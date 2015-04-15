@@ -65,7 +65,7 @@ static cmdContext_t cmd;
 Cmd_SaveCmdContext
 ============
 */
-void Cmd_SaveCmdContext( void )
+void Cmd_SaveCmdContext()
 {
 	Cmd::SaveArgs();
 }
@@ -75,7 +75,7 @@ void Cmd_SaveCmdContext( void )
 Cmd_RestoreCmdContext
 ============
 */
-void Cmd_RestoreCmdContext( void )
+void Cmd_RestoreCmdContext()
 {
 	Cmd::LoadArgs();
 }
@@ -102,7 +102,7 @@ void Cmd_PrintUsage( const char *syntax, const char *description )
 Cmd_Argc
 ============
 */
-int Cmd_Argc( void )
+int Cmd_Argc()
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
 	return args.Argc();
@@ -192,7 +192,7 @@ Cmd_Args
 Returns a single string containing argv(1) to argv(argc()-1)
 ============
 */
-char           *Cmd_Args( void )
+char           *Cmd_Args()
 {
 	return Cmd_ArgsFrom( 1 );
 }
@@ -345,7 +345,7 @@ Optionally wrap in ""
 ============
 */
 #define ESCAPEBUFFER_SIZE BIG_INFO_STRING
-static char *GetEscapeBuffer( void )
+static char *GetEscapeBuffer()
 {
 	static char escapeBuffer[ 4 ][ ESCAPEBUFFER_SIZE ];
 	static int escapeIndex = -1;

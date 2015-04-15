@@ -68,7 +68,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-gentity_t *G_NewEntity( void )
+gentity_t *G_NewEntity()
 {
 	int       i, force;
 	gentity_t *newEntity;

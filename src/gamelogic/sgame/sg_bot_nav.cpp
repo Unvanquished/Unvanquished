@@ -68,7 +68,7 @@ void G_BotNavInit()
 	navMeshLoaded = true;
 }
 
-void G_BotNavCleanup( void )
+void G_BotNavCleanup()
 {
 	trap_BotShutdownNav();
 	navMeshLoaded = false;

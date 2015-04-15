@@ -1677,7 +1677,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void       COM_BeginParseSession( const char *name );
 	void       COM_RestoreParseSession( char **data_p );
 	void       COM_SetCurrentParseLine( int line );
-	int        COM_GetCurrentParseLine( void );
+	int        COM_GetCurrentParseLine();
 	char       *COM_Parse( char **data_p );
 
 // RB: added COM_Parse2 for having a Doom 3 style tokenizer.

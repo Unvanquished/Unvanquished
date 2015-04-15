@@ -27,13 +27,13 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 void             trap_Print( const char *string );
 void NORETURN    trap_Error( const char *string );
-int              trap_Milliseconds( void );
+int              trap_Milliseconds();
 void             trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
 void             trap_Cvar_Set( const char *var_name, const char *value );
 void             trap_Cvar_Update( vmCvar_t *cvar );
 int              trap_Cvar_VariableIntegerValue( const char *var_name );
 void             trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
-int              trap_Argc( void );
+int              trap_Argc();
 void             trap_Argv( int n, char *buffer, int bufferLength );
 void             trap_SendConsoleCommand( const char *text );
 int              trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
@@ -66,7 +66,7 @@ void             trap_GetUserinfo( int num, char *buffer, int bufferSize );
 void             trap_GetServerinfo( char *buffer, int bufferSize );
 void             trap_AdjustAreaPortalState( gentity_t *ent, bool open );
 bool         trap_AreasConnected( int area1, int area2 );
-int              trap_BotAllocateClient( void );
+int              trap_BotAllocateClient();
 void             trap_BotFreeClient( int clientNum );
 void             trap_GetUsercmd( int clientNum, usercmd_t *cmd );
 bool         trap_GetEntityToken( char *buffer, int bufferSize );
@@ -96,7 +96,7 @@ void             trap_GetTimeString( char *buffer, int size, const char *format,
 bool         trap_FindPak( const char *name );
 
 bool         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
-void             trap_BotShutdownNav( void );
+void             trap_BotShutdownNav();
 void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 bool         trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
 bool         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
@@ -107,6 +107,6 @@ void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, con
 void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
 void             trap_BotRemoveObstacle( qhandle_t handle );
-void             trap_BotUpdateObstacles( void );
+void             trap_BotUpdateObstacles();
 
 #endif // SG_TRAPCALLS_H_

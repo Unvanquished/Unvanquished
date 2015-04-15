@@ -3792,7 +3792,7 @@ CollapseMultitexture
 =================
 */
 // *INDENT-OFF*
-static void CollapseStages( void )
+static void CollapseStages()
 {
 	int           i, j;
 
@@ -4109,7 +4109,7 @@ shaders.
 Sets shader->sortedIndex
 ==============
 */
-static void SortNewShader( void )
+static void SortNewShader()
 {
 	int      i;
 	float    sort;
@@ -4142,7 +4142,7 @@ static void SortNewShader( void )
 GeneratePermanentShader
 ====================
 */
-static shader_t *GeneratePermanentShader( void )
+static shader_t *GeneratePermanentShader()
 {
 	shader_t *newShader;
 	int      i, b;
@@ -4249,7 +4249,7 @@ Returns a freshly allocated shader with all the needed info
 from the current global working shader
 =========================
 */
-static shader_t *FinishShader( void )
+static shader_t *FinishShader()
 {
 	int      stage, i;
 	shader_t *ret;
@@ -5052,7 +5052,7 @@ Dump information on all valid shaders to the console
 A second parameter will cause it to print in sorted order
 ===============
 */
-void R_ShaderList_f( void )
+void R_ShaderList_f()
 {
 	int      i;
 	int      count;
@@ -5240,7 +5240,7 @@ void R_ShaderList_f( void )
 	ri.Printf( PRINT_ALL, "------------------\n" );
 }
 
-void R_ShaderExp_f( void )
+void R_ShaderExp_f()
 {
 	int          i;
 	int          len;
@@ -5281,7 +5281,7 @@ a single large text block that can be scanned for shader names
 =====================
 */
 #define MAX_SHADER_FILES 4096
-static void ScanAndLoadShaderFiles( void )
+static void ScanAndLoadShaderFiles()
 {
 	char **shaderFiles;
 	char *buffers[ MAX_SHADER_FILES ];
@@ -5535,7 +5535,7 @@ static void ScanAndLoadShaderFiles( void )
 CreateInternalShaders
 ====================
 */
-static void CreateInternalShaders( void )
+static void CreateInternalShaders()
 {
 	ri.Printf( PRINT_DEVELOPER, "----- CreateInternalShaders -----\n" );
 
@@ -5555,7 +5555,7 @@ static void CreateInternalShaders( void )
 	tr.defaultShader = FinishShader();
 }
 
-static void CreateExternalShaders( void )
+static void CreateExternalShaders()
 {
 	ri.Printf( PRINT_DEVELOPER, "----- CreateExternalShaders -----\n" );
 
@@ -5572,7 +5572,7 @@ static void CreateExternalShaders( void )
 R_InitShaders
 ==================
 */
-void R_InitShaders( void )
+void R_InitShaders()
 {
 	Com_Memset( shaderTableHashTable, 0, sizeof( shaderTableHashTable ) );
 	Com_Memset( shaderHashTable, 0, sizeof( shaderHashTable ) );

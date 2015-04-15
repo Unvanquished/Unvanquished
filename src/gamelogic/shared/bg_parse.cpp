@@ -560,7 +560,7 @@ bool BG_ParseConfigVar(configVar_t *var, char **text, const char *filename)
 	return true;
 }
 
-bool BG_CheckConfigVars( void )
+bool BG_CheckConfigVars()
 {
 	int i;
 	int ok = true;

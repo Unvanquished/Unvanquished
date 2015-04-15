@@ -66,7 +66,7 @@ static LinkedMem *lm = nullptr;
 #ifdef WIN32
 static HANDLE    hMapObject = nullptr;
 #else
-static int32_t GetTickCount( void )
+static int32_t GetTickCount()
 {
 	struct timeval tv;
 
@@ -197,7 +197,7 @@ void mumble_set_description( const char *description )
 	mbstowcs( lm->description, description, len );
 }
 
-void mumble_unlink( void )
+void mumble_unlink()
 {
 	if ( !lm )
 	{
@@ -214,7 +214,7 @@ void mumble_unlink( void )
 	lm = nullptr;
 }
 
-int mumble_islinked( void )
+int mumble_islinked()
 {
 	return lm != nullptr;
 }

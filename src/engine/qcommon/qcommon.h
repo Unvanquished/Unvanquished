@@ -195,9 +195,9 @@ typedef struct
 
 extern cvar_t       *net_enabled;
 
-void       NET_Init( void );
-void       NET_Shutdown( void );
-void       NET_Restart_f( void );
+void       NET_Init();
+void       NET_Shutdown();
+void       NET_Restart_f();
 void       NET_Config( bool enableNetworking );
 
 void       NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
@@ -211,8 +211,8 @@ const char *NET_AdrToString( netadr_t a );
 const char *NET_AdrToStringwPort( netadr_t a );
 int        NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );
 bool   NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_message );
-void       NET_JoinMulticast6( void );
-void       NET_LeaveMulticast6( void );
+void       NET_JoinMulticast6();
+void       NET_LeaveMulticast6();
 
 void       NET_Sleep( int msec );
 
@@ -372,7 +372,7 @@ then searches for a command or variable that matches the first token.
 
 */
 
-typedef void ( *xcommand_t )( void );
+typedef void ( *xcommand_t )();
 typedef void ( *xcommand_arg_t )( int );
 
 void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
@@ -402,14 +402,14 @@ void Cmd_CompleteCfgName( char *args, int argNum );
 // callback with each valid string
 
 void Cmd_PrintUsage( const char *syntax, const char *description );
-int  Cmd_Argc( void );
+int  Cmd_Argc();
 char *Cmd_Argv( int arg );
 void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
-char *Cmd_Args( void );
+char *Cmd_Args();
 char *Cmd_ArgsFrom( int arg );
 void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength ); // from index 0
 void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength );
-const char *Cmd_Cmd( void );
+const char *Cmd_Cmd();
 const char *Cmd_Cmd_FromNth( int );
 
 // these all share an output buffer
@@ -424,8 +424,8 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
 void Cmd_TokenizeString( const char *text );
 void Cmd_LiteralArgsBuffer( char *buffer, int bufferLength );
-void Cmd_SaveCmdContext( void );
-void Cmd_RestoreCmdContext( void );
+void Cmd_SaveCmdContext();
+void Cmd_RestoreCmdContext();
 
 /*
 ==============================================================
@@ -574,9 +574,9 @@ typedef enum
 } dlStatus_t;
 
 int        DL_BeginDownload( const char *localName, const char *remoteName, int debug );
-dlStatus_t DL_DownloadLoop( void );
+dlStatus_t DL_DownloadLoop();
 
-void       DL_Shutdown( void );
+void       DL_Shutdown();
 
 // bitmask
 typedef enum
@@ -637,18 +637,18 @@ void QDECL Com_Log( log_level_t level, const char* message );
 #define    PrintBanner(text) Com_Printf("----- %s -----\n", text );
 
 // *INDENT-ON*
-void NORETURN Com_Quit_f( void );
-int        Com_Milliseconds( void );
+void NORETURN Com_Quit_f();
+int        Com_Milliseconds();
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_FilterPath( const char *filter, char *name, int casesensitive );
-bool   Com_SafeMode( void );
+bool   Com_SafeMode();
 
 bool   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
 
 void       Com_StartupVariable( const char *match );
-void       Com_SetRecommended( void );
+void       Com_SetRecommended();
 bool       Com_AreCheatsAllowed();
 bool       Com_IsClient();
 bool       Com_IsDedicatedServer();
@@ -743,19 +743,19 @@ static inline void Z_Free(void* ptr)
   free(ptr);
 }
 
-void     Hunk_Clear( void );
-void     Hunk_ClearToMark( void );
-void     Hunk_SetMark( void );
-bool Hunk_CheckMark( void );
+void     Hunk_Clear();
+void     Hunk_ClearToMark();
+void     Hunk_SetMark();
+bool Hunk_CheckMark();
 
 //void *Hunk_Alloc( int size );
 // void *Hunk_Alloc( int size, ha_pref preference );
-void   Hunk_ClearTempMemory( void );
+void   Hunk_ClearTempMemory();
 void   *Hunk_AllocateTempMemory( int size );
 void   Hunk_FreeTempMemory( void *buf );
-int    Hunk_MemoryRemaining( void );
-void   Hunk_SmallLog( void );
-void   Hunk_Log( void );
+int    Hunk_MemoryRemaining();
+void   Hunk_SmallLog();
+void   Hunk_Log();
 
 // commandLine should not include the executable name (argv[0])
 void   Com_Init( char *commandLine );
@@ -773,16 +773,16 @@ CLIENT / SERVER SYSTEMS
 //
 // client interface
 //
-void CL_InitKeyCommands( void );
+void CL_InitKeyCommands();
 
 // the keyboard binding interface must be setup before execing
 // config files, but the rest of client startup will happen later
 
-void     CL_Init( void );
-void     CL_ClearStaticDownload( void );
+void     CL_Init();
+void     CL_ClearStaticDownload();
 void     CL_Disconnect( bool showMainMenu );
-void     CL_SendDisconnect( void );
-void     CL_Shutdown( void );
+void     CL_SendDisconnect();
+void     CL_Shutdown();
 void     CL_Frame( int msec );
 void     CL_KeyEvent( int key, bool down, unsigned time );
 
@@ -798,7 +798,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg );
 
 void CL_ConsolePrint( std::string text );
 
-void CL_MapLoading( void );
+void CL_MapLoading();
 
 // do a screen update before starting to load a map
 // when the server is going to load a new map, the entire hunk
@@ -811,15 +811,15 @@ void CL_ForwardCommandToServer( const char *string );
 // things like godmode, noclip, etc, are commands directed to the server,
 // so when they are typed in at the console, they will need to be forwarded.
 
-void CL_ShutdownAll( void );
+void CL_ShutdownAll();
 
 // shutdown all the client stuff
 
-void CL_FlushMemory( void );
+void CL_FlushMemory();
 
 // dump all memory on an error
 
-void CL_StartHunkUsers( void );
+void CL_StartHunkUsers();
 
 // start all the client stuff using the hunk
 
@@ -831,7 +831,7 @@ void Key_WriteBindings( fileHandle_t f );
 
 // for writing the config files
 
-void S_ClearSoundBuffer( void );
+void S_ClearSoundBuffer();
 
 // AVI files have the start of pixel lines 4 byte-aligned
 #define AVI_LINE_PADDING 4
@@ -839,11 +839,11 @@ void S_ClearSoundBuffer( void );
 //
 // server interface
 //
-void     SV_Init( void );
+void     SV_Init();
 void     SV_Shutdown( const char *finalmsg );
 void     SV_Frame( int msec );
 void     SV_PacketEvent( netadr_t from, msg_t *msg );
-int      SV_FrameMsec( void );
+int      SV_FrameMsec();
 
 /*
 ==============================================================
@@ -886,7 +886,7 @@ typedef struct
 } sysEvent_t;
 
 void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
-int        Com_EventLoop( void );
+int        Com_EventLoop();
 
 void Sys_SendPacket(int length, const void *data, netadr_t to);
 bool Sys_GetPacket(netadr_t *net_from, msg_t *net_message);
@@ -896,19 +896,19 @@ bool Sys_StringToAdr(const char *s, netadr_t *a, netadrtype_t family);
 bool Sys_IsLANAddress(netadr_t adr);
 void Sys_ShowIP();
 
-int Sys_Milliseconds( void );
+int Sys_Milliseconds();
 
 // Curses Console
-void         CON_Shutdown( void );
-void         CON_Init( void );
-void         CON_Init_TTY( void );
-char         *CON_Input( void );
+void         CON_Shutdown();
+void         CON_Init();
+void         CON_Init_TTY();
+char         *CON_Input();
 void         CON_Print( const char *message );
 
-void         CON_LogDump( void );
+void         CON_LogDump();
 
 // Console - other
-unsigned int CON_LogSize( void );
+unsigned int CON_LogSize();
 unsigned int CON_LogWrite( const char *in );
 unsigned int CON_LogRead( char *out, unsigned int outSize );
 
@@ -966,7 +966,7 @@ void             Huff_putBit( int bit, byte *fout, int *offset );
 int              Huff_getBit( byte *fout, int *offset );
 
 // don't use if you don't know what you're doing.
-int              Huff_getBloc( void );
+int              Huff_getBloc();
 void             Huff_setBloc( int _bloc );
 
 extern huffman_t clientHuffTables;
@@ -989,8 +989,8 @@ void Com_RandomBytes( byte *string, int len );
 #define N_(x) (x)
 #define P_(x, y, c) Trans_GettextPlural(x, y, c)
 
-void Trans_Init( void );
-void Trans_LoadDefaultLanguage( void );
+void Trans_Init();
+void Trans_LoadDefaultLanguage();
 const char* Trans_Gettext( const char *msgid ) PRINTF_TRANSLATE_ARG(1);
 const char* Trans_Pgettext( const char *ctxt, const char *msgid ) PRINTF_TRANSLATE_ARG(2);
 const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) PRINTF_TRANSLATE_ARG(1) PRINTF_TRANSLATE_ARG(2);

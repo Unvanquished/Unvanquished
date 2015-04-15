@@ -506,7 +506,7 @@ int SCR_GetBigStringWidth( const char *str )
 SCR_DrawDemoRecording
 =================
 */
-void SCR_DrawDemoRecording( void )
+void SCR_DrawDemoRecording()
 {
 	if ( !clc.demorecording )
 	{
@@ -524,7 +524,7 @@ void SCR_DrawDemoRecording( void )
 SCR_DrawVoipMeter
 =================
 */
-void SCR_DrawVoipMeter( void )
+void SCR_DrawVoipMeter()
 {
 	char buffer[ 16 ];
 	char string[ 256 ];
@@ -583,7 +583,7 @@ void SCR_DrawVoipMeter( void )
 SCR_DrawVoipSender
 =================
 */
-void SCR_DrawVoipSender( void )
+void SCR_DrawVoipSender()
 {
 #if 0 //FIXME we need to find another way to get the team CS_PLAYERS value, which will continuously change independently of the client, especially now with several cgames/games in development
 	char string[ 256 ];
@@ -658,7 +658,7 @@ void SCR_DrawVoipSender( void )
 SCR_Init
 ==================
 */
-void SCR_Init( void )
+void SCR_Init()
 {
 	scr_initialized = true;
 }
@@ -670,7 +670,7 @@ void SCR_Init( void )
 SCR_DrawScreenField
 ==================
 */
-void SCR_DrawScreenField( void )
+void SCR_DrawScreenField()
 {
 	re.BeginFrame();
 
@@ -730,7 +730,7 @@ void SCR_DrawScreenField( void )
 	}
 }
 
-void SCR_DrawConsoleAndPointer( void )
+void SCR_DrawConsoleAndPointer()
 {
 	extern bool mouseActive; // see sdl_input.c
 
@@ -746,7 +746,7 @@ This is called every frame, and can also be called explicitly to flush
 text to the screen.
 ==================
 */
-void SCR_UpdateScreen( void )
+void SCR_UpdateScreen()
 {
 	static int recursive = 0;
 
@@ -799,14 +799,14 @@ float SCR_ConsoleFontCharWidth( const char *s )
 	return SCR_ConsoleFontUnicharWidth( Q_UTF8_CodePoint( s ) );
 }
 
-float SCR_ConsoleFontCharHeight( void )
+float SCR_ConsoleFontCharHeight()
 {
 	return cls.useLegacyConsoleFont
 	       ? SMALLCHAR_HEIGHT
 	       : cls.consoleFont->glyphBlock[0][(unsigned)'I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 }
 
-float SCR_ConsoleFontCharVPadding( void )
+float SCR_ConsoleFontCharVPadding()
 {
 	return cls.useLegacyConsoleFont
 	       ? 0

@@ -243,7 +243,7 @@ float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
 /**
  * @brief Calculate the level mine rate and the teams' mining efficiencies, add build points.
  */
-void G_MineBuildPoints( void )
+void G_MineBuildPoints()
 {
 	int              i, playerNum;
 	gentity_t        *ent, *player;

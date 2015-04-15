@@ -163,7 +163,7 @@ static const char *Con_LineToColouredString( int lineno, bool lf )
 Con_ToggleConsole_f
 ================
 */
-void Con_ToggleConsole_f( void )
+void Con_ToggleConsole_f()
 {
 	// ydnar: persistent console input is more useful
 	if ( con_autoclear->integer )
@@ -180,7 +180,7 @@ void Con_ToggleConsole_f( void )
 	}
 }
 
-void Con_OpenConsole_f( void )
+void Con_OpenConsole_f()
 {
 	if ( !consoleState.isOpened )
 	{
@@ -193,7 +193,7 @@ void Con_OpenConsole_f( void )
 Con_Clear
 ================
 */
-static INLINE void Con_Clear( void )
+static INLINE void Con_Clear()
 {
 	int i;
 	conChar_t fill = { '\0', ColorIndex( CONSOLE_COLOR ) };
@@ -211,7 +211,7 @@ static INLINE void Con_Clear( void )
 Con_Clear_f
 ================
 */
-void Con_Clear_f( void )
+void Con_Clear_f()
 {
 	Con_Clear();
 	Con_ScrollToBottom(); // go to end
@@ -224,7 +224,7 @@ Con_Dump_f
 Save the console contents out to a file
 ================
 */
-void Con_Dump_f( void )
+void Con_Dump_f()
 {
 	int          l;
 	fileHandle_t f;
@@ -285,7 +285,7 @@ Con_Search_f
 Scroll up to the first console line containing a string
 ================
 */
-void Con_Search_f( void )
+void Con_Search_f()
 {
 	int   l, i;
 	int   direction;
@@ -329,7 +329,7 @@ Con_Grep_f
 Find all console lines containing a string
 ================
 */
-void Con_Grep_f( void )
+void Con_Grep_f()
 {
 	int    l;
 	char  *search;
@@ -406,7 +406,7 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-bool Con_CheckResize( void )
+bool Con_CheckResize()
 {
 	int   i, textWidthInChars, oldwidth, oldtotallines, numlines, numchars;
 	conChar_t buf[ CON_TEXTSIZE ];
@@ -487,7 +487,7 @@ bool Con_CheckResize( void )
 Con_Init
 ================
 */
-void Con_Init( void )
+void Con_Init()
 {
 	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
@@ -532,7 +532,7 @@ void Con_Init( void )
 Con_Linefeed
 ===============
 */
-void Con_Linefeed( void )
+void Con_Linefeed()
 {
 	int             i;
 	conChar_t       *line;
@@ -717,7 +717,7 @@ Con_DrawBackground
 Draws the background of the console (on the virtual 640x480 resolution)
 ================
 */
-void Con_DrawBackground( void )
+void Con_DrawBackground()
 {
 	vec4_t color;
 	const int consoleWidth = cls.glconfig.vidWidth - 2 * consoleState.margin.sides;
@@ -821,7 +821,7 @@ Con_DrawAboutText
 Draws the build and copyright info onto the console
 ================
 */
-void Con_DrawAboutText( void )
+void Con_DrawAboutText()
 {
 	vec4_t color;
 
@@ -860,7 +860,7 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	}
 }
 
-void Con_DrawConsoleScrollbar( void )
+void Con_DrawConsoleScrollbar()
 {
 	vec4_t color;
 	const int	freeConsoleHeight = consoleState.height - consoleState.padding.top - consoleState.padding.bottom;
@@ -960,7 +960,7 @@ static float Con_MarginFadeAlpha( float alpha, float lineDrawPosition, int topMa
 Con_DrawConsoleContent
 ================
 */
-void Con_DrawConsoleContent( void )
+void Con_DrawConsoleContent()
 {
 	float  currentWidthLocation = 0;
 	int    x;
@@ -1087,7 +1087,7 @@ Con_DrawSolidConsole
 Draws the console with the solid background
 ================
 */
-void Con_DrawAnimatedConsole( void )
+void Con_DrawAnimatedConsole()
 {
 	vec4_t contentClipping;
 
@@ -1120,7 +1120,7 @@ Con_UpdateConsoleState
 updates the consoleState
 ==================
 */
-void Con_UpdateConsoleState( void )
+void Con_UpdateConsoleState()
 {
 	float  horizontalMargin, verticalMargin;
 	int    totalVerticalPadding;
@@ -1222,7 +1222,7 @@ Con_RunAnimatedConsole
 runs each render-frame to update the console state accordingly
 ==================
 */
-void Con_RunAnimatedConsole( void )
+void Con_RunAnimatedConsole()
 {
 	int consoleVidWidth;
 
@@ -1268,7 +1268,7 @@ Con_DrawConsole
 runs each render-frame
 ==================
 */
-void Con_DrawConsole( void )
+void Con_DrawConsole()
 {
 	// render console only if flag is set or is within an animation but also in special disconnected states
 	if ( !consoleState.isOpened && consoleState.currentAnimationFraction <= 0
@@ -1293,7 +1293,7 @@ runs each frame once independend wheter or not the console is going to be render
 static std::vector<std::string> cl_consoleBufferedLines;
 static std::mutex cl_bufferedLinesLock;
 
-void Con_RunConsole( void )
+void Con_RunConsole()
 {
 	//check whether or not the console should be in opened state
 	consoleState.isOpened = cls.keyCatchers & KEYCATCH_CONSOLE;
@@ -1393,12 +1393,12 @@ class GraphicalTarget : public Log::Target {
 static GraphicalTarget gui;
 
 
-void Con_PageUp( void )
+void Con_PageUp()
 {
 	Con_ScrollUp( consoleState.visibleAmountOfLines/2 );
 }
 
-void Con_PageDown( void )
+void Con_PageDown()
 {
 	Con_ScrollDown( consoleState.visibleAmountOfLines/2 );
 }
@@ -1428,14 +1428,14 @@ void Con_ScrollDown( int lines )
 	}
 }
 
-void Con_ScrollToMarkerLine( void )
+void Con_ScrollToMarkerLine()
 {
 	consoleState.scrollLineIndex = std::max(consoleState.lastReadLineIndex, consoleState.currentLine - consoleState.usedScrollbackLengthInLines)
 			+ std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
 	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
 
-void Con_ScrollToTop( void )
+void Con_ScrollToTop()
 {
 	consoleState.scrollLineIndex = consoleState.currentLine
 			- consoleState.usedScrollbackLengthInLines
@@ -1443,13 +1443,13 @@ void Con_ScrollToTop( void )
 	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
 
-void Con_ScrollToBottom( void )
+void Con_ScrollToBottom()
 {
 	consoleState.scrollLineIndex = consoleState.currentLine;
 	//consoleState.bottomDisplayedLine = consoleState.currentLine;
 }
 
-void Con_JumpUp( void )
+void Con_JumpUp()
 {
 	if ( consoleState.lastReadLineIndex &&
 		 consoleState.scrollLineIndex > consoleState.lastReadLineIndex + std::min(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines)
@@ -1465,7 +1465,7 @@ void Con_JumpUp( void )
 
 }
 
-void Con_Close( void )
+void Con_Close()
 {
 	if ( !com_cl_running->integer )
 	{

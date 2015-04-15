@@ -630,7 +630,7 @@ static void CG_MinimapDrawBeacons( const minimap_t* m, const rectDef_t *rect )
 CG_InitMinimap
 ================
 */
-void CG_InitMinimap( void )
+void CG_InitMinimap()
 {
     minimap_t* m = &cg.minimap;
 

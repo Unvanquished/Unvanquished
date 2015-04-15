@@ -1265,7 +1265,7 @@ CG_LoadTrailSystems
 Load trail system templates
 ===============
 */
-void CG_LoadTrailSystems( void )
+void CG_LoadTrailSystems()
 {
 	int  i, numFiles, fileLen;
 	char fileList[ MAX_TRAIL_FILES * MAX_QPATH ];
@@ -1509,7 +1509,7 @@ CG_GarbageCollectTrailSystems
 Destroy inactive trail systems
 ===============
 */
-static void CG_GarbageCollectTrailSystems( void )
+static void CG_GarbageCollectTrailSystems()
 {
 	int           i, j, count;
 	trailSystem_t *ts;
@@ -1596,7 +1596,7 @@ CG_AddTrails
 Add trails to the scene
 ===============
 */
-void CG_AddTrails( void )
+void CG_AddTrails()
 {
 	int         i;
 	trailBeam_t *tb;
@@ -1648,7 +1648,7 @@ CG_DestroyTestTS_f
 Destroy the test a trail system
 ===============
 */
-void CG_DestroyTestTS_f( void )
+void CG_DestroyTestTS_f()
 {
 	if ( CG_IsTrailSystemValid( &testTS ) )
 	{
@@ -1663,7 +1663,7 @@ CG_TestTS_f
 Test a trail system
 ===============
 */
-void CG_TestTS_f( void )
+void CG_TestTS_f()
 {
 	char tsName[ MAX_QPATH ];
 

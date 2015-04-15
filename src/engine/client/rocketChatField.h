@@ -70,7 +70,7 @@ public:
 		}
 	}
 
-	void OnRender( void )
+	void OnRender()
 	{
 		UpdateCursorPosition();
 		cursor_geometry.Render( cursor_position );
@@ -99,7 +99,7 @@ public:
 		}
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		// Ensure mouse follow cursor
 		if ( focus )
@@ -289,7 +289,7 @@ public:
 
 
 protected:
-	void GenerateCursor( void )
+	void GenerateCursor()
 	{
 		// Generates the cursor.
 		cursor_geometry.Release();
@@ -312,7 +312,7 @@ protected:
 		cursor_character_index = Rocket::Core::Math::Clamp<int>( cursor_character_index, 0, text.Length() );
 	}
 
-	void UpdateCursorPosition( void )
+	void UpdateCursorPosition()
 	{
 		if ( text_element->GetFontFaceHandle() == nullptr )
 		{
@@ -324,7 +324,7 @@ protected:
 		cursor_position.x += ( float ) Rocket::Core::ElementUtilities::GetStringWidth( text_element, text.Substring( 0, cursor_character_index ) );
 	}
 
-	void UpdateText( void )
+	void UpdateText()
 	{
 		RemoveChild( text_element );
 		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );

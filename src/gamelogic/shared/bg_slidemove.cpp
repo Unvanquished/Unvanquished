@@ -452,7 +452,7 @@ bool PM_StepSlideMove( bool gravity, bool predictive )
 PM_PredictStepMove
 ==================
 */
-bool PM_PredictStepMove( void )
+bool PM_PredictStepMove()
 {
 	vec3_t   velocity, origin;
 	float    impactSpeed;

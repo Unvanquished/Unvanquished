@@ -764,7 +764,7 @@ void COM_SetCurrentParseLine( int line )
 	com_lines = line;
 }
 
-int COM_GetCurrentParseLine( void )
+int COM_GetCurrentParseLine()
 {
 	return com_lines;
 }

@@ -170,7 +170,7 @@ static clientList_t G_ClientListForTeam( team_t team )
 G_UpdateTeamConfigStrings
 ==================
 */
-void G_UpdateTeamConfigStrings( void )
+void G_UpdateTeamConfigStrings()
 {
 	clientList_t alienTeam = G_ClientListForTeam( TEAM_ALIENS );
 	clientList_t humanTeam = G_ClientListForTeam( TEAM_HUMANS );
@@ -500,7 +500,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 	}
 }
 
-void CheckTeamStatus( void )
+void CheckTeamStatus()
 {
 	int       i;
 	gentity_t *loc, *ent;

@@ -95,10 +95,10 @@ class MapCmd: public Cmd::StaticCmd {
 static MapCmd MapCmdRegistration("map", "starts a new map", false);
 static MapCmd DevmapCmdRegistration("devmap", "starts a new map with cheats enabled", true);
 
-void MSG_PrioritiseEntitystateFields( void );
-void MSG_PrioritisePlayerStateFields( void );
+void MSG_PrioritiseEntitystateFields();
+void MSG_PrioritisePlayerStateFields();
 
-static void SV_FieldInfo_f( void )
+static void SV_FieldInfo_f()
 {
 	MSG_PrioritiseEntitystateFields();
 	MSG_PrioritisePlayerStateFields();
@@ -112,7 +112,7 @@ Completely restarts a level, but doesn't send a new gamestate to the clients.
 This allows fair starts with variable load times.
 ================
 */
-static void SV_MapRestart_f( void )
+static void SV_MapRestart_f()
 {
 	int         i;
 	client_t    *client;
@@ -228,7 +228,7 @@ static void SV_MapRestart_f( void )
 SV_Status_f
 ================
 */
-static void SV_Status_f( void )
+static void SV_Status_f()
 {
 	int           i, j, l;
 	client_t      *cl;
@@ -321,7 +321,7 @@ SV_Heartbeat_f
 Also called by SV_DropClient, SV_DirectConnect, and SV_SpawnServer
 ==================
 */
-void SV_Heartbeat_f( void )
+void SV_Heartbeat_f()
 {
 	svs.nextHeartbeatTime = -9999999;
 }
@@ -333,7 +333,7 @@ SV_Serverinfo_f
 Examine the serverinfo string
 ===========
 */
-static void SV_Serverinfo_f( void )
+static void SV_Serverinfo_f()
 {
 	// make sure server is running
 	if ( !com_sv_running->integer )
@@ -353,7 +353,7 @@ SV_Systeminfo_f
 Examine the systeminfo string
 ===========
 */
-static void SV_Systeminfo_f( void )
+static void SV_Systeminfo_f()
 {
 	// make sure server is running
 	if ( !com_sv_running->integer )
@@ -371,7 +371,7 @@ static void SV_Systeminfo_f( void )
 SV_AddOperatorCommands
 ==================
 */
-void SV_AddOperatorCommands( void )
+void SV_AddOperatorCommands()
 {
 	if ( com_sv_running->integer )
 	{
@@ -390,7 +390,7 @@ void SV_AddOperatorCommands( void )
 SV_RemoveOperatorCommands
 ==================
 */
-void SV_RemoveOperatorCommands( void )
+void SV_RemoveOperatorCommands()
 {
 	Cmd_RemoveCommand( "fieldinfo" );
 	Cmd_RemoveCommand( "heartbeat" );

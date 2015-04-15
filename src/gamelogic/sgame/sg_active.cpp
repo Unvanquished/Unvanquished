@@ -1218,7 +1218,7 @@ void SendPendingPredictableEvents( playerState_t *ps )
  This data is used by G_UnlaggedCalc()
 ==============
 */
-void G_UnlaggedStore( void )
+void G_UnlaggedStore()
 {
 	int        i = 0;
 	gentity_t  *ent;
@@ -1408,7 +1408,7 @@ void G_UnlaggedCalc( int time, gentity_t *rewindEnt )
  Reverses the changes made to all active clients by G_UnlaggedOn()
 ==============
 */
-void G_UnlaggedOff( void )
+void G_UnlaggedOff()
 {
 	int       i = 0;
 	gentity_t *ent;

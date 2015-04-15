@@ -440,8 +440,8 @@ static cvarTable_t gameCvarTable[] =
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
-void               CheckExitRules( void );
-void               G_CountSpawns( void );
+void               CheckExitRules();
+void               G_CountSpawns();
 static void        G_LogGameplayStats( int state );
 
 // state field of G_LogGameplayStats
@@ -487,7 +487,7 @@ All but the first will have the FL_GROUPSLAVE flag set and groupMaster field set
 All but the last will have the groupChain field set to the next one
 ================
 */
-void G_FindEntityGroups( void )
+void G_FindEntityGroups()
 {
 	gentity_t *masterEntity, *comparedEntity;
 	int       i, j, k;
@@ -551,7 +551,7 @@ goes through all entities and concludes the spawn
 by calling their reset function as initiation if available
 ================
 */
-void G_InitSetEntities( void )
+void G_InitSetEntities()
 {
 	int i;
 	gentity_t *entity;
@@ -575,7 +575,7 @@ static int cvarCompare( const void *a, const void *b )
 G_RegisterCvars
 =================
 */
-void G_RegisterCvars( void )
+void G_RegisterCvars()
 {
 	int         i;
 	cvarTable_t *cvarTable;
@@ -605,7 +605,7 @@ void G_RegisterCvars( void )
 G_UpdateCvars
 =================
 */
-void G_UpdateCvars( void )
+void G_UpdateCvars()
 {
 	int         i;
 	cvarTable_t *cv;
@@ -640,7 +640,7 @@ void G_UpdateCvars( void )
 G_RestoreCvars
 =================
 */
-void G_RestoreCvars( void )
+void G_RestoreCvars()
 {
 	int         i;
 	cvarTable_t *cv;
@@ -947,7 +947,7 @@ G_VotesRunning
 Check if there are any votes currently running
 ==================
 */
-static bool G_VotesRunning( void )
+static bool G_VotesRunning()
 {
 	int i;
 
@@ -1394,7 +1394,7 @@ G_CountSpawns
 Counts the number of spawns for each team
 ============
 */
-void G_CountSpawns( void )
+void G_CountSpawns()
 {
 	int       i;
 	gentity_t *ent;
@@ -1431,7 +1431,7 @@ Calculates the average number of players on each team.
 Resets completely if all players leave a team.
 ============
 */
-void G_CalculateAvgPlayers( void )
+void G_CalculateAvgPlayers()
 {
 	int        team;
 	int        *samples, currentPlayers, currentBots;
@@ -1481,7 +1481,7 @@ This will be called on every client connect, begin, disconnect, death,
 and team change.
 ============
 */
-void CalculateRanks( void )
+void CalculateRanks()
 {
 	int  clientNum;
 	int  team;
@@ -1606,7 +1606,7 @@ Do this at BeginIntermission time and whenever ranks are recalculated
 due to enters/exits/forced team changes
 ========================
 */
-void SendScoreboardMessageToAllClients( void )
+void SendScoreboardMessageToAllClients()
 {
 	int i;
 
@@ -1659,7 +1659,7 @@ FindIntermissionPoint
 This is also used for spectator spawns
 ==================
 */
-void FindIntermissionPoint( void )
+void FindIntermissionPoint()
 {
 	gentity_t *ent, *target;
 	vec3_t    dir;
@@ -1696,7 +1696,7 @@ void FindIntermissionPoint( void )
 BeginIntermission
 ==================
 */
-void BeginIntermission( void )
+void BeginIntermission()
 {
 	int       i;
 	gentity_t *client;
@@ -1745,7 +1745,7 @@ When the intermission has been exited, the server is either moved
 to a new map based on the map rotation or the current map restarted
 =============
 */
-void ExitLevel( void )
+void ExitLevel()
 {
 	int       i;
 	gclient_t *cl;
@@ -2250,7 +2250,7 @@ If one or more players have not acknowledged the continue, the game will
 wait 10 seconds before going on.
 =================
 */
-void CheckIntermissionExit( void )
+void CheckIntermissionExit()
 {
 	int          ready, notReady;
 	int          i;
@@ -2347,7 +2347,7 @@ void CheckIntermissionExit( void )
 ScoreIsTied
 =============
 */
-bool ScoreIsTied( void )
+bool ScoreIsTied()
 {
 	int a, b;
 
@@ -2371,7 +2371,7 @@ and the time everyone is moved to the intermission spot, so you
 can see the last frag.
 =================
 */
-void CheckExitRules( void )
+void CheckExitRules()
 {
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
@@ -2654,7 +2654,7 @@ void G_CheckVote( team_t team )
 CheckCvars
 ==================
 */
-void CheckCvars( void )
+void CheckCvars()
 {
 	static int lastPasswordModCount = -1;
 

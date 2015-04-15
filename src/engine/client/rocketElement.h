@@ -148,7 +148,7 @@ public:
 		dimensions.y = y;
 	}
 
-	void OnRender( void )
+	void OnRender()
 	{
 		activeElement = this;
 
@@ -181,7 +181,7 @@ public:
 		delete element;
 	}
 
-	void Release( void )
+	void Release()
 	{
 		delete this;
 	}

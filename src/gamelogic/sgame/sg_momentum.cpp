@@ -64,7 +64,7 @@ const char *MomentumTypeToReason( momentum_t type )
 /**
  * Has to be called whenever the momentum of a team has been modified.
  */
-void MomentumChanged( void )
+void MomentumChanged()
 {
 	int       playerNum;
 	gentity_t *player;
@@ -124,7 +124,7 @@ void NotifyLegacyStageSensors( team_t team, float amount )
 	}
 }
 
-static INLINE float MomentumTimeMod( void )
+static INLINE float MomentumTimeMod()
 {
 	if ( g_momentumRewardDoubleTime.value <= 0.0f )
 	{
@@ -140,7 +140,7 @@ static INLINE float MomentumTimeMod( void )
 /**
  * @todo Currently this function is just a guess, find out the correct mod via statistics.
  */
-static INLINE float MomentumPlayerCountMod( void )
+static INLINE float MomentumPlayerCountMod()
 {
 	int playerCount = std::max( 2, level.team[ TEAM_ALIENS ].numClients +
 	                               level.team[ TEAM_HUMANS ].numClients );
@@ -302,7 +302,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 /**
  * Exponentially decreases momentum.
  */
-void G_DecreaseMomentum( void )
+void G_DecreaseMomentum()
 {
 	int          team;
 	float        amount;
@@ -507,7 +507,7 @@ float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float
 /**
  * Has to be called after the last G_AddMomentum*Step step.
  */
-void G_AddMomentumEnd( void )
+void G_AddMomentumEnd()
 {
 	MomentumChanged();
 }

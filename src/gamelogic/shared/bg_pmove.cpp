@@ -247,7 +247,7 @@ PM_Friction
 Handles both ground friction and water friction
 ==================
 */
-static void PM_Friction( void )
+static void PM_Friction()
 {
 	vec3_t vec;
 	float  *vel;
@@ -559,7 +559,7 @@ PM_SetMovementDir
 Determine the rotation of the legs relative to the facing dir
 ================
 */
-static void PM_SetMovementDir( void )
+static void PM_SetMovementDir()
 {
 	if ( pm->cmd.forwardmove || pm->cmd.rightmove )
 	{
@@ -617,7 +617,7 @@ static void PM_SetMovementDir( void )
 PM_CheckCharge
 =============
 */
-static void PM_CheckCharge( void )
+static void PM_CheckCharge()
 {
 	if ( pm->ps->weapon != WP_ALEVEL4 )
 	{
@@ -646,7 +646,7 @@ static void PM_CheckCharge( void )
 PM_CheckWaterPounce
 =============
 */
-static void PM_CheckWaterPounce( void )
+static void PM_CheckWaterPounce()
 {
 	// Check for valid class
 	switch ( pm->ps->weapon )
@@ -680,7 +680,7 @@ static void PM_CheckWaterPounce( void )
 PM_PlayJumpingAnimation
 =============
 */
-static void PM_PlayJumpingAnimation( void )
+static void PM_PlayJumpingAnimation()
 {
 	if ( pm->cmd.forwardmove >= 0 )
 	{
@@ -715,7 +715,7 @@ static void PM_PlayJumpingAnimation( void )
 PM_CheckPounce
 =============
 */
-static bool PM_CheckPounce( void )
+static bool PM_CheckPounce()
 {
 	const static vec3_t up = { 0.0f, 0.0f, 1.0f };
 
@@ -1046,7 +1046,7 @@ static bool PM_CheckPounce( void )
 PM_CheckWallJump
 =============
 */
-static bool PM_CheckWallJump( void )
+static bool PM_CheckWallJump()
 {
 	vec3_t  dir, forward, right, movedir, point;
 	float   normalFraction = 1.5f;
@@ -1174,7 +1174,7 @@ static bool PM_CheckWallJump( void )
  * @brief PM_CheckJetpack
  * @return true if and only if thrust was applied
  */
-static bool PM_CheckJetpack( void )
+static bool PM_CheckJetpack()
 {
 	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
 	int                 sideVelocity;
@@ -1325,7 +1325,7 @@ static bool PM_CheckJetpack( void )
  * @brief Restores jetpack fuel
  * @return true if and only if fuel has been restored
  */
-static bool PM_CheckJetpackRestoreFuel( void )
+static bool PM_CheckJetpackRestoreFuel()
 {
 	// don't restore fuel when full or jetpack active
 	if ( pm->ps->stats[ STAT_FUEL ] == JETPACK_FUEL_MAX ||
@@ -1407,7 +1407,7 @@ static void PM_LandJetpack( bool force )
 	}
 }
 
-static bool PM_CheckJump( void )
+static bool PM_CheckJump()
 {
 	vec3_t   normal;
 	int      staminaJumpCost;
@@ -1538,7 +1538,7 @@ static bool PM_CheckJump( void )
 	return true;
 }
 
-static bool PM_CheckWaterJump( void )
+static bool PM_CheckWaterJump()
 {
 	vec3_t spot;
 	int    cont;
@@ -1596,7 +1596,7 @@ PM_WaterJumpMove
 Flying out of the water
 ===================
 */
-static void PM_WaterJumpMove( void )
+static void PM_WaterJumpMove()
 {
 	// waterjump has no control, but falls
 
@@ -1618,7 +1618,7 @@ PM_WaterMove
 
 ===================
 */
-static void PM_WaterMove( void )
+static void PM_WaterMove()
 {
 	int    i;
 	vec3_t wishvel;
@@ -1740,7 +1740,7 @@ PM_AirMove
 
 ===================
 */
-static void PM_AirMove( void )
+static void PM_AirMove()
 {
 	int       i;
 	vec3_t    wishvel;
@@ -1802,7 +1802,7 @@ PM_ClimbMove
 
 ===================
 */
-static void PM_ClimbMove( void )
+static void PM_ClimbMove()
 {
 	int       i;
 	vec3_t    wishvel;
@@ -1931,7 +1931,7 @@ PM_WalkMove
 
 ===================
 */
-static void PM_WalkMove( void )
+static void PM_WalkMove()
 {
 	int       i;
 	vec3_t    wishvel;
@@ -2073,7 +2073,7 @@ PM_LadderMove
 Basically a rip of PM_WaterMove with a few changes
 ===================
 */
-static void PM_LadderMove( void )
+static void PM_LadderMove()
 {
 	int    i;
 	vec3_t wishvel;
@@ -2125,7 +2125,7 @@ PM_CheckLadder
 Check to see if the player is on a ladder or not
 =============
 */
-static void PM_CheckLadder( void )
+static void PM_CheckLadder()
 {
 	vec3_t  forward, end;
 	trace_t trace;
@@ -2160,7 +2160,7 @@ static void PM_CheckLadder( void )
 PM_DeadMove
 ==============
 */
-static void PM_DeadMove( void )
+static void PM_DeadMove()
 {
 	float forward;
 
@@ -2194,7 +2194,7 @@ PM_FootstepForSurface
 Returns an event number appropriate for the groundsurface
 ================
 */
-static int PM_FootstepForSurface( void )
+static int PM_FootstepForSurface()
 {
 	if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
 	{
@@ -2221,7 +2221,7 @@ PM_Land
 Play landing animation
 =================
 */
-static void PM_Land( void )
+static void PM_Land()
 {
 	PM_LandJetpack( false ); // don't force a stop, sometimes we can push off with a jump
 
@@ -2269,7 +2269,7 @@ PM_CrashLand
 Check for hard landings that generate sound events
 =================
 */
-static void PM_CrashLand( void )
+static void PM_CrashLand()
 {
 	float delta;
 	float dist;
@@ -2417,7 +2417,7 @@ PM_GroundTraceMissed
 The ground trace didn't hit a surface, so we are in freefall
 =============
 */
-static void PM_GroundTraceMissed( void )
+static void PM_GroundTraceMissed()
 {
 	trace_t trace;
 	vec3_t  point;
@@ -2498,7 +2498,7 @@ enum {
 	NUM_GCT_ATP
 };
 
-static void PM_GroundClimbTrace( void )
+static void PM_GroundClimbTrace()
 {
 	vec3_t      surfNormal, moveDir, lookDir, point, velocityDir;
 	vec3_t      toAngles, surfAngles;
@@ -2904,7 +2904,7 @@ static void PM_GroundClimbTrace( void )
 PM_GroundTrace
 =============
 */
-static void PM_GroundTrace( void )
+static void PM_GroundTrace()
 {
 	vec3_t  point;
 	trace_t trace;
@@ -3147,7 +3147,7 @@ static void PM_GroundTrace( void )
 PM_SetWaterLevel  FIXME: avoid this twice?  certainly if not moving
 =============
 */
-static void PM_SetWaterLevel( void )
+static void PM_SetWaterLevel()
 {
 	vec3_t point;
 	int    cont;
@@ -3194,7 +3194,7 @@ static void PM_SetWaterLevel( void )
 PM_SetViewheight
 ==============
 */
-static void PM_SetViewheight( void )
+static void PM_SetViewheight()
 {
 	pm->ps->viewheight = ( pm->ps->pm_flags & PMF_DUCKED )
 	                     ? BG_ClassModelConfig( pm->ps->stats[ STAT_CLASS ] )->crouchViewheight
@@ -3208,7 +3208,7 @@ PM_CheckDuck
 Sets mins and maxs, and calls PM_SetViewheight
 ==============
 */
-static void PM_CheckDuck( void )
+static void PM_CheckDuck()
 {
 	trace_t trace;
 	vec3_t  PCmins, PCmaxs, PCcmaxs;
@@ -3272,7 +3272,7 @@ static void PM_CheckDuck( void )
 PM_Footsteps
 ===============
 */
-static void PM_Footsteps( void )
+static void PM_Footsteps()
 {
 	float    bobmove;
 	int      old;
@@ -3554,7 +3554,7 @@ PM_WaterEvents
 Generate sound events for entering and leaving water
 ==============
 */
-static void PM_WaterEvents( void )
+static void PM_WaterEvents()
 {
 	// FIXME?
 	//
@@ -3648,7 +3648,7 @@ static void PM_BeginWeaponChange( int weapon )
 PM_FinishWeaponChange
 ===============
 */
-static void PM_FinishWeaponChange( void )
+static void PM_FinishWeaponChange()
 {
 	int weapon;
 
@@ -3682,7 +3682,7 @@ PM_TorsoAnimation
 
 ==============
 */
-static void PM_TorsoAnimation( void )
+static void PM_TorsoAnimation()
 {
 	if ( pm->ps->weaponstate == WEAPON_READY )
 	{
@@ -3709,7 +3709,7 @@ PM_Weapon
 Generates weapon events and modifies the weapon counter
 ==============
 */
-static void PM_Weapon( void )
+static void PM_Weapon()
 {
 	int      addTime = 200; //default addTime - should never be used
 	bool attack1 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK );
@@ -4383,7 +4383,7 @@ static void PM_Weapon( void )
 PM_Animate
 ================
 */
-static void PM_Animate( void )
+static void PM_Animate()
 {
 	if ( PM_Paralyzed( pm->ps->pm_type ) )
 	{
@@ -4461,7 +4461,7 @@ static void PM_Animate( void )
 PM_DropTimers
 ================
 */
-static void PM_DropTimers( void )
+static void PM_DropTimers()
 {
 	// drop misc timing counter
 	if ( pm->ps->pm_time )
@@ -4633,7 +4633,7 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
-static void PM_HumanStaminaEffects( void )
+static void PM_HumanStaminaEffects()
 {
 	const classAttributes_t *ca;
 	int      *stats;

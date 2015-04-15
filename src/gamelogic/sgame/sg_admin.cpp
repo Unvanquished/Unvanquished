@@ -415,7 +415,7 @@ static const char *G_quoted_user_name( gentity_t *ent, const char *fallback )
 	return Quote( G_user_name( ent, fallback ) );
 }
 
-void G_admin_register_cmds( void )
+void G_admin_register_cmds()
 {
 	int i;
 
@@ -428,7 +428,7 @@ void G_admin_register_cmds( void )
 	}
 }
 
-void G_admin_unregister_cmds( void )
+void G_admin_unregister_cmds()
 {
 	int i;
 
@@ -783,7 +783,7 @@ static void admin_writeconfig_int( int v, fileHandle_t f )
 	trap_FS_Write( buf, strlen( buf ), f );
 }
 
-void G_admin_writeconfig( void )
+void G_admin_writeconfig()
 {
 	fileHandle_t      f;
 	int               t;
@@ -959,7 +959,7 @@ static void admin_readconfig_int( char **cnf, int *v )
 
 // if we can't parse any levels from readconfig, set up default
 // ones to make new installs easier for admins
-static void admin_default_levels( void )
+static void admin_default_levels()
 {
 	g_admin_level_t *l;
 	int             level = 0;
@@ -1064,7 +1064,7 @@ static void admin_log( const char *str )
 	}
 }
 
-static void admin_log_abort( void )
+static void admin_log_abort()
 {
 	adminLog[ 0 ] = '\0';
 	adminLogLen = 0;
@@ -1735,7 +1735,7 @@ static int cmplevel( const void *a, const void *b )
 	return ( ( g_admin_level_t * ) b )->level - ( ( g_admin_level_t * ) a )->level;
 }
 
-void G_admin_pubkey( void )
+void G_admin_pubkey()
 {
 	g_admin_admin_t *highest = nullptr, *a = nullptr;
 
@@ -2497,7 +2497,7 @@ static void G_admin_reflag_warnings_ent( int i )
 	}
 }
 
-static void G_admin_reflag_warnings( void )
+static void G_admin_reflag_warnings()
 {
 	int                 i;
 
@@ -5545,7 +5545,7 @@ void G_admin_print_plural( gentity_t *ent, const char *m, int number )
  The supplied text is raw; it will be quoted but not marked translatable.
 ================
 */
-void G_admin_buffer_begin( void )
+void G_admin_buffer_begin()
 {
 	g_bfb[ 0 ] = '\0';
 }
@@ -5570,7 +5570,7 @@ void G_admin_buffer_print( gentity_t *ent, const char *m )
 	}
 }
 
-void G_admin_cleanup( void )
+void G_admin_cleanup()
 {
 	g_admin_level_t   *l;
 	g_admin_admin_t   *a;

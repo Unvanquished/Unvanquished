@@ -495,7 +495,7 @@ void CG_Rocket_FormatData( int handle )
 	}
 }
 
-void CG_Rocket_RegisterDataFormatters( void )
+void CG_Rocket_RegisterDataFormatters()
 {
 	int i;
 

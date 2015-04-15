@@ -565,7 +565,7 @@ CG_TutorialText
 Returns context help for the current class/weapon
 ===============
 */
-const char *CG_TutorialText( void )
+const char *CG_TutorialText()
 {
 	playerState_t *ps;
 	static char   text[ MAX_TUTORIAL_TEXT ];

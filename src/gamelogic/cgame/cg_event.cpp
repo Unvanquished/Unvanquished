@@ -637,7 +637,7 @@ Called on upgrade change
 =========================
 */
 
-void CG_OnPlayerUpgradeChange( void )
+void CG_OnPlayerUpgradeChange()
 {
 	playerState_t *ps = &cg.snap->ps;
 
@@ -657,7 +657,7 @@ Called whenever the map is restarted
 via map_restart
 =========================
 */
-void CG_OnMapRestart( void )
+void CG_OnMapRestart()
 {
 	// if scoreboard is showing, hide it
 	CG_HideScores_f();

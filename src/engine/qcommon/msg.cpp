@@ -47,7 +47,7 @@ Handles byte ordering and avoids alignment errors
 ==============================================================================
 */
 
-void MSG_initHuffman( void );
+void MSG_initHuffman();
 
 void MSG_Init( msg_t *buf, byte *data, int length )
 {
@@ -998,7 +998,7 @@ static int QDECL qsort_entitystatefields( const void *a, const void *b )
 	return 0;
 }
 
-void MSG_PrioritiseEntitystateFields( void )
+void MSG_PrioritiseEntitystateFields()
 {
 	int fieldorders[ ARRAY_LEN( entityStateFields ) ];
 	int numfields = ARRAY_LEN( entityStateFields );
@@ -1511,7 +1511,7 @@ static int QDECL qsort_playerstatefields( const void *a, const void *b )
 	return 0;
 }
 
-void MSG_PrioritisePlayerStateFields( void )
+void MSG_PrioritisePlayerStateFields()
 {
 	int fieldorders[ ARRAY_LEN( playerStateFields ) ];
 	int numfields = ARRAY_LEN( playerStateFields );
@@ -2204,7 +2204,7 @@ static const int msg_hData[ 256 ] =
 	13504, // 255
 };
 
-void MSG_initHuffman( void )
+void MSG_initHuffman()
 {
 	int i, j;
 

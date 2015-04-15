@@ -259,7 +259,7 @@ int           sv_numworldSectors;
 G_CM_SectorList_f
 ===============
 */
-void G_CM_SectorList_f( void )
+void G_CM_SectorList_f()
 {
 	int           i, c;
 	worldSector_t *sec;
@@ -334,7 +334,7 @@ G_CM_ClearWorld
 
 ===============
 */
-void G_CM_ClearWorld( void )
+void G_CM_ClearWorld()
 {
 	clipHandle_t h;
 	vec3_t       mins, maxs;

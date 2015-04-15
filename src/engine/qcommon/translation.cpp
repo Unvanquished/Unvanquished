@@ -259,7 +259,7 @@ void Trans_SetLanguage( const char* lang )
 	Com_Printf( "Set language to %s" , bestLang.get_name().c_str() );
 }
 
-void Trans_UpdateLanguage_f( void )
+void Trans_UpdateLanguage_f()
 {
 	Trans_SetLanguage( language->string );
 
@@ -275,7 +275,7 @@ void Trans_UpdateLanguage_f( void )
 Trans_Init
 ============
 */
-void Trans_Init( void )
+void Trans_Init()
 {
 	char langList[ MAX_TOKEN_CHARS ] = "";
 	char encList[ MAX_TOKEN_CHARS ] = "";
@@ -314,7 +314,7 @@ void Trans_Init( void )
 	Com_Printf( "Loaded %lu language%s\n", ( unsigned long ) langs.size(), ( langs.size() == 1 ? "" : "s" ) );
 }
 
-void Trans_LoadDefaultLanguage( void )
+void Trans_LoadDefaultLanguage()
 {
 	FL_Locale           *locale;
 

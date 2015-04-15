@@ -45,7 +45,7 @@ static ALIGNED( 16, transform_t bones[ MAX_BONES ] );
 Tess_EndBegin
 ==============
 */
-void Tess_EndBegin( void )
+void Tess_EndBegin()
 {
 	Tess_End();
 	Tess_Begin( tess.stageIteratorFunc, tess.stageIteratorFunc2, tess.surfaceShader, tess.lightShader, tess.skipTangentSpaces, tess.skipVBO,
@@ -631,7 +631,7 @@ Tess_SurfaceSprite
 */
 #define NORMAL_EPSILON 0.0001
 
-static void Tess_SurfaceSprite( void )
+static void Tess_SurfaceSprite()
 {
 	vec3_t delta, left, up;
 	float  radius;

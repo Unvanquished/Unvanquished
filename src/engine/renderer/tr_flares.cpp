@@ -85,7 +85,7 @@ flare_t *r_activeFlares, *r_inactiveFlares;
 R_ClearFlares
 ==================
 */
-void R_ClearFlares( void )
+void R_ClearFlares()
 {
 	int i;
 

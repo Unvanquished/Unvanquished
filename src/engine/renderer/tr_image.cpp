@@ -147,7 +147,7 @@ void GL_TextureMode( const char *string )
 R_ImageList_f
 ===============
 */
-void R_ImageList_f( void )
+void R_ImageList_f()
 {
 	int        i;
 	image_t    *image;
@@ -2442,7 +2442,7 @@ skipCubeImage:
 R_InitFogTable
 =================
 */
-void R_InitFogTable( void )
+void R_InitFogTable()
 {
 	int   i;
 	float d;
@@ -2508,7 +2508,7 @@ R_CreateFogImage
 */
 #define FOG_S 256
 #define FOG_T 32
-static void R_CreateFogImage( void )
+static void R_CreateFogImage()
 {
 	int   x, y;
 	byte  *data, *ptr;
@@ -2551,7 +2551,7 @@ R_CreateDefaultImage
 ==================
 */
 #define DEFAULT_SIZE 128
-static void R_CreateDefaultImage( void )
+static void R_CreateDefaultImage()
 {
 	int  x;
 	byte data[ DEFAULT_SIZE ][ DEFAULT_SIZE ][ 4 ];
@@ -2576,7 +2576,7 @@ static void R_CreateDefaultImage( void )
 					 DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, FT_DEFAULT, WT_REPEAT );
 }
 
-static void R_CreateRandomNormalsImage( void )
+static void R_CreateRandomNormalsImage()
 {
 	int  x, y;
 	byte data[ DEFAULT_SIZE ][ DEFAULT_SIZE ][ 4 ];
@@ -2611,7 +2611,7 @@ static void R_CreateRandomNormalsImage( void )
 					       DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, FT_DEFAULT, WT_REPEAT );
 }
 
-static void R_CreateNoFalloffImage( void )
+static void R_CreateNoFalloffImage()
 {
 	byte data[ DEFAULT_SIZE ][ DEFAULT_SIZE ][ 4 ];
 	byte *dataPtr = &data[0][0][0];
@@ -2623,7 +2623,7 @@ static void R_CreateNoFalloffImage( void )
 }
 
 #define ATTENUATION_XY_SIZE 128
-static void R_CreateAttenuationXYImage( void )
+static void R_CreateAttenuationXYImage()
 {
 	int  x, y;
 	byte data[ ATTENUATION_XY_SIZE ][ ATTENUATION_XY_SIZE ][ 4 ];
@@ -2663,7 +2663,7 @@ static void R_CreateAttenuationXYImage( void )
 	                 WT_CLAMP );
 }
 
-static void R_CreateContrastRenderFBOImage( void )
+static void R_CreateContrastRenderFBOImage()
 {
 	int  width, height;
 
@@ -2681,7 +2681,7 @@ static void R_CreateContrastRenderFBOImage( void )
 	tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 }
 
-static void R_CreateBloomRenderFBOImage( void )
+static void R_CreateBloomRenderFBOImage()
 {
 	int  i;
 	int  width, height;
@@ -2703,7 +2703,7 @@ static void R_CreateBloomRenderFBOImage( void )
 	}
 }
 
-static void R_CreateCurrentRenderImage( void )
+static void R_CreateCurrentRenderImage()
 {
 	int  width, height;
 
@@ -2721,7 +2721,7 @@ static void R_CreateCurrentRenderImage( void )
 	tr.currentRenderImage = R_CreateImage( "_currentRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 }
 
-static void R_CreateDepthRenderImage( void )
+static void R_CreateDepthRenderImage()
 {
 	int  width, height;
 
@@ -2741,7 +2741,7 @@ static void R_CreateDepthRenderImage( void )
 	}
 }
 
-static void R_CreatePortalRenderImage( void )
+static void R_CreatePortalRenderImage()
 {
 	int  width, height;
 
@@ -2759,7 +2759,7 @@ static void R_CreatePortalRenderImage( void )
 	tr.portalRenderImage = R_CreateImage( "_portalRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
 }
 
-static void R_CreateOcclusionRenderFBOImage( void )
+static void R_CreateOcclusionRenderFBOImage()
 {
 	int  width, height;
 
@@ -2779,7 +2779,7 @@ static void R_CreateOcclusionRenderFBOImage( void )
 	}
 }
 
-static void R_CreateDepthToColorFBOImages( void )
+static void R_CreateDepthToColorFBOImages()
 {
 	int  width, height;
 
@@ -2801,7 +2801,7 @@ static void R_CreateDepthToColorFBOImages( void )
 }
 
 // Tr3B: clean up this mess some day ...
-static void R_CreateDownScaleFBOImages( void )
+static void R_CreateDownScaleFBOImages()
 {
 	int  width, height;
 
@@ -2824,7 +2824,7 @@ static void R_CreateDownScaleFBOImages( void )
 }
 
 // *INDENT-OFF*
-static void R_CreateShadowMapFBOImage( void )
+static void R_CreateShadowMapFBOImage()
 {
 	int  i;
 	int  width, height;
@@ -2898,7 +2898,7 @@ static void R_CreateShadowMapFBOImage( void )
 // *INDENT-ON*
 
 // *INDENT-OFF*
-static void R_CreateShadowCubeFBOImage( void )
+static void R_CreateShadowCubeFBOImage()
 {
 	int  j;
 	int  width, height;
@@ -2962,7 +2962,7 @@ static void R_CreateShadowCubeFBOImage( void )
 // *INDENT-ON*
 
 // *INDENT-OFF*
-static void R_CreateBlackCubeImage( void )
+static void R_CreateBlackCubeImage()
 {
 	int  i;
 	int  width, height;
@@ -2989,7 +2989,7 @@ static void R_CreateBlackCubeImage( void )
 // *INDENT-ON*
 
 // *INDENT-OFF*
-static void R_CreateWhiteCubeImage( void )
+static void R_CreateWhiteCubeImage()
 {
 	int  i;
 	int  width, height;
@@ -3014,7 +3014,7 @@ static void R_CreateWhiteCubeImage( void )
 
 // *INDENT-ON*
 
-static void R_CreateColorGradeImage( void )
+static void R_CreateColorGradeImage()
 {
 	byte *data, *ptr;
 	int i, r, g, b;
@@ -3051,7 +3051,7 @@ static void R_CreateColorGradeImage( void )
 R_CreateBuiltinImages
 ==================
 */
-void R_CreateBuiltinImages( void )
+void R_CreateBuiltinImages()
 {
 	int   x, y;
 	byte  data[ DEFAULT_SIZE ][ DEFAULT_SIZE ][ 4 ];
@@ -3170,7 +3170,7 @@ void R_CreateBuiltinImages( void )
 R_InitImages
 ===============
 */
-void R_InitImages( void )
+void R_InitImages()
 {
 	const char *charsetImage = "gfx/2d/consolechars";
 
@@ -3203,7 +3203,7 @@ void R_InitImages( void )
 R_ShutdownImages
 ===============
 */
-void R_ShutdownImages( void )
+void R_ShutdownImages()
 {
 	int     i;
 	image_t *image;

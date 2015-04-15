@@ -174,11 +174,11 @@ typedef struct g_admin_command
 
 g_admin_command_t;
 
-void            G_admin_register_cmds( void );
-void            G_admin_unregister_cmds( void );
+void            G_admin_register_cmds();
+void            G_admin_unregister_cmds();
 void            G_admin_cmdlist( gentity_t *ent );
-void            G_admin_writeconfig( void );
-void            G_admin_pubkey( void );
+void            G_admin_writeconfig();
+void            G_admin_pubkey();
 
 bool        G_admin_ban_check( gentity_t *ent, char *reason, int rlen );
 bool        G_admin_cmd_check( gentity_t *ent );
@@ -237,10 +237,10 @@ bool        G_admin_bot( gentity_t *ent );
 void            G_admin_print( gentity_t *ent, const char *m );
 void            G_admin_print_plural( gentity_t *ent, const char *m, int number );
 void            G_admin_buffer_print( gentity_t *ent, const char *m );
-void            G_admin_buffer_begin( void );
+void            G_admin_buffer_begin();
 void            G_admin_buffer_end( gentity_t *ent );
 
 void            G_admin_duration( int secs, char *time, int timesize, char *duration, int dursize );
-void            G_admin_cleanup( void );
+void            G_admin_cleanup();
 
 #endif /* ifndef SG_ADMIN_H */

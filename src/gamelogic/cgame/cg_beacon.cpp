@@ -36,7 +36,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 #define bc_etime time2
 #define bc_mtime apos.trTime
 
-void CG_LoadBeaconsConfig( void )
+void CG_LoadBeaconsConfig()
 {
 	beaconsConfig_t  *bc = &cgs.bc;
 	const char       *path = "ui/beacons.cfg";
@@ -150,7 +150,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
  * @brief Fills cg.beacons with explicit (ET_BEACON entity) beacons.
  * @return Whether all beacons found space in cg.beacons.
  */
-static bool LoadExplicitBeacons( void )
+static bool LoadExplicitBeacons()
 {
 	int i;
 	centity_t     *ent;
@@ -218,7 +218,7 @@ static bool LoadExplicitBeacons( void )
  * @brief Fills cg.beacons with implicit (client side generated) beacons.
  * @return Whether all beacons found space in cg.beacons.
  */
-static bool LoadImplicitBeacons( void )
+static bool LoadImplicitBeacons()
 {
 	// All alive aliens have enemy sense.
 	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
@@ -312,7 +312,7 @@ static int CompareBeaconsByDist( const void *a, const void *b )
  * @brief Marks the nearest refreshing buildable if low on health or ammo.
  * @note  Assumes that cg.beacons is sorted.
  */
-static void MarkRelevantBeacons( void )
+static void MarkRelevantBeacons()
 {
 	const playerState_t *ps = &cg.predictedPlayerState;
 	int team = ps->persistant[ PERS_TEAM ];
@@ -358,7 +358,7 @@ static void MarkRelevantBeacons( void )
 	}
 }
 
-static void SetHighlightedBeacon( void )
+static void SetHighlightedBeacon()
 {
 	for( int beaconNum = 0; beaconNum < cg.beaconCount; beaconNum++ ) {
 		cbeacon_t *beacon = cg.beacons[ beaconNum ];
@@ -579,7 +579,7 @@ static void DrawBeacon( cbeacon_t *b )
 /**
  * @brief Hands over information about highlighted beacon to UI.
  */
-static void HandHLBeaconToUI( void )
+static void HandHLBeaconToUI()
 {
 	cbeacon_t *beacon;
 	beaconRocket_t * const br = &cg.beaconRocket;
@@ -655,7 +655,7 @@ static void HandHLBeaconToUI( void )
 /**
  * @brief Loads and runs beacons, passes beacon data to the UI.
  */
-void CG_RunBeacons( void )
+void CG_RunBeacons()
 {
 	// Don't load implicit beacons if there wasn't enough space for the explicit ones.
 	LoadExplicitBeacons() && LoadImplicitBeacons();

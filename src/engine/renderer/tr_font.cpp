@@ -311,7 +311,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 static int  fdOffset;
 static byte *fdFile;
 
-int readInt( void )
+int readInt()
 {
 	int i =
 	  fdFile[ fdOffset ] + ( fdFile[ fdOffset + 1 ] << 8 ) + ( fdFile[ fdOffset + 2 ] << 16 ) + ( fdFile[ fdOffset + 3 ] << 24 );
@@ -325,7 +325,7 @@ typedef union
 	float ffred;
 } poor;
 
-float readFloat( void )
+float readFloat()
 {
 	poor me;
 
@@ -856,7 +856,7 @@ void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int poin
 	}
 }
 
-void R_InitFreeType( void )
+void R_InitFreeType()
 {
 	if ( FT_Init_FreeType( &ftLibrary ) )
 	{
@@ -937,7 +937,7 @@ void RE_UnregisterFontVM( fontHandle_t handle )
 	}
 }
 
-void R_DoneFreeType( void )
+void R_DoneFreeType()
 {
 	if ( ftLibrary )
 	{

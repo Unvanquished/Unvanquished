@@ -34,7 +34,7 @@ CG_ParseScores
 
 =================
 */
-static void CG_ParseScores( void )
+static void CG_ParseScores()
 {
 	int i;
 
@@ -84,7 +84,7 @@ CG_ParseTeamInfo
 
 =================
 */
-static void CG_ParseTeamInfo( void )
+static void CG_ParseTeamInfo()
 {
 	int i;
 	int count;
@@ -130,7 +130,7 @@ This is called explicitly when the gamestate is first received,
 and whenever the server updates any serverinfo flagged cvars
 ================
 */
-void CG_ParseServerinfo( void )
+void CG_ParseServerinfo()
 {
 	const char *info;
 
@@ -155,7 +155,7 @@ void CG_ParseServerinfo( void )
 CG_ParseWarmup
 ==================
 */
-static void CG_ParseWarmup( void )
+static void CG_ParseWarmup()
 {
 	const char *info;
 	int        warmup;
@@ -173,7 +173,7 @@ CG_SetConfigValues
 Called on load to set the initial values from configure strings
 ================
 */
-void CG_SetConfigValues( void )
+void CG_SetConfigValues()
 {
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
 	cg.warmupTime = atoi( CG_ConfigString( CS_WARMUP ) );
@@ -184,7 +184,7 @@ void CG_SetConfigValues( void )
 CG_ShaderStateChanged
 =====================
 */
-void CG_ShaderStateChanged( void )
+void CG_ShaderStateChanged()
 {
 	char       originalShader[ MAX_QPATH ];
 	char       newShader[ MAX_QPATH ];
@@ -239,7 +239,7 @@ CG_ConfigStringModified
 
 ================
 */
-static void CG_ConfigStringModified( void )
+static void CG_ConfigStringModified()
 {
 	const char *str;
 	int        num;
@@ -371,7 +371,7 @@ A tournement restart will clear everything, but doesn't
 require a reload of all the media
 ===============
 */
-static void CG_MapRestart( void )
+static void CG_MapRestart()
 {
 	if ( cg_showmiss.integer )
 	{
@@ -994,7 +994,7 @@ CG_ParseVoice
 voice clientNum vChan cmdNum trackNum [sayText]
 =================
 */
-static void CG_ParseVoice( void )
+static void CG_ParseVoice()
 {
 	int            clientNum;
 	voiceChannel_t vChan;
@@ -1133,7 +1133,7 @@ static void CG_ParseVoice( void )
 CG_CenterPrint_f
 =================
 */
-void CG_CenterPrint_f( void )
+void CG_CenterPrint_f()
 {
 	CG_CenterPrint( CG_Argv( 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 }
@@ -1143,7 +1143,7 @@ void CG_CenterPrint_f( void )
 CG_CenterPrint_Delay_f
 =================
 */
-void CG_CenterPrint_Delay_f( void )
+void CG_CenterPrint_Delay_f()
 {
 	char cmd[ MAX_STRING_CHARS ];
 
@@ -1156,7 +1156,7 @@ void CG_CenterPrint_Delay_f( void )
 CG_CenterPrintTR_f
 =================
 */
-void CG_CenterPrintTR_f( void )
+void CG_CenterPrintTR_f()
 {
 	CG_CenterPrint( TranslateText_Internal( false, 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 }
@@ -1166,7 +1166,7 @@ void CG_CenterPrintTR_f( void )
 CG_CenterPrintTR_Delay_f
 =================
 */
-void CG_CenterPrintTR_Delay_f( void )
+void CG_CenterPrintTR_Delay_f()
 {
 	char cmd[ MAX_STRING_CHARS ];
 
@@ -1179,7 +1179,7 @@ void CG_CenterPrintTR_Delay_f( void )
 CG_Print_f
 =================
 */
-static void CG_Print_f( void )
+static void CG_Print_f()
 {
 	CG_Printf( "%s", CG_Argv( 1 ) );
 }
@@ -1189,12 +1189,12 @@ static void CG_Print_f( void )
 CG_PrintTR_f
 =================
 */
-static void CG_PrintTR_f( void )
+static void CG_PrintTR_f()
 {
 	Com_Printf( "%s", TranslateText_Internal( false, 1 ) );
 }
 
-static void CG_PrintTR_plural_f( void )
+static void CG_PrintTR_plural_f()
 {
 	Com_Printf("%s", TranslateText_Internal( true, 1 ) );
 }
@@ -1204,7 +1204,7 @@ static void CG_PrintTR_plural_f( void )
 CG_Chat_f
 =================
 */
-static void CG_Chat_f( void )
+static void CG_Chat_f()
 {
 	char id[ 3 ];
 	char mode[ 3 ];
@@ -1220,7 +1220,7 @@ static void CG_Chat_f( void )
 CG_AdminChat_f
 =================
 */
-static void CG_AdminChat_f( void )
+static void CG_AdminChat_f()
 {
 	char name[ MAX_NAME_LENGTH ];
 	char mode[ 3 ];
@@ -1236,7 +1236,7 @@ static void CG_AdminChat_f( void )
 CG_ServerMenu_f
 =================
 */
-static void CG_ServerMenu_f( void )
+static void CG_ServerMenu_f()
 {
 	if ( !cg.demoPlayback )
 	{
@@ -1256,7 +1256,7 @@ static void CG_ServerMenu_f( void )
 CG_ServerCloseMenus_f
 =================
 */
-static void CG_ServerCloseMenus_f( void )
+static void CG_ServerCloseMenus_f()
 {
 	trap_SendConsoleCommand( "closemenus\n" );
 }
@@ -1268,7 +1268,7 @@ CG_VCommand
 The server has asked us to execute a string from some variable
 =================
 */
-static void CG_VCommand( void )
+static void CG_VCommand()
 {
 	static int recurse = 0;
 	char       cmd[ 32 ];
@@ -1294,7 +1294,7 @@ static void CG_VCommand( void )
 	recurse = 0;
 }
 
-static void CG_GameCmds_f( void )
+static void CG_GameCmds_f()
 {
 	int i;
 	int c = trap_Argc();
@@ -1366,7 +1366,7 @@ The string has been tokenized and can be retrieved with
 CG_Argc() / CG_Argv()
 =================
 */
-static void CG_ServerCommand( void )
+static void CG_ServerCommand()
 {
 	const char       *cmd;
 	consoleCommand_t *command;

@@ -246,7 +246,7 @@ static float UnlockToLockThreshold( float unlockThreshold )
 // BG methods
 // ----------
 
-void BG_InitUnlockackables( void )
+void BG_InitUnlockackables()
 {
 	unlockablesDataAvailable = false;
 	unlockablesTeamKnowledge = TEAM_NONE;
@@ -502,7 +502,7 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 // ------------
 
 #ifdef BUILD_SGAME
-static void UpdateUnlockablesMask( void )
+static void UpdateUnlockablesMask()
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
 	int    team;
@@ -541,7 +541,7 @@ static void UpdateUnlockablesMask( void )
 #endif
 
 #ifdef BUILD_SGAME
-void G_UpdateUnlockables( void )
+void G_UpdateUnlockables()
 {
 	int              itemNum = 0, unlockableNum, unlockThreshold;
 	float            momentum;
@@ -636,7 +636,7 @@ void CG_UpdateUnlockables( playerState_t *ps )
 // ----------
 
 #ifdef BUILD_UI
-void UI_UpdateUnlockables( void )
+void UI_UpdateUnlockables()
 {
 	char   buffer[ MAX_TOKEN_CHARS ];
 	team_t team;

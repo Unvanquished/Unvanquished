@@ -221,7 +221,7 @@ typedef struct
 //
 //lifecycle
 void       G_InitGentity( gentity_t *e );
-gentity_t  *G_NewEntity( void );
+gentity_t  *G_NewEntity();
 gentity_t  *G_NewTempEntity( const vec3_t origin, int event );
 void       G_FreeEntity( gentity_t *e );
 
@@ -266,8 +266,8 @@ void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
 //
 // g_spawn.c
 //
-void     G_SpawnEntitiesFromString( void );
-void     G_SpawnFakeEntities( void );
+void     G_SpawnEntitiesFromString();
+void     G_SpawnFakeEntities();
 void     G_ReorderCallTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
 

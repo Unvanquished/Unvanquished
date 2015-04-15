@@ -810,7 +810,7 @@ void R_BindVBO( VBO_t *vbo )
 R_BindNullVBO
 ============
 */
-void R_BindNullVBO( void )
+void R_BindNullVBO()
 {
 	GLimp_LogComment( "--- R_BindNullVBO ---\n" );
 
@@ -856,7 +856,7 @@ void R_BindIBO( IBO_t *ibo )
 R_BindNullIBO
 ============
 */
-void R_BindNullIBO( void )
+void R_BindNullIBO()
 {
 	GLimp_LogComment( "--- R_BindNullIBO ---\n" );
 
@@ -868,7 +868,7 @@ void R_BindNullIBO( void )
 	}
 }
 
-static void R_InitUnitCubeVBO( void )
+static void R_InitUnitCubeVBO()
 {
 	vec3_t        mins = { -1, -1, -1 };
 	vec3_t        maxs = { 1,  1,  1 };
@@ -915,7 +915,7 @@ const int indexCapacity = DYN_BUFFER_SIZE / sizeof( glIndex_t );
 R_InitVBOs
 ============
 */
-void R_InitVBOs( void )
+void R_InitVBOs()
 {
 	uint32_t attribs = ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR;
 
@@ -958,7 +958,7 @@ void R_InitVBOs( void )
 R_ShutdownVBOs
 ============
 */
-void R_ShutdownVBOs( void )
+void R_ShutdownVBOs()
 {
 	int   i;
 	VBO_t *vbo;
@@ -1103,7 +1103,7 @@ Tess_UpdateVBOs
 Tr3B: update the default VBO to replace the client side vertex arrays
 ==============
 */
-void Tess_UpdateVBOs( void )
+void Tess_UpdateVBOs()
 {
 	GLimp_LogComment( "--- Tess_UpdateVBOs( ) ---\n" );
 
@@ -1184,7 +1184,7 @@ void Tess_UpdateVBOs( void )
 R_VBOList_f
 ============
 */
-void R_VBOList_f( void )
+void R_VBOList_f()
 {
 	int   i;
 	VBO_t *vbo;

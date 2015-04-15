@@ -36,16 +36,16 @@ Maryland 20850 USA.
 
 #include "client/client.h"
 
-void Rocket_Init( void ) {}
-void Rocket_Shutdown( void ) {}
-void Rocket_Render( void ) {}
-void Rocket_Update( void ) {}
+void Rocket_Init() {}
+void Rocket_Shutdown() {}
+void Rocket_Render() {}
+void Rocket_Update() {}
 void Rocket_InjectMouseMotion( int x, int y ) {}
 void Rocket_LoadDocument( const char *path ) {}
 void Rocket_LoadCursor( const char *path ) {}
 void Rocket_DocumentAction( const char *name, const char *action ) {}
 bool Rocket_GetEvent(std::string& ) { return false; }
-void Rocket_DeleteEvent( void ) {}
+void Rocket_DeleteEvent() {}
 void Rocket_RegisterDataSource( const char *name ) {}
 void Rocket_DSAddRow( const char *name, const char *table, const char *data ) {}
 void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data ) {}
@@ -73,13 +73,13 @@ void Rocket_LoadUnit( const char *path ) {}
 void Rocket_AddUnitToHud( int weapon, const char *id ) {}
 void Rocket_ShowHud( int weapon ) {}
 void Rocket_ClearHud( int weapon ) {}
-void Rocket_InitKeys( void ) {}
+void Rocket_InitKeys() {}
 keyNum_t Rocket_ToQuake( int key ) { return K_NONE; }
 void Rocket_ProcessKeyInput( int key, bool down ) {}
 void Rocket_ProcessTextInput( int key ) {}
 void Rocket_MouseMove( int x, int y ) {}
 void Rocket_AddTextElement( const char *text, const char *_class, float x, float y ) {}
-void Rocket_ClearText( void ) {}
+void Rocket_ClearText() {}
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs ) {}
 void Rocket_ShowScoreboard( const char *name, bool show ) {}
 void Rocket_SetDataSelectIndex( int index ) {}

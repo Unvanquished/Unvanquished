@@ -161,7 +161,7 @@ static int CG_MapLoadNameCompare( const void *a, const void *b )
 CG_LoadArenas
 ===============
 */
-void CG_LoadArenas( void )
+void CG_LoadArenas()
 {
 	int  numdirs;
 	char filename[ 128 ];

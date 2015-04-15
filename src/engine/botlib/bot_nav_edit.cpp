@@ -164,7 +164,7 @@ void BotDebugDrawMesh( BotDebugInterface_t *in )
 	}
 }
 
-void Cmd_NavEdit( void )
+void Cmd_NavEdit()
 {
 	int argc = Cmd_Argc();
 	char *arg = nullptr;
@@ -235,7 +235,7 @@ void Cmd_NavEdit( void )
 	}
 }
 
-void Cmd_AddConnection( void )
+void Cmd_AddConnection()
 {
 	const char usage[] = "Usage: addcon start <dir> (radius)\n"
 	                     " addcon end\n";
@@ -358,17 +358,17 @@ static void adjustConnectionSize( int dir )
 	}
 }
 
-void Cmd_ConnectionSizeUp( void )
+void Cmd_ConnectionSizeUp()
 {
 	return adjustConnectionSize( 1 );
 }
 
-void Cmd_ConnectionSizeDown( void )
+void Cmd_ConnectionSizeDown()
 {
 	return adjustConnectionSize( -1 );
 }
 
-void Cmd_NavTest( void )
+void Cmd_NavTest()
 {
 	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath\n";
 	char *arg = nullptr;
@@ -440,7 +440,7 @@ void Cmd_NavTest( void )
 	}
 }
 
-void NavEditInit( void )
+void NavEditInit()
 {
 #ifndef BUILD_SERVER
 	memset( &cmd, 0, sizeof( cmd ) );
@@ -453,7 +453,7 @@ void NavEditInit( void )
 #endif
 }
 
-void NavEditShutdown( void )
+void NavEditShutdown()
 {
 #ifndef BUILD_SERVER
 	Cmd_RemoveCommand( "navedit" );

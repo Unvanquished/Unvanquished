@@ -891,7 +891,7 @@ static float CalcDamageModifier( vec3_t point, gentity_t *target, class_t pcl, i
 	return modifier;
 }
 
-void G_InitDamageLocations( void )
+void G_InitDamageLocations()
 {
 	const char   *modelName;
 	char         filename[ MAX_QPATH ];

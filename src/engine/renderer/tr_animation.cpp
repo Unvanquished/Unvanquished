@@ -34,7 +34,7 @@ frame.
 ===========================================================================
 */
 
-static skelAnimation_t *R_AllocAnimation( void )
+static skelAnimation_t *R_AllocAnimation()
 {
 	skelAnimation_t *anim;
 
@@ -56,7 +56,7 @@ static skelAnimation_t *R_AllocAnimation( void )
 R_InitAnimations
 ===============
 */
-void R_InitAnimations( void )
+void R_InitAnimations()
 {
 	skelAnimation_t *anim;
 
@@ -575,7 +575,7 @@ skelAnimation_t *R_GetAnimationByHandle( qhandle_t index )
 R_AnimationList_f
 ================
 */
-void R_AnimationList_f( void )
+void R_AnimationList_f()
 {
 	int             i;
 	skelAnimation_t *anim;

@@ -30,7 +30,7 @@ volatile bool            renderThreadActive;
 R_PerformanceCounters
 =====================
 */
-void R_PerformanceCounters( void )
+void R_PerformanceCounters()
 {
 	if ( !r_speeds->integer )
 	{
@@ -199,7 +199,7 @@ and will remain idle and the main thread is free to issue
 OpenGL calls until R_IssueRenderCommands is called.
 ====================
 */
-void R_SyncRenderThread( void )
+void R_SyncRenderThread()
 {
 	if ( !tr.registered )
 	{
@@ -253,7 +253,7 @@ void           *R_GetCommandBuffer( int bytes )
 R_AddDrawViewCmd
 =============
 */
-void R_AddDrawViewCmd( void )
+void R_AddDrawViewCmd()
 {
 	drawViewCommand_t *cmd;
 
@@ -276,7 +276,7 @@ R_AddRunVisTestsCmd
 
 =============
 */
-void R_AddRunVisTestsCmd( void )
+void R_AddRunVisTestsCmd()
 {
 	runVisTestsCommand_t *cmd;
 
@@ -702,7 +702,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 RE_BeginFrame
 ====================
 */
-void RE_BeginFrame( void )
+void RE_BeginFrame()
 {
 	drawBufferCommand_t *cmd;
 
@@ -930,7 +930,7 @@ void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 RE_Finish
 ==================
 */
-void RE_Finish( void )
+void RE_Finish()
 {
 	renderFinishCommand_t *cmd;
 

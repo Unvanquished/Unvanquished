@@ -144,7 +144,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 
 	/* Step 3: read file parameters with jpeg_read_header() */
 
-	( void ) jpeg_read_header( &cinfo, TRUE );
+	Q_UNUSED(jpeg_read_header( &cinfo, TRUE ));
 
 	/* We can ignore the return value from jpeg_read_header since
 	 *   (a) suspension is not possible with the stdio data source, and
@@ -162,7 +162,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 
 	/* Step 5: Start decompressor */
 
-	( void ) jpeg_start_decompress( &cinfo );
+	Q_UNUSED(jpeg_start_decompress( &cinfo ));
 
 	/* We can ignore the return value since suspension is not possible
 	 * with the stdio data source.
@@ -215,7 +215,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 		 */
 		buf = ( ( out + ( row_stride * cinfo.output_scanline ) ) );
 		buffer = &buf;
-		( void ) jpeg_read_scanlines( &cinfo, buffer, 1 );
+		Q_UNUSED(jpeg_read_scanlines( &cinfo, buffer, 1 ));
 	}
 
 	buf = out;
@@ -438,7 +438,7 @@ int SaveJPGToBuffer( byte *buffer, size_t bufSize, int quality, int image_width,
 		 * more than one scanline at a time if that's more convenient.
 		 */
 		row_pointer[ 0 ] = &image_buffer[( ( cinfo.image_height - 1 ) * row_stride ) - cinfo.next_scanline * row_stride ];
-		( void ) jpeg_write_scanlines( &cinfo, row_pointer, 1 );
+		Q_UNUSED(jpeg_write_scanlines( &cinfo, row_pointer, 1 ));
 	}
 
 	/* Step 6: Finish compression */

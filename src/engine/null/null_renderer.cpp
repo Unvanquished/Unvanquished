@@ -97,8 +97,8 @@ void RE_GlyphCharVM( fontHandle_t font, int ch, glyphInfo_t *glyph ) { }
 void RE_UnregisterFontVM( fontHandle_t font ) { }
 void RE_LoadWorldMap( const char *name ) { }
 void RE_SetWorldVisData( const byte *vis ) { }
-void RE_EndRegistration( void ) { }
-void RE_ClearScene( void ) { }
+void RE_EndRegistration() { }
+void RE_ClearScene() { }
 void RE_AddRefEntityToScene( const refEntity_t *ref ) { }
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
 {
@@ -117,14 +117,14 @@ void RE_StretchPicGradient( float x, float y, float w, float h, float s1, float 
 void RE_2DPolyies( polyVert_t *polys, int numverts, qhandle_t hShader ) { }
 void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, bool dirty ) { }
 void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, bool dirty ) { }
-void RE_BeginFrame( void ) { }
+void RE_BeginFrame() { }
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) { }
 int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer )
 {
 	return 0;
 }
 void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime ) { }
-void RE_ClearDecals( void ) { }
+void RE_ClearDecals() { }
 int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
 {
 	return 0;
@@ -155,7 +155,7 @@ int R_GetTextureId( const char *imagename )
 {
 	return 0;
 }
-void RE_Finish( void ) { }
+void RE_Finish() { }
 void RE_TakeVideoFrame( int h, int w, byte *captureBuffer, byte *encodeBuffer, bool motionJpeg ) { }
 void RE_AddRefLightToScene( const refLight_t *light ) { }
 int RE_RegisterAnimation( const char *name )
@@ -187,7 +187,7 @@ int RE_AnimFrameRate( qhandle_t hAnim )
 {
 	return 1;
 }
-qhandle_t RE_RegisterVisTest( void )
+qhandle_t RE_RegisterVisTest()
 {
 	return 1;
 }

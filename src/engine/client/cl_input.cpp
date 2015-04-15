@@ -204,7 +204,7 @@ float CL_KeyState( kbutton_t *key )
 }
 
 #ifdef USE_VOIP
-void IN_VoipRecordDown( void )
+void IN_VoipRecordDown()
 {
 	//IN_KeyDown(&in_voiprecord);
 	IN_KeyDown( &kb[ KB_VOIPRECORD ] );
@@ -212,7 +212,7 @@ void IN_VoipRecordDown( void )
 	Cvar_Set( "cl_voipSend", "1" );
 }
 
-void IN_VoipRecordUp( void )
+void IN_VoipRecordUp()
 {
 	// IN_KeyUp(&in_voiprecord);
 	IN_KeyUp( &kb[ KB_VOIPRECORD ] );
@@ -220,12 +220,12 @@ void IN_VoipRecordUp( void )
 }
 #endif
 
-void IN_CenterView (void)
+void IN_CenterView ()
 {
         cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
 }
 
-void IN_Help( void )
+void IN_Help()
 {
 	if ( cls.state == CA_ACTIVE && !clc.demoplaying )
 	{
@@ -251,7 +251,7 @@ CL_AdjustAngles
 Moves the local angle positions
 ================
 */
-void CL_AdjustAngles( void )
+void CL_AdjustAngles()
 {
 	float speed;
 
@@ -644,7 +644,7 @@ void CL_MouseMove( usercmd_t *cmd )
 /*
 
 */
-void CL_ClearCmdButtons( void )
+void CL_ClearCmdButtons()
 {
 	for ( int i = 0; i < USERCMD_BUTTONS; ++i )
 	{
@@ -728,7 +728,7 @@ void CL_FinishMove( usercmd_t *cmd )
 CL_CreateCmd
 =================
 */
-usercmd_t CL_CreateCmd( void )
+usercmd_t CL_CreateCmd()
 {
 	usercmd_t cmd;
 	vec3_t    oldAngles;
@@ -781,7 +781,7 @@ CL_CreateNewCommands
 Create a new usercmd_t structure for this frame
 =================
 */
-void CL_CreateNewCommands( void )
+void CL_CreateNewCommands()
 {
 	//usercmd_t      *cmd;
 	int cmdNum;
@@ -821,7 +821,7 @@ delivered in the next packet, but saving a header and
 getting more delta compression will reduce total bandwidth.
 =================
 */
-bool CL_ReadyToSendPacket( void )
+bool CL_ReadyToSendPacket()
 {
 	int oldPacketNum;
 	int delta;
@@ -925,7 +925,7 @@ A client packet will contain something like:
 
 ===================
 */
-void CL_WritePacket( void )
+void CL_WritePacket()
 {
 	msg_t     buf;
 	byte      data[ MAX_MSGLEN ];
@@ -1115,7 +1115,7 @@ CL_SendCmd
 Called every frame to builds and sends a command packet to the server.
 =================
 */
-void CL_SendCmd( void )
+void CL_SendCmd()
 {
 	// don't send any message if not connected
 	if ( cls.state < CA_CONNECTED )
@@ -1169,7 +1169,7 @@ static const struct{
 };
 
 //A proxy command for +/-commands
-void IN_BuiltinButtonCommand( void )
+void IN_BuiltinButtonCommand()
 {
 	int i = 0;
 	const char* name = Cmd_Argv( 0 );
@@ -1221,7 +1221,7 @@ void IN_BuiltinButtonCommand( void )
 	}
 }
 
-void IN_KeysUp_f( void )
+void IN_KeysUp_f()
 {
 	unsigned int check;
 	int key, time;
@@ -1283,7 +1283,7 @@ For pseudo-button commands which don't need key/time info but do need to be exec
 Called by the +command code.
 ============
 */
-void IN_PrepareKeyUp( void )
+void IN_PrepareKeyUp()
 {
 	char *cmd;
 	int  key;
@@ -1384,7 +1384,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 CL_InitInput
 ============
 */
-void CL_InitInput( void )
+void CL_InitInput()
 {
 	int i = 0;
 
@@ -1415,7 +1415,7 @@ void CL_InitInput( void )
 CL_ClearKeys
 ============
 */
-void CL_ClearKeys( void )
+void CL_ClearKeys()
 {
 	int i;
 

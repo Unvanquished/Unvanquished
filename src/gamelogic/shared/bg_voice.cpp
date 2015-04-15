@@ -59,7 +59,7 @@ static void NORETURN BG_VoiceParseError( fileHandle_t handle, char *err )
 BG_VoiceList
 ============
 */
-static voice_t *BG_VoiceList( void )
+static voice_t *BG_VoiceList()
 {
 	char    fileList[ MAX_VOICES * ( MAX_VOICE_NAME_LEN + 6 ) ] = { "" };
 	int     numFiles, i, fileLen = 0;
@@ -495,7 +495,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 BG_VoiceInit
 ============
 */
-voice_t *BG_VoiceInit( void )
+voice_t *BG_VoiceInit()
 {
 	voice_t *voices;
 	voice_t *voice;

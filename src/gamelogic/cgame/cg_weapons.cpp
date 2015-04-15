@@ -78,7 +78,7 @@ Load custom crosshairs specified by the user
 =======================
 */
 
-static void CG_LoadCustomCrosshairs( void )
+static void CG_LoadCustomCrosshairs()
 {
 	char         *text_p, *token;
 	char         text[ 20000 ];
@@ -199,7 +199,7 @@ CG_InitUpgrades
 Precaches upgrades
 ===============
 */
-void CG_InitUpgrades( void )
+void CG_InitUpgrades()
 {
 	int i;
 
@@ -1205,7 +1205,7 @@ CG_InitWeapons
 Precaches weapons
 ===============
 */
-void CG_InitWeapons( void )
+void CG_InitWeapons()
 {
 	int i;
 
@@ -2040,7 +2040,7 @@ static bool CG_UpgradeSelectable( upgrade_t upgrade )
 CG_DrawItemSelect
 ===================
 */
-void CG_DrawHumanInventory( void )
+void CG_DrawHumanInventory()
 {
 	int           i;
 	int           items[ 64 ];
@@ -2183,7 +2183,7 @@ void CG_DrawHumanInventory( void )
 CG_DrawItemSelectText
 ===================
 */
-void CG_DrawItemSelectText( void )
+void CG_DrawItemSelectText()
 {
 	const char *name;
 	float      alpha;
@@ -2230,7 +2230,7 @@ void CG_DrawItemSelectText( void )
 CG_NextWeapon_f
 ===============
 */
-void CG_NextWeapon_f( void )
+void CG_NextWeapon_f()
 {
 	int i;
 	int original;
@@ -2285,7 +2285,7 @@ void CG_NextWeapon_f( void )
 CG_PrevWeapon_f
 ===============
 */
-void CG_PrevWeapon_f( void )
+void CG_PrevWeapon_f()
 {
 	int i;
 	int original;
@@ -2340,7 +2340,7 @@ void CG_PrevWeapon_f( void )
 CG_Weapon_f
 ===============
 */
-void CG_Weapon_f( void )
+void CG_Weapon_f()
 {
 	int num;
 
@@ -2890,7 +2890,7 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
 	}
 }
 
-float CG_ChargeProgress( void )
+float CG_ChargeProgress()
 {
 	float progress;
 	int   min = 0, max = 0;

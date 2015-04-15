@@ -69,7 +69,7 @@ Creates an entity in front of the current position, which
 can then be moved around
 =================
 */
-void CG_TestModel_f( void )
+void CG_TestModel_f()
 {
 	vec3_t angles;
 
@@ -127,20 +127,20 @@ CG_TestGun_f
 Replaces the current view weapon with the given model
 =================
 */
-void CG_TestGun_f( void )
+void CG_TestGun_f()
 {
 	CG_TestModel_f();
 	cg.testGun = true;
 	cg.testModelEntity.renderfx = RF_MINLIGHT | RF_DEPTHHACK | RF_FIRST_PERSON;
 }
 
-void CG_TestModelNextFrame_f( void )
+void CG_TestModelNextFrame_f()
 {
 	cg.testModelEntity.frame++;
 	CG_Printf( "frame %i\n", cg.testModelEntity.frame );
 }
 
-void CG_TestModelPrevFrame_f( void )
+void CG_TestModelPrevFrame_f()
 {
 	cg.testModelEntity.frame--;
 
@@ -152,13 +152,13 @@ void CG_TestModelPrevFrame_f( void )
 	CG_Printf( "frame %i\n", cg.testModelEntity.frame );
 }
 
-void CG_TestModelNextSkin_f( void )
+void CG_TestModelNextSkin_f()
 {
 	cg.testModelEntity.skinNum++;
 	CG_Printf( "skin %i\n", cg.testModelEntity.skinNum );
 }
 
-void CG_TestModelPrevSkin_f( void )
+void CG_TestModelPrevSkin_f()
 {
 	cg.testModelEntity.skinNum--;
 
@@ -170,7 +170,7 @@ void CG_TestModelPrevSkin_f( void )
 	CG_Printf( "skin %i\n", cg.testModelEntity.skinNum );
 }
 
-static void CG_AddTestModel( void )
+static void CG_AddTestModel()
 {
 	int i;
 
@@ -221,7 +221,7 @@ CG_CalcVrect
 Sets the coordinates of the rendered window
 =================
 */
-static void CG_CalcVrect( void )
+static void CG_CalcVrect()
 {
 	int size;
 
@@ -253,7 +253,7 @@ CG_OffsetThirdPersonView
 
 ===============
 */
-void CG_OffsetThirdPersonView( void )
+void CG_OffsetThirdPersonView()
 {
 	int           i;
 	vec3_t        forward, right, up;
@@ -450,7 +450,7 @@ CG_OffsetShoulderView
 
 ===============
 */
-void CG_OffsetShoulderView( void )
+void CG_OffsetShoulderView()
 {
 	int          i;
 	int          cmdNum;
@@ -534,7 +534,7 @@ void CG_OffsetShoulderView( void )
 }
 
 // this causes a compiler bug on mac MrC compiler
-static void CG_StepOffset( void )
+static void CG_StepOffset()
 {
 	float         steptime;
 	int           timeDelta;
@@ -563,7 +563,7 @@ CG_OffsetFirstPersonView
 
 ===============
 */
-void CG_OffsetFirstPersonView( void )
+void CG_OffsetFirstPersonView()
 {
 	float         *origin;
 	float         *angles;
@@ -869,7 +869,7 @@ Fixed fov at intermissions, otherwise account for fov variable and zooms.
 #define MAX_FOV_Y      120.0f
 #define MAX_FOV_WARP_Y 127.5f
 
-static int CG_CalcFov( void )
+static int CG_CalcFov()
 {
 	float     y;
 	float     phase;
@@ -1062,7 +1062,7 @@ Draws a vector against
 the surface player is looking at
 ===============
 */
-static void CG_DrawSurfNormal( void )
+static void CG_DrawSurfNormal()
 {
 	trace_t    tr;
 	vec3_t     end, temp;
@@ -1615,7 +1615,7 @@ Helper function to terminate the list of models for the last shadow caster.
 following models.
 ===============
 */
-void CG_EndShadowCaster( void ) {
+void CG_EndShadowCaster() {
 	trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
 				0.0f, 0.0f, 0.0f,
 				0, 0 );
@@ -1628,7 +1628,7 @@ CG_CalcViewValues
 Sets cg.refdef view values
 ===============
 */
-static int CG_CalcViewValues( void )
+static int CG_CalcViewValues()
 {
 	playerState_t *ps;
 
@@ -1766,7 +1766,7 @@ static cplane_t  frustum[4];
 CG_SetupFrustum
 =================
 */
-void CG_SetupFrustum(void)
+void CG_SetupFrustum()
 {
 	int             i;
 	float           xs, xc;

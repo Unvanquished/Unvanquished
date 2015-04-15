@@ -57,7 +57,7 @@ static void CG_GetRocketElementRect( rectDef_t *rect )
 	rect->h = ( rect->h / cgs.glconfig.vidHeight ) * 480;
 }
 
-static void CG_Rocket_DrawAmmo( void )
+static void CG_Rocket_DrawAmmo()
 {
 	int      value;
 	int      valueMarked = -1;
@@ -121,7 +121,7 @@ static void CG_Rocket_DrawAmmo( void )
 	}
 }
 
-static void CG_Rocket_DrawClips( void )
+static void CG_Rocket_DrawClips()
 {
 	int           value;
 	playerState_t *ps = &cg.snap->ps;
@@ -151,7 +151,7 @@ static void CG_Rocket_DrawClips( void )
 
 #define FPS_FRAMES 20
 #define FPS_STRING "fps"
-static void CG_Rocket_DrawFPS( void )
+static void CG_Rocket_DrawFPS()
 {
 	char       *s = "";
 	static int previousTimes[ FPS_FRAMES ];
@@ -203,7 +203,7 @@ static void CG_Rocket_DrawFPS( void )
 
 #define CROSSHAIR_INDICATOR_HITFADE 500
 
-static void CG_Rocket_DrawCrosshairIndicator( void )
+static void CG_Rocket_DrawCrosshairIndicator()
 {
 	rectDef_t    rect;
 	float        x, y, w, h, dim;
@@ -296,7 +296,7 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	trap_R_SetColor( nullptr );
 }
 
-static void CG_Rocket_DrawCrosshair( void )
+static void CG_Rocket_DrawCrosshair()
 {
 	rectDef_t    rect;
 	float        w, h;
@@ -376,7 +376,7 @@ CG_AddSpeed
 append a speed to the sample history
 ===================
 */
-void CG_AddSpeed( void )
+void CG_AddSpeed()
 {
 	float  speed;
 	vec3_t vel;
@@ -463,7 +463,7 @@ void CG_AddSpeed( void )
 #define SPEEDOMETER_MIN_RANGE 900
 #define SPEED_MED             1000.f
 #define SPEED_FAST            1600.f
-static void CG_Rocket_DrawSpeedGraph( void )
+static void CG_Rocket_DrawSpeedGraph()
 {
 	int          i;
 	float        val, max, top;
@@ -553,7 +553,7 @@ static void CG_Rocket_DrawSpeedGraph( void )
 	}
 }
 
-static void CG_Rocket_DrawCreditsValue( void )
+static void CG_Rocket_DrawCreditsValue()
 {
 	playerState_t *ps = &cg.snap->ps;
 	int value = ps->persistant[ PERS_CREDIT ];;
@@ -561,7 +561,7 @@ static void CG_Rocket_DrawCreditsValue( void )
 	trap_Rocket_SetInnerRML( va( "%d", value ), 0 );
 }
 
-static void CG_Rocket_DrawAlienEvosValue( void )
+static void CG_Rocket_DrawAlienEvosValue()
 {
 	playerState_t *ps = &cg.snap->ps;
 	float value = ps->persistant[ PERS_CREDIT ];;
@@ -571,7 +571,7 @@ static void CG_Rocket_DrawAlienEvosValue( void )
 	trap_Rocket_SetInnerRML( va( "%1.1f", value ), 0 );
 }
 
-static void CG_Rocket_DrawStaminaValue( void )
+static void CG_Rocket_DrawStaminaValue()
 {
 	playerState_t *ps = &cg.snap->ps;
 	float         stamina = ps->stats[ STAT_STAMINA ];
@@ -580,7 +580,7 @@ static void CG_Rocket_DrawStaminaValue( void )
 	trap_Rocket_SetInnerRML( va( "%d", percent ), 0 );
 }
 
-static void CG_Rocket_DrawWeaponIcon( void )
+static void CG_Rocket_DrawWeaponIcon()
 {
 	playerState_t *ps;
 	weapon_t      weapon;
@@ -618,14 +618,14 @@ static void CG_Rocket_DrawWeaponIcon( void )
 	trap_Rocket_SetInnerRML( va( "<img class='weapon_icon%s%s' src='/%s' />", rmlClass ? " " : "", rmlClass, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ), 0 );
 }
 
-static void CG_Rocket_DrawPlayerWallclimbing( void )
+static void CG_Rocket_DrawPlayerWallclimbing()
 {
 	bool wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
 	trap_Rocket_SetClass( "active", wallwalking );
 	trap_Rocket_SetClass( "inactive", !wallwalking );
 }
 
-static void CG_Rocket_DrawUsableBuildable( void )
+static void CG_Rocket_DrawUsableBuildable()
 {
 	vec3_t        view, point;
 	trace_t       trace;
@@ -663,7 +663,7 @@ static void CG_Rocket_DrawUsableBuildable( void )
 	}
 }
 
-static void CG_Rocket_DrawLocation( void )
+static void CG_Rocket_DrawLocation()
 {
 	const char *location;
 	centity_t  *locent;
@@ -689,7 +689,7 @@ static void CG_Rocket_DrawLocation( void )
 	trap_Rocket_SetInnerRML( location, RP_QUAKE );
 }
 
-static void CG_Rocket_DrawTimer( void )
+static void CG_Rocket_DrawTimer()
 {
 	int   mins, seconds, tens;
 	int   msec;
@@ -731,7 +731,7 @@ CG_AddLagometerFrameInfo
 Adds the current interpolate / extrapolate bar for this frame
 ==============
 */
-void CG_AddLagometerFrameInfo( void )
+void CG_AddLagometerFrameInfo()
 {
 	int offset;
 
@@ -793,7 +793,7 @@ CG_DrawDisconnect
 Should we draw something differnet for long lag vs no packets?
 ==============
 */
-static void CG_Rocket_DrawDisconnect( void )
+static void CG_Rocket_DrawDisconnect()
 {
 	float      x, y;
 	int        cmdNum;
@@ -830,7 +830,7 @@ static void CG_Rocket_DrawDisconnect( void )
 CG_Rocket_DrawLagometer
 ==============
 */
-static void CG_Rocket_DrawLagometer( void )
+static void CG_Rocket_DrawLagometer()
 {
 	int    a, i;
 	float  v;
@@ -998,7 +998,7 @@ static void CG_Rocket_DrawLagometer( void )
 CG_ScanForCrosshairEntity
 =================
 */
-static void CG_ScanForCrosshairEntity( void )
+static void CG_ScanForCrosshairEntity()
 {
 	trace_t       trace;
 	vec3_t        start, end;
@@ -1090,7 +1090,7 @@ static void CG_ScanForCrosshairEntity( void )
 	}
 }
 
-static void CG_Rocket_DrawCrosshairNames( void )
+static void CG_Rocket_DrawCrosshairNames()
 {
 	float alpha;
 	char  *name;
@@ -1158,7 +1158,7 @@ static void CG_Rocket_DrawCrosshairNames( void )
 	trap_Rocket_SetInnerRML( va( "%s", name ), RP_EMOTICONS );
 }
 
-static void CG_Rocket_DrawMomentum( void )
+static void CG_Rocket_DrawMomentum()
 {
 	char  s[ MAX_TOKEN_CHARS ];
 	float momentum;
@@ -1186,7 +1186,7 @@ static void CG_Rocket_DrawMomentum( void )
 
 }
 
-static void CG_Rocket_DrawLevelshot( void )
+static void CG_Rocket_DrawLevelshot()
 {
 	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
 	{
@@ -1196,7 +1196,7 @@ static void CG_Rocket_DrawLevelshot( void )
 	trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName, rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName ), 0 );
 }
 
-static void CG_Rocket_DrawMapLoadingLevelshot( void )
+static void CG_Rocket_DrawMapLoadingLevelshot()
 {
 	if ( rocketInfo.cstate.connState >= CA_LOADING )
 	{
@@ -1206,7 +1206,7 @@ static void CG_Rocket_DrawMapLoadingLevelshot( void )
 
 
 #define CENTER_PRINT_DURATION 3000
-void CG_Rocket_DrawCenterPrint( void )
+void CG_Rocket_DrawCenterPrint()
 {
 	if ( !*cg.centerPrint )
 	{
@@ -1229,31 +1229,31 @@ void CG_Rocket_DrawCenterPrint( void )
 }
 
 
-void CG_Rocket_DrawBeaconAge( void )
+void CG_Rocket_DrawBeaconAge()
 {
 	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.ageAlpha ) );
 	trap_Rocket_SetInnerRML( cg.beaconRocket.age, 0 );
 }
 
-void CG_Rocket_DrawBeaconDistance( void )
+void CG_Rocket_DrawBeaconDistance()
 {
 	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.distanceAlpha ) );
 	trap_Rocket_SetInnerRML( cg.beaconRocket.distance, 0 );
 }
 
-void CG_Rocket_DrawBeaconInfo( void )
+void CG_Rocket_DrawBeaconInfo()
 {
 	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.infoAlpha ) );
 	trap_Rocket_SetInnerRML( cg.beaconRocket.info, 0 );
 }
 
-void CG_Rocket_DrawBeaconName( void )
+void CG_Rocket_DrawBeaconName()
 {
 	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.nameAlpha ) );
 	trap_Rocket_SetInnerRML( cg.beaconRocket.name, 0 );
 }
 
-void CG_Rocket_DrawBeaconIcon( void )
+void CG_Rocket_DrawBeaconIcon()
 {
 	rectDef_t rect;
 	vec4_t    color;
@@ -1273,14 +1273,14 @@ void CG_Rocket_DrawBeaconIcon( void )
 	trap_R_SetColor( nullptr );
 }
 
-void CG_Rocket_DrawBeaconOwner( void )
+void CG_Rocket_DrawBeaconOwner()
 {
 	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.ownerAlpha ) );
 	trap_Rocket_SetInnerRML( cg.beaconRocket.owner, RP_QUAKE | RP_EMOTICONS );
 }
 
 
-void CG_Rocket_DrawPlayerHealth( void )
+void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
 
@@ -1290,7 +1290,7 @@ void CG_Rocket_DrawPlayerHealth( void )
 	}
 }
 
-void CG_Rocket_DrawPlayerHealthCross( void )
+void CG_Rocket_DrawPlayerHealthCross()
 {
 	qhandle_t shader;
 	vec4_t    color, ref_color;
@@ -1383,7 +1383,7 @@ void CG_Rocket_DrawPlayerHealthCross( void )
 
 }
 
-void CG_Rocket_DrawAlienBarbs( void )
+void CG_Rocket_DrawAlienBarbs()
 {
 	int numBarbs = cg.snap->ps.ammo;
 	char base[ MAX_STRING_CHARS ];
@@ -1592,7 +1592,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	trap_R_SetColor( nullptr );
 }
 
-static void CG_DrawPlayerAmmoStack( void )
+static void CG_DrawPlayerAmmoStack()
 {
 	float         val;
 	int           maxVal, align;
@@ -1698,7 +1698,7 @@ static void CG_DrawPlayerAmmoStack( void )
 	CG_DrawStack( &rect, localColor, 0.8, align, val, maxVal );
 }
 
-static void CG_DrawPlayerClipsStack( void )
+static void CG_DrawPlayerClipsStack()
 {
 	float         val;
 	int           maxVal;
@@ -1743,7 +1743,7 @@ static void CG_DrawPlayerClipsStack( void )
 	CG_DrawStack( &rect, foreColor, 0.8, LALIGN_TOPLEFT, val, maxVal );
 }
 
-void CG_Rocket_DrawMinimap( void )
+void CG_Rocket_DrawMinimap()
 {
 	if ( cg.minimap.defined )
 	{
@@ -1760,7 +1760,7 @@ void CG_Rocket_DrawMinimap( void )
 
 #define FOLLOWING_STRING "following "
 #define CHASING_STRING   "chasing "
-void CG_Rocket_DrawFollow( void )
+void CG_Rocket_DrawFollow()
 {
 	if ( cg.snap && cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
@@ -1786,7 +1786,7 @@ void CG_Rocket_DrawFollow( void )
 	}
 }
 
-void CG_Rocket_DrawConnectText( void )
+void CG_Rocket_DrawConnectText()
 {
 	char       rml[ MAX_STRING_CHARS ];
 	const char *s;
@@ -1836,7 +1836,7 @@ void CG_Rocket_DrawConnectText( void )
 	trap_Rocket_SetInnerRML( rml, 0 );
 }
 
-void CG_Rocket_DrawClock( void )
+void CG_Rocket_DrawClock()
 {
 	char    *s;
 	qtime_t qt;
@@ -1882,7 +1882,7 @@ void CG_Rocket_DrawClock( void )
 	trap_Rocket_SetInnerRML( s, 0 );
 }
 
-void CG_Rocket_DrawTutorial( void )
+void CG_Rocket_DrawTutorial()
 {
 	if ( !cg_tutorial.integer )
 	{
@@ -1893,14 +1893,14 @@ void CG_Rocket_DrawTutorial( void )
 	trap_Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS );
 }
 
-void CG_Rocket_DrawStaminaBolt( void )
+void CG_Rocket_DrawStaminaBolt()
 {
 	bool  activate = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
 	trap_Rocket_SetClass( "sprint", activate );
 	trap_Rocket_SetClass( "walk", !activate );
 }
 
-void CG_Rocket_DrawChatType( void )
+void CG_Rocket_DrawChatType()
 {
 	static const struct {
 		char colour[4]; // ^n
@@ -1931,7 +1931,7 @@ void CG_Rocket_DrawChatType( void )
 #define MOMENTUM_BAR_MARKWIDTH 0.5f
 #define MOMENTUM_BAR_GLOWTIME  2000
 
-static void CG_Rocket_DrawPlayerMomentumBar( void )
+static void CG_Rocket_DrawPlayerMomentumBar()
 {
 	// data
 	rectDef_t     rect;
@@ -2070,7 +2070,7 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 
 }
 
-void CG_Rocket_DrawMineRate( void )
+void CG_Rocket_DrawMineRate()
 {
 	float levelRate, rate;
 	int efficiency;
@@ -2117,7 +2117,7 @@ static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 	return 0;
 }
 
-static void CG_Rocket_DrawPlayerUnlockedItems( void )
+static void CG_Rocket_DrawPlayerUnlockedItems()
 {
 	rectDef_t     rect;
 	vec4_t        foreColour, backColour;
@@ -2306,17 +2306,17 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	trap_Rocket_SetInnerRML( s, RP_EMOTICONS );
 }
 
-static void CG_Rocket_DrawVote( void )
+static void CG_Rocket_DrawVote()
 {
 	CG_Rocket_DrawVote_internal( TEAM_NONE );
 }
 
-static void CG_Rocket_DrawTeamVote( void )
+static void CG_Rocket_DrawTeamVote()
 {
 	CG_Rocket_DrawVote_internal( ( team_t ) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 }
 
-static void CG_Rocket_DrawSpawnQueuePosition( void )
+static void CG_Rocket_DrawSpawnQueuePosition()
 {
 	int    position;
 	const char *s;
@@ -2348,7 +2348,7 @@ static void CG_Rocket_DrawSpawnQueuePosition( void )
 	trap_Rocket_SetInnerRML( s, 0 );
 }
 
-static void CG_Rocket_DrawNumSpawns( void )
+static void CG_Rocket_DrawNumSpawns()
 {
 	int    position, spawns;
 	const char *s;
@@ -2378,7 +2378,7 @@ static void CG_Rocket_DrawNumSpawns( void )
 	trap_Rocket_SetInnerRML( s, 0 );
 }
 
-void CG_Rocket_DrawPredictedRGSRate( void )
+void CG_Rocket_DrawPredictedRGSRate()
 {
 	playerState_t  *ps = &cg.snap->ps;
 	buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
@@ -2414,7 +2414,7 @@ void CG_Rocket_DrawPredictedRGSRate( void )
 	trap_Rocket_SetInnerRML( va( "^%c%+d%%", color, delta ), RP_QUAKE );
 }
 
-static void CG_Rocket_DrawWarmup( void )
+static void CG_Rocket_DrawWarmup()
 {
 	int   sec = 0;
 
@@ -2435,7 +2435,7 @@ static void CG_Rocket_DrawWarmup( void )
 	trap_Rocket_SetInnerRML( va( "%s", sec ? va( "%d", sec ) : _("FIGHT!") ), 0 );
 }
 
-static void CG_Rocket_DrawProgressValue( void )
+static void CG_Rocket_DrawProgressValue()
 {
 	const char *src = CG_Rocket_GetAttribute( "src" );
 	if ( *src )
@@ -2445,12 +2445,12 @@ static void CG_Rocket_DrawProgressValue( void )
 	}
 }
 
-static void CG_Rocket_DrawLevelName( void )
+static void CG_Rocket_DrawLevelName()
 {
 	trap_Rocket_SetInnerRML( CG_ConfigString( CS_MESSAGE ), RP_QUAKE );
 }
 
-static void CG_Rocket_DrawMOTD( void )
+static void CG_Rocket_DrawMOTD()
 {
 	const char *s;
 	char       parsed[ MAX_STRING_CHARS ];
@@ -2460,14 +2460,14 @@ static void CG_Rocket_DrawMOTD( void )
 	trap_Rocket_SetInnerRML( parsed, RP_EMOTICONS );
 }
 
-static void CG_Rocket_DrawHostname( void )
+static void CG_Rocket_DrawHostname()
 {
 	const char *info;
 	info = CG_ConfigString( CS_SERVERINFO );
 	trap_Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
 }
 
-static void CG_Rocket_DrawDownloadName( void )
+static void CG_Rocket_DrawDownloadName()
 {
 	char downloadName[ MAX_STRING_CHARS ];
 
@@ -2480,7 +2480,7 @@ static void CG_Rocket_DrawDownloadName( void )
 	}
 }
 
-static void CG_Rocket_DrawDownloadTime( void )
+static void CG_Rocket_DrawDownloadTime()
 {
 	float downloadSize = trap_Cvar_VariableValue( "cl_downloadSize" );
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
@@ -2518,7 +2518,7 @@ static void CG_Rocket_DrawDownloadTime( void )
 	}
 }
 
-static void CG_Rocket_DrawDownloadTotalSize( void )
+static void CG_Rocket_DrawDownloadTotalSize()
 {
 	char totalSizeBuf[ MAX_STRING_CHARS ];
 	float downloadSize = trap_Cvar_VariableValue( "cl_downloadSize" );
@@ -2534,7 +2534,7 @@ static void CG_Rocket_DrawDownloadTotalSize( void )
 	trap_Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
 }
 
-static void CG_Rocket_DrawDownloadCompletedSize( void )
+static void CG_Rocket_DrawDownloadCompletedSize()
 {
 	char dlSizeBuf[ MAX_STRING_CHARS ];
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
@@ -2550,7 +2550,7 @@ static void CG_Rocket_DrawDownloadCompletedSize( void )
 	trap_Rocket_SetInnerRML( dlSizeBuf, RP_QUAKE );
 }
 
-static void CG_Rocket_DrawDownloadSpeed( void )
+static void CG_Rocket_DrawDownloadSpeed()
 {
 	char xferRateBuf[ MAX_STRING_CHARS ];
 	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
@@ -2576,7 +2576,7 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 	}
 }
 
-static void CG_Rocket_HaveJetpck( void )
+static void CG_Rocket_HaveJetpck()
 {
 	bool jetpackInInventory = BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats );
 	trap_Rocket_SetClass( "active", jetpackInInventory );
@@ -2586,7 +2586,7 @@ static void CG_Rocket_HaveJetpck( void )
 typedef struct
 {
 	const char *name;
-	void ( *exec )( void );
+	void ( *exec )();
 	rocketElementType_t type;
 } elementRenderCmd_t;
 
@@ -2661,7 +2661,7 @@ static int elementRenderCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( elementRenderCmd_t * ) b )->name );
 }
 
-void CG_Rocket_RenderElement( void )
+void CG_Rocket_RenderElement()
 {
 	const char *tag = CG_Rocket_GetTag();
 	elementRenderCmd_t *cmd;
@@ -2674,7 +2674,7 @@ void CG_Rocket_RenderElement( void )
 	}
 }
 
-void CG_Rocket_RegisterElements( void )
+void CG_Rocket_RegisterElements()
 {
 	int i;
 

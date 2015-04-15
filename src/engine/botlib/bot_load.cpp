@@ -319,7 +319,7 @@ inline void dtFreeCustom( void *ptr )
 	Z_Free( ptr );
 }
 
-void BotShutdownNav( void )
+void BotShutdownNav()
 {
 	for ( int i = 0; i < numNavData; i++ )
 	{

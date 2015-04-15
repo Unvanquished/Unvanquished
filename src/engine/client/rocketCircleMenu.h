@@ -50,7 +50,7 @@ public:
 	{
 	}
 
-	virtual ~RocketCircleMenu( void )
+	virtual ~RocketCircleMenu()
 	{
 		if ( data_source )
 		{
@@ -207,7 +207,7 @@ public:
 
 
 	// Checks if parents are visible as well
-	bool IsTreeVisible( void )
+	bool IsTreeVisible()
 	{
 		if ( IsVisible() )
 		{
@@ -232,7 +232,7 @@ public:
 
 
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		// Only do layout if element is visible
 		// Positions calcs are not correct if element
@@ -329,7 +329,7 @@ public:
 	}
 
 protected:
-	void LayoutChildren( void )
+	void LayoutChildren()
 	{
 		dirty_layout = false;
 
@@ -371,7 +371,7 @@ protected:
 
 private:
 
-	void AddCancelbutton( void )
+	void AddCancelbutton()
 	{
 		init = true;
 		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );

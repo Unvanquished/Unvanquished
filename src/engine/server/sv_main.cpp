@@ -232,7 +232,7 @@ static struct {
 	char         text[ MAX_CHALLENGE_LEN + 1 ];
 } challenges[ MAX_MASTER_SERVERS ];
 
-static void SV_ResolveMasterServers( void )
+static void SV_ResolveMasterServers()
 {
 	int i, netenabled, res;
 
@@ -395,7 +395,7 @@ SV_MasterShutdown
 Informs all masters that this server is going down
 =================
 */
-void SV_MasterShutdown( void )
+void SV_MasterShutdown()
 {
 	// send a heartbeat right now
 	svs.nextHeartbeatTime = -9999;
@@ -1025,7 +1025,7 @@ SV_CalcPings
 Updates the cl->ping variables
 ===================
 */
-void SV_CalcPings( void )
+void SV_CalcPings()
 {
 	int           i, j;
 	client_t      *cl;
@@ -1103,7 +1103,7 @@ for a few seconds to make sure any final reliable message gets resent
 if necessary
 ==================
 */
-void SV_CheckTimeouts( void )
+void SV_CheckTimeouts()
 {
 	int      i;
 	client_t *cl;
@@ -1152,7 +1152,7 @@ void SV_CheckTimeouts( void )
 SV_CheckPaused
 ==================
 */
-bool SV_CheckPaused( void )
+bool SV_CheckPaused()
 {
 	int      count;
 	client_t *cl;
@@ -1199,7 +1199,7 @@ SV_FrameMsec
 Return time in millseconds until processing of the next server frame.
 ==================
 */
-int SV_FrameMsec( void )
+int SV_FrameMsec()
 {
 	if( sv_fps )
 	{

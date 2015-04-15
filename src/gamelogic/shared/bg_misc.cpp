@@ -126,7 +126,7 @@ const buildableAttributes_t *BG_Buildable( int buildable )
 BG_InitBuildableAttributes
 ===============
 */
-void BG_InitBuildableAttributes( void )
+void BG_InitBuildableAttributes()
 {
 	int i;
 	const buildableName_t *bh;
@@ -190,7 +190,7 @@ void BG_BuildableBoundingBox( int buildable,
 BG_InitBuildableModelConfigs
 ===============
 */
-void BG_InitBuildableModelConfigs( void )
+void BG_InitBuildableModelConfigs()
 {
 	int               i;
 	buildableModelConfig_t *bc;
@@ -495,7 +495,7 @@ bool BG_AlienCanEvolve( int from, int credits )
 BG_InitClassAttributes
 ===============
 */
-void BG_InitClassAttributes( void )
+void BG_InitClassAttributes()
 {
 	int i;
 	const classData_t *cd;
@@ -524,7 +524,7 @@ void BG_InitClassAttributes( void )
 BG_InitClassModelConfigs
 ===============
 */
-void BG_InitClassModelConfigs( void )
+void BG_InitClassModelConfigs()
 {
 	int           i;
 	classModelConfig_t *cc;
@@ -627,7 +627,7 @@ const weaponAttributes_t *BG_Weapon( int weapon )
 BG_InitWeaponAttributes
 ===============
 */
-void BG_InitWeaponAttributes( void )
+void BG_InitWeaponAttributes()
 {
 	int i;
 	const weaponData_t *wd;
@@ -718,7 +718,7 @@ const upgradeAttributes_t *BG_Upgrade( int upgrade )
 BG_InitUpgradeAttributes
 ===============
 */
-void BG_InitUpgradeAttributes( void )
+void BG_InitUpgradeAttributes()
 {
 	int i;
 	const upgradeData_t *ud;
@@ -805,7 +805,7 @@ const missileAttributes_t *BG_Missile( int missile )
 BG_InitMissileAttributes
 ===============
 */
-void BG_InitMissileAttributes( void )
+void BG_InitMissileAttributes()
 {
 	int                 i;
 	const missileData_t *md;
@@ -974,7 +974,7 @@ const beaconAttributes_t *BG_Beacon( int index )
 BG_InitBeaconAttributes
 ===============
 */
-void BG_InitBeaconAttributes( void )
+void BG_InitBeaconAttributes()
 {
 	int i;
 	const beaconData_t *bd;
@@ -1009,7 +1009,7 @@ BG_InitAllConfigs
 
 bool config_loaded = false;
 
-void BG_InitAllConfigs( void )
+void BG_InitAllConfigs()
 {
 	BG_InitBuildableAttributes();
 	BG_InitBuildableModelConfigs();
@@ -1032,7 +1032,7 @@ BG_UnloadAllConfigs
 ================
 */
 
-void BG_UnloadAllConfigs( void )
+void BG_UnloadAllConfigs()
 {
     // Frees all the strings that were allocated when the config files were read
     int i;
@@ -2554,7 +2554,7 @@ static gameElements_t bg_disabledGameElements;
 BG_InitAllowedGameElements
 ============
 */
-void BG_InitAllowedGameElements( void )
+void BG_InitAllowedGameElements()
 {
 	char cvar[ MAX_CVAR_VALUE_STRING ];
 

@@ -64,7 +64,7 @@ void G_SetShaderRemap( const char *oldShader, const char *newShader, float timeO
 	}
 }
 
-const char *BuildShaderStateConfig( void )
+const char *BuildShaderStateConfig()
 {
 	static char buff[ MAX_STRING_CHARS * 4 ];
 	char        out[ MAX_QPATH * 2 + 5 ];

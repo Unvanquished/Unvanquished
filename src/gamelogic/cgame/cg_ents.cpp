@@ -1261,7 +1261,7 @@ CG_AddPacketEntities
 
 ===============
 */
-void CG_AddPacketEntities( void )
+void CG_AddPacketEntities()
 {
 	int           num;
 	centity_t     *cent;

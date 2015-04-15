@@ -110,9 +110,9 @@ int      com_hunkusedvalue;
 
 bool com_fullyInitialized;
 
-void     Com_WriteConfig_f( void );
-void     Com_WriteBindings_f( void );
-void     CIN_CloseAllVideos( void );
+void     Com_WriteConfig_f();
+void     Com_WriteBindings_f();
+void     CIN_CloseAllVideos();
 
 //============================================================================
 
@@ -274,7 +274,7 @@ void QDECL PRINTF_LIKE(2) Com_Error( int code, const char *fmt, ... )
 
 // *INDENT-OFF*
 //bani - moved
-void CL_ShutdownCGame( void );
+void CL_ShutdownCGame();
 
 // *INDENT-ON*
 
@@ -286,7 +286,7 @@ Both client and server can use this, and it will
 do the appropriate things.
 =============
 */
-void NORETURN Com_Quit_f( void )
+void NORETURN Com_Quit_f()
 {
 	// don't try to shutdown if we are in a recursive error
 	char *p = Cmd_Args();
@@ -354,7 +354,7 @@ Check for "safe" on the command line, which will
 skip loading of wolfconfig.cfg
 ===================
 */
-bool Com_SafeMode( void )
+bool Com_SafeMode()
 {
 	int i;
 
@@ -426,7 +426,7 @@ Returns true if any late commands were added, which
 will keep the demoloop from immediately starting
 =================
 */
-bool Com_AddStartupCommands( void )
+bool Com_AddStartupCommands()
 {
 	int      i;
 	bool added;
@@ -638,7 +638,7 @@ static int         s_hunkTotal;
 Com_Meminfo_f
 =================
 */
-void Com_Meminfo_f( void )
+void Com_Meminfo_f()
 {
 	Com_Printf( "%9i bytes (%6.2f MB) total hunk\n", s_hunkTotal, s_hunkTotal / Square( 1024.f ) );
 	Com_Printf( "\n" );
@@ -720,7 +720,7 @@ void Com_Free_Aligned( void *ptr )
 Hunk_Log
 =================
 */
-void Hunk_Log( void )
+void Hunk_Log()
 {
 	hunkblock_t *block;
 	char        buf[ 4096 ];
@@ -757,7 +757,7 @@ void Hunk_Log( void )
 Hunk_SmallLog
 =================
 */
-void Hunk_SmallLog( void )
+void Hunk_SmallLog()
 {
 	hunkblock_t *block, *block2;
 	char        buf[ 4096 ];
@@ -824,7 +824,7 @@ void Hunk_SmallLog( void )
 Com_InitHunkMemory
 =================
 */
-void Com_InitHunkMemory( void )
+void Com_InitHunkMemory()
 {
 	cvar_t *cv;
 
@@ -863,7 +863,7 @@ void Com_InitHunkMemory( void )
 Hunk_MemoryRemaining
 ====================
 */
-int Hunk_MemoryRemaining( void )
+int Hunk_MemoryRemaining()
 {
 	int low, high;
 
@@ -880,7 +880,7 @@ Hunk_SetMark
 The server calls this after the level and game VM have been loaded
 ===================
 */
-void Hunk_SetMark( void )
+void Hunk_SetMark()
 {
 	hunk_low.mark = hunk_low.permanent;
 	hunk_high.mark = hunk_high.permanent;
@@ -893,13 +893,13 @@ Hunk_ClearToMark
 The client calls this before starting a vid_restart or snd_restart
 =================
 */
-void Hunk_ClearToMark( void )
+void Hunk_ClearToMark()
 {
 	hunk_low.permanent = hunk_low.temp = hunk_low.mark;
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
 
-void SV_ShutdownGameProgs( void );
+void SV_ShutdownGameProgs();
 
 /*
 =================
@@ -908,7 +908,7 @@ Hunk_Clear
 The server calls this before shutting down or loading a new map
 =================
 */
-void Hunk_Clear( void )
+void Hunk_Clear()
 {
 #ifdef BUILD_CLIENT
 	CL_ShutdownCGame();
@@ -939,7 +939,7 @@ void Hunk_Clear( void )
 #endif
 }
 
-static void Hunk_SwapBanks( void )
+static void Hunk_SwapBanks()
 {
 	hunkUsed_t *swap;
 
@@ -1228,7 +1228,7 @@ void Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int p
 Com_GetEvent
 ================
 */
-sysEvent_t Com_GetEvent( void )
+sysEvent_t Com_GetEvent()
 {
 	sysEvent_t ev;
 	char       *s;
@@ -1329,7 +1329,7 @@ Returns last event time
 extern bool consoleButtonWasPressed;
 #endif
 
-int Com_EventLoop( void )
+int Com_EventLoop()
 {
 	sysEvent_t ev;
 	netadr_t   evFrom;
@@ -1493,7 +1493,7 @@ Com_Milliseconds
 Can be used for profiling, but will be journaled accurately
 ================
 */
-int Com_Milliseconds( void )
+int Com_Milliseconds()
 {
     return Sys_Milliseconds();
 }
@@ -1508,7 +1508,7 @@ Just throw a fatal error to
 test error shutdown procedures
 =============
 */
-static void Com_Error_f( void )
+static void Com_Error_f()
 {
 	if ( Cmd_Argc() > 1 )
 	{
@@ -1528,7 +1528,7 @@ Just freeze in place for a given number of seconds to test
 error recovery
 =============
 */
-static void Com_Freeze_f( void )
+static void Com_Freeze_f()
 {
 	float s;
 	int   start, now;
@@ -1561,13 +1561,13 @@ Com_Crash_f
 A way to force a bus error for development reasons
 =================
 */
-static void NORETURN Com_Crash_f( void )
+static void NORETURN Com_Crash_f()
 {
 	* ( volatile int * ) 0 = 0x12345678;
 	Sys::OSExit(1); // silence warning
 }
 
-void Com_SetRecommended( void )
+void Com_SetRecommended()
 {
 	cvar_t   *r_highQualityVideo; //, *com_recommended;
 	bool goodVideo;
@@ -1591,7 +1591,7 @@ void Com_SetRecommended( void )
 	}
 }
 
-void Com_In_Restart_f( void )
+void Com_In_Restart_f()
 {
 	IN_Restart();
 }
@@ -1739,7 +1739,7 @@ Com_WriteConfiguration
 Writes key bindings and archived cvars to config file if modified
 ===============
 */
-void Com_WriteConfiguration( void )
+void Com_WriteConfiguration()
 {
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything
@@ -1772,7 +1772,7 @@ Com_WriteConfig_f
 Write the config file to a specific name
 ===============
 */
-void Com_WriteConfig_f( void )
+void Com_WriteConfig_f()
 {
 	char filename[ MAX_QPATH ];
 
@@ -1796,7 +1796,7 @@ Write the key bindings file to a specific name
 ===============
 */
 #ifndef BUILD_SERVER
-void Com_WriteBindings_f( void )
+void Com_WriteBindings_f()
 {
 	char filename[ MAX_QPATH ];
 
@@ -2190,7 +2190,7 @@ bool Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum 
 }
 
 
-int Sys_Milliseconds( void )
+int Sys_Milliseconds()
 {
 	static Sys::SteadyClock::time_point baseTime = Sys::SteadyClock::now();
 	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();

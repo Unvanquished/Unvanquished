@@ -225,7 +225,7 @@ typedef enum
   GAME_INIT, // void ()( int levelTime, int randomSeed, bool restart );
   // the first call to the game module
 
-  GAME_SHUTDOWN, // void ()( void );
+  GAME_SHUTDOWN, // void ()();
   // the last call to the game module
 
   GAME_CLIENT_CONNECT, // const char * ()( int clientNum, bool firstTime, bool isBot );

@@ -273,7 +273,7 @@ public:
 		_locationIndex = index;
 	}
 
-	const char *GetName( void )
+	const char *GetName()
 	{
 		return _name.c_str();
 	}
@@ -283,7 +283,7 @@ public:
 		shaderProgram->uniformLocations[ _locationIndex ] = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
-	virtual size_t GetSize( void )
+	virtual size_t GetSize()
 	{
 		return 0;
 	}
@@ -323,7 +323,7 @@ protected:
 		glUniform1f( p->uniformLocations[ _locationIndex ], value );
 	}
 public:
-	size_t GetSize( void )
+	size_t GetSize()
 	{
 		return sizeof( float );
 	}
@@ -389,7 +389,7 @@ protected:
 		glUniform2f( p->uniformLocations[ _locationIndex ], v[ 0 ], v[ 1 ] );
 	}
 
-	size_t GetSize( void )
+	size_t GetSize()
 	{
 		return sizeof( vec2_t );
 	}
@@ -429,7 +429,7 @@ protected:
 		glUniform3f( p->uniformLocations[ _locationIndex ], v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 public:
-	size_t GetSize( void )
+	size_t GetSize()
 	{
 		return sizeof( vec3_t );
 	}
@@ -469,7 +469,7 @@ protected:
 		glUniform4f( p->uniformLocations[ _locationIndex ], v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 public:
-	size_t GetSize( void )
+	size_t GetSize()
 	{
 		return sizeof( vec4_t );
 	}
@@ -536,7 +536,7 @@ protected:
 		glUniformMatrix4fv( p->uniformLocations[ _locationIndex ], 1, transpose, m );
 	}
 public:
-	size_t GetSize( void )
+	size_t GetSize()
 	{
 		return sizeof( matrix_t );
 	}

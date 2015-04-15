@@ -368,7 +368,7 @@ static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
 CG_RegisterCvars
 =================
 */
-void CG_RegisterCvars( void )
+void CG_RegisterCvars()
 {
 	size_t i;
 	const cvarTable_t *cv;
@@ -397,7 +397,7 @@ Set some player cvars usable in scripts
 these should refer only to playerstates that belong to the client, not the followed player, ui cvars will do that already
 ===============
 */
-static void CG_SetPVars( void )
+static void CG_SetPVars()
 {
 	playerState_t *ps;
 	char          buffer[ MAX_CVAR_VALUE_STRING ];
@@ -488,7 +488,7 @@ Set some cvars used by the UI
 these will change when following another player
 ===============
 */
-static void CG_SetUIVars( void )
+static void CG_SetUIVars()
 {
 	if ( !cg.snap )
 	{
@@ -504,7 +504,7 @@ static void CG_SetUIVars( void )
 CG_UpdateBuildableRangeMarkerMask
 ================
 */
-void CG_UpdateBuildableRangeMarkerMask( void )
+void CG_UpdateBuildableRangeMarkerMask()
 {
 	static int btmc = 0;
 	static int spmc = 0;
@@ -619,7 +619,7 @@ empty:
 	}
 }
 
-void CG_NotifyHooks( void )
+void CG_NotifyHooks()
 {
 	playerState_t *ps;
 	char config[ MAX_CVAR_VALUE_STRING ];
@@ -654,7 +654,7 @@ void CG_NotifyHooks( void )
 CG_UpdateCvars
 =================
 */
-void CG_UpdateCvars( void )
+void CG_UpdateCvars()
 {
 	size_t i;
 	const cvarTable_t *cv;
@@ -673,7 +673,7 @@ void CG_UpdateCvars( void )
 	CG_UpdateBuildableRangeMarkerMask();
 }
 
-int CG_CrosshairPlayer( void )
+int CG_CrosshairPlayer()
 {
 	if ( cg.time > ( cg.crosshairClientTime + 1000 ) )
 	{
@@ -688,7 +688,7 @@ int CG_CrosshairPlayer( void )
 CG_RemoveNotifyLine
 =================
 */
-void CG_RemoveNotifyLine( void )
+void CG_RemoveNotifyLine()
 {
 	int i, offset, totalLength;
 
@@ -720,7 +720,7 @@ CG_AddNotifyText
 TODO TODO this can be removed, as well as all its dependencies
 =================
 */
-void CG_AddNotifyText( void )
+void CG_AddNotifyText()
 {
 	char buffer[ BIG_INFO_STRING ];
 	int  bufferLen, textLen;
@@ -831,7 +831,7 @@ const char *CG_Argv( int arg )
 CG_Args
 ================
 */
-const char *CG_Args( void )
+const char *CG_Args()
 {
 	static char buffer[ MAX_STRING_CHARS ];
 
@@ -1024,7 +1024,7 @@ CG_RegisterSounds
 called during a precache command
 =================
 */
-static void CG_RegisterSounds( void )
+static void CG_RegisterSounds()
 {
 	int        i;
 	char       name[ MAX_QPATH ];
@@ -1180,7 +1180,7 @@ void CG_RegisterReverb( int slot, const char *str )
 CG_RegisterGraphics
 =================
 */
-static void CG_RegisterGraphics( void )
+static void CG_RegisterGraphics()
 {
 	int         i;
 	static const char *const sb_nums[ 11 ] =
@@ -1455,7 +1455,7 @@ CG_BuildSpectatorString
 
 =======================
 */
-void CG_BuildSpectatorString( void )
+void CG_BuildSpectatorString()
 {
 	int i;
 
@@ -1477,7 +1477,7 @@ CG_RegisterClients
 
 ===================
 */
-static void CG_RegisterClients( void )
+static void CG_RegisterClients()
 {
 	int i;
 
@@ -1573,7 +1573,7 @@ CG_StartMusic
 
 ======================
 */
-void CG_StartMusic( void )
+void CG_StartMusic()
 {
 	char *s;
 	char parm1[ MAX_QPATH ], parm2[ MAX_QPATH ];
@@ -1753,7 +1753,7 @@ CG_Shutdown
 Called before every level change or subsystem restart
 =================
 */
-void CG_Shutdown( void )
+void CG_Shutdown()
 {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
@@ -1767,7 +1767,7 @@ void CG_Shutdown( void )
 CG_VoIPString
 ================
 */
-static char *CG_VoIPString( void )
+static char *CG_VoIPString()
 {
 	// a generous overestimate of the space needed for 0,1,2...61,62,63
 	static char voipString[ MAX_CLIENTS * 4 ];

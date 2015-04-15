@@ -64,7 +64,7 @@ public:
 	~RocketProgressBar() {}
 
 	// Get current value
-	float GetValue( void ) const
+	float GetValue() const
 	{
 		return value;
 	}
@@ -75,7 +75,7 @@ public:
 	}
 
 
-	void Update( void )
+	void Update()
 	{
 		float newValue;
 
@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	void OnRender( void )
+	void OnRender()
 	{
 
 		if ( !shader )

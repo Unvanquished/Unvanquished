@@ -1415,12 +1415,12 @@ const beaconAttributes_t  *BG_Beacon( int index );
 
 meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
 
-void                      BG_InitAllConfigs( void );
-void                      BG_UnloadAllConfigs( void );
+void                      BG_InitAllConfigs();
+void                      BG_UnloadAllConfigs();
 
 // Parsers
 bool                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
-bool                  BG_CheckConfigVars( void );
+bool                  BG_CheckConfigVars();
 bool                  BG_NonSegModel( const char *filename );
 void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
 void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
@@ -1449,7 +1449,7 @@ typedef struct {
 	int threshold;
 } momentumThresholdIterator_t;
 
-void     BG_InitUnlockackables( void );
+void     BG_InitUnlockackables();
 void     BG_ImportUnlockablesFromMask( int team, int mask );
 int      BG_UnlockablesMask( int team );
 bool BG_WeaponUnlocked( int weapon );
@@ -1461,13 +1461,13 @@ unlockableType_t              BG_UnlockableType( int num );
 int                           BG_UnlockableTypeIndex( int num );
 momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, bool *unlocked );
 #ifdef BUILD_SGAME
-void     G_UpdateUnlockables( void );
+void     G_UpdateUnlockables();
 #endif
 #ifdef BUILD_CGAME
 void     CG_UpdateUnlockables( playerState_t *ps );
 #endif
 #ifdef BUILD_UI
-void     UI_UpdateUnlockables( void );
+void     UI_UpdateUnlockables();
 #endif
 
 // content masks
@@ -1481,10 +1481,10 @@ void     UI_UpdateUnlockables( void );
 #define MASK_ENTITY      ( CONTENTS_MOVER )
 
 void     *BG_Alloc( int size );
-void     BG_InitMemory( void );
+void     BG_InitMemory();
 void     BG_Free( void *ptr );
-void     BG_DefragmentMemory( void );
-void     BG_MemoryInfo( void );
+void     BG_DefragmentMemory();
+void     BG_MemoryInfo();
 
 void     BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
 void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
@@ -1507,7 +1507,7 @@ void     BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int we
                                    upgrade_t *upgrades, int upgradesSize );
 void     BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize );
 void     BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize );
-void     BG_InitAllowedGameElements( void );
+void     BG_InitAllowedGameElements();
 bool BG_WeaponDisabled( int weapon );
 bool BG_UpgradeDisabled( int upgrade );
 
@@ -1564,7 +1564,7 @@ typedef struct voice_s
 	struct voice_s *next;
 } voice_t;
 
-voice_t      *BG_VoiceInit( void );
+voice_t      *BG_VoiceInit();
 void         BG_PrintVoices( voice_t *voices, int debugLevel );
 
 voice_t      *BG_VoiceByName( voice_t *head, const char *name );

@@ -295,7 +295,7 @@ if one of them is dead/unspawned
 */
 static gentity_t *FindBuildable( buildable_t buildable );
 
-gentity_t *G_Reactor( void )
+gentity_t *G_Reactor()
 {
 	static gentity_t *rc;
 
@@ -308,7 +308,7 @@ gentity_t *G_Reactor( void )
 	return rc;
 }
 
-gentity_t *G_AliveReactor( void )
+gentity_t *G_AliveReactor()
 {
 	gentity_t *rc = G_Reactor();
 
@@ -320,7 +320,7 @@ gentity_t *G_AliveReactor( void )
 	return rc;
 }
 
-gentity_t *G_ActiveReactor( void )
+gentity_t *G_ActiveReactor()
 {
 	gentity_t *rc = G_Reactor();
 
@@ -332,7 +332,7 @@ gentity_t *G_ActiveReactor( void )
 	return rc;
 }
 
-gentity_t *G_Overmind( void )
+gentity_t *G_Overmind()
 {
 	static gentity_t *om;
 
@@ -345,7 +345,7 @@ gentity_t *G_Overmind( void )
 	return om;
 }
 
-gentity_t *G_AliveOvermind( void )
+gentity_t *G_AliveOvermind()
 {
 	gentity_t *om = G_Overmind();
 
@@ -357,7 +357,7 @@ gentity_t *G_AliveOvermind( void )
 	return om;
 }
 
-gentity_t *G_ActiveOvermind( void )
+gentity_t *G_ActiveOvermind()
 {
 	gentity_t *om = G_Overmind();
 
@@ -5352,7 +5352,7 @@ G_LayoutSelect
 set level.layout based on g_layouts or g_layoutAuto
 ============
 */
-void G_LayoutSelect( void )
+void G_LayoutSelect()
 {
 	char fileName[ MAX_OSPATH ];
 	char layouts[ MAX_CVAR_VALUE_STRING ];
@@ -5455,7 +5455,7 @@ load the layout .dat file indicated by level.layout and spawn buildables
 as if a builder was creating them
 ============
 */
-void G_LayoutLoad( void )
+void G_LayoutLoad()
 {
 	fileHandle_t f;
 	int          len;

@@ -85,7 +85,7 @@ public:
 		}
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		if ( dirty_key && team >= 0 )
 		{

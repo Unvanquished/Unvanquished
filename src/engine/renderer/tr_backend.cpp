@@ -117,7 +117,7 @@ void GL_BindProgram( shaderProgram_t *program )
 	}
 }
 
-void GL_BindNullProgram( void )
+void GL_BindNullProgram()
 {
 	if ( r_logFile->integer )
 	{
@@ -735,7 +735,7 @@ RB_Hyperspace
 A player has predicted a teleport, but hasn't arrived yet
 ================
 */
-static void RB_Hyperspace( void )
+static void RB_Hyperspace()
 {
 	float c;
 
@@ -751,7 +751,7 @@ static void RB_Hyperspace( void )
 	backEnd.isHyperspace = true;
 }
 
-static void SetViewportAndScissor( void )
+static void SetViewportAndScissor()
 {
 	float	mat[16], scale;
 	vec4_t	q, c;
@@ -789,7 +789,7 @@ static void SetViewportAndScissor( void )
 RB_SetGL2D
 ================
 */
-static void RB_SetGL2D( void )
+static void RB_SetGL2D()
 {
 	matrix_t proj;
 
@@ -2859,7 +2859,7 @@ void RB_RenderBloom()
 	GL_CheckErrors();
 }
 
-void RB_RenderMotionBlur( void )
+void RB_RenderMotionBlur()
 {
 	static vec4_t quadVerts[4] = {
 		{ -1.0f, -1.0f, 0.0f, 1.0f },
@@ -2904,7 +2904,7 @@ void RB_RenderMotionBlur( void )
 	GL_CheckErrors();
 }
 
-void RB_FXAA( void )
+void RB_FXAA()
 {
 	static vec4_t quadVerts[4] = {
 		{ -1.0f, -1.0f, 0.0f, 1.0f },
@@ -2949,7 +2949,7 @@ void RB_FXAA( void )
 	GL_CheckErrors();
 }
 
-void RB_CameraPostFX( void )
+void RB_CameraPostFX()
 {
 	matrix_t ortho;
 
@@ -4312,7 +4312,7 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 	tess.numIndexes++;
 }
 
-void DebugDrawEnd( void ) {
+void DebugDrawEnd() {
 
 	Tess_UpdateVBOs( );
 	GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
@@ -4341,7 +4341,7 @@ void DebugDrawEnd( void ) {
 RB_RenderView
 ==================
 */
-static void RB_RenderView( void )
+static void RB_RenderView()
 {
 	int clearBits = 0;
 	int startTime = 0, endTime = 0;
@@ -5378,7 +5378,7 @@ was there.  This is used to test for texture thrashing.
 Also called by RE_EndRegistration
 ===============
 */
-void RB_ShowImages( void )
+void RB_ShowImages()
 {
 	int     i;
 	image_t *image;
@@ -5554,7 +5554,7 @@ const void     *RB_Finish( const void *data )
 R_ShutdownBackend
 =============
 */
-void R_ShutdownBackend( void )
+void R_ShutdownBackend()
 {
 	int i;
 
@@ -5673,7 +5673,7 @@ void RB_ExecuteRenderCommands( const void *data )
 RB_RenderThread
 ================
 */
-void RB_RenderThread( void )
+void RB_RenderThread()
 {
 	const void *data;
 

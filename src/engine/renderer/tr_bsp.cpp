@@ -1835,7 +1835,7 @@ This function assumes that all patches in one group are nicely stitched together
 If this is not the case this function will still do its job but won't fix the highest LoD cracks.
 =================
 */
-void R_FixSharedVertexLodError( void )
+void R_FixSharedVertexLodError()
 {
 	int           i;
 	srfGridMesh_t *grid1;
@@ -2700,7 +2700,7 @@ int R_TryStitchingPatch( int grid1num )
 R_StitchAllPatches
 ===============
 */
-void R_StitchAllPatches( void )
+void R_StitchAllPatches()
 {
 	int           i, stitched, numstitches;
 	srfGridMesh_t *grid1;
@@ -2747,7 +2747,7 @@ void R_StitchAllPatches( void )
 R_MovePatchSurfacesToHunk
 ===============
 */
-void R_MovePatchSurfacesToHunk( void )
+void R_MovePatchSurfacesToHunk()
 {
 	int           i, size;
 	srfGridMesh_t *grid, *hunkgrid;
@@ -2854,7 +2854,7 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 R_CreateClusters
 =================
 */
-static void R_CreateClusters( void )
+static void R_CreateClusters()
 {
 	int          i, j;
 	bspSurface_t *surface;
@@ -2941,7 +2941,7 @@ static int LeafSurfaceCompare( const void *a, const void *b )
 R_CreateWorldVBO
 ===============
 */
-static void R_CreateWorldVBO( void )
+static void R_CreateWorldVBO()
 {
 	int       i, j, k;
 
@@ -6124,7 +6124,7 @@ static void R_CalcInteractionCubeSideBits( trRefLight_t *light )
 R_PrecacheInteractions
 =============
 */
-void R_PrecacheInteractions( void )
+void R_PrecacheInteractions()
 {
 	int          i;
 	trRefLight_t *light;
@@ -6273,7 +6273,7 @@ unsigned int VertexCoordGenerateHash( const vec3_t xyz )
 	return hash;
 }
 
-vertexHash_t **NewVertexHashTable( void )
+vertexHash_t **NewVertexHashTable()
 {
 	vertexHash_t **hashTable = (vertexHash_t**) Com_Allocate( HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
 
@@ -6466,7 +6466,7 @@ void R_FindTwoNearestCubeMaps( const vec3_t position, cubemapProbe_t **cubeProbe
 	}
 }
 
-void R_BuildCubeMaps( void )
+void R_BuildCubeMaps()
 {
 	int            i, j;
 	int            ii, jj;

@@ -87,7 +87,7 @@ public:
 
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		if ( dirty_listener )
 		{

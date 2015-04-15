@@ -370,7 +370,7 @@ Check if there are any ejectors that should be
 introducing new particles
 ===============
 */
-static void CG_SpawnNewParticles( void )
+static void CG_SpawnNewParticles()
 {
 	int                   i, j;
 	particle_t            *p;
@@ -1831,7 +1831,7 @@ CG_LoadParticleSystems
 Load particle systems from .particle files
 ===============
 */
-void CG_LoadParticleSystems( void )
+void CG_LoadParticleSystems()
 {
 	int  i, j, numFiles, fileLen;
 	char fileList[ MAX_PARTICLE_FILES * MAX_QPATH ];
@@ -2092,7 +2092,7 @@ CG_GarbageCollectParticleSystems
 Destroy inactive particle systems
 ===============
 */
-static void CG_GarbageCollectParticleSystems( void )
+static void CG_GarbageCollectParticleSystems()
 {
 	int               i, j, count;
 	particleSystem_t  *ps;
@@ -2459,7 +2459,7 @@ CG_CompactAndSortParticles
 Depth sort the particles
 ===============
 */
-static void CG_CompactAndSortParticles( void )
+static void CG_CompactAndSortParticles()
 {
 	int    i, j = 0;
 	int    numParticles;
@@ -2700,7 +2700,7 @@ CG_AddParticles
 Add particles to the scene
 ===============
 */
-void CG_AddParticles( void )
+void CG_AddParticles()
 {
 	int        i;
 	particle_t *p;
@@ -2813,7 +2813,7 @@ CG_DestroyTestPS_f
 Destroy the test a particle system
 ===============
 */
-void CG_DestroyTestPS_f( void )
+void CG_DestroyTestPS_f()
 {
 	if ( CG_IsParticleSystemValid( &testPS ) )
 	{
@@ -2828,7 +2828,7 @@ CG_TestPS_f
 Test a particle system
 ===============
 */
-void CG_TestPS_f( void )
+void CG_TestPS_f()
 {
 	vec3_t origin;
 	vec3_t up = { 0.0f, 0.0f, 1.0f };

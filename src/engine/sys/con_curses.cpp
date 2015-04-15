@@ -56,9 +56,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LOG_BUF_SIZE  65536
 
 // TTY Console prototypes
-void CON_Shutdown_TTY( void );
-void CON_Init_TTY( void );
-char *CON_Input_TTY( void );
+void CON_Shutdown_TTY();
+void CON_Init_TTY();
+char *CON_Input_TTY();
 void CON_Print_TTY( const char *message );
 
 static bool curses_on = false;
@@ -143,7 +143,7 @@ static void CON_SetColor( WINDOW *win, int color )
 	}
 }
 
-static INLINE void CON_UpdateCursor( void )
+static INLINE void CON_UpdateCursor()
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
 #ifdef _WIN32
@@ -263,7 +263,7 @@ CON_UpdateClock
 Update the clock
 ==================
 */
-static void CON_UpdateClock( void )
+static void CON_UpdateClock()
 {
 	qtime_t realtime;
 	Com_Time( &realtime );
@@ -279,7 +279,7 @@ CON_Redraw
 Redraw everything
 ==================
 */
-static void CON_Redraw( void )
+static void CON_Redraw()
 {
 	int col;
 
@@ -371,7 +371,7 @@ static void CON_Resize( int sig )
 CON_Clear_f
 ==================
 */
-void CON_Clear_f( void )
+void CON_Clear_f()
 {
 	if ( !curses_on )
 	{
@@ -396,7 +396,7 @@ CON_Shutdown
 Never exit without calling this, or your terminal will be left in a pretty bad state
 ==================
 */
-void CON_Shutdown( void )
+void CON_Shutdown()
 {
 	if ( !curses_on )
 	{
@@ -426,7 +426,7 @@ Used for dumping log text to the tty.
 May be called on shutdown from a signal handler.
 ==================
 */
-void CON_LogDump( void )
+void CON_LogDump()
 {
 	if ( dump_logs )
 	{
@@ -463,7 +463,7 @@ CON_Init
 Initialize the console in curses mode, fall back to tty mode on failure
 ==================
 */
-void CON_Init( void )
+void CON_Init()
 {
 #ifndef _WIN32
 	// If the process is backgrounded (running non-interactively),
@@ -549,7 +549,7 @@ void CON_Init( void )
 CON_Input
 ==================
 */
-char *CON_Input( void )
+char *CON_Input()
 {
 	int         chr, num_chars = 0;
 	static int  lasttime = -1;

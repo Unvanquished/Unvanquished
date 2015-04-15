@@ -801,7 +801,7 @@ Spawn an entity and fill in all of the level fields from
 level.spawnVars[], then call the class specfic spawn function
 ===================
 */
-void G_SpawnGEntityFromSpawnVars( void )
+void G_SpawnGEntityFromSpawnVars()
 {
 	int       i, j;
 	gentity_t *spawningEntity;
@@ -952,7 +952,7 @@ level's entity strings into level.spawnVars[]
 This does not actually spawn an entity.
 ====================
 */
-bool G_ParseSpawnVars( void )
+bool G_ParseSpawnVars()
 {
 	char keyname[ MAX_TOKEN_CHARS ];
 	char com_token[ MAX_TOKEN_CHARS ];
@@ -1030,7 +1030,7 @@ Every map should have exactly one.
 ; disabledClasses: A comma delimited list of alien classes to disable for this map. [g_disabledClasses ()]
 ; disabledBuildables: A comma delimited list of buildables to disable for this map. [g_disabledBuildables ()]
 */
-void SP_worldspawn( void )
+void SP_worldspawn()
 {
 	char *s;
 	float reverbIntensity = 1.0f;
@@ -1107,7 +1107,7 @@ G_SpawnEntitiesFromString
 Parses textual entity definitions out of an entstring and spawns gentities.
 ==============
 */
-void G_SpawnEntitiesFromString( void )
+void G_SpawnEntitiesFromString()
 {
 	level.numSpawnVars = 0;
 
@@ -1128,7 +1128,7 @@ void G_SpawnEntitiesFromString( void )
 	}
 }
 
-void G_SpawnFakeEntities( void )
+void G_SpawnFakeEntities()
 {
 	level.fakeLocation = G_NewEntity();
 	level.fakeLocation->s.origin[ 0 ] =

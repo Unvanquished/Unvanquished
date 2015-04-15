@@ -92,7 +92,7 @@ typedef struct
 
 static cin_ogm_t g_ogm;
 
-int              nextNeededVFrame( void );
+int              nextNeededVFrame();
 
 /* ####################### #######################
 
@@ -107,7 +107,7 @@ int              nextNeededVFrame( void );
   return:
   !0 -> no data transferred
 */
-static int loadBlockToSync( void )
+static int loadBlockToSync()
 {
 	int  r = -1;
 	char *buffer;
@@ -131,7 +131,7 @@ static int loadBlockToSync( void )
   return:
   !0 -> no data transferred (or not for all Streams)
 */
-static int loadPagesToStreams( void )
+static int loadPagesToStreams()
 {
 	int              r = -1;
 	int              AudioPages = 0;
@@ -181,7 +181,7 @@ static int loadPagesToStreams( void )
 
   return: audio wants more packets
 */
-static bool loadAudio( void )
+static bool loadAudio()
 {
 	bool     anyDataTransferred = true;
 	float        **pcm;
@@ -289,7 +289,7 @@ static int findSizeShift( int x, int y )
 	return -1;
 }
 
-static int loadVideoFrameTheora( void )
+static int loadVideoFrameTheora()
 {
 	int        r = 0;
 	ogg_packet op;
@@ -399,7 +399,7 @@ static int loadVideoFrameTheora( void )
                         0 -> no new Frame
                         <0  -> error
 */
-static int loadVideoFrame( void )
+static int loadVideoFrame()
 {
 	if ( g_ogm.videoStreamIsTheora )
 	{
@@ -421,7 +421,7 @@ static int loadVideoFrame( void )
 
   return: true => noDataTransferred
 */
-static bool loadFrame( void )
+static bool loadFrame()
 {
 	bool anyDataTransferred = true;
 	bool needVOutputData = true;
@@ -720,7 +720,7 @@ int Cin_OGM_Init( const char *filename )
 	return 0;
 }
 
-int nextNeededVFrame( void )
+int nextNeededVFrame()
 {
 	return ( int )( g_ogm.currentTime * ( ogg_int64_t ) 10000 / g_ogm.Vtime_unit );
 }
@@ -765,7 +765,7 @@ unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 	return g_ogm.outputBuffer;
 }
 
-void Cin_OGM_Shutdown( void )
+void Cin_OGM_Shutdown()
 {
 	theora_clear( &g_ogm.th_state );
 	theora_comment_clear( &g_ogm.th_comment );
@@ -808,7 +808,7 @@ unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 	return 0;
 }
 
-void Cin_OGM_Shutdown( void )
+void Cin_OGM_Shutdown()
 {
 }
 

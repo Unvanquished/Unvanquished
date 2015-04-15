@@ -229,7 +229,7 @@ void CG_SetClipRegion( float x, float y, float w, float h )
 CG_ClearClipRegion
 =================
 */
-void CG_ClearClipRegion( void )
+void CG_ClearClipRegion()
 {
 	trap_R_ResetClipRegion();
 }
@@ -344,7 +344,7 @@ CG_TileClear
 Clear around a sized down screen
 ==============
 */
-void CG_TileClear( void )
+void CG_TileClear()
 {
 	int top, bottom, left, right;
 	int w, h;

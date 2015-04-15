@@ -60,7 +60,7 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Handles beacon expiration and tag score decay. Called every server frame.
 	 */
-	void Frame( void )
+	void Frame()
 	{
 		gentity_t *ent = nullptr;
 		static int nextframe = 0;
@@ -397,7 +397,7 @@ namespace Beacon //this should eventually become a class
 	 *
 	 * Should be called everytime someone joins or leaves a team.
 	 */
-	void PropagateAll( void )
+	void PropagateAll()
 	{
 		for ( gentity_t *ent = nullptr; (ent = G_IterateEntities( ent )); )
 		{

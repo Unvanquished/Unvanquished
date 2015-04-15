@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		extern std::queue< RocketEvent_t * > eventQueue;
 

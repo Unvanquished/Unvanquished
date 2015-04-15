@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 
-void G_namelog_cleanup( void )
+void G_namelog_cleanup()
 {
 	namelog_t *namelog, *n;
 

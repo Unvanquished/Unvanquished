@@ -61,7 +61,7 @@ GLShaderManager::~GLShaderManager( )
 	}
 }
 
-void GLShaderManager::freeAll( void )
+void GLShaderManager::freeAll()
 {
 	for ( std::size_t i = 0; i < _shaders.size(); i++ )
 	{

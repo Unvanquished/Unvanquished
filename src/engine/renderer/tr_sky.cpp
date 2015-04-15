@@ -308,7 +308,7 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 ClearSkyBox
 ==============
 */
-static void ClearSkyBox( void )
+static void ClearSkyBox()
 {
 	int i;
 
@@ -765,7 +765,7 @@ All of the visible sky triangles are in tess
 Other things could be stuck in here, like birds in the sky, etc
 ================
 */
-void Tess_StageIteratorSky( void )
+void Tess_StageIteratorSky()
 {
 	// log this call
 	if ( r_logFile->integer )

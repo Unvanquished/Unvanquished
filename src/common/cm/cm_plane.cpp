@@ -49,7 +49,7 @@ CM_ResetPlaneCounts
 =================
 */
 
-void CM_ResetPlaneCounts( void )
+void CM_ResetPlaneCounts()
 {
 	memset( planeHashTable, 0, sizeof( planeHashTable ) );
 	numPlanes = 0;

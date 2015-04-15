@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	float       displayAspect = 0.0f;
 
-	static void GfxInfo_f( void );
+	static void GfxInfo_f();
 
 	cvar_t      *r_glMajorVersion;
 	cvar_t      *r_glMinorVersion;
@@ -291,7 +291,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	** setting variables, checking GL constants, and reporting the gfx system config
 	** to the user.
 	*/
-	static bool InitOpenGL( void )
+	static bool InitOpenGL()
 	{
 		char renderer_buffer[ 1024 ];
 
@@ -506,7 +506,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	/*
 	** R_ModeList_f
 	*/
-	static void R_ModeList_f( void )
+	static void R_ModeList_f()
 	{
 		int i;
 
@@ -730,17 +730,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	screenshot [filename]
 	==================
 	*/
-	static void R_ScreenShot_f( void )
+	static void R_ScreenShot_f()
 	{
 		R_TakeScreenshot( "tga", SSF_TGA );
 	}
 
-	static void R_ScreenShotJPEG_f( void )
+	static void R_ScreenShotJPEG_f()
 	{
 		R_TakeScreenshot( "jpg", SSF_JPEG );
 	}
 
-	static void R_ScreenShotPNG_f( void )
+	static void R_ScreenShotPNG_f()
 	{
 		R_TakeScreenshot( "png", SSF_PNG );
 	}
@@ -821,7 +821,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	/*
 	** GL_SetDefaultState
 	*/
-	void GL_SetDefaultState( void )
+	void GL_SetDefaultState()
 	{
 		int i;
 
@@ -924,7 +924,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	GfxInfo_f
 	================
 	*/
-	void GfxInfo_f( void )
+	void GfxInfo_f()
 	{
 		static const char fsstrings[][16] =
 		{
@@ -1048,7 +1048,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		}
 	}
 
-	static void GLSL_restart_f( void )
+	static void GLSL_restart_f()
 	{
 		// make sure the render thread is stopped
 		R_SyncRenderThread();
@@ -1062,7 +1062,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	R_Register
 	===============
 	*/
-	void R_Register( void )
+	void R_Register()
 	{
 		// OpenGL context selection
 		r_glMajorVersion = ri.Cvar_Get( "r_glMajorVersion", "", CVAR_LATCH );
@@ -1366,7 +1366,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	R_Init
 	===============
 	*/
-	bool R_Init( void )
+	bool R_Init()
 	{
 		int i;
 
@@ -1555,7 +1555,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	Touch all images to make sure they are resident
 	=============
 	*/
-	void RE_EndRegistration( void )
+	void RE_EndRegistration()
 	{
 		R_SyncRenderThread();
 		if ( r_lazyShaders->integer == 1 )

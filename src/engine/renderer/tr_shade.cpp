@@ -32,7 +32,7 @@ This file deals with applying shaders to surface data in the tess struct.
 =================================================================================
 */
 
-void GLSL_InitGPUShaders( void )
+void GLSL_InitGPUShaders()
 {
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
@@ -122,7 +122,7 @@ void GLSL_InitGPUShaders( void )
 	}
 }
 
-void GLSL_ShutdownGPUShaders( void )
+void GLSL_ShutdownGPUShaders()
 {
 	R_SyncRenderThread();
 
@@ -158,7 +158,7 @@ void GLSL_ShutdownGPUShaders( void )
 	GL_BindNullProgram();
 }
 
-void GLSL_FinishGPUShaders( void )
+void GLSL_FinishGPUShaders()
 {
 	R_SyncRenderThread();
 
@@ -380,8 +380,8 @@ to overflow.
 ==============
 */
 // *INDENT-OFF*
-void Tess_Begin( void ( *stageIteratorFunc )( void ),
-                 void ( *stageIteratorFunc2 )( void ),
+void Tess_Begin( void ( *stageIteratorFunc )(),
+                 void ( *stageIteratorFunc2 )(),
                  shader_t *surfaceShader, shader_t *lightShader,
                  bool skipTangentSpaces,
                  bool skipVBO,

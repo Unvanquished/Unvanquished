@@ -39,7 +39,7 @@ Maryland 20850 USA.
 
 #include "common/cm/cm_public.h"
 
-void G_CM_ClearWorld( void );
+void G_CM_ClearWorld();
 
 // called after the world model has been loaded, before linking any entities
 
@@ -58,7 +58,7 @@ void G_CM_LinkEntity( gentity_t *ent );
 
 clipHandle_t G_CM_ClipHandleForEntity( const sharedEntity_t *ent );
 
-void         G_CM_SectorList_f( void );
+void         G_CM_SectorList_f();
 
 int          G_CM_AreaEntities( const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount );
 

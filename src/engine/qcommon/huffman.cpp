@@ -61,7 +61,7 @@ void Huff_putBit( int bit, byte *fout, int *offset )
 	*offset = bloc;
 }
 
-int     Huff_getBloc( void )
+int     Huff_getBloc()
 {
 	return bloc;
 }

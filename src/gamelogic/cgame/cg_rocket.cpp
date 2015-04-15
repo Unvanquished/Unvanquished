@@ -62,7 +62,7 @@ static const size_t rocketCvarTableSize = ARRAY_LEN( rocketCvarTable );
 CG_RegisterRocketCvars
 =================
 */
-void CG_RegisterRocketCvars( void )
+void CG_RegisterRocketCvars()
 {
 	int         i;
 	const cvarTable_t *cv;
@@ -76,7 +76,7 @@ void CG_RegisterRocketCvars( void )
 
 static connstate_t oldConnState;
 
-void CG_Rocket_Init( void )
+void CG_Rocket_Init()
 {
 	int len;
 	char *token, *text_p;
@@ -300,7 +300,7 @@ void CG_Rocket_Init( void )
 	trap_Key_SetCatcher( KEYCATCH_UI );
 }
 
-void CG_Rocket_LoadHuds( void )
+void CG_Rocket_LoadHuds()
 {
 	int i, len;
 	char *token, *text_p;

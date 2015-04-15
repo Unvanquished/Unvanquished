@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "bot_types.h"
 
 bool     BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
-void         BotShutdownNav( void );
+void         BotShutdownNav();
 
 void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );

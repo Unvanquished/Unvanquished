@@ -158,7 +158,7 @@ CG_Respawn
 A respawn happened this snapshot
 ================
 */
-void CG_Respawn( void )
+void CG_Respawn()
 {
 	// no error decay on player movement
 	cg.thisFrameTeleport = true;

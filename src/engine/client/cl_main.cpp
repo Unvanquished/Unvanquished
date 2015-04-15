@@ -190,16 +190,16 @@ typedef struct serverStatus_s
 serverStatus_t cl_serverStatusList[ MAX_SERVERSTATUSREQUESTS ];
 int            serverStatusCount;
 
-void        CL_CheckForResend( void );
-void        CL_ShowIP_f( void );
-void        CL_ServerStatus_f( void );
+void        CL_CheckForResend();
+void        CL_ShowIP_f();
+void        CL_ServerStatus_f();
 void        CL_ServerStatusResponse( netadr_t from, msg_t *msg );
 
 // fretn
-void        CL_WriteWaveClose( void );
-void        CL_WavStopRecord_f( void );
+void        CL_WriteWaveClose();
+void        CL_WavStopRecord_f();
 
-static void CL_UpdateMumble( void )
+static void CL_UpdateMumble()
 {
 	vec3_t pos, forward, up;
 	float  scale = cl_mumbleScale->value;
@@ -277,7 +277,7 @@ void CL_UpdateVoipGain( const char *idstr, float gain )
 	}
 }
 
-void CL_Voip_f( void )
+void CL_Voip_f()
 {
 	const char *cmd = Cmd_Argv( 1 );
 	const char *reason = nullptr;
@@ -355,7 +355,7 @@ void CL_Voip_f( void )
 }
 
 static
-void CL_VoipNewGeneration( void )
+void CL_VoipNewGeneration()
 {
 	// don't have a zero generation so new clients won't match, and don't
 	//  wrap to negative so MSG_ReadLong() doesn't "fail."
@@ -379,7 +379,7 @@ Generally we don't want who's listening to change during a transmission,
 so this is only called when the key is first pressed
 ===============
 */
-void CL_VoipParseTargets( void )
+void CL_VoipParseTargets()
 {
 	const char *target = cl_voipSendTarget->string;
 	char       *end;
@@ -484,7 +484,7 @@ Record more audio from the hardware if required and encode it into Speex
 ===============
 */
 static
-void CL_CaptureVoip( void )
+void CL_CaptureVoip()
 {
 	const float    audioMult = cl_voipCaptureMult->value;
 	const bool useVad = ( cl_voipUseVAD->integer != 0 );
@@ -768,7 +768,7 @@ CL_StopRecording_f
 stop recording a demo
 ====================
 */
-void CL_StopRecord_f( void )
+void CL_StopRecord_f()
 {
 	int len;
 
@@ -802,7 +802,7 @@ Begins recording a demo from the current position
 */
 
 static char demoName[ MAX_QPATH ]; // compiler bug workaround
-void CL_Record_f( void )
+void CL_Record_f()
 {
 	char name[ MAX_OSPATH ];
 	char *s;
@@ -984,7 +984,7 @@ CL_DemoCompleted
 =================
 */
 
-void CL_DemoCompleted( void )
+void CL_DemoCompleted()
 {
 	if ( cl_timedemo && cl_timedemo->integer )
 	{
@@ -1016,7 +1016,7 @@ CL_ReadDemoMessage
 =================
 */
 
-void CL_ReadDemoMessage( void )
+void CL_ReadDemoMessage()
 {
 	int   r;
 	msg_t buf;
@@ -1128,7 +1128,7 @@ typedef struct wav_hdr_s
 
 wav_hdr_t hdr;
 
-static void CL_WriteWaveHeader( void )
+static void CL_WriteWaveHeader()
 {
 	memset( &hdr, 0, sizeof( hdr ) );
 
@@ -1161,7 +1161,7 @@ static void CL_WriteWaveHeader( void )
 }
 
 static char wavName[ MAX_OSPATH ]; // compiler bug workaround
-void CL_WriteWaveOpen( void )
+void CL_WriteWaveOpen()
 {
 	// we will just save it as a 16bit stereo 22050kz pcm file
 
@@ -1229,7 +1229,7 @@ void CL_WriteWaveOpen( void )
 	Cvar_Set( "cl_waveoffset", "0" );
 }
 
-void CL_WriteWaveClose( void )
+void CL_WriteWaveClose()
 {
 	Com_Printf("%s", "Stopped recording\n" );
 
@@ -1332,7 +1332,7 @@ Called when a demo or cinematic finishes
 If the "nextdemo" cvar is set, that command will be issued
 ==================
 */
-void CL_NextDemo( void )
+void CL_NextDemo()
 {
 	char v[ MAX_STRING_CHARS ];
 
@@ -1357,7 +1357,7 @@ void CL_NextDemo( void )
 CL_ShutdownAll
 =====================
 */
-void CL_ShutdownAll( void )
+void CL_ShutdownAll()
 {
 	// clear sounds
 	Audio::StopAllSounds();
@@ -1406,7 +1406,7 @@ ways a client gets into a game
 Also called by Com_Error
 =================
 */
-void CL_FlushMemory( void )
+void CL_FlushMemory()
 {
 	// shutdown all the client stuff
 	CL_ShutdownAll();
@@ -1437,7 +1437,7 @@ screen to let the user know about it, then dump all client
 memory on the hunk from cgame, ui, and renderer
 =====================
 */
-void CL_MapLoading( void )
+void CL_MapLoading()
 {
 	if ( !com_cl_running->integer )
 	{
@@ -1485,7 +1485,7 @@ CL_ClearState
 Called before parsing a gamestate
 =====================
 */
-void CL_ClearState( void )
+void CL_ClearState()
 {
 	cl.~clientActive_t();
 	new(&cl) clientActive_t{}; // Using {} instead of () to work around MSVC bug
@@ -1497,7 +1497,7 @@ CL_ClearStaticDownload
 Clear download information that we keep in cls (disconnected download support)
 =====================
 */
-void CL_ClearStaticDownload( void )
+void CL_ClearStaticDownload()
 {
 	assert( !cls.bWWWDlDisconnected );  // reset before calling
 	cls.downloadRestart = false;
@@ -1516,7 +1516,7 @@ Sends a disconnect message to the server
 This is also called on Com_Error and Com_Quit, so it shouldn't cause any errors
 =====================
 */
-void CL_SendDisconnect( void )
+void CL_SendDisconnect()
 {
 	// send a disconnect message to the server
 	// send it a few times in case one is dropped
@@ -1697,7 +1697,7 @@ CL_RequestMotd
 
 ===================
 */
-void CL_RequestMotd( void )
+void CL_RequestMotd()
 {
 	char info[ MAX_INFO_STRING ];
 
@@ -1749,7 +1749,7 @@ CONSOLE COMMANDS
 CL_ForwardToServer_f
 ==================
 */
-void CL_ForwardToServer_f( void )
+void CL_ForwardToServer_f()
 {
 	if ( cls.state != CA_ACTIVE || clc.demoplaying )
 	{
@@ -1769,7 +1769,7 @@ void CL_ForwardToServer_f( void )
 CL_Disconnect_f
 ==================
 */
-void CL_Disconnect_f( void )
+void CL_Disconnect_f()
 {
 	CL_Disconnect( false );
 }
@@ -1780,7 +1780,7 @@ CL_Reconnect_f
 
 ================
 */
-void CL_Reconnect_f( void )
+void CL_Reconnect_f()
 {
 	if ( !*cls.servername )
 	{
@@ -1802,7 +1802,7 @@ CL_Connect_f
 
 ================
 */
-void CL_Connect_f( void )
+void CL_Connect_f()
 {
 	char         *server, password[ 64 ];
 	const char   *serverString;
@@ -1941,7 +1941,7 @@ CL_Rcon_f
   an unconnected command.
 =====================
 */
-void CL_Rcon_f( void )
+void CL_Rcon_f()
 {
 	char     message[ MAX_RCON_MESSAGE ];
 	netadr_t to;
@@ -2047,7 +2047,7 @@ Attempt to load the RSA keys from a file
 If this fails then generate a new keypair
 ===============
 */
-static void CL_LoadRSAKeys( void )
+static void CL_LoadRSAKeys()
 {
 	int                  len;
 	fileHandle_t         f;
@@ -2099,11 +2099,11 @@ doesn't know what graphics to reload
 */
 
 #ifdef _WIN32
-extern void IN_Restart( void );  // fretn
+extern void IN_Restart();  // fretn
 
 #endif
 
-void CL_Vid_Restart_f( void )
+void CL_Vid_Restart_f()
 {
 // XreaL BEGIN
 	// settings may have changed so stop recording now
@@ -2169,7 +2169,7 @@ CL_UI_Restart_f
 Restart the ui subsystem
 =================
 */
-void CL_UI_Restart_f( void )
+void CL_UI_Restart_f()
 {
 	// NERVE - SMF
 	Rocket_Shutdown();
@@ -2185,7 +2185,7 @@ CL_Snd_Reload_f
 Reloads sounddata from disk, retains soundhandles.
 =================
 */
-void CL_Snd_Reload_f( void )
+void CL_Snd_Reload_f()
 {
 	// FIXME
 	//S_Reload();
@@ -2200,7 +2200,7 @@ The cgame and game must also be forced to restart because
 handles will be invalid
 =================
 */
-void CL_Snd_Restart_f( void )
+void CL_Snd_Restart_f()
 {
 	Audio::Shutdown();
 
@@ -2225,7 +2225,7 @@ void CL_Snd_Restart_f( void )
 CL_Configstrings_f
 ==================
 */
-void CL_Configstrings_f( void )
+void CL_Configstrings_f()
 {
 	int i;
 	int ofs;
@@ -2252,7 +2252,7 @@ void CL_Configstrings_f( void )
 CL_Clientinfo_f
 ==============
 */
-void CL_Clientinfo_f( void )
+void CL_Clientinfo_f()
 {
 	Com_Printf("%s",  "--------- Client Information ---------\n" );
 	Com_Printf( "state: %i\n", cls.state );
@@ -2268,7 +2268,7 @@ CL_WavRecord_f
 ==============
 */
 
-void CL_WavRecord_f( void )
+void CL_WavRecord_f()
 {
 	if ( clc.wavefile )
 	{
@@ -2285,7 +2285,7 @@ CL_WavStopRecord_f
 ==============
 */
 
-void CL_WavStopRecord_f( void )
+void CL_WavStopRecord_f()
 {
 	if ( !clc.wavefile )
 	{
@@ -2310,7 +2310,7 @@ video
 video [filename]
 ===============
 */
-void CL_Video_f( void )
+void CL_Video_f()
 {
 	char filename[ MAX_OSPATH ];
 	int  i, last;
@@ -2366,7 +2366,7 @@ void CL_Video_f( void )
 CL_StopVideo_f
 ===============
 */
-void CL_StopVideo_f( void )
+void CL_StopVideo_f()
 {
 	CL_CloseAVI();
 }
@@ -2380,7 +2380,7 @@ CL_DownloadsComplete
 Called when all downloading has been completed
 =================
 */
-void CL_DownloadsComplete( void )
+void CL_DownloadsComplete()
 {
 
 	// if we downloaded files we need to restart the file system
@@ -2477,7 +2477,7 @@ CL_NextDownload
 A download completed or failed
 =================
 */
-void CL_NextDownload( void )
+void CL_NextDownload()
 {
 	char *s;
 	char *remoteName, *localName;
@@ -2536,7 +2536,7 @@ After receiving a valid game state, we valid the cgame and local zip files here
 and determine if we need to download them
 =================
 */
-void CL_InitDownloads( void )
+void CL_InitDownloads()
 {
 	char missingfiles[ 1024 ];
 
@@ -2584,7 +2584,7 @@ CL_CheckForResend
 Resend a connect message if the last one has timed out
 =================
 */
-void CL_CheckForResend( void )
+void CL_CheckForResend()
 {
 	int  port;
 	char info[ MAX_INFO_STRING ];
@@ -3359,7 +3359,7 @@ CL_CheckTimeout
 
 ==================
 */
-void CL_CheckTimeout( void )
+void CL_CheckTimeout()
 {
 	//
 	// check timeout
@@ -3389,7 +3389,7 @@ CL_CheckUserinfo
 
 ==================
 */
-void CL_CheckUserinfo( void )
+void CL_CheckUserinfo()
 {
 	// don't add reliable commands when not yet connected
 	if ( cls.state < CA_CHALLENGING )
@@ -3416,7 +3416,7 @@ void CL_CheckUserinfo( void )
 CL_WWWDownload
 ==================
 */
-void CL_WWWDownload( void )
+void CL_WWWDownload()
 {
 	dlStatus_t      ret;
 	static bool bAbort = false;
@@ -3632,7 +3632,7 @@ void CL_Frame( int msec )
 CL_SetRecommended_f
 ================
 */
-void CL_SetRecommended_f( void )
+void CL_SetRecommended_f()
 {
 	Com_SetRecommended();
 }
@@ -3672,7 +3672,7 @@ void QDECL PRINTF_LIKE(2) CL_RefPrintf( int print_level, const char *fmt, ... )
 CL_InitRenderer
 ============
 */
-bool CL_InitRenderer( void )
+bool CL_InitRenderer()
 {
 	fileHandle_t f;
 
@@ -3716,7 +3716,7 @@ After the server has cleared the hunk, these will need to be restarted
 This is the only place that any of these functions are called from
 ============================
 */
-void CL_StartHunkUsers( void )
+void CL_StartHunkUsers()
 {
 	if ( !com_cl_running )
 	{
@@ -3784,11 +3784,11 @@ void           *CL_RefMalloc( int size )
 CL_RefTagFree
 ============
 */
-void CL_RefTagFree( void )
+void CL_RefTagFree()
 {
 }
 
-int CL_ScaledMilliseconds( void )
+int CL_ScaledMilliseconds()
 {
 	return Sys_Milliseconds() * com_timescale->value;
 }
@@ -3890,7 +3890,7 @@ bool CL_InitRef( )
 CL_ShutdownRef
 ============
 */
-void CL_ShutdownRef( void )
+void CL_ShutdownRef()
 {
 	if ( !re.Shutdown )
 	{
@@ -3908,7 +3908,7 @@ void CL_ShutdownRef( void )
 CL_Init
 ====================
 */
-void CL_Init( void )
+void CL_Init()
 {
 	PrintBanner( "Client Initialization" )
 
@@ -4124,7 +4124,7 @@ CL_Shutdown
 
 ===============
 */
-void CL_Shutdown( void )
+void CL_Shutdown()
 {
 	static bool recursive = false;
 
@@ -4646,7 +4646,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 CL_LocalServers_f
 ==================
 */
-void CL_LocalServers_f( void )
+void CL_LocalServers_f()
 {
 	char     *message;
 	int      i, j;
@@ -4696,7 +4696,7 @@ void CL_LocalServers_f( void )
 CL_GlobalServers_f
 ==================
 */
-void CL_GlobalServers_f( void )
+void CL_GlobalServers_f()
 {
 	netadr_t to;
 	int      count, i, masterNum;
@@ -4844,7 +4844,7 @@ void CL_ClearPing( int n )
 CL_GetPingQueueCount
 ==================
 */
-int CL_GetPingQueueCount( void )
+int CL_GetPingQueueCount()
 {
 	int    i;
 	int    count;
@@ -4869,7 +4869,7 @@ int CL_GetPingQueueCount( void )
 CL_GetFreePing
 ==================
 */
-ping_t         *CL_GetFreePing( void )
+ping_t         *CL_GetFreePing()
 {
 	ping_t *pingptr;
 	ping_t *best;
@@ -4929,7 +4929,7 @@ ping_t         *CL_GetFreePing( void )
 CL_Ping_f
 ==================
 */
-void CL_Ping_f( void )
+void CL_Ping_f()
 {
 	netadr_t     to;
 	ping_t        *pingptr;
@@ -5128,7 +5128,7 @@ bool CL_UpdateVisiblePings_f( int source )
 CL_ServerStatus_f
 ==================
 */
-void CL_ServerStatus_f( void )
+void CL_ServerStatus_f()
 {
 	netadr_t       to, *toptr = nullptr;
 	char           *server;
@@ -5197,7 +5197,7 @@ void CL_ServerStatus_f( void )
 CL_ShowIP_f
 ==================
 */
-void CL_ShowIP_f( void )
+void CL_ShowIP_f()
 {
 	Sys_ShowIP();
 }

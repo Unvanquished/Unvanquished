@@ -69,7 +69,7 @@ Maryland 20850 USA.
 
 extern int  s_soundtime;
 
-static void RoQ_init( void );
+static void RoQ_init();
 
 /******************************************************************************
 *
@@ -156,7 +156,7 @@ static cin_cache    cinTable[ MAX_VIDEO_HANDLES ];
 static int          currentHandle = -1;
 static int          CL_handle = -1;
 
-void CIN_CloseAllVideos( void )
+void CIN_CloseAllVideos()
 {
 	int i;
 
@@ -169,7 +169,7 @@ void CIN_CloseAllVideos( void )
 	}
 }
 
-static int CIN_HandleForVideo( void )
+static int CIN_HandleForVideo()
 {
 	int i;
 
@@ -184,7 +184,7 @@ static int CIN_HandleForVideo( void )
 	Com_Error( ERR_DROP, "CIN_HandleForVideo: none free" );
 }
 
-extern int CL_ScaledMilliseconds( void );
+extern int CL_ScaledMilliseconds();
 
 //-----------------------------------------------------------------------------
 // RllSetupTable
@@ -195,7 +195,7 @@ extern int CL_ScaledMilliseconds( void );
 //
 // Returns:     Nothing
 //-----------------------------------------------------------------------------
-static void RllSetupTable( void )
+static void RllSetupTable()
 {
 	int z;
 
@@ -565,7 +565,7 @@ static void blitVQQuad32fs( byte **status, unsigned char *data )
 *
 ******************************************************************************/
 
-void ROQ_GenYUVTables( void )
+void ROQ_GenYUVTables()
 {
 	float t_ub, t_vr, t_ug, t_vg;
 	long  i;
@@ -1257,7 +1257,7 @@ static void RoQPrepMcomp( long xoff, long yoff )
 *
 ******************************************************************************/
 
-static void initRoQ( void )
+static void initRoQ()
 {
 	if ( currentHandle < 0 ) { return; }
 
@@ -1292,7 +1292,7 @@ static byte* RoQFetchInterlaced( byte *source ) {
         return cinTable[currentHandle].buf2;
 }
 */
-static void RoQReset( void )
+static void RoQReset()
 {
 	if ( currentHandle < 0 ) { return; }
 
@@ -1312,7 +1312,7 @@ static void RoQReset( void )
 *
 ******************************************************************************/
 
-static void RoQInterrupt( void )
+static void RoQInterrupt()
 {
 	byte  *framedata;
 	int   ssize;
@@ -1497,7 +1497,7 @@ redump:
 *
 ******************************************************************************/
 
-static void RoQ_init( void )
+static void RoQ_init()
 {
 	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
 	cinTable[ currentHandle ].startTime = cinTable[ currentHandle ].lastTime = CL_ScaledMilliseconds() * com_timescale->value;
@@ -1530,7 +1530,7 @@ static void RoQ_init( void )
 ******************************************************************************/
 
 //FIXME: this isn't really a "ROQ shutdown" function (it's more like a "CIN shutdown" function, beside the file closing)
-static void RoQShutdown( void )
+static void RoQShutdown()
 {
 	const char *s;
 
@@ -2051,7 +2051,7 @@ void CIN_DrawCinematic( int handle )
 	cinTable[ handle ].dirty = false;
 }
 
-void CL_PlayCinematic_f( void )
+void CL_PlayCinematic_f()
 {
 	char *arg, *s;
 //	bool holdatend;
@@ -2098,7 +2098,7 @@ void CL_PlayCinematic_f( void )
 	}
 }
 
-void SCR_DrawCinematic( void )
+void SCR_DrawCinematic()
 {
 	if ( CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES )
 	{
@@ -2106,7 +2106,7 @@ void SCR_DrawCinematic( void )
 	}
 }
 
-void SCR_RunCinematic( void )
+void SCR_RunCinematic()
 {
 	if ( CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES )
 	{
@@ -2114,7 +2114,7 @@ void SCR_RunCinematic( void )
 	}
 }
 
-void SCR_StopCinematic( void )
+void SCR_StopCinematic()
 {
 	if ( CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES )
 	{

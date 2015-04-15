@@ -1740,7 +1740,7 @@ typedef struct
 typedef struct
 {
 	const char *cmd;
-	void     ( *function )( void );
+	void     ( *function )();
 } consoleCommand_t;
 
 typedef enum
@@ -1959,48 +1959,48 @@ extern vmCvar_t            rocket_menuFile;
 //
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
-const char *CG_Args( void );
+const char *CG_Args();
 
 void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 void QDECL NORETURN CG_Error( const char *msg, ... ) PRINTF_LIKE(1);
 
-void       CG_StartMusic( void );
+void       CG_StartMusic();
 
-void       CG_NotifyHooks( void );
-void       CG_UpdateCvars( void );
+void       CG_NotifyHooks();
+void       CG_UpdateCvars();
 
-int        CG_CrosshairPlayer( void );
+int        CG_CrosshairPlayer();
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );
 bool   CG_ClientIsReady( int clientNum );
-void       CG_BuildSpectatorString( void );
+void       CG_BuildSpectatorString();
 
 bool   CG_FileExists( const char *filename );
-void       CG_RemoveNotifyLine( void );
-void       CG_AddNotifyText( void );
-void       CG_UpdateBuildableRangeMarkerMask( void );
+void       CG_RemoveNotifyLine();
+void       CG_AddNotifyText();
+void       CG_UpdateBuildableRangeMarkerMask();
 void       CG_RegisterGrading( int slot, const char *str );
 
 //
 // cg_view.c
 //
 void     CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod );
-void     CG_TestModel_f( void );
-void     CG_TestGun_f( void );
-void     CG_TestModelNextFrame_f( void );
-void     CG_TestModelPrevFrame_f( void );
-void     CG_TestModelNextSkin_f( void );
-void     CG_TestModelPrevSkin_f( void );
+void     CG_TestModel_f();
+void     CG_TestGun_f();
+void     CG_TestModelNextFrame_f();
+void     CG_TestModelPrevFrame_f();
+void     CG_TestModelNextSkin_f();
+void     CG_TestModelPrevSkin_f();
 void     CG_AddBufferedSound( sfxHandle_t sfx );
 bool CG_CullBox(vec3_t mins, vec3_t maxs);
 bool CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
 void     CG_DrawActiveFrame( int serverTime, bool demoPlayback );
-void     CG_OffsetFirstPersonView( void );
-void     CG_OffsetThirdPersonView( void );
-void     CG_OffsetShoulderView( void );
+void     CG_OffsetFirstPersonView();
+void     CG_OffsetThirdPersonView();
+void     CG_OffsetShoulderView();
 void     CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs );
-void     CG_EndShadowCaster( void );
+void     CG_EndShadowCaster();
 
 //
 // cg_drawtools.c
@@ -2014,7 +2014,7 @@ void     CG_DrawNoStretchPic( float x, float y, float width, float height, qhand
 void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
                          vec4_t tcolor, float amount, qhandle_t hShader );
 void     CG_SetClipRegion( float x, float y, float w, float h );
-void     CG_ClearClipRegion( void );
+void     CG_ClearClipRegion();
 void     CG_EnableScissor( bool enable );
 void     CG_SetScissor( int x, int y, int w, int h );
 
@@ -2022,7 +2022,7 @@ int      CG_DrawStrlen( const char *str );
 
 float    *CG_FadeColor( int startMsec, int totalMsec );
 float    CG_FadeAlpha( int startMsec, int totalMsec );
-void     CG_TileClear( void );
+void     CG_TileClear();
 void     CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
 void     CG_DrawSides( float x, float y, float w, float h, float size );
 void     CG_DrawTopBottom( float x, float y, float w, float h, float size );
@@ -2042,11 +2042,11 @@ ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001 );
 //
 
 void CG_AlignText( rectDef_t *rect, const char *text, float scale, float w, float h, int align, int valign,float *x, float *y );
-void CG_AddLagometerFrameInfo( void );
+void CG_AddLagometerFrameInfo();
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
-void CG_AddSpeed( void );
+void CG_AddSpeed();
 void CG_CenterPrint( const char *str, int y, int charWidth );
-void CG_DrawActive( void );
+void CG_DrawActive();
 void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float text_y, int ownerDraw, int ownerDrawFlags,
                    int align, int textalign, int textvalign,
@@ -2055,9 +2055,9 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 float      CG_GetValue( int ownerDraw );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
-const char *CG_GetKillerText( void );
-void       CG_DrawLoadingScreen( void );
-void       CG_ResetPainBlend( void );
+const char *CG_GetKillerText();
+void       CG_DrawLoadingScreen();
+void       CG_ResetPainBlend();
 void       CG_DrawField( float x, float y, int width, float cw, float ch, int value );
 
 //
@@ -2072,9 +2072,9 @@ void        CG_PrecacheClientInfo( class_t class_, const char *model, const char
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
 centity_t   *CG_GetLocation( vec3_t );
-centity_t   *CG_GetPlayerLocation( void );
+centity_t   *CG_GetPlayerLocation();
 
-void        CG_InitClasses( void );
+void        CG_InitClasses();
 
 //
 // cg_buildable.c
@@ -2082,8 +2082,8 @@ void        CG_InitClasses( void );
 void     CG_GhostBuildable( int buildableInfo );
 void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
-void     CG_DrawBuildableStatus( void );
-void     CG_InitBuildables( void );
+void     CG_DrawBuildableStatus();
+void     CG_InitBuildables();
 void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
 void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
@@ -2107,7 +2107,7 @@ void CG_ModelDoor( centity_t *cent );
 // cg_predict.c
 //
 
-void CG_BuildSolidList( void );
+void CG_BuildSolidList();
 int  CG_PointContents( const vec3_t point, int passEntityNum );
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                const vec3_t end, int skipNumber, int mask, int skipmask );
@@ -2116,7 +2116,7 @@ void CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const 
 void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
                        const float startRadius, const float endRadius, int skipNumber, int mask,
                        int skipmask );
-void CG_PredictPlayerState( void );
+void CG_PredictPlayerState();
 
 //
 // cg_events.c
@@ -2125,15 +2125,15 @@ void CG_CheckEvents( centity_t *cent );
 void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
 void CG_OnPlayerWeaponChange( weapon_t oldWeapon );
-void CG_OnPlayerUpgradeChange( void );
-void CG_OnMapRestart( void );
+void CG_OnPlayerUpgradeChange();
+void CG_OnMapRestart();
 
 //
 // cg_ents.c
 //
 void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
-void CG_AddPacketEntities( void );
+void CG_AddPacketEntities();
 void CG_Beam( centity_t *cent );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
                                 vec3_t angles_in, vec3_t angles_out );
@@ -2146,13 +2146,13 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 //
 // cg_weapons.c
 //
-void CG_NextWeapon_f( void );
-void CG_PrevWeapon_f( void );
-void CG_Weapon_f( void );
+void CG_NextWeapon_f();
+void CG_PrevWeapon_f();
+void CG_Weapon_f();
 
-void CG_InitUpgrades( void );
+void CG_InitUpgrades();
 void CG_RegisterUpgrade( int upgradeNum );
-void CG_InitWeapons( void );
+void CG_InitWeapons();
 void CG_RegisterWeapon( int weaponNum );
 bool CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, bool loop, bool reversed,
     bool clearOrigin );
@@ -2167,21 +2167,21 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
-void CG_DrawHumanInventory( void );
-void CG_DrawItemSelectText( void );
-float CG_ChargeProgress( void );
+void CG_DrawHumanInventory();
+void CG_DrawItemSelectText();
+float CG_ChargeProgress();
 
 //
 // cg_minimap.c
 //
-void CG_InitMinimap( void );
+void CG_InitMinimap();
 void CG_DrawMinimap( const rectDef_t *rect, const vec4_t color );
 
 //
 // cg_marks.c
 //
-void CG_InitMarkPolys( void );
-void CG_AddMarks( void );
+void CG_InitMarkPolys();
+void CG_AddMarks();
 void CG_ImpactMark( qhandle_t markShader,
                     const vec3_t origin, const vec3_t dir,
                     float orientation,
@@ -2192,31 +2192,31 @@ void CG_ImpactMark( qhandle_t markShader,
 //
 // cg_snapshot.c
 //
-void CG_ProcessSnapshots( void );
+void CG_ProcessSnapshots();
 
 //
 // cg_consolecmds.c
 //
-bool ConsoleCommand( void );
-void     CG_InitConsoleCommands( void );
-void     CG_RequestScores( void );
-void     CG_HideScores_f( void );
-void     CG_ShowScores_f( void );
+bool ConsoleCommand();
+void     CG_InitConsoleCommands();
+void     CG_RequestScores();
+void     CG_HideScores_f();
+void     CG_ShowScores_f();
 
 //
 // cg_servercmds.c
 //
 void CG_ExecuteServerCommands( snapshot_t* snap );
-void CG_ParseServerinfo( void );
-void CG_SetConfigValues( void );
-void CG_ShaderStateChanged( void );
+void CG_ParseServerinfo();
+void CG_SetConfigValues();
+void CG_ShaderStateChanged();
 void CG_CompleteCommand( int argNum );
-void CG_CenterPrint_f( void );
+void CG_CenterPrint_f();
 
 //
 // cg_playerstate.c
 //
-void CG_Respawn( void );
+void CG_Respawn();
 void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops );
 void CG_CheckChangedPredictableEvents( playerState_t *ps );
 
@@ -2247,7 +2247,7 @@ void     CG_SetAttachmentOffset( attachment_t *a, vec3_t v );
 //
 // cg_particles.c
 //
-void             CG_LoadParticleSystems( void );
+void             CG_LoadParticleSystems();
 qhandle_t        CG_RegisterParticleSystem( const char *name );
 
 particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle );
@@ -2259,17 +2259,17 @@ bool         CG_IsParticleSystemValid( particleSystem_t **ps );
 void             CG_SetParticleSystemNormal( particleSystem_t *ps, vec3_t normal );
 void             CG_SetParticleSystemLastNormal( particleSystem_t *ps, const vec3_t normal );
 
-void             CG_AddParticles( void );
+void             CG_AddParticles();
 
 void             CG_ParticleSystemEntity( centity_t *cent );
 
-void             CG_TestPS_f( void );
-void             CG_DestroyTestPS_f( void );
+void             CG_TestPS_f();
+void             CG_DestroyTestPS_f();
 
 //
 // cg_trails.c
 //
-void          CG_LoadTrailSystems( void );
+void          CG_LoadTrailSystems();
 qhandle_t     CG_RegisterTrailSystem( const char *name );
 
 trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle );
@@ -2277,22 +2277,22 @@ void          CG_DestroyTrailSystem( trailSystem_t **ts );
 
 bool      CG_IsTrailSystemValid( trailSystem_t **ts );
 
-void          CG_AddTrails( void );
+void          CG_AddTrails();
 
-void          CG_TestTS_f( void );
-void          CG_DestroyTestTS_f( void );
+void          CG_TestTS_f();
+void          CG_DestroyTestTS_f();
 
 //
 // cg_tutorial.c
 //
-const char *CG_TutorialText( void );
+const char *CG_TutorialText();
 
 //
 // cg_beacon.c
 //
 
-void          CG_LoadBeaconsConfig( void );
-void          CG_RunBeacons( void );
+void          CG_LoadBeaconsConfig();
+void          CG_RunBeacons();
 qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
 qhandle_t     CG_BeaconDescriptiveIcon( const cbeacon_t *b );
 char          *CG_BeaconName( const cbeacon_t *b, char *out, size_t len );
@@ -2321,8 +2321,8 @@ void CG_FormatSI( char *buf, int size, float num, int sf, const char *unit );
 // cg_rocket.c
 //
 
-void CG_Rocket_Init( void );
-void CG_Rocket_LoadHuds( void );
+void CG_Rocket_Init();
+void CG_Rocket_LoadHuds();
 void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *attribute );
@@ -2334,19 +2334,19 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type );
 //
 // cg_rocket_events.c
 //
-void CG_Rocket_ProcessEvents( void );
+void CG_Rocket_ProcessEvents();
 
 //
 // cg_rocket_dataformatter.c
 //
 void CG_Rocket_FormatData( int handle );
-void CG_Rocket_RegisterDataFormatters( void );
+void CG_Rocket_RegisterDataFormatters();
 
 //
 // cg_rocket_draw.c
 //
-void CG_Rocket_RenderElement( void );
-void CG_Rocket_RegisterElements( void );
+void CG_Rocket_RenderElement();
+void CG_Rocket_RegisterElements();
 
 //
 // cg_rocket_datasource.c
@@ -2354,13 +2354,13 @@ void CG_Rocket_RegisterElements( void );
 void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table );
 void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const char *sortBy );
 void CG_Rocket_CleanUpServerList( const char *table );
-void CG_Rocket_RegisterDataSources( void );
-void CG_Rocket_CleanUpDataSources( void );
+void CG_Rocket_RegisterDataSources();
+void CG_Rocket_CleanUpDataSources();
 void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
 void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, int index );
 int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );
 void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
-void CG_Rocket_BuildServerInfo( void );
+void CG_Rocket_BuildServerInfo();
 void CG_Rocket_BuildServerList( const char *args );
 void CG_Rocket_BuildArmourySellList( const char *table );
 void CG_Rocket_BuildArmouryBuyList( const char *table );
@@ -2369,11 +2369,11 @@ void CG_Rocket_BuildPlayerList( const char *table );
 //
 // cg_rocket_progressbar.c
 //
-float CG_Rocket_ProgressBarValue( void );
+float CG_Rocket_ProgressBarValue();
 float CG_Rocket_ProgressBarValueByName( const char *name );
 //
 // cg_gameinfo.c
 //
-void CG_LoadArenas( void );
+void CG_LoadArenas();
 #endif
 

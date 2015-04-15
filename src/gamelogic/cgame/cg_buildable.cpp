@@ -575,7 +575,7 @@ CG_InitBuildables
 Initialises the animation db
 ===============
 */
-void CG_InitBuildables( void )
+void CG_InitBuildables()
 {
 	char         filename[ MAX_QPATH ];
 	char         soundfile[ MAX_QPATH ];
@@ -2245,7 +2245,7 @@ static bool CG_BuildableRemovalPending( int entityNum )
 CG_DrawBuildableStatus
 ==================
 */
-void CG_DrawBuildableStatus( void )
+void CG_DrawBuildableStatus()
 {
 	int           i;
 	centity_t     *cent;

@@ -50,7 +50,7 @@ public:
 	{
 	}
 
-	virtual ~RocketDataSource( void )
+	virtual ~RocketDataSource()
 	{
 		if ( data_source )
 		{
@@ -108,7 +108,7 @@ public:
 	}
 
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		if ( dirty_query )
 		{
@@ -201,7 +201,7 @@ public:
 	}
 
 protected:
-	void LayoutChildren( void )
+	void LayoutChildren()
 	{
 		dirty_layout = false;
 
@@ -243,7 +243,7 @@ protected:
 
 private:
 
-	void AddCancelbutton( void )
+	void AddCancelbutton()
 	{
 		init = true;
 		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );

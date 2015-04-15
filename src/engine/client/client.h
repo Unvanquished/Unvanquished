@@ -584,34 +584,34 @@ extern  cvar_t *cl_voip;
 // cl_main
 //
 
-void        CL_Init( void );
-void        CL_FlushMemory( void );
-void        CL_ShutdownAll( void );
+void        CL_Init();
+void        CL_FlushMemory();
+void        CL_ShutdownAll();
 void        CL_AddReliableCommand( const char *cmd );
 
 void        CL_RegisterButtonCommands( const char *cmdList );
 
-void        CL_StartHunkUsers( void );
+void        CL_StartHunkUsers();
 
-void        CL_Disconnect_f( void );
-void        CL_GetChallengePacket( void );
-void        CL_Vid_Restart_f( void );
-void        CL_Snd_Restart_f( void );
+void        CL_Disconnect_f();
+void        CL_GetChallengePacket();
+void        CL_Vid_Restart_f();
+void        CL_Snd_Restart_f();
 
-void        CL_NextDemo( void );
-void        CL_ReadDemoMessage( void );
-void        CL_StartDemoLoop( void );
+void        CL_NextDemo();
+void        CL_ReadDemoMessage();
+void        CL_StartDemoLoop();
 
-void        CL_InitDownloads( void );
-void        CL_NextDownload( void );
+void        CL_InitDownloads();
+void        CL_NextDownload();
 
 void        CL_GetPing( int n, char *buf, int buflen, int *pingtime );
 void        CL_GetPingInfo( int n, char *buf, int buflen );
 void        CL_ClearPing( int n );
-int         CL_GetPingQueueCount( void );
+int         CL_GetPingQueueCount();
 
-void        CL_ShutdownRef( void );
-bool    CL_InitRef( void );
+void        CL_ShutdownRef();
+bool    CL_InitRef();
 
 int         CL_ServerStatus( const char *serverAddress, char *serverStatusString, int maxLen );
 
@@ -620,8 +620,8 @@ void CL_Record( const char *name );
 //
 // cl_keys (for input usage)
 //
-int             Key_GetKeyNumber(void);
-unsigned int    Key_GetKeyTime(void);
+int             Key_GetKeyNumber();
+unsigned int    Key_GetKeyTime();
 
 //
 // cl_input
@@ -657,20 +657,20 @@ typedef enum
   NUM_BUTTONS = KB_BUTTONS + USERCMD_BUTTONS
 } kbuttons_t;
 
-void CL_ClearKeys( void );
-void CL_ClearCmdButtons( void );
+void CL_ClearKeys();
+void CL_ClearCmdButtons();
 
-void CL_InitInput( void );
-void CL_SendCmd( void );
-void CL_ClearState( void );
-void CL_ReadPackets( void );
+void CL_InitInput();
+void CL_SendCmd();
+void CL_ClearState();
+void CL_ReadPackets();
 
-void CL_WritePacket( void );
+void CL_WritePacket();
 
-void IN_Notebook( void );
-void IN_Help( void );
+void IN_Notebook();
+void IN_Help();
 
-void IN_PrepareKeyUp( void );
+void IN_PrepareKeyUp();
 
 //----(SA)
 
@@ -679,32 +679,32 @@ int      Key_StringToKeynum( const char *str );
 const char *Key_KeynumToString( int keynum );
 
 //cl_irc.c
-void     CL_IRCSetup( void );
-void     CL_InitIRC( void );
-void     CL_IRCInitiateShutdown( void );
-void     CL_IRCWaitShutdown( void );
-void     CL_IRCSay( void );
-bool CL_IRCIsConnected( void );
-bool CL_IRCIsRunning( void );
+void     CL_IRCSetup();
+void     CL_InitIRC();
+void     CL_IRCInitiateShutdown();
+void     CL_IRCWaitShutdown();
+void     CL_IRCSay();
+bool CL_IRCIsConnected();
+bool CL_IRCIsRunning();
 
 //
 // cl_parse.c
 //
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
-void       CL_Voip_f( void );
+void       CL_Voip_f();
 
 #endif
 
-void CL_SystemInfoChanged( void );
+void CL_SystemInfoChanged();
 void CL_ParseServerMessage( msg_t *msg );
 
 //====================================================================
 
 void     CL_ServerInfoPacket( netadr_t from, msg_t *msg );
-void     CL_LocalServers_f( void );
-void     CL_GlobalServers_f( void );
-void     CL_FavoriteServers_f( void );
-void     CL_Ping_f( void );
+void     CL_LocalServers_f();
+void     CL_GlobalServers_f();
+void     CL_FavoriteServers_f();
+void     CL_Ping_f();
 bool CL_UpdateVisiblePings_f( int source );
 
 //
@@ -790,32 +790,32 @@ extern console_t consoleState;
 
 void             Con_DrawCharacter( int cx, int line, int num );
 
-bool         Con_CheckResize( void );
-void             Con_Init( void );
-void             Con_Clear_f( void );
-void             Con_ToggleConsole_f( void );
-void             Con_OpenConsole_f( void );
+bool         Con_CheckResize();
+void             Con_Init();
+void             Con_Clear_f();
+void             Con_ToggleConsole_f();
+void             Con_OpenConsole_f();
 void             Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text );
-void             Con_DrawConsole( void );
-void             Con_RunConsole( void );
-void             Con_PageUp( void );
-void             Con_PageDown( void );
-void             Con_JumpUp( void );
+void             Con_DrawConsole();
+void             Con_RunConsole();
+void             Con_PageUp();
+void             Con_PageDown();
+void             Con_JumpUp();
 void             Con_ScrollUp( int lines );
 void             Con_ScrollDown( int lines );
-void             Con_ScrollToMarkerLine( void );
-void             Con_ScrollToTop( void );
-void             Con_ScrollToBottom( void );
-void             Con_Close( void );
+void             Con_ScrollToMarkerLine();
+void             Con_ScrollToTop();
+void             Con_ScrollToBottom();
+void             Con_Close();
 
-void             CL_LoadConsoleHistory( void );
-void             CL_SaveConsoleHistory( void );
+void             CL_LoadConsoleHistory();
+void             CL_SaveConsoleHistory();
 
 //
 // cl_scrn.c
 //
-void  SCR_Init( void );
-void  SCR_UpdateScreen( void );
+void  SCR_Init();
+void  SCR_UpdateScreen();
 
 int   SCR_GetBigStringWidth( const char *str );  // returns in virtual 640x480 coordinates
 
@@ -833,18 +833,18 @@ void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
 void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
 float SCR_ConsoleFontUnicharWidth( int ch );
-float SCR_ConsoleFontCharHeight( void );
-float SCR_ConsoleFontCharVPadding( void );
+float SCR_ConsoleFontCharHeight();
+float SCR_ConsoleFontCharVPadding();
 float SCR_ConsoleFontStringWidth( const char *s, int len );
 
 //
 // cl_cin.c
 //
 
-void     CL_PlayCinematic_f( void );
-void     SCR_DrawCinematic( void );
-void     SCR_RunCinematic( void );
-void     SCR_StopCinematic( void );
+void     CL_PlayCinematic_f();
+void     SCR_DrawCinematic();
+void     SCR_RunCinematic();
+void     SCR_StopCinematic();
 int      CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status CIN_StopCinematic( int handle );
 e_status CIN_RunCinematic( int handle );
@@ -852,10 +852,10 @@ void     CIN_DrawCinematic( int handle );
 void     CIN_SetExtents( int handle, int x, int y, int w, int h );
 void     CIN_SetLooping( int handle, bool loop );
 void     CIN_UploadCinematic( int handle );
-void     CIN_CloseAllVideos( void );
+void     CIN_CloseAllVideos();
 
 // yuv->rgb will be used for Theora(ogm)
-void     ROQ_GenYUVTables( void );
+void     ROQ_GenYUVTables();
 void     Frame_yuv_to_rgb24( const unsigned char *y, const unsigned char *u, const unsigned char *v,
                              int width, int height, int y_stride, int uv_stride,
                              int yWShift, int uvWShift, int yHShift, int uvHShift, unsigned int *output );
@@ -867,32 +867,32 @@ void     Frame_yuv_to_rgb24( const unsigned char *y, const unsigned char *u, con
 int           Cin_OGM_Init( const char *filename );
 int           Cin_OGM_Run( int time );
 unsigned char *Cin_OGM_GetOutput( int *outWidth, int *outHeight );
-void          Cin_OGM_Shutdown( void );
+void          Cin_OGM_Shutdown();
 
 //
 // cl_cgame.c
 //
-void     CL_InitCGame( void );
-void     CL_InitCGameCVars( void );
-void     CL_ShutdownCGame( void );
-void     CL_GameCommandHandler( void );
-bool CL_GameConsoleText( void );
-void     CL_CGameRendering( void );
-void     CL_SetCGameTime( void );
-void     CL_FirstSnapshot( void );
-void     CL_ShaderStateChanged( void );
+void     CL_InitCGame();
+void     CL_InitCGameCVars();
+void     CL_ShutdownCGame();
+void     CL_GameCommandHandler();
+bool CL_GameConsoleText();
+void     CL_CGameRendering();
+void     CL_SetCGameTime();
+void     CL_FirstSnapshot();
+void     CL_ShaderStateChanged();
 void     CL_CGameBinaryMessageReceived( const char *buf, int buflen, int serverTime );
 void     CL_OnTeamChanged( int newTeam );
 
 //
 // cl_ui.c
 //
-void CL_ShutdownUI( void );
-int  Key_GetCatcher( void );
+void CL_ShutdownUI();
+int  Key_GetCatcher();
 void Key_SetCatcher( int catcher );
-void UI_GameCommandHandler( void );
-void LAN_LoadCachedServers( void );
-void LAN_SaveServersToCache( void );
+void UI_GameCommandHandler();
+void LAN_LoadCachedServers();
+void LAN_SaveServersToCache();
 
 //
 // cl_net_chan.c
@@ -907,11 +907,11 @@ bool CL_Netchan_Process( netchan_t *chan, msg_t *msg );
 // cl_avi.c
 //
 bool CL_OpenAVIForWriting( const char *filename );
-void     CL_TakeVideoFrame( void );
+void     CL_TakeVideoFrame();
 void     CL_WriteAVIVideoFrame( const byte *imageBuffer, int size );
 void     CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size );
-bool CL_CloseAVI( void );
-bool CL_VideoRecording( void );
+bool CL_CloseAVI();
+bool CL_VideoRecording();
 
 // XreaL END
 
@@ -919,22 +919,22 @@ bool CL_VideoRecording( void );
 // cl_main.c
 //
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
-void CL_RequestMotd( void );
+void CL_RequestMotd();
 void CL_GetClipboardData( char *, int, clipboard_t );
 
 //
 // Rocket Functions
 //
-void Rocket_Init( void );
-void Rocket_Shutdown( void );
-void Rocket_Render( void );
-void Rocket_Update( void );
+void Rocket_Init();
+void Rocket_Shutdown();
+void Rocket_Render();
+void Rocket_Update();
 void Rocket_InjectMouseMotion( int x, int y );
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
 bool Rocket_GetEvent(std::string& cmdText);
-void Rocket_DeleteEvent( void );
+void Rocket_DeleteEvent();
 void Rocket_RegisterDataSource( const char *name );
 void Rocket_DSAddRow( const char *name, const char *table, const char *data );
 void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data );
@@ -962,13 +962,13 @@ void Rocket_LoadUnit( const char *path );
 void Rocket_AddUnitToHud( int weapon, const char *id );
 void Rocket_ShowHud( int weapon );
 void Rocket_ClearHud( int weapon );
-void Rocket_InitKeys( void );
+void Rocket_InitKeys();
 keyNum_t Rocket_ToQuake( int key );
 void Rocket_ProcessKeyInput( int key, bool down );
 void Rocket_ProcessTextInput( int key );
 void Rocket_MouseMove( int x, int y );
 void Rocket_AddTextElement( const char *text, const char *_class, float x, float y );
-void Rocket_ClearText( void );
+void Rocket_ClearText();
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs );
 void Rocket_ShowScoreboard( const char *name, bool show );
 void Rocket_SetDataSelectIndex( int index );

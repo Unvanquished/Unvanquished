@@ -251,7 +251,7 @@ typedef struct leafList_s
 #define WRAP_POINT_EPSILON 0.1
 
 cSurfaceCollide_t *CM_GeneratePatchCollide( int width, int height, vec3_t *points );
-void              CM_ClearLevelPatches( void );
+void              CM_ClearLevelPatches();
 
 // cm_trisoup.c
 
@@ -278,7 +278,7 @@ extern cPlane_t planes[];
 extern int numFacets;
 extern cFacet_t facets[];
 
-void     CM_ResetPlaneCounts( void );
+void     CM_ResetPlaneCounts();
 int      CM_FindPlane2( float plane[ 4 ], bool *flipped );
 int      CM_FindPlane( const float *p1, const float *p2, const float *p3 );
 int      CM_PointOnPlaneSide( float *p, int planeNum );

@@ -42,8 +42,8 @@ int VM::VM_API_VERSION = CGAME_API_VERSION;
 static IPC::CommandBufferClient cmdBuffer("cgame");
 
 void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState );
-void CG_RegisterCvars( void );
-void CG_Shutdown( void );
+void CG_RegisterCvars();
+void CG_Shutdown();
 
 void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
     int major = id >> 16;
@@ -152,7 +152,7 @@ void trap_SendClientCommand( const char *s )
 	VM::SendMsg<SendClientCommandMsg>(s);
 }
 
-void trap_UpdateScreen( void )
+void trap_UpdateScreen()
 {
 	VM::SendMsg<UpdateScreenMsg>();
 }
@@ -185,7 +185,7 @@ bool trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 	return res;
 }
 
-int trap_GetCurrentCmdNumber( void )
+int trap_GetCurrentCmdNumber()
 {
 	int res;
 	VM::SendMsg<GetCurrentCmdNumberMsg>(res);
@@ -258,7 +258,7 @@ void trap_notify_onTeamChange( int newTeam )
 	VM::SendMsg<NotifyTeamChangeMsg>(newTeam);
 }
 
-void trap_PrepareKeyUp( void )
+void trap_PrepareKeyUp()
 {
 	VM::SendMsg<PrepareKeyUpMsg>();
 }
@@ -341,7 +341,7 @@ void trap_S_StartBackgroundTrack( const char *intro, const char *loop )
 	cmdBuffer.SendMsg<Audio::StartBackgroundTrackMsg>(intro, loop);
 }
 
-void trap_S_StopBackgroundTrack( void )
+void trap_S_StopBackgroundTrack()
 {
 	cmdBuffer.SendMsg<Audio::StopBackgroundTrackMsg>();
 }
@@ -358,12 +358,12 @@ void trap_S_SetReverb( int slotNum, const char* name, float ratio )
 	cmdBuffer.SendMsg<Audio::SetReverbMsg>(slotNum, name, ratio);
 }
 
-void trap_S_BeginRegistration( void )
+void trap_S_BeginRegistration()
 {
 	cmdBuffer.SendMsg<Audio::BeginRegistrationMsg>();
 }
 
-void trap_S_EndRegistration( void )
+void trap_S_EndRegistration()
 {
 	cmdBuffer.SendMsg<Audio::EndRegistrationMsg>();
 }
@@ -433,7 +433,7 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 	VM::SendMsg<Render::RegisterFontMsg>(fontName, fallbackName, pointSize, *font);
 }
 
-void trap_R_ClearScene( void )
+void trap_R_ClearScene()
 {
 	cmdBuffer.SendMsg<Render::ClearSceneMsg>();
 }
@@ -492,7 +492,7 @@ void trap_R_SetClipRegion( const float *region )
 	cmdBuffer.SendMsg<Render::SetClipRegionMsg>(myregion);
 }
 
-void trap_R_ResetClipRegion( void )
+void trap_R_ResetClipRegion()
 {
 	cmdBuffer.SendMsg<Render::ResetClipRegionMsg>();
 }
@@ -622,7 +622,7 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 	return n;
 }
 
-qhandle_t trap_RegisterVisTest( void )
+qhandle_t trap_RegisterVisTest()
 {
 	int handle;
 	VM::SendMsg<Render::RegisterVisTestMsg>(handle);
@@ -655,7 +655,7 @@ void trap_SetColorGrading( int slot, qhandle_t hShader )
 
 // All keys
 
-int trap_Key_GetCatcher( void )
+int trap_Key_GetCatcher()
 {
 	int result;
 	VM::SendMsg<Key::GetCatcherMsg>(result);
@@ -736,18 +736,18 @@ int trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int ma
 	return res;
 }
 
-void trap_LAN_ResetServerStatus( void )
+void trap_LAN_ResetServerStatus()
 {
 	VM::SendMsg<LAN::ResetServerStatusMsg>();
 }
 // All rocket
 
-void trap_Rocket_Init( void )
+void trap_Rocket_Init()
 {
 	VM::SendMsg<Rocket::InitMsg>();
 }
 
-void trap_Rocket_Shutdown( void )
+void trap_Rocket_Shutdown()
 {
 	VM::SendMsg<Rocket::ShutdownMsg>();
 }
@@ -774,7 +774,7 @@ bool trap_Rocket_GetEvent(std::string& cmdText)
 	return result;
 }
 
-void trap_Rocket_DeleteEvent( void )
+void trap_Rocket_DeleteEvent()
 {
 	VM::SendMsg<Rocket::DeleteEventMsg>();
 }
@@ -908,7 +908,7 @@ void trap_Rocket_AddTextElement( const char *text, const char *Class, float x, f
 	VM::SendMsg<Rocket::AddTextMsg>(text, Class, x, y);
 }
 
-void trap_Rocket_ClearText( void )
+void trap_Rocket_ClearText()
 {
 	VM::SendMsg<Rocket::ClearTextMsg>();
 }

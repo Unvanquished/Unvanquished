@@ -37,15 +37,15 @@ Maryland 20850 USA.
 #include "engine/renderer/tr_types.h"
 
 void         CM_LoadMap(Str::StringRef name);
-void         CM_ClearMap( void );
+void         CM_ClearMap();
 
 clipHandle_t CM_InlineModel( int index );  // 0 = world, 1 + are bmodels
 clipHandle_t CM_TempBoxModel( const vec3_t mins, const vec3_t maxs, int capsule );
 
 void         CM_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs );
 
-int          CM_NumInlineModels( void );
-char         *CM_EntityString( void );
+int          CM_NumInlineModels();
+char         *CM_EntityString();
 
 // returns an ORed contents mask
 int          CM_PointContents( const vec3_t p, clipHandle_t model );

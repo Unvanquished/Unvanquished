@@ -187,7 +187,7 @@ G_AllocateNode
 Allocate memory for a mrNode_t
 ===============
 */
-static mrNode_t *G_AllocateNode( void )
+static mrNode_t *G_AllocateNode()
 {
 	mrNode_t *node = (mrNode_t*) BG_Alloc( sizeof( mrNode_t ) );
 
@@ -713,7 +713,7 @@ G_PrintRotations
 Print the parsed map rotations
 ===============
 */
-void G_PrintRotations( void )
+void G_PrintRotations()
 {
 	int i, j;
 	int size = sizeof( mapRotations );
@@ -859,7 +859,7 @@ G_ClearRotationStack
 Clear the rotation stack
 ===============
 */
-void G_ClearRotationStack( void )
+void G_ClearRotationStack()
 {
 	trap_Cvar_Set( "g_mapRotationStack", "" );
 	trap_Cvar_Update( &g_mapRotationStack );
@@ -889,7 +889,7 @@ G_PopRotationStack
 Pop the rotation stack
 ===============
 */
-static int G_PopRotationStack( void )
+static int G_PopRotationStack()
 {
 	int  value = -1;
 	char text[ MAX_CVAR_VALUE_STRING ];
@@ -947,7 +947,7 @@ G_CurrentNodeIndexArray
 Fill a static array with the current node of each rotation
 ===============
 */
-static int *G_CurrentNodeIndexArray( void )
+static int *G_CurrentNodeIndexArray()
 {
 	static int currentNode[ MAX_MAP_ROTATIONS ];
 	int        i = 0;
@@ -1406,7 +1406,7 @@ G_StopMapRotation
 Stop the current map rotation
 ===============
 */
-void G_StopMapRotation( void )
+void G_StopMapRotation()
 {
 	trap_Cvar_Set( "g_currentMapRotation", va( "%d", NOT_ROTATING ) );
 	trap_Cvar_Update( &g_currentMapRotation );
@@ -1419,7 +1419,7 @@ G_MapRotationActive
 Test if any map rotation is currently active
 ===============
 */
-bool G_MapRotationActive( void )
+bool G_MapRotationActive()
 {
 	return ( g_currentMapRotation.integer > NOT_ROTATING && g_currentMapRotation.integer <= MAX_MAP_ROTATIONS );
 }
@@ -1431,7 +1431,7 @@ G_InitMapRotations
 Load and initialise the map rotations
 ===============
 */
-void G_InitMapRotations( void )
+void G_InitMapRotations()
 {
 	const char *fileName = "maprotation.cfg";
 
@@ -1484,7 +1484,7 @@ G_ShutdownMapRotations
 Free up memory used by map rotations
 ===============
 */
-void G_ShutdownMapRotations( void )
+void G_ShutdownMapRotations()
 {
 	int i, j;
 

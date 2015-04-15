@@ -297,12 +297,12 @@ public:
 // }
 
 
-void Rocket_Rocket_f( void )
+void Rocket_Rocket_f()
 {
 	Rocket_DocumentAction( Cmd_Argv(1), Cmd_Argv(2) );
 }
 
-void Rocket_RocketDebug_f( void )
+void Rocket_RocketDebug_f()
 {
 	static bool init = false;
 
@@ -344,7 +344,7 @@ Rocket::Core::Context *hudContext = nullptr;
 
 cvar_t *cg_draw2D;
 
-void Rocket_Init( void )
+void Rocket_Init()
 {
 	Rocket::Core::SetFileInterface( &fileInterface );
 	Rocket::Core::SetSystemInterface( &systemInterface );
@@ -407,7 +407,7 @@ void Rocket_Init( void )
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
 
-void Rocket_Shutdown( void )
+void Rocket_Shutdown()
 {
 	extern std::vector<RocketDataFormatter*> dataFormatterList;
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
@@ -453,7 +453,7 @@ void Rocket_Shutdown( void )
 	Cmd_RemoveCommand( "rocketDebug" );
 }
 
-void Rocket_Render( void )
+void Rocket_Render()
 {
 	if ( hudContext && cg_draw2D->integer )
 	{
@@ -468,7 +468,7 @@ void Rocket_Render( void )
 
 }
 
-void Rocket_Update( void )
+void Rocket_Update()
 {
 	// Mouse move is necessary to ensure the menus update, so fake one
 	Rocket_MouseMove( 0, 0 );

@@ -388,7 +388,7 @@ void R_BindFBO( FBO_t *fbo )
 R_BindNullFBO
 ============
 */
-void R_BindNullFBO( void )
+void R_BindNullFBO()
 {
 	if ( r_logFile->integer )
 	{
@@ -408,7 +408,7 @@ void R_BindNullFBO( void )
 R_InitFBOs
 ============
 */
-void R_InitFBOs( void )
+void R_InitFBOs()
 {
 	int i;
 	int width, height;
@@ -608,7 +608,7 @@ void R_InitFBOs( void )
 R_ShutdownFBOs
 ============
 */
-void R_ShutdownFBOs( void )
+void R_ShutdownFBOs()
 {
 	int   i, j;
 	FBO_t *fbo;
@@ -656,7 +656,7 @@ void R_ShutdownFBOs( void )
 R_FBOList_f
 ============
 */
-void R_FBOList_f( void )
+void R_FBOList_f()
 {
 	int   i;
 	FBO_t *fbo;

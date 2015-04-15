@@ -84,7 +84,7 @@ bool CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 	return true;
 }
 
-int CL_GetCurrentCmdNumber( void )
+int CL_GetCurrentCmdNumber()
 {
 	return cl.cmdNumber;
 }
@@ -348,7 +348,7 @@ bool CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 CL_ShutdownCGame
 ====================
 */
-void CL_ShutdownCGame( void )
+void CL_ShutdownCGame()
 {
 	cls.keyCatchers &= ~KEYCATCH_CGAME;
 	cls.cgameStarted = false;
@@ -372,7 +372,7 @@ void CL_ShutdownCGame( void )
  * LAN_LoadCachedServers
  * ====================
  */
-void LAN_LoadCachedServers( void )
+void LAN_LoadCachedServers()
 {
 	int          size;
 	fileHandle_t fileIn;
@@ -406,7 +406,7 @@ void LAN_LoadCachedServers( void )
  * LAN_SaveServersToCache
  * ====================
  */
-void LAN_SaveServersToCache( void )
+void LAN_SaveServersToCache()
 {
 	int          size;
 	fileHandle_t fileOut;
@@ -828,7 +828,7 @@ void Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
  * Key_GetCatcher
  * ====================
  */
-int Key_GetCatcher( void )
+int Key_GetCatcher()
 {
 	return cls.keyCatchers;
 }
@@ -866,7 +866,7 @@ CL_UpdateLevelHunkUsage
   things should only account for a small variation (hopefully)
 ====================
 */
-void CL_UpdateLevelHunkUsage( void )
+void CL_UpdateLevelHunkUsage()
 {
 	int  handle;
 	const char *memlistfile = "hunkusage.dat";
@@ -986,7 +986,7 @@ CL_InitCGame
 Should only by called by CL_StartHunkUsers
 ====================
 */
-void CL_InitCGame( void )
+void CL_InitCGame()
 {
 	const char *info;
 	const char *mapname;
@@ -1029,7 +1029,7 @@ void CL_InitCGame( void )
 	Key_ClearStates();
 }
 
-void CL_InitCGameCVars( void )
+void CL_InitCGameCVars()
 {/* TODO I don't understand that
 	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
 
@@ -1048,7 +1048,7 @@ void CL_InitCGameCVars( void )
 CL_CGameRendering
 =====================
 */
-void CL_CGameRendering( void )
+void CL_CGameRendering()
 {
 	cgvm.CGameDrawActiveFrame(cl.serverTime, clc.demoplaying);
 }
@@ -1075,7 +1075,7 @@ or bursted delayed packets.
 
 #define RESET_TIME 500
 
-void CL_AdjustTimeDelta( void )
+void CL_AdjustTimeDelta()
 {
 //	int             resetTime;
 	int newDelta;
@@ -1159,7 +1159,7 @@ void CL_AdjustTimeDelta( void )
 CL_FirstSnapshot
 ==================
 */
-void CL_FirstSnapshot( void )
+void CL_FirstSnapshot()
 {
 	// ignore snapshots that don't have entities
 	if ( cl.snap.snapFlags & SNAPFLAG_NOT_ACTIVE )
@@ -1241,7 +1241,7 @@ void CL_FirstSnapshot( void )
 CL_SetCGameTime
 ==================
 */
-void CL_SetCGameTime( void )
+void CL_SetCGameTime()
 {
 	// getting a valid frame message ends the connection process
 	if ( cls.state != CA_ACTIVE )

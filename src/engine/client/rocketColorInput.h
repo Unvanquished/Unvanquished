@@ -112,7 +112,7 @@ public:
 	}
 
 private:
-	void UpdateValue( void )
+	void UpdateValue()
 	{
 		Rocket::Core::String string = "^7";
 

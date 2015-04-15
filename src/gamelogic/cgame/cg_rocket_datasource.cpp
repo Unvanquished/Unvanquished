@@ -76,7 +76,7 @@ static void CG_Rocket_SetServerListServer( const char *table, int index )
 	CG_Rocket_BuildServerInfo();
 }
 #define MAX_SERVERSTATUS_LINES 4096
-void CG_Rocket_BuildServerInfo( void )
+void CG_Rocket_BuildServerInfo()
 {
 	static char serverInfoText[ MAX_SERVERSTATUS_LINES ];
 	char buf[ MAX_INFO_STRING ];
@@ -2092,7 +2092,7 @@ int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table )
 	return -1;
 }
 
-void CG_Rocket_RegisterDataSources( void )
+void CG_Rocket_RegisterDataSources()
 {
 	int i;
 
@@ -2108,7 +2108,7 @@ void CG_Rocket_RegisterDataSources( void )
 	}
 }
 
-void CG_Rocket_CleanUpDataSources( void )
+void CG_Rocket_CleanUpDataSources()
 {
 	int i;
 

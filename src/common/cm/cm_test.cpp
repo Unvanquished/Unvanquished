@@ -362,7 +362,7 @@ CM_FloodAreaConnections
 
 ====================
 */
-void CM_FloodAreaConnections( void )
+void CM_FloodAreaConnections()
 {
 	int     i;
 	cArea_t *area;

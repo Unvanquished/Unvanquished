@@ -323,7 +323,7 @@ RE_ClearDecals()
 clears decals from the world and entities
 */
 
-void RE_ClearDecals( void )
+void RE_ClearDecals()
 {
 	int i, j;
 
@@ -918,7 +918,7 @@ R_CullDecalProjectors()
 frustum culls decal projector list
 */
 
-void R_CullDecalProjectors( void )
+void R_CullDecalProjectors()
 {
 	int              i, numDecalProjectors, decalBits;
 	decalProjector_t *dp;

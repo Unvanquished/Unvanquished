@@ -84,7 +84,7 @@ void            PM_AddEvent( int newEvent );
 bool        PM_SlideMove( bool gravity );
 void            PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal );
 bool        PM_StepSlideMove( bool gravity, bool predictive );
-bool        PM_PredictStepMove( void );
+bool        PM_PredictStepMove();
 
 //==================================================================
 #endif /* BG_LOCAL_H_ */

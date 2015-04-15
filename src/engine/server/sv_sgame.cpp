@@ -312,7 +312,7 @@ SV_ShutdownGameProgs
 Called every time a map changes
 ===============
 */
-void SV_ShutdownGameProgs( void )
+void SV_ShutdownGameProgs()
 {
 	if ( !gvm.IsActive() )
 	{

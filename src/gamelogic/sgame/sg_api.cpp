@@ -356,7 +356,7 @@ void trap_QuoteString(const char *str, char *buffer, int size)
 	Q_strncpyz(buffer, Cmd::Escape(str).c_str(), size);
 }
 
-int trap_BotAllocateClient( void )
+int trap_BotAllocateClient()
 {
 	int res;
 	VM::SendMsg<BotAllocateClientMsg>(res);
@@ -384,7 +384,7 @@ bool trap_BotSetupNav(const botClass_t *botClass, qhandle_t *navHandle)
 	return res;
 }
 
-void trap_BotShutdownNav(void)
+void trap_BotShutdownNav()
 {
 	VM::SendMsg<BotNavShutdownMsg>();
 }
@@ -465,7 +465,7 @@ void trap_BotRemoveObstacle(qhandle_t handle)
 	VM::SendMsg<BotRemoveObstacleMsg>(handle);
 }
 
-void trap_BotUpdateObstacles(void)
+void trap_BotUpdateObstacles()
 {
 	VM::SendMsg<BotUpdateObstaclesMsg>();
 }

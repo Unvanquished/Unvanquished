@@ -404,13 +404,13 @@ void       SV_FinalCommand( char *cmd, bool disconnect );  // ydnar: added disco
 void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) PRINTF_LIKE(2);
 void       SV_PrintTranslatedText( const char *text, bool broadcast, bool plural );
 
-void       SV_AddOperatorCommands( void );
-void       SV_RemoveOperatorCommands( void );
+void       SV_AddOperatorCommands();
+void       SV_RemoveOperatorCommands();
 
-void       SV_NET_Config( void );
+void       SV_NET_Config();
 
 void       SV_MasterHeartbeat( const char *hbname );
-void       SV_MasterShutdown( void );
+void       SV_MasterShutdown();
 void       SV_MasterGameStat( const char *data );
 
 //bani - bugtraq 12534
@@ -420,9 +420,9 @@ bool   SV_VerifyChallenge( const char *challenge );
 // sv_init.c
 //
 void SV_SetConfigstringNoUpdate( int index, const char *val );
-void SV_UpdateConfigStrings( void );
+void SV_UpdateConfigStrings();
 void SV_SetConfigstring( int index, const char *val );
-void SV_UpdateConfigStrings( void );
+void SV_UpdateConfigStrings();
 void SV_GetConfigstring( int index, char *buffer, int bufferSize );
 void SV_SetConfigstringRestrictions( int index, const clientList_t *clientList );
 
@@ -430,9 +430,9 @@ void SV_SetUserinfo( int index, const char *val );
 void SV_GetUserinfo( int index, char *buffer, int bufferSize );
 void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
-void SV_CreateBaseline( void );
+void SV_CreateBaseline();
 
-void SV_ChangeMaxClients( void );
+void SV_ChangeMaxClients();
 void SV_SpawnServer( const char *server );
 
 //
@@ -462,7 +462,7 @@ void SV_WriteVoipToClient( client_t *cl, msg_t *msg );
 //
 // sv_ccmds.c
 //
-void     SV_Heartbeat_f( void );
+void     SV_Heartbeat_f();
 
 //
 // sv_snapshot.c
@@ -470,7 +470,7 @@ void     SV_Heartbeat_f( void );
 void SV_AddServerCommand( client_t *client, const char *cmd );
 void SV_UpdateServerCommandsToClient( client_t *client, msg_t *msg );
 void SV_SendMessageToClient( msg_t *msg, client_t *client );
-void SV_SendClientMessages( void );
+void SV_SendClientMessages();
 void SV_SendClientSnapshot( client_t *client );
 
 //bani
@@ -489,20 +489,20 @@ playerState_t  *SV_GameClientNum( int num );
 
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
-std::unique_ptr<GameVM> SV_CreateGameVM( void );
+std::unique_ptr<GameVM> SV_CreateGameVM();
 void           SV_InitGameProgs(Str::StringRef mapname);
-void           SV_ShutdownGameProgs( void );
+void           SV_ShutdownGameProgs();
 void           SV_RestartGameProgs(Str::StringRef mapname);
 bool       SV_inPVS( const vec3_t p1, const vec3_t p2 );
 bool       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );
 void           SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime );
-void           SV_GameCommandHandler( void );
+void           SV_GameCommandHandler();
 
 //
 // sv_bot.c
 //
-int  SV_BotAllocateClient( void );
+int  SV_BotAllocateClient();
 void SV_BotFreeClient( int clientNum );
 bool SV_IsBot( const client_t* client );
 
@@ -522,6 +522,6 @@ void     SV_Netchan_FreeQueue( client_t *client );
 #define DLNOTIFY_ALL      ( DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN )
 
 
-void SV_GeoIP_Init( void );
+void SV_GeoIP_Init();
 
 #endif /* SERVER_H_ */

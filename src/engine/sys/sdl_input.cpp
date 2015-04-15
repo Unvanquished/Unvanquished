@@ -65,7 +65,7 @@ static cvar_t *in_xbox360ControllerDebug = nullptr;
 
 static SDL_Window *window = nullptr;
 
-void *IN_GetWindow( void )
+void *IN_GetWindow()
 {
 	return window;
 }
@@ -574,7 +574,7 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, bool down )
 IN_GobbleMotionEvents
 ===============
 */
-static void IN_GobbleMotionEvents( void )
+static void IN_GobbleMotionEvents()
 {
 	SDL_Event dummy[ 1 ];
 
@@ -589,7 +589,7 @@ static void IN_GobbleMotionEvents( void )
 IN_ActivateMouse
 ===============
 */
-static void IN_ActivateMouse( void )
+static void IN_ActivateMouse()
 {
 	if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
@@ -701,7 +701,7 @@ struct
 IN_InitJoystick
 ===============
 */
-static void IN_InitJoystick( void )
+static void IN_InitJoystick()
 {
 	int i = 0;
 	int total = 0;
@@ -791,7 +791,7 @@ static void IN_InitJoystick( void )
 IN_ShutdownJoystick
 ===============
 */
-static void IN_ShutdownJoystick( void )
+static void IN_ShutdownJoystick()
 {
 	if ( stick )
 	{
@@ -807,7 +807,7 @@ static void IN_ShutdownJoystick( void )
 IN_JoyMove
 ===============
 */
-static void IN_JoyMove( void )
+static void IN_JoyMove()
 {
 	bool     joy_pressed[ ARRAY_LEN( joy_keys ) ];
 	unsigned int axes = 0;
@@ -1141,7 +1141,7 @@ static int IN_XBox360AxisToButton( int controllerAxis, int key, float expectedSt
 IN_Xbox360ControllerMove
 ===============
 */
-static void IN_Xbox360ControllerMove( void )
+static void IN_Xbox360ControllerMove()
 {
 	bool     joy_pressed[ ARRAY_LEN( joy_keys ) ];
 	unsigned int axes = 0;
@@ -1544,7 +1544,7 @@ IN_Frame
 */
 static bool dropInput = false;
 
-void IN_Frame( void )
+void IN_Frame()
 {
 	bool loading;
 
@@ -1588,12 +1588,12 @@ void IN_Frame( void )
 	IN_ProcessEvents( dropInput );
 }
 
-void IN_DropInputsForFrame( void )
+void IN_DropInputsForFrame()
 {
 	dropInput = true;
 }
 
-void IN_FrameEnd( void )
+void IN_FrameEnd()
 {
 	dropInput = false;
 }
@@ -1646,7 +1646,7 @@ void IN_Init( void *windowData )
 IN_Shutdown
 ===============
 */
-void IN_Shutdown( void )
+void IN_Shutdown()
 {
 	SDL_StopTextInput();
 	IN_DeactivateMouse( true );
@@ -1662,7 +1662,7 @@ void IN_Shutdown( void )
 IN_Restart
 ===============
 */
-void IN_Restart( void )
+void IN_Restart()
 {
 	IN_ShutdownJoystick();
 	IN_Init( window );

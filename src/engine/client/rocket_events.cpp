@@ -65,7 +65,7 @@ bool Rocket_GetEvent(std::string& cmdText)
 	return false;
 }
 
-void Rocket_DeleteEvent( void )
+void Rocket_DeleteEvent()
 {
 	RocketEvent_t *event = eventQueue.front();
 	eventQueue.pop();

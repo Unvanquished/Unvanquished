@@ -718,7 +718,7 @@ typedef enum
   // demos or vid_restarts
 
   CG_SHUTDOWN,
-//  void (*CG_Shutdown)( void );
+//  void (*CG_Shutdown)();
   // oportunity to flush and close any open files
 
   CG_DRAW_ACTIVE_FRAME,
@@ -727,7 +727,7 @@ typedef enum
   // If demoPlayback is set, local movement prediction will not be enabled
 
   CG_CROSSHAIR_PLAYER,
-//  int (*CG_CrosshairPlayer)( void );
+//  int (*CG_CrosshairPlayer)();
 
   CG_KEY_EVENT,
 //  void    (*CG_KeyEvent)( int key, bool down );

@@ -176,7 +176,7 @@ Flush stdin, I suspect some terminals are sending a LOT of shit
 FIXME relevant?
 ==================
 */
-static void CON_FlushIn( void )
+static void CON_FlushIn()
 {
 	char key;
 
@@ -194,7 +194,7 @@ send "\b \b"
 (FIXME there may be a way to find out if '\b' alone would work though)
 ==================
 */
-static void CON_Back( void )
+static void CON_Back()
 {
 	char key;
 //	size_t size;
@@ -215,7 +215,7 @@ Clear the display of the line currently edited
 bring cursor back to beginning of line
 ==================
 */
-static void CON_Hide( void )
+static void CON_Hide()
 {
 	if ( ttycon_on )
 	{
@@ -242,7 +242,7 @@ Show the current line
 FIXME need to position the cursor if needed?
 ==================
 */
-static void CON_Show( void )
+static void CON_Show()
 {
 	if ( ttycon_on )
 	{
@@ -266,7 +266,7 @@ CON_Shutdown_TTY
 Never exit without calling this, or your terminal will be left in a pretty bad state
 ==================
 */
-void CON_Shutdown_TTY( void )
+void CON_Shutdown_TTY()
 {
 	if ( ttycon_on )
 	{
@@ -288,7 +288,7 @@ set attributes if user did CTRL+Z and then does fg again.
 
 void CON_SigCont( int signum )
 {
-	void CON_Init_TTY( void );
+	void CON_Init_TTY();
 
 	CON_Init_TTY();
 }
@@ -300,7 +300,7 @@ CON_Init_TTY
 Initialize the console input (tty mode if possible)
 ==================
 */
-void CON_Init_TTY( void )
+void CON_Init_TTY()
 {
 	struct termios tc;
 
@@ -357,7 +357,7 @@ void CON_Init_TTY( void )
 CON_Input_TTY
 ==================
 */
-char *CON_Input_TTY( void )
+char *CON_Input_TTY()
 {
 	// we use this when sending back commands
 	static char text[ MAX_EDIT_LINE ];
@@ -518,21 +518,21 @@ void CON_Print_TTY( const char *msg )
 
 /* fallbacks for con_curses.c */
 #ifndef USE_CURSES
-void CON_Init( void )
+void CON_Init()
 {
 	CON_Init_TTY();
 }
 
-void CON_Shutdown( void )
+void CON_Shutdown()
 {
 	CON_Shutdown_TTY();
 }
 
-void CON_LogDump( void )
+void CON_LogDump()
 {
 }
 
-char *CON_Input( void )
+char *CON_Input()
 {
 	return CON_Input_TTY();
 }
@@ -542,7 +542,7 @@ void CON_Print( const char *message )
 	CON_Print_TTY( message );
 }
 
-void CON_Clear_f( void )
+void CON_Clear_f()
 {
 }
 #endif

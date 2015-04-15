@@ -2916,7 +2916,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 	return true;
 }
 
-static void CG_PlayerShadowEnd( void )
+static void CG_PlayerShadowEnd()
 {
 	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
@@ -3992,7 +3992,7 @@ centity_t *CG_GetLocation( vec3_t origin )
 	return best;
 }
 
-centity_t *CG_GetPlayerLocation( void )
+centity_t *CG_GetPlayerLocation()
 {
 	vec3_t    origin;
 
@@ -4000,7 +4000,7 @@ centity_t *CG_GetPlayerLocation( void )
 	return CG_GetLocation( origin );
 }
 
-void CG_InitClasses( void )
+void CG_InitClasses()
 {
 	int i;
 

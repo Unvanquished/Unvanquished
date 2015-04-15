@@ -65,7 +65,7 @@ void G_BotListNames( gentity_t *ent )
 	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:\n" ) ), TEAM_HUMANS, "^5*" );
 }
 
-bool G_BotClearNames( void )
+bool G_BotClearNames()
 {
 	int i;
 
@@ -313,7 +313,7 @@ void G_BotDel( int clientNum )
 	trap_DropClient( clientNum, "disconnected" );
 }
 
-void G_BotDelAllBots( void )
+void G_BotDelAllBots()
 {
 	int i;
 
@@ -496,7 +496,7 @@ void G_BotIntermissionThink( gclient_t *client )
 	client->readyToExit = true;
 }
 
-void G_BotInit( void )
+void G_BotInit()
 {
 	G_BotNavInit( );
 	if ( treeList.maxTrees == 0 )

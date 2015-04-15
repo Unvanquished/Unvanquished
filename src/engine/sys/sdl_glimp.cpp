@@ -65,7 +65,7 @@ SMP acceleration
 static SDL_mutex  *smpMutex = nullptr;
 static SDL_cond   *renderCommandsEvent = nullptr;
 static SDL_cond   *renderCompletedEvent = nullptr;
-static void ( *renderThreadFunction )( void ) = nullptr;
+static void ( *renderThreadFunction )() = nullptr;
 static SDL_Thread *renderThread = nullptr;
 
 /*
@@ -92,7 +92,7 @@ static int GLimp_RenderThreadWrapper( void *arg )
 GLimp_SpawnRenderThread
 ===============
 */
-bool GLimp_SpawnRenderThread( void ( *function )( void ) )
+bool GLimp_SpawnRenderThread( void ( *function )() )
 {
 	static bool warned = false;
 
@@ -153,7 +153,7 @@ bool GLimp_SpawnRenderThread( void ( *function )( void ) )
 GLimp_ShutdownRenderThread
 ===============
 */
-void GLimp_ShutdownRenderThread( void )
+void GLimp_ShutdownRenderThread()
 {
 	if ( renderThread != nullptr )
 	{
@@ -192,7 +192,7 @@ static volatile bool smpDataReady;
 GLimp_RendererSleep
 ===============
 */
-void           *GLimp_RendererSleep( void )
+void           *GLimp_RendererSleep()
 {
 	void *data = nullptr;
 
@@ -225,7 +225,7 @@ void           *GLimp_RendererSleep( void )
 GLimp_FrontEndSleep
 ===============
 */
-void GLimp_FrontEndSleep( void )
+void GLimp_FrontEndSleep()
 {
 	SDL_LockMutex( smpMutex );
 	{
@@ -242,7 +242,7 @@ void GLimp_FrontEndSleep( void )
 GLimp_SyncRenderThread
 ===============
 */
-void GLimp_SyncRenderThread( void )
+void GLimp_SyncRenderThread()
 {
 	GLimp_FrontEndSleep();
 
@@ -277,26 +277,26 @@ void GLimp_RenderThreadWrapper( void *arg )
 {
 }
 
-bool GLimp_SpawnRenderThread( void ( *function )( void ) )
+bool GLimp_SpawnRenderThread( void ( *function )() )
 {
 	ri.Printf( PRINT_WARNING, "ERROR: SMP support was disabled at compile time\n" );
 	return false;
 }
 
-void GLimp_ShutdownRenderThread( void )
+void GLimp_ShutdownRenderThread()
 {
 }
 
-void *GLimp_RendererSleep( void )
+void *GLimp_RendererSleep()
 {
 	return nullptr;
 }
 
-void GLimp_FrontEndSleep( void )
+void GLimp_FrontEndSleep()
 {
 }
 
-void GLimp_SyncRenderThread( void )
+void GLimp_SyncRenderThread()
 {
 }
 
@@ -327,7 +327,7 @@ cvar_t                     *r_sdlDriver;
 GLimp_Shutdown
 ===============
 */
-void GLimp_Shutdown( void )
+void GLimp_Shutdown()
 {
 	ri.Printf( PRINT_DEVELOPER, "Shutting down OpenGL subsystem\n" );
 
@@ -361,7 +361,7 @@ void GLimp_Shutdown( void )
 	Com_Memset( &glState, 0, sizeof( glState ) );
 }
 
-static void GLimp_Minimize( void )
+static void GLimp_Minimize()
 {
 	SDL_MinimizeWindow( window );
 }
@@ -403,7 +403,7 @@ static int GLimp_CompareModes( const void *a, const void *b )
 GLimp_DetectAvailableModes
 ===============
 */
-static void GLimp_DetectAvailableModes( void )
+static void GLimp_DetectAvailableModes()
 {
 	char     buf[ MAX_STRING_CHARS ] = { 0 };
 	SDL_Rect modes[ 128 ];
@@ -1052,7 +1052,7 @@ static bool LoadExtWithCvar( bool hasExt, const char* name, bool cvarValue )
 
 #define LOAD_EXTENSION_WITH_CVAR(ext, cvar) LoadExtWithCvar(GLEW_##ext, #ext, cvar->value)
 
-static void GLimp_InitExtensions( void )
+static void GLimp_InitExtensions()
 {
 	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
 
@@ -1252,7 +1252,7 @@ This routine is responsible for initializing the OS specific portions
 of OpenGL
 ===============
 */
-bool GLimp_Init( void )
+bool GLimp_Init()
 {
 	glConfig.driverType = GLDRV_ICD;
 
@@ -1470,7 +1470,7 @@ success:
 	return true;
 }
 
-void GLimp_ReleaseGL( void )
+void GLimp_ReleaseGL()
 {
 }
 
@@ -1481,7 +1481,7 @@ GLimp_EndFrame
 Responsible for doing a swapbuffers
 ===============
 */
-void GLimp_EndFrame( void )
+void GLimp_EndFrame()
 {
 	// don't flip if drawing to front buffer
 	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
@@ -1498,7 +1498,7 @@ Responsible for handling cvars that change the window or GL state
 Should only be called by the main thread
 ===============
 */
-void GLimp_HandleCvars( void )
+void GLimp_HandleCvars()
 {
 	if ( r_swapInterval->modified )
 	{
@@ -1541,7 +1541,7 @@ void GLimp_HandleCvars( void )
 	}
 }
 
-void GLimp_AcquireGL( void )
+void GLimp_AcquireGL()
 {
 }
 

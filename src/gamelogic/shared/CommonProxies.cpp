@@ -221,7 +221,7 @@ void trap_RemoveCommand(const char *cmdName) {
     Cmd::RemoveCommand(cmdName);
 }
 
-int trap_Argc(void) {
+int trap_Argc() {
     if (argStack.empty()) {
         return 0;
     }
@@ -471,7 +471,7 @@ namespace Log {
 // Common functions for all syscalls
 
 static Sys::SteadyClock::time_point baseTime;
-int trap_Milliseconds(void)
+int trap_Milliseconds()
 {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();
 }
@@ -589,7 +589,7 @@ bool trap_FS_LoadPak( const char *pak, const char* prefix )
 	return res;
 }
 
-void trap_FS_LoadAllMapMetadata( void )
+void trap_FS_LoadAllMapMetadata()
 {
 	VM::SendMsg<VM::FSLoadMapMetadataMsg>();
 }

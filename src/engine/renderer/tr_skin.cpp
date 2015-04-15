@@ -298,7 +298,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 R_InitSkins
 ===============
 */
-void R_InitSkins( void )
+void R_InitSkins()
 {
 	skin_t *skin;
 
@@ -332,7 +332,7 @@ skin_t         *R_GetSkinByHandle( qhandle_t hSkin )
 R_SkinList_f
 ===============
 */
-void R_SkinList_f( void )
+void R_SkinList_f()
 {
 	int    i, j;
 	skin_t *skin;

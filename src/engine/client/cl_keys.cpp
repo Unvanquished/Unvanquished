@@ -738,7 +738,7 @@ void Console_Key( int key )
 
 //============================================================================
 
-bool Key_GetOverstrikeMode( void )
+bool Key_GetOverstrikeMode()
 {
 	return key_overstrikeMode;
 }
@@ -1046,7 +1046,7 @@ int Key_GetKey( const char *binding, int team )
 Key_Unbind_f
 ===================
 */
-void Key_Unbind_f( void )
+void Key_Unbind_f()
 {
 	int b = Cmd_Argc();
 	int team = -1;
@@ -1083,7 +1083,7 @@ void Key_Unbind_f( void )
 Key_Unbindall_f
 ===================
 */
-void Key_Unbindall_f( void )
+void Key_Unbindall_f()
 {
 	int i;
 
@@ -1098,7 +1098,7 @@ void Key_Unbindall_f( void )
 Key_Bind_f
 ===================
 */
-void Key_Bind_f( void )
+void Key_Bind_f()
 {
 	int        c, b;
 	const char *key;
@@ -1194,7 +1194,7 @@ void Key_Bind_f( void )
 Key_EditBind_f
 ===================
 */
-void Key_EditBind_f( void )
+void Key_EditBind_f()
 {
 	std::u32string buf;
 	int            b;
@@ -1288,7 +1288,7 @@ Key_Bindlist_f
 
 ============
 */
-void Key_Bindlist_f( void )
+void Key_Bindlist_f()
 {
 	int i, team;
 
@@ -1330,7 +1330,7 @@ void Key_Bindlist_f( void )
 Key_SetKeyData
 ============
 */
-void Key_SetKeyData_f(void)
+void Key_SetKeyData_f()
 {
 	if ( atoi( Cmd_Argv( 1 ) ) == plusCommand.check )
 	{
@@ -1344,12 +1344,12 @@ void Key_SetKeyData_f(void)
 	}
 }
 
-int Key_GetKeyNumber(void)
+int Key_GetKeyNumber()
 {
 	return plusCommand.valid ? plusCommand.key : -1;
 }
 
-unsigned int Key_GetKeyTime(void)
+unsigned int Key_GetKeyTime()
 {
 	return plusCommand.valid ? plusCommand.time : 0;
 }
@@ -1646,7 +1646,7 @@ Executes the command for the first matching modifier set
 
 ===============
 */
-void Key_ModCase_f( void )
+void Key_ModCase_f()
 {
 	int argc = Cmd_Argc();
 	int index = 0;
@@ -1723,7 +1723,7 @@ found:
 CL_InitKeyCommands
 ===================
 */
-void CL_InitKeyCommands( void )
+void CL_InitKeyCommands()
 {
 	// register our functions
 	Cmd_AddCommand( "bind", Key_Bind_f );
@@ -2020,7 +2020,7 @@ void CL_CharEvent( int c )
 Key_ClearStates
 ===================
 */
-void Key_ClearStates( void )
+void Key_ClearStates()
 {
 	int i;
 

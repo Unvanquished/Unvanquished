@@ -953,7 +953,7 @@ G_CensorString
 static char censors[ 20000 ];
 static int  numcensors;
 
-void G_LoadCensors( void )
+void G_LoadCensors()
 {
 	char         *text_p, *token;
 	char         text[ 20000 ];
@@ -4173,7 +4173,7 @@ static const mapLogResult_t maplog_table[] = {
 	{ '\0', "" }
 };
 
-void G_MapLog_NewMap( void )
+void G_MapLog_NewMap()
 {
 	char maplog[ MAX_CVAR_VALUE_STRING ];
 	char map[ MAX_QPATH ];

@@ -41,7 +41,7 @@ Maryland 20850 USA.
 SV_BotAllocateClient
 ==================
 */
-int SV_BotAllocateClient( void )
+int SV_BotAllocateClient()
 {
 	int i;
 	for (i = std::max(1, sv_privateClients->integer); i < sv_maxclients->integer; i++) {

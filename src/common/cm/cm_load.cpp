@@ -54,8 +54,8 @@ cmodel_t  box_model;
 cplane_t  *box_planes;
 cbrush_t  *box_brush;
 
-void      CM_InitBoxHull( void );
-void      CM_FloodAreaConnections( void );
+void      CM_InitBoxHull();
+void      CM_FloodAreaConnections();
 
 Cvar::Cvar<bool> cm_forceTriangles(VM_STRING_PREFIX "cm_forceTriangles", "Convert all patches into triangles?", Cvar::CHEAT | Cvar::ROM, false);
 Log::Logger cmLog(VM_STRING_PREFIX "common.cm");
@@ -70,7 +70,7 @@ void* CM_Alloc( int size )
     return alloc;
 }
 
-void CM_FreeAll( void )
+void CM_FreeAll()
 {
     for (auto alloc : allocations)
     {
@@ -564,7 +564,7 @@ static bool CMod_AddEdgeToBrush( const vec3_t p0, const vec3_t p1, cbrushedge_t 
 CMod_CreateBrushSideWindings
 =================
 */
-static void CMod_CreateBrushSideWindings( void )
+static void CMod_CreateBrushSideWindings()
 {
 	int          i, j, k;
 	winding_t    *w;
@@ -978,7 +978,7 @@ void CM_LoadMap(Str::StringRef name)
 CM_ClearMap
 ==================
 */
-void CM_ClearMap( void )
+void CM_ClearMap()
 {
 	Com_Memset( &cm, 0, sizeof( cm ) );
 	CM_ClearLevelPatches();
@@ -1026,12 +1026,12 @@ clipHandle_t CM_InlineModel( int index )
 	return index;
 }
 
-int CM_NumInlineModels( void )
+int CM_NumInlineModels()
 {
 	return cm.numSubModels;
 }
 
-char           *CM_EntityString( void )
+char           *CM_EntityString()
 {
 	return cm.entityString;
 }
@@ -1066,7 +1066,7 @@ Set up the planes and nodes so that the six floats of a bounding box
 can just be stored out and get a proper clipping hull structure.
 ===================
 */
-void CM_InitBoxHull( void )
+void CM_InitBoxHull()
 {
 	int          i;
 	int          side;

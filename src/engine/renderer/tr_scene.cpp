@@ -55,7 +55,7 @@ int r_firstSceneVisTest;
 R_ToggleSmpFrame
 ====================
 */
-void R_ToggleSmpFrame( void )
+void R_ToggleSmpFrame()
 {
 	if ( r_smp->integer )
 	{
@@ -103,7 +103,7 @@ void R_ToggleSmpFrame( void )
 RE_ClearScene
 ====================
 */
-void RE_ClearScene( void )
+void RE_ClearScene()
 {
 	r_firstSceneLight = r_numLights;
 	r_firstSceneEntity = r_numEntities;
@@ -126,7 +126,7 @@ R_AddPolygonSurfaces
 Adds all the scene's polys into this view's drawsurf list
 =====================
 */
-void R_AddPolygonSurfaces( void )
+void R_AddPolygonSurfaces()
 {
 	int       i;
 	shader_t  *sh;
@@ -153,7 +153,7 @@ R_AddPolygonSurfaces
 Adds all the scene's polys into this view's drawsurf list
 =====================
 */
-void R_AddPolygonBufferSurfaces( void )
+void R_AddPolygonBufferSurfaces()
 {
 	int             i;
 	shader_t        *sh;
@@ -427,7 +427,7 @@ void RE_AddRefLightToScene( const refLight_t *l )
 R_AddWorldLightsToScene
 =====================
 */
-static void R_AddWorldLightsToScene( void )
+static void R_AddWorldLightsToScene()
 {
 	int          i;
 	trRefLight_t *light;
@@ -725,7 +725,7 @@ R_UpdateVisTests
 Update the vis tests with the results
 ================
 */
-void R_UpdateVisTests( void )
+void R_UpdateVisTests()
 {
 	int i;
 	int numVisTests = backEndData[ tr.smpFrame ]->numVisTests;
@@ -762,7 +762,7 @@ of a 3D-point in the scene. The engine will try not to stall the GPU,
 so the result may be available delayed.
 ================
 */
-qhandle_t RE_RegisterVisTest( void )
+qhandle_t RE_RegisterVisTest()
 {
 	int hTest;
 	visTest_t *test;
@@ -867,7 +867,7 @@ void RE_UnregisterVisTest( qhandle_t hTest )
 	tr.numVisTests--;
 }
 
-void R_InitVisTests( void )
+void R_InitVisTests()
 {
 	int hTest;
 
@@ -884,7 +884,7 @@ void R_InitVisTests( void )
 	}
 }
 
-void R_ShutdownVisTests( void )
+void R_ShutdownVisTests()
 {
 	int hTest;
 

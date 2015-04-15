@@ -86,11 +86,11 @@ typedef struct
 
 	// EndRegistration will draw a tiny polygon with each texture, forcing
 	// them to be loaded into card memory
-	void ( *EndRegistration )( void );
+	void ( *EndRegistration )();
 
 	// a scene is built up by calls to R_ClearScene and the various R_Add functions.
 	// Nothing is drawn until R_RenderScene is called.
-	void ( *ClearScene )( void );
+	void ( *ClearScene )();
 	void ( *AddRefEntityToScene )( const refEntity_t *re );
 
 	int ( *LightForPoint )( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
@@ -118,7 +118,7 @@ typedef struct
 	                          bool dirty );
 	void ( *UploadCinematic )( int w, int h, int cols, int rows, const byte *data, int client, bool dirty );
 
-	void ( *BeginFrame )( void );
+	void ( *BeginFrame )();
 
 	// if the pointers are not nullptr, timing info will be returned
 	void ( *EndFrame )( int *frontEndMsec, int *backEndMsec );
@@ -128,7 +128,7 @@ typedef struct
 
 	void ( *ProjectDecal )( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color,
 	                        int lifeTime, int fadeTime );
-	void ( *ClearDecals )( void );
+	void ( *ClearDecals )();
 
 	int ( *LerpTag )( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 	void ( *ModelBounds )( qhandle_t model, vec3_t mins, vec3_t maxs );
@@ -148,7 +148,7 @@ typedef struct
 	bool( *LoadDynamicShader )( const char *shadername, const char *shadertext );
 
 	void ( *RenderToTexture )( int textureid, int x, int y, int w, int h );
-	void ( *Finish )( void );
+	void ( *Finish )();
 
 	// XreaL BEGIN
 	void ( *TakeVideoFrame )( int h, int w, byte *captureBuffer, byte *encodeBuffer, bool motionJpeg );
@@ -201,13 +201,13 @@ typedef struct
 
 	// milliseconds should only be used for profiling, never
 	// for anything game related.  Get time from the refdef
-	int ( *Milliseconds )( void );
+	int ( *Milliseconds )();
 
 	int ( *RealTime )( qtime_t *qtime );
 
 	// stack based memory allocation for per-level things that
 	// won't be freed
-	void ( *Hunk_Clear )( void );
+	void ( *Hunk_Clear )();
 #ifdef HUNK_DEBUG
 	void            *( *Hunk_AllocDebug )( int size, ha_pref pref, const char *label, const char *file, int line );
 #else
@@ -219,15 +219,15 @@ typedef struct
 	// dynamic memory allocator for things that need to be freed
 	void            *( *Z_Malloc )( int bytes );
 	void ( *Free )( void *buf );
-	void ( *Tag_Free )( void );
+	void ( *Tag_Free )();
 
 	cvar_t          *( *Cvar_Get )( const char *name, const char *value, int flags );
 	void ( *Cvar_Set )( const char *name, const char *value );
 
-	void ( *Cmd_AddCommand )( const char *name, void ( *cmd )( void ) );
+	void ( *Cmd_AddCommand )( const char *name, void ( *cmd )() );
 	void ( *Cmd_RemoveCommand )( const char *name );
 
-	int ( *Cmd_Argc )( void );
+	int ( *Cmd_Argc )();
 	char            *( *Cmd_Argv )( int i );
 
 	const char *( *Cmd_QuoteString )( const char *text );
@@ -259,14 +259,14 @@ typedef struct
 	e_status( *CIN_RunCinematic )( int handle );
 
 	// XreaL BEGIN
-	bool( *CL_VideoRecording )( void );
+	bool( *CL_VideoRecording )();
 	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );
 	// XreaL END
 
 	// input event handling
 	void ( *IN_Init )( void *windowData );
-	void ( *IN_Shutdown )( void );
-	void ( *IN_Restart )( void );
+	void ( *IN_Shutdown )();
+	void ( *IN_Restart )();
 	void ( *Bot_DrawDebugMesh )( BotDebugInterface_t *in );
 } refimport_t;
 
