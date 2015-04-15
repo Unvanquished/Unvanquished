@@ -539,7 +539,7 @@ namespace Beacon //this should eventually become a class
 		if( existingTag )
 			RefreshTag( existingTag );
 
-		return existingTag;
+		return existingTag != nullptr;
 	}
 
 	/**
