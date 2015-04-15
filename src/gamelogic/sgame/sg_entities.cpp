@@ -45,8 +45,8 @@ basic gentity lifecycle handling
 
 void G_InitGentity( gentity_t *entity )
 {
-	entity->inuse = qtrue;
-	entity->enabled = qtrue;
+	entity->inuse = true;
+	entity->enabled = true;
 	entity->classname = "noclass";
 	entity->s.number = entity - g_entities;
 	entity->r.ownerNum = ENTITYNUM_NONE;
@@ -168,7 +168,7 @@ void G_FreeEntity( gentity_t *entity )
 	memset( entity, 0, sizeof( *entity ) );
 	entity->classname = "freent";
 	entity->freetime = level.time;
-	entity->inuse = qfalse;
+	entity->inuse = false;
 }
 
 
@@ -191,7 +191,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 
 	newEntity->classname = "tempEntity";
 	newEntity->eventTime = level.time;
-	newEntity->freeAfterEvent = qtrue;
+	newEntity->freeAfterEvent = true;
 
 	VectorCopy( origin, snapped );
 	SnapVector( snapped );  // save network bandwidth
@@ -287,7 +287,7 @@ or NULL if there are no further matching gentities.
 Set NULL as previous gentity to start the iteration from the beginning
 =============
 */
-gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, qboolean skipdisabled, size_t fieldofs, const char *match )
+gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, bool skipdisabled, size_t fieldofs, const char *match )
 {
 	char *fieldString;
 
@@ -330,12 +330,12 @@ gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, qboolean
 
 gentity_t *G_IterateEntities( gentity_t *entity )
 {
-	return G_IterateEntities( entity, NULL, qtrue, 0, NULL );
+	return G_IterateEntities( entity, NULL, true, 0, NULL );
 }
 
 gentity_t *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname )
 {
-	return G_IterateEntities( entity, classname, qtrue, 0, NULL );
+	return G_IterateEntities( entity, classname, true, 0, NULL );
 }
 
 /*
@@ -354,7 +354,7 @@ if we are not searching for player entities it is recommended to start searching
 */
 gentity_t *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const char *match )
 {
-	return G_IterateEntities( entity, NULL, qtrue, fieldofs, match );
+	return G_IterateEntities( entity, NULL, true, fieldofs, match );
 }
 
 // from quakestyle.telefragged.com
@@ -441,7 +441,7 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	gentity_t *choices[ MAX_GENTITIES - 2 - MAX_CLIENTS ];
 
 	//collects the targets
-	while( ( foundEntity = G_IterateEntities( foundEntity, classname, qtrue, fieldofs, match ) ) != NULL )
+	while( ( foundEntity = G_IterateEntities( foundEntity, classname, true, fieldofs, match ) ) != NULL )
 		choices[ totalChoiceCount++ ] = foundEntity;
 
 	if ( !totalChoiceCount )
@@ -765,13 +765,13 @@ void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 	}
 
 	entity->nextAct = 0;
-	entity->active = qtrue;
+	entity->active = true;
 	/*
 	 * for now we use the callIn activator if its set or fallback to the old solution, but we should
 	 * //TODO remove the old solution of activator setting from this
 	 */
 	entity->act(entity, call->caller, call->caller->activator ? call->caller->activator : entity->activator );
-	entity->active = qfalse;
+	entity->active = false;
 }
 
 /**
@@ -836,14 +836,14 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 		case ECA_ENABLE:
 			if(!targetedEntity->enabled) //only fire an event if we weren't already enabled
 			{
-				targetedEntity->enabled = qtrue;
+				targetedEntity->enabled = true;
 				G_EventFireEntity( targetedEntity, call->activator, ON_ENABLE );
 			}
 			break;
 		case ECA_DISABLE:
 			if(targetedEntity->enabled) //only fire an event if we weren't already disabled
 			{
-				targetedEntity->enabled = qfalse;
+				targetedEntity->enabled = false;
 				G_EventFireEntity( targetedEntity, call->activator, ON_DISABLE );
 			}
 			break;
@@ -898,16 +898,16 @@ gentity testing/querying
 =================================================================================
 */
 
-qboolean G_MatchesName( gentity_t *entity, const char* name )
+bool G_MatchesName( gentity_t *entity, const char* name )
 {
 	int nameIndex;
 
 	for (nameIndex = 0; entity->names[nameIndex]; ++nameIndex)
 	{
 		if (!Q_stricmp(name, entity->names[nameIndex]))
-			return qtrue;
+			return true;
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -917,7 +917,7 @@ G_Visible
 Test for a LOS between two entities
 ===============
 */
-qboolean G_IsVisible( gentity_t *start, gentity_t *end, int contents )
+bool G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 {
 	trace_t trace;
 

@@ -35,7 +35,7 @@ int         trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
 #ifdef BUILD_CGAME
-sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed );
+sfxHandle_t trap_S_RegisterSound( const char *sample, bool compressed );
 
 #endif
 
@@ -148,12 +148,12 @@ static voice_t *BG_VoiceList( void )
 BG_VoiceParseTrack
 ============
 */
-static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
+static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 {
 	pc_token_t token;
-	qboolean   found = qfalse;
-	qboolean   foundText = qfalse;
-	qboolean   foundToken = qfalse;
+	bool   found = false;
+	bool   foundText = false;
+	bool   foundToken = false;
 
 	foundToken = trap_Parse_ReadToken( handle, &token );
 
@@ -163,7 +163,7 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 		{
 			if ( foundText )
 			{
-				return qtrue;
+				return true;
 			}
 			else
 			{
@@ -174,7 +174,7 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 		else if ( !Q_stricmp( token.string, "team" ) )
 		{
 			foundToken = trap_Parse_ReadToken( handle, &token );
-			found = qfalse;
+			found = false;
 
 			while ( foundToken )
 			{
@@ -196,7 +196,7 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 					break;
 				}
 
-				found = qtrue;
+				found = true;
 				foundToken = trap_Parse_ReadToken( handle, &token );
 			}
 
@@ -209,10 +209,10 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 		}
 		else if ( !Q_stricmp( token.string, "class" ) )
 		{
-			qboolean negate = qfalse;
+			bool negate = false;
 
 			foundToken = trap_Parse_ReadToken( handle, &token );
-			found = qfalse;
+			found = false;
 
 			while ( foundToken )
 			{
@@ -238,7 +238,7 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				}
 				else if ( !Q_stricmp( token.string, "-" ) ) // this must be outside quotation marks
 				{
-					negate = qtrue;
+					negate = true;
 					modelno = 0;
 				}
 				else
@@ -261,7 +261,7 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				{
 					if ( negate )
 					{
-						negate = qfalse;
+						negate = false;
 						voiceTrack->pClass &= ~modelno;
 					}
 					else
@@ -274,7 +274,7 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				        break; // possibly the next keyword
 				}
 
-				found = qtrue;
+				found = true;
 				foundToken = trap_Parse_ReadToken( handle, &token );
 			}
 
@@ -301,7 +301,7 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				                    "missing \"text\" value" );
 			}
 
-			foundText = qtrue;
+			foundText = true;
 
 			if ( strlen( token.string ) >= MAX_SAY_TEXT )
 			{
@@ -339,7 +339,7 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -350,7 +350,7 @@ BG_VoiceParseCommand
 static voiceTrack_t *BG_VoiceParseCommand( int handle )
 {
 	pc_token_t   token;
-	qboolean     parsingTrack = qfalse;
+	bool     parsingTrack = false;
 	voiceTrack_t *voiceTracks = NULL;
 	voiceTrack_t *top = NULL;
 
@@ -366,7 +366,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 			if ( token.string[ 0 ] == '{' )
 			{
 				BG_VoiceParseTrack( handle, voiceTracks );
-				parsingTrack = qfalse;
+				parsingTrack = false;
 				continue;
 			}
 			else
@@ -400,7 +400,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 		else
 		{
 #ifdef BUILD_CGAME
-			voiceTracks->track = trap_S_RegisterSound( token.string, qfalse );
+			voiceTracks->track = trap_S_RegisterSound( token.string, false );
 			voiceTracks->duration = 0; // FIXME: Was always zero...
 #endif
 		}
@@ -411,7 +411,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 		voiceTracks->enthusiasm = 0;
 		voiceTracks->text = NULL;
 		voiceTracks->next = NULL;
-		parsingTrack = qtrue;
+		parsingTrack = true;
 	}
 
 	return NULL;
@@ -427,7 +427,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 	voiceCmd_t *voiceCmds = NULL;
 	voiceCmd_t *top = NULL;
 	pc_token_t token;
-	qboolean   parsingCmd = qfalse;
+	bool   parsingCmd = false;
 	int        handle;
 
 	handle = trap_Parse_LoadSource( va( "voice/%s.voice", name ) );
@@ -444,7 +444,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 			if ( token.string[ 0 ] == '{' )
 			{
 				voiceCmds->tracks = BG_VoiceParseCommand( handle );
-				parsingCmd = qfalse;
+				parsingCmd = false;
 				continue;
 			}
 			else
@@ -482,7 +482,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 
 		Q_strncpyz( voiceCmds->cmd, token.string, sizeof( voiceCmds->cmd ) );
 		voiceCmds->next = NULL;
-		parsingCmd = qtrue;
+		parsingCmd = true;
 	}
 
 	trap_Parse_FreeSource( handle );

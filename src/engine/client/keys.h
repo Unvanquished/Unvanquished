@@ -41,12 +41,12 @@ Maryland 20850 USA.
 
 typedef struct
 {
-	qboolean down;
+	bool down;
 	int      repeats; // if > 1, it is autorepeating
 	char     *binding[ MAX_TEAMS ];
 } qkey_t;
 
-extern qboolean key_overstrikeMode;
+extern bool key_overstrikeMode;
 extern qkey_t   keys[ MAX_KEYS ];
 extern int      bindTeam;
 
@@ -54,20 +54,20 @@ extern int      bindTeam;
 
 void            Field_KeyDownEvent(Util::LineEditData& edit, int key );
 void            Field_CharEvent(Util::LineEditData& edit, int c );
-void            Field_Draw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha );
-void            Field_BigDraw(Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape );
+void            Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape, float alpha );
+void            Field_BigDraw(Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape );
 
 extern Console::Field  g_consoleField;
 extern int      anykeydown;
-extern qboolean chat_irc;
+extern bool chat_irc;
 
 void            Key_WriteBindings( fileHandle_t f );
 void            Key_SetBinding( int keynum, int team, const char *binding );
 void            Key_GetBindingByString( const char *binding, int team, int *key1, int *key2 );
 const char      *Key_GetBinding( int keynum, int team );
-qboolean        Key_IsDown( int keynum );
-qboolean        Key_GetOverstrikeMode( void );
-void            Key_SetOverstrikeMode( qboolean state );
+bool        Key_IsDown( int keynum );
+bool        Key_GetOverstrikeMode( void );
+void            Key_SetOverstrikeMode( bool state );
 void            Key_ClearStates( void );
 int             Key_GetKey( const char *binding, int team );
 

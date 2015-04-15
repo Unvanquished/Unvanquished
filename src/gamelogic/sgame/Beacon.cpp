@@ -598,7 +598,7 @@ namespace Beacon //this should eventually become a class
 	 * @param team           Team the caller belongs to.
 	 * @param refreshTagged  Refresh all already tagged entities's tags and exclude these entities from further consideration.
 	 */
-	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, qboolean refreshTagged )
+	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged )
 	{
 		tagtrace_ent_t list[ MAX_GENTITIES ];
 		int i, count = 0;
@@ -668,11 +668,11 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Tags an entity.
 	 */
-	void Tag( gentity_t *ent, team_t team, qboolean permanent )
+	void Tag( gentity_t *ent, team_t team, bool permanent )
 	{
 		int data;
 		vec3_t origin, mins, maxs;
-		qboolean dead, player;
+		bool dead, player;
 		gentity_t *beacon, **attachment;
 		team_t targetTeam;
 
@@ -694,14 +694,14 @@ namespace Beacon //this should eventually become a class
 				targetTeam = ent->buildableTeam;
 				data       = ent->s.modelindex;
 				dead       = ( ent->health <= 0 );
-				player     = qfalse;
+				player     = false;
 				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
 				break;
 
 			case ET_PLAYER:
 				targetTeam = (team_t)ent->client->pers.team;
 				dead       = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
-				player     = qtrue;
+				player     = true;
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
 
 				// Set beacon data to class (aliens) or weapon (humans).

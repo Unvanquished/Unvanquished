@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "qcommon/q_unicode.h"
 
-qboolean scr_initialized; // ready to draw
+bool scr_initialized; // ready to draw
 
 /*
 ================
@@ -283,12 +283,12 @@ Coordinates are at 640 by 480 virtual resolution
 ==================
 */
 
-void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape )
+void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, bool forceColor, bool noColorEscape )
 {
 	vec4_t     color;
 	const char *s;
 	int        xx;
-	qboolean   noColour = qfalse;
+	bool   noColour = false;
 
 	// draw the drop shadow
 	color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
@@ -358,12 +358,12 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			}
 			else
 			{
-				noColour = qtrue;
+				noColour = true;
 			}
 		}
 		else
 		{
-			noColour = qfalse;
+			noColour = false;
 		}
 
 		ch = Q_UTF8_CodePoint( s );
@@ -375,18 +375,18 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	re.SetColor( NULL );
 }
 
-void SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape )
+void SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape )
 {
 	float color[ 4 ];
 
 	color[ 0 ] = color[ 1 ] = color[ 2 ] = 1.0;
 	color[ 3 ] = alpha;
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, qfalse, noColorEscape );
+	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, false, noColorEscape );
 }
 
-void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape )
+void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, bool noColorEscape )
 {
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, qtrue, noColorEscape );
+	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, true, noColorEscape );
 }
 
 /*
@@ -399,12 +399,12 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape )
+void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape )
 {
 	vec4_t     color;
 	const char *s;
 	float      xx;
-	qboolean   noColour = qfalse;
+	bool   noColour = false;
 
 	// draw the colored text
 	s = string;
@@ -446,12 +446,12 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 			}
 			else
 			{
-				noColour = qtrue;
+				noColour = true;
 			}
 		}
 		else
 		{
-			noColour = qfalse;
+			noColour = false;
 		}
 
 		ch = Q_UTF8_CodePoint( s );
@@ -575,7 +575,7 @@ void SCR_DrawVoipMeter( void )
 	buffer[ i ] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[ 7 ], qtrue, qfalse );
+	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[ 7 ], true, false );
 }
 
 /*
@@ -624,27 +624,27 @@ void SCR_DrawVoipSender( void )
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[ 7 ], true, true );
 		}
 	}
 #endif
@@ -660,7 +660,7 @@ SCR_Init
 */
 void SCR_Init( void )
 {
-	scr_initialized = qtrue;
+	scr_initialized = true;
 }
 
 //=======================================================
@@ -732,7 +732,7 @@ void SCR_DrawScreenField( void )
 
 void SCR_DrawConsoleAndPointer( void )
 {
-	extern qboolean mouseActive; // see sdl_input.c
+	extern bool mouseActive; // see sdl_input.c
 
 	// console draws next
 	Con_DrawConsole();

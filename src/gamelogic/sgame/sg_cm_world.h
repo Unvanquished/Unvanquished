@@ -89,13 +89,13 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 
 void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type );
 
-qboolean G_CM_inPVS( const vec3_t p1, const vec3_t p2 );
+bool G_CM_inPVS( const vec3_t p1, const vec3_t p2 );
 
-qboolean G_CM_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );
+bool G_CM_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );
 
-void G_CM_AdjustAreaPortalState( gentity_t *ent, qboolean open );
+void G_CM_AdjustAreaPortalState( gentity_t *ent, bool open );
 
-qboolean G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *gEnt, traceType_t type );
+bool G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *gEnt, traceType_t type );
 
 void G_CM_SetBrushModel( gentity_t *ent, const char *name );
 

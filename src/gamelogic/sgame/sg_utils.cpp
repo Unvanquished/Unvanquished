@@ -96,7 +96,7 @@ G_FindConfigstringIndex
 
 ================
 */
-static int G_FindConfigstringIndex( const char *name, int start, int max, qboolean create )
+static int G_FindConfigstringIndex( const char *name, int start, int max, bool create )
 {
 	int  i;
 	char s[ MAX_STRING_CHARS ];
@@ -138,22 +138,22 @@ static int G_FindConfigstringIndex( const char *name, int start, int max, qboole
 
 int G_ParticleSystemIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_PARTICLE_SYSTEMS, MAX_GAME_PARTICLE_SYSTEMS, qtrue );
+	return G_FindConfigstringIndex( name, CS_PARTICLE_SYSTEMS, MAX_GAME_PARTICLE_SYSTEMS, true );
 }
 
 int G_ShaderIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_SHADERS, MAX_GAME_SHADERS, qtrue );
+	return G_FindConfigstringIndex( name, CS_SHADERS, MAX_GAME_SHADERS, true );
 }
 
 int G_ModelIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_MODELS, MAX_MODELS, qtrue );
+	return G_FindConfigstringIndex( name, CS_MODELS, MAX_MODELS, true );
 }
 
 int G_SoundIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_SOUNDS, MAX_SOUNDS, qtrue );
+	return G_FindConfigstringIndex( name, CS_SOUNDS, MAX_SOUNDS, true );
 }
 
 /**
@@ -164,17 +164,17 @@ int G_SoundIndex( const char *name )
  */
 int G_GradingTextureIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES+1, MAX_GRADING_TEXTURES-1, qtrue );
+	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES+1, MAX_GRADING_TEXTURES-1, true );
 }
 
 int G_ReverbEffectIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_REVERB_EFFECTS+1, MAX_REVERB_EFFECTS-1, qtrue );
+	return G_FindConfigstringIndex( name, CS_REVERB_EFFECTS+1, MAX_REVERB_EFFECTS-1, true );
 }
 
 int G_LocationIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_LOCATIONS, MAX_LOCATIONS, qtrue );
+	return G_FindConfigstringIndex( name, CS_LOCATIONS, MAX_LOCATIONS, true );
 }
 
 /*
@@ -233,7 +233,7 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	G_SetClientViewAngle( player, angles );
 
 	// save results of pmove
-	BG_PlayerStateToEntityState( &player->client->ps, &player->s, qtrue );
+	BG_PlayerStateToEntityState( &player->client->ps, &player->s, true );
 
 	// use the precise origin for linking
 	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
@@ -444,21 +444,21 @@ void G_Sound( gentity_t *ent, int channel, int soundIndex )
 G_ClientIsLagging
 =============
 */
-qboolean G_ClientIsLagging( gclient_t *client )
+bool G_ClientIsLagging( gclient_t *client )
 {
 	if ( client )
 	{
 		if ( client->ps.ping >= 999 )
 		{
-			return qtrue;
+			return true;
 		}
 		else
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qfalse; //is a non-existant client lagging? woooo zen
+	return false; //is a non-existant client lagging? woooo zen
 }
 
 //==============================================================================
@@ -554,7 +554,7 @@ static const char *addr4parse( const char *str, addr_t *addr )
 static const char *addr6parse( const char *str, addr_t *addr )
 {
 	int      i;
-	qboolean seen = qfalse;
+	bool seen = false;
 
 	/* keep track of the parts before and after the ::
 	   it's either this or even uglier hacks */
@@ -620,7 +620,7 @@ static const char *addr6parse( const char *str, addr_t *addr )
 					break;
 				}
 
-				seen = qtrue;
+				seen = true;
 				i++;
 			}
 			else if ( i == 0 ) // starts with : but not ::
@@ -661,7 +661,7 @@ static const char *addr6parse( const char *str, addr_t *addr )
 	return str + i;
 }
 
-qboolean G_AddressParse( const char *str, addr_t *addr )
+bool G_AddressParse( const char *str, addr_t *addr )
 {
 	const char *p;
 	int        max;
@@ -678,14 +678,14 @@ qboolean G_AddressParse( const char *str, addr_t *addr )
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 
 	Q_strncpyz( addr->str, str, sizeof( addr->str ) );
 
 	if ( !p )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( *p == '/' )
@@ -701,13 +701,13 @@ qboolean G_AddressParse( const char *str, addr_t *addr )
 	{
 		if ( *p )
 		{
-			return qfalse;
+			return false;
 		}
 
 		addr->mask = max;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -717,13 +717,13 @@ G_AddressCompare
 Based largely on NET_CompareBaseAdrMask from ioq3 revision 1557
 ===============
 */
-qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
+bool G_AddressCompare( const addr_t *a, const addr_t *b )
 {
 	int i, netmask;
 
 	if ( a->type != b->type )
 	{
-		return qfalse;
+		return false;
 	}
 
 	netmask = a->mask;
@@ -747,7 +747,7 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 	{
 		if ( a->addr[ i ] != b->addr[ i ] )
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
@@ -757,7 +757,7 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 		return ( a->addr[ i ] & netmask ) == ( b->addr[ i ] & netmask );
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -852,7 +852,7 @@ void G_FireThink( gentity_t *self )
 	// damage close players
 	if ( self->nextBurnSplashDamage < level.time )
 	{
-		qboolean hit;
+		bool hit;
 
 		hit = G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_SPLDAMAGE,
 		                               BURN_SPLDAMAGE_RADIUS, self, MOD_BURN, TEAM_NONE );
@@ -893,7 +893,7 @@ void G_FireThink( gentity_t *self )
 
 			switch ( self->s.eType )
 			{
-				case ET_BUILDABLE: self->onFire = qfalse; break;
+				case ET_BUILDABLE: self->onFire = false; break;
 				case ET_FIRE:      G_FreeEntity( self );  break;
 				default:                                  break;
 			}
@@ -1011,13 +1011,13 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	return fire;
 }
 
-qboolean G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase )
+bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase )
 {
 	trace_t trace;
 
 	if ( !from || !to )
 	{
-		return qfalse;
+		return false;
 	}
 
 	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, NULL, NULL, to->s.origin,
@@ -1030,7 +1030,7 @@ qboolean G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bo
 /**
  * @return Wheter a shot from the source's origin towards the target's origin would hit the target.
  */
-qboolean G_LineOfSight( const gentity_t *from, const gentity_t *to )
+bool G_LineOfSight( const gentity_t *from, const gentity_t *to )
 {
 	return G_LineOfSight( from, to, MASK_SHOT, false );
 }
@@ -1039,7 +1039,7 @@ qboolean G_LineOfSight( const gentity_t *from, const gentity_t *to )
  * @return Wheter a shot from the source's trajectory base towards the target's origin would hit the
  *         target.
  */
-qboolean G_LineOfFire( const gentity_t *from, const gentity_t *to )
+bool G_LineOfFire( const gentity_t *from, const gentity_t *to )
 {
 	return G_LineOfSight( from, to, MASK_SHOT, true );
 }
@@ -1048,7 +1048,7 @@ qboolean G_LineOfFire( const gentity_t *from, const gentity_t *to )
  * @brief This version of line of sight only considers map geometry, including movers.
  * @return Whether a line from one point to the other would intersect the world.
  */
-qboolean G_LineOfSight( const vec3_t point1, const vec3_t point2 )
+bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 {
 	trace_t trace;
 

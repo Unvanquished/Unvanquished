@@ -34,7 +34,7 @@ The return values are used in various sequences and selectors to change the exec
 ======================
 */
 
-qboolean isBinaryOp( AIOpType_t op )
+bool isBinaryOp( AIOpType_t op )
 {
 	switch ( op )
 	{
@@ -46,12 +46,12 @@ qboolean isBinaryOp( AIOpType_t op )
 		case OP_NEQUAL:
 		case OP_AND:
 		case OP_OR:
-			return qtrue;
-		default: return qfalse;
+			return true;
+		default: return false;
 	}
 }
 
-qboolean isUnaryOp( AIOpType_t op )
+bool isUnaryOp( AIOpType_t op )
 {
 	return op == OP_NOT;
 }
@@ -186,17 +186,17 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 	return ret;
 }
 
-static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
+static bool NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 {
 	int i;
 	for ( i = 0; i < self->botMind->numRunningNodes; i++ )
 	{
 		if ( self->botMind->runningNodes[ i ] == node )
 		{
-			return qtrue;
+			return true;
 		}
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -322,7 +322,7 @@ AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 	return status;
 }
 
-qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
+bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
 
 double EvalFunc( gentity_t *self, AIExpType_t *exp )
 {
@@ -351,7 +351,7 @@ double EvalValue( gentity_t *self, AIExpType_t *exp )
 	return AIUnBoxDouble( *v );
 }
 
-qboolean EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
+bool EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIBinaryOp_t *o = ( AIBinaryOp_t * ) exp;
 
@@ -374,17 +374,17 @@ qboolean EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 		case OP_OR:
 			return EvalConditionExpression( self, o->exp1 ) || EvalConditionExpression( self, o->exp2 );
 		default:
-			return qfalse;
+			return false;
 	}
 }
 
-qboolean EvaluateUnaryOp( gentity_t *self, AIExpType_t *exp )
+bool EvaluateUnaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIUnaryOp_t *o = ( AIUnaryOp_t * ) exp;
 	return !EvalConditionExpression( self, o->exp );
 }
 
-qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
+bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 {
 	if ( *exp == EX_OP )
 	{
@@ -408,7 +408,7 @@ qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 		return EvalFunc( self, exp ) != 0.0;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -422,7 +422,7 @@ returns failure otherwise
 */
 AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 {
-	qboolean success = qfalse;
+	bool success = false;
 
 	AIConditionNode_t *con = ( AIConditionNode_t * ) node;
 
@@ -731,7 +731,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 	else
 	{
-		qboolean inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
+		bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
 		self->botMind->enemyLastSeen = level.time;
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->nav.directPathToGoal )
@@ -774,7 +774,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 					BotStandStill( self );
 				}
 
-				BotSprint( self, qtrue );
+				BotSprint( self, true );
 			}
 			else if ( myTeam == TEAM_ALIENS )
 			{
@@ -1122,7 +1122,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
-	qboolean fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
+	bool fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
 	                       BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
 	if ( self->client->pers.team != TEAM_HUMANS )

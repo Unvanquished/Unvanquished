@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 R_CheckFBO
 =============
 */
-qboolean R_CheckFBO( const FBO_t *fbo )
+bool R_CheckFBO( const FBO_t *fbo )
 {
 	int code;
 	int id;
@@ -41,7 +41,7 @@ qboolean R_CheckFBO( const FBO_t *fbo )
 	if ( code == GL_FRAMEBUFFER_COMPLETE_EXT )
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, id );
-		return qtrue;
+		return true;
 	}
 
 	// an error occurred
@@ -87,7 +87,7 @@ qboolean R_CheckFBO( const FBO_t *fbo )
 
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, id );
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -139,7 +139,7 @@ Framebuffer must be bound
 */
 void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 {
-	qboolean absent;
+	bool absent;
 
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
@@ -175,7 +175,7 @@ R_CreateFBODepthBuffer
 */
 void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 {
-	qboolean absent;
+	bool absent;
 
 	if ( format != GL_DEPTH_COMPONENT &&
 	     format != GL_DEPTH_COMPONENT16 && format != GL_DEPTH_COMPONENT24 && format != GL_DEPTH_COMPONENT32_ARB )
@@ -211,7 +211,7 @@ R_CreateFBOStencilBuffer
 */
 void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 {
-	qboolean absent;
+	bool absent;
 
 	if ( format != GL_STENCIL_INDEX &&
 	     format != GL_STENCIL_INDEX1_EXT &&
@@ -249,7 +249,7 @@ R_CreateFBOPackedDepthStencilBuffer
 */
 void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 {
-	qboolean absent;
+	bool absent;
 
 	if ( format != GL_DEPTH_STENCIL_EXT && format != GL_DEPTH24_STENCIL8_EXT )
 	{

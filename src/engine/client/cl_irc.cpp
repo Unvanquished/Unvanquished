@@ -115,7 +115,7 @@ static void         IRC_SetThreadDead( void );
 static int          IRC_ThreadStatus = IRC_THREAD_DEAD;
 
 /* Quit requested? */
-static qboolean     IRC_QuitRequested;
+static bool     IRC_QuitRequested;
 
 /* Socket handler */
 static irc_socket_t IRC_Socket; // Socket
@@ -144,8 +144,8 @@ static irc_socket_t IRC_Socket; // Socket
 #define IRC_PARSER_LF             15 // End of line
 
 static int      IRC_ParserState;
-static qboolean IRC_ParserInMessage;
-static qboolean IRC_ParserError;
+static bool IRC_ParserInMessage;
+static bool IRC_ParserError;
 
 /*
  * According to RFC 1459, maximal message size is 512 bytes, including trailing
@@ -210,7 +210,7 @@ static struct irc_message_t IRC_ReceivedMessage;
  */
 
 typedef int ( *irc_handler_func_t )( void );
-typedef int ( *ctcp_handler_func_t )( qboolean is_channel, const char *message );
+typedef int ( *ctcp_handler_func_t )( bool is_channel, const char *message );
 
 typedef struct
 {
@@ -343,7 +343,7 @@ IRC_ExecuteCTCPHandler
 Executes a CTCP command handler.
 ==================
 */
-static int IRC_ExecuteCTCPHandler( const char *command, qboolean is_channel, const char *argument )
+static int IRC_ExecuteCTCPHandler( const char *command, bool is_channel, const char *argument )
 {
 	auto it = IRC_CTCPHandlers.find( IRC_String( cmd_string ) );
 
@@ -423,19 +423,19 @@ IRC_DequeueDelayed
 This function dequeues an entry from the delayed execution queue.
 ==================
 */
-static qboolean IRC_DequeueDelayed( void )
+static bool IRC_DequeueDelayed( void )
 {
 	struct irc_delayed_t *found;
 
 	if ( !IRC_DEQueue )
 	{
-		return qfalse;
+		return false;
 	}
 
 	found = IRC_DEQueue;
 	IRC_DEQueue = found->next;
 	free( found );
-	return qtrue;
+	return true;
 }
 
 /*
@@ -500,7 +500,7 @@ static int IRC_ProcessDEQueue( void )
 #define P_SET_STATE(S)    IRC_ParserState = IRC_PARSER_##S
 #define P_INIT_MESSAGE(S) { \
     P_SET_STATE(S); \
-    IRC_ParserInMessage = qtrue; \
+    IRC_ParserInMessage = true; \
     memset( &IRC_ReceivedMessage, 0, sizeof( struct irc_message_t ) ); \
 }
 #if defined DEBUG_DUMP_IRC
@@ -509,12 +509,12 @@ static int IRC_ProcessDEQueue( void )
       Com_Printf( "IRC PARSER ERROR (state: %d , received: %d)\n", IRC_ParserState, next ); \
     } \
     P_SET_STATE(S); \
-    IRC_ParserError = qtrue; \
+    IRC_ParserError = true; \
 }
 #else // defined DEBUG_DUMP_IRC
 #define P_ERROR(S)        { \
     P_SET_STATE(S); \
-    IRC_ParserError = qtrue; \
+    IRC_ParserError = true; \
 }
 #endif // defined DEBUG_DUMP_IRC
 #define P_AUTO_ERROR  { \
@@ -556,9 +556,9 @@ Main parsing function that uses a FSM to parse one character at a time.
 Returns true when a full message is read and no error has occurred.
 ==================
 */
-static qboolean IRC_Parser( char next )
+static bool IRC_Parser( char next )
 {
-	qboolean has_msg = qfalse;
+	bool has_msg = false;
 
 	switch ( IRC_ParserState )
 	{
@@ -569,8 +569,8 @@ static qboolean IRC_Parser( char next )
 			 * it. Anything else is an error.
 			 */
 		case IRC_PARSER_START:
-			IRC_ParserError = qfalse;
-			IRC_ParserInMessage = qfalse;
+			IRC_ParserError = false;
+			IRC_ParserInMessage = false;
 
 			if ( next == ':' )
 			{
@@ -1203,15 +1203,15 @@ Checks if some action can be effected using the rate limiter. If it can,
 the rate limiter's status will be updated.
 ==================
 */
-static INLINE qboolean IRC_CheckEventRate( int event_type )
+static INLINE bool IRC_CheckEventRate( int event_type )
 {
 	if ( IRC_RateLimiter[ event_type ] >= IRC_LIMIT_THRESHOLD * IRC_TIMEOUTS_PER_SEC )
 	{
-		return qfalse;
+		return false;
 	}
 
 	IRC_RateLimiter[ event_type ] += IRC_LIMIT_INCREASE * IRC_TIMEOUTS_PER_SEC;
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1301,8 +1301,8 @@ static void IRC_Display( int event, const char *nick, const char *message )
 	char       nick_copy[ IRC_MAX_NICK_LEN * 2 ];
 	char       message_copy[ IRC_MAX_ARG_LEN * 2 ];
 	const char *fmt_string;
-	qboolean   has_nick;
-	qboolean   has_message;
+	bool   has_nick;
+	bool   has_message;
 
 	// If we're quitting, just skip this
 	if ( IRC_QuitRequested )
@@ -1314,7 +1314,7 @@ static void IRC_Display( int event, const char *nick, const char *message )
 	switch ( IRC_EventType( event ) )
 	{
 		case IRC_EVT_SAY:
-			has_nick = has_message = qtrue;
+			has_nick = has_message = true;
 
 			if ( IRC_EventIsSelf( event ) )
 			{
@@ -1332,7 +1332,7 @@ static void IRC_Display( int event, const char *nick, const char *message )
 			break;
 
 		case IRC_EVT_ACT:
-			has_nick = has_message = qtrue;
+			has_nick = has_message = true;
 
 			if ( IRC_EventIsSelf( event ) )
 			{
@@ -1350,7 +1350,7 @@ static void IRC_Display( int event, const char *nick, const char *message )
 			break;
 
 		case IRC_EVT_JOIN:
-			has_message = qfalse;
+			has_message = false;
 			has_nick = !IRC_EventIsSelf( event );
 
 			if ( has_nick )
@@ -1367,7 +1367,7 @@ static void IRC_Display( int event, const char *nick, const char *message )
 		case IRC_EVT_PART:
 			// The AlienArena IRC client never parts, so it's
 			// someone else.
-			has_nick = qtrue;
+			has_nick = true;
 			has_message = ( message[ 0 ] != 0 );
 
 			if ( has_message )
@@ -1399,14 +1399,14 @@ static void IRC_Display( int event, const char *nick, const char *message )
 			}
 			else
 			{
-				has_message = qtrue;
+				has_message = true;
 				fmt_string = "^2Quit IRC chat: %s.\n";
 			}
 
 			break;
 
 		case IRC_EVT_KICK:
-			has_nick = has_message = qtrue;
+			has_nick = has_message = true;
 
 			if ( IRC_EventIsSelf( event ) )
 			{
@@ -1420,7 +1420,7 @@ static void IRC_Display( int event, const char *nick, const char *message )
 			break;
 
 		case IRC_EVT_NICK_CHANGE:
-			has_nick = has_message = qtrue;
+			has_nick = has_message = true;
 
 			if ( IRC_EventIsSelf( event ) )
 			{
@@ -1434,7 +1434,7 @@ static void IRC_Display( int event, const char *nick, const char *message )
 			break;
 
 		default:
-			has_nick = has_message = qfalse;
+			has_nick = has_message = false;
 			fmt_string = "unknown message received\n";
 			break;
 	}
@@ -1745,7 +1745,7 @@ IRC_HandleMessage
 Handles an actual message.
 ==================
 */
-static int IRC_HandleMessage( qboolean is_channel, const char *string )
+static int IRC_HandleMessage( bool is_channel, const char *string )
 {
 	if ( is_channel )
 	{
@@ -1769,7 +1769,7 @@ Splits a CTCP message into action and argument, then call
 its handler (if there is one).
 ==================
 */
-static int IRC_HandleCTCP( qboolean is_channel, char *string, int string_len )
+static int IRC_HandleCTCP( bool is_channel, char *string, int string_len )
 {
 	char *end_of_action;
 
@@ -1806,7 +1806,7 @@ CTCP command (action, version, etc...)
 */
 static int IRCH_PrivMsg( void )
 {
-	qboolean is_channel;
+	bool is_channel;
 
 	if ( IRC_ReceivedMessage.arg_count != 2 )
 	{
@@ -1856,7 +1856,7 @@ CTCP_Action
 Action command aka "/me"
 ==================
 */
-static int CTCP_Action( qboolean is_channel, const char *argument )
+static int CTCP_Action( bool is_channel, const char *argument )
 {
 	if ( !*argument )
 	{
@@ -1884,7 +1884,7 @@ CTCP_Ping
 PING requests
 ==================
 */
-static int CTCP_Ping( qboolean is_channel, const char *argument )
+static int CTCP_Ping( bool is_channel, const char *argument )
 {
 	if ( is_channel || !IRC_CheckEventRate( IRC_RL_PING ) )
 	{
@@ -1906,7 +1906,7 @@ CTCP_Version
 VERSION requests, let's advertise AA a lil'.
 ==================
 */
-static int CTCP_Version( qboolean is_channel, const char *argument )
+static int CTCP_Version( bool is_channel, const char *argument )
 {
 	if ( is_channel || !IRC_CheckEventRate( IRC_RL_VERSION ) )
 	{
@@ -1931,8 +1931,8 @@ static int CTCP_Version( qboolean is_channel, const char *argument )
 
 struct irc_sendqueue_t
 {
-	qboolean has_content;
-	qboolean is_action;
+	bool has_content;
+	bool is_action;
 	char     string[ IRC_MAX_SEND_LEN ];
 };
 
@@ -1966,18 +1966,18 @@ IRC_AddSendItem
 Writes an entry to the send queue.
 ==================
 */
-static qboolean IRC_AddSendItem( qboolean is_action, const char *string )
+static bool IRC_AddSendItem( bool is_action, const char *string )
 {
 	if ( IRC_SendQueue[ IRC_SendQueue_Write ].has_content )
 	{
-		return qfalse;
+		return false;
 	}
 
 	Q_strncpyz( IRC_SendQueue[ IRC_SendQueue_Write ].string, string, sizeof( IRC_SendQueue[ IRC_SendQueue_Write ].string ) );
 	IRC_SendQueue[ IRC_SendQueue_Write ].is_action = is_action;
-	IRC_SendQueue[ IRC_SendQueue_Write ].has_content = qtrue;
+	IRC_SendQueue[ IRC_SendQueue_Write ].has_content = true;
 	IRC_SendQueue_Write = ( IRC_SendQueue_Write + 1 ) % IRC_SENDQUEUE_SIZE;
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1990,7 +1990,7 @@ Sends an IRC message (console command).
 void CL_IRCSay( void )
 {
 	char     m_sendstring[ 480 ];
-	qboolean send_result;
+	bool send_result;
 
 	if ( Cmd_Argc() < 2 )
 	{
@@ -2013,11 +2013,11 @@ void CL_IRCSay( void )
 
 	if ( ( m_sendstring[ 0 ] == '/' || m_sendstring[ 0 ] == '.' ) && !Q_strnicmp( m_sendstring + 1, "me ", 3 ) && m_sendstring[ 4 ] != 0 )
 	{
-		send_result = IRC_AddSendItem( qtrue, m_sendstring + 4 );
+		send_result = IRC_AddSendItem( true, m_sendstring + 4 );
 	}
 	else
 	{
-		send_result = IRC_AddSendItem( qfalse, m_sendstring );
+		send_result = IRC_AddSendItem( false, m_sendstring );
 	}
 
 	if ( !send_result )
@@ -2033,13 +2033,13 @@ IRC_ProcessSendQueue
 Processes the next item on the send queue, if any.
 ==================
 */
-static qboolean IRC_ProcessSendQueue( void )
+static bool IRC_ProcessSendQueue( void )
 {
 	int        event, rv;
 
 	if ( !IRC_SendQueue[ IRC_SendQueue_Process ].has_content )
 	{
-		return qtrue;
+		return true;
 	}
 
 	if ( IRC_SendQueue[ IRC_SendQueue_Process ].is_action )
@@ -2059,7 +2059,7 @@ static qboolean IRC_ProcessSendQueue( void )
 		IRC_Display( event, IRC_User.nick, IRC_SendQueue[ IRC_SendQueue_Process ].string );
 	}
 
-	IRC_SendQueue[ IRC_SendQueue_Process ].has_content = qfalse;
+	IRC_SendQueue[ IRC_SendQueue_Process ].has_content = false;
 	IRC_SendQueue_Process = ( IRC_SendQueue_Process + 1 ) % IRC_SENDQUEUE_SIZE;
 	return ( rv == IRC_CMD_SUCCESS );
 }
@@ -2117,9 +2117,9 @@ IRC_InitialiseUser
 Prepares the user record which is used when issuing the USER command.
 ==================
 */
-static qboolean IRC_InitialiseUser( const char *name )
+static bool IRC_InitialiseUser( const char *name )
 {
-	qboolean   ovrnn;
+	bool   ovrnn;
 	const char *source;
 	int        i = 0, j = 0;
 	int        replaced = 0;
@@ -2187,7 +2187,7 @@ static qboolean IRC_InitialiseUser( const char *name )
 	// it is invalid
 	if ( ovrnn && strcmp( source, IRC_User.nick ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// Set static address
@@ -2309,7 +2309,7 @@ Only retry a few times and assume the server's dead/does not exist if
 connection can't be established.
 ==================
 */
-static qboolean IRC_InitialConnect( void )
+static bool IRC_InitialConnect( void )
 {
 	int err_code, retries = 3;
 	int rc_delay = cl_IRC_reconnect_delay->integer;
@@ -2332,7 +2332,7 @@ static qboolean IRC_InitialConnect( void )
 		}
 		else if ( IRC_QuitRequested )
 		{
-			return qfalse;
+			return false;
 		}
 
 		err_code = IRC_AttemptConnection();
@@ -2664,7 +2664,7 @@ void CL_InitIRC( void )
 		return;
 	}
 
-	IRC_QuitRequested = qfalse;
+	IRC_QuitRequested = false;
 	IRC_ThreadStatus = IRC_THREAD_INITIALISING;
 	IRC_StartThread();
 }
@@ -2676,7 +2676,7 @@ CL_IRCInitiateShutdown
 */
 void CL_IRCInitiateShutdown( void )
 {
-	IRC_QuitRequested = qtrue;
+	IRC_QuitRequested = true;
 }
 
 /*
@@ -2694,7 +2694,7 @@ void CL_IRCWaitShutdown( void )
 CL_IRCIsConnected
 ==================
 */
-qboolean CL_IRCIsConnected( void )
+bool CL_IRCIsConnected( void )
 {
 	// get IRC status
 	return ( IRC_ThreadStatus == IRC_THREAD_JOINED );
@@ -2705,7 +2705,7 @@ qboolean CL_IRCIsConnected( void )
 CL_IRCIsRunning
 ==================
 */
-qboolean CL_IRCIsRunning( void )
+bool CL_IRCIsRunning( void )
 {
 	// return IRC status
 	return ( IRC_ThreadStatus != IRC_THREAD_DEAD );

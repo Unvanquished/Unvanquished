@@ -71,7 +71,7 @@ void G_namelog_connect( gclient_t *client )
 
 	client->pers.namelog = n;
 	n->slot = client - level.clients;
-	n->banned = qfalse;
+	n->banned = false;
 
 	newname = n->name[ n->nameOffset ];
 
@@ -151,5 +151,5 @@ void G_namelog_restore( gclient_t *client )
 	G_ChangeTeam( g_entities + n->slot, n->team );
 	client->ps.persistant[ PERS_SCORE ] = n->score;
 	client->ps.persistant[ PERS_CREDIT ] = 0;
-	G_AddCreditToClient( client, n->credits, qfalse );
+	G_AddCreditToClient( client, n->credits, false );
 }

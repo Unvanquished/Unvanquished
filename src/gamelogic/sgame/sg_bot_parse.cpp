@@ -23,27 +23,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
 
-static qboolean expectToken( const char *s, pc_token_list **list, qboolean next )
+static bool expectToken( const char *s, pc_token_list **list, bool next )
 {
 	const pc_token_list *current = *list;
 
 	if ( !current )
 	{
 		BotError( "Expected token %s but found end of file\n", s );
-		return qfalse;
+		return false;
 	}
 	
 	if ( Q_stricmp( current->token.string, s ) != 0 )
 	{
 		BotError( "Expected token %s but found %s on line %d\n", s, current->token.string, current->token.line );
-		return qfalse;
+		return false;
 	}
 	
 	if ( next )
 	{
 		*list = current->next;
 	}
-	return qtrue;
+	return true;
 }
 
 AIValue_t AIBoxToken( const pc_token_stripped_t *token )
@@ -96,28 +96,28 @@ static AIValue_t goalType( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 {
-	qboolean dead = qfalse;
+	bool dead = false;
 	botTarget_t *goal = &self->botMind->goal;
 
 	if ( !BotTargetIsEntity( *goal ) )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 	else if ( BotGetTargetTeam( *goal ) == TEAM_NONE )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 	else if ( goal->ent->health <= 0 )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 	else if ( goal->ent->client && goal->ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 
 	return AIBoxInt( dead );
@@ -190,17 +190,17 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 
 	if ( !e.ent )
 	{
-		return AIBoxInt( qfalse );
+		return AIBoxInt( false );
 	}
 
 	BotSetTarget( &target, e.ent, NULL );
 
 	if ( BotTargetInAttackRange( self, target ) )
 	{
-		return AIBoxInt( qtrue );
+		return AIBoxInt( true );
 	}
 
-	return AIBoxInt( qfalse );
+	return AIBoxInt( false );
 }
 
 static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
@@ -211,7 +211,7 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 
 	if ( !e.ent )
 	{
-		return AIBoxInt( qfalse );
+		return AIBoxInt( false );
 	}
 
 	BotSetTarget( &target, e.ent, NULL );
@@ -222,10 +222,10 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 		{
 			self->botMind->enemyLastSeen = level.time;
 		}
-		return AIBoxInt( qtrue );
+		return AIBoxInt( true );
 	}
 
-	return AIBoxInt( qfalse );
+	return AIBoxInt( false );
 }
 
 static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
@@ -244,7 +244,7 @@ static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 		return AIBoxInt( BotPathIsWalkable( self, target ) );
 	}
 
-	return AIBoxInt( qfalse );
+	return AIBoxInt( false );
 }
 
 static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
@@ -494,7 +494,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	int           numParams = 0;
 
 	// functions should always be proceeded by a '(' if they have parameters
-	if ( !expectToken( "(", &parenBegin, qfalse ) )
+	if ( !expectToken( "(", &parenBegin, false ) )
 	{
 		*list = current;
 		return NULL;
@@ -705,7 +705,7 @@ static AIExpType_t *Primary( pc_token_list **list )
 	{
 		*list = current->next;
 		tree = ReadConditionExpression( list, OP_NONE );
-		if ( !expectToken( ")", list, qtrue ) )
+		if ( !expectToken( ")", list, true ) )
 		{
 			return NULL;
 		}
@@ -756,7 +756,7 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 
 	AIConditionNode_t *condition;
 
-	if ( !expectToken( "condition", &current, qtrue ) )
+	if ( !expectToken( "condition", &current, true ) )
 	{
 		return NULL;
 	}
@@ -800,7 +800,7 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 		return NULL;
 	}
 
-	if ( !expectToken( "}", &current, qtrue ) )
+	if ( !expectToken( "}", &current, true ) )
 	{
 		*tokenlist = current;
 		FreeConditionNode( condition );
@@ -832,7 +832,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 	AIDecoratorNode_t       *ret;
 	pc_token_list           *parenBegin;
 
-	if ( !expectToken( "decorator", &current, qtrue ) )
+	if ( !expectToken( "decorator", &current, true ) )
 	{
 		return NULL;
 	}
@@ -876,7 +876,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 		return NULL;
 	}
 
-	if ( !expectToken( "{", &current, qtrue ) )
+	if ( !expectToken( "{", &current, true ) )
 	{
 		*list = current;
 		return NULL;
@@ -891,7 +891,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 		return NULL;
 	}
 
-	if ( !expectToken( "}", &current, qtrue ) )
+	if ( !expectToken( "}", &current, true ) )
 	{
 		*list = current;
 		return NULL;
@@ -959,7 +959,7 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	AIActionNode_t        node;
 	struct AIActionMap_s  *action = NULL;
 
-	if ( !expectToken( "action", &current, qtrue ) )
+	if ( !expectToken( "action", &current, true ) )
 	{
 		return NULL;
 	}
@@ -1073,7 +1073,7 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	AINodeList_t *list;
 	pc_token_list *current = *tokenlist;
 
-	if ( !expectToken( "{", &current, qtrue ) )
+	if ( !expectToken( "{", &current, true ) )
 	{
 		return NULL;
 	}
@@ -1125,7 +1125,7 @@ AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 
 	AIBehaviorTree_t *behavior;
 
-	if ( !expectToken( "behavior", &current, qtrue ) )
+	if ( !expectToken( "behavior", &current, true ) )
 	{
 		return NULL;
 	}

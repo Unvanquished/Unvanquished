@@ -216,7 +216,7 @@ void CG_MouseEvent( int x, int y )
 {
 	if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) &&
-	     cg.showScores == qfalse )
+	     cg.showScores == false )
 	{
 		trap_Key_SetCatcher( 0 );
 		return;
@@ -254,7 +254,7 @@ void CG_KeyEvent( int key, int chr, int flags )
 
 	if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
-	       cg.showScores == qfalse ) )
+	       cg.showScores == false ) )
 	{
 		trap_Key_SetCatcher( 0 );
 		return;

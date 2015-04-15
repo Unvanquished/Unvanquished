@@ -40,7 +40,7 @@ static INLINE void *IQMPtr( iqmHeader_t *header, int offset ) {
 	return ( (byte *)header ) + offset;
 }
 
-static qboolean IQM_CheckRange( iqmHeader_t *header, int offset,
+static bool IQM_CheckRange( iqmHeader_t *header, int offset,
 				int count, int size, const char *mod_name,
 				const char *section ) {
 	int section_end;
@@ -50,34 +50,34 @@ static qboolean IQM_CheckRange( iqmHeader_t *header, int offset,
 	if( count <= 0 ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has a negative count in the %s section (%d).\n",
 			  mod_name, section, count );
-		return qtrue;
+		return true;
 	}
 	if( offset < 0 ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has a negative offset to the %s section (%d).\n",
 			  mod_name, section, offset );
-		return qtrue;
+		return true;
 	}
 	if( offset > header->filesize ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has an offset behind the end of file to the %s section (%d).\n",
 			  mod_name, section, offset );
-		return qtrue;
+		return true;
 	}
 	if( offset > header->filesize ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has an offset behind the end of file to the %s section (%d).\n",
 			  mod_name, section, offset );
-		return qtrue;
+		return true;
 	}
 
 	section_end = offset + count * size;
 	if( section_end > header->filesize || section_end < 0 ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has the section %s exceeding the end of file (%d).\n",
 			  mod_name, section, section_end );
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
-static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
+static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			     size_t *len_names )
 {
 	iqmHeader_t		*header;
@@ -93,28 +93,28 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 	if( filesize < sizeof(iqmHeader_t) ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQModel: file size of %s is too small.\n",
 			  mod_name );
-		return qfalse;
+		return false;
 	}
 
 	header = (iqmHeader_t *)buffer;
 	if( Q_strncmp( header->magic, IQM_MAGIC, sizeof(header->magic) ) ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQModel: file %s doesn't contain an IQM header.\n",
 			  mod_name );
-		return qfalse;
+		return false;
 	}
 
 	LL( header->version );
 	if( header->version != IQM_VERSION ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s is a unsupported IQM version (%d), only version %d is supported.\n",
 			  mod_name, header->version, IQM_VERSION);
-		return qfalse;
+		return false;
 	}
 
 	LL( header->filesize );
 	if( header->filesize > filesize || header->filesize > 1<<24 ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has an invalid file size %d.\n",
 			  mod_name, header->filesize );
-		return qfalse;
+		return false;
 	}
 
 	LL( header->flags );
@@ -148,7 +148,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    header->num_vertexarrays,
 			    sizeof(iqmVertexArray_t),
 			    mod_name, "vertexarray" ) ) {
-		return qfalse;
+		return false;
 	}
 	vertexarray = ( iqmVertexArray_t* )IQMPtr( header, header->ofs_vertexarrays );
 	for( i = 0; i < header->num_vertexarrays; i++, vertexarray++ ) {
@@ -157,7 +157,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		if( vertexarray->size <= 0 || vertexarray->size > 4 ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQM: %s contains an invalid vertexarray size.\n",
 				  mod_name );
-			return qfalse;
+			return false;
 		}
 
 		// total number of values
@@ -169,7 +169,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			// 1 byte, no swapping necessary
 			if( IQM_CheckRange( header, vertexarray->offset, n,
 					    sizeof(byte), mod_name, "vertexarray" ) ) {
-				return qfalse;
+				return false;
 			}
 			break;
 		case IQM_INT:
@@ -178,7 +178,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			// 4-byte swap
 			if( IQM_CheckRange( header, vertexarray->offset, n,
 					    sizeof(float), mod_name, "vertexarray" ) ) {
-				return qfalse;
+				return false;
 			}
 			intPtr = ( int* )IQMPtr( header, vertexarray->offset );
 			for( j = 0; j < n; j++, intPtr++ ) {
@@ -189,7 +189,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			// not supported
 			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
 				  mod_name );
-			return qfalse;
+			return false;
 			break;
 		}
 
@@ -200,7 +200,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    vertexarray->size != 3 ) {
 				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
 					  mod_name );
-				return qfalse;
+				return false;
 			}
 			break;
 		case IQM_TANGENT:
@@ -208,7 +208,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    vertexarray->size != 4 ) {
 				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
 					  mod_name );
-				return qfalse;
+				return false;
 			}
 			break;
 		case IQM_TEXCOORD:
@@ -216,7 +216,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    vertexarray->size != 2 ) {
 				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
 					  mod_name );
-				return qfalse;
+				return false;
 			}
 			break;
 		case IQM_BLENDINDEXES:
@@ -225,7 +225,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    vertexarray->size != 4 ) {
 				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
 					  mod_name );
-				return qfalse;
+				return false;
 			}
 			break;
 		case IQM_COLOR:
@@ -233,7 +233,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			    vertexarray->size != 4 ) {
 				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
 					  mod_name );
-				return qfalse;
+				return false;
 			}
 			break;
 		}
@@ -243,7 +243,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 	if( IQM_CheckRange( header, header->ofs_triangles,
 			    header->num_triangles, sizeof(iqmTriangle_t),
 			    mod_name, "triangle" ) ) {
-		return qfalse;
+		return false;
 	}
 	triangle = ( iqmTriangle_t* )IQMPtr( header, header->ofs_triangles );
 	for( i = 0; i < header->num_triangles; i++, triangle++ ) {
@@ -254,7 +254,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		if( triangle->vertex[0] < 0 || triangle->vertex[0] > header->num_vertexes ||
 		    triangle->vertex[1] < 0 || triangle->vertex[1] > header->num_vertexes ||
 		    triangle->vertex[2] < 0 || triangle->vertex[2] > header->num_vertexes ) {
-			return qfalse;
+			return false;
 		}
 	}
 
@@ -264,7 +264,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 	if( IQM_CheckRange( header, header->ofs_meshes,
 			    header->num_meshes, sizeof(iqmMesh_t),
 			    mod_name, "mesh" ) ) {
-		return qfalse;
+		return false;
 	}
 	mesh = ( iqmMesh_t* )IQMPtr( header, header->ofs_meshes );
 	for( i = 0; i < header->num_meshes; i++, mesh++) {
@@ -285,7 +285,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		    mesh->material >= header->num_text ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid mesh.\n",
 				  mod_name );
-			return qfalse;
+			return false;
 		}
 		*len_names += strlen( ( char* )IQMPtr( header, header->ofs_text
 					      + mesh->name ) ) + 1;
@@ -296,7 +296,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 	    IQM_CheckRange( header, header->ofs_joints,
 			    header->num_joints, sizeof(iqmJoint_t),
 			    mod_name, "joint" ) ) {
-		return qfalse;
+		return false;
 	}
 	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
 	for( i = 0; i < header->num_joints; i++, joint++ ) {
@@ -318,14 +318,14 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		    joint->name >= header->num_text ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid joint.\n",
 				  mod_name );
-			return qfalse;
+			return false;
 		}
 		if( joint->scale[0] < 0.0f ||
 			(int)( joint->scale[0] - joint->scale[1] ) ||
 			(int)( joint->scale[1] - joint->scale[2] ) ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid scale.\n%f %f %f",
 				  mod_name, joint->scale[0], joint->scale[1], joint->scale[2] );
-			return qfalse;
+			return false;
 		}
 		*len_names += strlen( ( char* )IQMPtr( header, header->ofs_text
 					      + joint->name ) ) + 1;
@@ -336,7 +336,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		if( IQM_CheckRange( header, header->ofs_poses,
 				    header->num_poses, sizeof(iqmPose_t),
 				    mod_name, "pose" ) ) {
-			return qfalse;
+			return false;
 		}
 		pose = ( iqmPose_t* )IQMPtr( header, header->ofs_poses );
 		for( i = 0; i < header->num_poses; i++, pose++ ) {
@@ -372,7 +372,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 				  header->num_frames, sizeof(*bounds),
 				  mod_name, "bounds" ))
 		{
-			return qfalse;
+			return false;
 		}
 		bounds = ( iqmBounds_t* )IQMPtr( header, header->ofs_bounds );
 		for(i = 0; i < header->num_poses; i++)
@@ -393,7 +393,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		if( IQM_CheckRange( header, header->ofs_anims,
 				    header->num_anims, sizeof(iqmAnim_t),
 				    mod_name, "animation" ) ) {
-			return qfalse;
+			return false;
 		}
 		anim = ( iqmAnim_t* )IQMPtr( header, header->ofs_anims );
 		for( i = 0; i < header->num_anims; i++, anim++ ) {
@@ -408,7 +408,7 @@ static qboolean LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		}
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -443,7 +443,7 @@ R_LoadIQModel
 Load an IQM model and compute the joint matrices for every frame.
 =================
 */
-qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
+bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			const char *mod_name ) {
 	iqmHeader_t		*header;
 	iqmVertexArray_t	*vertexarray;
@@ -471,7 +471,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	u8vec4_t                *weights;
 
 	if( !LoadIQMFile( buffer, filesize, mod_name, &len_names ) ) {
-		return qfalse;
+		return false;
 	}
 
 	header = (iqmHeader_t *)buffer;
@@ -614,7 +614,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		if( joint->parent >= i ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQModel: file %s contains an invalid parent joint number.\n",
 				  mod_name );
-			return qfalse;
+			return false;
 		}
 
 		TransInitRotationQuat( joint->rotate, trans );
@@ -675,7 +675,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			    (int)( scale[1] - scale[2] ) ) {
 				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid scale.",
 				mod_name );
-				return qfalse;
+				return false;
 			    }
 
 			// construct transformation
@@ -810,7 +810,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		vboData.numFrames = 0;
 		vboData.color = (u8vec4_t *)IQModel->colors;
 		vboData.st = (i16vec2_t *)IQModel->texcoords;
-		vboData.noLightCoords = qtrue;
+		vboData.noLightCoords = true;
 		vboData.boneIndexes = (int (*)[4])indexbuf;
 		vboData.boneWeights = (vec4_t *)weightbuf;
 		vboData.numVerts = IQModel->num_vertexes;
@@ -895,7 +895,7 @@ qboolean R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	// build VBO
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1017,7 +1017,7 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	IQModel_t		*IQModel;
 	srfIQModel_t		*surface;
 	int                     i, j;
-	qboolean                personalModel;
+	bool                personalModel;
 	int                     cull;
 	int                     fogNum;
 	shader_t                *shader;

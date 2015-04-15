@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_cmds.c
 #include "tr_local.h"
 
-volatile qboolean            renderThreadActive;
+volatile bool            renderThreadActive;
 
 /*
 =====================
@@ -129,7 +129,7 @@ R_IssueRenderCommands
 int c_blockedOnRender;
 int c_blockedOnMain;
 
-void R_IssueRenderCommands( qboolean runPerformanceCounters )
+void R_IssueRenderCommands( bool runPerformanceCounters )
 {
 	renderCommandList_t *cmdList;
 
@@ -206,7 +206,7 @@ void R_SyncRenderThread( void )
 		return;
 	}
 
-	R_IssueRenderCommands( qfalse );
+	R_IssueRenderCommands( false );
 
 	if ( !glConfig.smpActive )
 	{
@@ -391,7 +391,7 @@ void RE_SetColorGrading( int slot, qhandle_t hShader )
 R_ClipRegion
 =============
 */
-static qboolean R_ClipRegion ( float *x, float *y, float *w, float *h, float *s1, float *t1, float *s2, float *t2 )
+static bool R_ClipRegion ( float *x, float *y, float *w, float *h, float *s1, float *t1, float *s2, float *t2 )
 {
 	float left, top, right, bottom;
 	float _s1, _t1, _s2, _t2;
@@ -400,7 +400,7 @@ static qboolean R_ClipRegion ( float *x, float *y, float *w, float *h, float *s1
 	if ( tr.clipRegion[2] <= tr.clipRegion[0] ||
 		tr.clipRegion[3] <= tr.clipRegion[1] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	left = *x;
@@ -422,7 +422,7 @@ static qboolean R_ClipRegion ( float *x, float *y, float *w, float *h, float *s1
 	if ( right <= clipLeft || left >= clipRight ||
 		bottom <= clipTop || top >= clipBottom )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// Clip left edge
@@ -459,7 +459,7 @@ static qboolean R_ClipRegion ( float *x, float *y, float *w, float *h, float *s1
 		*h = clipBottom - *y;
 	}
 
-	return qfalse;
+	return false;
 }
 
 
@@ -591,7 +591,7 @@ void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int num
 RE_ScissorEnable
 ================
 */
-void RE_ScissorEnable( qboolean enable )
+void RE_ScissorEnable( bool enable )
 {
 	// scissor disable sets scissor to full screen
 	// scissor enable is a no-op
@@ -724,7 +724,7 @@ void RE_BeginFrame( void )
 		{
 			ri.Printf( PRINT_ALL, "Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits );
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
-			r_measureOverdraw->modified = qfalse;
+			r_measureOverdraw->modified = false;
 		}
 		else
 		{
@@ -736,7 +736,7 @@ void RE_BeginFrame( void )
 			glStencilOp( GL_KEEP, GL_INCR, GL_INCR );
 		}
 
-		r_measureOverdraw->modified = qfalse;
+		r_measureOverdraw->modified = false;
 	}
 	else
 	{
@@ -747,7 +747,7 @@ void RE_BeginFrame( void )
 			glDisable( GL_STENCIL_TEST );
 		}
 
-		r_measureOverdraw->modified = qfalse;
+		r_measureOverdraw->modified = false;
 	}
 
 	// texturemode stuff
@@ -755,7 +755,7 @@ void RE_BeginFrame( void )
 	{
 		R_SyncRenderThread();
 		GL_TextureMode( r_textureMode->string );
-		r_textureMode->modified = qfalse;
+		r_textureMode->modified = false;
 	}
 
 	// check for errors
@@ -859,7 +859,7 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 
 	cmd->commandId = RC_SWAP_BUFFERS;
 
-	R_IssueRenderCommands( qtrue );
+	R_IssueRenderCommands( true );
 
 	// use the other buffers next frame, because another CPU
 	// may still be rendering into the current ones
@@ -888,7 +888,7 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 RE_TakeVideoFrame
 =============
 */
-void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg )
+void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encodeBuffer, bool motionJpeg )
 {
 	videoFrameCommand_t *cmd;
 

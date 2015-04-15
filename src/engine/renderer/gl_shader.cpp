@@ -143,7 +143,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	{
 		char *libBuffer; // single extra lib file
 
-		token = COM_ParseExt2( libs, qfalse );
+		token = COM_ParseExt2( libs, false );
 
 		if ( !token[ 0 ] )
 		{
@@ -694,7 +694,7 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 
 		while ( 1 )
 		{
-			token = COM_ParseExt2( compileMacrosP, qfalse );
+			token = COM_ParseExt2( compileMacrosP, false );
 
 			if ( !token[ 0 ] )
 			{
@@ -734,7 +734,7 @@ void GLShaderManager::CompileGPUShader( GLuint program, const char *programName,
 	if ( !compiled )
 	{
 		PrintShaderSource( shader );
-		PrintInfoLog( shader, qfalse );
+		PrintInfoLog( shader, false );
 #ifdef NDEBUG
 		// In a release build, GLSL shader compiliation usually means that the hardware does
 		// not support GLSL shaders and should rely on vanilla instead.
@@ -743,7 +743,7 @@ void GLShaderManager::CompileGPUShader( GLuint program, const char *programName,
 		ri.Error( ERR_DROP, "Couldn't compile %s %s", ( shaderType == GL_VERTEX_SHADER ? "vertex shader" : "fragment shader" ), programName );
 	}
 
-	//PrintInfoLog(shader, qtrue);
+	//PrintInfoLog(shader, true);
 	//ri.Printf(PRINT_ALL, "%s\n", GLSL_PrintShaderSource(shader));
 
 	// attach shader to program
@@ -842,7 +842,7 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 
 	if ( !linked )
 	{
-		PrintInfoLog( program, qfalse );
+		PrintInfoLog( program, false );
 		ri.Error( ERR_DROP, "Shaders failed to link!!!" );
 	}
 }
@@ -857,7 +857,7 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 
 	if ( !validated )
 	{
-		PrintInfoLog( program, qfalse );
+		PrintInfoLog( program, false );
 		ri.Error( ERR_DROP, "Shaders failed to validate!!!" );
 	}
 }

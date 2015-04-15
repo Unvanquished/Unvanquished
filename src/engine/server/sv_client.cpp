@@ -93,7 +93,7 @@ void SV_GetChallenge( netadr_t from )
 		challenge->firstTime = svs.time;
 		challenge->firstPing = 0;
 		challenge->time = svs.time;
-		challenge->connected = qfalse;
+		challenge->connected = false;
 		i = oldest;
 	}
 
@@ -124,7 +124,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	int                 challenge;
 	char                *password;
 	int                 startIndex;
-	qboolean            denied;
+	bool            denied;
 	char                reason[ MAX_STRING_CHARS ];
 	int                 count;
 	const char          *ip;
@@ -194,7 +194,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		return;
 	}
 
-	Info_SetValueForKey( userinfo, "ip", ip, qfalse );
+	Info_SetValueForKey( userinfo, "ip", ip, false );
 
 	// see if the challenge is valid (local clients don't need to challenge)
 	if ( !NET_IsLocalAddress( from ) )
@@ -219,7 +219,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		}
 
 		// force the IP address key/value pair, so the game can filter based on it
-		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ), qfalse );
+		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ), false );
 
 		if ( svs.challenges[ i ].firstPing == 0 )
 		{
@@ -246,7 +246,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
 #endif
 
-		svs.challenges[ i ].connected = qtrue;
+		svs.challenges[ i ].connected = true;
 
 		// never reject a LAN client based on ping
 		if ( !Sys_IsLANAddress( from ) )
@@ -269,7 +269,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	else
 	{
 		// force the "ip" info key to "localhost"
-		Info_SetValueForKey( userinfo, "ip", "localhost", qfalse );
+		Info_SetValueForKey( userinfo, "ip", "localhost", false );
 	}
 
 	newcl = &temp;
@@ -389,7 +389,7 @@ gotnewcl:
 
 	if ( country )
 	{
-		Info_SetValueForKey( userinfo, "geoip", country, qfalse );
+		Info_SetValueForKey( userinfo, "geoip", country, false );
 	}
 #endif
 
@@ -402,12 +402,12 @@ gotnewcl:
 
 	// Save the pubkey
 	Q_strncpyz( newcl->pubkey, Info_ValueForKey( userinfo, "pubkey" ), sizeof( newcl->pubkey ) );
-	Info_RemoveKey( userinfo, "pubkey", qfalse );
+	Info_RemoveKey( userinfo, "pubkey", false );
 	// save the userinfo
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
 	// get the game a chance to reject this connection or modify the userinfo
-	denied = gvm.GameClientConnect( reason, sizeof( reason ), clientNum, qtrue, qfalse );  // firstTime = qtrue
+	denied = gvm.GameClientConnect( reason, sizeof( reason ), clientNum, true, false );  // firstTime = true
 
 	if ( denied )
 	{
@@ -486,7 +486,7 @@ void SV_FreeClient( client_t *client )
 		{
 			if ( NET_CompareAdr( client->netchan.remoteAddress, challenge->adr ) )
 			{
-				challenge->connected = qfalse;
+				challenge->connected = false;
 				break;
 			}
 		}
@@ -623,7 +623,7 @@ void SV_SendClientGameState( client_t *client )
 		}
 
 		MSG_WriteByte( &msg, svc_baseline );
-		MSG_WriteDeltaEntity( &msg, &nullstate, base, qtrue );
+		MSG_WriteDeltaEntity( &msg, &nullstate, base, true );
 	}
 
 	MSG_WriteByte( &msg, svc_EOF );
@@ -833,7 +833,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 			Com_Logf(LOG_WARN, "dupe wwwdl ack from client '%s'", cl->name );
 		}
 
-		cl->bWWWing = qtrue;
+		cl->bWWWing = true;
 		return;
 	}
 	else if ( !Q_stricmp( subcmd, "bbl8r" ) )
@@ -853,14 +853,14 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	if ( !Q_stricmp( subcmd, "done" ) )
 	{
 		*cl->downloadName = 0;
-		cl->bWWWing = qfalse;
+		cl->bWWWing = false;
 		return;
 	}
 	else if ( !Q_stricmp( subcmd, "fail" ) )
 	{
 		*cl->downloadName = 0;
-		cl->bWWWing = qfalse;
-		cl->bFallback = qtrue;
+		cl->bWWWing = false;
+		cl->bFallback = true;
 		// send a reconnect
 		SV_SendClientGameState( cl );
 		return;
@@ -870,8 +870,8 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 		Com_Logf(LOG_WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
 				cl->name, cl->downloadName );
 		*cl->downloadName = 0;
-		cl->bWWWing = qfalse;
-		cl->bFallback = qtrue;
+		cl->bWWWing = false;
+		cl->bFallback = true;
 		// send a reconnect
 		SV_SendClientGameState( cl );
 		return;
@@ -900,11 +900,11 @@ return true when a redirect URL message was filled up
 when the cvar is set to something, the download server will effectively never use a legacy download strategy
 ==================
 */
-static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *msg )
+static bool SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *msg )
 {
 	if ( !sv_wwwFallbackURL->string || strlen( sv_wwwFallbackURL->string ) == 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
@@ -917,7 +917,7 @@ static qboolean SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *m
 	MSG_WriteLong( msg, 0 );
 	MSG_WriteLong( msg, 0 );
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -936,7 +936,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 	char     errorMessage[ 1024 ];
 	int      download_flag;
 
-	qboolean bTellRate = qfalse; // verbosity
+	bool bTellRate = false; // verbosity
 
 	if ( !*cl->downloadName )
 	{
@@ -1022,7 +1022,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					}
 
 					// once cl->downloadName is set (and possibly we have our listening socket), let the client know
-					cl->bWWWDl = qtrue;
+					cl->bWWWDl = true;
 					MSG_WriteByte( msg, svc_download );
 					MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
 					// compatible with legacy svc_download protocol: [size] [size bytes]
@@ -1047,8 +1047,8 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			}
 			else
 			{
-				cl->bFallback = qfalse;
-				cl->bWWWDl = qtrue;
+				cl->bFallback = false;
+				cl->bWWWDl = true;
 
 				if ( SV_CheckFallbackURL( cl, pakName.c_str(), msg ) )
 				{
@@ -1061,7 +1061,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		}
 
 		// find file
-		cl->bWWWDl = qfalse;
+		cl->bWWWDl = false;
 		std::string name, version;
 		Util::optional<uint32_t> checksum;
 		bool success = FS::ParsePakName(cl->downloadName, cl->downloadName + strlen(cl->downloadName), name, version, checksum);
@@ -1091,9 +1091,9 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		// is valid source, init
 		cl->downloadCurrentBlock = cl->downloadClientBlock = cl->downloadXmitBlock = 0;
 		cl->downloadCount = 0;
-		cl->downloadEOF = qfalse;
+		cl->downloadEOF = false;
 
-		bTellRate = qtrue;
+		bTellRate = true;
 	}
 
 	// Perform any reads that we need to
@@ -1127,7 +1127,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		cl->downloadBlockSize[ cl->downloadCurrentBlock % MAX_DOWNLOAD_WINDOW ] = 0;
 		cl->downloadCurrentBlock++;
 
-		cl->downloadEOF = qtrue; // We have added the EOF block
+		cl->downloadEOF = true; // We have added the EOF block
 	}
 
 	// Loop up to window size times based on how many blocks we can fit in the
@@ -1310,7 +1310,7 @@ void SV_UserinfoChanged( client_t *cl )
 	// in the future, (val) will be a protocol version string, so only
 	//  accept explicitly 1, not generally non-zero.
 	val = Info_ValueForKey( cl->userinfo, "cl_voip" );
-	cl->hasVoip = ( atoi( val ) == 1 ) ? qtrue : qfalse;
+	cl->hasVoip = ( atoi( val ) == 1 ) ? true : false;
 #endif
 
 	// TTimo
@@ -1322,17 +1322,17 @@ void SV_UserinfoChanged( client_t *cl )
 	//Com_DPrintf("Maintain IP address in userinfo for '%s'\n", cl->name);
 	if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) )
 	{
-		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), qfalse );
+		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), false );
 #ifdef HAVE_GEOIP
-		Info_SetValueForKey( cl->userinfo, "geoip", NET_GeoIP_Country( &cl->netchan.remoteAddress ), qfalse );
+		Info_SetValueForKey( cl->userinfo, "geoip", NET_GeoIP_Country( &cl->netchan.remoteAddress ), false );
 #endif
 	}
 	else
 	{
 		// force the "ip" info key to "localhost" for local clients
-		Info_SetValueForKey( cl->userinfo, "ip", "localhost", qfalse );
+		Info_SetValueForKey( cl->userinfo, "ip", "localhost", false );
 #ifdef HAVE_GEOIP
-		Info_SetValueForKey( cl->userinfo, "geoip", NULL, qfalse );
+		Info_SetValueForKey( cl->userinfo, "geoip", NULL, false );
 #endif
 	}
 }
@@ -1357,7 +1357,7 @@ static void SV_UpdateUserinfo_f( client_t *cl, const Cmd::Args& args )
 
 #ifdef USE_VOIP
 static
-void SV_UpdateVoipIgnore( client_t *cl, const char *idstr, qboolean ignore )
+void SV_UpdateVoipIgnore( client_t *cl, const char *idstr, bool ignore )
 {
 	if ( ( *idstr >= '0' ) && ( *idstr <= '9' ) )
 	{
@@ -1384,19 +1384,19 @@ static void SV_Voip_f( client_t *cl, const Cmd::Args& args )
 
 	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc() >= 3)
 	{
-		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qtrue );
+		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), true );
 	}
 	else if ( strcmp( cmd, "unignore" ) == 0 and args.Argc() >= 3)
 	{
-		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), qfalse );
+		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), false );
 	}
 	else if ( strcmp( cmd, "muteall" ) == 0 )
 	{
-		cl->muteAllVoip = qtrue;
+		cl->muteAllVoip = true;
 	}
 	else if ( strcmp( cmd, "unmuteall" ) == 0 )
 	{
-		cl->muteAllVoip = qfalse;
+		cl->muteAllVoip = false;
 	}
 }
 
@@ -1406,22 +1406,22 @@ typedef struct
 {
 	const char *name;
 	void ( *func )( client_t *cl, const Cmd::Args& args );
-	qboolean allowedpostmapchange;
+	bool allowedpostmapchange;
 } ucmd_t;
 
 static ucmd_t ucmds[] =
 {
-	{ "userinfo",   SV_UpdateUserinfo_f,  qfalse },
-	{ "disconnect", SV_Disconnect_f,      qtrue  },
-	{ "download",   SV_BeginDownload_f,   qfalse },
-	{ "nextdl",     SV_NextDownload_f,    qfalse },
-	{ "stopdl",     SV_StopDownload_f,    qfalse },
-	{ "donedl",     SV_DoneDownload_f,    qfalse },
+	{ "userinfo",   SV_UpdateUserinfo_f,  false },
+	{ "disconnect", SV_Disconnect_f,      true  },
+	{ "download",   SV_BeginDownload_f,   false },
+	{ "nextdl",     SV_NextDownload_f,    false },
+	{ "stopdl",     SV_StopDownload_f,    false },
+	{ "donedl",     SV_DoneDownload_f,    false },
 #ifdef USE_VOIP
-	{ "voip",       SV_Voip_f,            qfalse },
+	{ "voip",       SV_Voip_f,            false },
 #endif
-	{ "wwwdl",      SV_WWWDownload_f,     qfalse },
-	{ NULL,         NULL, qfalse}
+	{ "wwwdl",      SV_WWWDownload_f,     false },
+	{ NULL,         NULL, false}
 };
 
 /*
@@ -1432,10 +1432,10 @@ Also called by bot code
 ==================
 */
 
-void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qboolean premaprestart )
+void SV_ExecuteClientCommand( client_t *cl, const char *s, bool clientOK, bool premaprestart )
 {
 	ucmd_t   *u;
-	qboolean bProcessed = qfalse;
+	bool bProcessed = false;
 
 	Com_DPrintf( "EXCL: %s\n", s );
 	Cmd::Args args(s);
@@ -1451,7 +1451,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 			}
 
 			u->func(cl, args);
-			bProcessed = qtrue;
+			bProcessed = true;
 			break;
 		}
 	}
@@ -1475,12 +1475,12 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 SV_ClientCommand
 ===============
 */
-static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premaprestart )
+static bool SV_ClientCommand( client_t *cl, msg_t *msg, bool premaprestart )
 {
 	int        seq;
 	const char *s;
-	qboolean   clientOk = qtrue;
-	qboolean   floodprotect = qtrue;
+	bool   clientOk = true;
+	bool   floodprotect = true;
 
 	seq = MSG_ReadLong( msg );
 	s = MSG_ReadString( msg );
@@ -1488,7 +1488,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	// see if we have already executed it
 	if ( cl->lastClientCommand >= seq )
 	{
-		return qtrue;
+		return true;
 	}
 
 	Com_DPrintf( "clientCommand: %s^7 : %i : %s\n", cl->name, seq, s );
@@ -1498,7 +1498,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	{
 		Com_Printf( "Client %s lost %i clientCommands\n", cl->name, seq - cl->lastClientCommand + 1 );
 		SV_DropClient( cl, "Lost reliable commands" );
-		return qfalse;
+		return false;
 	}
 
 	// Gordon: AHA! Need to steal this for some other stuff BOOKMARK
@@ -1506,7 +1506,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	if ( !Q_strncmp( "team", s, 4 ) || !Q_strncmp( "setspawnpt", s, 10 ) || !Q_strncmp( "score", s, 5 ) || !Q_stricmp( "forcetapout", s ) )
 	{
 //      Com_DPrintf( "Skipping flood protection for: %s\n", s );
-		floodprotect = qfalse;
+		floodprotect = false;
 	}
 
 	// malicious users may try using too many string commands
@@ -1521,7 +1521,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	{
 		// ignore any other text messages from this client but let them keep playing
 		// TTimo - moved the ignored verbose to the actual processing in SV_ExecuteClientCommand, only printing if the core doesn't intercept
-		clientOk = qfalse;
+		clientOk = false;
 	}
 
 	// don't allow another command for 800 msec
@@ -1535,7 +1535,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	cl->lastClientCommand = seq;
 	Com_sprintf( cl->lastClientCommandString, sizeof( cl->lastClientCommandString ), "%s", s );
 
-	return qtrue; // continue processing
+	return true; // continue processing
 }
 
 //==================================================================================
@@ -1571,7 +1571,7 @@ On very fast clients, there may be multiple usercmd packed into
 each of the backup packets.
 ==================
 */
-static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
+static void SV_UserMove( client_t *cl, msg_t *msg, bool delta )
 {
 	int       i;
 	int       cmdCount;
@@ -1682,20 +1682,20 @@ Blocking of voip packets based on source client
 ==================
 */
 
-static qboolean SV_ShouldIgnoreVoipSender( const client_t *cl )
+static bool SV_ShouldIgnoreVoipSender( const client_t *cl )
 {
 	if ( !sv_voip->integer )
 	{
-		return qtrue; // VoIP disabled on this server.
+		return true; // VoIP disabled on this server.
 	}
 	else if ( !cl->hasVoip ) // client doesn't have VoIP support?!
 	{
-		return qtrue;
+		return true;
 	}
 
 	// !!! FIXME: implement player blacklist.
 
-	return qfalse; // don't ignore.
+	return false; // don't ignore.
 }
 
 static
@@ -1915,7 +1915,7 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 				break;
 			}
 
-			if ( !SV_ClientCommand( cl, msg, qtrue ) )
+			if ( !SV_ClientCommand( cl, msg, true ) )
 			{
 				return; // we couldn't execute it because of the flood protection
 			}
@@ -1945,7 +1945,7 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 			break;
 		}
 
-		if ( !SV_ClientCommand( cl, msg, qfalse ) )
+		if ( !SV_ClientCommand( cl, msg, false ) )
 		{
 			return; // we couldn't execute it because of the flood protection
 		}
@@ -1968,11 +1968,11 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	// read the usercmd_t
 	if ( c == clc_move )
 	{
-		SV_UserMove( cl, msg, qtrue );
+		SV_UserMove( cl, msg, true );
 	}
 	else if ( c == clc_moveNoDelta )
 	{
-		SV_UserMove( cl, msg, qfalse );
+		SV_UserMove( cl, msg, false );
 	}
 	else if ( c != clc_EOF )
 	{

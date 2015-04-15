@@ -515,19 +515,19 @@ void CMod_LoadBrushSides( lump_t *l )
 CMod_BrushEdgesAreTheSame
 =================
 */
-static qboolean CMod_BrushEdgesAreTheSame( const vec3_t p0, const vec3_t p1, const vec3_t q0, const vec3_t q1 )
+static bool CMod_BrushEdgesAreTheSame( const vec3_t p0, const vec3_t p1, const vec3_t q0, const vec3_t q1 )
 {
 	if ( VectorCompareEpsilon( p0, q0, CM_EDGE_VERTEX_EPSILON ) && VectorCompareEpsilon( p1, q1, CM_EDGE_VERTEX_EPSILON ) )
 	{
-		return qtrue;
+		return true;
 	}
 
 	if ( VectorCompareEpsilon( p1, q0, CM_EDGE_VERTEX_EPSILON ) && VectorCompareEpsilon( p0, q1, CM_EDGE_VERTEX_EPSILON ) )
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -535,20 +535,20 @@ static qboolean CMod_BrushEdgesAreTheSame( const vec3_t p0, const vec3_t p1, con
 CMod_AddEdgeToBrush
 =================
 */
-static qboolean CMod_AddEdgeToBrush( const vec3_t p0, const vec3_t p1, cbrushedge_t *edges, int *numEdges )
+static bool CMod_AddEdgeToBrush( const vec3_t p0, const vec3_t p1, cbrushedge_t *edges, int *numEdges )
 {
 	int i;
 
 	if ( !edges || !numEdges )
 	{
-		return qfalse;
+		return false;
 	}
 
 	for ( i = 0; i < *numEdges; i++ )
 	{
 		if ( CMod_BrushEdgesAreTheSame( p0, p1, edges[ i ].p0, edges[ i ].p1 ) )
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
@@ -556,7 +556,7 @@ static qboolean CMod_AddEdgeToBrush( const vec3_t p0, const vec3_t p1, cbrushedg
 	VectorCopy( p1, edges[ *numEdges ].p1 );
 	( *numEdges ) ++;
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -684,7 +684,7 @@ void CMod_LoadEntityString( lump_t *l )
 	while ( 1 )
 	{
 		// parse key
-		token = COM_ParseExt2( &p, qtrue );
+		token = COM_ParseExt2( &p, true );
 
 		if ( !*token )
 		{
@@ -705,7 +705,7 @@ void CMod_LoadEntityString( lump_t *l )
 		Q_strncpyz( keyname, token, sizeof( keyname ) );
 
 		// parse value
-		token = COM_ParseExt2( &p, qfalse );
+		token = COM_ParseExt2( &p, false );
 
 		if ( !*token )
 		{
@@ -718,7 +718,7 @@ void CMod_LoadEntityString( lump_t *l )
 		if ( !Q_stricmp( keyname, "perPolyCollision" ) && !Q_stricmp( value, "1" ) )
 		{
 			Log::Notice( "map features per poly collision detection" );
-			cm.perPolyCollision = qtrue;
+			cm.perPolyCollision = true;
 			continue;
 		}
 
@@ -753,7 +753,7 @@ void CMod_LoadVisibility( lump_t *l )
 
 	buf = cmod_base + l->fileofs;
 
-	cm.vised = qtrue;
+	cm.vised = true;
 	cm.visibility = ( byte * ) CM_Alloc( len - VIS_HEADER );
 	cm.numClusters = LittleLong( ( ( int * ) buf ) [ 0 ] );
 	cm.clusterBytes = LittleLong( ( ( int * ) buf ) [ 1 ] );

@@ -242,7 +242,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	}
 	else if ( hitEnt->s.eType == ET_BUILDABLE && hitEnt->buildableTeam == TEAM_ALIENS )
 	{
-		hitEnt->onFire = qfalse;
+		hitEnt->onFire = false;
 		hitEnt->fireImmunityUntil = level.time + ABUILDER_BLOB_FIRE_IMMUNITY;
 
 		impactFlags &= ~MIF_NO_DAMAGE;
@@ -274,7 +274,7 @@ static int ImpactHive( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 		}
 		else
 		{
-			ent->parent->active = qfalse;
+			ent->parent->active = false;
 		}
 
 		return MIB_FREE;
@@ -406,7 +406,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, dirAsByte );
 		}
 
-		ent->freeAfterEvent = qtrue;
+		ent->freeAfterEvent = true;
 
 		// HACK: Change over to a general entity at the point of impact.
 		ent->s.eType = ET_GENERAL;
@@ -448,7 +448,7 @@ void G_ExplodeMissile( gentity_t *ent )
 
 	// turn the missile into an event carrier
 	ent->s.eType = ET_INVISIBLE;
-	ent->freeAfterEvent = qtrue;
+	ent->freeAfterEvent = true;
 	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
 
 	// splash damage
@@ -468,7 +468,7 @@ void G_RunMissile( gentity_t *ent )
 	vec3_t   origin;
 	trace_t  tr;
 	int      passent;
-	qboolean impact = qfalse;
+	bool impact = false;
 
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
@@ -491,7 +491,7 @@ void G_RunMissile( gentity_t *ent )
 		if ( !ent->pointAgainstWorld || (tr.contents & CONTENTS_BODY) )
 		{
 			// We hit an entity or we don't care
-			impact = qtrue;
+			impact = true;
 		}
 		else
 		{
@@ -501,14 +501,14 @@ void G_RunMissile( gentity_t *ent )
 			if ( tr.fraction < 1.0f )
 			{
 				// Hit the world with point trace
-				impact = qtrue;
+				impact = true;
 			}
 			else
 			{
 				if ( tr.contents & CONTENTS_BODY )
 				{
 					// Hit an entity
-					impact = qtrue;
+					impact = true;
 				}
 				else
 				{
@@ -517,7 +517,7 @@ void G_RunMissile( gentity_t *ent )
 
 					if ( tr.fraction < 1.0f )
 					{
-						impact = qtrue;
+						impact = true;
 					}
 				}
 			}

@@ -94,7 +94,7 @@ cvar_t    *con_debug;
 // Buffer used by line-to-string code. Implementation detail.
 static char lineString[ MAX_CONSOLE_WIDTH * 6 + 5 ];
 
-static const char *Con_LineToString( int lineno, qboolean lf )
+static const char *Con_LineToString( int lineno, bool lf )
 {
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
@@ -124,7 +124,7 @@ static const char *Con_LineToString( int lineno, qboolean lf )
 	return lineString;
 }
 
-static const char *Con_LineToColouredString( int lineno, qboolean lf )
+static const char *Con_LineToColouredString( int lineno, bool lf )
 {
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d, colour = 7;
@@ -271,7 +271,7 @@ void Con_Dump_f( void )
 	// write the remaining lines
 	for ( ; l <= consoleState.currentLine; l++ )
 	{
-		const char *buffer = Con_LineToString( l, qtrue );
+		const char *buffer = Con_LineToString( l, true );
 		FS_Write( buffer, strlen( buffer ), f );
 	}
 
@@ -302,7 +302,7 @@ void Con_Search_f( void )
 	// check the lines
 	for ( l = consoleState.scrollLineIndex - 1 + direction; l <= consoleState.currentLine && consoleState.currentLine - l < consoleState.maxScrollbackLengthInLines; l += direction )
 	{
-		const char *buffer = Con_LineToString( l, qtrue );
+		const char *buffer = Con_LineToString( l, true );
 
 		// Don't search commands
 		for ( i = 1; i < c; i++ )
@@ -356,13 +356,13 @@ void Con_Grep_f( void )
 
 	for ( ; l <= consoleState.currentLine; l++ )
 	{
-		const char *buffer = Con_LineToString( l, qfalse );
+		const char *buffer = Con_LineToString( l, false );
 
 		if ( Q_stristr( buffer, search ) )
 		{
 			size_t i;
 
-			buffer = Con_LineToColouredString( l, qtrue );
+			buffer = Con_LineToColouredString( l, true );
 			i = strlen( buffer );
 
 			if ( pbLength + i >= pbAlloc )
@@ -406,11 +406,11 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-qboolean Con_CheckResize( void )
+bool Con_CheckResize( void )
 {
 	int   i, textWidthInChars, oldwidth, oldtotallines, numlines, numchars;
 	conChar_t buf[ CON_TEXTSIZE ];
-	qboolean  ret = qtrue;
+	bool  ret = true;
 
 	if ( cls.glconfig.vidWidth )
 	{
@@ -436,7 +436,7 @@ qboolean Con_CheckResize( void )
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 		consoleState.scrollLineIndex = consoleState.currentLine;
 
-		ret = qfalse;
+		ret = false;
 	}
 	else
 	{
@@ -579,7 +579,7 @@ If no console is visible, the text will appear at the top of the game window
 #pragma optimize( "g", off ) // SMF - msvc totally screws this function up with optimize on
 #endif
 
-qboolean CL_InternalConsolePrint( const char *text )
+bool CL_InternalConsolePrint( const char *text )
 {
 	int      y;
 	int      c, i;
@@ -589,7 +589,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
 	{
-		return qtrue;
+		return true;
 	}
 
 	if ( !consoleState.initialized )
@@ -600,7 +600,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 
 	//Video hasn't been initialized
 	if ( ! cls.glconfig.vidWidth ) {
-		return qfalse;
+		return false;
 	}
 
 	// NERVE - SMF - work around for text that shows up in console but not in notify
@@ -696,7 +696,7 @@ qboolean CL_InternalConsolePrint( const char *text )
 		text += Q_UTF8_Width( text );
 	}
 
-	return qtrue;
+	return true;
 }
 
 #if defined( _WIN32 ) && defined( NDEBUG )
@@ -782,10 +782,10 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	color[ 2 ] = 1.0f;
 	color[ 3 ] = consoleState.currentAlphaFactor * overrideAlpha;
 
-	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, qfalse, qfalse );
+	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
 
 	Q_CleanStr( prompt );
-	Field_Draw( g_consoleField, consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
+	Field_Draw( g_consoleField, consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, true, true, color[ 3 ] );
 }
 
 void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )
@@ -1474,7 +1474,7 @@ void Con_Close( void )
 
 	g_consoleField.Clear();
 	cls.keyCatchers &= ~KEYCATCH_CONSOLE;
-	consoleState.isOpened = qfalse;
+	consoleState.isOpened = false;
 
 	//instant disappearance, if we need it for situations where this is not called by the user
 	consoleState.currentAnimationFraction = 0;

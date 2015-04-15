@@ -63,7 +63,7 @@ static void CG_Rocket_DrawAmmo( void )
 	int      valueMarked = -1;
 	int      maxAmmo;
 	weapon_t weapon;
-	qboolean bp = qfalse;
+	bool bp = false;
 
 	switch ( weapon = BG_PrimaryWeapon( cg.snap->ps.stats ) )
 	{
@@ -77,7 +77,7 @@ static void CG_Rocket_DrawAmmo( void )
 		case WP_HBUILD:
 			value = cg.snap->ps.persistant[ PERS_BP ];
 			valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
-			bp = qtrue;
+			bp = true;
 			break;
 
 		default:
@@ -211,7 +211,7 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 	vec4_t       color, drawColor, baseColor;
 	weapon_t     weapon;
 	weaponInfo_t *wi;
-	qboolean     onRelevantEntity;
+	bool     onRelevantEntity;
 
 	if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
 			cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
@@ -241,27 +241,27 @@ static void CG_Rocket_DrawCrosshairIndicator( void )
 		{
 			Vector4Copy( colorRed, baseColor );
 			baseColor[ 3 ] = color[ 3 ] * 0.75f;
-			onRelevantEntity = qtrue;
+			onRelevantEntity = true;
 		}
 
 		else if ( cg.crosshairFriend )
 		{
 			Vector4Copy( colorGreen, baseColor );
 			baseColor[ 3 ] = color[ 3 ] * 0.75f;
-			onRelevantEntity = qtrue;
+			onRelevantEntity = true;
 		}
 
 		else
 		{
 			Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
-			onRelevantEntity = qfalse;
+			onRelevantEntity = false;
 		}
 	}
 
 	else
 	{
 		Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
-		onRelevantEntity = qfalse;
+		onRelevantEntity = false;
 	}
 
 	// add hit color
@@ -381,7 +381,7 @@ void CG_AddSpeed( void )
 	float  speed;
 	vec3_t vel;
 	int    windowTime;
-	qboolean newSpeedGteMaxSpeed, newSpeedGteMaxSpeedInWindow;
+	bool newSpeedGteMaxSpeed, newSpeedGteMaxSpeedInWindow;
 
 	VectorCopy( cg.snap->ps.velocity, vel );
 
@@ -620,7 +620,7 @@ static void CG_Rocket_DrawWeaponIcon( void )
 
 static void CG_Rocket_DrawPlayerWallclimbing( void )
 {
-	qboolean wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
+	bool wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
 	trap_Rocket_SetClass( "active", wallwalking );
 	trap_Rocket_SetClass( "inactive", !wallwalking );
 }
@@ -1005,8 +1005,8 @@ static void CG_ScanForCrosshairEntity( void )
 	team_t        ownTeam, targetTeam;
 	entityState_t *targetState;
 
-	cg.crosshairFriend = qfalse;
-	cg.crosshairFoe    = qfalse;
+	cg.crosshairFriend = false;
+	cg.crosshairFoe    = false;
 
 	VectorCopy( cg.refdef.vieworg, start );
 	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
@@ -1040,12 +1040,12 @@ static void CG_ScanForCrosshairEntity( void )
 
 			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
 			{
-				cg.crosshairFriend = qtrue;
+				cg.crosshairFriend = true;
 			}
 
 			else if ( targetTeam != TEAM_NONE )
 			{
-				cg.crosshairFoe = qtrue;
+				cg.crosshairFoe = true;
 			}
 		}
 
@@ -1068,7 +1068,7 @@ static void CG_ScanForCrosshairEntity( void )
 			// set friend/foe
 			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
 			{
-				cg.crosshairFriend = qtrue;
+				cg.crosshairFriend = true;
 
 				// only set this for friendly clients as it triggers name display
 				cg.crosshairClientNum = trace.entityNum;
@@ -1077,7 +1077,7 @@ static void CG_ScanForCrosshairEntity( void )
 
 			else if ( targetTeam != TEAM_NONE )
 			{
-				cg.crosshairFoe = qtrue;
+				cg.crosshairFoe = true;
 
 				if ( ownTeam == TEAM_NONE )
 				{
@@ -1428,7 +1428,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	float    each, frac;
 	float    nudge;
 	float    fmax = max; // we don't want integer division
-	qboolean vertical; // a stack taller than it is wide is drawn vertically
+	bool vertical; // a stack taller than it is wide is drawn vertically
 	vec4_t   localColor;
 
 	// so that the vertical and horizontal bars can share code, abstract the
@@ -1445,13 +1445,13 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 
 	if ( rect->h >= rect->w )
 	{
-		vertical = qtrue;
+		vertical = true;
 		length = rect->h;
 	}
 
 	else
 	{
-		vertical = qfalse;
+		vertical = false;
 		length = rect->w;
 	}
 
@@ -1895,7 +1895,7 @@ void CG_Rocket_DrawTutorial( void )
 
 void CG_Rocket_DrawStaminaBolt( void )
 {
-	qboolean  activate = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
+	bool  activate = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
 	trap_Rocket_SetClass( "sprint", activate );
 	trap_Rocket_SetClass( "walk", !activate );
 }
@@ -1940,14 +1940,14 @@ static void CG_Rocket_DrawPlayerMomentumBar( void )
 	float         momentum, rawFraction, fraction, glowFraction, glowOffset, borderSize;
 	int           threshold;
 	team_t        team;
-	qboolean      unlocked;
+	bool      unlocked;
 
 	momentumThresholdIterator_t unlockableIter = { -1 };
 
 	// display
 	vec4_t        color;
 	float         x, y, w, h, b, glowStrength;
-	qboolean      vertical;
+	bool      vertical;
 
 	CG_GetRocketElementRect( &rect );
 	CG_GetRocketElementBGColor( backColor );
@@ -2128,14 +2128,14 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 
 	// display
 	float     x, y, w, h, iw, ih, borderSize;
-	qboolean  vertical;
+	bool  vertical;
 
 	int       icons, counts;
 	int       count[ 32 ] = { 0 };
 	struct
 	{
 		qhandle_t shader;
-		qboolean  unlocked;
+		bool  unlocked;
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
 	CG_GetRocketElementRect( &rect );
@@ -2162,7 +2162,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems( void )
 	{
 		qhandle_t shader;
 		int       threshold;
-		qboolean  unlocked;
+		bool  unlocked;
 
 		previousIter = unlockableIter;
 		unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked );
@@ -2278,7 +2278,7 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	// play a talk beep whenever it is modified
 	if ( cgs.voteModified[ team ] )
 	{
-		cgs.voteModified[ team ] = qfalse;
+		cgs.voteModified[ team ] = false;
 		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 	}
 
@@ -2578,7 +2578,7 @@ static void CG_Rocket_DrawDownloadSpeed( void )
 
 static void CG_Rocket_HaveJetpck( void )
 {
-	qboolean jetpackInInventory = BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats );
+	bool jetpackInInventory = BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats );
 	trap_Rocket_SetClass( "active", jetpackInInventory );
 	trap_Rocket_SetClass( "inactive", !jetpackInInventory );
 }

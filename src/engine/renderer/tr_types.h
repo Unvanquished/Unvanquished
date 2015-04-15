@@ -169,7 +169,7 @@ typedef struct
 	vec3_t    lightingOrigin; // so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
 
 	vec3_t    axis[ 3 ]; // rotation vectors
-	qboolean  nonNormalizedAxes; // axis are not normalized, i.e. they have scale
+	bool  nonNormalizedAxes; // axis are not normalized, i.e. they have scale
 	vec3_t    origin;
 	int       frame;
 
@@ -248,10 +248,10 @@ typedef struct
 	vec3_t   projStart;
 	vec3_t   projEnd;
 
-	qboolean noShadows;
+	bool noShadows;
 	short    noShadowID; // don't cast shadows of all entities with this id
 
-	qboolean inverseShadows; // don't cast light and draw shadows by darken the scene
+	bool inverseShadows; // don't cast light and draw shadows by darken the scene
 	// this is useful for drawing player shadows with shadow mapping
 } refLight_t;
 
@@ -354,8 +354,8 @@ typedef struct
 	glHardwareType_t     hardwareType;
 
 	textureCompression_t textureCompression;
-	qboolean             textureEnvAddAvailable;
-	qboolean             anisotropicAvailable; //----(SA)  added
+	bool             textureEnvAddAvailable;
+	bool             anisotropicAvailable; //----(SA)  added
 	float                maxAnisotropy; //----(SA)  added
 
 	int      vidWidth, vidHeight;
@@ -367,18 +367,18 @@ typedef struct
 
 	// synonymous with "does rendering consume the entire screen?", therefore
 	// a Win32 ICD that used CDS will have this set to TRUE
-	qboolean isFullscreen;
-	qboolean smpActive; // dual processor
+	bool isFullscreen;
+	bool smpActive; // dual processor
 } glconfig_t;
 
 // XreaL BEGIN
 typedef struct
 {
-	qboolean ARBTextureCompressionAvailable;
+	bool ARBTextureCompressionAvailable;
 
 	int      maxCubeMapTextureSize;
 
-	qboolean occlusionQueryAvailable;
+	bool occlusionQueryAvailable;
 	int      occlusionQueryBits;
 
 	char     shadingLanguageVersionString[ MAX_STRING_CHARS ];
@@ -387,31 +387,31 @@ typedef struct
 	int      maxVertexUniforms;
 //	int             maxVaryingFloats;
 	int      maxVertexAttribs;
-	qboolean vboVertexSkinningAvailable;
+	bool vboVertexSkinningAvailable;
 	int      maxVertexSkinningBones;
 
-	qboolean textureNPOTAvailable;
+	bool textureNPOTAvailable;
 
-	qboolean drawBuffersAvailable;
-	qboolean textureHalfFloatAvailable;
-	qboolean textureFloatAvailable;
-	qboolean textureRGAvailable;
+	bool drawBuffersAvailable;
+	bool textureHalfFloatAvailable;
+	bool textureFloatAvailable;
+	bool textureRGAvailable;
 	int      maxDrawBuffers;
 
 	float    maxTextureAnisotropy;
-	qboolean textureAnisotropyAvailable;
+	bool textureAnisotropyAvailable;
 
-	qboolean framebufferObjectAvailable;
+	bool framebufferObjectAvailable;
 	int      maxRenderbufferSize;
 	int      maxColorAttachments;
-	qboolean framebufferPackedDepthStencilAvailable;
-	qboolean framebufferBlitAvailable;
+	bool framebufferPackedDepthStencilAvailable;
+	bool framebufferBlitAvailable;
 
-	qboolean generateMipmapAvailable;
-	qboolean getProgramBinaryAvailable;
-	qboolean bufferStorageAvailable;
-	qboolean mapBufferRangeAvailable;
-	qboolean syncAvailable;
+	bool generateMipmapAvailable;
+	bool getProgramBinaryAvailable;
+	bool bufferStorageAvailable;
+	bool mapBufferRangeAvailable;
+	bool syncAvailable;
 } glconfig2_t;
 // XreaL END
 

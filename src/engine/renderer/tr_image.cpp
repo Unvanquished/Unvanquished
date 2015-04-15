@@ -171,7 +171,7 @@ void R_ImageList_f( void )
 		char buffer[ MAX_TOKEN_CHARS ];
 		std::string out;
 
-		if ( filter && !Com_Filter( filter, image->name, qtrue ) )
+		if ( filter && !Com_Filter( filter, image->name, true ) )
 		{
 			continue;
 		}
@@ -446,7 +446,7 @@ before or after.
 ================
 */
 static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *out, int outwidth, int outheight,
-                             qboolean normalMap )
+                             bool normalMap )
 {
 	int      x, y;
 	unsigned *inrow, *inrow2;
@@ -949,7 +949,7 @@ XY as vec2(tex.x * tex.a, tex.y).
 */
 static void
 R_ConvertBC5Image(const byte **in, byte **out, int numMips, int numLayers,
-		  int width, int height, qboolean is3D )
+		  int width, int height, bool is3D )
 {
 	int blocks = 0;
 	int mipWidth, mipHeight, mipLayers, mipSize;
@@ -1711,7 +1711,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 R_AllocImage
 ================
 */
-image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
+image_t        *R_AllocImage( const char *name, bool linkIntoHashTable )
 {
 	image_t *image;
 	long    hash;
@@ -1775,7 +1775,7 @@ image_t        *R_CreateImage( const char *name, const byte **pic, int width, in
 {
 	image_t *image;
 
-	image = R_AllocImage( name, qtrue );
+	image = R_AllocImage( name, true );
 
 	if ( !image )
 	{
@@ -1807,7 +1807,7 @@ R_CreateGlyph
 */
 image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height )
 {
-	image_t *image = R_AllocImage( name, qtrue );
+	image_t *image = R_AllocImage( name, true );
 
 	if ( !image )
 	{
@@ -1855,7 +1855,7 @@ image_t        *R_CreateCubeImage( const char *name,
 {
 	image_t *image;
 
-	image = R_AllocImage( name, qtrue );
+	image = R_AllocImage( name, true );
 
 	if ( !image )
 	{
@@ -1895,7 +1895,7 @@ image_t        *R_Create3DImage( const char *name,
 	const byte **pics;
 	int i;
 
-	image = R_AllocImage( name, qtrue );
+	image = R_AllocImage( name, true );
 
 	if ( !image )
 	{
@@ -1967,7 +1967,7 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 	*width = 0;
 	*height = 0;
 
-	token = COM_ParseExt2( buffer, qfalse );
+	token = COM_ParseExt2( buffer, false );
 
 	if ( !token[ 0 ] )
 	{
@@ -2267,13 +2267,13 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	static char *openglSuffices[ 6 ] = { "px", "nx", "py", "ny", "pz", "nz" };
 
 	static char     *doom3Suffices[ 6 ] = { "forward", "back", "left", "right", "up", "down" };
-	static qboolean doom3FlipX[ 6 ] = { qtrue,        qtrue,  qfalse, qtrue,  qtrue,  qfalse };
-	static qboolean doom3FlipY[ 6 ] = { qfalse,       qfalse, qtrue,  qfalse, qfalse, qtrue };
+	static bool doom3FlipX[ 6 ] = { true,        true,  false, true,  true,  false };
+	static bool doom3FlipY[ 6 ] = { false,       false, true,  false, false, true };
 	static int      doom3Rot[ 6 ] = { 90,           -90,    0,              0,              90,             -90 };
 
 	static char     *quakeSuffices[ 6 ] = { "rt", "lf", "bk", "ft", "up", "dn" };
-	static qboolean quakeFlipX[ 6 ] = { qtrue,        qtrue,  qfalse, qtrue,  qtrue,  qfalse };
-	static qboolean quakeFlipY[ 6 ] = { qfalse,       qfalse, qtrue,  qfalse, qfalse, qtrue };
+	static bool quakeFlipX[ 6 ] = { true,        true,  false, true,  true,  false };
+	static bool quakeFlipY[ 6 ] = { false,       false, true,  false, false, true };
 	static int      quakeRot[ 6 ] = { 90,           -90,    0,              0,              90,             -90 };
 
 	char            buffer[ 1024 ], filename[ 1024 ];

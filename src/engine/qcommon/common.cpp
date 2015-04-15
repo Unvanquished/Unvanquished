@@ -108,7 +108,7 @@ int      com_frameMsec;
 int      com_frameNumber;
 int      com_hunkusedvalue;
 
-qboolean com_fullyInitialized;
+bool com_fullyInitialized;
 
 void     Com_WriteConfig_f( void );
 void     Com_WriteBindings_f( void );
@@ -354,7 +354,7 @@ Check for "safe" on the command line, which will
 skip loading of wolfconfig.cfg
 ===================
 */
-qboolean Com_SafeMode( void )
+bool Com_SafeMode( void )
 {
 	int i;
 
@@ -365,11 +365,11 @@ qboolean Com_SafeMode( void )
 		if ( line.size() > 1 && ( !Q_stricmp( line[0].c_str(), "safe" ) || !Q_stricmp( line[0].c_str(), "cvar_restart" ) ) )
 		{
 			com_consoleLines[ i ][ 0 ] = 0;
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -422,16 +422,16 @@ Com_AddStartupCommands
 Adds command-line arguments as script statements
 Commands are separated by + signs
 
-Returns qtrue if any late commands were added, which
+Returns true if any late commands were added, which
 will keep the demoloop from immediately starting
 =================
 */
-qboolean Com_AddStartupCommands( void )
+bool Com_AddStartupCommands( void )
 {
 	int      i;
-	qboolean added;
+	bool added;
 
-	added = qfalse;
+	added = false;
 
 	// quote every token, so args with semicolons can work
 	for ( i = 0; i < com_numConsoleLines; i++ )
@@ -444,7 +444,7 @@ qboolean Com_AddStartupCommands( void )
 		// set commands won't override menu startup
 		if ( Q_strnicmp( com_consoleLines[ i ], "set", 3 ) )
 		{
-			added = qtrue;
+			added = true;
 		}
 
 		Cmd::BufferCommandText(com_consoleLines[i], true);
@@ -770,7 +770,7 @@ void Hunk_SmallLog( void )
 
 	for ( block = hunkblocks; block; block = block->next )
 	{
-		block->printed = qfalse;
+		block->printed = false;
 	}
 
 	size = 0;
@@ -801,7 +801,7 @@ void Hunk_SmallLog( void )
 
 			size += block2->size;
 			locsize += block2->size;
-			block2->printed = qtrue;
+			block2->printed = true;
 		}
 
 #ifdef HUNK_DEBUG
@@ -1326,7 +1326,7 @@ Returns last event time
 */
 
 #ifdef BUILD_CLIENT
-extern qboolean consoleButtonWasPressed;
+extern bool consoleButtonWasPressed;
 #endif
 
 int Com_EventLoop( void )
@@ -1393,7 +1393,7 @@ int Com_EventLoop( void )
 				// when you just opened it
 				if ( consoleButtonWasPressed )
 				{
-					consoleButtonWasPressed = qfalse;
+					consoleButtonWasPressed = false;
 					break;
 				}
 
@@ -1570,7 +1570,7 @@ static void NORETURN Com_Crash_f( void )
 void Com_SetRecommended( void )
 {
 	cvar_t   *r_highQualityVideo; //, *com_recommended;
-	qboolean goodVideo;
+	bool goodVideo;
 
 	// will use this for recommended settings as well.. do i outside the lower check so it gets done even with command line stuff
 	r_highQualityVideo = Cvar_Get( "r_highQualityVideo", "1", 0 );
@@ -1704,7 +1704,7 @@ void Com_Init( char *commandLine )
 
 	CL_StartHunkUsers();
 
-	com_fullyInitialized = qtrue;
+	com_fullyInitialized = true;
 	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
 
 	NET_Init();
@@ -1758,7 +1758,7 @@ void Com_WriteConfiguration( void )
 #ifdef BUILD_CLIENT
 	if ( bindingsModified )
 	{
-		bindingsModified = qfalse;
+		bindingsModified = false;
 
 		Com_WriteConfigToFile( KEYBINDINGS_NAME, Key_WriteBindings );
 	}
@@ -1905,7 +1905,7 @@ void Com_Frame()
 	int             timeAfter;
 
 	static int      watchdogTime = 0;
-	static qboolean watchWarn = qfalse;
+	static bool watchWarn = false;
 
 	// bk001204 - init to zero.
 	//  also:  might be clobbered by `longjmp' or `vfork'
@@ -2045,13 +2045,13 @@ void Com_Frame()
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( watchdogThreshold.Get() - 4 ) * 1000 )
 			{
 				Com_Log( LOG_WARN, "watchdog will trigger in 4 seconds" );
-				watchWarn = qtrue;
+				watchWarn = true;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )
 			{
 				Com_Printf( "Idle server with no map — triggering watchdog\n" );
 				watchdogTime = 0;
-				watchWarn = qfalse;
+				watchWarn = false;
 
 				if ( watchdogCmd.Get().empty() )
 				{
@@ -2162,7 +2162,7 @@ Returns non-zero if given clientNum is enabled in voipTargets, zero otherwise.
 If clientNum is negative return if any bit is set.
 ==================
 */
-qboolean Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum )
+bool Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum )
 {
 	int index;
 
@@ -2172,11 +2172,11 @@ qboolean Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int client
 		{
 			if ( voipTargets[ index ] )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 
-		return qfalse;
+		return false;
 	}
 
 	index = clientNum >> 3;
@@ -2186,7 +2186,7 @@ qboolean Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int client
 		return ( voipTargets[ index ] & ( 1 << ( clientNum & 0x07 ) ) );
 	}
 
-	return qfalse;
+	return false;
 }
 
 

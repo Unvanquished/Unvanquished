@@ -35,7 +35,7 @@ added to the sorting list.
 This will also allow mirrors on both sides of a model without recursion.
 ================
 */
-static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int planeBits )
+static bool R_CullSurface( surfaceType_t *surface, shader_t *shader, int planeBits )
 {
 	srfGeneric_t *gen;
 	float        d;
@@ -43,18 +43,18 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int pla
 	// allow culling to be disabled
 	if ( r_nocull->integer )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
 	if ( *surface == SF_GRID && r_nocurves->integer )
 	{
-		return qtrue;
+		return true;
 	}
 
 	if ( *surface != SF_FACE && *surface != SF_TRIANGLES && *surface != SF_VBO_MESH && *surface != SF_GRID )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// get generic surface
@@ -74,7 +74,7 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int pla
 			if ( d < -8.0f )
 			{
 				tr.pc.c_plane_cull_out++;
-				return qtrue;
+				return true;
 			}
 		}
 		else if ( shader->cullType == CT_BACK_SIDED )
@@ -82,7 +82,7 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int pla
 			if ( d > 8.0f )
 			{
 				tr.pc.c_plane_cull_out++;
-				return qtrue;
+				return true;
 			}
 		}
 
@@ -105,7 +105,7 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int pla
 		if ( cull == CULL_OUT )
 		{
 			tr.pc.c_box_cull_out++;
-			return qtrue;
+			return true;
 		}
 		else if ( cull == CULL_CLIP )
 		{
@@ -118,10 +118,10 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int pla
 	}
 
 	// must be visible
-	return qfalse;
+	return false;
 }
 
-static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, trRefLight_t *light, byte *cubeSideBits )
+static bool R_CullLightSurface( surfaceType_t *surface, shader_t *shader, trRefLight_t *light, byte *cubeSideBits )
 {
 	srfGeneric_t *gen;
 	float        d;
@@ -129,18 +129,18 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 	// allow culling to be disabled
 	if ( r_nocull->integer )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
 	if ( *surface == SF_GRID && r_nocurves->integer )
 	{
-		return qtrue;
+		return true;
 	}
 
 	if ( *surface != SF_FACE && *surface != SF_TRIANGLES && *surface != SF_VBO_MESH && *surface != SF_GRID )
 	{
-		return qtrue;
+		return true;
 	}
 
 	gen = ( srfGeneric_t * ) surface;
@@ -148,7 +148,7 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 	// do a quick AABB cull
 	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], gen->bounds[ 0 ], gen->bounds[ 1 ] ) )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// do a more expensive and precise light frustum cull
@@ -156,7 +156,7 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 	{
 		if ( R_CullLightWorldBounds( light, gen->bounds ) == CULL_OUT )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
@@ -179,14 +179,14 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 		{
 			if ( d < -8.0f )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 		else if ( shader->cullType == CT_BACK_SIDED )
 		{
 			if ( d > 8.0f )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 	}
@@ -196,7 +196,7 @@ static qboolean R_CullLightSurface( surfaceType_t *surface, shader_t *shader, tr
 		*cubeSideBits = R_CalcLightCubeSideBits( light, gen->bounds );
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -207,14 +207,14 @@ R_AddInteractionSurface
 static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, int interactionBits )
 {
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
-	qboolean          firstAddition = qfalse;
+	bool          firstAddition = false;
 	int               bits;
 
 	if ( surf->lightCount != tr.lightCount )
 	{
 		surf->interactionBits = 0;
 		surf->lightCount = tr.lightCount;
-		firstAddition = qtrue;
+		firstAddition = true;
 	}
 
 	// only add interactions we haven't already added
@@ -281,11 +281,11 @@ static void R_AddDecalSurface( bspSurface_t *surf, int decalBits )
 R_AddWorldSurface
 ======================
 */
-static qboolean R_AddWorldSurface( bspSurface_t *surf, int fogIndex, int planeBits )
+static bool R_AddWorldSurface( bspSurface_t *surf, int fogIndex, int planeBits )
 {
 	if ( surf->viewCount == tr.viewCountNoReset )
 	{
-		return qfalse; // already in this view
+		return false; // already in this view
 	}
 
 	surf->viewCount = tr.viewCountNoReset;
@@ -293,11 +293,11 @@ static qboolean R_AddWorldSurface( bspSurface_t *surf, int fogIndex, int planeBi
 	// try to cull before lighting or adding
 	if ( R_CullSurface( surf->data, surf->shader, planeBits ) )
 	{
-		return qtrue;
+		return true;
 	}
 
 	R_AddDrawSurf( surf->data, surf->shader, surf->lightmapNum, fogIndex );
-	return qtrue;
+	return true;
 }
 
 /*
@@ -705,7 +705,7 @@ static const byte *R_ClusterPVVS( int cluster )
 R_inPVS
 =================
 */
-qboolean R_inPVS( const vec3_t p1, const vec3_t p2 )
+bool R_inPVS( const vec3_t p1, const vec3_t p2 )
 {
 	bspNode_t  *leaf;
 	const byte *vis;
@@ -716,10 +716,10 @@ qboolean R_inPVS( const vec3_t p1, const vec3_t p2 )
 
 	if ( !( vis[ leaf->cluster >> 3 ] & ( 1 << ( leaf->cluster & 7 ) ) ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -727,7 +727,7 @@ qboolean R_inPVS( const vec3_t p1, const vec3_t p2 )
 R_inPVVS
 =================
 */
-qboolean R_inPVVS( const vec3_t p1, const vec3_t p2 )
+bool R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
 	bspNode_t  *leaf;
 	const byte *vis;
@@ -738,10 +738,10 @@ qboolean R_inPVVS( const vec3_t p1, const vec3_t p2 )
 
 	if ( !( vis[ leaf->cluster >> 3 ] & ( 1 << ( leaf->cluster & 7 ) ) ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -802,7 +802,7 @@ static void R_MarkLeaves( void )
 
 	if ( r_showcluster->modified || r_showcluster->integer )
 	{
-		r_showcluster->modified = qfalse;
+		r_showcluster->modified = false;
 
 		if ( r_showcluster->integer )
 		{

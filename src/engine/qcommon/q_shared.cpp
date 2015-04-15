@@ -318,7 +318,7 @@ char *COM_SkipPath( char *pathname )
 Com_CharIsOneOfCharset
 ==================
 */
-static qboolean Com_CharIsOneOfCharset( char c, char *set )
+static bool Com_CharIsOneOfCharset( char c, char *set )
 {
 	int i;
 
@@ -326,11 +326,11 @@ static qboolean Com_CharIsOneOfCharset( char c, char *set )
 	{
 		if ( set[ i ] == c )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -558,7 +558,7 @@ COM_BitCheck
   Allows bit-wise checks on arrays with more than one item (> 32 bits)
 ==================
 */
-qboolean COM_BitCheck( const int array[], int bitNum )
+bool COM_BitCheck( const int array[], int bitNum )
 {
 	int i;
 
@@ -771,7 +771,7 @@ int COM_GetCurrentParseLine( void )
 
 char *COM_Parse( char **data_p )
 {
-	return COM_ParseExt( data_p, qtrue );
+	return COM_ParseExt( data_p, true );
 }
 
 void PRINTF_LIKE(1) COM_ParseError( char *format, ... )
@@ -805,12 +805,12 @@ COM_Parse
 Parse a token out of a string
 Will never return NULL, just empty strings
 
-If "allowLineBreaks" is qtrue then an empty
+If "allowLineBreaks" is true then an empty
 string will be returned if the next token is
 a newline.
 ==============
 */
-static char *SkipWhitespace( char *data, qboolean *hasNewLines )
+static char *SkipWhitespace( char *data, bool *hasNewLines )
 {
 	int c;
 
@@ -824,7 +824,7 @@ static char *SkipWhitespace( char *data, qboolean *hasNewLines )
 		if ( c == '\n' )
 		{
 			com_lines++;
-			*hasNewLines = qtrue;
+			*hasNewLines = true;
 		}
 
 		data++;
@@ -837,7 +837,7 @@ int COM_Compress( char *data_p )
 {
 	char     *datai, *datao;
 	int      c, size;
-	qboolean ws = qfalse;
+	bool ws = false;
 
 	size = 0;
 	datai = datao = data_p;
@@ -850,7 +850,7 @@ int COM_Compress( char *data_p )
 			{
 				*datao = c;
 				datao++;
-				ws = qfalse;
+				ws = false;
 				datai++;
 				size++;
 				// skip double slash comments
@@ -862,7 +862,7 @@ int COM_Compress( char *data_p )
 					datai++;
 				}
 
-				ws = qfalse;
+				ws = false;
 				// skip /* */ comments
 			}
 			else if ( c == '/' && datai[ 1 ] == '*' )
@@ -879,7 +879,7 @@ int COM_Compress( char *data_p )
 					datai += 2;
 				}
 
-				ws = qfalse;
+				ws = false;
 			}
 			else
 			{
@@ -892,7 +892,7 @@ int COM_Compress( char *data_p )
 				*datao = c;
 				datao++;
 				datai++;
-				ws = qfalse;
+				ws = false;
 				size++;
 			}
 		}
@@ -903,10 +903,10 @@ int COM_Compress( char *data_p )
 	return size;
 }
 
-char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
+char *COM_ParseExt( char **data_p, bool allowLineBreaks )
 {
 	int      c = 0, len;
-	qboolean hasNewLines = qfalse;
+	bool hasNewLines = false;
 	char     *data;
 
 	data = *data_p;
@@ -1080,14 +1080,14 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
 
 char           *COM_Parse2( char **data_p )
 {
-	return COM_ParseExt2( data_p, qtrue );
+	return COM_ParseExt2( data_p, true );
 }
 
 // *INDENT-OFF*
-char           *COM_ParseExt2( char **data_p, qboolean allowLineBreaks )
+char           *COM_ParseExt2( char **data_p, bool allowLineBreaks )
 {
 	int        c = 0, len;
-	qboolean   hasNewLines = qfalse;
+	bool   hasNewLines = false;
 	char       *data;
 	const char **punc;
 
@@ -1373,13 +1373,13 @@ SkipBracedSection_Depth
 
 =================
 */
-qboolean SkipBracedSection_Depth( char **program, int depth )
+bool SkipBracedSection_Depth( char **program, int depth )
 {
 	char *token;
 
 	do
 	{
-		token = COM_ParseExt( program, qtrue );
+		token = COM_ParseExt( program, true );
 
 		if ( token[ 1 ] == 0 )
 		{
@@ -1408,7 +1408,7 @@ Internal brace depths are properly skipped.
 Returns whether the close brace was found.
 =================
 */
-qboolean SkipBracedSection( char **program )
+bool SkipBracedSection( char **program )
 {
 	char *token;
 	int  depth;
@@ -1417,7 +1417,7 @@ qboolean SkipBracedSection( char **program )
 
 	do
 	{
-		token = COM_ParseExt( program, qtrue );
+		token = COM_ParseExt( program, true );
 
 		if ( token[ 1 ] == 0 )
 		{
@@ -1557,14 +1557,14 @@ int Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] )
 
 			Q_strncpyz( key, token, sizeof( key ) );
 
-			token = COM_ParseExt( &buf, qfalse );
+			token = COM_ParseExt( &buf, false );
 
 			if ( !token[ 0 ] )
 			{
 				token = "<NULL>";
 			}
 
-			Info_SetValueForKey( infos[ count ], key, token, qfalse );
+			Info_SetValueForKey( infos[ count ], key, token, false );
 		}
 
 		count++;
@@ -1573,7 +1573,7 @@ int Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] )
 	return count;
 }
 
-void Com_Parse1DMatrix( char **buf_p, int x, float *m, qboolean checkBrackets )
+void Com_Parse1DMatrix( char **buf_p, int x, float *m, bool checkBrackets )
 {
 	char *token;
 	int  i;
@@ -1603,7 +1603,7 @@ void Com_Parse2DMatrix( char **buf_p, int y, int x, float *m )
 
 	for ( i = 0; i < y; i++ )
 	{
-		Com_Parse1DMatrix( buf_p, x, m + i * x, qtrue );
+		Com_Parse1DMatrix( buf_p, x, m + i * x, true );
 	}
 
 	COM_MatchToken( buf_p, ")" );
@@ -1956,13 +1956,13 @@ Returns true on success and vice versa.
 Demonstration of behavior of strtod and conversions: http://codepad.org/YQKxV94R
 -============
 */
-qboolean Q_strtol( const char *s, long *outNum )
+bool Q_strtol( const char *s, long *outNum )
 {
 	char *p;
 
 	if ( *s == '\0' )
 	{
-		return qfalse;
+		return false;
 	}
 
 	*outNum = strtod( s, &p );
@@ -1970,13 +1970,13 @@ qboolean Q_strtol( const char *s, long *outNum )
 	return *p == '\0';
 }
 
-qboolean Q_strtoi( const char *s, int *outNum )
+bool Q_strtoi( const char *s, int *outNum )
 {
 	char *p;
 
 	if ( *s == '\0' )
 	{
-		return qfalse;
+		return false;
 	}
 
 	*outNum = strtod( s, &p );
@@ -2322,7 +2322,7 @@ int Com_Filter( const char *filter, const char *name, int casesensitive )
 
 				if ( !ptr )
 				{
-					return qfalse;
+					return false;
 				}
 
 				name = ptr + strlen( buf );
@@ -2340,7 +2340,7 @@ int Com_Filter( const char *filter, const char *name, int casesensitive )
 		else if ( *filter == '[' )
 		{
 			filter++;
-			found = qfalse;
+			found = false;
 
 			while ( *filter && !found )
 			{
@@ -2355,14 +2355,14 @@ int Com_Filter( const char *filter, const char *name, int casesensitive )
 					{
 						if ( *name >= *filter && *name <= * ( filter + 2 ) )
 						{
-							found = qtrue;
+							found = true;
 						}
 					}
 					else
 					{
 						if ( toupper( *name ) >= toupper( *filter ) && toupper( *name ) <= toupper( * ( filter + 2 ) ) )
 						{
-							found = qtrue;
+							found = true;
 						}
 					}
 
@@ -2374,14 +2374,14 @@ int Com_Filter( const char *filter, const char *name, int casesensitive )
 					{
 						if ( *filter == *name )
 						{
-							found = qtrue;
+							found = true;
 						}
 					}
 					else
 					{
 						if ( toupper( *filter ) == toupper( *name ) )
 						{
-							found = qtrue;
+							found = true;
 						}
 					}
 
@@ -2391,7 +2391,7 @@ int Com_Filter( const char *filter, const char *name, int casesensitive )
 
 			if ( !found )
 			{
-				return qfalse;
+				return false;
 			}
 
 			while ( *filter )
@@ -2413,14 +2413,14 @@ int Com_Filter( const char *filter, const char *name, int casesensitive )
 			{
 				if ( *filter != *name )
 				{
-					return qfalse;
+					return false;
 				}
 			}
 			else
 			{
 				if ( toupper( *filter ) != toupper( *name ) )
 				{
-					return qfalse;
+					return false;
 				}
 			}
 
@@ -2429,7 +2429,7 @@ int Com_Filter( const char *filter, const char *name, int casesensitive )
 		}
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -2439,7 +2439,7 @@ Q_strreplace
 replaces content of find by replace in dest
 =============
 */
-qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace )
+bool Q_strreplace( char *dest, int destsize, const char *find, const char *replace )
 {
 	int  lstart, lfind, lreplace, lend;
 	char *s;
@@ -2456,7 +2456,7 @@ qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *r
 
 	if ( !s )
 	{
-		return qfalse;
+		return false;
 	}
 	else
 	{
@@ -2468,7 +2468,7 @@ qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *r
 		Q_strncpyz( s, replace, destsize - lstart );
 		Q_strncpyz( s + lreplace, backup + lstart + lfind, destsize - lstart - lreplace );
 
-		return qtrue;
+		return true;
 	}
 }
 
@@ -2533,7 +2533,7 @@ char *Q_CleanStr( char *string )
 }
 
 // strips whitespaces and bad characters
-qboolean Q_isBadDirChar( char c )
+bool Q_isBadDirChar( char c )
 {
 	char badchars[] = { ';', '&', '(', ')', '|', '<', '>', '*', '?', '[', ']', '~', '+', '@', '!', '\\', '/', ' ', '\'', '\"', '\0' };
 	int  i;
@@ -2542,11 +2542,11 @@ qboolean Q_isBadDirChar( char c )
 	{
 		if ( c == badchars[ i ] )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 char *Q_CleanDirName( char *dirname )
@@ -2799,7 +2799,7 @@ void Info_NextPair( const char **head, char *key, char *value )
 Info_RemoveKey
 ===================
 */
-void Info_RemoveKey( char *s, const char *key, qboolean big )
+void Info_RemoveKey( char *s, const char *key, bool big )
 {
 	char *start;
 	int maxlen = big ? BIG_INFO_STRING : MAX_INFO_STRING;
@@ -2877,19 +2877,19 @@ Some characters are illegal in info strings because they
 can mess up the server's parsing
 ==================
 */
-qboolean Info_Validate( const char *s )
+bool Info_Validate( const char *s )
 {
 	if ( strchr( s, '\"' ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( strchr( s, ';' ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -2899,7 +2899,7 @@ Info_SetValueForKey
 Changes or adds a key/value pair
 ==================
 */
-void Info_SetValueForKey( char *s, const char *key, const char *value, qboolean big )
+void Info_SetValueForKey( char *s, const char *key, const char *value, bool big )
 {
 	int maxlen = big ? BIG_INFO_STRING : MAX_INFO_STRING;
 	int slen = strlen( s );
@@ -2946,7 +2946,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value, qboolean 
 	strcat( s, newi );
 }
 
-void Info_SetValueForKeyRocket( char *s, const char *key, const char *value, qboolean big )
+void Info_SetValueForKeyRocket( char *s, const char *key, const char *value, bool big )
 {
 	int maxlen = big ? BIG_INFO_STRING : MAX_INFO_STRING;
 	int slen = strlen( s );
@@ -2963,7 +2963,7 @@ void Info_SetValueForKeyRocket( char *s, const char *key, const char *value, qbo
 		return;
 	}
 
-	Info_RemoveKey( s, key, qtrue );
+	Info_RemoveKey( s, key, true );
 
 	if ( !value || !strlen( value ) )
 	{
@@ -2986,11 +2986,11 @@ void Info_SetValueForKeyRocket( char *s, const char *key, const char *value, qbo
 Com_ClientListContains
 ============
 */
-qboolean Com_ClientListContains( const clientList_t *list, int clientNum )
+bool Com_ClientListContains( const clientList_t *list, int clientNum )
 {
 	if ( clientNum < 0 || clientNum >= MAX_CLIENTS || !list )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( clientNum < 32 )

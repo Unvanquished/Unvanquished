@@ -49,9 +49,9 @@ Maryland 20850 USA.
 typedef struct
 {
 	// called before the library is unloaded
-	// if the system is just reconfiguring, pass destroyWindow = qfalse,
+	// if the system is just reconfiguring, pass destroyWindow = false,
 	// which will keep the screen from flashing to the desktop.
-	void ( *Shutdown )( qboolean destroyWindow );
+	void ( *Shutdown )( bool destroyWindow );
 
 	// All data that will be used in a level should be
 	// registered before rendering any frames to prevent disk hits,
@@ -63,7 +63,7 @@ typedef struct
 	// and height, which can be used by the client to intelligently
 	// size display elements. Returns false if the renderer couldn't
 	// be initialized.
-	qboolean( *BeginRegistration )( glconfig_t *config, glconfig2_t *glconfig2 );
+	bool( *BeginRegistration )( glconfig_t *config, glconfig2_t *glconfig2 );
 	qhandle_t ( *RegisterModel )( const char *name );
 	//qhandle_t   (*RegisterModelAllLODs) (const char *name);
 	qhandle_t ( *RegisterSkin )( const char *name );
@@ -115,8 +115,8 @@ typedef struct
 
 	// Draw images for cinematic rendering, pass as 32 bit rgba
 	void ( *DrawStretchRaw )( int x, int y, int w, int h, int cols, int rows, const byte *data, int client,
-	                          qboolean dirty );
-	void ( *UploadCinematic )( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
+	                          bool dirty );
+	void ( *UploadCinematic )( int w, int h, int cols, int rows, const byte *data, int client, bool dirty );
 
 	void ( *BeginFrame )( void );
 
@@ -136,22 +136,22 @@ typedef struct
 	void ( *RemapShader )( const char *oldShader, const char *newShader, const char *offsetTime );
 
 	void ( *DrawDebugPolygon )( int color, int numpoints, float *points );
-	void ( *DrawDebugText )( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
+	void ( *DrawDebugText )( const vec3_t org, float r, float g, float b, const char *text, bool neverOcclude );
 
-	qboolean( *GetEntityToken )( char *buffer, int size );
+	bool( *GetEntityToken )( char *buffer, int size );
 
 	void ( *AddPolyBufferToScene )( polyBuffer_t *pPolyBuffer );
 
-	qboolean( *inPVS )( const vec3_t p1, const vec3_t p2 );
-	qboolean( *inPVVS )( const vec3_t p1, const vec3_t p2 );
+	bool( *inPVS )( const vec3_t p1, const vec3_t p2 );
+	bool( *inPVVS )( const vec3_t p1, const vec3_t p2 );
 
-	qboolean( *LoadDynamicShader )( const char *shadername, const char *shadertext );
+	bool( *LoadDynamicShader )( const char *shadername, const char *shadertext );
 
 	void ( *RenderToTexture )( int textureid, int x, int y, int w, int h );
 	void ( *Finish )( void );
 
 	// XreaL BEGIN
-	void ( *TakeVideoFrame )( int h, int w, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg );
+	void ( *TakeVideoFrame )( int h, int w, byte *captureBuffer, byte *encodeBuffer, bool motionJpeg );
 
 	void ( *AddRefLightToScene )( const refLight_t *light );
 
@@ -159,7 +159,7 @@ typedef struct
 	qhandle_t ( *RegisterAnimation )( const char *name );
 	int ( *CheckSkeleton )( refSkeleton_t *skel, qhandle_t model, qhandle_t anim );
 	int ( *BuildSkeleton )( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,
-	                        qboolean clearOrigin );
+	                        bool clearOrigin );
 	int ( *BlendSkeleton )( refSkeleton_t *skel, const refSkeleton_t *blend, float frac );
 	int ( *BoneIndex )( qhandle_t hModel, const char *boneName );
 	int ( *AnimNumFrames )( qhandle_t hAnim );
@@ -177,7 +177,7 @@ typedef struct
 	// color grading
 	void      ( *SetColorGrading ) ( int slot, qhandle_t hShader );
 
-	void ( *ScissorEnable ) ( qboolean enable );
+	void ( *ScissorEnable ) ( bool enable );
 	void ( *ScissorSet ) ( int x, int y, int w, int h );
 
 	void ( *SetAltShaderTokens ) ( const char * );
@@ -246,12 +246,12 @@ typedef struct
 	char           **( *FS_ListFiles )( const char *name, const char *extension, int *numfilesfound );
 	void ( *FS_FreeFileList )( char **filelist );
 	void ( *FS_WriteFile )( const char *qpath, const void *buffer, int size );
-	qboolean( *FS_FileExists )( const char *file );
+	bool( *FS_FileExists )( const char *file );
 	int ( *FS_Seek )( fileHandle_t f, long offset, int origin );
 	int ( *FS_FTell )( fileHandle_t f );
 	int ( *FS_Read )( void *buffer, int len, fileHandle_t f );
 	int ( *FS_FCloseFile )( fileHandle_t f );
-	int ( *FS_FOpenFileRead )( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
+	int ( *FS_FOpenFileRead )( const char *qpath, fileHandle_t *file, bool uniqueFILE );
 
 	// cinematic stuff
 	void ( *CIN_UploadCinematic )( int handle );
@@ -259,7 +259,7 @@ typedef struct
 	e_status( *CIN_RunCinematic )( int handle );
 
 	// XreaL BEGIN
-	qboolean( *CL_VideoRecording )( void );
+	bool( *CL_VideoRecording )( void );
 	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );
 	// XreaL END
 

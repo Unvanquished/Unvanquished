@@ -178,7 +178,7 @@ void trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
 	VM::SendMsg<GetCurrentSnapshotNumberMsg>(*snapshotNumber, *serverTime);
 }
 
-qboolean trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
+bool trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 {
 	bool res;
 	VM::SendMsg<GetSnapshotMsg>(snapshotNumber, res, *snapshot);
@@ -192,7 +192,7 @@ int trap_GetCurrentCmdNumber( void )
 	return res;
 }
 
-qboolean trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
+bool trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 {
 	bool res;
 	VM::SendMsg<GetUserCmdMsg>(cmdNumber, res, *ucmd);
@@ -204,7 +204,7 @@ void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale )
 	VM::SendMsg<SetUserCmdValueMsg>(stateValue, flags, sensitivityScale);
 }
 
-qboolean trap_GetEntityToken( char *buffer, int bufferSize )
+bool trap_GetEntityToken( char *buffer, int bufferSize )
 {
 	bool res;
 	std::string token;
@@ -263,7 +263,7 @@ void trap_PrepareKeyUp( void )
 	VM::SendMsg<PrepareKeyUpMsg>();
 }
 
-qboolean trap_GetNews( qboolean force )
+bool trap_GetNews( bool force )
 {
 	bool res;
 	VM::SendMsg<GetNewsMsg>(force, res);
@@ -286,7 +286,7 @@ void trap_S_StartLocalSound( sfxHandle_t sfx, int )
 	cmdBuffer.SendMsg<Audio::StartLocalSoundMsg>(sfx);
 }
 
-void trap_S_ClearLoopingSounds( qboolean )
+void trap_S_ClearLoopingSounds( bool )
 {
 	cmdBuffer.SendMsg<Audio::ClearLoopingSoundsMsg>();
 }
@@ -329,7 +329,7 @@ void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], 
 	cmdBuffer.SendMsg<Audio::RespatializeMsg>(entityNum, myaxis);
 }
 
-sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean)
+sfxHandle_t trap_S_RegisterSound( const char *sample, bool)
 {
 	int sfx;
 	VM::SendMsg<Audio::RegisterSoundMsg>(sample, sfx);
@@ -382,7 +382,7 @@ void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len 
 	Q_strncpyz(out, result.c_str(), len);
 }
 
-void trap_R_ScissorEnable( qboolean enable )
+void trap_R_ScissorEnable( bool enable )
 {
     cmdBuffer.SendMsg<Render::ScissorEnableMsg>(enable);
 }
@@ -392,7 +392,7 @@ void trap_R_ScissorSet( int x, int y, int w, int h )
 	cmdBuffer.SendMsg<Render::ScissorSetMsg>(x, y, w, h);
 }
 
-qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
+bool trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
 	bool res;
 	std::array<float, 3> myp1, myp2;
@@ -527,7 +527,7 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 	VM::SendMsg<Render::RemapShaderMsg>(oldShader, newShader, timeOffset);
 }
 
-qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
+bool trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
 {
 	bool res;
 	std::array<float, 3> myp1, myp2;
@@ -556,7 +556,7 @@ qhandle_t trap_R_RegisterAnimation( const char *name )
 	return handle;
 }
 
-int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
+int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, bool clearOrigin )
 {
 	int result;
 	VM::SendMsg<Render::BuildSkeletonMsg>(anim, startFrame, endFrame, frac, clearOrigin, *skel, result);
@@ -572,7 +572,7 @@ int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float
     if ( skel->numBones != blend->numBones )
     {
         Log::Warn("trap_R_BlendSkeleton: different number of bones %d != %d\n", skel->numBones, blend->numBones);
-        return qfalse;
+        return false;
     }
 
     // lerp between the 2 bone poses
@@ -598,7 +598,7 @@ int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float
     VectorCopy( bounds[ 0 ], skel->bounds[ 0 ] );
     VectorCopy( bounds[ 1 ], skel->bounds[ 1 ] );
 
-    return qtrue;
+    return true;
 }
 
 int trap_R_BoneIndex( qhandle_t hModel, const char *boneName )
@@ -703,7 +703,7 @@ int trap_LAN_GetServerPing( int source, int n )
 	return ping;
 }
 
-void trap_LAN_MarkServerVisible( int source, int n, qboolean visible )
+void trap_LAN_MarkServerVisible( int source, int n, bool visible )
 {
 	VM::SendMsg<LAN::MarkServerVisibleMsg>(source, n, visible);
 }
@@ -715,7 +715,7 @@ int trap_LAN_ServerIsVisible( int source, int n )
 	return visible;
 }
 
-qboolean trap_LAN_UpdateVisiblePings( int source )
+bool trap_LAN_UpdateVisiblePings( int source )
 {
 	bool res;
 	VM::SendMsg<LAN::UpdateVisiblePingsMsg>(source, res);
@@ -767,7 +767,7 @@ void trap_Rocket_DocumentAction( const char *name, const char *action )
 	VM::SendMsg<Rocket::DocumentActionMsg>(name, action);
 }
 
-qboolean trap_Rocket_GetEvent(std::string& cmdText)
+bool trap_Rocket_GetEvent(std::string& cmdText)
 {
 	bool result;
 	VM::SendMsg<Rocket::GetEventMsg>(result, cmdText);
@@ -844,7 +844,7 @@ void trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, c
 	Q_strncpyz(data, dataResult.c_str(), dataLength);
 }
 
-void trap_Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake )
+void trap_Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake )
 {
 	VM::SendMsg<Rocket::DataFormatterFormattedDataMsg>(handle, data, parseQuake);
 }
@@ -873,7 +873,7 @@ void trap_Rocket_QuakeToRML( const char *in, char *out, int length )
 	Q_strncpyz(out, result.c_str(), length);
 }
 
-void trap_Rocket_SetClass( const char *in, qboolean activate )
+void trap_Rocket_SetClass( const char *in, bool activate )
 {
 	VM::SendMsg<Rocket::SetClassMsg>(in, activate);
 }
@@ -913,12 +913,12 @@ void trap_Rocket_ClearText( void )
 	VM::SendMsg<Rocket::ClearTextMsg>();
 }
 
-void trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs )
+void trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs )
 {
 	VM::SendMsg<Rocket::RegisterPropertyMsg>(name, defaultValue, inherited, force_layout, parseAs);
 }
 
-void trap_Rocket_ShowScoreboard( const char *name, qboolean show )
+void trap_Rocket_ShowScoreboard( const char *name, bool show )
 {
 	VM::SendMsg<Rocket::ShowScoreboardMsg>(name, show);
 }

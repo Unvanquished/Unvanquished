@@ -40,11 +40,11 @@ Maryland 20850 USA.
  */
 
 /** spawn string returns a temporary reference, you must CopyString() if you want to keep it */
-qboolean G_SpawnString( const char *key, const char *defaultString, char **out );
-qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean );
-qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
-qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
-qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );
+bool G_SpawnString( const char *key, const char *defaultString, char **out );
+bool G_SpawnBoolean( const char *key, bool defaultqboolean );
+bool G_SpawnFloat( const char *key, const char *defaultString, float *out );
+bool G_SpawnInt( const char *key, const char *defaultString, int *out );
+bool G_SpawnVector( const char *key, const char *defaultString, float *out );
 
 
 /*
@@ -127,9 +127,9 @@ void    SP_gfx_shader_mod( gentity_t *self );
 #define ENT_V_TMPNAME  33
 
 /**
- * @return qtrue if a deprecated field was found, qfalse otherwise
+ * @return true if a deprecated field was found, false otherwise
  */
-qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation );
+bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation );
 
 /**
  * shared entity functions

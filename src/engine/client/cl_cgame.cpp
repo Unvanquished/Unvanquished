@@ -62,7 +62,7 @@ void Key_GetBindingByString( const char *binding, int team, int *key1, int *key2
 CL_GetUserCmd
 ====================
 */
-qboolean CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
+bool CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 {
 	// cmds[cmdNumber] is the last properly generated command
 
@@ -76,12 +76,12 @@ qboolean CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 	// buffer because it is too far out of date
 	if ( cmdNumber <= cl.cmdNumber - CMD_BACKUP )
 	{
-		return qfalse;
+		return false;
 	}
 
 	*ucmd = cl.cmds[ cmdNumber & CMD_MASK ];
 
-	return qtrue;
+	return true;
 }
 
 int CL_GetCurrentCmdNumber( void )
@@ -155,7 +155,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 	Cmd::Args args(text);
 
 	if (args.Argc() == 0) {
-		return qfalse;
+		return false;
 	}
 
 	auto cmd = args.Argv(0);
@@ -179,7 +179,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 		if (argc >= 3) {
 			Com_sprintf(bigConfigString, BIG_INFO_STRING, "cs %s %s", args.Argv(1).c_str(), args.EscapedArgs(2).c_str());
 		}
-		return qfalse;
+		return false;
 	}
 
 	if (cmd == "bcs1") {
@@ -192,7 +192,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 
 			Q_strcat(bigConfigString, sizeof(bigConfigString), s);
 		}
-		return qfalse;
+		return false;
 	}
 
 	if (cmd == "bcs2") {
@@ -208,19 +208,19 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 			newText = bigConfigString;
 			return CL_HandleServerCommand(bigConfigString, newText);
 		}
-		return qfalse;
+		return false;
 	}
 
 	if (cmd == "cs") {
 		CL_ConfigstringModified(args);
-		return qtrue;
+		return true;
 	}
 
 	if (cmd == "map_restart") {
 		// clear outgoing commands before passing
 		// the restart to the cgame
 		memset(cl.cmds, 0, sizeof(cl.cmds));
-		return qtrue;
+		return true;
 	}
 
 	if (cmd == "popup") {
@@ -228,7 +228,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 		if (cls.state == CA_ACTIVE && !clc.demoplaying && argc >=1) {
 			Rocket_DocumentAction(args.Argv(1).c_str(), "open");
 		}
-		return qfalse;
+		return false;
 	}
 
 	if (cmd == "pubkey_decrypt") {
@@ -238,7 +238,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 
 		if (argc == 1) {
 			Com_Printf("%s", "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n");
-			return qfalse;
+			return false;
 		}
 
 		mpz_init_set_str(message, args.Argv(1).c_str(), 16);
@@ -250,10 +250,10 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 		}
 
 		mpz_clear(message);
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 // Get the server commands, does client-specific handling
@@ -295,7 +295,7 @@ void CL_FillServerCommands(std::vector<std::string>& commands, int start, int en
 CL_GetSnapshot
 ====================
 */
-qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
+bool CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 {
 	clSnapshot_t *clSnap;
 
@@ -307,7 +307,7 @@ qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 	// if the frame has fallen out of the circular buffer, we can't return it
 	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// if the frame is not valid, we can't return it
@@ -315,14 +315,14 @@ qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 
 	if ( !clSnap->valid )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// if the entities in the frame have fallen out of their
 	// circular buffer, we can't return it
 	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// write the snapshot
@@ -340,7 +340,7 @@ qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 	CL_FillServerCommands(snapshot->serverCommands, clc.lastExecutedServerCommand + 1, clSnap->serverCommandNum);
 	clc.lastExecutedServerCommand = clSnap->serverCommandNum;
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -351,7 +351,7 @@ CL_ShutdownCGame
 void CL_ShutdownCGame( void )
 {
 	cls.keyCatchers &= ~KEYCATCH_CGAME;
-	cls.cgameStarted = qfalse;
+	cls.cgameStarted = false;
 
 	if ( !cgvm.IsActive() )
 	{
@@ -380,7 +380,7 @@ void LAN_LoadCachedServers( void )
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
-	if ( FS_FOpenFileRead( "servercache.dat", &fileIn, qtrue ) != -1 )
+	if ( FS_FOpenFileRead( "servercache.dat", &fileIn, true ) != -1 )
 	{
 		FS_Read( &cls.numglobalservers, sizeof( int ), fileIn );
 		FS_Read( &cls.numfavoriteservers, sizeof( int ), fileIn );
@@ -426,7 +426,7 @@ void LAN_SaveServersToCache( void )
  * GetNews
  * ====================
  */
-qboolean GetNews( qboolean begin )
+bool GetNews( bool begin )
 {
 	if ( begin ) // if not already using curl, start the download
 	{
@@ -436,11 +436,11 @@ qboolean GetNews( qboolean begin )
 
 	if ( Cvar_VariableString( "cl_newsString" ) [ 0 ] == 'R' )
 	{
-		return qfalse;
+		return false;
 	}
 	else
 	{
-		return qtrue;
+		return true;
 	}
 }
 
@@ -547,22 +547,22 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 	if ( server && buf )
 	{
 		buf[ 0 ] = '\0';
-		Info_SetValueForKey( info, "hostname", server->hostName, qfalse );
-		Info_SetValueForKey( info, "serverload", va( "%i", server->load ), qfalse );
-		Info_SetValueForKey( info, "mapname", server->mapName, qfalse );
-		Info_SetValueForKey( info, "label", server->label, qfalse );
-		Info_SetValueForKey( info, "clients", va( "%i", server->clients ), qfalse );
-		Info_SetValueForKey( info, "bots", va( "%i", server->bots ), qfalse );
-		Info_SetValueForKey( info, "sv_maxclients", va( "%i", server->maxClients ), qfalse );
-		Info_SetValueForKey( info, "ping", va( "%i", server->ping ), qfalse );
-		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ), qfalse );
-		Info_SetValueForKey( info, "maxping", va( "%i", server->maxPing ), qfalse );
-		Info_SetValueForKey( info, "game", server->game, qfalse );
-		Info_SetValueForKey( info, "nettype", va( "%i", server->netType ), qfalse );
-		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort( server->adr ), qfalse );
-		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), qfalse );   // NERVE - SMF
-		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ), qfalse );   // NERVE - SMF
-		Info_SetValueForKey( info, "gamename", server->gameName, qfalse );  // Arnout
+		Info_SetValueForKey( info, "hostname", server->hostName, false );
+		Info_SetValueForKey( info, "serverload", va( "%i", server->load ), false );
+		Info_SetValueForKey( info, "mapname", server->mapName, false );
+		Info_SetValueForKey( info, "label", server->label, false );
+		Info_SetValueForKey( info, "clients", va( "%i", server->clients ), false );
+		Info_SetValueForKey( info, "bots", va( "%i", server->bots ), false );
+		Info_SetValueForKey( info, "sv_maxclients", va( "%i", server->maxClients ), false );
+		Info_SetValueForKey( info, "ping", va( "%i", server->ping ), false );
+		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ), false );
+		Info_SetValueForKey( info, "maxping", va( "%i", server->maxPing ), false );
+		Info_SetValueForKey( info, "game", server->game, false );
+		Info_SetValueForKey( info, "nettype", va( "%i", server->netType ), false );
+		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort( server->adr ), false );
+		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), false );   // NERVE - SMF
+		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ), false );   // NERVE - SMF
+		Info_SetValueForKey( info, "gamename", server->gameName, false );  // Arnout
 		Q_strncpyz( buf, info, buflen );
 	}
 	else
@@ -623,7 +623,7 @@ static int LAN_GetServerPing( int source, int n )
  * LAN_MarkServerVisible
  * ====================
  */
-static void LAN_MarkServerVisible( int source, int n, qboolean visible )
+static void LAN_MarkServerVisible( int source, int n, bool visible )
 {
 	if ( n == -1 )
 	{
@@ -703,7 +703,7 @@ static int LAN_ServerIsVisible( int source, int n )
 		if ( Cmd_Argc() == 1 )
 		{
 			Com_Log(LOG_ERROR, "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
-			return qfalse;
+			return false;
 		}
 
 		case AS_GLOBAL:
@@ -723,7 +723,7 @@ static int LAN_ServerIsVisible( int source, int n )
 			break;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -731,7 +731,7 @@ static int LAN_ServerIsVisible( int source, int n )
  * LAN_UpdateVisiblePings
  * =======================
  */
-qboolean LAN_UpdateVisiblePings( int source )
+bool LAN_UpdateVisiblePings( int source )
 {
 	return CL_UpdateVisiblePings_f( source );
 }
@@ -751,7 +751,7 @@ int LAN_GetServerStatus( const char *serverAddress, char *serverStatus, int maxL
  * LAN_ServerIsInFavoriteList
  * =======================
  */
-qboolean LAN_ServerIsInFavoriteList( int source, int n )
+bool LAN_ServerIsInFavoriteList( int source, int n )
 {
 	int          i;
 	serverInfo_t *server = NULL;
@@ -777,7 +777,7 @@ qboolean LAN_ServerIsInFavoriteList( int source, int n )
 		case AS_FAVORITES:
 			if ( n >= 0 && n < MAX_OTHER_SERVERS )
 			{
-				return qtrue;
+				return true;
 			}
 
 			break;
@@ -785,18 +785,18 @@ qboolean LAN_ServerIsInFavoriteList( int source, int n )
 
 	if ( !server )
 	{
-		return qfalse;
+		return false;
 	}
 
 	for ( i = 0; i < cls.numfavoriteservers; i++ )
 	{
 		if ( NET_CompareAdr( cls.favoriteServers[ i ].adr, server->adr ) )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -885,7 +885,7 @@ void CL_UpdateLevelHunkUsage( void )
 
 	memusage = Cvar_VariableIntegerValue( "com_hunkused" ) + Cvar_VariableIntegerValue( "hunk_soundadjust" );
 
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
+	len = FS_FOpenFileRead( memlistfile, &handle, false );
 
 	if ( len >= 0 )
 	{
@@ -978,7 +978,7 @@ void CL_UpdateLevelHunkUsage( void )
 	FS_FCloseFile( handle );
 
 	// now just open it and close it, so it gets copied to the pak dir
-	len = FS_FOpenFileRead( memlistfile, &handle, qfalse );
+	len = FS_FOpenFileRead( memlistfile, &handle, false );
 
 	if ( len >= 0 )
 	{
@@ -1088,7 +1088,7 @@ void CL_AdjustTimeDelta( void )
 	int newDelta;
 	int deltaDelta;
 
-	cl.newSnapshots = qfalse;
+	cl.newSnapshots = false;
 
 	// the delta never drifts when replaying a demo
 	if ( clc.demoplaying )
@@ -1144,7 +1144,7 @@ void CL_AdjustTimeDelta( void )
 		{
 			if ( cl.extrapolatedSnapshot )
 			{
-				cl.extrapolatedSnapshot = qfalse;
+				cl.extrapolatedSnapshot = false;
 				cl.serverTimeDelta -= 2;
 			}
 			else
@@ -1229,12 +1229,12 @@ void CL_FirstSnapshot( void )
 			speex_bits_init( &clc.speexDecoderBits[ i ] );
 			speex_bits_reset( &clc.speexDecoderBits[ i ] );
 			clc.speexDecoder[ i ] = speex_decoder_init( speex_lib_get_mode( SPEEX_MODEID_NB ) );
-			clc.voipIgnore[ i ] = qfalse;
+			clc.voipIgnore[ i ] = false;
 			clc.voipGain[ i ] = 1.0f;
 		}
 
-		clc.speexInitialized = qtrue;
-		clc.voipMuteAll = qfalse;
+		clc.speexInitialized = true;
+		clc.voipMuteAll = false;
 		Cmd_AddCommand( "voip", CL_Voip_f );
 		Cvar_Set( "cl_voipSendTarget", "spatial" );
 		Com_Memset( clc.voipTargets, ~0, sizeof( clc.voipTargets ) );
@@ -1264,7 +1264,7 @@ void CL_SetCGameTime( void )
 			// as the gamestate, because it causes a bad time skip
 			if ( !clc.firstDemoFrameSkipped )
 			{
-				clc.firstDemoFrameSkipped = qtrue;
+				clc.firstDemoFrameSkipped = true;
 				return;
 			}
 
@@ -1273,7 +1273,7 @@ void CL_SetCGameTime( void )
 
 		if ( cl.newSnapshots )
 		{
-			cl.newSnapshots = qfalse;
+			cl.newSnapshots = false;
 			CL_FirstSnapshot();
 		}
 
@@ -1350,7 +1350,7 @@ void CL_SetCGameTime( void )
 		// so we will try and adjust back a bit when the next snapshot arrives
 		if ( cls.realtime + cl.serverTimeDelta >= cl.snap.serverTime - 5 )
 		{
-			cl.extrapolatedSnapshot = qtrue;
+			cl.extrapolatedSnapshot = true;
 		}
 	}
 
@@ -1403,17 +1403,17 @@ void CL_SetCGameTime( void )
 CL_GetTag
 ====================
 */
-qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * orientation )
+bool CL_GetTag( int clientNum, const char *tagname, orientation_t * orientation )
 {
 	if ( !cgvm.IsActive() )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// the current design of CG_GET_TAG is inappropriate for modules in sandboxed formats
 	//  (the direct pointer method to pass the tag name would work only with modules in native format)
 	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
-	return qfalse;
+	return false;
 }
 
 /**

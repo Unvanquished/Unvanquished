@@ -272,7 +272,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	mdvSurface_t *mdvSurface = 0;
 	shader_t     *shader = 0;
 	int          lod;
-	qboolean     personalModel;
+	bool     personalModel;
 	int          fogNum;
 
 	// don't add third_person objects if not in a portal
@@ -377,7 +377,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	mdvSurface_t      *mdvSurface = 0;
 	shader_t          *shader = 0;
 	int               lod;
-	qboolean          personalModel;
+	bool          personalModel;
 	byte              cubeSideBits;
 
 	// cull the entire model if merged bounding box of both frames

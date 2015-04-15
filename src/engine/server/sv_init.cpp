@@ -67,7 +67,7 @@ void SV_SetConfigstring( int index, const char *val )
 	// change the string in sv
 	Z_Free( sv.configstrings[ index ] );
 	sv.configstrings[ index ] = CopyString( val );
-	sv.configstringsmodified[ index ] = qtrue;
+	sv.configstringsmodified[ index ] = true;
 }
 
 void SV_UpdateConfigStrings( void )
@@ -83,7 +83,7 @@ void SV_UpdateConfigStrings( void )
 			continue;
 		}
 
-		sv.configstringsmodified[ index ] = qfalse;
+		sv.configstringsmodified[ index ] = false;
 
 		// send it to all the clients if we aren't
 		// spawning a new server
@@ -281,7 +281,7 @@ void SV_BoundMaxClients( int minimum )
 	// get the current maxclients value
 	Cvar_Get( "sv_maxclients", "20", 0 ); // NERVE - SMF - changed to 20 from 8
 
-	sv_maxclients->modified = qfalse;
+	sv_maxclients->modified = false;
 
 	if ( sv_maxclients->integer < minimum )
 	{
@@ -322,11 +322,11 @@ void SV_Startup( void )
 
 	svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
 
-	svs.initialized = qtrue;
+	svs.initialized = true;
 
 	Cvar_Set( "sv_running", "1" );
 #ifndef BUILD_SERVER
-	NET_Config( qtrue );
+	NET_Config( true );
 #endif
 
 	// Join the IPv6 multicast group now that a map is running, so clients can scan for us on the local network.
@@ -448,7 +448,7 @@ This is NOT called for map_restart
 void SV_SpawnServer( const char *server )
 {
 	int        i;
-	qboolean   isBot;
+	bool   isBot;
 
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
@@ -473,7 +473,7 @@ void SV_SpawnServer( const char *server )
 	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
 		sv.configstrings[ i ] = CopyString( "" );
-		sv.configstringsmodified[ i ] = qfalse;
+		sv.configstringsmodified[ i ] = false;
 	}
 
 	// init client structures and svs.numSnapshotEntities
@@ -548,13 +548,13 @@ void SV_SpawnServer( const char *server )
 		// send the new gamestate to all connected clients
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			qboolean denied;
+			bool denied;
 			char reason[ MAX_STRING_CHARS ];
 
 			isBot = SV_IsBot(&svs.clients[i]);
 
 			// connect the client again
-			denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );   // firstTime = qfalse
+			denied = gvm.GameClientConnect( reason, sizeof( reason ), i, false, isBot );   // firstTime = false
 
 			if ( denied )
 			{
@@ -602,9 +602,9 @@ void SV_SpawnServer( const char *server )
 
 	// save systeminfo and serverinfo strings
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
-	SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, qtrue ) );
+	SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, true ) );
 
-	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
+	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, false ) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
 	// any media configstring setting now should issue a warning
@@ -716,7 +716,7 @@ not just stuck on the outgoing message list, because the server is going
 to totally exit after returning from this function.
 ==================
 */
-void SV_FinalCommand( char *cmd, qboolean disconnect )
+void SV_FinalCommand( char *cmd, bool disconnect )
 {
 	int      i, j;
 	client_t *cl;
@@ -770,7 +770,7 @@ void SV_Shutdown( const char *finalmsg )
 
 	if ( svs.clients )
 	{
-		SV_FinalCommand( va( "print %s", Cmd_QuoteString( finalmsg ) ), qtrue );
+		SV_FinalCommand( va( "print %s", Cmd_QuoteString( finalmsg ) ), true );
 	}
 
 	SV_RemoveOperatorCommands();
@@ -798,11 +798,11 @@ void SV_Shutdown( const char *finalmsg )
 
 	Cvar_Set( "sv_running", "0" );
 #ifndef BUILD_SERVER
-	NET_Config( qtrue );
+	NET_Config( true );
 #endif
 
 	Com_Printf( "---------------------------\n" );
 
 	// disconnect any local clients
-	CL_Disconnect( qfalse );
+	CL_Disconnect( false );
 }

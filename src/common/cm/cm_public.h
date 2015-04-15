@@ -78,8 +78,8 @@ int      CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list, int li
 int      CM_LeafCluster( int leafnum );
 int      CM_LeafArea( int leafnum );
 
-void     CM_AdjustAreaPortalState( int area1, int area2, qboolean open );
-qboolean CM_AreasConnected( int area1, int area2 );
+void     CM_AdjustAreaPortalState( int area1, int area2, bool open );
+bool CM_AreasConnected( int area1, int area2 );
 
 int      CM_WriteAreaBits( byte *buffer, int area );
 

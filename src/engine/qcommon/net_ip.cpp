@@ -69,7 +69,7 @@ typedef unsigned short sa_family_t;
 #       define socketError   WSAGetLastError()
 
 static WSADATA  winsockdata;
-static qboolean winsockInitialized = qfalse;
+static bool winsockInitialized = false;
 
 #else
 
@@ -110,12 +110,12 @@ static GeoIP *geoip_data_4 = NULL;
 static GeoIP *geoip_data_6 = NULL;
 #endif
 
-static qboolean            usingSocks = qfalse;
+static bool            usingSocks = false;
 static int                 networkingEnabled = 0;
 #ifndef BUILD_SERVER
-static qboolean            serverMode = qfalse;
+static bool            serverMode = false;
 #else
-#define serverMode (qtrue)
+#define serverMode (true)
 #endif
 
 cvar_t                     *net_enabled;
@@ -391,7 +391,7 @@ static struct addrinfo *SearchAddrInfo( struct addrinfo *hints, sa_family_t fami
 Sys_StringToSockaddr
 =============
 */
-static qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, int sadr_len, sa_family_t family )
+static bool Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, int sadr_len, sa_family_t family )
 {
 	struct addrinfo hints;
 
@@ -455,7 +455,7 @@ static qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, int 
 			memcpy( sadr, search->ai_addr, search->ai_addrlen );
 			freeaddrinfo( res );
 
-			return qtrue;
+			return true;
 		}
 		else
 		{
@@ -472,7 +472,7 @@ static qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, int 
 		freeaddrinfo( res );
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -504,7 +504,7 @@ static void Sys_SockaddrToString( char *dest, int destlen, struct sockaddr *inpu
 Sys_StringToAdr
 =============
 */
-qboolean Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
+bool Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 {
 	struct sockaddr_storage sadr;
 
@@ -527,11 +527,11 @@ qboolean Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 
 	if ( !Sys_StringToSockaddr( s, ( struct sockaddr * ) &sadr, sizeof( sadr ), fam ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	SockadrToNetadr( ( struct sockaddr * ) &sadr, a );
-	return qtrue;
+	return true;
 }
 
 /*
@@ -541,7 +541,7 @@ NET_CompareBaseAdrMask
 Compare without port, and up to the bit number given in netmask.
 ===================
 */
-qboolean NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
+bool NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 {
 	byte     cmpmask, *addra, *addrb;
 	int      curbyte;
@@ -550,12 +550,12 @@ qboolean NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 
 	if ( a_type != NET_TYPE( b.type ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( a_type == NA_LOOPBACK )
 	{
-		return qtrue;
+		return true;
 	}
 
 	if ( a_type == NA_IP )
@@ -581,14 +581,14 @@ qboolean NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 	else
 	{
 		Com_Printf( "NET_CompareBaseAdr: bad address type\n" );
-		return qfalse;
+		return false;
 	}
 
 	curbyte = netmask >> 3;
 
 	if ( curbyte && memcmp( addra, addrb, curbyte ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	netmask &= 7;
@@ -600,15 +600,15 @@ qboolean NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 
 		if ( ( addra[ curbyte ] & cmpmask ) == ( addrb[ curbyte ] & cmpmask ) )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 	else
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -618,7 +618,7 @@ NET_CompareBaseAdr
 Compares without the port
 ===================
 */
-qboolean NET_CompareBaseAdr( netadr_t a, netadr_t b )
+bool NET_CompareBaseAdr( netadr_t a, netadr_t b )
 {
 	return NET_CompareBaseAdrMask( a, b, -1 );
 }
@@ -670,29 +670,29 @@ const char      *NET_AdrToStringwPort( netadr_t a )
 	return s;
 }
 
-qboolean        NET_CompareAdr( netadr_t a, netadr_t b )
+bool        NET_CompareAdr( netadr_t a, netadr_t b )
 {
 	if ( !NET_CompareBaseAdr( a, b ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( a.type == NA_IP || a.type == NA_IP6 )
 	{
 		if ( a.port == b.port )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 	else
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
-qboolean        NET_IsLocalAddress( netadr_t adr )
+bool        NET_IsLocalAddress( netadr_t adr )
 {
 	return adr.type == NA_LOOPBACK;
 }
@@ -706,7 +706,7 @@ Sys_GetPacket
 Never called by the game logic, just the system event queuing
 ==================
 */
-qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
+bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 {
 	int                     ret;
 	struct sockaddr_storage from;
@@ -736,7 +736,7 @@ qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 			{
 				if ( ret < 10 || net_message->data[ 0 ] != 0 || net_message->data[ 1 ] != 0 || net_message->data[ 2 ] != 0 || net_message->data[ 3 ] != 1 )
 				{
-					return qfalse;
+					return false;
 				}
 
 				net_from->type = NA_IP;
@@ -756,11 +756,11 @@ qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 			if ( ret == net_message->maxsize )
 			{
 				Com_Printf( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
-				return qfalse;
+				return false;
 			}
 
 			net_message->cursize = ret;
-			return qtrue;
+			return true;
 		}
 	}
 
@@ -786,11 +786,11 @@ qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 			if ( ret == net_message->maxsize )
 			{
 				Com_Printf( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
-				return qfalse;
+				return false;
 			}
 
 			net_message->cursize = ret;
-			return qtrue;
+			return true;
 		}
 	}
 
@@ -816,15 +816,15 @@ qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 			if ( ret == net_message->maxsize )
 			{
 				Com_Printf( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
-				return qfalse;
+				return false;
 			}
 
 			net_message->cursize = ret;
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 //=============================================================================
@@ -925,15 +925,15 @@ Sys_IsLANAddress
 LAN clients will have their rate var ignored
 ==================
 */
-qboolean Sys_IsLANAddress( netadr_t adr )
+bool Sys_IsLANAddress( netadr_t adr )
 {
 	int      index, run, addrsize;
-	qboolean differed;
+	bool differed;
 	byte     *compareadr, *comparemask, *compareip;
 
 	if ( adr.type == NA_LOOPBACK )
 	{
-		return qtrue;
+		return true;
 	}
 
 	if ( adr.type == NA_IP )
@@ -947,34 +947,34 @@ qboolean Sys_IsLANAddress( netadr_t adr )
 
 		if ( adr.ip[ 0 ] == 10 )
 		{
-			return qtrue;
+			return true;
 		}
 
 		if ( adr.ip[ 0 ] == 172 && ( adr.ip[ 1 ] & 0xf0 ) == 16 )
 		{
-			return qtrue;
+			return true;
 		}
 
 		if ( adr.ip[ 0 ] == 192 && adr.ip[ 1 ] == 168 )
 		{
-			return qtrue;
+			return true;
 		}
 
 		if ( adr.ip[ 0 ] == 127 )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 	else if ( adr.type == NA_IP6 )
 	{
 		if ( adr.ip6[ 0 ] == 0xfe && ( adr.ip6[ 1 ] & 0xc0 ) == 0x80 )
 		{
-			return qtrue;
+			return true;
 		}
 
 		if ( ( adr.ip6[ 0 ] & 0xfe ) == 0xfc )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
@@ -1002,25 +1002,25 @@ qboolean Sys_IsLANAddress( netadr_t adr )
 				addrsize = sizeof( adr.ip6 );
 			}
 
-			differed = qfalse;
+			differed = false;
 
 			for ( run = 0; run < addrsize; run++ )
 			{
 				if ( ( compareip[ run ] & comparemask[ run ] ) != ( compareadr[ run ] & comparemask[ run ] ) )
 				{
-					differed = qtrue;
+					differed = true;
 					break;
 				}
 			}
 
 			if ( !differed )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1145,7 +1145,7 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 	struct sockaddr_in6 address;
 
 	u_long              _true = 1;
-	qboolean            brackets = net_interface && Q_CountChar( net_interface, ':' );
+	bool            brackets = net_interface && Q_CountChar( net_interface, ':' );
 
 	*err = 0;
 
@@ -1348,10 +1348,10 @@ void NET_OpenSocks( int port )
 	struct hostent     *h;
 
 	int                len;
-	qboolean           rfc1929;
+	bool           rfc1929;
 	unsigned char      buf[ 64 ];
 
-	usingSocks = qfalse;
+	usingSocks = false;
 
 	Com_Printf( "Opening connection to SOCKS server.\n" );
 
@@ -1389,11 +1389,11 @@ void NET_OpenSocks( int port )
 	// send socks authentication handshake
 	if ( *net_socksUsername->string || *net_socksPassword->string )
 	{
-		rfc1929 = qtrue;
+		rfc1929 = true;
 	}
 	else
 	{
-		rfc1929 = qfalse;
+		rfc1929 = false;
 	}
 
 	buf[ 0 ] = 5; // SOCKS version
@@ -1553,7 +1553,7 @@ void NET_OpenSocks( int port )
 	( ( struct sockaddr_in * ) &socksRelayAddr )->sin_port = * ( short * ) &buf[ 8 ];
 	memset( ( ( struct sockaddr_in * ) &socksRelayAddr )->sin_zero, 0, 8 );
 
-	usingSocks = qtrue;
+	usingSocks = true;
 }
 
 /*
@@ -1803,7 +1803,7 @@ static void NET_OpenIP( void )
 NET_GetCvars
 ====================
 */
-static qboolean NET_GetCvars( void )
+static bool NET_GetCvars( void )
 {
 	int modified;
 
@@ -1817,28 +1817,28 @@ static qboolean NET_GetCvars( void )
 	net_enabled = Cvar_Get( "net_enabled", "3", CVAR_LATCH  );
 #endif
 	modified = net_enabled->modified;
-	net_enabled->modified = qfalse;
+	net_enabled->modified = false;
 
 	net_ip = Cvar_Get( "net_ip", "0.0.0.0", CVAR_LATCH );
 	modified += net_ip->modified;
-	net_ip->modified = qfalse;
+	net_ip->modified = false;
 
 	net_ip6 = Cvar_Get( "net_ip6", "::", CVAR_LATCH );
 	modified += net_ip6->modified;
-	net_ip6->modified = qfalse;
+	net_ip6->modified = false;
 
 	net_port = Cvar_Get( "net_port", va( "%i", PORT_SERVER ), CVAR_LATCH );
 	modified += net_port->modified;
-	net_port->modified = qfalse;
+	net_port->modified = false;
 
 	net_port6 = Cvar_Get( "net_port6", va( "%i", PORT_SERVER ), CVAR_LATCH );
 	modified += net_port6->modified;
-	net_port6->modified = qfalse;
+	net_port6->modified = false;
 
 	// Some cvars for configuring multicast options which facilitates scanning for servers on local subnets.
 	net_mcast6addr = Cvar_Get( "net_mcast6addr", NET_MULTICAST_IP6, CVAR_LATCH  );
 	modified += net_mcast6addr->modified;
-	net_mcast6addr->modified = qfalse;
+	net_mcast6addr->modified = false;
 
 #ifdef _WIN32
 	net_mcast6iface = Cvar_Get( "net_mcast6iface", "0", CVAR_LATCH  );
@@ -1846,29 +1846,29 @@ static qboolean NET_GetCvars( void )
 	net_mcast6iface = Cvar_Get( "net_mcast6iface", "", CVAR_LATCH  );
 #endif
 	modified += net_mcast6iface->modified;
-	net_mcast6iface->modified = qfalse;
+	net_mcast6iface->modified = false;
 
 	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH  );
 	modified += net_socksEnabled->modified;
-	net_socksEnabled->modified = qfalse;
+	net_socksEnabled->modified = false;
 
 	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH  );
 	modified += net_socksServer->modified;
-	net_socksServer->modified = qfalse;
+	net_socksServer->modified = false;
 
 	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH  );
 	modified += net_socksPort->modified;
-	net_socksPort->modified = qfalse;
+	net_socksPort->modified = false;
 
 	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH  );
 	modified += net_socksUsername->modified;
-	net_socksUsername->modified = qfalse;
+	net_socksUsername->modified = false;
 
 	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH  );
 	modified += net_socksPassword->modified;
-	net_socksPassword->modified = qfalse;
+	net_socksPassword->modified = false;
 
-	return modified ? qtrue : qfalse;
+	return modified ? true : false;
 }
 
 /*
@@ -1876,13 +1876,13 @@ static qboolean NET_GetCvars( void )
 NET_Config
 ====================
 */
-void NET_Config( qboolean enableNetworking )
+void NET_Config( bool enableNetworking )
 {
-	qboolean modified;
-	qboolean stop;
-	qboolean start;
+	bool modified;
+	bool stop;
+	bool start;
 #ifndef BUILD_SERVER
-	qboolean svRunning;
+	bool svRunning;
 #endif
 
 	// get any latched changes to cvars
@@ -1907,26 +1907,26 @@ void NET_Config( qboolean enableNetworking )
 	{
 		if ( enableNetworking )
 		{
-			stop = qtrue;
-			start = qtrue;
+			stop = true;
+			start = true;
 		}
 		else
 		{
-			stop = qfalse;
-			start = qfalse;
+			stop = false;
+			start = false;
 		}
 	}
 	else
 	{
 		if ( enableNetworking )
 		{
-			stop = qfalse;
-			start = qtrue;
+			stop = false;
+			start = true;
 		}
 		else
 		{
-			stop = qtrue;
-			start = qfalse;
+			stop = true;
+			start = false;
 		}
 	}
 
@@ -2031,7 +2031,7 @@ void NET_Init( void )
 		return;
 	}
 
-	winsockInitialized = qtrue;
+	winsockInitialized = true;
 	Com_Printf( "Winsock Initialized\n" );
 #endif
 
@@ -2041,7 +2041,7 @@ void NET_Init( void )
 	Com_Printf( "Loaded GeoIP data: ^%dIPv4 ^%dIPv6\n", geoip_data_4 ? 2 : 1, geoip_data_6 ? 2 : 1 );
 #endif
 
-	NET_Config( qtrue );
+	NET_Config( true );
 
 	Cmd_AddCommand( "net_restart", NET_Restart_f );
 }
@@ -2058,11 +2058,11 @@ void NET_Shutdown( void )
 		return;
 	}
 
-	NET_Config( qfalse );
+	NET_Config( false );
 
 #ifdef _WIN32
 	WSACleanup();
-	winsockInitialized = qfalse;
+	winsockInitialized = false;
 #endif
 }
 
@@ -2121,5 +2121,5 @@ NET_Restart_f
 */
 void NET_Restart_f( void )
 {
-	NET_Config( qtrue );
+	NET_Config( true );
 }

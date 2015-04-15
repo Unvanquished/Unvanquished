@@ -175,7 +175,7 @@ void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
 {
 	vec3_t tangent2, binormal2, normal2;
 	vec4_t q;
-	qboolean flipped = qfalse;
+	bool flipped = false;
 	float trace, scale, dot;
 	vec3_t mid, tangent3, binormal3;
 
@@ -246,7 +246,7 @@ void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
 	CrossProduct( binormal2, normal2, tangent3 );
 	dot = DotProduct( tangent2, tangent3 );
 	if( dot < 0.0f ) {
-		flipped = qtrue;
+		flipped = true;
 		VectorNegate( tangent2, tangent2 );
 	}
 
@@ -334,7 +334,7 @@ Returns CULL_IN, CULL_CLIP, or CULL_OUT
 */
 cullResult_t R_CullBox( vec3_t worldBounds[ 2 ] )
 {
-	qboolean anyClip;
+	bool anyClip;
 	cplane_t *frust;
 	int i, r;
 
@@ -344,7 +344,7 @@ cullResult_t R_CullBox( vec3_t worldBounds[ 2 ] )
 	}
 
 	// check against frustum planes
-	anyClip = qfalse;
+	anyClip = false;
 
 	for ( i = 0; i < FRUSTUM_PLANES; i++ )
 	{
@@ -360,7 +360,7 @@ cullResult_t R_CullBox( vec3_t worldBounds[ 2 ] )
 
 		if ( r == 3 )
 		{
-			anyClip = qtrue;
+			anyClip = true;
 		}
 	}
 
@@ -429,7 +429,7 @@ int R_CullPointAndRadius( vec3_t pt, float radius )
 	int      i;
 	float    dist;
 	cplane_t *frust;
-	qboolean mightBeClipped = qfalse;
+	bool mightBeClipped = false;
 
 	if ( r_nocull->integer )
 	{
@@ -449,7 +449,7 @@ int R_CullPointAndRadius( vec3_t pt, float radius )
 		}
 		else if ( dist <= radius )
 		{
-			mightBeClipped = qtrue;
+			mightBeClipped = true;
 		}
 	}
 
@@ -904,7 +904,7 @@ R_SetupProjection
 ===============
 */
 // *INDENT-OFF*
-static void R_SetupProjection( qboolean infiniteFarClip )
+static void R_SetupProjection( bool infiniteFarClip )
 {
 	float zNear, zFar;
 	float *proj = tr.viewParms.projectionMatrix;
@@ -1254,11 +1254,11 @@ R_GetPortalOrientation
 entityNum is the entity that the portal surface is a part of, which may
 be moving and rotating.
 
-Returns qtrue if it should be mirrored
+Returns true if it should be mirrored
 =================
 */
-static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *surface, orientation_t *camera, vec3_t pvsOrigin,
-    qboolean *mirror )
+static bool R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *surface, orientation_t *camera, vec3_t pvsOrigin,
+    bool *mirror )
 {
 	int           i;
 	cplane_t      originalPlane, plane;
@@ -1325,8 +1325,8 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 			VectorCopy( surface->axis[ 1 ], camera->axis[ 1 ] );
 			VectorCopy( surface->axis[ 2 ], camera->axis[ 2 ] );
 
-			*mirror = qtrue;
-			return qtrue;
+			*mirror = true;
+			return true;
 		}
 
 		// project the origin onto the surface plane to get
@@ -1370,8 +1370,8 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 			CrossProduct( camera->axis[ 0 ], camera->axis[ 1 ], camera->axis[ 2 ] );
 		}
 
-		*mirror = qfalse;
-		return qtrue;
+		*mirror = false;
+		return true;
 	}
 
 	// if we didn't locate a portal entity, don't render anything.
@@ -1383,10 +1383,10 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 	// to see a surface before the server has communicated the matching
 	// portal surface entity, so we don't want to print anything here...
 
-	return qfalse;
+	return false;
 }
 
-static qboolean IsMirror( const drawSurf_t *drawSurf )
+static bool IsMirror( const drawSurf_t *drawSurf )
 {
 	int           i;
 	cplane_t      originalPlane, plane;
@@ -1437,13 +1437,13 @@ static qboolean IsMirror( const drawSurf_t *drawSurf )
 		// if the entity is just a mirror, don't use as a camera point
 		if ( e->e.oldorigin[ 0 ] == e->e.origin[ 0 ] && e->e.oldorigin[ 1 ] == e->e.origin[ 1 ] && e->e.oldorigin[ 2 ] == e->e.origin[ 2 ] )
 		{
-			return qtrue;
+			return true;
 		}
 
-		return qfalse;
+		return false;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1451,7 +1451,7 @@ static qboolean IsMirror( const drawSurf_t *drawSurf )
 **
 ** Determines if a surface is completely offscreen.
 */
-static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 128 ] )
+static bool SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 128 ] )
 {
 	float        shortest = 100000000;
 	shader_t     *shader;
@@ -1464,7 +1464,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 	if ( glConfig.smpActive )
 	{
 		// FIXME!  we can't do Tess_Begin/Tess_End stuff with smp!
-		return qfalse;
+		return false;
 	}
 
 	tr.currentEntity = drawSurf->entity;
@@ -1480,13 +1480,13 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 		tr.orientation = tr.viewParms.world;
 	}
 
-	Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qtrue, qtrue, -1, 0 );
+	Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, true, true, -1, 0 );
 	rb_surfaceTable[ *drawSurf->surface ]( drawSurf->surface );
 
 	// Tr3B: former assertion
 	if ( tess.numVertexes >= 128 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	for ( i = 0; i < tess.numVertexes; i++ )
@@ -1515,7 +1515,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 	// trivially reject
 	if ( pointAnd )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// determine if this surface is backfaced and also determine the distance
@@ -1552,32 +1552,32 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 
 	if ( !numTriangles )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// mirrors can early out at this point, since we don't do a fade over distance
 	// with them (although we could)
 	if ( IsMirror( drawSurf ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( shortest > ( tess.surfaceShader->portalRange * tess.surfaceShader->portalRange ) )
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
 ========================
 R_MirrorViewBySurface
 
-Returns qtrue if another view has been rendered
+Returns true if another view has been rendered
 ========================
 */
-static qboolean R_MirrorViewBySurface( drawSurf_t *drawSurf )
+static bool R_MirrorViewBySurface( drawSurf_t *drawSurf )
 {
 	vec4_t        clipDest[ 128 ];
 	viewParms_t   newParms;
@@ -1588,29 +1588,29 @@ static qboolean R_MirrorViewBySurface( drawSurf_t *drawSurf )
 	if ( tr.viewParms.isPortal )
 	{
 		ri.Printf( PRINT_DEVELOPER, "WARNING: recursive mirror/portal found\n" );
-		return qfalse;
+		return false;
 	}
 
 	if ( r_noportals->integer )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// trivially reject portal/mirror
 	if ( SurfIsOffscreen( drawSurf, clipDest ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// save old viewParms so we can return to it after the mirror view
 	oldParms = tr.viewParms;
 
 	newParms = tr.viewParms;
-	newParms.isPortal = qtrue;
+	newParms.isPortal = true;
 
 	if ( !R_GetPortalOrientations( drawSurf, &surface, &camera, newParms.pvsOrigin, &newParms.isMirror ) )
 	{
-		return qfalse; // bad portal, no portalentity
+		return false; // bad portal, no portalentity
 	}
 
 	R_MirrorPoint( oldParms.orientation.origin, &surface, &camera, newParms.orientation.origin );
@@ -1629,7 +1629,7 @@ static qboolean R_MirrorViewBySurface( drawSurf_t *drawSurf )
 
 	tr.viewParms = oldParms;
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -2197,7 +2197,7 @@ void R_AddLightInteractions( void )
 		light->numInteractions = 0;
 		light->numShadowOnlyInteractions = 0;
 		light->numLightOnlyInteractions = 0;
-		light->noSort = qfalse;
+		light->noSort = false;
 
 		if ( light->isStatic )
 		{
@@ -2386,7 +2386,7 @@ void R_DebugPolygon( int color, int numPoints, float *points )
 R_DebugText
 ================
 */
-void R_DebugText( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude )
+void R_DebugText( const vec3_t org, float r, float g, float b, const char *text, bool neverOcclude )
 {
 }
 
@@ -2461,7 +2461,7 @@ void R_RenderView( viewParms_t *parms )
 
 	// set the projection matrix with the far clip plane set at infinity
 	// this required for the CHC++ algorithm
-	R_SetupProjection( qtrue );
+	R_SetupProjection( true );
 
 	R_SetupFrustum();
 
@@ -2483,7 +2483,7 @@ void R_RenderView( viewParms_t *parms )
 	// this needs to be done before entities are
 	// added, because they use the projection
 	// matrix for lod calculation
-	R_SetupProjection( qfalse );
+	R_SetupProjection( false );
 
 	R_SetupUnprojection();
 

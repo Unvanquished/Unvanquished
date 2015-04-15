@@ -748,7 +748,7 @@ static void RB_Hyperspace( void )
 	GL_ClearColor( c, c, c, 1 );
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	backEnd.isHyperspace = qtrue;
+	backEnd.isHyperspace = true;
 }
 
 static void SetViewportAndScissor( void )
@@ -801,7 +801,7 @@ static void RB_SetGL2D( void )
 		R_BindNullFBO();
 	}
 
-	backEnd.projection2D = qtrue;
+	backEnd.projection2D = true;
 
 	// set 2D virtual screen size
 	GL_Viewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
@@ -837,7 +837,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	shader_t      *shader, *oldShader;
 	int           lightmapNum, oldLightmapNum;
 	int           fogNum, oldFogNum;
-	qboolean      depthRange, oldDepthRange;
+	bool      depthRange, oldDepthRange;
 	int           i;
 	drawSurf_t    *drawSurf;
 
@@ -848,8 +848,8 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	oldShader = NULL;
 	oldLightmapNum = -1;
 	oldFogNum = -1;
-	oldDepthRange = qfalse;
-	depthRange = qfalse;
+	oldDepthRange = false;
+	depthRange = false;
 	backEnd.currentLight = NULL;
 
 	for ( i = 0, drawSurf = backEnd.viewParms.drawSurfs; i < backEnd.viewParms.numDrawSurfs; i++, drawSurf++ )
@@ -910,7 +910,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 				Tess_End();
 			}
 
-			Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, lightmapNum, fogNum );
+			Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, lightmapNum, fogNum );
 
 			oldShader = shader;
 			oldLightmapNum = lightmapNum;
@@ -920,7 +920,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 		// change the modelview matrix if needed
 		if ( entity != oldEntity )
 		{
-			depthRange = qfalse;
+			depthRange = false;
 
 			if ( entity != &tr.worldEntity )
 			{
@@ -932,7 +932,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 				if ( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK )
 				{
 					// hack the depth range to prevent view model from poking into walls
-					depthRange = qtrue;
+					depthRange = true;
 				}
 			}
 			else
@@ -1212,7 +1212,7 @@ static void RB_RenderInteractions()
 	trRefLight_t  *light;
 	const interaction_t *ia;
 	const interaction_t *iaFirst;
-	qboolean      depthRange, oldDepthRange;
+	bool      depthRange, oldDepthRange;
 	surfaceType_t *surface;
 	int           startTime = 0, endTime = 0;
 
@@ -1227,8 +1227,8 @@ static void RB_RenderInteractions()
 	// draw everything
 	oldEntity = NULL;
 	oldShader = NULL;
-	oldDepthRange = qfalse;
-	depthRange = qfalse;
+	oldDepthRange = false;
+	depthRange = false;
 	iaFirst = NULL;
 
 	// render interactions
@@ -1272,12 +1272,12 @@ static void RB_RenderInteractions()
 			Tess_End();
 
 			// begin a new batch
-			Tess_Begin( Tess_StageIteratorLighting, NULL, shader, light->shader, qfalse, qfalse, -1, 0 );
+			Tess_Begin( Tess_StageIteratorLighting, NULL, shader, light->shader, false, false, -1, 0 );
 
 			// change the modelview matrix if needed
 			if ( entity != oldEntity )
 			{
-				depthRange = qfalse;
+				depthRange = false;
 
 				if ( entity != &tr.worldEntity )
 				{
@@ -1287,7 +1287,7 @@ static void RB_RenderInteractions()
 					if ( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK )
 					{
 						// hack the depth range to prevent view model from poking into walls
-						depthRange = qtrue;
+						depthRange = true;
 					}
 				}
 				else
@@ -1354,7 +1354,7 @@ static void RB_RenderInteractions()
 }
 
 static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
-				       qboolean shadowClip )
+				       bool shadowClip )
 {
 	// HACK: bring OpenGL into a safe state or strange FBO update problems will occur
 	GL_BindProgram( NULL );
@@ -1372,7 +1372,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 			{
 				float    zNear, zFar;
 				float    fovX, fovY;
-				qboolean flipX, flipY;
+				bool flipX, flipY;
 				vec3_t   angles;
 				matrix_t rotationMatrix, transformMatrix, viewMatrix;
 
@@ -1405,7 +1405,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, shadowMapResolutions[ light->shadowLOD ], shadowMapResolutions[ light->shadowLOD ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = qfalse;
+				backEnd.depthRenderImageValid = false;
 
 				switch ( cubeSide )
 				{
@@ -1415,48 +1415,48 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 							VectorSet( angles, 0, 0, 90 );
 
 							// projection parameters
-							flipX = qfalse;
-							flipY = qfalse;
+							flipX = false;
+							flipY = false;
 							break;
 						}
 
 					case 1:
 						{
 							VectorSet( angles, 0, 180, 90 );
-							flipX = qtrue;
-							flipY = qtrue;
+							flipX = true;
+							flipY = true;
 							break;
 						}
 
 					case 2:
 						{
 							VectorSet( angles, 0, 90, 0 );
-							flipX = qfalse;
-							flipY = qfalse;
+							flipX = false;
+							flipY = false;
 							break;
 						}
 
 					case 3:
 						{
 							VectorSet( angles, 0, -90, 0 );
-							flipX = qtrue;
-							flipY = qtrue;
+							flipX = true;
+							flipY = true;
 							break;
 						}
 
 					case 4:
 						{
 							VectorSet( angles, -90, 90, 0 );
-							flipX = qfalse;
-							flipY = qfalse;
+							flipX = false;
+							flipY = false;
 							break;
 						}
 
 					case 5:
 						{
 							VectorSet( angles, 90, 90, 0 );
-							flipX = qtrue;
-							flipY = qtrue;
+							flipX = true;
+							flipY = true;
 							break;
 						}
 
@@ -1464,8 +1464,8 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 						{
 							// shut up compiler
 							VectorSet( angles, 0, 0, 0 );
-							flipX = qfalse;
-							flipY = qfalse;
+							flipX = false;
+							flipY = false;
 							break;
 						}
 				}
@@ -1526,7 +1526,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, shadowMapResolutions[ light->shadowLOD ], shadowMapResolutions[ light->shadowLOD ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = qfalse;
+				backEnd.depthRenderImageValid = false;
 
 				GL_LoadProjectionMatrix( light->projectionMatrix );
 				break;
@@ -1579,7 +1579,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, sunShadowMapResolutions[ splitFrustumIndex ], sunShadowMapResolutions[ splitFrustumIndex ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = qfalse;
+				backEnd.depthRenderImageValid = false;
 
 				VectorCopy( tr.sunDirection, lightDirection );
 
@@ -1676,8 +1676,8 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 
 					MatrixMultiply( projectionMatrix, light->viewMatrix, viewProjectionMatrix );
 
-					numCasters = MergeInteractionBounds( viewProjectionMatrix, ia, iaCount, casterBounds, qtrue );
-					MergeInteractionBounds( viewProjectionMatrix, ia, iaCount, receiverBounds, qfalse );
+					numCasters = MergeInteractionBounds( viewProjectionMatrix, ia, iaCount, casterBounds, true );
+					MergeInteractionBounds( viewProjectionMatrix, ia, iaCount, receiverBounds, false );
 
 					// find the bounding box of the current split in the light's clip space
 					ClearBounds( splitFrustumClipBounds[ 0 ], splitFrustumClipBounds[ 1 ] );
@@ -2069,9 +2069,9 @@ static void RB_RenderInteractionsShadowMapped()
 	const interaction_t  *ia;
 	const interaction_t  *iaFirst;
 	surfaceType_t  *surface;
-	qboolean       depthRange, oldDepthRange;
-	qboolean       alphaTest, oldAlphaTest;
-	qboolean       shadowClipFound;
+	bool       depthRange, oldDepthRange;
+	bool       alphaTest, oldAlphaTest;
+	bool       shadowClipFound;
 
 	int            startTime = 0, endTime = 0;
 	static const matrix_t bias = { 0.5,     0.0, 0.0, 0.0,
@@ -2097,8 +2097,8 @@ static void RB_RenderInteractionsShadowMapped()
 	// draw everything
 	oldEntity = NULL;
 	oldShader = NULL;
-	oldDepthRange = depthRange = qfalse;
-	oldAlphaTest = alphaTest = qfalse;
+	oldDepthRange = depthRange = false;
+	oldAlphaTest = alphaTest = false;
 
 	// if we need to clear the FBO color buffers then it should be white
 	GL_ClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -2144,9 +2144,9 @@ static void RB_RenderInteractionsShadowMapped()
 				continue;
 			}
 
-			RB_SetupLightForShadowing( light, i, qfalse );
+			RB_SetupLightForShadowing( light, i, false );
 
-			shadowClipFound = qfalse;
+			shadowClipFound = false;
 			for( ia = iaFirst; ia; ia = ia->next )
 			{
 				iaLast = ia;
@@ -2176,7 +2176,7 @@ static void RB_RenderInteractionsShadowMapped()
 				}
 
 				if ( (ia->type & IA_SHADOWCLIP) ) {
-					shadowClipFound = qtrue;
+					shadowClipFound = true;
 				}
 
 				if ( !(ia->type & IA_SHADOW) )
@@ -2221,7 +2221,7 @@ static void RB_RenderInteractionsShadowMapped()
 								}
 
 								// we don't need tangent space calculations here
-								Tess_Begin( Tess_StageIteratorShadowFill, NULL, shader, light->shader, qtrue, qfalse, -1, 0 );
+								Tess_Begin( Tess_StageIteratorShadowFill, NULL, shader, light->shader, true, false, -1, 0 );
 							}
 
 							break;
@@ -2234,7 +2234,7 @@ static void RB_RenderInteractionsShadowMapped()
 				// change the modelview matrix if needed
 				if ( entity != oldEntity )
 				{
-					depthRange = qfalse;
+					depthRange = false;
 
 					if ( entity != &tr.worldEntity )
 					{
@@ -2244,7 +2244,7 @@ static void RB_RenderInteractionsShadowMapped()
 						if ( entity->e.renderfx & RF_DEPTHHACK )
 						{
 							// hack the depth range to prevent view model from poking into walls
-							depthRange = qtrue;
+							depthRange = true;
 						}
 					}
 					else
@@ -2328,7 +2328,7 @@ static void RB_RenderInteractionsShadowMapped()
 					continue;
 				}
 
-				RB_SetupLightForShadowing( light, i, qtrue );
+				RB_SetupLightForShadowing( light, i, true );
 
 				for( ia = iaFirst; ia; ia = ia->next )
 				{
@@ -2400,7 +2400,7 @@ static void RB_RenderInteractionsShadowMapped()
 									}
 
 									// we don't need tangent space calculations here
-									Tess_Begin( Tess_StageIteratorShadowFill, NULL, shader, light->shader, qtrue, qfalse, -1, 0 );
+									Tess_Begin( Tess_StageIteratorShadowFill, NULL, shader, light->shader, true, false, -1, 0 );
 								}
 
 								break;
@@ -2413,7 +2413,7 @@ static void RB_RenderInteractionsShadowMapped()
 					// change the modelview matrix if needed
 					if ( entity != oldEntity )
 					{
-						depthRange = qfalse;
+						depthRange = false;
 
 						if ( entity != &tr.worldEntity )
 						{
@@ -2423,7 +2423,7 @@ static void RB_RenderInteractionsShadowMapped()
 							if ( entity->e.renderfx & RF_DEPTHHACK )
 							{
 								// hack the depth range to prevent view model from poking into walls
-								depthRange = qtrue;
+								depthRange = true;
 							}
 						}
 						else
@@ -2553,13 +2553,13 @@ static void RB_RenderInteractionsShadowMapped()
 				}
 
 				// begin a new batch
-				Tess_Begin( Tess_StageIteratorLighting, NULL, shader, light->shader, light->l.inverseShadows, qfalse, -1, 0 );
+				Tess_Begin( Tess_StageIteratorLighting, NULL, shader, light->shader, light->l.inverseShadows, false, -1, 0 );
 			}
 
 			// change the modelview matrix if needed
 			if ( entity != oldEntity )
 			{
-				depthRange = qfalse;
+				depthRange = false;
 
 				if ( entity != &tr.worldEntity )
 				{
@@ -2569,7 +2569,7 @@ static void RB_RenderInteractionsShadowMapped()
 					if ( entity->e.renderfx & RF_DEPTHHACK )
 					{
 						// hack the depth range to prevent view model from poking into walls
-						depthRange = qtrue;
+						depthRange = true;
 					}
 				}
 				else
@@ -2718,7 +2718,7 @@ void RB_RenderGlobalFog()
 	if( !backEnd.depthRenderImageValid ) {
 		GL_Bind( tr.depthRenderImage );
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = qtrue;
+		backEnd.depthRenderImageValid = true;
 	}
 
 	// set 2D virtual screen size
@@ -2889,7 +2889,7 @@ void RB_RenderMotionBlur( void )
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
 				     tr.depthRenderImage->uploadWidth,
 				     tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = qtrue;
+		backEnd.depthRenderImageValid = true;
 	}
 
 	gl_motionblurShader->BindProgram();
@@ -3081,7 +3081,7 @@ static void RB_RenderDebugUtils()
 			VectorMA( vec3_origin, 16, left, left );
 			VectorMA( vec3_origin, 16, up, up );
 
-			Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qtrue, 0, 0 );
+			Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, true, 0, 0 );
 
 			if ( light->isStatic && light->frustumVBO && light->frustumIBO )
 			{
@@ -3193,7 +3193,7 @@ static void RB_RenderDebugUtils()
 			light = ia->light;
 			surface = ia->surface;
 
-			Tess_MapVBOs( qfalse );
+			Tess_MapVBOs( false );
 
 			if ( entity != &tr.worldEntity )
 			{
@@ -3338,7 +3338,7 @@ static void RB_RenderDebugUtils()
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
 
-			Tess_MapVBOs( qfalse );
+			Tess_MapVBOs( false );
 
 			Tess_AddCube( vec3_origin, ent->localBounds[ 0 ], ent->localBounds[ 1 ], colorBlue );
 
@@ -3453,7 +3453,7 @@ static void RB_RenderDebugUtils()
 				static vec3_t worldOrigins[ MAX_BONES ];
 
 				GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
-				Tess_MapVBOs( qfalse );
+				Tess_MapVBOs( false );
 
 				for ( j = 0; j < skel->numBones; j++ )
 				{
@@ -3526,7 +3526,7 @@ static void RB_RenderDebugUtils()
 						float  radius;
 						vec3_t origin;
 
-						Tess_MapVBOs( qfalse );
+						Tess_MapVBOs( false );
 
 						// calculate the xyz locations for the four corners
 						radius = 0.4;
@@ -3687,7 +3687,7 @@ static void RB_RenderDebugUtils()
 		gl_reflectionShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 		gl_reflectionShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, false, -1, 0 );
 
 		for ( j = 0; j < tr.cubeProbes.currentElements; j++ )
 		{
@@ -3735,7 +3735,7 @@ static void RB_RenderDebugUtils()
 
 			R_FindTwoNearestCubeMaps( backEnd.viewParms.orientation.origin, &cubeProbeNearest, &cubeProbeSecondNearest );
 
-			Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
+			Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, false, -1, 0 );
 
 			if ( cubeProbeNearest == NULL && cubeProbeSecondNearest == NULL )
 			{
@@ -3808,7 +3808,7 @@ static void RB_RenderDebugUtils()
 
 		for ( z = 0; z < tr.world->lightGridBounds[ 2 ]; z++ ) {
 			for ( y = 0; y < tr.world->lightGridBounds[ 1 ]; y++ ) {
-				Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
+				Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, false, -1, 0 );
 
 				for ( x = 0; x < tr.world->lightGridBounds[ 0 ]; x++ ) {
 					vec3_t origin;
@@ -3987,7 +3987,7 @@ static void RB_RenderDebugUtils()
 					tess.numIndexes = 0;
 					tess.numVertexes = 0;
 
-					Tess_MapVBOs( qfalse );
+					Tess_MapVBOs( false );
 
 					for ( j = 0; j < 6; j++ )
 					{
@@ -4100,7 +4100,7 @@ static void RB_RenderDebugUtils()
 				tess.numIndexes = 0;
 				tess.multiDrawPrimitives = 0;
 
-				Tess_MapVBOs( qfalse );
+				Tess_MapVBOs( false );
 
 				Tess_AddCube( vec3_origin, node->mins, node->maxs, colorWhite );
 
@@ -4182,7 +4182,7 @@ static void RB_RenderDebugUtils()
 
 		GL_CheckErrors();
 
-		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, true, false, -1, 0 );
 
 		for ( i = 0, dp = backEnd.refdef.decalProjectors; i < backEnd.refdef.numDecalProjectors; i++, dp++ )
 		{
@@ -4223,7 +4223,7 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 		Tess_End();
 	}
 
-	Tess_MapVBOs( qfalse );
+	Tess_MapVBOs( false );
 
 	const vec4_t colorClear = { 0, 0, 0, 0 };
 	currentDebugDrawMode = mode;
@@ -4278,7 +4278,7 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 	GL_CheckErrors();
 }
 
-void DebugDrawDepthMask(qboolean state)
+void DebugDrawDepthMask(bool state)
 {
 	GL_DepthMask( state ? GL_TRUE : GL_FALSE );
 }
@@ -4362,12 +4362,12 @@ static void RB_RenderView( void )
 	if ( r_finish->integer == 1 && !glState.finishCalled )
 	{
 		glFinish();
-		glState.finishCalled = qtrue;
+		glState.finishCalled = true;
 	}
 
 	if ( r_finish->integer == 0 )
 	{
-		glState.finishCalled = qtrue;
+		glState.finishCalled = true;
 	}
 
 	// disable offscreen rendering
@@ -4378,7 +4378,7 @@ static void RB_RenderView( void )
 
 	// we will need to change the projection matrix before drawing
 	// 2D images again
-	backEnd.projection2D = qfalse;
+	backEnd.projection2D = false;
 
 	// set the modelview matrix for the viewer
 	SetViewportAndScissor();
@@ -4390,7 +4390,7 @@ static void RB_RenderView( void )
 	clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
 	glClear( clearBits );
-	backEnd.depthRenderImageValid = qfalse;
+	backEnd.depthRenderImageValid = false;
 
 	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
 	{
@@ -4399,11 +4399,11 @@ static void RB_RenderView( void )
 	}
 	else
 	{
-		backEnd.isHyperspace = qfalse;
+		backEnd.isHyperspace = false;
 	}
 
 	// we will only draw a sun if there was sky rendered in this view
-	backEnd.skyRenderedThisView = qfalse;
+	backEnd.skyRenderedThisView = false;
 
 	GL_CheckErrors();
 
@@ -4517,7 +4517,7 @@ Stretches a raw 32 bit power of 2 bitmap image over the given screen rectangle.
 Used for cinematics.
 =============
 */
-void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty )
+void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, bool dirty )
 {
 	int i, j;
 	int start, end;
@@ -4658,7 +4658,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	GL_CheckErrors();
 }
 
-void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty )
+void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, bool dirty )
 {
 	R_SyncRenderThread();
 
@@ -4791,11 +4791,11 @@ const void     *RB_StretchPic( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	if( !tess.indexes ) {
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( 4, 6 );
@@ -4890,7 +4890,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( cmd->numverts, ( cmd->numverts - 2 ) * 3 );
@@ -4947,11 +4947,11 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	if( !tess.verts ) {
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( cmd->numverts, cmd->numIndexes );
@@ -5017,11 +5017,11 @@ const void     *RB_RotatedPic( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	if( !tess.indexes ) {
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( 4, 6 );
@@ -5114,11 +5114,11 @@ const void     *RB_StretchPicGradient( const void *data )
 		}
 
 		backEnd.currentEntity = &backEnd.entity2D;
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	if( !tess.indexes ) {
-		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, false, false, -1, 0 );
 	}
 
 	Tess_CheckOverflow( 4, 6 );
@@ -5263,10 +5263,10 @@ const void *RB_RunVisTests( const void *data )
 				test->lastResult = 0.0f;
 			}
 
-			testState->running = qfalse;
+			testState->running = false;
 		}
 
-		Tess_MapVBOs( qfalse );
+		Tess_MapVBOs( false );
 		VectorSubtract( backEnd.orientation.viewOrigin,
 				test->position, diff );
 		VectorNormalize( diff );
@@ -5334,7 +5334,7 @@ const void *RB_RunVisTests( const void *data )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 		tess.multiDrawPrimitives = 0;
-		testState->running = qtrue;
+		testState->running = true;
 	}
 
 	return ( const void * )( cmd + 1 );
@@ -5361,10 +5361,10 @@ const void     *RB_DrawBuffer( const void *data )
 //      GL_ClearColor(1, 0, 0.5, 1);
 		GL_ClearColor( 0, 0, 0, 1 );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
-	glState.finishCalled = qfalse;
+	glState.finishCalled = false;
 	return ( const void * )( cmd + 1 );
 }
 
@@ -5504,7 +5504,7 @@ const void     *RB_SwapBuffers( const void *data )
 
 	GLimp_EndFrame();
 
-	backEnd.projection2D = qfalse;
+	backEnd.projection2D = false;
 
 	return ( const void * )( cmd + 1 );
 }
@@ -5688,10 +5688,10 @@ void RB_RenderThread( void )
 			return; // all done, renderer is shutting down
 		}
 
-		renderThreadActive = qtrue;
+		renderThreadActive = true;
 
 		RB_ExecuteRenderCommands( data );
 
-		renderThreadActive = qfalse;
+		renderThreadActive = false;
 	}
 }

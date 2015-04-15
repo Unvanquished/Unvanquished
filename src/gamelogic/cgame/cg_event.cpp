@@ -35,65 +35,65 @@ static const char teamTag[][8] = { "^2●^7", "^1●^7", "^4●^7" };
 #define LONGFORM ">"
 static const struct {
 	char     icon[16];
-	qboolean envKill;
-	qboolean showAssist;
+	bool envKill;
+	bool showAssist;
 	team_t   team;
 } meansOfDeath[] = {
 	// Icon            Envkill Assist? (Team)
-	{ "☠",             qfalse, qfalse },
-	{ "[shotgun]",     qfalse, qtrue  },
-	{ "[blaster]",     qfalse, qtrue  },
-	{ "[painsaw]",     qfalse, qtrue  },
-	{ "[rifle]",       qfalse, qtrue  },
-	{ "[chaingun]",    qfalse, qtrue  },
-	{ "[prifle]",      qfalse, qtrue  },
-	{ "[mdriver]",     qfalse, qtrue  },
-	{ "[lasgun]",      qfalse, qtrue  },
-	{ "[lcannon]",     qfalse, qtrue  },
-	{ "[lcannon]",     qfalse, qtrue  }, // splash
-	{ "[flamer]",      qfalse, qtrue  },
-	{ "[flamer]",      qfalse, qtrue  }, // splash
-	{ "[flamer]",      qfalse, qtrue  }, // burn
-	{ "[grenade]",     qfalse, qtrue  },
-	{ "[firebomb]",    qfalse, qtrue  },
-	{ "crushed",       qtrue,  qfalse }, // weight (H) // FIXME
-	{ LONGFORM,        qtrue,  qfalse }, // water
-	{ LONGFORM,        qtrue,  qfalse }, // slime
-	{ LONGFORM,        qtrue,  qfalse }, // lava
-	{ LONGFORM,        qtrue,  qfalse }, // crush
-	{ "[telenode]",    qfalse, qfalse }, // telefrag
-	{ LONGFORM,        qtrue,  qfalse }, // falling
-	{ "☠",             qfalse, qfalse }, // suicide
-	{ LONGFORM,        qtrue,  qfalse }, // target laser - shouldn't happen
-	{ LONGFORM,        qtrue,  qfalse }, // trigger hurt
+	{ "☠",             false, false },
+	{ "[shotgun]",     false, true  },
+	{ "[blaster]",     false, true  },
+	{ "[painsaw]",     false, true  },
+	{ "[rifle]",       false, true  },
+	{ "[chaingun]",    false, true  },
+	{ "[prifle]",      false, true  },
+	{ "[mdriver]",     false, true  },
+	{ "[lasgun]",      false, true  },
+	{ "[lcannon]",     false, true  },
+	{ "[lcannon]",     false, true  }, // splash
+	{ "[flamer]",      false, true  },
+	{ "[flamer]",      false, true  }, // splash
+	{ "[flamer]",      false, true  }, // burn
+	{ "[grenade]",     false, true  },
+	{ "[firebomb]",    false, true  },
+	{ "crushed",       true,  false }, // weight (H) // FIXME
+	{ LONGFORM,        true,  false }, // water
+	{ LONGFORM,        true,  false }, // slime
+	{ LONGFORM,        true,  false }, // lava
+	{ LONGFORM,        true,  false }, // crush
+	{ "[telenode]",    false, false }, // telefrag
+	{ LONGFORM,        true,  false }, // falling
+	{ "☠",             false, false }, // suicide
+	{ LONGFORM,        true,  false }, // target laser - shouldn't happen
+	{ LONGFORM,        true,  false }, // trigger hurt
 
-	{ "[granger]",     qfalse, qtrue  },
-	{ "[dretch]",      qfalse, qtrue  },
-	{ "[basilisk]",    qfalse, qtrue  },
-	{ "[dragoon]",     qfalse, qtrue  },
-	{ "[dragoon]",     qfalse, qtrue  }, // pounce
-	{ "[advdragoon]",  qfalse, qtrue  },
-	{ "[marauder]",    qfalse, qtrue  },
-	{ "[advmarauder]", qfalse, qtrue  },
-	{ "[tyrant]",      qfalse, qtrue  },
-	{ "[tyrant]",      qfalse, qtrue  }, // trample
-	{ "crushed",       qfalse, qtrue  }, // weight (A) // FIXME
+	{ "[granger]",     false, true  },
+	{ "[dretch]",      false, true  },
+	{ "[basilisk]",    false, true  },
+	{ "[dragoon]",     false, true  },
+	{ "[dragoon]",     false, true  }, // pounce
+	{ "[advdragoon]",  false, true  },
+	{ "[marauder]",    false, true  },
+	{ "[advmarauder]", false, true  },
+	{ "[tyrant]",      false, true  },
+	{ "[tyrant]",      false, true  }, // trample
+	{ "crushed",       false, true  }, // weight (A) // FIXME
 
-	{ "[granger]",     qfalse, qtrue  }, // granger spit (slowblob)
-	{ "[booster]",     qfalse, qtrue  }, // poison
-	{ "[hive]",        qtrue,  qtrue,  TEAM_ALIENS },
+	{ "[granger]",     false, true  }, // granger spit (slowblob)
+	{ "[booster]",     false, true  }, // poison
+	{ "[hive]",        true,  true,  TEAM_ALIENS },
 
-	{ LONGFORM,        qtrue,  qfalse, TEAM_HUMANS }, // H spawn
-	{ "[rocketpod]",   qtrue,  qtrue,  TEAM_HUMANS },
-	{ "[turret]",      qtrue,  qtrue,  TEAM_HUMANS },
-	{ "[reactor]",     qtrue,  qtrue,  TEAM_HUMANS },
+	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn
+	{ "[rocketpod]",   true,  true,  TEAM_HUMANS },
+	{ "[turret]",      true,  true,  TEAM_HUMANS },
+	{ "[reactor]",     true,  true,  TEAM_HUMANS },
 
-	{ LONGFORM,        qtrue,  qfalse, TEAM_ALIENS }, // A spawn
-	{ "[acidtube]",    qtrue,  qtrue,  TEAM_ALIENS },
-	{ "[overmind]",    qtrue,  qtrue,  TEAM_ALIENS },
-	{ "",              qtrue,  qfalse },
-	{ "",              qtrue,  qfalse },
-	{ "",              qtrue,  qfalse },
+	{ LONGFORM,        true,  false, TEAM_ALIENS }, // A spawn
+	{ "[acidtube]",    true,  true,  TEAM_ALIENS },
+	{ "[overmind]",    true,  true,  TEAM_ALIENS },
+	{ "",              true,  false },
+	{ "",              true,  false },
+	{ "",              true,  false },
 };
 
 static void CG_Obituary( entityState_t *ent )
@@ -676,7 +676,7 @@ Notify player of generated momentum
 void CG_Momentum( entityState_t *es )
 {
 	float                  momentum;
-	qboolean               negative;
+	bool               negative;
 
 	negative   = es->groundEntityNum;
 	momentum = ( negative ? -es->otherEntityNum2 : es->otherEntityNum2 ) / 10.0f;
@@ -1227,7 +1227,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( es->eventParm >= MAX_CLIENTS && es->eventParm < MAX_GENTITIES )
 			{
 				const char *location;
-				qboolean    base = cg_entities[ es->eventParm ].currentState.modelindex == BA_H_REACTOR;
+				bool    base = cg_entities[ es->eventParm ].currentState.modelindex == BA_H_REACTOR;
 				centity_t  *locent = CG_GetLocation( cg_entities[ es->eventParm ].currentState.origin );
 
 				CG_CenterPrint( base ? _( "Our base is under attack!" ) : _( "A forward base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );

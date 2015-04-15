@@ -23,16 +23,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_models.c -- model loading and caching
 #include "tr_local.h"
 
-qboolean AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri, int *numBoneReferences, int boneReferences[ MAX_BONES ] )
+bool AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri, int *numBoneReferences, int boneReferences[ MAX_BONES ] )
 {
 	int         i, j, k;
 	md5Vertex_t *v;
 	int         boneIndex;
 	int         numNewReferences;
 	int         newReferences[ MAX_WEIGHTS * 3 ]; // a single triangle can have up to 12 new bone references !
-	qboolean    hasWeights;
+	bool    hasWeights;
 
-	hasWeights = qfalse;
+	hasWeights = false;
 
 	numNewReferences = 0;
 	Com_Memset( newReferences, -1, sizeof( newReferences ) );
@@ -47,7 +47,7 @@ qboolean AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t 
 			if ( j < v->numWeights )
 			{
 				boneIndex = v->boneIndexes[ j ];
-				hasWeights = qtrue;
+				hasWeights = true;
 
 				// is the bone already referenced?
 				if ( !boneReferences[ boneIndex ] )
@@ -55,7 +55,7 @@ qboolean AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t 
 					// the bone isn't yet and we have to test if we can give the mesh this bone at all
 					if ( ( *numBoneReferences + numNewReferences ) >= glConfig2.maxVertexSkinningBones )
 					{
-						return qfalse;
+						return false;
 					}
 					else
 					{
@@ -91,10 +91,10 @@ qboolean AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t 
 	if ( hasWeights )
 	{
 		Com_AddToGrowList( vboTriangles, tri );
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriangles, md5Model_t *md5, md5Surface_t *surf, int skinIndex, int numBoneReferences, int boneReferences[ MAX_BONES ] )
@@ -132,7 +132,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	data.boneIndexes = ( int (*)[ 4 ] ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneIndexes ) * vertexesNum );
 	data.boneWeights = ( vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( *data.boneWeights ) * vertexesNum );
 	data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * vertexesNum );
-	data.noLightCoords = qtrue;
+	data.noLightCoords = true;
 	data.numVerts = vertexesNum;
 
 	indexes = ( glIndex_t * ) ri.Hunk_AllocateTempMemory( indexesNum * sizeof( glIndex_t ) );

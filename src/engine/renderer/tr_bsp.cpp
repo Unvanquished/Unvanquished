@@ -266,7 +266,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 	float    *floatbuf;
 	char     *token;
 	int      w, h, c;
-	qboolean formatFound;
+	bool formatFound;
 	float        exposure = 1.6;
 	const vec3_t LUMINANCE_VECTOR = { 0.2125f, 0.7154f, 0.0721f };
 
@@ -288,12 +288,12 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 
 	buf_p = buffer;
 
-	formatFound = qfalse;
+	formatFound = false;
 	w = h = 0;
 
-	while ( qtrue )
+	while ( true )
 	{
-		token = COM_ParseExt2( ( char ** ) &buf_p, qtrue );
+		token = COM_ParseExt2( ( char ** ) &buf_p, true );
 
 		if ( !token[ 0 ] )
 		{
@@ -302,23 +302,23 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 
 		if ( !Q_stricmp( token, "FORMAT" ) )
 		{
-			token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+			token = COM_ParseExt2( ( char ** ) &buf_p, false );
 
 			if ( !Q_stricmp( token, "=" ) )
 			{
-				token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+				token = COM_ParseExt2( ( char ** ) &buf_p, false );
 
 				if ( !Q_stricmp( token, "32" ) )
 				{
-					token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+					token = COM_ParseExt2( ( char ** ) &buf_p, false );
 
 					if ( !Q_stricmp( token, "-" ) )
 					{
-						token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+						token = COM_ParseExt2( ( char ** ) &buf_p, false );
 
 						if ( !Q_stricmp( token, "bit_rle_rgbe" ) )
 						{
-							formatFound = qtrue;
+							formatFound = true;
 						}
 						else
 						{
@@ -343,22 +343,22 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 
 		if ( !Q_stricmp( token, "-" ) )
 		{
-			token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+			token = COM_ParseExt2( ( char ** ) &buf_p, false );
 
 			if ( !Q_stricmp( token, "Y" ) )
 			{
-				token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+				token = COM_ParseExt2( ( char ** ) &buf_p, false );
 				w = atoi( token );
 
-				token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+				token = COM_ParseExt2( ( char ** ) &buf_p, false );
 
 				if ( !Q_stricmp( token, "+" ) )
 				{
-					token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+					token = COM_ParseExt2( ( char ** ) &buf_p, false );
 
 					if ( !Q_stricmp( token, "X" ) )
 					{
-						token = COM_ParseExt2( ( char ** ) &buf_p, qfalse );
+						token = COM_ParseExt2( ( char ** ) &buf_p, false );
 						h = atoi( token );
 						break;
 					}
@@ -946,7 +946,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		vec2_t stBounds[ 2 ];
 		int    minVertex;
 	} *components;
-	qboolean         updated;
+	bool         updated;
 
 	// get lightmap
 	realLightmapNum = LittleLong( ds->lightmapNum );
@@ -1047,7 +1047,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 
 	// compute strongly connected components and TC bounds per component
 	do {
-		updated = qfalse;
+		updated = false;
 
 		for( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ ) {
 			int minVertex = MIN( MIN( components[ tri->indexes[ 0 ] ].minVertex,
@@ -1056,7 +1056,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 			for( j = 0; j < 3; j++ ) {
 				int vertex = tri->indexes[ j ];
 				if( components[ vertex ].minVertex != minVertex ) {
-					updated = qtrue;
+					updated = true;
 					components[ vertex ].minVertex = minVertex;
 					components[ minVertex ].stBounds[ 0 ][ 0 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 0 ],
 											  components[ vertex ].stBounds[ 0 ][ 0 ] );
@@ -1275,7 +1275,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		vec2_t stBounds[ 2 ];
 		int    minVertex;
 	} *components;
-	qboolean         updated;
+	bool         updated;
 
 	// get lightmap
 	surf->lightmapNum = -1; // FIXME LittleLong(ds->lightmapNum);
@@ -1368,7 +1368,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 
 	// compute strongly connected components and TC bounds per component
 	do {
-		updated = qfalse;
+		updated = false;
 
 		for( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ ) {
 			int minVertex = MIN( MIN( components[ tri->indexes[ 0 ] ].minVertex,
@@ -1377,7 +1377,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 			for( j = 0; j < 3; j++ ) {
 				int vertex = tri->indexes[ j ];
 				if( components[ vertex ].minVertex != minVertex ) {
-					updated = qtrue;
+					updated = true;
 					components[ vertex ].minVertex = minVertex;
 					components[ minVertex ].stBounds[ 0 ][ 0 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 0 ],
 											  components[ vertex ].stBounds[ 0 ][ 0 ] );
@@ -1513,11 +1513,11 @@ int R_MergedWidthPoints( srfGridMesh_t *grid, int offset )
 				continue;
 			}
 
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1550,11 +1550,11 @@ int R_MergedHeightPoints( srfGridMesh_t *grid, int offset )
 				continue;
 			}
 
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1611,7 +1611,7 @@ void R_FixSharedVertexLodError_r( int start, srfGridMesh_t *grid1 )
 		}
 
 		//
-		touch = qfalse;
+		touch = false;
 
 		for ( n = 0; n < 2; n++ )
 		{
@@ -1668,7 +1668,7 @@ void R_FixSharedVertexLodError_r( int start, srfGridMesh_t *grid1 )
 
 						// ok the points are equal and should have the same lod error
 						grid2->widthLodError[ l ] = grid1->widthLodError[ k ];
-						touch = qtrue;
+						touch = true;
 					}
 				}
 
@@ -1708,7 +1708,7 @@ void R_FixSharedVertexLodError_r( int start, srfGridMesh_t *grid1 )
 
 						// ok the points are equal and should have the same lod error
 						grid2->heightLodError[ l ] = grid1->widthLodError[ k ];
-						touch = qtrue;
+						touch = true;
 					}
 				}
 			}
@@ -1769,7 +1769,7 @@ void R_FixSharedVertexLodError_r( int start, srfGridMesh_t *grid1 )
 
 						// ok the points are equal and should have the same lod error
 						grid2->widthLodError[ l ] = grid1->heightLodError[ k ];
-						touch = qtrue;
+						touch = true;
 					}
 				}
 
@@ -1815,7 +1815,7 @@ void R_FixSharedVertexLodError_r( int start, srfGridMesh_t *grid1 )
 
 						// ok the points are equal and should have the same lod error
 						grid2->heightLodError[ l ] = grid1->heightLodError[ k ];
-						touch = qtrue;
+						touch = true;
 					}
 				}
 			}
@@ -1976,9 +1976,9 @@ int R_StitchPatches( int grid1num, int grid2num )
 					}
 
 					grid2 = R_GridInsertColumn( grid2, l + 1, row, grid1->verts[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
-					grid2->lodStitched = qfalse;
+					grid2->lodStitched = false;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
-					return qtrue;
+					return true;
 				}
 			}
 
@@ -2058,9 +2058,9 @@ int R_StitchPatches( int grid1num, int grid2num )
 					}
 
 					grid2 = R_GridInsertRow( grid2, l + 1, column, grid1->verts[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
-					grid2->lodStitched = qfalse;
+					grid2->lodStitched = false;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
-					return qtrue;
+					return true;
 				}
 			}
 		}
@@ -2162,9 +2162,9 @@ int R_StitchPatches( int grid1num, int grid2num )
 
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 					                            grid1->verts[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
-					grid2->lodStitched = qfalse;
+					grid2->lodStitched = false;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
-					return qtrue;
+					return true;
 				}
 			}
 
@@ -2245,9 +2245,9 @@ int R_StitchPatches( int grid1num, int grid2num )
 
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 					                         grid1->verts[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
-					grid2->lodStitched = qfalse;
+					grid2->lodStitched = false;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
-					return qtrue;
+					return true;
 				}
 			}
 		}
@@ -2348,9 +2348,9 @@ int R_StitchPatches( int grid1num, int grid2num )
 					}
 
 					grid2 = R_GridInsertColumn( grid2, l + 1, row, grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k - 1 ] );
-					grid2->lodStitched = qfalse;
+					grid2->lodStitched = false;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
-					return qtrue;
+					return true;
 				}
 			}
 
@@ -2436,9 +2436,9 @@ int R_StitchPatches( int grid1num, int grid2num )
 						break;
 					}
 
-					grid2->lodStitched = qfalse;
+					grid2->lodStitched = false;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
-					return qtrue;
+					return true;
 				}
 			}
 		}
@@ -2540,9 +2540,9 @@ int R_StitchPatches( int grid1num, int grid2num )
 
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 					                            grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k - 1 ] );
-					grid2->lodStitched = qfalse;
+					grid2->lodStitched = false;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
-					return qtrue;
+					return true;
 				}
 			}
 
@@ -2623,15 +2623,15 @@ int R_StitchPatches( int grid1num, int grid2num )
 
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 					                         grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k - 1 ] );
-					grid2->lodStitched = qfalse;
+					grid2->lodStitched = false;
 					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t * ) grid2;
-					return qtrue;
+					return true;
 				}
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -2714,7 +2714,7 @@ void R_StitchAllPatches( void )
 
 	do
 	{
-		stitched = qfalse;
+		stitched = false;
 
 		for ( i = 0; i < s_worldData.numSurfaces; i++ )
 		{
@@ -2734,8 +2734,8 @@ void R_StitchAllPatches( void )
 			}
 
 			//
-			grid1->lodStitched = qtrue;
-			stitched = qtrue;
+			grid1->lodStitched = true;
+			stitched = true;
 			//
 			numstitches += R_TryStitchingPatch( i );
 		}
@@ -3032,7 +3032,7 @@ static void R_CreateWorldVBO( void )
 			shader_t *shader1;
 			int fogIndex1;
 			int lightMapNum1;
-			qboolean merged = qfalse;
+			bool merged = false;
 			surf1 = s_worldData.markSurfaces[ leaf->firstMarkSurface + j ];
 
 			if ( surf1->viewCount != -1 )
@@ -3088,7 +3088,7 @@ static void R_CreateWorldVBO( void )
 				surf2->viewCount = surf1->viewCount;
 				surf2->lightCount = k;
 				surf2->interactionBits = i;
-				merged = qtrue;
+				merged = true;
 			}
 
 			if ( !merged )
@@ -3137,7 +3137,7 @@ static void R_CreateWorldVBO( void )
 	// set up triangle and vertex arrays
 	numVerts = 0;
 	numTriangles = 0;
-	tess.buildingVBO = qtrue; // no batch splitting please
+	tess.buildingVBO = true; // no batch splitting please
 	tess.verts = vboVerts;
 	tess.numVertexes = 0;
 	tess.indexes = vboIdxs;
@@ -3266,7 +3266,7 @@ static void R_CreateWorldVBO( void )
 	tess.numIndexes = 0;
 	tess.verts = NULL;
 	tess.indexes = NULL;
-	tess.buildingVBO = qfalse;
+	tess.buildingVBO = false;
 
 	ri.Hunk_FreeTempMemory( vboIdxs );
 	ri.Hunk_FreeTempMemory( vboVerts );
@@ -3992,11 +3992,11 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 		// ydnar: made this check a little more strenuous (was sideNum == -1)
 		if ( sideNum < 0 || sideNum >= sidesCount )
 		{
-			out->hasSurface = qfalse;
+			out->hasSurface = false;
 		}
 		else
 		{
-			out->hasSurface = qtrue;
+			out->hasSurface = true;
 			planeNum = LittleLong( sides[ firstSide + sideNum ].planeNum );
 			VectorSubtract( vec3_origin, s_worldData.planes[ planeNum ].normal, out->surface );
 			out->surface[ 3 ] = -s_worldData.planes[ planeNum ].dist;
@@ -4246,7 +4246,7 @@ void R_LoadEntities( lump_t *l )
 	char         keyname[ MAX_TOKEN_CHARS ];
 	char         value[ MAX_TOKEN_CHARS ];
 	world_t      *w;
-	qboolean     isLight = qfalse;
+	bool     isLight = false;
 	int          numEntities = 0;
 	int          numLights = 0;
 	int          numOmniLights = 0;
@@ -4273,7 +4273,7 @@ void R_LoadEntities( lump_t *l )
 	while ( 1 )
 	{
 		// parse key
-		token = COM_ParseExt2( &p, qtrue );
+		token = COM_ParseExt2( &p, true );
 
 		if ( !*token )
 		{
@@ -4294,7 +4294,7 @@ void R_LoadEntities( lump_t *l )
 		Q_strncpyz( keyname, token, sizeof( keyname ) );
 
 		// parse value
-		token = COM_ParseExt2( &p, qfalse );
+		token = COM_ParseExt2( &p, false );
 
 		if ( !*token )
 		{
@@ -4362,7 +4362,7 @@ void R_LoadEntities( lump_t *l )
 		if ( !Q_stricmp( keyname, "deluxeMapping" ) && !Q_stricmp( value, "1" ) )
 		{
 			ri.Printf( PRINT_DEVELOPER, "map features directional light mapping\n" );
-			tr.worldDeluxeMapping = qtrue;
+			tr.worldDeluxeMapping = true;
 			continue;
 		}
 
@@ -4380,7 +4380,7 @@ void R_LoadEntities( lump_t *l )
 			if ( s )
 			{
 				ri.Printf( PRINT_DEVELOPER, "map features directional light mapping\n" );
-				tr.worldDeluxeMapping = qtrue;
+				tr.worldDeluxeMapping = true;
 			}
 
 			continue;
@@ -4390,7 +4390,7 @@ void R_LoadEntities( lump_t *l )
 		if ( !Q_stricmp( keyname, "hdrRGBE" ) && !Q_stricmp( value, "1" ) )
 		{
 			ri.Printf( PRINT_DEVELOPER, "map features HDR light mapping\n" );
-			tr.worldHDR_RGBE = qtrue;
+			tr.worldHDR_RGBE = true;
 			continue;
 		}
 
@@ -4408,7 +4408,7 @@ void R_LoadEntities( lump_t *l )
 	while ( 1 )
 	{
 		// parse {
-		token = COM_ParseExt2( &p, qtrue );
+		token = COM_ParseExt2( &p, true );
 
 		if ( !*token )
 		{
@@ -4423,13 +4423,13 @@ void R_LoadEntities( lump_t *l )
 		}
 
 		// new entity
-		isLight = qfalse;
+		isLight = false;
 
 		// parse epairs
 		while ( 1 )
 		{
 			// parse key
-			token = COM_ParseExt2( &p, qtrue );
+			token = COM_ParseExt2( &p, true );
 
 			if ( *token == '}' )
 			{
@@ -4445,7 +4445,7 @@ void R_LoadEntities( lump_t *l )
 			Q_strncpyz( keyname, token, sizeof( keyname ) );
 
 			// parse value
-			token = COM_ParseExt2( &p, qfalse );
+			token = COM_ParseExt2( &p, false );
 
 			if ( !*token )
 			{
@@ -4458,7 +4458,7 @@ void R_LoadEntities( lump_t *l )
 			// check if this entity is a light
 			if ( !Q_stricmp( keyname, "classname" ) && !Q_stricmp( value, "light" ) )
 			{
-				isLight = qtrue;
+				isLight = true;
 			}
 		}
 
@@ -4506,11 +4506,11 @@ void R_LoadEntities( lump_t *l )
 		VectorClear( light->l.projStart );
 		VectorClear( light->l.projEnd );
 
-		light->l.inverseShadows = qfalse;
+		light->l.inverseShadows = false;
 
-		light->isStatic = qtrue;
-		light->noRadiosity = qfalse;
-		light->additive = qtrue;
+		light->isStatic = true;
+		light->noRadiosity = false;
+		light->additive = true;
 
 		light->shadowLOD = 0;
 	}
@@ -4523,7 +4523,7 @@ void R_LoadEntities( lump_t *l )
 	while ( 1 )
 	{
 		// parse {
-		token = COM_ParseExt2( &p, qtrue );
+		token = COM_ParseExt2( &p, true );
 
 		if ( !*token )
 		{
@@ -4538,13 +4538,13 @@ void R_LoadEntities( lump_t *l )
 		}
 
 		// new entity
-		isLight = qfalse;
+		isLight = false;
 
 		// parse epairs
 		while ( 1 )
 		{
 			// parse key
-			token = COM_ParseExt2( &p, qtrue );
+			token = COM_ParseExt2( &p, true );
 
 			if ( *token == '}' )
 			{
@@ -4560,7 +4560,7 @@ void R_LoadEntities( lump_t *l )
 			Q_strncpyz( keyname, token, sizeof( keyname ) );
 
 			// parse value
-			token = COM_ParseExt2( &p, qfalse );
+			token = COM_ParseExt2( &p, false );
 
 			if ( !*token )
 			{
@@ -4573,7 +4573,7 @@ void R_LoadEntities( lump_t *l )
 			// check if this entity is a light
 			if ( !Q_stricmp( keyname, "classname" ) && !Q_stricmp( value, "light" ) )
 			{
-				isLight = qtrue;
+				isLight = true;
 			}
 			// check for origin
 			else if ( !Q_stricmp( keyname, "origin" ) || !Q_stricmp( keyname, "light_origin" ) )
@@ -4672,12 +4672,12 @@ void R_LoadEntities( lump_t *l )
 			// check if this light does not cast any shadows
 			else if ( !Q_stricmp( keyname, "noshadows" ) && !Q_stricmp( value, "1" ) )
 			{
-				light->l.noShadows = qtrue;
+				light->l.noShadows = true;
 			}
 			// check if this light does not contribute to the global lightmapping
 			else if ( !Q_stricmp( keyname, "noradiosity" ) && !Q_stricmp( value, "1" ) )
 			{
-				light->noRadiosity = qtrue;
+				light->noRadiosity = true;
 			}
 			// check if this light is a parallel sun light
 			else if ( !Q_stricmp( keyname, "parallel" ) && !Q_stricmp( value, "1" ) )
@@ -4743,7 +4743,7 @@ void R_LoadEntities( lump_t *l )
 R_GetEntityToken
 =================
 */
-qboolean R_GetEntityToken( char *buffer, int size )
+bool R_GetEntityToken( char *buffer, int size )
 {
 	const char *s;
 
@@ -4753,11 +4753,11 @@ qboolean R_GetEntityToken( char *buffer, int size )
 	if ( !s_worldData.entityParsePoint || !s[ 0 ] )
 	{
 		s_worldData.entityParsePoint = s_worldData.entityString;
-		return qfalse;
+		return false;
 	}
 	else
 	{
-		return qtrue;
+		return true;
 	}
 }
 
@@ -4789,7 +4789,7 @@ static void R_PrecacheInteraction( trRefLight_t *light, bspSurface_t *surface )
 	iaCache->next = NULL;
 	iaCache->surface = surface;
 
-	iaCache->redundant = qfalse;
+	iaCache->redundant = false;
 }
 
 /*
@@ -4797,14 +4797,14 @@ static void R_PrecacheInteraction( trRefLight_t *light, bspSurface_t *surface )
 R_PrecacheGenericSurfInteraction
 ================
 */
-static qboolean R_PrecacheGenericSurfInteraction( srfGeneric_t *face, trRefLight_t *light )
+static bool R_PrecacheGenericSurfInteraction( srfGeneric_t *face, trRefLight_t *light )
 {
 	if ( !BoundsIntersect( face->bounds[ 0 ], face->bounds[ 1 ], light->worldBounds[ 0 ], light->worldBounds[ 1 ] ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -4814,7 +4814,7 @@ R_PrecacheInteractionSurface
 */
 static void R_PrecacheInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 {
-	qboolean intersects;
+	bool intersects;
 
 	if ( surf->lightCount == s_lightCount )
 	{
@@ -4837,7 +4837,7 @@ static void R_PrecacheInteractionSurface( bspSurface_t *surf, trRefLight_t *ligh
 			intersects = R_PrecacheGenericSurfInteraction( ( srfGeneric_t * ) surf->data, light );
 			break;
 		default:
-			intersects = qfalse;
+			intersects = false;
 			break;
 	}
 
@@ -5025,11 +5025,11 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 
 				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
 				{
-					tri->facingLight = qtrue;
+					tri->facingLight = true;
 				}
 				else
 				{
-					tri->facingLight = qfalse;
+					tri->facingLight = false;
 				}
 			}
 			else
@@ -5039,22 +5039,22 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 
 				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
 				{
-					tri->facingLight = qtrue;
+					tri->facingLight = true;
 				}
 				else
 				{
-					tri->facingLight = qfalse;
+					tri->facingLight = false;
 				}
 			}
 		}
 		else
 		{
-			tri->facingLight = qtrue; // FIXME ?
+			tri->facingLight = true; // FIXME ?
 		}
 
 		if ( R_CullLightTriangle( light, pos ) == CULL_OUT )
 		{
-			tri->facingLight = qfalse;
+			tri->facingLight = false;
 		}
 
 		if ( tri->facingLight )
@@ -5168,7 +5168,7 @@ static void R_CreateVBOLightMeshes( trRefLight_t *light )
 	{
 		iaCache = iaCachesSorted[ k ];
 
-		iaCache->mergedIntoVBO = qtrue;
+		iaCache->mergedIntoVBO = true;
 
 		shader = iaCache->surface->shader;
 
@@ -5381,7 +5381,7 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 	int                numCaches;
 
 	shader_t           *shader, *oldShader;
-	qboolean           alphaTest, oldAlphaTest;
+	bool           alphaTest, oldAlphaTest;
 
 	bspSurface_t       *surface;
 
@@ -5516,12 +5516,12 @@ static void R_CreateVBOShadowMeshes( trRefLight_t *light )
 	{
 		iaCache = iaCachesSorted[ k ];
 
-		iaCache->mergedIntoVBO = qtrue;
+		iaCache->mergedIntoVBO = true;
 
 		shader = iaCache->surface->shader;
 		alphaTest = shader->alphaTest;
 
-		iaCache->mergedIntoVBO = qtrue;
+		iaCache->mergedIntoVBO = true;
 
 		if ( alphaTest ? shader != oldShader : alphaTest != oldAlphaTest )
 		{
@@ -5753,7 +5753,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 	int                numCaches;
 
 	shader_t           *shader, *oldShader;
-	qboolean           alphaTest, oldAlphaTest;
+	bool           alphaTest, oldAlphaTest;
 	int                cubeSide;
 
 	bspSurface_t       *surface;
@@ -5884,7 +5884,7 @@ static void R_CreateVBOShadowCubeMeshes( trRefLight_t *light )
 			shader = iaCache->surface->shader;
 			alphaTest = shader->alphaTest;
 
-			iaCache->mergedIntoVBO = qtrue;
+			iaCache->mergedIntoVBO = true;
 
 			if ( alphaTest ? shader != oldShader : alphaTest != oldAlphaTest )
 			{
@@ -6493,8 +6493,8 @@ void R_BuildCubeMaps( void )
 	int            i, j;
 	int            ii, jj;
 	refdef_t       rf;
-	qboolean       flipx;
-	qboolean       flipy;
+	bool       flipx;
+	bool       flipy;
 	int            x, y, xy, xy2;
 
 	cubemapProbe_t *cubeProbe;
@@ -6613,8 +6613,8 @@ void R_BuildCubeMaps( void )
 
 		for ( i = 0; i < 6; i++ )
 		{
-			flipx = qfalse;
-			flipy = qfalse;
+			flipx = false;
+			flipy = false;
 
 			switch ( i )
 			{
@@ -6630,7 +6630,7 @@ void R_BuildCubeMaps( void )
 						rf.viewaxis[ 1 ][ 2 ] = 1;
 
 						CrossProduct( rf.viewaxis[ 0 ], rf.viewaxis[ 1 ], rf.viewaxis[ 2 ] );
-						//flipx=qtrue;
+						//flipx=true;
 						break;
 					}
 
@@ -6646,7 +6646,7 @@ void R_BuildCubeMaps( void )
 						rf.viewaxis[ 1 ][ 2 ] = -1;
 
 						CrossProduct( rf.viewaxis[ 0 ], rf.viewaxis[ 1 ], rf.viewaxis[ 2 ] );
-						//flipx=qtrue;
+						//flipx=true;
 						break;
 					}
 
@@ -6662,7 +6662,7 @@ void R_BuildCubeMaps( void )
 						rf.viewaxis[ 1 ][ 2 ] = 0;
 
 						CrossProduct( rf.viewaxis[ 0 ], rf.viewaxis[ 1 ], rf.viewaxis[ 2 ] );
-						//flipx=qtrue;
+						//flipx=true;
 						break;
 					}
 
@@ -6678,7 +6678,7 @@ void R_BuildCubeMaps( void )
 						rf.viewaxis[ 1 ][ 2 ] = 0;
 
 						CrossProduct( rf.viewaxis[ 0 ], rf.viewaxis[ 1 ], rf.viewaxis[ 2 ] );
-						//flipx=qtrue;
+						//flipx=true;
 						break;
 					}
 
@@ -6694,7 +6694,7 @@ void R_BuildCubeMaps( void )
 						rf.viewaxis[ 1 ][ 2 ] = 0;
 
 						CrossProduct( rf.viewaxis[ 0 ], rf.viewaxis[ 1 ], rf.viewaxis[ 2 ] );
-						//  flipx=qtrue;
+						//  flipx=true;
 						break;
 					}
 
@@ -6710,7 +6710,7 @@ void R_BuildCubeMaps( void )
 						rf.viewaxis[ 1 ][ 2 ] = 0;
 
 						CrossProduct( rf.viewaxis[ 0 ], rf.viewaxis[ 1 ], rf.viewaxis[ 2 ] );
-						//flipx=qtrue;
+						//flipx=true;
 						break;
 					}
 			}
@@ -6763,7 +6763,7 @@ void R_BuildCubeMaps( void )
 			}
 
 			// encode the pixel intensity into the alpha channel, saves work in the shader
-			if ( qtrue )
+			if ( true )
 			{
 				byte r, g, b, best;
 
@@ -6799,7 +6799,7 @@ void R_BuildCubeMaps( void )
 		}
 
 		// build the cubemap
-		cubeProbe->cubemap = R_AllocImage( va( "_autoCube%d", j ), qfalse );
+		cubeProbe->cubemap = R_AllocImage( va( "_autoCube%d", j ), false );
 
 		if ( !cubeProbe->cubemap )
 		{
@@ -6863,7 +6863,7 @@ void RE_LoadWorldMap( const char *name )
 	tr.worldEntity.ambientLight[ 1 ] = r_forceAmbient->value;
 	tr.worldEntity.ambientLight[ 2 ] = r_forceAmbient->value;
 
-	tr.worldMapLoaded = qtrue;
+	tr.worldMapLoaded = true;
 
 	// load it
 	ri.FS_ReadFile( name, ( void ** ) &buffer );
@@ -6878,8 +6878,8 @@ void RE_LoadWorldMap( const char *name )
 	tr.world = NULL;
 
 	// tr.worldDeluxeMapping will be set by R_LoadEntities()
-	tr.worldDeluxeMapping = qfalse;
-	tr.worldHDR_RGBE = qfalse;
+	tr.worldDeluxeMapping = false;
+	tr.worldHDR_RGBE = false;
 
 	Com_Memset( &s_worldData, 0, sizeof( s_worldData ) );
 	Q_strncpyz( s_worldData.name, name, sizeof( s_worldData.name ) );

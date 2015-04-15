@@ -216,7 +216,7 @@ static void png_flush_data( png_structp png )
 {
 }
 
-void SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip )
+void SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, bool flip )
 {
 	png_structp png;
 	png_infop   info;

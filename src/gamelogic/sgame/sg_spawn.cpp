@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_spawn.h"
 
-qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
+bool G_SpawnString( const char *key, const char *defaultString, char **out )
 {
 	int i;
 
@@ -43,7 +43,7 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
 	{
 		*out = ( char * ) defaultString;
 //    G_Error( "G_SpawnString() called while not spawning" );
-		return qfalse;
+		return false;
 	}
 
 	for ( i = 0; i < level.numSpawnVars; i++ )
@@ -51,12 +51,12 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
 		if ( !Q_stricmp( key, level.spawnVars[ i ][ 0 ] ) )
 		{
 			*out = level.spawnVars[ i ][ 1 ];
-			return qtrue;
+			return true;
 		}
 	}
 
 	*out = ( char * ) defaultString;
-	return qfalse;
+	return false;
 }
 
 /**
@@ -64,17 +64,17 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
  *
  * use this with caution, as it might persist unprepared cvars (see cvartable)
  */
-static qboolean G_SpawnStringIntoCVarIfSet( const char *key, const char *cvarName )
+static bool G_SpawnStringIntoCVarIfSet( const char *key, const char *cvarName )
 {
 	char     *tmpString;
 
 	if ( G_SpawnString( key, "", &tmpString ) )
 	{
 		trap_Cvar_Set( cvarName, tmpString );
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 static void G_SpawnStringIntoCVar( const char *key, const char *cvarName )
@@ -85,7 +85,7 @@ static void G_SpawnStringIntoCVar( const char *key, const char *cvarName )
 	trap_Cvar_Set( cvarName, tmpString );
 }
 
-qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
+bool G_SpawnBoolean( const char *key, bool defaultqboolean )
 {
 	char     *string;
 	int     out;
@@ -96,11 +96,11 @@ qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
 		{
 			if(out == 1)
 			{
-				return qtrue;
+				return true;
 			}
 			else if(out == 0)
 			{
-				return qfalse;
+				return false;
 			}
 			return defaultqboolean;
 		}
@@ -108,11 +108,11 @@ qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
 		{
 			if(!Q_stricmp(string, "true"))
 			{
-				return qtrue;
+				return true;
 			}
 			else if(!Q_stricmp(string, "false"))
 			{
-				return qfalse;
+				return false;
 			}
 			return defaultqboolean;
 		}
@@ -123,40 +123,40 @@ qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
 	}
 }
 
-qboolean  G_SpawnFloat( const char *key, const char *defaultString, float *out )
+bool  G_SpawnFloat( const char *key, const char *defaultString, float *out )
 {
 	char     *s;
-	qboolean present;
+	bool present;
 
 	present = G_SpawnString( key, defaultString, &s );
 	*out = atof( s );
 	return present;
 }
 
-qboolean G_SpawnInt( const char *key, const char *defaultString, int *out )
+bool G_SpawnInt( const char *key, const char *defaultString, int *out )
 {
 	char     *s;
-	qboolean present;
+	bool present;
 
 	present = G_SpawnString( key, defaultString, &s );
 	*out = atoi( s );
 	return present;
 }
 
-qboolean  G_SpawnVector( const char *key, const char *defaultString, float *out )
+bool  G_SpawnVector( const char *key, const char *defaultString, float *out )
 {
 	char     *s;
-	qboolean present;
+	bool present;
 
 	present = G_SpawnString( key, defaultString, &s );
 	sscanf( s, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] );
 	return present;
 }
 
-qboolean  G_SpawnVector4( const char *key, const char *defaultString, float *out )
+bool  G_SpawnVector4( const char *key, const char *defaultString, float *out )
 {
 	char     *s;
-	qboolean present;
+	bool present;
 
 	present = G_SpawnString( key, defaultString, &s );
 	sscanf( s, "%f %f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ], &out[ 3 ] );
@@ -460,17 +460,17 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "trigger_win",              SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_END }
 };
 
-qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )
+bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )
 {
 	if ( spawnDescription->versionState == ENT_V_CURRENT ) // we don't need to handle anything
-		return qtrue;
+		return true;
 
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
 	{
 		if ( g_debugEntities.integer > -2 )
 			G_Printf(S_ERROR "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
 
-		return qfalse;
+		return false;
 	}
 
 	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
@@ -482,10 +482,10 @@ qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gent
 		}
 	}
 	entity->classname = spawnDescription->replacement;
-	return qtrue;
+	return true;
 }
 
-qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
+bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 {
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
@@ -493,7 +493,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( S_WARNING "Entity %s needs to call or target to something — Removing it.\n", etos( entity ) );
-				return qfalse;
+				return false;
 			}
 			break;
 		case CHAIN_TARGET:
@@ -502,7 +502,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( S_WARNING "Entity %s needs a name, so other entities can target it — Removing it.\n", etos( entity ) );
-				return qfalse;
+				return false;
 			}
 			break;
 		case CHAIN_RELAY:
@@ -511,14 +511,14 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( S_WARNING "Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.\n", etos( entity ) );
-				return qfalse;
+				return false;
 			}
 			break;
 		default:
 			break;
 	}
 
-	return qtrue;
+	return true;
 }
 
 static entityClass_t entityClasses[ARRAY_LEN(entityClassDescriptions)];
@@ -528,10 +528,10 @@ static entityClass_t entityClasses[ARRAY_LEN(entityClassDescriptions)];
 G_CallSpawnFunction
 
 Finds the spawn function for the entity and calls it,
-returning qfalse if not found
+returning false if not found
 ===============
 */
-qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
+bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 {
 	entityClassDescriptor_t     *spawnedClass;
 	buildable_t buildable;
@@ -541,7 +541,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
 			G_Printf( S_ERROR "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
-		return qfalse;
+		return false;
 	}
 
 	//check buildable spawn functions
@@ -554,7 +554,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 		// don't spawn built-in buildings if we are using a custom layout
 		if ( level.layout[ 0 ] && Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( buildable == BA_A_SPAWN || buildable == BA_H_SPAWN )
@@ -566,7 +566,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 		G_SpawnBuildable( spawnedEntity, buildable );
 		level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
 
-		return qtrue;
+		return true;
 	}
 
 	// check the spawn functions for other classes
@@ -580,10 +580,10 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 		spawnedEntity->eclass->instanceCounter++;
 
 		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
-			return qfalse; // results in freeing the entity
+			return false; // results in freeing the entity
 
 		spawnedClass->spawn( spawnedEntity );
-		spawnedEntity->spawned = qtrue;
+		spawnedEntity->spawned = true;
 
 		if ( g_debugEntities.integer > 2 )
 			G_Printf( S_DEBUG "Successfully spawned entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " as " S_COLOR_YELLOW "%i" S_COLOR_WHITE "th instance of " S_COLOR_CYAN "%s\n",
@@ -594,10 +594,10 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 		 *  we handle it automatically *after* the spawn (but before it's use/reset)
 		 */
 		if(!G_HandleEntityVersions( spawnedClass, spawnedEntity ))
-			return qfalse;
+			return false;
 
 
-		return qtrue;
+		return true;
 	}
 
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
@@ -613,7 +613,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -814,7 +814,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], spawningEntity );
 	}
 
-	if(G_SpawnBoolean( "nop", qfalse ) || G_SpawnBoolean( "notunv", qfalse ))
+	if(G_SpawnBoolean( "nop", false ) || G_SpawnBoolean( "notunv", false ))
 	{
 		G_FreeEntity( spawningEntity );
 		return;
@@ -900,10 +900,10 @@ void G_ReorderCallTargets( gentity_t *ent )
 	ent->callTargetCount = j;
 }
 
-qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
+bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
 {
 	if ( !Q_stricmp(expectedFieldname, actualFieldname) || typeOfDeprecation == ENT_V_CURRENT )
-		return qfalse;
+		return false;
 
 	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
 	{
@@ -914,7 +914,7 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
 		}
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -952,7 +952,7 @@ level's entity strings into level.spawnVars[]
 This does not actually spawn an entity.
 ====================
 */
-qboolean G_ParseSpawnVars( void )
+bool G_ParseSpawnVars( void )
 {
 	char keyname[ MAX_TOKEN_CHARS ];
 	char com_token[ MAX_TOKEN_CHARS ];
@@ -964,7 +964,7 @@ qboolean G_ParseSpawnVars( void )
 	if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
 	{
 		// end of spawn string
-		return qfalse;
+		return false;
 	}
 
 	if ( com_token[ 0 ] != '{' )
@@ -1007,7 +1007,7 @@ qboolean G_ParseSpawnVars( void )
 		level.numSpawnVars++;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /**

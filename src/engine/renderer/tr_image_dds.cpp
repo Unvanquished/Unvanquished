@@ -164,7 +164,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 	//first face of the cube, subsequent faces will use the
 	//same offsets, just shifted over
 	int      i, size;
-	qboolean compressed;
+	bool compressed;
 
 	*numLayers = 0;
 
@@ -209,7 +209,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 		return;
 	}
 
-	compressed = ( ddsd->ddpfPixelFormat.dwFlags & DDPF_FOURCC ) ? qtrue : qfalse;
+	compressed = ( ddsd->ddpfPixelFormat.dwFlags & DDPF_FOURCC ) ? true : false;
 
 	// either a cube or a volume
 	if ( ddsd->ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP )

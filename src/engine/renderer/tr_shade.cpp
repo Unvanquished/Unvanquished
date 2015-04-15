@@ -311,10 +311,10 @@ static void DrawTris()
 
 	if( tess.surfaceShader->autoSpriteMode ) {
 		gl_genericShader->EnableVertexSprite();
-		tess.vboVertexSprite = qtrue;
+		tess.vboVertexSprite = true;
 	} else {
 		gl_genericShader->DisableVertexSprite();
-		tess.vboVertexSprite = qfalse;
+		tess.vboVertexSprite = false;
 	}
 
 	gl_genericShader->DisableTCGenEnvironment();
@@ -383,8 +383,8 @@ to overflow.
 void Tess_Begin( void ( *stageIteratorFunc )( void ),
                  void ( *stageIteratorFunc2 )( void ),
                  shader_t *surfaceShader, shader_t *lightShader,
-                 qboolean skipTangentSpaces,
-                 qboolean skipVBO,
+                 bool skipTangentSpaces,
+                 bool skipVBO,
                  int lightmapNum,
                  int fogNum )
 {
@@ -417,7 +417,7 @@ void Tess_Begin( void ( *stageIteratorFunc )( void ),
 	}
 
 
-	bool isSky = ( state != NULL && state->isSky != qfalse );
+	bool isSky = ( state != NULL && state->isSky != false );
 
 	tess.lightShader = lightShader;
 
@@ -466,7 +466,7 @@ static void Render_generic( int stage )
 	shaderStage_t *pStage;
 	colorGen_t    rgbGen;
 	alphaGen_t    alphaGen;
-	qboolean      needDepthMap = qfalse;
+	bool      needDepthMap = false;
 
 	GLimp_LogComment( "--- Render_generic ---\n" );
 
@@ -476,7 +476,7 @@ static void Render_generic( int stage )
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	// choose right shader program ----------------------------------
@@ -488,24 +488,24 @@ static void Render_generic( int stage )
 
 	if( pStage->hasDepthFade ) {
 		gl_genericShader->EnableMacro_USE_DEPTH_FADE();
-		needDepthMap = qtrue;
+		needDepthMap = true;
 	} else {
 		gl_genericShader->DisableMacro_USE_DEPTH_FADE();
 	}
 
 	if( tess.surfaceShader->autoSpriteMode ) {
 		gl_genericShader->EnableVertexSprite();
-		needDepthMap = qtrue;
-		tess.vboVertexSprite = qtrue;
+		needDepthMap = true;
+		tess.vboVertexSprite = true;
 	} else {
 		gl_genericShader->DisableVertexSprite();
-		tess.vboVertexSprite = qfalse;
+		tess.vboVertexSprite = false;
 	}
 
 	if( needDepthMap && !backEnd.depthRenderImageValid ) {
 		GL_Bind( tr.depthRenderImage );
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = qtrue;
+		backEnd.depthRenderImageValid = true;
 	}
 
 	gl_genericShader->BindProgram();
@@ -607,7 +607,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
@@ -617,7 +617,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_vertexLightingShader_DBS_entity->SetVertexAnimation( tess.vboVertexAnimation );
 
-	tess.vboVertexSprite = qfalse;
+	tess.vboVertexSprite = false;
 
 	gl_vertexLightingShader_DBS_entity->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_entity->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
@@ -830,7 +830,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 	gl_vertexLightingShader_DBS_world->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 	gl_vertexLightingShader_DBS_world->SetGlowMapping( glowMapping );
 
-	tess.vboVertexSprite = qfalse;
+	tess.vboVertexSprite = false;
 
 	gl_vertexLightingShader_DBS_world->BindProgram();
 
@@ -879,7 +879,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	gl_vertexLightingShader_DBS_world->SetUniform_ColorModulate( colorGen, alphaGen );
@@ -1010,7 +1010,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] == NULL )
@@ -1028,7 +1028,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	gl_lightMappingShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 	gl_lightMappingShader->SetGlowMapping( glowMapping );
 
-	tess.vboVertexSprite = qfalse;
+	tess.vboVertexSprite = false;
 
 	gl_lightMappingShader->BindProgram();
 
@@ -1140,7 +1140,7 @@ static void Render_depthFill( int stage )
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -1218,7 +1218,7 @@ static void Render_shadowFill( int stage )
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	gl_shadowFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -1299,7 +1299,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
-	backEnd.depthRenderImageValid = qfalse;
+	backEnd.depthRenderImageValid = false;
 
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_omniXYZ->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -1493,7 +1493,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
-	backEnd.depthRenderImageValid = qfalse;
+	backEnd.depthRenderImageValid = false;
 
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_projXYZ->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -1686,7 +1686,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
-	backEnd.depthRenderImageValid = qfalse;
+	backEnd.depthRenderImageValid = false;
 
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_directionalSun->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -1889,7 +1889,7 @@ static void Render_reflection_CB( int stage )
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
@@ -1981,7 +1981,7 @@ static void Render_screen( int stage )
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	gl_screenShader->BindProgram();
@@ -2012,7 +2012,7 @@ static void Render_portal( int stage )
 
 	if( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 		// depth buffer may change
-		backEnd.depthRenderImageValid = qfalse;
+		backEnd.depthRenderImageValid = false;
 	}
 
 	// enable shader, set arrays
@@ -2057,10 +2057,10 @@ static void Render_heatHaze( int stage )
 	gl_heatHazeShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 	if( tess.surfaceShader->autoSpriteMode ) {
 		gl_heatHazeShader->EnableVertexSprite();
-		tess.vboVertexSprite = qtrue;
+		tess.vboVertexSprite = true;
 	} else {
 		gl_heatHazeShader->DisableVertexSprite();
-		tess.vboVertexSprite = qfalse;
+		tess.vboVertexSprite = false;
 	}
 
 	gl_heatHazeShader->BindProgram();
@@ -3140,8 +3140,8 @@ void Tess_End()
 		}
 	}
 
-	tess.vboVertexSkinning = qfalse;
-	tess.vboVertexAnimation = qfalse;
+	tess.vboVertexSkinning = false;
+	tess.vboVertexAnimation = false;
 
 	// clear shader so we can tell we don't have any unclosed surfaces
 	tess.multiDrawPrimitives = 0;

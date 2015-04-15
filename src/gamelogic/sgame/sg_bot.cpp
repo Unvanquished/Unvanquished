@@ -37,7 +37,7 @@ static struct
 	struct
 	{
 		char *name;
-		qboolean inUse;
+		bool inUse;
 	} name[MAX_CLIENTS];
 } botNames[NUM_TEAMS];
 
@@ -65,20 +65,20 @@ void G_BotListNames( gentity_t *ent )
 	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:\n" ) ), TEAM_HUMANS, "^5*" );
 }
 
-qboolean G_BotClearNames( void )
+bool G_BotClearNames( void )
 {
 	int i;
 
 	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
 		if ( botNames[TEAM_ALIENS].name[i].inUse )
 		{
-			return qfalse;
+			return false;
 		}
 
 		for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
 			if ( botNames[TEAM_HUMANS].name[i].inUse )
 			{
-				return qfalse;
+				return false;
 			}
 
 			for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
@@ -94,7 +94,7 @@ qboolean G_BotClearNames( void )
 			botNames[TEAM_ALIENS].count = 0;
 			botNames[TEAM_HUMANS].count = 0;
 
-			return qtrue;
+			return true;
 }
 
 int G_BotAddNames( team_t team, int arg, int last )
@@ -153,7 +153,7 @@ static char *G_BotSelectName( team_t team )
 	return NULL;
 }
 
-static void G_BotNameUsed( team_t team, const char *name, qboolean inUse )
+static void G_BotNameUsed( team_t team, const char *name, bool inUse )
 {
 	unsigned int i;
 
@@ -167,7 +167,7 @@ static void G_BotNameUsed( team_t team, const char *name, qboolean inUse )
 	}
 }
 
-qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
+bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
 {
 	botMemory_t *botMind;
 	gentity_t *self = &g_entities[ clientNum ];
@@ -192,7 +192,7 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 		if ( !botMind->behaviorTree )
 		{
 			G_Printf( "Problem when loading default behavior tree\n" );
-			return qfalse;
+			return false;
 		}
 	}
 
@@ -207,22 +207,22 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 
 	self->pain = BotPain;
 
-	return qtrue;
+	return true;
 }
 
-qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
+bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 {
 	int clientNum;
 	char userinfo[MAX_INFO_STRING];
 	const char* s = 0;
 	gentity_t *bot;
-	qboolean autoname = qfalse;
-	qboolean okay;
+	bool autoname = false;
+	bool okay;
 
 	if ( !navMeshLoaded )
 	{
 		trap_Print( "No Navigation Mesh file is available for this map\n" );
-		return qfalse;
+		return false;
 	}
 
 	// find what clientNum to use for bot
@@ -231,11 +231,11 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	if ( clientNum < 0 )
 	{
 		trap_Print( "no more slots for bot\n" );
-		return qfalse;
+		return false;
 	}
 	bot = &g_entities[ clientNum ];
 	bot->r.svFlags |= SVF_BOT;
-	bot->inuse = qtrue;
+	bot->inuse = true;
 
 	if ( !Q_stricmp( name, "*" ) )
 	{
@@ -248,44 +248,44 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 
 	// register user information
 	userinfo[0] = '\0';
-	Info_SetValueForKey( userinfo, "name", name ? name : "", qfalse ); // allow defaulting
-	Info_SetValueForKey( userinfo, "rate", "25000", qfalse );
-	Info_SetValueForKey( userinfo, "snaps", "20", qfalse );
+	Info_SetValueForKey( userinfo, "name", name ? name : "", false ); // allow defaulting
+	Info_SetValueForKey( userinfo, "rate", "25000", false );
+	Info_SetValueForKey( userinfo, "snaps", "20", false );
 	if ( autoname )
 	{
-		Info_SetValueForKey( userinfo, "autoname", name, qfalse );
+		Info_SetValueForKey( userinfo, "autoname", name, false );
 	}
 
 	//so we can connect if server is password protected
 	if ( g_needpass.integer == 1 )
 	{
-		Info_SetValueForKey( userinfo, "password", g_password.string, qfalse );
+		Info_SetValueForKey( userinfo, "password", g_password.string, false );
 	}
 
 	trap_SetUserinfo( clientNum, userinfo );
 
 	// have it connect to the game as a normal client
-	if ( ( s = ClientBotConnect( clientNum, qtrue, team ) ) )
+	if ( ( s = ClientBotConnect( clientNum, true, team ) ) )
 	{
 		// won't let us join
 		trap_Print( s );
-		okay = qfalse;
+		okay = false;
 	}
 
 	if ( !okay )
 	{
 		G_BotDel( clientNum );
-		return qfalse;
+		return false;
 	}
 
 	if ( autoname )
 	{
-		G_BotNameUsed( team, name, qtrue );
+		G_BotNameUsed( team, name, true );
 	}
 
 	ClientBegin( clientNum );
 	bot->pain = BotPain; // ClientBegin resets the pain function
-	return qtrue;
+	return true;
 }
 
 void G_BotDel( int clientNum )
@@ -305,7 +305,7 @@ void G_BotDel( int clientNum )
 	autoname = Info_ValueForKey( userinfo, "autoname" );
 	if ( autoname && *autoname )
 	{
-		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, qfalse );
+		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, false );
 	}
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected\n" ) ),
@@ -327,12 +327,12 @@ void G_BotDelAllBots( void )
 
 	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
 	{
-		botNames[TEAM_ALIENS].name[i].inUse = qfalse;
+		botNames[TEAM_ALIENS].name[i].inUse = false;
 	}
 
 	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
 	{
-		botNames[TEAM_HUMANS].name[i].inUse = qfalse;
+		botNames[TEAM_HUMANS].name[i].inUse = false;
 	}
 }
 
@@ -382,7 +382,7 @@ void G_BotThink( gentity_t *self )
 	//infinite funds cvar
 	if ( g_bot_infinite_funds.integer )
 	{
-		G_AddCreditToClient( self->client, HUMAN_MAX_CREDITS, qtrue );
+		G_AddCreditToClient( self->client, HUMAN_MAX_CREDITS, true );
 	}
 
 	//hacky ping fix
@@ -493,7 +493,7 @@ void G_BotSpectatorThink( gentity_t *self )
 
 void G_BotIntermissionThink( gclient_t *client )
 {
-	client->readyToExit = qtrue;
+	client->readyToExit = true;
 }
 
 void G_BotInit( void )

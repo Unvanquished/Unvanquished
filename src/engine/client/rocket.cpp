@@ -79,7 +79,7 @@ public:
 	Rocket::Core::FileHandle Open( const Rocket::Core::String &filePath )
 	{
 		fileHandle_t fileHandle;
-		FS_FOpenFileRead( filePath.CString(), &fileHandle, qfalse );
+		FS_FOpenFileRead( filePath.CString(), &fileHandle, false );
 		return ( Rocket::Core::FileHandle )fileHandle;
 	}
 
@@ -271,7 +271,7 @@ public:
 
 	void EnableScissorRegion( bool enable )
 	{
-		re.ScissorEnable( enable ? qtrue :  qfalse );
+		re.ScissorEnable( enable ? true :  false );
 
 	}
 
@@ -627,7 +627,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 			// TODO: Dont hardcode the extension.
 			path =  va( "emoticons/%s.crn", emoticon.CString() );
-			if ( FS_FOpenFileRead( path, NULL, qtrue ) )
+			if ( FS_FOpenFileRead( path, NULL, true ) )
 			{
 				out.Erase( openBracket, closeBracket - openBracket + 1 );
 				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );

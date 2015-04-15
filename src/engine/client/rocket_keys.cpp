@@ -218,7 +218,7 @@ KeyModifier Rocket_GetKeyModifiers( void )
 }
 
 static bool wasDownBefore = false;
-void Rocket_ProcessMouseClick( int button, qboolean down )
+void Rocket_ProcessMouseClick( int button, bool down )
 {
 	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{
@@ -261,7 +261,7 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 }
 
 #define MOUSEWHEEL_DELTA 5
-void Rocket_ProcessKeyInput( int key, qboolean down )
+void Rocket_ProcessKeyInput( int key, bool down )
 {
 	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{

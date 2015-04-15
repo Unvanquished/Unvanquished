@@ -195,7 +195,7 @@ void Cvar_WriteVariables( fileHandle_t f )
 Cvar_InfoString
 =====================
 */
-char* Cvar_InfoString(int flag, qboolean big) {
+char* Cvar_InfoString(int flag, bool big) {
     return Cvar::InfoString(flag, big);
 }
 
@@ -205,7 +205,7 @@ Cvar_InfoStringBuffer
 =====================
 */
 void Cvar_InfoStringBuffer(int bit, char* buff, int buffsize) {
-	Q_strncpyz(buff, Cvar_InfoString( bit, qfalse), buffsize);
+	Q_strncpyz(buff, Cvar_InfoString( bit, false), buffsize);
 }
 
 /*

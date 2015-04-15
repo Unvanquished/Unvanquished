@@ -135,7 +135,7 @@ static void CG_CompleteClass( void )
 	}
 }
 
-static void CG_CompleteBuy_internal( qboolean negatives )
+static void CG_CompleteBuy_internal( bool negatives )
 {
 	int i;
 
@@ -188,7 +188,7 @@ static void CG_CompleteBuy( void )
 	trap_CompleteCallback( "-all" );
 	trap_CompleteCallback( "-weapons" );
 	trap_CompleteCallback( "-upgrades" );
-	CG_CompleteBuy_internal( qtrue );
+	CG_CompleteBuy_internal( true );
 }
 
 static void CG_CompleteSell( void )
@@ -201,7 +201,7 @@ static void CG_CompleteSell( void )
 	trap_CompleteCallback( "all" );
 	trap_CompleteCallback( "weapons" );
 	trap_CompleteCallback( "upgrades" );
-	CG_CompleteBuy_internal( qfalse );
+	CG_CompleteBuy_internal( false );
 }
 
 
@@ -388,12 +388,12 @@ void CG_ShowScores_f( void )
 	{
 		trap_PrepareKeyUp();
 
-		trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
-		cg.showScores = qtrue;
+		trap_Rocket_ShowScoreboard( "scoreboard", true );
+		cg.showScores = true;
 	}
 	else
 	{
-		cg.showScores = qfalse;
+		cg.showScores = false;
 	}
 }
 
@@ -404,8 +404,8 @@ void CG_HideScores_f( void )
 		return;
 	}
 
-	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
-	cg.showScores = qfalse;
+	trap_Rocket_ShowScoreboard( "scoreboard", false );
+	cg.showScores = false;
 }
 
 void CG_BeaconMenu_f( void )
@@ -505,7 +505,7 @@ The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 =================
 */
-qboolean ConsoleCommand( void )
+bool ConsoleCommand( void )
 {
 	char buffer[BIG_INFO_STRING];
 	consoleCommand_t *cmd;
@@ -526,7 +526,7 @@ qboolean ConsoleCommand( void )
 	{
 		cmd->function();
 	}
-	return qtrue;
+	return true;
 }
 
 /*

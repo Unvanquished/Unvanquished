@@ -410,7 +410,7 @@ team_t BG_ClassTeam( int pClass )
 BG_ClassHasAbility
 ==============
 */
-qboolean BG_ClassHasAbility( int pClass, int ability )
+bool BG_ClassHasAbility( int pClass, int ability )
 {
 	int abilities = BG_Class( pClass )->abilities;
 
@@ -475,7 +475,7 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 BG_AlienCanEvolve
 ==============
 */
-qboolean BG_AlienCanEvolve( int from, int credits )
+bool BG_AlienCanEvolve( int from, int credits )
 {
 	int to;
 
@@ -483,11 +483,11 @@ qboolean BG_AlienCanEvolve( int from, int credits )
 	{
 		if ( BG_ClassCanEvolveFromTo( from, to, credits ) >= 0 )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -536,7 +536,7 @@ void BG_InitClassModelConfigs( void )
 		BG_ParseClassModelFile( va( "configs/classes/%s.model.cfg",
 		                       BG_Class( i )->name ), cc );
 
-		cc->segmented = cc->modelName[0] ? BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) ) : qfalse;
+		cc->segmented = cc->modelName[0] ? BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) ) : false;
 	}
 }
 
@@ -1007,7 +1007,7 @@ BG_InitAllConfigs
 ================
 */
 
-qboolean config_loaded = qfalse;
+bool config_loaded = false;
 
 void BG_InitAllConfigs( void )
 {
@@ -1022,7 +1022,7 @@ void BG_InitAllConfigs( void )
 
 	BG_CheckConfigVars();
 
-	config_loaded = qtrue;
+	config_loaded = true;
 }
 
 /*
@@ -1041,7 +1041,7 @@ void BG_UnloadAllConfigs( void )
     if(!config_loaded){
         return;
     }
-    config_loaded = qfalse;
+    config_loaded = false;
 
     for ( i = 0; i < bg_numBuildables; i++ )
     {
@@ -1422,7 +1422,7 @@ This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
-void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap )
+void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap )
 {
 	int i;
 
@@ -1567,7 +1567,7 @@ This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
-void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap )
+void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, bool snap )
 {
 	int i;
 
@@ -1715,7 +1715,7 @@ BG_WeaponIsFull
 Check if a weapon has full ammo
 ========================
 */
-qboolean BG_WeaponIsFull( int weapon, int ammo, int clips )
+bool BG_WeaponIsFull( int weapon, int ammo, int clips )
 {
 	int maxAmmo, maxClips;
 
@@ -1732,14 +1732,14 @@ BG_InventoryContainsWeapon
 Does the player hold a weapon?
 ========================
 */
-qboolean BG_InventoryContainsWeapon( int weapon, const int stats[] )
+bool BG_InventoryContainsWeapon( int weapon, const int stats[] )
 {
 	// humans always have a blaster
 	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
 	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
 	if ( BG_ClassTeam( stats[ STAT_CLASS ] ) == TEAM_HUMANS && weapon == WP_BLASTER )
 	{
-		return qtrue;
+		return true;
 	}
 
 	return ( stats[ STAT_WEAPON ] == weapon );
@@ -1816,7 +1816,7 @@ BG_InventoryContainsUpgrade
 Does the player hold an upgrade?
 ========================
 */
-qboolean BG_InventoryContainsUpgrade( int item, int stats[] )
+bool BG_InventoryContainsUpgrade( int item, int stats[] )
 {
 	return ( stats[ STAT_ITEMS ] & ( 1 << item ) );
 }
@@ -1852,7 +1852,7 @@ BG_UpgradeIsActive
 Is this upgrade active?
 ========================
 */
-qboolean BG_UpgradeIsActive( int item, int stats[] )
+bool BG_UpgradeIsActive( int item, int stats[] )
 {
 	return ( stats[ STAT_ACTIVEITEMS ] & ( 1 << item ) );
 }
@@ -1864,8 +1864,8 @@ BG_RotateAxis
 Shared axis rotation function
 ===============
 */
-qboolean BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
-                        vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling )
+bool BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
+                        vec3_t outAxis[ 3 ], bool inverse, bool ceiling )
 {
 	vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
 	vec3_t ceilingNormal = { 0.0f, 0.0f, -1.0f };
@@ -1905,10 +1905,10 @@ qboolean BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -2051,13 +2051,13 @@ int BG_GetValueOfPlayer( playerState_t *ps )
 BG_PlayerCanChangeWeapon
 =================
 */
-qboolean BG_PlayerCanChangeWeapon( playerState_t *ps )
+bool BG_PlayerCanChangeWeapon( playerState_t *ps )
 {
 	// Do not allow Lucifer Cannon "canceling" via weapon switch
 	if ( ps->weapon == WP_LUCIFER_CANNON &&
 	     ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_MIN )
 	{
-		return qfalse;
+		return false;
 	}
 
 	return ps->weaponTime <= 0 || ps->weaponstate != WEAPON_FIRING;
@@ -2089,7 +2089,7 @@ Checks if a player is running low on ammo
 Also returns whether the gun uses energy or not
 =================
 */
-qboolean BG_PlayerLowAmmo( const playerState_t *ps, qboolean *energy )
+bool BG_PlayerLowAmmo( const playerState_t *ps, bool *energy )
 {
   int weapon;
 	const weaponAttributes_t *wattr;
@@ -2100,14 +2100,14 @@ qboolean BG_PlayerLowAmmo( const playerState_t *ps, qboolean *energy )
 			if( BG_InventoryContainsWeapon( weapon, ps->stats ) )
 				goto found;
 
-	return qfalse; // got only blaster
+	return false; // got only blaster
 
 found:
 
 	wattr = BG_Weapon( weapon );
 
 	if( wattr->infiniteAmmo )
-		return qfalse;
+		return false;
 
 	*energy = wattr->usesEnergy;
 
@@ -2124,7 +2124,7 @@ atof_neg
 atof with an allowance for negative values
 ===============
 */
-float atof_neg( char *token, qboolean allowNegative )
+float atof_neg( char *token, bool allowNegative )
 {
 	float value;
 
@@ -2145,7 +2145,7 @@ atoi_neg
 atoi with an allowance for negative values
 ===============
 */
-int atoi_neg( char *token, qboolean allowNegative )
+int atoi_neg( char *token, bool allowNegative )
 {
 	int value;
 
@@ -2337,7 +2337,7 @@ void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weapon
 	char     buffer[ MAX_STRING_CHARS ];
 	int      i = 0, j = 0;
 	char     *p, *q;
-	qboolean EOS = qfalse;
+	bool EOS = false;
 
 	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
 
@@ -2353,7 +2353,7 @@ void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weapon
 
 		if ( *p == '\0' )
 		{
-			EOS = qtrue;
+			EOS = true;
 		}
 
 		*p = '\0';
@@ -2425,7 +2425,7 @@ void BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize
 	char     buffer[ MAX_STRING_CHARS ];
 	int      i = 0;
 	char     *p, *q;
-	qboolean EOS = qfalse;
+	bool EOS = false;
 
 	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
 
@@ -2441,7 +2441,7 @@ void BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize
 
 		if ( *p == '\0' )
 		{
-			EOS = qtrue;
+			EOS = true;
 		}
 
 		*p = '\0';
@@ -2487,7 +2487,7 @@ void BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int 
 	char     buffer[ MAX_STRING_CHARS ];
 	int      i = 0;
 	char     *p, *q;
-	qboolean EOS = qfalse;
+	bool EOS = false;
 
 	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
 
@@ -2503,7 +2503,7 @@ void BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int 
 
 		if ( *p == '\0' )
 		{
-			EOS = qtrue;
+			EOS = true;
 		}
 
 		*p = '\0';
@@ -2583,7 +2583,7 @@ void BG_InitAllowedGameElements( void )
 BG_WeaponIsAllowed
 ============
 */
-qboolean BG_WeaponDisabled( int weapon )
+bool BG_WeaponDisabled( int weapon )
 {
 	int i;
 
@@ -2592,11 +2592,11 @@ qboolean BG_WeaponDisabled( int weapon )
 	{
 		if ( bg_disabledGameElements.weapons[ i ] == weapon )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -2604,7 +2604,7 @@ qboolean BG_WeaponDisabled( int weapon )
 BG_UpgradeIsAllowed
 ============
 */
-qboolean BG_UpgradeDisabled( int upgrade )
+bool BG_UpgradeDisabled( int upgrade )
 {
 	int i;
 
@@ -2613,11 +2613,11 @@ qboolean BG_UpgradeDisabled( int upgrade )
 	{
 		if ( bg_disabledGameElements.upgrades[ i ] == upgrade )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -2625,7 +2625,7 @@ qboolean BG_UpgradeDisabled( int upgrade )
 BG_ClassDisabled
 ============
 */
-qboolean BG_ClassDisabled( int class_ )
+bool BG_ClassDisabled( int class_ )
 {
 	int i;
 
@@ -2634,11 +2634,11 @@ qboolean BG_ClassDisabled( int class_ )
 	{
 		if ( bg_disabledGameElements.classes[ i ] == class_ )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -2646,7 +2646,7 @@ qboolean BG_ClassDisabled( int class_ )
 BG_BuildableIsAllowed
 ============
 */
-qboolean BG_BuildableDisabled( int buildable )
+bool BG_BuildableDisabled( int buildable )
 {
 	int i;
 
@@ -2655,11 +2655,11 @@ qboolean BG_BuildableDisabled( int buildable )
 	{
 		if ( bg_disabledGameElements.buildables[ i ] == buildable )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*

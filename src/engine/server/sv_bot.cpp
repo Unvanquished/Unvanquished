@@ -113,7 +113,7 @@ int SV_BotGetConsoleMessage( int client, char *buf, int size )
 
 	if ( cl->reliableAcknowledge == cl->reliableSequence )
 	{
-		return qfalse;
+		return false;
 	}
 
 	cl->reliableAcknowledge++;
@@ -121,10 +121,10 @@ int SV_BotGetConsoleMessage( int client, char *buf, int size )
 
 	if ( !cl->reliableCommands[ index ][ 0 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//Q_strncpyz( buf, cl->reliableCommands[index], size );
-	return qtrue;
+	return true;
 }
 

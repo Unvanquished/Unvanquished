@@ -96,7 +96,7 @@ void SV_GameSendServerCommand( int clientNum, const char *text )
 	}
 	else if ( clientNum == -2 )
 	{
-		SV_PrintTranslatedText( text, qfalse, qfalse );
+		SV_PrintTranslatedText( text, false, false );
 	}
 	else
 	{
@@ -172,7 +172,7 @@ void SV_GetServerinfo( char *buffer, int bufferSize )
 		Com_Error( ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
 	}
 
-	Q_strncpyz( buffer, Cvar_InfoString( CVAR_SERVERINFO, qfalse ), bufferSize );
+	Q_strncpyz( buffer, Cvar_InfoString( CVAR_SERVERINFO, false ), bufferSize );
 }
 
 /*
@@ -245,7 +245,7 @@ static int SV_BinaryMessageStatus( int cno )
 {
 	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( svs.clients[ cno ].binaryMessageLength == 0 )
@@ -319,7 +319,7 @@ void SV_ShutdownGameProgs( void )
 		return;
 	}
 
-	gvm.GameShutdown( qfalse );
+	gvm.GameShutdown( false );
     gvm.Free();
 }
 
@@ -330,7 +330,7 @@ SV_InitGameVM
 Called for both a full init and a restart
 ==================
 */
-static void SV_InitGameVM( qboolean restart )
+static void SV_InitGameVM( bool restart )
 {
 	int i;
 
@@ -363,11 +363,11 @@ void SV_RestartGameProgs(Str::StringRef mapname)
 		return;
 	}
 
-	gvm.GameShutdown( qtrue );
+	gvm.GameShutdown( true );
 
 	gvm.Start();
 
-	SV_InitGameVM( qtrue );
+	SV_InitGameVM( true );
 }
 
 /*
@@ -385,17 +385,17 @@ void SV_InitGameProgs(Str::StringRef mapname)
 	// load the game module
 	gvm.Start();
 
-	SV_InitGameVM( qfalse );
+	SV_InitGameVM( false );
 }
 
 /*
 ====================
 SV_GetTag
 
-  return qfalse if unable to retrieve tag information for this client
+  return false if unable to retrieve tag information for this client
 ====================
 */
-qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t * org )
+bool SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t * org )
 {
 	int i;
 
@@ -410,12 +410,12 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orien
 				VectorCopy( sv.tags[ i ].axis[ 0 ], org ->axis[ 0 ] );
 				VectorCopy( sv.tags[ i ].axis[ 1 ], org ->axis[ 1 ] );
 				VectorCopy( sv.tags[ i ].axis[ 2 ], org ->axis[ 2 ] );
-				return qtrue;
+				return true;
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 GameVM::GameVM(): VM::VMBase("sgame"), services(nullptr){
@@ -438,12 +438,12 @@ void GameVM::GameStaticInit()
 	this->SendMsg<GameStaticInitMsg>(Sys_Milliseconds());
 }
 
-void GameVM::GameInit(int levelTime, int randomSeed, qboolean restart)
+void GameVM::GameInit(int levelTime, int randomSeed, bool restart)
 {
 	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart, Com_AreCheatsAllowed(), Com_IsClient());
 }
 
-void GameVM::GameShutdown(qboolean restart)
+void GameVM::GameShutdown(bool restart)
 {
 	// Ignore errors when shutting down
 	try {
@@ -456,7 +456,7 @@ void GameVM::GameShutdown(qboolean restart)
 	this->shmRegion.Close();
 }
 
-qboolean GameVM::GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot)
+bool GameVM::GameClientConnect(char* reason, size_t size, int clientNum, bool firstTime, bool isBot)
 {
 	bool denied;
 	std::string sentReason;
@@ -498,7 +498,7 @@ void GameVM::GameRunFrame(int levelTime)
 	this->SendMsg<GameRunFrameMsg>(levelTime);
 }
 
-qboolean GameVM::GameSnapshotCallback(int entityNum, int clientNum)
+bool GameVM::GameSnapshotCallback(int entityNum, int clientNum)
 {
 	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
 }

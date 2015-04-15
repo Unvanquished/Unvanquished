@@ -73,7 +73,7 @@ typedef struct
 	vorbis_info      vi; /* struct that stores all the static vorbis bitstream settings */
 	vorbis_comment   vc; /* struct that stores all the bitstream user comments */
 
-	qboolean         videoStreamIsTheora;
+	bool         videoStreamIsTheora;
 
 	theora_info      th_info; // dump_video.c(example decoder): ti
 	theora_comment   th_comment; // dump_video.c(example decoder): tc
@@ -181,9 +181,9 @@ static int loadPagesToStreams( void )
 
   return: audio wants more packets
 */
-static qboolean loadAudio( void )
+static bool loadAudio( void )
 {
-	qboolean     anyDataTransferred = qtrue;
+	bool     anyDataTransferred = true;
 	float        **pcm;
 	float        *right, *left;
 	int          samples, samplesNeeded;
@@ -199,7 +199,7 @@ static qboolean loadAudio( void )
 
 	while ( anyDataTransferred && g_ogm.currentTime + MAX_AUDIO_PRELOAD > ( int )( g_ogm.vd.granulepos * 1000 / g_ogm.vi.rate ) )
 	{
-		anyDataTransferred = qfalse;
+		anyDataTransferred = false;
 
 		if ( ( samples = vorbis_synthesis_pcmout( &g_ogm.vd, &pcm ) ) > 0 )
 		{
@@ -231,7 +231,7 @@ static qboolean loadAudio( void )
 
 				Audio::StreamData( 0, rawBuffer, i, g_ogm.vi.rate, 2, 2, 1.0f, 1);
 
-				anyDataTransferred = qtrue;
+				anyDataTransferred = true;
 			}
 		}
 
@@ -245,7 +245,7 @@ static qboolean loadAudio( void )
 					vorbis_synthesis_blockin( &g_ogm.vd, &vb );
 				}
 
-				anyDataTransferred = qtrue;
+				anyDataTransferred = true;
 			}
 		}
 	}
@@ -254,11 +254,11 @@ static qboolean loadAudio( void )
 
 	if ( g_ogm.currentTime + MIN_AUDIO_PRELOAD > ( int )( g_ogm.vd.granulepos * 1000 / g_ogm.vi.rate ) )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -419,21 +419,21 @@ static int loadVideoFrame( void )
 
 /*
 
-  return: qtrue => noDataTransferred
+  return: true => noDataTransferred
 */
-static qboolean loadFrame( void )
+static bool loadFrame( void )
 {
-	qboolean anyDataTransferred = qtrue;
-	qboolean needVOutputData = qtrue;
+	bool anyDataTransferred = true;
+	bool needVOutputData = true;
 
-//  qboolean audioSDone = qfalse;
-//  qboolean videoSDone = qfalse;
-	qboolean audioWantsMoreData = qfalse;
+//  bool audioSDone = false;
+//  bool videoSDone = false;
+	bool audioWantsMoreData = false;
 	int      status;
 
 	while ( anyDataTransferred && ( needVOutputData || audioWantsMoreData ) )
 	{
-		anyDataTransferred = qfalse;
+		anyDataTransferred = false;
 
 //      xvid -> "gl" ? videoDone : needPacket
 //      vorbis -> raw sound ? audioDone : needPacket
@@ -447,15 +447,15 @@ static qboolean loadFrame( void )
 
 			if ( needVOutputData && ( status = loadVideoFrame() ) )
 			{
-				needVOutputData = qfalse;
+				needVOutputData = false;
 
 				if ( status > 0 )
 				{
-					anyDataTransferred = qtrue;
+					anyDataTransferred = true;
 				}
 				else
 				{
-					anyDataTransferred = qfalse; // error (we don't need any videodata and we had no transferred)
+					anyDataTransferred = false; // error (we don't need any videodata and we had no transferred)
 				}
 			}
 
@@ -470,7 +470,7 @@ static qboolean loadFrame( void )
 				}
 				else
 				{
-					anyDataTransferred = qtrue; // successful loadPagesToStreams()
+					anyDataTransferred = true; // successful loadPagesToStreams()
 				}
 			}
 
@@ -519,7 +519,7 @@ typedef struct
 	} sh;
 } stream_header_t;
 
-qboolean isPowerOf2( int x )
+bool isPowerOf2( int x )
 {
 	int bitsSet = 0;
 	int i;
@@ -555,7 +555,7 @@ int Cin_OGM_Init( const char *filename )
 
 	memset( &g_ogm, 0, sizeof( cin_ogm_t ) );
 
-	FS_FOpenFileRead( filename, &g_ogm.ogmFile, qtrue );
+	FS_FOpenFileRead( filename, &g_ogm.ogmFile, true );
 
 	if ( !g_ogm.ogmFile )
 	{
@@ -593,7 +593,7 @@ int Cin_OGM_Init( const char *filename )
 				}
 				else
 				{
-					g_ogm.videoStreamIsTheora = qtrue;
+					g_ogm.videoStreamIsTheora = true;
 					ogg_stream_init( &g_ogm.os_video, ogg_page_serialno( &og ) );
 					ogg_stream_pagein( &g_ogm.os_video, &og );
 				}

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "engine/botlib/bot_types.h"
 
 //tells if all navmeshes loaded successfully
-qboolean navMeshLoaded = qfalse;
+bool navMeshLoaded = false;
 
 /*
 ========================
@@ -65,13 +65,13 @@ void G_BotNavInit()
 			return;
 		}
 	}
-	navMeshLoaded = qtrue;
+	navMeshLoaded = true;
 }
 
 void G_BotNavCleanup( void )
 {
 	trap_BotShutdownNav();
-	navMeshLoaded = qfalse;
+	navMeshLoaded = false;
 }
 
 void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
@@ -134,7 +134,7 @@ float BotGetGoalRadius( gentity_t *self )
 	}
 }
 
-qboolean GoalInRange( gentity_t *self, float r )
+bool GoalInRange( gentity_t *self, float r )
 {
 	gentity_t *ent = NULL;
 
@@ -147,11 +147,11 @@ qboolean GoalInRange( gentity_t *self, float r )
 	{
 		if ( ent == self->botMind->goal.ent )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 int DistanceToGoal2DSquared( gentity_t *self )
@@ -194,7 +194,7 @@ int DistanceToGoalSquared( gentity_t *self )
 	return DistanceSquared( selfPos, targetPos );
 }
 
-qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target )
+bool BotPathIsWalkable( gentity_t *self, botTarget_t target )
 {
 	vec3_t selfPos, targetPos;
 	vec3_t viewNormal;
@@ -206,16 +206,16 @@ qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target )
 
 	if ( !trap_BotNavTrace( self->s.number, &trace, selfPos, targetPos ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( trace.frac >= 1.0f )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -308,14 +308,14 @@ void BotStandStill( gentity_t *self )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
-	BotWalk( self, qfalse );
-	BotSprint( self, qfalse );
+	BotWalk( self, false );
+	BotSprint( self, false );
 	botCmdBuffer->forwardmove = 0;
 	botCmdBuffer->rightmove = 0;
 	botCmdBuffer->upmove = 0;
 }
 
-qboolean BotJump( gentity_t *self )
+bool BotJump( gentity_t *self )
 {
 	int staminaJumpCost;
 
@@ -325,15 +325,15 @@ qboolean BotJump( gentity_t *self )
 
 		if ( self->client->ps.stats[STAT_STAMINA] < staminaJumpCost )
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
 	self->botMind->cmdBuffer.upmove = 127;
-	return qtrue;
+	return true;
 }
 
-qboolean BotSprint( gentity_t *self, qboolean enable )
+bool BotSprint( gentity_t *self, bool enable )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	int       staminaJumpCost;
@@ -341,7 +341,7 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 	if ( !enable )
 	{
 		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		return qfalse;
+		return false;
 	}
 
 	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
@@ -351,17 +351,17 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 	     && self->botMind->botSkill.level >= 5 )
 	{
 		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		BotWalk( self, qfalse );
-		return qtrue;
+		BotWalk( self, false );
+		return true;
 	}
 	else
 	{
 		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		return qfalse;
+		return false;
 	}
 }
 
-void BotWalk( gentity_t *self, qboolean enable )
+void BotWalk( gentity_t *self, bool enable )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
@@ -416,7 +416,7 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 	}
 }
 
-qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
+bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 {
 	vec3_t playerMins;
 	vec3_t playerMaxs;
@@ -428,7 +428,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	//blocker is not on our team, so ignore
 	if ( BotGetEntityTeam( self ) != BotGetEntityTeam( blocker ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//already normalized
@@ -445,7 +445,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
 	if ( trace.fraction >= 1.0f || blocker != &g_entities[trace.entityNum] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	jumpMagnitude = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->jumpMagnitude;
@@ -464,15 +464,15 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	//note that we also test for a blocking barricade because barricades will collapse to let us through
 	if ( blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
-qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
+bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 {
 	vec3_t forward;
 	vec3_t testPoint1, testPoint2;
@@ -484,7 +484,7 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
 
 	if ( !( self && self->client ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//get bbox
@@ -524,7 +524,7 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
 		if ( trace1.fraction >= 1.0f )
 		{
 			VectorCopy( forward, dir );
-			return qtrue;
+			return true;
 		}
 
 		//compute forward for left
@@ -542,14 +542,14 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
 		if ( trace2.fraction >= 1.0f )
 		{
 			VectorCopy( forward, dir );
-			return qtrue;
+			return true;
 		}
 	}
 
 	//we couldnt find a new position
-	return qfalse;
+	return false;
 }
-qboolean BotAvoidObstacles( gentity_t *self, vec3_t dir )
+bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
 	gentity_t *blocker;
 
@@ -560,7 +560,7 @@ qboolean BotAvoidObstacles( gentity_t *self, vec3_t dir )
 		if ( BotShouldJump( self, blocker, dir ) )
 		{
 			BotJump( self );
-			return qfalse;
+			return false;
 		}
 		else if ( !BotFindSteerTarget( self, dir ) )
 		{
@@ -580,13 +580,13 @@ qboolean BotAvoidObstacles( gentity_t *self, vec3_t dir )
 			dir[ 2 ] = 0;
 			VectorNormalize( dir );
 		}
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 //copy of PM_CheckLadder in bg_pmove.c
-qboolean BotOnLadder( gentity_t *self )
+bool BotOnLadder( gentity_t *self )
 {
 	vec3_t forward, end;
 	vec3_t mins, maxs;
@@ -594,7 +594,7 @@ qboolean BotOnLadder( gentity_t *self )
 
 	if ( !BG_ClassHasAbility( ( class_t ) self->client->ps.stats[ STAT_CLASS ], SCA_CANUSELADDERS ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
@@ -607,11 +607,11 @@ qboolean BotOnLadder( gentity_t *self )
 
 	if ( trace.fraction < 1.0f && trace.surfaceFlags & SURF_LADDER )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -721,11 +721,11 @@ void BotMoveToGoal( gentity_t *self )
 		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
 
 		// walk to regain stamina
-		BotWalk( self, qtrue );
+		BotWalk( self, true );
 	}
 }
 
-qboolean FindRouteToTarget( gentity_t *self, botTarget_t target, qboolean allowPartial )
+bool FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial )
 {
 	botRouteTarget_t routeTarget;
 	BotTargetToRouteTarget( self, target, &routeTarget );

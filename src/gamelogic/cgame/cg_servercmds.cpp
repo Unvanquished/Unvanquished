@@ -75,7 +75,7 @@ static void CG_ParseScores( void )
 		cg.scores[ i ].team = cgs.clientinfo[ cg.scores[ i ].client ].team;
 	}
 
-	cg.scoreInvalidated = qtrue;
+	cg.scoreInvalidated = true;
 }
 
 /*
@@ -119,7 +119,7 @@ static void CG_ParseTeamInfo( void )
 		}
 	}
 
-	cgs.teamInfoReceived = qtrue;
+	cgs.teamInfoReceived = true;
 }
 
 /*
@@ -275,7 +275,7 @@ static void CG_ConfigStringModified( void )
 	else if ( num >= CS_VOTE_TIME && num < CS_VOTE_TIME + NUM_TEAMS )
 	{
 		cgs.voteTime[ num - CS_VOTE_TIME ] = atoi( str );
-		cgs.voteModified[ num - CS_VOTE_TIME ] = qtrue;
+		cgs.voteModified[ num - CS_VOTE_TIME ] = true;
 
 		if ( num - CS_VOTE_TIME == TEAM_NONE )
 		{
@@ -295,12 +295,12 @@ static void CG_ConfigStringModified( void )
 	else if ( num >= CS_VOTE_YES && num < CS_VOTE_YES + NUM_TEAMS )
 	{
 		cgs.voteYes[ num - CS_VOTE_YES ] = atoi( str );
-		cgs.voteModified[ num - CS_VOTE_YES ] = qtrue;
+		cgs.voteModified[ num - CS_VOTE_YES ] = true;
 	}
 	else if ( num >= CS_VOTE_NO && num < CS_VOTE_NO + NUM_TEAMS )
 	{
 		cgs.voteNo[ num - CS_VOTE_NO ] = atoi( str );
-		cgs.voteModified[ num - CS_VOTE_NO ] = qtrue;
+		cgs.voteModified[ num - CS_VOTE_NO ] = true;
 	}
 	else if ( num >= CS_VOTE_STRING && num < CS_VOTE_STRING + NUM_TEAMS )
 	{
@@ -317,7 +317,7 @@ static void CG_ConfigStringModified( void )
 		cg.intermissionStarted = atoi( str );
 		if ( cg.intermissionStarted )
 		{
-			trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
+			trap_Rocket_ShowScoreboard( "scoreboard", true );
 		}
 	}
 	else if ( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
@@ -342,7 +342,7 @@ static void CG_ConfigStringModified( void )
 		if ( str[ 0 ] != '*' )
 		{
 			// player specific sounds don't register here
-			cgs.gameSounds[ num - CS_SOUNDS ] = trap_S_RegisterSound( str, qfalse );
+			cgs.gameSounds[ num - CS_SOUNDS ] = trap_S_RegisterSound( str, false );
 		}
 	}
 	else if ( num >= CS_PLAYERS && num < CS_PLAYERS + MAX_CLIENTS )
@@ -380,15 +380,15 @@ static void CG_MapRestart( void )
 
 	CG_InitMarkPolys();
 
-	cg.intermissionStarted = qfalse;
+	cg.intermissionStarted = false;
 
 	cgs.voteTime[ TEAM_NONE ] = 0;
 
-	cg.mapRestart = qtrue;
+	cg.mapRestart = true;
 
 	CG_StartMusic();
 
-	trap_S_ClearLoopingSounds( qtrue );
+	trap_S_ClearLoopingSounds( true );
 
 	// we really should clear more parts of cg here and stop sounds
 
@@ -1158,7 +1158,7 @@ CG_CenterPrintTR_f
 */
 void CG_CenterPrintTR_f( void )
 {
-	CG_CenterPrint( TranslateText_Internal( qfalse, 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+	CG_CenterPrint( TranslateText_Internal( false, 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 }
 
 /*
@@ -1170,7 +1170,7 @@ void CG_CenterPrintTR_Delay_f( void )
 {
 	char cmd[ MAX_STRING_CHARS ];
 
-	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( TranslateText_Internal( qfalse, 2 ) ) );
+	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( TranslateText_Internal( false, 2 ) ) );
 	trap_SendConsoleCommand( cmd );
 }
 
@@ -1191,12 +1191,12 @@ CG_PrintTR_f
 */
 static void CG_PrintTR_f( void )
 {
-	Com_Printf( "%s", TranslateText_Internal( qfalse, 1 ) );
+	Com_Printf( "%s", TranslateText_Internal( false, 1 ) );
 }
 
 static void CG_PrintTR_plural_f( void )
 {
-	Com_Printf("%s", TranslateText_Internal( qtrue, 1 ) );
+	Com_Printf("%s", TranslateText_Internal( true, 1 ) );
 }
 
 /*

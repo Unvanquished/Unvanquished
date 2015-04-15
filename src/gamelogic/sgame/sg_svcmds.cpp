@@ -235,11 +235,11 @@ void  Svcmd_EntityList_f( void )
 		}
 		currentEntityCount++;
 
-		if(filter && !Com_Filter(filter, displayedEntity->classname, qfalse) )
+		if(filter && !Com_Filter(filter, displayedEntity->classname, false) )
 		{
 			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->names[i]; ++i)
 			{
-				if( Com_Filter(filter, displayedEntity->names[i], qfalse) )
+				if( Com_Filter(filter, displayedEntity->names[i], false) )
 				{
 					PrintEntityOverviewLine( displayedEntity );
 					break;
@@ -382,7 +382,7 @@ static void Svcmd_LayoutLoad_f( void )
 	Q_strncpyz( layouts, s, sizeof( layouts ) );
 	trap_Cvar_Set( "g_layouts", layouts );
 	trap_SendConsoleCommand( "map_restart\n" );
-	level.restarted = qtrue;
+	level.restarted = true;
 }
 
 static void Svcmd_AdmitDefeat_f( void )
@@ -462,7 +462,7 @@ static void Svcmd_MapRotation_f( void )
 
 	trap_Argv( 1, rotationName, sizeof( rotationName ) );
 
-	if ( !G_StartMapRotation( rotationName, qfalse, qtrue, qfalse, 0 ) )
+	if ( !G_StartMapRotation( rotationName, false, true, false, 0 ) )
 	{
 		G_Printf( "maprotation: invalid map rotation \"%s\"\n", rotationName );
 	}
@@ -683,36 +683,36 @@ static void Svcmd_G_AdvanceMapRotation_f( void )
 static const struct svcmd
 {
 	const char *cmd;
-	qboolean conflicts; //With a command registered by cgame
+	bool conflicts; //With a command registered by cgame
 	void ( *function )( void );
 } svcmds[] =
 {
-	{ "a",                  qtrue,  Svcmd_MessageWrapper         },
-	{ "admitDefeat",        qfalse, Svcmd_AdmitDefeat_f          },
-	{ "advanceMapRotation", qfalse, Svcmd_G_AdvanceMapRotation_f },
-	{ "alienWin",           qfalse, Svcmd_TeamWin_f              },
-	{ "asay",               qtrue,  Svcmd_MessageWrapper         },
-	{ "chat",               qtrue,  Svcmd_MessageWrapper         },
-	{ "cp",                 qtrue,  Svcmd_CenterPrint_f          },
-	{ "dumpuser",           qfalse, Svcmd_DumpUser_f             },
-	{ "eject",              qfalse, Svcmd_EjectClient_f          },
-	{ "entityFire",         qfalse, Svcmd_EntityFire_f           },
-	{ "entityList",         qfalse, Svcmd_EntityList_f           },
-	{ "entityShow",         qfalse, Svcmd_EntityShow_f           },
-	{ "evacuation",         qfalse, Svcmd_Evacuation_f           },
-	{ "forceTeam",          qfalse, Svcmd_ForceTeam_f            },
-	{ "humanWin",           qfalse, Svcmd_TeamWin_f              },
-	{ "layoutLoad",         qfalse, Svcmd_LayoutLoad_f           },
-	{ "layoutSave",         qfalse, Svcmd_LayoutSave_f           },
-	{ "loadcensors",        qfalse, G_LoadCensors                },
-	{ "m",                  qtrue,  Svcmd_MessageWrapper         },
-	{ "maplog",             qtrue,  Svcmd_MapLogWrapper          },
-	{ "mapRotation",        qfalse, Svcmd_MapRotation_f          },
-	{ "pr",                 qfalse, Svcmd_Pr_f                   },
-	{ "printqueue",         qfalse, Svcmd_PrintQueue_f           },
-	{ "say",                qtrue,  Svcmd_MessageWrapper         },
-	{ "say_team",           qtrue,  Svcmd_TeamMessage_f          },
-	{ "stopMapRotation",    qfalse, G_StopMapRotation            },
+	{ "a",                  true,  Svcmd_MessageWrapper         },
+	{ "admitDefeat",        false, Svcmd_AdmitDefeat_f          },
+	{ "advanceMapRotation", false, Svcmd_G_AdvanceMapRotation_f },
+	{ "alienWin",           false, Svcmd_TeamWin_f              },
+	{ "asay",               true,  Svcmd_MessageWrapper         },
+	{ "chat",               true,  Svcmd_MessageWrapper         },
+	{ "cp",                 true,  Svcmd_CenterPrint_f          },
+	{ "dumpuser",           false, Svcmd_DumpUser_f             },
+	{ "eject",              false, Svcmd_EjectClient_f          },
+	{ "entityFire",         false, Svcmd_EntityFire_f           },
+	{ "entityList",         false, Svcmd_EntityList_f           },
+	{ "entityShow",         false, Svcmd_EntityShow_f           },
+	{ "evacuation",         false, Svcmd_Evacuation_f           },
+	{ "forceTeam",          false, Svcmd_ForceTeam_f            },
+	{ "humanWin",           false, Svcmd_TeamWin_f              },
+	{ "layoutLoad",         false, Svcmd_LayoutLoad_f           },
+	{ "layoutSave",         false, Svcmd_LayoutSave_f           },
+	{ "loadcensors",        false, G_LoadCensors                },
+	{ "m",                  true,  Svcmd_MessageWrapper         },
+	{ "maplog",             true,  Svcmd_MapLogWrapper          },
+	{ "mapRotation",        false, Svcmd_MapRotation_f          },
+	{ "pr",                 false, Svcmd_Pr_f                   },
+	{ "printqueue",         false, Svcmd_PrintQueue_f           },
+	{ "say",                true,  Svcmd_MessageWrapper         },
+	{ "say_team",           true,  Svcmd_TeamMessage_f          },
+	{ "stopMapRotation",    false, G_StopMapRotation            },
 };
 
 /*
@@ -721,7 +721,7 @@ ConsoleCommand
 
 =================
 */
-qboolean  ConsoleCommand( void )
+bool  ConsoleCommand( void )
 {
 	char         cmd[ MAX_TOKEN_CHARS ];
 	struct svcmd *command;
@@ -736,7 +736,7 @@ qboolean  ConsoleCommand( void )
 		// see if this is an admin command
 		if ( G_admin_cmd_check( NULL ) )
 		{
-			return qtrue;
+			return true;
 		}
 
 		if ( level.inClient )
@@ -744,16 +744,16 @@ qboolean  ConsoleCommand( void )
 			G_Printf( "unknown command server console command: %s\n", cmd );
 		}
 
-		return qfalse;
+		return false;
 	}
 
 	if ( command->conflicts && level.inClient )
 	{
-		return qfalse;
+		return false;
 	}
 
 	command->function();
-	return qtrue;
+	return true;
 }
 
 void CompleteCommand(int)

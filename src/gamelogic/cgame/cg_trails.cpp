@@ -306,7 +306,7 @@ static trailBeamNode_t *CG_AllocateBeamNode( trailBeam_t *tb )
 			tbn->timeLeft = btb->segmentTime;
 			tbn->prev = NULL;
 			tbn->next = NULL;
-			tbn->used = qtrue;
+			tbn->used = true;
 			return tbn;
 		}
 	}
@@ -357,7 +357,7 @@ static trailBeamNode_t *CG_DestroyBeamNode( trailBeamNode_t *tbn )
 
 	tbn->prev = NULL;
 	tbn->next = NULL;
-	tbn->used = qfalse;
+	tbn->used = false;
 
 	return newHead;
 }
@@ -644,7 +644,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 
 		if ( ts->destroyTime > 0 && ( cg.time - ts->destroyTime ) >= btb->fadeOutTime )
 		{
-			tb->valid = qfalse;
+			tb->valid = false;
 			return;
 		}
 
@@ -684,7 +684,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 
 				if ( !tb->nodes )
 				{
-					tb->valid = qfalse;
+					tb->valid = false;
 					return;
 				}
 
@@ -728,7 +728,7 @@ CG_ParseTrailBeam
 Parse a trail beam
 ===============
 */
-static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
+static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 {
 	char *token;
 
@@ -739,7 +739,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 		if ( !*token )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( !Q_stricmp( token, "segments" ) )
@@ -751,7 +751,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				break;
 			}
 
-			btb->numSegments = atoi_neg( token, qfalse );
+			btb->numSegments = atoi_neg( token, false );
 
 			if ( btb->numSegments >= MAX_TRAIL_BEAM_NODES )
 			{
@@ -770,7 +770,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				break;
 			}
 
-			btb->frontWidth = atof_neg( token, qfalse );
+			btb->frontWidth = atof_neg( token, false );
 
 			token = COM_Parse( text_p );
 
@@ -785,7 +785,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			}
 			else
 			{
-				btb->backWidth = atof_neg( token, qfalse );
+				btb->backWidth = atof_neg( token, false );
 			}
 
 			continue;
@@ -799,7 +799,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				break;
 			}
 
-			btb->frontAlpha = atof_neg( token, qfalse );
+			btb->frontAlpha = atof_neg( token, false );
 
 			token = COM_Parse( text_p );
 
@@ -814,7 +814,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			}
 			else
 			{
-				btb->backAlpha = atof_neg( token, qfalse );
+				btb->backAlpha = atof_neg( token, false );
 			}
 
 			continue;
@@ -878,7 +878,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				break;
 			}
 
-			btb->segmentTime = atoi_neg( token, qfalse );
+			btb->segmentTime = atoi_neg( token, false );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "fadeOutTime" ) )
@@ -890,7 +890,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				break;
 			}
 
-			btb->fadeOutTime = atoi_neg( token, qfalse );
+			btb->fadeOutTime = atoi_neg( token, false );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "shader" ) )
@@ -926,7 +926,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 					break;
 				}
 
-				btb->frontTextureCoord = atof_neg( token, qfalse );
+				btb->frontTextureCoord = atof_neg( token, false );
 
 				token = COM_Parse( text_p );
 
@@ -935,7 +935,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 					break;
 				}
 
-				btb->backTextureCoord = atof_neg( token, qfalse );
+				btb->backTextureCoord = atof_neg( token, false );
 			}
 			else if ( !Q_stricmp( token, "repeat" ) )
 			{
@@ -950,11 +950,11 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				if ( !Q_stricmp( token, "front" ) )
 				{
-					btb->clampToBack = qfalse;
+					btb->clampToBack = false;
 				}
 				else if ( !Q_stricmp( token, "back" ) )
 				{
-					btb->clampToBack = qtrue;
+					btb->clampToBack = true;
 				}
 				else
 				{
@@ -969,7 +969,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 					break;
 				}
 
-				btb->repeatLength = atof_neg( token, qfalse );
+				btb->repeatLength = atof_neg( token, false );
 			}
 			else
 			{
@@ -981,7 +981,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		}
 		else if ( !Q_stricmp( token, "realLight" ) )
 		{
-			btb->realLight = qtrue;
+			btb->realLight = true;
 
 			continue;
 		}
@@ -1000,7 +1000,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				break;
 			}
 
-			btb->jitters[ btb->numJitters ].magnitude = atof_neg( token, qfalse );
+			btb->jitters[ btb->numJitters ].magnitude = atof_neg( token, false );
 
 			token = COM_Parse( text_p );
 
@@ -1009,7 +1009,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				break;
 			}
 
-			btb->jitters[ btb->numJitters ].period = atoi_neg( token, qfalse );
+			btb->jitters[ btb->numJitters ].period = atoi_neg( token, false );
 
 			btb->numJitters++;
 
@@ -1017,22 +1017,22 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		}
 		else if ( !Q_stricmp( token, "jitterAttachments" ) )
 		{
-			btb->jitterAttachments = qtrue;
+			btb->jitterAttachments = true;
 
 			continue;
 		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{
-			return qtrue; //reached the end of this trail beam
+			return true; //reached the end of this trail beam
 		}
 		else
 		{
 			CG_Printf( S_ERROR "unknown token '%s' in trail beam\n", token );
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1064,7 +1064,7 @@ CG_ParseTrailSystem
 Parse a trail system section
 ===============
 */
-static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, const char *name )
+static bool CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, const char *name )
 {
 	char *token;
 
@@ -1075,7 +1075,7 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 
 		if ( !*token )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( !Q_stricmp( token, "{" ) )
@@ -1085,19 +1085,19 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 			if ( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], text_p ) )
 			{
 				CG_Printf( S_ERROR "failed to parse trail beam\n" );
-				return qfalse;
+				return false;
 			}
 
 			if ( bts->numBeams == MAX_BEAMS_PER_SYSTEM )
 			{
 				CG_Printf( S_ERROR "trail system has > %d beams\n", MAX_BEAMS_PER_SYSTEM );
-				return qfalse;
+				return false;
 			}
 			else if ( numBaseTrailBeams == MAX_BASETRAIL_BEAMS )
 			{
 				CG_Printf( S_ERROR "maximum number of trail beams (%d) reached\n",
 				           MAX_BASETRAIL_BEAMS );
-				return qfalse;
+				return false;
 			}
 			else
 			{
@@ -1111,7 +1111,7 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 		}
 		else if ( !Q_stricmp( token, "thirdPersonOnly" ) )
 		{
-			bts->thirdPersonOnly = qtrue;
+			bts->thirdPersonOnly = true;
 		}
 		else if ( !Q_stricmp( token, "lifeTime" ) )
 		{
@@ -1122,7 +1122,7 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 				break;
 			}
 
-			bts->lifeTime = atoi_neg( token, qfalse );
+			bts->lifeTime = atoi_neg( token, false );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "beam" ) )  //acceptable text
@@ -1136,16 +1136,16 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 				CG_Printf( "Parsed trail system %s\n", name );
 			}
 
-			return qtrue; //reached the end of this trail system
+			return true; //reached the end of this trail system
 		}
 		else
 		{
 			CG_Printf( "ERROR: unknown token '%s' in trail system %s\n", token, bts->name );
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1155,7 +1155,7 @@ CG_ParseTrailFile
 Load the trail systems from a trail file
 ===============
 */
-static qboolean CG_ParseTrailFile( const char *fileName )
+static bool CG_ParseTrailFile( const char *fileName )
 {
 	char         *text_p;
 	int          i;
@@ -1163,7 +1163,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 	char         *token;
 	char         text[ 32000 ];
 	char         tsName[ MAX_QPATH ];
-	qboolean     tsNameSet = qfalse;
+	bool     tsNameSet = false;
 	fileHandle_t f;
 
 	// load the file
@@ -1171,14 +1171,14 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 
 	if ( len <= 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len ? S_ERROR "trail file %s is too long\n" : S_ERROR "trail file %s is empty\n", fileName );
-		return qfalse;
+		return false;
 	}
 
 	trap_FS_Read( text, len, f );
@@ -1208,7 +1208,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 					if ( !Q_stricmp( baseTrailSystems[ i ].name, tsName ) )
 					{
 						CG_Printf( S_ERROR "a trail system is already named %s\n", tsName );
-						return qfalse;
+						return false;
 					}
 				}
 
@@ -1217,17 +1217,17 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 				if ( !CG_ParseTrailSystem( &baseTrailSystems[ numBaseTrailSystems ], &text_p, tsName ) )
 				{
 					CG_Printf( S_ERROR "%s: failed to parse trail system %s\n", fileName, tsName );
-					return qfalse;
+					return false;
 				}
 
 				//start parsing trail systems again
-				tsNameSet = qfalse;
+				tsNameSet = false;
 
 				if ( numBaseTrailSystems == MAX_BASETRAIL_SYSTEMS )
 				{
 					CG_Printf( S_ERROR "maximum number of trail systems (%d) reached\n",
 					           MAX_BASETRAIL_SYSTEMS );
-					return qfalse;
+					return false;
 				}
 				else
 				{
@@ -1239,23 +1239,23 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 			else
 			{
 				CG_Printf( S_ERROR "unnamed trail system\n" );
-				return qfalse;
+				return false;
 			}
 		}
 
 		if ( !tsNameSet )
 		{
 			Q_strncpyz( tsName, token, sizeof( tsName ) );
-			tsNameSet = qtrue;
+			tsNameSet = true;
 		}
 		else
 		{
 			CG_Printf( S_ERROR "trail system already named\n" );
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1341,7 +1341,7 @@ qhandle_t CG_RegisterTrailSystem( const char *name )
 				CG_Printf( "Registered trail system %s\n", name );
 			}
 
-			bts->registered = qtrue;
+			bts->registered = true;
 
 			//avoid returning 0
 			return i + 1;
@@ -1378,7 +1378,7 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
 			tb->class_ = btb;
 			tb->parent = ts;
 
-			tb->valid = qtrue;
+			tb->valid = true;
 
 			if ( cg_debugTrails.integer >= 1 )
 			{
@@ -1427,7 +1427,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 			//found a free slot
 			ts->class_ = bts;
 
-			ts->valid = qtrue;
+			ts->valid = true;
 			ts->destroyTime = -1;
 			ts->birthTime = cg.time;
 
@@ -1474,7 +1474,7 @@ void CG_DestroyTrailSystem( trailSystem_t **ts )
 		CG_SetAttachmentPoint( & ( *ts )->frontAttachment, v );
 		CG_AttachToPoint( & ( *ts )->frontAttachment );
 
-		( *ts )->frontAttachment.centValid = qfalse; // a bit naughty
+		( *ts )->frontAttachment.centValid = false; // a bit naughty
 	}
 
 	ts = NULL;
@@ -1487,7 +1487,7 @@ CG_IsTrailSystemValid
 Test a trail system for validity
 ===============
 */
-qboolean CG_IsTrailSystemValid( trailSystem_t **ts )
+bool CG_IsTrailSystemValid( trailSystem_t **ts )
 {
 	if ( *ts == NULL || ( *ts && !( *ts )->valid ) )
 	{
@@ -1496,10 +1496,10 @@ qboolean CG_IsTrailSystemValid( trailSystem_t **ts )
 			*ts = NULL;
 		}
 
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1539,7 +1539,7 @@ static void CG_GarbageCollectTrailSystems( void )
 
 		if ( !count )
 		{
-			ts->valid = qfalse;
+			ts->valid = false;
 		}
 
 		//check systems where the parent cent has left the PVS

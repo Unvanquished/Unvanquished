@@ -116,9 +116,9 @@ static void SV_MapRestart_f( void )
 {
 	int         i;
 	client_t    *client;
-	qboolean    denied;
+	bool    denied;
 	char        reason[ MAX_STRING_CHARS ];
-	qboolean    isBot;
+	bool    isBot;
 
 	// make sure we aren't restarting twice in the same frame
 	if ( com_frameTime == sv.serverId )
@@ -160,7 +160,7 @@ static void SV_MapRestart_f( void )
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
 	sv.state = SS_LOADING;
-	sv.restarting = qtrue;
+	sv.restarting = true;
 
 	SV_RestartGameProgs(Cvar_VariableString("mapname"));
 
@@ -177,7 +177,7 @@ static void SV_MapRestart_f( void )
 //  SV_CreateBaseline ();
 
 	sv.state = SS_GAME;
-	sv.restarting = qfalse;
+	sv.restarting = false;
 
 	// connect and begin all the clients
 	for ( i = 0; i < sv_maxclients->integer; i++ )
@@ -196,7 +196,7 @@ static void SV_MapRestart_f( void )
 		SV_AddServerCommand( client, "map_restart\n" );
 
 		// connect the client again, without the firstTime flag
-		denied = gvm.GameClientConnect( reason, sizeof( reason ), i, qfalse, isBot );
+		denied = gvm.GameClientConnect( reason, sizeof( reason ), i, false, isBot );
 
 		if ( denied )
 		{
@@ -343,7 +343,7 @@ static void SV_Serverinfo_f( void )
 	}
 
 	Com_Printf( "Server info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, qfalse ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, false ) );
 }
 
 /*
@@ -363,7 +363,7 @@ static void SV_Systeminfo_f( void )
 	}
 
 	Com_Printf( "System info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, qfalse ) );
+	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, false ) );
 }
 
 /*

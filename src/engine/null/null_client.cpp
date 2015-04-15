@@ -61,7 +61,7 @@ void CL_CharEvent( int c )
 {
 }
 
-void CL_Disconnect( qboolean showMainMenu )
+void CL_Disconnect( bool showMainMenu )
 {
 }
 
@@ -69,18 +69,18 @@ void CL_MapLoading( void )
 {
 }
 
-qboolean CL_GameCommand( void )
+bool CL_GameCommand( void )
 {
-	return qfalse; // bk001204 - non-void
+	return false; // bk001204 - non-void
 }
 
-void CL_KeyEvent( int key, qboolean down, unsigned time )
+void CL_KeyEvent( int key, bool down, unsigned time )
 {
 }
 
-qboolean UI_GameCommand( void )
+bool UI_GameCommand( void )
 {
-	return qfalse;
+	return false;
 }
 
 void CL_ForwardCommandToServer( const char *cmd )

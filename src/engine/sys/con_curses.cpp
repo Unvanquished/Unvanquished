@@ -61,8 +61,8 @@ void CON_Init_TTY( void );
 char *CON_Input_TTY( void );
 void CON_Print_TTY( const char *message );
 
-static qboolean curses_on = qfalse;
-static qboolean dump_logs = qfalse;
+static bool curses_on = false;
+static bool dump_logs = false;
 static Console::Field input_field(INT_MAX);
 static WINDOW   *borderwin;
 static WINDOW   *logwin;
@@ -160,11 +160,11 @@ static INLINE void CON_UpdateCursor( void )
 CON_ColorPrint
 ==================
 */
-static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
+static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 {
 	static wchar_t buffer[ MAXPRINTMSG ];
 	int         length = 0;
-	qboolean    noColour = qfalse;
+	bool    noColour = false;
 
 	CON_SetColor( win, CURSES_NULL_COLOR );
 
@@ -172,7 +172,7 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 	{
 		if ( ( !noColour && Q_IsColorString( msg ) ) || *msg == '\n' )
 		{
-			noColour = qfalse;
+			noColour = false;
 
 			// First empty the buffer
 			if ( length > 0 )
@@ -235,12 +235,12 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 				}
 				else
 				{
-					noColour = qtrue; // guaranteed a colour control next
+					noColour = true; // guaranteed a colour control next
 				}
 			}
 			else
 			{
-				noColour = qfalse;
+				noColour = false;
 			}
 			buffer[ length ] = (wchar_t) Q_UTF8_CodePoint( msg );
 			msg += Q_UTF8_WidthCP( buffer[ length ]);
@@ -268,7 +268,7 @@ static void CON_UpdateClock( void )
 	qtime_t realtime;
 	Com_Time( &realtime );
 	werase( clockwin );
-	CON_ColorPrint( clockwin, va( "^0[^3%02d%c%02d^0]^7 ", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min ), qtrue );
+	CON_ColorPrint( clockwin, va( "^0[^3%02d%c%02d^0]^7 ", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min ), true );
 	wnoutrefresh( clockwin );
 }
 
@@ -309,7 +309,7 @@ static void CON_Redraw( void )
 	logwin = newpad( MAX_LOG_LINES, COLS );
 	scrollok( logwin, TRUE );
 	idlok( logwin, TRUE );
-	CON_ColorPrint( logwin, logbuf, qtrue );
+	CON_ColorPrint( logwin, logbuf, true );
 	getyx( logwin, lastline, col );
 	if ( col )
 	{
@@ -325,7 +325,7 @@ static void CON_Redraw( void )
 	// Create the input field
 	inputwin = newwin( 1, COLS - Q_PrintStrlen( PROMPT ) - 8, LINES - 1, Q_PrintStrlen( PROMPT ) + 8 );
 	input_field.SetWidth(COLS - Q_PrintStrlen( PROMPT ) - 9);
-	CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), qfalse );
+	CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), false );
 	CON_UpdateCursor();
 	wnoutrefresh( inputwin );
 
@@ -342,9 +342,9 @@ static void CON_Redraw( void )
 
 	// Display the title and input prompt
 	move( 0, ( COLS - Q_PrintStrlen( TITLE ) ) / 2 );
-	CON_ColorPrint( stdscr, TITLE, qtrue );
+	CON_ColorPrint( stdscr, TITLE, true );
 	move( LINES - 1, 8 );
-	CON_ColorPrint( stdscr, PROMPT, qtrue );
+	CON_ColorPrint( stdscr, PROMPT, true );
 
 	wnoutrefresh( stdscr );
 	doupdate();
@@ -408,7 +408,7 @@ void CON_Shutdown( void )
 	refresh();
 	endwin();
 	dump_logs = curses_on;
-	curses_on = qfalse;
+	curses_on = false;
 
 #ifndef _WIN32
 	if ( stderr_fd >= 0 )
@@ -538,7 +538,7 @@ void CON_Init( void )
 		close( STDERR_FILENO );
 #endif
 
-		curses_on = qtrue;
+		curses_on = true;
 	}
 
 	CON_Redraw();
@@ -567,7 +567,7 @@ char *CON_Input( void )
 	if ( com_ansiColor->modified )
 	{
 		CON_Redraw();
-		com_ansiColor->modified = qfalse;
+		com_ansiColor->modified = false;
 	}
 
 	if ( Com_Time( NULL ) != lasttime )
@@ -595,7 +595,7 @@ char *CON_Input( void )
 				{
 					werase( inputwin );
 
-					CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), qfalse );
+					CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), false );
 #ifdef _WIN32
 					wrefresh( inputwin );  // If this is not done the cursor moves strangely
 #else
@@ -826,7 +826,7 @@ CON_Print
 void CON_Print( const char *msg )
 {
 	int      col;
-	qboolean scroll = ( lastline > scrollline && lastline <= scrollline + LOG_LINES );
+	bool scroll = ( lastline > scrollline && lastline <= scrollline + LOG_LINES );
 
 	if ( !curses_on )
 	{
@@ -835,7 +835,7 @@ void CON_Print( const char *msg )
 	}
 
 	// Print the message in the log window
-	CON_ColorPrint( logwin, msg, qtrue );
+	CON_ColorPrint( logwin, msg, true );
 	getyx( logwin, lastline, col );
 
 	if ( col )

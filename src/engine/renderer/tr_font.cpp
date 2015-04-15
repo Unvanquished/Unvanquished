@@ -169,7 +169,7 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 }
 
 static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, int *yOut,
-    int *maxHeight, FT_Face face, FT_Face fallback, const int c, qboolean calcHeight )
+    int *maxHeight, FT_Face face, FT_Face fallback, const int c, bool calcHeight )
 {
 	int                i;
 	static glyphInfo_t glyph;
@@ -469,7 +469,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	int           i, lastStart, page;
 	unsigned char *out;
 	glyphInfo_t   *glyphs;
-	qboolean      rendered;
+	bool      rendered;
 
 	const int     startGlyph = chunk * 256;
 
@@ -491,11 +491,11 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	// calculate max height
 	maxHeight = 0;
-	rendered = qfalse;
+	rendered = false;
 
 	for ( i = 0; i < 256; i++ )
 	{
-		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue );
+		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, true );
 	}
 
 	// no glyphs? just return
@@ -510,16 +510,16 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	memset( glyphs, 0, sizeof( glyphBlock_t ) );
 
 	xOut = yOut = 0;
-	rendered = qfalse;
+	rendered = false;
 	i = lastStart = page = 0;
 
 	while ( i < 256 )
 	{
-		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
+		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, false );
 
 		if ( glyph )
 		{
-			rendered = qtrue;
+			rendered = true;
 			Com_Memcpy( glyphs + i, glyph, sizeof( glyphInfo_t ) );
 		}
 
@@ -528,7 +528,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 			RE_StoreImage( font, chunk, page++, lastStart, i, out, yOut + maxHeight + 1 );
 			Com_Memset( out, 0, FONT_SIZE * FONT_SIZE );
 			xOut = yOut = 0;
-			rendered = qfalse;
+			rendered = false;
 			lastStart = i;
 		}
 		else

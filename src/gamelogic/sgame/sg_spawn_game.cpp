@@ -114,12 +114,12 @@ void game_funds_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 		return;
 	}
 
-	G_AddCreditToClient( activator->client, self->amount, qtrue );
+	G_AddCreditToClient( activator->client, self->amount, true );
 }
 
 void game_funds_reset( gentity_t *self )
 {
-	G_ResetIntField( &self->amount, qfalse, self->config.amount, self->eclass->config.amount, 0);
+	G_ResetIntField( &self->amount, false, self->config.amount, self->eclass->config.amount, 0);
 }
 
 void SP_game_funds( gentity_t *self )

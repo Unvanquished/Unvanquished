@@ -53,9 +53,9 @@ called before and after a stdout or stderr output
 =============================================================
 */
 
-static qboolean       stdin_active;
+static bool       stdin_active;
 // general flag to tell about tty console mode
-static qboolean       ttycon_on = qfalse;
+static bool       ttycon_on = false;
 static int            ttycon_hide = 0;
 
 // some key codes that the terminal may be using, initialised on start up
@@ -321,8 +321,8 @@ void CON_Init_TTY( void )
 	if ( !stdinIsATTY )
 	{
 		Com_Printf( "tty console mode disabled\n" );
-		ttycon_on = qfalse;
-		stdin_active = qtrue;
+		ttycon_on = false;
+		stdin_active = true;
 		return;
 	}
 
@@ -349,7 +349,7 @@ void CON_Init_TTY( void )
 	tc.c_cc[ VMIN ] = 1;
 	tc.c_cc[ VTIME ] = 0;
 	tcsetattr( STDIN_FILENO, TCSADRAIN, &tc );
-	ttycon_on = qtrue;
+	ttycon_on = true;
 }
 
 /*
@@ -478,7 +478,7 @@ char *CON_Input_TTY( void )
 		if ( len == 0 )
 		{
 			// eof!
-			stdin_active = qfalse;
+			stdin_active = false;
 			return NULL;
 		}
 

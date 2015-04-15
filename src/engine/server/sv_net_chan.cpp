@@ -103,13 +103,13 @@ static void SV_WriteBinaryMessage( msg_t *msg, client_t *cl )
 
 	if ( ( msg->cursize + cl->binaryMessageLength ) >= msg->maxsize )
 	{
-		cl->binaryMessageOverflowed = qtrue;
+		cl->binaryMessageOverflowed = true;
 		return;
 	}
 
 	MSG_WriteData( msg, cl->binaryMessage, cl->binaryMessageLength );
 	cl->binaryMessageLength = 0;
-	cl->binaryMessageOverflowed = qfalse;
+	cl->binaryMessageOverflowed = false;
 }
 
 /*

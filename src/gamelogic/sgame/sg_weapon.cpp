@@ -100,14 +100,14 @@ void G_GiveMaxAmmo( gentity_t *self )
 /**
  * @brief Checks the condition for G_RefillAmmo.
  */
-static qboolean CanUseAmmoRefill( gentity_t *self )
+static bool CanUseAmmoRefill( gentity_t *self )
 {
 	const weaponAttributes_t *wa;
 	playerState_t *ps;
 
 	if ( !self || !self->client )
 	{
-		return qfalse;
+		return false;
 	}
 
 	ps = &self->client->ps;
@@ -115,7 +115,7 @@ static qboolean CanUseAmmoRefill( gentity_t *self )
 
 	if ( wa->infiniteAmmo )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( wa->maxClips == 0 )
@@ -126,11 +126,11 @@ static qboolean CanUseAmmoRefill( gentity_t *self )
 	else if ( ps->clips != wa->maxClips )
 	{
 		// clip weapons have to miss a clip to be refillable
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -140,11 +140,11 @@ static qboolean CanUseAmmoRefill( gentity_t *self )
  * @param triggerEvent Trigger an event when relvant resource was modified.
  * @return Whether relevant resource was modified.
  */
-qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
+bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
 {
 	if ( !CanUseAmmoRefill( self ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	self->client->lastAmmoRefillTime = level.time;
@@ -168,7 +168,7 @@ qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
 		}
 	}
 
-	return qtrue;
+	return true;
 }
 
 /**
@@ -177,18 +177,18 @@ qboolean G_RefillAmmo( gentity_t *self, qboolean triggerEvent )
  * @param triggerEvent Trigger an event when fuel was modified.
  * @return Whether fuel was modified.
  */
-qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
+bool G_RefillFuel( gentity_t *self, bool triggerEvent )
 {
 	if ( !self || !self->client )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// needs a human with jetpack
 	if ( self->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS ||
 	     !BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( self->client->ps.stats[ STAT_FUEL ] != JETPACK_FUEL_MAX )
@@ -202,11 +202,11 @@ qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
 			G_AddEvent( self, EV_FUEL_REFILL, 0 );
 		}
 
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -214,15 +214,15 @@ qboolean G_RefillFuel( gentity_t *self, qboolean triggerEvent )
  * @brief Attempts to refill ammo from a close source.
  * @return Whether ammo was refilled.
  */
-qboolean G_FindAmmo( gentity_t *self )
+bool G_FindAmmo( gentity_t *self )
 {
 	gentity_t *neighbor = NULL;
-	qboolean  foundSource = qfalse;
+	bool  foundSource = false;
 
 	// don't search for a source if refilling isn't possible
 	if ( !CanUseAmmoRefill( self ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// search for ammo source
@@ -241,14 +241,14 @@ qboolean G_FindAmmo( gentity_t *self )
 		switch ( neighbor->s.modelindex )
 		{
 			case BA_H_ARMOURY:
-				foundSource = qtrue;
+				foundSource = true;
 				break;
 
 			case BA_H_REACTOR:
 			case BA_H_REPEATER:
 				if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
 				{
-					foundSource = qtrue;
+					foundSource = true;
 				}
 				break;
 		}
@@ -256,24 +256,24 @@ qboolean G_FindAmmo( gentity_t *self )
 
 	if ( foundSource )
 	{
-		return G_RefillAmmo( self, qtrue );
+		return G_RefillAmmo( self, true );
 	}
 
-	return qfalse;
+	return false;
 }
 
 /**
  * @brief Attempts to refill jetpack fuel from a close source.
- * @return qtrue if fuel was refilled.
+ * @return true if fuel was refilled.
  */
-qboolean G_FindFuel( gentity_t *self )
+bool G_FindFuel( gentity_t *self )
 {
 	gentity_t *neighbor = NULL;
-	qboolean  foundSource = qfalse;
+	bool  foundSource = false;
 
 	if ( !self || !self->client )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// search for fuel source
@@ -292,17 +292,17 @@ qboolean G_FindFuel( gentity_t *self )
 		switch ( neighbor->s.modelindex )
 		{
 			case BA_H_ARMOURY:
-				foundSource = qtrue;
+				foundSource = true;
 				break;
 		}
 	}
 
 	if ( foundSource )
 	{
-		return G_RefillFuel( self, qtrue );
+		return G_RefillFuel( self, true );
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -746,7 +746,7 @@ static void HiveMissileThink( gentity_t *self )
 
 		self->think = G_ExplodeMissile;
 		self->nextthink = level.time + 50;
-		self->parent->active = qfalse; //allow the parent to start again
+		self->parent->active = false; //allow the parent to start again
 		return;
 	}
 
@@ -1114,7 +1114,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self, vec3_t start, vec3_t dir,
 	return m;
 }
 
-static void FireLcannon( gentity_t *self, qboolean secondary )
+static void FireLcannon( gentity_t *self, bool secondary )
 {
 	if ( secondary && self->client->ps.stats[ STAT_MISC ] <= 0 )
 	{
@@ -1265,7 +1265,7 @@ LEVEL0
 ======================================================================
 */
 
-qboolean G_CheckVenomAttack( gentity_t *self )
+bool G_CheckVenomAttack( gentity_t *self )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
@@ -1273,7 +1273,7 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 
 	if ( self->client->ps.weaponTime )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// Calculate muzzle point
@@ -1285,13 +1285,13 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 	if ( !traceEnt || !traceEnt->takedamage || traceEnt->health <= 0 ||
 	     G_OnSameTeam( self, traceEnt ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// only allow bites to work against buildables in construction
 	if ( traceEnt->s.eType == ET_BUILDABLE && traceEnt->spawned )
 	{
-		return qfalse;
+		return false;
 	}
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
@@ -1300,7 +1300,7 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 
 	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1405,7 +1405,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 			continue;
 		}
 
-		zap->used = qtrue;
+		zap->used = true;
 		zap->timeToLive = LEVEL2_AREAZAP_TIME;
 
 		zap->creator = creator;
@@ -1460,7 +1460,7 @@ void G_UpdateZaps( int msec )
 		if ( zap->timeToLive <= 0 || !zap->targets[ 0 ]->inuse )
 		{
 			G_FreeEntity( zap->effectChannel );
-			zap->used = qfalse;
+			zap->used = false;
 			continue;
 		}
 
@@ -1500,7 +1500,7 @@ void G_ClearPlayerZapEffects( gentity_t *player )
 		if ( zap->creator == player || zap->targets[ 0 ] == player )
 		{
 			G_FreeEntity( zap->effectChannel );
-			zap->used = qfalse;
+			zap->used = false;
 			continue;
 		}
 
@@ -1543,7 +1543,7 @@ LEVEL3
 ======================================================================
 */
 
-qboolean G_CheckPounceAttack( gentity_t *self )
+bool G_CheckPounceAttack( gentity_t *self )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
@@ -1551,7 +1551,7 @@ qboolean G_CheckPounceAttack( gentity_t *self )
 
 	if ( self->client->pmext.pouncePayload <= 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// In case the goon lands on his target, he gets one shot after landing
@@ -1574,7 +1574,7 @@ qboolean G_CheckPounceAttack( gentity_t *self )
 
 	if ( traceEnt == NULL )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// Send blood impact
@@ -1585,7 +1585,7 @@ qboolean G_CheckPounceAttack( gentity_t *self )
 
 	if ( !traceEnt->takedamage )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// Deal damage
@@ -1596,7 +1596,7 @@ qboolean G_CheckPounceAttack( gentity_t *self )
 	G_Damage( traceEnt, self, self, forward, tr.endpos, damage,
 	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE );
 
-	return qtrue;
+	return true;
 }
 
 static void FireBounceball( gentity_t *self )
@@ -1889,7 +1889,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_LUCIFER_CANNON:
-					FireLcannon( self, qfalse );
+					FireLcannon( self, false );
 					break;
 
 				case WP_LAS_GUN:
@@ -1935,7 +1935,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_LUCIFER_CANNON:
-					FireLcannon( self, qtrue );
+					FireLcannon( self, true );
 					break;
 
 				case WP_ALEVEL2_UPG:

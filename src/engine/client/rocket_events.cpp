@@ -53,16 +53,16 @@ void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& valu
 	}
 }
 
-qboolean Rocket_GetEvent(std::string& cmdText)
+bool Rocket_GetEvent(std::string& cmdText)
 {
 	if ( !eventQueue.empty() )
 	{
 		cmdText = eventQueue.front()->cmd.CString();
 		activeElement = eventQueue.front()->targetElement;
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 void Rocket_DeleteEvent( void )
@@ -85,7 +85,7 @@ void Rocket_GetEventParameters( char *params, int length )
 
 		while ( event->Parameters.Iterate( index, key, value ) )
 		{
-			Info_SetValueForKeyRocket( params, key.CString(), value.CString(), qtrue );
+			Info_SetValueForKeyRocket( params, key.CString(), value.CString(), true );
 		}
 	}
 }

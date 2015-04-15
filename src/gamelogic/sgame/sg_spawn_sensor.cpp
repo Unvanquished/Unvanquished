@@ -312,19 +312,19 @@ sensor_buildable
 =================================================================================
 */
 
-qboolean sensor_buildable_match( gentity_t *self, gentity_t *activator )
+bool sensor_buildable_match( gentity_t *self, gentity_t *activator )
 {
 	int i = 0;
 
 	if ( !activator )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//if there is no buildable list every buildable triggers
 	if ( self->conditions.buildables[ i ] == BA_NONE )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
@@ -333,12 +333,12 @@ qboolean sensor_buildable_match( gentity_t *self, gentity_t *activator )
 		{
 			if ( activator->s.modelindex == self->conditions.buildables[ i ] )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
@@ -388,19 +388,19 @@ sensor_player
 sensor_class_match
 ===============
 */
-qboolean sensor_class_match( gentity_t *self, gentity_t *activator )
+bool sensor_class_match( gentity_t *self, gentity_t *activator )
 {
 	int i = 0;
 
 	if ( !activator )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//if there is no class list every class triggers (stupid case)
 	if ( self->conditions.classes[ i ] == PCL_NONE )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
@@ -409,12 +409,12 @@ qboolean sensor_class_match( gentity_t *self, gentity_t *activator )
 		{
 			if ( activator->client->ps.stats[ STAT_CLASS ] == self->conditions.classes[ i ] )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -422,19 +422,19 @@ qboolean sensor_class_match( gentity_t *self, gentity_t *activator )
 sensor_equipment_match
 ===============
 */
-qboolean sensor_equipment_match( gentity_t *self, gentity_t *activator )
+bool sensor_equipment_match( gentity_t *self, gentity_t *activator )
 {
 	int i = 0;
 
 	if ( !activator )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( self->conditions.weapons[ i ] == WP_NONE && self->conditions.upgrades[ i ] == UP_NONE )
 	{
 		//if there is no equipment list all equipment triggers for the old behavior of target_equipment, but not the new or different one
-		return qtrue;
+		return true;
 	}
 	else
 	{
@@ -443,7 +443,7 @@ qboolean sensor_equipment_match( gentity_t *self, gentity_t *activator )
 		{
 			if ( BG_InventoryContainsWeapon( self->conditions.weapons[ i ], activator->client->ps.stats ) )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 
@@ -451,17 +451,17 @@ qboolean sensor_equipment_match( gentity_t *self, gentity_t *activator )
 		{
 			if ( BG_InventoryContainsUpgrade( self->conditions.upgrades[ i ], activator->client->ps.stats ) )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
 {
-	qboolean shouldFire;
+	bool shouldFire;
 
 	//sanity check
 	if ( !activator || !activator->client )
@@ -489,7 +489,7 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 	}
 	else
 	{
-		shouldFire = qtrue;
+		shouldFire = true;
 	}
 
 	if( shouldFire == !self->conditions.negated )
@@ -537,7 +537,7 @@ void sensor_support_think( gentity_t *self )
 	//TODO check the difference between G_FindCreep and G_FindPower
 	switch (self->conditions.team) {
 		case TEAM_HUMANS:
-			self->powered = qfalse;
+			self->powered = false;
 			break;
 		case TEAM_ALIENS:
 			self->powered = G_FindCreep( self );
@@ -587,7 +587,7 @@ void sensor_power_think( gentity_t *self )
 		return;
 	}
 
-	self->powered = qfalse; //TODO: Reuse or remove this sensor
+	self->powered = false; //TODO: Reuse or remove this sensor
 
 	if(self->powered)
 		G_FireEntity( self, self->powerSource );

@@ -242,7 +242,7 @@ Enables the GL scissor test to be used for rotated images
 DrawStretchPic seems to reset the scissor
 =================
 */
-void CG_EnableScissor( qboolean enable )
+void CG_EnableScissor( bool enable )
 {
     trap_R_ScissorEnable(enable);
 }
@@ -458,13 +458,13 @@ float CG_FadeAlpha( int startMsec, int totalMsec )
 CG_WorldToScreen
 ================
 */
-qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
+bool CG_WorldToScreen( vec3_t point, float *x, float *y )
 {
 	vec3_t trans;
 	float  xc, yc;
 	float  px, py;
 	float  z;
-	qboolean front = qtrue;
+	bool front = true;
 
 	px = tan( cg.refdef.fov_x * M_PI / 360.0f );
 	py = tan( cg.refdef.fov_y * M_PI / 360.0f );
@@ -478,7 +478,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 
 	if ( z <= 0.001f )
 	{
-		front = qfalse;
+		front = false;
 	}
 
 	if ( x )
@@ -585,7 +585,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const f
 	VectorSet( re.axis[ 0 ], radius, 0, 0 );
 	VectorSet( re.axis[ 1 ], 0, radius, 0 );
 	VectorSet( re.axis[ 2 ], 0, 0, radius );
-	re.nonNormalizedAxes = qtrue;
+	re.nonNormalizedAxes = true;
 
 	trap_R_AddRefEntityToScene( &re );
 }
@@ -596,7 +596,7 @@ CG_DrawSphericalCone
 ================
 */
 void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
-                           qboolean a240, int customShader, const float *shaderRGBA )
+                           bool a240, int customShader, const float *shaderRGBA )
 {
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
@@ -623,7 +623,7 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	VectorScale( re.axis[ 0 ], radius, re.axis[ 0 ] );
 	VectorScale( re.axis[ 1 ], radius, re.axis[ 1 ] );
 	VectorScale( re.axis[ 2 ], radius, re.axis[ 2 ] );
-	re.nonNormalizedAxes = qtrue;
+	re.nonNormalizedAxes = true;
 
 	trap_R_AddRefEntityToScene( &re );
 }
@@ -648,10 +648,10 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 				CG_DrawSphere( origin, range, pcsh, rgba );
 				break;
 			case RM_SPHERICAL_CONE_64:
-				CG_DrawSphericalCone( origin, angles, range, qfalse, pcsh, rgba );
+				CG_DrawSphericalCone( origin, angles, range, false, pcsh, rgba );
 				break;
 			case RM_SPHERICAL_CONE_240:
-				CG_DrawSphericalCone( origin, angles, range, qtrue, pcsh, rgba );
+				CG_DrawSphericalCone( origin, angles, range, true, pcsh, rgba );
 				break;
 		}
 	}
@@ -695,7 +695,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 		}
 		else
 		{
-			qboolean t2;
+			bool t2;
 			float    f, r;
 			vec3_t   forward, tip;
 

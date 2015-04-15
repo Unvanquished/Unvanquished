@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VMMain.h"
 
 // The old console command handler that should be defined in all VMs
-qboolean ConsoleCommand();
+bool ConsoleCommand();
 void CompleteCommand(int);
 
 const char* Trans_Gettext(const char* text) {
@@ -575,14 +575,14 @@ int trap_FS_GetFileListRecursive(const char *path, const char *extension, char *
 	return res;
 }
 
-qboolean trap_FindPak(const char *name)
+bool trap_FindPak(const char *name)
 {
 	bool res;
 	VM::SendMsg<VM::FSFindPakMsg>(name, res);
 	return res;
 }
 
-qboolean trap_FS_LoadPak( const char *pak, const char* prefix )
+bool trap_FS_LoadPak( const char *pak, const char* prefix )
 {
 	bool res;
 	VM::SendMsg<VM::FSLoadPakMsg>(pak, prefix, res);

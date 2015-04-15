@@ -316,7 +316,7 @@ static void MarkRelevantBeacons( void )
 {
 	const playerState_t *ps = &cg.predictedPlayerState;
 	int team = ps->persistant[ PERS_TEAM ];
-	qboolean lowammo, energy;
+	bool lowammo, energy;
 
 	lowammo = BG_PlayerLowAmmo( ps, &energy );
 
@@ -403,7 +403,7 @@ static void DrawBeacon( cbeacon_t *b )
 	float alpha; // target
 	int time_in, time_left;
 	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
-	qboolean front;
+	bool front;
 	const beaconAttributes_t *ba = BG_Beacon( b->type );
 
 	// reset animations
@@ -417,7 +417,7 @@ static void DrawBeacon( cbeacon_t *b )
 	if( !b->old )
 	{
 		if( time_in > 1000 ) //TODO: take time since entering the game into account
-			b->old = qtrue;
+			b->old = true;
 		else
 		{
 			if( ba->inSound && ( b->type != BCT_TAG || ( b->flags & EF_BC_ENEMY ) ) )
@@ -471,7 +471,7 @@ static void DrawBeacon( cbeacon_t *b )
 			if( !b->eventFired )
 			{
 				trap_S_StartLocalSound( cgs.media.timerBeaconExpiredSound, CHAN_LOCAL_SOUND );
-				b->eventFired = qtrue;
+				b->eventFired = true;
 			}
 		}
 		else
@@ -570,10 +570,10 @@ static void DrawBeacon( cbeacon_t *b )
 		                         cgs.bc.hudRect[1][1] - b->size/2 );
 		Vector2Subtract( b->pos, cgs.bc.hudCenter, b->clamp_dir );
 		ProjectPointOntoRectangleOutwards( b->pos, cgs.bc.hudCenter, b->clamp_dir, (const vec2_t*)screen );
-		b->clamped = qtrue;
+		b->clamped = true;
 	}
 	else
-		b->clamped = qfalse;
+		b->clamped = false;
 }
 
 /**
@@ -583,24 +583,24 @@ static void HandHLBeaconToUI( void )
 {
 	cbeacon_t *beacon;
 	beaconRocket_t * const br = &cg.beaconRocket;
-	qboolean showIcon     = qfalse,
-	         showName     = qfalse,
-	         showInfo     = qfalse,
-	         showDistance = qfalse,
-	         showAge      = qfalse,
-	         showOwner    = qfalse;
+	bool showIcon     = false,
+	         showName     = false,
+	         showInfo     = false,
+	         showDistance = false,
+	         showAge      = false,
+	         showOwner    = false;
 
 	if( ( beacon = cg.highlightedBeacon ) )
 	{
 		// icon
 		if ( ( br->icon = CG_BeaconDescriptiveIcon( beacon ) ) )
 		{
-			showIcon = qtrue;
+			showIcon = true;
 		}
 
 		// name
 		CG_BeaconName( beacon, br->name, sizeof( br->name ) );
-		showName = qtrue;
+		showName = true;
 
 		// info
 		if ( beacon->type == BCT_TAG &&
@@ -609,13 +609,13 @@ static void HandHLBeaconToUI( void )
 		{
 			Com_sprintf( br->info, sizeof( br->info ), "Carrying %s",
 			             BG_Weapon( beacon->data )->humanName );
-			showInfo = qtrue;
+			showInfo = true;
 		}
 
 		// distance
 		Com_sprintf( br->distance, sizeof( br->distance ), "%im from here",
 		             (int)round( beacon->dist * QU_TO_METER ) );
-		showDistance = qtrue;
+		showDistance = true;
 
 		// age
 		if( beacon->type == BCT_TAG &&
@@ -630,7 +630,7 @@ static void HandHLBeaconToUI( void )
 				Com_sprintf( br->age, sizeof( br->age ), "Spotted %i:%02i ago",
 				             age / 60000, ( age / 1000 ) % 60 );
 
-			showAge = qtrue;
+			showAge = true;
 		}
 
 		// owner
@@ -640,7 +640,7 @@ static void HandHLBeaconToUI( void )
 		{
 				Com_sprintf( br->owner, sizeof( br->owner ), "by ^7%s",
 				             cgs.clientinfo[ beacon->owner ].name );
-				showOwner = qtrue;
+				showOwner = true;
 		}
 	}
 
@@ -671,7 +671,7 @@ void CG_RunBeacons( void )
 	}
 
 	for( int beaconNum = 0; beaconNum < cg.beaconCount; beaconNum++ ) {
-		cg.beacons[ beaconNum ]->old = qtrue;
+		cg.beacons[ beaconNum ]->old = true;
 		cg.beacons[ beaconNum ]->oldFlags = cg.beacons[ beaconNum ]->flags;
 	}
 

@@ -722,7 +722,7 @@ typedef enum
   // oportunity to flush and close any open files
 
   CG_DRAW_ACTIVE_FRAME,
-//  void (*CG_DrawActiveFrame)( int serverTime, qboolean demoPlayback );
+//  void (*CG_DrawActiveFrame)( int serverTime, bool demoPlayback );
   // Generates and draws a game scene and status information at the given time.
   // If demoPlayback is set, local movement prediction will not be enabled
 
@@ -730,7 +730,7 @@ typedef enum
 //  int (*CG_CrosshairPlayer)( void );
 
   CG_KEY_EVENT,
-//  void    (*CG_KeyEvent)( int key, qboolean down );
+//  void    (*CG_KeyEvent)( int key, bool down );
 
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );

@@ -46,9 +46,9 @@ Maryland 20850 USA.
 //
 typedef struct
 {
-    qboolean allowoverflow; // if false, do a Com_Error
-    qboolean overflowed; // set to true if the buffer size failed (with allowoverflow set)
-    qboolean oob; // set to true if the buffer size failed (with allowoverflow set)
+    bool allowoverflow; // if false, do a Com_Error
+    bool overflowed; // set to true if the buffer size failed (with allowoverflow set)
+    bool oob; // set to true if the buffer size failed (with allowoverflow set)
     byte     *data;
     int      maxsize;
     int      cursize;
@@ -109,7 +109,7 @@ int   MSG_LookaheadByte( msg_t *msg );
 void  MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
 void  MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
 
-void  MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, qboolean force );
+void  MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, bool force );
 void  MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, int number );
 
 void  MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
@@ -198,19 +198,19 @@ extern cvar_t       *net_enabled;
 void       NET_Init( void );
 void       NET_Shutdown( void );
 void       NET_Restart_f( void );
-void       NET_Config( qboolean enableNetworking );
+void       NET_Config( bool enableNetworking );
 
 void       NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
 void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) PRINTF_LIKE(3);
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
-qboolean   NET_CompareAdr( netadr_t a, netadr_t b );
-qboolean   NET_CompareBaseAdr( netadr_t a, netadr_t b );
-qboolean   NET_IsLocalAddress( netadr_t adr );
+bool   NET_CompareAdr( netadr_t a, netadr_t b );
+bool   NET_CompareBaseAdr( netadr_t a, netadr_t b );
+bool   NET_IsLocalAddress( netadr_t adr );
 const char *NET_AdrToString( netadr_t a );
 const char *NET_AdrToStringwPort( netadr_t a );
 int        NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );
-qboolean   NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_message );
+bool   NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_message );
 void       NET_JoinMulticast6( void );
 void       NET_LeaveMulticast6( void );
 
@@ -251,7 +251,7 @@ typedef struct
 
     // outgoing fragment buffer
     // we need to space out the sending of large fragmented messages
-    qboolean unsentFragments;
+    bool unsentFragments;
     int      unsentFragmentStart;
     int      unsentLength;
     byte     unsentBuffer[ MAX_MSGLEN ];
@@ -263,7 +263,7 @@ void     Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport 
 void     Netchan_Transmit( netchan_t *chan, int length, const byte *data );
 void     Netchan_TransmitNextFragment( netchan_t *chan );
 
-qboolean Netchan_Process( netchan_t *chan, msg_t *msg );
+bool Netchan_Process( netchan_t *chan, msg_t *msg );
 
 /*
 ==============================================================
@@ -446,7 +446,7 @@ char **FS_ListFiles( const char *directory, const char *extension, int *numfiles
 
 void         FS_FreeFileList( char **list );
 
-qboolean     FS_FileExists( const char *file );
+bool     FS_FileExists( const char *file );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 int          FS_GetFileListRecursive( const char* path, const char* extension, char* listBuf, int bufSize );
@@ -462,7 +462,7 @@ fileHandle_t FS_FOpenFileWriteViaTemporary( const char *qpath );
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
 int          FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp );
 void         FS_SV_Rename( const char *from, const char *to );
-int          FS_FOpenFileRead( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
+int          FS_FOpenFileRead( const char *qpath, fileHandle_t *file, bool uniqueFILE );
 
 /*
 if uniqueFILE is true, then a new FILE will be fopened even if the file
@@ -538,7 +538,7 @@ bool     FS_LoadServerPaks( const char* paks, bool isDemo );
 
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect
 
-qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
+bool   FS_ComparePaks( char *neededpaks, int len, bool dlstring );
 
 void       FS_Rename( const char *from, const char *to );
 
@@ -643,9 +643,9 @@ unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_FilterPath( const char *filter, char *name, int casesensitive );
-qboolean   Com_SafeMode( void );
+bool   Com_SafeMode( void );
 
-qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
+bool   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
 
 void       Com_StartupVariable( const char *match );
 void       Com_SetRecommended( void );
@@ -746,7 +746,7 @@ static inline void Z_Free(void* ptr)
 void     Hunk_Clear( void );
 void     Hunk_ClearToMark( void );
 void     Hunk_SetMark( void );
-qboolean Hunk_CheckMark( void );
+bool Hunk_CheckMark( void );
 
 //void *Hunk_Alloc( int size );
 // void *Hunk_Alloc( int size, ha_pref preference );
@@ -780,11 +780,11 @@ void CL_InitKeyCommands( void );
 
 void     CL_Init( void );
 void     CL_ClearStaticDownload( void );
-void     CL_Disconnect( qboolean showMainMenu );
+void     CL_Disconnect( bool showMainMenu );
 void     CL_SendDisconnect( void );
 void     CL_Shutdown( void );
 void     CL_Frame( int msec );
-void     CL_KeyEvent( int key, qboolean down, unsigned time );
+void     CL_KeyEvent( int key, bool down, unsigned time );
 
 void     CL_CharEvent( int c );
 
@@ -889,11 +889,11 @@ void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2,
 int        Com_EventLoop( void );
 
 void Sys_SendPacket(int length, const void *data, netadr_t to);
-qboolean Sys_GetPacket(netadr_t *net_from, msg_t *net_message);
+bool Sys_GetPacket(netadr_t *net_from, msg_t *net_message);
 
-qboolean Sys_StringToAdr(const char *s, netadr_t *a, netadrtype_t family);
+bool Sys_StringToAdr(const char *s, netadr_t *a, netadrtype_t family);
 
-qboolean Sys_IsLANAddress(netadr_t adr);
+bool Sys_IsLANAddress(netadr_t adr);
 void Sys_ShowIP();
 
 int Sys_Milliseconds( void );

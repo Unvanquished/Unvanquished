@@ -207,8 +207,8 @@ float G_RGSPredictEfficiency( vec3_t origin )
 	VectorCopy( origin, dummy.s.origin );
 	dummy.s.eType = ET_BUILDABLE;
 	dummy.s.modelindex = BA_A_LEECH;
-	dummy.spawned = qtrue;
-	dummy.powered = qtrue;
+	dummy.spawned = true;
+	dummy.powered = true;
 
 	RGSCalculateRate( &dummy );
 
@@ -379,7 +379,7 @@ int G_GetMarkedBuildPointsInt( team_t team )
  * @brief Tests wether a team can afford an amont of build points.
  * @param amount Amount of build points, the sign is discarded.
  */
-qboolean G_CanAffordBuildPoints( team_t team, float amount )
+bool G_CanAffordBuildPoints( team_t team, float amount )
 {
 	float *bp;
 
@@ -389,16 +389,16 @@ qboolean G_CanAffordBuildPoints( team_t team, float amount )
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( fabs( amount ) > *bp )
 	{
-		return qfalse;
+		return false;
 	}
 	else
 	{
-		return qtrue;
+		return true;
 	}
 }
 

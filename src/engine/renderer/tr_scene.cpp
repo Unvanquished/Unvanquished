@@ -366,7 +366,7 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 	}
 
 	Com_Memcpy( &backEndData[ tr.smpFrame ]->entities[ r_numEntities ].e, ent, sizeof( refEntity_t ) );
-	backEndData[ tr.smpFrame ]->entities[ r_numEntities ].lightingCalculated = qfalse;
+	backEndData[ tr.smpFrame ]->entities[ r_numEntities ].lightingCalculated = false;
 
 	r_numEntities++;
 }
@@ -403,8 +403,8 @@ void RE_AddRefLightToScene( const refLight_t *l )
 	light = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
 	Com_Memcpy( &light->l, l, sizeof( light->l ) );
 
-	light->isStatic = qfalse;
-	light->additive = qtrue;
+	light->isStatic = false;
+	light->additive = true;
 
 	if ( light->l.scale <= 0 )
 	{
@@ -418,7 +418,7 @@ void RE_AddRefLightToScene( const refLight_t *l )
 
 	if ( !r_dynamicLightCastShadows->integer && !light->l.inverseShadows )
 	{
-		light->l.noShadows = qtrue;
+		light->l.noShadows = true;
 	}
 }
 
@@ -526,8 +526,8 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 		light->restrictInteractionLast = -1;
 	}
 
-	light->isStatic = qfalse;
-	light->additive = qtrue;
+	light->isStatic = false;
+	light->additive = true;
 
 	if( light->l.inverseShadows )
 		light->l.scale = -intensity;
@@ -593,7 +593,7 @@ void RE_RenderScene( const refdef_t *fd )
 
 	// copy the areamask data over and note if it has changed, which
 	// will force a reset of the visible leafs even if the view hasn't moved
-	tr.refdef.areamaskModified = qfalse;
+	tr.refdef.areamaskModified = false;
 
 	if ( !( tr.refdef.rdflags & RDF_NOWORLDMODEL ) && !( ( tr.refdef.rdflags & RDF_SKYBOXPORTAL ) && tr.world->numSkyNodes > 0 ) )
 	{
@@ -612,7 +612,7 @@ void RE_RenderScene( const refdef_t *fd )
 		if ( areaDiff )
 		{
 			// a door just opened or something
-			tr.refdef.areamaskModified = qtrue;
+			tr.refdef.areamaskModified = true;
 		}
 	}
 
@@ -691,7 +691,7 @@ void RE_RenderScene( const refdef_t *fd )
 	Vector4Set( parms.viewportVerts[ 2 ], parms.viewportX + parms.viewportWidth, parms.viewportY + parms.viewportHeight, 0, 1 );
 	Vector4Set( parms.viewportVerts[ 3 ], parms.viewportX, parms.viewportY + parms.viewportHeight, 0, 1 );
 
-	parms.isPortal = qfalse;
+	parms.isPortal = false;
 
 	parms.fovX = tr.refdef.fov_x;
 	parms.fovY = tr.refdef.fov_y;
@@ -782,7 +782,7 @@ qhandle_t RE_RegisterVisTest( void )
 	}
 
 	memset( test, 0, sizeof( *test ) );
-	test->registered = qtrue;
+	test->registered = true;
 	tr.numVisTests++;
 
 	return hTest + 1;
@@ -821,11 +821,11 @@ void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
 	if ( !VectorCompare( test->position, pos ) || test->depthAdjust != depthAdjust ||
 	     test->area != area )
 	{
-		result->discardExisting = qtrue;
+		result->discardExisting = true;
 	}
 	else
 	{
-		result->discardExisting = qfalse;
+		result->discardExisting = false;
 	}
 
 	VectorCopy( pos, result->position );
@@ -869,7 +869,7 @@ void RE_UnregisterVisTest( qhandle_t hTest )
 		return;
 	}
 
-	tr.visTests[ hTest - 1 ].registered = qfalse;
+	tr.visTests[ hTest - 1 ].registered = false;
 	tr.numVisTests--;
 }
 
@@ -886,7 +886,7 @@ void R_InitVisTests( void )
 
 		glGenQueries( 1, &test->hQuery );
 		glGenQueries( 1, &test->hQueryRef );
-		test->running  = qfalse;
+		test->running  = false;
 	}
 }
 

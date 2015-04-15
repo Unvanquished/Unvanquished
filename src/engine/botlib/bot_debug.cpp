@@ -46,7 +46,7 @@ void DebugDrawQuake::init(BotDebugInterface_t *ref)
 
 void DebugDrawQuake::depthMask(bool state)
 {
-	re->DebugDrawDepthMask( ( qboolean ) ( int ) state );
+	re->DebugDrawDepthMask( ( bool ) ( int ) state );
 }
 
 void DebugDrawQuake::begin(duDebugDrawPrimitives prim, float s)

@@ -693,7 +693,7 @@ ALIGN_STACK int main(int argc, char** argv)
 				FS::PakPath::ClearPaks();
 				FS_LoadBasePak();
 				SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", err.what()));
-				CL_Disconnect(qtrue);
+				CL_Disconnect(true);
 				CL_FlushMemory();
 			}
 		}

@@ -77,7 +77,7 @@ static kbuttons_t dtmapping[] =
 
 void IN_KeyDown( kbutton_t *b )
 {
-	qboolean nokey = ( Cmd_Argc() > 1 );
+	bool nokey = ( Cmd_Argc() > 1 );
 	int      k = nokey ? -1 : Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
 	if ( k == b->down[ 0 ] || k == b->down[ 1 ] )
@@ -107,21 +107,21 @@ void IN_KeyDown( kbutton_t *b )
 	// save timestamp for partial frame summing
 	b->downtime = nokey ? 0 : Key_GetKeyTime();
 
-	b->active = qtrue;
-	b->wasPressed = qtrue;
+	b->active = true;
+	b->wasPressed = true;
 }
 
 void IN_KeyUp( kbutton_t *b )
 {
 	unsigned uptime;
-	qboolean nokey = ( Cmd_Argc() > 1 );
+	bool nokey = ( Cmd_Argc() > 1 );
 	int      k = nokey ? -1 : Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
 	if ( k < 0 )
 	{
 		// typed manually at the console, assume for unsticking, so clear all
 		b->down[ 0 ] = b->down[ 1 ] = 0;
-		b->active = qfalse;
+		b->active = false;
 		return;
 	}
 
@@ -141,7 +141,7 @@ void IN_KeyUp( kbutton_t *b )
 		return; // some other key is still holding it down
 	}
 
-	b->active = qfalse;
+	b->active = false;
 
 	// save timestamp for partial frame summing
 	uptime = nokey ? 0 : Key_GetKeyTime();
@@ -155,7 +155,7 @@ void IN_KeyUp( kbutton_t *b )
 		b->msec += frame_msec / 2;
 	}
 
-	b->active = qfalse;
+	b->active = false;
 }
 
 /*
@@ -335,7 +335,7 @@ void CL_KeyMove( usercmd_t *cmd )
 	if ( !cl.doubleTap.lastdoubleTap || com_frameTime - cl.doubleTap.lastdoubleTap > cl_doubletapdelay->integer + cls.frametime )
 	{
 		int      i;
-		qboolean key_down;
+		bool key_down;
 
 		int          lastKey = 0;
 		unsigned int lastKeyTime = 0;
@@ -648,8 +648,8 @@ void CL_ClearCmdButtons( void )
 {
 	for ( int i = 0; i < USERCMD_BUTTONS; ++i )
 	{
-		kb[ KB_BUTTONS + i ].active = qfalse;
-		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
+		kb[ KB_BUTTONS + i ].active = false;
+		kb[ KB_BUTTONS + i ].wasPressed = false;
 	}
 }
 
@@ -674,7 +674,7 @@ void CL_CmdButtons( usercmd_t *cmd )
 			usercmdPressButton( cmd->buttons, i );
 		}
 
-		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
+		kb[ KB_BUTTONS + i ].wasPressed = false;
 	}
 
 	if ( cls.keyCatchers )
@@ -694,7 +694,7 @@ void CL_CmdButtons( usercmd_t *cmd )
 	{
 		if ( dtmapping[ i ] != KB_BUTTONS )
 		{
-			kb[ dtmapping[ i ] ].wasPressed = qfalse;
+			kb[ dtmapping[ i ] ].wasPressed = false;
 		}
 	}
 }
@@ -814,14 +814,14 @@ void CL_CreateNewCommands( void )
 =================
 CL_ReadyToSendPacket
 
-Returns qfalse if we are over the maxpackets limit
+Returns false if we are over the maxpackets limit
 and should choke back the bandwidth a bit by not sending
 a packet this frame.  All the commands will still get
 delivered in the next packet, but saving a header and
 getting more delta compression will reduce total bandwidth.
 =================
 */
-qboolean CL_ReadyToSendPacket( void )
+bool CL_ReadyToSendPacket( void )
 {
 	int oldPacketNum;
 	int delta;
@@ -829,32 +829,32 @@ qboolean CL_ReadyToSendPacket( void )
 	// don't send anything if playing back a demo
 	if ( clc.demoplaying || cls.state == CA_CINEMATIC )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// If we are downloading, we send no less than 50ms between packets
 	if ( *cls.downloadTempName && cls.realtime - clc.lastPacketSentTime < 50 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// if we don't have a valid gamestate yet, only send
 	// one packet a second
 	if ( cls.state != CA_ACTIVE && cls.state != CA_PRIMED && !*cls.downloadTempName && cls.realtime - clc.lastPacketSentTime < 1000 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// send every frame for loopbacks
 	if ( clc.netchan.remoteAddress.type == NA_LOOPBACK )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// send every frame for LAN
 	if ( Sys_IsLANAddress( clc.netchan.remoteAddress ) )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// check for exceeding cl_maxpackets
@@ -873,10 +873,10 @@ qboolean CL_ReadyToSendPacket( void )
 	if ( delta < 1000 / cl_maxpackets->integer )
 	{
 		// the accumulated commands will go out in the next packet
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -895,13 +895,13 @@ static void CL_WriteBinaryMessage( msg_t *msg )
 
 	if ( ( msg->cursize + clc.binaryMessageLength ) >= msg->maxsize )
 	{
-		clc.binaryMessageOverflowed = qtrue;
+		clc.binaryMessageOverflowed = true;
 		return;
 	}
 
 	MSG_WriteData( msg, clc.binaryMessage, clc.binaryMessageLength );
 	clc.binaryMessageLength = 0;
-	clc.binaryMessageOverflowed = qfalse;
+	clc.binaryMessageOverflowed = false;
 }
 
 /*
@@ -1173,7 +1173,7 @@ void IN_BuiltinButtonCommand( void )
 {
 	int i = 0;
 	const char* name = Cmd_Argv( 0 );
-	qboolean isPlus = ( name[0] == '+' );
+	bool isPlus = ( name[0] == '+' );
 	int key = -1;
 
 	//Remove the modifier
@@ -1226,7 +1226,7 @@ void IN_KeysUp_f( void )
 	unsigned int check;
 	int key, time;
 	int i;
-	qboolean first = qtrue;
+	bool first = true;
 
 	check = atoi( Cmd_Argv( 1 ) );
 	key   = atoi( Cmd_Argv( 2 ) );
@@ -1239,7 +1239,7 @@ void IN_KeysUp_f( void )
 			if ( first )
 			{
 				Cmd::ExecuteCommand(va("setkeydata %d %d %u", check, key + 1, time));
-				first = qfalse;
+				first = false;
 			}
 
 			Cmd::ExecuteCommand(va("-%s", registeredButtonCommands[ i ] + 1)); // command name includes '+'
@@ -1253,7 +1253,7 @@ void IN_KeysUp_f( void )
 			if ( first )
 			{
 				Cmd::ExecuteCommand(va("setkeydata %d %d %u", check, key + 1, time));
-				first = qfalse;
+				first = false;
 			}
 
 			Cmd::ExecuteCommand(va("-%s", builtinButtonCommands[i].name)); // command name doesn't include '+'

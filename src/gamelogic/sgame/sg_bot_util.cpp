@@ -264,21 +264,21 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 }
 
 
-qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
+bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
 	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass,
 	                                  self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
 }
 
-qboolean WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
+bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
 {
 	if ( ps->ammo <= 0 && ps->clips <= 0 && !BG_Weapon( weapon )->infiniteAmmo )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -595,7 +595,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 	}
 }
 
-qboolean BotEntityIsVisible( gentity_t *self, gentity_t *target, int mask )
+bool BotEntityIsVisible( gentity_t *self, gentity_t *target, int mask )
 {
 	botTarget_t bt;
 	BotSetTarget( &bt, target, NULL );
@@ -610,7 +610,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	gentity_t *bestInvisibleEnemy = NULL;
 	gentity_t *target;
 	team_t    team = BotGetEntityTeam( self );
-	qboolean  hasRadar = ( team == TEAM_ALIENS ) ||
+	bool  hasRadar = ( team == TEAM_ALIENS ) ||
 	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
 	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
@@ -802,28 +802,28 @@ void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos )
 	{
 		target->ent = ent;
 		VectorClear( target->coord );
-		target->inuse = qtrue;
+		target->inuse = true;
 	}
 	else if ( pos )
 	{
 		target->ent = NULL;
 		VectorCopy( pos, target->coord );
-		target->inuse = qtrue;
+		target->inuse = true;
 	}
 	else
 	{
 		target->ent = NULL;
 		VectorClear( target->coord );
-		target->inuse = qfalse;
+		target->inuse = false;
 	}
 }
 
-qboolean BotTargetIsEntity( botTarget_t target )
+bool BotTargetIsEntity( botTarget_t target )
 {
 	return ( target.ent && target.ent->inuse );
 }
 
-qboolean BotTargetIsPlayer( botTarget_t target )
+bool BotTargetIsPlayer( botTarget_t target )
 {
 	return ( target.ent && target.ent->inuse && target.ent->client );
 }
@@ -978,38 +978,38 @@ int BotGetTargetType( botTarget_t target )
 	}
 }
 
-qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
+bool BotChangeGoal( gentity_t *self, botTarget_t target )
 {
 	if ( !target.inuse )
 	{
-		return qfalse;
+		return false;
 	}
 
-	if ( !FindRouteToTarget( self, target, qfalse ) )
+	if ( !FindRouteToTarget( self, target, false ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	self->botMind->goal = target;
-	self->botMind->nav.directPathToGoal = qfalse;
-	return qtrue;
+	self->botMind->nav.directPathToGoal = false;
+	return true;
 }
 
-qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
+bool BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
 {
 	botTarget_t target;
 	BotSetTarget( &target, goal, NULL );
 	return BotChangeGoal( self, target );
 }
 
-qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
+bool BotChangeGoalPos( gentity_t *self, vec3_t goal )
 {
 	botTarget_t target;
 	BotSetTarget( &target, NULL, goal );
 	return BotChangeGoal( self, target );
 }
 
-qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
+bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 {
 	float range, secondaryRange;
 	vec3_t forward, right, up;
@@ -1166,15 +1166,15 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
 		&& Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
-qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
+bool BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 {
 	trace_t trace;
 	vec3_t  muzzle, targetPos;
@@ -1186,7 +1186,7 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 
 	if ( !trap_InPVS( muzzle, targetPos ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	trap_Trace( &trace, muzzle, NULL, NULL, targetPos, self->s.number, mask,
@@ -1194,16 +1194,16 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//target is in range
 	if ( ( trace.entityNum == BotGetTargetEntityNumber( target ) || trace.fraction == 1.0f ) &&
 	     !trace.startsolid )
 	{
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 /*
  = *=======================
@@ -1386,7 +1386,7 @@ int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 	return numBots;
 }
 
-qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
+bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 {
 	//this function only checks if there are Humans in the SpawnQueue
 	//which are behind the bot
@@ -1401,7 +1401,7 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 
 	i = sq->front;
@@ -1441,15 +1441,15 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 
 	if ( botPos < lastPlayerPos )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
-qboolean BotTeamateHasWeapon( gentity_t *self, int weapon )
+bool BotTeamateHasWeapon( gentity_t *self, int weapon )
 {
 	int botNumbers[MAX_CLIENTS];
 	int i;
@@ -1464,10 +1464,10 @@ qboolean BotTeamateHasWeapon( gentity_t *self, int weapon )
 		}
 		if ( BG_InventoryContainsWeapon( weapon, bot->client->ps.stats ) )
 		{
-			return qtrue;
+			return true;
 		}
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1490,7 +1490,7 @@ void BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer )
 		usercmdPressButton( botCmdBuffer->buttons, BUTTON_USE_HOLDABLE );
 	}
 }
-void BotClassMovement( gentity_t *self, qboolean inAttackRange )
+void BotClassMovement( gentity_t *self, bool inAttackRange )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
@@ -1714,7 +1714,7 @@ void BotFireWeaponAI( gentity_t *self )
 	}
 }
 
-qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
+bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 {
 	int clientNum;
 	int i;
@@ -1729,7 +1729,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	clientNum = ent->client - level.clients;
@@ -1754,13 +1754,13 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
 				( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
 			{
-				return qfalse;
+				return false;
 			}
 		}
 
 		if ( !G_ActiveOvermind() )
 		{
-			return qfalse;
+			return false;
 		}
 
 		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ] );
@@ -1783,29 +1783,29 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 				}
 
 				//remove credit
-				G_AddCreditToClient( ent->client, -( short )numLevels, qtrue );
+				G_AddCreditToClient( ent->client, -( short )numLevels, true );
 				ent->client->pers.classSelection = newClass;
 				BotSetNavmesh( ent, newClass );
-				ClientUserinfoChanged( clientNum, qfalse );
+				ClientUserinfoChanged( clientNum, false );
 				VectorCopy( infestOrigin, ent->s.pos.trBase );
 				ClientSpawn( ent, ent, ent->s.pos.trBase, ent->s.apos.trBase );
 
 				//trap_SendServerCommand( -1, va( "print \"evolved to %s\n\"", classname) );
 
-				return qtrue;
+				return true;
 			}
 			else
 				//trap_SendServerCommand( -1, va( "print \"Not enough evos to evolve to %s\n\"", classname) );
 			{
-				return qfalse;
+				return false;
 			}
 		}
 		else
 		{
-			return qfalse;
+			return false;
 		}
 	}
-	return qfalse;
+	return false;
 }
 
 //Cmd_Buy_f ripoff, weapon version
@@ -1863,14 +1863,14 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		self->client->ps.stats[ STAT_MISC ] = 0;
 
 		//subtract from funds
-		G_AddCreditToClient( self->client, -( short )BG_Weapon( weapon )->price, qfalse );
+		G_AddCreditToClient( self->client, -( short )BG_Weapon( weapon )->price, false );
 	}
 	else
 	{
 		return;
 	}
 	//update ClientInfo
-	ClientUserinfoChanged( self->client->ps.clientNum, qfalse );
+	ClientUserinfoChanged( self->client->ps.clientNum, false );
 }
 void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 {
@@ -1955,7 +1955,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		BG_AddUpgradeToInventory( upgrade, self->client->ps.stats );
 
 		//subtract from funds
-		G_AddCreditToClient( self->client, -( short )BG_Upgrade( upgrade )->price, qfalse );
+		G_AddCreditToClient( self->client, -( short )BG_Upgrade( upgrade )->price, false );
 	}
 	else
 	{
@@ -1963,7 +1963,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	}
 
 	//update ClientInfo
-	ClientUserinfoChanged( self->client->ps.clientNum, qfalse );
+	ClientUserinfoChanged( self->client->ps.clientNum, false );
 }
 void BotSellWeapons( gentity_t *self )
 {
@@ -1996,7 +1996,7 @@ void BotSellWeapons( gentity_t *self )
 			self->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
 
 			//add to funds
-			G_AddCreditToClient( self->client, ( short )BG_Weapon( ( weapon_t ) i )->price, qfalse );
+			G_AddCreditToClient( self->client, ( short )BG_Weapon( ( weapon_t ) i )->price, false );
 		}
 
 		//if we have this weapon selected, force a new selection
@@ -2045,11 +2045,11 @@ void BotSellAll( gentity_t *self )
 			BG_RemoveUpgradeFromInventory( i, self->client->ps.stats );
 
 			//add to funds
-			G_AddCreditToClient( self->client, ( short )BG_Upgrade( ( upgrade_t )i )->price, qfalse );
+			G_AddCreditToClient( self->client, ( short )BG_Upgrade( ( upgrade_t )i )->price, false );
 		}
 	}
 	//update ClientInfo
-	ClientUserinfoChanged( self->client->ps.clientNum, qfalse );
+	ClientUserinfoChanged( self->client->ps.clientNum, false );
 }
 
 void BotSetSkillLevel( gentity_t *self, int skill )
@@ -2106,41 +2106,41 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 	return NULL;
 }
 
-qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
+bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 {
 	if ( !enemy->inuse )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( enemy->health <= 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//ignore buildings if we cant attack them
 	if ( enemy->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
 	                                         self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( BotGetEntityTeam( enemy ) == self->client->pers.team )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( BotGetEntityTeam( enemy ) == TEAM_NONE )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( enemy->client && enemy->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 void BotPain( gentity_t *self, gentity_t *attacker, int damage )

@@ -129,7 +129,7 @@ team_t G_Team( gentity_t *ent )
 	}
 }
 
-qboolean G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
+bool G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
 	team_t team1 = G_Team( ent1 );
 	return ( team1 != TEAM_NONE && team1 == G_Team( ent2 ) );
@@ -221,7 +221,7 @@ void G_LeaveTeam( gentity_t *self )
 	// stop any following clients
 	G_StopFromFollowing( self );
 
-	G_Vote( self, team, qfalse );
+	G_Vote( self, team, false );
 	self->suicideTime = 0;
 
 	for ( i = 0; i < level.num_entities; i++ )
@@ -297,7 +297,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	{
 		if ( ent->client->noclip )
 		{
-			ent->client->noclip = qfalse;
+			ent->client->noclip = false;
 			ent->r.contents = ent->client->cliprcontents;
 		}
 		ent->flags &= ~( FL_GODMODE | FL_NOTARGET );
@@ -309,7 +309,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	// Update PERS_UNLOCKABLES in the same frame as PERS_TEAM to prevent bad status change notifications
 	ent->client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( newTeam );
 
-	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+	ClientUserinfoChanged( ent->client->ps.clientNum, false );
 
 	G_UpdateTeamConfigStrings();
 

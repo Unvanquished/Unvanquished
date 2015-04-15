@@ -253,7 +253,7 @@ static void R_SetAttributeLayoutsPosition( VBO_t *vbo )
 	vbo->vertexesSize = sizeof( vec3_t ) * vbo->vertexesNum;
 }
 
-static void R_SetVBOAttributeLayouts( VBO_t *vbo, qboolean noLightCoords )
+static void R_SetVBOAttributeLayouts( VBO_t *vbo, bool noLightCoords )
 {
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
@@ -496,7 +496,7 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_DYNAMIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo, qfalse );
+	R_SetVBOAttributeLayouts( vbo, false );
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
@@ -613,7 +613,7 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, shaderVertex_t *ve
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_STATIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo, qfalse );
+	R_SetVBOAttributeLayouts( vbo, false );
 	
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
@@ -881,7 +881,7 @@ static void R_InitUnitCubeVBO( void )
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 
-	Tess_MapVBOs( qtrue );
+	Tess_MapVBOs( true );
 
 	Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
 
@@ -1032,7 +1032,7 @@ Tess_MapVBOs
 Map the default VBOs
 ==============
 */
-void Tess_MapVBOs( qboolean forceCPU ) {
+void Tess_MapVBOs( bool forceCPU ) {
 	if( forceCPU || !glConfig2.mapBufferRangeAvailable ) {
 		// use host buffers
 		tess.verts = tess.vertsBuffer;

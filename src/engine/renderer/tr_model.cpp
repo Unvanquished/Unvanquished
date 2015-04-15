@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LL(x) x = LittleLong(x)
 #define LF(x) x = LittleFloat(x)
 
-qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
-qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
-qboolean R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
+bool R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
+bool R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
+bool R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
 
 model_t  *loadmodel;
 
@@ -91,7 +91,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	int       bufferLen = 0;
 	int       lod;
 	int       ident;
-	qboolean  loaded;
+	bool  loaded;
 	qhandle_t hModel;
 	int       numLoaded;
 
@@ -145,7 +145,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	{
 		// try loading skeletal file
 
-		loaded = qfalse;
+		loaded = false;
 		bufferLen = ri.FS_ReadFile( name, ( void ** ) &buffer );
 
 		if ( buffer )
@@ -267,11 +267,11 @@ fail:
 /*
 ** RE_BeginRegistration
 */
-qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out )
+bool RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out )
 {
 	if ( !R_Init() )
 	{
-		return qfalse;
+		return false;
 	}
 
 	*glconfigOut = glConfig;
@@ -292,16 +292,16 @@ qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Ou
 	tr.worldEntity.e.shaderRGBA[ 2 ] = 255;
 	tr.worldEntity.e.shaderRGBA[ 3 ] = 255;
 
-	tr.worldEntity.e.nonNormalizedAxes = qfalse;
+	tr.worldEntity.e.nonNormalizedAxes = false;
 
-	tr.registered = qtrue;
+	tr.registered = true;
 
 	// NOTE: this sucks, for some reason the first stretch pic is never drawn
 	// without this we'd see a white flash on a level load because the very
 	// first time the level shot would not be drawn
 	RE_StretchPic( 0, 0, 0, 0, 0, 0, 1, 1, 0 );
 
-	return qtrue;
+	return true;
 }
 
 //=============================================================================
@@ -333,15 +333,15 @@ void R_Modellist_f( void )
 	model_t  *mod;
 	int      total;
 	int      totalDataSize;
-	qboolean showFrames;
+	bool showFrames;
 
 	if ( !strcmp( ri.Cmd_Argv( 1 ), "frames" ) )
 	{
-		showFrames = qtrue;
+		showFrames = true;
 	}
 	else
 	{
-		showFrames = qfalse;
+		showFrames = false;
 	}
 
 	total = 0;

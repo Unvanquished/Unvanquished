@@ -28,10 +28,10 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  * @brief Given an origin, a target point, an initial velocity v0, and a gravity g,
  *        calculate the two possible pitch angles and corresponding directions for
  *        reaching the target on a parabolic trajectory.
- * @return qtrue when angles contains the two possible pitch angles and dir1 and dir2
- *         contain the corresponding directions. qfalse when the target is out of reach.
+ * @return true when angles contains the two possible pitch angles and dir1 and dir2
+ *         contain the corresponding directions. false when the target is out of reach.
  */
-qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
+bool BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 )
 {
 	vec3_t t3;  // target relative to origin in 3D space
@@ -44,7 +44,7 @@ qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
 	// abort if the distance is very small
 	if ( VectorLength( t3 ) < 0.1f )
 	{
-		return qfalse;
+		return false;
 	}
 
 	v02 = v0 * v0;
@@ -60,7 +60,7 @@ qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
 	if ( tmp < 0.0f )
 	{
 		// target not reachable
-		return qfalse;
+		return false;
 	}
 
 	tmp = sqrt( tmp );
@@ -102,7 +102,7 @@ qboolean BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
 	VectorNormalize( dir1 );
 	VectorNormalize( dir2 );
 
-	return qtrue;
+	return true;
 }
 
 void BG_BuildEntityDescription( char *str, size_t size, entityState_t *es )
@@ -111,18 +111,18 @@ void BG_BuildEntityDescription( char *str, size_t size, entityState_t *es )
 	str[ size -1 ] = '\0';
 }
 
-qboolean BG_IsMainStructure( entityState_t *es )
+bool BG_IsMainStructure( entityState_t *es )
 {
-	if ( es->eType != ET_BUILDABLE ) return qfalse;
+	if ( es->eType != ET_BUILDABLE ) return false;
 
 	switch ( es->modelindex )
 	{
 		case BA_A_OVERMIND:
 		case BA_H_REACTOR:
-			return qtrue;
+			return true;
 
 		default:
-			return qfalse;
+			return false;
 	}
 }
 

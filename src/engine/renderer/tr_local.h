@@ -290,10 +290,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		l->prev->next = l;
 	}
 
-	static INLINE qboolean StackEmpty( link_t *l )
+	static INLINE bool StackEmpty( link_t *l )
 	{
-		// GCC shit: cannot convert 'bool' to 'qboolean' in return
-		return l->next == l ? qtrue : qfalse;
+		// GCC shit: cannot convert 'bool' to 'bool' in return
+		return l->next == l ? true : false;
 	}
 
 	static INLINE link_t *StackTop( link_t *l )
@@ -342,9 +342,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		return l->numElements;
 	}
 
-	static INLINE qboolean QueueEmpty( link_t *l )
+	static INLINE bool QueueEmpty( link_t *l )
 	{
-		return l->prev == l ? qtrue : qfalse;
+		return l->prev == l ? true : false;
 	}
 
 	static INLINE void EnQueue( link_t *sentinel, void *data )
@@ -388,9 +388,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		refLight_t l;
 
 		// local
-		qboolean     isStatic; // loaded from the BSP entities lump
-		qboolean     noRadiosity; // this is a pure realtime light that was not considered by XMap2
-		qboolean     additive; // texture detail is lost tho when the lightmap is dark
+		bool     isStatic; // loaded from the BSP entities lump
+		bool     noRadiosity; // this is a pure realtime light that was not considered by XMap2
+		bool     additive; // texture detail is lost tho when the lightmap is dark
 		vec3_t       origin; // l.origin + rotated l.center
 		vec3_t       transformed; // origin in local coordinate system
 		vec3_t       direction; // for directional lights (sun)
@@ -444,7 +444,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		uint16_t                  numInteractions; // total interactions
 		uint16_t                  numShadowOnlyInteractions;
 		uint16_t                  numLightOnlyInteractions;
-		qboolean                  noSort; // don't sort interactions by material
+		bool                  noSort; // don't sort interactions by material
 
 		link_t                    leafs;
 
@@ -460,7 +460,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		// local
 		float        axisLength; // compensate for non-normalized axis
-		qboolean     lightingCalculated;
+		bool     lightingCalculated;
 		vec3_t       lightDir; // normalized direction towards light
 		vec3_t       ambientLight; // color normalized to 0-1
 		vec3_t       directedLight;
@@ -691,7 +691,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int	numFrames;
 		int     numVerts;
-		qboolean noLightCoords;
+		bool noLightCoords;
 	} vboData_t;
 
 	typedef struct VBO_s
@@ -767,8 +767,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		uint16_t             index;
 
-		qboolean             clamp;
-		qboolean             snap;
+		bool             clamp;
+		bool             snap;
 
 		float                *values;
 		uint16_t             numValues;
@@ -919,7 +919,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		expOperation_t ops[ MAX_EXPRESSION_OPS ];
 		uint8_t        numOps;
 
-		qboolean       active; // no parsing problems
+		bool       active; // no parsing problems
 	} expression_t;
 
 	typedef struct
@@ -1021,7 +1021,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		texModInfo_t *texMods;
 
 		int          videoMapHandle;
-		qboolean     isVideoMap;
+		bool     isVideoMap;
 	} textureBundle_t;
 
 	typedef enum
@@ -1068,7 +1068,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	{
 		stageType_t     type;
 
-		qboolean        active;
+		bool        active;
 
 		textureBundle_t bundle[ MAX_TEXTURE_BUNDLES ];
 
@@ -1087,24 +1087,24 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		expression_t    alphaTestExp;
 
-		qboolean        tcGen_Environment;
-		qboolean        tcGen_Lightmap;
+		bool        tcGen_Environment;
+		bool        tcGen_Lightmap;
 
 		byte            constantColor[ 4 ]; // for CGEN_CONST and AGEN_CONST
 
 		uint32_t        stateBits; // GLS_xxxx mask
 
-		qboolean        overrideNoPicMip; // for images that must always be full resolution
-		qboolean        overrideFilterType; // for console fonts, 2D elements, etc.
+		bool        overrideNoPicMip; // for images that must always be full resolution
+		bool        overrideFilterType; // for console fonts, 2D elements, etc.
 		filterType_t    filterType;
-		qboolean        overrideWrapType;
+		bool        overrideWrapType;
 		wrapType_t      wrapType;
 
-		qboolean        uncompressed;
-		qboolean        highQuality;
-		qboolean        forceHighQuality;
+		bool        uncompressed;
+		bool        highQuality;
+		bool        forceHighQuality;
 
-		qboolean        hasDepthFade; // for soft particles
+		bool        hasDepthFade; // for soft particles
 		float           depthFadeValue;
 
 		expression_t    refractionIndexExp;
@@ -1129,7 +1129,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		expression_t    wrapAroundLightingExp;
 
-		qboolean        noFog; // used only for shaders that have fog disabled, so we can enable it for individual stages
+		bool        noFog; // used only for shaders that have fog disabled, so we can enable it for individual stages
 	} shaderStage_t;
 
 	struct shaderCommands_s;
@@ -1181,51 +1181,51 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		float        sort; // lower numbered shaders draw before higher numbered
 
-		qboolean     defaultShader; // we want to return index 0 if the shader failed to
+		bool     defaultShader; // we want to return index 0 if the shader failed to
 		// load for some reason, but R_FindShader should
 		// still keep a name allocated for it, so if
 		// something calls RE_RegisterShader again with
 		// the same name, we don't try looking for it again
 
-		qboolean       createdByGuide; // created using a shader .guide template
+		bool       createdByGuide; // created using a shader .guide template
 
 		int            surfaceFlags;
 		int            contentFlags;
 
-		qboolean       entityMergable; // merge across entites optimizable (smoke, blood)
-		qboolean       alphaTest; // helps merging shadowmap generating surfaces
+		bool       entityMergable; // merge across entites optimizable (smoke, blood)
+		bool       alphaTest; // helps merging shadowmap generating surfaces
 
 		fogParms_t     fogParms;
 		fogPass_t      fogPass; // draw a blended pass, possibly with depth test equals
-		qboolean       noFog;
+		bool       noFog;
 
-		qboolean       parallax; // material has normalmaps suited for parallax mapping
+		bool       parallax; // material has normalmaps suited for parallax mapping
 
-		qboolean       noShadows;
-		qboolean       fogLight;
-		qboolean       blendLight;
-		qboolean       ambientLight;
-		qboolean       translucent;
-		qboolean       forceOpaque;
-		qboolean       isSky;
+		bool       noShadows;
+		bool       fogLight;
+		bool       blendLight;
+		bool       ambientLight;
+		bool       translucent;
+		bool       forceOpaque;
+		bool       isSky;
 		skyParms_t     sky;
 
 		float          portalRange; // distance to fog out at
-		qboolean       isPortal;
+		bool       isPortal;
 
 		collapseType_t collapseType;
 		int            collapseTextureEnv; // 0, GL_MODULATE, GL_ADD (FIXME: put in stage)
 
 		cullType_t     cullType; // CT_FRONT_SIDED, CT_BACK_SIDED, or CT_TWO_SIDED
-		qboolean       polygonOffset; // set for decals and other items that must be offset
+		bool       polygonOffset; // set for decals and other items that must be offset
 		float          polygonOffsetValue;
 
-		qboolean       uncompressed;
-		qboolean       noPicMip; // for images that must always be full resolution
+		bool       uncompressed;
+		bool       noPicMip; // for images that must always be full resolution
 		filterType_t   filterType; // for console fonts, 2D elements, etc.
 		wrapType_t     wrapType;
 
-		qboolean        interactLight; // this shader can interact with light shaders
+		bool        interactLight; // this shader can interact with light shaders
 
 		int		autoSpriteMode;
 
@@ -1353,7 +1353,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		// 1 bits will prevent the associated area from rendering at all
 		byte     areamask[ MAX_MAP_AREA_BYTES ];
-		qboolean areamaskModified; // qtrue if areamask changed since last scene
+		bool areamaskModified; // true if areamask changed since last scene
 
 		float    floatTime; // tr.refdef.time / 1000.0
 
@@ -1401,7 +1401,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec3_t   mins, maxs;
 		vec3_t   center;
 		float    radius, radius2;
-		qboolean omnidirectional;
+		bool omnidirectional;
 		int      numPlanes; // either 5 or 6, for quad or triangle projectors
 		vec4_t   planes[ 6 ];
 		vec4_t   texMat[ 3 ][ 2 ];
@@ -1416,7 +1416,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec3_t   transformed; // origin in local coordinate system
 		float    scale; // uses r_flaresize as the baseline (1.0)
 		int      id;
-		qboolean visible; // still send the corona request, even if not visible, for proper fading
+		bool visible; // still send the corona request, even if not visible, for proper fading
 	} corona_t;
 
 //=================================================================================
@@ -1461,7 +1461,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		fogParms_t fogParms;
 
 		// for clipping distance in fog when outside
-		qboolean hasSurface;
+		bool hasSurface;
 		float    surface[ 4 ];
 	} fog_t;
 
@@ -1472,8 +1472,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		vec3_t         pvsOrigin; // may be different than or.origin for portals
 
-		qboolean       isPortal; // true if this view is through a portal
-		qboolean       isMirror; // the portal is a mirror, invert the face culling
+		bool       isPortal; // true if this view is through a portal
+		bool       isMirror; // the portal is a mirror, invert the face culling
 
 		int            frameSceneNum; // copied from tr.frameSceneNum
 		int            frameCount; // copied from tr.frameCount
@@ -1642,8 +1642,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		struct bspSurface_s       *surface;
 
 		byte                      cubeSideBits;
-		qboolean                  redundant;
-		qboolean                  mergedIntoVBO;
+		bool                  redundant;
+		bool                  mergedIntoVBO;
 
 		struct interactionCache_s *next;
 	} interactionCache_t;
@@ -1684,9 +1684,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	typedef struct
 	{
 		int      numDegenerated; // number of bad triangles
-		qboolean degenerated[ SHADER_MAX_TRIANGLES ];
+		bool degenerated[ SHADER_MAX_TRIANGLES ];
 
-		qboolean facing[ SHADER_MAX_TRIANGLES ];
+		bool facing[ SHADER_MAX_TRIANGLES ];
 		int      numFacing; // number of triangles facing the light origin
 
 		int      numIndexes;
@@ -1752,7 +1752,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	typedef struct
 	{
 		int      indexes[ 3 ];
-		qboolean facingLight;
+		bool facingLight;
 	} srfTriangle_t;
 
 // ydnar: plain map drawsurfaces must match this header
@@ -2058,7 +2058,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		char     *entityString;
 		char     *entityParsePoint;
 
-		qboolean hasSkyboxPortal;
+		bool hasSkyboxPortal;
 	} world_t;
 
 	/*
@@ -2343,7 +2343,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	{
 		int         indexes[ 3 ];
 		md5Vertex_t *vertexes[ 3 ];
-		qboolean    referenced;
+		bool    referenced;
 	} skelTriangle_t;
 
 //======================================================================
@@ -2456,7 +2456,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		matrix_t        projectionMatrix[ MAX_GLSTACK ];
 		matrix_t        modelViewProjectionMatrix[ MAX_GLSTACK ];
 
-		qboolean        finishCalled;
+		bool        finishCalled;
 		int             faceCulling; // FIXME redundant cullFace
 		uint32_t        glStateBits;
 		uint32_t        vertexAttribsState;
@@ -2507,7 +2507,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	typedef struct
 	{
 		GLuint   hQuery, hQueryRef;
-		qboolean running;
+		bool running;
 	} visTestQueries_t;
 
 // all state modified by the back end is separated
@@ -2520,15 +2520,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		orientationr_t    orientation;
 		backEndCounters_t pc;
 		visTestQueries_t  visTestQueries[ MAX_VISTESTS ];
-		qboolean          isHyperspace;
-		qboolean          depthRenderImageValid;
+		bool          isHyperspace;
+		bool          depthRenderImageValid;
 		trRefEntity_t     *currentEntity;
 		trRefLight_t      *currentLight; // only used when lighting interactions
-		qboolean          skyRenderedThisView; // flag for drawing sun
+		bool          skyRenderedThisView; // flag for drawing sun
 
-		qboolean          projection2D; // if qtrue, drawstretchpic doesn't need to change modes
+		bool          projection2D; // if true, drawstretchpic doesn't need to change modes
 		u8vec4_t          color2D;
-		qboolean          vertexes2D; // shader needs to be finished
+		bool          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 	} backEndState_t;
 
@@ -2537,7 +2537,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec3_t   position;
 		float    depthAdjust;
 		float    area;
-		qboolean registered;
+		bool registered;
 		float    lastResult;
 	} visTest_t;
 
@@ -2548,7 +2548,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float     depthAdjust; // move position this distance to camera
 		float     area; // size of the quad used to test vis
 
-		qboolean  discardExisting; // true if the currently running vis test should be discarded
+		bool  discardExisting; // true if the currently running vis test should be discarded
 
 		float     lastResult; // updated by backend
 	} visTestResult_t;
@@ -2564,7 +2564,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	typedef struct
 	{
-		qboolean status;
+		bool status;
 		int       x;
 		int       y;
 		int       w;
@@ -2581,7 +2581,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	*/
 	typedef struct
 	{
-		qboolean registered; // cleared at shutdown, set at beginRegistration
+		bool registered; // cleared at shutdown, set at beginRegistration
 
 		int      visIndex;
 		int      visClusters[ MAX_VISCOUNTS ];
@@ -2598,9 +2598,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int        frameSceneNum; // zeroed at RE_BeginFrame
 
-		qboolean   worldMapLoaded;
-		qboolean   worldDeluxeMapping;
-		qboolean   worldHDR_RGBE;
+		bool   worldMapLoaded;
+		bool   worldDeluxeMapping;
+		bool   worldHDR_RGBE;
 		world_t    *world;
 
 		const byte *externalVisData; // from RE_SetWorldVisData, shared with CM_Load
@@ -3053,7 +3053,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void           R_SetupFrustum2( frustum_t frustum, const matrix_t modelViewProjectionMatrix );
 	void           R_CalcFrustumNearCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
 	void           R_CalcFrustumFarCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
-	qboolean       R_CompareVert( srfVert_t *v1, srfVert_t *v2, qboolean checkst );
+	bool       R_CompareVert( srfVert_t *v1, srfVert_t *v2, bool checkst );
 
 	/* Tangent/normal vector calculation functions */
 	void R_CalcFaceNormal( vec3_t normal, const vec3_t v0,
@@ -3098,11 +3098,11 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void     R_DebugAxis( const vec3_t origin, const matrix_t transformMatrix );
 	void     R_DebugBoundingBox( const vec3_t origin, const vec3_t mins, const vec3_t maxs, vec4_t color );
 	void     R_DebugPolygon( int color, int numPoints, float *points );
-	void     R_DebugText( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
+	void     R_DebugText( const vec3_t org, float r, float g, float b, const char *text, bool neverOcclude );
 
 	void     DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv);
 	void     DebugDrawBegin( debugDrawMode_t mode, float size );
-	void     DebugDrawDepthMask(qboolean state);
+	void     DebugDrawDepthMask(bool state);
 	void     DebugDrawEnd( void );
 	/*
 	====================================================================
@@ -3160,25 +3160,25 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	====================================================================
 	*/
 
-	void      RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
-	void      RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty );
+	void      RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, bool dirty );
+	void      RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, bool dirty );
 
 	void      RE_BeginFrame( void );
-	qboolean  RE_BeginRegistration( glconfig_t *glconfig, glconfig2_t *glconfig2 );
+	bool  RE_BeginRegistration( glconfig_t *glconfig, glconfig2_t *glconfig2 );
 	void      RE_LoadWorldMap( const char *mapname );
 	void      RE_SetWorldVisData( const byte *vis );
 	qhandle_t RE_RegisterModel( const char *name );
 	qhandle_t RE_RegisterSkin( const char *name );
-	void      RE_Shutdown( qboolean destroyWindow );
+	void      RE_Shutdown( bool destroyWindow );
 
-	qboolean   R_GetEntityToken( char *buffer, int size );
+	bool   R_GetEntityToken( char *buffer, int size );
 	float      R_ProcessLightmap( byte *pic, int in_padding, int width, int height, int bits, byte *pic_out );  // Arnout
 
 	model_t    *R_AllocModel( void );
 
-	qboolean   R_Init( void );
+	bool   R_Init( void );
 
-	qboolean   R_GetModeInfo( int *width, int *height, float *windowAspect, int mode );
+	bool   R_GetModeInfo( int *width, int *height, float *windowAspect, int mode );
 
 	void       R_ImageList_f( void );
 	void       R_SkinList_f( void );
@@ -3223,7 +3223,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
 	qhandle_t RE_GenerateTexture( const byte *pic, int width, int height );
 
-	image_t *R_AllocImage( const char *name, qboolean linkIntoHashTable );
+	image_t *R_AllocImage( const char *name, bool linkIntoHashTable );
 	void    R_UploadImage( const byte **dataArray, int numLayers, int numMips, image_t *image );
 
 	void    RE_GetTextureSize( int textureID, int *width, int *height );
@@ -3241,7 +3241,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	*/
 	qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
 	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image );
-	qboolean  RE_LoadDynamicShader( const char *shadername, const char *shadertext );
+	bool  RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 
 	shader_t  *R_FindShader( const char *name, shaderType_t type,
 				 RegisterShaderFlags_t flags );
@@ -3261,12 +3261,12 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	====================================================================
 	*/
 
-	qboolean GLimp_Init( void );
+	bool GLimp_Init( void );
 	void     GLimp_Shutdown( void );
 	void     GLimp_EndFrame( void );
 	void     GLimp_HandleCvars( void );
 
-	qboolean GLimp_SpawnRenderThread( void ( *function )( void ) );
+	bool GLimp_SpawnRenderThread( void ( *function )( void ) );
 	void     GLimp_ShutdownRenderThread( void );
 	void     *GLimp_RendererSleep( void );
 	void     GLimp_FrontEndSleep( void );
@@ -3286,7 +3286,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	typedef struct stageVars
 	{
 		vec4_t   color;
-		qboolean texMatricesChanged[ MAX_TEXTURE_BUNDLES ];
+		bool texMatricesChanged[ MAX_TEXTURE_BUNDLES ];
 		matrix_t texMatrices[ MAX_TEXTURE_BUNDLES ];
 	} stageVars_t;
 
@@ -3333,8 +3333,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		shader_t    *surfaceShader;
 		shader_t    *lightShader;
 
-		qboolean    skipTangentSpaces;
-		qboolean    skipVBO;
+		bool    skipTangentSpaces;
+		bool    skipVBO;
 		int16_t     lightmapNum;
 		int16_t     fogNum;
 
@@ -3346,13 +3346,13 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		glIndex_t    *multiDrawIndexes[ MAX_MULTIDRAW_PRIMITIVES ];
 		int         multiDrawCounts[ MAX_MULTIDRAW_PRIMITIVES ];
 
-		qboolean    vboVertexSkinning;
+		bool    vboVertexSkinning;
 		int         numBones;
 		transform_t bones[ MAX_BONES ];
 
-		qboolean    vboVertexAnimation;
-		qboolean    vboVertexSprite;
-		qboolean    buildingVBO;
+		bool    vboVertexAnimation;
+		bool    vboVertexSprite;
+		bool    buildingVBO;
 
 		// info extracted from current shader or backend mode
 		void ( *stageIteratorFunc )( void );
@@ -3381,8 +3381,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void Tess_Begin( void ( *stageIteratorFunc )( void ),
 	                 void ( *stageIteratorFunc2 )( void ),
 	                 shader_t *surfaceShader, shader_t *lightShader,
-	                 qboolean skipTangentSpaces,
-	                 qboolean skipVBO,
+	                 bool skipTangentSpaces,
+	                 bool skipVBO,
 	                 int lightmapNum,
 	                 int     fogNum );
 
@@ -3404,7 +3404,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color );
 	void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color, float s1, float t1, float s2, float t2 );
 
-	void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2, qboolean calcNormals );
+	void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2, bool calcNormals );
 	void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const vec4_t color );
 	void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const vec4_t color );
 
@@ -3419,7 +3419,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color );
 
 	void Tess_InstantQuad( vec4_t quadVerts[ 4 ] );
-	void Tess_MapVBOs( qboolean forceCPU );
+	void Tess_MapVBOs( bool forceCPU );
 	void Tess_UpdateVBOs( void );
 
 	void RB_ShowImages( void );
@@ -3434,8 +3434,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	void     R_AddBSPModelSurfaces( trRefEntity_t *e );
 	void     R_AddWorldSurfaces( void );
-	qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
-	qboolean R_inPVVS( const vec3_t p1, const vec3_t p2 );
+	bool R_inPVS( const vec3_t p1, const vec3_t p2 );
+	bool R_inPVVS( const vec3_t p1, const vec3_t p2 );
 
 	void     R_AddWorldInteractions( trRefLight_t *light );
 	void     R_AddPrecachedWorldInteractions( trRefLight_t *light );
@@ -3477,7 +3477,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void     R_SetupLightFrustum( trRefLight_t *light );
 	void     R_SetupLightProjection( trRefLight_t *light );
 
-	qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, shader_t *surfaceShader, byte cubeSideBits,
+	bool R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, shader_t *surfaceShader, byte cubeSideBits,
 	                                interactionType_t iaType );
 
 	void     R_SortInteractions( trRefLight_t *light );
@@ -3537,7 +3537,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	============================================================
 	*/
-	qboolean R_CheckFBO( const FBO_t *fbo );
+	bool R_CheckFBO( const FBO_t *fbo );
 
 	FBO_t    *R_CreateFBO( const char *name, int width, int height );
 
@@ -3593,8 +3593,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void     RE_ClearDecals( void );
 
 	void     R_TransformDecalProjector( decalProjector_t *in, vec3_t axis[ 3 ], vec3_t origin, decalProjector_t *out );
-	qboolean R_TestDecalBoundingBox( decalProjector_t *dp, vec3_t mins, vec3_t maxs );
-	qboolean R_TestDecalBoundingSphere( decalProjector_t *dp, vec3_t center, float radius2 );
+	bool R_TestDecalBoundingBox( decalProjector_t *dp, vec3_t mins, vec3_t maxs );
+	bool R_TestDecalBoundingSphere( decalProjector_t *dp, vec3_t center, float radius2 );
 
 	void     R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspModel_t *bmodel );
 
@@ -3659,7 +3659,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	int             RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
 	int             RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac,
-	                                  qboolean clearOrigin );
+	                                  bool clearOrigin );
 	int             RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac );
 	int             RE_AnimNumFrames( qhandle_t hAnim );
 	int             RE_AnimFrameRate( qhandle_t hAnim );
@@ -3845,7 +3845,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int      height;
 		byte     *captureBuffer;
 		byte     *encodeBuffer;
-		qboolean motionJpeg;
+		bool motionJpeg;
 	} videoFrameCommand_t;
 
 	typedef struct
@@ -3912,7 +3912,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	extern backEndData_t                *backEndData[ SMP_FRAMES ]; // the second one may not be allocated
 
-	extern volatile qboolean            renderThreadActive;
+	extern volatile bool            renderThreadActive;
 
 	void                                *R_GetCommandBuffer( int bytes );
 	void                                RB_ExecuteRenderCommands( const void *data );
@@ -3931,7 +3931,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
 	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader );
-	void                                RE_ScissorEnable( qboolean enable );
+	void                                RE_ScissorEnable( bool enable );
 	void                                RE_ScissorSet( int x, int y, int w, int h );
 
 	void                                RE_BeginFrame( void );
@@ -3944,7 +3944,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	int                                 SaveJPGToBuffer( byte *buffer, size_t bufferSize, int quality, int image_width, int image_height, byte *image_buffer );
 
 	void                                LoadPNG( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
-	void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip );
+	void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, bool flip );
 
 	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte );
 	void                                LoadDDS( const char *name, byte **pic, int *width, int *height, int *numLayers, int *numMips, int *bits, byte alphaByte);
@@ -3955,7 +3955,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 // video stuff
 	const void *RB_TakeVideoFrameCmd( const void *data );
-	void       RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg );
+	void       RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encodeBuffer, bool motionJpeg );
 
 // cubemap reflections stuff
 	void       R_BuildCubeMaps( void );

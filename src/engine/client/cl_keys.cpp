@@ -48,10 +48,10 @@ key up events are sent even if in console mode
 #define CLIP(t) Maths::clamp( (t), 0, MAX_TEAMS - 1 )
 
 Console::Field g_consoleField(INT_MAX);
-qboolean chat_irc;
+bool chat_irc;
 
-qboolean key_overstrikeMode;
-qboolean bindingsModified;
+bool key_overstrikeMode;
+bool bindingsModified;
 
 int      anykeydown;
 qkey_t   keys[ MAX_KEYS ];
@@ -61,7 +61,7 @@ int      bindTeam = DEFAULT_BINDING;
 static struct {
 	int          key;
 	unsigned int time;
-	qboolean     valid;
+	bool     valid;
 	int          check;
 } plusCommand;
 
@@ -360,8 +360,8 @@ Handles horizontal scrolling and cursor blinking
 x, y, and width are in pixels
 ===================
 */
-void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int size, qboolean showCursor,
-        qboolean noColorEscape, float alpha )
+void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int size, bool showCursor,
+        bool noColorEscape, float alpha )
 {
     //TODO support UTF-8 once LineEditData does
     //Extract the text we want to draw
@@ -374,7 +374,7 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
     // draw the text
     if (size == SMALLCHAR_WIDTH) {
         float color[4] = {1.0, 1.0, 1.0, alpha};
-        SCR_DrawSmallStringExt(x, y, text.c_str(), color, qfalse, noColorEscape);
+        SCR_DrawSmallStringExt(x, y, text.c_str(), color, false, noColorEscape);
     } else {
         SCR_DrawBigString(x, y, text.c_str(), 1.0, noColorEscape);
     }
@@ -414,12 +414,12 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
     }
 }
 
-void Field_Draw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha)
+void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape, float alpha)
 {
 	Field_VariableSizeDraw(edit, x, y, SMALLCHAR_WIDTH, showCursor, noColorEscape, alpha);
 }
 
-void Field_BigDraw(const Util::LineEditData& edit, int x, int y, qboolean showCursor, qboolean noColorEscape)
+void Field_BigDraw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape)
 {
 	Field_VariableSizeDraw(edit, x, y, BIGCHAR_WIDTH, showCursor, noColorEscape, 1.0f);
 }
@@ -738,12 +738,12 @@ void Console_Key( int key )
 
 //============================================================================
 
-qboolean Key_GetOverstrikeMode( void )
+bool Key_GetOverstrikeMode( void )
 {
 	return key_overstrikeMode;
 }
 
-void Key_SetOverstrikeMode( qboolean state )
+void Key_SetOverstrikeMode( bool state )
 {
 	key_overstrikeMode = state;
 }
@@ -753,11 +753,11 @@ void Key_SetOverstrikeMode( qboolean state )
 Key_IsDown
 ===================
 */
-qboolean Key_IsDown( int keynum )
+bool Key_IsDown( int keynum )
 {
 	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
-		return qfalse;
+		return false;
 	}
 
 	return keys[ keynum ].down;
@@ -987,7 +987,7 @@ void Key_SetBinding( int keynum, int team, const char *binding )
 		keys[ keynum ].binding[ team ] = NULL;
 	}
 
-	bindingsModified = qtrue;
+	bindingsModified = true;
 }
 
 /*
@@ -1155,7 +1155,7 @@ void Key_Bind_f( void )
 		}
 		else
 		{
-			qboolean bound = qfalse;
+			bool bound = false;
 			int      i;
 
 			for ( i = 0; i < MAX_TEAMS; ++i )
@@ -1163,7 +1163,7 @@ void Key_Bind_f( void )
 				if ( keys[ b ].binding[ i ] )
 				{
 					Com_Printf( "\"%s\"[%s] = %s\n", key, teamName[ i ], Cmd_QuoteString( keys[ b ].binding[ i ] ) );
-					bound = qtrue;
+					bound = true;
 				}
 			}
 
@@ -1294,13 +1294,13 @@ void Key_Bindlist_f( void )
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		qboolean teamSpecific = qfalse;
+		bool teamSpecific = false;
 
 		for ( team = 1; team < MAX_TEAMS; ++team )
 		{
 			if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
 			{
-				teamSpecific = qtrue;
+				teamSpecific = true;
 				break;
 			}
 		}
@@ -1336,11 +1336,11 @@ void Key_SetKeyData_f(void)
 	{
 		plusCommand.key  = atoi( Cmd_Argv( 2 ) ) - 1;
 		plusCommand.time = atoi( Cmd_Argv( 3 ) );
-		plusCommand.valid = qtrue;
+		plusCommand.valid = true;
 	}
 	else
 	{
-		plusCommand.valid = qfalse;
+		plusCommand.valid = false;
 	}
 }
 
@@ -1749,13 +1749,13 @@ Called by the system for both key up and key down events
 */
 //static consoleCount = 0;
 // fretn
-qboolean consoleButtonWasPressed = qfalse;
+bool consoleButtonWasPressed = false;
 
-void CL_KeyEvent( int key, qboolean down, unsigned time )
+void CL_KeyEvent( int key, bool down, unsigned time )
 {
 	char     *kb;
-	qboolean bypassMenu = qfalse; // NERVE - SMF
-	qboolean onlybinds = qfalse;
+	bool bypassMenu = false; // NERVE - SMF
+	bool onlybinds = false;
 
 	if ( key < 1 )
 	{
@@ -1778,7 +1778,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		case K_KP_HOME:
 			if ( IN_IsNumLockDown() )
 			{
-				onlybinds = qtrue;
+				onlybinds = true;
 			}
 
 			break;
@@ -2030,7 +2030,7 @@ void Key_ClearStates( void )
 	{
 		if ( keys[ i ].down )
 		{
-			CL_KeyEvent( i, qfalse, 0 );
+			CL_KeyEvent( i, false, 0 );
 		}
 
 		keys[ i ].down = 0;

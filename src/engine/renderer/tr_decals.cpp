@@ -50,12 +50,12 @@ decalVert_t;
 /*
 MakeTextureMatrix()
 generates a texture projection matrix for a triangle
-returns qfalse if a texture matrix cannot be created
+returns false if a texture matrix cannot be created
 */
 
 typedef double dvec3_t[ 3 ];
 
-static qboolean MakeTextureMatrix( vec4_t texMat[ 2 ], vec4_t projection, decalVert_t *a, decalVert_t *b, decalVert_t *c )
+static bool MakeTextureMatrix( vec4_t texMat[ 2 ], vec4_t projection, decalVert_t *a, decalVert_t *b, decalVert_t *c )
 {
 	int     i, j;
 	double  bb, s, t, d;
@@ -76,7 +76,7 @@ static qboolean MakeTextureMatrix( vec4_t texMat[ 2 ], vec4_t projection, decalV
 
 	if ( fabs( bb ) < 0.00000001f )
 	{
-		return qfalse;
+		return false;
 	}
 
 	/* calculate texture origin */
@@ -137,7 +137,7 @@ static qboolean MakeTextureMatrix( vec4_t texMat[ 2 ], vec4_t projection, decalV
 	texMat[ 1 ][ 3 ] = a->st[ 1 ] - DotProduct( pa, texMat[ 1 ] );
 
 	/* disco */
-	return qtrue;
+	return true;
 }
 
 /*
@@ -214,7 +214,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 		/* set up omnidirectional */
 		numPoints = 4;
 		temp.numPlanes = 6;
-		temp.omnidirectional = qtrue;
+		temp.omnidirectional = true;
 		radius = projection[ 3 ];
 		Vector4Set( omniProjection, 0.0f, 0.0f, -1.0f, radius * 2.0f );
 		projection = omniProjection;
@@ -250,7 +250,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	else
 	{
 		/* set up unidirectional */
-		temp.omnidirectional = qfalse;
+		temp.omnidirectional = false;
 
 		/* set up decal points */
 		VectorCopy( points[ 0 ], dv[ 0 ].xyz );
@@ -351,27 +351,27 @@ void RE_ClearDecals( void )
 
 /*
 R_TestDecalBoundingBox()
-return qtrue if the decal projector intersects the bounding box
+return true if the decal projector intersects the bounding box
 */
 
-qboolean R_TestDecalBoundingBox( decalProjector_t *dp, vec3_t mins, vec3_t maxs )
+bool R_TestDecalBoundingBox( decalProjector_t *dp, vec3_t mins, vec3_t maxs )
 {
 	if ( mins[ 0 ] >= ( dp->center[ 0 ] + dp->radius ) || maxs[ 0 ] <= ( dp->center[ 0 ] - dp->radius ) ||
 	     mins[ 1 ] >= ( dp->center[ 1 ] + dp->radius ) || maxs[ 1 ] <= ( dp->center[ 1 ] - dp->radius ) ||
 	     mins[ 2 ] >= ( dp->center[ 2 ] + dp->radius ) || maxs[ 2 ] <= ( dp->center[ 2 ] - dp->radius ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
 R_TestDecalBoundingSphere()
-return qtrue if the decal projector intersects the bounding sphere
+return true if the decal projector intersects the bounding sphere
 */
 
-qboolean R_TestDecalBoundingSphere( decalProjector_t *dp, vec3_t center, float radius2 )
+bool R_TestDecalBoundingSphere( decalProjector_t *dp, vec3_t center, float radius2 )
 {
 	vec3_t delta;
 	float  distance2;
@@ -381,10 +381,10 @@ qboolean R_TestDecalBoundingSphere( decalProjector_t *dp, vec3_t center, float r
 
 	if ( distance2 >= ( radius2 + dp->radius2 ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
