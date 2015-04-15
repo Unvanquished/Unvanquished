@@ -303,9 +303,7 @@ void G_KillBox( gentity_t *ent )
 			continue;
 		}
 
-		// nail it
-		G_Damage( hit, ent, ent, NULL, NULL,
-		          100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
+		hit->entity->Kill(ent, MOD_TELEFRAG);
 	}
 }
 
@@ -334,8 +332,8 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
     trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
                 e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
-    if( tr.entityNum != ENTITYNUM_NONE )
-      G_Damage( e, ent, activator, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
+	if( tr.entityNum != ENTITYNUM_NONE )
+      e->entity->Kill(activator, MOD_CRUSH);
   }
 }
 

@@ -4332,8 +4332,9 @@ void Cmd_Damage_f( gentity_t *ent )
 	point[ 0 ] += dx;
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
-	G_Damage( ent, NULL, NULL, NULL, point, damage,
-	          ( nonloc ? DAMAGE_NO_LOCDAMAGE : 0 ), MOD_TARGET_LASER );
+
+	ent->entity->Damage((float)damage, nullptr, Vec3::Load(point), Util::nullopt,
+	                    nonloc ? DAMAGE_NO_LOCDAMAGE : 0, MOD_TARGET_LASER);
 }
 
 /*

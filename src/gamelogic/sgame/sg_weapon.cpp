@@ -517,11 +517,9 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 
 	G_WideTrace( &tr, self, range, width, height, &traceEnt );
 
-	if ( traceEnt != NULL && traceEnt->takedamage )
-	{
+	if (traceEnt != NULL && traceEnt->entity->Damage((float)damage, self, Vec3::Load(tr.endpos),
+													 Vec3::Load(forward), 0, (meansOfDeath_t)mod)) {
 		SendMeleeHitEvent( self, traceEnt, &tr );
-
-		G_Damage( traceEnt, self, self, forward, tr.endpos, damage, 0, mod );
 	}
 
 	return traceEnt;
@@ -586,10 +584,8 @@ static void FireBullet( gentity_t *self, float spread, int damage, int mod )
 
 	SendRangedHitEvent( self, target, &tr );
 
-	if ( target->takedamage )
-	{
-		G_Damage( target, self, self, forward, tr.endpos, damage, 0, mod );
-	}
+	target->entity->Damage((float)damage, self, Vec3::Load(tr.endpos), Vec3::Load(forward), 0,
+	                       (meansOfDeath_t)mod);
 }
 
 /*
@@ -636,14 +632,8 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		trap_Trace( &tr, origin, NULL, NULL, end, self->s.number, MASK_SHOT, 0 );
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		// do the damage
-		if ( !( tr.surfaceFlags & SURF_NOIMPACT ) )
-		{
-			if ( traceEnt->takedamage )
-			{
-				G_Damage( traceEnt, self, self, forward, tr.endpos, SHOTGUN_DMG, 0, MOD_SHOTGUN );
-			}
-		}
+		traceEnt->entity->Damage((float)SHOTGUN_DMG, self, Vec3::Load(tr.endpos),
+		                         Vec3::Load(forward), 0, (meansOfDeath_t)MOD_SHOTGUN);
 	}
 }
 
@@ -698,11 +688,8 @@ static void FireMassdriver( gentity_t *self )
 
 	SendRangedHitEvent( self, target, &tr );
 
-	if ( target->takedamage )
-	{
-		G_Damage( target, self, self, forward, tr.endpos, MDRIVER_DMG, DAMAGE_KNOCKBACK,
-		          MOD_MDRIVER );
-	}
+	target->entity->Damage((float)MDRIVER_DMG, self, Vec3::Load(tr.endpos),
+	                       Vec3::Load(forward), 0, (meansOfDeath_t)MOD_MDRIVER);
 }
 
 /*
@@ -1027,10 +1014,8 @@ static void FireLasgun( gentity_t *self )
 
 	SendRangedHitEvent( self, target, &tr );
 
-	if ( target->takedamage )
-	{
-		G_Damage( target, self, self, forward, tr.endpos, LASGUN_DAMAGE, 0, MOD_LASGUN );
-	}
+	target->entity->Damage((float)LASGUN_DAMAGE, self, Vec3::Load(tr.endpos),
+	                       Vec3::Load(forward), 0, (meansOfDeath_t)MOD_LASGUN);
 }
 
 /*
@@ -1056,7 +1041,8 @@ static void FirePainsaw( gentity_t *self )
 	// not really a "ranged" weapon, but this is still the right call
 	SendRangedHitEvent( self, target, &tr );
 
-	G_Damage( target, self, self, forward, tr.endpos, PAINSAW_DAMAGE, 0, MOD_PAINSAW );
+	target->entity->Damage((float)PAINSAW_DAMAGE, self, Vec3::Load(tr.endpos),
+	                       Vec3::Load(forward), 0, (meansOfDeath_t)MOD_PAINSAW);
 }
 
 /*
@@ -1270,7 +1256,6 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
-	int       damage = LEVEL0_BITE_DMG;
 
 	if ( self->client->ps.weaponTime )
 	{
@@ -1295,13 +1280,14 @@ qboolean G_CheckVenomAttack( gentity_t *self )
 		return qfalse;
 	}
 
-	SendMeleeHitEvent( self, traceEnt, &tr );
+	if (traceEnt->entity->Damage((float)LEVEL0_BITE_DMG, self, Vec3::Load(tr.endpos),
+	                             Vec3::Load(forward), 0, (meansOfDeath_t)MOD_LEVEL0_BITE)) {
+		SendMeleeHitEvent( self, traceEnt, &tr );
+		self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
+		return qtrue;
+	}
 
-	G_Damage( traceEnt, self, self, forward, tr.endpos, damage, 0, MOD_LEVEL0_BITE );
-
-	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
-
-	return qtrue;
+	return qfalse;
 }
 
 /*
@@ -1413,20 +1399,18 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 		zap->targets[ 0 ] = target;
 		zap->numTargets = 1;
 
-		// the zap chains only through living entities
-		if ( target->health > 0 )
-		{
-			G_Damage( target, creator, creator, forward, target->s.origin, LEVEL2_AREAZAP_DMG,
-			          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
-
+		// Zap chains only originate from alive entities.
+		if (target->entity->Damage((float)LEVEL2_AREAZAP_DMG, creator, Vec3::Load(target->s.origin),
+		                           Vec3::Load(forward), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP)) {
 			FindZapChainTargets( zap );
 
 			for ( i = 1; i < zap->numTargets; i++ )
 			{
-				G_Damage( zap->targets[ i ], target, zap->creator, forward, target->s.origin,
-				          LEVEL2_AREAZAP_DMG * ( 1 - powf( ( zap->distances[ i ] /
-				                                 LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1,
-				          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
+				float damage = LEVEL2_AREAZAP_DMG * ( 1 - powf( ( zap->distances[ i ] /
+				               LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1;
+
+				target->entity->Damage(damage, zap->creator, Vec3::Load(target->s.origin),
+				                       Vec3::Load(forward), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
 			}
 		}
 
@@ -1590,14 +1574,13 @@ qboolean G_CheckPounceAttack( gentity_t *self )
 	}
 
 	// Deal damage
-	timeMax = self->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME :
-	          LEVEL3_POUNCE_TIME_UPG;
-	damage = payload * LEVEL3_POUNCE_DMG / timeMax;
-	self->client->pmext.pouncePayload = 0;
-	G_Damage( traceEnt, self, self, forward, tr.endpos, damage,
-	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE );
+	timeMax = self->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
+	damage  = payload * LEVEL3_POUNCE_DMG / timeMax;
 
-	return qtrue;
+	self->client->pmext.pouncePayload = 0;
+
+	return traceEnt->entity->Damage((float)damage, self, Vec3::Load(tr.endpos), Vec3::Load(forward),
+	                                DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE);
 }
 
 static void FireBounceball( gentity_t *self )
@@ -1652,15 +1635,13 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 		    victim - g_entities;
 	}
 
-	SendMeleeHitEvent( self, victim, NULL );
+	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.stats[ STAT_MISC ] / LEVEL4_TRAMPLE_DURATION;
 
-	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.stats[ STAT_MISC ] /
-	         LEVEL4_TRAMPLE_DURATION;
-
-	G_Damage( victim, self, self, forward, victim->s.origin, damage,
-	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE );
-
-	self->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
+	if (victim->entity->Damage((float)damage, self, Vec3::Load(victim->s.origin), Vec3::Load(forward),
+	                           DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE)) {
+		SendMeleeHitEvent( self, victim, NULL );
+		self->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
+	}
 }
 
 /*
@@ -1678,9 +1659,9 @@ static INLINE meansOfDeath_t ModWeight( const gentity_t *self )
 
 void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 {
-	float  impactVelocity, impactEnergy;
+	float  impactVelocity, impactEnergy, impactDamage;
 	vec3_t knockbackDir;
-	int    attackerMass, impactDamage;
+	int    attackerMass;
 
 	// self must be a client
 	if ( !self->client )
@@ -1719,24 +1700,20 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	attackerMass = BG_Class( self->client->pers.classSelection )->mass;
 	impactVelocity = fabs( self->client->pmext.fallImpactVelocity[ 2 ] ) * QU_TO_METER; // in m/s
 	impactEnergy = attackerMass * impactVelocity * impactVelocity; // in J
-	impactDamage = ( int )( impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE );
+	impactDamage = impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE;
 
-	// deal impact damage to both clients and structures, use a threshold for friendly fire
-	if ( impactDamage > 0 )
-	{
-		// calculate knockback direction
-		VectorSubtract( victim->s.origin, self->client->ps.origin, knockbackDir );
-		VectorNormalize( knockbackDir );
+	// calculate knockback direction
+	VectorSubtract( victim->s.origin, self->client->ps.origin, knockbackDir );
+	VectorNormalize( knockbackDir );
 
-		G_Damage( victim, self, self, knockbackDir, victim->s.origin, impactDamage,
-		          DAMAGE_NO_LOCDAMAGE, ModWeight( self ) );
-	}
+	victim->entity->Damage((float)impactDamage, self, Vec3::Load(victim->s.origin),
+						   Vec3::Load(knockbackDir), DAMAGE_NO_LOCDAMAGE, ModWeight(self));
 }
 
 void G_WeightAttack( gentity_t *self, gentity_t *victim )
 {
-	float  weightDPS;
-	int    attackerMass, victimMass, weightDamage;
+	float  weightDPS, weightDamage;
+	int    attackerMass, victimMass;
 
 	// weigth damage is only dealt between clients
 	if ( !self->client || !victim->client )
@@ -1781,13 +1758,10 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 
 	if ( weightDPS > WEIGHTDMG_DPS_THRESHOLD )
 	{
-		weightDamage = ( int )( weightDPS * ( WEIGHTDMG_REPEAT / 1000.0f ) );
+		weightDamage = weightDPS * ( WEIGHTDMG_REPEAT / 1000.0f );
 
-		if ( weightDamage > 0 )
-		{
-			G_Damage( victim, self, self, NULL, victim->s.origin, weightDamage,
-					  DAMAGE_NO_LOCDAMAGE, ModWeight( self ) );
-		}
+		victim->entity->Damage(weightDamage, self, Vec3::Load(victim->s.origin), Util::nullopt,
+		                       DAMAGE_NO_LOCDAMAGE, ModWeight(self));
 	}
 
 	victim->client->nextCrushTime = level.time + WEIGHTDMG_REPEAT;

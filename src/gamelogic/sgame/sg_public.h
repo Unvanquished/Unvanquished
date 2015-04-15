@@ -178,7 +178,6 @@ void              Cmd_MapLog_f( gentity_t *ent );
 qboolean          G_CanDamage( gentity_t *targ, vec3_t origin );
 void              G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength, qboolean ignoreMass );
 void              G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, qboolean ignoreMass );
-void              G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod );
 void              G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team );
 qboolean          G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int dflags, int mod, team_t testHit = TEAM_NONE );
 qboolean          G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod, int ignoreTeam );

@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "CBSE.h"
 
 void InitEnvAFXEntity( gentity_t *self, qboolean link )
 {
@@ -232,7 +233,8 @@ void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		dflags = 0;
 	}
 
-	G_Damage( other, self, self, NULL, NULL, self->damage, dflags, MOD_TRIGGER_HURT );
+	other->entity->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, dflags,
+	                      MOD_TRIGGER_HURT);
 }
 
 void SP_env_afx_hurt( gentity_t *self )

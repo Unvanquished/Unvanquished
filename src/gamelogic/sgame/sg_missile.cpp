@@ -360,8 +360,9 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			if ( !ma->doLocationalDamage ) dflags |= DAMAGE_NO_LOCDAMAGE;
 			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
-			G_Damage( hitEnt, ent, attacker, dir, trace->endpos,
-					  roundf( ent->damage * MissileTimeDmgMod( ent ) ), dflags, ent->methodOfDeath );
+			hitEnt->entity->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
+			                       Vec3::Load(trace->endpos), Vec3::Load(dir), dflags,
+			                       (meansOfDeath_t)ent->methodOfDeath);
 		}
 
 		// splash damage (doesn't apply to person directly hit)

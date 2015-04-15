@@ -109,7 +109,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 
 		// TODO: Replace with a damage message.
 		if (entity.oldEnt->takedamage) {
-			G_Damage( entity.oldEnt, entity.oldEnt, fireStarter, NULL, NULL, BURN_SELFDAMAGE, 0, MOD_BURN );
+			entity.Damage(BURN_SELFDAMAGE, fireStarter, Util::nullopt, Util::nullopt, 0, MOD_BURN);
 			fireLogger.Debug("%s took burn damage.", descr);
 		}
 	}

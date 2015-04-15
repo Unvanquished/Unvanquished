@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "CBSE.h"
 
 #define DEFAULT_FUNC_TRAIN_SPEED 100
 
@@ -369,7 +370,7 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 		// bobbing entities are instant-kill and never get blocked
 		if ( pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE )
 		{
-			G_Damage( check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH );
+			check->entity->Kill(pusher, MOD_CRUSH);
 			continue;
 		}
 
@@ -1383,7 +1384,7 @@ void func_door_block( gentity_t *self, gentity_t *other )
 
 	if ( self->damage )
 	{
-		G_Damage( other, self, self, NULL, NULL, self->damage, 0, MOD_CRUSH );
+		other->entity->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, 0, MOD_CRUSH);
 	}
 
 	if ( self->spawnflags & 4 )
@@ -2316,7 +2317,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			//whatever is blocking the train isn't a client
 
 			//KILL!!1!!!
-			G_Damage( other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH );
+			other->entity->Kill(self, MOD_CRUSH);
 
 			//buildables need to be handled differently since even when
 			//dealt fatal amounts of damage they won't instantly become non-solid
@@ -2344,7 +2345,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			return;
 		}
 
-		G_Damage( other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH );
+		other->entity->Kill(self, MOD_CRUSH);
 	}
 }
 

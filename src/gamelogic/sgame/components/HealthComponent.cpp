@@ -80,8 +80,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 
 	// Don't handle ET_MOVER w/o die or pain function.
 	// TODO: Handle mover special casing in a dedicated component.
-	if (entity.oldEnt->s.eType == ET_MOVER && !(entity.oldEnt->die || entity.oldEnt->pain))
-	{
+	if (entity.oldEnt->s.eType == ET_MOVER && !(entity.oldEnt->die || entity.oldEnt->pain)) {
 		// Special case for ET_MOVER with act function in initial position.
 		if ((entity.oldEnt->moverState == MOVER_POS1 || entity.oldEnt->moverState == ROTATOR_POS1)
 		    && entity.oldEnt->act) {
@@ -145,9 +144,12 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		}
 	}
 
-	// Apply damage modifiers.
 	float take = amount;
-	entity.ApplyDamageModifier(take, location, direction, flags, meansOfDeath);
+
+	// Apply damage modifiers.
+	if (!(flags & DAMAGE_PURE)) {
+		entity.ApplyDamageModifier(take, location, direction, flags, meansOfDeath);
+	}
 
 	// Update combat timers.
 	// TODO: Add a message to update combat timers.
@@ -241,10 +243,19 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	}
 }
 
+void HealthComponent::HandleKill(gentity_t* source, meansOfDeath_t meansOfDeath) {
+	entity.Damage(health, source, Util::nullopt, Util::nullopt, (DAMAGE_PURE | DAMAGE_NO_PROTECTION),
+	              meansOfDeath);
+}
+
+
 void HealthComponent::SetMaxHealth(float maxHealth) {
 	assert(maxHealth > 0.0f);
 
 	float scale = HealthComponent::maxHealth / maxHealth;
+
+	healthLogger.Debug("Changing maximum health: %3.1f → %3.1f, current health: %3.1f → %3.1f.",
+	                   HealthComponent::maxHealth, maxHealth, health, health * scale);
 
 	HealthComponent::maxHealth = maxHealth;
 	health *= scale;

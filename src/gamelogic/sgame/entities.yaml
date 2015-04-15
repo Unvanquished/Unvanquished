@@ -50,6 +50,12 @@ messages:
         - name: meansOfDeath
           type: meansOfDeath_t
 
+    Kill:
+        - name: source
+          type: gentity_t*
+        - name: meansOfDeath
+          type: meansOfDeath_t
+
     ApplyDamageModifier:
         - name: damage
           type: float&
@@ -87,6 +93,7 @@ components:
             - PrepareNetCode
             - Heal
             - Damage
+            - Kill
 
     Armor:
         messages:
