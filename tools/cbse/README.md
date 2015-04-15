@@ -44,23 +44,24 @@ As part of the processing, the correctness of the definition should be checked (
 
 Sending messages to components handling them can be done from ``Entity``: suppose we have defined a ``Damage`` message taking ``int`` and an ``AttackType`` argument, then the following code sends a damage message that can be used like and event:
 ```cpp
-Entity* entity = HitEntity(attackOrigin, attackDirection);
+Entity* entity = FindEntityHitByAttack(attackOrigin, attackDirection);
 if (entity) {
-    bool damaged = entity->Damage(attackDamage, attackType);
-    if (damaged) {
+    bool damagedHandled = entity->Damage(attackDamage, attackType);
+    if (damageHandled) {
         PlayHitSound();
     }
 }
 ```
 The function that sends the message returns ``true`` if there was at least one component that handled the message; in this case this tells us that the entity was hit in some way so we should play a hit sound.
 
-Messages are great for broadcasting but sometimes given an ``Entity`` all you need is call a method of a specific component; defining a message handled only by that component would be wastefully.
+Messages are great for broadcasting but sometimes given an ``Entity`` all you need is call a method of a specific component; defining a message handled only by that component would be wasteful.
 To avoid that anti-pattern the ``Entity`` can also be queried for a specific component, returning ``nullptr`` if it doesn't exist:
 ```cpp
-for (Entity* grabber: EntitiesColliding(pointsBonus->hitbox)) {
+for (Entity* grabber : GetEntitiesColliding(pointsBonus->hitbox)) {
     ScoreComponent* score = grabber->Get<ScoreComponent>();
     if (score != nullptr) {
         score->acquire(pointsBonus);
+        break;
     }
 }
 ```
@@ -71,3 +72,45 @@ ForEntities<FireComponent>([] (Entity* entity, FireComponent* fire) {
    fire->Spread();
 });
 ```
+
+### Defining a component
+
+Messages and components are defined in a YAML document. Messages are simply defined as list of parameters of the form (name, type) and the list of message handled is under the ``messages`` key of the dictionnary defining a component.
+```yaml
+messages:
+    Damage:
+        - name: amount
+          type: int
+        - name: flags
+          type: int
+    Heal:
+        - name: amount
+          type: int
+components:
+    Physics:
+        messages:
+            - Damage # for example for knockback
+    Health:
+        messages:
+            - Damage
+            - Heal
+# Definition of entities
+```
+
+From this the generator will create both base classes for the components that implements helper functions and a skeletons for the implementation of the components. The component constructor is forced from the definition file (see parameters and dependencies) as are the message handling functions, but stubs are generated in the skeletons. Message handling function look like the following:
+```cpp
+class HealthComponent : public HealthComponentBase {
+public:
+    # Constructor skipped
+    void HandleDamage(int amount, int flags);
+    void HandleHeal(int amount);
+    
+    # Regular member functions can be called directly
+    # for example after a 
+    void SetMaxHealth(int maximum);
+};
+```
+
+In this example, ``SetMaxHealth`` is a member function that can be called directly, for example after a ``entity.Get<HealthComponent>()``. However the maximum health is the same for all entities of the same entity type so it can be put directly in the entity definition.
+
+### Defining entities
