@@ -723,7 +723,7 @@ void CM_TracePointThroughSurfaceCollide( traceWork_t *tw, const cSurfaceCollide_
 		{
 			k = facet->borderPlanes[ j ];
 
-			if ( frontFacing[ k ] ^ facet->borderInward[ j ] )
+			if ( frontFacing[ k ] != facet->borderInward[ j ] )
 			{
 				if ( intersection[ k ] > intersect )
 				{

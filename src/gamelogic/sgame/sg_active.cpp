@@ -2031,7 +2031,7 @@ void ClientThink_real( gentity_t *self )
 	pm.pointcontents  = trap_PointContents;
 	pm.debugLevel     = g_debugMove.integer;
 	pm.noFootsteps    = 0;
-	pm.pmove_fixed    = level.pmoveParams.fixed | client->pers.pmoveFixed;
+	pm.pmove_fixed    = level.pmoveParams.fixed || client->pers.pmoveFixed;
 	pm.pmove_msec     = level.pmoveParams.msec;
 	pm.pmove_accurate = level.pmoveParams.accurate;
 

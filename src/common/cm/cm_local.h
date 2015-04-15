@@ -111,7 +111,7 @@ typedef struct
 	int      surfacePlane;
 	int      numBorders;
 	int      borderPlanes[ MAX_FACET_BEVELS ];
-	int      borderInward[ MAX_FACET_BEVELS ];
+	bool     borderInward[ MAX_FACET_BEVELS ];
 	bool borderNoAdjust[ MAX_FACET_BEVELS ];
 } cFacet_t;
 

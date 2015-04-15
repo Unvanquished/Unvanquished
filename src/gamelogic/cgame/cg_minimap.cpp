@@ -381,7 +381,7 @@ static void CG_UpdateMinimapActive(minimap_t* m)
 
     m->active = active;
 
-    if( cg_minimapActive.integer != active )
+    if ((cg_minimapActive.integer != 0) != active)
     {
         trap_Cvar_Set( "cg_minimapActive", va( "%d", active ) );
     }

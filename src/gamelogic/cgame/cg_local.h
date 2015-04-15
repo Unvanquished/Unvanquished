@@ -768,7 +768,7 @@ typedef struct centity_s
 
 	lightFlareStatus_t    lfs;
 
-	bool              doorState;
+	int               doorState;
 
 	bool              animInit;
 	bool              animPlaying;

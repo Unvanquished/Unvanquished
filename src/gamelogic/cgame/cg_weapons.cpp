@@ -1520,22 +1520,22 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		gun.shaderRGBA[ 3 ] = 255;
 
 		//set weapon[1/2]Time when respective buttons change state
-		if ( cg.weapon1Firing != ( cg.predictedPlayerState.eFlags & EF_FIRING ) )
+		if (cg.weapon1Firing != !!(cg.predictedPlayerState.eFlags & EF_FIRING))
 		{
 			cg.weapon1Time = cg.time;
-			cg.weapon1Firing = ( cg.predictedPlayerState.eFlags & EF_FIRING );
+			cg.weapon1Firing = !!(cg.predictedPlayerState.eFlags & EF_FIRING);
 		}
 
-		if ( cg.weapon2Firing != ( cg.predictedPlayerState.eFlags & EF_FIRING2 ) )
+		if (cg.weapon2Firing != !!(cg.predictedPlayerState.eFlags & EF_FIRING2))
 		{
 			cg.weapon2Time = cg.time;
-			cg.weapon2Firing = ( cg.predictedPlayerState.eFlags & EF_FIRING2 );
+			cg.weapon2Firing = !!(cg.predictedPlayerState.eFlags & EF_FIRING2);
 		}
 
-		if ( cg.weapon3Firing != ( cg.predictedPlayerState.eFlags & EF_FIRING3 ) )
+		if (cg.weapon3Firing != !!(cg.predictedPlayerState.eFlags & EF_FIRING3))
 		{
 			cg.weapon3Time = cg.time;
-			cg.weapon3Firing = ( cg.predictedPlayerState.eFlags & EF_FIRING3 );
+			cg.weapon3Firing = !!(cg.predictedPlayerState.eFlags & EF_FIRING3);
 		}
 	}
 

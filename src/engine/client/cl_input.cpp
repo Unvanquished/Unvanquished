@@ -291,7 +291,7 @@ void CL_KeyMove( usercmd_t *cmd )
 	// the walking flag is to keep animations consistent
 	// even during acceleration and deceleration
 	//
-	if ( kb[ KB_SPEED ].active ^ cl_run->integer )
+	if ( kb[ KB_SPEED ].active != (cl_run->integer != 0) )
 	{
 		movespeed = 127;
 		usercmdReleaseButton( cmd->buttons, BUTTON_WALKING );
@@ -452,7 +452,7 @@ void CL_JoystickMove( usercmd_t *cmd )
 //	int             movespeed;
 	float anglespeed;
 
-	if ( !( kb[ KB_SPEED ].active ^ cl_run->integer ) )
+	if ( kb[ KB_SPEED ].active == (cl_run->integer != 0) )
 	{
 		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 	}
@@ -508,7 +508,7 @@ void CL_Xbox360ControllerMove( usercmd_t *cmd )
 //	int     movespeed;
 	float anglespeed;
 
-	if ( !( kb[ KB_SPEED ].active ^ cl_run->integer ) )
+	if ( kb[ KB_SPEED ].active == (cl_run->integer != 0) )
 	{
 		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 	}

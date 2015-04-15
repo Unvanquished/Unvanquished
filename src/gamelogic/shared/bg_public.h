@@ -199,7 +199,7 @@ typedef struct pmove_s
 	float  xyspeed;
 
 	// for fixed msec Pmove
-	int pmove_fixed;
+	bool pmove_fixed;
 	int pmove_msec;
 
 	// don't round velocity to an integer
