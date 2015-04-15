@@ -2090,7 +2090,7 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 		return; // map not loaded, shouldn't happen
 	}
 
-	// allow NULL to be passed in for 0,0,0
+	// allow nullptr to be passed in for 0,0,0
 	if ( !mins )
 	{
 		mins = vec3_origin;

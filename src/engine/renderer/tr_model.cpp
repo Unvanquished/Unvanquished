@@ -315,7 +315,7 @@ void R_ModelInit( void )
 {
 	model_t *mod;
 
-	// leave a space for NULL model
+	// leave a space for nullptr model
 	tr.numModels = 0;
 
 	mod = R_AllocModel();

@@ -55,7 +55,7 @@ static cvar_t       *in_joystickThreshold = nullptr;
 static cvar_t       *in_joystickNo = nullptr;
 static cvar_t       *in_joystickUseAnalog = nullptr;
 
-//static cvar_t  *in_fullscreen = NULL;
+//static cvar_t  *in_fullscreen = nullptr;
 
 static cvar_t *in_xbox360Controller = nullptr;
 static cvar_t *in_xbox360ControllerAvailable = nullptr;

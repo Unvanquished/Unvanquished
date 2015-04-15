@@ -803,7 +803,7 @@ void PRINTF_LIKE(1) COM_ParseWarning( char *format, ... )
 COM_Parse
 
 Parse a token out of a string
-Will never return NULL, just empty strings
+Will never return nullptr, just empty strings
 
 If "allowLineBreaks" is true then an empty
 string will be returned if the next token is

@@ -1459,7 +1459,7 @@ static float CG_MachinegunSpinAngle( centity_t *cent, bool firing )
 =============
 CG_AddPlayerWeapon
 
-Used for both the view weapon (ps is valid) and the world modelother character models (ps is NULL)
+Used for both the view weapon (ps is valid) and the world modelother character models (ps is nullptr)
 The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============

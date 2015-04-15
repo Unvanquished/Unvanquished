@@ -278,7 +278,7 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Find a beacon matching a pattern.
-	 * @return An ET_BEACON entity or NULL.
+	 * @return An ET_BEACON entity or nullptr.
 	 */
 	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
 	                        float radius, int eFlags, int eFlagsRelevant )
@@ -346,7 +346,7 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Move a single beacon matching a pattern.
-	 * @return The moved beacon or NULL.
+	 * @return The moved beacon or nullptr.
 	 */
 	gentity_t *MoveSimilar( const vec3_t from, const vec3_t to, beaconType_t type, int data,
 	                        int team, int owner, float radius, int eFlags, int eFlagsRelevant )

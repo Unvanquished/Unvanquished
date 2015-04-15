@@ -747,7 +747,7 @@ CG_AddLagometerSnapshotInfo
 Each time a snapshot is received, log its ping time and
 the number of snapshots that were dropped before it.
 
-Pass NULL for a dropped packet.
+Pass nullptr for a dropped packet.
 ==============
 */
 #define PING_FRAMES 40

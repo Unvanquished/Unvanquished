@@ -282,9 +282,9 @@ Iterates through all active enities optionally filtered by classname
 and a fieldoffset (set via FOFS() macro) of the callers choosing.
 
 Iteration will continue to return the gentity following the "previous" parameter that fullfill these conditions
-or NULL if there are no further matching gentities.
+or nullptr if there are no further matching gentities.
 
-Set NULL as previous gentity to start the iteration from the beginning
+Set nullptr as previous gentity to start the iteration from the beginning
 =============
 */
 gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, bool skipdisabled, size_t fieldofs, const char *match )
@@ -345,8 +345,8 @@ G_IterateEntitiesWithField
 Searches all active entities for the next one that holds
 the matching string at fieldofs (use the FOFS() macro) in the structure.
 
-Searches beginning at the entity after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
+Searches beginning at the entity after from, or the beginning if nullptr
+nullptr will be returned if the end of the list is reached.
 
 if we are not searching for player entities it is recommended to start searching from gentities[MAX_CLIENTS - 1]
 
@@ -746,7 +746,7 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
 /**
  * executes the entities act function
  * This is basicly nothing but a wrapper around act() ensuring a correct call,
- * neither paramater may be NULL, and the entity is required to have an act function to execute
+ * neither paramater may be nullptr, and the entity is required to have an act function to execute
  * or this function will fail
  */
 void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
@@ -757,7 +757,7 @@ void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 	assert( entity->act != nullptr );
 	assert( call != nullptr );
 
-	//assert( entity->callIn->activator != NULL );
+	//assert( entity->callIn->activator != nullptr );
 
 	if( entity->active )
 	{

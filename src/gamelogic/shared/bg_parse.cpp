@@ -2086,7 +2086,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 			ma->doLocationalDamage = true;
 			defined |= LOCATIONAL_DAMAGE;
 		}
-		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != NULL )
+		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}*/

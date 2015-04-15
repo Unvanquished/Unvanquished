@@ -380,7 +380,7 @@ void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
 // The cmd_name is referenced later, so it should not be in temp memory
-// if function is NULL, the command will be forwarded to the server
+// if function is nullptr, the command will be forwarded to the server
 // as a clc_clientCommand instead of executed locally
 
 void Cmd_RemoveCommand( const char *cmd_name );
@@ -419,7 +419,7 @@ const char *Cmd_UnquoteString( const char *in );
 void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
 // The functions that execute commands get their parameters with these
-// functions. Cmd_Argv () will return an empty string, not a NULL
+// functions. Cmd_Argv () will return an empty string, not a nullptr
 // if arg >= argc, so string operations are always safe.
 
 void Cmd_TokenizeString( const char *text );
@@ -655,7 +655,7 @@ bool       Com_IsDedicatedServer();
 bool       Com_ServerRunning();
 
 // checks for and removes command line "+set var arg" constructs
-// if match is NULL, all set commands will be executed, otherwise
+// if match is nullptr, all set commands will be executed, otherwise
 // only a set with the exact name.  Only used during startup.
 
 extern cvar_t       *com_crashed;
@@ -882,7 +882,7 @@ typedef struct
     sysEventType_t evType;
     int            evValue, evValue2;
     int            evPtrLength; // bytes of data pointed to by evPtr, for journaling
-    void           *evPtr; // this must be manually freed if not NULL
+    void           *evPtr; // this must be manually freed if not nullptr
 } sysEvent_t;
 
 void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );

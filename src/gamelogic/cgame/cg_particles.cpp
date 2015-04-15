@@ -1984,7 +1984,7 @@ Destroy a particle system
 This doesn't actually invalidate anything, it just stops
 particle ejectors from producing new particles so the
 garbage collector will eventually remove this system.
-However is does set the pointer to NULL so the user is
+However is does set the pointer to nullptr so the user is
 unable to manipulate this particle system any longer.
 ===============
 */

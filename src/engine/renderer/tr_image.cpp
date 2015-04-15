@@ -2056,7 +2056,7 @@ static void R_LoadImage( char **buffer, byte **pic, int *width, int *height,
 R_FindImageFile
 
 Finds or loads the given image.
-Returns NULL if it fails, not a default image.
+Returns nullptr if it fails, not a default image.
 ==============
 */
 image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName )
@@ -2239,7 +2239,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 R_FindCubeImage
 
 Finds or loads the given image.
-Returns NULL if it fails, not a default image.
+Returns nullptr if it fails, not a default image.
 
 Tr3B: fear the use of goto
 ==============

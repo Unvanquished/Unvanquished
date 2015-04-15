@@ -377,7 +377,7 @@ bool Com_SafeMode( void )
 Com_StartupVariable
 
 Searches for command-line arguments that are set commands.
-If match is not NULL, only that cvar will be looked for.
+If match is not nullptr, only that cvar will be looked for.
 That is necessary because the fs_* cvars need to be set
 before the filesystem is started, but all other sets should
 be after execing the config and default.

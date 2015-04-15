@@ -1119,7 +1119,7 @@ typedef struct
 	int        latestSnapshotTime; // the time from latestSnapshotNum, so we don't need to read the snapshot yet
 
 	snapshot_t *snap; // cg.snap->serverTime <= cg.time
-	snapshot_t *nextSnap; // cg.nextSnap->serverTime > cg.time, or NULL
+	snapshot_t *nextSnap; // cg.nextSnap->serverTime > cg.time, or nullptr
 	snapshot_t activeSnapshots[ 2 ];
 
 	float      frameInterpolation; // (float)( cg.time - cg.frame->serverTime ) /

@@ -297,7 +297,7 @@ void R_AddRunVisTestsCmd( void )
 =============
 RE_SetColor
 
-Passing NULL will set the color to white
+Passing nullptr will set the color to white
 =============
 */
 void RE_SetColor( const float *rgba )

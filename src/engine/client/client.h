@@ -323,7 +323,7 @@ typedef struct
 	int      load;
 	char     mapName[ MAX_NAME_LENGTH ];
 	char     game[ MAX_NAME_LENGTH ];
-	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
+	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, nullptr otherwise
 	int      netType;
 	int      clients;
 	int      bots;

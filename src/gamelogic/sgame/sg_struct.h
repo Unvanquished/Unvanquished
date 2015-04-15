@@ -97,7 +97,7 @@ struct gentity_s
 	// EXPECTS THE FIELDS IN THAT ORDER!
 	//================================
 
-	struct gclient_s *client; // NULL if not a client
+	struct gclient_s *client; // nullptr if not a client
 
 	bool     inuse;
 	bool     neverFree; // if true, FreeEntity will only unlink

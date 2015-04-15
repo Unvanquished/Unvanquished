@@ -122,7 +122,7 @@ Check if a map exists
 bool G_MapExists( const char *name )
 {
 	// Due to filesystem changes, this is no longer the correct way to check if a map exists
-	//return trap_FS_FOpenFile( va( "maps/%s.bsp", name ), NULL, FS_READ );
+	//return trap_FS_FOpenFile( va( "maps/%s.bsp", name ), nullptr, FS_READ );
 	return trap_FindPak( va( "map-%s", name ) );
 }
 

@@ -60,7 +60,7 @@ void R_InitAnimations( void )
 {
 	skelAnimation_t *anim;
 
-	// leave a space for NULL animation
+	// leave a space for nullptr animation
 	tr.numAnimations = 0;
 
 	anim = R_AllocAnimation();

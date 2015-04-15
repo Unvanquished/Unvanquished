@@ -575,7 +575,7 @@ static void AGeneric_CreepSlow( gentity_t *self )
 ================
 nullDieFunction
 
-hack to prevent compilers complaining about function pointer -> NULL conversion
+hack to prevent compilers complaining about function pointer -> nullptr conversion
 ================
 */
 static void NullDieFunction( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod ) {}

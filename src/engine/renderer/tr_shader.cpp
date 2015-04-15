@@ -4510,7 +4510,7 @@ RE_LoadDynamicShader
 
 bani - load a new dynamic shader
 
-if shadertext is NULL, looks for matching shadername and removes it
+if shadertext is nullptr, looks for matching shadername and removes it
 
 returns true if request was successful, false if the gods were angered
 ====================
@@ -4636,7 +4636,7 @@ FindShaderInShaderText
 Scans the combined text description of all the shader files for
 the given shader name.
 
-return NULL if not found
+return nullptr if not found
 
 If found, it will return a valid shader
 =====================

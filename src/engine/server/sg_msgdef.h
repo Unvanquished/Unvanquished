@@ -229,7 +229,7 @@ typedef enum
   // the last call to the game module
 
   GAME_CLIENT_CONNECT, // const char * ()( int clientNum, bool firstTime, bool isBot );
-  // return NULL if the client is allowed to connect,
+  // return nullptr if the client is allowed to connect,
   //  otherwise return a text string describing the reason for the denial
 
   GAME_CLIENT_BEGIN, // void ()( int clientNum );

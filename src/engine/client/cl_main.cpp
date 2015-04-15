@@ -84,7 +84,7 @@ cvar_t *cl_timeNudge;
 cvar_t *cl_showTimeDelta;
 cvar_t *cl_freezeDemo;
 
-cvar_t *cl_shownet = nullptr; // NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
+cvar_t *cl_shownet = nullptr; // NERVE - SMF - This is referenced in msg.c and we need to make sure it is nullptr
 cvar_t *cl_shownuments; // DHM - Nerve
 cvar_t *cl_showSend;
 cvar_t *cl_showServerCommands; // NERVE - SMF
@@ -1633,7 +1633,7 @@ void CL_Disconnect( bool showMainMenu )
 	// XreaL END
 
 	// show_bug.cgi?id=589
-	// don't try a restart if rocket is NULL, as we might be in the middle of a restart already
+	// don't try a restart if rocket is nullptr, as we might be in the middle of a restart already
 	if ( cgvm.IsActive() && cls.state > CA_DISCONNECTED )
 	{
 		// restart the UI
@@ -3687,7 +3687,7 @@ bool CL_InitRenderer( void )
 	cls.useLegacyConsoleFont = cls.useLegacyConsoleFace = true;
 
 	// Register console font specified by cl_consoleFont, if any
-	// filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL
+	// filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is nullptr
 	if ( cl_consoleFont->string[0] )
 	{
 		if ( FS_FOpenFileRead( cl_consoleFont->string, &f, false ) >= 0 )
@@ -4393,7 +4393,7 @@ serverStatus_t *CL_GetServerStatus( netadr_t from )
 //	serverStatus_t *serverStatus;
 	int i, oldest, oldestTime;
 
-//	serverStatus = NULL;
+//	serverStatus = nullptr;
 	for ( i = 0; i < MAX_SERVERSTATUSREQUESTS; i++ )
 	{
 		if ( NET_CompareAdr( from, cl_serverStatusList[ i ].address ) )

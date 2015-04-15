@@ -105,7 +105,7 @@ typedef struct
 
 	void ( *RenderScene )( const refdef_t *fd );
 
-	void ( *SetColor )( const float *rgba );             // NULL = 1,1,1,1
+	void ( *SetColor )( const float *rgba );             // nullptr = 1,1,1,1
 	void ( *SetClipRegion )( const float *region );
 	void ( *DrawStretchPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );             // 0 = white
 	void ( *DrawRotatedPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );             // NERVE - SMF
@@ -120,7 +120,7 @@ typedef struct
 
 	void ( *BeginFrame )( void );
 
-	// if the pointers are not NULL, timing info will be returned
+	// if the pointers are not nullptr, timing info will be returned
 	void ( *EndFrame )( int *frontEndMsec, int *backEndMsec );
 
 	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
@@ -239,7 +239,7 @@ typedef struct
 	void ( *CM_DrawDebugSurface )( void ( *drawPoly )( int color, int numPoints, float *points ) );
 
 	// a -1 return means the file does not exist
-	// NULL can be passed for buf to just determine existence
+	// nullptr can be passed for buf to just determine existence
 	int ( *FS_FileIsInPAK )( const char *name, int *pChecksum );
 	int ( *FS_ReadFile )( const char *name, void **buf );
 	void ( *FS_FreeFile )( void *buf );
@@ -271,7 +271,7 @@ typedef struct
 } refimport_t;
 
 // this is the only function actually exported at the linker level
-// If the module can't init to a valid rendering state, NULL will be
+// If the module can't init to a valid rendering state, nullptr will be
 // returned.
 
 // RB: changed to GetRefAPI_t

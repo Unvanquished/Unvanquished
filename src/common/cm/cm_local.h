@@ -182,7 +182,7 @@ typedef struct
 	int          *areaPortals; // [ numAreas*numAreas ] reference counts
 
 	int          numSurfaces;
-	cSurface_t   **surfaces; // non-patches will be NULL
+	cSurface_t   **surfaces; // non-patches will be nullptr
 
 	int          floodvalid;
 	int          checkcount; // incremented on each trace

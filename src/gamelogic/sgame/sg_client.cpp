@@ -1147,7 +1147,7 @@ Called again for every map change or tournement restart.
 
 The session information will be valid after exit.
 
-Return NULL if the client should be allowed, otherwise return
+Return nullptr if the client should be allowed, otherwise return
 a string with the reason for denial.
 
 Otherwise, the client will be sent the current gamestate

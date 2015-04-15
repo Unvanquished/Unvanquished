@@ -392,7 +392,7 @@ g_admin_ban_t     *g_admin_bans = nullptr;
 g_admin_spec_t    *g_admin_specs = nullptr;
 g_admin_command_t *g_admin_commands = nullptr;
 
-/* ent must be non-NULL */
+/* ent must be non-nullptr */
 #define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
 
 const char *G_admin_name( gentity_t *ent )
@@ -4529,7 +4529,7 @@ bool G_admin_namelog( gentity_t *ent )
 G_NamelogFromString
 
 This is similar to G_ClientNumberFromString but for namelog instead
-Returns NULL if not exactly 1 match
+Returns nullptr if not exactly 1 match
 ==================
 */
 namelog_t *G_NamelogFromString( gentity_t *ent, char *s )

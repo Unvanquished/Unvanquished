@@ -1280,7 +1280,7 @@ static void initRoQ( void )
 static byte* RoQFetchInterlaced( byte *source ) {
         int x, *src, *dst;
 
-        if (currentHandle < 0) return NULL;
+        if (currentHandle < 0) return nullptr;
 
         src = (int *)source;
         dst = (int *)cinTable[currentHandle].buf2;
