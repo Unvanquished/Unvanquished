@@ -247,7 +247,7 @@ PM_Friction
 Handles both ground friction and water friction
 ==================
 */
-static void PM_Friction( void )
+static void PM_Friction()
 {
 	vec3_t vec;
 	float  *vel;
@@ -379,7 +379,7 @@ This allows the clients to use axial -127 to 127 values for all directions
 without getting a sqrt(2) distortion in speed.
 ============
 */
-static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
+static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 {
 	int   max;
 	float total;
@@ -391,7 +391,7 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
-		qboolean wasSprinting, sprint;
+		bool wasSprinting, sprint;
 
 		wasSprinting = sprint = pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST;
 
@@ -423,12 +423,12 @@ static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 			if ( wasSprinting && pm->ps->stats[ STAT_STAMINA ] <= 0 )
 			{
 				// we were sprinting but ran out of stamina
-				sprint = qfalse;
+				sprint = false;
 			}
 			else if ( !wasSprinting && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
 			{
 				// stamina is too low to start sprinting
-				sprint = qfalse;
+				sprint = false;
 			}
 		}
 
@@ -559,7 +559,7 @@ PM_SetMovementDir
 Determine the rotation of the legs relative to the facing dir
 ================
 */
-static void PM_SetMovementDir( void )
+static void PM_SetMovementDir()
 {
 	if ( pm->cmd.forwardmove || pm->cmd.rightmove )
 	{
@@ -617,7 +617,7 @@ static void PM_SetMovementDir( void )
 PM_CheckCharge
 =============
 */
-static void PM_CheckCharge( void )
+static void PM_CheckCharge()
 {
 	if ( pm->ps->weapon != WP_ALEVEL4 )
 	{
@@ -646,7 +646,7 @@ static void PM_CheckCharge( void )
 PM_CheckWaterPounce
 =============
 */
-static void PM_CheckWaterPounce( void )
+static void PM_CheckWaterPounce()
 {
 	// Check for valid class
 	switch ( pm->ps->weapon )
@@ -680,7 +680,7 @@ static void PM_CheckWaterPounce( void )
 PM_PlayJumpingAnimation
 =============
 */
-static void PM_PlayJumpingAnimation( void )
+static void PM_PlayJumpingAnimation()
 {
 	if ( pm->cmd.forwardmove >= 0 )
 	{
@@ -715,7 +715,7 @@ static void PM_PlayJumpingAnimation( void )
 PM_CheckPounce
 =============
 */
-static qboolean PM_CheckPounce( void )
+static bool PM_CheckPounce()
 {
 	const static vec3_t up = { 0.0f, 0.0f, 1.0f };
 
@@ -732,7 +732,7 @@ static qboolean PM_CheckPounce( void )
 			break;
 
 		default:
-			return qfalse;
+			return false;
 	}
 
 	// Handle landing
@@ -750,7 +750,7 @@ static qboolean PM_CheckPounce( void )
 				break;
 		}
 
-		return qfalse;
+		return false;
 	}
 
 	// Check class-specific conditions for starting a pounce
@@ -760,13 +760,13 @@ static qboolean PM_CheckPounce( void )
 			// Check if player wants to pounce
 			if ( !usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
 			{
-				return qfalse;
+				return false;
 			}
 
 			// Check if cooldown is over
 			if ( pm->ps->stats[ STAT_MISC ] > 0 )
 			{
-				return qfalse;
+				return false;
 			}
 			break;
 
@@ -777,13 +777,13 @@ static qboolean PM_CheckPounce( void )
 			{
 				pm->ps->pm_flags &= ~PMF_CHARGE;
 
-				return qfalse;
+				return false;
 			}
 
 			// Pounce if minimum charge time has passed and the charge button isn't held anymore
 			if ( pm->ps->stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_MIN )
 			{
-				return qfalse;
+				return false;
 			}
 			break;
 	}
@@ -791,13 +791,13 @@ static qboolean PM_CheckPounce( void )
 	// Check if already pouncing
 	if ( pm->ps->pm_flags & PMF_CHARGE )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// Check if in air
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// Calculate jump parameters
@@ -822,7 +822,7 @@ static qboolean PM_CheckPounce( void )
 					vec3_t   traceTarget, endpos, trajDir1, trajDir2;
 					vec2_t   trajAngles;
 					float    zCorrection;
-					qboolean foundTrajectory;
+					bool foundTrajectory;
 
 					VectorMA( pm->ps->origin, 10000.0f, pml.forward, traceTarget );
 
@@ -994,7 +994,7 @@ static qboolean PM_CheckPounce( void )
 			// compilers don't get my epic dijkstra-if
 			else
 			{
-				return qfalse;
+				return false;
 			}
 
 			break;
@@ -1023,12 +1023,12 @@ static qboolean PM_CheckPounce( void )
 			break;
 
 		default:
-			return qfalse;
+			return false;
 	}
 
 	// Prepare a simulated jump
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
+	pml.groundPlane = false;
+	pml.walking = false;
 	pm->ps->pm_flags |= PMF_CHARGE;
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
@@ -1038,7 +1038,7 @@ static qboolean PM_CheckPounce( void )
 	PM_PlayJumpingAnimation();
 
 	// We started to pounce
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1046,7 +1046,7 @@ static qboolean PM_CheckPounce( void )
 PM_CheckWallJump
 =============
 */
-static qboolean PM_CheckWallJump( void )
+static bool PM_CheckWallJump()
 {
 	vec3_t  dir, forward, right, movedir, point;
 	float   normalFraction = 1.5f;
@@ -1058,7 +1058,7 @@ static qboolean PM_CheckWallJump( void )
 
 	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLJUMPER ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	ProjectPointOnPlane( movedir, pml.forward, refNormal );
@@ -1093,37 +1093,37 @@ static qboolean PM_CheckWallJump( void )
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 	{
-		return qfalse; // don't allow jump until all buttons are up
+		return false; // don't allow jump until all buttons are up
 	}
 
 	if ( pm->cmd.upmove < 10 )
 	{
 		// not holding jump
-		return qfalse;
+		return false;
 	}
 
 	if ( pm->ps->pm_flags & PMF_TIME_WALLJUMP )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// must wait for jump to be released
 	if ( pm->ps->pm_flags & PMF_JUMP_HELD &&
 	     pm->ps->grapplePoint[ 2 ] == 1.0f )
 	{
-		return qfalse;
+		return false;
 	}
 
 	pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 	pm->ps->pm_time = 200;
 
-	pml.groundPlane = qfalse; // jumping away
-	pml.walking = qfalse;
+	pml.groundPlane = false; // jumping away
+	pml.walking = false;
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
@@ -1167,14 +1167,14 @@ static qboolean PM_CheckWallJump( void )
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();
 
-	return qtrue;
+	return true;
 }
 
 /**
  * @brief PM_CheckJetpack
- * @return qtrue if and only if thrust was applied
+ * @return true if and only if thrust was applied
  */
-static qboolean PM_CheckJetpack( void )
+static bool PM_CheckJetpack()
 {
 	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
 	int                 sideVelocity;
@@ -1187,7 +1187,7 @@ static qboolean PM_CheckJetpack( void )
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_WARM;
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ENABLED;
 
-		return qfalse;
+		return false;
 	}
 
 	// enable jetpack when in air
@@ -1202,7 +1202,7 @@ static qboolean PM_CheckJetpack( void )
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ENABLED;
 		PM_AddEvent( EV_JETPACK_ENABLE );
 
-		return qfalse;
+		return false;
 	}
 
 	// if jump key not held stop active thrust
@@ -1219,7 +1219,7 @@ static qboolean PM_CheckJetpack( void )
 			PM_AddEvent( EV_JETPACK_STOP );
 		}
 
-		return qfalse;
+		return false;
 	}
 
 	// sanity check that jetpack is enabled at this point
@@ -1230,7 +1230,7 @@ static qboolean PM_CheckJetpack( void )
 			Com_Printf( "[PM_CheckJetpack] " S_COLOR_RED "Can't start jetpack thrust (jetpack not enabled)\n" );
 		}
 
-		return qfalse;
+		return false;
 	}
 
 	// check ignite conditions
@@ -1248,19 +1248,19 @@ static qboolean PM_CheckJetpack( void )
 			// require the jump key to be held since the jump
 			if ( !( pm->ps->pm_flags & PMF_JUMP_HELD ) )
 			{
-				return qfalse;
+				return false;
 			}
 
 			// minimum fuel required to start from a jump
 			if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_LOW )
 			{
-				return qfalse;
+				return false;
 			}
 
 			// wait until at highest spot
 			if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE ) && pm->ps->velocity[ 2 ] > 0.0f )
 			{
-				return qfalse;
+				return false;
 			}
 		}
 
@@ -1287,7 +1287,7 @@ static qboolean PM_CheckJetpack( void )
 			PM_AddEvent( EV_JETPACK_STOP );
 		}
 
-		return qfalse;
+		return false;
 	}
 
 	// start thrusting if possible
@@ -1296,7 +1296,7 @@ static qboolean PM_CheckJetpack( void )
 		// minimum fuel required
 		if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_STOP )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( pm->debugLevel > 0 )
@@ -1318,20 +1318,20 @@ static qboolean PM_CheckJetpack( void )
 	pm->ps->stats[ STAT_FUEL ] -= pml.msec * JETPACK_FUEL_USAGE;
 	if ( pm->ps->stats[ STAT_FUEL ] < 0 ) pm->ps->stats[ STAT_FUEL ] = 0;
 
-	return qtrue;
+	return true;
 }
 
 /**
  * @brief Restores jetpack fuel
- * @return qtrue if and only if fuel has been restored
+ * @return true if and only if fuel has been restored
  */
-static qboolean PM_CheckJetpackRestoreFuel( void )
+static bool PM_CheckJetpackRestoreFuel()
 {
 	// don't restore fuel when full or jetpack active
 	if ( pm->ps->stats[ STAT_FUEL ] == JETPACK_FUEL_MAX ||
 	     pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
 	{
-		return qfalse;
+		return false;
 	}
 
 	pm->ps->stats[ STAT_FUEL ] += pml.msec * JETPACK_FUEL_RESTORE;
@@ -1341,20 +1341,20 @@ static qboolean PM_CheckJetpackRestoreFuel( void )
 		pm->ps->stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /**
  * @brief Disables the jetpack. Without force, the call can get ignored based on previous velocity.
  */
-static void PM_LandJetpack( qboolean force )
+static void PM_LandJetpack( bool force )
 {
 	float angle, sideVelocity;
 
 	// when low on fuel, always force a landing
 	if ( pm->ps->stats[ STAT_FUEL ] < JETPACK_FUEL_LOW )
 	{
-		force = qtrue;
+		force = true;
 	}
 
 	sideVelocity = sqrt( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
@@ -1407,29 +1407,29 @@ static void PM_LandJetpack( qboolean force )
 	}
 }
 
-static qboolean PM_CheckJump( void )
+static bool PM_CheckJump()
 {
 	vec3_t   normal;
 	int      staminaJumpCost;
 	float    magnitude;
-	qboolean jetpackJump;
+	bool jetpackJump;
 
 	// can't jump while in air
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// check if holding jump key
 	if ( pm->cmd.upmove < 10 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// needs jump ability
 	if ( BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude <= 0.0f )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// can't jump and pounce at the same time
@@ -1439,35 +1439,35 @@ static qboolean PM_CheckJump( void )
 	       pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG ) &&
 	     pm->ps->stats[ STAT_MISC ] > 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// can't jump and charge at the same time
 	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 && pm->ps->stats[ STAT_MISC ] > 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// don't allow jump until all buttons are up (?)
 	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// can't jump whilst grabbed
 	if ( pm->ps->pm_type == PM_GRABBED )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// must wait for jump to be released
 	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
 	{
-		return qfalse;
+		return false;
 	}
 
 	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
-	jetpackJump     = qfalse;
+	jetpackJump     = false;
 
 	// humans need stamina or jetpack to jump
 	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
@@ -1477,11 +1477,11 @@ static qboolean PM_CheckJump( void )
 		if ( BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) &&
 		     pm->ps->stats[ STAT_FUEL ] > JETPACK_FUEL_LOW )
 		{
-			jetpackJump = qtrue;
+			jetpackJump = true;
 		}
 		else
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
@@ -1492,8 +1492,8 @@ static qboolean PM_CheckJump( void )
 	}
 
 	// go into jump mode
-	pml.groundPlane = qfalse;
-	pml.walking     = qfalse;
+	pml.groundPlane = false;
+	pml.walking     = false;
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 	pm->ps->pm_flags |= PMF_JUMPED;
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
@@ -1535,10 +1535,10 @@ static qboolean PM_CheckJump( void )
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();
 
-	return qtrue;
+	return true;
 }
 
-static qboolean PM_CheckWaterJump( void )
+static bool PM_CheckWaterJump()
 {
 	vec3_t spot;
 	int    cont;
@@ -1546,13 +1546,13 @@ static qboolean PM_CheckWaterJump( void )
 
 	if ( pm->ps->pm_time )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// check for water jump
 	if ( pm->waterlevel != 2 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	flatforward[ 0 ] = pml.forward[ 0 ];
@@ -1566,7 +1566,7 @@ static qboolean PM_CheckWaterJump( void )
 
 	if ( !( cont & CONTENTS_SOLID ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	spot[ 2 ] += 16;
@@ -1574,7 +1574,7 @@ static qboolean PM_CheckWaterJump( void )
 
 	if ( cont )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// jump out of water
@@ -1584,7 +1584,7 @@ static qboolean PM_CheckWaterJump( void )
 	pm->ps->pm_flags |= PMF_TIME_WATERJUMP;
 	pm->ps->pm_time = 2000;
 
-	return qtrue;
+	return true;
 }
 
 //============================================================================
@@ -1596,11 +1596,11 @@ PM_WaterJumpMove
 Flying out of the water
 ===================
 */
-static void PM_WaterJumpMove( void )
+static void PM_WaterJumpMove()
 {
 	// waterjump has no control, but falls
 
-	PM_StepSlideMove( qtrue, qfalse );
+	PM_StepSlideMove( true, false );
 
 	pm->ps->velocity[ 2 ] -= pm->ps->gravity * pml.frametime;
 
@@ -1618,7 +1618,7 @@ PM_WaterMove
 
 ===================
 */
-static void PM_WaterMove( void )
+static void PM_WaterMove()
 {
 	int    i;
 	vec3_t wishvel;
@@ -1661,7 +1661,7 @@ static void PM_WaterMove( void )
 #endif
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd, qtrue );
+	scale = PM_CmdScale( &pm->cmd, true );
 
 	//
 	// user intentions
@@ -1695,13 +1695,13 @@ static void PM_WaterMove( void )
 		VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
 	}
 
-	PM_SlideMove( qfalse );
+	PM_SlideMove( false );
 }
 
 /**
  * @brief Used for both free spectating and noclip mode
  */
-static void PM_GhostMove( qboolean noclip )
+static void PM_GhostMove( bool noclip )
 {
 	int    i;
 	float  scale, wishspeed;
@@ -1709,7 +1709,7 @@ static void PM_GhostMove( qboolean noclip )
 
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd, qtrue );
+	scale = PM_CmdScale( &pm->cmd, true );
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -1730,7 +1730,7 @@ static void PM_GhostMove( qboolean noclip )
 	}
 	else
 	{
-		PM_StepSlideMove( qfalse, qfalse );
+		PM_StepSlideMove( false, false );
 	}
 }
 
@@ -1740,7 +1740,7 @@ PM_AirMove
 
 ===================
 */
-static void PM_AirMove( void )
+static void PM_AirMove()
 {
 	int       i;
 	vec3_t    wishvel;
@@ -1759,7 +1759,7 @@ static void PM_AirMove( void )
 	smove = pm->cmd.rightmove;
 
 	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd, qfalse );
+	scale = PM_CmdScale( &cmd, false );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -1793,7 +1793,7 @@ static void PM_AirMove( void )
 		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 	}
 
-	PM_StepSlideMove( qtrue, qfalse );
+	PM_StepSlideMove( true, false );
 }
 
 /*
@@ -1802,7 +1802,7 @@ PM_ClimbMove
 
 ===================
 */
-static void PM_ClimbMove( void )
+static void PM_ClimbMove()
 {
 	int       i;
 	vec3_t    wishvel;
@@ -1842,7 +1842,7 @@ static void PM_ClimbMove( void )
 	smove = pm->cmd.rightmove;
 
 	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd, qfalse );
+	scale = PM_CmdScale( &cmd, false );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -1922,7 +1922,7 @@ static void PM_ClimbMove( void )
 		return;
 	}
 
-	PM_StepSlideMove( qfalse, qfalse );
+	PM_StepSlideMove( false, false );
 }
 
 /*
@@ -1931,7 +1931,7 @@ PM_WalkMove
 
 ===================
 */
-static void PM_WalkMove( void )
+static void PM_WalkMove()
 {
 	int       i;
 	vec3_t    wishvel;
@@ -1965,7 +1965,7 @@ static void PM_WalkMove( void )
 
 	// if PM_Land didn't stop the jetpack (e.g. to allow for a jump) but we didn't get away
 	// from the ground, stop it now
-	PM_LandJetpack( qtrue );
+	PM_LandJetpack( true );
 
 	PM_CheckCharge();
 
@@ -1975,7 +1975,7 @@ static void PM_WalkMove( void )
 	smove = pm->cmd.rightmove;
 
 	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd, qfalse );
+	scale = PM_CmdScale( &cmd, false );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -2061,7 +2061,7 @@ static void PM_WalkMove( void )
 		return;
 	}
 
-	PM_StepSlideMove( qfalse, qfalse );
+	PM_StepSlideMove( false, false );
 
 	//Com_Printf("velocity2 = %1.1f\n", VectorLength(pm->ps->velocity));
 }
@@ -2073,7 +2073,7 @@ PM_LadderMove
 Basically a rip of PM_WaterMove with a few changes
 ===================
 */
-static void PM_LadderMove( void )
+static void PM_LadderMove()
 {
 	int    i;
 	vec3_t wishvel;
@@ -2084,7 +2084,7 @@ static void PM_LadderMove( void )
 
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd, qtrue );
+	scale = PM_CmdScale( &pm->cmd, true );
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -2115,7 +2115,7 @@ static void PM_LadderMove( void )
 		VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
 	}
 
-	PM_SlideMove( qfalse );
+	PM_SlideMove( false );
 }
 
 /*
@@ -2125,7 +2125,7 @@ PM_CheckLadder
 Check to see if the player is on a ladder or not
 =============
 */
-static void PM_CheckLadder( void )
+static void PM_CheckLadder()
 {
 	vec3_t  forward, end;
 	trace_t trace;
@@ -2133,7 +2133,7 @@ static void PM_CheckLadder( void )
 	//test if class can use ladders
 	if ( !BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_CANUSELADDERS ) )
 	{
-		pml.ladder = qfalse;
+		pml.ladder = false;
 		return;
 	}
 
@@ -2147,11 +2147,11 @@ static void PM_CheckLadder( void )
 
 	if ( ( trace.fraction < 1.0f ) && ( trace.surfaceFlags & SURF_LADDER ) )
 	{
-		pml.ladder = qtrue;
+		pml.ladder = true;
 	}
 	else
 	{
-		pml.ladder = qfalse;
+		pml.ladder = false;
 	}
 }
 
@@ -2160,7 +2160,7 @@ static void PM_CheckLadder( void )
 PM_DeadMove
 ==============
 */
-static void PM_DeadMove( void )
+static void PM_DeadMove()
 {
 	float forward;
 
@@ -2194,7 +2194,7 @@ PM_FootstepForSurface
 Returns an event number appropriate for the groundsurface
 ================
 */
-static int PM_FootstepForSurface( void )
+static int PM_FootstepForSurface()
 {
 	if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
 	{
@@ -2221,9 +2221,9 @@ PM_Land
 Play landing animation
 =================
 */
-static void PM_Land( void )
+static void PM_Land()
 {
-	PM_LandJetpack( qfalse ); // don't force a stop, sometimes we can push off with a jump
+	PM_LandJetpack( false ); // don't force a stop, sometimes we can push off with a jump
 
 	// decide which landing animation to use
 	if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP )
@@ -2269,7 +2269,7 @@ PM_CrashLand
 Check for hard landings that generate sound events
 =================
 */
-static void PM_CrashLand( void )
+static void PM_CrashLand()
 {
 	float delta;
 	float dist;
@@ -2397,17 +2397,17 @@ static int PM_CorrectAllSolid( trace_t *trace )
 					pm->trace( trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
 					           pm->tracemask, 0 );
 					pml.groundTrace = *trace;
-					return qtrue;
+					return true;
 				}
 			}
 		}
 	}
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
+	pml.groundPlane = false;
+	pml.walking = false;
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -2417,7 +2417,7 @@ PM_GroundTraceMissed
 The ground trace didn't hit a surface, so we are in freefall
 =============
 */
-static void PM_GroundTraceMissed( void )
+static void PM_GroundTraceMissed()
 {
 	trace_t trace;
 	vec3_t  point;
@@ -2435,7 +2435,7 @@ static void PM_GroundTraceMissed( void )
 		VectorCopy( pm->ps->origin, point );
 		point[ 2 ] -= 64.0f;
 
-		pm->trace( &trace, pm->ps->origin, NULL, NULL, point, pm->ps->clientNum, pm->tracemask, 0 );
+		pm->trace( &trace, pm->ps->origin, nullptr, nullptr, point, pm->ps->clientNum, pm->tracemask, 0 );
 
 		if ( trace.fraction == 1.0f )
 		{
@@ -2477,8 +2477,8 @@ static void PM_GroundTraceMissed( void )
 	}
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
+	pml.groundPlane = false;
+	pml.walking = false;
 }
 
 /*
@@ -2498,7 +2498,7 @@ enum {
 	NUM_GCT_ATP
 };
 
-static void PM_GroundClimbTrace( void )
+static void PM_GroundClimbTrace()
 {
 	vec3_t      surfNormal, moveDir, lookDir, point, velocityDir;
 	vec3_t      toAngles, surfAngles;
@@ -2578,7 +2578,7 @@ static void PM_GroundClimbTrace( void )
 				break;
 
 			case GCT_ATP_STEPMOVE:
-				if ( pml.groundPlane != qfalse && PM_PredictStepMove() )
+				if ( pml.groundPlane != false && PM_PredictStepMove() )
 				{
 					// step down
 					VectorMA( pm->ps->origin, -STEPSIZE, surfNormal, point );
@@ -2594,7 +2594,7 @@ static void PM_GroundClimbTrace( void )
 
 			case GCT_ATP_UNDERNEATH:
 				// trace "underneath" BBOX so we can traverse angles > 180deg
-				if ( pml.groundPlane != qfalse )
+				if ( pml.groundPlane != false )
 				{
 					VectorMA( pm->ps->origin, -16.0f, surfNormal, point );
 					VectorMA( point, -16.0f, moveDir, point );
@@ -2827,8 +2827,8 @@ static void PM_GroundClimbTrace( void )
 	if ( trace.fraction >= 1.0f )
 	{
 		PM_GroundTraceMissed();
-		pml.groundPlane = qfalse;
-		pml.walking = qfalse;
+		pml.groundPlane = false;
+		pml.walking = false;
 
 		// if we were wallwalking the last frame, apply delta correction
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
@@ -2853,7 +2853,7 @@ static void PM_GroundClimbTrace( void )
 			{
 				vec3_t xNormal;
 
-				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
+				AngleVectors( pm->ps->viewangles, forward, nullptr, nullptr );
 
 				if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
 				{
@@ -2884,8 +2884,8 @@ static void PM_GroundClimbTrace( void )
 	}
 
 	// we are on a surface
-	pml.groundPlane = qtrue;
-	pml.walking = qtrue;
+	pml.groundPlane = true;
+	pml.walking = true;
 
 	// hitting solid ground will end a waterjump
 	if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
@@ -2904,7 +2904,7 @@ static void PM_GroundClimbTrace( void )
 PM_GroundTrace
 =============
 */
-static void PM_GroundTrace( void )
+static void PM_GroundTrace()
 {
 	vec3_t  point;
 	trace_t trace;
@@ -2973,7 +2973,7 @@ static void PM_GroundTrace( void )
 				//The rotation applied there causes our view to turn around
 				//We correct this here
 				vec3_t xNormal;
-				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
+				AngleVectors( pm->ps->viewangles, forward, nullptr, nullptr );
 				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
 				{
 					VectorCopy(pm->ps->grapplePoint, xNormal);
@@ -3016,7 +3016,7 @@ static void PM_GroundTrace( void )
 	// if the trace didn't hit anything, we are in free fall
 	if ( trace.fraction == 1.0f )
 	{
-		qboolean steppedDown = qfalse;
+		bool steppedDown = false;
 
 		// try to step down
 		if ( pml.groundPlane && PM_PredictStepMove() )
@@ -3033,15 +3033,15 @@ static void PM_GroundTrace( void )
 			{
 				PM_StepEvent( pm->ps->origin, trace.endpos, refNormal );
 				VectorCopy( trace.endpos, pm->ps->origin );
-				steppedDown = qtrue;
+				steppedDown = true;
 			}
 		}
 
 		if ( !steppedDown )
 		{
 			PM_GroundTraceMissed();
-			pml.groundPlane = qfalse;
-			pml.walking = qfalse;
+			pml.groundPlane = false;
+			pml.walking = false;
 
 			return;
 		}
@@ -3084,8 +3084,8 @@ static void PM_GroundTrace( void )
 		}
 
 		pm->ps->groundEntityNum = ENTITYNUM_NONE;
-		pml.groundPlane = qfalse;
-		pml.walking = qfalse;
+		pml.groundPlane = false;
+		pml.walking = false;
 		return;
 	}
 
@@ -3100,13 +3100,13 @@ static void PM_GroundTrace( void )
 		// FIXME: if they can't slide down the slope, let them
 		// walk (sharp crevices)
 		pm->ps->groundEntityNum = ENTITYNUM_NONE;
-		pml.groundPlane = qtrue;
-		pml.walking = qfalse;
+		pml.groundPlane = true;
+		pml.walking = false;
 		return;
 	}
 
-	pml.groundPlane = qtrue;
-	pml.walking = qtrue;
+	pml.groundPlane = true;
+	pml.walking = true;
 
 	// hitting solid ground will end a waterjump
 	if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
@@ -3147,7 +3147,7 @@ static void PM_GroundTrace( void )
 PM_SetWaterLevel  FIXME: avoid this twice?  certainly if not moving
 =============
 */
-static void PM_SetWaterLevel( void )
+static void PM_SetWaterLevel()
 {
 	vec3_t point;
 	int    cont;
@@ -3194,7 +3194,7 @@ static void PM_SetWaterLevel( void )
 PM_SetViewheight
 ==============
 */
-static void PM_SetViewheight( void )
+static void PM_SetViewheight()
 {
 	pm->ps->viewheight = ( pm->ps->pm_flags & PMF_DUCKED )
 	                     ? BG_ClassModelConfig( pm->ps->stats[ STAT_CLASS ] )->crouchViewheight
@@ -3208,12 +3208,12 @@ PM_CheckDuck
 Sets mins and maxs, and calls PM_SetViewheight
 ==============
 */
-static void PM_CheckDuck( void )
+static void PM_CheckDuck()
 {
 	trace_t trace;
 	vec3_t  PCmins, PCmaxs, PCcmaxs;
 
-	BG_ClassBoundingBox( pm->ps->stats[ STAT_CLASS ], PCmins, PCmaxs, PCcmaxs, NULL, NULL );
+	BG_ClassBoundingBox( pm->ps->stats[ STAT_CLASS ], PCmins, PCmaxs, PCcmaxs, nullptr, nullptr );
 
 	pm->mins[ 0 ] = PCmins[ 0 ];
 	pm->mins[ 1 ] = PCmins[ 1 ];
@@ -3272,11 +3272,11 @@ static void PM_CheckDuck( void )
 PM_Footsteps
 ===============
 */
-static void PM_Footsteps( void )
+static void PM_Footsteps()
 {
 	float    bobmove;
 	int      old;
-	qboolean footstep;
+	bool footstep;
 
 	//
 	// calculate speed and cycle to be used for
@@ -3347,7 +3347,7 @@ static void PM_Footsteps( void )
 		return;
 	}
 
-	footstep = qfalse;
+	footstep = false;
 
 	if ( pm->ps->pm_flags & PMF_DUCKED )
 	{
@@ -3455,7 +3455,7 @@ static void PM_Footsteps( void )
 				}
 			}
 
-			footstep = qtrue;
+			footstep = true;
 		}
 		else
 		{
@@ -3554,7 +3554,7 @@ PM_WaterEvents
 Generate sound events for entering and leaving water
 ==============
 */
-static void PM_WaterEvents( void )
+static void PM_WaterEvents()
 {
 	// FIXME?
 	//
@@ -3648,7 +3648,7 @@ static void PM_BeginWeaponChange( int weapon )
 PM_FinishWeaponChange
 ===============
 */
-static void PM_FinishWeaponChange( void )
+static void PM_FinishWeaponChange()
 {
 	int weapon;
 
@@ -3682,7 +3682,7 @@ PM_TorsoAnimation
 
 ==============
 */
-static void PM_TorsoAnimation( void )
+static void PM_TorsoAnimation()
 {
 	if ( pm->ps->weaponstate == WEAPON_READY )
 	{
@@ -3709,12 +3709,12 @@ PM_Weapon
 Generates weapon events and modifies the weapon counter
 ==============
 */
-static void PM_Weapon( void )
+static void PM_Weapon()
 {
 	int      addTime = 200; //default addTime - should never be used
-	qboolean attack1 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK );
-	qboolean attack2 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 );
-	qboolean attack3 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE );
+	bool attack1 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK );
+	bool attack2 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 );
+	bool attack3 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE );
 
 	// Ignore weapons in some cases
 	if ( pm->ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
@@ -3783,7 +3783,7 @@ static void PM_Weapon( void )
 					int    charge = pml.msec;
 					vec3_t dir, vel;
 
-					AngleVectors( pm->ps->viewangles, dir, NULL, NULL );
+					AngleVectors( pm->ps->viewangles, dir, nullptr, nullptr );
 					VectorCopy( pm->ps->velocity, vel );
 					vel[ 2 ] = 0;
 					dir[ 2 ] = 0;
@@ -4075,7 +4075,7 @@ static void PM_Weapon( void )
 			break;
 
 		case WP_LUCIFER_CANNON:
-			attack3 = qfalse;
+			attack3 = false;
 
 			// Prevent firing of the Lucifer Cannon after an overcharge
 			if ( pm->ps->weaponstate == WEAPON_NEEDS_RESET )
@@ -4091,7 +4091,7 @@ static void PM_Weapon( void )
 			// Can't fire secondary while primary is charging
 			if ( attack1 || pm->ps->stats[ STAT_MISC ] > 0 )
 			{
-				attack2 = qfalse;
+				attack2 = false;
 			}
 
 			if ( ( attack1 || pm->ps->stats[ STAT_MISC ] == 0 ) && !attack2 )
@@ -4112,8 +4112,8 @@ static void PM_Weapon( void )
 			if ( pm->ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_MIN )
 			{
 				// Fire primary attack
-				attack1 = qtrue;
-				attack2 = qfalse;
+				attack1 = true;
+				attack2 = false;
 			}
 			else if ( pm->ps->stats[ STAT_MISC ] > 0 )
 			{
@@ -4134,7 +4134,7 @@ static void PM_Weapon( void )
 			break;
 
 		case WP_MASS_DRIVER:
-			attack2 = attack3 = qfalse;
+			attack2 = attack3 = false;
 			// attack2 is handled on the client for zooming (cg_view.c)
 
 			if ( !attack1 )
@@ -4383,7 +4383,7 @@ static void PM_Weapon( void )
 PM_Animate
 ================
 */
-static void PM_Animate( void )
+static void PM_Animate()
 {
 	if ( PM_Paralyzed( pm->ps->pm_type ) )
 	{
@@ -4461,7 +4461,7 @@ static void PM_Animate( void )
 PM_DropTimers
 ================
 */
-static void PM_DropTimers( void )
+static void PM_DropTimers()
 {
 	// drop misc timing counter
 	if ( pm->ps->pm_time )
@@ -4576,7 +4576,7 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	AnglesToAxis( tempang, axis );
 
 	if ( !( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) ||
-	     !BG_RotateAxis( ps->grapplePoint, axis, rotaxis, qfalse,
+	     !BG_RotateAxis( ps->grapplePoint, axis, rotaxis, false,
 	                     ps->eFlags & EF_WALLCLIMBCEILING ) )
 	{
 		AxisCopy( axis, rotaxis );
@@ -4633,11 +4633,11 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
-static void PM_HumanStaminaEffects( void )
+static void PM_HumanStaminaEffects()
 {
 	const classAttributes_t *ca;
 	int      *stats;
-	qboolean crouching, stopped, walking;
+	bool crouching, stopped, walking;
 
 	if ( pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS )
 	{
@@ -4834,13 +4834,13 @@ void PmoveSingle( pmove_t *pmove )
 		case PM_SPECTATOR:
 			PM_UpdateViewAngles( pm->ps, &pm->cmd );
 			PM_CheckDuck();
-			PM_GhostMove( qfalse );
+			PM_GhostMove( false );
 			PM_DropTimers();
 			return;
 
 		case PM_NOCLIP:
 			PM_UpdateViewAngles( pm->ps, &pm->cmd );
-			PM_GhostMove( qtrue );
+			PM_GhostMove( true );
 			PM_SetViewheight();
 			PM_Weapon();
 			PM_DropTimers();

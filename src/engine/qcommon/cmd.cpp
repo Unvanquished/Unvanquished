@@ -65,7 +65,7 @@ static cmdContext_t cmd;
 Cmd_SaveCmdContext
 ============
 */
-void Cmd_SaveCmdContext( void )
+void Cmd_SaveCmdContext()
 {
 	Cmd::SaveArgs();
 }
@@ -75,7 +75,7 @@ void Cmd_SaveCmdContext( void )
 Cmd_RestoreCmdContext
 ============
 */
-void Cmd_RestoreCmdContext( void )
+void Cmd_RestoreCmdContext()
 {
 	Cmd::LoadArgs();
 }
@@ -102,7 +102,7 @@ void Cmd_PrintUsage( const char *syntax, const char *description )
 Cmd_Argc
 ============
 */
-int Cmd_Argc( void )
+int Cmd_Argc()
 {
 	const Cmd::Args& args = Cmd::GetCurrentArgs();
 	return args.Argc();
@@ -113,7 +113,7 @@ int Cmd_Argc( void )
 Cmd_Argv
 ============
 */
-char *Cmd_Argv( int arg )
+const char *Cmd_Argv( int arg )
 {
 	if (arg >= Cmd_Argc() || arg < 0) {
 		return "";
@@ -192,7 +192,7 @@ Cmd_Args
 Returns a single string containing argv(1) to argv(argc()-1)
 ============
 */
-char           *Cmd_Args( void )
+char           *Cmd_Args()
 {
 	return Cmd_ArgsFrom( 1 );
 }
@@ -207,7 +207,7 @@ are inserted in the appropriate place. The argv array
 will point into this temporary buffer.
 ============
 */
-static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean ignoreQuotes )
+static void Tokenise( const char *text, char *textOut, bool tokens, bool ignoreQuotes )
 {
 	// Assumption:
 	// if ( tokens ) cmd.argc == 0 && textOut == cmd.tokenized
@@ -345,7 +345,7 @@ Optionally wrap in ""
 ============
 */
 #define ESCAPEBUFFER_SIZE BIG_INFO_STRING
-static char *GetEscapeBuffer( void )
+static char *GetEscapeBuffer()
 {
 	static char escapeBuffer[ 4 ][ ESCAPEBUFFER_SIZE ];
 	static int escapeIndex = -1;
@@ -354,13 +354,13 @@ static char *GetEscapeBuffer( void )
 	return escapeBuffer[ escapeIndex ];
 }
 
-static const char *EscapeString( const char *in, qboolean quote )
+static const char *EscapeString( const char *in, bool quote )
 {
 	char        *escapeBuffer = GetEscapeBuffer();
 	char        *out = escapeBuffer;
 	const char  *end = escapeBuffer + ESCAPEBUFFER_SIZE - 1 - !!quote;
-	qboolean    quoted = qfalse;
-	qboolean    forcequote = qfalse;
+	bool    quoted = false;
+	bool    forcequote = false;
 
 	if ( quote )
 	{
@@ -373,7 +373,7 @@ static const char *EscapeString( const char *in, qboolean quote )
 
 		if ( forcequote )
 		{
-			forcequote = qfalse;
+			forcequote = false;
 			goto doquote;
 		}
 
@@ -382,23 +382,23 @@ static const char *EscapeString( const char *in, qboolean quote )
 		case '/':
 			// only quote "//" and "/*"
 			if ( *in != '/' && *in != '*' ) break;
-			forcequote = qtrue;
+			forcequote = true;
 			goto doquote;
 		case ';':
 			// no need to quote semicolons if in ""
-			quoted = qtrue;
+			quoted = true;
 			if ( quote ) break;
 		case '"':
 		case '$':
 		case '\\':
 			doquote:
-			quoted = qtrue;
+			quoted = true;
 			*out++ = '\\'; // could set out == end - is fine
 			break;
 		}
 
 		// keep quotes if we have white space
-		if ( c >= '\0' && c <= ' ' ) quoted = qtrue;
+		if ( c >= '\0' && c <= ' ' ) quoted = true;
 
 		// if out == end, overrun (but within escapeBuffer)
 		*out++ = c;
@@ -435,7 +435,7 @@ Adds escapes (see above), wraps in quotation marks.
 */
 const char *Cmd_QuoteString( const char *in )
 {
-	return EscapeString( in, qtrue );
+	return EscapeString( in, true );
 }
 
 /*
@@ -461,7 +461,7 @@ String length is UNCHECKED
 const char *Cmd_UnquoteString( const char *str )
 {
 	char *escapeBuffer = GetEscapeBuffer();
-	Tokenise( str, escapeBuffer, qfalse, qfalse );
+	Tokenise( str, escapeBuffer, false, false );
 	return escapeBuffer;
 }
 
@@ -529,7 +529,7 @@ Cmd_AddCommand
 */
 void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 {
-	proxies[cmd_name] = proxyInfo_t{function, NULL};
+	proxies[cmd_name] = proxyInfo_t{function, nullptr};
 
 	//VMs do not properly clean up commands so we avoid creating a command if there is already one
 	if (not Cmd::CommandExists(cmd_name)) {

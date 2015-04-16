@@ -41,7 +41,7 @@ static float GetNoiseValue( int x, int y, int z, int t )
 	return s_noise_table[ index ];
 }
 
-void R_NoiseInit( void )
+void R_NoiseInit()
 {
 	int i;
 

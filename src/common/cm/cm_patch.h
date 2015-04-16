@@ -38,10 +38,10 @@ Maryland 20850 USA.
 
 This file does not reference any globals, and has these entry points:
 
-void CM_ClearLevelPatches( void );
+void CM_ClearLevelPatches();
 struct patchCollide_s *CM_GeneratePatchCollide( int width, int height, const vec3_t *points );
 void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
-qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
+bool CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
 void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, flaot *points) );
 
 
@@ -77,9 +77,9 @@ typedef struct
 {
 	int      width;
 	int      height;
-	qboolean wrapWidth;
-	qboolean wrapHeight;
+	bool wrapWidth;
+	bool wrapHeight;
 	vec3_t   points[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ]; // [width][height]
 } cGrid_t;
 
-//struct patchCollide_s *CM_GeneratePatchCollide(int width, int height, vec3_t * points, qboolean addBevels);
+//struct patchCollide_s *CM_GeneratePatchCollide(int width, int height, vec3_t * points, bool addBevels);

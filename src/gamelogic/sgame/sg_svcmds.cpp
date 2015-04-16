@@ -38,13 +38,13 @@ Maryland 20850 USA.
 
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
 
-void Svcmd_EntityFire_f( void )
+void Svcmd_EntityFire_f()
 {
 	char argument[ MAX_STRING_CHARS ];
 	int  entityNum;
 	gentity_t *selection;
 	gentityCall_t call;
-	gentityCallDefinition_t callDefinition = { NULL, ON_DEFAULT, NULL, NULL, ECA_DEFAULT };
+	gentityCallDefinition_t callDefinition = { nullptr, ON_DEFAULT, nullptr, nullptr, ECA_DEFAULT };
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
@@ -101,12 +101,12 @@ static inline void PrintEntityOverviewLine( gentity_t *entity )
 Svcmd_EntityShow_f
 ===================
 */
-void Svcmd_EntityShow_f( void )
+void Svcmd_EntityShow_f()
 {
 	int       entityNum;
 	int       lastTargetIndex, targetIndex;
 	gentity_t *selection;
-	gentity_t *possibleTarget = NULL;
+	gentity_t *possibleTarget = nullptr;
 	char argument[ 6 ];
 
 
@@ -168,7 +168,7 @@ void Svcmd_EntityShow_f( void )
 	{
 		G_Printf( "Aims at\n");
 
-		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != NULL )
+		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != nullptr )
 		{
 			G_Printf(" • %s %s\n", etos( possibleTarget ), vtos( possibleTarget->s.origin));
 		}
@@ -178,7 +178,7 @@ void Svcmd_EntityShow_f( void )
 	if(selection->callTargetCount)
 	{
 		lastTargetIndex = -1;
-		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != NULL )
+		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != nullptr )
 		{
 
 			if(lastTargetIndex != targetIndex)
@@ -208,7 +208,7 @@ Svcmd_EntityList_f
 ===================
 */
 
-void  Svcmd_EntityList_f( void )
+void  Svcmd_EntityList_f()
 {
 	int       entityNum;
 	int i;
@@ -224,7 +224,7 @@ void  Svcmd_EntityList_f( void )
 	}
 	else
 	{
-		filter = NULL;
+		filter = nullptr;
 	}
 
 	for ( entityNum = 0, currentEntityCount = 0; entityNum < level.num_entities; entityNum++, displayedEntity++ )
@@ -235,11 +235,11 @@ void  Svcmd_EntityList_f( void )
 		}
 		currentEntityCount++;
 
-		if(filter && !Com_Filter(filter, displayedEntity->classname, qfalse) )
+		if(filter && !Com_Filter(filter, displayedEntity->classname, false) )
 		{
 			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->names[i]; ++i)
 			{
-				if( Com_Filter(filter, displayedEntity->names[i], qfalse) )
+				if( Com_Filter(filter, displayedEntity->names[i], false) )
 				{
 					PrintEntityOverviewLine( displayedEntity );
 					break;
@@ -263,7 +263,7 @@ static gclient_t *ClientForString( char *s )
 	if ( idnum == -1 )
 	{
 		G_Printf( "%s", err );
-		return NULL;
+		return nullptr;
 	}
 
 	return &level.clients[ idnum ];
@@ -276,7 +276,7 @@ Svcmd_ForceTeam_f
 forceteam <player> <team>
 ===================
 */
-static void Svcmd_ForceTeam_f( void )
+static void Svcmd_ForceTeam_f()
 {
 	gclient_t *cl;
 	char      str[ MAX_TOKEN_CHARS ];
@@ -315,7 +315,7 @@ Svcmd_LayoutSave_f
 layoutsave <name>
 ===================
 */
-static void Svcmd_LayoutSave_f( void )
+static void Svcmd_LayoutSave_f()
 {
 	char str[ MAX_QPATH ];
 	char str2[ MAX_QPATH - 4 ];
@@ -367,7 +367,7 @@ This is just a silly alias for doing:
  map_restart
 ===================
 */
-static void Svcmd_LayoutLoad_f( void )
+static void Svcmd_LayoutLoad_f()
 {
 	char layouts[ MAX_CVAR_VALUE_STRING ];
 	char *s;
@@ -382,10 +382,10 @@ static void Svcmd_LayoutLoad_f( void )
 	Q_strncpyz( layouts, s, sizeof( layouts ) );
 	trap_Cvar_Set( "g_layouts", layouts );
 	trap_SendConsoleCommand( "map_restart\n" );
-	level.restarted = qtrue;
+	level.restarted = true;
 }
 
-static void Svcmd_AdmitDefeat_f( void )
+static void Svcmd_AdmitDefeat_f()
 {
 	int  team;
 	char teamNum[ 2 ];
@@ -419,7 +419,7 @@ static void Svcmd_AdmitDefeat_f( void )
 	G_BaseSelfDestruct( (team_t) team );
 }
 
-static void Svcmd_TeamWin_f( void )
+static void Svcmd_TeamWin_f()
 {
 	// this is largely made redundant by admitdefeat <team>
 	char cmd[ 6 ];
@@ -438,7 +438,7 @@ static void Svcmd_TeamWin_f( void )
 	}
 }
 
-static void Svcmd_Evacuation_f( void )
+static void Svcmd_Evacuation_f()
 {
 	trap_SendServerCommand( -1, "print_tr \"" N_("Evacuation ordered\n") "\"" );
 	level.lastWin = TEAM_NONE;
@@ -448,7 +448,7 @@ static void Svcmd_Evacuation_f( void )
 	G_MapLog_Result( 'd' );
 }
 
-static void Svcmd_MapRotation_f( void )
+static void Svcmd_MapRotation_f()
 {
 	char rotationName[ MAX_QPATH ];
 
@@ -462,13 +462,13 @@ static void Svcmd_MapRotation_f( void )
 
 	trap_Argv( 1, rotationName, sizeof( rotationName ) );
 
-	if ( !G_StartMapRotation( rotationName, qfalse, qtrue, qfalse, 0 ) )
+	if ( !G_StartMapRotation( rotationName, false, true, false, 0 ) )
 	{
 		G_Printf( "maprotation: invalid map rotation \"%s\"\n", rotationName );
 	}
 }
 
-static void Svcmd_TeamMessage_f( void )
+static void Svcmd_TeamMessage_f()
 {
 	char   teamNum[ 2 ];
 	team_t team;
@@ -494,7 +494,7 @@ static void Svcmd_TeamMessage_f( void )
 	G_LogPrintf( "SayTeam: -1 \"console\": %s\n", arg );
 }
 
-static void Svcmd_CenterPrint_f( void )
+static void Svcmd_CenterPrint_f()
 {
 	if ( trap_Argc() < 2 )
 	{
@@ -505,7 +505,7 @@ static void Svcmd_CenterPrint_f( void )
 	trap_SendServerCommand( -1, va( "cp %s", Quote( ConcatArgs( 1 ) ) ) );
 }
 
-static void Svcmd_EjectClient_f( void )
+static void Svcmd_EjectClient_f()
 {
 	char *reason, name[ MAX_STRING_CHARS ];
 
@@ -556,7 +556,7 @@ static void Svcmd_EjectClient_f( void )
 	}
 }
 
-static void Svcmd_DumpUser_f( void )
+static void Svcmd_DumpUser_f()
 {
 	char       name[ MAX_STRING_CHARS ], userinfo[ MAX_INFO_STRING ];
 	char       key[ BIG_INFO_KEY ], value[ BIG_INFO_VALUE ];
@@ -595,7 +595,7 @@ static void Svcmd_DumpUser_f( void )
 	}
 }
 
-static void Svcmd_Pr_f( void )
+static void Svcmd_Pr_f()
 {
 	char targ[ 4 ];
 	int  cl;
@@ -618,7 +618,7 @@ static void Svcmd_Pr_f( void )
 	trap_SendServerCommand( cl, va( "print %s\\\n", Quote( ConcatArgs( 2 ) ) ) );
 }
 
-static void Svcmd_PrintQueue_f( void )
+static void Svcmd_PrintQueue_f()
 {
 	team_t team;
 	char teamName[ MAX_STRING_CHARS ];
@@ -643,39 +643,39 @@ static void Svcmd_PrintQueue_f( void )
 }
 
 // dumb wrapper for "a", "m", "chat", and "say"
-static void Svcmd_MessageWrapper( void )
+static void Svcmd_MessageWrapper()
 {
 	char cmd[ 5 ];
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
 	if ( !Q_stricmp( cmd, "a" ) )
 	{
-		Cmd_AdminMessage_f( NULL );
+		Cmd_AdminMessage_f( nullptr );
 	}
 	else if ( !Q_stricmp( cmd, "asay" ) )
 	{
-		G_Say( NULL, SAY_ALL_ADMIN, ConcatArgs( 1 ) );
+		G_Say( nullptr, SAY_ALL_ADMIN, ConcatArgs( 1 ) );
 	}
 	else if ( !Q_stricmp( cmd, "m" ) )
 	{
-		Cmd_PrivateMessage_f( NULL );
+		Cmd_PrivateMessage_f( nullptr );
 	}
 	else if ( !Q_stricmp( cmd, "say" ) )
 	{
-		G_Say( NULL, SAY_ALL, ConcatArgs( 1 ) );
+		G_Say( nullptr, SAY_ALL, ConcatArgs( 1 ) );
 	}
 	else if ( !Q_stricmp( cmd, "chat" ) )
 	{
-		G_Say( NULL, SAY_RAW, ConcatArgs( 1 ) );
+		G_Say( nullptr, SAY_RAW, ConcatArgs( 1 ) );
 	}
 }
 
-static void Svcmd_MapLogWrapper( void )
+static void Svcmd_MapLogWrapper()
 {
-	Cmd_MapLog_f( NULL );
+	Cmd_MapLog_f( nullptr );
 }
 
-static void Svcmd_G_AdvanceMapRotation_f( void )
+static void Svcmd_G_AdvanceMapRotation_f()
 {
 	G_AdvanceMapRotation( 0 );
 }
@@ -683,36 +683,36 @@ static void Svcmd_G_AdvanceMapRotation_f( void )
 static const struct svcmd
 {
 	const char *cmd;
-	qboolean conflicts; //With a command registered by cgame
-	void ( *function )( void );
+	bool conflicts; //With a command registered by cgame
+	void ( *function )();
 } svcmds[] =
 {
-	{ "a",                  qtrue,  Svcmd_MessageWrapper         },
-	{ "admitDefeat",        qfalse, Svcmd_AdmitDefeat_f          },
-	{ "advanceMapRotation", qfalse, Svcmd_G_AdvanceMapRotation_f },
-	{ "alienWin",           qfalse, Svcmd_TeamWin_f              },
-	{ "asay",               qtrue,  Svcmd_MessageWrapper         },
-	{ "chat",               qtrue,  Svcmd_MessageWrapper         },
-	{ "cp",                 qtrue,  Svcmd_CenterPrint_f          },
-	{ "dumpuser",           qfalse, Svcmd_DumpUser_f             },
-	{ "eject",              qfalse, Svcmd_EjectClient_f          },
-	{ "entityFire",         qfalse, Svcmd_EntityFire_f           },
-	{ "entityList",         qfalse, Svcmd_EntityList_f           },
-	{ "entityShow",         qfalse, Svcmd_EntityShow_f           },
-	{ "evacuation",         qfalse, Svcmd_Evacuation_f           },
-	{ "forceTeam",          qfalse, Svcmd_ForceTeam_f            },
-	{ "humanWin",           qfalse, Svcmd_TeamWin_f              },
-	{ "layoutLoad",         qfalse, Svcmd_LayoutLoad_f           },
-	{ "layoutSave",         qfalse, Svcmd_LayoutSave_f           },
-	{ "loadcensors",        qfalse, G_LoadCensors                },
-	{ "m",                  qtrue,  Svcmd_MessageWrapper         },
-	{ "maplog",             qtrue,  Svcmd_MapLogWrapper          },
-	{ "mapRotation",        qfalse, Svcmd_MapRotation_f          },
-	{ "pr",                 qfalse, Svcmd_Pr_f                   },
-	{ "printqueue",         qfalse, Svcmd_PrintQueue_f           },
-	{ "say",                qtrue,  Svcmd_MessageWrapper         },
-	{ "say_team",           qtrue,  Svcmd_TeamMessage_f          },
-	{ "stopMapRotation",    qfalse, G_StopMapRotation            },
+	{ "a",                  true,  Svcmd_MessageWrapper         },
+	{ "admitDefeat",        false, Svcmd_AdmitDefeat_f          },
+	{ "advanceMapRotation", false, Svcmd_G_AdvanceMapRotation_f },
+	{ "alienWin",           false, Svcmd_TeamWin_f              },
+	{ "asay",               true,  Svcmd_MessageWrapper         },
+	{ "chat",               true,  Svcmd_MessageWrapper         },
+	{ "cp",                 true,  Svcmd_CenterPrint_f          },
+	{ "dumpuser",           false, Svcmd_DumpUser_f             },
+	{ "eject",              false, Svcmd_EjectClient_f          },
+	{ "entityFire",         false, Svcmd_EntityFire_f           },
+	{ "entityList",         false, Svcmd_EntityList_f           },
+	{ "entityShow",         false, Svcmd_EntityShow_f           },
+	{ "evacuation",         false, Svcmd_Evacuation_f           },
+	{ "forceTeam",          false, Svcmd_ForceTeam_f            },
+	{ "humanWin",           false, Svcmd_TeamWin_f              },
+	{ "layoutLoad",         false, Svcmd_LayoutLoad_f           },
+	{ "layoutSave",         false, Svcmd_LayoutSave_f           },
+	{ "loadcensors",        false, G_LoadCensors                },
+	{ "m",                  true,  Svcmd_MessageWrapper         },
+	{ "maplog",             true,  Svcmd_MapLogWrapper          },
+	{ "mapRotation",        false, Svcmd_MapRotation_f          },
+	{ "pr",                 false, Svcmd_Pr_f                   },
+	{ "printqueue",         false, Svcmd_PrintQueue_f           },
+	{ "say",                true,  Svcmd_MessageWrapper         },
+	{ "say_team",           true,  Svcmd_TeamMessage_f          },
+	{ "stopMapRotation",    false, G_StopMapRotation            },
 };
 
 /*
@@ -721,7 +721,7 @@ ConsoleCommand
 
 =================
 */
-qboolean  ConsoleCommand( void )
+bool  ConsoleCommand()
 {
 	char         cmd[ MAX_TOKEN_CHARS ];
 	struct svcmd *command;
@@ -734,9 +734,9 @@ qboolean  ConsoleCommand( void )
 	if ( !command )
 	{
 		// see if this is an admin command
-		if ( G_admin_cmd_check( NULL ) )
+		if ( G_admin_cmd_check( nullptr ) )
 		{
-			return qtrue;
+			return true;
 		}
 
 		if ( level.inClient )
@@ -744,23 +744,23 @@ qboolean  ConsoleCommand( void )
 			G_Printf( "unknown command server console command: %s\n", cmd );
 		}
 
-		return qfalse;
+		return false;
 	}
 
 	if ( command->conflicts && level.inClient )
 	{
-		return qfalse;
+		return false;
 	}
 
 	command->function();
-	return qtrue;
+	return true;
 }
 
 void CompleteCommand(int)
 {
 }
 
-void G_RegisterCommands( void )
+void G_RegisterCommands()
 {
 	int i;
 
@@ -777,7 +777,7 @@ void G_RegisterCommands( void )
 	G_admin_register_cmds();
 }
 
-void G_UnregisterCommands( void )
+void G_UnregisterCommands()
 {
 	int i;
 

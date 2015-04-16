@@ -36,38 +36,38 @@ Maryland 20850 USA.
 #include "shared/CommonProxies.h"
 
 
-static void CG_Rocket_EventOpen( void )
+static void CG_Rocket_EventOpen()
 {
 	trap_Rocket_LoadDocument( va( "%s.rml", CG_Argv( 1 ) ) );
 }
 
-static void CG_Rocket_EventClose( void )
+static void CG_Rocket_EventClose()
 {
 	trap_Rocket_DocumentAction( CG_Argv( 1 ), "close" );
 }
 
-static void CG_Rocket_EventGoto( void )
+static void CG_Rocket_EventGoto()
 {
 	trap_Rocket_DocumentAction( CG_Argv( 1 ), "goto" );
 }
 
-static void CG_Rocket_EventShow( void )
+static void CG_Rocket_EventShow()
 {
 	trap_Rocket_DocumentAction( CG_Argv( 1 ), "show" );
 }
 
-static void CG_Rocket_EventBlur( void )
+static void CG_Rocket_EventBlur()
 {
 	trap_Rocket_DocumentAction( CG_Argv( 1 ), "blur" );
 }
 
-static void CG_Rocket_EventHide( void )
+static void CG_Rocket_EventHide()
 {
 	trap_Rocket_DocumentAction( CG_Argv( 1 ), "hide" );
 }
 
 
-static void CG_Rocket_InitServers( void )
+static void CG_Rocket_InitServers()
 {
 	const char *src = CG_Argv( 1 );
 	trap_LAN_ResetPings( CG_StringToNetSource( src ) );
@@ -86,7 +86,7 @@ static void CG_Rocket_InitServers( void )
 	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( src ) );
 }
 
-static void CG_Rocket_BuildDS( void )
+static void CG_Rocket_BuildDS()
 {
 	char table[ 100 ];
 
@@ -96,14 +96,14 @@ static void CG_Rocket_BuildDS( void )
 
 
 
-static void CG_Rocket_EventExec( void )
+static void CG_Rocket_EventExec()
 {
 	const char *args = CG_Args();
 	args = Q_stristr( args, " ");
 	trap_SendConsoleCommand( args );
 }
 
-static void CG_Rocket_SortDS( void )
+static void CG_Rocket_SortDS()
 {
 	char name[ 100 ], table[ 100 ], sortBy[ 100 ];
 
@@ -120,14 +120,14 @@ static void CG_Rocket_SortDS( void )
 	Com_Printf( "^3WARNING: Invalid syntax for 'sortDS'\n sortDS <data source> <table name> <sort by>\n" );
 }
 
-static void CG_Rocket_ExecDS( void )
+static void CG_Rocket_ExecDS()
 {
 	char table[ 100 ];
 	Q_strncpyz( table, CG_Argv( 2 ), sizeof( table ) );
 	CG_Rocket_ExecDataSource( CG_Argv( 1 ), table );
 }
 
-static void CG_Rocket_SetDS( void )
+static void CG_Rocket_SetDS()
 {
 	char datasrc[ 100 ];
 	char datatbl[ 100 ];
@@ -137,7 +137,7 @@ static void CG_Rocket_SetDS( void )
 	CG_Rocket_SetDataSourceIndex( datasrc, datatbl, atoi( CG_Argv( 3 ) ) );
 }
 
-static void CG_Rocket_SetAttribute( void )
+static void CG_Rocket_SetAttribute()
 {
 	char attribute[ 100 ], value[ MAX_STRING_CHARS ];
 
@@ -148,7 +148,7 @@ static void CG_Rocket_SetAttribute( void )
 
 }
 
-static void CG_Rocket_FilterDS( void )
+static void CG_Rocket_FilterDS()
 {
 	char src[ 100 ];
 	char tbl[ 100 ];
@@ -162,9 +162,9 @@ static void CG_Rocket_FilterDS( void )
 	CG_Rocket_FilterDataSource( src, tbl, params );
 }
 
-static void CG_Rocket_SetChatCommand( void )
+static void CG_Rocket_SetChatCommand()
 {
-	const char *cmd = NULL;
+	const char *cmd = nullptr;
 
 	switch ( cg.sayType )
 	{
@@ -194,7 +194,7 @@ static void CG_Rocket_SetChatCommand( void )
 	}
 }
 
-static void CG_Rocket_EventExecForm( void )
+static void CG_Rocket_EventExecForm()
 {
 	static char params[ BIG_INFO_STRING ];
 	char cmd[ MAX_STRING_CHARS ]  = { 0 };
@@ -235,7 +235,7 @@ static void CG_Rocket_EventExecForm( void )
 	}
 }
 
-static void CG_Rocket_SetDataSelectValue( void )
+static void CG_Rocket_SetDataSelectValue()
 {
 	char src[ 100 ];
 	char tbl[ 100 ];
@@ -253,7 +253,7 @@ static void CG_Rocket_SetDataSelectValue( void )
 
 }
 
-static void CG_Rocket_GraphicsQualityChanged( void )
+static void CG_Rocket_GraphicsQualityChanged()
 {
 	switch ( trap_Cvar_VariableIntegerValue( "ui_glCustom" ) )
 	{
@@ -351,9 +351,9 @@ static void CG_Rocket_GraphicsQualityChanged( void )
 	}
 }
 
-static void CG_Rocket_EventPlay( void )
+static void CG_Rocket_EventPlay()
 {
-	const char *track = NULL;
+	const char *track = nullptr;
 
 	// Specifying multiple files to randomly select between
 	if ( trap_Argc() > 2 )
@@ -373,7 +373,7 @@ static void CG_Rocket_EventPlay( void )
 	}
 }
 
-static void CG_Rocket_ResetPings( void )
+static void CG_Rocket_ResetPings()
 {
 	const char *src = CG_Argv( 1 );
 	trap_LAN_ResetPings( CG_StringToNetSource( src ) );
@@ -383,7 +383,7 @@ static void CG_Rocket_ResetPings( void )
 typedef struct
 {
 	const char *const command;
-	void ( *exec ) ( void );
+	void ( *exec ) ();
 } eventCmd_t;
 
 static const eventCmd_t eventCmdList[] =
@@ -417,7 +417,7 @@ static int eventCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( eventCmd_t * ) b )->command );
 }
 
-void CG_Rocket_ProcessEvents( void )
+void CG_Rocket_ProcessEvents()
 {
 	eventCmd_t *cmd;
 	std::string cmdText;

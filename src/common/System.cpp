@@ -149,7 +149,7 @@ std::string Win32StrError(uint32_t error)
 {
 	std::string out;
 	char* message;
-	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL, error, MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), reinterpret_cast<char *>(&message), 0, NULL)) {
+	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, error, MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), reinterpret_cast<char *>(&message), 0, nullptr)) {
 		out = message;
 
 		// FormatMessage adds ".\r\n" to messages, but we don't want those
@@ -218,7 +218,7 @@ static const char *WindowsExceptionString(DWORD code)
 static LONG WINAPI CrashHandler(PEXCEPTION_POINTERS ExceptionInfo)
 {
 	// Reset handler so that any future errors cause a crash
-	SetUnhandledExceptionFilter(NULL);
+	SetUnhandledExceptionFilter(nullptr);
 
 	// TODO: backtrace
 

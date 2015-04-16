@@ -76,7 +76,7 @@ Parses deltas from the given base and adds the resulting entity
 to the current frame
 ==================
 */
-void CL_DeltaEntity( msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t *old, qboolean unchanged )
+void CL_DeltaEntity( msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t *old, bool unchanged )
 {
 	entityState_t *state;
 
@@ -119,11 +119,11 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 
 	// delta from the entities present in oldframe
 	oldindex = 0;
-	oldstate = NULL;
+	oldstate = nullptr;
 
 	if ( !oldframe )
 	{
-		static const clSnapshot_t nullframe = { qfalse };
+		static const clSnapshot_t nullframe = { false };
 
 		oldframe = &nullframe;
 		oldnum = MAX_GENTITIES; // guaranteed out of range
@@ -165,7 +165,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 				Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
 			}
 
-			CL_DeltaEntity( msg, newframe, oldnum, oldstate, qtrue );
+			CL_DeltaEntity( msg, newframe, oldnum, oldstate, true );
 
 			oldindex++;
 
@@ -189,7 +189,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 				Com_Printf( "%3i:  delta: %i\n", msg->readcount, newnum );
 			}
 
-			CL_DeltaEntity( msg, newframe, newnum, oldstate, qfalse );
+			CL_DeltaEntity( msg, newframe, newnum, oldstate, false );
 
 			oldindex++;
 
@@ -215,7 +215,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 				Com_Printf( "%3i:  baseline: %i\n", msg->readcount, newnum );
 			}
 
-			CL_DeltaEntity( msg, newframe, newnum, &cl.entityBaselines[ newnum ], qfalse );
+			CL_DeltaEntity( msg, newframe, newnum, &cl.entityBaselines[ newnum ], false );
 			continue;
 		}
 	}
@@ -229,7 +229,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 			Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
 		}
 
-		CL_DeltaEntity( msg, newframe, oldnum, oldstate, qtrue );
+		CL_DeltaEntity( msg, newframe, oldnum, oldstate, true );
 
 		oldindex++;
 
@@ -308,12 +308,12 @@ void CL_ParseSnapshot( msg_t *msg )
 	// message
 	if ( newSnap.deltaNum <= 0 )
 	{
-		newSnap.valid = qtrue; // uncompressed frame
-		old = NULL;
+		newSnap.valid = true; // uncompressed frame
+		old = nullptr;
 
 		if ( clc.demorecording )
 		{
-			clc.demowaiting = qfalse; // we can start recording now
+			clc.demowaiting = false; // we can start recording now
 //          if(cl_autorecord->integer) {
 //              Cvar_Set( "g_synchronousClients", "0" );
 //          }
@@ -383,7 +383,7 @@ void CL_ParseSnapshot( msg_t *msg )
 		}
 		else
 		{
-			newSnap.valid = qtrue; // valid delta parse
+			newSnap.valid = true; // valid delta parse
 		}
 	}
 
@@ -406,7 +406,7 @@ void CL_ParseSnapshot( msg_t *msg )
 	}
 	else
 	{
-		MSG_ReadDeltaPlayerstate( msg, NULL, &newSnap.ps );
+		MSG_ReadDeltaPlayerstate( msg, nullptr, &newSnap.ps );
 	}
 
 	// read packet entities
@@ -433,7 +433,7 @@ void CL_ParseSnapshot( msg_t *msg )
 
 	for ( ; oldMessageNum < newSnap.messageNum; oldMessageNum++ )
 	{
-		cl.snapshots[ oldMessageNum & PACKET_MASK ].valid = qfalse;
+		cl.snapshots[ oldMessageNum & PACKET_MASK ].valid = false;
 	}
 
 	// copy to the current good spot
@@ -460,7 +460,7 @@ void CL_ParseSnapshot( msg_t *msg )
 		Com_Printf( "   snapshot:%i  delta:%i  ping:%i\n", cl.snap.messageNum, cl.snap.deltaNum, cl.snap.ping );
 	}
 
-	cl.newSnapshots = qtrue;
+	cl.newSnapshots = true;
 }
 
 //=====================================================================
@@ -474,7 +474,7 @@ new information out of it.  This will happen at every
 gamestate, and possibly during gameplay.
 ==================
 */
-void CL_SystemInfoChanged( void )
+void CL_SystemInfoChanged()
 {
 	const char *systemInfo;
 	const char *s;
@@ -646,7 +646,7 @@ void CL_ParseDownload( msg_t *msg )
 
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
 			Com_DPrintf( "Server redirected download: %s\n", cls.downloadName );
-			clc.bWWWDl = qtrue; // activate wwwdl client loop
+			clc.bWWWDl = true; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
 			cls.state = CA_DOWNLOADING;
 
@@ -655,7 +655,7 @@ void CL_ParseDownload( msg_t *msg )
 			{
 				Com_Printf( "refusing redirect to %s by server (bad checksum)\n", cls.downloadName );
 				CL_AddReliableCommand( "wwwdl fail" );
-				clc.bWWWDlAborting = qtrue;
+				clc.bWWWDlAborting = true;
 				return;
 			}
 
@@ -666,7 +666,7 @@ void CL_ParseDownload( msg_t *msg )
 				// still leave a flag so that CL_WWWDownload is inactive
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand( "wwwdl fail" );
-				clc.bWWWDlAborting = qtrue;
+				clc.bWWWDlAborting = true;
 				Com_Printf( "Failed to initialize download for '%s'\n", cls.downloadName );
 			}
 
@@ -675,7 +675,7 @@ void CL_ParseDownload( msg_t *msg )
 			if ( clc.downloadFlags & ( 1 << DL_FLAG_DISCON ) )
 			{
 				CL_AddReliableCommand( "wwwdl bbl8r" );
-				cls.bWWWDlDisconnected = qtrue;
+				cls.bWWWDlDisconnected = true;
 			}
 
 			return;
@@ -776,30 +776,30 @@ void CL_ParseDownload( msg_t *msg )
 
 #ifdef USE_VOIP
 static
-qboolean CL_ShouldIgnoreVoipSender( int sender )
+bool CL_ShouldIgnoreVoipSender( int sender )
 {
 	if ( !cl_voip->integer )
 	{
-		return qtrue; // VoIP is disabled.
+		return true; // VoIP is disabled.
 	}
 	else if ( ( sender == clc.clientNum ) && ( !clc.demoplaying ) )
 	{
-		return qtrue; // ignore own voice (unless playing back a demo).
+		return true; // ignore own voice (unless playing back a demo).
 	}
 	else if ( clc.voipMuteAll )
 	{
-		return qtrue; // all channels are muted with extreme prejudice.
+		return true; // all channels are muted with extreme prejudice.
 	}
 	else if ( clc.voipIgnore[ sender ] )
 	{
-		return qtrue; // just ignoring this guy.
+		return true; // just ignoring this guy.
 	}
 	else if ( clc.voipGain[ sender ] == 0.0f )
 	{
-		return qtrue; // too quiet to play.
+		return true; // too quiet to play.
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -946,7 +946,7 @@ void CL_ParseVoip( msg_t *msg )
 		for ( i = 0; i < seqdiff; i++ )
 		{
 			assert( ( written + clc.speexFrameSize ) * 2 < decodedSize );
-			speex_decode_int( clc.speexDecoder[ sender ], NULL, decoded + written );
+			speex_decode_int( clc.speexDecoder[ sender ], nullptr, decoded + written );
 			written += clc.speexFrameSize;
 		}
 	}

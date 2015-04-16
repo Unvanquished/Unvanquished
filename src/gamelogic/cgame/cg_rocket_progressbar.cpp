@@ -34,27 +34,27 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static float CG_Rocket_GetBuildableLoadProgress( void )
+static float CG_Rocket_GetBuildableLoadProgress()
 {
 	return cg.buildablesFraction;
 }
 
-static float CG_Rocket_GetCharLoadProgress( void )
+static float CG_Rocket_GetCharLoadProgress()
 {
 	return cg.charModelFraction;
 }
 
-static float CG_Rocket_GetMediaLoadProgress( void )
+static float CG_Rocket_GetMediaLoadProgress()
 {
 	return cg.mediaFraction;
 }
 
-static float CG_Rocket_GetOverallLoadProgress( void )
+static float CG_Rocket_GetOverallLoadProgress()
 {
 	return ( cg.mediaFraction + cg.charModelFraction + cg.buildablesFraction ) / 3.0f;
 }
 
-static float CG_Rocket_GetBuildTimerProgress( void )
+static float CG_Rocket_GetBuildTimerProgress()
 {
 	static int misc = 0;
 	static int max;
@@ -78,7 +78,7 @@ static float CG_Rocket_GetBuildTimerProgress( void )
 	return ( float ) misc / ( float ) max;
 }
 
-static float CG_Rocket_GetStaminaProgress( void )
+static float CG_Rocket_GetStaminaProgress()
 {
 	playerState_t *ps = &cg.snap->ps;
 	float         stamina = ps->stats[ STAT_STAMINA ];
@@ -86,7 +86,7 @@ static float CG_Rocket_GetStaminaProgress( void )
 	return ( stamina / ( float ) STAMINA_MAX );
 }
 
-static float CG_Rocket_GetPoisonProgress( void )
+static float CG_Rocket_GetPoisonProgress()
 {
 	static int time = -1;
 
@@ -108,14 +108,14 @@ static float CG_Rocket_GetPoisonProgress( void )
 
 }
 
-static float CG_Rocket_GetPlayerHealthProgress( void )
+static float CG_Rocket_GetPlayerHealthProgress()
 {
 	playerState_t *ps = &cg.snap->ps;
 
 	return ( float )ps->stats[ STAT_HEALTH ] / ( float )BG_Class( ps->stats[ STAT_CLASS ] )->health;
 }
 
-static float CG_Rocket_GetPlayerAmmoProgress( void )
+static float CG_Rocket_GetPlayerAmmoProgress()
 {
 	if ( cg.snap->ps.weaponstate == WEAPON_RELOADING )
 	{
@@ -145,7 +145,7 @@ static float CG_Rocket_GetPlayerAmmoProgress( void )
 	}
 }
 
-float CG_Rocket_FuelProgress( void )
+float CG_Rocket_FuelProgress()
 {
 	int   fuel;
 
@@ -158,7 +158,7 @@ float CG_Rocket_FuelProgress( void )
 	return ( float )fuel / ( float )JETPACK_FUEL_MAX;
 }
 
-float CG_Rocket_DownloadProgress( void )
+float CG_Rocket_DownloadProgress()
 {
 	return trap_Cvar_VariableValue( "cl_downloadCount" ) / trap_Cvar_VariableValue( "cl_downloadSize" );
 }
@@ -167,7 +167,7 @@ float CG_Rocket_DownloadProgress( void )
 typedef struct progressBarCmd_s
 {
 	const char *command;
-	float( *get )( void );
+	float( *get )();
 	rocketElementType_t type;
 } progressBarCmd_t;
 
@@ -194,7 +194,7 @@ static int progressBarCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( progressBarCmd_t * ) b )->command );
 }
 
-float CG_Rocket_ProgressBarValue( void )
+float CG_Rocket_ProgressBarValue()
 {
 	progressBarCmd_t *cmd;
 

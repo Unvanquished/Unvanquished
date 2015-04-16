@@ -247,7 +247,7 @@ static void CM_TestBoxInBrush( traceWork_t *tw, cbrush_t *brush )
 	}
 
 	// inside this brush
-	tw->trace.startsolid = tw->trace.allsolid = qtrue;
+	tw->trace.startsolid = tw->trace.allsolid = true;
 	tw->trace.fraction = 0;
 	tw->trace.contents = brush->contents;
 }
@@ -257,7 +257,7 @@ static void CM_TestBoxInBrush( traceWork_t *tw, cbrush_t *brush )
 CM_PositionTestInSurfaceCollide
 ====================
 */
-static qboolean CM_PositionTestInSurfaceCollide( traceWork_t *tw, const cSurfaceCollide_t *sc )
+static bool CM_PositionTestInSurfaceCollide( traceWork_t *tw, const cSurfaceCollide_t *sc )
 {
 	int      i, j;
 	float    offset, t;
@@ -268,7 +268,7 @@ static qboolean CM_PositionTestInSurfaceCollide( traceWork_t *tw, const cSurface
 
 	if ( tw->isPoint )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//
@@ -361,10 +361,10 @@ static qboolean CM_PositionTestInSurfaceCollide( traceWork_t *tw, const cSurface
 		}
 
 		// inside this patch facet
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -441,7 +441,7 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf )
 		{
 			if ( surface->type == MST_PATCH && surface->sc && CM_PositionTestInSurfaceCollide( tw, surface->sc ) )
 			{
-				tw->trace.startsolid = tw->trace.allsolid = qtrue;
+				tw->trace.startsolid = tw->trace.allsolid = true;
 				tw->trace.fraction = 0;
 				tw->trace.contents = surface->contents;
 				return;
@@ -452,7 +452,7 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf )
 		{
 			if ( surface->type == MST_TRIANGLE_SOUP && surface->sc && CM_PositionTestInSurfaceCollide( tw, surface->sc ) )
 			{
-				tw->trace.startsolid = tw->trace.allsolid = qtrue;
+				tw->trace.startsolid = tw->trace.allsolid = true;
 				tw->trace.fraction = 0;
 				tw->trace.contents = surface->contents;
 				return;
@@ -502,7 +502,7 @@ void CM_TestCapsuleInCapsule( traceWork_t *tw, clipHandle_t model )
 
 	if ( VectorLengthSquared( tmp ) < r )
 	{
-		tw->trace.startsolid = tw->trace.allsolid = qtrue;
+		tw->trace.startsolid = tw->trace.allsolid = true;
 		tw->trace.fraction = 0;
 	}
 
@@ -510,7 +510,7 @@ void CM_TestCapsuleInCapsule( traceWork_t *tw, clipHandle_t model )
 
 	if ( VectorLengthSquared( tmp ) < r )
 	{
-		tw->trace.startsolid = tw->trace.allsolid = qtrue;
+		tw->trace.startsolid = tw->trace.allsolid = true;
 		tw->trace.fraction = 0;
 	}
 
@@ -520,7 +520,7 @@ void CM_TestCapsuleInCapsule( traceWork_t *tw, clipHandle_t model )
 
 	if ( VectorLengthSquared( tmp ) < r )
 	{
-		tw->trace.startsolid = tw->trace.allsolid = qtrue;
+		tw->trace.startsolid = tw->trace.allsolid = true;
 		tw->trace.fraction = 0;
 	}
 
@@ -528,7 +528,7 @@ void CM_TestCapsuleInCapsule( traceWork_t *tw, clipHandle_t model )
 
 	if ( VectorLengthSquared( tmp ) < r )
 	{
-		tw->trace.startsolid = tw->trace.allsolid = qtrue;
+		tw->trace.startsolid = tw->trace.allsolid = true;
 		tw->trace.fraction = 0;
 	}
 
@@ -542,7 +542,7 @@ void CM_TestCapsuleInCapsule( traceWork_t *tw, clipHandle_t model )
 
 		if ( VectorLengthSquared( tmp ) < r )
 		{
-			tw->trace.startsolid = tw->trace.allsolid = qtrue;
+			tw->trace.startsolid = tw->trace.allsolid = true;
 			tw->trace.fraction = 0;
 		}
 	}
@@ -582,7 +582,7 @@ void CM_TestBoundingBoxInCapsule( traceWork_t *tw, clipHandle_t model )
 	VectorSet( tw->sphere.offset, 0, 0, size[ 1 ][ 2 ] - tw->sphere.radius );
 
 	// replace the capsule with the bounding box
-	h = CM_TempBoxModel( tw->size[ 0 ], tw->size[ 1 ], qfalse );
+	h = CM_TempBoxModel( tw->size[ 0 ], tw->size[ 1 ], false );
 	// calculate collision
 	cmod = CM_ClipHandleToModel( h );
 	CM_TestInLeaf( tw, &cmod->leaf );
@@ -615,7 +615,7 @@ void CM_PositionTest( traceWork_t *tw )
 	ll.list = leafs;
 	ll.storeLeafs = CM_StoreLeafs;
 	ll.lastLeaf = 0;
-	ll.overflowed = qfalse;
+	ll.overflowed = false;
 
 	cm.checkcount++;
 
@@ -652,7 +652,7 @@ CM_TracePointThroughSurfaceCollide
 */
 void CM_TracePointThroughSurfaceCollide( traceWork_t *tw, const cSurfaceCollide_t *sc )
 {
-	static qboolean frontFacing[ SHADER_MAX_TRIANGLES ];
+	static bool frontFacing[ SHADER_MAX_TRIANGLES ];
 	static float    intersection[ SHADER_MAX_TRIANGLES ];
 	float           intersect;
 	const cPlane_t  *planes;
@@ -677,11 +677,11 @@ void CM_TracePointThroughSurfaceCollide( traceWork_t *tw, const cSurfaceCollide_
 
 		if ( d1 <= 0 )
 		{
-			frontFacing[ i ] = qfalse;
+			frontFacing[ i ] = false;
 		}
 		else
 		{
-			frontFacing[ i ] = qtrue;
+			frontFacing[ i ] = true;
 		}
 
 		if ( d1 == d2 )
@@ -723,7 +723,7 @@ void CM_TracePointThroughSurfaceCollide( traceWork_t *tw, const cSurfaceCollide_
 		{
 			k = facet->borderPlanes[ j ];
 
-			if ( frontFacing[ k ] ^ facet->borderInward[ j ] )
+			if ( frontFacing[ k ] != facet->borderInward[ j ] )
 			{
 				if ( intersection[ k ] > intersect )
 				{
@@ -772,7 +772,7 @@ int CM_CheckFacetPlane( float *plane, vec3_t start, vec3_t end, float *enterFrac
 {
 	float d1, d2, f;
 
-	*hit = qfalse;
+	*hit = false;
 
 	d1 = DotProduct( start, plane ) - plane[ 3 ];
 	d2 = DotProduct( end, plane ) - plane[ 3 ];
@@ -780,13 +780,13 @@ int CM_CheckFacetPlane( float *plane, vec3_t start, vec3_t end, float *enterFrac
 	// if completely in front of face, no intersection with the entire facet
 	if ( d1 > 0 && ( d2 >= SURFACE_CLIP_EPSILON || d2 >= d1 ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// if it doesn't cross the plane, the plane isn't relevant
 	if ( d1 <= 0 && d2 <= 0 )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// crosses face
@@ -804,7 +804,7 @@ int CM_CheckFacetPlane( float *plane, vec3_t start, vec3_t end, float *enterFrac
 		if ( f > *enterFrac )
 		{
 			*enterFrac = f;
-			*hit = qtrue;
+			*hit = true;
 		}
 	}
 	else
@@ -823,7 +823,7 @@ int CM_CheckFacetPlane( float *plane, vec3_t start, vec3_t end, float *enterFrac
 		}
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1027,7 +1027,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 	float        dist;
 	float        enterFrac, leaveFrac;
 	float        d1, d2;
-	qboolean     getout, startout;
+	bool     getout, startout;
 	float        f;
 	cbrushside_t *side, *leadside;
 	float        t;
@@ -1036,7 +1036,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 
 	enterFrac = -1.0;
 	leaveFrac = 1.0;
-	clipplane = NULL;
+	clipplane = nullptr;
 
 	if ( !brush->numsides )
 	{
@@ -1045,10 +1045,10 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 
 	c_brush_traces++;
 
-	getout = qfalse;
-	startout = qfalse;
+	getout = false;
+	startout = false;
 
-	leadside = NULL;
+	leadside = nullptr;
 
 	if ( tw->type == TT_BISPHERE )
 	{
@@ -1068,12 +1068,12 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 
 			if ( d2 > 0 )
 			{
-				getout = qtrue; // endpoint is not in solid
+				getout = true; // endpoint is not in solid
 			}
 
 			if ( d1 > 0 )
 			{
-				startout = qtrue;
+				startout = true;
 			}
 
 			// if completely in front of face, no intersection with the entire brush
@@ -1088,7 +1088,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 				continue;
 			}
 
-			brush->collided = qtrue;
+			brush->collided = true;
 
 			// crosses face
 			if ( d1 > d2 )
@@ -1159,12 +1159,12 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 
 			if ( d2 > 0 )
 			{
-				getout = qtrue; // endpoint is not in solid
+				getout = true; // endpoint is not in solid
 			}
 
 			if ( d1 > 0 )
 			{
-				startout = qtrue;
+				startout = true;
 			}
 
 			// if completely in front of face, no intersection with the entire brush
@@ -1179,7 +1179,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 				continue;
 			}
 
-			brush->collided = qtrue;
+			brush->collided = true;
 
 			// crosses face
 			if ( d1 > d2 )
@@ -1236,12 +1236,12 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 
 			if ( d2 > 0 )
 			{
-				getout = qtrue; // endpoint is not in solid
+				getout = true; // endpoint is not in solid
 			}
 
 			if ( d1 > 0 )
 			{
-				startout = qtrue;
+				startout = true;
 			}
 
 			// if completely in front of face, no intersection with the entire brush
@@ -1256,7 +1256,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 				continue;
 			}
 
-			brush->collided = qtrue;
+			brush->collided = true;
 
 			// crosses face
 			if ( d1 > d2 )
@@ -1301,11 +1301,11 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 	if ( !startout )
 	{
 		// original point was inside brush
-		tw->trace.startsolid = qtrue;
+		tw->trace.startsolid = true;
 
 		if ( !getout )
 		{
-			tw->trace.allsolid = qtrue;
+			tw->trace.allsolid = true;
 			tw->trace.fraction = 0;
 			tw->trace.contents = brush->contents;
 		}
@@ -1465,7 +1465,7 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 			continue;
 		}
 
-		b->collided = qfalse;
+		b->collided = false;
 
 		if ( !CM_BoundsIntersect( tw->bounds[ 0 ], tw->bounds[ 1 ], b->bounds[ 0 ], b->bounds[ 1 ] ) )
 		{
@@ -1605,14 +1605,14 @@ void CM_TraceThroughSphere( traceWork_t *tw, vec3_t origin, float radius, vec3_t
 	if ( l1 < Square( radius ) )
 	{
 		tw->trace.fraction = 0;
-		tw->trace.startsolid = qtrue;
+		tw->trace.startsolid = true;
 		// test for allsolid
 		VectorSubtract( end, origin, dir );
 		l1 = VectorLengthSquared( dir );
 
 		if ( l1 < Square( radius ) )
 		{
-			tw->trace.allsolid = qtrue;
+			tw->trace.allsolid = true;
 		}
 
 		return;
@@ -1714,13 +1714,13 @@ void CM_TraceThroughVerticalCylinder( traceWork_t *tw, vec3_t origin, float radi
 		if ( l1 < Square( radius ) )
 		{
 			tw->trace.fraction = 0;
-			tw->trace.startsolid = qtrue;
+			tw->trace.startsolid = true;
 			VectorSubtract( end2d, org2d, dir );
 			l1 = VectorLengthSquared( dir );
 
 			if ( l1 < Square( radius ) )
 			{
-				tw->trace.allsolid = qtrue;
+				tw->trace.allsolid = true;
 			}
 
 			return;
@@ -1909,7 +1909,7 @@ void CM_TraceBoundingBoxThroughCapsule( traceWork_t *tw, clipHandle_t model )
 	VectorSet( tw->sphere.offset, 0, 0, size[ 1 ][ 2 ] - tw->sphere.radius );
 
 	// replace the capsule with the bounding box
-	h = CM_TempBoxModel( tw->size[ 0 ], tw->size[ 1 ], qfalse );
+	h = CM_TempBoxModel( tw->size[ 0 ], tw->size[ 1 ], false );
 
 	// calculate collision
 	cmod = CM_ClipHandleToModel( h );
@@ -2090,7 +2090,7 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 		return; // map not loaded, shouldn't happen
 	}
 
-	// allow NULL to be passed in for 0,0,0
+	// allow nullptr to be passed in for 0,0,0
 	if ( !mins )
 	{
 		mins = vec3_origin;
@@ -2250,12 +2250,12 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 		//
 		if ( tw.size[ 0 ][ 0 ] == 0 && tw.size[ 0 ][ 1 ] == 0 && tw.size[ 0 ][ 2 ] == 0 )
 		{
-			tw.isPoint = qtrue;
+			tw.isPoint = true;
 			VectorClear( tw.extents );
 		}
 		else
 		{
-			tw.isPoint = qfalse;
+			tw.isPoint = false;
 			tw.extents[ 0 ] = tw.size[ 1 ][ 0 ];
 			tw.extents[ 1 ] = tw.size[ 1 ][ 1 ];
 			tw.extents[ 2 ] = tw.size[ 1 ][ 2 ];
@@ -2333,7 +2333,7 @@ CM_BoxTrace
 void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
                   clipHandle_t model, int brushmask, int skipmask, traceType_t type )
 {
-	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, skipmask, type, NULL );
+	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, skipmask, type, nullptr );
 }
 
 /*
@@ -2351,7 +2351,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 {
 	trace_t  trace;
 	vec3_t   start_l, end_l;
-	qboolean rotated;
+	bool rotated;
 	vec3_t   offset;
 	vec3_t   symetricSize[ 2 ];
 	vec3_t   matrix[ 3 ], transpose[ 3 ];
@@ -2390,11 +2390,11 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	// rotate start and end into the models frame of reference
 	if ( model != BOX_MODEL_HANDLE && ( angles[ 0 ] || angles[ 1 ] || angles[ 2 ] ) )
 	{
-		rotated = qtrue;
+		rotated = true;
 	}
 	else
 	{
-		rotated = qfalse;
+		rotated = false;
 	}
 
 	halfwidth = symetricSize[ 1 ][ 0 ];
@@ -2470,7 +2470,7 @@ void CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, f
 	tw.trace.fraction = 1.0f; // assume it goes the entire distance until shown otherwise
 	VectorCopy( vec3_origin, tw.modelOrigin );
 	tw.type = TT_BISPHERE;
-	tw.testLateralCollision = qtrue;
+	tw.testLateralCollision = true;
 	tw.trace.lateralFraction = 1.0f;
 
 	if ( !cm.numNodes )
@@ -2507,7 +2507,7 @@ void CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, f
 		}
 	}
 
-	tw.isPoint = qfalse;
+	tw.isPoint = false;
 	tw.extents[ 0 ] = largestRadius;
 	tw.extents[ 1 ] = largestRadius;
 	tw.extents[ 2 ] = largestRadius;
@@ -2683,7 +2683,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 			else
 			{
 				planenum = facet->surfacePlane;
-				inward = qfalse;
+				inward = false;
 				//continue;
 			}
 
@@ -2708,7 +2708,7 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 				else
 				{
 					curplanenum = facet->surfacePlane;
-					curinward = qfalse;
+					curinward = false;
 					//continue;
 				}
 

@@ -56,7 +56,7 @@ public:
 
 		for ( size_t i = 0; i < raw_data.size(); ++i )
 		{
-			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].CString(), qtrue );
+			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].CString(), true );
 		}
 		cgvm.CGameRocketFormatData(handle);
 		formatted_data = out;

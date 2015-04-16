@@ -124,7 +124,7 @@ static void CG_DestroyParticle( particle_t *p, vec3_t impactNormal )
 		}
 	}
 
-	p->valid = qfalse;
+	p->valid = false;
 
 	//this gives other systems a couple of
 	//frames to realise the particle is gone
@@ -141,7 +141,7 @@ Introduce a new particle into the world
 static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *parent )
 {
 	int               i, j;
-	particle_t        *p = NULL;
+	particle_t        *p = nullptr;
 	particleEjector_t *pe = parent;
 	particleSystem_t  *ps = parent->parent;
 	vec3_t            attachmentPoint, attachmentVelocity;
@@ -205,7 +205,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 
 			if ( !CG_AttachmentPoint( &ps->attachment, attachmentPoint ) )
 			{
-				return NULL;
+				return nullptr;
 			}
 
 			VectorCopy( attachmentPoint, p->origin );
@@ -244,7 +244,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				case PMT_STATIC_TRANSFORM:
 					if ( !CG_AttachmentAxis( &ps->attachment, transform ) )
 					{
-						return NULL;
+						return nullptr;
 					}
 
 					if ( bp->velMoveValues.dirType == PMD_POINT )
@@ -271,7 +271,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 					{
 						if ( !CG_AttachmentDir( &ps->attachment, p->velocity ) )
 						{
-							return NULL;
+							return nullptr;
 						}
 					}
 
@@ -282,7 +282,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 					{
 						CG_Printf( S_ERROR "a particle with velocityType "
 						           "normal has no normal\n" );
-						return NULL;
+						return nullptr;
 					}
 
 					VectorCopy( ps->normal, p->velocity );
@@ -323,7 +323,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 
 			p->lastEvalTime = cg.time;
 
-			p->valid = qtrue;
+			p->valid = true;
 
 			//this particle has a child particle system attached
 			if ( bp->childSystemName[ 0 ] != '\0' )
@@ -370,7 +370,7 @@ Check if there are any ejectors that should be
 introducing new particles
 ===============
 */
-static void CG_SpawnNewParticles( void )
+static void CG_SpawnNewParticles()
 {
 	int                   i, j;
 	particle_t            *p;
@@ -438,7 +438,7 @@ static void CG_SpawnNewParticles( void )
 
 				if ( !count )
 				{
-					pe->valid = qfalse;
+					pe->valid = false;
 				}
 			}
 		}
@@ -456,7 +456,7 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
     particleSystem_t *parent )
 {
 	int               i;
-	particleEjector_t *pe = NULL;
+	particleEjector_t *pe = nullptr;
 	particleSystem_t  *ps = parent;
 
 	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
@@ -480,7 +480,7 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
 			pe->count = pe->totalParticles =
 			              ( int ) rint( CG_RandomiseValue( ( float ) bpe->totalParticles, bpe->totalParticlesRandFrac ) );
 
-			pe->valid = qtrue;
+			pe->valid = true;
 
 			if ( cg_debugParticles.integer >= 1 )
 			{
@@ -504,13 +504,13 @@ Allocate a new particle system
 particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 {
 	int                  i, j;
-	particleSystem_t     *ps = NULL;
+	particleSystem_t     *ps = nullptr;
 	baseParticleSystem_t *bps = &baseParticleSystems[ psHandle - 1 ];
 
 	if ( !bps->registered )
 	{
 		CG_Printf( S_ERROR "a particle system has not been registered yet\n" );
-		return NULL;
+		return nullptr;
 	}
 
 	for ( i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
@@ -524,8 +524,8 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 			//found a free slot
 			ps->class_ = bps;
 
-			ps->valid = qtrue;
-			ps->lazyRemove = qfalse;
+			ps->valid = true;
+			ps->lazyRemove = false;
 
 			// use "up" as an arbitrary (non-null) "last" normal
 			VectorSet( ps->lastNormal, 0, 0, 1 );
@@ -600,7 +600,7 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 
 					if ( bp->bounceSoundName[ 0 ] != '\0' )
 					{
-						bp->bounceSound = trap_S_RegisterSound( bp->bounceSoundName, qfalse );
+						bp->bounceSound = trap_S_RegisterSound( bp->bounceSoundName, false );
 					}
 
 					//recursively register any children
@@ -630,7 +630,7 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 				CG_Printf( "Registered particle system %s\n", name );
 			}
 
-			bps->registered = qtrue;
+			bps->registered = true;
 
 			//avoid returning 0
 			return i + 1;
@@ -648,10 +648,10 @@ CG_ParseValueAndVariance
 Parse a value and its random variance
 ===============
 */
-static void CG_ParseValueAndVariance( char *token, float *value, float *variance, qboolean allowNegative )
+static void CG_ParseValueAndVariance( char *token, float *value, float *variance, bool allowNegative )
 {
 	char  valueBuffer[ 16 ];
-	char  *variancePtr = NULL, *varEndPointer = NULL;
+	char  *variancePtr = nullptr, *varEndPointer = nullptr;
 	float localValue = 0.0f;
 	float localVariance = 0.0f;
 
@@ -672,17 +672,17 @@ static void CG_ParseValueAndVariance( char *token, float *value, float *variance
 		if ( varEndPointer )
 		{
 			varEndPointer[ 0 ] = '\0';
-			localVariance = atof_neg( variancePtr, qfalse ) / 100.0f;
+			localVariance = atof_neg( variancePtr, false ) / 100.0f;
 		}
 		else
 		{
 			if ( localValue != 0.0f )
 			{
-				localVariance = atof_neg( variancePtr, qfalse ) / localValue;
+				localVariance = atof_neg( variancePtr, false ) / localValue;
 			}
 			else
 			{
-				localVariance = atof_neg( variancePtr, qfalse );
+				localVariance = atof_neg( variancePtr, false );
 			}
 		}
 	}
@@ -691,12 +691,12 @@ static void CG_ParseValueAndVariance( char *token, float *value, float *variance
 		localValue = atof_neg( valueBuffer, allowNegative );
 	}
 
-	if ( value != NULL )
+	if ( value != nullptr )
 	{
 		*value = localValue;
 	}
 
-	if ( variance != NULL )
+	if ( variance != nullptr )
 	{
 		*variance = localVariance;
 	}
@@ -705,13 +705,13 @@ static void CG_ParseValueAndVariance( char *token, float *value, float *variance
 /*
 CG_ParseParticle helpers
 */
-static void CG_CopyLine( int *i, char *toks, int num, size_t size, char **text_p )
+static void CG_CopyLine( int *i, char *toks, int num, size_t size, const char **text_p )
 {
 	char *token;
 
 	while( *i < num )
 	{
-		token = COM_ParseExt( text_p, qfalse );
+		token = COM_ParseExt( text_p, false );
 
 		if ( !*token )
 		{
@@ -725,13 +725,13 @@ static void CG_CopyLine( int *i, char *toks, int num, size_t size, char **text_p
 	}
 }
 
-static qboolean CG_ParseType( pMoveType_t *pmt, char **text_p )
+static bool CG_ParseType( pMoveType_t *pmt, const char **text_p )
 {
 	char *token = COM_Parse( text_p );
 
 	if( !*token )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( !Q_stricmp( token, "static" ) )
@@ -763,16 +763,16 @@ static qboolean CG_ParseType( pMoveType_t *pmt, char **text_p )
 		*pmt = PMT_OPPORTUNISTIC_NORMAL;
 	}
 
-	return qtrue;
+	return true;
 }
 
-static qboolean CG_ParseDir( pMoveValues_t *pmv, char **text_p )
+static bool CG_ParseDir( pMoveValues_t *pmv, const char **text_p )
 {
 	char *token = COM_Parse( text_p );
 
 	if ( !*token )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( !Q_stricmp( token, "linear" ) )
@@ -784,16 +784,16 @@ static qboolean CG_ParseDir( pMoveValues_t *pmv, char **text_p )
 		pmv->dirType = PMD_POINT;
 	}
 
-	return qtrue;
+	return true;
 }
 
-static qboolean CG_ParseFinal( pLerpValues_t *plv, char **text_p, qboolean allowNegative )
+static bool CG_ParseFinal( pLerpValues_t *plv, const char **text_p, bool allowNegative )
 {
 	char *token = COM_Parse( text_p );
 
 	if( !*token )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( !Q_stricmp( token, "-" ) )
@@ -806,7 +806,7 @@ static qboolean CG_ParseFinal( pLerpValues_t *plv, char **text_p, qboolean allow
 		CG_ParseValueAndVariance( token, &plv->final, &plv->finalRandFrac, allowNegative );
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -816,7 +816,7 @@ CG_ParseParticle
 Parse a particle section
 ===============
 */
-static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
+static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 {
 	char  *token;
 	float number, randFrac;
@@ -829,7 +829,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 		if ( !*token )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( !Q_stricmp( token, "bounce" ) )
@@ -843,14 +843,14 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			if ( !Q_stricmp( token, "cull" ) )
 			{
-				bp->bounceCull = qtrue;
+				bp->bounceCull = true;
 
 				bp->bounceFrac = -1.0f;
 				bp->bounceFracRandFrac = 0.0f;
 			}
 			else
 			{
-				CG_ParseValueAndVariance( token, &bp->bounceFrac, &bp->bounceFracRandFrac, qfalse );
+				CG_ParseValueAndVariance( token, &bp->bounceFrac, &bp->bounceFracRandFrac, false );
 			}
 		}
 		else if ( !Q_stricmp( token, "bounceMark" ) )
@@ -862,7 +862,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->bounceMarkCount, &bp->bounceMarkCountRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &bp->bounceMarkCount, &bp->bounceMarkCountRandFrac, false );
 
 			token = COM_Parse( text_p );
 
@@ -871,9 +871,9 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->bounceMarkRadius, &bp->bounceMarkRadiusRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &bp->bounceMarkRadius, &bp->bounceMarkRadiusRandFrac, false );
 
-			token = COM_ParseExt( text_p, qfalse );
+			token = COM_ParseExt( text_p, false );
 
 			if ( !*token )
 			{
@@ -891,7 +891,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->bounceSoundCount, &bp->bounceSoundCountRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &bp->bounceSoundCount, &bp->bounceSoundCountRandFrac, false );
 
 			token = COM_Parse( text_p );
 
@@ -924,7 +924,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			}
 			else
 			{
-				bp->framerate = atof_neg( token, qfalse );
+				bp->framerate = atof_neg( token, false );
 			}
 
 			CG_CopyLine( &bp->numFrames, bp->shaderNames[ 0 ], ARRAY_LEN( bp->shaderNames ), MAX_QPATH, text_p );
@@ -949,7 +949,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			bp->modelAnimation.firstFrame = atoi_neg( token, qfalse );
+			bp->modelAnimation.firstFrame = atoi_neg( token, false );
 
 			token = COM_Parse( text_p );
 
@@ -959,14 +959,14 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			}
 
 			bp->modelAnimation.numFrames = atoi( token );
-			bp->modelAnimation.reversed = qfalse;
-			bp->modelAnimation.flipflop = qfalse;
+			bp->modelAnimation.reversed = false;
+			bp->modelAnimation.flipflop = false;
 
 			// if numFrames is negative the animation is reversed
 			if ( bp->modelAnimation.numFrames < 0 )
 			{
 				bp->modelAnimation.numFrames = -bp->modelAnimation.numFrames;
-				bp->modelAnimation.reversed = qtrue;
+				bp->modelAnimation.reversed = true;
 			}
 
 			token = COM_Parse( text_p );
@@ -992,7 +992,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			}
 			else
 			{
-				float fps = atof_neg( token, qfalse );
+				float fps = atof_neg( token, false );
 
 				if ( fps == 0.0f )
 				{
@@ -1027,7 +1027,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->velMoveValues.mag, &bp->velMoveValues.magRandFrac, qtrue );
+			CG_ParseValueAndVariance( token, &bp->velMoveValues.mag, &bp->velMoveValues.magRandFrac, true );
 		}
 		else if ( !Q_stricmp( token, "parentVelocityFraction" ) )
 		{
@@ -1038,7 +1038,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->velMoveValues.parentVelFrac, &bp->velMoveValues.parentVelFracRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &bp->velMoveValues.parentVelFrac, &bp->velMoveValues.parentVelFracRandFrac, false );
 		}
 		else if ( !Q_stricmp( token, "velocity" ) )
 		{
@@ -1051,7 +1051,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 					break;
 				}
 
-				bp->velMoveValues.dir[ i ] = atof_neg( token, qtrue );
+				bp->velMoveValues.dir[ i ] = atof_neg( token, true );
 			}
 
 			token = COM_Parse( text_p );
@@ -1061,7 +1061,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bp->velMoveValues.dirRandAngle, qfalse );
+			CG_ParseValueAndVariance( token, nullptr, &bp->velMoveValues.dirRandAngle, false );
 		}
 		else if ( !Q_stricmp( token, "velocityPoint" ) )
 		{
@@ -1074,7 +1074,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 					break;
 				}
 
-				bp->velMoveValues.point[ i ] = atof_neg( token, qtrue );
+				bp->velMoveValues.point[ i ] = atof_neg( token, true );
 			}
 
 			token = COM_Parse( text_p );
@@ -1084,7 +1084,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bp->velMoveValues.pointRandAngle, qfalse );
+			CG_ParseValueAndVariance( token, nullptr, &bp->velMoveValues.pointRandAngle, false );
 		}
 		///
 		else if ( !Q_stricmp( token, "accelerationType" ) )
@@ -1110,7 +1110,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->accMoveValues.mag, &bp->accMoveValues.magRandFrac, qtrue );
+			CG_ParseValueAndVariance( token, &bp->accMoveValues.mag, &bp->accMoveValues.magRandFrac, true );
 		}
 		else if ( !Q_stricmp( token, "acceleration" ) )
 		{
@@ -1123,7 +1123,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 					break;
 				}
 
-				bp->accMoveValues.dir[ i ] = atof_neg( token, qtrue );
+				bp->accMoveValues.dir[ i ] = atof_neg( token, true );
 			}
 
 			token = COM_Parse( text_p );
@@ -1133,7 +1133,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bp->accMoveValues.dirRandAngle, qfalse );
+			CG_ParseValueAndVariance( token, nullptr, &bp->accMoveValues.dirRandAngle, false );
 		}
 		else if ( !Q_stricmp( token, "accelerationPoint" ) )
 		{
@@ -1146,7 +1146,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 					break;
 				}
 
-				bp->accMoveValues.point[ i ] = atof_neg( token, qtrue );
+				bp->accMoveValues.point[ i ] = atof_neg( token, true );
 			}
 
 			token = COM_Parse( text_p );
@@ -1156,7 +1156,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bp->accMoveValues.pointRandAngle, qfalse );
+			CG_ParseValueAndVariance( token, nullptr, &bp->accMoveValues.pointRandAngle, false );
 		}
 		///
 		else if ( !Q_stricmp( token, "displacement" ) )
@@ -1171,18 +1171,18 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				}
 
 				CG_ParseValueAndVariance( token, &bp->displacement[ i ],
-				                          &bp->randDisplacement[ i ], qtrue );
+				                          &bp->randDisplacement[ i ], true );
 			}
 
 			// if there is another token on the same line interpret it as an
 			// additional displacement in all three directions, for compatibility
 			// with the old scripts where this was the only option
 			randFrac = 0;
-			token = COM_ParseExt( text_p, qfalse );
+			token = COM_ParseExt( text_p, false );
 
 			if ( token )
 			{
-				CG_ParseValueAndVariance( token, NULL, &randFrac, qtrue );
+				CG_ParseValueAndVariance( token, nullptr, &randFrac, true );
 			}
 
 			for ( i = 0; i < 3; i++ )
@@ -1205,19 +1205,19 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			bp->normalDisplacement = atof_neg( token, qtrue );
+			bp->normalDisplacement = atof_neg( token, true );
 		}
 		else if ( !Q_stricmp( token, "overdrawProtection" ) )
 		{
-			bp->overdrawProtection = qtrue;
+			bp->overdrawProtection = true;
 		}
 		else if ( !Q_stricmp( token, "realLight" ) )
 		{
-			bp->realLight = qtrue;
+			bp->realLight = true;
 		}
 		else if ( !Q_stricmp( token, "dynamicLight" ) )
 		{
-			bp->dynamicLight = qtrue;
+			bp->dynamicLight = true;
 
 			token = COM_Parse( text_p );
 
@@ -1226,7 +1226,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &bp->dLightRadius.delayRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &bp->dLightRadius.delayRandFrac, false );
 			bp->dLightRadius.delay = ( int ) number;
 
 			token = COM_Parse( text_p );
@@ -1236,9 +1236,9 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->dLightRadius.initial, &bp->dLightRadius.initialRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &bp->dLightRadius.initial, &bp->dLightRadius.initialRandFrac, false );
 
-			if ( !CG_ParseFinal( &bp->dLightRadius, text_p, qfalse ) )
+			if ( !CG_ParseFinal( &bp->dLightRadius, text_p, false ) )
 			{
 				break;
 			}
@@ -1260,7 +1260,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		}
 		else if ( !Q_stricmp( token, "cullOnStartSolid" ) )
 		{
-			bp->cullOnStartSolid = qtrue;
+			bp->cullOnStartSolid = true;
 		}
 		else if ( !Q_stricmp( token, "radius" ) )
 		{
@@ -1271,7 +1271,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &bp->radius.delayRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &bp->radius.delayRandFrac, false );
 			bp->radius.delay = ( int ) number;
 
 			token = COM_Parse( text_p );
@@ -1281,9 +1281,9 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->radius.initial, &bp->radius.initialRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &bp->radius.initial, &bp->radius.initialRandFrac, false );
 
-			if ( !CG_ParseFinal( &bp->radius, text_p, qfalse ) )
+			if ( !CG_ParseFinal( &bp->radius, text_p, false ) )
 			{
 				break;
 			}
@@ -1308,7 +1308,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &bp->alpha.delayRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &bp->alpha.delayRandFrac, false );
 			bp->alpha.delay = ( int ) number;
 
 			token = COM_Parse( text_p );
@@ -1318,9 +1318,9 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->alpha.initial, &bp->alpha.initialRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &bp->alpha.initial, &bp->alpha.initialRandFrac, false );
 
-			if ( !CG_ParseFinal( &bp->alpha, text_p, qfalse ) )
+			if ( !CG_ParseFinal( &bp->alpha, text_p, false ) )
 			{
 				break;
 			}
@@ -1334,7 +1334,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &bp->colorDelayRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &bp->colorDelayRandFrac, false );
 			bp->colorDelay = ( int ) number;
 
 			token = COM_Parse( text_p );
@@ -1392,7 +1392,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &bp->rotation.delayRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &bp->rotation.delayRandFrac, false );
 			bp->rotation.delay = ( int ) number;
 
 			token = COM_Parse( text_p );
@@ -1402,9 +1402,9 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &bp->rotation.initial, &bp->rotation.initialRandFrac, qtrue );
+			CG_ParseValueAndVariance( token, &bp->rotation.initial, &bp->rotation.initialRandFrac, true );
 
-			if ( !CG_ParseFinal( &bp->rotation, text_p, qtrue ) )
+			if ( !CG_ParseFinal( &bp->rotation, text_p, true ) )
 			{
 				break;
 			}
@@ -1418,7 +1418,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &bp->lifeTimeRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &bp->lifeTimeRandFrac, false );
 			bp->lifeTime = ( int ) number;
 		}
 		else if ( !Q_stricmp( token, "childSystem" ) )
@@ -1467,16 +1467,16 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{
-			return qtrue; //reached the end of this particle
+			return true; //reached the end of this particle
 		}
 		else
 		{
 			CG_Printf( S_ERROR "unknown token '%s' in particle\n", token );
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1499,7 +1499,7 @@ CG_ParseParticleEjector
 Parse a particle ejector section
 ===============
 */
-static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text_p )
+static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **text_p )
 {
 	char  *token;
 	float number;
@@ -1511,7 +1511,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 
 		if ( !*token )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( !Q_stricmp( token, "{" ) )
@@ -1521,19 +1521,19 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 			if ( !CG_ParseParticle( &baseParticles[ numBaseParticles ], text_p ) )
 			{
 				CG_Printf( S_ERROR "failed to parse particle\n" );
-				return qfalse;
+				return false;
 			}
 
 			if ( bpe->numParticles == MAX_PARTICLES_PER_EJECTOR )
 			{
 				CG_Printf( S_ERROR "ejector has > %d particles\n", MAX_PARTICLES_PER_EJECTOR );
-				return qfalse;
+				return false;
 			}
 
 			if ( numBaseParticles == MAX_BASEPARTICLES )
 			{
 				CG_Printf( S_ERROR "maximum number of particles (%d) reached\n", MAX_BASEPARTICLES );
-				return qfalse;
+				return false;
 			}
 
 			//start parsing particles again
@@ -1550,7 +1550,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &bpe->eject.delayRandFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &bpe->eject.delayRandFrac, false );
 			bpe->eject.delay = ( int ) number;
 		}
 		else if ( !Q_stricmp( token, "period" ) )
@@ -1562,7 +1562,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 				break;
 			}
 
-			bpe->eject.initial = atoi_neg( token, qfalse );
+			bpe->eject.initial = atoi_neg( token, false );
 
 			token = COM_Parse( text_p );
 
@@ -1577,7 +1577,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 			}
 			else
 			{
-				bpe->eject.final = atoi_neg( token, qfalse );
+				bpe->eject.final = atoi_neg( token, false );
 			}
 
 			token = COM_Parse( text_p );
@@ -1587,7 +1587,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, NULL, &bpe->eject.randFrac, qfalse );
+			CG_ParseValueAndVariance( token, nullptr, &bpe->eject.randFrac, false );
 		}
 		else if ( !Q_stricmp( token, "count" ) )
 		{
@@ -1605,7 +1605,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 			}
 			else
 			{
-				CG_ParseValueAndVariance( token, &number, &bpe->totalParticlesRandFrac, qfalse );
+				CG_ParseValueAndVariance( token, &number, &bpe->totalParticlesRandFrac, false );
 				bpe->totalParticles = ( int ) number;
 			}
 		}
@@ -1615,16 +1615,16 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{
-			return qtrue; //reached the end of this particle ejector
+			return true; //reached the end of this particle ejector
 		}
 		else
 		{
 			CG_Printf( S_ERROR "unknown token '%s' in particle ejector\n", token );
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1634,7 +1634,7 @@ CG_ParseParticleSystem
 Parse a particle system section
 ===============
 */
-static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p, const char *name )
+static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text_p, const char *name )
 {
 	char                  *token;
 	baseParticleEjector_t *bpe;
@@ -1646,7 +1646,7 @@ static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p
 
 		if ( !*token )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( !Q_stricmp( token, "{" ) )
@@ -1654,7 +1654,7 @@ static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p
 			if ( !CG_ParseParticleEjector( &baseParticleEjectors[ numBaseParticleEjectors ], text_p ) )
 			{
 				CG_Printf( S_ERROR "failed to parse particle ejector\n" );
-				return qfalse;
+				return false;
 			}
 
 			bpe = &baseParticleEjectors[ numBaseParticleEjectors ];
@@ -1664,20 +1664,20 @@ static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p
 			     ( bpe->eject.initial == 0.0f || bpe->eject.final == 0.0f ) )
 			{
 				CG_Printf( S_ERROR "ejector with 'count infinite' potentially has zero period\n" );
-				return qfalse;
+				return false;
 			}
 
 			if ( bps->numEjectors == MAX_EJECTORS_PER_SYSTEM )
 			{
 				CG_Printf( S_ERROR "particle system has > %d ejectors\n", MAX_EJECTORS_PER_SYSTEM );
-				return qfalse;
+				return false;
 			}
 
 			if ( numBaseParticleEjectors == MAX_BASEPARTICLE_EJECTORS )
 			{
 				CG_Printf( S_ERROR "maximum number of particle ejectors (%d) reached\n",
 				           MAX_BASEPARTICLE_EJECTORS );
-				return qfalse;
+				return false;
 			}
 
 			//start parsing ejectors again
@@ -1687,7 +1687,7 @@ static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p
 		}
 		else if ( !Q_stricmp( token, "thirdPersonOnly" ) )
 		{
-			bps->thirdPersonOnly = qtrue;
+			bps->thirdPersonOnly = true;
 		}
 		else if ( !Q_stricmp( token, "ejector" ) )  //acceptable text
 		{
@@ -1700,16 +1700,16 @@ static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p
 				CG_Printf( "Parsed particle system %s\n", name );
 			}
 
-			return qtrue; //reached the end of this particle system
+			return true; //reached the end of this particle system
 		}
 		else
 		{
 			CG_Printf( S_ERROR "unknown token '%s' in particle system %s\n", token, bps->name );
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1719,15 +1719,15 @@ CG_ParseParticleFile
 Load the particle systems from a particle file
 ===============
 */
-static qboolean CG_ParseParticleFile( const char *fileName )
+static bool CG_ParseParticleFile( const char *fileName )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          i;
 	int          len;
 	char         *token;
 	char         text[ 32000 ];
 	char         psName[ MAX_QPATH ];
-	qboolean     psNameSet = qfalse;
+	bool     psNameSet = false;
 	fileHandle_t f;
 
 	// load the file
@@ -1735,14 +1735,14 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 
 	if ( len < 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len ? S_ERROR "particle file %s is too long\n" : S_ERROR "particle file %s is empty\n", fileName );
-		return qfalse;
+		return false;
 	}
 
 	trap_FS_Read( text, len, f );
@@ -1771,17 +1771,17 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 				if ( !CG_ParseParticleSystem( &baseParticleSystems[ numBaseParticleSystems ], &text_p, psName ) )
 				{
 					CG_Printf( S_ERROR "%s: failed to parse particle system %s\n", fileName, psName );
-					return qfalse;
+					return false;
 				}
 
 				//start parsing particle systems again
-				psNameSet = qfalse;
+				psNameSet = false;
 
 				if ( numBaseParticleSystems == MAX_BASEPARTICLE_SYSTEMS )
 				{
 					CG_Printf( S_ERROR "maximum number of particle systems (%d) reached\n",
 					           MAX_BASEPARTICLE_SYSTEMS );
-					return qfalse;
+					return false;
 				}
 
 				numBaseParticleSystems++;
@@ -1789,7 +1789,7 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 			else
 			{
 				CG_Printf( S_ERROR "unnamed particle system\n" );
-				return qfalse;
+				return false;
 			}
 		}
 		else if ( !psNameSet )
@@ -1812,16 +1812,16 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 				continue;
 			}
 
-			psNameSet = qtrue;
+			psNameSet = true;
 		}
 		else
 		{
 			CG_Printf( S_ERROR "particle system already named\n" );
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1831,7 +1831,7 @@ CG_LoadParticleSystems
 Load particle systems from .particle files
 ===============
 */
-void CG_LoadParticleSystems( void )
+void CG_LoadParticleSystems()
 {
 	int  i, j, numFiles, fileLen;
 	char fileList[ MAX_PARTICLE_FILES * MAX_QPATH ];
@@ -1939,13 +1939,13 @@ CG_SetParticleSystemNormal
 */
 void CG_SetParticleSystemNormal( particleSystem_t *ps, vec3_t normal )
 {
-	if ( ps == NULL || !ps->valid )
+	if ( ps == nullptr || !ps->valid )
 	{
 		CG_Printf( S_WARNING "tried to modify a NULL particle system\n" );
 		return;
 	}
 
-	ps->normalValid = qtrue;
+	ps->normalValid = true;
 	VectorCopy( normal, ps->normal );
 	VectorNormalize( ps->normal );
 
@@ -1959,7 +1959,7 @@ CG_SetParticleSystemLastNormal
 */
 void CG_SetParticleSystemLastNormal( particleSystem_t *ps, const vec3_t normal )
 {
-	if ( ps == NULL || !ps->valid )
+	if ( ps == nullptr || !ps->valid )
 	{
 		CG_Printf( S_WARNING "tried to modify a NULL particle system\n" );
 		return;
@@ -1967,12 +1967,12 @@ void CG_SetParticleSystemLastNormal( particleSystem_t *ps, const vec3_t normal )
 
 	if ( normal )
 	{
-		ps->lastNormalIsCurrent = qtrue;
+		ps->lastNormalIsCurrent = true;
 		VectorCopy( normal, ps->lastNormal );
 		VectorNormalize( ps->lastNormal );
 	}
 	else
-		ps->lastNormalIsCurrent = qfalse;
+		ps->lastNormalIsCurrent = false;
 }
 
 /*
@@ -1984,7 +1984,7 @@ Destroy a particle system
 This doesn't actually invalidate anything, it just stops
 particle ejectors from producing new particles so the
 garbage collector will eventually remove this system.
-However is does set the pointer to NULL so the user is
+However is does set the pointer to nullptr so the user is
 unable to manipulate this particle system any longer.
 ===============
 */
@@ -1993,7 +1993,7 @@ void CG_DestroyParticleSystem( particleSystem_t **ps )
 	int               i;
 	particleEjector_t *pe;
 
-	if ( *ps == NULL || !( *ps )->valid )
+	if ( *ps == nullptr || !( *ps )->valid )
 	{
 		CG_Printf( S_WARNING "tried to destroy a NULL particle system\n" );
 		return;
@@ -2014,7 +2014,7 @@ void CG_DestroyParticleSystem( particleSystem_t **ps )
 		}
 	}
 
-	*ps = NULL;
+	*ps = nullptr;
 }
 
 /*
@@ -2024,27 +2024,27 @@ CG_IsParticleSystemInfinite
 Test a particle system for 'count infinite' ejectors
 ===============
 */
-qboolean CG_IsParticleSystemInfinite( particleSystem_t *ps )
+bool CG_IsParticleSystemInfinite( particleSystem_t *ps )
 {
 	int               i;
 	particleEjector_t *pe;
 
-	if ( ps == NULL )
+	if ( ps == nullptr )
 	{
 		CG_Printf( S_WARNING "tried to test a NULL particle system\n" );
-		return qfalse;
+		return false;
 	}
 
 	if ( !ps->valid )
 	{
 		CG_Printf( S_WARNING "tried to test an invalid particle system\n" );
-		return qfalse;
+		return false;
 	}
 
 	//don't bother checking already invalid systems
 	if ( !ps->valid )
 	{
-		return qfalse;
+		return false;
 	}
 
 	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
@@ -2055,12 +2055,12 @@ qboolean CG_IsParticleSystemInfinite( particleSystem_t *ps )
 		{
 			if ( pe->totalParticles == PARTICLES_INFINITE )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -2070,19 +2070,19 @@ CG_IsParticleSystemValid
 Test a particle system for validity
 ===============
 */
-qboolean CG_IsParticleSystemValid( particleSystem_t **ps )
+bool CG_IsParticleSystemValid( particleSystem_t **ps )
 {
-	if ( *ps == NULL || ( *ps && !( *ps )->valid ) )
+	if ( *ps == nullptr || ( *ps && !( *ps )->valid ) )
 	{
 		if ( *ps && !( *ps )->valid )
 		{
-			*ps = NULL;
+			*ps = nullptr;
 		}
 
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -2092,7 +2092,7 @@ CG_GarbageCollectParticleSystems
 Destroy inactive particle systems
 ===============
 */
-static void CG_GarbageCollectParticleSystems( void )
+static void CG_GarbageCollectParticleSystems()
 {
 	int               i, j, count;
 	particleSystem_t  *ps;
@@ -2122,7 +2122,7 @@ static void CG_GarbageCollectParticleSystems( void )
 
 		if ( !count )
 		{
-			ps->valid = qfalse;
+			ps->valid = false;
 		}
 
 		//check systems where the parent cent has left the PVS
@@ -2132,7 +2132,7 @@ static void CG_GarbageCollectParticleSystems( void )
 		{
 			if ( !cg_entities[ centNum ].valid )
 			{
-				ps->lazyRemove = qtrue;
+				ps->lazyRemove = true;
 			}
 		}
 
@@ -2334,7 +2334,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 
 		if ( ( contents & CONTENTS_SOLID ) || ( contents & CONTENTS_NODROP ) )
 		{
-			CG_DestroyParticle( p, NULL );
+			CG_DestroyParticle( p, nullptr );
 		}
 		else
 		{
@@ -2352,7 +2352,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	{
 		VectorCopy( newOrigin, p->origin );
 		if ( CG_IsParticleSystemValid( &p->childParticleSystem ) )
-			CG_SetParticleSystemLastNormal( p->childParticleSystem, NULL );
+			CG_SetParticleSystemLastNormal( p->childParticleSystem, nullptr );
 		return;
 	}
 
@@ -2360,7 +2360,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	if ( ( trap_CM_PointContents( trace.endpos, 0 ) & CONTENTS_NODROP ) ||
 	     ( bp->cullOnStartSolid && trace.startsolid ) )
 	{
-		CG_DestroyParticle( p, NULL );
+		CG_DestroyParticle( p, nullptr );
 		return;
 	}
 	else if ( bp->bounceCull )
@@ -2379,13 +2379,13 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	     ( p->velocity[ 2 ] < 40.0f ||
 	       p->velocity[ 2 ] < -cg.frametime * p->velocity[ 2 ] ) )
 	{
-		p->atRest = qtrue;
+		p->atRest = true;
 	}
 
 	if ( bp->bounceMarkName[ 0 ] && p->bounceMarkCount > 0 )
 	{
 		CG_ImpactMark( bp->bounceMark, trace.endpos, trace.plane.normal,
-		               random() * 360, 1, 1, 1, 1, qtrue, bp->bounceMarkRadius, qfalse );
+		               random() * 360, 1, 1, 1, 1, true, bp->bounceMarkRadius, false );
 		p->bounceMarkCount--;
 	}
 
@@ -2459,7 +2459,7 @@ CG_CompactAndSortParticles
 Depth sort the particles
 ===============
 */
-static void CG_CompactAndSortParticles( void )
+static void CG_CompactAndSortParticles()
 {
 	int    i, j = 0;
 	int    numParticles;
@@ -2653,11 +2653,11 @@ static void CG_RenderParticle( particle_t *p )
 			VectorScale( re.axis[ 0 ], scale, re.axis[ 0 ] );
 			VectorScale( re.axis[ 1 ], scale, re.axis[ 1 ] );
 			VectorScale( re.axis[ 2 ], scale, re.axis[ 2 ] );
-			re.nonNormalizedAxes = qtrue;
+			re.nonNormalizedAxes = true;
 		}
 		else
 		{
-			re.nonNormalizedAxes = qfalse;
+			re.nonNormalizedAxes = false;
 		}
 
 		p->lf.animation = &bp->modelAnimation;
@@ -2700,7 +2700,7 @@ CG_AddParticles
 Add particles to the scene
 ===============
 */
-void CG_AddParticles( void )
+void CG_AddParticles()
 {
 	int        i;
 	particle_t *p;
@@ -2729,7 +2729,7 @@ void CG_AddParticles( void )
 			}
 			else
 			{
-				CG_DestroyParticle( p, NULL );
+				CG_DestroyParticle( p, nullptr );
 			}
 		}
 	}
@@ -2798,7 +2798,7 @@ void CG_ParticleSystemEntity( centity_t *cent )
 		}
 		else
 		{
-			cent->entityPSMissing = qtrue;
+			cent->entityPSMissing = true;
 		}
 	}
 }
@@ -2813,7 +2813,7 @@ CG_DestroyTestPS_f
 Destroy the test a particle system
 ===============
 */
-void CG_DestroyTestPS_f( void )
+void CG_DestroyTestPS_f()
 {
 	if ( CG_IsParticleSystemValid( &testPS ) )
 	{
@@ -2828,7 +2828,7 @@ CG_TestPS_f
 Test a particle system
 ===============
 */
-void CG_TestPS_f( void )
+void CG_TestPS_f()
 {
 	vec3_t origin;
 	vec3_t up = { 0.0f, 0.0f, 1.0f };

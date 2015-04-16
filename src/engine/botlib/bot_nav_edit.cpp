@@ -51,10 +51,10 @@ bool GetPointPointedTo( NavData_t *nav, rVec &p )
 
 	VectorSet( extents, 640, 96, 640 );
 
-	AngleVectors( cl.snap.ps.viewangles, forward, NULL, NULL );
+	AngleVectors( cl.snap.ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( cl.snap.ps.origin, 8096, forward, end );
 
-	CM_BoxTrace( &trace, cl.snap.ps.origin, end, NULL, NULL, 0,
+	CM_BoxTrace( &trace, cl.snap.ps.origin, end, nullptr, nullptr, 0,
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, TT_AABB );
 
 	pos = qVec( trace.endpos );
@@ -164,10 +164,10 @@ void BotDebugDrawMesh( BotDebugInterface_t *in )
 	}
 }
 
-void Cmd_NavEdit( void )
+void Cmd_NavEdit()
 {
 	int argc = Cmd_Argc();
-	char *arg = NULL;
+	const char *arg = nullptr;
 	const char usage[] = "Usage: navedit enable/disable/save <navmesh>\n";
 
 	if ( !Cvar_VariableIntegerValue( "sv_cheats" ) )
@@ -235,11 +235,11 @@ void Cmd_NavEdit( void )
 	}
 }
 
-void Cmd_AddConnection( void )
+void Cmd_AddConnection()
 {
 	const char usage[] = "Usage: addcon start <dir> (radius)\n"
 	                     " addcon end\n";
-	char *arg = NULL;
+	const char *arg = nullptr;
 	int argc = Cmd_Argc();
 
 	if ( argc < 2 )
@@ -358,20 +358,20 @@ static void adjustConnectionSize( int dir )
 	}
 }
 
-void Cmd_ConnectionSizeUp( void )
+void Cmd_ConnectionSizeUp()
 {
 	return adjustConnectionSize( 1 );
 }
 
-void Cmd_ConnectionSizeDown( void )
+void Cmd_ConnectionSizeDown()
 {
 	return adjustConnectionSize( -1 );
 }
 
-void Cmd_NavTest( void )
+void Cmd_NavTest()
 {
 	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath\n";
-	char *arg = NULL;
+	const char *arg = nullptr;
 	int argc = Cmd_Argc();
 
 	if ( !cmd.enabled )
@@ -440,7 +440,7 @@ void Cmd_NavTest( void )
 	}
 }
 
-void NavEditInit( void )
+void NavEditInit()
 {
 #ifndef BUILD_SERVER
 	memset( &cmd, 0, sizeof( cmd ) );
@@ -453,7 +453,7 @@ void NavEditInit( void )
 #endif
 }
 
-void NavEditShutdown( void )
+void NavEditShutdown()
 {
 #ifndef BUILD_SERVER
 	Cmd_RemoveCommand( "navedit" );

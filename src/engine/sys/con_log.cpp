@@ -46,7 +46,7 @@ static unsigned int readPos = 0;
 CON_LogSize
 ==================
 */
-unsigned int CON_LogSize( void )
+unsigned int CON_LogSize()
 {
 	if ( readPos <= writePos )
 	{
@@ -63,7 +63,7 @@ unsigned int CON_LogSize( void )
 CON_LogFree
 ==================
 */
-static unsigned int CON_LogFree( void )
+static unsigned int CON_LogFree()
 {
 	return MAX_LOG - CON_LogSize() - 1;
 }

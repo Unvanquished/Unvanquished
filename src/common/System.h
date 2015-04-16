@@ -82,7 +82,7 @@ template<typename ... Args> void Error(Str::StringRef format, Args&& ... args)
 {
 	Error(Str::Format(format, std::forward<Args>(args)...));
 }
-template<typename ... Args> void Drop(Str::StringRef format, Args&& ... args)
+template<typename ... Args> NORETURN void Drop(Str::StringRef format, Args&& ... args)
 {
 	Drop(Str::Format(format, std::forward<Args>(args)...));
 }
@@ -103,7 +103,7 @@ typedef void* OSHandle;
 const OSHandle INVALID_HANDLE = reinterpret_cast<void*>(-1);
 inline bool IsValidHandle(OSHandle handle)
 {
-	return handle != NULL && handle != INVALID_HANDLE;
+	return handle != nullptr && handle != INVALID_HANDLE;
 }
 #else
 typedef int OSHandle;

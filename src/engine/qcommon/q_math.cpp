@@ -408,7 +408,7 @@ vec_t PlaneNormalize( vec4_t plane )
  * The normal will point out of the clock for clockwise ordered points
  * =====================
  */
-qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c )
+bool PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c )
 {
 	vec3_t d1, d2;
 
@@ -418,11 +418,11 @@ qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const ve
 
 	if ( VectorNormalize( plane ) == 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	plane[ 3 ] = DotProduct( a, plane );
-	return qtrue;
+	return true;
 }
 
 /*
@@ -432,7 +432,7 @@ qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const ve
  * Returns false if the triangle is degenerate.
  * =====================
  */
-qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw )
+bool PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, bool cw )
 {
 	vec3_t d1, d2;
 
@@ -451,14 +451,14 @@ qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, con
 
 	if ( VectorNormalize( plane ) == 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	plane[ 3 ] = DotProduct( a, plane );
-	return qtrue;
+	return true;
 }
 
-qboolean PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, const vec4_t plane3, vec3_t out )
+bool PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, const vec4_t plane3, vec3_t out )
 {
 	// http://www.cgafaq.info/wiki/Intersection_of_three_planes
 
@@ -481,7 +481,7 @@ qboolean PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, c
 	{
 		// no intersection could be found, return <0,0,0>
 		VectorClear( out );
-		return qfalse;
+		return false;
 	}
 
 	VectorClear( out );
@@ -492,7 +492,7 @@ qboolean PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, c
 
 	VectorScale( out, 1.0f / denom, out );
 
-	return qtrue;
+	return true;
 }
 
 void PlaneIntersectRay( const vec3_t rayPos, const vec3_t rayDir, const vec4_t plane, vec3_t res )
@@ -744,7 +744,7 @@ float ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const v
                                          const vec2_t bounds[ 2 ] )
 {
 	float t, ty;
-	qboolean dsign[ 2 ];
+	bool dsign[ 2 ];
 
 	dsign[ 0 ] = ( dir[ 0 ] < 0 );
 	dsign[ 1 ] = ( dir[ 1 ] < 0.0 );
@@ -1067,39 +1067,39 @@ void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs )
 	}
 }
 
-qboolean PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs )
+bool PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs )
 {
 	if ( v[ 0 ] < mins[ 0 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( v[ 0 ] > maxs[ 0 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( v[ 1 ] < mins[ 1 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( v[ 1 ] > maxs[ 1 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( v[ 2 ] < mins[ 2 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( v[ 2 ] > maxs[ 2 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 void BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
@@ -1135,39 +1135,39 @@ void BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2
 	}
 }
 
-qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
+bool BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
 {
 	if ( maxs[ 0 ] < mins2[ 0 ] ||
 	        maxs[ 1 ] < mins2[ 1 ] || maxs[ 2 ] < mins2[ 2 ] || mins[ 0 ] > maxs2[ 0 ] || mins[ 1 ] > maxs2[ 1 ] || mins[ 2 ] > maxs2[ 2 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
-qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius )
+bool BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius )
 {
 	if ( origin[ 0 ] - radius > maxs[ 0 ] ||
 	        origin[ 0 ] + radius < mins[ 0 ] ||
 	        origin[ 1 ] - radius > maxs[ 1 ] ||
 	        origin[ 1 ] + radius < mins[ 1 ] || origin[ 2 ] - radius > maxs[ 2 ] || origin[ 2 ] + radius < mins[ 2 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
-qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin )
+bool BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin )
 {
 	if ( origin[ 0 ] > maxs[ 0 ] ||
 	        origin[ 0 ] < mins[ 0 ] || origin[ 1 ] > maxs[ 1 ] || origin[ 1 ] < mins[ 1 ] || origin[ 2 ] > maxs[ 2 ] || origin[ 2 ] < mins[ 2 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs ) {
@@ -1979,7 +1979,7 @@ void MatrixCopy( const matrix_t in, matrix_t out )
 	out[ 15 ] = in[ 15 ];
 }
 
-qboolean MatrixCompare( const matrix_t a, const matrix_t b )
+bool MatrixCompare( const matrix_t a, const matrix_t b )
 {
 	return ( a[ 0 ] == b[ 0 ] && a[ 4 ] == b[ 4 ] && a[ 8 ] == b[ 8 ] && a[ 12 ] == b[ 12 ] &&
 	         a[ 1 ] == b[ 1 ] && a[ 5 ] == b[ 5 ] && a[ 9 ] == b[ 9 ] && a[ 13 ] == b[ 13 ] &&
@@ -2097,7 +2097,7 @@ static float m4_det( matrix_t mr )
 	return result;
 }
 
-qboolean MatrixInverse( matrix_t matrix )
+bool MatrixInverse( matrix_t matrix )
 {
 	float       mdet = m4_det( matrix );
 	matrix3x3_t mtemp;
@@ -2108,7 +2108,7 @@ qboolean MatrixInverse( matrix_t matrix )
 
 	if ( fabs( mdet ) < 0.0000000001 )
 	{
-		return qtrue;
+		return true;
 	}
 
 #endif
@@ -2128,7 +2128,7 @@ qboolean MatrixInverse( matrix_t matrix )
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 void MatrixSetupXRotation( matrix_t m, vec_t degrees )

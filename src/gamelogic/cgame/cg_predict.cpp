@@ -46,7 +46,7 @@ efficient collision detection
 It also adds content flags to allow for more specific traces in synchronized code.
 ====================
 */
-void CG_BuildSolidList( void )
+void CG_BuildSolidList()
 {
 	int           i;
 	centity_t     *cent;
@@ -177,7 +177,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 
 			if ( i == cg_numSolidEntities )
 			{
-				BG_ClassBoundingBox( ( ent->misc >> 8 ) & 0xFF, bmins, bmaxs, NULL, NULL, NULL );
+				BG_ClassBoundingBox( ( ent->misc >> 8 ) & 0xFF, bmins, bmaxs, nullptr, nullptr, nullptr );
 			}
 
 			VectorAdd( cent->lerpOrigin, bmins, bmins );
@@ -204,8 +204,8 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			break;
 
 		case TT_BISPHERE:
-			assert( maxs != NULL );
-			assert( mins != NULL );
+			assert( maxs != nullptr );
+			assert( mins != nullptr );
 			trap_CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
 			                                  mask, skipmask, origin );
 			break;
@@ -231,7 +231,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		}
 		else if ( trace.startsolid )
 		{
-			tr->startsolid = qtrue;
+			tr->startsolid = true;
 			tr->entityNum = ent->number;
 		}
 
@@ -373,7 +373,7 @@ Generates cg.predictedPlayerState by interpolating between
 cg.snap->player_state and cg.nextFrame->player_state
 ========================
 */
-static void CG_InterpolatePlayerState( qboolean grabAngles )
+static void CG_InterpolatePlayerState( bool grabAngles )
 {
 	float         f;
 	int           i;
@@ -441,14 +441,14 @@ CG_TouchTriggerPrediction
 Predict push triggers and items
 =========================
 */
-static void CG_TouchTriggerPrediction( void )
+static void CG_TouchTriggerPrediction()
 {
 	int           i;
 	trace_t       trace;
 	entityState_t *ent;
 	clipHandle_t  cmodel;
 	centity_t     *cent;
-	qboolean      spectator;
+	bool      spectator;
 
 	// dead clients don't activate triggers
 	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
@@ -490,7 +490,7 @@ static void CG_TouchTriggerPrediction( void )
 
 		if ( ent->eType == ET_TELEPORTER )
 		{
-			cg.hyperspace = qtrue;
+			cg.hyperspace = true;
 		}
 	}
 }
@@ -662,7 +662,7 @@ We detect prediction errors and allow them to be decayed off over several frames
 to ease the jerk.
 =================
 */
-void CG_PredictPlayerState( void )
+void CG_PredictPlayerState()
 {
 	int           cmdNum, current, i;
 	playerState_t oldPlayerState;
@@ -670,28 +670,28 @@ void CG_PredictPlayerState( void )
 	usercmd_t     latestCmd;
 	int           stateIndex = 0, predictCmd = 0;
 
-	cg.hyperspace = qfalse; // will be set if touching a trigger_teleport
+	cg.hyperspace = false; // will be set if touching a trigger_teleport
 
 	// if this is the first frame we must guarantee
 	// predictedPlayerState is valid even if there is some
 	// other error condition
 	if ( !cg.validPPS )
 	{
-		cg.validPPS = qtrue;
+		cg.validPPS = true;
 		cg.predictedPlayerState = cg.snap->ps;
 	}
 
 	// demo playback just copies the moves
 	if ( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
 	{
-		CG_InterpolatePlayerState( qfalse );
+		CG_InterpolatePlayerState( false );
 		return;
 	}
 
 	// non-predicting local movement will grab the latest angles
 	if ( cg_nopredict.integer || cg.pmoveParams.synchronous )
 	{
-		CG_InterpolatePlayerState( qtrue );
+		CG_InterpolatePlayerState( true );
 		return;
 	}
 
@@ -802,7 +802,7 @@ void CG_PredictPlayerState( void )
 			// we have a new snapshot
 			int      i;
 			int      errorcode;
-			qboolean error = qtrue;
+			bool error = true;
 
 			// loop through the saved states queue
 			for ( i = cg.stateHead; i != cg.stateTail;
@@ -839,7 +839,7 @@ void CG_PredictPlayerState( void )
 				predictCmd = cg.lastPredictedCommand + 1;
 
 				// a saved state matched, so flag it
-				error = qfalse;
+				error = false;
 				break;
 			}
 
@@ -901,7 +901,7 @@ void CG_PredictPlayerState( void )
 					CG_Printf( "PredictionTeleport\n" );
 				}
 
-				cg.thisFrameTeleport = qfalse;
+				cg.thisFrameTeleport = false;
 			}
 			else
 			{
@@ -962,7 +962,7 @@ void CG_PredictPlayerState( void )
 		// when it actually inflicts damage
 		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 		{
-			cg_pmove.autoWeaponHit[ i ] = qfalse;
+			cg_pmove.autoWeaponHit[ i ] = false;
 		}
 
 		if ( cg_pmove.pmove_fixed )

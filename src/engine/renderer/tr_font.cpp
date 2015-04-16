@@ -93,7 +93,7 @@ Maryland 20850 USA.
 #define _CEIL( x )  ( ( ( x ) + 63 ) & - 64 )
 #define _TRUNC( x ) ( ( x ) >> 6 )
 
-FT_Library ftLibrary = NULL;
+FT_Library ftLibrary = nullptr;
 
 #define FONT_SIZE 512
 
@@ -165,22 +165,22 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 		ri.Printf( PRINT_WARNING, "Non-outline fonts are not supported\n" );
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, int *yOut,
-    int *maxHeight, FT_Face face, FT_Face fallback, const int c, qboolean calcHeight )
+    int *maxHeight, FT_Face face, FT_Face fallback, const int c, bool calcHeight )
 {
 	int                i;
 	static glyphInfo_t glyph;
 	unsigned char      *src, *dst;
 	float              scaledWidth, scaledHeight;
-	FT_Bitmap          *bitmap = NULL;
+	FT_Bitmap          *bitmap = nullptr;
 
 	Com_Memset( &glyph, 0, sizeof( glyphInfo_t ) );
 
 	// make sure everything is here
-	if ( face != NULL )
+	if ( face != nullptr )
 	{
 		FT_UInt index = FT_Get_Char_Index( face, c );
 
@@ -191,7 +191,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 
 		if ( index == 0 )
 		{
-			return NULL; // nothing to render
+			return nullptr; // nothing to render
 		}
 
 		FT_Load_Glyph( face, index, FT_LOAD_DEFAULT );
@@ -203,7 +203,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 		}
 		else
 		{
-			return NULL;
+			return nullptr;
 		}
 
 		if ( glyph.height > *maxHeight )
@@ -233,7 +233,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 			*xOut = -1;
 			ri.Free( bitmap->buffer );
 			ri.Free( bitmap );
-			return NULL;
+			return nullptr;
 		}
 
 		src = bitmap->buffer;
@@ -304,14 +304,14 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 		return &glyph;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
 static int  fdOffset;
 static byte *fdFile;
 
-int readInt( void )
+int readInt()
 {
 	int i =
 	  fdFile[ fdOffset ] + ( fdFile[ fdOffset + 1 ] << 8 ) + ( fdFile[ fdOffset + 2 ] << 16 ) + ( fdFile[ fdOffset + 3 ] << 24 );
@@ -325,7 +325,7 @@ typedef union
 	float ffred;
 } poor;
 
-float readFloat( void )
+float readFloat()
 {
 	poor me;
 
@@ -469,7 +469,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	int           i, lastStart, page;
 	unsigned char *out;
 	glyphInfo_t   *glyphs;
-	qboolean      rendered;
+	bool      rendered;
 
 	const int     startGlyph = chunk * 256;
 
@@ -481,7 +481,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	out = (unsigned char*) ri.Z_Malloc( FONT_SIZE * FONT_SIZE );
 
-	if ( out == NULL )
+	if ( out == nullptr )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RenderChunk: ri.Malloc failure during output image creation.\n" );
 		return;
@@ -491,11 +491,11 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	// calculate max height
 	maxHeight = 0;
-	rendered = qfalse;
+	rendered = false;
 
 	for ( i = 0; i < 256; i++ )
 	{
-		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue );
+		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, true );
 	}
 
 	// no glyphs? just return
@@ -510,16 +510,16 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	memset( glyphs, 0, sizeof( glyphBlock_t ) );
 
 	xOut = yOut = 0;
-	rendered = qfalse;
+	rendered = false;
 	i = lastStart = page = 0;
 
 	while ( i < 256 )
 	{
-		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
+		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, (FT_Face) font->face, (FT_Face) font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, false );
 
 		if ( glyph )
 		{
-			rendered = qtrue;
+			rendered = true;
 			Com_Memcpy( glyphs + i, glyph, sizeof( glyphInfo_t ) );
 		}
 
@@ -528,7 +528,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 			RE_StoreImage( font, chunk, page++, lastStart, i, out, yOut + maxHeight + 1 );
 			Com_Memset( out, 0, FONT_SIZE * FONT_SIZE );
 			xOut = yOut = 0;
-			rendered = qfalse;
+			rendered = false;
 			lastStart = i;
 		}
 		else
@@ -642,7 +642,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 	if ( !Q_stricmp( strippedName, fontName ) )
 	{
-		fallbackName = NULL;
+		fallbackName = nullptr;
 		Com_sprintf( fileName, sizeof( fileName ), "fonts/fontImage_%i.dat", pointSize );
 	}
 	else
@@ -688,7 +688,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		return -1;
 	}
 
-	len = ri.FS_ReadFile( fileName, NULL );
+	len = ri.FS_ReadFile( fileName, nullptr );
 
 	if ( len > 0x5004 && len <= 0x5004 + MAX_QPATH ) // 256 glyphs, scale info, and the bitmap name
 	{
@@ -742,7 +742,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		return fontNo;
 	}
 
-	if ( ftLibrary == NULL )
+	if ( ftLibrary == nullptr )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType not initialized.\n" );
 		return -1;
@@ -778,8 +778,8 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		return -1;
 	}
 
-	fallback = NULL;
-	fallbackData = NULL;
+	fallback = nullptr;
+	fallbackData = nullptr;
 
 	if ( fallbackName )
 	{
@@ -856,7 +856,7 @@ void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int poin
 	}
 }
 
-void R_InitFreeType( void )
+void R_InitFreeType()
 {
 	if ( FT_Init_FreeType( &ftLibrary ) )
 	{
@@ -896,7 +896,7 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 		if ( registeredFont[ handle ].glyphBlock[ i ] && registeredFont[ handle ].glyphBlock[ i ] != nullGlyphs )
 		{
 			ri.Free( registeredFont[ handle ].glyphBlock[ i ] );
-			registeredFont[ handle ].glyphBlock[ i ] = NULL;
+			registeredFont[ handle ].glyphBlock[ i ] = nullptr;
 		}
 	}
 
@@ -937,12 +937,12 @@ void RE_UnregisterFontVM( fontHandle_t handle )
 	}
 }
 
-void R_DoneFreeType( void )
+void R_DoneFreeType()
 {
 	if ( ftLibrary )
 	{
-		RE_UnregisterFont( NULL );
+		RE_UnregisterFont( nullptr );
 		FT_Done_FreeType( ftLibrary );
-		ftLibrary = NULL;
+		ftLibrary = nullptr;
 	}
 }

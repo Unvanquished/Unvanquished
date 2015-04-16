@@ -31,11 +31,11 @@ If you have questions concerning this license or the applicable additional terms
 
 cvar_t *cl_shownet;
 
-void CL_Shutdown( void )
+void CL_Shutdown()
 {
 }
 
-void CL_Init( void )
+void CL_Init()
 {
 	cl_shownet = Cvar_Get( "cl_shownet", "0", CVAR_TEMP );
 	// TTimo: localisation, prolly not any use in dedicated / null client
@@ -61,26 +61,26 @@ void CL_CharEvent( int c )
 {
 }
 
-void CL_Disconnect( qboolean showMainMenu )
+void CL_Disconnect( bool showMainMenu )
 {
 }
 
-void CL_MapLoading( void )
+void CL_MapLoading()
 {
 }
 
-qboolean CL_GameCommand( void )
+bool CL_GameCommand()
 {
-	return qfalse; // bk001204 - non-void
+	return false; // bk001204 - non-void
 }
 
-void CL_KeyEvent( int key, qboolean down, unsigned time )
+void CL_KeyEvent( int key, bool down, unsigned time )
 {
 }
 
-qboolean UI_GameCommand( void )
+bool UI_GameCommand()
 {
-	return qfalse;
+	return false;
 }
 
 void CL_ForwardCommandToServer( const char *cmd )
@@ -96,24 +96,24 @@ void CL_JoystickEvent( int axis, int value, int time )
 {
 }
 
-void CL_InitKeyCommands( void )
+void CL_InitKeyCommands()
 {
 }
 
-void CL_FlushMemory( void )
+void CL_FlushMemory()
 {
 }
 
-void CL_StartHunkUsers( void )
+void CL_StartHunkUsers()
 {
 }
 
 // bk001119 - added new dummy for sv_init.c
-void CL_ShutdownAll( void )
+void CL_ShutdownAll()
 {
 }
 
 // TTimo added for win32 dedicated
-void Key_ClearStates( void )
+void Key_ClearStates()
 {
 }

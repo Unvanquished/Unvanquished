@@ -55,7 +55,7 @@ int r_firstSceneVisTest;
 R_ToggleSmpFrame
 ====================
 */
-void R_ToggleSmpFrame( void )
+void R_ToggleSmpFrame()
 {
 	if ( r_smp->integer )
 	{
@@ -103,7 +103,7 @@ void R_ToggleSmpFrame( void )
 RE_ClearScene
 ====================
 */
-void RE_ClearScene( void )
+void RE_ClearScene()
 {
 	r_firstSceneLight = r_numLights;
 	r_firstSceneEntity = r_numEntities;
@@ -126,7 +126,7 @@ R_AddPolygonSurfaces
 Adds all the scene's polys into this view's drawsurf list
 =====================
 */
-void R_AddPolygonSurfaces( void )
+void R_AddPolygonSurfaces()
 {
 	int       i;
 	shader_t  *sh;
@@ -153,7 +153,7 @@ R_AddPolygonSurfaces
 Adds all the scene's polys into this view's drawsurf list
 =====================
 */
-void R_AddPolygonBufferSurfaces( void )
+void R_AddPolygonBufferSurfaces()
 {
 	int             i;
 	shader_t        *sh;
@@ -225,7 +225,7 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 		r_numPolyVerts += numVerts;
 
 		// if no world is loaded
-		if ( tr.world == NULL )
+		if ( tr.world == nullptr )
 		{
 			fogIndex = 0;
 		}
@@ -366,7 +366,7 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 	}
 
 	Com_Memcpy( &backEndData[ tr.smpFrame ]->entities[ r_numEntities ].e, ent, sizeof( refEntity_t ) );
-	backEndData[ tr.smpFrame ]->entities[ r_numEntities ].lightingCalculated = qfalse;
+	backEndData[ tr.smpFrame ]->entities[ r_numEntities ].lightingCalculated = false;
 
 	r_numEntities++;
 }
@@ -403,8 +403,8 @@ void RE_AddRefLightToScene( const refLight_t *l )
 	light = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
 	Com_Memcpy( &light->l, l, sizeof( light->l ) );
 
-	light->isStatic = qfalse;
-	light->additive = qtrue;
+	light->isStatic = false;
+	light->additive = true;
 
 	if ( light->l.scale <= 0 )
 	{
@@ -418,7 +418,7 @@ void RE_AddRefLightToScene( const refLight_t *l )
 
 	if ( !r_dynamicLightCastShadows->integer && !light->l.inverseShadows )
 	{
-		light->l.noShadows = qtrue;
+		light->l.noShadows = true;
 	}
 }
 
@@ -427,7 +427,7 @@ void RE_AddRefLightToScene( const refLight_t *l )
 R_AddWorldLightsToScene
 =====================
 */
-static void R_AddWorldLightsToScene( void )
+static void R_AddWorldLightsToScene()
 {
 	int          i;
 	trRefLight_t *light;
@@ -515,7 +515,7 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	light->l.color[ 1 ] = g;
 	light->l.color[ 2 ] = b;
 
-	light->l.inverseShadows = !!( flags & REF_INVERSE_DLIGHT );
+	light->l.inverseShadows = (flags & REF_INVERSE_DLIGHT) != 0;
 	light->l.noShadows = !r_dynamicLightCastShadows->integer && !light->l.inverseShadows;
 
 	if( flags & REF_RESTRICT_DLIGHT ) {
@@ -526,8 +526,8 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 		light->restrictInteractionLast = -1;
 	}
 
-	light->isStatic = qfalse;
-	light->additive = qtrue;
+	light->isStatic = false;
+	light->additive = true;
 
 	if( light->l.inverseShadows )
 		light->l.scale = -intensity;
@@ -593,7 +593,7 @@ void RE_RenderScene( const refdef_t *fd )
 
 	// copy the areamask data over and note if it has changed, which
 	// will force a reset of the visible leafs even if the view hasn't moved
-	tr.refdef.areamaskModified = qfalse;
+	tr.refdef.areamaskModified = false;
 
 	if ( !( tr.refdef.rdflags & RDF_NOWORLDMODEL ) && !( ( tr.refdef.rdflags & RDF_SKYBOXPORTAL ) && tr.world->numSkyNodes > 0 ) )
 	{
@@ -612,7 +612,7 @@ void RE_RenderScene( const refdef_t *fd )
 		if ( areaDiff )
 		{
 			// a door just opened or something
-			tr.refdef.areamaskModified = qtrue;
+			tr.refdef.areamaskModified = true;
 		}
 	}
 
@@ -669,7 +669,7 @@ void RE_RenderScene( const refdef_t *fd )
 	//
 	Com_Memset( &parms, 0, sizeof( parms ) );
 
-	if ( tr.refdef.pixelTarget == NULL )
+	if ( tr.refdef.pixelTarget == nullptr )
 	{
 		parms.viewportX = tr.refdef.x;
 		parms.viewportY = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );
@@ -691,7 +691,7 @@ void RE_RenderScene( const refdef_t *fd )
 	Vector4Set( parms.viewportVerts[ 2 ], parms.viewportX + parms.viewportWidth, parms.viewportY + parms.viewportHeight, 0, 1 );
 	Vector4Set( parms.viewportVerts[ 3 ], parms.viewportX, parms.viewportY + parms.viewportHeight, 0, 1 );
 
-	parms.isPortal = qfalse;
+	parms.isPortal = false;
 
 	parms.fovX = tr.refdef.fov_x;
 	parms.fovY = tr.refdef.fov_y;
@@ -725,7 +725,7 @@ R_UpdateVisTests
 Update the vis tests with the results
 ================
 */
-void R_UpdateVisTests( void )
+void R_UpdateVisTests()
 {
 	int i;
 	int numVisTests = backEndData[ tr.smpFrame ]->numVisTests;
@@ -762,7 +762,7 @@ of a 3D-point in the scene. The engine will try not to stall the GPU,
 so the result may be available delayed.
 ================
 */
-qhandle_t RE_RegisterVisTest( void )
+qhandle_t RE_RegisterVisTest()
 {
 	int hTest;
 	visTest_t *test;
@@ -782,7 +782,7 @@ qhandle_t RE_RegisterVisTest( void )
 	}
 
 	memset( test, 0, sizeof( *test ) );
-	test->registered = qtrue;
+	test->registered = true;
 	tr.numVisTests++;
 
 	return hTest + 1;
@@ -818,15 +818,9 @@ void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
 	result = &backEndData[ tr.smpFrame ]->visTests[ r_numVisTests++ ];
 
 	// cancel the currently running query if the parameters change
-	if ( !VectorCompare( test->position, pos ) || test->depthAdjust != depthAdjust ||
-	     test->area != area )
-	{
-		result->discardExisting = qtrue;
-	}
-	else
-	{
-		result->discardExisting = qfalse;
-	}
+	result->discardExisting = !VectorCompare(test->position, pos)
+							  || test->depthAdjust != depthAdjust
+							  || test->area != area;
 
 	VectorCopy( pos, result->position );
 	result->depthAdjust = depthAdjust;
@@ -869,11 +863,11 @@ void RE_UnregisterVisTest( qhandle_t hTest )
 		return;
 	}
 
-	tr.visTests[ hTest - 1 ].registered = qfalse;
+	tr.visTests[ hTest - 1 ].registered = false;
 	tr.numVisTests--;
 }
 
-void R_InitVisTests( void )
+void R_InitVisTests()
 {
 	int hTest;
 
@@ -886,11 +880,11 @@ void R_InitVisTests( void )
 
 		glGenQueries( 1, &test->hQuery );
 		glGenQueries( 1, &test->hQueryRef );
-		test->running  = qfalse;
+		test->running  = false;
 	}
 }
 
-void R_ShutdownVisTests( void )
+void R_ShutdownVisTests()
 {
 	int hTest;
 

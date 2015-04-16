@@ -163,12 +163,12 @@ void target_hurt_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	G_Damage( activator, self, self, NULL, NULL, self->damage, 0, MOD_TRIGGER_HURT );
+	G_Damage( activator, self, self, nullptr, nullptr, self->damage, 0, MOD_TRIGGER_HURT );
 }
 
 void SP_target_hurt( gentity_t *self )
 {
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 5);
+	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 5);
 	self->act = target_hurt_act;
 }
 

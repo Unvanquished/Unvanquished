@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 R_LoadMD3
 =================
 */
-qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *modName )
+bool R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *modName )
 {
 	int            i, j, k; //, l;
 
@@ -64,7 +64,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 	if ( version != MD3_VERSION )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD3: %s has wrong version (%i should be %i)\n", modName, version, MD3_VERSION );
-		return qfalse;
+		return false;
 	}
 
 	mod->type = MOD_MESH;
@@ -85,7 +85,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 	if ( md3Model->numFrames < 1 )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD3: %s has no frames\n", modName );
-		return qfalse;
+		return false;
 	}
 
 	// swap all the frames
@@ -260,7 +260,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			data.qtangent = ( i16vec4_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * mdvModel->numFrames * surf->numVerts );
 			data.numFrames = mdvModel->numFrames;
 			data.st = ( i16vec2_t * ) ri.Hunk_AllocateTempMemory( sizeof( i16vec2_t ) * surf->numVerts );
-			data.noLightCoords = qtrue;
+			data.noLightCoords = true;
 			data.numVerts = surf->numVerts;
 
 			// feed vertex XYZ
@@ -373,5 +373,5 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		Com_DestroyGrowList( &vboSurfaces );
 	}
 
-	return qtrue;
+	return true;
 }

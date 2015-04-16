@@ -62,6 +62,7 @@ if(NOT DEFINED _WEBP_COMPILATION_TEST)
   #if WEBP_DECODER_ABI_VERSION < 0x0200
   error; // Deliberate compile-time error
   #endif
+  return 0;
   }"
    _WEBP_COMPILATION_TEST)
   SET(CMAKE_REQUIRED_INCLUDES ${_WEBP_RQ_INCLUDES})
