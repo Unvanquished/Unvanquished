@@ -43,14 +43,14 @@ class SelectableDataGrid : public Rocket::Controls::ElementDataGrid
 {
 public:
 	SelectableDataGrid( const Rocket::Core::String& tag ) :
-		Rocket::Controls::ElementDataGrid(tag), lastSelectedRow( NULL ), lastSelectedRowIndex( -1 )
+		Rocket::Controls::ElementDataGrid(tag), lastSelectedRow( nullptr ), lastSelectedRowIndex( -1 )
 	{
 		SetProperty( "selected-row", "-1" );
 	}
 
 	~SelectableDataGrid()
 	{
-		if( lastSelectedRow != NULL ) {
+		if( lastSelectedRow != nullptr ) {
 			lastSelectedRow->SetPseudoClass( "selected", false );
 			lastSelectedRow->RemoveReference();
 		}
@@ -162,7 +162,7 @@ public:
 			int firstRowRemoved = evt.GetParameter< int >("first_row_removed", 0);
 			if( lastSelectedRowIndex >= firstRowRemoved && lastSelectedRowIndex < firstRowRemoved + numRowsRemoved ) {
 				lastSelectedRow->RemoveReference();
-				lastSelectedRow = NULL;
+				lastSelectedRow = nullptr;
 
 				lastSelectedRowIndex = -1;
 				this->SetProperty( "selected-row", "-1" );

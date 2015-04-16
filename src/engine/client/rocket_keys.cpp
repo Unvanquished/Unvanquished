@@ -40,7 +40,7 @@ using namespace Rocket::Core::Input;
 static std::map< int, int > keyMap;
 static bool init = false;
 
-void Rocket_InitKeys( void )
+void Rocket_InitKeys()
 {
 	keyMap[ K_TAB ] = KI_TAB;
 	keyMap[ K_ENTER ] = KI_RETURN;
@@ -185,7 +185,7 @@ keyNum_t Rocket_ToQuake( int key )
 	return K_NONE;
 }
 
-KeyModifier Rocket_GetKeyModifiers( void )
+KeyModifier Rocket_GetKeyModifiers()
 {
 	int mod = 0;
 
@@ -218,7 +218,7 @@ KeyModifier Rocket_GetKeyModifiers( void )
 }
 
 static bool wasDownBefore = false;
-void Rocket_ProcessMouseClick( int button, qboolean down )
+void Rocket_ProcessMouseClick( int button, bool down )
 {
 	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{
@@ -261,7 +261,7 @@ void Rocket_ProcessMouseClick( int button, qboolean down )
 }
 
 #define MOUSEWHEEL_DELTA 5
-void Rocket_ProcessKeyInput( int key, qboolean down )
+void Rocket_ProcessKeyInput( int key, bool down )
 {
 	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
 	{

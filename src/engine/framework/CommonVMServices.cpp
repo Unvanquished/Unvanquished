@@ -244,7 +244,7 @@ namespace VM {
             case QVM_COMMON_FS_FOPEN_FILE:
                 IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](std::string filename, bool open, int fsMode, int& success, int& handle) {
                     fsMode_t mode = static_cast<fsMode_t>(fsMode);
-                    success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : NULL, mode);
+                    success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : nullptr, mode);
                 });
                 break;
 
@@ -301,7 +301,7 @@ namespace VM {
 
             case QVM_COMMON_FS_FIND_PAK:
                 IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
-                    found = FS::FindPak(pakName);
+                    found = FS::FindPak(pakName) != nullptr;
                 });
                 break;
 
@@ -341,7 +341,7 @@ namespace VM {
                 break;
 
             case QVM_COMMON_PARSE_READ_TOKEN:
-                IPC::HandleMsg<ParseReadTokenMsg>(channel, std::move(reader), [this](int source, int& res, pc_token_t& token) {
+                IPC::HandleMsg<ParseReadTokenMsg>(channel, std::move(reader), [this](int source, bool& res, pc_token_t& token) {
                     res = Parse_ReadTokenHandle(source, &token);
                 });
                 break;

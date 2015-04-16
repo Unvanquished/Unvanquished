@@ -139,7 +139,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 	}
 }
 
-void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, qboolean animChanged )
+void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, bool animChanged )
 {
 	int         f, numFrames;
 	animation_t *anim;

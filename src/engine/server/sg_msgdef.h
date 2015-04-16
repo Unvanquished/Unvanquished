@@ -222,14 +222,14 @@ typedef enum
 {
   GAME_STATIC_INIT,
 
-  GAME_INIT, // void ()( int levelTime, int randomSeed, qboolean restart );
+  GAME_INIT, // void ()( int levelTime, int randomSeed, bool restart );
   // the first call to the game module
 
-  GAME_SHUTDOWN, // void ()( void );
+  GAME_SHUTDOWN, // void ()();
   // the last call to the game module
 
-  GAME_CLIENT_CONNECT, // const char * ()( int clientNum, qboolean firstTime, qboolean isBot );
-  // return NULL if the client is allowed to connect,
+  GAME_CLIENT_CONNECT, // const char * ()( int clientNum, bool firstTime, bool isBot );
+  // return nullptr if the client is allowed to connect,
   //  otherwise return a text string describing the reason for the denial
 
   GAME_CLIENT_BEGIN, // void ()( int clientNum );
@@ -244,15 +244,15 @@ typedef enum
 
   GAME_RUN_FRAME, // void ()( int levelTime );
 
-  GAME_SNAPSHOT_CALLBACK, // qboolean ()( int entityNum, int clientNum );
-  // return qfalse if the entity should not be sent to the client
+  GAME_SNAPSHOT_CALLBACK, // bool ()( int entityNum, int clientNum );
+  // return false if the entity should not be sent to the client
 
   BOTAI_START_FRAME, // void ()( int levelTime );
 
   // Cast AI
-  BOT_VISIBLEFROMPOS, // qboolean ()( vec3_t srcOrig, int srcNum, dstOrig, int dstNum, qboolean isDummy );
-  BOT_CHECKATTACKATPOS, // qboolean ()( int entityNum, int enemyNum, vec3_t position,
-  //              qboolean ducking, qboolean allowWorldHit );
+  BOT_VISIBLEFROMPOS, // bool ()( vec3_t srcOrig, int srcNum, dstOrig, int dstNum, bool isDummy );
+  BOT_CHECKATTACKATPOS, // bool ()( int entityNum, int enemyNum, vec3_t position,
+  //              bool ducking, bool allowWorldHit );
 
   GAME_MESSAGERECEIVED, // void ()( int clientNum, const char *buffer, int bufferSize, int commandTime );
 } gameExport_t;

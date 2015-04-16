@@ -59,14 +59,14 @@ typedef struct flare_s
 
 	int            addedFrame;
 
-	qboolean       inPortal; // true if in a portal view of the scene
+	bool       inPortal; // true if in a portal view of the scene
 	int            frameSceneNum;
 	void           *surface;
 	int            fogNum;
 
 	int            fadeTime;
 
-	qboolean       visible; // state of last test
+	bool       visible; // state of last test
 	float          drawIntensity; // may be non 0 even if !visible due to fading
 
 	int            windowX, windowY;
@@ -85,13 +85,13 @@ flare_t *r_activeFlares, *r_inactiveFlares;
 R_ClearFlares
 ==================
 */
-void R_ClearFlares( void )
+void R_ClearFlares()
 {
 	int i;
 
 	Com_Memset( r_flareStructs, 0, sizeof( r_flareStructs ) );
-	r_activeFlares = NULL;
-	r_inactiveFlares = NULL;
+	r_activeFlares = nullptr;
+	r_inactiveFlares = nullptr;
 
 	for ( i = 0; i < MAX_FLARES; i++ )
 	{
@@ -173,7 +173,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 
 	if ( f->addedFrame != backEnd.viewParms.frameCount - 1 )
 	{
-		f->visible = qfalse;
+		f->visible = false;
 		f->fadeTime = backEnd.refdef.time - 2000;
 	}
 

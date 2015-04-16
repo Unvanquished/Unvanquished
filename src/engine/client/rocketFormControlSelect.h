@@ -95,7 +95,7 @@ public:
 		}
 	}
 
-	void UpdateValue( void )
+	void UpdateValue()
 	{
 		Rocket::Core::String value = Cvar::GetValue( cvar.CString() ).c_str();
 

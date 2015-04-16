@@ -49,7 +49,7 @@ CM_ResetPlaneCounts
 =================
 */
 
-void CM_ResetPlaneCounts( void )
+void CM_ResetPlaneCounts()
 {
 	memset( planeHashTable, 0, sizeof( planeHashTable ) );
 	numPlanes = 0;
@@ -85,7 +85,7 @@ Returns false if the triangle is degenerate.
 The normal will point out of the clock for clockwise ordered points
 =====================
 */
-qboolean CM_PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c )
+bool CM_PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c )
 {
 	vec3_t d1, d2;
 
@@ -95,11 +95,11 @@ qboolean CM_PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const
 
 	if ( VectorNormalize( plane ) == 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	plane[ 3 ] = DotProduct( a, plane );
-	return qtrue;
+	return true;
 }
 
 #define NORMAL_EPSILON    0.0001
@@ -110,7 +110,7 @@ qboolean CM_PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const
 CM_PlaneEqual
 ==================
 */
-int CM_PlaneEqual( cPlane_t *p, float plane[ 4 ], qboolean *flipped )
+int CM_PlaneEqual( cPlane_t *p, float plane[ 4 ], bool *flipped )
 {
 	float invplane[ 4 ];
 
@@ -118,8 +118,8 @@ int CM_PlaneEqual( cPlane_t *p, float plane[ 4 ], qboolean *flipped )
 	     && fabs( p->plane[ 1 ] - plane[ 1 ] ) < NORMAL_EPSILON
 	     && fabs( p->plane[ 2 ] - plane[ 2 ] ) < NORMAL_EPSILON && fabs( p->plane[ 3 ] - plane[ 3 ] ) < DIST_EPSILON )
 	{
-		*flipped = qfalse;
-		return qtrue;
+		*flipped = false;
+		return true;
 	}
 
 	VectorNegate( plane, invplane );
@@ -129,11 +129,11 @@ int CM_PlaneEqual( cPlane_t *p, float plane[ 4 ], qboolean *flipped )
 	     && fabs( p->plane[ 1 ] - invplane[ 1 ] ) < NORMAL_EPSILON
 	     && fabs( p->plane[ 2 ] - invplane[ 2 ] ) < NORMAL_EPSILON && fabs( p->plane[ 3 ] - invplane[ 3 ] ) < DIST_EPSILON )
 	{
-		*flipped = qtrue;
-		return qtrue;
+		*flipped = true;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -226,7 +226,7 @@ static int CM_CreateNewFloatPlane( vec4_t plane )
 CM_FindPlane2
 ==================
 */
-int CM_FindPlane2( float plane[ 4 ], qboolean *flipped )
+int CM_FindPlane2( float plane[ 4 ], bool *flipped )
 {
 	int      i;
 	cPlane_t *p;
@@ -249,7 +249,7 @@ int CM_FindPlane2( float plane[ 4 ], qboolean *flipped )
 		}
 	}
 
-	*flipped = qfalse;
+	*flipped = false;
 	return CM_CreateNewFloatPlane( plane );
 }
 
@@ -353,7 +353,7 @@ CM_ValidateFacet
 If the facet isn't bounded by its borders, we screwed up.
 ==================
 */
-qboolean CM_ValidateFacet( cFacet_t *facet )
+bool CM_ValidateFacet( cFacet_t *facet )
 {
 	float     plane[ 4 ];
 	int       j;
@@ -362,7 +362,7 @@ qboolean CM_ValidateFacet( cFacet_t *facet )
 
 	if ( facet->surfacePlane == -1 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	Vector4Copy( planes[ facet->surfacePlane ].plane, plane );
@@ -373,7 +373,7 @@ qboolean CM_ValidateFacet( cFacet_t *facet )
 		if ( facet->borderPlanes[ j ] == -1 )
 		{
 			FreeWinding( w );
-			return qfalse;
+			return false;
 		}
 
 		Vector4Copy( planes[ facet->borderPlanes[ j ] ].plane, plane );
@@ -389,7 +389,7 @@ qboolean CM_ValidateFacet( cFacet_t *facet )
 
 	if ( !w )
 	{
-		return qfalse; // winding was completely chopped away
+		return false; // winding was completely chopped away
 	}
 
 	// see if the facet is unreasonably large
@@ -400,21 +400,21 @@ qboolean CM_ValidateFacet( cFacet_t *facet )
 	{
 		if ( bounds[ 1 ][ j ] - bounds[ 0 ][ j ] > MAX_WORLD_COORD )
 		{
-			return qfalse; // we must be missing a plane
+			return false; // we must be missing a plane
 		}
 
 		if ( bounds[ 0 ][ j ] >= MAX_WORLD_COORD )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( bounds[ 1 ][ j ] <= MIN_WORLD_COORD )
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qtrue; // winding is fine
+	return true; // winding is fine
 }
 
 /*
@@ -426,7 +426,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 {
 	int       i, j, k, l;
 	int       axis, dir, order;
-	qboolean  flipped;
+	bool  flipped;
 	float     plane[ 4 ], d, newplane[ 4 ];
 	winding_t *w, *w2;
 	vec3_t    mins, maxs, vec, vec2;
@@ -502,7 +502,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 				}
 
 				facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
-				facet->borderNoAdjust[ facet->numBorders ] = qfalse;
+				facet->borderNoAdjust[ facet->numBorders ] = false;
 				facet->borderInward[ facet->numBorders ] = flipped;
 				facet->numBorders++;
 			}
@@ -605,7 +605,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 						}
 					}
 
-					facet->borderNoAdjust[ facet->numBorders ] = qfalse;
+					facet->borderNoAdjust[ facet->numBorders ] = false;
 					facet->borderInward[ facet->numBorders ] = flipped;
 					//
 					w2 = CopyWinding( w );
@@ -642,8 +642,8 @@ void CM_AddFacetBevels( cFacet_t *facet )
 
 	// add opposite plane
 	facet->borderPlanes[ facet->numBorders ] = facet->surfacePlane;
-	facet->borderNoAdjust[ facet->numBorders ] = qfalse;
-	facet->borderInward[ facet->numBorders ] = qtrue;
+	facet->borderNoAdjust[ facet->numBorders ] = false;
+	facet->borderInward[ facet->numBorders ] = true;
 	facet->numBorders++;
 }
 
@@ -666,25 +666,25 @@ static int CM_GenerateBoundaryForPoints( const vec4_t triPlane, const vec3_t p1,
 CM_GenerateFacetFor3Points
 =====================
 */
-qboolean CM_GenerateFacetFor3Points( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3 )
+bool CM_GenerateFacetFor3Points( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3 )
 {
 	vec4_t          plane;
 
 	// if we can't generate a valid plane for the points, ignore the facet
-	//if(!PlaneFromPoints(f->surface, a, b, c, qtrue))
+	//if(!PlaneFromPoints(f->surface, a, b, c, true))
 	if ( facet->surfacePlane == -1 )
 	{
 		facet->numBorders = 0;
-		return qfalse;
+		return false;
 	}
 
 	Vector4Copy( planes[ facet->surfacePlane ].plane, plane );
 
 	facet->numBorders = 3;
 
-	facet->borderNoAdjust[ 0 ] = qfalse;
-	facet->borderNoAdjust[ 1 ] = qfalse;
-	facet->borderNoAdjust[ 2 ] = qfalse;
+	facet->borderNoAdjust[ 0 ] = false;
+	facet->borderNoAdjust[ 1 ] = false;
+	facet->borderNoAdjust[ 2 ] = false;
 
 	facet->borderPlanes[ 0 ] = CM_GenerateBoundaryForPoints( plane, p1, p2 );
 	facet->borderPlanes[ 1 ] = CM_GenerateBoundaryForPoints( plane, p2, p3 );
@@ -694,5 +694,5 @@ qboolean CM_GenerateFacetFor3Points( cFacet_t *facet, const vec3_t p1, const vec
 	//VectorCopy(b->xyz, f->points[1]);
 	//VectorCopy(c->xyz, f->points[2]);
 
-	return qtrue;
+	return true;
 }

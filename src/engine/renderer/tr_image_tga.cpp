@@ -39,7 +39,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height,
 	TargaHeader targa_header;
 	byte        *targa_rgba;
 
-	*pic = NULL;
+	*pic = nullptr;
 
 	//
 	// load the file

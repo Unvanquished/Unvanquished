@@ -45,7 +45,7 @@ static ALIGNED( 16, transform_t bones[ MAX_BONES ] );
 Tess_EndBegin
 ==============
 */
-void Tess_EndBegin( void )
+void Tess_EndBegin()
 {
 	Tess_End();
 	Tess_Begin( tess.stageIteratorFunc, tess.stageIteratorFunc2, tess.surfaceShader, tess.lightShader, tess.skipTangentSpaces, tess.skipVBO,
@@ -76,7 +76,7 @@ Tess_CheckOverflow
 void Tess_CheckOverflow( int verts, int indexes )
 {
 	// FIXME: need to check if a vbo is bound, otherwise we fail on startup
-	if ( glState.currentVBO != NULL && glState.currentIBO != NULL )
+	if ( glState.currentVBO != nullptr && glState.currentIBO != nullptr )
 	{
 		Tess_CheckVBOAndIBO( tess.vbo, tess.ibo );
 	}
@@ -157,16 +157,16 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 	tess.attribsSet =  ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR | ATTR_QTANGENT;
 }
 
-static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIndexes, int firstIndex )
+static bool Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIndexes, int firstIndex )
 {
 	if ( !vbo || !ibo )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( tess.skipVBO || tess.stageIteratorFunc == &Tess_StageIteratorSky )
 	{
-		return qfalse;
+		return false;
 	}
 
 	Tess_CheckVBOAndIBO( vbo, ibo );
@@ -210,7 +210,7 @@ static qboolean Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIn
 		tess.multiDrawPrimitives++;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -306,7 +306,7 @@ void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t colo
 Tess_AddQuadStampExt2
 ==============
 */
-void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2, qboolean calcNormals )
+void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2, bool calcNormals )
 {
 	int    i;
 	vec3_t normal, tangent, binormal;
@@ -384,12 +384,12 @@ Tess_AddQuadStamp2
 */
 void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const vec4_t color )
 {
-	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, qfalse );
+	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, false );
 }
 
 void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const vec4_t color )
 {
-	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, qtrue );
+	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, true );
 }
 
 void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, float rotation )
@@ -580,7 +580,7 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.numIndexes = 0;
 	tess.attribsSet = 0;
 
-	Tess_MapVBOs( qfalse );
+	Tess_MapVBOs( false );
 	VectorCopy( quadVerts[ 0 ], tess.verts[ tess.numVertexes ].xyz );
 	Vector4Set( tess.verts[ tess.numVertexes ].color, 255, 255, 255, 255 );
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.0f );
@@ -631,7 +631,7 @@ Tess_SurfaceSprite
 */
 #define NORMAL_EPSILON 0.0001
 
-static void Tess_SurfaceSprite( void )
+static void Tess_SurfaceSprite()
 {
 	vec3_t delta, left, up;
 	float  radius;
@@ -1250,9 +1250,9 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 		}
 		R_BindVBO( surf->vbo );
 		R_BindIBO( surf->ibo );
-		tess.vboVertexSkinning = qtrue;
+		tess.vboVertexSkinning = true;
 
-		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)NULL) + surf->first_triangle * 3;
+		tess.multiDrawIndexes[ tess.multiDrawPrimitives ] = ((glIndex_t *)nullptr) + surf->first_triangle * 3;
 		tess.multiDrawCounts[ tess.multiDrawPrimitives ] = surf->num_triangles * 3;
 		tess.multiDrawPrimitives++;
 
@@ -1428,7 +1428,7 @@ void Tess_SurfaceVBOMDVMesh( srfVBOMDVMesh_t *surface )
 
 	tess.numIndexes = surface->numIndexes;
 	tess.numVertexes = surface->numVerts;
-	tess.vboVertexAnimation = qtrue;
+	tess.vboVertexAnimation = true;
 
 	refEnt = &backEnd.currentEntity->e;
 
@@ -1474,7 +1474,7 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 
 	model = srf->md5Model;
 
-	tess.vboVertexSkinning = qtrue;
+	tess.vboVertexSkinning = true;
 	tess.numBones = srf->numBoneRemap;
 
 	for ( i = 0; i < srf->numBoneRemap; i++ )

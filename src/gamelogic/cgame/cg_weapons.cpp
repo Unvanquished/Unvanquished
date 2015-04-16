@@ -54,7 +54,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 		return;
 	}
 
-	upgradeInfo->registered = qtrue;
+	upgradeInfo->registered = true;
 
 	if ( !BG_Upgrade( upgradeNum )->name[ 0 ] )
 	{
@@ -78,9 +78,9 @@ Load custom crosshairs specified by the user
 =======================
 */
 
-static void CG_LoadCustomCrosshairs( void )
+static void CG_LoadCustomCrosshairs()
 {
-	char         *text_p, *token;
+	const char         *text_p, *token;
 	char         text[ 20000 ];
 	int          len;
 	fileHandle_t f;
@@ -199,7 +199,7 @@ CG_InitUpgrades
 Precaches upgrades
 ===============
 */
-void CG_InitUpgrades( void )
+void CG_InitUpgrades()
 {
 	int i;
 
@@ -224,9 +224,9 @@ Reads the animation.cfg for weapons
 ============================
 */
 
-static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
+static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -242,14 +242,14 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 	if ( len < 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	trap_FS_Read( text, len, f );
@@ -266,13 +266,13 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 		token = COM_Parse2( &text_p );
 		animations[ i ].numFrames = atoi( token );
-		animations[ i ].reversed = qfalse;
-		animations[ i ].flipflop = qfalse;
+		animations[ i ].reversed = false;
+		animations[ i ].flipflop = false;
 
 		if ( animations[ i ].numFrames < 0 )
 		{
 			animations[ i ].numFrames *= -1;
-			animations[ i ].reversed = qtrue;
+			animations[ i ].reversed = true;
 		}
 
 		token = COM_Parse2( &text_p );
@@ -293,10 +293,10 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 	if ( i != MAX_WEAPON_ANIMATIONS )
 	{
 		CG_Printf( "Error parsing weapon animation file: %s\n", filename );
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -306,7 +306,7 @@ CG_ParseWeaponModeSection
 Parse a weapon mode section
 ===============
 */
-static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p )
+static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_p )
 {
 	char *token;
 	int  i;
@@ -321,7 +321,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 		if ( !*token )
 		{
-			return qfalse;
+			return false;
 		}
 
 		else if ( !Q_stricmp( token, "muzzleParticleSystem" ) )
@@ -425,7 +425,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 				break;
 			}
 
-			wim->impactSound[ index ] = trap_S_RegisterSound( token, qfalse );
+			wim->impactSound[ index ] = trap_S_RegisterSound( token, false );
 
 			continue;
 		}
@@ -458,13 +458,13 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 				break;
 			}
 
-			wim->impactFleshSound[ index ] = trap_S_RegisterSound( token, qfalse );
+			wim->impactFleshSound[ index ] = trap_S_RegisterSound( token, false );
 
 			continue;
 		}
 		else if ( !Q_stricmp( token, "alwaysImpact" ) )
 		{
-			wim->alwaysImpact = qtrue;
+			wim->alwaysImpact = true;
 
 			continue;
 		}
@@ -512,7 +512,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 		}
 		else if ( !Q_stricmp( token, "continuousFlash" ) )
 		{
-			wim->continuousFlash = qtrue;
+			wim->continuousFlash = true;
 
 			continue;
 		}
@@ -525,7 +525,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 				break;
 			}
 
-			wim->firingSound = trap_S_RegisterSound( token, qfalse );
+			wim->firingSound = trap_S_RegisterSound( token, false );
 
 			continue;
 		}
@@ -558,7 +558,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 				break;
 			}
 
-			wim->flashSound[ index ] = trap_S_RegisterSound( token, qfalse );
+			wim->flashSound[ index ] = trap_S_RegisterSound( token, false );
 
 			continue;
 		}
@@ -571,25 +571,25 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 				break;
 			}
 
-			wim->reloadSound = trap_S_RegisterSound( token, qfalse );
+			wim->reloadSound = trap_S_RegisterSound( token, false );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{
-			return qtrue; //reached the end of this weapon section
+			return true; //reached the end of this weapon section
 		}
 		else
 		{
 			CG_Printf( S_ERROR "unknown token '%s' in weapon section\n", token );
-			return qfalse;
+			return false;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
-qboolean CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, qboolean loop, qboolean reversed,
-    qboolean clearOrigin )
+bool CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, bool loop, bool reversed,
+    bool clearOrigin )
 {
 	int frameRate;
 
@@ -598,7 +598,7 @@ qboolean CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, qb
 	if ( !anim->handle )
 	{
 		Com_Printf( "Failed to load animation file %s\n", filename );
-		return qfalse;
+		return false;
 	}
 
 	anim->firstFrame = 0;
@@ -625,7 +625,7 @@ qboolean CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, qb
 	anim->reversed = reversed;
 	anim->clearOrigin = clearOrigin;
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -635,9 +635,9 @@ CG_ParseWeaponFile
 Parses a configuration file describing a weapon
 ======================
 */
-static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *wi )
+static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *wi )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	char         *token;
 	char         text[ 20000 ];
@@ -651,14 +651,14 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 	if ( len < 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
-		return qfalse;
+		return false;
 	}
 
 	trap_FS_Read( text, len, f );
@@ -685,12 +685,12 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 			if ( weaponMode == WPM_NONE )
 			{
 				CG_Printf( S_ERROR "weapon mode section started without a declaration\n" );
-				return qfalse;
+				return false;
 			}
 			else if ( !CG_ParseWeaponModeSection( &wi->wim[ weaponMode ], &text_p ) )
 			{
 				CG_Printf( S_ERROR "failed to parse weapon mode section\n" );
-				return qfalse;
+				return false;
 			}
 
 			//start parsing ejectors again
@@ -728,10 +728,10 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 			if ( cg_highPolyWeaponModels.integer && ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.iqm", token2 ) ) ) )
 			{
-				wi->md5 = qtrue;
+				wi->md5 = true;
 
 				if ( !CG_RegisterWeaponAnimation( &wi->animations[ WANIM_IDLE ],
-				                                  va( "%s_view.iqm:idle", token2 ), qtrue, qfalse, qfalse ) )
+				                                  va( "%s_view.iqm:idle", token2 ), true, false, false ) )
 				{
 					//CG_Error( "could not find '%s'", path );
 				}
@@ -755,73 +755,73 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 					case WP_PULSE_RIFLE:
 
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-													va( "%s_view.iqm:raise", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:raise", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-													va( "%s_view.iqm:lower", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:lower", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-													va( "%s_view.iqm:reload", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:reload", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-													va( "%s_view.iqm:fire", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire", token2 ), false, false, false );
 						break;
 
 					case WP_LUCIFER_CANNON:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-													va( "%s_view.iqm:fire2", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire2", token2 ), false, false, false );
 					case WP_BLASTER:
 					case WP_PAIN_SAW:
 					case WP_LAS_GUN:
 					case WP_CHAINGUN:
 					case WP_FLAMER:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-													va( "%s_view.iqm:raise", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:raise", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-													va( "%s_view.iqm:lower", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:lower", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-													va( "%s_view.iqm:reload", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:reload", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-													va( "%s_view.iqm:fire", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire", token2 ), false, false, false );
 						break;
 
 					case WP_ALEVEL1:
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-													va( "%s_view.iqm:fire", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-													va( "%s_view.iqm:fire2", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire2", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
-													va( "%s_view.iqm:fire3", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire3", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
-													va( "%s_view.iqm:fire4", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire4", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
-													va( "%s_view.iqm:fire5", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire5", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
-													va( "%s_view.iqm:fire6", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire6", token2 ), false, false, false );
 						break;
 
 					case WP_ALEVEL2_UPG:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-													va( "%s_view.iqm:fire", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-													va( "%s_view.iqm:fire2", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire2", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
-													va( "%s_view.iqm:fire3", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire3", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
-													va( "%s_view.iqm:fire4", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire4", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
-													va( "%s_view.iqm:fire5", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire5", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
-													va( "%s_view.iqm:fire6", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire6", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK7 ],
-													va( "%s_view.iqm:fire7", token2 ), qfalse, qfalse, qfalse );
+													va( "%s_view.iqm:fire7", token2 ), false, false, false );
 				}
 			}
 			else if ( cg_highPolyWeaponModels.integer && ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.md5mesh", token2 ) ) ) )
 			{
-				wi->md5 = qtrue;
+				wi->md5 = true;
 
 				if ( !CG_RegisterWeaponAnimation( &wi->animations[ WANIM_IDLE ],
-					va( "%s_view_idle.md5anim", token2 ), qtrue, qfalse, qfalse ) )
+					va( "%s_view_idle.md5anim", token2 ), true, false, false ) )
 				{
 					//CG_Error( "could not find '%s'", path );
 				}
@@ -845,65 +845,65 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 					case WP_PULSE_RIFLE:
 
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-									    va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_raise.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-									    va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_lower.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-									    va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_reload.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-									    va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire.md5anim", token2 ), false, false, false );
 						break;
 
 					case WP_LUCIFER_CANNON:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-									    va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire2.md5anim", token2 ), false, false, false );
 					case WP_BLASTER:
 					case WP_PAIN_SAW:
 					case WP_LAS_GUN:
 					case WP_CHAINGUN:
 					case WP_FLAMER:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-									    va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_raise.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-									    va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_lower.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-									    va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_reload.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-									    va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire.md5anim", token2 ), false, false, false );
 						break;
 
 					case WP_ALEVEL1:
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-									    va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-									    va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire2.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
-									    va( "%s_view_fire3.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire3.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
-									    va( "%s_view_fire4.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire4.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
-									    va( "%s_view_fire5.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire5.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
-									    va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire6.md5anim", token2 ), false, false, false );
 						break;
 
 					case WP_ALEVEL2_UPG:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-									    va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
-									    va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire2.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
-									    va( "%s_view_fire3.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire3.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
-									    va( "%s_view_fire4.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire4.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
-									    va( "%s_view_fire5.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire5.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
-									    va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire6.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK7 ],
-									    va( "%s_view_fire7.md5anim", token2 ), qfalse, qfalse, qfalse );
+									    va( "%s_view_fire7.md5anim", token2 ), false, false, false );
 				}
 			}
 			else
@@ -968,7 +968,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 				break;
 			}
 
-			wi->readySound = trap_S_RegisterSound( token, qfalse );
+			wi->readySound = trap_S_RegisterSound( token, false );
 
 			continue;
 		}
@@ -1051,7 +1051,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 		}
 		else if ( !Q_stricmp( token, "disableIn3rdPerson" ) )
 		{
-			wi->disableIn3rdPerson = qtrue;
+			wi->disableIn3rdPerson = true;
 
 			continue;
 		}
@@ -1061,14 +1061,14 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 			{
 				for ( i = 0; i < 3; i++ )
 				{
-					token = COM_ParseExt2( &text_p, qfalse );
+					token = COM_ParseExt2( &text_p, false );
 				}
 				continue;
 			}
 
 			for ( i = 0; i < 3; i++ )
 			{
-				token = COM_ParseExt2( &text_p, qfalse );
+				token = COM_ParseExt2( &text_p, false );
 
 				if ( !token )
 				{
@@ -1086,13 +1086,13 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 			{
 				for ( i = 0; i < 3; i++ )
 				{
-					token = COM_ParseExt2( &text_p, qfalse );
+					token = COM_ParseExt2( &text_p, false );
 				}
 				continue;
 			}
 			for ( i = 0; i < 3; i++ )
 			{
-				token = COM_ParseExt2( &text_p, qfalse );
+				token = COM_ParseExt2( &text_p, false );
 
 				if ( !token )
 				{
@@ -1120,11 +1120,11 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 		{
 			if ( !cg_highPolyWeaponModels.integer )
 			{
-				token = COM_ParseExt2( &text_p, qfalse );
+				token = COM_ParseExt2( &text_p, false );
 				continue;
 			}
 
-			token = COM_ParseExt2( &text_p, qfalse );
+			token = COM_ParseExt2( &text_p, false );
 
 			if ( token )
 			{
@@ -1135,10 +1135,10 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 		}
 
 		Com_Printf( S_ERROR "unknown token '%s'\n", token );
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1167,7 +1167,7 @@ void CG_RegisterWeapon( int weaponNum )
 		return;
 	}
 
-	weaponInfo->registered = qtrue;
+	weaponInfo->registered = true;
 
 	if ( !BG_Weapon( weaponNum )->name[ 0 ] )
 	{
@@ -1205,7 +1205,7 @@ CG_InitWeapons
 Precaches weapons
 ===============
 */
-void CG_InitWeapons( void )
+void CG_InitWeapons()
 {
 	int i;
 
@@ -1237,7 +1237,7 @@ may include ANIM_TOGGLEBIT
 static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
-	qboolean toggle = qfalse;
+	bool toggle = false;
 
 	lf->animationNumber = newAnimation;
 	toggle = newAnimation & ANIM_TOGGLEBIT;
@@ -1422,7 +1422,7 @@ CG_MachinegunSpinAngle
 */
 #define   SPIN_SPEED 0.9
 #define   COAST_TIME 1000
-static float CG_MachinegunSpinAngle( centity_t *cent, qboolean firing )
+static float CG_MachinegunSpinAngle( centity_t *cent, bool firing )
 {
 	int   delta;
 	float angle;
@@ -1459,7 +1459,7 @@ static float CG_MachinegunSpinAngle( centity_t *cent, qboolean firing )
 =============
 CG_AddPlayerWeapon
 
-Used for both the view weapon (ps is valid) and the world modelother character models (ps is NULL)
+Used for both the view weapon (ps is valid) and the world modelother character models (ps is nullptr)
 The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
@@ -1473,8 +1473,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	weapon_t     weaponNum;
 	weaponMode_t weaponMode;
 	weaponInfo_t *weapon;
-	qboolean     noGunModel;
-	qboolean     firing;
+	bool     noGunModel;
+	bool     firing;
 
 	weaponNum = (weapon_t) cent->currentState.weapon;
 	weaponMode = (weaponMode_t) cent->currentState.generic1;
@@ -1488,11 +1488,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	     ( ( cent->currentState.eFlags & EF_FIRING2 ) && weaponMode == WPM_SECONDARY ) ||
 	     ( ( cent->currentState.eFlags & EF_FIRING3 ) && weaponMode == WPM_TERTIARY ) )
 	{
-		firing = qtrue;
+		firing = true;
 	}
 	else
 	{
-		firing = qfalse;
+		firing = false;
 	}
 
 	weapon = &cg_weapons[ weaponNum ];
@@ -1520,22 +1520,22 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		gun.shaderRGBA[ 3 ] = 255;
 
 		//set weapon[1/2]Time when respective buttons change state
-		if ( cg.weapon1Firing != ( cg.predictedPlayerState.eFlags & EF_FIRING ) )
+		if (cg.weapon1Firing != !!(cg.predictedPlayerState.eFlags & EF_FIRING))
 		{
 			cg.weapon1Time = cg.time;
-			cg.weapon1Firing = ( cg.predictedPlayerState.eFlags & EF_FIRING );
+			cg.weapon1Firing = !!(cg.predictedPlayerState.eFlags & EF_FIRING);
 		}
 
-		if ( cg.weapon2Firing != ( cg.predictedPlayerState.eFlags & EF_FIRING2 ) )
+		if (cg.weapon2Firing != !!(cg.predictedPlayerState.eFlags & EF_FIRING2))
 		{
 			cg.weapon2Time = cg.time;
-			cg.weapon2Firing = ( cg.predictedPlayerState.eFlags & EF_FIRING2 );
+			cg.weapon2Firing = !!(cg.predictedPlayerState.eFlags & EF_FIRING2);
 		}
 
-		if ( cg.weapon3Firing != ( cg.predictedPlayerState.eFlags & EF_FIRING3 ) )
+		if (cg.weapon3Firing != !!(cg.predictedPlayerState.eFlags & EF_FIRING3))
 		{
 			cg.weapon3Time = cg.time;
-			cg.weapon3Firing = ( cg.predictedPlayerState.eFlags & EF_FIRING3 );
+			cg.weapon3Firing = !!(cg.predictedPlayerState.eFlags & EF_FIRING3);
 		}
 	}
 
@@ -1748,7 +1748,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 				CG_AttachToTag( &cent->muzzlePS->attachment );
 			}
 
-			cent->muzzlePsTrigger = qfalse;
+			cent->muzzlePsTrigger = false;
 		}
 
 		// make a dlight for the flash
@@ -1834,7 +1834,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	weaponInfo_t *wi;
 	weapon_t     weapon = (weapon_t) ps->weapon;
 	weaponMode_t weaponMode = (weaponMode_t) ps->generic1;
-	qboolean     drawGun = qtrue;
+	bool     drawGun = true;
 
 	// no weapon carried - can't draw it
 	if ( weapon == WP_NONE )
@@ -1852,13 +1852,13 @@ void CG_AddViewWeapon( playerState_t *ps )
 	switch ( cg_drawGun.integer )
 	{
 		case 0:
-			drawGun = qfalse;
+			drawGun = false;
 			break;
 
 		case 1:
 			if ( BG_Weapon( weapon )->team == TEAM_ALIENS )
 			{
-				drawGun = qfalse;
+				drawGun = false;
 			}
 			break;
 	}
@@ -1920,7 +1920,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 				CG_AttachToPoint( &cent->muzzlePS->attachment );
 			}
 
-			cent->muzzlePsTrigger = qfalse;
+			cent->muzzlePsTrigger = false;
 		}
 
 		return;
@@ -2008,14 +2008,14 @@ WEAPON SELECTION
 CG_WeaponSelectable
 ===============
 */
-static qboolean CG_WeaponSelectable( weapon_t weapon )
+static bool CG_WeaponSelectable( weapon_t weapon )
 {
 	if ( !BG_InventoryContainsWeapon( weapon, cg.snap->ps.stats ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -2023,11 +2023,11 @@ static qboolean CG_WeaponSelectable( weapon_t weapon )
 CG_UpgradeSelectable
 ===============
 */
-static qboolean CG_UpgradeSelectable( upgrade_t upgrade )
+static bool CG_UpgradeSelectable( upgrade_t upgrade )
 {
 	if ( !BG_InventoryContainsUpgrade( upgrade, cg.snap->ps.stats ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	return BG_Upgrade( upgrade )->usable;
@@ -2040,7 +2040,7 @@ static qboolean CG_UpgradeSelectable( upgrade_t upgrade )
 CG_DrawItemSelect
 ===================
 */
-void CG_DrawHumanInventory( void )
+void CG_DrawHumanInventory()
 {
 	int           i;
 	int           items[ 64 ];
@@ -2174,7 +2174,7 @@ void CG_DrawHumanInventory( void )
 	}
 	Q_strcat( RML, sizeof( RML ), "</div>" );
 
-	trap_Rocket_SetInnerRML( RML, qfalse );
+	trap_Rocket_SetInnerRML( RML, false );
 
 }
 
@@ -2183,7 +2183,7 @@ void CG_DrawHumanInventory( void )
 CG_DrawItemSelectText
 ===================
 */
-void CG_DrawItemSelectText( void )
+void CG_DrawItemSelectText()
 {
 	const char *name;
 	float      alpha;
@@ -2192,7 +2192,7 @@ void CG_DrawItemSelectText( void )
 
 	if ( !alpha )
 	{
-		trap_Rocket_SetInnerRML( "&nbsp;", qfalse );
+		trap_Rocket_SetInnerRML( "&nbsp;", false );
 		return;
 	}
 
@@ -2206,7 +2206,7 @@ void CG_DrawItemSelectText( void )
 		{
 			if ( ( name = cg_weapons[ cg.weaponSelect ].humanName ) )
 			{
-				trap_Rocket_SetInnerRML( name, qfalse );
+				trap_Rocket_SetInnerRML( name, false );
 			}
 		}
 	}
@@ -2217,7 +2217,7 @@ void CG_DrawItemSelectText( void )
 		{
 			if ( ( name = cg_upgrades[ cg.weaponSelect - 32 ].humanName ) )
 			{
-				trap_Rocket_SetInnerRML( name, qfalse );
+				trap_Rocket_SetInnerRML( name, false );
 			}
 		}
 	}
@@ -2230,7 +2230,7 @@ void CG_DrawItemSelectText( void )
 CG_NextWeapon_f
 ===============
 */
-void CG_NextWeapon_f( void )
+void CG_NextWeapon_f()
 {
 	int i;
 	int original;
@@ -2285,7 +2285,7 @@ void CG_NextWeapon_f( void )
 CG_PrevWeapon_f
 ===============
 */
-void CG_PrevWeapon_f( void )
+void CG_PrevWeapon_f()
 {
 	int i;
 	int original;
@@ -2340,7 +2340,7 @@ void CG_PrevWeapon_f( void )
 CG_Weapon_f
 ===============
 */
-void CG_Weapon_f( void )
+void CG_Weapon_f()
 {
 	int num;
 
@@ -2381,13 +2381,13 @@ TODO: Put this into cg_event_weapon.c?
 ===================================================================================================
 */
 
-static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
+static bool CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 {
 	centity_t *cent;
 
 	if ( entityNum < 0 || entityNum >= MAX_ENTITIES )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( entityNum == cg.predictedPlayerState.clientNum )
@@ -2396,7 +2396,7 @@ static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 	}
 	else if ( !( cent = &cg_entities[ entityNum ] ) || !cent->currentValid )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( cent->muzzlePS && CG_Attached( &cent->muzzlePS->attachment ) )
@@ -2405,10 +2405,10 @@ static qboolean CalcMuzzlePoint( int entityNum, vec3_t muzzle )
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 static void PlayHitSound( vec3_t origin, const sfxHandle_t *impactSound )
@@ -2625,7 +2625,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
-		CG_Trace( &tr, origin, NULL, NULL, end, attackerNum, MASK_SHOT, 0 );
+		CG_Trace( &tr, origin, nullptr, nullptr, end, attackerNum, MASK_SHOT, 0 );
 
 		if ( !( tr.surfaceFlags & SURF_NOIMPACT ) )
 		{
@@ -2686,7 +2686,7 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 		if ( !CG_IsParticleSystemValid( &cent->muzzlePS ) ||
 		     !CG_IsParticleSystemInfinite( cent->muzzlePS ) )
 		{
-			cent->muzzlePsTrigger = qtrue;
+			cent->muzzlePsTrigger = true;
 		}
 	}
 
@@ -2705,7 +2705,7 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 
 		if ( wi->wim[ weaponMode ].flashSound[ c ] )
 		{
-			trap_S_StartSound( NULL, es->number, CHAN_WEAPON, wi->wim[ weaponMode ].flashSound[ c ] );
+			trap_S_StartSound( nullptr, es->number, CHAN_WEAPON, wi->wim[ weaponMode ].flashSound[ c ] );
 		}
 	}
 }
@@ -2811,7 +2811,7 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	// mark
 	if ( wim->impactMark && wim->impactMarkSize > 0.0f )
 	{
-		CG_ImpactMark( wim->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, qfalse, wim->impactMarkSize, qfalse );
+		CG_ImpactMark( wim->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, false, wim->impactMarkSize, false );
 	}
 
 	// tracer
@@ -2885,12 +2885,12 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
 	// mark
 	if ( ma->impactMark && ma->impactMarkSize > 0.0f )
 	{
-		CG_ImpactMark( ma->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, qfalse,
-		               ma->impactMarkSize, qfalse );
+		CG_ImpactMark( ma->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, false,
+		               ma->impactMarkSize, false );
 	}
 }
 
-float CG_ChargeProgress( void )
+float CG_ChargeProgress()
 {
 	float progress;
 	int   min = 0, max = 0;

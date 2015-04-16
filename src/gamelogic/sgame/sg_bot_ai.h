@@ -205,8 +205,8 @@ typedef struct
 	int          nparams;
 } AIActionNode_t;
 
-qboolean isBinaryOp( AIOpType_t op );
-qboolean isUnaryOp( AIOpType_t op );
+bool isBinaryOp( AIOpType_t op );
+bool isUnaryOp( AIOpType_t op );
 
 AIValue_t AIBoxFloat( float f );
 AIValue_t AIBoxInt( int i );

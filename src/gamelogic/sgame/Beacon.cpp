@@ -60,9 +60,9 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Handles beacon expiration and tag score decay. Called every server frame.
 	 */
-	void Frame( void )
+	void Frame()
 	{
-		gentity_t *ent = NULL;
+		gentity_t *ent = nullptr;
 		static int nextframe = 0;
 
 		if( nextframe > level.time )
@@ -187,7 +187,7 @@ namespace Beacon //this should eventually become a class
 		else
 		{
 			// Detach link from tagged entity to its beacon.
-			if( ent->tagAttachment ) *ent->tagAttachment = NULL;
+			if( ent->tagAttachment ) *ent->tagAttachment = nullptr;
 
 			// BaseClustering::Remove will be called inside G_FreeEntity since we need to be sure
 			// that it happens no matter how the beacon was destroyed.
@@ -268,7 +268,7 @@ namespace Beacon //this should eventually become a class
 		for ( i = 0; i < numvecs; i++ )
 		{
 			VectorMA( origin, 500, vecs[ i ], end );
-			trap_Trace( &tr, origin, NULL, NULL, end, 0, MASK_SOLID, 0 );
+			trap_Trace( &tr, origin, nullptr, nullptr, end, 0, MASK_SOLID, 0 );
 			VectorAdd( accumulator, tr.endpos, accumulator );
 		}
 
@@ -278,14 +278,14 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Find a beacon matching a pattern.
-	 * @return An ET_BEACON entity or NULL.
+	 * @return An ET_BEACON entity or nullptr.
 	 */
 	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
 	                        float radius, int eFlags, int eFlagsRelevant )
 	{
 		int flags = BG_Beacon( type )->flags;
 
-		for ( gentity_t *ent = NULL; (ent = G_IterateEntities(ent)); )
+		for ( gentity_t *ent = nullptr; (ent = G_IterateEntities(ent)); )
 		{
 			if ( ent->s.eType != ET_BEACON )
 				continue;
@@ -324,7 +324,7 @@ namespace Beacon //this should eventually become a class
 			return ent;
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	/**
@@ -346,7 +346,7 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Move a single beacon matching a pattern.
-	 * @return The moved beacon or NULL.
+	 * @return The moved beacon or nullptr.
 	 */
 	gentity_t *MoveSimilar( const vec3_t from, const vec3_t to, beaconType_t type, int data,
 	                        int team, int owner, float radius, int eFlags, int eFlagsRelevant )
@@ -397,9 +397,9 @@ namespace Beacon //this should eventually become a class
 	 *
 	 * Should be called everytime someone joins or leaves a team.
 	 */
-	void PropagateAll( void )
+	void PropagateAll()
 	{
-		for ( gentity_t *ent = NULL; (ent = G_IterateEntities( ent )); )
+		for ( gentity_t *ent = nullptr; (ent = G_IterateEntities( ent )); )
 		{
 			if ( ent->s.eType != ET_BEACON )
 				continue;
@@ -415,7 +415,7 @@ namespace Beacon //this should eventually become a class
 	 */
 	void RemoveOrphaned( int clientNum )
 	{
-		for ( gentity_t *ent = NULL; ( ent = G_IterateEntities( ent ) ); )
+		for ( gentity_t *ent = nullptr; ( ent = G_IterateEntities( ent ) ); )
 		{
 			if ( ent->s.eType != ET_BEACON )
 				continue;
@@ -440,7 +440,7 @@ namespace Beacon //this should eventually become a class
 
 		if ( parent->client )
 		{
-			BG_ClassBoundingBox( parent->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+			BG_ClassBoundingBox( parent->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
 			BG_MoveOriginToBBOXCenter( center, mins, maxs );
 
 			// Also update weapon for humans.
@@ -485,8 +485,8 @@ namespace Beacon //this should eventually become a class
 			if ( ( ent->alienTag->s.eFlags & EF_BC_ENEMY ) &&
 			     !( ent->alienTag->s.eFlags & EF_BC_TAG_PLAYER ) )
 			{
-				ent->alienTag->tagAttachment = NULL;
-				ent->alienTag = NULL;
+				ent->alienTag->tagAttachment = nullptr;
+				ent->alienTag = nullptr;
 			}
 			else
 				Delete( ent->alienTag, true );
@@ -497,8 +497,8 @@ namespace Beacon //this should eventually become a class
 			if ( ( ent->humanTag->s.eFlags & EF_BC_ENEMY ) &&
 			     !( ent->humanTag->s.eFlags & EF_BC_TAG_PLAYER ) )
 			{
-				ent->humanTag->tagAttachment = NULL;
-				ent->humanTag = NULL;
+				ent->humanTag->tagAttachment = nullptr;
+				ent->humanTag = nullptr;
 			}
 			else
 				Delete( ent->humanTag, true );
@@ -539,7 +539,7 @@ namespace Beacon //this should eventually become a class
 		if( existingTag )
 			RefreshTag( existingTag );
 
-		return existingTag;
+		return existingTag != nullptr;
 	}
 
 	/**
@@ -598,11 +598,11 @@ namespace Beacon //this should eventually become a class
 	 * @param team           Team the caller belongs to.
 	 * @param refreshTagged  Refresh all already tagged entities's tags and exclude these entities from further consideration.
 	 */
-	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, qboolean refreshTagged )
+	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged )
 	{
 		tagtrace_ent_t list[ MAX_GENTITIES ];
 		int i, count = 0;
-		gentity_t *ent, *reticleEnt = NULL;
+		gentity_t *ent, *reticleEnt = nullptr;
 		vec3_t seg, delta;
 		float dot;
 
@@ -611,7 +611,7 @@ namespace Beacon //this should eventually become a class
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
 			trace_t tr;
-			trap_Trace( &tr, begin, NULL, NULL, end, skip, mask, 0 );
+			trap_Trace( &tr, begin, nullptr, nullptr, end, skip, mask, 0 );
 			if ( EntityTaggable( tr.entityNum, team, true ) )
 			{
 				reticleEnt = g_entities + tr.entityNum;
@@ -645,7 +645,7 @@ namespace Beacon //this should eventually become a class
 			// LOS
 			{
 				trace_t tr;
-				trap_Trace( &tr, begin, NULL, NULL, ent->r.currentOrigin, skip, mask, 0 );
+				trap_Trace( &tr, begin, nullptr, nullptr, ent->r.currentOrigin, skip, mask, 0 );
 				if( tr.entityNum != i )
 					continue;
 			}
@@ -658,7 +658,7 @@ namespace Beacon //this should eventually become a class
 		}
 
 		if( !count )
-			return NULL;
+			return nullptr;
 
 		qsort( list, count, sizeof( tagtrace_ent_t ), TagTrace_EntCmp );
 
@@ -668,11 +668,11 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Tags an entity.
 	 */
-	void Tag( gentity_t *ent, team_t team, qboolean permanent )
+	void Tag( gentity_t *ent, team_t team, bool permanent )
 	{
 		int data;
 		vec3_t origin, mins, maxs;
-		qboolean dead, player;
+		bool dead, player;
 		gentity_t *beacon, **attachment;
 		team_t targetTeam;
 
@@ -694,15 +694,15 @@ namespace Beacon //this should eventually become a class
 				targetTeam = ent->buildableTeam;
 				data       = ent->s.modelindex;
 				dead       = ( ent->health <= 0 );
-				player     = qfalse;
+				player     = false;
 				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
 				break;
 
 			case ET_PLAYER:
 				targetTeam = (team_t)ent->client->pers.team;
 				dead       = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
-				player     = qtrue;
-				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, NULL, NULL, NULL );
+				player     = true;
+				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, nullptr, nullptr, nullptr );
 
 				// Set beacon data to class (aliens) or weapon (humans).
 				switch( targetTeam ) {

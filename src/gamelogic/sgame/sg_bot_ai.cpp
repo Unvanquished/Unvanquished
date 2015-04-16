@@ -34,7 +34,7 @@ The return values are used in various sequences and selectors to change the exec
 ======================
 */
 
-qboolean isBinaryOp( AIOpType_t op )
+bool isBinaryOp( AIOpType_t op )
 {
 	switch ( op )
 	{
@@ -46,12 +46,12 @@ qboolean isBinaryOp( AIOpType_t op )
 		case OP_NEQUAL:
 		case OP_AND:
 		case OP_OR:
-			return qtrue;
-		default: return qfalse;
+			return true;
+		default: return false;
 	}
 }
 
-qboolean isUnaryOp( AIOpType_t op )
+bool isUnaryOp( AIOpType_t op )
 {
 	return op == OP_NOT;
 }
@@ -155,7 +155,7 @@ void AIDestroyValue( AIValue_t v )
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
-	static const botEntityAndDistance_t nullEntity = { NULL, HUGE_QFLT };
+	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_QFLT };
 	botEntityAndDistance_t              ret = nullEntity;
 
 	if ( e > E_NONE && e < E_NUM_BUILDABLES )
@@ -186,17 +186,17 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 	return ret;
 }
 
-static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
+static bool NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 {
 	int i;
 	for ( i = 0; i < self->botMind->numRunningNodes; i++ )
 	{
 		if ( self->botMind->runningNodes[ i ] == node )
 		{
-			return qtrue;
+			return true;
 		}
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -322,7 +322,7 @@ AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 	return status;
 }
 
-qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
+bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
 
 double EvalFunc( gentity_t *self, AIExpType_t *exp )
 {
@@ -351,7 +351,7 @@ double EvalValue( gentity_t *self, AIExpType_t *exp )
 	return AIUnBoxDouble( *v );
 }
 
-qboolean EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
+bool EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIBinaryOp_t *o = ( AIBinaryOp_t * ) exp;
 
@@ -374,17 +374,17 @@ qboolean EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 		case OP_OR:
 			return EvalConditionExpression( self, o->exp1 ) || EvalConditionExpression( self, o->exp2 );
 		default:
-			return qfalse;
+			return false;
 	}
 }
 
-qboolean EvaluateUnaryOp( gentity_t *self, AIExpType_t *exp )
+bool EvaluateUnaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIUnaryOp_t *o = ( AIUnaryOp_t * ) exp;
 	return !EvalConditionExpression( self, o->exp );
 }
 
-qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
+bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 {
 	if ( *exp == EX_OP )
 	{
@@ -408,7 +408,7 @@ qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 		return EvalFunc( self, exp ) != 0.0;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -422,7 +422,7 @@ returns failure otherwise
 */
 AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 {
-	qboolean success = qfalse;
+	bool success = false;
 
 	AIConditionNode_t *con = ( AIConditionNode_t * ) node;
 
@@ -473,7 +473,7 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 	// we do this so we can re-pathfind on the next entrance
 	if ( ( status == STATUS_SUCCESS || status == STATUS_FAILURE ) && self->botMind->currentNode == node )
 	{
-		self->botMind->currentNode = NULL;
+		self->botMind->currentNode = nullptr;
 	}
 
 	// reset running information on node success so sequences and selectors reset their state
@@ -712,7 +712,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
 	{
 		botTarget_t proposedTarget;
-		BotSetTarget( &proposedTarget, self->botMind->bestEnemy.ent, NULL );
+		BotSetTarget( &proposedTarget, self->botMind->bestEnemy.ent, nullptr );
 
 		//we can see another enemy (not our target) so switch to it
 		if ( self->botMind->bestEnemy.ent && self->botMind->goal.ent != self->botMind->bestEnemy.ent && BotPathIsWalkable( self, proposedTarget ) )
@@ -731,7 +731,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 	else
 	{
-		qboolean inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
+		bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
 		self->botMind->enemyLastSeen = level.time;
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->nav.directPathToGoal )
@@ -774,7 +774,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 					BotStandStill( self );
 				}
 
-				BotSprint( self, qtrue );
+				BotSprint( self, true );
 			}
 			else if ( myTeam == TEAM_ALIENS )
 			{
@@ -885,7 +885,7 @@ botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 {
 	botTarget_t target;
 	botEntityAndDistance_t en = AIEntityToGentity( self, e );
-	BotSetTarget( &target, en.ent, NULL );
+	BotSetTarget( &target, en.ent, nullptr );
 	return target;
 }
 
@@ -1050,7 +1050,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 {
 	const int maxHealth = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->health;
-	gentity_t *healTarget = NULL;
+	gentity_t *healTarget = nullptr;
 
 	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
 	{
@@ -1122,7 +1122,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
-	qboolean fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
+	bool fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
 	                       BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
 	if ( self->client->pers.team != TEAM_HUMANS )
@@ -1214,7 +1214,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		G_ForceWeaponChange( self, WP_HBUILD );
 	}
 
-	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 	BotGetTargetPos( self->botMind->goal, targetPos );
 	VectorMA( self->s.origin, self->r.maxs[1], forward, selfPos );
 

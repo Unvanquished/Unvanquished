@@ -79,7 +79,7 @@ public:
 	Rocket::Core::FileHandle Open( const Rocket::Core::String &filePath )
 	{
 		fileHandle_t fileHandle;
-		FS_FOpenFileRead( filePath.CString(), &fileHandle, qfalse );
+		FS_FOpenFileRead( filePath.CString(), &fileHandle, false );
 		return ( Rocket::Core::FileHandle )fileHandle;
 	}
 
@@ -258,7 +258,7 @@ public:
 	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions )
 	{
 
-		textureHandle = re.GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
+		textureHandle = re.GenerateTexture(source, sourceDimensions.x, sourceDimensions.y );
 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
 
 		return ( textureHandle > 0 );
@@ -271,7 +271,7 @@ public:
 
 	void EnableScissorRegion( bool enable )
 	{
-		re.ScissorEnable( enable ? qtrue :  qfalse );
+		re.ScissorEnable( enable );
 
 	}
 
@@ -297,12 +297,12 @@ public:
 // }
 
 
-void Rocket_Rocket_f( void )
+void Rocket_Rocket_f()
 {
 	Rocket_DocumentAction( Cmd_Argv(1), Cmd_Argv(2) );
 }
 
-void Rocket_RocketDebug_f( void )
+void Rocket_RocketDebug_f()
 {
 	static bool init = false;
 
@@ -339,12 +339,12 @@ static DaemonRenderInterface renderInterface;
 
 static RocketFocusManager fm;
 
-Rocket::Core::Context *menuContext = NULL;
-Rocket::Core::Context *hudContext = NULL;
+Rocket::Core::Context *menuContext = nullptr;
+Rocket::Core::Context *hudContext = nullptr;
 
 cvar_t *cg_draw2D;
 
-void Rocket_Init( void )
+void Rocket_Init()
 {
 	Rocket::Core::SetFileInterface( &fileInterface );
 	Rocket::Core::SetSystemInterface( &systemInterface );
@@ -407,7 +407,7 @@ void Rocket_Init( void )
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
 
-void Rocket_Shutdown( void )
+void Rocket_Shutdown()
 {
 	extern std::vector<RocketDataFormatter*> dataFormatterList;
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
@@ -416,13 +416,13 @@ void Rocket_Shutdown( void )
 	if ( menuContext )
 	{
 		menuContext->RemoveReference();
-		menuContext = NULL;
+		menuContext = nullptr;
 	}
 
 	if ( hudContext )
 	{
 		hudContext->RemoveReference();
-		hudContext = NULL;
+		hudContext = nullptr;
 	}
 
 	Rocket::Core::Shutdown();
@@ -453,7 +453,7 @@ void Rocket_Shutdown( void )
 	Cmd_RemoveCommand( "rocketDebug" );
 }
 
-void Rocket_Render( void )
+void Rocket_Render()
 {
 	if ( hudContext && cg_draw2D->integer )
 	{
@@ -468,7 +468,7 @@ void Rocket_Render( void )
 
 }
 
-void Rocket_Update( void )
+void Rocket_Update()
 {
 	// Mouse move is necessary to ensure the menus update, so fake one
 	Rocket_MouseMove( 0, 0 );
@@ -627,7 +627,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 			// TODO: Dont hardcode the extension.
 			path =  va( "emoticons/%s.crn", emoticon.CString() );
-			if ( FS_FOpenFileRead( path, NULL, qtrue ) )
+			if ( FS_FOpenFileRead( path, nullptr, true ) )
 			{
 				out.Erase( openBracket, closeBracket - openBracket + 1 );
 				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );

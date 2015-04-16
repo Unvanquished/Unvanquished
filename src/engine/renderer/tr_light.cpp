@@ -34,8 +34,8 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 {
 	int               i;
 	bspSurface_t      *surf;
-	bspModel_t        *bspModel = NULL;
-	model_t           *pModel = NULL;
+	bspModel_t        *bspModel = nullptr;
+	model_t           *pModel = nullptr;
 	byte              cubeSideBits;
 
 	// cull the entire model if it is outside the view frustum
@@ -191,10 +191,10 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	float           totalFactor;
 
 	// bk010103 - this segfaults with -nolight maps
-	if ( tr.world->lightGridData1 == NULL ||
-	     tr.world->lightGridData2 == NULL )
+	if ( tr.world->lightGridData1 == nullptr ||
+	     tr.world->lightGridData2 == nullptr )
 	{
-		return qfalse;
+		return false;
 	}
 
 	for ( i = 0; i < 3; i++ )
@@ -254,7 +254,7 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 		ambientLight[ 2 ] = r_forceAmbient->value;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -305,7 +305,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 		return;
 	}
 
-	ent->lightingCalculated = qtrue;
+	ent->lightingCalculated = true;
 
 	// if NOWORLDMODEL, only use dynamic lights (menu system, etc)
 	if ( !( refdef->rdflags & RDF_NOWORLDMODEL ) && tr.world
@@ -692,7 +692,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
-		R_TessLight( light, NULL );
+		R_TessLight( light, nullptr );
 
 		memset( &data, 0, sizeof( data ) );
 		data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );
@@ -870,7 +870,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 R_AddLightInteraction
 =================
 */
-qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, shader_t *surfaceShader, byte cubeSideBits,
+bool R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, shader_t *surfaceShader, byte cubeSideBits,
                                 interactionType_t iaType )
 {
 	int           iaIndex;
@@ -881,12 +881,12 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	{
 		if ( surfaceShader->isSky || ( !surfaceShader->interactLight && surfaceShader->noShadows ) )
 		{
-			return qfalse;
+			return false;
 		}
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 
 	// instead of checking for overflow, we just mask the index
@@ -920,7 +920,7 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 		light->numLightOnlyInteractions++;
 	}
 
-	ia->next = NULL;
+	ia->next = nullptr;
 
 	ia->type = iaType;
 
@@ -945,7 +945,7 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 		tr.pc.c_dlightInteractions++;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1021,7 +1021,7 @@ void R_SortInteractions( trRefLight_t *light )
 	qsort( iaFirst, light->numInteractions, sizeof( interaction_t ), InteractionCompare );
 
 	// fix linked list
-	iaLast = NULL;
+	iaLast = nullptr;
 
 	for ( i = 0; i < light->numInteractions; i++ )
 	{
@@ -1032,7 +1032,7 @@ void R_SortInteractions( trRefLight_t *light )
 			iaLast->next = ia;
 		}
 
-		ia->next = NULL;
+		ia->next = nullptr;
 
 		iaLast = ia;
 	}
@@ -1319,8 +1319,8 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	frustum_t  frustum;
 	cplane_t   *clipPlane;
 	int        r;
-	qboolean   anyClip;
-	qboolean   culled;
+	bool   anyClip;
+	bool   culled;
 
 	if ( light->l.rlType != RL_OMNI || r_shadows->integer < SHADOWING_ESM16 || r_noShadowPyramids->integer )
 	{
@@ -1400,8 +1400,8 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 		R_SetupFrustum2( frustum, viewProjectionMatrix );
 
 		// use the frustum planes to cut off shadowmaps beyond the light volume
-		anyClip = qfalse;
-		culled = qfalse;
+		anyClip = false;
+		culled = false;
 
 		for ( i = 0; i < 5; i++ )
 		{
@@ -1411,13 +1411,13 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 
 			if ( r == 2 )
 			{
-				culled = qtrue;
+				culled = true;
 				break;
 			}
 
 			if ( r == 3 )
 			{
-				anyClip = qtrue;
+				anyClip = true;
 			}
 		}
 
@@ -1658,7 +1658,7 @@ int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 {
 	int      i;
 	cplane_t *frust;
-	qboolean anyClip;
+	bool anyClip;
 	int      r;
 
 	if ( r_nocull->integer )
@@ -1667,7 +1667,7 @@ int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	}
 
 	// check against frustum planes
-	anyClip = qfalse;
+	anyClip = false;
 
 	for ( i = 0; i < 6; i++ )
 	{
@@ -1683,7 +1683,7 @@ int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 
 		if ( r == 3 )
 		{
-			anyClip = qtrue;
+			anyClip = true;
 		}
 	}
 

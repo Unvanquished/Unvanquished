@@ -45,7 +45,7 @@ CG_InitMarkPolys
 This is called at startup and for tournement restarts
 ===================
 */
-void CG_InitMarkPolys( void )
+void CG_InitMarkPolys()
 {
 	int i;
 
@@ -89,7 +89,7 @@ CG_AllocMark
 Will always succeed, even if it requires freeing an old active mark
 ===================
 */
-markPoly_t *CG_AllocMark( void )
+markPoly_t *CG_AllocMark()
 {
 	markPoly_t *le;
 	int        time;
@@ -135,7 +135,7 @@ passed to the renderer.
 
 void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
                     float orientation, float red, float green, float blue, float alpha,
-                    qboolean alphaFade, float radius, qboolean temporary )
+                    bool alphaFade, float radius, bool temporary )
 {
 	vec3_t         axis[ 3 ];
 	float          texCoordScale;
@@ -252,7 +252,7 @@ CG_AddMarks
 #define MARK_TOTAL_TIME 10000
 #define MARK_FADE_TIME  1000
 
-void CG_AddMarks( void )
+void CG_AddMarks()
 {
 	int        j;
 	markPoly_t *mp, *next;

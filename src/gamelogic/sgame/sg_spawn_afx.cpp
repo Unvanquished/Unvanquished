@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #include "sg_spawn.h"
 #include "CBSE.h"
 
-void InitEnvAFXEntity( gentity_t *self, qboolean link )
+void InitEnvAFXEntity( gentity_t *self, bool link )
 {
 	if ( !VectorCompare( self->s.angles, vec3_origin ) )
 	{
@@ -174,7 +174,7 @@ void SP_env_afx_teleport( gentity_t *self )
 	self->touch = env_afx_teleporter_touch;
 	self->act = env_afx_teleporter_act;
 
-	InitEnvAFXEntity( self, qtrue );
+	InitEnvAFXEntity( self, true );
 	// unlike other afx, we need to send this one to the client
 	// unless is a spectator trigger
 	if ( self->spawnflags & 1 )
@@ -243,7 +243,7 @@ void SP_env_afx_hurt( gentity_t *self )
 	self->soundIndex = G_SoundIndex( "sound/misc/electro.wav" );
 	self->touch = env_afx_hurt_touch;
 
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 5);
+	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 5);
 
 	self->act = env_afx_toggle;
 
@@ -260,7 +260,7 @@ trigger_gravity
 
 void env_afx_gravity_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->amount, qfalse, self->config.amount, self->eclass->config.amount, 800);
+	G_ResetIntField(&self->amount, false, self->config.amount, self->eclass->config.amount, 800);
 }
 
 void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
@@ -288,7 +288,7 @@ void SP_env_afx_gravity( gentity_t *self )
 	self->act = env_afx_toggle;
 	self->reset = env_afx_gravity_reset;
 
-	InitEnvAFXEntity( self, qtrue );
+	InitEnvAFXEntity( self, true );
 }
 
 /*
@@ -436,5 +436,5 @@ void SP_env_afx_ammo( gentity_t *self )
 	self->touch = env_afx_ammo_touch;
 	self->act = env_afx_toggle;
 
-	InitEnvAFXEntity( self, qtrue );
+	InitEnvAFXEntity( self, true );
 }

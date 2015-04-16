@@ -37,14 +37,14 @@ Maryland 20850 USA.
 #include "renderer/tr_public.h"
 
 
-void RE_Shutdown( qboolean destroyWindow ) { }
+void RE_Shutdown( bool destroyWindow ) { }
 qhandle_t RE_RegisterModel( const char *name )
 {
-	return FS_FOpenFileRead( name, NULL, qfalse );
+	return FS_FOpenFileRead( name, nullptr, false );
 }
 qhandle_t RE_RegisterSkin( const char *name )
 {
-	return FS_FOpenFileRead( name, NULL, qfalse );
+	return FS_FOpenFileRead( name, nullptr, false );
 }
 qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
@@ -81,13 +81,13 @@ void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
 }
 void RE_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
 {
-	RE_Glyph( font, NULL, glyph );
+	RE_Glyph( font, nullptr, glyph );
 }
 void RE_UnregisterFont( fontInfo_t *font ) { }
 void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
 {
 	font->handle = 1;
-	font->isBitmap = qtrue;
+	font->isBitmap = true;
 	font->pointSize = pointSize;
 	font->height = 1;
 	font->glyphScale = 1.0f;
@@ -97,8 +97,8 @@ void RE_GlyphCharVM( fontHandle_t font, int ch, glyphInfo_t *glyph ) { }
 void RE_UnregisterFontVM( fontHandle_t font ) { }
 void RE_LoadWorldMap( const char *name ) { }
 void RE_SetWorldVisData( const byte *vis ) { }
-void RE_EndRegistration( void ) { }
-void RE_ClearScene( void ) { }
+void RE_EndRegistration() { }
+void RE_ClearScene() { }
 void RE_AddRefEntityToScene( const refEntity_t *ref ) { }
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
 {
@@ -115,16 +115,16 @@ void RE_StretchPic( float x, float y, float w, float h, float s1, float t1, floa
 void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle ) { }
 void RE_StretchPicGradient( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType ) { }
 void RE_2DPolyies( polyVert_t *polys, int numverts, qhandle_t hShader ) { }
-void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty ) { }
-void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty ) { }
-void RE_BeginFrame( void ) { }
+void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, bool dirty ) { }
+void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, bool dirty ) { }
+void RE_BeginFrame() { }
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) { }
 int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer )
 {
 	return 0;
 }
 void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime ) { }
-void RE_ClearDecals( void ) { }
+void RE_ClearDecals() { }
 int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
 {
 	return 0;
@@ -132,31 +132,31 @@ int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagNam
 void R_ModelBounds( qhandle_t model, vec3_t mins, vec3_t maxs ) { }
 void R_RemapShader( const char *oldShader, const char *newShader, const char *offsetTime ) { }
 void R_DebugPolygon( int color, int numpoints, float *points ) { }
-void R_DebugText( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude ) { }
-qboolean R_GetEntityToken( char *buffer, int size )
+void R_DebugText( const vec3_t org, float r, float g, float b, const char *text, bool neverOcclude ) { }
+bool R_GetEntityToken( char *buffer, int size )
 {
-	return qtrue;
+	return true;
 }
 void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer ) { }
-qboolean R_inPVS( const vec3_t p1, const vec3_t p2 )
+bool R_inPVS( const vec3_t p1, const vec3_t p2 )
 {
-	return qfalse;
+	return false;
 }
-qboolean R_inPVVS( const vec3_t p1, const vec3_t p2 )
+bool R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
-	return qfalse;
+	return false;
 }
-qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
+bool RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 {
-	return qtrue;
+	return true;
 }
 void RE_RenderToTexture( int textureid, int x, int y, int w, int h ) { }
 int R_GetTextureId( const char *imagename )
 {
 	return 0;
 }
-void RE_Finish( void ) { }
-void RE_TakeVideoFrame( int h, int w, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg ) { }
+void RE_Finish() { }
+void RE_TakeVideoFrame( int h, int w, byte *captureBuffer, byte *encodeBuffer, bool motionJpeg ) { }
 void RE_AddRefLightToScene( const refLight_t *light ) { }
 int RE_RegisterAnimation( const char *name )
 {
@@ -166,8 +166,9 @@ int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t model, qhandle_t anim )
 {
 	return 1;
 }
-int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
+int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, bool clearOrigin )
 {
+	skel->numBones = 0;
 	return 1;
 }
 int RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
@@ -186,7 +187,7 @@ int RE_AnimFrameRate( qhandle_t hAnim )
 {
 	return 1;
 }
-qhandle_t RE_RegisterVisTest( void )
+qhandle_t RE_RegisterVisTest()
 {
 	return 1;
 }
@@ -197,11 +198,11 @@ float RE_CheckVisibility( qhandle_t hTest )
 }
 void RE_UnregisterVisTest( qhandle_t hTest ) { }
 void     RE_SetColorGrading( int slot, qhandle_t hShader ) { }
-void                                RE_ScissorEnable( qboolean enable ) { }
+void                                RE_ScissorEnable( bool enable ) { }
 void                                RE_ScissorSet( int x, int y, int w, int h ) { }
 void     R_SetAltShaderTokens( const char *name ) { }
 
-qboolean RE_BeginRegistration( glconfig_t *config, glconfig2_t *glconfig2 )
+bool RE_BeginRegistration( glconfig_t *config, glconfig2_t *glconfig2 )
 {
 	Com_Memset( config, 0, sizeof( glconfig_t ) );
 	config->vidWidth = 640;
@@ -209,7 +210,7 @@ qboolean RE_BeginRegistration( glconfig_t *config, glconfig2_t *glconfig2 )
 	config->windowAspect = 1.0f;
 	Com_Memset( glconfig2, 0, sizeof( glconfig2_t ) );
 
-	return qtrue;
+	return true;
 }
 
 refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )

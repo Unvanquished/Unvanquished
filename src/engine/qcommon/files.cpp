@@ -75,12 +75,12 @@ static void FS_CheckHandle(fileHandle_t handle, bool write)
 		Com_Error(ERR_DROP, "FS_CheckHandle: writing to file in pak");
 }
 
-qboolean FS_FileExists(const char* path)
+bool FS_FileExists(const char* path)
 {
 	return FS::PakPath::FileExists(path) || FS::HomePath::FileExists(path);
 }
 
-int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
+int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 {
 	if (!handle)
 		return FS_FileExists(path);
@@ -181,7 +181,7 @@ int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mod
 	switch (mode) {
 	case FS_READ:
 		if (FS::PakPath::FileExists(path))
-			return FS_FOpenFileRead(path, handle, qfalse);
+			return FS_FOpenFileRead(path, handle, false);
 		else {
 			int size = FS_SV_FOpenFileRead(FS::Path::Build("game", path).c_str(), handle);
 			return (!handle || *handle) ? size : -1;
@@ -406,7 +406,7 @@ void FS_WriteFile(const char* path, const void* buffer, int size)
 int FS_ReadFile(const char* path, void** buffer)
 {
 	fileHandle_t handle;
-	int length = FS_FOpenFileRead(path, &handle, qtrue);
+	int length = FS_FOpenFileRead(path, &handle, true);
 
 	if (length < 0) {
 		if (buffer)
@@ -665,8 +665,8 @@ bool FS_LoadServerPaks(const char* paks, bool isDemo)
 	return fs_missingPaks.empty();
 }
 
-qboolean CL_WWWBadChecksum(const char *pakname);
-qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
+bool CL_WWWBadChecksum(const char *pakname);
+bool FS_ComparePaks(char* neededpaks, int len, bool dlstring)
 {
 	*neededpaks = '\0';
 	for (auto& x: fs_missingPaks) {
@@ -761,7 +761,7 @@ public:
 		Print("--------");
 		try {
 			for (auto& filename : FS::PakPath::ListFiles(args.Argv(1))) {
-				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), qfalse))) {
+				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), false))) {
 					Print("%s", filename.c_str());
 				}
 			}
@@ -774,7 +774,7 @@ public:
 		Print("-----------");
 		try {
 			for (auto& filename : FS::RawPath::ListFiles(FS::Path::Build(FS::GetHomePath(),args.Argv(1)))) {
-				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), qfalse))) {
+				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), false))) {
 					Print("%s", filename.c_str());
 				}
 			}

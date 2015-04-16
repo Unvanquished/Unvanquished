@@ -149,7 +149,7 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
  */
 static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *killer, team_t *team )
 {
-	const gentity_t *assistant = NULL;
+	const gentity_t *assistant = nullptr;
 	float           damage;
 	int             when = 0;
 	int             playerNum;
@@ -157,7 +157,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	// Suicide? No assistance needed with that
 	if ( killer == self)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Require that the assist was for, at least, 25% of the damage or
@@ -289,7 +289,7 @@ void G_RewardAttackers( gentity_t *self )
 			G_AddCreditsToScore( player, ( int )reward );
 
 			// Add credits
-			G_AddCreditToClient( player->client, ( short )reward, qtrue );
+			G_AddCreditToClient( player->client, ( short )reward, true );
 
 			// Add momentum
 			G_AddMomentumForKillingStep( self, player, share );
@@ -310,7 +310,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	const gentity_t *assistantEnt;
 	int             assistant = ENTITYNUM_NONE;
-	const char      *assistantName = NULL;
+	const char      *assistantName = nullptr;
 	team_t          assistantTeam = TEAM_NONE;
 
 	if ( self->client->ps.pm_type == PM_DEAD )
@@ -411,12 +411,12 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 			//punish team kills and suicides
 			if ( attacker->client->pers.team == TEAM_ALIENS )
 			{
-				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, qtrue );
+				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, true );
 				G_AddCreditsToScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
 			}
 			else if ( attacker->client->pers.team == TEAM_HUMANS )
 			{
-				G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, qtrue );
+				G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, true );
 				G_AddCreditsToScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
 			}
 		}
@@ -470,7 +470,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	VectorCopy( self->s.origin, self->client->pers.lastDeathLocation );
 
-	self->takedamage = qfalse; // can still be gibbed
+	self->takedamage = false; // can still be gibbed
 
 	self->s.weapon = WP_NONE;
 	if ( self->client->noclip )
@@ -564,7 +564,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	self->client->pers.infoChangeTime = level.time;
 }
 
-static int ParseDmgScript( damageRegion_t *regions, char *buf )
+static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 {
 	char  *token;
 	float angleSpan, heightSpan;
@@ -598,12 +598,12 @@ static int ParseDmgScript( damageRegion_t *regions, char *buf )
 		regions[ count ].minAngle      = 0.0f;
 		regions[ count ].maxAngle      = 360.0f;
 		regions[ count ].modifier      = 1.0f;
-		regions[ count ].crouch        = qfalse;
-		regions[ count ].nonlocational = qfalse;
+		regions[ count ].crouch        = false;
+		regions[ count ].nonlocational = false;
 
 		while ( 1 )
 		{
-			token = COM_ParseExt( &buf, qtrue );
+			token = COM_ParseExt( &buf, true );
 
 			if ( !token[ 0 ] )
 			{
@@ -617,7 +617,7 @@ static int ParseDmgScript( damageRegion_t *regions, char *buf )
 			}
 			else if ( !strcmp( token, "name" ) )
 			{
-				token = COM_ParseExt( &buf, qfalse );
+				token = COM_ParseExt( &buf, false );
 
 				if ( token[ 0 ] )
 				{
@@ -627,7 +627,7 @@ static int ParseDmgScript( damageRegion_t *regions, char *buf )
 			}
 			else if ( !strcmp( token, "minHeight" ) )
 			{
-				token = COM_ParseExt( &buf, qfalse );
+				token = COM_ParseExt( &buf, false );
 
 				if ( !token[ 0 ] )
 				{
@@ -638,7 +638,7 @@ static int ParseDmgScript( damageRegion_t *regions, char *buf )
 			}
 			else if ( !strcmp( token, "maxHeight" ) )
 			{
-				token = COM_ParseExt( &buf, qfalse );
+				token = COM_ParseExt( &buf, false );
 
 				if ( !token[ 0 ] )
 				{
@@ -649,7 +649,7 @@ static int ParseDmgScript( damageRegion_t *regions, char *buf )
 			}
 			else if ( !strcmp( token, "minAngle" ) )
 			{
-				token = COM_ParseExt( &buf, qfalse );
+				token = COM_ParseExt( &buf, false );
 
 				if ( !token[ 0 ] )
 				{
@@ -660,7 +660,7 @@ static int ParseDmgScript( damageRegion_t *regions, char *buf )
 			}
 			else if ( !strcmp( token, "maxAngle" ) )
 			{
-				token = COM_ParseExt( &buf, qfalse );
+				token = COM_ParseExt( &buf, false );
 
 				if ( !token[ 0 ] )
 				{
@@ -671,7 +671,7 @@ static int ParseDmgScript( damageRegion_t *regions, char *buf )
 			}
 			else if ( !strcmp( token, "modifier" ) )
 			{
-				token = COM_ParseExt( &buf, qfalse );
+				token = COM_ParseExt( &buf, false );
 
 				if ( !token[ 0 ] )
 				{
@@ -682,11 +682,11 @@ static int ParseDmgScript( damageRegion_t *regions, char *buf )
 			}
 			else if ( !strcmp( token, "crouch" ) )
 			{
-				regions[ count ].crouch = qtrue;
+				regions[ count ].crouch = true;
 			}
 			else if ( !strcmp( token, "nonlocational" ) )
 			{
-				regions[ count ].nonlocational = qtrue;
+				regions[ count ].nonlocational = true;
 			}
 			else
 			{
@@ -766,7 +766,7 @@ float G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float he
 {
 	int            regionNum;
 	damageRegion_t *region;
-	qboolean       crouching;
+	bool       crouching;
 
 	if ( !target || !target->client )
 	{
@@ -824,7 +824,7 @@ float G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float he
 	return 1.0f;
 }
 
-void G_InitDamageLocations( void )
+void G_InitDamageLocations()
 {
 	const char   *modelName;
 	char         filename[ MAX_QPATH ];
@@ -879,7 +879,7 @@ void G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attack
 #define KNOCKBACK_PMOVE_TIME  50
 
 void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength,
-                       qboolean ignoreMass )
+                       bool ignoreMass )
 {
 	vec3_t dir, vel;
 	int    mass;
@@ -954,7 +954,7 @@ void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength
 	}
 }
 
-void G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, qboolean ignoreMass )
+void G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, bool ignoreMass )
 {
 	vec3_t dir;
 
@@ -973,9 +973,9 @@ void G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, 
  * @brief Used for explosions and melee attacks.
  * @param targ
  * @param origin
- * @return qtrue if the inflictor can directly damage the target.
+ * @return true if the inflictor can directly damage the target.
  */
-qboolean G_CanDamage( gentity_t *targ, vec3_t origin )
+bool G_CanDamage( gentity_t *targ, vec3_t origin )
 {
 	vec3_t  dest;
 	trace_t tr;
@@ -991,7 +991,7 @@ qboolean G_CanDamage( gentity_t *targ, vec3_t origin )
 
 	if ( tr.fraction == 1.0  || tr.entityNum == targ->s.number )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// this should probably check in the plane of projection,
@@ -1003,7 +1003,7 @@ qboolean G_CanDamage( gentity_t *targ, vec3_t origin )
 
 	if ( tr.fraction == 1.0 )
 	{
-		return qtrue;
+		return true;
 	}
 
 	VectorCopy( midpoint, dest );
@@ -1013,7 +1013,7 @@ qboolean G_CanDamage( gentity_t *targ, vec3_t origin )
 
 	if ( tr.fraction == 1.0 )
 	{
-		return qtrue;
+		return true;
 	}
 
 	VectorCopy( midpoint, dest );
@@ -1023,7 +1023,7 @@ qboolean G_CanDamage( gentity_t *targ, vec3_t origin )
 
 	if ( tr.fraction == 1.0 )
 	{
-		return qtrue;
+		return true;
 	}
 
 	VectorCopy( midpoint, dest );
@@ -1033,13 +1033,13 @@ qboolean G_CanDamage( gentity_t *targ, vec3_t origin )
 
 	if ( tr.fraction == 1.0 )
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
-qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
+bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
                                   float radius, gentity_t *ignore, int mod, int ignoreTeam )
 {
 	float     points, dist;
@@ -1049,7 +1049,7 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 	vec3_t    mins, maxs;
 	vec3_t    v;
 	int       i, e;
-	qboolean  hitClient = qfalse;
+	bool  hitClient = false;
 
 	if ( radius < 1 )
 	{
@@ -1120,7 +1120,7 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 	return hitClient;
 }
 
-qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
+bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
                          float radius, gentity_t *ignore, int dflags, int mod, team_t testHit )
 {
 	float     points, dist;
@@ -1131,7 +1131,7 @@ qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 	vec3_t    v;
 	vec3_t    dir;
 	int       i, e;
-	qboolean  hitSomething = qfalse;
+	bool  hitSomething = false;
 
 	if ( radius < 1 )
 	{
@@ -1201,7 +1201,7 @@ qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 			}
 			else if ( G_Team( ent ) == testHit && ent->health > 0 )
 			{
-				return qtrue;
+				return true;
 			}
 		}
 	}

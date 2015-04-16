@@ -84,7 +84,7 @@ public:
 		end = buffer + BUFFER_SIZE - putBack;
 		setg( end, end, end );
 
-		FS_FOpenFileRead( filename.c_str(), &fileHandle, qfalse );
+		FS_FOpenFileRead( filename.c_str(), &fileHandle, false );
 	}
 
 	~DaemonInputbuf()
@@ -169,7 +169,7 @@ public:
 		char **files;
 		std::vector<std::string> ret;
 
-		files = FS_ListFiles( pathname.c_str(), NULL, &numFiles );
+		files = FS_ListFiles( pathname.c_str(), nullptr, &numFiles );
 
 		for( int i = 0; i < numFiles; i++ )
 		{
@@ -259,7 +259,7 @@ void Trans_SetLanguage( const char* lang )
 	Com_Printf( "Set language to %s" , bestLang.get_name().c_str() );
 }
 
-void Trans_UpdateLanguage_f( void )
+void Trans_UpdateLanguage_f()
 {
 	Trans_SetLanguage( language->string );
 
@@ -275,7 +275,7 @@ void Trans_UpdateLanguage_f( void )
 Trans_Init
 ============
 */
-void Trans_Init( void )
+void Trans_Init()
 {
 	char langList[ MAX_TOKEN_CHARS ] = "";
 	char encList[ MAX_TOKEN_CHARS ] = "";
@@ -314,7 +314,7 @@ void Trans_Init( void )
 	Com_Printf( "Loaded %lu language%s\n", ( unsigned long ) langs.size(), ( langs.size() == 1 ? "" : "s" ) );
 }
 
-void Trans_LoadDefaultLanguage( void )
+void Trans_LoadDefaultLanguage()
 {
 	FL_Locale           *locale;
 
@@ -379,7 +379,7 @@ const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_p
 			return msgid_plural;
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	num = ( num + 1 ) & 3;

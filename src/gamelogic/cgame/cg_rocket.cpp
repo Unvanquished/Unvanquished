@@ -62,7 +62,7 @@ static const size_t rocketCvarTableSize = ARRAY_LEN( rocketCvarTable );
 CG_RegisterRocketCvars
 =================
 */
-void CG_RegisterRocketCvars( void )
+void CG_RegisterRocketCvars()
 {
 	int         i;
 	const cvarTable_t *cv;
@@ -76,10 +76,10 @@ void CG_RegisterRocketCvars( void )
 
 static connstate_t oldConnState;
 
-void CG_Rocket_Init( void )
+void CG_Rocket_Init()
 {
 	int len;
-	char *token, *text_p;
+	const char *token, *text_p;
 	char text[ 20000 ];
 	fileHandle_t f;
 
@@ -98,10 +98,10 @@ void CG_Rocket_Init( void )
 	// Register elements
 	CG_Rocket_RegisterElements();
 
-	trap_Rocket_RegisterProperty( "cell-color", "white", qfalse, qfalse, "color" );
-	trap_Rocket_RegisterProperty( "border-width", "0.5", qfalse, qfalse, "number" );
-	trap_Rocket_RegisterProperty( "unlocked-marker-color", "green", qfalse, qfalse, "color" );
-	trap_Rocket_RegisterProperty( "locked-marker-color", "red", qfalse, qfalse, "color" );
+	trap_Rocket_RegisterProperty( "cell-color", "white", false, false, "color" );
+	trap_Rocket_RegisterProperty( "border-width", "0.5", false, false, "number" );
+	trap_Rocket_RegisterProperty( "unlocked-marker-color", "green", false, false, "color" );
+	trap_Rocket_RegisterProperty( "locked-marker-color", "red", false, false, "color" );
 
 	// Load custom rocket pak if necessary
 	if ( *rocket_pak.string )
@@ -300,10 +300,10 @@ void CG_Rocket_Init( void )
 	trap_Key_SetCatcher( KEYCATCH_UI );
 }
 
-void CG_Rocket_LoadHuds( void )
+void CG_Rocket_LoadHuds()
 {
 	int i, len;
-	char *token, *text_p;
+	const char *token, *text_p;
 	char text[ 20000 ];
 	fileHandle_t f;
 
@@ -332,7 +332,7 @@ void CG_Rocket_LoadHuds( void )
 
 	while ( 1 )
 	{
-		qboolean valid = qfalse;
+		bool valid = false;
 
 		token = COM_Parse2( &text_p );
 
@@ -518,7 +518,7 @@ void CG_Rocket_LoadHuds( void )
 					trap_Rocket_AddUnitToHud( i, token );
 				}
 
-				valid = qtrue;
+				valid = true;
 				break;
 			}
 		}
@@ -618,8 +618,8 @@ void CG_Rocket_Frame( cgClientState_t state )
 
 	if ( cg.scoreInvalidated )
 	{
-		CG_Rocket_BuildPlayerList( NULL );
-		cg.scoreInvalidated = qfalse;
+		CG_Rocket_BuildPlayerList( nullptr );
+		cg.scoreInvalidated = false;
 	}
 
 	// Update scores as long as they are showing
@@ -656,30 +656,30 @@ const char *CG_Rocket_QuakeToRML( const char *in )
 	return buffer;
 }
 
-qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
+bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 {
 	playerState_t *ps;
 
 	switch ( type )
 	{
 		case ELEMENT_ALL:
-			return qtrue;
+			return true;
 
 		case ELEMENT_LOADING:
 			if ( rocketInfo.cstate.connState < CA_ACTIVE && rocketInfo.cstate.connState > CA_CONNECTED )
 			{
-				return qtrue;
+				return true;
 			}
 
-			return qfalse;
+			return false;
 
 		case ELEMENT_GAME:
 			if ( rocketInfo.cstate.connState == CA_ACTIVE )
 			{
-				return qtrue;
+				return true;
 			}
 
-			return qfalse;
+			return false;
 
 		default:
 			break;
@@ -688,7 +688,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 	if ( !cg.snap )
 	{
-		return qfalse;
+		return false;
 	}
 	ps = &cg.snap->ps;
 	switch( type )
@@ -696,36 +696,36 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 		case ELEMENT_ALIENS:
 			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
-				return qtrue;
+				return true;
 			}
 
-			return qfalse;
+			return false;
 
 		case ELEMENT_HUMANS:
 			if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
-				return qtrue;
+				return true;
 			}
 
-			return qfalse;
+			return false;
 
 		case ELEMENT_BOTH:
 			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
-				return qtrue;
+				return true;
 			}
 
-			return qfalse;
+			return false;
 
 		case ELEMENT_DEAD:
 			// If you're on a team and spectating, you're probably dead
 			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 			{
-				return qtrue;
+				return true;
 			}
 
-			return qfalse;
+			return false;
 	}
 
-	return qfalse;
+	return false;
 }

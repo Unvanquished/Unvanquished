@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #include "qcommon.h"
 
 static huffman_t msgHuff;
-static qboolean  msgInit = qfalse;
+static bool  msgInit = false;
 
 /*
 ==============================================================================
@@ -47,7 +47,7 @@ Handles byte ordering and avoids alignment errors
 ==============================================================================
 */
 
-void MSG_initHuffman( void );
+void MSG_initHuffman();
 
 void MSG_Init( msg_t *buf, byte *data, int length )
 {
@@ -71,47 +71,47 @@ void MSG_InitOOB( msg_t *buf, byte *data, int length )
 	Com_Memset( buf, 0, sizeof( *buf ) );
 	buf->data = data;
 	buf->maxsize = length;
-	buf->oob = qtrue;
+	buf->oob = true;
 }
 
 void MSG_Clear( msg_t *buf )
 {
 	buf->cursize = 0;
-	buf->overflowed = qfalse;
+	buf->overflowed = false;
 	buf->bit = 0; //<- in bits
 }
 
 void MSG_Bitstream( msg_t *buf )
 {
-	buf->oob = qfalse;
+	buf->oob = false;
 }
 
 void MSG_Uncompressed( msg_t *buf )
 {
 	// align to byte-boundary
 	buf->bit = ( buf->bit + 7 ) & ~7;
-	buf->oob = qtrue;
+	buf->oob = true;
 }
 
 void MSG_BeginReading( msg_t *msg )
 {
 	msg->readcount = 0;
 	msg->bit = 0;
-	msg->oob = qfalse;
+	msg->oob = false;
 }
 
 void MSG_BeginReadingOOB( msg_t *msg )
 {
 	msg->readcount = 0;
 	msg->bit = 0;
-	msg->oob = qtrue;
+	msg->oob = true;
 }
 
 void MSG_BeginReadingUncompressed( msg_t *buf )
 {
 	// align to byte-boundary
 	buf->bit = ( buf->bit + 7 ) & ~7;
-	buf->oob = qtrue;
+	buf->oob = true;
 }
 
 void MSG_Copy( msg_t *buf, byte *data, int length, msg_t *src )
@@ -144,7 +144,7 @@ void MSG_WriteBits( msg_t *msg, int value, int bits )
 	// this isn't an exact overflow check, but close enough
 	if ( msg->maxsize - msg->cursize < 32 )
 	{
-		msg->overflowed = qtrue;
+		msg->overflowed = true;
 		return;
 	}
 
@@ -223,7 +223,7 @@ int MSG_ReadBits( msg_t *msg, int bits )
 {
 	int      value;
 	int      get;
-	qboolean sgn;
+	bool sgn;
 	int      i, nbits;
 
 	value = 0;
@@ -231,11 +231,11 @@ int MSG_ReadBits( msg_t *msg, int bits )
 	if ( bits < 0 )
 	{
 		bits = -bits;
-		sgn = qtrue;
+		sgn = true;
 	}
 	else
 	{
-		sgn = qfalse;
+		sgn = false;
 	}
 
 	if ( msg->oob )
@@ -998,7 +998,7 @@ static int QDECL qsort_entitystatefields( const void *a, const void *b )
 	return 0;
 }
 
-void MSG_PrioritiseEntitystateFields( void )
+void MSG_PrioritiseEntitystateFields()
 {
 	int fieldorders[ ARRAY_LEN( entityStateFields ) ];
 	int numfields = ARRAY_LEN( entityStateFields );
@@ -1033,12 +1033,12 @@ MSG_WriteDeltaEntity
 
 Writes part of a packetentities message, including the entity number.
 Can delta from either a baseline or a previous packet_entity
-If to is NULL, a remove entity update will be sent
+If to is nullptr, a remove entity update will be sent
 If force is not set, then nothing at all will be generated if the entity is
 identical, under the assumption that the in-order delta code will catch it.
 ==================
 */
-void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, qboolean force )
+void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, bool force )
 {
 	int        i, lc;
 	int        numFields;
@@ -1055,10 +1055,10 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 	// struct without updating the message fields
 	assert( numFields + 1 == sizeof( *from ) / 4 );
 
-	// a NULL to is a delta remove message
-	if ( to == NULL )
+	// a nullptr to is a delta remove message
+	if ( to == nullptr )
 	{
-		if ( from == NULL )
+		if ( from == nullptr )
 		{
 			return;
 		}
@@ -1511,7 +1511,7 @@ static int QDECL qsort_playerstatefields( const void *a, const void *b )
 	return 0;
 }
 
-void MSG_PrioritisePlayerStateFields( void )
+void MSG_PrioritisePlayerStateFields()
 {
 	int fieldorders[ ARRAY_LEN( playerStateFields ) ];
 	int numfields = ARRAY_LEN( playerStateFields );
@@ -2204,11 +2204,11 @@ static const int msg_hData[ 256 ] =
 	13504, // 255
 };
 
-void MSG_initHuffman( void )
+void MSG_initHuffman()
 {
 	int i, j;
 
-	msgInit = qtrue;
+	msgInit = true;
 	Huff_Init( &msgHuff );
 
 	for ( i = 0; i < 256; i++ )

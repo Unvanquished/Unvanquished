@@ -61,7 +61,7 @@ cmake_dependent_option( USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT
 option( USE_LTO "Use link-time optimization for release builds" 0 )
 cmake_dependent_option( USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0 )
 option( USE_HARDENING "Use stack protection and other hardening flags" 0 )
-option( USE_WEXTRA "Enable extra compilation warnings" 0 )
+option( USE_WERROR "Tell the compiler to make the build fail when warnings are present" 0 )
 option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
@@ -238,14 +238,14 @@ if( MSVC )
   endif()
   set_linker_flag( "/LARGEADDRESSAWARE" )
 
-  # Turn off C4503:, e.g: 
+  # Turn off C4503:, e.g:
   # warning C4503: 'std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Insert_hint' : decorated name length exceeded, name was truncated
   # No issue will be caused from this error as long as no two symbols become identical by being truncated.
   # In practice this rarely happens and even the standard libraries are affected as in the example. So there really is not
   # much that can to done about it and the warnings about each truncation really just make it more likely
   # that other more real issues might get missed. So better to remove the distraction when it really is very unlikey to happen.
-  set_c_cxx_flag( "/wd4503" )  
-  
+  set_c_cxx_flag( "/wd4503" )
+
   # Turn off warning C4996:, e.g:
   # warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _open. See online help for details.  set_c_cxx_flag( "/wd4996" )
   # open seems far more popular than _open not to mention nicer. There doesn't seem to be any reason or will to change to _open.
@@ -338,16 +338,36 @@ else()
   endif()
 
   # Warning options
-  set_c_cxx_flag( "-Wall" )
-  if( USE_WEXTRA )
-    set_c_cxx_flag( "-Wextra" )
-  else()
-    set_c_cxx_flag( "-Wno-sign-compare" )
-    set_c_cxx_flag( "-Wno-write-strings" )
-  endif()
-
+  set_cxx_flag( "-Wall" )
+  set_cxx_flag( "-Wextra" )
   if( USE_PEDANTIC )
     set_c_cxx_flag( "-pedantic" )
+  endif()
+  if( USE_WERROR )
+    set_cxx_flag( "-Werror" )
+    if( USE_PEDANTIC )
+      set_cxx_flag( "-pedantic-errors" )
+    endif()
+    try_cxx_flag_werror( WNO_ABSOLUTE_VALUE "-Wno-error=absolute-value" )
+    try_cxx_flag_werror( WNO_DEPRECATED_REGISTER "-Wno-error=deprecated-register" )
+    try_cxx_flag_werror( WNO_INVALID_SOURCE_ENCODING "-Wno-error=invalid-source-encoding" )
+    try_cxx_flag_werror( WNO_MAYBE_UNINITIALIZED "-Wno-error=maybe-uninitialized" )
+    try_cxx_flag_werror( WNO_MISSING_FIELD_INITIALIZERS "-Wno-error=missing-field-initializers" )
+    try_cxx_flag_werror( WNO_PARENTHESES "-Wno-error=parentheses" )
+    try_cxx_flag_werror( WNO_POINTER_BOOL_CONVERSION "-Wno-error=pointer-bool-conversion" )
+    try_cxx_flag_werror( WNO_PRAGMAS "-Wno-error=pragmas" )
+    try_cxx_flag_werror( WNO_SIGN_COMPARE "-Wno-error=sign-compare" )
+    try_cxx_flag_werror( WNO_STRICT_OVERFLOW "-Wno-error=strict-overflow" )
+    try_cxx_flag_werror( WNO_SWITCH "-Wno-error=switch" )
+    try_cxx_flag_werror( WNO_UNINITIALIZED "-Wno-error=uninitialized" )
+    try_cxx_flag_werror( WNO_UNUSED_BUT_SET_PARAMETER "-Wno-error=unused-but-set-parameter" )
+    try_cxx_flag_werror( WNO_UNUSED_BUT_SET_VARIABLE "-Wno-error=unused-but-set-variable" )
+    try_cxx_flag_werror( WNO_UNUSED_FUNCTION "-Wno-error=unused-function" )
+    try_cxx_flag_werror( WNO_UNUSED_PARAMETER "-Wno-error=unused-parameter" )
+    try_cxx_flag_werror( WNO_UNUSED_PRIVATE_FIELD "-Wno-error=unused-private-field" )
+    try_cxx_flag_werror( WNO_UNUSED_RESULT "-Wno-error=unused-result" )
+    try_cxx_flag_werror( WNO_UNUSED_VARIABLE "-Wno-error=unused-variable" )
+    try_cxx_flag_werror( WNO_WRITE_STRINGS "-Wno-error=write-strings" )
   endif()
 
   if( USE_ADDRESS_SANITIZER )
@@ -1461,14 +1481,23 @@ function( GAMEMODULE )
         $<$<CONFIG:MinSizeRel>:-O2>
       )
     endif()
-    if( USE_WEXTRA )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wextra" )
-    else()
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-sign-compare" )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-Wno-write-strings" )
-    endif()
-    if( USE_PEDANTIC )
-      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} "-pedantic" )
+    set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS}
+      -Wextra
+      -Wno-error=absolute-value
+      -Wno-error=implicit-function-declaration
+      -Wno-error=missing-field-initializers
+      -Wno-error=pointer-bool-conversion
+      -Wno-error=sign-compare
+      -Wno-error=switch
+      -Wno-error=uninitialized
+      -Wno-error=unused-function
+      -Wno-error=unused-label
+      -Wno-error=unused-parameter
+      -Wno-error=writable-strings
+      -pedantic
+    )
+    if( USE_WERROR )
+      set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} -Werror )
     endif()
     foreach( DEF ${GAMEMODULE_COMPILE_DEF} )
       set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS} -D${DEF} )
@@ -1485,7 +1514,7 @@ function( GAMEMODULE )
       if( EXT STREQUAL ".c" AND FILEDIR MATCHES ${LIB_DIR} )
         add_custom_command( OUTPUT ${OBJ}
           COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang${PNACL_BIN_EXT}
-            -std=gnu89
+            -std=c11
             ${NACL_COMPILE_OPTIONS}
             -c
             -o ${OBJ}

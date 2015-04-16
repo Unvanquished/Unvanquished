@@ -268,13 +268,13 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawBBOX,                    "cg_drawBBOX",                    "0",            CVAR_CHEAT                   },
 	{ &cg_drawEntityInfo,              "cg_drawEntityInfo",              "0",            CVAR_CHEAT                   },
 	{ &cg_wwSmoothTime,                "cg_wwSmoothTime",                "150",          0                            },
-	{ NULL,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
-	{ NULL,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
-	{ NULL,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
+	{ nullptr,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
+	{ nullptr,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
+	{ nullptr,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
 	{ &cg_stickySpec,                  "cg_stickySpec",                  "1",            CVAR_USERINFO                },
 	{ &cg_sprintToggle,                "cg_sprintToggle",                "0",            CVAR_USERINFO                },
 	{ &cg_unlagged,                    "cg_unlagged",                    "1",            CVAR_USERINFO                },
-	{ NULL,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
+	{ nullptr,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
 	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            0                            },
 	{ &cg_bounceParticles,             "cg_bounceParticles",             "0",            0                            },
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         0                            },
@@ -303,9 +303,9 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_hudFiles,                    "cg_hudFiles",                    "ui/hud.txt",   0                            },
 	{ &cg_hudFilesEnable,              "cg_hudFilesEnable",              "0",            0                            },
-	{ NULL,                            "cg_alienConfig",                 "",             0                            },
-	{ NULL,                            "cg_humanConfig",                 "",             0                            },
-	{ NULL,                            "cg_spectatorConfig",             "",             0                            },
+	{ nullptr,                            "cg_alienConfig",                 "",             0                            },
+	{ nullptr,                            "cg_humanConfig",                 "",             0                            },
+	{ nullptr,                            "cg_spectatorConfig",             "",             0                            },
 
 	{ &cg_painBlendUpRate,             "cg_painBlendUpRate",             "10.0",         0                            },
 	{ &cg_painBlendDownRate,           "cg_painBlendDownRate",           "0.5",          0                            },
@@ -368,7 +368,7 @@ static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
 CG_RegisterCvars
 =================
 */
-void CG_RegisterCvars( void )
+void CG_RegisterCvars()
 {
 	size_t i;
 	const cvarTable_t *cv;
@@ -397,12 +397,12 @@ Set some player cvars usable in scripts
 these should refer only to playerstates that belong to the client, not the followed player, ui cvars will do that already
 ===============
 */
-static void CG_SetPVars( void )
+static void CG_SetPVars()
 {
 	playerState_t *ps;
 	char          buffer[ MAX_CVAR_VALUE_STRING ];
 	int           i;
-	qboolean      first;
+	bool      first;
 
 	if ( !cg.snap )
 	{
@@ -460,7 +460,7 @@ static void CG_SetPVars( void )
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 
 	// set p_availableBuildings to a space-separated list of buildings
-	first = qtrue;
+	first = true;
 	*buffer = 0;
 
 	for ( i = BA_NONE; i < BA_NUM_BUILDABLES; ++i )
@@ -473,7 +473,7 @@ static void CG_SetPVars( void )
 
 		{
 			Q_strcat( buffer, sizeof( buffer ), first ? buildable->name : va( " %s", buildable->name ) );
-			first = qfalse;
+			first = false;
 		}
 	}
 
@@ -488,7 +488,7 @@ Set some cvars used by the UI
 these will change when following another player
 ===============
 */
-static void CG_SetUIVars( void )
+static void CG_SetUIVars()
 {
 	if ( !cg.snap )
 	{
@@ -504,7 +504,7 @@ static void CG_SetUIVars( void )
 CG_UpdateBuildableRangeMarkerMask
 ================
 */
-void CG_UpdateBuildableRangeMarkerMask( void )
+void CG_UpdateBuildableRangeMarkerMask()
 {
 	static int btmc = 0;
 	static int spmc = 0;
@@ -619,7 +619,7 @@ empty:
 	}
 }
 
-void CG_NotifyHooks( void )
+void CG_NotifyHooks()
 {
 	playerState_t *ps;
 	char config[ MAX_CVAR_VALUE_STRING ];
@@ -654,7 +654,7 @@ void CG_NotifyHooks( void )
 CG_UpdateCvars
 =================
 */
-void CG_UpdateCvars( void )
+void CG_UpdateCvars()
 {
 	size_t i;
 	const cvarTable_t *cv;
@@ -673,7 +673,7 @@ void CG_UpdateCvars( void )
 	CG_UpdateBuildableRangeMarkerMask();
 }
 
-int CG_CrosshairPlayer( void )
+int CG_CrosshairPlayer()
 {
 	if ( cg.time > ( cg.crosshairClientTime + 1000 ) )
 	{
@@ -688,7 +688,7 @@ int CG_CrosshairPlayer( void )
 CG_RemoveNotifyLine
 =================
 */
-void CG_RemoveNotifyLine( void )
+void CG_RemoveNotifyLine()
 {
 	int i, offset, totalLength;
 
@@ -720,7 +720,7 @@ CG_AddNotifyText
 TODO TODO this can be removed, as well as all its dependencies
 =================
 */
-void CG_AddNotifyText( void )
+void CG_AddNotifyText()
 {
 	char buffer[ BIG_INFO_STRING ];
 	int  bufferLen, textLen;
@@ -831,7 +831,7 @@ const char *CG_Argv( int arg )
 CG_Args
 ================
 */
-const char *CG_Args( void )
+const char *CG_Args()
 {
 	static char buffer[ MAX_STRING_CHARS ];
 
@@ -881,9 +881,9 @@ CG_FileExists
 Test if a specific file exists or not
 =================
 */
-qboolean CG_FileExists( const char *filename )
+bool CG_FileExists( const char *filename )
 {
-	return trap_FS_FOpenFile( filename, NULL, FS_READ );
+	return trap_FS_FOpenFile( filename, nullptr, FS_READ );
 }
 
 /*
@@ -971,45 +971,45 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 
 	switch (step) {
 		case LOAD_START:
-			cg.loading = qtrue;
+			cg.loading = true;
 			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 0.0f;
 			break;
 
 		case LOAD_TRAILS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Tracking your movements", "Letting out the magic smoke", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Tracking your movements", "Letting out the magic smoke", nullptr) );
 			break;
 		case LOAD_PARTICLES:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", nullptr) );
 			break;
 		case LOAD_SOUNDS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.08f, choose("Recording granger purring", "Generating annoying noises", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.08f, choose("Recording granger purring", "Generating annoying noises", nullptr) );
 			break;
 		case LOAD_GEOMETRY:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", nullptr) );
 			break;
 		case LOAD_ASSETS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.63f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.63f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", nullptr) );
 			break;
 		case LOAD_CONFIGS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.80f, choose("Reading the manual", "Looking at blueprints", nullptr) );
 			break;
 		case LOAD_WEAPONS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", nullptr) );
 			break;
 		case LOAD_UPGRADES:
 		case LOAD_CLASSES:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", nullptr) );
 			break;
 		case LOAD_BUILDINGS:
 			cg.mediaFraction = 1.0f;
-			CG_UpdateLoadingProgress( LOADBAR_BUILDABLES, 0.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_BUILDABLES, 0.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", nullptr) );
 			break;
 
 		case LOAD_DONE:
 			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 1.0f;
 			Q_strncpyz(cg.currentLoadingLabel, "Done!", sizeof( cg.currentLoadingLabel ) );
 			trap_UpdateScreen();
-			cg.loading = qfalse;
+			cg.loading = false;
 			break;
 
 		default:
@@ -1024,50 +1024,50 @@ CG_RegisterSounds
 called during a precache command
 =================
 */
-static void CG_RegisterSounds( void )
+static void CG_RegisterSounds()
 {
 	int        i;
 	char       name[ MAX_QPATH ];
 	const char *soundName;
 
-	cgs.media.weHaveEvolved = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", qtrue );
-	cgs.media.reinforcement = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", qtrue );
+	cgs.media.weHaveEvolved = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", true );
+	cgs.media.reinforcement = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", true );
 
-	cgs.media.alienOvermindAttack = trap_S_RegisterSound( "sound/announcements/overmindattack.wav", qtrue );
-	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying.wav", qtrue );
-	cgs.media.alienOvermindSpawns = trap_S_RegisterSound( "sound/announcements/overmindspawns.wav", qtrue );
+	cgs.media.alienOvermindAttack = trap_S_RegisterSound( "sound/announcements/overmindattack.wav", true );
+	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying.wav", true );
+	cgs.media.alienOvermindSpawns = trap_S_RegisterSound( "sound/announcements/overmindspawns.wav", true );
 
-	cgs.media.alienL4ChargePrepare = trap_S_RegisterSound( "sound/player/level4/charge_prepare.wav", qtrue );
-	cgs.media.alienL4ChargeStart = trap_S_RegisterSound( "sound/player/level4/charge_start.wav", qtrue );
+	cgs.media.alienL4ChargePrepare = trap_S_RegisterSound( "sound/player/level4/charge_prepare.wav", true );
+	cgs.media.alienL4ChargeStart = trap_S_RegisterSound( "sound/player/level4/charge_start.wav", true );
 
-	cgs.media.selectSound = trap_S_RegisterSound( "sound/weapons/change.wav", qfalse );
-	cgs.media.turretSpinupSound = trap_S_RegisterSound( "sound/buildables/mgturret/spinup.wav", qfalse );
-	cgs.media.weaponEmptyClick = trap_S_RegisterSound( "sound/weapons/click.wav", qfalse );
+	cgs.media.selectSound = trap_S_RegisterSound( "sound/weapons/change.wav", false );
+	cgs.media.turretSpinupSound = trap_S_RegisterSound( "sound/buildables/mgturret/spinup.wav", false );
+	cgs.media.weaponEmptyClick = trap_S_RegisterSound( "sound/weapons/click.wav", false );
 
-	cgs.media.talkSound = trap_S_RegisterSound( "sound/misc/talk.wav", qfalse );
-	cgs.media.alienTalkSound = trap_S_RegisterSound( "sound/misc/alien_talk.wav", qfalse );
-	cgs.media.humanTalkSound = trap_S_RegisterSound( "sound/misc/human_talk.wav", qfalse );
-	cgs.media.landSound = trap_S_RegisterSound( "sound/player/land1.wav", qfalse );
+	cgs.media.talkSound = trap_S_RegisterSound( "sound/misc/talk.wav", false );
+	cgs.media.alienTalkSound = trap_S_RegisterSound( "sound/misc/alien_talk.wav", false );
+	cgs.media.humanTalkSound = trap_S_RegisterSound( "sound/misc/human_talk.wav", false );
+	cgs.media.landSound = trap_S_RegisterSound( "sound/player/land1.wav", false );
 
-	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in.wav", qfalse );
-	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out.wav", qfalse );
-	cgs.media.watrUnSound = trap_S_RegisterSound( "sound/player/watr_un.wav", qfalse );
+	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in.wav", false );
+	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out.wav", false );
+	cgs.media.watrUnSound = trap_S_RegisterSound( "sound/player/watr_un.wav", false );
 
-	cgs.media.disconnectSound = trap_S_RegisterSound( "sound/misc/disconnect.wav", qfalse );
+	cgs.media.disconnectSound = trap_S_RegisterSound( "sound/misc/disconnect.wav", false );
 
 	for ( i = 0; i < 4; i++ )
 	{
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/step%i.wav", i + 1 );
-		cgs.media.footsteps[ FOOTSTEP_GENERAL ][ i ] = trap_S_RegisterSound( name, qfalse );
+		cgs.media.footsteps[ FOOTSTEP_GENERAL ][ i ] = trap_S_RegisterSound( name, false );
 
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/flesh%i.wav", i + 1 );
-		cgs.media.footsteps[ FOOTSTEP_FLESH ][ i ] = trap_S_RegisterSound( name, qfalse );
+		cgs.media.footsteps[ FOOTSTEP_FLESH ][ i ] = trap_S_RegisterSound( name, false );
 
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/splash%i.wav", i + 1 );
-		cgs.media.footsteps[ FOOTSTEP_SPLASH ][ i ] = trap_S_RegisterSound( name, qfalse );
+		cgs.media.footsteps[ FOOTSTEP_SPLASH ][ i ] = trap_S_RegisterSound( name, false );
 
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/clank%i.wav", i + 1 );
-		cgs.media.footsteps[ FOOTSTEP_METAL ][ i ] = trap_S_RegisterSound( name, qfalse );
+		cgs.media.footsteps[ FOOTSTEP_METAL ][ i ] = trap_S_RegisterSound( name, false );
 	}
 
 	for ( i = 1; i < MAX_SOUNDS; i++ )
@@ -1084,42 +1084,42 @@ static void CG_RegisterSounds( void )
 			continue; // custom sound
 		}
 
-		cgs.gameSounds[ i ] = trap_S_RegisterSound( soundName, qfalse );
+		cgs.gameSounds[ i ] = trap_S_RegisterSound( soundName, false );
 	}
 
-	cgs.media.jetpackThrustLoopSound = trap_S_RegisterSound( "sound/upgrades/jetpack/hi.wav", qfalse );
+	cgs.media.jetpackThrustLoopSound = trap_S_RegisterSound( "sound/upgrades/jetpack/hi.wav", false );
 
-	cgs.media.medkitUseSound = trap_S_RegisterSound( "sound/upgrades/medkit/medkit.wav", qfalse );
+	cgs.media.medkitUseSound = trap_S_RegisterSound( "sound/upgrades/medkit/medkit.wav", false );
 
-	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve.wav", qfalse );
+	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve.wav", false );
 
-	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion.wav", qfalse );
-	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild.wav", qfalse );
+	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion.wav", false );
+	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild.wav", false );
 
-	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying.wav", qfalse );
-	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion.wav", qfalse );
-	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild.wav", qfalse );
+	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying.wav", false );
+	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion.wav", false );
+	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild.wav", false );
 
 	for ( i = 0; i < 4; i++ )
 	{
 		cgs.media.humanBuildableDamage[ i ] = trap_S_RegisterSound(
-		                                        va( "sound/buildables/human/damage%d.wav", i ), qfalse );
+		                                        va( "sound/buildables/human/damage%d.wav", i ), false );
 	}
 
-	cgs.media.hardBounceSound1 = trap_S_RegisterSound( "sound/misc/hard_bounce1.wav", qfalse );
-	cgs.media.hardBounceSound2 = trap_S_RegisterSound( "sound/misc/hard_bounce2.wav", qfalse );
+	cgs.media.hardBounceSound1 = trap_S_RegisterSound( "sound/misc/hard_bounce1.wav", false );
+	cgs.media.hardBounceSound2 = trap_S_RegisterSound( "sound/misc/hard_bounce2.wav", false );
 
-	cgs.media.repeaterUseSound = trap_S_RegisterSound( "sound/buildables/repeater/use.wav", qfalse );
+	cgs.media.repeaterUseSound = trap_S_RegisterSound( "sound/buildables/repeater/use.wav", false );
 
-	cgs.media.buildableRepairSound = trap_S_RegisterSound( "sound/buildables/human/repair.wav", qfalse );
-	cgs.media.buildableRepairedSound = trap_S_RegisterSound( "sound/buildables/human/repaired.wav", qfalse );
+	cgs.media.buildableRepairSound = trap_S_RegisterSound( "sound/buildables/human/repair.wav", false );
+	cgs.media.buildableRepairedSound = trap_S_RegisterSound( "sound/buildables/human/repaired.wav", false );
 
-	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", qfalse );
-	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", qfalse );
+	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", false );
+	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", false );
 
-	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon.wav", qfalse );
+	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon.wav", false );
 
-	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", qfalse );
+	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", false );
 }
 
 //===================================================================================
@@ -1180,7 +1180,7 @@ void CG_RegisterReverb( int slot, const char *str )
 CG_RegisterGraphics
 =================
 */
-static void CG_RegisterGraphics( void )
+static void CG_RegisterGraphics()
 {
 	int         i;
 	static const char *const sb_nums[ 11 ] =
@@ -1455,7 +1455,7 @@ CG_BuildSpectatorString
 
 =======================
 */
-void CG_BuildSpectatorString( void )
+void CG_BuildSpectatorString()
 {
 	int i;
 
@@ -1477,7 +1477,7 @@ CG_RegisterClients
 
 ===================
 */
-static void CG_RegisterClients( void )
+static void CG_RegisterClients()
 {
 	int i;
 
@@ -1514,18 +1514,18 @@ static void CG_RegisterClients( void )
 	CG_RegisterWeaponAnimation(
 	    &cgs.media.jetpackAnims[ JANIM_NONE ],
 	    "models/players/human_base/jetpack.iqm:idle",
-	    qfalse, qfalse, qfalse );
+	    false, false, false );
 
 
 	CG_RegisterWeaponAnimation(
 	    &cgs.media.jetpackAnims[ JANIM_SLIDEOUT ],
 	    "models/players/human_base/jetpack.iqm:slideout",
-	    qfalse, qfalse, qfalse );
+	    false, false, false );
 
 	CG_RegisterWeaponAnimation(
 	    &cgs.media.jetpackAnims[ JANIM_SLIDEIN ],
 	    "models/players/human_base/jetpack.iqm:slidein",
-	    qfalse, qfalse, qfalse );
+	    false, false, false );
 
 	cg.charModelFraction = 1.0f;
 	trap_UpdateScreen();
@@ -1573,9 +1573,9 @@ CG_StartMusic
 
 ======================
 */
-void CG_StartMusic( void )
+void CG_StartMusic()
 {
-	char *s;
+	const char *s;
 	char parm1[ MAX_QPATH ], parm2[ MAX_QPATH ];
 
 	// start the background music
@@ -1586,7 +1586,7 @@ void CG_StartMusic( void )
 	trap_S_StartBackgroundTrack( parm1, parm2 );
 }
 
-qboolean CG_ClientIsReady( int clientNum )
+bool CG_ClientIsReady( int clientNum )
 {
 	clientList_t ready;
 
@@ -1736,7 +1736,7 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 
 	CG_ShaderStateChanged();
 
-	trap_S_ClearLoopingSounds( qtrue );
+	trap_S_ClearLoopingSounds( true );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 
 	CG_Rocket_LoadHuds();
@@ -1753,7 +1753,7 @@ CG_Shutdown
 Called before every level change or subsystem restart
 =================
 */
-void CG_Shutdown( void )
+void CG_Shutdown()
 {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
@@ -1767,7 +1767,7 @@ void CG_Shutdown( void )
 CG_VoIPString
 ================
 */
-static char *CG_VoIPString( void )
+static char *CG_VoIPString()
 {
 	// a generous overestimate of the space needed for 0,1,2...61,62,63
 	static char voipString[ MAX_CLIENTS * 4 ];

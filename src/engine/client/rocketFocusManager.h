@@ -42,7 +42,7 @@ Maryland 20850 USA.
 class RocketFocusManager : public Rocket::Core::EventListener
 {
 public:
-	RocketFocusManager( void ) { }
+	RocketFocusManager() { }
 	void ProcessEvent( Rocket::Core::Event &evt )
 	{
 		bool anyVisible = false;

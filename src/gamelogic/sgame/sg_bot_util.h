@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //g_bot.c
 void     BotError( const char* fmt, ... ) PRINTF_LIKE(1);
 void     BotDPrintf( const char* fmt, ... ) PRINTF_LIKE(1);
-qboolean PlayersBehindBotInSpawnQueue( gentity_t *self );
+bool PlayersBehindBotInSpawnQueue( gentity_t *self );
 void     BotSetSkillLevel( gentity_t *self, int skill );
 
 // entity queries
@@ -38,7 +38,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
 void       BotFindClosestBuildings( gentity_t *self );
 gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
-qboolean   BotTeamateHasWeapon( gentity_t *self, int weapon );
+bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
 
@@ -52,10 +52,10 @@ float BotAimAngle( gentity_t *self, vec3_t pos );
 
 // targets
 void        BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos );
-qboolean    BotTargetIsEntity( botTarget_t target );
-qboolean    BotTargetIsPlayer( botTarget_t target );
-qboolean    BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
-qboolean    BotTargetInAttackRange( gentity_t *self, botTarget_t target );
+bool    BotTargetIsEntity( botTarget_t target );
+bool    BotTargetIsPlayer( botTarget_t target );
+bool    BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
+bool    BotTargetInAttackRange( gentity_t *self, botTarget_t target );
 void        BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
 int         BotGetTargetEntityNumber( botTarget_t target );
 void        BotGetTargetPos( botTarget_t target, vec3_t rVec );
@@ -72,22 +72,22 @@ float    BotGetBaseRushScore( gentity_t *ent );
 float    BotGetEnemyPriority( gentity_t *self, gentity_t *ent );
 
 // goal changing
-qboolean BotChangeGoal( gentity_t *self, botTarget_t target );
-qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal );
-qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal );
+bool BotChangeGoal( gentity_t *self, botTarget_t target );
+bool BotChangeGoalEntity( gentity_t *self, gentity_t *goal );
+bool BotChangeGoalPos( gentity_t *self, vec3_t goal );
 
 // fighting
 void     BotResetEnemyQueue( enemyQueue_t *queue );
-qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy );
+bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy );
 void     BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer );
 void     BotFireWeaponAI( gentity_t *self );
-void     BotClassMovement( gentity_t *self, qboolean inAttackRange );
+void     BotClassMovement( gentity_t *self, bool inAttackRange );
 
 // human bots
-qboolean   WeaponIsEmpty( weapon_t weapon, playerState_t *ps );
+bool   WeaponIsEmpty( weapon_t weapon, playerState_t *ps );
 float      PercentAmmoRemaining( weapon_t weapon, playerState_t *ps );
 void       BotFindDamagedFriendlyStructure( gentity_t *self );
-qboolean   BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building );
+bool   BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building );
 void       BotBuyWeapon( gentity_t *self, weapon_t weapon );
 void       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );
 void       BotSellWeapons( gentity_t *self );
@@ -100,8 +100,8 @@ void       BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgra
 #define AS_OVER_RT3         ((ALIENSENSE_RANGE*0.5f)/M_ROOT3)
 float    CalcPounceAimPitch( gentity_t *self, botTarget_t target );
 float    CalcBarbAimPitch( gentity_t *self, botTarget_t target );
-qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass );
-qboolean BotEvolveToClass( gentity_t *ent, class_t newClass );
+bool BotCanEvolveToClass( gentity_t *self, class_t newClass );
+bool BotEvolveToClass( gentity_t *ent, class_t newClass );
 float    CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed );
 
 //g_bot_nav.c
@@ -114,33 +114,33 @@ typedef enum
 } botMoveDir_t;
 
 // global navigation
-extern qboolean navMeshLoaded;
+extern bool navMeshLoaded;
 
-void         G_BotNavInit( void );
-void         G_BotNavCleanup( void );
-qboolean     FindRouteToTarget( gentity_t *self, botTarget_t target, qboolean allowPartial );
+void         G_BotNavInit();
+void         G_BotNavCleanup();
+bool     FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial );
 void         BotMoveToGoal( gentity_t *self );
 void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
 void         BotClampPos( gentity_t *self );
 
 // local navigation
-qboolean BotDodge( gentity_t *self );
-void     BotWalk( gentity_t *self, qboolean enable );
-qboolean BotSprint( gentity_t *self, qboolean enable );
-qboolean BotJump( gentity_t *self );
+bool BotDodge( gentity_t *self );
+void     BotWalk( gentity_t *self, bool enable );
+bool BotSprint( gentity_t *self, bool enable );
+bool BotJump( gentity_t *self );
 void     BotStrafeDodge( gentity_t *self );
 void     BotAlternateStrafe( gentity_t *self );
 void     BotMoveInDir( gentity_t *self, uint32_t moveDir );
 void     BotStandStill( gentity_t *self );
 
 // navigation queries
-qboolean GoalInRange( gentity_t *self, float r );
+bool GoalInRange( gentity_t *self, float r );
 int      DistanceToGoal( gentity_t *self );
 int      DistanceToGoalSquared( gentity_t *self );
 int      DistanceToGoal2DSquared( gentity_t *self );
 float    BotGetGoalRadius( gentity_t *self );
 void     BotFindRandomPointOnMesh( gentity_t *self, vec3_t point );
-qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target );
+bool BotPathIsWalkable( gentity_t *self, botTarget_t target );
 
 //configureable constants
 //For a reference of how far a number represents, take a look at tremulous.h

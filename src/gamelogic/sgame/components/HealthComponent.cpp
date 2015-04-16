@@ -164,10 +164,10 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		// Save damage direction.
 		if (direction) {
 			VectorCopy(direction.value().Data(), client->damage_from);
-			client->damage_fromWorld = qfalse;
+			client->damage_fromWorld = false;
 		} else {
 			VectorCopy(entity.oldEnt->r.currentOrigin, client->damage_from);
-			client->damage_fromWorld = qtrue;
+			client->damage_fromWorld = true;
 		}
 
 		// Drain jetpack fuel.

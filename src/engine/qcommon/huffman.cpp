@@ -61,7 +61,7 @@ void Huff_putBit( int bit, byte *fout, int *offset )
 	*offset = bloc;
 }
 
-int     Huff_getBloc( void )
+int     Huff_getBloc()
 {
 	return bloc;
 }
@@ -232,7 +232,7 @@ static void increment( huff_t *huff, node_t *node )
 		return;
 	}
 
-	if ( node->next != NULL && node->next->weight == node->weight )
+	if ( node->next != nullptr && node->next->weight == node->weight )
 	{
 		lnode = *node->head;
 
@@ -250,7 +250,7 @@ static void increment( huff_t *huff, node_t *node )
 	}
 	else
 	{
-		*node->head = NULL;
+		*node->head = nullptr;
 		free_ppnode( huff, node->head );
 	}
 
@@ -286,7 +286,7 @@ void Huff_addRef( huff_t *huff, byte ch )
 {
 	node_t *tnode, *tnode2;
 
-	if ( huff->loc[ ch ] == NULL )
+	if ( huff->loc[ ch ] == nullptr )
 	{
 		/* if this is the first transmission of this node */
 		tnode = & ( huff->nodeList[ huff->blocNode++ ] );
@@ -347,7 +347,7 @@ void Huff_addRef( huff_t *huff, byte ch )
 
 		huff->lhead->next = tnode;
 		tnode->prev = huff->lhead;
-		tnode->left = tnode->right = NULL;
+		tnode->left = tnode->right = nullptr;
 
 		if ( huff->lhead->parent )
 		{
@@ -460,7 +460,7 @@ void Huff_transmit( huff_t *huff, int ch, byte *fout )
 {
 	int i;
 
-	if ( huff->loc[ ch ] == NULL )
+	if ( huff->loc[ ch ] == nullptr )
 	{
 		/* node_t hasn't been transmitted, send a NYT, then the symbol */
 		Huff_transmit( huff, NYT, fout );
@@ -472,14 +472,14 @@ void Huff_transmit( huff_t *huff, int ch, byte *fout )
 	}
 	else
 	{
-		send( huff->loc[ ch ], NULL, fout );
+		send( huff->loc[ ch ], nullptr, fout );
 	}
 }
 
 void Huff_offsetTransmit( huff_t *huff, int ch, byte *fout, int *offset )
 {
 	bloc = *offset;
-	send( huff->loc[ ch ], NULL, fout );
+	send( huff->loc[ ch ], nullptr, fout );
 	*offset = bloc;
 }
 
@@ -503,8 +503,8 @@ void Huff_Decompress( msg_t *mbuf, int offset )
 	huff.tree = huff.lhead = huff.ltail = huff.loc[ NYT ] = & ( huff.nodeList[ huff.blocNode++ ] );
 	huff.tree->symbol = NYT;
 	huff.tree->weight = 0;
-	huff.lhead->next = huff.lhead->prev = NULL;
-	huff.tree->parent = huff.tree->left = huff.tree->right = NULL;
+	huff.lhead->next = huff.lhead->prev = nullptr;
+	huff.tree->parent = huff.tree->left = huff.tree->right = nullptr;
 
 	cch = buffer[ 0 ] * 256 + buffer[ 1 ];
 
@@ -570,8 +570,8 @@ void Huff_Compress( msg_t *mbuf, int offset )
 	huff.tree = huff.lhead = huff.loc[ NYT ] = & ( huff.nodeList[ huff.blocNode++ ] );
 	huff.tree->symbol = NYT;
 	huff.tree->weight = 0;
-	huff.lhead->next = huff.lhead->prev = NULL;
-	huff.tree->parent = huff.tree->left = huff.tree->right = NULL;
+	huff.lhead->next = huff.lhead->prev = nullptr;
+	huff.tree->parent = huff.tree->left = huff.tree->right = nullptr;
 	huff.loc[ NYT ] = huff.tree;
 
 	seq[ 0 ] = ( size >> 8 );
@@ -602,15 +602,15 @@ void Huff_Init( huffman_t *huff )
 	                            & ( huff->decompressor.nodeList[ huff->decompressor.blocNode++ ] );
 	huff->decompressor.tree->symbol = NYT;
 	huff->decompressor.tree->weight = 0;
-	huff->decompressor.lhead->next = huff->decompressor.lhead->prev = NULL;
-	huff->decompressor.tree->parent = huff->decompressor.tree->left = huff->decompressor.tree->right = NULL;
+	huff->decompressor.lhead->next = huff->decompressor.lhead->prev = nullptr;
+	huff->decompressor.tree->parent = huff->decompressor.tree->left = huff->decompressor.tree->right = nullptr;
 
 	// Add the NYT (not yet transmitted) node into the tree/list */
 	huff->compressor.tree = huff->compressor.lhead = huff->compressor.loc[ NYT ] =
 	                          & ( huff->compressor.nodeList[ huff->compressor.blocNode++ ] );
 	huff->compressor.tree->symbol = NYT;
 	huff->compressor.tree->weight = 0;
-	huff->compressor.lhead->next = huff->compressor.lhead->prev = NULL;
-	huff->compressor.tree->parent = huff->compressor.tree->left = huff->compressor.tree->right = NULL;
+	huff->compressor.lhead->next = huff->compressor.lhead->prev = nullptr;
+	huff->compressor.tree->parent = huff->compressor.tree->left = huff->compressor.tree->right = nullptr;
 	huff->compressor.loc[ NYT ] = huff->compressor.tree;
 }
