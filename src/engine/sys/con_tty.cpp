@@ -504,7 +504,7 @@ void CON_Print_TTY( const char *msg )
 {
 	CON_Hide();
 
-	if ( com_ansiColor && com_ansiColor->integer )
+	if ( ttycon_on && com_ansiColor && com_ansiColor->integer )
 	{
 		CON_AnsiColorPrint( msg );
 	}
