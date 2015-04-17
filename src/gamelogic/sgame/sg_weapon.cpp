@@ -446,11 +446,6 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 		return;
 	}
 
-	if ( !G_Alive( target ) )
-	{
-		return;
-	}
-
 	if ( tr )
 	{
 		VectorSubtract( tr->endpos, target->s.origin, normal );
@@ -511,10 +506,15 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 
 	G_WideTrace( &tr, self, range, width, height, &traceEnt );
 
-	if (traceEnt && traceEnt->entity->Damage((float)damage, self, Vec3::Load(tr.endpos),
-	                                         Vec3::Load(forward), 0, (meansOfDeath_t)mod)) {
-		SendMeleeHitEvent( self, traceEnt, &tr );
+	if ( !G_Alive( traceEnt ) )
+	{
+		return false;
 	}
+
+	traceEnt->entity->Damage((float)damage, self, Vec3::Load(tr.endpos),
+		                     Vec3::Load(forward), 0, (meansOfDeath_t)mod);
+
+	SendMeleeHitEvent( self, traceEnt, &tr );
 
 	return traceEnt;
 }
@@ -1256,7 +1256,7 @@ bool G_CheckVenomAttack( gentity_t *self )
 
 	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
-	if ( !traceEnt || !traceEnt->takedamage || G_OnSameTeam( self, traceEnt ) || !G_Alive( traceEnt ) )
+	if ( !G_Alive( traceEnt ) || G_OnSameTeam( self, traceEnt ) )
 	{
 		return false;
 	}
@@ -1267,14 +1267,14 @@ bool G_CheckVenomAttack( gentity_t *self )
 		return false;
 	}
 
-	if (traceEnt->entity->Damage((float)LEVEL0_BITE_DMG, self, Vec3::Load(tr.endpos),
-	                             Vec3::Load(forward), 0, (meansOfDeath_t)MOD_LEVEL0_BITE)) {
-		SendMeleeHitEvent( self, traceEnt, &tr );
-		self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
-		return true;
-	}
+	traceEnt->entity->Damage((float)LEVEL0_BITE_DMG, self, Vec3::Load(tr.endpos),
+	                         Vec3::Load(forward), 0, (meansOfDeath_t)MOD_LEVEL0_BITE);
 
-	return false;
+	SendMeleeHitEvent( self, traceEnt, &tr );
+
+	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
+
+	return true;
 }
 
 /*
@@ -1544,30 +1544,22 @@ bool G_CheckPounceAttack( gentity_t *self )
 	G_WideTrace( &tr, self, pounceRange, LEVEL3_POUNCE_WIDTH,
 	             LEVEL3_POUNCE_WIDTH, &traceEnt );
 
-	if ( traceEnt == nullptr )
+	if ( !G_Alive( traceEnt ) )
 	{
 		return false;
 	}
 
-	// Send blood impact
-	if ( traceEnt->takedamage )
-	{
-		SendMeleeHitEvent( self, traceEnt, &tr );
-	}
-
-	if ( !traceEnt->takedamage )
-	{
-		return false;
-	}
-
-	// Deal damage
 	timeMax = self->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
 	damage  = payload * LEVEL3_POUNCE_DMG / timeMax;
 
 	self->client->pmext.pouncePayload = 0;
 
-	return traceEnt->entity->Damage((float)damage, self, Vec3::Load(tr.endpos), Vec3::Load(forward),
-	                                DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE);
+	traceEnt->entity->Damage((float)damage, self, Vec3::Load(tr.endpos), Vec3::Load(forward),
+	                         DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE);
+
+	SendMeleeHitEvent( self, traceEnt, &tr );
+
+	return true;
 }
 
 static void FireBounceball( gentity_t *self )
@@ -1596,13 +1588,13 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 		return;
 	}
 
-	VectorSubtract( victim->s.origin, self->s.origin, forward );
-	VectorNormalize( forward );
-
-	if ( !victim->takedamage )
+	if ( !G_Alive( victim ) )
 	{
 		return;
 	}
+
+	VectorSubtract( victim->s.origin, self->s.origin, forward );
+	VectorNormalize( forward );
 
 	// For buildables, track the last MAX_TRAMPLE_BUILDABLES_TRACKED buildables
 	//  hit, and do not do damage if the current buildable is in that list
@@ -1624,11 +1616,12 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 
 	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.stats[ STAT_MISC ] / LEVEL4_TRAMPLE_DURATION;
 
-	if (victim->entity->Damage((float)damage, self, Vec3::Load(victim->s.origin), Vec3::Load(forward),
-	                           DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE)) {
-		SendMeleeHitEvent( self, victim, nullptr );
-		self->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
-	}
+	victim->entity->Damage((float)damage, self, Vec3::Load(victim->s.origin), Vec3::Load(forward),
+	                       DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE);
+
+	SendMeleeHitEvent( self, victim, nullptr );
+
+	self->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
 }
 
 /*

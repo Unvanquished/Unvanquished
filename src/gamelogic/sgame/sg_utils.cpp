@@ -968,6 +968,7 @@ float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
  * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
  */
 bool G_Alive(gentity_t *ent) {
+	if (!ent) return false;
 	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
 	return (healthComponent && healthComponent->Alive());
 }
@@ -977,6 +978,7 @@ bool G_Alive(gentity_t *ent) {
  * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
  */
 bool G_Dead(gentity_t *ent) {
+	if (!ent) return false;
 	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
 	return (healthComponent && !healthComponent->Alive());
 }
