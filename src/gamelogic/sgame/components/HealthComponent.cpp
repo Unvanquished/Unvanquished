@@ -29,12 +29,15 @@ void HealthComponent::HandlePrepareNetCode() {
 }
 
 void HealthComponent::HandleHeal(float amount, gentity_t* source) {
-	if (amount <= 0.0f) return;
 	if (health <= 0.0f) return;
 	if (health >= maxHealth) return;
 
 	// Only heal up to maximum health.
 	amount = std::min(amount, maxHealth - health);
+
+	if (amount <= 0.0f) return;
+
+	healthLogger.Debug("Healing: %3.1f (%3.1f → %3.1f)", amount, health, health + amount);
 
 	health += amount;
 	ScaleDamageAccounts(amount);
@@ -168,7 +171,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		}
 	}
 
-	healthLogger.Debug("Taking damage: %3.1f (%3.1f → %3.1f)", take, health, health - take);
+	healthLogger.Notice("Taking damage: %3.1f (%3.1f → %3.1f)", take, health, health - take);
 
 	// Do the damage.
 	health -= take;
@@ -205,6 +208,8 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	// Handle death.
 	// TODO: Send a Die/Pain message and handle details where appropriate.
 	if (health <= 0) {
+		healthLogger.Notice("Dying with %.1f health.", health);
+
 		// Disable knockback.
 		if (client) entity.oldEnt->flags |= FL_NO_KNOCKBACK;
 
@@ -256,17 +261,20 @@ void HealthComponent::ScaleDamageAccounts(float healthRestored) {
 		}
 	});
 
+	if (relevantClients.empty()) return;
+
 	// Calculate account scale factor.
 	float scale;
 	if (healthRestored < totalAccreditedDamage) {
 		scale = (totalAccreditedDamage - healthRestored) / totalAccreditedDamage;
 
-		//healthLogger.Debug("Scaling damage accounts by %.2f.", scale);
+		healthLogger.Debug("Scaling damage accounts of %i client(s) by %.2f.",
+		                   relevantClients.size(), scale);
 	} else {
 		// Clear all accounts.
 		scale = 0.0f;
 
-		healthLogger.Debug("Clearing damage accounts.");
+		healthLogger.Debug("Clearing damage accounts of %i client(s).", relevantClients.size());
 	}
 
 	// Scale down or clear damage accounts.

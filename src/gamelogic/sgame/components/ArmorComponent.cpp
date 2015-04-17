@@ -48,7 +48,7 @@ float ArmorComponent::GetLocationalDamageMod(float angle, float height) {
 		}
 
 		armorLogger.Debug("Locational damage modifier of %.2f found for angle %.2f and height %.2f (%s).",
-		                  angle, height, region->modifier, region->name);
+		                  region->modifier, angle, height, region->name);
 
 		return region->modifier;
 	}
