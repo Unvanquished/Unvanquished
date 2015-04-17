@@ -2968,12 +2968,7 @@ void G_RunFrame( int levelTime )
 	G_UpdateZaps( msec );
 	Beacon::Frame( );
 
-	ent = &g_entities[0];
-	for ( i = 0; i < level.num_entities; i++, ent++ ) {
-		if (ent->entity) {
-			ent->entity->PrepareNetCode();
-		}
-	}
+	G_PrepareEntityNetCode();
 
 	// log gameplay statistics
 	G_LogGameplayStats( LOG_GAMEPLAY_STATS_BODY );
@@ -2992,4 +2987,14 @@ void G_RunFrame( int levelTime )
 
 	trap_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
+}
+
+void G_PrepareEntityNetCode() {
+	// TODO: Allow ForEntities with empty template arguments.
+	gentity_t *oldEnt = &g_entities[0];
+	for (int i = 0; i < level.num_entities; i++, oldEnt++) {
+		if (oldEnt->entity) {
+			oldEnt->entity->PrepareNetCode();
+		}
+	}
 }

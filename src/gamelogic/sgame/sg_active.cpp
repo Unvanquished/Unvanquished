@@ -2042,6 +2042,9 @@ void ClientThink_real( gentity_t *self )
 	// moved from after Pmove -- potentially the cause of future triggering bugs
 	G_TouchTriggers( self );
 
+	// Do this before Pmove because it is shared code and accesses networked fields.
+	G_PrepareEntityNetCode();
+
 	Pmove( &pm );
 
 	G_UnlaggedDetectCollisions( self );

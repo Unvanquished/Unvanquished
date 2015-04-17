@@ -233,6 +233,7 @@ void              G_ShutdownGame( int restart );
 vmCvar_t          *G_FindCvar( const char *name );
 void              G_CheckPmoveParamChanges();
 void              G_SendClientPmoveParams(int client);
+void              G_PrepareEntityNetCode();
 
 // sg_maprotation.c
 void              G_PrintRotations();
