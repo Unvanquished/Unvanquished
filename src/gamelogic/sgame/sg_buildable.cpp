@@ -3707,25 +3707,28 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	{
 		ent->time1000 -= 1000;
 
-		if ( !ent->spawned )
+		if ( G_Alive( ent ) )
 		{
-			float gain = maxHealth * ( 1.0f - BUILDABLE_START_HEALTH_FRAC ) * 1000.0f / buildTime;
-			ent->entity->Heal(gain, nullptr);
-		}
-		else if ( ent->powered )
-		{
-			int regenWait;
-
-			switch ( ent->buildableTeam )
+			if ( !ent->spawned )
 			{
-				case TEAM_ALIENS: regenWait = ALIEN_BUILDABLE_REGEN_WAIT; break;
-				case TEAM_HUMANS: regenWait = HUMAN_BUILDABLE_REGEN_WAIT; break;
-				default:          regenWait = 0;                          break;
+				float gain = maxHealth * ( 1.0f - BUILDABLE_START_HEALTH_FRAC ) * 1000.0f / buildTime;
+				ent->entity->Heal(gain, nullptr);
 			}
-
-			if ( regenRate && ( ent->lastDamageTime + regenWait ) < level.time )
+			else if ( ent->powered )
 			{
-				ent->entity->Heal((float)regenRate, nullptr);
+				int regenWait;
+
+				switch ( ent->buildableTeam )
+				{
+					case TEAM_ALIENS: regenWait = ALIEN_BUILDABLE_REGEN_WAIT; break;
+					case TEAM_HUMANS: regenWait = HUMAN_BUILDABLE_REGEN_WAIT; break;
+					default:          regenWait = 0;                          break;
+				}
+
+				if ( regenRate && ( ent->lastDamageTime + regenWait ) < level.time )
+				{
+					ent->entity->Heal((float)regenRate, nullptr);
+				}
 			}
 		}
 	}
