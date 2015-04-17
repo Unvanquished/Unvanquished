@@ -135,7 +135,7 @@ float BotGetHealScore( gentity_t *self )
 		distToHealer = self->botMind->closestBuildings[ BA_H_MEDISTAT ].distance;
 	}
 
-	percentHealth = ( ( float ) self->client->ps.stats[STAT_HEALTH] ) / maxHealth;
+	percentHealth = self->entity->Get<HealthComponent>()->HealthFraction();
 
 	distToHealer = MAX( MIN( MAX_HEAL_DIST, distToHealer ), MAX_HEAL_DIST * ( 3.0f / 4.0f ) );
 
@@ -1730,7 +1730,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 	int num;
 	gentity_t *other;
 
-	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( G_Dead( ent ) )
 	{
 		return false;
 	}
@@ -1773,8 +1773,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			//...check we can evolve to that class
 			if ( numLevels >= 0 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
 			{
-				ent->client->pers.evolveHealthFraction = ( float )ent->client->ps.stats[ STAT_HEALTH ] /
-				( float )BG_Class( currentClass )->health;
+				ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
 
 				if ( ent->client->pers.evolveHealthFraction < 0.0f )
 				{

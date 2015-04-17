@@ -701,7 +701,7 @@ namespace Beacon //this should eventually become a class
 
 			case ET_PLAYER:
 				targetTeam = (team_t)ent->client->pers.team;
-				dead       = ( ent->client && ent->client->ps.stats[ STAT_HEALTH ] <= 0 );
+				dead       = G_Dead( ent );
 				player     = true;
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, nullptr, nullptr, nullptr );
 

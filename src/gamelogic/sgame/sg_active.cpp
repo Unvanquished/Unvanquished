@@ -437,7 +437,7 @@ void  G_TouchTriggers( gentity_t *ent )
 	}
 
 	// dead clients don't activate triggers!
-	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( G_Dead( ent ) )
 	{
 		return;
 	}
@@ -1601,8 +1601,7 @@ static int FindAlienHealthSource( gentity_t *self )
 		return 0;
 	}
 
-	needsHealing = self->client->ps.stats[ STAT_HEALTH ] <
-	               BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
+	needsHealing = !self->entity->Get<HealthComponent>()->FullHealth();
 
 	self->boosterUsed = nullptr;
 
@@ -1856,7 +1855,7 @@ void ClientThink_real( gentity_t *self )
 	{
 		client->ps.pm_type = PM_NOCLIP;
 	}
-	else if ( client->ps.stats[ STAT_HEALTH ] <= 0 )
+	else if ( G_Dead( self ) )
 	{
 		client->ps.pm_type = PM_DEAD;
 	}
@@ -1923,18 +1922,20 @@ void ClientThink_real( gentity_t *self )
 	// copy global gravity to playerstate
 	client->ps.gravity = g_gravity.value;
 
+	HealthComponent *healthComponent = self->entity->Get<HealthComponent>();
+
 	// handle medkit (TODO: move into helper function)
 	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
 	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
 	{
 		//if currently using a medkit or have no need for a medkit now
 		if ( (client->ps.stats[ STAT_STATE ] & SS_HEALING_4X) ||
-		     ( client->ps.stats[ STAT_HEALTH ] == client->ps.stats[ STAT_MAX_HEALTH ] &&
+		     ( healthComponent->FullHealth() &&
 		       !( client->ps.stats[ STAT_STATE ] & SS_POISONED ) ) )
 		{
 			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
 		}
-		else if ( client->ps.stats[ STAT_HEALTH ] > 0 )
+		else if ( G_Alive( self ) )
 		{
 			//remove anti toxin
 			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
@@ -1945,8 +1946,7 @@ void ClientThink_real( gentity_t *self )
 
 			client->ps.stats[ STAT_STATE ] |= SS_HEALING_4X;
 			client->lastMedKitTime = level.time;
-			client->medKitHealthToRestore =
-			  client->ps.stats[ STAT_MAX_HEALTH ] - client->ps.stats[ STAT_HEALTH ];
+			client->medKitHealthToRestore = healthComponent->MaxHealth() - healthComponent->Health();
 			client->medKitIncrementTime = level.time +
 			                              ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
 
@@ -2146,7 +2146,7 @@ void ClientThink_real( gentity_t *self )
 	client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
 
 	// Don't think anymore if dead
-	if ( client->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( G_Dead( self ) )
 	{
 		return;
 	}
@@ -2158,7 +2158,7 @@ void ClientThink_real( gentity_t *self )
 
 	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) &&
 	     !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
-	     client->ps.stats[ STAT_HEALTH ] > 0 )
+	     G_Alive( self ) )
 	{
 		trace_t   trace;
 		vec3_t    view, point;

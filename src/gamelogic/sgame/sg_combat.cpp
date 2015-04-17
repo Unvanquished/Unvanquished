@@ -162,7 +162,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 
 	// Require that the assist was for, at least, 25% of the damage or
 	// as much damage as the killer did, whichever is lower
-	damage = self->client->ps.stats[ STAT_MAX_HEALTH ] / 4.0f;
+	damage = self->entity->Get<HealthComponent>()->MaxHealth() / 4.0f;
 	if ( killer )
 	{
 		damage = MIN( damage, self->credits[ killer - g_entities ].value );
@@ -205,13 +205,13 @@ void G_RewardAttackers( gentity_t *self )
 	if ( self->client )
 	{
 		ownTeam   = (team_t) self->client->pers.team;
-		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
+		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
 		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
 		ownTeam   = (team_t) self->buildableTeam;
-		maxHealth = BG_Buildable( self->s.modelindex )->health;
+		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
 		value     = BG_IsMainStructure( &self->s )
 		            ? MAIN_STRUCTURE_MOMENTUM_VALUE
 		            : BG_Buildable( self->s.modelindex )->buildPoints;

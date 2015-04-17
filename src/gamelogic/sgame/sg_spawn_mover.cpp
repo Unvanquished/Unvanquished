@@ -1859,7 +1859,7 @@ void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	if ( !other->client || other->client->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( !other->client || G_Dead( other ) )
 	{
 		return;
 	}

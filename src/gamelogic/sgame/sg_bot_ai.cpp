@@ -1080,7 +1080,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 	if ( self->botMind->currentNode != node )
 	{
 		// already fully healed
-		if ( maxHealth == self->client->ps.stats[ STAT_HEALTH ] )
+		if ( self->entity->Get<HealthComponent>()->FullHealth() )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1094,7 +1094,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	//we are fully healed now
-	if ( maxHealth == self->client->ps.stats[STAT_HEALTH] )
+	if ( self->entity->Get<HealthComponent>()->FullHealth() )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -1124,8 +1124,8 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
-	bool fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
-	                       BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
+	bool fullyHealed = self->entity->Get<HealthComponent>()->FullHealth() &&
+	                   BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
 	if ( self->client->pers.team != TEAM_HUMANS )
 	{

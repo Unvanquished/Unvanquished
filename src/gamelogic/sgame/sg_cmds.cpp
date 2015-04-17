@@ -602,8 +602,7 @@ void Cmd_Give_f( gentity_t *ent )
 		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
 	}
 
-	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
-			ent->client->sess.spectatorState != SPECTATOR_NOT )
+	if ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		return;
 	}
@@ -2614,8 +2613,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			{
 				if ( cost >= 0 )
 				{
-					ent->client->pers.evolveHealthFraction = ( float ) ent->client->ps.stats[ STAT_HEALTH ] /
-					    ( float ) BG_Class( currentClass )->health;
+					ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
 
 					if ( ent->client->pers.evolveHealthFraction < 0.0f )
 					{
@@ -4644,8 +4642,7 @@ void ClientCommand( int clientNum )
 	}
 
 	if ( (command->cmdFlags & CMD_ALIVE) &&
-	     ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
-	       ent->client->sess.spectatorState != SPECTATOR_NOT ) )
+	     ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIVE );
 		return;
