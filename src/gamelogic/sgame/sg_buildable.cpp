@@ -4868,7 +4868,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	built->splashMethodOfDeath = attr->meansOfDeath;
 
 	built->nextthink = level.time;
-	built->takedamage = true;
 	built->enabled = false;
 	built->spawned = false;
 
@@ -5194,7 +5193,6 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	built = Build( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles, ENTITYNUM_NONE );
 
-	built->takedamage = true;
 	built->spawned = true; //map entities are already spawned
 	built->enabled = true;
 	built->s.eFlags |= EF_B_SPAWNED;

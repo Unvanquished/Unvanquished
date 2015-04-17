@@ -410,7 +410,7 @@ static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t 
 	// snap the endpos to integers, but nudged towards the line
 	G_SnapVectorTowards( tr->endpos, muzzle );
 
-	if ( target->takedamage && ( target->s.eType == ET_BUILDABLE || target->s.eType == ET_PLAYER ) )
+	if ( HasComponents<HealthComponent>(*target->entity) )
 	{
 		event = G_NewTempEntity( tr->endpos, EV_WEAPON_HIT_ENTITY );
 	}
@@ -526,7 +526,7 @@ static void FireLevel1Melee( gentity_t *self )
 	target = FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
 	                    LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW );
 
-	if ( target && target->client && target->takedamage )
+	if ( target && target->client )
 	{
 		target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
 		target->client->lastLevel1SlowTime = level.time;
@@ -1025,7 +1025,7 @@ static void FirePainsaw( gentity_t *self )
 
 	G_WideTrace( &tr, self, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT, &target );
 
-	if ( !target || !target->takedamage )
+	if ( !G_Alive( target ) )
 	{
 		return;
 	}
@@ -1649,12 +1649,6 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 		return;
 	}
 
-	// ignore invincible targets
-	if ( !victim->takedamage )
-	{
-		return;
-	}
-
 	// don't do friendly fire
 	if ( G_OnSameTeam( self, victim ) )
 	{
@@ -1703,12 +1697,6 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 
 	// don't do friendly fire
 	if ( G_OnSameTeam( self, victim ) )
-	{
-		return;
-	}
-
-	// ignore invincible targets
-	if ( !victim->takedamage )
 	{
 		return;
 	}

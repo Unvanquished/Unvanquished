@@ -199,11 +199,6 @@ void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	int dflags;
 
-	if ( !other->takedamage )
-	{
-		return;
-	}
-
 	if ( self->timestamp > level.time )
 	{
 		return;

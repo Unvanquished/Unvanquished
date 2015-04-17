@@ -51,7 +51,12 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 
 	gclient_t *client = entity.oldEnt->client;
 
-	if ( client && client->noclip ) return;
+	// Check for immunity.
+	if (entity.oldEnt->flags & FL_GODMODE) return;
+	if (client) {
+		if (client->noclip) return;
+		if (client->sess.spectatorState != SPECTATOR_NOT) return;
+	}
 
 	// Set source to world if missing.
 	if (!source) source = &g_entities[ENTITYNUM_WORLD];
@@ -73,9 +78,6 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	if ((flags & DAMAGE_KNOCKBACK) && client && direction) {
 		G_KnockbackByDir(entity.oldEnt, direction.value().Data(), amount * DAMAGE_TO_KNOCKBACK, false);
 	}
-
-	// Godmode prevents damage.
-	if (entity.oldEnt->flags & FL_GODMODE) return;
 
 	// Check for protection.
 	if (!(flags & DAMAGE_NO_PROTECTION)) {

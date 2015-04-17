@@ -315,7 +315,8 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	std::function<int(gentity_t*, trace_t*, gentity_t*)> impactFunc;
 
 	// Check for bounce.
-	if ( !hitEnt->takedamage && ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) )
+	if ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) &&
+	     !HasComponents<HealthComponent>(*ent->entity) )
 	{
 		BounceMissile( ent, trace );
 
@@ -345,7 +346,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	// Deal impact damage.
 	if ( !( impactFlags & MIF_NO_DAMAGE ) )
 	{
-		if ( ent->damage && hitEnt->takedamage )
+		if ( ent->damage && G_Alive( hitEnt ) )
 		{
 			vec3_t dir;
 
@@ -392,7 +393,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		}
 
 		// Add hit event.
-		if ( hitEnt->takedamage && ( hitEnt->s.eType == ET_PLAYER || hitEnt->s.eType == ET_BUILDABLE ) )
+		if ( HasComponents<HealthComponent>(*hitEnt->entity) )
 		{
 			G_AddEvent( ent, EV_MISSILE_HIT_ENTITY, dirAsByte );
 

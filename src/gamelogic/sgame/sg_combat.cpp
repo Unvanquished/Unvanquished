@@ -470,8 +470,6 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	VectorCopy( self->s.origin, self->client->pers.lastDeathLocation );
 
-	self->takedamage = false; // can still be gibbed
-
 	self->s.weapon = WP_NONE;
 	if ( self->client->noclip )
 	{
@@ -1073,11 +1071,6 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 			continue;
 		}
 
-		if ( !ent->takedamage )
-		{
-			continue;
-		}
-
 		if ( ent->flags & FL_NOTARGET )
 		{
 			continue;
@@ -1151,11 +1144,6 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		ent = &g_entities[ entityList[ e ] ];
 
 		if ( ent == ignore )
-		{
-			continue;
-		}
-
-		if ( !ent->takedamage )
 		{
 			continue;
 		}

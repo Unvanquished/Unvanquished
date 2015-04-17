@@ -159,7 +159,7 @@ target_hurt
 void target_hurt_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	// hurt the activator
-	if ( !activator || !activator->takedamage )
+	if ( !activator )
 	{
 		return;
 	}

@@ -493,8 +493,6 @@ static void SpawnCorpse( gentity_t *ent )
 		}
 	}
 
-	body->takedamage = false;
-
 	//change body dimensions
 	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, nullptr, nullptr, body->r.mins, body->r.maxs );
 
@@ -1773,7 +1771,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
-	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //true;
 	ent->classname = S_PLAYER_CLASSNAME;
 	if ( client->noclip )
 	{

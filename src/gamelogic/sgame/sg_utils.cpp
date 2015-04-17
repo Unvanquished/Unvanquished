@@ -320,7 +320,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 
   for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
   {
-    if( !e->takedamage || !e->r.linked || !e->clipmask || ( e->client && e->client->noclip ) )
+    if( !e->r.linked || !e->clipmask )
       continue;
 
     VectorAdd( e->r.currentOrigin, e->r.mins, mins );
