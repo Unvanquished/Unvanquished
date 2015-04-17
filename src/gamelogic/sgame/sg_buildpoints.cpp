@@ -22,6 +22,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sg_local.h"
+#include "CBSE.h"
 
 #define MINING_PERIOD 1000
 
@@ -52,6 +53,7 @@ static float RGSInterferenceMod( float distance )
 /**
  * @brief Adjust the rate of a RGS.
  */
+// TODO: Move to MiningComponent, along with all other RGS* functions.
 static void RGSCalculateRate( gentity_t *self )
 {
 	gentity_t       *rgs;
@@ -79,7 +81,7 @@ static void RGSCalculateRate( gentity_t *self )
 		{
 			if ( rgs->s.eType == ET_BUILDABLE &&
 			     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-				 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
+				 && rgs != self && rgs->spawned && rgs->powered && G_Alive( rgs ) )
 			{
 				rate *= RGSInterferenceMod( Distance( self->s.origin, rgs->s.origin ) );
 			}
@@ -105,7 +107,7 @@ static void RGSInformNeighbors( gentity_t *self )
 	{
 		if ( rgs->s.eType == ET_BUILDABLE &&
 		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-			 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
+			 && rgs != self && rgs->spawned && rgs->powered && G_Alive( rgs ) )
 		{
 			RGSCalculateRate( rgs );
 		}
@@ -231,7 +233,7 @@ float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
 	{
 		if ( rgs->s.eType == ET_BUILDABLE &&
 		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-		     && rgs->spawned && rgs->powered && rgs->health > 0 && rgs->buildableTeam == team )
+		     && rgs->spawned && rgs->powered && G_Alive( rgs ) && rgs->buildableTeam == team )
 		{
 			delta += RGSPredictInterferenceLoss( rgs, origin );
 		}
@@ -362,14 +364,14 @@ int G_GetMarkedBuildPointsInt( team_t team )
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( ent->s.eType != ET_BUILDABLE || !ent->inuse || ent->health <= 0 ||
+		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || G_Dead( ent ) ||
 		     ent->buildableTeam != team || !ent->deconstruct )
 		{
 			continue;
 		}
 
 		attr = BG_Buildable( ent->s.modelindex );
-		sum += attr->buildPoints * ( ent->health / (float)attr->health );
+		sum += attr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
 	}
 
 	return sum;
@@ -429,7 +431,7 @@ void G_GetBuildableResourceValue( int *teamValue )
 		team = ent->buildableTeam ;
 		attr = BG_Buildable( ent->s.modelindex );
 
-		teamValue[ team ] += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
+		teamValue[ team ] += attr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
 	}
 }
 

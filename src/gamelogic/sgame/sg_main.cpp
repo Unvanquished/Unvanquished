@@ -1410,7 +1410,7 @@ void G_CountSpawns()
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
+		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || G_Dead( ent ) )
 		{
 			continue;
 			// is it really useful? Seriously?
@@ -1730,7 +1730,7 @@ void BeginIntermission()
 		}
 
 		// respawn if dead
-		if ( client->health <= 0 )
+		if ( G_Dead( client ) )
 		{
 			respawn( client );
 		}

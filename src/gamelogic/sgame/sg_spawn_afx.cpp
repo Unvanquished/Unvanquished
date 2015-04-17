@@ -320,7 +320,7 @@ void env_afx_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		self->timestamp = level.time + FRAMETIME;
 	}
 
-	G_Heal( other, self->damage );
+	other->entity->Heal((float)self->damage, nullptr);
 }
 
 /*

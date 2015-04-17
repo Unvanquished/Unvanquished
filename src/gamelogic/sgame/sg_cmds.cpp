@@ -612,13 +612,13 @@ void Cmd_Give_f( gentity_t *ent )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
-			ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
+			ent->entity->Heal(1000.0f, nullptr);
 			BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
 		}
 		else
 		{
-			int amount = atoi( name + strlen("health") );
-			ent->health = Math::Clamp(ent->health + amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
+			float amount = atof( name + strlen("health") );
+			ent->entity->Heal(amount, nullptr);
 		}
 	}
 
@@ -749,8 +749,7 @@ void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		G_PlayerDie( ent, ent, ent, MOD_SUICIDE );
+		ent->entity->Kill(nullptr, MOD_SUICIDE);
 	}
 	else
 	{
@@ -802,7 +801,7 @@ void Cmd_Team_f( gentity_t *ent )
 	     g_combatCooldown.integer &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
-	     ent->health > 0 &&
+	     G_Alive( ent ) &&
 	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
 	{
 		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
@@ -2534,7 +2533,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 		return false;
 	}
 
-	if ( ent->health <= 0 )
+	if ( G_Dead( ent ) )
 	{
 		return true; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
@@ -2738,7 +2737,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	}
 
 	// always let the builder prevent the explosion of a buildable
-	if ( buildable->health <= 0 )
+	if ( G_Dead( buildable ) )
 	{
 		G_RewardAttackers( buildable );
 		G_FreeEntity( buildable );

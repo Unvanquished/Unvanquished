@@ -7,6 +7,7 @@ HealthComponent::HealthComponent(Entity& entity, float maxHealth)
 	: HealthComponentBase(entity, maxHealth), health(maxHealth)
 {}
 
+// TODO: Handle rewards array.
 HealthComponent& HealthComponent::operator=(const HealthComponent& other) {
 	health = (other.health / other.maxHealth) * maxHealth;
 	return *this;
@@ -14,55 +15,29 @@ HealthComponent& HealthComponent::operator=(const HealthComponent& other) {
 
 void HealthComponent::HandlePrepareNetCode() {
 	int transmittedHealth = Math::Clamp((int)std::ceil(health), -999, 999);
+	gclient_t *client = entity.oldEnt->client;
 
-	if (entity.oldEnt->client) {
-		entity.oldEnt->client->ps.stats[STAT_HEALTH] = transmittedHealth;
+	if (client) {
+		if (client->ps.stats[STAT_HEALTH] != transmittedHealth) {
+			client->pers.infoChangeTime = level.time;
+		}
+		client->ps.stats[STAT_HEALTH] = transmittedHealth;
+		client->ps.stats[STAT_MAX_HEALTH] = (int)std::ceil(maxHealth);
 	} else if (entity.oldEnt->s.eType == ET_BUILDABLE) {
-		entity.oldEnt->s.generic1 = transmittedHealth;
+		entity.oldEnt->s.generic1 = std::max(transmittedHealth, 0);
 	}
 }
 
-// TODO: Move damage account array to HealthComponent.
 void HealthComponent::HandleHeal(float amount, gentity_t* source) {
 	if (amount <= 0.0f) return;
 	if (health <= 0.0f) return;
-	if (health == maxHealth) return;
+	if (health >= maxHealth) return;
 
-	// Get total damage account and remember relevant clients.
-	float totalCredits = 0.0f;
-	std::vector<int> relevantClients;
-	for (int clientNum = 0; clientNum < MAX_CLIENTS; clientNum++) {
-		if (entity.oldEnt->credits[clientNum].value > 0.0f) {
-			relevantClients.push_back(clientNum);
-			totalCredits += entity.oldEnt->credits[clientNum].value;
-		}
-	}
+	// Only heal up to maximum health.
+	amount = std::min(amount, maxHealth - health);
 
-	// Calculate account scale factor.
-	float scaleAccounts;
-	if (amount < totalCredits) {
-		scaleAccounts = (totalCredits - amount) / totalCredits;
-	} else {
-		// Clear the account array.
-		scaleAccounts = 0.0f;
-	}
-
-	// Scale down or clear damage accounts.
-	for (int clientNum : relevantClients) {
-		entity.oldEnt->credits[clientNum].value *= scaleAccounts;
-	}
-
-	health = std::min(health + amount, maxHealth);
-}
-
-// TODO: Replace this with a call to a proper event factory.
-static void SpawnHitNotification(gentity_t *attacker)
-{
-	if (!attacker->client) return;
-
-	gentity_t *event = G_NewTempEntity(attacker->s.origin, EV_HIT);
-	event->r.svFlags = SVF_SINGLECLIENT;
-	event->r.singleClient = attacker->client->ps.clientNum;
+	health += amount;
+	ScaleDamageAccounts(amount);
 }
 
 #define DAMAGE_TO_KNOCKBACK 5
@@ -248,15 +223,64 @@ void HealthComponent::HandleKill(gentity_t* source, meansOfDeath_t meansOfDeath)
 	              meansOfDeath);
 }
 
+void HealthComponent::SetHealth(float health) {
+	Math::Clamp(health, FLT_EPSILON, maxHealth);
 
-void HealthComponent::SetMaxHealth(float maxHealth) {
+	healthLogger.Debug("Changing health: %3.1f → %3.1f.", HealthComponent::health, health);
+
+	ScaleDamageAccounts(health - HealthComponent::health);
+	HealthComponent::health = health;
+}
+
+void HealthComponent::SetMaxHealth(float maxHealth, bool scaleHealth) {
 	assert(maxHealth > 0.0f);
 
-	float scale = HealthComponent::maxHealth / maxHealth;
-
-	healthLogger.Debug("Changing maximum health: %3.1f → %3.1f, current health: %3.1f → %3.1f.",
-	                   HealthComponent::maxHealth, maxHealth, health, health * scale);
+	healthLogger.Debug("Changing maximum health: %3.1f → %3.1f.", HealthComponent::maxHealth, maxHealth);
 
 	HealthComponent::maxHealth = maxHealth;
-	health *= scale;
+	if (scaleHealth) SetHealth(health * (HealthComponent::maxHealth / maxHealth));
+}
+
+// TODO: Move credits array to HealthComponent.
+void HealthComponent::ScaleDamageAccounts(float healthRestored) {
+	if (healthRestored <= 0.0f) return;
+
+	// Get total damage account and remember relevant clients.
+	float totalAccreditedDamage = 0.0f;
+	std::vector<Entity*> relevantClients;
+	ForEntities<ClientComponent>([&](Entity& other, ClientComponent& client) {
+		float clientDamage = entity.oldEnt->credits[other.oldEnt->s.number].value;
+		if (clientDamage > 0.0f) {
+			totalAccreditedDamage += clientDamage;
+			relevantClients.push_back(&other);
+		}
+	});
+
+	// Calculate account scale factor.
+	float scale;
+	if (healthRestored < totalAccreditedDamage) {
+		scale = (totalAccreditedDamage - healthRestored) / totalAccreditedDamage;
+
+		//healthLogger.Debug("Scaling damage accounts by %.2f.", scale);
+	} else {
+		// Clear all accounts.
+		scale = 0.0f;
+
+		healthLogger.Debug("Clearing damage accounts.");
+	}
+
+	// Scale down or clear damage accounts.
+	for (Entity* other : relevantClients) {
+		entity.oldEnt->credits[other->oldEnt->s.number].value *= scale;
+	}
+}
+
+// TODO: Replace this with a call to a proper event factory.
+void HealthComponent::SpawnHitNotification(gentity_t *attacker)
+{
+	if (!attacker->client) return;
+
+	gentity_t *event = G_NewTempEntity(attacker->s.origin, EV_HIT);
+	event->r.svFlags = SVF_SINGLECLIENT;
+	event->r.singleClient = attacker->client->ps.clientNum;
 }

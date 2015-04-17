@@ -317,13 +317,13 @@ bool          G_LineOfSight( const gentity_t *from, const gentity_t *to, int mas
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfFire( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfSight( const vec3_t point1, const vec3_t point2 );
-int               G_Heal( gentity_t *self, int amount );
 bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 team_t            G_Enemy( team_t team );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
-bool              G_Alive( gentity_t *ent );
+bool              G_Alive(gentity_t *ent);
+bool              G_Dead(gentity_t *ent);
 
 // sg_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );

@@ -268,7 +268,7 @@ struct gentity_s
 	char         *shaderKey;
 	char         *shaderReplacement;
 
-	int          lastHealth;
+	float        lastHealthFrac;
 	int          health;
 	float        deconHealthFrac;
 

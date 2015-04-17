@@ -39,17 +39,16 @@ Called from overmind and reactor thinkers.
 static void G_WarnPrimaryUnderAttack( gentity_t *self )
 {
 	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
-	float fracHealth, fracLastHealth;
+	float healthFrac;
 	int event = 0;
 
-	fracHealth = (float) self->health / (float) attr->health;
-	fracLastHealth = (float) self->lastHealth / (float) attr->health;
+	healthFrac = self->entity->Get<HealthComponent>()->HealthFraction();
 
-	if ( fracHealth < 0.25f && fracLastHealth >= 0.25f )
+	if ( healthFrac < 0.25f && self->lastHealthFrac >= 0.25f )
 	{
 		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_2 : EV_REACTOR_ATTACK_2;
 	}
-	else if ( fracHealth < 0.75f && fracLastHealth >= 0.75f )
+	else if ( healthFrac < 0.75f && self->lastHealthFrac >= 0.75f )
 	{
 		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_1 : EV_REACTOR_ATTACK_1;
 	}
@@ -62,7 +61,7 @@ static void G_WarnPrimaryUnderAttack( gentity_t *self )
 		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
 	}
 
-	self->lastHealth = self->health;
+	self->lastHealthFrac = healthFrac;
 }
 
 /*
@@ -313,7 +312,7 @@ gentity_t *G_AliveReactor()
 {
 	gentity_t *rc = G_Reactor();
 
-	if ( !rc || rc->health <= 0 )
+	if ( !rc || G_Dead( rc ) )
 	{
 		return nullptr;
 	}
@@ -323,9 +322,9 @@ gentity_t *G_AliveReactor()
 
 gentity_t *G_ActiveReactor()
 {
-	gentity_t *rc = G_Reactor();
+	gentity_t *rc = G_AliveReactor();
 
-	if ( !rc || rc->health <= 0 || !rc->spawned )
+	if ( !rc || !rc->spawned )
 	{
 		return nullptr;
 	}
@@ -350,7 +349,7 @@ gentity_t *G_AliveOvermind()
 {
 	gentity_t *om = G_Overmind();
 
-	if ( !om || om->health <= 0 )
+	if ( !om || G_Dead( om ) )
 	{
 		return nullptr;
 	}
@@ -360,9 +359,9 @@ gentity_t *G_AliveOvermind()
 
 gentity_t *G_ActiveOvermind()
 {
-	gentity_t *om = G_Overmind();
+	gentity_t *om = G_AliveOvermind();
 
-	if ( !om || om->health <= 0 || !om->spawned )
+	if ( !om || !om->spawned )
 	{
 		return nullptr;
 	}
@@ -483,8 +482,7 @@ bool G_FindCreep( gentity_t *self )
 	}
 
 	//if self does not have a parentNode or its parentNode is invalid find a new one
-	if ( self->client || self->powerSource == nullptr || !self->powerSource->inuse ||
-	     self->powerSource->health <= 0 )
+	if ( self->client || !self->powerSource || !self->powerSource->inuse || G_Dead( self->powerSource ) )
 	{
 		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 		{
@@ -493,9 +491,8 @@ bool G_FindCreep( gentity_t *self )
 				continue;
 			}
 
-			if ( ( ent->s.modelindex == BA_A_SPAWN ||
-			       ent->s.modelindex == BA_A_OVERMIND ) &&
-			       ent->health > 0 )
+			if ( ( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_A_OVERMIND ) &&
+			     G_Alive( ent ) )
 			{
 				VectorSubtract( self->s.origin, ent->s.origin, temp_v );
 				distance = VectorLength( temp_v );
@@ -718,7 +715,8 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	}
 
 	// fully grown and not blasted to smithereens
-	if ( self->spawned && -self->health < BG_Buildable( self->s.modelindex )->health )
+	HealthComponent *healthComponent = self->entity->Get<HealthComponent>();
+	if ( self->spawned && healthComponent->Health() / healthComponent->MaxHealth() > -1.0f )
 	{
 		// blast after brief period
 		self->nextthink = level.time + ALIEN_DETONATION_DELAY
@@ -795,7 +793,7 @@ A generic pain function for Alien buildables
 */
 void AGeneric_Pain( gentity_t *self, gentity_t *attacker, int damage )
 {
-	if ( self->health <= 0 )
+	if ( G_Dead( self ) )
 	{
 		return;
 	}
@@ -868,7 +866,7 @@ static bool AOvermind_TargetValid( gentity_t *self, gentity_t *target )
 	if (    !target
 	     || !target->client
 	     || target->client->sess.spectatorState != SPECTATOR_NOT
-	     || target->health <= 0
+	     || G_Dead( target )
 	     || target->flags & FL_NOTARGET
 	     || !trap_InPVS( self->s.origin, target->s.origin )
 	     || !G_LineOfSight( self, target, MASK_SOLID, false ) )
@@ -944,7 +942,7 @@ void AOvermind_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( self->spawned && ( self->health > 0 ) )
+	if ( self->spawned && G_Alive( self ) )
 	{
 		AOvermind_FindTarget( self );
 
@@ -982,7 +980,7 @@ void AOvermind_Think( gentity_t *self )
 			{
 				builder = &g_entities[ level.sortedClients[ clientNum ] ];
 
-				if ( builder->health > 0 &&
+				if ( G_Alive( builder ) &&
 				     ( builder->client->pers.classSelection == PCL_ALIEN_BUILDER0 ||
 				       builder->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG ) )
 				{
@@ -1036,7 +1034,7 @@ Barricade pain animation depends on shrunk state
 */
 void ABarricade_Pain( gentity_t *self, gentity_t *attacker, int damage )
 {
-	if ( self->health <= 0 )
+	if ( G_Dead( self ) )
 	{
 		return;
 	}
@@ -1061,7 +1059,7 @@ is enough room.
 */
 void ABarricade_Shrink( gentity_t *self, bool shrink )
 {
-	if ( !self->spawned || self->health <= 0 )
+	if ( !self->spawned || G_Dead( self ) )
 	{
 		shrink = true;
 	}
@@ -1075,7 +1073,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		self->shrunkTime = level.time;
 		anim = self->s.torsoAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
-		if ( self->spawned && self->health > 0 && anim != BANIM_DESTROYED )
+		if ( self->spawned && G_Alive( self ) && anim != BANIM_DESTROYED )
 		{
 			G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 			G_SetBuildableAnim( self, BANIM_ATTACK1, true );
@@ -1098,7 +1096,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		self->shrunkTime = level.time;
 
 		// shrink animation
-		if ( self->spawned && self->health > 0 )
+		if ( self->spawned && G_Alive( self ) )
 		{
 			G_SetBuildableAnim( self, BANIM_ATTACK1, true );
 			G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
@@ -1123,7 +1121,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		// unshrink animation
 		anim = self->s.legsAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
-		if ( self->spawned && self->health > 0 && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
+		if ( self->spawned && G_Alive( self ) && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
 		{
 			G_SetBuildableAnim( self, BANIM_ATTACK2, true );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
@@ -1209,7 +1207,7 @@ void AAcidTube_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( !self->spawned || !self->powered || self->health <= 0 )
+	if ( !self->spawned || !self->powered || G_Dead( self ) )
 	{
 		return;
 	}
@@ -1324,7 +1322,7 @@ void ASpiker_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( !self->spawned || !self->powered || self->health <= 0 )
+	if ( !self->spawned || !self->powered || G_Dead( self ) )
 	{
 		return;
 	}
@@ -1343,36 +1341,32 @@ void ASpiker_Think( gentity_t *self )
 	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin,
 	                                                         SPIKER_SPIKE_RANGE ) ); )
 	{
-		float   durability, health;
-		class_t pClass;
+		float health, durability;
 
 		if ( self == ent || ( ent->flags & FL_NOTARGET ) ) continue;
 
-		switch ( ent->s.eType )
-		{
-			case ET_PLAYER:
-				pClass     = (class_t)ent->client->ps.stats[ STAT_CLASS ];
-				if ( G_OnSameTeam( self, ent ) ) {
-					health = (float)ent->health; // current health
-				} else {
-					health = (float)BG_Class( pClass )->health; // max health
-				}
-				durability = health / G_GetNonLocDamageMod( pClass );
-				break;
+		HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
 
-			case ET_BUILDABLE:
-				if ( G_OnSameTeam( self, ent ) ) {
-					durability = (float)ent->health; // current health
-				} else {
-					durability = (float)BG_Buildable( ent->s.modelindex )->health; // max health
-				}
-				break;
+		if (!healthComponent) continue;
 
-			default:
-				continue;
+		if ( G_OnSameTeam( self, ent ) ) {
+			health = healthComponent->Health();
+		} else if ( ent->s.eType == ET_BUILDABLE ) {
+			// Enemy buildables don't count in the scoring.
+			continue;
+		} else {
+			health = healthComponent->MaxHealth();
 		}
 
-		if ( !durability || !G_LineOfSight( self, ent ) ) continue;
+		ArmorComponent *armorComponent  = ent->entity->Get<ArmorComponent>();
+
+		if (armorComponent) {
+			durability = health / armorComponent->GetNonLocationalDamageMod();
+		} else {
+			durability = health;
+		}
+
+		if ( durability <= 0.0f || !G_LineOfSight( self, ent ) ) continue;
 
 		vec3_t vecToTarget;
 		VectorSubtract( ent->s.origin, self->s.origin, vecToTarget );
@@ -1506,7 +1500,7 @@ static bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDi
 	if (    !target
 	     || !target->client
 	     || target->client->pers.team != TEAM_HUMANS
-	     || target->health <= 0
+	     || G_Dead( target )
 	     || ( target->flags & FL_NOTARGET ) )
 	{
 		return false;
@@ -1608,7 +1602,7 @@ void AHive_Think( gentity_t *self )
 		self->active = false;
 	}
 
-	if ( !self->spawned || !self->powered || self->health <= 0 )
+	if ( !self->spawned || !self->powered || G_Dead( self ) )
 	{
 		return;
 	}
@@ -1630,7 +1624,7 @@ void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 	AGeneric_Pain( self, attacker, damage );
 
 	// if inactive, fire on attacker even if it's out of sense range
-	if ( self->spawned && self->powered && self->health > 0 && !self->active )
+	if ( self->spawned && self->powered && G_Alive( self ) && !self->active )
 	{
 		if ( AHive_TargetValid( self, attacker, true ) )
 		{
@@ -1676,7 +1670,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	gclient_t *client = other->client;
 
-	if ( !self->spawned || !self->powered || self->health <= 0 )
+	if ( !self->spawned || !self->powered || G_Dead( self ) )
 	{
 		return;
 	}
@@ -1810,7 +1804,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return false;
 	}
 
-	if ( target->health <= 0 ) // is the target still alive?
+	if ( G_Dead( target ) ) // is the target still alive?
 	{
 		return false;
 	}
@@ -1894,7 +1888,7 @@ void ATrapper_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( !self->spawned || !self->powered || self->health <= 0 )
+	if ( !self->spawned || !self->powered || G_Dead( self ) )
 	{
 		return;
 	}
@@ -2044,7 +2038,7 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 		switch ( neighbor->s.modelindex )
 		{
 			case BA_H_REPEATER:
-				if ( neighbor->health > 0 )
+				if ( G_Alive( neighbor ) )
 				{
 					power = g_powerRepeaterSupply.integer;
 					range = g_powerRepeaterRange.integer;
@@ -2056,7 +2050,7 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 				}
 
 			case BA_H_REACTOR:
-				if ( neighbor->health > 0 )
+				if ( G_Alive( neighbor ) )
 				{
 					power = g_powerReactorSupply.integer;
 					range = g_powerReactorRange.integer;
@@ -2507,7 +2501,7 @@ void HReactor_Think( gentity_t *self )
 
 	self->nextthink = level.time + REACTOR_ATTACK_REPEAT;
 
-	if ( !self->spawned || self->health <= 0 )
+	if ( !self->spawned || G_Dead( self ) )
 	{
 		return;
 	}
@@ -2646,8 +2640,8 @@ void HMedistat_Think( gentity_t *self )
 		client = player->client;
 
 		if ( self->target == player && PM_Live( client->ps.pm_type ) &&
-			 ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
-			   client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
+			 ( !player->entity->Get<HealthComponent>()->FullHealth() ||
+		       client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 		{
 			occupied = true;
 		}
@@ -2682,11 +2676,11 @@ void HMedistat_Think( gentity_t *self )
 			client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 		}
 
-		// give medikit to players with full health
-		if ( player->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
-		{
-			player->health = client->ps.stats[ STAT_MAX_HEALTH ];
+		HealthComponent *healthComponent = player->entity->Get<HealthComponent>();
 
+		// give medikit to players with full health
+		if ( healthComponent->FullHealth() )
+		{
 			if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, player->client->ps.stats ) )
 			{
 				BG_AddUpgradeToInventory( UP_MEDKIT, player->client->ps.stats );
@@ -2697,7 +2691,7 @@ void HMedistat_Think( gentity_t *self )
 		if ( !occupied )
 		{
 			if ( PM_Live( client->ps.pm_type ) &&
-				 ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
+				 ( !healthComponent->FullHealth() ||
 				   client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 			{
 				self->target = player;
@@ -2733,18 +2727,15 @@ void HMedistat_Think( gentity_t *self )
 		}
 
 		// restore health
-		if ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] )
-		{
-			G_Heal( player, 1 );
+		player->entity->Heal(1.0f, nullptr);
 
-			// check if fully healed
-			if ( player->health == client->ps.stats[ STAT_MAX_HEALTH ] )
+		// check if fully healed
+		if ( player->entity->Get<HealthComponent>()->FullHealth() )
+		{
+			// give medikit
+			if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) )
 			{
-				// give medikit
-				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) )
-				{
-					BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
-				}
+				BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 			}
 		}
 	}
@@ -2901,7 +2892,7 @@ static bool HTurret_TargetValid( gentity_t *self, gentity_t *target, bool newTar
 	if (    !target
 	     || !target->client
 	     || target->client->sess.spectatorState != SPECTATOR_NOT
-	     || target->health <= 0
+	     || G_Dead( target )
 	     || target->flags & FL_NOTARGET
 	     || G_OnSameTeam( self, target )
 	     || Distance( self->s.origin, target->s.origin ) > range
@@ -3444,7 +3435,7 @@ static bool HRocketPod_EnemyClose( gentity_t *self )
 	for ( neighbour = nullptr; ( neighbour = G_IterateEntitiesWithinRadius( neighbour, self->s.origin,
 	                                                                     ROCKETPOD_RANGE ) ); )
 	{
-		if ( neighbour->client && neighbour->health > 0 && !G_OnSameTeam( self, neighbour ) &&
+		if ( neighbour->client && G_Alive( neighbour ) && !G_OnSameTeam( self, neighbour ) &&
 		     neighbour->client->sess.spectatorState == SPECTATOR_NOT )
 		{
 			classModelConfig_t *cmc = BG_ClassModelConfig( neighbour->client->pers.classSelection );
@@ -3620,8 +3611,8 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 	vec3_t           bmins, bmaxs;
 	static    vec3_t range = { 10, 10, 10 };
 
-	// dead buildables don't activate triggers!
-	if ( ent->health <= 0 )
+	// dead buildables don't activate triggers
+	if ( G_Dead( ent ) )
 	{
 		return;
 	}
@@ -3692,7 +3683,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	int   buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
 
 	//toggle spawned flag for buildables
-	if ( !ent->spawned && ent->health > 0 && !level.pausedTime )
+	if ( !ent->spawned && G_Alive( ent ) && !level.pausedTime )
 	{
 		if ( ent->creationTime + buildTime < level.time )
 		{
@@ -3716,13 +3707,12 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	{
 		ent->time1000 -= 1000;
 
-		if ( !ent->spawned && ent->health > 0 )
+		if ( !ent->spawned )
 		{
-			int gain = ( int )ceil( maxHealth * ( 1.0f - BUILDABLE_START_HEALTH_FRAC ) * 1000.0f / buildTime );
-
-			G_Heal( ent, gain );
+			float gain = maxHealth * ( 1.0f - BUILDABLE_START_HEALTH_FRAC ) * 1000.0f / buildTime;
+			ent->entity->Heal(gain, nullptr);
 		}
-		else if ( ent->health > 0 && ent->health < maxHealth && ent->powered )
+		else if ( ent->powered )
 		{
 			int regenWait;
 
@@ -3735,7 +3725,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 			if ( regenRate && ( ent->lastDamageTime + regenWait ) < level.time )
 			{
-				G_Heal( ent, regenRate );
+				ent->entity->Heal((float)regenRate, nullptr);
 			}
 		}
 	}
@@ -3749,9 +3739,6 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	{
 		ent->clientSpawnTime = 0;
 	}
-
-	// Set health
-	ent->s.generic1 = MAX( ent->health, 0 );
 
 	// Set flags
 	ent->s.eFlags &= ~( EF_B_SPAWNED |  EF_B_POWERED | EF_B_MARKED | EF_B_ONFIRE );
@@ -3791,7 +3778,7 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
-		if ( neighbor->s.eType != ET_BUILDABLE || !neighbor->spawned || neighbor->health <= 0 ||
+		if ( neighbor->s.eType != ET_BUILDABLE || !neighbor->spawned || G_Dead( neighbor ) ||
 		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
 		{
 			continue;
@@ -4000,7 +3987,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
 
 	// save remaining health fraction
-	self->deconHealthFrac = Math::Clamp( self->health / ( float )attr->health, 0.0f, 1.0f );
+	self->deconHealthFrac = self->entity->Get<HealthComponent>()->HealthFraction();
 
 	// return BP
 	int refund = attr->buildPoints * self->deconHealthFrac;
@@ -4419,7 +4406,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		ent = level.markedBuildables[ entNum ];
 		entAttr = BG_Buildable( ent->s.modelindex );
 
-		cost -= entAttr->buildPoints * ( ent->health / ( float )entAttr->health );
+		cost -= entAttr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
 	}
 	cost = MAX( 0.0f, cost );
 
@@ -4475,7 +4462,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 		level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
 
-		cost -= entAttr->buildPoints * ( ent->health / ( float )entAttr->health );
+		cost -= entAttr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
 		cost = MAX( 0.0f, cost );
 
 		// check if we have enough resources now
@@ -4862,7 +4849,16 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
-	built->health = ( int )ceil( attr->health * BUILDABLE_START_HEALTH_FRAC );
+	if (builder->client) {
+		// Build instantly in cheat mode.
+		if (g_cheats.integer) {
+			// HACK: This causes animation issues and can result in built->creationTime < 0.
+			built->creationTime -= attr->buildTime;
+		} else {
+			HealthComponent *healthComponent = built->entity->Get<HealthComponent>();
+			healthComponent->SetHealth(healthComponent->MaxHealth() * BUILDABLE_START_HEALTH_FRAC);
+		}
+	}
 
 	built->splashDamage = attr->splashDamage;
 	built->splashRadius = attr->splashRadius;
@@ -4872,15 +4868,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	built->takedamage = true;
 	built->enabled = false;
 	built->spawned = false;
-
-	// build instantly in cheat mode
-	if ( builder->client && g_cheats.integer )
-	{
-		built->health = attr->health;
-
-		// HACK: This causes animation issues and can result in built->creationTime < 0.
-		built->creationTime -= attr->buildTime;
-	}
 
 	built->s.time = built->creationTime;
 
@@ -5041,8 +5028,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 		// gently nudge the buildable onto the surface :)
 		VectorScale( normal, -50.0f, built->s.pos.trDelta );
 	}
-
-	built->s.generic1 = MAX( built->health, 0 );
 
 	built->powered = true;
 
@@ -5209,7 +5194,6 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	built->takedamage = true;
 	built->spawned = true; //map entities are already spawned
 	built->enabled = true;
-	built->health = BG_Buildable( buildable )->health;
 	built->s.eFlags |= EF_B_SPAWNED;
 
 	// drop towards normal surface
@@ -5581,11 +5565,6 @@ void G_BaseSelfDestruct( team_t team )
 	{
 		ent = &level.gentities[ i ];
 
-		if ( ent->health <= 0 )
-		{
-			continue;
-		}
-
 		if ( ent->s.eType != ET_BUILDABLE )
 		{
 			continue;
@@ -5718,7 +5697,7 @@ void G_BuildLogRevert( int id )
 			{
 				ent = &g_entities[ team ];
 
-				if ( ( ( ent->s.eType == ET_BUILDABLE && ent->health > 0 ) ||
+				if ( ( ( ent->s.eType == ET_BUILDABLE && G_Alive( ent ) ) ||
 					   ( ent->s.eType == ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
 					 ent->s.modelindex == log->modelindex )
 				{

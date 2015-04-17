@@ -424,7 +424,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		{
 			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^7, had $2$ HP.\n") ),
 			                        Quote( killerName ),
-			                        attacker->health ) );
+			                        (int)std::ceil(attacker->entity->Get<HealthComponent>()->Health()) ) );
 		}
 	}
 	else if ( attacker->s.eType != ET_BUILDABLE )
@@ -1199,7 +1199,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 				hitSomething = ent->entity->Damage(points, attacker, Vec3::Load(origin), Vec3::Load(dir),
 				                                   (DAMAGE_NO_LOCDAMAGE | dflags), (meansOfDeath_t)mod);
 			}
-			else if ( G_Team( ent ) == testHit && ent->health > 0 )
+			else if ( G_Team( ent ) == testHit && G_Alive( ent ) )
 			{
 				return true;
 			}

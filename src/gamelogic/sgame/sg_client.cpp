@@ -215,7 +215,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 			continue;
 		}
 
-		if ( search->health <= 0 )
+		if ( G_Dead( search ) )
 		{
 			continue;
 		}
@@ -494,9 +494,6 @@ static void SpawnCorpse( gentity_t *ent )
 	}
 
 	body->takedamage = false;
-
-	body->health = ent->health = ent->client->ps.stats[ STAT_HEALTH ];
-	ent->health = 0;
 
 	//change body dimensions
 	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, nullptr, nullptr, body->r.mins, body->r.maxs );
@@ -1848,17 +1845,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	VectorSet( client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 
-	// health will count down towards max_health
-	ent->health = client->ps.stats[ STAT_HEALTH ] = client->ps.stats[ STAT_MAX_HEALTH ]; //* 1.25;
-
-	//if evolving scale health
-	if ( ent == spawn )
-	{
-		ent->health *= ent->client->pers.evolveHealthFraction;
-		client->ps.stats[ STAT_HEALTH ] *= ent->client->pers.evolveHealthFraction;
-	}
-
 	//clear the credits array
+	// TODO: Handle in HealthComponent or ClientComponent.
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		ent->credits[ i ].value = 0.0f;

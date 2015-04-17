@@ -923,112 +923,6 @@ bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }
 
-/**
- * @brief Heals an entity and scales/clears account array accordingly.
- * @param self
- * @param amount Positive health amount.
- * @return Health healed.
- */
-int G_Heal( gentity_t *self, int amount )
-{
-	int   clientNum, relevantClientNum, maxHealth, healed;
-	float totalCredits, scaleAccounts;
-	int   relevantClients[ MAX_CLIENTS ];
-
-	// amount must be positive
-	if ( amount <= 0 )
-	{
-		return 0;
-	}
-
-	// don't heal dead targets
-	if ( self->health <= 0 )
-	{
-		return 0;
-	}
-
-	// get max health
-	switch ( self->s.eType )
-	{
-		case ET_PLAYER:
-			maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
-			break;
-
-		case ET_BUILDABLE:
-			maxHealth = BG_Buildable( self->s.modelindex )->health;
-			break;
-
-		default:
-			maxHealth = 0;
-	}
-
-	// abort if already fully healed
-	if ( maxHealth )
-	{
-		if ( self->health == maxHealth )
-		{
-			return 0;
-		}
-		else if ( self->health > maxHealth )
-		{
-			// this shouldn't really happen, so print a warning
-			Com_Printf( S_WARNING "G_Heal: Target has health above max health (%i/%i).\n",
-			            self->health, maxHealth );
-			return 0;
-		}
-	}
-
-	// get total damage account and assemble list of relevant clients
-	totalCredits = 0;
-	for ( clientNum = 0, relevantClientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
-	{
-		if ( self->credits[ clientNum ].value > 0.0f )
-		{
-			relevantClients[ relevantClientNum++ ] = clientNum;
-			totalCredits += self->credits[ clientNum ].value;
-		}
-	}
-
-	// calculate account scale factor
-	if ( ( float )amount >= totalCredits )
-	{
-		// clear the account array
-		scaleAccounts = 0.0f;
-	}
-	else
-	{
-		scaleAccounts = ( totalCredits - ( float )amount ) / totalCredits;
-	}
-
-	// scale down or clear damage accounts
-	for ( clientNum = 0; clientNum < relevantClientNum; clientNum++ )
-	{
-		self->credits[ relevantClients[ clientNum ] ].value *= scaleAccounts;
-	}
-
-	// heal
-	self->health += amount;
-
-	// cap health
-	if ( maxHealth && self->health > maxHealth )
-	{
-		healed = amount - ( self->health - maxHealth );
-		self->health = maxHealth;
-	}
-	else
-	{
-		healed = amount;
-	}
-
-	// send to client
-	if ( self->client )
-	{
-		self->client->ps.stats[ STAT_HEALTH ] = self->health;
-	}
-
-	return healed;
-}
-
 bool G_IsPlayableTeam( team_t team )
 {
 	return ( team > TEAM_NONE && team < NUM_TEAMS );
@@ -1070,22 +964,19 @@ float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
 }
 
 /**
- * @return Whether ent is a player or buildable with positive health.
+ * @return Whether entity has a health component and is alive.
+ * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
  */
-bool G_Alive( gentity_t *ent )
-{
-	if ( !ent->inuse ) return false;
+bool G_Alive(gentity_t *ent) {
+	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
+	return (healthComponent && healthComponent->Alive());
+}
 
-	switch ( ent->s.eType )
-	{
-		case ET_PLAYER:
-			return ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
-			         ent->client->ps.stats[ STAT_HEALTH ] > 0 );
-
-		case ET_BUILDABLE:
-			return ( ent->health > 0 );
-
-		default:
-			return false;
-	}
+/**
+ * @return Whether entity has a health component and is dead.
+ * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
+ */
+bool G_Dead(gentity_t *ent) {
+	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
+	return (healthComponent && !healthComponent->Alive());
 }

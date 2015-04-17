@@ -57,7 +57,8 @@ class HealthComponent: public HealthComponentBase {
 		// Handwritten Members //
 		// /////////////////// //
 
-		void SetMaxHealth(float maxHealth);
+		void SetHealth(float health);
+		void SetMaxHealth(float maxHealth, bool scaleHealth = false);
 
 		/**
 		 * @brief Copies state from another HealthComponent.
@@ -65,13 +66,26 @@ class HealthComponent: public HealthComponentBase {
 		 */
 		HealthComponent& operator=(const HealthComponent& other);
 
+		bool Alive() const { return health > 0.0f; }
+		bool FullHealth() const { return health >= maxHealth; }
+		float Health() const { return health; }
+		float MaxHealth() const { return maxHealth; }
+		float HealthFraction() const { return Math::Clamp(health / maxHealth, 0.0f, 1.0f); }
+
 	private:
 		// /////////////////// //
 		// Handwritten Members //
 		// /////////////////// //
 
 		float health;
+
+		/**
+		 * @brief Whenever health is restored, this makes sure the damage accounts are scaled down
+		 *        so that they can't exceed the missing health.
+		 */
+		void ScaleDamageAccounts(float healthRestored);
+
+		void SpawnHitNotification(gentity_t *attacker);
 };
 
 #endif // HEALTH_COMPONENT_H_
-

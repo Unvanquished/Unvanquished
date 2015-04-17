@@ -230,11 +230,8 @@ bool G_FindAmmo( gentity_t *self )
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
 	{
 		// only friendly, living and powered buildables provide ammo
-		if ( neighbor->s.eType != ET_BUILDABLE ||
-		     !G_OnSameTeam( self, neighbor ) ||
-		     !neighbor->spawned ||
-		     !neighbor->powered ||
-		     neighbor->health <= 0 )
+		if ( neighbor->s.eType != ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
+		     !neighbor->spawned || !neighbor->powered || G_Dead( neighbor ) )
 		{
 			continue;
 		}
@@ -281,11 +278,8 @@ bool G_FindFuel( gentity_t *self )
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
 	{
 		// only friendly, living and powered buildables provide fuel
-		if ( neighbor->s.eType != ET_BUILDABLE ||
-		     !G_OnSameTeam( self, neighbor ) ||
-		     !neighbor->spawned ||
-		     !neighbor->powered ||
-		     neighbor->health <= 0 )
+		if ( neighbor->s.eType != ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
+		     !neighbor->spawned || !neighbor->powered || G_Dead( neighbor ) )
 		{
 			continue;
 		}
@@ -452,7 +446,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 		return;
 	}
 
-	if ( target->health <= 0 )
+	if ( !G_Alive( target ) )
 	{
 		return;
 	}
@@ -750,9 +744,7 @@ static void HiveMissileThink( gentity_t *self )
 			continue;
 		}
 
-		if ( ent->client &&
-		     ent->health > 0 &&
-		     ent->client->pers.team == TEAM_HUMANS &&
+		if ( ent->client && G_Alive( ent ) && ent->client->pers.team == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
@@ -1145,22 +1137,18 @@ void G_CheckCkitRepair( gentity_t *self )
 	trap_Trace( &tr, viewOrigin, nullptr, nullptr, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
 
-	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health > 0 &&
-	     traceEnt->s.eType == ET_BUILDABLE && traceEnt->buildableTeam == TEAM_HUMANS )
+	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->s.eType == ET_BUILDABLE &&
+	     traceEnt->buildableTeam == TEAM_HUMANS )
 	{
-		const buildableAttributes_t *buildable;
+		HealthComponent *healthComponent = traceEnt->entity->Get<HealthComponent>();
 
-		buildable = BG_Buildable( traceEnt->s.modelindex );
+		if (healthComponent && healthComponent->Alive() && !healthComponent->FullHealth()) {
+			traceEnt->entity->Heal(HBUILD_HEALRATE, nullptr);
 
-		if ( traceEnt->health < buildable->health )
-		{
-			if ( G_Heal( traceEnt, HBUILD_HEALRATE ) )
-			{
-				G_AddEvent( self, EV_BUILD_REPAIR, 0 );
-			}
-			else
-			{
-				G_AddEvent( self, EV_BUILD_REPAIRED, 0 );
+			if (healthComponent->FullHealth()) {
+				G_AddEvent(self, EV_BUILD_REPAIRED, 0);
+			} else {
+				G_AddEvent(self, EV_BUILD_REPAIR, 0);
 			}
 
 			self->client->ps.weaponTime += BG_Weapon( self->client->ps.weapon )->repeatRate1;
@@ -1268,8 +1256,7 @@ bool G_CheckVenomAttack( gentity_t *self )
 
 	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
-	if ( !traceEnt || !traceEnt->takedamage || traceEnt->health <= 0 ||
-	     G_OnSameTeam( self, traceEnt ) )
+	if ( !traceEnt || !traceEnt->takedamage || G_OnSameTeam( self, traceEnt ) || !G_Alive( traceEnt ) )
 	{
 		return false;
 	}
@@ -1335,7 +1322,7 @@ static void FindZapChainTargets( zap_t *zap )
 		         enemy->client->pers.team == TEAM_HUMANS ) ||
 		       ( enemy->s.eType == ET_BUILDABLE &&
 		         BG_Buildable( enemy->s.modelindex )->team == TEAM_HUMANS ) ) &&
-		     enemy->health > 0 && // only chain to living targets
+		     G_Alive( enemy ) &&
 		     distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
 		{
 			// world-LOS check: trace against the world, ignoring other BODY entities

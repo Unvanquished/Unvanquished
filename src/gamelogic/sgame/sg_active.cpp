@@ -84,7 +84,9 @@ void P_DamageFeedback( gentity_t *player )
 	if ( ( level.time > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
 	{
 		player->pain_debounce_time = level.time + 700;
-		G_AddEvent( player, EV_PAIN, player->health > 255 ? 255 : player->health );
+		int transmittedHalth = (int)std::ceil(player->entity->Get<HealthComponent>()->Health());
+		transmittedHalth = Math::Clamp(transmittedHalth, 0, 255);
+		G_AddEvent( player, EV_PAIN, transmittedHalth );
 		client->ps.damageEvent++;
 	}
 
@@ -126,7 +128,7 @@ void P_WorldEffects( gentity_t *ent )
 			// drown!
 			ent->client->airOutTime += 1000;
 
-			if ( ent->health > 0 )
+			if ( G_Alive( ent ) )
 			{
 				// take more damage the longer underwater
 				ent->damage += 2;
@@ -137,7 +139,7 @@ void P_WorldEffects( gentity_t *ent )
 				}
 
 				// play a gurp sound instead of a general pain sound
-				if ( ent->health <= ent->damage )
+				if ( ent->entity->Get<HealthComponent>()->Health() <= (float)ent->damage )
 				{
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
 				}
@@ -170,8 +172,7 @@ void P_WorldEffects( gentity_t *ent )
 	if ( waterlevel &&
 	     ( ent->watertype & ( CONTENTS_LAVA | CONTENTS_SLIME ) ) )
 	{
-		if ( ent->health > 0 &&
-		     ent->pain_debounce_time <= level.time )
+		if ( G_Alive( ent ) && ent->pain_debounce_time <= level.time )
 		{
 			if ( ent->watertype & CONTENTS_LAVA )
 			{
@@ -722,6 +723,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 	return true;
 }
 
+// TODO: Move to MedikitComponent.
 static void G_ReplenishHumanHealth( gentity_t *self )
 {
 	gclient_t *client;
@@ -746,7 +748,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	// stop if client is fully healed
-	if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+	if ( self->entity->Get<HealthComponent>()->FullHealth() )
 	{
 		client->medKitHealthToRestore = 0;
 		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_4X;
@@ -779,7 +781,8 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	// heal
-	client->medKitHealthToRestore -= G_Heal( self, 1 );
+	self->entity->Heal(1.0f, nullptr);
+	client->medKitHealthToRestore --;
 }
 
 static void BeaconAutoTag( gentity_t *self, int timePassed )
@@ -1606,7 +1609,7 @@ static int FindAlienHealthSource( gentity_t *self )
 	for ( ent = nullptr; ( ent = G_IterateEntities( ent, nullptr, true, 0, nullptr ) ); )
 	{
 		if ( !G_OnSameTeam( self, ent ) ) continue;
-		if ( ent->health <= 0 )           continue;
+		if ( G_Dead( ent ) )              continue;
 
 		distance = Distance( ent->s.origin, self->s.origin );
 
@@ -1669,6 +1672,7 @@ static int FindAlienHealthSource( gentity_t *self )
 }
 
 // TODO: Synchronize
+// TODO: Move to HealthRegenComponent.
 static void G_ReplenishAlienHealth( gentity_t *self )
 {
 	gclient_t *client;
@@ -1679,8 +1683,8 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client = self->client;
 
 	// Check if client is an alien and has the healing ability
-	if ( !client || client->pers.team != TEAM_ALIENS ||
-	     self->health <= 0 || level.surrenderTeam == client->pers.team )
+	if ( !client || client->pers.team != TEAM_ALIENS || G_Dead( self )
+	     || level.surrenderTeam == client->pers.team )
 	{
 		return;
 	}
@@ -1732,7 +1736,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		// If recovery interval is less than frametime, compensate by healing more
 		count = 1 + ( level.time - self->nextRegenTime ) / interval;
 
-		G_Heal( self, count );
+		self->entity->Heal((float)count, nullptr);
 
 		self->nextRegenTime = level.time + count * interval;
 	}
@@ -2225,9 +2229,7 @@ void ClientThink_real( gentity_t *self )
 
 	if ( self->suicideTime > 0 && self->suicideTime < level.time )
 	{
-		client->ps.stats[ STAT_HEALTH ] = self->health = 0;
-		G_PlayerDie( self, self, self, MOD_SUICIDE );
-
+		self->entity->Kill(nullptr, MOD_SUICIDE);
 		self->suicideTime = 0;
 	}
 }
@@ -2349,14 +2351,8 @@ void ClientEndFrame( gentity_t *ent )
 		ent->client->ps.eFlags &= ~EF_CONNECTION;
 	}
 
-	if( ent->client->ps.stats[ STAT_HEALTH ] != ent->health )
-	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health; // FIXME: get rid of ent->health...
-		ent->client->pers.infoChangeTime = level.time;
-	}
-
 	// respawn if dead
-	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 && level.time >= ent->client->respawnTime )
+	if ( G_Dead( ent ) && level.time >= ent->client->respawnTime )
 	{
 		respawn( ent );
 	}

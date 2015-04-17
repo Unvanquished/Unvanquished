@@ -21,6 +21,7 @@
  */
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
+#include "CBSE.h"
 
 void BotDPrintf( const char* fmt, ... )
 {
@@ -472,7 +473,9 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 		{
 			continue;
 		}
-		if ( target->s.eType == ET_BUILDABLE && target->s.modelindex == buildingType && ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) && target->health > 0 )
+		if ( target->s.eType == ET_BUILDABLE && target->s.modelindex == buildingType &&
+		     ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) &&
+		     G_Alive( target ) )
 		{
 			newDistance = DistanceSquared( self->s.origin, target->s.origin );
 			if ( range && newDistance > rangeSquared )
@@ -511,14 +514,14 @@ void BotFindClosestBuildings( gentity_t *self )
 			continue;
 		}
 
-		//ignore dead targets
-		if ( testEnt->health <= 0 )
+		//skip non buildings
+		if ( testEnt->s.eType != ET_BUILDABLE )
 		{
 			continue;
 		}
 
-		//skip non buildings
-		if ( testEnt->s.eType != ET_BUILDABLE )
+		//ignore dead targets
+		if ( G_Dead( testEnt ) )
 		{
 			continue;
 		}
@@ -570,12 +573,12 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( target->health >= BG_Buildable( ( buildable_t )target->s.modelindex )->health )
+		if ( target->entity->Get<HealthComponent>()->FullHealth() )
 		{
 			continue;
 		}
 
-		if ( target->health <= 0 )
+		if ( G_Dead( target ) )
 		{
 			continue;
 		}
@@ -677,8 +680,8 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 			continue;
 		}
 
-		//ignore dead targets
-		if ( target->health <= 0 )
+		// Only consider living targets.
+		if ( !G_Alive( target ) )
 		{
 			continue;
 		}
@@ -2113,7 +2116,8 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 		return false;
 	}
 
-	if ( enemy->health <= 0 )
+	// Only living targets are valid.
+	if ( !G_Alive( enemy ) )
 	{
 		return false;
 	}

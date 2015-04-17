@@ -33,13 +33,14 @@ class ArmorComponent: public ArmorComponentBase {
 		// Handwritten Members //
 		// /////////////////// //
 
+		float GetLocationalDamageMod(float angle, float height);
+		float GetNonLocationalDamageMod();
+
 	private:
 		// /////////////////// //
 		// Handwritten Members //
 		// /////////////////// //
 
-		float GetLocationalDamageMod(float angle, float height);
-		float GetNonLocationalDamageMod();
 };
 
 #endif // ARMOR_COMPONENT_H_
