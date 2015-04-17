@@ -231,19 +231,19 @@ void HealthComponent::HandleKill(gentity_t* source, meansOfDeath_t meansOfDeath)
 void HealthComponent::SetHealth(float health) {
 	Math::Clamp(health, FLT_EPSILON, maxHealth);
 
-	healthLogger.Debug("Changing health: %3.1f → %3.1f.", HealthComponent::health, health);
+	healthLogger.Debug("Changing health: %3.1f → %3.1f.", this->health, health);
 
-	ScaleDamageAccounts(health - HealthComponent::health);
+	ScaleDamageAccounts(health - this->health);
 	HealthComponent::health = health;
 }
 
 void HealthComponent::SetMaxHealth(float maxHealth, bool scaleHealth) {
 	assert(maxHealth > 0.0f);
 
-	healthLogger.Debug("Changing maximum health: %3.1f → %3.1f.", HealthComponent::maxHealth, maxHealth);
+	healthLogger.Debug("Changing maximum health: %3.1f → %3.1f.", this->maxHealth, maxHealth);
 
 	HealthComponent::maxHealth = maxHealth;
-	if (scaleHealth) SetHealth(health * (HealthComponent::maxHealth / maxHealth));
+	if (scaleHealth) SetHealth(health * (this->maxHealth / maxHealth));
 }
 
 // TODO: Move credits array to HealthComponent.
