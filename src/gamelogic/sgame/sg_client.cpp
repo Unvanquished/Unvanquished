@@ -895,7 +895,7 @@ The game can override any of the settings and call trap_SetUserinfo
 if desired.
 ============
 */
-char *ClientUserinfoChanged( int clientNum, bool forceName )
+const char *ClientUserinfoChanged( int clientNum, bool forceName )
 {
 	gentity_t *ent;
 	const char      *s;
@@ -1158,10 +1158,10 @@ to the server machine, but false on map changes and tournement
 restarts.
 ============
 */
-char *ClientConnect( int clientNum, bool firstTime )
+const char *ClientConnect( int clientNum, bool firstTime )
 {
 	const char      *value;
-	char            *userInfoError;
+	const char      *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];
 	char            pubkey[ RSA_STRING_LENGTH ];
@@ -1318,9 +1318,9 @@ Cut-down version of ClientConnect.
 Doesn't do things not relevant to bots (which are local GUIDless clients).
 ============
 */
-char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
+const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 {
-	char            *userInfoError;
+	const char      *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];
 	gentity_t       *ent;

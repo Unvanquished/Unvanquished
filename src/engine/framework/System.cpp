@@ -573,7 +573,7 @@ static void Init(int argc, char** argv)
 	}
 
 	// Enable S3TC on Mesa even if libtxc-dxtn is not available
-	putenv("force_s3tc_enable=true");
+	putenv((char *) "force_s3tc_enable=true");
 #endif
 
 	// Initialize the console
@@ -650,7 +650,7 @@ static void Init(int argc, char** argv)
 
 	// Legacy initialization code, needs to be replaced
 	// TODO: eventually move all of Com_Init into here
-	Com_Init("");
+	Com_Init((char *) "");
 
 	// Buffer the commands that were specified on the command line so they are
 	// executed in the first frame.

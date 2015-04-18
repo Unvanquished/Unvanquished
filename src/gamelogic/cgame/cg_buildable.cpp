@@ -1326,7 +1326,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 		if ( text )
 		{
 			rectDef_t rect;
-			float     tx, ty;
+			float     tx = 0, ty = 0;
 			vec4_t    colour;
 
 			rect.x = picX - 128;

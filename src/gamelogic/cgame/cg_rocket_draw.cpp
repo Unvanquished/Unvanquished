@@ -153,7 +153,7 @@ static void CG_Rocket_DrawClips()
 #define FPS_STRING "fps"
 static void CG_Rocket_DrawFPS()
 {
-	char       *s = "";
+	const char *s = "";
 	static int previousTimes[ FPS_FRAMES ];
 	static int index;
 	int        i, total;
@@ -838,7 +838,7 @@ static void CG_Rocket_DrawLagometer()
 	int    color;
 	vec4_t adjustedColor;
 	float  vscale;
-	char   *ping;
+	const char *ping;
 	rectDef_t rect;
 
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
@@ -1857,7 +1857,7 @@ void CG_Rocket_DrawClock()
 
 	else
 	{
-		char *pm = "am";
+		const char *pm = "am";
 		int  h = qt.tm_hour;
 
 		if ( h == 0 )
