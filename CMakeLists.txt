@@ -355,7 +355,6 @@ else()
       set_cxx_flag( "-pedantic-errors" )
     endif()
   endif()
-  try_cxx_flag_werror( WNO_ABSOLUTE_VALUE             "-W${WARNMODE}absolute-value" )
   try_cxx_flag_werror( WNO_DEPRECATED_REGISTER        "-Wno-error=deprecated-register" )
   try_cxx_flag_werror( WNO_INVALID_SOURCE_ENCODING    "-Wno-error=invalid-source-encoding" )
   try_cxx_flag_werror( WNO_MAYBE_UNINITIALIZED        "-Wno-error=maybe-uninitialized" )
@@ -374,7 +373,6 @@ else()
   try_cxx_flag_werror( WNO_UNUSED_PRIVATE_FIELD       "-W${WARNMODE}unused-private-field" )
   try_cxx_flag_werror( WNO_UNUSED_RESULT              "-W${WARNMODE}unused-result" )
   try_cxx_flag_werror( WNO_UNUSED_VARIABLE            "-W${WARNMODE}unused-variable" )
-  try_cxx_flag_werror( WNO_WRITE_STRINGS              "-Wno-error=write-strings" )
 
   if( USE_ADDRESS_SANITIZER )
     set_cxx_flag( "-fsanitize=address" )
@@ -1473,17 +1471,13 @@ function( GAMEMODULE )
     endif()
     set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS}
       -Wextra
-      -W${WARNMODE}absolute-value
       -Wno-error=implicit-function-declaration
       -W${WARNMODE}missing-field-initializers
       -Wno-error=pointer-bool-conversion
       -W${WARNMODE}sign-compare
       -Wno-error=switch
-      -Wno-error=uninitialized
       -W${WARNMODE}unused-function
-      -Wno-error=unused-label
       -W${WARNMODE}unused-parameter
-      -Wno-error=writable-strings
       -pedantic
     )
     if( USE_WERROR )
