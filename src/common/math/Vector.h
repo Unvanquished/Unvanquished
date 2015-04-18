@@ -123,12 +123,12 @@ namespace Math {
 		Vector<Length, Type> operator/(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
 
 		// Compound arithmetic operators
-		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return *this = *this + other;}
-		Vector<Length, Type>& operator-=(Vector<Length, Type> other) {return *this = *this - other;}
-		Vector<Length, Type>& operator*=(Type x) {return *this = *this * x;}
-		Vector<Length, Type>& operator*=(Vector<Length, Type> other) {return *this = *this * other;}
-		Vector<Length, Type>& operator/=(Type x) {return *this = *this / x;}
-		Vector<Length, Type>& operator/=(Vector<Length, Type> other) {return *this = *this / other;}
+		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) + other;}
+		Vector<Length, Type>& operator-=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) - other;}
+		Vector<Length, Type>& operator*=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) * x;}
+		Vector<Length, Type>& operator*=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) * other;}
+		Vector<Length, Type>& operator/=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) / x;}
+		Vector<Length, Type>& operator/=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) / other;}
 	};
 	template<size_t Length, typename Type> class VectorOps<Length, Type, typename std::enable_if<std::is_integral<Type>::value>>: public VectorBase<Length, Type> {
 	public:
@@ -153,14 +153,14 @@ namespace Math {
 		Vector<Length, Type> operator%(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a % b;}, other);}
 
 		// Compound arithmetic operators
-		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return *this = *this + other;}
-		Vector<Length, Type>& operator-=(Vector<Length, Type> other) {return *this = *this - other;}
-		Vector<Length, Type>& operator*=(Type x) {return *this = *this * x;}
-		Vector<Length, Type>& operator*=(Vector<Length, Type> other) {return *this = *this * other;}
-		Vector<Length, Type>& operator/=(Type x) {return *this = *this / x;}
-		Vector<Length, Type>& operator/=(Vector<Length, Type> other) {return *this = *this / other;}
-		Vector<Length, Type>& operator%=(Type x) {return *this = *this % x;}
-		Vector<Length, Type>& operator%=(Vector<Length, Type> other) {return *this = *this % other;}
+		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) + other;}
+		Vector<Length, Type>& operator-=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) - other;}
+		Vector<Length, Type>& operator*=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) * x;}
+		Vector<Length, Type>& operator*=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) * other;}
+		Vector<Length, Type>& operator/=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) / x;}
+		Vector<Length, Type>& operator/=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) / other;}
+		Vector<Length, Type>& operator%=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) % x;}
+		Vector<Length, Type>& operator%=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) % other;}
 
 		// Bitwise operators
 		Vector<Length, Type> operator~() const {return this->Apply([](Type a) {return ~a;});}
@@ -173,13 +173,13 @@ namespace Math {
 		Vector<Length, Type> operator>>(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a >> b;}, other);}
 
 		// Compound bitwise operators
-		Vector<Length, Type>& operator&=(Vector<Length, Type> other) {return *this = *this & other;}
-		Vector<Length, Type>& operator|=(Vector<Length, Type> other) {return *this = *this | other;}
-		Vector<Length, Type>& operator^=(Vector<Length, Type> other) {return *this = *this ^ other;}
-		Vector<Length, Type>& operator<<=(Type x) {return *this = *this << x;}
-		Vector<Length, Type>& operator<<=(Vector<Length, Type> other) {return *this = *this << other;}
-		Vector<Length, Type>& operator>>=(Type x) {return *this = *this >> x;}
-		Vector<Length, Type>& operator>>=(Vector<Length, Type> other) {return *this = *this >> other;}
+		Vector<Length, Type>& operator&=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) & other;}
+		Vector<Length, Type>& operator|=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) | other;}
+		Vector<Length, Type>& operator^=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) ^ other;}
+		Vector<Length, Type>& operator<<=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) << x;}
+		Vector<Length, Type>& operator<<=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) << other;}
+		Vector<Length, Type>& operator>>=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) >> x;}
+		Vector<Length, Type>& operator>>=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) >> other;}
 	};
 	template<size_t Length> class VectorOps<Length, bool>: public VectorBase<Length, bool> {
 	public:
@@ -194,9 +194,9 @@ namespace Math {
 		Vector<Length, bool> operator^(Vector<Length, bool> other) const {return this->Apply2([](bool a, bool b) {return a != b;}, other);}
 
 		// Compound bitwise operators
-		Vector<Length, bool>& operator&=(Vector<Length, bool> other) {return *this = *this & other;}
-		Vector<Length, bool>& operator|=(Vector<Length, bool> other) {return *this = *this | other;}
-		Vector<Length, bool>& operator^=(Vector<Length, bool> other) {return *this = *this ^ other;}
+		Vector<Length, bool>& operator&=(Vector<Length, bool> other) {return static_cast<Vector<Length, bool>&>(*this) = static_cast<Vector<Length, bool>&>(*this) & other;}
+		Vector<Length, bool>& operator|=(Vector<Length, bool> other) {return static_cast<Vector<Length, bool>&>(*this) = static_cast<Vector<Length, bool>&>(*this) | other;}
+		Vector<Length, bool>& operator^=(Vector<Length, bool> other) {return static_cast<Vector<Length, bool>&>(*this) = static_cast<Vector<Length, bool>&>(*this) ^ other;}
 
 		// Group testing
 		bool All() const {return this->Reduce(true, [](bool a, bool b) {return a && b;});}
