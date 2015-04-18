@@ -183,8 +183,6 @@ void              G_RewardAttackers( gentity_t *self );
 void              G_AddCreditsToScore( gentity_t *self, int credits );
 void              G_AddMomentumToScore( gentity_t *self, float momentum );
 void              G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
-float             G_GetNonLocDamageMod( class_t pcl );
-float             G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float height );
 void              G_InitDamageLocations();
 void              G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 
