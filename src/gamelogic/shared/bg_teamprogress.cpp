@@ -45,10 +45,10 @@ typedef struct unlockable_s
 	int      type;
 	int      num;
 	team_t   team;
-	bool unlocked;
-	bool statusKnown;
-	bool unlockThreshold;
-	bool lockThreshold;
+	bool     unlocked;
+	bool     statusKnown;
+	int      unlockThreshold;
+	int      lockThreshold;
 } unlockable_t;
 
 // ----
