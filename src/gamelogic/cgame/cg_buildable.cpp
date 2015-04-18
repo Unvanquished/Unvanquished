@@ -1237,7 +1237,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, CG_Trace, entity_origin, angles, &tr );
 
 	entity_origin[ 2 ] += mins[ 2 ];
-	entity_origin[ 2 ] += ( abs( mins[ 2 ] ) + abs( maxs[ 2 ] ) ) / 2;
+	entity_origin[ 2 ] += ( std::abs( mins[ 2 ] ) + std::abs( maxs[ 2 ] ) ) / 2;
 
 	if ( CG_WorldToScreen( entity_origin, &x, &y ) )
 	{
@@ -1744,7 +1744,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 	// center point
 	origin[ 2 ] += mins[ 2 ];
-	origin[ 2 ] += ( abs( mins[ 2 ] ) + abs( maxs[ 2 ] ) ) / 2;
+	origin[ 2 ] += ( std::abs( mins[ 2 ] ) + std::abs( maxs[ 2 ] ) ) / 2;
 
 	entNum = cg.predictedPlayerState.clientNum;
 
