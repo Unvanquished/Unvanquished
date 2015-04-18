@@ -95,17 +95,35 @@ components:
             - Damage
             - Kill
 
+    # TODO: Damage zones as parameter, removing the dependency on Client.
+    # NOTE: The dependency on Client is symbolic for an actual dependency
+    #       on gentity_t.client.
     Armor:
         messages:
             - ApplyDamageModifier
         requires:
             - Client
 
+    # TODO: Depend on or turn into PhysicsComponent, which handles the mass as
+    #       a parameter. This would get rid of the dependency on Client.
+    # NOTE: The dependency on Client is symbolic for an actual dependency
+    #       on gentity_t.client.
+    Knockback:
+        messages:
+            - Damage
+        requires:
+            - Client
+
 entities:
+    ###################
+    # Pseudo entities #
+    ###################
+
     Empty:
         components:
 
     # A generic client entity, not spawned yet.
+    # TODO: Evaluate if HealthComponent is needed.
     Client:
         components:
             Client:
@@ -121,78 +139,91 @@ entities:
             Client:
             Health:
             Armor:
+            Knockback:
 
     Mantis:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     Marauder:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     AdvMarauder:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     Dragoon:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     AdvDragoon:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     Tyrant:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     Granger:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     AdvGranger:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     NakedHuman:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     LightHuman:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     MediumHuman:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     HeavyHuman:
         components:
             Client:
             Health:
             Armor:
+            Knockback:
 
     ##############
     # Buildables #

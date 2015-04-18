@@ -682,8 +682,8 @@ static void FireMassdriver( gentity_t *self )
 
 	SendRangedHitEvent( self, target, &tr );
 
-	target->entity->Damage((float)MDRIVER_DMG, self, Vec3::Load(tr.endpos),
-	                       Vec3::Load(forward), 0, (meansOfDeath_t)MOD_MDRIVER);
+	target->entity->Damage((float)MDRIVER_DMG, self, Vec3::Load(tr.endpos), Vec3::Load(forward),
+	                       DAMAGE_KNOCKBACK, (meansOfDeath_t)MOD_MDRIVER);
 }
 
 /*

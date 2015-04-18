@@ -924,6 +924,8 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/components/HealthComponent.h
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/KnockbackComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/KnockbackComponent.h
   ${ENGINE_DIR}/server/sg_api.h
   ${ENGINE_DIR}/server/sg_msgdef.h
   ${GAMESHAREDLIST}

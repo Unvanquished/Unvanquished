@@ -43,11 +43,10 @@ void HealthComponent::HandleHeal(float amount, gentity_t* source) {
 	ScaleDamageAccounts(amount);
 }
 
-#define DAMAGE_TO_KNOCKBACK 5
-
 void HealthComponent::HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location,
 Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	if (health <= 0.0f) return;
+	if (amount <= 0.0f) return;
 
 	gclient_t *client = entity.oldEnt->client;
 
@@ -71,12 +70,6 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		}
 
 		return;
-	}
-
-	// Do knockback against clients.
-	// TODO: Catch damage message elsewhere to handle knockback.
-	if ((flags & DAMAGE_KNOCKBACK) && client && direction) {
-		G_KnockbackByDir(entity.oldEnt, direction.value().Data(), amount * DAMAGE_TO_KNOCKBACK, false);
 	}
 
 	// Check for protection.
