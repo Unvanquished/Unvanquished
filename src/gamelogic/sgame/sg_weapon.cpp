@@ -508,7 +508,7 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 
 	if ( !G_Alive( traceEnt ) )
 	{
-		return false;
+		return nullptr;
 	}
 
 	traceEnt->entity->Damage((float)damage, self, Vec3::Load(tr.endpos),

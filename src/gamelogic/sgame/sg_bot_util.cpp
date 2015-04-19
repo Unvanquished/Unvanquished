@@ -113,7 +113,6 @@ float BotGetHealScore( gentity_t *self )
 {
 	float distToHealer = 0;
 	float percentHealth = 0;
-	float maxHealth = BG_Class( ( class_t ) self->client->ps.stats[ STAT_CLASS ] )->health;
 
 	if ( self->client->pers.team == TEAM_ALIENS )
 	{
