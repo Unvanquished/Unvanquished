@@ -150,14 +150,6 @@ class Entity {
 			}
 		}
 
-		// ///////////////////// //
-		// Shared public members //
-		// ///////////////////// //
-
-		{% for attrib in general.common_entity_attributes %}
-			{{attrib.get_declaration()}};
-		{% endfor %}
-
 	private:
 		/** Message handler vtable. */
 		const MessageHandler* messageHandlers;
@@ -171,6 +163,14 @@ class Entity {
 		 */
 		bool SendMessage(int msg, const void* data);
 
+    public:
+		// ///////////////////// //
+		// Shared public members //
+		// ///////////////////// //
+
+		{% for attrib in general.common_entity_attributes %}
+			{{attrib.get_declaration()}};
+		{% endfor %}
 };
 
 // ////////////////////////// //
