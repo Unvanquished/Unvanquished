@@ -2015,15 +2015,12 @@ void ClientDisconnect( int clientNum )
 	G_LogPrintf( "ClientDisconnect: %i [%s] (%s) \"%s^7\"\n", clientNum,
 	             ent->client->pers.ip.str, ent->client->pers.guid, ent->client->pers.netname );
 
-	trap_UnlinkEntity( ent );
-	ent->inuse = false;
-	ent->classname = "disconnected";
 	ent->client->pers.connected = CON_DISCONNECTED;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;
 	ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_NOT;
 
-	// Destroy CBSE entitiy.
-	delete ent->entity;
+	G_FreeEntity(ent);
+	ent->classname = "disconnected";
 
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "" );
 
