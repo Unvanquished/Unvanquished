@@ -40,10 +40,9 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* source, Util::opt
 	float strength = amount * DAMAGE_TO_KNOCKBACK * massMod;
 
 	// Change client velocity.
-	Vec3 dir = Math::normalize(direction.value());
 	Vec3 clientVelocity = Vec3::Load(client->ps.velocity);
-	clientVelocity = clientVelocity + (dir * strength);
-	VectorCopy(clientVelocity.Data(), client->ps.velocity);
+	clientVelocity += Math::normalize(direction.value()) * strength;
+	clientVelocity.Store(client->ps.velocity);
 
 	// Set pmove timer so that the client can't cancel out the movement immediately.
 	if (!client->ps.pm_time) {
