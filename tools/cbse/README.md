@@ -68,8 +68,8 @@ for (Entity* grabber : GetEntitiesColliding(pointsBonus->hitbox)) {
 
 Likewise it is possible to iterate over all entities with a certain component to help process them in batch:
 ```cpp
-ForEntities<FireComponent>([] (Entity* entity, FireComponent* fire) {
-   fire->Spread();
+ForEntities<FireComponent>([] (Entity* entity, FireComponent& fire) {
+   fire.Spread();
 });
 ```
 
