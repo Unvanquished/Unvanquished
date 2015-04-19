@@ -748,7 +748,7 @@ void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
-		ent->entity->Kill(nullptr, MOD_SUICIDE);
+		G_Kill(ent, MOD_SUICIDE);
 	}
 	else
 	{

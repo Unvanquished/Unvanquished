@@ -370,7 +370,7 @@ bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obst
 		// bobbing entities are instant-kill and never get blocked
 		if ( pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE )
 		{
-			check->entity->Kill(pusher, MOD_CRUSH);
+			G_Kill(check, pusher, MOD_CRUSH);
 			continue;
 		}
 
@@ -2317,7 +2317,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			//whatever is blocking the train isn't a client
 
 			//KILL!!1!!!
-			other->entity->Kill(self, MOD_CRUSH);
+			G_Kill(other, self, MOD_CRUSH);
 
 			//buildables need to be handled differently since even when
 			//dealt fatal amounts of damage they won't instantly become non-solid
@@ -2345,7 +2345,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			return;
 		}
 
-		other->entity->Kill(self, MOD_CRUSH);
+		G_Kill(other, self, MOD_CRUSH);
 	}
 }
 

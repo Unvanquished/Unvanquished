@@ -2232,7 +2232,7 @@ void ClientThink_real( gentity_t *self )
 
 	if ( self->suicideTime > 0 && self->suicideTime < level.time )
 	{
-		self->entity->Kill(nullptr, MOD_SUICIDE);
+		G_Kill(self, nullptr, MOD_SUICIDE);
 		self->suicideTime = 0;
 	}
 }

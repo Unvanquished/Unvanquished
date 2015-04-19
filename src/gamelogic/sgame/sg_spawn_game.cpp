@@ -144,7 +144,7 @@ void game_kill_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	activator->entity->Kill(nullptr, MOD_TELEFRAG);
+	G_Kill(activator, MOD_TELEFRAG);
 }
 
 void SP_game_kill( gentity_t *self )

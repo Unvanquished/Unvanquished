@@ -218,11 +218,6 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	}
 }
 
-void HealthComponent::HandleKill(gentity_t* source, meansOfDeath_t meansOfDeath) {
-	entity.Damage(health, source, Util::nullopt, Util::nullopt, (DAMAGE_PURE | DAMAGE_NO_PROTECTION),
-	              meansOfDeath);
-}
-
 void HealthComponent::SetHealth(float health) {
 	Math::Clamp(health, FLT_EPSILON, maxHealth);
 

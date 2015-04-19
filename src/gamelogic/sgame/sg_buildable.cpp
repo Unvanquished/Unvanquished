@@ -250,7 +250,7 @@ static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 		else if( level.time - self->spawnBlockTime > 10000 )
 		{
 			// still blocked, get rid of them
-			blocker->entity->Kill(nullptr, MOD_TRIGGER_HURT);
+			G_Kill(blocker, MOD_TRIGGER_HURT);
 			self->spawnBlockTime = 0;
 			return;
 		}
@@ -743,8 +743,6 @@ Tests for creep and kills the buildable if there is none
 */
 void AGeneric_CreepCheck( gentity_t *self )
 {
-	gentity_t *spawn;
-
 	if ( !BG_Buildable( self->s.modelindex )->creepTest )
 	{
 		return;
@@ -752,16 +750,8 @@ void AGeneric_CreepCheck( gentity_t *self )
 
 	if ( !G_FindCreep( self ) )
 	{
-		spawn = self->powerSource;
-
-		if ( spawn )
-		{
-			self->entity->Kill(&g_entities[spawn->killedBy], MOD_NOCREEP);
-		}
-		else
-		{
-			self->entity->Kill(nullptr, MOD_NOCREEP);
-		}
+		G_Kill(self, self->powerSource ? &g_entities[self->powerSource->killedBy] : nullptr,
+		       MOD_NOCREEP);
 	}
 }
 
@@ -833,14 +823,14 @@ void ASpawn_Think( gentity_t *self )
 			// If it's part of the map, kill self.
 			if ( ent->s.eType == ET_BUILDABLE )
 			{
-				ent->entity->Kill((ent->builtBy && ent->builtBy->slot >= 0) ?
-				                  &g_entities[ent->builtBy->slot] : nullptr, MOD_SUICIDE);
+				G_Kill(ent, (ent->builtBy && ent->builtBy->slot >= 0) ?
+				       &g_entities[ent->builtBy->slot] : nullptr, MOD_SUICIDE);
 
 				G_SetBuildableAnim( self, BANIM_SPAWN1, true );
 			}
 			else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
 			{
-				ent->entity->Kill(nullptr, MOD_SUICIDE);
+				G_Kill(ent, MOD_SUICIDE);
 				return;
 			}
 			else if( g_antiSpawnBlock.integer &&
@@ -2460,12 +2450,12 @@ void HSpawn_Think( gentity_t *self )
 				// If it's part of the map, kill self.
 				if ( ent->s.eType == ET_BUILDABLE )
 				{
-					ent->entity->Kill(nullptr, MOD_SUICIDE);
+					G_Kill(ent, MOD_SUICIDE);
 					G_SetBuildableAnim( self, BANIM_SPAWN1, true );
 				}
 				else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
 				{
-					self->entity->Kill(nullptr, MOD_SUICIDE);
+					G_Kill(self, MOD_SUICIDE);
 					return;
 				}
 				else if( g_antiSpawnBlock.integer &&
@@ -4003,7 +3993,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	if ( self->deconHealthFrac < 1.0f ) G_RewardAttackers( self );
 
 	// deconstruct
-	self->entity->Kill(deconner, deconType);
+	G_Kill(self, deconner, deconType);
 
 	// TODO: Check if freeing needs to be deferred.
 	G_FreeEntity( self );
@@ -5576,7 +5566,7 @@ void G_BaseSelfDestruct( team_t team )
 			continue;
 		}
 
-		ent->entity->Kill(nullptr, MOD_SUICIDE);
+		G_Kill(ent, MOD_SUICIDE);
 	}
 }
 

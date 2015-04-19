@@ -303,7 +303,7 @@ void G_KillBox( gentity_t *ent )
 			continue;
 		}
 
-		hit->entity->Kill(ent, MOD_TELEFRAG);
+		G_Kill(hit, ent, MOD_TELEFRAG);
 	}
 }
 
@@ -332,8 +332,9 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
     trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
                 e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
-	if( tr.entityNum != ENTITYNUM_NONE )
-      e->entity->Kill(activator, MOD_CRUSH);
+	if( tr.entityNum != ENTITYNUM_NONE ) {
+	  G_Kill(e, activator, MOD_CRUSH);
+	}
   }
 }
 
@@ -981,4 +982,20 @@ bool G_Dead(gentity_t *ent) {
 	if (!ent) return false;
 	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
 	return (healthComponent && !healthComponent->Alive());
+}
+
+void G_Kill(Entity& entity, gentity_t *source, meansOfDeath_t meansOfDeath) {
+	HealthComponent *healthComponent = entity.Get<HealthComponent>();
+	if (healthComponent) {
+		entity.Damage(healthComponent->Health(), source, {}, {},
+		              (DAMAGE_PURE | DAMAGE_NO_PROTECTION), meansOfDeath);
+	}
+}
+
+void G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
+	if (ent) G_Kill(*ent->entity, source, meansOfDeath);
+}
+
+void G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
+	if (ent) G_Kill(*ent->entity, nullptr, meansOfDeath);
 }

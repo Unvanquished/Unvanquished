@@ -50,12 +50,6 @@ messages:
         - name: meansOfDeath
           type: meansOfDeath_t
 
-    Kill:
-        - name: source
-          type: gentity_t*
-        - name: meansOfDeath
-          type: meansOfDeath_t
-
     ApplyDamageModifier:
         - name: damage
           type: float&
@@ -93,7 +87,6 @@ components:
             - PrepareNetCode
             - Heal
             - Damage
-            - Kill
 
     # TODO: Damage zones as parameter, removing the dependency on Client.
     # NOTE: The dependency on Client is symbolic for an actual dependency
