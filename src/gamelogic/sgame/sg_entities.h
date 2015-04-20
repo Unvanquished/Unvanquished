@@ -199,7 +199,7 @@ typedef enum
 
 typedef struct
 {
-	char  *event;
+	const char *event;
 	gentityCallEvent_t eventType;
 
 	char  *name;
@@ -227,7 +227,7 @@ gentity_t  *G_NewTempEntity( const vec3_t origin, int event );
 void       G_FreeEntity( gentity_t *e );
 
 //debug
-char       *etos( const gentity_t *entity );
+const char *etos( const gentity_t *entity );
 void       G_PrintEntityNameList( gentity_t *entity );
 
 //search, select, iterate

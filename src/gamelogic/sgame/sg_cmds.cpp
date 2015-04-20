@@ -663,7 +663,7 @@ argv(0) god
 */
 void Cmd_God_f( gentity_t *ent )
 {
-	char *msg;
+	const char *msg;
 
 	ent->flags ^= FL_GODMODE;
 
@@ -690,7 +690,7 @@ argv(0) notarget
 */
 void Cmd_Notarget_f( gentity_t *ent )
 {
-	char *msg;
+	const char *msg;
 
 	ent->flags ^= FL_NOTARGET;
 
@@ -715,7 +715,7 @@ argv(0) noclip
 */
 void Cmd_Noclip_f( gentity_t *ent )
 {
-	char *msg;
+	const char *msg;
 
 	if ( ent->client->noclip )
 	{

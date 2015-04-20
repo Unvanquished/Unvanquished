@@ -364,8 +364,8 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 
 typedef struct
 {
-	char *flag;
-	char *description;
+	const char *flag;
+	const char *description;
 }
 g_admin_flag_t;
 
@@ -3809,7 +3809,7 @@ static int ban_out( void *ban, char *str )
 	int           colorlen1 = 0;
 	char          duration[ MAX_DURATION_LENGTH ];
 	char          time[ MAX_DURATION_LENGTH ];
-	char          *d_color = S_COLOR_WHITE;
+	const char    *d_color = S_COLOR_WHITE;
 	char          date[ 11 ];
 	g_admin_ban_t *b = ( g_admin_ban_t * ) ban;
 	char          *made = b->made;

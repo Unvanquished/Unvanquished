@@ -66,6 +66,12 @@ option( USE_PEDANTIC "Tell the compiler to be pedantic" 0 )
 option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
+option( BE_VERBOSE "Tell the compiler to report all warnings" 0 )
+if( BE_VERBOSE )
+  set( WARNMODE "no-error=" )
+else()
+  set( WARNMODE "no-" )
+endif()
 
 set( NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries" )
 
@@ -348,27 +354,25 @@ else()
     if( USE_PEDANTIC )
       set_cxx_flag( "-pedantic-errors" )
     endif()
-    try_cxx_flag_werror( WNO_ABSOLUTE_VALUE "-Wno-error=absolute-value" )
-    try_cxx_flag_werror( WNO_DEPRECATED_REGISTER "-Wno-error=deprecated-register" )
-    try_cxx_flag_werror( WNO_INVALID_SOURCE_ENCODING "-Wno-error=invalid-source-encoding" )
-    try_cxx_flag_werror( WNO_MAYBE_UNINITIALIZED "-Wno-error=maybe-uninitialized" )
-    try_cxx_flag_werror( WNO_MISSING_FIELD_INITIALIZERS "-Wno-error=missing-field-initializers" )
-    try_cxx_flag_werror( WNO_PARENTHESES "-Wno-error=parentheses" )
-    try_cxx_flag_werror( WNO_POINTER_BOOL_CONVERSION "-Wno-error=pointer-bool-conversion" )
-    try_cxx_flag_werror( WNO_PRAGMAS "-Wno-error=pragmas" )
-    try_cxx_flag_werror( WNO_SIGN_COMPARE "-Wno-error=sign-compare" )
-    try_cxx_flag_werror( WNO_STRICT_OVERFLOW "-Wno-error=strict-overflow" )
-    try_cxx_flag_werror( WNO_SWITCH "-Wno-error=switch" )
-    try_cxx_flag_werror( WNO_UNINITIALIZED "-Wno-error=uninitialized" )
-    try_cxx_flag_werror( WNO_UNUSED_BUT_SET_PARAMETER "-Wno-error=unused-but-set-parameter" )
-    try_cxx_flag_werror( WNO_UNUSED_BUT_SET_VARIABLE "-Wno-error=unused-but-set-variable" )
-    try_cxx_flag_werror( WNO_UNUSED_FUNCTION "-Wno-error=unused-function" )
-    try_cxx_flag_werror( WNO_UNUSED_PARAMETER "-Wno-error=unused-parameter" )
-    try_cxx_flag_werror( WNO_UNUSED_PRIVATE_FIELD "-Wno-error=unused-private-field" )
-    try_cxx_flag_werror( WNO_UNUSED_RESULT "-Wno-error=unused-result" )
-    try_cxx_flag_werror( WNO_UNUSED_VARIABLE "-Wno-error=unused-variable" )
-    try_cxx_flag_werror( WNO_WRITE_STRINGS "-Wno-error=write-strings" )
   endif()
+  try_cxx_flag_werror( WNO_DEPRECATED_REGISTER        "-Wno-error=deprecated-register" )
+  try_cxx_flag_werror( WNO_INVALID_SOURCE_ENCODING    "-Wno-error=invalid-source-encoding" )
+  try_cxx_flag_werror( WNO_MAYBE_UNINITIALIZED        "-Wno-error=maybe-uninitialized" )
+  try_cxx_flag_werror( WNO_MISSING_FIELD_INITIALIZERS "-W${WARNMODE}missing-field-initializers" )
+  try_cxx_flag_werror( WNO_PARENTHESES                "-Wno-error=parentheses" )
+  try_cxx_flag_werror( WNO_POINTER_BOOL_CONVERSION    "-Wno-error=pointer-bool-conversion" )
+  try_cxx_flag_werror( WNO_PRAGMAS                    "-Wno-error=pragmas" )
+  try_cxx_flag_werror( WNO_SIGN_COMPARE               "-W${WARNMODE}sign-compare" )
+  try_cxx_flag_werror( WNO_STRICT_OVERFLOW            "-W${WARNMODE}strict-overflow" )
+  try_cxx_flag_werror( WNO_SWITCH                     "-Wno-error=switch" )
+  try_cxx_flag_werror( WNO_UNINITIALIZED              "-Wno-error=uninitialized" )
+  try_cxx_flag_werror( WNO_UNUSED_BUT_SET_PARAMETER   "-W${WARNMODE}unused-but-set-parameter" )
+  try_cxx_flag_werror( WNO_UNUSED_BUT_SET_VARIABLE    "-W${WARNMODE}unused-but-set-variable" )
+  try_cxx_flag_werror( WNO_UNUSED_FUNCTION            "-W${WARNMODE}unused-function" )
+  try_cxx_flag_werror( WNO_UNUSED_PARAMETER           "-W${WARNMODE}unused-parameter" )
+  try_cxx_flag_werror( WNO_UNUSED_PRIVATE_FIELD       "-W${WARNMODE}unused-private-field" )
+  try_cxx_flag_werror( WNO_UNUSED_RESULT              "-W${WARNMODE}unused-result" )
+  try_cxx_flag_werror( WNO_UNUSED_VARIABLE            "-W${WARNMODE}unused-variable" )
 
   if( USE_ADDRESS_SANITIZER )
     set_cxx_flag( "-fsanitize=address" )
@@ -1485,17 +1489,13 @@ function( GAMEMODULE )
     endif()
     set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS}
       -Wextra
-      -Wno-error=absolute-value
       -Wno-error=implicit-function-declaration
-      -Wno-error=missing-field-initializers
+      -W${WARNMODE}missing-field-initializers
       -Wno-error=pointer-bool-conversion
-      -Wno-error=sign-compare
+      -W${WARNMODE}sign-compare
       -Wno-error=switch
-      -Wno-error=uninitialized
-      -Wno-error=unused-function
-      -Wno-error=unused-label
-      -Wno-error=unused-parameter
-      -Wno-error=writable-strings
+      -W${WARNMODE}unused-function
+      -W${WARNMODE}unused-parameter
       -pedantic
     )
     if( USE_WERROR )

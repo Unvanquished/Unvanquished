@@ -50,7 +50,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 PC_SourceError
 =================
 */
-void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
+void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];

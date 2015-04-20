@@ -4302,7 +4302,7 @@ void R_LoadEntities( lump_t *l )
 		Q_strncpyz( value, token, sizeof( value ) );
 
 		// check for remapping of shaders for vertex lighting
-		s = "vertexremapshader";
+		s = (char *) "vertexremapshader";
 
 		if ( !Q_strncmp( keyname, s, strlen( s ) ) )
 		{
@@ -4319,7 +4319,7 @@ void R_LoadEntities( lump_t *l )
 		}
 
 		// check for remapping of shaders
-		s = "remapshader";
+		s = (char *) "remapshader";
 
 		if ( !Q_strncmp( keyname, s, strlen( s ) ) )
 		{
