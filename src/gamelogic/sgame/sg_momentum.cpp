@@ -218,7 +218,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 {
 	gentity_t *event = nullptr;
 	gclient_t *client;
-	char      *clientName;
+	const char *clientName;
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{

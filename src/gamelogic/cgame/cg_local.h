@@ -2295,7 +2295,7 @@ void          CG_LoadBeaconsConfig();
 void          CG_RunBeacons();
 qhandle_t     CG_BeaconIcon( const cbeacon_t *b );
 qhandle_t     CG_BeaconDescriptiveIcon( const cbeacon_t *b );
-char          *CG_BeaconName( const cbeacon_t *b, char *out, size_t len );
+const char    *CG_BeaconName( const cbeacon_t *b, char *out, size_t len );
 
 //
 //===============================================

@@ -24,7 +24,7 @@ before_script:
 script:
   - mkdir -p build
   - cd build
-  - CXXFLAGS="-D__extern_always_inline=inline" cmake -DUSE_WERROR=1 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ..
+  - CXXFLAGS="-D__extern_always_inline=inline" cmake -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ..
   - cmake --build . -- -j8
 
 notifications:

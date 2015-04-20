@@ -763,15 +763,15 @@ CG_Say
 static void CG_Say( const char *name, int clientNum, saymode_t mode, const char *text )
 {
 	char prefix[ 21 ] = "";
-	char *ignore = "";
-	char *location = "";
+	const char *ignore = "";
+	const char *location = "";
 	char color;
 	team_t team = TEAM_NONE;
 
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		clientInfo_t *ci = &cgs.clientinfo[ clientNum ];
-		char         *tcolor = S_COLOR_WHITE;
+		const char *tcolor = S_COLOR_WHITE;
 
 		name = ci->name;
 		team = ci->team;

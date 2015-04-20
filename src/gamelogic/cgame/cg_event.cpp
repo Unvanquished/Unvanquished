@@ -569,7 +569,7 @@ Also called by playerstate transition
 */
 void CG_PainEvent( centity_t *cent, int health )
 {
-	char *snd;
+	const char *snd;
 
 	// don't do more than two pain sounds a second
 	if ( cg.time - cent->pe.painTime < 500 )

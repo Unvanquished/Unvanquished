@@ -718,7 +718,7 @@ qhandle_t CG_BeaconDescriptiveIcon( const cbeacon_t *b )
 	}
 }
 
-char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
+const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 {
 	if( b->type <= BCT_NONE || b->type > NUM_BEACON_TYPES ) {
 		return strncpy( out, "b->type out of range", len );

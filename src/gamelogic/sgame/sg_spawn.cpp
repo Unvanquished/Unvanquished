@@ -182,11 +182,11 @@ typedef enum
 
 typedef struct
 {
-	char  *name;
+	const char  *name;
 	size_t      offset;
 	fieldType_t type;
 	int   versionState;
-	char  *replacement;
+	const char  *replacement;
 } fieldDescriptor_t;
 
 static const fieldDescriptor_t fields[] =
@@ -276,7 +276,7 @@ typedef struct
 
 	//optional spawn-time data
 	int	versionState;
-	char  *replacement;
+	const char  *replacement;
 } entityClassDescriptor_t;
 
 
@@ -665,7 +665,7 @@ char *G_NewString( const char *string )
 G_NewTarget
 =============
 */
-gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string )
+gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const char *string )
 {
 	char *stringPointer;
 	int  i, stringLength;
