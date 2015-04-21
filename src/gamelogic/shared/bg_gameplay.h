@@ -371,6 +371,10 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define HUMAN_BUILDDELAY_MOD               0.6f
 #define ALIEN_BUILDDELAY_MOD               0.6f
 
+// base attack warnings
+#define ATTACKWARN_PRIMARY_PERIOD         7500
+#define ATTACKWARN_NEARBY_PERIOD          15000
+
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
 #define SCORE_PER_MOMENTUM                 1.0f  // used to convert momentum rewards to score points

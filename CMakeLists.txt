@@ -918,18 +918,42 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.h
   ${GAMELOGIC_DIR}/sgame/backend/CBSEComponents.h
   ${GAMELOGIC_DIR}/sgame/backend/CBSEEntities.h
+  ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.h
   ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/BarricadeComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/BarricadeComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/BuildableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/BuildableComponent.h
   ${GAMELOGIC_DIR}/sgame/components/ClientComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/ClientComponent.h
   ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.h
   ${GAMELOGIC_DIR}/sgame/components/HealthComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/HealthComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/HiveComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/HiveComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/HumanBuildableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/HumanBuildableComponent.h
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
   ${GAMELOGIC_DIR}/sgame/components/KnockbackComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/KnockbackComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/MainBuildableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/MainBuildableComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/MedipadComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/MedipadComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/MiningComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/MiningComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ReactorComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/ReactorComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/SpikerComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/SpikerComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/TurretComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/TurretComponent.h
   ${ENGINE_DIR}/server/sg_api.h
   ${ENGINE_DIR}/server/sg_msgdef.h
   ${GAMESHAREDLIST}

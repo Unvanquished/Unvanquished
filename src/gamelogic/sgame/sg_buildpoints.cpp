@@ -98,7 +98,7 @@ static void RGSCalculateRate( gentity_t *self )
 /**
  * @brief Adjust the rate of all RGS in range.
  */
-static void RGSInformNeighbors( gentity_t *self )
+void G_RGSInformNeighbors( gentity_t *self )
 {
 	gentity_t *rgs;
 
@@ -127,7 +127,7 @@ void G_RGSThink( gentity_t *self )
 		// If the state of this RGS has changed, adjust own rate and inform active closeby RGS so
 		// they can adjust their rate immediately.
 		RGSCalculateRate( self );
-		RGSInformNeighbors( self );
+		G_RGSInformNeighbors( self );
 	}
 
 	// HACK: Save fraction of stored build points in entityState.weapon
@@ -163,23 +163,6 @@ void G_BPStorageDie( gentity_t *self )
 	float loss         = ( 1.0f - self->deconHealthFrac ) * std::min( acquiredFrac, 1.0f ) *
 	                     level.team[ team ].buildPoints * g_buildPointLossFraction.value;
 	G_ModifyBuildPoints( team, -loss );
-}
-
-/**
- * @brief Called when a RGS dies or gets deconstructed.
- */
-void G_RGSDie( gentity_t *self )
-{
-	// HACK: entityState.weaponAnim stores mining efficiency
-	self->s.weaponAnim = 0;
-
-	G_BPStorageDie( self );
-
-	// The remaining BP storages take over this one's account
-	G_MarkBuildPointsMined( self->buildableTeam, -self->acquiredBuildPoints );
-
-	// Inform neighbours so they can increase their rate immediately.
-	RGSInformNeighbors( self );
 }
 
 /**

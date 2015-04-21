@@ -24,9 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "CBSE.h"
 
-#define PRIMARY_ATTACK_PERIOD 7500
-#define NEARBY_ATTACK_PERIOD  15000
-
 /*
 ================
 G_WarnPrimaryUnderAttack
@@ -55,7 +52,7 @@ static void G_WarnPrimaryUnderAttack( gentity_t *self )
 
 	if ( event && ( event != self->attackLastEvent || level.time > self->attackTimer ) )
 	{
-		self->attackTimer = level.time + PRIMARY_ATTACK_PERIOD; // don't spam
+		self->attackTimer = level.time + ATTACKWARN_PRIMARY_PERIOD; // don't spam
 		self->attackLastEvent = event;
 		G_BroadcastEvent( event, 0, attr->team );
 		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
@@ -72,7 +69,7 @@ True if the means of death allows an under-attack warning.
 ================
 */
 
-static bool IsWarnableMOD( int mod )
+bool G_IsWarnableMOD( int mod )
 {
 	switch ( mod )
 	{
@@ -442,6 +439,7 @@ G_InsideBase
 */
 #define INSIDE_BASE_MAX_DISTANCE 1000.0f
 
+// TODO: Use base clustering.
 bool G_InsideBase( gentity_t *self, bool ownBase )
 {
 	gentity_t *mainBuilding = GetMainBuilding( self, ownBase );
@@ -686,56 +684,6 @@ void AGeneric_Blast( gentity_t *self )
 
 /*
 ================
-AGeneric_Die
-
-Called when an Alien buildable is killed and enters a brief dead state prior to
-exploding.
-================
-*/
-void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	gentity_t *om;
-
-	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true );
-	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
-
-	self->die = NullDieFunction;
-	self->killedBy = attacker - g_entities;
-	self->think = AGeneric_Blast;
-	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
-	self->powered = false;
-
-	// warn if in main base and there's an overmind
-	if ( ( om = G_ActiveOvermind() ) && om != self && level.time > om->warnTimer
-	     && G_InsideBase( self, true ) && IsWarnableMOD( mod ) )
-	{
-		om->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
-		G_BroadcastEvent( EV_WARN_ATTACK, 0, TEAM_ALIENS );
-		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
-	}
-
-	// fully grown and not blasted to smithereens
-	HealthComponent *healthComponent = self->entity->Get<HealthComponent>();
-	if ( self->spawned && healthComponent->Health() / healthComponent->MaxHealth() > -1.0f )
-	{
-		// blast after brief period
-		self->nextthink = level.time + ALIEN_DETONATION_DELAY
-		                  + ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) )
-		                  * DETONATION_DELAY_RAND_RANGE * ALIEN_DETONATION_DELAY;
-	}
-	else
-	{
-		// blast immediately
-		self->nextthink = level.time;
-	}
-
-	G_LogDestruction( self, attacker, mod );
-
-	Beacon::DetachTags( self );
-}
-
-/*
-================
 AGeneric_CreepCheck
 
 Tests for creep and kills the buildable if there is none
@@ -772,24 +720,6 @@ void AGeneric_Think( gentity_t *self )
 
 	// slow down close humans
 	AGeneric_CreepSlow( self );
-}
-
-/*
-================
-AGeneric_Pain
-
-A generic pain function for Alien buildables
-================
-*/
-void AGeneric_Pain( gentity_t *self, gentity_t *attacker, int damage )
-{
-	if ( G_Dead( self ) )
-	{
-		return;
-	}
-
-	// Alien buildables only have the first pain animation defined
-	G_SetBuildableAnim( self, BANIM_PAIN1, false );
 }
 
 //==================================================================================
@@ -998,49 +928,6 @@ void AOvermind_Think( gentity_t *self )
 
 /*
 ================
-AOvermind_Die
-
-Called when the overmind dies
-================
-*/
-void AOvermind_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	AGeneric_Die( self, inflictor, attacker, mod );
-
-	if ( IsWarnableMOD( mod ) )
-	{
-		G_BroadcastEvent( EV_OVERMIND_DYING, 0, TEAM_ALIENS );
-	}
-
-	G_BPStorageDie( self );
-}
-
-/*
-================
-ABarricade_Pain
-
-Barricade pain animation depends on shrunk state
-================
-*/
-void ABarricade_Pain( gentity_t *self, gentity_t *attacker, int damage )
-{
-	if ( G_Dead( self ) )
-	{
-		return;
-	}
-
-	if ( !self->shrunkTime )
-	{
-		G_SetBuildableAnim( self, BANIM_PAIN1, false );
-	}
-	else
-	{
-		G_SetBuildableAnim( self, BANIM_PAIN2, false );
-	}
-}
-
-/*
-================
 ABarricade_Shrink
 
 Set shrink state for a barricade. When unshrinking, checks to make sure there
@@ -1123,19 +1010,6 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	{
 		trap_LinkEntity( self );
 	}
-}
-
-/*
-================
-ABarricade_Die
-
-Called when an alien barricade dies
-================
-*/
-void ABarricade_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	AGeneric_Die( self, inflictor, attacker, mod );
-	ABarricade_Shrink( self, true );
 }
 
 /*
@@ -1420,16 +1294,6 @@ void ASpiker_Think( gentity_t *self )
 	self->spikerLastSensing = sensing;
 }
 
-void ASpiker_Pain( gentity_t *self, gentity_t *attacker, int damage )
-{
-	AGeneric_Pain( self, attacker, damage );
-
-	if ( self->spikerLastScoring > 0.0f )
-	{
-		//ASpiker_Fire( self );
-	}
-}
-
 void ALeech_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
@@ -1437,13 +1301,6 @@ void ALeech_Think( gentity_t *self )
 	AGeneric_Think( self );
 
 	G_RGSThink( self );
-}
-
-void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	AGeneric_Die( self, inflictor, attacker, mod );
-
-	G_RGSDie( self );
 }
 
 static bool AHive_isBetterTarget(const gentity_t *const self, const gentity_t *candidate)
@@ -1482,7 +1339,7 @@ static bool AHive_isBetterTarget(const gentity_t *const self, const gentity_t *c
 	return rand()%2 ? true : false;
 }
 
-static bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDistance )
+bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDistance )
 {
 	trace_t trace;
 	vec3_t  tipOrigin;
@@ -1557,7 +1414,7 @@ static bool AHive_FindTarget( gentity_t *self )
 /**
  * @brief Fires a hive missile on the target, which is assumed to be valid.
  */
-static void AHive_Fire( gentity_t *self )
+void AHive_Fire( gentity_t *self )
 {
 	vec3_t dirToTarget;
 
@@ -1606,23 +1463,6 @@ void AHive_Think( gentity_t *self )
 	if ( AHive_FindTarget( self ) )
 	{
 		AHive_Fire( self );
-	}
-}
-
-void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
-{
-	AGeneric_Pain( self, attacker, damage );
-
-	// if inactive, fire on attacker even if it's out of sense range
-	if ( self->spawned && self->powered && G_Alive( self ) && !self->active )
-	{
-		if ( AHive_TargetValid( self, attacker, true ) )
-		{
-			self->target = attacker;
-			attacker->numTrackedBy++;
-
-			AHive_Fire( self );
-		}
 	}
 }
 
@@ -1959,7 +1799,7 @@ Check if origin is affected by reactor or repeater power.
 If it is, return whichever is nearest (preferring reactor).
 ================
 */
-static gentity_t *NearestPowerSourceInRange( gentity_t *self )
+gentity_t *G_NearestPowerSourceInRange( gentity_t *self )
 {
 	gentity_t *neighbor = G_ActiveReactor();
 	gentity_t *best = nullptr;
@@ -2350,88 +2190,6 @@ void HGeneric_Cancel( gentity_t *self )
 	G_FreeEntity( self );
 }
 
-#define HUMAN_DETONATION_RAND_DELAY ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) ) \
-                                     * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY \
-                                     + HUMAN_DETONATION_DELAY
-
-void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true );
-	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
-
-	self->die = NullDieFunction;
-	self->killedBy = attacker - g_entities;
-	//self->powered = false;
-	self->s.eFlags &= ~EF_FIRING; // prevent any firing effects
-
-	if ( self->spawned )
-	{
-		self->think = HGeneric_Blast;
-
-		// make a warning sound before ractor and repeater explosion
-		// don't randomize blast delay for them so the sound stays synced
-		switch ( self->s.modelindex )
-		{
-			case BA_H_REPEATER:
-			case BA_H_REACTOR:
-				G_AddEvent( self, EV_HUMAN_BUILDABLE_DYING, 0 );
-				self->nextthink = level.time + HUMAN_DETONATION_DELAY;
-				break;
-
-			default:
-				self->nextthink = level.time + HUMAN_DETONATION_RAND_DELAY;
-		}
-	}
-	else
-	{
-		// disappear immediately
-		self->think = HGeneric_Cancel;
-		self->nextthink = level.time;
-	}
-
-	// warn if this building was powered and there's a watcher nearby
-	if ( self->s.modelindex != BA_H_REACTOR && self->powered && IsWarnableMOD( mod ) )
-	{
-		bool  inBase    = G_InsideBase( self, true );
-		gentity_t *watcher  = nullptr;
-		gentity_t *location = nullptr;
-
-		if ( inBase )
-		{
-			// note that being inside the main base doesn't mean there always is an active reactor
-			watcher = G_ActiveReactor();
-		}
-
-		if ( !watcher )
-		{
-			// note that a repeater will find itself as nearest power source
-			watcher = NearestPowerSourceInRange( self );
-		}
-
-		// found reactor or repeater? get location entity
-		if ( watcher )
-		{
-			location = Team_GetLocation( watcher );
-			if ( !location )
-			{
-				location = level.fakeLocation; // fall back on the fake location
-			}
-		}
-
-		// check that the location/repeater/reactor hasn't warned recently
-		if ( location && level.time > location->warnTimer )
-		{
-			location->warnTimer = level.time + NEARBY_ATTACK_PERIOD; // don't spam
-			G_BroadcastEvent( EV_WARN_ATTACK, inBase ? 0 : ( watcher - level.gentities ), TEAM_HUMANS );
-			Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
-		}
-	}
-
-	G_LogDestruction( self, attacker, mod );
-
-	Beacon::DetachTags( self );
-}
-
 void HSpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
@@ -2528,18 +2286,6 @@ void HReactor_Think( gentity_t *self )
 	G_MainStructBPStorageThink( self );
 }
 
-void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	HGeneric_Die( self, inflictor, attacker, mod );
-
-	if ( IsWarnableMOD( mod ) )
-	{
-		G_BroadcastEvent( EV_REACTOR_DYING, 0, TEAM_HUMANS );
-	}
-
-	G_BPStorageDie( self );
-}
-
 void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( !self->spawned )
@@ -2564,18 +2310,6 @@ void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 void HArmoury_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
-}
-
-void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
-                    gentity_t *attacker, int mod )
-{
-	// clear target's healing flag
-	if ( self->target && self->target->client )
-	{
-		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-	}
-
-	HGeneric_Die( self, inflictor, attacker, mod );
 }
 
 void HMedistat_Think( gentity_t *self )
@@ -3152,29 +2886,6 @@ void HTurret_PreBlast( gentity_t *self )
 	}
 }
 
-void HTurret_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	if ( self->target )
-	{
-		self->target->numTrackedBy--;
-	}
-
-	HGeneric_Die( self, inflictor, attacker, mod );
-
-	if ( self->think == HGeneric_Blast )
-	{
-		// Rocketpod: The safe mode has the same idle as the unpowered state.
-		if ( self->turretSafeMode )
-		{
-			G_SetBuildableAnim( self, BANIM_DESTROY_UNPOWERED, true );
-		}
-
-		// Do some last movements before entering blast state.
-		self->think = HTurret_PreBlast;
-		self->nextthink = level.time;
-	}
-}
-
 static bool HTurret_TargetInReach( gentity_t *self, float range )
 {
 	trace_t tr;
@@ -3575,13 +3286,6 @@ void HDrill_Think( gentity_t *self )
 	G_RGSThink( self );
 
 	PlayPowerStateAnims( self );
-}
-
-void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
-{
-	HGeneric_Die( self, inflictor, attacker, mod );
-
-	G_RGSDie( self );
 }
 
 /*
@@ -4867,103 +4571,77 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	switch ( buildable )
 	{
 		case BA_A_SPAWN:
-			built->die = AGeneric_Die;
 			built->think = ASpawn_Think;
-			built->pain = AGeneric_Pain;
 			break;
 
 		case BA_A_BARRICADE:
-			built->die = ABarricade_Die;
 			built->think = ABarricade_Think;
-			built->pain = ABarricade_Pain;
 			built->touch = ABarricade_Touch;
 			built->shrunkTime = 0;
 			ABarricade_Shrink( built, true );
 			break;
 
 		case BA_A_BOOSTER:
-			built->die = AGeneric_Die;
 			built->think = ABooster_Think;
-			built->pain = AGeneric_Pain;
 			built->touch = ABooster_Touch;
 			break;
 
 		case BA_A_ACIDTUBE:
-			built->die = AGeneric_Die;
 			built->think = AAcidTube_Think;
-			built->pain = AGeneric_Pain;
 			break;
 
 		case BA_A_HIVE:
-			built->die = AGeneric_Die;
 			built->think = AHive_Think;
-			built->pain = AHive_Pain;
 			break;
 
 		case BA_A_TRAPPER:
-			built->die = AGeneric_Die;
 			built->think = ATrapper_Think;
-			built->pain = AGeneric_Pain;
 			break;
 
 		case BA_A_LEECH:
-			built->die = ALeech_Die;
 			built->think = ALeech_Think;
-			built->pain = AGeneric_Pain;
 			break;
 
 		case BA_A_SPIKER:
-			built->die = AGeneric_Die;
 			built->think = ASpiker_Think;
-			built->pain = ASpiker_Pain;
 			break;
 
 		case BA_A_OVERMIND:
-			built->die = AOvermind_Die;
 			built->think = AOvermind_Think;
-			built->pain = AGeneric_Pain;
 			break;
 
 		case BA_H_SPAWN:
-			built->die = HGeneric_Die;
 			built->think = HSpawn_Think;
 			break;
 
 		case BA_H_MGTURRET:
-			built->die = HTurret_Die;
 			built->think = HMGTurret_Think;
 			break;
 
 		case BA_H_ROCKETPOD:
-			built->die = HTurret_Die;
 			built->think = HRocketpod_Think;
 			break;
 
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
-			built->die = HGeneric_Die;
 			built->use = HArmoury_Use;
 			break;
 
 		case BA_H_MEDISTAT:
 			built->think = HMedistat_Think;
-			built->die = HMedistat_Die;
 			break;
 
 		case BA_H_DRILL:
 			built->think = HDrill_Think;
-			built->die = HDrill_Die;
 			break;
 
 		case BA_H_REACTOR:
 			built->think = HReactor_Think;
-			built->die = HReactor_Die;
 			built->powered = built->active = true;
 			break;
 
 		case BA_H_REPEATER:
 			built->think = HRepeater_Think;
-			built->die = HGeneric_Die;
 			built->customNumber = -1;
 			break;
 

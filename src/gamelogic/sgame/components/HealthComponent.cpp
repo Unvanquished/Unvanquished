@@ -211,6 +211,9 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		// Call legacy die function.
 		if (entity.oldEnt->die) entity.oldEnt->die(entity.oldEnt, source, source, meansOfDeath);
 
+		// Send die message.
+		entity.Die(source, meansOfDeath);
+
 		// Trigger ON_DIE event.
 		if(!client) G_EventFireEntity(entity.oldEnt, source, ON_DIE);
 	} else if (entity.oldEnt->pain) {

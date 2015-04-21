@@ -2,8 +2,8 @@
 
 static Log::Logger knockbackLogger("sgame.knockback");
 
-KnockbackComponent::KnockbackComponent(Entity& entity, ClientComponent& r_ClientComponent)
-	: KnockbackComponentBase(entity, r_ClientComponent)
+KnockbackComponent::KnockbackComponent(Entity& entity)
+	: KnockbackComponentBase(entity)
 {}
 
 // TODO: Consider location as well as direction when both given.
@@ -22,8 +22,9 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* source, Util::opt
 		return;
 	}
 
-	// Assume client is valid since we depend on a ClientComponent.
+	// TODO: Remove dependency on client.
 	gclient_t *client = entity.oldEnt->client;
+	assert(client);
 
 	// Check for immunity.
 	if (client->noclip) return;

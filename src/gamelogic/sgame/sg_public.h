@@ -70,6 +70,7 @@ namespace Beacon
 }
 
 // sg_buildable.c
+bool              G_IsWarnableMOD( int mod );
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
 gentity_t         *G_Reactor();
 gentity_t         *G_AliveReactor();
@@ -99,8 +100,20 @@ void              G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void              G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void              G_BuildLogRevert( int id );
 void              G_SetHumanBuildablePowerState();
+gentity_t         *G_NearestPowerSourceInRange( gentity_t *self );
+
+// TODO: Convert these functions to component methods.
+void AGeneric_Blast( gentity_t *self );
+void ABarricade_Shrink( gentity_t *self, bool shrink );
+void HGeneric_Blast( gentity_t *self );
+void HGeneric_Cancel( gentity_t *self );
+void AHive_Fire( gentity_t *self );
+bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDistance );
+bool ASpiker_Fire( gentity_t *self );
+void HTurret_PreBlast( gentity_t *self );
 
 // sg_buildpoints
+void              G_RGSInformNeighbors( gentity_t *self );
 void              G_RGSThink( gentity_t *self );
 void              G_MainStructBPStorageThink( gentity_t *self );
 void              G_BPStorageDie( gentity_t *self );

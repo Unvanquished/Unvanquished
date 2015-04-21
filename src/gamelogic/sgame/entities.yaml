@@ -12,12 +12,6 @@ messages:
         - name: timeDelta
           type: int
 
-    # ######################### #
-    # Component-affine messages #
-    # ######################### #
-    # Every component can listen to them but few (and atleast one) will.
-    # TODO: Define them inside their affine component's definition below.
-
     FreeAt:
         - name: freeTime
           type: int
@@ -50,6 +44,12 @@ messages:
         - name: meansOfDeath
           type: meansOfDeath_t
 
+    Die:
+        - name: killer
+          type: gentity_t*
+        - name: meansOfDeath
+          type: meansOfDeath_t
+
     ApplyDamageModifier:
         - name: damage
           type: float&
@@ -74,6 +74,8 @@ components:
     Ignitable:
         parameters:
             freeOnExtinguish: bool
+        defaults:
+            freeOnExtinguish: false
         messages:
             - PrepareNetCode
             - Think
@@ -88,24 +90,115 @@ components:
             - Heal
             - Damage
 
-    # TODO: Damage zones as parameter, removing the dependency on Client.
-    # NOTE: The dependency on Client is symbolic for an actual dependency
-    #       on gentity_t.client.
+    # TODO: Get rid of dependency on gentity_t.client. Depend on
+    #       PhysicsComponent instead.
     Armor:
         messages:
             - ApplyDamageModifier
-        requires:
-            - Client
 
-    # TODO: Depend on or turn into PhysicsComponent, which handles the mass as
-    #       a parameter. This would get rid of the dependency on Client.
-    # NOTE: The dependency on Client is symbolic for an actual dependency
-    #       on gentity_t.client.
+    # TODO: Get rid of dependency on gentity_t.client. Depend on
+    #       PhysicsComponent instead.
     Knockback:
         messages:
             - Damage
+
+    Buildable:
+        messages:
+            - PrepareNetCode
+            - Die
         requires:
-            - Client
+            - Health
+
+    AlienBuildable:
+        messages:
+            - Damage
+            - Die
+        requires:
+            - Buildable
+            - Ignitable
+
+    HumanBuildable:
+        messages:
+            - Die
+        requires:
+            - Buildable
+
+    MainBuildable:
+        messages:
+            - Die
+        requires:
+            - Buildable
+
+    Turret:
+        messages:
+            - Die
+
+    Mining:
+        messages:
+            - PrepareNetCode
+            - Die
+
+
+    ##############################
+    # Entity-specific components #
+    ##############################
+
+    #AcidTube:
+
+    Barricade:
+        messages:
+            - Damage
+            - Die
+        requires:
+            # TODO: Check if this lets us override animations reliably.
+            - AlienBuildable
+
+    #Booster:
+    #Egg:
+
+    Hive:
+        messages:
+            - Damage
+        requires:
+            - AlienBuildable
+
+    #Leech:
+
+    Overmind:
+        messages:
+            - Die
+        requires:
+            - AlienBuildable
+            - MainBuildable
+
+    Spiker:
+        messages:
+            - Damage
+        requires:
+            - AlienBuildable
+
+    #Trapper:
+    #Armoury:
+    #Drill:
+
+    Medipad:
+        messages:
+            - Die
+        requires:
+            - HumanBuildable
+
+    #MGTurret:
+
+    Reactor:
+        messages:
+            - Die
+        requires:
+            - HumanBuildable
+            - MainBuildable
+
+    #Repeater:
+    #Rocketpod:
+    #Telenode:
 
 entities:
     ###################
@@ -224,89 +317,75 @@ entities:
 
     AcidTube:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            AlienBuildable:
 
     Barricade:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            Barricade:
 
     Booster:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            AlienBuildable:
 
     Egg:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            AlienBuildable:
 
     Hive:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            Hive:
 
     Leech:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            AlienBuildable:
+            Mining:
 
     Overmind:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            Overmind:
 
     Spiker:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            Spiker:
 
     Trapper:
         components:
-            Ignitable:
-                freeOnExtinguish: false
-            Health:
+            AlienBuildable:
 
     Armoury:
         components:
-            Health:
+            HumanBuildable:
 
     Drill:
         components:
-            Health:
+            HumanBuildable:
+            Mining:
 
     Medipad:
         components:
-            Health:
+            Medipad:
 
     MGTurret:
         components:
-            Health:
+            HumanBuildable:
+            Turret:
 
     Reactor:
         components:
-            Health:
+            Reactor:
 
     Repeater:
         components:
-            Health:
+            HumanBuildable:
 
     Rocketpod:
         components:
-            Health:
+            HumanBuildable:
+            Turret:
 
     Telenode:
         components:
-            Health:
+            HumanBuildable:
 
     ############
     # Unsorted #
