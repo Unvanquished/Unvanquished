@@ -45,7 +45,7 @@ struct gentityConditions_s
 	upgrade_t   upgrades[ UP_NUM_UPGRADES ];
 	buildable_t buildables[ BA_NUM_BUILDABLES ];
 
-	bool negated;
+	int negated;
 };
 
 /**
@@ -99,12 +99,12 @@ struct gentity_s
 
 	struct gclient_s *client; // nullptr if not a client
 
-	bool     inuse;
-	bool     neverFree; // if true, FreeEntity will only unlink
+	int     inuse;
+	int     neverFree; // if true, FreeEntity will only unlink
 	int          freetime; // level.time when the object was freed
 	int          eventTime; // events will be cleared EVENT_VALID_MSEC after set
-	bool     freeAfterEvent;
-	bool     unlinkAfterEvent;
+	int     freeAfterEvent;
+	int     unlinkAfterEvent;
 
 	int          flags; // FL_* variables
 
@@ -128,7 +128,7 @@ struct gentity_s
 	 * e.g. used for buildables (e.g. medi-stations or hives can be in an active state or being inactive)
 	 * or during executing act() in general
 	 */
-	bool     active;
+	int     active;
 	/**
 	 * delay being really active until this time, e.g for act() delaying or for spinup for norfenturrets
 	 * this will most probably be set by think() before act()ing, probably by using the config.delay time
@@ -149,14 +149,14 @@ struct gentity_s
 	 * as a reasonable assumption we default to entities being enabled directly after they are spawned,
 	 * since most of the time we want them to be
 	 */
-	bool     enabled;
+	int     enabled;
 
 	/**
 	 * for entities taking a longer time to spawn,
-	 * this boolean indicates when this spawn process was finished
+	 * this intean indicates when this spawn process was finished
 	 * this can e.g. be indicated by an animation
 	 */
-	bool     spawned;
+	int     spawned;
 	gentity_t    *parent; // the gentity that spawned this one
 
 	/**
@@ -166,7 +166,7 @@ struct gentity_s
 	 * unpowered buildables are expected to be disabled though
 	 * other entities might also consider the powergrid for behavior changes
 	 */
-	bool     powered;
+	int     powered;
 	gentity_t    *powerSource;
 
 	/**
@@ -196,7 +196,7 @@ struct gentity_s
 	/**
 	 * Alien buildables can burn, which is a lot of fun if they are close.
 	 */
-	bool     onFire;
+	int     onFire;
 	int          fireImmunityUntil;
 	int          nextBurnDamage;
 	int          nextBurnSplashDamage;
@@ -246,7 +246,7 @@ struct gentity_s
 	char     *model;
 	char     *model2;
 
-	bool physicsObject; // if true, it can be pushed by movers and fall off edges
+	int physicsObject; // if true, it can be pushed by movers and fall off edges
 	// all game items are physicsObjects,
 	float    physicsBounce; // 1.0 = continuous bounce, 0.0 = no bounce
 	int      clipmask; // brushes with this content value will be collided against
@@ -293,7 +293,7 @@ struct gentity_s
 	int count;
 
 	// acceleration evaluation
-	bool  evaluateAcceleration;
+	int  evaluateAcceleration;
 	vec3_t    oldVelocity;
 	vec3_t    acceleration;
 	vec3_t    oldAccel;
@@ -312,7 +312,7 @@ struct gentity_s
 	 * especially previous chain members will indirectly call this when firing against the given entity
 	 * @returns true if the call was handled by the given function and doesn't need default handling anymore or false otherwise
 	 */
-	bool ( *handleCall )( gentity_t *self, gentityCall_t *call );
+	int ( *handleCall )( gentity_t *self, gentityCall_t *call );
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
@@ -325,7 +325,7 @@ struct gentity_s
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 
-	bool  takedamage;
+	int  takedamage;
 
 	int       flightSplashDamage; // quad will increase this without increasing radius
 	int       flightSplashRadius;
@@ -368,7 +368,7 @@ struct gentity_s
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
 
-	bool    deconstruct; // deconstruct if no BP left
+	int    deconstruct; // deconstruct if no BP left
 	int         deconstructTime; // time at which structure marked
 	int         attackTimer, attackLastEvent; // self being attacked
 	int         warnTimer; // nearby building(s) being attacked
@@ -398,27 +398,27 @@ struct gentity_s
 	int         turretCurrentDamage;
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
-	bool    turretDisabled;
+	int    turretDisabled;
 	int         turretSafeModeCheckTime;
-	bool    turretSafeMode;
+	int    turretSafeMode;
 	int         turretPrepareTime; // when the turret can start locking on and/or firing
 	int         turretLockonTime;  // when the turret can start firing
 
 	// spiker
 	int         spikerRestUntil;
 	float       spikerLastScoring;
-	bool    spikerLastSensing;
+	int    spikerLastSensing;
 
 	vec4_t      animation; // animated map objects
 
-	bool    nonSegModel; // this entity uses a nonsegmented player model
+	int    nonSegModel; // this entity uses a nonsegmented player model
 
 	int         suicideTime; // when the client will suicide
 
 	int         lastDamageTime;
 	int         nextRegenTime;
 
-	bool    pointAgainstWorld; // don't use the bbox for map collisions
+	int    pointAgainstWorld; // don't use the bbox for map collisions
 
 	qhandle_t   obstacleHandle;
 	botMemory_t *botMind;
@@ -458,7 +458,7 @@ struct namelog_s
 	addr_t           ip[ MAX_NAMELOG_ADDRS ];
 	char             guid[ 33 ];
 	int              slot;
-	bool         banned;
+	int         banned;
 
 	int              nameOffset;
 	int              nameChangeTime;
@@ -467,8 +467,8 @@ struct namelog_s
 
 	unnamed_t        unnamedNumber;
 
-	bool         muted;
-	bool         denyBuild;
+	int         muted;
+	int         denyBuild;
 
 	int              score;
 	int              credits;
@@ -485,16 +485,16 @@ struct clientPersistant_s
 {
 	clientConnected_t connected;
 	usercmd_t         cmd; // we would lose angles if not persistent
-	bool          localClient; // true if "ip" info key is "localhost"
-	bool          stickySpec; // don't stop spectating a player after they get killed
-	bool          pmoveFixed; //
+	int          localClient; // true if "ip" info key is "localhost"
+	int          stickySpec; // don't stop spectating a player after they get killed
+	int          pmoveFixed; //
 	char              netname[ MAX_NAME_LENGTH ];
 	char              country[ MAX_NAME_LENGTH ];
 	int               enterTime; // level.time the client entered the game
 	int               location; // player locations
 	int               teamInfo; // level.time of team overlay update (disabled = 0)
 	float             flySpeed; // for spectator/noclip moves
-	bool          disableBlueprintErrors; // should the buildable blueprint never be hidden from the players?
+	int          disableBlueprintErrors; // should the buildable blueprint never be hidden from the players?
 
 	class_t           classSelection; // player class (copied to ent->client->ps.stats[ STAT_CLASS ] once spawned)
 	float             evolveHealthFraction;
@@ -522,7 +522,7 @@ struct clientPersistant_s
 	char     guid[ 33 ];
 	addr_t   ip;
 	char     voice[ MAX_VOICE_NAME_LEN ];
-	bool useUnlagged;
+	int useUnlagged;
 	int      pubkey_authenticated; // -1 = does not have pubkey, 0 = not authenticated, 1 = authenticated
 	int      pubkey_challengedAt; // time at which challenge was sent
 
@@ -530,7 +530,7 @@ struct clientPersistant_s
 	int                 infoChangeTime;
 
 	// warnings in the ban log
-	bool            hasWarnings;
+	int            hasWarnings;
 };
 
 struct unlagged_s
@@ -538,7 +538,7 @@ struct unlagged_s
 	vec3_t   origin;
 	vec3_t   mins;
 	vec3_t   maxs;
-	bool used;
+	int used;
 };
 
 #define MAX_UNLAGGED_MARKERS 256
@@ -560,9 +560,9 @@ struct gclient_s
 	clientPersistant_t pers;
 	clientSession_t    sess;
 
-	bool           readyToExit; // wishes to leave the intermission
+	int           readyToExit; // wishes to leave the intermission
 
-	bool           noclip;
+	int           noclip;
 	int                cliprcontents; // the backup layer of ent->r.contents for when noclipping
 
 	int                lastCmdTime; // level.time of last usercmd_t, for EF_CONNECTION
@@ -578,12 +578,12 @@ struct gclient_s
 	int      damage_received;  // damage received this frame
 	int      damage_knockback; // total knockback this frame
 	vec3_t   damage_from;      // last damage direction
-	bool damage_fromWorld; // if true, don't use the damage_from vector
+	int damage_fromWorld; // if true, don't use the damage_from vector
 
 	// timers
 	int        respawnTime; // can respawn when time > this
 	int        inactivityTime; // kick players when time > this
-	bool   inactivityWarning; // true if the five seoond warning has been given
+	int   inactivityWarning; // true if the five seoond warning has been given
 	int        boostedTime; // last time we touched a booster
 
 	int        airOutTime;
@@ -631,8 +631,8 @@ struct damageRegion_s
 	char     name[ 32 ];
 	float    area, modifier, minHeight, maxHeight;
 	int      minAngle, maxAngle;
-	bool crouch;
-	bool nonlocational;
+	int crouch;
+	int nonlocational;
 };
 
 struct spawnQueue_s
@@ -654,7 +654,7 @@ struct buildLog_s
 	team_t      buildableTeam;
 	buildable_t modelindex;
 	float       momentumEarned;
-	bool    deconstruct;
+	int    deconstruct;
 	int         deconstructTime;
 	vec3_t      origin;
 	vec3_t      angles;
@@ -684,7 +684,7 @@ struct level_locals_s
 	// store latched cvars here that we want to get at often
 	int      maxclients;
 
-	bool     inClient;
+	int     inClient;
 
 	int      framenum;
 	int      time; // time the map was first started in milliseconds (map restart will update startTime)
@@ -696,7 +696,7 @@ struct level_locals_s
 
 	int      lastTeamLocationTime; // last time of client team location update
 
-	bool restarted; // waiting for a map_restart to fire
+	int restarted; // waiting for a map_restart to fire
 
 	int      numConnectedClients; // connected
 	int      numAliveClients;     // on a team and alive
@@ -711,7 +711,7 @@ struct level_locals_s
 	int      warmupModificationCount; // for detecting if g_warmup is changed
 
 	// spawn variables
-	bool spawning; // the G_Spawn*() functions are valid
+	int spawning; // the G_Spawn*() functions are valid
 	int      numSpawnVars;
 	char     *spawnVars[ MAX_SPAWN_VARS ][ 2 ]; // key / value pairs
 	int      numSpawnVarChars;
@@ -725,7 +725,7 @@ struct level_locals_s
 	// kills during this delay
 	int              intermissiontime; // time the intermission was started
 	char             *changemap;
-	bool         readyToExit; // at least one client wants to exit
+	int         readyToExit; // at least one client wants to exit
 	int              exitTime;
 	vec3_t           intermission_origin; // also used for spectator spawns
 	vec3_t           intermission_angle;
@@ -766,7 +766,7 @@ struct level_locals_s
 	int              buildId;
 	int              numBuildLogs;
 
-	bool         overmindMuted;
+	int         overmindMuted;
 
 	int              humanBaseAttackTimer;
 
@@ -801,7 +801,7 @@ struct level_locals_s
 		float            mineEfficiency;
 		int              kills;
 		spawnQueue_t     spawnQueue;
-		bool         locked;
+		int         locked;
 		float            momentum;
 		int              layoutBuildPoints;
 	} team[ NUM_TEAMS ];
@@ -811,7 +811,7 @@ struct level_locals_s
 		int fixed;
 		int msec;
 		int accurate;
-		bool initialized;
+		int initialized;
 	} pmoveParams;
 };
 
@@ -824,7 +824,7 @@ struct commands_s
 
 struct zap_s
 {
-	bool  used;
+	int  used;
 
 	gentity_t *creator;
 	gentity_t *targets[ LEVEL2_AREAZAP_MAX_TARGETS ];

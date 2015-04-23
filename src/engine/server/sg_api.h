@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef struct
 {
-	bool linked; // false if not in any good cluster
+	int linked; // false if not in any good cluster
 	int      linkcount;
 
 	int      svFlags; // SVF_NOCLIENT, SVF_BROADCAST, etc.
@@ -60,7 +60,7 @@ typedef struct
 	//  loMask: low-order bits (0..31)
 	float    clientRadius;    // if SVF_CLIENTS_IN_RANGE, send to all clients within this range
 
-	bool bmodel; // if false, assume an explicit mins/maxs bounding box
+	int bmodel; // if false, assume an explicit mins/maxs bounding box
 	// only set by trap_SetBrushModel
 	vec3_t   mins, maxs;
 	int      contents; // CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc.
@@ -87,7 +87,7 @@ typedef struct
 	//     ( ent->r.ownerNum != ENTITYNUM_NONE && ent->r.ownerNum == entities[passEntityNum].r.ownerNum ) ) )
 	int      ownerNum;
 
-	bool snapshotCallback;
+	int snapshotCallback;
 
 	int numClusters; // if -1, use headnode instead
 	int clusternums[ MAX_ENT_CLUSTERS ];
