@@ -1055,11 +1055,11 @@ void SP_worldspawn()
 	trap_SetConfigstring( CS_MESSAGE, s );  // map specific message
 
 	if(G_SpawnString( "gradingTexture", "", &s ))
-		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", -1, 0.0f, s ) );
 
 	if(G_SpawnString( "colorGrade", "", &s )) {
 		Com_Printf("^3Warning: ^7\"colorGrade\" deprecated. Please use \"gradingTexture\"");
-		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", -1, 0.0f, s ) );
 	}
 
 	if(G_SpawnString( "reverbIntensity", "", &s ))
