@@ -7,8 +7,9 @@ messages:
     # Make all components export their networked state.
     PrepareNetCode:
 
-    # Sent unconditionally once every frame.
-    Think:
+    # Sent unconditionally once every server frame.
+    # TODO: This should probably be replaced entirely by thinking.
+    Frame:
         - name: timeDelta
           type: int
 
@@ -63,13 +64,16 @@ messages:
           type: meansOfDeath_t
 
 components:
+    #####################
+    # Common Components #
+    #####################
+
+    # TODO: See if we can do without this.
     DeferredFreeing:
         messages:
             - FreeAt
 
-    Client:
-        parameters:
-            clientData: gclient_t*
+    Thinking:
 
     Ignitable:
         parameters:
@@ -78,7 +82,7 @@ components:
             freeOnExtinguish: false
         messages:
             - PrepareNetCode
-            - Think
+            - Frame
             - Ignite
             - Extinguish
 
@@ -89,6 +93,14 @@ components:
             - PrepareNetCode
             - Heal
             - Damage
+
+    #-----------------+
+    # Client Specific |
+    #-----------------+
+
+    Client:
+        parameters:
+            clientData: gclient_t*
 
     # TODO: Get rid of dependency on gentity_t.client. Depend on
     #       PhysicsComponent instead.
@@ -102,12 +114,31 @@ components:
         messages:
             - Damage
 
+    AlienClass:
+        requires:
+            - Client
+            - Armor
+            - Knockback
+            - Health
+
+    HumanClass:
+        requires:
+            - Client
+            - Armor
+            - Knockback
+            - Health
+
+    #--------------------+
+    # Buildable Specific |
+    #--------------------+
+
     Buildable:
         messages:
             - PrepareNetCode
             - Die
         requires:
             - Health
+            - Thinking
 
     AlienBuildable:
         messages:
@@ -123,11 +154,11 @@ components:
         requires:
             - Buildable
 
+    # TODO: See if needed.
     MainBuildable:
-        messages:
-            - Die
         requires:
             - Buildable
+            - ResourceStorage
 
     Turret:
         messages:
@@ -137,24 +168,47 @@ components:
         messages:
             - PrepareNetCode
             - Die
+        requires:
+            - ResourceStorage
 
+    ResourceStorage:
+        messages:
+            - PrepareNetCode
+            - Die
 
     ##############################
     # Entity-specific components #
     ##############################
 
-    #AcidTube:
+    # These are needed for various reasons:
+    #   - Register specific think methods.
+    #   - Export an entity type to the network. (TODO)
+    #   - Export a name/descriptions to the gamelogic. (TODO)
+
+    #------------------+
+    # Alien Buildables |
+    #------------------+
+
+    AcidTube:
+        requires:
+            - AlienBuildable
 
     Barricade:
         messages:
             - Damage
             - Die
         requires:
-            # TODO: Check if this lets us override animations reliably.
+            # TODO: Check if this dependency lets us override animations
+            #       reliably in the Damage/Die handlers.
             - AlienBuildable
 
-    #Booster:
-    #Egg:
+    Booster:
+        requires:
+            - AlienBuildable
+
+    Egg:
+        requires:
+            - AlienBuildable
 
     Hive:
         messages:
@@ -162,7 +216,10 @@ components:
         requires:
             - AlienBuildable
 
-    #Leech:
+    Leech:
+        requires:
+            - AlienBuildable
+            - Mining
 
     Overmind:
         messages:
@@ -177,9 +234,22 @@ components:
         requires:
             - AlienBuildable
 
-    #Trapper:
-    #Armoury:
-    #Drill:
+    Trapper:
+        requires:
+            - AlienBuildable
+
+    #------------------+
+    # Human Buildables |
+    #------------------+
+
+    Armoury:
+        requires:
+            - HumanBuildable
+
+    Drill:
+        requires:
+            - HumanBuildable
+            - Mining
 
     Medipad:
         messages:
@@ -187,7 +257,9 @@ components:
         requires:
             - HumanBuildable
 
-    #MGTurret:
+    MGTurret:
+        requires:
+            - HumanBuildable
 
     Reactor:
         messages:
@@ -196,15 +268,25 @@ components:
             - HumanBuildable
             - MainBuildable
 
-    #Repeater:
-    #Rocketpod:
-    #Telenode:
+    Repeater:
+        requires:
+            - HumanBuildable
+
+    Rocketpod:
+        requires:
+            - HumanBuildable
+
+    Telenode:
+        requires:
+            - HumanBuildable
+
 
 entities:
     ###################
-    # Pseudo entities #
+    # Pseudo Entities #
     ###################
 
+    # Every legacy entity without a specific new entity has this.
     Empty:
         components:
 
@@ -217,107 +299,80 @@ entities:
                 maxHealth: 1
 
     ##################
-    # Player classes #
+    # Player Classes #
     ##################
+
+    #---------------+
+    # Alien Classes |
+    #---------------+
 
     Dretch:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
 
     Mantis:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
 
     Marauder:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
 
     AdvMarauder:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
 
     Dragoon:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
 
     AdvDragoon:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
 
     Tyrant:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
 
     Granger:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
 
     AdvGranger:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            AlienClass:
+
+    #---------------+
+    # Human Classes |
+    #---------------+
 
     NakedHuman:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            HumanClass:
 
     LightHuman:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            HumanClass:
 
     MediumHuman:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            HumanClass:
 
     HeavyHuman:
         components:
-            Client:
-            Health:
-            Armor:
-            Knockback:
+            HumanClass:
 
-    ##############
-    # Buildables #
-    ##############
+    ######################
+    # Buildable Entities #
+    ######################
+
+    #------------------+
+    # Alien Buildables |
+    #------------------+
 
     AcidTube:
         components:
-            AlienBuildable:
+            AcidTube:
 
     Barricade:
         components:
@@ -325,11 +380,11 @@ entities:
 
     Booster:
         components:
-            AlienBuildable:
+            Booster:
 
     Egg:
         components:
-            AlienBuildable:
+            Egg:
 
     Hive:
         components:
@@ -337,8 +392,7 @@ entities:
 
     Leech:
         components:
-            AlienBuildable:
-            Mining:
+            Leech:
 
     Overmind:
         components:
@@ -350,7 +404,11 @@ entities:
 
     Trapper:
         components:
-            AlienBuildable:
+            Trapper:
+
+    #------------------+
+    # Human Buildables |
+    #------------------+
 
     Armoury:
         components:
@@ -387,9 +445,9 @@ entities:
         components:
             HumanBuildable:
 
-    ############
-    # Unsorted #
-    ############
+    #####################
+    # Unsorted Entities #
+    #####################
 
     Fire:
         components:

@@ -918,34 +918,49 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.h
   ${GAMELOGIC_DIR}/sgame/backend/CBSEComponents.h
   ${GAMELOGIC_DIR}/sgame/backend/CBSEEntities.h
-  ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/BarricadeComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/BarricadeComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/BuildableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/BuildableComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/ClientComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/ClientComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/HealthComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/HealthComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/HiveComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/HiveComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/HumanBuildableComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/HumanBuildableComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/KnockbackComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/KnockbackComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/BuildableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/MainBuildableComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/MainBuildableComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ResourceStorageComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/IgnitableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/MiningComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/MiningComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/RepeaterComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/RocketpodComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/RocketpodComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/skeletons
+  ${GAMELOGIC_DIR}/sgame/components/TelenodeComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/TelenodeComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/DrillComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/MGTurretComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/MGTurretComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/RepeaterComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ArmouryComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/ArmouryComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/DrillComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/TrapperComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/TrapperComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/EggComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/LeechComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/LeechComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/BoosterComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/BoosterComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/EggComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ResourceStorageComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/AlienClassComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/AlienClassComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/HumanClassComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/HumanClassComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ThinkingComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/ThinkingComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/KnockbackComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/KnockbackComponent.h
   ${GAMELOGIC_DIR}/sgame/components/MedipadComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/MedipadComponent.h
-  ${GAMELOGIC_DIR}/sgame/components/MiningComponent.cpp
-  ${GAMELOGIC_DIR}/sgame/components/MiningComponent.h
   ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.h
   ${GAMELOGIC_DIR}/sgame/components/ReactorComponent.cpp
@@ -954,6 +969,22 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/components/SpikerComponent.h
   ${GAMELOGIC_DIR}/sgame/components/TurretComponent.cpp
   ${GAMELOGIC_DIR}/sgame/components/TurretComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/HealthComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/HealthComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/HiveComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/HiveComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/HumanBuildableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/HumanBuildableComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/ArmorComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/BarricadeComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/BarricadeComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/ClientComponent.cpp
+  ${GAMELOGIC_DIR}/sgame/components/ClientComponent.h
+  ${GAMELOGIC_DIR}/sgame/components/DeferredFreeingComponent.cpp
   ${ENGINE_DIR}/server/sg_api.h
   ${ENGINE_DIR}/server/sg_msgdef.h
   ${GAMESHAREDLIST}

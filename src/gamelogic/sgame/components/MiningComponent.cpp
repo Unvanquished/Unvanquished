@@ -1,7 +1,7 @@
 #include "MiningComponent.h"
 
-MiningComponent::MiningComponent(Entity& entity)
-	: MiningComponentBase(entity)
+MiningComponent::MiningComponent(Entity& entity, ResourceStorageComponent& r_ResourceStorageComponent)
+	: MiningComponentBase(entity, r_ResourceStorageComponent)
 {}
 
 void MiningComponent::HandlePrepareNetCode() {

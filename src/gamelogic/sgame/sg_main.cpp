@@ -2686,42 +2686,45 @@ G_RunThink
 
 Runs thinking code for this frame if necessary
 // TODO: Convert entirely to CBSE style thinking.
+// TODO: Make sure this is run for all entities.
 =============
 */
 void G_RunThink( gentity_t *ent )
 {
 	// Free entities with FREE_BEFORE_THINKING set.
 	DeferredFreeingComponent *deferredFreeing;
-	if ( ( deferredFreeing = ent->entity->Get<DeferredFreeingComponent>() ) )
-	{
-		if ( deferredFreeing->GetFreeTime() == DeferredFreeingComponent::FREE_BEFORE_THINKING )
-		{
-			G_FreeEntity( ent );
+	if ((deferredFreeing = ent->entity->Get<DeferredFreeingComponent>())) {
+		if (deferredFreeing->GetFreeTime() == DeferredFreeingComponent::FREE_BEFORE_THINKING) {
+			G_FreeEntity(ent);
 			return;
 		}
 	}
+
+	// TODO: Replace this with thinking.
+	ent->entity->Frame(level.time - level.previousTime);
 
 	// Do CBSE style thinking.
-	// TODO: Group think calls by component type?
-	ent->entity->Think( level.time - level.previousTime );
-
-	// Free entities with FREE_AFTER_THINKING set.
-	if ( ( deferredFreeing = ent->entity->Get<DeferredFreeingComponent>() ) )
-	{
-		if ( deferredFreeing->GetFreeTime() == DeferredFreeingComponent::FREE_AFTER_THINKING )
-		{
-			G_FreeEntity( ent );
-			return;
-		}
-	}
+	ForEntities<ThinkingComponent>([] (Entity &entity, ThinkingComponent &thinkingComponent) {
+		thinkingComponent.Think(level.time - level.previousTime);
+	});
 
 	// Do legacy thinking.
 	// TODO: Replace this kind of thinking entirely with CBSE.
-	float thinktime = ent->nextthink;
-	if ( thinktime <= 0 || thinktime > level.time ) return;
-	ent->nextthink = 0;
-	if ( !ent->think ) G_Error( "NULL ent->think" );
-	ent->think( ent );
+	{
+		float thinktime = ent->nextthink;
+		if (thinktime <= 0 || thinktime > level.time) return;
+		ent->nextthink = 0;
+		if (!ent->think) G_Error("NULL ent->think");
+		ent->think(ent);
+	}
+
+	// Free entities with FREE_AFTER_THINKING set.
+	if ((deferredFreeing = ent->entity->Get<DeferredFreeingComponent>())) {
+		if (deferredFreeing->GetFreeTime() == DeferredFreeingComponent::FREE_AFTER_THINKING) {
+			G_FreeEntity(ent);
+			return;
+		}
+	}
 }
 
 /*

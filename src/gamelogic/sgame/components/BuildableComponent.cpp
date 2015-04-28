@@ -1,7 +1,7 @@
 #include "BuildableComponent.h"
 
-BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_HealthComponent)
-	: BuildableComponentBase(entity, r_HealthComponent)
+BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_HealthComponent, ThinkingComponent& r_ThinkingComponent)
+	: BuildableComponentBase(entity, r_HealthComponent, r_ThinkingComponent)
 {}
 
 void BuildableComponent::HandlePrepareNetCode() {

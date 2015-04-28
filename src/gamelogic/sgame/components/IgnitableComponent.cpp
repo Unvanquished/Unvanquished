@@ -58,11 +58,11 @@ void IgnitableComponent::HandleIgnite(struct gentity_s* fireStarter) {
 		nextSplashDamage  = level.time + BURN_SPLDAMAGE_PERIOD  * BURN_PERIODS_RAND_MOD;
 		nextStatusAction  = level.time + BURN_ACTION_PERIOD     * BURN_PERIODS_RAND_MOD;
 
-		fireLogger.DoDebugCode([&]{
+		fireLogger.DoNoticeCode([&]{
 			char selfDescr[64], fireStarterDescr[64];
 			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
 			BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
-			fireLogger.Debug("%s ignited %s.", fireStarterDescr, selfDescr);
+			fireLogger.Notice("%s ignited %s.", fireStarterDescr, selfDescr);
 		});
 	} else {
 		// Reset the status action timer to refresh an existing fire.
@@ -79,11 +79,11 @@ void IgnitableComponent::HandleIgnite(struct gentity_s* fireStarter) {
 }
 
 void IgnitableComponent::HandleExtinguish(int immunityTime) {
-	fireLogger.DoDebugCode([&]{
+	fireLogger.DoNoticeCode([&]{
 		char selfDescr[64];
 		if (onFire) {
 			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
-			fireLogger.Debug("%s was extinquished.", selfDescr);
+			fireLogger.Notice("%s was extinquished.", selfDescr);
 		}
 	});
 
@@ -95,7 +95,8 @@ void IgnitableComponent::HandleExtinguish(int immunityTime) {
 	}
 }
 
-void IgnitableComponent::HandleThink(int timeDelta) {
+// TODO: Replace with thinking.
+void IgnitableComponent::HandleFrame(int timeDelta) {
 	if (not onFire) return;
 
 	char descr[64] = {0};
@@ -107,9 +108,7 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 	if (nextSelfDamage < level.time) {
 		nextSelfDamage = level.time + BURN_SELFDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
 
-		// TODO: Replace with a damage message.
-		if (entity.oldEnt->takedamage) {
-			entity.Damage(BURN_SELFDAMAGE, fireStarter, Util::nullopt, Util::nullopt, 0, MOD_BURN);
+		if (entity.Damage(BURN_SELFDAMAGE, fireStarter, Util::nullopt, Util::nullopt, 0, MOD_BURN)) {
 			fireLogger.Debug("%s took burn damage.", descr);
 		}
 	}
@@ -146,15 +145,12 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 
 		// Attempt to stop burning.
 		if (random() < burnStopChance) {
-			fireLogger.Debug("%s has chance to stop burning of %.2f → stop",
-			                 descr, burnStopChance);
+			fireLogger.Debug("%s stopped burning (chance was %.0f%%)", descr, burnStopChance * 100.0f);
 
 			entity.Extinguish(0);
-
 			return;
 		} else {
-			fireLogger.Debug("%s has chance to stop burning of %.2f → continue",
-			                 descr, burnStopChance);
+			fireLogger.Debug("%s didn't stop burning (chance was %.0f%%)", descr, burnStopChance * 100.0f);
 		}
 
 		// Attempt to ignite close ignitables.
@@ -165,17 +161,16 @@ void IgnitableComponent::HandleThink(int timeDelta) {
 
 			if (chance <= 0.0f) return; // distance > spread radius
 
-			if (random() < chance && G_LineOfSight(entity.oldEnt, other.oldEnt)) {
-				if (other.Ignite(fireStarter)) {
-					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → try to ignite",
-					                 descr, chance);
+			if (random() < chance) {
+				if (G_LineOfSight(entity.oldEnt, other.oldEnt) && other.Ignite(fireStarter)) {
+					fireLogger.Debug("%s (re-)ignited a neighbour (chance was %.0f%%)", descr, chance * 100.0f);
 				} else {
-					fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → not ignitable",
-					                 descr, chance);
+					fireLogger.Debug("%s tried to ignite a non-ignitable or non-LOS neighbour (chance was %.0f%%)",
+					                 descr, chance * 100.0f);
 				}
 			} else {
-				fireLogger.Debug("%s has chance to ignite a neighbour of %.2f → failed or no los",
-				                 descr, chance);
+				fireLogger.Debug("%s didn't try to ignite a neighbour (chance was %.0f%%)",
+				                 descr, chance * 100.0f);
 			}
 		});
 	}
