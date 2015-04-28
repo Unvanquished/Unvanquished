@@ -280,7 +280,11 @@ bool RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out )
 	R_SyncRenderThread();
 
 	tr.visIndex = 0;
-	memset( tr.visClusters, -2, sizeof( tr.visClusters ) );   // force markleafs to regenerate
+	// force markleafs to regenerate
+	for (size_t i = 0; i < MAX_VISCOUNTS; ++i)
+	{
+		tr.visClusters[i] = -1;
+	}
 
 	R_ClearFlares();
 
