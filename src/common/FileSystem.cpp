@@ -307,6 +307,7 @@ static const minizip_category_impl& minizip_category()
 
 // Filesystem-specific error codes
 enum filesystem_error {
+	no_filesystem_error,
 	invalid_filename,
 	no_such_file,
 	no_such_directory,
@@ -1878,7 +1879,8 @@ DirectoryRange ListFiles(Str::StringRef path, std::error_code& err)
 		SetErrorCodeFilesystem(err, filesystem_error::invalid_filename);
 		return {};
 	}
-	return RawPath::ListFiles(Path::Build(homePath, path), err);
+	auto fpath = Path::Build(homePath, path);
+	return RawPath::ListFiles(fpath, err);
 #endif
 }
 
