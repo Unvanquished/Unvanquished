@@ -307,6 +307,7 @@ static const minizip_category_impl& minizip_category()
 
 // Filesystem-specific error codes
 enum filesystem_error {
+	no_filesystem_error,
 	invalid_filename,
 	no_such_file,
 	no_such_directory,
