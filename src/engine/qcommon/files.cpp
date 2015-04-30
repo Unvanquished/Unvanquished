@@ -86,7 +86,7 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 		return FS_FileExists(path);
 
 	*handle = FS_AllocHandle();
-	int length;
+	int length = -1;
 	std::error_code err;
 	if (FS::PakPath::FileExists(path)) {
 		handleTable[*handle].fileData = FS::PakPath::ReadFile(path, err);
@@ -97,7 +97,7 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 			length = handleTable[*handle].fileData.size();
 		}
 	} else {
-		handleTable[*handle].file = FS::HomePath::OpenRead(path);
+		handleTable[*handle].file = FS::HomePath::OpenRead(path,err);
 		if (!err) {
 			length = handleTable[*handle].file.Length();
 			handleTable[*handle].isPakFile = false;
