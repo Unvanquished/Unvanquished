@@ -2367,9 +2367,10 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 
 	case VM::FS_HOMEPATH_OPENMODE:
 		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, Util::optional<IPC::OwnedFileHandle>& out) {
-			try {
-				out = FileToIPC(HomePath::OpenMode(Path::Build("game", path), static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
-			} catch (std::system_error&) {}
+			std::error_code err;
+			FS::File file = HomePath::OpenMode(Path::Build("game", path), static_cast<openMode_t>(mode), err);
+			if (!err)
+				out = FileToIPC(std::move(file), static_cast<openMode_t>(mode));
 		});
 		break;
 
@@ -2381,31 +2382,26 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 
 	case VM::FS_HOMEPATH_TIMESTAMP:
 		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, std::move(reader), [](std::string path, Util::optional<uint64_t>& out) {
-			try {
-				out = std::chrono::system_clock::to_time_t(HomePath::FileTimestamp(Path::Build("game", path)));
-			} catch (std::system_error&) {}
+			std::error_code err;
+			std::chrono::system_clock::time_point t = HomePath::FileTimestamp(Path::Build("game", path), err);
+			if (!err)
+				out = std::chrono::system_clock::to_time_t(t);
 		});
 		break;
 
 	case VM::FS_HOMEPATH_MOVEFILE:
 		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool success) {
-			try {
-				HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src));
-				success = true;
-			} catch (std::system_error&) {
-				success = false;
-			}
+			std::error_code err;
+			HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src), err);
+			success = !err;
 		});
 		break;
 
 	case VM::FS_HOMEPATH_DELETEFILE:
 		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool success) {
-			try {
-				HomePath::DeleteFile(Path::Build("game", path));
-				success = true;
-			} catch (std::system_error&) {
-				success = false;
-			}
+			std::error_code err;
+			HomePath::DeleteFile(Path::Build("game", path), err);
+			success = !err;
 		});
 		break;
 
@@ -2440,9 +2436,10 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			if (!Path::IsValid(path, false))
 				return;
-			try {
-				out = FileToIPC(RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path)), MODE_READ);
-			} catch (std::system_error&) {}
+			std::error_code err;
+			FS::File file = RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path), err);
+			if (!err)
+				out = FileToIPC(std::move(file), MODE_READ);
 		});
 		break;
 
@@ -2455,9 +2452,10 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			if (!Path::IsValid(path, false))
 				return;
-			try {
-				out = std::chrono::system_clock::to_time_t(RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path)));
-			} catch (std::system_error&) {}
+			std::error_code err;
+			std::chrono::system_clock::time_point t = RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path), err);
+			if (!err)
+				out = std::chrono::system_clock::to_time_t(t);
 		});
 		break;
 
@@ -2467,7 +2465,9 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			try {
 				FS::PakPath::InternalLoadPak(availablePaks[pakIndex], expectedChecksum, pathPrefix, FS::throws());
-			} catch (std::system_error&) {}
+			} catch (std::system_error& err) {
+				fsLogs.Warn("Could not load pak %s: %s", availablePaks[pakIndex].path, err.what());
+			}
 		});
 		break;
 

@@ -87,21 +87,25 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 
 	*handle = FS_AllocHandle();
 	int length;
-	try {
-		if (FS::PakPath::FileExists(path)) {
+	std::error_code err;
+	if (FS::PakPath::FileExists(path)) {
+		handleTable[*handle].fileData = FS::PakPath::ReadFile(path, err);
+		if (!err) {
 			handleTable[*handle].filePos = 0;
-			handleTable[*handle].fileData = FS::PakPath::ReadFile(path);
 			handleTable[*handle].isPakFile = true;
 			handleTable[*handle].isOpen = true;
 			length = handleTable[*handle].fileData.size();
-		} else {
-			handleTable[*handle].file = FS::HomePath::OpenRead(path);
+		}
+	} else {
+		handleTable[*handle].file = FS::HomePath::OpenRead(path);
+		if (!err) {
 			length = handleTable[*handle].file.Length();
 			handleTable[*handle].isPakFile = false;
 			handleTable[*handle].isOpen = true;
 		}
-	} catch (std::system_error& err) {
-		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.what());
+	}
+	if (err) {
+		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.message().c_str());
 		*handle = 0;
 		return -1;
 	}
@@ -162,18 +166,16 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 		return FS::HomePath::FileExists(path);
 
 	*handle = FS_AllocHandle();
-	int length;
-	try {
-		handleTable[*handle].file = FS::HomePath::OpenRead(path);
-		length = handleTable[*handle].file.Length();
-	} catch (std::system_error& err) {
-		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.what());
+	std::error_code err;
+	handleTable[*handle].file = FS::HomePath::OpenRead(path, err);
+	if (err) {
+		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.message().c_str());
 		*handle = 0;
 		return 0;
 	}
 	handleTable[*handle].isPakFile = false;
 	handleTable[*handle].isOpen = true;
-	return length;
+	return handleTable[*handle].file.Length();
 }
 
 int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
@@ -239,12 +241,13 @@ int FS_filelength(fileHandle_t handle)
 	if (handleTable[handle].isPakFile)
 		return handleTable[handle].fileData.size();
 	else {
-		try {
-			return handleTable[handle].file.Length();
-		} catch (std::system_error& err) {
-			Com_Printf("Failed to get file length: %s\n", err.what());
+		std::error_code err;
+		int length = handleTable[handle].file.Length(err);
+		if (err) {
+			Com_Printf("Failed to get file length: %s\n", err.message().c_str());
 			return 0;
 		}
+		return length;
 	}
 }
 
