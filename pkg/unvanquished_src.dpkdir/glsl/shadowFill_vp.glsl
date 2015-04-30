@@ -34,6 +34,12 @@ varying vec3		var_Position;
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
+void DeformVertex( inout vec4 pos,
+		   inout vec3 normal,
+		   inout vec2 st,
+		   inout vec4 color,
+		   in    float time);
+
 void	main()
 {
 	vec4 position;
