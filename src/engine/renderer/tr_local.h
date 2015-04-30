@@ -800,26 +800,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	typedef enum
 	{
-	  DSTEP_NONE,
-	  DSTEP_LOAD_POS,
-	  DSTEP_LOAD_NORM,
-	  DSTEP_LOAD_TC,
-	  DSTEP_LOAD_COLOR,
-	  DSTEP_LOAD_VEC,
-	  DSTEP_MODIFY_POS,
-	  DSTEP_MODIFY_NORM,
-	  DSTEP_MODIFY_COLOR,
-	  DSTEP_SIN,
-	  DSTEP_SQUARE,
-	  DSTEP_TRIANGLE,
-	  DSTEP_SAWTOOTH,
-	  DSTEP_INVERSE_SAWTOOTH,
-	  DSTEP_NOISE,
-	  DSTEP_ROTGROW
-	} deformStep_t;
-
-	typedef enum
-	{
 	  AGEN_IDENTITY,
 	  AGEN_ENTITY,
 	  AGEN_ONE_MINUS_ENTITY,
@@ -1146,6 +1126,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		acff_t          adjustColorsForFog;
 
 		stencil_t       frontStencil, backStencil;
+		int             deformIndex;
 
 		qboolean        overrideNoPicMip; // for images that must always be full resolution
 		qboolean        overrideFilterType; // for console fonts, 2D elements, etc.
@@ -1402,6 +1383,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	typedef struct shaderProgram_s
 	{
 		GLuint    program;
+		GLuint    VS, FS;
 		uint32_t  attribs; // vertex array attributes
 		GLint    *uniformLocations;
 		byte     *uniformFirewall;

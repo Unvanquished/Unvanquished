@@ -1846,7 +1846,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 						GL_Cull( CT_TWO_SIDED );
 						GL_State( GLS_DEPTHTEST_DISABLE );
 
-						gl_debugShadowMapShader->BindProgram();
+						gl_debugShadowMapShader->BindProgram( 0 );
 						gl_debugShadowMapShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 						GL_BindToTMU( 0, tr.sunShadowMapFBOImage[ frustumIndex ] );
@@ -1879,7 +1879,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							gl_genericShader->DisableVertexAnimation();
 							gl_genericShader->DisableTCGenEnvironment();
 
-							gl_genericShader->BindProgram();
+							gl_genericShader->BindProgram( 0 );
 
 							// set uniforms
 							gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
@@ -2032,7 +2032,7 @@ static void RB_BlurShadowMap( const trRefLight_t *light, int i )
 	MatrixOrthogonalProjection( ortho, 0, verts[ 2 ][ 0 ], 0, verts[ 2 ][ 1 ], -99999, 99999 );
 	GL_LoadProjectionMatrix( ortho );
 
-	gl_blurXShader->BindProgram();
+	gl_blurXShader->BindProgram( 0 );
 	gl_blurXShader->SetUniform_DeformMagnitude( 1 );
 	gl_blurXShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 	gl_blurXShader->SetUniform_TexScale( texScale );
@@ -2045,7 +2045,7 @@ static void RB_BlurShadowMap( const trRefLight_t *light, int i )
 
 	GL_BindToTMU( 0, images[ index + MAX_SHADOWMAPS ] );
 
-	gl_blurYShader->BindProgram();
+	gl_blurYShader->BindProgram( 0 );
 	gl_blurYShader->SetUniform_DeformMagnitude( 1 );
 	gl_blurYShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 	gl_blurYShader->SetUniform_TexScale( texScale );
@@ -2669,7 +2669,7 @@ void RB_RenderGlobalFog()
 
 	GL_Cull( CT_TWO_SIDED );
 
-	gl_fogGlobalShader->BindProgram();
+	gl_fogGlobalShader->BindProgram( 0 );
 
 	// go back to the world modelview matrix
 	backEnd.orientation = backEnd.viewParms.world;
@@ -2775,7 +2775,7 @@ void RB_RenderBloom()
 		GL_LoadProjectionMatrix( ortho );
 
 		// render contrast downscaled to 1/4th of the screen
-		gl_contrastShader->BindProgram();
+		gl_contrastShader->BindProgram( 0 );
 
 		gl_contrastShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
@@ -2819,7 +2819,7 @@ void RB_RenderBloom()
 
 				if ( i == 0 )
 				{
-					gl_blurXShader->BindProgram();
+					gl_blurXShader->BindProgram( 0 );
 
 					gl_blurXShader->SetUniform_DeformMagnitude( r_bloomBlur->value );
 					gl_blurXShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -2827,7 +2827,7 @@ void RB_RenderBloom()
 				}
 				else
 				{
-					gl_blurYShader->BindProgram();
+					gl_blurYShader->BindProgram( 0 );
 
 					gl_blurYShader->SetUniform_DeformMagnitude( r_bloomBlur->value );
 					gl_blurYShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -2844,7 +2844,7 @@ void RB_RenderBloom()
 
 		R_BindNullFBO();
 
-		gl_screenShader->BindProgram();
+		gl_screenShader->BindProgram( 0 );
 		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 		glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
 
@@ -2892,7 +2892,7 @@ void RB_RenderMotionBlur( void )
 		backEnd.depthRenderImageValid = qtrue;
 	}
 
-	gl_motionblurShader->BindProgram();
+	gl_motionblurShader->BindProgram( 0 );
 	gl_motionblurShader->SetUniform_blurVec(tr.refdef.blurVec);
 
 	GL_BindToTMU( 0, tr.currentRenderImage );
@@ -2940,7 +2940,7 @@ void RB_FXAA( void )
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// set the shader parameters
-	gl_fxaaShader->BindProgram();
+	gl_fxaaShader->BindProgram( 0 );
 
 	R_BindNullFBO();
 
@@ -2974,7 +2974,7 @@ void RB_CameraPostFX( void )
 	GL_Cull( CT_TWO_SIDED );
 
 	// enable shader, set arrays
-	gl_cameraEffectsShader->BindProgram();
+	gl_cameraEffectsShader->BindProgram( 0 );
 
 	gl_cameraEffectsShader->SetUniform_ColorModulate( backEnd.viewParms.gradingWeights );
 	gl_cameraEffectsShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -3016,7 +3016,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableTCGenEnvironment();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( CT_TWO_SIDED );
@@ -3173,7 +3173,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableTCGenEnvironment();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( CT_TWO_SIDED );
@@ -3301,7 +3301,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableTCGenEnvironment();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( CT_TWO_SIDED );
@@ -3374,7 +3374,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableTCGenEnvironment();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		GL_Cull( CT_TWO_SIDED );
 
@@ -3594,7 +3594,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableTCGenEnvironment();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( CT_TWO_SIDED );
@@ -3671,7 +3671,7 @@ static void RB_RenderDebugUtils()
 
 		gl_reflectionShader->SetNormalMapping( false );
 
-		gl_reflectionShader->BindProgram();
+		gl_reflectionShader->BindProgram( 0 );
 
 		// end choose right shader program ------------------------------
 
@@ -3709,7 +3709,7 @@ static void RB_RenderDebugUtils()
 			gl_genericShader->DisableVertexAnimation();
 			gl_genericShader->DisableTCGenEnvironment();
 
-			gl_genericShader->BindProgram();
+			gl_genericShader->BindProgram( 0 );
 
 			gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 			gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
@@ -3782,7 +3782,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableTCGenEnvironment();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
@@ -3876,7 +3876,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableTCGenEnvironment();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
@@ -4161,7 +4161,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableTCGenEnvironment();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( CT_TWO_SIDED );
@@ -4253,7 +4253,7 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableTCGenEnvironment();
 	gl_genericShader->DisableTCGenLightmap();
-	gl_genericShader->BindProgram();
+	gl_genericShader->BindProgram( 0 );
 
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	GL_Cull( CT_FRONT_SIDED );
@@ -4692,7 +4692,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableTCGenEnvironment();
 
-	gl_genericShader->BindProgram();
+	gl_genericShader->BindProgram( 0 );
 
 	// set uniforms
 	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
@@ -5436,7 +5436,7 @@ const void *RB_RunVisTests( const void *data )
 		gl_genericShader->DisableTCGenEnvironment();
 		gl_genericShader->DisableTCGenLightmap();
 
-		gl_genericShader->BindProgram();
+		gl_genericShader->BindProgram( 0 );
 
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_Color( colorWhite );
@@ -5530,7 +5530,7 @@ void RB_ShowImages( void )
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableTCGenEnvironment();
 
-	gl_genericShader->BindProgram();
+	gl_genericShader->BindProgram( 0 );
 
 	GL_Cull( CT_TWO_SIDED );
 

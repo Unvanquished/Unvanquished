@@ -114,6 +114,16 @@ protected:
 				glDeleteProgram( p->program );
 			}
 
+			if ( p->VS )
+			{
+				glDeleteShader( p->VS );
+			}
+
+			if ( p->FS )
+			{
+				glDeleteShader( p->FS );
+			}
+
 			if ( p->uniformFirewall )
 			{
 				ri.Free( p->uniformFirewall );
@@ -171,7 +181,7 @@ protected:
 	virtual void SetShaderProgramUniforms( shaderProgram_t *shaderProgram ) { };
 	int          SelectProgram();
 public:
-	void BindProgram();
+	void BindProgram( int deformIndex );
 	void SetRequiredVertexPointers();
 
 	bool IsMacroSet( int bit )
@@ -209,6 +219,8 @@ class GLShaderManager
 {
 	std::queue< GLShader* > _shaderBuildQueue;
 	std::vector< GLShader* > _shaders;
+	std::unordered_map< std::string, int > _deformShaderLookup;
+	std::vector< GLint > _deformShaders;
 	int       _totalBuildTime;
 public:
 	GLShaderManager() : _totalBuildTime( 0 )
@@ -219,6 +231,10 @@ public:
 	template< class T >
 	void load( T *& shader )
 	{
+		if( _deformShaders.size() == 0 ) {
+			(void)getDeformShaderIndex( NULL, 0 );
+		}
+
 		shader = new T( this );
 		InitShader( shader );
 		_shaders.push_back( shader );
@@ -226,15 +242,20 @@ public:
 	}
 	void freeAll();
 
-	bool buildPermutation( GLShader *shader, size_t permutation );
+	int getDeformShaderIndex( deformStage_t *deforms, int numDeforms );
+
+	bool buildPermutation( GLShader *shader, int macroIndex, int deformIndex );
 	void buildAll();
 private:
 	bool LoadShaderBinary( GLShader *shader, size_t permutation );
 	void SaveShaderBinary( GLShader *shader, size_t permutation );
-	void CompileGPUShader( GLuint program, const char *programName, const char *shaderText,
-	                       int shaderTextSize, GLenum shaderType ) const;
+	GLuint CompileShader( const char *programName, const char *shaderText,
+			      int shaderTextSize, GLenum shaderType ) const;
+	void CompileGPUShaders( GLShader *shader, shaderProgram_t *program,
+				const std::string &compileMacros ) const;
 	void CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
-	                                     const std::string &compileMacros ) const;
+	                                     const std::string &compileMacros, int deformIndex ) const;
+	std::string BuildDeformShaderText( std::string steps ) const;
 	std::string BuildGPUShaderText( const char *mainShader, const char *libShaders, GLenum shaderType ) const;
 	void LinkProgram( GLuint program ) const;
 	void BindAttribLocations( GLuint program ) const;
@@ -1829,210 +1850,6 @@ public:
 	}
 };
 
-class u_DeformParms :
-	GLUniform4fv
-{
-public:
-	u_DeformParms( GLShader *shader ) :
-		GLUniform4fv( shader, "u_DeformParms" )
-	{
-	}
-
-	void SetUniform_DeformParms( deformStage_t deforms[ MAX_SHADER_DEFORMS ], int numDeforms )
-	{
-		vec4_t deformParms[ MAX_SHADER_DEFORM_PARMS ];
-		int    deformOfs = 0;
-
-		if ( numDeforms > MAX_SHADER_DEFORMS )
-		{
-			numDeforms = MAX_SHADER_DEFORMS;
-		}
-
-		for ( int i = 0; i < numDeforms; i++ )
-		{
-			deformStage_t *ds = &deforms[ i ];
-
-			switch ( ds->deformation )
-			{
-				case DEFORM_WAVE:
-					deformParms[ deformOfs ][ 0 ] = 1.0f;
-					deformParms[ deformOfs ][ 1 ] = 1.0f;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.phase;
-					deformParms[ deformOfs ][ 1 ] = ds->deformationSpread;
-					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
-					switch( ds->deformationWave.func ) {
-					case GF_SIN:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
-						break;
-					case GF_SQUARE:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_SQUARE;
-						break;
-					case GF_TRIANGLE:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_TRIANGLE;
-						break;
-					case GF_SAWTOOTH:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_SAWTOOTH;
-						break;
-					case GF_INVERSE_SAWTOOTH:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_INVERSE_SAWTOOTH;
-						break;
-					case GF_NOISE:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
-						break;
-					default:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
-						break;
-					}
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = 1.0f;
-					deformParms[ deformOfs ][ 1 ] = 1.0f;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_NORM;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.base;
-					deformParms[ deformOfs ][ 1 ] = ds->deformationWave.amplitude;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
-					deformOfs++;
-					break;
-
-				case DEFORM_BULGE:
-					deformParms[ deformOfs ][ 0 ] = 1.0f;
-					deformParms[ deformOfs ][ 1 ] = 0.0f;
-					deformParms[ deformOfs ][ 2 ] = 0.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_TC;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = 0.0f;
-					deformParms[ deformOfs ][ 1 ] = ds->bulgeWidth;
-					deformParms[ deformOfs ][ 2 ] = ds->bulgeSpeed * 0.001f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = 1.0f;
-					deformParms[ deformOfs ][ 1 ] = 1.0f;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_NORM;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = 0.0f;
-					deformParms[ deformOfs ][ 1 ] = ds->bulgeHeight;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
-					deformOfs++;
-					break;
-
-				case DEFORM_MOVE:
-					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.phase;
-					deformParms[ deformOfs ][ 1 ] = 0.0f;
-					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
-					switch( ds->deformationWave.func ) {
-					case GF_SIN:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_SIN;
-						break;
-					case GF_SQUARE:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_SQUARE;
-						break;
-					case GF_TRIANGLE:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_TRIANGLE;
-						break;
-					case GF_SAWTOOTH:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_SAWTOOTH;
-						break;
-					case GF_INVERSE_SAWTOOTH:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_INVERSE_SAWTOOTH;
-						break;
-					case GF_NOISE:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
-						break;
-					default:
-						deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
-						break;
-					}
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = ds->moveVector[ 0 ];
-					deformParms[ deformOfs ][ 1 ] = ds->moveVector[ 1 ];
-					deformParms[ deformOfs ][ 2 ] = ds->moveVector[ 2 ];
-					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_VEC;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = ds->deformationWave.base;
-					deformParms[ deformOfs ][ 1 ] = ds->deformationWave.amplitude;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_POS;
-					deformOfs++;
-					break;
-
-				case DEFORM_NORMALS:
-					deformParms[ deformOfs ][ 0 ] = 1.0f;
-					deformParms[ deformOfs ][ 1 ] = 1.0f;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = 0.0f;
-					deformParms[ deformOfs ][ 1 ] = 0.0f;
-					deformParms[ deformOfs ][ 2 ] = ds->deformationWave.frequency;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_NOISE;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = 0.0f;
-					deformParms[ deformOfs ][ 1 ] = 0.98f * ds->deformationWave.amplitude;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_NORM;
-					deformOfs++;
-					break;
-
-				case DEFORM_ROTGROW:
-					deformParms[ deformOfs ][ 0 ] = 1.0f;
-					deformParms[ deformOfs ][ 1 ] = 1.0f;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_POS;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = ds->moveVector[0];
-					deformParms[ deformOfs ][ 1 ] = ds->moveVector[1];
-					deformParms[ deformOfs ][ 2 ] = ds->moveVector[2];
-					deformParms[ deformOfs ][ 3 ] = DSTEP_ROTGROW;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = 1.0f;
-					deformParms[ deformOfs ][ 1 ] = 1.0f;
-					deformParms[ deformOfs ][ 2 ] = 1.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_LOAD_COLOR;
-					deformOfs++;
-
-					deformParms[ deformOfs ][ 0 ] = -1.0f;
-					deformParms[ deformOfs ][ 1 ] = 1.0f;
-					deformParms[ deformOfs ][ 2 ] = 0.0f;
-					deformParms[ deformOfs ][ 3 ] = DSTEP_MODIFY_COLOR;
-					deformOfs++;
-					break;
-
-				default:
-					break;
-			}
-		}
-
-		if( deformOfs < MAX_SHADER_DEFORM_PARMS ) {
-			deformParms[ deformOfs ][ 0 ] = 0.0f;
-			deformParms[ deformOfs ][ 1 ] = 0.0f;
-			deformParms[ deformOfs ][ 2 ] = 0.0f;
-			deformParms[ deformOfs ][ 3 ] = DSTEP_NONE;
-			deformOfs++;
-		}
-
-		this->SetValue( deformOfs, deformParms );
-	}
-};
-
 class u_Time :
 	GLUniform1f
 {
@@ -2049,12 +1866,10 @@ public:
 };
 
 class GLDeformStage :
-	public u_DeformParms,
 	public u_Time
 {
 public:
 	GLDeformStage( GLShader *shader ) :
-		u_DeformParms( shader ),
 		u_Time( shader )
 	{
 	}
