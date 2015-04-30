@@ -97,7 +97,7 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 			length = handleTable[*handle].fileData.size();
 		}
 	} else {
-		handleTable[*handle].file = FS::HomePath::OpenRead(path);
+		handleTable[*handle].file = FS::HomePath::OpenRead(path, err);
 		if (!err) {
 			length = handleTable[*handle].file.Length();
 			handleTable[*handle].isPakFile = false;
