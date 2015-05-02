@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_shader.c -- this file deals with the parsing and definition of shaders
 #include "tr_local.h"
+#include "gl_shader.h"
 
 #define MAX_SHADERTABLE_HASH 1024
 static shaderTable_t *shaderTableHashTable[ MAX_SHADERTABLE_HASH ];
@@ -4474,6 +4475,12 @@ static shader_t *FinishShader()
 	if ( shader.numStages == 0 && !shader.isSky )
 	{
 		shader.sort = SS_FOG;
+	}
+
+	if ( shader.numDeforms > 0 ) {
+		for( i = 0; i < shader.numStages; i++ ) {
+			stages[i].deformIndex = gl_shaderManager.getDeformShaderIndex( shader.deforms, shader.numDeforms );
+		}
 	}
 
 	ret = GeneratePermanentShader();

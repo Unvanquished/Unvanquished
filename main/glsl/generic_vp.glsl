@@ -47,6 +47,12 @@ varying vec2            var_FadeDepth;
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
+void DeformVertex( inout vec4 pos,
+		   inout vec3 normal,
+		   inout vec2 st,
+		   inout vec4 color,
+		   in    float time);
+
 void	main()
 {
 	vec4 position;
@@ -90,7 +96,6 @@ void	main()
 	// compute z of end of fading effect
 	vec4 fadeDepth = u_ModelViewProjectionMatrix * (position - u_DepthScale * vec4(LB.normal, 0.0));
 	var_FadeDepth = fadeDepth.zw;
-
 #endif
 
 	var_Color = color;
