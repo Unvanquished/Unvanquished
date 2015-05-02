@@ -90,15 +90,7 @@ void	main()
 	vec2 texDiffuse = var_TexDiffuse.st;
 
 #if defined(USE_NORMAL_MAPPING)
-	// invert tangent space for two sided surfaces
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
-
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		tangentToWorldMatrix = -tangentToWorldMatrix;
-	}
-#endif
 
 	vec2 texNormal = var_TexNormalSpecular.xy;
 	vec2 texSpecular = var_TexNormalSpecular.zw;
@@ -182,13 +174,6 @@ void	main()
 #else // USE_NORMAL_MAPPING
 
 	vec3 N = normalize(var_Normal);
-
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		N = -N;
-	}
-#endif
 
 	vec3 specBase = vec3(0.0);
 	vec3 specMult = vec3(0.0);
