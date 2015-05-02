@@ -2754,7 +2754,7 @@ void CG_Buildable( centity_t *cent )
 		}
 
 		// Play lockon sound if applicable.
-		if ( es->eFlags & EF_B_LOCKON )
+		if ( es->generic1 > 0 && ( es->eFlags & EF_B_LOCKON ) )
 		{
 			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
 			                        cgs.media.rocketpodLockonSound );
