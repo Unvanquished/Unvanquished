@@ -342,13 +342,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		ri.Printf( PRINT_DEVELOPER, "...loading fragment main() shader '%s'\n", filename );
 	}
 
-	ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );
-
-	if ( !mainBuffer )
-	{
-		ri.Error( ERR_DROP, "Couldn't load %s", filename );
-	}
-
 	std::string bufferExtra;
 
 	bufferExtra.reserve( 4096 );
@@ -546,9 +539,25 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
 	// so we have to reset the line counting
 	bufferExtra += "#line 0\n";
-	shaderText = bufferExtra + libsBuffer + mainBuffer;
 
-	ri.FS_FreeFile( mainBuffer );
+	std::unordered_map<std::string, std::string>::const_iterator it = shadermap.find( filename );
+
+	if( it != shadermap.end() ) {
+		shaderText = bufferExtra + libsBuffer + it->second;
+	}
+	else
+	{
+		ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );
+
+		if ( !mainBuffer )
+		{
+			ri.Error( ERR_DROP, "Couldn't load %s", filename );
+		}
+
+		shaderText = bufferExtra + libsBuffer + mainBuffer;
+
+		ri.FS_FreeFile( mainBuffer );
+	}
 
 	return shaderText;
 }
