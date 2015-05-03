@@ -30,6 +30,7 @@ SPEEX_VERSION=1.2rc1
 THEORA_VERSION=1.1.1
 OPUS_VERSION=1.1
 OPUSFILE_VERSION=0.6
+NCURSES_VERSION=5.9
 NACLSDK_VERSION=41.0.2272.53
 
 # Extract an archive into the given subdirectory of the build dir and cd to it
@@ -113,8 +114,9 @@ build_zlib() {
 		make -f win32/Makefile.gcc install BINARY_PATH="${PREFIX}/bin" LIBRARY_PATH="${PREFIX}/lib" INCLUDE_PATH="${PREFIX}/include" SHARED_MODE=1
 		;;
 	*)
-		echo "Unsupported platform for zlib"
-		exit 1
+		./configure --prefix="${PREFIX}" --static --const
+		make
+		make install
 		;;
 	esac
 }
@@ -176,7 +178,7 @@ build_geoip() {
 build_curl() {
 	download "curl-${CURL_VERSION}.tar.bz2" "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2" curl
 	cd "curl-${CURL_VERSION}"
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" --without-ssl --without-libssh2 --without-librtmp --without-libidn --disable-file --disable-ldap --disable-crypto-auth ${MSVC_SHARED[@]}
 	make
 	make install
 }
@@ -210,8 +212,11 @@ build_sdl2() {
 		cp -R "SDL2.framework" "${PREFIX}"
 		;;
 	*)
-		echo "Unsupported platform for SDL2"
-		exit 1
+		download "SDL2-${SDL2_VERSION}.tar.gz" "https://www.libsdl.org/release/SDL2-${SDL2_VERSION}.tar.gz" sdl2
+		cd "SDL2-${SDL2_VERSION}"
+		./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
+		make
+		make install
 		;;
 	esac
 }
@@ -231,8 +236,8 @@ build_glew() {
 		install_name_tool -id "@rpath/libGLEW.${GLEW_VERSION}.dylib" "${PREFIX}/lib/libGLEW.${GLEW_VERSION}.dylib"
 		;;
 	*)
-		echo "Unsupported platform for GLEW"
-		exit 1
+		make GLEW_DEST="${PREFIX}"
+		make install GLEW_DEST="${PREFIX}"
 		;;
 	esac
 }
@@ -310,8 +315,13 @@ build_openal() {
 		install_name_tool -id "@rpath/libopenal.${OPENAL_VERSION}.dylib" "${PREFIX}/lib/libopenal.${OPENAL_VERSION}.dylib"
 		;;
 	*)
-		echo "Unsupported platform for OpenAL"
-		exit 1
+		download "openal-soft-${OPENAL_VERSION}.tar.bz2" "http://kcat.strangesoft.net/openal-releases/openal-soft-${OPENAL_VERSION}.tar.bz2" openal
+		cd "openal-soft-${OPENAL_VERSION}"
+		cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+		make
+		make install
+		echo -ne "create libopenal-combined.a\naddlib libopenal.a\naddlib libcommon.a\nsave\nend\n" | ar -M
+		cp "libopenal-combined.a" "${PREFIX}/lib/libopenal.a"
 		;;
 	esac
 }
@@ -385,6 +395,15 @@ build_opusfile() {
 	download "opusfile-${OPUSFILE_VERSION}.tar.gz" "http://downloads.xiph.org/releases/opus/opusfile-${OPUSFILE_VERSION}.tar.gz" opusfile
 	cd "opusfile-${OPUSFILE_VERSION}"
 	./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]} --disable-http
+	make
+	make install
+}
+
+# Build ncurses
+build_ncurses() {
+	download "ncurses-${NCURSES_VERSION}.tar.gz" "http://ftp.gnu.org/pub/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz" ncurses
+	cd "ncurses-${NCURSES_VERSION}"
+	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-widec ${MSVC_SHARED[@]}
 	make
 	make install
 }
@@ -633,8 +652,8 @@ setup_linux32() {
 setup_linux64() {
 	HOST=x86_64-unknown-linux-gnu
 	MSVC_SHARED=(--disable-shared --enable-static)
-	export CFLAGS="-m64"
-	export CXXFLAGS="-m64"
+	export CFLAGS="-m64 -fPIC"
+	export CXXFLAGS="-m64 -fPIC"
 	export LDFLAGS="-m64"
 	common_setup
 }

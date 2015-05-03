@@ -71,6 +71,8 @@ option( USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1 )
 option( USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1 )
 option( USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0 )
 option( BE_VERBOSE "Tell the compiler to report all warnings" 0 )
+option( USE_STATIC_LIBS "Tries to use static libs where possible. Only works for Linux" 0 )
+
 if( BE_VERBOSE )
   set( WARNMODE "no-error=" )
 else()
@@ -1106,6 +1108,13 @@ include_directories( ${MOUNT_DIR} )
 ################################################################################
 # Libraries
 ################################################################################
+
+# Prefer static libs
+if ( USE_STATIC_LIBS )
+    if ( LINUX )
+        set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+    endif()
+endif()
 
 # Import external dependencies
 if( DEPS_DIR )
