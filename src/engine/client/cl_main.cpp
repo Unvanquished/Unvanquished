@@ -2227,7 +2227,6 @@ CL_Configstrings_f
 void CL_Configstrings_f()
 {
 	int i;
-	int ofs;
 
 	if ( cls.state != CA_ACTIVE )
 	{
