@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "gl_shader.h"
 
+extern std::unordered_map<std::string, std::string> shadermap;
+
 // *INDENT-OFF*
 
 GLShader_generic                         *gl_genericShader = nullptr;
@@ -215,7 +217,7 @@ static inline std::string BuildDeformSteps( deformStage_t *deforms, int numDefor
 
 std::string     GLShaderManager::BuildDeformShaderText( std::string steps ) const
 {
-	GLchar      *mainBuffer = NULL;
+	GLchar *mainBuffer = NULL;
 	std::string shaderText;
 
 	shaderText = va( "#version %d\n", glConfig2.shadingLanguageVersion ); 
@@ -224,19 +226,28 @@ std::string     GLShaderManager::BuildDeformShaderText( std::string steps ) cons
 	// load DeformVertex() program
 	ri.Printf( PRINT_DEVELOPER, "...loading DeformVertex() shader\n" );
 
-	ri.FS_ReadFile( "glsl/deformVertexes_vp.glsl", ( void ** ) &mainBuffer );
+	std::unordered_map<std::string, std::string>::const_iterator it = shadermap.find( "glsl/deformVertexes_vp.glsl" );
 
-	if ( !mainBuffer )
-	{
-		ri.Error( ERR_DROP, "Couldn't load glsl/deformVertexes_vp.glsl" );
+	if( it != shadermap.end() ) {
+		// append it to the libsBuffer
+		shaderText += it->second;
 	}
+	else
+	{
+		ri.FS_ReadFile( "glsl/deformVertexes_vp.glsl", ( void ** ) &mainBuffer );
 
-	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
-	// so we have to reset the line counting
-	shaderText += "#line 0\n";
-	shaderText += mainBuffer;
+		if ( !mainBuffer )
+		{
+			ri.Error( ERR_DROP, "Couldn't load glsl/deformVertexes_vp.glsl" );
+		}
 
-	ri.FS_FreeFile( mainBuffer );
+		// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
+		// so we have to reset the line counting
+		shaderText += "#line 0\n";
+		shaderText += mainBuffer;
+
+		ri.FS_FreeFile( mainBuffer );
+	}
 
 	return shaderText;
 }
@@ -297,17 +308,26 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 			ri.Printf( PRINT_DEVELOPER, "...loading fragment shader '%s'\n", filename );
 		}
 
-		ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
+		std::unordered_map<std::string, std::string>::const_iterator it = shadermap.find( filename );
 
-		if ( !libBuffer )
-		{
-			ri.Error( ERR_DROP, "Couldn't load %s", filename );
+		if( it != shadermap.end() ) {
+			// append it to the libsBuffer
+			libsBuffer.append( it->second );
 		}
+		else
+		{
+			ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
 
-		// append it to the libsBuffer
-		libsBuffer.append(libBuffer);
+			if ( !libBuffer )
+			{
+				ri.Error( ERR_DROP, "Couldn't load %s", filename );
+			}
 
-		ri.FS_FreeFile( libBuffer );
+			// append it to the libsBuffer
+			libsBuffer.append(libBuffer);
+
+			ri.FS_FreeFile( libBuffer );
+		}
 	}
 
 	// load main() program

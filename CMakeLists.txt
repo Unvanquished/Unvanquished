@@ -691,6 +691,7 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/gl_shader.h
   ${ENGINE_DIR}/renderer/tr_image.h
   ${ENGINE_DIR}/renderer/tr_model_skel.h
+  ${ENGINE_DIR}/renderer/shaders.cpp
 )
 
 set( SERVERLIST
