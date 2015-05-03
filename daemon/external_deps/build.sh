@@ -32,6 +32,7 @@ OPUS_VERSION=1.1
 OPUSFILE_VERSION=0.6
 LUA_VERSION=5.3.1
 NACLSDK_VERSION=44.0.2403.155
+NCURSES_VERSION=6.0
 
 # Extract an archive into the given subdirectory of the build dir and cd to it
 # Usage: extract <filename> <directory>
@@ -114,8 +115,9 @@ build_zlib() {
 		make -f win32/Makefile.gcc install BINARY_PATH="${PREFIX}/bin" LIBRARY_PATH="${PREFIX}/lib" INCLUDE_PATH="${PREFIX}/include" SHARED_MODE=1
 		;;
 	*)
-		echo "Unsupported platform for zlib"
-		exit 1
+		./configure --prefix="${PREFIX}" --static --const
+		make
+		make install
 		;;
 	esac
 }
@@ -177,7 +179,7 @@ build_geoip() {
 build_curl() {
 	download "curl-${CURL_VERSION}.tar.bz2" "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2" curl
 	cd "curl-${CURL_VERSION}"
-	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-shared
+	./configure --host="${HOST}" --prefix="${PREFIX}" --without-ssl --without-libssh2 --without-librtmp --without-libidn --disable-file --disable-ldap --disable-crypto-auth ${MSVC_SHARED[@]}
 	make
 	make install
 }
@@ -211,8 +213,11 @@ build_sdl2() {
 		cp -R "SDL2.framework" "${PREFIX}"
 		;;
 	*)
-		echo "Unsupported platform for SDL2"
-		exit 1
+		download "SDL2-${SDL2_VERSION}.tar.gz" "https://www.libsdl.org/release/SDL2-${SDL2_VERSION}.tar.gz" sdl2
+		cd "SDL2-${SDL2_VERSION}"
+		./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
+		make
+		make install
 		;;
 	esac
 }
@@ -232,8 +237,8 @@ build_glew() {
 		install_name_tool -id "@rpath/libGLEW.${GLEW_VERSION}.dylib" "${PREFIX}/lib/libGLEW.${GLEW_VERSION}.dylib"
 		;;
 	*)
-		echo "Unsupported platform for GLEW"
-		exit 1
+		make GLEW_DEST="${PREFIX}"
+		make install GLEW_DEST="${PREFIX}"
 		;;
 	esac
 }
@@ -303,7 +308,7 @@ build_openal() {
 			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" -DCMAKE_BUILD_TYPE=Release
 			;;
 		macosx64)
-			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" -DCMAKE_BUILD_TYPE=Release
+			cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" -DCMAKE_BUILD_TYPE=Release -DALSOFT_EXAMPLES=OFF
 			;;
 		esac
 		make
@@ -311,8 +316,13 @@ build_openal() {
 		install_name_tool -id "@rpath/libopenal.${OPENAL_VERSION}.dylib" "${PREFIX}/lib/libopenal.${OPENAL_VERSION}.dylib"
 		;;
 	*)
-		echo "Unsupported platform for OpenAL"
-		exit 1
+		download "openal-soft-${OPENAL_VERSION}.tar.bz2" "http://kcat.strangesoft.net/openal-releases/openal-soft-${OPENAL_VERSION}.tar.bz2" openal
+		cd "openal-soft-${OPENAL_VERSION}"
+		cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DALSOFT_EXAMPLES=OFF -DLIBTYPE=STATIC .
+		make
+		make install
+		echo -ne "create libopenal-combined.a\naddlib libopenal.a\naddlib libcommon.a\nsave\nend\n" | ar -M
+		cp "libopenal-combined.a" "${PREFIX}/lib/libopenal.a"
 		;;
 	esac
 }
@@ -390,6 +400,7 @@ build_opusfile() {
 	make install
 }
 
+
 # Build Lua
 build_lua() {
 	download "lua-${LUA_VERSION}.tar.gz" "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" lua
@@ -422,6 +433,15 @@ build_lua() {
 		make install INSTALL_TOP="${PREFIX}"
 		;;
 	esac
+}
+
+# Build ncurses
+build_ncurses() {
+	download "ncurses-${NCURSES_VERSION}.tar.gz" "http://ftp.gnu.org/pub/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz" ncurses
+	cd "ncurses-${NCURSES_VERSION}"
+	./configure --host="${HOST}" --prefix="${PREFIX}" --enable-widec ${MSVC_SHARED[@]}
+	make
+	make install
 }
 
 # Build the NaCl SDK
@@ -685,8 +705,8 @@ setup_linux64() {
 	HOST=x86_64-unknown-linux-gnu
 	CROSS=
 	MSVC_SHARED=(--disable-shared --enable-static)
-	export CFLAGS="-m64"
-	export CXXFLAGS="-m64"
+	export CFLAGS="-m64 -fPIC"
+	export CXXFLAGS="-m64 -fPIC"
 	export LDFLAGS="-m64"
 	common_setup
 }
