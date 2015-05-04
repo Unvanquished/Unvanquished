@@ -13,7 +13,7 @@ cd main
 for f in glsl/*.glsl
 do
     echo '{ "'$f'", R"('
-    cat $f
+    perl -p0e 's%/(\*.*?\*/|/[^\n]*)%%sg' $f
     echo ')" },'
 done
 echo '} );'
