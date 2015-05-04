@@ -51,7 +51,7 @@
 				</p>
 
 				<row>
-					<dataselect cvar="r_mode" source="resolutions.default" fields="width,height" formatter="Resolution" />
+					<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
 					<h3>Screen Resolution</h3>
 				</row>
 				<row>
