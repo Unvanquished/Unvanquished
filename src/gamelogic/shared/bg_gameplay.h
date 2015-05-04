@@ -118,14 +118,9 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
 
-// TODO: Increase burn damage frequencies, make sure burn functions are called frequently
-// Average burn damage of an independent buildable is given by the limit of a geometric series:
-// ( BURN_SELFDAMAGE / BURN_SELFDAMAGE_PERIOD ) * ( BURN_STOP_PERIOD / BURN_STOP_CHANCE )
 #define BURN_SELFDAMAGE         10
-#define BURN_SELFDAMAGE_PERIOD  1000
-#define BURN_SPLDAMAGE          10
+#define BURN_SPLDAMAGE          20
 #define BURN_SPLDAMAGE_RADIUS   60
-#define BURN_SPLDAMAGE_PERIOD   500
 // A burn action will first evaluate the stop chance, then a spread chance for each close neighbor
 #define BURN_ACTION_PERIOD      2500
 // The stop chance is lowered by a factor for every burning entity nearby

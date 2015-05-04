@@ -85,6 +85,8 @@ components:
             - Frame
             - Ignite
             - Extinguish
+        requires:
+            - Thinking
 
     Health:
         parameters:

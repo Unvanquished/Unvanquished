@@ -2705,7 +2705,7 @@ void G_RunThink( gentity_t *ent )
 
 	// Do CBSE style thinking.
 	ForEntities<ThinkingComponent>([] (Entity &entity, ThinkingComponent &thinkingComponent) {
-		thinkingComponent.Think(level.time - level.previousTime);
+		thinkingComponent.Think();
 	});
 
 	// Do legacy thinking.

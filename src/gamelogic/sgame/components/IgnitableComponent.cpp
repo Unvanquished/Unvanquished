@@ -26,9 +26,11 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 static Log::Logger fireLogger("sgame.fire");
 
-IgnitableComponent::IgnitableComponent(Entity &entity, bool alwaysOnFire)
-	: IgnitableComponentBase(entity, alwaysOnFire), onFire(false), immuneUntil(0)
-{}
+IgnitableComponent::IgnitableComponent(Entity& entity, bool freeOnExtinguish, ThinkingComponent& r_ThinkingComponent)
+	: IgnitableComponentBase(entity, freeOnExtinguish, r_ThinkingComponent) {
+	REGISTER_THINKER(DamageSelf, ThinkingComponent::THINKSCHEDULER_AVERAGE, 100);
+	REGISTER_THINKER(DamageArea, ThinkingComponent::THINKSCHEDULER_AVERAGE, 100);
+}
 
 void IgnitableComponent::HandlePrepareNetCode() {
 	if (onFire) {
@@ -38,7 +40,13 @@ void IgnitableComponent::HandlePrepareNetCode() {
 	}
 }
 
-void IgnitableComponent::HandleIgnite(struct gentity_s* fireStarter) {
+void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
+	if (!fireStarter) {
+		// TODO: Find out why this happens.
+		fireLogger.Warn("Fire starter not known.");
+		fireStarter = entity.oldEnt;
+	}
+
 	if (level.time < immuneUntil) {
 		fireLogger.DoDebugCode([&]{
 			char selfDescr[64];
@@ -54,9 +62,7 @@ void IgnitableComponent::HandleIgnite(struct gentity_s* fireStarter) {
 		// Start a new fire.
 		onFire            = true;
 		this->fireStarter = fireStarter;
-		nextSelfDamage    = level.time + BURN_SELFDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-		nextSplashDamage  = level.time + BURN_SPLDAMAGE_PERIOD  * BURN_PERIODS_RAND_MOD;
-		nextStatusAction  = level.time + BURN_ACTION_PERIOD     * BURN_PERIODS_RAND_MOD;
+		nextStatusAction  = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
 
 		fireLogger.DoNoticeCode([&]{
 			char selfDescr[64], fireStarterDescr[64];
@@ -95,6 +101,27 @@ void IgnitableComponent::HandleExtinguish(int immunityTime) {
 	}
 }
 
+void IgnitableComponent::DamageSelf(int timeDelta) {
+	if (!onFire) return;
+
+	float damage = BURN_SELFDAMAGE * timeDelta * 0.001f;
+
+	if (entity.Damage(damage, fireStarter, {}, {}, 0, MOD_BURN)) {
+		fireLogger.Debug("Self burn damage of %.1f (%i/s) was dealt.", damage, BURN_SELFDAMAGE);
+	}
+}
+
+void IgnitableComponent::DamageArea(int timeDelta) {
+	if (!onFire) return;
+
+	float damage = BURN_SPLDAMAGE * timeDelta * 0.001f;
+
+	if (G_SelectiveRadiusDamage(entity.oldEnt->s.origin, fireStarter, damage,
+		BURN_SPLDAMAGE_RADIUS, entity.oldEnt, MOD_BURN, TEAM_NONE)) {
+		fireLogger.Debug("Area burn damage of %.1f (%i/s) was dealt.", damage, BURN_SPLDAMAGE);
+	}
+}
+
 // TODO: Replace with thinking.
 void IgnitableComponent::HandleFrame(int timeDelta) {
 	if (not onFire) return;
@@ -103,27 +130,6 @@ void IgnitableComponent::HandleFrame(int timeDelta) {
 	fireLogger.DoDebugCode([&]{
 		BG_BuildEntityDescription(descr, sizeof(descr), &entity.oldEnt->s);
 	});
-
-	// Damage self.
-	if (nextSelfDamage < level.time) {
-		nextSelfDamage = level.time + BURN_SELFDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-
-		if (entity.Damage(BURN_SELFDAMAGE, fireStarter, Util::nullopt, Util::nullopt, 0, MOD_BURN)) {
-			fireLogger.Debug("%s took burn damage.", descr);
-		}
-	}
-
-	// Damage close players.
-	if (nextSplashDamage < level.time) {
-		nextSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-
-		bool hit = G_SelectiveRadiusDamage( entity.oldEnt->s.origin, fireStarter, BURN_SPLDAMAGE,
-			BURN_SPLDAMAGE_RADIUS, entity.oldEnt, MOD_BURN, TEAM_NONE );
-
-		if (hit) {
-			fireLogger.Debug("%s dealt burn damage.", descr);
-		}
-	}
 
 	// Evaluate chances to stop burning or ignite other ignitables.
 	if (nextStatusAction < level.time) {
