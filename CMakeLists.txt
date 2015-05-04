@@ -1360,13 +1360,6 @@ if( BUILD_CLIENT )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENGL_LIBRARIES} )
 endif()
 
-# X11
-if( LINUX AND BUILD_CLIENT )
-  find_package( X11 REQUIRED )
-  include_directories( ${X11_INCLUDE_DIRS} )
-  set( LIBS_CLIENT ${LIBS_CLIENT} ${X11_LIBRARIES} )
-endif()
-
 # OpenAL
 if( BUILD_CLIENT )
   find_package( OpenAL REQUIRED )
