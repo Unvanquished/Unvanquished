@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "gl_shader.h"
 
-extern std::unordered_map<std::string, std::string> shadermap;
+extern std::unordered_map<std::string, const char *> shadermap;
 
 // *INDENT-OFF*
 
@@ -228,7 +228,7 @@ std::string     GLShaderManager::BuildDeformShaderText( std::string steps ) cons
 	// load DeformVertex() program
 	ri.Printf( PRINT_DEVELOPER, "...loading DeformVertex() shader\n" );
 
-	std::unordered_map<std::string, std::string>::const_iterator it = shadermap.find( "glsl/deformVertexes_vp.glsl" );
+	std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( "glsl/deformVertexes_vp.glsl" );
 
 	if( it != shadermap.end() ) {
 		// append it to the libsBuffer
@@ -310,7 +310,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 			ri.Printf( PRINT_DEVELOPER, "...loading fragment shader '%s'\n", filename );
 		}
 
-		std::unordered_map<std::string, std::string>::const_iterator it = shadermap.find( filename );
+		std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( filename );
 
 		if( it != shadermap.end() ) {
 			// append it to the libsBuffer
@@ -542,7 +542,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	// so we have to reset the line counting
 	bufferExtra += "#line 0\n";
 
-	std::unordered_map<std::string, std::string>::const_iterator it = shadermap.find( filename );
+	std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( filename );
 
 	if( it != shadermap.end() ) {
 		shaderText = bufferExtra + libsBuffer + it->second;
