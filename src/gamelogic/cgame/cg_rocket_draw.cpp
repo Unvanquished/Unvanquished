@@ -2362,7 +2362,7 @@ static void CG_Rocket_DrawNumSpawns()
 	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
 	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
 
-	if ( position < 1 )
+	if ( position < 1 || cg.intermissionStarted )
 	{
 		s = "";
 	}
