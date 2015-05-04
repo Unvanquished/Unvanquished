@@ -7,8 +7,7 @@
 
 /** A helper to register component thinkers. */
 #define REGISTER_THINKER(METHOD, SCHEDULER, PERIOD) \
-	GetThinkingComponent().RegisterThinker(std::bind(&IgnitableComponent::METHOD, this, \
-	std::placeholders::_1), SCHEDULER, PERIOD)
+	GetThinkingComponent().RegisterThinker([this](int i){this->METHOD(i);}, SCHEDULER, PERIOD)
 
 #endif // CBSE_TYPES_H_
 

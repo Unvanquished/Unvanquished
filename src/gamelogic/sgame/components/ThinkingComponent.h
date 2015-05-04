@@ -10,10 +10,10 @@ class ThinkingComponent: public ThinkingComponentBase {
 
 	public:
 		typedef enum {
-			THINKSCHEDULER_CLOSEST,
-			THINKSCHEDULER_BEFORE,
-			THINKSCHEDULER_AFTER,
-			THINKSCHEDULER_AVERAGE
+			SCHEDULER_CLOSEST,
+			SCHEDULER_BEFORE,
+			SCHEDULER_AFTER,
+			SCHEDULER_AVERAGE
 		} thinkScheduler_t;
 
 		/**
@@ -47,14 +47,14 @@ class ThinkingComponent: public ThinkingComponentBase {
 		// /////////////////// //
 
 		typedef struct {
-			const thinker_t thinker;
-			const thinkScheduler_t scheduler;
-			const int period;
+			thinker_t thinker;
+			thinkScheduler_t scheduler;
+			int period;
 			int timestamp; /**< Time of last thinker execution. */
 			int delay; /**< Summed lateness of previous executions. */
 		} thinkRecord_t;
 
-		std::list<thinkRecord_t> thinkers;
+		std::vector<thinkRecord_t> thinkers;
 
 		float averageFrameTime; /**< Smoothed out average frame time for predictions. */
 		constexpr static float averageChangeRate = 0.1f;

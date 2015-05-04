@@ -22,17 +22,20 @@ void ThinkingComponent::Think() {
 		int nextFrameExecutionLateness = timeDelta + averageFrameTime - record.period;
 
 		switch (record.scheduler) {
-			case THINKSCHEDULER_AFTER:
-				if (thisFrameExecutionLateness < 0) continue; break;
+			case SCHEDULER_AFTER:
+				if (thisFrameExecutionLateness < 0) continue;
+				break;
 
-			case THINKSCHEDULER_BEFORE:
-				if (nextFrameExecutionLateness <= 0) continue; break;
+			case SCHEDULER_BEFORE:
+				if (nextFrameExecutionLateness <= 0) continue;
+				break;
 
-			case THINKSCHEDULER_CLOSEST:
+			case SCHEDULER_CLOSEST:
 				if (std::abs(nextFrameExecutionLateness) <
-				    std::abs(thisFrameExecutionLateness)) continue; break;
+				    std::abs(thisFrameExecutionLateness)) continue;
+				break;
 
-			case THINKSCHEDULER_AVERAGE:
+			case SCHEDULER_AVERAGE:
 				if (std::abs(nextFrameExecutionLateness + record.delay) <
 				    std::abs(thisFrameExecutionLateness + record.delay)) continue;
 				record.delay += thisFrameExecutionLateness;

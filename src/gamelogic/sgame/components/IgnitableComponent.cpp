@@ -28,8 +28,8 @@ static Log::Logger fireLogger("sgame.fire");
 
 IgnitableComponent::IgnitableComponent(Entity& entity, bool freeOnExtinguish, ThinkingComponent& r_ThinkingComponent)
 	: IgnitableComponentBase(entity, freeOnExtinguish, r_ThinkingComponent) {
-	REGISTER_THINKER(DamageSelf, ThinkingComponent::THINKSCHEDULER_AVERAGE, 100);
-	REGISTER_THINKER(DamageArea, ThinkingComponent::THINKSCHEDULER_AVERAGE, 100);
+	REGISTER_THINKER(DamageSelf, ThinkingComponent::SCHEDULER_AVERAGE, 100);
+	REGISTER_THINKER(DamageArea, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 }
 
 void IgnitableComponent::HandlePrepareNetCode() {
@@ -43,7 +43,7 @@ void IgnitableComponent::HandlePrepareNetCode() {
 void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 	if (!fireStarter) {
 		// TODO: Find out why this happens.
-		fireLogger.Warn("Fire starter not known.");
+		fireLogger.Notice("Fire starter not known.");
 		fireStarter = entity.oldEnt;
 	}
 
