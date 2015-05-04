@@ -76,6 +76,8 @@ void GLShaderManager::freeAll()
 	{
 		glDeleteShader( _deformShaders[ i ] );
 	}
+	_deformShaders.clear();
+	_deformShaderLookup.clear();
 
 	while ( !_shaderBuildQueue.empty() )
 	{
@@ -220,7 +222,7 @@ std::string     GLShaderManager::BuildDeformShaderText( std::string steps ) cons
 	GLchar *mainBuffer = NULL;
 	std::string shaderText;
 
-	shaderText = va( "#version %d\n", glConfig2.shadingLanguageVersion ); 
+	shaderText = va( "#version %d\n", glConfig2.shadingLanguageVersion );
 	shaderText += steps + "\n";
 
 	// load DeformVertex() program
