@@ -51,7 +51,6 @@ public:
 	~SelectableDataGrid()
 	{
 		if( lastSelectedRow != nullptr ) {
-			lastSelectedRow->SetPseudoClass( "selected", false );
 			lastSelectedRow->RemoveReference();
 		}
 	}
