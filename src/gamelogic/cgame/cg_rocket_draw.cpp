@@ -2337,7 +2337,7 @@ static void CG_Rocket_DrawSpawnQueuePosition()
 
 	else
 	{
-		s = va( P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
+		s = va( _( "You are at position %d in the spawn queue" ), position );
 	}
 
 	trap_Rocket_SetInnerRML( s, 0 );
@@ -2367,7 +2367,7 @@ static void CG_Rocket_DrawNumSpawns()
 	}
 	else
 	{
-		s = P_( "There is 1 spawn remaining", va( "There are %d spawns remaining", spawns ), spawns );
+		s = va( P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
 	}
 
 	trap_Rocket_SetInnerRML( s, 0 );
