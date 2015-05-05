@@ -2289,13 +2289,8 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 		sec = 0;
 	}
 
-	if ( cg_tutorial.integer )
-	{
-		Com_sprintf( yeskey, sizeof( yeskey ), "[%s]",
-					 CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
-		Com_sprintf( nokey, sizeof( nokey ), "[%s]",
-					 CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
-	}
+	Com_sprintf( yeskey, sizeof( yeskey ), "[%s]", CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
+	Com_sprintf( nokey, sizeof( nokey ), "[%s]", CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
 
 	s = va( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
