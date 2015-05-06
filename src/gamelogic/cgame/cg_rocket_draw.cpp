@@ -2365,9 +2365,13 @@ static void CG_Rocket_DrawNumSpawns()
 	{
 		s = _( "There are no spawns remaining" );
 	}
+	else if ( spawns == 1 )
+	{
+		s = _( "There is 1 spawn remaining" );
+	}
 	else
 	{
-		s = va( P_( "There is 1 spawn remaining", "There are %d spawns remaining", spawns ), spawns );
+		s = va( _( "There are %d spawns remaining" ), spawns );
 	}
 
 	trap_Rocket_SetInnerRML( s, 0 );
