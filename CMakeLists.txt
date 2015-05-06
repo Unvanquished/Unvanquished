@@ -1270,6 +1270,13 @@ if( BUILD_CLIENT )
   set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
 endif()
 
+# OpenGL
+if( BUILD_CLIENT )
+  find_package( OpenGL REQUIRED )
+  include_directories( ${OPENGL_INCLUDE_DIR} )
+  set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENGL_LIBRARIES} )
+endif()
+
 # Prefer static libs
 if ( USE_STATIC_LIBS )
   if ( LINUX )
@@ -1361,13 +1368,6 @@ if( BUILD_CLIENT )
   find_package( GLEW REQUIRED )
   include_directories( ${GLEW_INCLUDE_DIR} )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${GLEW_LIBRARIES} )
-endif()
-
-# OpenGL
-if( BUILD_CLIENT )
-  find_package( OpenGL REQUIRED )
-  include_directories( ${OPENGL_INCLUDE_DIR} )
-  set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENGL_LIBRARIES} )
 endif()
 
 # OpenAL
