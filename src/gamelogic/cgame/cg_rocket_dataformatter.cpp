@@ -69,6 +69,12 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 {
 	int w = atoi( Info_ValueForKey(data, "1" ) );
 	int h = atoi( Info_ValueForKey(data, "2" ) );
+
+	if ( w == -1 || h == -1 )
+	{
+		trap_Rocket_DataFormatterFormattedData( handle, "Custom", false );
+		return;
+	}
 	char *aspectRatio = BG_strdup( DisplayAspectString( w, h ) );
 	trap_Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio ), false );
 	BG_Free( aspectRatio );

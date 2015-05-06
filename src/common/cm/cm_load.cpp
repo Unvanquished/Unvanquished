@@ -919,7 +919,7 @@ void CM_LoadMap(Str::StringRef name)
 	std::string mapData;
 	try {
 		mapData = FS::PakPath::ReadFile(mapFile);
-	} catch (std::system_error& err) {
+	} catch (std::system_error&) {
 		Sys::Drop("Could not load %s", mapFile.c_str());
 	}
 

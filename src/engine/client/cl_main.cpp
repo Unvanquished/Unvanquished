@@ -2227,7 +2227,6 @@ CL_Configstrings_f
 void CL_Configstrings_f()
 {
 	int i;
-	int ofs;
 
 	if ( cls.state != CA_ACTIVE )
 	{
@@ -2624,7 +2623,6 @@ void CL_CheckForResend()
 		{
 			char key[ RSA_STRING_LENGTH ];
 
-			CL_LoadRSAKeys();
 			mpz_get_str( key, 16, public_key.n);
 			// sending back the challenge
 			port = Cvar_VariableValue( "net_qport" );
@@ -3922,6 +3920,8 @@ void CL_Init()
 	CL_InitInput();
 
 	CL_IRCSetup();
+
+	CL_LoadRSAKeys();
 
 	//
 	// register our variables
