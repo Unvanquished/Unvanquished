@@ -1133,13 +1133,6 @@ include_directories( ${MOUNT_DIR} )
 # Libraries
 ################################################################################
 
-# Prefer static libs
-if ( USE_STATIC_LIBS )
-    if ( LINUX )
-        set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    endif()
-endif()
-
 # Import external dependencies
 if( DEPS_DIR )
   # Download them if they not available
@@ -1276,6 +1269,14 @@ if( BUILD_CLIENT )
   add_definitions( -DSTATIC_LIB )
   set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
 endif()
+
+# Prefer static libs
+if ( USE_STATIC_LIBS )
+  if ( LINUX )
+    set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+  endif()
+endif()
+
 
 # zlib
 find_package( ZLIB REQUIRED )
