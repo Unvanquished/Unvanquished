@@ -10,4 +10,3 @@ void ReactorComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath)
 		G_BroadcastEvent(EV_REACTOR_DYING, 0, TEAM_HUMANS);
 	}
 }
-

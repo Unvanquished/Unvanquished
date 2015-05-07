@@ -13,5 +13,5 @@ definitions="${output_dir}/entities.yaml"
 
 cd $(dirname "${generator}")
 
-"${generator}" -c -o "${output_dir}" "${definitions}"
+"${generator}" -s -o "${output_dir}" "${definitions}"
 

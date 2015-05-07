@@ -29,17 +29,12 @@ class ArmorComponent: public ArmorComponentBase {
 		 */
 		void HandleApplyDamageModifier(float& damage, Util::optional<Vec3> location, Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath);
 
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
+		// ///////////////////// //
 
 		float GetLocationalDamageMod(float angle, float height);
 		float GetNonLocationalDamageMod();
 
 	private:
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
 
 };
 

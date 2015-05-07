@@ -45,9 +45,7 @@ class HealthComponent: public HealthComponentBase {
 		 */
 		void HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location, Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath);
 
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
+		// ///////////////////// //
 
 		void SetHealth(float health);
 		void SetMaxHealth(float maxHealth, bool scaleHealth = false);
@@ -65,9 +63,6 @@ class HealthComponent: public HealthComponentBase {
 		float HealthFraction() const { return Math::Clamp(health / maxHealth, 0.0f, 1.0f); }
 
 	private:
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
 
 		float health;
 

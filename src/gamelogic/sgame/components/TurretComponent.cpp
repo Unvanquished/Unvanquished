@@ -21,4 +21,3 @@ void TurretComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) 
 		entity.oldEnt->nextthink = level.time;
 	}
 }
-

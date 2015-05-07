@@ -22,4 +22,3 @@ void MiningComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) 
 	// Inform neighbours so they can increase their rate immediately.
 	G_RGSInformNeighbors(entity.oldEnt);
 }
-

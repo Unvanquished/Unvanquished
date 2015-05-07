@@ -11,4 +11,3 @@ void ResourceStorageComponent::HandlePrepareNetCode() {
 void ResourceStorageComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
 	G_BPStorageDie(entity.oldEnt);
 }
-

@@ -11,4 +11,3 @@ void MedipadComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath)
 		entity.oldEnt->target->client->ps.stats[STAT_STATE] &= ~SS_HEALING_2X;
 	}
 }
-

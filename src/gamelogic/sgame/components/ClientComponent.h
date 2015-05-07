@@ -19,18 +19,13 @@ class ClientComponent: public ClientComponentBase {
 		 */
 		ClientComponent(Entity& entity, gclient_t* clientData);
 
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
+		// ///////////////////// //
 
 		gclient_t* GetClientData() {
 			return clientData;
 		}
 
 	private:
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
 
 };
 

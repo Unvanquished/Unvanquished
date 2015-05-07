@@ -14,4 +14,3 @@ void SpikerComponent::HandleDamage(float amount, gentity_t* source, Util::option
 		ASpiker_Fire(entity.oldEnt);
 	}
 }
-

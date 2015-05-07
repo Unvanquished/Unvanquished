@@ -17,4 +17,3 @@ void HiveComponent::HandleDamage(float amount, gentity_t* source, Util::optional
 		}
 	}
 }
-

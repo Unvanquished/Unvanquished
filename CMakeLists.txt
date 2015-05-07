@@ -913,7 +913,6 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/Beacon.cpp
   ${GAMELOGIC_DIR}/sgame/Clustering.cpp
   ${GAMELOGIC_DIR}/sgame/CBSE.h
-  ${GAMELOGIC_DIR}/sgame/CBSETypes.h
   ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.cpp
   ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.h
   ${GAMELOGIC_DIR}/sgame/backend/CBSEComponents.h

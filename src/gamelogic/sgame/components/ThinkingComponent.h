@@ -7,7 +7,6 @@
 #include <functional>
 
 class ThinkingComponent: public ThinkingComponentBase {
-
 	public:
 		typedef enum {
 			SCHEDULER_CLOSEST,
@@ -33,19 +32,13 @@ class ThinkingComponent: public ThinkingComponentBase {
 		 */
 		ThinkingComponent(Entity& entity);
 
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
+		// ///////////////////// //
 
 		void Think();
 
 		void RegisterThinker(thinker_t thinker, thinkScheduler_t scheduler, int period);
 
 	private:
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
-
 		typedef struct {
 			thinker_t thinker;
 			thinkScheduler_t scheduler;
@@ -61,4 +54,3 @@ class ThinkingComponent: public ThinkingComponentBase {
 };
 
 #endif // THINKING_COMPONENT_H_
-

@@ -30,9 +30,7 @@ class KnockbackComponent: public KnockbackComponentBase {
 		 */
 		void HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location, Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath);
 
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
+		// ///////////////////// //
 
 		constexpr static float DAMAGE_TO_KNOCKBACK   = 5.0f;
 		constexpr static float KNOCKBACK_MIN_MASSMOD = 0.5f;
@@ -41,9 +39,6 @@ class KnockbackComponent: public KnockbackComponentBase {
 		constexpr static int   KNOCKBACK_PMOVE_TIME  = 50;
 
 	private:
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
 
 };
 

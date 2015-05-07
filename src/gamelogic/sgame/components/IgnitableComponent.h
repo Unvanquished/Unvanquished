@@ -71,17 +71,12 @@ class IgnitableComponent: public IgnitableComponentBase {
 		 */
 		void HandleExtinguish(int immunityTime);
 
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
+		// ///////////////////// //
 
 		void DamageSelf(int timeDelta);
 		void DamageArea(int timeDelta);
 
 	private:
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
 
 		gentity_t* fireStarter = nullptr; /**< Client who orginally started the fire. */
 		bool onFire;

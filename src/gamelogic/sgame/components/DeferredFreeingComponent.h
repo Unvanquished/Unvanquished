@@ -56,9 +56,7 @@ class DeferredFreeingComponent: public DeferredFreeingComponentBase {
 		 */
 		void HandleFreeAt(int freeTime);
 
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
+		// ///////////////////// //
 
 		/**
 		 * @return When to free the parent entity.
@@ -67,9 +65,6 @@ class DeferredFreeingComponent: public DeferredFreeingComponentBase {
 		int GetFreeTime();
 
 	private:
-		// /////////////////// //
-		// Handwritten Members //
-		// /////////////////// //
 
 		int freeTime; /**< When the entity shall be freed. @todo Use freeTime_t */
 };
