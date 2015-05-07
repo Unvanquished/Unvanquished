@@ -27,7 +27,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 static Log::Logger fireLogger("sgame.fire");
 
 IgnitableComponent::IgnitableComponent(Entity& entity, bool freeOnExtinguish, ThinkingComponent& r_ThinkingComponent)
-	: IgnitableComponentBase(entity, freeOnExtinguish, r_ThinkingComponent) {
+	: IgnitableComponentBase(entity, freeOnExtinguish, r_ThinkingComponent), onFire(freeOnExtinguish) {
 	REGISTER_THINKER(DamageSelf, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 	REGISTER_THINKER(DamageArea, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 }
