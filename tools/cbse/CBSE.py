@@ -496,7 +496,7 @@ if __name__ == '__main__':
     parser.add_argument('definitions', metavar='DEFINITION_FILE', nargs=1, type=open, help ="The definitions to use, - for stdin.")
     parser.add_argument('-t', '--template-dir', default="templates", type=str, help="Directory with template files.")
     parser.add_argument('-o', '--output-dir', default=None, type=str, help="Output directory for the generated source files.")
-    parser.add_argument('-c', '--copy-skel', action="store_true", help="Copy skeleton files in place if the file doesn't exist.")
+    parser.add_argument('-s', '--skeletons', action="store_true", help="Put latest skeleton files in a subfolder.")
     parser.add_argument('-p', '--header', default=None, type=argparse.FileType('r'), help="Prepend file contents as a header to all source files.")
 
     args = parser.parse_args()
@@ -549,12 +549,12 @@ if __name__ == '__main__':
         for component in definitions['components']:
             params = template_params + [{'component': component}]
 
-            to_render.append(FileToRender('Component.h', skeletons_dir + component.get_type_name() + '.h', params, True))
-            to_render.append(FileToRender('Component.cpp', skeletons_dir + component.get_type_name() + '.cpp', params, True))
+            if args.skeletons:
+                to_render.append(FileToRender('Component.h', skeletons_dir + component.get_type_name() + '.h', params, True))
+                to_render.append(FileToRender('Component.cpp', skeletons_dir + component.get_type_name() + '.cpp', params, True))
 
-            if args.copy_skel:
-                to_render.append(FileToRender('Component.h', components_dir + component.get_type_name() + '.h', params, False))
-                to_render.append(FileToRender('Component.cpp', components_dir + component.get_type_name() + '.cpp', params, False))
+            to_render.append(FileToRender('Component.h', components_dir + component.get_type_name() + '.h', params, False))
+            to_render.append(FileToRender('Component.cpp', components_dir + component.get_type_name() + '.cpp', params, False))
 
         # Now render the files
         env = jinja2.Environment(loader=PreprocessingLoader(args.template_dir), trim_blocks=True, lstrip_blocks=True)
