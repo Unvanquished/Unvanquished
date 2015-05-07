@@ -631,7 +631,7 @@ struct damageRegion_s
 	char     name[ 32 ];
 	float    area, modifier, minHeight, maxHeight;
 	int      minAngle, maxAngle;
-	int crouch;
+	bool crouch;
 	int nonlocational;
 };
 
@@ -801,7 +801,7 @@ struct level_locals_s
 		float            mineEfficiency;
 		int              kills;
 		spawnQueue_t     spawnQueue;
-		int         locked;
+		bool         locked;
 		float            momentum;
 		int              layoutBuildPoints;
 	} team[ NUM_TEAMS ];

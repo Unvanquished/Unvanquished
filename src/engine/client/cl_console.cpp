@@ -1298,23 +1298,23 @@ void Con_RunConsole()
 	//check whether or not the console should be in opened state
 	consoleState.isOpened = cls.keyCatchers & KEYCATCH_CONSOLE;
 
-	if ( consoleState.isOpened < consoleState.currentAnimationFraction )
+	if ( !consoleState.isOpened && consoleState.currentAnimationFraction >= 0.0f )
 	{
 		consoleState.currentAnimationFraction -= con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction <= 0  || con_animationType->integer == ANIMATION_TYPE_NONE )
+		if ( consoleState.currentAnimationFraction <= 0.0f  || con_animationType->integer == ANIMATION_TYPE_NONE )
 		{	//we are closed, do some last onClose work
-			consoleState.currentAnimationFraction = 0;
+			consoleState.currentAnimationFraction = 0.0f;
 			consoleState.lastReadLineIndex = consoleState.currentLine;
 		}
 	}
-	else if ( consoleState.isOpened > consoleState.currentAnimationFraction )
+	else if ( consoleState.isOpened && consoleState.currentAnimationFraction <= 1.0f)
 	{
 		consoleState.currentAnimationFraction += con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction > 1  || con_animationType->integer == ANIMATION_TYPE_NONE  )
+		if ( consoleState.currentAnimationFraction > 1.0f  || con_animationType->integer == ANIMATION_TYPE_NONE  )
 		{
-			consoleState.currentAnimationFraction = 1;
+			consoleState.currentAnimationFraction = 1.0f;
 		}
 	}
 

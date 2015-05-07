@@ -1616,14 +1616,7 @@ static int FindAlienHealthSource( gentity_t *self )
 		     G_LineOfSight( self, ent, MASK_SOLID, false ) )
 		{
 			closeTeammates++;
-
-			switch ( ent->client->ps.stats[ STAT_CLASS ] )
-			{
-				// Group healing
-				default:
-					ret |= ( closeTeammates > 1 ) ? SS_HEALING_4X : SS_HEALING_2X;
-					break;
-			}
+			ret |= ( closeTeammates > 1 ) ? SS_HEALING_4X : SS_HEALING_2X;
 		}
 		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->powered )
 		{

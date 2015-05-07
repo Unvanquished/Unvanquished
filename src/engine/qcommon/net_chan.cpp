@@ -612,7 +612,7 @@ static INLINE void NET_SetOOBHeader( char *s )
 
 	for ( i = 0; i < 4; ++i )
 	{
-		s[ i ] = 0xff;
+		s[ i ] = -1;
 	}
 }
 
