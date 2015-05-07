@@ -60,7 +60,9 @@
 
 #include <set>
 
-#include "../{{files['types']}}"
+#define CBSE_INCLUDE_TYPES_ONLY
+#include "../{{files['helper']}}"
+#undef CBSE_INCLUDE_TYPES_ONLY
 
 // /////////// //
 // Message IDs //
@@ -286,5 +288,4 @@ void ForEntities(FuncType f) {
 }
 
 #endif // CBSE_BACKEND_H_
-
 //* vi:ai:ts=4

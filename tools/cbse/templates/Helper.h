@@ -35,14 +35,26 @@
 
 {% endif %}
 // This header includes the rest of the CBSE system.
-// It won't be overwritten on backend generation but there should be no need to
-// add any content here.
+// It also provides to the CBSE backend all types that it needs to know about.
 
 #ifndef CBSE_H_
 #define CBSE_H_
 
+// Add here any definitions, forward declarations and includes that provide all
+// the types used in the entities definition file (and thus the CBSE backend).
+// Make sure none of the includes in this file includes any header that is part
+// of the CBSE system.
+// You can also define helper macros for use in all components here.
+// ----------------
+
+
+
+// ----------------
+
+// Include the backend. These should be the last lines in this header.
+#ifndef CBSE_INCLUDE_TYPES_ONLY
 #include "{{dirs['backend']}}/{{files['entities']}}"
+#endif // CBSE_INCLUDE_TYPES_ONLY
 
 #endif // CBSE_H_
-
 //* vi:ai:ts=4

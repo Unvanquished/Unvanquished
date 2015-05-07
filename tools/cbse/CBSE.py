@@ -519,7 +519,6 @@ if __name__ == '__main__':
         'backend_cpp':  Output('Backend.cpp',  subdir_names['backend'], 'CBSEBackend.cpp',  True),
         'components':   Output('Components.h', subdir_names['backend'], 'CBSEComponents.h', True),
         'entities':     Output('Entities.h',   subdir_names['backend'], 'CBSEEntities.h',   True),
-        'types':        Output('Types.h',      '',                      'CBSETypes.h',      False),
         'helper':       Output('Helper.h',     '',                      'CBSE.h',           False)
     }
 

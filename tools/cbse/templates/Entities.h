@@ -89,5 +89,4 @@
 {% endfor %}
 
 #endif // CBSE_ENTITIES_H_
-
 //* vi:ai:ts=4

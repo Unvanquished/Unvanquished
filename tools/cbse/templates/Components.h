@@ -44,5 +44,4 @@
 {% endfor %}
 
 #endif // CBSE_COMPONENTS_H_
-
 //* vi:ai:ts=4
