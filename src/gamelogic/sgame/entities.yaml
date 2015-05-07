@@ -71,9 +71,9 @@ components:
 
     Ignitable:
         parameters:
-            freeOnExtinguish: bool
+            alwaysOnFire: bool
         defaults:
-            freeOnExtinguish: false
+            alwaysOnFire: false
         messages:
             - PrepareNetCode
             - Ignite
@@ -447,7 +447,7 @@ entities:
     Fire:
         components:
             Ignitable:
-                freeOnExtinguish: true
+                alwaysOnFire: true
             DeferredFreeing:
 
 # vi:ts=4:et:ai

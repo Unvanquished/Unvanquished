@@ -36,8 +36,12 @@ const float IgnitableComponent::STOP_RADIUS          = 150.0f;
 const int   IgnitableComponent::SPREAD_CHECK_TIME    = 2500;
 const float IgnitableComponent::SPREAD_RADIUS        = 120.0f;
 
-IgnitableComponent::IgnitableComponent(Entity& entity, bool freeOnExtinguish, ThinkingComponent& r_ThinkingComponent)
-	: IgnitableComponentBase(entity, freeOnExtinguish, r_ThinkingComponent), onFire(freeOnExtinguish) {
+IgnitableComponent::IgnitableComponent(Entity& entity, bool alwaysOnFire, ThinkingComponent& r_ThinkingComponent)
+	: IgnitableComponentBase(entity, alwaysOnFire, r_ThinkingComponent)
+	, onFire(alwaysOnFire)
+	, igniteTime(alwaysOnFire ? level.time : 0)
+	, immuneUntil(0)
+	, fireStarter(nullptr) {
 	REGISTER_THINKER(DamageSelf, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 	REGISTER_THINKER(DamageArea, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 	REGISTER_THINKER(ConsiderStop, ThinkingComponent::SCHEDULER_AVERAGE, STOP_CHECK_TIME);
@@ -55,16 +59,11 @@ void IgnitableComponent::HandlePrepareNetCode() {
 void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 	if (!fireStarter) {
 		// TODO: Find out why this happens.
-		fireLogger.Notice("Fire starter not known.");
-		fireStarter = entity.oldEnt;
+		fireLogger.Notice("Received ignite message with no fire starter.");
 	}
 
 	if (level.time < immuneUntil) {
-		fireLogger.DoDebugCode([&]{
-			char selfDescr[64];
-			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
-			fireLogger.Debug("%s was immune against fire.", selfDescr);
-		});
+		fireLogger.Debug("Not ignited: Immune against fire.");
 
 		return;
 	}
@@ -76,39 +75,30 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 		onFire = true;
 		this->fireStarter = fireStarter;
 
-		fireLogger.DoNoticeCode([&]{
-			char selfDescr[64], fireStarterDescr[64];
-			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
-			BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
-			fireLogger.Notice("%s ignited %s.", fireStarterDescr, selfDescr);
-		});
+		fireLogger.Debug("Ignited.");
 	} else {
-		fireLogger.DoDebugCode([&]{
-			char selfDescr[64], fireStarterDescr[64];
-			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
-			BG_BuildEntityDescription(fireStarterDescr, sizeof(fireStarterDescr), &fireStarter->s);
-			fireLogger.Debug("%s reset burning action timer of %s.", fireStarterDescr, selfDescr);
-		});
+		if (alwaysOnFire && !this->fireStarter) {
+			// HACK: Igniting an alwaysOnFire entity will initialize the fire starter.
+			this->fireStarter = fireStarter;
+
+			fireLogger.Debug("Firestarter initialized.");
+		} else {
+			fireLogger.Debug("Re-Ignited.");
+		}
 	}
 }
 
 void IgnitableComponent::HandleExtinguish(int immunityTime) {
 	if (!onFire) return;
 
-	fireLogger.DoNoticeCode([&]{
-		char selfDescr[64];
-		if (onFire) {
-			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
-			fireLogger.Notice("%s was extinquished.", selfDescr);
-		}
-	});
-
 	onFire = false;
 	immuneUntil = level.time + immunityTime;
 
-	if (freeOnExtinguish) {
+	if (alwaysOnFire) {
 		entity.FreeAt(DeferredFreeingComponent::FREE_BEFORE_THINKING);
 	}
+
+	fireLogger.Debug("Extinguished.");
 }
 
 void IgnitableComponent::DamageSelf(int timeDelta) {
@@ -136,7 +126,11 @@ void IgnitableComponent::ConsiderStop(int timeDelta) {
 	if (!onFire) return;
 
 	// Don't stop freshly (re-)ignited fires.
-	if (igniteTime + MIN_BURN_TIME < level.time) return;
+	if (igniteTime + MIN_BURN_TIME > level.time) {
+		fireLogger.Debug("(Re-)Ignited %i ms ago, skipping stop check.", level.time - igniteTime);
+
+		return;
+	}
 
 	float burnStopChance = STOP_CHANCE;
 
