@@ -39,6 +39,7 @@ namespace Audio {
     void InitSounds();
     void ShutdownSounds();
     void UpdateSounds();
+    void StopSounds();
 
     // The only way to add a sound, attaches the sound to the emitter, a higher priority means
     // the sound will be less likely to be recycled to spawn a new sound.
