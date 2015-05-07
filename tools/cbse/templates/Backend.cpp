@@ -181,5 +181,4 @@ bool Entity::SendMessage(int msg, const void* data) {
 {% endfor %}
 
 #undef myoffsetof
-
 //* vi:ai:ts=4

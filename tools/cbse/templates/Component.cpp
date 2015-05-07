@@ -54,10 +54,11 @@
 )
 {}
 
-{% for message in component.get_messages_to_handle() %}
+{%- for message in component.get_messages_to_handle() %}
+
+
 	{{message.get_return_type()}} {{component.get_type_name()}}::{{message.get_handler_declaration()}} {
 		// TODO: Implement {{component.get_type_name()}}::{{message.get_name()}}
 	}
-{% endfor %}
-
+{%- endfor %}
 //* vi:ai:ts=4
