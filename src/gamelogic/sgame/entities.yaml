@@ -7,12 +7,6 @@ messages:
     # Make all components export their networked state.
     PrepareNetCode:
 
-    # Sent unconditionally once every server frame.
-    # TODO: This should probably be replaced entirely by thinking.
-    Frame:
-        - name: timeDelta
-          type: int
-
     FreeAt:
         - name: freeTime
           type: int
@@ -82,7 +76,6 @@ components:
             freeOnExtinguish: false
         messages:
             - PrepareNetCode
-            - Frame
             - Ignite
             - Extinguish
         requires:

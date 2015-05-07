@@ -26,10 +26,22 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 static Log::Logger fireLogger("sgame.fire");
 
+const float IgnitableComponent::SELF_DAMAGE          = 10.0f;
+const float IgnitableComponent::SPLASH_DAMAGE        = 20.0f;
+const float IgnitableComponent::SPLASH_DAMAGE_RADIUS = 60.0f;
+const int   IgnitableComponent::MIN_BURN_TIME        = 2500;
+const int   IgnitableComponent::STOP_CHECK_TIME      = 2500;
+const float IgnitableComponent::STOP_CHANCE          = 0.5f;
+const float IgnitableComponent::STOP_RADIUS          = 150.0f;
+const int   IgnitableComponent::SPREAD_CHECK_TIME    = 2500;
+const float IgnitableComponent::SPREAD_RADIUS        = 120.0f;
+
 IgnitableComponent::IgnitableComponent(Entity& entity, bool freeOnExtinguish, ThinkingComponent& r_ThinkingComponent)
 	: IgnitableComponentBase(entity, freeOnExtinguish, r_ThinkingComponent), onFire(freeOnExtinguish) {
 	REGISTER_THINKER(DamageSelf, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 	REGISTER_THINKER(DamageArea, ThinkingComponent::SCHEDULER_AVERAGE, 100);
+	REGISTER_THINKER(ConsiderStop, ThinkingComponent::SCHEDULER_AVERAGE, STOP_CHECK_TIME);
+	REGISTER_THINKER(ConsiderSpread, ThinkingComponent::SCHEDULER_AVERAGE, SPREAD_CHECK_TIME);
 }
 
 void IgnitableComponent::HandlePrepareNetCode() {
@@ -57,12 +69,12 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 		return;
 	}
 
-	// Start a new fire or refresh an existing one.
-	if (not onFire) {
-		// Start a new fire.
-		onFire            = true;
+	// Refresh ignite time even if already burning.
+	igniteTime = level.time;
+
+	if (!onFire) {
+		onFire = true;
 		this->fireStarter = fireStarter;
-		nextStatusAction  = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
 
 		fireLogger.DoNoticeCode([&]{
 			char selfDescr[64], fireStarterDescr[64];
@@ -71,10 +83,6 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 			fireLogger.Notice("%s ignited %s.", fireStarterDescr, selfDescr);
 		});
 	} else {
-		// Reset the status action timer to refresh an existing fire.
-		// This leads to prolonged burning but slow spread in burning groups.
-		nextStatusAction = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
-
 		fireLogger.DoDebugCode([&]{
 			char selfDescr[64], fireStarterDescr[64];
 			BG_BuildEntityDescription(selfDescr, sizeof(selfDescr), &entity.oldEnt->s);
@@ -85,6 +93,8 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 }
 
 void IgnitableComponent::HandleExtinguish(int immunityTime) {
+	if (!onFire) return;
+
 	fireLogger.DoNoticeCode([&]{
 		char selfDescr[64];
 		if (onFire) {
@@ -93,7 +103,7 @@ void IgnitableComponent::HandleExtinguish(int immunityTime) {
 		}
 	});
 
-	onFire      = false;
+	onFire = false;
 	immuneUntil = level.time + immunityTime;
 
 	if (freeOnExtinguish) {
@@ -104,80 +114,75 @@ void IgnitableComponent::HandleExtinguish(int immunityTime) {
 void IgnitableComponent::DamageSelf(int timeDelta) {
 	if (!onFire) return;
 
-	float damage = BURN_SELFDAMAGE * timeDelta * 0.001f;
+	float damage = SELF_DAMAGE * timeDelta * 0.001f;
 
 	if (entity.Damage(damage, fireStarter, {}, {}, 0, MOD_BURN)) {
-		fireLogger.Debug("Self burn damage of %.1f (%i/s) was dealt.", damage, BURN_SELFDAMAGE);
+		fireLogger.Debug("Self burn damage of %.1f (%.1f/s) was dealt.", damage, SELF_DAMAGE);
 	}
 }
 
 void IgnitableComponent::DamageArea(int timeDelta) {
 	if (!onFire) return;
 
-	float damage = BURN_SPLDAMAGE * timeDelta * 0.001f;
+	float damage = SPLASH_DAMAGE * timeDelta * 0.001f;
 
-	if (G_SelectiveRadiusDamage(entity.oldEnt->s.origin, fireStarter, damage,
-		BURN_SPLDAMAGE_RADIUS, entity.oldEnt, MOD_BURN, TEAM_NONE)) {
-		fireLogger.Debug("Area burn damage of %.1f (%i/s) was dealt.", damage, BURN_SPLDAMAGE);
+	if (G_SelectiveRadiusDamage(entity.oldEnt->s.origin, fireStarter, damage, SPLASH_DAMAGE_RADIUS,
+			entity.oldEnt, MOD_BURN, TEAM_NONE)) {
+		fireLogger.Debug("Area burn damage of %.1f (%.1f/s) was dealt.", damage, SPLASH_DAMAGE);
 	}
 }
 
-// TODO: Replace with thinking.
-void IgnitableComponent::HandleFrame(int timeDelta) {
-	if (not onFire) return;
+void IgnitableComponent::ConsiderStop(int timeDelta) {
+	if (!onFire) return;
 
-	char descr[64] = {0};
-	fireLogger.DoDebugCode([&]{
-		BG_BuildEntityDescription(descr, sizeof(descr), &entity.oldEnt->s);
+	// Don't stop freshly (re-)ignited fires.
+	if (igniteTime + MIN_BURN_TIME < level.time) return;
+
+	float burnStopChance = STOP_CHANCE;
+
+	// Lower burn stop chance if there are other burning entities nearby.
+	ForEntities<IgnitableComponent>([&](Entity &other, IgnitableComponent &ignitable){
+		if (&other == &entity) return;
+		if (!ignitable.onFire) return;
+		if (G_Distance(other.oldEnt, entity.oldEnt) > STOP_RADIUS) return;
+
+		float frac = G_Distance(entity.oldEnt, other.oldEnt) / STOP_RADIUS;
+		float mod  = frac * 1.0f + (1.0f - frac) * STOP_CHANCE;
+
+		burnStopChance *= mod;
 	});
 
-	// Evaluate chances to stop burning or ignite other ignitables.
-	if (nextStatusAction < level.time) {
-		nextStatusAction = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
+	// Attempt to stop burning.
+	if (random() < burnStopChance) {
+		fireLogger.Debug("Stopped burning (chance was %.0f%%)", burnStopChance * 100.0f);
 
-		float burnStopChance = BURN_STOP_CHANCE;
-
-		// Lower burn stop chance if there are other burning entities nearby.
-		ForEntities<IgnitableComponent>([&](Entity &other, IgnitableComponent &ignitable){
-			if (&other == &entity) return;
-			if (!ignitable.onFire) return;
-			if (G_Distance(other.oldEnt, entity.oldEnt) > BURN_STOP_RADIUS) return;
-
-			float frac = G_Distance(entity.oldEnt, other.oldEnt) / BURN_STOP_RADIUS;
-			float mod  = frac * 1.0f + ( 1.0f - frac ) * BURN_STOP_CHANCE;
-
-			burnStopChance *= mod;
-		});
-
-		// Attempt to stop burning.
-		if (random() < burnStopChance) {
-			fireLogger.Debug("%s stopped burning (chance was %.0f%%)", descr, burnStopChance * 100.0f);
-
-			entity.Extinguish(0);
-			return;
-		} else {
-			fireLogger.Debug("%s didn't stop burning (chance was %.0f%%)", descr, burnStopChance * 100.0f);
-		}
-
-		// Attempt to ignite close ignitables.
-		ForEntities<IgnitableComponent>([&](Entity &other, IgnitableComponent &ignitable){
-			if (&other == &entity) return;
-
-			float chance = 1.0f - G_Distance(entity.oldEnt, other.oldEnt) / BURN_SPREAD_RADIUS;
-
-			if (chance <= 0.0f) return; // distance > spread radius
-
-			if (random() < chance) {
-				if (G_LineOfSight(entity.oldEnt, other.oldEnt) && other.Ignite(fireStarter)) {
-					fireLogger.Debug("%s (re-)ignited a neighbour (chance was %.0f%%)", descr, chance * 100.0f);
-				} else {
-					fireLogger.Debug("%s tried to ignite a non-ignitable or non-LOS neighbour (chance was %.0f%%)",
-					                 descr, chance * 100.0f);
-				}
-			} else {
-				fireLogger.Debug("%s didn't try to ignite a neighbour (chance was %.0f%%)",
-				                 descr, chance * 100.0f);
-			}
-		});
+		entity.Extinguish(0);
+		return;
+	} else {
+		fireLogger.Debug("Didn't stop burning (chance was %.0f%%)", burnStopChance * 100.0f);
 	}
+}
+
+void IgnitableComponent::ConsiderSpread(int timeDelta) {
+	if (!onFire) return;
+
+	ForEntities<IgnitableComponent>([&](Entity &other, IgnitableComponent &ignitable){
+		if (&other == &entity) return;
+
+		// TODO: Use LocationComponent.
+		float chance = 1.0f - G_Distance(entity.oldEnt, other.oldEnt) / SPREAD_RADIUS;
+
+		if (chance <= 0.0f) return; // distance > spread radius
+
+		if (random() < chance) {
+			if (G_LineOfSight(entity.oldEnt, other.oldEnt) && other.Ignite(fireStarter)) {
+				fireLogger.Debug("(Re-)Ignited a neighbour (chance was %.0f%%)", chance * 100.0f);
+			} else {
+				fireLogger.Debug("Tried to ignite a non-ignitable or non-LOS neighbour (chance was %.0f%%)",
+								 chance * 100.0f);
+			}
+		} else {
+			fireLogger.Debug("Didn't try to ignite a neighbour (chance was %.0f%%)", chance * 100.0f);
+		}
+	});
 }

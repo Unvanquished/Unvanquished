@@ -2700,9 +2700,6 @@ void G_RunThink( gentity_t *ent )
 		}
 	}
 
-	// TODO: Replace this with thinking.
-	ent->entity->Frame(level.time - level.previousTime);
-
 	// Do CBSE style thinking.
 	ForEntities<ThinkingComponent>([] (Entity &entity, ThinkingComponent &thinkingComponent) {
 		thinkingComponent.Think();

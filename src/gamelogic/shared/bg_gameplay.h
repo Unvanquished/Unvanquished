@@ -118,21 +118,6 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
 
-#define BURN_SELFDAMAGE         10
-#define BURN_SPLDAMAGE          20
-#define BURN_SPLDAMAGE_RADIUS   60
-// A burn action will first evaluate the stop chance, then a spread chance for each close neighbor
-#define BURN_ACTION_PERIOD      2500
-// The stop chance is lowered by a factor for every burning entity nearby
-// The factors decrease lineraly from BURN_STOP_CHANCE to 0.0 over the given radius
-#define BURN_STOP_CHANCE        0.5f
-#define BURN_STOP_RADIUS        150
-// Spread chance decreases linearly from 1.0 to 0.0 over this distance
-// A target entity that's already burning will reset its action timer
-#define BURN_SPREAD_RADIUS      120
-// Randomization applied to all burn periods
-#define BURN_PERIODS_RAND       0.25
-
 #define BARRICADE_SHRINKPROP    0.25f
 #define BARRICADE_SHRINKTIMEOUT 500
 
