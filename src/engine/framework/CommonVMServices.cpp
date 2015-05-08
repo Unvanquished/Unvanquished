@@ -338,7 +338,7 @@ namespace VM {
                 break;
 
             case QVM_COMMON_PARSE_READ_TOKEN:
-                IPC::HandleMsg<ParseReadTokenMsg>(channel, std::move(reader), [this](int source, int& res, pc_token_t& token) {
+                IPC::HandleMsg<ParseReadTokenMsg>(channel, std::move(reader), [this](int source, bool& res, pc_token_t& token) {
                     res = Parse_ReadTokenHandle(source, &token);
                 });
                 break;
