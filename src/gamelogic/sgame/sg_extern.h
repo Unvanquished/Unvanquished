@@ -173,6 +173,8 @@ extern  vmCvar_t g_geoip;
 
 extern  vmCvar_t g_debugEntities;
 
+extern  vmCvar_t g_instantBuilding;
+
 // bot buy cvars
 extern vmCvar_t g_bot_buy;
 extern vmCvar_t g_bot_rifle;

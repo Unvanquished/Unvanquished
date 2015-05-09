@@ -1227,7 +1227,7 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 	// build
 	if ( G_BuildIfValid( self, buildable ) )
 	{
-		if ( !g_cheats.integer )
+		if ( !g_instantBuilding.integer )
 		{
 			int buildTime = BG_Buildable( buildable )->buildTime;
 

@@ -194,6 +194,8 @@ vmCvar_t           g_geoip;
 
 vmCvar_t           g_debugEntities;
 
+vmCvar_t           g_instantBuilding;
+
 
 // <bot stuff>
 
@@ -400,6 +402,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_allowTeamOverlay,            "g_allowTeamOverlay",            "1",                                0,                                               0, true            },
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                0,                                               0, false           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               0,                                               0, false           },
+
+	{ &g_instantBuilding,             "g_instantBuilding",             "0",                                0,                                               0, true            },
 
 	// bots: buying
 	{ &g_bot_buy, "g_bot_buy", "1",  CVAR_NORESTART, 0, false },

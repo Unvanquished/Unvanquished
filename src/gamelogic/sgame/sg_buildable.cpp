@@ -4834,8 +4834,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	built->enabled = false;
 	built->spawned = false;
 
-	// build instantly in cheat mode
-	if ( builder->client && g_cheats.integer )
+	if ( g_instantBuilding.integer )
 	{
 		built->health = attr->health;
 
