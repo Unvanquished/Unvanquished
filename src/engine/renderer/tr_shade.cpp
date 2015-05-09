@@ -304,6 +304,8 @@ Draws triangle outlines for debugging
 */
 static void DrawTris()
 {
+	int deform = 0;
+
 	GLimp_LogComment( "--- DrawTris ---\n" );
 
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -321,7 +323,11 @@ static void DrawTris()
 	gl_genericShader->DisableTCGenLightmap();
 	gl_genericShader->DisableMacro_USE_DEPTH_FADE();
 
-	gl_genericShader->BindProgram( tess.surfaceShader->stages[0]->deformIndex );
+	if( tess.surfaceShader->stages[0] ) {
+		deform = tess.surfaceShader->stages[0]->deformIndex;
+	}
+
+	gl_genericShader->BindProgram( deform );
 
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
