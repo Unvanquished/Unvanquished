@@ -45,7 +45,7 @@
 #include "{{files['entities']}}"
 #include <tuple>
 
-#define myoffsetof(st, m) static_cast<int>((size_t)(&((st *)0)->m))
+#define myoffsetof(st, m) static_cast<int>((size_t)(&((st *)1)->m))-1
 
 // /////////// //
 // Base entity //
