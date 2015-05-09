@@ -220,7 +220,7 @@ void CG_MouseEvent( int x, int y )
 	}
 	else if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) &&
-	     cg.showScores == qfalse )
+	     cg.showScores == false )
 	{
 		trap_Key_SetCatcher( 0 );
 		return;
@@ -229,7 +229,7 @@ void CG_MouseEvent( int x, int y )
 
 }
 
-void CG_KeyEvent( int key, qboolean down )
+void CG_KeyEvent( int key, bool down )
 {
 	if ( rocketInfo.keyCatcher & KEYCATCH_UI )
 	{
@@ -237,7 +237,7 @@ void CG_KeyEvent( int key, qboolean down )
 	}
 	else if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
-	       cg.showScores == qfalse ) )
+	       cg.showScores == false ) )
 	{
 		trap_Key_SetCatcher( 0 );
 	}
@@ -292,7 +292,7 @@ void CG_CenterPrint( const char *str, int y, int charWidth )
 CG_DrawIntermission
 =================
 */
-static void CG_DrawIntermission( void )
+static void CG_DrawIntermission()
 {
 // TODO
 }
@@ -401,7 +401,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		}
 	}
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 //==================================================================================
@@ -411,7 +411,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 CG_Draw2D
 =================
 */
-static void CG_Draw2D( void )
+static void CG_Draw2D()
 {
 	int i;
 
@@ -446,7 +446,7 @@ static void CG_Draw2D( void )
 		trap_R_SetColor( black );
 		trap_R_DrawStretchPic( 0, 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
 		trap_R_DrawStretchPic( cgs.glconfig.vidWidth - ( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ) ), 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
-		trap_R_SetColor( NULL );
+		trap_R_SetColor( nullptr );
 	}
 }
 
@@ -480,7 +480,7 @@ static void CG_ScalePainBlendTCs( float *s1, float *t1, float *s2, float *t2 )
 CG_PainBlend
 ===============
 */
-static void CG_PainBlend( void )
+static void CG_PainBlend()
 {
 	vec4_t    color;
 	int       damage;
@@ -602,7 +602,7 @@ static void CG_PainBlend( void )
 	CG_ScalePainBlendTCs( &s1, &t1, &s2, &t2 );
 	trap_R_DrawStretchPic( x, y, w, h, s1, t1, s2, t2, shader );
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 /*
@@ -610,7 +610,7 @@ static void CG_PainBlend( void )
 CG_ResetPainBlend
 =====================
 */
-void CG_ResetPainBlend( void )
+void CG_ResetPainBlend()
 {
 	cg.painBlendValue = 0.0f;
 	cg.painBlendTarget = 0.0f;
@@ -622,7 +622,7 @@ void CG_ResetPainBlend( void )
 CG_DrawBinaryShadersFinalPhases
 ================
 */
-static void CG_DrawBinaryShadersFinalPhases( void )
+static void CG_DrawBinaryShadersFinalPhases()
 {
 	float      ss;
 	char       str[ 20 ];
@@ -700,7 +700,7 @@ CG_DrawActive
 Perform all drawing needed to completely fill the screen
 =====================
 */
-void CG_DrawActive( void )
+void CG_DrawActive()
 {
 	// optionally draw the info screen instead
 	if ( !cg.snap )

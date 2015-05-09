@@ -45,7 +45,7 @@ Maryland 20850 USA.
 class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
 {
 public:
-	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), focus( false ), cursor_character_index( 0 ), text_element( NULL )
+	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
 	{
 		// Spawn text container
 		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
@@ -65,11 +65,11 @@ public:
 			context->GetRootElement()->RemoveEventListener( "blur", this );
 			context->GetRootElement()->RemoveEventListener( "mousemove", this );
 
-			context = NULL;
+			context = nullptr;
 		}
 	}
 
-	void OnRender( void )
+	void OnRender()
 	{
 		UpdateCursorPosition();
 		cursor_geometry.Render( cursor_position );
@@ -98,7 +98,7 @@ public:
 		}
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		// Ensure mouse follow cursor
 		if ( focus )
@@ -191,7 +191,9 @@ public:
 						}
 						else if ( cmd == "/" )
 						{
-							trap_SendConsoleCommand( va( "%s\n", text.CString() ) );
+							Rocket::Core::String utf8String;
+							Rocket::Core::WString( text ).ToUTF8( utf8String );
+							trap_SendConsoleCommand( va( "%s\n", utf8String.CString() ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -205,7 +207,9 @@ public:
 
 						if ( !cmd.Empty() && !text.Empty() )
 						{
-							trap_SendConsoleCommand( va( "%s %s", cmd.CString(), Cmd::Escape( text.CString() ).c_str() ) );
+							Rocket::Core::String utf8String;
+							Rocket::Core::WString( text ).ToUTF8( utf8String );
+							trap_SendConsoleCommand( va( "%s %s", cmd.CString(), Cmd::Escape( utf8String.CString() ).c_str() ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -228,7 +232,7 @@ public:
 
 					if ( text.Length() == cursor_character_index )
 					{
-						text.Append( ( char )character );
+						text.Append( character );
 					}
 
 					else
@@ -288,7 +292,7 @@ public:
 
 
 protected:
-	void GenerateCursor( void )
+	void GenerateCursor()
 	{
 		// Generates the cursor.
 		cursor_geometry.Release();
@@ -311,9 +315,9 @@ protected:
 		cursor_character_index = Rocket::Core::Math::Clamp<int>( cursor_character_index, 0, text.Length() );
 	}
 
-	void UpdateCursorPosition( void )
+	void UpdateCursorPosition()
 	{
-		if ( text_element->GetFontFaceHandle() == NULL )
+		if ( text_element->GetFontFaceHandle() == nullptr )
 		{
 			return;
 		}
@@ -323,7 +327,7 @@ protected:
 		cursor_position.x += ( float ) Rocket::Core::ElementUtilities::GetStringWidth( text_element, text.Substring( 0, cursor_character_index ) );
 	}
 
-	void UpdateText( void )
+	void UpdateText()
 	{
 		RemoveChild( text_element );
 		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
@@ -331,41 +335,54 @@ protected:
 		text_element->RemoveReference();
 		if ( !text.Empty() )
 		{
-			q2rml( text.CString(), text_element );
+			q2rml( text, text_element );
+		}
+	}
+
+	bool IsColorString( Rocket::Core::WString str, size_t position )
+	{
+		if ( position + 1 < str.Length() )
+		{
+			return ( str[position] == Q_COLOR_ESCAPE &&
+			( str[position + 1] == COLOR_NULL || ( str[position + 1] >= '0' && str[position + 1] != Q_COLOR_ESCAPE && str[position + 1] < 'p' ) )
+			) ? true : false;
+		}
+		else
+		{
+			return false;
 		}
 	}
 
 	// Special q -> rml conversion function that preserves carets and codes
-	void q2rml( const char *in, Rocket::Core::Element *parent )
+	void q2rml( Rocket::Core::WString in, Rocket::Core::Element *parent )
 	{
-		const char *p;
-		Rocket::Core::String out;
-		Rocket::Core::Element *child = NULL;
+		Rocket::Core::WString out;
+		Rocket::Core::Element *child = nullptr;
 		bool span = false;
 
-		if ( !*in )
+		if ( in.Empty() )
 		{
 			return;
 		}
 
-		for ( p = in; p && *p; ++p )
+		for ( size_t i = 0; i < in.Length(); ++i )
 		{
-			if ( *p == '<' )
+			if ( in[i] == '<' )
 			{
-				out.Append( "&lt;" );
+				out.Append( Rocket::Core::WString( "&lt;" ) );
 			}
 
-			else if ( *p == '>' )
+			else if ( in[i] == '>' )
 			{
-				out.Append( "&gt;" );
+				out.Append( Rocket::Core::WString( "&gt;" ) );
 			}
 
-			else if ( *p == '&' )
+			else if ( in[i] == '&' )
 			{
-				out.Append( "&amp;" );
+				out.Append( Rocket::Core::WString( "&amp;" ) );
 			}
 
-			else if ( *p == '\n' )
+			else if ( in[i] == '\n' )
 			{
 				// Child element initialized.
 				if ( span )
@@ -388,19 +405,17 @@ protected:
 				child->RemoveReference();
 				out.Clear();
 			}
-
 			// Convert ^^ to ^
-			else if ( *p == '^' && *( p + 1 ) == '^' )
+			else if ( in[i] == '^' && i < in.Length() - 1 && in[i + 1] == '^' )
 			{
-				p++;
-				out.Append( "^" );
+				i++;
+				out.Append( Rocket::Core::WString( "^" ) );
 			}
-
-			else if ( Q_IsColorString( p ) )
+			else if ( IsColorString( in, i ) )
 			{
 				Rocket::Core::XMLAttributes xml;
-				int code = ColorIndex( *++p );
-				char c = *p;
+				int code = ColorIndex( in[++i] );
+				auto c = in[i];
 
 				// Child element initialized
 				if ( span )
@@ -430,13 +445,12 @@ protected:
 				                                 ( int )( g_color_table[ code ][ 0 ] * 255 ),
 				                                 ( int )( g_color_table[ code ][ 1 ] * 255 ),
 				                                 ( int )( g_color_table[ code ][ 2 ] * 255 ) ) );
-				out.Append( va( "^%c", c ) );
+				out.Append( Rocket::Core::WString( va( "^%c", c ) ) );
 				span = true;
 			}
-
 			else
 			{
-				out.Append( *p );
+				out.Append( in[i] );
 			}
 		}
 
@@ -469,8 +483,10 @@ private:
 	Rocket::Core::Geometry cursor_geometry;
 	Rocket::Core::Vector2f cursor_size;
 	Rocket::Core::Vector2f dimensions;
-	Rocket::Core::String text;
+	Rocket::Core::WString text;
 	Rocket::Core::String cmd;
 
 };
 #endif
+
+

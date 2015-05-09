@@ -59,7 +59,7 @@ public:
 	{
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		// Clean up old elements
 		int latency = trap_Cvar_VariableIntegerValue( "cg_consoleLatency" );

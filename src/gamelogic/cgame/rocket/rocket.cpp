@@ -266,7 +266,7 @@ public:
 
 	void EnableScissorRegion( bool enable )
 	{
-		trap_R_ScissorEnable( enable ? qtrue :  qfalse );
+		trap_R_ScissorEnable( enable );
 
 	}
 
@@ -276,13 +276,29 @@ public:
 	}
 };
 
-void Rocket_Rocket_f( void )
+// Rocket::Core::Input::KeyModifier RocketConvertSDLmod( SDLMod sdl )
+// {
+// 	using namespace Rocket::Core::Input;
+//
+// 	int mod = 0;
+// 	if( sdl & KMOD_SHIFT )	mod |= KM_SHIFT;
+// 	if( sdl & KMOD_CTRL )	mod |= KM_CTRL;
+// 	if( sdl & KMOD_ALT )	mod |= KM_ALT;
+// 	if( sdl & KMOD_META )	mod |= KM_META;
+// 	if( sdl & KMOD_CAPS )	mod |= KM_CAPSLOCK;
+// 	if( sdl & KMOD_NUM )	mod |= KM_NUMLOCK;
+//
+// 	return KeyModifier( mod );
+// }
+
+
+void Rocket_Rocket_f()
 {
 	std::string action = CG_Argv(1);
 	Rocket_DocumentAction( action.c_str(), CG_Argv(2) );
 }
 
-void Rocket_RocketDebug_f( void )
+void Rocket_RocketDebug_f()
 {
 	static bool init = false;
 
@@ -319,13 +335,13 @@ static DaemonRenderInterface renderInterface;
 
 static RocketFocusManager fm;
 
-Rocket::Core::Context *menuContext = NULL;
-Rocket::Core::Context *hudContext = NULL;
+Rocket::Core::Context *menuContext = nullptr;
+Rocket::Core::Context *hudContext = nullptr;
 
 // TODO
 // cvar_t *cg_draw2D;
 
-void Rocket_Init( void )
+void Rocket_Init()
 {
 	Rocket::Core::SetFileInterface( &fileInterface );
 	Rocket::Core::SetSystemInterface( &systemInterface );
@@ -384,7 +400,7 @@ void Rocket_Init( void )
 	whiteShader = trap_R_RegisterShader( "white", RSF_DEFAULT );
 }
 
-void Rocket_Shutdown( void )
+void Rocket_Shutdown()
 {
 	extern std::vector<RocketDataFormatter*> dataFormatterList;
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
@@ -393,13 +409,13 @@ void Rocket_Shutdown( void )
 	if ( menuContext )
 	{
 		menuContext->RemoveReference();
-		menuContext = NULL;
+		menuContext = nullptr;
 	}
 
 	if ( hudContext )
 	{
 		hudContext->RemoveReference();
-		hudContext = NULL;
+		hudContext = nullptr;
 	}
 
 	Rocket::Core::Shutdown();
@@ -430,7 +446,7 @@ void Rocket_Shutdown( void )
 	trap_RemoveCommand( "rocketDebug" );
 }
 
-void Rocket_Render( void )
+void Rocket_Render()
 {
 	if ( cg_draw2D.integer && hudContext )
 	{
@@ -445,7 +461,7 @@ void Rocket_Render( void )
 
 }
 
-void Rocket_Update( void )
+void Rocket_Update()
 {
 	// Mouse move is necessary to ensure the menus update, so fake one
 	Rocket_MouseMove( 0, 0 );

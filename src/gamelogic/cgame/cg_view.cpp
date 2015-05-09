@@ -69,7 +69,7 @@ Creates an entity in front of the current position, which
 can then be moved around
 =================
 */
-void CG_TestModel_f( void )
+void CG_TestModel_f()
 {
 	vec3_t angles;
 
@@ -109,7 +109,7 @@ void CG_TestModel_f( void )
 	angles[ ROLL ] = 0;
 
 	AnglesToAxis( angles, cg.testModelEntity.axis );
-	cg.testGun = qfalse;
+	cg.testGun = false;
 
 	if ( cg.testModelBarrelEntity.hModel )
 	{
@@ -127,20 +127,20 @@ CG_TestGun_f
 Replaces the current view weapon with the given model
 =================
 */
-void CG_TestGun_f( void )
+void CG_TestGun_f()
 {
 	CG_TestModel_f();
-	cg.testGun = qtrue;
+	cg.testGun = true;
 	cg.testModelEntity.renderfx = RF_MINLIGHT | RF_DEPTHHACK | RF_FIRST_PERSON;
 }
 
-void CG_TestModelNextFrame_f( void )
+void CG_TestModelNextFrame_f()
 {
 	cg.testModelEntity.frame++;
 	CG_Printf( "frame %i\n", cg.testModelEntity.frame );
 }
 
-void CG_TestModelPrevFrame_f( void )
+void CG_TestModelPrevFrame_f()
 {
 	cg.testModelEntity.frame--;
 
@@ -152,13 +152,13 @@ void CG_TestModelPrevFrame_f( void )
 	CG_Printf( "frame %i\n", cg.testModelEntity.frame );
 }
 
-void CG_TestModelNextSkin_f( void )
+void CG_TestModelNextSkin_f()
 {
 	cg.testModelEntity.skinNum++;
 	CG_Printf( "skin %i\n", cg.testModelEntity.skinNum );
 }
 
-void CG_TestModelPrevSkin_f( void )
+void CG_TestModelPrevSkin_f()
 {
 	cg.testModelEntity.skinNum--;
 
@@ -170,7 +170,7 @@ void CG_TestModelPrevSkin_f( void )
 	CG_Printf( "skin %i\n", cg.testModelEntity.skinNum );
 }
 
-static void CG_AddTestModel( void )
+static void CG_AddTestModel()
 {
 	int i;
 
@@ -221,7 +221,7 @@ CG_CalcVrect
 Sets the coordinates of the rendered window
 =================
 */
-static void CG_CalcVrect( void )
+static void CG_CalcVrect()
 {
 	int size;
 
@@ -253,7 +253,7 @@ CG_OffsetThirdPersonView
 
 ===============
 */
-void CG_OffsetThirdPersonView( void )
+void CG_OffsetThirdPersonView()
 {
 	int           i;
 	vec3_t        forward, right, up;
@@ -300,10 +300,10 @@ void CG_OffsetThirdPersonView( void )
 		{
 			vec3_t lookDirection;
 
-			if ( cg.wasDeadLastFrame == qfalse || !cg_staticDeathCam.integer )
+			if ( cg.wasDeadLastFrame == false || !cg_staticDeathCam.integer )
 			{
 				VectorCopy( cg_entities[ killerEntNum ].lerpOrigin, killerPos );
-				cg.wasDeadLastFrame = qtrue;
+				cg.wasDeadLastFrame = true;
 			}
 
 			VectorSubtract( killerPos, cg.refdef.vieworg, lookDirection );
@@ -378,7 +378,7 @@ void CG_OffsetThirdPersonView( void )
 		AnglesToAxis( rotationAngles, axis );
 
 		if ( !( cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) ||
-		     !BG_RotateAxis( cg.snap->ps.grapplePoint, axis, rotaxis, qfalse,
+		     !BG_RotateAxis( cg.snap->ps.grapplePoint, axis, rotaxis, false,
 		                     cg.snap->ps.eFlags & EF_WALLCLIMBCEILING ) )
 		{
 			AxisCopy( axis, rotaxis );
@@ -450,7 +450,7 @@ CG_OffsetShoulderView
 
 ===============
 */
-void CG_OffsetShoulderView( void )
+void CG_OffsetShoulderView()
 {
 	int          i;
 	int          cmdNum;
@@ -515,7 +515,7 @@ void CG_OffsetShoulderView( void )
 	AnglesToAxis( rotationAngles, axis );
 
 	if ( !( cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) ||
-	     !BG_RotateAxis( cg.snap->ps.grapplePoint, axis, rotaxis, qfalse,
+	     !BG_RotateAxis( cg.snap->ps.grapplePoint, axis, rotaxis, false,
 	                     cg.snap->ps.eFlags & EF_WALLCLIMBCEILING ) )
 	{
 		AxisCopy( axis, rotaxis );
@@ -534,7 +534,7 @@ void CG_OffsetShoulderView( void )
 }
 
 // this causes a compiler bug on mac MrC compiler
-static void CG_StepOffset( void )
+static void CG_StepOffset()
 {
 	float         steptime;
 	int           timeDelta;
@@ -563,7 +563,7 @@ CG_OffsetFirstPersonView
 
 ===============
 */
-void CG_OffsetFirstPersonView( void )
+void CG_OffsetFirstPersonView()
 {
 	float         *origin;
 	float         *angles;
@@ -713,7 +713,7 @@ void CG_OffsetFirstPersonView( void )
 		float  fraction1, fraction2;
 		vec3_t forward;
 
-		AngleVectors( angles, forward, NULL, NULL );
+		AngleVectors( angles, forward, nullptr, nullptr );
 		VectorNormalize( forward );
 
 		fraction1 = ( float ) cg.predictedPlayerState.stats[ STAT_MISC ] /
@@ -869,7 +869,7 @@ Fixed fov at intermissions, otherwise account for fov variable and zooms.
 #define MAX_FOV_Y      120.0f
 #define MAX_FOV_WARP_Y 127.5f
 
-static int CG_CalcFov( void )
+static int CG_CalcFov()
 {
 	float     y;
 	float     phase;
@@ -895,11 +895,11 @@ static int CG_CalcFov( void )
 		{
 			if ( !cg.chaseFollow )
 			{
-				cg.chaseFollow = qtrue;
+				cg.chaseFollow = true;
 			}
 			else
 			{
-				cg.chaseFollow = qfalse;
+				cg.chaseFollow = false;
 				trap_SendClientCommand( "follow\n" );
 			}
 		}
@@ -986,7 +986,7 @@ static int CG_CalcFov( void )
 				// WBUTTON_ATTACK2 isn't held so unzoom next time
 				if ( !usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) || cg.snap->ps.weaponstate == WEAPON_RELOADING )
 				{
-					cg.zoomed = qfalse;
+					cg.zoomed = false;
 					cg.zoomTime = MIN( cg.time,
 					                   cg.time + cg.time - cg.zoomTime - ZOOM_TIME );
 				}
@@ -1003,7 +1003,7 @@ static int CG_CalcFov( void )
 				// WBUTTON_ATTACK2 is held so zoom next time
 				if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) && cg.snap->ps.weaponstate != WEAPON_RELOADING )
 				{
-					cg.zoomed = qtrue;
+					cg.zoomed = true;
 					cg.zoomTime = MIN( cg.time,
 					                   cg.time + cg.time - cg.zoomTime - ZOOM_TIME );
 				}
@@ -1011,7 +1011,7 @@ static int CG_CalcFov( void )
 		}
 		else if ( cg.zoomed )
 		{
-			cg.zoomed = qfalse;
+			cg.zoomed = false;
 		}
 	}
 
@@ -1028,11 +1028,11 @@ static int CG_CalcFov( void )
 		v = WAVE_AMPLITUDE * sin( phase );
 		fov_x += v;
 		fov_y -= v;
-		inwater = qtrue;
+		inwater = true;
 	}
 	else
 	{
-		inwater = qfalse;
+		inwater = false;
 	}
 
 	// set it
@@ -1062,7 +1062,7 @@ Draws a vector against
 the surface player is looking at
 ===============
 */
-static void CG_DrawSurfNormal( void )
+static void CG_DrawSurfNormal()
 {
 	trace_t    tr;
 	vec3_t     end, temp;
@@ -1071,7 +1071,7 @@ static void CG_DrawSurfNormal( void )
 
 	VectorMA( cg.refdef.vieworg, 8192, cg.refdef.viewaxis[ 0 ], end );
 
-	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, end, cg.predictedPlayerState.clientNum,
+	CG_Trace( &tr, cg.refdef.vieworg, nullptr, nullptr, end, cg.predictedPlayerState.clientNum,
 	          MASK_SOLID, 0 );
 
 	VectorCopy( tr.endpos, normal[ 0 ].xyz );
@@ -1139,7 +1139,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	int      i;
 	float    stLocal, sFraction, rotAngle;
 	float    smoothTime, timeMod;
-	qboolean performed = qfalse;
+	bool performed = false;
 	vec3_t   inAxis[ 3 ], lastAxis[ 3 ], outAxis[ 3 ];
 
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
@@ -1206,7 +1206,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 			                         inAxis[ 2 ], sFraction * cg.sList[ i ].rotAngle );
 
 			AxisCopy( outAxis, inAxis );
-			performed = qtrue;
+			performed = true;
 		}
 	}
 
@@ -1235,7 +1235,7 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 {
 	int      i;
 	float    stLocal, sFraction;
-	qboolean performed = qfalse;
+	bool performed = false;
 	vec3_t   inAxis[ 3 ], outAxis[ 3 ];
 
 	Q_UNUSED(ps);
@@ -1265,7 +1265,7 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 			                         inAxis[ 2 ], sFraction * cg.sList[ i ].rotAngle );
 
 			AxisCopy( outAxis, inAxis );
-			performed = qtrue;
+			performed = true;
 		}
 	}
 
@@ -1296,7 +1296,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
 	float totalWeight = 0.0f;
 	int freeSlot = -1;
-	qboolean haveGlobal = qfalse;
+	bool haveGlobal = false;
 
 	// the first allocated grading is special in that it may be global
 	i = 0;
@@ -1305,7 +1305,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 	{
 		selectedIdx[0] = 0; // shouldn't be needed
 		selectedWeight[0] = 2.0f; // won't be sorted down
-		haveGlobal = qtrue;
+		haveGlobal = true;
 		i = 1;
 	}
 
@@ -1384,7 +1384,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 {
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
-	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
+	bool playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 
 	//the player has spawned once and is dead or in the intermission
 	if ( cg_spawnEffects.integer && ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) ) )
@@ -1400,7 +1400,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	}
 }
 
-static qboolean CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
+static bool CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
 {
 	Q_UNUSED(ps);
 
@@ -1408,10 +1408,10 @@ static qboolean CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandl
 	{
 		*effect = cgs.media.tealCgrade;
 		*fade = 0.4f;
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 static void CG_AddColorGradingEffects( const playerState_t* ps )
@@ -1489,7 +1489,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 	int   selectedIdx[3] = { 0, 0, 0 };
 	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
 	float totalWeight = 0.0f;
-	qboolean haveGlobal = qfalse;
+	bool haveGlobal = false;
 
 	// the first allocated reverb is special in that it may be global
 	i = 0;
@@ -1498,7 +1498,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 	{
 		selectedIdx[0] = 0;
 		selectedWeight[0] = 2.0f; // won't be sorted down
-		haveGlobal = qtrue;
+		haveGlobal = true;
 		i = 1;
 	}
 
@@ -1615,7 +1615,7 @@ Helper function to terminate the list of models for the last shadow caster.
 following models.
 ===============
 */
-void CG_EndShadowCaster( void ) {
+void CG_EndShadowCaster() {
 	trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
 				0.0f, 0.0f, 0.0f,
 				0, 0 );
@@ -1628,7 +1628,7 @@ CG_CalcViewValues
 Sets cg.refdef view values
 ===============
 */
-static int CG_CalcViewValues( void )
+static int CG_CalcViewValues()
 {
 	playerState_t *ps;
 
@@ -1713,7 +1713,7 @@ static int CG_CalcViewValues( void )
 	//shut off the poison cloud effect if it's still on the go
 	if ( cg.snap->ps.stats[ STAT_HEALTH ] > 0 )
 	{
-		cg.wasDeadLastFrame = qfalse;
+		cg.wasDeadLastFrame = false;
 	}
 
 	if ( cg.renderingThirdPerson )
@@ -1766,7 +1766,7 @@ static cplane_t  frustum[4];
 CG_SetupFrustum
 =================
 */
-void CG_SetupFrustum(void)
+void CG_SetupFrustum()
 {
 	int             i;
 	float           xs, xc;
@@ -1807,7 +1807,7 @@ CG_CullBox
 returns true if culled
 =================
 */
-qboolean CG_CullBox(vec3_t mins, vec3_t maxs)
+bool CG_CullBox(vec3_t mins, vec3_t maxs)
 {
 	int              i;
 	cplane_t         *frust;
@@ -1818,9 +1818,9 @@ qboolean CG_CullBox(vec3_t mins, vec3_t maxs)
 		frust = &frustum[i];
 
 		if( BoxOnPlaneSide(mins, maxs, frust ) == 2 )
-			return qtrue;
+			return true;
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1830,7 +1830,7 @@ CG_PointAndRadius
 returns true if culled
 =================
 */
-qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius)
+bool CG_CullPointAndRadius(const vec3_t pt, vec_t radius)
 {
 	int             i;
 	cplane_t        *frust;
@@ -1842,11 +1842,11 @@ qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius)
 
 		if( ( DotProduct(pt, frust->normal) - frust->dist ) < -radius )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1856,7 +1856,7 @@ CG_DrawActiveFrame
 Generates and draws a game scene and status information at the given time.
 =================
 */
-void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback )
+void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 {
 	int inwater;
 
@@ -1868,7 +1868,7 @@ void CG_DrawActiveFrame( int serverTime, qboolean demoPlayback )
 
 	// any looped sounds will be respecified as entities
 	// are added to the render list
-	trap_S_ClearLoopingSounds( qfalse );
+	trap_S_ClearLoopingSounds( false );
 
 	// clear all the render lists
 	trap_R_ClearScene();

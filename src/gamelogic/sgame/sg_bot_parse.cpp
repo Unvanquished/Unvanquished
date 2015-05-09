@@ -23,27 +23,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
 
-static qboolean expectToken( const char *s, pc_token_list **list, qboolean next )
+static bool expectToken( const char *s, pc_token_list **list, bool next )
 {
 	const pc_token_list *current = *list;
 
 	if ( !current )
 	{
 		BotError( "Expected token %s but found end of file\n", s );
-		return qfalse;
+		return false;
 	}
 	
 	if ( Q_stricmp( current->token.string, s ) != 0 )
 	{
 		BotError( "Expected token %s but found %s on line %d\n", s, current->token.string, current->token.line );
-		return qfalse;
+		return false;
 	}
 	
 	if ( next )
 	{
 		*list = current->next;
 	}
-	return qtrue;
+	return true;
 }
 
 AIValue_t AIBoxToken( const pc_token_stripped_t *token )
@@ -66,7 +66,7 @@ AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 // functions that are used to provide values to the behavior tree in condition nodes
 static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->botMind->closestDamagedBuilding.ent != NULL );
+	return AIBoxInt( self->botMind->closestDamagedBuilding.ent != nullptr );
 }
 
 static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
@@ -76,7 +76,7 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->botMind->bestEnemy.ent != NULL );
+	return AIBoxInt( self->botMind->bestEnemy.ent != nullptr );
 }
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
@@ -96,28 +96,28 @@ static AIValue_t goalType( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 {
-	qboolean dead = qfalse;
+	bool dead = false;
 	botTarget_t *goal = &self->botMind->goal;
 
 	if ( !BotTargetIsEntity( *goal ) )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 	else if ( BotGetTargetTeam( *goal ) == TEAM_NONE )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 	else if ( goal->ent->health <= 0 )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 	else if ( goal->ent->client && goal->ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
 	{
-		dead = qtrue;
+		dead = true;
 	}
 
 	return AIBoxInt( dead );
@@ -190,17 +190,17 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 
 	if ( !e.ent )
 	{
-		return AIBoxInt( qfalse );
+		return AIBoxInt( false );
 	}
 
-	BotSetTarget( &target, e.ent, NULL );
+	BotSetTarget( &target, e.ent, nullptr );
 
 	if ( BotTargetInAttackRange( self, target ) )
 	{
-		return AIBoxInt( qtrue );
+		return AIBoxInt( true );
 	}
 
-	return AIBoxInt( qfalse );
+	return AIBoxInt( false );
 }
 
 static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
@@ -211,10 +211,10 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 
 	if ( !e.ent )
 	{
-		return AIBoxInt( qfalse );
+		return AIBoxInt( false );
 	}
 
-	BotSetTarget( &target, e.ent, NULL );
+	BotSetTarget( &target, e.ent, nullptr );
 
 	if ( BotTargetIsVisible( self, target, CONTENTS_SOLID ) )
 	{
@@ -222,10 +222,10 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 		{
 			self->botMind->enemyLastSeen = level.time;
 		}
-		return AIBoxInt( qtrue );
+		return AIBoxInt( true );
 	}
 
-	return AIBoxInt( qfalse );
+	return AIBoxInt( false );
 }
 
 static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
@@ -240,11 +240,11 @@ static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 	else if ( ed.ent )
 	{
 		botTarget_t target;
-		BotSetTarget( &target, ed.ent, NULL );
+		BotSetTarget( &target, ed.ent, nullptr );
 		return AIBoxInt( BotPathIsWalkable( self, target ) );
 	}
 
-	return AIBoxInt( qfalse );
+	return AIBoxInt( false );
 }
 
 static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
@@ -402,7 +402,7 @@ static const char *opTypeToString( AIOpType_t op )
 			return conditionOps[ i ].str;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 // compare operator precedence
@@ -444,13 +444,13 @@ static pc_token_list *findCloseParen( pc_token_list *start, pc_token_list *end )
 		list = list->next;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static AIOp_t *newOp( pc_token_list *list )
 {
 	pc_token_list *current = list;
-	AIOp_t *ret = NULL;
+	AIOp_t *ret = nullptr;
 
 	AIOpType_t op = opTypeFromToken( &current->token );
 
@@ -490,24 +490,24 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	pc_token_list *parenBegin = current->next;
 	pc_token_list *parenEnd;
 	pc_token_list *parse;
-	AIValue_t     *params = NULL;
+	AIValue_t     *params = nullptr;
 	int           numParams = 0;
 
 	// functions should always be proceeded by a '(' if they have parameters
-	if ( !expectToken( "(", &parenBegin, qfalse ) )
+	if ( !expectToken( "(", &parenBegin, false ) )
 	{
 		*list = current;
-		return NULL;
+		return nullptr;
 	}
 
 	// find the end parenthesis around the function's args
-	parenEnd = findCloseParen( parenBegin, NULL );
+	parenEnd = findCloseParen( parenBegin, nullptr );
 
 	if ( !parenEnd )
 	{
 		BotError( "could not find matching ')' for '(' on line %d", parenBegin->token.line );
 		*list = parenBegin->next;
-		return NULL;
+		return nullptr;
 	}
 
 	// count the number of parameters
@@ -523,7 +523,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 		{
 			BotError( "Invalid token %s in parameter list on line %d\n", parse->token.string, parse->token.line );
 			*list = parenEnd->next; // skip invalid function expression
-			return NULL;
+			return nullptr;
 		}
 		parse = parse->next;
 	}
@@ -533,14 +533,14 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	{
 		BotError( "too few parameters for %s on line %d\n", current->token.string, current->token.line );
 		*list = parenEnd->next;
-		return NULL;
+		return nullptr;
 	}
 
 	if ( numParams > maxparams )
 	{
 		BotError( "too many parameters for %s on line %d\n", current->token.string, current->token.line );
 		*list = parenEnd->next;
-		return NULL;
+		return nullptr;
 	}
 
 	*nparams = numParams;
@@ -568,10 +568,10 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 static AIValueFunc_t *newValueFunc( pc_token_list **list )
 {
-	AIValueFunc_t *ret = NULL;
+	AIValueFunc_t *ret = nullptr;
 	AIValueFunc_t v;
 	pc_token_list *current = *list;
-	pc_token_list *parenBegin = NULL;
+	pc_token_list *parenBegin = nullptr;
 	struct AIConditionMap_s *f;
 
 	memset( &v, 0, sizeof( v ) );
@@ -582,7 +582,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	{
 		BotError( "Unknown function: %s on line %d\n", current->token.string, current->token.line );
 		*list = current->next;
-		return NULL;
+		return nullptr;
 	}
 
 	v.expType = EX_FUNC;
@@ -606,7 +606,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 
 	if ( !v.params && f->nparams > 0 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// create the value op
@@ -644,14 +644,14 @@ static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op
 	if ( !*list )
 	{
 		BotError( "Unexpected end of file\n" );
-		return NULL;
+		return nullptr;
 	}
 
 	t = Primary( list );
 
 	if ( !t )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	op = opTypeFromToken( &(*list)->token );
@@ -669,7 +669,7 @@ static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op
 			BotError( "Missing right operand for %s on line %d\n", opTypeToString( op ), prev->token.line );
 			FreeExpression( t );
 			FreeOp( exp );
-			return NULL;
+			return nullptr;
 		}
 
 		t = makeExpression( exp, t, t1 );
@@ -683,7 +683,7 @@ static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op
 static AIExpType_t *Primary( pc_token_list **list )
 {
 	pc_token_list *current = *list;
-	AIExpType_t *tree = NULL;
+	AIExpType_t *tree = nullptr;
 
 	if ( isUnaryOp( opTypeFromToken( &current->token ) ) )
 	{
@@ -696,18 +696,18 @@ static AIExpType_t *Primary( pc_token_list **list )
 		{
 			BotError( "Missing right operand for %s on line %d\n", opTypeToString( op->opType ), current->token.line );
 			FreeOp( op );
-			return NULL;
+			return nullptr;
 		}
 
-		tree = makeExpression( op, t, NULL );
+		tree = makeExpression( op, t, nullptr );
 	}
 	else if ( current->token.string[0] == '(' )
 	{
 		*list = current->next;
 		tree = ReadConditionExpression( list, OP_NONE );
-		if ( !expectToken( ")", list, qtrue ) )
+		if ( !expectToken( ")", list, true ) )
 		{
-			return NULL;
+			return nullptr;
 		}
 	}
 	else if ( current->token.type == TT_NUMBER )
@@ -756,9 +756,9 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 
 	AIConditionNode_t *condition;
 
-	if ( !expectToken( "condition", &current, qtrue ) )
+	if ( !expectToken( "condition", &current, true ) )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	condition = allocNode( AIConditionNode_t );
@@ -771,14 +771,14 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 		*tokenlist = current;
 		BotError( "Unexpected end of file\n" );
 		FreeConditionNode( condition );
-		return NULL;
+		return nullptr;
 	}
 
 	if ( !condition->exp )
 	{
 		*tokenlist = current;
 		FreeConditionNode( condition );
-		return NULL;
+		return nullptr;
 	}
 
 	if ( Q_stricmp( current->token.string, "{" ) )
@@ -797,14 +797,14 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 		BotError( "Failed to parse child node of condition on line %d\n", (*tokenlist)->token.line );
 		*tokenlist = current;
 		FreeConditionNode( condition );
-		return NULL;
+		return nullptr;
 	}
 
-	if ( !expectToken( "}", &current, qtrue ) )
+	if ( !expectToken( "}", &current, true ) )
 	{
 		*tokenlist = current;
 		FreeConditionNode( condition );
-		return NULL;
+		return nullptr;
 	}
 
 	*tokenlist = current;
@@ -832,16 +832,16 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 	AIDecoratorNode_t       *ret;
 	pc_token_list           *parenBegin;
 
-	if ( !expectToken( "decorator", &current, qtrue ) )
+	if ( !expectToken( "decorator", &current, true ) )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( !current )
 	{
 		BotError( "Unexpected end of file after line %d\n", (*list)->token.line );
 		*list = current;
-		return NULL;
+		return nullptr;
 	}
 
 	dec = (struct AIDecoratorMap_s*) bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
@@ -850,7 +850,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 	{
 		BotError( "%s on line %d is not a valid decorator\n", current->token.string, current->token.line );
 		*list = current;
-		return NULL;
+		return nullptr;
 	}
 
 	parenBegin = current->next;
@@ -873,13 +873,13 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 	if ( !node.params && dec->minparams > 0 )
 	{
 		*list = current;
-		return NULL;
+		return nullptr;
 	}
 
-	if ( !expectToken( "{", &current, qtrue ) )
+	if ( !expectToken( "{", &current, true ) )
 	{
 		*list = current;
-		return NULL;
+		return nullptr;
 	}
 
 	node.child = ReadNode( &current );
@@ -888,13 +888,13 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 	{
 		BotError( "Failed to parse child node of decorator on line %d\n",  (*list)->token.line );
 		*list = current;
-		return NULL;
+		return nullptr;
 	}
 
-	if ( !expectToken( "}", &current, qtrue ) )
+	if ( !expectToken( "}", &current, true ) )
 	{
 		*list = current;
-		return NULL;
+		return nullptr;
 	}
 
 	// create the decorator node
@@ -955,19 +955,19 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
 	pc_token_list *parenBegin;
-	AIActionNode_t        *ret = NULL;
+	AIActionNode_t        *ret = nullptr;
 	AIActionNode_t        node;
-	struct AIActionMap_s  *action = NULL;
+	struct AIActionMap_s  *action = nullptr;
 
-	if ( !expectToken( "action", &current, qtrue ) )
+	if ( !expectToken( "action", &current, true ) )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( !current )
 	{
 		BotError( "Unexpected end of file after line %d\n", (*tokenlist)->token.line );
-		return NULL;
+		return nullptr;
 	}
 
 	action = (struct AIActionMap_s*) bsearch( current->token.string, AIActions, ARRAY_LEN( AIActions ), sizeof( *AIActions ), cmdcmp );
@@ -976,7 +976,7 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	{
 		BotError( "%s on line %d is not a valid action\n", current->token.string, current->token.line );
 		*tokenlist = current;
-		return NULL;
+		return nullptr;
 	}
 
 	parenBegin = current->next;
@@ -998,7 +998,7 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	if ( !node.params && action->minparams > 0 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// create the action node
@@ -1012,7 +1012,7 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = NULL;
+	AIGenericNode_t *node = nullptr;
 	current = current->next;
 
 	node = ReadNodeList( &current );
@@ -1020,7 +1020,7 @@ AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
 	*tokenlist = current;
 	if ( !node )
 	{
-		return NULL;
+		return nullptr;
 	}
 	BotInitNode( SELECTOR_NODE, BotSequenceNode, node );
 	return node;
@@ -1029,7 +1029,7 @@ AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
 AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = NULL;
+	AIGenericNode_t *node = nullptr;
 	current = current->next;
 
 	node = ReadNodeList( &current );
@@ -1037,7 +1037,7 @@ AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
 	*tokenlist = current;
 	if ( !node )
 	{
-		return NULL;
+		return nullptr;
 	}
 	BotInitNode( SELECTOR_NODE, BotSelectorNode, node );
 	return node;
@@ -1046,7 +1046,7 @@ AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
 AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = NULL;
+	AIGenericNode_t *node = nullptr;
 	current = current->next;
 
 	node = ReadNodeList( &current );
@@ -1054,7 +1054,7 @@ AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
 	*tokenlist = current;
 	if ( !node )
 	{
-		return NULL;
+		return nullptr;
 	}
 	BotInitNode( SELECTOR_NODE, BotConcurrentNode, node );
 	return node;
@@ -1073,9 +1073,9 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	AINodeList_t *list;
 	pc_token_list *current = *tokenlist;
 
-	if ( !expectToken( "{", &current, qtrue ) )
+	if ( !expectToken( "{", &current, true ) )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	list = allocNode( AINodeList_t );
@@ -1090,7 +1090,7 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 			FreeNode( node );
 			FreeNodeList( list );
 			*tokenlist = current;
-			return NULL;
+			return nullptr;
 		}
 		else if ( node )
 		{
@@ -1102,7 +1102,7 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 		{
 			*tokenlist = current;
 			FreeNodeList( list );
-			return NULL;
+			return nullptr;
 		}
 
 		if ( !current )
@@ -1116,7 +1116,7 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) list;
 }
 
-static AITreeList_t *currentList = NULL;
+static AITreeList_t *currentList = nullptr;
 
 AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 {
@@ -1125,16 +1125,16 @@ AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 
 	AIBehaviorTree_t *behavior;
 
-	if ( !expectToken( "behavior", &current, qtrue ) )
+	if ( !expectToken( "behavior", &current, true ) )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( !current )
 	{
 		BotError( "Unexpected end of file after line %d\n", first->token.line );
 		*tokenlist = current;
-		return NULL;
+		return nullptr;
 	}
 
 	behavior = ReadBehaviorTree( current->token.string, currentList );
@@ -1143,14 +1143,14 @@ AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 	{
 		BotError( "Could not load behavior %s on line %d\n", current->token.string, current->token.line );
 		*tokenlist = current->next;
-		return NULL;
+		return nullptr;
 	}
 
 	if ( !behavior->root )
 	{
 		BotError( "Recursive behavior %s on line %d\n", current->token.string, current->token.line );
 		*tokenlist = current->next;
-		return NULL;
+		return nullptr;
 	}
 
 	*tokenlist = current->next;
@@ -1205,7 +1205,7 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	else
 	{
 		BotError( "Invalid token on line %d found: %s\n", current->token.line, current->token.string );
-		node = NULL;
+		node = nullptr;
 	}
 
 	*tokenlist = current;
@@ -1330,7 +1330,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	if ( !handle )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
-		return NULL;
+		return nullptr;
 	}
 
 	tokenlist = CreateTokenList( handle );
@@ -1350,12 +1350,12 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	node = ReadNode( &current );
 	if ( node )
 	{
-		tree->root = ( AIGenericNode_t * ) node;
+		tree->root = node;
 	}
 	else
 	{
 		RemoveTreeFromList( list, tree );
-		tree = NULL;
+		tree = nullptr;
 	}
 
 	FreeTokenList( tokenlist );
@@ -1366,8 +1366,8 @@ pc_token_list *CreateTokenList( int handle )
 {
 	pc_token_t token;
 	char filename[ MAX_QPATH ];
-	pc_token_list *current = NULL;
-	pc_token_list *root = NULL;
+	pc_token_list *current = nullptr;
+	pc_token_list *root = nullptr;
 
 	while ( trap_Parse_ReadToken( handle, &token ) )
 	{
@@ -1385,7 +1385,7 @@ pc_token_list *CreateTokenList( int handle )
 		}
 		
 		current = list;
-		current->next = NULL;
+		current->next = nullptr;
 
 		current->token.floatvalue = token.floatvalue;
 		current->token.intvalue = token.intvalue;
@@ -1460,7 +1460,7 @@ void FreeTreeList( AITreeList_t *list )
 	}
 
 	BG_Free( list->trees );
-	list->trees = NULL;
+	list->trees = nullptr;
 	list->maxTrees = 0;
 	list->numTrees = 0;
 }
@@ -1607,7 +1607,7 @@ void FreeBehaviorTree( AIBehaviorTree_t *tree )
 {
 	if ( tree )
 	{
-		FreeNode( ( AIGenericNode_t * ) tree->root );
+		FreeNode(tree->root);
 
 		BG_Free( tree );
 	}

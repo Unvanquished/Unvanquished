@@ -64,7 +64,7 @@ public:
 	~RocketProgressBar() {}
 
 	// Get current value
-	float GetValue( void ) const
+	float GetValue() const
 	{
 		return value;
 	}
@@ -75,7 +75,7 @@ public:
 	}
 
 
-	void Update( void )
+	void Update()
 	{
 		float newValue;
 
@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	void OnRender( void )
+	void OnRender()
 	{
 
 		if ( !shader )
@@ -113,14 +113,14 @@ public:
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y, dimensions.x, height,
 						       0.0f, 0.0f, 1.0f, value, shader );
-				trap_R_SetColor( NULL );
+				trap_R_SetColor( nullptr );
 			}
 			else
 			{
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y - height + dimensions.y, dimensions.x,
 						       height, 0.0f, 1.0f - value, 1.0f, 1.0f, shader );
-				trap_R_SetColor( NULL );
+				trap_R_SetColor( nullptr );
 			}
 		}
 
@@ -137,14 +137,14 @@ public:
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y, width,
 						       dimensions.y, 0.0f, 0.0f, value, 1.0f, shader );
-				trap_R_SetColor( NULL );
+				trap_R_SetColor( nullptr );
 			}
 			else
 			{
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x - width + dimensions.x, position.y, width,
 						       dimensions.y, 1.0f - value, 0.0f, 1.0f, 1.0f, shader );
-				trap_R_SetColor( NULL );
+				trap_R_SetColor( nullptr );
 			}
 		}
 	}

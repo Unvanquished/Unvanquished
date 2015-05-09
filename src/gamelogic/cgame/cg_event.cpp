@@ -35,65 +35,65 @@ static const char teamTag[][8] = { "^2●^7", "^1●^7", "^4●^7" };
 #define LONGFORM ">"
 static const struct {
 	char     icon[16];
-	qboolean envKill;
-	qboolean showAssist;
+	bool envKill;
+	bool showAssist;
 	team_t   team;
 } meansOfDeath[] = {
 	// Icon            Envkill Assist? (Team)
-	{ "☠",             qfalse, qfalse },
-	{ "[shotgun]",     qfalse, qtrue  },
-	{ "[blaster]",     qfalse, qtrue  },
-	{ "[painsaw]",     qfalse, qtrue  },
-	{ "[rifle]",       qfalse, qtrue  },
-	{ "[chaingun]",    qfalse, qtrue  },
-	{ "[prifle]",      qfalse, qtrue  },
-	{ "[mdriver]",     qfalse, qtrue  },
-	{ "[lasgun]",      qfalse, qtrue  },
-	{ "[lcannon]",     qfalse, qtrue  },
-	{ "[lcannon]",     qfalse, qtrue  }, // splash
-	{ "[flamer]",      qfalse, qtrue  },
-	{ "[flamer]",      qfalse, qtrue  }, // splash
-	{ "[flamer]",      qfalse, qtrue  }, // burn
-	{ "[grenade]",     qfalse, qtrue  },
-	{ "[firebomb]",    qfalse, qtrue  },
-	{ "crushed",       qtrue,  qfalse }, // weight (H) // FIXME
-	{ LONGFORM,        qtrue,  qfalse }, // water
-	{ LONGFORM,        qtrue,  qfalse }, // slime
-	{ LONGFORM,        qtrue,  qfalse }, // lava
-	{ LONGFORM,        qtrue,  qfalse }, // crush
-	{ "[telenode]",    qfalse, qfalse }, // telefrag
-	{ LONGFORM,        qtrue,  qfalse }, // falling
-	{ "☠",             qfalse, qfalse }, // suicide
-	{ LONGFORM,        qtrue,  qfalse }, // target laser - shouldn't happen
-	{ LONGFORM,        qtrue,  qfalse }, // trigger hurt
+	{ "☠",             false, false },
+	{ "[shotgun]",     false, true  },
+	{ "[blaster]",     false, true  },
+	{ "[painsaw]",     false, true  },
+	{ "[rifle]",       false, true  },
+	{ "[chaingun]",    false, true  },
+	{ "[prifle]",      false, true  },
+	{ "[mdriver]",     false, true  },
+	{ "[lasgun]",      false, true  },
+	{ "[lcannon]",     false, true  },
+	{ "[lcannon]",     false, true  }, // splash
+	{ "[flamer]",      false, true  },
+	{ "[flamer]",      false, true  }, // splash
+	{ "[flamer]",      false, true  }, // burn
+	{ "[grenade]",     false, true  },
+	{ "[firebomb]",    false, true  },
+	{ "crushed",       true,  false }, // weight (H) // FIXME
+	{ LONGFORM,        true,  false }, // water
+	{ LONGFORM,        true,  false }, // slime
+	{ LONGFORM,        true,  false }, // lava
+	{ LONGFORM,        true,  false }, // crush
+	{ "[telenode]",    false, false }, // telefrag
+	{ LONGFORM,        true,  false }, // falling
+	{ "☠",             false, false }, // suicide
+	{ LONGFORM,        true,  false }, // target laser - shouldn't happen
+	{ LONGFORM,        true,  false }, // trigger hurt
 
-	{ "[granger]",     qfalse, qtrue  },
-	{ "[dretch]",      qfalse, qtrue  },
-	{ "[basilisk]",    qfalse, qtrue  },
-	{ "[dragoon]",     qfalse, qtrue  },
-	{ "[dragoon]",     qfalse, qtrue  }, // pounce
-	{ "[advdragoon]",  qfalse, qtrue  },
-	{ "[marauder]",    qfalse, qtrue  },
-	{ "[advmarauder]", qfalse, qtrue  },
-	{ "[tyrant]",      qfalse, qtrue  },
-	{ "[tyrant]",      qfalse, qtrue  }, // trample
-	{ "crushed",       qfalse, qtrue  }, // weight (A) // FIXME
+	{ "[granger]",     false, true  },
+	{ "[dretch]",      false, true  },
+	{ "[basilisk]",    false, true  },
+	{ "[dragoon]",     false, true  },
+	{ "[dragoon]",     false, true  }, // pounce
+	{ "[advdragoon]",  false, true  },
+	{ "[marauder]",    false, true  },
+	{ "[advmarauder]", false, true  },
+	{ "[tyrant]",      false, true  },
+	{ "[tyrant]",      false, true  }, // trample
+	{ "crushed",       false, true  }, // weight (A) // FIXME
 
-	{ "[granger]",     qfalse, qtrue  }, // granger spit (slowblob)
-	{ "[booster]",     qfalse, qtrue  }, // poison
-	{ "[hive]",        qtrue,  qtrue,  TEAM_ALIENS },
+	{ "[granger]",     false, true  }, // granger spit (slowblob)
+	{ "[booster]",     false, true  }, // poison
+	{ "[hive]",        true,  true,  TEAM_ALIENS },
 
-	{ LONGFORM,        qtrue,  qfalse, TEAM_HUMANS }, // H spawn
-	{ "[rocketpod]",   qtrue,  qtrue,  TEAM_HUMANS },
-	{ "[turret]",      qtrue,  qtrue,  TEAM_HUMANS },
-	{ "[reactor]",     qtrue,  qtrue,  TEAM_HUMANS },
+	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn
+	{ "[rocketpod]",   true,  true,  TEAM_HUMANS },
+	{ "[turret]",      true,  true,  TEAM_HUMANS },
+	{ "[reactor]",     true,  true,  TEAM_HUMANS },
 
-	{ LONGFORM,        qtrue,  qfalse, TEAM_ALIENS }, // A spawn
-	{ "[acidtube]",    qtrue,  qtrue,  TEAM_ALIENS },
-	{ "[overmind]",    qtrue,  qtrue,  TEAM_ALIENS },
-	{ "",              qtrue,  qfalse },
-	{ "",              qtrue,  qfalse },
-	{ "",              qtrue,  qfalse },
+	{ LONGFORM,        true,  false, TEAM_ALIENS }, // A spawn
+	{ "[acidtube]",    true,  true,  TEAM_ALIENS },
+	{ "[overmind]",    true,  true,  TEAM_ALIENS },
+	{ "",              true,  false },
+	{ "",              true,  false },
+	{ "",              true,  false },
 };
 
 static void CG_Obituary( entityState_t *ent )
@@ -102,8 +102,8 @@ static void CG_Obituary( entityState_t *ent )
 	int          target, attacker, assistant;
 	int          attackerClass = -1;
 	const char   *message;
-	const char   *messageAssisted = NULL;
-	const char   *messageSuicide = NULL;
+	const char   *messageAssisted = nullptr;
+	const char   *messageSuicide = nullptr;
 	const char   *targetInfo;
 	const char   *attackerInfo;
 	const char   *assistantInfo;
@@ -131,7 +131,7 @@ static void CG_Obituary( entityState_t *ent )
 	if ( attacker < 0 || attacker >= MAX_CLIENTS )
 	{
 		attacker = ENTITYNUM_WORLD;
-		attackerInfo = NULL;
+		attackerInfo = nullptr;
 		attackerTeam = TEAM_NONE;
 		strcpy( attackerName, "noname" );
 	}
@@ -150,7 +150,7 @@ static void CG_Obituary( entityState_t *ent )
 
 	if ( assistant < 0 || assistant >= MAX_CLIENTS )
 	{
-		assistantInfo = NULL;
+		assistantInfo = nullptr;
 	}
 	else
 	{
@@ -331,7 +331,7 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			default:
-				message = NULL;
+				message = nullptr;
 				break;
 		}
 
@@ -569,7 +569,7 @@ Also called by playerstate transition
 */
 void CG_PainEvent( centity_t *cent, int health )
 {
-	char *snd;
+	const char *snd;
 
 	// don't do more than two pain sounds a second
 	if ( cg.time - cent->pe.painTime < 500 )
@@ -594,7 +594,7 @@ void CG_PainEvent( centity_t *cent, int health )
 		snd = "*pain100_1.wav";
 	}
 
-	trap_S_StartSound( NULL, cent->currentState.number, CHAN_VOICE,
+	trap_S_StartSound( nullptr, cent->currentState.number, CHAN_VOICE,
 	                   CG_CustomSound( cent->currentState.number, snd ) );
 
 	// save pain time for programitic twitch animation
@@ -637,7 +637,7 @@ Called on upgrade change
 =========================
 */
 
-void CG_OnPlayerUpgradeChange( void )
+void CG_OnPlayerUpgradeChange()
 {
 	playerState_t *ps = &cg.snap->ps;
 
@@ -657,7 +657,7 @@ Called whenever the map is restarted
 via map_restart
 =========================
 */
-void CG_OnMapRestart( void )
+void CG_OnMapRestart()
 {
 	// if scoreboard is showing, hide it
 	CG_HideScores_f();
@@ -676,7 +676,7 @@ Notify player of generated momentum
 void CG_Momentum( entityState_t *es )
 {
 	float                  momentum;
-	qboolean               negative;
+	bool               negative;
 
 	negative   = es->groundEntityNum;
 	momentum = ( negative ? -es->otherEntityNum2 : es->otherEntityNum2 ) / 10.0f;
@@ -742,12 +742,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			{
 				if ( ci->footsteps == FOOTSTEP_CUSTOM )
 				{
-					trap_S_StartSound( NULL, es->number, CHAN_BODY,
+					trap_S_StartSound( nullptr, es->number, CHAN_BODY,
 					                   ci->customFootsteps[ rand() & 3 ] );
 				}
 				else
 				{
-					trap_S_StartSound( NULL, es->number, CHAN_BODY,
+					trap_S_StartSound( nullptr, es->number, CHAN_BODY,
 					                   cgs.media.footsteps[ ci->footsteps ][ rand() & 3 ] );
 				}
 			}
@@ -759,12 +759,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			{
 				if ( ci->footsteps == FOOTSTEP_CUSTOM )
 				{
-					trap_S_StartSound( NULL, es->number, CHAN_BODY,
+					trap_S_StartSound( nullptr, es->number, CHAN_BODY,
 					                   ci->customMetalFootsteps[ rand() & 3 ] );
 				}
 				else
 				{
-					trap_S_StartSound( NULL, es->number, CHAN_BODY,
+					trap_S_StartSound( nullptr, es->number, CHAN_BODY,
 					                   cgs.media.footsteps[ FOOTSTEP_METAL ][ rand() & 3 ] );
 				}
 			}
@@ -774,7 +774,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_FOOTSTEP_SQUELCH:
 			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_BODY,
+				trap_S_StartSound( nullptr, es->number, CHAN_BODY,
 				                   cgs.media.footsteps[ FOOTSTEP_FLESH ][ rand() & 3 ] );
 			}
 
@@ -783,7 +783,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_FOOTSPLASH:
 			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_BODY,
+				trap_S_StartSound( nullptr, es->number, CHAN_BODY,
 				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
 			}
 
@@ -792,7 +792,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_FOOTWADE:
 			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_BODY,
+				trap_S_StartSound( nullptr, es->number, CHAN_BODY,
 				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
 			}
 
@@ -801,14 +801,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_SWIM:
 			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_BODY,
+				trap_S_StartSound( nullptr, es->number, CHAN_BODY,
 				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
 			}
 
 			break;
 
 		case EV_FALL_SHORT:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.landSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.landSound );
 
 			if ( clientNum == cg.predictedPlayerState.clientNum )
 			{
@@ -821,7 +821,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_FALL_MEDIUM:
 			// use a general pain sound
-			trap_S_StartSound( NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*pain100_1.wav" ) );
+			trap_S_StartSound( nullptr, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*pain100_1.wav" ) );
 
 			if ( clientNum == cg.predictedPlayerState.clientNum )
 			{
@@ -833,7 +833,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FALL_FAR:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*fall1.wav" ) );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*fall1.wav" ) );
 			cent->pe.painTime = cg.time; // don't play a pain sound right after this
 
 			if ( clientNum == cg.predictedPlayerState.clientNum )
@@ -846,7 +846,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FALLING:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*falling1.wav" ) );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*falling1.wav" ) );
 			break;
 
 		case EV_STEP_4:
@@ -912,7 +912,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			}
 
 		case EV_JUMP:
-			trap_S_StartSound( NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*jump1.wav" ) );
+			trap_S_StartSound( nullptr, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*jump1.wav" ) );
 
 			if ( BG_ClassHasAbility( cg.predictedPlayerState.stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
 			{
@@ -944,36 +944,36 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_LEV4_TRAMPLE_PREPARE:
-			trap_S_StartSound( NULL, es->number, CHAN_VOICE, cgs.media.alienL4ChargePrepare );
+			trap_S_StartSound( nullptr, es->number, CHAN_VOICE, cgs.media.alienL4ChargePrepare );
 			break;
 
 		case EV_LEV4_TRAMPLE_START:
 			//FIXME: stop cgs.media.alienL4ChargePrepare playing here
-			trap_S_StartSound( NULL, es->number, CHAN_VOICE, cgs.media.alienL4ChargeStart );
+			trap_S_StartSound( nullptr, es->number, CHAN_VOICE, cgs.media.alienL4ChargeStart );
 			break;
 
 		case EV_TAUNT:
 			if ( !cg_noTaunt.integer )
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*taunt.wav" ) );
+				trap_S_StartSound( nullptr, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*taunt.wav" ) );
 			}
 
 			break;
 
 		case EV_WATER_TOUCH:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.watrInSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.watrInSound );
 			break;
 
 		case EV_WATER_LEAVE:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.watrOutSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.watrOutSound );
 			break;
 
 		case EV_WATER_UNDER:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.watrUnSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.watrUnSound );
 			break;
 
 		case EV_WATER_CLEAR:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*gasp.wav" ) );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, CG_CustomSound( es->number, "*gasp.wav" ) );
 			break;
 
 		case EV_JETPACK_ENABLE:
@@ -997,11 +997,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_NOAMMO:
-			trap_S_StartSound( NULL, es->number, CHAN_WEAPON, cgs.media.weaponEmptyClick );
+			trap_S_StartSound( nullptr, es->number, CHAN_WEAPON, cgs.media.weaponEmptyClick );
 			break;
 
 		case EV_CHANGE_WEAPON:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.selectSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.selectSound );
 			break;
 
 		case EV_FIRE_WEAPON:
@@ -1019,7 +1019,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_WEAPON_RELOAD:
 			if ( cg_weapons[ es->eventParm ].wim[ WPM_PRIMARY ].reloadSound )
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_WEAPON, cg_weapons[ es->eventParm ].wim[ WPM_PRIMARY ].reloadSound );
+				trap_S_StartSound( nullptr, es->number, CHAN_WEAPON, cg_weapons[ es->eventParm ].wim[ WPM_PRIMARY ].reloadSound );
 			}
 			break;
 
@@ -1041,17 +1041,17 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_CLIPS_REFILL:
 		case EV_FUEL_REFILL:
 			// TODO: Add different sounds for EV_AMMO_REFILL, EV_CLIPS_REFILL, EV_FUEL_REFILL
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.repeaterUseSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.repeaterUseSound );
 			break;
 
 		case EV_GRENADE_BOUNCE:
 			if ( rand() & 1 )
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.hardBounceSound1 );
+				trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.hardBounceSound1 );
 			}
 			else
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.hardBounceSound2 );
+				trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.hardBounceSound2 );
 			}
 			break;
 
@@ -1116,12 +1116,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_GENERAL_SOUND:
 			if ( cgs.gameSounds[ es->eventParm ] )
 			{
-				trap_S_StartSound( NULL, es->number, CHAN_VOICE, cgs.gameSounds[ es->eventParm ] );
+				trap_S_StartSound( nullptr, es->number, CHAN_VOICE, cgs.gameSounds[ es->eventParm ] );
 			}
 			else
 			{
 				s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-				trap_S_StartSound( NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, s ) );
+				trap_S_StartSound( nullptr, es->number, CHAN_VOICE, CG_CustomSound( es->number, s ) );
 			}
 
 			break;
@@ -1129,12 +1129,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_GLOBAL_SOUND: // play from the player's head so it never diminishes
 			if ( cgs.gameSounds[ es->eventParm ] )
 			{
-				trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.gameSounds[ es->eventParm ] );
+				trap_S_StartSound( nullptr, cg.snap->ps.clientNum, CHAN_AUTO, cgs.gameSounds[ es->eventParm ] );
 			}
 			else
 			{
 				s = CG_ConfigString( CS_SOUNDS + es->eventParm );
-				trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_AUTO, CG_CustomSound( es->number, s ) );
+				trap_S_StartSound( nullptr, cg.snap->ps.clientNum, CHAN_AUTO, CG_CustomSound( es->number, s ) );
 			}
 
 			break;
@@ -1152,7 +1152,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_DEATH1:
 		case EV_DEATH2:
 		case EV_DEATH3:
-			trap_S_StartSound( NULL, es->number, CHAN_VOICE,
+			trap_S_StartSound( nullptr, es->number, CHAN_VOICE,
 			                   CG_CustomSound( es->number, va( "*death%i.wav", event - EV_DEATH1 + 1 ) ) );
 			break;
 
@@ -1179,11 +1179,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_BUILD_REPAIR:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.buildableRepairSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.buildableRepairSound );
 			break;
 
 		case EV_BUILD_REPAIRED:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.buildableRepairedSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.buildableRepairedSound );
 			break;
 
 		case EV_OVERMIND_ATTACK_1:
@@ -1227,7 +1227,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( es->eventParm >= MAX_CLIENTS && es->eventParm < MAX_GENTITIES )
 			{
 				const char *location;
-				qboolean    base = cg_entities[ es->eventParm ].currentState.modelindex == BA_H_REACTOR;
+				bool    base = cg_entities[ es->eventParm ].currentState.modelindex == BA_H_REACTOR;
 				centity_t  *locent = CG_GetLocation( cg_entities[ es->eventParm ].currentState.origin );
 
 				CG_CenterPrint( base ? _( "Our base is under attack!" ) : _( "A forward base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
@@ -1258,7 +1258,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_MGTURRET_SPINUP:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.turretSpinupSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.turretSpinupSound );
 			break;
 
 		case EV_OVERMIND_SPAWNS:
@@ -1271,7 +1271,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_ALIEN_EVOLVE:
-			trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.alienEvolveSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_BODY, cgs.media.alienEvolveSound );
 			{
 				particleSystem_t *ps = CG_SpawnNewParticleSystem( cgs.media.alienEvolvePS );
 
@@ -1329,7 +1329,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_MEDKIT_USED:
-			trap_S_StartSound( NULL, es->number, CHAN_AUTO, cgs.media.medkitUseSound );
+			trap_S_StartSound( nullptr, es->number, CHAN_AUTO, cgs.media.medkitUseSound );
 			break;
 
 		case EV_PLAYER_RESPAWN:

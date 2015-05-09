@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "qcommon/q_unicode.h"
 
-qboolean scr_initialized; // ready to draw
+bool scr_initialized; // ready to draw
 
 /*
 ================
@@ -118,7 +118,7 @@ void SCR_FillRect( float x, float y, float width, float height, const float *col
 {
 	re.SetColor( color );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
-	re.SetColor( NULL );
+	re.SetColor( nullptr );
 }
 
 /*
@@ -283,12 +283,12 @@ Coordinates are at 640 by 480 virtual resolution
 ==================
 */
 
-void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape )
+void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, bool forceColor, bool noColorEscape )
 {
 	vec4_t     color;
 	const char *s;
 	int        xx;
-	qboolean   noColour = qfalse;
+	bool   noColour = false;
 
 	// draw the drop shadow
 	color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
@@ -299,8 +299,6 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 
 	while ( *s )
 	{
-		int ch;
-
 		if ( !noColorEscape && Q_IsColorString( s ) )
 		{
 			s += 2;
@@ -312,7 +310,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			++s;
 		}
 
-		ch = Q_UTF8_CodePoint( s );
+		auto ch = Q_UTF8_CodePoint( s );
 		SCR_DrawUnichar( xx + 2, y + 2, size, ch );
 		xx += size;
 		s += Q_UTF8_WidthCP( ch );
@@ -358,12 +356,12 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			}
 			else
 			{
-				noColour = qtrue;
+				noColour = true;
 			}
 		}
 		else
 		{
-			noColour = qfalse;
+			noColour = false;
 		}
 
 		ch = Q_UTF8_CodePoint( s );
@@ -372,21 +370,21 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 		s += Q_UTF8_WidthCP( ch );
 	}
 
-	re.SetColor( NULL );
+	re.SetColor( nullptr );
 }
 
-void SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape )
+void SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape )
 {
 	float color[ 4 ];
 
 	color[ 0 ] = color[ 1 ] = color[ 2 ] = 1.0;
 	color[ 3 ] = alpha;
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, qfalse, noColorEscape );
+	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, false, noColorEscape );
 }
 
-void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape )
+void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, bool noColorEscape )
 {
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, qtrue, noColorEscape );
+	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, true, noColorEscape );
 }
 
 /*
@@ -399,12 +397,12 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape )
+void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape )
 {
 	vec4_t     color;
 	const char *s;
 	float      xx;
-	qboolean   noColour = qfalse;
+	bool   noColour = false;
 
 	// draw the colored text
 	s = string;
@@ -446,12 +444,12 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 			}
 			else
 			{
-				noColour = qtrue;
+				noColour = true;
 			}
 		}
 		else
 		{
-			noColour = qfalse;
+			noColour = false;
 		}
 
 		ch = Q_UTF8_CodePoint( s );
@@ -460,7 +458,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 		s += Q_UTF8_WidthCP( ch );
 	}
 
-	re.SetColor( NULL );
+	re.SetColor( nullptr );
 }
 
 /*
@@ -506,7 +504,7 @@ int SCR_GetBigStringWidth( const char *str )
 SCR_DrawDemoRecording
 =================
 */
-void SCR_DrawDemoRecording( void )
+void SCR_DrawDemoRecording()
 {
 	if ( !clc.demorecording )
 	{
@@ -524,7 +522,7 @@ void SCR_DrawDemoRecording( void )
 SCR_DrawVoipMeter
 =================
 */
-void SCR_DrawVoipMeter( void )
+void SCR_DrawVoipMeter()
 {
 	char buffer[ 16 ];
 	char string[ 256 ];
@@ -575,7 +573,7 @@ void SCR_DrawVoipMeter( void )
 	buffer[ i ] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[ 7 ], qtrue, qfalse );
+	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[ 7 ], true, false );
 }
 
 /*
@@ -583,7 +581,7 @@ void SCR_DrawVoipMeter( void )
 SCR_DrawVoipSender
 =================
 */
-void SCR_DrawVoipSender( void )
+void SCR_DrawVoipSender()
 {
 #if 0 //FIXME we need to find another way to get the team CS_PLAYERS value, which will continuously change independently of the client, especially now with several cgames/games in development
 	char string[ 256 ];
@@ -624,27 +622,27 @@ void SCR_DrawVoipSender( void )
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, g_color_table[ 7 ], true, true );
 		}
 		else
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[ 7 ], qtrue, qtrue );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[ 7 ], true, true );
 		}
 	}
 #endif
@@ -658,9 +656,9 @@ void SCR_DrawVoipSender( void )
 SCR_Init
 ==================
 */
-void SCR_Init( void )
+void SCR_Init()
 {
-	scr_initialized = qtrue;
+	scr_initialized = true;
 }
 
 //=======================================================
@@ -670,7 +668,7 @@ void SCR_Init( void )
 SCR_DrawScreenField
 ==================
 */
-void SCR_DrawScreenField( void )
+void SCR_DrawScreenField()
 {
 	re.BeginFrame();
 
@@ -682,7 +680,7 @@ void SCR_DrawScreenField( void )
 		{
 			re.SetColor( g_color_table[ 0 ] );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
-			re.SetColor( NULL );
+			re.SetColor( nullptr );
 		}
 	}
 
@@ -730,9 +728,9 @@ void SCR_DrawScreenField( void )
 	}
 }
 
-void SCR_DrawConsoleAndPointer( void )
+void SCR_DrawConsoleAndPointer()
 {
-	extern qboolean mouseActive; // see sdl_input.c
+	extern bool mouseActive; // see sdl_input.c
 
 	// console draws next
 	Con_DrawConsole();
@@ -746,7 +744,7 @@ This is called every frame, and can also be called explicitly to flush
 text to the screen.
 ==================
 */
-void SCR_UpdateScreen( void )
+void SCR_UpdateScreen()
 {
 	static int recursive = 0;
 
@@ -779,7 +777,7 @@ void SCR_UpdateScreen( void )
 		}
 		else
 		{
-			re.EndFrame( NULL, NULL );
+			re.EndFrame( nullptr, nullptr );
 		}
 	}
 
@@ -798,14 +796,14 @@ float SCR_ConsoleFontCharWidth( const char *s )
 	return SCR_ConsoleFontUnicharWidth( Q_UTF8_CodePoint( s ) );
 }
 
-float SCR_ConsoleFontCharHeight( void )
+float SCR_ConsoleFontCharHeight()
 {
 	return cls.useLegacyConsoleFont
 	       ? SMALLCHAR_HEIGHT
 	       : cls.consoleFont->glyphBlock[0][(unsigned)'I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 }
 
-float SCR_ConsoleFontCharVPadding( void )
+float SCR_ConsoleFontCharVPadding()
 {
 	return cls.useLegacyConsoleFont
 	       ? 0

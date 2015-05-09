@@ -71,6 +71,7 @@ public:
 
 	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
+		ElementFormControlDataSelect::OnAttributeChange( changed_attributes );
 		if (  changed_attributes.find( "source" ) != changed_attributes.end() )
 		{
 			Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
@@ -90,7 +91,7 @@ public:
 		}
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		extern std::queue< RocketEvent_t * > eventQueue;
 

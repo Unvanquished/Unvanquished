@@ -124,11 +124,11 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 
 				VectorAdd( origin, delta, test );
 
-				trap_Trace( &trace, test, NULL, NULL, test, ENTITYNUM_NONE, MASK_SOLID, 0 );
+				trap_Trace( &trace, test, nullptr, nullptr, test, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 				if ( !trace.allsolid )
 				{
-					trap_Trace( &trace, test, NULL, NULL, origin, ENTITYNUM_NONE, MASK_SOLID, 0 );
+					trap_Trace( &trace, test, nullptr, nullptr, origin, ENTITYNUM_NONE, MASK_SOLID, 0 );
 					VectorScale( delta, trace.fraction, delta );
 					VectorAdd( total, delta, total );
 				}
@@ -346,7 +346,7 @@ void gfx_shader_mod_act( gentity_t *self, gentity_t *other, gentity_t *activator
 	G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
 	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 
-	self->active = qtrue;
+	self->active = true;
 }
 
 void gfx_shader_mod_reset( gentity_t *self )
@@ -364,7 +364,7 @@ void gfx_shader_mod_reset( gentity_t *self )
 	G_SetShaderRemap( self->shaderKey, self->shaderKey, level.time * 0.001 );
 	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 
-	self->active = qfalse;
+	self->active = false;
 }
 
 void SP_gfx_shader_mod( gentity_t *self )

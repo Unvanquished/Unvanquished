@@ -96,12 +96,12 @@ int Q_UTF8_PrintStrlen( const char *str )
   return l;
 }
 
-qboolean Q_UTF8_ContByte( char c )
+bool Q_UTF8_ContByte( char c )
 {
   return (unsigned char )0x80 <= (unsigned char)c && (unsigned char)c <= (unsigned char )0xBF;
 }
 
-static qboolean getbit(const unsigned char *p, int pos)
+static bool getbit(const unsigned char *p, int pos)
 {
   p   += pos / 8;
   pos %= 8;
@@ -109,7 +109,7 @@ static qboolean getbit(const unsigned char *p, int pos)
   return (*p & (1 << (7 - pos))) != 0;
 }
 
-static void setbit(unsigned char *p, int pos, qboolean on)
+static void setbit(unsigned char *p, int pos, bool on)
 {
   p   += pos / 8;
   pos %= 8;
@@ -297,9 +297,9 @@ static int uc_search_range( const void *chp, const void *memb )
 }
 
 #define Q_UC_IS(label, array) \
-  qboolean Q_Unicode_Is##label( int ch ) \
+  bool Q_Unicode_Is##label( int ch ) \
   { \
-    return bsearch( &ch, array, ARRAY_LEN( array ), sizeof( array[ 0 ] ), uc_search_range ) ? qtrue : qfalse; \
+    return bsearch( &ch, array, ARRAY_LEN( array ), sizeof( array[ 0 ] ), uc_search_range ) ? true : false; \
   }
 
 Q_UC_IS( Alpha, uc_prop_alphabetic  )
@@ -308,12 +308,12 @@ Q_UC_IS( Lower, uc_prop_lowercase   )
 Q_UC_IS( Ideo,  uc_prop_ideographic )
 Q_UC_IS( Digit, uc_prop_digit       )
 
-qboolean Q_Unicode_IsAlphaOrIdeo( int ch )
+bool Q_Unicode_IsAlphaOrIdeo( int ch )
 {
   return Q_Unicode_IsAlpha( ch ) || Q_Unicode_IsIdeo( ch );
 }
 
-qboolean Q_Unicode_IsAlphaOrIdeoOrDigit( int ch )
+bool Q_Unicode_IsAlphaOrIdeoOrDigit( int ch )
 {
   return Q_Unicode_IsAlpha( ch ) || Q_Unicode_IsIdeo( ch ) || Q_Unicode_IsDigit( ch );
 }

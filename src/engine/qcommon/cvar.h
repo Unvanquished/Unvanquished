@@ -54,7 +54,7 @@ typedef struct cvar_s
 	char *resetString; // cvar_restart will reset to this value
 	char *latchedString; // for CVAR_LATCH vars
 	int flags;
-	qboolean modified; // set each time the cvar is changed
+	bool modified; // set each time the cvar is changed
 	int modificationCount; // incremented each time the cvar is changed
 	float value; // atof( string )
 	int integer; // atoi( string )
@@ -65,7 +65,7 @@ typedef struct cvar_s
 	 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
 	 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
 	 */
-	qboolean transient;
+	bool transient;
 
 	struct cvar_s *next;
 
@@ -132,7 +132,7 @@ void Cvar_WriteVariables(fileHandle_t f);
  * returns an info string containing all the cvars that have the given bit set
  * in their flags ( CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc )
  */
-char *Cvar_InfoString(int bit, qboolean big);
+char *Cvar_InfoString(int bit, bool big);
 
 void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
 
@@ -144,7 +144,7 @@ void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
  */
 extern int cvar_modifiedFlags;
 #ifndef BUILD_SERVER
-extern qboolean bindingsModified;
+extern bool bindingsModified;
 #endif
 
 #endif /* CVAR_H_ */

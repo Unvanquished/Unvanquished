@@ -104,7 +104,7 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname, filename );
-	FS_FOpenFileRead( filePath, &f, qtrue );
+	FS_FOpenFileRead( filePath, &f, true );
 
 	if ( !f )
 	{
@@ -165,7 +165,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navMesh", mapname, filename );
 	Com_Printf( " loading navigation mesh file '%s'...\n", filePath );
 
-	int len = FS_FOpenFileRead( filePath, &f, qtrue );
+	int len = FS_FOpenFileRead( filePath, &f, true );
 
 	if ( !f )
 	{
@@ -214,7 +214,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Could not init navmesh\n" );
 		dtFreeNavMesh( nav.mesh );
-		nav.mesh = NULL;
+		nav.mesh = nullptr;
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -225,7 +225,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Could not allocate tile cache\n" );
 		dtFreeNavMesh( nav.mesh );
-		nav.mesh = NULL;
+		nav.mesh = nullptr;
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -237,8 +237,8 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		Com_Printf( S_COLOR_RED "ERROR: Could not init tile cache\n" );
 		dtFreeNavMesh( nav.mesh );
 		dtFreeTileCache( nav.cache );
-		nav.mesh = NULL;
-		nav.cache = NULL;
+		nav.mesh = nullptr;
+		nav.cache = nullptr;
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -256,8 +256,8 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			Com_Printf( S_COLOR_RED "ERROR: NUll Tile in navmesh\n" );
 			dtFreeNavMesh( nav.mesh );
 			dtFreeTileCache( nav.cache );
-			nav.cache = NULL;
-			nav.mesh = NULL;
+			nav.cache = nullptr;
+			nav.mesh = nullptr;
 			FS_FCloseFile( f );
 			return false;
 		}
@@ -269,8 +269,8 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			Com_Printf( S_COLOR_RED "ERROR: Failed to allocate memory for tile data\n" );
 			dtFreeNavMesh( nav.mesh );
 			dtFreeTileCache( nav.cache );
-			nav.cache = NULL;
-			nav.mesh = NULL;
+			nav.cache = nullptr;
+			nav.mesh = nullptr;
 			FS_FCloseFile( f );
 			return false;
 		}
@@ -293,8 +293,8 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			dtFree( data );
 			dtFreeTileCache( nav.cache );
 			dtFreeNavMesh( nav.mesh );
-			nav.cache = NULL;
-			nav.mesh = NULL;
+			nav.cache = nullptr;
+			nav.mesh = nullptr;
 			FS_FCloseFile( f );
 			return false;
 		}
@@ -319,7 +319,7 @@ inline void dtFreeCustom( void *ptr )
 	Z_Free( ptr );
 }
 
-void BotShutdownNav( void )
+void BotShutdownNav()
 {
 	for ( int i = 0; i < numNavData; i++ )
 	{
@@ -353,7 +353,7 @@ void BotShutdownNav( void )
 	numNavData = 0;
 }
 
-qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
+bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 {
 	cvar_t *maxNavNodes = Cvar_Get( "bot_maxNavNodes", "4096",  CVAR_LATCH );
 
@@ -370,14 +370,14 @@ qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 			{
 				if ( !agents[ i ].corridor.init( MAX_BOT_PATH ) )
 				{
-					return qfalse;
+					return false;
 				}
 			}
 
 			agents[ i ].corridor.reset( 0, clearVec );
 			agents[ i ].clientNum = i;
 			agents[ i ].needReplan = true;
-			agents[ i ].nav = NULL;
+			agents[ i ].nav = nullptr;
 			agents[ i ].offMesh = false;
 			memset( agents[ i ].routeResults, 0, sizeof( agents[ i ].routeResults ) );
 		}
@@ -389,7 +389,7 @@ qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 	if ( numNavData == MAX_NAV_DATA )
 	{
 		Com_Printf( "^3ERROR: maximum number of navigation meshes exceeded\n" );
-		return qfalse;
+		return false;
 	}
 
 	NavData_t *nav = &BotNavData[ numNavData ];
@@ -398,7 +398,7 @@ qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 	if ( !BotLoadNavMesh( filename, *nav ) )
 	{
 		BotShutdownNav();
-		return qfalse;
+		return false;
 	}
 
 	Q_strncpyz( nav->name, botClass->name, sizeof( nav->name ) );
@@ -408,19 +408,19 @@ qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 	{
 		Com_Printf( "Could not allocate Detour Navigation Mesh Query for navmesh %s\n", filename );
 		BotShutdownNav();
-		return qfalse;
+		return false;
 	}
 
 	if ( dtStatusFailed( nav->query->init( nav->mesh, maxNavNodes->integer ) ) )
 	{
 		Com_Printf( "Could not init Detour Navigation Mesh Query for navmesh %s\n", filename );
 		BotShutdownNav();
-		return qfalse;
+		return false;
 	}
 
 	nav->filter.setIncludeFlags( botClass->polyFlagsInclude );
 	nav->filter.setExcludeFlags( botClass->polyFlagsExclude );
 	*navHandle = numNavData;
 	numNavData++;
-	return qtrue;
+	return true;
 }

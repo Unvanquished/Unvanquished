@@ -41,7 +41,7 @@ Maryland 20850 USA.
 SV_BotAllocateClient
 ==================
 */
-int SV_BotAllocateClient( void )
+int SV_BotAllocateClient()
 {
 	int i;
 	for (i = std::max(1, sv_privateClients->integer); i < sv_maxclients->integer; i++) {
@@ -113,7 +113,7 @@ int SV_BotGetConsoleMessage( int client, char *buf, int size )
 
 	if ( cl->reliableAcknowledge == cl->reliableSequence )
 	{
-		return qfalse;
+		return false;
 	}
 
 	cl->reliableAcknowledge++;
@@ -121,10 +121,10 @@ int SV_BotGetConsoleMessage( int client, char *buf, int size )
 
 	if ( !cl->reliableCommands[ index ][ 0 ] )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//Q_strncpyz( buf, cl->reliableCommands[index], size );
-	return qtrue;
+	return true;
 }
 

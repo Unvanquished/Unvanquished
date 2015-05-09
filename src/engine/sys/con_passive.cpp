@@ -40,7 +40,7 @@ Maryland 20850 USA.
 CON_Shutdown
 ==================
 */
-void CON_Shutdown_TTY( void )
+void CON_Shutdown_TTY()
 {
 }
 
@@ -49,7 +49,7 @@ void CON_Shutdown_TTY( void )
 CON_Init
 ==================
 */
-void CON_Init_TTY( void )
+void CON_Init_TTY()
 {
 }
 
@@ -58,9 +58,9 @@ void CON_Init_TTY( void )
 CON_Input
 ==================
 */
-char *CON_Input_TTY( void )
+char *CON_Input_TTY()
 {
-	return NULL;
+	return nullptr;
 }
 
 /*

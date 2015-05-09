@@ -129,7 +129,7 @@ public:
 	}
 
 
-	void UpdateValue( void )
+	void UpdateValue()
 	{
 		if ( !type.Empty() )
 		{

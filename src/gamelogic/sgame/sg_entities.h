@@ -199,7 +199,7 @@ typedef enum
 
 typedef struct
 {
-	char  *event;
+	const char *event;
 	gentityCallEvent_t eventType;
 
 	char  *name;
@@ -221,16 +221,16 @@ typedef struct
 //
 //lifecycle
 void       G_InitGentity( gentity_t *e );
-gentity_t  *G_NewEntity( void );
+gentity_t  *G_NewEntity();
 gentity_t  *G_NewTempEntity( const vec3_t origin, int event );
 void       G_FreeEntity( gentity_t *e );
 
 //debug
-char       *etos( const gentity_t *entity );
+const char *etos( const gentity_t *entity );
 void       G_PrintEntityNameList( gentity_t *entity );
 
 //search, select, iterate
-gentity_t  *G_IterateEntities( gentity_t *entity, const char *classname, qboolean skipdisabled, size_t fieldofs, const char *match );
+gentity_t  *G_IterateEntities( gentity_t *entity, const char *classname, bool skipdisabled, size_t fieldofs, const char *match );
 gentity_t  *G_IterateEntities( gentity_t *entity );
 gentity_t  *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname );
 gentity_t  *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const char *match );
@@ -241,8 +241,8 @@ gentity_t  *G_PickRandomEntityOfClass( const char *classname );
 gentity_t  *G_PickRandomEntityWithField( size_t fieldofs, const char *match );
 
 //test
-qboolean   G_MatchesName( gentity_t *entity, const char* name );
-qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
+bool   G_MatchesName( gentity_t *entity, const char* name );
+bool   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 
 //chain
 gentityCallEvent_t      G_GetCallEventTypeFor( const char* event );
@@ -266,8 +266,8 @@ void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
 //
 // g_spawn.c
 //
-void     G_SpawnEntitiesFromString( void );
-void     G_SpawnFakeEntities( void );
+void     G_SpawnEntitiesFromString();
+void     G_SpawnFakeEntities();
 void     G_ReorderCallTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
 
@@ -288,8 +288,8 @@ void G_notify_sensor_end( team_t winningTeam );
 //
 // g_spawn_shared.c
 //
-void     G_ResetIntField( int* target, qboolean fallbackIfNegativ, int instanceField, int classField, int fallbacke );
-void     G_ResetFloatField( float* target, qboolean fallbackIfNegativ, float instanceField, float classField, float fallback );
+void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallbacke );
+void     G_ResetFloatField( float* target, bool fallbackIfNegativ, float instanceField, float classField, float fallback );
 void     G_ResetTimeField( variatingTime_t* result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback );
 
 //==================================================================

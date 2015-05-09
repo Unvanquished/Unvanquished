@@ -155,7 +155,7 @@ G_WriteSessionData
 
 ==================
 */
-void G_WriteSessionData( void )
+void G_WriteSessionData()
 {
 	int i;
 

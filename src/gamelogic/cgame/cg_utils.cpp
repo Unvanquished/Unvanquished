@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 CG_ParseColor
 ===============
 */
-qboolean CG_ParseColor( byte *c, char **text_p )
+bool CG_ParseColor( byte *c, const char **text_p )
 {
 	char *token;
 	int  i;
@@ -41,10 +41,10 @@ qboolean CG_ParseColor( byte *c, char **text_p )
 
 		if ( !*token )
 		{
-			return qfalse;
+			return false;
 		}
 
-		c[ i ] = ( int )( ( float ) 0xFF * atof_neg( token, qfalse ) );
+		c[ i ] = ( int )( ( float ) 0xFF * atof_neg( token, false ) );
 	}
 
 	token = COM_Parse( text_p );
@@ -52,10 +52,10 @@ qboolean CG_ParseColor( byte *c, char **text_p )
 	if ( strcmp( token, "}" ) )
 	{
 		CG_Printf( S_ERROR "missing '}'\n" );
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*

@@ -114,12 +114,12 @@ void game_funds_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 		return;
 	}
 
-	G_AddCreditToClient( activator->client, self->amount, qtrue );
+	G_AddCreditToClient( activator->client, self->amount, true );
 }
 
 void game_funds_reset( gentity_t *self )
 {
-	G_ResetIntField( &self->amount, qfalse, self->config.amount, self->eclass->config.amount, 0);
+	G_ResetIntField( &self->amount, false, self->config.amount, self->eclass->config.amount, 0);
 }
 
 void SP_game_funds( gentity_t *self )
@@ -143,7 +143,7 @@ void game_kill_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	G_Damage( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
+	G_Damage( activator, nullptr, nullptr, nullptr, nullptr, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
 }
 
 void SP_game_kill( gentity_t *self )

@@ -42,8 +42,8 @@ int VM::VM_API_VERSION = CGAME_API_VERSION;
 static IPC::CommandBufferClient cmdBuffer("cgame");
 
 void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState );
-void CG_RegisterCvars( void );
-void CG_Shutdown( void );
+void CG_RegisterCvars();
+void CG_Shutdown();
 
 void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
     int major = id >> 16;
@@ -139,7 +139,7 @@ void trap_SendClientCommand( const char *s )
 	VM::SendMsg<SendClientCommandMsg>(s);
 }
 
-void trap_UpdateScreen( void )
+void trap_UpdateScreen()
 {
 	VM::SendMsg<UpdateScreenMsg>();
 }
@@ -165,21 +165,21 @@ void trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
 	VM::SendMsg<GetCurrentSnapshotNumberMsg>(*snapshotNumber, *serverTime);
 }
 
-qboolean trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
+bool trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 {
 	bool res;
 	VM::SendMsg<GetSnapshotMsg>(snapshotNumber, res, *snapshot);
 	return res;
 }
 
-int trap_GetCurrentCmdNumber( void )
+int trap_GetCurrentCmdNumber()
 {
 	int res;
 	VM::SendMsg<GetCurrentCmdNumberMsg>(res);
 	return res;
 }
 
-qboolean trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
+bool trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 {
 	bool res;
 	VM::SendMsg<GetUserCmdMsg>(cmdNumber, res, *ucmd);
@@ -191,7 +191,7 @@ void trap_SetUserCmdValue( int stateValue, int flags, float sensitivityScale )
 	VM::SendMsg<SetUserCmdValueMsg>(stateValue, flags, sensitivityScale);
 }
 
-qboolean trap_GetEntityToken( char *buffer, int bufferSize )
+bool trap_GetEntityToken( char *buffer, int bufferSize )
 {
 	bool res;
 	std::string token;
@@ -245,12 +245,12 @@ void trap_notify_onTeamChange( int newTeam )
 	VM::SendMsg<NotifyTeamChangeMsg>(newTeam);
 }
 
-void trap_PrepareKeyUp( void )
+void trap_PrepareKeyUp()
 {
 	VM::SendMsg<PrepareKeyUpMsg>();
 }
 
-qboolean trap_GetNews( qboolean force )
+bool trap_GetNews( bool force )
 {
 	bool res;
 	VM::SendMsg<GetNewsMsg>(force, res);
@@ -273,7 +273,7 @@ void trap_S_StartLocalSound( sfxHandle_t sfx, int )
 	cmdBuffer.SendMsg<Audio::StartLocalSoundMsg>(sfx);
 }
 
-void trap_S_ClearLoopingSounds( qboolean )
+void trap_S_ClearLoopingSounds( bool )
 {
 	cmdBuffer.SendMsg<Audio::ClearLoopingSoundsMsg>();
 }
@@ -316,7 +316,7 @@ void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], 
 	cmdBuffer.SendMsg<Audio::RespatializeMsg>(entityNum, myaxis);
 }
 
-sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean)
+sfxHandle_t trap_S_RegisterSound( const char *sample, bool)
 {
 	int sfx;
 	VM::SendMsg<Audio::RegisterSoundMsg>(sample, sfx);
@@ -328,7 +328,7 @@ void trap_S_StartBackgroundTrack( const char *intro, const char *loop )
 	cmdBuffer.SendMsg<Audio::StartBackgroundTrackMsg>(intro, loop);
 }
 
-void trap_S_StopBackgroundTrack( void )
+void trap_S_StopBackgroundTrack()
 {
 	cmdBuffer.SendMsg<Audio::StopBackgroundTrackMsg>();
 }
@@ -345,12 +345,12 @@ void trap_S_SetReverb( int slotNum, const char* name, float ratio )
 	cmdBuffer.SendMsg<Audio::SetReverbMsg>(slotNum, name, ratio);
 }
 
-void trap_S_BeginRegistration( void )
+void trap_S_BeginRegistration()
 {
 	cmdBuffer.SendMsg<Audio::BeginRegistrationMsg>();
 }
 
-void trap_S_EndRegistration( void )
+void trap_S_EndRegistration()
 {
 	cmdBuffer.SendMsg<Audio::EndRegistrationMsg>();
 }
@@ -369,7 +369,7 @@ void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len 
 	Q_strncpyz(out, result.c_str(), len);
 }
 
-void trap_R_ScissorEnable( qboolean enable )
+void trap_R_ScissorEnable( bool enable )
 {
     cmdBuffer.SendMsg<Render::ScissorEnableMsg>(enable);
 }
@@ -379,7 +379,7 @@ void trap_R_ScissorSet( int x, int y, int w, int h )
 	cmdBuffer.SendMsg<Render::ScissorSetMsg>(x, y, w, h);
 }
 
-qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
+bool trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
 	bool res;
 	std::array<float, 3> myp1, myp2;
@@ -420,7 +420,7 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 	VM::SendMsg<Render::RegisterFontMsg>(fontName, fallbackName, pointSize, *font);
 }
 
-void trap_R_ClearScene( void )
+void trap_R_ClearScene()
 {
 	cmdBuffer.SendMsg<Render::ClearSceneMsg>();
 }
@@ -489,7 +489,7 @@ void trap_R_SetClipRegion( const float *region )
 	cmdBuffer.SendMsg<Render::SetClipRegionMsg>(myregion);
 }
 
-void trap_R_ResetClipRegion( void )
+void trap_R_ResetClipRegion()
 {
 	cmdBuffer.SendMsg<Render::ResetClipRegionMsg>();
 }
@@ -524,7 +524,7 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 	VM::SendMsg<Render::RemapShaderMsg>(oldShader, newShader, timeOffset);
 }
 
-qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
+bool trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
 {
 	bool res;
 	std::array<float, 3> myp1, myp2;
@@ -553,7 +553,7 @@ qhandle_t trap_R_RegisterAnimation( const char *name )
 	return handle;
 }
 
-int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, qboolean clearOrigin )
+int trap_R_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, bool clearOrigin )
 {
 	int result;
 	VM::SendMsg<Render::BuildSkeletonMsg>(anim, startFrame, endFrame, frac, clearOrigin, *skel, result);
@@ -569,7 +569,7 @@ int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float
     if ( skel->numBones != blend->numBones )
     {
         Log::Warn("trap_R_BlendSkeleton: different number of bones %d != %d\n", skel->numBones, blend->numBones);
-        return qfalse;
+        return false;
     }
 
     // lerp between the 2 bone poses
@@ -595,7 +595,7 @@ int trap_R_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float
     VectorCopy( bounds[ 0 ], skel->bounds[ 0 ] );
     VectorCopy( bounds[ 1 ], skel->bounds[ 1 ] );
 
-    return qtrue;
+    return true;
 }
 
 int trap_R_BoneIndex( qhandle_t hModel, const char *boneName )
@@ -619,7 +619,7 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 	return n;
 }
 
-qhandle_t trap_RegisterVisTest( void )
+qhandle_t trap_RegisterVisTest()
 {
 	int handle;
 	VM::SendMsg<Render::RegisterVisTestMsg>(handle);
@@ -667,7 +667,7 @@ void trap_SetColorGrading( int slot, qhandle_t hShader )
 
 // All keys
 
-int trap_Key_GetCatcher( void )
+int trap_Key_GetCatcher()
 {
 	int result;
 	VM::SendMsg<Key::GetCatcherMsg>(result);
@@ -739,7 +739,7 @@ int trap_LAN_GetServerPing( int source, int n )
 	return ping;
 }
 
-void trap_LAN_MarkServerVisible( int source, int n, qboolean visible )
+void trap_LAN_MarkServerVisible( int source, int n, bool visible )
 {
 	VM::SendMsg<LAN::MarkServerVisibleMsg>(source, n, visible);
 }
@@ -751,7 +751,7 @@ int trap_LAN_ServerIsVisible( int source, int n )
 	return visible;
 }
 
-qboolean trap_LAN_UpdateVisiblePings( int source )
+bool trap_LAN_UpdateVisiblePings( int source )
 {
 	bool res;
 	VM::SendMsg<LAN::UpdateVisiblePingsMsg>(source, res);
@@ -772,7 +772,7 @@ int trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int ma
 	return res;
 }
 
-void trap_LAN_ResetServerStatus( void )
+void trap_LAN_ResetServerStatus()
 {
 	VM::SendMsg<LAN::ResetServerStatusMsg>();
 }

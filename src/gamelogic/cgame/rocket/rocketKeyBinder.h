@@ -83,11 +83,11 @@ public:
 		{
 			context->RemoveEventListener( "mousemove", this );
 			context->RemoveEventListener( "keydown", this );
-			context = NULL;
+			context = nullptr;
 		}
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		if ( dirty_key && team >= 0 )
 		{
@@ -161,7 +161,7 @@ protected:
 
 		if ( key > 0 )
 		{
-			trap_Key_SetBinding( key, team, NULL );
+			trap_Key_SetBinding( key, team, nullptr );
 		}
 
 		key = newKey;

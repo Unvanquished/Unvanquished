@@ -72,13 +72,13 @@ void CG_ModelDoor( centity_t *cent )
 	VectorScale( ent.axis[ 0 ], es->origin2[ 0 ], ent.axis[ 0 ] );
 	VectorScale( ent.axis[ 1 ], es->origin2[ 1 ], ent.axis[ 1 ] );
 	VectorScale( ent.axis[ 2 ], es->origin2[ 2 ], ent.axis[ 2 ] );
-	ent.nonNormalizedAxes = qtrue;
+	ent.nonNormalizedAxes = true;
 
 	//setup animation
 	anim.firstFrame = es->misc;
 	anim.numFrames = es->weapon;
 	anim.reversed = !es->legsAnim;
-	anim.flipflop = qfalse;
+	anim.flipflop = false;
 	anim.loopFrames = 0;
 	anim.frameLerp = 1000 / es->torsoAnim;
 	anim.initialLerp = 1000 / es->torsoAnim;
@@ -155,7 +155,7 @@ void CG_AnimMapObj( centity_t *cent )
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	VectorCopy( cent->lerpOrigin, ent.oldorigin );
 
-	ent.nonNormalizedAxes = qfalse;
+	ent.nonNormalizedAxes = false;
 
 	//scale the model
 	if ( es->angles2[ 0 ] )
@@ -164,20 +164,20 @@ void CG_AnimMapObj( centity_t *cent )
 		VectorScale( ent.axis[ 0 ], scale, ent.axis[ 0 ] );
 		VectorScale( ent.axis[ 1 ], scale, ent.axis[ 1 ] );
 		VectorScale( ent.axis[ 2 ], scale, ent.axis[ 2 ] );
-		ent.nonNormalizedAxes = qtrue;
+		ent.nonNormalizedAxes = true;
 	}
 
 	//setup animation
 	anim.firstFrame = es->misc;
 	anim.numFrames = es->weapon;
-	anim.reversed = qfalse;
-	anim.flipflop = qfalse;
+	anim.reversed = false;
+	anim.flipflop = false;
 
 	// if numFrames is negative the animation is reversed
 	if ( anim.numFrames < 0 )
 	{
 		anim.numFrames = -anim.numFrames;
-		anim.reversed = qtrue;
+		anim.reversed = true;
 	}
 
 	anim.loopFrames = es->torsoAnim;
@@ -203,7 +203,7 @@ void CG_AnimMapObj( centity_t *cent )
 
 		if ( !cent->animInit )
 		{
-			cent->animInit = qtrue;
+			cent->animInit = true;
 			cent->animPlaying = !( cent->currentState.eFlags & EF_MOVER_STOP );
 		}
 		else
@@ -211,7 +211,7 @@ void CG_AnimMapObj( centity_t *cent )
 			if ( cent->animLastState !=
 			     !( cent->currentState.eFlags & EF_MOVER_STOP ) )
 			{
-				cent->animPlaying = qtrue;
+				cent->animPlaying = true;
 				cent->lerpFrame.animationTime = cg.time;
 				cent->lerpFrame.frameTime = cg.time;
 			}

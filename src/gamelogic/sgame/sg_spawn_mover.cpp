@@ -81,7 +81,7 @@ gentity_t *G_TestEntityPosition( gentity_t *ent )
 		return &g_entities[ tr.entityNum ];
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -132,10 +132,10 @@ void G_RotatePoint( vec3_t point, vec3_t matrix[ 3 ] )
 ==================
 G_TryPushingEntity
 
-Returns qfalse if the move is blocked
+Returns false if the move is blocked
 ==================
 */
-qboolean G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove )
+bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove )
 {
 	vec3_t    matrix[ 3 ], transpose[ 3 ];
 	vec3_t    org, org2, move2;
@@ -146,14 +146,14 @@ qboolean G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) &&
 	     check->s.groundEntityNum != pusher->s.number )
 	{
-		return qfalse;
+		return false;
 	}
 
 	//don't try to move buildables unless standing on a mover
 	if ( check->s.eType == ET_BUILDABLE &&
 	     check->s.groundEntityNum != pusher->s.number )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// save off the old position
@@ -224,7 +224,7 @@ qboolean G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 		}
 
 		trap_LinkEntity( check );
-		return qtrue;
+		return true;
 	}
 
 	// if it is ok to leave in the old position, do it
@@ -244,11 +244,11 @@ qboolean G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 	{
 		check->s.groundEntityNum = ENTITYNUM_NONE;
 		pushed_p--;
-		return qtrue;
+		return true;
 	}
 
 	// blocked
-	return qfalse;
+	return false;
 }
 
 /*
@@ -257,10 +257,10 @@ G_MoverPush
 
 Objects need to be moved back on a failed push,
 otherwise riders would continue to slide.
-If qfalse is returned, *obstacle will be the blocking entity
+If false is returned, *obstacle will be the blocking entity
 ============
 */
-qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle )
+bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle )
 {
 	int       i, e;
 	gentity_t *check;
@@ -270,7 +270,7 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 	int       listedEntities;
 	vec3_t    totalMins, totalMaxs;
 
-	*obstacle = NULL;
+	*obstacle = nullptr;
 
 	// mins/maxs are the bounds at the destination
 	// totalMins / totalMaxs are the bounds for the entire move
@@ -369,7 +369,7 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 		// bobbing entities are instant-kill and never get blocked
 		if ( pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE )
 		{
-			G_Damage( check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH );
+			G_Damage( check, pusher, pusher, nullptr, nullptr, 99999, 0, MOD_CRUSH );
 			continue;
 		}
 
@@ -393,10 +393,10 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 			trap_LinkEntity( p->ent );
 		}
 
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -410,7 +410,7 @@ void G_MoverGroup( gentity_t *ent )
 	gentity_t *part, *obstacle;
 	vec3_t    origin, angles;
 
-	obstacle = NULL;
+	obstacle = nullptr;
 
 	// make sure all group slaves can move before commiting
 	// any moves or calling any think functions
@@ -676,13 +676,13 @@ Returns a MOVER_* value representing the phase (either one
 */
 moverState_t GetMoverGroupState( gentity_t *ent )
 {
-	qboolean restingPosition = qfalse;
+	bool restingPosition = false;
 
 	for ( ent = MasterOf( ent ); ent; ent = ent->groupChain )
 	{
 		if ( ent->moverState == MOVER_POS1 || ent->moverState == ROTATOR_POS1 )
 		{
-			restingPosition = qtrue;
+			restingPosition = true;
 		}
 		else if ( ent->moverState == MOVER_1TO2 || ent->moverState == ROTATOR_1TO2 )
 		{
@@ -740,7 +740,7 @@ void Think_ClosedModelDoor( gentity_t *ent )
 	// close areaportals
 	if ( ent->groupMaster == ent || !ent->groupMaster )
 	{
-		trap_AdjustAreaPortalState( ent, qfalse );
+		trap_AdjustAreaPortalState( ent, false );
 	}
 
 	ent->moverState = MODEL_POS1;
@@ -757,7 +757,7 @@ void Think_CloseModelDoor( gentity_t *ent )
 	int       numEntities, i;
 	gentity_t *clipBrush = ent->clipBrush;
 	gentity_t *check;
-	qboolean  canClose = qtrue;
+	bool  canClose = true;
 
 	numEntities = trap_EntitiesInBox( clipBrush->r.absmin, clipBrush->r.absmax, entityList, MAX_GENTITIES );
 
@@ -780,7 +780,7 @@ void Think_CloseModelDoor( gentity_t *ent )
 		//test is this entity collides with this door
 		if ( G_TestEntityPosition( check ) )
 		{
-			canClose = qfalse;
+			canClose = false;
 		}
 	}
 
@@ -795,7 +795,7 @@ void Think_CloseModelDoor( gentity_t *ent )
 	}
 
 	//toggle door state
-	ent->s.legsAnim = qfalse;
+	ent->s.legsAnim = false;
 
 	// play sound
 	if ( ent->sound2to1 )
@@ -892,7 +892,7 @@ void BinaryMover_reached( gentity_t *ent )
 		// close areaportals
 		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
-			trap_AdjustAreaPortalState( ent, qfalse );
+			trap_AdjustAreaPortalState( ent, false );
 		}
 	}
 	else if ( ent->moverState == ROTATOR_1TO2 )
@@ -932,7 +932,7 @@ void BinaryMover_reached( gentity_t *ent )
 		// close areaportals
 		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
-			trap_AdjustAreaPortalState( ent, qfalse );
+			trap_AdjustAreaPortalState( ent, false );
 		}
 	}
 	else
@@ -992,7 +992,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
-			trap_AdjustAreaPortalState( ent, qtrue );
+			trap_AdjustAreaPortalState( ent, true );
 		}
 	}
 	else if ( ent->moverState == MOVER_POS2 &&
@@ -1018,7 +1018,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
-			trap_AdjustAreaPortalState( ent, qtrue );
+			trap_AdjustAreaPortalState( ent, true );
 	}
 	else if ( ent->moverState == MOVER_2TO1 )
 	{
@@ -1074,7 +1074,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
-			trap_AdjustAreaPortalState( ent, qtrue );
+			trap_AdjustAreaPortalState( ent, true );
 		}
 	}
 	else if ( ent->moverState == ROTATOR_POS2 &&
@@ -1100,7 +1100,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
-			trap_AdjustAreaPortalState( ent, qtrue );
+			trap_AdjustAreaPortalState( ent, true );
 	}
 	else if ( ent->moverState == ROTATOR_2TO1 )
 	{
@@ -1141,7 +1141,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	else if ( ent->moverState == MODEL_POS1 )
 	{
 		//toggle door state
-		ent->s.legsAnim = qtrue;
+		ent->s.legsAnim = true;
 
 		ent->think = Think_OpenModelDoor;
 		ent->nextthink = level.time + ent->config.speed;
@@ -1158,7 +1158,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
-			trap_AdjustAreaPortalState( ent, qtrue );
+			trap_AdjustAreaPortalState( ent, true );
 		}
 
 		ent->moverState = MODEL_1TO2;
@@ -1180,7 +1180,7 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	if(!fallbackSpeed)
 		G_Error("No default speed was supplied to reset_moverspeed for entity #%i of type %s.\n", self->s.number, self->classname);
 
-	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, fallbackSpeed);
+	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
 	// reset duration only for linear movement else func_bobbing will not move
 	if ( self->s.pos.trType != TR_SINE )
@@ -1201,7 +1201,7 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 
 static void SP_ConstantLightField( gentity_t *self )
 {
-	qboolean  lightSet, colorSet;
+	bool  lightSet, colorSet;
 	float     light;
 	vec3_t    color;
 
@@ -1301,7 +1301,7 @@ void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
 	angle = VectorLength( move );
 
-	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, fallbackSpeed);
+	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
 	VectorScale( move, self->speed, self->s.apos.trDelta );
 	self->s.apos.trDuration = angle * 1000 / self->speed;
@@ -1383,7 +1383,7 @@ void func_door_block( gentity_t *self, gentity_t *other )
 
 	if ( self->damage )
 	{
-		G_Damage( other, self, self, NULL, NULL, self->damage, 0, MOD_CRUSH );
+		G_Damage( other, self, self, nullptr, nullptr, self->damage, 0, MOD_CRUSH );
 	}
 
 	if ( self->spawnflags & 4 )
@@ -1485,8 +1485,8 @@ void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 void func_door_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
+	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
+	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 
 	self->takedamage = !!self->health;
 
@@ -1586,7 +1586,7 @@ void SP_func_door( gentity_t *self )
 
 void func_door_rotating_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
+	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 
@@ -1710,8 +1710,8 @@ void SP_func_door_rotating( gentity_t *self )
 
 void func_door_model_reset( gentity_t *self )
 {
-	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, 200);
-	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
+	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, 200);
+	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 
@@ -1963,7 +1963,7 @@ void SP_func_plat( gentity_t *self )
 
 	G_SpawnFloat( "lip", "8", &lip );
 
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
+	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 
 	if(!self->config.wait.time)
 		self->config.wait.time = 1.0f;
@@ -2030,7 +2030,7 @@ void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
 
 void func_button_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
+	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 
@@ -2129,7 +2129,7 @@ void func_train_reached( gentity_t *self )
 	}
 
 	// fire all other targets
-	G_FireEntity( next, NULL );
+	G_FireEntity( next, nullptr );
 
 	// set the new trajectory
 	self->nextPathSegment = next->nextPathSegment;
@@ -2137,9 +2137,9 @@ void func_train_reached( gentity_t *self )
 	VectorCopy( next->nextPathSegment->s.origin, self->activatedPosition );
 
 	// if the path_corner has a speed, use that otherwise use the train's speed
-	G_ResetFloatField( &self->speed, qtrue, next->config.speed, next->eclass->config.speed, 0);
+	G_ResetFloatField( &self->speed, true, next->config.speed, next->eclass->config.speed, 0);
 	if(!self->speed) {
-		G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, DEFAULT_FUNC_TRAIN_SPEED);
+		G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, DEFAULT_FUNC_TRAIN_SPEED);
 	}
 
 	// calculate duration
@@ -2248,7 +2248,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 	gentity_t *path, *next, *start;
 	int targetIndex;
 
-	self->nextPathSegment = G_IterateTargets( NULL, &targetIndex, self );
+	self->nextPathSegment = G_IterateTargets( nullptr, &targetIndex, self );
 
 	if ( !self->nextPathSegment )
 	{
@@ -2257,7 +2257,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 		return;
 	}
 
-	start = NULL;
+	start = nullptr;
 
 	for ( path = self->nextPathSegment; path != start; path = next )
 	{
@@ -2276,7 +2276,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 		// find a path_corner among the targets
 		// there may also be other targets that get fired when the corner
 		// is reached
-		next = NULL;
+		next = nullptr;
 
 		do
 		{
@@ -2316,7 +2316,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			//whatever is blocking the train isn't a client
 
 			//KILL!!1!!!
-			G_Damage( other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH );
+			G_Damage( other, self, self, nullptr, nullptr, 10000, 0, MOD_CRUSH );
 
 			//buildables need to be handled differently since even when
 			//dealt fatal amounts of damage they won't instantly become non-solid
@@ -2344,7 +2344,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			return;
 		}
 
-		G_Damage( other, self, self, NULL, NULL, 10000, 0, MOD_CRUSH );
+		G_Damage( other, self, self, nullptr, nullptr, 10000, 0, MOD_CRUSH );
 	}
 }
 
@@ -2358,7 +2358,7 @@ void SP_func_train( gentity_t *self )
 	}
 	else
 	{
-		G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
+		G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 	}
 
 	trap_SetBrushModel( self, self->model );
@@ -2444,7 +2444,7 @@ ROTATING
 
 void SP_func_rotating( gentity_t *self )
 {
-	G_ResetFloatField(&self->speed, qfalse, self->config.speed, self->eclass->config.speed, 400);
+	G_ResetFloatField(&self->speed, false, self->config.speed, self->eclass->config.speed, 400);
 
 	// set the axis of rotation
 	self->s.apos.trType = TR_LINEAR;
@@ -2462,7 +2462,7 @@ void SP_func_rotating( gentity_t *self )
 		self->s.apos.trDelta[ 1 ] = self->config.speed;
 	}
 
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
+	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2496,7 +2496,7 @@ void SP_func_bobbing( gentity_t *self )
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
 
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
+	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2539,7 +2539,7 @@ void SP_func_pendulum( gentity_t *self )
 
 	G_SpawnFloat( "phase", "0", &phase );
 
-	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
+	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 
@@ -2617,7 +2617,7 @@ void SP_func_spawn( gentity_t *self )
 
 void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
-	self->takedamage = qfalse;
+	self->takedamage = false;
 	trap_UnlinkEntity( self );
 
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self,
@@ -2627,8 +2627,8 @@ void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *at
 
 void func_destructable_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 100);
-	self->takedamage = qtrue;
+	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 100);
+	self->takedamage = true;
 }
 
 /*
@@ -2640,7 +2640,7 @@ void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t *activ
 {
   if( self->r.linked )
   {
-	self->takedamage = qfalse;
+	self->takedamage = false;
     trap_UnlinkEntity( self );
     if( self->health <= 0 )
     {
@@ -2652,7 +2652,7 @@ void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t *activ
     trap_LinkEntity( self );
     G_KillBrushModel( self, activator );
 		func_destructable_reset ( self );
-    self->takedamage = qtrue;
+    self->takedamage = true;
   }
 }
 
@@ -2689,6 +2689,6 @@ void SP_func_destructable( gentity_t *self )
   if( !( self->spawnflags & 1 ) )
   {
     trap_LinkEntity( self );
-    self->takedamage = qtrue;
+    self->takedamage = true;
   }
 }

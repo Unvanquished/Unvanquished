@@ -32,7 +32,7 @@ CG_DrawBoxFace
 Draws a bounding box face
 ======================
 */
-static void CG_DrawBoxFace( qboolean solid, vec3_t a, vec3_t b, vec3_t c, vec3_t d )
+static void CG_DrawBoxFace( bool solid, vec3_t a, vec3_t b, vec3_t c, vec3_t d )
 {
 	polyVert_t verts[ 4 ];
 	vec4_t     color = { 255.0f, 0.0f, 0.0f, 128.0f };
@@ -69,7 +69,7 @@ Draws a bounding box
 */
 void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs )
 {
-	qboolean solid = (type > 1);
+	bool solid = (type > 1);
 
 	vec3_t ppp, mpp, mmp, pmp;
 	vec3_t mmm, pmm, ppm, mpm;
@@ -369,7 +369,7 @@ static void CG_Speaker( centity_t *cent )
 		return;
 	}
 
-	trap_S_StartSound( NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[ cent->currentState.eventParm ] );
+	trap_S_StartSound( nullptr, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[ cent->currentState.eventParm ] );
 
 	//  ent->s.frame = ent->wait * 10;
 	//  ent->s.clientNum = ent->random * 10;
@@ -430,11 +430,22 @@ static void CG_Missile( centity_t *cent )
 	}
 	else if ( ma->model )
 	{
+		vec3_t velocity;
+
 		ent.hModel = ma->model;
 		ent.renderfx = ma->renderfx | RF_NOSHADOW;
 
+		if( es->weapon == MIS_GRENADE || es->weapon == MIS_FIREBOMB )
+		{
+			VectorCopy( es->pos.trDelta, velocity );
+		}
+		else
+		{
+			BG_EvaluateTrajectoryDelta( &es->pos, cg.time, velocity );
+		}
+
 		// convert direction of travel into axis
-		if ( VectorNormalize2( es->pos.trDelta, ent.axis[ 0 ] ) == 0 )
+		if ( VectorNormalize2( velocity, ent.axis[ 0 ] ) == 0 )
 		{
 			ent.axis[ 0 ][ 2 ] = 1.0f;
 		}
@@ -470,11 +481,11 @@ static void CG_Missile( centity_t *cent )
 			VectorScale( ent.axis[ 1 ], ma->modelScale, ent.axis[ 1 ] );
 			VectorScale( ent.axis[ 2 ], ma->modelScale, ent.axis[ 2 ] );
 
-			ent.nonNormalizedAxes = qtrue;
+			ent.nonNormalizedAxes = true;
 		}
 		else
 		{
-			ent.nonNormalizedAxes = qfalse;
+			ent.nonNormalizedAxes = false;
 		}
 
 		if ( ma->usesAnim )
@@ -718,7 +729,7 @@ static void CG_LightFlare( centity_t *cent )
 	flare.renderfx |= RF_DEPTHHACK;
 
 	//bunch of geometry
-	AngleVectors( es->angles, forward, NULL, NULL );
+	AngleVectors( es->angles, forward, nullptr, nullptr );
 	VectorCopy( cent->lerpOrigin, flare.origin );
 	VectorSubtract( flare.origin, cg.refdef.vieworg, delta );
 	len = VectorLength( delta );
@@ -771,12 +782,12 @@ static void CG_LightFlare( centity_t *cent )
 		//draw timed flares
 		if ( newStatus <= 0.5f && cent->lfs.status )
 		{
-			cent->lfs.status = qfalse;
+			cent->lfs.status = false;
 			cent->lfs.lastTime = cg.time;
 		}
 		else if ( newStatus > 0.5f && !cent->lfs.status )
 		{
-			cent->lfs.status = qtrue;
+			cent->lfs.status = true;
 			cent->lfs.lastTime = cg.time;
 		}
 
@@ -838,7 +849,7 @@ static void CG_Lev2ZapChain( centity_t *cent )
 {
 	int           i;
 	entityState_t *es;
-	centity_t     *source = NULL, *target = NULL;
+	centity_t     *source = nullptr, *target = nullptr;
 	int           entityNums[ LEVEL2_AREAZAP_MAX_TARGETS + 1 ];
 	int           count;
 
@@ -932,7 +943,7 @@ static void CG_InterpolateEntityPosition( centity_t *cent )
 
 	// it would be an internal error to find an entity that interpolates without
 	// a snapshot ahead of the current one
-	if ( cg.nextSnap == NULL )
+	if ( cg.nextSnap == nullptr )
 	{
 		CG_Error( "CG_InterpoateEntityPosition: cg.nextSnap == NULL" );
 	}
@@ -1063,17 +1074,17 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	}
 
 	//clear any particle systems from previous uses of this centity_t
-	cent->muzzlePS = NULL;
-	cent->muzzlePsTrigger = qfalse;
-	cent->jetPackPS[ 0 ] = NULL;
-	cent->jetPackPS[ 1 ] = NULL;
+	cent->muzzlePS = nullptr;
+	cent->muzzlePsTrigger = false;
+	cent->jetPackPS[ 0 ] = nullptr;
+	cent->jetPackPS[ 1 ] = nullptr;
 	cent->jetPackState = JPS_INACTIVE;
-	cent->buildablePS = NULL;
-	cent->buildableStatusPS = NULL;
-	cent->entityPS = NULL;
-	cent->entityPSMissing = qfalse;
-	cent->missilePS = NULL;
-	cent->missileTS = NULL;
+	cent->buildablePS = nullptr;
+	cent->buildableStatusPS = nullptr;
+	cent->entityPS = nullptr;
+	cent->entityPSMissing = false;
+	cent->missilePS = nullptr;
+	cent->missileTS = nullptr;
 
 	//make sure that the buildable animations are in a consistent state
 	//when a buildable enters the PVS
@@ -1261,7 +1272,7 @@ CG_AddPacketEntities
 
 ===============
 */
-void CG_AddPacketEntities( void )
+void CG_AddPacketEntities()
 {
 	int           num;
 	centity_t     *cent;
@@ -1303,8 +1314,8 @@ void CG_AddPacketEntities( void )
 
 	// generate and add the entity from the playerstate
 	ps = &cg.predictedPlayerState;
-	BG_PlayerStateToEntityState( ps, &cg.predictedPlayerEntity.currentState, qfalse );
-	cg.predictedPlayerEntity.valid = qtrue;
+	BG_PlayerStateToEntityState( ps, &cg.predictedPlayerEntity.currentState, false );
+	cg.predictedPlayerEntity.valid = true;
 	CG_AddCEntity( &cg.predictedPlayerEntity );
 
 	// lerp the non-predicted value for lightning gun origins
@@ -1312,14 +1323,14 @@ void CG_AddPacketEntities( void )
 
 	for ( num = 0; num < MAX_GENTITIES; num++ )
 	{
-		cg_entities[ num ].valid = qfalse;
+		cg_entities[ num ].valid = false;
 	}
 
 	// add each entity sent over by the server
 	for ( num = 0; num < cg.snap->entities.size(); num++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ num ].number ];
-		cent->valid = qtrue;
+		cent->valid = true;
 	}
 
 	for ( num = 0; num < MAX_GENTITIES; num++ )

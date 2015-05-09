@@ -80,7 +80,7 @@ typedef enum
 typedef struct
 {
 	serverState_t state;
-	qboolean      restarting; // if true, send configstring changes during SS_LOADING
+	bool      restarting; // if true, send configstring changes during SS_LOADING
 	int           serverId; // changes each server start
 	int           restartedServerId; // serverId before a map_restart
 	int           checksumFeed; // the feed key that we use to compute the pure checksum strings
@@ -90,10 +90,10 @@ typedef struct
 	struct cmodel_s *models[ MAX_MODELS ];
 
 	char            *configstrings[ MAX_CONFIGSTRINGS ];
-	qboolean        configstringsmodified[ MAX_CONFIGSTRINGS ];
+	bool        configstringsmodified[ MAX_CONFIGSTRINGS ];
 	svEntity_t      svEntities[ MAX_GENTITIES ];
 
-	char            *entityParsePoint; // used during game VM init
+	const char            *entityParsePoint; // used during game VM init
 
 	// the game virtual machine will update these on init and changes
 	sharedEntity_t *gentities;
@@ -171,7 +171,7 @@ typedef struct client_s
 
 	int            binaryMessageLength;
 	char           binaryMessage[ MAX_BINARY_MESSAGE ];
-	qboolean       binaryMessageOverflowed;
+	bool       binaryMessageOverflowed;
 
 	int            gamestateMessageNum; // netchan->outgoingSequence of gamestate
 	int            challenge;
@@ -193,14 +193,14 @@ typedef struct client_s
 	int           downloadXmitBlock; // last block we xmited
 	unsigned char *downloadBlocks[ MAX_DOWNLOAD_WINDOW ]; // the buffers for the download blocks
 	int           downloadBlockSize[ MAX_DOWNLOAD_WINDOW ];
-	qboolean      downloadEOF; // We have sent the EOF block
+	bool      downloadEOF; // We have sent the EOF block
 	int           downloadSendTime; // time we last got an ack from the client
 
 	// www downloading
 	char     downloadURL[ MAX_OSPATH ]; // the URL we redirected the client to
-	qboolean bWWWDl; // we have a www download going
-	qboolean bWWWing; // the client is doing an ftp/http download
-	qboolean bFallback; // last www download attempt failed, fallback to regular download
+	bool bWWWDl; // we have a www download going
+	bool bWWWing; // the client is doing an ftp/http download
+	bool bFallback; // last www download attempt failed, fallback to regular download
 	// note: this is one-shot, multiple downloads would cause a www download to be attempted again
 
 	int              deltaMessage; // frame last client usercmd message
@@ -208,7 +208,7 @@ typedef struct client_s
 	int              lastPacketTime; // svs.time when packet was last received
 	int              lastConnectTime; // svs.time when connection started
 	int              nextSnapshotTime; // send another snapshot when svs.time >= nextSnapshotTime
-	qboolean         rateDelayed; // true if nextSnapshotTime was set based on rate instead of snapshotMsec
+	bool         rateDelayed; // true if nextSnapshotTime was set based on rate instead of snapshotMsec
 	int              timeoutCount; // must timeout a few frames in a row so debugging doesn't break
 	clientSnapshot_t frames[ PACKET_BACKUP ]; // updates can be delta'd from here
 	int              ping;
@@ -226,9 +226,9 @@ typedef struct client_s
 	char             pubkey[ RSA_STRING_LENGTH ];
 
 #ifdef USE_VOIP
-	qboolean           hasVoip;
-	qboolean           muteAllVoip;
-	qboolean           ignoreVoipFromClient[ MAX_CLIENTS ];
+	bool           hasVoip;
+	bool           muteAllVoip;
+	bool           ignoreVoipFromClient[ MAX_CLIENTS ];
 	voipServerPacket_t *voipPacket[ VOIP_QUEUE_LENGTH ];
 	int                queuedVoipPackets;
 	int                queuedVoipIndex;
@@ -266,7 +266,7 @@ typedef struct
 	int      pingTime; // time the challenge response was sent to client
 	int      firstTime; // time the adr was first used, for authorize timeout checks
 	int      firstPing; // Used for min and max ping checks
-	qboolean connected;
+	bool connected;
 } challenge_t;
 
 typedef struct
@@ -285,7 +285,7 @@ typedef struct
 // this structure will be cleared only when the game module changes
 typedef struct
 {
-	qboolean      initialized; // sv_init has completed
+	bool      initialized; // sv_init has completed
 
 	int           time; // will be strictly increasing across level changes
 
@@ -315,16 +315,16 @@ public:
 	void Start();
 
 	void GameStaticInit();
-	void GameInit(int levelTime, int randomSeed, qboolean restart);
-	void GameShutdown(qboolean restart);
-	qboolean GameClientConnect(char* reason, size_t size, int clientNum, qboolean firstTime, qboolean isBot);
+	void GameInit(int levelTime, int randomSeed, bool restart);
+	void GameShutdown(bool restart);
+	bool GameClientConnect(char* reason, size_t size, int clientNum, bool firstTime, bool isBot);
 	void GameClientBegin(int clientNum);
 	void GameClientUserInfoChanged(int clientNum);
 	void GameClientDisconnect(int clientNum);
 	void GameClientCommand(int clientNum, const char* command);
 	void GameClientThink(int clientNum);
 	void GameRunFrame(int levelTime);
-	qboolean GameSnapshotCallback(int entityNum, int clientNum);
+	bool GameSnapshotCallback(int entityNum, int clientNum);
 	void BotAIStartFrame(int levelTime);
 	void GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime);
 
@@ -400,29 +400,29 @@ extern Cvar::Cvar<bool> isLanOnly;
 //
 // sv_main.c
 //
-void       SV_FinalCommand( char *cmd, qboolean disconnect );  // ydnar: added disconnect flag so map changes can use this function as well
+void       SV_FinalCommand( char *cmd, bool disconnect );  // ydnar: added disconnect flag so map changes can use this function as well
 void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) PRINTF_LIKE(2);
-void       SV_PrintTranslatedText( const char *text, qboolean broadcast, qboolean plural );
+void       SV_PrintTranslatedText( const char *text, bool broadcast, bool plural );
 
-void       SV_AddOperatorCommands( void );
-void       SV_RemoveOperatorCommands( void );
+void       SV_AddOperatorCommands();
+void       SV_RemoveOperatorCommands();
 
-void       SV_NET_Config( void );
+void       SV_NET_Config();
 
 void       SV_MasterHeartbeat( const char *hbname );
-void       SV_MasterShutdown( void );
+void       SV_MasterShutdown();
 void       SV_MasterGameStat( const char *data );
 
 //bani - bugtraq 12534
-qboolean   SV_VerifyChallenge( const char *challenge );
+bool   SV_VerifyChallenge( const char *challenge );
 
 //
 // sv_init.c
 //
 void SV_SetConfigstringNoUpdate( int index, const char *val );
-void SV_UpdateConfigStrings( void );
+void SV_UpdateConfigStrings();
 void SV_SetConfigstring( int index, const char *val );
-void SV_UpdateConfigStrings( void );
+void SV_UpdateConfigStrings();
 void SV_GetConfigstring( int index, char *buffer, int bufferSize );
 void SV_SetConfigstringRestrictions( int index, const clientList_t *clientList );
 
@@ -430,9 +430,9 @@ void SV_SetUserinfo( int index, const char *val );
 void SV_GetUserinfo( int index, char *buffer, int bufferSize );
 void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
-void SV_CreateBaseline( void );
+void SV_CreateBaseline();
 
-void SV_ChangeMaxClients( void );
+void SV_ChangeMaxClients();
 void SV_SpawnServer( const char *server );
 
 //
@@ -449,7 +449,7 @@ void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd );
 void SV_FreeClient( client_t *client );
 void SV_DropClient( client_t *drop, const char *reason );
 
-void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qboolean premaprestart );
+void SV_ExecuteClientCommand( client_t *cl, const char *s, bool clientOK, bool premaprestart );
 void SV_ClientThink( client_t *cl, usercmd_t *cmd );
 
 void SV_WriteDownloadToClient( client_t *cl, msg_t *msg );
@@ -462,7 +462,7 @@ void SV_WriteVoipToClient( client_t *cl, msg_t *msg );
 //
 // sv_ccmds.c
 //
-void     SV_Heartbeat_f( void );
+void     SV_Heartbeat_f();
 
 //
 // sv_snapshot.c
@@ -470,7 +470,7 @@ void     SV_Heartbeat_f( void );
 void SV_AddServerCommand( client_t *client, const char *cmd );
 void SV_UpdateServerCommandsToClient( client_t *client, msg_t *msg );
 void SV_SendMessageToClient( msg_t *msg, client_t *client );
-void SV_SendClientMessages( void );
+void SV_SendClientMessages();
 void SV_SendClientSnapshot( client_t *client );
 
 //bani
@@ -489,20 +489,20 @@ playerState_t  *SV_GameClientNum( int num );
 
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
-std::unique_ptr<GameVM> SV_CreateGameVM( void );
+std::unique_ptr<GameVM> SV_CreateGameVM();
 void           SV_InitGameProgs(Str::StringRef mapname);
-void           SV_ShutdownGameProgs( void );
+void           SV_ShutdownGameProgs();
 void           SV_RestartGameProgs(Str::StringRef mapname);
-qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
-qboolean       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
+bool       SV_inPVS( const vec3_t p1, const vec3_t p2 );
+bool       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );
 void           SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime );
-void           SV_GameCommandHandler( void );
+void           SV_GameCommandHandler();
 
 //
 // sv_bot.c
 //
-int  SV_BotAllocateClient( void );
+int  SV_BotAllocateClient();
 void SV_BotFreeClient( int clientNum );
 bool SV_IsBot( const client_t* client );
 
@@ -513,7 +513,7 @@ int  SV_BotGetConsoleMessage( int client, char *buf, int size );
 //
 void     SV_Netchan_Transmit( client_t *client, msg_t *msg );
 void     SV_Netchan_TransmitNextFragment( client_t *client );
-qboolean SV_Netchan_Process( client_t *client, msg_t *msg );
+bool SV_Netchan_Process( client_t *client, msg_t *msg );
 void     SV_Netchan_FreeQueue( client_t *client );
 
 //bani - cl->downloadnotify
@@ -522,6 +522,6 @@ void     SV_Netchan_FreeQueue( client_t *client );
 #define DLNOTIFY_ALL      ( DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN )
 
 
-void SV_GeoIP_Init( void );
+void SV_GeoIP_Init();
 
 #endif /* SERVER_H_ */

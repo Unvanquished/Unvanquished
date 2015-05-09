@@ -339,8 +339,8 @@ namespace Audio {
     }
 
     void StopAllSounds() {
-        //TODO: really stop all the sounds
         StopMusic();
+        StopSounds();
     }
 
     void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {

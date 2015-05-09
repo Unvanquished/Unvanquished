@@ -77,7 +77,7 @@ static kbuttons_t dtmapping[] =
 
 void IN_KeyDown( kbutton_t *b )
 {
-	qboolean nokey = ( Cmd_Argc() > 1 );
+	bool nokey = ( Cmd_Argc() > 1 );
 	int      k = nokey ? -1 : Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
 	if ( k == b->down[ 0 ] || k == b->down[ 1 ] )
@@ -107,21 +107,21 @@ void IN_KeyDown( kbutton_t *b )
 	// save timestamp for partial frame summing
 	b->downtime = nokey ? 0 : Key_GetKeyTime();
 
-	b->active = qtrue;
-	b->wasPressed = qtrue;
+	b->active = true;
+	b->wasPressed = true;
 }
 
 void IN_KeyUp( kbutton_t *b )
 {
 	unsigned uptime;
-	qboolean nokey = ( Cmd_Argc() > 1 );
+	bool nokey = ( Cmd_Argc() > 1 );
 	int      k = nokey ? -1 : Key_GetKeyNumber(); // -1 if typed manually at the console for continuous down
 
 	if ( k < 0 )
 	{
 		// typed manually at the console, assume for unsticking, so clear all
 		b->down[ 0 ] = b->down[ 1 ] = 0;
-		b->active = qfalse;
+		b->active = false;
 		return;
 	}
 
@@ -141,7 +141,7 @@ void IN_KeyUp( kbutton_t *b )
 		return; // some other key is still holding it down
 	}
 
-	b->active = qfalse;
+	b->active = false;
 
 	// save timestamp for partial frame summing
 	uptime = nokey ? 0 : Key_GetKeyTime();
@@ -155,7 +155,7 @@ void IN_KeyUp( kbutton_t *b )
 		b->msec += frame_msec / 2;
 	}
 
-	b->active = qfalse;
+	b->active = false;
 }
 
 /*
@@ -204,7 +204,7 @@ float CL_KeyState( kbutton_t *key )
 }
 
 #ifdef USE_VOIP
-void IN_VoipRecordDown( void )
+void IN_VoipRecordDown()
 {
 	//IN_KeyDown(&in_voiprecord);
 	IN_KeyDown( &kb[ KB_VOIPRECORD ] );
@@ -212,7 +212,7 @@ void IN_VoipRecordDown( void )
 	Cvar_Set( "cl_voipSend", "1" );
 }
 
-void IN_VoipRecordUp( void )
+void IN_VoipRecordUp()
 {
 	// IN_KeyUp(&in_voiprecord);
 	IN_KeyUp( &kb[ KB_VOIPRECORD ] );
@@ -220,7 +220,7 @@ void IN_VoipRecordUp( void )
 }
 #endif
 
-void IN_CenterView (void)
+void IN_CenterView ()
 {
         cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
 }
@@ -243,7 +243,7 @@ CL_AdjustAngles
 Moves the local angle positions
 ================
 */
-void CL_AdjustAngles( void )
+void CL_AdjustAngles()
 {
 	float speed;
 
@@ -283,7 +283,7 @@ void CL_KeyMove( usercmd_t *cmd )
 	// the walking flag is to keep animations consistent
 	// even during acceleration and deceleration
 	//
-	if ( kb[ KB_SPEED ].active ^ cl_run->integer )
+	if ( kb[ KB_SPEED ].active != (cl_run->integer != 0) )
 	{
 		movespeed = 127;
 		usercmdReleaseButton( cmd->buttons, BUTTON_WALKING );
@@ -327,7 +327,7 @@ void CL_KeyMove( usercmd_t *cmd )
 	if ( !cl.doubleTap.lastdoubleTap || com_frameTime - cl.doubleTap.lastdoubleTap > cl_doubletapdelay->integer + cls.frametime )
 	{
 		int      i;
-		qboolean key_down;
+		bool key_down;
 
 		int          lastKey = 0;
 		unsigned int lastKeyTime = 0;
@@ -441,7 +441,7 @@ void CL_JoystickMove( usercmd_t *cmd )
 //	int             movespeed;
 	float anglespeed;
 
-	if ( !( kb[ KB_SPEED ].active ^ cl_run->integer ) )
+	if ( kb[ KB_SPEED ].active == (cl_run->integer != 0) )
 	{
 		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 	}
@@ -497,7 +497,7 @@ void CL_Xbox360ControllerMove( usercmd_t *cmd )
 //	int     movespeed;
 	float anglespeed;
 
-	if ( !( kb[ KB_SPEED ].active ^ cl_run->integer ) )
+	if ( kb[ KB_SPEED ].active == (cl_run->integer != 0) )
 	{
 		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 	}
@@ -633,12 +633,12 @@ void CL_MouseMove( usercmd_t *cmd )
 /*
 
 */
-void CL_ClearCmdButtons( void )
+void CL_ClearCmdButtons()
 {
 	for ( int i = 0; i < USERCMD_BUTTONS; ++i )
 	{
-		kb[ KB_BUTTONS + i ].active = qfalse;
-		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
+		kb[ KB_BUTTONS + i ].active = false;
+		kb[ KB_BUTTONS + i ].wasPressed = false;
 	}
 }
 
@@ -663,7 +663,7 @@ void CL_CmdButtons( usercmd_t *cmd )
 			usercmdPressButton( cmd->buttons, i );
 		}
 
-		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
+		kb[ KB_BUTTONS + i ].wasPressed = false;
 	}
 
 	if ( cls.keyCatchers )
@@ -683,7 +683,7 @@ void CL_CmdButtons( usercmd_t *cmd )
 	{
 		if ( dtmapping[ i ] != KB_BUTTONS )
 		{
-			kb[ dtmapping[ i ] ].wasPressed = qfalse;
+			kb[ dtmapping[ i ] ].wasPressed = false;
 		}
 	}
 }
@@ -717,7 +717,7 @@ void CL_FinishMove( usercmd_t *cmd )
 CL_CreateCmd
 =================
 */
-usercmd_t CL_CreateCmd( void )
+usercmd_t CL_CreateCmd()
 {
 	usercmd_t cmd;
 	vec3_t    oldAngles;
@@ -770,7 +770,7 @@ CL_CreateNewCommands
 Create a new usercmd_t structure for this frame
 =================
 */
-void CL_CreateNewCommands( void )
+void CL_CreateNewCommands()
 {
 	//usercmd_t      *cmd;
 	int cmdNum;
@@ -803,14 +803,14 @@ void CL_CreateNewCommands( void )
 =================
 CL_ReadyToSendPacket
 
-Returns qfalse if we are over the maxpackets limit
+Returns false if we are over the maxpackets limit
 and should choke back the bandwidth a bit by not sending
 a packet this frame.  All the commands will still get
 delivered in the next packet, but saving a header and
 getting more delta compression will reduce total bandwidth.
 =================
 */
-qboolean CL_ReadyToSendPacket( void )
+bool CL_ReadyToSendPacket()
 {
 	int oldPacketNum;
 	int delta;
@@ -818,32 +818,32 @@ qboolean CL_ReadyToSendPacket( void )
 	// don't send anything if playing back a demo
 	if ( clc.demoplaying || cls.state == CA_CINEMATIC )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// If we are downloading, we send no less than 50ms between packets
 	if ( *cls.downloadTempName && cls.realtime - clc.lastPacketSentTime < 50 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// if we don't have a valid gamestate yet, only send
 	// one packet a second
 	if ( cls.state != CA_ACTIVE && cls.state != CA_PRIMED && !*cls.downloadTempName && cls.realtime - clc.lastPacketSentTime < 1000 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// send every frame for loopbacks
 	if ( clc.netchan.remoteAddress.type == NA_LOOPBACK )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// send every frame for LAN
 	if ( Sys_IsLANAddress( clc.netchan.remoteAddress ) )
 	{
-		return qtrue;
+		return true;
 	}
 
 	// check for exceeding cl_maxpackets
@@ -862,10 +862,10 @@ qboolean CL_ReadyToSendPacket( void )
 	if ( delta < 1000 / cl_maxpackets->integer )
 	{
 		// the accumulated commands will go out in the next packet
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -884,13 +884,13 @@ static void CL_WriteBinaryMessage( msg_t *msg )
 
 	if ( ( msg->cursize + clc.binaryMessageLength ) >= msg->maxsize )
 	{
-		clc.binaryMessageOverflowed = qtrue;
+		clc.binaryMessageOverflowed = true;
 		return;
 	}
 
 	MSG_WriteData( msg, clc.binaryMessage, clc.binaryMessageLength );
 	clc.binaryMessageLength = 0;
-	clc.binaryMessageOverflowed = qfalse;
+	clc.binaryMessageOverflowed = false;
 }
 
 /*
@@ -914,7 +914,7 @@ A client packet will contain something like:
 
 ===================
 */
-void CL_WritePacket( void )
+void CL_WritePacket()
 {
 	msg_t     buf;
 	byte      data[ MAX_MSGLEN ];
@@ -1104,7 +1104,7 @@ CL_SendCmd
 Called every frame to builds and sends a command packet to the server.
 =================
 */
-void CL_SendCmd( void )
+void CL_SendCmd()
 {
 	// don't send any message if not connected
 	if ( cls.state < CA_CONNECTED )
@@ -1135,7 +1135,7 @@ void CL_SendCmd( void )
 	CL_WritePacket();
 }
 
-static char *registeredButtonCommands[ USERCMD_BUTTONS ] = { NULL };
+static char *registeredButtonCommands[ USERCMD_BUTTONS ] = { nullptr };
 
 static const struct{
 	const char* name;
@@ -1154,15 +1154,15 @@ static const struct{
 	{ "moveright",  KB_MOVERIGHT },
 	{ "speed",      KB_SPEED     },
 	{ "mlook",      KB_MLOOK     },
-	{ NULL, 0                    }
+	{ nullptr, 0                    }
 };
 
 //A proxy command for +/-commands
-void IN_BuiltinButtonCommand( void )
+void IN_BuiltinButtonCommand()
 {
 	int i = 0;
 	const char* name = Cmd_Argv( 0 );
-	qboolean isPlus = ( name[0] == '+' );
+	bool isPlus = ( name[0] == '+' );
 	int key = -1;
 
 	//Remove the modifier
@@ -1185,7 +1185,7 @@ void IN_BuiltinButtonCommand( void )
 	if ( key == -1 )
 	{
 		i = 0;
-		while ( builtinButtonCommands[i].name != NULL )
+		while ( builtinButtonCommands[i].name != nullptr )
 		{
 			if ( !Q_stricmp( builtinButtonCommands[i].name, name ) )
 			{
@@ -1210,12 +1210,12 @@ void IN_BuiltinButtonCommand( void )
 	}
 }
 
-void IN_KeysUp_f( void )
+void IN_KeysUp_f()
 {
 	unsigned int check;
 	int key, time;
 	int i;
-	qboolean first = qtrue;
+	bool first = true;
 
 	check = atoi( Cmd_Argv( 1 ) );
 	key   = atoi( Cmd_Argv( 2 ) );
@@ -1228,7 +1228,7 @@ void IN_KeysUp_f( void )
 			if ( first )
 			{
 				Cmd::ExecuteCommand(va("setkeydata %d %d %u", check, key + 1, time));
-				first = qfalse;
+				first = false;
 			}
 
 			Cmd::ExecuteCommand(va("-%s", registeredButtonCommands[ i ] + 1)); // command name includes '+'
@@ -1242,7 +1242,7 @@ void IN_KeysUp_f( void )
 			if ( first )
 			{
 				Cmd::ExecuteCommand(va("setkeydata %d %d %u", check, key + 1, time));
-				first = qfalse;
+				first = false;
 			}
 
 			Cmd::ExecuteCommand(va("-%s", builtinButtonCommands[i].name)); // command name doesn't include '+'
@@ -1260,7 +1260,7 @@ void IN_KeysUp_f( void )
 	{
 		Cmd::ExecuteCommand( keyup[ key ] );
 		Z_Free( keyup[ key ] );
-		keyup[ key ] = NULL;
+		keyup[ key ] = nullptr;
 	}
 }
 
@@ -1272,9 +1272,9 @@ For pseudo-button commands which don't need key/time info but do need to be exec
 Called by the +command code.
 ============
 */
-void IN_PrepareKeyUp( void )
+void IN_PrepareKeyUp()
 {
-	char *cmd;
+	const char *cmd;
 	int  key;
 
 	// Get the current key no. If negative, return
@@ -1331,7 +1331,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 			registeredButtonCommands[ i ][ 0 ] = '-';
 			Cmd_RemoveCommand( registeredButtonCommands[ i ] );
 			Z_Free( registeredButtonCommands[ i ] );
-			registeredButtonCommands[ i ] = NULL;
+			registeredButtonCommands[ i ] = nullptr;
 		}
 	}
 
@@ -1373,13 +1373,13 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 CL_InitInput
 ============
 */
-void CL_InitInput( void )
+void CL_InitInput()
 {
 	int i = 0;
 
 	Cmd_AddCommand ("centerview", IN_CenterView);
 
-	while( builtinButtonCommands[i].name != NULL )
+	while( builtinButtonCommands[i].name != nullptr )
 	{
 		Cmd_AddCommand( va( "-%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
 		Cmd_AddCommand( va( "+%s", builtinButtonCommands[i].name ), IN_BuiltinButtonCommand );
@@ -1403,7 +1403,7 @@ void CL_InitInput( void )
 CL_ClearKeys
 ============
 */
-void CL_ClearKeys( void )
+void CL_ClearKeys()
 {
 	int i;
 
@@ -1412,7 +1412,7 @@ void CL_ClearKeys( void )
 		if ( keyup[ i ] )
 		{
 			Z_Free( keyup[ i ] );
-			keyup[ i ] = NULL;
+			keyup[ i ] = nullptr;
 		}
 	}
 

@@ -45,7 +45,7 @@ void Rocket_AddTextElement( const char *text, const char *_class, float x, float
 	RocketMiscText::AddText( text, _class, x, y );
 }
 
-void Rocket_ClearText( void )
+void Rocket_ClearText()
 {
 	RocketMiscText::ClearText();
 }

@@ -45,17 +45,17 @@ typedef struct unlockable_s
 	int      type;
 	int      num;
 	team_t   team;
-	qboolean unlocked;
-	qboolean statusKnown;
-	qboolean unlockThreshold;
-	qboolean lockThreshold;
+	bool     unlocked;
+	bool     statusKnown;
+	int      unlockThreshold;
+	int      lockThreshold;
 } unlockable_t;
 
 // ----
 // data
 // ----
 
-qboolean         unlockablesDataAvailable;
+bool         unlockablesDataAvailable;
 team_t           unlockablesTeamKnowledge;
 
 unlockable_t     unlockables[ NUM_UNLOCKABLES ];
@@ -78,11 +78,11 @@ static const char *UnlockableHumanName( unlockable_t *unlockable )
 	}
 
 	Com_Error( ERR_FATAL, "UnlockableHumanName: Unlockable has unknown type" );
-	return NULL;
+	return nullptr;
 }
 
 #ifdef BUILD_CGAME
-static qboolean Disabled( unlockable_t *unlockable )
+static bool Disabled( unlockable_t *unlockable )
 {
 	switch ( unlockable->type )
 	{
@@ -93,12 +93,12 @@ static qboolean Disabled( unlockable_t *unlockable )
 	}
 
 	Com_Error( ERR_FATAL, "Disabled: Unlockable has unknown type" );
-	return qfalse;
+	return false;
 }
 #endif // BUILD_CGAME
 
 #ifdef BUILD_CGAME
-static void InformUnlockableStatusChange( unlockable_t *unlockable, qboolean unlocked )
+static void InformUnlockableStatusChange( unlockable_t *unlockable, bool unlocked )
 {
 }
 #endif // BUILD_CGAME
@@ -109,7 +109,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 	char         text[ MAX_STRING_CHARS ];
 	char         *textptr = text;
 	int          unlockableNum;
-	qboolean     firstPass = qtrue, unlocked = qtrue;
+	bool     firstPass = true, unlocked = true;
 	unlockable_t *unlockable;
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
@@ -130,13 +130,13 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 			}
 			else
 			{
-				unlocked = qfalse;
+				unlocked = false;
 				Com_sprintf( text, sizeof( text ),
 				             S_COLOR_RED   "ITEM%s LOCKED: "   S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
 			}
 
 			textptr = text + strlen( text );
-			firstPass = qfalse;
+			firstPass = false;
 		}
 		else
 		{
@@ -171,7 +171,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 }
 #endif // BUILD_CGAME
 
-static INLINE qboolean Unlocked( unlockableType_t type, int itemNum )
+static INLINE bool Unlocked( unlockableType_t type, int itemNum )
 {
 	return unlockables[ unlockablesTypeOffset[ type ] + itemNum ].unlocked;
 }
@@ -246,9 +246,9 @@ static float UnlockToLockThreshold( float unlockThreshold )
 // BG methods
 // ----------
 
-void BG_InitUnlockackables( void )
+void BG_InitUnlockackables()
 {
-	unlockablesDataAvailable = qfalse;
+	unlockablesDataAvailable = false;
 	unlockablesTeamKnowledge = TEAM_NONE;
 
 	memset( unlockables, 0, sizeof( unlockables ) );
@@ -270,7 +270,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 	unlockable_t     *unlockable;
 	int unlockableType = 0;
 	team_t           currentTeam;
-	qboolean         newStatus;
+	bool         newStatus;
 	int              statusChanges[ NUM_UNLOCKABLES ];
 #ifdef BUILD_CGAME
 	int statusChangeCount = 0;
@@ -342,8 +342,8 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 		// retrieve the item's locking state
 		if ( !unlockThreshold )
 		{
-			unlockable->statusKnown = qtrue;
-			unlockable->unlocked    = qtrue;
+			unlockable->statusKnown = true;
+			unlockable->unlocked    = true;
 		}
 		else if ( currentTeam == team )
 		{
@@ -361,15 +361,15 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 			}
 #endif
 
-			unlockable->statusKnown = qtrue;
+			unlockable->statusKnown = true;
 			unlockable->unlocked    = newStatus;
 
 			teamUnlockableNum++;
 		}
 		else
 		{
-			unlockable->statusKnown = qfalse;
-			unlockable->unlocked    = qfalse;
+			unlockable->statusKnown = false;
+			unlockable->unlocked    = false;
 		}
 
 		itemNum++;
@@ -387,7 +387,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 #endif
 
 	// we only know the state for one team
-	unlockablesDataAvailable = qtrue;
+	unlockablesDataAvailable = true;
 	unlockablesTeamKnowledge = (team_t) team;
 
 	// save mask for later use
@@ -414,32 +414,32 @@ int BG_UnlockableTypeIndex( int num )
 	return ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].num : 0;
 }
 
-qboolean BG_WeaponUnlocked( int weapon )
+bool BG_WeaponUnlocked( int weapon )
 {
-	CheckStatusKnowledge( UNLT_WEAPON, ( int )weapon );
+	CheckStatusKnowledge( UNLT_WEAPON, weapon);
 
-	return Unlocked( UNLT_WEAPON, ( int )weapon );
+	return Unlocked( UNLT_WEAPON, weapon);
 }
 
-qboolean BG_UpgradeUnlocked( int upgrade )
+bool BG_UpgradeUnlocked( int upgrade )
 {
-	CheckStatusKnowledge( UNLT_UPGRADE, ( int )upgrade );
+	CheckStatusKnowledge( UNLT_UPGRADE, upgrade);
 
-	return Unlocked( UNLT_UPGRADE, ( int )upgrade );
+	return Unlocked( UNLT_UPGRADE, upgrade);
 }
 
-qboolean BG_BuildableUnlocked( int buildable )
+bool BG_BuildableUnlocked( int buildable )
 {
-	CheckStatusKnowledge( UNLT_BUILDABLE, ( int )buildable );
+	CheckStatusKnowledge( UNLT_BUILDABLE, buildable);
 
-	return Unlocked( UNLT_BUILDABLE, ( int )buildable );
+	return Unlocked( UNLT_BUILDABLE, buildable);
 }
 
-qboolean BG_ClassUnlocked( int class_ )
+bool BG_ClassUnlocked( int class_ )
 {
-	CheckStatusKnowledge( UNLT_CLASS, ( int )class_ );
+	CheckStatusKnowledge( UNLT_CLASS, class_);
 
-	return Unlocked( UNLT_CLASS, ( int )class_ );
+	return Unlocked( UNLT_CLASS, class_);
 }
 
 static int MomentumNextThreshold( int threshold )
@@ -460,7 +460,7 @@ static int MomentumNextThreshold( int threshold )
 	return next < ( 1 << 30 ) ? next : 0;
 }
 
-momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, qboolean *unlocked )
+momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, bool *unlocked )
 {
 	static const momentumThresholdIterator_t finished = { -1, 0 };
 
@@ -502,7 +502,7 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 // ------------
 
 #ifdef BUILD_SGAME
-static void UpdateUnlockablesMask( void )
+static void UpdateUnlockablesMask()
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
 	int    team;
@@ -541,7 +541,7 @@ static void UpdateUnlockablesMask( void )
 #endif
 
 #ifdef BUILD_SGAME
-void G_UpdateUnlockables( void )
+void G_UpdateUnlockables()
 {
 	int              itemNum = 0, unlockableNum, unlockThreshold;
 	float            momentum;
@@ -593,7 +593,7 @@ void G_UpdateUnlockables( void )
 		unlockable->type            = unlockableType;
 		unlockable->num             = itemNum;
 		unlockable->team            = team;
-		unlockable->statusKnown     = qtrue;
+		unlockable->statusKnown     = true;
 		unlockable->unlockThreshold = unlockThreshold;
 		unlockable->lockThreshold   = UnlockToLockThreshold( unlockThreshold );
 
@@ -612,7 +612,7 @@ void G_UpdateUnlockables( void )
 	}
 
 	// GAME knows about all teams
-	unlockablesDataAvailable = qtrue;
+	unlockablesDataAvailable = true;
 	unlockablesTeamKnowledge = TEAM_ALL;
 
 	// generate masks for network transmission
@@ -636,7 +636,7 @@ void CG_UpdateUnlockables( playerState_t *ps )
 // ----------
 
 #ifdef BUILD_UI
-void UI_UpdateUnlockables( void )
+void UI_UpdateUnlockables()
 {
 	char   buffer[ MAX_TOKEN_CHARS ];
 	team_t team;

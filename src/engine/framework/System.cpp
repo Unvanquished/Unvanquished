@@ -88,7 +88,7 @@ static std::string GetSingletonSocketPath()
 static void CreateSingletonSocket()
 {
 #ifdef _WIN32
-	singletonSocket = CreateNamedPipeA(singletonSocketPath.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 4096, 4096, 1000, NULL);
+	singletonSocket = CreateNamedPipeA(singletonSocketPath.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 4096, 4096, 1000, nullptr);
 	if (singletonSocket == INVALID_HANDLE_VALUE)
 		Sys::Error("Could not create singleton socket: %s", Sys::Win32StrError(GetLastError()));
 #else
@@ -137,7 +137,7 @@ static bool ConnectSingletonSocket()
 {
 #ifdef _WIN32
 	while (true) {
-		singletonSocket = CreateFileA(singletonSocketPath.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+		singletonSocket = CreateFileA(singletonSocketPath.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
 		if (singletonSocket != INVALID_HANDLE_VALUE)
 			break;
 		if (GetLastError() != ERROR_PIPE_BUSY) {
@@ -173,7 +173,7 @@ static void WriteSingletonSocket(Str::StringRef commands)
 {
 #ifdef _WIN32
 	DWORD result = 0;
-	if (!WriteFile(singletonSocket, commands.data(), commands.size(), &result, NULL))
+	if (!WriteFile(singletonSocket, commands.data(), commands.size(), &result, nullptr))
 		Log::Warn("Could not send commands through socket: %s", Sys::Win32StrError(GetLastError()));
 	else if (result != commands.size())
 		Log::Warn("Could not send commands through socket: Short write");
@@ -192,7 +192,7 @@ static void ReadSingletonSocketCommands()
 	char buffer[4096];
 	while (true) {
 		DWORD result = 0;
-		if (!ReadFile(singletonSocket, buffer, sizeof(buffer), &result, NULL)) {
+		if (!ReadFile(singletonSocket, buffer, sizeof(buffer), &result, nullptr)) {
 			if (GetLastError() != ERROR_NO_DATA && GetLastError() != ERROR_BROKEN_PIPE) {
 				Log::Warn("Singleton socket ReadFile() failed: %s", Sys::Win32StrError(GetLastError()));
 				return;
@@ -229,7 +229,7 @@ void ReadSingletonSocket()
 {
 #ifdef _WIN32
 	while (true) {
-		if (!ConnectNamedPipe(singletonSocket, NULL)) {
+		if (!ConnectNamedPipe(singletonSocket, nullptr)) {
 			Log::Warn("Singleton socket ConnectNamedPipe() failed: %s", Sys::Win32StrError(GetLastError()));
 
 			// Stop handling incoming commands if an error occured
@@ -242,7 +242,7 @@ void ReadSingletonSocket()
 	}
 #else
 	while (true) {
-		int sock = accept(singletonSocket, NULL, NULL);
+		int sock = accept(singletonSocket, nullptr, nullptr);
 		if (sock == -1) {
 			Log::Warn("Singleton socket accept() failed: %s", strerror(errno));
 
@@ -573,7 +573,7 @@ static void Init(int argc, char** argv)
 	}
 
 	// Enable S3TC on Mesa even if libtxc-dxtn is not available
-	putenv("force_s3tc_enable=true");
+	putenv((char *) "force_s3tc_enable=true");
 #endif
 
 	// Initialize the console
@@ -650,7 +650,7 @@ static void Init(int argc, char** argv)
 
 	// Legacy initialization code, needs to be replaced
 	// TODO: eventually move all of Com_Init into here
-	Com_Init("");
+	Com_Init((char *) "");
 
 	// Buffer the commands that were specified on the command line so they are
 	// executed in the first frame.
@@ -693,7 +693,7 @@ ALIGN_STACK int main(int argc, char** argv)
 				FS::PakPath::ClearPaks();
 				FS_LoadBasePak();
 				SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", err.what()));
-				CL_Disconnect(qtrue);
+				CL_Disconnect(true);
 				CL_FlushMemory();
 			}
 		}

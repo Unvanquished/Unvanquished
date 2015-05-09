@@ -57,7 +57,7 @@ public:
 	{
 	}
 
-	static void ClearText( void )
+	static void ClearText()
 	{
 		strings.clear();
 	}
@@ -67,7 +67,7 @@ public:
 		strings.push_back( TextAndRect( text, text_class, x, y ) );
 	}
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		while ( HasChildNodes() )
 		{

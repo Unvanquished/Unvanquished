@@ -144,9 +144,9 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	entityState_t *es;
 	int           health;
 
-	AngleVectors( cg.refdefViewAngles, view, NULL, NULL );
+	AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
 	VectorMA( cg.refdef.vieworg, 64, view, point );
-	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL, point, ps->clientNum, MASK_SHOT, 0 );
+	CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr, point, ps->clientNum, MASK_SHOT, 0 );
 
 	es = &cg_entities[ trace.entityNum ].currentState;
 
@@ -163,7 +163,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -194,7 +194,7 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 		              CG_KeyNameForCommand( "+attack" ) ) );
 	}
 
-	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
+	if ( ( es = CG_BuildableInRange( ps, nullptr ) ) )
 	{
 		const char *key = CG_KeyNameForCommand( "modcase alt \"/deconstruct marked\" /deconstruct" );
 
@@ -565,7 +565,7 @@ CG_TutorialText
 Returns context help for the current class/weapon
 ===============
 */
-const char *CG_TutorialText( void )
+const char *CG_TutorialText()
 {
 	playerState_t *ps;
 	static char   text[ MAX_TUTORIAL_TEXT ];

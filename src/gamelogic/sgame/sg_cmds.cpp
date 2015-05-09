@@ -90,7 +90,7 @@ G_MatchOnePlayer
 
 This is a companion function to G_ClientNumbersFromString()
 
-returns qtrue if the int array plist only has one client id, false otherwise
+returns true if the int array plist only has one client id, false otherwise
 In the case of false, err will be populated with an error message.
 ==================
 */
@@ -535,7 +535,7 @@ Give items to a client
 void Cmd_Give_f( gentity_t *ent )
 {
 	char     *name;
-	qboolean give_all = qfalse;
+	bool give_all = false;
 	float    amount;
 
 	if ( trap_Argc() < 2 )
@@ -550,7 +550,7 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( Q_stricmp( name, "all" ) == 0 )
 	{
-		give_all = qtrue;
+		give_all = true;
 	}
 
 	if ( give_all || Q_strnicmp( name, "funds", strlen("funds") ) == 0 )
@@ -567,7 +567,7 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = Maths::clamp(amount, -30000.0f, 30000.0f);
 		}
 
-		G_AddCreditToClient( ent->client, ( short ) amount, qtrue );
+		G_AddCreditToClient( ent->client, ( short ) amount, true );
 	}
 
 	// give bp
@@ -628,7 +628,7 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( give_all || Q_stricmp( name, "fuel" ) == 0 )
 	{
-		G_RefillFuel(ent, qfalse);
+		G_RefillFuel(ent, false);
 	}
 
 	if ( Q_stricmp( name, "poison" ) == 0 )
@@ -648,7 +648,7 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( give_all || Q_stricmp( name, "ammo" ) == 0 )
 	{
-		G_RefillAmmo( ent, qfalse );
+		G_RefillAmmo( ent, false );
 	}
 }
 
@@ -663,7 +663,7 @@ argv(0) god
 */
 void Cmd_God_f( gentity_t *ent )
 {
-	char *msg;
+	const char *msg;
 
 	ent->flags ^= FL_GODMODE;
 
@@ -690,7 +690,7 @@ argv(0) notarget
 */
 void Cmd_Notarget_f( gentity_t *ent )
 {
-	char *msg;
+	const char *msg;
 
 	ent->flags ^= FL_NOTARGET;
 
@@ -715,7 +715,7 @@ argv(0) noclip
 */
 void Cmd_Noclip_f( gentity_t *ent )
 {
-	char *msg;
+	const char *msg;
 
 	if ( ent->client->noclip )
 	{
@@ -776,7 +776,7 @@ void Cmd_Team_f( gentity_t *ent )
 	team_t   team;
 	team_t   oldteam = (team_t) ent->client->pers.team;
 	char     s[ MAX_TOKEN_CHARS ];
-	qboolean force = G_admin_permission( ent, ADMF_FORCETEAMCHANGE );
+	bool force = G_admin_permission( ent, ADMF_FORCETEAMCHANGE );
 	int      players[ NUM_TEAMS ];
 	int      t;
 	const g_admin_spec_t *specOnly;
@@ -866,7 +866,7 @@ void Cmd_Team_f( gentity_t *ent )
 				}
 				else if ( level.team[ TEAM_HUMANS ].locked )
 				{
-					force = qtrue;
+					force = true;
 				}
 
 				if ( !force && g_teamForceBalance.integer && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ])
@@ -887,7 +887,7 @@ void Cmd_Team_f( gentity_t *ent )
 				}
 				else if ( level.team[ TEAM_ALIENS ].locked )
 				{
-					force = qtrue;
+					force = true;
 				}
 
 				if ( !force && g_teamForceBalance.integer && players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
@@ -907,7 +907,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot join a team for a while after a locking putteam.
-	t = Com_GMTime( NULL );
+	t = Com_GMTime( nullptr );
 
 	if ( team != TEAM_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
 	{
@@ -953,9 +953,10 @@ G_CensorString
 static char censors[ 20000 ];
 static int  numcensors;
 
-void G_LoadCensors( void )
+void G_LoadCensors()
 {
-	char         *text_p, *token;
+	const char *text_p;
+	char *token;
 	char         text[ 20000 ];
 	char         *term;
 	int          len;
@@ -1011,7 +1012,7 @@ void G_LoadCensors( void )
 			break;
 		}
 
-		token = COM_ParseExt( &text_p, qfalse );
+		token = COM_ParseExt( &text_p, false );
 		Q_strncpyz( term, token, sizeof( censors ) - ( term - censors ) );
 		term += strlen( term ) + 1;
 		numcensors++;
@@ -1140,26 +1141,26 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 G_Say
 ==================
 */
-static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const char *message )
+static bool G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const char *message )
 {
 	if ( !other )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( !other->inuse )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( !other->client )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( other->client->pers.connected != CON_CONNECTED )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( ( ent && !G_OnSameTeam( ent, other ) ) &&
@@ -1167,13 +1168,13 @@ static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const
 	{
 		if ( other->client->pers.team != TEAM_NONE )
 		{
-			return qfalse;
+			return false;
 		}
 
 		// specs with ADMF_SPEC_ALLCHAT flag can see team chat
 		if ( !G_admin_permission( other, ADMF_SPEC_ALLCHAT ) && mode != SAY_TPRIVMSG )
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
@@ -1190,7 +1191,7 @@ static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const
 		                        mode, Quote( message ) ) );
 	}
 
-	return qtrue;
+	return true;
 }
 
 void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
@@ -1398,6 +1399,34 @@ static void Cmd_Say_f( gentity_t *ent )
 
 /*
 ==================
+Cmd_Me_f
+==================
+*/
+static void Cmd_Me_f( gentity_t *ent )
+{
+	char      *p;
+	char      cmd[ MAX_TOKEN_CHARS ];
+	saymode_t mode = SAY_ALL_ME;
+
+	if ( trap_Argc() < 2 )
+	{
+		return;
+	}
+
+	trap_Argv( 0, cmd, sizeof( cmd ) );
+
+	if ( Q_stricmp( cmd, "me_team" ) == 0 )
+	{
+		mode = SAY_TEAM_ME;
+	}
+
+	p = ConcatArgs( 1 );
+
+	G_Say( ent, mode, p );
+}
+
+/*
+==================
 Cmd_VSay_f
 ==================
 */
@@ -1586,35 +1615,35 @@ enum {
 };
 static const struct {
 	const char     *name;
-	qboolean        stopOnIntermission;
+	bool        stopOnIntermission;
 	int             type;
 	int             target;
-	qboolean        adminImmune; // from needing a reason and from being the target
-	qboolean        quorum;
+	bool        adminImmune; // from needing a reason and from being the target
+	bool        quorum;
 	qtrinary        reasonNeeded;
 	const vmCvar_t *percentage;
 	int             special;
 	const vmCvar_t *specialCvar;
-	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
+	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be true)
 } voteInfo[] = {
 	// Name           Stop?   Type      Target     Immune   Quorum  Reason  Vote percentage var        Extra
-	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  qyes,   &g_kickVotesPercent },
-	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  qyes,   &g_kickVotesPercent },
-	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qtrue,  qyes,   &g_denyVotesPercent },
-	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qtrue,  qno,    &g_denyVotesPercent },
-	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qtrue,  qyes,   &g_denyVotesPercent },
-	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qtrue,  qno,    &g_denyVotesPercent },
-	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
-	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qtrue,  qno,    &g_admitDefeatVotesPercent },
-	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qtrue,  qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qtrue,  qno,    &g_mapVotesPercent },
-	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qtrue,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qtrue,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, qmaybe, &g_nextMapVotesPercent },
-	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qfalse, qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO },
-	{ "kickbots",     qtrue,  V_PUBLIC, T_NONE,    qfalse,  qfalse, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
-	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qfalse, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
-	{ NULL }
+	{ "kick",         false, V_ANY,    T_PLAYER,  true,   true,  qyes,   &g_kickVotesPercent },
+	{ "spectate",     false, V_ANY,    T_PLAYER,  true,   true,  qyes,   &g_kickVotesPercent },
+	{ "mute",         true,  V_PUBLIC, T_PLAYER,  true,   true,  qyes,   &g_denyVotesPercent },
+	{ "unmute",       true,  V_PUBLIC, T_PLAYER,  false,  true,  qno,    &g_denyVotesPercent },
+	{ "denybuild",    true,  V_TEAM,   T_PLAYER,  true,   true,  qyes,   &g_denyVotesPercent },
+	{ "allowbuild",   true,  V_TEAM,   T_PLAYER,  false,  true,  qno,    &g_denyVotesPercent },
+	{ "extend",       true,  V_PUBLIC, T_OTHER,   false,  false, qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
+	{ "admitdefeat",  true,  V_TEAM,   T_NONE,    false,  true,  qno,    &g_admitDefeatVotesPercent },
+	{ "draw",         true,  V_PUBLIC, T_NONE,    true,   true,  qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "map_restart",  true,  V_PUBLIC, T_NONE,    false,  true,  qno,    &g_mapVotesPercent },
+	{ "map",          true,  V_PUBLIC, T_OTHER,   false,  true,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "layout",       true,  V_PUBLIC, T_OTHER,   false,  true,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false, qmaybe, &g_nextMapVotesPercent },
+	{ "poll",         false, V_ANY,    T_NONE,    false,  false, qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO },
+	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
+	{ "spectatebots", false, V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
+	{ nullptr }
 	// note: map votes use the reason, if given, as the layout name
 };
 
@@ -1623,7 +1652,7 @@ static const struct {
 G_CheckStopVote
 ==================
 */
-qboolean G_CheckStopVote( team_t team )
+bool G_CheckStopVote( team_t team )
 {
 	return level.team[ team ].voteTime && voteInfo[ level.team[ team ].voteType ].stopOnIntermission;
 }
@@ -1690,7 +1719,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	// not found? report & return
 	if ( !voteInfo[voteId].name )
 	{
-		qboolean added = qfalse;
+		bool added = false;
 
 		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("Invalid vote string\n") "\"" );
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", team == TEAM_NONE ? QQ( N_("Valid vote commands are: ") ) :
@@ -1707,7 +1736,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 				if ( !voteInfo[voteId].percentage || voteInfo[voteId].percentage->integer > 0 )
 				{
 					Q_strcat( cmd, sizeof( cmd ), va( "%s%s", added ? ", " : "", voteInfo[voteId].name ) );
-					added = qtrue;
+					added = true;
 				}
 			}
 		}
@@ -1880,7 +1909,7 @@ vote_is_disabled:
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune\n") ), cmd ) );
-			G_AdminMessage( NULL,
+			G_AdminMessage( nullptr,
 			                va( "^7%s^3 attempted %s %s"
 			                    " on immune admin ^7%s"
 			                    " ^3for: %s",
@@ -2088,7 +2117,7 @@ vote_is_disabled:
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
 			if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
-			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), NULL, FS_READ ) )
+			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), nullptr, FS_READ ) )
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
 				                        "layout '$1$' could not be found on the server\n") ), Quote( arg ) ) );
@@ -2204,7 +2233,7 @@ vote_is_disabled:
 	{
 		ent->client->pers.namelog->voteCount++;
 		ent->client->pers.voteYes |= 1 << team;
-		G_Vote( ent, team, qtrue );
+		G_Vote( ent, team, true );
 	}
 }
 
@@ -2255,7 +2284,7 @@ void Cmd_Vote_f( gentity_t *ent )
 		break;
 	}
 
-	G_Vote( ent, team, qtrue );
+	G_Vote( ent, team, true );
 }
 
 /*
@@ -2324,7 +2353,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
 
-qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
+bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 {
 	vec3_t  fromMins, fromMaxs;
 	vec3_t  toMins, toMaxs;
@@ -2334,8 +2363,8 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 	float   maxHorizGrowth;
 	class_t oldClass = (class_t) ent->client->ps.stats[ STAT_CLASS ];
 
-	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
-	BG_ClassBoundingBox( pcl, toMins, toMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, nullptr, nullptr, nullptr );
+	BG_ClassBoundingBox( pcl, toMins, toMaxs, nullptr, nullptr, nullptr );
 
 	VectorCopy( ent->client->ps.origin, newOrigin );
 
@@ -2373,7 +2402,7 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 
 	if ( ent->client->noclip )
 	{
-		return qtrue;
+		return true;
 	}
 
 	//compute a place up in the air to start the real trace
@@ -2399,7 +2428,7 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 Cmd_Class_f
 =================
 */
-static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean report )
+static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 {
 	int       clientNum;
 	int       i;
@@ -2436,7 +2465,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTSPAWN, newClass );
 				}
-				return qfalse;
+				return false;
 			}
 
 			if ( BG_ClassDisabled( newClass ) )
@@ -2445,7 +2474,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTALLOWED, newClass );
 				}
-				return qfalse;
+				return false;
 			}
 
 			if ( !BG_ClassUnlocked( newClass ) )
@@ -2454,7 +2483,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSLOCKED, newClass );
 				}
-				return qfalse;
+				return false;
 			}
 
 			// spawn from an egg
@@ -2464,7 +2493,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				ent->client->pers.classSelection = newClass;
 				ent->client->ps.stats[ STAT_CLASS ] = newClass;
 
-				return qtrue;
+				return true;
 			}
 		}
 		else if ( team == TEAM_HUMANS )
@@ -2486,7 +2515,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
 				}
-				return qfalse;
+				return false;
 			}
 
 			// spawn from a telenode
@@ -2497,16 +2526,16 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				ent->client->pers.classSelection = newClass;
 				ent->client->ps.stats[ STAT_CLASS ] = newClass;
 
-				return qtrue;
+				return true;
 			}
 		}
 
-		return qfalse;
+		return false;
 	}
 
 	if ( ent->health <= 0 )
 	{
-		return qtrue; // dead, can't evolve; no point in trying other classes (if any listed)
+		return true; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
 
 	if ( ent->client->pers.team == TEAM_ALIENS )
@@ -2517,7 +2546,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_A_UNKNOWNCLASS );
 			}
-			return qfalse;
+			return false;
 		}
 
 		//if we are not currently spectating, we are attempting evolution
@@ -2532,7 +2561,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( clientNum, MN_A_NOOVMND_EVOLVE );
 				}
-				return qfalse;
+				return false;
 			}
 
 			//check there are no humans nearby
@@ -2553,7 +2582,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 					{
 						G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
 					}
-					return qfalse;
+					return false;
 				}
 			}
 
@@ -2564,7 +2593,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( clientNum, MN_A_EVOLVEWALLWALK );
 				}
-				return qfalse;
+				return false;
 			}
 
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
@@ -2576,7 +2605,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEBUILDTIMER );
 				}
-				return qfalse;
+				return false;
 			}
 
 			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit );
@@ -2598,9 +2627,9 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 					}
 
 					//remove credit
-					G_AddCreditToClient( ent->client, -cost, qtrue );
+					G_AddCreditToClient( ent->client, -cost, true );
 					ent->client->pers.classSelection = newClass;
-					ClientUserinfoChanged( clientNum, qfalse );
+					ClientUserinfoChanged( clientNum, false );
 					VectorCopy( infestOrigin, ent->s.pos.trBase );
 					VectorCopy( ent->client->ps.velocity, oldVel );
 
@@ -2625,7 +2654,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 					{
 						G_TriggerMenuArgs( clientNum, MN_A_CANTEVOLVE, newClass );
 					}
-					return qfalse;
+					return false;
 				}
 			}
 			else
@@ -2634,7 +2663,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				{
 					G_TriggerMenu( clientNum, MN_A_NOEROOM );
 				}
-				return qfalse;
+				return false;
 			}
 		}
 	}
@@ -2644,11 +2673,11 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 		{
 			G_TriggerMenu( clientNum, MN_H_DEADTOCLASS );
 		}
-		return qfalse;
+		return false;
 	}
 
 	// if we reach this, found a valid class and changed to it
-	return qtrue;
+	return true;
 }
 
 void Cmd_Class_f( gentity_t *ent )
@@ -2671,7 +2700,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	vec3_t    viewOrigin, forward, end;
 	trace_t   trace;
 	gentity_t *buildable;
-	qboolean  instant;
+	bool  instant;
 
 	// check for revoked building rights
 	if ( ent->client->pers.namelog->denyBuild )
@@ -2682,9 +2711,9 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 
 	// trace for target
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
-	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// check if target is valid
@@ -2723,7 +2752,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	}
 	else
 	{
-		instant = qfalse;
+		instant = false;
 	}
 
 	if ( instant && buildable->deconstruct )
@@ -2781,9 +2810,9 @@ void Cmd_Ignite_f( gentity_t *player )
 	gentity_t *target;
 
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
-	AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->s.number, MASK_PLAYERSOLID, 0 );
 	target = &g_entities[ trace.entityNum ];
 
 	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )
@@ -2942,15 +2971,15 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 Cmd_Sell_f
 =================
 */
-static qboolean Cmd_Sell_weapons( gentity_t *ent )
+static bool Cmd_Sell_weapons( gentity_t *ent )
 {
 	int      i;
 	weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
-	qboolean sold = qfalse;
+	bool sold = false;
 
 	if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
@@ -2968,9 +2997,9 @@ static qboolean Cmd_Sell_weapons( gentity_t *ent )
 			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
 
 			// add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, qfalse );
+			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, false );
 
-			sold = qtrue;
+			sold = true;
 		}
 
 		// if we have this weapon selected, force a new selection
@@ -2983,13 +3012,13 @@ static qboolean Cmd_Sell_weapons( gentity_t *ent )
 	return sold;
 }
 
-static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
+static bool Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 {
 	// check if carried and sellable
 	if ( !BG_InventoryContainsUpgrade( item, ent->client->ps.stats ) ||
 	     !BG_Upgrade( item )->purchasable )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// shouldn't really need to test for this, but just to be safe
@@ -3000,7 +3029,7 @@ static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 		if ( !G_RoomForClassChange( ent, PCL_HUMAN_NAKED, newOrigin ) )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-			return qfalse;
+			return false;
 		}
 
 		VectorCopy( newOrigin, ent->client->ps.origin );
@@ -3013,15 +3042,15 @@ static qboolean Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 	BG_RemoveUpgradeFromInventory( item, ent->client->ps.stats );
 
 	// add to funds
-	G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, qfalse );
+	G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, false );
 
-	return qtrue;
+	return true;
 }
 
-static qboolean Cmd_Sell_upgrades( gentity_t *ent )
+static bool Cmd_Sell_upgrades( gentity_t *ent )
 {
 	int      i;
-	qboolean sold = qfalse;
+	bool sold = false;
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
@@ -3031,7 +3060,7 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 	return sold;
 }
 
-static qboolean Cmd_Sell_armour( gentity_t *ent )
+static bool Cmd_Sell_armour( gentity_t *ent )
 {
 	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) |
 	       Cmd_Sell_upgradeItem( ent, UP_MEDIUMARMOUR ) |
@@ -3039,7 +3068,7 @@ static qboolean Cmd_Sell_armour( gentity_t *ent )
 	       Cmd_Sell_upgradeItem( ent, UP_RADAR );
 }
 
-static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
+static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 {
 	weapon_t  weapon;
 	upgrade_t upgrade;
@@ -3048,7 +3077,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
-		return qfalse;
+		return false;
 	}
 
 	if ( !Q_strnicmp( s, "weapon", 6 ) )
@@ -3068,14 +3097,14 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 
 		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 		{
-			return qfalse;
+			return false;
 		}
 
 		//are we /allowed/ to sell this?
 		if ( !BG_Weapon( weapon )->purchasable )
 		{
 			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this weapon\n") "\"" );
-			return qfalse;
+			return false;
 		}
 
 		//remove weapon if carried
@@ -3085,7 +3114,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 			if ( weapon == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
-				return qfalse;
+				return false;
 			}
 
 			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
@@ -3093,7 +3122,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 			ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 
 			//add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( weapon )->price, qfalse );
+			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( weapon )->price, false );
 		}
 
 		//if we have this weapon selected, force a new selection
@@ -3108,7 +3137,7 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 		if ( !BG_Upgrade( upgrade )->purchasable )
 		{
 			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this item\n") "\"" );
-			return qfalse;
+			return false;
 		}
 
 		return Cmd_Sell_upgradeItem( ent, upgrade );
@@ -3134,14 +3163,14 @@ static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
 	}
 
-	return qfalse;
+	return false;
 }
 
 void Cmd_Sell_f( gentity_t *ent )
 {
 	char     s[ MAX_TOKEN_CHARS ];
 	int      c, args;
-	qboolean updated = qfalse;
+	bool updated = false;
 
 	args = trap_Argc();
 
@@ -3154,7 +3183,7 @@ void Cmd_Sell_f( gentity_t *ent )
 	//update ClientInfo
 	if ( updated )
 	{
-		ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+		ClientUserinfoChanged( ent->client->ps.clientNum, false );
 		ent->client->pers.infoChangeTime = level.time;
 	}
 }
@@ -3164,11 +3193,11 @@ void Cmd_Sell_f( gentity_t *ent )
 Cmd_Buy_f
 =================
 */
-static qboolean Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade )
+static bool Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade )
 {
 	const int  slots = BG_Upgrade( upgrade )->slots;
 	int        i;
-	qboolean   sold = qfalse;
+	bool   sold = false;
 	int *const stats = ent->client->ps.stats;
 
 	for ( i = UP_NONE; i < UP_NUM_UPGRADES; i++ )
@@ -3188,7 +3217,7 @@ static qboolean Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade 
 }
 
 
-static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellConflicting, qboolean quiet )
+static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflicting, bool quiet )
 {
 #define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
 	weapon_t  weapon;
@@ -3203,7 +3232,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 
-		return qfalse;
+		return false;
 	}
 
 	if ( weapon != WP_NONE )
@@ -3212,7 +3241,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		if ( BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
 		{
 			Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
-			return qfalse;
+			return false;
 		}
 
 		// Only humans can buy stuff
@@ -3236,7 +3265,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		// In some instances, weapons can't be changed
 		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 		{
-			return qfalse;
+			return false;
 		}
 
 		for (;;)
@@ -3251,7 +3280,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 				}
 
 				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-				return qfalse;
+				return false;
 			}
 
 			//have space to carry this?
@@ -3264,7 +3293,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 				}
 
 				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-				return qfalse;
+				return false;
 			}
 
 			break; // okay, can buy this
@@ -3278,9 +3307,9 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		ent->client->ps.stats[ STAT_MISC ] = 0;
 
 		//subtract from funds
-		G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, qfalse );
+		G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, false );
 
-		return qtrue;
+		return true;
 	}
 	else if ( upgrade != UP_NONE )
 	{
@@ -3288,7 +3317,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		if ( BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
 		{
 			Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
-			return qfalse;
+			return false;
 		}
 
 		// Only humans can buy stuff
@@ -3321,7 +3350,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 				}
 
 				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-				return qfalse;
+				return false;
 			}
 
 			//have space to carry this?
@@ -3334,7 +3363,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 				}
 
 				Maybe_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-				return qfalse;
+				return false;
 			}
 
 			break; // okay, can buy this
@@ -3345,7 +3374,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 			if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return qfalse;
+				return false;
 			}
 
 			VectorCopy( newOrigin, ent->client->ps.origin );
@@ -3358,7 +3387,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 			if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return qfalse;
+				return false;
 			}
 
 			VectorCopy( newOrigin, ent->client->ps.origin );
@@ -3371,7 +3400,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 			if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return qfalse;
+				return false;
 			}
 
 			VectorCopy( newOrigin, ent->client->ps.origin );
@@ -3384,31 +3413,31 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s, qboolean sellCo
 		BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
 
 		//subtract from funds
-		G_AddCreditToClient( ent->client, - ( short ) BG_Upgrade( upgrade )->price, qfalse );
+		G_AddCreditToClient( ent->client, - ( short ) BG_Upgrade( upgrade )->price, false );
 
-		return qtrue;
+		return true;
 	}
 	else
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
 	}
 
-	return qfalse;
+	return false;
 
 cant_buy:
 	trap_SendServerCommand( ent - g_entities, va( "print_tr \"" N_("You can't buy this item ($1$)\n") "\" %s", Quote( s ) ) );
-	return qfalse;
+	return false;
 
 not_alien:
 	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
-	return qfalse;
+	return false;
 }
 
 void Cmd_Buy_f( gentity_t *ent )
 {
 	char     s[ MAX_TOKEN_CHARS ];
 	int      c, args;
-	qboolean updated = qfalse;
+	bool updated = false;
 
 	args = trap_Argc();
 
@@ -3425,13 +3454,13 @@ void Cmd_Buy_f( gentity_t *ent )
 			updated |= Cmd_Sell_internal( ent, s + 1 );
 			break;
 		case '+':
-			updated |= Cmd_Buy_internal( ent, s + 1, qtrue, qfalse ); // auto-sell if needed
+			updated |= Cmd_Buy_internal( ent, s + 1, true, false ); // auto-sell if needed
 			break;
 		case '?':
-			updated |= Cmd_Buy_internal( ent, s + 1, qfalse, qtrue ); // quiet mode
+			updated |= Cmd_Buy_internal( ent, s + 1, false, true ); // quiet mode
 			break;
 		default:
-			updated |= Cmd_Buy_internal( ent, s, qfalse, qfalse );
+			updated |= Cmd_Buy_internal( ent, s, false, false );
 			break;
 		}
 	}
@@ -3439,7 +3468,7 @@ void Cmd_Buy_f( gentity_t *ent )
 	//update ClientInfo
 	if ( updated )
 	{
-		ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+		ClientUserinfoChanged( ent->client->ps.clientNum, false );
 		ent->client->pers.infoChangeTime = level.time;
 	}
 }
@@ -3482,7 +3511,7 @@ void Cmd_Build_f( gentity_t *ent )
 		itemBuildError_t reason;
 
 		BG_GetClientNormal( &ent->client->ps, normal );
-		AngleVectors( ent->client->ps.viewangles, aimDir, NULL, NULL );
+		AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
 		ProjectPointOnPlane( forward, aimDir, normal);
 		VectorNormalize( forward );
 
@@ -3649,7 +3678,7 @@ void G_StopFollowing( gentity_t *ent )
 		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 		VectorCopy( ent->client->ps.viewangles, angles );
 		angles[ ROLL ] = 0;
-		G_TeleportPlayer( ent, viewOrigin, angles, qfalse );
+		G_TeleportPlayer( ent, viewOrigin, angles, false );
 	}
 
 	CalculateRanks();
@@ -3706,11 +3735,11 @@ G_FollowNewClient
 This was a really nice, elegant function. Then I fucked it up.
 =================
 */
-qboolean G_FollowNewClient( gentity_t *ent, int dir )
+bool G_FollowNewClient( gentity_t *ent, int dir )
 {
 	int      clientnum = ent->client->sess.spectatorClient;
 	int      original = clientnum;
-	qboolean selectAny = qfalse;
+	bool selectAny = false;
 
 	if ( dir > 1 )
 	{
@@ -3722,19 +3751,19 @@ qboolean G_FollowNewClient( gentity_t *ent, int dir )
 	}
 	else if ( dir == 0 )
 	{
-		return qtrue;
+		return true;
 	}
 
 	if ( ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// select any if no target exists
 	if ( clientnum < 0 || clientnum >= level.maxclients )
 	{
 		clientnum = original = 0;
-		selectAny = qtrue;
+		selectAny = true;
 	}
 
 	do
@@ -3800,11 +3829,11 @@ qboolean G_FollowNewClient( gentity_t *ent, int dir )
 			G_FollowLockView( ent );
 		}
 
-		return qtrue;
+		return true;
 	}
 	while ( clientnum != original );
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -3917,13 +3946,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 	char     cmd[ 9 ];
 	int      matches = 0;
 	int      i;
-	qboolean ignore = qfalse;
+	bool ignore = false;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
 	if ( Q_stricmp( cmd, "ignore" ) == 0 )
 	{
-		ignore = qtrue;
+		ignore = true;
 	}
 
 	if ( trap_Argc() < 2 )
@@ -3950,7 +3979,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			if ( !Com_ClientListContains( &ent->client->sess.ignoreList, pids[ i ] ) )
 			{
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
-				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+				ClientUserinfoChanged( ent->client->ps.clientNum, false );
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: added $1$^7 to your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
@@ -3967,7 +3996,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			if ( Com_ClientListContains( &ent->client->sess.ignoreList, pids[ i ] ) )
 			{
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
-				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+				ClientUserinfoChanged( ent->client->ps.clientNum, false );
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: removed $1$^7 from your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
@@ -4145,7 +4174,7 @@ static const mapLogResult_t maplog_table[] = {
 	{ '\0', "" }
 };
 
-void G_MapLog_NewMap( void )
+void G_MapLog_NewMap()
 {
 	char maplog[ MAX_CVAR_VALUE_STRING ];
 	char map[ MAX_QPATH ];
@@ -4310,7 +4339,7 @@ void Cmd_Damage_f( gentity_t *ent )
 	char     arg[ 16 ];
 	float    dx = 0.0f, dy = 0.0f, dz = 100.0f;
 	int      damage = 100;
-	qboolean nonloc = qtrue;
+	bool nonloc = true;
 
 	if ( trap_Argc() > 1 )
 	{
@@ -4326,14 +4355,14 @@ void Cmd_Damage_f( gentity_t *ent )
 		dy = atof( arg );
 		trap_Argv( 4, arg, sizeof( arg ) );
 		dz = atof( arg );
-		nonloc = qfalse;
+		nonloc = false;
 	}
 
 	VectorCopy( ent->s.origin, point );
 	point[ 0 ] += dx;
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
-	G_Damage( ent, NULL, NULL, NULL, point, damage,
+	G_Damage( ent, nullptr, nullptr, nullptr, point, damage,
 	          ( nonloc ? DAMAGE_NO_LOCDAMAGE : 0 ), MOD_TARGET_LASER );
 }
 
@@ -4380,11 +4409,11 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	// Trace in view direction.
 	BG_GetClientViewOrigin( &ent->client->ps, origin );
-	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( origin, 65536, forward, end );
 
 	G_UnlaggedOn( ent, origin, 65536 );
-	trap_Trace( &tr, origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr, origin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.
@@ -4501,6 +4530,8 @@ static const commands_t cmds[] =
 	{ "listrotation",    CMD_MESSAGE | CMD_INTERMISSION,      G_PrintCurrentRotation },
 	{ "m",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "maplog",          CMD_MESSAGE | CMD_INTERMISSION,      Cmd_MapLog_f           },
+	{ "me",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
+	{ "me_team",         CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
 	{ "mt",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
 	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Notarget_f         },
@@ -4626,7 +4657,7 @@ void ClientCommand( int clientNum )
 
 void G_DecolorString( const char *in, char *out, int len )
 {
-	qboolean decolor = qtrue;
+	bool decolor = true;
 
 	len--;
 
@@ -4689,7 +4720,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	char     color;
 	int      i, pcount;
 	int      count = 0;
-	qboolean teamonly = qfalse;
+	bool teamonly = false;
 	char     recipients[ MAX_STRING_CHARS ] = "";
 
 	if ( !g_privateMessages.integer && ent )
@@ -4708,7 +4739,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 
 	if ( !Q_stricmp( cmd, "mt" ) )
 	{
-		teamonly = qtrue;
+		teamonly = true;
 	}
 
 	trap_Argv( 1, name, sizeof( name ) );

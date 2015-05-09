@@ -87,7 +87,7 @@ public:
 		}
 	}
 
-	virtual void OnUpdate( void )
+	virtual void OnUpdate()
 	{
 		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar::GetValue( cvar.CString() ).c_str() ) )
 		{
@@ -162,7 +162,7 @@ private:
 			case GREATER_EQUAL: return one >= two; \
 			case NOT_EQUAL: return one != two; }
 
-	bool IsConditionValid( void )
+	bool IsConditionValid()
 	{
 		switch ( value.GetType() )
 		{
@@ -178,7 +178,7 @@ private:
 		return false;
 	}
 
-	bool IsConditionValidLatched( void )
+	bool IsConditionValidLatched()
 	{
 		std::string str = Cvar::GetValue( cvar.CString() );
 		if ( !str.empty() )

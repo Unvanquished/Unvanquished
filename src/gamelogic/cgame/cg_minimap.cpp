@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ParseFloats
 ================
 */
-static qboolean ParseFloats( float* res, const int number, char **text )
+static bool ParseFloats( float* res, const int number, const char **text )
 {
     char* token;
     int i = number;
@@ -48,14 +48,14 @@ static qboolean ParseFloats( float* res, const int number, char **text )
     {
         if( !*(token = COM_Parse( text )) )
         {
-            return qfalse;
+            return false;
         }
 
         *res = atof(token);
         res ++;
     }
 
-    return qtrue;
+    return true;
 }
 
 /*
@@ -63,18 +63,18 @@ static qboolean ParseFloats( float* res, const int number, char **text )
 CG_ParseMinimapZone
 ================
 */
-static qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
+static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
 {
     char* token;
-    qboolean hasImage = qfalse;
-    qboolean hasBounds = qfalse;
+    bool hasImage = false;
+    bool hasBounds = false;
 
     z->scale = 1.0f;
 
     if( !*(token = COM_Parse( text )) || Q_stricmp( token, "{" ) )
     {
         CG_Printf( S_ERROR "expected a { at the beginning of a zones\n" );
-        return qfalse;
+        return false;
     }
 
     while(1)
@@ -89,10 +89,10 @@ static qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
             if( !ParseFloats( z->boundsMin, 3, text) || !ParseFloats( z->boundsMax, 3, text) )
             {
                 CG_Printf( S_ERROR "error while parsing 'bounds'\n" );
-                return qfalse;
+                return false;
             }
 
-            hasBounds = qtrue;
+            hasBounds = true;
         }
         else if( !Q_stricmp( token, "image") )
         {
@@ -106,10 +106,10 @@ static qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
             if( !ParseFloats( z->imageMin, 2, text) || !ParseFloats( z->imageMax, 2, text) )
             {
                 CG_Printf( S_ERROR "error while parsing 'image'\n" );
-                return qfalse;
+                return false;
             }
 
-            hasImage = qtrue;
+            hasImage = true;
         }
         else if( !Q_stricmp( token, "scale" ))
         {
@@ -133,22 +133,22 @@ static qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
     if( Q_stricmp( token, "}" ) )
     {
         CG_Printf( S_ERROR "expected a } at the end of a zone\n");
-        return qfalse;
+        return false;
     }
 
     if( !hasBounds )
     {
         CG_Printf( S_ERROR "missing bounds in the zone\n" );
-        return qfalse;
+        return false;
     }
 
     if( !hasImage )
     {
         CG_Printf( S_ERROR "missing image in the zone\n" );
-        return qfalse;
+        return false;
     }
 
-    return qtrue;
+    return true;
 }
 
 /*
@@ -156,10 +156,10 @@ static qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
 CG_ParseMinimap
 ================
 */
-static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
+static bool CG_ParseMinimap( minimap_t* m, const char* filename )
 {
     char text_buffer[ 20000 ];
-    char* text;
+    const char* text;
     char* token;
 
     m->nZones = 0;
@@ -169,7 +169,7 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
     {
-        return qfalse;
+        return false;
     }
 
     text = text_buffer;
@@ -177,7 +177,7 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
     if( !*(token = COM_Parse( &text )) || Q_stricmp( token, "{" ) )
     {
         CG_Printf( S_ERROR "expected a { at the beginning of %s\n", filename );
-        return qfalse;
+        return false;
     }
 
     while(1)
@@ -193,13 +193,13 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
             if( m->nZones > MAX_MINIMAP_ZONES )
             {
                 CG_Printf( S_ERROR "reached the zone number limit (%i) in %s\n", MAX_MINIMAP_ZONES, filename );
-                return qfalse;
+                return false;
             }
 
             if( !CG_ParseMinimapZone( &m->zones[m->nZones - 1], &text ) )
             {
                 CG_Printf( S_ERROR "error while reading zone n°%i in %s\n", m->nZones, filename );
-                return qfalse;
+                return false;
             }
         }
         else if( !Q_stricmp( token, "backgroundColor") )
@@ -207,7 +207,7 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
             if( !ParseFloats( m->bgColor, 4, &text) )
             {
                 CG_Printf( S_ERROR "error while parsing 'backgroundColor' in %s\n", filename );
-                return qfalse;
+                return false;
             }
         }
         else if( !Q_stricmp( token, "globalScale") )
@@ -215,7 +215,7 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
             if( !ParseFloats( &m->scale, 1, &text) )
             {
                 CG_Printf( S_ERROR "error while parsing 'globalScale' in %s\n", filename );
-                return qfalse;
+                return false;
             }
         }
         else if( !Q_stricmp( token, "}" ) )
@@ -231,10 +231,10 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
     if( Q_stricmp( token, "}" ) )
     {
         CG_Printf( S_ERROR "expected a } at the end of %s\n", filename );
-        return qfalse;
+        return false;
     }
 
-    return qtrue;
+    return true;
 }
 
 //Helper functions for the minimap
@@ -244,7 +244,7 @@ static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
 CG_IsInMinimapZone
 ================
 */
-static qboolean CG_IsInMinimapZone(const minimapZone_t* z)
+static bool CG_IsInMinimapZone(const minimapZone_t* z)
 {
     return PointInBounds(cg.refdef.vieworg, z->boundsMin, z->boundsMax);
 }
@@ -377,11 +377,11 @@ CG_UpdateMinimapActive
 */
 static void CG_UpdateMinimapActive(minimap_t* m)
 {
-    qboolean active = m->defined && cg_drawMinimap.integer;
+    bool active = m->defined && cg_drawMinimap.integer;
 
     m->active = active;
 
-    if( cg_minimapActive.integer != active )
+    if ((cg_minimapActive.integer != 0) != active)
     {
         trap_Cvar_Set( "cg_minimapActive", va( "%d", active ) );
     }
@@ -478,17 +478,17 @@ static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
 
         if( state->minimapFading == 0.0f )
         {
-            state->minimapFadingOut = qfalse;
+            state->minimapFadingOut = false;
         }
     }
     else
     {
         //The player is out of the PVS or is dead
-        qboolean shouldStayVisible = mate->valid && ! ( mate->currentState.eFlags & EF_DEAD );
+        bool shouldStayVisible = mate->valid && ! ( mate->currentState.eFlags & EF_DEAD );
 
         if( !shouldStayVisible )
         {
-            state->minimapFadingOut = qtrue;
+            state->minimapFadingOut = true;
         }
         else
         {
@@ -523,7 +523,7 @@ static void CG_MinimapDrawTeammates( const minimap_t* m )
 
         int clientNum = mate->currentState.clientNum;
 
-        qboolean isTeammate = mate->currentState.eType == ET_PLAYER && clientNum >= 0 && clientNum < MAX_CLIENTS && (mate->currentState.misc & 0x00FF) == ownTeam;
+        bool isTeammate = mate->currentState.eType == ET_PLAYER && clientNum >= 0 && clientNum < MAX_CLIENTS && (mate->currentState.misc & 0x00FF) == ownTeam;
 
         if ( !isTeammate )
         {
@@ -550,7 +550,7 @@ CG_MinimapDrawBeacon
 static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t center, const vec2_t *bounds )
 {
 	vec2_t offset, pos2d, dir;
-	qboolean clamped;
+	bool clamped;
 	vec4_t color;
 
 	size *= b->scale;
@@ -564,7 +564,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 	    pos2d[ 1 ] < bounds[ 0 ][ 1 ] ||
 	    pos2d[ 1 ] > bounds[ 1 ][ 1 ] )
 	{
-		clamped = qtrue;
+		clamped = true;
 
 		if( b->type == BCT_TAG )
 			return;
@@ -573,7 +573,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 		ProjectPointOntoRectangleOutwards( pos2d, center, dir, bounds );
 	}
 	else
-		clamped = qfalse;
+		clamped = false;
 
 	Vector4Copy( b->color, color );
 	color[ 3 ] *= cgs.bc.minimapAlpha;
@@ -630,20 +630,20 @@ static void CG_MinimapDrawBeacons( const minimap_t* m, const rectDef_t *rect )
 CG_InitMinimap
 ================
 */
-void CG_InitMinimap( void )
+void CG_InitMinimap()
 {
     minimap_t* m = &cg.minimap;
 
-    m->defined = qtrue;
+    m->defined = true;
 
     if( !CG_ParseMinimap( m, va( "minimaps/%s.minimap", cgs.mapname ) ) )
     {
-        m->defined = qfalse;
+        m->defined = false;
         CG_Printf( S_WARNING "could not parse the minimap, defaulting to no minimap.\n" );
     }
     else if( m->nZones == 0 )
     {
-        m->defined = qfalse;
+        m->defined = false;
         CG_Printf( S_ERROR "the minimap did not define any zone.\n" );
     }
 
@@ -661,7 +661,7 @@ CG_DrawMinimap
 void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
 {
     minimap_t* m = &cg.minimap;
-    minimapZone_t *z = NULL;
+    minimapZone_t *z = nullptr;
     rectDef_t rect = *rect640;
 
     CG_UpdateMinimapActive( m );
@@ -684,17 +684,17 @@ void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
 
     //Draw things inside the rectangle we were given
     CG_SetScissor( rect.x, rect.y, rect.w, rect.h );
-    CG_EnableScissor( qtrue );
+    CG_EnableScissor( true );
     {
         CG_MinimapDrawMap( m, z );
         CG_MinimapDrawPlayer( m );
         //CG_MinimapDrawTeammates( m );
     }
-    CG_EnableScissor( qfalse );
+    CG_EnableScissor( false );
 
 		//(experimental) Draw beacons without the scissor
     CG_MinimapDrawBeacons( m, &rect );
 
     //Reset the color for other hud elements
-    trap_R_SetColor( NULL );
+    trap_R_SetColor( nullptr );
 }

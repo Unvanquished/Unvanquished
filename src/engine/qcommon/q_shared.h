@@ -49,7 +49,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.38.0"
+#define PRODUCT_VERSION         "0.39.0"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -166,9 +166,6 @@ Maryland 20850 USA.
 
 	typedef unsigned char        byte;
 	typedef unsigned int         uint;
-
-	enum {qfalse, qtrue};
-	typedef int qboolean;
 	typedef enum {qno, qyes, qmaybe} qtrinary;
 
 	typedef union
@@ -494,11 +491,11 @@ void  Com_Free_Aligned( void *ptr );
 #define S_COLOR_MDPURPLE "^C"
 #define S_COLOR_NULL     "^*"
 
-inline qboolean Q_IsColorString( const char *p )
+inline bool Q_IsColorString( const char *p )
 {
 	return ( p[0] == Q_COLOR_ESCAPE &&
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
-	       ) ? qtrue : qfalse;
+	       ) ? true : false;
 }
 
 #define INDENT_MARKER    '\v'
@@ -681,12 +678,12 @@ void         ByteToDir( int b, vec3_t dir );
 	void     AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs );
 
 // RB: same as BoundsIntersectPoint but kept for compatibility
-	qboolean PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs );
+	bool PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs );
 
 	void     BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
-	qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
-	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
-	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
+	bool BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
+	bool BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
+	bool BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
 	float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs );
 
 	inline void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] )
@@ -801,11 +798,11 @@ void         ByteToDir( int b, vec3_t dir );
 	/* greebo: This calculates the intersection point of three planes.
 	 * Returns <0,0,0> if no intersection point could be found, otherwise returns the coordinates of the intersection point
 	 * (this may also be 0,0,0) */
-	qboolean PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, const vec4_t plane3, vec3_t out );
+	bool PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, const vec4_t plane3, vec3_t out );
 	void     PlaneIntersectRay( const vec3_t rayPos, const vec3_t rayDir, const vec4_t plane, vec3_t res );
 
-	qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
-	qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw );
+	bool PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
+	bool PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, bool cw );
 	void     ProjectPointOnPlane( vec3_t dst, const vec3_t point, const vec3_t normal );
 	void     RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
 	void     RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin );
@@ -850,12 +847,12 @@ void         ByteToDir( int b, vec3_t dir );
 	void     MatrixIdentity( matrix_t m );
 	void     MatrixClear( matrix_t m );
 	void     MatrixCopy( const matrix_t in, matrix_t out );
-	qboolean MatrixCompare( const matrix_t a, const matrix_t b );
+	bool MatrixCompare( const matrix_t a, const matrix_t b );
 	void     MatrixTransposeIntoXMM( const matrix_t m );
 	void     MatrixTranspose( const matrix_t in, matrix_t out );
 
-// invert any m4x4 using Kramer's rule.. return qtrue if matrix is singular, else return qfalse
-	qboolean MatrixInverse( matrix_t m );
+// invert any m4x4 using Kramer's rule.. return true if matrix is singular, else return false
+	bool MatrixInverse( matrix_t m );
 	void     MatrixSetupXRotation( matrix_t m, vec_t degrees );
 	void     MatrixSetupYRotation( matrix_t m, vec_t degrees );
 	void     MatrixSetupZRotation( matrix_t m, vec_t degrees );
@@ -1603,7 +1600,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 	typedef struct
 	{
-		qboolean frameMemory;
+		bool frameMemory;
 		int      currentElements;
 		int      maxElements; // will reallocate and move when exceeded
 		void     **elements;
@@ -1667,7 +1664,7 @@ void         ByteToDir( int b, vec3_t dir );
 	float      Com_Clamp( float min, float max, float value );
 
 	char       *COM_SkipPath( char *pathname );
-	char       *Com_SkipTokens( char *s, int numTokens, char *sep );
+	char       *Com_SkipTokens( char *s, int numTokens, const char *sep );
 	char       *Com_SkipCharset( char *s, char *sep );
 	void       COM_FixPath( char *pathname );
 	const char *COM_GetExtension( const char *name );
@@ -1680,21 +1677,21 @@ void         ByteToDir( int b, vec3_t dir );
 	void       COM_BeginParseSession( const char *name );
 	void       COM_RestoreParseSession( char **data_p );
 	void       COM_SetCurrentParseLine( int line );
-	int        COM_GetCurrentParseLine( void );
-	char       *COM_Parse( char **data_p );
+	int        COM_GetCurrentParseLine();
+	char       *COM_Parse( const char **data_p );
 
 // RB: added COM_Parse2 for having a Doom 3 style tokenizer.
-	char       *COM_Parse2( char **data_p );
-	char       *COM_ParseExt2( char **data_p, qboolean allowLineBreak );
+	char       *COM_Parse2( const char **data_p );
+	char       *COM_ParseExt2( const char **data_p, bool allowLineBreak );
 
-	char       *COM_ParseExt( char **data_p, qboolean allowLineBreak );
+	char       *COM_ParseExt( const char **data_p, bool allowLineBreak );
 	int        COM_Compress( char *data_p );
-	void       COM_ParseError( char *format, ... ) PRINTF_LIKE(1);
-	void       COM_ParseWarning( char *format, ... ) PRINTF_LIKE(1);
+	void       COM_ParseError( const char *format, ... ) PRINTF_LIKE(1);
+	void       COM_ParseWarning( const char *format, ... ) PRINTF_LIKE(1);
 
-	int        Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] );
+	int        Com_ParseInfos( const char *buf, int max, char infos[][ MAX_INFO_STRING ] );
 
-	qboolean   COM_BitCheck( const int array[], int bitNum );
+	bool   COM_BitCheck( const int array[], int bitNum );
 
 	void       COM_BitSet( int array[], int bitNum );
 	void       COM_BitClear( int array[], int bitNum );
@@ -1727,17 +1724,17 @@ void         ByteToDir( int b, vec3_t dir );
 
 	void      COM_MatchToken( char **buf_p, char *match );
 
-	void      Com_Parse1DMatrix( char **buf_p, int x, float *m, qboolean checkBrackets );
-	void      Com_Parse2DMatrix( char **buf_p, int y, int x, float *m );
-	void      Com_Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
+	void      Com_Parse1DMatrix( const char **buf_p, int x, float *m, bool checkBrackets );
+	void      Com_Parse2DMatrix( const char **buf_p, int y, int x, float *m );
+	void      Com_Parse3DMatrix( const char **buf_p, int z, int y, int x, float *m );
 
-	qboolean  SkipBracedSection( char **program );
-	qboolean  SkipBracedSection_Depth( char **program, int depth );  // start at given depth if already
-	void      SkipRestOfLine( char **data );
+	bool  SkipBracedSection( const char **program );
+	bool  SkipBracedSection_Depth( const char **program, int depth );  // start at given depth if already
+	void      SkipRestOfLine( const char **data );
 
-	void      Parse1DMatrix( char **buf_p, int x, float *m );
-	void      Parse2DMatrix( char **buf_p, int y, int x, float *m );
-	void      Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
+	void      Parse1DMatrix( const char **buf_p, int x, float *m );
+	void      Parse2DMatrix( const char **buf_p, int y, int x, float *m );
+	void      Parse3DMatrix( const char **buf_p, int z, int y, int x, float *m );
 
 	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) PRINTF_LIKE(3);
 
@@ -1774,8 +1771,8 @@ void         ByteToDir( int b, vec3_t dir );
 	int        Q_isalphanumeric( int c );
 	int        Q_isforfilename( int c );
 
-	qboolean   Q_strtol( const char *s, long *out );
-	qboolean   Q_strtoi( const char *s, int *out );
+	bool   Q_strtol( const char *s, long *out );
+	bool   Q_strtoi( const char *s, int *out );
 
 // portable case insensitive compare
 	int        Q_stricmp( const char *s1, const char *s2 );
@@ -1797,7 +1794,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
-	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
+	bool Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );
 
@@ -1825,12 +1822,12 @@ void         ByteToDir( int b, vec3_t dir );
 //
 // key / value info strings
 //
-	char       *Info_ValueForKey( const char *s, const char *key );
-	void       Info_RemoveKey( char *s, const char *key , qboolean big );
+	const char *Info_ValueForKey( const char *s, const char *key );
+	void       Info_RemoveKey( char *s, const char *key , bool big );
 	void       Info_RemoveKey_big( char *s, const char *key );
-	void       Info_SetValueForKey( char *s, const char *key, const char *value , qboolean big );
-	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value, qboolean big );
-	qboolean   Info_Validate( const char *s );
+	void       Info_SetValueForKey( char *s, const char *key, const char *value , bool big );
+	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value, bool big );
+	bool   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
 
 //=============================================
@@ -1988,8 +1985,8 @@ void         ByteToDir( int b, vec3_t dir );
 // a trace is returned when a box is swept through the world
 	typedef struct
 	{
-		qboolean allsolid; // if true, plane is not valid
-		qboolean startsolid; // if true, the initial point was in a solid area
+		bool allsolid; // if true, plane is not valid
+		bool startsolid; // if true, the initial point was in a solid area
 		float    fraction; // time completed, 1.0 = didn't hit anything
 		vec3_t   endpos; // final position
 		cplane_t plane; // surface normal at impact, transformed to world space
@@ -2301,14 +2298,14 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 		}
 	}
 
-	inline qboolean usercmdButtonPressed( const byte *buttons, int bit )
+	inline bool usercmdButtonPressed( const byte *buttons, int bit )
 	{
-		return ( buttons[bit / 8] & ( 1 << ( bit & 7 ) ) ) ? qtrue : qfalse;
+		return ( buttons[bit / 8] & ( 1 << ( bit & 7 ) ) ) ? true : false;
 	}
 
-	inline qboolean usercmdButtonsDiffer( const byte *a, const byte *b )
+	inline bool usercmdButtonsDiffer( const byte *a, const byte *b )
 	{
-		return memcmp( a, b, USERCMD_BUTTONS / 8 ) ? qtrue : qfalse;
+		return memcmp( a, b, USERCMD_BUTTONS / 8 ) ? true : false;
 	}
 
 //===================================================================
@@ -2501,7 +2498,7 @@ typedef struct
 typedef struct
 {
 	fontHandle_t  handle;
-	qboolean      isBitmap;
+	bool      isBitmap;
 	int           pointSize;
 	int           height;
 	float         glyphScale;
@@ -2595,7 +2592,7 @@ int        Com_GMTime( qtime_t *qtime );
 		unsigned int lo;
 	} clientList_t;
 
-	qboolean Com_ClientListContains( const clientList_t *list, int clientNum );
+	bool Com_ClientListContains( const clientList_t *list, int clientNum );
 	void     Com_ClientListAdd( clientList_t *list, int clientNum );
 	void     Com_ClientListRemove( clientList_t *list, int clientNum );
 	char     *Com_ClientListString( const clientList_t *list );

@@ -50,7 +50,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 PC_SourceError
 =================
 */
-void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
+void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];
@@ -99,19 +99,19 @@ void LerpColor( vec4_t a, vec4_t b, vec4_t c, float t )
 Float_Parse
 =================
 */
-qboolean Float_Parse( char **p, float *f )
+bool Float_Parse( const char **p, float *f )
 {
 	char *token;
-	token = COM_ParseExt( p, qfalse );
+	token = COM_ParseExt( p, false );
 
 	if ( token && token[ 0 ] != 0 )
 	{
 		*f = atof( token );
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -181,13 +181,13 @@ static INLINE int OpPrec( char op )
 PC_Expression_Parse
 =================
 */
-static qboolean PC_Expression_Parse( int handle, float *f )
+static bool PC_Expression_Parse( int handle, float *f )
 {
 	pc_token_t  token;
 	int         unmatchedParentheses = 0;
 	exprList_t  stack, fifo;
 	exprToken_t *value;
-	qboolean    expectingNumber = qtrue;
+	bool    expectingNumber = true;
 
 #define FULL( a )  ( a.b >= ( MAX_EXPR_ELEMENTS - 1 ) )
 #define EMPTY( a ) ( a.f > a.b )
@@ -195,7 +195,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 #define PUSH_VAL( a, v ) \
   { \
     if( FULL( a ) ) { \
-      return qfalse; } \
+      return false; } \
     a.b++; \
     a.l[ a.b ].type = EXPR_VALUE; \
     a.l[ a.b ].u.val = v; \
@@ -204,7 +204,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 #define PUSH_OP( a, o ) \
   { \
     if( FULL( a ) ) { \
-      return qfalse; } \
+      return false; } \
     a.b++; \
     a.l[ a.b ].type = EXPR_OPERATOR; \
     a.l[ a.b ].u.op = o; \
@@ -213,7 +213,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 #define POP_STACK( a ) \
   { \
     if( EMPTY( a ) ) { \
-      return qfalse; } \
+      return false; } \
     value = &a.l[ a.b ]; \
     a.b--; \
   }
@@ -224,7 +224,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 #define POP_FIFO( a ) \
   { \
     if( EMPTY( a ) ) { \
-      return qfalse; } \
+      return false; } \
     value = &a.l[ a.f ]; \
     a.f++; \
   }
@@ -244,7 +244,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 		{
 			if ( !trap_Parse_ReadToken( handle, &token ) )
 			{
-				return qfalse;
+				return false;
 			}
 
 			token.floatvalue = -token.floatvalue;
@@ -254,7 +254,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 		{
 			if ( !expectingNumber )
 			{
-				return qfalse;
+				return false;
 			}
 
 			expectingNumber = !expectingNumber;
@@ -275,7 +275,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 
 					if ( unmatchedParentheses < 0 )
 					{
-						return qfalse;
+						return false;
 					}
 
 					while ( !EMPTY( stack ) && PEEK_STACK_OP( stack ) != '(' )
@@ -295,7 +295,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 				case '-':
 					if ( expectingNumber )
 					{
-						return qfalse;
+						return false;
 					}
 
 					expectingNumber = !expectingNumber;
@@ -319,7 +319,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 
 				default:
 					// Unknown token
-					return qfalse;
+					return false;
 			}
 		}
 	}
@@ -378,7 +378,7 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 
 	*f = value->u.val;
 
-	return qtrue;
+	return true;
 
 #undef FULL
 #undef EMPTY
@@ -395,14 +395,14 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 PC_Float_Parse
 =================
 */
-qboolean PC_Float_Parse( int handle, float *f )
+bool PC_Float_Parse( int handle, float *f )
 {
 	pc_token_t token;
-	int        negative = qfalse;
+	int        negative = false;
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( token.string[ 0 ] == '(' )
@@ -414,16 +414,16 @@ qboolean PC_Float_Parse( int handle, float *f )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			return qfalse;
+			return false;
 		}
 
-		negative = qtrue;
+		negative = true;
 	}
 
 	if ( token.type != TT_NUMBER )
 	{
 		PC_SourceError( handle, "expected float but found %s", token.string );
-		return qfalse;
+		return false;
 	}
 
 	if ( negative )
@@ -435,7 +435,7 @@ qboolean PC_Float_Parse( int handle, float *f )
 		*f = token.floatvalue;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -443,7 +443,7 @@ qboolean PC_Float_Parse( int handle, float *f )
 Color_Parse
 =================
 */
-qboolean Color_Parse( char **p, vec4_t *c )
+bool Color_Parse( const char **p, vec4_t *c )
 {
 	int   i;
 	float f;
@@ -452,13 +452,13 @@ qboolean Color_Parse( char **p, vec4_t *c )
 	{
 		if ( !Float_Parse( p, &f ) )
 		{
-			return qfalse;
+			return false;
 		}
 
 		( *c ) [ i ] = f;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -466,7 +466,7 @@ qboolean Color_Parse( char **p, vec4_t *c )
 PC_Color_Parse
 =================
 */
-qboolean PC_Color_Parse( int handle, vec4_t *c )
+bool PC_Color_Parse( int handle, vec4_t *c )
 {
 	int   i;
 	float f;
@@ -475,13 +475,13 @@ qboolean PC_Color_Parse( int handle, vec4_t *c )
 	{
 		if ( !PC_Float_Parse( handle, &f ) )
 		{
-			return qfalse;
+			return false;
 		}
 
 		( *c ) [ i ] = f;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -489,19 +489,19 @@ qboolean PC_Color_Parse( int handle, vec4_t *c )
 Int_Parse
 =================
 */
-qboolean Int_Parse( char **p, int *i )
+bool Int_Parse( const char **p, int *i )
 {
 	char *token;
-	token = COM_ParseExt( p, qfalse );
+	token = COM_ParseExt( p, false );
 
 	if ( token && token[ 0 ] != 0 )
 	{
 		*i = atoi( token );
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -510,14 +510,14 @@ qboolean Int_Parse( char **p, int *i )
 PC_Int_Parse
 =================
 */
-qboolean PC_Int_Parse( int handle, int *i )
+bool PC_Int_Parse( int handle, int *i )
 {
 	pc_token_t token;
-	int        negative = qfalse;
+	int        negative = false;
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( token.string[ 0 ] == '(' )
@@ -527,11 +527,11 @@ qboolean PC_Int_Parse( int handle, int *i )
 		if ( PC_Expression_Parse( handle, &f ) )
 		{
 			*i = ( int ) f;
-			return qtrue;
+			return true;
 		}
 		else
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
@@ -539,16 +539,16 @@ qboolean PC_Int_Parse( int handle, int *i )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			return qfalse;
+			return false;
 		}
 
-		negative = qtrue;
+		negative = true;
 	}
 
 	if ( token.type != TT_NUMBER )
 	{
 		PC_SourceError( handle, "expected integer but found %s", token.string );
-		return qfalse;
+		return false;
 	}
 
 	*i = token.intvalue;
@@ -558,7 +558,7 @@ qboolean PC_Int_Parse( int handle, int *i )
 		*i = -*i;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -566,7 +566,7 @@ qboolean PC_Int_Parse( int handle, int *i )
 Rect_Parse
 =================
 */
-qboolean Rect_Parse( char **p, rectDef_t *r )
+bool Rect_Parse( const char **p, rectDef_t *r )
 {
 	if ( Float_Parse( p, &r->x ) )
 	{
@@ -576,13 +576,13 @@ qboolean Rect_Parse( char **p, rectDef_t *r )
 			{
 				if ( Float_Parse( p, &r->h ) )
 				{
-					return qtrue;
+					return true;
 				}
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -590,7 +590,7 @@ qboolean Rect_Parse( char **p, rectDef_t *r )
 PC_Rect_Parse
 =================
 */
-qboolean PC_Rect_Parse( int handle, rectDef_t *r )
+bool PC_Rect_Parse( int handle, rectDef_t *r )
 {
 	if ( PC_Float_Parse( handle, &r->x ) )
 	{
@@ -600,13 +600,13 @@ qboolean PC_Rect_Parse( int handle, rectDef_t *r )
 			{
 				if ( PC_Float_Parse( handle, &r->h ) )
 				{
-					return qtrue;
+					return true;
 				}
 			}
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -614,19 +614,19 @@ qboolean PC_Rect_Parse( int handle, rectDef_t *r )
 String_Parse
 =================
 */
-qboolean String_Parse( char **p, const char **out )
+bool String_Parse( const char **p, const char **out )
 {
 	char *token;
 
-	token = COM_ParseExt( p, qfalse );
+	token = COM_ParseExt( p, false );
 
 	if ( token && token[ 0 ] != 0 )
 	{
 		* ( out ) = BG_strdup( token );
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -634,32 +634,32 @@ qboolean String_Parse( char **p, const char **out )
 PC_String_Parse
 =================
 */
-qboolean PC_String_Parse( int handle, const char **out )
+bool PC_String_Parse( int handle, const char **out )
 {
 	pc_token_t token;
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	* ( out ) = BG_strdup( token.string );
 
-	return qtrue;
+	return true;
 }
 
-qboolean PC_String_ParseTranslate( int handle, const char **out )
+bool PC_String_ParseTranslate( int handle, const char **out )
 {
 	pc_token_t token;
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	* ( out ) = BG_strdup( _(token.string) );
 
-	return qtrue;
+	return true;
 }
 
 
@@ -668,18 +668,18 @@ qboolean PC_String_ParseTranslate( int handle, const char **out )
 PC_Char_Parse
 ================
 */
-qboolean PC_Char_Parse( int handle, char *out )
+bool PC_Char_Parse( int handle, char *out )
 {
 	pc_token_t token;
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	*out = token.string[ 0 ];
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -687,7 +687,7 @@ qboolean PC_Char_Parse( int handle, char *out )
 PC_Script_Parse
 =================
 */
-qboolean PC_Script_Parse( int handle, const char **out )
+bool PC_Script_Parse( int handle, const char **out )
 {
 	char       script[ 1024 ];
 	pc_token_t token;
@@ -698,25 +698,25 @@ qboolean PC_Script_Parse( int handle, const char **out )
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( Q_stricmp( token.string, "{" ) != 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	while ( 1 )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			return qfalse;
+			return false;
 		}
 
 		if ( Q_stricmp( token.string, "}" ) == 0 )
 		{
 			*out = BG_strdup( script );
-			return qtrue;
+			return true;
 		}
 
 		if ( token.string[ 1 ] != '\0' )
@@ -731,5 +731,5 @@ qboolean PC_Script_Parse( int handle, const char **out )
 		Q_strcat( script, 1024, " " );
 	}
 
-	return qfalse;
+	return false;
 }

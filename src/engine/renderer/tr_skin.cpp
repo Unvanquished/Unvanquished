@@ -41,7 +41,7 @@ This is unfortunate, but the skin files aren't
 compatible with our engine's main script/source parsing rules.
 ==================
 */
-static char    *CommaParse( char **data_p )
+static const char *CommaParse( char **data_p )
 {
 	int         c = 0, len;
 	char        *data;
@@ -54,7 +54,7 @@ static char    *CommaParse( char **data_p )
 	// make sure incoming data is valid
 	if ( !data )
 	{
-		*data_p = NULL;
+		*data_p = nullptr;
 		return com_token;
 	}
 
@@ -117,7 +117,7 @@ static char    *CommaParse( char **data_p )
 			if ( c == '\"' || !c )
 			{
 				com_token[ len ] = 0;
-				*data_p = ( char * ) data;
+				*data_p = data;
 				return com_token;
 			}
 
@@ -150,7 +150,7 @@ static char    *CommaParse( char **data_p )
 
 	com_token[ len ] = 0;
 
-	*data_p = ( char * ) data;
+	*data_p = data;
 	return com_token;
 }
 
@@ -167,7 +167,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 	skinSurface_t *surf;
 	skinModel_t   *model; //----(SA) added
 	char          *text, *text_p;
-	char          *token;
+	const char    *token;
 	char          surfName[ MAX_QPATH ];
 
 	if ( !name || !name[ 0 ] )
@@ -298,7 +298,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 R_InitSkins
 ===============
 */
-void R_InitSkins( void )
+void R_InitSkins()
 {
 	skin_t *skin;
 
@@ -332,7 +332,7 @@ skin_t         *R_GetSkinByHandle( qhandle_t hSkin )
 R_SkinList_f
 ===============
 */
-void R_SkinList_f( void )
+void R_SkinList_f()
 {
 	int    i, j;
 	skin_t *skin;

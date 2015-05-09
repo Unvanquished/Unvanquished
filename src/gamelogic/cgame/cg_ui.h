@@ -50,14 +50,14 @@ const char *GettextPlural( const char *msgid, const char *msgid2, int number ) P
 // Parsing
 //
 
-qboolean            String_Parse( char **p, const char **out );
-qboolean            Script_Parse( char **p, const char **out );
-qboolean            PC_Float_Parse( int handle, float *f );
-qboolean            PC_Color_Parse( int handle, vec4_t *c );
-qboolean            PC_Int_Parse( int handle, int *i );
-qboolean            PC_Rect_Parse( int handle, rectDef_t *r );
-qboolean            PC_String_Parse( int handle, const char **out );
-qboolean            PC_Script_Parse( int handle, const char **out );
+bool            String_Parse( char **p, const char **out );
+bool            Script_Parse( char **p, const char **out );
+bool            PC_Float_Parse( int handle, float *f );
+bool            PC_Color_Parse( int handle, vec4_t *c );
+bool            PC_Int_Parse( int handle, int *i );
+bool            PC_Rect_Parse( int handle, rectDef_t *r );
+bool            PC_String_Parse( int handle, const char **out );
+bool            PC_Script_Parse( int handle, const char **out );
 
 //
 // Chat

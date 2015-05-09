@@ -32,12 +32,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "SDL_syswm.h"
 #include "framework/CommandSystem.h"
 
-SDL_Window         *window = NULL;
-static SDL_GLContext glContext = NULL;
+SDL_Window         *window = nullptr;
+static SDL_GLContext glContext = nullptr;
 static int colorBits = 0;
 
 #ifdef SMP
-static void GLimp_SetCurrentContext( qboolean enable )
+static void GLimp_SetCurrentContext( bool enable )
 {
 	if ( enable )
 	{
@@ -45,7 +45,7 @@ static void GLimp_SetCurrentContext( qboolean enable )
 	}
 	else
 	{
-		SDL_GL_MakeCurrent( window, NULL );
+		SDL_GL_MakeCurrent( window, nullptr );
 	}
 }
 
@@ -62,11 +62,11 @@ SMP acceleration
  * thread-safe OpenGL libraries.
  */
 
-static SDL_mutex  *smpMutex = NULL;
-static SDL_cond   *renderCommandsEvent = NULL;
-static SDL_cond   *renderCompletedEvent = NULL;
-static void ( *renderThreadFunction )( void ) = NULL;
-static SDL_Thread *renderThread = NULL;
+static SDL_mutex  *smpMutex = nullptr;
+static SDL_cond   *renderCommandsEvent = nullptr;
+static SDL_cond   *renderCompletedEvent = nullptr;
+static void ( *renderThreadFunction )() = nullptr;
+static SDL_Thread *renderThread = nullptr;
 
 /*
 ===============
@@ -80,7 +80,7 @@ static int GLimp_RenderThreadWrapper( void *arg )
 
 	renderThreadFunction();
 
-	GLimp_SetCurrentContext( qfalse );
+	GLimp_SetCurrentContext( false );
 
 	Com_Printf( "Render thread terminating\n" );
 
@@ -92,17 +92,17 @@ static int GLimp_RenderThreadWrapper( void *arg )
 GLimp_SpawnRenderThread
 ===============
 */
-qboolean GLimp_SpawnRenderThread( void ( *function )( void ) )
+bool GLimp_SpawnRenderThread( void ( *function )() )
 {
-	static qboolean warned = qfalse;
+	static bool warned = false;
 
 	if ( !warned )
 	{
 		Com_Printf( "WARNING: You enable r_smp at your own risk!\n" );
-		warned = qtrue;
+		warned = true;
 	}
 
-	if ( renderThread != NULL ) /* hopefully just a zombie at this point... */
+	if ( renderThread != nullptr ) /* hopefully just a zombie at this point... */
 	{
 		Com_Printf( "Already a render thread? Trying to clean it up...\n" );
 		GLimp_ShutdownRenderThread();
@@ -110,42 +110,42 @@ qboolean GLimp_SpawnRenderThread( void ( *function )( void ) )
 
 	smpMutex = SDL_CreateMutex();
 
-	if ( smpMutex == NULL )
+	if ( smpMutex == nullptr )
 	{
 		Com_Printf( "smpMutex creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
-		return qfalse;
+		return false;
 	}
 
 	renderCommandsEvent = SDL_CreateCond();
 
-	if ( renderCommandsEvent == NULL )
+	if ( renderCommandsEvent == nullptr )
 	{
 		Com_Printf( "renderCommandsEvent creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
-		return qfalse;
+		return false;
 	}
 
 	renderCompletedEvent = SDL_CreateCond();
 
-	if ( renderCompletedEvent == NULL )
+	if ( renderCompletedEvent == nullptr )
 	{
 		Com_Printf( "renderCompletedEvent creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
-		return qfalse;
+		return false;
 	}
 
 	renderThreadFunction = function;
-	renderThread = SDL_CreateThread( GLimp_RenderThreadWrapper, "render thread", NULL );
+	renderThread = SDL_CreateThread( GLimp_RenderThreadWrapper, "render thread", nullptr );
 
-	if ( renderThread == NULL )
+	if ( renderThread == nullptr )
 	{
 		ri.Printf( PRINT_ALL, "SDL_CreateThread() returned %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -153,55 +153,55 @@ qboolean GLimp_SpawnRenderThread( void ( *function )( void ) )
 GLimp_ShutdownRenderThread
 ===============
 */
-void GLimp_ShutdownRenderThread( void )
+void GLimp_ShutdownRenderThread()
 {
-	if ( renderThread != NULL )
+	if ( renderThread != nullptr )
 	{
-		GLimp_WakeRenderer( NULL );
-		SDL_WaitThread( renderThread, NULL );
-		renderThread = NULL;
-		glConfig.smpActive = qfalse;
+		GLimp_WakeRenderer( nullptr );
+		SDL_WaitThread( renderThread, nullptr );
+		renderThread = nullptr;
+		glConfig.smpActive = false;
 	}
 
-	if ( smpMutex != NULL )
+	if ( smpMutex != nullptr )
 	{
 		SDL_DestroyMutex( smpMutex );
-		smpMutex = NULL;
+		smpMutex = nullptr;
 	}
 
-	if ( renderCommandsEvent != NULL )
+	if ( renderCommandsEvent != nullptr )
 	{
 		SDL_DestroyCond( renderCommandsEvent );
-		renderCommandsEvent = NULL;
+		renderCommandsEvent = nullptr;
 	}
 
-	if ( renderCompletedEvent != NULL )
+	if ( renderCompletedEvent != nullptr )
 	{
 		SDL_DestroyCond( renderCompletedEvent );
-		renderCompletedEvent = NULL;
+		renderCompletedEvent = nullptr;
 	}
 
-	renderThreadFunction = NULL;
+	renderThreadFunction = nullptr;
 }
 
-static volatile void     *smpData = NULL;
-static volatile qboolean smpDataReady;
+static volatile void     *smpData = nullptr;
+static volatile bool smpDataReady;
 
 /*
 ===============
 GLimp_RendererSleep
 ===============
 */
-void           *GLimp_RendererSleep( void )
+void           *GLimp_RendererSleep()
 {
-	void *data = NULL;
+	void *data = nullptr;
 
-	GLimp_SetCurrentContext( qfalse );
+	GLimp_SetCurrentContext( false );
 
 	SDL_LockMutex( smpMutex );
 	{
-		smpData = NULL;
-		smpDataReady = qfalse;
+		smpData = nullptr;
+		smpDataReady = false;
 
 		// after this, the front end can exit GLimp_FrontEndSleep
 		SDL_CondSignal( renderCompletedEvent );
@@ -215,7 +215,7 @@ void           *GLimp_RendererSleep( void )
 	}
 	SDL_UnlockMutex( smpMutex );
 
-	GLimp_SetCurrentContext( qtrue );
+	GLimp_SetCurrentContext( true );
 
 	return data;
 }
@@ -225,7 +225,7 @@ void           *GLimp_RendererSleep( void )
 GLimp_FrontEndSleep
 ===============
 */
-void GLimp_FrontEndSleep( void )
+void GLimp_FrontEndSleep()
 {
 	SDL_LockMutex( smpMutex );
 	{
@@ -242,11 +242,11 @@ void GLimp_FrontEndSleep( void )
 GLimp_SyncRenderThread
 ===============
 */
-void GLimp_SyncRenderThread( void )
+void GLimp_SyncRenderThread()
 {
 	GLimp_FrontEndSleep();
 
-	GLimp_SetCurrentContext( qtrue );
+	GLimp_SetCurrentContext( true );
 }
 
 /*
@@ -256,13 +256,13 @@ GLimp_WakeRenderer
 */
 void GLimp_WakeRenderer( void *data )
 {
-	GLimp_SetCurrentContext( qfalse );
+	GLimp_SetCurrentContext( false );
 
 	SDL_LockMutex( smpMutex );
 	{
-		assert( smpData == NULL );
+		assert( smpData == nullptr );
 		smpData = data;
-		smpDataReady = qtrue;
+		smpDataReady = true;
 
 		// after this, the renderer can continue through GLimp_RendererSleep
 		SDL_CondSignal( renderCommandsEvent );
@@ -277,26 +277,26 @@ void GLimp_RenderThreadWrapper( void *arg )
 {
 }
 
-qboolean GLimp_SpawnRenderThread( void ( *function )( void ) )
+bool GLimp_SpawnRenderThread( void ( *function )() )
 {
 	ri.Printf( PRINT_WARNING, "ERROR: SMP support was disabled at compile time\n" );
-	return qfalse;
+	return false;
 }
 
-void GLimp_ShutdownRenderThread( void )
+void GLimp_ShutdownRenderThread()
 {
 }
 
-void *GLimp_RendererSleep( void )
+void *GLimp_RendererSleep()
 {
-	return NULL;
+	return nullptr;
 }
 
-void GLimp_FrontEndSleep( void )
+void GLimp_FrontEndSleep()
 {
 }
 
-void GLimp_SyncRenderThread( void )
+void GLimp_SyncRenderThread()
 {
 }
 
@@ -327,7 +327,7 @@ cvar_t                     *r_sdlDriver;
 GLimp_Shutdown
 ===============
 */
-void GLimp_Shutdown( void )
+void GLimp_Shutdown()
 {
 	ri.Printf( PRINT_DEVELOPER, "Shutting down OpenGL subsystem\n" );
 
@@ -335,7 +335,7 @@ void GLimp_Shutdown( void )
 
 #if defined( SMP )
 
-	if ( renderThread != NULL )
+	if ( renderThread != nullptr )
 	{
 		Com_Printf( "Destroying renderer thread...\n" );
 		GLimp_ShutdownRenderThread();
@@ -346,13 +346,13 @@ void GLimp_Shutdown( void )
 	if ( glContext )
 	{
 		SDL_GL_DeleteContext( glContext );
-		glContext = NULL;
+		glContext = nullptr;
 	}
 
 	if ( window )
 	{
 		SDL_DestroyWindow( window );
-		window = NULL;
+		window = nullptr;
 	}
 
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
@@ -361,7 +361,7 @@ void GLimp_Shutdown( void )
 	Com_Memset( &glState, 0, sizeof( glState ) );
 }
 
-static void GLimp_Minimize( void )
+static void GLimp_Minimize()
 {
 	SDL_MinimizeWindow( window );
 }
@@ -403,7 +403,7 @@ static int GLimp_CompareModes( const void *a, const void *b )
 GLimp_DetectAvailableModes
 ===============
 */
-static void GLimp_DetectAvailableModes( void )
+static void GLimp_DetectAvailableModes()
 {
 	char     buf[ MAX_STRING_CHARS ] = { 0 };
 	SDL_Rect modes[ 128 ];
@@ -476,14 +476,14 @@ static void GLimp_DetectAvailableModes( void )
 GLimp_SetMode
 ===============
 */
-static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
+static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 {
 	const char  *glstring;
 	int         perChannelColorBits;
 	int         alphaBits, depthBits, stencilBits;
 	int         samples;
 	int         i = 0;
-	SDL_Surface *icon = NULL;
+	SDL_Surface *icon = nullptr;
 	SDL_DisplayMode desktopMode;
 	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	int         x, y;
@@ -542,16 +542,11 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		{
 			glConfig.vidWidth = desktopMode.w;
 			glConfig.vidHeight = desktopMode.h;
-			Cvar_Set( "r_customwidth", va("%d", desktopMode.w ) );
-			Cvar_Set( "r_customheight", va("%d", desktopMode.h ) );
 		}
 		else
 		{
 			glConfig.vidWidth = 640;
 			glConfig.vidHeight = 480;
-			Cvar_Set( "r_customwidth", "640" );
-			Cvar_Set( "r_customheight", "480" );
-
 			ri.Printf( PRINT_ALL, "Cannot determine display resolution, assuming 640x480\n" );
 		}
 
@@ -564,21 +559,23 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	}
 
 	ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight );
+	Cvar_Set( "r_customwidth", va("%d", glConfig.vidWidth ) );
+	Cvar_Set( "r_customheight", va("%d", glConfig.vidHeight ) );
 
 	do
 	{
-		if ( glContext != NULL )
+		if ( glContext != nullptr )
 		{
 			SDL_GL_DeleteContext( glContext );
-			glContext = NULL;
+			glContext = nullptr;
 		}
 
-		if ( window != NULL )
+		if ( window != nullptr )
 		{
 			SDL_GetWindowPosition( window, &x, &y );
 			ri.Printf( PRINT_DEVELOPER, "Existing window at %dx%d before being destroyed\n", x, y );
 			SDL_DestroyWindow( window );
-			window = NULL;
+			window = nullptr;
 		}
 		// we come back here if we couldn't get a visual and there's
 		// something we can switch off
@@ -586,7 +583,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		if ( fullscreen )
 		{
 			flags |= SDL_WINDOW_FULLSCREEN;
-			glConfig.isFullscreen = qtrue;
+			glConfig.isFullscreen = true;
 		}
 		else
 		{
@@ -595,7 +592,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 				flags |= SDL_WINDOW_BORDERLESS;
 			}
 
-			glConfig.isFullscreen = qfalse;
+			glConfig.isFullscreen = false;
 		}
 
 		colorBits = r_colorbits->integer;
@@ -831,7 +828,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	return RSERR_OK;
 }
 
-static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
+static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, bool shouldBeIntegral )
 {
 	if ( shouldBeIntegral )
 	{
@@ -859,7 +856,7 @@ static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean sh
 GLimp_StartDriverAndSetMode
 ===============
 */
-static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboolean noborder )
+static bool GLimp_StartDriverAndSetMode( int mode, bool fullscreen, bool noborder )
 {
 	rserr_t err;
 	int numDisplays;
@@ -876,7 +873,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 		if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) == -1 )
 		{
 			ri.Printf( PRINT_ALL, "SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) FAILED (%s)\n", SDL_GetError() );
-			return qfalse;
+			return false;
 		}
 
 		driverName = SDL_GetCurrentVideoDriver();
@@ -897,14 +894,14 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 		ri.Error( ERR_FATAL, "SDL_GetNumVideoDisplays FAILED (%s)\n", SDL_GetError() );
 	}
 
-	AssertCvarRange( r_displayIndex, 0, numDisplays - 1, qtrue );
+	AssertCvarRange( r_displayIndex, 0, numDisplays - 1, true );
 
 	if ( fullscreen && ri.Cvar_VariableIntegerValue( "in_nograb" ) )
 	{
 		ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
 		ri.Cvar_Set( "r_fullscreen", "0" );
-		r_fullscreen->modified = qfalse;
-		fullscreen = qfalse;
+		r_fullscreen->modified = false;
+		fullscreen = false;
 	}
 
 	err = (rserr_t) GLimp_SetMode( mode, fullscreen, noborder );
@@ -913,21 +910,21 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, qboo
 	{
 		case RSERR_INVALID_FULLSCREEN:
 			ri.Printf( PRINT_ALL, "...WARNING: fullscreen unavailable in this mode\n" );
-			return qfalse;
+			return false;
 
 		case RSERR_INVALID_MODE:
 			ri.Printf( PRINT_ALL, "...WARNING: could not set the given mode (%d)\n", mode );
-			return qfalse;
+			return false;
 
 		case RSERR_OLD_GL:
 			ri.Printf( PRINT_ALL, "...WARNING: OpenGL too old\n" );
-			return qfalse;
+			return false;
 
 		default:
 			break;
 	}
 
-	return qtrue;
+	return true;
 }
 
 static GLenum debugTypes[] =
@@ -1052,13 +1049,13 @@ static bool LoadExtWithCvar( bool hasExt, const char* name, bool cvarValue )
 
 #define LOAD_EXTENSION_WITH_CVAR(ext, cvar) LoadExtWithCvar(GLEW_##ext, #ext, cvar->value)
 
-static void GLimp_InitExtensions( void )
+static void GLimp_InitExtensions()
 {
 	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
 
 	if ( LOAD_EXTENSION_WITH_CVAR(ARB_debug_output, r_glDebugProfile) )
 	{
-		glDebugMessageCallbackARB( (GLDEBUGPROCARB)GLimp_DebugCallback, NULL );
+		glDebugMessageCallbackARB( (GLDEBUGPROCARB)GLimp_DebugCallback, nullptr );
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB );
 	}
 
@@ -1069,9 +1066,9 @@ static void GLimp_InitExtensions( void )
 	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &glConfig2.maxVertexUniforms );
 	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS_ARB, &glConfig2.maxVertexAttribs );
 
-	int reservedComponents = 26 * 10; // approximation how many uniforms we have besides the bone matrices
+	int reservedComponents = 36 * 10; // approximation how many uniforms we have besides the bone matrices
 	glConfig2.maxVertexSkinningBones = Maths::clamp( ( glConfig2.maxVertexUniforms - reservedComponents ) / 16, 0, MAX_BONES );
-	glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? qtrue : qfalse );
+	glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? true : false );
 
 	// GLSL
 	REQUIRE_EXTENSION( ARB_shading_language_100 );
@@ -1112,11 +1109,11 @@ static void GLimp_InitExtensions( void )
 	glConfig2.textureNPOTAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_non_power_of_two, r_ext_texture_non_power_of_two);
 	glConfig2.generateMipmapAvailable = LOAD_EXTENSION_WITH_CVAR(SGIS_generate_mipmap, r_ext_generate_mipmap);
 
-	glConfig2.textureAnisotropyAvailable = qfalse;
+	glConfig2.textureAnisotropyAvailable = false;
 	if ( LOAD_EXTENSION_WITH_CVAR(EXT_texture_filter_anisotropic, r_ext_texture_filter_anisotropic) )
 	{
 		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glConfig2.maxTextureAnisotropy );
-		glConfig2.textureAnisotropyAvailable = qtrue;
+		glConfig2.textureAnisotropyAvailable = true;
 	}
 
 	// VAO and VBO
@@ -1125,31 +1122,31 @@ static void GLimp_InitExtensions( void )
 	REQUIRE_EXTENSION( ARB_half_float_vertex );
 
 	// FBO
-	glConfig2.framebufferObjectAvailable = qfalse;
+	glConfig2.framebufferObjectAvailable = false;
 	if ( LOAD_EXTENSION_WITH_CVAR(EXT_framebuffer_object, r_ext_framebuffer_object) )
 	{
 		glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE_EXT, &glConfig2.maxRenderbufferSize );
 		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &glConfig2.maxColorAttachments );
-		glConfig2.framebufferObjectAvailable = qtrue;
+		glConfig2.framebufferObjectAvailable = true;
 	}
 	glConfig2.framebufferBlitAvailable = LOAD_EXTENSION_WITH_CVAR(EXT_framebuffer_blit, r_ext_framebuffer_blit);
 
 	// Other
 	REQUIRE_EXTENSION( ARB_shader_objects );
 
-	glConfig2.occlusionQueryAvailable = qfalse;
+	glConfig2.occlusionQueryAvailable = false;
 	glConfig2.occlusionQueryBits = 0;
 	if ( LOAD_EXTENSION_WITH_CVAR(ARB_occlusion_query, r_ext_occlusion_query) )
 	{
-		glConfig2.occlusionQueryAvailable = qtrue;
+		glConfig2.occlusionQueryAvailable = true;
 		glGetQueryivARB( GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &glConfig2.occlusionQueryBits );
 	}
 
-	glConfig2.drawBuffersAvailable = qfalse;
+	glConfig2.drawBuffersAvailable = false;
 	if ( LOAD_EXTENSION_WITH_CVAR(ARB_draw_buffers, r_ext_draw_buffers) )
 	{
 		glGetIntegerv( GL_MAX_DRAW_BUFFERS_ARB, &glConfig2.maxDrawBuffers );
-		glConfig2.drawBuffersAvailable = qtrue;
+		glConfig2.drawBuffersAvailable = true;
 	}
 
 	// gDEBugger debug
@@ -1172,19 +1169,19 @@ static void GLimp_InitExtensions( void )
 		if ( !formats )
 		{
 			ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary found, but with no binary formats\n");
-			glConfig2.getProgramBinaryAvailable = qfalse;
+			glConfig2.getProgramBinaryAvailable = false;
 		}
 		else
 		{
 			ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
-			glConfig2.getProgramBinaryAvailable = qtrue;
+			glConfig2.getProgramBinaryAvailable = true;
 		}
 	}
 	else
 #endif
 	{
 		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
-		glConfig2.getProgramBinaryAvailable = qfalse;
+		glConfig2.getProgramBinaryAvailable = false;
 	}
 
 #ifdef GLEW_ARB_buffer_storage
@@ -1193,19 +1190,19 @@ static void GLimp_InitExtensions( void )
 		if ( r_arb_buffer_storage->integer )
 		{
 			ri.Printf( PRINT_ALL, "...using GL_ARB_buffer_storage\n" );
-			glConfig2.bufferStorageAvailable = qtrue;
+			glConfig2.bufferStorageAvailable = true;
 		}
 		else
 		{
 			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_buffer_storage\n" );
-			glConfig2.bufferStorageAvailable = qfalse;
+			glConfig2.bufferStorageAvailable = false;
 		}
 	}
 	else
 #endif
 	{
 		ri.Printf( PRINT_ALL, "...GL_ARB_buffer_storage not found\n" );
-		glConfig2.bufferStorageAvailable = qfalse;
+		glConfig2.bufferStorageAvailable = false;
 	}
 
 	glConfig2.mapBufferRangeAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );
@@ -1218,7 +1215,7 @@ static void GLimp_InitExtensions( void )
 
 /* Support code for GLimp_Init */
 
-static void reportDriverType( qboolean force )
+static void reportDriverType( bool force )
 {
 	static const char *const drivers[] = {
 		"integrated", "stand-alone", "OpenGL 3+", "Mesa"
@@ -1231,7 +1228,7 @@ static void reportDriverType( qboolean force )
 	}
 }
 
-static void reportHardwareType( qboolean force )
+static void reportHardwareType( bool force )
 {
 	static const char *const hardware[] = {
 		"generic", "ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
@@ -1252,7 +1249,7 @@ This routine is responsible for initializing the OS specific portions
 of OpenGL
 ===============
 */
-qboolean GLimp_Init( void )
+bool GLimp_Init()
 {
 	glConfig.driverType = GLDRV_ICD;
 
@@ -1271,7 +1268,7 @@ qboolean GLimp_Init( void )
 	}
 
 	// Create the window and set up the context
-	if ( GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer, qfalse ) )
+	if ( GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer, false ) )
 	{
 		goto success;
 	}
@@ -1281,7 +1278,7 @@ qboolean GLimp_Init( void )
 	{
 		ri.Printf( PRINT_ALL, "Setting r_mode %d failed, falling back on r_mode %d\n", r_mode->integer, R_MODE_FALLBACK );
 
-		if ( GLimp_StartDriverAndSetMode( R_MODE_FALLBACK, qfalse, qfalse ) )
+		if ( GLimp_StartDriverAndSetMode( R_MODE_FALLBACK, false, false ) )
 		{
 			goto success;
 		}
@@ -1289,7 +1286,7 @@ qboolean GLimp_Init( void )
 
 	// Nothing worked, give up
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
-	return qfalse;
+	return false;
 
 success:
 	// These values force the UI to disable driver selection
@@ -1399,8 +1396,8 @@ success:
 		glConfig.hardwareType = GLHW_ATI;
 	}
 
-	reportDriverType( qfalse );
-	reportHardwareType( qfalse );
+	reportDriverType( false );
+	reportHardwareType( false );
 
 	{ // allow overriding where the user really does know better
 		cvar_t          *forceGL;
@@ -1449,13 +1446,13 @@ success:
 		if ( driverType != GLDRV_UNKNOWN )
 		{
 			glConfig.driverType = driverType;
-			reportDriverType( qtrue );
+			reportDriverType( true );
 		}
 
 		if ( hardwareType != GLHW_UNKNOWN )
 		{
 			glConfig.hardwareType = hardwareType;
-			reportHardwareType( qtrue );
+			reportHardwareType( true );
 		}
 	}
 
@@ -1467,10 +1464,10 @@ success:
 	// This depends on SDL_INIT_VIDEO, hence having it here
 	ri.IN_Init( window );
 
-	return qtrue;
+	return true;
 }
 
-void GLimp_ReleaseGL( void )
+void GLimp_ReleaseGL()
 {
 }
 
@@ -1481,7 +1478,7 @@ GLimp_EndFrame
 Responsible for doing a swapbuffers
 ===============
 */
-void GLimp_EndFrame( void )
+void GLimp_EndFrame()
 {
 	// don't flip if drawing to front buffer
 	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
@@ -1498,28 +1495,28 @@ Responsible for handling cvars that change the window or GL state
 Should only be called by the main thread
 ===============
 */
-void GLimp_HandleCvars( void )
+void GLimp_HandleCvars()
 {
 	if ( r_swapInterval->modified )
 	{
-		AssertCvarRange( r_swapInterval, -1, 1, qtrue );
+		AssertCvarRange( r_swapInterval, -1, 1, true );
 		R_SyncRenderThread();
 		SDL_GL_SetSwapInterval( r_swapInterval->integer );
-		r_swapInterval->modified = qfalse;
+		r_swapInterval->modified = false;
 	}
 
 	if ( r_fullscreen->modified )
 	{
-		qboolean    fullscreen;
-		qboolean    needToToggle = qtrue;
-		int         sdlToggled = qfalse;
+		bool    fullscreen;
+		bool    needToToggle = true;
+		int         sdlToggled = false;
 		fullscreen = !!( SDL_GetWindowFlags( window ) & SDL_WINDOW_FULLSCREEN );
 
 		if ( r_fullscreen->integer && ri.Cvar_VariableIntegerValue( "in_nograb" ) )
 		{
 			ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
 			ri.Cvar_Set( "r_fullscreen", "0" );
-			r_fullscreen->modified = qfalse;
+			r_fullscreen->modified = false;
 		}
 
 		// Is the state we want different from the current state?
@@ -1537,11 +1534,11 @@ void GLimp_HandleCvars( void )
 			ri.IN_Restart();
 		}
 
-		r_fullscreen->modified = qfalse;
+		r_fullscreen->modified = false;
 	}
 }
 
-void GLimp_AcquireGL( void )
+void GLimp_AcquireGL()
 {
 }
 

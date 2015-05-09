@@ -166,7 +166,7 @@ static int ImpactGrenade( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 
 static int ImpactFlamer( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 {
-	gentity_t *neighbor = NULL;
+	gentity_t *neighbor = nullptr;
 
 	// ignite alien buildables on direct hit
 	if ( random() < FLAMER_IGNITE_CHANCE )
@@ -223,7 +223,7 @@ static int ImpactLockblock( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	{
 		hitEnt->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
 		hitEnt->client->lastLockTime = level.time;
-		AngleVectors( hitEnt->client->ps.viewangles, dir, NULL, NULL );
+		AngleVectors( hitEnt->client->ps.viewangles, dir, nullptr, nullptr );
 		hitEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 	}
 
@@ -242,7 +242,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	}
 	else if ( hitEnt->s.eType == ET_BUILDABLE && hitEnt->buildableTeam == TEAM_ALIENS )
 	{
-		hitEnt->onFire = qfalse;
+		hitEnt->onFire = false;
 		hitEnt->fireImmunityUntil = level.time + ABUILDER_BLOB_FIRE_IMMUNITY;
 
 		impactFlags &= ~MIF_NO_DAMAGE;
@@ -250,7 +250,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	else if ( hitEnt->s.number == ENTITYNUM_WORLD )
 	{
 		// put out floor fires in range
-		neighbor = NULL;
+		neighbor = nullptr;
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
 		                                                    ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
 		{
@@ -274,7 +274,7 @@ static int ImpactHive( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 		}
 		else
 		{
-			ent->parent->active = qfalse;
+			ent->parent->active = false;
 		}
 
 		return MIB_FREE;
@@ -406,7 +406,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, dirAsByte );
 		}
 
-		ent->freeAfterEvent = qtrue;
+		ent->freeAfterEvent = true;
 
 		// HACK: Change over to a general entity at the point of impact.
 		ent->s.eType = ET_GENERAL;
@@ -448,7 +448,7 @@ void G_ExplodeMissile( gentity_t *ent )
 
 	// turn the missile into an event carrier
 	ent->s.eType = ET_INVISIBLE;
-	ent->freeAfterEvent = qtrue;
+	ent->freeAfterEvent = true;
 	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
 
 	// splash damage
@@ -468,7 +468,7 @@ void G_RunMissile( gentity_t *ent )
 	vec3_t   origin;
 	trace_t  tr;
 	int      passent;
-	qboolean impact = qfalse;
+	bool impact = false;
 
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
@@ -491,24 +491,24 @@ void G_RunMissile( gentity_t *ent )
 		if ( !ent->pointAgainstWorld || (tr.contents & CONTENTS_BODY) )
 		{
 			// We hit an entity or we don't care
-			impact = qtrue;
+			impact = true;
 		}
 		else
 		{
-			trap_Trace( &tr, ent->r.currentOrigin, NULL, NULL, origin,
+			trap_Trace( &tr, ent->r.currentOrigin, nullptr, nullptr, origin,
 			            passent, ent->clipmask, 0 );
 
 			if ( tr.fraction < 1.0f )
 			{
 				// Hit the world with point trace
-				impact = qtrue;
+				impact = true;
 			}
 			else
 			{
 				if ( tr.contents & CONTENTS_BODY )
 				{
 					// Hit an entity
-					impact = qtrue;
+					impact = true;
 				}
 				else
 				{
@@ -517,7 +517,7 @@ void G_RunMissile( gentity_t *ent )
 
 					if ( tr.fraction < 1.0f )
 					{
-						impact = qtrue;
+						impact = true;
 					}
 				}
 			}
@@ -576,7 +576,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, v
 
 	if ( !parent )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	ma = BG_Missile( missile );

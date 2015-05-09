@@ -172,7 +172,7 @@ namespace VM {
     //ParseReadTokenMsg
     typedef IPC::SyncMessage<
         IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PARSE_READ_TOKEN>, int>,
-        IPC::Reply<int, pc_token_t>
+        IPC::Reply<bool, pc_token_t>
     > ParseReadTokenMsg;
     //ParseSourceFileAndLineMsg
     typedef IPC::SyncMessage<

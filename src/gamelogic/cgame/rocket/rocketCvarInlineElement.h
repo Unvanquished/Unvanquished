@@ -81,7 +81,7 @@ public:
 		}
 	}
 
-	virtual void OnUpdate( void )
+	virtual void OnUpdate()
 	{
 		if ( dirty_value || ( !cvar.Empty() && cvar_value.CString() != Cvar::GetValue( cvar.CString() ) ) )
 		{

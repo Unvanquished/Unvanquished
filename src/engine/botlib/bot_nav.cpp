@@ -136,14 +136,14 @@ void GetEntPosition( int num, qVec &pos )
 	pos = SV_GentityNum( num )->s.origin;
 }
 
-qboolean BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial )
+bool BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, bool allowPartial )
 {
 	rVec start;
 	Bot_t *bot = &agents[ botClientNum ];
 
 	GetEntPosition( botClientNum, start );
 	bool result = FindRoute( bot, start, *target, allowPartial );
-	return static_cast<qboolean>( result );
+	return static_cast<bool>( result );
 }
 
 static bool withinRadiusOfOffMeshConnection( const Bot_t *bot, rVec pos, rVec off, dtPolyRef conPoly )
@@ -186,7 +186,7 @@ void UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
 	if ( !bot->corridor.isValid( MAX_PATH_LOOKAHEAD, bot->nav->query, &bot->nav->filter ) )
 	{
 		bot->corridor.trimInvalidPath( bot->corridor.getFirstPoly(), spos, bot->nav->query, &bot->nav->filter );
-		bot->needReplan = qtrue;
+		bot->needReplan = true;
 	}
 
 	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
@@ -245,14 +245,14 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 
 		if ( !PointInPoly( bot, firstPoly, spos ) )
 		{
-			bot->needReplan = qtrue;
+			bot->needReplan = true;
 		}
 
 		if ( rtarget.type == BOT_TARGET_DYNAMIC )
 		{
 			if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) )
 			{
-				bot->needReplan = qtrue;
+				bot->needReplan = true;
 			}
 		}
 
@@ -302,7 +302,7 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 		ProjectPointOntoVectorBounded( pos, start, end, proj );
 		
 		VectorCopy( proj, cmd->pos );
-		cmd->directPathToGoal = qfalse;
+		cmd->directPathToGoal = false;
 		VectorSubtract( end, pos, cmd->dir );
 		VectorNormalize( cmd->dir );
 
@@ -338,7 +338,7 @@ void BotFindRandomPoint( int botClientNum, vec3_t point )
 	}
 }
 
-qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
+bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
 {
 	rVec rorigin = qVec( origin );
 	rVec nearPoint;
@@ -350,7 +350,7 @@ qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3
 
 	if ( !BotFindNearestPoly( bot, rorigin, &nearPoly, nearPoint ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	dtPolyRef randRef;
@@ -358,15 +358,15 @@ qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3
 	
 	if ( dtStatusFailed( status ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	VectorCopy( nearPoint, point );
 	recast2quake( point );
-	return qtrue;
+	return true;
 }
 
-qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
+bool BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
 {
 	dtPolyRef startRef;
 	dtStatus status;
@@ -378,26 +378,26 @@ qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, c
 
 	Bot_t *bot = &agents[ botClientNum ];
 
-	status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, NULL );
+	status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, nullptr );
 	if ( dtStatusFailed( status ) || startRef == 0 )
 	{
 		//try larger extents
 		extents[ 1 ] += 500;
-		status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, NULL );
+		status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, nullptr );
 		if ( dtStatusFailed( status ) || startRef == 0 )
 		{
-			return qfalse;
+			return false;
 		}
 	}
 
-	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, trace->normal, NULL, NULL, 0 );
+	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, trace->normal, nullptr, nullptr, 0 );
 	if ( dtStatusFailed( status ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	recast2quake( trace->normal );
-	return qtrue;
+	return true;
 }
 
 void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )

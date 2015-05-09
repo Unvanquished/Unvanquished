@@ -38,7 +38,7 @@ static char *cg_arenaInfos[ MAX_ARENAS ];
 CG_ParseInfos
 ===============
 */
-int CG_ParseInfos( char *buf, int max, char *infos[] )
+int CG_ParseInfos( const char *buf, int max, char *infos[] )
 {
 	char *token;
 	int  count;
@@ -72,7 +72,7 @@ int CG_ParseInfos( char *buf, int max, char *infos[] )
 
 		while ( 1 )
 		{
-			token = COM_ParseExt( &buf, qtrue );
+			token = COM_ParseExt( &buf, true );
 
 			if ( !token[ 0 ] )
 			{
@@ -87,14 +87,14 @@ int CG_ParseInfos( char *buf, int max, char *infos[] )
 
 			Q_strncpyz( key, token, sizeof( key ) );
 
-			token = COM_ParseExt( &buf, qfalse );
+			token = COM_ParseExt( &buf, false );
 
 			if ( !token[ 0 ] )
 			{
 				strcpy( token, "<NULL>" );
 			}
 
-			Info_SetValueForKey( info, key, token, qfalse );
+			Info_SetValueForKey( info, key, token, false );
 		}
 
 		//NOTE: extra space for arena number
@@ -161,7 +161,7 @@ static int CG_MapLoadNameCompare( const void *a, const void *b )
 CG_LoadArenas
 ===============
 */
-void CG_LoadArenas( void )
+void CG_LoadArenas()
 {
 	int  numdirs;
 	char filename[ 128 ];

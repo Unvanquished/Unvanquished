@@ -91,7 +91,7 @@ void G_CM_SetBrushModel( gentity_t *ent, const char *name )
 	CM_ModelBounds( h, mins, maxs );
 	VectorCopy( mins, ent->r.mins );
 	VectorCopy( maxs, ent->r.maxs );
-	ent->r.bmodel = qtrue;
+	ent->r.bmodel = true;
 
 	ent->r.contents = -1; // we don't know exactly what is in the brushes
 }
@@ -116,11 +116,11 @@ clipHandle_t G_CM_ClipHandleForEntity( const gentity_t *ent )
 	if ( ent->r.svFlags & SVF_CAPSULE )
 	{
 		// create a temp capsule from bounding box sizes
-		return CM_TempBoxModel( ent->r.mins, ent->r.maxs, qtrue );
+		return CM_TempBoxModel( ent->r.mins, ent->r.maxs, true );
 	}
 
 	// create a temp tree from bounding box sizes
-	return CM_TempBoxModel( ent->r.mins, ent->r.maxs, qfalse );
+	return CM_TempBoxModel( ent->r.mins, ent->r.maxs, false );
 }
 
 /*
@@ -130,7 +130,7 @@ G_CM_inPVS
 Also checks portalareas so that doors block sight
 =================
 */
-qboolean G_CM_inPVS( const vec3_t p1, const vec3_t p2 )
+bool G_CM_inPVS( const vec3_t p1, const vec3_t p2 )
 {
 	int  leafnum;
 	int  cluster;
@@ -148,15 +148,15 @@ qboolean G_CM_inPVS( const vec3_t p1, const vec3_t p2 )
 
 	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( !CM_AreasConnected( area1, area2 ) )
 	{
-		return qfalse; // a door blocks sight
+		return false; // a door blocks sight
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -166,7 +166,7 @@ G_CM_inPVSIgnorePortals
 Does NOT check portalareas
 =================
 */
-qboolean G_CM_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 )
+bool G_CM_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 )
 {
 	int  leafnum;
 	int  cluster;
@@ -184,10 +184,10 @@ qboolean G_CM_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 )
 
 	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -195,7 +195,7 @@ qboolean G_CM_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 )
 G_CM_AdjustAreaPortalState
 ========================
 */
-void G_CM_AdjustAreaPortalState( gentity_t *ent, qboolean open )
+void G_CM_AdjustAreaPortalState( gentity_t *ent, bool open )
 {
 	if ( ent->r.areanum2 == -1 )
 	{
@@ -210,7 +210,7 @@ void G_CM_AdjustAreaPortalState( gentity_t *ent, qboolean open )
 G_CM_EntityContact
 ==================
 */
-qboolean G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *gEnt, traceType_t type )
+bool G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *gEnt, traceType_t type )
 {
 	const float  *origin, *angles;
 	clipHandle_t ch;
@@ -259,7 +259,7 @@ int           sv_numworldSectors;
 G_CM_SectorList_f
 ===============
 */
-void G_CM_SectorList_f( void )
+void G_CM_SectorList_f()
 {
 	int           i, c;
 	worldSector_t *sec;
@@ -299,7 +299,7 @@ worldSector_t  *G_CM_CreateworldSector( int depth, vec3_t mins, vec3_t maxs )
 	if ( depth == AREA_DEPTH )
 	{
 		anode->axis = -1;
-		anode->children[ 0 ] = anode->children[ 1 ] = NULL;
+		anode->children[ 0 ] = anode->children[ 1 ] = nullptr;
 		return anode;
 	}
 
@@ -334,7 +334,7 @@ G_CM_ClearWorld
 
 ===============
 */
-void G_CM_ClearWorld( void )
+void G_CM_ClearWorld()
 {
 	clipHandle_t h;
 	vec3_t       mins, maxs;
@@ -362,7 +362,7 @@ void G_CM_UnlinkEntity( gentity_t *gEnt )
 
 	worldEntity_t* went = G_CM_WorldEntityForGentity( gEnt );
 
-	gEnt->r.linked = qfalse;
+	gEnt->r.linked = false;
 
 	ws = went->worldSector;
 
@@ -371,7 +371,7 @@ void G_CM_UnlinkEntity( gentity_t *gEnt )
 		return; // not linked in anywhere
 	}
 
-	went->worldSector = NULL;
+	went->worldSector = nullptr;
 
 	if ( ws->entities == went )
 	{
@@ -597,7 +597,7 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	went->nextEntityInWorldSector = node->entities;
 	node->entities = went;
 
-	gEnt->r.linked = qtrue;
+	gEnt->r.linked = true;
 }
 
 /*
@@ -850,18 +850,18 @@ void G_CM_ClipMoveToEntities( moveclip_t *clip )
 
 		if ( trace.allsolid )
 		{
-			clip->trace.allsolid = qtrue;
+			clip->trace.allsolid = true;
 			trace.entityNum = touch->s.number;
 		}
 		else if ( trace.startsolid )
 		{
-			clip->trace.startsolid = qtrue;
+			clip->trace.startsolid = true;
 			trace.entityNum = touch->s.number;
 		}
 
 		if ( trace.fraction < clip->trace.fraction )
 		{
-			qboolean oldStart;
+			bool oldStart;
 
 			// make sure we keep a startsolid from a previous trace
 			oldStart = clip->trace.startsolid;

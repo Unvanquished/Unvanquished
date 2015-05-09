@@ -89,7 +89,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 		angles[ YAW ] = yaw;
 		angles[ ROLL ] = 0;
 
-		AngleVectors( angles, dir, NULL, NULL );
+		AngleVectors( angles, dir, nullptr, nullptr );
 		VectorSubtract( vec3_origin, dir, dir );
 
 		front = DotProduct( dir, cg.refdef.viewaxis[ 0 ] );
@@ -158,10 +158,10 @@ CG_Respawn
 A respawn happened this snapshot
 ================
 */
-void CG_Respawn( void )
+void CG_Respawn()
 {
 	// no error decay on player movement
-	cg.thisFrameTeleport = qtrue;
+	cg.thisFrameTeleport = true;
 
 	// display weapons available
 	cg.weaponSelectTime = cg.time;
@@ -299,7 +299,7 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 	// check for changing follow mode
 	if ( ps->clientNum != ops->clientNum )
 	{
-		cg.thisFrameTeleport = qtrue;
+		cg.thisFrameTeleport = true;
 		// make sure we don't get any unwanted transition effects
 		*ops = *ps;
 
@@ -321,7 +321,7 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 	if ( cg.mapRestart )
 	{
 		CG_Respawn();
-		cg.mapRestart = qfalse;
+		cg.mapRestart = false;
 	}
 
 	if ( cg.snap->ps.pm_type != PM_INTERMISSION &&

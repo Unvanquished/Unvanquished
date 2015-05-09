@@ -185,21 +185,21 @@ namespace Log {
         if (filterLevel.Get() <= LOG_WARNING) {
             code();
         }
-    };
+    }
 
     template<typename F>
     inline void Logger::DoNoticeCode(F&& code) {
         if (filterLevel.Get() <= LOG_NOTICE) {
             code();
         }
-    };
+    }
 
     template<typename F>
     inline void Logger::DoDebugCode(F&& code) {
         if (filterLevel.Get() <= LOG_DEBUG) {
             code();
         }
-    };
+    }
 
     // Quick Logs
 

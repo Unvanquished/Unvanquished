@@ -107,7 +107,7 @@ static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Ro
 	}
 }
 
-void Rocket_SetInnerRMLById( const char *name, const char *id, const char *RML, int parseFlags )
+void Rocket_SetInnerRMLById( const char *name, const char *id, const char *RML, bool parseFlags )
 {
 	Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
 
@@ -132,7 +132,7 @@ void Rocket_SetInnerRMLById( const char *name, const char *id, const char *RML, 
 	}
 }
 
-void Rocket_SetInnerRML( const char *RML, qboolean parseFlags )
+void Rocket_SetInnerRML( const char *RML, bool parseFlags )
 {
 	Rocket_SetInnerRMLById( "", "", RML, parseFlags );
 }
@@ -295,7 +295,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 	}
 }
 
-void Rocket_SetClass( const char *in, qboolean activate )
+void Rocket_SetClass( const char *in, bool activate )
 {
 	bool isSet = activeElement->IsClassSet( in );
 	if ( ( activate && !isSet ) || ( !activate && isSet ) )
@@ -342,7 +342,7 @@ void Rocket_AddConsoleText(Str::StringRef text)
 	RocketConsoleTextElement::lines.push_front( ConsoleLine( Rocket::Core::String( va( "%s\n", buffer ) ) ) );
 }
 
-void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs )
+void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs )
 {
 	Rocket::Core::StyleSheetSpecification::RegisterProperty( name, defaultValue, ( bool ) inherited, ( bool ) force_layout ).AddParser( parseAs );
 }
