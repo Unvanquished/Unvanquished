@@ -1351,6 +1351,39 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, int anim )
 
 /*
 ==============
+WeaponOffsets
+==============
+*/
+
+WeaponOffsets WeaponOffsets::operator=( int B )
+{
+	VectorClear( bob );
+	VectorClear( angvel );
+
+	return *this;
+}
+
+WeaponOffsets WeaponOffsets::operator+=( WeaponOffsets B )
+{
+	VectorAdd( bob, B.bob, bob );
+	VectorAdd( angvel, B.angvel, angvel );
+
+	return *this;
+}
+
+WeaponOffsets WeaponOffsets::operator*( float B )
+{
+	WeaponOffsets R;
+
+	VectorScale( bob, B, R.bob );
+	VectorScale( angvel, B, R.angvel );
+
+	return R;
+}
+
+
+/*
+==============
 CG_CalculateWeaponPosition
 ==============
 */
@@ -1361,6 +1394,8 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	float        fracsin;
 	float        bob;
 	weaponInfo_t *weapon;
+	Filter<WeaponOffsets> &filter = cg.weaponOffsetsFilter;
+	WeaponOffsets offsets;
 
 	weapon = &cg_weapons[ cg.predictedPlayerState.weapon ];
 
@@ -1377,16 +1412,52 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 		scale = cg.xyspeed;
 	}
 
-	// gun angles from bobbing
-	// bob amount is class-dependent
-	bob = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
+	filter.SetWidth( 500 );
+	offsets = 0;
 
-	if ( bob != 0 )
+	// bobbing
+
+	bob = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
+	if( bob != 0.0f )
 	{
-		angles[ ROLL ] += scale * cg.bobfracsin * 0.005;
-		angles[ YAW ] += scale * cg.bobfracsin * 0.01;
-		angles[ PITCH ] += cg.xyspeed * cg.bobfracsin * 0.005;
+		offsets.bob[ ROLL ] = scale * cg.bobfracsin * 0.005;
+		offsets.bob[ YAW ] = scale * cg.bobfracsin * 0.01;
+		offsets.bob[ PITCH ] = cg.xyspeed * cg.bobfracsin * 0.005;
 	}
+
+	// weapon inertia
+
+	VectorCopy( angles, offsets.angles );
+
+	if( !filter.IsEmpty( ) )
+	{
+		auto last = filter.Last( );
+		float dt;
+
+		dt = ( cg.time - last.first ) * 0.001f;
+
+		for( int i = 0; i < 3; i++ )
+			offsets.angvel[ i ] =
+				AngleDelta( angles[ i ], last.second.angles[ i ] ) * dt;
+	}
+
+	// accumulate and get the smoothed out values
+
+	filter.Accumulate( cg.time, offsets );
+	offsets = filter.GaussianMA( cg.time );
+
+	// offset angles and origin
+
+#define WI_X_LIMIT 1.5f
+#define WI_X_SCALE -15.0f
+#define WI_Y_LIMIT 1.5f
+#define WI_Y_SCALE 15.0f
+
+	VectorAdd( offsets.bob, angles, angles );
+	VectorMA( origin, atan( offsets.angvel[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
+	          cg.refdef.viewaxis[ 2 ], origin );
+	VectorMA( origin, atan( offsets.angvel[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
+	          cg.refdef.viewaxis[ 1 ], origin );
 
 	if ( !weapon->md5 )
 	{
@@ -1765,55 +1836,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 }
 
-
-/*
-==============
-CG_WeaponInertia
-
-Offset view weapon's position based on view's angular velocity.
-==============
-*/
-
-#define WI_LAMBDA 12.5f
-#define WI_X_LIMIT 1.6f
-#define WI_X_SCALE 0.002f
-#define WI_Y_LIMIT 1.0f
-#define WI_Y_SCALE -0.0025f
-
-void CG_WeaponInertia( playerState_t *ps, vec3_t origin )
-{
-	weaponInertia_t *I = &cg.weaponInertia;
-	int i;
-	float dt;
-	vec3_t av;
-
-	if( !I->init )
-		goto out;
-
-	dt = 0.001 * cg.frametime;
-
-	for( i = 0; i < 3; i++ )
-	{
-		if ( Q_isnan( I->oav[ i ] ) )
-		{
-			I->oav[ i ] = 0;
-		}
-
-		av[ i ] = AngleDelta( I->oa[ i ], ps->viewangles[ i ] ) / dt;
-		ExponentialFade( I->oav + i, av[ i ], WI_LAMBDA, dt );
-		av[ i ] = I->oav[ i ];
-	}
-
-	VectorMA( origin, atan( av[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
-	          cg.refdef.viewaxis[ 2 ], origin );
-	VectorMA( origin, atan( av[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
-	          cg.refdef.viewaxis[ 1 ], origin );
-
-out:
-	VectorCopy( ps->viewangles, I->oa );
-	I->init = 1;
-}
-
 /*
 ==============
 CG_AddViewWeapon
@@ -1957,8 +1979,6 @@ void CG_AddViewWeapon( playerState_t *ps )
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
 		          hand.origin );
 	}
-
-	CG_WeaponInertia( ps, hand.origin );
 
 	AnglesToAxis( angles, hand.axis );
 	if( cg_mirrorgun.integer ) {

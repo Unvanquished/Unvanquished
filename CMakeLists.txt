@@ -892,7 +892,6 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.cpp
   ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
   ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
-  ${GAMELOGIC_DIR}/cgame/Filter.cpp
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/client/cg_msgdef.h
   ${ENGINE_DIR}/qcommon/print_translated.h

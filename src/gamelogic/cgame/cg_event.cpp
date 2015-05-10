@@ -623,8 +623,7 @@ void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
 		CG_Rocket_BuildArmouryBuyList( "default" );
 	}
 
-	// Reset weapon inertia data.
-	memset( &cg.weaponInertia, 0, sizeof( cg.weaponInertia ) );
+	cg.weaponOffsetsFilter.Reset( );
 
 	cg.predictedPlayerEntity.pe.weapon.animationNumber = -1; //force weapon lerpframe recalculation
 }

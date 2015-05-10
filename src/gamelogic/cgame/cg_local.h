@@ -1095,12 +1095,21 @@ typedef enum
 	SAY_TYPE_COMMAND,
 } sayType_t;
 
-typedef struct
+#include "Filter.hpp"
+
+class WeaponOffsets
 {
-	int     init;
-	vec3_t  oa; // old angles
-	vec3_t  oav; // old angular velocity
-} weaponInertia_t;
+public:
+	vec3_t bob;
+
+	vec3_t angles;
+	vec3_t angvel;
+
+	WeaponOffsets operator=( int ); // for offsets = 0
+	WeaponOffsets operator+=( WeaponOffsets );
+	WeaponOffsets operator*( float );
+};
+
 
 #define NUM_BINARY_SHADERS 256
 
@@ -1305,8 +1314,6 @@ typedef struct
 	float                   momentumGained;
 	int                     momentumGainedTime;
 
-	weaponInertia_t         weaponInertia;
-
 	// beacons
 	cbeacon_t               *beacons[ MAX_CBEACONS ];
 	int                     beaconCount;
@@ -1322,6 +1329,8 @@ typedef struct
 		int msec;
 		int accurate;
 	} pmoveParams;
+
+	Filter<WeaponOffsets>   weaponOffsetsFilter;
 } cg_t;
 
 typedef struct
@@ -2375,48 +2384,6 @@ float CG_Rocket_ProgressBarValueByName( const char *name );
 // cg_gameinfo.c
 //
 void CG_LoadArenas();
-
-//
-// Filter.cpp
-//
-
-template <class T>
-class Filter
-{
-protected:
-	std::list<std::pair<int,T> > samples;
-	int width;
-
-public:
-	Filter( int a_width );
-	void Insert( T sample );
-	void Reset( );
-	virtual T Get( ) = 0;
-};
-
-template <class T>
-class MAFilter: public Filter<T>
-{
-public:
-	using Filter<T>::Filter;
-	T Get( );
-};
-
-template <class T>
-class CubicMAFilter: public Filter<T>
-{
-public:
-	using Filter<T>::Filter;
-	T Get( );
-};
-
-template <class T>
-class GaussianMAFilter: public Filter<T>
-{
-public:
-	using Filter<T>::Filter;
-	T Get( );
-};
 
 #endif
 
