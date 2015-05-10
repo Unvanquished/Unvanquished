@@ -299,7 +299,7 @@ void CG_Rocket_Init( glconfig_t gl )
 		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
 	}
 
-	trap_Key_SetCatcher( KEYCATCH_UI );
+	CG_SetKeyCatcher( KEYCATCH_UI );
 }
 
 void CG_Rocket_LoadHuds()

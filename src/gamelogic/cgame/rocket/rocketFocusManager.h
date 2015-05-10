@@ -64,11 +64,11 @@ public:
 		{
 			trap_Key_ClearCmdButtons();
 			trap_Key_ClearStates();
-			trap_Key_SetCatcher( KEYCATCH_UI );
+			CG_SetKeyCatcher( KEYCATCH_UI );
 		}
 		else if ( !anyVisible && rocketInfo.keyCatcher && rocketInfo.cstate.connState >= CA_PRIMED )
 		{
-			trap_Key_SetCatcher( 0 );
+			CG_SetKeyCatcher( 0 );
 		}
 	}
 

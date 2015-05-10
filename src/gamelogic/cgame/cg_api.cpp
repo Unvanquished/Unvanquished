@@ -676,7 +676,6 @@ int trap_Key_GetCatcher()
 
 void trap_Key_SetCatcher( int catcher )
 {
-	rocketInfo.keyCatcher = catcher;
 	VM::SendMsg<Key::SetCatcherMsg>(catcher);
 }
 

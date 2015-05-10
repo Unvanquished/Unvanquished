@@ -222,7 +222,7 @@ void CG_MouseEvent( int x, int y )
 	       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) &&
 	     cg.showScores == false )
 	{
-		trap_Key_SetCatcher( 0 );
+		CG_SetKeyCatcher( 0 );
 		return;
 	}
 
@@ -239,7 +239,7 @@ void CG_KeyEvent( int key, bool down )
 	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
 	       cg.showScores == false ) )
 	{
-		trap_Key_SetCatcher( 0 );
+		CG_SetKeyCatcher( 0 );
 	}
 }
 

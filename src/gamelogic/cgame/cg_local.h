@@ -2318,6 +2318,7 @@ const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
 void CG_FormatSI( char *buf, int size, float num, int sf, const char *unit );
+void CG_SetKeyCatcher( int catcher );
 
 //
 // cg_rocket.c

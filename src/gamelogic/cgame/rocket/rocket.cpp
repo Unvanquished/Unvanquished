@@ -320,11 +320,11 @@ void Rocket_RocketDebug_f()
 		{
 			Rocket::Debugger::SetContext( menuContext );
 		}
-		trap_Key_SetCatcher( trap_Key_GetCatcher() | KEYCATCH_UI );
+		CG_SetKeyCatcher( trap_Key_GetCatcher() | KEYCATCH_UI );
 	}
 	else
 	{
-		trap_Key_SetCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
+		CG_SetKeyCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
 	}
 }
 
