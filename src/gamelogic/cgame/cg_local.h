@@ -1099,10 +1099,10 @@ typedef enum
 
 struct WeaponOffsets
 {
-	vec3_t bob;
+	Vec3 bob;
 
-	vec3_t angles;
-	vec3_t angvel;
+	Vec3 angles;
+	Vec3 angvel;
 
 	WeaponOffsets operator+=( WeaponOffsets );
 	WeaponOffsets operator*( float );

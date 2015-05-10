@@ -1356,8 +1356,8 @@ WeaponOffsets
 */
 WeaponOffsets WeaponOffsets::operator+=( WeaponOffsets B )
 {
-	VectorAdd( bob, B.bob, bob );
-	VectorAdd( angvel, B.angvel, angvel );
+	bob += B.bob;
+	angvel += B.angvel;
 
 	return *this;
 }
@@ -1366,8 +1366,8 @@ WeaponOffsets WeaponOffsets::operator*( float B )
 {
 	WeaponOffsets R;
 
-	VectorScale( bob, B, R.bob );
-	VectorScale( angvel, B, R.angvel );
+	R.bob = bob * B;
+	R.angvel = angvel * B;
 
 	return R;
 }
@@ -1378,46 +1378,38 @@ WeaponOffsets WeaponOffsets::operator*( float B )
 CG_CalculateWeaponPosition
 ==============
 */
-static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
+
+#define DUMPVEC(x) Com_Printf( #x " = (%f,%f,%f)\n", (x)[0], (x)[1], (x)[2] )
+
+static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 {
+	Vec3 origin, angles, right, up;
 	float        scale;
-	int          delta;
-	float        fracsin;
-	float        bob;
-	weaponInfo_t *weapon;
+	weaponInfo_t *weapon = cg_weapons + cg.predictedPlayerState.weapon;
 	Filter<WeaponOffsets> &filter = cg.weaponOffsetsFilter;
 	WeaponOffsets offsets{};
 
-	weapon = &cg_weapons[ cg.predictedPlayerState.weapon ];
-
-	VectorCopy( cg.refdef.vieworg, origin );
-	VectorCopy( cg.refdefViewAngles, angles );
+	origin = Vec3::Load( cg.refdef.vieworg );
+	angles = Vec3::Load( cg.refdefViewAngles );
+	right = Vec3::Load( cg.refdef.viewaxis[ 1 ] );
+	up = Vec3::Load( cg.refdef.viewaxis[ 2 ] );
 
 	// on odd legs, invert some angles
-	if ( cg.bobcycle & 1 )
-	{
-		scale = -cg.xyspeed;
-	}
-	else
-	{
-		scale = cg.xyspeed;
-	}
+	scale = ( cg.bobcycle & 1 ? -1 : 1 ) * cg.xyspeed;
 
 	filter.SetWidth( 500 );
 
 	// bobbing
-
-	bob = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
-	if( bob != 0.0f )
+	if( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob )
 	{
-		offsets.bob[ ROLL ] = scale * cg.bobfracsin * 0.005;
-		offsets.bob[ YAW ] = scale * cg.bobfracsin * 0.01;
-		offsets.bob[ PITCH ] = cg.xyspeed * cg.bobfracsin * 0.005;
+		offsets.bob = Vec3(
+			cg.xyspeed * cg.bobfracsin * 0.005,
+			scale * cg.bobfracsin * 0.005,
+			scale * cg.bobfracsin * 0.01 );
 	}
 
 	// weapon inertia
-
-	VectorCopy( angles, offsets.angles );
+	offsets.angles = angles;
 
 	if( !filter.IsEmpty( ) )
 	{
@@ -1426,9 +1418,9 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 
 		dt = ( cg.time - last.first ) * 0.001f;
 
-		for( int i = 0; i < 3; i++ )
-			offsets.angvel[ i ] =
-				AngleDelta( angles[ i ], last.second.angles[ i ] ) * dt;
+		offsets.angvel = angles.Apply2(
+			[]( float a, float b ){ return AngleDelta( a, b ); },
+			last.second.angles ) * dt;
 	}
 
 	// accumulate and get the smoothed out values
@@ -1443,37 +1435,36 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 #define WI_Y_LIMIT 1.5f
 #define WI_Y_SCALE 15.0f
 
-	VectorAdd( offsets.bob, angles, angles );
-	VectorMA( origin, atan( offsets.angvel[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT,
-	          cg.refdef.viewaxis[ 2 ], origin );
-	VectorMA( origin, atan( offsets.angvel[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT,
-	          cg.refdef.viewaxis[ 1 ], origin );
+	angles += offsets.bob;
+	origin += up * atan( offsets.angvel[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT;
+	origin += right * atan( offsets.angvel[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT;
 
-	if ( !weapon->md5 )
+	// FIXME: is this of any use?
+	/*if( !weapon->md5 && !weapon->noDrift )
 	{
-		// drop the weapon when landing
-		if ( !weapon->noDrift )
+		int delta;
+		float fracsin;
+
+		delta = cg.time - cg.landTime;
+
+		if ( delta < LAND_DEFLECT_TIME )
 		{
-			delta = cg.time - cg.landTime;
-
-			if ( delta < LAND_DEFLECT_TIME )
-			{
-				origin[ 2 ] += cg.landChange * 0.25 * delta / LAND_DEFLECT_TIME;
-			}
-			else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
-			{
-				origin[ 2 ] += cg.landChange * 0.25 *
-				               ( LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta ) / LAND_RETURN_TIME;
-			}
-
-			// idle drift
-			scale = cg.xyspeed + 40;
-			fracsin = sin( cg.time * 0.001 );
-			angles[ ROLL ] += scale * fracsin * 0.01;
-			angles[ YAW ] += scale * fracsin * 0.01;
-			angles[ PITCH ] += scale * fracsin * 0.01;
+			origin += Vec3( 0, 0, cg.landChange * 0.25 * delta / LAND_DEFLECT_TIME );
 		}
-	}
+		else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
+		{
+			origin += Vec3( 0, 0, cg.landChange * 0.25 *
+			          ( LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta ) / LAND_RETURN_TIME );
+		}
+
+		// idle drift
+		scale = cg.xyspeed + 40;
+		fracsin = sin( cg.time * 0.001 );
+		angles += Vec3( scale * fracsin * 0.01 );
+	}*/
+
+	origin.Store( out_origin );
+	angles.Store( out_angles );
 }
 
 /*
