@@ -2375,5 +2375,48 @@ float CG_Rocket_ProgressBarValueByName( const char *name );
 // cg_gameinfo.c
 //
 void CG_LoadArenas();
+
+//
+// Filter.cpp
+//
+
+template <class T>
+class Filter
+{
+protected:
+	std::list<std::pair<int,T> > samples;
+	int width;
+
+public:
+	Filter( int a_width );
+	void Insert( T sample );
+	void Reset( );
+	virtual T Get( ) = 0;
+};
+
+template <class T>
+class MAFilter: public Filter<T>
+{
+public:
+	using Filter<T>::Filter;
+	T Get( );
+};
+
+template <class T>
+class CubicMAFilter: public Filter<T>
+{
+public:
+	using Filter<T>::Filter;
+	T Get( );
+};
+
+template <class T>
+class GaussianMAFilter: public Filter<T>
+{
+public:
+	using Filter<T>::Filter;
+	T Get( );
+};
+
 #endif
 
