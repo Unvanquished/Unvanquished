@@ -222,4 +222,5 @@ void CG_SetKeyCatcher( int catcher )
 {
 	rocketInfo.keyCatcher = catcher;
 	Rocket_SetActiveContext( catcher );
+	trap_Key_SetCatcher( catcher );
 }
