@@ -42,10 +42,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Cvar.h"
 #include "Log.h"
 #include "LineEditData.h"
-#include "Maths.h"
+#include "Math.h"
 #include "System.h"
 #include "Serialize.h"
 #include "FileSystem.h"
 #include "DisjointSets.h"
+
+using Math::Vec2;
+using Math::Vec3;
+using Math::Vec4;
 
 #endif // COMMON_COMMON_H_

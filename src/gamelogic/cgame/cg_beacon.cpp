@@ -257,10 +257,10 @@ static bool LoadImplicitBeacons()
 			}
 
 			// Add alpha fade at the borders of the sense range.
-			beacon->alphaMod = Maths::clampFraction(
+			beacon->alphaMod = Math::Clamp(
 				( ( (float)ALIENSENSE_RANGE -
 			        Distance( cg.predictedPlayerState.origin, beacon->origin ) ) /
-			      ( ALIENSENSE_BORDER_FRAC * (float)ALIENSENSE_RANGE ) ) );
+			      ( ALIENSENSE_BORDER_FRAC * (float)ALIENSENSE_RANGE ) ), 0.0f, 1.0f );
 
 			// A value of 0 means the target is out of range, don't create a beacon in that case.
 			if ( beacon->alphaMod == 0.0f ) continue;
