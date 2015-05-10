@@ -334,8 +334,8 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					if ( table->clamp )
 					{
 						// clamp indices to table-range
-						oldIndex = Maths::clamp( oldIndex, 0, numValues - 1 );
-						newIndex = Maths::clamp( newIndex, 0, numValues - 1 );
+						oldIndex = Math::Clamp( oldIndex, 0, numValues - 1 );
+						newIndex = Math::Clamp( newIndex, 0, numValues - 1 );
 					}
 					else
 					{

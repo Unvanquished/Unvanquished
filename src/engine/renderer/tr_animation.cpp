@@ -1335,8 +1335,8 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 		   }
 		 */
 
-		startFrame = Maths::clamp( startFrame, 0, anim->numFrames - 1 );
-		endFrame = Maths::clamp( endFrame, 0, anim->numFrames - 1 );
+		startFrame = Math::Clamp( startFrame, 0, anim->numFrames - 1 );
+		endFrame = Math::Clamp( endFrame, 0, anim->numFrames - 1 );
 
 		// compute frame pointers
 		oldFrame = &anim->frames[ startFrame ];

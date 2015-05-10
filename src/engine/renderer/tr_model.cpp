@@ -413,7 +413,7 @@ static int R_GetTag( mdvModel_t *model, int frame, const char *_tagName, int sta
 	mdvTagName_t *tagName;
 
 	// it is possible to have a bad frame while changing models, so don't error
-	frame = Maths::clamp( frame, 0, model->numFrames - 1 );
+	frame = Math::Clamp( frame, 0, model->numFrames - 1 );
 
 	if ( startTagIndex > model->numTags )
 	{
