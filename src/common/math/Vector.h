@@ -97,7 +97,8 @@ namespace Math {
 		template<typename Func> Type Reduce(Type init, Func func);
 
 		// Get an element of the vector
-		Type& operator[](size_t index) const {return data[index];}
+		Type& operator[](size_t index) {return data[index];}
+		const Type& operator[](size_t index) const {return data[index];}
 	};
 
 	// Type-specific vector operations
@@ -119,8 +120,10 @@ namespace Math {
 		Vector<Length, Type> operator-(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a - b;}, other);}
 		Vector<Length, Type> operator*(Type x) const {return this->Apply([x](Type a) {return a * x;});}
 		Vector<Length, Type> operator*(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a * b;}, other);}
+		friend Vector<Length, Type> operator*(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x * a;});}
 		Vector<Length, Type> operator/(Type x) const {return this->Apply([x](Type a) {return a / x;});}
 		Vector<Length, Type> operator/(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
+		friend Vector<Length, Type> operator/(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x / a;});}
 
 		// Compound arithmetic operators
 		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) + other;}
@@ -147,10 +150,13 @@ namespace Math {
 		Vector<Length, Type> operator-(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a - b;}, other);}
 		Vector<Length, Type> operator*(Type x) const {return this->Apply([x](Type a) {return a * x;});}
 		Vector<Length, Type> operator*(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a * b;}, other);}
+		friend Vector<Length, Type> operator*(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x * a;});}
 		Vector<Length, Type> operator/(Type x) const {return this->Apply([x](Type a) {return a / x;});}
 		Vector<Length, Type> operator/(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
+		friend Vector<Length, Type> operator/(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x / a;});}
 		Vector<Length, Type> operator%(Type x) const {return this->Apply([x](Type a) {return a % x;});}
 		Vector<Length, Type> operator%(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a % b;}, other);}
+		friend Vector<Length, Type> operator%(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x % a;});}
 
 		// Compound arithmetic operators
 		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) + other;}
