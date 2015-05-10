@@ -71,14 +71,8 @@ namespace Math {
 
 	public:
 		// Expose internal data
-		const Type* Data() const
-		{
-			return data;
-		}
-		Type* Data()
-		{
-			return data;
-		}
+		const Type* Data() const {return data;}
+		Type* Data() {return data;}
 
 		// Swizzle operations
 		template<size_t x> Type Swizzle() const;
@@ -99,6 +93,19 @@ namespace Math {
 		// Get an element of the vector
 		Type& operator[](size_t index) {return data[index];}
 		const Type& operator[](size_t index) const {return data[index];}
+
+		// Convert a vector to a string
+		friend std::ostream& operator<<(std::ostream& os, Vector<Length, Type> vec)
+		{
+			os << '(';
+			for (size_t i = 0; i < Length; i++) {
+				if (i != 0)
+					os << ", ";
+				os << vec.data[i];
+			}
+			os << ')';
+			return os;
+		}
 	};
 
 	// Type-specific vector operations
