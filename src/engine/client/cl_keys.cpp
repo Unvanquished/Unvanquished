@@ -2026,6 +2026,9 @@ void Key_ClearStates()
 
 	anykeydown = 0;
 
+	int oldKeyCatcher = Key_GetCatcher();
+	Key_SetCatcher( 0 );
+
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
 		if ( keys[ i ].down )
@@ -2038,6 +2041,8 @@ void Key_ClearStates()
 	}
 
 	plusCommand.check = rand();
+
+	Key_SetCatcher( oldKeyCatcher );
 }
 
 /*
