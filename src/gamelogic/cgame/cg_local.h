@@ -1097,19 +1097,16 @@ typedef enum
 
 #include "Filter.h"
 
-class WeaponOffsets
+struct WeaponOffsets
 {
-public:
 	vec3_t bob;
 
 	vec3_t angles;
 	vec3_t angvel;
 
-	WeaponOffsets operator=( int ); // for offsets = 0
 	WeaponOffsets operator+=( WeaponOffsets );
 	WeaponOffsets operator*( float );
 };
-
 
 #define NUM_BINARY_SHADERS 256
 

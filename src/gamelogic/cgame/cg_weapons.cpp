@@ -1354,15 +1354,6 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, int anim )
 WeaponOffsets
 ==============
 */
-
-WeaponOffsets WeaponOffsets::operator=( int B )
-{
-	VectorClear( bob );
-	VectorClear( angvel );
-
-	return *this;
-}
-
 WeaponOffsets WeaponOffsets::operator+=( WeaponOffsets B )
 {
 	VectorAdd( bob, B.bob, bob );
@@ -1395,7 +1386,7 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	float        bob;
 	weaponInfo_t *weapon;
 	Filter<WeaponOffsets> &filter = cg.weaponOffsetsFilter;
-	WeaponOffsets offsets;
+	WeaponOffsets offsets{};
 
 	weapon = &cg_weapons[ cg.predictedPlayerState.weapon ];
 
@@ -1413,7 +1404,6 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	}
 
 	filter.SetWidth( 500 );
-	offsets = 0;
 
 	// bobbing
 
