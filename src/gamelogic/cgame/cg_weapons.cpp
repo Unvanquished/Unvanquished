@@ -1387,7 +1387,7 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 		WI_Y_SCALE = 15.0f;
 	Vec3 origin, angles, right, up;
 	float        scale;
-	weaponInfo_t *weapon = cg_weapons + cg.predictedPlayerState.weapon;
+	//weaponInfo_t *weapon = cg_weapons + cg.predictedPlayerState.weapon;
 	Filter<WeaponOffsets> &filter = cg.weaponOffsetsFilter;
 	WeaponOffsets offsets;
 
