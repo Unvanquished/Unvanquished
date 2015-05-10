@@ -1095,7 +1095,7 @@ typedef enum
 	SAY_TYPE_COMMAND,
 } sayType_t;
 
-#include "Filter.hpp"
+#include "Filter.h"
 
 class WeaponOffsets
 {
