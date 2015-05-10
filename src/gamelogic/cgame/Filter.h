@@ -25,15 +25,18 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 template <class T>
 class Filter
 {
-protected:
 	std::list<std::pair<int,T> > samples;
 	int width;
 
-public:
-	Filter( )
+	/**
+	 * @brief The Gaussian function used to calculate a Gaussian moving averaege.
+	 */
+	float Gaussian( float x )
 	{
+		return exp( -8.0f * x * x );
 	}
 
+public:
 	/**
 	 * @brief Set the filter's width (in units of time).
 	 */
@@ -45,17 +48,15 @@ public:
 	/**
 	 * @brief Add a sample to the filter.
 	 */
-	Filter& Accumulate( int time, T& sample )
+	void Accumulate( int time, const T& sample )
 	{
 		samples.remove_if(
-			[&]( std::pair<int,T>& sample )
+			[&]( const std::pair<int,T>& sample )
 			{
 				return time - sample.first > width;
 			}
 		);
 		samples.emplace( samples.begin( ), time, sample );
-
-		return *this;
 	}
 
 	/**
@@ -87,12 +88,12 @@ public:
 	 */
 	T MA( )
 	{
-		T total = 0;
+		T total{};
 
-		for( auto s : this->samples )
+		for( auto s : samples )
 			total += s.second;
 
-		return total * ( 1.0f / this->samples.size( ) );
+		return total * ( 1.0f / samples.size( ) );
 	}
 
 	/**
@@ -100,13 +101,14 @@ public:
 	 */
 	T CubicMA( int time )
 	{
-		T total = 0;
-		float weight, total_weight = 0;
+		T total{};
+		float total_weight = 0;
 
-		for( auto s: this->samples )
+		for( auto s: samples )
 		{
-			weight = 1.0f - (float)( time - s.first ) / this->width;
-			weight = weight * weight * weight;
+			float weight;
+
+			weight = pow( 1.0f - (float)( time - s.first ) / width, 3 );
 			total_weight += weight;
 			total += s.second * weight;
 		}
@@ -120,12 +122,13 @@ public:
 	T GaussianMA( int time )
 	{
 		T total{};
-		float weight, total_weight = 0;
+		float total_weight = 0;
 
-		for( auto s: this->samples )
+		for( auto s: samples )
 		{
-			weight = (float)( time - s.first ) / this->width;
-			weight = exp( -8.0f * weight * weight );
+			float weight;
+
+			weight = Gaussian( (float)( time - s.first ) / width );
 			total_weight += weight;
 			total += s.second * weight;
 		}

@@ -1378,16 +1378,18 @@ WeaponOffsets WeaponOffsets::operator*( float B )
 CG_CalculateWeaponPosition
 ==============
 */
-
-#define DUMPVEC(x) Com_Printf( #x " = (%f,%f,%f)\n", (x)[0], (x)[1], (x)[2] )
-
 static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 {
+	const float
+		WI_X_LIMIT = 1.5f,
+		WI_X_SCALE = -15.0f,
+		WI_Y_LIMIT = 1.5f,
+		WI_Y_SCALE = 15.0f;
 	Vec3 origin, angles, right, up;
 	float        scale;
 	weaponInfo_t *weapon = cg_weapons + cg.predictedPlayerState.weapon;
 	Filter<WeaponOffsets> &filter = cg.weaponOffsetsFilter;
-	WeaponOffsets offsets{};
+	WeaponOffsets offsets;
 
 	origin = Vec3::Load( cg.refdef.vieworg );
 	angles = Vec3::Load( cg.refdefViewAngles );
@@ -1418,9 +1420,7 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 
 		dt = ( cg.time - last.first ) * 0.001f;
 
-		offsets.angvel = angles.Apply2(
-			[]( float a, float b ){ return AngleDelta( a, b ); },
-			last.second.angles ) * dt;
+		offsets.angvel = angles.Apply2( AngleDelta, last.second.angles ) * dt;
 	}
 
 	// accumulate and get the smoothed out values
@@ -1429,11 +1429,6 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	offsets = filter.GaussianMA( cg.time );
 
 	// offset angles and origin
-
-#define WI_X_LIMIT 1.5f
-#define WI_X_SCALE -15.0f
-#define WI_Y_LIMIT 1.5f
-#define WI_Y_SCALE 15.0f
 
 	angles += offsets.bob;
 	origin += up * atan( offsets.angvel[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT;
