@@ -2161,20 +2161,6 @@ void CL_Vid_Restart_f()
 	}
 }
 
-/*
-=================
-CL_UI_Restart_f
-
-Restart the ui subsystem
-=================
-*/
-void CL_UI_Restart_f()
-{
-	// NERVE - SMF
-	// init the UI
-	cgvm.Start();
-	cgvm.CGameRocketInit();
-}
 
 /*
 =================
@@ -4072,7 +4058,6 @@ void CL_Init()
 	Cmd_AddCommand( "snd_reload", CL_Snd_Reload_f );
 	Cmd_AddCommand( "snd_restart", CL_Snd_Restart_f );
 	Cmd_AddCommand( "vid_restart", CL_Vid_Restart_f );
-	Cmd_AddCommand( "ui_restart", CL_UI_Restart_f );  // NERVE - SMF
 	Cmd_AddCommand( "disconnect", CL_Disconnect_f );
 	Cmd_AddCommand( "record", CL_Record_f );
 	Cmd_AddCommand( "cinematic", CL_PlayCinematic_f );
