@@ -119,6 +119,13 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 				});
 				break;
 
+			case CG_CONSOLE_LINE:
+				IPC::HandleMsg<CGameConsoleLineMsg>(VM::rootChannel, std::move(reader), [](std::string str) {
+					Rocket_AddConsoleText( str );
+					cmdBuffer.TryFlush();
+				});
+				break;
+
             default:
                 CG_Error("VMMain(): unknown cgame command %i", minor);
 

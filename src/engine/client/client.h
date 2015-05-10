@@ -434,6 +434,7 @@ public:
 
 	void CGameRocketInit();
 	void CGameRocketFrame();
+	void CGameConsoleLine(const std::string& str);
 
 private:
 	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;

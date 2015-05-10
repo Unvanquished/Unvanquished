@@ -1511,6 +1511,11 @@ void CGameVM::CGameRocketFrame()
 	this->SendMsg<CGameRocketFrameMsg>(state);
 }
 
+void CGameVM::CGameConsoleLine(const std::string& str)
+{
+	this->SendMsg<CGameConsoleLineMsg>(str);
+}
+
 void CGameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
 {
 	int major = id >> 16;

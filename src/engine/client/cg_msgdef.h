@@ -772,7 +772,9 @@ typedef enum
 // Inits libRocket in the game.
 
   CG_ROCKET_FRAME,
-// Rocket runs through a frame, including event processing
+// Rocket runs through a frame, including event processing, and rendering
+
+  CG_CONSOLE_LINE
 } cgameExport_t;
 
 // CGameStaticInitMsg
@@ -817,5 +819,9 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>, cgClientState_t>
 > CGameRocketFrameMsg;
+
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_CONSOLE_LINE>, std::string>
+> CGameConsoleLineMsg;
 
 #endif

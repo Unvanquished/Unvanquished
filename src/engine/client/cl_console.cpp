@@ -612,7 +612,7 @@ bool CL_InternalConsolePrint( const char *text )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
-		// TODO: Rocket
+		cgvm.CGameConsoleLine( text );
 	}
 
 	color = ColorIndex( CONSOLE_COLOR );
