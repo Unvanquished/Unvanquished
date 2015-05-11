@@ -38,6 +38,8 @@ include( CMakeDependentOption )
 
 # This line has to appear before 'PROJECT' in order to be able to disable incremental linking
 set( MSVC_INCREMENTAL_DEFAULT ON )
+# Enable the creation of project folders for Visual Studio projects
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Default to Release builds. To use system CFLAGS only (for distro builds), set CMAKE_BUILD_TYPE to None
 set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." )
@@ -52,7 +54,11 @@ option( BUILD_CLIENT "Build Daemon client" 1 )
 option( BUILD_SERVER "Build Daemonded server" 1 )
 option( BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1 )
 option( BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1 )
-option( BUILD_GAME_NACL "Build NaCl game logic" 1 )
+if( CMAKE_SYSTEM_NAME STREQUAL CMAKE_HOST_SYSTEM_NAME )
+  option( BUILD_GAME_NACL "Build NaCl game logic" 1 )
+else()
+  set( BUILD_GAME_NACL 0 )
+endif()
 option( BUILD_TTY_CLIENT "Build Daemon headless client" 1 )
 
 cmake_dependent_option( USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0 )
@@ -495,6 +501,27 @@ endif()
 include_directories( "${OBJ_DIR}" )
 
 ################################################################################
+# Group the sources by folder to have folder show in Visual Studio
+################################################################################
+
+macro(group_dir_sources dir)
+  file(GLOB_RECURSE files ${dir}/*)
+  string(LENGTH ${dir}/ dir_length)
+  foreach(file ${files})
+    if(NOT IS_DIRECTORY ${dir}/${file})
+      get_filename_component(group_name ${file} DIRECTORY)
+      string(SUBSTRING ${group_name} ${dir_length} -1 group_name)
+      string(REPLACE "/" "\\" group_name ${group_name})
+      source_group(${group_name} FILES ${file})
+    endif()
+  endforeach()
+endmacro()
+
+if(MSVC)
+  group_dir_sources(${MOUNT_DIR})
+endif()
+
+################################################################################
 # Support for precompiled headers
 ################################################################################
 
@@ -664,6 +691,7 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/gl_shader.h
   ${ENGINE_DIR}/renderer/tr_image.h
   ${ENGINE_DIR}/renderer/tr_model_skel.h
+  ${ENGINE_DIR}/renderer/shaders.cpp
 )
 
 set( SERVERLIST
@@ -1307,6 +1335,7 @@ mark_as_advanced( SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR )
 if( BUILD_CLIENT )
   include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
   add_subdirectory( ${ROCKET_DIR} )
+  set_target_properties(ROCKET_LIB PROPERTIES FOLDER "libs")
   add_definitions( -DSTATIC_LIB )
   set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
 endif()
@@ -1403,13 +1432,6 @@ if( BUILD_CLIENT )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${OPENGL_LIBRARIES} )
 endif()
 
-# X11
-if( LINUX AND BUILD_CLIENT )
-  find_package( X11 REQUIRED )
-  include_directories( ${X11_INCLUDE_DIRS} )
-  set( LIBS_CLIENT ${LIBS_CLIENT} ${X11_LIBRARIES} )
-endif()
-
 # OpenAL
 if( BUILD_CLIENT )
   find_package( OpenAL REQUIRED )
@@ -1443,7 +1465,7 @@ endif()
 add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
 add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
 add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
-set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 )
+set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
 
 set( LIBS_BASE base-source-libs ${LIBS_BASE} )
 set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
@@ -1466,6 +1488,7 @@ function( GAMEMODULE )
     set_target_properties( ${GAMEMODULE_NAME}-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
+      FOLDER ${GAMEMODULE_NAME}
     )
     set_property( TARGET ${GAMEMODULE_NAME}-native-dll APPEND PROPERTY INCLUDE_DIRECTORIES ${GAMELOGIC_DIR} )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-dll ${COMMON_DIR}/Common.h )
@@ -1476,6 +1499,7 @@ function( GAMEMODULE )
     target_link_libraries( ${GAMEMODULE_NAME}-native-exe nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-native-exe PROPERTIES
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
+      FOLDER ${GAMEMODULE_NAME}
     )
     set_property( TARGET ${GAMEMODULE_NAME}-native-exe APPEND PROPERTY INCLUDE_DIRECTORIES ${GAMELOGIC_DIR} )
     ADD_PRECOMPILED_HEADER( ${GAMEMODULE_NAME}-native-exe ${COMMON_DIR}/Common.h )
@@ -1650,6 +1674,9 @@ function( GAMEMODULE )
         ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86-stripped.nexe
         ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}-x86_64-stripped.nexe
     )
+    set_target_properties( ${GAMEMODULE_NAME}-nacl PROPERTIES
+      FOLDER ${GAMEMODULE_NAME}
+    )
 
     # Create the build directory before building
     add_custom_command( TARGET ${GAMEMODULE_NAME}-nacl PRE_BUILD
@@ -1685,7 +1712,7 @@ if( BUILD_CLIENT )
     # Set it here so the tty client doesn't need to depend on speex
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
   endif()
-  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" )
+  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" FOLDER "engine")
   set_property( TARGET client APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( client ${COMMON_DIR}/Common.h )
 endif()
@@ -1694,7 +1721,7 @@ if( BUILD_SERVER )
   add_executable( server WIN32 ${PCH_FILE} ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
-  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" )
+  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" FOLDER "engine")
   set_property( TARGET server APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( server ${COMMON_DIR}/Common.h )
 endif()
@@ -1703,7 +1730,7 @@ if( BUILD_TTY_CLIENT )
   add_executable( ttyclient WIN32 ${PCH_FILE} ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
-  set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" )
+  set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" FOLDER "engine")
   set_property( TARGET ttyclient APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} )
   ADD_PRECOMPILED_HEADER( ttyclient ${COMMON_DIR}/Common.h )
 endif()
@@ -1714,6 +1741,7 @@ endif()
 
 if( BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT )
   add_custom_target( runtime_deps )
+  set_target_properties(runtime_deps PROPERTIES FOLDER "CMakePlumbing")
 
   # The NaCl loader and IRT are required to load .nexe files
   add_custom_command( TARGET runtime_deps PRE_BUILD

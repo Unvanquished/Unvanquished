@@ -195,6 +195,8 @@ vmCvar_t           g_geoip;
 
 vmCvar_t           g_debugEntities;
 
+vmCvar_t           g_instantBuilding;
+
 
 // <bot stuff>
 
@@ -401,6 +403,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_allowTeamOverlay,            "g_allowTeamOverlay",            "1",                                0,                                               0, true            },
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                0,                                               0, false           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               0,                                               0, false           },
+
+	{ &g_instantBuilding,             "g_instantBuilding",             "0",                                0,                                               0, true            },
 
 	// bots: buying
 	{ &g_bot_buy, "g_bot_buy", "1",  CVAR_NORESTART, 0, false },
@@ -1855,6 +1859,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	va_list argptr;
 	char    string[ 1024 ], decolored[ 1024 ];
 	int     min, tens, sec;
+	size_t  tslen;
 
 	sec = level.matchTime / 1000;
 
@@ -1865,8 +1870,10 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 	Com_sprintf( string, sizeof( string ), "%3i:%i%i ", min, tens, sec );
 
+	tslen = strlen( string );
+
 	va_start( argptr, fmt );
-	Q_vsnprintf( string + 7, sizeof( string ) - 7, fmt, argptr );
+	Q_vsnprintf( string + tslen, sizeof( string ) - tslen, fmt, argptr );
 	va_end( argptr );
 
 	if ( !level.inClient )

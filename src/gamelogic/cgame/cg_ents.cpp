@@ -430,11 +430,22 @@ static void CG_Missile( centity_t *cent )
 	}
 	else if ( ma->model )
 	{
+		vec3_t velocity;
+
 		ent.hModel = ma->model;
 		ent.renderfx = ma->renderfx | RF_NOSHADOW;
 
+		if( es->weapon == MIS_GRENADE || es->weapon == MIS_FIREBOMB )
+		{
+			VectorCopy( es->pos.trDelta, velocity );
+		}
+		else
+		{
+			BG_EvaluateTrajectoryDelta( &es->pos, cg.time, velocity );
+		}
+
 		// convert direction of travel into axis
-		if ( VectorNormalize2( es->pos.trDelta, ent.axis[ 0 ] ) == 0 )
+		if ( VectorNormalize2( velocity, ent.axis[ 0 ] ) == 0 )
 		{
 			ent.axis[ 0 ][ 2 ] = 1.0f;
 		}

@@ -4548,7 +4548,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 
 	if (builder->client) {
 		// Build instantly in cheat mode.
-		if (g_cheats.integer) {
+		if (g_instantBuilding.integer) {
 			// HACK: This causes animation issues and can result in built->creationTime < 0.
 			built->creationTime -= attr->buildTime;
 		} else {

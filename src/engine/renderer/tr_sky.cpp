@@ -833,7 +833,7 @@ void Tess_StageIteratorSky()
 			R_BindVBO( tess.vbo );
 			R_BindIBO( tess.ibo );
 
-			gl_skyboxShader->BindProgram();
+			gl_skyboxShader->BindProgram( 0 );
 
 			gl_skyboxShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // in world space
 

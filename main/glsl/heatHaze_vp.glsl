@@ -34,6 +34,12 @@ uniform float		u_DeformMagnitude;
 varying vec2		var_TexNormal;
 varying float		var_Deform;
 
+void DeformVertex( inout vec4 pos,
+		   inout vec3 normal,
+		   inout vec2 st,
+		   inout vec4 color,
+		   in    float time);
+
 void	main()
 {
 	vec4            deformVec;

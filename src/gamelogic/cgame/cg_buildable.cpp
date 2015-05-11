@@ -1046,7 +1046,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	}
 }
 
-#define TRACE_DEPTH 64.0f
+#define TRACE_DEPTH 10.0f
 
 /*
 ===============
@@ -2754,7 +2754,7 @@ void CG_Buildable( centity_t *cent )
 		}
 
 		// Play lockon sound if applicable.
-		if ( es->eFlags & EF_B_LOCKON )
+		if ( es->generic1 > 0 && ( es->eFlags & EF_B_LOCKON ) )
 		{
 			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
 			                        cgs.media.rocketpodLockonSound );

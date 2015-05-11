@@ -299,8 +299,6 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 
 	while ( *s )
 	{
-		int ch;
-
 		if ( !noColorEscape && Q_IsColorString( s ) )
 		{
 			s += 2;
@@ -312,7 +310,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			++s;
 		}
 
-		ch = Q_UTF8_CodePoint( s );
+		auto ch = Q_UTF8_CodePoint( s );
 		SCR_DrawUnichar( xx + 2, y + 2, size, ch );
 		xx += size;
 		s += Q_UTF8_WidthCP( ch );

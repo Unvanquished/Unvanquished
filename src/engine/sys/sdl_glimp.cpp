@@ -542,16 +542,11 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 		{
 			glConfig.vidWidth = desktopMode.w;
 			glConfig.vidHeight = desktopMode.h;
-			Cvar_Set( "r_customwidth", va("%d", desktopMode.w ) );
-			Cvar_Set( "r_customheight", va("%d", desktopMode.h ) );
 		}
 		else
 		{
 			glConfig.vidWidth = 640;
 			glConfig.vidHeight = 480;
-			Cvar_Set( "r_customwidth", "640" );
-			Cvar_Set( "r_customheight", "480" );
-
 			ri.Printf( PRINT_ALL, "Cannot determine display resolution, assuming 640x480\n" );
 		}
 
@@ -564,6 +559,8 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	}
 
 	ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight );
+	Cvar_Set( "r_customwidth", va("%d", glConfig.vidWidth ) );
+	Cvar_Set( "r_customheight", va("%d", glConfig.vidHeight ) );
 
 	do
 	{
@@ -1069,7 +1066,7 @@ static void GLimp_InitExtensions()
 	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &glConfig2.maxVertexUniforms );
 	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS_ARB, &glConfig2.maxVertexAttribs );
 
-	int reservedComponents = 26 * 10; // approximation how many uniforms we have besides the bone matrices
+	int reservedComponents = 36 * 10; // approximation how many uniforms we have besides the bone matrices
 	glConfig2.maxVertexSkinningBones = Math::Clamp( ( glConfig2.maxVertexUniforms - reservedComponents ) / 16, 0, MAX_BONES );
 	glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? true : false );
 

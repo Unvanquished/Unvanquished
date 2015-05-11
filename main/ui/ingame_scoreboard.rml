@@ -118,11 +118,12 @@
 		{
 			width: 1.2em;
 			height: 1.2em;
-                        vertical-align: middle;
+			vertical-align: middle;
 		}
 
 		div.playername {
-                        color: white;
+			color: white;
+			padding-right: 0.75em;
 		}
 
 

@@ -81,7 +81,9 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, G_DROP_CLIENT>, int, std::string>
 > DropClientMsg;
 // SendServerCommandMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_SERVER_COMMAND>, int, std::string> SendServerCommandMsg;
+typedef IPC::SyncMessage<
+    IPC::Message<IPC::Id<VM::QVM, G_SEND_SERVER_COMMAND>, int, std::string>
+> SendServerCommandMsg;
 // SetConfigStringMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_SET_CONFIGSTRING>, int, std::string> SetConfigStringMsg;
 // GetConfigStringMsg

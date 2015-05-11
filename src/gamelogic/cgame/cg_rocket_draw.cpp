@@ -2289,13 +2289,8 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 		sec = 0;
 	}
 
-	if ( cg_tutorial.integer )
-	{
-		Com_sprintf( yeskey, sizeof( yeskey ), "[%s]",
-					 CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
-		Com_sprintf( nokey, sizeof( nokey ), "[%s]",
-					 CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
-	}
+	Com_sprintf( yeskey, sizeof( yeskey ), "[%s]", CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
+	Com_sprintf( nokey, sizeof( nokey ), "[%s]", CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
 
 	s = va( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
@@ -2362,7 +2357,7 @@ static void CG_Rocket_DrawNumSpawns()
 	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
 	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
 
-	if ( position < 1 )
+	if ( position < 1 || cg.intermissionStarted )
 	{
 		s = "";
 	}
@@ -2372,7 +2367,7 @@ static void CG_Rocket_DrawNumSpawns()
 	}
 	else
 	{
-		s = P_( "There is 1 spawn remaining", va( "There are %d spawns remaining", spawns ), spawns );
+		s = va( P_( "There is %d spawn remaining", "There are %d spawns remaining", spawns ), spawns );
 	}
 
 	trap_Rocket_SetInnerRML( s, 0 );

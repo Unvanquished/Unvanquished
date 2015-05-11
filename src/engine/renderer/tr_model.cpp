@@ -280,7 +280,11 @@ bool RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out )
 	R_SyncRenderThread();
 
 	tr.visIndex = 0;
-	memset( tr.visClusters, -2, sizeof( tr.visClusters ) );   // force markleafs to regenerate
+	// force markleafs to regenerate
+	for (size_t i = 0; i < MAX_VISCOUNTS; ++i)
+	{
+		tr.visClusters[i] = -1;
+	}
 
 	R_ClearFlares();
 
@@ -295,11 +299,6 @@ bool RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out )
 	tr.worldEntity.e.nonNormalizedAxes = false;
 
 	tr.registered = true;
-
-	// NOTE: this sucks, for some reason the first stretch pic is never drawn
-	// without this we'd see a white flash on a level load because the very
-	// first time the level shot would not be drawn
-	RE_StretchPic( 0, 0, 0, 0, 0, 0, 1, 1, 0 );
 
 	return true;
 }

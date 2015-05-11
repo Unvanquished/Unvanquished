@@ -34,6 +34,12 @@ varying vec4		var_Tangent;
 varying vec4		var_Binormal;
 varying vec4		var_Normal;
 
+void DeformVertex( inout vec4 pos,
+		   inout vec3 normal,
+		   inout vec2 st,
+		   inout vec4 color,
+		   in    float time);
+
 void	main()
 {
 	vec4 position;

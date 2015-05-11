@@ -274,11 +274,10 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 	}
 
 	if (debugLoader) {
-		try {
-			stderrRedirect = FS::HomePath::OpenWrite(name + ".nacl_loader.log");
-		} catch (std::system_error& err) {
-			Log::Warn("Couldn't open %s: %s", name + ".nacl_loader.log", err.what());
-		}
+		std::error_code err;
+		stderrRedirect = FS::HomePath::OpenWrite(name + ".nacl_loader.log", err);
+		if (err)
+			Log::Warn("Couldn't open %s: %s", name + ".nacl_loader.log", err.message());
 		verbosity = "-";
 		verbosity.append(debugLoader, 'v');
 		args.push_back(verbosity.c_str());
@@ -379,11 +378,10 @@ uint32_t VMBase::Create()
 	// Open the syscall log
 	if (params.logSyscalls.Get()) {
 		std::string filename = name + ".syscallLog";
-		try {
-			syscallLogFile = FS::RawPath::OpenWrite(filename);
-		} catch (std::system_error& err) {
-			Log::Warn("Couldn't open %s: %s", filename, err.what());
-		}
+		std::error_code err;
+		syscallLogFile = FS::HomePath::OpenWrite(filename, err);
+		if (err)
+			Log::Warn("Couldn't open %s: %s", filename, err.message());
 	}
 
 	// Create the socket pair to get the handle for the root socket

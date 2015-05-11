@@ -307,12 +307,9 @@ namespace VM {
 
             case QVM_COMMON_FS_LOAD_PAK:
                 IPC::HandleMsg<FSLoadPakMsg>(channel, std::move(reader), [this](std::string pakName, std::string prefix, bool& found) {
-					found = true;
-					try {
-						FS::PakPath::LoadPakPrefix(*FS::FindPak(pakName), prefix);
-					} catch (std::system_error& err) {
-						found = false;
-					}
+                    std::error_code err;
+                    FS::PakPath::LoadPakPrefix(*FS::FindPak(pakName), prefix, err);
+                    found = bool(err);
                 });
                 break;
 
