@@ -76,7 +76,9 @@ namespace Math {
 
 		// Swizzle operations
 		template<size_t x> Type Swizzle() const;
-		template<size_t x, size_t y, size_t... indices> Vector<sizeof...(indices) + 2, Type> Swizzle() const;
+		template<size_t x, size_t y> Vector<2, Type> Swizzle() const;
+		template<size_t x, size_t y, size_t z> Vector<3, Type> Swizzle() const;
+		template<size_t x, size_t y, size_t z, size_t w> Vector<4, Type> Swizzle() const;
 
 		// Load/store from pointer
 		static Vector<Length, Type> Load(const Type* ptr);
@@ -127,10 +129,10 @@ namespace Math {
 		Vector<Length, Type> operator-(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a - b;}, other);}
 		Vector<Length, Type> operator*(Type x) const {return this->Apply([x](Type a) {return a * x;});}
 		Vector<Length, Type> operator*(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a * b;}, other);}
-		friend Vector<Length, Type> operator*(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x * a;});}
+		friend Vector<Length, Type> operator*(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x * a;});}
 		Vector<Length, Type> operator/(Type x) const {return this->Apply([x](Type a) {return a / x;});}
 		Vector<Length, Type> operator/(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
-		friend Vector<Length, Type> operator/(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x / a;});}
+		friend Vector<Length, Type> operator/(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x / a;});}
 
 		// Compound arithmetic operators
 		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) + other;}
@@ -157,13 +159,13 @@ namespace Math {
 		Vector<Length, Type> operator-(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a - b;}, other);}
 		Vector<Length, Type> operator*(Type x) const {return this->Apply([x](Type a) {return a * x;});}
 		Vector<Length, Type> operator*(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a * b;}, other);}
-		friend Vector<Length, Type> operator*(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x * a;});}
+		friend Vector<Length, Type> operator*(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x * a;});}
 		Vector<Length, Type> operator/(Type x) const {return this->Apply([x](Type a) {return a / x;});}
 		Vector<Length, Type> operator/(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
-		friend Vector<Length, Type> operator/(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x / a;});}
+		friend Vector<Length, Type> operator/(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x / a;});}
 		Vector<Length, Type> operator%(Type x) const {return this->Apply([x](Type a) {return a % x;});}
 		Vector<Length, Type> operator%(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a % b;}, other);}
-		friend Vector<Length, Type> operator%(Type x, Vector<Length, Type> other) {return other->Apply([x](Type a) {return x % a;});}
+		friend Vector<Length, Type> operator%(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x % a;});}
 
 		// Compound arithmetic operators
 		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) + other;}
@@ -805,10 +807,20 @@ namespace Math {
 	{
 		return data[x];
 	}
-	template<size_t Length, typename Type> template<size_t x, size_t y, size_t... indices>
-	Vector<sizeof...(indices) + 2, Type> VectorBase<Length, Type>::Swizzle() const
+	template<size_t Length, typename Type> template<size_t x, size_t y>
+	Vector<2, Type> VectorBase<Length, Type>::Swizzle() const
 	{
-		return Vector<sizeof...(indices) + 2, Type>(data[x], data[y], data[indices]...);
+		return Vector<2, Type>(data[x], data[y]);
+	}
+	template<size_t Length, typename Type> template<size_t x, size_t y, size_t z>
+	Vector<3, Type> VectorBase<Length, Type>::Swizzle() const
+	{
+		return Vector<3, Type>(data[x], data[y], data[z]);
+	}
+	template<size_t Length, typename Type> template<size_t x, size_t y, size_t z, size_t w>
+	Vector<4, Type> VectorBase<Length, Type>::Swizzle() const
+	{
+		return Vector<4, Type>(data[x], data[y], data[z], data[w]);
 	}
 
 	// VectorBase::Load/Store
