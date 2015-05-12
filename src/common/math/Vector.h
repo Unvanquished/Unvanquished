@@ -28,10 +28,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 namespace Math {
 
 	// Forward declarations
-	template<size_t Length, typename Type, typename Enable> class VectorOps;
-	template<size_t Length, typename Type> class Vector;
-	template<size_t Length> class BoolVectorEq;
-	template<size_t Length> class BoolVectorNe;
+	template<size_t Dimension, typename Type, typename Enable> class VectorOps;
+	template<size_t Dimension, typename Type> class Vector;
+	template<size_t Dimension> class BoolVectorEq;
+	template<size_t Dimension> class BoolVectorNe;
 
 	// Shortcut typedefs
 	typedef Vector<2, float> Vec2;
@@ -42,15 +42,15 @@ namespace Math {
 	typedef Vector<4, bool> Vec4b;
 
 	// Base vector class containing operations common to all vector types
-	template<size_t Length, typename Type> class VectorBase {
+	template<size_t Dimension, typename Type> class VectorBase {
 	protected:
-		Type data[Length];
+		Type data[Dimension];
 		template<size_t L, typename T> friend class VectorBase;
 
 		// Vector construction helpers
 		template<size_t Index> void FillFromList()
 		{
-			static_assert(Index == Length, "Invalid arguments for vector constructor");
+			static_assert(Index == Dimension, "Invalid arguments for vector constructor");
 		}
 		template<size_t Index, typename... Args> void FillFromList(Type x, Args... args)
 		{
@@ -65,7 +65,7 @@ namespace Math {
 		}
 		void FillFromElem(Type x)
 		{
-			for (size_t i = 0; i < Length; i++)
+			for (size_t i = 0; i < Dimension; i++)
 				data[i] = x;
 		}
 
@@ -81,13 +81,13 @@ namespace Math {
 		template<size_t x, size_t y, size_t z, size_t w> Vector<4, Type> Swizzle() const;
 
 		// Load/store from pointer
-		static Vector<Length, Type> Load(const Type* ptr);
+		static Vector<Dimension, Type> Load(const Type* ptr);
 		void Store(Type* ptr) const;
 
 		// Apply a function on all elements of the vector
-		template<typename Func> Vector<Length, typename std::result_of<Func(Type)>::type> Apply(Func func) const;
-		template<typename Func, typename Type2> Vector<Length, typename std::result_of<Func(Type, Type2)>::type> Apply2(Func func, Vector<Length, Type2> other) const;
-		template<typename Func, typename Type2, typename Type3> Vector<Length, typename std::result_of<Func(Type, Type2, Type3)>::type> Apply3(Func func, Vector<Length, Type2> other1, Vector<Length, Type3> other2) const;
+		template<typename Func> Vector<Dimension, typename std::result_of<Func(Type)>::type> Apply(Func func) const;
+		template<typename Func, typename Type2> Vector<Dimension, typename std::result_of<Func(Type, Type2)>::type> Apply2(Func func, Vector<Dimension, Type2> other) const;
+		template<typename Func, typename Type2, typename Type3> Vector<Dimension, typename std::result_of<Func(Type, Type2, Type3)>::type> Apply3(Func func, Vector<Dimension, Type2> other1, Vector<Dimension, Type3> other2) const;
 
 		// Reduce the elements of the vector to a single value
 		template<typename Func> Type Reduce(Type init, Func func);
@@ -97,10 +97,10 @@ namespace Math {
 		const Type& operator[](size_t index) const {return data[index];}
 
 		// Convert a vector to a string
-		friend std::ostream& operator<<(std::ostream& os, Vector<Length, Type> vec)
+		friend std::ostream& operator<<(std::ostream& os, Vector<Dimension, Type> vec)
 		{
 			os << '(';
-			for (size_t i = 0; i < Length; i++) {
+			for (size_t i = 0; i < Dimension; i++) {
 				if (i != 0)
 					os << ", ";
 				os << vec.data[i];
@@ -111,107 +111,107 @@ namespace Math {
 	};
 
 	// Type-specific vector operations
-	template<size_t Length, typename Type, typename Enable = void> class VectorOps: public VectorBase<Length, Type> {};
-	template<size_t Length, typename Type> class VectorOps<Length, Type, typename std::enable_if<std::is_floating_point<Type>::value>::type>: public VectorBase<Length, Type> {
+	template<size_t Dimension, typename Type, typename Enable = void> class VectorOps: public VectorBase<Dimension, Type> {};
+	template<size_t Dimension, typename Type> class VectorOps<Dimension, Type, typename std::enable_if<std::is_floating_point<Type>::value>::type>: public VectorBase<Dimension, Type> {
 	public:
 		// Comparison operators, == and != can be implicitly converted to bool
-		BoolVectorEq<Length> operator==(Vector<Length, Type> other) const {return BoolVectorEq<Length>(this->Apply2([](Type a, Type b) {return a == b;}, other));}
-		BoolVectorNe<Length> operator!=(Vector<Length, Type> other) const {return BoolVectorNe<Length>(this->Apply2([](Type a, Type b) {return a != b;}, other));}
-		Vector<Length, bool> operator>=(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a >= b;}, other);}
-		Vector<Length, bool> operator<=(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a <= b;}, other);}
-		Vector<Length, bool> operator>(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a > b;}, other);}
-		Vector<Length, bool> operator<(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a < b;}, other);}
+		BoolVectorEq<Dimension> operator==(Vector<Dimension, Type> other) const {return BoolVectorEq<Dimension>(this->Apply2([](Type a, Type b) {return a == b;}, other));}
+		BoolVectorNe<Dimension> operator!=(Vector<Dimension, Type> other) const {return BoolVectorNe<Dimension>(this->Apply2([](Type a, Type b) {return a != b;}, other));}
+		Vector<Dimension, bool> operator>=(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a >= b;}, other);}
+		Vector<Dimension, bool> operator<=(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a <= b;}, other);}
+		Vector<Dimension, bool> operator>(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a > b;}, other);}
+		Vector<Dimension, bool> operator<(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a < b;}, other);}
 
 		// Arithmetic operators
-		Vector<Length, Type> operator+() const {return this->Apply([](Type a) {return a;});}
-		Vector<Length, Type> operator-() const {return this->Apply([](Type a) {return -a;});}
-		Vector<Length, Type> operator+(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a + b;}, other);}
-		Vector<Length, Type> operator-(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a - b;}, other);}
-		Vector<Length, Type> operator*(Type x) const {return this->Apply([x](Type a) {return a * x;});}
-		Vector<Length, Type> operator*(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a * b;}, other);}
-		friend Vector<Length, Type> operator*(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x * a;});}
-		Vector<Length, Type> operator/(Type x) const {return this->Apply([x](Type a) {return a / x;});}
-		Vector<Length, Type> operator/(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
-		friend Vector<Length, Type> operator/(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x / a;});}
+		Vector<Dimension, Type> operator+() const {return this->Apply([](Type a) {return a;});}
+		Vector<Dimension, Type> operator-() const {return this->Apply([](Type a) {return -a;});}
+		Vector<Dimension, Type> operator+(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a + b;}, other);}
+		Vector<Dimension, Type> operator-(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a - b;}, other);}
+		Vector<Dimension, Type> operator*(Type x) const {return this->Apply([x](Type a) {return a * x;});}
+		Vector<Dimension, Type> operator*(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a * b;}, other);}
+		friend Vector<Dimension, Type> operator*(Type x, Vector<Dimension, Type> other) {return other.Apply([x](Type a) {return x * a;});}
+		Vector<Dimension, Type> operator/(Type x) const {return this->Apply([x](Type a) {return a / x;});}
+		Vector<Dimension, Type> operator/(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
+		friend Vector<Dimension, Type> operator/(Type x, Vector<Dimension, Type> other) {return other.Apply([x](Type a) {return x / a;});}
 
 		// Compound arithmetic operators
-		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) + other;}
-		Vector<Length, Type>& operator-=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) - other;}
-		Vector<Length, Type>& operator*=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) * x;}
-		Vector<Length, Type>& operator*=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) * other;}
-		Vector<Length, Type>& operator/=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) / x;}
-		Vector<Length, Type>& operator/=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) / other;}
+		Vector<Dimension, Type>& operator+=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) + other;}
+		Vector<Dimension, Type>& operator-=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) - other;}
+		Vector<Dimension, Type>& operator*=(Type x) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) * x;}
+		Vector<Dimension, Type>& operator*=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) * other;}
+		Vector<Dimension, Type>& operator/=(Type x) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) / x;}
+		Vector<Dimension, Type>& operator/=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) / other;}
 	};
-	template<size_t Length, typename Type> class VectorOps<Length, Type, typename std::enable_if<std::is_integral<Type>::value>>: public VectorBase<Length, Type> {
+	template<size_t Dimension, typename Type> class VectorOps<Dimension, Type, typename std::enable_if<std::is_integral<Type>::value>>: public VectorBase<Dimension, Type> {
 	public:
 		// Comparison operators, == and != can be implicitly converted to bool
-		BoolVectorEq<Length> operator==(Vector<Length, Type> other) const {return BoolVectorEq<Length>(this->Apply2([](Type a, Type b) {return a == b;}, other));}
-		BoolVectorNe<Length> operator!=(Vector<Length, Type> other) const {return BoolVectorNe<Length>(this->Apply2([](Type a, Type b) {return a != b;}, other));}
-		Vector<Length, bool> operator>=(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a >= b;}, other);}
-		Vector<Length, bool> operator<=(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a <= b;}, other);}
-		Vector<Length, bool> operator>(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a > b;}, other);}
-		Vector<Length, bool> operator<(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a < b;}, other);}
+		BoolVectorEq<Dimension> operator==(Vector<Dimension, Type> other) const {return BoolVectorEq<Dimension>(this->Apply2([](Type a, Type b) {return a == b;}, other));}
+		BoolVectorNe<Dimension> operator!=(Vector<Dimension, Type> other) const {return BoolVectorNe<Dimension>(this->Apply2([](Type a, Type b) {return a != b;}, other));}
+		Vector<Dimension, bool> operator>=(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a >= b;}, other);}
+		Vector<Dimension, bool> operator<=(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a <= b;}, other);}
+		Vector<Dimension, bool> operator>(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a > b;}, other);}
+		Vector<Dimension, bool> operator<(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a < b;}, other);}
 
 		// Arithmetic operators
-		Vector<Length, Type> operator+() const {return this->Apply([](Type a) {return a;});}
-		Vector<Length, Type> operator-() const {return this->Apply([](Type a) {return -a;});}
-		Vector<Length, Type> operator+(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a + b;}, other);}
-		Vector<Length, Type> operator-(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a - b;}, other);}
-		Vector<Length, Type> operator*(Type x) const {return this->Apply([x](Type a) {return a * x;});}
-		Vector<Length, Type> operator*(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a * b;}, other);}
-		friend Vector<Length, Type> operator*(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x * a;});}
-		Vector<Length, Type> operator/(Type x) const {return this->Apply([x](Type a) {return a / x;});}
-		Vector<Length, Type> operator/(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
-		friend Vector<Length, Type> operator/(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x / a;});}
-		Vector<Length, Type> operator%(Type x) const {return this->Apply([x](Type a) {return a % x;});}
-		Vector<Length, Type> operator%(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a % b;}, other);}
-		friend Vector<Length, Type> operator%(Type x, Vector<Length, Type> other) {return other.Apply([x](Type a) {return x % a;});}
+		Vector<Dimension, Type> operator+() const {return this->Apply([](Type a) {return a;});}
+		Vector<Dimension, Type> operator-() const {return this->Apply([](Type a) {return -a;});}
+		Vector<Dimension, Type> operator+(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a + b;}, other);}
+		Vector<Dimension, Type> operator-(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a - b;}, other);}
+		Vector<Dimension, Type> operator*(Type x) const {return this->Apply([x](Type a) {return a * x;});}
+		Vector<Dimension, Type> operator*(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a * b;}, other);}
+		friend Vector<Dimension, Type> operator*(Type x, Vector<Dimension, Type> other) {return other.Apply([x](Type a) {return x * a;});}
+		Vector<Dimension, Type> operator/(Type x) const {return this->Apply([x](Type a) {return a / x;});}
+		Vector<Dimension, Type> operator/(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a / b;}, other);}
+		friend Vector<Dimension, Type> operator/(Type x, Vector<Dimension, Type> other) {return other.Apply([x](Type a) {return x / a;});}
+		Vector<Dimension, Type> operator%(Type x) const {return this->Apply([x](Type a) {return a % x;});}
+		Vector<Dimension, Type> operator%(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a % b;}, other);}
+		friend Vector<Dimension, Type> operator%(Type x, Vector<Dimension, Type> other) {return other.Apply([x](Type a) {return x % a;});}
 
 		// Compound arithmetic operators
-		Vector<Length, Type>& operator+=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) + other;}
-		Vector<Length, Type>& operator-=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) - other;}
-		Vector<Length, Type>& operator*=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) * x;}
-		Vector<Length, Type>& operator*=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) * other;}
-		Vector<Length, Type>& operator/=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) / x;}
-		Vector<Length, Type>& operator/=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) / other;}
-		Vector<Length, Type>& operator%=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) % x;}
-		Vector<Length, Type>& operator%=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) % other;}
+		Vector<Dimension, Type>& operator+=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) + other;}
+		Vector<Dimension, Type>& operator-=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) - other;}
+		Vector<Dimension, Type>& operator*=(Type x) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) * x;}
+		Vector<Dimension, Type>& operator*=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) * other;}
+		Vector<Dimension, Type>& operator/=(Type x) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) / x;}
+		Vector<Dimension, Type>& operator/=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) / other;}
+		Vector<Dimension, Type>& operator%=(Type x) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) % x;}
+		Vector<Dimension, Type>& operator%=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) % other;}
 
 		// Bitwise operators
-		Vector<Length, Type> operator~() const {return this->Apply([](Type a) {return ~a;});}
-		Vector<Length, Type> operator&(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a & b;}, other);}
-		Vector<Length, Type> operator|(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a | b;}, other);}
-		Vector<Length, Type> operator^(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a ^ b;}, other);}
-		Vector<Length, Type> operator<<(Type x) const {return this->Apply([x](Type a) {return a << x;});}
-		Vector<Length, Type> operator<<(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a << b;}, other);}
-		Vector<Length, Type> operator>>(Type x) const {return this->Apply([x](Type a) {return a >> x;});}
-		Vector<Length, Type> operator>>(Vector<Length, Type> other) const {return this->Apply2([](Type a, Type b) {return a >> b;}, other);}
+		Vector<Dimension, Type> operator~() const {return this->Apply([](Type a) {return ~a;});}
+		Vector<Dimension, Type> operator&(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a & b;}, other);}
+		Vector<Dimension, Type> operator|(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a | b;}, other);}
+		Vector<Dimension, Type> operator^(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a ^ b;}, other);}
+		Vector<Dimension, Type> operator<<(Type x) const {return this->Apply([x](Type a) {return a << x;});}
+		Vector<Dimension, Type> operator<<(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a << b;}, other);}
+		Vector<Dimension, Type> operator>>(Type x) const {return this->Apply([x](Type a) {return a >> x;});}
+		Vector<Dimension, Type> operator>>(Vector<Dimension, Type> other) const {return this->Apply2([](Type a, Type b) {return a >> b;}, other);}
 
 		// Compound bitwise operators
-		Vector<Length, Type>& operator&=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) & other;}
-		Vector<Length, Type>& operator|=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) | other;}
-		Vector<Length, Type>& operator^=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) ^ other;}
-		Vector<Length, Type>& operator<<=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) << x;}
-		Vector<Length, Type>& operator<<=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) << other;}
-		Vector<Length, Type>& operator>>=(Type x) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) >> x;}
-		Vector<Length, Type>& operator>>=(Vector<Length, Type> other) {return static_cast<Vector<Length, Type>&>(*this) = static_cast<Vector<Length, Type>&>(*this) >> other;}
+		Vector<Dimension, Type>& operator&=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) & other;}
+		Vector<Dimension, Type>& operator|=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) | other;}
+		Vector<Dimension, Type>& operator^=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) ^ other;}
+		Vector<Dimension, Type>& operator<<=(Type x) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) << x;}
+		Vector<Dimension, Type>& operator<<=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) << other;}
+		Vector<Dimension, Type>& operator>>=(Type x) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) >> x;}
+		Vector<Dimension, Type>& operator>>=(Vector<Dimension, Type> other) {return static_cast<Vector<Dimension, Type>&>(*this) = static_cast<Vector<Dimension, Type>&>(*this) >> other;}
 	};
-	template<size_t Length> class VectorOps<Length, bool>: public VectorBase<Length, bool> {
+	template<size_t Dimension> class VectorOps<Dimension, bool>: public VectorBase<Dimension, bool> {
 	public:
 		// Comparison operators, == and != can be implicitly converted to bool
-		BoolVectorEq<Length> operator==(Vector<Length, bool> other) const {return BoolVectorEq<Length>(this->Apply2([](bool a, bool b) {return a == b;}, other));}
-		BoolVectorNe<Length> operator!=(Vector<Length, bool> other) const {return BoolVectorNe<Length>(this->Apply2([](bool a, bool b) {return a != b;}, other));}
+		BoolVectorEq<Dimension> operator==(Vector<Dimension, bool> other) const {return BoolVectorEq<Dimension>(this->Apply2([](bool a, bool b) {return a == b;}, other));}
+		BoolVectorNe<Dimension> operator!=(Vector<Dimension, bool> other) const {return BoolVectorNe<Dimension>(this->Apply2([](bool a, bool b) {return a != b;}, other));}
 
 		// Bitwise operators
-		Vector<Length, bool> operator~() const {return this->Apply([](bool a) {return !a;});}
-		Vector<Length, bool> operator&(Vector<Length, bool> other) const {return this->Apply2([](bool a, bool b) {return a && b;}, other);}
-		Vector<Length, bool> operator|(Vector<Length, bool> other) const {return this->Apply2([](bool a, bool b) {return a || b;}, other);}
-		Vector<Length, bool> operator^(Vector<Length, bool> other) const {return this->Apply2([](bool a, bool b) {return a != b;}, other);}
+		Vector<Dimension, bool> operator~() const {return this->Apply([](bool a) {return !a;});}
+		Vector<Dimension, bool> operator&(Vector<Dimension, bool> other) const {return this->Apply2([](bool a, bool b) {return a && b;}, other);}
+		Vector<Dimension, bool> operator|(Vector<Dimension, bool> other) const {return this->Apply2([](bool a, bool b) {return a || b;}, other);}
+		Vector<Dimension, bool> operator^(Vector<Dimension, bool> other) const {return this->Apply2([](bool a, bool b) {return a != b;}, other);}
 
 		// Compound bitwise operators
-		Vector<Length, bool>& operator&=(Vector<Length, bool> other) {return static_cast<Vector<Length, bool>&>(*this) = static_cast<Vector<Length, bool>&>(*this) & other;}
-		Vector<Length, bool>& operator|=(Vector<Length, bool> other) {return static_cast<Vector<Length, bool>&>(*this) = static_cast<Vector<Length, bool>&>(*this) | other;}
-		Vector<Length, bool>& operator^=(Vector<Length, bool> other) {return static_cast<Vector<Length, bool>&>(*this) = static_cast<Vector<Length, bool>&>(*this) ^ other;}
+		Vector<Dimension, bool>& operator&=(Vector<Dimension, bool> other) {return static_cast<Vector<Dimension, bool>&>(*this) = static_cast<Vector<Dimension, bool>&>(*this) & other;}
+		Vector<Dimension, bool>& operator|=(Vector<Dimension, bool> other) {return static_cast<Vector<Dimension, bool>&>(*this) = static_cast<Vector<Dimension, bool>&>(*this) | other;}
+		Vector<Dimension, bool>& operator^=(Vector<Dimension, bool> other) {return static_cast<Vector<Dimension, bool>&>(*this) = static_cast<Vector<Dimension, bool>&>(*this) ^ other;}
 
 		// Group testing
 		bool All() const {return this->Reduce(true, [](bool a, bool b) {return a && b;});}
@@ -221,7 +221,7 @@ namespace Math {
 	};
 
 	// Size-specific vector operations
-	template<size_t Length, typename Type> class Vector: public VectorOps<Length, Type> {
+	template<size_t Dimension, typename Type> class Vector: public VectorOps<Dimension, Type> {
 	public:
 		// Constructors
 		Vector() = default;
@@ -229,7 +229,7 @@ namespace Math {
 		{
 			this->FillFromElem(x);
 		}
-		template<typename Type2, typename = typename std::enable_if<std::is_convertible<Type2, Type>::value>::type> explicit Vector(Vector<Length, Type2> vec)
+		template<typename Type2, typename = typename std::enable_if<std::is_convertible<Type2, Type>::value>::type> explicit Vector(Vector<Dimension, Type2> vec)
 		{
 			*this = vec.Apply([](Type2 a) {return static_cast<Type>(a);});
 		}
@@ -788,191 +788,191 @@ namespace Math {
 
 	// Boolean vector types with implicit conversions to bool, used for the == and
 	// != operators.
-	template<size_t Length> class BoolVectorEq: public Vector<Length, bool> {
+	template<size_t Dimension> class BoolVectorEq: public Vector<Dimension, bool> {
 	public:
-		explicit BoolVectorEq(Vector<Length, bool> vec)
-			: Vector<Length, bool>(vec) {}
+		explicit BoolVectorEq(Vector<Dimension, bool> vec)
+			: Vector<Dimension, bool>(vec) {}
 		explicit operator bool() const {return this->All();}
 	};
-	template<size_t Length> class BoolVectorNe: public Vector<Length, bool> {
+	template<size_t Dimension> class BoolVectorNe: public Vector<Dimension, bool> {
 	public:
-		explicit BoolVectorNe(Vector<Length, bool> vec)
-			: Vector<Length, bool>(vec) {}
+		explicit BoolVectorNe(Vector<Dimension, bool> vec)
+			: Vector<Dimension, bool>(vec) {}
 		explicit operator bool() const {return this->Any();}
 	};
 
 	// VectorBase::Swizzle
-	template<size_t Length, typename Type> template<size_t x>
-	Type VectorBase<Length, Type>::Swizzle() const
+	template<size_t Dimension, typename Type> template<size_t x>
+	Type VectorBase<Dimension, Type>::Swizzle() const
 	{
 		return data[x];
 	}
-	template<size_t Length, typename Type> template<size_t x, size_t y>
-	Vector<2, Type> VectorBase<Length, Type>::Swizzle() const
+	template<size_t Dimension, typename Type> template<size_t x, size_t y>
+	Vector<2, Type> VectorBase<Dimension, Type>::Swizzle() const
 	{
 		return Vector<2, Type>(data[x], data[y]);
 	}
-	template<size_t Length, typename Type> template<size_t x, size_t y, size_t z>
-	Vector<3, Type> VectorBase<Length, Type>::Swizzle() const
+	template<size_t Dimension, typename Type> template<size_t x, size_t y, size_t z>
+	Vector<3, Type> VectorBase<Dimension, Type>::Swizzle() const
 	{
 		return Vector<3, Type>(data[x], data[y], data[z]);
 	}
-	template<size_t Length, typename Type> template<size_t x, size_t y, size_t z, size_t w>
-	Vector<4, Type> VectorBase<Length, Type>::Swizzle() const
+	template<size_t Dimension, typename Type> template<size_t x, size_t y, size_t z, size_t w>
+	Vector<4, Type> VectorBase<Dimension, Type>::Swizzle() const
 	{
 		return Vector<4, Type>(data[x], data[y], data[z], data[w]);
 	}
 
 	// VectorBase::Load/Store
-	template<size_t Length, typename Type>
-	Vector<Length, Type> VectorBase<Length, Type>::Load(const Type* ptr)
+	template<size_t Dimension, typename Type>
+	Vector<Dimension, Type> VectorBase<Dimension, Type>::Load(const Type* ptr)
 	{
-		Vector<Length, Type> out;
-		for (size_t i = 0; i < Length; i++)
+		Vector<Dimension, Type> out;
+		for (size_t i = 0; i < Dimension; i++)
 			out.data[i] = ptr[i];
 		return out;
 	}
-	template<size_t Length, typename Type>
-	void VectorBase<Length, Type>::Store(Type* ptr) const
+	template<size_t Dimension, typename Type>
+	void VectorBase<Dimension, Type>::Store(Type* ptr) const
 	{
-		for (size_t i = 0; i < Length; i++)
+		for (size_t i = 0; i < Dimension; i++)
 			ptr[i] = data[i];
 	}
 
 	// VectorBase::Apply/Apply2/Apply3
-	template<size_t Length, typename Type> template<typename Func>
-	Vector<Length, typename std::result_of<Func(Type)>::type> VectorBase<Length, Type>::Apply(Func func) const
+	template<size_t Dimension, typename Type> template<typename Func>
+	Vector<Dimension, typename std::result_of<Func(Type)>::type> VectorBase<Dimension, Type>::Apply(Func func) const
 	{
-		Vector<Length, typename std::result_of<Func(Type)>::type> out;
-		for (size_t i = 0; i < Length; i++)
+		Vector<Dimension, typename std::result_of<Func(Type)>::type> out;
+		for (size_t i = 0; i < Dimension; i++)
 			out.data[i] = func(data[i]);
 		return out;
 	}
-	template<size_t Length, typename Type> template<typename Func, typename Type2>
-	Vector<Length, typename std::result_of<Func(Type, Type2)>::type> VectorBase<Length, Type>::Apply2(Func func, Vector<Length, Type2> other) const
+	template<size_t Dimension, typename Type> template<typename Func, typename Type2>
+	Vector<Dimension, typename std::result_of<Func(Type, Type2)>::type> VectorBase<Dimension, Type>::Apply2(Func func, Vector<Dimension, Type2> other) const
 	{
-		Vector<Length, typename std::result_of<Func(Type, Type2)>::type> out;
-		for (size_t i = 0; i < Length; i++)
+		Vector<Dimension, typename std::result_of<Func(Type, Type2)>::type> out;
+		for (size_t i = 0; i < Dimension; i++)
 			out.data[i] = func(data[i], other.data[i]);
 		return out;
 	}
-	template<size_t Length, typename Type> template<typename Func, typename Type2, typename Type3>
-	Vector<Length, typename std::result_of<Func(Type, Type2, Type3)>::type> VectorBase<Length, Type>::Apply3(Func func, Vector<Length, Type2> other1, Vector<Length, Type3> other2) const
+	template<size_t Dimension, typename Type> template<typename Func, typename Type2, typename Type3>
+	Vector<Dimension, typename std::result_of<Func(Type, Type2, Type3)>::type> VectorBase<Dimension, Type>::Apply3(Func func, Vector<Dimension, Type2> other1, Vector<Dimension, Type3> other2) const
 	{
-		Vector<Length, typename std::result_of<Func(Type, Type2, Type3)>::type> out;
-		for (size_t i = 0; i < Length; i++)
+		Vector<Dimension, typename std::result_of<Func(Type, Type2, Type3)>::type> out;
+		for (size_t i = 0; i < Dimension; i++)
 			out.data[i] = func(data[i], other1.data[i], other2.data[i]);
 		return out;
 	}
 
 	// VectorBase::Reduce
-	template<size_t Length, typename Type> template<typename Func>
-	Type VectorBase<Length, Type>::Reduce(Type init, Func func)
+	template<size_t Dimension, typename Type> template<typename Func>
+	Type VectorBase<Dimension, Type>::Reduce(Type init, Func func)
 	{
-		for (size_t i = 0; i < Length; i++)
+		for (size_t i = 0; i < Dimension; i++)
 			init = func(init, data[i]);
 		return init;
 	}
 
 	// Vector minimum/maximum and clamping
-	template<size_t Length, typename Type>
-	Vector<Length, Type> min(Vector<Length, Type> a, Vector<Length, Type> b)
+	template<size_t Dimension, typename Type>
+	Vector<Dimension, Type> Min(Vector<Dimension, Type> a, Vector<Dimension, Type> b)
 	{
 		return a.Apply2([](Type a, Type b) {return std::min(a, b);}, b);
 	}
-	template<size_t Length, typename Type>
-	Vector<Length, Type> max(Vector<Length, Type> a, Vector<Length, Type> b)
+	template<size_t Dimension, typename Type>
+	Vector<Dimension, Type> Max(Vector<Dimension, Type> a, Vector<Dimension, Type> b)
 	{
 		return a.Apply2([](Type a, Type b) {return std::max(a, b);}, b);
 	}
-	template<size_t Length, typename Type>
-	Vector<Length, Type> clamp(Vector<Length, Type> x, Vector<Length, Type> low, Vector<Length, Type> high)
+	template<size_t Dimension, typename Type>
+	Vector<Dimension, Type> Clamp(Vector<Dimension, Type> x, Vector<Dimension, Type> low, Vector<Dimension, Type> high)
 	{
-		return min(max(x, low), high);
+		return Min(Max(x, low), high);
 	}
-	template<size_t Length, typename Type>
-	Vector<Length, Type> clamp(Vector<Length, Type> x, Type low, Type high)
+	template<size_t Dimension, typename Type>
+	Vector<Dimension, Type> Clamp(Vector<Dimension, Type> x, Type low, Type high)
 	{
-		return clamp(x, Vector<Length, Type>(low), Vector<Length, Type>(high));
+		return Clamp(x, Vector<Dimension, Type>(low), Vector<Dimension, Type>(high));
 	}
 
 	// Vector dot product, length and distance
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Type dot(Vector<Length, Type> a, Vector<Length, Type> b)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Type Dot(Vector<Dimension, Type> a, Vector<Dimension, Type> b)
 	{
 		return (a * b).Reduce(0, [](Type a, Type b) {return a + b;});
 	}
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Type lengthSq(Vector<Length, Type> x)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Type LengthSq(Vector<Dimension, Type> x)
 	{
-		return dot(x, x);
+		return Dot(x, x);
 	}
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Type length(Vector<Length, Type> x)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Type Length(Vector<Dimension, Type> x)
 	{
-		return sqrt(lengthSq(x));
+		return sqrt(LengthSq(x));
 	}
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Type distanceSq(Vector<Length, Type> a, Vector<Length, Type> b)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Type DistanceSq(Vector<Dimension, Type> a, Vector<Dimension, Type> b)
 	{
-		return lengthSq(a - b);
+		return LengthSq(a - b);
 	}
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Type distance(Vector<Length, Type> a, Vector<Length, Type> b)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Type Distance(Vector<Dimension, Type> a, Vector<Dimension, Type> b)
 	{
 		return sqrt(distanceSq(a, b));
 	}
 
 	// Vector cross product
 	template<typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Vector<3, Type> cross(Vector<3, Type> a, Vector<3, Type> b)
+	Vector<3, Type> Cross(Vector<3, Type> a, Vector<3, Type> b)
 	{
 		return a.yzx() * b.zxy() - a.zxy() * b.yzx();
 	}
 
 	// Vector normalization
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Vector<Length, Type> normalize(Vector<Length, Type> x)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Dimension, Type> Normalize(Vector<Dimension, Type> x)
 	{
-		return x / length(x);
+		return x / Length(x);
 	}
 
 	// Vector interpolation
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Vector<Length, Type> mix(Vector<Length, Type> a, Vector<Length, Type> b, Vector<Length, Type> frac)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Dimension, Type> Mix(Vector<Dimension, Type> a, Vector<Dimension, Type> b, Vector<Dimension, Type> frac)
 	{
 		return a + (b - a) * frac;
 	}
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Vector<Length, Type> mix(Vector<Length, Type> a, Vector<Length, Type> b, Type frac)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Dimension, Type> Mix(Vector<Dimension, Type> a, Vector<Dimension, Type> b, Type frac)
 	{
 		return a + (b - a) * frac;
 	}
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Vector<Length, Type> mix(Vector<Length, Type> a, Vector<Length, Type> b, Vector<Length, bool> sel)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Dimension, Type> Mix(Vector<Dimension, Type> a, Vector<Dimension, Type> b, Vector<Dimension, bool> sel)
 	{
 		return a.Apply3([](Type a, Type b, bool sel) {return sel ? b : a;}, b, sel);
 	}
 
 	// Vector projection
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Vector<Length, Type> project(Vector<Length, Type> a, Vector<Length, Type> n)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Dimension, Type> Project(Vector<Dimension, Type> a, Vector<Dimension, Type> n)
 	{
-		return dot( a, n ) * n;
+		return Dot(a, n) * n;
 	}
 
 	// Vector rejection
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Vector<Length, Type> reject(Vector<Length, Type> a, Vector<Length, Type> n)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Dimension, Type> Reject(Vector<Dimension, Type> a, Vector<Dimension, Type> n)
 	{
-		return a - project( a, n );
+		return a - Project(a, n);
 	}
 
 	// Vector reflection
-	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
-	Vector<Length, Type> reflect(Vector<Length, Type> a, Vector<Length, Type> n)
+	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Dimension, Type> Reflect(Vector<Dimension, Type> a, Vector<Dimension, Type> n)
 	{
-		return a - 2 * project( a, n );
+		return a - 2 * Project(a, n);
 	}
 }
 
