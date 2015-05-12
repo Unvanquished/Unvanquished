@@ -954,6 +954,26 @@ namespace Math {
 		return a.Apply3([](Type a, Type b, bool sel) {return sel ? b : a;}, b, sel);
 	}
 
+	// Vector projection
+	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Length, Type> project(Vector<Length, Type> a, Vector<Length, Type> n)
+	{
+		return dot( a, n ) * n;
+	}
+
+	// Vector rejection
+	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Length, Type> reject(Vector<Length, Type> a, Vector<Length, Type> n)
+	{
+		return a - project( a, n );
+	}
+
+	// Vector reflection
+	template<size_t Length, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
+	Vector<Length, Type> reflect(Vector<Length, Type> a, Vector<Length, Type> n)
+	{
+		return a - 2 * project( a, n );
+	}
 }
 
 #endif // COMMON_VECTOR_H_
