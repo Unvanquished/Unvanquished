@@ -405,7 +405,6 @@ typedef struct
 	int      maxRenderbufferSize;
 	int      maxColorAttachments;
 	bool framebufferPackedDepthStencilAvailable;
-	bool framebufferBlitAvailable;
 
 	bool generateMipmapAvailable;
 	bool getProgramBinaryAvailable;

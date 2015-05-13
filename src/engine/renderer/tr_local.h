@@ -2842,10 +2842,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_ext_texture_float;
 	extern cvar_t *r_ext_texture_rg;
 	extern cvar_t *r_ext_texture_filter_anisotropic;
-	extern cvar_t *r_ext_framebuffer_object;
+	extern cvar_t *r_arb_framebuffer_object;
 	extern cvar_t *r_ext_packed_depth_stencil;
-	extern cvar_t *r_ext_framebuffer_blit;
-	extern cvar_t *r_extx_framebuffer_mixed_formats;
 	extern cvar_t *r_ext_generate_mipmap;
 	extern cvar_t *r_arb_buffer_storage;
 	extern cvar_t *r_arb_map_buffer_range;
