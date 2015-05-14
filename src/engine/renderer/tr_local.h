@@ -213,6 +213,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define REF_CUBEMAP_STORE_SIZE 1024
 #define REF_CUBEMAP_STORE_SIDE ( REF_CUBEMAP_STORE_SIZE / REF_CUBEMAP_SIZE )
 
+#define REF_COLORGRADE_SLOTS   4
 #define REF_COLORGRADEMAP_SIZE 16
 #define REF_COLORGRADEMAP_STORE_SIZE ( REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE )
 
@@ -2449,6 +2450,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		FBO_t           *currentFBO;
 		VBO_t           *currentVBO;
 		IBO_t           *currentIBO;
+		image_t         *colorgradeSlots[ REF_COLORGRADE_SLOTS ];
 	} glstate_t;
 
 	typedef struct
