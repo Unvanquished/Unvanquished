@@ -32,7 +32,7 @@ This file deals with applying shaders to surface data in the tess struct.
 =================================================================================
 */
 
-void GLSL_InitGPUShaders()
+static void GLSL_InitGPUShadersOrError()
 {
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
@@ -119,6 +119,73 @@ void GLSL_InitGPUShaders()
 	if ( !r_lazyShaders->integer )
 	{
 		gl_shaderManager.buildAll();
+	}
+}
+
+void GLSL_InitGPUShaders()
+{
+	// Without a shaderpath option, the shader debugging cycle is like this:
+	// * Change shader file(s).
+	// * Run script to convert shader files to c++.
+	// * Recompile app.
+	// * Re-run app.
+	// * If the change fails the app crashes and you go back to step 1.
+	// * If the change succeeds but you want to make more changes you still goto step 1.
+	
+	// Alternatively, if set shaderpath = "c:/unvanquished/main"' is used
+	// then debug cycle is easier:
+	// (note Windows path names must be given using forward slash as the App console
+	// seems to eat backs slashes.)
+	// * If shaderpath is set on the command line unv will load the
+	//   shaders directly from disk on startup.
+	// * If shader path is set at the app console it will not
+	// take effect until a glsl_restart is done.
+	// If there is an error compiling the external shaders files,
+	// unv will fallback to using the built in ones until a glsl_restart is performed.
+	// So the debug cycle is simply:
+	// * Change the shader files as desired, do glsl_restart. Repeat as needed.
+	// Note that unv will respond by listing the files it thinks are different.
+	// If this matches your expectations then it's not an error.
+
+	auto shaderPath = GetShaderPath();
+	if (shaderPath.empty()) // We wish to use built in shaders.
+	{
+		// Let the user know if we are transitioning from external to
+		// built-in shaders. We won't alert them if we were already using
+		// built-in shaders as this is the normal case.
+		bool wasExternal = (shaderType == ShaderType::External );
+		if (wasExternal)
+			ri.Printf(PRINT_ALL, "Building built-in shaders.");
+		shaderType = ShaderType::BuiltIn;
+		GLSL_InitGPUShadersOrError();
+		if (wasExternal)
+			ri.Printf(PRINT_ALL, "Using built-in shaders.");
+		return;
+	}
+	// We wish to use external shaders.
+	shaderType = ShaderType::External;
+	try
+	{
+		// Let the user know we are intending to use external shaders
+		// as this is not the usual situation.
+		ri.Printf(PRINT_WARNING, "Building external shaders.");
+		GLSL_InitGPUShadersOrError();
+		ri.Printf(PRINT_WARNING, "Using external shaders.");
+	}
+	catch (ShaderException& e)
+	{
+		// We wanted to use external shaders but we failed. Let the user
+		// know we failed and try again using built-in shaders to
+		// recover the situation.
+		// If recovery fails, another exception will be thrown but this time
+		// we will avoid catching it and that should end the program.
+		// That should be what we want as by then neither shader type will
+		// have worked so how can we continue?
+		ri.Printf(PRINT_WARNING, "WARNING: External shaders failed. Error: %s", e.what());
+		ri.Printf(PRINT_WARNING, "Attempting restart with built in shaders.");
+		shaderType = ShaderType::BuiltIn;
+		GLSL_InitGPUShadersOrError();
+		ri.Printf(PRINT_WARNING, "Using built-in shaders.");
 	}
 }
 

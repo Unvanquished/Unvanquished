@@ -32,6 +32,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static const unsigned int MAX_SHADER_MACROS = 9;
 static const unsigned int GL_SHADER_VERSION = 3;
 
+class ShaderException : public std::exception
+{
+public:
+	ShaderException(const char* msg) : std::exception(msg) { }
+};
+
+enum class ShaderType
+{
+	Unknown,
+	BuiltIn,
+	External
+};
+
 struct GLShaderHeader
 {
 	unsigned int version;
@@ -255,7 +268,7 @@ private:
 				const std::string &compileMacros ) const;
 	void CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
 	                                     const std::string &compileMacros, int deformIndex ) const;
-	std::string BuildDeformShaderText( std::string steps ) const;
+	std::string BuildDeformShaderText( const std::string& steps ) const;
 	std::string BuildGPUShaderText( const char *mainShader, const char *libShaders, GLenum shaderType ) const;
 	void LinkProgram( GLuint program ) const;
 	void BindAttribLocations( GLuint program ) const;
@@ -2599,6 +2612,10 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 };
+
+extern ShaderType shaderType;
+extern std::string shaderPath;
+std::string GetShaderPath();
 
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;

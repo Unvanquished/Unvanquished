@@ -24,6 +24,63 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "gl_shader.h"
 
 extern std::unordered_map<std::string, const char *> shadermap;
+// Shader Type will be determined later based on command line setting or absence of.
+ShaderType shaderType = ShaderType::Unknown;
+
+namespace // Private types - implementation details.
+{
+	class file_reader
+	{
+	public:
+		file_reader() : data_(nullptr), length_(-1)
+		{
+		}
+		file_reader(Str::StringRef filename) : data_(nullptr), length_(-1)
+		{
+			open(filename.c_str());
+		}
+		int open(Str::StringRef filename)
+		{
+			close();
+			void* new_data = nullptr;
+			int new_length = ri.FS_ReadFile(filename.c_str(), &new_data);
+			if (new_length < 0)
+				return -1;
+			data_ = static_cast<char*>(new_data);
+			length_ = new_length;
+			return length_;
+		}
+		void close()
+		{
+			char* old_data = data_;
+			length_ = -1;
+			data_ = nullptr;
+			if (old_data != nullptr)
+				ri.FS_FreeFile(old_data);
+		}
+		~file_reader()
+		{
+			close();
+		}
+		int length() const
+		{
+			return length_;
+		}
+		char* data()
+		{
+			return data_;
+		}
+
+	private:
+		char* data_;
+		int length_;
+	};
+};
+
+namespace
+{
+	std::unordered_map<std::string, std::string> aliasmap;
+};
 
 // *INDENT-OFF*
 
@@ -55,7 +112,133 @@ GLShader_motionblur                      *gl_motionblurShader = nullptr;
 GLShader_fxaa                            *gl_fxaaShader = nullptr;
 GLShaderManager                           gl_shaderManager;
 
-GLShaderManager::~GLShaderManager( )
+namespace // Implementation details
+{
+	void ShaderError(const char* msg)
+	{
+		// Copy msg early to avoid errors from nesting
+		// calls for va() etc. which uses an internal static buffer 
+		// currently. Failure to do this will result in
+		// random behaviour or crashing.
+		// TODO! Fix va and remove this copy.
+		std::string errmsg = msg;
+		throw ShaderException(msg);
+	}
+
+	const char* GetInternalShader(Str::StringRef filename)
+	{
+		auto it = shadermap.find(filename.c_str());
+		if (it != shadermap.end())
+			return it->second;
+		return nullptr;
+	}
+
+	void StripComments(std::string& text)
+	{
+		// /* */ comment remover.
+		for (;;)
+		{
+			auto commentStart = text.find("/*", 0);
+			if (commentStart == std::string::npos)
+				break;
+			auto commentEnd = text.find("*/", commentStart + 2);
+			if (commentEnd == std::string::npos)
+				break;
+			commentEnd += 2;
+			auto commentLength = commentEnd - commentStart;
+			text.erase(commentStart, commentLength);
+		}
+
+		/* // comment remover. */
+		for (;;)
+		{
+			auto commentStart = text.find("//", 0);
+			if (commentStart == std::string::npos)
+				break;
+			// Comment goes from start to end of line.
+			// End of line may be \n or \r\n
+			auto commentEnd = text.find_first_of("\r\n", commentStart + 2);
+			if (commentEnd == std::string::npos)
+				commentEnd = commentStart + 2; // Found just the comment introducer.
+			auto commentLength = commentEnd - commentStart;
+			text.erase(commentStart, commentLength); // Erase the comment and the eol char.
+		}
+	}
+
+	// This routine basically aims to have the same behaviour as the
+	// script file buildshaders.sh that creates shaders.cpp
+	std::string NormalizeShaderText( const std::string& shaderText )
+	{
+		std::string result = shaderText;
+		// Remove any \r\n that are present. These line
+		// endings can be there on windows as the text
+		// file is opened in binary mode.
+		size_t pos;
+		while ((pos = result.find("\r\n")) != std::string::npos)
+			result.erase(pos, 1); // Remove the \r leaving the \n.
+		StripComments(result);
+		return result;
+	}
+
+	std::string GetShaderText(Str::StringRef filename)
+	{
+		// Shader type should be set during initialisation.
+		assert(shaderType != ShaderType::Unknown);
+		std::string shaderPath = GetShaderPath();
+		if (! shaderPath.empty() && shaderType != ShaderType::BuiltIn)
+		{
+			std::string shaderText;
+			std::string fullShaderFilename = FS::Path::Build(shaderPath, filename);
+			std::error_code openErr;
+
+			FS::File shaderFile = FS::RawPath::OpenRead(fullShaderFilename.c_str(), openErr);
+			if (openErr)
+				ShaderError(va("Cannot load shader from file: %s\n", fullShaderFilename.c_str()));
+
+			std::error_code readErr;
+			shaderText = shaderFile.ReadAll(readErr);
+			if (readErr)
+				ShaderError(va("Failed to read shader from file: %s\n", fullShaderFilename.c_str()));
+
+			shaderText = NormalizeShaderText(shaderText);
+			if (shaderText.empty())
+				ShaderError(va("Shader from file is empty: %s\n", fullShaderFilename.c_str()));
+
+			// Alert the user when a file does not match it's built-in version.
+			// There should be no differences in normal conditions.
+			// When testing shader file changes this is an expected message
+			// and helps the tester track which files have changed and need 
+			// to be recommmitted to git.
+			// If one is not making shader files changes this message
+			// indicates there is a mismatch between disk changes and builtins
+			// which the application is out of sync with it's files 
+			// and he translation script needs to be run.
+			auto textPtr = GetInternalShader(filename);
+			if (textPtr != nullptr && textPtr != shaderText)
+				ri.Printf(PRINT_ALL, "Note shader file differs from built-in shader: %s\n", fullShaderFilename.c_str());
+			return shaderText;
+		}
+
+		// Look for the shader internally. If not found,
+		// look for it externally.
+		// If found neither internally or externally of if empty, then Error.
+		auto text_ptr = GetInternalShader(filename);
+		if (text_ptr == nullptr)
+			ShaderError(va("No shader found for shader: %s", filename.c_str()));
+		return text_ptr;
+	}
+};
+
+std::string GetShaderPath()
+{
+	auto shaderPathCV = Cvar_Get("shaderpath", "", 0);
+	std::string shaderPath;
+	if (shaderPathCV != nullptr && shaderPathCV->string != nullptr)
+		shaderPath = shaderPathCV->string;
+	return shaderPath;
+}
+
+GLShaderManager::~GLShaderManager()
 {
 	for ( std::size_t i = 0; i < _shaders.size(); i++ )
 	{
@@ -217,10 +400,10 @@ static inline std::string BuildDeformSteps( deformStage_t *deforms, int numDefor
 	return steps;
 }
 
-std::string     GLShaderManager::BuildDeformShaderText( std::string steps ) const
+std::string GLShaderManager::BuildDeformShaderText( const std::string& steps ) const
 {
-	GLchar *mainBuffer = NULL;
 	std::string shaderText;
+	std::string basicShaderText;
 
 	shaderText = va( "#version %d\n", glConfig2.shadingLanguageVersion );
 	shaderText += steps + "\n";
@@ -228,29 +411,12 @@ std::string     GLShaderManager::BuildDeformShaderText( std::string steps ) cons
 	// load DeformVertex() program
 	ri.Printf( PRINT_DEVELOPER, "...loading DeformVertex() shader\n" );
 
-	std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( "glsl/deformVertexes_vp.glsl" );
+	basicShaderText = GetShaderText("glsl/deformVertexes_vp.glsl" );
 
-	if( it != shadermap.end() ) {
-		// append it to the libsBuffer
-		shaderText += it->second;
-	}
-	else
-	{
-		ri.FS_ReadFile( "glsl/deformVertexes_vp.glsl", ( void ** ) &mainBuffer );
-
-		if ( !mainBuffer )
-		{
-			ri.Error( ERR_DROP, "Couldn't load glsl/deformVertexes_vp.glsl" );
-		}
-
-		// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
-		// so we have to reset the line counting
-		shaderText += "#line 0\n";
-		shaderText += mainBuffer;
-
-		ri.FS_FreeFile( mainBuffer );
-	}
-
+	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
+	// so we have to reset the line counting
+	shaderText += "#line 0\n";
+	shaderText += basicShaderText;
 	return shaderText;
 }
 
@@ -285,13 +451,12 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	const char        **libs = &libShaderNames;
 
 	std::string shaderText;
+	std::string basicShaderText;
 
 	GL_CheckErrors();
 
 	while ( 1 )
 	{
-		char *libBuffer; // single extra lib file
-
 		token = COM_ParseExt2( libs, false );
 
 		if ( !token[ 0 ] )
@@ -310,26 +475,8 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 			ri.Printf( PRINT_DEVELOPER, "...loading fragment shader '%s'\n", filename );
 		}
 
-		std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( filename );
-
-		if( it != shadermap.end() ) {
-			// append it to the libsBuffer
-			libsBuffer.append( it->second );
-		}
-		else
-		{
-			ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
-
-			if ( !libBuffer )
-			{
-				ri.Error( ERR_DROP, "Couldn't load %s", filename );
-			}
-
-			// append it to the libsBuffer
-			libsBuffer.append(libBuffer);
-
-			ri.FS_FreeFile( libBuffer );
-		}
+		basicShaderText = GetShaderText(filename );
+		libsBuffer.append( basicShaderText );
 	}
 
 	// load main() program
@@ -542,24 +689,9 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	// so we have to reset the line counting
 	bufferExtra += "#line 0\n";
 
-	std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( filename );
+	basicShaderText = GetShaderText( filename );
 
-	if( it != shadermap.end() ) {
-		shaderText = bufferExtra + libsBuffer + it->second;
-	}
-	else
-	{
-		ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );
-
-		if ( !mainBuffer )
-		{
-			ri.Error( ERR_DROP, "Couldn't load %s", filename );
-		}
-
-		shaderText = bufferExtra + libsBuffer + mainBuffer;
-
-		ri.FS_FreeFile( mainBuffer );
-	}
+	shaderText = bufferExtra + libsBuffer + basicShaderText;
 
 	return shaderText;
 }
@@ -678,8 +810,6 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 {
 #ifdef GLEW_ARB_get_program_binary
 	GLint          success;
-	GLint          fileLength;
-	void           *binary;
 	byte           *binaryptr;
 	GLShaderHeader shaderHeader;
 
@@ -695,15 +825,20 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 		return false;
 	}
 
-	fileLength = ri.FS_ReadFile( va( "glsl/%s/%s_%u.bin", shader->GetName().c_str(), shader->GetName().c_str(), ( unsigned int ) programNum ), &binary );
-
+	std::string shader_filename = va("glsl/%s/%s_%u.bin", shader->GetName().c_str(), shader->GetName().c_str(), (unsigned int)programNum);
+	file_reader shader_data(shader_filename);
+	auto fileLength = shader_data.length();
 	// file empty or not found
-	if( fileLength <= 0 )
+	if (fileLength <= 0)
 	{
 		return false;
 	}
+	if (fileLength < sizeof(shaderHeader))
+	{
+		ShaderError(va("Shader file has a bad size: %s", shader_filename.c_str()));
+	}
 
-	binaryptr = ( byte* )binary;
+	binaryptr = reinterpret_cast<byte*>(shader_data.data());
 
 	// get the shader header from the file
 	memcpy( &shaderHeader, binaryptr, sizeof( shaderHeader ) );
@@ -711,34 +846,22 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 
 	// check if this shader binary is the correct format
 	if ( shaderHeader.version != GL_SHADER_VERSION )
-	{
-		ri.FS_FreeFile( binary );
 		return false;
-	}
 
 	// make sure this shader uses the same number of macros
 	if ( shaderHeader.numMacros != shader->GetNumOfCompiledMacros() )
-	{
-		ri.FS_FreeFile( binary );
 		return false;
-	}
 
 	// make sure this shader uses the same macros
 	for ( unsigned int i = 0; i < shaderHeader.numMacros; i++ )
 	{
 		if ( shader->_compileMacros[ i ]->GetType() != shaderHeader.macros[ i ] )
-		{
-			ri.FS_FreeFile( binary );
 			return false;
-		}
 	}
 
 	// make sure the checksums for the source code match
 	if ( shaderHeader.checkSum != shader->_checkSum )
-	{
-		ri.FS_FreeFile( binary );
 		return false;
-	}
 
 	// load the shader
 	shaderProgram_t *shaderProgram = &shader->_shaderPrograms[ programNum ];
@@ -746,12 +869,8 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	glGetProgramiv( shaderProgram->program, GL_LINK_STATUS, &success );
 
 	if ( !success )
-	{
-		ri.FS_FreeFile( binary );
 		return false;
-	}
 
-	ri.FS_FreeFile( binary );
 	return true;
 #else
 	return false;
@@ -917,7 +1036,7 @@ GLuint GLShaderManager::CompileShader( const char *programName, const char *shad
 	{
 		PrintShaderSource( shader );
 		PrintInfoLog( shader, false );
-		ri.Error( ERR_DROP, "Couldn't compile %s %s", ( shaderType == GL_VERTEX_SHADER ? "vertex shader" : "fragment shader" ), programName );
+		ShaderError(va("Couldn't compile %s %s", ( shaderType == GL_VERTEX_SHADER ? "vertex shader" : "fragment shader" ), programName));
 	}
 
 	return shader;
@@ -1010,7 +1129,7 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 	if ( !linked )
 	{
 		PrintInfoLog( program, false );
-		ri.Error( ERR_DROP, "Shaders failed to link!!!" );
+		ShaderError( "Shaders failed to link!!!" );
 	}
 }
 

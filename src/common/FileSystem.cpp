@@ -594,12 +594,26 @@ void File::Flush(std::error_code& err) const
 }
 std::string File::ReadAll(std::error_code& err) const
 {
+	std::string out;
 	offset_t length = Length(err);
 	if (err)
-		return "";
-	std::string out;
+		return out;
 	out.resize(length);
-	Read(&out[0], length, err);
+	auto actual = Read(&out[0], length, err);
+	out.resize(actual);
+	// The size of data read might not always match the file size reported
+	// before reading. There can be various reasons for that but one example
+	// is a file opened in text mode on Windows will result in
+	// transparent translations of \r\n to \n on read. When that occurs the data
+	// read will be smaller as the \r\n's that are on disk have become
+	// just \n in the data returned and the size returned from read/fread
+	// will reflect that.
+	// We have to try to account for at least this scenario by resizing the
+	// string to the size actually read from the size we anticipated.
+	// If we don't do this, the buffer will be padded with potentially random
+	// data and even if this is all zeros, the length of the string will
+	// also account for that and that excess data and will end up being
+	// processed by the caller which would be an errant thing for it to do.
 	return out;
 }
 void File::CopyTo(const File& dest, std::error_code& err) const
