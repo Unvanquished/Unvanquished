@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	02110-1301	USA
 
 int  trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void trap_FS_Read( void *buffer, int len, fileHandle_t f );
-void trap_FS_Write( const void *buffer, int len, fileHandle_t f );
+int  trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void trap_FS_FCloseFile( fileHandle_t f );
 
 #define PARSE(text, token) \
@@ -53,7 +53,7 @@ typedef struct
 	//The name is on top of the structure, this is useful for bsearch
 	const char *name;
 	configVarType_t type;
-	qboolean defined;
+	bool defined;
 	void *var;
 } configVar_t;
 
@@ -195,133 +195,133 @@ int   LCANNON_CHARGE_AMMO;
 // MUST BE ALPHABETICALLY SORTED!
 static configVar_t bg_configVars[] =
 {
-	{"b_reactor_powerRadius", FLOAT, qfalse, &REACTOR_BASESIZE},
-	{"b_reactor_zapAttackDamage", INTEGER, qfalse, &REACTOR_ATTACK_DAMAGE},
-	{"b_reactor_zapAttackRange", FLOAT, qfalse, &REACTOR_ATTACK_RANGE},
-	{"b_reactor_zapAttackRepeat", INTEGER, qfalse, &REACTOR_ATTACK_REPEAT},
+	{"b_reactor_powerRadius", FLOAT, false, &REACTOR_BASESIZE},
+	{"b_reactor_zapAttackDamage", INTEGER, false, &REACTOR_ATTACK_DAMAGE},
+	{"b_reactor_zapAttackRange", FLOAT, false, &REACTOR_ATTACK_RANGE},
+	{"b_reactor_zapAttackRepeat", INTEGER, false, &REACTOR_ATTACK_REPEAT},
 
-	{"b_repeater_powerRadius", FLOAT, qfalse, &REPEATER_BASESIZE},
+	{"b_repeater_powerRadius", FLOAT, false, &REPEATER_BASESIZE},
 
-	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
-	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
-	{"u_medkit_startupTime", INTEGER, qfalse, &MEDKIT_STARTUP_TIME},
+	{"u_medkit_poisonImmunityTime", INTEGER, false, &MEDKIT_POISON_IMMUNITY_TIME},
+	{"u_medkit_startupSpeed", INTEGER, false, &MEDKIT_STARTUP_SPEED},
+	{"u_medkit_startupTime", INTEGER, false, &MEDKIT_STARTUP_TIME},
 
-	{"w_abuild_blobDmg", INTEGER, qfalse, &ABUILDER_BLOB_DMG},
-	{"w_abuild_blobSlowTime", INTEGER, qfalse, &ABUILDER_BLOB_TIME},
-	{"w_abuild_blobSpeed", FLOAT, qfalse, &ABUILDER_BLOB_SPEED},
-	{"w_abuild_blobSpeedMod", FLOAT, qfalse, &ABUILDER_BLOB_SPEED_MOD},
-	{"w_abuild_clawDmg", INTEGER, qfalse, &ABUILDER_CLAW_DMG},
-	{"w_abuild_clawRange", FLOAT, qfalse, &ABUILDER_CLAW_RANGE},
-	{"w_abuild_clawWidth", FLOAT, qfalse, &ABUILDER_CLAW_WIDTH},
+	{"w_abuild_blobDmg", INTEGER, false, &ABUILDER_BLOB_DMG},
+	{"w_abuild_blobSlowTime", INTEGER, false, &ABUILDER_BLOB_TIME},
+	{"w_abuild_blobSpeed", FLOAT, false, &ABUILDER_BLOB_SPEED},
+	{"w_abuild_blobSpeedMod", FLOAT, false, &ABUILDER_BLOB_SPEED_MOD},
+	{"w_abuild_clawDmg", INTEGER, false, &ABUILDER_CLAW_DMG},
+	{"w_abuild_clawRange", FLOAT, false, &ABUILDER_CLAW_RANGE},
+	{"w_abuild_clawWidth", FLOAT, false, &ABUILDER_CLAW_WIDTH},
 
-	{"w_blaster_damage", INTEGER, qfalse, &BLASTER_DMG },
-	{"w_blaster_size", INTEGER, qfalse, &BLASTER_SIZE },
-	{"w_blaster_speed", INTEGER, qfalse, &BLASTER_SPEED },
-	{"w_blaster_spread", INTEGER, qfalse, &BLASTER_SPREAD },
+	{"w_blaster_damage", INTEGER, false, &BLASTER_DMG },
+	{"w_blaster_size", INTEGER, false, &BLASTER_SIZE },
+	{"w_blaster_speed", INTEGER, false, &BLASTER_SPEED },
+	{"w_blaster_spread", INTEGER, false, &BLASTER_SPREAD },
 
-	{"w_chaingun_damage", INTEGER, qfalse, &CHAINGUN_DMG },
-	{"w_chaingun_spread", INTEGER, qfalse, &CHAINGUN_SPREAD },
+	{"w_chaingun_damage", INTEGER, false, &CHAINGUN_DMG },
+	{"w_chaingun_spread", INTEGER, false, &CHAINGUN_SPREAD },
 
-	{"w_flamer_damage", INTEGER, qfalse, &FLAMER_DMG },
-	{"w_flamer_flightDamage", INTEGER, qfalse, &FLAMER_FLIGHTDAMAGE },
-	{"w_flamer_igniteChance", FLOAT, qfalse, &FLAMER_IGNITE_CHANCE },
-	{"w_flamer_igniteRadius", FLOAT, qfalse, &FLAMER_IGNITE_RADIUS },
-	{"w_flamer_igniteSplChance", FLOAT, qfalse, &FLAMER_IGNITE_SPLCHANCE },
-	{"w_flamer_lag", FLOAT, qfalse, &FLAMER_LAG },
-	{"w_flamer_lifeTime", FLOAT, qfalse, &FLAMER_LIFETIME },
-	{"w_flamer_radius", INTEGER, qfalse, &FLAMER_RADIUS },
-	{"w_flamer_size", INTEGER, qfalse, &FLAMER_SIZE },
-	{"w_flamer_speed", FLOAT, qfalse, &FLAMER_SPEED },
-	{"w_flamer_splashDamage", INTEGER, qfalse, &FLAMER_SPLASHDAMAGE },
+	{"w_flamer_damage", INTEGER, false, &FLAMER_DMG },
+	{"w_flamer_flightDamage", INTEGER, false, &FLAMER_FLIGHTDAMAGE },
+	{"w_flamer_igniteChance", FLOAT, false, &FLAMER_IGNITE_CHANCE },
+	{"w_flamer_igniteRadius", FLOAT, false, &FLAMER_IGNITE_RADIUS },
+	{"w_flamer_igniteSplChance", FLOAT, false, &FLAMER_IGNITE_SPLCHANCE },
+	{"w_flamer_lag", FLOAT, false, &FLAMER_LAG },
+	{"w_flamer_lifeTime", FLOAT, false, &FLAMER_LIFETIME },
+	{"w_flamer_radius", INTEGER, false, &FLAMER_RADIUS },
+	{"w_flamer_size", INTEGER, false, &FLAMER_SIZE },
+	{"w_flamer_speed", FLOAT, false, &FLAMER_SPEED },
+	{"w_flamer_splashDamage", INTEGER, false, &FLAMER_SPLASHDAMAGE },
 
-	{"w_lcannon_chargeAmmo", INTEGER, qfalse, &LCANNON_CHARGE_AMMO },
-	{"w_lcannon_chargeTimeMax", INTEGER, qfalse, &LCANNON_CHARGE_TIME_MAX },
-	{"w_lcannon_chargeTimeMin", INTEGER, qfalse, &LCANNON_CHARGE_TIME_MIN },
-	{"w_lcannon_chargeTimeWarn", INTEGER, qfalse, &LCANNON_CHARGE_TIME_WARN },
-	{"w_lcannon_damage", INTEGER, qfalse, &LCANNON_DAMAGE },
-	{"w_lcannon_radius", INTEGER, qfalse, &LCANNON_RADIUS },
-	{"w_lcannon_secondaryDamage", INTEGER, qfalse, &LCANNON_SECONDARY_DAMAGE },
-	{"w_lcannon_secondaryRadius", INTEGER, qfalse, &LCANNON_SECONDARY_RADIUS },
-	{"w_lcannon_secondarySpeed", INTEGER, qfalse, &LCANNON_SECONDARY_SPEED },
-	{"w_lcannon_size", INTEGER, qfalse, &LCANNON_SIZE },
-	{"w_lcannon_speed", INTEGER, qfalse, &LCANNON_SPEED },
+	{"w_lcannon_chargeAmmo", INTEGER, false, &LCANNON_CHARGE_AMMO },
+	{"w_lcannon_chargeTimeMax", INTEGER, false, &LCANNON_CHARGE_TIME_MAX },
+	{"w_lcannon_chargeTimeMin", INTEGER, false, &LCANNON_CHARGE_TIME_MIN },
+	{"w_lcannon_chargeTimeWarn", INTEGER, false, &LCANNON_CHARGE_TIME_WARN },
+	{"w_lcannon_damage", INTEGER, false, &LCANNON_DAMAGE },
+	{"w_lcannon_radius", INTEGER, false, &LCANNON_RADIUS },
+	{"w_lcannon_secondaryDamage", INTEGER, false, &LCANNON_SECONDARY_DAMAGE },
+	{"w_lcannon_secondaryRadius", INTEGER, false, &LCANNON_SECONDARY_RADIUS },
+	{"w_lcannon_secondarySpeed", INTEGER, false, &LCANNON_SECONDARY_SPEED },
+	{"w_lcannon_size", INTEGER, false, &LCANNON_SIZE },
+	{"w_lcannon_speed", INTEGER, false, &LCANNON_SPEED },
 
-	{"w_level0_biteDmg", INTEGER, qfalse, &LEVEL0_BITE_DMG},
-	{"w_level0_biteRange", FLOAT, qfalse, &LEVEL0_BITE_RANGE},
-	{"w_level0_biteRepeat", INTEGER, qfalse, &LEVEL0_BITE_REPEAT},
-	{"w_level0_biteWidth", FLOAT, qfalse, &LEVEL0_BITE_WIDTH},
+	{"w_level0_biteDmg", INTEGER, false, &LEVEL0_BITE_DMG},
+	{"w_level0_biteRange", FLOAT, false, &LEVEL0_BITE_RANGE},
+	{"w_level0_biteRepeat", INTEGER, false, &LEVEL0_BITE_REPEAT},
+	{"w_level0_biteWidth", FLOAT, false, &LEVEL0_BITE_WIDTH},
 
-	{"w_level1_clawDmg", INTEGER, qfalse, &LEVEL1_CLAW_DMG},
-	{"w_level1_clawRange", FLOAT, qfalse, &LEVEL1_CLAW_RANGE},
-	{"w_level1_clawWidth", FLOAT, qfalse, &LEVEL1_CLAW_WIDTH},
+	{"w_level1_clawDmg", INTEGER, false, &LEVEL1_CLAW_DMG},
+	{"w_level1_clawRange", FLOAT, false, &LEVEL1_CLAW_RANGE},
+	{"w_level1_clawWidth", FLOAT, false, &LEVEL1_CLAW_WIDTH},
 
-	{"w_level2upg_clawRange", FLOAT, qfalse, &LEVEL2_CLAW_U_RANGE},
-	{"w_level2upg_zapChainFalloff", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
-	{"w_level2upg_zapChainRange", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_RANGE},
-	{"w_level2upg_zapDmg", INTEGER, qfalse, &LEVEL2_AREAZAP_DMG},
-	{"w_level2upg_zapRange", FLOAT, qfalse, &LEVEL2_AREAZAP_RANGE},
-	{"w_level2upg_zapTime", INTEGER, qfalse, &LEVEL2_AREAZAP_TIME},
-	{"w_level2upg_zapWidth", FLOAT, qfalse, &LEVEL2_AREAZAP_WIDTH},
+	{"w_level2upg_clawRange", FLOAT, false, &LEVEL2_CLAW_U_RANGE},
+	{"w_level2upg_zapChainFalloff", FLOAT, false, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
+	{"w_level2upg_zapChainRange", FLOAT, false, &LEVEL2_AREAZAP_CHAIN_RANGE},
+	{"w_level2upg_zapDmg", INTEGER, false, &LEVEL2_AREAZAP_DMG},
+	{"w_level2upg_zapRange", FLOAT, false, &LEVEL2_AREAZAP_RANGE},
+	{"w_level2upg_zapTime", INTEGER, false, &LEVEL2_AREAZAP_TIME},
+	{"w_level2upg_zapWidth", FLOAT, false, &LEVEL2_AREAZAP_WIDTH},
 
-	{"w_level2_clawDmg", INTEGER, qfalse, &LEVEL2_CLAW_DMG},
-	{"w_level2_clawRange", FLOAT, qfalse, &LEVEL2_CLAW_RANGE},
-	{"w_level2_clawWidth", FLOAT, qfalse, &LEVEL2_CLAW_WIDTH},
-	{"w_level2_maxWalljumpSpeed", FLOAT, qfalse, &LEVEL2_WALLJUMP_MAXSPEED},
+	{"w_level2_clawDmg", INTEGER, false, &LEVEL2_CLAW_DMG},
+	{"w_level2_clawRange", FLOAT, false, &LEVEL2_CLAW_RANGE},
+	{"w_level2_clawWidth", FLOAT, false, &LEVEL2_CLAW_WIDTH},
+	{"w_level2_maxWalljumpSpeed", FLOAT, false, &LEVEL2_WALLJUMP_MAXSPEED},
 
-	{"w_level3upg_ballDmg", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_DMG},
-	{"w_level3upg_ballRadius", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_RADIUS},
-	{"w_level3upg_ballRegen", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_REGEN},
-	{"w_level3upg_ballSpeed", FLOAT, qfalse, &LEVEL3_BOUNCEBALL_SPEED},
-	{"w_level3upg_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_UPG_RANGE},
-	{"w_level3upg_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME_UPG},
-	{"w_level3upg_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG_UPG},
-	{"w_level3upg_pounceRange", FLOAT, qfalse, &LEVEL3_POUNCE_UPG_RANGE},
+	{"w_level3upg_ballDmg", INTEGER, false, &LEVEL3_BOUNCEBALL_DMG},
+	{"w_level3upg_ballRadius", INTEGER, false, &LEVEL3_BOUNCEBALL_RADIUS},
+	{"w_level3upg_ballRegen", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN},
+	{"w_level3upg_ballSpeed", FLOAT, false, &LEVEL3_BOUNCEBALL_SPEED},
+	{"w_level3upg_clawRange", FLOAT, false, &LEVEL3_CLAW_UPG_RANGE},
+	{"w_level3upg_pounceDuration", INTEGER, false, &LEVEL3_POUNCE_TIME_UPG},
+	{"w_level3upg_pounceJumpMagnitude", INTEGER, false, &LEVEL3_POUNCE_JUMP_MAG_UPG},
+	{"w_level3upg_pounceRange", FLOAT, false, &LEVEL3_POUNCE_UPG_RANGE},
 
-	{"w_level3_clawDmg", INTEGER, qfalse, &LEVEL3_CLAW_DMG},
-	{"w_level3_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_RANGE},
-	{"w_level3_clawWidth", FLOAT, qfalse, &LEVEL3_CLAW_WIDTH},
-	{"w_level3_pounceDmg", INTEGER, qfalse, &LEVEL3_POUNCE_DMG},
-	{"w_level3_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
-	{"w_level3_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG},
-	{"w_level3_pounceRange", FLOAT, qfalse, &LEVEL3_POUNCE_RANGE},
-	{"w_level3_pounceRepeat", INTEGER, qfalse, &LEVEL3_POUNCE_REPEAT},
-	{"w_level3_pounceSpeedMod", FLOAT, qfalse, &LEVEL3_POUNCE_SPEED_MOD},
-	{"w_level3_pounceTimeMin", INTEGER, qfalse, &LEVEL3_POUNCE_TIME_MIN},
-	{"w_level3_pounceWidth", FLOAT, qfalse, &LEVEL3_POUNCE_WIDTH},
+	{"w_level3_clawDmg", INTEGER, false, &LEVEL3_CLAW_DMG},
+	{"w_level3_clawRange", FLOAT, false, &LEVEL3_CLAW_RANGE},
+	{"w_level3_clawWidth", FLOAT, false, &LEVEL3_CLAW_WIDTH},
+	{"w_level3_pounceDmg", INTEGER, false, &LEVEL3_POUNCE_DMG},
+	{"w_level3_pounceDuration", INTEGER, false, &LEVEL3_POUNCE_TIME},
+	{"w_level3_pounceJumpMagnitude", INTEGER, false, &LEVEL3_POUNCE_JUMP_MAG},
+	{"w_level3_pounceRange", FLOAT, false, &LEVEL3_POUNCE_RANGE},
+	{"w_level3_pounceRepeat", INTEGER, false, &LEVEL3_POUNCE_REPEAT},
+	{"w_level3_pounceSpeedMod", FLOAT, false, &LEVEL3_POUNCE_SPEED_MOD},
+	{"w_level3_pounceTimeMin", INTEGER, false, &LEVEL3_POUNCE_TIME_MIN},
+	{"w_level3_pounceWidth", FLOAT, false, &LEVEL3_POUNCE_WIDTH},
 
-	{"w_level4_clawDmg", INTEGER, qfalse, &LEVEL4_CLAW_DMG},
-	{"w_level4_clawHeight", FLOAT, qfalse, &LEVEL4_CLAW_HEIGHT},
-	{"w_level4_clawRange", FLOAT, qfalse, &LEVEL4_CLAW_RANGE},
-	{"w_level4_clawWidth", FLOAT, qfalse, &LEVEL4_CLAW_WIDTH},
-	{"w_level4_trampleChargeMax", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MAX},
-	{"w_level4_trampleChargeMin", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MIN},
-	{"w_level4_trampleChargeTrigger", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_TRIGGER},
-	{"w_level4_trampleDmg", INTEGER, qfalse, &LEVEL4_TRAMPLE_DMG},
-	{"w_level4_trampleDuration", INTEGER, qfalse, &LEVEL4_TRAMPLE_DURATION},
-	{"w_level4_trampleRepeat", INTEGER, qfalse, &LEVEL4_TRAMPLE_REPEAT},
-	{"w_level4_trampleSpeed", FLOAT, qfalse, &LEVEL4_TRAMPLE_SPEED},
-	{"w_level4_trampleStopPenalty", INTEGER, qfalse, &LEVEL4_TRAMPLE_STOP_PENALTY},
+	{"w_level4_clawDmg", INTEGER, false, &LEVEL4_CLAW_DMG},
+	{"w_level4_clawHeight", FLOAT, false, &LEVEL4_CLAW_HEIGHT},
+	{"w_level4_clawRange", FLOAT, false, &LEVEL4_CLAW_RANGE},
+	{"w_level4_clawWidth", FLOAT, false, &LEVEL4_CLAW_WIDTH},
+	{"w_level4_trampleChargeMax", INTEGER, false, &LEVEL4_TRAMPLE_CHARGE_MAX},
+	{"w_level4_trampleChargeMin", INTEGER, false, &LEVEL4_TRAMPLE_CHARGE_MIN},
+	{"w_level4_trampleChargeTrigger", INTEGER, false, &LEVEL4_TRAMPLE_CHARGE_TRIGGER},
+	{"w_level4_trampleDmg", INTEGER, false, &LEVEL4_TRAMPLE_DMG},
+	{"w_level4_trampleDuration", INTEGER, false, &LEVEL4_TRAMPLE_DURATION},
+	{"w_level4_trampleRepeat", INTEGER, false, &LEVEL4_TRAMPLE_REPEAT},
+	{"w_level4_trampleSpeed", FLOAT, false, &LEVEL4_TRAMPLE_SPEED},
+	{"w_level4_trampleStopPenalty", INTEGER, false, &LEVEL4_TRAMPLE_STOP_PENALTY},
 
-	{"w_lgun_damage", INTEGER, qfalse, &LASGUN_DAMAGE },
+	{"w_lgun_damage", INTEGER, false, &LASGUN_DAMAGE },
 
-	{"w_mdriver_damage", INTEGER, qfalse, &MDRIVER_DMG },
+	{"w_mdriver_damage", INTEGER, false, &MDRIVER_DMG },
 
-	{"w_prifle_damage", INTEGER, qfalse, &PRIFLE_DMG },
-	{"w_prifle_size", INTEGER, qfalse, &PRIFLE_SIZE },
-	{"w_prifle_speed", INTEGER, qfalse, &PRIFLE_SPEED },
+	{"w_prifle_damage", INTEGER, false, &PRIFLE_DMG },
+	{"w_prifle_size", INTEGER, false, &PRIFLE_SIZE },
+	{"w_prifle_speed", INTEGER, false, &PRIFLE_SPEED },
 
-	{"w_psaw_damage", INTEGER, qfalse, &PAINSAW_DAMAGE },
-	{"w_psaw_height", FLOAT, qfalse, &PAINSAW_HEIGHT },
-	{"w_psaw_range", FLOAT, qfalse, &PAINSAW_RANGE },
-	{"w_psaw_width", FLOAT, qfalse, &PAINSAW_WIDTH },
+	{"w_psaw_damage", INTEGER, false, &PAINSAW_DAMAGE },
+	{"w_psaw_height", FLOAT, false, &PAINSAW_HEIGHT },
+	{"w_psaw_range", FLOAT, false, &PAINSAW_RANGE },
+	{"w_psaw_width", FLOAT, false, &PAINSAW_WIDTH },
 
-	{"w_rifle_damage", INTEGER, qfalse, &RIFLE_DMG },
-	{"w_rifle_spread", INTEGER, qfalse, &RIFLE_SPREAD },
+	{"w_rifle_damage", INTEGER, false, &RIFLE_DMG },
+	{"w_rifle_spread", INTEGER, false, &RIFLE_SPREAD },
 
-	{"w_shotgun_damage", INTEGER, qfalse, &SHOTGUN_DMG },
-	{"w_shotgun_pellets", INTEGER, qfalse, &SHOTGUN_PELLETS },
-	{"w_shotgun_range", INTEGER, qfalse, &SHOTGUN_RANGE },
-	{"w_shotgun_spread", INTEGER, qfalse, &SHOTGUN_SPREAD },
+	{"w_shotgun_damage", INTEGER, false, &SHOTGUN_DMG },
+	{"w_shotgun_pellets", INTEGER, false, &SHOTGUN_PELLETS },
+	{"w_shotgun_range", INTEGER, false, &SHOTGUN_RANGE },
+	{"w_shotgun_spread", INTEGER, false, &SHOTGUN_SPREAD },
 };
 
 static const size_t bg_numConfigVars = ARRAY_LEN( bg_configVars );
@@ -334,7 +334,7 @@ Helper function that tries to read a whole file in a buffer. Should it be in bg_
 ======================
 */
 
-qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
+bool BG_ReadWholeFile( const char *filename, char *buffer, int size)
 {
 	fileHandle_t f;
 	int len;
@@ -344,7 +344,7 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
 	if ( len < 0 )
 	{
 		Com_Printf( S_ERROR "file %s doesn't exist\n", filename );
-		return qfalse;
+		return false;
 	}
 
 	if ( len == 0 || len >= size - 1 )
@@ -352,17 +352,17 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
 		trap_FS_FCloseFile( f );
 		Com_Printf( S_ERROR "file %s is %s\n", filename,
 					len == 0 ? "empty" : "too long" );
-		return qfalse;
+		return false;
 	}
 
 	trap_FS_Read( buffer, len, f );
 	buffer[ len ] = 0;
 	trap_FS_FCloseFile( f );
 
-	return qtrue;
+	return true;
 }
 
-static team_t ParseTeam(char* token)
+static team_t ParseTeam(const char* token)
 {
 	if ( !Q_strnicmp( token, "alien", 5 ) ) // alien(s)
 	{
@@ -383,7 +383,7 @@ static team_t ParseTeam(char* token)
 	}
 }
 
-static int ParseSlotList(char** text)
+static int ParseSlotList(const char** text)
 {
 	int slots = 0;
 	char* token;
@@ -448,7 +448,7 @@ static int ParseSlotList(char** text)
 	return slots;
 }
 
-static int ParseClipmask( char *token )
+static int ParseClipmask( const char *token )
 {
 	if      ( !Q_stricmp( token, "MASK_ALL" ) )
 	{
@@ -485,7 +485,7 @@ static int ParseClipmask( char *token )
 	}
 }
 
-static trType_t ParseTrajectoryType( char *token )
+static trType_t ParseTrajectoryType( const char *token )
 {
 	if      ( !Q_stricmp( token, "TR_STATIONARY" ) )
 	{
@@ -534,7 +534,7 @@ configVar_t* BG_FindConfigVar(const char *varName)
 	return (configVar_t*) bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
 }
 
-qboolean BG_ParseConfigVar(configVar_t *var, char **text, const char *filename)
+bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *filename)
 {
 	char *token;
 
@@ -543,7 +543,7 @@ qboolean BG_ParseConfigVar(configVar_t *var, char **text, const char *filename)
 	if( !*token )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: %s expected argument for '%s'\n", filename, var->name );
-		return qfalse;
+		return false;
 	}
 
 	if( var->type == INTEGER)
@@ -555,21 +555,21 @@ qboolean BG_ParseConfigVar(configVar_t *var, char **text, const char *filename)
 		*((float*) var->var) = atof( token );
 	}
 
-	var->defined = qtrue;
+	var->defined = true;
 
-	return qtrue;
+	return true;
 }
 
-qboolean BG_CheckConfigVars( void )
+bool BG_CheckConfigVars()
 {
 	int i;
-	int ok = qtrue;
+	int ok = true;
 
 	for( i = 0; i < bg_numConfigVars; i++)
 	{
 		if( !bg_configVars[i].defined )
 		{
-			ok = qfalse;
+			ok = false;
 			Com_Printf(S_COLOR_YELLOW "WARNING: config var %s was not defined\n", bg_configVars[i].name );
 		}
 	}
@@ -587,9 +587,9 @@ Parses a configuration file describing the attributes of a buildable
 
 void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	configVar_t* var;
 	int defined = 0;
 	enum
@@ -642,7 +642,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			if ( !Q_stricmp( token, "null" ) )
 			{
-				ba->icon = NULL;
+				ba->icon = nullptr;
 			}
 			else
 			{
@@ -760,7 +760,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		}
 		else if ( !Q_stricmp( token, "usable" ) )
 		{
-			ba->usable = qtrue;
+			ba->usable = true;
 		}
 		else if ( !Q_stricmp( token, "minNormal" ) )
 		{
@@ -772,11 +772,11 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 		else if ( !Q_stricmp( token, "allowInvertNormal" ) )
 		{
-			ba->invertNormal = qtrue;
+			ba->invertNormal = true;
 		}
 		else if ( !Q_stricmp( token, "needsCreep" ) )
 		{
-			ba->creepTest = qtrue;
+			ba->creepTest = true;
 		}
 		else if ( !Q_stricmp( token, "creepSize" ) )
 		{
@@ -786,11 +786,11 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		}
 		else if ( !Q_stricmp( token, "transparentTest" ) )
 		{
-			ba->transparentTest = qtrue;
+			ba->transparentTest = true;
 		}
 		else if ( !Q_stricmp( token, "unique" ) )
 		{
-			ba->uniqueTest = qtrue;
+			ba->uniqueTest = true;
 		}
 		else if ( !Q_stricmp( token, "unlockThreshold" ) )
 		{
@@ -799,7 +799,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 			ba->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
-		else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != NULL )
+		else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}
@@ -835,9 +835,9 @@ Parses a configuration file describing the model of a buildable
 */
 void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	int defined = 0;
 	enum
 	{
@@ -993,9 +993,9 @@ Parses a configuration file describing the attributes of a class
 
 void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 {
-	char         *token = NULL;
+	const char         *token = nullptr;
 	char         text_buffer[ 20000 ];
-	char         *text;
+	const char         *text;
 	configVar_t  *var;
 	int          defined = 0;
 
@@ -1058,7 +1058,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 
 			if ( !Q_stricmp( token, "null" ) )
 			{
-				ca->icon = NULL;
+				ca->icon = nullptr;
 			}
 			else
 			{
@@ -1209,7 +1209,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			ca->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
-		else if( (var = BG_FindConfigVar( va( "c_%s_%s", ca->name, token ) ) ) != NULL )
+		else if( (var = BG_FindConfigVar( va( "c_%s_%s", ca->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}
@@ -1273,7 +1273,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !( defined & JUMPMAGNITUDE ) )   { token = "jumpMagnitude"; }
 		else if ( !( defined & ICON ) )            { token = "icon"; }
 		else if ( !( defined & COST ) )            { token = "cost"; }
-		else                                       { token = NULL; }
+		else                                       { token = nullptr; }
 
 		if ( token )
 		{
@@ -1290,7 +1290,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !( defined & STAMINAJOGRESTORE ) )  { token = "staminaJogRestore"; }
 		else if ( !( defined & STAMINAWALKRESTORE ) ) { token = "staminaWalkRestore"; }
 		else if ( !( defined & STAMINASTOPRESTORE ) ) { token = "staminaStopRestore"; }
-		else                                          { token = NULL; }
+		else                                          { token = nullptr; }
 
 		if ( token )
 		{
@@ -1307,15 +1307,15 @@ BG_NonSegModel
 Reads an animation.cfg to check for nonsegmentation
 ======================
 */
-qboolean BG_NonSegModel( const char *filename )
+bool BG_NonSegModel( const char *filename )
 {
-	char *text_p;
+	const char *text_p;
 	char *token;
 	char text[ 20000 ];
 
 	if ( !BG_ReadWholeFile( filename, text, sizeof( text ) ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// parse the text
@@ -1334,11 +1334,11 @@ qboolean BG_NonSegModel( const char *filename )
 
 		if ( !Q_stricmp( token, "nonsegmented" ) )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1350,9 +1350,9 @@ Parses a configuration file describing the model of a class
 */
 void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	int defined = 0;
 	enum
 	{
@@ -1630,9 +1630,9 @@ Parses a configuration file describing the attributes of a weapon
 */
 void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	configVar_t* var;
 	int defined = 0;
 	enum
@@ -1696,7 +1696,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		}
 		else if ( !Q_stricmp( token, "infiniteAmmo" ) )
 		{
-			wa->infiniteAmmo = qtrue;
+			wa->infiniteAmmo = true;
 
 			defined |= AMMO;
 		}
@@ -1716,7 +1716,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		}
 		else if ( !Q_stricmp( token, "usesEnergy" ) )
 		{
-			wa->usesEnergy = qtrue;
+			wa->usesEnergy = true;
 		}
 		else if ( !Q_stricmp( token, "primaryAttackRate" ) )
 		{
@@ -1752,23 +1752,23 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		}
 		else if ( !Q_stricmp( token, "hasAltMode" ) )
 		{
-			wa->hasAltMode = qtrue;
+			wa->hasAltMode = true;
 		}
 		else if ( !Q_stricmp( token, "hasThirdMode" ) )
 		{
-			wa->hasThirdMode = qtrue;
+			wa->hasThirdMode = true;
 		}
 		else if ( !Q_stricmp( token, "isPurchasable" ) )
 		{
-			wa->purchasable = qtrue;
+			wa->purchasable = true;
 		}
 		else if ( !Q_stricmp( token, "isLongRanged" ) )
 		{
-			wa->longRanged = qtrue;
+			wa->longRanged = true;
 		}
 		else if ( !Q_stricmp( token, "canZoom" ) )
 		{
-			wa->canZoom = qtrue;
+			wa->canZoom = true;
 		}
 		else if ( !Q_stricmp( token, "zoomFov" ) )
 		{
@@ -1791,7 +1791,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 			wa->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
-		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != NULL )
+		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}
@@ -1824,9 +1824,9 @@ Parses a configuration file describing the attributes of an upgrade
 */
 void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua )
 {
-	char *token;
+	const char *token;
 	char text_buffer[ 20000 ];
-	char* text;
+	const char* text;
 	configVar_t* var;
 	int defined = 0;
 	enum
@@ -1885,7 +1885,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 
 			if ( !Q_stricmp( token, "null" ) )
 			{
-				ua->icon = NULL;
+				ua->icon = nullptr;
 			}
 			else
 			{
@@ -1912,11 +1912,11 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 		}
 		else if ( !Q_stricmp( token, "isPurchasable" ) )
 		{
-			ua->purchasable = qtrue;
+			ua->purchasable = true;
 		}
 		else if ( !Q_stricmp( token, "isUsable" ) )
 		{
-			ua->usable = qtrue;
+			ua->usable = true;
 		}
 		else if ( !Q_stricmp( token, "unlockThreshold" ) )
 		{
@@ -1925,7 +1925,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 			ua->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
 		}
-		else if( (var = BG_FindConfigVar( va( "u_%s_%s", ua->name, token ) ) ) != NULL )
+		else if( (var = BG_FindConfigVar( va( "u_%s_%s", ua->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}
@@ -1959,9 +1959,9 @@ Can be the same as the display configuration file.
 */
 void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma )
 {
-	char        *token;
+	const char *token;
 	char        text_buffer[ 20000 ];
-	char        *text;
+	const char        *text;
 	//configVar_t *var;
 	int         defined = 0;
 
@@ -1998,7 +1998,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 
 		if      ( !Q_stricmp( token, "pointAgainstWorld" ) )
 		{
-			ma->pointAgainstWorld = qtrue;
+			ma->pointAgainstWorld = true;
 			defined |= POINT_AGAINST_WORLD;
 		}
 		else if ( !Q_stricmp( token, "damage" ) )
@@ -2078,15 +2078,15 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		}
 		else if ( !Q_stricmp( token, "doKnockback" ) )
 		{
-			ma->doKnockback = qtrue;
+			ma->doKnockback = true;
 			defined |= KNOCKBACK;
 		}
 		else if ( !Q_stricmp( token, "doLocationalDamage" ) )
 		{
-			ma->doLocationalDamage = qtrue;
+			ma->doLocationalDamage = true;
 			defined |= LOCATIONAL_DAMAGE;
 		}
-		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != NULL )
+		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}*/
@@ -2122,7 +2122,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 {
 	char        *token;
 	char        text_buffer[ 20000 ];
-	char        *text;
+	const char        *text;
 	int         defined = 0;
 #ifdef BUILD_CGAME
 	int         index;
@@ -2164,7 +2164,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 
 	text = text_buffer;
 
-	while ( qtrue )
+	while ( true )
 	{
 		PARSE( text, token );
 
@@ -2199,7 +2199,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		{
 			PARSE( text, token );
 #ifdef BUILD_CGAME
-			ma->sound = trap_S_RegisterSound( token, qfalse );
+			ma->sound = trap_S_RegisterSound( token, false );
 #endif
 			defined |= SOUND;
 		}
@@ -2208,14 +2208,14 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			ma->dlight = atof( token );
 			defined |= DLIGHT;
-			ma->usesDlight = qtrue;
+			ma->usesDlight = true;
 		}
 		else if ( !Q_stricmp( token, "dlightIntensity" ) )
 		{
 			PARSE( text, token );
 			ma->dlightIntensity = atof( token );
 			defined |= DLIGHT_INTENSITY;
-			ma->usesDlight = qtrue;
+			ma->usesDlight = true;
 		}
 		else if ( !Q_stricmp( token, "dlightColor" ) )
 		{
@@ -2226,7 +2226,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			ma->dlightColor[ 2 ] = atof( token );
 			defined |= DLIGHT_COLOR;
-			ma->usesDlight = qtrue;
+			ma->usesDlight = true;
 		}
 		else if ( !Q_stricmp( token, "renderfx" ) )
 		{
@@ -2241,21 +2241,21 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->sprite = trap_R_RegisterShader( token, RSF_SPRITE );
 #endif
 			defined |= SPRITE;
-			ma->usesSprite = qtrue;
+			ma->usesSprite = true;
 		}
 		else if ( !Q_stricmp( token, "spriteSize" ) )
 		{
 			PARSE( text, token );
 			ma->spriteSize = atoi( token );
 			defined |= SPRITE_SIZE;
-			ma->usesSprite = qtrue;
+			ma->usesSprite = true;
 		}
 		else if ( !Q_stricmp( token, "spriteCharge" ) )
 		{
 			PARSE( text, token );
 			ma->spriteCharge = atof( token );
 			defined |= SPRITE_CHARGE;
-			ma->usesSprite = qtrue;
+			ma->usesSprite = true;
 		}
 		else if ( !Q_stricmp( token, "particleSystem" ) )
 		{
@@ -2275,7 +2275,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		}
 		else if ( !Q_stricmp( token, "rotates" ) )
 		{
-			ma->rotates = qtrue;
+			ma->rotates = true;
 			defined |= ROTATES;
 		}
 		else if ( !Q_stricmp( token, "animStartFrame" ) )
@@ -2283,31 +2283,31 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			ma->animStartFrame = atoi( token );
 			defined |= ANIM_START_FRAME;
-			ma->usesAnim = qtrue;
+			ma->usesAnim = true;
 		}
 		else if ( !Q_stricmp( token, "animNumFrames" ) )
 		{
 			PARSE( text, token );
 			ma->animNumFrames = atoi( token );
 			defined |= ANIM_NUM_FRAMES;
-			ma->usesAnim = qtrue;
+			ma->usesAnim = true;
 		}
 		else if ( !Q_stricmp( token, "animFrameRate" ) )
 		{
 			PARSE( text, token );
 			ma->animFrameRate = atoi( token );
 			defined |= ANIM_FRAME_RATE;
-			ma->usesAnim = qtrue;
+			ma->usesAnim = true;
 		}
 		else if ( !Q_stricmp( token, "animLooping" ) )
 		{
-			ma->animLooping = qtrue;
+			ma->animLooping = true;
 			defined |= ANIM_LOOPING;
-			ma->usesAnim = qtrue;
+			ma->usesAnim = true;
 		}
 		else if ( !Q_stricmp( token, "alwaysImpact" ) )
 		{
-			ma->alwaysImpact = qtrue;
+			ma->alwaysImpact = true;
 			defined |= ALWAYS_IMPACT;
 		}
 		else if ( !Q_stricmp( token, "impactParticleSystem" ) )
@@ -2320,7 +2320,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		}
 		else if ( !Q_stricmp( token, "impactFlightDir" ) )
 		{
-			ma->impactFlightDirection = qtrue;
+			ma->impactFlightDirection = true;
 			defined |= IMPACT_FLIGHTDIR;
 		}
 		else if ( !Q_stricmp( token, "impactMark" ) )
@@ -2330,14 +2330,14 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->impactMark = trap_R_RegisterShader( token, RSF_DEFAULT );
 #endif
 			defined |= IMPACT_MARK;
-			ma->usesImpactMark = qtrue;
+			ma->usesImpactMark = true;
 		}
 		else if ( !Q_stricmp( token, "impactMarkSize" ) )
 		{
 			PARSE( text, token );
 			ma->impactMarkSize = atoi( token );
 			defined |= IMPACT_MARK_SIZE;
-			ma->usesImpactMark = qtrue;
+			ma->usesImpactMark = true;
 		}
 		else if ( !Q_stricmp( token, "impactSound" ) )
 		{
@@ -2349,7 +2349,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 #ifdef BUILD_CGAME
 			if ( index >= 0 && index < 4 )
 			{
-				ma->impactSound[ index ] = trap_S_RegisterSound( token, qfalse );
+				ma->impactSound[ index ] = trap_S_RegisterSound( token, false );
 			}
 #endif
 			defined |= IMPACT_SOUND;
@@ -2364,7 +2364,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 #ifdef BUILD_CGAME
 			if ( index >= 0 && index < 4 )
 			{
-				ma->impactFleshSound[ index ] = trap_S_RegisterSound( token, qfalse );
+				ma->impactFleshSound[ index ] = trap_S_RegisterSound( token, false );
 			}
 #endif
 			defined |= IMPACT_FLESH_SND;
@@ -2380,7 +2380,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 	     !( defined & SPRITE        ) ||
 	     !( defined & SPRITE_SIZE   ) ) )
 	{
-		ma->usesSprite = qfalse;
+		ma->usesSprite = false;
 		Com_Printf( S_ERROR "Not all mandatory sprite vars defined in %s\n", filename );
 	}
 
@@ -2390,7 +2390,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 	     !( defined & ANIM_NUM_FRAMES  ) ||
 	     !( defined & ANIM_FRAME_RATE  ) ) )
 	{
-		ma->usesAnim = qfalse;
+		ma->usesAnim = false;
 		Com_Printf( S_ERROR "Not all mandatory animation vars defined in %s\n", filename );
 	}
 
@@ -2400,7 +2400,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 	     !( defined & DLIGHT_INTENSITY ) ||
 	     !( defined & DLIGHT_COLOR     ) ) )
 	{
-		ma->usesDlight = qfalse;
+		ma->usesDlight = false;
 		Com_Printf( S_ERROR "Not all mandatory dlight vars defined in %s\n", filename );
 	}
 
@@ -2409,7 +2409,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 	     !( defined & IMPACT_MARK      ) ||
 	     !( defined & IMPACT_MARK_SIZE ) ) )
 	{
-		ma->usesImpactMark = qfalse;
+		ma->usesImpactMark = false;
 		Com_Printf( S_ERROR "Not all mandatory impactMark vars defined in %s\n", filename );
 	}
 
@@ -2428,7 +2428,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 {
 	char        *token;
 	char        text_buffer[ 20000 ];
-	char        *text;
+	const char        *text;
 #ifdef BUILD_CGAME
 	int         index;
 #endif
@@ -2440,7 +2440,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 
 	text = text_buffer;
 
-	while ( qtrue )
+	while ( true )
 	{
 		PARSE( text, token );
 
@@ -2502,14 +2502,14 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 		{
 			PARSE( text, token );
 #ifdef BUILD_CGAME
-			ba->inSound = trap_S_RegisterSound( token, qfalse );
+			ba->inSound = trap_S_RegisterSound( token, false );
 #endif
 		}
 		else if ( !Q_stricmp( token, "outSound" ) )
 		{
 			PARSE( text, token );
 #ifdef BUILD_CGAME
-			ba->outSound = trap_S_RegisterSound( token, qfalse );
+			ba->outSound = trap_S_RegisterSound( token, false );
 #endif
 		}
 		else if ( !Q_stricmp( token, "decayTime" ) )

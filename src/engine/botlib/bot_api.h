@@ -34,17 +34,17 @@ Maryland 20850 USA.
 
 #include "bot_types.h"
 
-qboolean     BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
-void         BotShutdownNav( void );
+bool     BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
+void         BotShutdownNav();
 
 void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void         BotSetNavMesh( int botClientNum, qhandle_t nav );
-qboolean     BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial );
+bool     BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
 void         BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
 void         BotFindRandomPoint( int botClientNum, vec3_t point );
-qboolean     BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
-qboolean     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end );
+bool     BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
+bool     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end );
 void         BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle );
 void         BotRemoveObstacle( qhandle_t obstacleHandle );
 void         BotUpdateObstacles();

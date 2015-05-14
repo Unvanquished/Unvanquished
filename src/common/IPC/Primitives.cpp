@@ -235,7 +235,7 @@ static void InternalSendMsg(Sys::OSHandle handle, bool more, const FileDesc* han
 	}
 #else
 	size_t descBytes = 0;
-	std::unique_ptr<char[]> descBuffer;
+	std::unique_ptr<unsigned char[]> descBuffer;
 	if (numHandles != 0) {
 		for (size_t i = 0; i < numHandles; i++) {
 			// tag: 1 byte
@@ -251,8 +251,8 @@ static void InternalSendMsg(Sys::OSHandle handle, bool more, const FileDesc* han
 		// Add 1 byte end tag and round to 16 bytes
 		descBytes = (descBytes + 1 + 0xf) & ~0xf;
 
-		descBuffer.reset(new char[descBytes]);
-		char* descBuffer_ptr = &descBuffer[0];
+		descBuffer.reset(new unsigned char[descBytes]);
+		unsigned char* descBuffer_ptr = &descBuffer[0];
 		for (size_t i = 0; i < numHandles; i++) {
 			*descBuffer_ptr++ = handles[i].type;
 			memset(descBuffer_ptr, 0, sizeof(uint32_t));
@@ -495,7 +495,7 @@ static void* MapSharedMemory(Sys::OSHandle handle, size_t size)
 		Sys::Drop("IPC: Failed to map shared memory object of size %zu: %s", size, Sys::Win32StrError(GetLastError()));
 	return base;
 #else
-	void* base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);
+	void* base = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, handle, 0);
 	if (base == MAP_FAILED)
 		Sys::Drop("IPC: Failed to map shared memory object of size %zu: %s", size, strerror(errno));
 	return base;

@@ -280,7 +280,7 @@ static void MD5Final( struct MD5Context *ctx, unsigned char *digest )
 	MD5Transform( ctx->buf, ( uint32_t * ) ctx->in );
 	byteReverse( ( unsigned char * ) ctx->buf, 4 );
 
-	if ( digest != NULL )
+	if ( digest != nullptr )
 	{
 		memcpy( digest, ctx->buf, 16 );
 	}

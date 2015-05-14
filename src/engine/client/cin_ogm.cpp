@@ -73,7 +73,7 @@ typedef struct
 	vorbis_info      vi; /* struct that stores all the static vorbis bitstream settings */
 	vorbis_comment   vc; /* struct that stores all the bitstream user comments */
 
-	qboolean         videoStreamIsTheora;
+	bool         videoStreamIsTheora;
 
 	theora_info      th_info; // dump_video.c(example decoder): ti
 	theora_comment   th_comment; // dump_video.c(example decoder): tc
@@ -92,7 +92,7 @@ typedef struct
 
 static cin_ogm_t g_ogm;
 
-int              nextNeededVFrame( void );
+int              nextNeededVFrame();
 
 /* ####################### #######################
 
@@ -107,7 +107,7 @@ int              nextNeededVFrame( void );
   return:
   !0 -> no data transferred
 */
-static int loadBlockToSync( void )
+static int loadBlockToSync()
 {
 	int  r = -1;
 	char *buffer;
@@ -131,12 +131,12 @@ static int loadBlockToSync( void )
   return:
   !0 -> no data transferred (or not for all Streams)
 */
-static int loadPagesToStreams( void )
+static int loadPagesToStreams()
 {
 	int              r = -1;
 	int              AudioPages = 0;
 	int              VideoPages = 0;
-	ogg_stream_state *osptr = NULL;
+	ogg_stream_state *osptr = nullptr;
 	ogg_page         og;
 
 	while ( !AudioPages || !VideoPages )
@@ -158,7 +158,7 @@ static int loadPagesToStreams( void )
 			++VideoPages;
 		}
 
-		if ( osptr != NULL )
+		if ( osptr != nullptr )
 		{
 			ogg_stream_pagein( osptr, &og );
 		}
@@ -181,9 +181,9 @@ static int loadPagesToStreams( void )
 
   return: audio wants more packets
 */
-static qboolean loadAudio( void )
+static bool loadAudio()
 {
-	qboolean     anyDataTransferred = qtrue;
+	bool     anyDataTransferred = true;
 	float        **pcm;
 	float        *right, *left;
 	int          samples, samplesNeeded;
@@ -199,7 +199,7 @@ static qboolean loadAudio( void )
 
 	while ( anyDataTransferred && g_ogm.currentTime + MAX_AUDIO_PRELOAD > ( int )( g_ogm.vd.granulepos * 1000 / g_ogm.vi.rate ) )
 	{
-		anyDataTransferred = qfalse;
+		anyDataTransferred = false;
 
 		if ( ( samples = vorbis_synthesis_pcmout( &g_ogm.vd, &pcm ) ) > 0 )
 		{
@@ -231,7 +231,7 @@ static qboolean loadAudio( void )
 
 				Audio::StreamData( 0, rawBuffer, i, g_ogm.vi.rate, 2, 2, 1.0f, 1);
 
-				anyDataTransferred = qtrue;
+				anyDataTransferred = true;
 			}
 		}
 
@@ -245,7 +245,7 @@ static qboolean loadAudio( void )
 					vorbis_synthesis_blockin( &g_ogm.vd, &vb );
 				}
 
-				anyDataTransferred = qtrue;
+				anyDataTransferred = true;
 			}
 		}
 	}
@@ -254,11 +254,11 @@ static qboolean loadAudio( void )
 
 	if ( g_ogm.currentTime + MIN_AUDIO_PRELOAD > ( int )( g_ogm.vd.granulepos * 1000 / g_ogm.vi.rate ) )
 	{
-		return qtrue;
+		return true;
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 }
 
@@ -289,7 +289,7 @@ static int findSizeShift( int x, int y )
 	return -1;
 }
 
-static int loadVideoFrameTheora( void )
+static int loadVideoFrameTheora()
 {
 	int        r = 0;
 	ogg_packet op;
@@ -335,7 +335,7 @@ static int loadVideoFrameTheora( void )
 				/* Allocate the new buffer */
 				g_ogm.outputBuffer = ( unsigned char * ) malloc( g_ogm.outputBufferSize * 4 );
 
-				if ( g_ogm.outputBuffer == NULL )
+				if ( g_ogm.outputBuffer == nullptr )
 				{
 					g_ogm.outputBufferSize = 0;
 					r = -2;
@@ -399,7 +399,7 @@ static int loadVideoFrameTheora( void )
                         0 -> no new Frame
                         <0  -> error
 */
-static int loadVideoFrame( void )
+static int loadVideoFrame()
 {
 	if ( g_ogm.videoStreamIsTheora )
 	{
@@ -419,21 +419,21 @@ static int loadVideoFrame( void )
 
 /*
 
-  return: qtrue => noDataTransferred
+  return: true => noDataTransferred
 */
-static qboolean loadFrame( void )
+static bool loadFrame()
 {
-	qboolean anyDataTransferred = qtrue;
-	qboolean needVOutputData = qtrue;
+	bool anyDataTransferred = true;
+	bool needVOutputData = true;
 
-//  qboolean audioSDone = qfalse;
-//  qboolean videoSDone = qfalse;
-	qboolean audioWantsMoreData = qfalse;
+//  bool audioSDone = false;
+//  bool videoSDone = false;
+	bool audioWantsMoreData = false;
 	int      status;
 
 	while ( anyDataTransferred && ( needVOutputData || audioWantsMoreData ) )
 	{
-		anyDataTransferred = qfalse;
+		anyDataTransferred = false;
 
 //      xvid -> "gl" ? videoDone : needPacket
 //      vorbis -> raw sound ? audioDone : needPacket
@@ -447,15 +447,15 @@ static qboolean loadFrame( void )
 
 			if ( needVOutputData && ( status = loadVideoFrame() ) )
 			{
-				needVOutputData = qfalse;
+				needVOutputData = false;
 
 				if ( status > 0 )
 				{
-					anyDataTransferred = qtrue;
+					anyDataTransferred = true;
 				}
 				else
 				{
-					anyDataTransferred = qfalse; // error (we don't need any videodata and we had no transferred)
+					anyDataTransferred = false; // error (we don't need any videodata and we had no transferred)
 				}
 			}
 
@@ -470,7 +470,7 @@ static qboolean loadFrame( void )
 				}
 				else
 				{
-					anyDataTransferred = qtrue; // successful loadPagesToStreams()
+					anyDataTransferred = true; // successful loadPagesToStreams()
 				}
 			}
 
@@ -519,7 +519,7 @@ typedef struct
 	} sh;
 } stream_header_t;
 
-qboolean isPowerOf2( int x )
+bool isPowerOf2( int x )
 {
 	int bitsSet = 0;
 	int i;
@@ -555,7 +555,7 @@ int Cin_OGM_Init( const char *filename )
 
 	memset( &g_ogm, 0, sizeof( cin_ogm_t ) );
 
-	FS_FOpenFileRead( filename, &g_ogm.ogmFile, qtrue );
+	FS_FOpenFileRead( filename, &g_ogm.ogmFile, true );
 
 	if ( !g_ogm.ogmFile )
 	{
@@ -593,7 +593,7 @@ int Cin_OGM_Init( const char *filename )
 				}
 				else
 				{
-					g_ogm.videoStreamIsTheora = qtrue;
+					g_ogm.videoStreamIsTheora = true;
 					ogg_stream_init( &g_ogm.os_video, ogg_page_serialno( &og ) );
 					ogg_stream_pagein( &g_ogm.os_video, &og );
 				}
@@ -720,7 +720,7 @@ int Cin_OGM_Init( const char *filename )
 	return 0;
 }
 
-int nextNeededVFrame( void )
+int nextNeededVFrame()
 {
 	return ( int )( g_ogm.currentTime * ( ogg_int64_t ) 10000 / g_ogm.Vtime_unit );
 }
@@ -752,12 +752,12 @@ int Cin_OGM_Run( int time )
 */
 unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 {
-	if ( outWidth != NULL )
+	if ( outWidth != nullptr )
 	{
 		*outWidth = g_ogm.outputWidht;
 	}
 
-	if ( outHeight != NULL )
+	if ( outHeight != nullptr )
 	{
 		*outHeight = g_ogm.outputHeight;
 	}
@@ -765,7 +765,7 @@ unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 	return g_ogm.outputBuffer;
 }
 
-void Cin_OGM_Shutdown( void )
+void Cin_OGM_Shutdown()
 {
 	theora_clear( &g_ogm.th_state );
 	theora_comment_clear( &g_ogm.th_comment );
@@ -776,7 +776,7 @@ void Cin_OGM_Shutdown( void )
 		free( g_ogm.outputBuffer );
 	}
 
-	g_ogm.outputBuffer = NULL;
+	g_ogm.outputBuffer = nullptr;
 
 	vorbis_dsp_clear( &g_ogm.vd );
 	vorbis_comment_clear( &g_ogm.vc );
@@ -808,7 +808,7 @@ unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 	return 0;
 }
 
-void Cin_OGM_Shutdown( void )
+void Cin_OGM_Shutdown()
 {
 }
 

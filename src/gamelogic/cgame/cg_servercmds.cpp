@@ -34,7 +34,7 @@ CG_ParseScores
 
 =================
 */
-static void CG_ParseScores( void )
+static void CG_ParseScores()
 {
 	int i;
 
@@ -75,7 +75,7 @@ static void CG_ParseScores( void )
 		cg.scores[ i ].team = cgs.clientinfo[ cg.scores[ i ].client ].team;
 	}
 
-	cg.scoreInvalidated = qtrue;
+	cg.scoreInvalidated = true;
 }
 
 /*
@@ -84,7 +84,7 @@ CG_ParseTeamInfo
 
 =================
 */
-static void CG_ParseTeamInfo( void )
+static void CG_ParseTeamInfo()
 {
 	int i;
 	int count;
@@ -119,7 +119,7 @@ static void CG_ParseTeamInfo( void )
 		}
 	}
 
-	cgs.teamInfoReceived = qtrue;
+	cgs.teamInfoReceived = true;
 }
 
 /*
@@ -130,7 +130,7 @@ This is called explicitly when the gamestate is first received,
 and whenever the server updates any serverinfo flagged cvars
 ================
 */
-void CG_ParseServerinfo( void )
+void CG_ParseServerinfo()
 {
 	const char *info;
 
@@ -155,7 +155,7 @@ void CG_ParseServerinfo( void )
 CG_ParseWarmup
 ==================
 */
-static void CG_ParseWarmup( void )
+static void CG_ParseWarmup()
 {
 	const char *info;
 	int        warmup;
@@ -173,7 +173,7 @@ CG_SetConfigValues
 Called on load to set the initial values from configure strings
 ================
 */
-void CG_SetConfigValues( void )
+void CG_SetConfigValues()
 {
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
 	cg.warmupTime = atoi( CG_ConfigString( CS_WARMUP ) );
@@ -184,7 +184,7 @@ void CG_SetConfigValues( void )
 CG_ShaderStateChanged
 =====================
 */
-void CG_ShaderStateChanged( void )
+void CG_ShaderStateChanged()
 {
 	char       originalShader[ MAX_QPATH ];
 	char       newShader[ MAX_QPATH ];
@@ -239,7 +239,7 @@ CG_ConfigStringModified
 
 ================
 */
-static void CG_ConfigStringModified( void )
+static void CG_ConfigStringModified()
 {
 	const char *str;
 	int        num;
@@ -275,7 +275,7 @@ static void CG_ConfigStringModified( void )
 	else if ( num >= CS_VOTE_TIME && num < CS_VOTE_TIME + NUM_TEAMS )
 	{
 		cgs.voteTime[ num - CS_VOTE_TIME ] = atoi( str );
-		cgs.voteModified[ num - CS_VOTE_TIME ] = qtrue;
+		cgs.voteModified[ num - CS_VOTE_TIME ] = true;
 
 		if ( num - CS_VOTE_TIME == TEAM_NONE )
 		{
@@ -295,12 +295,12 @@ static void CG_ConfigStringModified( void )
 	else if ( num >= CS_VOTE_YES && num < CS_VOTE_YES + NUM_TEAMS )
 	{
 		cgs.voteYes[ num - CS_VOTE_YES ] = atoi( str );
-		cgs.voteModified[ num - CS_VOTE_YES ] = qtrue;
+		cgs.voteModified[ num - CS_VOTE_YES ] = true;
 	}
 	else if ( num >= CS_VOTE_NO && num < CS_VOTE_NO + NUM_TEAMS )
 	{
 		cgs.voteNo[ num - CS_VOTE_NO ] = atoi( str );
-		cgs.voteModified[ num - CS_VOTE_NO ] = qtrue;
+		cgs.voteModified[ num - CS_VOTE_NO ] = true;
 	}
 	else if ( num >= CS_VOTE_STRING && num < CS_VOTE_STRING + NUM_TEAMS )
 	{
@@ -317,7 +317,7 @@ static void CG_ConfigStringModified( void )
 		cg.intermissionStarted = atoi( str );
 		if ( cg.intermissionStarted )
 		{
-			trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
+			trap_Rocket_ShowScoreboard( "scoreboard", true );
 		}
 	}
 	else if ( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
@@ -342,7 +342,7 @@ static void CG_ConfigStringModified( void )
 		if ( str[ 0 ] != '*' )
 		{
 			// player specific sounds don't register here
-			cgs.gameSounds[ num - CS_SOUNDS ] = trap_S_RegisterSound( str, qfalse );
+			cgs.gameSounds[ num - CS_SOUNDS ] = trap_S_RegisterSound( str, false );
 		}
 	}
 	else if ( num >= CS_PLAYERS && num < CS_PLAYERS + MAX_CLIENTS )
@@ -371,7 +371,7 @@ A tournement restart will clear everything, but doesn't
 require a reload of all the media
 ===============
 */
-static void CG_MapRestart( void )
+static void CG_MapRestart()
 {
 	if ( cg_showmiss.integer )
 	{
@@ -380,15 +380,15 @@ static void CG_MapRestart( void )
 
 	CG_InitMarkPolys();
 
-	cg.intermissionStarted = qfalse;
+	cg.intermissionStarted = false;
 
 	cgs.voteTime[ TEAM_NONE ] = 0;
 
-	cg.mapRestart = qtrue;
+	cg.mapRestart = true;
 
 	CG_StartMusic();
 
-	trap_S_ClearLoopingSounds( qtrue );
+	trap_S_ClearLoopingSounds( true );
 
 	// we really should clear more parts of cg here and stop sounds
 
@@ -403,8 +403,8 @@ CG_Menu
 void CG_Menu( int menuType, int arg )
 {
 	int          menu = -1; // Menu to open
-	const char   *longMsg = NULL; // command parameter
-	const char   *shortMsg = NULL; // non-modal version of message
+	const char   *longMsg = nullptr; // command parameter
+	const char   *shortMsg = nullptr; // non-modal version of message
 
 	switch ( menuType )
 	{
@@ -531,7 +531,7 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_B_CANNOT:
-			longMsg = NULL;
+			longMsg = nullptr;
 			shortMsg = _("You cannot build that structure");
 			break;
 
@@ -763,16 +763,15 @@ CG_Say
 static void CG_Say( const char *name, int clientNum, saymode_t mode, const char *text )
 {
 	char prefix[ 21 ] = "";
-	char *ignore = "";
-	char *location = "";
+	const char *ignore = "";
+	const char *location = "";
 	char color;
-	char *maybeColon;
 	team_t team = TEAM_NONE;
 
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		clientInfo_t *ci = &cgs.clientinfo[ clientNum ];
-		char         *tcolor = S_COLOR_WHITE;
+		const char *tcolor = S_COLOR_WHITE;
 
 		name = ci->name;
 		team = ci->team;
@@ -846,11 +845,6 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	{
 		text += 4;
 		Q_strcat( prefix, sizeof( prefix ), "* " );
-		maybeColon = "";
-	}
-	else
-	{
-		maybeColon = ":";
 	}
 
 	color = '0' + UI_GetChatColour( mode, team );
@@ -865,34 +859,34 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			}
 
 		case SAY_ALL_ADMIN:
-			CG_Printf(  "%s%s%s^7%s ^%c%s\n",
-			           ignore, prefix, name, maybeColon, color, text );
+			CG_Printf(  "%s%s%s^7: ^%c%s\n",
+			           ignore, prefix, name, color, text );
 			break;
 
 		case SAY_TEAM:
-			CG_Printf( "%s%s(%s^7)%s%s ^%c%s\n",
-			           ignore, prefix, name, location, maybeColon, color, text );
+			CG_Printf( "%s%s(%s^7)%s: ^%c%s\n",
+			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_ADMINS:
 		case SAY_ADMINS_PUBLIC:
-			CG_Printf( "%s%s%s%s^7%s ^%c%s\n",
+			CG_Printf( "%s%s%s%s^7: ^%c%s\n",
 			           ignore, prefix,
 			           ( mode == SAY_ADMINS ) ? "[ADMIN]" : "[PLAYER]",
-			           name, maybeColon, color, text );
+			           name, color, text );
 			break;
 
 		case SAY_AREA:
 		case SAY_AREA_TEAM:
-			CG_Printf( "%s%s<%s^7>%s%s ^%c%s\n",
-			           ignore, prefix, name, location, maybeColon, color, text );
+			CG_Printf( "%s%s<%s^7>%s: ^%c%s\n",
+			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_PRIVMSG:
 		case SAY_TPRIVMSG:
-			CG_Printf( "%s%s[%s^7 → %s^7]%s ^%c%s\n",
+			CG_Printf( "%s%s[%s^7 → %s^7]: ^%c%s\n",
 			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
-			           maybeColon, color, text );
+			           color, text );
 
 			if ( !ignore[ 0 ] )
 			{
@@ -907,6 +901,16 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 				CG_Printf(_( ">> to reply, say: /m %d [your message] <<\n"), clientNum );
 			}
 
+			break;
+
+		case SAY_ALL_ME:
+			CG_Printf(  "%s* %s%s^7 ^%c%s\n",
+			           ignore, prefix, name, color, text );
+			break;
+
+		case SAY_TEAM_ME:
+			CG_Printf( "%s* %s(%s^7)%s ^%c%s\n",
+			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_RAW:
@@ -959,7 +963,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 	if ( !v )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find voice \"%s\"\n", voice );
-		return NULL;
+		return nullptr;
 	}
 
 	c = BG_VoiceCmdByNum( v->cmds, cmd );
@@ -968,7 +972,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find command %d "
 		           "in voice \"%s\"\n", cmd, voice );
-		return NULL;
+		return nullptr;
 	}
 
 	t = BG_VoiceTrackByNum( c->tracks, track );
@@ -977,7 +981,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find track %d for command %d in "
 		           "voice \"%s\"\n", track, cmd, voice );
-		return NULL;
+		return nullptr;
 	}
 
 	return t;
@@ -990,7 +994,7 @@ CG_ParseVoice
 voice clientNum vChan cmdNum trackNum [sayText]
 =================
 */
-static void CG_ParseVoice( void )
+static void CG_ParseVoice()
 {
 	int            clientNum;
 	voiceChannel_t vChan;
@@ -1065,15 +1069,15 @@ static void CG_ParseVoice( void )
 		switch ( vChan )
 		{
 			case VOICE_CHAN_ALL:
-				CG_Say( NULL, clientNum, SAY_ALL, sayText );
+				CG_Say( nullptr, clientNum, SAY_ALL, sayText );
 				break;
 
 			case VOICE_CHAN_TEAM:
-				CG_Say( NULL, clientNum, SAY_TEAM, sayText );
+				CG_Say( nullptr, clientNum, SAY_TEAM, sayText );
 				break;
 
 			case VOICE_CHAN_LOCAL:
-				CG_Say( NULL, clientNum, SAY_AREA_TEAM, sayText );
+				CG_Say( nullptr, clientNum, SAY_AREA_TEAM, sayText );
 				break;
 
 			default:
@@ -1110,7 +1114,7 @@ static void CG_ParseVoice( void )
 			break;
 
 		case VOICE_CHAN_LOCAL:
-			trap_S_StartSound( NULL, clientNum, CHAN_VOICE, track->track );
+			trap_S_StartSound( nullptr, clientNum, CHAN_VOICE, track->track );
 			break;
 
 		default:
@@ -1129,7 +1133,7 @@ static void CG_ParseVoice( void )
 CG_CenterPrint_f
 =================
 */
-void CG_CenterPrint_f( void )
+void CG_CenterPrint_f()
 {
 	CG_CenterPrint( CG_Argv( 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 }
@@ -1139,7 +1143,7 @@ void CG_CenterPrint_f( void )
 CG_CenterPrint_Delay_f
 =================
 */
-void CG_CenterPrint_Delay_f( void )
+void CG_CenterPrint_Delay_f()
 {
 	char cmd[ MAX_STRING_CHARS ];
 
@@ -1152,9 +1156,9 @@ void CG_CenterPrint_Delay_f( void )
 CG_CenterPrintTR_f
 =================
 */
-void CG_CenterPrintTR_f( void )
+void CG_CenterPrintTR_f()
 {
-	CG_CenterPrint( TranslateText_Internal( qfalse, 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+	CG_CenterPrint( TranslateText_Internal( false, 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 }
 
 /*
@@ -1162,11 +1166,11 @@ void CG_CenterPrintTR_f( void )
 CG_CenterPrintTR_Delay_f
 =================
 */
-void CG_CenterPrintTR_Delay_f( void )
+void CG_CenterPrintTR_Delay_f()
 {
 	char cmd[ MAX_STRING_CHARS ];
 
-	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( TranslateText_Internal( qfalse, 2 ) ) );
+	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( TranslateText_Internal( false, 2 ) ) );
 	trap_SendConsoleCommand( cmd );
 }
 
@@ -1175,7 +1179,7 @@ void CG_CenterPrintTR_Delay_f( void )
 CG_Print_f
 =================
 */
-static void CG_Print_f( void )
+static void CG_Print_f()
 {
 	CG_Printf( "%s", CG_Argv( 1 ) );
 }
@@ -1185,14 +1189,14 @@ static void CG_Print_f( void )
 CG_PrintTR_f
 =================
 */
-static void CG_PrintTR_f( void )
+static void CG_PrintTR_f()
 {
-	Com_Printf( "%s", TranslateText_Internal( qfalse, 1 ) );
+	Com_Printf( "%s", TranslateText_Internal( false, 1 ) );
 }
 
-static void CG_PrintTR_plural_f( void )
+static void CG_PrintTR_plural_f()
 {
-	Com_Printf("%s", TranslateText_Internal( qtrue, 1 ) );
+	Com_Printf("%s", TranslateText_Internal( true, 1 ) );
 }
 
 /*
@@ -1200,7 +1204,7 @@ static void CG_PrintTR_plural_f( void )
 CG_Chat_f
 =================
 */
-static void CG_Chat_f( void )
+static void CG_Chat_f()
 {
 	char id[ 3 ];
 	char mode[ 3 ];
@@ -1208,7 +1212,7 @@ static void CG_Chat_f( void )
 	trap_Argv( 1, id, sizeof( id ) );
 	trap_Argv( 2, mode, sizeof( mode ) );
 
-	CG_Say( NULL, atoi( id ), (saymode_t) atoi( mode ), CG_Argv( 3 ) );
+	CG_Say( nullptr, atoi( id ), (saymode_t) atoi( mode ), CG_Argv( 3 ) );
 }
 
 /*
@@ -1216,7 +1220,7 @@ static void CG_Chat_f( void )
 CG_AdminChat_f
 =================
 */
-static void CG_AdminChat_f( void )
+static void CG_AdminChat_f()
 {
 	char name[ MAX_NAME_LENGTH ];
 	char mode[ 3 ];
@@ -1232,7 +1236,7 @@ static void CG_AdminChat_f( void )
 CG_ServerMenu_f
 =================
 */
-static void CG_ServerMenu_f( void )
+static void CG_ServerMenu_f()
 {
 	if ( !cg.demoPlayback )
 	{
@@ -1252,7 +1256,7 @@ static void CG_ServerMenu_f( void )
 CG_ServerCloseMenus_f
 =================
 */
-static void CG_ServerCloseMenus_f( void )
+static void CG_ServerCloseMenus_f()
 {
 	trap_SendConsoleCommand( "closemenus\n" );
 }
@@ -1264,7 +1268,7 @@ CG_VCommand
 The server has asked us to execute a string from some variable
 =================
 */
-static void CG_VCommand( void )
+static void CG_VCommand()
 {
 	static int recurse = 0;
 	char       cmd[ 32 ];
@@ -1290,7 +1294,7 @@ static void CG_VCommand( void )
 	recurse = 0;
 }
 
-static void CG_GameCmds_f( void )
+static void CG_GameCmds_f()
 {
 	int i;
 	int c = trap_Argc();
@@ -1362,7 +1366,7 @@ The string has been tokenized and can be retrieved with
 CG_Argc() / CG_Argv()
 =================
 */
-static void CG_ServerCommand( void )
+static void CG_ServerCommand()
 {
 	const char       *cmd;
 	consoleCommand_t *command;

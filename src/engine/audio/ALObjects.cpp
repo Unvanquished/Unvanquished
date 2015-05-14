@@ -769,11 +769,11 @@ namespace AL {
     }
 
     std::string Device::DefaultDeviceName() {
-        return alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+        return alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);
     }
 
     std::vector<std::string> Device::ListByName() {
-        const char* list = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+        const char* list = alcGetString(nullptr, ALC_ALL_DEVICES_SPECIFIER);
 
         if (!list) {
             return {};
@@ -881,11 +881,11 @@ namespace AL {
     }
 
     std::string CaptureDevice::DefaultDeviceName() {
-        return alcGetString(NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
+        return alcGetString(nullptr, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
     }
 
     std::vector<std::string> CaptureDevice::ListByName() {
-        const char* list = alcGetString(NULL, ALC_CAPTURE_DEVICE_SPECIFIER);
+        const char* list = alcGetString(nullptr, ALC_CAPTURE_DEVICE_SPECIFIER);
 
         if (!list) {
             return {};

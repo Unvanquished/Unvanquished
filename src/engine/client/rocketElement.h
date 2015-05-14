@@ -45,7 +45,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "rocket.h"
 
-Rocket::Core::Element *activeElement = NULL;
+Rocket::Core::Element *activeElement = nullptr;
 
 class RocketElement : public Rocket::Core::Element
 {
@@ -148,7 +148,7 @@ public:
 		dimensions.y = y;
 	}
 
-	void OnRender( void )
+	void OnRender()
 	{
 		activeElement = this;
 
@@ -181,7 +181,7 @@ public:
 		delete element;
 	}
 
-	void Release( void )
+	void Release()
 	{
 		delete this;
 	}

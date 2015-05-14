@@ -33,7 +33,7 @@ CG_SizeUp_f
 Keybinding command
 =================
 */
-static void CG_SizeUp_f( void )
+static void CG_SizeUp_f()
 {
 	trap_Cvar_Set( "cg_viewsize", va( "%i", MIN( cg_viewsize.integer + 10, 100 ) ) );
 }
@@ -45,7 +45,7 @@ CG_SizeDown_f
 Keybinding command
 =================
 */
-static void CG_SizeDown_f( void )
+static void CG_SizeDown_f()
 {
 	trap_Cvar_Set( "cg_viewsize", va( "%i", MAX( cg_viewsize.integer - 10, 30 ) ) );
 }
@@ -57,20 +57,20 @@ CG_Viewpos_f
 Debugging command to print the current position
 =============
 */
-static void CG_Viewpos_f( void )
+static void CG_Viewpos_f()
 {
 	CG_Printf( "(%i %i %i) : %i\n", ( int ) cg.refdef.vieworg[ 0 ],
 	           ( int ) cg.refdef.vieworg[ 1 ], ( int ) cg.refdef.vieworg[ 2 ],
 	           ( int ) cg.refdefViewAngles[ YAW ] );
 }
 
-void CG_RequestScores( void )
+void CG_RequestScores()
 {
 		cg.scoresRequestTime = cg.time;
 		trap_SendClientCommand( "score\n" );
 }
 
-void CG_ClientList_f( void )
+void CG_ClientList_f()
 {
 	clientInfo_t *ci;
 	int          i;
@@ -110,13 +110,13 @@ void CG_ClientList_f( void )
 	Com_Printf(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
 }
 
-static void CG_ReloadHud_f( void )
+static void CG_ReloadHud_f()
 {
 	CG_Rocket_LoadHuds();
 	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
 }
 
-static void CG_CompleteClass( void )
+static void CG_CompleteClass()
 {
 	int i = 0;
 
@@ -135,7 +135,7 @@ static void CG_CompleteClass( void )
 	}
 }
 
-static void CG_CompleteBuy_internal( qboolean negatives )
+static void CG_CompleteBuy_internal( bool negatives )
 {
 	int i;
 
@@ -178,7 +178,7 @@ static void CG_CompleteBuy_internal( qboolean negatives )
 	}
 }
 
-static void CG_CompleteBuy( void )
+static void CG_CompleteBuy()
 {
 	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
 	{
@@ -188,10 +188,10 @@ static void CG_CompleteBuy( void )
 	trap_CompleteCallback( "-all" );
 	trap_CompleteCallback( "-weapons" );
 	trap_CompleteCallback( "-upgrades" );
-	CG_CompleteBuy_internal( qtrue );
+	CG_CompleteBuy_internal( true );
 }
 
-static void CG_CompleteSell( void )
+static void CG_CompleteSell()
 {
 	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
 	{
@@ -201,11 +201,11 @@ static void CG_CompleteSell( void )
 	trap_CompleteCallback( "all" );
 	trap_CompleteCallback( "weapons" );
 	trap_CompleteCallback( "upgrades" );
-	CG_CompleteBuy_internal( qfalse );
+	CG_CompleteBuy_internal( false );
 }
 
 
-static void CG_CompleteBeacon( void )
+static void CG_CompleteBeacon()
 {
 	int i;
 
@@ -219,7 +219,7 @@ static void CG_CompleteBeacon( void )
 	}
 }
 
-static void CG_CompleteBuild( void )
+static void CG_CompleteBuild()
 {
 	int i;
 
@@ -233,7 +233,7 @@ static void CG_CompleteBuild( void )
 	}
 }
 
-static void CG_CompleteName( void )
+static void CG_CompleteName()
 {
 	int           i;
 	clientInfo_t *ci;
@@ -253,19 +253,19 @@ static void CG_CompleteName( void )
 	}
 }
 
-static void CG_CompleteVsay( void )
+static void CG_CompleteVsay()
 {
 	voice_t     *voice = cgs.voices;
 	voiceCmd_t  *voiceCmd = voice->cmds;
 
-	while ( voiceCmd != NULL )
+	while ( voiceCmd != nullptr )
 	{
 		trap_CompleteCallback( voiceCmd->cmd );
 		voiceCmd = voiceCmd->next;
 	}
 }
 
-static void CG_CompleteGive( void )
+static void CG_CompleteGive()
 {
 	unsigned               i = 0;
 	static const char give[][ 12 ] =
@@ -279,7 +279,7 @@ static void CG_CompleteGive( void )
 	}
 }
 
-static void CG_CompleteTeamVote( void )
+static void CG_CompleteTeamVote()
 {
 	unsigned           i = 0;
 	static const char vote[][ 16 ] =
@@ -292,7 +292,7 @@ static void CG_CompleteTeamVote( void )
 		trap_CompleteCallback( vote[i] );
 	}
 }
-static void CG_CompleteVote( void )
+static void CG_CompleteVote()
 {
 	unsigned           i = 0;
 	static const char vote[][ 16 ] =
@@ -307,7 +307,7 @@ static void CG_CompleteVote( void )
 	}
 }
 
-static void CG_CompleteItem( void )
+static void CG_CompleteItem()
 {
 	int i = 0;
 
@@ -337,7 +337,7 @@ static void CG_CompleteItem( void )
 	}
 }
 
-static void CG_TestCGrade_f( void )
+static void CG_TestCGrade_f()
 {
 	qhandle_t shader = trap_R_RegisterShader(CG_Argv(1),
 						 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
@@ -347,37 +347,37 @@ static void CG_TestCGrade_f( void )
 	cgs.gameGradingModels[ 0 ] = -1;
 }
 
-static void CG_MessageAdmin_f( void )
+static void CG_MessageAdmin_f()
 {
 	cg.sayType = SAY_TYPE_ADMIN;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
-static void CG_MessageCommand_f( void )
+static void CG_MessageCommand_f()
 {
 	cg.sayType = SAY_TYPE_COMMAND;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
-static void CG_MessageTeam_f( void )
+static void CG_MessageTeam_f()
 {
 	cg.sayType = SAY_TYPE_TEAM;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
-static void CG_MessagePublic_f( void )
+static void CG_MessagePublic_f()
 {
 	cg.sayType = SAY_TYPE_PUBLIC;
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
-static void CG_ToggleMenu_f( void )
+static void CG_ToggleMenu_f()
 {
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_INGAME_MENU ].id, "show" );
 }
 
 // FIXME: Don't hardcode scoreboard ID
-void CG_ShowScores_f( void )
+void CG_ShowScores_f()
 {
 	if ( cg.intermissionStarted )
 	{
@@ -388,27 +388,27 @@ void CG_ShowScores_f( void )
 	{
 		trap_PrepareKeyUp();
 
-		trap_Rocket_ShowScoreboard( "scoreboard", qtrue );
-		cg.showScores = qtrue;
+		trap_Rocket_ShowScoreboard( "scoreboard", true );
+		cg.showScores = true;
 	}
 	else
 	{
-		cg.showScores = qfalse;
+		cg.showScores = false;
 	}
 }
 
-void CG_HideScores_f( void )
+void CG_HideScores_f()
 {
 	if ( cg.intermissionStarted )
 	{
 		return;
 	}
 
-	trap_Rocket_ShowScoreboard( "scoreboard", qfalse );
-	cg.showScores = qfalse;
+	trap_Rocket_ShowScoreboard( "scoreboard", false );
+	cg.showScores = false;
 }
 
-void CG_BeaconMenu_f( void )
+void CG_BeaconMenu_f()
 {
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }
@@ -416,8 +416,8 @@ void CG_BeaconMenu_f( void )
 static const struct
 {
 	const char *cmd;
-	void ( *function )( void );
-	void ( *completer )( void );
+	void ( *function )();
+	void ( *completer )();
 } commands[] =
 {
 	{ "+scores",           CG_ShowScores_f,        0                },
@@ -453,10 +453,12 @@ static const struct
 	{ "listrotation",     0,                       0                },
 	{ "m",                0,                       CG_CompleteName  },
 	{ "maplog",           0,                       0                },
+	{ "me",               0,                       0                },
 	{ "message_admin",    CG_MessageAdmin_f,       0                },
 	{ "message_command",  CG_MessageCommand_f,     0                },
 	{ "message_public",   CG_MessagePublic_f,      0                },
 	{ "message_team",     CG_MessageTeam_f,        0                },
+	{ "me_team",          0,                       0                },
 	{ "mt",               0,                       CG_CompleteName  },
 	{ "nextframe",        CG_TestModelNextFrame_f, 0                },
 	{ "nextskin",         CG_TestModelNextSkin_f,  0                },
@@ -503,7 +505,7 @@ The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 =================
 */
-qboolean ConsoleCommand( void )
+bool ConsoleCommand()
 {
 	char buffer[BIG_INFO_STRING];
 	consoleCommand_t *cmd;
@@ -524,7 +526,7 @@ qboolean ConsoleCommand( void )
 	{
 		cmd->function();
 	}
-	return qtrue;
+	return true;
 }
 
 /*
@@ -535,7 +537,7 @@ Let the client system know about all of our commands
 so it can perform tab completion
 =================
 */
-void CG_InitConsoleCommands( void )
+void CG_InitConsoleCommands()
 {
 	unsigned i;
 

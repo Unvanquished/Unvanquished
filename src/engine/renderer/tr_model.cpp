@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LL(x) x = LittleLong(x)
 #define LF(x) x = LittleFloat(x)
 
-qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
-qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
-qboolean R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
+bool R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
+bool R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
+bool R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
 
 model_t  *loadmodel;
 
@@ -55,13 +55,13 @@ model_t        *R_GetModelByHandle( qhandle_t index )
 /*
 ** R_AllocModel
 */
-model_t        *R_AllocModel( void )
+model_t        *R_AllocModel()
 {
 	model_t *mod;
 
 	if ( tr.numModels == MAX_MOD_KNOWN )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	mod = (model_t*) ri.Hunk_Alloc( sizeof( *tr.models[ tr.numModels ] ), h_low );
@@ -91,7 +91,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	int       bufferLen = 0;
 	int       lod;
 	int       ident;
-	qboolean  loaded;
+	bool  loaded;
 	qhandle_t hModel;
 	int       numLoaded;
 
@@ -124,7 +124,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	}
 
 	// allocate a new model_t
-	if ( ( mod = R_AllocModel() ) == NULL )
+	if ( ( mod = R_AllocModel() ) == nullptr )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterModel: R_AllocModel() failed for '%s'\n", name );
 		return 0;
@@ -145,7 +145,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	{
 		// try loading skeletal file
 
-		loaded = qfalse;
+		loaded = false;
 		bufferLen = ri.FS_ReadFile( name, ( void ** ) &buffer );
 
 		if ( buffer )
@@ -267,11 +267,11 @@ fail:
 /*
 ** RE_BeginRegistration
 */
-qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out )
+bool RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out )
 {
 	if ( !R_Init() )
 	{
-		return qfalse;
+		return false;
 	}
 
 	*glconfigOut = glConfig;
@@ -280,7 +280,11 @@ qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Ou
 	R_SyncRenderThread();
 
 	tr.visIndex = 0;
-	memset( tr.visClusters, -2, sizeof( tr.visClusters ) );   // force markleafs to regenerate
+	// force markleafs to regenerate
+	for (size_t i = 0; i < MAX_VISCOUNTS; ++i)
+	{
+		tr.visClusters[i] = -1;
+	}
 
 	R_ClearFlares();
 
@@ -292,16 +296,11 @@ qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Ou
 	tr.worldEntity.e.shaderRGBA[ 2 ] = 255;
 	tr.worldEntity.e.shaderRGBA[ 3 ] = 255;
 
-	tr.worldEntity.e.nonNormalizedAxes = qfalse;
+	tr.worldEntity.e.nonNormalizedAxes = false;
 
-	tr.registered = qtrue;
+	tr.registered = true;
 
-	// NOTE: this sucks, for some reason the first stretch pic is never drawn
-	// without this we'd see a white flash on a level load because the very
-	// first time the level shot would not be drawn
-	RE_StretchPic( 0, 0, 0, 0, 0, 0, 1, 1, 0 );
-
-	return qtrue;
+	return true;
 }
 
 //=============================================================================
@@ -311,11 +310,11 @@ qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Ou
 R_ModelInit
 ===============
 */
-void R_ModelInit( void )
+void R_ModelInit()
 {
 	model_t *mod;
 
-	// leave a space for NULL model
+	// leave a space for nullptr model
 	tr.numModels = 0;
 
 	mod = R_AllocModel();
@@ -327,22 +326,15 @@ void R_ModelInit( void )
 R_Modellist_f
 ================
 */
-void R_Modellist_f( void )
+void R_Modellist_f()
 {
 	int      i, j, k;
 	model_t  *mod;
 	int      total;
 	int      totalDataSize;
-	qboolean showFrames;
+	bool showFrames;
 
-	if ( !strcmp( ri.Cmd_Argv( 1 ), "frames" ) )
-	{
-		showFrames = qtrue;
-	}
-	else
-	{
-		showFrames = qfalse;
-	}
+	showFrames = !strcmp( ri.Cmd_Argv( 1 ), "frames" );
 
 	total = 0;
 	totalDataSize = 0;
@@ -425,7 +417,7 @@ static int R_GetTag( mdvModel_t *model, int frame, const char *_tagName, int sta
 
 	if ( startTagIndex > model->numTags )
 	{
-		*outTag = NULL;
+		*outTag = nullptr;
 		return -1;
 	}
 
@@ -441,7 +433,7 @@ static int R_GetTag( mdvModel_t *model, int frame, const char *_tagName, int sta
 		}
 	}
 
-	*outTag = NULL;
+	*outTag = nullptr;
 	return -1;
 }
 
@@ -474,7 +466,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 	frontLerp = frac;
 	backLerp = 1.0 - frac;
 
-	start = end = NULL;
+	start = end = nullptr;
 	if ( model->type == MOD_MD5 || model->type == MOD_IQM )
 	{
 		vec3_t tmp;

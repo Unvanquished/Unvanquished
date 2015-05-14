@@ -145,13 +145,15 @@ namespace Cmd {
 
             bool ExecFile(Str::StringRef filename, bool executeSilent) const {
                 std::string buffer;
-                try {
-                    if (readHomepath) {
-                        buffer = FS::HomePath::OpenRead(FS::Path::Build("config", filename)).ReadAll();
-                    } else {
-                        buffer = FS::PakPath::ReadFile(filename);
-                    }
-                } catch (std::system_error&) {
+                std::error_code err;
+                if (readHomepath) {
+                    FS::File file = FS::HomePath::OpenRead(FS::Path::Build("config", filename), err);
+                    if (!err)
+                        buffer = file.ReadAll(err);
+                } else {
+                    buffer = FS::PakPath::ReadFile(filename, err);
+                }
+                if (err) {
                     return false;
                 }
 

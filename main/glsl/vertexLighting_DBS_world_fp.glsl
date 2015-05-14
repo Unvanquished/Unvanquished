@@ -83,14 +83,6 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 
 	vec3 V = normalize(var_ViewDir);
 
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		V = -V;
-		L = -L;
-	}
-#endif
-
 	vec2 texNormal = var_TexNormalSpecular.st;
 	vec2 texSpecular = var_TexNormalSpecular.pq;
 
@@ -177,13 +169,6 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 #else // USE_NORMAL_MAPPING
 
 	vec3 N = normalize(var_Normal);
-
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		N = -N;
-	}
-#endif
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse) * var_Color;

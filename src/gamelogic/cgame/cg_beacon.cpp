@@ -36,7 +36,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 #define bc_etime time2
 #define bc_mtime apos.trTime
 
-void CG_LoadBeaconsConfig( void )
+void CG_LoadBeaconsConfig()
 {
 	beaconsConfig_t  *bc = &cgs.bc;
 	const char       *path = "ui/beacons.cfg";
@@ -150,14 +150,14 @@ else if( !Q_stricmp( token.string, #x ) ) \
  * @brief Fills cg.beacons with explicit (ET_BEACON entity) beacons.
  * @return Whether all beacons found space in cg.beacons.
  */
-static bool LoadExplicitBeacons( void )
+static bool LoadExplicitBeacons()
 {
 	int i;
 	centity_t     *ent;
 	entityState_t *es;
 	cbeacon_t     *beacon;
 
-	cg.highlightedBeacon = NULL;
+	cg.highlightedBeacon = nullptr;
 
 	// Find beacons and add them to cg.beacons.
 	for( cg.beaconCount = 0, i = 0; i < cg.snap->entities.size(); i++ )
@@ -195,7 +195,7 @@ static bool LoadExplicitBeacons( void )
 			int pClass = ( ( targetES->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
 
 			VectorCopy( targetCent->lerpOrigin, center );
-			BG_ClassBoundingBox( pClass, mins, maxs, NULL, NULL, NULL );
+			BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
 			BG_MoveOriginToBBOXCenter( center, mins, maxs );
 
 			// TODO: Interpolate when target entity pops in.
@@ -218,7 +218,7 @@ static bool LoadExplicitBeacons( void )
  * @brief Fills cg.beacons with implicit (client side generated) beacons.
  * @return Whether all beacons found space in cg.beacons.
  */
-static bool LoadImplicitBeacons( void )
+static bool LoadImplicitBeacons()
 {
 	// All alive aliens have enemy sense.
 	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
@@ -250,7 +250,7 @@ static bool LoadImplicitBeacons( void )
 				int pClass = ( ( es->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
 
 				VectorCopy( ent->lerpOrigin, center );
-				BG_ClassBoundingBox( pClass, mins, maxs, NULL, NULL, NULL );
+				BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
 				BG_MoveOriginToBBOXCenter( center, mins, maxs );
 
 				VectorCopy( center, beacon->origin );
@@ -312,11 +312,11 @@ static int CompareBeaconsByDist( const void *a, const void *b )
  * @brief Marks the nearest refreshing buildable if low on health or ammo.
  * @note  Assumes that cg.beacons is sorted.
  */
-static void MarkRelevantBeacons( void )
+static void MarkRelevantBeacons()
 {
 	const playerState_t *ps = &cg.predictedPlayerState;
 	int team = ps->persistant[ PERS_TEAM ];
-	qboolean lowammo, energy;
+	bool lowammo, energy;
 
 	lowammo = BG_PlayerLowAmmo( ps, &energy );
 
@@ -358,7 +358,7 @@ static void MarkRelevantBeacons( void )
 	}
 }
 
-static void SetHighlightedBeacon( void )
+static void SetHighlightedBeacon()
 {
 	for( int beaconNum = 0; beaconNum < cg.beaconCount; beaconNum++ ) {
 		cbeacon_t *beacon = cg.beacons[ beaconNum ];
@@ -403,7 +403,7 @@ static void DrawBeacon( cbeacon_t *b )
 	float alpha; // target
 	int time_in, time_left;
 	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
-	qboolean front;
+	bool front;
 	const beaconAttributes_t *ba = BG_Beacon( b->type );
 
 	// reset animations
@@ -417,7 +417,7 @@ static void DrawBeacon( cbeacon_t *b )
 	if( !b->old )
 	{
 		if( time_in > 1000 ) //TODO: take time since entering the game into account
-			b->old = qtrue;
+			b->old = true;
 		else
 		{
 			if( ba->inSound && ( b->type != BCT_TAG || ( b->flags & EF_BC_ENEMY ) ) )
@@ -471,7 +471,7 @@ static void DrawBeacon( cbeacon_t *b )
 			if( !b->eventFired )
 			{
 				trap_S_StartLocalSound( cgs.media.timerBeaconExpiredSound, CHAN_LOCAL_SOUND );
-				b->eventFired = qtrue;
+				b->eventFired = true;
 			}
 		}
 		else
@@ -485,7 +485,7 @@ static void DrawBeacon( cbeacon_t *b )
 	{
 		trace_t tr;
 
-		CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, b->origin, ENTITYNUM_NONE, CONTENTS_SOLID, 0 );
+		CG_Trace( &tr, cg.refdef.vieworg, nullptr, nullptr, b->origin, ENTITYNUM_NONE, CONTENTS_SOLID, 0 );
 
 		target = ( ( tr.fraction > 1.0f - FLT_EPSILON ) ? 1.0 : 0.0 );
 		CG_ExponentialFade( &b->t_occlusion, target, 10 );
@@ -570,37 +570,37 @@ static void DrawBeacon( cbeacon_t *b )
 		                         cgs.bc.hudRect[1][1] - b->size/2 );
 		Vector2Subtract( b->pos, cgs.bc.hudCenter, b->clamp_dir );
 		ProjectPointOntoRectangleOutwards( b->pos, cgs.bc.hudCenter, b->clamp_dir, (const vec2_t*)screen );
-		b->clamped = qtrue;
+		b->clamped = true;
 	}
 	else
-		b->clamped = qfalse;
+		b->clamped = false;
 }
 
 /**
  * @brief Hands over information about highlighted beacon to UI.
  */
-static void HandHLBeaconToUI( void )
+static void HandHLBeaconToUI()
 {
 	cbeacon_t *beacon;
 	beaconRocket_t * const br = &cg.beaconRocket;
-	qboolean showIcon     = qfalse,
-	         showName     = qfalse,
-	         showInfo     = qfalse,
-	         showDistance = qfalse,
-	         showAge      = qfalse,
-	         showOwner    = qfalse;
+	bool showIcon     = false,
+	         showName     = false,
+	         showInfo     = false,
+	         showDistance = false,
+	         showAge      = false,
+	         showOwner    = false;
 
 	if( ( beacon = cg.highlightedBeacon ) )
 	{
 		// icon
 		if ( ( br->icon = CG_BeaconDescriptiveIcon( beacon ) ) )
 		{
-			showIcon = qtrue;
+			showIcon = true;
 		}
 
 		// name
 		CG_BeaconName( beacon, br->name, sizeof( br->name ) );
-		showName = qtrue;
+		showName = true;
 
 		// info
 		if ( beacon->type == BCT_TAG &&
@@ -609,13 +609,13 @@ static void HandHLBeaconToUI( void )
 		{
 			Com_sprintf( br->info, sizeof( br->info ), "Carrying %s",
 			             BG_Weapon( beacon->data )->humanName );
-			showInfo = qtrue;
+			showInfo = true;
 		}
 
 		// distance
 		Com_sprintf( br->distance, sizeof( br->distance ), "%im from here",
 		             (int)round( beacon->dist * QU_TO_METER ) );
-		showDistance = qtrue;
+		showDistance = true;
 
 		// age
 		if( beacon->type == BCT_TAG &&
@@ -630,7 +630,7 @@ static void HandHLBeaconToUI( void )
 				Com_sprintf( br->age, sizeof( br->age ), "Spotted %i:%02i ago",
 				             age / 60000, ( age / 1000 ) % 60 );
 
-			showAge = qtrue;
+			showAge = true;
 		}
 
 		// owner
@@ -640,7 +640,7 @@ static void HandHLBeaconToUI( void )
 		{
 				Com_sprintf( br->owner, sizeof( br->owner ), "by ^7%s",
 				             cgs.clientinfo[ beacon->owner ].name );
-				showOwner = qtrue;
+				showOwner = true;
 		}
 	}
 
@@ -655,7 +655,7 @@ static void HandHLBeaconToUI( void )
 /**
  * @brief Loads and runs beacons, passes beacon data to the UI.
  */
-void CG_RunBeacons( void )
+void CG_RunBeacons()
 {
 	// Don't load implicit beacons if there wasn't enough space for the explicit ones.
 	LoadExplicitBeacons() && LoadImplicitBeacons();
@@ -671,7 +671,7 @@ void CG_RunBeacons( void )
 	}
 
 	for( int beaconNum = 0; beaconNum < cg.beaconCount; beaconNum++ ) {
-		cg.beacons[ beaconNum ]->old = qtrue;
+		cg.beacons[ beaconNum ]->old = true;
 		cg.beacons[ beaconNum ]->oldFlags = cg.beacons[ beaconNum ]->flags;
 	}
 
@@ -718,7 +718,7 @@ qhandle_t CG_BeaconDescriptiveIcon( const cbeacon_t *b )
 	}
 }
 
-char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
+const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 {
 	if( b->type <= BCT_NONE || b->type > NUM_BEACON_TYPES ) {
 		return strncpy( out, "b->type out of range", len );
@@ -772,7 +772,7 @@ char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 				suffix = "Base";
 			}
 
-			snprintf( out, len, "%s %s", prefix, suffix );
+			Q_snprintf( out, len, "%s %s", prefix, suffix );
 			return out;
 		}
 

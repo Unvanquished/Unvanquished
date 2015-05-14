@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VMMain.h"
 
 // The old console command handler that should be defined in all VMs
-qboolean ConsoleCommand();
+bool ConsoleCommand();
 void CompleteCommand(int);
 
 const char* Trans_Gettext(const char* text) {
@@ -182,7 +182,7 @@ class TrapProxyCommand: public Cmd::CmdBase {
     public:
         TrapProxyCommand() : Cmd::CmdBase(0) {
         }
-        virtual void Run(const Cmd::Args& args) const {
+        virtual void Run(const Cmd::Args& args) const OVERRIDE {
             // Push a pointer to args, it is fine because we remove the pointer before args goes out of scope
             argStack.push_back(&args);
             ConsoleCommand();
@@ -221,7 +221,7 @@ void trap_RemoveCommand(const char *cmdName) {
     Cmd::RemoveCommand(cmdName);
 }
 
-int trap_Argc(void) {
+int trap_Argc() {
     if (argStack.empty()) {
         return 0;
     }
@@ -377,7 +377,7 @@ class VMCvarProxy : public Cvar::CvarProxy {
         virtual Cvar::OnValueChangedResult OnValueChanged(Str::StringRef newValue) OVERRIDE {
             value = newValue;
             modificationCount++;
-            return {true, ""};
+            return Cvar::OnValueChangedResult{true, ""};
         }
 
         void Update(vmCvar_t* cvar) {
@@ -471,7 +471,7 @@ namespace Log {
 // Common functions for all syscalls
 
 static Sys::SteadyClock::time_point baseTime;
-int trap_Milliseconds(void)
+int trap_Milliseconds()
 {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(Sys::SteadyClock::now() - baseTime).count();
 }
@@ -521,7 +521,7 @@ void trap_SendConsoleCommand(const char *text)
 int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
 {
 	int ret, handle;
-	VM::SendMsg<VM::FSFOpenFileMsg>(qpath, f != NULL, mode, ret, handle);
+	VM::SendMsg<VM::FSFOpenFileMsg>(qpath, f != nullptr, mode, ret, handle);
 	if (f)
 		*f = handle;
 	return ret;
@@ -575,21 +575,21 @@ int trap_FS_GetFileListRecursive(const char *path, const char *extension, char *
 	return res;
 }
 
-qboolean trap_FindPak(const char *name)
+bool trap_FindPak(const char *name)
 {
 	bool res;
 	VM::SendMsg<VM::FSFindPakMsg>(name, res);
 	return res;
 }
 
-qboolean trap_FS_LoadPak( const char *pak, const char* prefix )
+bool trap_FS_LoadPak( const char *pak, const char* prefix )
 {
 	bool res;
 	VM::SendMsg<VM::FSLoadPakMsg>(pak, prefix, res);
 	return res;
 }
 
-void trap_FS_LoadAllMapMetadata( void )
+void trap_FS_LoadAllMapMetadata()
 {
 	VM::SendMsg<VM::FSLoadMapMetadataMsg>();
 }
@@ -615,9 +615,9 @@ int trap_Parse_FreeSource(int handle)
 	return res;
 }
 
-int trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
+bool trap_Parse_ReadToken(int handle, pc_token_t *pc_token)
 {
-	int res;
+	bool res;
 	VM::SendMsg<VM::ParseReadTokenMsg>(handle, res, *pc_token);
 	return res;
 }

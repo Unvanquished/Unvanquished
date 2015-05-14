@@ -61,7 +61,7 @@ Maryland 20850 USA.
 // snapshots are a view of the server at a given time
 typedef struct
 {
-	qboolean      valid; // cleared if delta parsing was invalid
+	bool      valid; // cleared if delta parsing was invalid
 	int           snapFlags; // rate delayed and dropped commands
 
 	int           serverTime; // server time the message is valid for (in msec)
@@ -131,9 +131,9 @@ typedef struct
 	int          oldFrameServerTime; // to check tournament restarts
 	int          serverTimeDelta; // cl.serverTime = cls.realtime + cl.serverTimeDelta
 	// this value changes as net lag varies
-	qboolean     extrapolatedSnapshot; // set if any cgame frame has been forced to extrapolate
+	bool     extrapolatedSnapshot; // set if any cgame frame has been forced to extrapolate
 	// cleared when CL_AdjustTimeDelta looks at it
-	qboolean     newSnapshots; // set on parse of any valid packet
+	bool     newSnapshots; // set on parse of any valid packet
 
 	char         mapname[ MAX_QPATH ]; // extracted from CS_SERVERINFO
 
@@ -213,7 +213,7 @@ typedef struct
 	// unreliable binary data to send to server
 	int      binaryMessageLength;
 	char     binaryMessage[ MAX_BINARY_MESSAGE ];
-	qboolean binaryMessageOverflowed;
+	bool binaryMessageOverflowed;
 
 	// server message (unreliable) and command (reliable) sequence
 	// numbers are NOT cleared at level changes, but continue to
@@ -238,23 +238,23 @@ typedef struct
 	char         downloadList[ MAX_INFO_STRING ]; // list of paks we need to download
 
 	// www downloading
-	qboolean bWWWDl; // we have a www download going
-	qboolean bWWWDlAborting; // disable the CL_WWWDownload until server gets us a gamestate (used for aborts)
+	bool bWWWDl; // we have a www download going
+	bool bWWWDlAborting; // disable the CL_WWWDownload until server gets us a gamestate (used for aborts)
 	char     redirectedList[ MAX_INFO_STRING ]; // list of files that we downloaded through a redirect since last FS_ComparePaks
 	char     badChecksumList[ MAX_INFO_STRING ]; // list of files for which wwwdl redirect is broken (wrong checksum)
 	char     newsString[ MAX_NEWS_STRING ];
 
 	// demo information
 	char         demoName[ MAX_QPATH ];
-	qboolean     demorecording;
-	qboolean     demoplaying;
-	qboolean     demowaiting; // don't record until a non-delta message is received
-	qboolean     firstDemoFrameSkipped;
+	bool     demorecording;
+	bool     demoplaying;
+	bool     demowaiting; // don't record until a non-delta message is received
+	bool     firstDemoFrameSkipped;
 	fileHandle_t demofile;
 
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
-	qboolean voipEnabled;
-	qboolean speexInitialized;
+	bool voipEnabled;
+	bool speexInitialized;
 	int      speexFrameSize;
 	int      speexSampleRate;
 
@@ -265,8 +265,8 @@ typedef struct
 	byte      voipIncomingGeneration[ MAX_CLIENTS ];
 	int       voipIncomingSequence[ MAX_CLIENTS ];
 	float     voipGain[ MAX_CLIENTS ];
-	qboolean  voipIgnore[ MAX_CLIENTS ];
-	qboolean  voipMuteAll;
+	bool  voipIgnore[ MAX_CLIENTS ];
+	bool  voipMuteAll;
 
 	// outgoing data...
 	// if voipTargets[i / 8] & (1 << (i % 8)),
@@ -284,7 +284,7 @@ typedef struct
 	float                voipPower;
 #endif
 
-	qboolean     waverecording;
+	bool     waverecording;
 	fileHandle_t wavefile;
 	int          wavetime;
 
@@ -323,7 +323,7 @@ typedef struct
 	int      load;
 	char     mapName[ MAX_NAME_LENGTH ];
 	char     game[ MAX_NAME_LENGTH ];
-	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
+	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, nullptr otherwise
 	int      netType;
 	int      clients;
 	int      bots;
@@ -331,7 +331,7 @@ typedef struct
 	int      minPing;
 	int      maxPing;
 	int      ping;
-	qboolean visible;
+	bool visible;
 	int      friendlyFire; // NERVE - SMF
 	int      needpass;
 	char     gameName[ MAX_NAME_LENGTH ]; // Arnout
@@ -346,13 +346,13 @@ typedef struct
 	char        reconnectCmd[ MAX_STRING_CHARS ]; // command to be used on reconnection
 
 	// when the server clears the hunk, all of these must be restarted
-	qboolean rendererStarted;
-	qboolean soundStarted;
-	qboolean soundRegistered;
-	qboolean uiStarted;
-	qboolean cgameStarted;
+	bool rendererStarted;
+	bool soundStarted;
+	bool soundRegistered;
+	bool uiStarted;
+	bool cgameStarted;
 
-	qboolean cgameCVarsRegistered;
+	bool cgameCVarsRegistered;
 
 	int      framecount;
 	int      frametime; // msec since last frame
@@ -398,18 +398,18 @@ typedef struct
 	qhandle_t   whiteShader;
 	qhandle_t   consoleShader;
 	qhandle_t   consoleShader2; // NERVE - SMF - merged from WolfSP
-	qboolean    useLegacyConsoleFont;
-	qboolean    useLegacyConsoleFace;
+	bool    useLegacyConsoleFont;
+	bool    useLegacyConsoleFace;
 	fontInfo_t *consoleFont;
 
 	// www downloading
 	// in the static stuff since this may have to survive server disconnects
 	// if new stuff gets added, CL_ClearStaticDownload code needs to be updated for clear up
-	qboolean bWWWDlDisconnected; // keep going with the download after server disconnect
+	bool bWWWDlDisconnected; // keep going with the download after server disconnect
 	char     downloadName[ MAX_OSPATH ];
 	char     downloadTempName[ MAX_OSPATH ]; // in wwwdl mode, this is OS path (it's a qpath otherwise)
 	char     originalDownloadName[ MAX_QPATH ]; // if we get a redirect, keep a copy of the original file path
-	qboolean downloadRestart; // if true, we need to do another FS_Restart because we downloaded a pak
+	bool downloadRestart; // if true, we need to do another FS_Restart because we downloaded a pak
 } clientStatic_t;
 
 extern clientStatic_t cls;
@@ -584,34 +584,34 @@ extern  cvar_t *cl_voip;
 // cl_main
 //
 
-void        CL_Init( void );
-void        CL_FlushMemory( void );
-void        CL_ShutdownAll( void );
+void        CL_Init();
+void        CL_FlushMemory();
+void        CL_ShutdownAll();
 void        CL_AddReliableCommand( const char *cmd );
 
 void        CL_RegisterButtonCommands( const char *cmdList );
 
-void        CL_StartHunkUsers( void );
+void        CL_StartHunkUsers();
 
-void        CL_Disconnect_f( void );
-void        CL_GetChallengePacket( void );
-void        CL_Vid_Restart_f( void );
-void        CL_Snd_Restart_f( void );
+void        CL_Disconnect_f();
+void        CL_GetChallengePacket();
+void        CL_Vid_Restart_f();
+void        CL_Snd_Restart_f();
 
-void        CL_NextDemo( void );
-void        CL_ReadDemoMessage( void );
-void        CL_StartDemoLoop( void );
+void        CL_NextDemo();
+void        CL_ReadDemoMessage();
+void        CL_StartDemoLoop();
 
-void        CL_InitDownloads( void );
-void        CL_NextDownload( void );
+void        CL_InitDownloads();
+void        CL_NextDownload();
 
 void        CL_GetPing( int n, char *buf, int buflen, int *pingtime );
 void        CL_GetPingInfo( int n, char *buf, int buflen );
 void        CL_ClearPing( int n );
-int         CL_GetPingQueueCount( void );
+int         CL_GetPingQueueCount();
 
-void        CL_ShutdownRef( void );
-qboolean    CL_InitRef( void );
+void        CL_ShutdownRef();
+bool    CL_InitRef();
 
 int         CL_ServerStatus( const char *serverAddress, char *serverStatusString, int maxLen );
 
@@ -620,8 +620,8 @@ void CL_Record( const char *name );
 //
 // cl_keys (for input usage)
 //
-int             Key_GetKeyNumber(void);
-unsigned int    Key_GetKeyTime(void);
+int             Key_GetKeyNumber();
+unsigned int    Key_GetKeyTime();
 
 //
 // cl_input
@@ -631,8 +631,8 @@ typedef struct
 	int      down[ 2 ]; // key nums holding it down
 	unsigned downtime; // msec timestamp
 	unsigned msec; // msec down this frame if both a down and up happened
-	qboolean active; // current state
-	qboolean wasPressed; // set when down, not cleared when up
+	bool active; // current state
+	bool wasPressed; // set when down, not cleared when up
 } kbutton_t;
 
 typedef enum
@@ -657,20 +657,20 @@ typedef enum
   NUM_BUTTONS = KB_BUTTONS + USERCMD_BUTTONS
 } kbuttons_t;
 
-void CL_ClearKeys( void );
-void CL_ClearCmdButtons( void );
+void CL_ClearKeys();
+void CL_ClearCmdButtons();
 
-void CL_InitInput( void );
-void CL_SendCmd( void );
-void CL_ClearState( void );
-void CL_ReadPackets( void );
+void CL_InitInput();
+void CL_SendCmd();
+void CL_ClearState();
+void CL_ReadPackets();
 
-void CL_WritePacket( void );
+void CL_WritePacket();
 
-void IN_Notebook( void );
-void IN_Help( void );
+void IN_Notebook();
+void IN_Help();
 
-void IN_PrepareKeyUp( void );
+void IN_PrepareKeyUp();
 
 //----(SA)
 
@@ -679,33 +679,33 @@ int      Key_StringToKeynum( const char *str );
 const char *Key_KeynumToString( int keynum );
 
 //cl_irc.c
-void     CL_IRCSetup( void );
-void     CL_InitIRC( void );
-void     CL_IRCInitiateShutdown( void );
-void     CL_IRCWaitShutdown( void );
-void     CL_IRCSay( void );
-qboolean CL_IRCIsConnected( void );
-qboolean CL_IRCIsRunning( void );
+void     CL_IRCSetup();
+void     CL_InitIRC();
+void     CL_IRCInitiateShutdown();
+void     CL_IRCWaitShutdown();
+void     CL_IRCSay();
+bool CL_IRCIsConnected();
+bool CL_IRCIsRunning();
 
 //
 // cl_parse.c
 //
 #if defined(USE_VOIP) && !defined(BUILD_SERVER)
-void       CL_Voip_f( void );
+void       CL_Voip_f();
 
 #endif
 
-void CL_SystemInfoChanged( void );
+void CL_SystemInfoChanged();
 void CL_ParseServerMessage( msg_t *msg );
 
 //====================================================================
 
 void     CL_ServerInfoPacket( netadr_t from, msg_t *msg );
-void     CL_LocalServers_f( void );
-void     CL_GlobalServers_f( void );
-void     CL_FavoriteServers_f( void );
-void     CL_Ping_f( void );
-qboolean CL_UpdateVisiblePings_f( int source );
+void     CL_LocalServers_f();
+void     CL_GlobalServers_f();
+void     CL_FavoriteServers_f();
+void     CL_Ping_f();
+bool CL_UpdateVisiblePings_f( int source );
 
 //
 // console
@@ -729,7 +729,7 @@ typedef struct
 
 typedef struct
 {
-	qboolean initialized;
+	bool initialized;
 
 	conChar_t text[ CON_TEXTSIZE ];
 
@@ -775,7 +775,7 @@ typedef struct
 	int height;
 
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
-	qboolean isOpened;
+	bool isOpened;
 
 	/**
 	 * changes between 0.0 and 1.0 correlated with currentAnimationFraction
@@ -790,32 +790,32 @@ extern console_t consoleState;
 
 void             Con_DrawCharacter( int cx, int line, int num );
 
-qboolean         Con_CheckResize( void );
-void             Con_Init( void );
-void             Con_Clear_f( void );
-void             Con_ToggleConsole_f( void );
-void             Con_OpenConsole_f( void );
+bool         Con_CheckResize();
+void             Con_Init();
+void             Con_Clear_f();
+void             Con_ToggleConsole_f();
+void             Con_OpenConsole_f();
 void             Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text );
-void             Con_DrawConsole( void );
-void             Con_RunConsole( void );
-void             Con_PageUp( void );
-void             Con_PageDown( void );
-void             Con_JumpUp( void );
+void             Con_DrawConsole();
+void             Con_RunConsole();
+void             Con_PageUp();
+void             Con_PageDown();
+void             Con_JumpUp();
 void             Con_ScrollUp( int lines );
 void             Con_ScrollDown( int lines );
-void             Con_ScrollToMarkerLine( void );
-void             Con_ScrollToTop( void );
-void             Con_ScrollToBottom( void );
-void             Con_Close( void );
+void             Con_ScrollToMarkerLine();
+void             Con_ScrollToTop();
+void             Con_ScrollToBottom();
+void             Con_Close();
 
-void             CL_LoadConsoleHistory( void );
-void             CL_SaveConsoleHistory( void );
+void             CL_LoadConsoleHistory();
+void             CL_SaveConsoleHistory();
 
 //
 // cl_scrn.c
 //
-void  SCR_Init( void );
-void  SCR_UpdateScreen( void );
+void  SCR_Init();
+void  SCR_UpdateScreen();
 
 int   SCR_GetBigStringWidth( const char *str );  // returns in virtual 640x480 coordinates
 
@@ -825,37 +825,37 @@ void  SCR_FillRect( float x, float y, float width, float height, const float *co
 void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
 void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 
-void  SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape );  // draws a string with embedded color control characters with fade
-void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape );  // ignores embedded color control characters
-void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape );
+void  SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape );  // draws a string with embedded color control characters with fade
+void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, bool noColorEscape );  // ignores embedded color control characters
+void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape );
 void  SCR_DrawSmallUnichar( int x, int y, int ch );
 void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
 void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
 float SCR_ConsoleFontUnicharWidth( int ch );
-float SCR_ConsoleFontCharHeight( void );
-float SCR_ConsoleFontCharVPadding( void );
+float SCR_ConsoleFontCharHeight();
+float SCR_ConsoleFontCharVPadding();
 float SCR_ConsoleFontStringWidth( const char *s, int len );
 
 //
 // cl_cin.c
 //
 
-void     CL_PlayCinematic_f( void );
-void     SCR_DrawCinematic( void );
-void     SCR_RunCinematic( void );
-void     SCR_StopCinematic( void );
+void     CL_PlayCinematic_f();
+void     SCR_DrawCinematic();
+void     SCR_RunCinematic();
+void     SCR_StopCinematic();
 int      CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status CIN_StopCinematic( int handle );
 e_status CIN_RunCinematic( int handle );
 void     CIN_DrawCinematic( int handle );
 void     CIN_SetExtents( int handle, int x, int y, int w, int h );
-void     CIN_SetLooping( int handle, qboolean loop );
+void     CIN_SetLooping( int handle, bool loop );
 void     CIN_UploadCinematic( int handle );
-void     CIN_CloseAllVideos( void );
+void     CIN_CloseAllVideos();
 
 // yuv->rgb will be used for Theora(ogm)
-void     ROQ_GenYUVTables( void );
+void     ROQ_GenYUVTables();
 void     Frame_yuv_to_rgb24( const unsigned char *y, const unsigned char *u, const unsigned char *v,
                              int width, int height, int y_stride, int uv_stride,
                              int yWShift, int uvWShift, int yHShift, int uvHShift, unsigned int *output );
@@ -867,51 +867,51 @@ void     Frame_yuv_to_rgb24( const unsigned char *y, const unsigned char *u, con
 int           Cin_OGM_Init( const char *filename );
 int           Cin_OGM_Run( int time );
 unsigned char *Cin_OGM_GetOutput( int *outWidth, int *outHeight );
-void          Cin_OGM_Shutdown( void );
+void          Cin_OGM_Shutdown();
 
 //
 // cl_cgame.c
 //
-void     CL_InitCGame( void );
-void     CL_InitCGameCVars( void );
-void     CL_ShutdownCGame( void );
-void     CL_GameCommandHandler( void );
-qboolean CL_GameConsoleText( void );
-void     CL_CGameRendering( void );
-void     CL_SetCGameTime( void );
-void     CL_FirstSnapshot( void );
-void     CL_ShaderStateChanged( void );
+void     CL_InitCGame();
+void     CL_InitCGameCVars();
+void     CL_ShutdownCGame();
+void     CL_GameCommandHandler();
+bool CL_GameConsoleText();
+void     CL_CGameRendering();
+void     CL_SetCGameTime();
+void     CL_FirstSnapshot();
+void     CL_ShaderStateChanged();
 void     CL_CGameBinaryMessageReceived( const char *buf, int buflen, int serverTime );
 void     CL_OnTeamChanged( int newTeam );
 
 //
 // cl_ui.c
 //
-void CL_ShutdownUI( void );
-int  Key_GetCatcher( void );
+void CL_ShutdownUI();
+int  Key_GetCatcher();
 void Key_SetCatcher( int catcher );
-void UI_GameCommandHandler( void );
-void LAN_LoadCachedServers( void );
-void LAN_SaveServersToCache( void );
+void UI_GameCommandHandler();
+void LAN_LoadCachedServers();
+void LAN_SaveServersToCache();
 
 //
 // cl_net_chan.c
 //
 void     CL_Netchan_Transmit( netchan_t *chan, msg_t *msg );  //int length, const byte *data );
 void     CL_Netchan_TransmitNextFragment( netchan_t *chan );
-qboolean CL_Netchan_Process( netchan_t *chan, msg_t *msg );
+bool CL_Netchan_Process( netchan_t *chan, msg_t *msg );
 
 // XreaL BEGIN
 
 //
 // cl_avi.c
 //
-qboolean CL_OpenAVIForWriting( const char *filename );
-void     CL_TakeVideoFrame( void );
+bool CL_OpenAVIForWriting( const char *filename );
+void     CL_TakeVideoFrame();
 void     CL_WriteAVIVideoFrame( const byte *imageBuffer, int size );
 void     CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size );
-qboolean CL_CloseAVI( void );
-qboolean CL_VideoRecording( void );
+bool CL_CloseAVI();
+bool CL_VideoRecording();
 
 // XreaL END
 
@@ -919,33 +919,33 @@ qboolean CL_VideoRecording( void );
 // cl_main.c
 //
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
-void CL_RequestMotd( void );
+void CL_RequestMotd();
 void CL_GetClipboardData( char *, int, clipboard_t );
 
 //
 // Rocket Functions
 //
-void Rocket_Init( void );
-void Rocket_Shutdown( void );
-void Rocket_Render( void );
-void Rocket_Update( void );
+void Rocket_Init();
+void Rocket_Shutdown();
+void Rocket_Render();
+void Rocket_Update();
 void Rocket_InjectMouseMotion( int x, int y );
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
-qboolean Rocket_GetEvent(std::string& cmdText);
-void Rocket_DeleteEvent( void );
+bool Rocket_GetEvent(std::string& cmdText);
+void Rocket_DeleteEvent();
 void Rocket_RegisterDataSource( const char *name );
 void Rocket_DSAddRow( const char *name, const char *table, const char *data );
 void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data );
 void Rocket_DSRemoveRow( const char *name, const char *table, const int row );
 void Rocket_DSClearTable( const char *name, const char *table );
-void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake );
+void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, int parseFlags );
 void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length );
 void Rocket_GetEventParameters( char *params, int length );
 void Rocket_RegisterDataFormatter( const char *name );
 void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
-void Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake );
+void Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake );
 void Rocket_GetElementTag( char *tag, int length );
 void Rocket_SetElementDimensions( float x, float y );
 void Rocket_RegisterElement( const char *tag );
@@ -953,7 +953,7 @@ void Rocket_SetAttribute( const char *name, const char *id, const char *attribut
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
 void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
 void Rocket_GetElementAbsoluteOffset( float *x, float *y );
-void Rocket_SetClass( const char *in, qboolean activate );
+void Rocket_SetClass( const char *in, bool activate );
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
 void Rocket_SetActiveContext( int catcher );
 void Rocket_AddConsoleText(Str::StringRef text);
@@ -962,14 +962,14 @@ void Rocket_LoadUnit( const char *path );
 void Rocket_AddUnitToHud( int weapon, const char *id );
 void Rocket_ShowHud( int weapon );
 void Rocket_ClearHud( int weapon );
-void Rocket_InitKeys( void );
+void Rocket_InitKeys();
 keyNum_t Rocket_ToQuake( int key );
-void Rocket_ProcessKeyInput( int key, qboolean down );
+void Rocket_ProcessKeyInput( int key, bool down );
 void Rocket_ProcessTextInput( int key );
 void Rocket_MouseMove( int x, int y );
 void Rocket_AddTextElement( const char *text, const char *_class, float x, float y );
-void Rocket_ClearText( void );
-void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs );
+void Rocket_ClearText();
+void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs );
 void Rocket_ShowScoreboard( const char *name, bool show );
 void Rocket_SetDataSelectIndex( int index );
 void Rocket_LoadFont( const char *font );

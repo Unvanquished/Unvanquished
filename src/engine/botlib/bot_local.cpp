@@ -178,7 +178,7 @@ static dtRouteResult *FindRouteResult( Bot_t *bot, dtPolyRef start, dtPolyRef en
 {
 	if ( bot->needReplan )
 	{
-		return NULL; // force replan
+		return nullptr; // force replan
 	}
 
 	for ( int i = 0; i < MAX_ROUTE_CACHE; i++ )
@@ -203,7 +203,7 @@ static dtRouteResult *FindRouteResult( Bot_t *bot, dtPolyRef start, dtPolyRef en
 		return &res;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static void AddRouteResult( Bot_t *bot, dtPolyRef start, dtPolyRef end, dtStatus status )
@@ -214,7 +214,7 @@ static void AddRouteResult( Bot_t *bot, dtPolyRef start, dtPolyRef end, dtStatus
 		return;
 	}
 
-	dtRouteResult *bestPos = NULL;
+	dtRouteResult *bestPos = nullptr;
 
 	for ( int i = 0; i < MAX_ROUTE_CACHE; i++ )
 	{

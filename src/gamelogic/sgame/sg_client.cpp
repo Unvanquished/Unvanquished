@@ -34,7 +34,7 @@ static const vec3_t playerMaxs = { 15, 15, 32 };
 G_AddCreditToClient
 ===============
 */
-void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
+void G_AddCreditToClient( gclient_t *client, short credit, bool cap )
 {
 	int capAmount;
 
@@ -80,7 +80,7 @@ SpotWouldTelefrag
 
 ================
 */
-qboolean SpotWouldTelefrag( gentity_t *spot )
+bool SpotWouldTelefrag( gentity_t *spot )
 {
 	int       i, num;
 	int       touch[ MAX_GENTITIES ];
@@ -98,11 +98,11 @@ qboolean SpotWouldTelefrag( gentity_t *spot )
 		//if ( hit->client && hit->client->ps.stats[STAT_HEALTH] > 0 ) {
 		if ( hit->client )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -114,7 +114,7 @@ Chooses a player start, deathmatch start, etc
 */
 gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
 {
-	gentity_t *spot = NULL;
+	gentity_t *spot = nullptr;
 	vec3_t    delta;
 	float     dist;
 	float     list_dist[ 64 ];
@@ -123,7 +123,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	numSpots = 0;
 
-	while ( ( spot = G_IterateEntitiesOfClass( spot, S_POS_PLAYER_SPAWN ) ) != NULL )
+	while ( ( spot = G_IterateEntitiesOfClass( spot, S_POS_PLAYER_SPAWN ) ) != nullptr )
 	{
 		if ( SpotWouldTelefrag( spot ) )
 		{
@@ -171,7 +171,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	if ( !numSpots )
 	{
-		spot = G_IterateEntitiesOfClass( NULL, S_POS_PLAYER_SPAWN );
+		spot = G_IterateEntitiesOfClass( nullptr, S_POS_PLAYER_SPAWN );
 
 		if ( !spot )
 		{
@@ -204,10 +204,10 @@ spawned/healthy/unblocked etc.
 */
 static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildable )
 {
-	gentity_t *search = NULL;
-	gentity_t *spot = NULL;
+	gentity_t *search = nullptr;
+	gentity_t *spot = nullptr;
 
-	while ( ( search = G_IterateEntitiesOfClass( search, BG_Buildable( buildable )->entityName ) ) != NULL )
+	while ( ( search = G_IterateEntitiesOfClass( search, BG_Buildable( buildable )->entityName ) ) != nullptr )
 	{
 		if ( !search->spawned )
 		{
@@ -230,7 +230,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 		}
 
 		if ( G_CheckSpawnPoint( search->s.number, search->s.origin,
-		                        search->s.origin2, buildable, NULL ) != NULL )
+		                        search->s.origin2, buildable, nullptr ) != nullptr )
 		{
 			continue;
 		}
@@ -254,13 +254,13 @@ Chooses a player start, deathmatch start, etc
 */
 gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles )
 {
-	gentity_t *spot = NULL;
+	gentity_t *spot = nullptr;
 
 	/* team must exist, or there will be a sigsegv */
 	assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
 	if( level.team[ team ].numSpawns <= 0 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( team == TEAM_ALIENS )
@@ -275,7 +275,7 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 	//no available spots
 	if ( !spot )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	if ( team == TEAM_ALIENS )
@@ -306,7 +306,7 @@ gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 	VectorCopy( level.intermission_origin, origin );
 	VectorCopy( level.intermission_angle, angles );
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -378,7 +378,7 @@ static void BodySink( gentity_t *ent )
 	//run on first BodySink call
 	if ( !ent->active )
 	{
-		ent->active = qtrue;
+		ent->active = true;
 
 		//sinking bodies can't be infested
 		ent->killedBy = ent->s.misc = MAX_CLIENTS;
@@ -492,13 +492,13 @@ static void SpawnCorpse( gentity_t *ent )
 		}
 	}
 
-	body->takedamage = qfalse;
+	body->takedamage = false;
 
 	body->health = ent->health = ent->client->ps.stats[ STAT_HEALTH ];
 	ent->health = 0;
 
 	//change body dimensions
-	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, NULL, NULL, body->r.mins, body->r.maxs );
+	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, nullptr, nullptr, body->r.mins, body->r.maxs );
 
 	//drop down to match the *model* origins of ent and body
 	origin[2] += mins[ 2 ] - body->r.mins[ 2 ];
@@ -549,7 +549,7 @@ void respawn( gentity_t *ent )
 
 	// Clients can't respawn - they must go through the class cmd
 	ent->client->pers.classSelection = PCL_NONE;
-	ClientSpawn( ent, NULL, NULL, NULL );
+	ClientSpawn( ent, nullptr, nullptr, nullptr );
 
 	// stop any following clients that don't have sticky spec on
 	for ( i = 0; i < level.maxclients; i++ )
@@ -572,23 +572,23 @@ void respawn( gentity_t *ent )
 	}
 }
 
-static qboolean G_IsEmoticon( const char *s, qboolean *escaped )
+static bool G_IsEmoticon( const char *s, bool *escaped )
 {
 	int        i, j;
 	const char *p = s;
 	char       emoticon[ MAX_EMOTICON_NAME_LEN ] = { "" };
-	qboolean   escape = qfalse;
+	bool   escape = false;
 
 	if ( *p != '[' )
 	{
-		return qfalse;
+		return false;
 	}
 
 	p++;
 
 	if ( *p == '[' )
 	{
-		escape = qtrue;
+		escape = true;
 		p++;
 	}
 
@@ -603,11 +603,11 @@ static qboolean G_IsEmoticon( const char *s, qboolean *escaped )
 				if ( !Q_stricmp( emoticon, level.emoticons[ j ].name ) )
 				{
 					*escaped = escape;
-					return qtrue;
+					return true;
 				}
 			}
 
-			return qfalse;
+			return false;
 		}
 
 		emoticon[ i++ ] = *p;
@@ -615,7 +615,7 @@ static qboolean G_IsEmoticon( const char *s, qboolean *escaped )
 		p++;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -623,7 +623,7 @@ static qboolean G_IsEmoticon( const char *s, qboolean *escaped )
 G_IsUnnamed
 ============
 */
-qboolean G_IsUnnamed( const char *name )
+bool G_IsUnnamed( const char *name )
 {
 	char testName[ MAX_NAME_LENGTH ];
 	int  length;
@@ -632,7 +632,7 @@ qboolean G_IsUnnamed( const char *name )
 
 	if ( !Q_stricmp( testName, UNNAMED_PLAYER ) )
 	{
-		return qtrue;
+		return true;
 	}
 
 	length = strlen( g_unnamedNamePrefix.string );
@@ -640,10 +640,10 @@ qboolean G_IsUnnamed( const char *name )
 	if ( g_unnamedNumbering.integer && length &&
 	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
 	{
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -726,9 +726,9 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	int      len, colorlessLen;
 	char     *p;
 	int      spaces;
-	qboolean escaped;
-	qboolean invalid = qfalse;
-	qboolean hasletter = qfalse;
+	bool escaped;
+	bool invalid = false;
+	bool hasletter = false;
 
 	//save room for trailing null byte
 	outSize--;
@@ -813,7 +813,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 
 		if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
 		{
-			hasletter = qtrue;
+			hasletter = true;
 		}
 
 		// don't allow too many consecutive spaces
@@ -850,31 +850,31 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	// don't allow names beginning with S_SKIPNOTIFY because it messes up /ignore-related code
 	if ( !Q_strnicmp( p, S_SKIPNOTIFY, 12 ) )
 	{
-		invalid = qtrue;
+		invalid = true;
 	}
 
 	// don't allow comment-beginning strings because it messes up various parsers
 	if ( strstr( p, "//" ) || strstr( p, "/*" ) )
 	{
-		invalid = qtrue;
+		invalid = true;
 	}
 
 	// don't allow empty names
 	if ( *p == 0 || colorlessLen == 0 )
 	{
-		invalid = qtrue;
+		invalid = true;
 	}
 
 	// don't allow names beginning with digits
 	if ( *p >= '0' && *p <= '9' )
 	{
-		invalid = qtrue;
+		invalid = true;
 	}
 
 	// limit no. of code points
 	if ( Q_UTF8_PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
 	{
-		invalid = qtrue;
+		invalid = true;
 	}
 
 	// if something made the name bad, put them back to UnnamedPlayer
@@ -895,16 +895,16 @@ The game can override any of the settings and call trap_SetUserinfo
 if desired.
 ============
 */
-char *ClientUserinfoChanged( int clientNum, qboolean forceName )
+const char *ClientUserinfoChanged( int clientNum, bool forceName )
 {
 	gentity_t *ent;
-	char      *s;
+	const char      *s;
 	char      model[ MAX_QPATH ];
 	char      buffer[ MAX_QPATH ];
 	char      oldname[ MAX_NAME_LENGTH ];
 	char      newname[ MAX_NAME_LENGTH ];
 	char      err[ MAX_STRING_CHARS ];
-	qboolean  revertName = qfalse;
+	bool  revertName = false;
 	gclient_t *client;
 	char      userinfo[ MAX_INFO_STRING ];
 
@@ -948,7 +948,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 			trap_SendServerCommand( ent - g_entities, va(
 			                          "print_tr %s %d", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)\n") ),
 			                          g_minNameChangePeriod.integer ) );
-			revertName = qtrue;
+			revertName = true;
 		}
 		else if ( !forceName && g_maxNameChanges.integer > 0 &&
 		          client->pers.namelog->nameChanges >= g_maxNameChanges.integer )
@@ -956,18 +956,18 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 			trap_SendServerCommand( ent - g_entities, va(
 			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$)\n") ),
 			                          g_maxNameChanges.integer ) );
-			revertName = qtrue;
+			revertName = true;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s", QQ( N_("You cannot change your name while you are muted\n") ) ) );
-			revertName = qtrue;
+			revertName = true;
 		}
 		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
 		{
 			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( "$1t$ $2$\n" ), Quote( err ), Quote( newname ) ) );
-			revertName = qtrue;
+			revertName = true;
 		}
 
 		if ( revertName )
@@ -1002,7 +1002,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 		G_namelog_update_name( client );
 
-		Info_SetValueForKey(userinfo, "name", client->pers.netname, qfalse);
+		Info_SetValueForKey(userinfo, "name", client->pers.netname, false);
 		trap_SetUserinfo(clientNum, userinfo);
 	}
 
@@ -1085,11 +1085,11 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	if ( atoi( s ) )
 	{
-		client->pers.disableBlueprintErrors = qtrue;
+		client->pers.disableBlueprintErrors = true;
 	}
 	else
 	{
-		client->pers.disableBlueprintErrors = qfalse;
+		client->pers.disableBlueprintErrors = false;
 	}
 
 	// teamInfo
@@ -1112,11 +1112,11 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	if ( !s[ 0 ] || atoi( s ) != 0 )
 	{
-		client->pers.useUnlagged = qtrue;
+		client->pers.useUnlagged = true;
 	}
 	else
 	{
-		client->pers.useUnlagged = qfalse;
+		client->pers.useUnlagged = false;
 	}
 
 	Q_strncpyz( client->pers.voice, Info_ValueForKey( userinfo, "voice" ),
@@ -1135,7 +1135,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	/*G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, userinfo );*/
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1147,21 +1147,21 @@ Called again for every map change or tournement restart.
 
 The session information will be valid after exit.
 
-Return NULL if the client should be allowed, otherwise return
+Return nullptr if the client should be allowed, otherwise return
 a string with the reason for denial.
 
 Otherwise, the client will be sent the current gamestate
 and will eventually get to ClientBegin.
 
-firstTime will be qtrue the very first time a client connects
-to the server machine, but qfalse on map changes and tournement
+firstTime will be true the very first time a client connects
+to the server machine, but false on map changes and tournement
 restarts.
 ============
 */
-char *ClientConnect( int clientNum, qboolean firstTime )
+const char *ClientConnect( int clientNum, bool firstTime )
 {
-	char            *value;
-	char            *userInfoError;
+	const char      *value;
+	const char      *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];
 	char            pubkey[ RSA_STRING_LENGTH ];
@@ -1176,7 +1176,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// ignore if client already connected
 	if ( client->pers.connected != CON_DISCONNECTED )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	ent->client = client;
@@ -1189,7 +1189,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// check for local client
 	if ( !strcmp( value, "localhost" ) )
 	{
-		client->pers.localClient = qtrue;
+		client->pers.localClient = true;
 	}
 
 	G_AddressParse( value, &client->pers.ip );
@@ -1204,7 +1204,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
 	client->pers.admin = G_admin_admin( client->pers.guid );
 
-	client->pers.pubkey_authenticated = qfalse;
+	client->pers.pubkey_authenticated = false;
 
 	if ( client->pers.admin )
 	{
@@ -1265,9 +1265,9 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	// get and distribute relevent paramters
 	G_namelog_connect( client );
-	userInfoError = ClientUserinfoChanged( clientNum, qfalse );
+	userInfoError = ClientUserinfoChanged( clientNum, false );
 
-	if ( userInfoError != NULL )
+	if ( userInfoError != nullptr )
 	{
 		return userInfoError;
 	}
@@ -1307,7 +1307,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 		client->sess.restartTeam = TEAM_NONE;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1318,9 +1318,9 @@ Cut-down version of ClientConnect.
 Doesn't do things not relevant to bots (which are local GUIDless clients).
 ============
 */
-char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
+const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 {
-	char            *userInfoError;
+	const char      *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];
 	gentity_t       *ent;
@@ -1333,12 +1333,12 @@ char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
-	client->pers.localClient = qtrue;
+	client->pers.localClient = true;
 	G_AddressParse( "localhost", &client->pers.ip );
 
 	Q_strncpyz( client->pers.guid, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", sizeof( client->pers.guid ) );
-	client->pers.admin = NULL;
-	client->pers.pubkey_authenticated = qtrue;
+	client->pers.admin = nullptr;
+	client->pers.pubkey_authenticated = true;
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
@@ -1351,9 +1351,9 @@ char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 
 	// get and distribute relevant parameters
 	G_namelog_connect( client );
-	userInfoError = ClientUserinfoChanged( clientNum, qfalse );
+	userInfoError = ClientUserinfoChanged( clientNum, false );
 
-	if ( userInfoError != NULL )
+	if ( userInfoError != nullptr )
 	{
 		return userInfoError;
 	}
@@ -1393,7 +1393,7 @@ char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 		client->sess.restartTeam = team;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -1468,7 +1468,7 @@ void ClientBegin( int clientNum )
 	client->ps.eFlags = flags;
 
 	// locate ent at a spawn point
-	ClientSpawn( ent, NULL, NULL, NULL );
+	ClientSpawn( ent, nullptr, nullptr, nullptr );
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 entered the game\n") ), Quote( client->pers.netname ) ) );
 
@@ -1523,9 +1523,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	int                i;
 	clientPersistant_t saved;
 	clientSession_t    savedSess;
-	qboolean           savedNoclip, savedCliprcontents;
+	bool           savedNoclip, savedCliprcontents;
 	int                persistant[ MAX_PERSISTANT ];
-	gentity_t          *spawnPoint = NULL;
+	gentity_t          *spawnPoint = nullptr;
 	int                flags;
 	int                savedPing;
 	int                teamLocal;
@@ -1563,12 +1563,12 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		G_StopFollowing( ent );
 	}
 
-	if ( origin != NULL )
+	if ( origin != nullptr )
 	{
 		VectorCopy( origin, spawn_origin );
 	}
 
-	if ( angles != NULL )
+	if ( angles != nullptr )
 	{
 		VectorCopy( angles, spawn_angles );
 	}
@@ -1593,7 +1593,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	}
 	else
 	{
-		if ( spawn == NULL )
+		if ( spawn == nullptr )
 		{
 			G_Error( "ClientSpawn: spawn is NULL" );
 		}
@@ -1602,7 +1602,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 		if ( spawnPoint->s.eType == ET_BUILDABLE )
 		{
-			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, qtrue );
+			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, true );
 
 			spawnPoint->buildableStatsCount++;
 
@@ -1663,7 +1663,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
-	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //qtrue;
+	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //true;
 	ent->classname = S_PLAYER_CLASSNAME;
 	if ( client->noclip )
 	{
@@ -1680,14 +1680,14 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->flags &= FL_GODMODE | FL_NOTARGET;
 
 	// calculate each client's acceleration
-	ent->evaluateAcceleration = qtrue;
+	ent->evaluateAcceleration = true;
 
 	client->ps.stats[ STAT_MISC ] = 0;
 
 	client->ps.eFlags = flags;
 	client->ps.clientNum = index;
 
-	BG_ClassBoundingBox( ent->client->pers.classSelection, ent->r.mins, ent->r.maxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( ent->client->pers.classSelection, ent->r.mins, ent->r.maxs, nullptr, nullptr, nullptr );
 
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
 	{
@@ -1774,7 +1774,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 			{
 				vec3_t forward, dir;
 
-				AngleVectors( spawn_angles, forward, NULL, NULL );
+				AngleVectors( spawn_angles, forward, nullptr, nullptr );
 				VectorAdd( spawnPoint->s.origin2, forward, dir );
 				VectorNormalize( dir );
 				VectorScale( dir, BG_Class( ent->client->pers.classSelection )->jumpMagnitude,
@@ -1859,7 +1859,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// positively link the client, even if the command times are weird
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
+		BG_PlayerStateToEntityState( &client->ps, &ent->s, true );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
 	}
@@ -1871,7 +1871,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ClientEndFrame( ent );
 
 	// clear entity state values
-	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
+	BG_PlayerStateToEntityState( &client->ps, &ent->s, true );
 
 	client->pers.infoChangeTime = level.time;
 
@@ -1907,7 +1907,7 @@ void ClientDisconnect( int clientNum )
 
 	G_LeaveTeam( ent );
 	G_namelog_disconnect( ent->client );
-	G_Vote( ent, TEAM_NONE, qfalse );
+	G_Vote( ent, TEAM_NONE, false );
 
 	// stop any following clients
 	for ( i = 0; i < level.maxclients; i++ )
@@ -1928,7 +1928,7 @@ void ClientDisconnect( int clientNum )
 	             ent->client->pers.ip.str, ent->client->pers.guid, ent->client->pers.netname );
 
 	trap_UnlinkEntity( ent );
-	ent->inuse = qfalse;
+	ent->inuse = false;
 	ent->classname = "disconnected";
 	ent->client->pers.connected = CON_DISCONNECTED;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;

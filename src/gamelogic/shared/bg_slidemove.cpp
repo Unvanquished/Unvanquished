@@ -39,11 +39,11 @@ output: origin, velocity, impacts, stairup boolean
 ==================
 PM_SlideMove
 
-Returns qtrue if the velocity was clipped in some way
+Returns true if the velocity was clipped in some way
 ==================
 */
 #define MAX_CLIP_PLANES 5
-qboolean  PM_SlideMove( qboolean gravity )
+bool  PM_SlideMove( bool gravity )
 {
 	int     bumpcount, numbumps;
 	vec3_t  dir;
@@ -109,7 +109,7 @@ qboolean  PM_SlideMove( qboolean gravity )
 		{
 			// entity is completely trapped in another solid
 			pm->ps->velocity[ 2 ] = 0; // don't build up falling damage, but allow sideways acceleration
-			return qtrue;
+			return true;
 		}
 
 		if ( trace.fraction > 0 )
@@ -132,7 +132,7 @@ qboolean  PM_SlideMove( qboolean gravity )
 		{
 			// this shouldn't really happen
 			VectorClear( pm->ps->velocity );
-			return qtrue;
+			return true;
 		}
 
 		//
@@ -232,7 +232,7 @@ qboolean  PM_SlideMove( qboolean gravity )
 
 					// stop dead at a tripple plane interaction
 					VectorClear( pm->ps->velocity );
-					return qtrue;
+					return true;
 				}
 			}
 
@@ -331,7 +331,7 @@ void PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal )
 PM_StepSlideMove
 ==================
 */
-qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
+bool PM_StepSlideMove( bool gravity, bool predictive )
 {
 	vec3_t   start_o, start_v;
 	vec3_t   down_o, down_v;
@@ -340,7 +340,7 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 	vec3_t   step_v, step_vNormal;
 	vec3_t   up, down;
 	float    stepSize;
-	qboolean stepped = qfalse;
+	bool stepped = false;
 
 	BG_GetClientNormal( pm->ps, normal );
 
@@ -355,14 +355,14 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 
 		//we can step down
 		if ( trace.fraction > 0.01f && trace.fraction < 1.0f &&
-		     !trace.allsolid && pml.groundPlane != qfalse )
+		     !trace.allsolid && pml.groundPlane != false )
 		{
 			if ( pm->debugLevel > 1 )
 			{
 				Com_Printf( "%d: step down\n", c_pmove );
 			}
 
-			stepped = qtrue;
+			stepped = true;
 		}
 	}
 	else
@@ -419,7 +419,7 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 				Com_Printf( "%d: step up\n", c_pmove );
 			}
 
-			stepped = qtrue;
+			stepped = true;
 		}
 
 		// push down the final amount
@@ -452,19 +452,19 @@ qboolean PM_StepSlideMove( qboolean gravity, qboolean predictive )
 PM_PredictStepMove
 ==================
 */
-qboolean PM_PredictStepMove( void )
+bool PM_PredictStepMove()
 {
 	vec3_t   velocity, origin;
 	float    impactSpeed;
-	qboolean stepped = qfalse;
+	bool stepped = false;
 
 	VectorCopy( pm->ps->velocity, velocity );
 	VectorCopy( pm->ps->origin, origin );
 	impactSpeed = pml.impactSpeed;
 
-	if ( PM_StepSlideMove( qfalse, qtrue ) )
+	if ( PM_StepSlideMove( false, true ) )
 	{
-		stepped = qtrue;
+		stepped = true;
 	}
 
 	VectorCopy( velocity, pm->ps->velocity );

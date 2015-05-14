@@ -272,7 +272,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	mdvSurface_t *mdvSurface = 0;
 	shader_t     *shader = 0;
 	int          lod;
-	qboolean     personalModel;
+	bool     personalModel;
 	int          fogNum;
 
 	// don't add third_person objects if not in a portal
@@ -321,7 +321,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	// set up lighting now that we know we aren't culled
 	if ( !personalModel || r_shadows->integer > SHADOWING_BLOB )
 	{
-		R_SetupEntityLighting( &tr.refdef, ent, NULL );
+		R_SetupEntityLighting( &tr.refdef, ent, nullptr );
 	}
 
 	// see if we are in a fog volume
@@ -377,7 +377,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	mdvSurface_t      *mdvSurface = 0;
 	shader_t          *shader = 0;
 	int               lod;
-	qboolean          personalModel;
+	bool          personalModel;
 	byte              cubeSideBits;
 
 	// cull the entire model if merged bounding box of both frames

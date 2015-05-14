@@ -614,7 +614,7 @@ namespace Cvar {
 
                 //Find all the matching cvars
                 for (auto& entry : cvars) {
-                    if (Com_Filter(match.c_str(), entry.first.c_str(), qfalse)) {
+                    if (Com_Filter(match.c_str(), entry.first.c_str(), false)) {
                         matchesNames.push_back(entry.first);
 
                         matches.push_back(entry.second);

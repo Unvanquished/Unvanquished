@@ -75,33 +75,37 @@ static void FS_CheckHandle(fileHandle_t handle, bool write)
 		Com_Error(ERR_DROP, "FS_CheckHandle: writing to file in pak");
 }
 
-qboolean FS_FileExists(const char* path)
+bool FS_FileExists(const char* path)
 {
 	return FS::PakPath::FileExists(path) || FS::HomePath::FileExists(path);
 }
 
-int FS_FOpenFileRead(const char* path, fileHandle_t* handle, qboolean)
+int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 {
 	if (!handle)
 		return FS_FileExists(path);
 
 	*handle = FS_AllocHandle();
 	int length;
-	try {
-		if (FS::PakPath::FileExists(path)) {
+	std::error_code err;
+	if (FS::PakPath::FileExists(path)) {
+		handleTable[*handle].fileData = FS::PakPath::ReadFile(path, err);
+		if (!err) {
 			handleTable[*handle].filePos = 0;
-			handleTable[*handle].fileData = FS::PakPath::ReadFile(path);
 			handleTable[*handle].isPakFile = true;
 			handleTable[*handle].isOpen = true;
 			length = handleTable[*handle].fileData.size();
-		} else {
-			handleTable[*handle].file = FS::HomePath::OpenRead(path);
+		}
+	} else {
+		handleTable[*handle].file = FS::HomePath::OpenRead(path, err);
+		if (!err) {
 			length = handleTable[*handle].file.Length();
 			handleTable[*handle].isPakFile = false;
 			handleTable[*handle].isOpen = true;
 		}
-	} catch (std::system_error& err) {
-		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.what());
+	}
+	if (err) {
+		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.message().c_str());
 		*handle = 0;
 		return -1;
 	}
@@ -162,18 +166,16 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 		return FS::HomePath::FileExists(path);
 
 	*handle = FS_AllocHandle();
-	int length;
-	try {
-		handleTable[*handle].file = FS::HomePath::OpenRead(path);
-		length = handleTable[*handle].file.Length();
-	} catch (std::system_error& err) {
-		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.what());
+	std::error_code err;
+	handleTable[*handle].file = FS::HomePath::OpenRead(path, err);
+	if (err) {
+		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.message().c_str());
 		*handle = 0;
 		return 0;
 	}
 	handleTable[*handle].isPakFile = false;
 	handleTable[*handle].isOpen = true;
-	return length;
+	return handleTable[*handle].file.Length();
 }
 
 int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
@@ -181,7 +183,7 @@ int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mod
 	switch (mode) {
 	case FS_READ:
 		if (FS::PakPath::FileExists(path))
-			return FS_FOpenFileRead(path, handle, qfalse);
+			return FS_FOpenFileRead(path, handle, false);
 		else {
 			int size = FS_SV_FOpenFileRead(FS::Path::Build("game", path).c_str(), handle);
 			return (!handle || *handle) ? size : -1;
@@ -239,12 +241,13 @@ int FS_filelength(fileHandle_t handle)
 	if (handleTable[handle].isPakFile)
 		return handleTable[handle].fileData.size();
 	else {
-		try {
-			return handleTable[handle].file.Length();
-		} catch (std::system_error& err) {
-			Com_Printf("Failed to get file length: %s\n", err.what());
+		std::error_code err;
+		int length = handleTable[handle].file.Length(err);
+		if (err) {
+			Com_Printf("Failed to get file length: %s\n", err.message().c_str());
 			return 0;
 		}
+		return length;
 	}
 }
 
@@ -406,7 +409,7 @@ void FS_WriteFile(const char* path, const void* buffer, int size)
 int FS_ReadFile(const char* path, void** buffer)
 {
 	fileHandle_t handle;
-	int length = FS_FOpenFileRead(path, &handle, qtrue);
+	int length = FS_FOpenFileRead(path, &handle, true);
 
 	if (length < 0) {
 		if (buffer)
@@ -665,8 +668,8 @@ bool FS_LoadServerPaks(const char* paks, bool isDemo)
 	return fs_missingPaks.empty();
 }
 
-qboolean CL_WWWBadChecksum(const char *pakname);
-qboolean FS_ComparePaks(char* neededpaks, int len, qboolean dlstring)
+bool CL_WWWBadChecksum(const char *pakname);
+bool FS_ComparePaks(char* neededpaks, int len, bool dlstring)
 {
 	*neededpaks = '\0';
 	for (auto& x: fs_missingPaks) {
@@ -761,7 +764,7 @@ public:
 		Print("--------");
 		try {
 			for (auto& filename : FS::PakPath::ListFiles(args.Argv(1))) {
-				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), qfalse))) {
+				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), false))) {
 					Print("%s", filename.c_str());
 				}
 			}
@@ -774,7 +777,7 @@ public:
 		Print("-----------");
 		try {
 			for (auto& filename : FS::RawPath::ListFiles(FS::Path::Build(FS::GetHomePath(),args.Argv(1)))) {
-				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), qfalse))) {
+				if (filename.size() && (!filter || Com_Filter(args.Argv(2).c_str(), filename.c_str(), false))) {
 					Print("%s", filename.c_str());
 				}
 			}

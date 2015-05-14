@@ -55,7 +55,7 @@ static RocketDataGrid *FindDataSource( const char *name )
 
 	if ( it == dataSourceMap.end() )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	return it->second;

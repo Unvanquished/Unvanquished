@@ -122,13 +122,13 @@ int main(int argc, char** argv)
 	// The socket handle is sent as the first argument
 	if (argc != 2) {
 		fprintf(stderr, "This program is not meant to be invoked directly, it must be invoked by the engine's VM loader.\n");
-		exit(1);
+		Sys::OSExit(1);
 	}
 	char* end;
 	Sys::OSHandle rootSocket = (Sys::OSHandle)strtol(argv[1], &end, 10);
 	if (argv[1] == end || *end != '\0') {
 		fprintf(stderr, "Parameter is not a valid handle number\n");
-		exit(1);
+		Sys::OSExit(1);
 	}
 
 	// Set up crash handling for this process. This will allow crashes to be

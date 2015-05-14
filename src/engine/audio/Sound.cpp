@@ -98,6 +98,14 @@ namespace Audio {
         }
     }
 
+    void StopSounds() {
+        for (int i = 0; i < nSources; i++) {
+            if (sources[i].active) {
+                sources[i].usingSound->Stop();
+            }
+        }
+    }
+
     void AddSound(std::shared_ptr<Emitter> emitter, std::shared_ptr<Sound> sound, int priority) {
         sourceRecord_t* source = GetSource(priority);
 
@@ -325,7 +333,7 @@ namespace Audio {
         }
     }
 
-	//TODO somehow try to catch back when data is coming faster than we consume (e.g. capture data)
+    //TODO somehow try to catch back when data is coming faster than we consume (e.g. capture data)
     void StreamingSound::AppendBuffer(AL::Buffer buffer) {
         if (IsStopped()) {
             return;

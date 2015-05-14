@@ -89,7 +89,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 
 		case GAME_CLIENT_USERINFO_CHANGED:
 			IPC::HandleMsg<GameClientUserinfoChangedMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
-				ClientUserinfoChanged(clientNum, qfalse);
+				ClientUserinfoChanged(clientNum, false);
 			});
 			break;
 
@@ -169,7 +169,7 @@ int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxc
 	return G_CM_AreaEntities(mins, maxs, list, maxcount);
 }
 
-qboolean trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
+bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
 {
 	return G_CM_EntityContact( mins, maxs, ent, TT_AABB );
 }
@@ -197,24 +197,24 @@ void trap_SetBrushModel(gentity_t *ent, const char *name)
 	G_CM_SetBrushModel( ent, name );
 }
 
-qboolean trap_InPVS(const vec3_t p1, const vec3_t p2)
+bool trap_InPVS(const vec3_t p1, const vec3_t p2)
 {
 	return G_CM_inPVS( p1, p2 );
 }
 
-qboolean trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
+bool trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
 {
 	return G_CM_inPVSIgnorePortals( p1, p2 );
 }
 
-void trap_AdjustAreaPortalState(gentity_t *ent, qboolean open)
+void trap_AdjustAreaPortalState(gentity_t *ent, bool open)
 {
     VM::SendMsg<AdjustAreaPortalStateMsg>(ent - g_entities, open);
 	G_CM_AdjustAreaPortalState( ent, open );
 }
 
-qboolean CM_AreasConnected(int area1, int area2);
-qboolean trap_AreasConnected(int area1, int area2)
+bool CM_AreasConnected(int area1, int area2);
+bool trap_AreasConnected(int area1, int area2)
 {
 	return CM_AreasConnected(area1, area2);
 }
@@ -276,7 +276,7 @@ void trap_GetUsercmd(int clientNum, usercmd_t *cmd)
 	VM::SendMsg<GetUsercmdMsg>(clientNum, *cmd);
 }
 
-qboolean trap_GetEntityToken(char *buffer, int bufferSize)
+bool trap_GetEntityToken(char *buffer, int bufferSize)
 {
 	std::string text;
 	bool res;
@@ -290,14 +290,14 @@ void trap_SendGameStat(const char *data)
 	VM::SendMsg<SendGameStatMsg>(data);
 }
 
-qboolean trap_GetTag(int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori)
+bool trap_GetTag(int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori)
 {
 	int res;
 	VM::SendMsg<GetTagMsg>(clientNum, tagFileNumber, tagName, res, *ori);
 	return res;
 }
 
-qboolean trap_LoadTag(const char *filename)
+bool trap_LoadTag(const char *filename)
 {
 	int res;
 	VM::SendMsg<RegisterTagMsg>(filename, res);
@@ -356,7 +356,7 @@ void trap_QuoteString(const char *str, char *buffer, int size)
 	Q_strncpyz(buffer, Cmd::Escape(str).c_str(), size);
 }
 
-int trap_BotAllocateClient( void )
+int trap_BotAllocateClient()
 {
 	int res;
 	VM::SendMsg<BotAllocateClientMsg>(res);
@@ -377,14 +377,14 @@ int trap_BotGetServerCommand(int clientNum, char *message, int size)
 	return res;
 }
 
-qboolean trap_BotSetupNav(const botClass_t *botClass, qhandle_t *navHandle)
+bool trap_BotSetupNav(const botClass_t *botClass, qhandle_t *navHandle)
 {
 	int res;
 	VM::SendMsg<BotNavSetupMsg>(*botClass, res, *navHandle);
 	return res;
 }
 
-void trap_BotShutdownNav(void)
+void trap_BotShutdownNav()
 {
 	VM::SendMsg<BotNavShutdownMsg>();
 }
@@ -394,20 +394,20 @@ void trap_BotSetNavMesh(int botClientNum, qhandle_t navHandle)
 	VM::SendMsg<BotSetNavmeshMsg>(botClientNum, navHandle);
 }
 
-qboolean trap_BotFindRoute(int botClientNum, const botRouteTarget_t *target, qboolean allowPartial)
+bool trap_BotFindRoute(int botClientNum, const botRouteTarget_t *target, bool allowPartial)
 {
 	int res;
 	VM::SendMsg<BotFindRouteMsg>(botClientNum, *target, allowPartial, res);
 	return res;
 }
 
-qboolean trap_BotUpdatePath(int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd)
+bool trap_BotUpdatePath(int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd)
 {
 	VM::SendMsg<BotUpdatePathMsg>(botClientNum, *target, *cmd);
 	return 0; // Amanieu: This always returns 0, but the value isn't used
 }
 
-qboolean trap_BotNavTrace(int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end)
+bool trap_BotNavTrace(int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end)
 {
 	std::array<float, 3> start2, end2;
 	VectorCopy(start, start2.data());
@@ -424,7 +424,7 @@ void trap_BotFindRandomPoint(int botClientNum, vec3_t point)
 	VectorCopy(point2.data(), point);
 }
 
-qboolean trap_BotFindRandomPointInRadius(int botClientNum, const vec3_t origin, vec3_t point, float radius)
+bool trap_BotFindRandomPointInRadius(int botClientNum, const vec3_t origin, vec3_t point, float radius)
 {
 	std::array<float, 3> point2, origin2;
 	VectorCopy(origin, origin2.data());
@@ -465,7 +465,7 @@ void trap_BotRemoveObstacle(qhandle_t handle)
 	VM::SendMsg<BotRemoveObstacleMsg>(handle);
 }
 
-void trap_BotUpdateObstacles(void)
+void trap_BotUpdateObstacles()
 {
 	VM::SendMsg<BotUpdateObstaclesMsg>();
 }

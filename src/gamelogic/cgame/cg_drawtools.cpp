@@ -115,7 +115,7 @@ void CG_FillRect( float x, float y, float width, float height, const float *colo
 	CG_AdjustFrom640( &x, &y, &width, &height );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader );
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 /*
@@ -159,7 +159,7 @@ void CG_DrawRect( float x, float y, float width, float height, float size, const
 	CG_DrawTopBottom( x, y, width, height, size );
 	CG_DrawSides( x, y, width, height, size );
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 /*
@@ -229,7 +229,7 @@ void CG_SetClipRegion( float x, float y, float w, float h )
 CG_ClearClipRegion
 =================
 */
-void CG_ClearClipRegion( void )
+void CG_ClearClipRegion()
 {
 	trap_R_ResetClipRegion();
 }
@@ -242,7 +242,7 @@ Enables the GL scissor test to be used for rotated images
 DrawStretchPic seems to reset the scissor
 =================
 */
-void CG_EnableScissor( qboolean enable )
+void CG_EnableScissor( bool enable )
 {
     trap_R_ScissorEnable(enable);
 }
@@ -282,7 +282,7 @@ void CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
 
 	trap_R_SetColor( finalcolor );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
-	trap_R_SetColor( NULL );
+	trap_R_SetColor( nullptr );
 }
 
 /*
@@ -344,7 +344,7 @@ CG_TileClear
 Clear around a sized down screen
 ==============
 */
-void CG_TileClear( void )
+void CG_TileClear()
 {
 	int top, bottom, left, right;
 	int w, h;
@@ -388,14 +388,14 @@ float *CG_FadeColor( int startMsec, int totalMsec )
 
 	if ( startMsec == 0 )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	t = cg.time - startMsec;
 
 	if ( t >= totalMsec )
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// fade out
@@ -458,13 +458,13 @@ float CG_FadeAlpha( int startMsec, int totalMsec )
 CG_WorldToScreen
 ================
 */
-qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
+bool CG_WorldToScreen( vec3_t point, float *x, float *y )
 {
 	vec3_t trans;
 	float  xc, yc;
 	float  px, py;
 	float  z;
-	qboolean front = qtrue;
+	bool front = true;
 
 	px = tan( cg.refdef.fov_x * M_PI / 360.0f );
 	py = tan( cg.refdef.fov_y * M_PI / 360.0f );
@@ -478,7 +478,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 
 	if ( z <= 0.001f )
 	{
-		front = qfalse;
+		front = false;
 	}
 
 	if ( x )
@@ -569,7 +569,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const f
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA != NULL )
+	if ( shaderRGBA != nullptr )
 	{
 		int i;
 
@@ -585,7 +585,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const f
 	VectorSet( re.axis[ 0 ], radius, 0, 0 );
 	VectorSet( re.axis[ 1 ], 0, radius, 0 );
 	VectorSet( re.axis[ 2 ], 0, 0, radius );
-	re.nonNormalizedAxes = qtrue;
+	re.nonNormalizedAxes = true;
 
 	trap_R_AddRefEntityToScene( &re );
 }
@@ -596,7 +596,7 @@ CG_DrawSphericalCone
 ================
 */
 void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
-                           qboolean a240, int customShader, const float *shaderRGBA )
+                           bool a240, int customShader, const float *shaderRGBA )
 {
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
@@ -606,7 +606,7 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA != NULL )
+	if ( shaderRGBA != nullptr )
 	{
 		int i;
 
@@ -623,7 +623,7 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	VectorScale( re.axis[ 0 ], radius, re.axis[ 0 ] );
 	VectorScale( re.axis[ 1 ], radius, re.axis[ 1 ] );
 	VectorScale( re.axis[ 2 ], radius, re.axis[ 2 ] );
-	re.nonNormalizedAxes = qtrue;
+	re.nonNormalizedAxes = true;
 
 	trap_R_AddRefEntityToScene( &re );
 }
@@ -648,10 +648,10 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 				CG_DrawSphere( origin, range, pcsh, rgba );
 				break;
 			case RM_SPHERICAL_CONE_64:
-				CG_DrawSphericalCone( origin, angles, range, qfalse, pcsh, rgba );
+				CG_DrawSphericalCone( origin, angles, range, false, pcsh, rgba );
 				break;
 			case RM_SPHERICAL_CONE_240:
-				CG_DrawSphericalCone( origin, angles, range, qtrue, pcsh, rgba );
+				CG_DrawSphericalCone( origin, angles, range, true, pcsh, rgba );
 				break;
 		}
 	}
@@ -680,29 +680,29 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 			{
 				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
-					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, NULL );
+					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, nullptr );
 				}
 
-				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, NULL );
+				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, nullptr );
 			}
 
 			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
-				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, NULL );
+				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, nullptr );
 			}
 
-			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, NULL );
+			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, nullptr );
 		}
 		else
 		{
-			qboolean t2;
+			bool t2;
 			float    f, r;
 			vec3_t   forward, tip;
 
 			t2 = ( rmType == RM_SPHERICAL_CONE_240 );
 			f = lineThickness * ( t2 ? 0.26f : 0.8f );
 			r = f + lineThickness * ( t2 ? 0.23f : 0.43f );
-			AngleVectors( angles, forward, NULL, NULL );
+			AngleVectors( angles, forward, nullptr, nullptr );
 
 			if ( range > r )
 			{
@@ -710,20 +710,20 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
-					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, NULL );
+					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, nullptr );
 				}
 
-				CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->f2, NULL );
+				CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->f2, nullptr );
 			}
 
 			VectorMA( origin, -f, forward, tip );
 
 			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
-				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, NULL );
+				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, nullptr );
 			}
 
-			CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->f1, NULL );
+			CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->f1, nullptr );
 		}
 
 		bshs = &cg.binaryShaderSettings[ cg.numBinaryShadersUsed ];

@@ -46,11 +46,11 @@ Maryland 20850 USA.
 class RocketDataSource : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
 {
 public:
-	RocketDataSource( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( NULL ), data_source( NULL )
+	RocketDataSource( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
 	{
 	}
 
-	virtual ~RocketDataSource( void )
+	virtual ~RocketDataSource()
 	{
 		if ( data_source )
 		{
@@ -108,7 +108,7 @@ public:
 	}
 
 
-	void OnUpdate( void )
+	void OnUpdate()
 	{
 		if ( dirty_query )
 		{
@@ -167,7 +167,7 @@ public:
 		if ( event == "mouseover" )
 		{
 			Rocket::Core::Element *parent = event.GetTargetElement();
-			Rocket::Core::Element *button = parent->GetTagName() == "button" ? parent : NULL;
+			Rocket::Core::Element *button = parent->GetTagName() == "button" ? parent : nullptr;
 			while ( ( parent = parent->GetParentNode() ) )
 			{
 				if ( !button && parent->GetTagName() == "button" )
@@ -201,7 +201,7 @@ public:
 	}
 
 protected:
-	void LayoutChildren( void )
+	void LayoutChildren()
 	{
 		dirty_layout = false;
 
@@ -243,7 +243,7 @@ protected:
 
 private:
 
-	void AddCancelbutton( void )
+	void AddCancelbutton()
 	{
 		init = true;
 		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );

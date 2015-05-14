@@ -43,6 +43,10 @@ namespace Log {
         static std::vector<Log::Event> buffers[MAX_TARGET_ID];
         static std::recursive_mutex bufferLocks[MAX_TARGET_ID];
 
+        if (Sys::IsProcessTerminating()) {
+            return;
+        }
+
         for (int i = 0; i < MAX_TARGET_ID; i++) {
             if ((targetControl >> i) & 1) {
                 std::lock_guard<std::recursive_mutex> guard(bufferLocks[i]);

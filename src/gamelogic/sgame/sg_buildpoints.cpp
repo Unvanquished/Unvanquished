@@ -74,7 +74,7 @@ static void RGSCalculateRate( gentity_t *self )
 	{
 		rate = level.mineRate;
 
-		for ( rgs = NULL;
+		for ( rgs = nullptr;
 		      ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
 		{
 			if ( rgs->s.eType == ET_BUILDABLE &&
@@ -100,7 +100,7 @@ static void RGSInformNeighbors( gentity_t *self )
 {
 	gentity_t *rgs;
 
-	for ( rgs = NULL;
+	for ( rgs = nullptr;
 	      ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
 	{
 		if ( rgs->s.eType == ET_BUILDABLE &&
@@ -207,8 +207,8 @@ float G_RGSPredictEfficiency( vec3_t origin )
 	VectorCopy( origin, dummy.s.origin );
 	dummy.s.eType = ET_BUILDABLE;
 	dummy.s.modelindex = BA_A_LEECH;
-	dummy.spawned = qtrue;
-	dummy.powered = qtrue;
+	dummy.spawned = true;
+	dummy.powered = true;
 
 	RGSCalculateRate( &dummy );
 
@@ -227,7 +227,7 @@ float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
 
 	delta = G_RGSPredictEfficiency( origin );
 
-	for ( rgs = NULL; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
+	for ( rgs = nullptr; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
 	{
 		if ( rgs->s.eType == ET_BUILDABLE &&
 		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
@@ -243,7 +243,7 @@ float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
 /**
  * @brief Calculate the level mine rate and the teams' mining efficiencies, add build points.
  */
-void G_MineBuildPoints( void )
+void G_MineBuildPoints()
 {
 	int              i, playerNum;
 	gentity_t        *ent, *player;
@@ -379,7 +379,7 @@ int G_GetMarkedBuildPointsInt( team_t team )
  * @brief Tests wether a team can afford an amont of build points.
  * @param amount Amount of build points, the sign is discarded.
  */
-qboolean G_CanAffordBuildPoints( team_t team, float amount )
+bool G_CanAffordBuildPoints( team_t team, float amount )
 {
 	float *bp;
 
@@ -389,16 +389,16 @@ qboolean G_CanAffordBuildPoints( team_t team, float amount )
 	}
 	else
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( fabs( amount ) > *bp )
 	{
-		return qfalse;
+		return false;
 	}
 	else
 	{
-		return qtrue;
+		return true;
 	}
 }
 

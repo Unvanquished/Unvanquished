@@ -22,14 +22,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // deformVertexes_vp.glsl - Quake 3 deformVertexes semantic
 
 
-uniform vec4 u_DeformParms[MAX_SHADER_DEFORM_PARMS];
+float waveSin(float x) {
+	return sin( radians( 360.0 * x ) );
+}
 
-float triangle(float x)
+float waveSquare(float x) {
+	return sign( waveSin( x ) );
+}
+
+float waveTriangle(float x)
 {
 	return 1.0 - abs( 4.0 * fract( x + 0.25 ) - 2.0 );
 }
 
-float sawtooth(float x)
+float waveSawtooth(float x)
 {
 	return fract( x );
 }
@@ -87,49 +93,26 @@ void DeformVertex( inout vec4 pos,
 {
 	vec4 work = vec4(0.0);
 
-	for(int deformOfs = 0; deformOfs < MAX_SHADER_DEFORM_PARMS; deformOfs++)
-	{
-		vec4 parms = u_DeformParms[ deformOfs ];
-		int  cmd   = int(parms.w);
+// spread provides some variation on location
+#define spread (dot(work.xyz, vec3(1.0)))
 
-		if( cmd == DSTEP_LOAD_POS ) {
-			work.xyz = pos.xyz * parms.xyz;
-		} else if( cmd == DSTEP_LOAD_NORM ) {
-			work.xyz = normal.xyz * parms.xyz;
-		} else if( cmd == DSTEP_LOAD_COLOR ) {
-			work.xyz = color.xyz * parms.xyz;
-		} else if( cmd == DSTEP_LOAD_TC ) {
-			work.xyz = vec3(st, 1.0) * parms.xyz;
-		} else if( cmd == DSTEP_LOAD_VEC ) {
-			work.xyz = parms.xyz;
-		} else if( cmd == DSTEP_MODIFY_POS ) {
-			pos.xyz += (parms.x + parms.y * work.a) * work.xyz;
-		} else if( cmd == DSTEP_MODIFY_NORM ) {
-			normal.xyz += (parms.x + parms.y * work.a) * work.xyz;
-			normal = normalize(normal);
-		} else if( cmd == DSTEP_MODIFY_COLOR ) {
-			color.xyz += (parms.x + parms.y * work.a) * work.xyz;
-		} else if( cmd == DSTEP_SIN ) {
-			work.a = sin( 2.0 * M_PI * (parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time) );
-		} else if( cmd == DSTEP_SQUARE ) {
-			work.a = sign(sin( 2.0 * M_PI * (parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time) ) );
-		} else if( cmd == DSTEP_TRIANGLE ) {
-			work.a = triangle(parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time);
-		} else if( cmd == DSTEP_SAWTOOTH ) {
-			work.a = sawtooth(parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time);
-		} else if( cmd == DSTEP_INVERSE_SAWTOOTH ) {
-			work.a = 1.0 - sawtooth(parms.x + parms.y * (work.x + work.y + work.z) + parms.z * time);
-		} else if( cmd == DSTEP_NOISE ) {
-			//work = pnoise(vec4(parms.y * work.xyz, parms.z * time));
-			work = noise4(vec4(parms.y * work.xyz, parms.z * time));
-		} else if( cmd == DSTEP_ROTGROW ) {
-			if(work.z > parms.x * time)
-				work.a = 0.0;
-			else {
-				work.a = parms.y * atan(pos.y, pos.x) + parms.z * time;
-				work.a = 0.5 * sin(work.a) + 0.5;
-			}
-		} else
-			break;
-	}
+#define DSTEP_LOAD_POS(X,Y,Z)     work.xyz = pos.xyz * vec3(X,Y,Z);
+#define DSTEP_LOAD_NORM(X,Y,Z)    work.xyz = normal.xyz * vec3(X,Y,Z);
+#define DSTEP_LOAD_COLOR(X,Y,Z)   work.xyz = color.xyz * vec3(X,Y,Z);
+#define DSTEP_LOAD_TC(X,Y,Z)      work.xyz = vec3(st, 1.0) * vec3(X,Y,Z);
+#define DSTEP_LOAD_VEC(X,Y,Z)     work.xyz = vec3(X,Y,Z);
+#define DSTEP_MODIFY_POS(X,Y,Z)   pos.xyz += (X + Y * work.a) * work.xyz;
+#define DSTEP_MODIFY_NORM(X,Y,Z)  normal.xyz += (X + Y * work.a) * work.xyz; \
+				  normal = normalize(normal);
+#define DSTEP_MODIFY_COLOR(X,Y,Z) color.xyz += (X + Y * work.a) * work.xyz;
+#define DSTEP_SIN(X,Y,Z)          work.a = waveSin( X + Y * spread + Z * time );
+#define DSTEP_SQUARE(X,Y,Z)       work.a = waveSquare( X + Y * spread + Z * time);
+#define DSTEP_TRIANGLE(X,Y,Z)     work.a = waveTriangle( X + Y * spread + Z * time);
+#define	DSTEP_SAWTOOTH(X,Y,Z)     work.a = waveSawtooth( X + Y * spread + Z * time);
+#define DSTEP_INV_SAWTOOTH(X,Y,Z) work.a = 1.0 - waveSawtooth( X + Y * spread + Z * time);
+#define DSTEP_NOISE(X,Y,Z)        work = noise4(vec4( Y * work.xyz, Z * time));
+#define DSTEP_ROTGROW(X,Y,Z)      if(work.z > X * time) { work.a = 0.0; } else { work.a = Y * atan(pos.y, pos.x) + Z * time; work.a = 0.5 * sin(work.a) + 0.5; }
+
+	// this macro has to be #defined by the shader compiler
+	DEFORM_STEPS
 }

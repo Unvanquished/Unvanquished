@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static void AddToServerList( char *name, char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
+static void AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
 	server_t *node;
 
@@ -76,7 +76,7 @@ static void CG_Rocket_SetServerListServer( const char *table, int index )
 	CG_Rocket_BuildServerInfo();
 }
 #define MAX_SERVERSTATUS_LINES 4096
-void CG_Rocket_BuildServerInfo( void )
+void CG_Rocket_BuildServerInfo()
 {
 	static char serverInfoText[ MAX_SERVERSTATUS_LINES ];
 	char buf[ MAX_INFO_STRING ];
@@ -102,7 +102,7 @@ void CG_Rocket_BuildServerInfo( void )
 
 	if ( !rocketInfo.data.buildingServerInfo )
 	{
-		rocketInfo.data.buildingServerInfo = qtrue;
+		rocketInfo.data.buildingServerInfo = true;
 	}
 
 	server = &rocketInfo.data.servers[ netSrc ][ serverIndex ];
@@ -126,8 +126,8 @@ void CG_Rocket_BuildServerInfo( void )
 
 			if ( key[ 0 ] )
 			{
-				Info_SetValueForKey( buf, "cvar", key, qfalse );
-				Info_SetValueForKey( buf, "value", value, qfalse );
+				Info_SetValueForKey( buf, "cvar", key, false );
+				Info_SetValueForKey( buf, "value", value, false );
 				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
 				*buf = '\0';
 			}
@@ -145,7 +145,7 @@ void CG_Rocket_BuildServerInfo( void )
 		if ( !start )
 		{
 			trap_LAN_ResetServerStatus();
-			rocketInfo.data.buildingServerInfo = qfalse;
+			rocketInfo.data.buildingServerInfo = false;
 			return;
 		}
 
@@ -154,16 +154,16 @@ void CG_Rocket_BuildServerInfo( void )
 		if ( !end )
 		{
 			trap_LAN_ResetServerStatus();
-			rocketInfo.data.buildingServerInfo = qfalse;
+			rocketInfo.data.buildingServerInfo = false;
 			return;
 		}
 
 		Q_strncpyz( name, start + 1, end - start );
-		start = end = NULL;
-		Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-		Info_SetValueForKeyRocket( buf, "name", name, qfalse );
-		Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
-		Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
+		start = end = nullptr;
+		Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
+		Info_SetValueForKeyRocket( buf, "name", name, false );
+		Info_SetValueForKey( buf, "score", va( "%d", score ), false );
+		Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
 		trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 
 		while ( *p )
@@ -188,11 +188,11 @@ void CG_Rocket_BuildServerInfo( void )
 				}
 
 				Q_strncpyz( name, start + 1, end - start );
-				start = end = NULL;
-				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-				Info_SetValueForKeyRocket( buf, "name", name, qfalse );
-				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
-				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
+				start = end = nullptr;
+				Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
+				Info_SetValueForKeyRocket( buf, "name", name, false );
+				Info_SetValueForKey( buf, "score", va( "%d", score ), false );
+				Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 			}
 
@@ -214,17 +214,17 @@ void CG_Rocket_BuildServerInfo( void )
 				}
 
 				Q_strncpyz( name, start + 1, end - start );
-				start = end = NULL;
-				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
-				Info_SetValueForKeyRocket( buf, "name", name, qfalse );
-				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
-				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
+				start = end = nullptr;
+				Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
+				Info_SetValueForKeyRocket( buf, "name", name, false );
+				Info_SetValueForKey( buf, "score", va( "%d", score ), false );
+				Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
 				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 			}
 		}
 
 		trap_LAN_ResetServerStatus();
-		rocketInfo.data.buildingServerInfo = qfalse;
+		rocketInfo.data.buildingServerInfo = false;
 	}
 
 }
@@ -248,12 +248,12 @@ void CG_Rocket_BuildServerList( const char *args )
 	{
 		int numServers;
 
-		rocketInfo.data.retrievingServers = qtrue;
+		rocketInfo.data.retrievingServers = true;
 
 		trap_Rocket_DSClearTable( "server_browser", args );
 		CG_Rocket_CleanUpServerList( args );
 
-		trap_LAN_MarkServerVisible( netSrc, -1, qtrue );
+		trap_LAN_MarkServerVisible( netSrc, -1, true );
 
 		numServers = trap_LAN_GetServerCount( netSrc );
 
@@ -299,20 +299,20 @@ void CG_Rocket_BuildServerList( const char *args )
 				continue;
 			}
 
-			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, qfalse );
-			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), qfalse );
-			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), qfalse );
-			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), qfalse );
-			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), qfalse );
-			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, qfalse );
-			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, qfalse );
-			Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, qfalse );
+			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
+			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
+			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
+			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
+			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
+			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
+			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
+			Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 
 			if ( rocketInfo.data.retrievingServers )
 			{
-				rocketInfo.data.retrievingServers = qfalse;
+				rocketInfo.data.retrievingServers = false;
 			}
 		}
 
@@ -408,14 +408,14 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 			continue;
 		}
 
-		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, qfalse );
-		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), qfalse );
-		Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), qfalse );
-		Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), qfalse );
-		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), qfalse );
-		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, qfalse );
-		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, qfalse );
-		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, qfalse );
+		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
+		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
+		Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
+		Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
+		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
+		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
+		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
+		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
 
 		trap_Rocket_DSAddRow( "server_browser", name, data );
 	}
@@ -461,13 +461,13 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 		{
 			char data[ MAX_INFO_STRING ] = { 0 };
 
-			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, qfalse );
-			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), qfalse );
-			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), qfalse );
-			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), qfalse );
-			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), qfalse );
-			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, qfalse );
-			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, qfalse );
+			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
+			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
+			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
+			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
+			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
+			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
+			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
 
 			trap_Rocket_DSAddRow( "server_browser", str, data );
 		}
@@ -480,19 +480,19 @@ void CG_Rocket_ExecServerList( const char *table )
 	trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverIndex[ netSrc ] ].addr ) );
 }
 
-static qboolean Parse( char **p, char **out )
+static bool Parse( const char **p, char **out )
 {
 	char *token;
 
-	token = COM_ParseExt( p, qfalse );
+	token = COM_ParseExt( p, false );
 
 	if ( token && token[ 0 ] != 0 )
 	{
 		* ( out ) = BG_strdup( token );
-		return qtrue;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 static void AddToResolutionList( int w, int h )
@@ -513,20 +513,29 @@ static void AddToResolutionList( int w, int h )
 
 void CG_Rocket_SetResolutionListResolution( const char *table, int index )
 {
-	rocketInfo.data.resolutionIndex = index;
+	if ( index < rocketInfo.data.resolutionCount && index >= 0 )
+	{
+		trap_Cvar_Set("r_customwidth", va( "%d", rocketInfo.data.resolutions[ index ].width ) );
+		trap_Cvar_Set("r_customheight", va( "%d", rocketInfo.data.resolutions[ index ].height ) );
+		trap_Cvar_Set("r_mode", "-1" );
+		rocketInfo.data.resolutionIndex = index;
+	}
 }
 
 void CG_Rocket_BuildResolutionList( const char *args )
 {
 	char        buf[ MAX_STRING_CHARS ];
-	int         w, h;
-	char        *p;
+	int         w, h, currentW, currentH;
+	const char        *p;
 	char        *out;
 	int          i;
 
+	currentW = trap_Cvar_VariableIntegerValue( "r_customwidth" );
+	currentH = trap_Cvar_VariableIntegerValue( "r_customheight" );
 	trap_Cvar_VariableStringBuffer( "r_availableModes", buf, sizeof( buf ) );
 	p = buf;
 	rocketInfo.data.resolutionCount = 0;
+	rocketInfo.data.resolutionIndex = -1;
 
 	while ( Parse( &p, &out ) )
 	{
@@ -542,10 +551,23 @@ void CG_Rocket_BuildResolutionList( const char *args )
 
 	for ( i = 0; i < rocketInfo.data.resolutionCount; ++i )
 	{
-		Info_SetValueForKey( buf, "width", va( "%d", rocketInfo.data.resolutions[ i ].width ), qfalse );
-		Info_SetValueForKey( buf, "height", va( "%d", rocketInfo.data.resolutions[ i ].height ), qfalse );
-
+		w = rocketInfo.data.resolutions[ i ].width;
+		h = rocketInfo.data.resolutions[ i ].height;
+		if ( w == currentW && h == currentH )
+		{
+			rocketInfo.data.resolutionIndex = i;
+		}
+		Info_SetValueForKey( buf, "width", va( "%d", w ), false );
+		Info_SetValueForKey( buf, "height", va( "%d", h ), false );
 		trap_Rocket_DSAddRow( "resolutions", "default", buf );
+	}
+
+	if ( rocketInfo.data.resolutionIndex == -1 )
+	{
+		Info_SetValueForKey( buf, "width", va( "%d", -1 ), false );
+		Info_SetValueForKey( buf, "height", va( "%d", -1 ), false );
+		trap_Rocket_DSAddRow( "resolutions", "default", buf );
+		rocketInfo.data.resolutionIndex = rocketInfo.data.resolutionCount;
 	}
 
 }
@@ -578,13 +600,21 @@ void CG_Rocket_SortResolutionList( const char *name, const char *sortBy )
 
 	for ( i = 0; i < rocketInfo.data.resolutionCount; ++i )
 	{
-		Info_SetValueForKey( buf, "width", va( "%d", rocketInfo.data.resolutions[ i ].width ), qfalse );
-		Info_SetValueForKey( buf, "height", va( "%d", rocketInfo.data.resolutions[ i ].height ), qfalse );
+		Info_SetValueForKey( buf, "width", va( "%d", rocketInfo.data.resolutions[ i ].width ), false );
+		Info_SetValueForKey( buf, "height", va( "%d", rocketInfo.data.resolutions[ i ].height ), false );
 
 		trap_Rocket_DSAddRow( "resolutions", "default", buf );
 	}
 }
 
+int CG_Rocket_GetResolutionListIndex( const char *table )
+{
+	if ( !rocketInfo.data.resolutionCount)
+	{
+		CG_Rocket_BuildResolutionList( nullptr );
+	}
+	return rocketInfo.data.resolutionIndex;
+}
 
 void CG_Rocket_CleanUpResolutionList( const char *table )
 {
@@ -621,7 +651,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 {
 	char        buf[ MAX_STRING_CHARS ], temp[ MAX_TOKEN_CHARS ], language[ 32 ];
 	int         index = 0, lang = 0;
-	qboolean    quoted = qfalse;
+	bool    quoted = false;
 	char        *p;
 
 	trap_Cvar_VariableStringBuffer( "trans_languages", buf, sizeof( buf ) );
@@ -635,8 +665,8 @@ void CG_Rocket_BuildLanguageList( const char *args )
 		if ( *p == '"' && quoted )
 		{
 			temp[ index ] = '\0';
-			AddToLanguageList( BG_strdup( temp ), NULL );
-			quoted = qfalse;
+			AddToLanguageList( BG_strdup( temp ), nullptr );
+			quoted = false;
 			index = 0;
 		}
 
@@ -647,7 +677,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 				p++;
 			}
 
-			quoted = qtrue;
+			quoted = true;
 			temp[ index++ ] = *p;
 		}
 
@@ -671,7 +701,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 			}
 
 			rocketInfo.data.languages[ lang++ ].lang = BG_strdup( temp );
-			quoted = qfalse;
+			quoted = false;
 			index = 0;
 		}
 
@@ -682,7 +712,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 				p++;
 			}
 
-			quoted = qtrue;
+			quoted = true;
 			temp[ index++ ] = *p;
 		}
 
@@ -693,8 +723,8 @@ void CG_Rocket_BuildLanguageList( const char *args )
 
 	for ( index = 0; index < rocketInfo.data.languageCount; ++index )
 	{
-		Info_SetValueForKey( buf, "name", rocketInfo.data.languages[ index ].name, qfalse );
-		Info_SetValueForKey( buf, "lang", rocketInfo.data.languages[ index ].lang, qfalse );
+		Info_SetValueForKey( buf, "name", rocketInfo.data.languages[ index ].name, false );
+		Info_SetValueForKey( buf, "lang", rocketInfo.data.languages[ index ].lang, false );
 
 		trap_Rocket_DSAddRow( "languages", "default", buf );
 	}
@@ -704,7 +734,7 @@ int CG_Rocket_GetLanguageListIndex( const char *args )
 {
 	if ( !rocketInfo.data.languageCount )
 	{
-		CG_Rocket_BuildLanguageList( NULL );
+		CG_Rocket_BuildLanguageList( nullptr );
 	}
 
 	return rocketInfo.data.languageIndex;
@@ -758,7 +788,7 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 
 	for ( inputs = 0; inputs < rocketInfo.data.voipInputsCount; ++inputs )
 	{
-		Info_SetValueForKey( buf, "name", rocketInfo.data.voipInputs[ inputs ], qfalse );
+		Info_SetValueForKey( buf, "name", rocketInfo.data.voipInputs[ inputs ], false );
 
 		trap_Rocket_DSAddRow( "voipInputs", "default", buf );
 	}
@@ -821,7 +851,7 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 
 	for ( outputs = 0; outputs < rocketInfo.data.alOutputsCount; ++outputs )
 	{
-		Info_SetValueForKey( buf, "name", rocketInfo.data.alOutputs[ outputs ], qfalse );
+		Info_SetValueForKey( buf, "name", rocketInfo.data.alOutputs[ outputs ], false );
 
 		trap_Rocket_DSAddRow( "alOutputs", "default", buf );
 	}
@@ -876,8 +906,8 @@ void CG_Rocket_BuildModList( const char *args )
 
 	for ( i = 0; i < rocketInfo.data.modCount; ++i )
 	{
-		Info_SetValueForKey( dirlist, "name", rocketInfo.data.modList[ i ].name, qfalse );
-		Info_SetValueForKey( dirlist, "description", rocketInfo.data.modList[ i ].description, qfalse );
+		Info_SetValueForKey( dirlist, "name", rocketInfo.data.modList[ i ].name, false );
+		Info_SetValueForKey( dirlist, "description", rocketInfo.data.modList[ i ].description, false );
 
 		trap_Rocket_DSAddRow( "modList", "default", dirlist );
 	}
@@ -946,7 +976,7 @@ void CG_Rocket_BuildDemoList( const char *args )
 
 	for ( i = 0; i < rocketInfo.data.demoCount; ++i )
 	{
-		Info_SetValueForKey( demolist, "name", rocketInfo.data.demoList[ i ], qfalse );
+		Info_SetValueForKey( demolist, "name", rocketInfo.data.demoList[ i ], false );
 
 		trap_Rocket_DSAddRow( "demoList", "default", demolist );
 	}
@@ -994,14 +1024,14 @@ void CG_Rocket_BuildPlayerList( const char *args )
 			continue;
 		}
 
-		Info_SetValueForKey( buf, "num", va( "%d", score->client ), qfalse );
-		Info_SetValueForKey( buf, "score", va( "%d", score->score ), qfalse );
-		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), qfalse );
-		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), qfalse );
-		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), qfalse );
-		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
-		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
-		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
+		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
+		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
+		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
+		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
+		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
+		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
+		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
+		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
 
 		switch ( score->team )
 		{
@@ -1075,14 +1105,14 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 			continue;
 		}
 
-		Info_SetValueForKey( buf, "num", va( "%d", score->client ), qfalse );
-		Info_SetValueForKey( buf, "score", va( "%d", score->score ), qfalse );
-		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), qfalse );
-		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), qfalse );
-		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), qfalse );
-		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
-		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
-		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
+		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
+		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
+		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
+		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
+		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
+		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
+		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
+		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
 
 		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
 	}
@@ -1097,14 +1127,14 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 			continue;
 		}
 
-		Info_SetValueForKey( buf, "num", va( "%d", score->client ), qfalse );
-		Info_SetValueForKey( buf, "score", va( "%d", score->score ), qfalse );
-		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), qfalse );
-		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), qfalse );
-		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), qfalse );
-		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
-		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
-		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
+		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
+		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
+		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
+		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
+		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
+		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
+		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
+		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
 		trap_Rocket_DSAddRow( "playerList", "humans", buf );
 	}
 
@@ -1118,14 +1148,14 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 			continue;
 		}
 
-		Info_SetValueForKey( buf, "num", va( "%d", score->client ), qfalse );
-		Info_SetValueForKey( buf, "score", va( "%d", score->score ), qfalse );
-		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), qfalse );
-		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), qfalse );
-		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), qfalse );
-		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
-		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
-		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
+		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
+		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
+		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
+		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
+		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
+		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
+		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
+		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
 
 		trap_Rocket_DSAddRow( "playerList", "aliens", buf );
 	}
@@ -1142,9 +1172,9 @@ void CG_Rocket_BuildMapList( const char *args )
 	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
 	{
 		char buf[ MAX_INFO_STRING ] = { 0 };
-		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
-		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapName, qfalse );
-		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName, qfalse );
+		Info_SetValueForKey( buf, "num", va( "%d", i ), false );
+		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapName, false );
+		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName, false );
 
 		trap_Rocket_DSAddRow( "mapList", "default", buf );
 	}
@@ -1202,7 +1232,7 @@ void CG_Rocket_BuildTeamList( const char *args )
 		,
 		"\\name\\Auto Select\\description\\Join the team with the least players.\\"
 		,
-		NULL
+		nullptr
 	};
 
 	int i = 0;
@@ -1222,7 +1252,7 @@ void CG_Rocket_SetTeamList( const char *table, int index )
 
 void CG_Rocket_ExecTeamList( const char *table )
 {
-	const char *cmd = NULL;
+	const char *cmd = nullptr;
 
 	switch ( rocketInfo.data.selectedTeamIndex )
 	{
@@ -1265,8 +1295,8 @@ void AddHumanSpawnItem( weapon_t weapon )
 	}
 
 	data[ 0 ] = '\0';
-	Info_SetValueForKey( data, "name", BG_Weapon( weapon )->humanName, qfalse );
-	Info_SetValueForKey( data, "description", BG_Weapon( weapon )->info, qfalse );
+	Info_SetValueForKey( data, "name", BG_Weapon( weapon )->humanName, false );
+	Info_SetValueForKey( data, "description", BG_Weapon( weapon )->info, false );
 
 	trap_Rocket_DSAddRow( "humanSpawnItems", "default", data );
 }
@@ -1290,7 +1320,7 @@ void CG_Rocket_SetHumanSpawnItems( const char *table, int index )
 
 void CG_Rocket_ExecHumanSpawnItems( const char *table )
 {
-	const char *cmd = NULL;
+	const char *cmd = nullptr;
 
 	switch ( rocketInfo.data.selectedHumanSpawnItem )
 	{
@@ -1356,10 +1386,10 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 	if ( BG_Weapon( i )->team == TEAM_HUMANS && BG_Weapon( i )->purchasable &&
 	        i != WP_BLASTER )
 	{
-		Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
-		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, qfalse );
-		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), qfalse );
-		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, qfalse );
+		Info_SetValueForKey( buf, "num", va( "%d", i ), false );
+		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, false );
+		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), false );
+		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, false );
 
 		trap_Rocket_DSAddRow( "armouryBuyList", table, buf );
 
@@ -1382,10 +1412,10 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 	if ( BG_Upgrade( i )->team == TEAM_HUMANS && BG_Upgrade( i )->purchasable &&
 	        i != UP_MEDKIT )
 	{
-		Info_SetValueForKey( buf, "num", va( "%d", tblIndex == ROCKETDS_BOTH ? i + WP_NUM_WEAPONS : i ), qfalse );
-		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, qfalse );
-		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), qfalse );
-		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, qfalse );
+		Info_SetValueForKey( buf, "num", va( "%d", tblIndex == ROCKETDS_BOTH ? i + WP_NUM_WEAPONS : i ), false );
+		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, false );
+		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), false );
+		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, false );
 
 		trap_Rocket_DSAddRow( "armouryBuyList", table, buf );
 
@@ -1485,7 +1515,7 @@ void CG_Rocket_BuildArmourySellList( const char *table );
 void CG_Rocket_ExecArmouryBuyList( const char *table )
 {
 	int item;
-	const char *buy = NULL;
+	const char *buy = nullptr;
 	char c = table ? *table : 'd';
 	int tblIndex;
 
@@ -1575,7 +1605,7 @@ void CG_Rocket_BuildArmourySellList( const char *table )
 
 				rocketInfo.data.armourySellList[ rocketInfo.data.armourySellListCount++ ] = i;
 
-				Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, qfalse );
+				Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, false );
 
 				trap_Rocket_DSAddRow( "armourySellList", "default", buf );
 			}
@@ -1589,7 +1619,7 @@ void CG_Rocket_BuildArmourySellList( const char *table )
 
 				rocketInfo.data.armourySellList[ rocketInfo.data.armourySellListCount++ ] = i + WP_NUM_WEAPONS;
 
-				Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, qfalse );
+				Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, false );
 
 				trap_Rocket_DSAddRow( "armourySellList", "default", buf );
 			}
@@ -1605,7 +1635,7 @@ void CG_Rocket_SetArmourySellList( const char *table, int index )
 void CG_Rocket_ExecArmourySellList( const char *table )
 {
 	int item;
-	const char *sell = NULL;
+	const char *sell = nullptr;
 
 	if ( rocketInfo.data.selectedArmourySellItem < 0 || rocketInfo.data.selectedArmourySellItem >= rocketInfo.data.armourySellListCount )
 	{
@@ -1670,10 +1700,10 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 			{
 				buf[ 0 ] = '\0';
 
-				Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
-				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, qfalse );
-				Info_SetValueForKey( buf, "description", BG_Class( i )->info, qfalse );
-				Info_SetValueForKey( buf, "price", va( "%d", BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) / CREDITS_PER_EVO ), qfalse );
+				Info_SetValueForKey( buf, "num", va( "%d", i ), false );
+				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );
+				Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
+				Info_SetValueForKey( buf, "price", va( "%d", BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) / CREDITS_PER_EVO ), false );
 
 				trap_Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
@@ -1727,10 +1757,10 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 			{
 				buf[ 0 ] = '\0';
 
-				Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
-				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
-				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
-				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );
+				Info_SetValueForKey( buf, "num", va( "%d", i ), false );
+				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
+				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
+				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
 
 				trap_Rocket_DSAddRow( "humanBuildList", "default", buf );
 
@@ -1784,10 +1814,10 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 			{
 				buf[ 0 ] = '\0';
 
-				Info_SetValueForKey( buf, "num", va( "%d", (int) i ), qfalse );
-				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, qfalse );
-				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), qfalse );
-				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, qfalse );
+				Info_SetValueForKey( buf, "num", va( "%d", (int) i ), false );
+				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
+				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
+				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
 
 				trap_Rocket_DSAddRow( "alienBuildList", "default", buf );
 
@@ -1823,8 +1853,8 @@ void AddAlienSpawnClass( class_t _class )
 	}
 
 	data[ 0 ] = '\0';
-	Info_SetValueForKey( data, "name", BG_ClassModelConfig( _class )->humanName, qfalse );
-	Info_SetValueForKey( data, "description", BG_Class( _class )->info, qfalse );
+	Info_SetValueForKey( data, "name", BG_ClassModelConfig( _class )->humanName, false );
+	Info_SetValueForKey( data, "description", BG_Class( _class )->info, false );
 
 	trap_Rocket_DSAddRow( "alienSpawnClass", "default", data );
 }
@@ -1867,7 +1897,7 @@ void CG_Rocket_SetAlienSpawnList( const char *table, int index )
 
 void CG_Rocket_ExecAlienSpawnList( const char *table )
 {
-	const char *_class = NULL;
+	const char *_class = nullptr;
 
 	switch ( rocketInfo.data.selectedAlienSpawnClass )
 	{
@@ -1922,9 +1952,9 @@ void CG_Rocket_BuildBeaconList( const char *table )
 
 			buf[ 0 ] = '\0';
 
-			Info_SetValueForKey( buf, "num", va( "%d", i ), qfalse );
-			Info_SetValueForKey( buf, "name", ba->humanName, qfalse );
-			Info_SetValueForKey( buf, "desc", ba->desc, qfalse );
+			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
+			Info_SetValueForKey( buf, "name", ba->humanName, false );
+			Info_SetValueForKey( buf, "desc", ba->desc, false );
 
 			trap_Rocket_DSAddRow( "beaconList", "default", buf );
 
@@ -1996,7 +2026,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetResolutionListIndex},
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList, &nullGetFunc },
 	{ "teamList", &CG_Rocket_BuildTeamList, &nullSortFunc, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamList, &nullFilterFunc, &CG_Rocket_ExecTeamList, &nullGetFunc },
 	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs, &CG_Rocket_SetVoipInputsInput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
@@ -2092,7 +2122,7 @@ int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table )
 	return -1;
 }
 
-void CG_Rocket_RegisterDataSources( void )
+void CG_Rocket_RegisterDataSources()
 {
 	int i;
 
@@ -2108,12 +2138,12 @@ void CG_Rocket_RegisterDataSources( void )
 	}
 }
 
-void CG_Rocket_CleanUpDataSources( void )
+void CG_Rocket_CleanUpDataSources()
 {
 	int i;
 
 	for ( i = 0; i < dataSourceCmdListCount; ++i )
 	{
-		dataSourceCmdList[ i ].cleanup( NULL );
+		dataSourceCmdList[ i ].cleanup( nullptr );
 	}
 }

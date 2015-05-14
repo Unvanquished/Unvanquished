@@ -307,6 +307,7 @@ static const minizip_category_impl& minizip_category()
 
 // Filesystem-specific error codes
 enum filesystem_error {
+	no_filesystem_error,
 	invalid_filename,
 	no_such_file,
 	no_such_directory,
@@ -615,7 +616,7 @@ void File::CopyTo(const File& dest, std::error_code& err) const
 }
 void File::SetLineBuffered(bool enable, std::error_code& err) const
 {
-	if (setvbuf(fd, NULL, enable ? _IOLBF : _IOFBF, BUFSIZ) != 0)
+	if (setvbuf(fd, nullptr, enable ? _IOLBF : _IOFBF, BUFSIZ) != 0)
 		SetErrorCodeSystem(err);
 	else
 		ClearErrorCode(err);
@@ -2026,39 +2027,53 @@ void Initialize()
 #else
 void Initialize(Str::StringRef homePath, Str::StringRef libPath, const std::vector<std::string>& paths)
 {
+	// The first path in the list is implicitly added by the engine, so don't
+	// print a warning if it is not valid.
+	bool first = true;
+
 	for (const std::string& path: paths) {
 		// Convert the given path to an absolute path and check that it exists
 #ifdef _WIN32
 		std::wstring path_u16 = Str::UTF8To16(path);
 		DWORD attr = GetFileAttributesW(path_u16.c_str());
 		if (attr == INVALID_FILE_ATTRIBUTES || !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
-			fsLogs.Warn("Ignoring path %s: %s", path, attr == INVALID_FILE_ATTRIBUTES ? Sys::Win32StrError(GetLastError()) : "Not a directory");
+			if (!first)
+				fsLogs.Warn("Ignoring path %s: %s", path, attr == INVALID_FILE_ATTRIBUTES ? Sys::Win32StrError(GetLastError()) : "Not a directory");
+			first = false;
 			continue;
 		}
 
 		size_t len = GetFullPathNameW(path_u16.c_str(), 0, nullptr, nullptr);
 		if (!len) {
-			fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
+			if (!first)
+				fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
+			first = false;
 			continue;
 		}
 		std::unique_ptr<wchar_t[]> realPath(new wchar_t[len]);
 		if (!GetFullPathNameW(path_u16.c_str(), len, realPath.get(), nullptr)) {
-			fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
+			if (!first)
+				fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
+			first = false;
 			continue;
 		}
 
 		if (std::find(FS::pakPaths.begin(), FS::pakPaths.end(), Str::UTF16To8(realPath.get())) == FS::pakPaths.end())
 			FS::pakPaths.push_back(Str::UTF16To8(realPath.get()));
+		first = false;
 #else
-		char* realPath = realpath(path.c_str(), NULL);
+		char* realPath = realpath(path.c_str(), nullptr);
 		if (!realPath) {
-			fsLogs.Warn("Ignoring path %s: %s", path, strerror(errno));
+			if (!first)
+				fsLogs.Warn("Ignoring path %s: %s", path, strerror(errno));
+			first = false;
 			continue;
 		}
 
 		if (std::find(FS::pakPaths.begin(), FS::pakPaths.end(), realPath) == FS::pakPaths.end())
 			FS::pakPaths.push_back(realPath);
 		free(realPath);
+		first = false;
 #endif
 	}
 	FS::homePath = homePath;
@@ -2353,9 +2368,10 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 
 	case VM::FS_HOMEPATH_OPENMODE:
 		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](std::string path, uint32_t mode, Util::optional<IPC::OwnedFileHandle>& out) {
-			try {
-				out = FileToIPC(HomePath::OpenMode(Path::Build("game", path), static_cast<openMode_t>(mode), throws()), static_cast<openMode_t>(mode));
-			} catch (std::system_error&) {}
+			std::error_code err;
+			FS::File file = HomePath::OpenMode(Path::Build("game", path), static_cast<openMode_t>(mode), err);
+			if (!err)
+				out = FileToIPC(std::move(file), static_cast<openMode_t>(mode));
 		});
 		break;
 
@@ -2367,31 +2383,26 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 
 	case VM::FS_HOMEPATH_TIMESTAMP:
 		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, std::move(reader), [](std::string path, Util::optional<uint64_t>& out) {
-			try {
-				out = std::chrono::system_clock::to_time_t(HomePath::FileTimestamp(Path::Build("game", path)));
-			} catch (std::system_error&) {}
+			std::error_code err;
+			std::chrono::system_clock::time_point t = HomePath::FileTimestamp(Path::Build("game", path), err);
+			if (!err)
+				out = std::chrono::system_clock::to_time_t(t);
 		});
 		break;
 
 	case VM::FS_HOMEPATH_MOVEFILE:
 		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool success) {
-			try {
-				HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src));
-				success = true;
-			} catch (std::system_error&) {
-				success = false;
-			}
+			std::error_code err;
+			HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src), err);
+			success = !err;
 		});
 		break;
 
 	case VM::FS_HOMEPATH_DELETEFILE:
 		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool success) {
-			try {
-				HomePath::DeleteFile(Path::Build("game", path));
-				success = true;
-			} catch (std::system_error&) {
-				success = false;
-			}
+			std::error_code err;
+			HomePath::DeleteFile(Path::Build("game", path), err);
+			success = !err;
 		});
 		break;
 
@@ -2426,9 +2437,10 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			if (!Path::IsValid(path, false))
 				return;
-			try {
-				out = FileToIPC(RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path)), MODE_READ);
-			} catch (std::system_error&) {}
+			std::error_code err;
+			FS::File file = RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path), err);
+			if (!err)
+				out = FileToIPC(std::move(file), MODE_READ);
 		});
 		break;
 
@@ -2441,9 +2453,10 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			if (!Path::IsValid(path, false))
 				return;
-			try {
-				out = std::chrono::system_clock::to_time_t(RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path)));
-			} catch (std::system_error&) {}
+			std::error_code err;
+			std::chrono::system_clock::time_point t = RawPath::FileTimestamp(Path::Build(loadedPaks[pakIndex].path, path), err);
+			if (!err)
+				out = std::chrono::system_clock::to_time_t(t);
 		});
 		break;
 
@@ -2453,7 +2466,9 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 				return;
 			try {
 				FS::PakPath::InternalLoadPak(availablePaks[pakIndex], expectedChecksum, pathPrefix, FS::throws());
-			} catch (std::system_error&) {}
+			} catch (std::system_error& err) {
+				fsLogs.Warn("Could not load pak %s: %s", availablePaks[pakIndex].path, err.what());
+			}
 		});
 		break;
 

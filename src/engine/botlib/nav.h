@@ -105,7 +105,7 @@ struct OffMeshConnections
 
 	OffMeshConnections() : offMeshConCount( 0 ) { }
 
-	void reset( void )
+	void reset()
 	{
 		offMeshConCount = 0;
 	}

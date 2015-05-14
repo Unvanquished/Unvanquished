@@ -291,7 +291,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 	}
 }
 
-void Rocket_SetClass( const char *in, qboolean activate )
+void Rocket_SetClass( const char *in, bool activate )
 {
 	bool isSet = activeElement->IsClassSet( in );
 	if ( ( activate && !isSet ) || ( !activate && isSet ) )
@@ -338,7 +338,7 @@ void Rocket_AddConsoleText(Str::StringRef text)
 	RocketConsoleTextElement::lines.push_front( ConsoleLine( Rocket::Core::String( va( "%s\n", buffer ) ) ) );
 }
 
-void Rocket_RegisterProperty( const char *name, const char *defaultValue, qboolean inherited, qboolean force_layout, const char *parseAs )
+void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs )
 {
 	Rocket::Core::StyleSheetSpecification::RegisterProperty( name, defaultValue, ( bool ) inherited, ( bool ) force_layout ).AddParser( parseAs );
 }

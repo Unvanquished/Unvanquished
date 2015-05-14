@@ -64,7 +64,7 @@ const char *MomentumTypeToReason( momentum_t type )
 /**
  * Has to be called whenever the momentum of a team has been modified.
  */
-void MomentumChanged( void )
+void MomentumChanged()
 {
 	int       playerNum;
 	gentity_t *player;
@@ -124,7 +124,7 @@ void NotifyLegacyStageSensors( team_t team, float amount )
 	}
 }
 
-static INLINE float MomentumTimeMod( void )
+static INLINE float MomentumTimeMod()
 {
 	if ( g_momentumRewardDoubleTime.value <= 0.0f )
 	{
@@ -140,7 +140,7 @@ static INLINE float MomentumTimeMod( void )
 /**
  * @todo Currently this function is just a guess, find out the correct mod via statistics.
  */
-static INLINE float MomentumPlayerCountMod( void )
+static INLINE float MomentumPlayerCountMod()
 {
 	int playerCount = std::max( 2, level.team[ TEAM_ALIENS ].numClients +
 	                               level.team[ TEAM_HUMANS ].numClients );
@@ -214,11 +214,11 @@ static float MomentumMod( momentum_t type )
  * Will notify the client hwo earned it if given, otherwise the whole team, with an event.
  */
 static float AddMomentum( momentum_t type, team_t team, float amount,
-                            gentity_t *source, qboolean skipChangeHook )
+                            gentity_t *source, bool skipChangeHook )
 {
-	gentity_t *event = NULL;
+	gentity_t *event = nullptr;
 	gclient_t *client;
-	char      *clientName;
+	const char *clientName;
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
@@ -269,7 +269,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 			event->s.eventParm = 0;
 			event->s.otherEntityNum = 0;
 			event->s.otherEntityNum2 = ( int )( fabs( amount ) * 10.0f + 0.5f );
-			event->s.groundEntityNum = amount < 0.0f ? qtrue : qfalse;
+			event->s.groundEntityNum = amount < 0.0f ? true : false;
 		}
 
 		// notify legacy stage sensors
@@ -302,7 +302,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 /**
  * Exponentially decreases momentum.
  */
-void G_DecreaseMomentum( void )
+void G_DecreaseMomentum()
 {
 	int          team;
 	float        amount;
@@ -351,7 +351,7 @@ void G_DecreaseMomentum( void )
  */
 float G_AddMomentumGeneric( team_t team, float amount )
 {
-	AddMomentum( CONF_GENERIC, team, amount, NULL, qfalse );
+	AddMomentum( CONF_GENERIC, team, amount, nullptr, false );
 
 	return amount;
 }
@@ -363,7 +363,7 @@ float G_AddMomentumGeneric( team_t team, float amount )
  */
 float G_AddMomentumGenericStep( team_t team, float amount )
 {
-	AddMomentum( CONF_GENERIC, team, amount, NULL, qtrue );
+	AddMomentum( CONF_GENERIC, team, amount, nullptr, true );
 
 	return amount;
 }
@@ -409,10 +409,10 @@ float G_AddMomentumForBuilding( gentity_t *buildable )
 	}
 	else
 	{
-		builder = NULL;
+		builder = nullptr;
 	}
 
-	reward = AddMomentum( CONF_BUILDING, team, value, builder, qfalse );
+	reward = AddMomentum( CONF_BUILDING, team, value, builder, false );
 
 	// Save reward with buildable so it can be reverted
 	buildable->momentumEarned = reward;
@@ -447,7 +447,7 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 
 	value *= buildable->deconHealthFrac;
 
-	return AddMomentum( CONF_DECONSTRUCTING, team, -value, deconner, qfalse );
+	return AddMomentum( CONF_DECONSTRUCTING, team, -value, deconner, false );
 }
 
 /**
@@ -473,7 +473,7 @@ float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker,
 
 	team = (team_t) attacker->client->pers.team;
 
-	return AddMomentum( CONF_DESTROYING, team, amount, attacker, qtrue );
+	return AddMomentum( CONF_DESTROYING, team, amount, attacker, true );
 }
 
 /**
@@ -501,13 +501,13 @@ float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float
 	value = BG_GetValueOfPlayer( &victim->client->ps ) * MOMENTUM_PER_CREDIT * share;
 	team  = (team_t) attacker->client->pers.team;
 
-	return AddMomentum( CONF_KILLING, team, value, attacker, qtrue );
+	return AddMomentum( CONF_KILLING, team, value, attacker, true );
 }
 
 /**
  * Has to be called after the last G_AddMomentum*Step step.
  */
-void G_AddMomentumEnd( void )
+void G_AddMomentumEnd()
 {
 	MomentumChanged();
 }

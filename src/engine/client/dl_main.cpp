@@ -45,8 +45,8 @@ Maryland 20850 USA.
 // initialize once
 static int   dl_initialized = 0;
 
-static CURLM *dl_multi = NULL;
-static CURL  *dl_request = NULL;
+static CURLM *dl_multi = nullptr;
+static CURL  *dl_request = nullptr;
 static fileHandle_t dl_file;
 
 /*
@@ -71,7 +71,7 @@ static int DL_cb_Progress( void *clientp, double dltotal, double dlnow, double u
 	return 0;
 }
 
-void DL_InitDownload( void )
+void DL_InitDownload()
 {
 	if ( dl_initialized )
 	{
@@ -93,7 +93,7 @@ DL_Shutdown
 
 ================
 */
-void DL_Shutdown( void )
+void DL_Shutdown()
 {
 	if ( !dl_initialized )
 	{
@@ -101,7 +101,7 @@ void DL_Shutdown( void )
 	}
 
 	curl_multi_cleanup( dl_multi );
-	dl_multi = NULL;
+	dl_multi = nullptr;
 
 	curl_global_cleanup();
 
@@ -122,7 +122,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	{
 		curl_multi_remove_handle( dl_multi, dl_request );
 		curl_easy_cleanup( dl_request );
-		dl_request = NULL;
+		dl_request = nullptr;
 	}
 
 	if ( dl_file )
@@ -168,12 +168,12 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 }
 
 // (maybe this should be CL_DL_DownloadLoop)
-dlStatus_t DL_DownloadLoop( void )
+dlStatus_t DL_DownloadLoop()
 {
 	CURLMcode  status;
 	CURLMsg    *msg;
 	int        dls = 0;
-	const char *err = NULL;
+	const char *err = nullptr;
 
 	if ( !dl_request )
 	{
@@ -206,7 +206,7 @@ dlStatus_t DL_DownloadLoop( void )
 	}
 	else
 	{
-		err = NULL;
+		err = nullptr;
 	}
 
 	curl_multi_remove_handle( dl_multi, dl_request );
@@ -215,7 +215,7 @@ dlStatus_t DL_DownloadLoop( void )
 	FS_FCloseFile( dl_file );
 	dl_file = 0;
 
-	dl_request = NULL;
+	dl_request = nullptr;
 
 	Cvar_Set( "ui_dl_running", "0" );
 

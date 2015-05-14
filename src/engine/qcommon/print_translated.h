@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #error No translation function? Fail!
 #endif
 
-static const char *TranslateText_Internal( qboolean plural, int firstTextArg )
+static const char *TranslateText_Internal( bool plural, int firstTextArg )
 {
 	static char str[ MAX_STRING_CHARS ];
 	char        buf[ MAX_STRING_CHARS ];

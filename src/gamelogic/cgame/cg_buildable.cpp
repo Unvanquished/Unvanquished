@@ -72,7 +72,7 @@ typedef enum shorthand_e {
 
 // Buildable animation names.
 static const char* shorthandToName[ NUM_SHORTHANDS ] = {
-    NULL,
+    nullptr,
 
 	"idle",
 	"idle2",
@@ -135,12 +135,12 @@ static int GetAnimationFlags( buildable_t buildable, buildableAnimNumber_t animN
 	return anims[ buildable ][ animNumber ].flags;
 }
 
-static qboolean IsLooped( buildable_t buildable, buildableAnimNumber_t animNumber )
+static bool IsLooped( buildable_t buildable, buildableAnimNumber_t animNumber )
 {
 	return ( GetAnimationFlags( buildable, animNumber ) & BAF_LOOP );
 }
 
-static qboolean IsReversed( buildable_t buildable, buildableAnimNumber_t animNumber )
+static bool IsReversed( buildable_t buildable, buildableAnimNumber_t animNumber )
 {
 	return ( GetAnimationFlags( buildable, animNumber ) & BAF_REVERSE );
 }
@@ -204,8 +204,8 @@ Called for human buildables as they are destroyed
 */
 void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir )
 {
-	particleSystem_t *explosion = NULL;
-	particleSystem_t *nova = NULL;
+	particleSystem_t *explosion = nullptr;
+	particleSystem_t *nova = nullptr;
 
 	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
 	{
@@ -278,13 +278,13 @@ static void CG_Creep( centity_t *cent )
 	VectorScale( temp, -attr->creepSize, temp );
 	VectorAdd( temp, cent->lerpOrigin, temp );
 
-	CG_Trace( &tr, cent->lerpOrigin, NULL, NULL, temp, cent->currentState.number,
+	CG_Trace( &tr, cent->lerpOrigin, nullptr, nullptr, temp, cent->currentState.number,
 	          MASK_PLAYERSOLID, 0 );
 
 	if ( size > 0.0f && tr.fraction < 1.0f )
 	{
 		CG_ImpactMark( cgs.media.creepShader, tr.endpos, cent->currentState.origin2,
-		               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, qfalse, size, qtrue );
+		               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, false, size, true );
 	}
 }
 
@@ -344,9 +344,9 @@ Read a configuration file containing animation counts and rates
 models/buildables/hivemind/animation.cfg, etc
 ======================
 */
-static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_t buildable )
+static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t buildable )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -362,14 +362,14 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 
 	if ( len < 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
-		return qfalse;
+		return false;
 	}
 
 	trap_FS_Read( text, len, f );
@@ -399,14 +399,14 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 		}
 
 		animations[ i ].numFrames = atoi( token );
-		animations[ i ].reversed = qfalse;
-		animations[ i ].flipflop = qfalse;
+		animations[ i ].reversed = false;
+		animations[ i ].flipflop = false;
 
 		// if numFrames is negative the animation is reversed
 		if ( animations[ i ].numFrames < 0 )
 		{
 			animations[ i ].numFrames = -animations[ i ].numFrames;
-			animations[ i ].reversed = qtrue;
+			animations[ i ].reversed = true;
 		}
 
 		token = COM_Parse( &text_p );
@@ -439,10 +439,10 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
 		CG_Printf( "Error parsing animation file: %s\n", filename );
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -453,9 +453,9 @@ Read a configuration file containing sound properties
 sound/buildables/hivemind/sound.cfg, etc
 ======================
 */
-static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t buildable )
+static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t buildable )
 {
-	char         *text_p;
+	const char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -470,14 +470,14 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 
 	if ( len < 0 )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
-		return qfalse;
+		return false;
 	}
 
 	trap_FS_Read( text, len, f );
@@ -512,14 +512,14 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
 		CG_Printf( "Error parsing sound file: %s\n", filename );
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
-static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *modelName, int anim, const char *animName,
-    qboolean loop, qboolean reversed, qboolean clearOrigin, qboolean iqm )
+static bool CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *modelName, int anim, const char *animName,
+    bool loop, bool reversed, bool clearOrigin, bool iqm )
 {
 	char filename[ MAX_QPATH ];
 	int  frameRate;
@@ -538,7 +538,7 @@ static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		return qfalse;
+		return false;
 	}
 
 	ci->animations[ anim ].firstFrame = 0;
@@ -565,7 +565,7 @@ static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *
 	ci->animations[ anim ].reversed = reversed;
 	ci->animations[ anim ].clearOrigin = clearOrigin;
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -575,7 +575,7 @@ CG_InitBuildables
 Initialises the animation db
 ===============
 */
-void CG_InitBuildables( void )
+void CG_InitBuildables()
 {
 	char         filename[ MAX_QPATH ];
 	char         soundfile[ MAX_QPATH ];
@@ -595,10 +595,10 @@ void CG_InitBuildables( void )
 		strcpy( soundfile, cg_buildableSoundNames[ j - 1 ] );
 
 		Com_sprintf( filename, sizeof( filename ), "sound/buildables/alien/%s", soundfile );
-		defaultAlienSounds[ j ] = trap_S_RegisterSound( filename, qfalse );
+		defaultAlienSounds[ j ] = trap_S_RegisterSound( filename, false );
 
 		Com_sprintf( filename, sizeof( filename ), "sound/buildables/human/%s", soundfile );
-		defaultHumanSounds[ j ] = trap_S_RegisterSound( filename, qfalse );
+		defaultHumanSounds[ j ] = trap_S_RegisterSound( filename, false );
 	}
 
 	cg.buildablesFraction = 0.0f;
@@ -607,7 +607,7 @@ void CG_InitBuildables( void )
 	      buildable = (buildable_t)( buildable + 1 ) )
 	{
 		buildableInfo_t *bi = &cg_buildables[ buildable ];
-		qboolean         iqm = qfalse;
+		bool         iqm = false;
 
 		buildableName = BG_Buildable( buildable )->name;
 		//Load models
@@ -617,18 +617,18 @@ void CG_InitBuildables( void )
 		     ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm",
 		                                                   buildableName, buildableName ) ) ) )
 		{
-			bi->md5 = qtrue;
-			iqm     = qtrue;
+			bi->md5 = true;
+			iqm     = true;
 		}
 		else if ( cg_highPolyBuildableModels.integer &&
 		          ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh",
 		                                                        buildableName, buildableName ) ) ) )
 		{
-			bi->md5 = qtrue;
+			bi->md5 = true;
 		}
 		else
 		{
-			bi->md5 = qfalse;
+			bi->md5 = false;
 
 			for ( j = 0; j < MAX_BUILDABLE_MODELS; j++ )
 			{
@@ -657,7 +657,7 @@ void CG_InitBuildables( void )
 
 				if ( !CG_RegisterBuildableAnimation( bi, buildableName, anim, animName,
 				                                     IsLooped( buildable, anim ),
-				                                     IsReversed( buildable, anim ), qfalse, iqm ) )
+				                                     IsReversed( buildable, anim ), false, iqm ) )
 				{
 					Com_Printf( S_ERROR "Failed to load animation '%s' for buildable '%s' and "
 					            "animation slot #%d.", animName, buildableName, anim );
@@ -696,7 +696,7 @@ void CG_InitBuildables( void )
 					//file exists so close it
 					trap_FS_FCloseFile( f );
 
-					cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, qfalse );
+					cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, false );
 				}
 				else
 				{
@@ -731,7 +731,7 @@ void CG_InitBuildables( void )
 CG_BuildableRangeMarkerProperties
 ================
 */
-qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec4_t rgba )
+bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec4_t rgba )
 {
 	shaderColorEnum_t shc;
 
@@ -803,7 +803,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		default:
-			return qfalse;
+			return false;
 	}
 
 	if ( bType == BA_A_TRAPPER )
@@ -824,7 +824,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 	VectorCopy( cg_shaderColors[ shc ], rgba );
 	rgba[3] = 1.0f;
 
-	return qtrue;
+	return true;
 }
 
 /*
@@ -854,7 +854,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		{
 			oldbSkeleton = bSkeleton;
 
-			if ( lf->old_animation != NULL && lf->old_animation->handle )
+			if ( lf->old_animation != nullptr && lf->old_animation->handle )
 			{
 				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
@@ -960,7 +960,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	if ( lf->frameTime == cg.time )
 	{
 		cent->buildableAnim = (buildableAnimNumber_t) cent->currentState.torsoAnim;
-		cent->buildableIdleAnim = qtrue;
+		cent->buildableIdleAnim = true;
 	}
 }
 
@@ -978,7 +978,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	if ( cent->buildableAnim == BANIM_NONE )
 	{
 		cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
-		cent->buildableIdleAnim = qtrue;
+		cent->buildableIdleAnim = true;
 	}
 
 	//display the first frame of the construction anim if not yet spawned
@@ -1017,15 +1017,15 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 			if ( cent->buildableAnim == es->torsoAnim || es->legsAnim & ANIM_FORCEBIT )
 			{
 				cent->buildableAnim = cent->oldBuildableAnim = (buildableAnimNumber_t) es->legsAnim;
-				cent->buildableIdleAnim = qfalse;
+				cent->buildableIdleAnim = false;
 			}
 			else
 			{
 				cent->buildableAnim = cent->oldBuildableAnim = (buildableAnimNumber_t) es->torsoAnim;
-				cent->buildableIdleAnim = qtrue;
+				cent->buildableIdleAnim = true;
 			}
 		}
-		else if ( cent->buildableIdleAnim == qtrue &&
+		else if ( cent->buildableIdleAnim &&
 		          cent->buildableAnim != es->torsoAnim )
 		{
 			cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
@@ -1046,7 +1046,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	}
 }
 
-#define TRACE_DEPTH 64.0f
+#define TRACE_DEPTH 10.0f
 
 /*
 ===============
@@ -1062,13 +1062,13 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
 	trace_t tr;
 	float   fraction;
 
-	AngleVectors( angles, forward, NULL, NULL );
+	AngleVectors( angles, forward, nullptr, nullptr );
 	VectorCopy( normal, outAxis[ 2 ] );
 	ProjectPointOnPlane( outAxis[ 0 ], forward, outAxis[ 2 ] );
 
 	if ( !VectorNormalize( outAxis[ 0 ] ) )
 	{
-		AngleVectors( angles, NULL, NULL, forward );
+		AngleVectors( angles, nullptr, nullptr, forward );
 		ProjectPointOnPlane( outAxis[ 0 ], forward, outAxis[ 2 ] );
 		VectorNormalize( outAxis[ 0 ] );
 	}
@@ -1125,7 +1125,7 @@ static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t ori
 
 		if ( rmType == RM_SPHERE )
 		{
-			CG_DrawRangeMarker( rmType, localOrigin, range, NULL, rgba );
+			CG_DrawRangeMarker( rmType, localOrigin, range, nullptr, rgba );
 		}
 		else
 		{
@@ -1185,7 +1185,7 @@ void CG_GhostBuildable( int buildableInfo )
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
+		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, false );
 		CG_TransformSkeleton( &ent.skeleton, scale );
 	}
 
@@ -1210,11 +1210,11 @@ void CG_GhostBuildable( int buildableInfo )
 		VectorScale( ent.axis[ 1 ], scale, ent.axis[ 1 ] );
 		VectorScale( ent.axis[ 2 ], scale, ent.axis[ 2 ] );
 
-		ent.nonNormalizedAxes = qtrue;
+		ent.nonNormalizedAxes = true;
 	}
 	else
 	{
-		ent.nonNormalizedAxes = qfalse;
+		ent.nonNormalizedAxes = false;
 	}
 
 	// add to refresh list
@@ -1237,7 +1237,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, CG_Trace, entity_origin, angles, &tr );
 
 	entity_origin[ 2 ] += mins[ 2 ];
-	entity_origin[ 2 ] += ( abs( mins[ 2 ] ) + abs( maxs[ 2 ] ) ) / 2;
+	entity_origin[ 2 ] += ( std::abs( mins[ 2 ] ) + std::abs( maxs[ 2 ] ) ) / 2;
 
 	if ( CG_WorldToScreen( entity_origin, &x, &y ) )
 	{
@@ -1255,7 +1255,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 		vec4_t backColour;
 
-		const char *text = NULL;
+		const char *text = nullptr;
 		qhandle_t  shader = 0;
 
 		picM = picH * scale;
@@ -1320,13 +1320,13 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			CG_DrawPic( picX - picM / 2, picY - picM / 2, picM, picM, cgs.media.whiteShader );
 			trap_R_SetColor( bs->foreColor );
 			CG_DrawPic( picX - picH / 2, picY - picH / 2, picH, picH, bs->noPowerShader );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		if ( text )
 		{
 			rectDef_t rect;
-			float     tx, ty;
+			float     tx = 0, ty = 0;
 			vec4_t    colour;
 
 			rect.x = picX - 128;
@@ -1340,7 +1340,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			            ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ),
 			            cgs.media.whiteShader );
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 
 			colour[0] = bs->foreColor[0];
 			colour[1] = bs->foreColor[1];
@@ -1604,13 +1604,13 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			Com_Printf( "CG_BuildableStatusParse: unknown token %s in %s\n",
 			            token.string, filename );
-			bs->loaded = qfalse;
+			bs->loaded = false;
 			trap_Parse_FreeSource( handle );
 			return;
 		}
 	}
 
-	bs->loaded = qtrue;
+	bs->loaded = true;
 	trap_Parse_FreeSource( handle );
 }
 
@@ -1683,7 +1683,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	int           health, powerUsage = 0, totalPower = 0;
 	float         x, y;
 	vec4_t        color;
-	qboolean      powered, marked, showMineEfficiency, showStoredBP, showPower;
+	bool      powered, marked, showMineEfficiency, showStoredBP, showPower;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1691,7 +1691,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	int           entNum;
 	vec3_t        trOrigin;
 	vec3_t        right;
-	qboolean      visible = qfalse;
+	bool      visible = false;
 	vec3_t        mins, maxs;
 	vec3_t        cullMins, cullMaxs;
 	entityState_t *hit;
@@ -1744,7 +1744,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 	// center point
 	origin[ 2 ] += mins[ 2 ];
-	origin[ 2 ] += ( abs( mins[ 2 ] ) + abs( maxs[ 2 ] ) ) / 2;
+	origin[ 2 ] += ( std::abs( mins[ 2 ] ) + std::abs( maxs[ 2 ] ) ) / 2;
 
 	entNum = cg.predictedPlayerState.clientNum;
 
@@ -1757,13 +1757,13 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		{
 			case 1:
 				// step right
-				AngleVectors( cg.refdefViewAngles, NULL, right, NULL );
+				AngleVectors( cg.refdefViewAngles, nullptr, right, nullptr );
 				VectorMA( trOrigin, STATUS_PEEK_DIST, right, trOrigin );
 				break;
 
 			case 2:
 				// step left
-				AngleVectors( cg.refdefViewAngles, NULL, right, NULL );
+				AngleVectors( cg.refdefViewAngles, nullptr, right, nullptr );
 				VectorMA( trOrigin, -STATUS_PEEK_DIST, right, trOrigin );
 				break;
 
@@ -1774,11 +1774,11 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// look through up to 3 players and/or transparent buildables
 		for ( i = 0; i < 3; i++ )
 		{
-			CG_Trace( &tr, trOrigin, NULL, NULL, origin, entNum, MASK_SHOT, 0 );
+			CG_Trace( &tr, trOrigin, nullptr, nullptr, origin, entNum, MASK_SHOT, 0 );
 
 			if ( tr.entityNum == cent->currentState.number )
 			{
-				visible = qtrue;
+				visible = true;
 				break;
 			}
 
@@ -1806,12 +1806,12 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	// check if visibility state changed
 	if ( !visible && cent->buildableStatus.visible )
 	{
-		cent->buildableStatus.visible = qfalse;
+		cent->buildableStatus.visible = false;
 		cent->buildableStatus.lastTime = cg.time;
 	}
 	else if ( visible && !cent->buildableStatus.visible )
 	{
-		cent->buildableStatus.visible = qtrue;
+		cent->buildableStatus.visible = true;
 		cent->buildableStatus.lastTime = cg.time;
 	}
 
@@ -1959,7 +1959,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 				CG_ClearClipRegion();
 			}
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		// draw mine rate bar
@@ -1979,7 +1979,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 
 			// TODO: Draw text using libRocket
 			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
@@ -2005,7 +2005,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 
 			// TODO: Draw text using libRocket
 			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
@@ -2028,7 +2028,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			trap_R_SetColor( separatorColor );
 			CG_DrawPic( sepX, sepY, sepW, sepH, cgs.media.whiteShader );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		// draw health bar
@@ -2048,7 +2048,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		// draw power consumption bar
@@ -2083,7 +2083,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( markColor );
 			CG_DrawPic( markX, barY, markW, markH, cgs.media.whiteShader );
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		if ( bs->overlayShader )
@@ -2101,7 +2101,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( frameColor );
 			CG_DrawPic( oX, oY, oW, oH, bs->overlayShader );
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor( nullptr );
 		}
 
 		trap_R_SetColor( color );
@@ -2160,7 +2160,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawField( nX, subY, 4, subH, subH, healthPoints );
 		}
 
-		trap_R_SetColor( NULL );
+		trap_R_SetColor( nullptr );
 		CG_ClearClipRegion();
 	}
 }
@@ -2199,7 +2199,7 @@ static int CG_SortDistance( const void *a, const void *b )
 CG_PlayerIsBuilder
 ==================
 */
-static qboolean CG_PlayerIsBuilder( buildable_t buildable )
+static bool CG_PlayerIsBuilder( buildable_t buildable )
 {
 	switch ( cg.predictedPlayerState.weapon )
 	{
@@ -2210,7 +2210,7 @@ static qboolean CG_PlayerIsBuilder( buildable_t buildable )
 			       BG_Weapon( cg.predictedPlayerState.weapon )->team;
 
 		default:
-			return qfalse;
+			return false;
 	}
 }
 
@@ -2219,25 +2219,25 @@ static qboolean CG_PlayerIsBuilder( buildable_t buildable )
 CG_BuildableRemovalPending
 ==================
 */
-static qboolean CG_BuildableRemovalPending( int entityNum )
+static bool CG_BuildableRemovalPending( int entityNum )
 {
 	int           i;
 	playerState_t *ps = &cg.snap->ps;
 
 	if ( SB_BUILDABLE_TO_IBE( ps->stats[ STAT_BUILDABLE ] ) != IBE_NONE )
 	{
-		return qfalse;
+		return false;
 	}
 
 	for ( i = 0; i < MAX_MISC; i++ )
 	{
 		if ( ps->misc[ i ] == entityNum )
 		{
-			return qtrue;
+			return true;
 		}
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -2245,7 +2245,7 @@ static qboolean CG_BuildableRemovalPending( int entityNum )
 CG_DrawBuildableStatus
 ==================
 */
-void CG_DrawBuildableStatus( void )
+void CG_DrawBuildableStatus()
 {
 	int           i;
 	centity_t     *cent;
@@ -2427,11 +2427,11 @@ void CG_Buildable( centity_t *cent )
 		VectorScale( ent.axis[ 1 ], scale, ent.axis[ 1 ] );
 		VectorScale( ent.axis[ 2 ], scale, ent.axis[ 2 ] );
 
-		ent.nonNormalizedAxes = qtrue;
+		ent.nonNormalizedAxes = true;
 	}
 	else
 	{
-		ent.nonNormalizedAxes = qfalse;
+		ent.nonNormalizedAxes = false;
 	}
 
 	// add inverse shadow map
@@ -2449,7 +2449,7 @@ void CG_Buildable( centity_t *cent )
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
 		// If buildable has spawned or is a human buildable, don't alter the size
-		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
+		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
 		float realScale = spawned ? scale :
 			scale * (float) sin ( 0.5f * (cg.time - es->time) / ba->buildTime * M_PI );
@@ -2613,11 +2613,11 @@ void CG_Buildable( centity_t *cent )
 			VectorScale( turretBarrel.axis[ 1 ], scale, turretBarrel.axis[ 1 ] );
 			VectorScale( turretBarrel.axis[ 2 ], scale, turretBarrel.axis[ 2 ] );
 
-			turretBarrel.nonNormalizedAxes = qtrue;
+			turretBarrel.nonNormalizedAxes = true;
 		}
 		else
 		{
-			turretBarrel.nonNormalizedAxes = qfalse;
+			turretBarrel.nonNormalizedAxes = false;
 		}
 
 		if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
@@ -2663,11 +2663,11 @@ void CG_Buildable( centity_t *cent )
 			VectorScale( turretTop.axis[ 1 ], scale, turretTop.axis[ 1 ] );
 			VectorScale( turretTop.axis[ 2 ], scale, turretTop.axis[ 2 ] );
 
-			turretTop.nonNormalizedAxes = qtrue;
+			turretTop.nonNormalizedAxes = true;
 		}
 		else
 		{
-			turretTop.nonNormalizedAxes = qfalse;
+			turretTop.nonNormalizedAxes = false;
 		}
 
 		if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
@@ -2754,7 +2754,7 @@ void CG_Buildable( centity_t *cent )
 		}
 
 		// Play lockon sound if applicable.
-		if ( es->eFlags & EF_B_LOCKON )
+		if ( es->generic1 > 0 && ( es->eFlags & EF_B_LOCKON ) )
 		{
 			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
 			                        cgs.media.rocketpodLockonSound );
@@ -2770,7 +2770,7 @@ void CG_Buildable( centity_t *cent )
 			if ( team == TEAM_HUMANS )
 			{
 				int i = rand() % 4;
-				trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
+				trap_S_StartSound( nullptr, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
 			}
 
 			cent->lastBuildableDamageSoundTime = cg.time;
@@ -2787,7 +2787,7 @@ void CG_Buildable( centity_t *cent )
 
 	// draw range marker if enabled
 	if( team == cg.predictedPlayerState.persistant[ PERS_TEAM ] ) {
-		qboolean drawRange;
+		bool drawRange;
 		float dist, maxDist = MAX( RADAR_RANGE, ALIENSENSE_RANGE );
 
 		if ( team == TEAM_HUMANS ) {
@@ -2796,10 +2796,10 @@ void CG_Buildable( centity_t *cent )
 			drawRange = cg.predictedPlayerState.weapon == WP_ABUILD ||
 			            cg.predictedPlayerState.weapon == WP_ABUILD2;
 		} else {
-			drawRange = !!(cg_buildableRangeMarkerMask.integer & (1 << BA_NONE));
+			drawRange = (cg_buildableRangeMarkerMask.integer & (1 << BA_NONE)) != 0;
 		}
 
-		drawRange &= !!(cg_buildableRangeMarkerMask.integer & (1 << ba->number));
+		drawRange &= (cg_buildableRangeMarkerMask.integer & (1 << ba->number)) != 0;
 
 		dist = Distance( cent->lerpOrigin, cg.refdef.vieworg );
 
