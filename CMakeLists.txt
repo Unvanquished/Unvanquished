@@ -610,21 +610,28 @@ set( SHAREDLIST
 
 set( COMMONLIST
   ${COMMON_DIR}/Command.cpp
+  ${COMMON_DIR}/Common.h
   ${COMMON_DIR}/Command.h
+  ${COMMON_DIR}/Compiler.h
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/Cvar.h
   ${COMMON_DIR}/DisjointSets.h
+  ${COMMON_DIR}/Endian.h
   ${COMMON_DIR}/FileSystem.cpp
   ${COMMON_DIR}/FileSystem.h
   ${COMMON_DIR}/LineEditData.cpp
   ${COMMON_DIR}/LineEditData.h
   ${COMMON_DIR}/Log.cpp
   ${COMMON_DIR}/Log.h
+  ${COMMON_DIR}/Math.h
+  ${COMMON_DIR}/Optional.h
+  ${COMMON_DIR}/Platform.h
   ${COMMON_DIR}/String.cpp
   ${COMMON_DIR}/String.h
   ${COMMON_DIR}/System.cpp
   ${COMMON_DIR}/System.h
   ${COMMON_DIR}/Serialize.h
+  ${COMMON_DIR}/Util.h
   ${COMMON_DIR}/cm/cm_load.cpp
   ${COMMON_DIR}/cm/cm_trisoup.cpp
   ${COMMON_DIR}/cm/cm_patch.cpp
@@ -637,16 +644,22 @@ set( COMMONLIST
   ${COMMON_DIR}/cm/cm_polylib.h
   ${COMMON_DIR}/cm/cm_public.h
   ${COMMON_DIR}/IPC/Channel.h
-  ${COMMON_DIR}/IPC/CommonSyscalls.h
   ${COMMON_DIR}/IPC/CommandBuffer.cpp
   ${COMMON_DIR}/IPC/CommandBuffer.h
+  ${COMMON_DIR}/IPC/Common.h
+  ${COMMON_DIR}/IPC/CommonSyscalls.h
   ${COMMON_DIR}/IPC/Primitives.cpp
   ${COMMON_DIR}/IPC/Primitives.h
+  ${COMMON_DIR}/math/Vector.h
 )
 
 set( RENDERERLIST
+  ${ENGINE_DIR}/sys/sdl_icon.h
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
   ${ENGINE_DIR}/renderer/gl_shader.cpp
+  ${ENGINE_DIR}/renderer/gl_shader.h
+  ${ENGINE_DIR}/renderer/iqm.h
+  ${ENGINE_DIR}/renderer/shaders.cpp
   ${ENGINE_DIR}/renderer/tr_animation.cpp
   ${ENGINE_DIR}/renderer/tr_backend.cpp
   ${ENGINE_DIR}/renderer/tr_bsp.cpp
@@ -656,7 +669,6 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_fbo.cpp
   ${ENGINE_DIR}/renderer/tr_flares.cpp
   ${ENGINE_DIR}/renderer/tr_font.cpp
-  ${ENGINE_DIR}/renderer/tr_image.cpp
   ${ENGINE_DIR}/renderer/tr_image_crn.cpp
   ${ENGINE_DIR}/renderer/tr_image_dds.cpp
   ${ENGINE_DIR}/renderer/tr_image_exr.cpp
@@ -665,40 +677,44 @@ set( RENDERERLIST
   ${ENGINE_DIR}/renderer/tr_image_png.cpp
   ${ENGINE_DIR}/renderer/tr_image_tga.cpp
   ${ENGINE_DIR}/renderer/tr_image_webp.cpp
+  ${ENGINE_DIR}/renderer/tr_image.cpp
+  ${ENGINE_DIR}/renderer/tr_image.h
   ${ENGINE_DIR}/renderer/tr_init.cpp
   ${ENGINE_DIR}/renderer/tr_light.cpp
+  ${ENGINE_DIR}/renderer/tr_local.h
   ${ENGINE_DIR}/renderer/tr_main.cpp
   ${ENGINE_DIR}/renderer/tr_marks.cpp
   ${ENGINE_DIR}/renderer/tr_mesh.cpp
-  ${ENGINE_DIR}/renderer/tr_model.cpp
+  ${ENGINE_DIR}/renderer/tr_model_iqm.cpp
   ${ENGINE_DIR}/renderer/tr_model_md3.cpp
   ${ENGINE_DIR}/renderer/tr_model_md5.cpp
-  ${ENGINE_DIR}/renderer/tr_model_iqm.cpp
   ${ENGINE_DIR}/renderer/tr_model_skel.cpp
+  ${ENGINE_DIR}/renderer/tr_model_skel.h
+  ${ENGINE_DIR}/renderer/tr_model.cpp
   ${ENGINE_DIR}/renderer/tr_noise.cpp
+  ${ENGINE_DIR}/renderer/tr_public.h
   ${ENGINE_DIR}/renderer/tr_scene.cpp
-  ${ENGINE_DIR}/renderer/tr_shade.cpp
   ${ENGINE_DIR}/renderer/tr_shade_calc.cpp
+  ${ENGINE_DIR}/renderer/tr_shade.cpp
   ${ENGINE_DIR}/renderer/tr_shader.cpp
   ${ENGINE_DIR}/renderer/tr_skin.cpp
   ${ENGINE_DIR}/renderer/tr_sky.cpp
   ${ENGINE_DIR}/renderer/tr_surface.cpp
+  ${ENGINE_DIR}/renderer/tr_types.h
   ${ENGINE_DIR}/renderer/tr_vbo.cpp
   ${ENGINE_DIR}/renderer/tr_world.cpp
   ${LIB_DIR}/openexr/half.cpp
-  ${ENGINE_DIR}/renderer/tr_local.h
-  ${ENGINE_DIR}/renderer/tr_public.h
-  ${ENGINE_DIR}/renderer/gl_shader.h
-  ${ENGINE_DIR}/renderer/tr_image.h
-  ${ENGINE_DIR}/renderer/tr_model_skel.h
-  ${ENGINE_DIR}/renderer/shaders.cpp
 )
 
 set( SERVERLIST
+  ${ENGINE_DIR}/botlib/bot_api.h
   ${ENGINE_DIR}/botlib/bot_convert.cpp
+  ${ENGINE_DIR}/botlib/bot_load.cpp
   ${ENGINE_DIR}/botlib/bot_local.cpp
   ${ENGINE_DIR}/botlib/bot_nav.cpp
-  ${ENGINE_DIR}/botlib/bot_load.cpp
+  ${ENGINE_DIR}/botlib/bot_navdraw.h
+  ${ENGINE_DIR}/botlib/bot_types.h
+  ${ENGINE_DIR}/botlib/nav.h
   ${ENGINE_DIR}/server/sv_bot.cpp
   ${ENGINE_DIR}/server/sv_ccmds.cpp
   ${ENGINE_DIR}/server/sv_client.cpp
@@ -802,6 +818,7 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/ALObjects.h
   ${ENGINE_DIR}/audio/Audio.cpp
   ${ENGINE_DIR}/audio/Audio.h
+  ${ENGINE_DIR}/audio/AudioData.h
   ${ENGINE_DIR}/audio/AudioPrivate.h
   ${ENGINE_DIR}/audio/Emitter.cpp
   ${ENGINE_DIR}/audio/Emitter.h
@@ -823,6 +840,30 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/rocket_keys.cpp
   ${ENGINE_DIR}/client/rocket_hud.cpp
   ${ENGINE_DIR}/client/rocket.cpp
+
+  ${ENGINE_DIR}/client/rocketSelectableDataGrid.h
+  ${ENGINE_DIR}/client/rocketConditionalElement.h
+  ${ENGINE_DIR}/client/rocketConsoleTextElement.h
+  ${ENGINE_DIR}/client/rocketFormControlSelect.h
+  ${ENGINE_DIR}/client/rocketCvarInlineElement.h
+  ${ENGINE_DIR}/client/rocketDataSourceSingle.h
+  ${ENGINE_DIR}/client/rocketFormControlInput.h
+  ${ENGINE_DIR}/client/rocketElementDocument.h
+  ${ENGINE_DIR}/client/rocketEventInstancer.h
+  ${ENGINE_DIR}/client/rocketIncludeElement.h
+  ${ENGINE_DIR}/client/rocketDataFormatter.h
+  ${ENGINE_DIR}/client/rocketFocusManager.h
+  ${ENGINE_DIR}/client/rocketProgressBar.h
+  ${ENGINE_DIR}/client/rocketDataSelect.h
+  ${ENGINE_DIR}/client/rocketDataSource.h
+  ${ENGINE_DIR}/client/rocketCircleMenu.h
+  ${ENGINE_DIR}/client/rocketColorInput.h
+  ${ENGINE_DIR}/client/rocketChatField.h
+  ${ENGINE_DIR}/client/rocketKeyBinder.h
+  ${ENGINE_DIR}/client/rocketMiscText.h
+  ${ENGINE_DIR}/client/rocketDataGrid.h
+  ${ENGINE_DIR}/client/rocketElement.h
+  ${ENGINE_DIR}/client/rocket.h
 )
 
 set( TTYCLIENTLIST
@@ -842,9 +883,12 @@ set( SDLLIST
 )
 
 set( GAMESHAREDLIST
+  ${GAMELOGIC_DIR}/shared/bg_gameplay.h
+  ${GAMELOGIC_DIR}/shared/bg_local.h
   ${GAMELOGIC_DIR}/shared/bg_misc.cpp
   ${GAMELOGIC_DIR}/shared/bg_parse.cpp
   ${GAMELOGIC_DIR}/shared/bg_pmove.cpp
+  ${GAMELOGIC_DIR}/shared/bg_public.h
   ${GAMELOGIC_DIR}/shared/bg_slidemove.cpp
   ${GAMELOGIC_DIR}/shared/bg_alloc.cpp
   ${GAMELOGIC_DIR}/shared/bg_voice.cpp
@@ -882,6 +926,7 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_trails.cpp
   ${GAMELOGIC_DIR}/cgame/cg_particles.cpp
   ${GAMELOGIC_DIR}/cgame/cg_tutorial.cpp
+  ${GAMELOGIC_DIR}/cgame/cg_ui.h
   ${GAMELOGIC_DIR}/cgame/cg_utils.cpp
   ${GAMELOGIC_DIR}/cgame/cg_beacon.cpp
   ${GAMELOGIC_DIR}/cgame/cg_rocket.cpp
@@ -892,6 +937,7 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.cpp
   ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
   ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
+  ${GAMELOGIC_DIR}/cgame/Filter.h
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/client/cg_msgdef.h
   ${ENGINE_DIR}/qcommon/print_translated.h
@@ -906,8 +952,13 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/sg_client.cpp
   ${GAMELOGIC_DIR}/sgame/sg_cmds.cpp
   ${GAMELOGIC_DIR}/sgame/sg_combat.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_definitions.h
   ${GAMELOGIC_DIR}/sgame/sg_momentum.cpp
   ${GAMELOGIC_DIR}/sgame/sg_entities.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_entities.h
+  ${GAMELOGIC_DIR}/sgame/sg_extern.h
+  ${GAMELOGIC_DIR}/sgame/sg_local.h
+  ${GAMELOGIC_DIR}/sgame/sg_public.h
   ${GAMELOGIC_DIR}/sgame/sg_physics.cpp
   ${GAMELOGIC_DIR}/sgame/sg_buildable.cpp
   ${GAMELOGIC_DIR}/sgame/sg_main.cpp
@@ -924,8 +975,12 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/sg_spawn_sensor.cpp
   ${GAMELOGIC_DIR}/sgame/sg_spawn_shared.cpp
   ${GAMELOGIC_DIR}/sgame/sg_spawn.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_spawn.h
+  ${GAMELOGIC_DIR}/sgame/sg_struct.h
   ${GAMELOGIC_DIR}/sgame/sg_svcmds.cpp
   ${GAMELOGIC_DIR}/sgame/sg_team.cpp
+  ${GAMELOGIC_DIR}/sgame/sg_trapcalls.h
+  ${GAMELOGIC_DIR}/sgame/sg_typedef.h
   ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
   ${GAMELOGIC_DIR}/sgame/sg_maprotation.cpp
   ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
