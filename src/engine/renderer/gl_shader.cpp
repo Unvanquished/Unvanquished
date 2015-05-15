@@ -444,7 +444,6 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
     GLenum shaderType ) const
 {
 	char        filename[ MAX_QPATH ];
-	GLchar      *mainBuffer = nullptr;
 	char        *token;
 	std::string libsBuffer; // all libs concatenated
 

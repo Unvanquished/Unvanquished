@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define GL_SHADER_H
 
 #include "tr_local.h"
+#include <stdexcept>
 
 #define LOG_GLSL_UNIFORMS 1
 #define USE_UNIFORM_FIREWALL 1
@@ -32,10 +33,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static const unsigned int MAX_SHADER_MACROS = 9;
 static const unsigned int GL_SHADER_VERSION = 3;
 
-class ShaderException : public std::exception
+class ShaderException : public std::runtime_error
 {
 public:
-	ShaderException(const char* msg) : std::exception(msg) { }
+	ShaderException(const char* msg) : std::runtime_error(msg) { }
 };
 
 enum class ShaderType
@@ -188,10 +189,10 @@ public:
 
 protected:
 	bool         GetCompileMacrosString( size_t permutation, std::string &compileMacrosOut ) const;
-	virtual void BuildShaderVertexLibNames( std::string& vertexInlines ) { };
-	virtual void BuildShaderFragmentLibNames( std::string& vertexInlines ) { };
-	virtual void BuildShaderCompileMacros( std::string& vertexInlines ) { };
-	virtual void SetShaderProgramUniforms( shaderProgram_t *shaderProgram ) { };
+	virtual void BuildShaderVertexLibNames( std::string& /*vertexInlines*/ ) { };
+	virtual void BuildShaderFragmentLibNames( std::string& /*vertexInlines*/ ) { };
+	virtual void BuildShaderCompileMacros( std::string& /*vertexInlines*/ ) { };
+	virtual void SetShaderProgramUniforms( shaderProgram_t* /*shaderProgram*/ ) { };
 	int          SelectProgram();
 public:
 	void BindProgram( int deformIndex );
