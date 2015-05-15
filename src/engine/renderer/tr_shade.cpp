@@ -157,7 +157,14 @@ void GLSL_InitGPUShaders()
 		if (wasExternal)
 			ri.Printf(PRINT_ALL, "Building built-in shaders.");
 		shaderType = ShaderType::BuiltIn;
-		GLSL_InitGPUShadersOrError();
+		try
+		{
+			GLSL_InitGPUShadersOrError();
+		}
+		catch (const ShaderException&e)
+		{
+			Sys::Error(e.what());
+		};
 		if (wasExternal)
 			ri.Printf(PRINT_ALL, "Using built-in shaders.");
 		return;
@@ -172,7 +179,7 @@ void GLSL_InitGPUShaders()
 		GLSL_InitGPUShadersOrError();
 		ri.Printf(PRINT_WARNING, "Using external shaders.");
 	}
-	catch (ShaderException& e)
+	catch (const ShaderException& e)
 	{
 		// We wanted to use external shaders but we failed. Let the user
 		// know we failed and try again using built-in shaders to
@@ -181,11 +188,18 @@ void GLSL_InitGPUShaders()
 		// we will avoid catching it and that should end the program.
 		// That should be what we want as by then neither shader type will
 		// have worked so how can we continue?
-		ri.Printf(PRINT_WARNING, "WARNING: External shaders failed. Error: %s", e.what());
-		ri.Printf(PRINT_WARNING, "Attempting restart with built in shaders.");
+		Log::Warn( "WARNING: External shaders failed. Error: %s", e.what());
+		Log::Warn( "Attempting restart with built in shaders.");
 		shaderType = ShaderType::BuiltIn;
-		GLSL_InitGPUShadersOrError();
-		ri.Printf(PRINT_WARNING, "Using built-in shaders.");
+		try
+		{
+			GLSL_InitGPUShadersOrError();
+		}
+		catch (const ShaderException& e)
+		{
+			Sys::Error(e.what());
+		}
+		Log::Warn("Using built-in shaders.");
 	}
 }
 

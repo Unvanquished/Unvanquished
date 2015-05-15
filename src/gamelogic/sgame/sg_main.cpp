@@ -186,6 +186,7 @@ vmCvar_t           g_allowTeamOverlay;
 vmCvar_t           g_censorship;
 
 vmCvar_t           g_tag;
+vmCvar_t           g_shaderPath;
 
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
@@ -256,6 +257,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, false           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, false           },
 	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, false           },
+	{ &g_shaderPath,                  "shaderPath"   ,                  "",                                 CVAR_INIT,                                       0, false },
 
 
 	// server: basic

@@ -263,14 +263,14 @@ public:
 private:
 	bool LoadShaderBinary( GLShader *shader, size_t permutation );
 	void SaveShaderBinary( GLShader *shader, size_t permutation );
-	GLuint CompileShader( const char *programName, const char *shaderText,
+	GLuint CompileShader( Str::StringRef programName, Str::StringRef shaderText,
 			      int shaderTextSize, GLenum shaderType ) const;
 	void CompileGPUShaders( GLShader *shader, shaderProgram_t *program,
 				const std::string &compileMacros ) const;
 	void CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
-	                                     const std::string &compileMacros, int deformIndex ) const;
+	                                     Str::StringRef compileMacros, int deformIndex ) const;
 	std::string BuildDeformShaderText( const std::string& steps ) const;
-	std::string BuildGPUShaderText( const char *mainShader, const char *libShaders, GLenum shaderType ) const;
+	std::string BuildGPUShaderText( Str::StringRef mainShader, Str::StringRef libShaders, GLenum shaderType ) const;
 	void LinkProgram( GLuint program ) const;
 	void BindAttribLocations( GLuint program ) const;
 	void PrintShaderSource( GLuint object ) const;
@@ -2615,7 +2615,6 @@ public:
 };
 
 extern ShaderType shaderType;
-extern std::string shaderPath;
 std::string GetShaderPath();
 
 extern GLShader_generic                         *gl_genericShader;
