@@ -599,7 +599,6 @@ endfunction()
 ################################################################################
 # Include directories
 ################################################################################
-
 include_directories("${MOUNT_DIR}")
 include_directories("${COMMON_DIR}")
 include_directories("${COMMON_DIR}/IPC")
@@ -620,6 +619,30 @@ include_directories("${GAMELOGIC_DIR}/cgame")
 include_directories("${GAMELOGIC_DIR}/sgame")
 include_directories("${GAMELOGIC_DIR}/shared")
 
+################################################################################
+# Lib include directories
+################################################################################
+include_directories("${LIB_DIR}/crunch")
+include_directories("${LIB_DIR}/detour")
+include_directories("${LIB_DIR}/fastlz")
+include_directories("${LIB_DIR}/findlocale")
+include_directories("${LIB_DIR}/openexr")
+include_directories("${LIB_DIR}/pdcurses")
+include_directories("${LIB_DIR}/recast")
+include_directories("${LIB_DIR}/tinyformat")
+include_directories("${LIB_DIR}/tinygettext")
+include_directories("${LIB_DIR}/zlib")
+include_directories("${LIB_DIR}/minizip")
+
+# LibRocket
+include_directories("${LIB_DIR}/libRocket/Include/Rocket")
+include_directories("${LIB_DIR}/libRocket/Include/Rocket/Controls")
+include_directories("${LIB_DIR}/libRocket/Include/Rocket/Core")
+include_directories("${LIB_DIR}/libRocket/Include/Rocket/Core/Python")
+include_directories("${LIB_DIR}/libRocket/Include/Rocket/Debugger")
+
+# MativeClient
+# ?
 
 ################################################################################
 # File lists
