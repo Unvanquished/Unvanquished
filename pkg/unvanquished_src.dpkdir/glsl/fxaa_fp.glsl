@@ -29,7 +29,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 uniform sampler2D	u_ColorMap;
 
-void	mainx()
+void	main()
 {
 	gl_FragColor = FxaaPixelShader(
 		gl_FragCoord.xy * r_FBufScale, //pos
