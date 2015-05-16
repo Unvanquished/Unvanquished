@@ -156,7 +156,7 @@ namespace // Implementation details
 			// and he translation script needs to be run.
 			auto textPtr = GetInternalShader(filename);
 			if (textPtr != nullptr && textPtr != shaderText)
-				ri.Printf(PRINT_ALL, "Note shader file differs from built-in shader: %s\n", fullShaderFilename.c_str());
+				Log::Notice("Note shader file differs from built-in shader: %s\n", fullShaderFilename);
 			return shaderText;
 		}
 
@@ -173,7 +173,11 @@ std::string GetShaderPath()
 {
 	std::string shaderPath;
 	if (shaderPathEnabledVar.Get())
-		shaderPath = Cvar_VariableString("shaderpath");
+	{
+		auto shaderPathVar = Cvar_Get("shaderpath", "", CVAR_INIT);
+		if (shaderPathVar->string != nullptr)
+			shaderPath = shaderPathVar->string;
+	}
 	return shaderPath;
 }
 
@@ -231,32 +235,26 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 
 static inline void AddGLSLDefine( std::string& defines, const std::string& define, int value )
 {
-	defines += "#ifndef " + define + "\n#define " + define + " ";
-	defines += Str::Format( "%d\n", value );
-	defines += "#endif\n";
+	defines += Str::Format("#ifndef %s\n#define %s %d\n#endif\n", define, define, value);
 }
 
 static inline void AddGLSLDefine( std::string& defines, const std::string& define, float value )
 {
-	defines += "#ifndef " + define + "\n#define " + define + " ";
-	defines += Str::Format( "%f\n", value );
-	defines += "#endif\n";
+	defines += Str::Format("#ifndef %s\n#define %s %f\n#endif\n", define, define, value);
 }
 
 static inline void AddGLSLDefine( std::string& defines, const std::string& define, float v1, float v2 )
 {
-	defines += "#ifndef " + define + "\n#define " + define + " ";
-	defines += Str::Format( "vec2( %f, %f )\n", v1, v2 );
-	defines += "#endif\n";
+	defines += Str::Format("#ifndef %s\n#define %s vec2(%f, %f)\n#endif\n", define, define, v1, v2);
 }
 
 static inline void AddGLSLDefine( std::string& defines, const std::string& define )
 {
-	defines += "#ifndef " + define + "\n#define " + define + "\n#endif\n";
+	defines += Str::Format("#ifndef %s\n#define %s\n#endif\n", define, define);
 }
 
-// has to match enum genFunc_t in tr_local.h
-static const char *genFuncNames[] = {
+// Has to match enum genFunc_t in tr_local.h
+static const char *const genFuncNames[] = {
 	  "DSTEP_NONE",
 	  "DSTEP_SIN",
 	  "DSTEP_SQUARE",
@@ -270,63 +268,66 @@ static inline std::string BuildDeformSteps( deformStage_t *deforms, int numDefor
 {
 	std::string steps;
 
-	steps += "#define DEFORM_STEPS ";
-	for( int step = 0; step < numDeforms; step++ ) {
-		deformStage_t *ds = &deforms[ step ];
+	steps.reserve(256); // Might help a little.
 
-		switch ( ds->deformation )
+	steps += "#define DEFORM_STEPS ";
+	for( int step = 0; step < numDeforms; step++ )
+	{
+		const deformStage_t &ds = deforms[ step ];
+
+		switch ( ds.deformation )
 		{
 		case DEFORM_WAVE:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
 			steps += Str::Format("%s(%f, %f, %f) ",
-				    genFuncNames[ ds->deformationWave.func ],
-				    ds->deformationWave.phase,
-				    ds->deformationSpread,
-				    ds->deformationWave.frequency );
+				    genFuncNames[ ds.deformationWave.func ],
+				    ds.deformationWave.phase,
+				    ds.deformationSpread,
+				    ds.deformationWave.frequency );
 			steps += "DSTEP_LOAD_NORM(1.0, 1.0, 1.0) ";
 			steps += Str::Format("DSTEP_MODIFY_POS(%f, %f, 1.0) ",
-				    ds->deformationWave.base,
-				    ds->deformationWave.amplitude );
+				    ds.deformationWave.base,
+				    ds.deformationWave.amplitude );
 			break;
 
 		case DEFORM_BULGE:
 			steps += "DSTEP_LOAD_TC(1.0, 0.0, 0.0) ";
 			steps += Str::Format("DSTEP_SIN(0.0, %f, %f) ",
-				    ds->bulgeWidth,
-				    ds->bulgeSpeed * 0.001f );
+				    ds.bulgeWidth,
+				    ds.bulgeSpeed * 0.001f );
 			steps += "DSTEP_LOAD_NORM(1.0, 1.0, 1.0) ";
 			steps += Str::Format("DSTEP_MODIFY_POS(0.0, %f, 1.0) ",
-				    ds->bulgeHeight );
+				    ds.bulgeHeight );
 			break;
 
 		case DEFORM_MOVE:
 			steps += Str::Format("%s(%f, 0.0, %f) ",
-				    genFuncNames[ ds->deformationWave.func ],
-				    ds->deformationWave.phase,
-				    ds->deformationWave.frequency );
+				    genFuncNames[ ds.deformationWave.func ],
+				    ds.deformationWave.phase,
+				    ds.deformationWave.frequency );
 			steps += Str::Format("DSTEP_LOAD_VEC(%f, %f, %f) ",
-				    ds->moveVector[ 0 ],
-				    ds->moveVector[ 1 ],
-				    ds->moveVector[ 2 ] );
+				    ds.moveVector[ 0 ],
+				    ds.moveVector[ 1 ],
+				    ds.moveVector[ 2 ] );
 			steps += Str::Format("DSTEP_MODIFY_POS(%f, %f, 1.0) ",
-				    ds->deformationWave.base,
-				    ds->deformationWave.amplitude );
+				    ds.deformationWave.base,
+				    ds.deformationWave.amplitude );
 			break;
 
 		case DEFORM_NORMALS:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
 			steps += Str::Format("DSTEP_NOISE(0.0, 0.0, %f) ",
-				    ds->deformationWave.frequency );
+				    ds.deformationWave.frequency );
 			steps += Str::Format("DSTEP_MODIFY_NORM(0.0, %f, 1.0) ",
-				    0.98f * ds->deformationWave.amplitude );
+				    0.98f * ds.deformationWave.amplitude );
 			break;
 
 		case DEFORM_ROTGROW:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
 			steps += Str::Format("DSTEP_ROTGROW(%f, %f, %f) ",
-				    ds->moveVector[0],
-				    ds->moveVector[1],
-				    ds->moveVector[2] );
+				    ds.moveVector[0],
+				    ds.moveVector[1],
+				    ds.moveVector[2] );
 			steps += "DSTEP_LOAD_COLOR(1.0, 1.0, 1.0) ";
 			steps += "DSTEP_MODIFY_COLOR(-1.0, 1.0, 0.0) ";
 			break;
@@ -342,20 +343,18 @@ static inline std::string BuildDeformSteps( deformStage_t *deforms, int numDefor
 std::string GLShaderManager::BuildDeformShaderText( const std::string& steps ) const
 {
 	std::string shaderText;
-	std::string basicShaderText;
 
 	shaderText = Str::Format( "#version %d\n", glConfig2.shadingLanguageVersion );
 	shaderText += steps + "\n";
 
-	// load DeformVertex() program
-	ri.Printf( PRINT_DEVELOPER, "...loading DeformVertex() shader\n" );
+	std::string shaderName = "glsl/deformVertexes_vp.glsl";
+	Log::Debug("...loading DeformVertex() shader: %s\n", shaderName );
 
-	basicShaderText = GetShaderText("glsl/deformVertexes_vp.glsl" );
-
-	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
-	// so we have to reset the line counting
+	// We added a lot of stuff but if we do something bad
+	// in the GLSL shaders then we want the proper line
+	// so we have to reset the line counting.
 	shaderText += "#line 0\n";
-	shaderText += basicShaderText;
+	shaderText += GetShaderText(shaderName);
 	return shaderText;
 }
 
@@ -364,7 +363,8 @@ int GLShaderManager::getDeformShaderIndex( deformStage_t *deforms, int numDeform
 	std::string steps = BuildDeformSteps( deforms, numDeforms );
 	int index = _deformShaderLookup[ steps ] - 1;
 
-	if( index < 0 ) {
+	if( index < 0 )
+	{
 		// compile new deform shader
 		std::string shaderText = GLShaderManager::BuildDeformShaderText( steps );
 		_deformShaders.push_back(CompileShader( "deformVertexes",
@@ -384,15 +384,13 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 {
 	char        filename[ MAX_QPATH ];
 	char        *token;
-	std::string libsBuffer; // all libs concatenated
 
 	const char        *libs = libShaderNames.c_str();
 
-	std::string shaderText;
-	std::string basicShaderText;
-
 	GL_CheckErrors();
 
+	std::string libsBuffer; // all libs concatenated
+	libsBuffer.reserve(256); // Might help.
 	while ( 1 )
 	{
 		token = COM_ParseExt2( &libs, false );
@@ -405,37 +403,35 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 		if ( shaderType == GL_VERTEX_SHADER )
 		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", token );
-			ri.Printf( PRINT_DEVELOPER, "...loading vertex shader '%s'\n", filename );
+			Log::Debug( "...loading vertex shader '%s'\n", filename );
 		}
 		else
 		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", token );
-			ri.Printf( PRINT_DEVELOPER, "...loading fragment shader '%s'\n", filename );
+			Log::Debug( "...loading fragment shader '%s'\n", filename );
 		}
 
-		basicShaderText = GetShaderText(filename );
-		libsBuffer += basicShaderText;
+		libsBuffer += GetShaderText(filename);
 	}
 
 	// load main() program
 	if ( shaderType == GL_VERTEX_SHADER )
 	{
 		Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", mainShaderName.c_str() );
-		ri.Printf( PRINT_DEVELOPER, "...loading vertex main() shader '%s'\n", filename );
+		Log::Debug( "...loading vertex main() shader '%s'\n", filename );
 	}
 	else
 	{
 		Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", mainShaderName.c_str() );
-		ri.Printf( PRINT_DEVELOPER, "...loading fragment main() shader '%s'\n", filename );
+		Log::Debug("...loading fragment main() shader '%s'\n", filename );
 	}
 
 	std::string bufferExtra;
 
 	bufferExtra.reserve( 4096 );
 
-	if( glConfig2.textureRGAvailable ) {
+	if ( glConfig2.textureRGAvailable )
 		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
-	}
 
 	AddGLSLDefine( bufferExtra, "r_AmbientScale", r_ambientScale->value );
 	AddGLSLDefine( bufferExtra, "r_SpecularScale", r_specularScale->value );
@@ -461,21 +457,19 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	AddGLSLDefine( bufferExtra, "r_NPOTScale", npotWidthScale, npotHeightScale );
 
 	if ( glConfig.driverType == GLDRV_MESA )
-	{
 		AddGLSLDefine( bufferExtra, "GLDRV_MESA", 1 );
-	}
 
-	if ( glConfig.hardwareType == GLHW_ATI )
+	switch (glConfig.hardwareType)
 	{
-		AddGLSLDefine( bufferExtra, "GLHW_ATI", 1 );
-	}
-	else if ( glConfig.hardwareType == GLHW_ATI_DX10 )
-	{
-		AddGLSLDefine( bufferExtra, "GLHW_ATI_DX10", 1 );
-	}
-	else if ( glConfig.hardwareType == GLHW_NV_DX10 )
-	{
-		AddGLSLDefine( bufferExtra, "GLHW_NV_DX10", 1 );
+	case GLHW_ATI:
+		AddGLSLDefine(bufferExtra, "GLHW_ATI", 1);
+		break;
+	case GLHW_ATI_DX10:
+		AddGLSLDefine(bufferExtra, "GLHW_ATI_DX10", 1);
+		break;
+	case GLHW_NV_DX10:
+		AddGLSLDefine(bufferExtra, "GLHW_NV_DX10", 1);
+		break;
 	}
 
 	if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
@@ -492,110 +486,56 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 			//         42.0 is the truncated value that we pass into the sample
 			AddGLSLDefine( bufferExtra, "r_EVSMExponents", 42.0f, 42.0f );
 			if ( r_evsmPostProcess->integer )
-			{
 				AddGLSLDefine( bufferExtra,"r_EVSMPostProcess", 1 );
-			}
 		}
 		else
 		{
 			AddGLSLDefine( bufferExtra, "VSM", 1 );
 
 			if ( glConfig.hardwareType == GLHW_ATI )
-			{
 				AddGLSLDefine( bufferExtra, "VSM_CLAMP", 1 );
-			}
 		}
 
 		if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
-		{
 			AddGLSLDefine( bufferExtra, "VSM_EPSILON", 0.000001f );
-		}
 		else
-		{
 			AddGLSLDefine( bufferExtra, "VSM_EPSILON", 0.0001f );
-		}
 
 		if ( r_lightBleedReduction->value )
-		{
 			AddGLSLDefine( bufferExtra, "r_LightBleedReduction", r_lightBleedReduction->value );
-		}
 
 		if ( r_overDarkeningFactor->value )
-		{
 			AddGLSLDefine( bufferExtra, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
-		}
 
 		if ( r_shadowMapDepthScale->value )
-		{
 			AddGLSLDefine( bufferExtra, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
-		}
 
 		if ( r_debugShadowMaps->integer )
-		{
 			AddGLSLDefine( bufferExtra, "r_DebugShadowMaps", r_debugShadowMaps->integer );
-		}
 
-		/*
-		if(r_softShadows->integer == 1)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_2X2", 1 );
-		}
-		else if(r_softShadows->integer == 2)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_3X3", 1 );
-		}
-		else if(r_softShadows->integer == 3)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_4X4", 1 );
-		}
-		else if(r_softShadows->integer == 4)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_5X5", 1 );
-		}
-		else if(r_softShadows->integer == 5)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_6X6", 1 );
-		}
-		*/
 		if ( r_softShadows->integer == 6 )
-		{
 			AddGLSLDefine( bufferExtra, "PCSS", 1 );
-		}
 		else if ( r_softShadows->integer )
-		{
 			AddGLSLDefine( bufferExtra, "r_PCFSamples", r_softShadows->value + 1.0f );
-		}
 
 		if ( r_parallelShadowSplits->integer )
-		{
 			AddGLSLDefine( bufferExtra, Str::Format( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
-		}
 
 		if ( r_showParallelShadowSplits->integer )
-		{
 			AddGLSLDefine( bufferExtra, "r_ShowParallelShadowSplits", 1 );
-		}
 	}
 
 	if ( r_precomputedLighting->integer )
-	{
 		AddGLSLDefine( bufferExtra, "r_precomputedLighting", 1 );
-	}
 
 	if ( r_showLightMaps->integer )
-	{
 		AddGLSLDefine( bufferExtra, "r_showLightMaps", r_showLightMaps->integer );
-	}
 
 	if ( r_showDeluxeMaps->integer )
-	{
 		AddGLSLDefine( bufferExtra, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
-	}
 
 	if ( r_showEntityNormals->integer )
-	{
 		AddGLSLDefine( bufferExtra, "r_showEntityNormals", r_showEntityNormals->integer );
-	}
 
 	if ( glConfig2.vboVertexSkinningAvailable )
 	{
@@ -608,14 +548,10 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	}
 
 	if ( r_wrapAroundLighting->value )
-	{
 		AddGLSLDefine( bufferExtra, "r_WrapAroundLighting", r_wrapAroundLighting->value );
-	}
 
 	if ( r_halfLambertLighting->integer )
-	{
 		AddGLSLDefine( bufferExtra, "r_HalfLambertLighting", 1 );
-	}
 
 	if ( r_rimLighting->integer )
 	{
@@ -627,9 +563,7 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	// so we have to reset the line counting
 	bufferExtra += "#line 0\n";
 
-	basicShaderText = GetShaderText( filename );
-
-	shaderText = bufferExtra + libsBuffer + basicShaderText;
+	std::string shaderText = bufferExtra + libsBuffer + GetShaderText(filename);
 
 	return shaderText;
 }
@@ -709,7 +643,7 @@ void GLShaderManager::buildAll( )
 		_shaderBuildQueue.pop();
 	}
 
-	ri.Printf( PRINT_DEVELOPER, "glsl shaders took %d msec to build\n", _totalBuildTime );
+	Log::Debug( "glsl shaders took %d msec to build\n", _totalBuildTime );
 
 	if( r_recompileShaders->integer )
 	{
@@ -1000,9 +934,9 @@ void GLShaderManager::PrintShaderSource( GLuint object ) const
 	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-		ri.Printf( PRINT_ALL, "%s", msgPart );
+		Log::Notice( "%s", msgPart );
 	}
-	ri.Printf( PRINT_ALL, "\n" );
+	Log::Notice( "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1014,6 +948,8 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 	int         maxLength = 0;
 	int         i;
 
+	// TODO: Not sure how to upgrade this type of usage to the
+	// new Log:: interace.
 	printParm_t print = ( developerOnly ) ? PRINT_DEVELOPER : PRINT_ALL;
 
 	if ( glIsShader( object ) )
@@ -1048,7 +984,7 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 		ri.Printf( print, "%s", msgPart );
 	}
-	ri.Printf( PRINT_ALL, "\n" );
+	ri.Printf( print, "\n" );
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1086,7 +1022,7 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 	if ( !validated )
 	{
 		PrintInfoLog( program, false );
-		ri.Error( ERR_DROP, "Shaders failed to validate!!!" );
+		ShaderError( "Shaders failed to validate!" );
 	}
 }
 
@@ -1170,6 +1106,7 @@ bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutati
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
 		{
 			foundUSE_NORMAL_MAPPING = true;
+			break;
 		}
 	}
 
@@ -1193,6 +1130,7 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permut
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
 		{
 			foundUSE_NORMAL_MAPPING = true;
+			break;
 		}
 	}
 
@@ -1282,7 +1220,7 @@ void GLShader::BindProgram( int deformIndex )
 			}
 		}
 
-		ri.Error( ERR_FATAL, "Invalid shader configuration: shader = '%s', macros = '%s'", _name.c_str(), activeMacros.c_str() );
+		ShaderError(Str::Format("Invalid shader configuration: shader = '%s', macros = '%s'", _name, activeMacros ));
 	}
 
 	_currentProgram = &_shaderPrograms[ index ];

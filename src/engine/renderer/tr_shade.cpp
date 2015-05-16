@@ -155,7 +155,7 @@ void GLSL_InitGPUShaders()
 		// built-in shaders as this is the normal case.
 		bool wasExternal = (shaderType == ShaderType::External );
 		if (wasExternal)
-			ri.Printf(PRINT_ALL, "Building built-in shaders.");
+			Log::Warn( "Switching from external to built-in shaders.");
 		shaderType = ShaderType::BuiltIn;
 		try
 		{
@@ -163,32 +163,31 @@ void GLSL_InitGPUShaders()
 		}
 		catch (const ShaderException&e)
 		{
+			Log::Warn("Built-in shaders failed: %s.", e.what());
 			Sys::Error(e.what());
 		};
 		if (wasExternal)
-			ri.Printf(PRINT_ALL, "Using built-in shaders.");
+			Log::Warn("Switched from external to built-in shaders.");
 		return;
 	}
 	// We wish to use external shaders.
 	shaderType = ShaderType::External;
 	try
 	{
-		// Let the user know we are intending to use external shaders
-		// as this is not the usual situation.
-		ri.Printf(PRINT_WARNING, "Building external shaders.");
+		// Let the user know we are intending to use external shaders.
+		// We warn but the user should be typically expecting this
+		// if they are debugging so it's not a warning in the usual sense.
+		// It's just alerting their attention so it stands out from other log noise.
+		Log::Warn( "Building external shaders.");
 		GLSL_InitGPUShadersOrError();
-		ri.Printf(PRINT_WARNING, "Using external shaders.");
+		Log::Warn( "Using external shaders.");
 	}
 	catch (const ShaderException& e)
 	{
-		// We wanted to use external shaders but we failed. Let the user
-		// know we failed and try again using built-in shaders to
+		// We wanted to use external shaders but we failed. Warn the user
+		// we failed and try again using built-in shaders to
 		// recover the situation.
-		// If recovery fails, another exception will be thrown but this time
-		// we will avoid catching it and that should end the program.
-		// That should be what we want as by then neither shader type will
-		// have worked so how can we continue?
-		Log::Warn( "WARNING: External shaders failed. Error: %s", e.what());
+		Log::Warn( "External shaders failed. Error: %s", e.what());
 		Log::Warn( "Attempting restart with built in shaders.");
 		shaderType = ShaderType::BuiltIn;
 		try
@@ -197,9 +196,10 @@ void GLSL_InitGPUShaders()
 		}
 		catch (const ShaderException& e)
 		{
+			Log::Warn("Built-in shaders failed: %s.", e.what());
 			Sys::Error(e.what());
 		}
-		Log::Warn("Using built-in shaders.");
+		Log::Warn("External shaders failed, but a restart using built-in shaders seems to have worked.");
 	}
 }
 
