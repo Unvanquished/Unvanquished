@@ -627,7 +627,6 @@ include_directories("${LIB_DIR}/detour")
 include_directories("${LIB_DIR}/fastlz")
 include_directories("${LIB_DIR}/findlocale")
 include_directories("${LIB_DIR}/openexr")
-#include_directories("${LIB_DIR}/pdcurses")
 include_directories("${LIB_DIR}/recast")
 include_directories("${LIB_DIR}/tinyformat")
 include_directories("${LIB_DIR}/tinygettext")
@@ -640,9 +639,6 @@ include_directories("${LIB_DIR}/libRocket/Include/Rocket/Controls")
 include_directories("${LIB_DIR}/libRocket/Include/Rocket/Core")
 include_directories("${LIB_DIR}/libRocket/Include/Rocket/Core/Python")
 include_directories("${LIB_DIR}/libRocket/Include/Rocket/Debugger")
-
-# MativeClient
-# ?
 
 ################################################################################
 # Source file lists
