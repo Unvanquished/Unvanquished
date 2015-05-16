@@ -385,15 +385,15 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	char        filename[ MAX_QPATH ];
 	char        *token;
 
-	const char        *libs = libShaderNames.c_str();
+	const char        *libNames = libShaderNames.c_str();
 
 	GL_CheckErrors();
 
-	std::string libsBuffer; // all libs concatenated
-	libsBuffer.reserve(256); // Might help.
+	std::string libs; // All libs concatenated
+	libs.reserve(8192); // Might help, just an estimate.
 	while ( 1 )
 	{
-		token = COM_ParseExt2( &libs, false );
+		token = COM_ParseExt2( &libNames, false );
 
 		if ( !token[ 0 ] )
 		{
@@ -411,7 +411,7 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 			Log::Debug( "...loading fragment shader '%s'\n", filename );
 		}
 
-		libsBuffer += GetShaderText(filename);
+		libs += GetShaderText(filename);
 	}
 
 	// load main() program
@@ -426,24 +426,23 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 		Log::Debug("...loading fragment main() shader '%s'\n", filename );
 	}
 
-	std::string bufferExtra;
-
-	bufferExtra.reserve( 4096 );
+	std::string env;
+	env.reserve( 1024 ); // Might help, just an estimate.
 
 	if ( glConfig2.textureRGAvailable )
-		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
+		AddGLSLDefine( env, "TEXTURE_RG", 1 );
 
-	AddGLSLDefine( bufferExtra, "r_AmbientScale", r_ambientScale->value );
-	AddGLSLDefine( bufferExtra, "r_SpecularScale", r_specularScale->value );
-	AddGLSLDefine( bufferExtra, "r_NormalScale", r_normalScale->value );
+	AddGLSLDefine( env, "r_AmbientScale", r_ambientScale->value );
+	AddGLSLDefine( env, "r_SpecularScale", r_specularScale->value );
+	AddGLSLDefine( env, "r_NormalScale", r_normalScale->value );
 
-	AddGLSLDefine( bufferExtra, "M_PI", static_cast<float>( M_PI ) );
-	AddGLSLDefine( bufferExtra, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
+	AddGLSLDefine( env, "M_PI", static_cast<float>( M_PI ) );
+	AddGLSLDefine( env, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 
 	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
 	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
 
-	AddGLSLDefine( bufferExtra, "r_FBufScale", fbufWidthScale, fbufHeightScale );
+	AddGLSLDefine( env, "r_FBufScale", fbufWidthScale, fbufHeightScale );
 
 	float npotWidthScale = 1;
 	float npotHeightScale = 1;
@@ -454,21 +453,21 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 		npotHeightScale = ( float ) glConfig.vidHeight / ( float ) NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	AddGLSLDefine( bufferExtra, "r_NPOTScale", npotWidthScale, npotHeightScale );
+	AddGLSLDefine( env, "r_NPOTScale", npotWidthScale, npotHeightScale );
 
 	if ( glConfig.driverType == GLDRV_MESA )
-		AddGLSLDefine( bufferExtra, "GLDRV_MESA", 1 );
+		AddGLSLDefine( env, "GLDRV_MESA", 1 );
 
 	switch (glConfig.hardwareType)
 	{
 	case GLHW_ATI:
-		AddGLSLDefine(bufferExtra, "GLHW_ATI", 1);
+		AddGLSLDefine(env, "GLHW_ATI", 1);
 		break;
 	case GLHW_ATI_DX10:
-		AddGLSLDefine(bufferExtra, "GLHW_ATI_DX10", 1);
+		AddGLSLDefine(env, "GLHW_ATI_DX10", 1);
 		break;
 	case GLHW_NV_DX10:
-		AddGLSLDefine(bufferExtra, "GLHW_NV_DX10", 1);
+		AddGLSLDefine(env, "GLHW_NV_DX10", 1);
 		break;
 	}
 
@@ -476,94 +475,94 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	{
 		if ( r_shadows->integer == SHADOWING_ESM16 || r_shadows->integer == SHADOWING_ESM32 )
 		{
-			AddGLSLDefine( bufferExtra, "ESM", 1 );
+			AddGLSLDefine( env, "ESM", 1 );
 		}
 		else if ( r_shadows->integer == SHADOWING_EVSM32 )
 		{
-			AddGLSLDefine( bufferExtra, "EVSM", 1 );
+			AddGLSLDefine( env, "EVSM", 1 );
 			// The exponents for the EVSM techniques should be less than ln(FLT_MAX/FILTER_SIZE)/2 {ln(FLT_MAX/1)/2 ~44.3}
 			//         42.9 is the maximum possible value for FILTER_SIZE=15
 			//         42.0 is the truncated value that we pass into the sample
-			AddGLSLDefine( bufferExtra, "r_EVSMExponents", 42.0f, 42.0f );
+			AddGLSLDefine( env, "r_EVSMExponents", 42.0f, 42.0f );
 			if ( r_evsmPostProcess->integer )
-				AddGLSLDefine( bufferExtra,"r_EVSMPostProcess", 1 );
+				AddGLSLDefine( env,"r_EVSMPostProcess", 1 );
 		}
 		else
 		{
-			AddGLSLDefine( bufferExtra, "VSM", 1 );
+			AddGLSLDefine( env, "VSM", 1 );
 
 			if ( glConfig.hardwareType == GLHW_ATI )
-				AddGLSLDefine( bufferExtra, "VSM_CLAMP", 1 );
+				AddGLSLDefine( env, "VSM_CLAMP", 1 );
 		}
 
 		if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
-			AddGLSLDefine( bufferExtra, "VSM_EPSILON", 0.000001f );
+			AddGLSLDefine( env, "VSM_EPSILON", 0.000001f );
 		else
-			AddGLSLDefine( bufferExtra, "VSM_EPSILON", 0.0001f );
+			AddGLSLDefine( env, "VSM_EPSILON", 0.0001f );
 
 		if ( r_lightBleedReduction->value )
-			AddGLSLDefine( bufferExtra, "r_LightBleedReduction", r_lightBleedReduction->value );
+			AddGLSLDefine( env, "r_LightBleedReduction", r_lightBleedReduction->value );
 
 		if ( r_overDarkeningFactor->value )
-			AddGLSLDefine( bufferExtra, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
+			AddGLSLDefine( env, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
 
 		if ( r_shadowMapDepthScale->value )
-			AddGLSLDefine( bufferExtra, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
+			AddGLSLDefine( env, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
 
 		if ( r_debugShadowMaps->integer )
-			AddGLSLDefine( bufferExtra, "r_DebugShadowMaps", r_debugShadowMaps->integer );
+			AddGLSLDefine( env, "r_DebugShadowMaps", r_debugShadowMaps->integer );
 
 		if ( r_softShadows->integer == 6 )
-			AddGLSLDefine( bufferExtra, "PCSS", 1 );
+			AddGLSLDefine( env, "PCSS", 1 );
 		else if ( r_softShadows->integer )
-			AddGLSLDefine( bufferExtra, "r_PCFSamples", r_softShadows->value + 1.0f );
+			AddGLSLDefine( env, "r_PCFSamples", r_softShadows->value + 1.0f );
 
 		if ( r_parallelShadowSplits->integer )
-			AddGLSLDefine( bufferExtra, Str::Format( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
+			AddGLSLDefine( env, Str::Format( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
 
 		if ( r_showParallelShadowSplits->integer )
-			AddGLSLDefine( bufferExtra, "r_ShowParallelShadowSplits", 1 );
+			AddGLSLDefine( env, "r_ShowParallelShadowSplits", 1 );
 	}
 
 	if ( r_precomputedLighting->integer )
-		AddGLSLDefine( bufferExtra, "r_precomputedLighting", 1 );
+		AddGLSLDefine( env, "r_precomputedLighting", 1 );
 
 	if ( r_showLightMaps->integer )
-		AddGLSLDefine( bufferExtra, "r_showLightMaps", r_showLightMaps->integer );
+		AddGLSLDefine( env, "r_showLightMaps", r_showLightMaps->integer );
 
 	if ( r_showDeluxeMaps->integer )
-		AddGLSLDefine( bufferExtra, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
+		AddGLSLDefine( env, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
 
 	if ( r_showEntityNormals->integer )
-		AddGLSLDefine( bufferExtra, "r_showEntityNormals", r_showEntityNormals->integer );
+		AddGLSLDefine( env, "r_showEntityNormals", r_showEntityNormals->integer );
 
 	if ( glConfig2.vboVertexSkinningAvailable )
 	{
-		AddGLSLDefine( bufferExtra, "r_VertexSkinning", 1 );
-		AddGLSLDefine( bufferExtra, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
+		AddGLSLDefine( env, "r_VertexSkinning", 1 );
+		AddGLSLDefine( env, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
 	}
 	else
 	{
-		AddGLSLDefine( bufferExtra, "MAX_GLSL_BONES", 4 );
+		AddGLSLDefine( env, "MAX_GLSL_BONES", 4 );
 	}
 
 	if ( r_wrapAroundLighting->value )
-		AddGLSLDefine( bufferExtra, "r_WrapAroundLighting", r_wrapAroundLighting->value );
+		AddGLSLDefine( env, "r_WrapAroundLighting", r_wrapAroundLighting->value );
 
 	if ( r_halfLambertLighting->integer )
-		AddGLSLDefine( bufferExtra, "r_HalfLambertLighting", 1 );
+		AddGLSLDefine( env, "r_HalfLambertLighting", 1 );
 
 	if ( r_rimLighting->integer )
 	{
-		AddGLSLDefine( bufferExtra, "r_RimLighting", 1 );
-		AddGLSLDefine( bufferExtra, "r_RimExponent", r_rimExponent->value );
+		AddGLSLDefine( env, "r_RimLighting", 1 );
+		AddGLSLDefine( env, "r_RimExponent", r_rimExponent->value );
 	}
 
 	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
 	// so we have to reset the line counting
-	bufferExtra += "#line 0\n";
+	env += "#line 0\n";
 
-	std::string shaderText = bufferExtra + libsBuffer + GetShaderText(filename);
+	std::string shaderText = env + libs + GetShaderText(filename);
 
 	return shaderText;
 }
@@ -573,7 +572,7 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 	std::string compileMacros;
 	int  startTime = ri.Milliseconds();
 	int  endTime;
-	int  i = macroIndex + ( deformIndex << shader->_compileMacros.size() );
+	size_t i = macroIndex + ( deformIndex << shader->_compileMacros.size() );
 
 	// program already exists
 	if ( i < shader->_shaderPrograms.size() &&
@@ -586,20 +585,19 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 	{
 		shader->BuildShaderCompileMacros( compileMacros );
 
-		if( i >= shader->_shaderPrograms.size() ) {
+		if( i >= shader->_shaderPrograms.size() )
 			shader->_shaderPrograms.resize( (deformIndex + 1) << shader->_compileMacros.size() );
-		}
 
 		shaderProgram_t *shaderProgram = &shader->_shaderPrograms[ i ];
 
 		shaderProgram->program = glCreateProgram();
 		shaderProgram->attribs = shader->_vertexAttribsRequired; // | _vertexAttribsOptional;
 
-		if( deformIndex > 0 ) {
+		if( deformIndex > 0 )
+		{
 			shaderProgram_t *baseShader = &shader->_shaderPrograms[ macroIndex ];
-			if( !baseShader->VS || !baseShader->FS ) {
+			if( !baseShader->VS || !baseShader->FS )
 				CompileGPUShaders( shader, baseShader, compileMacros );
-			}
 
 			glAttachShader( shaderProgram->program, baseShader->VS );
 			glAttachShader( shaderProgram->program, _deformShaders[ deformIndex ] );
@@ -607,7 +605,9 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 
 			BindAttribLocations( shaderProgram->program );
 			LinkProgram( shaderProgram->program );
-		} else if ( !LoadShaderBinary( shader, i ) ) {
+		}
+		else if ( !LoadShaderBinary( shader, i ) )
+		{
 			CompileAndLinkGPUShaderProgram(	shader, shaderProgram, compileMacros, deformIndex );
 			SaveShaderBinary( shader, i );
 		}
@@ -694,7 +694,6 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 		return false;
 
 	std::string shaderFilename = Str::Format("glsl/%s/%s_%u.bin", shader->GetName(), shader->GetName(), (unsigned int)programNum);
-
 	std::error_code openErr;
 	FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, openErr);
 	if (openErr)
@@ -703,10 +702,9 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	std::error_code readErr;
 	std::string shaderData = shaderFile.ReadAll(readErr);
 	if (readErr)
-		ShaderError(Str::Format("Failed to read shader from file: %s\n", shaderFilename));
+		ShaderError(Str::Format("Failed to open/read shader from file: %s\n", shaderFilename));
 
 	auto fileLength = shaderData.length();
-	// file empty or not found
 	if (fileLength <= 0)
 		return false;
 
