@@ -645,16 +645,16 @@ include_directories("${LIB_DIR}/libRocket/Include/Rocket/Debugger")
 # ?
 
 ################################################################################
-# File lists
+# Source file lists
 ################################################################################
 
-set( SHAREDLIST
+set( SHARED_SRC_LIST
   ${ENGINE_DIR}/qcommon/q_shared.cpp
   ${ENGINE_DIR}/qcommon/q_unicode.cpp
   ${ENGINE_DIR}/qcommon/q_math.cpp
 )
 
-set( COMMONLIST
+set( COMMON_SRC_LIST
   ${COMMON_DIR}/Command.cpp
   ${COMMON_DIR}/Cvar.cpp
   ${COMMON_DIR}/FileSystem.cpp
@@ -673,7 +673,7 @@ set( COMMONLIST
   ${COMMON_DIR}/IPC/Primitives.cpp
 )
 
-set( RENDERERLIST
+set( RENDERER_SRC_LIST
   ${ENGINE_DIR}/sys/sdl_glimp.cpp
   ${ENGINE_DIR}/renderer/gl_shader.cpp
   ${ENGINE_DIR}/renderer/shaders.cpp
@@ -718,7 +718,7 @@ set( RENDERERLIST
   ${LIB_DIR}/openexr/half.cpp
 )
 
-set( SERVERLIST
+set( SERVER_SRC_LIST
   ${ENGINE_DIR}/botlib/bot_convert.cpp
   ${ENGINE_DIR}/botlib/bot_load.cpp
   ${ENGINE_DIR}/botlib/bot_local.cpp
@@ -733,7 +733,7 @@ set( SERVERLIST
   ${ENGINE_DIR}/server/sv_snapshot.cpp
 )
 
-set( ENGINELIST
+set( ENGINE_SRC_LIST
   ${ENGINE_DIR}/framework/BaseCommands.cpp
   ${ENGINE_DIR}/framework/CommandSystem.cpp
   ${ENGINE_DIR}/framework/CvarSystem.cpp
@@ -758,26 +758,26 @@ set( ENGINELIST
   ${ENGINE_DIR}/qcommon/parse.cpp
   ${ENGINE_DIR}/qcommon/translation.cpp
   ${ENGINE_DIR}/sys/con_log.cpp
-  ${COMMONLIST}
+  ${COMMON_SRC_LIST}
 )
 
 if( WIN32 )
-  set( ENGINELIST ${ENGINELIST}
+  set( ENGINE_SRC_LIST ${ENGINE_SRC_LIST}
     ${ENGINE_DIR}/sys/con_passive.cpp
   )
 else()
-  set( ENGINELIST ${ENGINELIST}
+  set( ENGINE_SRC_LIST ${ENGINE_SRC_LIST}
     ${ENGINE_DIR}/sys/con_tty.cpp
   )
 endif()
 
 if( NOT APPLE )
-  set( ENGINELIST ${ENGINELIST}
+  set( ENGINE_SRC_LIST ${ENGINE_SRC_LIST}
     ${ENGINE_DIR}/sys/con_curses.cpp
   )
 endif()
 
-set( CLIENTBASELIST
+set( CLIENTBASE_SRC_LIST
   ${ENGINE_DIR}/botlib/bot_debug.cpp
   ${ENGINE_DIR}/botlib/bot_nav_edit.cpp
   ${ENGINE_DIR}/client/cin_ogm.cpp
@@ -795,7 +795,7 @@ set( CLIENTBASELIST
   ${ENGINE_DIR}/client/libmumblelink.cpp
 )
 
-set( CLIENTLIST
+set( CLIENT_SRC_LIST
   ${ENGINE_DIR}/audio/ALObjects.cpp
   ${ENGINE_DIR}/audio/Audio.cpp
   ${ENGINE_DIR}/audio/Emitter.cpp
@@ -816,23 +816,23 @@ set( CLIENTLIST
   ${ENGINE_DIR}/client/rocket.cpp
 )
 
-set( TTYCLIENTLIST
+set( TTYCLIENT_SRC_LIST
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_renderer.cpp
     ${ENGINE_DIR}/null/NullAudio.cpp
     ${ENGINE_DIR}/null/null_rocket.cpp
 )
 
-set( DEDSERVERLIST
+set( DEDSERVER_SRC_LIST
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_client.cpp
 )
 
-set( SDLLIST
+set( SDL_SRC_LIST
   ${ENGINE_DIR}/sys/sdl_input.cpp
 )
 
-set( GAMESHAREDLIST
+set( GAMESHARED_SRC_LIST
   ${GAMELOGIC_DIR}/shared/bg_misc.cpp
   ${GAMELOGIC_DIR}/shared/bg_parse.cpp
   ${GAMELOGIC_DIR}/shared/bg_pmove.cpp
@@ -846,7 +846,7 @@ set( GAMESHAREDLIST
   ${GAMELOGIC_DIR}/shared/VMMain.cpp
 )
 
-set( CGAMELIST
+set( CGAME_SRC_LIST
   ${GAMELOGIC_DIR}/cgame/cg_api.cpp
   ${GAMELOGIC_DIR}/cgame/cg_consolecmds.cpp
   ${GAMELOGIC_DIR}/cgame/cg_buildable.cpp
@@ -880,11 +880,11 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.cpp
   ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
   ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
-  ${GAMESHAREDLIST}
-  ${COMMONLIST}
+  ${GAMESHARED_SRC_LIST}
+  ${COMMON_SRC_LIST}
 )
 
-set( SGAMELIST
+set( SGAME_SRC_LIST
   ${GAMELOGIC_DIR}/sgame/sg_active.cpp
   ${GAMELOGIC_DIR}/sgame/sg_api.cpp
   ${GAMELOGIC_DIR}/sgame/sg_buildpoints.cpp
@@ -924,13 +924,13 @@ set( SGAMELIST
   ${GAMELOGIC_DIR}/sgame/sg_cm_world.cpp
   ${GAMELOGIC_DIR}/sgame/Beacon.cpp
   ${GAMELOGIC_DIR}/sgame/Clustering.cpp
-  ${GAMESHAREDLIST}
-  ${COMMONLIST}
+  ${GAMESHARED_SRC_LIST}
+  ${COMMON_SRC_LIST}
 )
 
 set( WIN_RC ${ENGINE_DIR}/sys/daemon.rc )
 
-set( MINIZIPLIST
+set( MINIZIP_SRC_LIST
   ${LIB_DIR}/minizip/ioapi.c
   ${LIB_DIR}/minizip/ioapi.h
   ${LIB_DIR}/minizip/unzip.c
@@ -939,7 +939,7 @@ set( MINIZIPLIST
 
 # This is only used for the NaCl modules. For all other targets, the host zlib
 # is used (sourced from external_deps if not available on target platform).
-set( ZLIBLIST
+set( ZLIB_SRC_LIST
   ${LIB_DIR}/zlib/adler32.c
   ${LIB_DIR}/zlib/compress.c
   ${LIB_DIR}/zlib/crc32.c
@@ -968,7 +968,7 @@ set( ZLIBLIST
   ${LIB_DIR}/zlib/zutil.h
 )
 
-set( TINYGETTEXTLIST
+set( TINYGETTEXT_SRC_LIST
   ${LIB_DIR}/tinygettext/dictionary_manager.hpp
   ${LIB_DIR}/tinygettext/file_system.hpp
   ${LIB_DIR}/tinygettext/iconv.cpp
@@ -990,7 +990,7 @@ set( TINYGETTEXTLIST
   ${LIB_DIR}/findlocale/findlocale.c
 )
 
-set( PDCURSESLIST
+set( PDCURSES_SRC_LIST
   ${LIB_DIR}/pdcurses/pdcurses/addch.c
   ${LIB_DIR}/pdcurses/pdcurses/addchstr.c
   ${LIB_DIR}/pdcurses/pdcurses/addstr.c
@@ -1041,12 +1041,12 @@ set( PDCURSESLIST
   ${LIB_DIR}/pdcurses/win32a/pdcutil.c
 )
 
-set( FASTLZLIST
+set( FASTLZ_SRC_LIST
   ${MOUNT_DIR}/libs/fastlz/fastlz.c
 )
 
-set( DETOURLIST
-  ${FASTLZLIST}
+set( DETOUR_SRC_LIST
+  ${FASTLZ_SRC_LIST}
   ${MOUNT_DIR}/libs/detour/DetourAlloc.cpp
   ${MOUNT_DIR}/libs/detour/DetourCommon.cpp
   ${MOUNT_DIR}/libs/detour/DetourNavMeshBuilder.cpp
@@ -1060,7 +1060,7 @@ set( DETOURLIST
   ${MOUNT_DIR}/libs/detour/DetourTileCacheBuilder.cpp
 )
 
-set( RECASTLIST
+set( RECAST_SRC_LIST
   ${MOUNT_DIR}/libs/recast/RecastAlloc.cpp
   ${MOUNT_DIR}/libs/recast/RecastArea.cpp
   ${MOUNT_DIR}/libs/recast/RecastContour.cpp
@@ -1180,13 +1180,13 @@ else()
 endif()
 
 # Minizip
-set( LIBSRC_BASE ${LIBSRC_BASE} ${MINIZIPLIST} )
+set( LIBSRC_BASE ${LIBSRC_BASE} ${MINIZIP_SRC_LIST} )
 
 # Tinygettext
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXTLIST} )
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${TINYGETTEXT_SRC_LIST} )
 
 # Detour
-set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${DETOURLIST} )
+set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${DETOUR_SRC_LIST} )
 
 # GeoIP
 if( USE_GEOIP )
@@ -1358,7 +1358,7 @@ endif()
 if( WIN32 )
   add_definitions( -DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES )
   include_directories( ${LIB_DIR}/pdcurses )
-  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSESLIST} )
+  set( LIBSRC_ENGINE ${LIBSRC_ENGINE} ${PDCURSES_SRC_LIST} )
   set( LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32 )
 elseif( NOT APPLE )
   add_definitions( -DUSE_CURSES )
@@ -1390,7 +1390,7 @@ function( GAMEMODULE )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( BUILD_GAME_NATIVE_DLL )
-    add_library( ${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
+    add_library( ${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHARED_SRC_LIST} )
     target_link_libraries( ${GAMEMODULE_NAME}-native-dll nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-native-dll PROPERTIES
       PREFIX ""
@@ -1402,7 +1402,7 @@ function( GAMEMODULE )
   endif()
 
   if( BUILD_GAME_NATIVE_EXE )
-    add_executable( ${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
+    add_executable( ${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHARED_SRC_LIST} )
     target_link_libraries( ${GAMEMODULE_NAME}-native-exe nacl-source-libs ${LIBS_BASE} )
     set_target_properties( ${GAMEMODULE_NAME}-native-exe PROPERTIES
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
@@ -1492,7 +1492,7 @@ function( GAMEMODULE )
 
     # Compile C files with clang and C++ files with clang++
     set( OBJECTS )
-    foreach( FILE ${GAMEMODULE_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} ${ZLIBLIST} ${LIBSRC_BASE} )
+    foreach( FILE ${GAMEMODULE_FILES} ${SHARED_SRC_LIST} ${NACLLIST_MODULE} ${ZLIB_SRC_LIST} ${LIBSRC_BASE} )
       get_filename_component( FILENAME ${FILE} NAME_WE )
       get_filename_component( FILEDIR ${FILE} PATH )
       get_filename_component( EXT ${FILE} EXT )
@@ -1596,12 +1596,12 @@ endfunction()
 
 GAMEMODULE( NAME sgame
   COMPILE_DEF BUILD_VM BUILD_SGAME
-  FILES ${SGAMELIST}
+  FILES ${SGAME_SRC_LIST}
 )
 
 GAMEMODULE( NAME cgame
   COMPILE_DEF BUILD_VM BUILD_CGAME
-  FILES ${CGAMELIST}
+  FILES ${CGAME_SRC_LIST}
 )
 
 ################################################################################
@@ -1609,7 +1609,7 @@ GAMEMODULE( NAME cgame
 ################################################################################
 
 if( BUILD_CLIENT )
-  add_executable( client WIN32 ${PCH_FILE} ${ENGINELIST} ${SHAREDLIST} ${CLIENTLIST} ${CLIENTBASELIST} ${RENDERERLIST} ${SERVERLIST} ${SDLLIST} ${WIN_RC} )
+  add_executable( client WIN32 ${PCH_FILE} ${ENGINE_SRC_LIST} ${SHARED_SRC_LIST} ${CLIENT_SRC_LIST} ${CLIENTBASE_SRC_LIST} ${RENDERER_SRC_LIST} ${SERVER_SRC_LIST} ${SDL_SRC_LIST} ${WIN_RC} )
   if( USE_SMP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP )
   endif()
@@ -1625,7 +1625,7 @@ if( BUILD_CLIENT )
 endif()
 
 if( BUILD_SERVER )
-  add_executable( server WIN32 ${PCH_FILE} ${SERVERLIST} ${DEDSERVERLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
+  add_executable( server WIN32 ${PCH_FILE} ${SERVER_SRC_LIST} ${DEDSERVER_SRC_LIST} ${ENGINE_SRC_LIST} ${SHARED_SRC_LIST} ${WIN_RC} )
   target_link_libraries( server ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" FOLDER "engine")
@@ -1634,7 +1634,7 @@ if( BUILD_SERVER )
 endif()
 
 if( BUILD_TTY_CLIENT )
-  add_executable( ttyclient WIN32 ${PCH_FILE} ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST} ${ENGINELIST} ${SHAREDLIST} ${WIN_RC} )
+  add_executable( ttyclient WIN32 ${PCH_FILE} ${SERVER_SRC_LIST} ${CLIENTBASE_SRC_LIST} ${TTYCLIENT_SRC_LIST} ${ENGINE_SRC_LIST} ${SHARED_SRC_LIST} ${WIN_RC} )
   target_link_libraries( ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" FOLDER "engine")
