@@ -45,6 +45,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set( CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." )
 
 project( Daemon C CXX )
+MESSAGE("PROJECT_NAME=${PROJECT_NAME}")
+MESSAGE("Daemon_SOURCE_DIR=${Daemon_SOURCE_DIR}")
+MESSAGE("Daemon_BINARY_DIR=${Daemon_BINARY_DIR}")
+MESSAGE("PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}")
+MESSAGE("PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}")
+MESSAGE("CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}")
+MESSAGE("CMAKE_BINARY_DIR=${CMAKE_BINARY_DIR}")
 
 ################################################################################
 # Configuration options
@@ -600,27 +607,25 @@ endfunction()
 # Include directories
 ################################################################################
 
-include_directories(
-  ${MOUNT_DIR},
-  ${COMMON_DIR},
-  ${COMMON_DIR}/IPC,
-  ${COMMON_DIR}/cm,
-  ${COMMON_DIR}/math,
-  ${ENGINE_DIR},
-  ${ENGINE_DIR}/audio,
-  ${ENGINE_DIR}/botlib,
-  ${ENGINE_DIR}/client,
-  ${ENGINE_DIR}/framework,
-  ${ENGINE_DIR}/null,
-  ${ENGINE_DIR}/qcommon,
-  ${ENGINE_DIR}/renderer,
-  ${ENGINE_DIR}/server,
-  ${ENGINE_DIR}/sys,
-  ${GAMELOGIC_DIR},
-  ${GAMELOGIC_DIR}/cgame,
-  ${GAMELOGIC_DIR}/sgame,
-  ${GAMELOGIC_DIR}/shared
-)
+include_directories("${MOUNT_DIR}")
+include_directories("${COMMON_DIR}")
+include_directories("${COMMON_DIR}/IPC")
+include_directories("${COMMON_DIR}/cm")
+include_directories("${COMMON_DIR}/math")
+include_directories("${ENGINE_DIR}")
+include_directories("${ENGINE_DIR}/audio")
+include_directories("${ENGINE_DIR}/botlib")
+include_directories("${ENGINE_DIR}/client")
+include_directories("${ENGINE_DIR}/framework")
+include_directories("${ENGINE_DIR}/null")
+include_directories("${ENGINE_DIR}/qcommon")
+include_directories("${ENGINE_DIR}/renderer")
+include_directories("${ENGINE_DIR}/server")
+include_directories("${ENGINE_DIR}/sys")
+include_directories("${GAMELOGIC_DIR}")
+include_directories("${GAMELOGIC_DIR}/cgame")
+include_directories("${GAMELOGIC_DIR}/sgame")
+include_directories("${GAMELOGIC_DIR}/shared")
 
 
 ################################################################################
