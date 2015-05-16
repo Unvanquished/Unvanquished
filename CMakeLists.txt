@@ -594,16 +594,45 @@ function( ADD_PRECOMPILED_HEADER Target Header )
   endif()
 endfunction()
 
+
+
+################################################################################
+# Include directories
+################################################################################
+
+include_directories(
+  ${MOUNT_DIR},
+  ${COMMON_DIR},
+  ${COMMON_DIR}/IPC,
+  ${COMMON_DIR}/cm,
+  ${COMMON_DIR}/math,
+  ${ENGINE_DIR},
+  ${ENGINE_DIR}/audio,
+  ${ENGINE_DIR}/botlib,
+  ${ENGINE_DIR}/client,
+  ${ENGINE_DIR}/framework,
+  ${ENGINE_DIR}/null,
+  ${ENGINE_DIR}/qcommon,
+  ${ENGINE_DIR}/renderer,
+  ${ENGINE_DIR}/server,
+  ${ENGINE_DIR}/sys,
+  ${GAMELOGIC_DIR},
+  ${GAMELOGIC_DIR}/cgame,
+  ${GAMELOGIC_DIR}/sgame,
+  ${GAMELOGIC_DIR}/shared
+)
+
+
 ################################################################################
 # File lists
 ################################################################################
 
 set( SHAREDLIST
   ${ENGINE_DIR}/qcommon/q_shared.cpp
-  ${ENGINE_DIR}/qcommon/q_unicode.cpp
-  ${ENGINE_DIR}/qcommon/q_math.cpp
   ${ENGINE_DIR}/qcommon/q_shared.h
+  ${ENGINE_DIR}/qcommon/q_unicode.cpp
   ${ENGINE_DIR}/qcommon/q_unicode.h
+  ${ENGINE_DIR}/qcommon/q_math.cpp
   ${ENGINE_DIR}/qcommon/unicode_data.h
   ${ENGINE_DIR}/qcommon/logging.h
 )
@@ -1178,9 +1207,6 @@ set( NACLLIST_MODULE
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
   ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
 )
-
-# Add include dirs
-include_directories( ${MOUNT_DIR} )
 
 ################################################################################
 # Libraries
