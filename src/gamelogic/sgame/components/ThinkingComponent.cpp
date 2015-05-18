@@ -2,8 +2,8 @@
 
 static Log::Logger thinkLogger("sgame.thinking");
 
-ThinkingComponent::ThinkingComponent(Entity& entity)
-	: ThinkingComponentBase(entity), averageFrameTime(0)
+ThinkingComponent::ThinkingComponent(Entity& entity, DeferredFreeingComponent& r_DeferredFreeingComponent)
+	: ThinkingComponentBase(entity, r_DeferredFreeingComponent), iteratingThinkers(false), averageFrameTime(0)
 {}
 
 void ThinkingComponent::Think() {
@@ -16,6 +16,7 @@ void ThinkingComponent::Think() {
 		averageFrameTime = averageFrameTime * (1.0f - averageChangeRate) + frameTime * averageChangeRate;
 	}
 
+	iteratingThinkers = true;
 	for (thinkRecord_t &record : thinkers) {
 		int timeDelta = time - record.timestamp;
 		int thisFrameExecutionLateness = timeDelta - record.period;
@@ -46,12 +47,35 @@ void ThinkingComponent::Think() {
 		                  record.period, thisFrameExecutionLateness);
 
 		record.timestamp = time;
+
+		unregisterActiveThinker = false;
 		record.thinker(timeDelta);
+		record.unregister = unregisterActiveThinker;
 	}
+	iteratingThinkers = false;
+
+	// Remove thinkers that unregistered themselves during iteration.
+	thinkers.erase(std::remove_if(thinkers.begin(), thinkers.end(),
+	                              [](thinkRecord_t &record){return record.unregister;}),
+	               thinkers.end());
+
+	// Add thinkers that were registered during iteration.
+	thinkers.insert(thinkers.end(), newThinkers.begin(), newThinkers.end());
+	newThinkers.clear();
 }
 
 void ThinkingComponent::RegisterThinker(thinker_t thinker, thinkScheduler_t scheduler, int period) {
-	thinkers.emplace_back(thinkRecord_t{thinker, scheduler, period, level.time, 0});
+	// When thinkers are being executed, add new ones to a temporary container so the iterator isn't
+	// invalidated.
+	std::vector<thinkRecord_t> *addTo = iteratingThinkers ? &newThinkers : &thinkers;
 
-	thinkLogger.Debug("Registered thinker of period %i.", period);
+	addTo->emplace_back(thinkRecord_t{thinker, scheduler, period, level.time, 0, false});
+
+	thinkLogger.Notice("Registered thinker of period %i.", period);
+}
+
+void ThinkingComponent::UnregisterActiveThinker() {
+	unregisterActiveThinker = true;
+
+	thinkLogger.Notice("Unregistered the active thinker.");
 }

@@ -69,6 +69,13 @@ namespace Beacon
 	void DeleteTags( gentity_t *ent );
 }
 
+// Utility.cpp
+namespace Utility
+{
+	void Kill(Entity& entity, Entity *source, meansOfDeath_t meansOfDeath);
+	bool AntiHumanRadiusDamage(Entity& entity, float damage, float range, meansOfDeath_t mod);
+}
+
 // sg_buildable.c
 bool              G_IsWarnableMOD( int mod );
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
@@ -334,7 +341,6 @@ team_t            G_Enemy( team_t team );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
 bool              G_Alive(gentity_t *ent);
 bool              G_Dead(gentity_t *ent);
-void              G_Kill(Entity& entity, gentity_t *source, meansOfDeath_t meansOfDeath);
 void              G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath);
 void              G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath);
 

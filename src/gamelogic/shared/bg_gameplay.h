@@ -125,10 +125,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define BOOST_WARN_TIME         15000
 #define BOOST_REPEAT_ANIM       2000
 
-#define ACIDTUBE_DAMAGE         8
 #define ACIDTUBE_RANGE          300.0f
-#define ACIDTUBE_REPEAT         300
-#define ACIDTUBE_REPEAT_ANIM    2000
 
 #define SPIKER_SPIKE_RANGE      400.0f // reach of spikes, also used for scoring
 #define SPIKER_SENSE_RANGE      200.0f // an enemy needs to be this close to consider an attack
@@ -344,7 +341,6 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 // buildable explosion
 #define HUMAN_DETONATION_DELAY             4000
-#define ALIEN_DETONATION_DELAY             5000
 #define DETONATION_DELAY_RAND_RANGE        0.25f
 
 // buildable limits

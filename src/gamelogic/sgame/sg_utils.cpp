@@ -984,18 +984,11 @@ bool G_Dead(gentity_t *ent) {
 	return (healthComponent && !healthComponent->Alive());
 }
 
-void G_Kill(Entity& entity, gentity_t *source, meansOfDeath_t meansOfDeath) {
-	HealthComponent *healthComponent = entity.Get<HealthComponent>();
-	if (healthComponent) {
-		entity.Damage(healthComponent->Health(), source, {}, {},
-		              (DAMAGE_PURE | DAMAGE_NO_PROTECTION), meansOfDeath);
-	}
+void G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
+	if (ent) Utility::Kill(*ent->entity, nullptr, meansOfDeath);
 }
 
 void G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
-	if (ent) G_Kill(*ent->entity, source, meansOfDeath);
-}
-
-void G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
-	if (ent) G_Kill(*ent->entity, nullptr, meansOfDeath);
+	if (!source) G_Kill(ent, meansOfDeath); return;
+	if (ent) Utility::Kill(*ent->entity, source->entity, meansOfDeath);
 }

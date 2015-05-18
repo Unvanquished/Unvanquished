@@ -1671,8 +1671,11 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// calculate impact damage
-	attackerMass = BG_Class( self->client->pers.classSelection )->mass;
 	impactVelocity = fabs( self->client->pmext.fallImpactVelocity[ 2 ] ) * QU_TO_METER; // in m/s
+
+	if (!impactVelocity) return;
+
+	attackerMass = BG_Class( self->client->pers.classSelection )->mass;
 	impactEnergy = attackerMass * impactVelocity * impactVelocity; // in J
 	impactDamage = impactEnergy * IMPACTDMG_JOULE_TO_DAMAGE;
 

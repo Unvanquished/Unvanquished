@@ -543,30 +543,6 @@ static bool IsCreepHere( vec3_t origin )
 	return G_FindCreep( &dummy );
 }
 
-/**
- * @brief Set any nearby humans' SS_CREEPSLOWED flag.
- */
-static void AGeneric_CreepSlow( gentity_t *self )
-{
-	buildable_t buildable = ( buildable_t )self->s.modelindex;
-	float       creepSize = ( float )BG_Buildable( buildable )->creepSize;
-	gentity_t   *ent;
-
-	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, creepSize ) ); )
-	{
-		if (    !ent->client
-		     || ent->client->pers.team != TEAM_HUMANS
-		     || ent->client->ps.groundEntityNum == ENTITYNUM_NONE
-		     || ent->flags & FL_NOTARGET )
-		{
-			continue;
-		}
-
-		ent->client->ps.stats[ STAT_STATE ] |= SS_CREEPSLOWED;
-		ent->client->lastCreepSlowTime = level.time;
-	}
-}
-
 /*
 ================
 nullDieFunction
@@ -613,115 +589,6 @@ static int    CompareEntityDistance( const void *a, const void *b )
 	}
 }
 
-/*
-================
-AGeneric_CreepRecede
-
-Called when an alien buildable dies
-================
-*/
-void AGeneric_CreepRecede( gentity_t *self )
-{
-	//if the creep just died begin the recession
-	if ( !( self->s.eFlags & EF_DEAD ) )
-	{
-		self->s.eFlags |= EF_DEAD;
-
-		G_AddEvent( self, EV_BUILD_DESTROY, 0 );
-
-		if ( self->spawned )
-		{
-			self->s.time = -level.time;
-		}
-		else
-		{
-			self->s.time = - ( level.time -
-			                   ( int )( ( float ) CREEP_SCALEDOWN_TIME *
-			                            ( 1.0f - ( ( float )( level.time - self->creationTime ) /
-			                                       ( float ) BG_Buildable( self->s.modelindex )->buildTime ) ) ) );
-		}
-	}
-
-	//creep is still receeding
-	if ( ( self->timestamp + 10000 ) > level.time )
-	{
-		self->nextthink = level.time + 500;
-	}
-	else //creep has died
-	{
-		G_FreeEntity( self );
-	}
-}
-
-/*
-================
-AGeneric_Blast
-
-Called when an Alien buildable explodes after dead state
-================
-*/
-void AGeneric_Blast( gentity_t *self )
-{
-	vec3_t dir;
-
-	VectorCopy( self->s.origin2, dir );
-
-	G_SelectiveRadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
-	                         self->splashRadius, self, self->splashMethodOfDeath, TEAM_ALIENS );
-
-	G_RewardAttackers( self );
-
-	//pretty events and item cleanup
-	self->s.eFlags |= EF_NODRAW; //don't draw the model once it's destroyed
-	G_AddEvent( self, EV_ALIEN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
-	self->timestamp = level.time;
-	self->think = AGeneric_CreepRecede;
-	self->nextthink = level.time + 500;
-
-	self->r.contents = 0; //stop collisions...
-	trap_LinkEntity( self );  //...requires a relink
-}
-
-/*
-================
-AGeneric_CreepCheck
-
-Tests for creep and kills the buildable if there is none
-================
-*/
-void AGeneric_CreepCheck( gentity_t *self )
-{
-	if ( !BG_Buildable( self->s.modelindex )->creepTest )
-	{
-		return;
-	}
-
-	if ( !G_FindCreep( self ) )
-	{
-		G_Kill(self, self->powerSource ? &g_entities[self->powerSource->killedBy] : nullptr,
-		       MOD_NOCREEP);
-	}
-}
-
-/*
-================
-AGeneric_Think
-
-A generic think function for Alien buildables
-================
-*/
-void AGeneric_Think( gentity_t *self )
-{
-	// set power state
-	self->powered = ( G_ActiveOvermind() != nullptr );
-
-	// check if still on creep
-	AGeneric_CreepCheck( self );
-
-	// slow down close humans
-	AGeneric_CreepSlow( self );
-}
-
 //==================================================================================
 
 /*
@@ -736,8 +603,6 @@ void ASpawn_Think( gentity_t *self )
 	gentity_t *ent;
 
 	self->nextthink = level.time + 100;
-
-	AGeneric_Think( self );
 
 	if ( !self->spawned )
 	{
@@ -859,8 +724,6 @@ void AOvermind_Think( gentity_t *self )
 	int clientNum;
 
 	self->nextthink = level.time + 1000;
-
-	AGeneric_Think( self );
 
 	if ( self->spawned && G_Alive( self ) )
 	{
@@ -1023,8 +886,6 @@ void ABarricade_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
 
-	AGeneric_Think( self );
-
 	// Shrink if unpowered
 	ABarricade_Shrink( self, !self->powered );
 }
@@ -1060,50 +921,6 @@ void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	}
 
 	ABarricade_Shrink( self, true );
-}
-
-void AAcidTube_Think( gentity_t *self )
-{
-	gentity_t *ent;
-
-	// TODO: Make damage independent of think timer
-	self->nextthink = level.time + ACIDTUBE_REPEAT;
-
-	AGeneric_Think( self );
-
-	if ( !self->spawned || !self->powered || G_Dead( self ) )
-	{
-		return;
-	}
-
-	// check for close humans
-	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, ACIDTUBE_RANGE ) ); )
-	{
-		if (    ( ent->flags & FL_NOTARGET )
-		     || !ent->client
-		     || ent->client->pers.team != TEAM_HUMANS )
-		{
-			continue;
-		}
-
-		// this is potentially expensive, so check this last
-		if ( !G_IsVisible( self, ent, CONTENTS_SOLID ) )
-		{
-			continue;
-		}
-
-		if ( level.time >= self->timestamp + ACIDTUBE_REPEAT_ANIM )
-		{
-			self->timestamp = level.time;
-			G_SetBuildableAnim( self, BANIM_ATTACK1, false );
-			G_AddEvent( self, EV_ALIEN_ACIDTUBE, DirToByte( self->s.origin2 ) );
-		}
-
-		G_SelectiveRadiusDamage( self->s.pos.trBase, self, ACIDTUBE_DAMAGE,
-								 ACIDTUBE_RANGE, self, MOD_ATUBE, TEAM_ALIENS );
-
-		return;
-	}
 }
 
 bool ASpiker_Fire( gentity_t *self )
@@ -1183,8 +1000,6 @@ void ASpiker_Think( gentity_t *self )
 	bool  sensing;
 
 	self->nextthink = level.time + 500;
-
-	AGeneric_Think( self );
 
 	if ( !self->spawned || !self->powered || G_Dead( self ) )
 	{
@@ -1297,8 +1112,6 @@ void ASpiker_Think( gentity_t *self )
 void ALeech_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
-
-	AGeneric_Think( self );
 
 	G_RGSThink( self );
 }
@@ -1441,8 +1254,6 @@ void AHive_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 500;
 
-	AGeneric_Think( self );
-
 	// last missile hasn't returned in time, forget about it
 	if ( self->timestamp < level.time )
 	{
@@ -1472,8 +1283,6 @@ void ABooster_Think( gentity_t *self )
 	bool  playHealingEffect = false;
 
 	self->nextthink = level.time + BOOST_REPEAT_ANIM / 4;
-
-	AGeneric_Think( self );
 
 	// check if there is a closeby alien that used this booster for healing recently
 	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOSTER_RANGE ) ); )
@@ -1715,8 +1524,6 @@ think function for Alien Defense
 void ATrapper_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 100;
-
-	AGeneric_Think( self );
 
 	if ( !self->spawned || !self->powered || G_Dead( self ) )
 	{
@@ -4587,7 +4394,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			break;
 
 		case BA_A_ACIDTUBE:
-			built->think = AAcidTube_Think;
 			break;
 
 		case BA_A_HIVE:

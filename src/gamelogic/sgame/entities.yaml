@@ -13,7 +13,7 @@ messages:
 
     Ignite:
         - name: fireStarter
-          type: gentity_t*
+          type: gentity_t* # TODO: Use Entity
 
     Extinguish:
         - name: immunityTime
@@ -23,13 +23,13 @@ messages:
         - name: amount
           type: float
         - name: source
-          type: gentity_t*
+          type: gentity_t* # TODO: Use Entity
 
     Damage:
         - name: amount
           type: float
         - name: source
-          type: gentity_t*
+          type: gentity_t* # TODO: Use Entity
         - name: location
           type: Util::optional<Vec3>
         - name: direction
@@ -41,7 +41,7 @@ messages:
 
     Die:
         - name: killer
-          type: gentity_t*
+          type: gentity_t* # TODO: Use Entity
         - name: meansOfDeath
           type: meansOfDeath_t
 
@@ -68,6 +68,10 @@ components:
             - FreeAt
 
     Thinking:
+        requires:
+            # Thinking components can't free themselves instantly inside their
+            # thinkers, so allow them to free themselves afterwards.
+            - DeferredFreeing
 
     Ignitable:
         parameters:
@@ -448,6 +452,5 @@ entities:
         components:
             Ignitable:
                 alwaysOnFire: true
-            DeferredFreeing:
 
 # vi:ts=4:et:ai

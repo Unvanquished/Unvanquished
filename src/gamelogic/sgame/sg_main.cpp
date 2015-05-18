@@ -2714,11 +2714,10 @@ void G_RunThink( gentity_t *ent )
 
 	// Do legacy thinking.
 	// TODO: Replace this kind of thinking entirely with CBSE.
-	{
+	if (ent->think) {
 		float thinktime = ent->nextthink;
 		if (thinktime <= 0 || thinktime > level.time) return;
 		ent->nextthink = 0;
-		if (!ent->think) G_Error("NULL ent->think");
 		ent->think(ent);
 	}
 
