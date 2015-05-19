@@ -22,6 +22,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // gl_shader.cpp -- GLSL shader handling
 
 #include "gl_shader.h"
+#include <type_traits>
+
+// We currently write GLShaderHeader to a file and memcpy all over it.
+// Make sure it's a pod, so we don't put a std::string in it or something
+// and try to memcpy over that or binary write an std::string to a file.
+static_assert(std::is_pod<GLShaderHeader>::value, "Value must be a pod while code in this cpp file reads and writes this object to file as binary.");
 
 extern std::unordered_map<std::string, const char *> shadermap;
 // shaderType's value will be determined later based on command line setting or absence of.
@@ -63,7 +69,7 @@ GLShaderManager                           gl_shaderManager;
 
 namespace // Implementation details
 {
-	void ShaderError(Str::StringRef msg)
+	inline void ThrowShaderError(Str::StringRef msg)
 	{
 		throw ShaderException(msg.c_str());
 	}
@@ -76,55 +82,144 @@ namespace // Implementation details
 		return nullptr;
 	}
 
+	enum class CommentType
+	{
+		None,
+		Block,
+		Line
+	};
+
+	bool FindCommentStart(const std::string& source, size_t start, size_t& commentStartPos, CommentType& commentType)
+	{
+		for (size_t pos = start; pos < source.length(); ++pos)
+		{
+			if (source[pos] == '/' && pos + 1 < source.length())
+			{
+				if (source[pos + 1] == '/')
+				{
+					commentType = CommentType::Line;
+					commentStartPos = pos;
+					return true;
+				}
+				if (source[pos + 1] == '*')
+				{
+					commentType = CommentType::Block;
+					commentStartPos = pos;
+					return true;
+				}
+			}
+		}
+		commentStartPos = std::string::npos;
+		commentType = CommentType::None;
+		return false;
+	}
+
+	bool FindCommentEnd(const std::string& source, size_t start, CommentType commentType, size_t& commentEndPos)
+	{
+		assert(commentType != CommentType::None);
+		if (commentType == CommentType::Block)
+		{
+			commentEndPos = source.find("*/", start);
+			if (commentEndPos != std::string::npos)
+				commentEndPos += 2;
+		}
+		else
+			commentEndPos = source.find_first_of("\r\n", start);
+		return (commentEndPos != std::string::npos);
+	}
+
+	// Remove C++ comments from a file.
+	// This logic must effictively match what buildshaders.sh does.
+	// If it doesn't the app will issue warnings but not from this routine.
+	// We remove slash star xxxx star slash and
+	// slash slash xxxx to \r or \n combinations. We leave the
+	// new line character inplace to avoid splicing together lines
+	// and creating new tokens by accident.
+	// We don't use regex as we don't need it. Nor do we want
+	// to force a dependency on it either for such simple needs.
+	// We do not remove #if 0 type comments as buildshader does not do
+	// that. It would be also more complex. Complexity comes from
+	// things like #if X #elif 0 #else X #endif patterns.
+	// The shaders actually do/did that btw.
+	// But we don't need to handle #directives right now nor do we.
+	void StripComments(std::string& source)
+	{
+		size_t sourcePos = 0;
+		size_t keepPos = 0;
+		size_t commentStartPos;
+		size_t commentEndPos;
+		CommentType commentType;
+
+		auto keep = [&](size_t keepLength)
+		{
+			if (keepPos != sourcePos)
+				std::copy(source.begin() + sourcePos, source.begin() + sourcePos + keepLength,
+					source.begin() + keepPos);
+			keepPos += keepLength;
+		};
+
+		for (;; )
+		{
+			bool foundCommentStart = FindCommentStart(source, sourcePos, commentStartPos, commentType);
+			if (!foundCommentStart)
+			{
+				// If we don't find a comment, the rest of program is code.
+				size_t remainingLength = source.length() - sourcePos;
+				keep(remainingLength);
+				break;
+			}
+
+			bool foundCommentEnd = FindCommentEnd(source, commentStartPos, commentType, commentEndPos);
+			if (!foundCommentEnd)
+			{
+				// If we don't find the end of a comment:
+				// If it' a block comment we failed to close then keep everything
+				// before it and after. Before it is code and keeping what's
+				// after makes it easier to diagnose what's wrong.
+				// If we can't close a line comment (i.e. no new line), keep everything
+				// before it as that's code, but forget the line comment and what follows.
+				// Either way we are done.
+				if (commentType == CommentType::Block)
+				{
+					size_t remainingLength = source.length() - sourcePos;
+					keep(remainingLength);
+				}
+				else
+				{
+					size_t codeLength = commentStartPos - sourcePos;
+					keep(codeLength);
+				}
+				break;
+			}
+			// We found a start and end comment. keep the what's before the comment.
+			// as that's code. Then continue after the comment.
+			// Note that the new line that exists after comments is kept to avoid
+			// splicing any lines together without gaps that would create new unexpected tokens.
+			size_t codeLength = commentStartPos - sourcePos;
+			keep(codeLength);
+			sourcePos = commentEndPos;
+		}
+		source.resize(keepPos);
+	}
+
 	// Somewhat emulate what buildshader.sh does or doesn't do.
 	// Not wildly efficient but doesn't have to be as it's currently
 	// only used as part of a debugging only feature on small shader files.
 	void NormalizeShaderText( std::string& text )
 	{
-		// Remove any \r\n that are present. These line
-		// endings can be there on windows as the text
-		// file is opened in binary mode.
-		size_t pos;
-		while ((pos = text.rfind("\r\n")) != std::string::npos)
-			text.erase(pos, 1); // Remove the \r leaving the \n.
-
-		// /* */ comment remover.
-		for (;;)
-		{
-			auto commentStart = text.rfind("/*");
-			if (commentStart == std::string::npos)
-				break;
-			auto commentEnd = text.find("*/", commentStart + 2);
-			if (commentEnd == std::string::npos)
-				break;
-			commentEnd += 2;
-			auto commentLength = commentEnd - commentStart;
-			text.erase(commentStart, commentLength);
-		}
-
-		/* // comment remover. */
-		for (;;)
-		{
-			auto commentStart = text.rfind("//");
-			if (commentStart == std::string::npos)
-				break;
-			// Comment goes to end of line or end of
-			// data if no end of line found. End of line may be \n or \r.
-			// Expects \r followed by \n sequences to have ready been removed.
-			// Line ending is left in place so as to avoid creating new tokens
-			// by splicing seperate lines together.
-			auto commentEnd = text.find_first_of("\r\n", commentStart + 2);
-			if (commentEnd == std::string::npos)
-				commentEnd = commentStart + text.length();
-			auto commentLength = commentEnd - commentStart;
-			text.erase(commentStart, commentLength);
-		}
+		size_t pos = 0;
+		while ((pos = text.find("\r\n", pos)) != std::string::npos)
+			text.erase(text.begin()+pos);
+		StripComments(text);
 	}
 
 	std::string GetShaderText(Str::StringRef filename)
 	{
 		// Shader type should be set during initialisation.
 		assert(shaderType != ShaderType::Unknown);
+
+		Log::Debug("loading shader '%s'\n", filename);
+
 		std::string shaderPath = GetShaderPath();
 		if (! shaderPath.empty() && shaderType != ShaderType::BuiltIn)
 		{
@@ -134,16 +229,16 @@ namespace // Implementation details
 
 			FS::File shaderFile = FS::RawPath::OpenRead(fullShaderFilename, openErr);
 			if (openErr)
-				ShaderError(Str::Format("Cannot load shader from file: %s\n", fullShaderFilename));
+				ThrowShaderError(Str::Format("Cannot load shader from file: %s\n", fullShaderFilename));
 
 			std::error_code readErr;
 			shaderText = shaderFile.ReadAll(readErr);
 			if (readErr)
-				ShaderError(Str::Format("Failed to read shader from file: %s\n", fullShaderFilename));
+				ThrowShaderError(Str::Format("Failed to read shader from file: %s\n", fullShaderFilename));
 
 			NormalizeShaderText(shaderText);
 			if (shaderText.empty())
-				ShaderError(Str::Format("Shader from file is empty: %s\n", fullShaderFilename));
+				ThrowShaderError(Str::Format("Shader from file is empty: %s\n", fullShaderFilename));
 
 			// Alert the user when a file does not match it's built-in version.
 			// There should be no differences in normal conditions.
@@ -164,7 +259,7 @@ namespace // Implementation details
 		// If found neither internally or externally of if empty, then Error.
 		auto text_ptr = GetInternalShader(filename);
 		if (text_ptr == nullptr)
-			ShaderError(Str::Format("No shader found for shader: %s", filename));
+			ThrowShaderError(Str::Format("No shader found for shader: %s", filename));
 		return text_ptr;
 	}
 };
@@ -183,25 +278,15 @@ std::string GetShaderPath()
 
 GLShaderManager::~GLShaderManager()
 {
-	for ( std::size_t i = 0; i < _shaders.size(); i++ )
-	{
-		delete _shaders[ i ];
-	}
 }
 
 void GLShaderManager::freeAll()
 {
-	for ( std::size_t i = 0; i < _shaders.size(); i++ )
-	{
-		delete _shaders[ i ];
-	}
+	_shaders.clear();
 
-	_shaders.erase( _shaders.begin(), _shaders.end() );
+	for ( GLint sh : _deformShaders )
+		glDeleteShader( sh );
 
-	for ( std::size_t i = 0; i < _deformShaders.size(); i++ )
-	{
-		glDeleteShader( _deformShaders[ i ] );
-	}
 	_deformShaders.clear();
 	_deformShaderLookup.clear();
 
@@ -225,30 +310,28 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 	shaderProgram->uniformFirewall = ( byte * ) ri.Z_Malloc( uniformSize );
 
 	// update uniforms
-	for ( size_t j = 0; j < numUniforms; j++ )
+	for (GLUniform *uniform : shader->_uniforms)
 	{
-		GLUniform *uniform = shader->_uniforms[ j ];
-
 		uniform->UpdateShaderProgramUniformLocation( shaderProgram );
 	}
 }
 
-static inline void AddGLSLDefine( std::string& defines, const std::string& define, int value )
+static inline void AddDefine( std::string& defines, const std::string& define, int value )
 {
 	defines += Str::Format("#ifndef %s\n#define %s %d\n#endif\n", define, define, value);
 }
 
-static inline void AddGLSLDefine( std::string& defines, const std::string& define, float value )
+static inline void AddDefine( std::string& defines, const std::string& define, float value )
 {
 	defines += Str::Format("#ifndef %s\n#define %s %f\n#endif\n", define, define, value);
 }
 
-static inline void AddGLSLDefine( std::string& defines, const std::string& define, float v1, float v2 )
+static inline void AddDefine( std::string& defines, const std::string& define, float v1, float v2 )
 {
 	defines += Str::Format("#ifndef %s\n#define %s vec2(%f, %f)\n#endif\n", define, define, v1, v2);
 }
 
-static inline void AddGLSLDefine( std::string& defines, const std::string& define )
+static inline void AddDefine( std::string& defines, const std::string& define )
 {
 	defines += Str::Format("#ifndef %s\n#define %s\n#endif\n", define, define);
 }
@@ -264,7 +347,7 @@ static const char *const genFuncNames[] = {
 	  "DSTEP_NOISE"
 };
 
-static inline std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
+static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 {
 	std::string steps;
 
@@ -347,14 +430,11 @@ std::string GLShaderManager::BuildDeformShaderText( const std::string& steps ) c
 	shaderText = Str::Format( "#version %d\n", glConfig2.shadingLanguageVersion );
 	shaderText += steps + "\n";
 
-	std::string shaderName = "glsl/deformVertexes_vp.glsl";
-	Log::Debug("...loading DeformVertex() shader: %s\n", shaderName );
-
 	// We added a lot of stuff but if we do something bad
 	// in the GLSL shaders then we want the proper line
 	// so we have to reset the line counting.
 	shaderText += "#line 0\n";
-	shaderText += GetShaderText(shaderName);
+	shaderText += GetShaderText("glsl/deformVertexes_vp.glsl");
 	return shaderText;
 }
 
@@ -401,48 +481,36 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 		}
 
 		if ( shaderType == GL_VERTEX_SHADER )
-		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", token );
-			Log::Debug( "...loading vertex shader '%s'\n", filename );
-		}
 		else
-		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", token );
-			Log::Debug( "...loading fragment shader '%s'\n", filename );
-		}
 
 		libs += GetShaderText(filename);
 	}
 
 	// load main() program
 	if ( shaderType == GL_VERTEX_SHADER )
-	{
 		Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", mainShaderName.c_str() );
-		Log::Debug( "...loading vertex main() shader '%s'\n", filename );
-	}
 	else
-	{
 		Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", mainShaderName.c_str() );
-		Log::Debug("...loading fragment main() shader '%s'\n", filename );
-	}
 
 	std::string env;
 	env.reserve( 1024 ); // Might help, just an estimate.
 
 	if ( glConfig2.textureRGAvailable )
-		AddGLSLDefine( env, "TEXTURE_RG", 1 );
+		AddDefine( env, "TEXTURE_RG", 1 );
 
-	AddGLSLDefine( env, "r_AmbientScale", r_ambientScale->value );
-	AddGLSLDefine( env, "r_SpecularScale", r_specularScale->value );
-	AddGLSLDefine( env, "r_NormalScale", r_normalScale->value );
+	AddDefine( env, "r_AmbientScale", r_ambientScale->value );
+	AddDefine( env, "r_SpecularScale", r_specularScale->value );
+	AddDefine( env, "r_NormalScale", r_normalScale->value );
 
-	AddGLSLDefine( env, "M_PI", static_cast<float>( M_PI ) );
-	AddGLSLDefine( env, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
+	AddDefine( env, "M_PI", static_cast<float>( M_PI ) );
+	AddDefine( env, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 
 	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
 	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
 
-	AddGLSLDefine( env, "r_FBufScale", fbufWidthScale, fbufHeightScale );
+	AddDefine( env, "r_FBufScale", fbufWidthScale, fbufHeightScale );
 
 	float npotWidthScale = 1;
 	float npotHeightScale = 1;
@@ -453,21 +521,21 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 		npotHeightScale = ( float ) glConfig.vidHeight / ( float ) NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	AddGLSLDefine( env, "r_NPOTScale", npotWidthScale, npotHeightScale );
+	AddDefine( env, "r_NPOTScale", npotWidthScale, npotHeightScale );
 
 	if ( glConfig.driverType == GLDRV_MESA )
-		AddGLSLDefine( env, "GLDRV_MESA", 1 );
+		AddDefine( env, "GLDRV_MESA", 1 );
 
 	switch (glConfig.hardwareType)
 	{
 	case GLHW_ATI:
-		AddGLSLDefine(env, "GLHW_ATI", 1);
+		AddDefine(env, "GLHW_ATI", 1);
 		break;
 	case GLHW_ATI_DX10:
-		AddGLSLDefine(env, "GLHW_ATI_DX10", 1);
+		AddDefine(env, "GLHW_ATI_DX10", 1);
 		break;
 	case GLHW_NV_DX10:
-		AddGLSLDefine(env, "GLHW_NV_DX10", 1);
+		AddDefine(env, "GLHW_NV_DX10", 1);
 		break;
 	}
 
@@ -475,87 +543,87 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	{
 		if ( r_shadows->integer == SHADOWING_ESM16 || r_shadows->integer == SHADOWING_ESM32 )
 		{
-			AddGLSLDefine( env, "ESM", 1 );
+			AddDefine( env, "ESM", 1 );
 		}
 		else if ( r_shadows->integer == SHADOWING_EVSM32 )
 		{
-			AddGLSLDefine( env, "EVSM", 1 );
+			AddDefine( env, "EVSM", 1 );
 			// The exponents for the EVSM techniques should be less than ln(FLT_MAX/FILTER_SIZE)/2 {ln(FLT_MAX/1)/2 ~44.3}
 			//         42.9 is the maximum possible value for FILTER_SIZE=15
 			//         42.0 is the truncated value that we pass into the sample
-			AddGLSLDefine( env, "r_EVSMExponents", 42.0f, 42.0f );
+			AddDefine( env, "r_EVSMExponents", 42.0f, 42.0f );
 			if ( r_evsmPostProcess->integer )
-				AddGLSLDefine( env,"r_EVSMPostProcess", 1 );
+				AddDefine( env,"r_EVSMPostProcess", 1 );
 		}
 		else
 		{
-			AddGLSLDefine( env, "VSM", 1 );
+			AddDefine( env, "VSM", 1 );
 
 			if ( glConfig.hardwareType == GLHW_ATI )
-				AddGLSLDefine( env, "VSM_CLAMP", 1 );
+				AddDefine( env, "VSM_CLAMP", 1 );
 		}
 
 		if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
-			AddGLSLDefine( env, "VSM_EPSILON", 0.000001f );
+			AddDefine( env, "VSM_EPSILON", 0.000001f );
 		else
-			AddGLSLDefine( env, "VSM_EPSILON", 0.0001f );
+			AddDefine( env, "VSM_EPSILON", 0.0001f );
 
 		if ( r_lightBleedReduction->value )
-			AddGLSLDefine( env, "r_LightBleedReduction", r_lightBleedReduction->value );
+			AddDefine( env, "r_LightBleedReduction", r_lightBleedReduction->value );
 
 		if ( r_overDarkeningFactor->value )
-			AddGLSLDefine( env, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
+			AddDefine( env, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
 
 		if ( r_shadowMapDepthScale->value )
-			AddGLSLDefine( env, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
+			AddDefine( env, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
 
 		if ( r_debugShadowMaps->integer )
-			AddGLSLDefine( env, "r_DebugShadowMaps", r_debugShadowMaps->integer );
+			AddDefine( env, "r_DebugShadowMaps", r_debugShadowMaps->integer );
 
 		if ( r_softShadows->integer == 6 )
-			AddGLSLDefine( env, "PCSS", 1 );
+			AddDefine( env, "PCSS", 1 );
 		else if ( r_softShadows->integer )
-			AddGLSLDefine( env, "r_PCFSamples", r_softShadows->value + 1.0f );
+			AddDefine( env, "r_PCFSamples", r_softShadows->value + 1.0f );
 
 		if ( r_parallelShadowSplits->integer )
-			AddGLSLDefine( env, Str::Format( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
+			AddDefine( env, Str::Format( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
 
 		if ( r_showParallelShadowSplits->integer )
-			AddGLSLDefine( env, "r_ShowParallelShadowSplits", 1 );
+			AddDefine( env, "r_ShowParallelShadowSplits", 1 );
 	}
 
 	if ( r_precomputedLighting->integer )
-		AddGLSLDefine( env, "r_precomputedLighting", 1 );
+		AddDefine( env, "r_precomputedLighting", 1 );
 
 	if ( r_showLightMaps->integer )
-		AddGLSLDefine( env, "r_showLightMaps", r_showLightMaps->integer );
+		AddDefine( env, "r_showLightMaps", r_showLightMaps->integer );
 
 	if ( r_showDeluxeMaps->integer )
-		AddGLSLDefine( env, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
+		AddDefine( env, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
 
 	if ( r_showEntityNormals->integer )
-		AddGLSLDefine( env, "r_showEntityNormals", r_showEntityNormals->integer );
+		AddDefine( env, "r_showEntityNormals", r_showEntityNormals->integer );
 
 	if ( glConfig2.vboVertexSkinningAvailable )
 	{
-		AddGLSLDefine( env, "r_VertexSkinning", 1 );
-		AddGLSLDefine( env, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
+		AddDefine( env, "r_VertexSkinning", 1 );
+		AddDefine( env, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
 	}
 	else
 	{
-		AddGLSLDefine( env, "MAX_GLSL_BONES", 4 );
+		AddDefine( env, "MAX_GLSL_BONES", 4 );
 	}
 
 	if ( r_wrapAroundLighting->value )
-		AddGLSLDefine( env, "r_WrapAroundLighting", r_wrapAroundLighting->value );
+		AddDefine( env, "r_WrapAroundLighting", r_wrapAroundLighting->value );
 
 	if ( r_halfLambertLighting->integer )
-		AddGLSLDefine( env, "r_HalfLambertLighting", 1 );
+		AddDefine( env, "r_HalfLambertLighting", 1 );
 
 	if ( r_rimLighting->integer )
 	{
-		AddGLSLDefine( env, "r_RimLighting", 1 );
-		AddGLSLDefine( env, "r_RimExponent", r_rimExponent->value );
+		AddDefine( env, "r_RimLighting", 1 );
+		AddDefine( env, "r_RimExponent", r_rimExponent->value );
 	}
 
 	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
@@ -627,17 +695,17 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 	return false;
 }
 
-void GLShaderManager::buildAll( )
+void GLShaderManager::buildAll()
 {
 	while ( !_shaderBuildQueue.empty() )
 	{
-		GLShader *shader = _shaderBuildQueue.front();
-		size_t numPermutations = 1 << shader->GetNumOfCompiledMacros();
+		GLShader& shader = *_shaderBuildQueue.front();
+		size_t numPermutations = 1 << shader.GetNumOfCompiledMacros();
 		size_t i;
 
 		for( i = 0; i < numPermutations; i++ )
 		{
-			buildPermutation( shader, i, 0 );
+			buildPermutation( &shader, i, 0 );
 		}
 
 		_shaderBuildQueue.pop();
@@ -654,7 +722,6 @@ void GLShaderManager::buildAll( )
 void GLShaderManager::InitShader( GLShader *shader )
 {
 	shader->_shaderPrograms = std::vector<shaderProgram_t>( 1 << shader->_compileMacros.size() );
-	memset( &shader->_shaderPrograms[ 0 ], 0, shader->_shaderPrograms.size() * sizeof( shaderProgram_t ) );
 
 	shader->_uniformStorageSize = 0;
 	for ( std::size_t i = 0; i < shader->_uniforms.size(); i++ )
@@ -697,19 +764,19 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	std::error_code openErr;
 	FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, openErr);
 	if (openErr)
-		ShaderError(Str::Format("Cannot load shader from file: %s\n", shaderFilename));
+		ThrowShaderError(Str::Format("Cannot load shader from file: %s\n", shaderFilename));
 
 	std::error_code readErr;
 	std::string shaderData = shaderFile.ReadAll(readErr);
 	if (readErr)
-		ShaderError(Str::Format("Failed to open/read shader from file: %s\n", shaderFilename));
+		ThrowShaderError(Str::Format("Failed to open/read shader from file: %s\n", shaderFilename));
 
 	auto fileLength = shaderData.length();
 	if (fileLength <= 0)
 		return false;
 
 	if (fileLength < sizeof(shaderHeader))
-		ShaderError(Str::Format("Shader file has a bad size: %s", shaderFilename));
+		ThrowShaderError(Str::Format("Shader file has a bad size: %s", shaderFilename));
 
 	binaryptr = reinterpret_cast<const byte*>(shaderData.data());
 
@@ -756,7 +823,7 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	GLuint                binarySize = 0;
 	byte                  *binary;
 	byte                  *binaryptr;
-	GLShaderHeader        shaderHeader;
+	GLShaderHeader        shaderHeader{}; // Zero init.
 	shaderProgram_t       *shaderProgram;
 
 	// don't even try if the necessary functions aren't available
@@ -766,8 +833,6 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	}
 
 	shaderProgram = &shader->_shaderPrograms[ programNum ];
-
-	memset( &shaderHeader, 0, sizeof( shaderHeader ) );
 
 	// find output size
 	binarySize += sizeof( shaderHeader );
@@ -795,7 +860,7 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	shaderHeader.checkSum = shader->_checkSum;
 
 	// write the header to the buffer
-	memcpy( ( void* )binary, &shaderHeader, sizeof( shaderHeader ) );
+	memcpy(binary, &shaderHeader, sizeof( shaderHeader ) );
 
 	auto fileName = Str::Format("glsl/%s/%s_%u.bin", shader->GetName(), shader->GetName(), (unsigned int)programNum);
 	ri.FS_WriteFile(fileName.c_str(), binary, binarySize);
@@ -910,7 +975,7 @@ GLuint GLShaderManager::CompileShader( Str::StringRef programName, Str::StringRe
 	{
 		PrintShaderSource( shader );
 		PrintInfoLog( shader, false );
-		ShaderError(Str::Format("Couldn't compile %s %s", ( shaderType == GL_VERTEX_SHADER ? "vertex shader" : "fragment shader" ), programName));
+		ThrowShaderError(Str::Format("Couldn't compile %s shader: %s", ( shaderType == GL_VERTEX_SHADER) ? "vertex" : "fragment", programName));
 	}
 
 	return shader;
@@ -1005,7 +1070,7 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 	if ( !linked )
 	{
 		PrintInfoLog( program, false );
-		ShaderError( "Shaders failed to link!!!" );
+		ThrowShaderError( "Shaders failed to link!" );
 	}
 }
 
@@ -1020,7 +1085,7 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 	if ( !validated )
 	{
 		PrintInfoLog( program, false );
-		ShaderError( "Shaders failed to validate!" );
+		ThrowShaderError( "Shaders failed to validate!" );
 	}
 }
 
@@ -1034,10 +1099,8 @@ void GLShaderManager::BindAttribLocations( GLuint program ) const
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		//if(GLCompileMacro_USE_VERTEX_ANIMATION* m = dynamic_cast<GLCompileMacro_USE_VERTEX_ANIMATION*>(macro))
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_ANIMATION )
 		{
@@ -1056,10 +1119,8 @@ bool GLCompileMacro_USE_VERTEX_SKINNING::MissesRequiredMacros( size_t permutatio
 
 bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_SKINNING )
 		{
 			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
@@ -1070,7 +1131,7 @@ bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutati
 	return false;
 }
 
-uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes() const
+uint32_t GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes() const
 {
 	uint32_t attribs = ATTR_POSITION2 | ATTR_QTANGENT2;
 
@@ -1079,10 +1140,8 @@ uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes
 
 bool GLCompileMacro_USE_VERTEX_SPRITE::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_ANIMATION))
 		{
 			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
@@ -1097,10 +1156,8 @@ bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutati
 {
 	bool foundUSE_NORMAL_MAPPING = false;
 
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
 		{
 			foundUSE_NORMAL_MAPPING = true;
@@ -1121,10 +1178,8 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permut
 {
 	bool foundUSE_NORMAL_MAPPING = false;
 
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
 		{
 			foundUSE_NORMAL_MAPPING = true;
@@ -1145,10 +1200,8 @@ bool GLShader::GetCompileMacrosString( size_t permutation, std::string &compileM
 {
 	compileMacrosOut.clear();
 
-	for ( size_t j = 0; j < _compileMacros.size(); j++ )
+	for (const GLCompileMacro* macro : _compileMacros)
 	{
-		GLCompileMacro *macro = _compileMacros[ j ];
-
 		if ( permutation & macro->GetBit() )
 		{
 			if ( macro->HasConflictingMacros( permutation, _compileMacros ) )
@@ -1158,9 +1211,7 @@ bool GLShader::GetCompileMacrosString( size_t permutation, std::string &compileM
 			}
 
 			if ( macro->MissesRequiredMacros( permutation, _compileMacros ) )
-			{
 				return false;
-			}
 
 			compileMacrosOut += macro->GetName();
 			compileMacrosOut += " ";
@@ -1218,7 +1269,7 @@ void GLShader::BindProgram( int deformIndex )
 			}
 		}
 
-		ShaderError(Str::Format("Invalid shader configuration: shader = '%s', macros = '%s'", _name, activeMacros ));
+		ThrowShaderError(Str::Format("Invalid shader configuration: shader = '%s', macros = '%s'", _name, activeMacros ));
 	}
 
 	_currentProgram = &_shaderPrograms[ index ];
