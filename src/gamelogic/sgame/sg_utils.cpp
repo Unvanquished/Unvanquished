@@ -989,6 +989,9 @@ void G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
 }
 
 void G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
-	if (!source) G_Kill(ent, meansOfDeath); return;
-	if (ent) Utility::Kill(*ent->entity, source->entity, meansOfDeath);
+	if (!source) {
+		G_Kill(ent, meansOfDeath);
+	} else {
+		if (ent) Utility::Kill(*ent->entity, source->entity, meansOfDeath);
+	}
 }

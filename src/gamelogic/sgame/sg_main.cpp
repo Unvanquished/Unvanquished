@@ -2913,7 +2913,9 @@ void G_RunFrame( int levelTime )
 				continue;
 
 			case ET_BUILDABLE:
-				G_BuildableThink( ent, msec );
+				// TODO: Do buildables make any use of G_Physics' functionality apart from the call
+				//       to G_RunThink?
+				G_Physics( ent, msec );
 				continue;
 
 			case ET_CORPSE:

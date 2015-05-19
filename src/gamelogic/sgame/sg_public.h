@@ -89,7 +89,6 @@ float             G_DistanceToBase( gentity_t *self, bool ownBase );
 bool          G_InsideBase( gentity_t *self, bool ownBase );
 bool          G_FindCreep( gentity_t *self );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
-void              G_BuildableThink( gentity_t *ent, int msec );
 bool          G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
 void              G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal, int *groundEntNum );
@@ -108,6 +107,7 @@ void              G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildF
 void              G_BuildLogRevert( int id );
 void              G_SetHumanBuildablePowerState();
 gentity_t         *G_NearestPowerSourceInRange( gentity_t *self );
+void              G_BuildableTouchTriggers( gentity_t *ent );
 
 // TODO: Convert these functions to component methods.
 void AGeneric_Blast( gentity_t *self );

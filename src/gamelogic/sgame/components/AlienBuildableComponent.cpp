@@ -77,41 +77,38 @@ void AlienBuildableComponent::Blast(int timeDelta) {
 	// Damage close humans.
 	Utility::AntiHumanRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
 
+	// Reward attackers.
 	G_RewardAttackers(entity.oldEnt);
 
-	// Blast.
-	entity.oldEnt->s.eFlags |= EF_NODRAW; // Turn invisible. // TODO: Move to HandlePrepareNetCode.
-	entity.oldEnt->r.contents = 0; trap_LinkEntity(entity.oldEnt); // Stop collisions.
-	G_AddEvent(entity.oldEnt, EV_ALIEN_BUILDABLE_EXPLOSION, DirToByte(entity.oldEnt->s.origin2)); // Add event.
+	// Stop collisions, add blast event and update buildable state.
+	entity.oldEnt->r.contents = 0; trap_LinkEntity(entity.oldEnt);
+	G_AddEvent(entity.oldEnt, EV_ALIEN_BUILDABLE_EXPLOSION, DirToByte(entity.oldEnt->s.origin2));
+	GetBuildableComponent().SetState(BuildableComponent::POST_BLAST); // Makes entity invisible.
 
-	// Start creep recede.
+	// Start creep recede with a brief delay.
 	GetBuildableComponent().REGISTER_THINKER(CreepRecede, ThinkingComponent::SCHEDULER_AVERAGE, 500);
-	GetBuildableComponent().REGISTER_THINKER(Remove,      ThinkingComponent::SCHEDULER_AFTER,   CREEP_SCALEDOWN_TIME);
-
-	// Only blast once.
 	GetBuildableComponent().GetThinkingComponent().UnregisterActiveThinker();
 }
 
 // TODO: Move this to the client side.
 void AlienBuildableComponent::CreepRecede(int timeDelta) {
-	alienBuildableLogger.Debug("Receding creep.");
+	alienBuildableLogger.Debug("Starting creep recede.");
 
-	if (!(entity.oldEnt->s.eFlags & EF_DEAD)) {
-		// TODO: Move to HandlePrepareNetcode (of HealthComponent?).
-		entity.oldEnt->s.eFlags |= EF_DEAD;
+	G_AddEvent(entity.oldEnt, EV_BUILD_DESTROY, 0);
 
-		G_AddEvent(entity.oldEnt, EV_BUILD_DESTROY, 0);
-
-		if (entity.oldEnt->spawned) {
-			entity.oldEnt->s.time = -level.time;
-		} else {
-			entity.oldEnt->s.time = -(level.time - (int)(
-				(float)CREEP_SCALEDOWN_TIME *
-				(1.0f - ((float)(level.time - entity.oldEnt->creationTime) /
-				         (float)BG_Buildable(entity.oldEnt->s.modelindex)->buildTime)))
-			);
-		}
+	if (entity.oldEnt->spawned) {
+		entity.oldEnt->s.time = -level.time;
+	} else {
+		entity.oldEnt->s.time = -(level.time - (int)(
+			(float)CREEP_SCALEDOWN_TIME *
+			(1.0f - ((float)(level.time - entity.oldEnt->creationTime) /
+					 (float)BG_Buildable(entity.oldEnt->s.modelindex)->buildTime)))
+		);
 	}
+
+	// Remove buildable when done.
+	GetBuildableComponent().REGISTER_THINKER(Remove, ThinkingComponent::SCHEDULER_AFTER, CREEP_SCALEDOWN_TIME);
+	GetBuildableComponent().GetThinkingComponent().UnregisterActiveThinker();
 }
 
 void AlienBuildableComponent::Remove(int timeDelta) {

@@ -3170,104 +3170,7 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 	}
 }
 
-/*
-===============
-G_BuildableThink
 
-General think function for buildables
-===============
-*/
-void G_BuildableThink( gentity_t *ent, int msec )
-{
-	int   maxHealth = BG_Buildable( ent->s.modelindex )->health;
-	int   regenRate = BG_Buildable( ent->s.modelindex )->regenRate;
-	int   buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
-
-	//toggle spawned flag for buildables
-	if ( !ent->spawned && G_Alive( ent ) && !level.pausedTime )
-	{
-		if ( ent->creationTime + buildTime < level.time )
-		{
-			ent->spawned = true;
-			ent->enabled = true;
-
-			if ( ent->s.modelindex == BA_A_OVERMIND )
-			{
-				G_TeamCommand( TEAM_ALIENS, "cp \"The Overmind has awakened!\"" );
-			}
-
-			// Award momentum
-			G_AddMomentumForBuilding( ent );
-		}
-	}
-
-	// Timer actions
-	ent->time1000 += msec;
-
-	if ( ent->time1000 >= 1000 )
-	{
-		ent->time1000 -= 1000;
-
-		if ( G_Alive( ent ) )
-		{
-			if ( !ent->spawned )
-			{
-				float gain = maxHealth * ( 1.0f - BUILDABLE_START_HEALTH_FRAC ) * 1000.0f / buildTime;
-				ent->entity->Heal(gain, nullptr);
-			}
-			else if ( ent->powered )
-			{
-				int regenWait;
-
-				switch ( ent->buildableTeam )
-				{
-					case TEAM_ALIENS: regenWait = ALIEN_BUILDABLE_REGEN_WAIT; break;
-					case TEAM_HUMANS: regenWait = HUMAN_BUILDABLE_REGEN_WAIT; break;
-					default:          regenWait = 0;                          break;
-				}
-
-				if ( regenRate && ( ent->lastDamageTime + regenWait ) < level.time )
-				{
-					ent->entity->Heal((float)regenRate, nullptr);
-				}
-			}
-		}
-	}
-
-	if ( ent->clientSpawnTime > 0 )
-	{
-		ent->clientSpawnTime -= msec;
-	}
-
-	if ( ent->clientSpawnTime < 0 )
-	{
-		ent->clientSpawnTime = 0;
-	}
-
-	// Set flags
-	ent->s.eFlags &= ~( EF_B_SPAWNED |  EF_B_POWERED | EF_B_MARKED | EF_B_ONFIRE );
-
-	if ( ent->spawned )
-	{
-		ent->s.eFlags |= EF_B_SPAWNED;
-	}
-
-	if ( ent->powered )
-	{
-		ent->s.eFlags |= EF_B_POWERED;
-	}
-
-	if ( ent->deconstruct )
-	{
-		ent->s.eFlags |= EF_B_MARKED;
-	}
-
-	// Check if this buildable is touching any triggers
-	G_BuildableTouchTriggers( ent );
-
-	// Fall back on generic physics routines
-	G_Physics( ent, msec );
-}
 
 /*
 ===============
@@ -4505,10 +4408,10 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 		VectorScale( normal, -50.0f, built->s.pos.trDelta );
 	}
 
-	built->powered = true;
+	/*built->powered = true;
 
 	built->s.eFlags |= EF_B_POWERED;
-	built->s.eFlags &= ~EF_B_SPAWNED;
+	built->s.eFlags &= ~EF_B_SPAWNED;*/
 
 	VectorCopy( normal, built->s.origin2 );
 
@@ -4667,9 +4570,11 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	built = Build( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles, ENTITYNUM_NONE );
 
-	built->spawned = true; //map entities are already spawned
+	// This particular function is used by buildables that skip construction.
+	built->entity->Get<BuildableComponent>()->SetState(BuildableComponent::CONSTRUCTED);
+	/*built->spawned = true; //map entities are already spawned
 	built->enabled = true;
-	built->s.eFlags |= EF_B_SPAWNED;
+	built->s.eFlags |= EF_B_SPAWNED;*/
 
 	// drop towards normal surface
 	VectorScale( built->s.origin2, -4096.0f, dest );
