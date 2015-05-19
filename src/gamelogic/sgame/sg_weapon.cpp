@@ -739,10 +739,8 @@ static void HiveMissileThink( gentity_t *self )
 	{
 		ent = &g_entities[ i ];
 
-		if ( ent->flags & FL_NOTARGET )
-		{
-			continue;
-		}
+		if ( !ent->inuse ) continue;
+		if ( ent->flags & FL_NOTARGET ) continue;
 
 		if ( ent->client && G_Alive( ent ) && ent->client->pers.team == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )

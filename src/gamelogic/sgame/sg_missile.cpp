@@ -316,7 +316,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 
 	// Check for bounce.
 	if ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) &&
-	     !HasComponents<HealthComponent>(*ent->entity) )
+	     !HasComponents<HealthComponent>(*hitEnt->entity) )
 	{
 		BounceMissile( ent, trace );
 
