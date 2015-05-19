@@ -6,10 +6,11 @@
 
 class BuildableComponent: public BuildableComponentBase {
 	public:
-		// TODO: Keep track of buildable state and convert it to the networked state in HandlePrepareNetcode.
 		typedef enum lifecycle_e {
+			// Alive states.
 			CONSTRUCTING,
 			CONSTRUCTED,
+			// Dead states.
 			PRE_BLAST,
 			POST_BLAST
 		} lifecycle_t;

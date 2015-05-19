@@ -14,7 +14,7 @@ AlienBuildableComponent::AlienBuildableComponent(Entity& entity, BuildableCompon
 
 void AlienBuildableComponent::HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location,
                                            Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
-	if (!GetBuildableComponent().GetHealthComponent().Alive()) return;
+	if (GetBuildableComponent().GetState() != BuildableComponent::CONSTRUCTED) return;
 
 	// TODO: Move animation code to BuildableComponent.
 	G_SetBuildableAnim(entity.oldEnt, BANIM_PAIN1, false);
