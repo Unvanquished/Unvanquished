@@ -1953,50 +1953,6 @@ void G_SetHumanBuildablePowerState()
 	nextCalculation = level.time + 500;
 }
 
-/*
-================
-HGeneric_Blast
-
-Called when a human buildable explodes.
-================
-*/
-void HGeneric_Blast( gentity_t *self )
-{
-	vec3_t dir;
-
-	// we don't have a valid direction, so just point straight up
-	dir[ 0 ] = dir[ 1 ] = 0;
-	dir[ 2 ] = 1;
-
-	self->timestamp = level.time;
-
-	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
-	                self->splashRadius, self, DAMAGE_KNOCKBACK, self->splashMethodOfDeath );
-
-	G_RewardAttackers( self );
-
-	// explode
-	self->s.eFlags |= EF_NODRAW;
-	self->freeAfterEvent = true;
-	G_AddEvent( self, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( dir ) );
-}
-
-/*
-================
-HGeneric_Disappear
-
-Called when a human buildable is destroyed before it is spawned.
-================
-*/
-void HGeneric_Cancel( gentity_t *self )
-{
-	self->timestamp = level.time;
-
-	G_RewardAttackers( self );
-
-	G_FreeEntity( self );
-}
-
 void HSpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
@@ -2684,7 +2640,7 @@ void HTurret_PreBlast( gentity_t *self )
 	// Enter regular blast state as soon as the barrel is lowered.
 	if ( !HTurret_MoveHeadToTarget( self ) )
 	{
-		self->think = HGeneric_Blast;
+		//self->think = HGeneric_Blast;
 		self->nextthink = level.time + HUMAN_DETONATION_RAND_DELAY;
 	}
 	else
@@ -4572,6 +4528,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	// This particular function is used by buildables that skip construction.
 	built->entity->Get<BuildableComponent>()->SetState(BuildableComponent::CONSTRUCTED);
+
 	/*built->spawned = true; //map entities are already spawned
 	built->enabled = true;
 	built->s.eFlags |= EF_B_SPAWNED;*/

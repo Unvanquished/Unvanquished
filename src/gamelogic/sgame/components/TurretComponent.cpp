@@ -8,7 +8,7 @@ void TurretComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) 
 	if (entity.oldEnt->target) entity.oldEnt->target->numTrackedBy--;
 
 	// TODO: This assumes HumanBuildableComponent's HandleDie is called first, validate this.
-	if (entity.oldEnt->think == HGeneric_Blast) {
+	if (entity.Get<BuildableComponent>()->GetState() == BuildableComponent::PRE_BLAST) {
 		// Rocketpod: The safe mode has the same idle as the unpowered state.
 		// TODO: Move to RocketPodComponent.
 		if (entity.oldEnt->turretSafeMode) {

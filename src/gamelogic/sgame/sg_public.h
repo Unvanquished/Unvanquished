@@ -73,7 +73,8 @@ namespace Beacon
 namespace Utility
 {
 	void Kill(Entity& entity, Entity *source, meansOfDeath_t meansOfDeath);
-	bool AntiHumanRadiusDamage(Entity& entity, float damage, float range, meansOfDeath_t mod);
+	bool AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
+	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 }
 
 // sg_buildable.c

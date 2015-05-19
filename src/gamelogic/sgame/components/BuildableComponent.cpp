@@ -39,7 +39,8 @@ void BuildableComponent::HandlePrepareNetCode() {
 }
 
 void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
-	state = PRE_BLAST;
+	// Note that this->state is adjusted in (Alien|Human)BuildableComponent::HandleDie so they have
+	// access to its current value.
 
 	// TODO: Move animation code to BuildableComponent.
 	G_SetBuildableAnim(entity.oldEnt, entity.oldEnt->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true);

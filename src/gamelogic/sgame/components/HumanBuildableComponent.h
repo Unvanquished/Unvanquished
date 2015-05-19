@@ -7,7 +7,7 @@
 // TODO: Remove or move this once logic outside this component doesn't need it anymore.
 #define HUMAN_DETONATION_RAND_DELAY HUMAN_DETONATION_DELAY + \
                                     ((rand() - RAND_MAX / 2) / (float)(RAND_MAX / 2)) * \
-	                                DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY;
+	                                DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY
 
 class HumanBuildableComponent: public HumanBuildableComponentBase {
 	public:
@@ -34,7 +34,7 @@ class HumanBuildableComponent: public HumanBuildableComponentBase {
 		// ///////////////////// //
 
 	private:
-
+		void Blast(int timeDelta);
 };
 
 #endif // HUMANBUILDABLE_COMPONENT_H_
