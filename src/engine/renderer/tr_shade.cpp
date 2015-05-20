@@ -165,7 +165,7 @@ void GLSL_InitGPUShaders()
 		}
 		catch (const ShaderException& e)
 		{
-			Log::Warn("External shaders failed. Error: %s", e.what());
+			Log::Warn("External shaders failed: %s", e.what());
 			Log::Warn("Attempting to use built in shaders instead.");
 			shaderKind = ShaderKind::BuiltIn;
 		}
@@ -184,9 +184,7 @@ void GLSL_InitGPUShaders()
 		}
 		catch (const ShaderException&e)
 		{
-			Log::Warn("Built-in shaders failed: %s.", e.what());
-
-			Sys::Error(e.what()); // Fatal.
+			Sys::Error("Built-in shaders failed: %s", e.what()); // Fatal.
 		};
 		if (wasExternal)
 			Log::Warn("Switched from external to built-in shaders.");

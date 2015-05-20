@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // gl_shader.cpp -- GLSL shader handling
 
 #include "gl_shader.h"
-#include <type_traits>
 
 // We currently write GLShaderHeader to a file and memcpy all over it.
 // Make sure it's a pod, so we don't put a std::string in it or something
@@ -255,10 +254,7 @@ namespace // Implementation details
 
 	std::string GetShaderText(Str::StringRef filename)
 	{
-		Log::Debug("loading shader '%s'\n", filename);
-
 		// Shader type should be set during initialisation.
-
 		if (shaderKind == ShaderKind::BuiltIn)
 		{
 			// Look for the shader internally. If not found, look for it externally.
@@ -272,16 +268,19 @@ namespace // Implementation details
 		{
 			std::string shaderText;
 			std::string shaderFilename = GetShaderFilename(filename);
+
+			Log::Debug("loading shader '%s'", shaderFilename);
+
 			std::error_code openErr;
 
 			FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, openErr);
 			if (openErr)
-				ThrowShaderError(Str::Format("Cannot load shader from file: %s\n", shaderFilename));
+				ThrowShaderError(Str::Format("Cannot load shader from file %s: %s\n", shaderFilename, openErr.message()));
 
 			std::error_code readErr;
 			shaderText = shaderFile.ReadAll(readErr);
 			if (readErr)
-				ThrowShaderError(Str::Format("Failed to read shader from file: %s\n", shaderFilename));
+				ThrowShaderError(Str::Format("Failed to read shader from file %s: %s\n", shaderFilename, openErr.message()));
 
 			NormalizeShaderText(shaderText);
 			if (shaderText.empty())
@@ -298,7 +297,7 @@ namespace // Implementation details
 			// and he translation script needs to be run.
 			auto textPtr = GetInternalShader(filename);
 			if (textPtr != nullptr && textPtr != shaderText)
-				Log::Notice("Note shader file differs from built-in shader: %s\n", shaderFilename);
+				Log::Notice("Note shader file differs from built-in shader: %s", shaderFilename);
 			return shaderText;
 		}
 		// Will never reach here.
