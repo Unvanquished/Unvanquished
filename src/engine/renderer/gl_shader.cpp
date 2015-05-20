@@ -30,12 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static_assert(std::is_pod<GLShaderHeader>::value, "Value must be a pod while code in this cpp file reads and writes this object to file as binary.");
 
 extern std::unordered_map<std::string, const char *> shadermap;
-// shaderType's value will be determined later based on command line setting or absence of.
-ShaderType shaderType = ShaderType::Unknown;
-
-// Cvar::INIT doesn't exist and doesn't appear to work even if i set it.
-//static Cvar::Cvar<std::string> shaderPathVar("shaderpath", "Set a path to load shader files from for debugging purposes.", Cvar::INIT, "");
-static Cvar::Cvar<bool> shaderPathEnabledVar("shaderpath_enabled", "Enable/disable the shaderpath option.", Cvar::CHEAT, false);
+// shaderKind's value will be determined later based on command line setting or absence of.
+ShaderKind shaderKind = ShaderKind::Unknown;
 
 // *INDENT-OFF*
 
@@ -213,32 +209,41 @@ namespace // Implementation details
 		StripComments(text);
 	}
 
+	std::string GetShaderFilename(Str::StringRef filename)
+	{
+		std::string shaderBase = GetShaderPath();
+		if (shaderBase.empty())
+			return shaderBase;
+		std::string shaderFileName = FS::Path::Build(shaderBase, filename);
+		return shaderFileName;
+	}
+
 	std::string GetShaderText(Str::StringRef filename)
 	{
 		// Shader type should be set during initialisation.
-		assert(shaderType != ShaderType::Unknown);
+		assert(shaderKind != ShaderKind::Unknown);
 
 		Log::Debug("loading shader '%s'\n", filename);
 
 		std::string shaderPath = GetShaderPath();
-		if (! shaderPath.empty() && shaderType != ShaderType::BuiltIn)
+		if (shaderKind == ShaderKind::External)
 		{
 			std::string shaderText;
-			std::string fullShaderFilename = FS::Path::Build(shaderPath, filename);
+			std::string shaderFilename = GetShaderFilename(filename);
 			std::error_code openErr;
 
-			FS::File shaderFile = FS::RawPath::OpenRead(fullShaderFilename, openErr);
+			FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, openErr);
 			if (openErr)
-				ThrowShaderError(Str::Format("Cannot load shader from file: %s\n", fullShaderFilename));
+				ThrowShaderError(Str::Format("Cannot load shader from file: %s\n", shaderFilename));
 
 			std::error_code readErr;
 			shaderText = shaderFile.ReadAll(readErr);
 			if (readErr)
-				ThrowShaderError(Str::Format("Failed to read shader from file: %s\n", fullShaderFilename));
+				ThrowShaderError(Str::Format("Failed to read shader from file: %s\n", shaderFilename));
 
 			NormalizeShaderText(shaderText);
 			if (shaderText.empty())
-				ThrowShaderError(Str::Format("Shader from file is empty: %s\n", fullShaderFilename));
+				ThrowShaderError(Str::Format("Shader from file is empty: %s\n", shaderFilename));
 
 			// Alert the user when a file does not match it's built-in version.
 			// There should be no differences in normal conditions.
@@ -251,28 +256,28 @@ namespace // Implementation details
 			// and he translation script needs to be run.
 			auto textPtr = GetInternalShader(filename);
 			if (textPtr != nullptr && textPtr != shaderText)
-				Log::Notice("Note shader file differs from built-in shader: %s\n", fullShaderFilename);
+				Log::Notice("Note shader file differs from built-in shader: %s\n", shaderFilename);
 			return shaderText;
 		}
-
-		// Look for the shader internally. If not found, look for it externally.
-		// If found neither internally or externally of if empty, then Error.
-		auto text_ptr = GetInternalShader(filename);
-		if (text_ptr == nullptr)
-			ThrowShaderError(Str::Format("No shader found for shader: %s", filename));
-		return text_ptr;
+		else
+		{
+			// Look for the shader internally. If not found, look for it externally.
+			// If found neither internally or externally of if empty, then Error.
+			auto text_ptr = GetInternalShader(filename);
+			if (text_ptr == nullptr)
+				ThrowShaderError(Str::Format("No shader found for shader: %s", filename));
+			return text_ptr;
+		}
+		ThrowShaderError("Internal error. ShaderKind not set.");
 	}
 };
 
 std::string GetShaderPath()
 {
 	std::string shaderPath;
-	if (shaderPathEnabledVar.Get())
-	{
-		auto shaderPathVar = Cvar_Get("shaderpath", "", CVAR_INIT);
-		if (shaderPathVar->string != nullptr)
-			shaderPath = shaderPathVar->string;
-	}
+	auto shaderPathVar = Cvar_Get("shaderpath", "", CVAR_INIT);
+	if (shaderPathVar->string != nullptr)
+		shaderPath = shaderPathVar->string;
 	return shaderPath;
 }
 

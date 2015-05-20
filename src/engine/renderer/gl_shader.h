@@ -39,7 +39,7 @@ public:
 	ShaderException(const char* msg) : std::runtime_error(msg) { }
 };
 
-enum class ShaderType
+enum class ShaderKind
 {
 	Unknown,
 	BuiltIn,
@@ -2614,7 +2614,7 @@ public:
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 };
 
-extern ShaderType shaderType;
+extern ShaderKind shaderKind;
 std::string GetShaderPath();
 
 extern GLShader_generic                         *gl_genericShader;

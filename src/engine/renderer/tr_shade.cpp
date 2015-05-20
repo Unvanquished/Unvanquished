@@ -124,39 +124,60 @@ static void GLSL_InitGPUShadersOrError()
 
 void GLSL_InitGPUShaders()
 {
-	// Without a shaderpath option, the shader debugging cycle is like this:
-	// * Change shader file(s).
-	// * Run script to convert shader files to c++.
-	// * Recompile app.
-	// * Re-run app.
-	// * If the change fails the app crashes and you go back to step 1.
-	// * If the change succeeds but you want to make more changes you still goto step 1.
+	/*
+	 Without a shaderpath option, the shader debugging cycle is like this:
+	 1. Change shader file(s).
+	 2. Run script to convert shader files into c++, storing them in shaders.cpp
+	 3. Recompile app to pickup the new shaders.cpp changes.
+	 4. Run the app and get to the point required to check work.
+	 5. If the change failed or succeeded but you want to make more changes restart at step 1.
 	
-	// Alternatively, if set shaderpath = "c:/unvanquished/main"' is used
-	// then debug cycle is easier:
-	// (note Windows path names must be given using forward slash as the App console
-	// seems to eat backs slashes.)
-	// * If shaderpath is set on the command line unv will load the
-	//   shaders directly from disk on startup.
-	// * If shader path is set at the app console it will not
-	// take effect until a glsl_restart is done.
-	// If there is an error compiling the external shaders files,
-	// unv will fallback to using the built in ones until a glsl_restart is performed.
-	// So the debug cycle is simply:
-	// * Change the shader files as desired, do glsl_restart. Repeat as needed.
-	// Note that unv will respond by listing the files it thinks are different.
-	// If this matches your expectations then it's not an error.
+	 Alternatively, if set shaderpath "c:/unvanquished/main" is used, the cylcle is:
+	 1. Change shader file(s) - don't run the buildshaders script unless samples.cpp is missing.
+	 2. Start the app, the app will load the shader files directly.
+	    If there is a problem the app will revert to the last working changes
+		in samples.cpp, so need to restart the app.
+	 3. Fix the problem shader files
+	 4. Do /glsl_restart at the app console to reload them. Repeat from step 3 as needed.
+	
+	 Note that unv will respond by listing the files it thinks are different.
+	 If this matches your expectations then it's not an error.
+	 Note foward slashes (like those used in windows pathnames are processed
+	 as escape characters by the Unvanquished command processor,
+	 so use two forward slashes in that case.
+	 */
+
+	bool wasExternal = (shaderKind == ShaderKind::External);
 
 	auto shaderPath = GetShaderPath();
-	if (shaderPath.empty()) // We wish to use built in shaders.
+	if (shaderPath.empty())
+		shaderKind = ShaderKind::BuiltIn;
+	else
+		shaderKind = ShaderKind::External;
+
+	if (shaderKind == ShaderKind::External)
+	{
+		try
+		{
+			Log::Warn("Loading external shaders.");
+			GLSL_InitGPUShadersOrError();
+			Log::Warn("External shaders in use.");
+		}
+		catch (const ShaderException& e)
+		{
+			Log::Warn("External shaders failed. Error: %s", e.what());
+			Log::Warn("Attempting to use built in shaders instead.");
+			shaderKind = ShaderKind::BuiltIn;
+		}
+	}
+
+	if (shaderKind == ShaderKind::BuiltIn)
 	{
 		// Let the user know if we are transitioning from external to
 		// built-in shaders. We won't alert them if we were already using
 		// built-in shaders as this is the normal case.
-		bool wasExternal = (shaderType == ShaderType::External );
 		if (wasExternal)
 			Log::Warn( "Switching from external to built-in shaders.");
-		shaderType = ShaderType::BuiltIn;
 		try
 		{
 			GLSL_InitGPUShadersOrError();
@@ -164,42 +185,11 @@ void GLSL_InitGPUShaders()
 		catch (const ShaderException&e)
 		{
 			Log::Warn("Built-in shaders failed: %s.", e.what());
-			Sys::Error(e.what());
+
+			Sys::Error(e.what()); // Fatal.
 		};
 		if (wasExternal)
 			Log::Warn("Switched from external to built-in shaders.");
-		return;
-	}
-	// We wish to use external shaders.
-	shaderType = ShaderType::External;
-	try
-	{
-		// Let the user know we are intending to use external shaders.
-		// We warn but the user should be typically expecting this
-		// if they are debugging so it's not a warning in the usual sense.
-		// It's just alerting their attention so it stands out from other log noise.
-		Log::Warn( "Building external shaders.");
-		GLSL_InitGPUShadersOrError();
-		Log::Warn( "Using external shaders.");
-	}
-	catch (const ShaderException& e)
-	{
-		// We wanted to use external shaders but we failed. Warn the user
-		// we failed and try again using built-in shaders to
-		// recover the situation.
-		Log::Warn( "External shaders failed. Error: %s", e.what());
-		Log::Warn( "Attempting restart with built in shaders.");
-		shaderType = ShaderType::BuiltIn;
-		try
-		{
-			GLSL_InitGPUShadersOrError();
-		}
-		catch (const ShaderException& e)
-		{
-			Log::Warn("Built-in shaders failed: %s.", e.what());
-			Sys::Error(e.what());
-		}
-		Log::Warn("External shaders failed, but a restart using built-in shaders seems to have worked.");
 	}
 }
 
