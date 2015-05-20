@@ -159,7 +159,7 @@ namespace // Implementation details
 			bool foundCommentStart = FindCommentStart(source, sourcePos, commentStartPos, commentType);
 			if (!foundCommentStart)
 			{
-				// If we don't find a comment, the rest of program is code.
+				// If we don't find a comment, the rest of the program is code.
 				size_t remainingLength = source.length() - sourcePos;
 				keep(remainingLength);
 				break;
@@ -169,10 +169,9 @@ namespace // Implementation details
 			if (!foundCommentEnd)
 			{
 				// If we don't find the end of a comment:
-				// If it' a block comment we failed to close then keep everything
-				// before it and after. Before it is code and keeping what's
-				// after makes it easier to diagnose what's wrong.
-				// If we can't close a line comment (i.e. no new line), keep everything
+				// If it was a block comment that failed to close then keep everything
+				// before it and after to make it easier to diagnose what is wrong.
+				// If a line comment can't be closed (i.e. no new line), keep everything
 				// before it as that's code, but forget the line comment and what follows.
 				// Either way we are done.
 				if (commentType == CommentType::Block)
@@ -187,13 +186,49 @@ namespace // Implementation details
 				}
 				break;
 			}
-			// We found a start and end comment. keep the what's before the comment.
+			// We found a start and end comment. Keep what's before the comment
 			// as that's code. Then continue after the comment.
-			// Note that the new line that exists after comments is kept to avoid
-			// splicing any lines together without gaps that would create new unexpected tokens.
+			// Note any new line that exists after a comment is kept to avoid
+			// splicing any lines together as that could create a new unexpected token.
 			size_t codeLength = commentStartPos - sourcePos;
 			keep(codeLength);
 			sourcePos = commentEndPos;
+		}
+		source.resize(keepPos);
+	}
+
+	void CRLFToLF(std::string& source)
+	{
+		size_t sourcePos = 0;
+		size_t keepPos = 0;
+
+		auto keep = [&](size_t keepLength)
+		{
+			if (sourcePos > 0)
+				std::copy(source.begin() + sourcePos, source.begin() + sourcePos + keepLength,
+					source.begin() + keepPos);
+			keepPos += keepLength;
+		};
+
+		for (;;)
+		{
+			size_t targetPos = source.find("\r\n", sourcePos);
+			// If we don't find a line break, shuffle what's left
+			// into place and we're done.
+			if (targetPos == std::string::npos)
+			{
+				size_t remainingLength = source.length() - sourcePos;
+				keep(remainingLength);
+				break;
+			}
+			// If we do find a line break, shuffle what's before it into place
+			// except for the '\r\n'. But then tack on a '\n',
+			// resulting in effectively just losing the '\r' in the sequence.
+			size_t keepLength = (targetPos - sourcePos);
+			keep(keepLength);
+			source[keepPos] = '\n';
+			++keepPos;
+			sourcePos = targetPos + 2;
 		}
 		source.resize(keepPos);
 	}
@@ -204,8 +239,8 @@ namespace // Implementation details
 	void NormalizeShaderText( std::string& text )
 	{
 		size_t pos = 0;
-		while ((pos = text.find("\r\n", pos)) != std::string::npos)
-			text.erase(text.begin()+pos);
+		// Windows can put CRLF's in the file. Make them LF's.
+		CRLFToLF(text); 
 		StripComments(text);
 	}
 
