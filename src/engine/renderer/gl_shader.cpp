@@ -271,20 +271,19 @@ namespace // Implementation details
 
 			Log::Debug("loading shader '%s'", shaderFilename);
 
-			std::error_code openErr;
+			std::error_code err;
 
-			FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, openErr);
-			if (openErr)
-				ThrowShaderError(Str::Format("Cannot load shader from file %s: %s\n", shaderFilename, openErr.message()));
+			FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, err);
+			if (err)
+				ThrowShaderError(Str::Format("Cannot load shader from file %s: %s", shaderFilename, err.message()));
 
-			std::error_code readErr;
-			shaderText = shaderFile.ReadAll(readErr);
-			if (readErr)
-				ThrowShaderError(Str::Format("Failed to read shader from file %s: %s\n", shaderFilename, openErr.message()));
+			shaderText = shaderFile.ReadAll(err);
+			if (err)
+				ThrowShaderError(Str::Format("Failed to read shader from file %s: %s", shaderFilename, err.message()));
 
 			NormalizeShaderText(shaderText);
 			if (shaderText.empty())
-				ThrowShaderError(Str::Format("Shader from file is empty: %s\n", shaderFilename));
+				ThrowShaderError(Str::Format("Shader from file is empty: %s", shaderFilename));
 
 			// Alert the user when a file does not match it's built-in version.
 			// There should be no differences in normal conditions.
@@ -800,16 +799,16 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	if( !glConfig2.getProgramBinaryAvailable )
 		return false;
 
-	std::string shaderFilename = Str::Format("glsl/%s/%s_%u.bin", shader->GetName(), shader->GetName(), (unsigned int)programNum);
-	std::error_code openErr;
-	FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, openErr);
-	if (openErr)
-		ThrowShaderError(Str::Format("Cannot load shader from file: %s\n", shaderFilename));
+	std::error_code err;
 
-	std::error_code readErr;
-	std::string shaderData = shaderFile.ReadAll(readErr);
-	if (readErr)
-		ThrowShaderError(Str::Format("Failed to open/read shader from file: %s\n", shaderFilename));
+	std::string shaderFilename = Str::Format("glsl/%s/%s_%u.bin", shader->GetName(), shader->GetName(), (unsigned int)programNum);
+	FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, err);
+	if (err)
+		ThrowShaderError(Str::Format("Cannot load shader from file %s: %s", shaderFilename, err.message()));
+
+	std::string shaderData = shaderFile.ReadAll(err);
+	if (err)
+		ThrowShaderError(Str::Format("Failed to open/read shader from file %s: %s", shaderFilename, err.message()));
 
 	auto fileLength = shaderData.length();
 	if (fileLength <= 0)
@@ -1047,7 +1046,7 @@ void GLShaderManager::PrintShaderSource( GLuint object ) const
 void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 {
 	char        *msg;
-	static char msgPart[ 1024 ];
+	char        msgPart[ 1024 ];
 	int         maxLength = 0;
 	int         i;
 
