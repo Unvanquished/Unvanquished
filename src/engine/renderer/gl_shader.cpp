@@ -220,13 +220,20 @@ namespace // Implementation details
 
 	std::string GetShaderText(Str::StringRef filename)
 	{
-		// Shader type should be set during initialisation.
-		assert(shaderKind != ShaderKind::Unknown);
-
 		Log::Debug("loading shader '%s'\n", filename);
 
-		std::string shaderPath = GetShaderPath();
-		if (shaderKind == ShaderKind::External)
+		// Shader type should be set during initialisation.
+
+		if (shaderKind == ShaderKind::BuiltIn)
+		{
+			// Look for the shader internally. If not found, look for it externally.
+			// If found neither internally or externally of if empty, then Error.
+			auto text_ptr = GetInternalShader(filename);
+			if (text_ptr == nullptr)
+				ThrowShaderError(Str::Format("No shader found for shader: %s", filename));
+			return text_ptr;
+		}
+		else if (shaderKind == ShaderKind::External)
 		{
 			std::string shaderText;
 			std::string shaderFilename = GetShaderFilename(filename);
@@ -259,16 +266,10 @@ namespace // Implementation details
 				Log::Notice("Note shader file differs from built-in shader: %s\n", shaderFilename);
 			return shaderText;
 		}
-		else
-		{
-			// Look for the shader internally. If not found, look for it externally.
-			// If found neither internally or externally of if empty, then Error.
-			auto text_ptr = GetInternalShader(filename);
-			if (text_ptr == nullptr)
-				ThrowShaderError(Str::Format("No shader found for shader: %s", filename));
-			return text_ptr;
-		}
+		// Will never reach here.
+		assert(false);
 		ThrowShaderError("Internal error. ShaderKind not set.");
+		return std::string();
 	}
 };
 
