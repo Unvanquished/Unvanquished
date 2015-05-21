@@ -147,14 +147,13 @@ void GLSL_InitGPUShaders()
 	 so use two forward slashes in that case.
 	 */
 
-	bool wasExternal = (shaderKind == ShaderKind::External);
-
 	auto shaderPath = GetShaderPath();
 	if (shaderPath.empty())
 		shaderKind = ShaderKind::BuiltIn;
 	else
 		shaderKind = ShaderKind::External;
 
+	bool externalFailed = false;
 	if (shaderKind == ShaderKind::External)
 	{
 		try
@@ -168,6 +167,7 @@ void GLSL_InitGPUShaders()
 			Log::Warn("External shaders failed: %s", e.what());
 			Log::Warn("Attempting to use built in shaders instead.");
 			shaderKind = ShaderKind::BuiltIn;
+			externalFailed = true;
 		}
 	}
 
@@ -176,8 +176,6 @@ void GLSL_InitGPUShaders()
 		// Let the user know if we are transitioning from external to
 		// built-in shaders. We won't alert them if we were already using
 		// built-in shaders as this is the normal case.
-		if (wasExternal)
-			Log::Warn( "Switching from external to built-in shaders.");
 		try
 		{
 			GLSL_InitGPUShadersOrError();
@@ -186,8 +184,8 @@ void GLSL_InitGPUShaders()
 		{
 			Sys::Error("Built-in shaders failed: %s", e.what()); // Fatal.
 		};
-		if (wasExternal)
-			Log::Warn("Switched from external to built-in shaders.");
+		if (externalFailed)
+			Log::Warn("Now using built-in shaders because external shaders failed.");
 	}
 }
 

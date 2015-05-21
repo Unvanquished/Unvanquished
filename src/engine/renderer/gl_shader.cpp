@@ -269,7 +269,7 @@ namespace // Implementation details
 			std::string shaderText;
 			std::string shaderFilename = GetShaderFilename(filename);
 
-			Log::Debug("Loading shader '%s'", shaderFilename);
+			Log::Notice("Loading shader '%s'", shaderFilename);
 
 			std::error_code err;
 
@@ -750,7 +750,7 @@ void GLShaderManager::buildAll()
 		_shaderBuildQueue.pop();
 	}
 
-	Log::Debug( "glsl shaders took %d msec to build\n", _totalBuildTime );
+	Log::Notice( "glsl shaders took %d msec to build\n", _totalBuildTime );
 
 	if( r_recompileShaders->integer )
 	{
