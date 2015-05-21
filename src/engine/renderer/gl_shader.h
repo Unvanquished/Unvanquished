@@ -273,8 +273,8 @@ private:
 	std::string BuildGPUShaderText( Str::StringRef mainShader, Str::StringRef libShaders, GLenum shaderType ) const;
 	void LinkProgram( GLuint program ) const;
 	void BindAttribLocations( GLuint program ) const;
-	void PrintShaderSource( GLuint object ) const;
-	void PrintInfoLog( GLuint object, bool developerOnly ) const;
+	void PrintShaderSource( Str::StringRef programName, GLuint object ) const;
+	void PrintInfoLog( GLuint object ) const;
 	void InitShader( GLShader *shader );
 	void ValidateProgram( GLuint program ) const;
 	void UpdateShaderProgramUniformLocations( GLShader *shader, shaderProgram_t *shaderProgram ) const;
@@ -2614,8 +2614,9 @@ public:
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 };
 
-extern ShaderKind shaderKind;
 std::string GetShaderPath();
+
+extern ShaderKind shaderKind;
 
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;

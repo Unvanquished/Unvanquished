@@ -269,7 +269,7 @@ namespace // Implementation details
 			std::string shaderText;
 			std::string shaderFilename = GetShaderFilename(filename);
 
-			Log::Debug("loading shader '%s'", shaderFilename);
+			Log::Debug("Loading shader '%s'", shaderFilename);
 
 			std::error_code err;
 
@@ -296,7 +296,7 @@ namespace // Implementation details
 			// and he translation script needs to be run.
 			auto textPtr = GetInternalShader(filename);
 			if (textPtr != nullptr && textPtr != shaderText)
-				Log::Notice("Note shader file differs from built-in shader: %s", shaderFilename);
+				Log::Warn("Note shader file differs from built-in shader: %s", shaderFilename);
 			return shaderText;
 		}
 		// Will never reach here.
@@ -1012,20 +1012,19 @@ GLuint GLShaderManager::CompileShader( Str::StringRef programName, Str::StringRe
 
 	if ( !compiled )
 	{
-		PrintShaderSource( shader );
-		PrintInfoLog( shader, false );
+		PrintShaderSource( programName, shader );
+		PrintInfoLog( shader );
 		ThrowShaderError(Str::Format("Couldn't compile %s shader: %s", ( shaderType == GL_VERTEX_SHADER) ? "vertex" : "fragment", programName));
 	}
 
 	return shader;
 }
 
-void GLShaderManager::PrintShaderSource( GLuint object ) const
+void GLShaderManager::PrintShaderSource( Str::StringRef programName, GLuint object ) const
 {
 	char        *msg;
-	static char msgPart[ 1024 ];
 	int         maxLength = 0;
-	int         i;
+	std::string msgText;
 
 	glGetShaderiv( object, GL_SHADER_SOURCE_LENGTH, &maxLength );
 
@@ -1033,26 +1032,16 @@ void GLShaderManager::PrintShaderSource( GLuint object ) const
 
 	glGetShaderSource( object, maxLength, &maxLength, msg );
 
-	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
-	{
-		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-		Log::Notice( "%s", msgPart );
-	}
-	Log::Notice( "\n" );
+	Log::Warn("Source for shader program %s:\n%s", programName, msg);
 
 	ri.Hunk_FreeTempMemory( msg );
 }
 
-void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
+void GLShaderManager::PrintInfoLog( GLuint object) const
 {
 	char        *msg;
-	char        msgPart[ 1024 ];
 	int         maxLength = 0;
-	int         i;
-
-	// TODO: Not sure how to upgrade this type of usage to the
-	// new Log:: interace.
-	printParm_t print = ( developerOnly ) ? PRINT_DEVELOPER : PRINT_ALL;
+	std::string msgText;
 
 	if ( glIsShader( object ) )
 	{
@@ -1064,7 +1053,7 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 	}
 	else
 	{
-		ri.Printf( print, "object is not a shader or program\n" );
+		Log::Warn( "object is not a shader or program\n" );
 		return;
 	}
 
@@ -1073,20 +1062,17 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 	if ( glIsShader( object ) )
 	{
 		glGetShaderInfoLog( object, maxLength, &maxLength, msg );
-		ri.Printf( print, "compile log:\n" );
+		msgText = "Compile log:";
 	}
 	else if ( glIsProgram( object ) )
 	{
 		glGetProgramInfoLog( object, maxLength, &maxLength, msg );
-		ri.Printf( print, "link log:\n" );
+		msgText = "Link log:";
 	}
-
-	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
-	{
-		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-		ri.Printf( print, "%s", msgPart );
-	}
-	ri.Printf( print, "\n" );
+	if (maxLength > 0)
+		msgText += '\n';
+	msgText += msg;
+	Log::Warn(msgText);
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1108,7 +1094,7 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 
 	if ( !linked )
 	{
-		PrintInfoLog( program, false );
+		PrintInfoLog( program );
 		ThrowShaderError( "Shaders failed to link!" );
 	}
 }
@@ -1123,7 +1109,7 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 
 	if ( !validated )
 	{
-		PrintInfoLog( program, false );
+		PrintInfoLog( program );
 		ThrowShaderError( "Shaders failed to validate!" );
 	}
 }
