@@ -33,8 +33,13 @@ class ResourceStorageComponent: public ResourceStorageComponentBase {
 
 		// ///////////////////// //
 
-	private:
+		void AcquireBuildPoints(float amount) { acquiredBuildPoints += amount; }
+		void SetAcquiredBuildPoints(float amount) { acquiredBuildPoints = amount; }
 
+	private:
+		float acquiredBuildPoints;
+
+		float GetStoredFraction();
 };
 
 #endif // RESOURCESTORAGE_COMPONENT_H_

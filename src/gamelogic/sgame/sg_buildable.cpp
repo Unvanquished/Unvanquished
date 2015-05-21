@@ -780,8 +780,6 @@ void AOvermind_Think( gentity_t *self )
 		}
 
 		G_WarnPrimaryUnderAttack( self );
-
-		G_MainStructBPStorageThink( self );
 	}
 	else
 	{
@@ -1107,13 +1105,6 @@ void ASpiker_Think( gentity_t *self )
 
 	self->spikerLastScoring = scoring;
 	self->spikerLastSensing = sensing;
-}
-
-void ALeech_Think( gentity_t *self )
-{
-	self->nextthink = level.time + 1000;
-
-	G_RGSThink( self );
 }
 
 static bool AHive_isBetterTarget(const gentity_t *const self, const gentity_t *candidate)
@@ -2045,8 +2036,6 @@ void HReactor_Think( gentity_t *self )
 	}
 
 	G_WarnPrimaryUnderAttack( self );
-
-	G_MainStructBPStorageThink( self );
 }
 
 void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -3045,8 +3034,6 @@ void HRocketpod_Think( gentity_t *self )
 void HDrill_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
-
-	G_RGSThink( self );
 
 	PlayPowerStateAnims( self );
 }
@@ -4264,7 +4251,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 			break;
 
 		case BA_A_LEECH:
-			built->think = ALeech_Think;
 			break;
 
 		case BA_A_SPIKER:

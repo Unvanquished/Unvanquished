@@ -121,20 +121,15 @@ bool ASpiker_Fire( gentity_t *self );
 void HTurret_PreBlast( gentity_t *self );
 
 // sg_buildpoints
-void              G_RGSInformNeighbors( gentity_t *self );
-void              G_RGSThink( gentity_t *self );
-void              G_MainStructBPStorageThink( gentity_t *self );
-void              G_BPStorageDie( gentity_t *self );
-void              G_RGSDie( gentity_t *self );
 float             G_RGSPredictEfficiency( vec3_t origin );
 float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
 void              G_MineBuildPoints();
 int               G_GetBuildPointsInt( team_t team );
 int               G_GetMarkedBuildPointsInt( team_t team );
-bool          G_CanAffordBuildPoints( team_t team, float amount );
+bool              G_CanAffordBuildPoints( team_t team, float amount );
 void              G_GetBuildableResourceValue( int *teamValue );
 void              G_ModifyBuildPoints( team_t team, float amount );
-void              G_MarkBuildPointsMined( team_t team, float amount );
+void              G_ModifyTotalBuildPointsAcquired( team_t team, float amount );
 
 // sg_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );

@@ -49,6 +49,11 @@ class BuildableComponent: public BuildableComponentBase {
 		lifecycle_t GetState() { return state; }
 		void SetState(lifecycle_t state) { this->state = state; }
 
+		/**
+		 * @return Whether the buildable has completed construction and is alive and powered.
+		 */
+		bool Active();
+
 	private:
 		lifecycle_t state;
 

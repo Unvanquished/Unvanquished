@@ -191,13 +191,6 @@ struct gentity_s
 	 */
 	float        momentumEarned;
 
-	/**
-	 * Mining structures
-	 */
-	float        mineRate;
-	float        mineEfficiency;
-	float        acquiredBuildPoints;
-
 	/*
 	 * targets to aim at
 	 */

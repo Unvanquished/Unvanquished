@@ -20,9 +20,6 @@ class MainBuildableComponent: public MainBuildableComponentBase {
 		MainBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent, ResourceStorageComponent& r_ResourceStorageComponent);
 
 		// ///////////////////// //
-
-	private:
-
 };
 
 #endif // MAINBUILDABLE_COMPONENT_H_

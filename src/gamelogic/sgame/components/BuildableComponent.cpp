@@ -115,3 +115,7 @@ void BuildableComponent::Think(int timeDelta) {
 	// TODO: Move helper here.
 	G_BuildableTouchTriggers(entity.oldEnt);
 }
+
+bool BuildableComponent::Active() {
+	return (state == CONSTRUCTED && entity.oldEnt->powered);
+}

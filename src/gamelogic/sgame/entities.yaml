@@ -169,6 +169,7 @@ components:
             - Die
         requires:
             - ResourceStorage
+            - Thinking
 
     ResourceStorage:
         messages:

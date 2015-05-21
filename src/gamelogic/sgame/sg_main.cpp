@@ -897,15 +897,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 	BG_PrintVoices( level.voices, g_debugVoices.integer );
 
 	// Give both teams some build points to start out with.
-	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
-	{
-		int startBP = std::max( 0, g_initialBuildPoints.integer -
-		                        level.team[ (team_t)team ].layoutBuildPoints );
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+		float startBP = (float)std::max(0, g_initialBuildPoints.integer - level.team[team].layoutBuildPoints);
 
-		G_ModifyBuildPoints( (team_t)team, (float)startBP );
-		G_MarkBuildPointsMined( (team_t)team, (float)startBP );
-
-		level.team[ (team_t)team ].mainStructAcquiredBP = std::max( (float)startBP, FLT_EPSILON );
+		G_ModifyBuildPoints(team, startBP);
 	}
 
 	G_Printf( "-----------------------------------\n" );
