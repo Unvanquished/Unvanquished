@@ -1466,7 +1466,7 @@ static void Key_CompleteBind_Internal( char *args, int argNum, int nameArg )
 	{
 		Cmd::Args arg(args);
 		Cmd::CompletionResult res = Cmd::CompleteArgument(Cmd::Args(arg.EscapedArgs(nameArg)), argNum - nameArg - 1);
-		for (auto candidate : res)
+		for (const auto& candidate : res)
 		{
 			FindMatches(candidate.first.c_str());
 		}

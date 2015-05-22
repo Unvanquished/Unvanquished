@@ -598,7 +598,7 @@ namespace Cmd {
     Cmd::CompletionResult CompleteDelayName(Str::StringRef prefix) {
         Cmd::CompletionResult res;
 
-        for (auto& delay: delays) {
+        for (const auto& delay: delays) {
             if (Str::IsIPrefix(prefix, delay.name)) {
                 res.push_back({delay.name, ""});
             }
@@ -730,7 +730,7 @@ namespace Cmd {
         std::string toWrite = "clearAliases\n";
         FS_Write(toWrite.c_str(), toWrite.size(), f);
 
-        for (auto it: aliases) {
+        for (const auto& it: aliases) {
             toWrite = "alias " + it.first + " " + it.second.command + "\n";
             FS_Write(toWrite.c_str(), toWrite.size(), f);
         }
@@ -739,7 +739,7 @@ namespace Cmd {
     Cmd::CompletionResult CompleteAliasName(Str::StringRef prefix) {
         Cmd::CompletionResult res;
 
-        for (auto it: aliases) {
+        for (const auto& it: aliases) {
             if (Str::IsIPrefix(prefix, it.first)) {
                 res.push_back({it.first, ""});
             }
