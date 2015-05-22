@@ -113,7 +113,7 @@ namespace Audio {
         }
 
         std::stringstream deviceList;
-        for (auto deviceName : AL::Device::ListByName()) {
+        for (const auto& deviceName : AL::Device::ListByName()) {
             deviceList << deviceName << "\n";
         }
         availableDevices.Set(deviceList.str());
@@ -123,7 +123,7 @@ namespace Audio {
         // Initializes the list of input devices
 
         std::stringstream captureDeviceList;
-        for (auto captureDeviceName : AL::CaptureDevice::ListByName()) {
+        for (const auto& captureDeviceName : AL::CaptureDevice::ListByName()) {
             captureDeviceList << captureDeviceName << "\n";
         }
         availableCaptureDevices.Set(captureDeviceList.str());
@@ -517,7 +517,7 @@ namespace Audio {
 
                 std::sort(samples.begin(), samples.end());
 
-                for (auto& sample: samples) {
+                for (const auto& sample: samples) {
                     Print(sample);
                 }
                 Print("%i samples", samples.size());

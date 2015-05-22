@@ -601,7 +601,7 @@ bool FS_LoadPak(const char* name)
 void FS_LoadBasePak()
 {
 	Cmd::Args extrapaks(fs_extrapaks.Get());
-	for (auto& x: extrapaks) {
+	for (const auto& x: extrapaks) {
 		if (!FS_LoadPak(x.c_str()))
 			Com_Error(ERR_FATAL, "Could not load extra pak '%s'\n", x.c_str());
 	}
@@ -616,12 +616,12 @@ void FS_LoadBasePak()
 void FS_LoadAllMapMetadata()
 {
 	std::unordered_set<std::string> maps;
-	for (auto& x: FS::GetAvailablePaks()) {
+	for (const auto& x: FS::GetAvailablePaks()) {
 		if (Str::IsPrefix("map-", x.name) && maps.find(x.name) == maps.end())
 			maps.insert(x.name);
 	}
 
-	for (auto& x: maps) {
+	for (const auto& x: maps) {
 		try {
 			FS::PakPath::LoadPakPrefix(*FS::FindPak(x), va("meta/%s/", x.substr(4).c_str()));
 		} catch (std::system_error&) {} // ignore and move on

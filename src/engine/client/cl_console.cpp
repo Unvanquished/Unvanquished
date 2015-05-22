@@ -1350,7 +1350,7 @@ void Con_RunConsole()
 		std::lock_guard<std::mutex> guard(cl_bufferedLinesLock);
 		lines = std::move(cl_consoleBufferedLines);
 	}
-	for (auto line : lines) {
+	for (const auto& line : lines) {
 		CL_InternalConsolePrint( line.c_str() );
 	}
 }
@@ -1382,8 +1382,8 @@ class GraphicalTarget : public Log::Target {
 				return false;
 			}
 
-			for (auto& event : events) {
-				CL_ConsolePrint(std::move(event.text));
+			for (const auto& event : events) {
+				CL_ConsolePrint(event.text);
 				CL_ConsolePrint("\n");
 			}
 			return true;
