@@ -251,9 +251,8 @@ namespace VM {
             case QVM_COMMON_FS_READ:
                 IPC::HandleMsg<FSReadMsg>(channel, std::move(reader), [this](int handle, int len, std::string& res) {
                     std::unique_ptr<char[]> buffer(new char[len]);
-                    buffer[0] = '\0';
-                    FS_Read(buffer.get(), len, handle);
-                    res.assign(buffer.get(), len);
+                    int actualLen = FS_Read(buffer.get(), len, handle);
+                    res.assign(buffer.get(), actualLen >= 0 ? actualLen : 0);
                 });
                 break;
 
