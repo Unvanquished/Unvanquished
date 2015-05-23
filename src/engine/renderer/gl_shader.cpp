@@ -52,6 +52,7 @@ GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = nullptr;
 GLShader_liquid                          *gl_liquidShader = nullptr;
 GLShader_volumetricFog                   *gl_volumetricFogShader = nullptr;
 GLShader_motionblur                      *gl_motionblurShader = nullptr;
+GLShader_ssao                            *gl_ssaoShader = nullptr;
 GLShader_fxaa                            *gl_fxaaShader = nullptr;
 GLShaderManager                           gl_shaderManager;
 
@@ -355,6 +356,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	AddGLSLDefine( bufferExtra, "r_AmbientScale", r_ambientScale->value );
 	AddGLSLDefine( bufferExtra, "r_SpecularScale", r_specularScale->value );
 	AddGLSLDefine( bufferExtra, "r_NormalScale", r_normalScale->value );
+	AddGLSLDefine( bufferExtra, "r_zNear", r_znear->value );
 
 	AddGLSLDefine( bufferExtra, "M_PI", static_cast<float>( M_PI ) );
 	AddGLSLDefine( bufferExtra, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
@@ -1963,6 +1965,16 @@ void GLShader_motionblur::SetShaderProgramUniforms( shaderProgram_t *shaderProgr
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ColorMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 1 );
+}
+
+GLShader_ssao::GLShader_ssao( GLShaderManager *manager ) :
+	GLShader( "ssao", ATTR_POSITION, manager )
+{
+}
+
+void GLShader_ssao::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 0 );
 }
 
 GLShader_fxaa::GLShader_fxaa( GLShaderManager *manager ) :
