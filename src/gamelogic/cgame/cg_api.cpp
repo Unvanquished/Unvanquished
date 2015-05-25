@@ -629,7 +629,7 @@ qhandle_t trap_RegisterVisTest()
 	return handle;
 }
 
-void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area )
+void trap_AddVisTestToScene( qhandle_t hTest, const vec3_t pos, float depthAdjust, float area )
 {
 	std::array<float, 3> mypos;
 	VectorCopy(pos, mypos.data());

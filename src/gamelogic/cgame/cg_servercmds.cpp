@@ -1399,7 +1399,7 @@ with this this snapshot.
 ====================
 */
 void CG_ExecuteServerCommands(snapshot_t* snap) {
-	for (auto& command: snap->serverCommands) {
+	for (const auto& command: snap->serverCommands) {
 		Cmd::PushArgs(command);
 		CG_ServerCommand();
 		Cmd::PopArgs();

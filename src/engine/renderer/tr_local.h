@@ -213,6 +213,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define REF_CUBEMAP_STORE_SIZE 1024
 #define REF_CUBEMAP_STORE_SIDE ( REF_CUBEMAP_STORE_SIZE / REF_CUBEMAP_SIZE )
 
+#define REF_COLORGRADE_SLOTS   4
 #define REF_COLORGRADEMAP_SIZE 16
 #define REF_COLORGRADEMAP_STORE_SIZE ( REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE )
 
@@ -2449,6 +2450,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		FBO_t           *currentFBO;
 		VBO_t           *currentVBO;
 		IBO_t           *currentIBO;
+		image_t         *colorgradeSlots[ REF_COLORGRADE_SLOTS ];
 	} glstate_t;
 
 	typedef struct
@@ -3607,7 +3609,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void RE_RenderScene( const refdef_t *fd );
 
 	qhandle_t RE_RegisterVisTest();
-	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
+	void RE_AddVisTestToScene( qhandle_t hTest, const vec3_t pos,
 				   float depthAdjust, float area );
 	float RE_CheckVisibility( qhandle_t hTest );
 	void RE_UnregisterVisTest( qhandle_t hTest );

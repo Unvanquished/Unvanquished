@@ -4723,6 +4723,14 @@ const void *RB_SetColorGrading( const void *data )
 
 	cmd = ( const setColorGradingCommand_t * ) data;
 
+	if( cmd->slot < 0 || cmd->slot >= REF_COLORGRADE_SLOTS ) {
+		return ( const void * ) ( cmd + 1 );
+	}
+
+	if( glState.colorgradeSlots[ cmd->slot ] == cmd->image ) {
+		return ( const void * ) ( cmd + 1 );
+	}
+
 	GL_Bind( cmd->image );
 
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
@@ -4757,6 +4765,8 @@ const void *RB_SetColorGrading( const void *data )
 	}
 
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
+
+	glState.colorgradeSlots[ cmd->slot ] = cmd->image;
 
 	return ( const void * ) ( cmd + 1 );
 }

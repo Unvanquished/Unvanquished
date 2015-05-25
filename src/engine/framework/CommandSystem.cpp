@@ -257,7 +257,7 @@ namespace Cmd {
         CommandMap& commands = GetCommandMap();
 
         CompletionResult res;
-        for (auto& entry: commands) {
+        for (const auto& entry: commands) {
             if (Str::IsIPrefix(prefix, entry.first)) {
                 res.push_back({entry.first, entry.second.description});
             }

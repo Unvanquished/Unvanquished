@@ -341,7 +341,7 @@ namespace AL {
     std::vector<std::string> ListPresetNames() {
         std::vector<std::string> res;
 
-        for (auto& it: presets) {
+        for (const auto& it: presets) {
             res.push_back(it.first);
         }
 

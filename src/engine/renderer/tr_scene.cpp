@@ -796,7 +796,7 @@ Add a VisTest to the current scene. If the VisTest is still
 running from a prior scene, just noop.
 ================
 */
-void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
+void RE_AddVisTestToScene( qhandle_t hTest, const vec3_t pos, float depthAdjust,
 			   float area )
 {
 	visTest_t *test;

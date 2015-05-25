@@ -353,7 +353,7 @@ namespace Cvar {
         CvarMap& cvars = GetCvarMap();
 
         Cmd::CompletionResult res;
-        for (auto& entry : cvars) {
+        for (const auto& entry : cvars) {
             if (Str::IsIPrefix(prefix, entry.first)) {
                 res.push_back(std::make_pair(entry.first, entry.second->description));
             }
