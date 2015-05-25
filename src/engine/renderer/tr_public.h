@@ -169,7 +169,7 @@ typedef struct
 
 	// VisTest API
 	qhandle_t ( *RegisterVisTest ) ();
-	void      ( *AddVisTestToScene ) ( qhandle_t hTest, vec3_t pos,
+	void      ( *AddVisTestToScene ) ( qhandle_t hTest, const vec3_t pos,
 					   float depthAdjust, float area );
 	float     ( *CheckVisibility ) ( qhandle_t hTest );
 	void      ( *UnregisterVisTest ) ( qhandle_t hTest );

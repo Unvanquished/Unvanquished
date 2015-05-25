@@ -246,7 +246,7 @@ void            trap_GettextPlural( char *buffer, const char *msgid, const char 
 void            trap_notify_onTeamChange( int newTeam );
 
 qhandle_t       trap_RegisterVisTest();
-void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
+void            trap_AddVisTestToScene( qhandle_t hTest, const vec3_t pos,
 					float depthAdjust, float area );
 float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
