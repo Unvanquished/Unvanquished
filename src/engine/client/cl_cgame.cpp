@@ -1548,7 +1548,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 		case CG_SENDCLIENTCOMMAND:
-			IPC::HandleMsg<SendClientCommandMsg>(channel, std::move(reader), [this] (std::string command) {
+			IPC::HandleMsg<SendClientCommandMsg>(channel, std::move(reader), [this] (const std::string& command) {
 				CL_AddReliableCommand(command.c_str());
 			});
 			break;
@@ -1642,7 +1642,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_PGETTEXT:
-			IPC::HandleMsg<PGettextMsg>(channel, std::move(reader), [this] (int len, std::string context, std::string input, std::string& output) {
+			IPC::HandleMsg<PGettextMsg>(channel, std::move(reader), [this] (int len, const std::string& context, const std::string& input, std::string& output) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Q_strncpyz(buffer.get(), C__(context.c_str(), input.c_str()), len);
 				output.assign(buffer.get(), len);
@@ -1741,7 +1741,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_R_LERPTAG:
-			IPC::HandleMsg<Render::LerpTagMsg>(channel, std::move(reader), [this] (refEntity_t&& entity, std::string tagName, int startIndex, orientation_t& tag, int& res) {
+			IPC::HandleMsg<Render::LerpTagMsg>(channel, std::move(reader), [this] (const refEntity_t& entity, const std::string& tagName, int startIndex, orientation_t& tag, int& res) {
 				res = re.LerpTag(&tag, &entity, tagName.c_str(), startIndex);
 			});
 			break;
@@ -1753,7 +1753,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_R_INPVS:
-			IPC::HandleMsg<Render::InPVSMsg>(channel, std::move(reader), [this] (std::array<float, 3> p1, std::array<float, 3> p2, bool& res) {
+			IPC::HandleMsg<Render::InPVSMsg>(channel, std::move(reader), [this] (const std::array<float, 3>& p1, const std::array<float, 3>& p2, bool& res) {
 				res = re.inPVS(p1.data(), p2.data());
 			});
 			break;
@@ -1897,7 +1897,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_LAN_SERVERSTATUS:
-			IPC::HandleMsg<LAN::ServerStatusMsg>(channel, std::move(reader), [this] (std::string serverAddress, int len, std::string& status, int& res) {
+			IPC::HandleMsg<LAN::ServerStatusMsg>(channel, std::move(reader), [this] (const std::string& serverAddress, int len, std::string& status, int& res) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				res = LAN_GetServerStatus(serverAddress.c_str(), buffer.get(), len);
 				status.assign(buffer.get(), len);
@@ -1961,7 +1961,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_DSADDROW:
-			IPC::HandleMsg<Rocket::DSAddRowMsg>(channel, std::move(reader), [this] (const std::string& name, std::string table, const std::string& data) {
+			IPC::HandleMsg<Rocket::DSAddRowMsg>(channel, std::move(reader), [this] (const std::string& name, const std::string& table, const std::string& data) {
 				Rocket_DSAddRow(name.c_str(), table.c_str(), data.c_str());
 			});
 			break;
@@ -2001,7 +2001,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_SETPROPERTYBYID:
-			IPC::HandleMsg<Rocket::SetPropertyMsg>(channel, std::move(reader), [this] (const std::string property, const std::string& value) {
+			IPC::HandleMsg<Rocket::SetPropertyMsg>(channel, std::move(reader), [this] (const std::string& property, const std::string& value) {
 				Rocket_SetPropertyById("", property.c_str(), value.c_str());
 			});
 			break;
@@ -2119,7 +2119,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_SHOWSCOREBOARD:
-			IPC::HandleMsg<Rocket::ShowScoreboardMsg>(channel, std::move(reader), [this] (std::string name, bool show) {
+			IPC::HandleMsg<Rocket::ShowScoreboardMsg>(channel, std::move(reader), [this] (const std::string& name, bool show) {
 				Rocket_ShowScoreboard(name.c_str(), show);
 			});
 			break;
@@ -2203,13 +2203,13 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 				break;
 
 			case CG_S_RESPATIALIZE:
-				HandleMsg<Audio::RespatializeMsg>(std::move(reader), [this] (int entityNum, std::array<float, 9> axis) {
+				HandleMsg<Audio::RespatializeMsg>(std::move(reader), [this] (int entityNum, const std::array<float, 9>& axis) {
 					Audio::UpdateListener(entityNum, (vec3_t*) axis.data());
 				});
 				break;
 
 			case CG_S_STARTBACKGROUNDTRACK:
-				HandleMsg<Audio::StartBackgroundTrackMsg>(std::move(reader), [this] (std::string intro, std::string loop) {
+				HandleMsg<Audio::StartBackgroundTrackMsg>(std::move(reader), [this] (const std::string& intro, const std::string& loop) {
 					Audio::StartMusic(intro.c_str(), loop.c_str());
 				});
 				break;
@@ -2227,7 +2227,7 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 				break;
 
 			case CG_S_SETREVERB:
-				HandleMsg<Audio::SetReverbMsg>(std::move(reader), [this] (int slotNum, std::string name, float ratio) {
+				HandleMsg<Audio::SetReverbMsg>(std::move(reader), [this] (int slotNum, const std::string& name, float ratio) {
 					Audio::SetReverb(slotNum, name.c_str(), ratio);
 				});
 				break;
@@ -2271,37 +2271,37 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
                 break;
 
             case CG_R_ADDPOLYTOSCENE:
-                HandleMsg<Render::AddPolyToSceneMsg>(std::move(reader), [this] (int shader, std::vector<polyVert_t> verts) {
+                HandleMsg<Render::AddPolyToSceneMsg>(std::move(reader), [this] (int shader, const std::vector<polyVert_t>& verts) {
                     re.AddPolyToScene(shader, verts.size(), verts.data());
                 });
                 break;
 
             case CG_R_ADDPOLYSTOSCENE:
-                HandleMsg<Render::AddPolysToSceneMsg>(std::move(reader), [this] (int shader, std::vector<polyVert_t> verts, int numVerts, int numPolys) {
+                HandleMsg<Render::AddPolysToSceneMsg>(std::move(reader), [this] (int shader, const std::vector<polyVert_t>& verts, int numVerts, int numPolys) {
                     re.AddPolysToScene(shader, numVerts, verts.data(), numPolys);
                 });
                 break;
 
             case CG_R_ADDLIGHTTOSCENE:
-                HandleMsg<Render::AddLightToSceneMsg>(std::move(reader), [this] (std::array<float, 3> point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
+                HandleMsg<Render::AddLightToSceneMsg>(std::move(reader), [this] (const std::array<float, 3>& point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
                     re.AddLightToScene(point.data(), radius, intensity, r, g, b, shader, flags);
                 });
                 break;
 
             case CG_R_ADDADDITIVELIGHTTOSCENE:
-                HandleMsg<Render::AddAdditiveLightToSceneMsg>(std::move(reader), [this] (std::array<float, 3> point, float intensity, float r, float g, float b) {
+                HandleMsg<Render::AddAdditiveLightToSceneMsg>(std::move(reader), [this] (const std::array<float, 3>& point, float intensity, float r, float g, float b) {
                     re.AddAdditiveLightToScene(point.data(), intensity, r, g, b);
                 });
                 break;
 
             case CG_R_SETCOLOR:
-                HandleMsg<Render::SetColorMsg>(std::move(reader), [this] (std::array<float, 4> color) {
+                HandleMsg<Render::SetColorMsg>(std::move(reader), [this] (const std::array<float, 4>& color) {
                     re.SetColor(color.data());
                 });
                 break;
 
             case CG_R_SETCLIPREGION:
-                HandleMsg<Render::SetClipRegionMsg>(std::move(reader), [this] (std::array<float, 4> region) {
+                HandleMsg<Render::SetClipRegionMsg>(std::move(reader), [this] (const std::array<float, 4>& region) {
                     re.SetClipRegion(region.data());
                 });
                 break;
@@ -2325,7 +2325,7 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
                 break;
 
             case CG_ADDVISTESTTOSCENE:
-                HandleMsg<Render::AddVisTestToSceneMsg>(std::move(reader), [this] (int handle, std::array<float, 3> pos, float depthAdjust, float area) {
+                HandleMsg<Render::AddVisTestToSceneMsg>(std::move(reader), [this] (int handle, const std::array<float, 3>& pos, float depthAdjust, float area) {
                     re.AddVisTestToScene(handle, pos.data(), depthAdjust, area);
                 });
                 break;

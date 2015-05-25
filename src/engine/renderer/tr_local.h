@@ -3609,7 +3609,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void RE_RenderScene( const refdef_t *fd );
 
 	qhandle_t RE_RegisterVisTest();
-	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
+	void RE_AddVisTestToScene( qhandle_t hTest, const vec3_t pos,
 				   float depthAdjust, float area );
 	float RE_CheckVisibility( qhandle_t hTest );
 	void RE_UnregisterVisTest( qhandle_t hTest );
