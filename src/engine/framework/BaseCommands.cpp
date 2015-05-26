@@ -346,7 +346,7 @@ namespace Cmd {
 
     class IfCmd: public StaticCmd {
         public:
-            IfCmd(): StaticCmd("if", BASE, "conditionnaly execute commands") {
+            IfCmd(): StaticCmd("if", BASE, "conditionally execute commands") {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
@@ -360,14 +360,27 @@ namespace Cmd {
                 const std::string& relation = args.Argv(2);
 
                 int intValue1, intValue2;
-                if (!Str::ParseInt(intValue1, value1) || !Str::ParseInt(intValue2, value2)) {
-                    Usage(args);
-                    return;
-                }
 
                 bool result;
 
-                if (relation == "=" or relation == "==") {
+                if (relation == "eq") {
+                    result = value1 == value2;
+
+                } else if (relation == "ne") {
+                    result = value1 != value2;
+
+                } else if (relation == "in") {
+                    result = value2.find(value1) != std::string::npos;
+
+                } else if (relation == "!in") {
+                    result = value2.find(value1) == std::string::npos;
+
+                } else if (!Str::ParseInt(intValue1, value1) || !Str::ParseInt(intValue2, value2)) {
+                    Usage(args);
+                    return;
+                
+
+                } else if (relation == "=" or relation == "==") {
                     result = intValue1 == intValue2;
 
                 } else if (relation == "!=" or relation == "≠") {
@@ -385,21 +398,13 @@ namespace Cmd {
                 } else if (relation == ">=" or relation == "≥") {
                     result = intValue1 >= intValue2;
 
-                } else if (relation == "eq") {
-                    result = value1 == value2;
-
-                } else if (relation == "ne") {
-                    result = value1 != value2;
-
-                } else if (relation == "in") {
-                    result = value2.find(value1) != std::string::npos;
-
-                } else if (relation == "!in") {
-                    result = value2.find(value1) == std::string::npos;
-
                 } else {
                     Print( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in" );
                     Usage(args);
+                    return;
+                }
+
+                if (!result && args.Argc() != 6) {
                     return;
                 }
 
