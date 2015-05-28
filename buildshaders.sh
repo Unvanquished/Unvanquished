@@ -13,7 +13,7 @@ for f in glsl/*.glsl
 do
     n=$(basename $f .glsl)
     echo 'const char '$n'[] = {'
-    ( perl -p0e 's%/(\*.*?\*/|/[^\n]*)%%sg' $f; perl -e 'printf "%c", 0;' ) | xxd -i
+    ( cat $f; perl -e 'printf "%c", 0;' ) | xxd -i
     echo '};'
 done
 
