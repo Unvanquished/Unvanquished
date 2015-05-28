@@ -77,125 +77,6 @@ namespace // Implementation details
 		return nullptr;
 	}
 
-	enum class CommentType
-	{
-		None,
-		Block,
-		Line
-	};
-
-	bool FindCommentStart(const std::string& source, size_t start, size_t& commentStartPos, CommentType& commentType)
-	{
-		for (size_t pos = start; pos < source.length(); ++pos)
-		{
-			if (source[pos] == '/' && pos + 1 < source.length())
-			{
-				if (source[pos + 1] == '/')
-				{
-					commentType = CommentType::Line;
-					commentStartPos = pos;
-					return true;
-				}
-				if (source[pos + 1] == '*')
-				{
-					commentType = CommentType::Block;
-					commentStartPos = pos;
-					return true;
-				}
-			}
-		}
-		commentStartPos = std::string::npos;
-		commentType = CommentType::None;
-		return false;
-	}
-
-	bool FindCommentEnd(const std::string& source, size_t start, CommentType commentType, size_t& commentEndPos)
-	{
-		assert(commentType != CommentType::None);
-		if (commentType == CommentType::Block)
-		{
-			commentEndPos = source.find("*/", start);
-			if (commentEndPos != std::string::npos)
-				commentEndPos += 2;
-		}
-		else
-			commentEndPos = source.find_first_of("\r\n", start);
-		return (commentEndPos != std::string::npos);
-	}
-
-	// Remove C++ comments from a file.
-	// This logic must effictively match what buildshaders.sh does.
-	// If it doesn't the app will issue warnings but not from this routine.
-	// We remove slash star xxxx star slash and
-	// slash slash xxxx to \r or \n combinations. We leave the
-	// new line character inplace to avoid splicing together lines
-	// and creating new tokens by accident.
-	// We don't use regex as we don't need it. Nor do we want
-	// to force a dependency on it either for such simple needs.
-	// We do not remove #if 0 type comments as buildshader does not do
-	// that. It would be also more complex. Complexity comes from
-	// things like #if X #elif 0 #else X #endif patterns.
-	// The shaders actually do/did that btw.
-	// But we don't need to handle #directives right now nor do we.
-	void StripComments(std::string& source)
-	{
-		size_t sourcePos = 0;
-		size_t keepPos = 0;
-		size_t commentStartPos;
-		size_t commentEndPos;
-		CommentType commentType;
-
-		auto keep = [&](size_t keepLength)
-		{
-			if (keepPos != sourcePos)
-				std::copy(source.begin() + sourcePos, source.begin() + sourcePos + keepLength,
-					source.begin() + keepPos);
-			keepPos += keepLength;
-		};
-
-		for (;; )
-		{
-			bool foundCommentStart = FindCommentStart(source, sourcePos, commentStartPos, commentType);
-			if (!foundCommentStart)
-			{
-				// If we don't find a comment, the rest of the program is code.
-				size_t remainingLength = source.length() - sourcePos;
-				keep(remainingLength);
-				break;
-			}
-
-			bool foundCommentEnd = FindCommentEnd(source, commentStartPos, commentType, commentEndPos);
-			if (!foundCommentEnd)
-			{
-				// If we don't find the end of a comment:
-				// If it was a block comment that failed to close then keep everything
-				// before it and after to make it easier to diagnose what is wrong.
-				// If a line comment can't be closed (i.e. no new line), keep everything
-				// before it as that's code, but forget the line comment and what follows.
-				// Either way we are done.
-				if (commentType == CommentType::Block)
-				{
-					size_t remainingLength = source.length() - sourcePos;
-					keep(remainingLength);
-				}
-				else
-				{
-					size_t codeLength = commentStartPos - sourcePos;
-					keep(codeLength);
-				}
-				break;
-			}
-			// We found a start and end comment. Keep what's before the comment
-			// as that's code. Then continue after the comment.
-			// Note any new line that exists after a comment is kept to avoid
-			// splicing any lines together as that could create a new unexpected token.
-			size_t codeLength = commentStartPos - sourcePos;
-			keep(codeLength);
-			sourcePos = commentEndPos;
-		}
-		source.resize(keepPos);
-	}
-
 	void CRLFToLF(std::string& source)
 	{
 		size_t sourcePos = 0;
@@ -232,15 +113,14 @@ namespace // Implementation details
 		source.resize(keepPos);
 	}
 
-	// Somewhat emulate what buildshader.sh does or doesn't do.
-	// Not wildly efficient but doesn't have to be as it's currently
-	// only used as part of a debugging only feature on small shader files.
+	// CR/LF's can wind up in the raw files because of how
+	// version control system works and how Windows works.
+	// Remove them so we are always comparing apples with apples.
 	void NormalizeShaderText( std::string& text )
 	{
-		size_t pos = 0;
+		// A windows user changing the shader file can put
 		// Windows can put CRLF's in the file. Make them LF's.
 		CRLFToLF(text); 
-		StripComments(text);
 	}
 
 	std::string GetShaderFilename(Str::StringRef filename)
@@ -281,10 +161,6 @@ namespace // Implementation details
 			if (err)
 				ThrowShaderError(Str::Format("Failed to read shader from file %s: %s", shaderFilename, err.message()));
 
-			NormalizeShaderText(shaderText);
-			if (shaderText.empty())
-				ThrowShaderError(Str::Format("Shader from file is empty: %s", shaderFilename));
-
 			// Alert the user when a file does not match it's built-in version.
 			// There should be no differences in normal conditions.
 			// When testing shader file changes this is an expected message
@@ -295,8 +171,33 @@ namespace // Implementation details
 			// which the application is out of sync with it's files 
 			// and he translation script needs to be run.
 			auto textPtr = GetInternalShader(filename);
-			if (textPtr != nullptr && textPtr != shaderText)
+			std::string internalShaderText;
+			if (textPtr != nullptr)
+				internalShaderText = textPtr;
+
+			// Note to the user any differences that might exist between
+			// what's on disk and what's compiled into the program in shaders.cpp.
+			// The developer should be aware of any differences why they exist but
+			// they might be expected or unexpected.
+			// If the developer made changes they might want to be reminded of what
+			// they have changed while they are working.
+			// But it also might be that the developer hasn't made any changes but
+			// the compiled code is shaders.cpp is just out of sync with the shader
+			// files and that buildshaders.sh might need to be run to re-sync.
+			// This message alerts user to either situation and they can decide
+			// what's going on from seeing that.
+			// We normalize the text by removing CL/LF's so they aren't considered
+			// a difference as Windows or the Version Control System can put them in
+			// and another OS might read them back and conisder that a difference
+			// to what's in shader.cpp or vice vesa.
+			NormalizeShaderText(internalShaderText);
+			NormalizeShaderText(shaderText);
+			if (internalShaderText != shaderText)
 				Log::Warn("Note shader file differs from built-in shader: %s", shaderFilename);
+
+			if (shaderText.empty())
+				ThrowShaderError(Str::Format("Shader from file is empty: %s", shaderFilename));
+
 			return shaderText;
 		}
 		// Will never reach here.
