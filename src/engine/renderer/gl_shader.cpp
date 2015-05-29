@@ -705,7 +705,11 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	std::string shaderFilename = Str::Format("glsl/%s/%s_%u.bin", shader->GetName(), shader->GetName(), (unsigned int)programNum);
 	FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, err);
 	if (err)
+	{
+		if (err.value == ENOENT)
+			return false;
 		ThrowShaderError(Str::Format("Cannot load shader from file %s: %s", shaderFilename, err.message()));
+	}
 
 	std::string shaderData = shaderFile.ReadAll(err);
 	if (err)
