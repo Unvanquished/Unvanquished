@@ -706,7 +706,7 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, err);
 	if (err)
 	{
-		if (err.value == ENOENT)
+		if (err.value() == ENOENT)
 			return false;
 		ThrowShaderError(Str::Format("Cannot load shader from file %s: %s", shaderFilename, err.message()));
 	}
@@ -1042,7 +1042,7 @@ bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutatio
 	return false;
 }
 
-bool GLCompileMacro_USE_VERTEX_SKINNING::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
+bool GLCompileMacro_USE_VERTEX_SKINNING::MissesRequiredMacros( size_t /*permutation*/, const std::vector< GLCompileMacro * > &/*macros*/ ) const
 {
 	return !glConfig2.vboVertexSkinningAvailable;
 }
@@ -1171,7 +1171,7 @@ int GLShader::SelectProgram()
 void GLShader::BindProgram( int deformIndex )
 {
 	int macroIndex = SelectProgram();
-	int index = macroIndex + ( deformIndex << _compileMacros.size() );
+	size_t index = macroIndex + ( size_t(deformIndex) << _compileMacros.size() );
 
 	// program may not be loaded yet because the shader manager hasn't yet gotten to it
 	// so try to load it now
@@ -1303,7 +1303,7 @@ void GLShader_lightMapping::BuildShaderFragmentLibNames( std::string& fragmentIn
 	fragmentInlines += "reliefMapping";
 }
 
-void GLShader_lightMapping::BuildShaderCompileMacros( std::string& compileMacros )
+void GLShader_lightMapping::BuildShaderCompileMacros( std::string& /*compileMacros*/ )
 {
 }
 
@@ -1462,7 +1462,7 @@ void GLShader_forwardLighting_omniXYZ::BuildShaderFragmentLibNames( std::string&
 	fragmentInlines += "reliefMapping";
 }
 
-void GLShader_forwardLighting_omniXYZ::BuildShaderCompileMacros( std::string& compileMacros )
+void GLShader_forwardLighting_omniXYZ::BuildShaderCompileMacros( std::string& /*compileMacros*/ )
 {
 }
 
