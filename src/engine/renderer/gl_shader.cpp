@@ -692,6 +692,9 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	const byte    *binaryptr;
 	GLShaderHeader shaderHeader;
 
+	if (!GetShaderPath().empty())
+		return false;
+
 	// we need to recompile the shaders
 	if( r_recompileShaders->integer )
 		return false;
@@ -703,13 +706,9 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	std::error_code err;
 
 	std::string shaderFilename = Str::Format("glsl/%s/%s_%u.bin", shader->GetName(), shader->GetName(), (unsigned int)programNum);
-	FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, err);
+	FS::File shaderFile = FS::HomePath::OpenRead(shaderFilename, err);
 	if (err)
-	{
-		if (err.value() == ENOENT)
-			return false;
-		ThrowShaderError(Str::Format("Cannot load shader from file %s: %s", shaderFilename, err.message()));
-	}
+		return false;
 
 	std::string shaderData = shaderFile.ReadAll(err);
 	if (err)
@@ -769,6 +768,9 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	byte                  *binaryptr;
 	GLShaderHeader        shaderHeader{}; // Zero init.
 	shaderProgram_t       *shaderProgram;
+
+	if (!GetShaderPath().empty())
+		return;
 
 	// don't even try if the necessary functions aren't available
 	if( !glConfig2.getProgramBinaryAvailable )
