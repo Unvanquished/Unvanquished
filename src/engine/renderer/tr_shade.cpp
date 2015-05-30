@@ -32,7 +32,7 @@ This file deals with applying shaders to surface data in the tess struct.
 =================================================================================
 */
 
-void GLSL_InitGPUShaders()
+static void GLSL_InitGPUShadersOrError()
 {
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
@@ -119,6 +119,73 @@ void GLSL_InitGPUShaders()
 	if ( !r_lazyShaders->integer )
 	{
 		gl_shaderManager.buildAll();
+	}
+}
+
+void GLSL_InitGPUShaders()
+{
+	/*
+	 Without a shaderpath option, the shader debugging cycle is like this:
+	 1. Change shader file(s).
+	 2. Run script to convert shader files into c++, storing them in shaders.cpp
+	 3. Recompile app to pickup the new shaders.cpp changes.
+	 4. Run the app and get to the point required to check work.
+	 5. If the change failed or succeeded but you want to make more changes restart at step 1.
+	
+	 Alternatively, if set shaderpath "c:/unvanquished/main" is used, the cylcle is:
+	 1. Change shader file(s) - don't run the buildshaders script unless samples.cpp is missing.
+	 2. Start the app, the app will load the shader files directly.
+	    If there is a problem the app will revert to the last working changes
+		in samples.cpp, so need to restart the app.
+	 3. Fix the problem shader files
+	 4. Do /glsl_restart at the app console to reload them. Repeat from step 3 as needed.
+	
+	 Note that unv will respond by listing the files it thinks are different.
+	 If this matches your expectations then it's not an error.
+	 Note foward slashes (like those used in windows pathnames are processed
+	 as escape characters by the Unvanquished command processor,
+	 so use two forward slashes in that case.
+	 */
+
+	auto shaderPath = GetShaderPath();
+	if (shaderPath.empty())
+		shaderKind = ShaderKind::BuiltIn;
+	else
+		shaderKind = ShaderKind::External;
+
+	bool externalFailed = false;
+	if (shaderKind == ShaderKind::External)
+	{
+		try
+		{
+			Log::Warn("Loading external shaders.");
+			GLSL_InitGPUShadersOrError();
+			Log::Warn("External shaders in use.");
+		}
+		catch (const ShaderException& e)
+		{
+			Log::Warn("External shaders failed: %s", e.what());
+			Log::Warn("Attempting to use built in shaders instead.");
+			shaderKind = ShaderKind::BuiltIn;
+			externalFailed = true;
+		}
+	}
+
+	if (shaderKind == ShaderKind::BuiltIn)
+	{
+		// Let the user know if we are transitioning from external to
+		// built-in shaders. We won't alert them if we were already using
+		// built-in shaders as this is the normal case.
+		try
+		{
+			GLSL_InitGPUShadersOrError();
+		}
+		catch (const ShaderException&e)
+		{
+			Sys::Error("Built-in shaders failed: %s", e.what()); // Fatal.
+		};
+		if (externalFailed)
+			Log::Warn("Now using built-in shaders because external shaders failed.");
 	}
 }
 
