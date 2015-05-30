@@ -1134,10 +1134,10 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		self->shrunkTime = level.time;
 		anim = self->s.torsoAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
-		if ( self->spawned && self->health > 0 && anim != BANIM_DESTROYED )
+		if ( self->spawned && self->health > 0 && anim != BANIM_IDLE_UNPOWERED )
 		{
-			G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
-			G_SetBuildableAnim( self, BANIM_ATTACK1, true );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
+			G_SetBuildableAnim( self, BANIM_POWERDOWN, true );
 		}
 
 		return;
@@ -1159,8 +1159,8 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		// shrink animation
 		if ( self->spawned && self->health > 0 )
 		{
-			G_SetBuildableAnim( self, BANIM_ATTACK1, true );
-			G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
+			G_SetBuildableAnim( self, BANIM_POWERDOWN, true );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 		}
 	}
 	else
@@ -1184,7 +1184,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 
 		if ( self->spawned && self->health > 0 && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
 		{
-			G_SetBuildableAnim( self, BANIM_ATTACK2, true );
+			G_SetBuildableAnim( self, BANIM_POWERUP, true );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 		}
 	}
@@ -1206,7 +1206,20 @@ Called when an alien barricade dies
 void ABarricade_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, mod );
-	ABarricade_Shrink( self, true );
+
+	if( !self->shrunkTime )
+	{
+		G_SetBuildableAnim( self, BANIM_DESTROY, true );
+		G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
+
+		self->r.maxs[ 2 ] = ( int )( self->r.maxs[ 2 ] * BARRICADE_SHRINKPROP );
+		trap_LinkEntity( self );
+	}
+	else
+	{
+		G_SetBuildableAnim( self, BANIM_DESTROY_UNPOWERED, true );
+		G_SetIdleBuildableAnim( self, BANIM_DESTROYED_UNPOWERED );
+	}
 }
 
 /*
