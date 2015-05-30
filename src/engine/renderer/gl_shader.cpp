@@ -712,14 +712,14 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 
 	std::string shaderData = shaderFile.ReadAll(err);
 	if (err)
-		ThrowShaderError(Str::Format("Failed to open/read shader from file %s: %s", shaderFilename, err.message()));
+		return false;
 
 	auto fileLength = shaderData.length();
 	if (fileLength <= 0)
 		return false;
 
 	if (fileLength < sizeof(shaderHeader))
-		ThrowShaderError(Str::Format("Shader file has a bad size: %s", shaderFilename));
+		return false;
 
 	binaryptr = reinterpret_cast<const byte*>(shaderData.data());
 
