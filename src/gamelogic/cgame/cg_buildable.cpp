@@ -124,7 +124,7 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // NONE
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // A_SPAWN
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{P2,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // A_OVERMIND
-{{XX,0},{I1,0},{XX,0},{BS,0},{IS,0},{C1,0},{BU,0},{XX,0},{XX,0},{XX,0},{XX,0},{P1,0},{PS,0},{DE,0},{dS,0},{DD,0},{DS,0}}, // A_BARRICADE
+{{XX,0},{I1,1},{XX,0},{BS,0},{IS,1},{C1,0},{BU,0},{XX,0},{XX,0},{XX,0},{XX,0},{P1,0},{PS,0},{DE,0},{dS,0},{DD,0},{DS,0}}, // A_BARRICADE
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_ACIDTUBE
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_TRAPPER
 {{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_BOOSTER
