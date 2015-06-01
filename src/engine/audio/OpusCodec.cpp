@@ -143,23 +143,20 @@ AudioData LoadOpusCodec(Str::StringRef filename)
 	int numberOfChannels = opusInfo->channel_count;
 
 	// The buffer is big enough to hold 120ms worth of samples per channel
-	opus_int16* buffer = new opus_int16[numberOfChannels * 5760];
+	std::vector<char> buffer(numberOfChannels * 5760 * sizeof(opus_int16));
 	int samplesPerChannelRead = 0;
 
-	std::vector<opus_int16> samples;
-
+	size_t bufferUsed = 0;
 	while ((samplesPerChannelRead =
-	            op_read(opusFile, buffer, sampleWidth * numberOfChannels * 5760, nullptr)) > 0) {
-		std::copy_n(buffer, samplesPerChannelRead * numberOfChannels, std::back_inserter(samples));
-	}
+		op_read(opusFile, reinterpret_cast<opus_int16*>(buffer.data() + bufferUsed),
+			buffer.size() - bufferUsed, nullptr)) > 0)
+		bufferUsed += samplesPerChannelRead * sizeof(opus_int16);
+	buffer.resize(bufferUsed);
 
 	op_free(opusFile);
 
-	char* rawSamples = new char[sampleWidth * samples.size()];
-	std::copy_n(reinterpret_cast<char*>(samples.data()), sampleWidth * samples.size(), rawSamples);
-
-	return AudioData(sampleRate, sampleWidth, numberOfChannels, samples.size() * sampleWidth,
-	                 rawSamples);
+	return AudioData(sampleRate, sampleWidth, numberOfChannels, buffer.size(),
+	                 std::move(buffer));
 }
 
 } //namespace Audio

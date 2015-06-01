@@ -113,9 +113,9 @@ AudioData LoadWavCodec(Str::StringRef filename)
 		return AudioData();
 	}
 
-	char* data = new char[size];
+	std::vector<char> data(size);
 
-	std::copy_n(audioFile.data() + dataOffset + 8, size, data);
+	std::copy_n(audioFile.data() + dataOffset + 8, size, data.begin());
 
 	return AudioData(sampleRate, byteDepth, numChannels, size, data);
 }
