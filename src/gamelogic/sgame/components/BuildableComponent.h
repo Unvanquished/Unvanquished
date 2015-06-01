@@ -50,12 +50,29 @@ class BuildableComponent: public BuildableComponentBase {
 		void SetState(lifecycle_t state) { this->state = state; }
 
 		/**
+		 * @return Whether the buildable is currently marked for deconstruction.
+		 */
+		bool MarkedForDeconstruction() { return marked; }
+
+		/**
+		 * @return Time when the buildable was marked for deconstruction or 0 if it isn't currently marked.
+		 */
+		int  GetMarkTime() { return marked ? markTime : 0; }
+
+		void SetDeconstructionMark() { marked = true; markTime = level.time; }
+		void ClearDeconstructionMark() { marked = false; }
+		void ToggleDeconstructionMark() { marked = !marked; if (marked) markTime = level.time; }
+
+		/**
 		 * @return Whether the buildable has completed construction and is alive and powered.
 		 */
 		bool Active();
 
 	private:
 		lifecycle_t state;
+
+		bool marked;
+		int  markTime;
 
 		// TODO: Move gentity_t.deconstruct and gentity_t.powered here.
 		//bool marked; /**< Marked for deconstruction. */

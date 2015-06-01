@@ -1,7 +1,9 @@
 #include "BuildableComponent.h"
 
 BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_HealthComponent, ThinkingComponent& r_ThinkingComponent)
-	: BuildableComponentBase(entity, r_HealthComponent, r_ThinkingComponent), state(CONSTRUCTING) {
+	: BuildableComponentBase(entity, r_HealthComponent, r_ThinkingComponent)
+	, state(CONSTRUCTING)
+	, marked(false) {
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 }
 
@@ -18,7 +20,7 @@ void BuildableComponent::HandlePrepareNetCode() {
 		entity.oldEnt->s.eFlags &= ~EF_NODRAW;
 	}
 
-	if (entity.oldEnt->deconstruct) {
+	if (marked) {
 		entity.oldEnt->s.eFlags |= EF_B_MARKED;
 	} else {
 		entity.oldEnt->s.eFlags &= ~EF_B_MARKED;

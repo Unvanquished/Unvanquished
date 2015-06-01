@@ -349,8 +349,7 @@ struct gentity_s
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
 
-	bool    deconstruct; // deconstruct if no BP left
-	int         deconstructTime; // time at which structure marked
+	bool        deconMarkHack; // TODO: Remove.
 	int         attackTimer, attackLastEvent; // self being attacked
 	int         warnTimer; // nearby building(s) being attacked
 	int         overmindDyingTimer;
@@ -634,8 +633,7 @@ struct buildLog_s
 	team_t      buildableTeam;
 	buildable_t modelindex;
 	float       momentumEarned;
-	bool    deconstruct;
-	int         deconstructTime;
+	bool        markedForDeconstruction;
 	vec3_t      origin;
 	vec3_t      angles;
 	vec3_t      origin2;

@@ -3307,7 +3307,8 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	if ( buildableA->s.modelindex == buildableB->s.modelindex )
 	{
 		// Pick the one marked earliest
-		return buildableA->deconstructTime - buildableB->deconstructTime;
+		return Math::Clamp(buildableA->entity->Get<BuildableComponent>()->GetMarkTime() -
+		                   buildableB->entity->Get<BuildableComponent>()->GetMarkTime(), -1, 1);
 	}
 
 	// Resort to preference list
@@ -3595,7 +3596,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 		if ( ent )
 		{
-			if ( ent->deconstruct )
+			if ( ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 			{
 				level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
 			}
@@ -3611,7 +3612,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 		if ( ent )
 		{
-			if ( ent->deconstruct )
+			if ( ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 			{
 				level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
 			}
@@ -3626,38 +3627,38 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	// check for collision
 	// -------------------
 
-	for ( entNum = MAX_CLIENTS; entNum < level.num_entities; entNum++ )
-	{
-		ent = &g_entities[ entNum ];
+	// TODO: Once ForEntities allows break semantics, rewrite.
+	itemBuildError_t collisionError = IBE_NONE;
+	ForEntities<BuildableComponent>([&] (Entity& entity, BuildableComponent& buildableComponent) {
+		// HACK: Fake a break.
+		if (collisionError != IBE_NONE) return;
 
-		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
+		buildable_t otherBuildable = (buildable_t)entity.oldEnt->s.modelindex;
+		team_t      otherTeam      = entity.oldEnt->buildableTeam;
 
-		if ( BuildablesIntersect( buildable, origin, (buildable_t) ent->s.modelindex, ent->s.origin ) )
-		{
-			if ( ent->buildableTeam == attr->team && ent->deconstruct )
-			{
-				// ignore main buildable since it will already be on the list
-				if (    !( buildable == BA_H_REACTOR  && ent->s.modelindex == BA_H_REACTOR )
-				     && !( buildable == BA_A_OVERMIND && ent->s.modelindex == BA_A_OVERMIND ) )
-				{
-					// apply general replacement rules
-					if ( ( reason = BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) ) != IBE_NONE )
-					{
-						return reason;
-					}
+		if (BuildablesIntersect(buildable, origin, otherBuildable, entity.oldEnt->s.origin)) {
+			if (otherTeam != attr->team) {
+				collisionError = IBE_NOROOM;
+				return;
+			}
 
-					level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
+			if (!buildableComponent.MarkedForDeconstruction()) {
+				collisionError = IBE_NOROOM;
+				return;
+			}
+
+			// Ignore main buildable replacement since it will already be on the list.
+			if (!(BG_IsMainStructure(buildable) && BG_IsMainStructure(otherBuildable))) {
+				// Apply general replacement rules.
+				if ((collisionError = BuildableReplacementChecks((buildable_t)entity.oldEnt->s.modelindex, buildable)) != IBE_NONE) {
+					return;
 				}
-			}
-			else
-			{
-				return IBE_NOROOM;
+
+				level.markedBuildables[level.numBuildablesForRemoval++] = entity.oldEnt;
 			}
 		}
-	}
+	});
+	if (collisionError != IBE_NONE) return collisionError;
 
 	// ---------------
 	// check for power
@@ -3709,7 +3710,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				}
 
 				// check if marked for deconstruction
-				if ( !neighbor->deconstruct )
+				if ( !neighbor->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 				{
 					continue;
 				}
@@ -3780,7 +3781,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		}
 
 		// check if available for deconstruction
-		if ( !ent->deconstruct )
+		if ( !ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
 			continue;
 		}
@@ -4003,7 +4004,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	{
 		tempent = FindBuildable( buildable );
 
-		if ( tempent && !tempent->deconstruct )
+		if ( tempent && !tempent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
 			switch ( buildable )
 			{
@@ -4921,8 +4922,7 @@ void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 {
 	log->buildableTeam = ent->buildableTeam;
 	log->modelindex = (buildable_t) ent->s.modelindex;
-	log->deconstruct = ent->deconstruct;
-	log->deconstructTime = ent->deconstructTime;
+	log->markedForDeconstruction = ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction();
 	log->builtBy = ent->builtBy;
 	log->momentumEarned = ent->momentumEarned;
 	VectorCopy( ent->s.pos.trBase, log->origin );
@@ -4981,9 +4981,11 @@ void G_BuildLogRevertThink( gentity_t *ent )
 
 	built = FinishSpawningBuildable( ent, true );
 
-	if ( ( built->deconstruct = ent->deconstruct ) )
-	{
-		built->deconstructTime = ent->deconstructTime;
+	// TODO: CBSE-ify. Currently ent is a pseudo entity that doesn't have a buildable component, so
+	//       we can't get rid of gentity_t.deconstruct yet.
+	if (ent->deconMarkHack) {
+		// Note that this doesn't preserve original mark time.
+		built->entity->Get<BuildableComponent>()->SetDeconstructionMark();
 	}
 
 	built->creationTime = built->s.time = 0;
@@ -5057,14 +5059,14 @@ void G_BuildLogRevert( int id )
 
 		default:
 			// Spawn buildable
+			// HACK: Uses legacy pseudo entity. TODO: CBSE-ify.
 			buildable = G_NewEntity();
 			VectorCopy( log->origin, buildable->s.pos.trBase );
 			VectorCopy( log->angles, buildable->s.angles );
 			VectorCopy( log->origin2, buildable->s.origin2 );
 			VectorCopy( log->angles2, buildable->s.angles2 );
 			buildable->s.modelindex = log->modelindex;
-			buildable->deconstruct = log->deconstruct;
-			buildable->deconstructTime = log->deconstructTime;
+			buildable->deconMarkHack = log->markedForDeconstruction;
 			buildable->builtBy = log->builtBy;
 			buildable->momentumEarned = log->momentumEarned;
 			buildable->think = G_BuildLogRevertThink;

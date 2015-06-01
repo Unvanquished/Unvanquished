@@ -2752,7 +2752,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 		instant = false;
 	}
 
-	if ( instant && buildable->deconstruct )
+	if ( instant && buildable->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 	{
 		if ( !g_cheats.integer )
 		{
@@ -2790,8 +2790,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	else
 	{
 		// toggle mark
-		buildable->deconstruct     = !buildable->deconstruct;
-		buildable->deconstructTime = level.time;
+		buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
 	}
 }
 

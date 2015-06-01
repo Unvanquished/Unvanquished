@@ -192,7 +192,7 @@ int G_GetMarkedBuildPointsInt( team_t team )
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || G_Dead( ent ) ||
-		     ent->buildableTeam != team || !ent->deconstruct )
+		     ent->buildableTeam != team || !ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
 			continue;
 		}
