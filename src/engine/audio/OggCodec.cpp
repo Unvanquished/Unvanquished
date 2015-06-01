@@ -109,7 +109,7 @@ size_t OggCallbackRead(void* ptr, size_t size, size_t count, void* datasource)
 
 const ov_callbacks Ogg_Callbacks = {&OggCallbackRead, nullptr, nullptr, nullptr};
 
-AudioData LoadOggCodec(std::string filename)
+AudioData LoadOggCodec(Str::StringRef filename)
 {
 	std::string audioFile;
 	try
@@ -121,11 +121,11 @@ AudioData LoadOggCodec(std::string filename)
 		audioLogs.Warn("Failed to open %s: %s", filename, err.what());
 		return AudioData();
 	}
-	OggDataSource dataSource = {&audioFile, 0};
+	OggDataSource dataSource = { &audioFile, 0 };
 	std::unique_ptr<OggVorbis_File> vorbisFile(new OggVorbis_File);
 
 	if (ov_open_callbacks(&dataSource, vorbisFile.get(), nullptr, 0, Ogg_Callbacks) != 0) {
-        audioLogs.Warn("Error while reading %s", filename);
+		audioLogs.Warn("Error while reading %s", filename);
 		ov_clear(vorbisFile.get());
 		return AudioData();
 	}
@@ -139,7 +139,7 @@ AudioData LoadOggCodec(std::string filename)
 	vorbis_info* oggInfo = ov_info(vorbisFile.get(), 0);
 
 	if (!oggInfo) {
-        audioLogs.Warn("Could not read vorbis_info in %s.", filename);
+		audioLogs.Warn("Could not read vorbis_info in %s.", filename);
 		ov_clear(vorbisFile.get());
 		return AudioData();
 	}
@@ -149,20 +149,41 @@ AudioData LoadOggCodec(std::string filename)
 	int sampleRate = oggInfo->rate;
 	int numberOfChannels = oggInfo->channels;
 
-	char buffer[4096];
 	int bytesRead = 0;
 	int bitStream = 0;
 
-	std::vector<char> samples;
+	char* buffer = nullptr;
+	const size_t bufferInitialCapacity = 4096;
+	const size_t bufferMinCapacity = 4096;
+	size_t bufferCapacity = 0;
+	size_t bufferUsed = 0;
 
-	while ((bytesRead = ov_read(vorbisFile.get(), buffer, 4096, 0, sampleWidth, 1, &bitStream)) > 0) {
-		std::copy_n(buffer, bytesRead, std::back_inserter(samples));
+	for (;;)
+	{
+		size_t bufferRemaining = bufferCapacity - bufferUsed;
+		if (bufferRemaining < bufferMinCapacity)
+		{
+			if (!bufferCapacity)
+				bufferCapacity = bufferInitialCapacity;
+			else
+				bufferCapacity *= 2;
+			bufferRemaining = bufferCapacity - bufferUsed;
+		}
+		buffer = (char*)realloc(buffer, bufferCapacity);
+		if (!buffer)
+			throw std::bad_alloc();
+		if (bytesRead <= 0)
+			break;
+		bytesRead = ov_read(vorbisFile.get(), &buffer[bufferUsed], bufferRemaining, 0, sampleWidth, 1, &bitStream);
+		bufferUsed += bytesRead;
 	}
 	ov_clear(vorbisFile.get());
 
-	char* rawSamples = new char[samples.size()];
-	std::copy_n(samples.data(), samples.size(), rawSamples);
-	return AudioData(sampleRate, sampleWidth, numberOfChannels, samples.size(), rawSamples);
+	char* rawSamples = new char[bufferUsed];
+	std::copy_n(buffer, bufferUsed, rawSamples);
+	free(buffer);
+
+	return AudioData(sampleRate, sampleWidth, numberOfChannels, bufferUsed, rawSamples);
 }
 
 } //namespace Audio
