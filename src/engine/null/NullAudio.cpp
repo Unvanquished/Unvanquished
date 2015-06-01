@@ -82,7 +82,7 @@ namespace Audio {
     }
 
 
-    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {
+    void StreamData(int streamNum, std::vector<unsigned char>&& data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {
     }
 
 
