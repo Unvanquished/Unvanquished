@@ -188,7 +188,7 @@ static bool loadAudio()
 	float        *right, *left;
 	int          samples, samplesNeeded;
 	int          i;
-	std::vector<char> rawBuffer(SIZEOF_RAWBUFF);
+	std::vector<unsigned char> rawBuffer(SIZEOF_RAWBUFF);
 	short        *ptr;
 	ogg_packet   op;
 	vorbis_block vb;
@@ -229,7 +229,7 @@ static bool loadAudio()
 				// tell libvorbis how many samples we actually consumed
 				vorbis_synthesis_read( &g_ogm.vd, i );
 
-				size_t rawBufferSize = reinterpret_cast<char*>(ptr) - rawBuffer.data();
+				size_t rawBufferSize = reinterpret_cast<unsigned char*>(ptr) - rawBuffer.data();
 				rawBuffer.resize(rawBufferSize);
 				Audio::StreamData( 0, std::move(rawBuffer), i, g_ogm.vi.rate, 2, 2, 1.0f, 1);
 

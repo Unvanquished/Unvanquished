@@ -343,7 +343,7 @@ namespace Audio {
         StopSounds();
     }
 
-    void StreamData(int streamNum, std::vector<char>&& data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {
+    void StreamData(int streamNum, std::vector<unsigned char>&& data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {
         if (not initialized or (streamNum < 0 or streamNum >= N_STREAMS)) {
             return;
         }
@@ -478,7 +478,7 @@ namespace Audio {
         int numSamples = AvailableCaptureSamples();
 
         if (numSamples > 0) {
-			std::vector<char> buffer(numSamples * sizeof(uint16_t));
+			std::vector<unsigned char> buffer(numSamples * sizeof(uint16_t));
             GetCapturedData(numSamples, buffer.data());
             StreamData(N_STREAMS - 1, std::move(buffer), numSamples, 16000, 2, 1, 1.0, -1);
         }

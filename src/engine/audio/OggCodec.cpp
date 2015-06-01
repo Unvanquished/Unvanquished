@@ -157,7 +157,7 @@ AudioData LoadOggCodec(Str::StringRef filename)
 	size_t bufferCapacity = 0;
 	size_t bufferUsed = 0;
 
-	std::vector<char> buffer;
+	std::vector<unsigned char> buffer;
 	for (;;)
 	{
 		size_t bufferRemaining = bufferCapacity - bufferUsed;
@@ -170,7 +170,8 @@ AudioData LoadOggCodec(Str::StringRef filename)
 			bufferRemaining = bufferCapacity - bufferUsed;
 			buffer.resize(bufferCapacity);
 		}
-		bytesRead = ov_read(vorbisFile.get(), &buffer[bufferUsed], bufferRemaining, 0, sampleWidth, 1, &bitStream);
+		bytesRead = ov_read(vorbisFile.get(), 
+			reinterpret_cast<char*>(&buffer[bufferUsed]), bufferRemaining, 0, sampleWidth, 1, &bitStream);
 		if (bytesRead <= 0)
 			break;
 		bufferUsed += bytesRead;

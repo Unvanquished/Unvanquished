@@ -113,11 +113,11 @@ AudioData LoadWavCodec(Str::StringRef filename)
 		return AudioData();
 	}
 
-	std::vector<char> data(size);
+	std::vector<unsigned char> data(size);
 
 	std::copy_n(audioFile.data() + dataOffset + 8, size, data.begin());
 
-	return AudioData(sampleRate, byteDepth, numChannels, size, data);
+	return AudioData(sampleRate, byteDepth, numChannels, size, std::move(data));
 }
 
 } // namespace Audio

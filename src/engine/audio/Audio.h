@@ -57,7 +57,7 @@ namespace Audio {
 
     void StopAllSounds();
 
-    void StreamData(int streamNum, std::vector<char>&& data, int numSamples, int rate, int width, int channels, float volume, int entityNum);
+    void StreamData(int streamNum, std::vector<unsigned char>&& data, int numSamples, int rate, int width, int channels, float volume, int entityNum);
 
     void UpdateListener(int entityNum, const vec3_t orientation[3]);
     void UpdateListenerGain();
