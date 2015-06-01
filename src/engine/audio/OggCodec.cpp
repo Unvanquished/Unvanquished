@@ -168,9 +168,13 @@ AudioData LoadOggCodec(Str::StringRef filename)
 			else
 				bufferCapacity *= 2;
 			bufferRemaining = bufferCapacity - bufferUsed;
+			char* oldBuffer = buffer;
 			buffer = (char*)realloc(buffer, bufferCapacity);
 			if (!buffer)
+			{
+				free(oldBuffer);
 				throw std::bad_alloc();
+			}
 		}
 		bytesRead = ov_read(vorbisFile.get(), &buffer[bufferUsed], bufferRemaining, 0, sampleWidth, 1, &bitStream);
 		if (bytesRead <= 0)
