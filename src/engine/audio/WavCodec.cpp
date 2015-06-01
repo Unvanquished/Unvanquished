@@ -55,7 +55,7 @@ inline int PackChars(const std::string& input, int startingPosition, int numberO
 	return packed;
 }
 
-AudioData LoadWavCodec(std::string filename)
+AudioData LoadWavCodec(Str::StringRef filename)
 {
 	std::string audioFile;
 

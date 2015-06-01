@@ -109,7 +109,7 @@ size_t OggCallbackRead(void* ptr, size_t size, size_t count, void* datasource)
 
 const ov_callbacks Ogg_Callbacks = {&OggCallbackRead, nullptr, nullptr, nullptr};
 
-AudioData LoadOggCodec(std::string filename)
+AudioData LoadOggCodec(Str::StringRef filename)
 {
 	std::string audioFile;
 	try
