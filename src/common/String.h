@@ -132,7 +132,7 @@ namespace Str {
         }
         size_t rfind(T chr, size_t pos = npos)
         {
-            pos = std::min(pos + 1, len);
+            pos = (pos == npos) ? len : std::min(pos + 1, len);
             for (const T* p = ptr + pos; p != ptr;) {
                 if (*--p == chr)
                     return p - ptr;
