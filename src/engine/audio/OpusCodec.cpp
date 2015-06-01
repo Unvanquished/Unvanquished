@@ -96,7 +96,7 @@ int OpusCallbackRead(void* dataSource, unsigned char* ptr, int nBytes)
 
 const OpusFileCallbacks Opus_Callbacks = {&OpusCallbackRead, nullptr, nullptr, nullptr};
 
-AudioData LoadOpusCodec(std::string filename)
+AudioData LoadOpusCodec(Str::StringRef filename)
 {
 	std::string audioFile;
 	try
