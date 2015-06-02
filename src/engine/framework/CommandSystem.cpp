@@ -193,10 +193,10 @@ namespace Cmd {
         commandLog.Debug("Execing command '%s'", command);
 
         std::string parsedString;
-		if (parseCvars)
+        if (parseCvars)
             parsedString = SubstituteCvars(command);
 
-        Args args(parseCvars? parsedString : command);
+        Args args(parseCvars? Str::StringRef(parsedString) : command);
         currentArgs = args;
 
         if (args.Argc() == 0) {
