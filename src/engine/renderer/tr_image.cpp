@@ -2269,12 +2269,12 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	static const char *doom3Suffices[ 6 ] = { "forward", "back", "left", "right", "up", "down" };
 	static bool doom3FlipX[ 6 ] = { true,  true,  false, true,  true,  false };
 	static bool doom3FlipY[ 6 ] = { false, false, true,  false, false, true };
-	static int      doom3Rot[ 6 ] = { 90,           -90,    0,              0,              90,             -90 };
+	static const int doom3Rot[ 6 ] = { 90, -90, 0, 0, 90, -90 };
 
 	static const char *quakeSuffices[ 6 ] = { "rt", "lf", "bk", "ft", "up", "dn" };
-	static bool quakeFlipX[ 6 ] = { true,  true,  false, true,  true,  false };
-	static bool quakeFlipY[ 6 ] = { false, false, true,  false, false, true };
-	static int      quakeRot[ 6 ] = { 90,           -90,    0,              0,              90,             -90 };
+	static const bool quakeFlipX[ 6 ] = { true,  true,  false, true,  true,  false };
+	static const bool quakeFlipY[ 6 ] = { false, false, true,  false, false, true };
+	static const int quakeRot[ 6 ] = { 90, -90, 0, 0, 90, -90 };
 
 	char            buffer[ 1024 ], filename[ 1024 ];
 	const  char     *filename_p;
@@ -2328,8 +2328,8 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
-		        goto skipCubeImage;
+			ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+			goto skipCubeImage;
 		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
@@ -2359,8 +2359,8 @@ tryDoom3Suffices:
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
-		        goto skipCubeImage;
+			ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+			goto skipCubeImage;
 		}
 
 		if ( !pic[ i ] || width != height || numLayers > 0 )
