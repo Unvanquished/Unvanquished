@@ -1146,7 +1146,8 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 			if (err)
 				return;
 			depsData.resize(length);
-			zipFile.ReadFile(&depsData[0], length, err);
+			auto read = zipFile.ReadFile(&depsData[0], length, err);
+			depsData.resize(read);
 			if (err)
 				return;
 		}
