@@ -55,7 +55,7 @@ inline int PackChars(const std::string& input, int startingPosition, int numberO
 	return packed;
 }
 
-AudioData LoadWavCodec(std::string filename)
+AudioData LoadWavCodec(Str::StringRef filename)
 {
 	std::string audioFile;
 
@@ -113,11 +113,11 @@ AudioData LoadWavCodec(std::string filename)
 		return AudioData();
 	}
 
-	char* data = new char[size];
+	std::vector<unsigned char> data(size);
 
-	std::copy_n(audioFile.data() + dataOffset + 8, size, data);
+	std::copy_n(audioFile.data() + dataOffset + 8, size, data.begin());
 
-	return AudioData(sampleRate, byteDepth, numChannels, size, data);
+	return AudioData(sampleRate, byteDepth, numChannels, size, std::move(data));
 }
 
 } // namespace Audio
