@@ -45,13 +45,13 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 void CG_RegisterCvars();
 void CG_Shutdown();
 
-void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
+void VM::VMHandleSyscall(uint32_t id, Util::Reader& reader) {
     int major = id >> 16;
     int minor = id & 0xffff;
     if (major == VM::QVM) {
         switch (minor) {
             case CG_STATIC_INIT:
-                IPC::HandleMsg<CGameStaticInitMsg>(VM::rootChannel, std::move(reader), [] (int milliseconds) {
+                IPC::HandleMsg<CGameStaticInitMsg>(VM::rootChannel, reader, [] (int milliseconds) {
                     VM::InitializeProxies(milliseconds);
                     FS::Initialize();
                     srand(time(nullptr));
@@ -60,72 +60,72 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
             case CG_INIT:
-                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gamestate) {
+                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, reader, [] (int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gamestate) {
                     CG_Init(serverMessageNum, clientNum, gl, gamestate);
                     cmdBuffer.TryFlush();
                 });
                 break;
 
             case CG_SHUTDOWN:
-                IPC::HandleMsg<CGameShutdownMsg>(VM::rootChannel, std::move(reader), [] {
+                IPC::HandleMsg<CGameShutdownMsg>(VM::rootChannel, reader, [] {
                     CG_Shutdown();
                 });
                 break;
 
             case CG_DRAW_ACTIVE_FRAME:
-                IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
+                IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, reader, [] (int serverTime, bool demoPlayback) {
                     CG_DrawActiveFrame(serverTime, demoPlayback);
                     cmdBuffer.TryFlush();
                 });
                 break;
 
             case CG_CROSSHAIR_PLAYER:
-                IPC::HandleMsg<CGameCrosshairPlayerMsg>(VM::rootChannel, std::move(reader), [] (int& player) {
+                IPC::HandleMsg<CGameCrosshairPlayerMsg>(VM::rootChannel, reader, [] (int& player) {
                     player = CG_CrosshairPlayer();
                 });
                 break;
 
             case CG_KEY_EVENT:
-                IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (int key, bool down) {
+                IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, reader, [] (int key, bool down) {
                     CG_KeyEvent(key, 0, down);
                     cmdBuffer.TryFlush();
                 });
                 break;
 
             case CG_MOUSE_EVENT:
-                IPC::HandleMsg<CGameMouseEventMsg>(VM::rootChannel, std::move(reader), [] (int dx, int dy) {
+                IPC::HandleMsg<CGameMouseEventMsg>(VM::rootChannel, reader, [] (int dx, int dy) {
                     // TODO don't we care about that?
                 });
                 break;
 
             case CG_ROCKET_VM_INIT:
-                IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] {
+                IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, reader, [] {
                     CG_Rocket_Init();
                 });
                 break;
 
             case CG_ROCKET_FRAME:
-                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), [] (cgClientState_t cs) {
+                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, reader, [] (cgClientState_t cs) {
                     CG_Rocket_Frame(cs);
                     cmdBuffer.TryFlush();
                 });
                 break;
 
             case CG_ROCKET_FORMAT_DATA:
-                IPC::HandleMsg<CGameRocketFormatDataMsg>(VM::rootChannel, std::move(reader), [] (int handle) {
+                IPC::HandleMsg<CGameRocketFormatDataMsg>(VM::rootChannel, reader, [] (int handle) {
                     CG_Rocket_FormatData(handle);
                 });
                 break;
 
             case CG_ROCKET_RENDER_ELEMENT:
-                IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, std::move(reader), [] {
+                IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, reade), [] {
                     CG_Rocket_RenderElement();
                     cmdBuffer.TryFlush();
                 });
                 break;
 
             case CG_ROCKET_PROGRESSBAR_VALUE:
-                IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (std::string source, float& value) {
+                IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, reader, [] (Str::StringRef source, float& value) {
 					Cmd::PushArgs(source);
 					value = CG_Rocket_ProgressBarValue();
 					Cmd::PopArgs();
@@ -137,7 +137,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 
         }
     } else if (major < VM::LAST_COMMON_SYSCALL) {
-        VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootChannel);
+        VM::HandleCommonSyscall(major, minor, reader, VM::rootChannel);
     } else {
         CG_Error("unhandled VM major syscall number %i", major);
     }

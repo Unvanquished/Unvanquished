@@ -136,7 +136,7 @@ namespace IPC {
     namespace detail {
 
         // Implementations of SendMsg for Message and SyncMessage
-        template<typename Func, typename Id, typename... MsgArgs, typename... Args> void SendMsg(Channel& channel, Func&&, Message<Id, MsgArgs...>, Args&&... args)
+        template<typename Func, typename Id, typename... MsgArgs, typename... Args> void SendMsg(Channel& channel, Func&&, const Message<Id, MsgArgs...>&, Args&&... args)
         {
             typedef Message<Id, MsgArgs...> Message;
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
@@ -149,7 +149,7 @@ namespace IPC {
             writer.WriteArgs(Util::TypeListFromTuple<typename Message::Inputs>(), std::forward<Args>(args)...);
             channel.SendMsg(writer);
         }
-        template<typename Func, typename Msg, typename Reply, typename... Args> void SendMsg(Channel& channel, Func&& messageHandler, SyncMessage<Msg, Reply>, Args&&... args)
+        template<typename Func, typename Msg, typename Reply, typename... Args> void SendMsg(Channel& channel, Func&& messageHandler, const SyncMessage<Msg, Reply>&, Args&&... args)
         {
             typedef SyncMessage<Msg, Reply> Message;
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + std::tuple_size<typename Message::Outputs>::value, "Incorrect number of arguments for IPC::SendMsg");
@@ -171,7 +171,7 @@ namespace IPC {
                     reader.FillTuple<std::tuple_size<typename Message::Inputs>::value>(Util::TypeListFromTuple<typename Message::Outputs>(), out);
                     return;
                 }
-                messageHandler(id, std::move(reader));
+                messageHandler(id, reader);
             }
         }
 
@@ -185,7 +185,7 @@ namespace IPC {
         };
 
         // Implementations of HandleMsg for Message and SyncMessage
-        template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel& channel, Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
+        template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel& channel, Message<Id, MsgArgs...>, Util::Reader& reader, Func&& func)
         {
             typedef Message<Id, MsgArgs...> Message;
 
@@ -201,7 +201,7 @@ namespace IPC {
             channel.canSendSyncMsg = oldSync;
             channel.canSendAsyncMsg = oldAsync;
         }
-        template<typename Func, typename Msg, typename Reply> void HandleMsg(Channel& channel, SyncMessage<Msg, Reply>, Util::Reader reader, Func&& func)
+        template<typename Func, typename Msg, typename Reply> void HandleMsg(Channel& channel, SyncMessage<Msg, Reply>, Util::Reader& reader, Func&& func)
         {
             typedef SyncMessage<Msg, Reply> Message;
 
@@ -236,9 +236,9 @@ namespace IPC {
 
     // Handle an incoming message using a callback function (which can just be a lambda). If the message is
     // synchronous then outputs values are written to using reference parameters.
-    template<typename Msg, typename Func> void HandleMsg(Channel& channel, Util::Reader reader, Func&& func)
+    template<typename Msg, typename Func> void HandleMsg(Channel& channel, Util::Reader& reader, Func&& func)
     {
-        detail::HandleMsg(channel, Msg(), std::move(reader), std::forward<Func>(func));
+        detail::HandleMsg(channel, Msg(), reader, std::forward<Func>(func));
     }
 
 } // namespace IPC

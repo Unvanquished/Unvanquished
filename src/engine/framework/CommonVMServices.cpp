@@ -368,7 +368,7 @@ namespace VM {
         //TODO unregesiter cvars
     }
 
-    void CommonVMServices::Syscall(int major, int minor, Util::Reader reader, IPC::Channel& channel) {
+    void CommonVMServices::Syscall(int major, int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch (major) {
             case QVM_COMMON:
                 HandleCommonQVMSyscall(minor, reader, channel);

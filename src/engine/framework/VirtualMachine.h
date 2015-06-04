@@ -131,9 +131,9 @@ public:
 	{
 		// Marking lambda as mutable to work around a bug in gcc 4.6
 		LogMessage(false, true, Msg::id);
-		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, Util::Reader reader) mutable {
+		IPC::SendMsg<Msg>(rootChannel, [this](uint32_t id, Util::Reader& reader) mutable {
 			LogMessage(true, true, id);
-			Syscall(id, std::move(reader), rootChannel);
+			Syscall(id, reader, rootChannel);
 			LogMessage(true, false, id);
 		}, std::forward<Args>(args)...);
 		LogMessage(false, false, Msg::id);
@@ -152,7 +152,7 @@ public:
 
 protected:
 	// System call handler
-	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) = 0;
+	virtual void Syscall(uint32_t id, Util::Reader& reader, IPC::Channel& channel) = 0;
 
 private:
 	void FreeInProcessVM();

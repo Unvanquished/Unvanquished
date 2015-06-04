@@ -63,7 +63,7 @@ static void CommonInit(Sys::OSHandle rootSocket)
 		if (id == IPC::ID_EXIT) {
 			return;
 		}
-		VM::VMHandleSyscall(id, std::move(reader));
+		VM::VMHandleSyscall(id, reader);
 	}
 }
 

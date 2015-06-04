@@ -1526,7 +1526,7 @@ float CGameVM::CGameRocketProgressbarValue(Str::StringRef source)
 	return value;
 }
 
-void CGameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
+void CGameVM::Syscall(uint32_t id, Util::Reader& reader, IPC::Channel& channel)
 {
 	int major = id >> 16;
 	int minor = id & 0xffff;
@@ -1537,7 +1537,7 @@ void CGameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
 		this->cmdBuffer.Syscall(minor, reader, channel);
 
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
-		services->Syscall(major, minor, std::move(reader), channel);
+		services->Syscall(major, minor, reader, channel);
 
 	} else {
 		Sys::Drop("Bad major game syscall number: %d", major);
@@ -1548,13 +1548,13 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 {
 	switch (index) {
 		case CG_SENDCLIENTCOMMAND:
-			IPC::HandleMsg<SendClientCommandMsg>(channel, std::move(reader), [this] (const std::string& command) {
+			IPC::HandleMsg<SendClientCommandMsg>(channel, reader, [] (const std::string& command) {
 				CL_AddReliableCommand(command.c_str());
 			});
 			break;
 
 		case CG_UPDATESCREEN:
-			IPC::HandleMsg<UpdateScreenMsg>(channel, std::move(reader), [this]  {
+			IPC::HandleMsg<UpdateScreenMsg>(channel, reader, [this]  {
 				CGameRocketFrame();
 				SCR_UpdateScreen();
 			});
@@ -1563,7 +1563,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		case CG_CM_MARKFRAGMENTS:
 			// TODO wow this is very ugly and expensive, find something better?
 			// plus we have a lot of const casts for the vector buffers
-			IPC::HandleMsg<CMMarkFragmentsMsg>(channel, std::move(reader), [this] (std::vector<std::array<float, 3>> points, std::array<float, 3> projection, int maxPoints, int maxFragments, std::vector<std::array<float, 3>>& pointBuffer, std::vector<markFragment_t>& fragmentBuffer) {
+			IPC::HandleMsg<CMMarkFragmentsMsg>(channel, reader, [] (const std::vector<std::array<float, 3>>& points, const std::array<float, 3>& projection, int maxPoints, int maxFragments, std::vector<std::array<float, 3>>& pointBuffer, std::vector<markFragment_t>& fragmentBuffer) {
 				pointBuffer.resize(maxPoints);
 				fragmentBuffer.resize(maxFragments);
 				int numFragments = re.MarkFragments(points.size(), (vec3_t*)points.data(), projection.data(), maxPoints, (float*) pointBuffer.data(), maxFragments, fragmentBuffer.data());
@@ -1572,37 +1572,37 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_GETCURRENTSNAPSHOTNUMBER:
-			IPC::HandleMsg<GetCurrentSnapshotNumberMsg>(channel, std::move(reader), [this] (int& number, int& serverTime) {
+			IPC::HandleMsg<GetCurrentSnapshotNumberMsg>(channel, reader, [] (int& number, int& serverTime) {
 				CL_GetCurrentSnapshotNumber(&number, &serverTime);
 			});
 			break;
 
 		case CG_GETSNAPSHOT:
-			IPC::HandleMsg<GetSnapshotMsg>(channel, std::move(reader), [this] (int number, bool& res, snapshot_t& snapshot) {
+			IPC::HandleMsg<GetSnapshotMsg>(channel, reader, [] (int number, bool& res, snapshot_t& snapshot) {
 				res = CL_GetSnapshot(number, &snapshot);
 			});
 			break;
 
 		case CG_GETCURRENTCMDNUMBER:
-			IPC::HandleMsg<GetCurrentCmdNumberMsg>(channel, std::move(reader), [this] (int& number) {
+			IPC::HandleMsg<GetCurrentCmdNumberMsg>(channel, reader, [] (int& number) {
 				number = CL_GetCurrentCmdNumber();
 			});
 			break;
 
 		case CG_GETUSERCMD:
-			IPC::HandleMsg<GetUserCmdMsg>(channel, std::move(reader), [this] (int number, bool& res, usercmd_t& cmd) {
+			IPC::HandleMsg<GetUserCmdMsg>(channel, reader, [] (int number, bool& res, usercmd_t& cmd) {
 				res = CL_GetUserCmd(number, &cmd);
 			});
 			break;
 
 		case CG_SETUSERCMDVALUE:
-			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale) {
+			IPC::HandleMsg<SetUserCmdValueMsg>(channel, reader, [] (int stateValue, int flags, float scale) {
 				CL_SetUserCmdValue(stateValue, flags, scale);
 			});
 			break;
 
 		case CG_GET_ENTITY_TOKEN:
-			IPC::HandleMsg<GetEntityTokenMsg>(channel, std::move(reader), [this] (int len, bool& res, std::string& token) {
+			IPC::HandleMsg<GetEntityTokenMsg>(channel, reader, [] (int len, bool& res, std::string& token) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				res = re.GetEntityToken(buffer.get(), len);
 				token.assign(buffer.get(), len);
@@ -1610,13 +1610,13 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_REGISTER_BUTTON_COMMANDS:
-			IPC::HandleMsg<RegisterButtonCommandsMsg>(channel, std::move(reader), [this] (const std::string& commands) {
+			IPC::HandleMsg<RegisterButtonCommandsMsg>(channel, reader, [] (const std::string& commands) {
 				CL_RegisterButtonCommands(commands.c_str());
 			});
 			break;
 
 		case CG_GETCLIPBOARDDATA:
-			IPC::HandleMsg<GetClipboardDataMsg>(channel, std::move(reader), [this] (int len, int type, std::string& data) {
+			IPC::HandleMsg<GetClipboardDataMsg>(channel, reader, [] (int len, int type, std::string& data) {
 				if (cl_allowPaste->integer) {
 					std::unique_ptr<char[]> buffer(new char[len]);
 					CL_GetClipboardData(buffer.get(), len, (clipboard_t)type);
@@ -1626,7 +1626,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_QUOTESTRING:
-			IPC::HandleMsg<QuoteStringMsg>(channel, std::move(reader), [this] (int len, const std::string& input, std::string& output) {
+			IPC::HandleMsg<QuoteStringMsg>(channel, reader, [] (int len, const std::string& input, std::string& output) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Cmd_QuoteStringBuffer(input.c_str(), buffer.get(), len);
 				output.assign(buffer.get(), len);
@@ -1634,7 +1634,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_GETTEXT:
-			IPC::HandleMsg<GettextMsg>(channel, std::move(reader), [this] (int len, const std::string& input, std::string& output) {
+			IPC::HandleMsg<GettextMsg>(channel, reader, [this] (int len, const std::string& input, std::string& output) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Q_strncpyz(buffer.get(), __(input.c_str()), len);
 				output.assign(buffer.get(), len);
@@ -1642,7 +1642,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_PGETTEXT:
-			IPC::HandleMsg<PGettextMsg>(channel, std::move(reader), [this] (int len, const std::string& context, const std::string& input, std::string& output) {
+			IPC::HandleMsg<PGettextMsg>(channel, reader, [] (int len, const std::string& context, const std::string& input, std::string& output) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Q_strncpyz(buffer.get(), C__(context.c_str(), input.c_str()), len);
 				output.assign(buffer.get(), len);
@@ -1650,7 +1650,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_GETTEXT_PLURAL:
-			IPC::HandleMsg<GettextPluralMsg>(channel, std::move(reader), [this] (int len, const std::string& input1, const std::string& input2, int number, std::string& output) {
+			IPC::HandleMsg<GettextPluralMsg>(channel, reader, [] (int len, const std::string& input1, const std::string& input2, int number, std::string& output) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Q_strncpyz(buffer.get(), P__(input1.c_str(), input2.c_str(), number), len);
 				output.assign(buffer.get(), len);
@@ -1658,19 +1658,19 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_NOTIFY_TEAMCHANGE:
-			IPC::HandleMsg<NotifyTeamChangeMsg>(channel, std::move(reader), [this] (int team) {
+			IPC::HandleMsg<NotifyTeamChangeMsg>(channel, reader, [] (int team) {
 				CL_OnTeamChanged(team);
 			});
 			break;
 
 		case CG_PREPAREKEYUP:
-			IPC::HandleMsg<PrepareKeyUpMsg>(channel, std::move(reader), [this] {
+			IPC::HandleMsg<PrepareKeyUpMsg>(channel, reader, [] {
 				IN_PrepareKeyUp();
 			});
 			break;
 
 		case CG_GETNEWS:
-			IPC::HandleMsg<GetNewsMsg>(channel, std::move(reader), [this] (bool force, bool& res) {
+			IPC::HandleMsg<GetNewsMsg>(channel, reader, [] (bool force, bool& res) {
 				res = GetNews(force);
 			});
 			break;
@@ -1678,7 +1678,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		// All sounds
 
 			case CG_S_REGISTERSOUND:
-				IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, std::move(reader), [this] (const std::string& sample, int& handle) {
+				IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, reader, [] (const std::string& sample, int& handle) {
 					handle = Audio::RegisterSFX(sample.c_str());
 				});
 				break;
@@ -1686,122 +1686,122 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		// All renderer
 
 		case CG_R_SETALTSHADERTOKENS:
-			IPC::HandleMsg<Render::SetAltShaderTokenMsg>(channel, std::move(reader), [this] (const std::string& tokens) {
+			IPC::HandleMsg<Render::SetAltShaderTokenMsg>(channel, reader, [] (const std::string& tokens) {
 				re.SetAltShaderTokens(tokens.c_str());
 			});
 			break;
 
 		case CG_R_GETSHADERNAMEFROMHANDLE:
-			IPC::HandleMsg<Render::GetShaderNameFromHandleMsg>(channel, std::move(reader), [this] (int handle, std::string& name) {
+			IPC::HandleMsg<Render::GetShaderNameFromHandleMsg>(channel, reader, [] (int handle, std::string& name) {
 			    name = re.ShaderNameFromHandle(handle);
 			});
 			break;
 
 		case CG_R_INPVVS:
-			IPC::HandleMsg<Render::InPVVSMsg>(channel, std::move(reader), [this] (const std::array<float, 3>& p1, const std::array<float, 3>& p2, bool& res) {
+			IPC::HandleMsg<Render::InPVVSMsg>(channel, reader, [] (const std::array<float, 3>& p1, const std::array<float, 3>& p2, bool& res) {
 				res = re.inPVVS(p1.data(), p2.data());
 			});
 			break;
 
 		case CG_R_LOADWORLDMAP:
-			IPC::HandleMsg<Render::LoadWorldMapMsg>(channel, std::move(reader), [this] (const std::string& mapName) {
+			IPC::HandleMsg<Render::LoadWorldMapMsg>(channel, reader, [] (const std::string& mapName) {
 				re.SetWorldVisData(CM_ClusterPVS(-1));
 				re.LoadWorld(mapName.c_str());
 			});
 			break;
 
 		case CG_R_REGISTERMODEL:
-			IPC::HandleMsg<Render::RegisterModelMsg>(channel, std::move(reader), [this] (const std::string& name, int& handle) {
+			IPC::HandleMsg<Render::RegisterModelMsg>(channel, reader, [] (const std::string& name, int& handle) {
 				handle = re.RegisterModel(name.c_str());
 			});
 			break;
 
 		case CG_R_REGISTERSKIN:
-			IPC::HandleMsg<Render::RegisterSkinMsg>(channel, std::move(reader), [this] (const std::string& name, int& handle) {
+			IPC::HandleMsg<Render::RegisterSkinMsg>(channel, reader, [] (const std::string& name, int& handle) {
 				handle = re.RegisterSkin(name.c_str());
 			});
 			break;
 
 		case CG_R_REGISTERSHADER:
-			IPC::HandleMsg<Render::RegisterShaderMsg>(channel, std::move(reader), [this] (const std::string& name, int flags, int& handle) {
+			IPC::HandleMsg<Render::RegisterShaderMsg>(channel, reader, [] (const std::string& name, int flags, int& handle) {
 				handle = re.RegisterShader(name.c_str(), (RegisterShaderFlags) flags);
 			});
 			break;
 
 		case CG_R_REGISTERFONT:
-			IPC::HandleMsg<Render::RegisterFontMsg>(channel, std::move(reader), [this] (const std::string& name, const std::string& fallbackName, int pointSize, fontMetrics_t& font) {
+			IPC::HandleMsg<Render::RegisterFontMsg>(channel, reader, [] (const std::string& name, const std::string& fallbackName, int pointSize, fontMetrics_t& font) {
 				re.RegisterFontVM(name.c_str(), fallbackName.c_str(), pointSize, &font);
 			});
 			break;
 
 		case CG_R_MODELBOUNDS:
-			IPC::HandleMsg<Render::ModelBoundsMsg>(channel, std::move(reader), [this] (int handle, std::array<float, 3>& mins, std::array<float, 3>& maxs) {
+			IPC::HandleMsg<Render::ModelBoundsMsg>(channel, reader, [] (int handle, std::array<float, 3>& mins, std::array<float, 3>& maxs) {
 				re.ModelBounds(handle, mins.data(), maxs.data());
 			});
 			break;
 
 		case CG_R_LERPTAG:
-			IPC::HandleMsg<Render::LerpTagMsg>(channel, std::move(reader), [this] (const refEntity_t& entity, const std::string& tagName, int startIndex, orientation_t& tag, int& res) {
+			IPC::HandleMsg<Render::LerpTagMsg>(channel, reader, [] (const refEntity_t& entity, const std::string& tagName, int startIndex, orientation_t& tag, int& res) {
 				res = re.LerpTag(&tag, &entity, tagName.c_str(), startIndex);
 			});
 			break;
 
 		case CG_R_REMAP_SHADER:
-			IPC::HandleMsg<Render::RemapShaderMsg>(channel, std::move(reader), [this] (const std::string& oldShader, const std::string& newShader, const std::string& timeOffset) {
+			IPC::HandleMsg<Render::RemapShaderMsg>(channel, reader, [] (const std::string& oldShader, const std::string& newShader, const std::string& timeOffset) {
 				re.RemapShader(oldShader.c_str(), newShader.c_str(), timeOffset.c_str());
 			});
 			break;
 
 		case CG_R_INPVS:
-			IPC::HandleMsg<Render::InPVSMsg>(channel, std::move(reader), [this] (const std::array<float, 3>& p1, const std::array<float, 3>& p2, bool& res) {
+			IPC::HandleMsg<Render::InPVSMsg>(channel, reader, [] (const std::array<float, 3>& p1, const std::array<float, 3>& p2, bool& res) {
 				res = re.inPVS(p1.data(), p2.data());
 			});
 			break;
 
 		case CG_R_LIGHTFORPOINT:
-			IPC::HandleMsg<Render::LightForPointMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, std::array<float, 3>& ambient, std::array<float, 3>& directed, std::array<float, 3>& dir, int res) {
+			IPC::HandleMsg<Render::LightForPointMsg>(channel, reader, [] (std::array<float, 3> point, std::array<float, 3>& ambient, std::array<float, 3>& directed, std::array<float, 3>& dir, int res) {
 				res = re.LightForPoint(point.data(), ambient.data(), directed.data(), dir.data());
 			});
 			break;
 
 		case CG_R_REGISTERANIMATION:
-			IPC::HandleMsg<Render::RegisterAnimationMsg>(channel, std::move(reader), [this] (const std::string& name, int& handle) {
+			IPC::HandleMsg<Render::RegisterAnimationMsg>(channel, reader, [this] (const std::string& name, int& handle) {
 				handle = re.RegisterAnimation(name.c_str());
 			});
 			break;
 
 		case CG_R_BUILDSKELETON:
-			IPC::HandleMsg<Render::BuildSkeletonMsg>(channel, std::move(reader), [this] (int anim, int startFrame, int endFrame, float frac, bool clearOrigin, refSkeleton_t& skel, int& res) {
+			IPC::HandleMsg<Render::BuildSkeletonMsg>(channel, reader, [] (int anim, int startFrame, int endFrame, float frac, bool clearOrigin, refSkeleton_t& skel, int& res) {
 				res = re.BuildSkeleton(&skel, anim, startFrame, endFrame, frac, clearOrigin);
 			});
 			break;
 
 		case CG_R_BONEINDEX:
-			IPC::HandleMsg<Render::BoneIndexMsg>(channel, std::move(reader), [this] (int model, const std::string& boneName, int& index) {
+			IPC::HandleMsg<Render::BoneIndexMsg>(channel, reader, [] (int model, const std::string& boneName, int& index) {
 				index = re.BoneIndex(model, boneName.c_str());
 			});
 			break;
 
 		case CG_R_ANIMNUMFRAMES:
-			IPC::HandleMsg<Render::AnimNumFramesMsg>(channel, std::move(reader), [this] (int anim, int& res) {
+			IPC::HandleMsg<Render::AnimNumFramesMsg>(channel, reader, [] (int anim, int& res) {
 				res = re.AnimNumFrames(anim);
 			});
 			break;
 
 		case CG_R_ANIMFRAMERATE:
-			IPC::HandleMsg<Render::AnimFrameRateMsg>(channel, std::move(reader), [this] (int anim, int& res) {
+			IPC::HandleMsg<Render::AnimFrameRateMsg>(channel, reader, [] (int anim, int& res) {
 				res = re.AnimFrameRate(anim);
 			});
 			break;
 
 		case CG_REGISTERVISTEST:
-			IPC::HandleMsg<Render::RegisterVisTestMsg>(channel, std::move(reader), [this] (int& handle) {
+			IPC::HandleMsg<Render::RegisterVisTestMsg>(channel, reader, [] (int& handle) {
 				handle = re.RegisterVisTest();
 			});
 			break;
 
 		case CG_CHECKVISIBILITY:
-			IPC::HandleMsg<Render::CheckVisibilityMsg>(channel, std::move(reader), [this] (int handle, float& res) {
+			IPC::HandleMsg<Render::CheckVisibilityMsg>(channel, reader, [] (int handle, float& res) {
 				res = re.CheckVisibility(handle);
 			});
 			break;
@@ -1809,19 +1809,19 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		// All keys
 
 		case CG_KEY_GETCATCHER:
-			IPC::HandleMsg<Key::GetCatcherMsg>(channel, std::move(reader), [this] (int& catcher) {
+			IPC::HandleMsg<Key::GetCatcherMsg>(channel, reader, [] (int& catcher) {
 				catcher = Key_GetCatcher();
 			});
 			break;
 
 		case CG_KEY_SETCATCHER:
-			IPC::HandleMsg<Key::SetCatcherMsg>(channel, std::move(reader), [this] (int catcher) {
+			IPC::HandleMsg<Key::SetCatcherMsg>(channel, reader, [] (int catcher) {
 				Key_SetCatcher(catcher);
 			});
 			break;
 
 		case CG_KEY_GETKEYNUMFORBINDS:
-			IPC::HandleMsg<Key::GetKeynumForBindsMsg>(channel, std::move(reader), [this] (int team, const std::vector<std::string>& binds, std::vector<std::vector<int>>& result) {
+			IPC::HandleMsg<Key::GetKeynumForBindsMsg>(channel, reader, [] (int team, const std::vector<std::string>& binds, std::vector<std::vector<int>>& result) {
                 for (const auto& bind : binds) {
                     result.push_back({});
                     for (int i = 0; i < MAX_KEYS; i++) {
@@ -1843,7 +1843,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
-			IPC::HandleMsg<Key::KeyNumToStringMsg>(channel, std::move(reader), [this] (int keynum, int len, std::string& result) {
+			IPC::HandleMsg<Key::KeyNumToStringMsg>(channel, reader, [] (int keynum, int len, std::string& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Key_KeynumToStringBuf(keynum, buffer.get(), len);
 				result.assign(buffer.get(), len);
@@ -1853,13 +1853,13 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		// All LAN
 
 		case CG_LAN_GETSERVERCOUNT:
-			IPC::HandleMsg<LAN::GetServerCountMsg>(channel, std::move(reader), [this] (int source, int& count) {
+			IPC::HandleMsg<LAN::GetServerCountMsg>(channel, reader, [this] (int source, int& count) {
 				count = LAN_GetServerCount(source);
 			});
 			break;
 
 		case CG_LAN_GETSERVERINFO:
-			IPC::HandleMsg<LAN::GetServerInfoMsg>(channel, std::move(reader), [this] (int source, int n, int len, std::string& info) {
+			IPC::HandleMsg<LAN::GetServerInfoMsg>(channel, reader, [] (int source, int n, int len, std::string& info) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				LAN_GetServerInfo(source, n, buffer.get(), len);
 				info.assign(buffer.get(), len);
@@ -1867,37 +1867,37 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_LAN_GETSERVERPING:
-			IPC::HandleMsg<LAN::GetServerPingMsg>(channel, std::move(reader), [this] (int source, int n, int& ping) {
+			IPC::HandleMsg<LAN::GetServerPingMsg>(channel, reader, [this] (int source, int n, int& ping) {
 				ping = LAN_GetServerPing(source, n);
 			});
 			break;
 
 		case CG_LAN_MARKSERVERVISIBLE:
-			IPC::HandleMsg<LAN::MarkServerVisibleMsg>(channel, std::move(reader), [this] (int source, int n, bool visible) {
+			IPC::HandleMsg<LAN::MarkServerVisibleMsg>(channel, reader, [] (int source, int n, bool visible) {
 				LAN_MarkServerVisible(source, n, visible);
 			});
 			break;
 
 		case CG_LAN_SERVERISVISIBLE:
-			IPC::HandleMsg<LAN::ServerIsVisibleMsg>(channel, std::move(reader), [this] (int source, int n, bool& visible) {
+			IPC::HandleMsg<LAN::ServerIsVisibleMsg>(channel, reader, [] (int source, int n, bool& visible) {
 				visible = LAN_ServerIsVisible(source, n);
 			});
 			break;
 
 		case CG_LAN_UPDATEVISIBLEPINGS:
-			IPC::HandleMsg<LAN::UpdateVisiblePingsMsg>(channel, std::move(reader), [this] (int source, bool& res) {
+			IPC::HandleMsg<LAN::UpdateVisiblePingsMsg>(channel, reader, [] (int source, bool& res) {
 				res = LAN_UpdateVisiblePings(source);
 			});
 			break;
 
 		case CG_LAN_RESETPINGS:
-			IPC::HandleMsg<LAN::ResetPingsMsg>(channel, std::move(reader), [this] (int n) {
+			IPC::HandleMsg<LAN::ResetPingsMsg>(channel, reader, [] (int n) {
 				LAN_ResetPings(n);
 			});
 			break;
 
 		case CG_LAN_SERVERSTATUS:
-			IPC::HandleMsg<LAN::ServerStatusMsg>(channel, std::move(reader), [this] (const std::string& serverAddress, int len, std::string& status, int& res) {
+			IPC::HandleMsg<LAN::ServerStatusMsg>(channel, reader, [] (const std::string& serverAddress, int len, std::string& status, int& res) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				res = LAN_GetServerStatus(serverAddress.c_str(), buffer.get(), len);
 				status.assign(buffer.get(), len);
@@ -1905,7 +1905,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_LAN_RESETSERVERSTATUS:
-			IPC::HandleMsg<LAN::ResetServerStatusMsg>(channel, std::move(reader), [this] {
+			IPC::HandleMsg<LAN::ResetServerStatusMsg>(channel, reader, [] {
 				LAN_GetServerStatus(nullptr, nullptr, 0);
 			});
 			break;
@@ -1913,73 +1913,73 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		// All rocket
 
 		case CG_ROCKET_INIT:
-			IPC::HandleMsg<Rocket::InitMsg>(channel, std::move(reader), [this] {
+			IPC::HandleMsg<Rocket::InitMsg>(channel, reader, [] {
 				Rocket_Init();
 			});
 			break;
 
 		case CG_ROCKET_SHUTDOWN:
-			IPC::HandleMsg<Rocket::ShutdownMsg>(channel, std::move(reader), [this] {
+			IPC::HandleMsg<Rocket::ShutdownMsg>(channel, reader, [] {
 				Rocket_Shutdown();
 			});
 			break;
 
 		case CG_ROCKET_LOADDOCUMENT:
-			IPC::HandleMsg<Rocket::LoadDocumentMsg>(channel, std::move(reader), [this] (const std::string& path) {
+			IPC::HandleMsg<Rocket::LoadDocumentMsg>(channel, reader, [] (const std::string& path) {
 				Rocket_LoadDocument(path.c_str());
 			});
 			break;
 
 		case CG_ROCKET_LOADCURSOR:
-			IPC::HandleMsg<Rocket::LoadCursorMsg>(channel, std::move(reader), [this] (const std::string& path) {
+			IPC::HandleMsg<Rocket::LoadCursorMsg>(channel, reader, [] (const std::string& path) {
 				Rocket_LoadCursor(path.c_str());
 			});
 			break;
 
 		case CG_ROCKET_DOCUMENTACTION:
-			IPC::HandleMsg<Rocket::DocumentActionMsg>(channel, std::move(reader), [this] (const std::string& name, const std::string& action) {
+			IPC::HandleMsg<Rocket::DocumentActionMsg>(channel, reader, [] (const std::string& name, const std::string& action) {
 				Rocket_DocumentAction(name.c_str(), action.c_str());
 			});
 			break;
 
 		case CG_ROCKET_GETEVENT:
-			IPC::HandleMsg<Rocket::GetEventMsg>(channel, std::move(reader), [this] (bool& got, std::string& cmdText) {
+			IPC::HandleMsg<Rocket::GetEventMsg>(channel, reader, [] (bool& got, std::string& cmdText) {
 				got = Rocket_GetEvent(cmdText);
 			});
 			break;
 
 		case CG_ROCKET_DELETEEVENT:
-			IPC::HandleMsg<Rocket::DeleteEventMsg>(channel, std::move(reader), [this] {
+			IPC::HandleMsg<Rocket::DeleteEventMsg>(channel, reader, [] {
 				Rocket_DeleteEvent();
 			});
 			break;
 
 		case CG_ROCKET_REGISTERDATASOURCE:
-			IPC::HandleMsg<Rocket::RegisterDataSourceMsg>(channel, std::move(reader), [this] (const std::string& name) {
+			IPC::HandleMsg<Rocket::RegisterDataSourceMsg>(channel, reader, [] (const std::string& name) {
 				Rocket_RegisterDataSource(name.c_str());
 			});
 			break;
 
 		case CG_ROCKET_DSADDROW:
-			IPC::HandleMsg<Rocket::DSAddRowMsg>(channel, std::move(reader), [this] (const std::string& name, const std::string& table, const std::string& data) {
+			IPC::HandleMsg<Rocket::DSAddRowMsg>(channel, reader, [] (const std::string& name, const std::string& table, const std::string& data) {
 				Rocket_DSAddRow(name.c_str(), table.c_str(), data.c_str());
 			});
 			break;
 
 		case CG_ROCKET_DSCLEARTABLE:
-			IPC::HandleMsg<Rocket::DSClearTableMsg>(channel, std::move(reader), [this] (const std::string& name, const std::string& table) {
+			IPC::HandleMsg<Rocket::DSClearTableMsg>(channel, reader, [] (const std::string& name, const std::string& table) {
 				Rocket_DSClearTable(name.c_str(), table.c_str());
 			});
 			break;
 
 		case CG_ROCKET_SETINNERRML:
-			IPC::HandleMsg<Rocket::SetInnerRMLMsg>(channel, std::move(reader), [this] (const std::string& rml, int flags) {
+			IPC::HandleMsg<Rocket::SetInnerRMLMsg>(channel, reader, [] (const std::string& rml, int flags) {
 				Rocket_SetInnerRML( "", "", rml.c_str(), flags);
 			});
 			break;
 
 		case CG_ROCKET_GETATTRIBUTE:
-			IPC::HandleMsg<Rocket::GetAttributeMsg>(channel, std::move(reader), [this] (const std::string& attribute, int len, std::string& result) {
+			IPC::HandleMsg<Rocket::GetAttributeMsg>(channel, reader, [] (const std::string& attribute, int len, std::string& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Rocket_GetAttribute( "", "", attribute.c_str(), buffer.get(), len);
 				result.assign(buffer.get(), len);
@@ -1987,13 +1987,13 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_SETATTRIBUTE:
-			IPC::HandleMsg<Rocket::SetAttributeMsg>(channel, std::move(reader), [this] (const std::string& attribute, const std::string& value) {
+			IPC::HandleMsg<Rocket::SetAttributeMsg>(channel, reader, [] (const std::string& attribute, const std::string& value) {
 				Rocket_SetAttribute("", "", attribute.c_str(), value.c_str());
 			});
 			break;
 
 		case CG_ROCKET_GETPROPERTY:
-			IPC::HandleMsg<Rocket::GetPropertyMsg>(channel, std::move(reader), [this] (const std::string& property, int type, int len, std::vector<char>& result) {
+			IPC::HandleMsg<Rocket::GetPropertyMsg>(channel, reader, [] (const std::string& property, int type, int len, std::vector<char>& result) {
 				result.resize(len);
 				assert(len > 0);
 				Rocket_GetProperty(property.c_str(), &result[0], len, (rocketVarType_t)type);
@@ -2001,13 +2001,13 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_SETPROPERTYBYID:
-			IPC::HandleMsg<Rocket::SetPropertyMsg>(channel, std::move(reader), [this] (const std::string& property, const std::string& value) {
+			IPC::HandleMsg<Rocket::SetPropertyMsg>(channel, reader, [] (const std::string& property, const std::string& value) {
 				Rocket_SetPropertyById("", property.c_str(), value.c_str());
 			});
 			break;
 
 		case CG_ROCKET_GETEVENTPARAMETERS:
-			IPC::HandleMsg<Rocket::GetEventParametersMsg>(channel, std::move(reader), [this] (int len, std::string& result) {
+			IPC::HandleMsg<Rocket::GetEventParametersMsg>(channel, reader, [] (int len, std::string& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Rocket_GetEventParameters(buffer.get(), len);
 				result.assign(buffer.get(), len);
@@ -2015,13 +2015,13 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_REGISTERDATAFORMATTER:
-			IPC::HandleMsg<Rocket::RegisterDataFormatterMsg>(channel, std::move(reader), [this] (const std::string& name) {
+			IPC::HandleMsg<Rocket::RegisterDataFormatterMsg>(channel, reader, [] (const std::string& name) {
 				Rocket_RegisterDataFormatter(name.c_str());
 			});
 			break;
 
 		case CG_ROCKET_DATAFORMATTERRAWDATA:
-			IPC::HandleMsg<Rocket::DataFormatterDataMsg>(channel, std::move(reader), [this] (int handle, int nameLength, int dataLength, std::string& name, std::string& data) {
+			IPC::HandleMsg<Rocket::DataFormatterDataMsg>(channel, reader, [] (int handle, int nameLength, int dataLength, std::string& name, std::string& data) {
 				std::unique_ptr<char[]> nameBuffer(new char[nameLength]);
 				std::unique_ptr<char[]> dataBuffer(new char[dataLength]);
 				Rocket_DataFormatterRawData(handle, nameBuffer.get(), nameLength, dataBuffer.get(), dataLength);
@@ -2031,19 +2031,19 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_DATAFORMATTERFORMATTEDDATA:
-			IPC::HandleMsg<Rocket::DataFormatterFormattedDataMsg>(channel, std::move(reader), [this] (int handle, const std::string& data, bool parseQuake) {
+			IPC::HandleMsg<Rocket::DataFormatterFormattedDataMsg>(channel, reader, [] (int handle, const std::string& data, bool parseQuake) {
 				Rocket_DataFormatterFormattedData(handle, data.c_str(), parseQuake);
 			});
 			break;
 
 		case CG_ROCKET_REGISTERELEMENT:
-			IPC::HandleMsg<Rocket::RegisterElementMsg>(channel, std::move(reader), [this] (const std::string& tag) {
+			IPC::HandleMsg<Rocket::RegisterElementMsg>(channel, reader, [] (const std::string& tag) {
 				Rocket_RegisterElement(tag.c_str());
 			});
 			break;
 
 		case CG_ROCKET_GETELEMENTTAG:
-			IPC::HandleMsg<Rocket::GetElementTagMsg>(channel, std::move(reader), [this] (int len, std::string& result) {
+			IPC::HandleMsg<Rocket::GetElementTagMsg>(channel, reader, [] (int len, std::string& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Rocket_GetElementTag(buffer.get(), len);
 				result.assign(buffer.get(), len);
@@ -2051,13 +2051,13 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_GETELEMENTABSOLUTEOFFSET:
-			IPC::HandleMsg<Rocket::GetElementAbsoluteOffsetMsg>(channel, std::move(reader), [this] (float& x, float& y) {
+			IPC::HandleMsg<Rocket::GetElementAbsoluteOffsetMsg>(channel, reader, [] (float& x, float& y) {
 				Rocket_GetElementAbsoluteOffset(&x, &y);
 			});
 			break;
 
 		case CG_ROCKET_QUAKETORML:
-			IPC::HandleMsg<Rocket::QuakeToRMLMsg>(channel, std::move(reader), [this] (const std::string& input, int len, std::string& result) {
+			IPC::HandleMsg<Rocket::QuakeToRMLMsg>(channel, reader, [] (const std::string& input, int len, std::string& result) {
 				std::unique_ptr<char[]> buffer(new char[len]);
 				Rocket_QuakeToRMLBuffer(input.c_str(), buffer.get(), len);
 				result.assign(buffer.get(), len);
@@ -2065,73 +2065,73 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_ROCKET_SETCLASS:
-			IPC::HandleMsg<Rocket::SetClassMsg>(channel, std::move(reader), [this] (std::string Class, bool activate) {
+			IPC::HandleMsg<Rocket::SetClassMsg>(channel, reader, [] (std::string Class, bool activate) {
 				Rocket_SetClass(Class.c_str(), activate);
 			});
 			break;
 
 		case CG_ROCKET_INITHUDS:
-			IPC::HandleMsg<Rocket::InitHUDsMsg>(channel, std::move(reader), [this] (int size) {
+			IPC::HandleMsg<Rocket::InitHUDsMsg>(channel, reader, [this] (int size) {
 				Rocket_InitializeHuds(size);
 			});
 			break;
 
 		case CG_ROCKET_LOADUNIT:
-			IPC::HandleMsg<Rocket::LoadUnitMsg>(channel, std::move(reader), [this] (const std::string& path) {
+			IPC::HandleMsg<Rocket::LoadUnitMsg>(channel, reader, [this] (const std::string& path) {
 				Rocket_LoadUnit(path.c_str());
 			});
 			break;
 
 		case CG_ROCKET_ADDUNITTOHUD:
-			IPC::HandleMsg<Rocket::AddUnitToHUDMsg>(channel, std::move(reader), [this] (int weapon, const std::string& id) {
+			IPC::HandleMsg<Rocket::AddUnitToHUDMsg>(channel, reader, [this] (int weapon, const std::string& id) {
 				Rocket_AddUnitToHud(weapon, id.c_str());
 			});
 			break;
 
 		case CG_ROCKET_SHOWHUD:
-			IPC::HandleMsg<Rocket::ShowHUDMsg>(channel, std::move(reader), [this] (int weapon) {
+			IPC::HandleMsg<Rocket::ShowHUDMsg>(channel, reader, [this] (int weapon) {
 				Rocket_ShowHud(weapon);
 			});
 			break;
 
 		case CG_ROCKET_CLEARHUD:
-			IPC::HandleMsg<Rocket::ClearHUDMsg>(channel, std::move(reader), [this] (int weapon) {
+			IPC::HandleMsg<Rocket::ClearHUDMsg>(channel, reader, [this] (int weapon) {
 				Rocket_ClearHud(weapon);
 			});
 			break;
 
 		case CG_ROCKET_ADDTEXT:
-			IPC::HandleMsg<Rocket::AddTextMsg>(channel, std::move(reader), [this] (const std::string& text, const std::string& Class, float x, float y) {
+			IPC::HandleMsg<Rocket::AddTextMsg>(channel, reader, [this] (const std::string& text, const std::string& Class, float x, float y) {
 				Rocket_AddTextElement(text.c_str(), Class.c_str(), x, y);
 			});
 			break;
 
 		case CG_ROCKET_CLEARTEXT:
-			IPC::HandleMsg<Rocket::ClearTextMsg>(channel, std::move(reader), [this] {
+			IPC::HandleMsg<Rocket::ClearTextMsg>(channel, reader, [] {
 				Rocket_ClearText();
 			});
 			break;
 
 		case CG_ROCKET_REGISTERPROPERTY:
-			IPC::HandleMsg<Rocket::RegisterPropertyMsg>(channel, std::move(reader), [this] (const std::string& name, const std::string& defaultValue, bool inherited, bool forceLayout, const std::string& parseAs) {
+			IPC::HandleMsg<Rocket::RegisterPropertyMsg>(channel, reader, [] (const std::string& name, const std::string& defaultValue, bool inherited, bool forceLayout, const std::string& parseAs) {
 				Rocket_RegisterProperty(name.c_str(), defaultValue.c_str(), inherited, forceLayout, parseAs.c_str());
 			});
 			break;
 
 		case CG_ROCKET_SHOWSCOREBOARD:
-			IPC::HandleMsg<Rocket::ShowScoreboardMsg>(channel, std::move(reader), [this] (const std::string& name, bool show) {
+			IPC::HandleMsg<Rocket::ShowScoreboardMsg>(channel, reader, [] (const std::string& name, bool show) {
 				Rocket_ShowScoreboard(name.c_str(), show);
 			});
 			break;
 
 		case CG_ROCKET_SETDATASELECTINDEX:
-			IPC::HandleMsg<Rocket::SetDataSelectIndexMsg>(channel, std::move(reader), [this] (int index) {
+			IPC::HandleMsg<Rocket::SetDataSelectIndexMsg>(channel, reader, [] (int index) {
 				Rocket_SetDataSelectIndex(index);
 			});
 			break;
 
 		case CG_ROCKET_LOADFONT:
-			IPC::HandleMsg<Rocket::LoadFontMsg>(channel, std::move(reader), [this] (const std::string& font) {
+			IPC::HandleMsg<Rocket::LoadFontMsg>(channel, reader, [] (const std::string& font) {
 				Rocket_LoadFont(font.c_str());
 			});
 			break;
@@ -2142,7 +2142,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 }
 
 //TODO move somewhere else
-template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
+template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Message<Id, MsgArgs...>, Util::Reader& reader, Func&& func)
 {
     typedef IPC::Message<Id, MsgArgs...> Message;
 
@@ -2152,9 +2152,9 @@ template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Me
     Util::apply(std::forward<Func>(func), std::move(inputs));
 }
 
-template<typename Msg, typename Func> void HandleMsg(Util::Reader reader, Func&& func)
+template<typename Msg, typename Func> void HandleMsg(Util::Reader& reader, Func&& func)
 {
-    HandleMsg(Msg(), std::move(reader), std::forward<Func>(func));
+    HandleMsg(Msg(), reader, std::forward<Func>(func));
 }
 
 CGameVM::CmdBuffer::CmdBuffer(std::string name): IPC::CommandBufferHost(name) {
@@ -2167,79 +2167,79 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 			// All sounds
 
 			case CG_S_STARTSOUND:
-				HandleMsg<Audio::StartSoundMsg>(std::move(reader), [this] (bool isPositional, std::array<float, 3> origin, int entityNum, int sfx) {
+				HandleMsg<Audio::StartSoundMsg>(reader, [] (bool isPositional, const std::array<float, 3>& origin, int entityNum, int sfx) {
 					Audio::StartSound(entityNum, (isPositional ? origin.data() : nullptr), sfx);
 				});
 				break;
 
 			case CG_S_STARTLOCALSOUND:
-				HandleMsg<Audio::StartLocalSoundMsg>(std::move(reader), [this] (int sfx) {
+				HandleMsg<Audio::StartLocalSoundMsg>(reader, [] (int sfx) {
 					Audio::StartLocalSound(sfx);
 				});
 				break;
 
 			case CG_S_CLEARLOOPINGSOUNDS:
-				HandleMsg<Audio::ClearLoopingSoundsMsg>(std::move(reader), [this] {
+				HandleMsg<Audio::ClearLoopingSoundsMsg>(reader, [] {
 					Audio::ClearAllLoopingSounds();
 				});
 				break;
 
 			case CG_S_ADDLOOPINGSOUND:
-				HandleMsg<Audio::AddLoopingSoundMsg>(std::move(reader), [this] (int entityNum, int sfx) {
+				HandleMsg<Audio::AddLoopingSoundMsg>(reader, [this] (int entityNum, int sfx) {
 					Audio::AddEntityLoopingSound(entityNum, sfx);
 				});
 				break;
 
 			case CG_S_STOPLOOPINGSOUND:
-				HandleMsg<Audio::StopLoopingSoundMsg>(std::move(reader), [this] (int entityNum) {
+				HandleMsg<Audio::StopLoopingSoundMsg>(reader, [] (int entityNum) {
 					Audio::ClearLoopingSoundsForEntity(entityNum);
 				});
 				break;
 
 			case CG_S_UPDATEENTITYPOSITION:
-				HandleMsg<Audio::UpdateEntityPositionMsg>(std::move(reader), [this] (int entityNum, std::array<float, 3> position) {
+				HandleMsg<Audio::UpdateEntityPositionMsg>(reader, [] (int entityNum, std::array<float, 3>& position) {
 					Audio::UpdateEntityPosition(entityNum, position.data());
 				});
 				break;
 
 			case CG_S_RESPATIALIZE:
-				HandleMsg<Audio::RespatializeMsg>(std::move(reader), [this] (int entityNum, const std::array<float, 9>& axis) {
+				HandleMsg<Audio::RespatializeMsg>(reader, [] (int entityNum, const std::array<float, 9>& axis) {
 					Audio::UpdateListener(entityNum, (vec3_t*) axis.data());
 				});
 				break;
 
 			case CG_S_STARTBACKGROUNDTRACK:
-				HandleMsg<Audio::StartBackgroundTrackMsg>(std::move(reader), [this] (const std::string& intro, const std::string& loop) {
+				HandleMsg<Audio::StartBackgroundTrackMsg>(reader, [] (const std::string& intro, const std::string& loop) {
 					Audio::StartMusic(intro.c_str(), loop.c_str());
 				});
 				break;
 
 			case CG_S_STOPBACKGROUNDTRACK:
-				HandleMsg<Audio::StopBackgroundTrackMsg>(std::move(reader), [this] {
+				HandleMsg<Audio::StopBackgroundTrackMsg>(reader, [] {
 					Audio::StopMusic();
 				});
 				break;
 
 			case CG_S_UPDATEENTITYVELOCITY:
-				HandleMsg<Audio::UpdateEntityVelocityMsg>(std::move(reader), [this] (int entityNum, std::array<float, 3> velocity) {
+				HandleMsg<Audio::UpdateEntityVelocityMsg>(reader, [] (int entityNum, const std::array<float, 3>& velocity) {
 					Audio::UpdateEntityVelocity(entityNum, velocity.data());
 				});
 				break;
 
 			case CG_S_SETREVERB:
-				HandleMsg<Audio::SetReverbMsg>(std::move(reader), [this] (int slotNum, const std::string& name, float ratio) {
+				HandleMsg<Audio::SetReverbMsg>(reader, [] (int slotNum, const std::string& name, float ratio) {
 					Audio::SetReverb(slotNum, name.c_str(), ratio);
 				});
 				break;
 
 			case CG_S_BEGINREGISTRATION:
-				HandleMsg<Audio::BeginRegistrationMsg>(std::move(reader), [this] {
+				HandleMsg<Audio::BeginRegistrationMsg>(reader, [] {
 					Audio::BeginRegistration();
 				});
 				break;
 
 			case CG_S_ENDREGISTRATION:
-				HandleMsg<Audio::EndRegistrationMsg>(std::move(reader), [this] {
+				HandleMsg<Audio::EndRegistrationMsg>(reader, [] {
 					Audio::EndRegistration();
 				});
 				break;
@@ -2247,103 +2247,103 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
             // All renderer
 
             case CG_R_SCISSOR_ENABLE:
-                HandleMsg<Render::ScissorEnableMsg>(std::move(reader), [this] (bool enable) {
+                HandleMsg<Render::ScissorEnableMsg>(reader, [] (bool enable) {
                     re.ScissorEnable(enable);
                 });
                 break;
 
             case CG_R_SCISSOR_SET:
-                HandleMsg<Render::ScissorSetMsg>(std::move(reader), [this] (int x, int y, int w, int h) {
+                HandleMsg<Render::ScissorSetMsg>(reader, [] (int x, int y, int w, int h) {
                     re.ScissorSet(x, y, w, h);
                 });
                 break;
 
             case CG_R_CLEARSCENE:
-                HandleMsg<Render::ClearSceneMsg>(std::move(reader), [this] {
+                HandleMsg<Render::ClearSceneMsg>(reader, [] {
                     re.ClearScene();
                 });
                 break;
 
             case CG_R_ADDREFENTITYTOSCENE:
-                HandleMsg<Render::AddRefEntityToSceneMsg>(std::move(reader), [this] (refEntity_t&& entity) {
+                HandleMsg<Render::AddRefEntityToSceneMsg>(reader, [] (const refEntity_t& entity) {
                     re.AddRefEntityToScene(&entity);
                 });
                 break;
 
             case CG_R_ADDPOLYTOSCENE:
-                HandleMsg<Render::AddPolyToSceneMsg>(std::move(reader), [this] (int shader, const std::vector<polyVert_t>& verts) {
+                HandleMsg<Render::AddPolyToSceneMsg>(reader, [] (int shader, const std::vector<polyVert_t>& verts) {
                     re.AddPolyToScene(shader, verts.size(), verts.data());
                 });
                 break;
 
             case CG_R_ADDPOLYSTOSCENE:
-                HandleMsg<Render::AddPolysToSceneMsg>(std::move(reader), [this] (int shader, const std::vector<polyVert_t>& verts, int numVerts, int numPolys) {
+                HandleMsg<Render::AddPolysToSceneMsg>(reader, [] (int shader, const std::vector<polyVert_t>& verts, int numVerts, int numPolys) {
                     re.AddPolysToScene(shader, numVerts, verts.data(), numPolys);
                 });
                 break;
 
             case CG_R_ADDLIGHTTOSCENE:
-                HandleMsg<Render::AddLightToSceneMsg>(std::move(reader), [this] (const std::array<float, 3>& point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
+                HandleMsg<Render::AddLightToSceneMsg>(reader, [] (const std::array<float, 3>& point, float radius, float intensity, float r, float g, float b, int shader, int flags) {
                     re.AddLightToScene(point.data(), radius, intensity, r, g, b, shader, flags);
                 });
                 break;
 
             case CG_R_ADDADDITIVELIGHTTOSCENE:
-                HandleMsg<Render::AddAdditiveLightToSceneMsg>(std::move(reader), [this] (const std::array<float, 3>& point, float intensity, float r, float g, float b) {
+                HandleMsg<Render::AddAdditiveLightToSceneMsg>(reader, [] (const std::array<float, 3>& point, float intensity, float r, float g, float b) {
                     re.AddAdditiveLightToScene(point.data(), intensity, r, g, b);
                 });
                 break;
 
             case CG_R_SETCOLOR:
-                HandleMsg<Render::SetColorMsg>(std::move(reader), [this] (const std::array<float, 4>& color) {
+                HandleMsg<Render::SetColorMsg>(reader, [] (const std::array<float, 4>& color) {
                     re.SetColor(color.data());
                 });
                 break;
 
             case CG_R_SETCLIPREGION:
-                HandleMsg<Render::SetClipRegionMsg>(std::move(reader), [this] (const std::array<float, 4>& region) {
+                HandleMsg<Render::SetClipRegionMsg>(reader, [] (const std::array<float, 4>& region) {
                     re.SetClipRegion(region.data());
                 });
                 break;
 
             case CG_R_RESETCLIPREGION:
-                HandleMsg<Render::ResetClipRegionMsg>(std::move(reader), [this] {
+                HandleMsg<Render::ResetClipRegionMsg>(reader, [] {
                     re.SetClipRegion(nullptr);
                 });
                 break;
 
             case CG_R_DRAWSTRETCHPIC:
-                HandleMsg<Render::DrawStretchPicMsg>(std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader) {
+                HandleMsg<Render::DrawStretchPicMsg>(reader, [] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader) {
                     re.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, shader);
                 });
                 break;
 
             case CG_R_DRAWROTATEDPIC:
-                HandleMsg<Render::DrawRotatedPicMsg>(std::move(reader), [this] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader, float angle) {
+                HandleMsg<Render::DrawRotatedPicMsg>(reader, [] (float x, float y, float w, float h, float s1, float t1, float s2, float t2, int shader, float angle) {
                     re.DrawRotatedPic(x, y, w, h, s1, t1, s2, t2, shader, angle);
                 });
                 break;
 
             case CG_ADDVISTESTTOSCENE:
-                HandleMsg<Render::AddVisTestToSceneMsg>(std::move(reader), [this] (int handle, const std::array<float, 3>& pos, float depthAdjust, float area) {
+                HandleMsg<Render::AddVisTestToSceneMsg>(reader, [] (int handle, const std::array<float, 3>& pos, float depthAdjust, float area) {
                     re.AddVisTestToScene(handle, pos.data(), depthAdjust, area);
                 });
                 break;
 
             case CG_UNREGISTERVISTEST:
-                HandleMsg<Render::UnregisterVisTestMsg>(std::move(reader), [this] (int handle) {
+                HandleMsg<Render::UnregisterVisTestMsg>(reader, [] (int handle) {
                     re.UnregisterVisTest(handle);
                 });
                 break;
 
             case CG_SETCOLORGRADING:
-                HandleMsg<Render::SetColorGradingMsg>(std::move(reader), [this] (int slot, int shader) {
+                HandleMsg<Render::SetColorGradingMsg>(reader, [] (int slot, int shader) {
                     re.SetColorGrading(slot, shader);
                 });
                 break;
 
             case CG_R_RENDERSCENE:
-                HandleMsg<Render::RenderSceneMsg>(std::move(reader), [this] (refdef_t rd) {
+                HandleMsg<Render::RenderSceneMsg>(reader, [] (refdef_t rd) {
                     re.RenderScene(&rd);
                 });
                 break;

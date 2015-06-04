@@ -45,14 +45,14 @@ void VM::VMInit() {
 	G_CM_ClearWorld();
 }
 
-void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
+void VM::VMHandleSyscall(uint32_t id, Util::Reader& reader) {
 
 	int major = id >> 16;
 	int minor = id & 0xffff;
 	if (major == VM::QVM) {
 		switch (minor) {
 		case GAME_STATIC_INIT:
-			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [] (int milliseconds) {
+			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, reader, [] (int milliseconds) {
 				VM::InitializeProxies(milliseconds);
 				FS::Initialize();
 				VM::VMInit();
@@ -60,20 +60,20 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			break;
 
 		case GAME_INIT:
-			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats, bool inClient) {
+			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, reader, [](int levelTime, int randomSeed, bool restart, bool cheats, bool inClient) {
 				g_cheats.integer = cheats;
 				G_InitGame(levelTime, randomSeed, restart, inClient);
 			});
 			break;
 
 		case GAME_SHUTDOWN:
-			IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, std::move(reader), [](bool restart) {
+			IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, reader, [](bool restart) {
 				G_ShutdownGame(restart);
 			});
 			break;
 
 		case GAME_CLIENT_CONNECT:
-			IPC::HandleMsg<GameClientConnectMsg>(VM::rootChannel, std::move(reader), [](int clientNum, bool firstTime, int isBot, bool& denied, std::string& reason) {
+			IPC::HandleMsg<GameClientConnectMsg>(VM::rootChannel, reader, [](int clientNum, bool firstTime, int isBot, bool& denied, std::string& reason) {
 				const char* deniedStr = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
 				denied = deniedStr != nullptr;
 				if (denied)
@@ -82,31 +82,31 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			break;
 
 		case GAME_CLIENT_THINK:
-			IPC::HandleMsg<GameClientThinkMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
+			IPC::HandleMsg<GameClientThinkMsg>(VM::rootChannel, reader, [](int clientNum) {
 				ClientThink(clientNum);
 			});
 			break;
 
 		case GAME_CLIENT_USERINFO_CHANGED:
-			IPC::HandleMsg<GameClientUserinfoChangedMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
+			IPC::HandleMsg<GameClientUserinfoChangedMsg>(VM::rootChannel, reader, [](int clientNum) {
 				ClientUserinfoChanged(clientNum, false);
 			});
 			break;
 
 		case GAME_CLIENT_DISCONNECT:
-			IPC::HandleMsg<GameClientDisconnectMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
+			IPC::HandleMsg<GameClientDisconnectMsg>(VM::rootChannel, reader, [](int clientNum) {
 				ClientDisconnect(clientNum);
 			});
 			break;
 
 		case GAME_CLIENT_BEGIN:
-			IPC::HandleMsg<GameClientBeginMsg>(VM::rootChannel, std::move(reader), [](int clientNum) {
+			IPC::HandleMsg<GameClientBeginMsg>(VM::rootChannel, reader, [](int clientNum) {
 				ClientBegin(clientNum);
 			});
 			break;
 
 		case GAME_CLIENT_COMMAND:
-			IPC::HandleMsg<GameClientCommandMsg>(VM::rootChannel, std::move(reader), [](int clientNum, std::string command) {
+			IPC::HandleMsg<GameClientCommandMsg>(VM::rootChannel, reader, [](int clientNum, std::string command) {
 				Cmd::PushArgs(command);
 				ClientCommand(clientNum);
 				Cmd::PopArgs();
@@ -114,7 +114,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			break;
 
 		case GAME_RUN_FRAME:
-			IPC::HandleMsg<GameRunFrameMsg>(VM::rootChannel, std::move(reader), [](int levelTime) {
+			IPC::HandleMsg<GameRunFrameMsg>(VM::rootChannel, reader, [](int levelTime) {
 				G_RunFrame(levelTime);
 			});
 			break;
@@ -135,7 +135,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			G_Error("VMMain(): unknown game command %i", minor);
 		}
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
-		VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootChannel);
+		VM::HandleCommonSyscall(major, minor, reader, VM::rootChannel);
 	} else {
 		G_Error("unhandled VM major syscall number %i", major);
 	}

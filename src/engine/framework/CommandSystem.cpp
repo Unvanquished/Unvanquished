@@ -66,9 +66,8 @@ namespace Cmd {
         do {
             const char* next = SplitCommand(current, end);
             std::string command(current, next != end ? next - 1 : end);
-
-            insertPoint = ++commandBuffer.insert(insertPoint, {std::move(command), env, parseCvars});
-
+            if (!command.empty() && command.compare("//") != 0)
+                insertPoint = ++commandBuffer.insert(insertPoint, {std::move(command), env, parseCvars});
             current = next;
         } while (current != end);
     }
