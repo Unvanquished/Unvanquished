@@ -545,32 +545,32 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_ADJUST_AREA_PORTAL_STATE:
-		IPC::HandleMsg<AdjustAreaPortalStateMsg>(channel, reader, [this](int entityNum, bool open) {
+		IPC::HandleMsg<AdjustAreaPortalStateMsg>(channel, reader, [](int entityNum, bool open) {
 			sharedEntity_t* ent = SV_GentityNum(entityNum);
 			CM_AdjustAreaPortalState(ent->r.areanum, ent->r.areanum2, open);
 		});
 		break;
 
 	case G_DROP_CLIENT:
-		IPC::HandleMsg<DropClientMsg>(channel, reader, [this](int clientNum, std::string reason) {
+		IPC::HandleMsg<DropClientMsg>(channel, reader, [](int clientNum, Str::StringRef reason) {
 			SV_GameDropClient(clientNum, reason.c_str());
 		});
 		break;
 
 	case G_SEND_SERVER_COMMAND:
-		IPC::HandleMsg<SendServerCommandMsg>(channel, reader, [this](int clientNum, std::string text) {
+		IPC::HandleMsg<SendServerCommandMsg>(channel, reader, [](int clientNum, std::string text) {
 			SV_GameSendServerCommand(clientNum, text.c_str());
 		});
 		break;
 
 	case G_SET_CONFIGSTRING:
-		IPC::HandleMsg<SetConfigStringMsg>(channel, reader, [this](int index, std::string val) {
+		IPC::HandleMsg<SetConfigStringMsg>(channel, reader, [](int index, std::string val) {
 			SV_SetConfigstring(index, val.c_str());
 		});
 		break;
 
 	case G_GET_CONFIGSTRING:
-		IPC::HandleMsg<GetConfigStringMsg>(channel, reader, [this](int index, int len, std::string& res) {
+		IPC::HandleMsg<GetConfigStringMsg>(channel, reader, [](int index, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			buffer[0] = '\0';
 			SV_GetConfigstring(index, buffer.get(), len);
@@ -579,19 +579,19 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_SET_CONFIGSTRING_RESTRICTIONS:
-		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(channel, reader, [this] {
+		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(channel, reader, [] {
 			//Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
 		});
 		break;
 
 	case G_SET_USERINFO:
-		IPC::HandleMsg<SetUserinfoMsg>(channel, reader, [this](int index, std::string val) {
+		IPC::HandleMsg<SetUserinfoMsg>(channel, reader, [](int index, std::string val) {
 			SV_SetUserinfo(index, val.c_str());
 		});
 		break;
 
 	case G_GET_USERINFO:
-		IPC::HandleMsg<GetUserinfoMsg>(channel, reader, [this](int index, int len, std::string& res) {
+		IPC::HandleMsg<GetUserinfoMsg>(channel, reader, [](int index, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			buffer[0] = '\0';
 			SV_GetUserinfo(index, buffer.get(), len);
@@ -600,7 +600,7 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_GET_SERVERINFO:
-		IPC::HandleMsg<GetServerinfoMsg>(channel, reader, [this](int len, std::string& res) {
+		IPC::HandleMsg<GetServerinfoMsg>(channel, reader, [](int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			buffer[0] = '\0';
 			SV_GetServerinfo(buffer.get(), len);
@@ -609,26 +609,26 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_GET_USERCMD:
-		IPC::HandleMsg<GetUsercmdMsg>(channel, reader, [this](int index, usercmd_t& cmd) {
+		IPC::HandleMsg<GetUsercmdMsg>(channel, reader, [](int index, usercmd_t& cmd) {
 			SV_GetUsercmd(index, &cmd);
 		});
 		break;
 
 	case G_GET_ENTITY_TOKEN:
-		IPC::HandleMsg<GetEntityTokenMsg>(channel, reader, [this](bool& boolRes, std::string& res) {
+		IPC::HandleMsg<GetEntityTokenMsg>(channel, reader, [](bool& boolRes, std::string& res) {
 			res = COM_Parse(&sv.entityParsePoint);
 			boolRes = sv.entityParsePoint or res.size() > 0;
 		});
 		break;
 
 	case G_SEND_GAME_STAT:
-		IPC::HandleMsg<SendGameStatMsg>(channel, reader, [this](Str::StringRef text) {
+		IPC::HandleMsg<SendGameStatMsg>(channel, reader, [](Str::StringRef text) {
 			SV_MasterGameStat(text.c_str());
 		});
 		break;
 
 	case G_GET_TAG:
-		IPC::HandleMsg<GetTagMsg>(channel, reader, [this](int clientNum, int tagFileNumber, Str::StringRef tagName, int& res, orientation_t& orientation) {
+		IPC::HandleMsg<GetTagMsg>(channel, reader, [](int clientNum, int tagFileNumber, Str::StringRef tagName, int& res, orientation_t& orientation) {
 			res = SV_GetTag(clientNum, tagFileNumber, tagName.c_str(), &orientation);
 		});
 		break;
@@ -646,13 +646,13 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_MESSAGE_STATUS:
-		IPC::HandleMsg<MessageStatusMsg>(channel, reader, [this](int index, int& status) {
+		IPC::HandleMsg<MessageStatusMsg>(channel, reader, [](int index, int& status) {
 			status = SV_BinaryMessageStatus(index);
 		});
 		break;
 
 	case G_RSA_GENMSG:
-		IPC::HandleMsg<RSAGenMsgMsg>(channel, reader, [this](Str::StringRef pubkey, int& res, std::string& cleartext, std::string& encrypted) {
+		IPC::HandleMsg<RSAGenMsgMsg>(channel, reader, [](Str::StringRef pubkey, int& res, std::string& cleartext, std::string& encrypted) {
 			char cleartextBuffer[RSA_STRING_LENGTH];
 			char encryptedBuffer[RSA_STRING_LENGTH];
 			res = SV_RSAGenMsg(pubkey.c_str(), cleartextBuffer, encryptedBuffer);
@@ -662,7 +662,7 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_GEN_FINGERPRINT:
-		IPC::HandleMsg<GenFingerprintMsg>(channel, reader, [this](int keylen, const std::vector<char>& key, int len, std::string& res) {
+		IPC::HandleMsg<GenFingerprintMsg>(channel, reader, [](int keylen, const std::vector<char>& key, int len, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			buffer[0] = '\0';
 			Com_MD5Buffer(key.data(), keylen, buffer.get(), len);
@@ -671,7 +671,7 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_GET_PLAYER_PUBKEY:
-		IPC::HandleMsg<GetPlayerPubkeyMsg>(channel, reader, [this](int clientNum, int len, std::string& pubkey) {
+		IPC::HandleMsg<GetPlayerPubkeyMsg>(channel, reader, [](int clientNum, int len, std::string& pubkey) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			buffer[0] = '\0';
 			SV_GetPlayerPubkey(clientNum, buffer.get(), len);
@@ -680,7 +680,7 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_GET_TIME_STRING:
-		IPC::HandleMsg<GetTimeStringMsg>(channel, reader, [this](int len, Str::StringRef format, const qtime_t& time, std::string& res) {
+		IPC::HandleMsg<GetTimeStringMsg>(channel, reader, [](int len, Str::StringRef format, const qtime_t& time, std::string& res) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			buffer[0] = '\0';
 			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
@@ -689,19 +689,19 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case BOT_ALLOCATE_CLIENT:
-		IPC::HandleMsg<BotAllocateClientMsg>(channel, reader, [this](int& output) {
+		IPC::HandleMsg<BotAllocateClientMsg>(channel, reader, [](int& output) {
 			output = SV_BotAllocateClient();
 		});
 		break;
 
 	case BOT_FREE_CLIENT:
-		IPC::HandleMsg<BotFreeClientMsg>(channel, reader, [this](int input) {
+		IPC::HandleMsg<BotFreeClientMsg>(channel, reader, [](int input) {
 			SV_BotFreeClient(input);
 		});
 		break;
 
 	case BOT_GET_CONSOLE_MESSAGE:
-		IPC::HandleMsg<BotGetConsoleMessageMsg>(channel, reader, [this](int client, int len, int& res, std::string& message) {
+		IPC::HandleMsg<BotGetConsoleMessageMsg>(channel, reader, [](int client, int len, int& res, std::string& message) {
 			std::unique_ptr<char[]> buffer(new char[len]);
 			buffer[0] = '\0';
 			res = SV_BotGetConsoleMessage(client, buffer.get(), len);
@@ -710,7 +710,7 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case BOT_NAV_SETUP:
-		IPC::HandleMsg<BotNavSetupMsg>(channel, reader, [this](botClass_t botClass, int& res, int& handle) {
+		IPC::HandleMsg<BotNavSetupMsg>(channel, reader, [](botClass_t botClass, int& res, int& handle) {
 			res = BotSetupNav(&botClass, &handle);
 		});
 		break;
@@ -720,61 +720,61 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case BOT_SET_NAVMESH:
-		IPC::HandleMsg<BotSetNavmeshMsg>(channel, reader, [this](int clientNum, int navHandle) {
+		IPC::HandleMsg<BotSetNavmeshMsg>(channel, reader, [](int clientNum, int navHandle) {
 			BotSetNavMesh(clientNum, navHandle);
 		});
 		break;
 
 	case BOT_FIND_ROUTE:
-		IPC::HandleMsg<BotFindRouteMsg>(channel, reader, [this](int clientNum, botRouteTarget_t target, bool allowPartial, int& res) {
+		IPC::HandleMsg<BotFindRouteMsg>(channel, reader, [](int clientNum, botRouteTarget_t target, bool allowPartial, int& res) {
 			res = BotFindRouteExt(clientNum, &target, allowPartial);
 		});
 		break;
 
 	case BOT_UPDATE_PATH:
-		IPC::HandleMsg<BotUpdatePathMsg>(channel, reader, [this](int clientNum, botRouteTarget_t target, botNavCmd_t& cmd) {
+		IPC::HandleMsg<BotUpdatePathMsg>(channel, reader, [](int clientNum, botRouteTarget_t target, botNavCmd_t& cmd) {
 			BotUpdateCorridor(clientNum, &target, &cmd);
 		});
 		break;
 
 	case BOT_NAV_RAYCAST:
-		IPC::HandleMsg<BotNavRaycastMsg>(channel, reader, [this](int clientNum, const std::array<float, 3>& start, const std::array<float, 3>& end, int& res, botTrace_t& botTrace) {
+		IPC::HandleMsg<BotNavRaycastMsg>(channel, reader, [](int clientNum, const std::array<float, 3>& start, const std::array<float, 3>& end, int& res, botTrace_t& botTrace) {
 			res = BotNavTrace(clientNum, &botTrace, start.data(), end.data());
 		});
 		break;
 
 	case BOT_NAV_RANDOMPOINT:
-		IPC::HandleMsg<BotNavRandomPointMsg>(channel, std::move(reader), [this](int clientNum, std::array<float, 3>& point) {
+		IPC::HandleMsg<BotNavRandomPointMsg>(channel, reader, [](int clientNum, std::array<float, 3>& point) {
 			BotFindRandomPoint(clientNum, point.data());
 		});
 		break;
 
 	case BOT_NAV_RANDOMPOINTRADIUS:
-		IPC::HandleMsg<BotNavRandomPointRadiusMsg>(channel, reader, [this](int clientNum, std::array<float, 3> origin, float radius, int& res, std::array<float, 3>& point) {
+		IPC::HandleMsg<BotNavRandomPointRadiusMsg>(channel, reader, [](int clientNum, const std::array<float, 3>& origin, float radius, int& res, std::array<float, 3>& point) {
 			res = BotFindRandomPointInRadius(clientNum, origin.data(), point.data(), radius);
 		});
 		break;
 
 	case BOT_ENABLE_AREA:
-		IPC::HandleMsg<BotEnableAreaMsg>(channel, reader, [this](const std::array<float, 3>& origin, const std::array<float, 3>& mins, const std::array<float, 3>& maxs) {
+		IPC::HandleMsg<BotEnableAreaMsg>(channel, reader, [](const std::array<float, 3>& origin, const std::array<float, 3>& mins, const std::array<float, 3>& maxs) {
 			BotEnableArea(origin.data(), mins.data(), maxs.data());
 		});
 		break;
 
 	case BOT_DISABLE_AREA:
-		IPC::HandleMsg<BotDisableAreaMsg>(channel, reader, [this](const std::array<float, 3>& origin, const std::array<float, 3>& mins, const std::array<float, 3>& maxs) {
+		IPC::HandleMsg<BotDisableAreaMsg>(channel, reader, [](const std::array<float, 3>& origin, const std::array<float, 3>& mins, const std::array<float, 3>& maxs) {
 			BotDisableArea(origin.data(), mins.data(), maxs.data());
 		});
 		break;
 
 	case BOT_ADD_OBSTACLE:
-		IPC::HandleMsg<BotAddObstacleMsg>(channel, reader, [this](const std::array<float, 3>& mins, const std::array<float, 3>& maxs, int& handle) {
+		IPC::HandleMsg<BotAddObstacleMsg>(channel, reader, [](const std::array<float, 3>& mins, const std::array<float, 3>& maxs, int& handle) {
 			BotAddObstacle(mins.data(), maxs.data(), &handle);
 		});
 		break;
 
 	case BOT_REMOVE_OBSTACLE:
-		IPC::HandleMsg<BotRemoveObstacleMsg>(channel, reader, [this](int handle) {
+		IPC::HandleMsg<BotRemoveObstacleMsg>(channel, reader, [](int handle) {
 			BotRemoveObstacle(handle);
 		});
 		break;
