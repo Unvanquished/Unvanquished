@@ -2912,6 +2912,7 @@ void RB_RenderSSAO()
 		{  1.0f,  1.0f, 0.0f, 1.0f },
 		{ -1.0f,  1.0f, 0.0f, 1.0f }
 	};
+	vec3_t zParams;
 
 	GLimp_LogComment( "--- RB_RenderSSAO ---\n" );
 
@@ -2938,6 +2939,12 @@ void RB_RenderSSAO()
 	}
 
 	gl_ssaoShader->BindProgram( 0 );
+
+	zParams[ 0 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_x * 0.5f) ) / glConfig.vidWidth;
+	zParams[ 1 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_y * 0.5f) ) / glConfig.vidHeight;
+	zParams[ 2 ] = backEnd.viewParms.zFar;
+
+	gl_ssaoShader->SetUniform_zFar( zParams );
 
 	GL_BindToTMU( 0, tr.depthRenderImage );
 

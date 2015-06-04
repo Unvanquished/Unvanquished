@@ -2091,6 +2091,21 @@ public:
 	}
 };
 
+class u_zFar :
+	GLUniform3f
+{
+public:
+	u_zFar( GLShader *shader ) :
+		GLUniform3f( shader, "u_zFar" )
+	{
+	}
+
+	void SetUniform_zFar( const vec3_t value )
+	{
+		this->SetValue( value );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2592,7 +2607,8 @@ public:
 };
 
 class GLShader_ssao :
-	public GLShader
+	public GLShader,
+	public u_zFar
 {
 public:
 	GLShader_ssao( GLShaderManager *manager );

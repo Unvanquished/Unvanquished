@@ -24,8 +24,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 attribute vec3 attr_Position;
 
+uniform vec3 u_zFar;
+varying vec3 unprojectionParams;
+
 void	main()
 {
+	unprojectionParams.x = - r_zNear * u_zFar.z;
+	unprojectionParams.y = 2.0 * (u_zFar.z - r_zNear);
+	unprojectionParams.z = 2.0 * u_zFar.z - r_zNear;
+
 	// no vertex transformation needed
 	gl_Position = vec4(attr_Position, 1.0);
 }

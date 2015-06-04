@@ -25,33 +25,53 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #extension GL_ARB_texture_gather : require
 
 uniform sampler2D u_DepthMap;
+varying vec3 unprojectionParams;
+
+uniform vec3 u_zFar;
 
 const vec2 pixelScale = r_FBufScale * r_NPOTScale;
+const float haloCutoff = 15.0;
 
 float depthToZ(float depth) {
-	return r_zNear / (1.0 - depth);
+	return unprojectionParams.x / ( unprojectionParams.y * depth - unprojectionParams.z );
 }
 vec4 depthToZ(vec4 depth) {
-	return r_zNear / (1.0 - depth);
+	return unprojectionParams.x / ( unprojectionParams.y * depth - unprojectionParams.z );
 }
 
-vec4 rangeTest(vec4 diff) {
-	return step( vec4( 0.00312 ), diff ) * step( diff, vec4( 0.43 ) );
+vec4 rangeTest(vec4 diff1, vec4 diff2, vec4 deltaX, vec4 deltaY) {
+	vec4 mask = step( 0.0, diff1 + diff2 )
+		* step( -haloCutoff, -diff1 )
+		* step( -haloCutoff, -diff2 );
+	vec4 deltaXY = deltaX * deltaX + deltaY * deltaY;
+	vec4 scale = inversesqrt( diff1 * diff1 + deltaXY );
+	scale *= inversesqrt( diff2 * diff2 + deltaXY );
+	vec4 cosAngle = scale * ( diff1 * diff2 - deltaXY );
+	return mask * ( 0.5 * cosAngle + 0.5 );
 }
 
 // Based on AMD HDAO, adapted for lack of normals
 void computeOcclusionForQuad( in vec2 centerTC, in float centerDepth,
-			      in vec2 quadOffset, in vec4 weights,
+			      in vec2 quadOffset,
 			      inout vec4 occlusion, inout vec4 total ) {
 	vec2 tc1 = centerTC + quadOffset * pixelScale;
 	vec2 tc2 = centerTC - quadOffset * pixelScale;
+
+	vec4 x = vec4( -0.5, 0.5, 0.5, -0.5 ) + quadOffset.x;
+	vec4 y = vec4( 0.5, 0.5, -0.5, -0.5 ) + quadOffset.y;
+	vec4 weights = inversesqrt( x * x + y * y );
 
 	// depths1 and depth2 pixels are swizzled to be in opposite position
 	vec4 depths1 = depthToZ( textureGather( u_DepthMap, tc1 ) ).xyzw;
 	vec4 depths2 = depthToZ( textureGather( u_DepthMap, tc2 ) ).zwxy;
 
+	depths1 = centerDepth - depths1;
+	depths2 = centerDepth - depths2;
+
 	total += weights;
-	occlusion += weights * rangeTest( centerDepth - depths1 ) * rangeTest( centerDepth - depths2 );
+	occlusion += weights * rangeTest( depths1, depths2,
+					  centerDepth * x * u_zFar.x,
+					  centerDepth * y * u_zFar.y );
 }
 
 void	main()
@@ -62,51 +82,42 @@ void	main()
 	vec4 total = vec4( 0.0 );
 
 	float center = texture2D( u_DepthMap, st ).r;
+
 	if( center >= 1.0 ) {
 		// no SSAO on the skybox !
 		discard;
 		return;
         }
 	center = depthToZ( center );
+	float spread = max( 1.0, 100.0 / center );
 
-	computeOcclusionForQuad( st, center, vec2( 1.5, -1.5 ),
-				 vec4( 1.00000, 0.50000, 0.44721, 0.70711 ),
+	// ring 1
+	computeOcclusionForQuad( st, center, spread * vec2( 1.5, -0.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 0.5,  1.5 ),
-				 vec4( 0.50000, 0.44721, 0.70711, 1.00000 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 0.5,  1.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 0.5,  3.5 ),
-				 vec4( 0.30000, 0.29104, 0.37947, 0.40000 ),
+	// ring 2
+	computeOcclusionForQuad( st, center, spread * vec2( 0.5,  3.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 2.5,  1.5 ),
-				 vec4( 0.42426, 0.33282, 0.37947, 0.53666 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 2.5,  1.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 3.5, -1.5 ),
-				 vec4( 0.40000, 0.30000, 0.29104, 0.37947 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 3.5, -0.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 1.5, -2.5 ),
-				 vec4( 0.53666, 0.42426, 0.33282, 0.37947 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 1.5, -2.5 ),
 				 occlusion, total );
-#if 1
-	computeOcclusionForQuad( st, center, vec2( 1.5, -4.5 ),
-				 vec4( 0.31530, 0.29069, 0.24140, 0.25495 ),
+	// ring 3
+	computeOcclusionForQuad( st, center, spread * vec2( 1.5, -4.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 3.5, -2.5 ),
-				 vec4( 0.36056, 0.29069, 0.26000, 0.30641 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 3.5, -2.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 5.5, -0.5 ),
-				 vec4( 0.26000, 0.21667, 0.21372, 0.25495 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 5.5, -0.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 4.5,  1.5 ),
-				 vec4( 0.29069, 0.24140, 0.25495, 0.31530 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 4.5,  1.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 2.5,  3.5 ),
-				 vec4( 0.29069, 0.26000, 0.30641, 0.36056 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 2.5,  3.5 ),
 				 occlusion, total );
-	computeOcclusionForQuad( st, center, vec2( 0.5,  5.5 ),
-				 vec4( 0.21667, 0.21372, 0.25495, 0.26000 ),
+	computeOcclusionForQuad( st, center, spread * vec2( 0.5,  5.5 ),
 				 occlusion, total );
-#endif
 
 	float summedOcclusion = dot( occlusion, vec4( 1.0 ) );
 	float summedTotal = dot( total, vec4( 1.0 ) );

@@ -1968,7 +1968,8 @@ void GLShader_motionblur::SetShaderProgramUniforms( shaderProgram_t *shaderProgr
 }
 
 GLShader_ssao::GLShader_ssao( GLShaderManager *manager ) :
-	GLShader( "ssao", ATTR_POSITION, manager )
+	GLShader( "ssao", ATTR_POSITION, manager ),
+	u_zFar( this )
 {
 }
 
