@@ -118,7 +118,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader& reader) {
                 break;
 
             case CG_ROCKET_RENDER_ELEMENT:
-                IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, reade), [] {
+                IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, reader, [] {
                     CG_Rocket_RenderElement();
                     cmdBuffer.TryFlush();
                 });
