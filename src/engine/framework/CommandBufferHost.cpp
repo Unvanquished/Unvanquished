@@ -38,13 +38,13 @@ namespace IPC {
     void CommandBufferHost::Syscall(int index, Util::Reader& reader, IPC::Channel& channel) {
         switch (index) {
             case IPC::COMMAND_BUFFER_LOCATE:
-                IPC::HandleMsg<IPC::CommandBufferLocateMsg>(channel, std::move(reader), [this] (IPC::SharedMemory mem) {
+                IPC::HandleMsg<IPC::CommandBufferLocateMsg>(channel, reader, [this] (IPC::SharedMemory&& mem) {
                     this->Init(std::move(mem));
                 });
                 break;
 
             case IPC::COMMAND_BUFFER_CONSUME:
-                IPC::HandleMsg<IPC::CommandBufferConsumeMsg>(channel, std::move(reader), [this] () {
+                IPC::HandleMsg<IPC::CommandBufferConsumeMsg>(channel, reader, [this] () {
                     this->Consume();
                 });
                 break;
@@ -53,7 +53,7 @@ namespace IPC {
         }
     }
 
-    void CommandBufferHost::Init(IPC::SharedMemory mem) {
+    void CommandBufferHost::Init(IPC::SharedMemory&& mem) {
         shm = std::move(mem);
         buffer.Init(shm.GetBase(), shm.GetSize());
 

@@ -51,7 +51,7 @@ namespace IPC {
 
             virtual void HandleCommandBufferSyscall(int major, int minor, Util::Reader& reader) = 0;
 
-            void Init(IPC::SharedMemory mem);
+            void Init(IPC::SharedMemory&& mem);
 
             void Consume();
             bool ConsumeOne(Util::Reader& reader);
