@@ -438,7 +438,7 @@ public:
 	float CGameRocketProgressbarValue(Str::StringRef source);
 
 private:
-	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;
+	virtual void Syscall(uint32_t id, Util::Reader& reader, IPC::Channel& channel) OVERRIDE FINAL;
 	void QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel);
 
 	std::unique_ptr<VM::CommonVMServices> services;

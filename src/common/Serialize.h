@@ -269,9 +269,13 @@ namespace Util {
 		static std::vector<T> Read(Reader& stream)
 		{
 			std::vector<T> value;
-			value.resize(stream.ReadSize<T>());
-			for (T& x: value)
-				x = stream.Read<T>();
+			auto size = stream.ReadSize<T>();
+			value.reserve(size);
+			while (size > 0)
+			{
+				value.push_back(stream.Read<T>());
+				--size;
+			}
 			return value;
 		}
 	};

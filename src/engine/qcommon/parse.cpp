@@ -334,8 +334,8 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 		script->punctuationtable = ( punctuation_t ** )
 		                           Z_Malloc( 256 * sizeof( punctuation_t * ) );
 	}
-
-	Com_Memset( script->punctuationtable, 0, 256 * sizeof( punctuation_t * ) );
+	else
+		Com_Memset( script->punctuationtable, 0, 256 * sizeof( punctuation_t * ) );
 
 	//add the punctuations in the list to the punctuation table
 	for ( i = 0; punctuations[ i ].p; i++ )
@@ -1166,10 +1166,7 @@ static script_t *Parse_LoadScriptFile( const char *filename )
 	if ( !fp ) { return nullptr; }
 
 	buffer = Z_Malloc( sizeof( script_t ) + length + 1 );
-	Com_Memset( buffer, 0, sizeof( script_t ) + length + 1 );
-
 	script = ( script_t * ) buffer;
-	Com_Memset( script, 0, sizeof( script_t ) );
 	Q_strncpyz( script->filename, filename, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
 	script->buffer[ length ] = 0;
@@ -3982,7 +3979,6 @@ static define_t *Parse_DefineFromString( const char *string )
 	Q_strncpyz( src.filename, "*extern", MAX_QPATH );
 	src.scriptstack = script;
 	src.definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
-	Com_Memset( src.definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
 	//create a define from the source
 	res = Parse_Directive_define( &src );
 
@@ -4167,7 +4163,6 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 	script->next = nullptr;
 
 	source = ( source_t * ) Z_Malloc( sizeof( source_t ) );
-	Com_Memset( source, 0, sizeof( source_t ) );
 
 	Q_strncpyz( source->filename, filename, MAX_QPATH );
 	source->scriptstack = script;
@@ -4177,7 +4172,6 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 	source->skip = 0;
 
 	source->definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
-	Com_Memset( source->definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
 	Parse_AddGlobalDefinesToSource( source );
 	return source;
 }

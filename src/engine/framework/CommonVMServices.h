@@ -43,7 +43,7 @@ namespace VM {
             CommonVMServices(VMBase& vm, Str::StringRef vmName, int commandFlag);
             ~CommonVMServices();
 
-            void Syscall(int major, int minor, Util::Reader reader, IPC::Channel& channel);
+            void Syscall(int major, int minor, Util::Reader& reader, IPC::Channel& channel);
 
         private:
             std::string vmName;

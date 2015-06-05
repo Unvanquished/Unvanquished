@@ -32,12 +32,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Audio {
 
-AudioData LoadSoundCodec(std::string filename)
+AudioData LoadSoundCodec(Str::StringRef filename)
 {
+	size_t position_of_last_dot{filename.rfind('.')};
 
-	size_t position_of_last_dot{filename.find_last_of('.')};
-
-	if (position_of_last_dot == std::string::npos) {
+	if (position_of_last_dot == Str::StringRef::npos) {
 		audioLogs.Warn("Could not find the extension in %s", filename);
 		return AudioData();
 	}
