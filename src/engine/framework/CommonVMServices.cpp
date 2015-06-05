@@ -43,7 +43,7 @@ namespace VM {
     void CommonVMServices::HandleMiscSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch(minor) {
             case CREATE_SHARED_MEMORY:
-                IPC::HandleMsg<CreateSharedMemoryMsg>(channel, std::move(reader), [this](size_t size, IPC::SharedMemory& shm) {
+                IPC::HandleMsg<CreateSharedMemoryMsg>(channel, reader, [this](size_t size, IPC::SharedMemory& shm) {
                     shm = IPC::SharedMemory::Create(size);
                 });
         }
@@ -96,7 +96,7 @@ namespace VM {
     };
 
     void CommonVMServices::AddCommand(Util::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<AddCommandMsg>(channel, std::move(reader), [this](std::string name, std::string description){
+        IPC::HandleMsg<AddCommandMsg>(channel, reader, [this](Str::StringRef name, Str::StringRef description){
             if (Cmd::CommandExists(name)) {
                 Log::Warn("VM '%s' tried to register command '%s' which is already registered", vmName, name);
                 return;
@@ -108,7 +108,7 @@ namespace VM {
     }
 
     void CommonVMServices::RemoveCommand(Util::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<RemoveCommandMsg>(channel, std::move(reader), [this](std::string name){
+        IPC::HandleMsg<RemoveCommandMsg>(channel, reader, [this](Str::StringRef name){
             if (registeredCommands.find(name) != registeredCommands.end()) {
                 Cmd::RemoveCommand(name);
             }
@@ -116,14 +116,14 @@ namespace VM {
     }
 
     void CommonVMServices::EnvPrint(Util::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<EnvPrintMsg>(channel, std::move(reader), [this](std::string line){
+        IPC::HandleMsg<EnvPrintMsg>(channel, std::move(reader), [](Str::StringRef line){
             //TODO allow it only if we are in a command?
             Cmd::GetEnv()->Print(line);
         });
     }
 
     void CommonVMServices::EnvExecuteAfter(Util::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<EnvExecuteAfterMsg>(channel, std::move(reader), [this](std::string commandText, bool parseCvars){
+        IPC::HandleMsg<EnvExecuteAfterMsg>(channel, reader, [](Str::StringRef commandText, bool parseCvars){
             //TODO check that it isn't sending /quit or other bad commands (/lua "rootkit()")?
             Cmd::GetEnv()->ExecuteAfter(commandText, parseCvars);
         });
