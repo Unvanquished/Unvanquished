@@ -2364,7 +2364,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 {
 	switch (minor) {
 	case VM::FS_INITIALIZE:
-		IPC::HandleMsg<VM::FSInitializeMsg>(channel, std::move(reader), [](std::string& homePath, std::string& libPath, std::vector<FS::PakInfo>& availablePaks, std::vector<FS::LoadedPakInfo>& loadedPaks, std::unordered_map<std::string, std::pair<uint32_t, FS::offset_t>>& fileMap) {
+		IPC::HandleMsg<VM::FSInitializeMsg>(channel, reader, [](std::string& homePath, std::string& libPath, std::vector<FS::PakInfo>& availablePaks, std::vector<FS::LoadedPakInfo>& loadedPaks, std::unordered_map<std::string, std::pair<uint32_t, FS::offset_t>>& fileMap) {
 			homePath = GetHomePath();
 			libPath = GetLibPath();
 			availablePaks = GetAvailablePaks();
@@ -2374,7 +2374,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_OPENMODE:
-		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, std::move(reader), [](Str::StringRef path, uint32_t mode, Util::optional<IPC::OwnedFileHandle>& out) {
+		IPC::HandleMsg<VM::FSHomePathOpenModeMsg>(channel, reader, [](Str::StringRef path, uint32_t mode, Util::optional<IPC::OwnedFileHandle>& out) {
 			std::error_code err;
 			FS::File file = HomePath::OpenMode(Path::Build("game", path), static_cast<openMode_t>(mode), err);
 			if (!err)
@@ -2383,13 +2383,13 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_FILEEXISTS:
-		IPC::HandleMsg<VM::FSHomePathFileExistsMsg>(channel, std::move(reader), [](Str::StringRef path, bool& out) {
+		IPC::HandleMsg<VM::FSHomePathFileExistsMsg>(channel, reader, [](Str::StringRef path, bool& out) {
 			out = HomePath::FileExists(Path::Build("game", path));
 		});
 		break;
 
 	case VM::FS_HOMEPATH_TIMESTAMP:
-		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, std::move(reader), [](Str::StringRef path, Util::optional<uint64_t>& out) {
+		IPC::HandleMsg<VM::FSHomePathTimestampMsg>(channel, reader, [](Str::StringRef path, Util::optional<uint64_t>& out) {
 			std::error_code err;
 			std::chrono::system_clock::time_point t = HomePath::FileTimestamp(Path::Build("game", path), err);
 			if (!err)
@@ -2398,7 +2398,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_MOVEFILE:
-		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](Str::StringRef dest, Str::StringRef src, bool success) {
+		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, reader, [](Str::StringRef dest, Str::StringRef src, bool success) {
 			std::error_code err;
 			HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src), err);
 			success = !err;
@@ -2406,7 +2406,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_DELETEFILE:
-		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](Str::StringRef path, bool success) {
+		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, reader, [](Str::StringRef path, bool success) {
 			std::error_code err;
 			HomePath::DeleteFile(Path::Build("game", path), err);
 			success = !err;
@@ -2414,7 +2414,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_LISTFILES:
-		IPC::HandleMsg<VM::FSHomePathListFilesMsg>(channel, std::move(reader), [](Str::StringRef path, Util::optional<std::vector<std::string>>& out) {
+		IPC::HandleMsg<VM::FSHomePathListFilesMsg>(channel, reader, [](Str::StringRef path, Util::optional<std::vector<std::string>>& out) {
 			try {
 				std::vector<std::string> vec;
 				for (auto&& x: FS::HomePath::ListFiles(Path::Build("game", path)))
@@ -2425,7 +2425,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_LISTFILESRECURSIVE:
-		IPC::HandleMsg<VM::FSHomePathListFilesRecursiveMsg>(channel, std::move(reader), [](Str::StringRef path, Util::optional<std::vector<std::string>>& out) {
+		IPC::HandleMsg<VM::FSHomePathListFilesRecursiveMsg>(channel, reader, [](Str::StringRef path, Util::optional<std::vector<std::string>>& out) {
 			try {
 				std::vector<std::string> vec;
 				for (auto&& x: FS::HomePath::ListFilesRecursive(Path::Build("game", path)))
@@ -2436,7 +2436,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_PAKPATH_OPEN:
-		IPC::HandleMsg<VM::FSPakPathOpenMsg>(channel, std::move(reader), [](uint32_t pakIndex, Str::StringRef path, Util::optional<IPC::OwnedFileHandle>& out) {
+		IPC::HandleMsg<VM::FSPakPathOpenMsg>(channel, reader, [](uint32_t pakIndex, Str::StringRef path, Util::optional<IPC::OwnedFileHandle>& out) {
 			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
 			if (loadedPaks.size() <= pakIndex)
 				return;
@@ -2452,7 +2452,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_PAKPATH_TIMESTAMP:
-		IPC::HandleMsg<VM::FSPakPathTimestampMsg>(channel, std::move(reader), [](uint32_t pakIndex, Str::StringRef path, Util::optional<uint64_t>& out) {
+		IPC::HandleMsg<VM::FSPakPathTimestampMsg>(channel, reader, [](uint32_t pakIndex, Str::StringRef path, Util::optional<uint64_t>& out) {
 			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
 			if (loadedPaks.size() <= pakIndex)
 				return;
@@ -2468,7 +2468,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_PAKPATH_LOADPAK:
-		IPC::HandleMsg<VM::FSPakPathLoadPakMsg>(channel, std::move(reader), [](uint32_t pakIndex, Util::optional<uint32_t> expectedChecksum, Str::StringRef pathPrefix) {
+		IPC::HandleMsg<VM::FSPakPathLoadPakMsg>(channel, reader, [](uint32_t pakIndex, Util::optional<uint32_t> expectedChecksum, Str::StringRef pathPrefix) {
 			if (availablePaks.size() <= pakIndex)
 				return;
 			try {
