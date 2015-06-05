@@ -2197,7 +2197,7 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 				break;
 
 			case CG_S_UPDATEENTITYPOSITION:
-				HandleMsg<Audio::UpdateEntityPositionMsg>(reader, [] (int entityNum, std::array<float, 3>& position) {
+				HandleMsg<Audio::UpdateEntityPositionMsg>(reader, [] (int entityNum, const std::array<float, 3>& position) {
 					Audio::UpdateEntityPosition(entityNum, position.data());
 				});
 				break;
