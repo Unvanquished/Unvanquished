@@ -2142,7 +2142,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 }
 
 //TODO move somewhere else
-template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Message<Id, MsgArgs...>, Util::Reader& reader, Func&& func)
+template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(const IPC::Message<Id, MsgArgs...>&, Util::Reader& reader, Func&& func)
 {
     typedef IPC::Message<Id, MsgArgs...> Message;
 
