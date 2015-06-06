@@ -116,7 +116,7 @@ echo "[1;32mCache directory:    [33m$CACHE
 [1;32mDownload directory: [33m$DEST_DIR[m"
 
 if test -n "$RUN_DOWNLOAD"; then
-  echo "[1;32mDonwloading from:   [33m$BASE_URL[m"
+  echo "[1;32mDownloading from:   [33m$BASE_URL[m"
 fi
 
 # Create directories if needed

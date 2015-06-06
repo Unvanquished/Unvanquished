@@ -564,7 +564,7 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + strlen("funds") ) *
 			          ( ent->client->pers.team == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
 			// clamp credits as G_AddCreditToClient() expects a short int
-			amount = Maths::clamp(amount, -30000.0f, 30000.0f);
+			amount = Math::Clamp(amount, -30000.0f, 30000.0f);
 		}
 
 		G_AddCreditToClient( ent->client, ( short ) amount, true );
@@ -617,7 +617,7 @@ void Cmd_Give_f( gentity_t *ent )
 		else
 		{
 			int amount = atoi( name + strlen("health") );
-			ent->health = Maths::clamp(ent->health + amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
+			ent->health = Math::Clamp(ent->health + amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
 		}
 	}
 

@@ -32,7 +32,7 @@ This file deals with applying shaders to surface data in the tess struct.
 =================================================================================
 */
 
-void GLSL_InitGPUShaders()
+static void GLSL_InitGPUShadersOrError()
 {
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
@@ -119,6 +119,73 @@ void GLSL_InitGPUShaders()
 	if ( !r_lazyShaders->integer )
 	{
 		gl_shaderManager.buildAll();
+	}
+}
+
+void GLSL_InitGPUShaders()
+{
+	/*
+	 Without a shaderpath option, the shader debugging cycle is like this:
+	 1. Change shader file(s).
+	 2. Run script to convert shader files into c++, storing them in shaders.cpp
+	 3. Recompile app to pickup the new shaders.cpp changes.
+	 4. Run the app and get to the point required to check work.
+	 5. If the change failed or succeeded but you want to make more changes restart at step 1.
+	
+	 Alternatively, if set shaderpath "c:/unvanquished/main" is used, the cylcle is:
+	 1. Change shader file(s) - don't run the buildshaders script unless samples.cpp is missing.
+	 2. Start the app, the app will load the shader files directly.
+	    If there is a problem the app will revert to the last working changes
+		in samples.cpp, so need to restart the app.
+	 3. Fix the problem shader files
+	 4. Do /glsl_restart at the app console to reload them. Repeat from step 3 as needed.
+	
+	 Note that unv will respond by listing the files it thinks are different.
+	 If this matches your expectations then it's not an error.
+	 Note foward slashes (like those used in windows pathnames are processed
+	 as escape characters by the Unvanquished command processor,
+	 so use two forward slashes in that case.
+	 */
+
+	auto shaderPath = GetShaderPath();
+	if (shaderPath.empty())
+		shaderKind = ShaderKind::BuiltIn;
+	else
+		shaderKind = ShaderKind::External;
+
+	bool externalFailed = false;
+	if (shaderKind == ShaderKind::External)
+	{
+		try
+		{
+			Log::Warn("Loading external shaders.");
+			GLSL_InitGPUShadersOrError();
+			Log::Warn("External shaders in use.");
+		}
+		catch (const ShaderException& e)
+		{
+			Log::Warn("External shaders failed: %s", e.what());
+			Log::Warn("Attempting to use built in shaders instead.");
+			shaderKind = ShaderKind::BuiltIn;
+			externalFailed = true;
+		}
+	}
+
+	if (shaderKind == ShaderKind::BuiltIn)
+	{
+		// Let the user know if we are transitioning from external to
+		// built-in shaders. We won't alert them if we were already using
+		// built-in shaders as this is the normal case.
+		try
+		{
+			GLSL_InitGPUShadersOrError();
+		}
+		catch (const ShaderException&e)
+		{
+			Sys::Error("Built-in shaders failed: %s", e.what()); // Fatal.
+		};
+		if (externalFailed)
+			Log::Warn("Now using built-in shaders because external shaders failed.");
 	}
 }
 
@@ -2351,17 +2418,17 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					tess.svars.color[ 0 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 0 ] );
-					tess.svars.color[ 1 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 1 ] );
-					tess.svars.color[ 2 ] = Maths::clampFraction( backEnd.currentLight->l.color[ 2 ] );
+					tess.svars.color[ 0 ] = Math::Clamp( backEnd.currentLight->l.color[ 0 ], 0.0f, 1.0f );
+					tess.svars.color[ 1 ] = Math::Clamp( backEnd.currentLight->l.color[ 1 ], 0.0f, 1.0f );
+					tess.svars.color[ 2 ] = Math::Clamp( backEnd.currentLight->l.color[ 2 ], 0.0f, 1.0f );
 					tess.svars.color[ 3 ] = 1.0;
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 0 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 1 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 2 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 3 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 0 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color[ 1 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color[ 2 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color[ 3 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
 				}
 				else
 				{
@@ -2378,17 +2445,17 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					tess.svars.color[ 0 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 0 ] );
-					tess.svars.color[ 1 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 1 ] );
-					tess.svars.color[ 2 ] = 1.0 - Maths::clampFraction( backEnd.currentLight->l.color[ 2 ] );
+					tess.svars.color[ 0 ] = 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 0 ], 0.0f, 1.0f );
+					tess.svars.color[ 1 ] = 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 1 ], 0.0f, 1.0f );
+					tess.svars.color[ 2 ] = 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 2 ], 0.0f, 1.0f );
 					tess.svars.color[ 3 ] = 0.0; // FIXME
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 0 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 1 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 2 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) );
-					tess.svars.color[ 3 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 0 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color[ 1 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color[ 2 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color[ 3 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
 				}
 				else
 				{
@@ -2428,7 +2495,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_CUSTOM_RGB:
 			{
-				rgb = Maths::clampFraction( RB_EvalExpression( &pStage->rgbExp, 1.0 ) );
+				rgb = Math::Clamp( RB_EvalExpression( &pStage->rgbExp, 1.0 ), 0.0f, 1.0f );
 
 				tess.svars.color[ 0 ] = rgb;
 				tess.svars.color[ 1 ] = rgb;
@@ -2440,24 +2507,24 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					red = Maths::clampFraction( RB_EvalExpression( &pStage->redExp, backEnd.currentLight->l.color[ 0 ] ) );
-					green = Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, backEnd.currentLight->l.color[ 1 ] ) );
-					blue = Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, backEnd.currentLight->l.color[ 2 ] ) );
+					red = Math::Clamp( RB_EvalExpression( &pStage->redExp, backEnd.currentLight->l.color[ 0 ] ), 0.0f, 1.0f );
+					green = Math::Clamp( RB_EvalExpression( &pStage->greenExp, backEnd.currentLight->l.color[ 1 ] ), 0.0f, 1.0f );
+					blue = Math::Clamp( RB_EvalExpression( &pStage->blueExp, backEnd.currentLight->l.color[ 2 ] ), 0.0f, 1.0f );
 				}
 				else if ( backEnd.currentEntity )
 				{
 					red =
-					  Maths::clampFraction( RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ) );
+					  Math::Clamp( RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
 					green =
-					  Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) ) );
+					  Math::Clamp( RB_EvalExpression( &pStage->greenExp, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
 					blue =
-					  Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) ) );
+					  Math::Clamp( RB_EvalExpression( &pStage->blueExp, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
 				}
 				else
 				{
-					red = Maths::clampFraction( RB_EvalExpression( &pStage->redExp, 1.0 ) );
-					green = Maths::clampFraction( RB_EvalExpression( &pStage->greenExp, 1.0 ) );
-					blue = Maths::clampFraction( RB_EvalExpression( &pStage->blueExp, 1.0 ) );
+					red = Math::Clamp( RB_EvalExpression( &pStage->redExp, 1.0 ), 0.0f, 1.0f );
+					green = Math::Clamp( RB_EvalExpression( &pStage->greenExp, 1.0 ), 0.0f, 1.0f );
+					blue = Math::Clamp( RB_EvalExpression( &pStage->blueExp, 1.0 ), 0.0f, 1.0f );
 				}
 
 				tess.svars.color[ 0 ] = red;
@@ -2509,7 +2576,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 3 ] = Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 3 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
 				}
 				else
 				{
@@ -2527,7 +2594,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 3 ] = 1.0 - Maths::clampFraction( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ) );
+					tess.svars.color[ 3 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
 				}
 				else
 				{
@@ -2552,7 +2619,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case AGEN_CUSTOM:
 			{
-				alpha = Maths::clampFraction( RB_EvalExpression( &pStage->alphaExp, 1.0 ) );
+				alpha = Math::Clamp( RB_EvalExpression( &pStage->alphaExp, 1.0 ), 0.0f, 1.0f );
 
 				tess.svars.color[ 3 ] = alpha;
 				break;

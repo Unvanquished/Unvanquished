@@ -798,8 +798,8 @@ void RE_BeginFrame()
 					strcpy( s, "GL_TABLE_TOO_LARGE" );
 					break;
 
-				case GL_INVALID_FRAMEBUFFER_OPERATION_EXT:
-					strcpy( s, "GL_INVALID_FRAMEBUFFER_OPERATION_EXT" );
+				case GL_INVALID_FRAMEBUFFER_OPERATION:
+					strcpy( s, "GL_INVALID_FRAMEBUFFER_OPERATION" );
 					break;
 
 				default:

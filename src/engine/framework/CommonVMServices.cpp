@@ -186,21 +186,22 @@ namespace VM {
     }
 
     void CommonVMServices::GetCvar(Util::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<GetCvarMsg>(channel, std::move(reader), [&, this](std::string name, std::string& value){
+        IPC::HandleMsg<GetCvarMsg>(channel, std::move(reader), [&, this](const std::string& name, std::string& value){
             //TODO check it is only looking at allowed cvars?
             value = Cvar::GetValue(name);
         });
     }
 
     void CommonVMServices::SetCvar(Util::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<SetCvarMsg>(channel, std::move(reader), [this](std::string name, std::string value){
+        // Leaving value by value for now. May revist later.
+        IPC::HandleMsg<SetCvarMsg>(channel, std::move(reader), [this](const std::string& name, std::string value){
             //TODO check it is only touching allowed cvars?
             Cvar::SetValue(name, value);
         });
     }
 
     void CommonVMServices::AddCvarFlags(Util::Reader& reader, IPC::Channel& channel) {
-        IPC::HandleMsg<AddCvarFlagsMsg>(channel, std::move(reader), [this](std::string name, int flags, bool& exists){
+        IPC::HandleMsg<AddCvarFlagsMsg>(channel, std::move(reader), [this](const std::string& name, int flags, bool& exists){
             //TODO check it is only touching allowed cvars?
             exists = Cvar::AddFlags(name, flags);
         });
@@ -210,7 +211,7 @@ namespace VM {
     void CommonVMServices::HandleLogSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch(minor) {
             case DISPATCH_EVENT:
-                IPC::HandleMsg<DispatchLogEventMsg>(channel, std::move(reader), [this](std::string text, int targetControl){
+                IPC::HandleMsg<DispatchLogEventMsg>(channel, std::move(reader), [this](const std::string& text, int targetControl){
                     Log::Dispatch(Log::Event(std::move(text)), targetControl);
                 });
                 break;
@@ -224,25 +225,25 @@ namespace VM {
     void CommonVMServices::HandleCommonQVMSyscall(int minor, Util::Reader& reader, IPC::Channel& channel) {
         switch (minor) {
             case QVM_COMMON_PRINT:
-                IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](std::string text) {
+                IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](const std::string& text) {
                     Com_Printf("%s", text.c_str());
                 });
                 break;
 
             case QVM_COMMON_ERROR:
-                IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](std::string text) {
+                IPC::HandleMsg<ErrorMsg>(channel, std::move(reader), [this](const std::string& text) {
                     Sys::Drop("%s VM: %s", vmName, text);
                 });
                 break;
 
             case QVM_COMMON_SEND_CONSOLE_COMMAND:
-                IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](std::string text) {
+                IPC::HandleMsg<SendConsoleCommandMsg>(channel, std::move(reader), [this](const std::string& text) {
                     Cmd::BufferCommandText(text);
                 });
                 break;
 
             case QVM_COMMON_FS_FOPEN_FILE:
-                IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](std::string filename, bool open, int fsMode, int& success, int& handle) {
+                IPC::HandleMsg<FSFOpenFileMsg>(channel, std::move(reader), [this](const std::string& filename, bool open, int fsMode, int& success, int& handle) {
                     fsMode_t mode = static_cast<fsMode_t>(fsMode);
                     success = FS_Game_FOpenFileByMode(filename.c_str(), open ? &handle : nullptr, mode);
                 });
@@ -253,12 +254,12 @@ namespace VM {
                     std::unique_ptr<char[]> buffer(new char[len]);
                     buffer[0] = '\0';
                     ret = FS_Read(buffer.get(), len, handle);
-                    res.assign(buffer.get(), len);
+                    res.assign(buffer.get(), ret >= 0 ? ret : 0);
                 });
                 break;
 
             case QVM_COMMON_FS_WRITE:
-                IPC::HandleMsg<FSWriteMsg>(channel, std::move(reader), [this](int handle, std::string text, int& res) {
+                IPC::HandleMsg<FSWriteMsg>(channel, std::move(reader), [this](int handle, const std::string& text, int& res) {
                     res = FS_Write(text.c_str(), text.size(), handle);
                 });
                 break;
@@ -280,7 +281,7 @@ namespace VM {
 				});
 				break;
             case QVM_COMMON_FS_RENAME:
-                IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](std::string from, std::string to) {
+                IPC::HandleMsg<FSRenameMsg>(channel, std::move(reader), [this](const std::string& from, const std::string& to) {
                     FS_Rename(from.c_str(), to.c_str());
                 });
                 break;
@@ -292,7 +293,7 @@ namespace VM {
                 break;
 
             case QVM_COMMON_FS_GET_FILE_LIST:
-                IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
+                IPC::HandleMsg<FSGetFileListMsg>(channel, std::move(reader), [this](const std::string& path, std::string extension, int len, int& intRes, std::string& res) {
                     std::unique_ptr<char[]> buffer(new char[len]);
                     buffer[0] = '\0';
                     intRes = FS_GetFileList(path.c_str(), extension.c_str(), buffer.get(), len);
@@ -301,7 +302,7 @@ namespace VM {
                 break;
 
             case QVM_COMMON_FS_GET_FILE_LIST_RECURSIVE:
-                IPC::HandleMsg<FSGetFileListRecursiveMsg>(channel, std::move(reader), [this](std::string path, std::string extension, int len, int& intRes, std::string& res) {
+                IPC::HandleMsg<FSGetFileListRecursiveMsg>(channel, std::move(reader), [this](const std::string& path, std::string extension, int len, int& intRes, std::string& res) {
                     std::unique_ptr<char[]> buffer(new char[len]);
                     buffer[0] = '\0';
                     intRes = FS_GetFileListRecursive(path.c_str(), extension.c_str(), buffer.get(), len);
@@ -310,13 +311,13 @@ namespace VM {
                 break;
 
             case QVM_COMMON_FS_FIND_PAK:
-                IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](std::string pakName, bool& found) {
+                IPC::HandleMsg<FSFindPakMsg>(channel, std::move(reader), [this](const std::string& pakName, bool& found) {
                     found = FS::FindPak(pakName) != nullptr;
                 });
                 break;
 
             case QVM_COMMON_FS_LOAD_PAK:
-                IPC::HandleMsg<FSLoadPakMsg>(channel, std::move(reader), [this](std::string pakName, std::string prefix, bool& found) {
+                IPC::HandleMsg<FSLoadPakMsg>(channel, std::move(reader), [this](const std::string& pakName, const std::string& prefix, bool& found) {
                     std::error_code err;
                     FS::PakPath::LoadPakPrefix(*FS::FindPak(pakName), prefix, err);
                     found = bool(err);
@@ -330,13 +331,13 @@ namespace VM {
                 break;
 
             case QVM_COMMON_PARSE_ADD_GLOBAL_DEFINE:
-                IPC::HandleMsg<ParseAddGlobalDefineMsg>(channel, std::move(reader), [this](std::string define, int& res) {
+                IPC::HandleMsg<ParseAddGlobalDefineMsg>(channel, std::move(reader), [this](const std::string& define, int& res) {
                     res = Parse_AddGlobalDefine(define.c_str());
                 });
                 break;
 
             case QVM_COMMON_PARSE_LOAD_SOURCE:
-                IPC::HandleMsg<ParseLoadSourceMsg>(channel, std::move(reader), [this](std::string name, int& res) {
+                IPC::HandleMsg<ParseLoadSourceMsg>(channel, std::move(reader), [this](const std::string& name, int& res) {
                     res = Parse_LoadSourceHandle(name.c_str());
                 });
                 break;

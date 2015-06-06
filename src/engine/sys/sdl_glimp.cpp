@@ -1067,7 +1067,7 @@ static void GLimp_InitExtensions()
 	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS_ARB, &glConfig2.maxVertexAttribs );
 
 	int reservedComponents = 36 * 10; // approximation how many uniforms we have besides the bone matrices
-	glConfig2.maxVertexSkinningBones = Maths::clamp( ( glConfig2.maxVertexUniforms - reservedComponents ) / 16, 0, MAX_BONES );
+	glConfig2.maxVertexSkinningBones = Math::Clamp( ( glConfig2.maxVertexUniforms - reservedComponents ) / 16, 0, MAX_BONES );
 	glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? true : false );
 
 	// GLSL
@@ -1123,13 +1123,12 @@ static void GLimp_InitExtensions()
 
 	// FBO
 	glConfig2.framebufferObjectAvailable = false;
-	if ( LOAD_EXTENSION_WITH_CVAR(EXT_framebuffer_object, r_ext_framebuffer_object) )
+	if ( LOAD_EXTENSION_WITH_CVAR(ARB_framebuffer_object, r_arb_framebuffer_object) )
 	{
-		glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE_EXT, &glConfig2.maxRenderbufferSize );
-		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &glConfig2.maxColorAttachments );
+		glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE, &glConfig2.maxRenderbufferSize );
+		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &glConfig2.maxColorAttachments );
 		glConfig2.framebufferObjectAvailable = true;
 	}
-	glConfig2.framebufferBlitAvailable = LOAD_EXTENSION_WITH_CVAR(EXT_framebuffer_blit, r_ext_framebuffer_blit);
 
 	// Other
 	REQUIRE_EXTENSION( ARB_shader_objects );

@@ -100,10 +100,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_ext_texture_float;
 	cvar_t      *r_ext_texture_rg;
 	cvar_t      *r_ext_texture_filter_anisotropic;
-	cvar_t      *r_ext_framebuffer_object;
+	cvar_t      *r_arb_framebuffer_object;
 	cvar_t      *r_ext_packed_depth_stencil;
-	cvar_t      *r_ext_framebuffer_blit;
-	cvar_t      *r_extx_framebuffer_mixed_formats;
 	cvar_t      *r_ext_generate_mipmap;
 	cvar_t      *r_arb_buffer_storage;
 	cvar_t      *r_arb_map_buffer_range;
@@ -419,8 +417,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				strcpy( s, "GL_TABLE_TOO_LARGE" );
 				break;
 
-			case GL_INVALID_FRAMEBUFFER_OPERATION_EXT:
-				strcpy( s, "GL_INVALID_FRAMEBUFFER_OPERATION_EXT" );
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				strcpy( s, "GL_INVALID_FRAMEBUFFER_OPERATION" );
 				break;
 
 			default:
@@ -889,8 +887,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		if ( glConfig2.framebufferObjectAvailable )
 		{
-			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
-			glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
+			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+			glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 			glState.currentFBO = nullptr;
 		}
 
@@ -960,8 +958,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		if ( glConfig2.framebufferObjectAvailable )
 		{
-			ri.Printf( PRINT_DEVELOPER, "GL_MAX_RENDERBUFFER_SIZE_EXT: %d\n", glConfig2.maxRenderbufferSize );
-			ri.Printf( PRINT_DEVELOPER, "GL_MAX_COLOR_ATTACHMENTS_EXT: %d\n", glConfig2.maxColorAttachments );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_RENDERBUFFER_SIZE: %d\n", glConfig2.maxRenderbufferSize );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_COLOR_ATTACHMENTS: %d\n", glConfig2.maxColorAttachments );
 		}
 
 		ri.Printf( PRINT_DEVELOPER, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits,
@@ -1082,10 +1080,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_ext_texture_float = ri.Cvar_Get( "r_ext_texture_float", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4",  CVAR_LATCH | CVAR_ARCHIVE );
-		r_ext_framebuffer_object = ri.Cvar_Get( "r_ext_framebuffer_object", "1",  CVAR_LATCH );
+		r_arb_framebuffer_object = ri.Cvar_Get( "r_arb_framebuffer_object", "1",  CVAR_LATCH );
 		r_ext_packed_depth_stencil = ri.Cvar_Get( "r_ext_packed_depth_stencil", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_framebuffer_blit = ri.Cvar_Get( "r_ext_framebuffer_blit", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_extx_framebuffer_mixed_formats = ri.Cvar_Get( "r_extx_framebuffer_mixed_formats", "1",  CVAR_LATCH );
 		r_ext_generate_mipmap = ri.Cvar_Get( "r_ext_generate_mipmap", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_buffer_storage = ri.Cvar_Get( "r_arb_buffer_storage", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_map_buffer_range = ri.Cvar_Get( "r_arb_map_buffer_range", "1", CVAR_CHEAT | CVAR_LATCH );

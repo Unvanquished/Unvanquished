@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define GL_SHADER_H
 
 #include "tr_local.h"
+#include <stdexcept>
 
 #define LOG_GLSL_UNIFORMS 1
 #define USE_UNIFORM_FIREWALL 1
@@ -31,6 +32,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // *INDENT-OFF*
 static const unsigned int MAX_SHADER_MACROS = 9;
 static const unsigned int GL_SHADER_VERSION = 3;
+
+class ShaderException : public std::runtime_error
+{
+public:
+	ShaderException(const char* msg) : std::runtime_error(msg) { }
+};
+
+enum class ShaderKind
+{
+	Unknown,
+	BuiltIn,
+	External
+};
 
 struct GLShaderHeader
 {
@@ -175,10 +189,10 @@ public:
 
 protected:
 	bool         GetCompileMacrosString( size_t permutation, std::string &compileMacrosOut ) const;
-	virtual void BuildShaderVertexLibNames( std::string& vertexInlines ) { };
-	virtual void BuildShaderFragmentLibNames( std::string& vertexInlines ) { };
-	virtual void BuildShaderCompileMacros( std::string& vertexInlines ) { };
-	virtual void SetShaderProgramUniforms( shaderProgram_t *shaderProgram ) { };
+	virtual void BuildShaderVertexLibNames( std::string& /*vertexInlines*/ ) { };
+	virtual void BuildShaderFragmentLibNames( std::string& /*vertexInlines*/ ) { };
+	virtual void BuildShaderCompileMacros( std::string& /*vertexInlines*/ ) { };
+	virtual void SetShaderProgramUniforms( shaderProgram_t* /*shaderProgram*/ ) { };
 	int          SelectProgram();
 public:
 	void BindProgram( int deformIndex );
@@ -249,18 +263,18 @@ public:
 private:
 	bool LoadShaderBinary( GLShader *shader, size_t permutation );
 	void SaveShaderBinary( GLShader *shader, size_t permutation );
-	GLuint CompileShader( const char *programName, const char *shaderText,
+	GLuint CompileShader( Str::StringRef programName, Str::StringRef shaderText,
 			      int shaderTextSize, GLenum shaderType ) const;
 	void CompileGPUShaders( GLShader *shader, shaderProgram_t *program,
 				const std::string &compileMacros ) const;
 	void CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
-	                                     const std::string &compileMacros, int deformIndex ) const;
-	std::string BuildDeformShaderText( std::string steps ) const;
-	std::string BuildGPUShaderText( const char *mainShader, const char *libShaders, GLenum shaderType ) const;
+	                                     Str::StringRef compileMacros, int deformIndex ) const;
+	std::string BuildDeformShaderText( const std::string& steps ) const;
+	std::string BuildGPUShaderText( Str::StringRef mainShader, Str::StringRef libShaders, GLenum shaderType ) const;
 	void LinkProgram( GLuint program ) const;
 	void BindAttribLocations( GLuint program ) const;
-	void PrintShaderSource( GLuint object ) const;
-	void PrintInfoLog( GLuint object, bool developerOnly ) const;
+	void PrintShaderSource( Str::StringRef programName, GLuint object ) const;
+	void PrintInfoLog( GLuint object ) const;
 	void InitShader( GLShader *shader );
 	void ValidateProgram( GLuint program ) const;
 	void UpdateShaderProgramUniformLocations( GLShader *shader, shaderProgram_t *shaderProgram ) const;
@@ -649,12 +663,12 @@ public:
 	virtual const char       *GetName() const = 0;
 	virtual EGLCompileMacro GetType() const = 0;
 
-	virtual bool            HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
+	virtual bool            HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &/*macros*/ ) const
 	{
 		return false;
 	}
 
-	virtual bool            MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
+	virtual bool            MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &/*macros*/ ) const
 	{
 		return false;
 	}
@@ -2599,6 +2613,10 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 };
+
+std::string GetShaderPath();
+
+extern ShaderKind shaderKind;
 
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;

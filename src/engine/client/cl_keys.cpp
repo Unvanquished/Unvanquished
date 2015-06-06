@@ -45,7 +45,7 @@ key up events are sent even if in console mode
 
 */
 
-#define CLIP(t) Maths::clamp( (t), 0, MAX_TEAMS - 1 )
+#define CLIP(t) Math::Clamp( (t), 0, MAX_TEAMS - 1 )
 
 Console::Field g_consoleField(INT_MAX);
 bool chat_irc;
@@ -1466,7 +1466,7 @@ static void Key_CompleteBind_Internal( char *args, int argNum, int nameArg )
 	{
 		Cmd::Args arg(args);
 		Cmd::CompletionResult res = Cmd::CompleteArgument(Cmd::Args(arg.EscapedArgs(nameArg)), argNum - nameArg - 1);
-		for (auto candidate : res)
+		for (const auto& candidate : res)
 		{
 			FindMatches(candidate.first.c_str());
 		}

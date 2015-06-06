@@ -842,7 +842,7 @@ static void RocketThink( gentity_t *self )
 	CrossProduct( currentDir, targetDir, rotAxis );
 	rotAngle = RAD2DEG( acos( DotProduct( currentDir, targetDir ) ) );
 	RotatePointAroundVector( newDir, rotAxis, currentDir,
-	                         Maths::clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
+	                         Math::Clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
 
 	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
 	if ( !G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, newDir ) &&

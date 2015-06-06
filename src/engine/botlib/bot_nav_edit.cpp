@@ -346,10 +346,10 @@ static void adjustConnectionSize( int dir )
 
 	if ( argc > 1 )
 	{
-		adjust = Maths::clamp( atoi( Cmd_Argv( 1 ) ), 1, 20 );
+		adjust = Math::Clamp( atoi( Cmd_Argv( 1 ) ), 1, 20 );
 	}
 
-	newConnectionSize = Maths::clamp( connectionSize + dir * adjust, 20, 100 );
+	newConnectionSize = Math::Clamp( connectionSize + dir * adjust, 20, 100 );
 
 	if ( newConnectionSize != connectionSize )
 	{

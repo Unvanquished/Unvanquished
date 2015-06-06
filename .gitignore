@@ -45,6 +45,8 @@ nacl_loader*
 .cproject
 .settings
 
+#ignore qtcreator project files
+CMakeLists.txt.user
 #ignore external deps
 external_deps/*
 !external_deps/build.sh

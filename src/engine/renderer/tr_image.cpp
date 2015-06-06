@@ -1432,7 +1432,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				if ( glConfig.driverType == GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
 				{
 					if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
-						glGenerateMipmapEXT( image->type );
+						glGenerateMipmap( image->type );
 						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 					}
 				}
@@ -3019,10 +3019,12 @@ static void R_CreateColorGradeImage()
 	byte *data, *ptr;
 	int i, r, g, b;
 
-	data = (byte*) ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(u8vec4_t) );
+	data = (byte*) ri.Hunk_AllocateTempMemory( REF_COLORGRADE_SLOTS * REF_COLORGRADEMAP_STORE_SIZE * sizeof(u8vec4_t) );
 
 	// 255 is 15 * 17, so the colors range from 0 to 255
-	for( ptr = data, i = 0; i < 4; i++ ) {
+	for( ptr = data, i = 0; i < REF_COLORGRADE_SLOTS; i++ ) {
+		glState.colorgradeSlots[ i ] = nullptr;
+
 		for( b = 0; b < REF_COLORGRADEMAP_SIZE; b++ ) {
 			for( g = 0; g < REF_COLORGRADEMAP_SIZE; g++ ) {
 				for( r = 0; r < REF_COLORGRADEMAP_SIZE; r++ ) {
@@ -3038,7 +3040,7 @@ static void R_CreateColorGradeImage()
 	tr.colorGradeImage = R_Create3DImage( "_colorGrade", data,
 					      REF_COLORGRADEMAP_SIZE,
 					      REF_COLORGRADEMAP_SIZE,
-					      4 * REF_COLORGRADEMAP_SIZE,
+					      REF_COLORGRADE_SLOTS * REF_COLORGRADEMAP_SIZE,
 					      IF_NOPICMIP | IF_NOCOMPRESSION | IF_NOLIGHTSCALE,
 					      FT_LINEAR,
 					      WT_EDGE_CLAMP );

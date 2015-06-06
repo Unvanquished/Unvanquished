@@ -191,7 +191,7 @@ qhandle_t RE_RegisterVisTest()
 {
 	return 1;
 }
-void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area ) { }
+void RE_AddVisTestToScene( qhandle_t hTest, const vec3_t pos, float depthAdjust, float area ) { }
 float RE_CheckVisibility( qhandle_t hTest )
 {
 	return 0.0f;

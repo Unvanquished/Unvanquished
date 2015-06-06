@@ -23,7 +23,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "gl_shader.h"
 
+// We currently write GLShaderHeader to a file and memcpy all over it.
+// Make sure it's a pod, so we don't put a std::string in it or something
+// and try to memcpy over that or binary write an std::string to a file.
+static_assert(std::is_pod<GLShaderHeader>::value, "Value must be a pod while code in this cpp file reads and writes this object to file as binary.");
+
 extern std::unordered_map<std::string, const char *> shadermap;
+// shaderKind's value will be determined later based on command line setting or absence of.
+ShaderKind shaderKind = ShaderKind::Unknown;
 
 // *INDENT-OFF*
 
@@ -55,27 +62,171 @@ GLShader_motionblur                      *gl_motionblurShader = nullptr;
 GLShader_fxaa                            *gl_fxaaShader = nullptr;
 GLShaderManager                           gl_shaderManager;
 
-GLShaderManager::~GLShaderManager( )
+namespace // Implementation details
 {
-	for ( std::size_t i = 0; i < _shaders.size(); i++ )
+	inline void ThrowShaderError(Str::StringRef msg)
 	{
-		delete _shaders[ i ];
+		throw ShaderException(msg.c_str());
 	}
+
+	const char* GetInternalShader(Str::StringRef filename)
+	{
+		auto it = shadermap.find(filename);
+		if (it != shadermap.end())
+			return it->second;
+		return nullptr;
+	}
+
+	void CRLFToLF(std::string& source)
+	{
+		size_t sourcePos = 0;
+		size_t keepPos = 0;
+
+		auto keep = [&](size_t keepLength)
+		{
+			if (sourcePos > 0)
+				std::copy(source.begin() + sourcePos, source.begin() + sourcePos + keepLength,
+					source.begin() + keepPos);
+			keepPos += keepLength;
+		};
+
+		for (;;)
+		{
+			size_t targetPos = source.find("\r\n", sourcePos);
+			// If we don't find a line break, shuffle what's left
+			// into place and we're done.
+			if (targetPos == std::string::npos)
+			{
+				size_t remainingLength = source.length() - sourcePos;
+				keep(remainingLength);
+				break;
+			}
+			// If we do find a line break, shuffle what's before it into place
+			// except for the '\r\n'. But then tack on a '\n',
+			// resulting in effectively just losing the '\r' in the sequence.
+			size_t keepLength = (targetPos - sourcePos);
+			keep(keepLength);
+			source[keepPos] = '\n';
+			++keepPos;
+			sourcePos = targetPos + 2;
+		}
+		source.resize(keepPos);
+	}
+
+	// CR/LF's can wind up in the raw files because of how
+	// version control system works and how Windows works.
+	// Remove them so we are always comparing apples with apples.
+	void NormalizeShaderText( std::string& text )
+	{
+		// A windows user changing the shader file can put
+		// Windows can put CRLF's in the file. Make them LF's.
+		CRLFToLF(text); 
+	}
+
+	std::string GetShaderFilename(Str::StringRef filename)
+	{
+		std::string shaderBase = GetShaderPath();
+		if (shaderBase.empty())
+			return shaderBase;
+		std::string shaderFileName = FS::Path::Build(shaderBase, filename);
+		return shaderFileName;
+	}
+
+	std::string GetShaderText(Str::StringRef filename)
+	{
+		// Shader type should be set during initialisation.
+		if (shaderKind == ShaderKind::BuiltIn)
+		{
+			// Look for the shader internally. If not found, look for it externally.
+			// If found neither internally or externally of if empty, then Error.
+			auto text_ptr = GetInternalShader(filename);
+			if (text_ptr == nullptr)
+				ThrowShaderError(Str::Format("No shader found for shader: %s", filename));
+			return text_ptr;
+		}
+		else if (shaderKind == ShaderKind::External)
+		{
+			std::string shaderText;
+			std::string shaderFilename = GetShaderFilename(filename);
+
+			Log::Notice("Loading shader '%s'", shaderFilename);
+
+			std::error_code err;
+
+			FS::File shaderFile = FS::RawPath::OpenRead(shaderFilename, err);
+			if (err)
+				ThrowShaderError(Str::Format("Cannot load shader from file %s: %s", shaderFilename, err.message()));
+
+			shaderText = shaderFile.ReadAll(err);
+			if (err)
+				ThrowShaderError(Str::Format("Failed to read shader from file %s: %s", shaderFilename, err.message()));
+
+			// Alert the user when a file does not match it's built-in version.
+			// There should be no differences in normal conditions.
+			// When testing shader file changes this is an expected message
+			// and helps the tester track which files have changed and need 
+			// to be recommmitted to git.
+			// If one is not making shader files changes this message
+			// indicates there is a mismatch between disk changes and builtins
+			// which the application is out of sync with it's files 
+			// and he translation script needs to be run.
+			auto textPtr = GetInternalShader(filename);
+			std::string internalShaderText;
+			if (textPtr != nullptr)
+				internalShaderText = textPtr;
+
+			// Note to the user any differences that might exist between
+			// what's on disk and what's compiled into the program in shaders.cpp.
+			// The developer should be aware of any differences why they exist but
+			// they might be expected or unexpected.
+			// If the developer made changes they might want to be reminded of what
+			// they have changed while they are working.
+			// But it also might be that the developer hasn't made any changes but
+			// the compiled code is shaders.cpp is just out of sync with the shader
+			// files and that buildshaders.sh might need to be run to re-sync.
+			// This message alerts user to either situation and they can decide
+			// what's going on from seeing that.
+			// We normalize the text by removing CL/LF's so they aren't considered
+			// a difference as Windows or the Version Control System can put them in
+			// and another OS might read them back and conisder that a difference
+			// to what's in shader.cpp or vice vesa.
+			NormalizeShaderText(internalShaderText);
+			NormalizeShaderText(shaderText);
+			if (internalShaderText != shaderText)
+				Log::Warn("Note shader file differs from built-in shader: %s", shaderFilename);
+
+			if (shaderText.empty())
+				ThrowShaderError(Str::Format("Shader from file is empty: %s", shaderFilename));
+
+			return shaderText;
+		}
+		// Will never reach here.
+		assert(false);
+		ThrowShaderError("Internal error. ShaderKind not set.");
+		return std::string();
+	}
+};
+
+std::string GetShaderPath()
+{
+	std::string shaderPath;
+	auto shaderPathVar = Cvar_Get("shaderpath", "", CVAR_INIT);
+	if (shaderPathVar->string != nullptr)
+		shaderPath = shaderPathVar->string;
+	return shaderPath;
+}
+
+GLShaderManager::~GLShaderManager()
+{
 }
 
 void GLShaderManager::freeAll()
 {
-	for ( std::size_t i = 0; i < _shaders.size(); i++ )
-	{
-		delete _shaders[ i ];
-	}
+	_shaders.clear();
 
-	_shaders.erase( _shaders.begin(), _shaders.end() );
+	for ( GLint sh : _deformShaders )
+		glDeleteShader( sh );
 
-	for ( std::size_t i = 0; i < _deformShaders.size(); i++ )
-	{
-		glDeleteShader( _deformShaders[ i ] );
-	}
 	_deformShaders.clear();
 	_deformShaderLookup.clear();
 
@@ -99,42 +250,34 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 	shaderProgram->uniformFirewall = ( byte * ) ri.Z_Malloc( uniformSize );
 
 	// update uniforms
-	for ( size_t j = 0; j < numUniforms; j++ )
+	for (GLUniform *uniform : shader->_uniforms)
 	{
-		GLUniform *uniform = shader->_uniforms[ j ];
-
 		uniform->UpdateShaderProgramUniformLocation( shaderProgram );
 	}
 }
 
-static inline void AddGLSLDefine( std::string& defines, const std::string& define, int value )
+static inline void AddDefine( std::string& defines, const std::string& define, int value )
 {
-	defines += "#ifndef " + define + "\n#define " + define + " ";
-	defines += va( "%d\n", value );
-	defines += "#endif\n";
+	defines += Str::Format("#ifndef %s\n#define %s %d\n#endif\n", define, define, value);
 }
 
-static inline void AddGLSLDefine( std::string& defines, const std::string& define, float value )
+static inline void AddDefine( std::string& defines, const std::string& define, float value )
 {
-	defines += "#ifndef " + define + "\n#define " + define + " ";
-	defines += va( "%f\n", value );
-	defines += "#endif\n";
+	defines += Str::Format("#ifndef %s\n#define %s %f\n#endif\n", define, define, value);
 }
 
-static inline void AddGLSLDefine( std::string& defines, const std::string& define, float v1, float v2 )
+static inline void AddDefine( std::string& defines, const std::string& define, float v1, float v2 )
 {
-	defines += "#ifndef " + define + "\n#define " + define + " ";
-	defines += va( "vec2( %f, %f )\n", v1, v2 );
-	defines += "#endif\n";
+	defines += Str::Format("#ifndef %s\n#define %s vec2(%f, %f)\n#endif\n", define, define, v1, v2);
 }
 
-static inline void AddGLSLDefine( std::string& defines, const std::string& define )
+static inline void AddDefine( std::string& defines, const std::string& define )
 {
-	defines += "#ifndef " + define + "\n#define " + define + "\n#endif\n";
+	defines += Str::Format("#ifndef %s\n#define %s\n#endif\n", define, define);
 }
 
-// has to match enum genFunc_t in tr_local.h
-static const char *genFuncNames[] = {
+// Has to match enum genFunc_t in tr_local.h
+static const char *const genFuncNames[] = {
 	  "DSTEP_NONE",
 	  "DSTEP_SIN",
 	  "DSTEP_SQUARE",
@@ -144,67 +287,70 @@ static const char *genFuncNames[] = {
 	  "DSTEP_NOISE"
 };
 
-static inline std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
+static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 {
 	std::string steps;
 
-	steps += "#define DEFORM_STEPS ";
-	for( int step = 0; step < numDeforms; step++ ) {
-		deformStage_t *ds = &deforms[ step ];
+	steps.reserve(256); // Might help a little.
 
-		switch ( ds->deformation )
+	steps += "#define DEFORM_STEPS ";
+	for( int step = 0; step < numDeforms; step++ )
+	{
+		const deformStage_t &ds = deforms[ step ];
+
+		switch ( ds.deformation )
 		{
 		case DEFORM_WAVE:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
-			steps += va("%s(%f, %f, %f) ",
-				    genFuncNames[ ds->deformationWave.func ],
-				    ds->deformationWave.phase,
-				    ds->deformationSpread,
-				    ds->deformationWave.frequency );
+			steps += Str::Format("%s(%f, %f, %f) ",
+				    genFuncNames[ ds.deformationWave.func ],
+				    ds.deformationWave.phase,
+				    ds.deformationSpread,
+				    ds.deformationWave.frequency );
 			steps += "DSTEP_LOAD_NORM(1.0, 1.0, 1.0) ";
-			steps += va("DSTEP_MODIFY_POS(%f, %f, 1.0) ",
-				    ds->deformationWave.base,
-				    ds->deformationWave.amplitude );
+			steps += Str::Format("DSTEP_MODIFY_POS(%f, %f, 1.0) ",
+				    ds.deformationWave.base,
+				    ds.deformationWave.amplitude );
 			break;
 
 		case DEFORM_BULGE:
 			steps += "DSTEP_LOAD_TC(1.0, 0.0, 0.0) ";
-			steps += va("DSTEP_SIN(0.0, %f, %f) ",
-				    ds->bulgeWidth,
-				    ds->bulgeSpeed * 0.001f );
+			steps += Str::Format("DSTEP_SIN(0.0, %f, %f) ",
+				    ds.bulgeWidth,
+				    ds.bulgeSpeed * 0.001f );
 			steps += "DSTEP_LOAD_NORM(1.0, 1.0, 1.0) ";
-			steps += va("DSTEP_MODIFY_POS(0.0, %f, 1.0) ",
-				    ds->bulgeHeight );
+			steps += Str::Format("DSTEP_MODIFY_POS(0.0, %f, 1.0) ",
+				    ds.bulgeHeight );
 			break;
 
 		case DEFORM_MOVE:
-			steps += va("%s(%f, 0.0, %f) ",
-				    genFuncNames[ ds->deformationWave.func ],
-				    ds->deformationWave.phase,
-				    ds->deformationWave.frequency );
-			steps += va("DSTEP_LOAD_VEC(%f, %f, %f) ",
-				    ds->moveVector[ 0 ],
-				    ds->moveVector[ 1 ],
-				    ds->moveVector[ 2 ] );
-			steps += va("DSTEP_MODIFY_POS(%f, %f, 1.0) ",
-				    ds->deformationWave.base,
-				    ds->deformationWave.amplitude );
+			steps += Str::Format("%s(%f, 0.0, %f) ",
+				    genFuncNames[ ds.deformationWave.func ],
+				    ds.deformationWave.phase,
+				    ds.deformationWave.frequency );
+			steps += Str::Format("DSTEP_LOAD_VEC(%f, %f, %f) ",
+				    ds.moveVector[ 0 ],
+				    ds.moveVector[ 1 ],
+				    ds.moveVector[ 2 ] );
+			steps += Str::Format("DSTEP_MODIFY_POS(%f, %f, 1.0) ",
+				    ds.deformationWave.base,
+				    ds.deformationWave.amplitude );
 			break;
 
 		case DEFORM_NORMALS:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
-			steps += va("DSTEP_NOISE(0.0, 0.0, %f) ",
-				    ds->deformationWave.frequency );
-			steps += va("DSTEP_MODIFY_NORM(0.0, %f, 1.0) ",
-				    0.98f * ds->deformationWave.amplitude );
+			steps += Str::Format("DSTEP_NOISE(0.0, 0.0, %f) ",
+				    ds.deformationWave.frequency );
+			steps += Str::Format("DSTEP_MODIFY_NORM(0.0, %f, 1.0) ",
+				    0.98f * ds.deformationWave.amplitude );
 			break;
 
 		case DEFORM_ROTGROW:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
-			steps += va("DSTEP_ROTGROW(%f, %f, %f) ",
-				    ds->moveVector[0],
-				    ds->moveVector[1],
-				    ds->moveVector[2] );
+			steps += Str::Format("DSTEP_ROTGROW(%f, %f, %f) ",
+				    ds.moveVector[0],
+				    ds.moveVector[1],
+				    ds.moveVector[2] );
 			steps += "DSTEP_LOAD_COLOR(1.0, 1.0, 1.0) ";
 			steps += "DSTEP_MODIFY_COLOR(-1.0, 1.0, 0.0) ";
 			break;
@@ -217,40 +363,18 @@ static inline std::string BuildDeformSteps( deformStage_t *deforms, int numDefor
 	return steps;
 }
 
-std::string     GLShaderManager::BuildDeformShaderText( std::string steps ) const
+std::string GLShaderManager::BuildDeformShaderText( const std::string& steps ) const
 {
-	GLchar *mainBuffer = NULL;
 	std::string shaderText;
 
-	shaderText = va( "#version %d\n", glConfig2.shadingLanguageVersion );
+	shaderText = Str::Format( "#version %d\n", glConfig2.shadingLanguageVersion );
 	shaderText += steps + "\n";
 
-	// load DeformVertex() program
-	ri.Printf( PRINT_DEVELOPER, "...loading DeformVertex() shader\n" );
-
-	std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( "glsl/deformVertexes_vp.glsl" );
-
-	if( it != shadermap.end() ) {
-		// append it to the libsBuffer
-		shaderText += it->second;
-	}
-	else
-	{
-		ri.FS_ReadFile( "glsl/deformVertexes_vp.glsl", ( void ** ) &mainBuffer );
-
-		if ( !mainBuffer )
-		{
-			ri.Error( ERR_DROP, "Couldn't load glsl/deformVertexes_vp.glsl" );
-		}
-
-		// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
-		// so we have to reset the line counting
-		shaderText += "#line 0\n";
-		shaderText += mainBuffer;
-
-		ri.FS_FreeFile( mainBuffer );
-	}
-
+	// We added a lot of stuff but if we do something bad
+	// in the GLSL shaders then we want the proper line
+	// so we have to reset the line counting.
+	shaderText += "#line 0\n";
+	shaderText += GetShaderText("glsl/deformVertexes_vp.glsl");
 	return shaderText;
 }
 
@@ -259,11 +383,12 @@ int GLShaderManager::getDeformShaderIndex( deformStage_t *deforms, int numDeform
 	std::string steps = BuildDeformSteps( deforms, numDeforms );
 	int index = _deformShaderLookup[ steps ] - 1;
 
-	if( index < 0 ) {
+	if( index < 0 )
+	{
 		// compile new deform shader
 		std::string shaderText = GLShaderManager::BuildDeformShaderText( steps );
 		_deformShaders.push_back(CompileShader( "deformVertexes",
-							shaderText.c_str(),
+							shaderText,
 							shaderText.length(),
 							GL_VERTEX_SHADER ) );
 		index = _deformShaders.size();
@@ -273,26 +398,22 @@ int GLShaderManager::getDeformShaderIndex( deformStage_t *deforms, int numDeform
 	return index;
 }
 
-std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
-    const char *libShaderNames,
+std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderName,
+    Str::StringRef libShaderNames,
     GLenum shaderType ) const
 {
 	char        filename[ MAX_QPATH ];
-	GLchar      *mainBuffer = nullptr;
 	char        *token;
-	std::string libsBuffer; // all libs concatenated
 
-	const char        **libs = &libShaderNames;
-
-	std::string shaderText;
+	const char        *libNames = libShaderNames.c_str();
 
 	GL_CheckErrors();
 
+	std::string libs; // All libs concatenated
+	libs.reserve(8192); // Might help, just an estimate.
 	while ( 1 )
 	{
-		char *libBuffer; // single extra lib file
-
-		token = COM_ParseExt2( libs, false );
+		token = COM_ParseExt2( &libNames, false );
 
 		if ( !token[ 0 ] )
 		{
@@ -300,69 +421,36 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		}
 
 		if ( shaderType == GL_VERTEX_SHADER )
-		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", token );
-			ri.Printf( PRINT_DEVELOPER, "...loading vertex shader '%s'\n", filename );
-		}
 		else
-		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", token );
-			ri.Printf( PRINT_DEVELOPER, "...loading fragment shader '%s'\n", filename );
-		}
 
-		std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( filename );
-
-		if( it != shadermap.end() ) {
-			// append it to the libsBuffer
-			libsBuffer.append( it->second );
-		}
-		else
-		{
-			ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
-
-			if ( !libBuffer )
-			{
-				ri.Error( ERR_DROP, "Couldn't load %s", filename );
-			}
-
-			// append it to the libsBuffer
-			libsBuffer.append(libBuffer);
-
-			ri.FS_FreeFile( libBuffer );
-		}
+		libs += GetShaderText(filename);
 	}
 
 	// load main() program
 	if ( shaderType == GL_VERTEX_SHADER )
-	{
-		Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", mainShaderName );
-		ri.Printf( PRINT_DEVELOPER, "...loading vertex main() shader '%s'\n", filename );
-	}
+		Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", mainShaderName.c_str() );
 	else
-	{
-		Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", mainShaderName );
-		ri.Printf( PRINT_DEVELOPER, "...loading fragment main() shader '%s'\n", filename );
-	}
+		Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", mainShaderName.c_str() );
 
-	std::string bufferExtra;
+	std::string env;
+	env.reserve( 1024 ); // Might help, just an estimate.
 
-	bufferExtra.reserve( 4096 );
+	if ( glConfig2.textureRGAvailable )
+		AddDefine( env, "TEXTURE_RG", 1 );
 
-	if( glConfig2.textureRGAvailable ) {
-		AddGLSLDefine( bufferExtra, "TEXTURE_RG", 1 );
-	}
+	AddDefine( env, "r_AmbientScale", r_ambientScale->value );
+	AddDefine( env, "r_SpecularScale", r_specularScale->value );
+	AddDefine( env, "r_NormalScale", r_normalScale->value );
 
-	AddGLSLDefine( bufferExtra, "r_AmbientScale", r_ambientScale->value );
-	AddGLSLDefine( bufferExtra, "r_SpecularScale", r_specularScale->value );
-	AddGLSLDefine( bufferExtra, "r_NormalScale", r_normalScale->value );
-
-	AddGLSLDefine( bufferExtra, "M_PI", static_cast<float>( M_PI ) );
-	AddGLSLDefine( bufferExtra, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
+	AddDefine( env, "M_PI", static_cast<float>( M_PI ) );
+	AddDefine( env, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 
 	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
 	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
 
-	AddGLSLDefine( bufferExtra, "r_FBufScale", fbufWidthScale, fbufHeightScale );
+	AddDefine( env, "r_FBufScale", fbufWidthScale, fbufHeightScale );
 
 	float npotWidthScale = 1;
 	float npotHeightScale = 1;
@@ -373,193 +461,116 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 		npotHeightScale = ( float ) glConfig.vidHeight / ( float ) NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	AddGLSLDefine( bufferExtra, "r_NPOTScale", npotWidthScale, npotHeightScale );
+	AddDefine( env, "r_NPOTScale", npotWidthScale, npotHeightScale );
 
 	if ( glConfig.driverType == GLDRV_MESA )
-	{
-		AddGLSLDefine( bufferExtra, "GLDRV_MESA", 1 );
-	}
+		AddDefine( env, "GLDRV_MESA", 1 );
 
-	if ( glConfig.hardwareType == GLHW_ATI )
+	switch (glConfig.hardwareType)
 	{
-		AddGLSLDefine( bufferExtra, "GLHW_ATI", 1 );
-	}
-	else if ( glConfig.hardwareType == GLHW_ATI_DX10 )
-	{
-		AddGLSLDefine( bufferExtra, "GLHW_ATI_DX10", 1 );
-	}
-	else if ( glConfig.hardwareType == GLHW_NV_DX10 )
-	{
-		AddGLSLDefine( bufferExtra, "GLHW_NV_DX10", 1 );
+	case GLHW_ATI:
+		AddDefine(env, "GLHW_ATI", 1);
+		break;
+	case GLHW_ATI_DX10:
+		AddDefine(env, "GLHW_ATI_DX10", 1);
+		break;
+	case GLHW_NV_DX10:
+		AddDefine(env, "GLHW_NV_DX10", 1);
+		break;
 	}
 
 	if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
 	{
 		if ( r_shadows->integer == SHADOWING_ESM16 || r_shadows->integer == SHADOWING_ESM32 )
 		{
-			AddGLSLDefine( bufferExtra, "ESM", 1 );
+			AddDefine( env, "ESM", 1 );
 		}
 		else if ( r_shadows->integer == SHADOWING_EVSM32 )
 		{
-			AddGLSLDefine( bufferExtra, "EVSM", 1 );
+			AddDefine( env, "EVSM", 1 );
 			// The exponents for the EVSM techniques should be less than ln(FLT_MAX/FILTER_SIZE)/2 {ln(FLT_MAX/1)/2 ~44.3}
 			//         42.9 is the maximum possible value for FILTER_SIZE=15
 			//         42.0 is the truncated value that we pass into the sample
-			AddGLSLDefine( bufferExtra, "r_EVSMExponents", 42.0f, 42.0f );
+			AddDefine( env, "r_EVSMExponents", 42.0f, 42.0f );
 			if ( r_evsmPostProcess->integer )
-			{
-				AddGLSLDefine( bufferExtra,"r_EVSMPostProcess", 1 );
-			}
+				AddDefine( env,"r_EVSMPostProcess", 1 );
 		}
 		else
 		{
-			AddGLSLDefine( bufferExtra, "VSM", 1 );
+			AddDefine( env, "VSM", 1 );
 
 			if ( glConfig.hardwareType == GLHW_ATI )
-			{
-				AddGLSLDefine( bufferExtra, "VSM_CLAMP", 1 );
-			}
+				AddDefine( env, "VSM_CLAMP", 1 );
 		}
 
 		if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
-		{
-			AddGLSLDefine( bufferExtra, "VSM_EPSILON", 0.000001f );
-		}
+			AddDefine( env, "VSM_EPSILON", 0.000001f );
 		else
-		{
-			AddGLSLDefine( bufferExtra, "VSM_EPSILON", 0.0001f );
-		}
+			AddDefine( env, "VSM_EPSILON", 0.0001f );
 
 		if ( r_lightBleedReduction->value )
-		{
-			AddGLSLDefine( bufferExtra, "r_LightBleedReduction", r_lightBleedReduction->value );
-		}
+			AddDefine( env, "r_LightBleedReduction", r_lightBleedReduction->value );
 
 		if ( r_overDarkeningFactor->value )
-		{
-			AddGLSLDefine( bufferExtra, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
-		}
+			AddDefine( env, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
 
 		if ( r_shadowMapDepthScale->value )
-		{
-			AddGLSLDefine( bufferExtra, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
-		}
+			AddDefine( env, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
 
 		if ( r_debugShadowMaps->integer )
-		{
-			AddGLSLDefine( bufferExtra, "r_DebugShadowMaps", r_debugShadowMaps->integer );
-		}
+			AddDefine( env, "r_DebugShadowMaps", r_debugShadowMaps->integer );
 
-		/*
-		if(r_softShadows->integer == 1)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_2X2", 1 );
-		}
-		else if(r_softShadows->integer == 2)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_3X3", 1 );
-		}
-		else if(r_softShadows->integer == 3)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_4X4", 1 );
-		}
-		else if(r_softShadows->integer == 4)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_5X5", 1 );
-		}
-		else if(r_softShadows->integer == 5)
-		{
-			AddGLSLDefine( bufferExtra, "PCF_6X6", 1 );
-		}
-		*/
 		if ( r_softShadows->integer == 6 )
-		{
-			AddGLSLDefine( bufferExtra, "PCSS", 1 );
-		}
+			AddDefine( env, "PCSS", 1 );
 		else if ( r_softShadows->integer )
-		{
-			AddGLSLDefine( bufferExtra, "r_PCFSamples", r_softShadows->value + 1.0f );
-		}
+			AddDefine( env, "r_PCFSamples", r_softShadows->value + 1.0f );
 
 		if ( r_parallelShadowSplits->integer )
-		{
-			AddGLSLDefine( bufferExtra, va( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
-		}
+			AddDefine( env, Str::Format( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
 
 		if ( r_showParallelShadowSplits->integer )
-		{
-			AddGLSLDefine( bufferExtra, "r_ShowParallelShadowSplits", 1 );
-		}
+			AddDefine( env, "r_ShowParallelShadowSplits", 1 );
 	}
 
 	if ( r_precomputedLighting->integer )
-	{
-		AddGLSLDefine( bufferExtra, "r_precomputedLighting", 1 );
-	}
+		AddDefine( env, "r_precomputedLighting", 1 );
 
 	if ( r_showLightMaps->integer )
-	{
-		AddGLSLDefine( bufferExtra, "r_showLightMaps", r_showLightMaps->integer );
-	}
+		AddDefine( env, "r_showLightMaps", r_showLightMaps->integer );
 
 	if ( r_showDeluxeMaps->integer )
-	{
-		AddGLSLDefine( bufferExtra, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
-	}
+		AddDefine( env, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
 
 	if ( r_showEntityNormals->integer )
-	{
-		AddGLSLDefine( bufferExtra, "r_showEntityNormals", r_showEntityNormals->integer );
-	}
+		AddDefine( env, "r_showEntityNormals", r_showEntityNormals->integer );
 
 	if ( glConfig2.vboVertexSkinningAvailable )
 	{
-		AddGLSLDefine( bufferExtra, "r_VertexSkinning", 1 );
-		AddGLSLDefine( bufferExtra, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
+		AddDefine( env, "r_VertexSkinning", 1 );
+		AddDefine( env, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
 	}
 	else
 	{
-		AddGLSLDefine( bufferExtra, "MAX_GLSL_BONES", 4 );
+		AddDefine( env, "MAX_GLSL_BONES", 4 );
 	}
 
 	if ( r_wrapAroundLighting->value )
-	{
-		AddGLSLDefine( bufferExtra, "r_WrapAroundLighting", r_wrapAroundLighting->value );
-	}
+		AddDefine( env, "r_WrapAroundLighting", r_wrapAroundLighting->value );
 
 	if ( r_halfLambertLighting->integer )
-	{
-		AddGLSLDefine( bufferExtra, "r_HalfLambertLighting", 1 );
-	}
+		AddDefine( env, "r_HalfLambertLighting", 1 );
 
 	if ( r_rimLighting->integer )
 	{
-		AddGLSLDefine( bufferExtra, "r_RimLighting", 1 );
-		AddGLSLDefine( bufferExtra, "r_RimExponent", r_rimExponent->value );
+		AddDefine( env, "r_RimLighting", 1 );
+		AddDefine( env, "r_RimExponent", r_rimExponent->value );
 	}
 
 	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
 	// so we have to reset the line counting
-	bufferExtra += "#line 0\n";
+	env += "#line 0\n";
 
-	std::unordered_map<std::string, const char *>::const_iterator it = shadermap.find( filename );
-
-	if( it != shadermap.end() ) {
-		shaderText = bufferExtra + libsBuffer + it->second;
-	}
-	else
-	{
-		ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );
-
-		if ( !mainBuffer )
-		{
-			ri.Error( ERR_DROP, "Couldn't load %s", filename );
-		}
-
-		shaderText = bufferExtra + libsBuffer + mainBuffer;
-
-		ri.FS_FreeFile( mainBuffer );
-	}
+	std::string shaderText = env + libs + GetShaderText(filename);
 
 	return shaderText;
 }
@@ -569,7 +580,7 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 	std::string compileMacros;
 	int  startTime = ri.Milliseconds();
 	int  endTime;
-	int  i = macroIndex + ( deformIndex << shader->_compileMacros.size() );
+	size_t i = macroIndex + ( deformIndex << shader->_compileMacros.size() );
 
 	// program already exists
 	if ( i < shader->_shaderPrograms.size() &&
@@ -582,20 +593,19 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 	{
 		shader->BuildShaderCompileMacros( compileMacros );
 
-		if( i >= shader->_shaderPrograms.size() ) {
+		if( i >= shader->_shaderPrograms.size() )
 			shader->_shaderPrograms.resize( (deformIndex + 1) << shader->_compileMacros.size() );
-		}
 
 		shaderProgram_t *shaderProgram = &shader->_shaderPrograms[ i ];
 
 		shaderProgram->program = glCreateProgram();
 		shaderProgram->attribs = shader->_vertexAttribsRequired; // | _vertexAttribsOptional;
 
-		if( deformIndex > 0 ) {
+		if( deformIndex > 0 )
+		{
 			shaderProgram_t *baseShader = &shader->_shaderPrograms[ macroIndex ];
-			if( !baseShader->VS || !baseShader->FS ) {
+			if( !baseShader->VS || !baseShader->FS )
 				CompileGPUShaders( shader, baseShader, compileMacros );
-			}
 
 			glAttachShader( shaderProgram->program, baseShader->VS );
 			glAttachShader( shaderProgram->program, _deformShaders[ deformIndex ] );
@@ -603,7 +613,9 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 
 			BindAttribLocations( shaderProgram->program );
 			LinkProgram( shaderProgram->program );
-		} else if ( !LoadShaderBinary( shader, i ) ) {
+		}
+		else if ( !LoadShaderBinary( shader, i ) )
+		{
 			CompileAndLinkGPUShaderProgram(	shader, shaderProgram, compileMacros, deformIndex );
 			SaveShaderBinary( shader, i );
 		}
@@ -623,23 +635,23 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 	return false;
 }
 
-void GLShaderManager::buildAll( )
+void GLShaderManager::buildAll()
 {
 	while ( !_shaderBuildQueue.empty() )
 	{
-		GLShader *shader = _shaderBuildQueue.front();
-		size_t numPermutations = 1 << shader->GetNumOfCompiledMacros();
+		GLShader& shader = *_shaderBuildQueue.front();
+		size_t numPermutations = 1 << shader.GetNumOfCompiledMacros();
 		size_t i;
 
 		for( i = 0; i < numPermutations; i++ )
 		{
-			buildPermutation( shader, i, 0 );
+			buildPermutation( &shader, i, 0 );
 		}
 
 		_shaderBuildQueue.pop();
 	}
 
-	ri.Printf( PRINT_DEVELOPER, "glsl shaders took %d msec to build\n", _totalBuildTime );
+	Log::Notice( "glsl shaders took %d msec to build\n", _totalBuildTime );
 
 	if( r_recompileShaders->integer )
 	{
@@ -650,7 +662,6 @@ void GLShaderManager::buildAll( )
 void GLShaderManager::InitShader( GLShader *shader )
 {
 	shader->_shaderPrograms = std::vector<shaderProgram_t>( 1 << shader->_compileMacros.size() );
-	memset( &shader->_shaderPrograms[ 0 ], 0, shader->_shaderPrograms.size() * sizeof( shaderProgram_t ) );
 
 	shader->_uniformStorageSize = 0;
 	for ( std::size_t i = 0; i < shader->_uniforms.size(); i++ )
@@ -661,14 +672,14 @@ void GLShaderManager::InitShader( GLShader *shader )
 		shader->_uniformStorageSize += uniform->GetSize();
 	}
 
-	std::string vertexInlines = "";
+	std::string vertexInlines;
 	shader->BuildShaderVertexLibNames( vertexInlines );
 
-	std::string fragmentInlines = "";
+	std::string fragmentInlines;
 	shader->BuildShaderFragmentLibNames( fragmentInlines );
 
-	shader->_vertexShaderText = BuildGPUShaderText( shader->GetMainShaderName().c_str(), vertexInlines.c_str(), GL_VERTEX_SHADER );
-	shader->_fragmentShaderText = BuildGPUShaderText( shader->GetMainShaderName().c_str(), fragmentInlines.c_str(), GL_FRAGMENT_SHADER );
+	shader->_vertexShaderText = BuildGPUShaderText( shader->GetMainShaderName(), vertexInlines, GL_VERTEX_SHADER );
+	shader->_fragmentShaderText = BuildGPUShaderText( shader->GetMainShaderName(), fragmentInlines, GL_FRAGMENT_SHADER );
 	std::string combinedShaderText= shader->_vertexShaderText + shader->_fragmentShaderText;
 
 	shader->_checkSum = Com_BlockChecksum( combinedShaderText.c_str(), combinedShaderText.length() );
@@ -678,32 +689,39 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 {
 #ifdef GLEW_ARB_get_program_binary
 	GLint          success;
-	GLint          fileLength;
-	void           *binary;
-	byte           *binaryptr;
+	const byte    *binaryptr;
 	GLShaderHeader shaderHeader;
+
+	if (!GetShaderPath().empty())
+		return false;
 
 	// we need to recompile the shaders
 	if( r_recompileShaders->integer )
-	{
 		return false;
-	}
 
 	// don't even try if the necessary functions aren't available
 	if( !glConfig2.getProgramBinaryAvailable )
-	{
 		return false;
-	}
 
-	fileLength = ri.FS_ReadFile( va( "glsl/%s/%s_%u.bin", shader->GetName().c_str(), shader->GetName().c_str(), ( unsigned int ) programNum ), &binary );
+	std::error_code err;
 
-	// file empty or not found
-	if( fileLength <= 0 )
-	{
+	std::string shaderFilename = Str::Format("glsl/%s/%s_%u.bin", shader->GetName(), shader->GetName(), (unsigned int)programNum);
+	FS::File shaderFile = FS::HomePath::OpenRead(shaderFilename, err);
+	if (err)
 		return false;
-	}
 
-	binaryptr = ( byte* )binary;
+	std::string shaderData = shaderFile.ReadAll(err);
+	if (err)
+		return false;
+
+	auto fileLength = shaderData.length();
+	if (fileLength <= 0)
+		return false;
+
+	if (fileLength < sizeof(shaderHeader))
+		return false;
+
+	binaryptr = reinterpret_cast<const byte*>(shaderData.data());
 
 	// get the shader header from the file
 	memcpy( &shaderHeader, binaryptr, sizeof( shaderHeader ) );
@@ -711,34 +729,22 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 
 	// check if this shader binary is the correct format
 	if ( shaderHeader.version != GL_SHADER_VERSION )
-	{
-		ri.FS_FreeFile( binary );
 		return false;
-	}
 
 	// make sure this shader uses the same number of macros
 	if ( shaderHeader.numMacros != shader->GetNumOfCompiledMacros() )
-	{
-		ri.FS_FreeFile( binary );
 		return false;
-	}
 
 	// make sure this shader uses the same macros
 	for ( unsigned int i = 0; i < shaderHeader.numMacros; i++ )
 	{
 		if ( shader->_compileMacros[ i ]->GetType() != shaderHeader.macros[ i ] )
-		{
-			ri.FS_FreeFile( binary );
 			return false;
-		}
 	}
 
 	// make sure the checksums for the source code match
 	if ( shaderHeader.checkSum != shader->_checkSum )
-	{
-		ri.FS_FreeFile( binary );
 		return false;
-	}
 
 	// load the shader
 	shaderProgram_t *shaderProgram = &shader->_shaderPrograms[ programNum ];
@@ -746,12 +752,8 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 	glGetProgramiv( shaderProgram->program, GL_LINK_STATUS, &success );
 
 	if ( !success )
-	{
-		ri.FS_FreeFile( binary );
 		return false;
-	}
 
-	ri.FS_FreeFile( binary );
 	return true;
 #else
 	return false;
@@ -764,8 +766,11 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	GLuint                binarySize = 0;
 	byte                  *binary;
 	byte                  *binaryptr;
-	GLShaderHeader        shaderHeader;
+	GLShaderHeader        shaderHeader{}; // Zero init.
 	shaderProgram_t       *shaderProgram;
+
+	if (!GetShaderPath().empty())
+		return;
 
 	// don't even try if the necessary functions aren't available
 	if( !glConfig2.getProgramBinaryAvailable )
@@ -774,8 +779,6 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	}
 
 	shaderProgram = &shader->_shaderPrograms[ programNum ];
-
-	memset( &shaderHeader, 0, sizeof( shaderHeader ) );
 
 	// find output size
 	binarySize += sizeof( shaderHeader );
@@ -803,9 +806,10 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	shaderHeader.checkSum = shader->_checkSum;
 
 	// write the header to the buffer
-	memcpy( ( void* )binary, &shaderHeader, sizeof( shaderHeader ) );
+	memcpy(binary, &shaderHeader, sizeof( shaderHeader ) );
 
-	ri.FS_WriteFile( va( "glsl/%s/%s_%u.bin", shader->GetName().c_str(), shader->GetName().c_str(), ( unsigned int ) programNum ), binary, binarySize );
+	auto fileName = Str::Format("glsl/%s/%s_%u.bin", shader->GetName(), shader->GetName(), (unsigned int)programNum);
+	ri.FS_WriteFile(fileName.c_str(), binary, binarySize);
 
 	ri.Hunk_FreeTempMemory( binary );
 #endif
@@ -866,25 +870,25 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 				break;
 			}
 
-			macrosString += va( "#ifndef %s\n#define %s 1\n#endif\n", token, token );
+			macrosString += Str::Format( "#ifndef %s\n#define %s 1\n#endif\n", token, token );
 		}
 	}
 
 	// add them
 	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + miscText +  shader->_vertexShaderText;
 	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + miscText + shader->_fragmentShaderText;
-	program->VS = CompileShader( shader->GetName().c_str(),
-				     vertexShaderTextWithMacros.c_str(),
+	program->VS = CompileShader( shader->GetName(),
+				     vertexShaderTextWithMacros,
 				     vertexShaderTextWithMacros.length(),
 				     GL_VERTEX_SHADER );
-	program->FS = CompileShader( shader->GetName().c_str(),
-				     fragmentShaderTextWithMacros.c_str(),
+	program->FS = CompileShader( shader->GetName(),
+				     fragmentShaderTextWithMacros,
 				     fragmentShaderTextWithMacros.length(),
 				     GL_FRAGMENT_SHADER );
 }
 
 void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
-						      const std::string &compileMacros, int deformIndex ) const
+						      Str::StringRef compileMacros, int deformIndex ) const
 {
 	GLShaderManager::CompileGPUShaders( shader, program, compileMacros );
 
@@ -896,7 +900,7 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	LinkProgram( program->program );
 }
 
-GLuint GLShaderManager::CompileShader( const char *programName, const char *shaderText, int shaderTextSize, GLenum shaderType ) const
+GLuint GLShaderManager::CompileShader( Str::StringRef programName, Str::StringRef shaderText, int shaderTextSize, GLenum shaderType ) const
 {
 	GLuint shader = glCreateShader( shaderType );
 
@@ -915,20 +919,19 @@ GLuint GLShaderManager::CompileShader( const char *programName, const char *shad
 
 	if ( !compiled )
 	{
-		PrintShaderSource( shader );
-		PrintInfoLog( shader, false );
-		ri.Error( ERR_DROP, "Couldn't compile %s %s", ( shaderType == GL_VERTEX_SHADER ? "vertex shader" : "fragment shader" ), programName );
+		PrintShaderSource( programName, shader );
+		PrintInfoLog( shader );
+		ThrowShaderError(Str::Format("Couldn't compile %s shader: %s", ( shaderType == GL_VERTEX_SHADER) ? "vertex" : "fragment", programName));
 	}
 
 	return shader;
 }
 
-void GLShaderManager::PrintShaderSource( GLuint object ) const
+void GLShaderManager::PrintShaderSource( Str::StringRef programName, GLuint object ) const
 {
 	char        *msg;
-	static char msgPart[ 1024 ];
 	int         maxLength = 0;
-	int         i;
+	std::string msgText;
 
 	glGetShaderiv( object, GL_SHADER_SOURCE_LENGTH, &maxLength );
 
@@ -936,24 +939,16 @@ void GLShaderManager::PrintShaderSource( GLuint object ) const
 
 	glGetShaderSource( object, maxLength, &maxLength, msg );
 
-	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
-	{
-		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-		ri.Printf( PRINT_ALL, "%s", msgPart );
-	}
-	ri.Printf( PRINT_ALL, "\n" );
+	Log::Warn("Source for shader program %s:\n%s", programName, msg);
 
 	ri.Hunk_FreeTempMemory( msg );
 }
 
-void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
+void GLShaderManager::PrintInfoLog( GLuint object) const
 {
 	char        *msg;
-	static char msgPart[ 1024 ];
 	int         maxLength = 0;
-	int         i;
-
-	printParm_t print = ( developerOnly ) ? PRINT_DEVELOPER : PRINT_ALL;
+	std::string msgText;
 
 	if ( glIsShader( object ) )
 	{
@@ -965,7 +960,7 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 	}
 	else
 	{
-		ri.Printf( print, "object is not a shader or program\n" );
+		Log::Warn( "object is not a shader or program\n" );
 		return;
 	}
 
@@ -974,20 +969,17 @@ void GLShaderManager::PrintInfoLog( GLuint object, bool developerOnly ) const
 	if ( glIsShader( object ) )
 	{
 		glGetShaderInfoLog( object, maxLength, &maxLength, msg );
-		ri.Printf( print, "compile log:\n" );
+		msgText = "Compile log:";
 	}
 	else if ( glIsProgram( object ) )
 	{
 		glGetProgramInfoLog( object, maxLength, &maxLength, msg );
-		ri.Printf( print, "link log:\n" );
+		msgText = "Link log:";
 	}
-
-	for ( i = 0; i < maxLength; i += sizeof( msgPart ) - 1 )
-	{
-		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
-		ri.Printf( print, "%s", msgPart );
-	}
-	ri.Printf( PRINT_ALL, "\n" );
+	if (maxLength > 0)
+		msgText += '\n';
+	msgText += msg;
+	Log::Warn(msgText);
 
 	ri.Hunk_FreeTempMemory( msg );
 }
@@ -1009,8 +1001,8 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 
 	if ( !linked )
 	{
-		PrintInfoLog( program, false );
-		ri.Error( ERR_DROP, "Shaders failed to link!!!" );
+		PrintInfoLog( program );
+		ThrowShaderError( "Shaders failed to link!" );
 	}
 }
 
@@ -1024,8 +1016,8 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 
 	if ( !validated )
 	{
-		PrintInfoLog( program, false );
-		ri.Error( ERR_DROP, "Shaders failed to validate!!!" );
+		PrintInfoLog( program );
+		ThrowShaderError( "Shaders failed to validate!" );
 	}
 }
 
@@ -1039,10 +1031,8 @@ void GLShaderManager::BindAttribLocations( GLuint program ) const
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		//if(GLCompileMacro_USE_VERTEX_ANIMATION* m = dynamic_cast<GLCompileMacro_USE_VERTEX_ANIMATION*>(macro))
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_ANIMATION )
 		{
@@ -1054,17 +1044,15 @@ bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutatio
 	return false;
 }
 
-bool GLCompileMacro_USE_VERTEX_SKINNING::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
+bool GLCompileMacro_USE_VERTEX_SKINNING::MissesRequiredMacros( size_t /*permutation*/, const std::vector< GLCompileMacro * > &/*macros*/ ) const
 {
 	return !glConfig2.vboVertexSkinningAvailable;
 }
 
 bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_SKINNING )
 		{
 			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
@@ -1075,7 +1063,7 @@ bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutati
 	return false;
 }
 
-uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes() const
+uint32_t GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes() const
 {
 	uint32_t attribs = ATTR_POSITION2 | ATTR_QTANGENT2;
 
@@ -1084,10 +1072,8 @@ uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes
 
 bool GLCompileMacro_USE_VERTEX_SPRITE::HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_ANIMATION))
 		{
 			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
@@ -1102,13 +1088,12 @@ bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutati
 {
 	bool foundUSE_NORMAL_MAPPING = false;
 
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
 		{
 			foundUSE_NORMAL_MAPPING = true;
+			break;
 		}
 	}
 
@@ -1125,13 +1110,12 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permut
 {
 	bool foundUSE_NORMAL_MAPPING = false;
 
-	for ( size_t i = 0; i < macros.size(); i++ )
+	for (const GLCompileMacro* macro : macros)
 	{
-		GLCompileMacro *macro = macros[ i ];
-
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
 		{
 			foundUSE_NORMAL_MAPPING = true;
+			break;
 		}
 	}
 
@@ -1146,12 +1130,10 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permut
 
 bool GLShader::GetCompileMacrosString( size_t permutation, std::string &compileMacrosOut ) const
 {
-	compileMacrosOut = "";
+	compileMacrosOut.clear();
 
-	for ( size_t j = 0; j < _compileMacros.size(); j++ )
+	for (const GLCompileMacro* macro : _compileMacros)
 	{
-		GLCompileMacro *macro = _compileMacros[ j ];
-
 		if ( permutation & macro->GetBit() )
 		{
 			if ( macro->HasConflictingMacros( permutation, _compileMacros ) )
@@ -1161,9 +1143,7 @@ bool GLShader::GetCompileMacrosString( size_t permutation, std::string &compileM
 			}
 
 			if ( macro->MissesRequiredMacros( permutation, _compileMacros ) )
-			{
 				return false;
-			}
 
 			compileMacrosOut += macro->GetName();
 			compileMacrosOut += " ";
@@ -1193,7 +1173,7 @@ int GLShader::SelectProgram()
 void GLShader::BindProgram( int deformIndex )
 {
 	int macroIndex = SelectProgram();
-	int index = macroIndex + ( deformIndex << _compileMacros.size() );
+	size_t index = macroIndex + ( size_t(deformIndex) << _compileMacros.size() );
 
 	// program may not be loaded yet because the shader manager hasn't yet gotten to it
 	// so try to load it now
@@ -1205,7 +1185,7 @@ void GLShader::BindProgram( int deformIndex )
 	// program is still not loaded
 	if ( index >= _shaderPrograms.size() || !_shaderPrograms[ index ].program )
 	{
-		std::string activeMacros = "";
+		std::string activeMacros;
 		size_t      numMacros = _compileMacros.size();
 
 		for ( size_t j = 0; j < numMacros; j++ )
@@ -1221,7 +1201,7 @@ void GLShader::BindProgram( int deformIndex )
 			}
 		}
 
-		ri.Error( ERR_FATAL, "Invalid shader configuration: shader = '%s', macros = '%s'", _name.c_str(), activeMacros.c_str() );
+		ThrowShaderError(Str::Format("Invalid shader configuration: shader = '%s', macros = '%s'", _name, activeMacros ));
 	}
 
 	_currentProgram = &_shaderPrograms[ index ];
@@ -1232,8 +1212,8 @@ void GLShader::BindProgram( int deformIndex )
 
 		this->GetCompileMacrosString( index, macros );
 
-		// don't just call LogComment, or we will get a call to va() every frame!
-		GLimp_LogComment( va( "--- GL_BindProgram( name = '%s', macros = '%s' ) ---\n", this->GetName().c_str(), macros.c_str() ) );
+		auto msg = Str::Format("--- GL_BindProgram( name = '%s', macros = '%s' ) ---\n", this->GetName(), macros);
+		GLimp_LogComment(msg.c_str());
 	}
 
 	GL_BindProgram( _currentProgram );
@@ -1325,7 +1305,7 @@ void GLShader_lightMapping::BuildShaderFragmentLibNames( std::string& fragmentIn
 	fragmentInlines += "reliefMapping";
 }
 
-void GLShader_lightMapping::BuildShaderCompileMacros( std::string& compileMacros )
+void GLShader_lightMapping::BuildShaderCompileMacros( std::string& /*compileMacros*/ )
 {
 }
 
@@ -1484,7 +1464,7 @@ void GLShader_forwardLighting_omniXYZ::BuildShaderFragmentLibNames( std::string&
 	fragmentInlines += "reliefMapping";
 }
 
-void GLShader_forwardLighting_omniXYZ::BuildShaderCompileMacros( std::string& compileMacros )
+void GLShader_forwardLighting_omniXYZ::BuildShaderCompileMacros( std::string& /*compileMacros*/ )
 {
 }
 

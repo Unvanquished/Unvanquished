@@ -824,7 +824,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 			if( target->tagScore > 1000 )
 				Beacon::Tag( target, team, ( target->s.eType == ET_BUILDABLE ) );
 
-			client->ps.stats[ STAT_TAGSCORE ] = Maths::clamp(
+			client->ps.stats[ STAT_TAGSCORE ] = Math::Clamp(
 				target->tagScore, client->ps.stats[ STAT_TAGSCORE ], 1000 );
 		}
 	}
