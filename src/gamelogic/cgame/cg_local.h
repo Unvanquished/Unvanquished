@@ -2430,8 +2430,6 @@ keyNum_t Rocket_ToQuake( int key );
 void Rocket_ProcessKeyInput( int key, bool down );
 void Rocket_ProcessTextInput( int key );
 void Rocket_MouseMove( int x, int y );
-void Rocket_AddTextElement( const char *text, const char *_class, float x, float y );
-void Rocket_ClearText( void );
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs );
 void Rocket_ShowScoreboard( const char *name, bool show );
 void Rocket_SetDataSelectIndex( int index );

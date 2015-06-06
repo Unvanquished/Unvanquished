@@ -1086,7 +1086,6 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
   ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
   ${GAMELOGIC_DIR}/cgame/rocket/rocket_dataformatter.cpp
-  ${GAMELOGIC_DIR}/cgame/rocket/rocket_textelements.cpp
   ${GAMELOGIC_DIR}/cgame/rocket/rocket_documents.cpp
   ${GAMELOGIC_DIR}/cgame/rocket/rocket_datagrid.cpp
   ${GAMELOGIC_DIR}/cgame/rocket/rocket_element.cpp
@@ -1114,7 +1113,6 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/rocket/rocketColorInput.h
   ${GAMELOGIC_DIR}/cgame/rocket/rocketChatField.h
   ${GAMELOGIC_DIR}/cgame/rocket/rocketKeyBinder.h
-  ${GAMELOGIC_DIR}/cgame/rocket/rocketMiscText.h
   ${GAMELOGIC_DIR}/cgame/rocket/rocketDataGrid.h
   ${GAMELOGIC_DIR}/cgame/rocket/rocketElement.h
   ${GAMELOGIC_DIR}/cgame/rocket/rocket.h
