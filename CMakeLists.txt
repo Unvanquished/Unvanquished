@@ -109,7 +109,7 @@ endif()
 
 # Dependencies version, this must match the number in external_deps/build.sh
 set( DEPS_VERSION 3 )
-set( NACL_DEPS_VERSION 1 )
+set( NACL_DEPS_VERSION 2 )
 
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
@@ -1659,12 +1659,12 @@ endif()
 add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
 add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
 add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
-set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs" )
 
 set( LIBS_BASE base-source-libs ${LIBS_BASE} )
 set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
 set( LIBS_cgame_nacl ${NACL_DEPS_DIR}/libfreetype.a ${NACL_DEPS_DIR}/libpng16.a )
-set( cgame_NACL_INCLUDE_DIRS -I${GAMELOGIC_DIR} -I${ROCKET_DIR}/Include -I${ROCKET_DIR}/Contrib/Include -I${FREETYPE_INCLUDE_DIR_ft2build} )
+set( cgame_NACL_INCLUDE_DIRS -I${GAMELOGIC_DIR} -I${ROCKET_DIR}/Include -I${ROCKET_DIR}/Contrib/Include -I${NACL_DEPS_DIR}/include/freetype2 )
 
 ################################################################################
 # Game logic
