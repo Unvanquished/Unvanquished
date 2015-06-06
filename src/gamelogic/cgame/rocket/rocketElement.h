@@ -160,8 +160,6 @@ public:
 
 
 	Rocket::Core::Vector2f dimensions;
-private:
-	bool dirty_geometry;
 };
 
 class RocketElementInstancer : public Rocket::Core::ElementInstancer

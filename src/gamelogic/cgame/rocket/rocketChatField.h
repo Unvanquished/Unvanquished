@@ -45,7 +45,7 @@ Maryland 20850 USA.
 class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
 {
 public:
-	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
+	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
 	{
 		// Spawn text container
 		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
@@ -473,8 +473,6 @@ protected:
 
 private:
 	Rocket::Core::Vector2f cursor_position;
-	float cursor_timer;
-	float last_update_time;
 	bool focus;
 	int cursor_character_index;
 	Rocket::Core::Element *text_element;
