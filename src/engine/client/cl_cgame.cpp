@@ -1192,6 +1192,10 @@ void CL_FirstSnapshot()
 		Com_Printf("%s", ret == 0 ? "Mumble: Linking to Mumble application okay\n" : "Mumble: Linking to Mumble application failed\n" );
 	}
 
+	// resend userinfo upon entering the game, as some cvars may
+    // not have had the CVAR_USERINFO flag set until loading cgame
+	cvar_modifiedFlags |= CVAR_USERINFO;
+
 #ifdef USE_VOIP
 
 	if ( !clc.speexInitialized )
