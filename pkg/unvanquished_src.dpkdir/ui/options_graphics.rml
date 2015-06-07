@@ -170,6 +170,11 @@
 					<h3>FXAA</h3>
 					<p> Fast approximate anti-aliasing.  Faster than full MSAA, but not as sharp. </p>
 				</row>
+				<row>
+					<input cvar="r_ssao" type="checkbox" />
+					<h3>SSAO</h3>
+					<p> Screen space ambient occlusion.</p>
+				</row>
 
 				<h2> Motion blur </h2>
 				<row>
