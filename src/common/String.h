@@ -40,15 +40,9 @@ namespace Str {
         static const size_t npos = -1;
 
         BasicStringRef(const std::basic_string<T>& other)
-        {
-            ptr = other.c_str();
-            len = other.size();
-        }
+            : ptr(other.c_str()), len(other.size()) {}
         BasicStringRef(const T* other)
-        {
-            ptr = other;
-            len = std::char_traits<T>::length(other);
-        }
+            : ptr(other), len(std::char_traits<T>::length(other)) {}
 
         const T& operator[](size_t pos) const
         {
@@ -97,14 +91,14 @@ namespace Str {
             return len;
         }
 
-        std::basic_string<T> substr(size_t pos = 0, size_t count = npos)
+        std::basic_string<T> substr(size_t pos = 0, size_t count = npos) const
         {
             if (count == npos)
                 count = std::max<size_t>(len - pos, 0);
             return std::basic_string<T>(ptr + pos, count);
         }
 
-        size_t find(BasicStringRef str, size_t pos = 0)
+        size_t find(BasicStringRef str, size_t pos = 0) const
         {
             if (pos > len)
                 return npos;
@@ -113,7 +107,7 @@ namespace Str {
                 return npos;
             return result - ptr;
         }
-        size_t find(T chr, size_t pos = 0)
+        size_t find(T chr, size_t pos = 0) const
         {
             if (pos >= len)
                 return npos;
@@ -122,7 +116,7 @@ namespace Str {
                 return npos;
             return result - ptr;
         }
-        size_t rfind(BasicStringRef str, size_t pos = npos)
+        size_t rfind(BasicStringRef str, size_t pos = npos) const
         {
             pos = std::min(pos + str.len, len);
             const T* result = std::find_end(ptr, ptr + pos, str.ptr, str.ptr + str.len);
@@ -130,9 +124,9 @@ namespace Str {
                 return npos;
             return result - ptr;
         }
-        size_t rfind(T chr, size_t pos = npos)
+        size_t rfind(T chr, size_t pos = npos) const
         {
-            pos = std::min(pos + 1, len);
+            pos = (pos == npos) ? len : std::min(pos + 1, len);
             for (const T* p = ptr + pos; p != ptr;) {
                 if (*--p == chr)
                     return p - ptr;
