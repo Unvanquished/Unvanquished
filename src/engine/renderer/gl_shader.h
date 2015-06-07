@@ -2105,6 +2105,21 @@ public:
 	}
 };
 
+class u_zFar :
+	GLUniform3f
+{
+public:
+	u_zFar( GLShader *shader ) :
+		GLUniform3f( shader, "u_zFar" )
+	{
+	}
+
+	void SetUniform_zFar( const vec3_t value )
+	{
+		this->SetValue( value );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2605,6 +2620,15 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
+class GLShader_ssao :
+	public GLShader,
+	public u_zFar
+{
+public:
+	GLShader_ssao( GLShaderManager *manager );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
+
 class GLShader_fxaa :
 	public GLShader
 {
@@ -2643,6 +2667,7 @@ extern GLShader_lightVolume_omni                *gl_lightVolumeShader_omni;
 extern GLShader_liquid                          *gl_liquidShader;
 extern GLShader_volumetricFog                   *gl_volumetricFogShader;
 extern GLShader_motionblur                      *gl_motionblurShader;
+extern GLShader_ssao                            *gl_ssaoShader;
 extern GLShader_fxaa                            *gl_fxaaShader;
 extern GLShaderManager                           gl_shaderManager;
 

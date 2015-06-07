@@ -2985,6 +2985,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_bloomBlur;
 	extern cvar_t *r_bloomPasses;
 	extern cvar_t *r_FXAA;
+	extern cvar_t *r_ssao;
 
 	extern cvar_t *r_evsmPostProcess;
 

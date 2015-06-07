@@ -2904,6 +2904,56 @@ void RB_RenderMotionBlur()
 	GL_CheckErrors();
 }
 
+void RB_RenderSSAO()
+{
+	static vec4_t quadVerts[4] = {
+		{ -1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f,  1.0f, 0.0f, 1.0f },
+		{ -1.0f,  1.0f, 0.0f, 1.0f }
+	};
+	vec3_t zParams;
+
+	GLimp_LogComment( "--- RB_RenderSSAO ---\n" );
+
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
+	{
+		return;
+	}
+
+	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO );
+	GL_Cull( CT_TWO_SIDED );
+
+	if( !backEnd.depthRenderImageValid ) {
+		GL_Bind( tr.depthRenderImage );
+		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+				     tr.depthRenderImage->uploadWidth,
+				     tr.depthRenderImage->uploadHeight );
+		backEnd.depthRenderImageValid = true;
+	}
+
+	if ( r_ssao->integer < 0 ) {
+		// clear the screen to show only SSAO
+		GL_ClearColor( 1.0f, 1.0f, 1.0f, 1.0f);
+		glClear( GL_COLOR_BUFFER_BIT );
+	}
+
+	gl_ssaoShader->BindProgram( 0 );
+
+	zParams[ 0 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_x * 0.5f) ) / glConfig.vidWidth;
+	zParams[ 1 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_y * 0.5f) ) / glConfig.vidHeight;
+	zParams[ 2 ] = backEnd.viewParms.zFar;
+
+	gl_ssaoShader->SetUniform_zFar( zParams );
+
+	GL_BindToTMU( 0, tr.depthRenderImage );
+
+	// draw quad
+	Tess_InstantQuad( quadVerts );
+
+	GL_CheckErrors();
+}
+
 void RB_FXAA()
 {
 	static vec4_t quadVerts[4] = {
@@ -4429,6 +4479,10 @@ static void RB_RenderView()
 	{
 		// draw everything that is opaque
 		RB_RenderDrawSurfaces( true, DRAWSURFACES_ALL );
+	}
+
+	if ( r_ssao->integer && GLEW_ARB_texture_gather ) {
+		RB_RenderSSAO();
 	}
 
 	if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )

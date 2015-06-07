@@ -114,6 +114,8 @@ static void GLSL_InitGPUShadersOrError()
 
 	gl_shaderManager.load( gl_motionblurShader );
 
+	gl_shaderManager.load( gl_ssaoShader );
+
 	gl_shaderManager.load( gl_fxaaShader );
 
 	if ( !r_lazyShaders->integer )
@@ -220,6 +222,7 @@ void GLSL_ShutdownGPUShaders()
 	gl_liquidShader = nullptr;
 	gl_volumetricFogShader = nullptr;
 	gl_motionblurShader = nullptr;
+	gl_ssaoShader = nullptr;
 	gl_fxaaShader = nullptr;
 
 	GL_BindNullProgram();
