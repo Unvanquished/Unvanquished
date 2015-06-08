@@ -114,7 +114,13 @@ static void GLSL_InitGPUShadersOrError()
 
 	gl_shaderManager.load( gl_motionblurShader );
 
-	gl_shaderManager.load( gl_ssaoShader );
+	if (r_ssao->integer > 0)
+	{
+		if (GLEW_ARB_texture_gather)
+			gl_shaderManager.load(gl_ssaoShader);
+		else
+			Log::Warn("SSAO not used because GL_ARB_texture_gather is not available.");
+	}
 
 	gl_shaderManager.load( gl_fxaaShader );
 
