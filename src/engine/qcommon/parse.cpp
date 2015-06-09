@@ -221,7 +221,7 @@ const int MAX_DEFINEPARMS = 128;
 struct directive_t
 {
 	const char *name;
-	int ( *func )( source_t& source );
+	bool ( *func )( source_t& source );
 };
 
 const int DEFINEHASHSIZE = 1024;
@@ -1052,14 +1052,14 @@ static int Parse_ReadPrimitive( script_t& script, token_t *token )
 Parse_ReadScriptToken
 ===============
 */
-static int Parse_ReadScriptToken( script_t& script, token_t *token )
+static bool Parse_ReadScriptToken( script_t& script, token_t *token )
 {
 	//if there is a token available (from UnreadToken)
 	if ( script.tokenavailable )
 	{
 		script.tokenavailable = 0;
 		Com_Memcpy( token, &script.token, sizeof( token_t ) );
-		return 1;
+		return true;
 	}
 
 	//save script pointer
@@ -1116,13 +1116,13 @@ static int Parse_ReadScriptToken( script_t& script, token_t *token )
 	else if ( !Parse_ReadPunctuation( script, token ) )
 	{
 		Parse_ScriptError( script, "can't read token" );
-		return 0;
+		return false;
 	}
 
 	//copy the token into the script structure
 	Com_Memcpy( &script.token, token, sizeof( token_t ) );
 	//successfully read a token
-	return 1;
+	return true;
 }
 
 /*
@@ -1387,7 +1387,7 @@ static void Parse_FreeToken( token_t *token )
 Parse_ReadSourceToken
 ===============
 */
-static int Parse_ReadSourceToken( source_t& source, token_t *token )
+static bool Parse_ReadSourceToken( source_t& source, token_t *token )
 {
 	token_t  *t;
 	script_t *script;
@@ -1458,7 +1458,7 @@ static int Parse_UnreadSourceToken( source_t& source, token_t *token )
 Parse_ReadDefineParms
 ===============
 */
-static int Parse_ReadDefineParms( source_t& source, define_t *define, token_t **parms, int maxparms )
+static bool Parse_ReadDefineParms( source_t& source, define_t *define, token_t **parms, int maxparms )
 {
 	token_t token, *t, *last;
 	int     i, done, lastcomma, numparms, indent;
@@ -1574,7 +1574,7 @@ static int Parse_ReadDefineParms( source_t& source, define_t *define, token_t **
 Parse_StringizeTokens
 ===============
 */
-static int Parse_StringizeTokens( token_t *tokens, token_t *token )
+static bool Parse_StringizeTokens( token_t *tokens, token_t *token )
 {
 	token_t *t;
 
@@ -1598,7 +1598,7 @@ static int Parse_StringizeTokens( token_t *tokens, token_t *token )
 Parse_MergeTokens
 ===============
 */
-static int Parse_MergeTokens( token_t *t1, token_t *t2 )
+static bool Parse_MergeTokens( token_t *t1, token_t *t2 )
 {
 	//merging of a name with a name or number
 	if ( t1->type == TT_NAME && ( t2->type == TT_NAME || t2->type == TT_NUMBER ) )
@@ -1730,8 +1730,8 @@ static void Parse_FreeDefine( define_t *define )
 Parse_ExpandBuiltinDefine
 ===============
 */
-static int Parse_ExpandBuiltinDefine( source_t& source, token_t *deftoken, define_t *define,
-                                      token_t **firsttoken, token_t **lasttoken )
+static bool Parse_ExpandBuiltinDefine( source_t& source, token_t *deftoken, define_t *define,
+                                       token_t **firsttoken, token_t **lasttoken )
 {
 	token_t *token;
 	time_t  t;
@@ -1812,8 +1812,8 @@ static int Parse_ExpandBuiltinDefine( source_t& source, token_t *deftoken, defin
 Parse_ExpandDefine
 ===============
 */
-static int Parse_ExpandDefine( source_t& source, token_t *deftoken, define_t *define,
-                               token_t **firsttoken, token_t **lasttoken )
+static bool Parse_ExpandDefine( source_t& source, token_t *deftoken, define_t *define,
+                                token_t **firsttoken, token_t **lasttoken )
 {
 	token_t *parms[ MAX_DEFINEPARMS ], *dt, *pt, *t;
 	token_t *t1, *t2, *first, *last, *nextpt, token;
@@ -1960,7 +1960,7 @@ static int Parse_ExpandDefine( source_t& source, token_t *deftoken, define_t *de
 Parse_ExpandDefineIntoSource
 ===============
 */
-static int Parse_ExpandDefineIntoSource( source_t& source, token_t *deftoken, define_t *define )
+static bool Parse_ExpandDefineIntoSource( source_t& source, token_t *deftoken, define_t *define )
 {
 	token_t *firsttoken, *lasttoken;
 
@@ -2008,7 +2008,7 @@ reads a token from the current line, continues reading on the next
 line only if a backslash '\' is encountered.
 ===============
 */
-static int Parse_ReadLine( source_t& source, token_t *token )
+static bool Parse_ReadLine( source_t& source, token_t *token )
 {
 	int crossline;
 
@@ -2049,7 +2049,7 @@ struct value_t
 	signed long int intvalue;
 	double          floatvalue;
 	int             parentheses;
-	struct value_t *prev, *next;
+	value_t        *prev, *next;
 };
 
 static int Parse_OperatorPriority( int op )
@@ -2123,7 +2123,7 @@ static int Parse_OperatorPriority( int op )
 			return 5;
 	}
 
-	return false;
+	return 0;
 }
 
 const int MAX_VALUES    = 64;
@@ -2134,8 +2134,8 @@ const int MAX_OPERATORS = 64;
 Parse_EvaluateTokens
 ===============
 */
-static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long int *intvalue,
-                                 double *floatvalue, int integer )
+static bool Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long int *intvalue,
+                                  double *floatvalue, int integer )
 {
 	operator_t *o, *firstoperator, *lastoperator;
 	value_t    *v, *firstvalue, *lastvalue, *v1, *v2;
@@ -2414,7 +2414,8 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 
 					if ( !error && !negativevalue )
 					{
-						AllocOperator( o );
+						if (!AllocOperator(o))
+							break;
 						o->op = t->subtype;
 						o->priority = Parse_OperatorPriority( t->subtype );
 						o->parentheses = parentheses;
@@ -2797,8 +2798,8 @@ static int Parse_Evaluate( source_t& source, signed long int *intvalue,
 Parse_DollarEvaluate
 ===============
 */
-static int Parse_DollarEvaluate( source_t& source, signed long int *intvalue,
-                                 double *floatvalue, int integer )
+static bool Parse_DollarEvaluate( source_t& source, signed long int *intvalue,
+                                  double *floatvalue, int integer )
 {
 	int      indent, defined = false;
 	token_t  token, *firsttoken, *lasttoken;
@@ -2919,7 +2920,7 @@ static int Parse_DollarEvaluate( source_t& source, signed long int *intvalue,
 Parse_Directive_include
 ===============
 */
-static int Parse_Directive_include( source_t& source )
+static bool Parse_Directive_include( source_t& source )
 {
 	script_t *script;
 	token_t  token;
@@ -3029,7 +3030,7 @@ static void Parse_ClearTokenWhiteSpace( token_t *token )
 Parse_Directive_undef
 ===============
 */
-static int Parse_Directive_undef( source_t& source )
+static bool Parse_Directive_undef( source_t& source )
 {
 	token_t  token;
 	define_t *define, *lastdefine;
@@ -3082,7 +3083,7 @@ static int Parse_Directive_undef( source_t& source )
 Parse_Directive_elif
 ===============
 */
-static int Parse_Directive_elif( source_t& source )
+static bool Parse_Directive_elif( source_t& source )
 {
 	signed long int value;
 	int             type, skip;
@@ -3107,7 +3108,7 @@ static int Parse_Directive_elif( source_t& source )
 Parse_Directive_if
 ===============
 */
-static int Parse_Directive_if( source_t& source )
+static bool Parse_Directive_if( source_t& source )
 {
 	signed long int value;
 	int             skip;
@@ -3124,7 +3125,7 @@ static int Parse_Directive_if( source_t& source )
 Parse_Directive_line
 ===============
 */
-static int Parse_Directive_line( source_t& source )
+static bool Parse_Directive_line( source_t& source )
 {
 	Parse_SourceError( source, "#line directive not supported" );
 	return false;
@@ -3135,7 +3136,7 @@ static int Parse_Directive_line( source_t& source )
 Parse_Directive_error
 ===============
 */
-static int Parse_Directive_error( source_t& source )
+static bool Parse_Directive_error( source_t& source )
 {
 	token_t token;
 
@@ -3150,7 +3151,7 @@ static int Parse_Directive_error( source_t& source )
 Parse_Directive_pragma
 ===============
 */
-static int Parse_Directive_pragma( source_t& source )
+static bool Parse_Directive_pragma( source_t& source )
 {
 	token_t token;
 
@@ -3185,7 +3186,7 @@ static void Parse_UnreadSignToken( source_t& source )
 Parse_Directive_eval
 ===============
 */
-static int Parse_Directive_eval( source_t& source )
+static bool Parse_Directive_eval( source_t& source )
 {
 	signed long int value;
 	token_t         token;
@@ -3212,7 +3213,7 @@ static int Parse_Directive_eval( source_t& source )
 Parse_Directive_evalfloat
 ===============
 */
-static int Parse_Directive_evalfloat( source_t& source )
+static bool Parse_Directive_evalfloat( source_t& source )
 {
 	double  value;
 	token_t token;
@@ -3238,7 +3239,7 @@ static int Parse_Directive_evalfloat( source_t& source )
 Parse_DollarDirective_evalint
 ===============
 */
-static int Parse_DollarDirective_evalint( source_t& source )
+static bool Parse_DollarDirective_evalint( source_t& source )
 {
 	signed long int value;
 	token_t         token;
@@ -3267,7 +3268,7 @@ static int Parse_DollarDirective_evalint( source_t& source )
 Parse_DollarDirective_evalfloat
 ===============
 */
-static int Parse_DollarDirective_evalfloat( source_t& source )
+static bool Parse_DollarDirective_evalfloat( source_t& source )
 {
 	double  value;
 	token_t token;
@@ -3302,7 +3303,7 @@ directive_t DollarDirectives[ 20 ] =
 	{ nullptr,        nullptr                            }
 };
 
-static int Parse_ReadDollarDirective( source_t& source )
+static bool Parse_ReadDollarDirective( source_t& source )
 {
 	token_t token;
 	int     i;
@@ -3345,7 +3346,7 @@ static int Parse_ReadDollarDirective( source_t& source )
 Parse_Directive_if_def
 ===============
 */
-static int Parse_Directive_if_def( source_t& source, int type )
+static bool Parse_Directive_if_def( source_t& source, int type )
 {
 	token_t  token;
 	define_t *d;
@@ -3375,7 +3376,7 @@ static int Parse_Directive_if_def( source_t& source, int type )
 Parse_Directive_ifdef
 ===============
 */
-static int Parse_Directive_ifdef( source_t& source )
+static bool Parse_Directive_ifdef( source_t& source )
 {
 	return Parse_Directive_if_def( source, INDENT_IFDEF );
 }
@@ -3385,7 +3386,7 @@ static int Parse_Directive_ifdef( source_t& source )
 Parse_Directive_ifndef
 ===============
 */
-static int Parse_Directive_ifndef( source_t& source )
+static bool Parse_Directive_ifndef( source_t& source )
 {
 	return Parse_Directive_if_def( source, INDENT_IFNDEF );
 }
@@ -3395,7 +3396,7 @@ static int Parse_Directive_ifndef( source_t& source )
 Parse_Directive_else
 ===============
 */
-static int Parse_Directive_else( source_t& source )
+static bool Parse_Directive_else( source_t& source )
 {
 	int type, skip;
 
@@ -3422,7 +3423,7 @@ static int Parse_Directive_else( source_t& source )
 Parse_Directive_endif
 ===============
 */
-static int Parse_Directive_endif( source_t& source )
+static bool Parse_Directive_endif( source_t& source )
 {
 	int type, skip;
 
@@ -3442,7 +3443,7 @@ static int Parse_Directive_endif( source_t& source )
 Parse_CheckTokenString
 ===============
 */
-static int Parse_CheckTokenString( source_t& source, const char *string )
+static bool Parse_CheckTokenString( source_t& source, const char *string )
 {
 	token_t tok;
 
@@ -3461,14 +3462,13 @@ static int Parse_CheckTokenString( source_t& source, const char *string )
 Parse_Directive_define
 ===============
 */
-static int Parse_Directive_define( source_t& source )
+static bool Parse_Directive_define( source_t& source )
 {
 	token_t  token, *t, *last;
 	define_t *define;
 
 	if ( source.skip > 0 ) { return true; }
 
-	//
 	if ( !Parse_ReadLine( source, &token ) )
 	{
 		Parse_SourceError( source, "#define without name" );
@@ -3599,7 +3599,6 @@ static int Parse_Directive_define( source_t& source )
 	}
 	while ( Parse_ReadLine( source, &token ) );
 
-	//
 	if ( last )
 	{
 		//check for merge operators at the beginning or end
@@ -4011,7 +4010,7 @@ Parse_AddGlobalDefine
 adds or overrides a global define that will be added to all opened sources
 ===============
 */
-int Parse_AddGlobalDefine( const char *string )
+bool Parse_AddGlobalDefine( const char *string )
 {
 	define_t *define, *prev, *curr;
 
@@ -4246,7 +4245,7 @@ int Parse_LoadSourceHandle( const char *filename )
 Parse_FreeSourceHandle
 ===============
 */
-int Parse_FreeSourceHandle( int handle )
+bool Parse_FreeSourceHandle( int handle )
 {
 	if ( handle < 1 || handle >= MAX_SOURCEFILES )
 	{
@@ -4303,7 +4302,7 @@ bool Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
 Parse_SourceFileAndLine
 ===============
 */
-int Parse_SourceFileAndLine( int handle, char *filename, int *line )
+bool Parse_SourceFileAndLine( int handle, char *filename, int *line )
 {
 	if ( handle < 1 || handle >= MAX_SOURCEFILES )
 	{
