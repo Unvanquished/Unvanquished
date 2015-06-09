@@ -1181,7 +1181,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "1.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_FXAA = ri.Cvar_Get( "r_FXAA", "0", 0 );
-		r_ssao = ri.Cvar_Get( "r_ssao", "0", 0 );
+		r_ssao = ri.Cvar_Get( "r_ssao", "0", CVAR_LATCH );
 
 		// temporary variables that can change at any time
 		r_showImages = ri.Cvar_Get( "r_showImages", "0", CVAR_TEMP );
