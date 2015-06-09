@@ -4168,7 +4168,6 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 	script->next = nullptr;
 
 	source = ( source_t * ) Z_Malloc( sizeof( source_t ) );
-	Com_Memset( source, 0, sizeof( source_t ) );
 
 	Q_strncpyz( source->filename, filename, MAX_QPATH );
 	source->scriptstack = script;
@@ -4178,7 +4177,6 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 	source->skip = 0;
 
 	source->definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
-	Com_Memset( source->definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
 	Parse_AddGlobalDefinesToSource( source );
 	return source;
 }
