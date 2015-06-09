@@ -2129,26 +2129,6 @@ static int Parse_OperatorPriority( int op )
 const int MAX_VALUES    = 64;
 const int MAX_OPERATORS = 64;
 
-#define AllocValue(val)                 \
-        if (numvalues >= MAX_VALUES) {            \
-    Parse_SourceError(source, "out of value space");    \
-    error = 1;                    \
-    break;                      \
-  }                         \
-        else{                        \
-    val = &value_heap[ numvalues++ ]; }
-#define FreeValue(val)
-//
-#define AllocOperator(op)               \
-        if (numoperators >= MAX_OPERATORS) {        \
-    Parse_SourceError(source, "out of operator space"); \
-    error = 1;                    \
-    break;                      \
-  }                         \
-        else{                        \
-    op = &operator_heap[ numoperators++ ]; }
-#define FreeOperator(op)
-
 /*
 ===============
 Parse_EvaluateTokens
@@ -2179,6 +2159,29 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 	if ( intvalue ) { *intvalue = 0; }
 
 	if ( floatvalue ) { *floatvalue = 0; }
+
+	auto AllocValue = [&](value_t*& val)->bool
+	{
+		if (numvalues >= MAX_VALUES)
+		{
+			Parse_SourceError(source, "out of value space");
+			error = 1;
+			return false;
+		}
+		val = &value_heap[ numvalues++ ];
+		return true;
+	};
+	auto AllocOperator = [&](operator_t*& op)->bool
+	{
+        if (numoperators >= MAX_OPERATORS)
+		{
+			Parse_SourceError(source, "out of operator space");
+			error = 1;
+			return false;
+		}
+		op = &operator_heap[ numoperators++ ];
+		return true;
+	};
 
 	for ( t = tokens; t; t = t->next )
 	{
@@ -2215,7 +2218,8 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 						break;
 					}
 
-					AllocValue( v );
+					if (!AllocValue(v))
+						break;
 
 					if ( Parse_FindHashedDefine( source.definehash, t->string ) )
 					{
@@ -2264,7 +2268,8 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 						break;
 					}
 
-					AllocValue( v );
+					if (!AllocValue(v))
+						break;
 
 					if ( negativevalue )
 					{
@@ -2642,7 +2647,6 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 
 		if ( error ) { break; }
 
-//    lastoperatortype = o->operator;
 		//if not an operator with arity 1
 		if ( o->op != P_LOGIC_NOT
 		     && o->op != P_BIN_NOT )
@@ -2650,14 +2654,11 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 			//remove the second value if not question mark operator
 			if ( o->op != P_QUESTIONMARK ) { v = v->next; }
 
-			//
 			if ( v->prev ) { v->prev->next = v->next; }
 			else { firstvalue = v->next; }
 
 			if ( v->next ) { v->next->prev = v->prev; }
 			else { lastvalue = v->prev; }
-
-			FreeValue( v );
 		}
 
 		//remove the operator
@@ -2666,8 +2667,6 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 
 		if ( o->next ) { o->next->prev = o->prev; }
 		else { lastoperator = o->prev; }
-
-		FreeOperator( o );
 	}
 
 	if ( firstvalue )
@@ -2680,13 +2679,11 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 	for ( o = firstoperator; o; o = lastoperator )
 	{
 		lastoperator = o->next;
-		FreeOperator( o );
 	}
 
 	for ( v = firstvalue; v; v = lastvalue )
 	{
 		lastvalue = v->next;
-		FreeValue( v );
 	}
 
 	if ( !error ) { return true; }
