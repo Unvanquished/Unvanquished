@@ -164,7 +164,7 @@ struct script_t
 	int             flags; //several script flags
 	punctuation_t   *punctuations; //the punctuations used in the script
 	punctuation_t   **punctuationtable;
-	token_t*        token; //available token
+	token_t         token; //available token
 	script_t        *next; //next script in a chain
 };
 
