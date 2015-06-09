@@ -125,15 +125,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //    the length of the name
 
 //punctuation
-typedef struct punctuation_s
+struct punctuation_t
 {
 	const char           *p; //punctuation character(s)
 	int                  n; //punctuation indication
-	struct punctuation_s *next; //next punctuation
-} punctuation_t;
+	punctuation_t        *next; //next punctuation
+};
 
 //token
-typedef struct token_s
+struct token_t
 {
 	char              string[ MAX_TOKEN_CHARS ]; //available token
 	int               type; //last read token type
@@ -144,8 +144,8 @@ typedef struct token_s
 	char              *endwhitespace_p; //start of white space before token
 	int               line; //line the token was on
 	int               linescrossed; //lines crossed in white space
-	struct token_s    *next; //next token in chain
-} token_t;
+	token_t          *next; //next token in chain
+};
 
 //script file
 struct script_t
@@ -164,7 +164,7 @@ struct script_t
 	int             flags; //several script flags
 	punctuation_t   *punctuations; //the punctuations used in the script
 	punctuation_t   **punctuationtable;
-	token_t         token; //available token
+	token_t*        token; //available token
 	script_t        *next; //next script in a chain
 };
 
@@ -183,7 +183,7 @@ struct script_t
 #define INDENT_IFNDEF 0x0010
 
 //macro definitions
-typedef struct define_s
+struct define_t
 {
 	char            *name; //define name
 	int             flags; //define flags
@@ -191,21 +191,21 @@ typedef struct define_s
 	int             numparms; //number of define parameters
 	token_t         *parms; //define parameters
 	token_t         *tokens; //macro tokens (possibly containing parm tokens)
-	struct define_s *next; //next defined macro in a list
+	define_t        *next; //next defined macro in a list
 
-	struct define_s *hashnext; //next define in the hash chain
-} define_t;
+	define_t        *hashnext; //next define in the hash chain
+};
 
 //indents
 //used for conditional compilation directives:
 //#if, #else, #elif, #ifdef, #ifndef
-typedef struct indent_s
+struct indent_t
 {
 	int             type; //indent type
 	int             skip; //true if skipping current indent
 	script_t        *script; //script the indent was in
-	struct indent_s *next; //next indent on the indent stack
-} indent_t;
+	indent_t        *next; //next indent on the indent stack
+};
 
 //source file
 struct source_t
@@ -225,11 +225,11 @@ struct source_t
 #define MAX_DEFINEPARMS 128
 
 //directive name with parse function
-typedef struct directive_s
+struct directive_t
 {
 	const char *name;
 	int ( *func )( source_t& source );
-} directive_t;
+};
 
 #define DEFINEHASHSIZE 1024
 
@@ -237,7 +237,7 @@ static bool Parse_ReadToken( source_t& source, token_t *token );
 static bool Parse_AddDefineToSourceFromString( source_t& source,
     char *string );
 
-int             numtokens;
+static int             numtokens;
 
 //list with global defines added to every source loaded
 define_t        *globaldefines;
@@ -2039,21 +2039,21 @@ static int Parse_ReadLine( source_t& source, token_t *token )
 Parse_OperatorPriority
 ===============
 */
-typedef struct operator_s
+struct operator_t
 {
 	int               op;
 	int               priority;
 	int               parentheses;
-	struct operator_s *prev, *next;
-} operator_t;
+	operator_t        *prev, *next;
+};
 
-typedef struct value_s
+struct value_t
 {
 	signed long int intvalue;
 	double          floatvalue;
 	int             parentheses;
-	struct value_s  *prev, *next;
-} value_t;
+	struct value_t *prev, *next;
+};
 
 static int Parse_OperatorPriority( int op )
 {
