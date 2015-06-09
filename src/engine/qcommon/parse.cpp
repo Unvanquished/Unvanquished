@@ -25,20 +25,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 
 //script flags
-#define SCFL_NOERRORS            0x0001
-#define SCFL_NOWARNINGS          0x0002
-#define SCFL_NOSTRINGWHITESPACES 0x0004
-#define SCFL_NOSTRINGESCAPECHARS 0x0008
-#define SCFL_PRIMITIVE           0x0010
-#define SCFL_NOBINARYNUMBERS     0x0020
-#define SCFL_NONUMBERVALUES      0x0040
-
-//token types
-#define TT_STRING                1 // string
-#define TT_LITERAL               2 // literal
-#define TT_NUMBER                3 // number
-#define TT_NAME                  4 // name
-#define TT_PUNCTUATION           5 // punctuation
+const int SCFL_NOERRORS            = 0x0001;
+const int SCFL_NOWARNINGS          = 0x0002;
+const int SCFL_NOSTRINGWHITESPACES = 0x0004;
+const int SCFL_NOSTRINGESCAPECHARS = 0x0008;
+const int SCFL_PRIMITIVE           = 0x0010;
+const int SCFL_NOBINARYNUMBERS     = 0x0020;
+const int SCFL_NONUMBERVALUES      = 0x0040;
 
 //string sub type
 //---------------
@@ -48,77 +41,77 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //    the ASCII code of the literal
 //number sub type
 //---------------
-#define TT_DECIMAL         0x0008 // decimal number
-#define TT_HEX             0x0100 // hexadecimal number
-#define TT_OCTAL           0x0200 // octal number
-#define TT_BINARY          0x0400 // binary number
-#define TT_FLOAT           0x0800 // floating point number
-#define TT_INTEGER         0x1000 // integer number
-#define TT_LONG            0x2000 // long number
-#define TT_UNSIGNED        0x4000 // unsigned number
+const int TT_DECIMAL         = 0x0008;
+const int TT_HEX             = 0x0100;
+const int TT_OCTAL           = 0x0200;
+const int TT_BINARY          = 0x0400;
+const int TT_FLOAT           = 0x0800;
+const int TT_INTEGER         = 0x1000;
+const int TT_LONG            = 0x2000;
+const int TT_UNSIGNED        = 0x4000;
 //punctuation sub type
 //--------------------
-#define P_RSHIFT_ASSIGN    1
-#define P_LSHIFT_ASSIGN    2
-#define P_PARMS            3
-#define P_PRECOMPMERGE     4
+const int P_RSHIFT_ASSIGN    = 1;
+const int P_LSHIFT_ASSIGN    = 2;
+const int P_PARMS            = 3;
+const int P_PRECOMPMERGE     = 4;
 
-#define P_LOGIC_AND        5
-#define P_LOGIC_OR         6
-#define P_LOGIC_GEQ        7
-#define P_LOGIC_LEQ        8
-#define P_LOGIC_EQ         9
-#define P_LOGIC_UNEQ       10
+const int P_LOGIC_AND        = 5;
+const int P_LOGIC_OR         = 6;
+const int P_LOGIC_GEQ        = 7;
+const int P_LOGIC_LEQ        = 8;
+const int P_LOGIC_EQ         = 9;
+const int P_LOGIC_UNEQ       = 10;
 
-#define P_MUL_ASSIGN       11
-#define P_DIV_ASSIGN       12
-#define P_MOD_ASSIGN       13
-#define P_ADD_ASSIGN       14
-#define P_SUB_ASSIGN       15
-#define P_INC              16
-#define P_DEC              17
+const int P_MUL_ASSIGN       = 11;
+const int P_DIV_ASSIGN       = 12;
+const int P_MOD_ASSIGN       = 13;
+const int P_ADD_ASSIGN       = 14;
+const int P_SUB_ASSIGN       = 15;
+const int P_INC              = 16;
+const int P_DEC              = 17;
 
-#define P_BIN_AND_ASSIGN   18
-#define P_BIN_OR_ASSIGN    19
-#define P_BIN_XOR_ASSIGN   20
-#define P_RSHIFT           21
-#define P_LSHIFT           22
+const int P_BIN_AND_ASSIGN   = 18;
+const int P_BIN_OR_ASSIGN    = 19;
+const int P_BIN_XOR_ASSIGN   = 20;
+const int P_RSHIFT           = 21;
+const int P_LSHIFT           = 22;
 
-#define P_POINTERREF       23
-#define P_CPP1             24
-#define P_CPP2             25
-#define P_MUL              26
-#define P_DIV              27
-#define P_MOD              28
-#define P_ADD              29
-#define P_SUB              30
-#define P_ASSIGN           31
+const int P_POINTERREF       = 23;
+const int P_CPP1             = 24;
+const int P_CPP2             = 25;
+const int P_MUL              = 26;
+const int P_DIV              = 27;
+const int P_MOD              = 28;
+const int P_ADD              = 29;
+const int P_SUB              = 30;
+const int P_ASSIGN           = 31;
 
-#define P_BIN_AND          32
-#define P_BIN_OR           33
-#define P_BIN_XOR          34
-#define P_BIN_NOT          35
+const int P_BIN_AND          = 32;
+const int P_BIN_OR           = 33;
+const int P_BIN_XOR          = 34;
+const int P_BIN_NOT          = 35;
 
-#define P_LOGIC_NOT        36
-#define P_LOGIC_GREATER    37
-#define P_LOGIC_LESS       38
+const int P_LOGIC_NOT        = 36;
+const int P_LOGIC_GREATER    = 37;
+const int P_LOGIC_LESS       = 38;
 
-#define P_REF              39
-#define P_COMMA            40
-#define P_SEMICOLON        41
-#define P_COLON            42
-#define P_QUESTIONMARK     43
+const int P_REF              = 39;
+const int P_COMMA            = 40;
+const int P_SEMICOLON        = 41;
+const int P_COLON            = 42;
+const int P_QUESTIONMARK     = 43;
 
-#define P_PARENTHESESOPEN  44
-#define P_PARENTHESESCLOSE 45
-#define P_BRACEOPEN        46
-#define P_BRACECLOSE       47
-#define P_SQBRACKETOPEN    48
-#define P_SQBRACKETCLOSE   49
-#define P_BACKSLASH        50
+const int P_PARENTHESESOPEN  = 44;
+const int P_PARENTHESESCLOSE = 45;
+const int P_BRACEOPEN        = 46;
+const int P_BRACECLOSE       = 47;
+const int P_SQBRACKETOPEN    = 48;
+const int P_SQBRACKETCLOSE   = 49;
+const int P_BACKSLASH        = 50;
 
-#define P_PRECOMP          51
-#define P_DOLLAR           52
+const int P_PRECOMP          = 51;
+const int P_DOLLAR           = 52;
 
 //name sub type
 //-------------
@@ -168,19 +161,19 @@ struct script_t
 	script_t        *next; //next script in a chain
 };
 
-#define DEFINE_FIXED  0x0001
+const int DEFINE_FIXED = 0x0001;
 
-#define BUILTIN_LINE  1
-#define BUILTIN_FILE  2
-#define BUILTIN_DATE  3
-#define BUILTIN_TIME  4
-#define BUILTIN_STDC  5
+const int BUILTIN_LINE = 1;
+const int BUILTIN_FILE = 2;
+const int BUILTIN_DATE = 3;
+const int BUILTIN_TIME = 4;
+const int BUILTIN_STDC = 5;
 
-#define INDENT_IF     0x0001
-#define INDENT_ELSE   0x0002
-#define INDENT_ELIF   0x0004
-#define INDENT_IFDEF  0x0008
-#define INDENT_IFNDEF 0x0010
+const int INDENT_IF    = 0x0001;
+const int INDENT_ELSE  = 0x0002;
+const int INDENT_ELIF  = 0x0004;
+const int INDENT_IFDEF = 0x0008;
+const int INDENT_IFNDEF= 0x0010;
 
 //macro definitions
 struct define_t
@@ -222,7 +215,7 @@ struct source_t
 	token_t       token; //last read token
 };
 
-#define MAX_DEFINEPARMS 128
+const int MAX_DEFINEPARMS = 128;
 
 //directive name with parse function
 struct directive_t
@@ -231,7 +224,7 @@ struct directive_t
 	int ( *func )( source_t& source );
 };
 
-#define DEFINEHASHSIZE 1024
+const int DEFINEHASHSIZE = 1024;
 
 static bool Parse_ReadToken( source_t& source, token_t *token );
 static bool Parse_AddDefineToSourceFromString( source_t& source,
@@ -240,7 +233,11 @@ static bool Parse_AddDefineToSourceFromString( source_t& source,
 static int             numtokens;
 
 //list with global defines added to every source loaded
-define_t        *globaldefines;
+static define_t        *globaldefines;
+
+const int MAX_SOURCEFILES = 64;
+
+static source_t* sourceFiles[MAX_SOURCEFILES];
 
 //longer punctuations first
 punctuation_t   Default_Punctuations[] =
@@ -2129,8 +2126,9 @@ static int Parse_OperatorPriority( int op )
 	return false;
 }
 
-#define MAX_VALUES    64
-#define MAX_OPERATORS 64
+const int MAX_VALUES    = 64;
+const int MAX_OPERATORS = 64;
+
 #define AllocValue(val)                 \
         if (numvalues >= MAX_VALUES) {            \
     Parse_SourceError(source, "out of value space");    \
@@ -2682,7 +2680,6 @@ static int Parse_EvaluateTokens( source_t& source, token_t *tokens, signed long 
 	for ( o = firstoperator; o; o = lastoperator )
 	{
 		lastoperator = o->next;
-		//Z_Free(o);
 		FreeOperator( o );
 	}
 
@@ -4212,10 +4209,6 @@ static void Parse_FreeSource( source_t& source )
 	//free the source itself
 	Z_Free( &source );
 }
-
-#define MAX_SOURCEFILES 64
-
-source_t* sourceFiles[ MAX_SOURCEFILES ];
 
 /*
 ===============
