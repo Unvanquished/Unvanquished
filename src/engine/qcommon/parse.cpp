@@ -240,7 +240,7 @@ const int MAX_SOURCEFILES = 64;
 static source_t* sourceFiles[MAX_SOURCEFILES];
 
 //longer punctuations first
-punctuation_t   Default_Punctuations[] =
+static punctuation_t   Default_Punctuations[] =
 {
 	//binary operators
 	{ ">>=", P_RSHIFT_ASSIGN,    nullptr },
