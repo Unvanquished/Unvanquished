@@ -150,7 +150,7 @@ typedef struct token_s
 //script file
 typedef struct script_s
 {
-	char            filename[ 1024 ]; //file name of the script
+	char            filename[MAX_QPATH]; //file name of the script
 	char            *buffer; //buffer containing the script
 	char            *script_p; //current pointer in the script
 	char            *end_p; //pointer to the end of the script
@@ -318,6 +318,13 @@ punctuation_t   Default_Punctuations[] =
 	{ nullptr, 0 }
 };
 
+static void Parse_CheckScriptFileNameSize( const char* filename)
+{
+	if (strlen(filename) + 1 > MAX_QPATH)
+		throw std::runtime_error(Str::Format("Script filename longer than allowed (max: %d): %s", 
+			MAX_QPATH, filename));
+}
+
 /*
 ===============
 Parse_CreatePunctuationTable
@@ -334,8 +341,8 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 		script->punctuationtable = ( punctuation_t ** )
 		                           Z_Malloc( 256 * sizeof( punctuation_t * ) );
 	}
-
-	Com_Memset( script->punctuationtable, 0, 256 * sizeof( punctuation_t * ) );
+	else // Z_Malloc returns memory already zero'd, but have to re-zero on this path.
+		Com_Memset( script->punctuationtable, 0, 256 * sizeof( punctuation_t * ) );
 
 	//add the punctuations in the list to the punctuation table
 	for ( i = 0; punctuations[ i ].p; i++ )
@@ -1156,43 +1163,40 @@ Parse_LoadScriptFile
 */
 static script_t *Parse_LoadScriptFile( const char *filename )
 {
+	Parse_CheckScriptFileNameSize(filename);
+
 	fileHandle_t fp;
-	int          length;
-	void         *buffer;
-	script_t     *script;
-
-	length = FS_FOpenFileRead( filename, &fp, false );
-
+	int length = FS_FOpenFileRead( filename, &fp, false );
 	if ( !fp ) { return nullptr; }
 
-	buffer = Z_Malloc( sizeof( script_t ) + length + 1 );
-	Com_Memset( buffer, 0, sizeof( script_t ) + length + 1 );
+	char* buffer = (char*) Z_Malloc( sizeof( script_t ) + length + 1 );
+	if (!buffer)
+	{
+		FS_FCloseFile(fp);
+		throw std::bad_alloc();
+	}
+	char* source = buffer + sizeof(script_t);
+	auto actualLength = FS_Read(source, length, fp);
+	// Files read in text mode may cause an unexpected length.
+	// Any error might happen. Check just to be safe and avoid random crashes.
+	if (actualLength != length)
+		throw std::runtime_error(Str::Format("Unexpected file read length. Expected %d, actual: %d",
+			length, actualLength));
+	source[length] = '\0';
+	FS_FCloseFile(fp);
 
-	script = ( script_t * ) buffer;
-	Com_Memset( script, 0, sizeof( script_t ) );
-	Q_strncpyz( script->filename, filename, sizeof( script->filename ) );
-	script->buffer = ( char * ) buffer + sizeof( script_t );
-	script->buffer[ length ] = 0;
-	script->length = length;
-	//pointer in script buffer
-	script->script_p = script->buffer;
-	//pointer in script buffer before reading token
-	script->lastscript_p = script->buffer;
-	//pointer to end of script buffer
-	script->end_p = &script->buffer[ length ];
-	//set if there's a token available in script->token
-	script->tokenavailable = 0;
-	//
-	script->line = 1;
-	script->lastline = 1;
-	//
-	Parse_SetScriptPunctuations( script, nullptr );
-	//
-	FS_Read( script->buffer, length, fp );
-	FS_FCloseFile( fp );
-	//
-
-	return script;
+	script_t& script = *( script_t * ) buffer;
+	Q_strncpyz( script.filename, filename, sizeof( script.filename ) );
+	script.buffer = source;
+	script.length = length;
+	script.script_p = source;
+	script.lastscript_p = source;
+	script.end_p = &source[ length ];
+	script.tokenavailable = 0;
+	script.line = 1;
+	script.lastline = 1;
+	Parse_SetScriptPunctuations( &script, nullptr );
+	return &script;
 }
 
 /*
@@ -1205,11 +1209,10 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 	void     *buffer;
 	script_t *script;
 
+	Parse_CheckScriptFileNameSize(ptr);
 	buffer = Z_Malloc( sizeof( script_t ) + length + 1 );
-	Com_Memset( buffer, 0, sizeof( script_t ) + length + 1 );
 
 	script = ( script_t * ) buffer;
-	Com_Memset( script, 0, sizeof( script_t ) );
 	Q_strncpyz( script->filename, name, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
 	script->buffer[ length ] = 0;
@@ -1354,7 +1357,7 @@ static token_t *Parse_CopyToken( token_t *token )
 	token_t *t;
 
 //  t = (token_t *) malloc(sizeof(token_t));
-	t = ( token_t * ) Z_Malloc( sizeof( token_t ) );
+	t = ( token_t * ) S_Malloc( sizeof( token_t ) );
 
 //  t = freetokens;
 	if ( !t )
@@ -3531,7 +3534,6 @@ static int Parse_Directive_define( source_t *source )
 
 	//allocate define
 	define = ( define_t * ) Z_Malloc( sizeof( define_t ) + strlen( token.string ) + 1 );
-	Com_Memset( define, 0, sizeof( define_t ) );
 	define->name = ( char * ) define + sizeof( define_t );
 	strcpy( define->name, token.string );
 	//add the define to the source
@@ -3982,7 +3984,6 @@ static define_t *Parse_DefineFromString( const char *string )
 	Q_strncpyz( src.filename, "*extern", MAX_QPATH );
 	src.scriptstack = script;
 	src.definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
-	Com_Memset( src.definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
 	//create a define from the source
 	res = Parse_Directive_define( &src );
 
