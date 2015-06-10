@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec > src/engine/renderer/shaders.cpp
+exec > daemon/src/engine/renderer/shaders.cpp
 
 cd main
 

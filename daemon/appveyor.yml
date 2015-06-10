@@ -1,0 +1,30 @@
+branches:
+  except:
+    - debian
+
+environment:
+  matrix:
+# causes `NMAKE : fatal error U1095: expanded command line '...' too long`
+#   - GENERATOR: "NMake Makefiles"
+#     VS_VERSION: "12.0"
+    - GENERATOR: "Visual Studio 12 2013"
+      VS_VERSION: "12.0"
+
+matrix:
+  fast_finish: true
+
+configuration: Debug
+
+build:
+  parallel: true
+
+before_build:
+ - git submodule update --init --recursive
+
+build_script:
+  - cmd: call "C:/Program Files (x86)/Microsoft Visual Studio %VS_VERSION%/Common7/Tools/vsvars32.bat"
+  - cmd: cmake --version
+  - cmd: mkdir build
+  - cmd: cd build
+  - cmd: cmake -DUSE_WERROR=1 -G"%GENERATOR%" -DCMAKE_BUILD_TYPE=Debug ..
+  - cmd: cmake --build .
