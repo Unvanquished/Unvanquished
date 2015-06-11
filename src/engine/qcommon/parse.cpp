@@ -30,8 +30,8 @@ const int SCFL_NOWARNINGS          = 0x0002;
 const int SCFL_NOSTRINGWHITESPACES = 0x0004;
 const int SCFL_NOSTRINGESCAPECHARS = 0x0008;
 const int SCFL_PRIMITIVE           = 0x0010;
-const int SCFL_NOBINARYNUMBERS     = 0x0020;
-const int SCFL_NONUMBERVALUES      = 0x0040;
+// unused: const int SCFL_NOBINARYNUMBERS     = 0x0020;
+// unused: const int SCFL_NONUMBERVALUES      = 0x0040;
 
 //string sub type
 //---------------
@@ -372,7 +372,7 @@ static punctuation_t   Default_Punctuations[] =
 	//precompiler operator
 	{ "#",  P_PRECOMP,          nullptr },
 	{ "$",  P_DOLLAR,           nullptr },
-	{ nullptr, 0 }
+	{ nullptr, 0, nullptr }
 };
 
 // Make sure we these types don't get complicated until we are ready.
@@ -4151,7 +4151,7 @@ bool Parse_AddGlobalDefine( const char *string )
 Parse_CopyDefine
 ===============
 */
-static define_t *Parse_CopyDefine( source_t& source, define_t *define )
+static define_t *Parse_CopyDefine( define_t *define )
 {
 	define_t *newdefine;
 	token_t  *token, *newtoken, *lasttoken;
@@ -4208,7 +4208,7 @@ static void Parse_AddGlobalDefinesToSource( source_t& source )
 
 	for ( define = globaldefines; define; define = define->next )
 	{
-		newdefine = Parse_CopyDefine( source, define );
+		newdefine = Parse_CopyDefine( define );
 		Parse_AddDefineToHash( newdefine, source.definehash );
 	}
 }
