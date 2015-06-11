@@ -161,14 +161,6 @@ struct token_t
 	{
 		return other.compare(string) != 0;
 	}
-	inline bool isI(Str::StringRef other) const
-	{
-		return stricmp(string, other.c_str()) == 0;
-	}
-	inline bool isNotI(Str::StringRef other) const
-	{
-		return stricmp(string, other.c_str()) != 0;
-	}
 	inline bool startsWith(char other) const
 	{
 		return *this->string == other;
@@ -181,7 +173,7 @@ struct token_t
 	{
 		assert(text.size() < MAX_TOKEN_CHARS);
 		size_t n = std::min(size_t(MAX_TOKEN_CHARS - 1), text.size());
-		std::strncpy(this->string, text.c_str(), n);
+		strncpy(this->string, text.c_str(), n);
 		this->string[n] = '\0';
 	}
 	inline void clearText()
