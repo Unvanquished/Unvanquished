@@ -163,11 +163,11 @@ struct token_t
 	}
 	inline bool isI(Str::StringRef other) const
 	{
-		return strnicmp(string, other.data(), other.size()) == 0;
+		return stricmp(string, other.c_str()) == 0;
 	}
 	inline bool isNotI(Str::StringRef other) const
 	{
-		return strnicmp(string, other.data(), other.size()) != 0;
+		return stricmp(string, other.c_str()) != 0;
 	}
 	inline bool startsWith(char other) const
 	{
@@ -385,10 +385,11 @@ static punctuation_t   Default_Punctuations[] =
 
 // Make sure we these types don't get complicated until we are ready.
 // We malloc them, memset or memcpy them.
-static_assert(std::is_trivially_destructible<source_t>::value, "");
-static_assert(std::is_trivially_destructible<script_t>::value, "");
-static_assert(std::is_trivially_destructible<token_t>::value, "");
-static_assert(std::is_trivially_destructible<source_t>::value, "");
+// When this is supported on all platforms we should enable this:
+//static_assert(std::is_trivially_destructible<source_t>::value);
+//static_assert(std::is_trivially_destructible<script_t>::value);
+//static_assert(std::is_trivially_destructible<token_t>::value);
+//static_assert(std::is_trivially_destructible<source_t>::value);
 
 static void Parse_CheckScriptFileNameSize( const char* filename)
 {
