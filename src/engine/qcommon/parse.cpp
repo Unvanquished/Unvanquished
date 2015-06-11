@@ -383,14 +383,6 @@ static punctuation_t   Default_Punctuations[] =
 //static_assert(std::is_trivially_destructible<token_t>::value);
 //static_assert(std::is_trivially_destructible<source_t>::value);
 
-static void Parse_CheckScriptFileNameSize( const char* filename)
-{
-	size_t expectedSize = sizeof(script_t::filename);
-	if (strlen(filename) >= expectedSize)
-		throw std::runtime_error(Str::Format("Script filename longer than allowed (max: %d): %s", 
-			(int) expectedSize, filename));
-}
-
 /*
 ===============
 Parse_CreatePunctuationTable
@@ -1253,8 +1245,6 @@ Parse_LoadScriptFile
 */
 static script_t *Parse_LoadScriptFile( const char *filename )
 {
-	Parse_CheckScriptFileNameSize(filename);
-
 	fileHandle_t fp;
 	int length = FS_FOpenFileRead( filename, &fp, false );
 	if ( !fp ) { return nullptr; }
@@ -1297,8 +1287,6 @@ Parse_LoadScriptMemory
 */
 static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char *name )
 {
-	Parse_CheckScriptFileNameSize(name);
-
 	char* buffer = (char*) Z_Malloc( sizeof( script_t ) + length + 1 );
 	if (!buffer)
 		throw std::bad_alloc();
