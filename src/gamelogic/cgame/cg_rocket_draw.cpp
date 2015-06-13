@@ -33,6 +33,11 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
+#include "rocket/rocket.h"
+#include <Rocket/Core/Element.h>
+#include <Rocket/Core/ElementInstancer.h>
+#include <Rocket/Core/ElementInstancerGeneric.h>
+#include <Rocket/Core/Factory.h>
 
 static void CG_GetRocketElementColor( vec4_t color )
 {
@@ -57,69 +62,128 @@ static void CG_GetRocketElementRect( rectDef_t *rect )
 	rect->h = ( rect->h / cgs.glconfig.vidHeight ) * 480;
 }
 
-static void CG_Rocket_DrawAmmo()
+class HudElement : public Rocket::Core::Element
 {
-	int      value;
-	int      valueMarked = -1;
-	int      maxAmmo;
-	weapon_t weapon;
-	bool bp = false;
+public:
+	HudElement(const Rocket::Core::String& tag, rocketElementType_t type_) : Rocket::Core::Element(tag), type(type_) {}
 
-	switch ( weapon = BG_PrimaryWeapon( cg.snap->ps.stats ) )
+	void OnUpdate()
 	{
-		case WP_NONE:
-		case WP_BLASTER:
-			Rocket_SetInnerRML( "", 0 );
-			return;
-
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_HBUILD:
-			value = cg.snap->ps.persistant[ PERS_BP ];
-			valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
-			bp = true;
-			break;
-
-		default:
-			if ( !Q_stricmp( "total", CG_Rocket_GetAttribute( "type" ) ) )
-			{
-				maxAmmo = BG_Weapon( weapon )->maxAmmo;
-				value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
-			}
-
-			else
-			{
-				value = cg.snap->ps.ammo;
-			}
-
-			break;
+		Rocket::Core::Element::OnUpdate();
+		if (CG_Rocket_IsCommandAllowed(type))
+		{
+			DoOnUpdate();
+		}
 	}
 
-	if ( value > 999 )
+	void OnRender()
 	{
-		value = 999;
+		if (CG_Rocket_IsCommandAllowed(type))
+		{
+			DoOnRender();
+			Rocket::Core::Element::OnRender();
+		}
 	}
 
-	if ( valueMarked > 999 )
+	virtual void DoOnRender() {}
+	virtual void DoOnUpdate() {}
+
+private:
+	rocketElementType_t type;
+};
+
+class AmmoHudElement : public HudElement
+{
+public:
+	AmmoHudElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_BOTH ),
+			showTotalAmmo( false ),
+			value( 0 ),
+			valueMarked( 0 ) {}
+
+	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
 	{
-		valueMarked = 999;
+		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
+		{
+			const Rocket::Core::String& type = GetAttribute<Rocket::Core::String>( "type", "" );
+			showTotalAmmo = type == "total";
+		}
 	}
 
-	if ( !bp )
+	void DoOnUpdate()
 	{
-		Rocket_SetInnerRML( va( "%d", value ), 0 );
+		bool bp = false;
+		weapon_t weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+		switch ( weapon )
+		{
+			case WP_NONE:
+			case WP_BLASTER:
+				return;
+
+			case WP_ABUILD:
+			case WP_ABUILD2:
+			case WP_HBUILD:
+				if ( cg.snap->ps.persistant[ PERS_BP ] == value &&
+					cg.snap->ps.persistant[ PERS_MARKEDBP ] == valueMarked )
+				{
+					return;
+				}
+				value = cg.snap->ps.persistant[ PERS_BP ];
+				valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+				bp = true;
+				break;
+
+			default:
+				if ( showTotalAmmo )
+				{
+					int maxAmmo = BG_Weapon( weapon )->maxAmmo;
+					if ( value == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
+					{
+						return;
+					}
+					value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
+				}
+				else
+				{
+					if ( value == cg.snap->ps.ammo )
+					{
+						return;
+					}
+					value = cg.snap->ps.ammo;
+				}
+
+				break;
+		}
+
+		if ( value > 999 )
+		{
+			value = 999;
+		}
+
+		if ( valueMarked > 999 )
+		{
+			valueMarked = 999;
+		}
+
+		if ( !bp )
+		{
+			SetInnerRML( va( "%d", value ) );
+		}
+		else if ( valueMarked > 0 )
+		{
+			SetInnerRML( va( "%d+%d", value, valueMarked ) );
+		}
+		else
+		{
+			SetInnerRML( va( "%d", value ) );
+		}
 	}
 
-	else if ( valueMarked > 0 )
-	{
-		Rocket_SetInnerRML( va( "%d+%d", value, valueMarked ), 0 );
-	}
-
-	else
-	{
-		Rocket_SetInnerRML( va( "%d", value ), 0 );
-	}
-}
+private:
+    bool showTotalAmmo;
+	int value;
+	int valueMarked;
+};
 
 static void CG_Rocket_DrawClips()
 {
@@ -2588,7 +2652,6 @@ typedef struct
 // THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
-	{ "ammo", &CG_Rocket_DrawAmmo, ELEMENT_BOTH },
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
 	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
 	{ "beacon_age", &CG_Rocket_DrawBeaconAge, ELEMENT_GAME },
@@ -2682,4 +2745,6 @@ void CG_Rocket_RegisterElements()
 
 		Rocket_RegisterElement( elementRenderCmdList[ i ].name );
 	}
+
+	Rocket::Core::Factory::RegisterElementInstancer( "ammo", new Rocket::Core::ElementInstancerGeneric< AmmoHudElement >() )->RemoveReference();
 }
