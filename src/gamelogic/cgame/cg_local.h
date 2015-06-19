@@ -1095,12 +1095,18 @@ typedef enum
 	SAY_TYPE_COMMAND,
 } sayType_t;
 
-typedef struct
+#include "Filter.h"
+
+struct WeaponOffsets
 {
-	int     init;
-	vec3_t  oa; // old angles
-	vec3_t  oav; // old angular velocity
-} weaponInertia_t;
+	Vec3 bob;
+
+	Vec3 angles;
+	Vec3 angvel;
+
+	WeaponOffsets operator+=( WeaponOffsets );
+	WeaponOffsets operator*( float );
+};
 
 #define NUM_BINARY_SHADERS 256
 
@@ -1305,8 +1311,6 @@ typedef struct
 	float                   momentumGained;
 	int                     momentumGainedTime;
 
-	weaponInertia_t         weaponInertia;
-
 	// beacons
 	cbeacon_t               *beacons[ MAX_CBEACONS ];
 	int                     beaconCount;
@@ -1322,6 +1326,8 @@ typedef struct
 		int msec;
 		int accurate;
 	} pmoveParams;
+
+	Filter<WeaponOffsets>   weaponOffsetsFilter;
 } cg_t;
 
 typedef struct
@@ -2375,5 +2381,6 @@ float CG_Rocket_ProgressBarValueByName( const char *name );
 // cg_gameinfo.c
 //
 void CG_LoadArenas();
+
 #endif
 

@@ -811,10 +811,10 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		self->shrunkTime = level.time;
 		anim = self->s.torsoAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
-		if ( self->spawned && G_Alive( self ) && anim != BANIM_DESTROYED )
+		if ( self->spawned && G_Alive( self ) && anim != BANIM_IDLE_UNPOWERED )
 		{
-			G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
-			G_SetBuildableAnim( self, BANIM_ATTACK1, true );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
+			G_SetBuildableAnim( self, BANIM_POWERDOWN, true );
 		}
 
 		return;
@@ -836,8 +836,8 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		// shrink animation
 		if ( self->spawned && G_Alive( self ) )
 		{
-			G_SetBuildableAnim( self, BANIM_ATTACK1, true );
-			G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
+			G_SetBuildableAnim( self, BANIM_POWERDOWN, true );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 		}
 	}
 	else
@@ -861,7 +861,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 
 		if ( self->spawned && G_Alive( self ) && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
 		{
-			G_SetBuildableAnim( self, BANIM_ATTACK2, true );
+			G_SetBuildableAnim( self, BANIM_POWERUP, true );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 		}
 	}

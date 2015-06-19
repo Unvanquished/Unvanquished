@@ -69,12 +69,12 @@ namespace AL {
     int ClearALError(int line = -1) {
         int error = alGetError();
 
-        if (line >= 0) {
-            if (error != AL_NO_ERROR) {
+        if (error != AL_NO_ERROR) {
+            if (line >= 0) {
                 audioLogs.Warn("Unhandled OpenAL error on line %i: %s", line, ALErrorToString(error));
+            } else if (checkAllCalls.Get()) {
+                audioLogs.Warn("Unhandled OpenAL error: %s", ALErrorToString(error));
             }
-        } else if (checkAllCalls.Get()) {
-            audioLogs.Warn("Unhandled OpenAL error: %s", ALErrorToString(error));
         }
 
         return error;
@@ -341,7 +341,7 @@ namespace AL {
     std::vector<std::string> ListPresetNames() {
         std::vector<std::string> res;
 
-        for (auto& it: presets) {
+        for (const auto& it: presets) {
             res.push_back(it.first);
         }
 

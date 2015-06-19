@@ -17,7 +17,7 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* source, Util::opt
 		return;
 	}
 
-	if (Math::length(direction.value()) == 0.0f) {
+	if (Math::Length(direction.value()) == 0.0f) {
 		knockbackLogger.Warn("Attempt to do knockback with null vector direction.");
 		return;
 	}
@@ -42,7 +42,7 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* source, Util::opt
 
 	// Change client velocity.
 	Vec3 clientVelocity = Vec3::Load(client->ps.velocity);
-	clientVelocity += Math::normalize(direction.value()) * strength;
+	clientVelocity += Math::Normalize(direction.value()) * strength;
 	clientVelocity.Store(client->ps.velocity);
 
 	// Set pmove timer so that the client can't cancel out the movement immediately.
