@@ -110,7 +110,7 @@ public:
 		}
 	}
 
-	void DoOnUpdate()
+	void DoOnRender()
 	{
 		bool bp = false;
 		weapon_t weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
@@ -185,32 +185,49 @@ private:
 	int valueMarked;
 };
 
-static void CG_Rocket_DrawClips()
+
+class ClipsHudElement : public HudElement
 {
-	int           value;
-	playerState_t *ps = &cg.snap->ps;
+public:
+	ClipsHudElement( const Rocket::Core::String& tag ) :
+		HudElement( tag, ELEMENT_HUMANS ),
+		clips( 0 ) {}
 
-	switch ( BG_PrimaryWeapon( ps->stats ) )
+	virtual void DoOnRender()
 	{
-		case WP_NONE:
-		case WP_BLASTER:
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_HBUILD:
-			Rocket_SetInnerRML( "", 0 );
-			return;
+		int           value;
+		playerState_t *ps = &cg.snap->ps;
 
-		default:
-			value = ps->clips;
+		switch ( BG_PrimaryWeapon( ps->stats ) )
+		{
+			case WP_NONE:
+			case WP_BLASTER:
+			case WP_ABUILD:
+			case WP_ABUILD2:
+			case WP_HBUILD:
+				if ( clips != -1 )
+				{
+					SetInnerRML( "" );
+				}
+				clips = -1;
+				return;
 
-			if ( value > -1 )
-			{
-				Rocket_SetInnerRML( va( "%d", value ), 0 );
-			}
+			default:
+				value = ps->clips;
 
-			break;
+				if ( value > -1 && value != clips )
+				{
+					SetInnerRML( va( "%d", value ) );
+					clips = value;
+				}
+
+				break;
+		}
 	}
-}
+
+private:
+	int clips;
+};
 
 
 #define FPS_FRAMES 20
@@ -2662,7 +2679,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "beacon_owner", &CG_Rocket_DrawBeaconOwner, ELEMENT_GAME },
 	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
-	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
@@ -2747,4 +2763,5 @@ void CG_Rocket_RegisterElements()
 	}
 
 	Rocket::Core::Factory::RegisterElementInstancer( "ammo", new Rocket::Core::ElementInstancerGeneric< AmmoHudElement >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "clips", new Rocket::Core::ElementInstancerGeneric< ClipsHudElement >() )->RemoveReference();
 }
