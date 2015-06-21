@@ -568,7 +568,6 @@ const char *CG_NetSourceToString( int netSrc )
 
 void CG_Rocket_Frame( cgClientState_t state )
 {
-	Rocket_Update();
 	rocketInfo.cstate = state;
 	rocketInfo.realtime = trap_Milliseconds();
 	rocketInfo.keyCatcher = trap_Key_GetCatcher();
@@ -633,6 +632,7 @@ void CG_Rocket_Frame( cgClientState_t state )
 	}
 
 	CG_Rocket_ProcessEvents();
+	Rocket_Update();
 	Rocket_Render();
 }
 
