@@ -38,6 +38,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/ElementInstancer.h>
 #include <Rocket/Core/ElementInstancerGeneric.h>
 #include <Rocket/Core/Factory.h>
+#include <Rocket/Core/ElementText.h>
 
 static void CG_GetRocketElementColor( vec4_t color )
 {
@@ -92,11 +93,35 @@ private:
 	rocketElementType_t type;
 };
 
-class AmmoHudElement : public HudElement
+class TextHudElement : public HudElement
+{
+public:
+	TextHudElement( const Rocket::Core::String& tag, rocketElementType_t type ) :
+		HudElement( tag, type )
+	{
+		textElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+				this,
+				"#text",
+				"#text",
+				Rocket::Core::XMLAttributes() ) );
+		AppendChild( textElement );
+	}
+
+	void SetText(const Rocket::Core::String& text )
+	{
+		textElement->SetText( text );
+	}
+
+private:
+	Rocket::Core::ElementText* textElement;
+
+};
+
+class AmmoHudElement : public TextHudElement
 {
 public:
 	AmmoHudElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_BOTH ),
+			TextHudElement( tag, ELEMENT_BOTH ),
 			showTotalAmmo( false ),
 			value( 0 ),
 			valueMarked( 0 ) {}
@@ -167,15 +192,15 @@ public:
 
 		if ( !bp )
 		{
-			SetInnerRML( va( "%d", value ) );
+			SetText( va( "%d", value ) );
 		}
 		else if ( valueMarked > 0 )
 		{
-			SetInnerRML( va( "%d+%d", value, valueMarked ) );
+			SetText( va( "%d+%d", value, valueMarked ) );
 		}
 		else
 		{
-			SetInnerRML( va( "%d", value ) );
+			SetText( va( "%d", value ) );
 		}
 	}
 
@@ -186,11 +211,11 @@ private:
 };
 
 
-class ClipsHudElement : public HudElement
+class ClipsHudElement : public TextHudElement
 {
 public:
 	ClipsHudElement( const Rocket::Core::String& tag ) :
-		HudElement( tag, ELEMENT_HUMANS ),
+		TextHudElement( tag, ELEMENT_HUMANS ),
 		clips( 0 ) {}
 
 	virtual void DoOnRender()
@@ -207,7 +232,7 @@ public:
 			case WP_HBUILD:
 				if ( clips != -1 )
 				{
-					SetInnerRML( "" );
+					SetText( "" );
 				}
 				clips = -1;
 				return;
@@ -217,7 +242,7 @@ public:
 
 				if ( value > -1 && value != clips )
 				{
-					SetInnerRML( va( "%d", value ) );
+					SetText( va( "%d", value ) );
 					clips = value;
 				}
 
@@ -232,55 +257,72 @@ private:
 
 #define FPS_FRAMES 20
 #define FPS_STRING "fps"
-static void CG_Rocket_DrawFPS()
+
+class FpsHudElement : public TextHudElement
 {
-	const char *s = "";
-	static int previousTimes[ FPS_FRAMES ];
-	static int index;
-	int        i, total;
-	int        fps;
-	static int previous;
-	int        t, frameTime;
+public:
+	FpsHudElement( const Rocket::Core::String& tag )
+			: TextHudElement( tag, ELEMENT_ALL ),
+			  shouldShowFps( true ),
+			  index(0),
+			  previous(0) {}
 
-	if ( !cg_drawFPS.integer )
+	void DoOnRender()
 	{
-		Rocket_SetInnerRML( s, 0 );
-		return;
-	}
+		const char *s = "";
+		int        i, total;
+		int        fps;
+		int        t, frameTime;
 
-	// don't use serverTime, because that will be drifting to
-	// correct for Internet lag changes, timescales, timedemos, etc.
-	t = trap_Milliseconds();
-	frameTime = t - previous;
-	previous = t;
-
-	previousTimes[ index % FPS_FRAMES ] = frameTime;
-	index++;
-
-	if ( index > FPS_FRAMES )
-	{
-		// average multiple frames together to smooth changes out a bit
-		total = 0;
-
-		for ( i = 0; i < FPS_FRAMES; i++ )
+		if ( !cg_drawFPS.integer && shouldShowFps )
 		{
-			total += previousTimes[ i ];
+			shouldShowFps = false;
+			SetText( "" );
+			return;
+		} else if ( !shouldShowFps )
+		{
+			shouldShowFps = true;
 		}
 
-		if ( !total )
+		// don't use serverTime, because that will be drifting to
+		// correct for Internet lag changes, timescales, timedemos, etc.
+		t = trap_Milliseconds();
+		frameTime = t - previous;
+		previous = t;
+
+		previousTimes[ index % FPS_FRAMES ] = frameTime;
+		index++;
+
+		if ( index > FPS_FRAMES )
 		{
-			total = 1;
+			// average multiple frames together to smooth changes out a bit
+			total = 0;
+
+			for ( i = 0; i < FPS_FRAMES; i++ )
+			{
+				total += previousTimes[ i ];
+			}
+
+			if ( !total )
+			{
+				total = 1;
+			}
+
+			fps = 1000 * FPS_FRAMES / total;
 		}
 
-		fps = 1000 * FPS_FRAMES / total;
+		else
+			fps = 0;
+
+		SetText( va( "%d", fps ) );
 	}
+private:
+	bool shouldShowFps;
+	int previousTimes[ FPS_FRAMES ];
+	int index;
+	int previous;
 
-	else
-		fps = 0;
-
-	s = va( "%d", fps );
-	Rocket_SetInnerRML( s, 0 );
-}
+};
 
 #define CROSSHAIR_INDICATOR_HITFADE 500
 
@@ -2693,7 +2735,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, ELEMENT_ALL },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
-	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
 	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
 	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
@@ -2764,4 +2805,5 @@ void CG_Rocket_RegisterElements()
 
 	Rocket::Core::Factory::RegisterElementInstancer( "ammo", new Rocket::Core::ElementInstancerGeneric< AmmoHudElement >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "clips", new Rocket::Core::ElementInstancerGeneric< ClipsHudElement >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "fps", new Rocket::Core::ElementInstancerGeneric< FpsHudElement >() )->RemoveReference();
 }
