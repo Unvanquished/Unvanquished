@@ -2916,6 +2916,10 @@ void RB_RenderSSAO()
 
 	GLimp_LogComment( "--- RB_RenderSSAO ---\n" );
 
+	if ( !GLEW_ARB_texture_gather ) {
+		return;
+	}
+
 	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
 	{
 		return;

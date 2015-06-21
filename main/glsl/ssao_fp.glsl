@@ -74,6 +74,15 @@ void computeOcclusionForQuad( in vec2 centerTC, in float centerDepth,
 					  centerDepth * y * u_zFar.y );
 }
 
+const vec4 offsets[] = vec4[6](
+	vec4( 0.5,  1.5, 1.5, -0.5 ),
+	vec4( 0.5,  4.5, 3.5,  2.5 ),
+	vec4( 4.5, -0.5, 2.5, -3.5 ),
+	vec4( 0.5,  7.5, 3.5,  5.5 ),
+	vec4( 6.5,  2.5, 7.5, -0.5 ),
+	vec4( 5.5, -3.5, 2.5, -6.5 )
+	);
+
 void	main()
 {
 	vec2 st = gl_FragCoord.st * pixelScale;
@@ -91,33 +100,15 @@ void	main()
 	center = depthToZ( center );
 	float spread = max( 1.0, 100.0 / center );
 
-	// ring 1
-	computeOcclusionForQuad( st, center, spread * vec2( 1.5, -0.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 0.5,  1.5 ),
-				 occlusion, total );
-	// ring 2
-	computeOcclusionForQuad( st, center, spread * vec2( 0.5,  3.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 2.5,  1.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 3.5, -0.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 1.5, -2.5 ),
-				 occlusion, total );
-	// ring 3
-	computeOcclusionForQuad( st, center, spread * vec2( 1.5, -4.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 3.5, -2.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 5.5, -0.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 4.5,  1.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 2.5,  3.5 ),
-				 occlusion, total );
-	computeOcclusionForQuad( st, center, spread * vec2( 0.5,  5.5 ),
-				 occlusion, total );
+	for(int i = 0; i < offsets.length(); i++) {
+		vec2 of;
+		if ( (int(gl_FragCoord.x - gl_FragCoord.y) & 1) != 0 )
+			of = offsets[i].xy;
+		else
+			of = offsets[i].zw;
+		computeOcclusionForQuad( st, center, spread * of,
+					 occlusion, total );
+	}
 
 	float summedOcclusion = dot( occlusion, vec4( 1.0 ) );
 	float summedTotal = dot( total, vec4( 1.0 ) );
