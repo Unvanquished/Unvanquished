@@ -66,7 +66,13 @@ static void CG_GetRocketElementRect( rectDef_t *rect )
 class HudElement : public Rocket::Core::Element
 {
 public:
-	HudElement(const Rocket::Core::String& tag, rocketElementType_t type_) : Rocket::Core::Element(tag), type(type_) {}
+	HudElement(const Rocket::Core::String& tag, rocketElementType_t type_, bool replacedElement) :
+			Rocket::Core::Element(tag),
+			type(type_),
+			isReplacedElement(replacedElement) {}
+
+	HudElement( const Rocket::Core::String& tag, rocketElementType_t type_ ) :
+			HudElement(tag, type_, false) {}
 
 	void OnUpdate()
 	{
@@ -89,8 +95,105 @@ public:
 	virtual void DoOnRender() {}
 	virtual void DoOnUpdate() {}
 
+	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
+	{
+		if ( !isReplacedElement )
+		{
+			return false;
+		}
+
+		const Rocket::Core::Property *property;
+		property = GetProperty( "width" );
+
+		// Absolute unit. We can use it as is
+		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		{
+			dimensions.x = property->value.Get<float>();
+		}
+		else
+		{
+			float base_size = 0;
+			Rocket::Core::Element *parent = this;
+			std::stack<Rocket::Core::Element*> stack;
+			stack.push( this );
+
+			while ( ( parent = parent->GetParentNode() ) )
+			{
+				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
+				{
+					dimensions.x = base_size;
+					while ( !stack.empty() )
+					{
+						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+
+						stack.pop();
+					}
+					break;
+				}
+
+				stack.push( parent );
+			}
+		}
+
+		property = GetProperty( "height" );
+		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		{
+			dimensions.y = property->value.Get<float>();
+		}
+		else
+		{
+			float base_size = 0;
+			Rocket::Core::Element *parent = this;
+			std::stack<Rocket::Core::Element*> stack;
+			stack.push( this );
+
+			while ( ( parent = parent->GetParentNode() ) )
+			{
+				if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
+				{
+					dimensions.y = base_size;
+					while ( !stack.empty() )
+					{
+						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
+
+						stack.pop();
+					}
+					break;
+				}
+
+				stack.push( parent );
+			}
+		}
+
+		// Return the calculated dimensions. If this changes the size of the element, it will result in
+		// a 'resize' event which is caught below and will regenerate the geometry.
+
+		dimension = dimensions;
+
+		return true;
+	}
+
+	void GetElementRect( rectDef_t& rect )
+	{
+		auto offset = GetAbsoluteOffset();
+		rect.x = offset.x;
+		rect.y = offset.y;
+		rect.w = dimensions.x;
+		rect.h = dimensions.y;
+
+		// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+		rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
+		rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
+		rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
+		rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
+	}
+
+protected:
+	Rocket::Core::Vector2f dimensions;
+
 private:
 	rocketElementType_t type;
+	bool isReplacedElement;
 };
 
 class TextHudElement : public HudElement
@@ -255,8 +358,7 @@ private:
 };
 
 
-#define FPS_FRAMES 20
-#define FPS_STRING "fps"
+static const int FPS_FRAMES = 20;
 
 class FpsHudElement : public TextHudElement
 {
@@ -326,52 +428,74 @@ private:
 
 #define CROSSHAIR_INDICATOR_HITFADE 500
 
-static void CG_Rocket_DrawCrosshairIndicator()
+class CrosshairIndicatorHudElement : public HudElement
 {
-	rectDef_t    rect;
-	float        x, y, w, h, dim;
-	qhandle_t    indicator;
-	vec4_t       color, drawColor, baseColor;
-	weapon_t     weapon;
-	weaponInfo_t *wi;
-	bool     onRelevantEntity;
+public:
+	CrosshairIndicatorHudElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_BOTH, true ) {}
 
-	if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	{
+		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		{
+			Rocket::Core::Colourb c = GetProperty<Rocket::Core::Colourb>( "color" );
+			color[0] = c.red, color[1] = c.green, color[2] = c.blue, color[3] = c.alpha;
+			Vector4Scale( color, 1 / 255.0f, color);
+		}
+	}
+
+	void DoOnRender()
+	{
+		rectDef_t    rect;
+		float        x, y, w, h, dim;
+		qhandle_t    indicator;
+		vec4_t       drawColor, baseColor;
+		weapon_t     weapon;
+		weaponInfo_t *wi;
+		bool     onRelevantEntity;
+
+		if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
 			cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
 			cg.snap->ps.pm_type == PM_INTERMISSION ||
 			cg.renderingThirdPerson )
-	{
-		return;
-	}
-
-	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
-	wi = &cg_weapons[ weapon ];
-	indicator = wi->crossHairIndicator;
-
-	if ( !indicator )
-	{
-		return;
-	}
-
-	CG_GetRocketElementColor( color );
-	CG_GetRocketElementRect( &rect );
-
-	// set base color (friend/foe detection)
-	if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
-			( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
-	{
-		if ( cg.crosshairFoe )
 		{
-			Vector4Copy( colorRed, baseColor );
-			baseColor[ 3 ] = color[ 3 ] * 0.75f;
-			onRelevantEntity = true;
+			return;
 		}
 
-		else if ( cg.crosshairFriend )
+		weapon = BG_GetPlayerWeapon( &cg.snap->ps );
+		wi = &cg_weapons[ weapon ];
+		indicator = wi->crossHairIndicator;
+
+		if ( !indicator )
 		{
-			Vector4Copy( colorGreen, baseColor );
-			baseColor[ 3 ] = color[ 3 ] * 0.75f;
-			onRelevantEntity = true;
+			return;
+		}
+
+		GetElementRect( rect );
+
+		// set base color (friend/foe detection)
+		if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
+			( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
+		{
+			if ( cg.crosshairFoe )
+			{
+				Vector4Copy( colorRed, baseColor );
+				baseColor[ 3 ] = color[ 3 ] * 0.75f;
+				onRelevantEntity = true;
+			}
+
+			else if ( cg.crosshairFriend )
+			{
+				Vector4Copy( colorGreen, baseColor );
+				baseColor[ 3 ] = color[ 3 ] * 0.75f;
+				onRelevantEntity = true;
+			}
+
+			else
+			{
+				Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
+				onRelevantEntity = false;
+			}
 		}
 
 		else
@@ -379,45 +503,42 @@ static void CG_Rocket_DrawCrosshairIndicator()
 			Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
 			onRelevantEntity = false;
 		}
+
+		// add hit color
+		if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
+		{
+			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
+
+			Vector4Lerp( dim, baseColor, colorWhite, drawColor );
+		}
+
+		else if ( !onRelevantEntity )
+		{
+			return;
+		}
+
+		else
+		{
+			Vector4Copy( baseColor, drawColor );
+		}
+
+		// set size
+		w = h = wi->crossHairSize * cg_crosshairSize.value;
+		w *= cgs.aspectScale;
+
+		x = rect.x + ( rect.w / 2 ) - ( w / 2 );
+		y = rect.y + ( rect.h / 2 ) - ( h / 2 );
+
+		// draw
+		trap_R_SetColor( drawColor );
+		CG_DrawPic( x, y, w, h, indicator );
+		trap_R_SetColor( nullptr );
 	}
+private:
+	vec4_t color;
 
-	else
-	{
-		Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
-		onRelevantEntity = false;
-	}
 
-	// add hit color
-	if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
-	{
-		dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
-
-		Vector4Lerp( dim, baseColor, colorWhite, drawColor );
-	}
-
-	else if ( !onRelevantEntity )
-	{
-		return;
-	}
-
-	else
-	{
-		Vector4Copy( baseColor, drawColor );
-	}
-
-	// set size
-	w = h = wi->crossHairSize * cg_crosshairSize.value;
-	w *= cgs.aspectScale;
-
-	// HACK: This ignores the width/height of the rect (does it?)
-	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
-	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
-
-	// draw
-	trap_R_SetColor( drawColor );
-	CG_DrawPic( x, y, w, h, indicator );
-	trap_R_SetColor( nullptr );
-}
+};
 
 static void CG_Rocket_DrawCrosshair()
 {
@@ -2726,7 +2847,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
-	{ "crosshair_indicator", &CG_Rocket_DrawCrosshairIndicator, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
 	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, ELEMENT_ALL },
 	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
@@ -2788,6 +2908,7 @@ void CG_Rocket_RenderElement( const char *tag )
 	}
 }
 
+#define REGISTER_ELEMENT( tag, clazz ) Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< clazz >() )->RemoveReference();
 void CG_Rocket_RegisterElements()
 {
 	int i;
@@ -2803,7 +2924,8 @@ void CG_Rocket_RegisterElements()
 		Rocket_RegisterElement( elementRenderCmdList[ i ].name );
 	}
 
-	Rocket::Core::Factory::RegisterElementInstancer( "ammo", new Rocket::Core::ElementInstancerGeneric< AmmoHudElement >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "clips", new Rocket::Core::ElementInstancerGeneric< ClipsHudElement >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "fps", new Rocket::Core::ElementInstancerGeneric< FpsHudElement >() )->RemoveReference();
+	REGISTER_ELEMENT( "ammo", AmmoHudElement )
+	REGISTER_ELEMENT( "clips", ClipsHudElement )
+	REGISTER_ELEMENT( "fps", FpsHudElement )
+	REGISTER_ELEMENT( "crosshair_indicator", CrosshairIndicatorHudElement )
 }
