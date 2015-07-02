@@ -1985,7 +1985,7 @@ const char *NET_GeoIP_Country( const netadr_t *from )
 
 static GeoIP *NET_GeoIP_LoadData (int db)
 {
-	GeoIP *data = GeoIP_open_type (db, GEOIP_MEMORY_CACHE | GEOIP_SILENCE);
+	GeoIP *data = GeoIP_open_type (db, GEOIP_MEMORY_CACHE);
 
 	if (data == nullptr)
 	{
