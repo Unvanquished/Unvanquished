@@ -371,7 +371,6 @@ public:
 
 	void DoOnRender()
 	{
-		const char *s = "";
 		int        i, total;
 		int        fps;
 		int        t, frameTime;
