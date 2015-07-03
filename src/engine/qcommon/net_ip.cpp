@@ -1985,11 +1985,20 @@ const char *NET_GeoIP_Country( const netadr_t *from )
 
 static GeoIP *NET_GeoIP_LoadData (int db)
 {
-	GeoIP *data = GeoIP_open_type (db, GEOIP_INDEX_CACHE);
+	GeoIP *data = GeoIP_open_type (db, GEOIP_MEMORY_CACHE);
 
-	if (!data)
+	if (data == nullptr)
 	{
-		data = GeoIP_open_type (db, GEOIP_MEMORY_CACHE);
+		if (db == GEOIP_COUNTRY_EDITION)
+		{
+			std::string dbPath = FS::Path::Build(FS::GetLibPath(), "GeoIP.dat");
+			data = GeoIP_open (dbPath.c_str(), GEOIP_MEMORY_CACHE);
+		}
+		else if (db == GEOIP_COUNTRY_EDITION_V6)
+		{
+			std::string dbPath = FS::Path::Build(FS::GetLibPath(), "GeoIPv6.dat");
+			data = GeoIP_open (dbPath.c_str(), GEOIP_MEMORY_CACHE);
+		}
 	}
 
 	return data;
