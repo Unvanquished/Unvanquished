@@ -1763,7 +1763,9 @@ function( GAMEMODULE )
     endif()
     set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS}
       -Wextra
+      -Wno-error=deprecated-register
       -Wno-error=implicit-function-declaration
+      -Wno-error=logical-op-parentheses
       -W${WARNMODE}missing-field-initializers
       -Wno-error=pointer-bool-conversion
       -W${WARNMODE}sign-compare
