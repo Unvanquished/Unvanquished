@@ -39,7 +39,7 @@ Maryland 20850 USA.
 // attributes don't match and the linker produces an error on windows.
 // see for example src/libs/libRocket/Include/Rocket/Debugger/Header.h
 // HACK: define STATIC_LIB to trick librocket to produce the same function prototypes
-#define STATIC_LIB 1
+#define ROCKET_STATIC_LIB 1
 
 #include "rocket.h"
 #include <Rocket/Core/FileInterface.h>
