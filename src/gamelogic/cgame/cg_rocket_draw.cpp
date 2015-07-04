@@ -71,8 +71,10 @@ public:
 			type(type_),
 			isReplacedElement(replacedElement) {}
 
-	HudElement( const Rocket::Core::String& tag, rocketElementType_t type_ ) :
-			HudElement(tag, type_, false) {}
+	HudElement(const Rocket::Core::String& tag, rocketElementType_t type_) :
+			Rocket::Core::Element(tag),
+			type(type_),
+			isReplacedElement(false) {}
 
 	void OnUpdate()
 	{
