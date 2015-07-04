@@ -37,6 +37,8 @@ FontFaceLayer::FontFaceLayer() : colour(255, 255, 255)
 {
 	handle = NULL;
 	effect = NULL;
+	base = NULL;
+	deep_copy = 0;
 }
 
 FontFaceLayer::~FontFaceLayer()
@@ -50,50 +52,20 @@ bool FontFaceLayer::Initialise(const FontFaceHandle* _handle, FontEffect* _effec
 {
 	handle = _handle;
 	effect = _effect;
+	base = clone;
+	deep_copy = deep_clone;
+
 	if (effect != NULL)
 	{
 		effect->AddReference();
 		colour = effect->GetColour();
 	}
 
-	const FontGlyphMap& glyphs = handle->GetGlyphs();
-
 	// Clone the geometry and textures from the clone layer.
 	if (clone != NULL)
 	{
 		// Copy the cloned layer's characters.
-		characters = clone->characters;
-
-		// Copy (and reference) the cloned layer's textures.
-		for (size_t i = 0; i < clone->textures.size(); ++i)
-			textures.push_back(clone->textures[i]);
-
-		// Request the effect (if we have one) adjust the origins as appropriate.
-		if (!deep_clone &&
-			effect != NULL)
-		{
-			for (FontGlyphMap::const_iterator i = glyphs.begin(); i != glyphs.end(); ++i)
-			{
-				const FontGlyph& glyph = i->second;
-
-				CharacterMap::iterator character_iterator = characters.find(i->first);
-				if (character_iterator == characters.end())
-					continue;
-
-				Character& character = character_iterator->second;
-
-				Vector2i glyph_origin(Math::RealToInteger(character.origin.x), Math::RealToInteger(character.origin.y));
-				Vector2i glyph_dimensions(Math::RealToInteger(character.dimensions.x), Math::RealToInteger(character.dimensions.y));
-
-				if (effect->GetGlyphMetrics(glyph_origin, glyph_dimensions, glyph))
-				{
-					character.origin.x = (float) glyph_origin.x;
-					character.origin.y = (float) glyph_origin.y;
-				}
-				else
-					characters.erase(character_iterator);
-			}
-		}
+		MergeFromBase();
 	}
 	else
 	{
@@ -104,10 +76,48 @@ bool FontFaceLayer::Initialise(const FontFaceHandle* _handle, FontEffect* _effec
 	return true;
 }
 
+void FontFaceLayer::MergeFromBase()
+{
+	characters = base->characters;
+
+	const FontGlyphMap& glyphs = handle->GetGlyphs();
+
+	// Copy (and reference) the cloned layer's textures.
+	for (size_t i = textures.size(); i < base->textures.size(); ++i)
+		textures.push_back(base->textures[i]);
+
+	// Request the effect (if we have one) adjust the origins as appropriate.
+	if (!deep_copy &&
+		effect != NULL)
+	{
+		for (FontGlyphMap::const_iterator i = glyphs.begin(); i != glyphs.end(); ++i)
+		{
+			const FontGlyph& glyph = i->second;
+
+			CharacterMap::iterator character_iterator = characters.find(i->first);
+			if (character_iterator == characters.end())
+				continue;
+
+			Character& character = character_iterator->second;
+
+			Vector2i glyph_origin(Math::RealToInteger(character.origin.x), Math::RealToInteger(character.origin.y));
+			Vector2i glyph_dimensions(Math::RealToInteger(character.dimensions.x), Math::RealToInteger(character.dimensions.y));
+
+			if (effect->GetGlyphMetrics(glyph_origin, glyph_dimensions, glyph))
+			{
+				character.origin.x = (float) glyph_origin.x;
+				character.origin.y = (float) glyph_origin.y;
+			}
+			else
+				characters.erase(character_iterator);
+		}
+	}
+}
+
 bool FontFaceLayer::AddNewGlyphs()
 {
 	const FontGlyphMap& glyphs = handle->GetGlyphs();
-	texture_layouts.push_back(std::unique_ptr<TextureLayout>(new TextureLayout()));
+	texture_layouts.push_back(std::move(std::unique_ptr<TextureLayout>(new TextureLayout())));
 	TextureLayout& texture_layout = *texture_layouts.back();
 	// Initialise the texture layout for the glyphs.
 	for (FontGlyphMap::const_iterator i = glyphs.begin(); i != glyphs.end(); ++i)
@@ -138,7 +148,11 @@ bool FontFaceLayer::AddNewGlyphs()
 
 	// Generate the texture layout; this will position the glyph rectangles efficiently and
 	// allocate the texture data ready for writing.
-	if (!texture_layout.GenerateLayout(512))
+#ifdef ROCKET_8BPP_FONTS
+    if (!texture_layout.GenerateLayout(1024, 1))
+#else
+	if (!texture_layout.GenerateLayout(1024, 4))
+#endif
 		return false;
 
 	// Iterate over each rectangle in the layout, copying the glyph data into the rectangle as
@@ -176,7 +190,7 @@ bool FontFaceLayer::AddNewGlyphs()
 
 
 // Generates the texture data for a layer (for the texture database).
-bool FontFaceLayer::GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int layout_id, int texture_id)
+bool FontFaceLayer::GenerateTexture(const byte*& texture_data, Vector2i& texture_dimensions, int &texture_samples, int layout_id, int texture_id)
 {
 	TextureLayout& texture_layout = *texture_layouts[layout_id];
 	if (texture_id < 0 ||
@@ -188,14 +202,19 @@ bool FontFaceLayer::GenerateTexture(const byte*& texture_data, Vector2i& texture
 	// Generate the texture data.
 	texture_data = texture_layout.GetTexture(texture_id).AllocateTexture();
 	texture_dimensions = texture_layout.GetTexture(texture_id).GetDimensions();
+#ifdef ROCKET_8BPP_FONTS
+	texture_samples = 1;
+#else
+	texture_samples = 4;
+#endif
 
 	for (int i = 0; i < texture_layout.GetNumRectangles(); ++i)
 	{
 		TextureLayoutRectangle& rectangle = texture_layout.GetRectangle(i);
 		Character& character = characters[(word) rectangle.GetId()];
 
-	if (character.local_texture_index != texture_id)
-		continue;
+		if (character.local_texture_index != texture_id)
+			continue;
 
 		const FontGlyph& glyph = glyphs.find((word) rectangle.GetId())->second;
 
@@ -209,9 +228,12 @@ bool FontFaceLayer::GenerateTexture(const byte*& texture_data, Vector2i& texture
 
 				for (int j = 0; j < glyph.bitmap_dimensions.y; ++j)
 				{
+#ifdef ROCKET_8BPP_FONTS
+					memcpy(destination, source, glyph.bitmap_dimensions.x);
+#else
 					for (int k = 0; k < glyph.bitmap_dimensions.x; ++k)
 						destination[k * 4 + 3] = source[k];
-
+#endif
 					destination += rectangle.GetTextureStride();
 					source += glyph.bitmap_dimensions.x;
 				}

@@ -249,13 +249,13 @@ public:
 		return true;
 	}
 
-	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions )
+	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions, int source_samples )
 	{
 
-		textureHandle = trap_R_GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
+		texture_handle = trap_R_GenerateTexture( (const byte* )source, source_dimensions.x, source_dimensions.y );
 // 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
 
-		return ( textureHandle > 0 );
+		return ( texture_handle > 0 );
 	}
 
 	void ReleaseTexture( Rocket::Core::TextureHandle textureHandle )

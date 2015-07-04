@@ -26,7 +26,7 @@
  */
 
 #include "precompiled.h"
-#include <Rocket/Core/RenderInterface.h>
+#include "../../Include/Rocket/Core/RenderInterface.h"
 #include "TextureDatabase.h"
 
 namespace Rocket {
@@ -77,11 +77,13 @@ bool RenderInterface::LoadTexture(TextureHandle& ROCKET_UNUSED_PARAMETER(texture
 }
 
 // Called by Rocket when a texture is required to be built from an internally-generated sequence of pixels.
-bool RenderInterface::GenerateTexture(TextureHandle& ROCKET_UNUSED_PARAMETER(texture_handle), const byte* ROCKET_UNUSED_PARAMETER(source), const Vector2i& ROCKET_UNUSED_PARAMETER(source_dimensions))
+bool RenderInterface::GenerateTexture(TextureHandle& ROCKET_UNUSED_PARAMETER(texture_handle), const byte* ROCKET_UNUSED_PARAMETER(source), const Vector2i& ROCKET_UNUSED_PARAMETER(source_dimensions),
+	int ROCKET_UNUSED_PARAMETER(source_samples))
 {
 	ROCKET_UNUSED(texture_handle);
 	ROCKET_UNUSED(source);
 	ROCKET_UNUSED(source_dimensions);
+	ROCKET_UNUSED(source_samples);
 	
 	return false;
 }
