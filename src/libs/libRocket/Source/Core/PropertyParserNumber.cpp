@@ -57,7 +57,6 @@ bool PropertyParserNumber::ParseValue(Property& property, const String& value, c
 	property.unit = Property::NUMBER;
 
 	// Check for a unit declaration at the end of the number.
-	size_t suffixLength = 0;
 	for (size_t i = 0; i < unit_suffixes.size(); i++)
 	{
 		const UnitSuffix& unit_suffix = unit_suffixes[i];
@@ -67,17 +66,13 @@ bool PropertyParserNumber::ParseValue(Property& property, const String& value, c
 
 		if (strcasecmp(value.CString() + (value.Length() - unit_suffix.second.Length()), unit_suffix.second.CString()) == 0)
 		{
-			// Found a suffix, remember the size.
-			suffixLength = unit_suffix.second.Length();
 			property.unit = unit_suffix.first;
 			break;
 		}
 	}
 
 	float float_value;
-	// Remove the unit suffix if there was one so sscanf doesn't see it and get confused.
-	int matched = sscanf(suffixLength == 0 ? value.CString() : value.Substring(0, value.Length() - suffixLength).CString(), "%f", &float_value);
-	if (matched == 1)
+	if (sscanf(value.CString(), "%f", &float_value) == 1)
 	{
 		property.value = Variant(float_value);
 		return true;

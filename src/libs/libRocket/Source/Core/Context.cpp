@@ -26,12 +26,12 @@
  */
 
 #include "precompiled.h"
-#include <Rocket/Core.h>
+#include "../../Include/Rocket/Core.h"
 #include "EventDispatcher.h"
 #include "EventIterators.h"
 #include "PluginRegistry.h"
 #include "StreamFile.h"
-#include <Rocket/Core/StreamMemory.h>
+#include "../../Include/Rocket/Core/StreamMemory.h"
 #include <algorithm>
 #include <iterator>
 
@@ -367,7 +367,10 @@ ElementDocument* Context::LoadMouseCursor(const String& document_path)
 	// Load the document from the stream.
 	ElementDocument* document = Factory::InstanceDocumentStream(this, stream);
 	if (document == NULL)
+	{
+		stream->RemoveReference();
 		return NULL;
+	}
 
 	AddMouseCursor(document);
 
@@ -375,6 +378,8 @@ ElementDocument* Context::LoadMouseCursor(const String& document_path)
 	ElementUtilities::BindEventAttributes(document);
 	document->UpdateLayout();
 	document->DispatchEvent(LOAD, Dictionary(), false);
+
+	stream->RemoveReference();
 
 	return document;
 }
