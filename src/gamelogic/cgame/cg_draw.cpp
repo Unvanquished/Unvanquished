@@ -214,50 +214,32 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 
 void CG_MouseEvent( int x, int y )
 {
-	if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
+	if ( rocketInfo.keyCatcher & KEYCATCH_UI)
+	{
+		Rocket_MouseMove( x, y );
+	}
+	else if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) &&
 	     cg.showScores == false )
 	{
-		trap_Key_SetCatcher( 0 );
+		CG_SetKeyCatcher( 0 );
 		return;
 	}
 
-	cgs.cursorX += x;
 
-	if ( cgs.cursorX < 0 )
-	{
-		cgs.cursorX = 0;
-	}
-	else if ( cgs.cursorX > 640 )
-	{
-		cgs.cursorX = 640;
-	}
-
-	cgs.cursorY += y;
-
-	if ( cgs.cursorY < 0 )
-	{
-		cgs.cursorY = 0;
-	}
-	else if ( cgs.cursorY > 480 )
-	{
-		cgs.cursorY = 480;
-	}
 }
 
-void CG_KeyEvent( int key, int chr, int flags )
+void CG_KeyEvent( int key, bool down )
 {
-	if ( !( flags & KEYEVSTATE_DOWN ) )
+	if ( rocketInfo.keyCatcher & KEYCATCH_UI )
 	{
-		return;
+		Rocket_ProcessKeyInput( key, down);
 	}
-
-	if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
+	else if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
 	       cg.showScores == false ) )
 	{
-		trap_Key_SetCatcher( 0 );
-		return;
+		CG_SetKeyCatcher( 0 );
 	}
 }
 

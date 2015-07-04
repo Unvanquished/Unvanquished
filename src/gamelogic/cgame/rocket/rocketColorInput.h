@@ -37,7 +37,7 @@ Maryland 20850 USA.
 
 #include <Rocket/Core.h>
 #include <Rocket/Controls/ElementFormControlInput.h>
-#include "client.h"
+#include "../cg_local.h"
 
 class RocketColorInput : public Rocket::Core::Element, public Rocket::Core::EventListener
 {

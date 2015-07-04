@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/Core.h>
 #include <Rocket/Controls/ElementFormControlDataSelect.h>
 
-#include "client.h"
+#include "../cg_local.h"
 
 class RocketDataSelect : public Rocket::Controls::ElementFormControlDataSelect, public Rocket::Core::EventListener
 {

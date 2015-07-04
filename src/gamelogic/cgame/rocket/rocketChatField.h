@@ -39,14 +39,13 @@ Maryland 20850 USA.
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/ElementUtilities.h>
 #include <Rocket/Core/GeometryUtilities.h>
-#include "client.h"
+#include "../cg_local.h"
 #include "rocket.h"
-#include "../framework/CommandSystem.h"
 
 class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
 {
 public:
-	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), cursor_timer( 0 ), last_update_time( 0 ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
+	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
 	{
 		// Spawn text container
 		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
@@ -194,7 +193,7 @@ public:
 						{
 							Rocket::Core::String utf8String;
 							Rocket::Core::WString( text ).ToUTF8( utf8String );
-							Cmd::BufferCommandText( utf8String.CString() );
+							trap_SendConsoleCommand( va( "%s\n", utf8String.CString() ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -203,14 +202,14 @@ public:
 
 						if ( cmd.Empty() )
 						{
-							cmd = Cvar_VariableString( "cg_sayCommand" );
+							cmd = cg_sayCommand.string;
 						}
 
 						if ( !cmd.Empty() && !text.Empty() )
 						{
 							Rocket::Core::String utf8String;
 							Rocket::Core::WString( text ).ToUTF8( utf8String );
-							Cmd::BufferCommandText( Cmd::Escape( va( "%s %s", cmd.CString(), utf8String.CString() ) ) );
+							trap_SendConsoleCommand( va( "%s %s", cmd.CString(), Cmd::Escape( utf8String.CString() ).c_str() ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -474,8 +473,6 @@ protected:
 
 private:
 	Rocket::Core::Vector2f cursor_position;
-	float cursor_timer;
-	float last_update_time;
 	bool focus;
 	int cursor_character_index;
 	Rocket::Core::Element *text_element;

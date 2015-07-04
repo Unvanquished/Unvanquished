@@ -32,20 +32,34 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// For various text elements that need to be drawn each frame
-
+#ifndef ROCKETDATAFORMATTER_H
+#define ROCKETDATAFORMATTER_H
+#include "../cg_local.h"
 #include "rocket.h"
-#include "rocketMiscText.h"
-#include "client.h"
 
-std::vector<TextAndRect> RocketMiscText::strings;
+#include <Rocket/Controls/DataFormatter.h>
 
-void Rocket_AddTextElement( const char *text, const char *_class, float x, float y )
+class RocketDataFormatter : public Rocket::Controls::DataFormatter
 {
-	RocketMiscText::AddText( text, _class, x, y );
-}
+public:
+	Rocket::Core::String name;
+	int handle;
+	char data[ BIG_INFO_STRING ];
+	Rocket::Core::String out;
 
-void Rocket_ClearText()
-{
-	RocketMiscText::ClearText();
-}
+	RocketDataFormatter( const char *name, int handle ) : Rocket::Controls::DataFormatter( name ), name( name ), handle( handle ) { }
+	~RocketDataFormatter() { }
+
+	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
+	{
+		Com_Memset( &data, 0, sizeof( data ) );
+
+		for ( size_t i = 0; i < raw_data.size(); ++i )
+		{
+			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].CString(), true );
+		}
+		CG_Rocket_FormatData(handle);
+		formatted_data = out;
+	}
+};
+#endif

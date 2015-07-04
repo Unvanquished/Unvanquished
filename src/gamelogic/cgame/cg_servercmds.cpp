@@ -317,7 +317,7 @@ static void CG_ConfigStringModified()
 		cg.intermissionStarted = atoi( str );
 		if ( cg.intermissionStarted )
 		{
-			trap_Rocket_ShowScoreboard( "scoreboard", true );
+			Rocket_ShowScoreboard( "scoreboard", true );
 		}
 	}
 	else if ( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
@@ -738,7 +738,7 @@ void CG_Menu( int menuType, int arg )
 
 	if ( menu > 0 )
 	{
-		trap_Rocket_DocumentAction( rocketInfo.menu[ menu ].id, "show" );
+		Rocket_DocumentAction( rocketInfo.menu[ menu ].id, "show" );
 	}
 	else if ( longMsg && cg_disableWarningDialogs.integer == 0 )
 	{

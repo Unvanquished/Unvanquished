@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 #include "rocket.h"
-#include "client.h"
-#include "qcommon/q_unicode.h"
+#include "../cg_local.h"
+#include "../../../engine/qcommon/q_unicode.h"
 
 using namespace Rocket::Core::Input;
 
@@ -151,7 +151,7 @@ KeyIdentifier Rocket_FromQuake( int key )
 {
 	if ( !init )
 	{
-		Com_Log( LOG_WARN, "Tried to convert keyMap before key array initialized." );
+		CG_Printf( "^3WARNING: ^7Tried to convert keyMap before key array initialized." );
 		return KI_UNKNOWN;
 	}
 	std::map< int, int >::iterator it;
@@ -161,7 +161,7 @@ KeyIdentifier Rocket_FromQuake( int key )
 		return static_cast< KeyIdentifier >( it->second );
 	}
 
-	Com_Logf( LOG_WARN, "Rocket_FromQuake: Could not find keynum %d", key );
+	CG_Printf( "^3WARNING: ^7Rocket_FromQuake: Could not find keynum %d", key );
 	return KI_UNKNOWN;
 }
 
@@ -169,11 +169,11 @@ keyNum_t Rocket_ToQuake( int key )
 {
 	if ( !init )
 	{
-		Com_Log( LOG_WARN, "Tried to convert keyMap before key array initialized." );
+		CG_Printf( "^3WARNING: ^7Tried to convert keyMap before key array initialized." );
 		return K_NONE;
 	}
-	std::map< int, int >::iterator it;
-	for ( it = keyMap.begin(); it != keyMap.end(); ++it )
+
+	for ( auto it = keyMap.begin(); it != keyMap.end(); ++it )
 	{
 		if ( it->second == key )
 		{
@@ -181,46 +181,31 @@ keyNum_t Rocket_ToQuake( int key )
 		}
 	}
 
-	Com_Logf( LOG_WARN, "Rocket_ToQuake: Could not find keynum %d", key );
+	CG_Printf( "^3WARNING: ^7Rocket_ToQuake: Could not find keynum %d", key );
 	return K_NONE;
 }
 
 KeyModifier Rocket_GetKeyModifiers()
 {
 	int mod = 0;
+	static const std::vector<int> keys = { K_CTRL, K_SHIFT, K_ALT, K_SUPER, K_CAPSLOCK, K_KP_NUMLOCK };
+	static const int quakeToRocketKeyModifier[] = { KM_CTRL, KM_SHIFT, KM_ALT, KM_META, KM_CAPSLOCK, KM_NUMLOCK };
+	std::vector<int> list = trap_Key_KeysDown( keys );
 
-	if ( Key_IsDown( K_CTRL ) )
+	for (int i = 0; i < keys.size(); ++i)
 	{
-		mod |= KM_CTRL;
+		if ( list[i] )
+		{
+			mod |= quakeToRocketKeyModifier[i];
+		}
 	}
-	if ( Key_IsDown( K_SHIFT ) )
-	{
-		mod |= KM_SHIFT;
-	}
-	if ( Key_IsDown( K_ALT ) )
-	{
-		mod |= KM_ALT;
-	}
-	if ( Key_IsDown( K_SUPER ) )
-	{
-		mod |= KM_META;
-	}
-	if ( Key_IsDown( K_CAPSLOCK ) )
-	{
-		mod |= KM_CAPSLOCK;
-	}
-	if ( IN_IsNumLockDown() )
-	{
-		mod |= KM_NUMLOCK;
-	}
-
 	return static_cast< KeyModifier >( mod );
 }
 
 static bool wasDownBefore = false;
 void Rocket_ProcessMouseClick( int button, bool down )
 {
-	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;
 	}
@@ -263,7 +248,7 @@ void Rocket_ProcessMouseClick( int button, bool down )
 #define MOUSEWHEEL_DELTA 5
 void Rocket_ProcessKeyInput( int key, bool down )
 {
-	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;
 	}
@@ -334,7 +319,7 @@ int utf8_to_ucs2( const unsigned char *input )
 
 void Rocket_ProcessTextInput( int key )
 {
-	if ( !menuContext || cls.keyCatchers & KEYCATCH_CONSOLE || !cls.keyCatchers )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;
 	}
@@ -354,7 +339,7 @@ void Rocket_ProcessTextInput( int key )
 void Rocket_MouseMove( int x, int y )
 {
 	static int mousex, mousey;
-	if ( !menuContext || ! ( cls.keyCatchers & KEYCATCH_UI ) )
+	if ( !menuContext || ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) )
 	{
 		return;
 	}
@@ -366,18 +351,18 @@ void Rocket_MouseMove( int x, int y )
 	{
 		mousex = 0;
 	}
-	else if ( mousex > cls.glconfig.vidWidth )
+	else if ( mousex > cgs.glconfig.vidWidth )
 	{
-		mousex = cls.glconfig.vidWidth;
+		mousex = cgs.glconfig.vidWidth;
 	}
 
 	if ( mousey < 0 )
 	{
 		mousey = 0;
 	}
-	else if ( mousey > cls.glconfig.vidHeight )
+	else if ( mousey > cgs.glconfig.vidHeight )
 	{
-		mousey = cls.glconfig.vidHeight;
+		mousey = cgs.glconfig.vidHeight;
 	}
 
 

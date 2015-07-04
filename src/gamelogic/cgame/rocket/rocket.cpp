@@ -62,16 +62,12 @@ Maryland 20850 USA.
 #include "rocketChatField.h"
 #include "rocketFormControlInput.h"
 #include "rocketFormControlSelect.h"
-#include "rocketMiscText.h"
 #include "rocketConditionalElement.h"
 #include "rocketColorInput.h"
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
-#include "client.h"
 #include <Rocket/Debugger.h>
-
-#include <SDL.h>
-
+#include "../cg_local.h"
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
 {
@@ -79,38 +75,39 @@ public:
 	Rocket::Core::FileHandle Open( const Rocket::Core::String &filePath )
 	{
 		fileHandle_t fileHandle;
-		FS_FOpenFileRead( filePath.CString(), &fileHandle, false );
+		trap_FS_FOpenFile( filePath.CString(), &fileHandle, FS_READ );
 		return ( Rocket::Core::FileHandle )fileHandle;
 	}
 
 	void Close( Rocket::Core::FileHandle file )
 	{
-		FS_FCloseFile( ( fileHandle_t ) file );
+		trap_FS_FCloseFile( ( fileHandle_t ) file );
 	}
 
 	size_t Read( void *buffer, size_t size, Rocket::Core::FileHandle file )
 	{
-		return ( size_t ) FS_Read( buffer, (int)size, ( fileHandle_t ) file );
+		return ( size_t ) trap_FS_Read( buffer, (int)size, ( fileHandle_t ) file );
 	}
 
+	// TODO
 	bool Seek( Rocket::Core::FileHandle file, long offset, int origin )
 	{
-		int ret = FS_Seek( ( fileHandle_t ) file, offset, origin );
-
-		return ( ret >= 0 );
+		return trap_FS_Seek( ( fileHandle_t ) file, offset, ( fsOrigin_t ) origin );
 	}
 
+	// TODO
 	size_t Tell( Rocket::Core::FileHandle file )
 	{
-		return ( size_t ) FS_FTell( ( fileHandle_t ) file );
+		return ( size_t ) trap_FS_Tell( ( fileHandle_t ) file );
 	}
 
 	/*
 		May not be correct for files in zip files
 	*/
+	// TODO
 	size_t Length( Rocket::Core::FileHandle file )
 	{
-		return ( size_t ) FS_filelength( ( fileHandle_t ) file );
+		return ( size_t ) trap_FS_FileLength( ( fileHandle_t ) file );
 	}
 };
 
@@ -119,17 +116,17 @@ class DaemonSystemInterface : public Rocket::Core::SystemInterface
 public:
 	float GetElapsedTime()
 	{
-		return Sys_Milliseconds() / 1000.0f;
+		return trap_Milliseconds() / 1000.0f;
 	}
 
 	int TranslateString( Rocket::Core::String &translated, const Rocket::Core::String &input )
 	{
-		const char* ret = Trans_GettextGame( input.CString() );
+		const char* ret = _( input.CString() );
 		translated = ret;
 		return 0;
 	}
 
-	//TODO: Add explicit support for other log types
+	// TODO: Add explicit support for other log types
 	bool LogMessage( Rocket::Core::Log::Type type, const Rocket::Core::String &message )
 	{
 		switch ( type )
@@ -155,7 +152,7 @@ public:
 
 static polyVert_t *createVertexArray( Rocket::Core::Vertex *vertices, int count )
 {
-	polyVert_t *verts = static_cast<polyVert_t *>( Z_Malloc( sizeof( polyVert_t ) * count ) );
+	polyVert_t *verts = new polyVert_t[ sizeof( polyVert_t ) * count ];
 
 	for ( int i = 0; i < count; i++ )
 	{
@@ -188,7 +185,7 @@ public:
 	{
 		this->verts = createVertexArray( verticies, numVerticies );
 
-		this->indices = ( int * ) Z_Malloc( sizeof( int ) * _numIndicies );
+		this->indices = new int[ sizeof( int ) * _numIndicies ];
 		Com_Memcpy( indices, _indices, _numIndicies * sizeof( int ) );
 
 		this->shader = shader;
@@ -196,15 +193,15 @@ public:
 
 	~RocketCompiledGeometry()
 	{
-		Z_Free( verts );
-		Z_Free( indices );
+		delete[] verts;
+		delete[] indices;
 	}
 };
 
 // HACK: Rocket uses a texturehandle of 0 when we really want the whiteImage shader
 static qhandle_t whiteShader;
 
-//TODO: CompileGeometry, RenderCompiledGeometry, ReleaseCompileGeometry ( use vbos and ibos )
+// TODO: CompileGeometry, RenderCompiledGeometry, ReleaseCompileGeometry ( use vbos and ibos )
 class DaemonRenderInterface : public Rocket::Core::RenderInterface
 {
 public:
@@ -213,10 +210,8 @@ public:
 	void RenderGeometry( Rocket::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation )
 	{
 		polyVert_t *verts = createVertexArray( verticies, numVerticies );
-
-		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, translation.x, translation.y, texture ? ( qhandle_t ) texture : whiteShader );
-
-		Z_Free( verts );
+		trap_R_Add2dPolysIndexedToScene( verts, numVerticies, indices, numIndicies, translation.x, translation.y, texture ? ( qhandle_t ) texture : whiteShader );
+		delete[]  verts;
 	}
 
 	Rocket::Core::CompiledGeometryHandle CompileGeometry( Rocket::Core::Vertex *vertices, int num_vertices, int *indices, int num_indices, Rocket::Core::TextureHandle texture )
@@ -230,8 +225,7 @@ public:
 	void RenderCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry, const Rocket::Core::Vector2f &translation )
 	{
 		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
-
-		re.Add2dPolysIndexed( g->verts, g->numVerts, g->indices, g->numIndicies, translation.x, translation.y, g->shader );
+		trap_R_Add2dPolysIndexedToScene( g->verts, g->numVerts, g->indices, g->numIndicies, translation.x, translation.y, g->shader );
 	}
 
 	void ReleaseCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry )
@@ -242,7 +236,7 @@ public:
 
 	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source )
 	{
-		qhandle_t shaderHandle = re.RegisterShader( source.CString(), RSF_NOMIP );
+		qhandle_t shaderHandle = trap_R_RegisterShader( source.CString(), RSF_NOMIP );
 
 		if ( shaderHandle == -1 )
 		{
@@ -251,15 +245,15 @@ public:
 
 		// Find the size of the texture
 		textureHandle = ( Rocket::Core::TextureHandle ) shaderHandle;
-		re.GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
+		trap_R_GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
 		return true;
 	}
 
 	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions )
 	{
 
-		textureHandle = re.GenerateTexture(source, sourceDimensions.x, sourceDimensions.y );
-		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
+		textureHandle = trap_R_GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
+// 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
 
 		return ( textureHandle > 0 );
 	}
@@ -271,13 +265,13 @@ public:
 
 	void EnableScissorRegion( bool enable )
 	{
-		re.ScissorEnable( enable );
+		trap_R_ScissorEnable( enable );
 
 	}
 
 	void SetScissorRegion( int x, int y, int width, int height )
 	{
-		re.ScissorSet( x, cls.glconfig.vidHeight - ( y + height ), width, height );
+		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
 	}
 };
 
@@ -299,7 +293,8 @@ public:
 
 void Rocket_Rocket_f()
 {
-	Rocket_DocumentAction( Cmd_Argv(1), Cmd_Argv(2) );
+	std::string action = CG_Argv(1);
+	Rocket_DocumentAction( action.c_str(), CG_Argv(2) );
 }
 
 void Rocket_RocketDebug_f()
@@ -316,7 +311,7 @@ void Rocket_RocketDebug_f()
 
 	if ( Rocket::Debugger::IsVisible() )
 	{
-		if ( !Q_stricmp( Cmd_Argv( 1 ), "hud" ) )
+		if ( !Q_stricmp( CG_Argv( 1 ), "hud" ) )
 		{
 			Rocket::Debugger::SetContext( hudContext );
 		}
@@ -324,11 +319,11 @@ void Rocket_RocketDebug_f()
 		{
 			Rocket::Debugger::SetContext( menuContext );
 		}
-		Key_SetCatcher( Key_GetCatcher() | KEYCATCH_UI );
+		CG_SetKeyCatcher( trap_Key_GetCatcher() | KEYCATCH_UI );
 	}
 	else
 	{
-		Key_SetCatcher( Key_GetCatcher() & ~KEYCATCH_UI );
+		CG_SetKeyCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
 	}
 }
 
@@ -342,7 +337,8 @@ static RocketFocusManager fm;
 Rocket::Core::Context *menuContext = nullptr;
 Rocket::Core::Context *hudContext = nullptr;
 
-cvar_t *cg_draw2D;
+// TODO
+// cvar_t *cg_draw2D;
 
 void Rocket_Init()
 {
@@ -365,7 +361,7 @@ void Rocket_Init()
 	Rocket_InitKeys();
 
 	// Create the menu context
-	menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+	menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
 
 	// Add the listener so we know where to give mouse/keyboard control to
 	menuContext->GetRootElement()->AddEventListener( "show", &fm );
@@ -374,7 +370,7 @@ void Rocket_Init()
 	menuContext->GetRootElement()->AddEventListener( "load", &fm );
 
 	// Create the HUD context
-	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
 
 	// Add the event listener instancer
 	EventInstancer* event_instancer = new EventInstancer();
@@ -392,7 +388,6 @@ void Rocket_Init()
 	Rocket::Core::Factory::RegisterElementInstancer( "keybind", new Rocket::Core::ElementInstancerGeneric< RocketKeyBinder >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "misc_text", new Rocket::Core::ElementInstancerGeneric< RocketMiscText >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "select", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlSelect >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "if", new Rocket::Core::ElementInstancerGeneric< RocketConditionalElement >() )->RemoveReference();
@@ -400,11 +395,7 @@ void Rocket_Init()
 	Rocket::Core::Factory::RegisterElementInstancer( "include", new Rocket::Core::ElementInstancerGeneric< RocketIncludeElement > () )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "inlinecvar", new Rocket::Core::ElementInstancerGeneric< RocketCvarInlineElement > () )->RemoveReference();
 
-	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
-	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
-
-	cg_draw2D = Cvar_Get( "cg_draw2D", "1", 0 );
-	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
+	whiteShader = trap_R_RegisterShader( "white", RSF_DEFAULT );
 }
 
 void Rocket_Shutdown()
@@ -449,13 +440,13 @@ void Rocket_Shutdown()
 		eventQueue.pop();
 	}
 
-	Cmd_RemoveCommand( "rocket" );
-	Cmd_RemoveCommand( "rocketDebug" );
+	trap_RemoveCommand( "rocket" );
+	trap_RemoveCommand( "rocketDebug" );
 }
 
 void Rocket_Render()
 {
-	if ( hudContext && cg_draw2D->integer )
+	if ( cg_draw2D.integer && hudContext )
 	{
 		hudContext->Render();
 	}
@@ -627,7 +618,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 			// TODO: Dont hardcode the extension.
 			path =  va( "emoticons/%s.crn", emoticon.CString() );
-			if ( FS_FOpenFileRead( path, nullptr, true ) )
+			if ( CG_FileExists( path ) )
 			{
 				out.Erase( openBracket, closeBracket - openBracket + 1 );
 				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );

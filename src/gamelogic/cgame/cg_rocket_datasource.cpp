@@ -115,8 +115,8 @@ void CG_Rocket_BuildServerInfo()
 		static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
 		char name[ MAX_STRING_CHARS ];
 
-		trap_Rocket_DSClearTable( "server_browser", "serverInfo" );
-		trap_Rocket_DSClearTable( "server_browser", "serverPlayers" );
+		Rocket_DSClearTable( "server_browser", "serverInfo" );
+		Rocket_DSClearTable( "server_browser", "serverPlayers" );
 
 		p = serverInfoText;
 
@@ -128,7 +128,7 @@ void CG_Rocket_BuildServerInfo()
 			{
 				Info_SetValueForKey( buf, "cvar", key, false );
 				Info_SetValueForKey( buf, "value", value, false );
-				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+				Rocket_DSAddRow( "server_browser", "serverInfo", buf );
 				*buf = '\0';
 			}
 
@@ -159,12 +159,12 @@ void CG_Rocket_BuildServerInfo()
 		}
 
 		Q_strncpyz( name, start + 1, end - start );
-		start = end = nullptr;
+		start = end = NULL;
 		Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
 		Info_SetValueForKeyRocket( buf, "name", name, false );
 		Info_SetValueForKey( buf, "score", va( "%d", score ), false );
 		Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
-		trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
+		Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 
 		while ( *p )
 		{
@@ -188,12 +188,12 @@ void CG_Rocket_BuildServerInfo()
 				}
 
 				Q_strncpyz( name, start + 1, end - start );
-				start = end = nullptr;
+				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
 				Info_SetValueForKeyRocket( buf, "name", name, false );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), false );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
-				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
+				Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 			}
 
 			if ( value[ 0 ] )
@@ -214,12 +214,12 @@ void CG_Rocket_BuildServerInfo()
 				}
 
 				Q_strncpyz( name, start + 1, end - start );
-				start = end = nullptr;
+				start = end = NULL;
 				Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
 				Info_SetValueForKeyRocket( buf, "name", name, false );
 				Info_SetValueForKey( buf, "score", va( "%d", score ), false );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
-				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
+				Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 			}
 		}
 
@@ -250,7 +250,7 @@ void CG_Rocket_BuildServerList( const char *args )
 
 		rocketInfo.data.retrievingServers = true;
 
-		trap_Rocket_DSClearTable( "server_browser", args );
+		Rocket_DSClearTable( "server_browser", args );
 		CG_Rocket_CleanUpServerList( args );
 
 		trap_LAN_MarkServerVisible( netSrc, -1, true );
@@ -308,7 +308,7 @@ void CG_Rocket_BuildServerList( const char *args )
 			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
 			Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
 
-			trap_Rocket_DSAddRow( "server_browser", args, data );
+			Rocket_DSAddRow( "server_browser", args, data );
 
 			if ( rocketInfo.data.retrievingServers )
 			{
@@ -399,7 +399,7 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 		qsort( rocketInfo.data.servers[ netSrc ], rocketInfo.data.serverCount[ netSrc ], sizeof( server_t ), &ServerListCmpByMap );
 	}
 
-	trap_Rocket_DSClearTable( "server_browser", name );
+	Rocket_DSClearTable( "server_browser", name );
 
 	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
@@ -417,7 +417,7 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
 		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
 
-		trap_Rocket_DSAddRow( "server_browser", name, data );
+		Rocket_DSAddRow( "server_browser", name, data );
 	}
 }
 
@@ -449,7 +449,7 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 	int netSrc = CG_StringToNetSource( str );
 	int i;
 
-	trap_Rocket_DSClearTable( "server_browser", str );
+	Rocket_DSClearTable( "server_browser", str );
 
 	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
@@ -469,7 +469,7 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
 			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
 
-			trap_Rocket_DSAddRow( "server_browser", str, data );
+			Rocket_DSAddRow( "server_browser", str, data );
 		}
 	}
 }
@@ -547,7 +547,7 @@ void CG_Rocket_BuildResolutionList( const char *args )
 
 	buf[ 0 ] = '\0';
 
-	trap_Rocket_DSClearTable( "resolutions", "default" );
+	Rocket_DSClearTable( "resolutions", "default" );
 
 	for ( i = 0; i < rocketInfo.data.resolutionCount; ++i )
 	{
@@ -559,14 +559,14 @@ void CG_Rocket_BuildResolutionList( const char *args )
 		}
 		Info_SetValueForKey( buf, "width", va( "%d", w ), false );
 		Info_SetValueForKey( buf, "height", va( "%d", h ), false );
-		trap_Rocket_DSAddRow( "resolutions", "default", buf );
+		Rocket_DSAddRow( "resolutions", "default", buf );
 	}
 
 	if ( rocketInfo.data.resolutionIndex == -1 )
 	{
 		Info_SetValueForKey( buf, "width", va( "%d", -1 ), false );
 		Info_SetValueForKey( buf, "height", va( "%d", -1 ), false );
-		trap_Rocket_DSAddRow( "resolutions", "default", buf );
+		Rocket_DSAddRow( "resolutions", "default", buf );
 		rocketInfo.data.resolutionIndex = rocketInfo.data.resolutionCount;
 	}
 
@@ -596,14 +596,14 @@ void CG_Rocket_SortResolutionList( const char *name, const char *sortBy )
 		qsort( rocketInfo.data.resolutions, rocketInfo.data.resolutionCount, sizeof( resolution_t ), &ResolutionListCmpByWidth );
 	}
 
-	trap_Rocket_DSClearTable( "resolutions", "default" );
+	Rocket_DSClearTable( "resolutions", "default" );
 
 	for ( i = 0; i < rocketInfo.data.resolutionCount; ++i )
 	{
 		Info_SetValueForKey( buf, "width", va( "%d", rocketInfo.data.resolutions[ i ].width ), false );
 		Info_SetValueForKey( buf, "height", va( "%d", rocketInfo.data.resolutions[ i ].height ), false );
 
-		trap_Rocket_DSAddRow( "resolutions", "default", buf );
+		Rocket_DSAddRow( "resolutions", "default", buf );
 	}
 }
 
@@ -726,7 +726,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 		Info_SetValueForKey( buf, "name", rocketInfo.data.languages[ index ].name, false );
 		Info_SetValueForKey( buf, "lang", rocketInfo.data.languages[ index ].lang, false );
 
-		trap_Rocket_DSAddRow( "languages", "default", buf );
+		Rocket_DSAddRow( "languages", "default", buf );
 	}
 }
 
@@ -790,7 +790,7 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 	{
 		Info_SetValueForKey( buf, "name", rocketInfo.data.voipInputs[ inputs ], false );
 
-		trap_Rocket_DSAddRow( "voipInputs", "default", buf );
+		Rocket_DSAddRow( "voipInputs", "default", buf );
 	}
 }
 
@@ -853,7 +853,7 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 	{
 		Info_SetValueForKey( buf, "name", rocketInfo.data.alOutputs[ outputs ], false );
 
-		trap_Rocket_DSAddRow( "alOutputs", "default", buf );
+		Rocket_DSAddRow( "alOutputs", "default", buf );
 	}
 }
 
@@ -909,7 +909,7 @@ void CG_Rocket_BuildModList( const char *args )
 		Info_SetValueForKey( dirlist, "name", rocketInfo.data.modList[ i ].name, false );
 		Info_SetValueForKey( dirlist, "description", rocketInfo.data.modList[ i ].description, false );
 
-		trap_Rocket_DSAddRow( "modList", "default", dirlist );
+		Rocket_DSAddRow( "modList", "default", dirlist );
 	}
 }
 
@@ -978,7 +978,7 @@ void CG_Rocket_BuildDemoList( const char *args )
 	{
 		Info_SetValueForKey( demolist, "name", rocketInfo.data.demoList[ i ], false );
 
-		trap_Rocket_DSAddRow( "demoList", "default", demolist );
+		Rocket_DSAddRow( "demoList", "default", demolist );
 	}
 }
 
@@ -1010,9 +1010,9 @@ void CG_Rocket_BuildPlayerList( const char *args )
 	}
 
 	// Clear old values. Always build all three teams.
-	trap_Rocket_DSClearTable( "playerList", "spectators" );
-	trap_Rocket_DSClearTable( "playerList", "aliens" );
-	trap_Rocket_DSClearTable( "playerList", "humans" );
+	Rocket_DSClearTable( "playerList", "spectators" );
+	Rocket_DSClearTable( "playerList", "aliens" );
+	Rocket_DSClearTable( "playerList", "humans" );
 
 	for ( i = 0; i < cg.numScores; ++i )
 	{
@@ -1037,17 +1037,17 @@ void CG_Rocket_BuildPlayerList( const char *args )
 		{
 			case TEAM_ALIENS:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TEAM_ALIENS ]++ ] = i;
-				trap_Rocket_DSAddRow( "playerList", "aliens", buf );
+				Rocket_DSAddRow( "playerList", "aliens", buf );
 				break;
 
 			case TEAM_HUMANS:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerIndex[ TEAM_HUMANS ]++ ] = i;
-				trap_Rocket_DSAddRow( "playerList", "humans", buf );
+				Rocket_DSAddRow( "playerList", "humans", buf );
 				break;
 
 			case TEAM_NONE:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TEAM_NONE ]++ ] = i;
-				trap_Rocket_DSAddRow( "playerList", "spectators", buf );
+				Rocket_DSAddRow( "playerList", "spectators", buf );
 				break;
 		}
 	}
@@ -1091,9 +1091,9 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 	}
 
 	// Clear old values. Always build all three teams.
-	trap_Rocket_DSClearTable( "playerList", "spectators" );
-	trap_Rocket_DSClearTable( "playerList", "aliens" );
-	trap_Rocket_DSClearTable( "playerList", "humans" );
+	Rocket_DSClearTable( "playerList", "spectators" );
+	Rocket_DSClearTable( "playerList", "aliens" );
+	Rocket_DSClearTable( "playerList", "humans" );
 
 	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
 	{
@@ -1114,7 +1114,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
 
-		trap_Rocket_DSAddRow( "playerList", "spectators", buf );
+		Rocket_DSAddRow( "playerList", "spectators", buf );
 	}
 
 	for ( i = 0; i < rocketInfo.data.playerIndex[ TEAM_HUMANS ]; ++i )
@@ -1135,7 +1135,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
-		trap_Rocket_DSAddRow( "playerList", "humans", buf );
+		Rocket_DSAddRow( "playerList", "humans", buf );
 	}
 
 	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_ALIENS ]; ++i )
@@ -1157,7 +1157,7 @@ void CG_Rocket_SortPlayerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
 		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
 
-		trap_Rocket_DSAddRow( "playerList", "aliens", buf );
+		Rocket_DSAddRow( "playerList", "aliens", buf );
 	}
 }
 
@@ -1165,7 +1165,7 @@ void CG_Rocket_BuildMapList( const char *args )
 {
 	int i;
 
-	trap_Rocket_DSClearTable( "mapList", "default" );
+	Rocket_DSClearTable( "mapList", "default" );
 	trap_FS_LoadAllMapMetadata();
 	CG_LoadArenas();
 
@@ -1176,7 +1176,7 @@ void CG_Rocket_BuildMapList( const char *args )
 		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapName, false );
 		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName, false );
 
-		trap_Rocket_DSAddRow( "mapList", "default", buf );
+		Rocket_DSAddRow( "mapList", "default", buf );
 	}
 
 }
@@ -1237,11 +1237,11 @@ void CG_Rocket_BuildTeamList( const char *args )
 
 	int i = 0;
 
-	trap_Rocket_DSClearTable( "teamList", "default" );
+	Rocket_DSClearTable( "teamList", "default" );
 
 	while ( data[ i ] )
 	{
-		trap_Rocket_DSAddRow( "teamList", "default", data[ i++ ] );
+		Rocket_DSAddRow( "teamList", "default", data[ i++ ] );
 	}
 }
 
@@ -1276,7 +1276,7 @@ void CG_Rocket_ExecTeamList( const char *table )
 	if ( cmd )
 	{
 		trap_SendConsoleCommand( cmd );
-		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_TEAMSELECT ].id, "hide" );
+		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_TEAMSELECT ].id, "hide" );
 	}
 }
 
@@ -1298,7 +1298,7 @@ void AddHumanSpawnItem( weapon_t weapon )
 	Info_SetValueForKey( data, "name", BG_Weapon( weapon )->humanName, false );
 	Info_SetValueForKey( data, "description", BG_Weapon( weapon )->info, false );
 
-	trap_Rocket_DSAddRow( "humanSpawnItems", "default", data );
+	Rocket_DSAddRow( "humanSpawnItems", "default", data );
 }
 
 void CG_Rocket_BuildHumanSpawnItems( const char *table )
@@ -1308,7 +1308,7 @@ void CG_Rocket_BuildHumanSpawnItems( const char *table )
 		return;
 	}
 
-	trap_Rocket_DSClearTable( "humanSpawnItems", "default" );
+	Rocket_DSClearTable( "humanSpawnItems", "default" );
 	AddHumanSpawnItem( WP_MACHINEGUN );
 	AddHumanSpawnItem( WP_HBUILD );
 }
@@ -1336,7 +1336,7 @@ void CG_Rocket_ExecHumanSpawnItems( const char *table )
 	if ( cmd )
 	{
 		trap_SendConsoleCommand( cmd );
-		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_HUMANSPAWN ].id, "hide" );
+		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_HUMANSPAWN ].id, "hide" );
 	}
 }
 
@@ -1391,7 +1391,7 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), false );
 		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, false );
 
-		trap_Rocket_DSAddRow( "armouryBuyList", table, buf );
+		Rocket_DSAddRow( "armouryBuyList", table, buf );
 
 		rocketInfo.data.armouryBuyList[ tblIndex ][ rocketInfo.data.armouryBuyListCount[ tblIndex ]++ ] = i;
 	}
@@ -1417,7 +1417,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), false );
 		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, false );
 
-		trap_Rocket_DSAddRow( "armouryBuyList", table, buf );
+		Rocket_DSAddRow( "armouryBuyList", table, buf );
 
 		rocketInfo.data.armouryBuyList[ tblIndex ][ rocketInfo.data.armouryBuyListCount[ tblIndex ]++ ] = i + WP_NUM_WEAPONS;
 
@@ -1449,19 +1449,19 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 	if ( tblIndex == ROCKETDS_BOTH )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "default" );
-		trap_Rocket_DSClearTable( "armouryBuyList", "default" );
+		Rocket_DSClearTable( "armouryBuyList", "default" );
 	}
 
 	if ( tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_WEAPONS )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "weapons" );
-		trap_Rocket_DSClearTable( "armouryBuyList", "weapons" );
+		Rocket_DSClearTable( "armouryBuyList", "weapons" );
 	}
 
 	if ( tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_UPGRADES )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "upgrades" );
-		trap_Rocket_DSClearTable( "armouryBuyList", "upgrades" );
+		Rocket_DSClearTable( "armouryBuyList", "upgrades" );
 	}
 
 
@@ -1594,7 +1594,7 @@ void CG_Rocket_BuildArmourySellList( const char *table )
 	{
 		int i;
 
-		trap_Rocket_DSClearTable( "armourySellList", "default" );
+		Rocket_DSClearTable( "armourySellList", "default" );
 		CG_Rocket_CleanUpArmourySellList( "default" );
 
 		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; ++i )
@@ -1607,7 +1607,7 @@ void CG_Rocket_BuildArmourySellList( const char *table )
 
 				Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, false );
 
-				trap_Rocket_DSAddRow( "armourySellList", "default", buf );
+				Rocket_DSAddRow( "armourySellList", "default", buf );
 			}
 		}
 
@@ -1621,7 +1621,7 @@ void CG_Rocket_BuildArmourySellList( const char *table )
 
 				Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, false );
 
-				trap_Rocket_DSAddRow( "armourySellList", "default", buf );
+				Rocket_DSAddRow( "armourySellList", "default", buf );
 			}
 		}
 	}
@@ -1691,7 +1691,7 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 	{
 		int i;
 
-		trap_Rocket_DSClearTable( "alienEvolveList", "default" );
+		Rocket_DSClearTable( "alienEvolveList", "default" );
 		CG_Rocket_CleanUpAlienEvolveList( "default" );
 
 		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
@@ -1705,7 +1705,7 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 				Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
 				Info_SetValueForKey( buf, "price", va( "%d", BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) / CREDITS_PER_EVO ), false );
 
-				trap_Rocket_DSAddRow( "alienEvolveList", "default", buf );
+				Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
 				rocketInfo.data.alienEvolveList[ rocketInfo.data.alienEvolveListCount++ ] = i;
 			}
@@ -1725,7 +1725,7 @@ void CG_Rocket_ExecAlienEvolveList( const char *table )
 	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) >= 0 )
 	{
 		trap_SendClientCommand( va( "class %s", BG_Class( evo )->name ) );
-		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id, "hide" );
+		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id, "hide" );
 	}
 }
 
@@ -1748,7 +1748,7 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 	{
 		int i;
 
-		trap_Rocket_DSClearTable( "humanBuildList", "default" );
+		Rocket_DSClearTable( "humanBuildList", "default" );
 		CG_Rocket_CleanUpHumanBuildList( "default" );
 
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
@@ -1762,7 +1762,7 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
 				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
 
-				trap_Rocket_DSAddRow( "humanBuildList", "default", buf );
+				Rocket_DSAddRow( "humanBuildList", "default", buf );
 
 				rocketInfo.data.humanBuildList[ rocketInfo.data.humanBuildListCount++ ] = i;
 			}
@@ -1782,7 +1782,7 @@ void CG_Rocket_ExecHumanBuildList( const char *table )
 	if ( BG_Buildable( build ) )
 	{
 		trap_SendClientCommand( va( "build %s", BG_Buildable( build )->name ) );
-		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id, "hide" );
+		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id, "hide" );
 	}
 }
 
@@ -1805,7 +1805,7 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 	{
 		int i;
 
-		trap_Rocket_DSClearTable( "alienBuildList", "default" );
+		Rocket_DSClearTable( "alienBuildList", "default" );
 		CG_Rocket_CleanUpAlienBuildList( "default" );
 
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
@@ -1819,7 +1819,7 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
 				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
 
-				trap_Rocket_DSAddRow( "alienBuildList", "default", buf );
+				Rocket_DSAddRow( "alienBuildList", "default", buf );
 
 				rocketInfo.data.alienBuildList[ rocketInfo.data.alienBuildListCount++ ] = i;
 			}
@@ -1839,7 +1839,7 @@ void CG_Rocket_ExecAlienBuildList( const char *table )
 	if ( BG_Buildable( build ) )
 	{
 		trap_SendClientCommand( va( "build %s", BG_Buildable( build )->name ) );
-		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id, "hide" );
+		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id, "hide" );
 	}
 }
 
@@ -1856,7 +1856,7 @@ void AddAlienSpawnClass( class_t _class )
 	Info_SetValueForKey( data, "name", BG_ClassModelConfig( _class )->humanName, false );
 	Info_SetValueForKey( data, "description", BG_Class( _class )->info, false );
 
-	trap_Rocket_DSAddRow( "alienSpawnClass", "default", data );
+	Rocket_DSAddRow( "alienSpawnClass", "default", data );
 }
 
 void CG_Rocket_BuildAlienSpawnList( const char *table )
@@ -1868,7 +1868,7 @@ void CG_Rocket_BuildAlienSpawnList( const char *table )
 
 	if ( !Q_stricmp( table, "default" ) )
 
-		trap_Rocket_DSClearTable( "alienSpawnClass", "default" );
+		Rocket_DSClearTable( "alienSpawnClass", "default" );
 
 	{
 		AddAlienSpawnClass( PCL_ALIEN_LEVEL0 );
@@ -1913,7 +1913,7 @@ void CG_Rocket_ExecAlienSpawnList( const char *table )
 	if ( _class )
 	{
 		trap_SendClientCommand( va( "class %s", _class ) );
-		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENSPAWN ].id, "hide" );
+		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENSPAWN ].id, "hide" );
 	}
 }
 
@@ -1940,7 +1940,7 @@ void CG_Rocket_BuildBeaconList( const char *table )
 		int i;
 		const beaconAttributes_t *ba;
 
-		trap_Rocket_DSClearTable( "beaconList", "default" );
+		Rocket_DSClearTable( "beaconList", "default" );
 		CG_Rocket_CleanUpBeaconList( "default" );
 
 		for ( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
@@ -1956,7 +1956,7 @@ void CG_Rocket_BuildBeaconList( const char *table )
 			Info_SetValueForKey( buf, "name", ba->humanName, false );
 			Info_SetValueForKey( buf, "desc", ba->desc, false );
 
-			trap_Rocket_DSAddRow( "beaconList", "default", buf );
+			Rocket_DSAddRow( "beaconList", "default", buf );
 
 			rocketInfo.data.beaconList[ rocketInfo.data.beaconListCount++ ] = i;
 		}
@@ -1978,7 +1978,7 @@ void CG_Rocket_ExecBeaconList( const char *table )
 		return;
 
 	trap_SendClientCommand( va( "beacon %s", ba->name ) );
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "hide" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "hide" );
 }
 
 static void nullSortFunc( const char *name, const char *sortBy )
@@ -2134,7 +2134,7 @@ void CG_Rocket_RegisterDataSources()
 			CG_Printf( "CGame dataSourceCmdList is in the wrong order for %s and %s\n", dataSourceCmdList[i - 1].name, dataSourceCmdList[ i ].name );
 		}
 
-		trap_Rocket_RegisterDataSource( dataSourceCmdList[ i ].name );
+		Rocket_RegisterDataSource( dataSourceCmdList[ i ].name );
 	}
 }
 

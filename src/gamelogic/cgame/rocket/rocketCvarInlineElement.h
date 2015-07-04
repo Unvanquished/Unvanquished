@@ -35,8 +35,8 @@ Maryland 20850 USA.
 #ifndef ROCKETCVARINLINEELEMENT_H
 #define ROCKETCVARINLINEELEMENT_H
 
-#include "framework/CvarSystem.h"
 #include <Rocket/Core/Core.h>
+#include "../cg_local.h"
 
 class RocketCvarInlineElement : public Rocket::Core::Element
 {
@@ -83,19 +83,19 @@ public:
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar_VariableString( cvar.CString() ) ) )
+		if ( dirty_value || ( !cvar.Empty() && cvar_value.CString() != Cvar::GetValue( cvar.CString() ) ) )
 		{
-			Rocket::Core::String value = cvar_value = Cvar_VariableString( cvar.CString() );
+			Rocket::Core::String value = cvar_value = Cvar::GetValue( cvar.CString() ).c_str();
 
 			if (!format.Empty())
 			{
 				if (type == NUMBER)
 				{
-					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar_VariableValue(cvar.CString()));
+					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), atof( Cvar::GetValue( cvar.CString() ).c_str() ) );
 				}
 				else
 				{
-					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar_VariableString(cvar.CString()));
+					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar::GetValue(cvar.CString()).c_str());
 				}
 			}
 

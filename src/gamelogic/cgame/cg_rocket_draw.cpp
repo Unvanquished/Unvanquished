@@ -33,22 +33,28 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
+#include "rocket/rocket.h"
+#include <Rocket/Core/Element.h>
+#include <Rocket/Core/ElementInstancer.h>
+#include <Rocket/Core/ElementInstancerGeneric.h>
+#include <Rocket/Core/Factory.h>
+#include <Rocket/Core/ElementText.h>
 
 static void CG_GetRocketElementColor( vec4_t color )
 {
-	trap_Rocket_GetProperty( "color", color, sizeof( vec4_t ), ROCKET_COLOR );
+	Rocket_GetProperty( "color", color, sizeof( vec4_t ), ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementBGColor( vec4_t bgColor )
 {
-	trap_Rocket_GetProperty( "background-color", bgColor, sizeof( vec4_t ), ROCKET_COLOR );
+	Rocket_GetProperty( "background-color", bgColor, sizeof( vec4_t ), ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementRect( rectDef_t *rect )
 {
-	trap_Rocket_GetElementAbsoluteOffset( &rect->x, &rect->y );
-	trap_Rocket_GetProperty( "width", &rect->w, sizeof( rect->w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &rect->h, sizeof( rect->h ), ROCKET_FLOAT );
+	Rocket_GetElementAbsoluteOffset( &rect->x, &rect->y );
+	Rocket_GetProperty( "width", &rect->w, sizeof( rect->w ), ROCKET_FLOAT );
+	Rocket_GetProperty( "height", &rect->h, sizeof( rect->h ), ROCKET_FLOAT );
 
 	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
 	rect->x = ( rect->x / cgs.glconfig.vidWidth ) * 640;
@@ -57,198 +63,438 @@ static void CG_GetRocketElementRect( rectDef_t *rect )
 	rect->h = ( rect->h / cgs.glconfig.vidHeight ) * 480;
 }
 
-static void CG_Rocket_DrawAmmo()
+class HudElement : public Rocket::Core::Element
 {
-	int      value;
-	int      valueMarked = -1;
-	int      maxAmmo;
-	weapon_t weapon;
-	bool bp = false;
+public:
+	HudElement(const Rocket::Core::String& tag, rocketElementType_t type_, bool replacedElement) :
+			Rocket::Core::Element(tag),
+			type(type_),
+			isReplacedElement(replacedElement) {}
 
-	switch ( weapon = BG_PrimaryWeapon( cg.snap->ps.stats ) )
+	HudElement( const Rocket::Core::String& tag, rocketElementType_t type_ ) :
+			HudElement(tag, type_, false) {}
+
+	void OnUpdate()
 	{
-		case WP_NONE:
-		case WP_BLASTER:
-			trap_Rocket_SetInnerRML( "", 0 );
-			return;
+		Rocket::Core::Element::OnUpdate();
+		if (CG_Rocket_IsCommandAllowed(type))
+		{
+			DoOnUpdate();
+		}
+	}
 
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_HBUILD:
-			value = cg.snap->ps.persistant[ PERS_BP ];
-			valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
-			bp = true;
-			break;
+	void OnRender()
+	{
+		if (CG_Rocket_IsCommandAllowed(type))
+		{
+			DoOnRender();
+			Rocket::Core::Element::OnRender();
+		}
+	}
 
-		default:
-			if ( !Q_stricmp( "total", CG_Rocket_GetAttribute( "type" ) ) )
+	virtual void DoOnRender() {}
+	virtual void DoOnUpdate() {}
+
+	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
+	{
+		if ( !isReplacedElement )
+		{
+			return false;
+		}
+
+		const Rocket::Core::Property *property;
+		property = GetProperty( "width" );
+
+		// Absolute unit. We can use it as is
+		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		{
+			dimensions.x = property->value.Get<float>();
+		}
+		else
+		{
+			float base_size = 0;
+			Rocket::Core::Element *parent = this;
+			std::stack<Rocket::Core::Element*> stack;
+			stack.push( this );
+
+			while ( ( parent = parent->GetParentNode() ) )
 			{
-				maxAmmo = BG_Weapon( weapon )->maxAmmo;
-				value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
+				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
+				{
+					dimensions.x = base_size;
+					while ( !stack.empty() )
+					{
+						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+
+						stack.pop();
+					}
+					break;
+				}
+
+				stack.push( parent );
+			}
+		}
+
+		property = GetProperty( "height" );
+		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		{
+			dimensions.y = property->value.Get<float>();
+		}
+		else
+		{
+			float base_size = 0;
+			Rocket::Core::Element *parent = this;
+			std::stack<Rocket::Core::Element*> stack;
+			stack.push( this );
+
+			while ( ( parent = parent->GetParentNode() ) )
+			{
+				if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
+				{
+					dimensions.y = base_size;
+					while ( !stack.empty() )
+					{
+						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
+
+						stack.pop();
+					}
+					break;
+				}
+
+				stack.push( parent );
+			}
+		}
+
+		// Return the calculated dimensions. If this changes the size of the element, it will result in
+		// a 'resize' event which is caught below and will regenerate the geometry.
+
+		dimension = dimensions;
+
+		return true;
+	}
+
+	void GetElementRect( rectDef_t& rect )
+	{
+		auto offset = GetAbsoluteOffset();
+		rect.x = offset.x;
+		rect.y = offset.y;
+		rect.w = dimensions.x;
+		rect.h = dimensions.y;
+
+		// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+		rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
+		rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
+		rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
+		rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
+	}
+
+protected:
+	Rocket::Core::Vector2f dimensions;
+
+private:
+	rocketElementType_t type;
+	bool isReplacedElement;
+};
+
+class TextHudElement : public HudElement
+{
+public:
+	TextHudElement( const Rocket::Core::String& tag, rocketElementType_t type ) :
+		HudElement( tag, type )
+	{
+		textElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+				this,
+				"#text",
+				"#text",
+				Rocket::Core::XMLAttributes() ) );
+		AppendChild( textElement );
+	}
+
+	void SetText(const Rocket::Core::String& text )
+	{
+		textElement->SetText( text );
+	}
+
+private:
+	Rocket::Core::ElementText* textElement;
+
+};
+
+class AmmoHudElement : public TextHudElement
+{
+public:
+	AmmoHudElement( const Rocket::Core::String& tag ) :
+			TextHudElement( tag, ELEMENT_BOTH ),
+			showTotalAmmo( false ),
+			value( 0 ),
+			valueMarked( 0 ) {}
+
+	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	{
+		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
+		{
+			const Rocket::Core::String& type = GetAttribute<Rocket::Core::String>( "type", "" );
+			showTotalAmmo = type == "total";
+		}
+	}
+
+	void DoOnRender()
+	{
+		bool bp = false;
+		weapon_t weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+		switch ( weapon )
+		{
+			case WP_NONE:
+			case WP_BLASTER:
+				return;
+
+			case WP_ABUILD:
+			case WP_ABUILD2:
+			case WP_HBUILD:
+				if ( cg.snap->ps.persistant[ PERS_BP ] == value &&
+					cg.snap->ps.persistant[ PERS_MARKEDBP ] == valueMarked )
+				{
+					return;
+				}
+				value = cg.snap->ps.persistant[ PERS_BP ];
+				valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+				bp = true;
+				break;
+
+			default:
+				if ( showTotalAmmo )
+				{
+					int maxAmmo = BG_Weapon( weapon )->maxAmmo;
+					if ( value == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
+					{
+						return;
+					}
+					value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
+				}
+				else
+				{
+					if ( value == cg.snap->ps.ammo )
+					{
+						return;
+					}
+					value = cg.snap->ps.ammo;
+				}
+
+				break;
+		}
+
+		if ( value > 999 )
+		{
+			value = 999;
+		}
+
+		if ( valueMarked > 999 )
+		{
+			valueMarked = 999;
+		}
+
+		if ( !bp )
+		{
+			SetText( va( "%d", value ) );
+		}
+		else if ( valueMarked > 0 )
+		{
+			SetText( va( "%d+%d", value, valueMarked ) );
+		}
+		else
+		{
+			SetText( va( "%d", value ) );
+		}
+	}
+
+private:
+    bool showTotalAmmo;
+	int value;
+	int valueMarked;
+};
+
+
+class ClipsHudElement : public TextHudElement
+{
+public:
+	ClipsHudElement( const Rocket::Core::String& tag ) :
+		TextHudElement( tag, ELEMENT_HUMANS ),
+		clips( 0 ) {}
+
+	virtual void DoOnRender()
+	{
+		int           value;
+		playerState_t *ps = &cg.snap->ps;
+
+		switch ( BG_PrimaryWeapon( ps->stats ) )
+		{
+			case WP_NONE:
+			case WP_BLASTER:
+			case WP_ABUILD:
+			case WP_ABUILD2:
+			case WP_HBUILD:
+				if ( clips != -1 )
+				{
+					SetText( "" );
+				}
+				clips = -1;
+				return;
+
+			default:
+				value = ps->clips;
+
+				if ( value > -1 && value != clips )
+				{
+					SetText( va( "%d", value ) );
+					clips = value;
+				}
+
+				break;
+		}
+	}
+
+private:
+	int clips;
+};
+
+
+static const int FPS_FRAMES = 20;
+
+class FpsHudElement : public TextHudElement
+{
+public:
+	FpsHudElement( const Rocket::Core::String& tag )
+			: TextHudElement( tag, ELEMENT_ALL ),
+			  shouldShowFps( true ),
+			  index(0),
+			  previous(0) {}
+
+	void DoOnRender()
+	{
+		int        i, total;
+		int        fps;
+		int        t, frameTime;
+
+		if ( !cg_drawFPS.integer && shouldShowFps )
+		{
+			shouldShowFps = false;
+			SetText( "" );
+			return;
+		} else if ( !shouldShowFps )
+		{
+			shouldShowFps = true;
+		}
+
+		// don't use serverTime, because that will be drifting to
+		// correct for Internet lag changes, timescales, timedemos, etc.
+		t = trap_Milliseconds();
+		frameTime = t - previous;
+		previous = t;
+
+		previousTimes[ index % FPS_FRAMES ] = frameTime;
+		index++;
+
+		if ( index > FPS_FRAMES )
+		{
+			// average multiple frames together to smooth changes out a bit
+			total = 0;
+
+			for ( i = 0; i < FPS_FRAMES; i++ )
+			{
+				total += previousTimes[ i ];
+			}
+
+			if ( !total )
+			{
+				total = 1;
+			}
+
+			fps = 1000 * FPS_FRAMES / total;
+		}
+
+		else
+			fps = 0;
+
+		SetText( va( "%d", fps ) );
+	}
+private:
+	bool shouldShowFps;
+	int previousTimes[ FPS_FRAMES ];
+	int index;
+	int previous;
+
+};
+
+#define CROSSHAIR_INDICATOR_HITFADE 500
+
+class CrosshairIndicatorHudElement : public HudElement
+{
+public:
+	CrosshairIndicatorHudElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_BOTH, true ) {}
+
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	{
+		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		{
+			Rocket::Core::Colourb c = GetProperty<Rocket::Core::Colourb>( "color" );
+			color[0] = c.red, color[1] = c.green, color[2] = c.blue, color[3] = c.alpha;
+			Vector4Scale( color, 1 / 255.0f, color);
+		}
+	}
+
+	void DoOnRender()
+	{
+		rectDef_t    rect;
+		float        x, y, w, h, dim;
+		qhandle_t    indicator;
+		vec4_t       drawColor, baseColor;
+		weapon_t     weapon;
+		weaponInfo_t *wi;
+		bool     onRelevantEntity;
+
+		if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
+			cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
+			cg.snap->ps.pm_type == PM_INTERMISSION ||
+			cg.renderingThirdPerson )
+		{
+			return;
+		}
+
+		weapon = BG_GetPlayerWeapon( &cg.snap->ps );
+		wi = &cg_weapons[ weapon ];
+		indicator = wi->crossHairIndicator;
+
+		if ( !indicator )
+		{
+			return;
+		}
+
+		GetElementRect( rect );
+
+		// set base color (friend/foe detection)
+		if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
+			( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
+		{
+			if ( cg.crosshairFoe )
+			{
+				Vector4Copy( colorRed, baseColor );
+				baseColor[ 3 ] = color[ 3 ] * 0.75f;
+				onRelevantEntity = true;
+			}
+
+			else if ( cg.crosshairFriend )
+			{
+				Vector4Copy( colorGreen, baseColor );
+				baseColor[ 3 ] = color[ 3 ] * 0.75f;
+				onRelevantEntity = true;
 			}
 
 			else
 			{
-				value = cg.snap->ps.ammo;
+				Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
+				onRelevantEntity = false;
 			}
-
-			break;
-	}
-
-	if ( value > 999 )
-	{
-		value = 999;
-	}
-
-	if ( valueMarked > 999 )
-	{
-		valueMarked = 999;
-	}
-
-	if ( !bp )
-	{
-		trap_Rocket_SetInnerRML( va( "%d", value ), 0 );
-	}
-
-	else if ( valueMarked > 0 )
-	{
-		trap_Rocket_SetInnerRML( va( "%d+%d", value, valueMarked ), 0 );
-	}
-
-	else
-	{
-		trap_Rocket_SetInnerRML( va( "%d", value ), 0 );
-	}
-}
-
-static void CG_Rocket_DrawClips()
-{
-	int           value;
-	playerState_t *ps = &cg.snap->ps;
-
-	switch ( BG_PrimaryWeapon( ps->stats ) )
-	{
-		case WP_NONE:
-		case WP_BLASTER:
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_HBUILD:
-			trap_Rocket_SetInnerRML( "", 0 );
-			return;
-
-		default:
-			value = ps->clips;
-
-			if ( value > -1 )
-			{
-				trap_Rocket_SetInnerRML( va( "%d", value ), 0 );
-			}
-
-			break;
-	}
-}
-
-
-#define FPS_FRAMES 20
-#define FPS_STRING "fps"
-static void CG_Rocket_DrawFPS()
-{
-	const char *s = "";
-	static int previousTimes[ FPS_FRAMES ];
-	static int index;
-	int        i, total;
-	int        fps;
-	static int previous;
-	int        t, frameTime;
-
-	if ( !cg_drawFPS.integer )
-	{
-		trap_Rocket_SetInnerRML( s, 0 );
-		return;
-	}
-
-	// don't use serverTime, because that will be drifting to
-	// correct for Internet lag changes, timescales, timedemos, etc.
-	t = trap_Milliseconds();
-	frameTime = t - previous;
-	previous = t;
-
-	previousTimes[ index % FPS_FRAMES ] = frameTime;
-	index++;
-
-	if ( index > FPS_FRAMES )
-	{
-		// average multiple frames together to smooth changes out a bit
-		total = 0;
-
-		for ( i = 0; i < FPS_FRAMES; i++ )
-		{
-			total += previousTimes[ i ];
-		}
-
-		if ( !total )
-		{
-			total = 1;
-		}
-
-		fps = 1000 * FPS_FRAMES / total;
-	}
-
-	else
-		fps = 0;
-
-	s = va( "%d", fps );
-	trap_Rocket_SetInnerRML( s, 0 );
-}
-
-#define CROSSHAIR_INDICATOR_HITFADE 500
-
-static void CG_Rocket_DrawCrosshairIndicator()
-{
-	rectDef_t    rect;
-	float        x, y, w, h, dim;
-	qhandle_t    indicator;
-	vec4_t       color, drawColor, baseColor;
-	weapon_t     weapon;
-	weaponInfo_t *wi;
-	bool     onRelevantEntity;
-
-	if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
-			cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
-			cg.snap->ps.pm_type == PM_INTERMISSION ||
-			cg.renderingThirdPerson )
-	{
-		return;
-	}
-
-	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
-	wi = &cg_weapons[ weapon ];
-	indicator = wi->crossHairIndicator;
-
-	if ( !indicator )
-	{
-		return;
-	}
-
-	CG_GetRocketElementColor( color );
-	CG_GetRocketElementRect( &rect );
-
-	// set base color (friend/foe detection)
-	if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
-			( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
-	{
-		if ( cg.crosshairFoe )
-		{
-			Vector4Copy( colorRed, baseColor );
-			baseColor[ 3 ] = color[ 3 ] * 0.75f;
-			onRelevantEntity = true;
-		}
-
-		else if ( cg.crosshairFriend )
-		{
-			Vector4Copy( colorGreen, baseColor );
-			baseColor[ 3 ] = color[ 3 ] * 0.75f;
-			onRelevantEntity = true;
 		}
 
 		else
@@ -256,45 +502,42 @@ static void CG_Rocket_DrawCrosshairIndicator()
 			Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
 			onRelevantEntity = false;
 		}
+
+		// add hit color
+		if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
+		{
+			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
+
+			Vector4Lerp( dim, baseColor, colorWhite, drawColor );
+		}
+
+		else if ( !onRelevantEntity )
+		{
+			return;
+		}
+
+		else
+		{
+			Vector4Copy( baseColor, drawColor );
+		}
+
+		// set size
+		w = h = wi->crossHairSize * cg_crosshairSize.value;
+		w *= cgs.aspectScale;
+
+		x = rect.x + ( rect.w / 2 ) - ( w / 2 );
+		y = rect.y + ( rect.h / 2 ) - ( h / 2 );
+
+		// draw
+		trap_R_SetColor( drawColor );
+		CG_DrawPic( x, y, w, h, indicator );
+		trap_R_SetColor( nullptr );
 	}
+private:
+	vec4_t color;
 
-	else
-	{
-		Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
-		onRelevantEntity = false;
-	}
 
-	// add hit color
-	if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
-	{
-		dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
-
-		Vector4Lerp( dim, baseColor, colorWhite, drawColor );
-	}
-
-	else if ( !onRelevantEntity )
-	{
-		return;
-	}
-
-	else
-	{
-		Vector4Copy( baseColor, drawColor );
-	}
-
-	// set size
-	w = h = wi->crossHairSize * cg_crosshairSize.value;
-	w *= cgs.aspectScale;
-
-	// HACK: This ignores the width/height of the rect (does it?)
-	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
-	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
-
-	// draw
-	trap_R_SetColor( drawColor );
-	CG_DrawPic( x, y, w, h, indicator );
-	trap_R_SetColor( nullptr );
-}
+};
 
 static void CG_Rocket_DrawCrosshair()
 {
@@ -476,7 +719,7 @@ static void CG_Rocket_DrawSpeedGraph()
 
 	if ( !cg_drawSpeed.integer )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -549,7 +792,7 @@ static void CG_Rocket_DrawSpeedGraph()
 			val = speedSamples[( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
 		}
 
-		trap_Rocket_SetInnerRML( va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ), 0 );
+		Rocket_SetInnerRML( va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ), 0 );
 	}
 }
 
@@ -558,7 +801,7 @@ static void CG_Rocket_DrawCreditsValue()
 	playerState_t *ps = &cg.snap->ps;
 	int value = ps->persistant[ PERS_CREDIT ];;
 
-	trap_Rocket_SetInnerRML( va( "%d", value ), 0 );
+	Rocket_SetInnerRML( va( "%d", value ), 0 );
 }
 
 static void CG_Rocket_DrawAlienEvosValue()
@@ -568,7 +811,7 @@ static void CG_Rocket_DrawAlienEvosValue()
 
 	value /= ( float ) CREDITS_PER_EVO;
 
-	trap_Rocket_SetInnerRML( va( "%1.1f", value ), 0 );
+	Rocket_SetInnerRML( va( "%1.1f", value ), 0 );
 }
 
 static void CG_Rocket_DrawStaminaValue()
@@ -577,7 +820,7 @@ static void CG_Rocket_DrawStaminaValue()
 	float         stamina = ps->stats[ STAT_STAMINA ];
 	int           percent = 100 * ( stamina / ( float ) STAMINA_MAX );
 
-	trap_Rocket_SetInnerRML( va( "%d", percent ), 0 );
+	Rocket_SetInnerRML( va( "%d", percent ), 0 );
 }
 
 static void CG_Rocket_DrawWeaponIcon()
@@ -593,7 +836,7 @@ static void CG_Rocket_DrawWeaponIcon()
 	// don't display if dead
 	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -606,7 +849,7 @@ static void CG_Rocket_DrawWeaponIcon()
 	{
 		Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
 					"is not registered\n", weapon, BG_Weapon( weapon )->name );
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -615,14 +858,14 @@ static void CG_Rocket_DrawWeaponIcon()
 		rmlClass = "no_ammo";
 	}
 
-	trap_Rocket_SetInnerRML( va( "<img class='weapon_icon%s%s' src='/%s' />", rmlClass ? " " : "", rmlClass, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ), 0 );
+	Rocket_SetInnerRML( va( "<img class='weapon_icon%s%s' src='/%s' />", rmlClass ? " " : "", rmlClass, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ), 0 );
 }
 
 static void CG_Rocket_DrawPlayerWallclimbing()
 {
 	bool wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
-	trap_Rocket_SetClass( "active", wallwalking );
-	trap_Rocket_SetClass( "inactive", !wallwalking );
+	Rocket_SetClass( "active", wallwalking );
+	Rocket_SetClass( "inactive", !wallwalking );
 }
 
 static void CG_Rocket_DrawUsableBuildable()
@@ -647,18 +890,18 @@ static void CG_Rocket_DrawUsableBuildable()
 				  BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
 		{
 			cg.nearUsableBuildable = BA_NONE;
-			trap_Rocket_SetInnerRML( "", 0 );
+			Rocket_SetInnerRML( "", 0 );
 			return;
 		}
 
-		trap_Rocket_SetInnerRML( va( "<img class='usable_buildable' src='%s' />", CG_Rocket_GetAttribute( "src" ) ), 0 );
+		Rocket_SetInnerRML( va( "<img class='usable_buildable' src='%s' />", CG_Rocket_GetAttribute( "src" ) ), 0 );
 		cg.nearUsableBuildable = es->modelindex;
 	}
 
 	else
 	{
 		// Clear the old image if there was one.
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		cg.nearUsableBuildable = BA_NONE;
 	}
 }
@@ -670,7 +913,7 @@ static void CG_Rocket_DrawLocation()
 
 	if ( cg.intermissionStarted )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -686,7 +929,7 @@ static void CG_Rocket_DrawLocation()
 		location = CG_ConfigString( CS_LOCATIONS );
 	}
 
-	trap_Rocket_SetInnerRML( location, RP_QUAKE );
+	Rocket_SetInnerRML( location, RP_QUAKE );
 }
 
 static void CG_Rocket_DrawTimer()
@@ -696,7 +939,7 @@ static void CG_Rocket_DrawTimer()
 
 	if ( !cg_drawTimer.integer )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -708,7 +951,7 @@ static void CG_Rocket_DrawTimer()
 	tens = seconds / 10;
 	seconds -= tens * 10;
 
-	trap_Rocket_SetInnerRML( va( "%d:%d%d", mins, tens, seconds ), 0 );
+	Rocket_SetInnerRML( va( "%d:%d%d", mins, tens, seconds ), 0 );
 }
 
 #define LAG_SAMPLES 128
@@ -843,19 +1086,19 @@ static void CG_Rocket_DrawLagometer()
 
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	if ( !cg_lagometer.integer )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	if ( cg.demoPlayback )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -989,7 +1232,7 @@ static void CG_Rocket_DrawLagometer()
 		ping = va( "%d", cg.ping );
 	}
 
-	trap_Rocket_SetInnerRML( va( "<span class='ping'>%s</span>", ping ), 0 );
+	Rocket_SetInnerRML( va( "<span class='ping'>%s</span>", ping ), 0 );
 	CG_Rocket_DrawDisconnect();
 }
 
@@ -1095,17 +1338,17 @@ static void CG_Rocket_DrawCrosshairNames()
 	float alpha;
 	char  *name;
 
-	trap_Rocket_SetInnerRML( "&nbsp;", 0 );
+	Rocket_SetInnerRML( "&nbsp;", 0 );
 
 	if ( !cg_drawCrosshairNames.integer )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	if ( cg.renderingThirdPerson )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1122,11 +1365,11 @@ static void CG_Rocket_DrawCrosshairNames()
 
 	else if ( !alpha )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
-	trap_Rocket_SetProperty( "opacity", va( "%f", alpha ) );
+	Rocket_SetPropertyById( "", "opacity", va( "%f", alpha ) );
 
 	if ( cg_drawEntityInfo.integer )
 	{
@@ -1155,7 +1398,7 @@ static void CG_Rocket_DrawCrosshairNames()
 				   cgs.clientinfo[ cg.crosshairClientNum ].health );
 	}
 
-	trap_Rocket_SetInnerRML( va( "%s", name ), RP_EMOTICONS );
+	Rocket_SetInnerRML( va( "%s", name ), RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawMomentum()
@@ -1166,7 +1409,7 @@ static void CG_Rocket_DrawMomentum()
 
 	if ( cg.intermissionStarted )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1174,7 +1417,7 @@ static void CG_Rocket_DrawMomentum()
 
 	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1182,7 +1425,7 @@ static void CG_Rocket_DrawMomentum()
 
 	Com_sprintf( s, MAX_TOKEN_CHARS, _( "%.1f momentum" ), momentum );
 
-	trap_Rocket_SetInnerRML( va( "%s", s ), 0 );
+	Rocket_SetInnerRML( va( "%s", s ), 0 );
 
 }
 
@@ -1193,14 +1436,14 @@ static void CG_Rocket_DrawLevelshot()
 		return;
 	}
 
-	trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName, rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName ), 0 );
+	Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName, rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName ), 0 );
 }
 
 static void CG_Rocket_DrawMapLoadingLevelshot()
 {
 	if ( rocketInfo.cstate.connState >= CA_LOADING )
 	{
-		trap_Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ), Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), 0 );
+		Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ), Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), 0 );
 	}
 }
 
@@ -1216,41 +1459,41 @@ void CG_Rocket_DrawCenterPrint()
 	if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
 	{
 		*cg.centerPrint = '\0';
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	if ( cg.time == cg.centerPrintTime )
 	{
-		trap_Rocket_SetInnerRML( cg.centerPrint, RP_EMOTICONS );
+		Rocket_SetInnerRML( cg.centerPrint, RP_EMOTICONS );
 	}
 
-	trap_Rocket_SetProperty( "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
+	Rocket_SetPropertyById( "", "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
 }
 
 
 void CG_Rocket_DrawBeaconAge()
 {
-	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.ageAlpha ) );
-	trap_Rocket_SetInnerRML( cg.beaconRocket.age, 0 );
+	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.ageAlpha ) );
+	Rocket_SetInnerRML( cg.beaconRocket.age, 0 );
 }
 
 void CG_Rocket_DrawBeaconDistance()
 {
-	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.distanceAlpha ) );
-	trap_Rocket_SetInnerRML( cg.beaconRocket.distance, 0 );
+	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.distanceAlpha ) );
+	Rocket_SetInnerRML( cg.beaconRocket.distance, 0 );
 }
 
 void CG_Rocket_DrawBeaconInfo()
 {
-	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.infoAlpha ) );
-	trap_Rocket_SetInnerRML( cg.beaconRocket.info, 0 );
+	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.infoAlpha ) );
+	Rocket_SetInnerRML( cg.beaconRocket.info, 0 );
 }
 
 void CG_Rocket_DrawBeaconName()
 {
-	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.nameAlpha ) );
-	trap_Rocket_SetInnerRML( cg.beaconRocket.name, 0 );
+	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.nameAlpha ) );
+	Rocket_SetInnerRML( cg.beaconRocket.name, 0 );
 }
 
 void CG_Rocket_DrawBeaconIcon()
@@ -1275,8 +1518,8 @@ void CG_Rocket_DrawBeaconIcon()
 
 void CG_Rocket_DrawBeaconOwner()
 {
-	trap_Rocket_SetProperty( "opacity", va( "%f", cg.beaconRocket.ownerAlpha ) );
-	trap_Rocket_SetInnerRML( cg.beaconRocket.owner, RP_QUAKE | RP_EMOTICONS );
+	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.ownerAlpha ) );
+	Rocket_SetInnerRML( cg.beaconRocket.owner, RP_QUAKE | RP_EMOTICONS );
 }
 
 
@@ -1286,7 +1529,7 @@ void CG_Rocket_DrawPlayerHealth()
 
 	if ( lastHealth != cg.snap->ps.stats[ STAT_HEALTH ] )
 	{
-		trap_Rocket_SetInnerRML( va( "%d", cg.snap->ps.stats[ STAT_HEALTH ] ), 0 );
+		Rocket_SetInnerRML( va( "%d", cg.snap->ps.stats[ STAT_HEALTH ] ), 0 );
 	}
 }
 
@@ -1391,7 +1634,7 @@ void CG_Rocket_DrawAlienBarbs()
 
 	if ( !numBarbs )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1402,7 +1645,7 @@ void CG_Rocket_DrawAlienBarbs()
 		Q_strcat( rml, sizeof( rml ), base );
 	}
 
-	trap_Rocket_SetInnerRML( rml, 0 );
+	Rocket_SetInnerRML( rml, 0 );
 }
 
 /*
@@ -1678,7 +1921,7 @@ static void CG_DrawPlayerAmmoStack()
 		Vector4Copy( foreColor, localColor );
 	}
 
-	trap_Rocket_GetProperty( "text-align", buf, sizeof( buf ), ROCKET_STRING );
+	Rocket_GetProperty( "text-align", buf, sizeof( buf ), ROCKET_STRING );
 
 	if ( *buf && !Q_stricmp( buf, "right" ) )
 	{
@@ -1778,11 +2021,11 @@ void CG_Rocket_DrawFollow()
 
 		Q_strcat( buffer, sizeof( buffer ), cgs.clientinfo[ cg.snap->ps.clientNum ].name );
 
-		trap_Rocket_SetInnerRML( buffer, RP_EMOTICONS );
+		Rocket_SetInnerRML( buffer, RP_EMOTICONS );
 	}
 	else
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 	}
 }
 
@@ -1833,7 +2076,7 @@ void CG_Rocket_DrawConnectText()
 
 	Q_strcat( rml, sizeof( rml ), s );
 
-	trap_Rocket_SetInnerRML( rml, 0 );
+	Rocket_SetInnerRML( rml, 0 );
 }
 
 void CG_Rocket_DrawClock()
@@ -1843,7 +2086,7 @@ void CG_Rocket_DrawClock()
 
 	if ( !cg_drawClock.integer )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -1879,25 +2122,25 @@ void CG_Rocket_DrawClock()
 		s = va( "%d%s%02d%s", h, ( qt.tm_sec % 2 ) ? ":" : " ", qt.tm_min, pm );
 	}
 
-	trap_Rocket_SetInnerRML( s, 0 );
+	Rocket_SetInnerRML( s, 0 );
 }
 
 void CG_Rocket_DrawTutorial()
 {
 	if ( !cg_tutorial.integer )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
-	trap_Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS );
+	Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS );
 }
 
 void CG_Rocket_DrawStaminaBolt()
 {
 	bool  activate = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
-	trap_Rocket_SetClass( "sprint", activate );
-	trap_Rocket_SetClass( "walk", !activate );
+	Rocket_SetClass( "sprint", activate );
+	Rocket_SetClass( "walk", !activate );
 }
 
 void CG_Rocket_DrawChatType()
@@ -1919,11 +2162,11 @@ void CG_Rocket_DrawChatType()
 
 		if ( ui_chatPromptColors.integer )
 		{
-			trap_Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, prompt ), RP_QUAKE );
+			Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, prompt ), RP_QUAKE );
 		}
 		else
 		{
-			trap_Rocket_SetInnerRML( prompt, RP_QUAKE );
+			Rocket_SetInnerRML( prompt, RP_QUAKE );
 		}
 	}
 }
@@ -1952,9 +2195,9 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	CG_GetRocketElementRect( &rect );
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
-	trap_Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof( lockedColor ), ROCKET_COLOR );
-	trap_Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof( unlockedColor ), ROCKET_COLOR );
+	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
+	Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof( lockedColor ), ROCKET_COLOR );
+	Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof( unlockedColor ), ROCKET_COLOR );
 
 
 	ps = &cg.predictedPlayerState;
@@ -2084,7 +2327,7 @@ void CG_Rocket_DrawMineRate()
 			break;
 
 		default:
-			trap_Rocket_SetInnerRML( "", 0 );
+			Rocket_SetInnerRML( "", 0 );
 			return;
 	}
 
@@ -2092,7 +2335,7 @@ void CG_Rocket_DrawMineRate()
 	efficiency = cg.predictedPlayerState.persistant[ PERS_RGS_EFFICIENCY ];
 	rate       = ( ( efficiency / 100.0f ) * levelRate );
 
-	trap_Rocket_SetInnerRML( va( _( "%.1f BP/min (%d%% × %.1f)" ), rate, efficiency, levelRate ), 0 );
+	Rocket_SetInnerRML( va( _( "%.1f BP/min (%d%% × %.1f)" ), rate, efficiency, levelRate ), 0 );
 }
 
 static INLINE qhandle_t CG_GetUnlockableIcon( int num )
@@ -2139,9 +2382,9 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
 	CG_GetRocketElementRect( &rect );
-	trap_Rocket_GetProperty( "cell-color", backColour, sizeof( vec4_t ), ROCKET_COLOR );
+	Rocket_GetProperty( "cell-color", backColour, sizeof( vec4_t ), ROCKET_COLOR );
 	CG_GetRocketElementColor( foreColour );
-	trap_Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
+	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
 
 	team = ( team_t ) cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
@@ -2271,7 +2514,7 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 
 	if ( !cgs.voteTime[ team ] )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2298,7 +2541,7 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 			team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
 			cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
-	trap_Rocket_SetInnerRML( s, RP_EMOTICONS );
+	Rocket_SetInnerRML( s, RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawVote()
@@ -2318,7 +2561,7 @@ static void CG_Rocket_DrawSpawnQueuePosition()
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2326,7 +2569,7 @@ static void CG_Rocket_DrawSpawnQueuePosition()
 
 	if ( position < 1 )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2340,7 +2583,7 @@ static void CG_Rocket_DrawSpawnQueuePosition()
 		s = va( _( "You are at position %d in the spawn queue" ), position );
 	}
 
-	trap_Rocket_SetInnerRML( s, 0 );
+	Rocket_SetInnerRML( s, 0 );
 }
 
 static void CG_Rocket_DrawNumSpawns()
@@ -2350,7 +2593,7 @@ static void CG_Rocket_DrawNumSpawns()
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2370,7 +2613,7 @@ static void CG_Rocket_DrawNumSpawns()
 		s = va( P_( "There is %d spawn remaining", "There are %d spawns remaining", spawns ), spawns );
 	}
 
-	trap_Rocket_SetInnerRML( s, 0 );
+	Rocket_SetInnerRML( s, 0 );
 }
 
 void CG_Rocket_DrawPredictedRGSRate()
@@ -2382,7 +2625,7 @@ void CG_Rocket_DrawPredictedRGSRate()
 
 	if ( buildable != BA_H_DRILL && buildable != BA_A_LEECH )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2406,7 +2649,7 @@ void CG_Rocket_DrawPredictedRGSRate()
 		color = COLOR_GREEN;
 	}
 
-	trap_Rocket_SetInnerRML( va( "^%c%+d%%", color, delta ), RP_QUAKE );
+	Rocket_SetInnerRML( va( "^%c%+d%%", color, delta ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawWarmup()
@@ -2415,7 +2658,7 @@ static void CG_Rocket_DrawWarmup()
 
 	if ( !cg.warmupTime )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2423,11 +2666,11 @@ static void CG_Rocket_DrawWarmup()
 
 	if ( sec < 0 )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
-	trap_Rocket_SetInnerRML( va( "%s", sec ? va( "%d", sec ) : _("FIGHT!") ), 0 );
+	Rocket_SetInnerRML( va( "%s", sec ? va( "%d", sec ) : _("FIGHT!") ), 0 );
 }
 
 static void CG_Rocket_DrawProgressValue()
@@ -2435,14 +2678,14 @@ static void CG_Rocket_DrawProgressValue()
 	const char *src = CG_Rocket_GetAttribute( "src" );
 	if ( *src )
 	{
-		float value = CG_Rocket_ProgressBarValueByName( src );
-		trap_Rocket_SetInnerRML( va( "%d", (int) ( value * 100 ) ), 0 );
+		float value = CG_Rocket_ProgressBarValue( src );
+		Rocket_SetInnerRML( va( "%d", (int) ( value * 100 ) ), 0 );
 	}
 }
 
 static void CG_Rocket_DrawLevelName()
 {
-	trap_Rocket_SetInnerRML( CG_ConfigString( CS_MESSAGE ), RP_QUAKE );
+	Rocket_SetInnerRML( CG_ConfigString( CS_MESSAGE ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawMOTD()
@@ -2452,14 +2695,14 @@ static void CG_Rocket_DrawMOTD()
 
 	s = CG_ConfigString( CS_MOTD );
 	Q_ParseNewlines( parsed, s, sizeof( parsed ) );
-	trap_Rocket_SetInnerRML( parsed, RP_EMOTICONS );
+	Rocket_SetInnerRML( parsed, RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawHostname()
 {
 	const char *info;
 	info = CG_ConfigString( CS_SERVERINFO );
-	trap_Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
+	Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawDownloadName()
@@ -2471,7 +2714,7 @@ static void CG_Rocket_DrawDownloadName()
 	if ( Q_stricmp( downloadName, rocketInfo.downloadName ) )
 	{
 		Q_strncpyz( rocketInfo.downloadName, downloadName, sizeof( rocketInfo.downloadName ) );
-		trap_Rocket_SetInnerRML( rocketInfo.downloadName, RP_QUAKE );
+		Rocket_SetInnerRML( rocketInfo.downloadName, RP_QUAKE );
 	}
 }
 
@@ -2484,7 +2727,7 @@ static void CG_Rocket_DrawDownloadTime()
 
 	if ( !*rocketInfo.downloadName )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
@@ -2505,11 +2748,11 @@ static void CG_Rocket_DrawDownloadTime()
 		// We do it in K (/1024) because we'd overflow around 4MB
 		CG_PrintTime( dlTimeBuf, sizeof dlTimeBuf,
 				  ( n - ( ( ( downloadCount / 1024 ) * n ) / ( downloadSize / 1024 ) ) ) * 1000 );
-		trap_Rocket_SetInnerRML( dlTimeBuf, RP_QUAKE );
+		Rocket_SetInnerRML( dlTimeBuf, RP_QUAKE );
 	}
 	else
 	{
-		trap_Rocket_SetInnerRML( _( "estimating" ), RP_QUAKE );
+		Rocket_SetInnerRML( _( "estimating" ), RP_QUAKE );
 	}
 }
 
@@ -2520,13 +2763,13 @@ static void CG_Rocket_DrawDownloadTotalSize()
 
 	if ( !*rocketInfo.downloadName )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	CG_ReadableSize( totalSizeBuf,  sizeof totalSizeBuf,  downloadSize );
 
-	trap_Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
+	Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
 }
 
 static void CG_Rocket_DrawDownloadCompletedSize()
@@ -2536,13 +2779,13 @@ static void CG_Rocket_DrawDownloadCompletedSize()
 
 	if ( !*rocketInfo.downloadName )
 	{
-		trap_Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRML( "", 0 );
 		return;
 	}
 
 	CG_ReadableSize( dlSizeBuf,  sizeof dlSizeBuf,  downloadCount );
 
-	trap_Rocket_SetInnerRML( dlSizeBuf, RP_QUAKE );
+	Rocket_SetInnerRML( dlSizeBuf, RP_QUAKE );
 }
 
 static void CG_Rocket_DrawDownloadSpeed()
@@ -2554,7 +2797,7 @@ static void CG_Rocket_DrawDownloadSpeed()
 
 	if ( !*rocketInfo.downloadName )
 	{
-		trap_Rocket_SetInnerRML ( "", 0 );
+		Rocket_SetInnerRML ( "", 0 );
 		return;
 	}
 
@@ -2562,20 +2805,20 @@ static void CG_Rocket_DrawDownloadSpeed()
 	{
 		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
 		CG_ReadableSize( xferRateBuf, sizeof xferRateBuf, xferRate );
-		trap_Rocket_SetInnerRML( va( "%s/Sec", xferRateBuf ), RP_QUAKE );
+		Rocket_SetInnerRML( va( "%s/Sec", xferRateBuf ), RP_QUAKE );
 	}
 	else
 	{
 		xferRate = 0;
-		trap_Rocket_SetInnerRML( "0 KB/Sec", RP_QUAKE );
+		Rocket_SetInnerRML( "0 KB/Sec", RP_QUAKE );
 	}
 }
 
 static void CG_Rocket_HaveJetpck()
 {
 	bool jetpackInInventory = BG_InventoryContainsUpgrade( UP_JETPACK, cg.snap->ps.stats );
-	trap_Rocket_SetClass( "active", jetpackInInventory );
-	trap_Rocket_SetClass( "inactive", !jetpackInInventory );
+	Rocket_SetClass( "active", jetpackInInventory );
+	Rocket_SetClass( "inactive", !jetpackInInventory );
 }
 
 typedef struct
@@ -2588,7 +2831,6 @@ typedef struct
 // THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
-	{ "ammo", &CG_Rocket_DrawAmmo, ELEMENT_BOTH },
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
 	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
 	{ "beacon_age", &CG_Rocket_DrawBeaconAge, ELEMENT_GAME },
@@ -2599,13 +2841,11 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "beacon_owner", &CG_Rocket_DrawBeaconOwner, ELEMENT_GAME },
 	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
-	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
-	{ "crosshair_indicator", &CG_Rocket_DrawCrosshairIndicator, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
 	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, ELEMENT_ALL },
 	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
@@ -2614,7 +2854,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, ELEMENT_ALL },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
-	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
 	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
 	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
@@ -2656,9 +2895,8 @@ static int elementRenderCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( elementRenderCmd_t * ) b )->name );
 }
 
-void CG_Rocket_RenderElement()
+void CG_Rocket_RenderElement( const char *tag )
 {
-	const char *tag = CG_Rocket_GetTag();
 	elementRenderCmd_t *cmd;
 
 	cmd = ( elementRenderCmd_t * ) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
@@ -2669,6 +2907,7 @@ void CG_Rocket_RenderElement()
 	}
 }
 
+#define REGISTER_ELEMENT( tag, clazz ) Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< clazz >() )->RemoveReference();
 void CG_Rocket_RegisterElements()
 {
 	int i;
@@ -2681,6 +2920,11 @@ void CG_Rocket_RegisterElements()
 			CG_Printf( "CGame elementRenderCmdList is in the wrong order for %s and %s\n", elementRenderCmdList[i - 1].name, elementRenderCmdList[ i ].name );
 		}
 
-		trap_Rocket_RegisterElement( elementRenderCmdList[ i ].name );
+		Rocket_RegisterElement( elementRenderCmdList[ i ].name );
 	}
+
+	REGISTER_ELEMENT( "ammo", AmmoHudElement )
+	REGISTER_ELEMENT( "clips", ClipsHudElement )
+	REGISTER_ELEMENT( "fps", FpsHudElement )
+	REGISTER_ELEMENT( "crosshair_indicator", CrosshairIndicatorHudElement )
 }

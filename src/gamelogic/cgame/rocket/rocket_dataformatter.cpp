@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "rocket.h"
 #include <Rocket/Controls.h>
-#include "client.h"
+#include "../cg_local.h"
 #include "rocketDataFormatter.h"
 
 // Code to format datagrid fields

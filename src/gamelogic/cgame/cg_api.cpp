@@ -72,6 +72,19 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 });
                 break;
 
+			case CG_ROCKET_VM_INIT:
+				IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] (glconfig_t gl) {
+					CG_Rocket_Init(gl);
+				});
+				break;
+
+			case CG_ROCKET_FRAME:
+				IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), [] (cgClientState_t cs) {
+					CG_Rocket_Frame(cs);
+					cmdBuffer.TryFlush();
+				});
+				break;
+
             case CG_DRAW_ACTIVE_FRAME:
                 IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
                     CG_DrawActiveFrame(serverTime, demoPlayback);
@@ -87,50 +100,31 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 
             case CG_KEY_EVENT:
                 IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (int key, bool down) {
-                    CG_KeyEvent(key, 0, down);
+                    CG_KeyEvent(key, down);
                     cmdBuffer.TryFlush();
                 });
                 break;
 
             case CG_MOUSE_EVENT:
                 IPC::HandleMsg<CGameMouseEventMsg>(VM::rootChannel, std::move(reader), [] (int dx, int dy) {
-                    // TODO don't we care about that?
+                    CG_MouseEvent(dx, dy);
+					cmdBuffer.TryFlush();
                 });
                 break;
 
-            case CG_ROCKET_VM_INIT:
-                IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] {
-                    CG_Rocket_Init();
-                });
-                break;
+			case CG_TEXT_INPUT_EVENT:
+				IPC::HandleMsg<CGameTextInptEvent>(VM::rootChannel, std::move(reader), [] (char c) {
+					Rocket_ProcessTextInput(c);
+					cmdBuffer.TryFlush();
+				});
+				break;
 
-            case CG_ROCKET_FRAME:
-                IPC::HandleMsg<CGameRocketFrameMsg>(VM::rootChannel, std::move(reader), [] (cgClientState_t cs) {
-                    CG_Rocket_Frame(cs);
-                    cmdBuffer.TryFlush();
-                });
-                break;
-
-            case CG_ROCKET_FORMAT_DATA:
-                IPC::HandleMsg<CGameRocketFormatDataMsg>(VM::rootChannel, std::move(reader), [] (int handle) {
-                    CG_Rocket_FormatData(handle);
-                });
-                break;
-
-            case CG_ROCKET_RENDER_ELEMENT:
-                IPC::HandleMsg<CGameRocketRenderElementMsg>(VM::rootChannel, std::move(reader), [] {
-                    CG_Rocket_RenderElement();
-                    cmdBuffer.TryFlush();
-                });
-                break;
-
-            case CG_ROCKET_PROGRESSBAR_VALUE:
-                IPC::HandleMsg<CGameRocketProgressbarValueMsg>(VM::rootChannel, std::move(reader), [] (std::string source, float& value) {
-					Cmd::PushArgs(source);
-					value = CG_Rocket_ProgressBarValue();
-					Cmd::PopArgs();
-                });
-                break;
+			case CG_CONSOLE_LINE:
+				IPC::HandleMsg<CGameConsoleLineMsg>(VM::rootChannel, std::move(reader), [](std::string str) {
+					Rocket_AddConsoleText( str );
+					cmdBuffer.TryFlush();
+				});
+				break;
 
             default:
                 CG_Error("VMMain(): unknown cgame command %i", minor);
@@ -457,6 +451,16 @@ void trap_R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *
 	cmdBuffer.SendMsg<Render::AddPolysToSceneMsg>(hShader, myverts, numVerts, numPolys);
 }
 
+void trap_R_Add2dPolysIndexedToScene( polyVert_t* polys, int numPolys, int* indexes, int numIndexes, int trans_x, int trans_y, qhandle_t shader )
+{
+	std::vector<polyVert_t> mypolys(numPolys);
+	std::vector<int> myindices(numIndexes);
+	memcpy(mypolys.data(), polys, numPolys * sizeof( polyVert_t ) );
+	memcpy(myindices.data(), indexes, numIndexes * sizeof( int ) );
+	cmdBuffer.SendMsg<Render::Add2dPolysIndexedMsg>(mypolys, numPolys, myindices, numIndexes, trans_x, trans_y, shader);
+}
+
+
 void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
 {
 	std::array<float, 3> myorg;
@@ -643,6 +647,21 @@ float trap_CheckVisibility( qhandle_t hTest )
 	return result;
 }
 
+void trap_R_GetTextureSize( qhandle_t handle, int *x, int *y )
+{
+	VM::SendMsg<Render::GetTextureSizeMsg>(handle, *x, *y);
+}
+
+qhandle_t trap_R_GenerateTexture( const byte *data, int x, int y )
+{
+	qhandle_t handle;
+	std::vector<byte> mydata(x * y * 4);
+	memcpy(mydata.data(), data, x * y * 4 * sizeof( byte ) );
+	VM::SendMsg<Render::GenerateTextureMsg>(mydata, x, y, handle);
+	return handle;
+}
+
+
 void trap_UnregisterVisTest( qhandle_t hTest )
 {
 	cmdBuffer.SendMsg<Render::UnregisterVisTestMsg>(hTest);
@@ -679,6 +698,29 @@ void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 	VM::SendMsg<Key::KeyNumToStringMsg>(keynum, buflen, result);
 	Q_strncpyz(buf, result.c_str(), buflen);
 }
+
+void trap_Key_SetBinding( int keyNum, int team, const char *cmd )
+{
+	VM::SendMsg<Key::SetBindingMsg>(keyNum, team, cmd);
+}
+
+void trap_Key_ClearCmdButtons( void )
+{
+	VM::SendMsg<Key::ClearCmdButtonsMsg>();
+}
+
+void trap_Key_ClearStates( void )
+{
+	VM::SendMsg<Key::ClearStatesMsg>();
+}
+
+std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys )
+{
+	std::vector<int> list;
+	VM::SendMsg<Key::KeysDownMsg>( keys, list );
+	return list;
+}
+
 
 // All LAN
 
@@ -739,196 +781,4 @@ int trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int ma
 void trap_LAN_ResetServerStatus()
 {
 	VM::SendMsg<LAN::ResetServerStatusMsg>();
-}
-// All rocket
-
-void trap_Rocket_Init()
-{
-	VM::SendMsg<Rocket::InitMsg>();
-}
-
-void trap_Rocket_Shutdown()
-{
-	VM::SendMsg<Rocket::ShutdownMsg>();
-}
-
-void trap_Rocket_LoadDocument( const char *path )
-{
-	VM::SendMsg<Rocket::LoadDocumentMsg>(path);
-}
-
-void trap_Rocket_LoadCursor( const char *path )
-{
-	VM::SendMsg<Rocket::LoadCursorMsg>(path);
-}
-
-void trap_Rocket_DocumentAction( const char *name, const char *action )
-{
-	VM::SendMsg<Rocket::DocumentActionMsg>(name, action);
-}
-
-bool trap_Rocket_GetEvent(std::string& cmdText)
-{
-	bool result;
-	VM::SendMsg<Rocket::GetEventMsg>(result, cmdText);
-	return result;
-}
-
-void trap_Rocket_DeleteEvent()
-{
-	VM::SendMsg<Rocket::DeleteEventMsg>();
-}
-
-void trap_Rocket_RegisterDataSource( const char *name )
-{
-	VM::SendMsg<Rocket::RegisterDataSourceMsg>(name);
-}
-
-void trap_Rocket_DSAddRow( const char *name, const char *table, const char *data )
-{
-	VM::SendMsg<Rocket::DSAddRowMsg>(name, table, data);
-}
-
-void trap_Rocket_DSClearTable( const char *name, const char *table )
-{
-	VM::SendMsg<Rocket::DSClearTableMsg>(name, table);
-}
-
-void trap_Rocket_SetInnerRML( const char *RML, int parseFlags )
-{
-	VM::SendMsg<Rocket::SetInnerRMLMsg>(RML, parseFlags);
-}
-
-void trap_Rocket_GetAttribute( const char *attribute, char *out, int length )
-{
-	std::string result;
-	VM::SendMsg<Rocket::GetAttributeMsg>(attribute, length, result);
-	Q_strncpyz((char*)out, result.c_str(), length);
-}
-
-void trap_Rocket_SetAttribute( const char *attribute, const char *value )
-{
-	VM::SendMsg<Rocket::SetAttributeMsg>(attribute, value);
-}
-
-void trap_Rocket_GetProperty( const char *name, void *out, size_t len, rocketVarType_t type )
-{
-	std::vector<char> result;
-	VM::SendMsg<Rocket::GetPropertyMsg>(name, type, len, result);
-	memcpy(out, result.data(), std::min(len, result.size()));
-}
-
-void trap_Rocket_SetProperty( const char *property, const char *value )
-{
-	VM::SendMsg<Rocket::SetPropertyMsg>(property, value);
-}
-
-void trap_Rocket_GetEventParameters( char *params, int length )
-{
-	std::string result;
-	VM::SendMsg<Rocket::GetEventParametersMsg>(length, result);
-	Q_strncpyz(params, result.c_str(), length);
-}
-
-void trap_Rocket_RegisterDataFormatter( const char *name )
-{
-	VM::SendMsg<Rocket::RegisterDataFormatterMsg>(name);
-}
-
-void trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength )
-{
-	std::string nameResult;
-	std::string dataResult;
-	VM::SendMsg<Rocket::DataFormatterDataMsg>(handle, nameLength, dataLength, nameResult, dataResult);
-	Q_strncpyz(name, nameResult.c_str(), nameLength);
-	Q_strncpyz(data, dataResult.c_str(), dataLength);
-}
-
-void trap_Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake )
-{
-	VM::SendMsg<Rocket::DataFormatterFormattedDataMsg>(handle, data, parseQuake);
-}
-
-void trap_Rocket_RegisterElement( const char *tag )
-{
-	VM::SendMsg<Rocket::RegisterElementMsg>(tag);
-}
-
-void trap_Rocket_GetElementTag( char *tag, int length )
-{
-	std::string result;
-	VM::SendMsg<Rocket::GetElementTagMsg>(length, result);
-	Q_strncpyz(tag, result.c_str(), length);
-}
-
-void trap_Rocket_GetElementAbsoluteOffset( float *x, float *y )
-{
-	VM::SendMsg<Rocket::GetElementAbsoluteOffsetMsg>(*x, *y);
-}
-
-void trap_Rocket_QuakeToRML( const char *in, char *out, int length )
-{
-	std::string result;
-	VM::SendMsg<Rocket::QuakeToRMLMsg>(in, length, result);
-	Q_strncpyz(out, result.c_str(), length);
-}
-
-void trap_Rocket_SetClass( const char *in, bool activate )
-{
-	VM::SendMsg<Rocket::SetClassMsg>(in, activate);
-}
-
-void trap_Rocket_InitializeHuds( int size )
-{
-	VM::SendMsg<Rocket::InitHUDsMsg>(size);
-}
-
-void trap_Rocket_LoadUnit( const char *path )
-{
-	VM::SendMsg<Rocket::LoadUnitMsg>(path);
-}
-
-void trap_Rocket_AddUnitToHud( int weapon, const char *id )
-{
-	VM::SendMsg<Rocket::AddUnitToHUDMsg>(weapon, id);
-}
-
-void trap_Rocket_ShowHud( int weapon )
-{
-	VM::SendMsg<Rocket::ShowHUDMsg>(weapon);
-}
-
-void trap_Rocket_ClearHud( int weapon )
-{
-	VM::SendMsg<Rocket::ClearHUDMsg>(weapon);
-}
-
-void trap_Rocket_AddTextElement( const char *text, const char *Class, float x, float y )
-{
-	VM::SendMsg<Rocket::AddTextMsg>(text, Class, x, y);
-}
-
-void trap_Rocket_ClearText()
-{
-	VM::SendMsg<Rocket::ClearTextMsg>();
-}
-
-void trap_Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs )
-{
-	VM::SendMsg<Rocket::RegisterPropertyMsg>(name, defaultValue, inherited, force_layout, parseAs);
-}
-
-void trap_Rocket_ShowScoreboard( const char *name, bool show )
-{
-	VM::SendMsg<Rocket::ShowScoreboardMsg>(name, show);
-}
-
-void trap_Rocket_SetDataSelectIndex( int index )
-{
-	VM::SendMsg<Rocket::SetDataSelectIndexMsg>(index);
-}
-
-void trap_Rocket_LoadFont( const char *font )
-{
-	VM::SendMsg<Rocket::LoadFontMsg>(font);
 }

@@ -32,60 +32,32 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// Code for generating custom events for libRocket
+#ifndef ROCKETINCLUDEELEMENT_H
+#define ROCKETINCLUDEELEMENT_H
 
-#include <queue>
+#include "../cg_local.h"
 #include "rocket.h"
-#include <Rocket/Core/StringUtilities.h>
-#include "client.h"
 
-std::queue< RocketEvent_t* > eventQueue;
-extern Rocket::Core::Element *activeElement;
-
-void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
+class RocketIncludeElement : public Rocket::Core::Element
 {
-	Rocket::Core::StringList list;
-
-	Rocket::Core::StringUtilities::ExpandString( list, value, ';' );
-	for ( size_t i = 0; i < list.size(); ++i )
+public:
+	RocketIncludeElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
+	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{
-		eventQueue.push( new RocketEvent_t( event, list[ i ] ) );
-	}
-}
-
-bool Rocket_GetEvent(std::string& cmdText)
-{
-	if ( !eventQueue.empty() )
-	{
-		cmdText = eventQueue.front()->cmd.CString();
-		activeElement = eventQueue.front()->targetElement;
-		return true;
-	}
-
-	return false;
-}
-
-void Rocket_DeleteEvent()
-{
-	RocketEvent_t *event = eventQueue.front();
-	eventQueue.pop();
-	activeElement = nullptr;
-	delete event;
-}
-
-void Rocket_GetEventParameters( char *params, int length )
-{
-	RocketEvent_t *event = eventQueue.front();
-	*params = '\0';
-	if ( !eventQueue.empty() )
-	{
-		int index = 0;
-		Rocket::Core::String key;
-		Rocket::Core::String value;
-
-		while ( event->Parameters.Iterate( index, key, value ) )
+		Element::OnAttributeChange( changed_attributes );
+		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
-			Info_SetValueForKeyRocket( params, key.CString(), value.CString(), true );
+			Rocket::Core::String filename = GetAttribute<Rocket::Core::String>("src", "");
+
+			if ( !filename.Empty() )
+			{
+				std::string buffer;
+				buffer = FS::PakPath::ReadFile(filename.CString());
+				SetInnerRML(buffer.c_str());
+			}
 		}
 	}
-}
+};
+
+
+#endif

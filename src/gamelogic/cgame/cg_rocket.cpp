@@ -76,7 +76,7 @@ void CG_RegisterRocketCvars()
 
 static connstate_t oldConnState;
 
-void CG_Rocket_Init()
+void CG_Rocket_Init( glconfig_t gl )
 {
 	int len;
 	const char *token, *text_p;
@@ -84,12 +84,14 @@ void CG_Rocket_Init()
 	fileHandle_t f;
 
 	oldConnState = CA_UNINITIALIZED;
+	cgs.glconfig = gl;
 
 	// Init Rocket
-	trap_Rocket_Init();
+	Rocket_Init();
 
 	// rocket cvars
 	CG_RegisterRocketCvars();
+	CG_InitConsoleCommands();
 
 	// Intialize data sources...
 	CG_Rocket_RegisterDataSources();
@@ -98,10 +100,10 @@ void CG_Rocket_Init()
 	// Register elements
 	CG_Rocket_RegisterElements();
 
-	trap_Rocket_RegisterProperty( "cell-color", "white", false, false, "color" );
-	trap_Rocket_RegisterProperty( "border-width", "0.5", false, false, "number" );
-	trap_Rocket_RegisterProperty( "unlocked-marker-color", "green", false, false, "color" );
-	trap_Rocket_RegisterProperty( "locked-marker-color", "red", false, false, "color" );
+	Rocket_RegisterProperty( "cell-color", "white", false, false, "color" );
+	Rocket_RegisterProperty( "border-width", "0.5", false, false, "number" );
+	Rocket_RegisterProperty( "unlocked-marker-color", "green", false, false, "color" );
+	Rocket_RegisterProperty( "locked-marker-color", "red", false, false, "color" );
 
 	// Load custom rocket pak if necessary
 	if ( *rocket_pak.string )
@@ -160,7 +162,7 @@ void CG_Rocket_Init()
 				continue;
 			}
 
-			trap_Rocket_LoadCursor( token );
+			Rocket_LoadCursor( token );
 			continue;
 		}
 
@@ -185,7 +187,7 @@ void CG_Rocket_Init()
 				}
 
 				rocketInfo.menu[ i ].path = BG_strdup( token );
-				trap_Rocket_LoadDocument( token );
+				Rocket_LoadDocument( token );
 
 				token = COM_Parse2( &text_p );
 
@@ -213,7 +215,7 @@ void CG_Rocket_Init()
 					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting RML document.", rocket_menuFile.string );
 				}
 
-				trap_Rocket_LoadDocument( token );
+				Rocket_LoadDocument( token );
 			}
 
 			continue;
@@ -249,7 +251,7 @@ void CG_Rocket_Init()
 					continue;
 				}
 
-				trap_Rocket_LoadDocument( token );
+				Rocket_LoadDocument( token );
 
 			}
 
@@ -279,14 +281,14 @@ void CG_Rocket_Init()
 					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting closing '}'.", rocket_menuFile.string );
 				}
 
-				trap_Rocket_LoadFont( token );
+				Rocket_LoadFont( token );
 			}
 
 			continue;
 		}
 	}
 
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_MAIN ].id, "open" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_MAIN ].id, "open" );
 
 	// Check if we need to display a server connect/disconnect error
 	text[ 0 ] = '\0';
@@ -294,10 +296,10 @@ void CG_Rocket_Init()
 	if ( *text )
 	{
 		trap_Cvar_Set( "ui_errorMessage", text );
-		trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
+		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
 	}
 
-	trap_Key_SetCatcher( KEYCATCH_UI );
+	CG_SetKeyCatcher( KEYCATCH_UI );
 }
 
 void CG_Rocket_LoadHuds()
@@ -326,7 +328,7 @@ void CG_Rocket_LoadHuds()
 	text_p = text;
 	trap_FS_FCloseFile( f );
 
-	trap_Rocket_InitializeHuds( WP_NUM_WEAPONS );
+	Rocket_InitializeHuds( WP_NUM_WEAPONS );
 
 	// Parse files to load...
 
@@ -366,7 +368,7 @@ void CG_Rocket_LoadHuds()
 					continue;
 				}
 
-				trap_Rocket_LoadUnit( token );
+				Rocket_LoadUnit( token );
 			}
 
 			continue;
@@ -377,10 +379,10 @@ void CG_Rocket_LoadHuds()
 			// Clear old values
 			for ( i = WP_BLASTER; i <= WP_LUCIFER_CANNON; ++i )
 			{
-				trap_Rocket_ClearHud( i );
+				Rocket_ClearHud( i );
 			}
 
-			trap_Rocket_ClearHud( WP_HBUILD );
+			Rocket_ClearHud( WP_HBUILD );
 
 			while ( 1 )
 			{
@@ -404,10 +406,10 @@ void CG_Rocket_LoadHuds()
 
 				for ( i = WP_BLASTER; i <= WP_LUCIFER_CANNON; ++i )
 				{
-					trap_Rocket_AddUnitToHud( i, token );
+					Rocket_AddUnitToHud( i, token );
 				}
 
-				trap_Rocket_AddUnitToHud( WP_HBUILD, token );
+				Rocket_AddUnitToHud( WP_HBUILD, token );
 			}
 
 
@@ -418,7 +420,7 @@ void CG_Rocket_LoadHuds()
 		{
 			for ( i = WP_NONE; i < WP_NUM_WEAPONS; ++i )
 			{
-				trap_Rocket_ClearHud( i );
+				Rocket_ClearHud( i );
 			}
 
 			while ( 1 )
@@ -443,7 +445,7 @@ void CG_Rocket_LoadHuds()
 
 				for ( i = WP_NONE; i < WP_NUM_WEAPONS; ++i )
 				{
-					trap_Rocket_AddUnitToHud( i, token );
+					Rocket_AddUnitToHud( i, token );
 				}
 			}
 
@@ -454,11 +456,11 @@ void CG_Rocket_LoadHuds()
 		{
 			for ( i = WP_ALEVEL0; i <= WP_ALEVEL4; ++i )
 			{
-				trap_Rocket_ClearHud( i );
+				Rocket_ClearHud( i );
 			}
 
-			trap_Rocket_ClearHud( WP_ABUILD );
-			trap_Rocket_ClearHud( WP_ABUILD2 );
+			Rocket_ClearHud( WP_ABUILD );
+			Rocket_ClearHud( WP_ABUILD2 );
 
 			while ( 1 )
 			{
@@ -481,11 +483,11 @@ void CG_Rocket_LoadHuds()
 
 				for ( i = WP_ALEVEL0; i <= WP_ALEVEL4; ++i )
 				{
-					trap_Rocket_AddUnitToHud( i, token );
+					Rocket_AddUnitToHud( i, token );
 				}
 
-				trap_Rocket_AddUnitToHud( WP_ABUILD, token );
-				trap_Rocket_AddUnitToHud( WP_ABUILD2, token );
+				Rocket_AddUnitToHud( WP_ABUILD, token );
+				Rocket_AddUnitToHud( WP_ABUILD2, token );
 			}
 
 			continue;
@@ -495,7 +497,7 @@ void CG_Rocket_LoadHuds()
 		{
 			if ( !Q_stricmp( token, va( "%s.hudgroup", BG_Weapon( i )->name ) ) )
 			{
-				trap_Rocket_ClearHud( i );
+				Rocket_ClearHud( i );
 				while ( 1 )
 				{
 					token = COM_Parse2( &text_p );
@@ -515,7 +517,7 @@ void CG_Rocket_LoadHuds()
 						break;
 					}
 
-					trap_Rocket_AddUnitToHud( i, token );
+					Rocket_AddUnitToHud( i, token );
 				}
 
 				valid = true;
@@ -568,6 +570,7 @@ void CG_Rocket_Frame( cgClientState_t state )
 {
 	rocketInfo.cstate = state;
 	rocketInfo.realtime = trap_Milliseconds();
+	rocketInfo.keyCatcher = trap_Key_GetCatcher();
 
 	if ( oldConnState != rocketInfo.cstate.connState )
 	{
@@ -584,18 +587,18 @@ void CG_Rocket_Frame( cgClientState_t state )
 			case CA_CONNECTING:
 			case CA_CHALLENGING:
 			case CA_CONNECTED:
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "show" );
+				Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "show" );
 				break;
 			case CA_DOWNLOADING:
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_DOWNLOADING ].id, "show" );
+				Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_DOWNLOADING ].id, "show" );
 				break;
 			case CA_LOADING:
 			case CA_PRIMED:
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
+				Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
 				break;
 
 			case CA_ACTIVE:
-				trap_Rocket_DocumentAction( "", "blurall" );
+				Rocket_DocumentAction( "", "blurall" );
 		}
 
 		oldConnState = rocketInfo.cstate.connState;
@@ -629,13 +632,15 @@ void CG_Rocket_Frame( cgClientState_t state )
 	}
 
 	CG_Rocket_ProcessEvents();
+	Rocket_Update();
+	Rocket_Render();
 }
 
 const char *CG_Rocket_GetTag()
 {
 	static char tag[ 100 ];
 
-	trap_Rocket_GetElementTag( tag, sizeof( tag ) );
+	Rocket_GetElementTag( tag, sizeof( tag ) );
 
 	return tag;
 }
@@ -644,7 +649,7 @@ const char *CG_Rocket_GetAttribute( const char *attribute )
 {
 	static char buffer[ MAX_STRING_CHARS ];
 
-	trap_Rocket_GetAttribute( attribute, buffer, sizeof( buffer ) );
+	Rocket_GetAttribute( "", "", attribute, buffer, sizeof( buffer ) );
 
 	return buffer;
 }
@@ -652,7 +657,7 @@ const char *CG_Rocket_GetAttribute( const char *attribute )
 const char *CG_Rocket_QuakeToRML( const char *in )
 {
 	static char buffer[ MAX_STRING_CHARS ];
-	trap_Rocket_QuakeToRML( in, buffer, sizeof( buffer ) );
+	Rocket_QuakeToRMLBuffer( in, buffer, sizeof( buffer ) );
 	return buffer;
 }
 

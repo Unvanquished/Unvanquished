@@ -614,7 +614,7 @@ void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
 	playerState_t *ps = &cg.snap->ps;
 
 	// Change the HUD to match the weapon. Close the old hud first
-	trap_Rocket_ShowHud( ps->weapon );
+	Rocket_ShowHud( ps->weapon );
 
 	// Rebuild weapon lists if UI is in focus.
 	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
@@ -662,7 +662,7 @@ void CG_OnMapRestart()
 	CG_HideScores_f();
 
 	// hide any other menus
-	trap_Rocket_DocumentAction( "", "blurall" );
+	Rocket_DocumentAction( "", "blurall" );
 }
 
 /*

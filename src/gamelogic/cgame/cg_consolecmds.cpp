@@ -350,30 +350,30 @@ static void CG_TestCGrade_f()
 static void CG_MessageAdmin_f()
 {
 	cg.sayType = SAY_TYPE_ADMIN;
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessageCommand_f()
 {
 	cg.sayType = SAY_TYPE_COMMAND;
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessageTeam_f()
 {
 	cg.sayType = SAY_TYPE_TEAM;
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_MessagePublic_f()
 {
 	cg.sayType = SAY_TYPE_PUBLIC;
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CHAT ].id, "show" );
 }
 
 static void CG_ToggleMenu_f()
 {
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_INGAME_MENU ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_INGAME_MENU ].id, "show" );
 }
 
 // FIXME: Don't hardcode scoreboard ID
@@ -388,7 +388,7 @@ void CG_ShowScores_f()
 	{
 		trap_PrepareKeyUp();
 
-		trap_Rocket_ShowScoreboard( "scoreboard", true );
+		Rocket_ShowScoreboard( "scoreboard", true );
 		cg.showScores = true;
 	}
 	else
@@ -404,13 +404,13 @@ void CG_HideScores_f()
 		return;
 	}
 
-	trap_Rocket_ShowScoreboard( "scoreboard", false );
+	Rocket_ShowScoreboard( "scoreboard", false );
 	cg.showScores = false;
 }
 
 void CG_BeaconMenu_f()
 {
-	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }
 
 static const struct
@@ -468,6 +468,7 @@ static const struct
 	{ "prevskin",         CG_TestModelPrevSkin_f,  0                },
 	{ "reload",           0,                       0                },
 	{ "reloadHud",        CG_ReloadHud_f,          0                },
+	{ "rocket",           Rocket_Rocket_f,         0,               },
 	{ "say",              0,                       0                },
 	{ "say_area",         0,                       0                },
 	{ "say_area_team",    0,                       0                },

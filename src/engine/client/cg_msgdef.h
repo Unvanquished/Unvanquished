@@ -161,6 +161,7 @@ typedef enum cgameImport_s
   CG_R_ADDLIGHTTOSCENE,
   CG_R_ADDADDITIVELIGHTTOSCENE,
   CG_R_RENDERSCENE,
+  CG_R_ADD2DPOLYSINDEXED,
   CG_R_SETCOLOR,
   CG_R_SETCLIPREGION,
   CG_R_RESETCLIPREGION,
@@ -181,12 +182,18 @@ typedef enum cgameImport_s
   CG_CHECKVISIBILITY,
   CG_UNREGISTERVISTEST,
   CG_SETCOLORGRADING,
+  CG_R_GETTEXTURESIZE,
+  CG_R_GENERATETEXTURE,
 
   // Keys
   CG_KEY_GETCATCHER,
   CG_KEY_SETCATCHER,
   CG_KEY_GETKEYNUMFORBINDS,
   CG_KEY_KEYNUMTOSTRINGBUF,
+  CG_KEY_SETBINDING,
+  CG_KEY_CLEARSTATES,
+  CG_KEY_CLEARCMDBUTTONS,
+  CG_KEY_KEYSDOWN,
 
   // Lan
   CG_LAN_GETSERVERCOUNT,
@@ -452,6 +459,16 @@ namespace Render {
 		IPC::Message<IPC::Id<VM::QVM, CG_CHECKVISIBILITY>, int>,
 		IPC::Reply<float>
 	> CheckVisibilityMsg;
+	// GetTextureSizeMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_GETTEXTURESIZE>, qhandle_t>,
+		IPC::Reply<int, int>
+	> GetTextureSizeMsg;
+	// GenerateTextureMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_R_GENERATETEXTURE>, std::vector<byte>, int, int>,
+		IPC::Reply<qhandle_t>
+	> GenerateTextureMsg;
 
     // All command buffer syscalls
 
@@ -489,6 +506,8 @@ namespace Render {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_SETCOLORGRADING>, int, int> SetColorGradingMsg;
 	// RenderSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RENDERSCENE>, refdef_t> RenderSceneMsg;
+	// Add2dPolysIndexedMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADD2DPOLYSINDEXED>, std::vector<polyVert_t>, int, std::vector<int>, int, int, int, qhandle_t> Add2dPolysIndexedMsg;
 }
 
 namespace Key {
@@ -509,6 +528,17 @@ namespace Key {
 		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int, int>,
 		IPC::Reply<std::string>
 	> KeyNumToStringMsg;
+	// SetBindingMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_SETBINDING>, int, int, std::string> SetBindingMsg;
+	// ClearCmdButtonsMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_CLEARCMDBUTTONS>> ClearCmdButtonsMsg;
+	// ClearStatesMsg
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_CLEARSTATES>> ClearStatesMsg;
+	// KeysDownMsg
+	typedef IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYSDOWN>, std::vector<int>>,
+		IPC::Reply<std::vector<int>>
+	> KeysDownMsg;
 }
 
 namespace LAN {
@@ -735,20 +765,16 @@ typedef enum
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
 
+  CG_TEXT_INPUT_EVENT,
+// pass in text input events from the engine
+
   CG_ROCKET_VM_INIT,
 // Inits libRocket in the game.
 
   CG_ROCKET_FRAME,
-// Rocket runs through a frame, including event processing
+// Rocket runs through a frame, including event processing, and rendering
 
-  CG_ROCKET_FORMAT_DATA,
-// Rocket wants some data formatted
-
-  CG_ROCKET_RENDER_ELEMENT,
-// Rocket wants an element renderered
-
-  CG_ROCKET_PROGRESSBAR_VALUE
-// Rocket wants to query the value of a progress bar
+  CG_CONSOLE_LINE
 } cgameExport_t;
 
 // CGameStaticInitMsg
@@ -780,28 +806,22 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
 > CGameMouseEventMsg;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, char>
+> CGameTextInptEvent;
 
 //TODO Check all rocket calls
 // CGameRocketInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_VM_INIT>>
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_VM_INIT>, glconfig_t>
 > CGameRocketInitMsg;
 // CGameRocketFrameMsg
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>, cgClientState_t>
 > CGameRocketFrameMsg;
-// CGameRocketFormatDataMsg
+
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FORMAT_DATA>, int>
-> CGameRocketFormatDataMsg;
-// CGameRocketRenderElementMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_RENDER_ELEMENT>>
-> CGameRocketRenderElementMsg;
-// CGameRocketProgressbarValueMsg
-typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_PROGRESSBAR_VALUE>, std::string>,
-	IPC::Reply<float>
-> CGameRocketProgressbarValueMsg;
+	IPC::Message<IPC::Id<VM::QVM, CG_CONSOLE_LINE>, std::string>
+> CGameConsoleLineMsg;
 
 #endif

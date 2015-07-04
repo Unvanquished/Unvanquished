@@ -1456,7 +1456,6 @@ void CL_MapLoading()
 		memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
 		cl.gameState.fill("");
 		clc.lastPacketSentTime = -9999;
-		cgvm.CGameRocketFrame();
 		SCR_UpdateScreen();
 	}
 	else
@@ -1468,7 +1467,6 @@ void CL_MapLoading()
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
 		cls.keyCatchers = 0;
-		cgvm.CGameRocketFrame();
 		SCR_UpdateScreen();
 		clc.connectTime = -RETRANSMIT_TIMEOUT;
 		NET_StringToAdr( cls.servername, &clc.serverAddress, NA_UNSPEC );
@@ -2161,21 +2159,6 @@ void CL_Vid_Restart_f()
 	}
 }
 
-/*
-=================
-CL_UI_Restart_f
-
-Restart the ui subsystem
-=================
-*/
-void CL_UI_Restart_f()
-{
-	// NERVE - SMF
-	Rocket_Shutdown();
-	// init the UI
-	cgvm.Start();
-	cgvm.CGameRocketInit();
-}
 
 /*
 =================
@@ -3598,12 +3581,6 @@ void CL_Frame( int msec )
 	// decide on the serverTime to render
 	CL_SetCGameTime();
 
-	// DOM updates from cgame
-	cgvm.CGameRocketFrame();
-
-	// Update librocket
-	Rocket_Update();
-
 	// update the screen
 	SCR_UpdateScreen();
 
@@ -4076,7 +4053,6 @@ void CL_Init()
 	Cmd_AddCommand( "snd_reload", CL_Snd_Reload_f );
 	Cmd_AddCommand( "snd_restart", CL_Snd_Restart_f );
 	Cmd_AddCommand( "vid_restart", CL_Vid_Restart_f );
-	Cmd_AddCommand( "ui_restart", CL_UI_Restart_f );  // NERVE - SMF
 	Cmd_AddCommand( "disconnect", CL_Disconnect_f );
 	Cmd_AddCommand( "record", CL_Record_f );
 	Cmd_AddCommand( "cinematic", CL_PlayCinematic_f );

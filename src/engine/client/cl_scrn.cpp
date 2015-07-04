@@ -768,8 +768,7 @@ void SCR_UpdateScreen()
 	if ( cgvm.IsActive() )
 	{
 		SCR_DrawScreenField();
-
-		Rocket_Render();
+		cgvm.CGameRocketFrame();
 		SCR_DrawConsoleAndPointer();
 
 		if ( com_speeds->integer )

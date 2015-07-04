@@ -40,7 +40,7 @@ Maryland 20850 USA.
 #include <Rocket/Controls.h>
 #include <Rocket/Controls/DataSourceListener.h>
 #include <Rocket/Controls/DataSource.h>
-#include "client.h"
+#include "../cg_local.h"
 #include "rocket.h"
 
 class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener

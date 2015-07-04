@@ -32,32 +32,69 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef ROCKETINCLUDEELEMENT_H
-#define ROCKETINCLUDEELEMENT_H
+#ifndef ROCKETFOCUSMANAGER_H
+#define ROCKETFOCUSMANAGER_H
 
-#include "client.h"
+#include "../cg_local.h"
 #include "rocket.h"
+#include <Rocket/Core/Core.h>
 
-class RocketIncludeElement : public Rocket::Core::Element
+class RocketFocusManager : public Rocket::Core::EventListener
 {
 public:
-	RocketIncludeElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	RocketFocusManager() { }
+	void ProcessEvent( Rocket::Core::Event &evt )
 	{
-		Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
-		{
-			Rocket::Core::String filename = GetAttribute<Rocket::Core::String>("src", "");
+		bool anyVisible = false;
+		Rocket::Core::Context* context = evt.GetTargetElement() ? evt.GetTargetElement()->GetContext() : nullptr;
 
-			if ( !filename.Empty() )
+		if ( context )
+		{
+			for ( size_t i = 0; i < context->GetNumDocuments(); ++i )
 			{
-				std::string buffer;
-				buffer = FS::PakPath::ReadFile(filename.CString());
-				SetInnerRML(buffer.c_str());
+				if ( context->GetDocument( i )->IsVisible() )
+				{
+					anyVisible = true;
+					break;
+				}
 			}
+		}
+
+		if ( anyVisible && ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) )
+		{
+			trap_Key_ClearCmdButtons();
+			trap_Key_ClearStates();
+			CG_SetKeyCatcher( KEYCATCH_UI );
+		}
+		else if ( !anyVisible && rocketInfo.keyCatcher && rocketInfo.cstate.connState >= CA_PRIMED )
+		{
+			CG_SetKeyCatcher( 0 );
+		}
+	}
+
+private:
+	// Checks if parents are visible as well
+	bool IsTreeVisible( Rocket::Core::Element *element )
+	{
+		if ( element && element->IsVisible() )
+		{
+			Rocket::Core::Element *parent = element;
+
+			while ( ( parent = parent->GetParentNode() ) )
+			{
+				if ( !parent->IsVisible() )
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		else
+		{
+			return false;
 		}
 	}
 };
-
-
 #endif

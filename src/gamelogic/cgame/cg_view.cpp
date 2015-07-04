@@ -1863,7 +1863,6 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
 
-	trap_Rocket_ClearText();
 	CG_NotifyHooks();
 
 	// any looped sounds will be respecified as entities

@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "rocket.h"
-#include "client.h"
+#include "../cg_local.h"
 
 
 struct HudUnit

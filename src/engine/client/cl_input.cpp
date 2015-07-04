@@ -225,14 +225,6 @@ void IN_CenterView ()
         cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
 }
 
-void IN_Help()
-{
-	if ( cls.state == CA_ACTIVE && !clc.demoplaying )
-	{
-		Rocket_DocumentAction( "Help", "open" );
-	}
-}
-
 //==========================================================================
 
 cvar_t *cl_yawspeed;
@@ -410,13 +402,10 @@ CL_MouseEvent
 */
 void CL_MouseEvent( int dx, int dy, int time )
 {
-	if ( cls.keyCatchers & KEYCATCH_CGAME )
+	if ( cls.keyCatchers & KEYCATCH_CGAME ||
+		cls.keyCatchers & KEYCATCH_UI )
 	{
 		cgvm.CGameMouseEvent(dx, dy);
-	}
-	else if ( cls.keyCatchers & KEYCATCH_UI )
-	{
-		Rocket_MouseMove( dx, dy );
 	}
 	else
 	{
@@ -1398,7 +1387,6 @@ void CL_InitInput()
 	}
 
 	//Cmd_AddCommand ("notebook",IN_Notebook);
-	Cmd_AddCommand( "help", IN_Help );
 
 #ifdef USE_VOIP
 	Cmd_AddCommand( "+voiprecord", IN_VoipRecordDown );

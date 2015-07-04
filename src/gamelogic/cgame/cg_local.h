@@ -1464,6 +1464,7 @@ typedef struct
 	int serversLastRefresh;
 	int serverStatusLastRefresh;
 	int realtime;
+	int keyCatcher;
 	char downloadName[ MAX_STRING_CHARS ];
 	cgClientState_t cstate;
 	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
@@ -1953,6 +1954,7 @@ extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
 extern vmCvar_t             cg_spawnEffects;
+extern vmCvar_t             cg_sayCommand;
 
 //
 // Rocket cvars
@@ -1977,7 +1979,7 @@ void       CG_UpdateCvars();
 
 int        CG_CrosshairPlayer();
 void       CG_LoadMenus( const char *menuFile );
-void       CG_KeyEvent( int key, int chr, int flags );
+void       CG_KeyEvent( int key, bool down );
 void       CG_MouseEvent( int x, int y );
 bool   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString();
@@ -2322,12 +2324,13 @@ const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
 void CG_FormatSI( char *buf, int size, float num, int sf, const char *unit );
+void CG_SetKeyCatcher( int catcher );
 
 //
 // cg_rocket.c
 //
 
-void CG_Rocket_Init();
+void CG_Rocket_Init( glconfig_t gl );
 void CG_Rocket_LoadHuds();
 void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();
@@ -2351,8 +2354,8 @@ void CG_Rocket_RegisterDataFormatters();
 //
 // cg_rocket_draw.c
 //
-void CG_Rocket_RenderElement();
-void CG_Rocket_RegisterElements();
+void CG_Rocket_RenderElement( const char* tag );
+void CG_Rocket_RegisterElements( void );
 
 //
 // cg_rocket_datasource.c
@@ -2375,12 +2378,62 @@ void CG_Rocket_BuildPlayerList( const char *table );
 //
 // cg_rocket_progressbar.c
 //
-float CG_Rocket_ProgressBarValue();
-float CG_Rocket_ProgressBarValueByName( const char *name );
+float CG_Rocket_ProgressBarValue( Str::StringRef name );
+
 //
 // cg_gameinfo.c
 //
 void CG_LoadArenas();
 
+//
+// Rocket Functions
+//
+void Rocket_Init( void );
+void Rocket_Shutdown( void );
+void Rocket_Render( void );
+void Rocket_Update( void );
+void Rocket_LoadDocument( const char *path );
+void Rocket_LoadCursor( const char *path );
+void Rocket_DocumentAction( const char *name, const char *action );
+bool Rocket_GetEvent(std::string& cmdText);
+void Rocket_DeleteEvent( void );
+void Rocket_RegisterDataSource( const char *name );
+void Rocket_DSAddRow( const char *name, const char *table, const char *data );
+void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data );
+void Rocket_DSRemoveRow( const char *name, const char *table, const int row );
+void Rocket_DSClearTable( const char *name, const char *table );
+void Rocket_SetInnerRMLById( const char* name, const char* id, const char* RML, bool parseFlags );
+void Rocket_SetInnerRML( const char *RML, bool parseQuake );
+void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length );
+void Rocket_GetEventParameters( char *params, int length );
+void Rocket_RegisterDataFormatter( const char *name );
+void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
+void Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake );
+void Rocket_GetElementTag( char *tag, int length );
+void Rocket_SetElementDimensions( float x, float y );
+void Rocket_RegisterElement( const char *tag );
+void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
+void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
+void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
+void Rocket_GetElementAbsoluteOffset( float *x, float *y );
+void Rocket_SetClass( const char *in, bool activate );
+void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
+void Rocket_SetActiveContext( int catcher );
+void Rocket_AddConsoleText(Str::StringRef text);
+void Rocket_InitializeHuds( int size );
+void Rocket_LoadUnit( const char *path );
+void Rocket_AddUnitToHud( int weapon, const char *id );
+void Rocket_ShowHud( int weapon );
+void Rocket_ClearHud( int weapon );
+void Rocket_InitKeys( void );
+keyNum_t Rocket_ToQuake( int key );
+void Rocket_ProcessKeyInput( int key, bool down );
+void Rocket_ProcessTextInput( int key );
+void Rocket_MouseMove( int x, int y );
+void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs );
+void Rocket_ShowScoreboard( const char *name, bool show );
+void Rocket_SetDataSelectIndex( int index );
+void Rocket_LoadFont( const char *font );
+void Rocket_Rocket_f( void );
 #endif
 

@@ -38,32 +38,32 @@ Maryland 20850 USA.
 
 static void CG_Rocket_EventOpen()
 {
-	trap_Rocket_LoadDocument( va( "%s.rml", CG_Argv( 1 ) ) );
+	Rocket_LoadDocument( va( "%s.rml", CG_Argv( 1 ) ) );
 }
 
 static void CG_Rocket_EventClose()
 {
-	trap_Rocket_DocumentAction( CG_Argv( 1 ), "close" );
+	Rocket_DocumentAction( CG_Argv( 1 ), "close" );
 }
 
 static void CG_Rocket_EventGoto()
 {
-	trap_Rocket_DocumentAction( CG_Argv( 1 ), "goto" );
+	Rocket_DocumentAction( CG_Argv( 1 ), "goto" );
 }
 
 static void CG_Rocket_EventShow()
 {
-	trap_Rocket_DocumentAction( CG_Argv( 1 ), "show" );
+	Rocket_DocumentAction( CG_Argv( 1 ), "show" );
 }
 
 static void CG_Rocket_EventBlur()
 {
-	trap_Rocket_DocumentAction( CG_Argv( 1 ), "blur" );
+	Rocket_DocumentAction( CG_Argv( 1 ), "blur" );
 }
 
 static void CG_Rocket_EventHide()
 {
-	trap_Rocket_DocumentAction( CG_Argv( 1 ), "hide" );
+	Rocket_DocumentAction( CG_Argv( 1 ), "hide" );
 }
 
 
@@ -144,7 +144,7 @@ static void CG_Rocket_SetAttribute()
 	Q_strncpyz( attribute, CG_Argv( 1 ), sizeof( attribute ) );
 	Q_strncpyz( value, CG_Argv( 2 ), sizeof( value ) );
 
-	trap_Rocket_SetAttribute( attribute, value );
+	Rocket_SetAttribute( "", "", attribute, value );
 
 }
 
@@ -154,7 +154,7 @@ static void CG_Rocket_FilterDS()
 	char tbl[ 100 ];
 	char params[ MAX_STRING_CHARS ];
 
-	trap_Rocket_GetAttribute( "value", params, sizeof( params ) );
+	Rocket_GetAttribute( "", "", "value", params, sizeof( params ) );
 
 	Q_strncpyz( src, CG_Argv( 1 ), sizeof ( src ) );
 	Q_strncpyz( tbl, CG_Argv( 2 ), sizeof( tbl ) );
@@ -190,7 +190,7 @@ static void CG_Rocket_SetChatCommand()
 
 	if ( cmd )
 	{
-		trap_Rocket_SetAttribute( "exec", cmd );
+		Rocket_SetAttribute( "", "", "exec", cmd );
 	}
 }
 
@@ -203,7 +203,7 @@ static void CG_Rocket_EventExecForm()
 	char *s = Template;
 
 	Q_strncpyz( Template, CG_Argv( 1 ), sizeof( Template ) );
-	trap_Rocket_GetEventParameters( params, sizeof( params ) );
+	Rocket_GetEventParameters( params, sizeof( params ) );
 
 	if ( !*params )
 	{
@@ -248,7 +248,7 @@ static void CG_Rocket_SetDataSelectValue()
 
 	if ( index > -1 )
 	{
-		trap_Rocket_SetDataSelectIndex( index );
+		Rocket_SetDataSelectIndex( index );
 	}
 
 }
@@ -423,7 +423,7 @@ void CG_Rocket_ProcessEvents()
 	std::string cmdText;
 
 	// Get the even command
-	while ( trap_Rocket_GetEvent(cmdText) )
+	while ( Rocket_GetEvent(cmdText) )
 	{
 		Cmd::PushArgs(cmdText);
 		cmd = (eventCmd_t*) bsearch( CG_Argv( 0 ), eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
@@ -433,7 +433,7 @@ void CG_Rocket_ProcessEvents()
 			cmd->exec();
 		}
 		Cmd::PopArgs();
-		trap_Rocket_DeleteEvent();
+		Rocket_DeleteEvent();
 	}
 
 }

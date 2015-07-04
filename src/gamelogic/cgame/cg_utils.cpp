@@ -217,3 +217,10 @@ void CG_PrintTime( char *buf, int bufsize, int time )
 		Com_sprintf( buf, bufsize, "%d sec", time );
 	}
 }
+
+void CG_SetKeyCatcher( int catcher )
+{
+	rocketInfo.keyCatcher = catcher;
+	Rocket_SetActiveContext( catcher );
+	trap_Key_SetCatcher( catcher );
+}

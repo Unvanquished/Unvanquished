@@ -42,7 +42,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/Texture.h>
 
 #include <queue>
-#include "client.h"
+#include "../cg_local.h"
 #include "rocket.h"
 
 Rocket::Core::Element *activeElement = nullptr;
@@ -117,7 +117,7 @@ public:
 				stack.push( parent );
 			}
 		}
-		
+
 		// Return the calculated dimensions. If this changes the size of the element, it will result in
 		// a 'resize' event which is caught below and will regenerate the geometry.
 
@@ -152,7 +152,7 @@ public:
 	{
 		activeElement = this;
 
-		cgvm.CGameRocketRenderElement();
+		CG_Rocket_RenderElement( GetTagName().CString() );
 
 		// Render text on top
 		Rocket::Core::Element::OnRender();
@@ -160,8 +160,6 @@ public:
 
 
 	Rocket::Core::Vector2f dimensions;
-private:
-	bool dirty_geometry;
 };
 
 class RocketElementInstancer : public Rocket::Core::ElementInstancer

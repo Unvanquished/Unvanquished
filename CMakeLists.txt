@@ -109,6 +109,7 @@ endif()
 
 # Dependencies version, this must match the number in external_deps/build.sh
 set( DEPS_VERSION 3 )
+set( NACL_DEPS_VERSION 2 )
 
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
@@ -161,6 +162,8 @@ if( WIN32 )
 else()
   set( PNACL_BIN_EXT "" )
 endif()
+
+set( NACL_DEPS_DIR ${CMAKE_SOURCE_DIR}/external_deps/pnacl-${NACL_DEPS_VERSION} )
 
 ################################################################################
 # Compile and link flags
@@ -831,39 +834,6 @@ set( CLIENTLIST
   ${ENGINE_DIR}/audio/OggCodec.cpp
   ${ENGINE_DIR}/audio/OpusCodec.cpp
   ${ENGINE_DIR}/audio/WavCodec.cpp
-  ${ENGINE_DIR}/client/rocket_dataformatter.cpp
-  ${ENGINE_DIR}/client/rocket_textelements.cpp
-  ${ENGINE_DIR}/client/rocket_documents.cpp
-  ${ENGINE_DIR}/client/rocket_datagrid.cpp
-  ${ENGINE_DIR}/client/rocket_element.cpp
-  ${ENGINE_DIR}/client/rocket_events.cpp
-  ${ENGINE_DIR}/client/rocket_keys.cpp
-  ${ENGINE_DIR}/client/rocket_hud.cpp
-  ${ENGINE_DIR}/client/rocket.cpp
-
-  ${ENGINE_DIR}/client/rocketSelectableDataGrid.h
-  ${ENGINE_DIR}/client/rocketConditionalElement.h
-  ${ENGINE_DIR}/client/rocketConsoleTextElement.h
-  ${ENGINE_DIR}/client/rocketFormControlSelect.h
-  ${ENGINE_DIR}/client/rocketCvarInlineElement.h
-  ${ENGINE_DIR}/client/rocketDataSourceSingle.h
-  ${ENGINE_DIR}/client/rocketFormControlInput.h
-  ${ENGINE_DIR}/client/rocketElementDocument.h
-  ${ENGINE_DIR}/client/rocketEventInstancer.h
-  ${ENGINE_DIR}/client/rocketIncludeElement.h
-  ${ENGINE_DIR}/client/rocketDataFormatter.h
-  ${ENGINE_DIR}/client/rocketFocusManager.h
-  ${ENGINE_DIR}/client/rocketProgressBar.h
-  ${ENGINE_DIR}/client/rocketDataSelect.h
-  ${ENGINE_DIR}/client/rocketDataSource.h
-  ${ENGINE_DIR}/client/rocketCircleMenu.h
-  ${ENGINE_DIR}/client/rocketColorInput.h
-  ${ENGINE_DIR}/client/rocketChatField.h
-  ${ENGINE_DIR}/client/rocketKeyBinder.h
-  ${ENGINE_DIR}/client/rocketMiscText.h
-  ${ENGINE_DIR}/client/rocketDataGrid.h
-  ${ENGINE_DIR}/client/rocketElement.h
-  ${ENGINE_DIR}/client/rocket.h
 )
 
 set( TTYCLIENTLIST
@@ -902,6 +872,184 @@ set( GAMESHAREDLIST
   ${GAMELOGIC_DIR}/shared/VMMain.h
 )
 
+set( ROCKETLIST
+  ${ROCKET_DIR}/Source/Core/StreamMemory.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledVertical.cpp
+  ${ROCKET_DIR}/Source/Core/EventInstancerDefault.cpp
+  ${ROCKET_DIR}/Source/Core/ElementHandle.cpp
+  ${ROCKET_DIR}/Source/Core/XMLNodeHandlerBody.cpp
+  ${ROCKET_DIR}/Source/Core/TextureDatabase.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledBox.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetParser.cpp
+  ${ROCKET_DIR}/Source/Core/Core.cpp
+  ${ROCKET_DIR}/Source/Core/Template.cpp
+  ${ROCKET_DIR}/Source/Core/XMLNodeHandler.cpp
+  ${ROCKET_DIR}/Source/Core/String.cpp
+  ${ROCKET_DIR}/Source/Core/ReferenceCountable.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorLastOfType.cpp
+  ${ROCKET_DIR}/Source/Core/ElementBackground.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledHorizontal.cpp
+  ${ROCKET_DIR}/Source/Core/EventDispatcher.cpp
+  ${ROCKET_DIR}/Source/Core/EventListenerInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/StringCache.cpp
+  ${ROCKET_DIR}/Source/Core/ElementUtilities.cpp
+  ${ROCKET_DIR}/Source/Core/TemplateCache.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledBoxInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/Event.cpp
+  ${ROCKET_DIR}/Source/Core/Clock.cpp
+  ${ROCKET_DIR}/Source/Core/GeometryDatabase.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorOnlyChild.cpp
+  ${ROCKET_DIR}/Source/Core/FontEffectInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/ElementDecoration.cpp
+  ${ROCKET_DIR}/Source/Core/FontEffect.cpp
+  ${ROCKET_DIR}/Source/Core/FileInterfaceDefault.cpp
+  ${ROCKET_DIR}/Source/Core/XMLNodeHandlerTemplate.cpp
+  ${ROCKET_DIR}/Source/Core/ConvolutionFilter.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiled.cpp
+  ${ROCKET_DIR}/Source/Core/XMLNodeHandlerHead.cpp
+  ${ROCKET_DIR}/Source/Core/DocumentHeader.cpp
+  ${ROCKET_DIR}/Source/Core/ContextInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/Decorator.cpp
+  ${ROCKET_DIR}/Source/Core/BaseXMLParser.cpp
+  ${ROCKET_DIR}/Source/Core/Box.cpp
+  ${ROCKET_DIR}/Source/Core/PropertyDefinition.cpp
+  ${ROCKET_DIR}/Source/Core/Math.cpp
+  ${ROCKET_DIR}/Source/Core/ElementText.cpp
+  ${ROCKET_DIR}/Source/Core/precompiled.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetSpecification.cpp
+  ${ROCKET_DIR}/Source/Core/FontEffectNone.cpp
+  ${ROCKET_DIR}/Source/Core/PluginRegistry.cpp
+  ${ROCKET_DIR}/Source/Core/ElementInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/RenderInterface.cpp
+  ${ROCKET_DIR}/Source/Core/ContextInstancerDefault.cpp
+  ${ROCKET_DIR}/Source/Core/LayoutInlineBoxText.cpp
+  ${ROCKET_DIR}/Source/Core/TextureLayout.cpp
+  ${ROCKET_DIR}/Source/Core/PropertyDictionary.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/Context.cpp
+  ${ROCKET_DIR}/Source/Core/LayoutEngine.cpp
+  ${ROCKET_DIR}/Source/Core/WidgetSlider.cpp
+  ${ROCKET_DIR}/Source/Core/Property.cpp
+  ${ROCKET_DIR}/Source/Core/ElementStyle.cpp
+  ${ROCKET_DIR}/Source/Core/ElementStyleCache.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorNoneInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/Element.cpp
+  ${ROCKET_DIR}/Source/Core/FontEffectOutlineInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/FontDatabase.cpp
+  ${ROCKET_DIR}/Source/Core/Texture.cpp
+  ${ROCKET_DIR}/Source/Core/ElementScroll.cpp
+  ${ROCKET_DIR}/Source/Core/FontFaceLayer.cpp
+  ${ROCKET_DIR}/Source/Core/UnicodeRange.cpp
+  ${ROCKET_DIR}/Source/Core/FileInterface.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthLastChild.cpp
+  ${ROCKET_DIR}/Source/Core/FontEffectShadow.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetFactory.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorLastChild.cpp
+  ${ROCKET_DIR}/Source/Core/LayoutBlockBoxSpace.cpp
+  ${ROCKET_DIR}/Source/Core/FontEffectNoneInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/FontFace.cpp
+  ${ROCKET_DIR}/Source/Core/Vector2.cpp
+  ${ROCKET_DIR}/Source/Core/PropertyParserKeyword.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNode.cpp
+  ${ROCKET_DIR}/Source/Core/ElementDocument.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorEmpty.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledImageInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/FontEffectOutline.cpp
+  ${ROCKET_DIR}/Source/Core/FontFamily.cpp
+  ${ROCKET_DIR}/Source/Core/WString.cpp
+  ${ROCKET_DIR}/Source/Core/URL.cpp
+  ${ROCKET_DIR}/Source/Core/FontEffectShadowInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledHorizontalInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorNone.cpp
+  ${ROCKET_DIR}/Source/Core/StreamFile.cpp
+  ${ROCKET_DIR}/Source/Core/Dictionary.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledImage.cpp
+  ${ROCKET_DIR}/Source/Core/EventInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/TextureLayoutRow.cpp
+  ${ROCKET_DIR}/Source/Core/PropertySpecification.cpp
+  ${ROCKET_DIR}/Source/Core/FontFaceHandle.cpp
+  ${ROCKET_DIR}/Source/Core/SystemInterface.cpp
+  ${ROCKET_DIR}/Source/Core/ElementBorder.cpp
+  ${ROCKET_DIR}/Source/Core/Plugin.cpp
+  ${ROCKET_DIR}/Source/Core/LayoutLineBox.cpp
+  ${ROCKET_DIR}/Source/Core/TextureLayoutRectangle.cpp
+  ${ROCKET_DIR}/Source/Core/TextureResource.cpp
+  ${ROCKET_DIR}/Source/Core/LayoutBlockBox.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthOfType.cpp
+  ${ROCKET_DIR}/Source/Core/ElementImage.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelector.cpp
+  ${ROCKET_DIR}/Source/Core/GeometryUtilities.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthLastOfType.cpp
+  ${ROCKET_DIR}/Source/Core/WidgetSliderScroll.cpp
+  ${ROCKET_DIR}/Source/Core/XMLParseTools.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorFirstOfType.cpp
+  ${ROCKET_DIR}/Source/Core/ElementTextDefault.cpp
+  ${ROCKET_DIR}/Source/Core/PropertyParserNumber.cpp
+  ${ROCKET_DIR}/Source/Core/XMLNodeHandlerDefault.cpp
+  ${ROCKET_DIR}/Source/Core/TextureLayoutTexture.cpp
+  ${ROCKET_DIR}/Source/Core/Stream.cpp
+  ${ROCKET_DIR}/Source/Core/XMLParser.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheet.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorFirstChild.cpp
+  ${ROCKET_DIR}/Source/Core/StringUtilities.cpp
+  ${ROCKET_DIR}/Source/Core/Log.cpp
+  ${ROCKET_DIR}/Source/Core/Variant.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthChild.cpp
+  ${ROCKET_DIR}/Source/Core/Geometry.cpp
+  ${ROCKET_DIR}/Source/Core/DecoratorTiledVerticalInstancer.cpp
+  ${ROCKET_DIR}/Source/Core/ElementReference.cpp
+  ${ROCKET_DIR}/Source/Core/StyleSheetNodeSelectorOnlyOfType.cpp
+  ${ROCKET_DIR}/Source/Core/PropertyParserString.cpp
+  ${ROCKET_DIR}/Source/Core/PropertyParserColour.cpp
+  ${ROCKET_DIR}/Source/Core/Factory.cpp
+  ${ROCKET_DIR}/Source/Core/ElementDefinition.cpp
+  ${ROCKET_DIR}/Source/Core/LayoutInlineBox.cpp
+  ${ROCKET_DIR}/Source/Controls/SelectOption.cpp
+  ${ROCKET_DIR}/Source/Controls/WidgetTextInputSingleLinePassword.cpp
+  ${ROCKET_DIR}/Source/Controls/XMLNodeHandlerDataGrid.cpp
+  ${ROCKET_DIR}/Source/Controls/XMLNodeHandlerTextArea.cpp
+  ${ROCKET_DIR}/Source/Controls/WidgetDropDown.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementTabSet.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementFormControlTextArea.cpp
+  ${ROCKET_DIR}/Source/Controls/Clipboard.cpp
+  ${ROCKET_DIR}/Source/Controls/WidgetTextInputMultiLine.cpp
+  ${ROCKET_DIR}/Source/Controls/DataSourceListener.cpp
+  ${ROCKET_DIR}/Source/Controls/WidgetSliderInput.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementFormControlDataSelect.cpp
+  ${ROCKET_DIR}/Source/Controls/InputTypeSubmit.cpp
+  ${ROCKET_DIR}/Source/Controls/WidgetTextInput.cpp
+  ${ROCKET_DIR}/Source/Controls/Controls.cpp
+  ${ROCKET_DIR}/Source/Controls/InputTypeRadio.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementDataGridRow.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementFormControlSelect.cpp
+  ${ROCKET_DIR}/Source/Controls/WidgetSlider.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementDataGridExpandButton.cpp
+  ${ROCKET_DIR}/Source/Controls/InputTypeText.cpp
+  ${ROCKET_DIR}/Source/Controls/InputTypeCheckbox.cpp
+  ${ROCKET_DIR}/Source/Controls/InputType.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementFormControlInput.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementDataGrid.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementTextSelection.cpp
+  ${ROCKET_DIR}/Source/Controls/XMLNodeHandlerTabSet.cpp
+  ${ROCKET_DIR}/Source/Controls/DataQuery.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementForm.cpp
+  ${ROCKET_DIR}/Source/Controls/InputTypeButton.cpp
+  ${ROCKET_DIR}/Source/Controls/InputTypeRange.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementDataGridCell.cpp
+  ${ROCKET_DIR}/Source/Controls/ElementFormControl.cpp
+  ${ROCKET_DIR}/Source/Controls/WidgetTextInputSingleLine.cpp
+  ${ROCKET_DIR}/Source/Controls/DataFormatter.cpp
+  ${ROCKET_DIR}/Source/Controls/DataSource.cpp
+  ${ROCKET_DIR}/Source/Debugger/ElementInfo.cpp
+  ${ROCKET_DIR}/Source/Debugger/Debugger.cpp
+  ${ROCKET_DIR}/Source/Debugger/ElementLog.cpp
+  ${ROCKET_DIR}/Source/Debugger/ElementContextHook.cpp
+  ${ROCKET_DIR}/Source/Debugger/SystemInterface.cpp
+  ${ROCKET_DIR}/Source/Debugger/Plugin.cpp
+  ${ROCKET_DIR}/Source/Debugger/Geometry.cpp
+)
+
 set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_api.cpp
   ${GAMELOGIC_DIR}/cgame/cg_consolecmds.cpp
@@ -937,6 +1085,38 @@ set( CGAMELIST
   ${GAMELOGIC_DIR}/cgame/cg_rocket_dataformatter.cpp
   ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
   ${GAMELOGIC_DIR}/cgame/cg_parseutils.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_dataformatter.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_documents.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_datagrid.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_element.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_events.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_keys.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket_hud.cpp
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket.cpp
+
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketSelectableDataGrid.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketConditionalElement.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketConsoleTextElement.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketFormControlSelect.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketCvarInlineElement.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketDataSourceSingle.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketFormControlInput.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketElementDocument.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketEventInstancer.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketIncludeElement.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketDataFormatter.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketFocusManager.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketProgressBar.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketDataSelect.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketDataSource.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketCircleMenu.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketColorInput.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketChatField.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketKeyBinder.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketDataGrid.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocketElement.h
+  ${GAMELOGIC_DIR}/cgame/rocket/rocket.h
+
   ${GAMELOGIC_DIR}/cgame/Filter.h
   ${ENGINE_DIR}/client/cg_api.h
   ${ENGINE_DIR}/client/cg_msgdef.h
@@ -1226,6 +1406,33 @@ if( DEPS_DIR )
   endif()
 endif()
 
+if( NACL_DEPS_DIR )
+  # Download them if they not available
+  if( NOT EXISTS ${NACL_DEPS_DIR} )
+    get_filename_component( BASENAME ${NACL_DEPS_DIR} NAME )
+    set( REMOTE "http://dl.unvanquished.net/deps/${BASENAME}.zip" )
+    message( STATUS "Downloading dependencies from '${REMOTE}'" )
+    file( DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}.zip SHOW_PROGRESS
+    STATUS DOWNLOAD_RESULT LOG DOWNLOAD_LOG )
+    list( GET DOWNLOAD_RESULT 0 DOWNLOAD_STATUS )
+    list( GET DOWNLOAD_RESULT 1 DOWNLOAD_STRING )
+    if( NOT DOWNLOAD_STATUS EQUAL 0 )
+      message( FATAL_ERROR "Error downloading '${REMOTE}':
+      Status code: ${DOWNLOAD_STATUS}
+      Error string: ${DOWNLOAD_STRING}
+      Download log: ${DOWNLOAD_LOG}" )
+    endif()
+    message( STATUS "Download completed successfully" )
+
+    # Extract the downloaded archive
+    execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}.zip
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/external_deps RESULT_VARIABLE EXTRACT_RESULT )
+    if( NOT EXTRACT_RESULT EQUAL 0 )
+      message( FATAL_ERROR "Could not extract ${BASENAME}.zip" )
+    endif()
+  endif()
+endif()
+
 # These variables are defined:
 # LIBS_BASE, LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
 # LIBSRC_BASE, LIBSRC_NACL, LIBSRC_ENGINE
@@ -1321,6 +1528,7 @@ if( BUILD_CLIENT )
   set_target_properties(ROCKET_LIB PROPERTIES FOLDER "libs")
   add_definitions( -DSTATIC_LIB )
   set( LIBS_CLIENT ${LIBS_CLIENT} ROCKET_LIB )
+  set( LIBS_cgame ${LIBS_cgame} ROCKET_LIB )
 endif()
 
 # zlib
@@ -1399,6 +1607,7 @@ if( BUILD_CLIENT )
   find_package( Freetype REQUIRED )
   include_directories( ${FREETYPE_INCLUDE_DIRS} )
   set( LIBS_CLIENT ${LIBS_CLIENT} ${FREETYPE_LIBRARIES} )
+  set( LIBS_cgame ${LIBS_cgame} ${FREETYPE_LIBRARIES} )
 endif()
 
 # GLEW
@@ -1448,10 +1657,12 @@ endif()
 add_library( base-source-libs EXCLUDE_FROM_ALL ${LIBSRC_BASE} )
 add_library( nacl-source-libs EXCLUDE_FROM_ALL ${LIBSRC_NACL} )
 add_library( engine-source-libs EXCLUDE_FROM_ALL ${LIBSRC_ENGINE} )
-set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+set_target_properties( base-source-libs nacl-source-libs engine-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs" )
 
 set( LIBS_BASE base-source-libs ${LIBS_BASE} )
 set( LIBS_ENGINE engine-source-libs nacl-source-libs ${LIBS_ENGINE} )
+set( LIBS_cgame_nacl ${NACL_DEPS_DIR}/libfreetype.a ${NACL_DEPS_DIR}/libpng16.a )
+set( cgame_NACL_INCLUDE_DIRS -I${GAMELOGIC_DIR} -I${ROCKET_DIR}/Include -I${ROCKET_DIR}/Contrib/Include -I${NACL_DEPS_DIR}/include/freetype2 )
 
 ################################################################################
 # Game logic
@@ -1462,12 +1673,13 @@ include( CMakeParseArguments )
 function( GAMEMODULE )
   # ParseArguments setup
   set( oneValueArgs NAME )
-  set( multiValueArgs COMPILE_DEF FILES )
+  set( multiValueArgs COMPILE_DEF FILES NACL_FILES )
   cmake_parse_arguments( GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  string( TOUPPER ${GAMEMODULE_NAME} UPPER_NAME )
 
   if( BUILD_GAME_NATIVE_DLL )
     add_library( ${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
-    target_link_libraries( ${GAMEMODULE_NAME}-native-dll nacl-source-libs ${LIBS_BASE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-native-dll nacl-source-libs ${LIBS_BASE} ${LIBS_${GAMEMODULE_NAME}} )
     set_target_properties( ${GAMEMODULE_NAME}-native-dll PROPERTIES
       PREFIX ""
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF};BUILD_VM_IN_PROCESS"
@@ -1479,7 +1691,7 @@ function( GAMEMODULE )
 
   if( BUILD_GAME_NATIVE_EXE )
     add_executable( ${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} )
-    target_link_libraries( ${GAMEMODULE_NAME}-native-exe nacl-source-libs ${LIBS_BASE} )
+    target_link_libraries( ${GAMEMODULE_NAME}-native-exe nacl-source-libs ${LIBS_BASE} ${LIBS_${GAMEMODULE_NAME}} )
     set_target_properties( ${GAMEMODULE_NAME}-native-exe PROPERTIES
       COMPILE_DEFINITIONS "${GAMEMODULE_COMPILE_DEF}"
       FOLDER ${GAMEMODULE_NAME}
@@ -1501,6 +1713,7 @@ function( GAMEMODULE )
       -I${LIB_DIR}/zlib
       -I${MOUNT_DIR}
       -I${GAMELOGIC_DIR}
+      ${${GAMEMODULE_NAME}_NACL_INCLUDE_DIRS}
       -DNACL_BUILD_ARCH=x86 # Not actually used
       -DNACL_BUILD_SUBARCH=64 # Not actually used
       -Wall
@@ -1550,7 +1763,9 @@ function( GAMEMODULE )
     endif()
     set( NACL_COMPILE_OPTIONS ${NACL_COMPILE_OPTIONS}
       -Wextra
+      -Wno-error=deprecated-register
       -Wno-error=implicit-function-declaration
+      -Wno-error=logical-op-parentheses
       -W${WARNMODE}missing-field-initializers
       -Wno-error=pointer-bool-conversion
       -W${WARNMODE}sign-compare
@@ -1568,11 +1783,15 @@ function( GAMEMODULE )
 
     # Compile C files with clang and C++ files with clang++
     set( OBJECTS )
-    foreach( FILE ${GAMEMODULE_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} ${ZLIBLIST} ${LIBSRC_BASE} )
+    foreach( FILE ${GAMEMODULE_FILES} ${GAMEMODULE_NACL_FILES} ${SHAREDLIST} ${NACLLIST_MODULE} ${ZLIBLIST} ${LIBSRC_BASE} )
       get_filename_component( FILENAME ${FILE} NAME_WE )
       get_filename_component( FILEDIR ${FILE} PATH )
       get_filename_component( EXT ${FILE} EXT )
-      set( OBJ ${NACL_DIR}/${FILENAME}.o )
+
+      # Use relative path to guarantee unique target names
+      file(RELATIVE_PATH FILE_REL_PATH ${CMAKE_SOURCE_DIR} "${FILEDIR}/${FILENAME}")
+      string(REGEX REPLACE "/" "-" OBJ_NAME ${FILE_REL_PATH})
+      set( OBJ ${NACL_DIR}/${OBJ_NAME}.o )
 
       if( EXT STREQUAL ".c" AND FILEDIR MATCHES ${LIB_DIR} )
         add_custom_command( OUTPUT ${OBJ}
@@ -1607,7 +1826,7 @@ function( GAMEMODULE )
       COMMAND ${PNACLPYTHON_PREFIX} ${PNACL_TOOLCHAIN}/pnacl-clang++${PNACL_BIN_EXT}
         ${NACL_COMPILE_OPTIONS}
         -o ${FULL_OUTPUT_DIR}/${GAMEMODULE_NAME}.pexe
-        ${OBJECTS} -lnacl_exception
+        ${OBJECTS} ${LIBS_${GAMEMODULE_NAME}_nacl} -lnacl_exception
       DEPENDS ${OBJECTS}
     )
 
@@ -1678,6 +1897,7 @@ GAMEMODULE( NAME sgame
 GAMEMODULE( NAME cgame
   COMPILE_DEF BUILD_VM BUILD_CGAME
   FILES ${CGAMELIST}
+  NACL_FILES ${ROCKETLIST}
 )
 
 ################################################################################

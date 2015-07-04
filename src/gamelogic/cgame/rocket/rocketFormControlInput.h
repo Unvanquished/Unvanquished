@@ -35,8 +35,7 @@ Maryland 20850 USA.
 #ifndef ROCKETFORMCONTROLINPUT_H
 #define ROCKETFORMCONTROLINPUT_H
 
-#include "client.h"
-#include "framework/CvarSystem.h"
+#include "../cg_local.h"
 #include <Rocket/Core/Core.h>
 #include <Rocket/Controls/ElementFormControlInput.h>
 

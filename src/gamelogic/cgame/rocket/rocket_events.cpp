@@ -32,57 +32,60 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+// Code for generating custom events for libRocket
 
-#ifndef ROCKETMISCTEXT_H
-#define ROCKETMISCTEXT_H
+#include <queue>
+#include "rocket.h"
+#include <Rocket/Core/StringUtilities.h>
+#include "../cg_local.h"
 
-#include <Rocket/Core.h>
-#include "client.h"
+std::queue< RocketEvent_t* > eventQueue;
+extern Rocket::Core::Element *activeElement;
 
-struct TextAndRect
+void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
 {
-	TextAndRect( const char *_text, const char *_class, float _x, float _y ) : text( _text ), text_class( _class ), x( _x ), y( _y ) { }
-	Rocket::Core::String text;
-	Rocket::Core::String text_class;
-	float x;
-	float y;
-};
+	Rocket::Core::StringList list;
 
-// A libRocket element to hold other misc text on the screen. It is assumed that it will change every frame
+	Rocket::Core::StringUtilities::ExpandString( list, value, ';' );
+	for ( size_t i = 0; i < list.size(); ++i )
+	{
+		eventQueue.push( new RocketEvent_t( event, list[ i ] ) );
+	}
+}
 
-class RocketMiscText : public Rocket::Core::Element
+bool Rocket_GetEvent(std::string& cmdText)
 {
-public:
-	RocketMiscText( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag )
+	if ( !eventQueue.empty() )
 	{
+		cmdText = eventQueue.front()->cmd.CString();
+		activeElement = eventQueue.front()->targetElement;
+		return true;
 	}
 
-	static void ClearText()
-	{
-		strings.clear();
-	}
+	return false;
+}
 
-	static void AddText( const char *text, const char *text_class, float x, float y )
-	{
-		strings.push_back( TextAndRect( text, text_class, x, y ) );
-	}
+void Rocket_DeleteEvent()
+{
+	RocketEvent_t *event = eventQueue.front();
+	eventQueue.pop();
+	activeElement = nullptr;
+	delete event;
+}
 
-	void OnUpdate()
+void Rocket_GetEventParameters( char *params, int length )
+{
+	RocketEvent_t *event = eventQueue.front();
+	*params = '\0';
+	if ( !eventQueue.empty() )
 	{
-		while ( HasChildNodes() )
+		int index = 0;
+		Rocket::Core::String key;
+		Rocket::Core::String value;
+
+		while ( event->Parameters.Iterate( index, key, value ) )
 		{
-
-			RemoveChild( GetFirstChild() );
-		}
-
-		for ( size_t i = 0; i < strings.size(); ++i )
-		{
-			Rocket::Core::Factory::InstanceElementText( this, va( "<div style='position: fixed; left: %.2f%%; top: %.2f%%;' class='%s'>%s</div>", strings[ i ].x * 100.0f, strings[ i ].y * 100.0f, strings[ i ].text_class.CString(), strings[ i ].text.CString() ) );
+			Info_SetValueForKeyRocket( params, key.CString(), value.CString(), true );
 		}
 	}
-
-private:
-	static std::vector<TextAndRect> strings;
-	Rocket::Core::Element *base_element;
-};
-#endif
+}

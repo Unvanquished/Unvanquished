@@ -35,8 +35,7 @@ Maryland 20850 USA.
 #ifndef ROCKETDATAGRID_H
 #define ROCKETDATAGRID_H
 
-#include "qcommon/q_shared.h"
-#include "client.h"
+#include "../cg_local.h"
 #include "rocket.h"
 #include <Rocket/Controls/DataSource.h>
 #include <Rocket/Core/Types.h>

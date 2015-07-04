@@ -39,7 +39,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/ElementInstancerGeneric.h>
 #include <Rocket/Controls/ElementFormControlDataSelect.h>
 #include "rocketConsoleTextElement.h"
-#include "client.h"
+#include "../cg_local.h"
 
 extern Rocket::Core::Element *activeElement;
 
@@ -107,7 +107,7 @@ static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Ro
 	}
 }
 
-void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, int parseFlags )
+void Rocket_SetInnerRMLById( const char *name, const char *id, const char *RML, bool parseFlags )
 {
 	Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
 
@@ -132,6 +132,10 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, int 
 	}
 }
 
+void Rocket_SetInnerRML( const char *RML, bool parseFlags )
+{
+	Rocket_SetInnerRMLById( "", "", RML, parseFlags );
+}
 
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
 {

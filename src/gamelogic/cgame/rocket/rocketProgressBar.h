@@ -38,7 +38,7 @@
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/GeometryUtilities.h>
-#include "client.h"
+#include "../cg_local.h"
 #include "rocket.h"
 
 typedef enum
@@ -81,7 +81,7 @@ public:
 
 		if ( !source.Empty() )
 		{
-			newValue = cgvm.CGameRocketProgressbarValue(source.CString());
+			newValue = CG_Rocket_ProgressBarValue(source.CString());
 
 			if ( newValue != value )
 			{
@@ -110,17 +110,17 @@ public:
 			// Meter decreases down
 			if ( orientation == DOWN )
 			{
-				re.SetColor( color );
-				re.DrawStretchPic( position.x, position.y, dimensions.x, height,
+				trap_R_SetColor( color );
+				trap_R_DrawStretchPic( position.x, position.y, dimensions.x, height,
 						       0.0f, 0.0f, 1.0f, value, shader );
-				re.SetColor( nullptr );
+				trap_R_SetColor( nullptr );
 			}
 			else
 			{
-				re.SetColor( color );
-				re.DrawStretchPic( position.x, position.y - height + dimensions.y, dimensions.x,
+				trap_R_SetColor( color );
+				trap_R_DrawStretchPic( position.x, position.y - height + dimensions.y, dimensions.x,
 						       height, 0.0f, 1.0f - value, 1.0f, 1.0f, shader );
-				re.SetColor( nullptr );
+				trap_R_SetColor( nullptr );
 			}
 		}
 
@@ -134,17 +134,17 @@ public:
 			// Meter decreases to the left
 			if ( orientation == LEFT )
 			{
-				re.SetColor( color );
-				re.DrawStretchPic( position.x, position.y, width,
+				trap_R_SetColor( color );
+				trap_R_DrawStretchPic( position.x, position.y, width,
 						       dimensions.y, 0.0f, 0.0f, value, 1.0f, shader );
-				re.SetColor( nullptr );
+				trap_R_SetColor( nullptr );
 			}
 			else
 			{
-				re.SetColor( color );
-				re.DrawStretchPic( position.x - width + dimensions.x, position.y, width,
+				trap_R_SetColor( color );
+				trap_R_DrawStretchPic( position.x - width + dimensions.x, position.y, width,
 						       dimensions.y, 1.0f - value, 0.0f, 1.0f, 1.0f, shader );
-				re.SetColor( nullptr );
+				trap_R_SetColor( nullptr );
 			}
 		}
 	}
@@ -173,7 +173,7 @@ public:
 				image = image.Substring( 1 );
 			}
 
-			shader = re.RegisterShader( image.CString(), RSF_NOMIP );
+			shader = trap_R_RegisterShader( image.CString(), RSF_NOMIP );
 		}
 
 		if ( changed_properties.find( "orientation" ) != changed_properties.end() )
@@ -294,7 +294,7 @@ public:
 		if ( shader && ( auto_height || auto_width ) )
 		{
 			int x, y;
-			re.GetTextureSize( shader, &x, &y );
+			trap_R_GetTextureSize( shader, &x, &y );
 
 			if ( auto_height && !auto_width )
 			{

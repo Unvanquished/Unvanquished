@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include <Rocket/Core.h>
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/FontFaceHandle.h>
-#include "client.h"
+#include "../cg_local.h"
 #include "rocket.h"
 
 struct ConsoleLine
@@ -47,7 +47,7 @@ struct ConsoleLine
 	int time;
 	ConsoleLine( Rocket::Core::String _i ) : text( _i )
 	{
-		time = Sys_Milliseconds();
+		time = trap_Milliseconds();
 	}
 };
 
@@ -62,8 +62,8 @@ public:
 	void OnUpdate()
 	{
 		// Clean up old elements
-		int latency = Cvar_VariableIntegerValue( "cg_consoleLatency" );
-		int time = Sys_Milliseconds();
+		int latency = trap_Cvar_VariableIntegerValue( "cg_consoleLatency" );
+		int time = trap_Milliseconds();
 
 		while ( !lines.empty() && lines.back().time + latency < time )
 		{

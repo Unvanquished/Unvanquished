@@ -1901,7 +1901,7 @@ void CL_KeyEvent( int key, bool down, unsigned time )
 			return;
 		}
 
-		Rocket_ProcessKeyInput( key, down );
+		cgvm.CGameKeyEvent(key, down);
 		return;
 	}
 
@@ -1910,7 +1910,7 @@ void CL_KeyEvent( int key, bool down, unsigned time )
 	// to run any binds (since they won't be found).
 	if ( cls.keyCatchers & KEYCATCH_UI && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
-		Rocket_ProcessKeyInput( key, down );
+		cgvm.CGameKeyEvent(key, down);
 		return;
 	}
 
@@ -2012,7 +2012,7 @@ void CL_CharEvent( int c )
 		Field_CharEvent(g_consoleField, CL_UTF8_unpack(c));
 	}
 
-	Rocket_ProcessTextInput( c );
+	cgvm.CGameTextInputEvent(c);
 }
 
 /*
@@ -2026,6 +2026,9 @@ void Key_ClearStates()
 
 	anykeydown = 0;
 
+	int oldKeyCatcher = Key_GetCatcher();
+	Key_SetCatcher( 0 );
+
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
 		if ( keys[ i ].down )
@@ -2038,6 +2041,8 @@ void Key_ClearStates()
 	}
 
 	plusCommand.check = rand();
+
+	Key_SetCatcher( oldKeyCatcher );
 }
 
 /*
