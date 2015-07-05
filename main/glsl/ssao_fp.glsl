@@ -74,7 +74,7 @@ void computeOcclusionForQuad( in vec2 centerTC, in float centerDepth,
 					  centerDepth * y * u_zFar.y );
 }
 
-const vec4 offsets[] = vec4[6](
+vec4 offsets[] = vec4[6](
 	vec4( 0.5,  1.5, 1.5, -0.5 ),
 	vec4( 0.5,  4.5, 3.5,  2.5 ),
 	vec4( 4.5, -0.5, 2.5, -3.5 ),
