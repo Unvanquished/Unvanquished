@@ -544,7 +544,7 @@ int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
 	return res;
 }
 
-int trap_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin )
+int trap_FS_Seek( fileHandle_t f, int offset, fsOrigin_t origin )
 {
     int res;
 	VM::SendMsg<VM::FSSeekMsg>(f, offset, origin, res);

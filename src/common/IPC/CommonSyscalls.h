@@ -112,7 +112,7 @@ namespace VM {
     > FSWriteMsg;
     // FSSeekMsg
     typedef IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_SEEK>, int, long, int>,
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_SEEK>, int, int, int>,
         IPC::Reply<int>
     > FSSeekMsg;
     // FSTellMsg

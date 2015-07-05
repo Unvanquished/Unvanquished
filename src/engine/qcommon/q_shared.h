@@ -2371,7 +2371,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 		ET_MODELDOOR,
 		ET_LIGHTFLARE,
 		ET_LEV2_ZAP_CHAIN,
-		
+
 		ET_BEACON,
 
 		ET_EVENTS       // any of the EV_* events can be added freestanding
