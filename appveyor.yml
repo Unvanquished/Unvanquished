@@ -26,5 +26,5 @@ build_script:
   - cmd: cmake --version
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake -DUSE_WERROR=1 -G"%GENERATOR%" -DCMAKE_BUILD_TYPE=Debug ..
+  - cmd: cmake -DBUILD_GAME_NACL=OFF -DUSE_WERROR=1 -G"%GENERATOR%" -DCMAKE_BUILD_TYPE=Debug ..
   - cmd: cmake --build .
