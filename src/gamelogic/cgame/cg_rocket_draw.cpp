@@ -541,66 +541,84 @@ private:
 
 };
 
-static void CG_Rocket_DrawCrosshair()
-{
-	rectDef_t    rect;
-	float        w, h;
-	qhandle_t    crosshair;
-	float        x, y;
-	weaponInfo_t *wi;
-	weapon_t     weapon;
-	vec4_t       color = { 255, 255, 255, 255 };
+class CrosshairHudElement : public HudElement {
+public:
+	CrosshairHudElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_BOTH, true ),
+			color{255, 255, 255, 255} {}
 
-
-	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
-
-	if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF )
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
-		return;
+		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		{
+			Rocket::Core::Colourb c = GetProperty<Rocket::Core::Colourb>( "color" );
+			color[0] = c.red, color[1] = c.green, color[2] = c.blue, color[3] = c.alpha;
+			Vector4Scale( color, 1 / 255.0f, color);
+		}
 	}
 
-	if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY &&
+	void DoOnRender()
+	{
+		rectDef_t    rect;
+		float        w, h;
+		qhandle_t    crosshair;
+		float        x, y;
+		weaponInfo_t *wi;
+		weapon_t     weapon;
+
+		weapon = BG_GetPlayerWeapon( &cg.snap->ps );
+
+		if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF )
+		{
+			return;
+		}
+
+		if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY &&
 			!BG_Weapon( weapon )->longRanged )
-	{
-		return;
+		{
+			return;
+		}
+
+		if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+		{
+			return;
+		}
+
+		if ( cg.renderingThirdPerson )
+		{
+			return;
+		}
+
+		if ( cg.snap->ps.pm_type == PM_INTERMISSION )
+		{
+			return;
+		}
+
+		GetElementRect( rect );
+
+		wi = &cg_weapons[ weapon ];
+
+		w = h = wi->crossHairSize * cg_crosshairSize.value;
+		w *= cgs.aspectScale;
+
+		// HACK: This ignores the width/height of the rect (does it?)
+		x = rect.x + ( rect.w / 2 ) - ( w / 2 );
+		y = rect.y + ( rect.h / 2 ) - ( h / 2 );
+
+		crosshair = wi->crossHair;
+
+		if ( crosshair )
+		{
+			CG_GetRocketElementColor( color );
+			trap_R_SetColor( color );
+			CG_DrawPic( x, y, w, h, crosshair );
+			trap_R_SetColor( nullptr );
+		}
 	}
 
-	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
-	{
-		return;
-	}
-
-	if ( cg.renderingThirdPerson )
-	{
-		return;
-	}
-
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
-	{
-		return;
-	}
-
-	CG_GetRocketElementRect( &rect );
-
-	wi = &cg_weapons[ weapon ];
-
-	w = h = wi->crossHairSize * cg_crosshairSize.value;
-	w *= cgs.aspectScale;
-
-	// HACK: This ignores the width/height of the rect (does it?)
-	x = rect.x + ( rect.w / 2 ) - ( w / 2 );
-	y = rect.y + ( rect.h / 2 ) - ( h / 2 );
-
-	crosshair = wi->crossHair;
-
-	if ( crosshair )
-	{
-		CG_GetRocketElementColor( color );
-		trap_R_SetColor( color );
-		CG_DrawPic( x, y, w, h, crosshair );
-		trap_R_SetColor( nullptr );
-	}
-}
+private:
+	vec4_t color;
+};
 
 #define SPEEDOMETER_NUM_SAMPLES 4096
 #define SPEEDOMETER_NUM_DISPLAYED_SAMPLES 160
@@ -2847,7 +2865,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
-	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
 	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, ELEMENT_ALL },
 	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
@@ -2929,4 +2946,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "clips", ClipsHudElement )
 	REGISTER_ELEMENT( "fps", FpsHudElement )
 	REGISTER_ELEMENT( "crosshair_indicator", CrosshairIndicatorHudElement )
+	REGISTER_ELEMENT( "crosshair", CrosshairHudElement )
 }
