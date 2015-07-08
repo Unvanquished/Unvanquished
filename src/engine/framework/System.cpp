@@ -332,6 +332,14 @@ void Error(Str::StringRef message)
 #ifndef _WIN32
 static void SignalHandler(int sig)
 {
+	// Abort if we still haven't exited 1 second after shutdown started
+	static Util::optional<Sys::SteadyClock::time_point> abort_time;
+	if (abort_time) {
+		if (Sys::SteadyClock::now() < abort_time)
+			return;
+		_exit(255);
+	}
+
 	// Queue a quit command to be executed next frame
 	Cmd::BufferCommandText("quit");
 
@@ -344,6 +352,11 @@ static void SignalHandler(int sig)
 	for (int sig: {SIGTERM, SIGINT, SIGQUIT, SIGPIPE, SIGHUP})
 		sigaddset(&sigset, sig);
 	sigwait(&sigset, &sig);
+
+	// Allow aborting shutdown if it gets stuck
+	abort_time = Sys::SteadyClock::now() + std::chrono::seconds(1);
+	pthread_sigmask(SIG_UNBLOCK, &sigset, nullptr);
+
 	Sys::Error("Forcing shutdown from signal: %s", strsignal(sig));
 }
 static void SignalThread()
