@@ -190,6 +190,13 @@ public:
 		rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
 	}
 
+	void GetColor( const Rocket::Core::String& property, vec4_t color )
+	{
+		Rocket::Core::Colourb c = GetProperty<Rocket::Core::Colourb>( property );
+		color[0] = c.red, color[1] = c.green, color[2] = c.blue, color[3] = c.alpha;
+		Vector4Scale( color, 1 / 255.0f, color);
+	}
+
 protected:
 	Rocket::Core::Vector2f dimensions;
 
@@ -204,12 +211,13 @@ public:
 	TextHudElement( const Rocket::Core::String& tag, rocketElementType_t type ) :
 		HudElement( tag, type )
 	{
-		textElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
-				this,
-				"#text",
-				"#text",
-				Rocket::Core::XMLAttributes() ) );
-		AppendChild( textElement );
+		InitializeTextElement();
+	}
+
+	TextHudElement( const Rocket::Core::String& tag, rocketElementType_t type, bool replacedElement ) :
+		HudElement( tag, type, replacedElement )
+	{
+		InitializeTextElement();
 	}
 
 	void SetText(const Rocket::Core::String& text )
@@ -218,6 +226,16 @@ public:
 	}
 
 private:
+	void InitializeTextElement()
+	{
+		textElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+			this,
+			"#text",
+			"#text",
+			Rocket::Core::XMLAttributes() ) );
+		AppendChild( textElement );
+	}
+
 	Rocket::Core::ElementText* textElement;
 
 };
@@ -439,9 +457,7 @@ public:
 	{
 		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
-			Rocket::Core::Colourb c = GetProperty<Rocket::Core::Colourb>( "color" );
-			color[0] = c.red, color[1] = c.green, color[2] = c.blue, color[3] = c.alpha;
-			Vector4Scale( color, 1 / 255.0f, color);
+			GetColor( "color", color );
 		}
 	}
 
@@ -551,9 +567,7 @@ public:
 	{
 		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
-			Rocket::Core::Colourb c = GetProperty<Rocket::Core::Colourb>( "color" );
-			color[0] = c.red, color[1] = c.green, color[2] = c.blue, color[3] = c.alpha;
-			Vector4Scale( color, 1 / 255.0f, color);
+			GetColor( "color", color );
 		}
 	}
 
@@ -726,95 +740,150 @@ void CG_AddSpeed()
 #define SPEEDOMETER_MIN_RANGE 900
 #define SPEED_MED             1000.f
 #define SPEED_FAST            1600.f
-static void CG_Rocket_DrawSpeedGraph()
-{
-	int          i;
-	float        val, max, top;
-	// colour of graph is interpolated between these values
-	const vec3_t slow = { 0.0, 0.0, 1.0 };
-	const vec3_t medium = { 0.0, 1.0, 0.0 };
-	const vec3_t fast = { 1.0, 0.0, 0.0 };
-	vec4_t       color, backColor;
-	rectDef_t    rect;
 
-	if ( !cg_drawSpeed.integer )
+class SpeedGraphElement : public HudElement
+{
+public:
+	SpeedGraphElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_GAME, true )
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
+		Rocket::Core::XMLAttributes xml;
+		maxSpeedElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+			this,
+			"#text",
+			"span",
+			xml ) );
+		maxSpeedElement->SetClass( "speed_max", true );
+		currentSpeedElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+			this,
+			"#text",
+			"span",
+			xml) );
+		currentSpeedElement->SetClass( "speed_current", true );
+		AppendChild( maxSpeedElement );
+		AppendChild( currentSpeedElement );
 	}
 
-	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_GRAPH )
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
-		// grab info from libRocket
-		CG_GetRocketElementColor( color );
-		CG_GetRocketElementBGColor( backColor );
-		CG_GetRocketElementRect( &rect );
-
-		max = speedSamples[ maxSpeedSample ];
-
-		if ( max < SPEEDOMETER_MIN_RANGE )
+		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
-			max = SPEEDOMETER_MIN_RANGE;
+			GetColor( "color", color );
 		}
 
-		trap_R_SetColor( backColor );
-		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
-
-		for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
+		if ( changed_properties.find( "background-color" ) != changed_properties.end() )
 		{
-			val = speedSamples[( oldestSpeedSample + i + SPEEDOMETER_NUM_SAMPLES -
-					SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
+			GetColor( "background-color", backColor );
+		}
+	}
 
-			if ( val < SPEED_MED )
+	void DoOnRender()
+	{
+		int          i;
+		float        val, max, top;
+		// colour of graph is interpolated between these values
+		const vec3_t slow = { 0.0, 0.0, 1.0 };
+		const vec3_t medium = { 0.0, 1.0, 0.0 };
+		const vec3_t fast = { 1.0, 0.0, 0.0 };
+		rectDef_t    rect;
+
+		if ( !cg_drawSpeed.integer )
+		{
+			if ( shouldDrawSpeed )
 			{
-				VectorLerpTrem( val / SPEED_MED, slow, medium, color );
+				currentSpeedElement->SetText( "" );
+				maxSpeedElement->SetText( "" );
+				shouldDrawSpeed = false;
+			}
+			return;
+		}
+		else if ( !shouldDrawSpeed )
+		{
+			shouldDrawSpeed = true;
+		}
+
+
+		if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_GRAPH )
+		{
+			// grab info from libRocket
+			GetElementRect( rect );
+
+			max = speedSamples[ maxSpeedSample ];
+
+			if ( max < SPEEDOMETER_MIN_RANGE )
+			{
+				max = SPEEDOMETER_MIN_RANGE;
 			}
 
-			else if ( val < SPEED_FAST )
+			trap_R_SetColor( backColor );
+			CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
+
+			for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
 			{
-				VectorLerpTrem( ( val - SPEED_MED ) / ( SPEED_FAST - SPEED_MED ),
-						medium, fast, color );
+				val = speedSamples[( oldestSpeedSample + i + SPEEDOMETER_NUM_SAMPLES -
+				SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
+
+				if ( val < SPEED_MED )
+				{
+					VectorLerpTrem( val / SPEED_MED, slow, medium, color );
+				}
+
+				else if ( val < SPEED_FAST )
+				{
+					VectorLerpTrem( ( val - SPEED_MED ) / ( SPEED_FAST - SPEED_MED ),
+									medium, fast, color );
+				}
+
+				else
+				{
+					VectorCopy( fast, color );
+				}
+
+				trap_R_SetColor( color );
+				top = rect.y + ( 1 - val / max ) * rect.h;
+				CG_DrawPic( rect.x + ( i / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) * rect.w, top,
+							rect.w / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES, val * rect.h / max,
+							cgs.media.whiteShader );
+			}
+
+			trap_R_SetColor( nullptr );
+		}
+
+		if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_TEXT )
+		{
+			// Add text to be configured via CSS
+			if ( cg.predictedPlayerState.clientNum == cg.clientNum )
+			{
+				vec3_t vel;
+				VectorCopy( cg.predictedPlayerState.velocity, vel );
+
+				if ( cg_drawSpeed.integer & SPEEDOMETER_IGNORE_Z )
+				{
+					vel[ 2 ] = 0;
+				}
+
+				val = VectorLength( vel );
 			}
 
 			else
 			{
-				VectorCopy( fast, color );
+				val = speedSamples[( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
 			}
-
-			trap_R_SetColor( color );
-			top = rect.y + ( 1 - val / max ) * rect.h;
-			CG_DrawPic( rect.x + ( i / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) * rect.w, top,
-				rect.w / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES, val * rect.h / max,
-				cgs.media.whiteShader );
+			// HACK: Put extra spaces to separate the children because setting them to block makes them disappear.
+			// TODO: Figure out why setting these two elements to block makes them disappear.
+			maxSpeedElement->SetText( va( "%d   ", ( int ) speedSamples[ maxSpeedSampleInWindow ] ) );
+			currentSpeedElement->SetText( va( "%d", ( int ) val ) );
 		}
-
-		trap_R_SetColor( nullptr );
 	}
 
-	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_TEXT )
-	{
-		// Add text to be configured via CSS
-		if ( cg.predictedPlayerState.clientNum == cg.clientNum )
-		{
-			vec3_t vel;
-			VectorCopy( cg.predictedPlayerState.velocity, vel );
+private:
+	Rocket::Core::ElementText* maxSpeedElement;
+	Rocket::Core::ElementText* currentSpeedElement;
+	bool shouldDrawSpeed;
+	vec4_t color;
+	vec4_t backColor;
 
-			if ( cg_drawSpeed.integer & SPEEDOMETER_IGNORE_Z )
-			{
-				vel[ 2 ] = 0;
-			}
-
-			val = VectorLength( vel );
-		}
-
-		else
-		{
-			val = speedSamples[( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
-		}
-
-		Rocket_SetInnerRML( va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ), 0 );
-	}
-}
+};
 
 static void CG_Rocket_DrawCreditsValue()
 {
@@ -2893,7 +2962,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "predictedMineEfficiency", &CG_Rocket_DrawPredictedRGSRate, ELEMENT_BOTH },
 	{ "progress_value", &CG_Rocket_DrawProgressValue, ELEMENT_ALL },
 	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
-	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
 	{ "stamina", &CG_Rocket_DrawStaminaValue, ELEMENT_HUMANS },
 	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
 	{ "timer", &CG_Rocket_DrawTimer, ELEMENT_GAME },
@@ -2947,4 +3015,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "fps", FpsHudElement )
 	REGISTER_ELEMENT( "crosshair_indicator", CrosshairIndicatorHudElement )
 	REGISTER_ELEMENT( "crosshair", CrosshairHudElement )
+	REGISTER_ELEMENT( "speedometer", SpeedGraphElement )
 }
