@@ -976,11 +976,11 @@ extern huffman_t clientHuffTables;
 #define CL_ENCODE_START 12
 #define CL_DECODE_START 4
 
-int  Parse_AddGlobalDefine( const char *string );
+bool  Parse_AddGlobalDefine( const char *string );
 int  Parse_LoadSourceHandle( const char *filename );
-int  Parse_FreeSourceHandle( int handle );
+bool  Parse_FreeSourceHandle( int handle );
 bool  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
-int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
+bool  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
 void Com_RandomBytes( byte *string, int len );
 
