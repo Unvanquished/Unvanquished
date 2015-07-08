@@ -40,15 +40,22 @@ struct AudioData {
 	    , byteDepth{0}
 	    , numberOfChannels{0}
 	    , size{0}
-	    , rawSamples{nullptr}
 	{}
 
-	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, const char* rawSamples)
+	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, std::vector<unsigned char>& rawSamples)
 	    : sampleRate{sampleRate}
 	    , byteDepth{byteDepth}
 	    , numberOfChannels{numberOfChannels}
 	    , size{size}
 	    , rawSamples{rawSamples}
+	{}
+
+	AudioData(int sampleRate, int byteDepth, int numberOfChannels, int size, std::vector<unsigned char>&& rawSamples)
+		: sampleRate{ sampleRate }
+		, byteDepth{ byteDepth }
+		, numberOfChannels{ numberOfChannels }
+		, size{ size }
+		, rawSamples{ std::move(rawSamples) }
 	{}
 
 	AudioData(AudioData&& that)
@@ -65,7 +72,7 @@ struct AudioData {
 	const int byteDepth;
 	const int numberOfChannels;
 	const int size;
-	std::unique_ptr<const char[]> rawSamples;
+	std::vector<unsigned char> rawSamples;
 };
 } // namespace Audio
 #endif

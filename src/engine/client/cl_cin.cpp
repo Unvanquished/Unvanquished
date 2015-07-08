@@ -1382,9 +1382,10 @@ redump:
 		case    ZA_SOUND_MONO:
 			if ( !cinTable[ currentHandle ].silent )
 			{
-			    short* sbuf = new short[32768];
-			    ssize = RllDecodeMonoToStereo( framedata, sbuf, cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
-                Audio::StreamData( 0, (byte*) sbuf, ssize, 22050, 2, 1, 1.0f, 1);
+				std::vector<unsigned char> sbuf(65536);
+				ssize = RllDecodeMonoToStereo( framedata, reinterpret_cast<short*>(sbuf.data()), cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
+				sbuf.resize(ssize * sizeof(short));
+				Audio::StreamData( 0, std::move(sbuf), ssize, 22050, 2, 1, 1.0f, 1);
 			}
 
 			break;
@@ -1398,9 +1399,10 @@ redump:
 					//TODO
 					//s_rawend[0] = s_soundtime;
 				}
-			    short* sbuf = new short[32768];
-				ssize = RllDecodeStereoToStereo( framedata, sbuf, cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
-                Audio::StreamData( 0, (byte*) sbuf, ssize, 22050, 2, 2, 1.0f, 1);
+				std::vector<unsigned char> sbuf(65535);
+				ssize = RllDecodeStereoToStereo( framedata, reinterpret_cast<short*>(sbuf.data()), cinTable[ currentHandle ].RoQFrameSize, 0, ( unsigned short ) cinTable[ currentHandle ].roq_flags );
+				sbuf.resize(ssize*sizeof(short));
+				Audio::StreamData( 0, std::move(sbuf), ssize, 22050, 2, 2, 1.0f, 1);
 			}
 
 			break;
