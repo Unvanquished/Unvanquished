@@ -932,14 +932,29 @@ private:
 	float evos;
 };
 
-static void CG_Rocket_DrawStaminaValue()
+class StaminaValueElement : public TextHudElement
 {
-	playerState_t *ps = &cg.snap->ps;
-	float         stamina = ps->stats[ STAT_STAMINA ];
-	int           percent = 100 * ( stamina / ( float ) STAMINA_MAX );
+public:
+	StaminaValueElement( const Rocket::Core::String& tag ) :
+	TextHudElement( tag, ELEMENT_HUMANS ),
+	stamina( -1 ) {}
 
-	Rocket_SetInnerRML( va( "%d", percent ), 0 );
-}
+	void DoOnRender()
+	{
+		playerState_t *ps = &cg.snap->ps;
+		float         value = ps->stats[ STAT_STAMINA ];
+
+		if ( stamina != value )
+		{
+			stamina = value;
+			int percent = 100 * ( stamina / ( float ) STAMINA_MAX );
+			SetText( va( "%d", percent ) );
+		}
+	}
+
+private:
+	float stamina;
+};
 
 static void CG_Rocket_DrawWeaponIcon()
 {
@@ -2989,7 +3004,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "predictedMineEfficiency", &CG_Rocket_DrawPredictedRGSRate, ELEMENT_BOTH },
 	{ "progress_value", &CG_Rocket_DrawProgressValue, ELEMENT_ALL },
 	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
-	{ "stamina", &CG_Rocket_DrawStaminaValue, ELEMENT_HUMANS },
 	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
 	{ "timer", &CG_Rocket_DrawTimer, ELEMENT_GAME },
 	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
@@ -3045,4 +3059,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "speedometer", SpeedGraphElement )
 	REGISTER_ELEMENT( "credits", CreditsValueElement )
 	REGISTER_ELEMENT( "evos", EvosValueElement )
+	REGISTER_ELEMENT( "stamina", StaminaValueElement )
 }
