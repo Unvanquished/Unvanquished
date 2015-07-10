@@ -560,8 +560,9 @@ private:
 class CrosshairHudElement : public HudElement {
 public:
 	CrosshairHudElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_BOTH, true ),
-			color{255, 255, 255, 255} {}
+			HudElement( tag, ELEMENT_BOTH, true ) {
+		color[0] = color[1] = color[2] = color[3] = 255;
+	}
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
