@@ -907,15 +907,30 @@ private:
 	int credits;
 };
 
-static void CG_Rocket_DrawAlienEvosValue()
+class EvosValueElement : public TextHudElement
 {
-	playerState_t *ps = &cg.snap->ps;
-	float value = ps->persistant[ PERS_CREDIT ];;
+public:
+	EvosValueElement( const Rocket::Core::String& tag ) :
+			TextHudElement( tag, ELEMENT_ALIENS ),
+			evos( -1 ) {}
 
-	value /= ( float ) CREDITS_PER_EVO;
+	void DoOnRender()
+	{
+		playerState_t *ps = &cg.snap->ps;
+		float value = ps->persistant[ PERS_CREDIT ];;
 
-	Rocket_SetInnerRML( va( "%1.1f", value ), 0 );
-}
+		value /= ( float ) CREDITS_PER_EVO;
+
+		if ( evos != value )
+		{
+			evos = value;
+			SetText( va( "%1.1f", evos ) );
+		}
+	}
+
+private:
+	float evos;
+};
 
 static void CG_Rocket_DrawStaminaValue()
 {
@@ -2953,7 +2968,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "downloadSpeed", &CG_Rocket_DrawDownloadSpeed, ELEMENT_ALL },
 	{ "downloadTime", &CG_Rocket_DrawDownloadTime, ELEMENT_ALL },
 	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, ELEMENT_ALL },
-	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
 	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
@@ -3030,4 +3044,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "crosshair", CrosshairHudElement )
 	REGISTER_ELEMENT( "speedometer", SpeedGraphElement )
 	REGISTER_ELEMENT( "credits", CreditsValueElement )
+	REGISTER_ELEMENT( "evos", EvosValueElement )
 }
