@@ -885,13 +885,27 @@ private:
 
 };
 
-static void CG_Rocket_DrawCreditsValue()
+class CreditsValueElement : public TextHudElement
 {
-	playerState_t *ps = &cg.snap->ps;
-	int value = ps->persistant[ PERS_CREDIT ];;
+public:
+	CreditsValueElement( const Rocket::Core::String& tag ) :
+			TextHudElement( tag, ELEMENT_HUMANS ),
+			credits( -1 ) {}
 
-	Rocket_SetInnerRML( va( "%d", value ), 0 );
-}
+	void DoOnRender()
+	{
+		playerState_t *ps = &cg.snap->ps;
+		int value = ps->persistant[ PERS_CREDIT ];;
+		if ( credits != value )
+		{
+			credits = value;
+			SetText( va( "%d", credits ) );
+		}
+	}
+
+private:
+	int credits;
+};
 
 static void CG_Rocket_DrawAlienEvosValue()
 {
@@ -2933,7 +2947,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
-	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
 	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, ELEMENT_ALL },
 	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
@@ -3016,4 +3029,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "crosshair_indicator", CrosshairIndicatorHudElement )
 	REGISTER_ELEMENT( "crosshair", CrosshairHudElement )
 	REGISTER_ELEMENT( "speedometer", SpeedGraphElement )
+	REGISTER_ELEMENT( "credits", CreditsValueElement )
 }
