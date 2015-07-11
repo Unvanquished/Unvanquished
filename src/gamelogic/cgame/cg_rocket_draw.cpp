@@ -389,7 +389,7 @@ public:
 			  index(0),
 			  previous(0) {}
 
-	void DoOnRender()
+	void DoOnUpdate()
 	{
 		int        i, total;
 		int        fps;
@@ -893,7 +893,7 @@ public:
 			TextHudElement( tag, ELEMENT_HUMANS ),
 			credits( -1 ) {}
 
-	void DoOnRender()
+	void DoOnUpdate()
 	{
 		playerState_t *ps = &cg.snap->ps;
 		int value = ps->persistant[ PERS_CREDIT ];;
@@ -915,7 +915,7 @@ public:
 			TextHudElement( tag, ELEMENT_ALIENS ),
 			evos( -1 ) {}
 
-	void DoOnRender()
+	void DoOnUpdate()
 	{
 		playerState_t *ps = &cg.snap->ps;
 		float value = ps->persistant[ PERS_CREDIT ];;
@@ -940,7 +940,7 @@ public:
 	TextHudElement( tag, ELEMENT_HUMANS ),
 	stamina( -1 ) {}
 
-	void DoOnRender()
+	void DoOnUpdate()
 	{
 		playerState_t *ps = &cg.snap->ps;
 		float         value = ps->stats[ STAT_STAMINA ];
@@ -957,43 +957,73 @@ private:
 	float stamina;
 };
 
-static void CG_Rocket_DrawWeaponIcon()
+class WeaponIconElement : public HudElement
 {
-	playerState_t *ps;
-	weapon_t      weapon;
-	const char    *rmlClass = nullptr;
-
-	ps = &cg.snap->ps;
-	weapon = BG_GetPlayerWeapon( ps );
-
-
-	// don't display if dead
-	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE )
+public:
+	WeaponIconElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_BOTH ),
+			weapon( WP_NONE ),
+			isNoAmmo( false )
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
+		img = Rocket::Core::Factory::InstanceElement( this, "*", "div", Rocket::Core::XMLAttributes());;
 	}
 
-	if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+	void DoOnUpdate()
 	{
-		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
-	}
+		playerState_t *ps;
+		weapon_t      newWeapon;
+		const char    *rmlClass = nullptr;
 
-	if ( !cg_weapons[ weapon ].registered )
-	{
-		Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
-					"is not registered\n", weapon, BG_Weapon( weapon )->name );
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
+		ps = &cg.snap->ps;
+		newWeapon = BG_GetPlayerWeapon( ps );
 
-	if ( ps->clips == 0 && ps->ammo == 0 && !BG_Weapon( weapon )->infiniteAmmo )
-	{
-		rmlClass = "no_ammo";
-	}
+		if ( newWeapon != weapon )
+		{
+			weapon = newWeapon;
+			// don't display if dead
+			if ( ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE ) && !IsVisible() )
+			{
+				img->SetProperty( "display", "none" );
+				return;
+			}
 
-	Rocket_SetInnerRML( va( "<img class='weapon_icon%s%s' src='/%s' />", rmlClass ? " " : "", rmlClass, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ), 0 );
-}
+			if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+			{
+				CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
+			}
+
+			if ( !cg_weapons[ weapon ].registered )
+			{
+				Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
+				"is not registered\n", weapon, BG_Weapon( weapon )->name );
+				img->SetProperty( "display", "none" );
+				return;
+			}
+
+			if ( !IsVisible() )
+			{
+				img->SetProperty( "display", "block" );
+			}
+
+			SetInnerRML( va( "<img src='/%s' />", CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ) );
+		}
+
+
+		if ( !isNoAmmo && ps->clips == 0 && ps->ammo == 0 && !BG_Weapon( weapon )->infiniteAmmo )
+		{
+			img->SetClass( "no_ammo", true );
+		}
+		else if ( isNoAmmo )
+		{
+			img->SetClass( "no_ammo", false );
+		}
+
+	}
+private:
+	Rocket::Core::Element* img;
+	int weapon;
+	bool isNoAmmo;
+};
 
 static void CG_Rocket_DrawPlayerWallclimbing()
 {
@@ -3014,7 +3044,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
 	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing, ELEMENT_ALIENS },
 	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },
-	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon, ELEMENT_BOTH },
 };
 
 static const size_t elementRenderCmdListCount = ARRAY_LEN( elementRenderCmdList );
@@ -3061,4 +3090,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "credits", CreditsValueElement )
 	REGISTER_ELEMENT( "evos", EvosValueElement )
 	REGISTER_ELEMENT( "stamina", StaminaValueElement )
+	REGISTER_ELEMENT( "weapon_icon", WeaponIconElement )
 }
