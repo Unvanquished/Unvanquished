@@ -1025,12 +1025,33 @@ private:
 	bool isNoAmmo;
 };
 
-static void CG_Rocket_DrawPlayerWallclimbing()
+class WallwalkElement : public HudElement
 {
-	bool wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
-	Rocket_SetClass( "active", wallwalking );
-	Rocket_SetClass( "inactive", !wallwalking );
-}
+public:
+	WallwalkElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_ALIENS ),
+			isActive( false ) {}
+
+	void DoOnUpdate()
+	{
+		bool wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
+		if ( ( wallwalking && !isActive ) || ( !wallwalking && isActive ) )
+		{
+			SetActive( wallwalking );
+		}
+	}
+
+private:
+	void SetActive( bool active )
+	{
+		isActive = active;
+		SetClass( "active", active );
+		SetClass( "inactive", !active );
+
+	}
+
+	bool isActive;
+};
 
 static void CG_Rocket_DrawUsableBuildable()
 {
@@ -3042,7 +3063,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable, ELEMENT_HUMANS },
 	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
 	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
-	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing, ELEMENT_ALIENS },
 	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },
 };
 
@@ -3091,4 +3111,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "evos", EvosValueElement )
 	REGISTER_ELEMENT( "stamina", StaminaValueElement )
 	REGISTER_ELEMENT( "weapon_icon", WeaponIconElement )
+	REGISTER_ELEMENT( "wallwalk", WallwalkElement )
 }

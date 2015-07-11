@@ -78,9 +78,13 @@
 				right: 0px;
 				bottom: 0px;
 			}
-			wallwalk.wallwalking.inactive img.sides
+			wallwalk.wallwalking img.sides
 			{
-				opacity: 0;
+				display: none;
+			}
+			wallwalk.wallwalking.active img.sides
+			{
+				display: block;
 			}
 			#left img.sides{
 				left:0px;
