@@ -1113,31 +1113,47 @@ private:
 	Rocket::Core::String display;
 };
 
-static void CG_Rocket_DrawLocation()
+class LocationElement : public HudElement
 {
-	const char *location;
-	centity_t  *locent;
+public:
+	LocationElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_GAME ) {}
 
-	if ( cg.intermissionStarted )
+	void DoOnUpdate()
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
+		Rocket::Core::String newLocation;
+		centity_t  *locent;
+
+		if ( cg.intermissionStarted )
+		{
+			if ( !location.Empty() )
+			{
+				location = "";
+				SetInnerRML( location );
+			}
+			return;
+		}
+
+		locent = CG_GetPlayerLocation();
+
+		if ( locent )
+		{
+			location = CG_ConfigString( CS_LOCATIONS + locent->currentState.generic1 );
+		}
+		else
+		{
+			location = CG_ConfigString( CS_LOCATIONS );
+		}
+
+		if ( location != newLocation )
+		{
+			SetInnerRML( Rocket_QuakeToRML( location.CString(), RP_EMOTICONS ) );
+		}
 	}
 
-	locent = CG_GetPlayerLocation();
-
-	if ( locent )
-	{
-		location = CG_ConfigString( CS_LOCATIONS + locent->currentState.generic1 );
-	}
-
-	else
-	{
-		location = CG_ConfigString( CS_LOCATIONS );
-	}
-
-	Rocket_SetInnerRML( location, RP_QUAKE );
-}
+private:
+	Rocket::Core::String location;
+};
 
 static void CG_Rocket_DrawTimer()
 {
@@ -3068,7 +3084,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "levelshot_loading", &CG_Rocket_DrawMapLoadingLevelshot, ELEMENT_ALL },
-	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },
 	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
@@ -3134,4 +3149,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "weapon_icon", WeaponIconElement )
 	REGISTER_ELEMENT( "wallwalk", WallwalkElement )
 	REGISTER_ELEMENT( "usable_buildable", UsableBuildableElement )
+	REGISTER_ELEMENT( "location", LocationElement )
 }

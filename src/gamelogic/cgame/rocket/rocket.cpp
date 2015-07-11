@@ -490,6 +490,7 @@ static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 	return false;
 }
 
+// TODO: Make this take Rocket::Core::String as an input.
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
 	const char *p;
