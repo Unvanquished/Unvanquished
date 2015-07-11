@@ -249,8 +249,9 @@ public:
 			value( 0 ),
 			valueMarked( 0 ) {}
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
 	{
+		TextHudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
 		{
 			const Rocket::Core::String& type = GetAttribute<Rocket::Core::String>( "type", "" );
@@ -455,6 +456,7 @@ public:
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
+		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
 			GetColor( "color", color );
@@ -566,6 +568,7 @@ public:
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
+		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
 			GetColor( "color", color );
@@ -767,6 +770,7 @@ public:
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
+		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
 			GetColor( "color", color );
@@ -963,16 +967,12 @@ public:
 	WeaponIconElement( const Rocket::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH ),
 			weapon( WP_NONE ),
-			isNoAmmo( false )
-	{
-		img = Rocket::Core::Factory::InstanceElement( this, "*", "div", Rocket::Core::XMLAttributes());;
-	}
+			isNoAmmo( false ) {}
 
 	void DoOnUpdate()
 	{
 		playerState_t *ps;
 		weapon_t      newWeapon;
-		const char    *rmlClass = nullptr;
 
 		ps = &cg.snap->ps;
 		newWeapon = BG_GetPlayerWeapon( ps );
@@ -983,7 +983,7 @@ public:
 			// don't display if dead
 			if ( ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE ) && !IsVisible() )
 			{
-				img->SetProperty( "display", "none" );
+				SetProperty( "display", "none" );
 				return;
 			}
 
@@ -996,26 +996,21 @@ public:
 			{
 				Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
 				"is not registered\n", weapon, BG_Weapon( weapon )->name );
-				img->SetProperty( "display", "none" );
+				SetProperty( "display", "none" );
 				return;
 			}
 
-			if ( !IsVisible() )
-			{
-				img->SetProperty( "display", "block" );
-			}
-
 			SetInnerRML( va( "<img src='/%s' />", CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ) );
+			SetProperty( "display", "block" );
 		}
-
 
 		if ( !isNoAmmo && ps->clips == 0 && ps->ammo == 0 && !BG_Weapon( weapon )->infiniteAmmo )
 		{
-			img->SetClass( "no_ammo", true );
+			SetClass( "no_ammo", true );
 		}
 		else if ( isNoAmmo )
 		{
-			img->SetClass( "no_ammo", false );
+			SetClass( "no_ammo", false );
 		}
 
 	}
@@ -1053,43 +1048,70 @@ private:
 	bool isActive;
 };
 
-static void CG_Rocket_DrawUsableBuildable()
+class UsableBuildableElement : public HudElement
 {
-	vec3_t        view, point;
-	trace_t       trace;
-	entityState_t *es;
+public:
+	UsableBuildableElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_HUMANS ),
+			display( "block" ) {}
 
-	AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
-	VectorMA( cg.refdef.vieworg, 64, view, point );
-	CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr,
-			  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
-
-	es = &cg_entities[ trace.entityNum ].currentState;
-
-	if ( es->eType == ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-			cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
-		//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
-		if ( ( es->modelindex == BA_H_REACTOR || es->modelindex == BA_H_REPEATER ) &&
-				( !BG_Weapon( cg.snap->ps.weapon )->usesEnergy ||
-				  BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
+		HudElement::OnPropertyChange( changed_properties );
+		if ( display.Empty() && changed_properties.find( "display" ) != changed_properties.end() )
 		{
-			cg.nearUsableBuildable = BA_NONE;
-			Rocket_SetInnerRML( "", 0 );
-			return;
+			display = GetProperty<Rocket::Core::String>( "display" );
 		}
-
-		Rocket_SetInnerRML( va( "<img class='usable_buildable' src='%s' />", CG_Rocket_GetAttribute( "src" ) ), 0 );
-		cg.nearUsableBuildable = es->modelindex;
 	}
 
-	else
+	void DoOnUpdate()
 	{
-		// Clear the old image if there was one.
-		Rocket_SetInnerRML( "", 0 );
-		cg.nearUsableBuildable = BA_NONE;
+		vec3_t        view, point;
+		trace_t       trace;
+		entityState_t *es;
+
+		AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
+		VectorMA( cg.refdef.vieworg, 64, view, point );
+		CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr,
+				  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
+
+		es = &cg_entities[ trace.entityNum ].currentState;
+
+		if ( es->eType == ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
+			cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
+		{
+			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
+			if ( ( es->modelindex == BA_H_REACTOR || es->modelindex == BA_H_REPEATER ) &&
+				( !BG_Weapon( cg.snap->ps.weapon )->usesEnergy ||
+				BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
+			{
+				cg.nearUsableBuildable = BA_NONE;
+				SetProperty( "display", "none" );
+				return;
+			}
+
+			if ( IsVisible() )
+			{
+				return;
+			}
+
+			SetProperty( "display", display );
+			cg.nearUsableBuildable = es->modelindex;
+		}
+		else
+		{
+			if ( IsVisible() )
+			{
+				// Clear the old image if there was one.
+				SetProperty( "display", "none" );
+				cg.nearUsableBuildable = BA_NONE;
+			}
+		}
 	}
-}
+
+private:
+	Rocket::Core::String display;
+};
 
 static void CG_Rocket_DrawLocation()
 {
@@ -3060,7 +3082,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "timer", &CG_Rocket_DrawTimer, ELEMENT_GAME },
 	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
 	{ "unlocked_items", &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
-	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable, ELEMENT_HUMANS },
 	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
 	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
 	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },
@@ -3112,4 +3133,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "stamina", StaminaValueElement )
 	REGISTER_ELEMENT( "weapon_icon", WeaponIconElement )
 	REGISTER_ELEMENT( "wallwalk", WallwalkElement )
+	REGISTER_ELEMENT( "usable_buildable", UsableBuildableElement )
 }
