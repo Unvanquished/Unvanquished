@@ -1155,27 +1155,53 @@ private:
 	Rocket::Core::String location;
 };
 
-static void CG_Rocket_DrawTimer()
+class TimerElement : public TextHudElement
 {
-	int   mins, seconds, tens;
-	int   msec;
+public:
+	TimerElement( const Rocket::Core::String& tag ) :
+			TextHudElement( tag, ELEMENT_GAME ),
+			mins_( 0 ),
+			seconds_( 0 ),
+			tens_( 0 ) {}
 
-	if ( !cg_drawTimer.integer )
+	void DoOnUpdate()
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
+		int   mins, seconds, tens;
+		int   msec;
+
+		if ( !cg_drawTimer.integer && IsVisible() )
+		{
+			SetProperty( "display", "none" );
+			return;
+		}
+		else if ( cg_drawTimer.integer && !IsVisible() )
+		{
+			SetProperty( "display", "block" );
+		}
+
+		msec = cg.time - cgs.levelStartTime;
+
+		seconds = msec / 1000;
+		mins = seconds / 60;
+		seconds -= mins * 60;
+		tens = seconds / 10;
+		seconds -= tens * 10;
+
+		if ( seconds_ != seconds || mins != mins_ || tens != tens_ )
+		{
+			SetText( va( "%d:%d%d", mins, tens, seconds ) );
+			seconds_ = seconds;
+			mins_ = mins;
+			tens_ = tens;
+		}
 	}
 
-	msec = cg.time - cgs.levelStartTime;
+private:
+	int mins_;
+	int seconds_;
+	int tens_;
 
-	seconds = msec / 1000;
-	mins = seconds / 60;
-	seconds -= mins * 60;
-	tens = seconds / 10;
-	seconds -= tens * 10;
-
-	Rocket_SetInnerRML( va( "%d:%d%d", mins, tens, seconds ), 0 );
-}
+};
 
 #define LAG_SAMPLES 128
 
@@ -3094,7 +3120,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "progress_value", &CG_Rocket_DrawProgressValue, ELEMENT_ALL },
 	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
 	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
-	{ "timer", &CG_Rocket_DrawTimer, ELEMENT_GAME },
 	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
 	{ "unlocked_items", &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
 	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
@@ -3150,4 +3175,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "wallwalk", WallwalkElement )
 	REGISTER_ELEMENT( "usable_buildable", UsableBuildableElement )
 	REGISTER_ELEMENT( "location", LocationElement )
+	REGISTER_ELEMENT( "timer", TimerElement )
 }
