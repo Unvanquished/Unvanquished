@@ -1317,173 +1317,203 @@ static void CG_Rocket_DrawDisconnect()
 #define MAX_LAGOMETER_PING  900
 #define MAX_LAGOMETER_RANGE 300
 
-/*
-==============
-CG_Rocket_DrawLagometer
-==============
-*/
-static void CG_Rocket_DrawLagometer()
+class LagometerElement : public TextHudElement
 {
-	int    a, i;
-	float  v;
-	float  ax, ay, aw, ah, mid, range;
-	int    color;
-	vec4_t adjustedColor;
-	float  vscale;
-	const char *ping;
-	rectDef_t rect;
-
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
+public:
+	LagometerElement( const Rocket::Core::String& tag ) :
+			TextHudElement( tag, ELEMENT_GAME, true ),
+			shouldDrawLagometer( true )
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
+		adjustedColor[ 0 ] = adjustedColor[ 1 ] = adjustedColor[ 2 ] = adjustedColor[ 3 ] = 255;
 	}
 
-	if ( !cg_lagometer.integer )
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
-
-	if ( cg.demoPlayback )
-	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
-
-	// grab info from libRocket
-	CG_GetRocketElementRect( &rect );
-	CG_GetRocketElementBGColor( adjustedColor );
-
-	trap_R_SetColor( adjustedColor );
-	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
-	trap_R_SetColor( nullptr );
-
-	//
-	// draw the graph
-	//
-	ax = rect.x;
-	ay = rect.y;
-	aw = rect.w;
-	ah = rect.h;
-
-	CG_AdjustFrom640( &ax, &ay, &aw, &ah );
-
-	color = -1;
-	range = ah / 3;
-	mid = ay + range;
-
-	vscale = range / MAX_LAGOMETER_RANGE;
-
-	// draw the frame interpoalte / extrapolate graph
-	for ( a = 0; a < aw; a++ )
-	{
-		i = ( lagometer.frameCount - 1 - a ) & ( LAG_SAMPLES - 1 );
-		v = lagometer.frameSamples[ i ];
-		v *= vscale;
-
-		if ( v > 0 )
+		HudElement::OnPropertyChange( changed_properties );
+		if ( changed_properties.find( "background-color" ) != changed_properties.end() )
 		{
-			if ( color != 1 )
-			{
-				color = 1;
-				trap_R_SetColor( g_color_table[ ColorIndex( COLOR_YELLOW ) ] );
-			}
-
-			if ( v > range )
-			{
-				v = range;
-			}
-
-			trap_R_DrawStretchPic( ax + aw - a, mid - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
-		}
-
-		else if ( v < 0 )
-		{
-			if ( color != 2 )
-			{
-				color = 2;
-				trap_R_SetColor( g_color_table[ ColorIndex( COLOR_BLUE ) ] );
-			}
-
-			v = -v;
-
-			if ( v > range )
-			{
-				v = range;
-			}
-
-			trap_R_DrawStretchPic( ax + aw - a, mid, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
+			GetColor( "background-color", adjustedColor );
 		}
 	}
 
-	// draw the snapshot latency / drop graph
-	range = ah / 2;
-	vscale = range / MAX_LAGOMETER_PING;
-
-	for ( a = 0; a < aw; a++ )
+	void DoOnRender()
 	{
-		i = ( lagometer.snapshotCount - 1 - a ) & ( LAG_SAMPLES - 1 );
-		v = lagometer.snapshotSamples[ i ];
+		int    a, i;
+		float  v;
+		float  ax, ay, aw, ah, mid, range;
+		int    color;
+		float  vscale;
+		rectDef_t rect;
 
-		if ( v > 0 )
+		if ( !shouldDrawLagometer )
 		{
-			if ( lagometer.snapshotFlags[ i ] & SNAPFLAG_RATE_DELAYED )
+			return;
+		}
+
+		// grab info from libRocket
+		GetElementRect( rect );
+
+		trap_R_SetColor( adjustedColor );
+		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
+		trap_R_SetColor( nullptr );
+
+		//
+		// draw the graph
+		//
+		ax = rect.x;
+		ay = rect.y;
+		aw = rect.w;
+		ah = rect.h;
+
+		CG_AdjustFrom640( &ax, &ay, &aw, &ah );
+
+		color = -1;
+		range = ah / 3;
+		mid = ay + range;
+
+		vscale = range / MAX_LAGOMETER_RANGE;
+
+		// draw the frame interpoalte / extrapolate graph
+		for ( a = 0; a < aw; a++ )
+		{
+			i = ( lagometer.frameCount - 1 - a ) & ( LAG_SAMPLES - 1 );
+			v = lagometer.frameSamples[ i ];
+			v *= vscale;
+
+			if ( v > 0 )
 			{
-				if ( color != 5 )
+				if ( color != 1 )
 				{
-					color = 5; // YELLOW for rate delay
+					color = 1;
 					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_YELLOW ) ] );
 				}
-			}
 
-			else
-			{
-				if ( color != 3 )
+				if ( v > range )
 				{
-					color = 3;
-
-					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_GREEN ) ] );
+					v = range;
 				}
+
+				trap_R_DrawStretchPic( ax + aw - a, mid - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
 			}
 
-			v = v * vscale;
-
-			if ( v > range )
+			else if ( v < 0 )
 			{
-				v = range;
-			}
+				if ( color != 2 )
+				{
+					color = 2;
+					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_BLUE ) ] );
+				}
 
-			trap_R_DrawStretchPic( ax + aw - a, ay + ah - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
+				v = -v;
+
+				if ( v > range )
+				{
+					v = range;
+				}
+
+				trap_R_DrawStretchPic( ax + aw - a, mid, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
+			}
 		}
 
-		else if ( v < 0 )
+		// draw the snapshot latency / drop graph
+		range = ah / 2;
+		vscale = range / MAX_LAGOMETER_PING;
+
+		for ( a = 0; a < aw; a++ )
 		{
-			if ( color != 4 )
+			i = ( lagometer.snapshotCount - 1 - a ) & ( LAG_SAMPLES - 1 );
+			v = lagometer.snapshotSamples[ i ];
+
+			if ( v > 0 )
 			{
-				color = 4; // RED for dropped snapshots
-				trap_R_SetColor( g_color_table[ ColorIndex( COLOR_RED ) ] );
+				if ( lagometer.snapshotFlags[ i ] & SNAPFLAG_RATE_DELAYED )
+				{
+					if ( color != 5 )
+					{
+						color = 5; // YELLOW for rate delay
+						trap_R_SetColor( g_color_table[ ColorIndex( COLOR_YELLOW ) ] );
+					}
+				}
+
+				else
+				{
+					if ( color != 3 )
+					{
+						color = 3;
+
+						trap_R_SetColor( g_color_table[ ColorIndex( COLOR_GREEN ) ] );
+					}
+				}
+
+				v = v * vscale;
+
+				if ( v > range )
+				{
+					v = range;
+				}
+
+				trap_R_DrawStretchPic( ax + aw - a, ay + ah - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
 			}
 
-			trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );
+			else if ( v < 0 )
+			{
+				if ( color != 4 )
+				{
+					color = 4; // RED for dropped snapshots
+					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_RED ) ] );
+				}
+
+				trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );
+			}
+		}
+
+		trap_R_SetColor( nullptr );
+		CG_Rocket_DrawDisconnect();
+	}
+
+	void DoOnUpdate()
+	{
+		const char* ping;
+
+		if ( ( cg.snap && cg.snap->ps.pm_type == PM_INTERMISSION )
+			|| !cg_lagometer.integer
+			|| cg.demoPlayback )
+		{
+			if ( shouldDrawLagometer )
+			{
+				SetText( "" );
+				shouldDrawLagometer = false;
+			}
+			return;
+		}
+		else if ( !shouldDrawLagometer )
+		{
+			shouldDrawLagometer = true;
+		}
+
+		if ( cg_nopredict.integer || cg.pmoveParams.synchronous )
+		{
+			ping = "snc";
+		}
+
+		else
+		{
+			ping = va( "%d", cg.ping );
+		}
+
+		if ( ping_ != ping )
+		{
+			SetText( ping );
+			ping_ = ping;
 		}
 	}
 
-	trap_R_SetColor( nullptr );
+private:
+	bool shouldDrawLagometer;
+	vec4_t adjustedColor;
+	Rocket::Core::String ping_;
 
-	if ( cg_nopredict.integer || cg.pmoveParams.synchronous )
-	{
-		ping = "snc";
-	}
-
-	else
-	{
-		ping = va( "%d", cg.ping );
-	}
-
-	Rocket_SetInnerRML( va( "<span class='ping'>%s</span>", ping ), 0 );
-	CG_Rocket_DrawDisconnect();
-}
+};
 
 /*
 =================
@@ -3106,7 +3136,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
 	{ "jetpack", &CG_Rocket_HaveJetpck, ELEMENT_HUMANS },
-	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "levelshot_loading", &CG_Rocket_DrawMapLoadingLevelshot, ELEMENT_ALL },
@@ -3176,4 +3205,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "usable_buildable", UsableBuildableElement )
 	REGISTER_ELEMENT( "location", LocationElement )
 	REGISTER_ELEMENT( "timer", TimerElement )
+	REGISTER_ELEMENT( "lagometer", LagometerElement )
 }
