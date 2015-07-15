@@ -1612,73 +1612,93 @@ static void CG_ScanForCrosshairEntity()
 	}
 }
 
-static void CG_Rocket_DrawCrosshairNames()
+class CrosshairNamesElement : public HudElement
 {
-	float alpha;
-	char  *name;
+public:
+	CrosshairNamesElement( const Rocket::Core::String& tag  ) :
+			HudElement( tag, ELEMENT_GAME ) {}
 
-	Rocket_SetInnerRML( "&nbsp;", 0 );
-
-	if ( !cg_drawCrosshairNames.integer )
+	void DoOnUpdate()
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
+		Rocket::Core::String name;
+		float alpha;
 
-	if ( cg.renderingThirdPerson )
-	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
+		if ( !cg_drawCrosshairNames.integer || cg.renderingThirdPerson )
+		{
+			Clear();
+			return;
+		}
 
-	// scan the known entities to see if the crosshair is sighted on one
-	CG_ScanForCrosshairEntity();
+		// scan the known entities to see if the crosshair is sighted on one
+		CG_ScanForCrosshairEntity();
 
-	// draw the name of the player being looked at
-	alpha = CG_FadeAlpha( cg.crosshairClientTime, CROSSHAIR_CLIENT_TIMEOUT );
+		// draw the name of the player being looked at
+		alpha = CG_FadeAlpha( cg.crosshairClientTime, CROSSHAIR_CLIENT_TIMEOUT );
 
-	if ( cg.crosshairClientTime == cg.time )
-	{
-		alpha = 1.0f;
-	}
+		if ( cg.crosshairClientTime == cg.time )
+		{
+			alpha = 1.0f;
+		}
 
-	else if ( !alpha )
-	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
+		else if ( !alpha )
+		{
+			Clear();
+			return;
+		}
 
-	Rocket_SetPropertyById( "", "opacity", va( "%f", alpha ) );
+		if ( alpha != alpha_ )
+		{
+			alpha_ = alpha;
+			SetProperty( "opacity", va( "%f", alpha ) );
+		}
 
-	if ( cg_drawEntityInfo.integer )
-	{
-		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
-				   Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
-	}
+		if ( cg_drawEntityInfo.integer )
+		{
+			name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
+					   Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
+		}
 
-	else if ( cg_drawCrosshairNames.integer >= 2 )
-	{
-		name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
-	}
+		else if ( cg_drawCrosshairNames.integer >= 2 )
+		{
+			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
+		}
 
-	else
-	{
-		name = cgs.clientinfo[ cg.crosshairClientNum ].name;
-	}
+		else
+		{
+			name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+		}
 
-	// add health from overlay info to the crosshair client name
-	if ( cg_teamOverlayUserinfo.integer &&
+		// add health from overlay info to the crosshair client name
+		if ( cg_teamOverlayUserinfo.integer &&
 			cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
 			cgs.teamInfoReceived &&
 			cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
-	{
-		name = va( "%s ^7[^%c%d^7]", name,
-				   CG_GetColorCharForHealth( cg.crosshairClientNum ),
-				   cgs.clientinfo[ cg.crosshairClientNum ].health );
+		{
+			name = va( "%s ^7[^%c%d^7]", name.CString(),
+					   CG_GetColorCharForHealth( cg.crosshairClientNum ),
+					   cgs.clientinfo[ cg.crosshairClientNum ].health );
+		}
+
+		if ( name != name_ )
+		{
+			name_ = name;
+			SetInnerRML( Rocket_QuakeToRML( name.CString(), RP_EMOTICONS ) );
+		}
 	}
 
-	Rocket_SetInnerRML( va( "%s", name ), RP_EMOTICONS );
-}
+private:
+	void Clear()
+	{
+		if ( !name_.Empty() )
+		{
+			name_ = "";
+			SetInnerRML( "" );
+		}
+	}
+
+	Rocket::Core::String name_;
+	float alpha_;
+};
 
 static void CG_Rocket_DrawMomentum()
 {
@@ -3123,7 +3143,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
-	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
 	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, ELEMENT_ALL },
 	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
 	{ "downloadSpeed", &CG_Rocket_DrawDownloadSpeed, ELEMENT_ALL },
@@ -3206,4 +3225,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "location", LocationElement )
 	REGISTER_ELEMENT( "timer", TimerElement )
 	REGISTER_ELEMENT( "lagometer", LagometerElement )
+	REGISTER_ELEMENT( "crosshair_name", CrosshairNamesElement )
 }
