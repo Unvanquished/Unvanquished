@@ -80,16 +80,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // VM Prefixes
-#if !defined(BUILD_VM)
+#if !defined(VM_NAME)
 #define VM_STRING_PREFIX ""
-#elif defined(BUILD_SGAME)
-#define VM_STRING_PREFIX "sgame."
-#elif defined(BUILD_CGAME)
-#define VM_STRING_PREFIX "cgame."
-#elif defined(BUILD_UI)
-#define VM_STRING_PREFIX "ui."
 #else
-#error "Unknown VM for VM_PREFIX"
+#define VM_STRING_PREFIX VM_NAME "."
 #endif
 
 #endif // COMMON_PLATFORM_H_

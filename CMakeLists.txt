@@ -118,7 +118,6 @@ try_flag(WARNINGS           "-Wno-error=unused-private-field")
 
 GAMEMODULE(NAME sgame
     DEFINITIONS
-        BUILD_VM
         BUILD_SGAME
     FLAGS
         ${WARNINGS}
@@ -128,7 +127,6 @@ GAMEMODULE(NAME sgame
 
 GAMEMODULE(NAME cgame
     DEFINITIONS
-        BUILD_VM
         BUILD_CGAME
     FLAGS
         ${WARNINGS}
