@@ -8,11 +8,9 @@ CMakeFiles
 Makefile
 cmake_install.cmake
 daemon
-!/daemon/
 daemonded
 daemon-tty
 vm
-main/*.pk3
 Release
 Debug
 build
@@ -23,14 +21,6 @@ build
 *.dylib
 *.so
 *.a
-
-# NaCl
-*-native-dll.*
-*-native-exe*
-*.pexe
-*.nexe
-nacl_helper_bootstrap*
-nacl_loader*
 
 #ignore editor temporary files
 .*.swp
@@ -47,8 +37,7 @@ nacl_loader*
 
 #ignore clion project files
 .idea/
-#ignore qtcreator project files
-CMakeLists.txt.user
+
 #ignore external deps
 external_deps/*
 !external_deps/build.sh

@@ -34,8 +34,7 @@ script:
 
 notifications:
   irc:
-    - "irc.freenode.org#unvanquished-dev"
-    - "irc.quakenet.org#unvanquished"
+    - "irc.freenode.org#daemon-engine"
   on_success: change
   on_failure: always
 

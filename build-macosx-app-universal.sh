@@ -20,8 +20,8 @@ fi
 
 # Get paths
 SOURCE_PATH="`dirname "${BASH_SOURCE[0]}"`"
-DEPS32_PATH="${SOURCE_PATH}/external_deps/macosx32-${DEPS_VERSION}"
-DEPS64_PATH="${SOURCE_PATH}/external_deps/macosx64-${DEPS_VERSION}"
+DEPS32_PATH="${SOURCE_PATH}/daemon/external_deps/macosx32-${DEPS_VERSION}"
+DEPS64_PATH="${SOURCE_PATH}/daemon/external_deps/macosx64-${DEPS_VERSION}"
 BUILD32_PATH="${1}"
 BUILD64_PATH="${2}"
 DEST_PATH="${PWD}/Unvanquished.app"

@@ -1,6 +1,6 @@
 #Unvanquished#
 
-This repository contains the engine and gamelogic of the game Unvanquished. You need to download the game's assets in addition to that to make it run. See below for build and launch instructions.
+This repository contains the gamelogic of the game Unvanquished. You need to download the game's assets in addition to that to make it run. See below for build and launch instructions.
 
 ##Dependencies##
 
@@ -33,7 +33,7 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
 ###Linux cross-compile to Windows###
 
   1. `mkdir build && cd build`
-  2. `cmake -DCMAKE_TOOLCHAIN_FILE=cmake/cross-toolchain-mingw32.cmake ..`¹
+  2. `cmake -DCMAKE_TOOLCHAIN_FILE=../daemon/cmake/cross-toolchain-mingw32.cmake ..`¹
   3. `make`
 
 ¹ *Use `cross-toolchain-mingw64.cmake` for a Win64 build.*
