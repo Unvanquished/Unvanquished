@@ -93,7 +93,7 @@ function(GAMEMODULE)
                 BUILD_IN_SOURCE 0
                 CMAKE_ARGS
                     -DFORK=2
-                    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/daemon/cmake/toolchain-pnacl.cmake
+                    -DCMAKE_TOOLCHAIN_FILE=${Daemon_SOURCE_DIR}/cmake/toolchain-pnacl.cmake
                     -DDEPS_DIR=${DEPS_DIR}
                     -DBUILD_GAME_NACL=1
                     -DBUILD_GAME_NATIVE_DLL=0
