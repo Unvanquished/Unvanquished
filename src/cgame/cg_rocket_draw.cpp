@@ -1700,33 +1700,52 @@ private:
 	float alpha_;
 };
 
-static void CG_Rocket_DrawMomentum()
+class MomentumElement : public TextHudElement
 {
-	char  s[ MAX_TOKEN_CHARS ];
-	float momentum;
-	team_t team;
+public:
+	MomentumElement( const Rocket::Core::String& tag ) :
+			TextHudElement( tag, ELEMENT_BOTH ),
+			momentum_(-1.0f) {}
 
-	if ( cg.intermissionStarted )
+	void DoOnUpdate()
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
+		float momentum;
+		team_t team;
+
+		if ( cg.intermissionStarted )
+		{
+			Clear();
+			return;
+		}
+
+		team = ( team_t ) cg.snap->ps.persistant[ PERS_TEAM ];
+
+		if ( team <= TEAM_NONE || team >= NUM_TEAMS )
+		{
+			Clear();
+			return;
+		}
+
+		momentum = cg.predictedPlayerState.persistant[ PERS_MOMENTUM ] / 10.0f;
+		if ( momentum != momentum_ )
+		{
+			momentum_ = momentum;
+			SetText( va( "%.1f", momentum_) );
+		}
 	}
 
-	team = ( team_t ) cg.snap->ps.persistant[ PERS_TEAM ];
-
-	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
+private:
+	void Clear()
 	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
+		if (momentum_ != -1.0f)
+		{
+			momentum_ = -1.0f;
+			SetText( "" );
+		}
 	}
 
-	momentum = cg.predictedPlayerState.persistant[ PERS_MOMENTUM ] / 10.0f;
-
-	Com_sprintf( s, MAX_TOKEN_CHARS, _( "%.1f momentum" ), momentum );
-
-	Rocket_SetInnerRML( va( "%s", s ), 0 );
-
-}
+	float momentum_;
+};
 
 static void CG_Rocket_DrawLevelshot()
 {
@@ -3160,7 +3179,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "levelshot_loading", &CG_Rocket_DrawMapLoadingLevelshot, ELEMENT_ALL },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },
-	{ "momentum", &CG_Rocket_DrawMomentum, ELEMENT_BOTH },
 	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "motd", &CG_Rocket_DrawMOTD, ELEMENT_ALL },
 	{ "numSpawns", &CG_Rocket_DrawNumSpawns, ELEMENT_DEAD },
@@ -3226,4 +3244,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "timer", TimerElement )
 	REGISTER_ELEMENT( "lagometer", LagometerElement )
 	REGISTER_ELEMENT( "crosshair_name", CrosshairNamesElement )
+	REGISTER_ELEMENT( "momentum", MomentumElement )
 }
