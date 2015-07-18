@@ -1784,14 +1784,40 @@ private:
 
 };
 
-static void CG_Rocket_DrawMapLoadingLevelshot()
+class LevelshotLoadingElement : public HudElement
 {
-	if ( rocketInfo.cstate.connState >= CA_LOADING )
-	{
-		Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ), Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), 0 );
-	}
-}
+public:
+	LevelshotLoadingElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_ALL ) {}
 
+	void DoOnUpdate()
+	{
+		if ( rocketInfo.cstate.connState < CA_LOADING )
+		{
+			Clear();
+			return;
+		}
+
+		const char *newMap = Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" );
+		if ( map != newMap )
+		{
+			map = newMap;
+			SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", newMap, newMap ) );
+		}
+	}
+
+private:
+	void Clear()
+	{
+		if ( !map.Empty() )
+		{
+			map = "";
+			SetInnerRML( "" );
+		}
+	}
+
+	Rocket::Core::String map;
+};
 
 #define CENTER_PRINT_DURATION 3000
 void CG_Rocket_DrawCenterPrint()
@@ -3202,7 +3228,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
 	{ "jetpack", &CG_Rocket_HaveJetpck, ELEMENT_HUMANS },
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
-	{ "levelshot_loading", &CG_Rocket_DrawMapLoadingLevelshot, ELEMENT_ALL },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },
 	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
@@ -3272,4 +3297,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "crosshair_name", CrosshairNamesElement )
 	REGISTER_ELEMENT( "momentum", MomentumElement )
 	REGISTER_ELEMENT( "levelshot", LevelshotElement )
+	REGISTER_ELEMENT( "levelshot_loading", LevelshotLoadingElement )
 }
