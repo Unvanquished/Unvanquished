@@ -1820,28 +1820,34 @@ private:
 };
 
 #define CENTER_PRINT_DURATION 3000
-void CG_Rocket_DrawCenterPrint()
+class CenterPrintElement : public HudElement
 {
-	if ( !*cg.centerPrint )
+public:
+	CenterPrintElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_GAME ) {}
+
+	void DoOnUpdate()
 	{
-		return;
+		if ( !*cg.centerPrint )
+		{
+			return;
+		}
+
+		if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
+		{
+			*cg.centerPrint = '\0';
+			SetInnerRML( "" );
+			return;
+		}
+
+		if ( cg.time == cg.centerPrintTime )
+		{
+			SetInnerRML( Rocket_QuakeToRML( cg.centerPrint, RP_EMOTICONS ) );
+		}
+
+		SetProperty( "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
 	}
-
-	if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
-	{
-		*cg.centerPrint = '\0';
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
-
-	if ( cg.time == cg.centerPrintTime )
-	{
-		Rocket_SetInnerRML( cg.centerPrint, RP_EMOTICONS );
-	}
-
-	Rocket_SetPropertyById( "", "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
-}
-
+};
 
 void CG_Rocket_DrawBeaconAge()
 {
@@ -3210,7 +3216,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "beacon_info", &CG_Rocket_DrawBeaconInfo, ELEMENT_GAME },
 	{ "beacon_name", &CG_Rocket_DrawBeaconName, ELEMENT_GAME },
 	{ "beacon_owner", &CG_Rocket_DrawBeaconOwner, ELEMENT_GAME },
-	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
@@ -3298,4 +3303,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "momentum", MomentumElement )
 	REGISTER_ELEMENT( "levelshot", LevelshotElement )
 	REGISTER_ELEMENT( "levelshot_loading", LevelshotLoadingElement )
+	REGISTER_ELEMENT( "center_print", CenterPrintElement )
 }
