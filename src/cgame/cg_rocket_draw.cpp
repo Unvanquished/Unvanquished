@@ -1747,15 +1747,42 @@ private:
 	float momentum_;
 };
 
-static void CG_Rocket_DrawLevelshot()
+class LevelshotElement : public HudElement
 {
-	if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
+public:
+	LevelshotElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_ALL ) {}
+
+	void DoOnUpdate()
 	{
-		return;
+		if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
+		{
+			Clear();
+			return;
+		}
+
+		if ( mapIndex != rocketInfo.data.mapIndex )
+		{
+			mapIndex = rocketInfo.data.mapIndex;
+			SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />",
+							 rocketInfo.data.mapList[ mapIndex ].mapLoadName,
+					rocketInfo.data.mapList[ mapIndex ].mapLoadName ) );
+		}
 	}
 
-	Rocket_SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName, rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].mapLoadName ), 0 );
-}
+private:
+	void Clear()
+	{
+		if ( mapIndex != -1)
+		{
+			mapIndex = -1;
+			SetInnerRML("");
+		}
+	}
+
+	int mapIndex;
+
+};
 
 static void CG_Rocket_DrawMapLoadingLevelshot()
 {
@@ -3175,7 +3202,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
 	{ "jetpack", &CG_Rocket_HaveJetpck, ELEMENT_HUMANS },
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
-	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "levelshot_loading", &CG_Rocket_DrawMapLoadingLevelshot, ELEMENT_ALL },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },
@@ -3245,4 +3271,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "lagometer", LagometerElement )
 	REGISTER_ELEMENT( "crosshair_name", CrosshairNamesElement )
 	REGISTER_ELEMENT( "momentum", MomentumElement )
+	REGISTER_ELEMENT( "levelshot", LevelshotElement )
 }
