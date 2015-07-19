@@ -65,26 +65,10 @@ public:
 		}
 		else
 		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
-
-			while ( ( parent = parent->GetParentNode() ) )
+			Rocket::Core::Element *parent = GetParentNode();
+			if ( parent != nullptr )
 			{
-				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
-				{
-					dimensions.x = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
-
-						stack.pop();
-					}
-					break;
-				}
-
-				stack.push( parent );
+				dimensions.x = ResolveProperty( "width", parent->GetBox().GetSize().x );
 			}
 		}
 
@@ -95,26 +79,10 @@ public:
 		}
 		else
 		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
-
-			while ( ( parent = parent->GetParentNode() ) )
+			Rocket::Core::Element *parent = GetParentNode();
+			if ( parent != nullptr )
 			{
-				if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
-				{
-					dimensions.y = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
-
-						stack.pop();
-					}
-					break;
-				}
-
-				stack.push( parent );
+				dimensions.x = ResolveProperty( "width", parent->GetBox().GetSize().x );
 			}
 		}
 
