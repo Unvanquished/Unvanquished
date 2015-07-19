@@ -1849,56 +1849,261 @@ public:
 	}
 };
 
-void CG_Rocket_DrawBeaconAge()
+class BeaconAgeElement : public TextHudElement
 {
-	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.ageAlpha ) );
-	Rocket_SetInnerRML( cg.beaconRocket.age, 0 );
-}
+public:
+	BeaconAgeElement( const Rocket::Core::String& tag ) :
+			TextHudElement( tag, ELEMENT_GAME ),
+			alpha_(0) {}
 
-void CG_Rocket_DrawBeaconDistance()
-{
-	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.distanceAlpha ) );
-	Rocket_SetInnerRML( cg.beaconRocket.distance, 0 );
-}
-
-void CG_Rocket_DrawBeaconInfo()
-{
-	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.infoAlpha ) );
-	Rocket_SetInnerRML( cg.beaconRocket.info, 0 );
-}
-
-void CG_Rocket_DrawBeaconName()
-{
-	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.nameAlpha ) );
-	Rocket_SetInnerRML( cg.beaconRocket.name, 0 );
-}
-
-void CG_Rocket_DrawBeaconIcon()
-{
-	rectDef_t rect;
-	vec4_t    color;
-
-	if ( !cg.beaconRocket.icon )
+	void DoOnUpdate()
 	{
-		return;
+		if ( cg.beaconRocket.ageAlpha > 0 )
+		{
+			if ( age != cg.beaconRocket.age )
+			{
+				age = cg.beaconRocket.age;
+				SetText( age );
+			}
+
+			if ( alpha_ != cg.beaconRocket.ageAlpha )
+			{
+				alpha_ = cg.beaconRocket.ageAlpha;
+				SetProperty( "opacity", va( "%f", alpha_ ) );
+			}
+		}
+		else
+		{
+			Clear();
+		}
 	}
 
-	CG_GetRocketElementColor( color );
-	CG_GetRocketElementRect( &rect );
+private:
+	void Clear()
+	{
+		if ( alpha_ != 0 )
+		{
+			alpha_ = 0;
+			SetText( "" );
+		}
+	}
 
-	color[ 3 ] *= cg.beaconRocket.iconAlpha;
+	float alpha_;
+	Rocket::Core::String age;
+};
 
-	trap_R_SetColor( color );
-	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.beaconRocket.icon );
-	trap_R_SetColor( nullptr );
-}
-
-void CG_Rocket_DrawBeaconOwner()
+class BeaconDistanceElement : public TextHudElement
 {
-	Rocket_SetPropertyById( "", "opacity", va( "%f", cg.beaconRocket.ownerAlpha ) );
-	Rocket_SetInnerRML( cg.beaconRocket.owner, RP_QUAKE | RP_EMOTICONS );
-}
+public:
+	BeaconDistanceElement( const Rocket::Core::String& tag ) :
+	TextHudElement( tag, ELEMENT_GAME ),
+	alpha_(0) {}
 
+	void DoOnUpdate()
+	{
+		if ( cg.beaconRocket.distanceAlpha > 0 )
+		{
+			if ( distance != cg.beaconRocket.distance )
+			{
+				distance = cg.beaconRocket.distance;
+				SetText( distance );
+			}
+
+			if ( alpha_ != cg.beaconRocket.distanceAlpha )
+			{
+				alpha_ = cg.beaconRocket.distanceAlpha;
+				SetProperty( "opacity", va( "%f", alpha_ ) );
+			}
+		}
+		else
+		{
+			Clear();
+		}
+	}
+
+private:
+	void Clear()
+	{
+		if ( alpha_ != 0 )
+		{
+			alpha_ = 0;
+			SetText( "" );
+		}
+	}
+
+	float alpha_;
+	Rocket::Core::String distance;
+};
+
+class BeaconInfoElement : public TextHudElement
+{
+public:
+	BeaconInfoElement( const Rocket::Core::String& tag ) :
+	TextHudElement( tag, ELEMENT_GAME ),
+	alpha_(0) {}
+
+	void DoOnUpdate()
+	{
+		if ( cg.beaconRocket.infoAlpha > 0 )
+		{
+			if ( info != cg.beaconRocket.info )
+			{
+				info = cg.beaconRocket.info;
+				SetText( info );
+			}
+
+			if ( alpha_ != cg.beaconRocket.infoAlpha )
+			{
+				alpha_ = cg.beaconRocket.infoAlpha;
+				SetProperty( "opacity", va( "%f", alpha_ ) );
+			}
+		}
+		else
+		{
+			Clear();
+		}
+	}
+
+private:
+	void Clear()
+	{
+		if ( alpha_ != 0 )
+		{
+			alpha_ = 0;
+			SetText( "" );
+		}
+	}
+
+	float alpha_;
+	Rocket::Core::String info;
+};
+
+class BeaconNameElement : public HudElement
+{
+public:
+	BeaconNameElement( const Rocket::Core::String& tag ) :
+	HudElement( tag, ELEMENT_GAME ),
+	alpha_(0) {}
+
+	void DoOnUpdate()
+	{
+		if ( cg.beaconRocket.nameAlpha > 0 )
+		{
+			if ( name != cg.beaconRocket.name )
+			{
+				name = cg.beaconRocket.name;
+				SetInnerRML( Rocket_QuakeToRML( name.CString(), RP_EMOTICONS ) );
+			}
+
+			if ( alpha_ != cg.beaconRocket.nameAlpha )
+			{
+				alpha_ = cg.beaconRocket.nameAlpha;
+				SetProperty( "opacity", va( "%f", alpha_ ) );
+			}
+		}
+		else
+		{
+			Clear();
+		}
+	}
+
+private:
+	void Clear()
+	{
+		if ( alpha_ != 0 )
+		{
+			alpha_ = 0;
+			SetInnerRML( "" );
+		}
+	}
+
+	float alpha_;
+	Rocket::Core::String name;
+};
+
+class BeaconIconElement : public HudElement
+{
+public:
+	BeaconIconElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_GAME, true ) {}
+
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	{
+		HudElement::OnPropertyChange( changed_properties );
+		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		{
+			GetColor( "color", color_ );
+		}
+	}
+
+	void DoOnRender()
+	{
+		rectDef_t rect;
+		vec4_t color;
+
+		if ( !cg.beaconRocket.icon )
+		{
+			return;
+		}
+
+		GetElementRect( rect );
+
+		Vector4Copy( color_, color );
+
+		color[ 3 ] *= cg.beaconRocket.iconAlpha;
+
+		trap_R_SetColor( color );
+		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.beaconRocket.icon );
+		trap_R_SetColor( nullptr );
+	}
+
+private:
+	vec4_t color_;
+};
+
+
+class BeaconOwnerElement : public HudElement
+{
+public:
+	BeaconOwnerElement( const Rocket::Core::String& tag ) :
+	HudElement( tag, ELEMENT_GAME ),
+	alpha_(0) {}
+
+	void DoOnUpdate()
+	{
+		if ( cg.beaconRocket.ownerAlpha > 0 )
+		{
+			if ( owner != cg.beaconRocket.owner )
+			{
+				owner = cg.beaconRocket.owner;
+				SetInnerRML( Rocket_QuakeToRML( owner.CString(), RP_EMOTICONS ) );
+			}
+
+			if ( alpha_ != cg.beaconRocket.ownerAlpha )
+			{
+				alpha_ = cg.beaconRocket.ownerAlpha;
+				SetProperty( "opacity", va( "%f", alpha_ ) );
+			}
+		}
+		else
+		{
+			Clear();
+		}
+	}
+
+private:
+	void Clear()
+	{
+		if ( alpha_ != 0 )
+		{
+			alpha_ = 0;
+			SetInnerRML( "" );
+		}
+	}
+
+	float alpha_;
+	Rocket::Core::String owner;
+};
 
 void CG_Rocket_DrawPlayerHealth()
 {
@@ -3210,12 +3415,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
 	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
-	{ "beacon_age", &CG_Rocket_DrawBeaconAge, ELEMENT_GAME },
-	{ "beacon_distance", &CG_Rocket_DrawBeaconDistance, ELEMENT_GAME },
-	{ "beacon_icon", &CG_Rocket_DrawBeaconIcon, ELEMENT_GAME },
-	{ "beacon_info", &CG_Rocket_DrawBeaconInfo, ELEMENT_GAME },
-	{ "beacon_name", &CG_Rocket_DrawBeaconName, ELEMENT_GAME },
-	{ "beacon_owner", &CG_Rocket_DrawBeaconOwner, ELEMENT_GAME },
 	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
@@ -3304,4 +3503,10 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "levelshot", LevelshotElement )
 	REGISTER_ELEMENT( "levelshot_loading", LevelshotLoadingElement )
 	REGISTER_ELEMENT( "center_print", CenterPrintElement )
+	REGISTER_ELEMENT( "beacon_age", BeaconAgeElement )
+	REGISTER_ELEMENT( "beacon_distance", BeaconDistanceElement )
+	REGISTER_ELEMENT( "beacon_icon", BeaconIconElement )
+	REGISTER_ELEMENT( "beacon_info", BeaconInfoElement )
+	REGISTER_ELEMENT( "beacon_name", BeaconNameElement )
+	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
 }
