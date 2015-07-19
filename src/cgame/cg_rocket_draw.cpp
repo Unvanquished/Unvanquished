@@ -1493,6 +1493,11 @@ static void CG_ScanForCrosshairEntity()
 	team_t        ownTeam, targetTeam;
 	entityState_t *targetState;
 
+	if ( cg.snap == nullptr )
+	{
+		return;
+	}
+
 	cg.crosshairFriend = false;
 	cg.crosshairFoe    = false;
 
