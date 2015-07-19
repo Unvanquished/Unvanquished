@@ -92,8 +92,29 @@ public:
 		if ( dirty_key && team >= 0 )
 		{
 			dirty_key = false;
-			const char *keyName = CG_KeyBinding( cmd.CString(), static_cast<team_t>(team) );
-			SetInnerRML( !keyName ? "Unbound" : keyName );
+			std::vector< std::vector< int > > keys = trap_Key_GetKeynumForBinds( team, { cmd.CString() } );
+			if ( keys.empty() )
+			{
+				SetInnerRML( "Unbound" );
+				return;
+			}
+
+			Rocket::Core::String str;
+			char keyNameBuf[ 64 ]=  { 0 };
+			for ( int i = 0; i < keys[ 0 ].size(); ++i )
+			{
+				trap_Key_KeynumToStringBuf( keys[ 0 ][ i ], keyNameBuf, sizeof( keyNameBuf ) );
+				if ( *keyNameBuf )
+				{
+					if ( i != 0 )
+					{
+						str += " OR ";
+					}
+					str += keyNameBuf;
+				}
+			}
+
+			SetInnerRML( str );
 		}
 	}
 
