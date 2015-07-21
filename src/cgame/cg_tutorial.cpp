@@ -115,7 +115,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 				else
 				{
 					Q_strncpyz( buffer[ which ], Q_strupr( keyName[ 0 ] ), sizeof( buffer[ 0 ] ) );
-                                }
+				}
 			}
 			else
 			{

@@ -368,3 +368,35 @@ void Rocket_MouseMove( int x, int y )
 
 	menuContext->ProcessMouseMove( mousex, mousey, Rocket_GetKeyModifiers() );
 }
+
+/*
+================
+CG_KeyBinding
+================
+*/
+Rocket::Core::String CG_KeyBinding( const char* bind, int team )
+{
+	static char keyBuf[ 32 ];
+	Rocket::Core::String key;
+	keyBuf[ 0 ] = '\0';
+	std::vector<std::vector<int>> keyNums = trap_Key_GetKeynumForBinds( team, {bind} );
+
+	if ( keyNums[0].size() == 0 )
+	{
+		return "Unbound";
+	}
+
+	trap_Key_KeynumToStringBuf( keyNums[0][0], keyBuf, sizeof( keyBuf ) );
+	key = keyBuf;
+
+	if ( keyNums[0].size() > 1 )
+	{
+		keyBuf[ 0 ] = '\0';
+		trap_Key_KeynumToStringBuf( keyNums[0][1], keyBuf, sizeof( keyBuf ) );
+		key += " or ";
+		key += keyBuf;
+	}
+
+	return key;
+}
+

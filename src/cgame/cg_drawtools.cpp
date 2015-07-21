@@ -495,30 +495,6 @@ bool CG_WorldToScreen( vec3_t point, float *x, float *y )
 }
 
 /*
-================
-CG_KeyBinding
-================
-*/
-char *CG_KeyBinding( const char *bind, team_t team )
-{
-	static char key[ 32 ];
-
-	key[0] = '\0';
-
-    std::vector<std::vector<int>> keyNums = trap_Key_GetKeynumForBinds(team, {bind});
-
-    if (keyNums[0].size() == 0) {
-        return key;
-    }
-
-    trap_Key_KeynumToStringBuf( keyNums[0][0], key, sizeof( key ) );
-    Q_strncpyz( key, "\\", sizeof( key ) );
-    Q_strcat( key, sizeof( key ), bind );
-
-	return key;
-}
-
-/*
 =================
 CG_GetColorCharForHealth
 =================
