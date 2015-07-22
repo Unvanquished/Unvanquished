@@ -3063,7 +3063,6 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 {
 	char   *s;
 	int    sec;
-	Rocket::Core::String yeskey, nokey;
 
 	if ( !cgs.voteTime[ team ] )
 	{
@@ -3085,8 +3084,8 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 		sec = 0;
 	}
 
-	yeskey = std::move(CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ));
-	nokey = std::move(CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ));
+	Rocket::Core::String yeskey = CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team );
+	Rocket::Core::String nokey = CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team );
 
 	s = va( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
