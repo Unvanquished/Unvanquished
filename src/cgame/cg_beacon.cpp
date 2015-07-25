@@ -613,8 +613,15 @@ static void HandHLBeaconToUI()
 		}
 
 		// distance
-		Com_sprintf( br->distance, sizeof( br->distance ), "%im from here",
-		             (int)round( beacon->dist * QU_TO_METER ) );
+		int distance = (int)floor( beacon->dist * QU_TO_METER );
+		if ( distance > 1 )
+		{
+			Com_sprintf( br->distance, sizeof( br->distance ), "%im from here", distance );
+		}
+		else
+		{
+			Com_sprintf( br->distance, sizeof( br->distance ), "Here" );
+		}
 		showDistance = true;
 
 		// age
