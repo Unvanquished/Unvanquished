@@ -1,5 +1,13 @@
 #Unvanquished
 
+[![GitHub tag](https://img.shields.io/github/tag/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/tags)
+[![GitHub release](https://img.shields.io/github/release/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/releases)
+[![Github release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/latest/total.svg)]()
+
+| Windows | OSX | Linux |
+|---------|-----|-------|
+| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/osx-ci.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
+
 This repository contains the gamelogic of the game Unvanquished.
 You need to download the game's assets in addition to that to make it run.
 See below for build and launch instructions.
