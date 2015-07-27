@@ -26,7 +26,7 @@
 
 set(PLATFORM_PREFIX ${DEPS_DIR}/pnacl/bin)
 set(PLATFORM_TRIPLET "pnacl")
-if (WIN32)
+if (MSVC)
   set(PNACL_BIN_EXT ".bat")
 else()
   set(PNACL_BIN_EXT "")
