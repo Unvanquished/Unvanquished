@@ -624,7 +624,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Erase( openBracket, closeBracket - openBracket + 1 );
 				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );
 				out.Insert( openBracket, path );
-				currentPosition = openBracket + strlen( path ) + 1;
+				currentPosition = openBracket + strlen( path );
 			}
 			else
 			{
