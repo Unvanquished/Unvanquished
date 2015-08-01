@@ -1,0 +1,60 @@
+------------------------------------------------------------- Daemon License ---
+Daemon is licensed under the NEW BSD LICENSE. This license is contained in
+full in the file named LICENSE.txt. Please be aware of the exceptions to this
+license as listed below.
+
+---------------------------------------------------- Code License Exceptions ---
+The following files contain sections of code that are not licensed under the
+GPL, but are nevertheless GPL compatible. The license text for these licenses
+is contained within the files as listed.
+
+    src/libs/minizip/*                                          zlib license
+
+--------------------------------------------------------------------------------
+
+
+------------------------------------------------------ ET-XreaL Code License ---
+The ET-XreaL code is licensed under the GNU GENERAL PUBLIC LICENSE. This
+license is contained in full in the file named GPL.txt. Please be aware of
+the exceptions to this license as listed below.
+
+-------- Code License Exceptions - The parts that are not covered by the GPL ---
+See GPL.txt for the GNU GENERAL PUBLIC LICENSE
+
+ADDITIONAL TERMS: The Wolfenstein: Enemy Territory GPL Source Code is also
+subject to certain additional terms. You should have received a copy of
+these additional terms immediately following the terms and conditions of the
+GNU GPL which accompanied the Wolf ET Source Code. If not, please request a
+copy in writing from id Software at id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
+
+EXCLUDED CODE: The code described below and contained in the Wolfenstein:
+Enemy Territory GPL Source Code release is not part of the Program covered
+by the GPL and is expressly excluded from its terms. You are solely
+responsible for obtaining from the copyright holder a license for such code
+and complying with the applicable license terms.
+
+
+--------------------------------------------------------------- zlib license ---
+IO on .zip files using portions of zlib
+
+    src/libs/minizip/*
+
+Copyright (C) 1998 Gilles Vollant
+zlib is Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.

@@ -1,0 +1,68 @@
+branches:
+  except:
+    - debian
+
+environment:
+  matrix:
+#    - COMPILER: mingw64
+#      COMPILER_VERSION: "5.1.0"
+#      MINGW_VERSION: "v4-rev0"
+#      GENERATOR: "MinGW Makefiles"
+    - COMPILER: msvc
+      COMPILER_VERSION: "12.0"
+      TARGET: x86
+      GENERATOR: "NMake Makefiles"
+#    - COMPILER: msvc
+#      COMPILER_VERSION: "12.0"
+#      TARGET: x86_amd64
+#      GENERATOR: "NMake Makefiles"
+#    - COMPILER: msvc
+#      COMPILER_VERSION: "14.0"
+#      TARGET: x86
+#      GENERATOR: "NMake Makefiles"
+#    - COMPILER: msvc
+#      TARGET: x86_amd64
+#      COMPILER_VERSION: "14.0"
+#      GENERATOR: "NMake Makefiles"
+
+matrix:
+  fast_finish: false
+
+configuration: Debug
+
+build:
+  parallel: true
+
+before_build:
+  - git submodule update --init --recursive
+  - ps: |
+      if ($env:COMPILER -eq "mingw64" -AND -Not (Test-Path "C:/mingw64")) {
+          $url  = "http://sourceforge.net/projects/mingw-w64/files/"
+          $url += "Toolchains%20targetting%20Win64/Personal%20Builds/"
+          $url += "mingw-builds/${env:COMPILER_VERSION}/threads-win32/seh/"
+          $url += "x86_64-${env:COMPILER_VERSION}-release-win32-seh-rt_${env:MINGW_VERSION}.7z/download"
+          Invoke-WebRequest -UserAgent wget -Uri $url -OutFile mingw64.7z
+          &7z x -oC:\ mingw64.7z > $null
+          $env:PATH = "C:/mingw64/bin;" + ($env:PATH -replace [regex]::escape("C:\Program Files (x86)\Git\bin"), "")
+      }
+
+build_script:
+  - cmd: cmake --version
+  - cmd: mkdir build
+  - cmd: cd build
+  - ps: |
+      if ($env:COMPILER -eq "msvc") {
+          pushd "${env:ProgramFiles(x86)}/Microsoft Visual Studio ${env:COMPILER_VERSION}/VC/"
+          cmd /c "vcvarsall.bat $env:TARGET & set" |
+          foreach {
+              if ($_ -match "=") {
+                  $v = $_.split("="); set-item -force -path "ENV:\$($v[0])"  -value "$($v[1])"
+              }
+          }
+          popd
+      } elseif ($env:COMPILER -eq "mingw64") {
+          $env:CC="gcc"
+          $env:CXX="g++"
+      }
+      cmake -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "${env:GENERATOR}" -DBUILD_GAME_NACL=0 -DCMAKE_BUILD_TYPE=Debug ..
+      cmake --build .

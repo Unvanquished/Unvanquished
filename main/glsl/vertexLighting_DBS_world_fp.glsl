@@ -38,13 +38,13 @@ uniform vec3            u_LightGridOrigin;
 uniform vec3            u_LightGridScale;
 
 varying vec4		var_TexDiffuseGlow;
+varying vec4		var_Color;
 
 #if defined(USE_NORMAL_MAPPING)
 varying vec4		var_TexNormalSpecular;
 varying vec3		var_ViewDir; // direction from surface to viewer
 varying vec3            var_Position;
 #else
-varying vec4		var_LightColor;
 varying vec3		var_Normal;
 #endif
 
@@ -83,14 +83,6 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 
 	vec3 V = normalize(var_ViewDir);
 
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		V = -V;
-		L = -L;
-	}
-#endif
-
 	vec2 texNormal = var_TexNormalSpecular.st;
 	vec2 texSpecular = var_TexNormalSpecular.pq;
 
@@ -122,7 +114,7 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 #endif // USE_PARALLAX_MAPPING
 
 	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
+	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse) * var_Color;
 
 	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
@@ -178,15 +170,8 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 
 	vec3 N = normalize(var_Normal);
 
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		N = -N;
-	}
-#endif
-
 	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
+	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse) * var_Color;
 
 	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
@@ -194,15 +179,10 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 		return;
 	}
 
-	vec4 color = vec4(diffuse.rgb * var_LightColor.rgb, var_LightColor.a);
+	vec4 color = diffuse;
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
 #endif
-	// gl_FragColor = vec4(diffuse.rgb * var_LightColor.rgb, diffuse.a);
-	// color = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
-	// gl_FragColor = vec4(vec3(diffuse.a, diffuse.a, diffuse.a), 1.0);
-	// gl_FragColor = vec4(vec3(var_LightColor.a, var_LightColor.a, var_LightColor.a), 1.0);
-	// gl_FragColor = var_LightColor;
 
 #if 0 //defined(r_ShowTerrainBlends)
 	color = vec4(vec3(var_LightColor.a), 1.0);
@@ -210,9 +190,9 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 
 #if defined(r_DeferredShading)
 	gl_FragData[0] = color;
-	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);
-	gl_FragData[2] = vec4(N, var_LightColor.a);
-	gl_FragData[3] = vec4(0.0, 0.0, 0.0, var_LightColor.a);
+	gl_FragData[1] = vec4(diffuse.rgb, color.a);
+	gl_FragData[2] = vec4(N, color.a);
+	gl_FragData[3] = vec4(0.0, 0.0, 0.0, color.a);
 #else
 	gl_FragColor = color;
 #endif

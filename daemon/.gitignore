@@ -1,0 +1,48 @@
+# use 'git ls-files -i --exclude-standard' for checking
+# which already committed files are matched against these rules
+
+*~
+*.DS_Store
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+daemon
+daemonded
+daemon-tty
+vm
+Release
+Debug
+build
+*.vcxproj.user
+*.kdev4
+*.dll
+*.exe
+*.dylib
+*.so
+*.a
+
+#ignore editor temporary files
+.*.swp
+.#*
+
+#ignore patch-generated
+*.orig
+*.rej
+
+#ignore eclipse cdt project files
+.project
+.cproject
+.settings
+
+#ignore clion project files
+.idea/
+
+#ignore external deps
+external_deps/*
+!external_deps/build.sh
+!external_deps/cygtar.py
+
+#never ignore these in subdirectories by accident
+!.gitattributes
+!.gitignore

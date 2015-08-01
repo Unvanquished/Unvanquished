@@ -64,7 +64,6 @@
 					<button onClick='Events.pushevent("buildDS server_browser local", event)'>Refresh list</button>
 					<button onClick='Events.pushevent("execDS server_browser local", event)'>Connect</button>
 					<button onClick='Events.pushevent("init_servers local;buildDS server_browser local", event)'>Scan for new</button>
-
 				</buttonbar>
 			</panel>
 

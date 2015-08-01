@@ -25,7 +25,7 @@
 
 
 	</head>
-	<body id="options_graphics" template="window" style="width: 45em; margin: 10%;">
+	<body id="options_graphics" template="window" style="width: 45em; margin: 10%;" onload='Events.pushevent("buildDS resolutions", event)'>
 		<h1> Graphics </h1>
 
 		<tabset>
@@ -51,25 +51,8 @@
 				</p>
 
 				<row>
-					<!--
-					<select cvar="r_mode">
-						<option value="-2">Automatic</option>
-						<option value="-1">Manual</option>
-					</select>
-					-->
-
+					<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
 					<h3>Screen Resolution</h3>
-
-					<half class="left">
-						<input type="text" cvar="r_customwidth" class="text" style="width: 3em;"/>
-						<p>Width</p>
-					</half>
-
-					<half class="right">
-						<input type="text" cvar="r_customheight" class="text" style="width: 3em;"/>
-						<p>Height</p>
-					</half>
-
 				</row>
 				<row>
 					<input cvar="r_fullscreen" type="checkbox"/>
@@ -85,8 +68,8 @@
 					<h3>Vsync</h3>
 					<p>
 						Vsync prevents 'visual tearing' but increases input latency.  Flexible Vsync
-						only activates when the frame-rate is above the refresh-rate of the monitor, 
-						avoiding stuttering when the FPS drops.  
+						only activates when the frame-rate is above the refresh-rate of the monitor,
+						avoiding stuttering when the FPS drops.
 					</p>
 				</row>
 
@@ -186,6 +169,11 @@
 					<input cvar="r_FXAA" type="checkbox" />
 					<h3>FXAA</h3>
 					<p> Fast approximate anti-aliasing.  Faster than full MSAA, but not as sharp. </p>
+				</row>
+				<row>
+					<input cvar="r_ssao" type="checkbox" />
+					<h3>SSAO</h3>
+					<p> Screen space ambient occlusion.</p>
 				</row>
 
 				<h2> Motion blur </h2>

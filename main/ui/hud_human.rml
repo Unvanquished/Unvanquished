@@ -203,17 +203,19 @@
 
 			usable_buildable
 			{
+				width: 1.5em;
 				position: absolute;
-				bottom: 200px;
+				bottom: 20%;
+				color: #aaffffff;
 				margin-left: auto;
 				margin-right: auto;
-				color: #aaffffff;
 			}
 
 			usable_buildable img
 			{
-				width: 30px;
-				height: 30px;
+				display: inline;
+				width: 1.5em;
+				height: 1.5em;
 			}
 
 			inventory
@@ -279,7 +281,9 @@
 			<momentum_bar/>
 		</div>
 		<div id="items">
-			<usable_buildable src="/ui/assets/neutral/use"/>
+			<usable_buildable>
+				<img src="/ui/assets/neutral/use" />
+			</usable_buildable>
 			<inventory />
 		</div>
 		<div id="scanner">

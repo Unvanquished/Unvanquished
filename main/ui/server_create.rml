@@ -7,6 +7,14 @@
 			.levelshot {
 				width: 100%;
 			}
+			/* select and selectbox elements are implicit, but their styles must be explicitely written */
+			row#maplist dataselect, row#maplist select, input#hostname, input#password {
+				width: 25em;
+			}
+			row#maplist selectbox {
+				max-height: 25em;
+				overflow-y: auto;
+			}
 
 
 		</style>
@@ -14,17 +22,17 @@
 	<body template="window" id="createserver" onShow='Events.pushevent("buildDS mapList", event)' style="width:40em; margin:10%;">
 		<h1> Start local/LAN game</h1>
 		<row>
-			<input type="text" cvar="sv_hostname" class="text" style="width:20em;"/>
+			<input type="text" cvar="sv_hostname" class="text" id="hostname"/>
 			<h3> Hostname </h3>
 		</row>
 		<row>
-			<input type="text" cvar="g_password" class="text" style="width:20em;"/>
+			<input type="text" cvar="g_password" class="text" id="password"/>
 			<input cvar="g_needpass" type="checkbox" style="margin-right:1em;"/>
 			<h3> Password </h3>
 		</row>
 
 		<form onsubmit='execForm "map $map$"'>
-			<row>
+			<row id="maplist">
 				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
 				<h3> Map </h3>
 			</row>

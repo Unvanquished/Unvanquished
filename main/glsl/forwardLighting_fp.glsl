@@ -957,15 +957,7 @@ void	main()
 
 #if defined(USE_NORMAL_MAPPING)
 
-	// invert tangent space for twosided surfaces
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		tangentToWorldMatrix = -tangentToWorldMatrix;
-	}
-#endif
-
 
 	vec2 texNormal = var_TexNormal.st;
 	vec2 texSpecular = var_TexSpecular.st;
@@ -1015,12 +1007,6 @@ void	main()
 #else // USE_NORMAL_MAPPING
 
 	vec3 N = normalize(var_Normal.xyz);
-#if defined(TWOSIDED)
-	if(gl_FrontFacing)
-	{
-		N = -N;
-	}
-#endif
 
 #endif // USE_NORMAL_MAPPING
 
