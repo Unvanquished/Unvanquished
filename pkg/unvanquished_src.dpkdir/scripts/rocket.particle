@@ -1,0 +1,33 @@
+rocketImpactPS
+{
+	ejector
+	{
+		particle
+		{
+			shader sync flame3 flame4 flame5 flame6 flame7 flame8 flame9 flame10 flame11 flame12 flame13 flame14 flame15 flame16 flame17 flame18 flame19 flame20 flame21 flame22 flame23 flame24 flame25
+
+			displacement          0 0 0 ~0
+
+			velocityType          static
+			velocityDir           linear
+			velocityMagnitude     100~75%
+			velocity              0 0 1 ~45
+
+			accelerationType      static
+			accelerationDir       linear
+			accelerationMagnitude 100
+			acceleration          0 0 -1 0
+
+			radius                0 10.0~75% 30.0~75%
+			alpha                 400 1.0 0.0
+			rotation              0 ~360 -
+			bounce                0
+
+			lifeTime              400
+		}
+
+		count  3
+		delay  0
+		period 0 - ~0%
+	}
+}
