@@ -114,7 +114,7 @@ static void GLSL_InitGPUShadersOrError()
 
 	gl_shaderManager.load( gl_motionblurShader );
 
-	if (GLEW_ARB_texture_gather)
+	if (r_ssao->integer && GLEW_ARB_texture_gather)
 		gl_shaderManager.load(gl_ssaoShader);
 	else
 		Log::Warn("SSAO not used because GL_ARB_texture_gather is not available.");
@@ -136,7 +136,7 @@ void GLSL_InitGPUShaders()
 	 3. Recompile app to pickup the new shaders.cpp changes.
 	 4. Run the app and get to the point required to check work.
 	 5. If the change failed or succeeded but you want to make more changes restart at step 1.
-	
+
 	 Alternatively, if set shaderpath "c:/unvanquished/main" is used, the cylcle is:
 	 1. Change shader file(s) - don't run the buildshaders script unless samples.cpp is missing.
 	 2. Start the app, the app will load the shader files directly.
@@ -144,7 +144,7 @@ void GLSL_InitGPUShaders()
 		in samples.cpp, so need to restart the app.
 	 3. Fix the problem shader files
 	 4. Do /glsl_restart at the app console to reload them. Repeat from step 3 as needed.
-	
+
 	 Note that unv will respond by listing the files it thinks are different.
 	 If this matches your expectations then it's not an error.
 	 Note foward slashes (like those used in windows pathnames are processed
@@ -437,7 +437,7 @@ static void DrawTris()
 	gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime - backEnd.currentEntity->e.shaderTime );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, tr.whiteImage ); 
+	GL_BindToTMU( 0, tr.whiteImage );
 	gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 	gl_genericShader->SetRequiredVertexPointers();
 
@@ -748,7 +748,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	}
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_vertexLightingShader_DBS_entity->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -781,7 +781,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 		float maxSpec = RB_EvalExpression( &pStage->specularExponentMax, r_specularExponentMax->value );
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_SpecularExponent( minSpec, maxSpec );
-		
+
 		if ( tr.cubeHashTable != nullptr )
 		{
 			cubemapProbe_t *cubeProbeNearest;
@@ -802,17 +802,17 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				GLimp_LogComment( "cubeProbeNearest && cubeProbeSecondNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_BindToTMU( 3, tr.whiteCubeImage ); 
+				GL_BindToTMU( 3, tr.whiteCubeImage );
 
 				// bind u_EnvironmentMap1
-				GL_BindToTMU( 4, tr.whiteCubeImage ); 
+				GL_BindToTMU( 4, tr.whiteCubeImage );
 			}
 			else if ( cubeProbeNearest == nullptr )
 			{
 				GLimp_LogComment( "cubeProbeNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_BindToTMU( 3, cubeProbeSecondNearest->cubemap ); 
+				GL_BindToTMU( 3, cubeProbeSecondNearest->cubemap );
 
 				// u_EnvironmentInterpolation
 				gl_vertexLightingShader_DBS_entity->SetUniform_EnvironmentInterpolation( 0.0 );
@@ -822,7 +822,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				GLimp_LogComment( "cubeProbeSecondNearest == NULL\n" );
 
 				// bind u_EnvironmentMap0
-				GL_BindToTMU( 3, cubeProbeNearest->cubemap ); 
+				GL_BindToTMU( 3, cubeProbeNearest->cubemap );
 
 				// bind u_EnvironmentMap1
 				//GL_SelectTexture(4);
@@ -856,10 +856,10 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				}
 
 				// bind u_EnvironmentMap0
-				GL_BindToTMU( 3, cubeProbeNearest->cubemap ); 
+				GL_BindToTMU( 3, cubeProbeNearest->cubemap );
 
 				// bind u_EnvironmentMap1
-				GL_BindToTMU( 4, cubeProbeSecondNearest->cubemap ); 
+				GL_BindToTMU( 4, cubeProbeSecondNearest->cubemap );
 
 				// u_EnvironmentInterpolation
 				gl_vertexLightingShader_DBS_entity->SetUniform_EnvironmentInterpolation( interpolate );
@@ -869,7 +869,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	if ( glowMapping )
 	{
-		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
 
 		gl_vertexLightingShader_DBS_entity->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
@@ -984,7 +984,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 	}
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_vertexLightingShader_DBS_world->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -1026,7 +1026,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 	if ( glowMapping )
 	{
-		GL_BindToTMU( 3, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+		GL_BindToTMU( 3, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
 
 		gl_vertexLightingShader_DBS_world->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
@@ -1185,7 +1185,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	if ( glowMapping )
 	{
-		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] ); 
+		GL_BindToTMU( 5, pStage->bundle[ TB_GLOWMAP ].image[ 0 ] );
 
 		gl_lightMappingShader->SetUniform_GlowTextureMatrix( tess.svars.texMatrices[ TB_GLOWMAP ] );
 	}
@@ -1481,7 +1481,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_omniXYZ->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -1531,12 +1531,12 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_BindToTMU( 5, tr.shadowCubeFBOImage[ light->shadowLOD ] ); 
-		GL_BindToTMU( 7, tr.shadowClipCubeFBOImage[ light->shadowLOD ] ); 
+		GL_BindToTMU( 5, tr.shadowCubeFBOImage[ light->shadowLOD ] );
+		GL_BindToTMU( 7, tr.shadowClipCubeFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
-	GL_BindToTMU( 6, tr.randomNormalsImage ); 
+	GL_BindToTMU( 6, tr.randomNormalsImage );
 
 	gl_forwardLightingShader_omniXYZ->SetRequiredVertexPointers();
 
@@ -1673,7 +1673,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_projXYZ->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -1723,12 +1723,12 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_BindToTMU( 5, tr.shadowMapFBOImage[ light->shadowLOD ] ); 
-		GL_BindToTMU( 7, tr.shadowClipMapFBOImage[ light->shadowLOD ] ); 
+		GL_BindToTMU( 5, tr.shadowMapFBOImage[ light->shadowLOD ] );
+		GL_BindToTMU( 7, tr.shadowClipMapFBOImage[ light->shadowLOD ] );
 	}
 
 	// bind u_RandomMap
-	GL_BindToTMU( 6, tr.randomNormalsImage ); 
+	GL_BindToTMU( 6, tr.randomNormalsImage );
 
 	gl_forwardLightingShader_projXYZ->SetRequiredVertexPointers();
 
@@ -1869,7 +1869,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
-	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_directionalSun->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
 	if ( normalMapping )
@@ -1911,12 +1911,12 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	// bind u_ShadowMap
 	if ( shadowCompare )
 	{
-		GL_BindToTMU( 5, tr.sunShadowMapFBOImage[ 0 ] ); 
+		GL_BindToTMU( 5, tr.sunShadowMapFBOImage[ 0 ] );
 		GL_BindToTMU( 10, tr.sunShadowClipMapFBOImage[ 0 ] );
 
 		if ( r_parallelShadowSplits->integer >= 1 )
 		{
-			GL_BindToTMU( 6, tr.sunShadowMapFBOImage[ 1 ] ); 
+			GL_BindToTMU( 6, tr.sunShadowMapFBOImage[ 1 ] );
 			GL_BindToTMU( 11, tr.sunShadowClipMapFBOImage[ 1 ] );
 		}
 
@@ -1928,13 +1928,13 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 		if ( r_parallelShadowSplits->integer >= 3 )
 		{
-			GL_BindToTMU( 8, tr.sunShadowMapFBOImage[ 3 ] ); 
+			GL_BindToTMU( 8, tr.sunShadowMapFBOImage[ 3 ] );
 			GL_BindToTMU( 13, tr.sunShadowClipMapFBOImage[ 3 ] );
 		}
 
 		if ( r_parallelShadowSplits->integer >= 4 )
 		{
-			GL_BindToTMU( 9, tr.sunShadowMapFBOImage[ 4 ] ); 
+			GL_BindToTMU( 9, tr.sunShadowMapFBOImage[ 4 ] );
 			GL_BindToTMU( 14, tr.sunShadowClipMapFBOImage[ 4 ] );
 		}
 	}
@@ -2002,7 +2002,7 @@ static void Render_reflection_CB( int stage )
 	// bind u_NormalMap
 	if ( normalMapping )
 	{
-		GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] ); 
+		GL_BindToTMU( 1, pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		gl_reflectionShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 	}
 
@@ -2029,7 +2029,7 @@ static void Render_skybox( int stage )
 	gl_skyboxShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
 
 	gl_skyboxShader->SetRequiredVertexPointers();
 
@@ -2169,7 +2169,7 @@ static void Render_heatHaze( int stage )
 	}
 
 	// bind u_NormalMap
-	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 0, pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
 	gl_heatHazeShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 	GL_BindToTMU( 1, tr.currentRenderImage );
@@ -2230,7 +2230,7 @@ static void Render_liquid( int stage )
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth, tr.currentRenderImage->uploadHeight );
 
 	// bind u_PortalMap
-	GL_BindToTMU( 1, tr.portalRenderImage ); 
+	GL_BindToTMU( 1, tr.portalRenderImage );
 
 	// depth texture is not bound to a FBO
 	GL_SelectTexture( 2 );
@@ -2238,7 +2238,7 @@ static void Render_liquid( int stage )
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
 
 	// bind u_NormalMap
-	GL_BindToTMU( 3, pStage->bundle[ TB_COLORMAP ].image[ 0 ] ); 
+	GL_BindToTMU( 3, pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
 	gl_liquidShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 	Tess_DrawElements();
@@ -2355,7 +2355,7 @@ static void Render_fog()
 	gl_fogQuake3Shader->SetUniform_Time( backEnd.refdef.floatTime - backEnd.currentEntity->e.shaderTime );
 
 	// bind u_ColorMap
-	GL_BindToTMU( 0, tr.fogImage ); 
+	GL_BindToTMU( 0, tr.fogImage );
 
 	gl_fogQuake3Shader->SetRequiredVertexPointers();
 
