@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <signal.h>
 #ifdef __native_client__
 #include <nacl/nacl_exception.h>
+#include <nacl/nacl_random.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -336,6 +337,10 @@ void GenRandomBytes(void* dest, size_t size)
 		Sys::Error("CryptGenRandom failed: %s", Win32StrError(GetLastError()));
 
 	CryptReleaseContext(prov, 0);
+#elif defined(__native_client__)
+	size_t bytes_written;
+	if (nacl_secure_random(dest, size, &bytes_written) != 0 || bytes_written != size)
+		Sys::Error("nacl_secure_random failed");
 #else
 	try {
 		FS::RawPath::OpenRead("/dev/urandom").Read(dest, size);
