@@ -325,6 +325,26 @@ bool IsProcessTerminating() {
 	return processTerminating;
 }
 
+void GenRandomBytes(void* dest, size_t size)
+{
+#ifdef _WIN32
+	HCRYPTPROV prov;
+	if (!CryptAcquireContext(&prov, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+		Sys::Error("CryptAcquireContext failed: %s", Win32StrError(GetLastError()));
+
+	if (!CryptGenRandom(prov, size, (BYTE*)dest))
+		Sys::Error("CryptGenRandom failed: %s", Win32StrError(GetLastError()));
+
+	CryptReleaseContext(prov, 0);
+#else
+	try {
+		FS::RawPath::OpenRead("/dev/urandom").Read(dest, size);
+	} catch (std::system_error& err) {
+		Sys::Error("Failed to generate random bytes: %s", err.what());
+	}
+#endif
+}
+
 } // namespace Sys
 
 // Global operator new/delete override to not throw an exception when out of

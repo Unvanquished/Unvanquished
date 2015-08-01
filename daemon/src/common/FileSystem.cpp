@@ -172,14 +172,14 @@ inline int my_open(Str::StringRef path, openMode_t mode)
 #endif
 
 #ifndef _WIN32
-	// Only allow opening regular files
+	// Don't allow opening directories
 	if (mode == MODE_READ && fd != -1) {
 		struct stat st;
 		if (fstat(fd, &st) == -1) {
 			close(fd);
 			return -1;
 		}
-		if (!S_ISREG(st.st_mode)) {
+		if (S_ISDIR(st.st_mode)) {
 			close(fd);
 			errno = EISDIR;
 			return -1;

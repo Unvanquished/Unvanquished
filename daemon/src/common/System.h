@@ -169,6 +169,10 @@ NORETURN void OSExit(int exitCode);
 
 bool IsProcessTerminating();
 
+// Generate cryptographically-secure random bytes. Don't use std::random_device
+// because it is not implemented correctly on some platforms.
+void GenRandomBytes(void* dest, size_t size);
+
 } // namespace Sys
 
 #endif // COMMON_SYSTEM_H_
