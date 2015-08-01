@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <fcntl.h>
 #include <signal.h>
 #ifdef __native_client__
 #include <nacl/nacl_exception.h>
@@ -342,11 +343,12 @@ void GenRandomBytes(void* dest, size_t size)
 	if (nacl_secure_random(dest, size, &bytes_written) != 0 || bytes_written != size)
 		Sys::Error("nacl_secure_random failed");
 #else
-	try {
-		FS::RawPath::OpenRead("/dev/urandom").Read(dest, size);
-	} catch (std::system_error& err) {
-		Sys::Error("Failed to generate random bytes: %s", err.what());
-	}
+	int fd = open("/dev/urandom", O_RDONLY);
+	if (fd == -1)
+		Sys::Error("Failed to open /dev/urandom: %s", strerror(errno));
+	if (read(fd, dest, size) != size)
+		Sys::Error("Failed to read from /dev/urandom: %s", strerror(errno));
+	close(fd);
 #endif
 }
 
