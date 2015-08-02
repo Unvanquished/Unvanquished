@@ -101,7 +101,7 @@ function(GAMEMODULE)
                     -DBUILD_CLIENT=0
                     -DBUILD_TTY_CLIENT=0
                     -DBUILD_SERVER=0
-                BUILD_COMMAND ${PNACLPYTHON} ${CMAKE_COMMAND} --build -j8 .
+                BUILD_COMMAND ${PNACLPYTHON} ${CMAKE_COMMAND} --build .
                 INSTALL_COMMAND ""
             )
             ExternalProject_Add_Step(${vm} forcebuild
