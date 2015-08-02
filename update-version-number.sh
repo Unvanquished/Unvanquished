@@ -21,8 +21,8 @@ VERSION_SHORT="$(echo "$VERSION" | cut -d. -f1,2)"
 
 # Update q_shared.h
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
-sed "s|\(#define \+PRODUCT_VERSION *\"\)[^\"]*\"|\1${VERSION}\"|" "${SOURCE_PATH}/src/engine/qcommon/q_shared.h" > "${TMP_FILE}"
-mv "${TMP_FILE}" "${SOURCE_PATH}/src/engine/qcommon/q_shared.h"
+sed "s|\(#define \+PRODUCT_VERSION *\"\)[^\"]*\"|\1${VERSION}\"|" "${SOURCE_PATH}/daemon/src/engine/qcommon/q_shared.h" > "${TMP_FILE}"
+mv "${TMP_FILE}" "${SOURCE_PATH}/daemon/src/engine/qcommon/q_shared.h"
 
 # Update download-pk3.sh
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
