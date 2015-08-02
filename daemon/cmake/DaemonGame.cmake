@@ -123,6 +123,6 @@ function(GAMEMODULE)
 
         # Generate NaCl executables for x86 and x86_64
         pnacl_translate(${GAMEMODULE_NAME}-nacl-exe i686 "-x86")
-        pnacl_translate(${GAMEMODULE_NAME}-nacl-exe x86-64 "-x86-64")
+        pnacl_translate(${GAMEMODULE_NAME}-nacl-exe x86-64 "-x86_64")
     endif()
 endfunction()
