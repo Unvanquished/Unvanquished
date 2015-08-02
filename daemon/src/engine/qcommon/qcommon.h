@@ -982,8 +982,6 @@ int  Parse_FreeSourceHandle( int handle );
 bool  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
 int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
-void Com_RandomBytes( byte *string, int len );
-
 #define _(x) Trans_Gettext(x)
 #define C_(x, y) Trans_Pgettext(x, y)
 #define N_(x) (x)

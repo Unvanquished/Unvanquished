@@ -33,9 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <fcntl.h>
 #include <signal.h>
 #ifdef __native_client__
 #include <nacl/nacl_exception.h>
+#include <nacl/nacl_random.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -323,6 +325,31 @@ void OSExit(int exitCode) {
 
 bool IsProcessTerminating() {
 	return processTerminating;
+}
+
+void GenRandomBytes(void* dest, size_t size)
+{
+#ifdef _WIN32
+	HCRYPTPROV prov;
+	if (!CryptAcquireContext(&prov, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+		Sys::Error("CryptAcquireContext failed: %s", Win32StrError(GetLastError()));
+
+	if (!CryptGenRandom(prov, size, (BYTE*)dest))
+		Sys::Error("CryptGenRandom failed: %s", Win32StrError(GetLastError()));
+
+	CryptReleaseContext(prov, 0);
+#elif defined(__native_client__)
+	size_t bytes_written;
+	if (nacl_secure_random(dest, size, &bytes_written) != 0 || bytes_written != size)
+		Sys::Error("nacl_secure_random failed");
+#else
+	int fd = open("/dev/urandom", O_RDONLY);
+	if (fd == -1)
+		Sys::Error("Failed to open /dev/urandom: %s", strerror(errno));
+	if (read(fd, dest, size) != size)
+		Sys::Error("Failed to read from /dev/urandom: %s", strerror(errno));
+	close(fd);
+#endif
 }
 
 } // namespace Sys

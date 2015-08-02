@@ -78,14 +78,6 @@ function(GAMEMODULE)
 
         if (NOT FORK AND BUILD_GAME_NACL)
             set(FORK 1 PARENT_SCOPE)
-            if (NOT CMAKE_HOST_WIN32)
-                set(PythonInterp_FIND_VERSION 2)
-                find_package(PythonInterp 2)
-                if (NOT PYTHONINTERP_FOUND)
-                    message("Please set the PNACLPYTHON environment variable to your Python2 executable")
-                endif()
-                set(PNACLPYTHON "PNACLPYTHON=${PYTHON_EXECUTABLE}")
-            endif()
             include(ExternalProject)
             set(vm nacl-vms)
             ExternalProject_Add(${vm}
@@ -101,7 +93,6 @@ function(GAMEMODULE)
                     -DBUILD_CLIENT=0
                     -DBUILD_TTY_CLIENT=0
                     -DBUILD_SERVER=0
-                BUILD_COMMAND ${PNACLPYTHON} ${CMAKE_COMMAND} --build .
                 INSTALL_COMMAND ""
             )
             ExternalProject_Add_Step(${vm} forcebuild
@@ -132,6 +123,6 @@ function(GAMEMODULE)
 
         # Generate NaCl executables for x86 and x86_64
         pnacl_translate(${GAMEMODULE_NAME}-nacl-exe i686 "-x86")
-        pnacl_translate(${GAMEMODULE_NAME}-nacl-exe x86-64 "-x86-64")
+        pnacl_translate(${GAMEMODULE_NAME}-nacl-exe x86-64 "-x86_64")
     endif()
 endfunction()

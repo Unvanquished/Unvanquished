@@ -1690,7 +1690,7 @@ void Com_Init( char *commandLine )
 	// As machines get faster, Com_Milliseconds() can't be used
 	// anymore, as it results in a smaller and smaller range of
 	// qport values.
-	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
+	Sys::GenRandomBytes( &qport, sizeof( int ) );
 	Netchan_Init( qport & 0xffff );
 
 	SV_Init();
@@ -2121,37 +2121,6 @@ void Com_Shutdown()
 	}
 
 	FS::FlushAll();
-}
-
-/*
-==================
-Com_RandomBytes
-
-fills string array with len radom bytes, peferably from the OS randomizer
-==================
-*/
-void Com_RandomBytes( byte *string, int len )
-{
-	static std::random_device rd;
-	static std::mt19937 prng(rd());
-	static std::uniform_int_distribution<uint32_t> dist;
-
-	while (len >= 4) {
-		*(uint32_t*)string = dist(prng);
-		string += 4;
-		len -= 4;
-	}
-
-	if (len == 0) {
-		return;
-	}
-
-	uint32_t remainder = dist(prng);
-	while (len-->0) {
-		*string = uint8_t(remainder & 0xFF);
-		remainder >>= 8;
-		string ++;
-	}
 }
 
 /*

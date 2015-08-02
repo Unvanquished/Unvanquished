@@ -29,5 +29,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void qnettle_random( void *ctx, NettleLength length, uint8_t *dst )
 {
-	Com_RandomBytes( dst, length );
+	Sys::GenRandomBytes( dst, length );
 }

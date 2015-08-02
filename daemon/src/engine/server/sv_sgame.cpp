@@ -140,7 +140,7 @@ int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 	mpz_t                 message;
 	unsigned char         buffer[ RSA_KEY_LENGTH / 8 - 11 ];
 	int                   retval;
-	Com_RandomBytes( buffer, RSA_KEY_LENGTH / 8 - 11 );
+	Sys::GenRandomBytes( buffer, RSA_KEY_LENGTH / 8 - 11 );
 	nettle_mpz_init_set_str_256_u( message, RSA_KEY_LENGTH / 8 - 11, buffer );
 	mpz_get_str( cleartext, 16, message );
 	rsa_public_key_init( &public_key );
