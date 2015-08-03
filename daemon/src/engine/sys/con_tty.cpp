@@ -114,7 +114,10 @@ static void CON_AnsiColorPrint( const char *msg )
 
 	while ( *msg )
 	{
-		if ( Q_IsColorString( msg ) || *msg == '\n' )
+		bool color_indexed = Q_IsColorString( msg );
+		bool color_rgb = Q_IsHexColorString( msg );
+
+		if ( color_indexed || color_rgb || *msg == '\n' )
 		{
 			// First empty the buffer
 			if ( length > 0 )
@@ -130,7 +133,7 @@ static void CON_AnsiColorPrint( const char *msg )
 				fputs( "\033[0;49;37m\n", stderr );
 				msg++;
 			}
-			else
+			else if ( color_indexed )
 			{
 				// Print the color code
 				int colour = colour16map[ index ][ ( msg[ 1 ] - '0' ) & 31 ];
@@ -140,6 +143,11 @@ static void CON_AnsiColorPrint( const char *msg )
 				             30 + ( colour & 15 ), modifier[ ( colour / 16 ) & 3 ] );
 				fputs( buffer, stderr );
 				msg += 2;
+			}
+			else
+			{
+				/// \todo (hexcolor) Apply color
+				msg += 5;
 			}
 		}
 		else

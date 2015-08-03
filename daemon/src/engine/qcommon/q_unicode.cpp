@@ -78,9 +78,8 @@ int Q_UTF8_PrintStrlen( const char *str )
 
   while( *str )
   {
-    if( Q_IsColorString( str ) )
+    if( Q_SkipColorString( str ) )
     {
-      str += 2;
       continue;
     }
     if( *str == Q_COLOR_ESCAPE && str[1] == Q_COLOR_ESCAPE )

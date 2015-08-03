@@ -445,6 +445,7 @@ void  Com_Free_Aligned( void *ptr );
 #define FRAMETIME        100 // msec
 
 #define Q_COLOR_ESCAPE   '^'
+#define Q_COLOR_HEX      'x'
 
 #define COLOR_BLACK      '0'
 #define COLOR_RED        '1'
@@ -508,9 +509,163 @@ inline bool Q_IsColorString( const char *p )
 // Hex Color string support
 #define gethex( ch )                  ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
 #define ishex( ch )                   ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
-// check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
+
+/*
+================
+Q_IsHexColorString
+
+Checks that a string is in the form ^xHHH (where H is a hex digit)
+================
+*/
+inline bool Q_IsHexColorString( const char *p )
+{
+	return p[0] == Q_COLOR_ESCAPE && p[1] == Q_COLOR_HEX
+		&& ishex(p[2]) && ishex(p[3]) && ishex(p[4]);
+}
+/*// check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
 #define Q_IsHexColorString( p )       ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
-#define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
+#define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )*/
+
+/*
+================
+color_t
+
+Simple wrapper around vec4_t
+================
+*/
+struct color_t
+{
+	typedef vec4_t array_type;
+	typedef vec_t  component_type;
+
+	array_type array;
+
+	/*
+	================
+	color_t::color_t
+
+	Initialize from a color index
+	================
+	*/
+	explicit color_t(int index) : color_t()
+	{
+		if ( index >= 0 && index < 32 )
+			memcpy( this->array, g_color_table[index], sizeof( array_type ) );
+	}
+
+	/*
+	================
+	color_t::color_t
+
+	Initialize from a color index character
+	================
+	*/
+	explicit color_t(char index)
+		: color_t( int( ColorIndex(index) ) )
+	{
+	}
+
+	/*
+	================
+	color_t::color_t
+
+	Initialize from a float array
+	================
+	*/
+	explicit color_t(array_type array)
+	{
+		memcpy( this->array, array, sizeof( array_type ) );
+	}
+
+	/*
+	================
+	color_t::color_t
+
+	Default constructor, all components set to zero
+	================
+	*/
+	constexpr color_t()
+		: array{ 0, 0, 0, 0 }
+	{
+	}
+
+	/*
+	================
+	color_t::color_t
+
+	Default constructor, all components set to zero
+	================
+	*/
+	constexpr color_t(component_type r, component_type g, component_type b, component_type a = 1)
+		: array{ r, g, b, a }
+	{
+	}
+
+	explicit operator const component_type*() const
+	{
+		return array;
+	}
+
+	explicit operator component_type*()
+	{
+		return array;
+	}
+
+	component_type& operator[] (int index)
+	{
+		return array[index];
+	}
+
+	const component_type& operator[] (int index) const
+	{
+		return array[index];
+	}
+
+};
+
+/*
+================
+ColorFromHexString
+
+Creates a color from a string, assumes Q_IsHexColorString(p)
+================
+*/
+inline color_t ColorFromHexString( const char* p )
+{
+	return { gethex(p[2])/15.0f, gethex(p[3])/15.0f, gethex(p[4])/15.0f, 1.0f };
+}
+
+/*
+================
+Q_SkipColorString
+
+If Q_IsHexColorString(p) or Q_IsColorString(p),
+increases i by the right amount of bytes
+
+Returns whether that has been done
+================
+*/
+template<class Incrementable>
+	bool Q_SkipColorString( const char* p, Incrementable& i )
+{
+	if ( Q_IsColorString( p ) )
+	{
+		i += 2;
+		return true;
+	}
+	else if ( Q_IsHexColorString( p ) )
+	{
+		i += 5;
+		return true;
+	}
+	return false;
+}
+
+template<class CharT>
+	bool Q_SkipColorString( CharT *& p )
+{
+	return Q_SkipColorString(p, p);
+}
 
 #include "logging.h"
 

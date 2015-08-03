@@ -625,6 +625,12 @@ bool CL_InternalConsolePrint( const char *text )
 			text += 2;
 			continue;
 		}
+		else if ( Q_IsHexColorString( text ) )
+		{
+			/// \todo (hexcolor) Apply the color
+			text += 5;
+			continue;
+		}
 
 		if ( !wordLen )
 		{
@@ -635,11 +641,8 @@ bool CL_InternalConsolePrint( const char *text )
 				{
 					break;
 				}
-				if ( Q_IsColorString( text + i ) )
-				{
-					i += 2;
+				if ( Q_SkipColorString( text + i, i ) )
 					continue;
-				}
 				if ( text[ i ] == Q_COLOR_ESCAPE && text[ i + 1 ] == Q_COLOR_ESCAPE )
 				{
 					++i;

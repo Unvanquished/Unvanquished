@@ -285,23 +285,21 @@ Coordinates are at 640 by 480 virtual resolution
 
 void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, bool forceColor, bool noColorEscape )
 {
-	vec4_t     color;
+	color_t     color;
 	const char *s;
 	int        xx;
 	bool   noColour = false;
 
 	// draw the drop shadow
-	color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
 	color[ 3 ] = setColor[ 3 ];
-	re.SetColor( color );
+	re.SetColor( color.array );
 	s = string;
 	xx = x;
 
 	while ( *s )
 	{
-		if ( !noColorEscape && Q_IsColorString( s ) )
+		if ( !noColorEscape && Q_SkipColorString( s ) )
 		{
-			s += 2;
 			continue;
 		}
 
@@ -331,20 +329,35 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			{
 				if ( * ( s + 1 ) == COLOR_NULL )
 				{
-					memcpy( color, setColor, sizeof( color ) );
+					color = color_t( setColor );
 				}
 				else
 				{
-					memcpy( color, g_color_table[ ColorIndex( * ( s + 1 ) ) ], sizeof( color ) );
+					color = color_t( s[ 1 ] );
 				}
 
 				color[ 3 ] = setColor[ 3 ];
-				re.SetColor( color );
+				re.SetColor( color.array );
 			}
 
 			if ( !noColorEscape )
 			{
 				s += 2;
+				continue;
+			}
+		}
+		else if ( !noColour && Q_IsHexColorString( s ) )
+		{
+			if ( !forceColor )
+			{
+				color = ColorFromHexString(s);
+				color[ 3 ] = setColor[ 3 ];
+				re.SetColor( color.array );
+			}
+
+			if ( !noColorEscape )
+			{
+				s += 5;
 				continue;
 			}
 		}
@@ -399,7 +412,7 @@ Coordinates are at 640 by 480 virtual resolution
 */
 void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape )
 {
-	vec4_t     color;
+	color_t    color;
 	const char *s;
 	float      xx;
 	bool   noColour = false;
@@ -413,26 +426,43 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 	{
 		int ch;
 
+		/// \todo (hexcolor) this looks pretty much like the code in SCR_DrawStringExt
+		/// Could be split in a separate function
 		if ( !noColour && Q_IsColorString( s ) )
 		{
 			if ( !forceColor )
 			{
 				if ( * ( s + 1 ) == COLOR_NULL )
 				{
-					memcpy( color, setColor, sizeof( color ) );
+					color = color_t( setColor );
 				}
 				else
 				{
-					memcpy( color, g_color_table[ ColorIndex( * ( s + 1 ) ) ], sizeof( color ) );
+					color = color_t( s[ 1 ] );
 				}
 
 				color[ 3 ] = setColor[ 3 ];
-				re.SetColor( color );
+				re.SetColor( color.array );
 			}
 
 			if ( !noColorEscape )
 			{
 				s += 2;
+				continue;
+			}
+		}
+		else if ( !noColour && Q_IsHexColorString( s ) )
+		{
+			if ( !forceColor )
+			{
+				color = ColorFromHexString(s);
+				color[ 3 ] = setColor[ 3 ];
+				re.SetColor( color.array );
+			}
+
+			if ( !noColorEscape )
+			{
+				s += 5;
 				continue;
 			}
 		}
@@ -471,11 +501,10 @@ static int SCR_Strlen( const char *str )
 
 	while ( *s )
 	{
-		if ( Q_IsColorString( s ) )
-		{
-			s += 2;
-		}
-		else if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		if ( Q_SkipColorString(s) )
+			continue;
+
+		if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
 		{
 			++s;
 		}

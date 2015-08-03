@@ -170,7 +170,15 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 
 	while ( *msg )
 	{
-		if ( ( !noColour && Q_IsColorString( msg ) ) || *msg == '\n' )
+		bool color_indexed = false;
+		bool color_rgb = false;
+		if ( !noColour )
+		{
+			color_indexed = Q_IsColorString( msg );
+			color_rgb = Q_IsHexColorString( msg );
+		}
+
+		if ( color_rgb || color_indexed || *msg == '\n' )
 		{
 			noColour = false;
 
@@ -192,11 +200,18 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 			else
 			{
 				// Set the color
-				CON_SetColor( win, *( msg + 1 ) == COLOR_NULL ? CURSES_NULL_COLOR : ColorIndex( *( msg + 1 ) ) );
+				if ( color_indexed )
+				{
+					CON_SetColor( win, *( msg + 1 ) == COLOR_NULL ? CURSES_NULL_COLOR : ColorIndex( *( msg + 1 ) ) );
+				}
+				else
+				{
+					/// \todo (hexcolor) Apply color
+				}
 
 				if ( stripcodes )
 				{
-					msg += 2;
+					msg += color_indexed ? 2 : 5;
 				}
 				else
 				{

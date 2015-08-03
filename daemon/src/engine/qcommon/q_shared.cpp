@@ -2487,11 +2487,11 @@ int Q_PrintStrlen( const char *string )
 
 	while ( *p )
 	{
-		if ( Q_IsColorString( p ) )
+		if ( Q_SkipColorString( p ) )
 		{
-			p += 2;
 			continue;
 		}
+
 		if ( *p == Q_COLOR_ESCAPE && p[1] == Q_COLOR_ESCAPE )
 		{
 			++p;
@@ -2515,11 +2515,12 @@ char *Q_CleanStr( char *string )
 
 	while ( ( c = *s ) != 0 )
 	{
-		if ( Q_IsColorString( s ) )
+		if ( Q_SkipColorString( s ) )
 		{
-			s++;
+			continue;
 		}
-		else if ( (byte) c >= 0x20 && c != 0x7F )
+		
+		if ( (byte) c >= 0x20 && c != 0x7F )
 		{
 			*d++ = c;
 		}
