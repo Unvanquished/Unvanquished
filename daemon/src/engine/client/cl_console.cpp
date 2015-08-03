@@ -127,7 +127,9 @@ static const char *Con_LineToString( int lineno, bool lf )
 static const char *Con_LineToColouredString( int lineno, bool lf )
 {
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
-	int              s, d, colour = 7;
+	int              s, d;
+
+	color_t colour(7);
 
 	for ( s = d = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
 	{
@@ -135,7 +137,9 @@ static const char *Con_LineToColouredString( int lineno, bool lf )
 		{
 			colour = line[ s ].ink;
 			lineString[ d++ ] = '^';
-			lineString[ d++ ] = '0' + colour;
+			/// \todo (hexcolor) translate to indexed
+			//lineString[ d++ ] = '0' + colour;
+			lineString[ d++ ] = '1';
 		}
 
 		if ( line[ s ].ch < 0x80 )
@@ -196,7 +200,7 @@ Con_Clear
 static INLINE void Con_Clear()
 {
 	int i;
-	conChar_t fill = { '\0', ColorIndex( CONSOLE_COLOR ) };
+	conChar_t fill = { '\0', color_t( CONSOLE_COLOR ) };
 
 	for ( i = 0; i < CON_TEXTSIZE; ++i )
 	{
@@ -536,7 +540,7 @@ void Con_Linefeed()
 {
 	int             i;
 	conChar_t       *line;
-	const conChar_t blank = { 0, ColorIndex( CONSOLE_COLOR ) };
+	const conChar_t blank = { 0, color_t( CONSOLE_COLOR ) };
 	const int scrollLockMode = con_scrollLock ? con_scrollLock->integer : 0;
 
 	consoleState.horizontalCharOffset = 0;
@@ -583,7 +587,6 @@ bool CL_InternalConsolePrint( const char *text )
 {
 	int      y;
 	int      c, i;
-	int      color;
 	int      wordLen = 0;
 
 	// for some demos we don't want to ever show anything on the console
@@ -615,19 +618,19 @@ bool CL_InternalConsolePrint( const char *text )
 		cgvm.CGameConsoleLine( text );
 	}
 
-	color = ColorIndex( CONSOLE_COLOR );
+	color_t color( CONSOLE_COLOR );
 
 	while ( ( c = *text & 0xFF ) != 0 )
 	{
 		if ( Q_IsColorString( text ) )
 		{
-			color = ( text[ 1 ] == COLOR_NULL ) ? ColorIndex( CONSOLE_COLOR ) : ColorIndex( text[ 1 ] );
+			color = color_t( text[ 1 ] == COLOR_NULL ? CONSOLE_COLOR : text[ 1 ] );
 			text += 2;
 			continue;
 		}
 		else if ( Q_IsHexColorString( text ) )
 		{
-			/// \todo (hexcolor) Apply the color
+			color = ColorFromHexString(text);
 			text += 5;
 			continue;
 		}
@@ -969,8 +972,6 @@ void Con_DrawConsoleContent()
 	int    x;
 	float  lineDrawPosition, lineDrawLowestPosition;
 	int    row;
-	int    currentColor;
-	vec4_t color;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
@@ -1034,10 +1035,8 @@ void Con_DrawConsoleContent()
 		++row;
 	}
 
-	currentColor = 7;
-	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
-	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
-	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
+	color_t currentColor(7);
+	color_t color = currentColor;
 
 	for ( ; row >= 0 && lineDrawPosition > textDistanceToTop; lineDrawPosition -= charHeight, row-- )
 	{
@@ -1065,12 +1064,11 @@ void Con_DrawConsoleContent()
 			if ( text[ x ].ink != currentColor )
 			{
 				currentColor = text[ x ].ink;
-				color[ 0 ] = g_color_table[ currentColor ][ 0 ];
-				color[ 1 ] = g_color_table[ currentColor ][ 1 ];
-				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
+				color = currentColor;
 			}
 
-			color[ 3 ] = Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight );
+			color.a = color_t::limits_type::max() *
+				Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight );
 			re.SetColor( color );
 
 			SCR_DrawConsoleFontUnichar( currentWidthLocation, floor( lineDrawPosition + 0.5 ), text[ x ].ch );

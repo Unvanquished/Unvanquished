@@ -300,7 +300,7 @@ RE_SetColor
 Passing nullptr will set the color to white
 =============
 */
-void RE_SetColor( const float *rgba )
+void RE_SetColor( const color_t& rgba )
 {
 	setColorCommand_t *cmd;
 
@@ -318,17 +318,7 @@ void RE_SetColor( const float *rgba )
 
 	cmd->commandId = RC_SET_COLOR;
 
-	if ( !rgba )
-	{
-		static float colorWhite[ 4 ] = { 1, 1, 1, 1 };
-
-		rgba = colorWhite;
-	}
-
-	cmd->color[ 0 ] = rgba[ 0 ];
-	cmd->color[ 1 ] = rgba[ 1 ];
-	cmd->color[ 2 ] = rgba[ 2 ];
-	cmd->color[ 3 ] = rgba[ 3 ];
+	rgba.to_float_array(cmd->color);
 }
 
 /*

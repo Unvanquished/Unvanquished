@@ -712,11 +712,11 @@ bool CL_UpdateVisiblePings_f( int source );
 #define     CON_TEXTSIZE 65536
 #define     CONSOLE_FONT_VPADDING 0.3
 
-typedef struct
+struct conChar_t
 {
-	int ch :24;
-	int ink :8;
-} conChar_t;
+	int ch;
+	color_t ink;
+};
 
 typedef struct
 {

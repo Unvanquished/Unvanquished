@@ -535,10 +535,9 @@ Simple wrapper around vec4_t
 */
 struct color_t
 {
-	typedef vec4_t array_type;
-	typedef vec_t  component_type;
-
-	array_type array;
+	typedef unsigned char component_type;
+	typedef std::numeric_limits<component_type> limits_type;
+	component_type r = 0, g = 0, b = 0, a = 0;
 
 	/*
 	================
@@ -547,10 +546,10 @@ struct color_t
 	Initialize from a color index
 	================
 	*/
-	explicit color_t(int index) : color_t()
+	explicit color_t(int index)
 	{
 		if ( index >= 0 && index < 32 )
-			memcpy( this->array, g_color_table[index], sizeof( array_type ) );
+			assign_float_array( g_color_table[index] );
 	}
 
 	/*
@@ -572,9 +571,9 @@ struct color_t
 	Initialize from a float array
 	================
 	*/
-	explicit color_t(array_type array)
+	color_t(const float array[4])
 	{
-		memcpy( this->array, array, sizeof( array_type ) );
+		assign_float_array(array);
 	}
 
 	/*
@@ -584,10 +583,7 @@ struct color_t
 	Default constructor, all components set to zero
 	================
 	*/
-	constexpr color_t()
-		: array{ 0, 0, 0, 0 }
-	{
-	}
+	constexpr color_t() = default;
 
 	/*
 	================
@@ -596,31 +592,68 @@ struct color_t
 	Default constructor, all components set to zero
 	================
 	*/
-	constexpr color_t(component_type r, component_type g, component_type b, component_type a = 1)
-		: array{ r, g, b, a }
+	constexpr color_t(component_type r, component_type g, component_type b,
+					  component_type a = limits_type::max())
+		: r(r), g(g), b(b), a(a)
 	{
 	}
 
-	explicit operator const component_type*() const
+	/*component_type& operator[] (int index)
 	{
-		return array;
-	}
-
-	explicit operator component_type*()
-	{
-		return array;
-	}
-
-	component_type& operator[] (int index)
-	{
-		return array[index];
+		return reinterpret_cast<component_type*>(this)[index];
 	}
 
 	const component_type& operator[] (int index) const
 	{
-		return array[index];
+		return reinterpret_cast<const component_type*>(this)[index];
+	}*/
+
+	bool operator==( const color_t& other ) const
+	{
+		return integer_32bit() == other.integer_32bit();
 	}
 
+	bool operator!=( const color_t& other ) const
+	{
+		return integer_32bit() != other.integer_32bit();
+	}
+
+	void to_float_array(vec4_t output) const
+	{
+		output[0] = r / float(limits_type::max());
+		output[1] = g / float(limits_type::max());
+		output[2] = b / float(limits_type::max());
+		output[3] = a / float(limits_type::max());
+	}
+
+private:
+	void assign_float_array(const float* col)
+	{
+		if ( !col )
+		{
+			// replicate behaviour from refexport_t::SetColor
+			r = g = b = a = limits_type::max();
+			return;
+		}
+
+		r = col[0] * limits_type::max();
+		g = col[1] * limits_type::max();
+		b = col[2] * limits_type::max();
+		a = col[3] * limits_type::max();
+	}
+
+	/*
+	================
+	color_t::integer_32bit
+
+	Returns a 32bit integer representing the color,
+	no guarantees are made with respect to endianness
+	================
+	*/
+	uint32_t integer_32bit() const
+	{
+		return *reinterpret_cast<const uint32_t*>(this);
+	}
 };
 
 /*
@@ -632,7 +665,13 @@ Creates a color from a string, assumes Q_IsHexColorString(p)
 */
 inline color_t ColorFromHexString( const char* p )
 {
-	return { gethex(p[2])/15.0f, gethex(p[3])/15.0f, gethex(p[4])/15.0f, 1.0f };
+	// Note: [0-15]*17 = [0-255]
+	return {
+		color_t::component_type(gethex(p[2])*17),
+		color_t::component_type(gethex(p[3])*17),
+		color_t::component_type(gethex(p[4])*17),
+		color_t::limits_type::max()
+	};
 }
 
 /*

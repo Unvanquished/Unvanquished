@@ -289,10 +289,11 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	const char *s;
 	int        xx;
 	bool   noColour = false;
+	color_t::component_type alpha = setColor[ 3 ] * color_t::limits_type::max();
 
 	// draw the drop shadow
-	color[ 3 ] = setColor[ 3 ];
-	re.SetColor( color.array );
+	color.a = alpha;
+	re.SetColor( color );
 	s = string;
 	xx = x;
 
@@ -336,8 +337,8 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 					color = color_t( s[ 1 ] );
 				}
 
-				color[ 3 ] = setColor[ 3 ];
-				re.SetColor( color.array );
+				color.a = alpha;
+				re.SetColor( color );
 			}
 
 			if ( !noColorEscape )
@@ -351,8 +352,8 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			if ( !forceColor )
 			{
 				color = ColorFromHexString(s);
-				color[ 3 ] = setColor[ 3 ];
-				re.SetColor( color.array );
+				color.a = alpha;
+				re.SetColor( color );
 			}
 
 			if ( !noColorEscape )
@@ -416,6 +417,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 	const char *s;
 	float      xx;
 	bool   noColour = false;
+	color_t::component_type alpha = setColor[ 3 ] * color_t::limits_type::max();
 
 	// draw the colored text
 	s = string;
@@ -441,8 +443,8 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 					color = color_t( s[ 1 ] );
 				}
 
-				color[ 3 ] = setColor[ 3 ];
-				re.SetColor( color.array );
+				color.a = alpha;
+				re.SetColor( color );
 			}
 
 			if ( !noColorEscape )
@@ -456,8 +458,8 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 			if ( !forceColor )
 			{
 				color = ColorFromHexString(s);
-				color[ 3 ] = setColor[ 3 ];
-				re.SetColor( color.array );
+				color.a = alpha;
+				re.SetColor( color );
 			}
 
 			if ( !noColorEscape )
