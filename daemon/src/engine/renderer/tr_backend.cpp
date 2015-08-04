@@ -3275,7 +3275,7 @@ static void RB_RenderDebugUtils()
 					}
 				}
 
-				Vector4Copy( g_color_table[ cubeSides ], lightColor );
+				g_color_table[ cubeSides ].to_float_array( lightColor );
 			}
 			else
 			{
@@ -3545,11 +3545,13 @@ static void RB_RenderDebugUtils()
 
 						VectorScale( origin, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
-						Tess_AddTetrahedron( tetraVerts, g_color_table[ ColorIndex( j ) ] );
+						vec4_t color;
+						g_color_table[ ColorIndex( j ) ].to_float_array(color);
+						Tess_AddTetrahedron( tetraVerts, color );
 
 						VectorScale( offset, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
-						Tess_AddTetrahedron( tetraVerts, g_color_table[ ColorIndex( j ) ] );
+						Tess_AddTetrahedron( tetraVerts, color );
 					}
 
 					MatrixTransformPoint( backEnd.orientation.transformMatrix, skel->bones[ j ].t.trans, worldOrigins[ j ] );

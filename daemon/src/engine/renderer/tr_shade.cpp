@@ -1307,7 +1307,7 @@ static void Render_shadowFill( int stage )
 	{
 		vec4_t shadowMapColor;
 
-		Vector4Copy( g_color_table[ backEnd.pc.c_batches % 8 ], shadowMapColor );
+		g_color_table[ backEnd.pc.c_batches % 8 ].to_float_array( shadowMapColor );
 
 		gl_shadowFillShader->SetUniform_Color( shadowMapColor );
 	}

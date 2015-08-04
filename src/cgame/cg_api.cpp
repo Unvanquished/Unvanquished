@@ -488,6 +488,12 @@ void trap_R_SetColor( const float *rgba )
 	}
 	cmdBuffer.SendMsg<Render::SetColorMsg>(myrgba);
 }
+void trap_R_SetColor( const color_s &rgba )
+{
+	std::array<float, 4> myrgba;
+	rgba.to_float_array( myrgba.data() );
+	cmdBuffer.SendMsg<Render::SetColorMsg>(myrgba);
+}
 
 void trap_R_SetClipRegion( const float *region )
 {

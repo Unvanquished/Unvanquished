@@ -373,7 +373,7 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
 
     // draw the text
     if (size == SMALLCHAR_WIDTH) {
-        float color[4] = {1.0, 1.0, 1.0, alpha};
+        color_s color{255, 255, 255, 255*alpha};
         SCR_DrawSmallStringExt(x, y, text.c_str(), color, false, noColorEscape);
     } else {
         SCR_DrawBigString(x, y, text.c_str(), 1.0, noColorEscape);

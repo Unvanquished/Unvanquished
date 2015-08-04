@@ -777,21 +777,20 @@ Draw the editline after a ] prompt
 void Con_DrawInput( int linePosition, float overrideAlpha )
 {
 	char    prompt[ MAX_STRING_CHARS ];
-	vec4_t  color;
 	qtime_t realtime;
 
 	Com_RealTime( &realtime );
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
-	color[ 0 ] = 1.0f;
-	color[ 1 ] = 1.0f;
-	color[ 2 ] = 1.0f;
-	color[ 3 ] = consoleState.currentAlphaFactor * overrideAlpha;
+	color_s color = colorWhite;
+	color.a = color_s::limits_type::max() * consoleState.currentAlphaFactor * overrideAlpha;
 
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
 
 	Q_CleanStr( prompt );
-	Field_Draw( g_consoleField, consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, true, true, color[ 3 ] );
+	Field_Draw( g_consoleField,
+		consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ),
+		linePosition, true, true, color.alpha_float() );
 }
 
 void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )

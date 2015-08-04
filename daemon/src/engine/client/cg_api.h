@@ -193,6 +193,7 @@ int             trap_FS_Tell( fileHandle_t f );
 int             trap_FS_FileLength( fileHandle_t f );
 void            trap_R_RenderScene( const refdef_t *fd );
 void            trap_R_SetColor( const float *rgba );
+void            trap_R_SetColor( const color_s &rgba );
 void            trap_R_SetClipRegion( const float *region );
 void            trap_R_ResetClipRegion();
 void            trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );

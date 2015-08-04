@@ -283,16 +283,16 @@ Coordinates are at 640 by 480 virtual resolution
 ==================
 */
 
-void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, bool forceColor, bool noColorEscape )
+void SCR_DrawStringExt( int x, int y, float size, const char *string,
+                        const color_s& setColor, bool forceColor, bool noColorEscape )
 {
-	color_s     color;
 	const char *s;
 	int        xx;
 	bool   noColour = false;
-	color_s::component_type alpha = setColor[ 3 ] * color_s::limits_type::max();
 
 	// draw the drop shadow
-	color.a = alpha;
+	color_s color;
+	color.a = setColor.a;
 	re.SetColor( color );
 	s = string;
 	xx = x;
@@ -337,7 +337,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 					color = color_s( s[ 1 ] );
 				}
 
-				color.a = alpha;
+				color.a = setColor.a;
 				re.SetColor( color );
 			}
 
@@ -352,7 +352,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			if ( !forceColor )
 			{
 				color = ColorFromHexString(s);
-				color.a = alpha;
+				color.a = setColor.a;
 				re.SetColor( color );
 			}
 
@@ -411,13 +411,13 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape )
+void SCR_DrawSmallStringExt( int x, int y, const char *string,
+							 const color_s &setColor, bool forceColor, bool noColorEscape )
 {
 	color_s    color;
 	const char *s;
 	float      xx;
 	bool   noColour = false;
-	color_s::component_type alpha = setColor[ 3 ] * color_s::limits_type::max();
 
 	// draw the colored text
 	s = string;
@@ -443,7 +443,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 					color = color_s( s[ 1 ] );
 				}
 
-				color.a = alpha;
+				color.a = setColor.a;
 				re.SetColor( color );
 			}
 
@@ -458,7 +458,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 			if ( !forceColor )
 			{
 				color = ColorFromHexString(s);
-				color.a = alpha;
+				color.a = setColor.a;
 				re.SetColor( color );
 			}
 

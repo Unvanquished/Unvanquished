@@ -825,8 +825,8 @@ void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShade
 void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 
 void  SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape );  // draws a string with embedded color control characters with fade
-void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, bool noColorEscape );  // ignores embedded color control characters
-void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape );
+void  SCR_DrawBigStringColor( int x, int y, const char *s, const color_s& color, bool noColorEscape );  // ignores embedded color control characters
+void  SCR_DrawSmallStringExt( int x, int y, const char *string, const color_s&setColor, bool forceColor, bool noColorEscape );
 void  SCR_DrawSmallUnichar( int x, int y, int ch );
 void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
 void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );

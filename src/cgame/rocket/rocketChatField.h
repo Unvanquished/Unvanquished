@@ -442,9 +442,9 @@ protected:
 
 				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 				child->SetProperty( "color", va( "#%02X%02X%02X",
-				                                 ( int )( g_color_table[ code ][ 0 ] * 255 ),
-				                                 ( int )( g_color_table[ code ][ 1 ] * 255 ),
-				                                 ( int )( g_color_table[ code ][ 2 ] * 255 ) ) );
+				                                 ( int )( g_color_table[ code ].r ),
+				                                 ( int )( g_color_table[ code ].g ),
+				                                 ( int )( g_color_table[ code ].b ) ) );
 				out.Append( Rocket::Core::WString( va( "^%c", c ) ) );
 				span = true;
 			}

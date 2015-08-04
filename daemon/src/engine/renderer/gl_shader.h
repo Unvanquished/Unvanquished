@@ -1682,6 +1682,13 @@ public:
 	{
 		this->SetValue( v );
 	}
+
+	void SetUniform_Color( const color_s& color )
+	{
+		vec4_t v;
+		color.to_float_array( v );
+		this->SetValue( v );
+	}
 };
 
 class u_ModelMatrix :

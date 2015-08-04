@@ -552,9 +552,9 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			int code = ColorIndex( *++p );
 
 			Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
-			          (int)( g_color_table[ code ][ 0 ] * 255 ),
-			          (int)( g_color_table[ code ][ 1 ] * 255 ),
-			          (int)( g_color_table[ code ][ 2 ] * 255 ) );
+			          (int)( g_color_table[ code ].r ),
+			          (int)( g_color_table[ code ].g ),
+			          (int)( g_color_table[ code ].b ) );
 
 			// don't add the span yet, because it might be empty
 			spanstr = rgb;
