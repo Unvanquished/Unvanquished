@@ -506,9 +506,37 @@ inline bool Q_IsColorString( const char *p )
 #define MAKERGB( v, r, g, b )         v[ 0 ] = r; v[ 1 ] = g; v[ 2 ] = b
 #define MAKERGBA( v, r, g, b, a )     v[ 0 ] = r; v[ 1 ] = g; v[ 2 ] = b; v[ 3 ] = a
 
-// Hex Color string support
-#define gethex( ch )                  ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
-#define ishex( ch )                   ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
+/*
+================
+gethex
+
+Converts a hexadecimal character to the value of the digit it represents.
+Pre: ishex(ch)
+================
+*/
+template<class CharT>
+	int gethex( CharT ch )
+	{
+		return ch > '9' ?
+			( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
+			: ch - '0'
+		;
+	}
+
+/*
+================
+ishex
+
+Whether a character is a hexadecimal digit
+================
+*/
+template<class CharT>
+	bool ishex( CharT ch )
+	{
+		return ( ch >= '0' && ch <= '9' ) ||
+			   ( ch >= 'A' && ch <= 'F' ) ||
+			   ( ch >= 'a' && ch <= 'f' );
+	}
 
 /*
 ================
@@ -522,9 +550,6 @@ inline bool Q_IsHexColorString( const char *p )
 	return p[0] == Q_COLOR_ESCAPE && p[1] == Q_COLOR_HEX
 		&& ishex(p[2]) && ishex(p[3]) && ishex(p[4]);
 }
-/*// check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
-#define Q_IsHexColorString( p )       ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
-#define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )*/
 
 /*
 ================
