@@ -416,7 +416,7 @@ void  Com_Free_Aligned( void *ptr );
 
 #include "logging.h"
 
-#include "color.h"
+#include "common/Color.h"
 
 #define DEG2RAD( a )                  ( ( ( a ) * M_PI ) / 180.0F )
 #define RAD2DEG( a )                  ( ( ( a ) * 180.0f ) / M_PI )

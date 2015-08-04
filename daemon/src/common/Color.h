@@ -30,8 +30,8 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef COLOR_H_
-#define COLOR_H_
+#ifndef COMMON_COLOR_H_
+#define COMMON_COLOR_H_
 
 #include <cstdint>
 #include <limits>
@@ -379,4 +379,4 @@ template<class CharT>
 	return Q_SkipColorString(p, p);
 }
 
-#endif // COLOR_H_
+#endif // COMMON_COLOR_H_

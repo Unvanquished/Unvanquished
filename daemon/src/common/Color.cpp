@@ -31,7 +31,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "color.h"
+#include "Color.h"
 
 #include <algorithm>
 

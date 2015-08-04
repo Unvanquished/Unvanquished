@@ -9,6 +9,8 @@ set(SHAREDLIST
 )
 
 set(COMMONLIST
+    ${COMMON_DIR}/Color.h
+    ${COMMON_DIR}/Color.cpp
     ${COMMON_DIR}/Command.cpp
     ${COMMON_DIR}/Command.h
     ${COMMON_DIR}/Common.h
@@ -51,8 +53,6 @@ set(COMMONLIST
     ${COMMON_DIR}/cm/cm_trace.cpp
     ${COMMON_DIR}/cm/cm_trisoup.cpp
     ${COMMON_DIR}/math/Vector.h
-    ${ENGINE_DIR}/qcommon/color.h
-    ${ENGINE_DIR}/qcommon/color.cpp
     ${ENGINE_DIR}/qcommon/logging.h
     ${ENGINE_DIR}/qcommon/q_math.cpp
     ${ENGINE_DIR}/qcommon/q_shared.cpp
