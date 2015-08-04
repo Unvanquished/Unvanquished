@@ -53,17 +53,6 @@ vec4_t   colorMdYellow = { 0.5, 0.5, 0, 1 };
 vec4_t   colorMdOrange = { 0.5, 0.25, 0, 1 };
 vec4_t   colorMdBlue = { 0, 0, 0.5, 1 };
 
-vec4_t   clrBrown = { 0.68f,         0.68f,          0.56f,          1.f };
-vec4_t   clrBrownDk = { 0.58f * 0.75f, 0.58f * 0.75f,  0.46f * 0.75f,  1.f };
-vec4_t   clrBrownLine = { 0.0525f,       0.05f,          0.025f,         0.2f };
-vec4_t   clrBrownLineFull = { 0.0525f,       0.05f,          0.025f,         1.f };
-
-vec4_t   clrBrownTextLt2 = { 108 * 1.8 / 255.f,     88 * 1.8 / 255.f,   62 * 1.8 / 255.f,   1.f };
-vec4_t   clrBrownTextLt = { 108 * 1.3 / 255.f,     88 * 1.3 / 255.f,   62 * 1.3 / 255.f,   1.f };
-vec4_t   clrBrownText = { 108 / 255.f,         88 / 255.f,       62 / 255.f,       1.f };
-vec4_t   clrBrownTextDk = { 20 / 255.f,          2 / 255.f,        0 / 255.f,        1.f };
-vec4_t   clrBrownTextDk2 = { 108 * 0.75 / 255.f,    88 * 0.75 / 255.f,  62 * 0.75 / 255.f,  1.f };
-
 vec4_t   g_color_table[ 32 ] =
 {
 	{ 0.2,  0.2,   0.2,     1.0    }, // 0 - black    0
@@ -99,60 +88,3 @@ vec4_t   g_color_table[ 32 ] =
 	{ 1.0,  1.0,   0.75,    1.0    }, // N        30
 	{ 1.0,  1.0,   0.5,     1.0    }, // O        31
 };
-
-/*
-
-unsigned ColorBytes3( float r, float g, float b )
-{
-	unsigned i;
-
-	( ( byte * ) &i ) [ 0 ] = r * 255;
-	( ( byte * ) &i ) [ 1 ] = g * 255;
-	( ( byte * ) &i ) [ 2 ] = b * 255;
-
-	return i;
-}
-
-unsigned ColorBytes4( float r, float g, float b, float a )
-{
-	unsigned i;
-
-	( ( byte * ) &i ) [ 0 ] = r * 255;
-	( ( byte * ) &i ) [ 1 ] = g * 255;
-	( ( byte * ) &i ) [ 2 ] = b * 255;
-	( ( byte * ) &i ) [ 3 ] = a * 255;
-
-	return i;
-}
-
-float NormalizeColor( const vec3_t in, vec3_t out )
-{
-	float max;
-
-	max = in[ 0 ];
-
-	if ( in[ 1 ] > max )
-	{
-		max = in[ 1 ];
-	}
-
-	if ( in[ 2 ] > max )
-	{
-		max = in[ 2 ];
-	}
-
-	if ( !max )
-	{
-		VectorClear( out );
-	}
-
-	else
-	{
-		out[ 0 ] = in[ 0 ] / max;
-		out[ 1 ] = in[ 1 ] / max;
-		out[ 2 ] = in[ 2 ] / max;
-	}
-
-	return max;
-}
-*/

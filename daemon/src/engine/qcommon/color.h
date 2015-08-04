@@ -38,36 +38,25 @@ Maryland 20850 USA.
 
 typedef float vec4_t[4]; // This will be replaced by the color struct
 
-	extern vec4_t colorBlack;
-	extern vec4_t colorRed;
-	extern vec4_t colorGreen;
-	extern vec4_t colorBlue;
-	extern vec4_t colorYellow;
-	extern vec4_t colorOrange;
-	extern vec4_t colorMagenta;
-	extern vec4_t colorCyan;
-	extern vec4_t colorWhite;
-	extern vec4_t colorLtGrey;
-	extern vec4_t colorMdGrey;
-	extern vec4_t colorDkGrey;
-	extern vec4_t colorMdRed;
-	extern vec4_t colorMdGreen;
-	extern vec4_t colorDkGreen;
-	extern vec4_t colorMdCyan;
-	extern vec4_t colorMdYellow;
-	extern vec4_t colorMdOrange;
-	extern vec4_t colorMdBlue;
-/*
-	extern vec4_t clrBrown;
-	extern vec4_t clrBrownDk;
-	extern vec4_t clrBrownLine;
-	extern vec4_t clrBrownText;
-	extern vec4_t clrBrownTextDk;
-	extern vec4_t clrBrownTextDk2;
-	extern vec4_t clrBrownTextLt;
-	extern vec4_t clrBrownTextLt2;
-	extern vec4_t clrBrownLineFull;
-*/
+extern vec4_t colorBlack;
+extern vec4_t colorRed;
+extern vec4_t colorGreen;
+extern vec4_t colorBlue;
+extern vec4_t colorYellow;
+extern vec4_t colorOrange;
+extern vec4_t colorMagenta;
+extern vec4_t colorCyan;
+extern vec4_t colorWhite;
+extern vec4_t colorLtGrey;
+extern vec4_t colorMdGrey;
+extern vec4_t colorDkGrey;
+extern vec4_t colorMdRed;
+extern vec4_t colorMdGreen;
+extern vec4_t colorDkGreen;
+extern vec4_t colorMdCyan;
+extern vec4_t colorMdYellow;
+extern vec4_t colorMdOrange;
+extern vec4_t colorMdBlue;
 
 #define Q_COLOR_ESCAPE   '^'
 #define Q_COLOR_HEX      'x'
@@ -246,16 +235,6 @@ struct color_s
 	{
 	}
 
-	/*component_type& operator[] (int index)
-	{
-		return reinterpret_cast<component_type*>(this)[index];
-	}
-
-	const component_type& operator[] (int index) const
-	{
-		return reinterpret_cast<const component_type*>(this)[index];
-	}*/
-
 	bool operator==( const color_s& other ) const
 	{
 		return integer_32bit() == other.integer_32bit();
@@ -354,11 +333,4 @@ template<class CharT>
 	return Q_SkipColorString(p, p);
 }
 
-/*
-	unsigned ColorBytes3( float r, float g, float b );
-	unsigned ColorBytes4( float r, float g, float b, float a );
-
-	float    NormalizeColor( const vec3_t in, vec3_t out );
-	void     ClampColor( vec4_t color );
-*/
 #endif // COLOR_H_
