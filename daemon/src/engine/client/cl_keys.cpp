@@ -360,8 +360,7 @@ Handles horizontal scrolling and cursor blinking
 x, y, and width are in pixels
 ===================
 */
-void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int size, bool showCursor,
-        bool noColorEscape, float alpha )
+void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape, unsigned char alpha)
 {
     //TODO support UTF-8 once LineEditData does
     //Extract the text we want to draw
@@ -372,12 +371,8 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
     std::string text = Str::UTF32To8(std::u32string(edit.GetViewText(), drawWidth));
 
     // draw the text
-    if (size == SMALLCHAR_WIDTH) {
-        color_s color{255, 255, 255, color_s::component_type( 255*alpha )};
-        SCR_DrawSmallStringExt(x, y, text.c_str(), color, false, noColorEscape);
-    } else {
-        SCR_DrawBigString(x, y, text.c_str(), 1.0, noColorEscape);
-    }
+	color_s color{255, 255, 255, alpha };
+	SCR_DrawSmallStringExt(x, y, text.c_str(), color, false, noColorEscape);
 
     // draw the line scrollbar
     if (len > drawWidth) {
@@ -400,28 +395,12 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
 
         //Compute the position of the cursor
         float xpos, width, height;
-        if (size == SMALLCHAR_WIDTH) {
-            xpos = x + SCR_ConsoleFontStringWidth(text.c_str(), cursorPos);
-            height = key_overstrikeMode ? SMALLCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
-            width = SMALLCHAR_WIDTH;
-        } else {
-            xpos = x + cursorPos * size;
-            height = key_overstrikeMode ? BIGCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
-            width = BIGCHAR_WIDTH;
-        }
+		xpos = x + SCR_ConsoleFontStringWidth(text.c_str(), cursorPos);
+		height = key_overstrikeMode ? SMALLCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
+		width = SMALLCHAR_WIDTH;
 
         re.DrawStretchPic(xpos, y + 2 - height, width, height, 0, 0, 0, 0, cls.whiteShader);
     }
-}
-
-void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape, float alpha)
-{
-	Field_VariableSizeDraw(edit, x, y, SMALLCHAR_WIDTH, showCursor, noColorEscape, alpha);
-}
-
-void Field_BigDraw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape)
-{
-	Field_VariableSizeDraw(edit, x, y, BIGCHAR_WIDTH, showCursor, noColorEscape, 1.0f);
 }
 
 /*

@@ -387,20 +387,6 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string,
 	re.SetColor( nullptr );
 }
 
-void SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape )
-{
-	float color[ 4 ];
-
-	color[ 0 ] = color[ 1 ] = color[ 2 ] = 1.0;
-	color[ 3 ] = alpha;
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, false, noColorEscape );
-}
-
-void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, bool noColorEscape )
-{
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, true, noColorEscape );
-}
-
 /*
 ==================
 SCR_DrawSmallString[Color]
@@ -428,8 +414,6 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 	{
 		int ch;
 
-		/// \todo (hexcolor) this looks pretty much like the code in SCR_DrawStringExt
-		/// Could be split in a separate function
 		if ( !noColour && Q_IsColorString( s ) )
 		{
 			if ( !forceColor )
@@ -520,14 +504,6 @@ static int SCR_Strlen( const char *str )
 	return count;
 }
 
-/*
-** SCR_GetBigStringWidth
-*/
-int SCR_GetBigStringWidth( const char *str )
-{
-	return SCR_Strlen( str ) * BIGCHAR_WIDTH;
-}
-
 //===============================================================================
 
 /*
@@ -604,7 +580,7 @@ void SCR_DrawVoipMeter()
 	buffer[ i ] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[ 7 ], true, false );
+	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[ 7 ], true, false );
 }
 
 /*

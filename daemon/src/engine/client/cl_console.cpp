@@ -753,7 +753,7 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Q_CleanStr( prompt );
 	Field_Draw( g_consoleField,
 		consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ),
-		linePosition, true, true, color.alpha_float() );
+		linePosition, true, true, color.a );
 }
 
 void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )

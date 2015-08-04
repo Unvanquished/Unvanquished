@@ -187,18 +187,6 @@ struct color_s
 
 	/*
 	================
-	color_s::alpha_float
-
-	Returns a normalized float representing the alpha component
-	================
-	*/
-	constexpr float alpha_float() const
-	{
-		return a / float( limits_type::max() );
-	}
-
-	/*
-	================
 	color_s::to_string
 
 	Returns a string representing the color
