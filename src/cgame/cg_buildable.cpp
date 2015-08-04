@@ -1341,15 +1341,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 		if ( text )
 		{
-			rectDef_t rect;
 			float     tx = 0, ty = 0;
-			vec4_t    colour;
-
-			rect.x = picX - 128;
-			rect.y = picY - picH / 2;
-			rect.w = 256;
-			rect.h = picH;
-
 			trap_R_SetColor( backColour );
 
 			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2,
@@ -1357,13 +1349,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 			            cgs.media.whiteShader );
 
 			trap_R_SetColor( nullptr );
-
-			colour[0] = bs->foreColor[0];
-			colour[1] = bs->foreColor[1];
-			colour[2] = bs->foreColor[2];
-			colour[3] = bs->foreColor[3];
-
-			// TODO: Draw text
 		}
 	}
 }

@@ -58,6 +58,9 @@ class MapCmd: public Cmd::StaticCmd {
 
             const std::string& mapName = args.Argv(1);
 
+            //Detect any newly added paks
+            FS::RefreshPaks();
+
             //Make sure the map exists to avoid typos that would kill the game
             if (!FS::FindPak("map-" + mapName)) {
                 Print("Can't find map %s", mapName);
