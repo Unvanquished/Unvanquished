@@ -341,10 +341,14 @@ protected:
 
 	bool IsColorString( Rocket::Core::WString str, size_t position )
 	{
-		if ( position + 1 < str.Length() )
+		if ( position + 4 < str.Length() )
+		{
+			return Q_IsHexColorString( str );
+		}
+		else if ( position + 1 < str.Length() )
 		{
 			return ( str[position] == Q_COLOR_ESCAPE &&
-			( str[position + 1] == COLOR_NULL || Q_IsColorString( str ) || Q_IsHexColorString( str ) )
+			( str[position + 1] == COLOR_NULL || Q_IsColorString( str ) )
 			) ? true : false;
 		}
 		else
@@ -414,8 +418,18 @@ protected:
 			else if ( IsColorString( in, i ) )
 			{
 				Rocket::Core::XMLAttributes xml;
-				int code = ColorIndex( in[++i] );
-				auto c = in[i];
+				color_s color;
+				int color_start = i;
+				if ( in[i+1] != 'x' )
+				{
+					color = color_s( char( in[++i] ) );
+				}
+				else
+				{
+					color = ColorFromHexString(in);
+					std::string temp = color.to_string();
+					i += 4;
+				}
 
 				// Child element initialized
 				if ( span )
@@ -442,10 +456,10 @@ protected:
 
 				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 				child->SetProperty( "color", va( "#%02X%02X%02X",
-				                                 ( int )( g_color_table[ code ].r ),
-				                                 ( int )( g_color_table[ code ].g ),
-				                                 ( int )( g_color_table[ code ].b ) ) );
-				out.Append( Rocket::Core::WString( va( "^%c", c ) ) );
+				                                 ( int )( color.r ),
+				                                 ( int )( color.g ),
+				                                 ( int )( color.b ) ) );
+				out.Append( in.Substring(color_start, i+1-color_start) );
 				span = true;
 			}
 			else

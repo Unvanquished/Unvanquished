@@ -335,7 +335,8 @@ ColorFromHexString
 Creates a color from a string, assumes Q_IsHexColorString(p)
 ================
 */
-inline color_s ColorFromHexString( const char* p )
+template<class String>
+	color_s ColorFromHexString( String&& p )
 {
 	// Note: [0-15]*17 = [0-255]
 	return {
