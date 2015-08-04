@@ -319,11 +319,11 @@ extern vec4_t colorMdBlue;
 #define S_COLOR_MDPURPLE "^C"
 #define S_COLOR_NULL     "^*"
 
-inline bool Q_IsColorString( const char *p )
+template<class String>
+	inline bool Q_IsColorString( String&& p )
 {
-	return ( p[0] == Q_COLOR_ESCAPE &&
-	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
-	       ) ? true : false;
+	return p[0] == Q_COLOR_ESCAPE &&
+	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) );
 }
 
 /*
@@ -333,7 +333,8 @@ Q_IsHexColorString
 Checks that a string is in the form ^xHHH (where H is a hex digit)
 ================
 */
-inline bool Q_IsHexColorString( const char *p )
+template<class String>
+	inline bool Q_IsHexColorString( String&& p )
 {
 	return p[0] == Q_COLOR_ESCAPE && p[1] == Q_COLOR_HEX
 		&& ishex(p[2]) && ishex(p[3]) && ishex(p[4]);

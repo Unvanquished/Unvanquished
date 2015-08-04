@@ -539,7 +539,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			span = false;
 			spanHasContent = false;
 		}
-		else if ( Q_IsColorString( p ) )
+		else if ( Q_IsColorString( p ) || Q_IsHexColorString( p ) )
 		{
 			if ( span && spanHasContent )
 			{
@@ -549,12 +549,21 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			}
 
 			char rgb[32];
-			int code = ColorIndex( *++p );
+			color_s color;
+			if ( p[1] == 'x' )
+			{
+				color = ColorFromHexString(p);
+				p += 4;
+			}
+			else
+			{
+				color = color_s( *++p );
+			}
 
 			Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
-			          (int)( g_color_table[ code ].r ),
-			          (int)( g_color_table[ code ].g ),
-			          (int)( g_color_table[ code ].b ) );
+			          (int)( color.r ),
+			          (int)( color.g ),
+			          (int)( color.b ) );
 
 			// don't add the span yet, because it might be empty
 			spanstr = rgb;

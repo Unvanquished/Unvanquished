@@ -344,7 +344,7 @@ protected:
 		if ( position + 1 < str.Length() )
 		{
 			return ( str[position] == Q_COLOR_ESCAPE &&
-			( str[position + 1] == COLOR_NULL || ( str[position + 1] >= '0' && str[position + 1] != Q_COLOR_ESCAPE && str[position + 1] < 'p' ) )
+			( str[position + 1] == COLOR_NULL || Q_IsColorString( str ) || Q_IsHexColorString( str ) )
 			) ? true : false;
 		}
 		else

@@ -49,9 +49,8 @@ void G_SanitiseString( const char *in, char *out, int len )
 		int cp = Q_UTF8_CodePoint( in );
 		int w;
 
-		if ( Q_IsColorString( in ) )
+		if ( Q_SkipColorString( in ) )
 		{
-			in += 2; // skip color code
 			continue;
 		}
 
@@ -1048,6 +1047,19 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 			len -= 2;
 			continue;
 		}
+		else if ( Q_IsHexColorString( in ) )
+		{
+			if ( len < 5 )
+			{
+				break;
+			}
+
+			for ( int i = 0; i < 5; i++ )
+				*out++ = *in++;
+
+			len -= 5;
+			continue;
+		}
 
 		ch = Q_UTF8_CodePoint( in );
 
@@ -1074,9 +1086,8 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 
 			while ( *s && *m )
 			{
-				if ( Q_IsColorString( s ) )
+				if ( Q_SkipColorString( s ) )
 				{
-					s += 2;
 					continue;
 				}
 
@@ -4672,9 +4683,8 @@ void G_DecolorString( const char *in, char *out, int len )
 
 		if ( decolor )
 		{
-			if ( Q_IsColorString( in ) )
+			if ( Q_SkipColorString( in ) )
 			{
-				in += 2;
 				continue;
 			}
 

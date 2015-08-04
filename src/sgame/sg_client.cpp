@@ -774,6 +774,23 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			len += 2;
 			continue;
 		}
+		else if ( Q_IsHexColorString(in) )
+		{
+			// make sure room in dest for both chars
+			if ( len > outSize - 5 )
+			{
+				break;
+			}
+
+			for ( int i = 0; i < 5; i++ )
+			{
+				*out++ = *in++;
+			}
+			in--;
+
+			len += 5;
+			continue;
+		}
 		else if ( in[ 0 ] == '^' && !in[ 1 ] )
 		{
 			// single trailing ^ will mess up some things

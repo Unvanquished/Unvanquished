@@ -1209,9 +1209,9 @@ static int admin_out( void *admin, char *str )
 
 	for ( i = 0; l && l->name[ i ]; i++ )
 	{
-		if ( Q_IsColorString( l->name + i ) )
+		if ( Q_SkipColorString( l->name + i, lncol ) )
 		{
-			lncol += 2;
+			continue;
 		}
 		else if ( l->name[ i ] == Q_COLOR_ESCAPE && l->name[ i + 1 ] == Q_COLOR_ESCAPE )
 		{
@@ -3756,9 +3756,9 @@ bool G_admin_listplayers( gentity_t *ent )
 
 		for ( colorlen = j = 0; lname[ j ]; j++ )
 		{
-			if ( Q_IsColorString( &lname[ j ] ) )
+			if ( Q_SkipColorString( &lname[ j ], colorlen ) )
 			{
-				colorlen += 2;
+				continue;
 			}
 			else if ( lname[ j ] == Q_COLOR_ESCAPE && lname[ j + 1 ] == Q_COLOR_ESCAPE )
 			{
@@ -3823,9 +3823,9 @@ static int ban_out( void *ban, char *str )
 
 	for ( i = 0; b->name[ i ]; i++ )
 	{
-		if ( Q_IsColorString( &b->name[ i ] ) )
+		if ( Q_SkipColorString( &b->name[ i ], colorlen1 ) )
 		{
-			colorlen1 += 2;
+			continue;
 		}
 		else if ( b->name[ i ] == Q_COLOR_ESCAPE && b->name[ i + 1 ] == Q_COLOR_ESCAPE )
 		{
