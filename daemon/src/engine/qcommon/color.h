@@ -185,15 +185,42 @@ struct color_s
 		output[3] = a / float(limits_type::max());
 	}
 
+	/*
+	================
+	color_s::alpha_float
+
+	Returns a normalized float representing the alpha component
+	================
+	*/
 	constexpr float alpha_float() const
 	{
 		return a / float( limits_type::max() );
 	}
 
+	/*
+	================
+	color_s::to_string
+
+	Returns a string representing the color
+	================
+	*/
 	std::string to_string() const
 	{
 		return std::string("^x")+hex_to_char(r/17)+hex_to_char(g/17)+hex_to_char(b/17);
 	}
+
+	/*
+	================
+	color_s::to_4bit
+
+	Returns a 4 bit integer with the bits following this pattern:
+		1 red
+		2 green
+		4 blue
+		8 bright
+	================
+	*/
+	int to_4bit() const;
 
 private:
 	void assign_float_array(const float* col)

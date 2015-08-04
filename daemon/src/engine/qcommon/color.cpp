@@ -32,6 +32,9 @@ Maryland 20850 USA.
 */
 
 #include "color.h"
+
+#include <algorithm>
+
 /*
 color_s   colorBlack   = {   0,   0,   0, 255 };
 color_s   colorRed     = { 255,   0,   0, 255 };
@@ -108,3 +111,56 @@ color_s   g_color_table[ 32 ] =
 	{ 255, 255, 191, 255 }, // N              30
 	{ 255, 255, 128, 255 }, // O              31
 };
+
+int color_s::to_4bit() const
+{
+    int color = 0;
+
+    component_type cmax = std::max({r,g,b});
+    component_type cmin = std::min({r,g,b});
+    component_type delta = cmax-cmin;
+
+    if ( delta > 0 )
+    {
+        float hue = 0;
+        if ( r == cmax )
+            hue = float(g-b)/delta;
+        else if ( g == cmax )
+            hue = float(b-r)/delta + 2;
+        else if ( b == cmax )
+            hue = float(r-g)/delta + 4;
+
+        float sat = float(delta)/cmax;
+        if ( sat >= 0.3 )
+        {
+            if ( hue < 0 )
+                hue += 6;
+
+            if ( hue <= 0.5 )      color = 0b001; // red
+            else if ( hue <= 1.5 ) color = 0b011; // yellow
+            else if ( hue <= 2.5 ) color = 0b010; // green
+            else if ( hue <= 3.5 ) color = 0b110; // cyan
+            else if ( hue <= 4.5 ) color = 0b100; // blue
+            else if ( hue <= 5.5 ) color = 0b101; // magenta
+            else                   color = 0b001; // red
+        }
+        else if ( cmax >= 120 )
+            color = 7;
+
+        if ( cmax >= 164 )
+            color |= 0b1000; // bright
+    }
+    else
+    {
+        if ( cmax > 204 )
+            color = 0b1111; // white
+        else if ( cmax > 136 )
+            color = 0b0111; // silver
+        else if ( cmax > 68 )
+            color = 0b1000; // gray
+        else
+            color = 0b0000; // black
+    }
+
+    return color;
+}

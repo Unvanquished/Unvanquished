@@ -146,7 +146,12 @@ static void CON_AnsiColorPrint( const char *msg )
 			}
 			else
 			{
-				/// \todo (hexcolor) Apply color
+				auto c4b = ColorFromHexString(msg).to_4bit();
+				bool bright = c4b & 8;
+				int number = c4b & ~8;
+
+				std::string ansi = "\x1b[3"+std::to_string(number)+";"+(bright ? "1" : "22")+"m";
+				fputs( ansi.c_str(), stderr );
 				msg += 5;
 			}
 		}
