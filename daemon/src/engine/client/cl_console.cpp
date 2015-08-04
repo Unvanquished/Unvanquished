@@ -129,7 +129,7 @@ static const char *Con_LineToColouredString( int lineno, bool lf )
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
 
-	color_t colour(7);
+	color_s colour(7);
 
 	for ( s = d = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
 	{
@@ -200,7 +200,7 @@ Con_Clear
 static INLINE void Con_Clear()
 {
 	int i;
-	conChar_t fill = { '\0', color_t( CONSOLE_COLOR ) };
+	conChar_t fill = { '\0', color_s( CONSOLE_COLOR ) };
 
 	for ( i = 0; i < CON_TEXTSIZE; ++i )
 	{
@@ -540,7 +540,7 @@ void Con_Linefeed()
 {
 	int             i;
 	conChar_t       *line;
-	const conChar_t blank = { 0, color_t( CONSOLE_COLOR ) };
+	const conChar_t blank = { 0, color_s( CONSOLE_COLOR ) };
 	const int scrollLockMode = con_scrollLock ? con_scrollLock->integer : 0;
 
 	consoleState.horizontalCharOffset = 0;
@@ -618,13 +618,13 @@ bool CL_InternalConsolePrint( const char *text )
 		cgvm.CGameConsoleLine( text );
 	}
 
-	color_t color( CONSOLE_COLOR );
+	color_s color( CONSOLE_COLOR );
 
 	while ( ( c = *text & 0xFF ) != 0 )
 	{
 		if ( Q_IsColorString( text ) )
 		{
-			color = color_t( text[ 1 ] == COLOR_NULL ? CONSOLE_COLOR : text[ 1 ] );
+			color = color_s( text[ 1 ] == COLOR_NULL ? CONSOLE_COLOR : text[ 1 ] );
 			text += 2;
 			continue;
 		}
@@ -1035,8 +1035,8 @@ void Con_DrawConsoleContent()
 		++row;
 	}
 
-	color_t currentColor(7);
-	color_t color = currentColor;
+	color_s currentColor(7);
+	color_s color = currentColor;
 
 	for ( ; row >= 0 && lineDrawPosition > textDistanceToTop; lineDrawPosition -= charHeight, row-- )
 	{
@@ -1067,7 +1067,7 @@ void Con_DrawConsoleContent()
 				color = currentColor;
 			}
 
-			color.a = color_t::limits_type::max() *
+			color.a = color_s::limits_type::max() *
 				Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight );
 			re.SetColor( color );
 

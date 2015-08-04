@@ -715,7 +715,7 @@ bool CL_UpdateVisiblePings_f( int source );
 struct conChar_t
 {
 	int ch;
-	color_t ink;
+	color_s ink;
 };
 
 typedef struct

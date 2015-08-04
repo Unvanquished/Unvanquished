@@ -176,12 +176,12 @@ inline bool Q_IsHexColorString( const char *p )
 
 /*
 ================
-color_t
+color_s
 
 Simple wrapper around vec4_t
 ================
 */
-struct color_t
+struct color_s
 {
 	typedef unsigned char component_type;
 	typedef std::numeric_limits<component_type> limits_type;
@@ -189,12 +189,12 @@ struct color_t
 
 	/*
 	================
-	color_t::color_t
+	color_s::color_s
 
 	Initialize from a color index
 	================
 	*/
-	explicit color_t(int index)
+	explicit color_s(int index)
 	{
 		if ( index >= 0 && index < 32 )
 			assign_float_array( g_color_table[index] );
@@ -202,45 +202,45 @@ struct color_t
 
 	/*
 	================
-	color_t::color_t
+	color_s::color_s
 
 	Initialize from a color index character
 	================
 	*/
-	explicit color_t(char index)
-		: color_t( int( ColorIndex(index) ) )
+	explicit color_s(char index)
+		: color_s( int( ColorIndex(index) ) )
 	{
 	}
 
 	/*
 	================
-	color_t::color_t
+	color_s::color_s
 
 	Initialize from a float array
 	================
 	*/
-	color_t(const float array[4])
+	color_s(const float array[4])
 	{
 		assign_float_array(array);
 	}
 
 	/*
 	================
-	color_t::color_t
+	color_s::color_s
 
 	Default constructor, all components set to zero
 	================
 	*/
-	constexpr color_t() = default;
+	constexpr color_s() = default;
 
 	/*
 	================
-	color_t::color_t
+	color_s::color_s
 
 	Default constructor, all components set to zero
 	================
 	*/
-	constexpr color_t(component_type r, component_type g, component_type b,
+	constexpr color_s(component_type r, component_type g, component_type b,
 					  component_type a = limits_type::max())
 		: r(r), g(g), b(b), a(a)
 	{
@@ -256,12 +256,12 @@ struct color_t
 		return reinterpret_cast<const component_type*>(this)[index];
 	}*/
 
-	bool operator==( const color_t& other ) const
+	bool operator==( const color_s& other ) const
 	{
 		return integer_32bit() == other.integer_32bit();
 	}
 
-	bool operator!=( const color_t& other ) const
+	bool operator!=( const color_s& other ) const
 	{
 		return integer_32bit() != other.integer_32bit();
 	}
@@ -292,7 +292,7 @@ private:
 
 	/*
 	================
-	color_t::integer_32bit
+	color_s::integer_32bit
 
 	Returns a 32bit integer representing the color,
 	no guarantees are made with respect to endianness
@@ -311,14 +311,14 @@ ColorFromHexString
 Creates a color from a string, assumes Q_IsHexColorString(p)
 ================
 */
-inline color_t ColorFromHexString( const char* p )
+inline color_s ColorFromHexString( const char* p )
 {
 	// Note: [0-15]*17 = [0-255]
 	return {
-		color_t::component_type(gethex(p[2])*17),
-		color_t::component_type(gethex(p[3])*17),
-		color_t::component_type(gethex(p[4])*17),
-		color_t::limits_type::max()
+		color_s::component_type(gethex(p[2])*17),
+		color_s::component_type(gethex(p[3])*17),
+		color_s::component_type(gethex(p[4])*17),
+		color_s::limits_type::max()
 	};
 }
 

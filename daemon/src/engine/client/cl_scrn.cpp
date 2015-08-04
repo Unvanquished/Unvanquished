@@ -285,11 +285,11 @@ Coordinates are at 640 by 480 virtual resolution
 
 void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, bool forceColor, bool noColorEscape )
 {
-	color_t     color;
+	color_s     color;
 	const char *s;
 	int        xx;
 	bool   noColour = false;
-	color_t::component_type alpha = setColor[ 3 ] * color_t::limits_type::max();
+	color_s::component_type alpha = setColor[ 3 ] * color_s::limits_type::max();
 
 	// draw the drop shadow
 	color.a = alpha;
@@ -330,11 +330,11 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			{
 				if ( * ( s + 1 ) == COLOR_NULL )
 				{
-					color = color_t( setColor );
+					color = color_s( setColor );
 				}
 				else
 				{
-					color = color_t( s[ 1 ] );
+					color = color_s( s[ 1 ] );
 				}
 
 				color.a = alpha;
@@ -413,11 +413,11 @@ Coordinates are at 640 by 480 virtual resolution
 */
 void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape )
 {
-	color_t    color;
+	color_s    color;
 	const char *s;
 	float      xx;
 	bool   noColour = false;
-	color_t::component_type alpha = setColor[ 3 ] * color_t::limits_type::max();
+	color_s::component_type alpha = setColor[ 3 ] * color_s::limits_type::max();
 
 	// draw the colored text
 	s = string;
@@ -436,11 +436,11 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 			{
 				if ( * ( s + 1 ) == COLOR_NULL )
 				{
-					color = color_t( setColor );
+					color = color_s( setColor );
 				}
 				else
 				{
-					color = color_t( s[ 1 ] );
+					color = color_s( s[ 1 ] );
 				}
 
 				color.a = alpha;
