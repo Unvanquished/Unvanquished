@@ -33,8 +33,9 @@ Maryland 20850 USA.
 #ifndef COLOR_H_
 #define COLOR_H_
 
-#include <limits>
 #include <cstdint>
+#include <limits>
+#include <string>
 
 /*
 ================
@@ -49,6 +50,50 @@ inline int ColorIndex( char c )
 }
 
 extern struct color_s g_color_table[ 32 ];
+
+/*
+================
+gethex
+
+Converts a hexadecimal character to the value of the digit it represents.
+Pre: ishex(ch)
+================
+*/
+inline int gethex( char ch )
+{
+	return ch > '9' ?
+		( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
+		: ch - '0'
+	;
+}
+
+/*
+================
+ishex
+
+Whether a character is a hexadecimal digit
+================
+*/
+inline bool ishex( char ch )
+{
+	return ( ch >= '0' && ch <= '9' ) ||
+		   ( ch >= 'A' && ch <= 'F' ) ||
+		   ( ch >= 'a' && ch <= 'f' );
+}
+
+/*
+================
+hex_to_char
+
+Returns a character representing a hexadecimal digit
+Pre: 0 <= i && i < 16
+================
+*/
+inline char hex_to_char( int i )
+{
+	return i < 10 ? i + '0' : i + 'a' - 10;
+}
+
 
 /*
 ================
@@ -143,6 +188,11 @@ struct color_s
 	constexpr float alpha_float() const
 	{
 		return a / float( limits_type::max() );
+	}
+
+	std::string to_string() const
+	{
+		return std::string("^x")+hex_to_char(r/17)+hex_to_char(g/17)+hex_to_char(b/17);
 	}
 
 private:
@@ -248,38 +298,6 @@ inline bool Q_IsColorString( const char *p )
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? true : false;
 }
-
-/*
-================
-gethex
-
-Converts a hexadecimal character to the value of the digit it represents.
-Pre: ishex(ch)
-================
-*/
-template<class CharT>
-	int gethex( CharT ch )
-	{
-		return ch > '9' ?
-			( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
-			: ch - '0'
-		;
-	}
-
-/*
-================
-ishex
-
-Whether a character is a hexadecimal digit
-================
-*/
-template<class CharT>
-	bool ishex( CharT ch )
-	{
-		return ( ch >= '0' && ch <= '9' ) ||
-			   ( ch >= 'A' && ch <= 'F' ) ||
-			   ( ch >= 'a' && ch <= 'f' );
-	}
 
 /*
 ================

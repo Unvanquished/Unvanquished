@@ -124,41 +124,37 @@ static const char *Con_LineToString( int lineno, bool lf )
 	return lineString;
 }
 
-static const char *Con_LineToColouredString( int lineno, bool lf )
+static std::string Con_LineToColouredString( int lineno, bool lf )
 {
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
 
-	color_s colour(7);
+	color_s color(7);
+	std::string lineString;
 
-	for ( s = d = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
+	for ( int s = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
 	{
-		if ( line[ s ].ink != colour )
+		if ( line[ s ].ink != color )
 		{
-			colour = line[ s ].ink;
-			lineString[ d++ ] = '^';
-			/// \todo (hexcolor) translate to indexed
-			//lineString[ d++ ] = '0' + colour;
-			lineString[ d++ ] = '1';
+			color = line[ s ].ink;
+			lineString += color.to_string();
 		}
 
 		if ( line[ s ].ch < 0x80 )
 		{
-			lineString[ d++ ] = (char) line[ s ].ch;
+			lineString += (char) line[ s ].ch;
 		}
 		else
 		{
-			strcpy( lineString + d, Q_UTF8_Encode( line[ s ].ch ) );
-			while ( lineString[ d ] ) { ++d; }
+			lineString += Q_UTF8_Encode( line[ s ].ch );
 		}
 	}
 
 	if ( lf )
 	{
-		lineString[ d++ ] = '\n';
+		lineString += '\n';
 	}
 
-	lineString[ d ] = '\0';
 	return lineString;
 }
 
@@ -337,8 +333,6 @@ void Con_Grep_f()
 {
 	int    l;
 	const char  *search;
-	char  *printbuf = nullptr;
-	size_t pbAlloc = 0, pbLength = 0;
 
 	if ( Cmd_Argc() != 2 )
 	{
@@ -358,48 +352,17 @@ void Con_Grep_f()
 	// check the remaining lines
 	search = Cmd_Argv( 1 );
 
+	std::string buffer;
 	for ( ; l <= consoleState.currentLine; l++ )
 	{
-		const char *buffer = Con_LineToString( l, false );
+		buffer = Con_LineToString( l, false );
 
-		if ( Q_stristr( buffer, search ) )
+		if ( buffer.find( search ) != std::string::npos )
 		{
-			size_t i;
 
 			buffer = Con_LineToColouredString( l, true );
-			i = strlen( buffer );
-
-			if ( pbLength + i >= pbAlloc )
-			{
-				char *nb;
-				// allocate in 16K chunks - more than adequate
-				pbAlloc = ( pbLength + i + 1 + 16383) & ~16383;
-				nb = (char*) Z_Malloc( pbAlloc );
-				if( printbuf )
-				{
-					strcpy( nb, printbuf );
-					Z_Free( printbuf );
-				}
-				printbuf = nb;
-			}
-			Q_strcat( printbuf, pbAlloc, buffer );
-			pbLength += i;
+			Com_Printf( "%s", buffer.c_str() );
 		}
-	}
-
-	if( printbuf )
-	{
-		char tmpbuf[ MAXPRINTMSG ];
-		int i;
-
-		// print out in chunks so we don't go over the MAXPRINTMSG limit
-		for ( i = 0; i < pbLength; i += MAXPRINTMSG - 1 )
-		{
-			Q_strncpyz( tmpbuf, printbuf + i, sizeof( tmpbuf ) );
-			Com_Printf( "%s", tmpbuf );
-		}
-
-		Z_Free( printbuf );
 	}
 }
 
