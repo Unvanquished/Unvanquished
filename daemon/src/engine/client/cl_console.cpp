@@ -129,7 +129,7 @@ static std::string Con_LineToColouredString( int lineno, bool lf )
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
 
-	color_s color(7);
+	Color::color_s color(7);
 	std::string lineString;
 
 	for ( int s = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
@@ -196,7 +196,7 @@ Con_Clear
 static INLINE void Con_Clear()
 {
 	int i;
-	conChar_t fill = { '\0', color_s( CONSOLE_COLOR ) };
+	conChar_t fill = { '\0', Color::color_s( CONSOLE_COLOR ) };
 
 	for ( i = 0; i < CON_TEXTSIZE; ++i )
 	{
@@ -503,7 +503,7 @@ void Con_Linefeed()
 {
 	int             i;
 	conChar_t       *line;
-	const conChar_t blank = { 0, color_s( CONSOLE_COLOR ) };
+	const conChar_t blank = { 0, Color::color_s( CONSOLE_COLOR ) };
 	const int scrollLockMode = con_scrollLock ? con_scrollLock->integer : 0;
 
 	consoleState.horizontalCharOffset = 0;
@@ -581,19 +581,19 @@ bool CL_InternalConsolePrint( const char *text )
 		cgvm.CGameConsoleLine( text );
 	}
 
-	color_s color( CONSOLE_COLOR );
+	Color::color_s color( CONSOLE_COLOR );
 
 	while ( ( c = *text & 0xFF ) != 0 )
 	{
-		if ( Q_IsColorString( text ) )
+		if ( Color::Q_IsColorString( text ) )
 		{
-			color = color_s( text[ 1 ] == COLOR_NULL ? CONSOLE_COLOR : text[ 1 ] );
+			color = Color::color_s( text[ 1 ] == COLOR_NULL ? CONSOLE_COLOR : text[ 1 ] );
 			text += 2;
 			continue;
 		}
-		else if ( Q_IsHexColorString( text ) )
+		else if ( Color::Q_IsHexColorString( text ) )
 		{
-			color = ColorFromHexString(text);
+			color = Color::ColorFromHexString(text);
 			text += 5;
 			continue;
 		}
@@ -607,7 +607,7 @@ bool CL_InternalConsolePrint( const char *text )
 				{
 					break;
 				}
-				if ( Q_SkipColorString( text + i, i ) )
+				if ( Color::Q_SkipColorString( text + i, i ) )
 					continue;
 				if ( text[ i ] == Q_COLOR_ESCAPE && text[ i + 1 ] == Q_COLOR_ESCAPE )
 				{
@@ -745,8 +745,8 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Com_RealTime( &realtime );
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
-	color_s color = colorWhite;
-	color.a = color_s::limits_type::max() * consoleState.currentAlphaFactor * overrideAlpha;
+	Color::color_s color = Color::colorWhite;
+	color.a = Color::color_s::limits_type::max() * consoleState.currentAlphaFactor * overrideAlpha;
 
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
 
@@ -997,8 +997,8 @@ void Con_DrawConsoleContent()
 		++row;
 	}
 
-	color_s currentColor(7);
-	color_s color = currentColor;
+	Color::color_s currentColor(7);
+	Color::color_s color = currentColor;
 
 	for ( ; row >= 0 && lineDrawPosition > textDistanceToTop; lineDrawPosition -= charHeight, row-- )
 	{
@@ -1029,7 +1029,7 @@ void Con_DrawConsoleContent()
 				color = currentColor;
 			}
 
-			color.a = color_s::limits_type::max() *
+			color.a = Color::color_s::limits_type::max() *
 				Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight );
 			re.SetColor( color );
 

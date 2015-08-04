@@ -78,7 +78,7 @@ static void CON_AnsiColorPrint( const char *msg )
 	static char buffer[ MAXPRINTMSG ];
 	int         length = 0;
 
-	// Approximations of g_color_table (q_math.c)
+	// Approximations of Color::g_color_table (q_math.c)
 #define A_BOLD 16
 #define A_DIM  32
 	static const char colour16map[2][32] = {
@@ -114,8 +114,8 @@ static void CON_AnsiColorPrint( const char *msg )
 
 	while ( *msg )
 	{
-		bool color_indexed = Q_IsColorString( msg );
-		bool color_rgb = Q_IsHexColorString( msg );
+		bool color_indexed = Color::Q_IsColorString( msg );
+		bool color_rgb = Color::Q_IsHexColorString( msg );
 
 		if ( color_indexed || color_rgb || *msg == '\n' )
 		{
@@ -146,7 +146,7 @@ static void CON_AnsiColorPrint( const char *msg )
 			}
 			else
 			{
-				auto c4b = ColorFromHexString(msg).to_4bit();
+				auto c4b = Color::ColorFromHexString(msg).to_4bit();
 				bool bright = c4b & 8;
 				int number = c4b & ~8;
 

@@ -300,7 +300,7 @@ RE_SetColor
 Passing nullptr will set the color to white
 =============
 */
-void RE_SetColor( const color_s& rgba )
+void RE_SetColor( const Color::color_s& rgba )
 {
 	setColorCommand_t *cmd;
 

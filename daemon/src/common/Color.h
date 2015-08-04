@@ -37,6 +37,8 @@ Maryland 20850 USA.
 #include <limits>
 #include <string>
 
+namespace Color {
+
 /*
 ================
 ColorIndex
@@ -106,6 +108,7 @@ struct color_s
 {
 	typedef unsigned char component_type;
 	typedef std::numeric_limits<component_type> limits_type;
+
 	component_type r = 0, g = 0, b = 0, a = 0;
 
 	/*
@@ -378,5 +381,7 @@ template<class CharT>
 {
 	return Q_SkipColorString(p, p);
 }
+
+} // namespace Color
 
 #endif // COMMON_COLOR_H_

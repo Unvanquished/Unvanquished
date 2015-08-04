@@ -109,7 +109,7 @@ void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *vert
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags ) { }
 void RE_AddLightToSceneQ3A( const vec3_t org, float intensity, float r, float g, float b ) { }
 void RE_RenderScene( const refdef_t *fd ) { }
-void RE_SetColor( const color_s& rgba ) { }
+void RE_SetColor( const Color::color_s& rgba ) { }
 void RE_SetClipRegion( const float *region ) { }
 void RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader ) { }
 void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle ) { }

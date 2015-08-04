@@ -1209,7 +1209,7 @@ static int admin_out( void *admin, char *str )
 
 	for ( i = 0; l && l->name[ i ]; i++ )
 	{
-		if ( Q_SkipColorString( l->name + i, lncol ) )
+		if ( Color::Q_SkipColorString( l->name + i, lncol ) )
 		{
 			continue;
 		}
@@ -3756,7 +3756,7 @@ bool G_admin_listplayers( gentity_t *ent )
 
 		for ( colorlen = j = 0; lname[ j ]; j++ )
 		{
-			if ( Q_SkipColorString( &lname[ j ], colorlen ) )
+			if ( Color::Q_SkipColorString( &lname[ j ], colorlen ) )
 			{
 				continue;
 			}
@@ -3823,7 +3823,7 @@ static int ban_out( void *ban, char *str )
 
 	for ( i = 0; b->name[ i ]; i++ )
 	{
-		if ( Q_SkipColorString( &b->name[ i ], colorlen1 ) )
+		if ( Color::Q_SkipColorString( &b->name[ i ], colorlen1 ) )
 		{
 			continue;
 		}

@@ -92,7 +92,7 @@ Use grey instead of black
 */
 static void CON_SetColor( WINDOW *win, int color )
 {
-	// Approximations of g_color_table (q_math.c)
+	// Approximations of Color::g_color_table (q_math.c)
 	// Colours are hard-wired below; see init_pair() calls
 	static const chtype colour16map[2][32] = {
 		{ // Variant 1 (xterm)
@@ -124,8 +124,8 @@ static void CON_SetColor( WINDOW *win, int color )
 	else if ( COLORS >= 256 && com_ansiColor->integer > 0 )
 	{
 #ifdef A_RGB  //macro producing color attribute for a 64-bit chtype in pdcurses
-		wattrset( win, A_RGB( (int)( g_color_table[color].r / 8 ),
-		    (int)( g_color_table[color].g / 8 ), (int)( g_color_table[color].b / 8 ), 0, 0, 0 ) );
+		wattrset( win, A_RGB( (int)( Color::g_color_table[color].r / 8 ),
+		    (int)( Color::g_color_table[color].g / 8 ), (int)( Color::g_color_table[color].b / 8 ), 0, 0, 0 ) );
 #else
 		wattrset( win, COLOR_PAIR( color + 9 ) ); // hard-wired below; see init_pair() calls
 #endif
@@ -143,7 +143,7 @@ static void CON_SetColor( WINDOW *win, int color )
 	}
 }
 
-static void CON_SetColor( WINDOW *win, const color_s& color )
+static void CON_SetColor( WINDOW *win, const Color::color_s& color )
 {
 	if ( !com_ansiColor || !com_ansiColor->integer )
 	{
@@ -186,8 +186,8 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 		bool color_rgb = false;
 		if ( !noColour )
 		{
-			color_indexed = Q_IsColorString( msg );
-			color_rgb = Q_IsHexColorString( msg );
+			color_indexed = Color::Q_IsColorString( msg );
+			color_rgb = Color::Q_IsHexColorString( msg );
 		}
 
 		if ( color_rgb || color_indexed || *msg == '\n' )
@@ -214,11 +214,11 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 				// Set the color
 				if ( color_indexed )
 				{
-					CON_SetColor( win, *( msg + 1 ) == COLOR_NULL ? CURSES_NULL_COLOR : ColorIndex( *( msg + 1 ) ) );
+					CON_SetColor( win, *( msg + 1 ) == COLOR_NULL ? CURSES_NULL_COLOR : Color::ColorIndex( *( msg + 1 ) ) );
 				}
 				else
 				{
-					CON_SetColor( win, ColorFromHexString(msg) );
+					CON_SetColor( win, Color::ColorFromHexString(msg) );
 				}
 
 				if ( stripcodes )
@@ -553,7 +553,7 @@ void CON_Init()
 				init_pair( i, colourmap[i], -1 );
 			}
 
-			// Pairs used for color_s
+			// Pairs used for Color::color_s
 			for ( i = 0; i < 16; i++ )
 			{
 				init_pair(i+64, i, -1);

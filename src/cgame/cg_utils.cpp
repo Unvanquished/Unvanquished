@@ -133,37 +133,37 @@ int UI_GetChatColour( int which, int team )
 	switch ( which )
 	{
 		default:
-			return ColorIndex( COLOR_WHITE );
+			return Color::ColorIndex( COLOR_WHITE );
 
 		case SAY_ALL:
-			return ColorIndex( COLOR_GREEN );
+			return Color::ColorIndex( COLOR_GREEN );
 
 		case SAY_TEAM:
 			switch ( team )
 			{
 				case TEAM_NONE:
-					return ColorIndex( COLOR_YELLOW );
+					return Color::ColorIndex( COLOR_YELLOW );
 				default:
-					return ColorIndex( COLOR_CYAN );
+					return Color::ColorIndex( COLOR_CYAN );
 			}
 
 				case SAY_PRIVMSG:
-					return ColorIndex( COLOR_GREEN );
+					return Color::ColorIndex( COLOR_GREEN );
 
 				case SAY_TPRIVMSG:
-					return ColorIndex( COLOR_CYAN );
+					return Color::ColorIndex( COLOR_CYAN );
 
 				case SAY_AREA:
 				case SAY_AREA_TEAM:
-					return ColorIndex( COLOR_BLUE );
+					return Color::ColorIndex( COLOR_BLUE );
 
 				case SAY_ADMINS:
 				case SAY_ADMINS_PUBLIC:
 				case SAY_ALL_ADMIN:
-					return ColorIndex( COLOR_MAGENTA );
+					return Color::ColorIndex( COLOR_MAGENTA );
 					#ifdef UIGPP
 				case SAY_RAW:
-					return ColorIndex( COLOR_LTGREY );
+					return Color::ColorIndex( COLOR_LTGREY );
 					#endif
 	}
 }

@@ -35,6 +35,7 @@ Maryland 20850 USA.
 
 #include <algorithm>
 
+namespace Color {
 /*
 color_s   colorBlack   = {   0,   0,   0, 255 };
 color_s   colorRed     = { 255,   0,   0, 255 };
@@ -164,3 +165,5 @@ int color_s::to_4bit() const
 
     return color;
 }
+
+} // namespace Color

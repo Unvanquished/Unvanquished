@@ -284,14 +284,14 @@ Coordinates are at 640 by 480 virtual resolution
 */
 
 void SCR_DrawStringExt( int x, int y, float size, const char *string,
-                        const color_s& setColor, bool forceColor, bool noColorEscape )
+                        const Color::color_s& setColor, bool forceColor, bool noColorEscape )
 {
 	const char *s;
 	int        xx;
 	bool   noColour = false;
 
 	// draw the drop shadow
-	color_s color;
+	Color::color_s color;
 	color.a = setColor.a;
 	re.SetColor( color );
 	s = string;
@@ -299,7 +299,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string,
 
 	while ( *s )
 	{
-		if ( !noColorEscape && Q_SkipColorString( s ) )
+		if ( !noColorEscape && Color::Q_SkipColorString( s ) )
 		{
 			continue;
 		}
@@ -324,17 +324,17 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string,
 	{
 		int ch;
 
-		if ( !noColour && Q_IsColorString( s ) )
+		if ( !noColour && Color::Q_IsColorString( s ) )
 		{
 			if ( !forceColor )
 			{
 				if ( * ( s + 1 ) == COLOR_NULL )
 				{
-					color = color_s( setColor );
+					color = Color::color_s( setColor );
 				}
 				else
 				{
-					color = color_s( s[ 1 ] );
+					color = Color::color_s( s[ 1 ] );
 				}
 
 				color.a = setColor.a;
@@ -347,11 +347,11 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string,
 				continue;
 			}
 		}
-		else if ( !noColour && Q_IsHexColorString( s ) )
+		else if ( !noColour && Color::Q_IsHexColorString( s ) )
 		{
 			if ( !forceColor )
 			{
-				color = ColorFromHexString(s);
+				color = Color::ColorFromHexString(s);
 				color.a = setColor.a;
 				re.SetColor( color );
 			}
@@ -398,9 +398,9 @@ Coordinates are at 640 by 480 virtual resolution
 ==================
 */
 void SCR_DrawSmallStringExt( int x, int y, const char *string,
-							 const color_s &setColor, bool forceColor, bool noColorEscape )
+							 const Color::color_s &setColor, bool forceColor, bool noColorEscape )
 {
-	color_s    color;
+	Color::color_s    color;
 	const char *s;
 	float      xx;
 	bool   noColour = false;
@@ -414,17 +414,17 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 	{
 		int ch;
 
-		if ( !noColour && Q_IsColorString( s ) )
+		if ( !noColour && Color::Q_IsColorString( s ) )
 		{
 			if ( !forceColor )
 			{
 				if ( * ( s + 1 ) == COLOR_NULL )
 				{
-					color = color_s( setColor );
+					color = Color::color_s( setColor );
 				}
 				else
 				{
-					color = color_s( s[ 1 ] );
+					color = Color::color_s( s[ 1 ] );
 				}
 
 				color.a = setColor.a;
@@ -437,11 +437,11 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 				continue;
 			}
 		}
-		else if ( !noColour && Q_IsHexColorString( s ) )
+		else if ( !noColour && Color::Q_IsHexColorString( s ) )
 		{
 			if ( !forceColor )
 			{
-				color = ColorFromHexString(s);
+				color = Color::ColorFromHexString(s);
 				color.a = setColor.a;
 				re.SetColor( color );
 			}
@@ -487,7 +487,7 @@ static int SCR_Strlen( const char *str )
 
 	while ( *s )
 	{
-		if ( Q_SkipColorString(s) )
+		if ( Color::Q_SkipColorString(s) )
 			continue;
 
 		if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
@@ -580,7 +580,7 @@ void SCR_DrawVoipMeter()
 	buffer[ i ] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[ 7 ], true, false );
+	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::g_color_table[ 7 ], true, false );
 }
 
 /*
@@ -629,27 +629,27 @@ void SCR_DrawVoipSender()
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::g_color_table[ 7 ], true, true );
 		}
 		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, Color::g_color_table[ 7 ], true, true );
 		}
 		else
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, Color::g_color_table[ 7 ], true, true );
 		}
 	}
 #endif
@@ -685,7 +685,7 @@ void SCR_DrawScreenField()
 	{
 		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
 		{
-			re.SetColor( g_color_table[ 0 ] );
+			re.SetColor( Color::g_color_table[ 0 ] );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
 			re.SetColor( nullptr );
 		}

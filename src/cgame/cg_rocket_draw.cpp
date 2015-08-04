@@ -464,14 +464,14 @@ public:
 		{
 			if ( cg.crosshairFoe )
 			{
-				Vector4Copy( colorRed, baseColor );
+				Vector4Copy( Color::colorRed, baseColor );
 				baseColor[ 3 ] = color[ 3 ] * 0.75f;
 				onRelevantEntity = true;
 			}
 
 			else if ( cg.crosshairFriend )
 			{
-				Vector4Copy( colorGreen, baseColor );
+				Vector4Copy( Color::colorGreen, baseColor );
 				baseColor[ 3 ] = color[ 3 ] * 0.75f;
 				onRelevantEntity = true;
 			}
@@ -494,7 +494,7 @@ public:
 		{
 			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
 
-			Vector4Lerp( dim, baseColor, colorWhite, drawColor );
+			Vector4Lerp( dim, baseColor, Color::colorWhite, drawColor );
 		}
 
 		else if ( !onRelevantEntity )
@@ -1351,7 +1351,7 @@ public:
 				if ( color != 1 )
 				{
 					color = 1;
-					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_YELLOW ) ] );
+					trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_YELLOW ) ] );
 				}
 
 				if ( v > range )
@@ -1367,7 +1367,7 @@ public:
 				if ( color != 2 )
 				{
 					color = 2;
-					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_BLUE ) ] );
+					trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_BLUE ) ] );
 				}
 
 				v = -v;
@@ -1397,7 +1397,7 @@ public:
 					if ( color != 5 )
 					{
 						color = 5; // YELLOW for rate delay
-						trap_R_SetColor( g_color_table[ ColorIndex( COLOR_YELLOW ) ] );
+						trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_YELLOW ) ] );
 					}
 				}
 
@@ -1407,7 +1407,7 @@ public:
 					{
 						color = 3;
 
-						trap_R_SetColor( g_color_table[ ColorIndex( COLOR_GREEN ) ] );
+						trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_GREEN ) ] );
 					}
 				}
 
@@ -1426,7 +1426,7 @@ public:
 				if ( color != 4 )
 				{
 					color = 4; // RED for dropped snapshots
-					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_RED ) ] );
+					trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_RED ) ] );
 				}
 
 				trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );

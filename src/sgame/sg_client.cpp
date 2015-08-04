@@ -757,7 +757,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		}
 
 		// check colors or escaped escape character
-		if ( Q_IsColorString(in) || ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE ) )
+		if ( Color::Q_IsColorString(in) || ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE ) )
 		{
 			in++;
 
@@ -774,7 +774,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			len += 2;
 			continue;
 		}
-		else if ( Q_IsHexColorString(in) )
+		else if ( Color::Q_IsHexColorString(in) )
 		{
 			// make sure room in dest for both chars
 			if ( len > outSize - 5 )

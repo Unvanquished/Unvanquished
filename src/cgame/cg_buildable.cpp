@@ -2025,7 +2025,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			sepW = pad;
 			sepH = ( 0.5f * picH ) - pad;
 
-			Vector4Copy( colorBlack, separatorColor );
+			Vector4Copy( Color::colorBlack, separatorColor );
 
 			trap_R_SetColor( separatorColor );
 			CG_DrawPic( sepX, sepY, sepW, sepH, cgs.media.whiteShader );
@@ -2079,7 +2079,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			markH = 0.5f * barH;
 			markW = ( bs->healthPadding * scale );
 
-			Vector4Copy( colorBlack, markColor );
+			Vector4Copy( Color::colorBlack, markColor );
 
 			trap_R_SetColor( markColor );
 			CG_DrawPic( markX, barY, markW, markH, cgs.media.whiteShader );

@@ -3903,7 +3903,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	void                                R_AddDrawViewCmd();
 
-	void                                RE_SetColor( const color_s& rgba );
+	void                                RE_SetColor( const Color::color_s& rgba );
 	void                                R_AddRunVisTestsCmd();
 	void                                RE_SetClipRegion( const float *region );
 	void                                RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );

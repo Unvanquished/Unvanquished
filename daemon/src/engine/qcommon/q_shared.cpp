@@ -2487,7 +2487,7 @@ int Q_PrintStrlen( const char *string )
 
 	while ( *p )
 	{
-		if ( Q_SkipColorString( p ) )
+		if ( Color::Q_SkipColorString( p ) )
 		{
 			continue;
 		}
@@ -2515,7 +2515,7 @@ char *Q_CleanStr( char *string )
 
 	while ( ( c = *s ) != 0 )
 	{
-		if ( Q_SkipColorString( s ) )
+		if ( Color::Q_SkipColorString( s ) )
 		{
 			continue;
 		}

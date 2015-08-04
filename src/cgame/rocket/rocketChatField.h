@@ -343,12 +343,12 @@ protected:
 	{
 		if ( position + 4 < str.Length() )
 		{
-			return Q_IsHexColorString( str );
+			return Color::Q_IsHexColorString( str );
 		}
 		else if ( position + 1 < str.Length() )
 		{
 			return ( str[position] == Q_COLOR_ESCAPE &&
-			( str[position + 1] == COLOR_NULL || Q_IsColorString( str ) )
+			( str[position + 1] == COLOR_NULL || Color::Q_IsColorString( str ) )
 			) ? true : false;
 		}
 		else
@@ -418,15 +418,15 @@ protected:
 			else if ( IsColorString( in, i ) )
 			{
 				Rocket::Core::XMLAttributes xml;
-				color_s color;
+				Color::color_s color;
 				int color_start = i;
 				if ( in[i+1] != 'x' )
 				{
-					color = color_s( char( in[++i] ) );
+					color = Color::color_s( char( in[++i] ) );
 				}
 				else
 				{
-					color = ColorFromHexString(in);
+					color = Color::ColorFromHexString(in);
 					std::string temp = color.to_string();
 					i += 4;
 				}
