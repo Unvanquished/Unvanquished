@@ -36,8 +36,18 @@ Maryland 20850 USA.
 #include <limits>
 #include <cstdint>
 
-#define COLOR_BITS       31
-#define ColorIndex( c ) ( ( ( c ) - '0' ) & COLOR_BITS )
+/*
+================
+ColorIndex
+
+Converts a character into an index to be used with g_color_table
+================
+*/
+inline int ColorIndex( char c )
+{
+	return (c - '0') & 31;
+}
+
 extern struct color_s g_color_table[ 32 ];
 
 /*
@@ -238,9 +248,6 @@ inline bool Q_IsColorString( const char *p )
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? true : false;
 }
-
-#define MAKERGB( v, r, g, b )         v[ 0 ] = r; v[ 1 ] = g; v[ 2 ] = b
-#define MAKERGBA( v, r, g, b, a )     v[ 0 ] = r; v[ 1 ] = g; v[ 2 ] = b; v[ 3 ] = a
 
 /*
 ================
