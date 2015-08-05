@@ -493,7 +493,6 @@ static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 // TODO: Make this take Rocket::Core::String as an input.
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
-	const char *p;
 	Rocket::Core::String out;
 	Rocket::Core::String spanstr;
 	bool span = false;
@@ -504,42 +503,55 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 		return "";
 	}
 
-	for ( p = in; p && *p; ++p )
+	for ( Color::TokenIterator i ( in ); *i; ++i )
 	{
-		if ( *p == '<' )
+		if ( i->Type() == Color::Token::CHARACTER )
 		{
-			if ( span && !spanHasContent )
+			char c = *i->Begin();
+			if ( c == '<' )
 			{
-				spanHasContent = true;
-				out.Append( spanstr );
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.Append( spanstr );
+				}
+				out.Append( "&lt;" );
 			}
-			out.Append( "&lt;" );
-		}
-		else if ( *p == '>' )
-		{
-			if ( span && !spanHasContent )
+			else if ( c == '>' )
 			{
-				spanHasContent = true;
-				out.Append( spanstr );
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.Append( spanstr );
+				}
+				out.Append( "&gt;" );
 			}
-			out.Append( "&gt;" );
-		}
-		else if ( *p == '&' )
-		{
-			if ( span && !spanHasContent )
+			else if ( c == '&' )
 			{
-				spanHasContent = true;
-				out.Append( spanstr );
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.Append( spanstr );
+				}
+				out.Append( "&amp;" );
 			}
-			out.Append( "&amp;" );
+			else if ( c == '\n' )
+			{
+				out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
+				span = false;
+				spanHasContent = false;
+			}
+			else
+			{
+				if ( span && !spanHasContent )
+				{
+					out.Append( spanstr );
+					spanHasContent = true;
+				}
+				out.Append( i->Begin(), i->Size() );
+			}
 		}
-		else if ( *p == '\n' )
-		{
-			out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
-			span = false;
-			spanHasContent = false;
-		}
-		else if ( Color::Q_IsColorString( p ) || Color::Q_IsHexColorString( p ) )
+		else if ( i->Type() == Color::Token::COLOR || i->Type() == Color::Token::DEFAULT_COLOR )
 		{
 			if ( span && spanHasContent )
 			{
@@ -548,49 +560,35 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = false;
 			}
 
-			char rgb[32];
-			Color::color_s color;
-			if ( p[1] == 'x' )
+			if ( i->Type() == Color::Token::COLOR  )
 			{
-				color = Color::ColorFromHexString(p);
-				p += 4;
+				char rgb[32];
+				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
+						(int)( i->Color().r ),
+						(int)( i->Color().g ),
+						(int)( i->Color().b ) );
+
+				// don't add the span yet, because it might be empty
+				spanstr = rgb;
+
+				span = true;
+				spanHasContent = false;
 			}
-			else
-			{
-				color = Color::color_s( *++p );
-			}
-
-			Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
-			          (int)( color.r ),
-			          (int)( color.g ),
-			          (int)( color.b ) );
-
-			// don't add the span yet, because it might be empty
-			spanstr = rgb;
-
-			span = true;
-			spanHasContent = false;
 		}
-		else
+		else if ( i->Type() == Color::Token::ESCAPE )
 		{
 			if ( span && !spanHasContent )
 			{
 				out.Append( spanstr );
 				spanHasContent = true;
 			}
-			out.Append( *p );
+			out.Append( '^' );
 		}
 	}
 
 	if ( span && spanHasContent )
 	{
 		out.Append( "</span>" );
-	}
-
-	// ^^ -> ^
-	while ( out.Find( "^^" ) != Rocket::Core::String::npos )
-	{
-		out = out.Replace( "^^", "^" );
 	}
 
 	if ( parseFlags & RP_EMOTICONS )

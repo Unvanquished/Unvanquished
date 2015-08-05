@@ -34,8 +34,11 @@ Maryland 20850 USA.
 #define COMMON_COLOR_H_
 
 #include <cstdint>
+#include <iterator>
 #include <limits>
 #include <string>
+
+#include "../engine/qcommon/q_unicode.h"
 
 namespace Color {
 
@@ -265,7 +268,6 @@ extern vec4_t colorMdOrange;
 extern vec4_t colorMdBlue;
 
 #define Q_COLOR_ESCAPE   '^'
-#define Q_COLOR_HEX      'x'
 
 #define COLOR_BLACK      '0'
 #define COLOR_RED        '1'
@@ -327,27 +329,8 @@ Checks that a string is in the form ^xHHH (where H is a hex digit)
 template<class String>
 	inline bool Q_IsHexColorString( String&& p )
 {
-	return p[0] == Q_COLOR_ESCAPE && p[1] == Q_COLOR_HEX
+	return p[0] == Q_COLOR_ESCAPE && p[1] == 'x'
 		&& ishex(p[2]) && ishex(p[3]) && ishex(p[4]);
-}
-
-/*
-================
-ColorFromHexString
-
-Creates a color from a string, assumes Q_IsHexColorString(p)
-================
-*/
-template<class String>
-	color_s ColorFromHexString( String&& p )
-{
-	// Note: [0-15]*17 = [0-255]
-	return {
-		color_s::component_type(gethex(p[2])*17),
-		color_s::component_type(gethex(p[3])*17),
-		color_s::component_type(gethex(p[4])*17),
-		color_s::limits_type::max()
-	};
 }
 
 /*
@@ -381,6 +364,188 @@ template<class CharT>
 {
 	return Q_SkipColorString(p, p);
 }
+
+template<class charT>
+	class BasicToken
+{
+public:
+	enum TokenType {
+		INVALID,
+		CHARACTER,
+		ESCAPE,
+		COLOR,
+		DEFAULT_COLOR,
+	};
+
+	BasicToken() = default;
+
+	BasicToken( const charT* begin, const charT* end, TokenType type )
+		: begin( begin ),
+		  end( end ),
+		  type( type )
+	{}
+
+	BasicToken( const charT* begin, const charT* end, const color_s& color )
+		: begin( begin ),
+		  end( end ),
+		  type( COLOR ),
+		  color( color )
+	{}
+
+	const charT* Begin() const
+	{
+		return begin;
+	}
+
+	const charT* End() const
+	{
+		return end;
+	}
+
+	std::size_t Size() const
+	{
+		return end - begin;
+	}
+
+	TokenType Type() const
+	{
+		return type;
+	}
+
+	color_s Color() const
+	{
+		return color;
+	}
+
+	explicit operator bool() const
+	{
+		return type != INVALID && begin && begin < end;
+	}
+
+private:
+
+	const charT*   begin = nullptr;
+	const charT*   end   = nullptr;
+	TokenType     type  = INVALID;
+	color_s       color;
+
+};
+
+class TokenAdvanceOne
+{
+public:
+	template<class CharT>
+		constexpr int operator()(const CharT*) const { return 1; }
+};
+
+class TokenAdvanceUtf8
+{
+public:
+	int operator()(const char* c) const
+	{
+		return Q_UTF8_Width(c);
+	}
+};
+
+template<class CharT, class TokenAdvanceT = TokenAdvanceOne>
+	class BasicTokenIterator
+{
+public:
+	using value_type = BasicToken<CharT>;
+	using reference = const value_type&;
+	using pointer = const value_type*;
+	using iterator_category = std::input_iterator_tag;
+	using difference_type = int;
+
+	BasicTokenIterator() = default;
+
+	explicit BasicTokenIterator( const CharT* input )
+	{
+		token = NextToken( input );
+	}
+
+	reference operator*() const
+	{
+		return token;
+	}
+
+	pointer operator->() const
+	{
+		return &token;
+	}
+
+	BasicTokenIterator& operator++()
+	{
+		token = NextToken( token.End() );
+		return *this;
+	}
+
+	BasicTokenIterator operator++(int)
+	{
+		auto copy = *this;
+		token = NextToken( token.End() );
+		return copy;
+	}
+
+	bool operator==( const BasicTokenIterator& rhs ) const
+	{
+		return token.Begin() == rhs.token.Begin();
+	}
+
+	bool operator!=( const BasicTokenIterator& rhs ) const
+	{
+		return token.Begin() != rhs.token.Begin();
+	}
+
+	void Skip( difference_type bytes )
+	{
+		if ( bytes != 0 )
+		{
+			token = NextToken( token.Begin() + bytes );
+		}
+	}
+
+private:
+	value_type NextToken(const CharT* input)
+	{
+		if ( !input || *input == '\0' )
+		{
+			return value_type();
+		}
+
+		if ( input[0] == '^' )
+		{
+			if ( input[1] == '^' )
+			{
+				return value_type( input, input+2, value_type::ESCAPE );
+			}
+			else if ( input[1] == COLOR_NULL )
+			{
+				return value_type( input, input+2, value_type::DEFAULT_COLOR );
+			}
+			else if ( input[1] >= '0' && input[1] < 'p' )
+			{
+				return value_type( input, input+2, color_s( char( input[1] ) ) );
+			}
+			else if ( input[1] == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
+			{
+				return value_type( input, input+5, color_s(
+					gethex( input[2] ) * 17,
+					gethex( input[3] ) * 17,
+					gethex( input[4] ) * 17,
+					1
+				) );
+			}
+		}
+
+		return value_type( input, input + TokenAdvanceT()( input ), value_type::CHARACTER );
+	}
+
+	value_type token;
+};
+
+using Token = BasicToken<char>;
+using TokenIterator = BasicTokenIterator<char, TokenAdvanceUtf8>;
 
 } // namespace Color
 

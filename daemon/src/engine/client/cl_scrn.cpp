@@ -274,121 +274,6 @@ void SCR_DrawSmallUnichar( int x, int y, int ch )
 
 /*
 ==================
-SCR_DrawBigString[Color]
-
-Draws a multi-colored string with a drop shadow, optionally forcing
-to a fixed color.
-
-Coordinates are at 640 by 480 virtual resolution
-==================
-*/
-
-void SCR_DrawStringExt( int x, int y, float size, const char *string,
-                        const Color::color_s& setColor, bool forceColor, bool noColorEscape )
-{
-	const char *s;
-	int        xx;
-	bool   noColour = false;
-
-	// draw the drop shadow
-	Color::color_s color;
-	color.a = setColor.a;
-	re.SetColor( color );
-	s = string;
-	xx = x;
-
-	while ( *s )
-	{
-		if ( !noColorEscape && Color::Q_SkipColorString( s ) )
-		{
-			continue;
-		}
-
-		if ( !noColorEscape && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-		{
-			++s;
-		}
-
-		auto ch = Q_UTF8_CodePoint( s );
-		SCR_DrawUnichar( xx + 2, y + 2, size, ch );
-		xx += size;
-		s += Q_UTF8_WidthCP( ch );
-	}
-
-	// draw the colored text
-	s = string;
-	xx = x;
-	re.SetColor( setColor );
-
-	while ( *s )
-	{
-		int ch;
-
-		if ( !noColour && Color::Q_IsColorString( s ) )
-		{
-			if ( !forceColor )
-			{
-				if ( * ( s + 1 ) == COLOR_NULL )
-				{
-					color = Color::color_s( setColor );
-				}
-				else
-				{
-					color = Color::color_s( s[ 1 ] );
-				}
-
-				color.a = setColor.a;
-				re.SetColor( color );
-			}
-
-			if ( !noColorEscape )
-			{
-				s += 2;
-				continue;
-			}
-		}
-		else if ( !noColour && Color::Q_IsHexColorString( s ) )
-		{
-			if ( !forceColor )
-			{
-				color = Color::ColorFromHexString(s);
-				color.a = setColor.a;
-				re.SetColor( color );
-			}
-
-			if ( !noColorEscape )
-			{
-				s += 5;
-				continue;
-			}
-		}
-		else if ( !noColour && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-		{
-			if ( !noColorEscape )
-			{
-				++s;
-			}
-			else
-			{
-				noColour = true;
-			}
-		}
-		else
-		{
-			noColour = false;
-		}
-
-		ch = Q_UTF8_CodePoint( s );
-		SCR_DrawUnichar( xx, y, size, ch );
-		xx += size;
-		s += Q_UTF8_WidthCP( ch );
-	}
-
-	re.SetColor( nullptr );
-}
-
-/*
-==================
 SCR_DrawSmallString[Color]
 
 Draws a multi-colored string with a drop shadow, optionally forcing
@@ -400,78 +285,57 @@ Coordinates are at 640 by 480 virtual resolution
 void SCR_DrawSmallStringExt( int x, int y, const char *string,
 							 const Color::color_s &setColor, bool forceColor, bool noColorEscape )
 {
-	Color::color_s    color;
-	const char *s;
 	float      xx;
-	bool   noColour = false;
 
 	// draw the colored text
-	s = string;
 	xx = x;
 	re.SetColor( setColor );
 
-	while ( *s )
+	for ( Color::TokenIterator i( string ); *i; ++i )
 	{
-		int ch;
-
-		if ( !noColour && Color::Q_IsColorString( s ) )
+		if ( i->Type() == Color::Token::COLOR || i->Type() == Color::Token::DEFAULT_COLOR )
 		{
 			if ( !forceColor )
 			{
-				if ( * ( s + 1 ) == COLOR_NULL )
+				Color::color_s color;
+				if ( i->Type() == Color::Token::DEFAULT_COLOR )
 				{
-					color = Color::color_s( setColor );
+					color = setColor;
 				}
 				else
 				{
-					color = Color::color_s( s[ 1 ] );
+					color = i->Color();
+					color.a = setColor.a;
 				}
-
-				color.a = setColor.a;
 				re.SetColor( color );
 			}
 
-			if ( !noColorEscape )
+			if ( noColorEscape )
 			{
-				s += 2;
-				continue;
+				for ( const char *c = i->Begin(); c != i->End(); c++ )
+				{
+					SCR_DrawConsoleFontUnichar( xx, y, *c );
+					xx += SCR_ConsoleFontUnicharWidth( *c );
+				}
 			}
 		}
-		else if ( !noColour && Color::Q_IsHexColorString( s ) )
+		else if ( i->Type() == Color::Token::ESCAPE )
 		{
-			if ( !forceColor )
-			{
-				color = Color::ColorFromHexString(s);
-				color.a = setColor.a;
-				re.SetColor( color );
-			}
+			SCR_DrawConsoleFontUnichar( xx, y, '^' );
+			xx += SCR_ConsoleFontUnicharWidth( '^' );
 
-			if ( !noColorEscape )
+			if ( noColorEscape )
 			{
-				s += 5;
-				continue;
-			}
-		}
-		else if ( !noColour && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-		{
-			if ( !noColorEscape )
-			{
-				++s;
-			}
-			else
-			{
-				noColour = true;
+				SCR_DrawConsoleFontUnichar( xx, y, '^' );
+				xx += SCR_ConsoleFontUnicharWidth( '^' );
 			}
 		}
 		else
 		{
-			noColour = false;
+			int ch = Q_UTF8_CodePoint( i->Begin() );
+			SCR_DrawConsoleFontUnichar( xx, y, ch );
+			xx += SCR_ConsoleFontUnicharWidth( ch );
 		}
-
-		ch = Q_UTF8_CodePoint( s );
-		SCR_DrawConsoleFontUnichar( xx, y, ch );
-		xx += SCR_ConsoleFontUnicharWidth( ch );
-		s += Q_UTF8_WidthCP( ch );
 	}
 
 	re.SetColor( nullptr );

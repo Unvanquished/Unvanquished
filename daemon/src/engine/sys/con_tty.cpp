@@ -75,109 +75,54 @@ Transform Q3 colour codes to ANSI escape sequences
 */
 static void CON_AnsiColorPrint( const char *msg )
 {
-	static char buffer[ MAXPRINTMSG ];
-	int         length = 0;
-
-	// Approximations of Color::g_color_table (q_math.c)
-#define A_BOLD 16
-#define A_DIM  32
-	static const char colour16map[2][32] = {
-		{ // Variant 1 (xterm)
-			0 | A_BOLD, 1,          2,          3,
-			4,          6,          5,          7,
-			3 | A_DIM,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
-			2 | A_DIM,  3 | A_DIM,  4 | A_DIM,  1 | A_DIM,
-			3 | A_DIM,  3 | A_DIM,  6 | A_DIM,  5 | A_DIM,
-			6 | A_DIM,  5 | A_DIM,  6 | A_DIM,  2 | A_BOLD,
-			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
-			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
-		},
-		{ // Variant 1 (vte)
-			0 | A_BOLD, 1,          2,          3 | A_BOLD,
-			4,          6,          5,          7,
-			3        ,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
-			2 | A_DIM,  3,          4 | A_DIM,  1 | A_DIM,
-			3 | A_DIM,  3 | A_DIM,  6 | A_DIM,  5 | A_DIM,
-			6 | A_DIM,  5 | A_DIM,  6 | A_DIM,  2 | A_BOLD,
-			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
-			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
-		}
-	};
-	static const char modifier[][4] = { "", ";1", ";2", "" };
-
-	int index = abs( com_ansiColor->integer ) - 1;
-
-	if ( index >= ARRAY_LEN( colour16map ) )
+	std::string buffer;
+	for ( Color::TokenIterator i ( msg ); *i; ++i )
 	{
-		index = 0;
-	}
-
-	while ( *msg )
-	{
-		bool color_indexed = Color::Q_IsColorString( msg );
-		bool color_rgb = Color::Q_IsHexColorString( msg );
-
-		if ( color_indexed || color_rgb || *msg == '\n' )
+		if ( i->Type() == Color::Token::COLOR )
 		{
-			// First empty the buffer
-			if ( length > 0 )
+			if ( !buffer.empty() )
 			{
-				buffer[ length ] = '\0';
-				fputs( buffer, stderr );
-				length = 0;
+				fputs( buffer.c_str(), stderr );
+				buffer.clear();
 			}
 
-			if ( *msg == '\n' )
+			auto c4b = i->Color().to_4bit();
+			bool bright = c4b & 8;
+			int number = c4b & ~8;
+
+			std::string ansi = "\x1b[3"+std::to_string(number)+";"+(bright ? "1" : "22")+"m";
+			fputs( ansi.c_str(), stderr );
+		}
+		else if ( i->Type() == Color::Token::ESCAPE )
+		{
+			buffer += '^';
+		}
+		else if ( i->Type() == Color::Token::DEFAULT_COLOR )
+		{
+			if ( !buffer.empty() )
 			{
-				// Issue a reset and then the newline
+				fputs( buffer.c_str(), stderr );
+				buffer.clear();
+			}
+			fputs( "\x1b[0m", stderr );
+		}
+		else if ( i->Type() == Color::Token::CHARACTER )
+		{
+			if ( *i->Begin() == '\n' )
+			{
+				fputs( buffer.c_str(), stderr );
+				buffer.clear();
 				fputs( "\033[0;49;37m\n", stderr );
-				msg++;
-			}
-			else if ( color_indexed )
-			{
-				// Print the color code
-				int colour = colour16map[ index ][ ( msg[ 1 ] - '0' ) & 31 ];
-
-				Com_sprintf( buffer, sizeof( buffer ), "\033[%s%d%sm",
-				             (colour & 0x30) == 0 ? "0;" : "",
-				             30 + ( colour & 15 ), modifier[ ( colour / 16 ) & 3 ] );
-				fputs( buffer, stderr );
-				msg += 2;
 			}
 			else
 			{
-				auto c4b = Color::ColorFromHexString(msg).to_4bit();
-				bool bright = c4b & 8;
-				int number = c4b & ~8;
-
-				std::string ansi = "\x1b[3"+std::to_string(number)+";"+(bright ? "1" : "22")+"m";
-				fputs( ansi.c_str(), stderr );
-				msg += 5;
+				buffer.append( i->Begin(), i->Size() );
 			}
-		}
-		else
-		{
-			if ( length >= MAXPRINTMSG - 1 )
-			{
-				break;
-			}
-
-			if ( *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
-			{
-				++msg;
-			}
-
-			buffer[ length ] = *msg;
-			length++;
-			msg++;
 		}
 	}
-
-	// Empty anything still left in the buffer
-	if ( length > 0 )
+	if ( !buffer.empty() )
 	{
-		buffer[ length ] = '\0';
-		fputs( buffer, stderr );
+		fputs( buffer.c_str(), stderr );
 	}
 }
 

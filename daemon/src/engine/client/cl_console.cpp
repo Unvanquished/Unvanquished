@@ -549,7 +549,6 @@ If no console is visible, the text will appear at the top of the game window
 bool CL_InternalConsolePrint( const char *text )
 {
 	int      y;
-	int      c, i;
 	int      wordLen = 0;
 
 	// for some demos we don't want to ever show anything on the console
@@ -581,40 +580,40 @@ bool CL_InternalConsolePrint( const char *text )
 		cgvm.CGameConsoleLine( text );
 	}
 
-	Color::color_s color( CONSOLE_COLOR );
+	Color::color_s console_color( CONSOLE_COLOR );
+	Color::color_s color = console_color;
 
-	while ( ( c = *text & 0xFF ) != 0 )
+	for ( Color::TokenIterator it ( text ); *it; ++it )
 	{
-		if ( Color::Q_IsColorString( text ) )
+		if ( it->Type() == Color::Token::COLOR )
 		{
-			color = Color::color_s( text[ 1 ] == COLOR_NULL ? CONSOLE_COLOR : text[ 1 ] );
-			text += 2;
+			color = it->Color();
+			color.a = console_color.a;
 			continue;
 		}
-		else if ( Color::Q_IsHexColorString( text ) )
+		else if ( it->Type() == Color::Token::DEFAULT_COLOR )
 		{
-			color = Color::ColorFromHexString(text);
-			text += 5;
+			color = console_color;
 			continue;
 		}
 
 		if ( !wordLen )
 		{
 			// count word length
-			for ( i = 0; ; ++wordLen )
+			for ( Color::TokenIterator i = it; *i; ++i )
 			{
-				if ( text[ i ] <= ' ' && text[ i ] >= 0 )
+				if ( i->Type() == Color::Token::ESCAPE )
 				{
-					break;
+					wordLen++;
 				}
-				if ( Color::Q_SkipColorString( text + i, i ) )
-					continue;
-				if ( text[ i ] == Q_COLOR_ESCAPE && text[ i + 1 ] == Q_COLOR_ESCAPE )
+				else if ( i->Type() == Color::Token::CHARACTER )
 				{
-					++i;
+					if ( std::isspace( *i->Begin() ) )
+					{
+						break;
+					}
+					wordLen++;
 				}
-
-				i += Q_UTF8_Width( text + i );
 			}
 
 			// word wrap
@@ -625,7 +624,7 @@ bool CL_InternalConsolePrint( const char *text )
 			}
 		}
 
-		switch ( c )
+		switch ( *it->Begin() )
 		{
 			case '\n':
 				Con_Linefeed( );
@@ -635,18 +634,11 @@ bool CL_InternalConsolePrint( const char *text )
 				consoleState.horizontalCharOffset = 0;
 				break;
 
-			case Q_COLOR_ESCAPE:
-				if ( text[ 1 ] == Q_COLOR_ESCAPE )
-				{
-					++text;
-				}
-				/* no break */
-
 			default: // display character and advance
 				y = consoleState.currentLine % consoleState.maxScrollbackLengthInLines;
 				// rain - sign extension caused the character to carry over
 				// into the color info for high ascii chars; casting c to unsigned
-				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8_CodePoint( text );
+				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8_CodePoint( it->Begin() );
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ink = color;
 				++consoleState.horizontalCharOffset;
 				if ( wordLen > 0 )
@@ -662,7 +654,6 @@ bool CL_InternalConsolePrint( const char *text )
 				break;
 		}
 
-		text += Q_UTF8_Width( text );
 	}
 
 	return true;

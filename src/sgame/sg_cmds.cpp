@@ -1022,8 +1022,6 @@ void G_LoadCensors()
 
 void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 {
-	const char *s, *m;
-	int        i, ch, bytes;
 
 	if ( !numcensors || G_admin_permission( ent, ADMF_NOCENSORFLOOD ) )
 	{
@@ -1033,118 +1031,72 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 
 	len--;
 
-	while ( *in )
+	std::string out_string;
+	for ( Color::TokenIterator i( in ); *i; ++i )
 	{
-		if ( Color::Q_IsColorString( in ) )
-		{
-			if ( len < 2 )
-			{
-				break;
-			}
-
-			*out++ = *in++;
-			*out++ = *in++;
-			len -= 2;
-			continue;
-		}
-		else if ( Color::Q_IsHexColorString( in ) )
-		{
-			if ( len < 5 )
-			{
-				break;
-			}
-
-			for ( int i = 0; i < 5; i++ )
-				*out++ = *in++;
-
-			len -= 5;
-			continue;
-		}
-
-		ch = Q_UTF8_CodePoint( in );
-
-		if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
-		{
-			if ( len < 1 )
-			{
-				break;
-			}
-
-			bytes = Q_UTF8_WidthCP( ch );
-			memcpy( out, in, bytes );
-			out += bytes;
-			in += bytes;
-			len -= bytes;
-			continue;
-		}
-
-		m = censors;
-
-		for ( i = 0; i < numcensors; i++, m++ )
-		{
-			s = in;
-
-			while ( *s && *m )
-			{
-				if ( Color::Q_SkipColorString( s ) )
-				{
-					continue;
-				}
-
-				ch = Q_UTF8_CodePoint( s );
-				bytes = Q_UTF8_WidthCP( ch );
-
-				if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
-				{
-					s += bytes;
-					continue;
-				}
-
-				if ( Q_Unicode_ToLower( ch ) != Q_UTF8_CodePoint( m ) )
-				{
-					break;
-				}
-
-				s += bytes;
-				m += Q_UTF8_Width( m );
-			}
-
-			// match
-			if ( !*m )
-			{
-				in = s;
-				m++;
-				bytes = strlen( m );
-				bytes = MIN( bytes, len );
-				memcpy( out, m, bytes );
-				out += bytes;
-				len -= bytes;
-				break;
-			}
-			else
-			{
-				m += strlen( m ) + 1;
-				m += strlen( m );
-			}
-		}
-
-		if ( len < 1 )
+		if ( out_string.size() + i->Size() > len )
 		{
 			break;
 		}
 
-		// no match
-		if ( i == numcensors )
+		if ( i->Type() != Color::Token::CHARACTER )
 		{
-			bytes = Q_UTF8_WidthCP( ch );
-			memcpy( out, in, bytes );
-			out += bytes;
-			in += bytes;
-			len -= bytes;
+			out_string.append(i->Begin(), i->Size());
+		}
+		else
+		{
+			int ch = Q_UTF8_CodePoint( i->Begin() );
+
+			if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
+			{
+				out_string.append(i->Begin(), i->Size());
+				continue;
+			}
+
+			const char* m = censors;
+
+			for ( Color::TokenIterator j = i; *j; ++j )
+			{
+				if ( j->Type() == Color::Token::CHARACTER )
+				{
+					ch = Q_UTF8_CodePoint( j->Begin() );
+
+					if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
+					{
+						continue;
+					}
+
+					if ( Q_Unicode_ToLower( ch ) != Q_UTF8_CodePoint( m ) )
+					{
+						break;
+					}
+
+					m += Q_UTF8_Width( m );
+
+					// match
+					if ( !*m )
+					{
+						m++;
+						int bytes = strlen(m);
+						if ( out_string.size() + bytes <= len )
+						{
+							out_string.append( m, bytes );
+						}
+
+						m += strlen( m );
+						break;
+					}
+					else
+					{
+						m += strlen( m ) + 1;
+						m += strlen( m );
+					}
+				}
+			}
 		}
 	}
 
-	*out = 0;
+	memcpy(out, out_string.c_str(), out_string.size()+1);
 }
 
 /*

@@ -148,7 +148,7 @@ int color_s::to_4bit() const
         else if ( cmax >= 120 )
             color = 7;
 
-        if ( cmax >= 164 )
+        if ( ( cmax + cmin ) / 2 >= 164 )
             color |= 0b1000; // bright
     }
     else

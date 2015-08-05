@@ -81,8 +81,12 @@ static int      stderr_fd;
 
 #define LOG_LINES      ( LINES - 3 )
 
-#define CURSES_NULL_COLOR -1
+static const int CURSES_DEFAULT_COLOR = 32;
 
+static void Con_ClearColor( WINDOW *win )
+{
+	wattrset( win, COLOR_PAIR( CURSES_DEFAULT_COLOR ) );
+}
 /*
 ==================
 CON_SetColor
@@ -90,68 +94,15 @@ CON_SetColor
 Use grey instead of black
 ==================
 */
-static void CON_SetColor( WINDOW *win, int color )
-{
-	// Approximations of Color::g_color_table (q_math.c)
-	// Colours are hard-wired below; see init_pair() calls
-	static const chtype colour16map[2][32] = {
-		{ // Variant 1 (xterm)
-			1 | A_BOLD, 2,          3,          4,
-			5,          6,          7,          8,
-			4 | A_DIM,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
-			3 | A_DIM,  4 | A_DIM,  5 | A_DIM,  2 | A_DIM,
-			4 | A_DIM,  4 | A_DIM,  6 | A_DIM,  7 | A_DIM,
-			6 | A_DIM,  7 | A_DIM,  6 | A_DIM,  3 | A_BOLD,
-			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
-			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
-		},
-		{ // Variant 2 (vte)
-			1 | A_BOLD, 2,          3,          4 | A_BOLD,
-			5,          6,          7,          8,
-			4        ,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
-			3 | A_DIM,  4,          5 | A_DIM,  2 | A_DIM,
-			4 | A_DIM,  4 | A_DIM,  6 | A_DIM,  7 | A_DIM,
-			6 | A_DIM,  7 | A_DIM,  6 | A_DIM,  3 | A_BOLD,
-			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
-			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
-		}
-	};
-
-	if ( color == CURSES_NULL_COLOR || !com_ansiColor || !com_ansiColor->integer )
-	{
-		wattrset( win, COLOR_PAIR( 0 ) );
-	}
-	else if ( COLORS >= 256 && com_ansiColor->integer > 0 )
-	{
-#ifdef A_RGB  //macro producing color attribute for a 64-bit chtype in pdcurses
-		wattrset( win, A_RGB( (int)( Color::g_color_table[color].r / 8 ),
-		    (int)( Color::g_color_table[color].g / 8 ), (int)( Color::g_color_table[color].b / 8 ), 0, 0, 0 ) );
-#else
-		wattrset( win, COLOR_PAIR( color + 9 ) ); // hard-wired below; see init_pair() calls
-#endif
-	}
-	else
-	{
-		int index = abs( com_ansiColor->integer ) - 1;
-
-		if ( index >= ARRAY_LEN( colour16map ) )
-		{
-			index = 0;
-		}
-
-		wattrset( win, COLOR_PAIR( colour16map[index][ color ] & 0xF ) | ( colour16map[index][color] & ~0xF ) );
-	}
-}
-
 static void CON_SetColor( WINDOW *win, const Color::color_s& color )
 {
 	if ( !com_ansiColor || !com_ansiColor->integer )
 	{
-		wattrset( win, COLOR_PAIR( 0 ) );
+		Con_ClearColor( win );
 	}
 	else
 	{
-		wattrset( win, COLOR_PAIR(64|color.to_4bit()) );
+		wattrset( win, COLOR_PAIR(color.to_4bit()) );
 	}
 }
 
@@ -174,113 +125,71 @@ CON_ColorPrint
 */
 static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 {
-	static wchar_t buffer[ MAXPRINTMSG ];
-	int         length = 0;
-	bool    noColour = false;
 
-	CON_SetColor( win, CURSES_NULL_COLOR );
+	Con_ClearColor( win );
 
-	while ( *msg )
+	std::string buffer;
+	for ( Color::TokenIterator i ( msg ); *i; ++i )
 	{
-		bool color_indexed = false;
-		bool color_rgb = false;
-		if ( !noColour )
-		{
-			color_indexed = Color::Q_IsColorString( msg );
-			color_rgb = Color::Q_IsHexColorString( msg );
-		}
 
-		if ( color_rgb || color_indexed || *msg == '\n' )
+		if ( i->Type() == Color::Token::COLOR )
 		{
-			noColour = false;
-
-			// First empty the buffer
-			if ( length > 0 )
+			if ( !buffer.empty() )
 			{
-				buffer[ length ] = L'\0';
-				waddwstr( win, buffer );
-				length = 0;
+				waddstr( win, buffer.c_str() );
+				buffer.clear();
 			}
 
-			if ( *msg == '\n' )
+			CON_SetColor( win, i->Color() );
+
+			if ( !stripcodes )
 			{
-				// Reset the color and then print a newline
-				CON_SetColor( win, CURSES_NULL_COLOR );
+				buffer.append( i->Begin(), i->Size() );
+			}
+		}
+		else if ( i->Type() == Color::Token::DEFAULT_COLOR )
+		{
+			if ( !buffer.empty() )
+			{
+				waddstr( win, buffer.c_str() );
+				buffer.clear();
+			}
+
+			Con_ClearColor( win );
+
+			if ( !stripcodes )
+			{
+				buffer.append( i->Begin(), i->Size() );
+			}
+		}
+		else if ( i->Type() == Color::Token::ESCAPE )
+		{
+			if ( !stripcodes )
+			{
+				buffer.append( i->Begin(), i->Size() );
+			}
+			else
+			{
+				buffer += '^';
+			}
+		}
+		else if ( i->Type() == Color::Token::CHARACTER )
+		{
+			if ( *i->Begin() == '\n' )
+			{
+				waddstr( win, buffer.c_str() );
+				buffer.clear();
+				Con_ClearColor( win );
 				waddch( win, '\n' );
-				msg++;
 			}
 			else
 			{
-				// Set the color
-				if ( color_indexed )
-				{
-					CON_SetColor( win, *( msg + 1 ) == COLOR_NULL ? CURSES_NULL_COLOR : Color::ColorIndex( *( msg + 1 ) ) );
-				}
-				else
-				{
-					CON_SetColor( win, Color::ColorFromHexString(msg) );
-				}
-
-				if ( stripcodes )
-				{
-					msg += color_indexed ? 2 : 5;
-				}
-				else
-				{
-					if ( length >= MAXPRINTMSG - 1 )
-					{
-						break;
-					}
-
-					buffer[ length ] = *msg;
-					length++;
-					msg++;
-
-					if ( length >= MAXPRINTMSG - 1 )
-					{
-						break;
-					}
-
-					buffer[ length ] = *msg;
-					length++;
-					msg++;
-				}
+				buffer.append( i->Begin(), i->Size() );
 			}
-		}
-		else
-		{
-			if ( length >= MAXPRINTMSG - 1 )
-			{
-				break;
-			}
-
-			if ( !noColour && *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
-			{
-				if ( stripcodes )
-				{
-					++msg;
-				}
-				else
-				{
-					noColour = true; // guaranteed a colour control next
-				}
-			}
-			else
-			{
-				noColour = false;
-			}
-			buffer[ length ] = (wchar_t) Q_UTF8_CodePoint( msg );
-			msg += Q_UTF8_WidthCP( buffer[ length ]);
-			length++;
 		}
 	}
 
-	// Empty anything still left in the buffer
-	if ( length > 0 )
-	{
-		buffer[ length ] = L'\0';
-		waddwstr( win, buffer );
-	}
+	waddstr( win, buffer.c_str() );
 }
 
 /*
@@ -361,7 +270,7 @@ static void CON_Redraw()
 	CON_UpdateClock();
 
 	// Create the border
-	CON_SetColor( stdscr, 2 );
+	CON_SetColor( stdscr, Color::color_s(0, 255, 0) );
 	for (int i = 0; i < COLS; i++) {
 		mvaddch(0, i, ACS_HLINE);
 		mvaddch(LINES - 2, i, ACS_HLINE);
@@ -530,33 +439,14 @@ void CON_Init()
 		// Set up colors
 		if ( has_colors() )
 		{
-			// Mappings used in CON_SetColor()
-			static const unsigned char colourmap[] = {
-				0, // <- dummy entry
-				// 8-colour terminal mappings (modified later with bold/dim)
-				COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW,
-				COLOR_BLUE, COLOR_CYAN, COLOR_MAGENTA, COLOR_WHITE,
-				// 256-colour terminal mappings
-				239, 196,  46, 226,  21,  51, 201, 231,
-				208, 244, 250, 250,  28, 100,  18,  88,
-				 94, 209,  30,  90,  33,  93,  68, 194,
-				 29, 197, 124,  94, 173, 101, 229, 228
-			};
-			int i;
-
 			use_default_colors();
 			start_color();
-			init_pair( 0, -1, -1 );
-
-			for ( i = ( COLORS >= 256 ) ? 40 : 8; i; --i )
-			{
-				init_pair( i, colourmap[i], -1 );
-			}
+			init_pair( CURSES_DEFAULT_COLOR, -1, -1 );
 
 			// Pairs used for Color::color_s
-			for ( i = 0; i < 16; i++ )
+			for ( int i = 0; i < 16; i++ )
 			{
-				init_pair(i+64, i, -1);
+				init_pair(i, i, -1);
 			}
 		}
 
@@ -707,7 +597,7 @@ char *CON_Input()
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
 				if (scrollline >= lastline - LOG_LINES) {
-					CON_SetColor(stdscr, 2);
+					CON_SetColor(stdscr, Color::color_s(0, 255, 0));
 					for (int i = COLS - 7; i < COLS - 1; i++)
 						mvaddch(LINES - 2, i, ACS_HLINE);
 				}
@@ -727,7 +617,7 @@ char *CON_Input()
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
 				if (scrollline < lastline - LOG_LINES) {
-					CON_SetColor(stdscr, 1);
+					CON_SetColor(stdscr, Color::color_s(255, 0, 0));
 					mvaddstr(LINES - 2, COLS - 7, "(more)");
 				}
 
