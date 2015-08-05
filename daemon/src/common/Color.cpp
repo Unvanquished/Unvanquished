@@ -37,25 +37,25 @@ Maryland 20850 USA.
 
 namespace Color {
 /*
-color_s   colorBlack   = {   0,   0,   0, 255 };
-color_s   colorRed     = { 255,   0,   0, 255 };
-color_s   colorGreen   = {   0, 255,   0, 255 };
-color_s   colorBlue    = {   0,   0, 255, 255 };
-color_s   colorYellow  = { 255, 255,   0, 255 };
-color_s   colorOrange  = { 255, 128,   0, 255 };
-color_s   colorMagenta = { 255,   0, 255, 255 };
-color_s   colorCyan    = {   0, 255, 255, 255 };
-color_s   colorWhite   = { 255, 255, 255, 255 };
-color_s   colorLtGrey  = { 191, 191, 191, 255 };
-color_s   colorMdGrey  = { 128, 128, 128, 255 };
-color_s   colorDkGrey  = {  64,  64,  64, 255 };
-color_s   colorMdRed   = { 128,   0,   0, 255 };
-color_s   colorMdGreen = {   0, 128,   0, 255 };
-color_s   colorDkGreen = {   0,  51,   0, 255 };
-color_s   colorMdCyan  = {   0, 128, 128, 255 };
-color_s   colorMdYellow= { 128, 128,   0, 255 };
-color_s   colorMdOrange= { 128,  64,   0, 255 };
-color_s   colorMdBlue  = {   0,   0, 128, 255 };
+Color   colorBlack   = {   0,   0,   0, 255 };
+Color   colorRed     = { 255,   0,   0, 255 };
+Color   colorGreen   = {   0, 255,   0, 255 };
+Color   colorBlue    = {   0,   0, 255, 255 };
+Color   colorYellow  = { 255, 255,   0, 255 };
+Color   colorOrange  = { 255, 128,   0, 255 };
+Color   colorMagenta = { 255,   0, 255, 255 };
+Color   colorCyan    = {   0, 255, 255, 255 };
+Color   colorWhite   = { 255, 255, 255, 255 };
+Color   colorLtGrey  = { 191, 191, 191, 255 };
+Color   colorMdGrey  = { 128, 128, 128, 255 };
+Color   colorDkGrey  = {  64,  64,  64, 255 };
+Color   colorMdRed   = { 128,   0,   0, 255 };
+Color   colorMdGreen = {   0, 128,   0, 255 };
+Color   colorDkGreen = {   0,  51,   0, 255 };
+Color   colorMdCyan  = {   0, 128, 128, 255 };
+Color   colorMdYellow= { 128, 128,   0, 255 };
+Color   colorMdOrange= { 128,  64,   0, 255 };
+Color   colorMdBlue  = {   0,   0, 128, 255 };
 */
 vec4_t   colorBlack = { 0, 0, 0, 1 };
 vec4_t   colorRed = { 1, 0, 0, 1 };
@@ -77,7 +77,7 @@ vec4_t   colorMdYellow = { 0.5, 0.5, 0, 1 };
 vec4_t   colorMdOrange = { 0.5, 0.25, 0, 1 };
 vec4_t   colorMdBlue = { 0, 0, 0.5, 1 };
 
-color_s   g_color_table[ 32 ] =
+Color   g_color_table[ 32 ] =
 {
 	{  51,  51,  51, 255 }, // 0 - black       0
 	{ 255,   0,   0, 255 }, // 1 - red         1
@@ -113,7 +113,7 @@ color_s   g_color_table[ 32 ] =
 	{ 255, 255, 128, 255 }, // O              31
 };
 
-int color_s::to_4bit() const
+int Color::to_4bit() const
 {
     int color = 0;
 

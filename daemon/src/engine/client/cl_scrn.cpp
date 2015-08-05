@@ -283,7 +283,7 @@ Coordinates are at 640 by 480 virtual resolution
 ==================
 */
 void SCR_DrawSmallStringExt( int x, int y, const char *string,
-							 const Color::color_s &setColor, bool forceColor, bool noColorEscape )
+							 const Color::Color &setColor, bool forceColor, bool noColorEscape )
 {
 	float      xx;
 
@@ -297,7 +297,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 		{
 			if ( !forceColor )
 			{
-				Color::color_s color;
+				Color::Color color;
 				if ( i->Type() == Color::Token::DEFAULT_COLOR )
 				{
 					color = setColor;

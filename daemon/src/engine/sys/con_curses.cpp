@@ -94,7 +94,7 @@ CON_SetColor
 Use grey instead of black
 ==================
 */
-static void CON_SetColor( WINDOW *win, const Color::color_s& color )
+static void CON_SetColor( WINDOW *win, const Color::Color& color )
 {
 	if ( !com_ansiColor || !com_ansiColor->integer )
 	{
@@ -270,7 +270,7 @@ static void CON_Redraw()
 	CON_UpdateClock();
 
 	// Create the border
-	CON_SetColor( stdscr, Color::color_s(0, 255, 0) );
+	CON_SetColor( stdscr, Color::Color(0, 255, 0) );
 	for (int i = 0; i < COLS; i++) {
 		mvaddch(0, i, ACS_HLINE);
 		mvaddch(LINES - 2, i, ACS_HLINE);
@@ -443,7 +443,7 @@ void CON_Init()
 			start_color();
 			init_pair( CURSES_DEFAULT_COLOR, -1, -1 );
 
-			// Pairs used for Color::color_s
+			// Pairs used for Color::Color
 			for ( int i = 0; i < 16; i++ )
 			{
 				init_pair(i, i, -1);
@@ -597,7 +597,7 @@ char *CON_Input()
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
 				if (scrollline >= lastline - LOG_LINES) {
-					CON_SetColor(stdscr, Color::color_s(0, 255, 0));
+					CON_SetColor(stdscr, Color::Color(0, 255, 0));
 					for (int i = COLS - 7; i < COLS - 1; i++)
 						mvaddch(LINES - 2, i, ACS_HLINE);
 				}
@@ -617,7 +617,7 @@ char *CON_Input()
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
 				if (scrollline < lastline - LOG_LINES) {
-					CON_SetColor(stdscr, Color::color_s(255, 0, 0));
+					CON_SetColor(stdscr, Color::Color(255, 0, 0));
 					mvaddstr(LINES - 2, COLS - 7, "(more)");
 				}
 

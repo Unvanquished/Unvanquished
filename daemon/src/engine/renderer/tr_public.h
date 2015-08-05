@@ -105,7 +105,7 @@ typedef struct
 
 	void ( *RenderScene )( const refdef_t *fd );
 
-	void ( *SetColor )( const Color::color_s& rgba );             // nullptr = 1,1,1,1
+	void ( *SetColor )( const Color::Color& rgba );             // nullptr = 1,1,1,1
 	void ( *SetClipRegion )( const float *region );
 	void ( *DrawStretchPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );             // 0 = white
 	void ( *DrawRotatedPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );             // NERVE - SMF

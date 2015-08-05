@@ -358,7 +358,7 @@ protected:
 			{
 				Rocket::Core::XMLAttributes xml;
 
-				Color::color_s color = { 255, 255, 255 };
+				Color::Color color = { 255, 255, 255 };
 				if ( i->Type() == Color::BasicToken< Rocket::Core::word >::COLOR )
 				{
 					color = i->Color();

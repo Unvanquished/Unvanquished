@@ -129,7 +129,7 @@ static std::string Con_LineToColouredString( int lineno, bool lf )
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
 
-	Color::color_s color(7);
+	Color::Color color(7);
 	std::string lineString;
 
 	for ( int s = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
@@ -196,7 +196,7 @@ Con_Clear
 static INLINE void Con_Clear()
 {
 	int i;
-	conChar_t fill = { '\0', Color::color_s( CONSOLE_COLOR ) };
+	conChar_t fill = { '\0', Color::Color( CONSOLE_COLOR ) };
 
 	for ( i = 0; i < CON_TEXTSIZE; ++i )
 	{
@@ -503,7 +503,7 @@ void Con_Linefeed()
 {
 	int             i;
 	conChar_t       *line;
-	const conChar_t blank = { 0, Color::color_s( CONSOLE_COLOR ) };
+	const conChar_t blank = { 0, Color::Color( CONSOLE_COLOR ) };
 	const int scrollLockMode = con_scrollLock ? con_scrollLock->integer : 0;
 
 	consoleState.horizontalCharOffset = 0;
@@ -580,8 +580,8 @@ bool CL_InternalConsolePrint( const char *text )
 		cgvm.CGameConsoleLine( text );
 	}
 
-	Color::color_s console_color( CONSOLE_COLOR );
-	Color::color_s color = console_color;
+	Color::Color console_color( CONSOLE_COLOR );
+	Color::Color color = console_color;
 
 	for ( Color::TokenIterator it ( text ); *it; ++it )
 	{
@@ -736,8 +736,8 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Com_RealTime( &realtime );
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
-	Color::color_s color = Color::colorWhite;
-	color.a = Color::color_s::limits_type::max() * consoleState.currentAlphaFactor * overrideAlpha;
+	Color::Color color = Color::colorWhite;
+	color.a = Color::Color::limits_type::max() * consoleState.currentAlphaFactor * overrideAlpha;
 
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
 
@@ -988,8 +988,8 @@ void Con_DrawConsoleContent()
 		++row;
 	}
 
-	Color::color_s currentColor(7);
-	Color::color_s color = currentColor;
+	Color::Color currentColor(7);
+	Color::Color color = currentColor;
 
 	for ( ; row >= 0 && lineDrawPosition > textDistanceToTop; lineDrawPosition -= charHeight, row-- )
 	{
@@ -1020,7 +1020,7 @@ void Con_DrawConsoleContent()
 				color = currentColor;
 			}
 
-			color.a = Color::color_s::limits_type::max() *
+			color.a = Color::Color::limits_type::max() *
 				Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight );
 			re.SetColor( color );
 

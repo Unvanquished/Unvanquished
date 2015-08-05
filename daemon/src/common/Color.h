@@ -54,7 +54,7 @@ inline int ColorIndex( char c )
 	return (c - '0') & 31;
 }
 
-extern struct color_s g_color_table[ 32 ];
+extern struct Color g_color_table[ 32 ];
 
 /*
 ================
@@ -102,12 +102,12 @@ inline char hex_to_char( int i )
 
 /*
 ================
-color_s
+Color
 
 Value class to represent colors
 ================
 */
-struct color_s
+struct Color
 {
 	typedef unsigned char component_type;
 	typedef std::numeric_limits<component_type> limits_type;
@@ -116,12 +116,12 @@ struct color_s
 
 	/*
 	================
-	color_s::color_s
+	Color::Color
 
 	Initialize from a color index
 	================
 	*/
-	explicit color_s(int index)
+	explicit Color(int index)
 	{
 		if ( index >= 0 && index < 32 )
 			*this = g_color_table[index];
@@ -129,56 +129,56 @@ struct color_s
 
 	/*
 	================
-	color_s::color_s
+	Color::Color
 
 	Initialize from a color index character
 	================
 	*/
-	explicit color_s(char index)
-		: color_s( int( ColorIndex(index) ) )
+	explicit Color(char index)
+		: Color( int( ColorIndex(index) ) )
 	{
 	}
 
 	/*
 	================
-	color_s::color_s
+	Color::Color
 
 	Initialize from a float array
 	================
 	*/
-	color_s(const float array[4])
+	Color(const float array[4])
 	{
 		assign_float_array(array);
 	}
 
 	/*
 	================
-	color_s::color_s
+	Color::Color
 
 	Default constructor, all components set to zero
 	================
 	*/
-	constexpr color_s() = default;
+	constexpr Color() = default;
 
 	/*
 	================
-	color_s::color_s
+	Color::Color
 
 	Default constructor, all components set to zero
 	================
 	*/
-	constexpr color_s(component_type r, component_type g, component_type b,
+	constexpr Color(component_type r, component_type g, component_type b,
 					  component_type a = limits_type::max())
 		: r(r), g(g), b(b), a(a)
 	{
 	}
 
-	bool operator==( const color_s& other ) const
+	bool operator==( const Color& other ) const
 	{
 		return integer_32bit() == other.integer_32bit();
 	}
 
-	bool operator!=( const color_s& other ) const
+	bool operator!=( const Color& other ) const
 	{
 		return integer_32bit() != other.integer_32bit();
 	}
@@ -193,7 +193,7 @@ struct color_s
 
 	/*
 	================
-	color_s::to_string
+	Color::to_string
 
 	Returns a string representing the color
 	================
@@ -205,7 +205,7 @@ struct color_s
 
 	/*
 	================
-	color_s::to_4bit
+	Color::to_4bit
 
 	Returns a 4 bit integer with the bits following this pattern:
 		1 red
@@ -234,7 +234,7 @@ private:
 
 	/*
 	================
-	color_s::integer_32bit
+	Color::integer_32bit
 
 	Returns a 32bit integer representing the color,
 	no guarantees are made with respect to endianness
@@ -385,7 +385,7 @@ public:
 		  type( type )
 	{}
 
-	BasicToken( const charT* begin, const charT* end, const color_s& color )
+	BasicToken( const charT* begin, const charT* end, const ::Color::Color& color )
 		: begin( begin ),
 		  end( end ),
 		  type( COLOR ),
@@ -412,7 +412,7 @@ public:
 		return type;
 	}
 
-	color_s Color() const
+	::Color::Color Color() const
 	{
 		return color;
 	}
@@ -427,7 +427,7 @@ private:
 	const charT*   begin = nullptr;
 	const charT*   end   = nullptr;
 	TokenType     type  = INVALID;
-	color_s       color;
+	::Color::Color       color;
 
 };
 
@@ -525,11 +525,11 @@ private:
 			}
 			else if ( input[1] >= '0' && input[1] < 'p' )
 			{
-				return value_type( input, input+2, color_s( char( input[1] ) ) );
+				return value_type( input, input+2, Color( char( input[1] ) ) );
 			}
 			else if ( input[1] == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
 			{
-				return value_type( input, input+5, color_s(
+				return value_type( input, input+5, Color(
 					gethex( input[2] ) * 17,
 					gethex( input[3] ) * 17,
 					gethex( input[4] ) * 17,
