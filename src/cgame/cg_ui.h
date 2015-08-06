@@ -63,4 +63,4 @@ bool            PC_Script_Parse( int handle, const char **out );
 // Chat
 //
 
-int UI_GetChatColour( int which, int team );
+const char* UI_GetChatColour( int which, int team );

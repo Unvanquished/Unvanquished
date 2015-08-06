@@ -526,7 +526,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	{
 		// tell everyone why they got dropped
 		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( nullptr, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
+		SV_SendServerCommand( nullptr, "print %s\"^* \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
 
 		// add the disconnect command
 		SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );

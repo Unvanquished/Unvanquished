@@ -234,7 +234,7 @@ const char *etos( const gentity_t *entity )
 	index = ( index + 1 ) & 3;
 
 	Com_sprintf( resultString, MAX_ETOS_LENGTH,
-			"%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")",
+			"%s%s^7(^5%s^7|^5#%i^7)",
 			entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->s.number
 			);
 
@@ -448,9 +448,9 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	{
 
 		if ( g_debugEntities.integer > -1 )
-			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s%s%s" S_COLOR_WHITE "\"\n",
+			G_Printf( S_WARNING "Could not find any entity matching \"^5%s%s%s^7\"\n",
 					classname ? classname : "",
-					classname && match ? S_COLOR_WHITE " and " S_COLOR_CYAN :  "",
+					classname && match ? "^7 and ^5" :  "",
 					match ? match : ""
 					);
 

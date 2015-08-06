@@ -88,12 +88,14 @@ void CG_ClientList_f()
 		switch ( ci->team )
 		{
 			case TEAM_ALIENS:
-				Com_Printf( "%2d " S_COLOR_RED "A   " S_COLOR_WHITE "%s\n", i,
+				Com_Printf( "%2d %sA   %s%s\n", i,
+				            Color::NamedString::Red, Color::NamedString::Null,
 				            ci->name );
 				break;
 
 			case TEAM_HUMANS:
-				Com_Printf( "%2d " S_COLOR_CYAN "H   " S_COLOR_WHITE "%s\n", i,
+				Com_Printf( "%2d %sH   %s%s\n", i,
+				            Color::NamedString::Cyan, Color::NamedString::Null,
 				            ci->name );
 				break;
 

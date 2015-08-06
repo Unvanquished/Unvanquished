@@ -912,7 +912,7 @@ RE_RenderToTexture
 */
 void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 {
-	ri.Printf( PRINT_ALL, S_COLOR_RED "TODO RE_RenderToTexture\n" );
+	ri.Printf( PRINT_ALL, "%sTODO RE_RenderToTexture\n", Color::NamedString::Red );
 }
 
 /*

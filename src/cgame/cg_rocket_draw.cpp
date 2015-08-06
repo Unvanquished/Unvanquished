@@ -1351,7 +1351,7 @@ public:
 				if ( color != 1 )
 				{
 					color = 1;
-					trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_YELLOW ) ] );
+					trap_R_SetColor( Color::Named::Yellow );
 				}
 
 				if ( v > range )
@@ -1367,7 +1367,7 @@ public:
 				if ( color != 2 )
 				{
 					color = 2;
-					trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_BLUE ) ] );
+					trap_R_SetColor( Color::Named::Blue );
 				}
 
 				v = -v;
@@ -1397,7 +1397,7 @@ public:
 					if ( color != 5 )
 					{
 						color = 5; // YELLOW for rate delay
-						trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_YELLOW ) ] );
+						trap_R_SetColor( Color::Named::Yellow );
 					}
 				}
 
@@ -1407,7 +1407,7 @@ public:
 					{
 						color = 3;
 
-						trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_GREEN ) ] );
+						trap_R_SetColor( Color::Named::Green );
 					}
 				}
 
@@ -1426,7 +1426,7 @@ public:
 				if ( color != 4 )
 				{
 					color = 4; // RED for dropped snapshots
-					trap_R_SetColor( Color::g_color_table[ Color::ColorIndex( COLOR_RED ) ] );
+					trap_R_SetColor( Color::Named::Red );
 				}
 
 				trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );
@@ -1625,7 +1625,7 @@ public:
 
 		if ( cg_drawEntityInfo.integer )
 		{
-			name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
+			name = va( "(^5%s^7|^5#%d^7)",
 					   Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
 		}
 
@@ -3172,7 +3172,7 @@ void CG_Rocket_DrawPredictedRGSRate()
 {
 	playerState_t  *ps = &cg.snap->ps;
 	buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
-	char color;
+	const char* color;
 	int  delta = ps->stats[ STAT_PREDICTION ];
 
 	if ( buildable != BA_H_DRILL && buildable != BA_A_LEECH )
@@ -3183,25 +3183,25 @@ void CG_Rocket_DrawPredictedRGSRate()
 
 	if ( delta < 0 )
 	{
-		color = COLOR_RED;
+		color = Color::NamedString::Red;
 	}
 
 	else if ( delta < 10 )
 	{
-		color = COLOR_ORANGE;
+		color = Color::NamedString::Orange;
 	}
 
 	else if ( delta < 50 )
 	{
-		color = COLOR_YELLOW;
+		color = Color::NamedString::Yellow;
 	}
 
 	else
 	{
-		color = COLOR_GREEN;
+		color = Color::NamedString::Green;
 	}
 
-	Rocket_SetInnerRML( va( "^%c%+d%%", color, delta ), RP_QUAKE );
+	Rocket_SetInnerRML( va( "%s%+d%%", color, delta ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawWarmup()

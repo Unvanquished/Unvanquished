@@ -1166,13 +1166,13 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 	switch ( mode )
 	{
 		case SAY_ALL:
-			G_LogPrintf( "Say: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_GREEN "%s\n",
+			G_LogPrintf( "Say: %d \"%s^7\": ^2%s\n",
 			             ( ent ) ? ( int )( ent - g_entities ) : -1,
 			             ( ent ) ? ent->client->pers.netname : "console", chatText );
 			break;
 
 		case SAY_ALL_ADMIN:
-			G_LogPrintf( "Say: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_MAGENTA "%s\n",
+			G_LogPrintf( "Say: %d \"%s^7\": ^6%s\n",
 			             ( ent ) ? ( int )( ent - g_entities ) : -1,
 			             ( ent ) ? ent->client->pers.netname : "console", chatText );
 			break;
@@ -1185,7 +1185,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 				Com_Error( ERR_FATAL, "SAY_TEAM by non-client entity" );
 			}
 
-			G_LogPrintf( "SayTeam: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_CYAN "%s\n",
+			G_LogPrintf( "SayTeam: %d \"%s^7\": ^5%s\n",
 			             ( int )( ent - g_entities ), ent->client->pers.netname, chatText );
 			break;
 
@@ -1237,7 +1237,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 		range[ i ] = g_sayAreaRange.value;
 	}
 
-	G_LogPrintf( "SayArea: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_BLUE "%s\n",
+	G_LogPrintf( "SayArea: %d \"%s^7\": ^4%s\n",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, msg );
 
 	VectorAdd( ent->s.origin, range, maxs );
@@ -1282,7 +1282,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 		range[ i ] = g_sayAreaRange.value;
 	}
 
-	G_LogPrintf( "SayAreaTeam: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_BLUE "%s\n",
+	G_LogPrintf( "SayAreaTeam: %d \"%s^7\": ^4%s\n",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, msg );
 
 	VectorAdd( ent->s.origin, range, maxs );
@@ -2137,7 +2137,7 @@ vote_is_disabled:
 		          sizeof( level.team[ team ].voteDisplayString ), va( " for '%s'", reason ) );
 	}
 
-	G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\": %s\n",
+	G_LogPrintf( "%s: %d \"%s^7\": %s\n",
 	             team == TEAM_NONE ? "CallVote" : "CallTeamVote",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, level.team[ team ].voteString );
 
@@ -2163,7 +2163,7 @@ vote_is_disabled:
 				}
 				else if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
 				{
-					trap_SendServerCommand( i, va( "chat -1 %d " S_COLOR_YELLOW "%s\"" S_COLOR_YELLOW " called a team vote (%ss): \"%s",
+					trap_SendServerCommand( i, va( "chat -1 %d ^3%s\"^3 called a team vote (%ss): \"%s",
 					                               SAY_ADMINS, Quote( ent->client->pers.netname ), BG_TeamName( team ),
 					                               Quote( level.team[ team ].voteDisplayString ) ) );
 				}
@@ -4667,7 +4667,6 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	char     cmd[ 12 ];
 	char     text[ MAX_STRING_CHARS ];
 	char     *msg;
-	char     color;
 	int      i, pcount;
 	int      count = 0;
 	bool teamonly = false;
@@ -4705,13 +4704,13 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		              teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, text ) )
 		{
 			count++;
-			Q_strcat( recipients, sizeof( recipients ), va( "%s" S_COLOR_WHITE ", ",
+			Q_strcat( recipients, sizeof( recipients ), va( "%s^7, ",
 			          level.clients[ pids[ i ] ].pers.netname ) );
 		}
 	}
 
 	// report the results
-	color = teamonly ? COLOR_CYAN : COLOR_YELLOW;
+	const char* color = teamonly ? Color::NamedString::Cyan : Color::NamedString::Yellow;
 
 	if ( !count )
 	{
@@ -4720,16 +4719,16 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	}
 	else
 	{
-		ADMP( va( "%s %c %s", QQ( N_("^$1$Private message: ^7$2$\n") ), color, Quote( text ) ) );
+		ADMP( va( "%s %s %s", QQ( N_("$1$Private message: ^7$2$\n") ), color, Quote( text ) ) );
 		// remove trailing ", "
 		recipients[ strlen( recipients ) - 2 ] = '\0';
 		// FIXME PLURAL
-		ADMP( va( "%s %c %i %s",
-		          Quote( P_( "^$1$sent to $2$ player: ^7$3$\n",
-		                     "^$1$sent to $2$ players: ^7$3$\n", count ) ),
+		ADMP( va( "%s %s %i %s",
+		          Quote( P_( "$1$sent to $2$ player: ^7$3$\n",
+		                     "$1$sent to $2$ players: ^7$3$\n", count ) ),
 		          color, count, Quote( recipients ) ) );
 
-		G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\" \"%s\": ^%c%s\n",
+		G_LogPrintf( "%s: %d \"%s^7\" \"%s\": %s%s\n",
 		             ( teamonly ) ? "TPrivMsg" : "PrivMsg",
 		             ( ent ) ? ( int )( ent - g_entities ) : -1,
 		             ( ent ) ? ent->client->pers.netname : "console",

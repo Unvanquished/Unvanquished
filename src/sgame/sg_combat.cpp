@@ -371,7 +371,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( assistant != ENTITYNUM_NONE )
 	{
-		G_LogPrintf( "Die: %d %d %s %d %d: %s" S_COLOR_WHITE " killed %s" S_COLOR_WHITE "; %s" S_COLOR_WHITE " assisted\n",
+		G_LogPrintf( "Die: %d %d %s %d %d: %s^* killed %s^*; %s^* assisted\n",
 		             killer,
 		             ( int )( self - g_entities ),
 		             obit,
@@ -383,7 +383,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 	else
 	{
-		G_LogPrintf( "Die: %d %d %s: %s" S_COLOR_WHITE " killed %s\n",
+		G_LogPrintf( "Die: %d %d %s: %s^* killed %s\n",
 		             killer,
 		             ( int )( self - g_entities ),
 		             obit,
@@ -747,7 +747,7 @@ float G_GetNonLocDamageMod( class_t pcl )
 		if ( g_debugDamage.integer > 1 )
 		{
 			Com_Printf( "GetNonLocDamageModifier( pcl = %s ): "
-			            S_COLOR_GREEN "FOUND:" S_COLOR_WHITE " %.2f\n",
+			            "^2FOUND:^* %.2f\n",
 			            BG_Class( pcl )->name, region->modifier );
 		}
 
@@ -757,7 +757,7 @@ float G_GetNonLocDamageMod( class_t pcl )
 	if ( g_debugDamage.integer > 1 )
 	{
 		Com_Printf( "GetNonLocDamageModifier( pcl = %s ): "
-		            S_COLOR_YELLOW "NOT FOUND:" S_COLOR_WHITE " %.2f.\n",
+		            "^3NOT FOUND:^* %.2f.\n",
 		            BG_Class( pcl )->name, 1.0f );
 	}
 
@@ -809,7 +809,7 @@ float G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float he
 		if ( g_debugDamage.integer > 1 )
 		{
 			G_Printf( "GetPointDamageModifier( pcl = %s, angle = %.2f, height = %.2f ): "
-			          S_COLOR_GREEN "FOUND:" S_COLOR_WHITE " %.2f (%s)\n",
+			          "^2FOUND:^* %.2f (%s)\n",
 			          BG_Class( pcl )->name, angle, height, region->modifier, region->name );
 		}
 
@@ -819,7 +819,7 @@ float G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float he
 	if ( g_debugDamage.integer > 1 )
 	{
 		G_Printf( "GetPointDamageModifier( pcl = %s, angle = %.2f, height = %.2f ): "
-		          S_COLOR_YELLOW "NOT FOUND:" S_COLOR_WHITE " %.2f\n",
+		          "^3NOT FOUND:^* %.2f\n",
 		          BG_Class( pcl )->name, angle, height, 1.0f );
 	}
 
@@ -909,13 +909,13 @@ void G_InitDamageLocations()
 
 		if ( !fileHandle )
 		{
-			G_Printf( S_COLOR_RED "file not found: %s\n", filename );
+			G_Printf( "^1file not found: %s\n", filename );
 			continue;
 		}
 
 		if ( len >= MAX_DAMAGE_REGION_TEXT )
 		{
-			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n",
+			G_Printf( "^1file too large: %s is %i, max allowed is %i\n",
 			          filename, len, MAX_DAMAGE_REGION_TEXT );
 			trap_FS_FCloseFile( fileHandle );
 			continue;
@@ -1645,7 +1645,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 		return;
 	}
 
-	G_LogPrintf( S_COLOR_YELLOW "Deconstruct: %d %d %s %s: %s %s by %s\n",
+	G_LogPrintf( "^3Deconstruct: %d %d %s %s: %s %s by %s\n",
 	             ( int )( actor - g_entities ),
 	             ( int )( self - g_entities ),
 	             BG_Buildable( self->s.modelindex )->name,

@@ -1032,8 +1032,7 @@ void G_admin_authlog( gentity_t *ent )
 	             ent->client->pers.admin->flags,
 	             ( level ) ? level->flags : "" );
 
-	G_LogPrintf( "AdminAuth: %i \"%s" S_COLOR_WHITE "\" \"%s" S_COLOR_WHITE
-	             "\" [%d] (%s): %s\n",
+	G_LogPrintf( "AdminAuth: %i \"%s^*\" \"%s^*\" [%d] (%s): %s\n",
 	             ( int )( ent - g_entities ), ent->client->pers.netname,
 	             ent->client->pers.admin->name, ent->client->pers.admin->level,
 	             ent->client->pers.guid, aflags );
@@ -1046,7 +1045,7 @@ static void admin_log_start( gentity_t *admin, const char *cmd )
 	const char *name = G_admin_name( admin );
 
 	adminLogLen = Q_snprintf( adminLog, sizeof( adminLog ),
-	                          "%d \"%s" S_COLOR_WHITE "\" \"%s" S_COLOR_WHITE "\" [%d] (%s): %s",
+	                          "%d \"%s^*\" \"%s^*\" [%d] (%s): %s",
 	                          admin ? admin->s.clientNum : -1,
 	                          name,
 	                          admin && admin->client->pers.admin ? admin->client->pers.admin->name : name,
@@ -1450,8 +1449,7 @@ static void G_admin_ban_message(
 		                  sizeof( duration ) );
 		// part of this might get cut off on the connect screen
 		Com_sprintf( creason, clen,
-					"You have been banned by %s" S_COLOR_WHITE " duration: %s%s"
-					" reason: %s",
+					"You have been banned by %s^* duration: %s%s reason: %s",
 					ban->banner,
 					time, duration,
 					ban->reason );
@@ -1460,8 +1458,7 @@ static void G_admin_ban_message(
 	if ( areason && ent )
 	{
 		Com_sprintf( areason, alen,
-		             S_COLOR_YELLOW "Banned player %s" S_COLOR_YELLOW
-		             " tried to connect from %s (ban #%d)",
+		             "^3Banned player %s^3 tried to connect from %s (ban #%d)",
 		             G_user_name( ent, ban->name ),
 		             ent->client->pers.ip.str,
 		             ban->id );
@@ -1537,7 +1534,7 @@ bool G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		{
 			trap_Print( va( "%s%s\n", warningMessage,
 			                ban->warnCount + 1 == 10 ?
-			                S_COLOR_WHITE " — future messages for this ban will be suppressed" :
+			                "^7 — future messages for this ban will be suppressed" :
 			                "" ) );
 		}
 
@@ -2265,7 +2262,7 @@ bool G_admin_setlevel( gentity_t *ent )
 		vic->client->pers.pubkey_authenticated = 1;
 	}
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\"", a->level, a->guid,
+	admin_log( va( "%d (%s) \"%s^*\"", a->level, a->guid,
 	               a->name ) );
 
 	AP( va(
@@ -2545,7 +2542,7 @@ bool G_admin_kick( gentity_t *ent )
 		return false;
 	}
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\"",
+	admin_log( va( "%d (%s) \"%s^*\": \"%s^*\"",
 	               pid,
 	               vic->client->pers.guid,
 	               vic->client->pers.netname,
@@ -2684,7 +2681,7 @@ bool G_admin_ban( gentity_t *ent )
 	        Quote( time ), duration,
 	        ( *reason ) ? Quote( reason ) : QQ( N_( "banned by admin" ) ) ) );
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\"",
+	admin_log( va( "%d (%s) \"%s^*\": \"%s^*\"",
 	               seconds, match->guid, match->name[ match->nameOffset ], reason ) );
 
 	if ( ipmatch )
@@ -2776,7 +2773,7 @@ bool G_admin_unban( gentity_t *ent )
 
 	wasWarning = G_ADMIN_BAN_IS_WARNING( ban );
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\": [%s]",
+	admin_log( va( "%d (%s) \"%s^*\": \"%s^*\": [%s]",
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
 
@@ -2960,7 +2957,7 @@ bool G_admin_adjustban( gentity_t *ent )
 		Q_strncpyz( ban->reason, reason, sizeof( ban->reason ) );
 	}
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\": [%s]",
+	admin_log( va( "%d (%s) \"%s^*\": \"%s^*\": [%s]",
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
 	AP( va( "print_tr %s %d %s %s %s %s %s %s %s %s %s", QQ( N_("^3adjustban: ^7ban #$1$ for $2$^7 has been updated by $3$^7 "
@@ -3036,7 +3033,7 @@ bool G_admin_putteam( gentity_t *ent )
 		return false;
 	}
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\"", pid, vic->client->pers.guid,
+	admin_log( va( "%d (%s) \"%s^*\"", pid, vic->client->pers.guid,
 	               vic->client->pers.netname ) );
 	G_ChangeTeam( vic, teamnum );
 
@@ -3116,7 +3113,7 @@ bool G_admin_speclock( gentity_t *ent )
 		spec->expires = -1;
 	}
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\" SPECTATE %s%s", pid, vic->client->pers.guid,
+	admin_log( va( "%d (%s) \"%s^*\" SPECTATE %s%s", pid, vic->client->pers.guid,
 	               vic->client->pers.netname, time, duration ) );
 
 	if ( vic->client->pers.team != TEAM_NONE )
@@ -3173,7 +3170,7 @@ bool G_admin_specunlock( gentity_t *ent )
 	if ( spec )
 	{
 		spec->expires = 0;
-		admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\" SPECTATE -", pid, vic->client->pers.guid,
+		admin_log( va( "%d (%s) \"%s^*\" SPECTATE -", pid, vic->client->pers.guid,
 			               vic->client->pers.netname ) );
 			AP( va( "print_tr %s %s %s", QQ( N_("^3specunlock: ^7$1$^7 unblocked team-change for $2$\n") ),
 			        G_quoted_admin_name( ent ),
@@ -3357,7 +3354,7 @@ bool G_admin_mute( gentity_t *ent )
 		        G_quoted_admin_name( ent ) ) );
 	}
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\"", vic->slot, vic->guid,
+	admin_log( va( "%d (%s) \"%s^*\"", vic->slot, vic->guid,
 	               vic->name[ vic->nameOffset ] ) );
 	return true;
 }
@@ -3434,7 +3431,7 @@ bool G_admin_denybuild( gentity_t *ent )
 		        G_quoted_admin_name( ent ) ) );
 	}
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\"", vic->slot, vic->guid,
+	admin_log( va( "%d (%s) \"%s^*\"", vic->slot, vic->guid,
 	               vic->name[ vic->nameOffset ] ) );
 	return true;
 }
@@ -3652,7 +3649,8 @@ bool G_admin_listplayers( gentity_t *ent )
 {
 	int             i;
 	gclient_t       *p;
-	char            c, t; // color and team letter
+	const char*     color = "";
+	char            t; // color and team letter
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
 	char            bot, muted, denied;
@@ -3681,7 +3679,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		if ( p->pers.connected == CON_CONNECTING )
 		{
 			t = 'C';
-			c = COLOR_YELLOW;
+			color = Color::NamedString::Yellow;
 		}
 		else
 		{
@@ -3689,15 +3687,15 @@ bool G_admin_listplayers( gentity_t *ent )
 
 			if ( p->pers.team == TEAM_HUMANS )
 			{
-				c = COLOR_CYAN;
+				color = Color::NamedString::Cyan;
 			}
 			else if ( p->pers.team == TEAM_ALIENS )
 			{
-				c = COLOR_RED;
+				color = Color::NamedString::Red;
 			}
 			else
 			{
-				c = COLOR_WHITE;
+				color = Color::NamedString::White;
 			}
 		}
 
@@ -3744,9 +3742,9 @@ bool G_admin_listplayers( gentity_t *ent )
 
 		int colorlen = Q_PrintStrlen( lname );
 
-		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s\n",
+		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s\n",
 		           i,
-		           c,
+		           color,
 		           t,
 		           l ? l->level : 0,
 		           hint ? '*' : ' ',
@@ -3755,12 +3753,12 @@ bool G_admin_listplayers( gentity_t *ent )
 		           bot,
 		           muted,
 		           denied,
-		           canseeWarn ? ( p->pers.hasWarnings ? S_COLOR_YELLOW "W" : " " ) : "",
+		           canseeWarn ? ( p->pers.hasWarnings ? "^3W" : " " ) : "",
 		           p->pers.netname,
 		           ( registeredname ) ? "(a.k.a. " : "",
 		           ( registeredname ) ? registeredname : "",
-		           ( registeredname ) ? S_COLOR_WHITE ")" : "",
-		           ( !authed ) ? S_COLOR_RED "NOT AUTHED" : "" ) );
+		           ( registeredname ) ? "^7)" : "",
+		           ( !authed ) ? "^1NOT AUTHED" : "" ) );
 	}
 
 	ADMBP_end();
@@ -3786,7 +3784,7 @@ static int ban_out( void *ban, char *str )
 	int           i, t;
 	char          duration[ MAX_DURATION_LENGTH ];
 	char          time[ MAX_DURATION_LENGTH ];
-	const char    *d_color = S_COLOR_WHITE;
+	const char    *d_color = Color::NamedString::White;
 	char          date[ 11 ];
 	g_admin_ban_t *b = ( g_admin_ban_t * ) ban;
 	char          *made = b->made;
@@ -3818,23 +3816,23 @@ static int ban_out( void *ban, char *str )
 	{
 		*time = 0;
 		Q_strncpyz( duration, "expired", sizeof( duration ) );
-		d_color = S_COLOR_CYAN;
+		d_color = Color::NamedString::Cyan;
 	}
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%s\n"
-	             "         %s\\__ %s%s%-*s %s%-15s " S_COLOR_WHITE "%-8s %s\n"
-	             "          %s\\__ %s: " S_COLOR_WHITE "%s",
+	             "         %s\\__ %s%s%-*s %s%-15s ^7%-8s %s\n"
+	             "          %s\\__ %s: ^7%s",
 	             b->name,
-	             G_ADMIN_BAN_IS_WARNING( b ) ? S_COLOR_YELLOW : S_COLOR_RED,
+	             G_ADMIN_BAN_IS_WARNING( b ) ? Color::NamedString::Yellow : Color::NamedString::Red,
 	             d_color,
 	             time,
 	             MAX_DURATION_LENGTH - 1,
 	             duration,
-	             ( strchr( b->ip.str, '/' ) ) ? S_COLOR_RED : S_COLOR_WHITE,
+	             ( strchr( b->ip.str, '/' ) ) ? Color::NamedString::Red : Color::NamedString::White,
 	             b->ip.str,
 	             date,
 	             b->banner,
-	             G_ADMIN_BAN_IS_WARNING( b ) ? S_COLOR_YELLOW : S_COLOR_RED,
+	             G_ADMIN_BAN_IS_WARNING( b ) ? Color::NamedString::Yellow : Color::NamedString::Red,
 	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING" : "BAN",
 	             b->reason );
 
@@ -4208,7 +4206,7 @@ bool G_admin_rename( gentity_t *ent )
 		return false;
 	}
 
-	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\"", pid,
+	admin_log( va( "%d (%s) \"%s^7\"", pid,
 	               victim->client->pers.guid, victim->client->pers.netname ) );
 	admin_log( newname );
 	trap_GetUserinfo( pid, userinfo, sizeof( userinfo ) );
@@ -4417,7 +4415,7 @@ static int namelog_out( void *namelog, char *str )
 
 	if ( n->slot > -1 )
 	{
-		scolor = S_COLOR_YELLOW;
+		scolor = Color::NamedString::Yellow;
 		l = Q_snprintf( p, l2, "%s%-2d", scolor, n->slot );
 		p += l;
 		l2 -= l;
@@ -4428,7 +4426,7 @@ static int namelog_out( void *namelog, char *str )
 		*p++ = ' ';
 		*p = '\0';
 		l2 -= 2;
-		scolor = S_COLOR_WHITE;
+		scolor = Color::NamedString::White;
 	}
 
 	for ( i = 0; i < MAX_NAMELOG_ADDRS && n->ip[ i ].str[ 0 ]; i++ )
@@ -4440,7 +4438,7 @@ static int namelog_out( void *namelog, char *str )
 
 	for ( i = 0; i < MAX_NAMELOG_NAMES && n->name[ i ][ 0 ]; i++ )
 	{
-		l = Q_snprintf( p, l2, " '" S_COLOR_WHITE "%s%s'%s", n->name[ i ], scolor,
+		l = Q_snprintf( p, l2, " '^7%s%s'%s", n->name[ i ], scolor,
 		                i == n->nameOffset ? "*" : "" );
 		p += l;
 		l2 -= l;

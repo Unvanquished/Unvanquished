@@ -1469,7 +1469,7 @@ void CG_BuildSpectatorString()
 		if ( cgs.clientinfo[ i ].infoValid && cgs.clientinfo[ i ].team == TEAM_NONE )
 		{
 			Q_strcat( cg.spectatorList, sizeof( cg.spectatorList ),
-			          va( S_COLOR_WHITE "%s     ", cgs.clientinfo[ i ].name ) );
+			          va( "%s%s     ", Color::NamedString::White, cgs.clientinfo[ i ].name ) );
 		}
 	}
 }

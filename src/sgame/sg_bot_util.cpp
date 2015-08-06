@@ -41,7 +41,7 @@ void BotError( const char* fmt, ... )
 {
 	va_list argptr;
 	size_t  len;
-	char    text[ 1024 ] = S_COLOR_RED "ERROR: ";
+	char    text[ 1024 ] = "^1ERROR: ";
 
 	len = strlen( text );
 

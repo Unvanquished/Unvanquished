@@ -127,43 +127,43 @@ const char *GettextPlural( const char *msgid, const char *msgid2, int number )
 // UI Helper Function
 //
 
-int UI_GetChatColour( int which, int team )
+const char* UI_GetChatColour( int which, int team )
 {
 
 	switch ( which )
 	{
 		default:
-			return Color::ColorIndex( COLOR_WHITE );
+			return Color::NamedString::White;
 
 		case SAY_ALL:
-			return Color::ColorIndex( COLOR_GREEN );
+			return Color::NamedString::Green;
 
 		case SAY_TEAM:
 			switch ( team )
 			{
 				case TEAM_NONE:
-					return Color::ColorIndex( COLOR_YELLOW );
+					return Color::NamedString::Yellow;
 				default:
-					return Color::ColorIndex( COLOR_CYAN );
+					return Color::NamedString::Cyan;
 			}
 
 				case SAY_PRIVMSG:
-					return Color::ColorIndex( COLOR_GREEN );
+					return Color::NamedString::Green;
 
 				case SAY_TPRIVMSG:
-					return Color::ColorIndex( COLOR_CYAN );
+					return Color::NamedString::Cyan;
 
 				case SAY_AREA:
 				case SAY_AREA_TEAM:
-					return Color::ColorIndex( COLOR_BLUE );
+					return Color::NamedString::Blue;
 
 				case SAY_ADMINS:
 				case SAY_ADMINS_PUBLIC:
 				case SAY_ALL_ADMIN:
-					return Color::ColorIndex( COLOR_MAGENTA );
+					return Color::NamedString::Magenta;
 					#ifdef UIGPP
 				case SAY_RAW:
-					return Color::ColorIndex( COLOR_LTGREY );
+					return Color::NamedString::LtGrey;
 					#endif
 	}
 }

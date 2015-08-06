@@ -26,16 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "framework/ConsoleField.h"
 
-// curses.h defines COLOR_*, which are already defined in q_shared.h
-#undef COLOR_BLACK
-#undef COLOR_RED
-#undef COLOR_GREEN
-#undef COLOR_YELLOW
-#undef COLOR_BLUE
-#undef COLOR_MAGENTA
-#undef COLOR_CYAN
-#undef COLOR_WHITE
-
 #ifndef _WIN32
 #include <fcntl.h>
 #include <unistd.h>
@@ -45,11 +35,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <curses.h>
 
 #ifdef BUILD_SERVER
-#define TITLE         S_COLOR_GREEN "[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Server Console " S_COLOR_GREEN "]"
+#define TITLE         "^2[ ^3" CLIENT_WINDOW_TITLE " Server Console ^2]"
 #else
-#define TITLE         S_COLOR_GREEN "[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Console " S_COLOR_GREEN "]"
+#define TITLE         "^2[ ^3" CLIENT_WINDOW_TITLE " Console ^2]"
 #endif
-#define PROMPT        S_COLOR_YELLOW "-> "
+#define PROMPT        "^3-> "
 #define INPUT_SCROLL  15
 #define LOG_SCROLL    5
 #define MAX_LOG_LINES 1024
@@ -533,7 +523,7 @@ char *CON_Input()
 			case '\n':
 			case '\r':
 			case KEY_ENTER:
-				Com_Printf( PROMPT S_COLOR_NULL "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
+				Com_Printf( PROMPT "^*%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
 				input_field.RunCommand(com_consoleCommand->string);
 				werase( inputwin );
 				wnoutrefresh( inputwin );

@@ -267,50 +267,56 @@ extern vec4_t colorMdYellow;
 extern vec4_t colorMdOrange;
 extern vec4_t colorMdBlue;
 
-#define Q_COLOR_ESCAPE   '^'
+namespace Constants {
+// Namespace enum to have these constants scoped but allowing implicit conversions
+enum {
+	ESCAPE = '^',
+	NULL_COLOR = '*',
+}; // enum
+} // namespace Constants
 
-#define COLOR_BLACK      '0'
-#define COLOR_RED        '1'
-#define COLOR_GREEN      '2'
-#define COLOR_YELLOW     '3'
-#define COLOR_BLUE       '4'
-#define COLOR_CYAN       '5'
-#define COLOR_MAGENTA    '6'
-#define COLOR_WHITE      '7'
-#define COLOR_ORANGE     '8'
-#define COLOR_MDGREY     '9'
-#define COLOR_LTGREY     ':'
-//#define COLOR_LTGREY  ';'
-#define COLOR_MDGREEN    '<'
-#define COLOR_MDYELLOW   '='
-#define COLOR_MDBLUE     '>'
-#define COLOR_MDRED      '?'
-#define COLOR_LTORANGE   'A'
-#define COLOR_MDCYAN     'B'
-#define COLOR_MDPURPLE   'C'
-#define COLOR_NULL       '*'
+namespace Named {
+extern Color Black;
+extern Color Red;
+extern Color Green;
+extern Color Blue;
+extern Color Yellow;
+extern Color Orange;
+extern Color Magenta;
+extern Color Cyan;
+extern Color White;
+extern Color LtGrey;
+extern Color MdGrey;
+extern Color DkGrey;
+extern Color MdRed;
+extern Color MdGreen;
+extern Color DkGreen;
+extern Color MdCyan;
+extern Color MdYellow;
+extern Color MdOrange;
+extern Color MdBlue;
+} // namespace Named
 
-
-#define S_COLOR_BLACK    "^0"
-#define S_COLOR_RED      "^1"
-#define S_COLOR_GREEN    "^2"
-#define S_COLOR_YELLOW   "^3"
-#define S_COLOR_BLUE     "^4"
-#define S_COLOR_CYAN     "^5"
-#define S_COLOR_MAGENTA  "^6"
-#define S_COLOR_WHITE    "^7"
-#define S_COLOR_ORANGE   "^8"
-#define S_COLOR_MDGREY   "^9"
-#define S_COLOR_LTGREY   "^:"
-//#define S_COLOR_LTGREY    "^;"
-#define S_COLOR_MDGREEN  "^<"
-#define S_COLOR_MDYELLOW "^="
-#define S_COLOR_MDBLUE   "^>"
-#define S_COLOR_MDRED    "^?"
-#define S_COLOR_LTORANGE "^A"
-#define S_COLOR_MDCYAN   "^B"
-#define S_COLOR_MDPURPLE "^C"
-#define S_COLOR_NULL     "^*"
+namespace NamedString {
+extern const char* Black;
+extern const char* Red;
+extern const char* Green;
+extern const char* Blue;
+extern const char* Yellow;
+extern const char* Orange;
+extern const char* Magenta;
+extern const char* Cyan;
+extern const char* White;
+extern const char* LtGrey;
+extern const char* MdGrey;
+extern const char* MdRed;
+extern const char* MdGreen;
+extern const char* MdCyan;
+extern const char* MdYellow;
+extern const char* LtOrange;
+extern const char* MdBlue;
+extern const char* Null;
+} // namespace Named
 
 template<class charT>
 	class BasicToken
@@ -460,13 +466,13 @@ private:
 			return value_type();
 		}
 
-		if ( input[0] == '^' )
+		if ( input[0] == Constants::ESCAPE )
 		{
-			if ( input[1] == '^' )
+			if ( input[1] == Constants::ESCAPE )
 			{
 				return value_type( input, input+2, value_type::ESCAPE );
 			}
-			else if ( input[1] == COLOR_NULL )
+			else if ( input[1] == Constants::NULL_COLOR )
 			{
 				return value_type( input, input+2, value_type::DEFAULT_COLOR );
 			}

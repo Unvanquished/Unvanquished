@@ -5041,7 +5041,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 		                   Quote( BG_Buildable( built->s.modelindex )->humanName ),
 		                   Quote( builder->client->pers.netname ),
 		                   Quote( readable ) ) );
-		G_LogPrintf( "Construct: %d %d %s%s: %s" S_COLOR_WHITE " is building "
+		G_LogPrintf( "Construct: %d %d %s%s: %s^7 is building "
 		             "%s%s%s\n",
 		             ( int )( builder - g_entities ),
 		             ( int )( built - g_entities ),
@@ -5194,7 +5194,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	if ( tr.startsolid && !force )
 	{
-		G_Printf( S_COLOR_YELLOW "G_FinishSpawningBuildable: %s startsolid at %s\n",
+		G_Printf( "^3G_FinishSpawningBuildable: %s startsolid at %s\n",
 		          built->classname, vtos( built->s.origin ) );
 		G_FreeEntity( built );
 		return nullptr;

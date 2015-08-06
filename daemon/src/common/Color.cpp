@@ -36,27 +36,51 @@ Maryland 20850 USA.
 #include <algorithm>
 
 namespace Color {
-/*
-Color   colorBlack   = {   0,   0,   0, 255 };
-Color   colorRed     = { 255,   0,   0, 255 };
-Color   colorGreen   = {   0, 255,   0, 255 };
-Color   colorBlue    = {   0,   0, 255, 255 };
-Color   colorYellow  = { 255, 255,   0, 255 };
-Color   colorOrange  = { 255, 128,   0, 255 };
-Color   colorMagenta = { 255,   0, 255, 255 };
-Color   colorCyan    = {   0, 255, 255, 255 };
-Color   colorWhite   = { 255, 255, 255, 255 };
-Color   colorLtGrey  = { 191, 191, 191, 255 };
-Color   colorMdGrey  = { 128, 128, 128, 255 };
-Color   colorDkGrey  = {  64,  64,  64, 255 };
-Color   colorMdRed   = { 128,   0,   0, 255 };
-Color   colorMdGreen = {   0, 128,   0, 255 };
-Color   colorDkGreen = {   0,  51,   0, 255 };
-Color   colorMdCyan  = {   0, 128, 128, 255 };
-Color   colorMdYellow= { 128, 128,   0, 255 };
-Color   colorMdOrange= { 128,  64,   0, 255 };
-Color   colorMdBlue  = {   0,   0, 128, 255 };
-*/
+
+namespace Named {
+Color   Black   = {   0,   0,   0, 255 };
+Color   Red     = { 255,   0,   0, 255 };
+Color   Green   = {   0, 255,   0, 255 };
+Color   Blue    = {   0,   0, 255, 255 };
+Color   Yellow  = { 255, 255,   0, 255 };
+Color   Orange  = { 255, 128,   0, 255 };
+Color   Magenta = { 255,   0, 255, 255 };
+Color   Cyan    = {   0, 255, 255, 255 };
+Color   White   = { 255, 255, 255, 255 };
+Color   LtGrey  = { 191, 191, 191, 255 };
+Color   MdGrey  = { 128, 128, 128, 255 };
+Color   DkGrey  = {  64,  64,  64, 255 };
+Color   MdRed   = { 128,   0,   0, 255 };
+Color   MdGreen = {   0, 128,   0, 255 };
+Color   DkGreen = {   0,  51,   0, 255 };
+Color   MdCyan  = {   0, 128, 128, 255 };
+Color   MdYellow= { 128, 128,   0, 255 };
+Color   MdOrange= { 128,  64,   0, 255 };
+Color   MdBlue  = {   0,   0, 128, 255 };
+} // namespace Named
+
+
+namespace NamedString {
+const char* Black = "^0";
+const char* Red = "^1";
+const char* Green = "^2";
+const char* Blue = "^4";
+const char* Yellow = "^3";
+const char* Orange = "^8";
+const char* Magenta = "^6";
+const char* Cyan = "^5";
+const char* White = "^7";
+const char* LtGrey = "^:";
+const char* MdGrey = "^9";
+const char* MdRed = "^?";
+const char* MdGreen = "^<";
+const char* MdCyan = "^B";
+const char* MdYellow = "^=";
+const char* LtOrange = "^A";
+const char* MdBlue = "^>";
+const char* Null = "^*";
+} // namespace Named
+
 vec4_t   colorBlack = { 0, 0, 0, 1 };
 vec4_t   colorRed = { 1, 0, 0, 1 };
 vec4_t   colorGreen = { 0, 1, 0, 1 };

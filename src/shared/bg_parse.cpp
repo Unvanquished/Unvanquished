@@ -542,7 +542,7 @@ bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *filename
 
 	if( !*token )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: %s expected argument for '%s'\n", filename, var->name );
+		Com_Printf( "^1ERROR: %s expected argument for '%s'\n", filename, var->name );
 		return false;
 	}
 
@@ -570,7 +570,7 @@ bool BG_CheckConfigVars()
 		if( !bg_configVars[i].defined )
 		{
 			ok = false;
-			Com_Printf(S_COLOR_YELLOW "WARNING: config var %s was not defined\n", bg_configVars[i].name );
+			Com_Printf( "^3WARNING: config var %s was not defined\n", bg_configVars[i].name );
 		}
 	}
 

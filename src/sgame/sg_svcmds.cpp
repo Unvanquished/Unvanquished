@@ -91,7 +91,7 @@ void Svcmd_EntityFire_f()
 
 static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
-	G_Printf( "%3i: %15s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s%s\n",
+	G_Printf( "%3i: %15s/^5%-24s^*%s%s\n",
 			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
 			entity->names[0] ? entity->names[0] : "", entity->names[1] ? " …" : "");
 }
@@ -134,13 +134,13 @@ void Svcmd_EntityShow_f()
 	}
 
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( S_COLOR_CYAN "#%3i" S_COLOR_WHITE ": %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
+	G_Printf( "^5#%3i^*: %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
 	if (IS_NON_NULL_VEC3(selection->s.origin))
 	{
 		G_Printf("%26s", vtos( selection->s.origin ) );
 	}
 	G_Printf( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "Classname: " S_COLOR_CYAN "%s" S_COLOR_WHITE "\n", selection->classname );
+	G_Printf( "Classname: ^5%s^*\n", selection->classname );
 	G_Printf( "Capabilities:%s%s%s%s%s%s%s\n\n",
 			selection->act ? " acts" : "",
 			selection->think ? " thinks" : "",

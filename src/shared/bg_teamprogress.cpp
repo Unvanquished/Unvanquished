@@ -126,13 +126,13 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 			if ( statusChanges[ unlockableNum ] > 0 )
 			{
 				Com_sprintf( text, sizeof( text ),
-				             S_COLOR_GREEN "ITEM%s UNLOCKED: " S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
+				             "^2ITEM%s UNLOCKED: ^*", ( count > 1 ) ? "S" : "" );
 			}
 			else
 			{
 				unlocked = false;
 				Com_sprintf( text, sizeof( text ),
-				             S_COLOR_RED   "ITEM%s LOCKED: "   S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
+				             "^1ITEM%s LOCKED: ^*", ( count > 1 ) ? "S" : "" );
 			}
 
 			textptr = text + strlen( text );

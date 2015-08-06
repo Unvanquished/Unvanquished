@@ -39,8 +39,7 @@ Maryland 20850 USA.
 #include "qcommon/q_unicode.h"
 #include "framework/LogSystem.h"
 
-
-#define CONSOLE_COLOR COLOR_WHITE //COLOR_BLACK
+static const Color::Color console_color = Color::Named::White;
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
@@ -196,7 +195,7 @@ Con_Clear
 static INLINE void Con_Clear()
 {
 	int i;
-	conChar_t fill = { '\0', Color::Color( CONSOLE_COLOR ) };
+	conChar_t fill = { '\0', console_color };
 
 	for ( i = 0; i < CON_TEXTSIZE; ++i )
 	{
@@ -503,7 +502,7 @@ void Con_Linefeed()
 {
 	int             i;
 	conChar_t       *line;
-	const conChar_t blank = { 0, Color::Color( CONSOLE_COLOR ) };
+	const conChar_t blank = { 0, console_color };
 	const int scrollLockMode = con_scrollLock ? con_scrollLock->integer : 0;
 
 	consoleState.horizontalCharOffset = 0;
@@ -580,7 +579,6 @@ bool CL_InternalConsolePrint( const char *text )
 		cgvm.CGameConsoleLine( text );
 	}
 
-	Color::Color console_color( CONSOLE_COLOR );
 	Color::Color color = console_color;
 
 	for ( Color::TokenIterator it ( text ); *it; ++it )
