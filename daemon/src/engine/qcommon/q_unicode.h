@@ -25,7 +25,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 int Q_UTF8_Width( const char *str );
 int Q_UTF8_WidthCP( int ch );
 int Q_UTF8_Strlen( const char *str );
-int Q_UTF8_PrintStrlen( const char *str );
 bool Q_UTF8_ContByte( char c );
 unsigned long Q_UTF8_CodePoint( const char *str );
 char *Q_UTF8_Encode( unsigned long codepoint );

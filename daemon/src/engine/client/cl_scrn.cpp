@@ -341,33 +341,6 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 	re.SetColor( nullptr );
 }
 
-/*
-** SCR_Strlen -- skips color escape codes
-*/
-static int SCR_Strlen( const char *str )
-{
-	const char *s = str;
-	int        count = 0;
-
-	while ( *s )
-	{
-		if ( Color::Q_SkipColorString(s) )
-			continue;
-
-		if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-		{
-			++s;
-		}
-
-		{
-			count++;
-			s += Q_UTF8_Width( s );
-		}
-	}
-
-	return count;
-}
-
 //===============================================================================
 
 /*

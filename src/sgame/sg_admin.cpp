@@ -1197,7 +1197,6 @@ static int admin_out( void *admin, char *str )
 {
 	g_admin_admin_t *a = ( g_admin_admin_t * ) admin;
 	g_admin_level_t *l;
-	int             lncol = 0, i;
 	char            lastSeen[64] = "          ";
 
 	if ( !str )
@@ -1207,17 +1206,7 @@ static int admin_out( void *admin, char *str )
 
 	l = G_admin_level( a->level );
 
-	for ( i = 0; l && l->name[ i ]; i++ )
-	{
-		if ( Color::Q_SkipColorString( l->name + i, lncol ) )
-		{
-			continue;
-		}
-		else if ( l->name[ i ] == Q_COLOR_ESCAPE && l->name[ i + 1 ] == Q_COLOR_ESCAPE )
-		{
-			lncol += 1;
-		}
-	}
+	int lncol = Q_PrintStrlen( l->name );
 
 	if ( a->lastSeen.tm_mday )
 	{
@@ -3661,13 +3650,12 @@ bool G_admin_listgeoip( gentity_t *ent )
 
 bool G_admin_listplayers( gentity_t *ent )
 {
-	int             i, j;
+	int             i;
 	gclient_t       *p;
 	char            c, t; // color and team letter
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
 	char            bot, muted, denied;
-	int             colorlen;
 	int             authed = 1;
 	char            namecleaned[ MAX_NAME_LENGTH ];
 	char            name2cleaned[ MAX_NAME_LENGTH ];
@@ -3754,17 +3742,7 @@ bool G_admin_listplayers( gentity_t *ent )
 			lname[ 0 ] = 0;
 		}
 
-		for ( colorlen = j = 0; lname[ j ]; j++ )
-		{
-			if ( Color::Q_SkipColorString( &lname[ j ], colorlen ) )
-			{
-				continue;
-			}
-			else if ( lname[ j ] == Q_COLOR_ESCAPE && lname[ j + 1 ] == Q_COLOR_ESCAPE )
-			{
-				colorlen += 1;
-			}
-		}
+		int colorlen = Q_PrintStrlen( lname );
 
 		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s\n",
 		           i,
@@ -3806,7 +3784,6 @@ static bool ban_matchname( void *ban, const void *name )
 static int ban_out( void *ban, char *str )
 {
 	int           i, t;
-	int           colorlen1 = 0;
 	char          duration[ MAX_DURATION_LENGTH ];
 	char          time[ MAX_DURATION_LENGTH ];
 	const char    *d_color = S_COLOR_WHITE;
@@ -3820,18 +3797,6 @@ static int ban_out( void *ban, char *str )
 	}
 
 	t = Com_GMTime( nullptr );
-
-	for ( i = 0; b->name[ i ]; i++ )
-	{
-		if ( Color::Q_SkipColorString( &b->name[ i ], colorlen1 ) )
-		{
-			continue;
-		}
-		else if ( b->name[ i ] == Q_COLOR_ESCAPE && b->name[ i + 1 ] == Q_COLOR_ESCAPE )
-		{
-			colorlen1 += 1;
-		}
-	}
 
 	// only print out the date part of made
 	date[ 0 ] = '\0';

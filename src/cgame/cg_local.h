@@ -2026,8 +2026,6 @@ void     CG_ClearClipRegion();
 void     CG_EnableScissor( bool enable );
 void     CG_SetScissor( int x, int y, int w, int h );
 
-int      CG_DrawStrlen( const char *str );
-
 float    *CG_FadeColor( int startMsec, int totalMsec );
 float    CG_FadeAlpha( int startMsec, int totalMsec );
 void     CG_TileClear();

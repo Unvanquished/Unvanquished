@@ -312,59 +312,6 @@ extern vec4_t colorMdBlue;
 #define S_COLOR_MDPURPLE "^C"
 #define S_COLOR_NULL     "^*"
 
-template<class String>
-	inline bool Q_IsColorString( String&& p )
-{
-	return p[0] == Q_COLOR_ESCAPE &&
-	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) );
-}
-
-/*
-================
-Q_IsHexColorString
-
-Checks that a string is in the form ^xHHH (where H is a hex digit)
-================
-*/
-template<class String>
-	inline bool Q_IsHexColorString( String&& p )
-{
-	return p[0] == Q_COLOR_ESCAPE && p[1] == 'x'
-		&& ishex(p[2]) && ishex(p[3]) && ishex(p[4]);
-}
-
-/*
-================
-Q_SkipColorString
-
-If Q_IsHexColorString(p) or Q_IsColorString(p),
-increases i by the right amount of bytes
-
-Returns whether that has been done
-================
-*/
-template<class Incrementable>
-	bool Q_SkipColorString( const char* p, Incrementable& i )
-{
-	if ( Q_IsColorString( p ) )
-	{
-		i += 2;
-		return true;
-	}
-	else if ( Q_IsHexColorString( p ) )
-	{
-		i += 5;
-		return true;
-	}
-	return false;
-}
-
-template<class CharT>
-	bool Q_SkipColorString( CharT *& p )
-{
-	return Q_SkipColorString(p, p);
-}
-
 template<class charT>
 	class BasicToken
 {

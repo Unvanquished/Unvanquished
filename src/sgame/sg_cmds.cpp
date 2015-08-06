@@ -43,44 +43,33 @@ Remove color codes and non-alphanumeric characters from a string
 */
 void G_SanitiseString( const char *in, char *out, int len )
 {
-	len--;
-	while ( *in && len > 0 )
+	--len;
+	for ( Color::TokenIterator i ( in ); *i; ++i )
 	{
-		int cp = Q_UTF8_CodePoint( in );
-		int w;
-
-		if ( Color::Q_SkipColorString( in ) )
+		if ( i->Type() == Color::Token::CHARACTER )
 		{
-			continue;
-		}
-
-		w = Q_UTF8_WidthCP( cp );
-
-		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
-		{
-			int wm;
-
-			if ( Q_Unicode_IsUpper( cp ) )
+			int cp = Q_UTF8_CodePoint( i->Begin() );
+			if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 			{
-				cp = Q_Unicode_ToLower( cp );
-				wm = Q_UTF8_WidthCP( cp );
-				wm = MIN( len, wm );
-				memcpy( out, Q_UTF8_Encode( cp ), wm );
-			}
-			else
-			{
-				wm = MIN( len, w );
-				memcpy( out, in, wm );
-			}
+				int sz = i->Size();
+				if ( Q_Unicode_IsUpper( cp ) )
+				{
+					cp = Q_Unicode_ToLower( cp );
+					sz = Q_UTF8_WidthCP( cp );
+				}
 
-			out += wm;
-			len -= wm;
+				if ( len < sz )
+				{
+					break;
+				}
+
+				memcpy( out, Q_UTF8_Encode( cp ), sz );
+				out += sz;
+				len -= sz;
+			}
 		}
-
-		in += w;
 	}
-
-	*out = 0;
+	*out = '\0';
 }
 
 /*
@@ -4618,37 +4607,36 @@ void ClientCommand( int clientNum )
 	command->cmdHandler( ent );
 }
 
+/// \todo (color) move to Color:: (unify with Q_CleanStr?)
 void G_DecolorString( const char *in, char *out, int len )
 {
+	--len;
 	bool decolor = true;
-
-	len--;
-
-	while ( *in && len > 0 )
+	for ( Color::TokenIterator i ( in ); *i; ++i )
 	{
-		if ( *in == DECOLOR_OFF || *in == DECOLOR_ON )
+		if ( !decolor || i->Type() == Color::Token::CHARACTER )
 		{
-			decolor = ( *in == DECOLOR_ON );
-			in++;
-			continue;
-		}
-
-		if ( decolor )
-		{
-			if ( Color::Q_SkipColorString( in ) )
+			if ( len < i->Size() )
 			{
+				break;
+			}
+			if ( *i->Begin() == DECOLOR_OFF || *i->Begin() == DECOLOR_ON )
+			{
+				decolor = ( *i->Begin() == DECOLOR_ON );
 				continue;
 			}
-
-			if ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE )
-			{
-				++in;
-				// at this point, we want the default 'copy' action
-			}
+			strncpy( out, i->Begin(), i->Size() );
+			out += i->Size();
+			len -= i->Size();
 		}
-
-		*out++ = *in++;
-		len--;
+		else if ( i->Type() == Color::Token::ESCAPE )
+		{
+			if ( len < 1 )
+			{
+				break;
+			}
+			*out++ = '^';
+		}
 	}
 
 	*out = '\0';

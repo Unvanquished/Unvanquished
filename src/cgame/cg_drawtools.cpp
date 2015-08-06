@@ -286,35 +286,6 @@ void CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
 }
 
 /*
-=================
-CG_DrawStrlen
-
-Returns character count, skiping color escape codes
-=================
-*/
-int CG_DrawStrlen( const char *str )
-{
-	const char *s = str;
-	int        count = 0;
-
-	while ( *s )
-	{
-		if ( !Color::Q_SkipColorString( s ) )
-		{
-			if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-			{
-				++s;
-			}
-
-			count++;
-			s++;
-		}
-	}
-
-	return count;
-}
-
-/*
 =============
 CG_TileClearBox
 

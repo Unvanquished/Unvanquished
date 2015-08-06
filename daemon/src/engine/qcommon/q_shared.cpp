@@ -2472,33 +2472,16 @@ bool Q_strreplace( char *dest, int destsize, const char *find, const char *repla
 	}
 }
 
+/// \todo (color) Move these two into Color::
 int Q_PrintStrlen( const char *string )
 {
-	int        len;
-	const char *p;
-
-	if ( !string )
+	int len = 0;
+	for ( Color::TokenIterator i ( string ); *i; ++i )
 	{
-		return 0;
-	}
-
-	len = 0;
-	p = string;
-
-	while ( *p )
-	{
-		if ( Color::Q_SkipColorString( p ) )
+		if ( i->Type() == Color::Token::CHARACTER || i->Type() == Color::Token::ESCAPE )
 		{
-			continue;
+			len++;
 		}
-
-		if ( *p == Q_COLOR_ESCAPE && p[1] == Q_COLOR_ESCAPE )
-		{
-			++p;
-		}
-
-		p++;
-		len++;
 	}
 
 	return len;
@@ -2506,29 +2489,21 @@ int Q_PrintStrlen( const char *string )
 
 char *Q_CleanStr( char *string )
 {
-	char *d;
-	char *s;
-	int c;
+	std::string output;
 
-	s = string;
-	d = string;
-
-	while ( ( c = *s ) != 0 )
+	for ( Color::TokenIterator i ( string ); *i; ++i )
 	{
-		if ( Color::Q_SkipColorString( s ) )
+		if ( i->Type() == Color::Token::CHARACTER )
 		{
-			continue;
+			output.append( i->Begin(), i->Size() );
 		}
-		
-		if ( (byte) c >= 0x20 && c != 0x7F )
+		else if ( i->Type() == Color::Token::ESCAPE )
 		{
-			*d++ = c;
+			output.push_back('^');
 		}
-
-		s++;
 	}
 
-	*d = '\0';
+	strcpy( string, output.c_str() );
 
 	return string;
 }
