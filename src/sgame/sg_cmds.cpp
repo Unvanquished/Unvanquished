@@ -4318,15 +4318,6 @@ void Cmd_MapLog_f( gentity_t *ent )
 
 /*
 =================
-Cmd_Test_f
-=================
-*/
-void Cmd_Test_f( gentity_t *player )
-{
-}
-
-/*
-=================
 Cmd_Damage_f
 
 Deals damage to you (for testing), arguments: [damage] [dx] [dy] [dz]
@@ -4546,7 +4537,6 @@ static const commands_t cmds[] =
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
 	{ "team",            0,                                   Cmd_Team_f             },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
-	{ "test",            CMD_CHEAT,                           Cmd_Test_f             },
 	{ "unignore",        0,                                   Cmd_Ignore_f           },
 	{ "vote",            CMD_INTERMISSION,                    Cmd_Vote_f             },
 	{ "vsay",            CMD_MESSAGE | CMD_INTERMISSION,      Cmd_VSay_f             },
