@@ -58,7 +58,7 @@ function(try_flag LIST FLAG)
     check_CXX_compiler_flag("${FLAG}" ${TEST})
     set(CMAKE_REQUIRED_FLAGS "")
     if (${TEST})
-        set(${LIST} "${${LIST}} ${FLAG}" PARENT_SCOPE)
+        set(${LIST} ${${LIST}} ${FLAG} PARENT_SCOPE)
     endif()
 endfunction()
 
