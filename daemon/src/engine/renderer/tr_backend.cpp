@@ -3275,7 +3275,7 @@ static void RB_RenderDebugUtils()
 					}
 				}
 
-				Color::g_color_table[ cubeSides ].to_float_array( lightColor );
+				Color::Color( cubeSides ).to_float_array( lightColor );
 			}
 			else
 			{
@@ -3546,7 +3546,7 @@ static void RB_RenderDebugUtils()
 						VectorScale( origin, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
 						vec4_t color;
-						Color::g_color_table[ Color::ColorIndex( j ) ].to_float_array(color);
+						Color::Color( j ).to_float_array(color);
 						Tess_AddTetrahedron( tetraVerts, color );
 
 						VectorScale( offset, skel->scale, tetraVerts[ 3 ] );

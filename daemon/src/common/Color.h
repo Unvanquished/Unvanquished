@@ -44,20 +44,6 @@ namespace Color {
 
 /*
 ================
-ColorIndex
-
-Converts a character into an index to be used with g_color_table
-================
-*/
-inline int ColorIndex( char c )
-{
-	return (c - '0') & 31;
-}
-
-extern struct Color g_color_table[ 32 ];
-
-/*
-================
 gethex
 
 Converts a hexadecimal character to the value of the digit it represents.
@@ -121,11 +107,7 @@ struct Color
 	Initialize from a color index
 	================
 	*/
-	explicit Color(int index)
-	{
-		if ( index >= 0 && index < 32 )
-			*this = g_color_table[index];
-	}
+	explicit Color(int index);
 
 	/*
 	================
@@ -135,7 +117,7 @@ struct Color
 	================
 	*/
 	explicit Color(char index)
-		: Color( int( ColorIndex(index) ) )
+		: Color( int( index - '0') )
 	{
 	}
 

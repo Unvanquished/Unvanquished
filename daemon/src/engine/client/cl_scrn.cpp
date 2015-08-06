@@ -417,7 +417,7 @@ void SCR_DrawVoipMeter()
 	buffer[ i ] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::g_color_table[ 7 ], true, false );
+	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::Color( 7 ), true, false );
 }
 
 /*
@@ -466,27 +466,27 @@ void SCR_DrawVoipSender()
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::Color( 7 ), true, true );
 		}
 		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::Color( 7 ), true, true );
 		}
 		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::Color( 7 ), true, true );
 		}
 		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::Color( 7 ), true, true );
 		}
 		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, Color::g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, Color::Color( 7 ], true, true );
 		}
 		else
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, Color::g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, Color::Color( 7 ], true, true );
 		}
 	}
 #endif
@@ -522,7 +522,7 @@ void SCR_DrawScreenField()
 	{
 		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
 		{
-			re.SetColor( Color::g_color_table[ 0 ] );
+			re.SetColor( Color::Color( 0 ) );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
 			re.SetColor( nullptr );
 		}

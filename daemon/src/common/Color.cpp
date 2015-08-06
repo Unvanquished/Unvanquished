@@ -101,7 +101,7 @@ vec4_t   colorMdYellow = { 0.5, 0.5, 0, 1 };
 vec4_t   colorMdOrange = { 0.5, 0.25, 0, 1 };
 vec4_t   colorMdBlue = { 0, 0, 0.5, 1 };
 
-Color   g_color_table[ 32 ] =
+static Color g_color_table[ 32 ] =
 {
 	{  51,  51,  51, 255 }, // 0 - black       0
 	{ 255,   0,   0, 255 }, // 1 - red         1
@@ -136,6 +136,13 @@ Color   g_color_table[ 32 ] =
 	{ 255, 255, 191, 255 }, // N              30
 	{ 255, 255, 128, 255 }, // O              31
 };
+
+Color::Color::Color (int index)
+{
+	if ( index < 0 )
+		index *= -1;
+	*this = g_color_table[index%32];
+}
 
 int Color::to_4bit() const
 {
