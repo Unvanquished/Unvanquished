@@ -164,8 +164,6 @@ void              Cmd_ListMaps_f( gentity_t *ent );
 void              Cmd_Test_f( gentity_t *player );
 void              Cmd_AdminMessage_f( gentity_t *ent );
 int               G_FloodLimited( gentity_t *ent );
-void              G_LoadCensors();
-void              G_CensorString( char *out, const char *in, int len, gentity_t *ent );
 bool          G_CheckStopVote( team_t );
 bool          G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin );
 void              ScoreboardMessage( gentity_t *client );

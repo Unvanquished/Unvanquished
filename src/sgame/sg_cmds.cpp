@@ -947,197 +947,6 @@ void Cmd_Team_f( gentity_t *ent )
 
 /*
 ==================
-G_CensorString
-==================
-*/
-static char censors[ 20000 ];
-static int  numcensors;
-
-void G_LoadCensors()
-{
-	const char *text_p;
-	char *token;
-	char         text[ 20000 ];
-	char         *term;
-	int          len;
-	fileHandle_t f;
-
-	numcensors = 0;
-
-	if ( !g_censorship.string[ 0 ] )
-	{
-		return;
-	}
-
-	len = trap_FS_FOpenFile( g_censorship.string, &f, FS_READ );
-
-	if ( len < 0 )
-	{
-		Com_Printf( S_ERROR "Censors file %s doesn't exist\n",
-		            g_censorship.string );
-		return;
-	}
-
-	if ( len == 0 || len >= sizeof( text ) - 1 )
-	{
-		trap_FS_FCloseFile( f );
-		Com_Printf( S_ERROR "Censors file %s is %s\n",
-		            g_censorship.string, len == 0 ? "empty" : "too long" );
-		return;
-	}
-
-	trap_FS_Read( text, len, f );
-	trap_FS_FCloseFile( f );
-	text[ len ] = 0;
-
-	term = censors;
-
-	text_p = text;
-
-	while ( 1 )
-	{
-		token = COM_Parse( &text_p );
-
-		if ( !*token || sizeof( censors ) - ( term - censors ) < 4 )
-		{
-			break;
-		}
-
-		Q_strncpyz( term, token, sizeof( censors ) - ( term - censors ) );
-		Q_strlwr( term );
-		term += strlen( term ) + 1;
-
-		if ( sizeof( censors ) - ( term - censors ) == 0 )
-		{
-			break;
-		}
-
-		token = COM_ParseExt( &text_p, false );
-		Q_strncpyz( term, token, sizeof( censors ) - ( term - censors ) );
-		term += strlen( term ) + 1;
-		numcensors++;
-	}
-
-	G_Printf( "Parsed %d string replacements\n", numcensors );
-}
-
-void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
-{
-	const char *s, *m;
-	int        i, ch, bytes;
-
-	if ( !numcensors || G_admin_permission( ent, ADMF_NOCENSORFLOOD ) )
-	{
-		Q_strncpyz( out, in, len );
-		return;
-	}
-
-	len--;
-
-	while ( *in )
-	{
-		if ( Q_IsColorString( in ) )
-		{
-			if ( len < 2 )
-			{
-				break;
-			}
-
-			*out++ = *in++;
-			*out++ = *in++;
-			len -= 2;
-			continue;
-		}
-
-		ch = Q_UTF8_CodePoint( in );
-
-		if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
-		{
-			if ( len < 1 )
-			{
-				break;
-			}
-
-			bytes = Q_UTF8_WidthCP( ch );
-			memcpy( out, in, bytes );
-			out += bytes;
-			in += bytes;
-			len -= bytes;
-			continue;
-		}
-
-		m = censors;
-
-		for ( i = 0; i < numcensors; i++, m++ )
-		{
-			s = in;
-
-			while ( *s && *m )
-			{
-				if ( Q_IsColorString( s ) )
-				{
-					s += 2;
-					continue;
-				}
-
-				ch = Q_UTF8_CodePoint( s );
-				bytes = Q_UTF8_WidthCP( ch );
-
-				if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
-				{
-					s += bytes;
-					continue;
-				}
-
-				if ( Q_Unicode_ToLower( ch ) != Q_UTF8_CodePoint( m ) )
-				{
-					break;
-				}
-
-				s += bytes;
-				m += Q_UTF8_Width( m );
-			}
-
-			// match
-			if ( !*m )
-			{
-				in = s;
-				m++;
-				bytes = strlen( m );
-				bytes = MIN( bytes, len );
-				memcpy( out, m, bytes );
-				out += bytes;
-				len -= bytes;
-				break;
-			}
-			else
-			{
-				m += strlen( m ) + 1;
-				m += strlen( m );
-			}
-		}
-
-		if ( len < 1 )
-		{
-			break;
-		}
-
-		// no match
-		if ( i == numcensors )
-		{
-			bytes = Q_UTF8_WidthCP( ch );
-			memcpy( out, in, bytes );
-			out += bytes;
-			in += bytes;
-			len -= bytes;
-		}
-	}
-
-	*out = 0;
-}
-
-/*
-==================
 G_Say
 ==================
 */
@@ -1248,8 +1057,6 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 		default:
 			break;
 	}
-
-	G_CensorString( text, chatText, sizeof( text ), ent );
 
 	// send it to all the appropriate clients
 	for ( j = 0; j < level.maxclients; j++ )
@@ -1551,7 +1358,6 @@ void Cmd_VSay_f( gentity_t *ent )
 
 	// optional user supplied text
 	trap_Argv( 2, arg, sizeof( arg ) );
-	G_CensorString( text, arg, sizeof( text ), ent );
 
 	switch ( vchan )
 	{
@@ -4735,8 +4541,6 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	trap_Argv( 1, name, sizeof( name ) );
 	msg = ConcatArgs( 2 );
 	pcount = G_ClientNumbersFromString( name, pids, MAX_CLIENTS );
-
-	G_CensorString( text, msg, sizeof( text ), ent );
 
 	// send the message
 	for ( i = 0; i < pcount; i++ )
