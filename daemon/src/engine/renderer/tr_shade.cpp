@@ -412,15 +412,15 @@ static void DrawTris()
 	}
 	else if ( glState.currentVBO == tess.vbo )
 	{
-		gl_genericShader->SetUniform_Color( Color::colorRed );
+		gl_genericShader->SetUniform_Color( Color::NamedFloat::Red );
 	}
 	else if ( glState.currentVBO )
 	{
-		gl_genericShader->SetUniform_Color( Color::colorBlue );
+		gl_genericShader->SetUniform_Color( Color::NamedFloat::Blue );
 	}
 	else
 	{
-		gl_genericShader->SetUniform_Color( Color::colorWhite );
+		gl_genericShader->SetUniform_Color( Color::NamedFloat::White );
 	}
 
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );

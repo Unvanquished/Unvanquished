@@ -228,26 +228,6 @@ private:
 	}
 };
 
-typedef float vec4_t[4];
-extern vec4_t colorBlack;
-extern vec4_t colorRed;
-extern vec4_t colorGreen;
-extern vec4_t colorBlue;
-extern vec4_t colorYellow;
-extern vec4_t colorOrange;
-extern vec4_t colorMagenta;
-extern vec4_t colorCyan;
-extern vec4_t colorWhite;
-extern vec4_t colorLtGrey;
-extern vec4_t colorMdGrey;
-extern vec4_t colorDkGrey;
-extern vec4_t colorMdRed;
-extern vec4_t colorMdGreen;
-extern vec4_t colorDkGreen;
-extern vec4_t colorMdCyan;
-extern vec4_t colorMdYellow;
-extern vec4_t colorMdOrange;
-extern vec4_t colorMdBlue;
 
 namespace Constants {
 // Namespace enum to have these constants scoped but allowing implicit conversions
@@ -299,6 +279,29 @@ extern const char* LtOrange;
 extern const char* MdBlue;
 extern const char* Null;
 } // namespace Named
+
+namespace NamedFloat {
+typedef float vec4_t[4];
+extern vec4_t Black;
+extern vec4_t Red;
+extern vec4_t Green;
+extern vec4_t Blue;
+extern vec4_t Yellow;
+extern vec4_t Orange;
+extern vec4_t Magenta;
+extern vec4_t Cyan;
+extern vec4_t White;
+extern vec4_t LtGrey;
+extern vec4_t MdGrey;
+extern vec4_t DkGrey;
+extern vec4_t MdRed;
+extern vec4_t MdGreen;
+extern vec4_t DkGreen;
+extern vec4_t MdCyan;
+extern vec4_t MdYellow;
+extern vec4_t MdOrange;
+extern vec4_t MdBlue;
+} // namespace NamedFloat
 
 template<class charT>
 	class BasicToken

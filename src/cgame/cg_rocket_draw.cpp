@@ -464,14 +464,14 @@ public:
 		{
 			if ( cg.crosshairFoe )
 			{
-				Vector4Copy( Color::colorRed, baseColor );
+				Vector4Copy( Color::NamedFloat::Red, baseColor );
 				baseColor[ 3 ] = color[ 3 ] * 0.75f;
 				onRelevantEntity = true;
 			}
 
 			else if ( cg.crosshairFriend )
 			{
-				Vector4Copy( Color::colorGreen, baseColor );
+				Vector4Copy( Color::NamedFloat::Green, baseColor );
 				baseColor[ 3 ] = color[ 3 ] * 0.75f;
 				onRelevantEntity = true;
 			}
@@ -494,7 +494,7 @@ public:
 		{
 			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
 
-			Vector4Lerp( dim, baseColor, Color::colorWhite, drawColor );
+			Vector4Lerp( dim, baseColor, Color::NamedFloat::White, drawColor );
 		}
 
 		else if ( !onRelevantEntity )

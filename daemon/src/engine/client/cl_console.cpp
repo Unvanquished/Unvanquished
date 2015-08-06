@@ -734,7 +734,7 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Com_RealTime( &realtime );
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
-	Color::Color color = Color::colorWhite;
+	Color::Color color = Color::Named::White;
 	color.a = Color::Color::limits_type::max() * consoleState.currentAlphaFactor * overrideAlpha;
 
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
