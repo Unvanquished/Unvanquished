@@ -228,7 +228,6 @@ private:
 	}
 };
 
-
 namespace Constants {
 // Namespace enum to have these constants scoped but allowing implicit conversions
 enum {
@@ -303,26 +302,55 @@ extern vec4_t MdOrange;
 extern vec4_t MdBlue;
 } // namespace NamedFloat
 
+/*
+================
+BasicToken
+
+Generic token for parsing colored strings
+================
+*/
 template<class charT>
 	class BasicToken
 {
 public:
 	enum TokenType {
-		INVALID,
-		CHARACTER,
-		ESCAPE,
-		COLOR,
-		DEFAULT_COLOR,
+		INVALID,       // Invalid/empty token
+		CHARACTER,     // A character
+		ESCAPE,        // Color escape
+		COLOR,         // Color code
+		DEFAULT_COLOR, // Color code to reset to the default
 	};
 
+	/*
+	================
+	BasicToken::BasicToken
+
+	Constructs an invalid token
+	================
+	*/
 	BasicToken() = default;
 
+
+	/*
+	================
+	BasicToken::BasicToken
+
+	Constructs a token with the given type and range
+	================
+	*/
 	BasicToken( const charT* begin, const charT* end, TokenType type )
 		: begin( begin ),
 		  end( end ),
 		  type( type )
 	{}
 
+	/*
+	================
+	BasicToken::BasicToken
+
+	Constructs a token representing a color
+	================
+	*/
 	BasicToken( const charT* begin, const charT* end, const ::Color::Color& color )
 		: begin( begin ),
 		  end( end ),
@@ -330,31 +358,74 @@ public:
 		  color( color )
 	{}
 
+	/*
+	================
+	BasicToken::Begin
+
+	Pointer to the first character of this token in the input sequence
+	================
+	*/
 	const charT* Begin() const
 	{
 		return begin;
 	}
 
+	/*
+	================
+	BasicToken::Begin
+
+	Pointer to the last character of this token in the input sequence
+	================
+	*/
 	const charT* End() const
 	{
 		return end;
 	}
 
+	/*
+	================
+	BasicToken::Size
+
+	Distance berween Begin and End
+	================
+	*/
 	std::size_t Size() const
 	{
 		return end - begin;
 	}
 
+	/*
+	================
+	BasicToken::Type
+
+	Token Type
+	================
+	*/
 	TokenType Type() const
 	{
 		return type;
 	}
 
+	/*
+	================
+	BasicToken::Color
+
+	Parsed color
+	Pre: Type() == COLOR
+	================
+	*/
 	::Color::Color Color() const
 	{
 		return color;
 	}
 
+	/*
+	================
+	BasicToken::operator bool
+
+	Converts to bool if the token is valid (and not empty)
+	================
+	*/
 	explicit operator bool() const
 	{
 		return type != INVALID && begin && begin < end;
@@ -369,6 +440,13 @@ private:
 
 };
 
+/*
+================
+TokenAdvanceOne
+
+Policy for BasicTokenIterator, advances by 1 input element
+================
+*/
 class TokenAdvanceOne
 {
 public:
@@ -376,6 +454,13 @@ public:
 		constexpr int operator()(const CharT*) const { return 1; }
 };
 
+/*
+================
+TokenAdvanceUtf8
+
+Policy for BasicTokenIterator<char>, advances to the next Utf-8 code point
+================
+*/
 class TokenAdvanceUtf8
 {
 public:
@@ -385,6 +470,17 @@ public:
 	}
 };
 
+/*
+================
+BasicTokenIterator
+
+Generic class to parse C-style strings into tokens,
+implements the InputIterator concept
+
+CharT is the type for the input
+TokenAdvanceT is the advancement policy used to define characters
+================
+*/
 template<class CharT, class TokenAdvanceT = TokenAdvanceOne>
 	class BasicTokenIterator
 {
@@ -435,15 +531,29 @@ public:
 		return token.Begin() != rhs.token.Begin();
 	}
 
-	void Skip( difference_type bytes )
+	/*
+	================
+	BasicTokenIterator::Skip
+
+	Skips the current token by "count" number of input elements
+	================
+	*/
+	void Skip( difference_type count )
 	{
-		if ( bytes != 0 )
+		if ( count != 0 )
 		{
-			token = NextToken( token.Begin() + bytes );
+			token = NextToken( token.Begin() + count );
 		}
 	}
 
 private:
+	/*
+	================
+	BasicTokenIterator::NextToken
+
+	Returns the token corresponding to the given input string
+	================
+	*/
 	value_type NextToken(const CharT* input)
 	{
 		if ( !input || *input == '\0' )
@@ -482,7 +592,21 @@ private:
 	value_type token;
 };
 
+/*
+================
+Token
+
+Default token type for Utf-8 C-strings
+================
+*/
 using Token = BasicToken<char>;
+/*
+================
+TokenIterator
+
+Default token iterator for Utf-8 C-strings
+================
+*/
 using TokenIterator = BasicTokenIterator<char, TokenAdvanceUtf8>;
 
 } // namespace Color
