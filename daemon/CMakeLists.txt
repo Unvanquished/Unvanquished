@@ -313,7 +313,6 @@ else()
     try_flag(WARNINGS           "-Wstrict-null-sentinel")
     try_flag(WARNINGS           "-Wno-error=sign-promo")
     # remove
-    try_flag(WARNINGS           "-Wno-error=maybe-uninitialized")
     try_flag(WARNINGS           "-W${WARNMODE}missing-field-initializers")
     try_flag(WARNINGS           "-W${WARNMODE}sign-compare")
     try_flag(WARNINGS           "-Wno-error=switch")

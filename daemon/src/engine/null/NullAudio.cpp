@@ -54,7 +54,7 @@ namespace Audio {
     }
 
 
-    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {
+    void StartSound(int entityNum, Vec3 origin, sfxHandle_t sfx) {
     }
 
     void StartLocalSound(int entityNum) {
@@ -86,13 +86,13 @@ namespace Audio {
     }
 
 
-    void UpdateListener(int entityNum, const vec3_t orientation[3]) {
+    void UpdateListener(int entityNum, const Vec3 orientation[3]) {
     }
 
-    void UpdateEntityPosition(int entityNum, const vec3_t position) {
+    void UpdateEntityPosition(int entityNum, Vec3 position) {
     }
 
-    void UpdateEntityVelocity(int entityNum, const vec3_t velocity) {
+    void UpdateEntityVelocity(int entityNum, Vec3 velocity) {
     }
 
 

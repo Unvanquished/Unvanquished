@@ -268,9 +268,9 @@ bool trap_GetNews( bool force )
 
 void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
 {
-	std::array<float, 3> myorigin = {{0.0f, 0.0f, 0.0f}};
+    Vec3 myorigin = Vec3(0.0f, 0.0f, 0.0f);
 	if (origin) {
-		VectorCopy(origin, myorigin.data());
+        myorigin = Vec3::Load(origin);
 	}
 	cmdBuffer.SendMsg<Audio::StartSoundMsg>(!!origin, myorigin, entityNum, sfx);
 }
@@ -308,9 +308,7 @@ void trap_S_StopLoopingSound( int entityNum )
 
 void trap_S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
-	std::array<float, 3> myposition;
-	VectorCopy(origin, myposition.data());
-	cmdBuffer.SendMsg<Audio::UpdateEntityPositionMsg>(entityNum, myposition);
+	cmdBuffer.SendMsg<Audio::UpdateEntityPositionMsg>(entityNum, Vec3::Load(origin));
 }
 
 void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int )
@@ -318,8 +316,10 @@ void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], 
 	if (origin) {
 		trap_S_UpdateEntityPosition(entityNum, origin);
 	}
-	std::array<float, 9> myaxis;
-	memcpy(myaxis.data(), axis, sizeof(float) * 9);
+	std::array<Vec3, 3> myaxis;
+    myaxis[0] = Vec3::Load(axis[0]);
+    myaxis[1] = Vec3::Load(axis[1]);
+    myaxis[2] = Vec3::Load(axis[2]);
 	cmdBuffer.SendMsg<Audio::RespatializeMsg>(entityNum, myaxis);
 }
 
@@ -342,9 +342,7 @@ void trap_S_StopBackgroundTrack()
 
 void trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocity )
 {
-	std::array<float, 3> myvelocity;
-	VectorCopy(velocity, myvelocity.data());
-	cmdBuffer.SendMsg<Audio::UpdateEntityVelocityMsg>(entityNum, myvelocity);
+	cmdBuffer.SendMsg<Audio::UpdateEntityVelocityMsg>(entityNum, Vec3::Load(velocity));
 }
 
 void trap_S_SetReverb( int slotNum, const char* name, float ratio )

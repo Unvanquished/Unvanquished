@@ -75,7 +75,7 @@ namespace Audio {
         return entityNum >= 0 and entityNum < MAX_GENTITIES;
     }
 
-    bool IsValidVector(const vec3_t v) {
+    bool IsValidVector(Vec3 v) {
         return not std::isnan(v[0]) and not std::isnan(v[1]) and not std::isnan(v[2]);
     }
 
@@ -240,18 +240,18 @@ namespace Audio {
         EndSampleRegistration();
     }
 
-    void StartSound(int entityNum, const vec3_t origin, sfxHandle_t sfx) {
+    void StartSound(int entityNum, Vec3 origin, sfxHandle_t sfx) {
         if (not initialized or not Sample::IsValidHandle(sfx)) {
             return;
         }
 
         std::shared_ptr<Emitter> emitter;
 
-        // Apparently no origin means it is attached to an entity
-        if (not origin and IsValidEntity(entityNum)) {
+        // A valid number means it is an entity sound
+        if (IsValidEntity(entityNum)) {
             emitter = GetEmitterForEntity(entityNum);
 
-        } else if(origin and IsValidVector(origin)){
+        } else if(IsValidVector(origin)){
             emitter = GetEmitterForPosition(origin);
 
         } else {
@@ -370,7 +370,7 @@ namespace Audio {
         }
     }
 
-    void UpdateListener(int entityNum, const vec3_t orientation[3]) {
+    void UpdateListener(int entityNum, const Vec3 orientation[3]) {
         if (not initialized or
             not IsValidEntity(entityNum) or
             not orientation or
@@ -391,7 +391,7 @@ namespace Audio {
         }
     }
 
-    void UpdateEntityPosition(int entityNum, const vec3_t position) {
+    void UpdateEntityPosition(int entityNum, Vec3 position) {
         if (not initialized or not IsValidEntity(entityNum) or not IsValidVector(position)) {
             return;
         }
@@ -399,7 +399,7 @@ namespace Audio {
         UpdateRegisteredEntityPosition(entityNum, position);
     }
 
-    void UpdateEntityVelocity(int entityNum, const vec3_t velocity) {
+    void UpdateEntityVelocity(int entityNum, Vec3 velocity) {
         if (not initialized or not IsValidEntity(entityNum) or not IsValidVector(velocity)) {
             return;
         }
