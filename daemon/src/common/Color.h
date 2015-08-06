@@ -50,7 +50,7 @@ Converts a hexadecimal character to the value of the digit it represents.
 Pre: ishex(ch)
 ================
 */
-inline int gethex( char ch )
+inline constexpr int gethex( char ch )
 {
 	return ch > '9' ?
 		( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
@@ -65,7 +65,7 @@ ishex
 Whether a character is a hexadecimal digit
 ================
 */
-inline bool ishex( char ch )
+inline constexpr bool ishex( char ch )
 {
 	return ( ch >= '0' && ch <= '9' ) ||
 		   ( ch >= 'A' && ch <= 'F' ) ||
@@ -80,7 +80,7 @@ Returns a character representing a hexadecimal digit
 Pre: 0 <= i && i < 16
 ================
 */
-inline char hex_to_char( int i )
+inline constexpr char hex_to_char( int i )
 {
 	return i < 10 ? i + '0' : i + 'a' - 10;
 }
