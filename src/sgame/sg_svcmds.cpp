@@ -704,7 +704,6 @@ static const struct svcmd
 	{ "humanWin",           false, Svcmd_TeamWin_f              },
 	{ "layoutLoad",         false, Svcmd_LayoutLoad_f           },
 	{ "layoutSave",         false, Svcmd_LayoutSave_f           },
-	{ "loadcensors",        false, G_LoadCensors                },
 	{ "m",                  true,  Svcmd_MessageWrapper         },
 	{ "maplog",             true,  Svcmd_MapLogWrapper          },
 	{ "mapRotation",        false, Svcmd_MapRotation_f          },

@@ -34,8 +34,8 @@ namespace Audio {
 
     // Structures to keep the state of entities we were given
     struct entityData_t {
-        vec3_t position;
-        vec3_t velocity;
+        Vec3 position;
+        Vec3 velocity;
         float occlusion;
     };
     static entityData_t entities[MAX_GENTITIES];
@@ -52,7 +52,7 @@ namespace Audio {
     // There is a single LocalEmitter
     static std::shared_ptr<Emitter> localEmitter;
 
-    static const vec3_t origin = {0.0f, 0.0f, 0.0f};
+    static const Vec3 origin = {0.0f, 0.0f, 0.0f};
 
     static Cvar::Range<Cvar::Cvar<float>> dopplerExaggeration("audio.dopplerExaggeration", "controls the pitch change of the doppler effect", Cvar::ARCHIVE, 0.4, 0.0, 1.0);
     static Cvar::Range<Cvar::Cvar<float>> reverbIntensity("audio.reverbIntensity", "the intensity of the reverb effects", Cvar::ARCHIVE, 1.0, 0.0, 1.0);
@@ -158,7 +158,7 @@ namespace Audio {
         AL::SetDopplerExaggerationFactor(dopplerExaggeration.Get());
     }
 
-    void UpdateListenerEntity(int entityNum, const vec3_t orientation[3]) {
+    void UpdateListenerEntity(int entityNum, const Vec3 orientation[3]) {
         listenerEntity = entityNum;
 
         AL::SetListenerPosition(entities[listenerEntity].position);
@@ -174,7 +174,7 @@ namespace Audio {
         return entityEmitters[entityNum];
     }
 
-    std::shared_ptr<Emitter> GetEmitterForPosition(const vec3_t position) {
+    std::shared_ptr<Emitter> GetEmitterForPosition(Vec3 position) {
         for (auto emitter : posEmitters) {
             if (Distance(emitter->GetPosition(), position) <= 1.0f) {
                 return emitter;
@@ -189,11 +189,11 @@ namespace Audio {
         return localEmitter;
     }
 
-    void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position) {
+    void UpdateRegisteredEntityPosition(int entityNum, Vec3 position) {
         VectorCopy(position, entities[entityNum].position);
     }
 
-    void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity) {
+    void UpdateRegisteredEntityVelocity(int entityNum, Vec3 velocity) {
         VectorCopy(velocity, entities[entityNum].velocity);
     }
 
@@ -244,7 +244,7 @@ namespace Audio {
         }
     }
 
-    void Make3D(AL::Source& source, const vec3_t position, const vec3_t velocity) {
+    void Make3D(AL::Source& source, Vec3 position, Vec3 velocity) {
         source.SetRelative(false);
         source.SetPosition(position);
         source.SetVelocity(velocity);
@@ -298,7 +298,7 @@ namespace Audio {
 
     // Implementation of PositionEmitter
 
-    PositionEmitter::PositionEmitter(const vec3_t position){
+    PositionEmitter::PositionEmitter(Vec3 position){
         VectorCopy(position, this->position);
     }
 
@@ -321,7 +321,7 @@ namespace Audio {
         Make3D(source, position, origin);
     }
 
-    const vec3_t& PositionEmitter::GetPosition() const {
+    Vec3 PositionEmitter::GetPosition() const {
         return position;
     }
 

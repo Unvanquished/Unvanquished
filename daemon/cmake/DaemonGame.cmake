@@ -59,7 +59,7 @@ function(GAMEMODULE)
             set_target_properties(${GAMEMODULE_NAME}-native-dll PROPERTIES
                 PREFIX ""
                 COMPILE_DEFINITIONS "VM_NAME=\"${GAMEMODULE_NAME}\";${GAMEMODULE_DEFINITIONS};BUILD_VM;BUILD_VM_IN_PROCESS"
-                COMPILE_FLAGS "${GAMEMODULE_FLAGS}"
+                COMPILE_OPTIONS "${GAMEMODULE_FLAGS}"
                 FOLDER ${GAMEMODULE_NAME}
             )
             # ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-native-dll)
@@ -70,7 +70,7 @@ function(GAMEMODULE)
             target_link_libraries(${GAMEMODULE_NAME}-native-exe nacl-source-libs ${LIBS_BASE} ${GAMEMODULE_LIBS})
             set_target_properties(${GAMEMODULE_NAME}-native-exe PROPERTIES
                 COMPILE_DEFINITIONS "VM_NAME=\"${GAMEMODULE_NAME}\";${GAMEMODULE_DEFINITIONS};BUILD_VM"
-                COMPILE_FLAGS "${GAMEMODULE_FLAGS}"
+                COMPILE_OPTIONS "${GAMEMODULE_FLAGS}"
                 FOLDER ${GAMEMODULE_NAME}
             )
             # ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-native-exe)
@@ -116,7 +116,7 @@ function(GAMEMODULE)
         set_target_properties(${GAMEMODULE_NAME}-nacl-exe PROPERTIES
             OUTPUT_NAME ${GAMEMODULE_NAME}.pexe
             COMPILE_DEFINITIONS "VM_NAME=\"${GAMEMODULE_NAME}\";${GAMEMODULE_DEFINITIONS};BUILD_VM"
-            COMPILE_FLAGS "${GAMEMODULE_FLAGS}"
+            COMPILE_OPTIONS "${GAMEMODULE_FLAGS}"
             FOLDER ${GAMEMODULE_NAME}
         )
         # ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-nacl-exe)

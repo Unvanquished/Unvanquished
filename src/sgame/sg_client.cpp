@@ -943,9 +943,6 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 				Q_strncpyz( newname, G_UnnamedClientName( client ), sizeof( newname ) );
 			}
 
-			G_CensorString( client->pers.netname, newname,
-			                sizeof( client->pers.netname ), ent );
-
 			if ( !forceName && client->pers.connected == CON_CONNECTED )
 			{
 				client->pers.namelog->nameChangeTime = level.time;

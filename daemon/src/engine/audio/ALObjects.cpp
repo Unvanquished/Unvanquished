@@ -542,17 +542,17 @@ namespace AL {
         CHECK_AL_ERROR();
     }
 
-    void SetListenerPosition(const vec3_t position) {
-        alListenerfv(AL_POSITION, position);
+    void SetListenerPosition(Vec3 position) {
+        alListenerfv(AL_POSITION, position.Data());
         CHECK_AL_ERROR();
     }
 
-    void SetListenerVelocity(const vec3_t velocity) {
-        alListenerfv(AL_VELOCITY, velocity);
+    void SetListenerVelocity(Vec3 velocity) {
+        alListenerfv(AL_VELOCITY, velocity.Data());
         CHECK_AL_ERROR();
     }
 
-    void SetListenerOrientation(const vec3_t orientation[3]) {
+    void SetListenerOrientation(const Vec3 orientation[3]) {
         float alOrientation[6] = {
             orientation[0][0],
             orientation[0][1],
@@ -681,13 +681,13 @@ namespace AL {
         CHECK_AL_ERROR();
     }
 
-    void Source::SetPosition(const vec3_t position) {
-        alSourcefv(alHandle, AL_POSITION, position);
+    void Source::SetPosition(Vec3 position) {
+        alSourcefv(alHandle, AL_POSITION, position.Data());
         CHECK_AL_ERROR();
     }
 
-    void Source::SetVelocity(const vec3_t velocity) {
-        alSourcefv(alHandle, AL_VELOCITY, velocity);
+    void Source::SetVelocity(Vec3 velocity) {
+        alSourcefv(alHandle, AL_VELOCITY, velocity.Data());
         CHECK_AL_ERROR();
     }
 

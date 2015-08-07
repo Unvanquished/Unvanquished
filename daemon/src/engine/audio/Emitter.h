@@ -41,12 +41,12 @@ namespace Audio {
     void UpdateEmitters();
 
     std::shared_ptr<Emitter> GetEmitterForEntity(int entityNum);
-    std::shared_ptr<Emitter> GetEmitterForPosition(const vec3_t position);
+    std::shared_ptr<Emitter> GetEmitterForPosition(Vec3 position);
     std::shared_ptr<Emitter> GetLocalEmitter();
 
-    void UpdateListenerEntity(int entityNum, const vec3_t orientation[3]);
-    void UpdateRegisteredEntityPosition(int entityNum, const vec3_t position);
-    void UpdateRegisteredEntityVelocity(int entityNum, const vec3_t velocity);
+    void UpdateListenerEntity(int entityNum, const Vec3 orientation[3]);
+    void UpdateRegisteredEntityPosition(int entityNum, Vec3 position);
+    void UpdateRegisteredEntityVelocity(int entityNum, Vec3 velocity);
 
     void UpdateReverbSlot(int slotNum, std::string name, float ratio);
 
@@ -88,17 +88,17 @@ namespace Audio {
     // An Emitter at a fixed position in space
     class PositionEmitter : public Emitter {
         public:
-            PositionEmitter(const vec3_t position);
+            PositionEmitter(Vec3 position);
             virtual ~PositionEmitter();
 
             void virtual Update() OVERRIDE;
             virtual void UpdateSound(Sound& sound) OVERRIDE;
             virtual void InternalSetupSound(Sound& sound) OVERRIDE;
 
-            const vec3_t& GetPosition() const;
+            Vec3 GetPosition() const;
 
         private:
-            vec3_t position;
+            Vec3 position;
     };
 
     // An Emitter for things that aren't spatialized (like menus, annoucements, ...)
