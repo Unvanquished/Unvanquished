@@ -103,6 +103,20 @@ namespace Util {
 			return ent;
 		}
 	};
+
+	template<>
+	struct SerializeTraits<Color::ColorFloat> {
+		static void Write(Writer& stream, const Color::ColorFloat& value)
+		{
+			stream.WriteData(std::addressof(value), sizeof(value));
+		}
+		static Color::ColorFloat Read(Reader& stream)
+		{
+			Color::ColorFloat value;
+			stream.ReadData(std::addressof(value), sizeof(value));
+			return value;
+		}
+	};
 }
 
 typedef enum cgameImport_s
@@ -489,7 +503,7 @@ namespace Render {
 	// AddAdditiveLightToSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDADDITIVELIGHTTOSCENE>, std::array<float, 3>, float, float, float, float> AddAdditiveLightToSceneMsg;
 	// SetColorMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, std::array<float, 4>> SetColorMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, Color::ColorFloat> SetColorMsg;
 	// SetClipRegionMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>> SetClipRegionMsg;
 	// ResetClipRegionMsg

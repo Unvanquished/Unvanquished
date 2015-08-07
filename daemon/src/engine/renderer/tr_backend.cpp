@@ -3218,7 +3218,7 @@ static void RB_RenderDebugUtils()
 		trRefLight_t  *light;
 		trRefEntity_t *entity;
 		surfaceType_t *surface;
-		vec4_t        lightColor;
+		Color::ColorFloat lightColor;
 
 		static const vec3_t mins = { -1, -1, -1 };
 		static const vec3_t maxs = { 1, 1, 1 };
@@ -3274,20 +3274,15 @@ static void RB_RenderDebugUtils()
 						cubeSides++;
 					}
 				}
-
-				Color::Color( cubeSides ).to_float_array( lightColor );
+				/// \todo (color) index to float colors
+				Color::Cast<Color::ColorFloat>( Color::Color( cubeSides ) ).toArray( lightColor );
 			}
 			else
 			{
-				Vector4Copy( Color::NamedFloat::MdGrey, lightColor );
+				lightColor = Color::NamedFloat::MdGrey;
 			}
 
-			lightColor[ 0 ] *= 0.5f;
-			lightColor[ 1 ] *= 0.5f;
-			lightColor[ 2 ] *= 0.5f;
-			//lightColor[3] *= 0.2f;
-
-			Vector4Copy( Color::NamedFloat::White, lightColor );
+			lightColor = Color::NamedFloat::White;
 
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
@@ -3545,8 +3540,8 @@ static void RB_RenderDebugUtils()
 
 						VectorScale( origin, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
-						vec4_t color;
-						Color::Color( j ).to_float_array(color);
+						/// \todo (color) templated function to get indexed colors
+						Color::ColorFloat color = Color::Cast<Color::ColorFloat>(Color::Color(j));
 						Tess_AddTetrahedron( tetraVerts, color );
 
 						VectorScale( offset, skel->scale, tetraVerts[ 3 ] );

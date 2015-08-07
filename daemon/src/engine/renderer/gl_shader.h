@@ -1683,11 +1683,9 @@ public:
 		this->SetValue( v );
 	}
 
-	void SetUniform_Color( const Color::Color& color )
+	void SetUniform_Color( const Color::ColorFloat& color )
 	{
-		vec4_t v;
-		color.to_float_array( v );
-		this->SetValue( v );
+		this->SetValue( color );
 	}
 };
 

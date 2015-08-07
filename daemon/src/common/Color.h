@@ -33,10 +33,13 @@ Maryland 20850 USA.
 #ifndef COMMON_COLOR_H_
 #define COMMON_COLOR_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <iterator>
 #include <limits>
 #include <string>
+#include <type_traits>
 
 #include "../engine/qcommon/q_unicode.h"
 
@@ -91,6 +94,25 @@ enum class Components
 	RGBA
 };
 
+// SFINAE trait to determine if a type is a color
+template<class T, class = void>
+struct IsColor : public std::false_type {};
+
+template<class T>
+struct IsColor<T,
+	typename std::enable_if<
+		std::is_same<
+			typename std::remove_const<decltype(T::components)>::type,
+			Components
+		>::value &&
+		std::is_same<
+			typename std::remove_const<decltype(T::component_max)>::type,
+			typename T::component_type
+		>::value
+	>::type
+> : std::true_type {};
+
+
 /*
 ================
 Color
@@ -115,13 +137,7 @@ public:
 	*/
 	constexpr Color() = default;
 
-	/*
-	================
-	Color::Color
-
-	Default constructor, all components set to zero
-	================
-	*/
+	// Initialize from the components
 	constexpr Color( component_type r, component_type g, component_type b,
 					  component_type a = component_max )
 		: r(r), g(g), b(b), a(a)
@@ -147,18 +163,6 @@ public:
 	explicit Color( char index )
 		: Color( int( index - '0') )
 	{
-	}
-
-	/*
-	================
-	Color::Color
-
-	Initialize from a float array
-	================
-	*/
-	Color(const float array[4])
-	{
-		assign_float_array(array);
 	}
 
 	constexpr component_type Red() const
@@ -211,14 +215,6 @@ public:
 		return To32bit() != other.To32bit();
 	}
 
-	void to_float_array(float output[4]) const
-	{
-		output[0] = r / float(component_max);
-		output[1] = g / float(component_max);
-		output[2] = b / float(component_max);
-		output[3] = a / float(component_max);
-	}
-
 	/*
 	================
 	Color::toString
@@ -245,20 +241,6 @@ public:
 	int To4bit() const;
 
 private:
-	void assign_float_array(const float* col)
-	{
-		if ( !col )
-		{
-			// replicate behaviour from refexport_t::SetColor
-			r = g = b = a = component_max;
-			return;
-		}
-
-		r = col[0] * component_max;
-		g = col[1] * component_max;
-		b = col[2] * component_max;
-		a = col[3] * component_max;
-	}
 
 	/*
 	================
@@ -276,6 +258,169 @@ private:
 
 	component_type r = 0, g = 0, b = 0, a = 0;
 };
+
+// A color with normalized floats RGBA components
+class ColorFloat
+{
+public:
+	typedef float component_type;
+	static constexpr const component_type component_max = 1;
+	static constexpr const Components components = Components::RGBA;
+
+
+	// Default constructor, all components set to zero
+	constexpr ColorFloat() : array{ 0.f, 0.f, 0.f, 0.f } {}
+
+
+	// Initialize from the components
+	constexpr ColorFloat( component_type r, component_type g, component_type b,
+					  component_type a = component_max )
+		: array{ r, g, b, a }
+	{
+	}
+
+	// Copy from array
+	constexpr ColorFloat( const float array[4] ) :
+		array{ array[0], array[1], array[2], array[3] }
+	{
+
+	}
+
+	ColorFloat( const std::nullptr_t& ) = delete;
+
+	// Convert to array
+	constexpr operator const float*() const
+	{
+		return array;
+	}
+
+	operator float*()
+	{
+		return array;
+	}
+
+	constexpr const float* toArray() const
+	{
+		return array;
+	}
+
+	float* toArray()
+	{
+		return array;
+	}
+
+	void toArray( float* output ) const
+	{
+		memcpy( output, array, sizeof(float)*4 );
+	}
+
+
+	constexpr component_type Red() const
+	{
+		return array[0];
+	}
+
+	constexpr component_type Green() const
+	{
+		return array[1];
+	}
+
+	constexpr component_type Blue() const
+	{
+		return array[2];
+	}
+
+	constexpr component_type Alpha() const
+	{
+		return array[3];
+	}
+
+	void SetRed( component_type v )
+	{
+		array[0] = v;
+	}
+
+	void SetGreen( component_type v )
+	{
+		array[1] = v;
+	}
+
+	void SetBlue( component_type v )
+	{
+		array[2] = v;
+	}
+
+	void SetAlpha( component_type v )
+	{
+		array[3] = v;
+	}
+
+	ColorFloat& operator*= ( component_type factor )
+	{
+		for ( component_type& c : array )
+		{
+			c *= factor;
+		}
+		return *this;
+	}
+
+private:
+	// Note: if the internal layout, the way it's serialized should be changed
+	// (see SerializeTraits<Color::ColorFloat> in cg_msgdef.h)
+	component_type array[4];
+};
+
+/*
+ * Blend two colors.
+ * If factor is 0, the first color will be shown, it it's 1 the second one will
+ */
+template<class ColorType>
+constexpr ColorType Blend(const ColorType& a, const ColorType& b, float factor)
+{
+	return ColorType {
+		typename ColorType::component_type ( a.Red()   * ( 1 - factor ) + b.Red()   * factor ),
+		typename ColorType::component_type ( a.Green() * ( 1 - factor ) + b.Green() * factor ),
+		typename ColorType::component_type ( a.Blue()  * ( 1 - factor ) + b.Blue()  * factor ),
+		typename ColorType::component_type ( a.Alpha() * ( 1 - factor ) + b.Alpha() * factor ),
+	};
+}
+
+// Converts a component, used by Cast()
+template<class ColorDest, class ColorSource>
+constexpr typename ColorDest::component_type ConvertComponent( typename ColorSource::component_type from )
+{
+	using Component = typename std::common_type<
+		typename ColorSource::component_type,
+		typename ColorDest::component_type
+	>::type;
+
+	return Component( from )   / Component( ColorSource::component_max ) * Component( ColorDest::component_max );
+}
+
+// Converts two types implementing the Color concept
+template<class ColorDest, class ColorSource>
+constexpr typename std::enable_if<
+		ColorDest::components == Components::RGBA &&
+		ColorSource::components == Components::RGBA &&
+		!std::is_same<ColorDest, ColorSource>::value, ColorDest>::type
+	Cast( const ColorSource& from )
+{
+
+	return {
+		ConvertComponent<ColorDest, ColorSource>( from.Red() ),
+		ConvertComponent<ColorDest, ColorSource>( from.Green() ),
+		ConvertComponent<ColorDest, ColorSource>( from.Blue() ),
+		ConvertComponent<ColorDest, ColorSource>( from.Alpha() ),
+	};
+}
+
+// Converts to the same type
+template<class ColorSource>
+	ColorSource Cast( const ColorSource& from )
+{
+	return from;
+}
+
 
 namespace Constants {
 // Namespace enum to have these constants scoped but allowing implicit conversions
@@ -329,7 +474,7 @@ extern const char* Null;
 } // namespace Named
 
 namespace NamedFloat {
-typedef float vec4_t[4];
+using vec4_t = float[4];
 extern vec4_t Black;
 extern vec4_t Red;
 extern vec4_t Green;

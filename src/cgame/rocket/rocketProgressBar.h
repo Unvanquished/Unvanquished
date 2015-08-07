@@ -113,14 +113,14 @@ public:
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y, dimensions.x, height,
 						       0.0f, 0.0f, 1.0f, value, shader );
-				trap_R_SetColor( nullptr );
+				trap_R_ClearColor();
 			}
 			else
 			{
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y - height + dimensions.y, dimensions.x,
 						       height, 0.0f, 1.0f - value, 1.0f, 1.0f, shader );
-				trap_R_SetColor( nullptr );
+				trap_R_ClearColor();
 			}
 		}
 
@@ -137,14 +137,14 @@ public:
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y, width,
 						       dimensions.y, 0.0f, 0.0f, value, 1.0f, shader );
-				trap_R_SetColor( nullptr );
+				trap_R_ClearColor();
 			}
 			else
 			{
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x - width + dimensions.x, position.y, width,
 						       dimensions.y, 1.0f - value, 0.0f, 1.0f, 1.0f, shader );
-				trap_R_SetColor( nullptr );
+				trap_R_ClearColor();
 			}
 		}
 	}

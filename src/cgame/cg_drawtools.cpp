@@ -115,7 +115,7 @@ void CG_FillRect( float x, float y, float width, float height, const float *colo
 	CG_AdjustFrom640( &x, &y, &width, &height );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader );
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 /*
@@ -159,7 +159,7 @@ void CG_DrawRect( float x, float y, float width, float height, float size, const
 	CG_DrawTopBottom( x, y, width, height, size );
 	CG_DrawSides( x, y, width, height, size );
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 /*
@@ -268,21 +268,15 @@ Coordinates are 640*480 virtual values
 void CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
                      vec4_t tcolor, float amount, qhandle_t hShader )
 {
-	vec4_t finalcolor;
-	float  inverse;
-
-	inverse = 100 - amount;
 
 	CG_AdjustFrom640( &x, &y, &width, &height );
 
-	finalcolor[ 0 ] = ( ( inverse * fcolor[ 0 ] ) + ( amount * tcolor[ 0 ] ) ) / 100;
-	finalcolor[ 1 ] = ( ( inverse * fcolor[ 1 ] ) + ( amount * tcolor[ 1 ] ) ) / 100;
-	finalcolor[ 2 ] = ( ( inverse * fcolor[ 2 ] ) + ( amount * tcolor[ 2 ] ) ) / 100;
-	finalcolor[ 3 ] = ( ( inverse * fcolor[ 3 ] ) + ( amount * tcolor[ 3 ] ) ) / 100;
+	Color::ColorFloat finalcolor =
+		Color::Blend<Color::ColorFloat>( fcolor, tcolor, amount / 100 );
 
 	trap_R_SetColor( finalcolor );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 /*

@@ -1269,7 +1269,6 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 		float  picM;
 		float  scale = ( picH / d ) * 3.0f;
 
-		vec4_t backColour;
 
 		const char *text = nullptr;
 		qhandle_t  shader = 0;
@@ -1277,10 +1276,8 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 		picM = picH * scale;
 		picH = picM * ( 1.0f - bs->verticalMargin );
 
-		backColour[0] = bs->backColor[0];
-		backColour[1] = bs->backColor[1];
-		backColour[2] = bs->backColor[2];
-		backColour[3] = bs->backColor[3] / 3;
+		Color::ColorFloat  backColor = bs->backColor;
+		backColor.SetAlpha( bs->backColor[3] / 3 );
 
 		switch ( SB_BUILDABLE_TO_IBE( buildableInfo ) )
 		{
@@ -1332,23 +1329,23 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 
 		if ( shader )
 		{
-			trap_R_SetColor( backColour );
+			trap_R_SetColor( backColor );
 			CG_DrawPic( picX - picM / 2, picY - picM / 2, picM, picM, cgs.media.whiteShader );
 			trap_R_SetColor( bs->foreColor );
 			CG_DrawPic( picX - picH / 2, picY - picH / 2, picH, picH, bs->noPowerShader );
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 
 		if ( text )
 		{
 			float     tx = 0, ty = 0;
-			trap_R_SetColor( backColour );
+			trap_R_SetColor( backColor );
 
 			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2,
 			            ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ),
 			            cgs.media.whiteShader );
 
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 	}
 }
@@ -1619,7 +1616,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 #define STATUS_MAX_VIEW_DIST 900.0f
 #define STATUS_PEEK_DIST     20
 
-static void HealthColorFade( vec4_t out, float healthFrac, buildStat_t *bs )
+static Color::ColorFloat HealthColorFade( float healthFrac, buildStat_t *bs )
 {
 	float frac;
 
@@ -1634,26 +1631,31 @@ static void HealthColorFade( vec4_t out, float healthFrac, buildStat_t *bs )
 
 	if ( healthFrac == 1.0f )
 	{
-		Vector4Copy( bs->healthLowColor, out );
+		return bs->healthLowColor;
 	}
-	else if ( healthFrac > 0.666f )
+
+	Color::ColorFloat out;
+	if ( healthFrac > 0.666f )
 	{
+		/// \todo (color) if possible, don't use these macros
 		frac = 1.0f - ( healthFrac - 0.666f ) * 3.0f;
-		Vector4Lerp( frac, bs->healthGuardedColor, bs->healthElevatedColor, out );
+		Vector4Lerp( frac, bs->healthGuardedColor, bs->healthElevatedColor, out.toArray() );
 	}
 	else if ( healthFrac > 0.333f )
 	{
 		frac = 1.0f - ( healthFrac - 0.333f ) * 3.0f;
-		Vector4Lerp( frac, bs->healthElevatedColor, bs->healthHighColor, out );
+		Vector4Lerp( frac, bs->healthElevatedColor, bs->healthHighColor, out.toArray() );
 	}
 	else
 	{
 		frac = 1.0f - healthFrac * 3.0f;
-		Vector4Lerp( frac, bs->healthHighColor, bs->healthSevereColor, out );
+		Vector4Lerp( frac, bs->healthHighColor, bs->healthSevereColor, out.toArray() );
 	}
+
+	return out;
 }
 
-static void DepletionColorFade( vec4_t out, float frac, buildStat_t *bs )
+static Color::ColorFloat DepletionColorFade( float frac, buildStat_t *bs )
 {
 	if ( frac > 1.0f )
 	{
@@ -1666,8 +1668,9 @@ static void DepletionColorFade( vec4_t out, float frac, buildStat_t *bs )
 
 	frac = frac * 0.6f + 0.4f;
 
-	Vector4Copy( bs->healthLowColor, out );
-	Vector4Scale( out, frac, out );
+	Color::ColorFloat out = bs->healthLowColor;
+	out *= frac;
+	return out;
 }
 
 /*
@@ -1913,7 +1916,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		float  scale, pad;
 		float  subH, subY;
 		float  clipX, clipY, clipW, clipH;
-		vec4_t frameColor;
+		Color::ColorFloat frameColor;
 
 		// this is fudged to get the width/height in the cfg to be more realistic
 		scale = ( picH / d ) * 3;
@@ -1940,8 +1943,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// draw bar frames
 		if ( bs->frameShader )
 		{
-			Vector4Copy( bs->backColor, frameColor );
-			frameColor[ 3 ] = color[ 3 ];
+			frameColor = bs->backColor;
+			frameColor.SetAlpha( color[ 3 ] );
 			trap_R_SetColor( frameColor );
 
 			if ( showMineEfficiency || showStoredBP )
@@ -1960,14 +1963,13 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 				CG_ClearClipRegion();
 			}
 
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 
 		// draw mine rate bar
 		if ( showMineEfficiency )
 		{
 			float  barX, barY, barW, barH;
-			vec4_t barColor;
 			//float levelRate  = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
 
 			barX = picX + pad;
@@ -1975,12 +1977,12 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			barW = ( 0.5f * picW * mineEfficiencyFrac ) - ( 1.5f * pad );
 			barH = ( 0.5f * picH ) - pad;
 
-			DepletionColorFade( barColor, mineEfficiencyFrac, bs );
-			barColor[ 3 ] = color[ 3 ];
+			Color::ColorFloat barColor = DepletionColorFade( mineEfficiencyFrac, bs );
+			barColor.SetAlpha( color[ 3 ] );
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 
 			// TODO: Draw text using libRocket
 			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
@@ -1992,7 +1994,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		if ( showStoredBP )
 		{
 			float  barX, barY, barW, barH;
-			vec4_t barColor;
 			//float buildPoints = (float)cg.predictedPlayerState.persistant[ PERS_BP ];
 
 			barX = picX + ( showMineEfficiency ? ( ( 0.5f * picW ) + ( 0.5f * pad ) ) : pad );
@@ -2001,12 +2002,12 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			       ( ( showMineEfficiency ? 1.5f : 2.0f ) * pad );
 			barH = ( 0.5f * picH ) - pad;
 
-			HealthColorFade( barColor, 1.0f - storedBPFrac, bs );
-			barColor[ 3 ] = color[ 3 ];
+			Color::ColorFloat barColor = HealthColorFade( 1.0f - storedBPFrac, bs );
+			barColor.SetAlpha( color[ 3 ] );
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 
 			// TODO: Draw text using libRocket
 			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
@@ -2018,45 +2019,40 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		if ( showMineEfficiency && showStoredBP )
 		{
 			float  sepX, sepY, sepW, sepH;
-			vec4_t separatorColor;
 
 			sepX = picX + ( 0.5f * picW ) - ( 0.5f * pad );
 			sepY = picY - ( 0.5f * picH ) + pad;
 			sepW = pad;
 			sepH = ( 0.5f * picH ) - pad;
 
-			Vector4Copy( Color::NamedFloat::Black, separatorColor );
-
-			trap_R_SetColor( separatorColor );
+			trap_R_SetColor( Color::Named::Black );
 			CG_DrawPic( sepX, sepY, sepW, sepH, cgs.media.whiteShader );
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 
 		// draw health bar
 		if ( health > 0 )
 		{
 			float  barX, barY, barW, barH;
-			vec4_t barColor;
 
 			barX = picX + ( bs->healthPadding * scale );
 			barY = picY + ( bs->healthPadding * scale );
 			barH = picH - ( bs->healthPadding * 2.0f * scale );
 			barW = picW * healthFrac - ( bs->healthPadding * 2.0f * scale );
 
-			HealthColorFade( barColor, healthFrac, bs );
-			barColor[ 3 ] = color[ 3 ];
+			Color::ColorFloat barColor = HealthColorFade( healthFrac, bs );
+			barColor.SetAlpha( color[ 3 ] );
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
 
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 
 		// draw power consumption bar
 		if ( showPower )
 		{
 			float  barX, barY, barW, barH, markX, markH, markW;
-			vec4_t barColor, markColor;
 
 			// draw bar
 			barX = picX + ( bs->healthPadding * scale );
@@ -2066,8 +2062,9 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			if ( barW > 0.0f )
 			{
-				if ( powered ) { DepletionColorFade( barColor, totalPowerFrac, bs ); }
-				else           { Vector4Copy( bs->healthSevereColor, barColor ); }
+				Color::ColorFloat barColor;
+				if ( powered ) { barColor = DepletionColorFade( totalPowerFrac, bs ); }
+				else           { barColor = bs->healthSevereColor; }
 				barColor[ 3 ] = color[ 3 ];
 
 				trap_R_SetColor( barColor );
@@ -2079,12 +2076,10 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			markH = 0.5f * barH;
 			markW = ( bs->healthPadding * scale );
 
-			Vector4Copy( Color::NamedFloat::Black, markColor );
-
-			trap_R_SetColor( markColor );
+			trap_R_SetColor( Color::Named::Black );
 			CG_DrawPic( markX, barY, markW, markH, cgs.media.whiteShader );
 
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 
 		if ( bs->overlayShader )
@@ -2102,7 +2097,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( frameColor );
 			CG_DrawPic( oX, oY, oW, oH, bs->overlayShader );
 
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 
 		trap_R_SetColor( color );
@@ -2161,7 +2156,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawField( nX, subY, 4, subH, subH, healthPoints );
 		}
 
-		trap_R_SetColor( nullptr );
+		trap_R_ClearColor();
 		CG_ClearClipRegion();
 	}
 }

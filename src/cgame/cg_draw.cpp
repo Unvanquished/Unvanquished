@@ -308,19 +308,18 @@ Draw a beacon on the HUD
 static void CG_DrawBeacon( cbeacon_t *b )
 {
 	float angle;
-	vec4_t color;
 
 	// Don't draw clamped beacons for tags, except for enemy players.
 	if( b->type == BCT_TAG && b->clamped && !( ( b->flags & EF_BC_ENEMY ) &&
 	                                           ( b->flags & EF_BC_TAG_PLAYER ) ) )
 		return;
 
-	Vector4Copy( b->color, color );
+	Color::ColorFloat color = b->color;
 
 	if( !( BG_Beacon( b->type )->flags & BCF_IMPORTANT ) )
-		color[ 3 ] *= cgs.bc.hudAlpha;
+		color.SetAlpha( color.Alpha() * cgs.bc.hudAlpha );
 	else
-		color[ 3 ] *= cgs.bc.hudAlphaImportant;
+		color.SetAlpha( color.Alpha() * cgs.bc.hudAlphaImportant );
 
 	trap_R_SetColor( color );
 
@@ -401,7 +400,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		}
 	}
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 //==================================================================================
@@ -441,12 +440,12 @@ static void CG_Draw2D()
 
 	if ( cg.zoomed )
 	{
-		vec4_t black = { 0.0f, 0.0f, 0.0f, 0.5f };
+		Color::Color black = { 0, 0, 0, 128 };
 		trap_R_DrawStretchPic( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), 0, cgs.glconfig.vidHeight, cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.scopeShader );
 		trap_R_SetColor( black );
 		trap_R_DrawStretchPic( 0, 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
 		trap_R_DrawStretchPic( cgs.glconfig.vidWidth - ( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ) ), 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
-		trap_R_SetColor( nullptr );
+		trap_R_ClearColor();
 	}
 }
 
@@ -482,7 +481,6 @@ CG_PainBlend
 */
 static void CG_PainBlend()
 {
-	vec4_t    color;
 	int       damage;
 	float     damageAsFracOfMax;
 	qhandle_t shader = cgs.media.viewBloodShader;
@@ -522,13 +520,14 @@ static void CG_PainBlend()
 		return;
 	}
 
+	Color::ColorFloat color;
 	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 	{
-		VectorSet( color, 0.43f, 0.8f, 0.37f );
+		color = { 0.43f, 0.8f, 0.37f };
 	}
 	else if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
-		VectorSet( color, 0.8f, 0.0f, 0.0f );
+		color = { 0.8f, 0.0f, 0.0f };
 	}
 
 	if ( cg.painBlendValue > cg.painBlendTarget )
@@ -546,7 +545,7 @@ static void CG_PainBlend()
 		cg.painBlendTarget = cg_painBlendMax.value;
 	}
 
-	color[ 3 ] = cg.painBlendTarget;
+	color.SetAlpha( cg.painBlendTarget );
 
 	trap_R_SetColor( color );
 
@@ -602,7 +601,7 @@ static void CG_PainBlend()
 	CG_ScalePainBlendTCs( &s1, &t1, &s2, &t2 );
 	trap_R_DrawStretchPic( x, y, w, h, s1, t1, s2, t2, shader );
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 /*

@@ -2109,8 +2109,8 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
                 break;
 
             case CG_R_SETCOLOR:
-                HandleMsg<Render::SetColorMsg>(std::move(reader), [this] (const std::array<float, 4>& color) {
-                    re.SetColor(color.data());
+                HandleMsg<Render::SetColorMsg>(std::move(reader), [this] (const Color::ColorFloat& color) {
+                    re.SetColor(color);
                 });
                 break;
 

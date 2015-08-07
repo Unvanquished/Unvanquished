@@ -339,10 +339,10 @@ static float CG_WorldToMinimapScale( const float scale )
 CG_SetMinimapColor
 ================
 */
-static vec4_t currentMinimapColor;
-static void CG_SetMinimapColor( const vec4_t color)
+static Color::ColorFloat currentMinimapColor;
+static void CG_SetMinimapColor( const Color::ColorFloat& color)
 {
-    VectorCopy( color, currentMinimapColor );
+    currentMinimapColor = color;
 }
 
 /*
@@ -364,7 +364,7 @@ static void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, con
     wh = texSize * realScale;
 
     //Handle teamcolor + transparency
-    currentMinimapColor[3] = alpha;
+    currentMinimapColor.SetAlpha( alpha );
     trap_R_SetColor( currentMinimapColor );
 
     trap_R_DrawRotatedPic( x, y, wh, wh, 0.0, 0.0, 1.0, 1.0, image, realAngle );
@@ -551,7 +551,6 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 {
 	vec2_t offset, pos2d, dir;
 	bool clamped;
-	vec4_t color;
 
 	size *= b->scale;
 
@@ -575,8 +574,8 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 	else
 		clamped = false;
 
-	Vector4Copy( b->color, color );
-	color[ 3 ] *= cgs.bc.minimapAlpha;
+	Color::ColorFloat color = b->color;
+	color.SetAlpha( cgs.bc.minimapAlpha );
 	trap_R_SetColor( color );
 
 	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0, 0.0, 1.0, 1.0, CG_BeaconIcon( b ), 0.0 );
@@ -696,5 +695,5 @@ void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
     CG_MinimapDrawBeacons( m, &rect );
 
     //Reset the color for other hud elements
-    trap_R_SetColor( nullptr );
+    trap_R_ClearColor();
 }

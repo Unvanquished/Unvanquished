@@ -986,7 +986,7 @@ void Con_DrawConsoleContent()
 		++row;
 	}
 
-	Color::Color currentColor(7);
+	Color::Color currentColor = Color::Named::White;
 	Color::Color color = currentColor;
 
 	for ( ; row >= 0 && lineDrawPosition > textDistanceToTop; lineDrawPosition -= charHeight, row-- )
@@ -1021,7 +1021,7 @@ void Con_DrawConsoleContent()
 			color.SetAlpha( Color::Color::component_max *
 				Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight )
 			);
-			re.SetColor( color );
+			re.SetColor( Color::Cast<Color::ColorFloat>(color) );
 
 			SCR_DrawConsoleFontUnichar( currentWidthLocation, floor( lineDrawPosition + 0.5 ), text[ x ].ch );
 			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
@@ -1030,7 +1030,7 @@ void Con_DrawConsoleContent()
 
 	Con_DrawConsoleScrollbar( );
 
-	re.SetColor( nullptr ); //set back to white
+	re.SetColor( Color::NamedFloat::White ); //set back to white
 }
 
 /*

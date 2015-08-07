@@ -434,7 +434,7 @@ public:
 		rectDef_t    rect;
 		float        x, y, w, h, dim;
 		qhandle_t    indicator;
-		vec4_t       drawColor, baseColor;
+		Color::ColorFloat drawColor, baseColor;
 		weapon_t     weapon;
 		weaponInfo_t *wi;
 		bool     onRelevantEntity;
@@ -464,28 +464,28 @@ public:
 		{
 			if ( cg.crosshairFoe )
 			{
-				Vector4Copy( Color::NamedFloat::Red, baseColor );
-				baseColor[ 3 ] = color[ 3 ] * 0.75f;
+				baseColor = Color::NamedFloat::Red;
+				baseColor.SetAlpha( color[ 3 ] * 0.75f );
 				onRelevantEntity = true;
 			}
 
 			else if ( cg.crosshairFriend )
 			{
-				Vector4Copy( Color::NamedFloat::Green, baseColor );
-				baseColor[ 3 ] = color[ 3 ] * 0.75f;
+				baseColor = Color::NamedFloat::Green;
+				baseColor.SetAlpha( color[ 3 ] * 0.75f );
 				onRelevantEntity = true;
 			}
 
 			else
 			{
-				Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
+				baseColor = { 1.0f, 1.0f, 1.0f, 0.0f };
 				onRelevantEntity = false;
 			}
 		}
 
 		else
 		{
-			Vector4Set( baseColor, 1.0f, 1.0f, 1.0f, 0.0f );
+			baseColor = { 1.0f, 1.0f, 1.0f, 0.0f };
 			onRelevantEntity = false;
 		}
 
@@ -494,7 +494,7 @@ public:
 		{
 			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
 
-			Vector4Lerp( dim, baseColor, Color::NamedFloat::White, drawColor );
+			Vector4Lerp( dim, baseColor.toArray(), Color::NamedFloat::White, drawColor );
 		}
 
 		else if ( !onRelevantEntity )
@@ -504,7 +504,7 @@ public:
 
 		else
 		{
-			Vector4Copy( baseColor, drawColor );
+			drawColor = baseColor;
 		}
 
 		// set size
@@ -517,7 +517,7 @@ public:
 		// draw
 		trap_R_SetColor( drawColor );
 		CG_DrawPic( x, y, w, h, indicator );
-		trap_R_SetColor( nullptr );
+		trap_R_ClearColor();
 	}
 private:
 	vec4_t color;
@@ -596,7 +596,7 @@ public:
 			CG_GetRocketElementColor( color );
 			trap_R_SetColor( color );
 			CG_DrawPic( x, y, w, h, crosshair );
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 	}
 
@@ -817,7 +817,7 @@ public:
 							cgs.media.whiteShader );
 			}
 
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 		}
 
 		if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_TEXT )
@@ -1321,7 +1321,7 @@ public:
 
 		trap_R_SetColor( adjustedColor );
 		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
-		trap_R_SetColor( nullptr );
+		trap_R_ClearColor();
 
 		//
 		// draw the graph
@@ -1433,7 +1433,7 @@ public:
 			}
 		}
 
-		trap_R_SetColor( nullptr );
+		trap_R_ClearColor();
 		CG_Rocket_DrawDisconnect();
 	}
 
@@ -2025,7 +2025,7 @@ public:
 
 		trap_R_SetColor( color );
 		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.beaconRocket.icon );
-		trap_R_SetColor( nullptr );
+		trap_R_ClearColor();
 	}
 
 private:
@@ -2089,9 +2089,10 @@ void CG_Rocket_DrawPlayerHealth()
 void CG_Rocket_DrawPlayerHealthCross()
 {
 	qhandle_t shader;
-	vec4_t    color, ref_color;
+	vec4_t    ref_color;
 	float     ref_alpha;
 	rectDef_t rect;
+	Color::ColorFloat color;
 
 	// grab info from libRocket
 	CG_GetRocketElementColor( ref_color );
@@ -2124,13 +2125,12 @@ void CG_Rocket_DrawPlayerHealthCross()
 	}
 
 	// Pick the alpha value
-	Vector4Copy( ref_color, color );
+	color = ref_color;
 
 	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 			cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
-		color[ 0 ] = 1.0f;
-		color[ 1 ] = color[ 2 ] = 0.0f;
+		color = Color::NamedFloat::Red;
 	}
 
 	ref_alpha = ref_color[ 3 ];
@@ -2160,22 +2160,22 @@ void CG_Rocket_DrawPlayerHealthCross()
 		else
 		{
 			// Fading between two icons
-			color[ 3 ] = ref_alpha * cg.healthCrossFade;
+			color.SetAlpha( ref_alpha * cg.healthCrossFade );
 			trap_R_SetColor( color );
 			CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
-			color[ 3 ] = ref_alpha * ( 1.0f - cg.healthCrossFade );
+			color.SetAlpha( ref_alpha * ( 1.0f - cg.healthCrossFade ) );
 			trap_R_SetColor( color );
 			CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.lastHealthCross );
-			trap_R_SetColor( nullptr );
+			trap_R_ClearColor();
 			return;
 		}
 	}
 
 	// Not fading, draw a single icon
-	color[ 3 ] = ref_alpha;
+	color.SetAlpha( ref_alpha );
 	trap_R_SetColor( color );
 	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 
 }
 
@@ -2225,7 +2225,6 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	float    nudge;
 	float    fmax = max; // we don't want integer division
 	bool vertical; // a stack taller than it is wide is drawn vertically
-	vec4_t   localColor;
 
 	// so that the vertical and horizontal bars can share code, abstract the
 	// longer dimension and the alignment parameter
@@ -2286,7 +2285,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 						cgs.media.whiteShader );
 		}
 
-		trap_R_SetColor( nullptr );
+		trap_R_ClearColor();
 		return;
 	}
 
@@ -2340,12 +2339,12 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	// if there is a partial square, draw it dropping off the end of the stack
 	if ( frac <= 0.f )
 	{
-		trap_R_SetColor( nullptr );
+		trap_R_ClearColor();
 		return; // no partial square, we're done here
 	}
 
-	Vector4Copy( color, localColor );
-	localColor[ 3 ] *= frac;
+	Color::ColorFloat localColor = color;
+	localColor.SetAlpha( localColor.Alpha() * frac );
 	trap_R_SetColor( localColor );
 
 	switch ( align )
@@ -2385,7 +2384,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 			}
 	}
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 static void CG_DrawPlayerAmmoStack()
@@ -2862,7 +2861,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 		}
 	}
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 
 }
 
@@ -3056,7 +3055,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 		}
 	}
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 static void CG_Rocket_DrawVote_internal( team_t team )

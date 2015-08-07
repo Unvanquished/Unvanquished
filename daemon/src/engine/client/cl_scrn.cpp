@@ -118,7 +118,7 @@ void SCR_FillRect( float x, float y, float width, float height, const float *col
 {
 	re.SetColor( color );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
-	re.SetColor( nullptr );
+	re.SetColor( Color::NamedFloat::White );
 }
 
 /*
@@ -289,7 +289,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 
 	// draw the colored text
 	xx = x;
-	re.SetColor( setColor );
+	re.SetColor( Color::Cast<Color::ColorFloat>( setColor ) );
 
 	for ( Color::TokenIterator i( string ); *i; ++i )
 	{
@@ -307,7 +307,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 					color = i->Color();
 					color.SetAlpha( setColor.Alpha() );
 				}
-				re.SetColor( color );
+				re.SetColor( Color::Cast<Color::ColorFloat>( color ) );
 			}
 
 			if ( noColorEscape )
@@ -338,7 +338,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 		}
 	}
 
-	re.SetColor( nullptr );
+	re.SetColor( Color::NamedFloat::White );
 }
 
 //===============================================================================
@@ -522,9 +522,9 @@ void SCR_DrawScreenField()
 	{
 		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
 		{
-			re.SetColor( Color::Color( 0 ) );
+			re.SetColor( Color::NamedFloat::Black );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
-			re.SetColor( nullptr );
+			re.SetColor( Color::NamedFloat::White );
 		}
 	}
 
