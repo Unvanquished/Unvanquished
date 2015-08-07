@@ -86,7 +86,7 @@ static void CON_AnsiColorPrint( const char *msg )
 				buffer.clear();
 			}
 
-			auto c4b = i->Color().to_4bit();
+			auto c4b = i->Color().To4bit();
 			bool bright = c4b & 8;
 			int number = c4b & ~8;
 

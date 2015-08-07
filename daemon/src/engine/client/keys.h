@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "keycodes.h"
 
 #include "framework/ConsoleField.h"
+#include "common/Color.h"
 
 #define MAX_TEAMS 4
 #define DEFAULT_BINDING 0
@@ -55,7 +56,8 @@ extern int      bindTeam;
 void            Field_KeyDownEvent(Util::LineEditData& edit, int key );
 void            Field_CharEvent(Util::LineEditData& edit, int c );
 void            Field_Draw(const Util::LineEditData& edit, int x, int y,
-						   bool showCursor, bool noColorEscape, unsigned char alpha );
+						   bool showCursor, bool noColorEscape,
+						   Color::Color::component_type alpha );
 
 extern Console::Field  g_consoleField;
 extern int      anykeydown;

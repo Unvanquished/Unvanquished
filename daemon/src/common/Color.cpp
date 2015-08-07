@@ -146,7 +146,7 @@ Color::Color::Color (int index)
 	*this = g_color_table[index%32];
 }
 
-int Color::to_4bit() const
+int Color::To4bit() const
 {
     int color = 0;
 

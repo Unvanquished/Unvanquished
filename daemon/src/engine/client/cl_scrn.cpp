@@ -305,7 +305,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 				else
 				{
 					color = i->Color();
-					color.a = setColor.a;
+					color.SetAlpha( setColor.Alpha() );
 				}
 				re.SetColor( color );
 			}

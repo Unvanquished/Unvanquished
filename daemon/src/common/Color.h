@@ -85,6 +85,11 @@ inline constexpr char hex_to_char( int i )
 	return i < 10 ? i + '0' : i + 'a' - 10;
 }
 
+// Description of the components used by a color class
+enum class Components
+{
+	RGBA
+};
 
 /*
 ================
@@ -93,45 +98,13 @@ Color
 Value class to represent colors
 ================
 */
-struct Color
+class Color
 {
-	typedef unsigned char component_type;
-	typedef std::numeric_limits<component_type> limits_type;
-
-	component_type r = 0, g = 0, b = 0, a = 0;
-
-	/*
-	================
-	Color::Color
-
-	Initialize from a color index
-	================
-	*/
-	explicit Color(int index);
-
-	/*
-	================
-	Color::Color
-
-	Initialize from a color index character
-	================
-	*/
-	explicit Color(char index)
-		: Color( int( index - '0') )
-	{
-	}
-
-	/*
-	================
-	Color::Color
-
-	Initialize from a float array
-	================
-	*/
-	Color(const float array[4])
-	{
-		assign_float_array(array);
-	}
+public:
+	typedef uint8_t component_type;
+	static constexpr const component_type component_max
+		= std::numeric_limits<component_type>::max();
+	static constexpr const Components components = Components::RGBA;
 
 	/*
 	================
@@ -149,45 +122,118 @@ struct Color
 	Default constructor, all components set to zero
 	================
 	*/
-	constexpr Color(component_type r, component_type g, component_type b,
-					  component_type a = limits_type::max())
+	constexpr Color( component_type r, component_type g, component_type b,
+					  component_type a = component_max )
 		: r(r), g(g), b(b), a(a)
 	{
 	}
 
-	bool operator==( const Color& other ) const
-	{
-		return integer_32bit() == other.integer_32bit();
-	}
+	/*
+	================
+	Color::Color
 
-	bool operator!=( const Color& other ) const
-	{
-		return integer_32bit() != other.integer_32bit();
-	}
+	Initialize from a color index
+	================
+	*/
+	explicit Color( int index );
 
-	void to_float_array(float output[4]) const
+	/*
+	================
+	Color::Color
+
+	Initialize from a color index character
+	================
+	*/
+	explicit Color( char index )
+		: Color( int( index - '0') )
 	{
-		output[0] = r / float(limits_type::max());
-		output[1] = g / float(limits_type::max());
-		output[2] = b / float(limits_type::max());
-		output[3] = a / float(limits_type::max());
 	}
 
 	/*
 	================
-	Color::to_string
+	Color::Color
+
+	Initialize from a float array
+	================
+	*/
+	Color(const float array[4])
+	{
+		assign_float_array(array);
+	}
+
+	constexpr component_type Red() const
+	{
+		return r;
+	}
+
+	constexpr component_type Green() const
+	{
+		return g;
+	}
+
+	constexpr component_type Blue() const
+	{
+		return b;
+	}
+
+	constexpr component_type Alpha() const
+	{
+		return a;
+	}
+
+	void SetRed( component_type v )
+	{
+		r = v;
+	}
+
+	void SetGreen( component_type v )
+	{
+		g = v;
+	}
+
+	void SetBlue( component_type v )
+	{
+		b = v;
+	}
+
+	void SetAlpha( component_type v )
+	{
+		a = v;
+	}
+
+	bool operator==( const Color& other ) const
+	{
+		return To32bit() == other.To32bit();
+	}
+
+	bool operator!=( const Color& other ) const
+	{
+		return To32bit() != other.To32bit();
+	}
+
+	void to_float_array(float output[4]) const
+	{
+		output[0] = r / float(component_max);
+		output[1] = g / float(component_max);
+		output[2] = b / float(component_max);
+		output[3] = a / float(component_max);
+	}
+
+	/*
+	================
+	Color::toString
 
 	Returns a string representing the color
 	================
 	*/
-	std::string to_string() const
+	std::string ToString() const
 	{
 		return std::string("^x")+hex_to_char(r/17)+hex_to_char(g/17)+hex_to_char(b/17);
 	}
 
 	/*
 	================
-	Color::to_4bit
+	Color::to4bit
 
 	Returns a 4 bit integer with the bits following this pattern:
 		1 red
@@ -196,7 +242,7 @@ struct Color
 		8 bright
 	================
 	*/
-	int to_4bit() const;
+	int To4bit() const;
 
 private:
 	void assign_float_array(const float* col)
@@ -204,28 +250,31 @@ private:
 		if ( !col )
 		{
 			// replicate behaviour from refexport_t::SetColor
-			r = g = b = a = limits_type::max();
+			r = g = b = a = component_max;
 			return;
 		}
 
-		r = col[0] * limits_type::max();
-		g = col[1] * limits_type::max();
-		b = col[2] * limits_type::max();
-		a = col[3] * limits_type::max();
+		r = col[0] * component_max;
+		g = col[1] * component_max;
+		b = col[2] * component_max;
+		a = col[3] * component_max;
 	}
 
 	/*
 	================
-	Color::integer_32bit
+	Color::To32bit
 
 	Returns a 32bit integer representing the color,
 	no guarantees are made with respect to endianness
 	================
 	*/
-	uint32_t integer_32bit() const
+	uint32_t To32bit() const
 	{
 		return *reinterpret_cast<const uint32_t*>(this);
 	}
+
+
+	component_type r = 0, g = 0, b = 0, a = 0;
 };
 
 namespace Constants {

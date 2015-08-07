@@ -136,7 +136,7 @@ static std::string Con_LineToColouredString( int lineno, bool lf )
 		if ( line[ s ].ink != color )
 		{
 			color = line[ s ].ink;
-			lineString += color.to_string();
+			lineString += color.ToString();
 		}
 
 		if ( line[ s ].ch < 0x80 )
@@ -586,7 +586,7 @@ bool CL_InternalConsolePrint( const char *text )
 		if ( it->Type() == Color::Token::COLOR )
 		{
 			color = it->Color();
-			color.a = console_color.a;
+			color.SetAlpha( console_color.Alpha() );
 			continue;
 		}
 		else if ( it->Type() == Color::Token::DEFAULT_COLOR )
@@ -735,14 +735,14 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
 	Color::Color color = Color::Named::White;
-	color.a = Color::Color::limits_type::max() * consoleState.currentAlphaFactor * overrideAlpha;
+	color.SetAlpha( Color::Color::component_max * consoleState.currentAlphaFactor * overrideAlpha );
 
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
 
 	Q_CleanStr( prompt );
 	Field_Draw( g_consoleField,
 		consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ),
-		linePosition, true, true, color.a );
+		linePosition, true, true, color.Alpha() );
 }
 
 void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )
@@ -1018,8 +1018,9 @@ void Con_DrawConsoleContent()
 				color = currentColor;
 			}
 
-			color.a = Color::Color::limits_type::max() *
-				Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight );
+			color.SetAlpha( Color::Color::component_max *
+				Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight )
+			);
 			re.SetColor( color );
 
 			SCR_DrawConsoleFontUnichar( currentWidthLocation, floor( lineDrawPosition + 0.5 ), text[ x ].ch );

@@ -92,7 +92,7 @@ static void CON_SetColor( WINDOW *win, const Color::Color& color )
 	}
 	else
 	{
-		wattrset( win, COLOR_PAIR(color.to_4bit()) );
+		wattrset( win, COLOR_PAIR(color.To4bit()) );
 	}
 }
 
