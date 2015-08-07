@@ -66,6 +66,12 @@ static struct termios TTY_tc;
 
 static Console::Field TTY_field(INT_MAX);
 
+void WriteToStdout(const char* text) {
+	if (write( STDOUT_FILENO, text, strlen(text)) < 0) {
+        Log::Warn("Error writing to the terminal: %s", strerror(errno));
+    }
+}
+
 /*
 =================
 CON_AnsiColorPrint
@@ -196,15 +202,7 @@ send "\b \b"
 */
 static void CON_Back()
 {
-	char key;
-//	size_t size;
-
-	key = '\b';
-	write( STDOUT_FILENO, &key, 1 );
-	key = ' ';
-	write( STDOUT_FILENO, &key, 1 );
-	key = '\b';
-	write( STDOUT_FILENO, &key, 1 );
+	WriteToStdout("\b \b");
 }
 
 /*
@@ -251,10 +249,10 @@ static void CON_Show()
 
 		if ( ttycon_hide == 0 )
 		{
-			write( STDOUT_FILENO, "]", 1 );
+			WriteToStdout("]");
 
 			std::string text = Str::UTF32To8(TTY_field.GetText());
-			write( STDOUT_FILENO, text.c_str(), text.size());
+			WriteToStdout(text.c_str());
 		}
 	}
 }
@@ -388,7 +386,7 @@ char *CON_Input_TTY()
 				if ( key == '\n' )
 				{
 					TTY_field.RunCommand(com_consoleCommand->string);
-					write( STDOUT_FILENO, "\n]", 2 );
+					WriteToStdout("\n]");
 					return nullptr;
 				}
 

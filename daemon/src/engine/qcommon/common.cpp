@@ -170,7 +170,7 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 	va_end( argptr );
 }
 
-void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location)
+void QDECL Com_LogEvent( log_event_t *event )
 {
 	switch (event->level)
 	{
@@ -192,12 +192,6 @@ void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location)
 		Com_Printf("%s\n", event->message);
 		break;
 	}
-#ifndef NDEBUG
-	if (location)
-	{
-		Com_Printf("\tin %s at %s:%i\n", location->function, location->file, location->line);
-	}
-#endif
 }
 
 void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... )
@@ -213,7 +207,7 @@ void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... )
 	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
 	va_end( argptr );
 
-	Com_LogEvent( &event, nullptr );
+	Com_LogEvent( &event );
 }
 
 void QDECL Com_Log( log_level_t level, const char* message )
@@ -221,7 +215,7 @@ void QDECL Com_Log( log_level_t level, const char* message )
 	log_event_t event;
 	event.level = level;
 	event.message = message;
-	Com_LogEvent( &event, nullptr );
+	Com_LogEvent( &event );
 }
 
 /*
