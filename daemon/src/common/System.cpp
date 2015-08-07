@@ -346,7 +346,7 @@ void GenRandomBytes(void* dest, size_t size)
 	int fd = open("/dev/urandom", O_RDONLY);
 	if (fd == -1)
 		Sys::Error("Failed to open /dev/urandom: %s", strerror(errno));
-	if (read(fd, dest, size) != size)
+	if (read(fd, dest, size) != (ssize_t) size)
 		Sys::Error("Failed to read from /dev/urandom: %s", strerror(errno));
 	close(fd);
 #endif

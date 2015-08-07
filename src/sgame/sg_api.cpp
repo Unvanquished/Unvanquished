@@ -290,20 +290,6 @@ void trap_SendGameStat(const char *data)
 	VM::SendMsg<SendGameStatMsg>(data);
 }
 
-bool trap_GetTag(int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori)
-{
-	int res;
-	VM::SendMsg<GetTagMsg>(clientNum, tagFileNumber, tagName, res, *ori);
-	return res;
-}
-
-bool trap_LoadTag(const char *filename)
-{
-	int res;
-	VM::SendMsg<RegisterTagMsg>(filename, res);
-	return res;
-}
-
 void trap_SendMessage(int clientNum, char *buf, int buflen)
 {
 	std::vector<char> buffer(buflen, 0);

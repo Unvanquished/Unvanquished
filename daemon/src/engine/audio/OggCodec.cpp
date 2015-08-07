@@ -51,7 +51,7 @@ namespace Audio{
  */
 struct OggDataSource {
 	std::string* audioFile;
-	int position;
+	size_t position;
 };
 
 /*
@@ -87,9 +87,9 @@ size_t OggCallbackRead(void* ptr, size_t size, size_t count, void* datasource)
 	}
 
 	std::string* audioFile = data->audioFile;
-	int position = data->position;
-	int bytesRemaining = audioFile->size() - position;
-	int bytesToRead = size * count;
+	size_t position = data->position;
+	size_t bytesRemaining = audioFile->size() - position;
+	size_t bytesToRead = size * count;
 	if (bytesToRead > bytesRemaining) {
 		bytesToRead = bytesRemaining;
 	}
@@ -97,11 +97,12 @@ size_t OggCallbackRead(void* ptr, size_t size, size_t count, void* datasource)
 	std::copy_n(audioFile->cbegin() + position, bytesToRead, static_cast<char*>(ptr));
 	data->position += bytesToRead;
 
-	int elementsRead = bytesToRead/size;
+	size_t elementsRead = bytesToRead / size;
 
     //An element was partially read
-	if (bytesToRead % size)
-		++elementsRead;
+	if (bytesToRead % size) {
+		++ elementsRead;
+    }
 
     return elementsRead;
 }

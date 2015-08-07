@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
 
-void IN_Init( void* windowData )
+void IN_Init( void* )
 {
 }
 
@@ -54,11 +54,11 @@ void Sys_SendKeyEvents()
 }
 
 // TTimo: added for win32 dedicated
-void IN_MouseEvent( int mstate )
+void IN_MouseEvent( int )
 {
 }
 
-void IN_Activate( bool active )
+void IN_Activate( bool )
 {
 }
 

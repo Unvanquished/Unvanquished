@@ -490,12 +490,10 @@ playerState_t  *SV_GameClientNum( int num );
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 std::unique_ptr<GameVM> SV_CreateGameVM();
-void           SV_InitGameProgs(Str::StringRef mapname);
+void           SV_InitGameProgs();
 void           SV_ShutdownGameProgs();
-void           SV_RestartGameProgs(Str::StringRef mapname);
+void           SV_RestartGameProgs();
 bool       SV_inPVS( const vec3_t p1, const vec3_t p2 );
-bool       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
-int            SV_LoadTag( const char *mod_name );
 void           SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime );
 void           SV_GameCommandHandler();
 

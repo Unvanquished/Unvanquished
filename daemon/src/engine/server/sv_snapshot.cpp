@@ -73,7 +73,7 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 	// generate the delta update
 	if ( !from )
 	{
-		static const clientSnapshot_t nullfrom = { 0 };
+		static const clientSnapshot_t nullfrom{};
 
 		from = &nullfrom;
 		from_num_entities = 0;

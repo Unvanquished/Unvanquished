@@ -2449,14 +2449,6 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 	  CA_CINEMATIC // playing a cinematic or a static pic, not connected to a server
 	} connstate_t;
 
-// clipboard
-	typedef enum
-	{
-		SELECTION_PRIMARY,
-		SELECTION_SECONDARY,
-		SELECTION_CLIPBOARD
-	} clipboard_t;
-
 // font support
 
 #define GLYPH_START     0

@@ -719,7 +719,7 @@ public:
 			Print("File not found: \"%s\"", filename);
 	}
 
-	Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE
+	Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE
 	{
 		if (argNum == 1) {
 			return FS::PakPath::CompleteFilename(prefix, "", "", true, false);
@@ -735,7 +735,7 @@ public:
 	ListPathsCmd()
 		: Cmd::StaticCmd("listPaths", Cmd::SYSTEM, "list filesystem search paths") {}
 
-	void Run(const Cmd::Args& args) const OVERRIDE
+	void Run(const Cmd::Args&) const OVERRIDE
 	{
 		Print("Home path: %s", FS::GetHomePath());
 		for (auto& x: FS::PakPath::GetLoadedPaks())

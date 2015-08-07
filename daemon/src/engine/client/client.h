@@ -74,7 +74,7 @@ typedef struct
 	int           cmdNum; // the next cmdNum the server is expecting
 	playerState_t ps; // complete information about the current player at this time
 
-	int           numEntities; // all of the entities that need to be presented
+	unsigned      numEntities; // all of the entities that need to be presented
 	int           parseEntitiesNum; // at the time of this snapshot
 
 	int           serverCommandNum; // execute all commands up to this before
@@ -376,7 +376,7 @@ typedef struct
 	int          numGlobalServerAddresses;
 	netadr_t     globalServerAddresses[ MAX_GLOBAL_SERVERS ];
 
-	int          numserverLinks;
+	unsigned     numserverLinks;
 	netadr_t     serverLinks[ MAX_GLOBAL_SERVERS ];
 
 	int          numfavoriteservers;
@@ -919,5 +919,5 @@ bool CL_VideoRecording();
 //
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd();
-void CL_GetClipboardData( char *, int, clipboard_t );
+void CL_GetClipboardData( char *, int );
 #endif

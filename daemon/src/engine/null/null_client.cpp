@@ -41,27 +41,27 @@ void CL_Init()
 	// TTimo: localisation, prolly not any use in dedicated / null client
 }
 
-void CL_MouseEvent( int dx, int dy, int time )
+void CL_MouseEvent( int, int, int )
 {
 }
 
-void Key_WriteBindings( fileHandle_t f )
+void Key_WriteBindings( fileHandle_t )
 {
 }
 
-void CL_Frame( int msec )
+void CL_Frame( int )
 {
 }
 
-void CL_PacketEvent( netadr_t from, msg_t *msg )
+void CL_PacketEvent( netadr_t, msg_t*  )
 {
 }
 
-void CL_CharEvent( int c )
+void CL_CharEvent( int )
 {
 }
 
-void CL_Disconnect( bool showMainMenu )
+void CL_Disconnect( bool )
 {
 }
 
@@ -71,10 +71,10 @@ void CL_MapLoading()
 
 bool CL_GameCommand()
 {
-	return false; // bk001204 - non-void
+	return false;
 }
 
-void CL_KeyEvent( int key, bool down, unsigned time )
+void CL_KeyEvent( int, bool, unsigned )
 {
 }
 
@@ -88,11 +88,11 @@ void CL_ForwardCommandToServer( const char *cmd )
 	Com_Printf( "Unknown command \"%s\"\n", cmd );
 }
 
-void CL_ConsolePrint( std::string text )
+void CL_ConsolePrint( std::string )
 {
 }
 
-void CL_JoystickEvent( int axis, int value, int time )
+void CL_JoystickEvent( int, int, int )
 {
 }
 
@@ -108,12 +108,10 @@ void CL_StartHunkUsers()
 {
 }
 
-// bk001119 - added new dummy for sv_init.c
 void CL_ShutdownAll()
 {
 }
 
-// TTimo added for win32 dedicated
 void Key_ClearStates()
 {
 }

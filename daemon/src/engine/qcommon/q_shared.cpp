@@ -320,9 +320,7 @@ Com_CharIsOneOfCharset
 */
 static bool Com_CharIsOneOfCharset( char c, const char *set )
 {
-	int i;
-
-	for ( i = 0; i < strlen( set ); i++ )
+	for (unsigned i = 0; i < strlen( set ); i++ )
 	{
 		if ( set[ i ] == c )
 		{
@@ -1638,9 +1636,9 @@ int Com_HexStrToInt( const char *str )
 	// check for hex code
 	if ( str[ 0 ] == '0' && str[ 1 ] == 'x' )
 	{
-		int i, n = 0;
+		int n = 0;
 
-		for ( i = 2; i < strlen( str ); i++ )
+		for (unsigned i = 2; i < strlen( str ); i++ )
 		{
 			char digit;
 
@@ -2937,7 +2935,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value, bool big 
 
 	Com_sprintf( newi, maxlen, "\\%s\\%s", key, value );
 
-	if ( strlen( newi ) + slen >= maxlen )
+	if ( strlen( newi ) + slen >= (unsigned) maxlen )
 	{
 		Com_Printf( "Info string length exceeded\n" );
 		return;
@@ -2972,7 +2970,7 @@ void Info_SetValueForKeyRocket( char *s, const char *key, const char *value, boo
 
 	Com_sprintf( newi, maxlen, "\\%s\\%s", key, value );
 
-	if ( strlen( newi ) + slen >= maxlen )
+	if ( strlen( newi ) + slen >= (unsigned) maxlen )
 	{
 		Com_Printf( "Info string length exceeded\n" );
 		return;

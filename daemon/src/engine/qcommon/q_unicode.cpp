@@ -149,9 +149,9 @@ static void shiftbitsright(unsigned char *p, unsigned long num, unsigned long by
 
 unsigned long Q_UTF8_CodePoint( const char *str )
 {
-  int i, j;
+  unsigned i, j;
   int n = 0;
-  int size = Q_UTF8_Width( str );
+  unsigned size = Q_UTF8_Width( str );
   unsigned long codepoint = 0;
   unsigned char *p = (unsigned char *) &codepoint;
 
@@ -290,7 +290,7 @@ char *Q_UTF8_Unstore( int e )
 
 static int uc_search_range( const void *chp, const void *memb )
 {
-  int ch = *(int *)chp;
+  unsigned ch = *(unsigned *)chp;
   const ucs2_pair_t *item = (ucs2_pair_t*) memb;
 
   return ( ch < item->c1 ) ? -1 : ( ch >= item->c2 ) ? 1 : 0;
@@ -320,7 +320,7 @@ bool Q_Unicode_IsAlphaOrIdeoOrDigit( int ch )
 
 static int uc_search_cp( const void *chp, const void *memb )
 {
-  int ch = *(int *)chp;
+  unsigned ch = *(unsigned *)chp;
   const ucs2_pair_t *item = (ucs2_pair_t*) memb;
 
   return ( ch < item->c1 ) ? -1 : ( ch > item->c1 ) ? 1 : 0;

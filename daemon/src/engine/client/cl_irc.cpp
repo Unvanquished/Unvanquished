@@ -343,7 +343,7 @@ IRC_ExecuteCTCPHandler
 Executes a CTCP command handler.
 ==================
 */
-static int IRC_ExecuteCTCPHandler( const char *command, bool is_channel, const char *argument )
+static int IRC_ExecuteCTCPHandler( bool is_channel, const char *argument )
 {
 	auto it = IRC_CTCPHandlers.find( IRC_String( cmd_string ) );
 
@@ -1223,9 +1223,7 @@ Decrease all non-zero rate limiter entries.
 */
 static INLINE void IRC_UpdateRateLimiter()
 {
-	int i;
-
-	for ( i = 0; i < ARRAY_LEN( IRC_RateLimiter ); i++ )
+	for ( unsigned i = 0; i < ARRAY_LEN( IRC_RateLimiter ); i++ )
 	{
 		if ( IRC_RateLimiter[ i ] )
 		{
@@ -1243,9 +1241,7 @@ Initialise the rate limiter.
 */
 static INLINE void IRC_InitRateLimiter()
 {
-	int i;
-
-	for ( i = 0; i < ARRAY_LEN( IRC_RateLimiter ); i++ )
+	for ( unsigned i = 0; i < ARRAY_LEN( IRC_RateLimiter ); i++ )
 	{
 		IRC_RateLimiter[ i ] = 0;
 	}
@@ -1791,7 +1787,7 @@ static int IRC_HandleCTCP( bool is_channel, char *string, int string_len )
 	Com_Printf( "--- IRC/CTCP ---\n Command:     %s\n Argument(s): %s\n", string, end_of_action );
 #endif
 
-	return IRC_ExecuteCTCPHandler( string, is_channel, end_of_action );
+	return IRC_ExecuteCTCPHandler( is_channel, end_of_action );
 }
 
 /*
@@ -1906,7 +1902,7 @@ CTCP_Version
 VERSION requests, let's advertise AA a lil'.
 ==================
 */
-static int CTCP_Version( bool is_channel, const char *argument )
+static int CTCP_Version( bool is_channel, const char * )
 {
 	if ( is_channel || !IRC_CheckEventRate( IRC_RL_VERSION ) )
 	{
@@ -2520,7 +2516,7 @@ static HANDLE IRC_ThreadHandle = nullptr;
 IRC_SystemThreadProc
 ==================
 */
-static DWORD WINAPI IRC_SystemThreadProc( LPVOID dummy )
+static DWORD WINAPI IRC_SystemThreadProc( LPVOID )
 {
 	IRC_Thread();
 	return 0;
@@ -2580,7 +2576,7 @@ static pthread_t IRC_ThreadHandle = ( pthread_t ) nullptr;
 IRC_SystemThreadProc
 ==================
 */
-static void *IRC_SystemThreadProc( void *dummy )
+static void *IRC_SystemThreadProc( void * )
 {
 	IRC_Thread();
 	return nullptr;

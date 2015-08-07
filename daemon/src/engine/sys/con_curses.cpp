@@ -134,7 +134,7 @@ static void CON_SetColor( WINDOW *win, int color )
 	{
 		int index = abs( com_ansiColor->integer ) - 1;
 
-		if ( index >= ARRAY_LEN( colour16map ) )
+		if ( index >= (int) ARRAY_LEN( colour16map ) )
 		{
 			index = 0;
 		}
@@ -287,7 +287,7 @@ static void CON_Redraw()
 	if( logwin )
 	{
 #ifndef _WIN32
-		struct winsize winsz = { 0, };
+		struct winsize winsz;
 
 		ioctl( fileno( stdout ), TIOCGWINSZ, &winsz );
 
@@ -358,7 +358,7 @@ The window has just been resized, move everything back into place
 ==================
 */
 #ifndef _WIN32
-static void CON_Resize( int sig )
+static void CON_Resize( int )
 {
 	// Don't call Redraw() directly, because it is slow, and we might miss more
 	// resize signals while redrawing.

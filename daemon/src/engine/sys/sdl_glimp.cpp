@@ -73,7 +73,7 @@ static SDL_Thread *renderThread = nullptr;
 GLimp_RenderThreadWrapper
 ===============
 */
-static int GLimp_RenderThreadWrapper( void *arg )
+static int GLimp_RenderThreadWrapper( void* )
 {
 	// These printfs cause race conditions which mess up the console output
 	Com_Printf( "Render thread starting\n" );
@@ -273,11 +273,11 @@ void GLimp_WakeRenderer( void *data )
 #else
 
 // No SMP - stubs
-void GLimp_RenderThreadWrapper( void *arg )
+void GLimp_RenderThreadWrapper( void* )
 {
 }
 
-bool GLimp_SpawnRenderThread( void ( *function )() )
+bool GLimp_SpawnRenderThread( void ( * )() )
 {
 	ri.Printf( PRINT_WARNING, "ERROR: SMP support was disabled at compile time\n" );
 	return false;
@@ -300,7 +300,7 @@ void GLimp_SyncRenderThread()
 {
 }
 
-void GLimp_WakeRenderer( void *data )
+void GLimp_WakeRenderer( void* )
 {
 }
 
@@ -943,8 +943,8 @@ static GLenum debugTypes[] =
 #else
 #define DEBUG_CALLBACK_CALL
 #endif
-static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum source, GLenum type, GLuint id,
-                                       GLenum severity, GLsizei length, const GLchar *message, const void *userParam )
+static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum, GLenum type, GLuint,
+                                       GLenum severity, GLsizei, const GLchar *message, const void* )
 {
 	const char *debugTypeName;
 	const char *debugSeverity;
@@ -1219,7 +1219,7 @@ static void reportDriverType( bool force )
 	static const char *const drivers[] = {
 		"integrated", "stand-alone", "OpenGL 3+", "Mesa"
 	};
-	if (glConfig.driverType > GLDRV_UNKNOWN && (int) glConfig.driverType < ARRAY_LEN( drivers ) )
+	if (glConfig.driverType > GLDRV_UNKNOWN && (unsigned) glConfig.driverType < ARRAY_LEN( drivers ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics driver class '%s'\n",
 		           force ? "User has forced" : "Detected",
@@ -1232,7 +1232,7 @@ static void reportHardwareType( bool force )
 	static const char *const hardware[] = {
 		"generic", "ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
-	if (glConfig.hardwareType > GLHW_UNKNOWN && (int) glConfig.hardwareType < ARRAY_LEN( hardware ) )
+	if (glConfig.hardwareType > GLHW_UNKNOWN && (unsigned) glConfig.hardwareType < ARRAY_LEN( hardware ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
 		           force ? "User has forced" : "Detected",

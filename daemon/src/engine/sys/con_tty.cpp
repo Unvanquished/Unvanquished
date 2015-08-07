@@ -107,7 +107,7 @@ static void CON_AnsiColorPrint( const char *msg )
 
 	int index = abs( com_ansiColor->integer ) - 1;
 
-	if ( index >= ARRAY_LEN( colour16map ) )
+	if ( index >= (int) ARRAY_LEN( colour16map ) )
 	{
 		index = 0;
 	}
@@ -286,7 +286,7 @@ set attributes if user did CTRL+Z and then does fg again.
 ==================
 */
 
-void CON_SigCont( int signum )
+void CON_SigCont( int )
 {
 	void CON_Init_TTY();
 

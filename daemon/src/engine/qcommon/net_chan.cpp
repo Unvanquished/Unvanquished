@@ -367,7 +367,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 
 		// copy the fragment to the fragment buffer
 		if ( fragmentLength < 0 || msg->readcount + fragmentLength > msg->cursize ||
-		     chan->fragmentLength + fragmentLength > sizeof( chan->fragmentBuffer ) )
+		     chan->fragmentLength + fragmentLength > (int) sizeof( chan->fragmentBuffer ) )
 		{
 			if ( showdrop->integer || showpackets->integer )
 			{
@@ -478,7 +478,7 @@ bool        NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_mes
 	return true;
 }
 
-void NET_SendLoopPacket( netsrc_t sock, int length, const void *data, netadr_t to )
+void NET_SendLoopPacket( netsrc_t sock, int length, const void *data )
 {
 	int        i;
 	loopback_t *loop;
@@ -575,7 +575,7 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 
 	if ( to.type == NA_LOOPBACK )
 	{
-		NET_SendLoopPacket( sock, length, data, to );
+		NET_SendLoopPacket( sock, length, data );
 		return;
 	}
 
