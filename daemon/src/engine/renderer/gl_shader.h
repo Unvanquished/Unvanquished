@@ -663,12 +663,12 @@ public:
 	virtual const char       *GetName() const = 0;
 	virtual EGLCompileMacro GetType() const = 0;
 
-	virtual bool            HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &/*macros*/ ) const
+	virtual bool            HasConflictingMacros( size_t, const std::vector<GLCompileMacro*>& ) const
 	{
 		return false;
 	}
 
-	virtual bool            MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &/*macros*/ ) const
+	virtual bool            MissesRequiredMacros( size_t, const std::vector<GLCompileMacro*>& ) const
 	{
 		return false;
 	}

@@ -114,41 +114,6 @@ static void R_ColorShiftLightingBytesCompressed( byte in[ 8 ], byte out[ 8 ] )
 
 /*
 ===============
-R_ColorShiftLightingFloats
-===============
-*/
-static void R_ColorShiftLightingFloats( const vec4_t in, vec4_t out )
-{
-	int shift, r, g, b;
-
-	// shift the color data based on overbright range
-	shift = tr.mapOverBrightBits - tr.overbrightBits;
-
-	// shift the data based on overbright range
-	r = ( ( byte )( in[ 0 ] * 255 ) ) << shift;
-	g = ( ( byte )( in[ 1 ] * 255 ) ) << shift;
-	b = ( ( byte )( in[ 2 ] * 255 ) ) << shift;
-
-	// normalize by color instead of saturating to white
-	if ( ( r | g | b ) > 255 )
-	{
-		int max;
-
-		max = r > g ? r : g;
-		max = max > b ? max : b;
-		r = r * 255 / max;
-		g = g * 255 / max;
-		b = b * 255 / max;
-	}
-
-	out[ 0 ] = r * ( 1.0f / 255.0f );
-	out[ 1 ] = g * ( 1.0f / 255.0f );
-	out[ 2 ] = b * ( 1.0f / 255.0f );
-	out[ 3 ] = in[ 3 ];
-}
-
-/*
-===============
 R_ProcessLightmap
 
         returns maxIntensity
@@ -230,34 +195,6 @@ static int QDECL LightmapNameCompare( const void *a, const void *b )
 	return 0;
 }
 
-/* standard conversion from rgbe to float pixels */
-/* note: Ward uses ldexp(col+0.5,exp-(128+8)).  However we wanted pixels */
-/*       in the range [0,1] to map back into the range [0,1].            */
-static INLINE void rgbe2float( float *red, float *green, float *blue, unsigned char rgbe[ 4 ] )
-{
-	float e;
-	float f;
-
-	if ( rgbe[ 3 ] )
-	{
-		/*nonzero pixel */
-		f = ldexp( 1.0, rgbe[ 3 ] - (128 + 8));
-		e = ( rgbe[ 3 ] - 128 ) / 4.0f;
-
-		// RB: exp2 not defined by MSVC
-		//f = exp2(e);
-		f = pow( 2, e );
-
-		*red = ( rgbe[ 0 ] / 255.0f ) * f;
-		*green = ( rgbe[ 1 ] / 255.0f ) * f;
-		*blue = ( rgbe[ 2 ] / 255.0f ) * f;
-	}
-	else
-	{
-		*red = *green = *blue = 0.0;
-	}
-}
-
 void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 {
 	int      i, j;
@@ -267,8 +204,6 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 	char     *token;
 	int      w, h, c;
 	bool formatFound;
-	float        exposure = 1.6;
-	const vec3_t LUMINANCE_VECTOR = { 0.2125f, 0.7154f, 0.0721f };
 
 	union
 	{
@@ -579,7 +514,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 				{
 					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
-					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP, nullptr );
+					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 					Com_AddToGrowList( &tr.deluxemaps, image );
 				}
 			}
@@ -624,18 +559,18 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 				{
 					if ( i % 2 == 0 )
 					{
-						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, nullptr );
+						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 						Com_AddToGrowList( &tr.lightmaps, image );
 					}
 					else
 					{
-						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, nullptr );
+						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 						Com_AddToGrowList( &tr.deluxemaps, image );
 					}
 				}
 				else
 				{
-					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP, nullptr );
+					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 					Com_AddToGrowList( &tr.lightmaps, image );
 				}
 			}
@@ -773,7 +708,7 @@ R_LoadVisibility
 */
 static void R_LoadVisibility( lump_t *l )
 {
-	int  len, i, j, k, m;
+	int  len, i, j, k;
 	byte *buf;
 
 	ri.Printf( PRINT_DEVELOPER, "...loading visibility\n" );
@@ -848,7 +783,7 @@ static void R_LoadVisibility( lump_t *l )
 				src2 = ( long * ) ( s_worldData.vis + index * s_worldData.clusterBytes );
 
 				// OR this vis data with the current cluster's
-				for ( m = 0; m < ( s_worldData.clusterBytes / sizeof( long ) ); m++ )
+				for (unsigned m = 0; m < ( s_worldData.clusterBytes / sizeof( long ) ); m++ )
 				{
 					( ( long * ) dest )[ m ] |= src2[ m ];
 				}
@@ -1448,7 +1383,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 ParseFlare
 ===============
 */
-static void ParseFlare( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, int *indexes )
+static void ParseFlare( dsurface_t *ds, bspSurface_t *surf )
 {
 	srfFlare_t *flare;
 	int        i;
@@ -2788,44 +2723,6 @@ void R_MovePatchSurfacesToHunk()
 	}
 }
 
-/*
-=================
-BSPSurfaceCompare
-compare function for qsort()
-=================
-*/
-static int BSPSurfaceCompare( const void *a, const void *b )
-{
-	bspSurface_t *aa, *bb;
-
-	aa = * ( bspSurface_t ** ) a;
-	bb = * ( bspSurface_t ** ) b;
-
-	// shader first
-	if ( aa->shader < bb->shader )
-	{
-		return -1;
-	}
-
-	else if ( aa->shader > bb->shader )
-	{
-		return 1;
-	}
-
-	// by lightmap
-	if ( aa->lightmapNum < bb->lightmapNum )
-	{
-		return -1;
-	}
-
-	else if ( aa->lightmapNum > bb->lightmapNum )
-	{
-		return 1;
-	}
-
-	return 0;
-}
-
 static void CopyVert( const srfVert_t *in, srfVert_t *out )
 {
 	int j;
@@ -3523,7 +3420,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 				break;
 
 			case MST_FLARE:
-				ParseFlare( in, dv, out, indexes );
+				ParseFlare( in, out );
 				numFlares++;
 				break;
 
@@ -3922,7 +3819,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 		}
 		else
 		{
-			if ( ( unsigned ) out->originalBrushNumber >= brushesCount )
+			if ( out->originalBrushNumber >= brushesCount )
 			{
 				ri.Error( ERR_DROP, "fog brushNumber out of range" );
 			}
@@ -3931,7 +3828,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 
 			firstSide = LittleLong( brush->firstSide );
 
-			if ( ( unsigned ) firstSide > sidesCount - 6 )
+			if ( firstSide > sidesCount - 6 )
 			{
 				ri.Error( ERR_DROP, "fog brush sideNumber out of range" );
 			}
@@ -6482,7 +6379,7 @@ void R_BuildCubeMaps()
 
 	int    startTime, endTime;
 	size_t tics = 0;
-	size_t nextTicCount = 0;
+	int nextTicCount = 0;
 
 	startTime = ri.Milliseconds();
 
@@ -6878,7 +6775,7 @@ void RE_LoadWorldMap( const char *name )
 	}
 
 	// swap all the lumps
-	for ( i = 0; i < sizeof( dheader_t ) / 4; i++ )
+	for ( unsigned i = 0; i < sizeof( dheader_t ) / 4; i++ )
 	{
 		( ( int * ) header ) [ i ] = LittleLong( ( ( int * ) header ) [ i ] );
 	}

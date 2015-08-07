@@ -116,7 +116,7 @@ typedef struct
 	// Draw images for cinematic rendering, pass as 32 bit rgba
 	void ( *DrawStretchRaw )( int x, int y, int w, int h, int cols, int rows, const byte *data, int client,
 	                          bool dirty );
-	void ( *UploadCinematic )( int w, int h, int cols, int rows, const byte *data, int client, bool dirty );
+	void ( *UploadCinematic )( int cols, int rows, const byte *data, int client, bool dirty );
 
 	void ( *BeginFrame )();
 
@@ -147,7 +147,6 @@ typedef struct
 
 	bool( *LoadDynamicShader )( const char *shadername, const char *shadertext );
 
-	void ( *RenderToTexture )( int textureid, int x, int y, int w, int h );
 	void ( *Finish )();
 
 	// XreaL BEGIN

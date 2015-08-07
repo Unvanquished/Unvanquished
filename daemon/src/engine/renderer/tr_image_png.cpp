@@ -41,7 +41,7 @@ static void png_read_data( png_structp png, png_bytep data, png_size_t length )
 	png_init_io( png, ( png_FILE_p )( io_ptr + length ) );
 }
 
-static void png_user_warning_fn( png_structp png_ptr, png_const_charp warning_message )
+static void png_user_warning_fn( png_structp, png_const_charp warning_message )
 {
 	ri.Printf( PRINT_WARNING, "libpng warning: %s\n", warning_message );
 }
@@ -53,7 +53,7 @@ static void NORETURN png_user_error_fn( png_structp png_ptr, png_const_charp err
 }
 
 void LoadPNG( const char *name, byte **pic, int *width, int *height,
-	      int *numLayers, int *numMips, int *bits, byte alphaByte )
+	      int*, int*, int*, byte alphaByte )
 {
 	int          bit_depth;
 	int          color_type;
@@ -212,7 +212,7 @@ static void png_write_data( png_structp png, png_bytep data, png_size_t length )
 	png_compressed_size += length;
 }
 
-static void png_flush_data( png_structp png )
+static void png_flush_data( png_structp )
 {
 }
 

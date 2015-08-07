@@ -29,11 +29,11 @@ LoadTGA
 =============
 */
 void LoadTGA( const char *name, byte **pic, int *width, int *height,
-	      int *numLayers, int *numMips, int *bits, byte alphaByte )
+	      int*, int*, int*, byte alphaByte )
 {
 	unsigned int columns, rows, numPixels;
 	byte        *pixbuf;
-	int         row, column;
+	int         row;
 	byte        *buf_p;
 	byte        *buffer;
 	TargaHeader targa_header;
@@ -127,7 +127,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height,
 		{
 			pixbuf = targa_rgba + row * columns * 4;
 
-			for ( column = 0; column < columns; column++ )
+			for (unsigned column = 0; column < columns; column++ )
 			{
 				unsigned char red, green, blue, alpha;
 
@@ -186,7 +186,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height,
 		{
 			pixbuf = targa_rgba + row * columns * 4;
 
-			for ( column = 0; column < columns; )
+			for (unsigned column = 0; column < columns; )
 			{
 				packetHeader = *buf_p++;
 				packetSize = 1 + ( packetHeader & 0x7f );
@@ -316,7 +316,7 @@ breakOut:
 
 		flip = ( unsigned char * ) ri.Hunk_AllocateTempMemory( columns * 4 );
 
-		for ( row = 0; row < rows / 2; row++ )
+		for ( row = 0; row < (int) rows / 2; row++ )
 		{
 			src = targa_rgba + row * 4 * columns;
 			dst = targa_rgba + ( rows - row - 1 ) * 4 * columns;

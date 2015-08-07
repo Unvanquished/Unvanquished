@@ -116,7 +116,7 @@ void RE_RotatedPic( float, float, float, float, float, float, float, float, qhan
 void RE_StretchPicGradient( float, float, float, float, float, float, float, float, qhandle_t, const float*, int ) { }
 void RE_2DPolyies( polyVert_t*, int, qhandle_t ) { }
 void RE_StretchRaw( int, int, int, int, int, int, const byte*, int, bool ) { }
-void RE_UploadCinematic( int, int, int, int, const byte*, int, bool ) { }
+void RE_UploadCinematic( int, int, const byte*, int, bool ) { }
 void RE_BeginFrame() { }
 void RE_EndFrame( int*, int* ) { }
 int R_MarkFragments( int, const vec3_t*, const vec3_t, int, vec3_t, int, markFragment_t* )
@@ -131,8 +131,6 @@ int R_LerpTag( orientation_t*, const refEntity_t*, const char*, int )
 }
 void R_ModelBounds( qhandle_t, vec3_t, vec3_t ) { }
 void R_RemapShader( const char*, const char*, const char* ) { }
-void R_DebugPolygon( int, int, float* ) { }
-void R_DebugText( const vec3_t, float, float, float, const char*, bool ) { }
 bool R_GetEntityToken( char*, int )
 {
 	return true;
@@ -150,7 +148,6 @@ bool RE_LoadDynamicShader( const char*, const char* )
 {
 	return true;
 }
-void RE_RenderToTexture( int, int, int, int, int ) { }
 int R_GetTextureId( const char* )
 {
 	return 0;
@@ -285,8 +282,6 @@ refexport_t    *GetRefAPI( int, refimport_t* )
     re.ModelBounds = R_ModelBounds;
 
     re.RemapShader = R_RemapShader;
-    re.DrawDebugPolygon = R_DebugPolygon;
-    re.DrawDebugText = R_DebugText;
     re.GetEntityToken = R_GetEntityToken;
 
     re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
@@ -296,8 +291,6 @@ refexport_t    *GetRefAPI( int, refimport_t* )
 
     //bani
     re.LoadDynamicShader = RE_LoadDynamicShader;
-    // fretn
-    re.RenderToTexture = RE_RenderToTexture;
     //bani
     re.Finish = RE_Finish;
 

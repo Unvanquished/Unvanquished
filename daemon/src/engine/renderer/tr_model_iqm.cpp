@@ -57,19 +57,14 @@ static bool IQM_CheckRange( iqmHeader_t *header, int offset,
 			  mod_name, section, offset );
 		return true;
 	}
-	if( offset > header->filesize ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has an offset behind the end of file to the %s section (%d).\n",
-			  mod_name, section, offset );
-		return true;
-	}
-	if( offset > header->filesize ) {
+	if( offset > (int) header->filesize ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has an offset behind the end of file to the %s section (%d).\n",
 			  mod_name, section, offset );
 		return true;
 	}
 
 	section_end = offset + count * size;
-	if( section_end > header->filesize || section_end < 0 ) {
+	if( section_end > (int) header->filesize || section_end < 0 ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has the section %s exceeding the end of file (%d).\n",
 			  mod_name, section, section_end );
 		return true;
@@ -77,7 +72,7 @@ static bool IQM_CheckRange( iqmHeader_t *header, int offset,
 	return false;
 }
 
-static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
+static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 			     size_t *len_names )
 {
 	iqmHeader_t		*header;
@@ -88,7 +83,6 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 	iqmPose_t		*pose;
 	iqmBounds_t		*bounds;
 	iqmAnim_t		*anim;
-	int			    i;
 
 	if( filesize < sizeof(iqmHeader_t) ) {
 		ri.Printf(PRINT_WARNING, "R_LoadIQModel: file size of %s is too small.\n",
@@ -151,7 +145,7 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		return false;
 	}
 	vertexarray = ( iqmVertexArray_t* )IQMPtr( header, header->ofs_vertexarrays );
-	for( i = 0; i < header->num_vertexarrays; i++, vertexarray++ ) {
+	for(unsigned i = 0; i < header->num_vertexarrays; i++, vertexarray++ ) {
 		int	j, n, *intPtr;
 
 		if( vertexarray->size <= 0 || vertexarray->size > 4 ) {
@@ -246,7 +240,7 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		return false;
 	}
 	triangle = ( iqmTriangle_t* )IQMPtr( header, header->ofs_triangles );
-	for( i = 0; i < header->num_triangles; i++, triangle++ ) {
+	for(unsigned i = 0; i < header->num_triangles; i++, triangle++ ) {
 		LL( triangle->vertex[0] );
 		LL( triangle->vertex[1] );
 		LL( triangle->vertex[2] );
@@ -267,7 +261,7 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		return false;
 	}
 	mesh = ( iqmMesh_t* )IQMPtr( header, header->ofs_meshes );
-	for( i = 0; i < header->num_meshes; i++, mesh++) {
+	for(unsigned i = 0; i < header->num_meshes; i++, mesh++) {
 		LL( mesh->name );
 		LL( mesh->material );
 		LL( mesh->first_vertex );
@@ -297,7 +291,7 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 		return false;
 	}
 	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
-	for( i = 0; i < header->num_joints; i++, joint++ ) {
+	for(unsigned i = 0; i < header->num_joints; i++, joint++ ) {
 		LL( joint->name );
 		LL( joint->parent );
 		LL( joint->translate[0] );
@@ -337,7 +331,7 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			return false;
 		}
 		pose = ( iqmPose_t* )IQMPtr( header, header->ofs_poses );
-		for( i = 0; i < header->num_poses; i++, pose++ ) {
+		for(unsigned i = 0; i < header->num_poses; i++, pose++ ) {
 			LL( pose->parent );
 			LL( pose->mask );
 			LL( pose->channeloffset[0] );
@@ -373,7 +367,7 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			return false;
 		}
 		bounds = ( iqmBounds_t* )IQMPtr( header, header->ofs_bounds );
-		for(i = 0; i < header->num_poses; i++)
+		for(unsigned i = 0; i < header->num_poses; i++)
 		{
 			LL(bounds->bbmin[0]);
 			LL(bounds->bbmin[1]);
@@ -394,7 +388,7 @@ static bool LoadIQMFile( void *buffer, int filesize, const char *mod_name,
 			return false;
 		}
 		anim = ( iqmAnim_t* )IQMPtr( header, header->ofs_anims );
-		for( i = 0; i < header->num_anims; i++, anim++ ) {
+		for(unsigned i = 0; i < header->num_anims; i++, anim++ ) {
 			LL( anim->name );
 			LL( anim->first_frame );
 			LL( anim->num_frames );
@@ -452,7 +446,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	iqmAnim_t		*anim;
 	unsigned short		*framedata;
 	char			*str, *name;
-	int			i, j, len;
+	int		len;
 	transform_t		*trans, *poses;
 	float			*bounds;
 	size_t			size, len_names;
@@ -570,7 +564,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	// copy joint names
 	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
-	for( i = 0; i < header->num_joints; i++, joint++ ) {
+	for(unsigned i = 0; i < header->num_joints; i++, joint++ ) {
 		name = ( char* )IQMPtr( header, header->ofs_text + joint->name );
 		len = strlen( name ) + 1;
 		Com_Memcpy( str, name, len );
@@ -580,7 +574,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	// setup animations
 	IQAnim = IQModel->anims;
 	anim = ( iqmAnim_t* )IQMPtr( header, header->ofs_anims );
-	for( i = 0; i < IQModel->num_anims; i++, IQAnim++, anim++ ) {
+	for(int i = 0; i < IQModel->num_anims; i++, IQAnim++, anim++ ) {
 		IQAnim->num_frames   = anim->num_frames;
 		IQAnim->framerate    = anim->framerate;
 		IQAnim->num_joints   = header->num_joints;
@@ -608,8 +602,8 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	// calculate joint transforms
 	trans = IQModel->joints;
 	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
-	for( i = 0; i < header->num_joints; i++, joint++, trans++ ) {
-		if( joint->parent >= i ) {
+	for(unsigned i = 0; i < header->num_joints; i++, joint++, trans++ ) {
+		if( joint->parent >= (int) i ) {
 			ri.Printf(PRINT_WARNING, "R_LoadIQModel: file %s contains an invalid parent joint number.\n",
 				  mod_name );
 			return false;
@@ -630,9 +624,9 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	// calculate pose transforms
 	framedata = ( short unsigned int* )IQMPtr( header, header->ofs_frames );
 	trans = poses;
-	for( i = 0; i < header->num_frames; i++ ) {
+	for(unsigned i = 0; i < header->num_frames; i++ ) {
 		pose = ( iqmPose_t* )IQMPtr( header, header->ofs_poses );
-		for( j = 0; j < header->num_poses; j++, pose++, trans++ ) {
+		for(unsigned j = 0; j < header->num_poses; j++, pose++, trans++ ) {
 			vec3_t	translate;
 			quat_t	rotate;
 			vec3_t	scale;
@@ -685,7 +679,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	// copy vertexarrays and indexes
 	vertexarray = ( iqmVertexArray_t* )IQMPtr( header, header->ofs_vertexarrays );
-	for( i = 0; i < header->num_vertexarrays; i++, vertexarray++ ) {
+	for(unsigned i = 0; i < header->num_vertexarrays; i++, vertexarray++ ) {
 		int	n;
 
 		// total number of values
@@ -697,7 +691,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			Com_Memcpy( IQModel->positions,
 				    IQMPtr( header, vertexarray->offset ),
 				    n * sizeof(float) );
-			for( j = 0; j < n; j += vertexarray->size ) {
+			for( int j = 0; j < n; j += vertexarray->size ) {
 				AddPointToBounds( &IQModel->positions[ j ],
 						  IQModel->bounds[ 0 ],
 						  IQModel->bounds[ 1 ] );
@@ -705,7 +699,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			IQModel->internalScale = BoundsMaxExtent( IQModel->bounds[ 0 ], IQModel->bounds[ 1 ] );
 			if( IQModel->internalScale > 0.0f ) {
 				float inverseScale = 1.0f / IQModel->internalScale;
-				for( j = 0; j < n; j += vertexarray->size ) {
+				for( int j = 0; j < n; j += vertexarray->size ) {
 					VectorScale( &IQModel->positions[ j ],
 						     inverseScale,
 						     &IQModel->positions[ j ] );
@@ -725,7 +719,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 				       IQModel->bitangents );
 			break;
 		case IQM_TEXCOORD:
-			for( j = 0; j < n; j++ ) {
+			for( int j = 0; j < n; j++ ) {
 				IQModel->texcoords[ j ] = floatToHalf( ((float *)IQMPtr( header, vertexarray->offset ))[ j ] );
 			}
 			break;
@@ -736,7 +730,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			break;
 		case IQM_BLENDWEIGHTS:
 			weights = (u8vec4_t *)IQMPtr( header, vertexarray->offset );
-			for( j = 0; j < header->num_vertexes; j++ ) {
+			for(unsigned j = 0; j < header->num_vertexes; j++ ) {
 				IQModel->blendWeights[ 4 * j + 0 ] = 255 - weights[ j ][ 1 ] - weights[ j ][ 2 ] - weights[ j ][ 3 ];
 				IQModel->blendWeights[ 4 * j + 1 ] = weights[ j ][ 1 ];
 				IQModel->blendWeights[ 4 * j + 2 ] = weights[ j ][ 2 ];
@@ -753,7 +747,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 	// copy triangles
 	triangle = ( iqmTriangle_t* )IQMPtr( header, header->ofs_triangles );
-	for( i = 0; i < header->num_triangles; i++, triangle++ ) {
+	for(unsigned i = 0; i < header->num_triangles; i++, triangle++ ) {
 		IQModel->triangles[3*i+0] = triangle->vertex[0];
 		IQModel->triangles[3*i+1] = triangle->vertex[1];
 		IQModel->triangles[3*i+2] = triangle->vertex[2];
@@ -765,7 +759,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 		if( IQModel->blendIndexes ) {
 			indexbuf = (int *)ri.Hunk_AllocateTempMemory( sizeof(int[4]) * IQModel->num_vertexes );
-			for( i = 0; i < IQModel->num_vertexes; i++ ) {
+			for(int i = 0; i < IQModel->num_vertexes; i++ ) {
 				indexbuf[ 4 * i + 0 ] = IQModel->blendIndexes[ 4 * i + 0 ];
 				indexbuf[ 4 * i + 1 ] = IQModel->blendIndexes[ 4 * i + 1 ];
 				indexbuf[ 4 * i + 2 ] = IQModel->blendIndexes[ 4 * i + 2 ];
@@ -778,7 +772,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			const float weightscale = 1.0f / 255.0f;
 
 			weightbuf = (float *)ri.Hunk_AllocateTempMemory( sizeof(vec4_t) * IQModel->num_vertexes );
-			for( i = 0; i < IQModel->num_vertexes; i++ ) {
+			for(int i = 0; i < IQModel->num_vertexes; i++ ) {
 				if( IQModel->blendWeights[ 4 * i + 0 ] == 0 &&
 				    IQModel->blendWeights[ 4 * i + 1 ] == 0 &&
 				    IQModel->blendWeights[ 4 * i + 2 ] == 0 &&
@@ -796,7 +790,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 		qtangentbuf = (i16vec4_t *)ri.Hunk_AllocateTempMemory( sizeof( i16vec4_t ) * IQModel->num_vertexes );
 
-		for( i = 0; i < IQModel->num_vertexes; i++ ) {
+		for(int i = 0; i < IQModel->num_vertexes; i++ ) {
 			R_TBNtoQtangents( &IQModel->tangents[ 3 * i ],
 					  &IQModel->bitangents[ 3 * i ],
 					  &IQModel->normals[ 3 * i ],
@@ -838,7 +832,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	// overwrite the material offset with the shader index
 	mesh = ( iqmMesh_t* )IQMPtr( header, header->ofs_meshes );
 	surface = IQModel->surfaces;
-	for( i = 0; i < header->num_meshes; i++, mesh++, surface++ ) {
+	for(unsigned i = 0; i < header->num_meshes; i++, mesh++, surface++ ) {
 		surface->surfaceType = SF_IQM;
 
 		if( mesh->name ) {
@@ -868,7 +862,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	if(header->ofs_bounds)
 	{
 		iqmBounds_t *ptr = ( iqmBounds_t* )IQMPtr( header, header->ofs_bounds );
-		for(i = 0; i < header->num_frames; i++)
+		for(unsigned i = 0; i < header->num_frames; i++)
 		{
 			VectorCopy( ptr->bbmin, bounds );
 			bounds += 3;
@@ -884,7 +878,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	if( header->num_anims == 1 ) {
 		RE_RegisterAnimationIQM( mod_name, IQAnim );
 	}
-	for( i = 0; i < header->num_anims; i++, IQAnim++ ) {
+	for(unsigned i = 0; i < header->num_anims; i++, IQAnim++ ) {
 		char name[ MAX_QPATH ];
 
 		Com_sprintf( name, MAX_QPATH, "%s:%s", mod_name, IQAnim->name );

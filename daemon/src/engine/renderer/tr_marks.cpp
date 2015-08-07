@@ -238,9 +238,8 @@ R_AddMarkFragments
 */
 void R_AddMarkFragments( int numClipPoints, vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ],
                          int numPlanes, vec3_t *normals, float *dists,
-                         int maxPoints, vec3_t pointBuffer,
-                         int maxFragments, markFragment_t *fragmentBuffer,
-                         int *returnedPoints, int *returnedFragments, vec3_t mins, vec3_t maxs )
+                         int maxPoints, vec3_t pointBuffer, markFragment_t *fragmentBuffer,
+                         int *returnedPoints, int *returnedFragments )
 {
 	int            pingPong, i;
 	markFragment_t *mf;
@@ -414,7 +413,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 						R_AddMarkFragments( numClipPoints, clipPoints,
 						                    numPlanes, normals, dists,
 						                    maxPoints, pointBuffer,
-						                    maxFragments, fragmentBuffer, &returnedPoints, &returnedFragments, mins, maxs );
+						                    fragmentBuffer, &returnedPoints, &returnedFragments );
 
 						if ( returnedFragments == maxFragments )
 						{
@@ -440,7 +439,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 						R_AddMarkFragments( numClipPoints, clipPoints,
 						                    numPlanes, normals, dists,
 						                    maxPoints, pointBuffer,
-						                    maxFragments, fragmentBuffer, &returnedPoints, &returnedFragments, mins, maxs );
+						                    fragmentBuffer, &returnedPoints, &returnedFragments );
 
 						if ( returnedFragments == maxFragments )
 						{
@@ -472,7 +471,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 				R_AddMarkFragments( 3, clipPoints,
 				                    numPlanes, normals, dists,
 				                    maxPoints, pointBuffer,
-				                    maxFragments, fragmentBuffer, &returnedPoints, &returnedFragments, mins, maxs );
+				                    fragmentBuffer, &returnedPoints, &returnedFragments );
 
 				if ( returnedFragments == maxFragments )
 				{
@@ -495,7 +494,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 				R_AddMarkFragments( 3, clipPoints,
 				                    numPlanes, normals, dists,
 				                    maxPoints, pointBuffer,
-				                    maxFragments, fragmentBuffer, &returnedPoints, &returnedFragments, mins, maxs );
+				                    fragmentBuffer, &returnedPoints, &returnedFragments );
 
 				if ( returnedFragments == maxFragments )
 				{

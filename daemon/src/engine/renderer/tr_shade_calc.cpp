@@ -519,7 +519,7 @@ Assuming all the triangles for this shader are independent
 quads, rebuild them as forward facing sprites
 =====================
 */
-static void AutospriteDeform( int firstVertex, int numVertexes, int firstIndex, int numIndexes )
+static void AutospriteDeform( int firstVertex, int numVertexes, int numIndexes )
 {
 	int    i, j;
 	shaderVertex_t *v;
@@ -691,7 +691,7 @@ void Tess_AutospriteDeform( int mode, int firstVertex, int numVertexes,
 {
 	switch( mode ) {
 	case 1:
-		AutospriteDeform( firstVertex, numVertexes, firstIndex, numIndexes );
+		AutospriteDeform( firstVertex, numVertexes, numIndexes );
 		break;
 	case 2:
 		Autosprite2Deform( firstVertex, numVertexes, firstIndex, numIndexes );

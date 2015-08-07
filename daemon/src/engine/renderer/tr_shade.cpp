@@ -1737,9 +1737,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	GL_CheckErrors();
 }
 
-static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
-    shaderStage_t *attenuationXYStage,
-    shaderStage_t *attenuationZStage, trRefLight_t *light )
+static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage, trRefLight_t *light )
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightDirection;
@@ -2182,9 +2180,9 @@ static void Render_heatHaze( int stage )
 	GL_CheckErrors();
 }
 
+#if !defined( GLSL_COMPILE_STARTUP_ONLY )
 static void Render_liquid( int stage )
 {
-#if !defined( GLSL_COMPILE_STARTUP_ONLY )
 	vec3_t        viewOrigin;
 	float         fogDensity;
 	GLfloat       fogColor[ 3 ];
@@ -2244,8 +2242,10 @@ static void Render_liquid( int stage )
 	Tess_DrawElements();
 
 	GL_CheckErrors();
-#endif
 }
+#else
+static void Render_liquid(int){}
+#endif
 
 static void Render_fog()
 {
@@ -3148,7 +3148,7 @@ void Tess_StageIteratorLighting()
 					else if ( light->l.rlType == RL_DIRECTIONAL )
 					{
 						{
-							Render_forwardLighting_DBS_directional( diffuseStage, attenuationXYStage, attenuationZStage, light );
+							Render_forwardLighting_DBS_directional( diffuseStage, light );
 						}
 					}
 

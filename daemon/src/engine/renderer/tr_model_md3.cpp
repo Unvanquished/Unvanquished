@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 R_LoadMD3
 =================
 */
-bool R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *modName )
+bool R_LoadMD3( model_t *mod, int lod, void *buffer, const char *modName )
 {
 	int            i, j, k; //, l;
 

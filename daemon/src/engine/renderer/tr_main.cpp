@@ -1451,13 +1451,12 @@ static bool IsMirror( const drawSurf_t *drawSurf )
 **
 ** Determines if a surface is completely offscreen.
 */
-static bool SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 128 ] )
+static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
 {
 	float        shortest = 100000000;
 	shader_t     *shader;
 	int          numTriangles;
 	vec4_t       clip, eye;
-	int          i;
 	unsigned int pointOr = 0;
 	unsigned int pointAnd = ( unsigned int ) ~0;
 
@@ -1489,7 +1488,7 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 128 ] 
 		return false;
 	}
 
-	for ( i = 0; i < tess.numVertexes; i++ )
+	for (unsigned i = 0; i < tess.numVertexes; i++ )
 	{
 		int          j;
 		unsigned int pointFlags = 0;
@@ -1525,7 +1524,7 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 128 ] 
 	// we have in the game right now.
 	numTriangles = tess.numIndexes / 3;
 
-	for ( i = 0; i < tess.numIndexes; i += 3 )
+	for (unsigned i = 0; i < tess.numIndexes; i += 3 )
 	{
 		vec3_t normal;
 		float  dot;
@@ -1579,7 +1578,6 @@ Returns true if another view has been rendered
 */
 static bool R_MirrorViewBySurface( drawSurf_t *drawSurf )
 {
-	vec4_t        clipDest[ 128 ];
 	viewParms_t   newParms;
 	viewParms_t   oldParms;
 	orientation_t surface, camera;
@@ -1597,7 +1595,7 @@ static bool R_MirrorViewBySurface( drawSurf_t *drawSurf )
 	}
 
 	// trivially reject portal/mirror
-	if ( SurfIsOffscreen( drawSurf, clipDest ) )
+	if ( SurfIsOffscreen( drawSurf ) )
 	{
 		return false;
 	}
@@ -2372,24 +2370,6 @@ void R_AddLightBoundsToVisBounds()
 	}
 }
 
-/*
-================
-R_DebugPolygon
-================
-*/
-void R_DebugPolygon( int color, int numPoints, float *points )
-{
-}
-
-/*
-================
-R_DebugText
-================
-*/
-void R_DebugText( const vec3_t org, float r, float g, float b, const char *text, bool neverOcclude )
-{
-}
-
 static BotDebugInterface_t bi = { DebugDrawBegin, DebugDrawDepthMask, DebugDrawVertex, DebugDrawEnd };
 
 /*
@@ -2412,8 +2392,6 @@ static void R_DebugGraphics()
 		GL_Bind( tr.whiteImage );
 
 		GL_Cull( CT_FRONT_SIDED );
-		ri.CM_DrawDebugSurface( R_DebugPolygon );
-
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 		ri.Bot_DrawDebugMesh( &bi );

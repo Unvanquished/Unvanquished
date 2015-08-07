@@ -68,7 +68,7 @@ void R_InitAnimations()
 	strcpy( anim->name, "<default animation>" );
 }
 
-static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int bufferSize, const char *name )
+static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *name )
 {
 	int            i, j;
 	md5Animation_t *anim;
@@ -388,7 +388,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 
 		frame->components = (float*) ri.Hunk_Alloc( sizeof( float ) * anim->numAnimatedComponents, h_low );
 
-		for ( j = 0; j < anim->numAnimatedComponents; j++ )
+		for (unsigned j = 0; j < anim->numAnimatedComponents; j++ )
 		{
 			token = COM_ParseExt2( &buf_p, true );
 			frame->components[ j ] = atof( token );
@@ -529,7 +529,7 @@ qhandle_t RE_RegisterAnimation( const char *name )
 
 	if ( !Q_strnicmp( ( const char * ) buffer, "MD5Version", 10 ) )
 	{
-		loaded = R_LoadMD5Anim( anim, buffer, bufferLen, name );
+		loaded = R_LoadMD5Anim( anim, buffer, name );
 	}
 	else
 	{

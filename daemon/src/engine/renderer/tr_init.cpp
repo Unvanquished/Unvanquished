@@ -1650,13 +1650,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		re.ProjectDecal = RE_ProjectDecal;
 		re.ClearDecals = RE_ClearDecals;
 
-		re.DrawDebugPolygon = R_DebugPolygon;
-		re.DrawDebugText = R_DebugText;
-
 		re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
 
 		re.LoadDynamicShader = RE_LoadDynamicShader;
-		re.RenderToTexture = RE_RenderToTexture;
 		re.Finish = RE_Finish;
 		// ET END
 

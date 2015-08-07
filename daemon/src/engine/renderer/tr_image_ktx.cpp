@@ -46,13 +46,12 @@ static const uint32_t KTX_endianness = 0x04030201;
 static const uint32_t KTX_endianness_reverse = 0x01020304;
 
 void LoadKTX( const char *name, byte **data, int *width, int *height,
-	      int *numLayers, int *numMips, int *bits, byte alphaByte )
+	      int *numLayers, int *numMips, int *bits, byte )
 {
 	KTX_header_t *hdr;
 	byte         *ptr;
 	size_t        bufLen, size;
 	uint32_t      imageSize;
-	int           i, j;
 
 	*numLayers = 0;
 
@@ -131,7 +130,7 @@ void LoadKTX( const char *name, byte **data, int *width, int *height,
 	ptr = (byte *)(hdr + 1);
 	ptr += hdr->bytesOfKeyValueData;
 	size = 0;
-	for( i = 0; i < hdr->numberOfMipmapLevels; i++ ) {
+	for(unsigned i = 0; i < hdr->numberOfMipmapLevels; i++ ) {
 		imageSize = *((uint32_t *)ptr);
 		if( hdr->endianness == KTX_endianness_reverse )
 			imageSize = Swap32( imageSize );
@@ -152,19 +151,19 @@ void LoadKTX( const char *name, byte **data, int *width, int *height,
 	ptr += 4;
 	Com_Memcpy( data[ 0 ], ptr, imageSize );
 	ptr += imageSize;
-	for( j = 1; j < hdr->numberOfFaces; j++ ) {
+	for(unsigned j = 1; j < hdr->numberOfFaces; j++ ) {
 		data[ j ] = data[ j - 1 ] + imageSize;
 		Com_Memcpy( data[ j ], ptr, imageSize );
 		ptr += imageSize;
 	}
-	for( i = 1; i <= hdr->numberOfMipmapLevels; i++ ) {
+	for(unsigned i = 1; i <= hdr->numberOfMipmapLevels; i++ ) {
 		imageSize = *((uint32_t *)ptr);
 		if( hdr->endianness == KTX_endianness_reverse )
 			imageSize = Swap32( imageSize );
 		imageSize = PAD( imageSize, 4 );
 		ptr += 4;
 
-		for( j = 0; j < hdr->numberOfFaces; j++ ) {
+		for(unsigned j = 0; j < hdr->numberOfFaces; j++ ) {
 			int idx = i * hdr->numberOfFaces + j;
 			data[ idx ] = data[ idx - 1 ] + imageSize;
 			Com_Memcpy( data[ idx ], ptr, imageSize );
@@ -178,7 +177,7 @@ void LoadKTX( const char *name, byte **data, int *width, int *height,
 void SaveImageKTX( const char *path, image_t *img )
 {
 	KTX_header_t hdr;
-	int          i, j, size, components;
+	int          size, components;
 	int          mipWidth, mipHeight, mipDepth, mipSize;
 	GLenum       target;
 	byte        *data, *ptr;
@@ -686,6 +685,7 @@ void SaveImageKTX( const char *path, image_t *img )
 	}
 
 	hdr.numberOfMipmapLevels = 1;
+    int i;
 	glGetTexParameteriv( target, GL_TEXTURE_MIN_FILTER,
 			     (GLint *)&i );
 	if( i == GL_NEAREST_MIPMAP_NEAREST || i == GL_NEAREST_MIPMAP_LINEAR ||
@@ -710,7 +710,7 @@ void SaveImageKTX( const char *path, image_t *img )
 	mipWidth = MAX(hdr.pixelWidth, 1u);
 	mipHeight = MAX(hdr.pixelHeight, 1u);
 	mipDepth = MAX(hdr.pixelDepth, 1u);
-	for( i = size = 0; i < hdr.numberOfMipmapLevels; i++ ) {
+	for(unsigned i = size = 0; i < hdr.numberOfMipmapLevels; i++ ) {
 		size += 4;
 		if( !hdr.glFormat ) {
 			glGetTexLevelParameteriv( target, i,
@@ -737,7 +737,7 @@ void SaveImageKTX( const char *path, image_t *img )
 	mipWidth = MAX(hdr.pixelWidth, 1u);
 	mipHeight = MAX(hdr.pixelHeight, 1u);
 	mipDepth = MAX(hdr.pixelDepth, 1u);
-	for( i = 0; i < hdr.numberOfMipmapLevels; i++ ) {
+	for(unsigned i = 0; i < hdr.numberOfMipmapLevels; i++ ) {
 		if( !hdr.glFormat ) {
 			glGetTexLevelParameteriv( target, i,
 						  GL_TEXTURE_COMPRESSED_IMAGE_SIZE,
@@ -750,7 +750,7 @@ void SaveImageKTX( const char *path, image_t *img )
 		*(int32_t *)ptr = PAD( mipSize, 4 );
 		ptr += sizeof( int32_t );
 
-		for( j = 0; j < hdr.numberOfFaces; j++ ) {
+		for(unsigned j = 0; j < hdr.numberOfFaces; j++ ) {
 			if( !hdr.glFormat ) {
 				glGetCompressedTexImage( target + j, i, ptr );
 			} else {

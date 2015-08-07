@@ -4267,7 +4267,7 @@ static void RB_RenderDebugUtils()
 
 static unsigned int drawMode;
 static debugDrawMode_t currentDebugDrawMode;
-static int maxDebugVerts;
+static unsigned maxDebugVerts;
 static float currentDebugSize;
 
 void DebugDrawBegin( debugDrawMode_t mode, float size ) {
@@ -4716,7 +4716,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	GL_CheckErrors();
 }
 
-void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, bool dirty )
+void RE_UploadCinematic( int cols, int rows, const byte *data, int client, bool dirty )
 {
 	R_SyncRenderThread();
 
@@ -5577,30 +5577,6 @@ const void     *RB_SwapBuffers( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
-//bani
-
-/*
-=============
-RB_RenderToTexture
-=============
-*/
-const void     *RB_RenderToTexture( const void *data )
-{
-	const renderToTextureCommand_t *cmd;
-
-	cmd = ( const renderToTextureCommand_t * ) data;
-
-	GL_Bind( cmd->image );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
-	glCopyTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, cmd->x, cmd->y, cmd->w, cmd->h, 0 );
-
-	return ( const void * )( cmd + 1 );
-}
-
-//bani
-
 /*
 =============
 RB_Finish
@@ -5712,10 +5688,6 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_VIDEOFRAME:
 				data = RB_TakeVideoFrameCmd( data );
-				break;
-
-			case RC_RENDERTOTEXTURE:
-				data = RB_RenderToTexture( data );
 				break;
 
 			case RC_FINISH:

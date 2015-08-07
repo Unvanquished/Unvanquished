@@ -26,8 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LL(x) x = LittleLong(x)
 #define LF(x) x = LittleFloat(x)
 
-bool R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const char *name );
-bool R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *name );
+bool R_LoadMD3( model_t *mod, int lod, void *buffer, const char *name );
+bool R_LoadMD5( model_t *mod, void *buffer, const char *name );
 bool R_LoadIQModel( model_t *mod, void *buffer, int bufferSize, const char *name );
 
 model_t  *loadmodel;
@@ -156,7 +156,7 @@ qhandle_t RE_RegisterModel( const char *name )
 
 			if ( !Q_strnicmp( ( const char * ) buffer, "MD5Version", 10 ) )
 			{
-				loaded = R_LoadMD5( mod, buffer, bufferLen, name );
+				loaded = R_LoadMD5( mod, buffer, name );
 			}
 			else if ( !Q_strnicmp( ( const char * ) buffer, "INTERQUAKEMODEL", 15 ) ) {
 				loaded = R_LoadIQModel( mod, buffer, bufferLen, name );
@@ -204,7 +204,7 @@ qhandle_t RE_RegisterModel( const char *name )
 
 		if ( ident == MD3_IDENT )
 		{
-			loaded = R_LoadMD3( mod, lod, buffer, bufferLen, name );
+			loaded = R_LoadMD3( mod, lod, buffer, name );
 			ri.FS_FreeFile( buffer );
 		}
 		else
@@ -567,6 +567,8 @@ int RE_BoneIndex( qhandle_t hModel, const char *boneName )
 			}
 		}
 		break;
+        default:
+        break;
 	}
 
 
