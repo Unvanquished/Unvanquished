@@ -474,26 +474,25 @@ extern const char* Null;
 } // namespace Named
 
 namespace NamedFloat {
-using vec4_t = float[4];
-extern vec4_t Black;
-extern vec4_t Red;
-extern vec4_t Green;
-extern vec4_t Blue;
-extern vec4_t Yellow;
-extern vec4_t Orange;
-extern vec4_t Magenta;
-extern vec4_t Cyan;
-extern vec4_t White;
-extern vec4_t LtGrey;
-extern vec4_t MdGrey;
-extern vec4_t DkGrey;
-extern vec4_t MdRed;
-extern vec4_t MdGreen;
-extern vec4_t DkGreen;
-extern vec4_t MdCyan;
-extern vec4_t MdYellow;
-extern vec4_t MdOrange;
-extern vec4_t MdBlue;
+extern ColorFloat Black;
+extern ColorFloat Red;
+extern ColorFloat Green;
+extern ColorFloat Blue;
+extern ColorFloat Yellow;
+extern ColorFloat Orange;
+extern ColorFloat Magenta;
+extern ColorFloat Cyan;
+extern ColorFloat White;
+extern ColorFloat LtGrey;
+extern ColorFloat MdGrey;
+extern ColorFloat DkGrey;
+extern ColorFloat MdRed;
+extern ColorFloat MdGreen;
+extern ColorFloat DkGreen;
+extern ColorFloat MdCyan;
+extern ColorFloat MdYellow;
+extern ColorFloat MdOrange;
+extern ColorFloat MdBlue;
 } // namespace NamedFloat
 
 /*

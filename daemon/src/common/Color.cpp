@@ -82,25 +82,25 @@ const char* Null = "^*";
 } // namespace Named
 
 namespace NamedFloat {
-vec4_t Black = { 0, 0, 0, 1 };
-vec4_t Red = { 1, 0, 0, 1 };
-vec4_t Green = { 0, 1, 0, 1 };
-vec4_t Blue = { 0, 0, 1, 1 };
-vec4_t Yellow = { 1, 1, 0, 1 };
-vec4_t Orange = { 1, 0.5, 0, 1 };
-vec4_t Magenta = { 1, 0, 1, 1 };
-vec4_t Cyan = { 0, 1, 1, 1 };
-vec4_t White = { 1, 1, 1, 1 };
-vec4_t LtGrey = { 0.75, 0.75, 0.75, 1 };
-vec4_t MdGrey = { 0.5, 0.5, 0.5, 1 };
-vec4_t DkGrey = { 0.25, 0.25, 0.25, 1 };
-vec4_t MdRed = { 0.5, 0, 0, 1 };
-vec4_t MdGreen = { 0, 0.5, 0, 1 };
-vec4_t DkGreen = { 0, 0.20, 0, 1 };
-vec4_t MdCyan = { 0, 0.5, 0.5, 1 };
-vec4_t MdYellow = { 0.5, 0.5, 0, 1 };
-vec4_t MdOrange = { 0.5, 0.25, 0, 1 };
-vec4_t MdBlue = { 0, 0, 0.5, 1 };
+ColorFloat Black = { 0, 0, 0, 1 };
+ColorFloat Red = { 1, 0, 0, 1 };
+ColorFloat Green = { 0, 1, 0, 1 };
+ColorFloat Blue = { 0, 0, 1, 1 };
+ColorFloat Yellow = { 1, 1, 0, 1 };
+ColorFloat Orange = { 1, 0.5, 0, 1 };
+ColorFloat Magenta = { 1, 0, 1, 1 };
+ColorFloat Cyan = { 0, 1, 1, 1 };
+ColorFloat White = { 1, 1, 1, 1 };
+ColorFloat LtGrey = { 0.75, 0.75, 0.75, 1 };
+ColorFloat MdGrey = { 0.5, 0.5, 0.5, 1 };
+ColorFloat DkGrey = { 0.25, 0.25, 0.25, 1 };
+ColorFloat MdRed = { 0.5, 0, 0, 1 };
+ColorFloat MdGreen = { 0, 0.5, 0, 1 };
+ColorFloat DkGreen = { 0, 0.20, 0, 1 };
+ColorFloat MdCyan = { 0, 0.5, 0.5, 1 };
+ColorFloat MdYellow = { 0.5, 0.5, 0, 1 };
+ColorFloat MdOrange = { 0.5, 0.25, 0, 1 };
+ColorFloat MdBlue = { 0, 0, 0.5, 1 };
 } // namespace NamedFloat
 
 static Color g_color_table[ 32 ] =
