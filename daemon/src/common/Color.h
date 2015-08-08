@@ -779,6 +779,27 @@ private:
 					1
 				) );
 			}
+			else if ( input[1] == '#' )
+			{
+				bool long_hex = true;
+				for ( int i = 0; i < 6; i++ )
+				{
+					if ( !ishex( input[i+2] ) )
+					{
+						long_hex = false;
+						break;
+					}
+				}
+				if ( long_hex )
+				{
+					return value_type( input, input+8, Color(
+						(gethex( input[2] ) << 4) | gethex( input[3] ),
+						(gethex( input[4] ) << 4) | gethex( input[5] ),
+						(gethex( input[6] ) << 4) | gethex( input[7] ),
+						1
+					) );
+				}
+			}
 		}
 
 		return value_type( input, input + TokenAdvanceT()( input ), value_type::CHARACTER );
