@@ -55,7 +55,7 @@ public:
 	RocketProgressBar( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 )
 	{
 		// Default to white
-		for (int i = 0; i < ARRAY_LEN( color ); ++i )
+		for (unsigned i = 0; i < ARRAY_LEN( color ); ++i )
 		{
 			color[ i ] = 1.0f;
 		}

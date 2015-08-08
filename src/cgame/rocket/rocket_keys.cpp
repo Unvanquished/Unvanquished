@@ -192,7 +192,7 @@ KeyModifier Rocket_GetKeyModifiers()
 	static const int quakeToRocketKeyModifier[] = { KM_CTRL, KM_SHIFT, KM_ALT, KM_META, KM_CAPSLOCK, KM_NUMLOCK };
 	std::vector<int> list = trap_Key_KeysDown( keys );
 
-	for (int i = 0; i < keys.size(); ++i)
+	for (unsigned i = 0; i < keys.size(); ++i)
 	{
 		if ( list[i] )
 		{

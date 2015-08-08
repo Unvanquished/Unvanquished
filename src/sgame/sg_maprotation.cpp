@@ -513,7 +513,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 		return false;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len >= (int) sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
 		G_Printf( S_ERROR "map rotation file %s is %s\n", fileName,

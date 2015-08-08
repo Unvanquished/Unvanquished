@@ -2131,7 +2131,7 @@ void CG_PredictPlayerState();
 void CG_CheckEvents( centity_t *cent );
 void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
-void CG_OnPlayerWeaponChange( weapon_t oldWeapon );
+void CG_OnPlayerWeaponChange();
 void CG_OnPlayerUpgradeChange();
 void CG_OnMapRestart();
 
@@ -2423,7 +2423,7 @@ void Rocket_InitializeHuds( int size );
 void Rocket_LoadUnit( const char *path );
 void Rocket_AddUnitToHud( int weapon, const char *id );
 void Rocket_ShowHud( int weapon );
-void Rocket_ClearHud( int weapon );
+void Rocket_ClearHud( unsigned weapon );
 void Rocket_InitKeys( void );
 keyNum_t Rocket_ToQuake( int key );
 void Rocket_ProcessKeyInput( int key, bool down );

@@ -183,7 +183,7 @@ shared class spawn functions
 =================================================================================
 */
 
-void SP_Nothing( gentity_t *self ) {
+void SP_Nothing( gentity_t* ) {
 }
 
 void SP_RemoveSelf( gentity_t *self ) {

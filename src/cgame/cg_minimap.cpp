@@ -604,7 +604,7 @@ function for all cg.beacons.
 ================
 */
 #define BEACON_MINIMAP_SIZE 64
-static void CG_MinimapDrawBeacons( const minimap_t* m, const rectDef_t *rect )
+static void CG_MinimapDrawBeacons( const rectDef_t *rect )
 {
   float size;
   vec2_t bounds[ 2 ], center;
@@ -693,7 +693,7 @@ void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
     CG_EnableScissor( false );
 
 		//(experimental) Draw beacons without the scissor
-    CG_MinimapDrawBeacons( m, &rect );
+    CG_MinimapDrawBeacons( &rect );
 
     //Reset the color for other hud elements
     trap_R_SetColor( nullptr );

@@ -88,7 +88,7 @@ G_Physics
 
 ================
 */
-void G_Physics( gentity_t *ent, int msec )
+void G_Physics( gentity_t *ent, int )
 {
 	vec3_t  origin;
 	trace_t tr;

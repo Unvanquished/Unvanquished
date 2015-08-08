@@ -132,7 +132,7 @@ int G_BotAddNames( team_t team, int arg, int last )
 
 static char *G_BotSelectName( team_t team )
 {
-	unsigned int i, choice;
+	unsigned int choice;
 
 	if ( botNames[team].count < 1 )
 	{
@@ -141,7 +141,7 @@ static char *G_BotSelectName( team_t team )
 
 	choice = rand() % botNames[team].count;
 
-	for ( i = 0; i < botNames[team].count; ++i )
+	for ( int i = 0; i < botNames[team].count; ++i )
 	{
 		if ( !botNames[team].name[choice].inUse )
 		{
@@ -155,9 +155,7 @@ static char *G_BotSelectName( team_t team )
 
 static void G_BotNameUsed( team_t team, const char *name, bool inUse )
 {
-	unsigned int i;
-
-	for ( i = 0; i < botNames[team].count; ++i )
+	for ( int i = 0; i < botNames[team].count; ++i )
 	{
 		if ( !Q_stricmp( name, botNames[team].name[i].name ) )
 		{

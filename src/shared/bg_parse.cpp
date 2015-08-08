@@ -562,10 +562,9 @@ bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *filename
 
 bool BG_CheckConfigVars()
 {
-	int i;
 	int ok = true;
 
-	for( i = 0; i < bg_numConfigVars; i++)
+	for( unsigned i = 0; i < bg_numConfigVars; i++)
 	{
 		if( !bg_configVars[i].defined )
 		{

@@ -43,7 +43,7 @@ ctrl_relay
 =================================================================================
 */
 
-void target_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
+void target_relay_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if (!self->enabled)
 		return;
@@ -83,7 +83,7 @@ void ctrl_relay_reset( gentity_t *self )
 	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
 }
 
-void ctrl_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
+void ctrl_relay_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if (!self->enabled)
 		return;
@@ -133,7 +133,7 @@ ctrl_limited
 =================================================================================
 */
 
-void ctrl_limited_act(gentity_t *self, gentity_t *other, gentity_t *activator)
+void ctrl_limited_act(gentity_t *self, gentity_t*, gentity_t *activator)
 {
 	if (!self->enabled)
 		return;

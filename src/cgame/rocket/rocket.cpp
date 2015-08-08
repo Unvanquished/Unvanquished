@@ -248,7 +248,7 @@ public:
 		trap_R_GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
 		return true;
 	}
-
+/*
 	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions, int source_samples )
 	{
 
@@ -262,7 +262,7 @@ public:
 	{
 		// we free all textures after each map load, but this may have to be filled for the libRocket font system
 	}
-
+*/
 	void EnableScissorRegion( bool enable )
 	{
 		trap_R_ScissorEnable( enable );
@@ -479,7 +479,7 @@ static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 {
 	const char invalid[][2] = { "*", "/", "\\", ".", " ", "<", ">", "!", "@", "#", "$", "%", "^", "&", "(", ")", "-", "_", "+", "=", ",", "?", "[", "]", "{", "}", "|", ":", ";", "'", "\"", "`", "~" };
 
-	for ( int i = 0; i < ARRAY_LEN( invalid ); ++i )
+	for ( unsigned i = 0; i < ARRAY_LEN( invalid ); ++i )
 	{
 		if ( emoticon.Find( invalid[ i ] ) != Rocket::Core::String::npos )
 		{

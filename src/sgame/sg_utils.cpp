@@ -431,7 +431,7 @@ void G_BroadcastEvent( int event, int eventParm, team_t team )
 G_Sound
 =============
 */
-void G_Sound( gentity_t *ent, int channel, int soundIndex )
+void G_Sound( gentity_t *ent, int, int soundIndex )
 {
 	gentity_t *te;
 

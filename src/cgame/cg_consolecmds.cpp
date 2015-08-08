@@ -113,7 +113,7 @@ void CG_ClientList_f()
 static void CG_ReloadHud_f()
 {
 	CG_Rocket_LoadHuds();
-	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
+	CG_OnPlayerWeaponChange();
 }
 
 static void CG_CompleteClass()

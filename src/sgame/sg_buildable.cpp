@@ -578,7 +578,7 @@ nullDieFunction
 hack to prevent compilers complaining about function pointer -> nullptr conversion
 ================
 */
-static void NullDieFunction( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod ) {}
+static void NullDieFunction( gentity_t*, gentity_t*, gentity_t*, int ) {}
 
 /*
 ================
@@ -694,7 +694,7 @@ Called when an Alien buildable is killed and enters a brief dead state prior to
 exploding.
 ================
 */
-void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+void AGeneric_Die( gentity_t *self, gentity_t*, gentity_t *attacker, int mod )
 {
 	gentity_t *om;
 
@@ -844,7 +844,7 @@ AGeneric_Pain
 A generic pain function for Alien buildables
 ================
 */
-void AGeneric_Pain( gentity_t *self, gentity_t *attacker, int damage )
+void AGeneric_Pain( gentity_t *self, gentity_t*, int )
 {
 	if ( self->health <= 0 )
 	{
@@ -1093,7 +1093,7 @@ ABarricade_Pain
 Barricade pain animation depends on shrunk state
 ================
 */
-void ABarricade_Pain( gentity_t *self, gentity_t *attacker, int damage )
+void ABarricade_Pain( gentity_t *self, gentity_t*, int )
 {
 	if ( self->health <= 0 )
 	{
@@ -1248,7 +1248,7 @@ pass through
 ================
 */
 
-void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	gclient_t *client = other->client;
 	int       client_z, min_z;
@@ -1744,7 +1744,7 @@ void ABooster_Think( gentity_t *self )
 	}
 }
 
-void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	gclient_t *client = other->client;
 
@@ -1788,7 +1788,7 @@ ATrapper_FireOnEnemy
 Used by ATrapper_Think to fire at enemy
 ================
 */
-void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
+void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 {
 	gentity_t *target = self->target;
 	vec3_t    dirToTarget;
@@ -1991,7 +1991,7 @@ void ATrapper_Think( gentity_t *self )
 	//if we are pointing at our target and we can fire shoot it
 	if ( self->customNumber < level.time )
 	{
-		ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT, LOCKBLOB_RANGE );
+		ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT );
 	}
 }
 
@@ -2447,7 +2447,7 @@ void HGeneric_Cancel( gentity_t *self )
                                      * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY \
                                      + HUMAN_DETONATION_DELAY
 
-void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+void HGeneric_Die( gentity_t *self, gentity_t*, gentity_t *attacker, int mod )
 {
 	G_SetBuildableAnim( self, self->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
@@ -2633,7 +2633,7 @@ void HReactor_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	G_BPStorageDie( self );
 }
 
-void HArmoury_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if ( !self->spawned )
 	{
@@ -3035,7 +3035,7 @@ static bool HTurret_FindTarget( gentity_t *self, float range,
 	gentity_t *ent = nullptr;
 	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, range ) ) )
 	{
-		if ( HTurret_TargetValid( self, ent, true, range ) && HMGTurret_IsBetterTarget( self, ent ) )
+		if ( HTurret_TargetValid( self, ent, true, range ) && isBetterTarget( self, ent ) )
 		{
 			self->target = ent;
 		}
@@ -3976,7 +3976,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	};
 
 	gentity_t *buildableA, *buildableB;
-	int       i;
 	int       aPrecedence = 0, bPrecedence = 0;
 	bool  aMatches = false, bMatches = false;
 
@@ -4058,7 +4057,7 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	}
 
 	// Resort to preference list
-	for ( i = 0; i < ARRAY_LEN( precedence ); i++ )
+	for ( unsigned i = 0; i < ARRAY_LEN( precedence ); i++ )
 	{
 		if ( buildableA->s.modelindex == precedence[ i ] )
 		{
@@ -4640,7 +4639,7 @@ G_CanBuild
 Checks to see if a buildable can be built
 ================
 */
-itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance,
+itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distance*/, //TODO
                              vec3_t origin, vec3_t normal, int *groundEntNum )
 {
 	vec3_t           angles;
@@ -5332,7 +5331,7 @@ int G_LayoutList( const char *map, char *list, int len )
 		}
 
 		// list is full, stop trying to add to it
-		if ( ( listLen + fileLen ) >= sizeof( layouts ) )
+		if ( ( listLen + fileLen ) >= (int) sizeof( layouts ) )
 		{
 			break;
 		}
@@ -5504,7 +5503,7 @@ void G_LayoutLoad()
 
 	while ( *layout )
 	{
-		if ( i >= sizeof( line ) - 1 )
+		if ( i >= (int) sizeof( line ) - 1 )
 		{
 			G_Printf( S_ERROR "line overflow in %s before \"%s\"\n",
 			          va( "layouts/%s/%s.dat", map, level.layout ), line );

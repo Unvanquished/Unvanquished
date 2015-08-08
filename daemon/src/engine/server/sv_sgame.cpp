@@ -330,7 +330,7 @@ SV_InitGameVM
 Called for both a full init and a restart
 ==================
 */
-static void SV_InitGameVM( bool restart )
+static void SV_InitGameVM()
 {
 	int i;
 
@@ -346,7 +346,7 @@ static void SV_InitGameVM( bool restart )
 
 	// use the current msec count for a random seed
 	// init for this gamestate
-	gvm.GameInit( sv.time, Com_Milliseconds(), restart );
+	gvm.GameInit( sv.time, Com_Milliseconds());
 }
 
 /*
@@ -367,7 +367,7 @@ void SV_RestartGameProgs()
 
 	gvm.Start();
 
-	SV_InitGameVM( true );
+	SV_InitGameVM();
 }
 
 /*
@@ -385,7 +385,7 @@ void SV_InitGameProgs()
 	// load the game module
 	gvm.Start();
 
-	SV_InitGameVM( false );
+	SV_InitGameVM();
 }
 
 GameVM::GameVM(): VM::VMBase("sgame"), services(nullptr){
@@ -408,9 +408,9 @@ void GameVM::GameStaticInit()
 	this->SendMsg<GameStaticInitMsg>(Sys_Milliseconds());
 }
 
-void GameVM::GameInit(int levelTime, int randomSeed, bool restart)
+void GameVM::GameInit(int levelTime, int randomSeed)
 {
-	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart, Com_AreCheatsAllowed(), Com_IsClient());
+	this->SendMsg<GameInitMsg>(levelTime, randomSeed, Com_AreCheatsAllowed(), Com_IsClient());
 }
 
 void GameVM::GameShutdown(bool restart)

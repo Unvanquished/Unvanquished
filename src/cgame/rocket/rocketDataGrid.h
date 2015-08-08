@@ -47,7 +47,7 @@ public:
 	~RocketDataGrid() { }
 	void GetRow( Rocket::Core::StringList& row, const Rocket::Core::String& table, int row_index, const Rocket::Core::StringList& columns )
 	{
-		if ( data.find( table ) == data.end() || data[table].size() <= row_index )
+		if ( data.find( table ) == data.end() || data[table].size() <= (unsigned) row_index )
 		{
 			return;
 		}

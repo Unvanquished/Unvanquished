@@ -503,9 +503,7 @@ void CG_Rocket_FormatData( int handle )
 
 void CG_Rocket_RegisterDataFormatters()
 {
-	int i;
-
-	for ( i = 0; i < dataFormatterCmdListCount; i++ )
+	for ( unsigned i = 0; i < dataFormatterCmdListCount; i++ )
 	{
 		// Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp( dataFormatterCmdList[ i - 1 ].name, dataFormatterCmdList[ i ].name ) > 0 )

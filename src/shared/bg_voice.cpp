@@ -696,7 +696,7 @@ BG_VoiceTrackFind
 ============
 */
 voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
-                                 int class_, int weapon,
+                                 int class_, int,
                                  int enthusiasm, int *trackNum )
 {
 	voiceTrack_t *vt = head;

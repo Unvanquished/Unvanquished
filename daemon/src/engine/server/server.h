@@ -315,7 +315,7 @@ public:
 	void Start();
 
 	void GameStaticInit();
-	void GameInit(int levelTime, int randomSeed, bool restart);
+	void GameInit(int levelTime, int randomSeed);
 	void GameShutdown(bool restart);
 	bool GameClientConnect(char* reason, size_t size, int clientNum, bool firstTime, bool isBot);
 	void GameClientBegin(int clientNum);

@@ -73,7 +73,7 @@ void Rocket_DeleteEvent()
 	delete event;
 }
 
-void Rocket_GetEventParameters( char *params, int length )
+void Rocket_GetEventParameters( char *params, int /*length*/ )
 {
 	RocketEvent_t *event = eventQueue.front();
 	*params = '\0';

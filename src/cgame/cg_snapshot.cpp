@@ -88,7 +88,6 @@ FIXME: Also called by map_restart?
 */
 void CG_SetInitialSnapshot( snapshot_t *snap )
 {
-	int           i;
 	centity_t     *cent;
 	entityState_t *state;
 
@@ -105,7 +104,7 @@ void CG_SetInitialSnapshot( snapshot_t *snap )
 	// what the server has indicated the current weapon is
 	CG_Respawn();
 
-	for ( i = 0; i < cg.snap->entities.size(); i++ )
+	for ( unsigned i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		state = &cg.snap->entities[ i ];
 		cent = &cg_entities[ state->number ];
@@ -143,7 +142,7 @@ static void CG_TransitionSnapshot()
 {
 	centity_t  *cent;
 	snapshot_t *oldFrame;
-	int        i, oldWeapon;
+	int        oldWeapon;
 
 	if ( !cg.snap )
 	{
@@ -159,7 +158,7 @@ static void CG_TransitionSnapshot()
 	CG_ExecuteServerCommands( cg.nextSnap );
 
 	// clear the currentValid flag for all entities in the existing snapshot
-	for ( i = 0; i < cg.snap->entities.size(); i++ )
+	for ( unsigned i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		cent->currentValid = false;
@@ -176,7 +175,7 @@ static void CG_TransitionSnapshot()
 	BG_PlayerStateToEntityState( &cg.snap->ps, &cg_entities[ cg.snap->ps.clientNum ].currentState, false );
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = false;
 
-	for ( i = 0; i < cg.snap->entities.size(); i++ )
+	for ( unsigned i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		CG_TransitionEntity( cent );
@@ -212,7 +211,7 @@ static void CG_TransitionSnapshot()
 		// Callbacks for changes in playerState like weapon/class/team
 		if ( oldWeapon != ps->weapon )
 		{
-			CG_OnPlayerWeaponChange( (weapon_t) ops->weapon );
+			CG_OnPlayerWeaponChange();
 		}
 
 		if ( ops->stats[ STAT_ITEMS ] != ps->stats[ STAT_ITEMS ] )
@@ -231,7 +230,6 @@ A new snapshot has just been read in from the client system.
 */
 static void CG_SetNextSnap( snapshot_t *snap )
 {
-	int           num;
 	entityState_t *es;
 	centity_t     *cent;
 
@@ -241,7 +239,7 @@ static void CG_SetNextSnap( snapshot_t *snap )
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = true;
 
 	// check for extrapolation errors
-	for ( num = 0; num < snap->entities.size(); num++ )
+	for ( unsigned num = 0; num < snap->entities.size(); num++ )
 	{
 		es = &snap->entities[ num ];
 		cent = &cg_entities[ es->number ];

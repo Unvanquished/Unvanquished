@@ -46,7 +46,7 @@ namespace Audio {
     void BeginRegistration() {
     }
 
-    sfxHandle_t RegisterSFX(Str::StringRef filename) {
+    sfxHandle_t RegisterSFX(Str::StringRef) {
         return 0;
     }
 
@@ -54,24 +54,24 @@ namespace Audio {
     }
 
 
-    void StartSound(int entityNum, Vec3 origin, sfxHandle_t sfx) {
+    void StartSound(int, Vec3, sfxHandle_t) {
     }
 
-    void StartLocalSound(int entityNum) {
+    void StartLocalSound(int) {
     }
 
 
-    void AddEntityLoopingSound(int entityNum, sfxHandle_t sfx) {
+    void AddEntityLoopingSound(int, sfxHandle_t) {
     }
 
     void ClearAllLoopingSounds() {
     }
 
-    void ClearLoopingSoundsForEntity(int entityNum) {
+    void ClearLoopingSoundsForEntity(int) {
     }
 
 
-    void StartMusic(Str::StringRef leadingSound, Str::StringRef loopSound) {
+    void StartMusic(Str::StringRef, Str::StringRef) {
     }
 
     void StopMusic() {
@@ -82,32 +82,32 @@ namespace Audio {
     }
 
 
-    void StreamData(int streamNum, const void* data, int numSamples, int rate, int width, int channels, float volume, int entityNum) {
+    void StreamData(int, const void*, int, int, int, int, float, int) {
     }
 
 
-    void UpdateListener(int entityNum, const Vec3 orientation[3]) {
+    void UpdateListener(int, const Vec3[3]) {
     }
 
-    void UpdateEntityPosition(int entityNum, Vec3 position) {
+    void UpdateEntityPosition(int, Vec3) {
     }
 
-    void UpdateEntityVelocity(int entityNum, Vec3 velocity) {
-    }
-
-
-    void SetReverb(int slotNum, std::string name, float ratio) {
+    void UpdateEntityVelocity(int, Vec3) {
     }
 
 
-    void StartCapture(int rate) {
+    void SetReverb(int, std::string, float) {
+    }
+
+
+    void StartCapture(int) {
     }
 
     int AvailableCaptureSamples() {
         return 0;
     }
 
-    void GetCapturedData(int numSamples, void* buffer) {
+    void GetCapturedData(int, void*) {
     }
 
     void StopCapture() {

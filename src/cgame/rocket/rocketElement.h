@@ -135,9 +135,9 @@ class RocketElementInstancer : public Rocket::Core::ElementInstancer
 public:
 	RocketElementInstancer() { }
 	~RocketElementInstancer() { }
-	Rocket::Core::Element *InstanceElement( Rocket::Core::Element *parent,
+	Rocket::Core::Element *InstanceElement( Rocket::Core::Element*,
 											const Rocket::Core::String &tag,
-											const Rocket::Core::XMLAttributes &attributes )
+											const Rocket::Core::XMLAttributes& )
 	{
 		return new RocketElement( tag );
 	}

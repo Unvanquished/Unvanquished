@@ -87,22 +87,22 @@ public:
 		}
 	}
 
-	void OnRowAdd( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_added, int num_rows_added )
+	void OnRowAdd( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_changed, int num_rows_changed )
+	void OnRowChange( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table )
+	void OnRowChange( Rocket::Controls::DataSource*, const Rocket::Core::String& )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowRemove( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_removed, int num_rows_removed )
+	void OnRowRemove( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
