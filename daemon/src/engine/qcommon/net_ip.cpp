@@ -1561,7 +1561,7 @@ void NET_OpenSocks( int port )
 NET_AddLocalAddress
 =====================
 */
-static void NET_AddLocalAddress( char *ifname, struct sockaddr *addr, struct sockaddr *netmask )
+static void NET_AddLocalAddress( const char *ifname, struct sockaddr *addr, struct sockaddr *netmask )
 {
 	int         addrlen;
 	sa_family_t family;

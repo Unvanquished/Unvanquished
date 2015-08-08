@@ -312,6 +312,7 @@ else()
     try_flag(WARNINGS           "-Woverloaded-virtual")
     try_flag(WARNINGS           "-Wstrict-null-sentinel")
     try_flag(WARNINGS           "-Wno-error=sign-promo")
+    try_flag(WARNINGS           "-Wno-error=extern-c-compat")
     # remove
     try_flag(WARNINGS           "-W${WARNMODE}missing-field-initializers")
     try_flag(WARNINGS           "-W${WARNMODE}sign-compare")
