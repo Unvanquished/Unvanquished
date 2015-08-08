@@ -2472,42 +2472,6 @@ bool Q_strreplace( char *dest, int destsize, const char *find, const char *repla
 	}
 }
 
-/// \todo (color) Move these two into Color::
-int Q_PrintStrlen( const char *string )
-{
-	int len = 0;
-	for ( Color::TokenIterator i ( string ); *i; ++i )
-	{
-		if ( i->Type() == Color::Token::CHARACTER || i->Type() == Color::Token::ESCAPE )
-		{
-			len++;
-		}
-	}
-
-	return len;
-}
-
-char *Q_CleanStr( char *string )
-{
-	std::string output;
-
-	for ( Color::TokenIterator i ( string ); *i; ++i )
-	{
-		if ( i->Type() == Color::Token::CHARACTER )
-		{
-			output.append( i->Begin(), i->Size() );
-		}
-		else if ( i->Type() == Color::Token::ESCAPE )
-		{
-			output.push_back('^');
-		}
-	}
-
-	strcpy( string, output.c_str() );
-
-	return string;
-}
-
 // strips whitespaces and bad characters
 bool Q_isBadDirChar( char c )
 {

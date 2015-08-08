@@ -1666,7 +1666,7 @@ vote_is_disabled:
 	if( voteInfo[voteId].reasonNeeded )
 	{
 		char *creason = ConcatArgs( voteInfo[voteId].target != T_NONE ? 3 : 2 );
-		G_DecolorString( creason, reason, sizeof( reason ) );
+		Color::StripColors( creason, reason, sizeof( reason ) );
 	}
 
 	if ( voteInfo[voteId].target == T_PLAYER )
@@ -1689,7 +1689,7 @@ vote_is_disabled:
 			return;
 		}
 
-		G_DecolorString( level.clients[ clientNum ].pers.netname, name, sizeof( name ) );
+		Color::StripColors( level.clients[ clientNum ].pers.netname, name, sizeof( name ) );
 		id = level.clients[ clientNum ].pers.namelog->id;
 
 		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
@@ -2013,7 +2013,7 @@ vote_is_disabled:
 		}
 	}
 
-	G_DecolorString( ent->client->pers.netname, caller, sizeof( caller ) );
+	Color::StripColors( ent->client->pers.netname, caller, sizeof( caller ) );
 
 	level.team[ team ].voteTime = level.time;
 	trap_SetConfigstring( CS_VOTE_TIME + team,
@@ -4437,41 +4437,6 @@ void ClientCommand( int clientNum )
 	}
 
 	command->cmdHandler( ent );
-}
-
-/// \todo (color) move to Color:: (unify with Q_CleanStr?)
-void G_DecolorString( const char *in, char *out, int len )
-{
-	--len;
-	bool decolor = true;
-	for ( Color::TokenIterator i ( in ); *i; ++i )
-	{
-		if ( !decolor || i->Type() == Color::Token::CHARACTER )
-		{
-			if ( len < i->Size() )
-			{
-				break;
-			}
-			if ( *i->Begin() == DECOLOR_OFF || *i->Begin() == DECOLOR_ON )
-			{
-				decolor = ( *i->Begin() == DECOLOR_ON );
-				continue;
-			}
-			strncpy( out, i->Begin(), i->Size() );
-			out += i->Size();
-			len -= i->Size();
-		}
-		else if ( i->Type() == Color::Token::ESCAPE )
-		{
-			if ( len < 1 )
-			{
-				break;
-			}
-			*out++ = '^';
-		}
-	}
-
-	*out = '\0';
 }
 
 void G_UnEscapeString( const char *in, char *out, int len )

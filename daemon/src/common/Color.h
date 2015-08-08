@@ -427,6 +427,8 @@ namespace Constants {
 enum {
 	ESCAPE = '^',
 	NULL_COLOR = '*',
+	DECOLOR_OFF = '\16', // these two are used by the second overload of StripColors (and a couple other places)
+	DECOLOR_ON  = '\17', // will have to be checked whether they are really useful
 }; // enum
 } // namespace Constants
 
@@ -801,6 +803,23 @@ Default token iterator for Utf-8 C-strings
 ================
 */
 using TokenIterator = BasicTokenIterator<char, TokenAdvanceUtf8>;
+
+
+// Returns the number of characters in a string discarding color codes
+// UTF-8 sequences are counted as a single character
+int StrlenNocolor( const char* string );
+
+// Removes the color codes from string (in place)
+char* StripColors( char* string );
+
+// Removes color codes from in, writing to out
+// Pre: in NUL terminated and out can contain at least len characters
+void StripColors( const char *in, char *out, int len );
+
+// Overload for C++ strings
+std::string StripColors( const std::string& input );
+
+
 
 } // namespace Color
 

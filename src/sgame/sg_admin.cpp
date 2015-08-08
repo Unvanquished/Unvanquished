@@ -644,7 +644,7 @@ bool G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 		return false;
 	}
 
-	G_DecolorString( name, testName, sizeof( testName ) );
+	Color::StripColors( name, testName, sizeof( testName ) );
 
 	if ( isdigit( testName[ 0 ] ) )
 	{
@@ -1205,7 +1205,7 @@ static int admin_out( void *admin, char *str )
 
 	l = G_admin_level( a->level );
 
-	int lncol = Q_PrintStrlen( l->name );
+	int lncol = Color::StrlenNocolor( l->name );
 
 	if ( a->lastSeen.tm_mday )
 	{
@@ -1923,7 +1923,7 @@ bool G_admin_readconfig( gentity_t *ent )
 			{
 				admin_readconfig_string( &cnf, l->name, sizeof( l->name ) );
 				// max printable name length for formatting
-				len = Q_PrintStrlen( l->name );
+				len = Color::StrlenNocolor( l->name );
 
 				if ( len > admin_level_maxname )
 				{
@@ -3265,7 +3265,7 @@ bool G_admin_warn( gentity_t *ent )
 
 	vic = &g_entities[ pids[ 0 ] ];
 
-	G_DecolorString( ConcatArgs( 2 ), reason, sizeof( reason ) );
+	Color::StripColors( ConcatArgs( 2 ), reason, sizeof( reason ) );
 
 	// create a ban list entry, set warnCount to -1 to indicate that this should NOT result in denying connection
 	if ( ent && !ent->client->pers.localClient )
@@ -3740,7 +3740,7 @@ bool G_admin_listplayers( gentity_t *ent )
 			lname[ 0 ] = 0;
 		}
 
-		int colorlen = Q_PrintStrlen( lname );
+		int colorlen = Color::StrlenNocolor( lname );
 
 		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s\n",
 		           i,

@@ -439,7 +439,7 @@ bool Con_CheckResize()
 		char prompt[ MAX_STRING_CHARS ];
 
 		Q_strncpyz( prompt, con_prompt->string, sizeof( prompt ) );
-		Q_CleanStr( prompt );
+		Color::StripColors( prompt );
 		// 8 spaces for clock, 1 for cursor
 		g_console_field_width = consoleState.textWidthInChars - 9 - Q_UTF8_Strlen( prompt );
 		g_consoleField.SetWidth(g_console_field_width);
@@ -739,7 +739,7 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
 
-	Q_CleanStr( prompt );
+	Color::StripColors( prompt );
 	Field_Draw( g_consoleField,
 		consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ),
 		linePosition, true, true, color.Alpha() );

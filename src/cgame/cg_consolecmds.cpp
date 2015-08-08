@@ -251,7 +251,7 @@ static void CG_CompleteName()
 			continue;
 		}
 
-		trap_CompleteCallback( Q_CleanStr( name ) );
+		trap_CompleteCallback( Color::StripColors( name ) );
 	}
 }
 

@@ -100,7 +100,7 @@ static INLINE void CON_UpdateCursor()
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
 #ifdef _WIN32
-	move( LINES - 1, Q_PrintStrlen( PROMPT ) + 8 + input_field.GetViewCursorPos() );
+	move( LINES - 1, Color::StrlenNocolor( PROMPT ) + 8 + input_field.GetViewCursorPos() );
 	wnoutrefresh( stdscr );
 #else
 	wmove( inputwin, 0, input_field.GetViewCursorPos() );
@@ -249,8 +249,8 @@ static void CON_Redraw()
 	pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 
 	// Create the input field
-	inputwin = newwin( 1, COLS - Q_PrintStrlen( PROMPT ) - 8, LINES - 1, Q_PrintStrlen( PROMPT ) + 8 );
-	input_field.SetWidth(COLS - Q_PrintStrlen( PROMPT ) - 9);
+	inputwin = newwin( 1, COLS - Color::StrlenNocolor( PROMPT ) - 8, LINES - 1, Color::StrlenNocolor( PROMPT ) + 8 );
+	input_field.SetWidth(COLS - Color::StrlenNocolor( PROMPT ) - 9);
 	CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), false );
 	CON_UpdateCursor();
 	wnoutrefresh( inputwin );
@@ -267,7 +267,7 @@ static void CON_Redraw()
 	}
 
 	// Display the title and input prompt
-	move( 0, ( COLS - Q_PrintStrlen( TITLE ) ) / 2 );
+	move( 0, ( COLS - Color::StrlenNocolor( TITLE ) ) / 2 );
 	CON_ColorPrint( stdscr, TITLE, true );
 	move( LINES - 1, 8 );
 	CON_ColorPrint( stdscr, PROMPT, true );

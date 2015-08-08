@@ -199,4 +199,92 @@ int Color::To4bit() const
     return color;
 }
 
+int StrlenNocolor( const char *string )
+{
+	int len = 0;
+	for ( TokenIterator i ( string ); *i; ++i )
+	{
+		if ( i->Type() == Token::CHARACTER || i->Type() == Token::ESCAPE )
+		{
+			len++;
+		}
+	}
+
+	return len;
+}
+
+char *StripColors( char *string )
+{
+	std::string output;
+
+	for ( TokenIterator i ( string ); *i; ++i )
+	{
+		if ( i->Type() == Token::CHARACTER )
+		{
+			output.append( i->Begin(), i->Size() );
+		}
+		else if ( i->Type() == Token::ESCAPE )
+		{
+			output.push_back('^');
+		}
+	}
+
+	strcpy( string, output.c_str() );
+
+	return string;
+}
+
+void StripColors( const char *in, char *out, int len )
+{
+	--len;
+	bool decolor = true;
+	for ( TokenIterator i ( in ); *i; ++i )
+	{
+		if ( !decolor || i->Type() == Token::CHARACTER )
+		{
+			if ( len < i->Size() )
+			{
+				break;
+			}
+			if ( *i->Begin() == Constants::DECOLOR_OFF || *i->Begin() == Constants::DECOLOR_ON )
+			{
+				decolor = ( *i->Begin() == Constants::DECOLOR_ON );
+				continue;
+			}
+			strncpy( out, i->Begin(), i->Size() );
+			out += i->Size();
+			len -= i->Size();
+		}
+		else if ( i->Type() == Token::ESCAPE )
+		{
+			if ( len < 1 )
+			{
+				break;
+			}
+			*out++ = '^';
+		}
+	}
+
+	*out = '\0';
+}
+
+std::string StripColors( const std::string& input )
+{
+	std::string output;
+
+	for ( TokenIterator i ( input.c_str() ); *i; ++i )
+	{
+		if ( i->Type() == Token::CHARACTER )
+		{
+			output.append( i->Begin(), i->Size() );
+		}
+		else if ( i->Type() == Token::ESCAPE )
+		{
+			output.push_back('^');
+		}
+	}
+
+	return output;
+}
+
 } // namespace Color

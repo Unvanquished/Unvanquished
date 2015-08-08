@@ -628,7 +628,7 @@ bool G_IsUnnamed( const char *name )
 	char testName[ MAX_NAME_LENGTH ];
 	int  length;
 
-	G_DecolorString( (char *)name, testName, sizeof( testName ) );
+	Color::StripColors( (char *)name, testName, sizeof( testName ) );
 
 	if ( !Q_stricmp( testName, UNNAMED_PLAYER ) )
 	{

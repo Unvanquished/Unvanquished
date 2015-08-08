@@ -348,8 +348,8 @@ static int ServerListCmpByName( const void* one, const void* two )
 	Q_strncpyz( cleanName1, a->name, sizeof( cleanName1 ) );
 	Q_strncpyz( cleanName2, b->name, sizeof( cleanName2 ) );
 
-	Q_CleanStr( cleanName1 );
-	Q_CleanStr( cleanName2 );
+	Color::StripColors( cleanName1 );
+	Color::StripColors( cleanName2 );
 
 	return Q_stricmp( cleanName1, cleanName2 );
 }
@@ -457,7 +457,7 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 
 		Q_strncpyz( name, rocketInfo.data.servers[ netSrc ][ i ].name, sizeof( name ) );
 
-		if ( Q_stristr( Q_CleanStr( name ), filter ) )
+		if ( Q_stristr( Color::StripColors( name ), filter ) )
 		{
 			char data[ MAX_INFO_STRING ] = { 0 };
 
