@@ -108,15 +108,6 @@ try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
 try_flag(WARNINGS           "-Woverloaded-virtual")
 try_flag(WARNINGS           "-Wstrict-null-sentinel")
 try_flag(WARNINGS           "-Wno-error=sign-promo")
-# remove
-try_flag(WARNINGS           "-Wno-error=maybe-uninitialized")
-try_flag(WARNINGS           "-W${WARNMODE}missing-field-initializers")
-try_flag(WARNINGS           "-W${WARNMODE}sign-compare")
-try_flag(WARNINGS           "-Wno-error=switch")
-try_flag(WARNINGS           "-Wno-error=unused-but-set-variable")
-try_flag(WARNINGS           "-Wno-error=unused-function")
-try_flag(WARNINGS           "-Wno-error=unused-parameter")
-try_flag(WARNINGS           "-Wno-error=unused-private-field")
 
 GAMEMODULE(NAME sgame
     DEFINITIONS
