@@ -766,11 +766,11 @@ private:
 			{
 				return value_type( input, input+2, value_type::DEFAULT_COLOR );
 			}
-			else if ( input[1] >= '0' && input[1] < 'p' )
+			else if ( std::toupper( input[1] ) >= '0' && std::toupper( input[1] ) < 'P' )
 			{
 				return value_type( input, input+2, Color( char( input[1] ) ) );
 			}
-			else if ( input[1] == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
+			else if ( std::tolower( input[1] ) == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
 			{
 				return value_type( input, input+5, Color(
 					gethex( input[2] ) * 17,
