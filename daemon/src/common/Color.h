@@ -406,28 +406,6 @@ enum {
 }; // enum
 } // namespace Constants
 
-namespace Named {
-extern Color Black;
-extern Color Red;
-extern Color Green;
-extern Color Blue;
-extern Color Yellow;
-extern Color Orange;
-extern Color Magenta;
-extern Color Cyan;
-extern Color White;
-extern Color LtGrey;
-extern Color MdGrey;
-extern Color DkGrey;
-extern Color MdRed;
-extern Color MdGreen;
-extern Color DkGreen;
-extern Color MdCyan;
-extern Color MdYellow;
-extern Color MdOrange;
-extern Color MdBlue;
-} // namespace Named
-
 namespace NamedString {
 extern const char* Black;
 extern const char* Red;

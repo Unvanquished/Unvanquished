@@ -37,29 +37,6 @@ Maryland 20850 USA.
 
 namespace Color {
 
-namespace Named {
-Color   Black   = {   0,   0,   0, 255 };
-Color   Red     = { 255,   0,   0, 255 };
-Color   Green   = {   0, 255,   0, 255 };
-Color   Blue    = {   0,   0, 255, 255 };
-Color   Yellow  = { 255, 255,   0, 255 };
-Color   Orange  = { 255, 128,   0, 255 };
-Color   Magenta = { 255,   0, 255, 255 };
-Color   Cyan    = {   0, 255, 255, 255 };
-Color   White   = { 255, 255, 255, 255 };
-Color   LtGrey  = { 191, 191, 191, 255 };
-Color   MdGrey  = { 128, 128, 128, 255 };
-Color   DkGrey  = {  64,  64,  64, 255 };
-Color   MdRed   = { 128,   0,   0, 255 };
-Color   MdGreen = {   0, 128,   0, 255 };
-Color   DkGreen = {   0,  51,   0, 255 };
-Color   MdCyan  = {   0, 128, 128, 255 };
-Color   MdYellow= { 128, 128,   0, 255 };
-Color   MdOrange= { 128,  64,   0, 255 };
-Color   MdBlue  = {   0,   0, 128, 255 };
-} // namespace Named
-
-
 namespace NamedString {
 const char* Black = "^0";
 const char* Red = "^1";
@@ -82,25 +59,25 @@ const char* Null = "^*";
 } // namespace Named
 
 namespace NamedFloat {
-ColorFloat Black = { 0, 0, 0, 1 };
-ColorFloat Red = { 1, 0, 0, 1 };
-ColorFloat Green = { 0, 1, 0, 1 };
-ColorFloat Blue = { 0, 0, 1, 1 };
-ColorFloat Yellow = { 1, 1, 0, 1 };
-ColorFloat Orange = { 1, 0.5, 0, 1 };
-ColorFloat Magenta = { 1, 0, 1, 1 };
-ColorFloat Cyan = { 0, 1, 1, 1 };
-ColorFloat White = { 1, 1, 1, 1 };
-ColorFloat LtGrey = { 0.75, 0.75, 0.75, 1 };
-ColorFloat MdGrey = { 0.5, 0.5, 0.5, 1 };
-ColorFloat DkGrey = { 0.25, 0.25, 0.25, 1 };
-ColorFloat MdRed = { 0.5, 0, 0, 1 };
-ColorFloat MdGreen = { 0, 0.5, 0, 1 };
-ColorFloat DkGreen = { 0, 0.20, 0, 1 };
-ColorFloat MdCyan = { 0, 0.5, 0.5, 1 };
-ColorFloat MdYellow = { 0.5, 0.5, 0, 1 };
-ColorFloat MdOrange = { 0.5, 0.25, 0, 1 };
-ColorFloat MdBlue = { 0, 0, 0.5, 1 };
+ColorFloat Black    = { 0.00, 0.00, 0.00, 1.00 };
+ColorFloat Red      = { 1.00, 0.00, 0.00, 1.00 };
+ColorFloat Green    = { 0.00, 1.00, 0.00, 1.00 };
+ColorFloat Blue     = { 0.00, 0.00, 1.00, 1.00 };
+ColorFloat Yellow   = { 1.00, 1.00, 0.00, 1.00 };
+ColorFloat Orange   = { 1.00, 0.50, 0.00, 1.00 };
+ColorFloat Magenta  = { 1.00, 0.00, 1.00, 1.00 };
+ColorFloat Cyan     = { 0.00, 1.00, 1.00, 1.00 };
+ColorFloat White    = { 1.00, 1.00, 1.00, 1.00 };
+ColorFloat LtGrey   = { 0.75, 0.75, 0.75, 1.00 };
+ColorFloat MdGrey   = { 0.50, 0.50, 0.50, 1.00 };
+ColorFloat DkGrey   = { 0.25, 0.25, 0.25, 1.00 };
+ColorFloat MdRed    = { 0.50, 0.00, 0.00, 1.00 };
+ColorFloat MdGreen  = { 0.00, 0.50, 0.00, 1.00 };
+ColorFloat DkGreen  = { 0.00, 0.20, 0.00, 1.00 };
+ColorFloat MdCyan   = { 0.00, 0.50, 0.50, 1.00 };
+ColorFloat MdYellow = { 0.50, 0.50, 0.00, 1.00 };
+ColorFloat MdOrange = { 0.50, 0.25, 0.00, 1.00 };
+ColorFloat MdBlue   = { 0.00, 0.00, 0.50, 1.00 };
 } // namespace NamedFloat
 
 static Color g_color_table[ 32 ] =

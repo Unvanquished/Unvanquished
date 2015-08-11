@@ -1350,7 +1350,7 @@ public:
 				if ( color != 1 )
 				{
 					color = 1;
-					trap_R_SetColor( Color::Named::Yellow );
+					trap_R_SetColor( Color::NamedFloat::Yellow );
 				}
 
 				if ( v > range )
@@ -1366,7 +1366,7 @@ public:
 				if ( color != 2 )
 				{
 					color = 2;
-					trap_R_SetColor( Color::Named::Blue );
+					trap_R_SetColor( Color::NamedFloat::Blue );
 				}
 
 				v = -v;
@@ -1396,7 +1396,7 @@ public:
 					if ( color != 5 )
 					{
 						color = 5; // YELLOW for rate delay
-						trap_R_SetColor( Color::Named::Yellow );
+						trap_R_SetColor( Color::NamedFloat::Yellow );
 					}
 				}
 
@@ -1406,7 +1406,7 @@ public:
 					{
 						color = 3;
 
-						trap_R_SetColor( Color::Named::Green );
+						trap_R_SetColor( Color::NamedFloat::Green );
 					}
 				}
 
@@ -1425,7 +1425,7 @@ public:
 				if ( color != 4 )
 				{
 					color = 4; // RED for dropped snapshots
-					trap_R_SetColor( Color::Named::Red );
+					trap_R_SetColor( Color::NamedFloat::Red );
 				}
 
 				trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );

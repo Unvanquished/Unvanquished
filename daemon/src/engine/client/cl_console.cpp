@@ -39,7 +39,7 @@ Maryland 20850 USA.
 #include "qcommon/q_unicode.h"
 #include "framework/LogSystem.h"
 
-static const Color::Color console_color = Color::Named::White;
+static const Color::Color console_color = { 255, 255, 255, 255 };
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
@@ -128,7 +128,7 @@ static std::string Con_LineToColouredString( int lineno, bool lf )
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
 
-	Color::Color color = Color::Named::White;
+	Color::Color color = console_color;
 	std::string lineString;
 
 	for ( int s = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
@@ -734,7 +734,7 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Com_RealTime( &realtime );
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
-	Color::Color color = Color::Named::White;
+	Color::Color color = console_color;
 	color.SetAlpha( Color::Color::component_max * consoleState.currentAlphaFactor * overrideAlpha );
 
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
@@ -986,8 +986,8 @@ void Con_DrawConsoleContent()
 		++row;
 	}
 
-	Color::Color currentColor = Color::Named::White;
-	Color::Color color = currentColor;
+	Color::Color currentColor = console_color;
+	Color::Color color = console_color;
 
 	for ( ; row >= 0 && lineDrawPosition > textDistanceToTop; lineDrawPosition -= charHeight, row-- )
 	{
