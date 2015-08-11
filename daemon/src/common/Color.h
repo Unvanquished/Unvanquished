@@ -112,6 +112,42 @@ struct IsColor<T,
 	>::type
 > : std::true_type {};
 
+// Converts a component, used by Cast()
+template<class ColorDest, class ColorSource>
+constexpr typename ColorDest::component_type ConvertComponent( typename ColorSource::component_type from )
+{
+	using Component = typename std::common_type<
+		typename ColorSource::component_type,
+		typename ColorDest::component_type
+	>::type;
+
+	return Component( from )   / Component( ColorSource::component_max ) * Component( ColorDest::component_max );
+}
+
+// Converts two types implementing the Color concept
+template<class ColorDest, class ColorSource>
+constexpr typename std::enable_if<
+		ColorDest::components == Components::RGBA &&
+		ColorSource::components == Components::RGBA &&
+		!std::is_same<ColorDest, ColorSource>::value,
+		ColorDest>::type
+	Cast( const ColorSource& from )
+{
+
+	return {
+		ConvertComponent<ColorDest, ColorSource>( from.Red() ),
+		ConvertComponent<ColorDest, ColorSource>( from.Green() ),
+		ConvertComponent<ColorDest, ColorSource>( from.Blue() ),
+		ConvertComponent<ColorDest, ColorSource>( from.Alpha() ),
+	};
+}
+
+// Converts to the same type
+template<class ColorSource>
+	constexpr ColorSource Cast( const ColorSource& from )
+{
+	return from;
+}
 
 /*
 ================
@@ -128,6 +164,9 @@ public:
 		= std::numeric_limits<component_type>::max();
 	static constexpr const Components components = Components::RGBA;
 
+	// Returns the value of an indexed color
+	static const Color& Indexed( int i );
+
 	/*
 	================
 	Color::Color
@@ -141,27 +180,6 @@ public:
 	constexpr Color( component_type r, component_type g, component_type b,
 					  component_type a = component_max )
 		: r(r), g(g), b(b), a(a)
-	{
-	}
-
-	/*
-	================
-	Color::Color
-
-	Initialize from a color index
-	================
-	*/
-	explicit Color( int index );
-
-	/*
-	================
-	Color::Color
-
-	Initialize from a color index character
-	================
-	*/
-	explicit Color( char index )
-		: Color( int( index - '0') )
 	{
 	}
 
@@ -266,6 +284,12 @@ public:
 	typedef float component_type;
 	static constexpr const component_type component_max = 1;
 	static constexpr const Components components = Components::RGBA;
+
+	// Returns the value of an indexed color
+	static ColorFloat Indexed( int i )
+	{
+		return Cast<ColorFloat>( Color::Indexed( i ) );
+	}
 
 
 	// Default constructor, all components set to zero
@@ -384,43 +408,6 @@ constexpr ColorType Blend(const ColorType& a, const ColorType& b, float factor)
 		typename ColorType::component_type ( a.Alpha() * ( 1 - factor ) + b.Alpha() * factor ),
 	};
 }
-
-// Converts a component, used by Cast()
-template<class ColorDest, class ColorSource>
-constexpr typename ColorDest::component_type ConvertComponent( typename ColorSource::component_type from )
-{
-	using Component = typename std::common_type<
-		typename ColorSource::component_type,
-		typename ColorDest::component_type
-	>::type;
-
-	return Component( from )   / Component( ColorSource::component_max ) * Component( ColorDest::component_max );
-}
-
-// Converts two types implementing the Color concept
-template<class ColorDest, class ColorSource>
-constexpr typename std::enable_if<
-		ColorDest::components == Components::RGBA &&
-		ColorSource::components == Components::RGBA &&
-		!std::is_same<ColorDest, ColorSource>::value, ColorDest>::type
-	Cast( const ColorSource& from )
-{
-
-	return {
-		ConvertComponent<ColorDest, ColorSource>( from.Red() ),
-		ConvertComponent<ColorDest, ColorSource>( from.Green() ),
-		ConvertComponent<ColorDest, ColorSource>( from.Blue() ),
-		ConvertComponent<ColorDest, ColorSource>( from.Alpha() ),
-	};
-}
-
-// Converts to the same type
-template<class ColorSource>
-	ColorSource Cast( const ColorSource& from )
-{
-	return from;
-}
-
 
 namespace Constants {
 // Namespace enum to have these constants scoped but allowing implicit conversions
@@ -768,7 +755,7 @@ private:
 			}
 			else if ( std::toupper( input[1] ) >= '0' && std::toupper( input[1] ) < 'P' )
 			{
-				return value_type( input, input+2, Color( char( input[1] ) ) );
+				return value_type( input, input+2, Color::Indexed( input[1] - '0' ) );
 			}
 			else if ( std::tolower( input[1] ) == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
 			{

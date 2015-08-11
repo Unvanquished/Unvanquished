@@ -128,7 +128,7 @@ static std::string Con_LineToColouredString( int lineno, bool lf )
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
 
-	Color::Color color(7);
+	Color::Color color = Color::Named::White;
 	std::string lineString;
 
 	for ( int s = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )

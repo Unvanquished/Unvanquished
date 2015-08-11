@@ -408,8 +408,7 @@ static void DrawTris()
 
 	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
-		/// \todo (color) index to ColorFloat
-		gl_genericShader->SetUniform_Color( Color::Cast<Color::ColorFloat>( Color::Color( backEnd.pc.c_batches % 8 ) ) );
+		gl_genericShader->SetUniform_Color( Color::ColorFloat::Indexed( backEnd.pc.c_batches % 8 ) );
 	}
 	else if ( glState.currentVBO == tess.vbo )
 	{
@@ -1306,9 +1305,7 @@ static void Render_shadowFill( int stage )
 
 	if ( r_debugShadowMaps->integer )
 	{
-		/// \todo (color) index to float
-		Color::ColorFloat shadowMapColor = Color::Cast<Color::ColorFloat>( Color::Color( backEnd.pc.c_batches % 8 ) );
-		gl_shadowFillShader->SetUniform_Color( shadowMapColor );
+		gl_shadowFillShader->SetUniform_Color( Color::ColorFloat::Indexed( backEnd.pc.c_batches % 8 ) );
 	}
 
 	gl_shadowFillShader->SetUniform_AlphaTest( pStage->stateBits );

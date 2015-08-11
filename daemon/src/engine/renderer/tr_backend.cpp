@@ -3274,8 +3274,7 @@ static void RB_RenderDebugUtils()
 						cubeSides++;
 					}
 				}
-				/// \todo (color) index to float colors
-				Color::Cast<Color::ColorFloat>( Color::Color( cubeSides ) ).toArray( lightColor );
+				Color::ColorFloat::Indexed( cubeSides ).toArray( lightColor );
 			}
 			else
 			{
@@ -3540,8 +3539,8 @@ static void RB_RenderDebugUtils()
 
 						VectorScale( origin, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
-						/// \todo (color) templated function to get indexed colors
-						Color::ColorFloat color = Color::Cast<Color::ColorFloat>(Color::Color(j));
+
+						Color::ColorFloat color = Color::ColorFloat::Indexed( j );
 						Tess_AddTetrahedron( tetraVerts, color );
 
 						VectorScale( offset, skel->scale, tetraVerts[ 3 ] );

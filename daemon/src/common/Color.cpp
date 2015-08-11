@@ -139,11 +139,11 @@ static Color g_color_table[ 32 ] =
 	{ 255, 255, 128, 255 }, // O              31
 };
 
-Color::Color::Color (int index)
+const Color& Color::Indexed( int index )
 {
 	if ( index < 0 )
 		index *= -1;
-	*this = g_color_table[index%32];
+	return g_color_table[index%32];
 }
 
 int Color::To4bit() const
