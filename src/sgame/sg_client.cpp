@@ -940,7 +940,11 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		{
 			if( G_IsUnnamed( newname ) )
 			{
-				Q_strncpyz( newname, G_UnnamedClientName( client ), sizeof( newname ) );
+				Q_strncpyz( client->pers.netname, G_UnnamedClientName( client ), sizeof( client->pers.netname ) );
+			}
+			else
+			{
+				Q_strncpyz( client->pers.netname, newname, sizeof( client->pers.netname ) );
 			}
 
 			if ( !forceName && client->pers.connected == CON_CONNECTED )
