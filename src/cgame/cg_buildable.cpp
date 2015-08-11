@@ -1686,7 +1686,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	              storedBPFrac = 0;
 	int           health, powerUsage = 0, totalPower = 0;
 	float         x, y;
-	vec4_t        color;
 	bool      powered, marked, showMineEfficiency, showStoredBP, showPower;
 	trace_t       tr;
 	float         d;
@@ -1723,7 +1722,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		return;
 	}
 
-	Vector4Copy( bs->foreColor, color );
+	Color::ColorFloat color = bs->foreColor;
 
 	// trace for center point
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
@@ -1824,7 +1823,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	{
 		if ( cent->buildableStatus.lastTime + STATUS_FADE_TIME > cg.time )
 		{
-			color[ 3 ] = ( float )( cg.time - cent->buildableStatus.lastTime ) / STATUS_FADE_TIME;
+			color.SetAlpha( ( float )( cg.time - cent->buildableStatus.lastTime ) / STATUS_FADE_TIME );
 		}
 	}
 
@@ -1833,7 +1832,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	{
 		if ( cent->buildableStatus.lastTime + STATUS_FADE_TIME > cg.time )
 		{
-			color[ 3 ] = 1.0f - ( float )( cg.time - cent->buildableStatus.lastTime ) / STATUS_FADE_TIME;
+			color.SetAlpha( 1.0f - ( float )( cg.time - cent->buildableStatus.lastTime ) / STATUS_FADE_TIME );
 		}
 		else
 		{
@@ -1944,7 +1943,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		if ( bs->frameShader )
 		{
 			frameColor = bs->backColor;
-			frameColor.SetAlpha( color[ 3 ] );
+			frameColor.SetAlpha( color.Alpha() );
 			trap_R_SetColor( frameColor );
 
 			if ( showMineEfficiency || showStoredBP )
@@ -1978,7 +1977,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			barH = ( 0.5f * picH ) - pad;
 
 			Color::ColorFloat barColor = DepletionColorFade( mineEfficiencyFrac, bs );
-			barColor.SetAlpha( color[ 3 ] );
+			barColor.SetAlpha( color.Alpha() );
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
@@ -2003,7 +2002,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			barH = ( 0.5f * picH ) - pad;
 
 			Color::ColorFloat barColor = HealthColorFade( 1.0f - storedBPFrac, bs );
-			barColor.SetAlpha( color[ 3 ] );
+			barColor.SetAlpha( color.Alpha() );
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
@@ -2041,7 +2040,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			barW = picW * healthFrac - ( bs->healthPadding * 2.0f * scale );
 
 			Color::ColorFloat barColor = HealthColorFade( healthFrac, bs );
-			barColor.SetAlpha( color[ 3 ] );
+			barColor.SetAlpha( color.Alpha() );
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
@@ -2065,7 +2064,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 				Color::ColorFloat barColor;
 				if ( powered ) { barColor = DepletionColorFade( totalPowerFrac, bs ); }
 				else           { barColor = bs->healthSevereColor; }
-				barColor[ 3 ] = color[ 3 ];
+				barColor.SetAlpha( color.Alpha() );
 
 				trap_R_SetColor( barColor );
 				CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );

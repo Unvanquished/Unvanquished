@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #include <type_traits>
 
 #include "../engine/qcommon/q_unicode.h"
+#include "Math.h"
 
 namespace Color {
 
@@ -278,7 +279,7 @@ private:
 };
 
 // A color with normalized floats RGBA components
-class ColorFloat
+class ColorFloat : public Math::Vec4
 {
 public:
 	typedef float component_type;
@@ -293,19 +294,19 @@ public:
 
 
 	// Default constructor, all components set to zero
-	constexpr ColorFloat() : array{ 0.f, 0.f, 0.f, 0.f } {}
+	ColorFloat() : Math::Vec4{ 0.f, 0.f, 0.f, 0.f } {}
 
 
 	// Initialize from the components
-	constexpr ColorFloat( component_type r, component_type g, component_type b,
+	ColorFloat( component_type r, component_type g, component_type b,
 					  component_type a = component_max )
-		: array{ r, g, b, a }
+		: Math::Vec4{ r, g, b, a }
 	{
 	}
 
 	// Copy from array
-	constexpr ColorFloat( const float array[4] ) :
-		array{ array[0], array[1], array[2], array[3] }
+	ColorFloat( const float array[4] ) :
+		Math::Vec4{ array[0], array[1], array[2], array[3] }
 	{
 
 	}
@@ -313,85 +314,71 @@ public:
 	ColorFloat( const std::nullptr_t& ) = delete;
 
 	// Convert to array
-	constexpr operator const float*() const
+	operator const float*() const
 	{
-		return array;
+		return Data();
 	}
 
 	operator float*()
 	{
-		return array;
+		return Data();
 	}
 
-	constexpr const float* toArray() const
+	const float* toArray() const
 	{
-		return array;
+		return Data();
 	}
 
 	float* toArray()
 	{
-		return array;
+		return Data();
 	}
 
 	void toArray( float* output ) const
 	{
-		memcpy( output, array, sizeof(float)*4 );
+		memcpy( output, Data(), sizeof(float)*4 );
 	}
 
 
-	constexpr component_type Red() const
+	component_type Red() const
 	{
-		return array[0];
+		return Data()[0];
 	}
 
-	constexpr component_type Green() const
+	component_type Green() const
 	{
-		return array[1];
+		return Data()[1];
 	}
 
-	constexpr component_type Blue() const
+	component_type Blue() const
 	{
-		return array[2];
+		return Data()[2];
 	}
 
-	constexpr component_type Alpha() const
+	component_type Alpha() const
 	{
-		return array[3];
+		return Data()[3];
 	}
 
 	void SetRed( component_type v )
 	{
-		array[0] = v;
+		Data()[0] = v;
 	}
 
 	void SetGreen( component_type v )
 	{
-		array[1] = v;
+		Data()[1] = v;
 	}
 
 	void SetBlue( component_type v )
 	{
-		array[2] = v;
+		Data()[2] = v;
 	}
 
 	void SetAlpha( component_type v )
 	{
-		array[3] = v;
+		Data()[3] = v;
 	}
-
-	ColorFloat& operator*= ( component_type factor )
-	{
-		for ( component_type& c : array )
-		{
-			c *= factor;
-		}
-		return *this;
-	}
-
-private:
-	// Note: if the internal layout, the way it's serialized should be changed
-	// (see SerializeTraits<Color::ColorFloat> in cg_msgdef.h)
-	component_type array[4];
 };
 
 /*

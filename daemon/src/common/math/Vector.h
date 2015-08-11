@@ -25,6 +25,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef COMMON_VECTOR_H_
 #define COMMON_VECTOR_H_
 
+#include <ostream>
+
 namespace Math {
 
 	// Forward declarations

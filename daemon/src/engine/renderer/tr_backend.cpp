@@ -3061,7 +3061,6 @@ static void RB_RenderDebugUtils()
 		const interaction_t *ia;
 		trRefLight_t  *light;
 		vec3_t        forward, left, up;
-		vec4_t        lightColor; //unused
 
 		static const vec3_t minSize = { -2, -2, -2 };
 		static const vec3_t maxSize = { 2,  2,  2 };
@@ -3086,6 +3085,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		ia = nullptr;
+		Color::ColorFloat lightColor;
 		while ( ( ia = IterateLights( ia ) ) )
 		{
 			backEnd.currentLight = light = ia->light;
@@ -3094,39 +3094,39 @@ static void RB_RenderDebugUtils()
 			{
 				if ( light->shadowLOD == 0 )
 				{
-					Vector4Copy( Color::NamedFloat::Red, lightColor );
+					lightColor = Color::NamedFloat::Red;
 				}
 				else if ( light->shadowLOD == 1 )
 				{
-					Vector4Copy( Color::NamedFloat::Green, lightColor );
+					lightColor = Color::NamedFloat::Green;
 				}
 				else if ( light->shadowLOD == 2 )
 				{
-					Vector4Copy( Color::NamedFloat::Blue, lightColor );
+					lightColor = Color::NamedFloat::Blue;
 				}
 				else if ( light->shadowLOD == 3 )
 				{
-					Vector4Copy( Color::NamedFloat::Yellow, lightColor );
+					lightColor = Color::NamedFloat::Yellow;
 				}
 				else if ( light->shadowLOD == 4 )
 				{
-					Vector4Copy( Color::NamedFloat::Magenta, lightColor );
+					lightColor = Color::NamedFloat::Magenta;
 				}
 				else if ( light->shadowLOD == 5 )
 				{
-					Vector4Copy( Color::NamedFloat::Cyan, lightColor );
+					lightColor = Color::NamedFloat::Cyan;
 				}
 				else
 				{
-					Vector4Copy( Color::NamedFloat::MdGrey, lightColor );
+					lightColor = Color::NamedFloat::MdGrey;
 				}
 			}
 			else
 			{
-				Vector4Copy( Color::NamedFloat::Blue, lightColor );
+				lightColor = Color::NamedFloat::Blue;
 			}
 
-			lightColor[ 3 ] = 0.2;
+			lightColor.SetAlpha( 0.2 );
 
 			gl_genericShader->SetUniform_Color( lightColor );
 
@@ -3274,7 +3274,7 @@ static void RB_RenderDebugUtils()
 						cubeSides++;
 					}
 				}
-				Color::ColorFloat::Indexed( cubeSides ).toArray( lightColor );
+				lightColor = Color::ColorFloat::Indexed( cubeSides );
 			}
 			else
 			{
@@ -3295,19 +3295,19 @@ static void RB_RenderDebugUtils()
 
 				if ( *surface == SF_FACE )
 				{
-					Vector4Copy( Color::NamedFloat::MdGrey, lightColor );
+					lightColor = Color::NamedFloat::MdGrey;
 				}
 				else if ( *surface == SF_GRID )
 				{
-					Vector4Copy( Color::NamedFloat::Cyan, lightColor );
+					lightColor = Color::NamedFloat::Cyan;
 				}
 				else if ( *surface == SF_TRIANGLES )
 				{
-					Vector4Copy( Color::NamedFloat::Magenta, lightColor );
+					lightColor = Color::NamedFloat::Magenta;
 				}
 				else
 				{
-					Vector4Copy( Color::NamedFloat::MdGrey, lightColor );
+					lightColor = Color::NamedFloat::MdGrey;
 				}
 
 				Tess_AddCube( vec3_origin, gen->bounds[ 0 ], gen->bounds[ 1 ], lightColor );
