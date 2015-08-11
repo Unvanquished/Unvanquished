@@ -493,8 +493,7 @@ public:
 		if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
 		{
 			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
-			/// \todo (color) no macros
-			Vector4Lerp( dim, baseColor.toArray(), Color::NamedFloat::White.toArray(), drawColor.toArray() );
+			drawColor = Color::Blend<Color::ColorFloat>( baseColor, Color::NamedFloat::White, dim );
 		}
 
 		else if ( !onRelevantEntity )

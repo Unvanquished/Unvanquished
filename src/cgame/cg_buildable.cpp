@@ -1637,19 +1637,18 @@ static Color::ColorFloat HealthColorFade( float healthFrac, buildStat_t *bs )
 	Color::ColorFloat out;
 	if ( healthFrac > 0.666f )
 	{
-		/// \todo (color) if possible, don't use these macros
 		frac = 1.0f - ( healthFrac - 0.666f ) * 3.0f;
-		Vector4Lerp( frac, bs->healthGuardedColor, bs->healthElevatedColor, out.toArray() );
+		out = Color::Blend<Color::ColorFloat>( bs->healthGuardedColor, bs->healthElevatedColor, frac );
 	}
 	else if ( healthFrac > 0.333f )
 	{
 		frac = 1.0f - ( healthFrac - 0.333f ) * 3.0f;
-		Vector4Lerp( frac, bs->healthElevatedColor, bs->healthHighColor, out.toArray() );
+		out = Color::Blend<Color::ColorFloat>( bs->healthElevatedColor, bs->healthHighColor, frac );
 	}
 	else
 	{
 		frac = 1.0f - healthFrac * 3.0f;
-		Vector4Lerp( frac, bs->healthHighColor, bs->healthSevereColor, out.toArray() );
+		out = Color::Blend<Color::ColorFloat>( bs->healthHighColor, bs->healthSevereColor, frac );
 	}
 
 	return out;
