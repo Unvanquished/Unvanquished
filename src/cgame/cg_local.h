@@ -2387,15 +2387,15 @@ void CG_LoadArenas();
 //
 // Rocket Functions
 //
-void Rocket_Init( void );
-void Rocket_Shutdown( void );
-void Rocket_Render( void );
-void Rocket_Update( void );
+void Rocket_Init();
+void Rocket_Shutdown();
+void Rocket_Render();
+void Rocket_Update();
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
 bool Rocket_GetEvent(std::string& cmdText);
-void Rocket_DeleteEvent( void );
+void Rocket_DeleteEvent();
 void Rocket_RegisterDataSource( const char *name );
 void Rocket_DSAddRow( const char *name, const char *table, const char *data );
 void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data );
@@ -2424,7 +2424,7 @@ void Rocket_LoadUnit( const char *path );
 void Rocket_AddUnitToHud( int weapon, const char *id );
 void Rocket_ShowHud( int weapon );
 void Rocket_ClearHud( int weapon );
-void Rocket_InitKeys( void );
+void Rocket_InitKeys();
 keyNum_t Rocket_ToQuake( int key );
 void Rocket_ProcessKeyInput( int key, bool down );
 void Rocket_ProcessTextInput( int key );
@@ -2433,6 +2433,7 @@ void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool i
 void Rocket_ShowScoreboard( const char *name, bool show );
 void Rocket_SetDataSelectIndex( int index );
 void Rocket_LoadFont( const char *font );
-void Rocket_Rocket_f( void );
+void Rocket_Rocket_f();
+void Rocket_RocketDebug_f();
 #endif
 
