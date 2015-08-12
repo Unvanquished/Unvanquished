@@ -616,7 +616,7 @@ void Console_Key( int key )
 
 		//scroll lock state 1 or smaller will scroll down on own output
 		if (con_scrollLock->integer <= 1) {
-			consoleState.scrollLineIndex = consoleState.currentLine;
+			consoleState.scrollLineIndex = consoleState.lines.size() - 1;
 		}
 
 		Com_Printf("]%s\n", Str::UTF32To8(g_consoleField.GetText()).c_str());

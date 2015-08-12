@@ -709,14 +709,7 @@ bool CL_UpdateVisiblePings_f( int source );
 //
 // console
 //
-#define     CON_TEXTSIZE 65536
 #define     CONSOLE_FONT_VPADDING 0.3
-
-struct conChar_t
-{
-	int ch;
-	Color::Color ink;
-};
 
 typedef struct
 {
@@ -726,27 +719,17 @@ typedef struct
 	int sides;
 } consoleBoxWidth_t;
 
-typedef struct
+struct console_t
 {
 	bool initialized;
 
-	conChar_t text[ CON_TEXTSIZE ];
-
-	int      currentLine; // line where next message will be printed
-	int      horizontalCharOffset; // offset in current line for next print
+	std::vector<std::string> lines;
 
 	int      lastReadLineIndex; // keep track fo the last read line, so we can show the user, what was added since he last opened the console
 	int      scrollLineIndex; // bottom of console is supposed displays this line
 	float    bottomDisplayedLine; // bottom of console displays this line, is trying to move towards:
 
 	int      textWidthInChars; // characters across screen
-	int      maxScrollbackLengthInLines; // total lines in console scrollback
-
-	/**
-	 * amount of lines in the scrollback that are filled with text,
-	 * so we e.g. can keep track how far it makes sense to scroll back
-	 */
-	int      usedScrollbackLengthInLines;
 
 	/**
 	 * the amount of lines that fit onto the screen
@@ -783,7 +766,7 @@ typedef struct
 	 * console as a whole
 	 */
 	float    currentAlphaFactor;
-} console_t;
+};
 
 extern console_t consoleState;
 
