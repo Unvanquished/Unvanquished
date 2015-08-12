@@ -883,7 +883,7 @@ static void R_InitUnitCubeVBO()
 
 	Tess_MapVBOs( true );
 
-	Tess_AddCube( vec3_origin, mins, maxs, Color::NamedFloat::White );
+	Tess_AddCube( vec3_origin, mins, maxs, Color::Named::White );
 
 	memset( &data, 0, sizeof( data ) );
 	data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );

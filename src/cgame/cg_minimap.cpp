@@ -339,8 +339,8 @@ static float CG_WorldToMinimapScale( const float scale )
 CG_SetMinimapColor
 ================
 */
-static Color::ColorFloat currentMinimapColor;
-static void CG_SetMinimapColor( const Color::ColorFloat& color)
+static Color::Color currentMinimapColor;
+static void CG_SetMinimapColor( const Color::Color& color)
 {
     currentMinimapColor = color;
 }
@@ -574,7 +574,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 	else
 		clamped = false;
 
-	Color::ColorFloat color = b->color;
+	Color::Color color = b->color;
 	color.SetAlpha( cgs.bc.minimapAlpha );
 	trap_R_SetColor( color );
 

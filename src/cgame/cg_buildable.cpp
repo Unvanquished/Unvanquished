@@ -1276,7 +1276,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 		picM = picH * scale;
 		picH = picM * ( 1.0f - bs->verticalMargin );
 
-		Color::ColorFloat  backColor = bs->backColor;
+		Color::Color  backColor = bs->backColor;
 		backColor.SetAlpha( bs->backColor[3] / 3 );
 
 		switch ( SB_BUILDABLE_TO_IBE( buildableInfo ) )
@@ -1616,7 +1616,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 #define STATUS_MAX_VIEW_DIST 900.0f
 #define STATUS_PEEK_DIST     20
 
-static Color::ColorFloat HealthColorFade( float healthFrac, buildStat_t *bs )
+static Color::Color HealthColorFade( float healthFrac, buildStat_t *bs )
 {
 	float frac;
 
@@ -1634,7 +1634,7 @@ static Color::ColorFloat HealthColorFade( float healthFrac, buildStat_t *bs )
 		return bs->healthLowColor;
 	}
 
-	Color::ColorFloat out;
+	Color::Color out;
 	if ( healthFrac > 0.666f )
 	{
 		frac = 1.0f - ( healthFrac - 0.666f ) * 3.0f;
@@ -1654,7 +1654,7 @@ static Color::ColorFloat HealthColorFade( float healthFrac, buildStat_t *bs )
 	return out;
 }
 
-static Color::ColorFloat DepletionColorFade( float frac, buildStat_t *bs )
+static Color::Color DepletionColorFade( float frac, buildStat_t *bs )
 {
 	if ( frac > 1.0f )
 	{
@@ -1667,7 +1667,7 @@ static Color::ColorFloat DepletionColorFade( float frac, buildStat_t *bs )
 
 	frac = frac * 0.6f + 0.4f;
 
-	Color::ColorFloat out = bs->healthLowColor;
+	Color::Color out = bs->healthLowColor;
 	out *= frac;
 	return out;
 }
@@ -1721,7 +1721,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		return;
 	}
 
-	Color::ColorFloat color = bs->foreColor;
+	Color::Color color = bs->foreColor;
 
 	// trace for center point
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
@@ -1914,7 +1914,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		float  scale, pad;
 		float  subH, subY;
 		float  clipX, clipY, clipW, clipH;
-		Color::ColorFloat frameColor;
+		Color::Color frameColor;
 
 		// this is fudged to get the width/height in the cfg to be more realistic
 		scale = ( picH / d ) * 3;
@@ -1975,7 +1975,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			barW = ( 0.5f * picW * mineEfficiencyFrac ) - ( 1.5f * pad );
 			barH = ( 0.5f * picH ) - pad;
 
-			Color::ColorFloat barColor = DepletionColorFade( mineEfficiencyFrac, bs );
+			Color::Color barColor = DepletionColorFade( mineEfficiencyFrac, bs );
 			barColor.SetAlpha( color.Alpha() );
 
 			trap_R_SetColor( barColor );
@@ -2000,7 +2000,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			       ( ( showMineEfficiency ? 1.5f : 2.0f ) * pad );
 			barH = ( 0.5f * picH ) - pad;
 
-			Color::ColorFloat barColor = HealthColorFade( 1.0f - storedBPFrac, bs );
+			Color::Color barColor = HealthColorFade( 1.0f - storedBPFrac, bs );
 			barColor.SetAlpha( color.Alpha() );
 
 			trap_R_SetColor( barColor );
@@ -2023,7 +2023,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			sepW = pad;
 			sepH = ( 0.5f * picH ) - pad;
 
-			trap_R_SetColor( Color::NamedFloat::Black );
+			trap_R_SetColor( Color::Named::Black );
 			CG_DrawPic( sepX, sepY, sepW, sepH, cgs.media.whiteShader );
 			trap_R_ClearColor();
 		}
@@ -2038,7 +2038,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			barH = picH - ( bs->healthPadding * 2.0f * scale );
 			barW = picW * healthFrac - ( bs->healthPadding * 2.0f * scale );
 
-			Color::ColorFloat barColor = HealthColorFade( healthFrac, bs );
+			Color::Color barColor = HealthColorFade( healthFrac, bs );
 			barColor.SetAlpha( color.Alpha() );
 
 			trap_R_SetColor( barColor );
@@ -2060,7 +2060,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			if ( barW > 0.0f )
 			{
-				Color::ColorFloat barColor;
+				Color::Color barColor;
 				if ( powered ) { barColor = DepletionColorFade( totalPowerFrac, bs ); }
 				else           { barColor = bs->healthSevereColor; }
 				barColor.SetAlpha( color.Alpha() );
@@ -2074,7 +2074,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			markH = 0.5f * barH;
 			markW = ( bs->healthPadding * scale );
 
-			trap_R_SetColor( Color::NamedFloat::Black );
+			trap_R_SetColor( Color::Named::Black );
 			CG_DrawPic( markX, barY, markW, markH, cgs.media.whiteShader );
 
 			trap_R_ClearColor();

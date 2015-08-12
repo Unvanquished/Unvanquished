@@ -118,7 +118,7 @@ void SCR_FillRect( float x, float y, float width, float height, const float *col
 {
 	re.SetColor( color );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
-	re.SetColor( Color::NamedFloat::White );
+	re.SetColor( Color::Named::White );
 }
 
 /*
@@ -283,7 +283,7 @@ Coordinates are at 640 by 480 virtual resolution
 ==================
 */
 void SCR_DrawSmallStringExt( int x, int y, const char *string,
-							 const Color::ColorFloat &setColor, bool forceColor, bool noColorEscape )
+							 const Color::Color &setColor, bool forceColor, bool noColorEscape )
 {
 	float      xx;
 
@@ -297,7 +297,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 		{
 			if ( !forceColor )
 			{
-				Color::ColorFloat color;
+				Color::Color color;
 				if ( i->Type() == Color::Token::DEFAULT_COLOR )
 				{
 					color = setColor;
@@ -338,7 +338,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 		}
 	}
 
-	re.SetColor( Color::NamedFloat::White );
+	re.SetColor( Color::Named::White );
 }
 
 //===============================================================================
@@ -417,7 +417,7 @@ void SCR_DrawVoipMeter()
 	buffer[ i ] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::NamedFloat::White, true, false );
+	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::Named::White, true, false );
 }
 
 /*
@@ -466,19 +466,19 @@ void SCR_DrawVoipSender()
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::NamedFloat::White, true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::Named::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::NamedFloat::White, true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::Named::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::NamedFloat::White, true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::Named::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::NamedFloat::White, true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::Named::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
 		{
@@ -522,9 +522,9 @@ void SCR_DrawScreenField()
 	{
 		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
 		{
-			re.SetColor( Color::NamedFloat::Black );
+			re.SetColor( Color::Named::Black );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
-			re.SetColor( Color::NamedFloat::White );
+			re.SetColor( Color::Named::White );
 		}
 	}
 

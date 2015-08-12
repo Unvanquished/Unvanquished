@@ -105,15 +105,15 @@ namespace Util {
 	};
 
 	template<>
-	struct SerializeTraits<Color::ColorFloat> {
-		static void Write(Writer& stream, const Color::ColorFloat& value)
+	struct SerializeTraits<Color::Color> {
+		static void Write(Writer& stream, const Color::Color& value)
 		{
-			stream.WriteData(value.toArray(), 4*sizeof(Color::ColorFloat::component_type));
+			stream.WriteData(value.toArray(), 4*sizeof(Color::Color::component_type));
 		}
-		static Color::ColorFloat Read(Reader& stream)
+		static Color::Color Read(Reader& stream)
 		{
-			Color::ColorFloat value;
-			stream.ReadData(value.toArray(), 4*sizeof(Color::ColorFloat::component_type));
+			Color::Color value;
+			stream.ReadData(value.toArray(), 4*sizeof(Color::Color::component_type));
 			return value;
 		}
 	};
@@ -503,7 +503,7 @@ namespace Render {
 	// AddAdditiveLightToSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDADDITIVELIGHTTOSCENE>, std::array<float, 3>, float, float, float, float> AddAdditiveLightToSceneMsg;
 	// SetColorMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, Color::ColorFloat> SetColorMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, Color::Color> SetColorMsg;
 	// SetClipRegionMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>> SetClipRegionMsg;
 	// ResetClipRegionMsg

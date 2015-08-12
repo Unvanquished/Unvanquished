@@ -91,35 +91,35 @@ inline constexpr char hex_to_char( int i )
 }
 
 // A color with normalized floats RGBA components
-class ColorFloat : public Math::Vec4
+class Color : public Math::Vec4
 {
 public:
 	typedef float component_type;
 	static constexpr const component_type component_max = 1;
 
 	// Returns the value of an indexed color
-	static const ColorFloat& Indexed( int i );
+	static const Color& Indexed( int i );
 
 
 	// Default constructor, all components set to zero
-	ColorFloat() : Math::Vec4{ 0.f, 0.f, 0.f, 0.f } {}
+	Color() : Math::Vec4{ 0.f, 0.f, 0.f, 0.f } {}
 
 
 	// Initialize from the components
-	ColorFloat( component_type r, component_type g, component_type b,
+	Color( component_type r, component_type g, component_type b,
 					  component_type a = component_max )
 		: Math::Vec4{ r, g, b, a }
 	{
 	}
 
 	// Copy from array
-	ColorFloat( const float array[4] ) :
+	Color( const float array[4] ) :
 		Math::Vec4{ array[0], array[1], array[2], array[3] }
 	{
 
 	}
 
-	ColorFloat( const std::nullptr_t& ) = delete;
+	Color( const std::nullptr_t& ) = delete;
 
 	// Convert to array
 	operator const float*() const
@@ -206,7 +206,7 @@ public:
 	{
 		return std::round( Alpha() * 255 );
 	}
-	
+
 	/*
 	 * Returns a 4 bit integer with the bits following this pattern:
 	 * 	1 red
@@ -221,9 +221,9 @@ public:
  * Blend two colors.
  * If factor is 0, the first color will be shown, it it's 1 the second one will
  */
-inline ColorFloat Blend(const ColorFloat& a, const ColorFloat& b, float factor)
+inline Color Blend(const Color& a, const Color& b, float factor)
 {
-	return ColorFloat {
+	return Color {
 		a.Red()   * ( 1 - factor ) + b.Red()   * factor,
 		a.Green() * ( 1 - factor ) + b.Green() * factor,
 		a.Blue()  * ( 1 - factor ) + b.Blue()  * factor,
@@ -262,27 +262,27 @@ extern const char* MdBlue;
 extern const char* Null;
 } // namespace Named
 
-namespace NamedFloat {
-extern ColorFloat Black;
-extern ColorFloat Red;
-extern ColorFloat Green;
-extern ColorFloat Blue;
-extern ColorFloat Yellow;
-extern ColorFloat Orange;
-extern ColorFloat Magenta;
-extern ColorFloat Cyan;
-extern ColorFloat White;
-extern ColorFloat LtGrey;
-extern ColorFloat MdGrey;
-extern ColorFloat DkGrey;
-extern ColorFloat MdRed;
-extern ColorFloat MdGreen;
-extern ColorFloat DkGreen;
-extern ColorFloat MdCyan;
-extern ColorFloat MdYellow;
-extern ColorFloat MdOrange;
-extern ColorFloat MdBlue;
-} // namespace NamedFloat
+namespace Named {
+extern Color Black;
+extern Color Red;
+extern Color Green;
+extern Color Blue;
+extern Color Yellow;
+extern Color Orange;
+extern Color Magenta;
+extern Color Cyan;
+extern Color White;
+extern Color LtGrey;
+extern Color MdGrey;
+extern Color DkGrey;
+extern Color MdRed;
+extern Color MdGreen;
+extern Color DkGreen;
+extern Color MdCyan;
+extern Color MdYellow;
+extern Color MdOrange;
+extern Color MdBlue;
+} // namespace Named
 
 /*
 ================
@@ -333,7 +333,7 @@ public:
 	Constructs a token representing a color
 	================
 	*/
-	BasicToken( const charT* begin, const charT* end, const ::Color::ColorFloat& color )
+	BasicToken( const charT* begin, const charT* end, const ::Color::Color& color )
 		: begin( begin ),
 		  end( end ),
 		  type( COLOR ),
@@ -396,7 +396,7 @@ public:
 	Pre: Type() == COLOR
 	================
 	*/
-	::Color::ColorFloat Color() const
+	::Color::Color Color() const
 	{
 		return color;
 	}
@@ -418,7 +418,7 @@ private:
 	const charT*   begin = nullptr;
 	const charT*   end   = nullptr;
 	TokenType     type  = INVALID;
-	::Color::ColorFloat       color;
+	::Color::Color       color;
 
 };
 
@@ -555,11 +555,11 @@ private:
 			}
 			else if ( std::toupper( input[1] ) >= '0' && std::toupper( input[1] ) < 'P' )
 			{
-				return value_type( input, input+2, ColorFloat::Indexed( input[1] - '0' ) );
+				return value_type( input, input+2, Color::Indexed( input[1] - '0' ) );
 			}
 			else if ( std::tolower( input[1] ) == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
 			{
-				return value_type( input, input+5, ColorFloat(
+				return value_type( input, input+5, Color(
 					gethex( input[2] ) / 15.f,
 					gethex( input[3] ) / 15.f,
 					gethex( input[4] ) / 15.f,
@@ -579,7 +579,7 @@ private:
 				}
 				if ( long_hex )
 				{
-					return value_type( input, input+8, ColorFloat(
+					return value_type( input, input+8, Color(
 						( (gethex( input[2] ) << 4) | gethex( input[3] ) ) / 255.f,
 						( (gethex( input[4] ) << 4) | gethex( input[5] ) ) / 255.f,
 						( (gethex( input[6] ) << 4) | gethex( input[7] ) ) / 255.f,

@@ -1683,7 +1683,7 @@ public:
 		this->SetValue( v );
 	}
 
-	void SetUniform_Color( const Color::ColorFloat& color )
+	void SetUniform_Color( const Color::Color& color )
 	{
 		this->SetValue( color );
 	}

@@ -434,7 +434,7 @@ public:
 		rectDef_t    rect;
 		float        x, y, w, h, dim;
 		qhandle_t    indicator;
-		Color::ColorFloat drawColor, baseColor;
+		Color::Color drawColor, baseColor;
 		weapon_t     weapon;
 		weaponInfo_t *wi;
 		bool     onRelevantEntity;
@@ -464,14 +464,14 @@ public:
 		{
 			if ( cg.crosshairFoe )
 			{
-				baseColor = Color::NamedFloat::Red;
+				baseColor = Color::Named::Red;
 				baseColor.SetAlpha( color[ 3 ] * 0.75f );
 				onRelevantEntity = true;
 			}
 
 			else if ( cg.crosshairFriend )
 			{
-				baseColor = Color::NamedFloat::Green;
+				baseColor = Color::Named::Green;
 				baseColor.SetAlpha( color[ 3 ] * 0.75f );
 				onRelevantEntity = true;
 			}
@@ -493,7 +493,7 @@ public:
 		if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
 		{
 			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
-			drawColor = Color::Blend( baseColor, Color::NamedFloat::White, dim );
+			drawColor = Color::Blend( baseColor, Color::Named::White, dim );
 		}
 
 		else if ( !onRelevantEntity )
@@ -1350,7 +1350,7 @@ public:
 				if ( color != 1 )
 				{
 					color = 1;
-					trap_R_SetColor( Color::NamedFloat::Yellow );
+					trap_R_SetColor( Color::Named::Yellow );
 				}
 
 				if ( v > range )
@@ -1366,7 +1366,7 @@ public:
 				if ( color != 2 )
 				{
 					color = 2;
-					trap_R_SetColor( Color::NamedFloat::Blue );
+					trap_R_SetColor( Color::Named::Blue );
 				}
 
 				v = -v;
@@ -1396,7 +1396,7 @@ public:
 					if ( color != 5 )
 					{
 						color = 5; // YELLOW for rate delay
-						trap_R_SetColor( Color::NamedFloat::Yellow );
+						trap_R_SetColor( Color::Named::Yellow );
 					}
 				}
 
@@ -1406,7 +1406,7 @@ public:
 					{
 						color = 3;
 
-						trap_R_SetColor( Color::NamedFloat::Green );
+						trap_R_SetColor( Color::Named::Green );
 					}
 				}
 
@@ -1425,7 +1425,7 @@ public:
 				if ( color != 4 )
 				{
 					color = 4; // RED for dropped snapshots
-					trap_R_SetColor( Color::NamedFloat::Red );
+					trap_R_SetColor( Color::Named::Red );
 				}
 
 				trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );
@@ -2091,7 +2091,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 	vec4_t    ref_color;
 	float     ref_alpha;
 	rectDef_t rect;
-	Color::ColorFloat color;
+	Color::Color color;
 
 	// grab info from libRocket
 	CG_GetRocketElementColor( ref_color );
@@ -2129,7 +2129,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 			cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
-		color = Color::NamedFloat::Red;
+		color = Color::Named::Red;
 	}
 
 	ref_alpha = ref_color[ 3 ];
@@ -2342,7 +2342,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 		return; // no partial square, we're done here
 	}
 
-	Color::ColorFloat localColor = color;
+	Color::Color localColor = color;
 	localColor.SetAlpha( localColor.Alpha() * frac );
 	trap_R_SetColor( localColor );
 

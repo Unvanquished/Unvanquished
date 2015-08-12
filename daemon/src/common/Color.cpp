@@ -58,29 +58,29 @@ const char* MdBlue = "^>";
 const char* Null = "^*";
 } // namespace Named
 
-namespace NamedFloat {
-ColorFloat Black    = { 0.00, 0.00, 0.00, 1.00 };
-ColorFloat Red      = { 1.00, 0.00, 0.00, 1.00 };
-ColorFloat Green    = { 0.00, 1.00, 0.00, 1.00 };
-ColorFloat Blue     = { 0.00, 0.00, 1.00, 1.00 };
-ColorFloat Yellow   = { 1.00, 1.00, 0.00, 1.00 };
-ColorFloat Orange   = { 1.00, 0.50, 0.00, 1.00 };
-ColorFloat Magenta  = { 1.00, 0.00, 1.00, 1.00 };
-ColorFloat Cyan     = { 0.00, 1.00, 1.00, 1.00 };
-ColorFloat White    = { 1.00, 1.00, 1.00, 1.00 };
-ColorFloat LtGrey   = { 0.75, 0.75, 0.75, 1.00 };
-ColorFloat MdGrey   = { 0.50, 0.50, 0.50, 1.00 };
-ColorFloat DkGrey   = { 0.25, 0.25, 0.25, 1.00 };
-ColorFloat MdRed    = { 0.50, 0.00, 0.00, 1.00 };
-ColorFloat MdGreen  = { 0.00, 0.50, 0.00, 1.00 };
-ColorFloat DkGreen  = { 0.00, 0.20, 0.00, 1.00 };
-ColorFloat MdCyan   = { 0.00, 0.50, 0.50, 1.00 };
-ColorFloat MdYellow = { 0.50, 0.50, 0.00, 1.00 };
-ColorFloat MdOrange = { 0.50, 0.25, 0.00, 1.00 };
-ColorFloat MdBlue   = { 0.00, 0.00, 0.50, 1.00 };
-} // namespace NamedFloat
+namespace Named {
+Color Black    = { 0.00, 0.00, 0.00, 1.00 };
+Color Red      = { 1.00, 0.00, 0.00, 1.00 };
+Color Green    = { 0.00, 1.00, 0.00, 1.00 };
+Color Blue     = { 0.00, 0.00, 1.00, 1.00 };
+Color Yellow   = { 1.00, 1.00, 0.00, 1.00 };
+Color Orange   = { 1.00, 0.50, 0.00, 1.00 };
+Color Magenta  = { 1.00, 0.00, 1.00, 1.00 };
+Color Cyan     = { 0.00, 1.00, 1.00, 1.00 };
+Color White    = { 1.00, 1.00, 1.00, 1.00 };
+Color LtGrey   = { 0.75, 0.75, 0.75, 1.00 };
+Color MdGrey   = { 0.50, 0.50, 0.50, 1.00 };
+Color DkGrey   = { 0.25, 0.25, 0.25, 1.00 };
+Color MdRed    = { 0.50, 0.00, 0.00, 1.00 };
+Color MdGreen  = { 0.00, 0.50, 0.00, 1.00 };
+Color DkGreen  = { 0.00, 0.20, 0.00, 1.00 };
+Color MdCyan   = { 0.00, 0.50, 0.50, 1.00 };
+Color MdYellow = { 0.50, 0.50, 0.00, 1.00 };
+Color MdOrange = { 0.50, 0.25, 0.00, 1.00 };
+Color MdBlue   = { 0.00, 0.00, 0.50, 1.00 };
+} // namespace Named
 
-static ColorFloat g_color_table[ 32 ] =
+static Color g_color_table[ 32 ] =
 {
 	{ 0.20f, 0.20f, 0.20f, 1.00f }, // 0 - black    0
 	{ 1.00f, 0.00f, 0.00f, 1.00f }, // 1 - red      1
@@ -116,14 +116,14 @@ static ColorFloat g_color_table[ 32 ] =
 	{ 1.00f, 1.00f, 0.50f, 1.00f }, // O        31
 };
 
-const ColorFloat& ColorFloat::Indexed( int index )
+const Color& Color::Indexed( int index )
 {
 	if ( index < 0 )
 		index *= -1;
 	return g_color_table[index%32];
 }
 
-int ColorFloat::To4bit() const
+int Color::To4bit() const
 {
     int color = 0;
 

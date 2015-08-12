@@ -408,19 +408,19 @@ static void DrawTris()
 
 	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
-		gl_genericShader->SetUniform_Color( Color::ColorFloat::Indexed( backEnd.pc.c_batches % 8 ) );
+		gl_genericShader->SetUniform_Color( Color::Color::Indexed( backEnd.pc.c_batches % 8 ) );
 	}
 	else if ( glState.currentVBO == tess.vbo )
 	{
-		gl_genericShader->SetUniform_Color( Color::NamedFloat::Red );
+		gl_genericShader->SetUniform_Color( Color::Named::Red );
 	}
 	else if ( glState.currentVBO )
 	{
-		gl_genericShader->SetUniform_Color( Color::NamedFloat::Blue );
+		gl_genericShader->SetUniform_Color( Color::Named::Blue );
 	}
 	else
 	{
-		gl_genericShader->SetUniform_Color( Color::NamedFloat::White );
+		gl_genericShader->SetUniform_Color( Color::Named::White );
 	}
 
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
@@ -1305,7 +1305,7 @@ static void Render_shadowFill( int stage )
 
 	if ( r_debugShadowMaps->integer )
 	{
-		gl_shadowFillShader->SetUniform_Color( Color::ColorFloat::Indexed( backEnd.pc.c_batches % 8 ) );
+		gl_shadowFillShader->SetUniform_Color( Color::Color::Indexed( backEnd.pc.c_batches % 8 ) );
 	}
 
 	gl_shadowFillShader->SetUniform_AlphaTest( pStage->stateBits );

@@ -371,7 +371,7 @@ void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, b
     std::string text = Str::UTF32To8(std::u32string(edit.GetViewText(), drawWidth));
 
     // draw the text
-	Color::ColorFloat color { 1.0f, 1.0f, 1.0f, alpha };
+	Color::Color color { 1.0f, 1.0f, 1.0f, alpha };
 	SCR_DrawSmallStringExt(x, y, text.c_str(), color, false, noColorEscape);
 
     // draw the line scrollbar
