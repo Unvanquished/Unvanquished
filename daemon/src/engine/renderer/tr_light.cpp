@@ -493,7 +493,7 @@ void R_SetupLightView( trRefLight_t *light )
 	}
 }
 
-void R_TessLight( const trRefLight_t *light, const vec4_t color )
+void R_TessLight( const trRefLight_t *light, const Color::Color& color )
 {
 	int j;
 
@@ -501,7 +501,7 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
-			Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], color ? color : Color::Named::White.toArray() );
+			Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], color ? color : Color::Named::White );
 			break;
 		case RL_PROJ:
 			{
@@ -525,7 +525,7 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 						Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
 						Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
 						Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, color ? color : Color::Named::Cyan.toArray() );
+						Tess_AddQuadStamp2( quadVerts, color ? color : Color::Named::Cyan );
 					}
 
 					// draw far cap
@@ -533,14 +533,14 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 					Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, color ? color : Color::Named::Red.toArray() );
+					Tess_AddQuadStamp2( quadVerts, color ? color : Color::Named::Red );
 
 					// draw near cap
 					Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, color ? color : Color::Named::Green.toArray() );
+					Tess_AddQuadStamp2( quadVerts, color ? color : Color::Named::Green );
 				}
 				else
 				{
@@ -552,7 +552,7 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 					// draw pyramid
 					for ( j = 0; j < 4; j++ )
 					{
-						const float *c = color ? color : Color::Named::Cyan.toArray();
+						const Color::Color &c = color ? color : Color::Named::Cyan;
 						u8vec4_t iColor;
 						iColor[ 0 ] = floatToUnorm8( c[ 0 ] );
 						iColor[ 1 ] = floatToUnorm8( c[ 1 ] );
@@ -579,7 +579,7 @@ void R_TessLight( const trRefLight_t *light, const vec4_t color )
 					Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, color ? color : Color::Named::Red.toArray() );
+					Tess_AddQuadStamp2( quadVerts, color ? color : Color::Named::Red );
 				}
 			}
 		default:
@@ -692,7 +692,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
-		R_TessLight( light, nullptr );
+		R_TessLight( light, Color::Named::White );
 
 		memset( &data, 0, sizeof( data ) );
 		data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );

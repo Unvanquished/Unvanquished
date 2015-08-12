@@ -1200,7 +1200,6 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 static void Render_depthFill( int stage )
 {
 	shaderStage_t *pStage;
-	vec4_t        ambientColor;
 
 	GLimp_LogComment( "--- Render_depthFill ---\n" );
 
@@ -1238,8 +1237,8 @@ static void Render_depthFill( int stage )
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
 
 	// u_Color
-	VectorClear( ambientColor );
-	ambientColor[ 3 ] = 1;
+	Color::Color ambientColor;
+	ambientColor.SetAlpha( 1 );
 
 	gl_genericShader->SetUniform_Color( ambientColor );
 
@@ -1356,7 +1355,6 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightOrigin;
-	vec4_t     lightColor;
 	float      shadowTexelSize;
 	colorGen_t colorGen;
 	alphaGen_t alphaGen;
@@ -1427,7 +1425,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// set uniforms
 	VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );
 	VectorCopy( light->origin, lightOrigin );
-	VectorCopy( tess.svars.color, lightColor );
+	Color::Color lightColor = tess.svars.color;
 
 	if ( shadowCompare )
 	{
@@ -1547,7 +1545,6 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightOrigin;
-	vec4_t     lightColor;
 	float      shadowTexelSize;
 	colorGen_t colorGen;
 	alphaGen_t alphaGen;
@@ -1618,7 +1615,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// set uniforms
 	VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );
 	VectorCopy( light->origin, lightOrigin );
-	VectorCopy( tess.svars.color, lightColor );
+	Color::Color lightColor = tess.svars.color;
 
 	if ( shadowCompare )
 	{
@@ -1739,7 +1736,6 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightDirection;
-	vec4_t     lightColor;
 	float      shadowTexelSize;
 	colorGen_t colorGen;
 	alphaGen_t alphaGen;
@@ -1812,7 +1808,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	VectorCopy( tr.sunDirection, lightDirection );
 
-	VectorCopy( tess.svars.color, lightColor );
+	Color::Color lightColor = tess.svars.color;
 
 	if ( shadowCompare )
 	{

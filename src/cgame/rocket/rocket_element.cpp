@@ -279,6 +279,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 
 			case ROCKET_COLOR:
 			{
+				/// \todo (color) write to Color::Color (?)
 				vec_t *outColor = ( vec_t * ) out;
 
 				if ( len != sizeof( vec4_t ) )

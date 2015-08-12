@@ -570,45 +570,48 @@ Draws the background of the console (on the virtual 640x480 resolution)
 */
 void Con_DrawBackground()
 {
-	vec4_t color;
 	const int consoleWidth = cls.glconfig.vidWidth - 2 * consoleState.margin.sides;
 
 	// draw the background
-	color[ 0 ] = con_colorRed->value;
-	color[ 1 ] = con_colorGreen->value;
-	color[ 2 ] = con_colorBlue->value;
-	color[ 3 ] = con_colorAlpha->value * consoleState.currentAlphaFactor;
+	Color::Color color (
+		con_colorRed->value,
+		con_colorGreen->value,
+		con_colorBlue->value,
+		con_colorAlpha->value * consoleState.currentAlphaFactor
+	);
 
 	SCR_FillRect( consoleState.margin.sides, consoleState.margin.top, consoleWidth, consoleState.height, color );
 
 	// draw the backgrounds borders
-	color[ 0 ] = con_borderColorRed->value;
-	color[ 1 ] = con_borderColorGreen->value;
-	color[ 2 ] = con_borderColorBlue->value;
-	color[ 3 ] = con_borderColorAlpha->value * consoleState.currentAlphaFactor;
+	Color::Color borderColor (
+		con_borderColorRed->value,
+		con_borderColorGreen->value,
+		con_borderColorBlue->value,
+		con_borderColorAlpha->value * consoleState.currentAlphaFactor
+	);
 
 	if ( con_margin->integer )
 	{
 		//top border
 		SCR_FillRect( consoleState.margin.sides - consoleState.border.sides,
 		              consoleState.margin.top - consoleState.border.top,
-		              consoleWidth + consoleState.border.sides, consoleState.border.top, color );
+		              consoleWidth + consoleState.border.sides, consoleState.border.top, borderColor );
 		//left border
 		SCR_FillRect( consoleState.margin.sides - consoleState.border.sides, consoleState.margin.top,
-		              consoleState.border.sides, consoleState.height + consoleState.border.bottom, color );
+		              consoleState.border.sides, consoleState.height + consoleState.border.bottom, borderColor );
 
 		//right border
 		SCR_FillRect( cls.glconfig.vidWidth - consoleState.margin.sides, consoleState.margin.top - consoleState.border.top,
-		              consoleState.border.sides, consoleState.border.top + consoleState.height, color );
+		              consoleState.border.sides, consoleState.border.top + consoleState.height, borderColor );
 
 		//bottom border
 		SCR_FillRect( consoleState.margin.sides, consoleState.height + consoleState.margin.top + consoleState.border.top - consoleState.border.bottom,
-		              consoleWidth + consoleState.border.sides, consoleState.border.bottom, color );
+		              consoleWidth + consoleState.border.sides, consoleState.border.bottom, borderColor );
 	}
 	else
 	{
 		//bottom border
-		SCR_FillRect( 0, consoleState.height, consoleWidth, consoleState.border.bottom, color );
+		SCR_FillRect( 0, consoleState.height, consoleWidth, consoleState.border.bottom, borderColor );
 	}
 }
 
@@ -638,7 +641,7 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 		linePosition, true, true, color.Alpha() );
 }
 
-void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )
+void Con_DrawRightFloatingTextLine( const int linePosition, const Color::Color& color, const char* text )
 {
 	int i, x;
 	float currentWidthLocation = 0;
@@ -673,14 +676,11 @@ Draws the build and copyright info onto the console
 */
 void Con_DrawAboutText()
 {
-	vec4_t color;
+	Color::Color color = Color::Named::White;
 
 	// draw the version number
-	color[ 0 ] = 1.0f;
-	color[ 1 ] = 1.0f;
-	color[ 2 ] = 1.0f;
 	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL_DOWN needs this, latter, since it might otherwise scroll out the console
-	color[ 3 ] = 0.66f * consoleState.currentAnimationFraction;
+	color.SetAlpha( 0.66f * consoleState.currentAnimationFraction );
 
 	Con_DrawRightFloatingTextLine( 0, color, Q3_VERSION );
 	Con_DrawRightFloatingTextLine( 1, color, Q3_ENGINE );
@@ -694,14 +694,11 @@ Con_DrawConsoleScrollbackIndicator
 void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 {
 	int i;
-	vec4_t color;
 	// draw arrows to show the buffer is backscrolled
 	const int hatWidth = SCR_ConsoleFontUnicharWidth( '^' );
 
-	color[ 0 ] = 1.0f;
-	color[ 1 ] = 1.0f;
-	color[ 2 ] = 1.0f;
-	color[ 3 ] = 0.66f * consoleState.currentAlphaFactor;
+	Color::Color color = Color::Named::White;
+	color.SetAlpha( 0.66f * consoleState.currentAlphaFactor );
 	re.SetColor( color );
 
 	for ( i = 0; i < consoleState.textWidthInChars; i += 4 )
@@ -712,7 +709,6 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 
 void Con_DrawConsoleScrollbar()
 {
-	vec4_t color;
 	const int	freeConsoleHeight = consoleState.height - consoleState.padding.top - consoleState.padding.bottom;
 	const float scrollBarX = cls.glconfig.vidWidth - consoleState.margin.sides - consoleState.padding.sides - 2 * consoleState.border.sides;
 	const float scrollBarY = consoleState.margin.top + consoleState.border.top + consoleState.padding.top + freeConsoleHeight * 0.10f;
@@ -733,35 +729,31 @@ void Con_DrawConsoleScrollbar()
 	                                  : 0; // we may get this: +/- NaN is never equal to itself
 
 	//draw the scrollBar
-	color[ 0 ] = 0.2f;
-	color[ 1 ] = 0.2f;
-	color[ 2 ] = 0.2f;
-	color[ 3 ] = 0.75f * consoleState.currentAlphaFactor;
+	Color::Color color ( 0.2f, 0.2f, 0.2f, 0.75f * consoleState.currentAlphaFactor );
 
 	SCR_FillRect( scrollBarX, scrollBarY, scrollBarWidth, scrollBarLength, color );
 
 	//draw the handle
 	if ( scrollHandlePostition >= 0 && scrollHandleLength > 0 )
 	{
-		color[ 0 ] = 0.5f;
-		color[ 1 ] = 0.5f;
-		color[ 2 ] = 0.5f;
-		color[ 3 ] = consoleState.currentAlphaFactor;
+		color = Color::Color( 0.5f, 0.5f, 0.5f, consoleState.currentAlphaFactor );
 
 		SCR_FillRect( scrollBarX, scrollBarY + scrollHandlePostition, scrollBarWidth, scrollHandleLength, color );
 	}
 	else if ( !consoleState.lines.empty() ) //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
 	{
-		color[ 0 ] = (-scrollHandlePostition * 5.0f)/10;
-		color[ 1 ] = 0.5f;
-		color[ 2 ] = 0.5f;
-		color[ 3 ] = consoleState.currentAlphaFactor;
+		color = Color::Color(
+			(-scrollHandlePostition * 5.0f)/10,
+			0.5f,
+			0.5f,
+			consoleState.currentAlphaFactor
+		);
 
 		SCR_FillRect( scrollBarX, scrollBarY, scrollBarWidth, scrollHandleLength, color );
 	}
 
 	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 6, nullptr, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
+		Con_DrawRightFloatingTextLine( 6, Color::Named::White, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
 	}
 }
 
@@ -845,8 +837,8 @@ void Con_DrawConsoleContent()
 	}
 
 	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 3, nullptr, va( "Buffer (lines): ScrollbackLength %d", (int) consoleState.lines.size() ) );
-		Con_DrawRightFloatingTextLine( 4, nullptr, va( "Display (lines): From %d to %d (%d a %i px)",
+		Con_DrawRightFloatingTextLine( 3, Color::Named::White, va( "Buffer (lines): ScrollbackLength %d", (int) consoleState.lines.size() ) );
+		Con_DrawRightFloatingTextLine( 4, Color::Named::White, va( "Display (lines): From %d to %d (%d a %i px)",
 			0, consoleState.scrollLineIndex, consoleState.visibleAmountOfLines, charHeight ) );
 	}
 
@@ -948,7 +940,7 @@ void Con_DrawAnimatedConsole()
 	Con_DrawAboutText();
 
 	if(con_debug->integer) {
-			Con_DrawRightFloatingTextLine( 8, nullptr, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
+			Con_DrawRightFloatingTextLine( 8, Color::Named::White, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
 	}
 
 	//input, scrollbackindicator, scrollback text

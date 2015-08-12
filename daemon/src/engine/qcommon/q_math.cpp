@@ -240,24 +240,6 @@ void ByteToDir( int b, vec3_t dir )
 	VectorCopy( bytedirs[ b ], dir );
 }
 
-void ClampColor( vec4_t color )
-{
-	int i;
-
-	for ( i = 0; i < 4; i++ )
-	{
-		if ( color[ i ] < 0 )
-		{
-			color[ i ] = 0;
-		}
-
-		if ( color[ i ] > 1 )
-		{
-			color[ i ] = 1;
-		}
-	}
-}
-
 vec_t PlaneNormalize( vec4_t plane )
 {
 	vec_t length2, ilength;

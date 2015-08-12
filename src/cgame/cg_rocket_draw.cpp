@@ -40,14 +40,14 @@ Maryland 20850 USA.
 #include <Rocket/Core/Factory.h>
 #include <Rocket/Core/ElementText.h>
 
-static void CG_GetRocketElementColor( vec4_t color )
+static void CG_GetRocketElementColor( Color::Color& color )
 {
-	Rocket_GetProperty( "color", color, sizeof( vec4_t ), ROCKET_COLOR );
+	Rocket_GetProperty( "color", color.toArray(), color.ArrayBytes(), ROCKET_COLOR );
 }
 
-static void CG_GetRocketElementBGColor( vec4_t bgColor )
+static void CG_GetRocketElementBGColor( Color::Color& bgColor )
 {
-	Rocket_GetProperty( "background-color", bgColor, sizeof( vec4_t ), ROCKET_COLOR );
+	Rocket_GetProperty( "background-color", bgColor.toArray(), bgColor.ArrayBytes(), ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementRect( rectDef_t *rect )
@@ -156,11 +156,10 @@ public:
 		rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
 	}
 
-	void GetColor( const Rocket::Core::String& property, vec4_t color )
+	void GetColor( const Rocket::Core::String& property, Color::Color& color )
 	{
 		Rocket::Core::Colourb c = GetProperty<Rocket::Core::Colourb>( property );
-		color[0] = c.red, color[1] = c.green, color[2] = c.blue, color[3] = c.alpha;
-		Vector4Scale( color, 1 / 255.0f, color);
+		color = Color::Color::From32Bit( c.red, c.green, c.blue, c.alpha );
 	}
 
 protected:
@@ -465,14 +464,14 @@ public:
 			if ( cg.crosshairFoe )
 			{
 				baseColor = Color::Named::Red;
-				baseColor.SetAlpha( color[ 3 ] * 0.75f );
+				baseColor.SetAlpha( color.Alpha() * 0.75f );
 				onRelevantEntity = true;
 			}
 
 			else if ( cg.crosshairFriend )
 			{
 				baseColor = Color::Named::Green;
-				baseColor.SetAlpha( color[ 3 ] * 0.75f );
+				baseColor.SetAlpha( color.Alpha() * 0.75f );
 				onRelevantEntity = true;
 			}
 
@@ -519,7 +518,7 @@ public:
 		trap_R_ClearColor();
 	}
 private:
-	vec4_t color;
+	Color::Color color;
 
 
 };
@@ -527,8 +526,8 @@ private:
 class CrosshairHudElement : public HudElement {
 public:
 	CrosshairHudElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_BOTH, true ) {
-		color[0] = color[1] = color[2] = color[3] = 255;
+			HudElement( tag, ELEMENT_BOTH, true ),
+			color( Color::Named::White ) {
 	}
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
@@ -600,7 +599,7 @@ public:
 	}
 
 private:
-	vec4_t color;
+	Color::Color color;
 };
 
 #define SPEEDOMETER_NUM_SAMPLES 4096
@@ -752,9 +751,9 @@ public:
 		int          i;
 		float        val, max, top;
 		// colour of graph is interpolated between these values
-		const vec3_t slow = { 0.0, 0.0, 1.0 };
-		const vec3_t medium = { 0.0, 1.0, 0.0 };
-		const vec3_t fast = { 1.0, 0.0, 0.0 };
+		const Color::Color slow = { 0.0, 0.0, 1.0 };
+		const Color::Color medium = { 0.0, 1.0, 0.0 };
+		const Color::Color fast = { 1.0, 0.0, 0.0 };
 		rectDef_t    rect;
 
 		if ( !cg_drawSpeed.integer )
@@ -795,18 +794,17 @@ public:
 
 				if ( val < SPEED_MED )
 				{
-					VectorLerpTrem( val / SPEED_MED, slow, medium, color );
+					color = Color::Blend ( slow, medium, val / SPEED_MED );
 				}
 
 				else if ( val < SPEED_FAST )
 				{
-					VectorLerpTrem( ( val - SPEED_MED ) / ( SPEED_FAST - SPEED_MED ),
-									medium, fast, color );
+					color = Color::Blend ( medium, fast, ( val - SPEED_MED ) / ( SPEED_FAST - SPEED_MED ) );
 				}
 
 				else
 				{
-					VectorCopy( fast, color );
+					color = fast;
 				}
 
 				trap_R_SetColor( color );
@@ -850,8 +848,8 @@ private:
 	Rocket::Core::ElementText* maxSpeedElement;
 	Rocket::Core::ElementText* currentSpeedElement;
 	bool shouldDrawSpeed;
-	vec4_t color;
-	vec4_t backColor;
+	Color::Color color;
+	Color::Color backColor;
 
 };
 
@@ -1287,9 +1285,9 @@ class LagometerElement : public TextHudElement
 public:
 	LagometerElement( const Rocket::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_GAME, true ),
-			shouldDrawLagometer( true )
+			shouldDrawLagometer( true ),
+			adjustedColor( Color::Named::White )
 	{
-		adjustedColor[ 0 ] = adjustedColor[ 1 ] = adjustedColor[ 2 ] = adjustedColor[ 3 ] = 255;
 	}
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
@@ -1475,7 +1473,7 @@ public:
 
 private:
 	bool shouldDrawLagometer;
-	vec4_t adjustedColor;
+	Color::Color adjustedColor;
 	Rocket::Core::String ping_;
 
 };
@@ -2009,7 +2007,7 @@ public:
 	void DoOnRender()
 	{
 		rectDef_t rect;
-		vec4_t color;
+		Color::Color color;
 
 		if ( !cg.beaconRocket.icon )
 		{
@@ -2018,9 +2016,9 @@ public:
 
 		GetElementRect( rect );
 
-		Vector4Copy( color_, color );
+		color = color_;
 
-		color[ 3 ] *= cg.beaconRocket.iconAlpha;
+		color.SetAlpha( color.Alpha() * cg.beaconRocket.iconAlpha );
 
 		trap_R_SetColor( color );
 		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.beaconRocket.icon );
@@ -2028,7 +2026,7 @@ public:
 	}
 
 private:
-	vec4_t color_;
+	Color::Color color_;
 };
 
 
@@ -2088,7 +2086,7 @@ void CG_Rocket_DrawPlayerHealth()
 void CG_Rocket_DrawPlayerHealthCross()
 {
 	qhandle_t shader;
-	vec4_t    ref_color;
+	Color::Color ref_color;
 	float     ref_alpha;
 	rectDef_t rect;
 	Color::Color color;
@@ -2132,7 +2130,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 		color = Color::Named::Red;
 	}
 
-	ref_alpha = ref_color[ 3 ];
+	ref_alpha = ref_color.Alpha();
 
 	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 	{
@@ -2216,7 +2214,7 @@ into a single progress bar.
 #define LALIGN_CENTER      1
 #define LALIGN_BOTTOMRIGHT 2
 
-static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
+static void CG_DrawStack( rectDef_t *rect, const Color::Color& color, float fill,
 						  int align, float val, int max )
 {
 	int      i;
@@ -2393,7 +2391,7 @@ static void CG_DrawPlayerAmmoStack()
 	static int    lastws, maxwt, lastval, valdiff;
 	playerState_t *ps = &cg.snap->ps;
 	weapon_t      primary = BG_PrimaryWeapon( ps->stats );
-	vec4_t        localColor, foreColor;
+	Color::Color  localColor, foreColor;
 	rectDef_t     rect;
 	static char   buf[ 100 ];
 
@@ -2461,15 +2459,16 @@ static void CG_DrawPlayerAmmoStack()
 	{
 		// low on ammo
 		// FIXME: don't hardcode this colour
-		vec4_t lowAmmoColor = { 1.f, 0.f, 0.f, 0.f };
+		Color::Color lowAmmoColor = { 1.f, 0.f, 0.f, 0.f };
 		// don't lerp alpha
-		VectorLerpTrem( ( cg.time & 128 ), foreColor, lowAmmoColor, localColor );
-		localColor[ 3 ] = foreColor[ 3 ];
+		/// \todo (color) that & 128 doesn't look quite right
+		localColor = Color::Blend( foreColor, lowAmmoColor, cg.time & 128 );
+		localColor.SetAlpha( foreColor.Alpha() );
 	}
 
 	else
 	{
-		Vector4Copy( foreColor, localColor );
+		localColor = foreColor;
 	}
 
 	Rocket_GetProperty( "text-align", buf, sizeof( buf ), ROCKET_STRING );
@@ -2499,7 +2498,7 @@ static void CG_DrawPlayerClipsStack()
 	static int    lastws, maxwt;
 	playerState_t *ps = &cg.snap->ps;
 	rectDef_t      rect;
-	vec4_t         foreColor;
+	Color::Color   foreColor;
 
 	// grab info from libRocket
 	CG_GetRocketElementColor( foreColor );
@@ -2541,8 +2540,8 @@ void CG_Rocket_DrawMinimap()
 {
 	if ( cg.minimap.defined )
 	{
-		vec4_t    foreColor;
-		rectDef_t rect;
+		Color::Color foreColor;
+		rectDef_t    rect;
 
 		// grab info from libRocket
 		CG_GetRocketElementColor( foreColor );
@@ -2729,7 +2728,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 {
 	// data
 	rectDef_t     rect;
-	vec4_t        foreColor, backColor, lockedColor, unlockedColor;
+	Color::Color  foreColor, backColor, lockedColor, unlockedColor;
 	playerState_t *ps;
 	float         momentum, rawFraction, fraction, glowFraction, glowOffset, borderSize;
 	int           threshold;
@@ -2739,7 +2738,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	momentumThresholdIterator_t unlockableIter = { -1 };
 
 	// display
-	vec4_t        color;
+	Color::Color  color;
 	float         x, y, w, h, b, glowStrength;
 	bool      vertical;
 
@@ -2747,8 +2746,8 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
 	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
-	Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof( lockedColor ), ROCKET_COLOR );
-	Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof( unlockedColor ), ROCKET_COLOR );
+	Rocket_GetProperty( "locked-marker-color", lockedColor.toArray(), lockedColor.ArrayBytes(), ROCKET_COLOR );
+	Rocket_GetProperty( "unlocked-marker-color", unlockedColor.toArray(), unlockedColor.ArrayBytes(), ROCKET_COLOR );
 
 
 	ps = &cg.predictedPlayerState;
@@ -2774,8 +2773,8 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	h -= 2.0f * b;
 
 	// draw background
-	Vector4Copy( backColor, color );
-	color[ 3 ] *= 0.5f;
+	color = backColor;
+	color.SetAlpha( color.Alpha() * 0.5f );
 	CG_FillRect( x, y, w, h, color );
 
 	// draw momentum bar
@@ -2820,10 +2819,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 
 		CG_SetClipRegion( x, y, w, h );
 
-		color[ 0 ] = 1.0f;
-		color[ 1 ] = 1.0f;
-		color[ 2 ] = 1.0f;
-		color[ 3 ] = 0.5f * glowStrength;
+		color = Color::Color( 1.0f, 1.0f, 1.0f, 0.5f * glowStrength );
 
 		if ( vertical )
 		{
@@ -2914,7 +2910,7 @@ static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 static void CG_Rocket_DrawPlayerUnlockedItems()
 {
 	rectDef_t     rect;
-	vec4_t        foreColour, backColour;
+	Color::Color  foreColour, backColour;
 	momentumThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
 
 	// data
@@ -2933,7 +2929,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
 	CG_GetRocketElementRect( &rect );
-	Rocket_GetProperty( "cell-color", backColour, sizeof( vec4_t ), ROCKET_COLOR );
+	Rocket_GetProperty( "cell-color", backColour.toArray(), backColour.ArrayBytes(), ROCKET_COLOR );
 	CG_GetRocketElementColor( foreColour );
 	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
 
@@ -2986,12 +2982,12 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	{
 		float gap;
 		int i, j;
-		vec4_t unlockedBg, lockedBg;
+		Color::Color unlockedBg, lockedBg;
 
-		Vector4Copy( foreColour, unlockedBg );
-		unlockedBg[ 3 ] *= 0.0f;  // No background
-		Vector4Copy( backColour, lockedBg );
-		lockedBg[ 3 ] *= 0.0f;  // No background
+		unlockedBg = foreColour;
+		unlockedBg.SetAlpha( 0.0f );  // No background
+		lockedBg = backColour;
+		lockedBg.SetAlpha( 0.0f );  // No background
 
 		gap = vertical ? ( h - icons * ih ) : ( w - icons * iw );
 

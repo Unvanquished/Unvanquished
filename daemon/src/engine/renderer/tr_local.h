@@ -3267,7 +3267,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	typedef struct stageVars
 	{
-		vec4_t   color;
+		Color::Color color;
 		bool texMatricesChanged[ MAX_TEXTURE_BUNDLES ];
 		matrix_t texMatrices[ MAX_TEXTURE_BUNDLES ];
 	} stageVars_t;
@@ -3383,22 +3383,22 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void Tess_StageIteratorLighting();
 	void Tess_StageIteratorSky();
 
-	void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color );
-	void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color, float s1, float t1, float s2, float t2 );
+	void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const Color::Color& color );
+	void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const Color::Color& color, float s1, float t1, float s2, float t2 );
 
-	void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2, bool calcNormals );
-	void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const vec4_t color );
-	void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const vec4_t color );
+	void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, float s1, float t1, float s2, float t2, bool calcNormals );
+	void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const Color::Color& color );
+	void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const Color::Color& color );
 
 	/*
 	Add a polyhedron that is composed of four triangular faces
 
 	@param tetraVerts[0..2] are the ground vertices, tetraVerts[3] is the pyramid offset
 	*/
-	void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], vec4_t const color );
+	void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const Color::Color& color );
 
-	void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color );
-	void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color );
+	void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const Color::Color& color );
+	void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const Color::Color& color );
 
 	void Tess_InstantQuad( vec4_t quadVerts[ 4 ] );
 	void Tess_MapVBOs( bool forceCPU );
@@ -3449,7 +3449,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 				      float *factors[3], vec3_t ambientLight,
 				      vec3_t directedLight, vec2_t lightDir );
 	int      R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
-	void     R_TessLight( const trRefLight_t *light, const vec4_t color );
+	void     R_TessLight( const trRefLight_t *light, const Color::Color& color );
 
 	void     R_SetupLightOrigin( trRefLight_t *light );
 	void     R_SetupLightLocalBounds( trRefLight_t *light );
@@ -3570,7 +3570,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	============================================================
 	*/
 
-	void     RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime,
+	void     RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, const Color::Color& color, int lifeTime,
 	                          int fadeTime );
 	void     RE_ClearDecals();
 
@@ -3909,7 +3909,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void                                RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 	void                                RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );  // NERVE - SMF
 	void                                RE_StretchPicGradient( float x, float y, float w, float h,
-	    float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
+	    float s1, float t1, float s2, float t2, qhandle_t hShader, const Color::Color& gradientColor,
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
 	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader );

@@ -113,7 +113,7 @@ void RE_SetColor( const Color::Color& rgba ) { }
 void RE_SetClipRegion( const float *region ) { }
 void RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader ) { }
 void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle ) { }
-void RE_StretchPicGradient( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor, int gradientType ) { }
+void RE_StretchPicGradient( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, const Color::Color& gradientColor, int gradientType ) { }
 void RE_2DPolyies( polyVert_t *polys, int numverts, qhandle_t hShader ) { }
 void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, bool dirty ) { }
 void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, bool dirty ) { }
@@ -123,7 +123,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 {
 	return 0;
 }
-void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime ) { }
+void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, const Color::Color& color, int lifeTime, int fadeTime ) { }
 void RE_ClearDecals() { }
 int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
 {

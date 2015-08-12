@@ -100,6 +100,11 @@ public:
 	// Returns the value of an indexed color
 	static const Color& Indexed( int i );
 
+	static Color From32Bit( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 )
+	{
+		return Color( r / 255.f, g / 255.f, b / 255.f, a / 255.f );
+	}
+
 
 	// Default constructor, all components set to zero
 	Color() : Math::Vec4{ 0.f, 0.f, 0.f, 0.f } {}
@@ -144,7 +149,14 @@ public:
 
 	void toArray( float* output ) const
 	{
-		memcpy( output, Data(), sizeof(float)*4 );
+		memcpy( output, Data(), ArrayBytes() );
+	}
+
+
+	// Size of the memory location returned by ToArray() in bytes
+	std::size_t ArrayBytes() const
+	{
+		return 4 * sizeof(component_type);
 	}
 
 	component_type Red() const

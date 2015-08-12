@@ -149,7 +149,7 @@ omnidirectional decals use points[ 0 ] as center and projection[ 3 ] as radius
 pass in lifeTime < 0 for a temporary mark
 */
 
-void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime,
+void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, const Color::Color& color, int lifeTime,
                       int fadeTime )
 {
 	int              i;

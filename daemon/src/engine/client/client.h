@@ -777,7 +777,7 @@ void             Con_Init();
 void             Con_Clear_f();
 void             Con_ToggleConsole_f();
 void             Con_OpenConsole_f();
-void             Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text );
+void             Con_DrawRightFloatingTextLine( const int linePosition, const Color::Color& color, const char* text );
 void             Con_DrawConsole();
 void             Con_RunConsole();
 void             Con_PageUp();
@@ -800,8 +800,8 @@ void  SCR_Init();
 void  SCR_UpdateScreen();
 
 void  SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
-void  SCR_FillAdjustedRect( float x, float y, float width, float height, const float *color );
-void  SCR_FillRect( float x, float y, float width, float height, const float *color );
+void  SCR_FillAdjustedRect( float x, float y, float width, float height, const Color::Color& color );
+void  SCR_FillRect( float x, float y, float width, float height, const Color::Color& color );
 void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
 void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 

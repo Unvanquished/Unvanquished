@@ -218,7 +218,7 @@ static bool Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIndexe
 Tess_AddQuadStampExt
 ==============
 */
-void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color, float s1, float t1, float s2, float t2 )
+void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const Color::Color& color, float s1, float t1, float s2, float t2 )
 {
 	int    i;
 	vec3_t normal;
@@ -296,7 +296,7 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t c
 Tess_AddQuadStamp
 ==============
 */
-void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color )
+void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const Color::Color& color )
 {
 	Tess_AddQuadStampExt( origin, left, up, color, 0, 0, 1, 1 );
 }
@@ -306,7 +306,7 @@ void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t colo
 Tess_AddQuadStampExt2
 ==============
 */
-void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2, bool calcNormals )
+void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, float s1, float t1, float s2, float t2, bool calcNormals )
 {
 	int    i;
 	vec3_t normal, tangent, binormal;
@@ -382,12 +382,12 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1,
 Tess_AddQuadStamp2
 ==============
 */
-void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const vec4_t color )
+void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const Color::Color& color )
 {
 	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, false );
 }
 
-void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const vec4_t color )
+void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const Color::Color& color )
 {
 	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, true );
 }
@@ -433,7 +433,7 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD | ATTR_ORIENTATION;
 }
 
-void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t colorf )
+void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const Color::Color& colorf )
 {
 	int k;
 	u8vec4_t color;
@@ -473,7 +473,7 @@ void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t colorf )
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR;
 }
 
-void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color )
+void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const Color::Color& color )
 {
 	vec4_t quadVerts[ 4 ];
 	vec3_t mins;
@@ -519,7 +519,7 @@ void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t max
 	Tess_AddQuadStamp2( quadVerts, color );
 }
 
-void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color )
+void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const Color::Color& color )
 {
 	vec4_t quadVerts[ 4 ];
 	vec3_t mins;
@@ -635,7 +635,6 @@ static void Tess_SurfaceSprite()
 {
 	vec3_t delta, left, up;
 	float  radius;
-	vec4_t color;
 
 	GLimp_LogComment( "--- Tess_SurfaceSprite ---\n" );
 
@@ -671,10 +670,12 @@ static void Tess_SurfaceSprite()
 	if ( backEnd.viewParms.isMirror )
 		VectorSubtract( vec3_origin, left, left );
 
-	color[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
-	color[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
-	color[ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 );
-	color[ 3 ] = backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 );
+	Color::Color color (
+		backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ),
+		backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ),
+		backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ),
+		backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 )
+	);
 
 	Tess_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, color );
 }

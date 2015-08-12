@@ -52,13 +52,9 @@ typedef enum
 class RocketProgressBar : public Rocket::Core::Element
 {
 public:
-	RocketProgressBar( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 )
+	RocketProgressBar( const Rocket::Core::String &tag ) :
+		Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 ), color( Color::Named::White )
 	{
-		// Default to white
-		for (int i = 0; i < ARRAY_LEN( color ); ++i )
-		{
-			color[ i ] = 1.0f;
-		}
 	}
 
 	~RocketProgressBar() {}
@@ -157,10 +153,7 @@ public:
 		{
 			Rocket::Core::Colourb tempColor = GetProperty( "color" )->Get<Rocket::Core::Colourb>();
 
-			color[ 0 ] = tempColor.red / 255.0f;
-			color[ 1 ] = tempColor.blue / 255.0f;
-			color[ 2 ] = tempColor.green / 255.0f;
-			color[ 3 ] = tempColor.alpha / 255.0f;
+			color = Color::Color::From32Bit( tempColor.red, tempColor.green, tempColor.blue, tempColor.alpha );
 		}
 
 		if ( changed_properties.find( "image" ) != changed_properties.end() )
@@ -322,7 +315,7 @@ private:
 	progressBarOrientation_t orientation; // Direction progressbar grows
 	float value; // current value
 	qhandle_t shader;
-	vec4_t color;
+	Color::Color color;
 	Rocket::Core::Vector2f dimensions;
 	Rocket::Core::String source;
 };

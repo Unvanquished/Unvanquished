@@ -651,7 +651,8 @@ RE_StretchPicGradient
 ==============
 */
 void RE_StretchPicGradient( float x, float y, float w, float h,
-                            float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
+                            float s1, float t1, float s2, float t2,
+                            qhandle_t hShader, const Color::Color& gradientColor,
                             int gradientType )
 {
 	stretchPicCommand_t *cmd;
@@ -673,13 +674,6 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 	cmd->t1 = t1;
 	cmd->s2 = s2;
 	cmd->t2 = t2;
-
-	if ( !gradientColor )
-	{
-		static float colorWhite[ 4 ] = { 1, 1, 1, 1 };
-
-		gradientColor = colorWhite;
-	}
 
 	floatToUnorm8( gradientColor, cmd->gradientColor );
 	cmd->gradientType = gradientType;

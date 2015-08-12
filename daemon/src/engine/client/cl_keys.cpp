@@ -390,7 +390,7 @@ void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, b
             return;
         }
 
-        vec4_t supportElementsColor = {1.0f, 1.0f, 1.0f, 0.66f * consoleState.currentAlphaFactor};
+        Color::Color supportElementsColor = {1.0f, 1.0f, 1.0f, 0.66f * consoleState.currentAlphaFactor};
         re.SetColor( supportElementsColor );
 
         //Compute the position of the cursor

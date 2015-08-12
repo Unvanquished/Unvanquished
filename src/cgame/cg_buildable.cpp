@@ -747,7 +747,7 @@ void CG_InitBuildables()
 CG_BuildableRangeMarkerProperties
 ================
 */
-bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec4_t rgba )
+bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, Color::Color& rgba )
 {
 	shaderColorEnum_t shc;
 
@@ -837,8 +837,8 @@ bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmT
 		*rmType = RM_SPHERE;
 	}
 
-	VectorCopy( cg_shaderColors[ shc ], rgba );
-	rgba[3] = 1.0f;
+	rgba = cg_shaderColors[ shc ];
+	rgba.SetAlpha( 1.0f );
 
 	return true;
 }
@@ -1122,13 +1122,13 @@ static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t ori
 {
 	rangeMarker_t rmType;
 	float    range;
-	vec4_t   rgba;
+	Color::Color rgba;
 
 	if ( CG_GetBuildableRangeMarkerProperties( buildable, &rmType, &range, rgba ) )
 	{
 		vec3_t localOrigin;
 
-		rgba[3] *= opacity;
+		rgba.SetAlpha( opacity );
 
 		if ( buildable == BA_A_HIVE )
 		{
@@ -1277,7 +1277,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 		picH = picM * ( 1.0f - bs->verticalMargin );
 
 		Color::Color  backColor = bs->backColor;
-		backColor.SetAlpha( bs->backColor[3] / 3 );
+		backColor.SetAlpha( bs->backColor.Alpha() / 3 );
 
 		switch ( SB_BUILDABLE_TO_IBE( buildableInfo ) )
 		{
@@ -1416,7 +1416,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 	const char *s;
 	int        i;
 	float      f;
-	vec4_t     c;
+	Color::Color c;
 
 	handle = trap_Parse_LoadSource( filename );
 
@@ -1476,7 +1476,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_Color_Parse( handle, &c ) )
 			{
-				Vector4Copy( c, bs->healthSevereColor );
+				bs->healthSevereColor = c;
 			}
 
 			continue;
@@ -1485,7 +1485,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_Color_Parse( handle, &c ) )
 			{
-				Vector4Copy( c, bs->healthHighColor );
+				bs->healthHighColor = c;
 			}
 
 			continue;
@@ -1494,7 +1494,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_Color_Parse( handle, &c ) )
 			{
-				Vector4Copy( c, bs->healthElevatedColor );
+				bs->healthElevatedColor = c;
 			}
 
 			continue;
@@ -1503,7 +1503,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_Color_Parse( handle, &c ) )
 			{
-				Vector4Copy( c, bs->healthGuardedColor );
+				bs->healthGuardedColor = c;
 			}
 
 			continue;
@@ -1512,7 +1512,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_Color_Parse( handle, &c ) )
 			{
-				Vector4Copy( c, bs->healthLowColor );
+				bs->healthLowColor = c;
 			}
 
 			continue;
@@ -1521,7 +1521,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_Color_Parse( handle, &c ) )
 			{
-				Vector4Copy( c, bs->foreColor );
+				bs->foreColor = c;
 			}
 
 			continue;
@@ -1530,7 +1530,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_Color_Parse( handle, &c ) )
 			{
-				Vector4Copy( c, bs->backColor );
+				bs->backColor = c;
 			}
 
 			continue;

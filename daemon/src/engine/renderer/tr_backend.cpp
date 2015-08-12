@@ -4275,7 +4275,7 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 
 	Tess_MapVBOs( false );
 
-	const vec4_t colorClear = { 0, 0, 0, 0 };
+	Color::Color colorClear = { 0, 0, 0, 0 };
 	currentDebugDrawMode = mode;
 	currentDebugSize = size;
 	switch(mode) {

@@ -657,7 +657,7 @@ void CG_InitMinimap()
 CG_DrawMinimap
 ================
 */
-void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
+void CG_DrawMinimap( const rectDef_t* rect640, const Color::Color& teamColor )
 {
     minimap_t* m = &cg.minimap;
     minimapZone_t *z = nullptr;
