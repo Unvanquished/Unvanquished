@@ -56,8 +56,7 @@ extern int      bindTeam;
 void            Field_KeyDownEvent(Util::LineEditData& edit, int key );
 void            Field_CharEvent(Util::LineEditData& edit, int c );
 void            Field_Draw(const Util::LineEditData& edit, int x, int y,
-						   bool showCursor, bool noColorEscape,
-						   Color::Color::component_type alpha );
+						   bool showCursor, bool noColorEscape, float alpha );
 
 extern Console::Field  g_consoleField;
 extern int      anykeydown;

@@ -358,7 +358,7 @@ protected:
 			{
 				Rocket::Core::XMLAttributes xml;
 
-				Color::Color color = { 255, 255, 255 };
+				Color::ColorFloat color = Color::NamedFloat::White;
 				if ( i->Type() == Color::BasicToken< Rocket::Core::word >::COLOR )
 				{
 					color = i->Color();
@@ -387,10 +387,7 @@ protected:
 
 
 				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-				child->SetProperty( "color", va( "#%02X%02X%02X",
-				                                 ( int )( color.Red() ),
-				                                 ( int )( color.Green() ),
-				                                 ( int )( color.Blue() ) ) );
+				child->SetProperty( "color", va( "#%02X%02X%02X", color.RedInt(), color.GreenInt(), color.BlueInt() ) );
 				out.Append( i->Begin(), i->Size() );
 				span = true;
 			}

@@ -486,11 +486,6 @@ void trap_R_SetColor( const Color::ColorFloat &rgba )
 {
 	cmdBuffer.SendMsg<Render::SetColorMsg>(rgba);
 }
-void trap_R_SetColor( const Color::Color &rgba )
-{
-	cmdBuffer.SendMsg<Render::SetColorMsg>(Color::Cast<Color::ColorFloat>(rgba));
-}
-
 void trap_R_SetClipRegion( const float *region )
 {
 	std::array<float, 4> myregion;

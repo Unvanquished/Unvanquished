@@ -1638,17 +1638,17 @@ static Color::ColorFloat HealthColorFade( float healthFrac, buildStat_t *bs )
 	if ( healthFrac > 0.666f )
 	{
 		frac = 1.0f - ( healthFrac - 0.666f ) * 3.0f;
-		out = Color::Blend<Color::ColorFloat>( bs->healthGuardedColor, bs->healthElevatedColor, frac );
+		out = Color::Blend( bs->healthGuardedColor, bs->healthElevatedColor, frac );
 	}
 	else if ( healthFrac > 0.333f )
 	{
 		frac = 1.0f - ( healthFrac - 0.333f ) * 3.0f;
-		out = Color::Blend<Color::ColorFloat>( bs->healthElevatedColor, bs->healthHighColor, frac );
+		out = Color::Blend( bs->healthElevatedColor, bs->healthHighColor, frac );
 	}
 	else
 	{
 		frac = 1.0f - healthFrac * 3.0f;
-		out = Color::Blend<Color::ColorFloat>( bs->healthHighColor, bs->healthSevereColor, frac );
+		out = Color::Blend( bs->healthHighColor, bs->healthSevereColor, frac );
 	}
 
 	return out;

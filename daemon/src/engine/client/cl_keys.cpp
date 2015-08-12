@@ -360,7 +360,7 @@ Handles horizontal scrolling and cursor blinking
 x, y, and width are in pixels
 ===================
 */
-void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape, unsigned char alpha)
+void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape, float alpha)
 {
     //TODO support UTF-8 once LineEditData does
     //Extract the text we want to draw
@@ -371,7 +371,7 @@ void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, b
     std::string text = Str::UTF32To8(std::u32string(edit.GetViewText(), drawWidth));
 
     // draw the text
-	Color::Color color{255, 255, 255, alpha };
+	Color::ColorFloat color { 1.0f, 1.0f, 1.0f, alpha };
 	SCR_DrawSmallStringExt(x, y, text.c_str(), color, false, noColorEscape);
 
     // draw the line scrollbar

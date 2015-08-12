@@ -805,7 +805,7 @@ void  SCR_FillRect( float x, float y, float width, float height, const float *co
 void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
 void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 
-void  SCR_DrawSmallStringExt( int x, int y, const char *string, const Color::Color&setColor, bool forceColor, bool noColorEscape );
+void  SCR_DrawSmallStringExt( int x, int y, const char *string, const Color::ColorFloat& setColor, bool forceColor, bool noColorEscape );
 void  SCR_DrawSmallUnichar( int x, int y, int ch );
 void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
 void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );

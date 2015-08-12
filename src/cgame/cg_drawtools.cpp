@@ -271,8 +271,7 @@ void CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
 
 	CG_AdjustFrom640( &x, &y, &width, &height );
 
-	Color::ColorFloat finalcolor =
-		Color::Blend<Color::ColorFloat>( fcolor, tcolor, amount / 100 );
+	Color::ColorFloat finalcolor = Color::Blend( fcolor, tcolor, amount / 100 );
 
 	trap_R_SetColor( finalcolor );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );

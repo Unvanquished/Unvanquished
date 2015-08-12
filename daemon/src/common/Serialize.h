@@ -415,8 +415,6 @@ namespace Util {
 		}
 	};
 
-	
-
 } // namespace Util
 
 #endif // COMMON_SERIALIZATION_H_

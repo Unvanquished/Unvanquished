@@ -41,7 +41,7 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 
-static const Color::Color console_color = { 255, 255, 255, 255 };
+static const Color::ColorFloat console_color = Color::NamedFloat::White;
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
@@ -627,8 +627,8 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Com_RealTime( &realtime );
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
-	Color::Color color = console_color;
-	color.SetAlpha( Color::Color::component_max * consoleState.currentAlphaFactor * overrideAlpha );
+	Color::ColorFloat color = console_color;
+	color.SetAlpha( consoleState.currentAlphaFactor * overrideAlpha );
 
 	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, false, false );
 
@@ -874,7 +874,7 @@ void Con_DrawConsoleContent()
 	}
 
 
-	Color::ColorFloat console_color_alpha = Color::Cast<Color::ColorFloat>(console_color);
+	Color::ColorFloat console_color_alpha = console_color;
 
 	for ( ; row >= 0 && lineDrawPosition > textDistanceToTop; lineDrawPosition -= charHeight, row-- )
 	{
@@ -895,9 +895,9 @@ void Con_DrawConsoleContent()
 		{
 			if ( it->Type() == Color::Token::COLOR )
 			{
-				Color::Color color = it->Color();
-				color.SetAlpha( Color::Color::component_max * console_color_alpha.Alpha() );
-				re.SetColor( Color::Cast<Color::ColorFloat>(color) );
+				Color::ColorFloat color = it->Color();
+				color.SetAlpha( console_color_alpha.Alpha() );
+				re.SetColor( color );
 			}
 			else if ( it->Type() == Color::Token::DEFAULT_COLOR )
 			{

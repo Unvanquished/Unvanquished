@@ -283,13 +283,13 @@ Coordinates are at 640 by 480 virtual resolution
 ==================
 */
 void SCR_DrawSmallStringExt( int x, int y, const char *string,
-							 const Color::Color &setColor, bool forceColor, bool noColorEscape )
+							 const Color::ColorFloat &setColor, bool forceColor, bool noColorEscape )
 {
 	float      xx;
 
 	// draw the colored text
 	xx = x;
-	re.SetColor( Color::Cast<Color::ColorFloat>( setColor ) );
+	re.SetColor( setColor );
 
 	for ( Color::TokenIterator i( string ); *i; ++i )
 	{
@@ -297,7 +297,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 		{
 			if ( !forceColor )
 			{
-				Color::Color color;
+				Color::ColorFloat color;
 				if ( i->Type() == Color::Token::DEFAULT_COLOR )
 				{
 					color = setColor;
@@ -307,7 +307,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 					color = i->Color();
 					color.SetAlpha( setColor.Alpha() );
 				}
-				re.SetColor( Color::Cast<Color::ColorFloat>( color ) );
+				re.SetColor( color );
 			}
 
 			if ( noColorEscape )
@@ -417,7 +417,7 @@ void SCR_DrawVoipMeter()
 	buffer[ i ] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::Color( 7 ), true, false );
+	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::NamedFloat::White, true, false );
 }
 
 /*
@@ -466,19 +466,19 @@ void SCR_DrawVoipSender()
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::Color( 7 ), true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::NamedFloat::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::Color( 7 ), true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::NamedFloat::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::Color( 7 ), true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::NamedFloat::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::Color( 7 ), true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::NamedFloat::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
 		{

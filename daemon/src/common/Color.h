@@ -33,6 +33,7 @@ Maryland 20850 USA.
 #ifndef COMMON_COLOR_H_
 #define COMMON_COLOR_H_
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -89,208 +90,15 @@ inline constexpr char hex_to_char( int i )
 	return i < 10 ? i + '0' : i + 'a' - 10;
 }
 
-// Description of the components used by a color class
-enum class Components
-{
-	RGBA
-};
-
-// SFINAE trait to determine if a type is a color
-template<class T, class = void>
-struct IsColor : public std::false_type {};
-
-template<class T>
-struct IsColor<T,
-	typename std::enable_if<
-		std::is_same<
-			typename std::remove_const<decltype(T::components)>::type,
-			Components
-		>::value &&
-		std::is_same<
-			typename std::remove_const<decltype(T::component_max)>::type,
-			typename T::component_type
-		>::value
-	>::type
-> : std::true_type {};
-
-// Converts a component, used by Cast()
-template<class ColorDest, class ColorSource>
-constexpr typename ColorDest::component_type ConvertComponent( typename ColorSource::component_type from )
-{
-	using Component = typename std::common_type<
-		typename ColorSource::component_type,
-		typename ColorDest::component_type
-	>::type;
-
-	return Component( from )   / Component( ColorSource::component_max ) * Component( ColorDest::component_max );
-}
-
-// Converts two types implementing the Color concept
-template<class ColorDest, class ColorSource>
-constexpr typename std::enable_if<
-		ColorDest::components == Components::RGBA &&
-		ColorSource::components == Components::RGBA &&
-		!std::is_same<ColorDest, ColorSource>::value,
-		ColorDest>::type
-	Cast( const ColorSource& from )
-{
-
-	return {
-		ConvertComponent<ColorDest, ColorSource>( from.Red() ),
-		ConvertComponent<ColorDest, ColorSource>( from.Green() ),
-		ConvertComponent<ColorDest, ColorSource>( from.Blue() ),
-		ConvertComponent<ColorDest, ColorSource>( from.Alpha() ),
-	};
-}
-
-// Converts to the same type
-template<class ColorSource>
-	constexpr ColorSource Cast( const ColorSource& from )
-{
-	return from;
-}
-
-/*
-================
-Color
-
-Value class to represent colors
-================
-*/
-class Color
-{
-public:
-	typedef uint8_t component_type;
-	static constexpr const component_type component_max
-		= std::numeric_limits<component_type>::max();
-	static constexpr const Components components = Components::RGBA;
-
-	// Returns the value of an indexed color
-	static const Color& Indexed( int i );
-
-	/*
-	================
-	Color::Color
-
-	Default constructor, all components set to zero
-	================
-	*/
-	constexpr Color() = default;
-
-	// Initialize from the components
-	constexpr Color( component_type r, component_type g, component_type b,
-					  component_type a = component_max )
-		: r(r), g(g), b(b), a(a)
-	{
-	}
-
-	constexpr component_type Red() const
-	{
-		return r;
-	}
-
-	constexpr component_type Green() const
-	{
-		return g;
-	}
-
-	constexpr component_type Blue() const
-	{
-		return b;
-	}
-
-	constexpr component_type Alpha() const
-	{
-		return a;
-	}
-
-	void SetRed( component_type v )
-	{
-		r = v;
-	}
-
-	void SetGreen( component_type v )
-	{
-		g = v;
-	}
-
-	void SetBlue( component_type v )
-	{
-		b = v;
-	}
-
-	void SetAlpha( component_type v )
-	{
-		a = v;
-	}
-
-	bool operator==( const Color& other ) const
-	{
-		return To32bit() == other.To32bit();
-	}
-
-	bool operator!=( const Color& other ) const
-	{
-		return To32bit() != other.To32bit();
-	}
-
-	/*
-	================
-	Color::toString
-
-	Returns a string representing the color
-	================
-	*/
-	std::string ToString() const
-	{
-		return std::string("^x")+hex_to_char(r/17)+hex_to_char(g/17)+hex_to_char(b/17);
-	}
-
-	/*
-	================
-	Color::to4bit
-
-	Returns a 4 bit integer with the bits following this pattern:
-		1 red
-		2 green
-		4 blue
-		8 bright
-	================
-	*/
-	int To4bit() const;
-
-private:
-
-	/*
-	================
-	Color::To32bit
-
-	Returns a 32bit integer representing the color,
-	no guarantees are made with respect to endianness
-	================
-	*/
-	uint32_t To32bit() const
-	{
-		return *reinterpret_cast<const uint32_t*>(this);
-	}
-
-
-	component_type r = 0, g = 0, b = 0, a = 0;
-};
-
 // A color with normalized floats RGBA components
 class ColorFloat : public Math::Vec4
 {
 public:
 	typedef float component_type;
 	static constexpr const component_type component_max = 1;
-	static constexpr const Components components = Components::RGBA;
 
 	// Returns the value of an indexed color
-	static ColorFloat Indexed( int i )
-	{
-		return Cast<ColorFloat>( Color::Indexed( i ) );
-	}
+	static const ColorFloat& Indexed( int i );
 
 
 	// Default constructor, all components set to zero
@@ -339,7 +147,6 @@ public:
 		memcpy( output, Data(), sizeof(float)*4 );
 	}
 
-
 	component_type Red() const
 	{
 		return Data()[0];
@@ -379,20 +186,48 @@ public:
 	{
 		Data()[3] = v;
 	}
+
+	int RedInt() const
+	{
+		return std::round( Red() * 255 );
+	}
+
+	int GreenInt() const
+	{
+		return std::round( Green() * 255 );
+	}
+
+	int BlueInt() const
+	{
+		return std::round( Blue() * 255 );
+	}
+
+	int AlphaInt() const
+	{
+		return std::round( Alpha() * 255 );
+	}
+	
+	/*
+	 * Returns a 4 bit integer with the bits following this pattern:
+	 * 	1 red
+	 * 	2 green
+	 * 	4 blue
+	 * 	8 bright
+	 */
+	int To4bit() const;
 };
 
 /*
  * Blend two colors.
  * If factor is 0, the first color will be shown, it it's 1 the second one will
  */
-template<class ColorType>
-constexpr ColorType Blend(const ColorType& a, const ColorType& b, float factor)
+inline ColorFloat Blend(const ColorFloat& a, const ColorFloat& b, float factor)
 {
-	return ColorType {
-		typename ColorType::component_type ( a.Red()   * ( 1 - factor ) + b.Red()   * factor ),
-		typename ColorType::component_type ( a.Green() * ( 1 - factor ) + b.Green() * factor ),
-		typename ColorType::component_type ( a.Blue()  * ( 1 - factor ) + b.Blue()  * factor ),
-		typename ColorType::component_type ( a.Alpha() * ( 1 - factor ) + b.Alpha() * factor ),
+	return ColorFloat {
+		a.Red()   * ( 1 - factor ) + b.Red()   * factor,
+		a.Green() * ( 1 - factor ) + b.Green() * factor,
+		a.Blue()  * ( 1 - factor ) + b.Blue()  * factor,
+		a.Alpha() * ( 1 - factor ) + b.Alpha() * factor,
 	};
 }
 
@@ -498,7 +333,7 @@ public:
 	Constructs a token representing a color
 	================
 	*/
-	BasicToken( const charT* begin, const charT* end, const ::Color::Color& color )
+	BasicToken( const charT* begin, const charT* end, const ::Color::ColorFloat& color )
 		: begin( begin ),
 		  end( end ),
 		  type( COLOR ),
@@ -561,7 +396,7 @@ public:
 	Pre: Type() == COLOR
 	================
 	*/
-	::Color::Color Color() const
+	::Color::ColorFloat Color() const
 	{
 		return color;
 	}
@@ -583,7 +418,7 @@ private:
 	const charT*   begin = nullptr;
 	const charT*   end   = nullptr;
 	TokenType     type  = INVALID;
-	::Color::Color       color;
+	::Color::ColorFloat       color;
 
 };
 
@@ -720,14 +555,14 @@ private:
 			}
 			else if ( std::toupper( input[1] ) >= '0' && std::toupper( input[1] ) < 'P' )
 			{
-				return value_type( input, input+2, Color::Indexed( input[1] - '0' ) );
+				return value_type( input, input+2, ColorFloat::Indexed( input[1] - '0' ) );
 			}
 			else if ( std::tolower( input[1] ) == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
 			{
-				return value_type( input, input+5, Color(
-					gethex( input[2] ) * 17,
-					gethex( input[3] ) * 17,
-					gethex( input[4] ) * 17,
+				return value_type( input, input+5, ColorFloat(
+					gethex( input[2] ) / 15.f,
+					gethex( input[3] ) / 15.f,
+					gethex( input[4] ) / 15.f,
 					1
 				) );
 			}
@@ -744,10 +579,10 @@ private:
 				}
 				if ( long_hex )
 				{
-					return value_type( input, input+8, Color(
-						(gethex( input[2] ) << 4) | gethex( input[3] ),
-						(gethex( input[4] ) << 4) | gethex( input[5] ),
-						(gethex( input[6] ) << 4) | gethex( input[7] ),
+					return value_type( input, input+8, ColorFloat(
+						( (gethex( input[2] ) << 4) | gethex( input[3] ) ) / 255.f,
+						( (gethex( input[4] ) << 4) | gethex( input[5] ) ) / 255.f,
+						( (gethex( input[6] ) << 4) | gethex( input[7] ) ) / 255.f,
 						1
 					) );
 				}

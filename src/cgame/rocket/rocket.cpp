@@ -564,9 +564,9 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			{
 				char rgb[32];
 				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
-						(int)( i->Color().Red() ),
-						(int)( i->Color().Green() ),
-						(int)( i->Color().Blue() ) );
+						i->Color().RedInt(),
+						i->Color().GreenInt(),
+						i->Color().BlueInt() );
 
 				// don't add the span yet, because it might be empty
 				spanstr = rgb;
