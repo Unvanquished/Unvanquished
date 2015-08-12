@@ -43,8 +43,6 @@
 /**
  * used for consistent representation within print or log statements, that don't use any severity enum yet
  */
-/// \todo (color) remove (use Com_Logf) or make into a function
-/// (also search for other Com_Printf that output Error: and unify them as well)
 #define S_WARNING "^3Warning: ^*"
 #define S_ERROR   "^1ERROR: ^*"
 #define S_DEBUG   "Debug: "
