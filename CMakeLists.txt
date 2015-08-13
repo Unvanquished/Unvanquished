@@ -100,6 +100,7 @@ if (BUILD_CGAME)
     GAMEMODULE(NAME cgame
         DEFINITIONS
             BUILD_CGAME
+            ROCKET_STATIC_LIB
         FLAGS
             ${WARNINGS}
         FILES

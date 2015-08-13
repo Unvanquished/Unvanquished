@@ -2399,7 +2399,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_MOVEFILE:
-		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool success) {
+		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool& success) {
 			std::error_code err;
 			HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src), err);
 			success = !err;
@@ -2407,7 +2407,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_DELETEFILE:
-		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool success) {
+		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool& success) {
 			std::error_code err;
 			HomePath::DeleteFile(Path::Build("game", path), err);
 			success = !err;
