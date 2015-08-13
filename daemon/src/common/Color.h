@@ -47,49 +47,6 @@ Maryland 20850 USA.
 
 namespace Color {
 
-/*
-================
-gethex
-
-Converts a hexadecimal character to the value of the digit it represents.
-Pre: ishex(ch)
-================
-*/
-inline constexpr int gethex( char ch )
-{
-	return ch > '9' ?
-		( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
-		: ch - '0'
-	;
-}
-
-/*
-================
-ishex
-
-Whether a character is a hexadecimal digit
-================
-*/
-inline constexpr bool ishex( char ch )
-{
-	return ( ch >= '0' && ch <= '9' ) ||
-		   ( ch >= 'A' && ch <= 'F' ) ||
-		   ( ch >= 'a' && ch <= 'f' );
-}
-
-/*
-================
-hex_to_char
-
-Returns a character representing a hexadecimal digit
-Pre: 0 <= i && i < 16
-================
-*/
-inline constexpr char hex_to_char( int i )
-{
-	return i < 10 ? i + '0' : i + 'a' - 10;
-}
-
 template<class T>
 	struct ColorComponentTraits
 {
@@ -389,12 +346,8 @@ extern Color MdBlue;
 } // namespace Named
 
 /*
-================
-BasicToken
-
-Generic token for parsing colored strings
-================
-*/
+ * Generic token for parsing colored strings
+ */
 template<class charT>
 	class BasicToken
 {
@@ -408,22 +361,14 @@ public:
 	};
 
 	/*
-	================
-	BasicToken::BasicToken
-
-	Constructs an invalid token
-	================
-	*/
+	 * Constructs an invalid token
+	 */
 	BasicToken() = default;
 
 
 	/*
-	================
-	BasicToken::BasicToken
-
-	Constructs a token with the given type and range
-	================
-	*/
+	 * Constructs a token with the given type and range
+	 */
 	BasicToken( const charT* begin, const charT* end, TokenType type )
 		: begin( begin ),
 		  end( end ),
@@ -431,12 +376,8 @@ public:
 	{}
 
 	/*
-	================
-	BasicToken::BasicToken
-
-	Constructs a token representing a color
-	================
-	*/
+	 * Constructs a token representing a color
+	 */
 	BasicToken( const charT* begin, const charT* end, const ::Color::Color& color )
 		: begin( begin ),
 		  end( end ),
@@ -445,73 +386,47 @@ public:
 	{}
 
 	/*
-	================
-	BasicToken::Begin
-
-	Pointer to the first character of this token in the input sequence
-	================
-	*/
+	 * Pointer to the first character of this token in the input sequence
+	 */
 	const charT* Begin() const
 	{
 		return begin;
 	}
 
 	/*
-	================
-	BasicToken::Begin
-
-	Pointer to the last character of this token in the input sequence
-	================
-	*/
+	 * Pointer to the last character of this token in the input sequence
+	 */
 	const charT* End() const
 	{
 		return end;
 	}
 
 	/*
-	================
-	BasicToken::Size
-
-	Distance berween Begin and End
-	================
-	*/
+	 * Distance berween Begin and End
+	 */
 	std::size_t Size() const
 	{
 		return end - begin;
 	}
 
-	/*
-	================
-	BasicToken::Type
-
-	Token Type
-	================
-	*/
+	// Token Type
 	TokenType Type() const
 	{
 		return type;
 	}
 
 	/*
-	================
-	BasicToken::Color
-
-	Parsed color
-	Pre: Type() == COLOR
-	================
-	*/
+	 * Parsed color
+	 * Pre: Type() == COLOR
+	 */
 	::Color::Color Color() const
 	{
 		return color;
 	}
 
 	/*
-	================
-	BasicToken::operator bool
-
-	Converts to bool if the token is valid (and not empty)
-	================
-	*/
+	 * Converts to bool if the token is valid (and not empty)
+	 */
 	explicit operator bool() const
 	{
 		return type != INVALID && begin && begin < end;
@@ -527,12 +442,8 @@ private:
 };
 
 /*
-================
-TokenAdvanceOne
-
-Policy for BasicTokenIterator, advances by 1 input element
-================
-*/
+ * Policy for BasicTokenIterator, advances by 1 input element
+ */
 class TokenAdvanceOne
 {
 public:
@@ -541,12 +452,8 @@ public:
 };
 
 /*
-================
-TokenAdvanceUtf8
-
-Policy for BasicTokenIterator<char>, advances to the next Utf-8 code point
-================
-*/
+ * Policy for BasicTokenIterator<char>, advances to the next Utf-8 code point
+ */
 class TokenAdvanceUtf8
 {
 public:
@@ -556,17 +463,13 @@ public:
 	}
 };
 
-/*
-================
-BasicTokenIterator
-
-Generic class to parse C-style strings into tokens,
-implements the InputIterator concept
-
-CharT is the type for the input
-TokenAdvanceT is the advancement policy used to define characters
-================
-*/
+/**
+ * Generic class to parse C-style strings into tokens,
+ * implements the InputIterator concept
+ *
+ * CharT is the type for the input
+ * TokenAdvanceT is the advancement policy used to define characters
+ */
 template<class CharT, class TokenAdvanceT = TokenAdvanceOne>
 	class BasicTokenIterator
 {
@@ -617,13 +520,7 @@ public:
 		return token.Begin() != rhs.token.Begin();
 	}
 
-	/*
-	================
-	BasicTokenIterator::Skip
-
-	Skips the current token by "count" number of input elements
-	================
-	*/
+	// Skips the current token by "count" number of input elements
 	void Skip( difference_type count )
 	{
 		if ( count != 0 )
@@ -633,13 +530,7 @@ public:
 	}
 
 private:
-	/*
-	================
-	BasicTokenIterator::NextToken
-
-	Returns the token corresponding to the given input string
-	================
-	*/
+	// Returns the token corresponding to the given input string
 	value_type NextToken(const CharT* input)
 	{
 		if ( !input || *input == '\0' )
@@ -696,24 +587,32 @@ private:
 		return value_type( input, input + TokenAdvanceT()( input ), value_type::CHARACTER );
 	}
 
+	/*
+	 * Converts a hexadecimal character to the value of the digit it represents.
+	 * Pre: ishex(ch)
+	 */
+	inline static constexpr int gethex( CharT ch )
+	{
+		return ch > '9' ?
+			( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
+			: ch - '0'
+		;
+	}
+
+	// Whether a character is a hexadecimal digit
+	inline static constexpr bool ishex( CharT ch )
+	{
+		return ( ch >= '0' && ch <= '9' ) ||
+			( ch >= 'A' && ch <= 'F' ) ||
+			( ch >= 'a' && ch <= 'f' );
+	}
+
 	value_type token;
 };
 
-/*
-================
-Token
-
-Default token type for Utf-8 C-strings
-================
-*/
+// Default token type for Utf-8 C-strings
 using Token = BasicToken<char>;
-/*
-================
-TokenIterator
-
-Default token iterator for Utf-8 C-strings
-================
-*/
+// Default token iterator for Utf-8 C-strings
 using TokenIterator = BasicTokenIterator<char, TokenAdvanceUtf8>;
 
 

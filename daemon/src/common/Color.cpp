@@ -206,7 +206,7 @@ char *StripColors( char *string )
 		}
 		else if ( i->Type() == Token::ESCAPE )
 		{
-			output.push_back('^');
+			output.push_back(Constants::ESCAPE);
 		}
 	}
 
@@ -242,7 +242,7 @@ void StripColors( const char *in, char *out, int len )
 			{
 				break;
 			}
-			*out++ = '^';
+			*out++ = Constants::ESCAPE;
 		}
 	}
 
@@ -261,7 +261,7 @@ std::string StripColors( const std::string& input )
 		}
 		else if ( i->Type() == Token::ESCAPE )
 		{
-			output.push_back('^');
+			output.push_back(Constants::ESCAPE);
 		}
 	}
 

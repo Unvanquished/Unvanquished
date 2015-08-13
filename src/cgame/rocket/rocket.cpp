@@ -583,7 +583,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( spanstr );
 				spanHasContent = true;
 			}
-			out.Append( '^' );
+			out.Append( Color::Constants::ESCAPE );
 		}
 	}
 

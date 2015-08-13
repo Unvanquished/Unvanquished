@@ -321,13 +321,13 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 		}
 		else if ( i->Type() == Color::Token::ESCAPE )
 		{
-			SCR_DrawConsoleFontUnichar( xx, y, '^' );
-			xx += SCR_ConsoleFontUnicharWidth( '^' );
+			SCR_DrawConsoleFontUnichar( xx, y, Color::Constants::ESCAPE );
+			xx += SCR_ConsoleFontUnicharWidth( Color::Constants::ESCAPE );
 
 			if ( noColorEscape )
 			{
-				SCR_DrawConsoleFontUnichar( xx, y, '^' );
-				xx += SCR_ConsoleFontUnicharWidth( '^' );
+				SCR_DrawConsoleFontUnichar( xx, y, Color::Constants::ESCAPE );
+				xx += SCR_ConsoleFontUnicharWidth( Color::Constants::ESCAPE );
 			}
 		}
 		else

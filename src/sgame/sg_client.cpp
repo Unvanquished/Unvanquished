@@ -756,13 +756,13 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 
 			bool escaped_emote = false;
 			// single trailing ^ will mess up some things
-			if ( cp == '^' && !i->End() )
+			if ( cp == Color::Constants::ESCAPE && !*i->End() )
 			{
 				if ( out_string.size() + 2 > outSize )
 				{
 					break;
 				}
-				out_string += "^";
+				out_string += Color::Constants::ESCAPE;
 			}
 			else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped_emote ) )
 			{

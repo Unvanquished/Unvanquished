@@ -160,7 +160,7 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 			}
 			else
 			{
-				buffer += '^';
+				buffer += Color::Constants::ESCAPE;
 			}
 		}
 		else if ( i->Type() == Color::Token::CHARACTER )

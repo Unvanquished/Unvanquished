@@ -394,7 +394,7 @@ protected:
 			}
 			else if ( i->Type() == Color::BasicToken< Rocket::Core::word >::ESCAPE )
 			{
-				out.Append( '^' );
+				out.Append( Color::Constants::ESCAPE );
 			}
 			else if ( i->Type() == Color::BasicToken< Rocket::Core::word >::CHARACTER )
 			{

@@ -95,7 +95,7 @@ static void CON_AnsiColorPrint( const char *msg )
 		}
 		else if ( i->Type() == Color::Token::ESCAPE )
 		{
-			buffer += '^';
+			buffer += Color::Constants::ESCAPE;
 		}
 		else if ( i->Type() == Color::Token::DEFAULT_COLOR )
 		{
