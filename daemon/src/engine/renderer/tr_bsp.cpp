@@ -114,41 +114,6 @@ static void R_ColorShiftLightingBytesCompressed( byte in[ 8 ], byte out[ 8 ] )
 
 /*
 ===============
-R_ColorShiftLightingFloats
-===============
-*/
-static void R_ColorShiftLightingFloats( const vec4_t in, vec4_t out )
-{
-	int shift, r, g, b;
-
-	// shift the color data based on overbright range
-	shift = tr.mapOverBrightBits - tr.overbrightBits;
-
-	// shift the data based on overbright range
-	r = ( ( byte )( in[ 0 ] * 255 ) ) << shift;
-	g = ( ( byte )( in[ 1 ] * 255 ) ) << shift;
-	b = ( ( byte )( in[ 2 ] * 255 ) ) << shift;
-
-	// normalize by color instead of saturating to white
-	if ( ( r | g | b ) > 255 )
-	{
-		int max;
-
-		max = r > g ? r : g;
-		max = max > b ? max : b;
-		r = r * 255 / max;
-		g = g * 255 / max;
-		b = b * 255 / max;
-	}
-
-	out[ 0 ] = r * ( 1.0f / 255.0f );
-	out[ 1 ] = g * ( 1.0f / 255.0f );
-	out[ 2 ] = b * ( 1.0f / 255.0f );
-	out[ 3 ] = in[ 3 ];
-}
-
-/*
-===============
 R_ProcessLightmap
 
         returns maxIntensity
