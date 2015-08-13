@@ -387,7 +387,8 @@ protected:
 
 
 				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-				child->SetProperty( "color", va( "#%02X%02X%02X", color.RedInt(), color.GreenInt(), color.BlueInt() ) );
+				Color::Color32Bit color32 ( color );
+				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
 				out.Append( i->Begin(), i->Size() );
 				span = true;
 			}

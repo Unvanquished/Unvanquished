@@ -1081,7 +1081,7 @@ typedef struct
 
 typedef struct
 {
-	byte     color[ 3 ];
+	Color::Color32Bit color;
 	bool drawIntersection;
 	bool drawFrontline;
 } cgBinaryShaderSetting_t;

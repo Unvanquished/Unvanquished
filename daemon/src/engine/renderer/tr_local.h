@@ -1378,7 +1378,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	typedef struct decalProjector_s
 	{
 		shader_t *shader;
-		byte     color[ 4 ];
+		Color::Color32Bit color;
 		int      fadeStartTime, fadeEndTime;
 		vec3_t   mins, maxs;
 		vec3_t   center;
@@ -1728,7 +1728,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec2_t lightmap;
 		vec3_t normal;
 		i16vec4_t qtangent;
-		u8vec4_t lightColor;
+		Color::Color32Bit lightColor;
 	} srfVert_t;
 
 	typedef struct
@@ -2510,7 +2510,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		bool          skyRenderedThisView; // flag for drawing sun
 
 		bool          projection2D; // if true, drawstretchpic doesn't need to change modes
-		u8vec4_t          color2D;
+		Color::Color32Bit color2D;
 		bool          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 	} backEndState_t;
@@ -3276,7 +3276,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	typedef struct shaderVertex_s {
 		vec3_t    xyz;
-		u8vec4_t  color;
+		Color::Color32Bit color;
 		union {
 			i16vec4_t qtangents;
 			f16vec4_t spriteOrientation;
@@ -3700,7 +3700,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	typedef struct
 	{
 		int   commandId;
-		float color[ 4 ];
+		Color::Color color;
 	} setColorCommand_t;
 
 	typedef struct
@@ -3745,7 +3745,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float    s1, t1;
 		float    s2, t2;
 
-		byte     gradientColor[ 4 ]; // color values 0-255
+		Color::Color32Bit gradientColor; // color values 0-255
 		int      gradientType; //----(SA)  added
 		float    angle; // NERVE - SMF
 	} stretchPicCommand_t;

@@ -4334,7 +4334,7 @@ void DebugDrawDepthMask(bool state)
 }
 
 void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
-	u8vec4_t colors = {
+	Color::Color32Bit colors = {
 		static_cast<byte>(color & 0xFF),
 		static_cast<byte>((color >> 8) & 0xFF),
 		static_cast<byte>((color >> 16) & 0xFF),
@@ -4352,7 +4352,7 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 	tess.verts[ tess.numVertexes ].xyz[ 0 ] = pos[ 0 ];
 	tess.verts[ tess.numVertexes ].xyz[ 1 ] = pos[ 1 ];
 	tess.verts[ tess.numVertexes ].xyz[ 2 ] = pos[ 2 ];
-	Vector4Copy( colors, tess.verts[ tess.numVertexes ].color );
+	tess.verts[ tess.numVertexes ].color = colors;
 	if( uv ) {
 		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( uv[ 0 ] );
 		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( uv[ 1 ] );
@@ -4759,7 +4759,7 @@ const void     *RB_SetColor( const void *data )
 
 	cmd = ( const setColorCommand_t * ) data;
 
-	floatToUnorm8( cmd->color, backEnd.color2D );
+	backEnd.color2D = Color::Color32Bit( cmd->color );
 
 	return ( const void * )( cmd + 1 );
 }

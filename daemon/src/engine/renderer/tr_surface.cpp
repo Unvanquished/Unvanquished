@@ -278,14 +278,11 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const Color::C
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
-	u8vec4_t iColor;
-	iColor[0] = color.RedInt();
-	iColor[1] = color.GreenInt();
-	iColor[2] = color.BlueInt();
-	iColor[3] = color.AlphaInt();
+	Color::Color32Bit iColor ( color );
+
 	for ( i = 0; i < 4; i++ )
 	{
-		Vector4Copy( iColor, tess.verts[ ndx + i ].color );
+		tess.verts[ ndx + i ].color = iColor;
 	}
 
 	tess.numVertexes += 4;
@@ -369,14 +366,10 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, fl
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
-	u8vec4_t iColor;
-	iColor[0] = color.RedInt();
-	iColor[1] = color.GreenInt();
-	iColor[2] = color.BlueInt();
-	iColor[3] = color.AlphaInt();
+	Color::Color32Bit iColor ( color );
 	for ( i = 0; i < 4; i++ )
 	{
-		Vector4Copy( iColor, tess.verts[ ndx + i ].color );
+		tess.verts[ ndx + i ].color = iColor;
 	}
 
 	tess.numVertexes += 4;
@@ -398,7 +391,7 @@ void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const Color::Color& c
 	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, true );
 }
 
-void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, float rotation )
+void Tess_AddSprite( const vec3_t center, const Color::Color32Bit color, float radius, float rotation )
 {
 	int    i;
 	int    ndx;
@@ -427,7 +420,7 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 			    0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ) );
 
 		VectorCopy( center, tess.verts[ ndx + i ].xyz );
-		Vector4Copy( color, tess.verts[ ndx + i ].color );
+		tess.verts[ ndx + i ].color = color;
 		floatToHalf( texCoord, tess.verts[ ndx + i ].texCoords );
 		Vector4Set( orientation, rotation, 0.0f, 0.0f, radius );
 		floatToHalf( orientation, tess.verts[ ndx + i ].spriteOrientation );
@@ -445,17 +438,13 @@ void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const Color::Color& colorf )
 
 	Tess_CheckOverflow( 12, 12 );
 
-	u8vec4_t color;
-	color[0] = colorf.RedInt();
-	color[1] = colorf.GreenInt();
-	color[2] = colorf.BlueInt();
-	color[3] = colorf.AlphaInt();
+	Color::Color32Bit color ( colorf  );
 
 	// ground triangle
 	for ( k = 0; k < 3; k++ )
 	{
 		VectorCopy( tetraVerts[ k ], tess.verts[ tess.numVertexes ].xyz );
-		Vector4Copy( color, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = color;
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 	}
@@ -464,17 +453,17 @@ void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const Color::Color& colorf )
 	for ( k = 0; k < 3; k++ )
 	{
 		VectorCopy( tetraVerts[ 3 ], tess.verts[ tess.numVertexes ].xyz );  // offset
-		Vector4Copy( color, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = color;
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 
 		VectorCopy( tetraVerts[ k ], tess.verts[ tess.numVertexes ].xyz );
-		Vector4Copy( color, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = color;
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 
 		VectorCopy( tetraVerts[( k + 1 ) % 3 ], tess.verts[ tess.numVertexes ].xyz );
-		Vector4Copy( color, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = color;
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 	}

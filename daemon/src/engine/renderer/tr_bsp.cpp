@@ -988,7 +988,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor.ToArray(), cv->verts[ i ].lightColor.ToArray() );
 	}
 
 	// copy triangles
@@ -1182,7 +1182,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 			points[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingBytes( points[ i ].lightColor, points[ i ].lightColor );
+		R_ColorShiftLightingBytes( points[ i ].lightColor.ToArray(), points[ i ].lightColor.ToArray() );
 	}
 
 	// center texture coords
@@ -1309,7 +1309,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
 		}
 
-		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor.ToArray(), cv->verts[ i ].lightColor.ToArray() );
 	}
 
 	// copy triangles

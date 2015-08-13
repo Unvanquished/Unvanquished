@@ -117,12 +117,6 @@ public:
 	// Returns the value of an indexed color
 	static const BasicColor& Indexed( int i );
 
-	static BasicColor From32Bit( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 )
-	{
-		return BasicColor( r / 255.f, g / 255.f, b / 255.f, a / 255.f );
-	}
-
-
 	// Default constructor, all components set to zero
 	BasicColor() :
 		vector_type{ component_type(), component_type(), component_type(), component_type() }
@@ -150,10 +144,10 @@ public:
 	template<class C, class T>
 		explicit BasicColor( const BasicColor<C,T>& other ) :
 			vector_type{
-				ConvertComponent( other.Red() ),
-				ConvertComponent( other.Green() ),
-				ConvertComponent( other.Blue() ),
-				ConvertComponent( other.Alpha() ),
+				ConvertComponent<C,T>( other.Red() ),
+				ConvertComponent<C,T>( other.Green() ),
+				ConvertComponent<C,T>( other.Blue() ),
+				ConvertComponent<C,T>( other.Alpha() ),
 			}
 		{}
 
@@ -222,26 +216,6 @@ public:
 		vector_type::Data()[3] = v;
 	}
 
-	int RedInt() const
-	{
-		return std::round( Red() * 255 );
-	}
-
-	int GreenInt() const
-	{
-		return std::round( Green() * 255 );
-	}
-
-	int BlueInt() const
-	{
-		return std::round( Blue() * 255 );
-	}
-
-	int AlphaInt() const
-	{
-		return std::round( Alpha() * 255 );
-	}
-
 	/*
 	 * Returns a 4 bit integer with the bits following this pattern:
 	 * 	1 red
@@ -251,6 +225,21 @@ public:
 	 */
 	int To4bit() const;
 
+	BasicColor& operator*=( float factor )
+	{
+		for( int i = 0; i < 4; i++ )
+		{
+			vector_type::Data()[i] *= factor;
+		}
+		return *this;
+	}
+
+	BasicColor operator*( float factor ) const
+	{
+		BasicColor copy = *this;
+		copy *= factor;
+		return copy;
+	}
 private:
 	// Converts a component, used by the explicit constructor converting between
 	// colors with different template arguments
@@ -325,6 +314,7 @@ private:
 
 typedef BasicColor<float>         Color;
 typedef BasicOptionalColor<float> OptionalColor;
+typedef BasicColor<uint8_t>       Color32Bit;
 
 extern OptionalColor DefaultColor;
 

@@ -318,7 +318,7 @@ void RE_SetColor( const Color::Color& rgba )
 
 	cmd->commandId = RC_SET_COLOR;
 
-	rgba.ToArray( cmd->color );
+	cmd->color = rgba;
 }
 
 /*
@@ -675,10 +675,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 	cmd->s2 = s2;
 	cmd->t2 = t2;
 
-	cmd->gradientColor[0] = gradientColor.RedInt();
-	cmd->gradientColor[1] = gradientColor.GreenInt();
-	cmd->gradientColor[2] = gradientColor.BlueInt();
-	cmd->gradientColor[3] = gradientColor.AlphaInt();
+	cmd->gradientColor = Color::Color32Bit( gradientColor );
 	cmd->gradientType = gradientType;
 }
 

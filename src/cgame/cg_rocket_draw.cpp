@@ -159,7 +159,8 @@ public:
 	void GetColor( const Rocket::Core::String& property, Color::Color& color )
 	{
 		Rocket::Core::Colourb c = GetProperty<Rocket::Core::Colourb>( property );
-		color = Color::Color::From32Bit( c.red, c.green, c.blue, c.alpha );
+		/// \todo (color) Enough templates and traits to convert Colourb directly to Color
+		color = Color::Color( Color::Color32Bit{ c.red, c.green, c.blue, c.alpha } );
 	}
 
 protected:
