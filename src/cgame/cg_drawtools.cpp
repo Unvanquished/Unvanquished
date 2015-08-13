@@ -490,7 +490,7 @@ char CG_GetColorCharForHealth( int clientnum )
 CG_DrawSphere
 ================
 */
-void CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::Color& shaderRGBA )
+void CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::OptionalColor& shaderRGBA )
 {
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
@@ -500,12 +500,12 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const C
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA != nullptr )
+	if ( shaderRGBA )
 	{
-		re.shaderRGBA[0] = shaderRGBA.RedInt();
-		re.shaderRGBA[1] = shaderRGBA.GreenInt();
-		re.shaderRGBA[2] = shaderRGBA.BlueInt();
-		re.shaderRGBA[3] = shaderRGBA.AlphaInt();
+		re.shaderRGBA[0] = shaderRGBA->RedInt();
+		re.shaderRGBA[1] = shaderRGBA->GreenInt();
+		re.shaderRGBA[2] = shaderRGBA->BlueInt();
+		re.shaderRGBA[3] = shaderRGBA->AlphaInt();
 	}
 
 	VectorCopy( center, re.origin );
@@ -525,7 +525,7 @@ CG_DrawSphericalCone
 ================
 */
 void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
-                           bool a240, int customShader, const Color::Color& shaderRGBA )
+                           bool a240, int customShader, const Color::OptionalColor& shaderRGBA )
 {
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
@@ -535,12 +535,12 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA != nullptr )
+	if ( shaderRGBA )
 	{
-		re.shaderRGBA[0] = shaderRGBA.RedInt();
-		re.shaderRGBA[1] = shaderRGBA.GreenInt();
-		re.shaderRGBA[2] = shaderRGBA.BlueInt();
-		re.shaderRGBA[3] = shaderRGBA.AlphaInt();
+		re.shaderRGBA[0] = shaderRGBA->RedInt();
+		re.shaderRGBA[1] = shaderRGBA->GreenInt();
+		re.shaderRGBA[2] = shaderRGBA->BlueInt();
+		re.shaderRGBA[3] = shaderRGBA->AlphaInt();
 	}
 
 	VectorCopy( tip, re.origin );

@@ -1026,7 +1026,7 @@ typedef struct
     bool     defined;
     int          lastZone;
     int          nZones;
-    float        bgColor[4];
+    Color::Color bgColor;
     float        scale;
     struct
     {
@@ -2034,9 +2034,9 @@ void     CG_DrawSides( float x, float y, float w, float h, float size );
 void     CG_DrawTopBottom( float x, float y, float w, float h, float size );
 bool CG_WorldToScreen( vec3_t point, float *x, float *y );
 char     CG_GetColorCharForHealth( int clientnum );
-void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::Color& shaderRGBA );
+void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::OptionalColor& shaderRGBA );
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
-                               bool a240, int customShader, const Color::Color& shaderRGBA );
+                               bool a240, int customShader, const Color::OptionalColor& shaderRGBA );
 void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, Color::Color rgba );
 
 #define CG_ExponentialFade( value, target, lambda ) \

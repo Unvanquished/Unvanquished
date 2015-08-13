@@ -376,7 +376,7 @@ void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, b
 
     // draw the line scrollbar
     if (len > drawWidth) {
-        static const float yellow[] = { 1, 1, 0, 0.25 };
+        static const Color::Color yellow = { 1.0f, 1.0f, 0.0f, 0.25f };
         float width = SCR_ConsoleFontStringWidth(text.c_str(), drawWidth);
 
         re.SetColor( yellow );

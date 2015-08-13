@@ -759,15 +759,10 @@ void Con_DrawConsoleScrollbar()
 
 void Con_DrawScrollbackMarkerline( int lineDrawPosition )
 {
-	vec4_t color;
-
 	//to not run into the scrollbar
 	const int scrollBarImpliedPadding = 2 * consoleState.padding.sides + 2 * consoleState.border.sides;
 
-	color[ 0 ] = 0.8f;
-	color[ 1 ] = 0.0f;
-	color[ 2 ] = 0.0f;
-	color[ 3 ] = 0.5f * consoleState.currentAlphaFactor;
+	Color::Color color( 0.8f, 0.0f, 0.0f, 0.5f * consoleState.currentAlphaFactor );
 
 	SCR_FillRect(	consoleState.margin.sides + consoleState.border.sides + consoleState.padding.sides/2,
 					lineDrawPosition + SCR_ConsoleFontCharVPadding(),

@@ -279,7 +279,10 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const Color::C
 	// should this be identity and let the shader specify from entity?
 
 	u8vec4_t iColor;
-	floatToUnorm8( color, iColor );
+	iColor[0] = color.RedInt();
+	iColor[1] = color.GreenInt();
+	iColor[2] = color.BlueInt();
+	iColor[3] = color.AlphaInt();
 	for ( i = 0; i < 4; i++ )
 	{
 		Vector4Copy( iColor, tess.verts[ ndx + i ].color );
@@ -367,7 +370,10 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, fl
 	// should this be identity and let the shader specify from entity?
 
 	u8vec4_t iColor;
-	floatToUnorm8( color, iColor );
+	iColor[0] = color.RedInt();
+	iColor[1] = color.GreenInt();
+	iColor[2] = color.BlueInt();
+	iColor[3] = color.AlphaInt();
 	for ( i = 0; i < 4; i++ )
 	{
 		Vector4Copy( iColor, tess.verts[ ndx + i ].color );
@@ -436,11 +442,14 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const Color::Color& colorf )
 {
 	int k;
-	u8vec4_t color;
 
 	Tess_CheckOverflow( 12, 12 );
 
-	floatToUnorm8( colorf, color );
+	u8vec4_t color;
+	color[0] = colorf.RedInt();
+	color[1] = colorf.GreenInt();
+	color[2] = colorf.BlueInt();
+	color[3] = colorf.AlphaInt();
 
 	// ground triangle
 	for ( k = 0; k < 3; k++ )

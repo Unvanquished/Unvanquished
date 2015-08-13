@@ -675,7 +675,10 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 	cmd->s2 = s2;
 	cmd->t2 = t2;
 
-	floatToUnorm8( gradientColor, cmd->gradientColor );
+	cmd->gradientColor[0] = gradientColor.RedInt();
+	cmd->gradientColor[1] = gradientColor.GreenInt();
+	cmd->gradientColor[2] = gradientColor.BlueInt();
+	cmd->gradientColor[3] = gradientColor.AlphaInt();
 	cmd->gradientType = gradientType;
 }
 

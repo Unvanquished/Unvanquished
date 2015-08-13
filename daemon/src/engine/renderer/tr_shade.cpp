@@ -1439,7 +1439,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_omniXYZ->SetUniform_ViewOrigin( viewOrigin );
 
 	gl_forwardLightingShader_omniXYZ->SetUniform_LightOrigin( lightOrigin );
-	gl_forwardLightingShader_omniXYZ->SetUniform_LightColor( lightColor );
+	gl_forwardLightingShader_omniXYZ->SetUniform_LightColor( lightColor.toArray() );
 	gl_forwardLightingShader_omniXYZ->SetUniform_LightRadius( light->sphereRadius );
 	gl_forwardLightingShader_omniXYZ->SetUniform_LightScale( light->l.scale );
 	gl_forwardLightingShader_omniXYZ->SetUniform_LightWrapAround( RB_EvalExpression( &diffuseStage->wrapAroundLightingExp, 0 ) );
@@ -1629,7 +1629,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_projXYZ->SetUniform_ViewOrigin( viewOrigin );
 
 	gl_forwardLightingShader_projXYZ->SetUniform_LightOrigin( lightOrigin );
-	gl_forwardLightingShader_projXYZ->SetUniform_LightColor( lightColor );
+	gl_forwardLightingShader_projXYZ->SetUniform_LightColor( lightColor.toArray() );
 	gl_forwardLightingShader_projXYZ->SetUniform_LightRadius( light->sphereRadius );
 	gl_forwardLightingShader_projXYZ->SetUniform_LightScale( light->l.scale );
 	gl_forwardLightingShader_projXYZ->SetUniform_LightWrapAround( RB_EvalExpression( &diffuseStage->wrapAroundLightingExp, 0 ) );
@@ -1822,7 +1822,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_directionalSun->SetUniform_ViewOrigin( viewOrigin );
 
 	gl_forwardLightingShader_directionalSun->SetUniform_LightDir( lightDirection );
-	gl_forwardLightingShader_directionalSun->SetUniform_LightColor( lightColor );
+	gl_forwardLightingShader_directionalSun->SetUniform_LightColor( lightColor.toArray() );
 	gl_forwardLightingShader_directionalSun->SetUniform_LightRadius( light->sphereRadius );
 	gl_forwardLightingShader_directionalSun->SetUniform_LightScale( light->l.scale );
 	gl_forwardLightingShader_directionalSun->SetUniform_LightWrapAround( RB_EvalExpression( &diffuseStage->wrapAroundLightingExp, 0 ) );
@@ -2047,7 +2047,7 @@ static void Render_screen( int stage )
 
 	{
 		GL_VertexAttribsState( ATTR_POSITION );
-		glVertexAttrib4fv( ATTR_INDEX_COLOR, tess.svars.color );
+		glVertexAttrib4fv( ATTR_INDEX_COLOR, tess.svars.color.toArray() );
 	}
 
 	gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -2079,7 +2079,7 @@ static void Render_portal( int stage )
 
 	{
 		GL_VertexAttribsState( ATTR_POSITION );
-		glVertexAttrib4fv( ATTR_INDEX_COLOR, tess.svars.color );
+		glVertexAttrib4fv( ATTR_INDEX_COLOR, tess.svars.color.toArray() );
 	}
 
 	gl_portalShader->SetUniform_PortalRange( tess.surfaceShader->portalRange );

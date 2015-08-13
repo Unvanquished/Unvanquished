@@ -1678,14 +1678,9 @@ public:
 	{
 	}
 
-	void SetUniform_Color( const vec4_t v )
-	{
-		this->SetValue( v );
-	}
-
 	void SetUniform_Color( const Color::Color& color )
 	{
-		this->SetValue( color );
+		this->SetValue( color.toArray() );
 	}
 };
 

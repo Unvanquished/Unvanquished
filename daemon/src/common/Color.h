@@ -112,30 +112,17 @@ public:
 
 	// Initialize from the components
 	Color( component_type r, component_type g, component_type b,
-					  component_type a = component_max )
+	       component_type a = component_max )
 		: Math::Vec4{ r, g, b, a }
 	{
 	}
 
 	// Copy from array
-	Color( const float array[4] ) :
+	explicit Color( const float array[4] ) :
 		Math::Vec4{ array[0], array[1], array[2], array[3] }
-	{
-
-	}
+	{}
 
 	Color( const std::nullptr_t& ) = delete;
-
-	// Convert to array
-	operator const float*() const
-	{
-		return Data();
-	}
-
-	operator float*()
-	{
-		return Data();
-	}
 
 	const float* toArray() const
 	{
@@ -151,7 +138,6 @@ public:
 	{
 		memcpy( output, Data(), ArrayBytes() );
 	}
-
 
 	// Size of the memory location returned by ToArray() in bytes
 	std::size_t ArrayBytes() const
@@ -228,6 +214,60 @@ public:
 	 */
 	int To4bit() const;
 };
+
+class OptionalColor
+{
+public:
+	OptionalColor() = default;
+	OptionalColor( const ::Color::Color& color )
+		: color( color ), has_color( true ) {}
+
+	operator const ::Color::Color&() const
+	{
+		return color;
+	}
+
+	explicit operator bool() const
+	{
+		return has_color;
+	}
+
+	class Color Color() const
+	{
+		return color;
+	}
+
+	class Color Color( const class Color& default_color ) const
+	{
+		return has_color ? color : default_color;
+	}
+
+	class Color* operator->()
+	{
+		return &color;
+	}
+
+	const class Color* operator->() const
+	{
+		return &color;
+	}
+
+	class Color& operator*()
+	{
+		return color;
+	}
+
+	const class Color& operator*() const
+	{
+		return color;
+	}
+
+private:
+	class Color color { 1, 1, 1, 1 };
+	bool  has_color = false;
+};
+
+extern OptionalColor DefaultColor;
 
 /*
  * Blend two colors.
@@ -408,7 +448,7 @@ public:
 	Pre: Type() == COLOR
 	================
 	*/
-	::Color::Color Color() const
+	class Color Color() const
 	{
 		return color;
 	}
@@ -427,10 +467,10 @@ public:
 
 private:
 
-	const charT*   begin = nullptr;
-	const charT*   end   = nullptr;
+	const charT*  begin = nullptr;
+	const charT*  end   = nullptr;
 	TokenType     type  = INVALID;
-	::Color::Color       color;
+	class Color   color;
 
 };
 

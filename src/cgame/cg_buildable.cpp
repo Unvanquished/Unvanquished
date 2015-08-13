@@ -837,8 +837,12 @@ bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmT
 		*rmType = RM_SPHERE;
 	}
 
-	rgba = cg_shaderColors[ shc ];
-	rgba.SetAlpha( 1.0f );
+	rgba = Color::Color(
+		cg_shaderColors[shc][0],
+		cg_shaderColors[shc][1],
+		cg_shaderColors[shc][2],
+		1.0f
+	);
 
 	return true;
 }
