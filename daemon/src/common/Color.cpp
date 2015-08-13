@@ -118,6 +118,7 @@ static Color g_color_table[ 32 ] =
 	{ 1.00f, 1.00f, 0.50f, 1.00f }, // O        31
 };
 
+template<>
 const Color& Color::Indexed( int index )
 {
 	if ( index < 0 )
@@ -125,6 +126,7 @@ const Color& Color::Indexed( int index )
 	return g_color_table[index%32];
 }
 
+template<>
 int Color::To4bit() const
 {
     int color = 0;

@@ -90,99 +90,136 @@ inline constexpr char hex_to_char( int i )
 	return i < 10 ? i + '0' : i + 'a' - 10;
 }
 
-// A color with normalized floats RGBA components
-class Color : public Math::Vec4
+template<class T>
+	struct ColorComponentTraits
+{
+	typedef T component_type;
+	static constexpr const component_type component_max = std::numeric_limits<component_type>::max();
+	static constexpr const std::size_t component_size = sizeof(component_type);
+};
+template<>
+	struct ColorComponentTraits<float>
+{
+	typedef float component_type;
+	static constexpr const component_type component_max = 1.0f;
+	static constexpr const std::size_t    component_size = sizeof(component_type);
+};
+
+// A color with RGBA components
+template<class Component, class Traits = ColorComponentTraits<Component>>
+class BasicColor : public Math::Vector<4, Component>
 {
 public:
-	typedef float component_type;
-	static constexpr const component_type component_max = 1;
+	typedef Math::Vector<4, Component>      vector_type;
+	typedef typename Traits::component_type component_type;
+	static constexpr const component_type   component_max = Traits::component_max;
 
 	// Returns the value of an indexed color
-	static const Color& Indexed( int i );
+	static const BasicColor& Indexed( int i );
 
-	static Color From32Bit( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 )
+	static BasicColor From32Bit( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 )
 	{
-		return Color( r / 255.f, g / 255.f, b / 255.f, a / 255.f );
+		return BasicColor( r / 255.f, g / 255.f, b / 255.f, a / 255.f );
 	}
 
 
 	// Default constructor, all components set to zero
-	Color() : Math::Vec4{ 0.f, 0.f, 0.f, 0.f } {}
+	BasicColor() :
+		vector_type{ component_type(), component_type(), component_type(), component_type() }
+	{}
 
 
 	// Initialize from the components
-	Color( component_type r, component_type g, component_type b,
+	BasicColor( component_type r, component_type g, component_type b,
 	       component_type a = component_max )
-		: Math::Vec4{ r, g, b, a }
+		: vector_type{ r, g, b, a }
 	{
 	}
 
 	// Copy from array
-	explicit Color( const float array[4] ) :
-		Math::Vec4{ array[0], array[1], array[2], array[3] }
+	explicit BasicColor( const component_type array[4] ) :
+		vector_type{ array[0], array[1], array[2], array[3] }
 	{}
 
-	Color( const std::nullptr_t& ) = delete;
+	BasicColor( const std::nullptr_t& ) = delete;
 
-	const float* ToArray() const
+	BasicColor( const BasicColor& ) = default;
+
+	BasicColor( BasicColor&& ) noexcept = default;
+
+	template<class C, class T>
+		explicit BasicColor( const BasicColor<C,T>& other ) :
+			vector_type{
+				ConvertComponent( other.Red() ),
+				ConvertComponent( other.Green() ),
+				ConvertComponent( other.Blue() ),
+				ConvertComponent( other.Alpha() ),
+			}
+		{}
+
+	BasicColor& operator=( const BasicColor& ) = default;
+
+	BasicColor& operator=( BasicColor&& ) = default;
+
+	const component_type* ToArray() const
 	{
-		return Data();
+		return vector_type::Data();
 	}
 
-	float* ToArray()
+	component_type* ToArray()
 	{
-		return Data();
+		return vector_type::Data();
 	}
 
-	void ToArray( float* output ) const
+	void ToArray( component_type* output ) const
 	{
-		memcpy( output, Data(), ArrayBytes() );
+		memcpy( output, vector_type::Data(), ArrayBytes() );
 	}
 
 	// Size of the memory location returned by ToArray() in bytes
 	std::size_t ArrayBytes() const
 	{
-		return 4 * sizeof(component_type);
+		return 4 * Traits::component_size;
 	}
 
 	component_type Red() const
 	{
-		return Data()[0];
+		return vector_type::Data()[0];
 	}
 
 	component_type Green() const
 	{
-		return Data()[1];
+		return vector_type::Data()[1];
 	}
 
 	component_type Blue() const
 	{
-		return Data()[2];
+		return vector_type::Data()[2];
 	}
 
 	component_type Alpha() const
 	{
-		return Data()[3];
+		return vector_type::Data()[3];
 	}
 
 	void SetRed( component_type v )
 	{
-		Data()[0] = v;
+		vector_type::Data()[0] = v;
 	}
 
 	void SetGreen( component_type v )
 	{
-		Data()[1] = v;
+		vector_type::Data()[1] = v;
 	}
 
 	void SetBlue( component_type v )
 	{
-		Data()[2] = v;
+		vector_type::Data()[2] = v;
 	}
 
 	void SetAlpha( component_type v )
 	{
-		Data()[3] = v;
+		vector_type::Data()[3] = v;
 	}
 
 	int RedInt() const
@@ -213,16 +250,34 @@ public:
 	 * 	8 bright
 	 */
 	int To4bit() const;
+
+private:
+	// Converts a component, used by the explicit constructor converting between
+	// colors with different template arguments
+	template<class C, class T>
+	static constexpr component_type ConvertComponent( typename BasicColor<C,T>::component_type from )
+	{
+		using work_type = typename std::common_type<
+			component_type,
+			typename BasicColor<C,T>::component_type
+		>::type;
+
+		return work_type( from )  / work_type( BasicColor<C,T>::component_max ) * work_type( component_max );
+	}
+
 };
 
-class OptionalColor
+template<class Component>
+class BasicOptionalColor
 {
 public:
-	OptionalColor() = default;
-	OptionalColor( const ::Color::Color& color )
+	typedef BasicColor<Component> color_type;
+
+	BasicOptionalColor() = default;
+	BasicOptionalColor( const color_type& color )
 		: color( color ), has_color( true ) {}
 
-	operator const ::Color::Color&() const
+	operator const color_type&() const
 	{
 		return color;
 	}
@@ -232,40 +287,44 @@ public:
 		return has_color;
 	}
 
-	class Color Color() const
+	const color_type& Color() const
 	{
 		return color;
 	}
 
-	class Color Color( const class Color& default_color ) const
+	color_type Color( const color_type& default_color ) const
 	{
 		return has_color ? color : default_color;
 	}
 
-	class Color* operator->()
+	color_type* operator->()
 	{
 		return &color;
 	}
 
-	const class Color* operator->() const
+	const color_type* operator->() const
 	{
 		return &color;
 	}
 
-	class Color& operator*()
+	color_type& operator*()
 	{
 		return color;
 	}
 
-	const class Color& operator*() const
+	const color_type& operator*() const
 	{
 		return color;
 	}
 
 private:
-	class Color color { 1, 1, 1, 1 };
+	color_type color { color_type::component_max, color_type::component_max,
+	                   color_type::component_max, color_type::component_max };
 	bool  has_color = false;
 };
+
+typedef BasicColor<float>         Color;
+typedef BasicOptionalColor<float> OptionalColor;
 
 extern OptionalColor DefaultColor;
 
@@ -273,13 +332,16 @@ extern OptionalColor DefaultColor;
  * Blend two colors.
  * If factor is 0, the first color will be shown, it it's 1 the second one will
  */
-inline Color Blend(const Color& a, const Color& b, float factor)
+template<class ComponentType>
+inline BasicColor<ComponentType> Blend( const BasicColor<ComponentType>& a,
+									    const BasicColor<ComponentType>& b,
+									    float factor )
 {
-	return Color {
-		a.Red()   * ( 1 - factor ) + b.Red()   * factor,
-		a.Green() * ( 1 - factor ) + b.Green() * factor,
-		a.Blue()  * ( 1 - factor ) + b.Blue()  * factor,
-		a.Alpha() * ( 1 - factor ) + b.Alpha() * factor,
+	return BasicColor<ComponentType> {
+		ComponentType ( a.Red()   * ( 1 - factor ) + b.Red()   * factor ),
+		ComponentType ( a.Green() * ( 1 - factor ) + b.Green() * factor ),
+		ComponentType ( a.Blue()  * ( 1 - factor ) + b.Blue()  * factor ),
+		ComponentType ( a.Alpha() * ( 1 - factor ) + b.Alpha() * factor ),
 	};
 }
 
@@ -448,7 +510,7 @@ public:
 	Pre: Type() == COLOR
 	================
 	*/
-	class Color Color() const
+	::Color::Color Color() const
 	{
 		return color;
 	}
@@ -470,7 +532,7 @@ private:
 	const charT*  begin = nullptr;
 	const charT*  end   = nullptr;
 	TokenType     type  = INVALID;
-	class Color   color;
+	::Color::Color   color;
 
 };
 
