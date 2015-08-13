@@ -105,6 +105,7 @@ set(MOUNT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(MOUNT_DIR ${MOUNT_DIR} PARENT_SCOPE)
 include_directories(${MOUNT_DIR})
 set(OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
+set(OBJ_DIR ${OBJ_DIR} PARENT_SCOPE)
 set(ENGINE_DIR ${MOUNT_DIR}/engine)
 set(ENGINE_DIR ${ENGINE_DIR} PARENT_SCOPE)
 set(COMMON_DIR ${MOUNT_DIR}/common)
@@ -520,7 +521,8 @@ function(ADD_PRECOMPILED_HEADER Target)
         add_custom_target(${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch")
         add_dependencies(${Target} ${Target}-pch)
 
-        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+        # PNaCl clang doesn't support -include-pch properly
+        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT NACL)
             set_property(TARGET ${Target} APPEND PROPERTY COMPILE_OPTIONS "-include-pch;${OBJ_DIR}/${Target}.h.gch")
         else()
             set_property(TARGET ${Target} APPEND PROPERTY COMPILE_OPTIONS "-include;${OBJ_DIR}/${Target}.h;-Winvalid-pch")
@@ -592,6 +594,18 @@ endif()
 # These variables are defined:
 # LIBS_BASE, LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
 
+# Native client
+include(DaemonNacl)
+if (NACL)
+    add_library(srclibs-nacl-module EXCLUDE_FROM_ALL ${NACLLIST_MODULE})
+    set_target_properties(srclibs-nacl-module PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set(LIBS_BASE ${LIBS_BASE} srclibs-nacl-module)
+else()
+    add_library(srclibs-nacl-native EXCLUDE_FROM_ALL ${NACLLIST_NATIVE})
+    set_target_properties(srclibs-nacl-native PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set(LIBS_BASE ${LIBS_BASE} srclibs-nacl-native)
+endif()
+
 # Base OS libs
 if (WIN32)
     set(LIBS_BASE ${LIBS_BASE} winmm ws2_32)
@@ -640,12 +654,6 @@ include_directories(${ZLIB_INCLUDE_DIRS})
 set(LIBS_BASE ${LIBS_BASE} PARENT_SCOPE)
 
 if (BUILD_CLIENT OR BUILD_TTY_CLIENT OR BUILD_SERVER)
-    # Native client
-    include(DaemonNacl)
-    add_library(nacl-source-libs EXCLUDE_FROM_ALL ${NACLLIST_NATIVE})
-    set_target_properties(nacl-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-    set(LIBS_ENGINE ${LIBS_ENGINE} nacl-source-libs)
-
     if (NACL_RUNTIME_PATH)
         add_definitions("-DNACL_RUNTIME_PATH=${NACL_RUNTIME_PATH}")
     endif()

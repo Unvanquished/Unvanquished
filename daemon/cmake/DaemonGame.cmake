@@ -39,25 +39,25 @@ function(GAMEMODULE)
     if (NOT NACL)
         if (BUILD_GAME_NATIVE_DLL)
             add_library(${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST})
-            target_link_libraries(${GAMEMODULE_NAME}-native-dll nacl-source-libs ${GAMEMODULE_LIBS} ${LIBS_BASE})
+            target_link_libraries(${GAMEMODULE_NAME}-native-dll ${GAMEMODULE_LIBS} ${LIBS_BASE})
             set_target_properties(${GAMEMODULE_NAME}-native-dll PROPERTIES
                 PREFIX ""
-                COMPILE_DEFINITIONS "VM_NAME=\"${GAMEMODULE_NAME}\";${GAMEMODULE_DEFINITIONS};BUILD_VM;BUILD_VM_IN_PROCESS"
+                COMPILE_DEFINITIONS "VM_NAME=${GAMEMODULE_NAME};${GAMEMODULE_DEFINITIONS};BUILD_VM;BUILD_VM_IN_PROCESS"
                 COMPILE_OPTIONS "${GAMEMODULE_FLAGS}"
                 FOLDER ${GAMEMODULE_NAME}
             )
-            # ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-native-dll)
+            ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-native-dll)
         endif()
 
         if (BUILD_GAME_NATIVE_EXE)
             add_executable(${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST})
-            target_link_libraries(${GAMEMODULE_NAME}-native-exe nacl-source-libs ${GAMEMODULE_LIBS} ${LIBS_BASE})
+            target_link_libraries(${GAMEMODULE_NAME}-native-exe ${GAMEMODULE_LIBS} ${LIBS_BASE})
             set_target_properties(${GAMEMODULE_NAME}-native-exe PROPERTIES
-                COMPILE_DEFINITIONS "VM_NAME=\"${GAMEMODULE_NAME}\";${GAMEMODULE_DEFINITIONS};BUILD_VM"
+                COMPILE_DEFINITIONS "VM_NAME=${GAMEMODULE_NAME};${GAMEMODULE_DEFINITIONS};BUILD_VM"
                 COMPILE_OPTIONS "${GAMEMODULE_FLAGS}"
                 FOLDER ${GAMEMODULE_NAME}
             )
-            # ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-native-exe)
+            ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-native-exe)
         endif()
 
         if (NOT FORK AND BUILD_GAME_NACL)
@@ -71,6 +71,8 @@ function(GAMEMODULE)
                     -DFORK=2
                     -DCMAKE_TOOLCHAIN_FILE=${Daemon_SOURCE_DIR}/cmake/toolchain-pnacl.cmake
                     -DDEPS_DIR=${DEPS_DIR}
+                    -DBUILD_CGAME=${BUILD_CGAME}
+                    -DBUILD_SGAME=${BUILD_SGAME}
                     -DBUILD_GAME_NACL=1
                     -DBUILD_GAME_NATIVE_DLL=0
                     -DBUILD_GAME_NATIVE_EXE=0
@@ -95,18 +97,18 @@ function(GAMEMODULE)
             set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
         endif()
 
-        add_executable(${GAMEMODULE_NAME}-nacl-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST} ${NACLLIST_MODULE})
-        target_link_libraries(${GAMEMODULE_NAME}-nacl-exe ${GAMEMODULE_LIBS} ${LIBS_BASE})
-        set_target_properties(${GAMEMODULE_NAME}-nacl-exe PROPERTIES
+        add_executable(${GAMEMODULE_NAME}-nacl ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST})
+        target_link_libraries(${GAMEMODULE_NAME}-nacl ${GAMEMODULE_LIBS} ${LIBS_BASE})
+        set_target_properties(${GAMEMODULE_NAME}-nacl PROPERTIES
             OUTPUT_NAME ${GAMEMODULE_NAME}.pexe
-            COMPILE_DEFINITIONS "VM_NAME=\"${GAMEMODULE_NAME}\";${GAMEMODULE_DEFINITIONS};BUILD_VM"
+            COMPILE_DEFINITIONS "VM_NAME=${GAMEMODULE_NAME};${GAMEMODULE_DEFINITIONS};BUILD_VM"
             COMPILE_OPTIONS "${GAMEMODULE_FLAGS}"
             FOLDER ${GAMEMODULE_NAME}
         )
-        # ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-nacl-exe)
+        ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-nacl)
 
         # Generate NaCl executables for x86 and x86_64
-        pnacl_translate(${GAMEMODULE_NAME}-nacl-exe i686 "-x86")
-        pnacl_translate(${GAMEMODULE_NAME}-nacl-exe x86-64 "-x86_64")
+        pnacl_translate(${GAMEMODULE_NAME}-nacl i686 "-x86")
+        pnacl_translate(${GAMEMODULE_NAME}-nacl x86-64 "-x86_64")
     endif()
 endfunction()

@@ -50,7 +50,6 @@ set(NACLLIST_MODULE
     ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_recvmsg.c
     ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_sendmsg.c
     ${LIB_DIR}/nacl/native_client/src/untrusted/nacl/imc_socketpair.c
-    PARENT_SCOPE
 )
 
 if (APPLE)
