@@ -238,27 +238,6 @@ cvar_t *cl_doubletapdelay;
 
 /*
 ================
-CL_AdjustAngles
-
-Moves the local angle positions
-================
-*/
-void CL_AdjustAngles()
-{
-	float speed;
-
-	if ( kb[ KB_SPEED ].active )
-	{
-		speed = 0.001 * cls.frametime * cl_anglespeedkey->value;
-	}
-	else
-	{
-		speed = 0.001 * cls.frametime;
-	}
-}
-
-/*
-================
 CL_KeyMove
 
 Sets the usercmd_t based on key states
@@ -708,9 +687,6 @@ usercmd_t CL_CreateCmd()
 	vec3_t    oldAngles;
 
 	VectorCopy( cl.viewangles, oldAngles );
-
-	// keyboard angle adjustment
-	CL_AdjustAngles();
 
 	memset( &cmd, 0, sizeof( cmd ) );
 
