@@ -1126,15 +1126,20 @@ static const struct{
 	const char* name;
 	int key;
 } builtinButtonCommands [] = {
-	{ "moveup",     KB_UP        },
-	{ "movedown",   KB_DOWN      },
+    // TODO remove the move* variants at Alpha 47
+	{ "up",         KB_UP        },
+	{ "down",       KB_DOWN      },
+	{ "left",       KB_LEFT      },
+	{ "right",      KB_RIGHT     },
 	{ "forward",    KB_FORWARD   },
 	{ "back",       KB_BACK      },
 	{ "strafe",     KB_STRAFE    },
-	{ "moveleft",   KB_LEFT      },
-	{ "moveright",  KB_RIGHT     },
 	{ "speed",      KB_SPEED     },
 	{ "mlook",      KB_MLOOK     },
+	{ "moveup",     KB_UP        },
+	{ "movedown",   KB_DOWN      },
+	{ "moveleft",   KB_LEFT      },
+	{ "moveright",  KB_RIGHT     },
 	{ nullptr, 0                    }
 };
 

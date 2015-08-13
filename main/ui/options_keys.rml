@@ -29,27 +29,26 @@
 					<p>Backpedal:</p>
 				</row>
 				<row>
-					<keybind cmd="+moveleft" />
+					<keybind cmd="+left" />
 					<p>Move Left:</p>
 				</row>
 				<row>
-					<keybind cmd="+moveright" />
+					<keybind cmd="+right" />
 					<p>Move Right:</p>
 				</row>
 				<row>
-					<keybind cmd="+moveup" />
+					<keybind cmd="+up" />
 					<p>Jump:</p>
 				</row>
 				<row>
 
-					<keybind cmd="+movedown" team="humans" />
+					<keybind cmd="+down" team="humans" />
 					<p>Crouch:</p>
 				</row>
 				<row>
-					<keybind cmd="+movedown" team="aliens" />
+					<keybind cmd="+down" team="aliens" />
 					<p>Wallwalk:</p>
 				</row>
-
 			</panel>
 			<tab>Abilities</tab>
 			<panel>
@@ -141,35 +140,6 @@
 				</row>
 				<p> Hold shift when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG. </p>
 			</panel>
-			<tab>Quake-look</tab>
-			<panel>
-				<row>
-					<keybind cmd="+lookup" />
-					<p>Look Up:</p>
-				</row>
-				<row>
-					<keybind cmd="+lookdown" />
-					<p>Look Down:</p>
-				</row>
-				<row>
-					<keybind cmd="+left" />
-					<p>Turn Left:</p>
-				</row>
-				<row>
-					<keybind cmd="+right" />
-					<p>Turn Right:</p>
-				</row>
-				<row>
-					<keybind cmd="+mlook" />
-					<p>Mouse Look:</p>
-				</row>
-				<row>
-					<qkeybind cmd="centerview" />
-					<p>Centerview:</p>
-				</row>
-			</panel>
 			</tabset>
-
-
 	</body>
 </rml>
