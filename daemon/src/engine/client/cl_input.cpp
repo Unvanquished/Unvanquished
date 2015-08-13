@@ -68,8 +68,8 @@ static char       *keyup[ MAX_KEYS ];
 static kbuttons_t dtmapping[] =
 {
 	KB_BUTTONS, // DT_NONE
-	KB_MOVELEFT, // DT_MOVELEFT
-	KB_MOVERIGHT, // DT_MOVERIGHT
+	KB_LEFT, // DT_MOVELEFT
+	KB_RIGHT, // DT_MOVERIGHT
 	KB_FORWARD, // DT_FORWARD
 	KB_BACK, // DT_BACK
 	KB_UP // DT_UP
@@ -255,15 +255,6 @@ void CL_AdjustAngles()
 	{
 		speed = 0.001 * cls.frametime;
 	}
-
-	if ( !kb[ KB_STRAFE ].active )
-	{
-		cl.viewangles[ YAW ] -= speed * cl_yawspeed->value * CL_KeyState( &kb[ KB_RIGHT ] );
-		cl.viewangles[ YAW ] += speed * cl_yawspeed->value * CL_KeyState( &kb[ KB_LEFT ] );
-	}
-
-	cl.viewangles[ PITCH ] -= speed * cl_pitchspeed->value * CL_KeyState( &kb[ KB_LOOKUP ] );
-	cl.viewangles[ PITCH ] += speed * cl_pitchspeed->value * CL_KeyState( &kb[ KB_LOOKDOWN ] );
 }
 
 /*
@@ -298,14 +289,8 @@ void CL_KeyMove( usercmd_t *cmd )
 	side = 0;
 	up = 0;
 
-	if ( kb[ KB_STRAFE ].active )
-	{
-		side += movespeed * CL_KeyState( &kb[ KB_RIGHT ] );
-		side -= movespeed * CL_KeyState( &kb[ KB_LEFT ] );
-	}
-
-	side += movespeed * CL_KeyState( &kb[ KB_MOVERIGHT ] );
-	side -= movespeed * CL_KeyState( &kb[ KB_MOVELEFT ] );
+	side += movespeed * CL_KeyState( &kb[ KB_RIGHT ] );
+	side -= movespeed * CL_KeyState( &kb[ KB_LEFT ] );
 
 	up += movespeed * CL_KeyState( &kb[ KB_UP ] );
 	up -= movespeed * CL_KeyState( &kb[ KB_DOWN ] );
@@ -1143,15 +1128,11 @@ static const struct{
 } builtinButtonCommands [] = {
 	{ "moveup",     KB_UP        },
 	{ "movedown",   KB_DOWN      },
-	{ "left",       KB_LEFT      },
-	{ "right",      KB_RIGHT     },
 	{ "forward",    KB_FORWARD   },
 	{ "back",       KB_BACK      },
-	{ "lookup",     KB_LOOKUP    },
-	{ "lookdown",   KB_LOOKDOWN  },
 	{ "strafe",     KB_STRAFE    },
-	{ "moveleft",   KB_MOVELEFT  },
-	{ "moveright",  KB_MOVERIGHT },
+	{ "moveleft",   KB_LEFT      },
+	{ "moveright",  KB_RIGHT     },
 	{ "speed",      KB_SPEED     },
 	{ "mlook",      KB_MLOOK     },
 	{ nullptr, 0                    }
