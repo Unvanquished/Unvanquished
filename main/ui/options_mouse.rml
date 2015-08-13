@@ -27,13 +27,5 @@
 			<input cvar="m_filter" type="checkbox" />
 			<p>Smooth out sudden mouse movements</p>
 		</row>
-		<row>
-			<h3> Free look </h3>
-			<input cvar="cl_freelook" type="checkbox" />
-			<p>Turn off only if you are a Quake junkie.</p>
-		</row>
-
-
-
 	</body>
 </rml>

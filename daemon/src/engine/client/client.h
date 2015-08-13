@@ -482,8 +482,6 @@ extern cvar_t *cl_anglespeedkey;
 extern cvar_t *cl_doubletapdelay;
 
 extern cvar_t *cl_sensitivity;
-extern cvar_t *cl_freelook;
-
 extern cvar_t *cl_xbox360ControllerAvailable;
 
 extern cvar_t *cl_mouseAccel;

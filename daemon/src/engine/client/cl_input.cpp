@@ -604,7 +604,7 @@ void CL_MouseMove( usercmd_t *cmd )
 		cl.viewangles[ YAW ] -= m_yaw->value * mx;
 	}
 
-	if ( ( kb[ KB_MLOOK ].active || cl_freelook->integer ) && !kb[ KB_STRAFE ].active )
+	if ( !kb[ KB_STRAFE ].active )
 	{
 		cl.viewangles[ PITCH ] += m_pitch->value * my;
 	}
