@@ -1844,7 +1844,7 @@ void CL_KeyEvent( int key, bool down, unsigned time )
 #endif
 
 	// console key is hardcoded, so the user can never unbind it
-	if ( key == K_CONSOLE || ( keys[ K_SHIFT ].down && key == K_ESCAPE ) )
+	if ( keys[ K_SHIFT ].down && key == K_ESCAPE )
 	{
 		if ( !down )
 		{

@@ -137,7 +137,6 @@ void Rocket_InitKeys()
 	keyMap[ '.' ] = KI_OEM_PERIOD; // Any region; the '.>' key.
 	keyMap[ '/' ] = KI_OEM_2;      // Any region; the '/?' key.
 	keyMap[ '`' ] = KI_OEM_3;      // Any region; the '`~' key.
-	keyMap[ K_CONSOLE ] = KI_OEM_3;
 
 	keyMap[ '[' ] = KI_OEM_4;      // US standard keyboard; the '[{' key.
 	keyMap[ '\\' ] = KI_OEM_5;     // US standard keyboard; the '\|' key.

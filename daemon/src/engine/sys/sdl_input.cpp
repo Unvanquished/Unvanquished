@@ -105,183 +105,6 @@ static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, bool down )
 		    SDL_GetKeyName( keysym->sym ), key, Key_KeynumToString( key ) );
 }
 
-#define MAX_CONSOLE_KEYS 16
-
-/*
-===============
-IN_IsConsoleKey
-
-TODO: If the SDL_Scancode situation improves, use it instead of
-      both of these methods
-===============
-*/
-static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
-{
-	typedef struct consoleKey_s
-	{
-		enum
-		{
-		  KEY,
-		  CHARACTER
-		} type;
-
-		union
-		{
-			keyNum_t      key;
-			int           character;
-		} u;
-	} consoleKey_t;
-
-	static const struct {
-		char name[8];
-		int  key;
-	} modMap[] = {
-		{ "shift", K_SHIFT },
-		{ "ctrl",  K_CTRL  },
-		{ "alt",   K_ALT   },
-		{ "super", K_SUPER },
-	};
-
-	static consoleKey_t consoleKeys[ MAX_CONSOLE_KEYS ];
-	static int          numConsoleKeys = 0;
-	static int          ifMod, unlessMod = 0;
-
-	// Only parse the variable when it changes
-	if ( cl_consoleKeys->modified )
-	{
-		const char *text_p, *token;
-
-		cl_consoleKeys->modified = false;
-		text_p = cl_consoleKeys->string;
-		numConsoleKeys = 0;
-		ifMod = unlessMod = 0;
-
-		while ( numConsoleKeys < MAX_CONSOLE_KEYS )
-		{
-			consoleKey_t *c = &consoleKeys[ numConsoleKeys ];
-			int          charCode = 0;
-
-			token = COM_Parse( &text_p );
-
-			if ( !token[ 0 ] )
-			{
-				break;
-			}
-
-			if ( token[ 0 ] == '+' && token[ 1 ] )
-			{
-				for (unsigned i = 0; i < ARRAY_LEN( modMap ); ++i )
-				{
-					if ( !Q_stricmp( token + 1, modMap[i].name ) )
-					{
-						ifMod |= 1 << i;
-					}
-				}
-			}
-			else if ( token[ 0 ] == '-' && token[ 1 ] )
-			{
-				for (unsigned i = 0; i < ARRAY_LEN( modMap ); ++i )
-				{
-					if ( !Q_stricmp( token + 1, modMap[i].name ) )
-					{
-						unlessMod |= 1 << i;
-					}
-				}
-			}
-			else if ( strlen( token ) == 4 )
-			{
-				charCode = Com_HexStrToInt( token );
-			}
-
-			if ( charCode > 0 )
-			{
-				c->type = consoleKey_t::CHARACTER;
-				c->u.character = charCode;
-			}
-			else
-			{
-				c->type = consoleKey_t::KEY;
-				c->u.key = (keyNum_t) Key_StringToKeynum( token );
-
-				// 0 isn't a key
-				if ( c->u.key <= 0 )
-				{
-					continue;
-				}
-			}
-
-			numConsoleKeys++;
-		}
-
-		// if MOD is requested pressed and released, clear released
-		unlessMod &= ~ifMod;
-	}
-
-	// require a +MOD, if there are any, to be pressed
-	if ( ifMod )
-	{
-		bool flag = false;
-
-		for (unsigned i = 0; i < ARRAY_LEN( modMap ); ++i )
-		{
-			if ( ( ifMod & 1 << i ) && keys[ modMap[i].key ].down )
-			{
-				flag = true;
-				break;
-			}
-		}
-
-		if ( !flag )
-		{
-			return false;
-		}
-	}
-
-	// require all -MOD not to be pressed
-	if ( unlessMod )
-	{
-		for (unsigned i = 0; i < ARRAY_LEN( modMap ); ++i )
-		{
-			if ( ( unlessMod & 1 << i ) && keys[ modMap[i].key ].down )
-			{
-				return false;
-			}
-		}
-	}
-
-	// If the character is the same as the key, prefer the character
-	if ( key == character )
-	{
-		key = (keyNum_t) 0;
-	}
-
-	for (int i = 0; i < numConsoleKeys; i++ )
-	{
-		consoleKey_t *c = &consoleKeys[ i ];
-
-		switch ( c->type )
-		{
-            case consoleKey_t::KEY:
-				if ( key && c->u.key == key )
-				{
-					return true;
-				}
-
-				break;
-
-            case consoleKey_t::CHARACTER:
-				if ( c->u.character == character )
-				{
-					return true;
-				}
-
-				break;
-		}
-	}
-
-	return false;
-}
-
 /*
 ===============
 IN_TranslateSDLToQ3Key
@@ -556,13 +379,6 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, bool down )
 	if ( in_keyboardDebug->integer )
 	{
 		IN_PrintKey( keysym, key, down );
-	}
-
-	if ( IN_IsConsoleKey( key, 0 ) && !keys[ K_ALT ].down)
-	{
-		// Console keys can't be bound or generate characters
-		// (but allow Alt+key for text input)
-		key = K_CONSOLE;
 	}
 
 	return key;
@@ -1414,7 +1230,6 @@ static void IN_ProcessEvents( bool dropInput )
 
 				break;
 			case SDL_TEXTINPUT:
-				if ( lastKeyDown != K_CONSOLE )
 				{
 					char *c = e.text.text;
 

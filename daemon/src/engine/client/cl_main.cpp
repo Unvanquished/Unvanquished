@@ -140,7 +140,6 @@ cvar_t                 *cl_waveoffset; //bani
 cvar_t                 *cl_packetloss; //bani
 cvar_t                 *cl_packetdelay; //bani
 
-cvar_t                 *cl_consoleKeys;
 cvar_t                 *cl_consoleFont;
 cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
@@ -3951,9 +3950,6 @@ void CL_Init()
 	j_up_axis = Cvar_Get( "j_up_axis", "2", 0 );
 
 	cl_motdString = Cvar_Get( "cl_motdString", "", CVAR_ROM );
-
-	// ~ and `, as keys and characters
-	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", _("~ ` 0x7e 0x60"), 0 );
 
 	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf",  CVAR_LATCH );
 	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16",  CVAR_LATCH );

@@ -57,10 +57,6 @@ cvar_t            *trans_debug;
 cvar_t            *trans_encodings;
 cvar_t            *trans_languages;
 
-#ifndef BUILD_SERVER
-extern cvar_t *cl_consoleKeys; // should really #include client.h
-#endif
-
 /*
 ====================
 DaemonInputbuf
@@ -262,12 +258,6 @@ void Trans_SetLanguage( const char* lang )
 void Trans_UpdateLanguage_f()
 {
 	Trans_SetLanguage( language->string );
-
-#ifndef BUILD_SERVER
-	// update the default console keys string
-	Z_Free( cl_consoleKeys->resetString );
-	cl_consoleKeys->resetString = CopyString( _("~ ` 0x7e 0x60") );
-#endif
 }
 
 /*

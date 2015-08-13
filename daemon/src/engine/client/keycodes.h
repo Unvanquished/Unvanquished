@@ -286,9 +286,6 @@ typedef enum
   K_XBOX360_DPAD_LEFTUP,
   K_XBOX360_DPAD_LEFTDOWN,
 
-  // Pseudo-key that brings the console down
-  K_CONSOLE,
-
   MAX_KEYS
 } keyNum_t;
 

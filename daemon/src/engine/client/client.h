@@ -530,7 +530,6 @@ extern cvar_t *cl_altTab;
 
 // -NERVE - SMF
 
-extern cvar_t *cl_consoleKeys;
 extern cvar_t *cl_consoleFont;
 extern cvar_t *cl_consoleFontSize;
 extern cvar_t *cl_consoleFontKerning;
