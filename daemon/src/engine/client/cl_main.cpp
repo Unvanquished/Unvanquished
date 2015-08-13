@@ -1912,10 +1912,6 @@ void CL_Connect_f()
 
 	Cvar_Set( "cl_avidemo", "0" );
 
-	// show_bug.cgi?id=507
-	// prepare to catch a connection process that would turn bad
-	Cvar_Set( "com_errorDiagnoseIP", NET_AdrToString( clc.serverAddress ) );
-	// ATVI Wolfenstein Misc #439
 	// we need to setup a correct default for this, otherwise the first val we set might reappear
 	Cvar_Set( "com_errorMessage", "" );
 
@@ -2157,20 +2153,6 @@ void CL_Vid_Restart_f()
 		cls.cgameCVarsRegistered = true;
 		CL_InitCGame();
 	}
-}
-
-
-/*
-=================
-CL_Snd_Reload_f
-
-Reloads sounddata from disk, retains soundhandles.
-=================
-*/
-void CL_Snd_Reload_f()
-{
-	// FIXME
-	//S_Reload();
 }
 
 /*
@@ -2709,18 +2691,6 @@ void CL_PrintPacket( msg_t *msg )
 	{
 		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		// Cvar_Set("com_errorMessage", clc.serverMessage );
-		Com_Error( ERR_DROP, "%s", clc.serverMessage );
-	}
-	else if ( !Q_strnicmp( s, "[err_prot]", 10 ) )
-	{
-		Q_strncpyz( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
-		Com_Error( ERR_DROP, "%s", PROTOCOL_MISMATCH_ERROR_LONG );
-	}
-	else if ( !Q_strnicmp( s, "ET://", 5 ) )
-	{
-		// fretn
-		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
-		Cvar_Set( "com_errorMessage", clc.serverMessage );
 		Com_Error( ERR_DROP, "%s", clc.serverMessage );
 	}
 	else
@@ -4050,7 +4020,6 @@ void CL_Init()
 	Cmd_AddCommand( "cmd", CL_ForwardToServer_f );
 	Cmd_AddCommand( "configstrings", CL_Configstrings_f );
 	Cmd_AddCommand( "clientinfo", CL_Clientinfo_f );
-	Cmd_AddCommand( "snd_reload", CL_Snd_Reload_f );
 	Cmd_AddCommand( "snd_restart", CL_Snd_Restart_f );
 	Cmd_AddCommand( "vid_restart", CL_Vid_Restart_f );
 	Cmd_AddCommand( "disconnect", CL_Disconnect_f );
@@ -4143,7 +4112,6 @@ void CL_Shutdown()
 	Cmd_RemoveCommand( "cmd" );
 	Cmd_RemoveCommand( "configstrings" );
 	Cmd_RemoveCommand( "userinfo" );
-	Cmd_RemoveCommand( "snd_reload" );
 	Cmd_RemoveCommand( "snd_restart" );
 	Cmd_RemoveCommand( "vid_restart" );
 	Cmd_RemoveCommand( "disconnect" );
