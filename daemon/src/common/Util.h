@@ -108,6 +108,15 @@ decltype(apply_impl(std::declval<Func>(), std::declval<Tuple>(), gen_seq<std::tu
 	return apply_impl(std::forward<Func>(func), std::forward<Tuple>(tuple), gen_seq<std::tuple_size<typename std::decay<Tuple>::type>::value>());
 }
 
+// An equivalent of is_pod to workaround an MSVC bug where Vec3 is not POD
+// while it is both trivial and standard layout.
+
+template<typename T, typename = void>
+struct IsPOD :std::false_type {};
+
+template<typename T>
+struct IsPOD<T, typename std::enable_if<std::is_trivial<T>::value && std::is_standard_layout<T>::value>::type> : std::true_type{};
+
 // Utility class to hold a possibly uninitialized object.
 template<typename T> class uninitialized {
 public:

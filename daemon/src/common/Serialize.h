@@ -212,7 +212,7 @@ namespace Util {
 
 	// Simple implementation for POD types
 	template<typename T>
-	struct SerializeTraits<T, typename std::enable_if<std::is_pod<T>::value && !std::is_array<T>::value>::type> {
+	struct SerializeTraits<T, typename std::enable_if<Util::IsPOD<T>::value && !std::is_array<T>::value>::type> {
 		static void Write(Writer& stream, const T& value)
 		{
 			stream.WriteData(std::addressof(value), sizeof(value));
@@ -227,7 +227,7 @@ namespace Util {
 
 	// std::array for non-POD types (POD types are already handled by the base case)
 	template<typename T, size_t N>
-	struct SerializeTraits<std::array<T, N>, typename std::enable_if<!std::is_pod<T>::value>::type> {
+	struct SerializeTraits<std::array<T, N>, typename std::enable_if<!Util::IsPOD<T>::value>::type> {
 		static void Write(Writer& stream, const std::array<T, N>& value)
 		{
 			for (const T& x: value)
@@ -244,7 +244,7 @@ namespace Util {
 
 	// std::vector, with a specialization for POD types
 	template<typename T>
-	struct SerializeTraits<std::vector<T>, typename std::enable_if<std::is_pod<T>::value>::type> {
+	struct SerializeTraits<std::vector<T>, typename std::enable_if<Util::IsPOD<T>::value>::type> {
 		static void Write(Writer& stream, const std::vector<T>& value)
 		{
 			stream.WriteSize(value.size());
@@ -259,7 +259,7 @@ namespace Util {
 		}
 	};
 	template<typename T>
-	struct SerializeTraits<std::vector<T>, typename std::enable_if<!std::is_pod<T>::value>::type> {
+	struct SerializeTraits<std::vector<T>, typename std::enable_if<!Util::IsPOD<T>::value>::type> {
 		static void Write(Writer& stream, const std::vector<T>& value)
 		{
 			stream.WriteSize(value.size());

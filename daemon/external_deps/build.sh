@@ -31,6 +31,7 @@ THEORA_VERSION=1.1.1
 OPUS_VERSION=1.1
 OPUSFILE_VERSION=0.6
 NACLSDK_VERSION=41.0.2272.53
+LUA_VERSION=5.3.1
 
 # Extract an archive into the given subdirectory of the build dir and cd to it
 # Usage: extract <filename> <directory>
@@ -389,6 +390,34 @@ build_opusfile() {
 	make install
 }
 
+# Build Lua
+build_lua() {
+	download "lua-${LUA_VERSION}.tar.gz" "http://www.lua.org/ftp/lua-5.3.1.tar.gz" lua
+	cd "lua-${LUA_VERSION}"
+	local build=""
+	local flags=""
+	case "${PLATFORM}" in
+	mingw*)
+		make mingw CC=${HOST}-gcc MYCFLAGS=${CFLAGS} RANLIB=${HOST}-ranlib
+		make local TO_BIN="lua.exe luac.exe"
+		;;
+	linux*)
+		make linux
+		make local
+		;;
+	macosx*)
+		make macosx
+		make local
+		;;
+	*)
+		echo "Unsupported system"
+		exit 1
+	esac
+
+	cp install/include/* ${PREFIX}/include
+	cp install/lib/liblua.a ${PREFIX}/lib
+}
+
 # Build the NaCl SDK
 build_naclsdk() {
 	case "${PLATFORM}" in
@@ -651,9 +680,9 @@ if [ "${#}" -lt "2" ]; then
 	echo
 	echo "Packages requires for each platform:"
 	echo "Linux native compile: naclsdk (and possibly others depending on what packages your distribution provides)"
-	echo "Linux to Windows cross-compile: zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
-	echo "Native Windows compile: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
-	echo "Native Mac OS X compile: pkgconfig nasm gmp nettle geoip sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile naclsdk"
+	echo "Linux to Windows cross-compile: zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile lua naclsdk"
+	echo "Native Windows compile: pkgconfig nasm zlib gmp nettle geoip curl sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile lua naclsdk"
+	echo "Native Mac OS X compile: pkgconfig nasm gmp nettle geoip sdl2 glew png jpeg webp freetype openal ogg vorbis speex theora opus opusfile lua naclsdk"
 	exit 1
 fi
 
