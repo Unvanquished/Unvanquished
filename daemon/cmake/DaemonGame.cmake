@@ -29,22 +29,6 @@ include(DaemonPlatform)
 include(DaemonNacl)
 include(DaemonFlags)
 
-if (NOT NACL)
-    if (WIN32)
-        add_definitions(-DNOMINMAX)
-    endif()
-    if (NOT MSVC)
-        # C++11 support
-        try_cxx_flag(GNUXX11 "-std=gnu++11")
-        if (NOT FLAG_GNUXX11)
-            try_cxx_flag(GNUXX0X "-std=gnu++0x")
-            if (NOT FLAG_GNUXX0X)
-                message(FATAL_ERROR "C++11 not supported by compiler")
-            endif()
-        endif()
-    endif()
-endif()
-
 # Function to setup all the Sgame/Cgame libraries
 include(CMakeParseArguments)
 function(GAMEMODULE)
