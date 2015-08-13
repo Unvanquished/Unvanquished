@@ -455,7 +455,7 @@ bool Color_Parse( const char **p, Color::Color* c )
 			return false;
 		}
 
-		c->toArray()[ i ] = f;
+		c->ToArray()[ i ] = f;
 	}
 
 	return true;
@@ -478,7 +478,7 @@ bool PC_Color_Parse( int handle, Color::Color *c )
 			return false;
 		}
 
-		c->toArray()[ i ] = f;
+		c->ToArray()[ i ] = f;
 	}
 
 	return true;

@@ -1680,7 +1680,7 @@ public:
 
 	void SetUniform_Color( const Color::Color& color )
 	{
-		this->SetValue( color.toArray() );
+		this->SetValue( color.ToArray() );
 	}
 };
 

@@ -108,12 +108,12 @@ namespace Util {
 	struct SerializeTraits<Color::Color> {
 		static void Write(Writer& stream, const Color::Color& value)
 		{
-			stream.WriteData(value.toArray(), 4*sizeof(Color::Color::component_type));
+			stream.WriteData(value.ToArray(), value.ArrayBytes());
 		}
 		static Color::Color Read(Reader& stream)
 		{
 			Color::Color value;
-			stream.ReadData(value.toArray(), 4*sizeof(Color::Color::component_type));
+			stream.ReadData(value.ToArray(), value.ArrayBytes());
 			return value;
 		}
 	};

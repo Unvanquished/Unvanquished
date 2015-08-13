@@ -124,17 +124,17 @@ public:
 
 	Color( const std::nullptr_t& ) = delete;
 
-	const float* toArray() const
+	const float* ToArray() const
 	{
 		return Data();
 	}
 
-	float* toArray()
+	float* ToArray()
 	{
 		return Data();
 	}
 
-	void toArray( float* output ) const
+	void ToArray( float* output ) const
 	{
 		memcpy( output, Data(), ArrayBytes() );
 	}

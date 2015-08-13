@@ -42,12 +42,12 @@ Maryland 20850 USA.
 
 static void CG_GetRocketElementColor( Color::Color& color )
 {
-	Rocket_GetProperty( "color", color.toArray(), color.ArrayBytes(), ROCKET_COLOR );
+	Rocket_GetProperty( "color", color.ToArray(), color.ArrayBytes(), ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementBGColor( Color::Color& bgColor )
 {
-	Rocket_GetProperty( "background-color", bgColor.toArray(), bgColor.ArrayBytes(), ROCKET_COLOR );
+	Rocket_GetProperty( "background-color", bgColor.ToArray(), bgColor.ArrayBytes(), ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementRect( rectDef_t *rect )
@@ -2746,8 +2746,8 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
 	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
-	Rocket_GetProperty( "locked-marker-color", lockedColor.toArray(), lockedColor.ArrayBytes(), ROCKET_COLOR );
-	Rocket_GetProperty( "unlocked-marker-color", unlockedColor.toArray(), unlockedColor.ArrayBytes(), ROCKET_COLOR );
+	Rocket_GetProperty( "locked-marker-color", lockedColor.ToArray(), lockedColor.ArrayBytes(), ROCKET_COLOR );
+	Rocket_GetProperty( "unlocked-marker-color", unlockedColor.ToArray(), unlockedColor.ArrayBytes(), ROCKET_COLOR );
 
 
 	ps = &cg.predictedPlayerState;
@@ -2929,7 +2929,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
 	CG_GetRocketElementRect( &rect );
-	Rocket_GetProperty( "cell-color", backColour.toArray(), backColour.ArrayBytes(), ROCKET_COLOR );
+	Rocket_GetProperty( "cell-color", backColour.ToArray(), backColour.ArrayBytes(), ROCKET_COLOR );
 	CG_GetRocketElementColor( foreColour );
 	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
 

@@ -318,7 +318,7 @@ void RE_SetColor( const Color::Color& rgba )
 
 	cmd->commandId = RC_SET_COLOR;
 
-	rgba.toArray( cmd->color );
+	rgba.ToArray( cmd->color );
 }
 
 /*

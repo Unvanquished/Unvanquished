@@ -204,7 +204,7 @@ static bool CG_ParseMinimap( minimap_t* m, const char* filename )
         }
         else if( !Q_stricmp( token, "backgroundColor") )
         {
-            if( !ParseFloats( m->bgColor.toArray(), 4, &text) )
+            if( !ParseFloats( m->bgColor.ToArray(), 4, &text) )
             {
                 CG_Printf( S_ERROR "error while parsing 'backgroundColor' in %s\n", filename );
                 return false;

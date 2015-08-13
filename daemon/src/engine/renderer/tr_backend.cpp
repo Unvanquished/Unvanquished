@@ -2846,7 +2846,7 @@ void RB_RenderBloom()
 
 		gl_screenShader->BindProgram( 0 );
 		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-		glVertexAttrib4fv( ATTR_INDEX_COLOR, Color::Named::White.toArray() );
+		glVertexAttrib4fv( ATTR_INDEX_COLOR, Color::Named::White.ToArray() );
 
 		gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
@@ -3876,8 +3876,8 @@ static void RB_RenderDebugUtils()
 						continue;
 					}
 
-					R_LightForPoint( origin, ambientColor.toArray(),
-							 directedColor.toArray(), lightDir );
+					R_LightForPoint( origin, ambientColor.ToArray(),
+							 directedColor.ToArray(), lightDir );
 					VectorNegate( lightDir, lightDir );
 
 					length = 8;
@@ -4731,7 +4731,7 @@ void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int
 
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-		glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, Color::Named::Black.toArray() );
+		glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, Color::Named::Black.ToArray() );
 	}
 	else
 	{
