@@ -1271,8 +1271,6 @@ namespace crnd
       enum { cNumComps = 4 };
 
       struct ColorFields {
-        ColorFields(component_type r, component_type g, component_type b, component_type a)
-          : r(r), g(g), b(b), a(a) {}
         component_type r;
         component_type g;
         component_type b;
@@ -1295,9 +1293,12 @@ namespace crnd
       {
       }
 
-      inline color_quad(const color_quad& other) :
-         f(other.f.r, other.f.g, other.f.b, other.f.a)
+      inline color_quad(const color_quad& other)
       {
+          f.r = other.f.r;
+          f.g = other.f.g;
+          f.b = other.f.b;
+          f.a = other.f.a;
       }
 
       inline color_quad(parameter_type y, parameter_type alpha = component_traits::cMax)
