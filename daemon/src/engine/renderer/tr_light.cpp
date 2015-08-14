@@ -555,17 +555,17 @@ void R_TessLight( const trRefLight_t *light, const Color::OptionalColor& color )
 						Color::Color32Bit iColor ( color.Color( Color::Named::Cyan ) );
 
 						VectorCopy( top, tess.verts[ tess.numVertexes ].xyz );
-						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
+						tess.verts[ tess.numVertexes ].color = iColor;
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 
 						VectorCopy( farCorners[( j + 1 ) % 4 ], tess.verts[ tess.numVertexes ].xyz );
-						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
+						tess.verts[ tess.numVertexes ].color = iColor;
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 
 						VectorCopy( farCorners[ j ], tess.verts[ tess.numVertexes ].xyz );
-						Vector4Copy( iColor, tess.verts[ tess.numVertexes ].color );
+						tess.verts[ tess.numVertexes ].color = iColor;
 						tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 						tess.numVertexes++;
 					}

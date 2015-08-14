@@ -1561,10 +1561,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	if ( ps )
 	{
-		gun.shaderRGBA[ 0 ] = 255;
-		gun.shaderRGBA[ 1 ] = 255;
-		gun.shaderRGBA[ 2 ] = 255;
-		gun.shaderRGBA[ 3 ] = 255;
+		gun.shaderRGBA = Color::Color32Bit( 0xFF, 0xFF, 0xFF, 0xFF );
 
 		//set weapon[1/2]Time when respective buttons change state
 		if (cg.weapon1Firing != !!(cg.predictedPlayerState.eFlags & EF_FIRING))

@@ -633,7 +633,6 @@ static void CG_DrawBinaryShadersFinalPhases()
 		{ { 0, 0, 0 }, { 1, 1 }, { 255, 255, 255, 255 } },
 		{ { 0, 0, 0 }, { 0, 1 }, { 255, 255, 255, 255 } }
 	};
-	int        i, j, k;
 
 	if ( !cg.numBinaryShadersUsed )
 	{
@@ -668,14 +667,13 @@ static void CG_DrawBinaryShadersFinalPhases()
 
 	trap_R_AddPolyToScene( cgs.media.binaryAlpha1Shader, 4, verts );
 
-	for ( i = 0; i < cg.numBinaryShadersUsed; ++i )
+	for ( int i = 0; i < cg.numBinaryShadersUsed; ++i )
 	{
-		for ( j = 0; j < 4; ++j )
+		for ( int j = 0; j < 4; ++j )
 		{
-			for ( k = 0; k < 3; ++k )
-			{
-				verts[ j ].modulate[ k ] = cg.binaryShaderSettings[ i ].color[ k ];
-			}
+			auto alpha = verts[ j ].modulate[ 3 ];
+			cg.binaryShaderSettings[ i ].color.ToArray( verts[ j ].modulate );
+			verts[ j ].modulate[ 3 ] = alpha;
 		}
 
 		if ( cg.binaryShaderSettings[ i ].drawFrontline )

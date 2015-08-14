@@ -107,7 +107,7 @@ const Color& Color::Indexed( int index )
 }
 
 template<>
-int Color::To4bit() const
+int Color::To4bit() const noexcept
 {
     int color = 0;
 

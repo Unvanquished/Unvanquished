@@ -4879,7 +4879,7 @@ const void     *RB_StretchPic( const void *data )
 	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
 	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;
 	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
+	tess.verts[ numVerts + 0 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
 	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
@@ -4887,7 +4887,7 @@ const void     *RB_StretchPic( const void *data )
 	tess.verts[ numVerts + 1 ].xyz[ 0 ] = cmd->x + cmd->w;
 	tess.verts[ numVerts + 1 ].xyz[ 1 ] = cmd->y;
 	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
+	tess.verts[ numVerts + 1 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
 	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
@@ -4895,7 +4895,7 @@ const void     *RB_StretchPic( const void *data )
 	tess.verts[ numVerts + 2 ].xyz[ 0 ] = cmd->x + cmd->w;
 	tess.verts[ numVerts + 2 ].xyz[ 1 ] = cmd->y + cmd->h;
 	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 2 ].color );
+	tess.verts[ numVerts + 2 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
 	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
@@ -4903,7 +4903,7 @@ const void     *RB_StretchPic( const void *data )
 	tess.verts[ numVerts + 3 ].xyz[ 0 ] = cmd->x;
 	tess.verts[ numVerts + 3 ].xyz[ 1 ] = cmd->y + cmd->h;
 	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 3 ].color );
+	tess.verts[ numVerts + 3 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
 	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
@@ -4976,7 +4976,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		Vector4Copy( cmd->verts[ i ].modulate, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = Color::Color32Bit( cmd->verts[ i ].modulate );
 		tess.numVertexes++;
 	}
 
@@ -5039,7 +5039,7 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		Vector4Copy( cmd->verts[ i ].modulate, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = Color::Color32Bit( cmd->verts[ i ].modulate );
 		tess.numVertexes++;
 	}
 
@@ -5114,7 +5114,7 @@ const void     *RB_RotatedPic( const void *data )
 	tess.verts[ numVerts ].xyz[ 0 ] = mx - cw - sh;
 	tess.verts[ numVerts ].xyz[ 1 ] = my + sw - ch;
 	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
+	tess.verts[ numVerts + 0 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
 	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
@@ -5122,7 +5122,7 @@ const void     *RB_RotatedPic( const void *data )
 	tess.verts[ numVerts + 1 ].xyz[ 0 ] = mx + cw - sh;
 	tess.verts[ numVerts + 1 ].xyz[ 1 ] = my - sw - ch;
 	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
+	tess.verts[ numVerts + 1 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
 	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
@@ -5130,7 +5130,7 @@ const void     *RB_RotatedPic( const void *data )
 	tess.verts[ numVerts + 2 ].xyz[ 0 ] = mx + cw + sh;
 	tess.verts[ numVerts + 2 ].xyz[ 1 ] = my - sw + ch;
 	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 2 ].color );
+	tess.verts[ numVerts + 2 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
 	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
@@ -5138,7 +5138,7 @@ const void     *RB_RotatedPic( const void *data )
 	tess.verts[ numVerts + 3 ].xyz[ 0 ] = mx - cw + sh;
 	tess.verts[ numVerts + 3 ].xyz[ 1 ] = my + sw + ch;
 	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 3 ].color );
+	tess.verts[ numVerts + 3 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
 	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
@@ -5199,10 +5199,10 @@ const void     *RB_StretchPicGradient( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
-	Vector4Copy( cmd->gradientColor, tess.verts[ numVerts + 2 ].color );
-	Vector4Copy( cmd->gradientColor, tess.verts[ numVerts + 3 ].color );
+	tess.verts[ numVerts + 0 ].color = backEnd.color2D;
+	tess.verts[ numVerts + 1 ].color = backEnd.color2D;
+	tess.verts[ numVerts + 2 ].color = cmd->gradientColor;
+	tess.verts[ numVerts + 3 ].color = cmd->gradientColor;
 
 	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
 	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;

@@ -36,6 +36,8 @@ Maryland 20850 USA.
 #ifndef __QFILES_H__
 #define __QFILES_H__
 
+#include "common/Color.h"
+
 //
 // qfiles.h: quake file formats
 // This file must be identical in the quake and utils directories
@@ -575,7 +577,7 @@ typedef struct
 	float  st[ 2 ];
 	float  lightmap[ 2 ];
 	vec3_t normal;
-	byte   color[ 4 ];
+	Color::Color32Bit color;
 } drawVert_t;
 
 typedef enum

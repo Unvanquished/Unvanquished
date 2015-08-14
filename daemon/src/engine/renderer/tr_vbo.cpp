@@ -333,7 +333,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
+				ptr[ v ].colour = Color::Color32Bit( inData.color[ v ] );
 			}
 
 			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
@@ -361,7 +361,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				Vector4Copy( inData.color[ v ], ptr[ v ].color );
+				ptr[ v ].color = Color::Color32Bit( inData.color[ v ] );
 			}
 
 			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
@@ -394,7 +394,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
+				ptr[ v ].colour = Color::Color32Bit( inData.color[ v ] );
 			}
 		}
 	}
