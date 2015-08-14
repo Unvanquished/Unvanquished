@@ -463,6 +463,7 @@ endif()
 if (USE_PRECOMPILED_HEADER AND MSVC)
     file(WRITE ${OBJ_DIR}/PrecompiledHeader.cpp "")
     set(PCH_FILE ${OBJ_DIR}/PrecompiledHeader.cpp)
+    set(PCH_FILE ${PCH_FILE} PARENT_SCOPE)
 endif()
 
 function(ADD_PRECOMPILED_HEADER Target)
