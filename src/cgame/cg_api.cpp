@@ -113,7 +113,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
 			case CG_TEXT_INPUT_EVENT:
-				IPC::HandleMsg<CGameTextInptEvent>(VM::rootChannel, std::move(reader), [] (char c) {
+				IPC::HandleMsg<CGameTextInptEvent>(VM::rootChannel, std::move(reader), [] (int c) {
 					Rocket_ProcessTextInput(c);
 					cmdBuffer.TryFlush();
 				});

@@ -807,7 +807,7 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
 > CGameMouseEventMsg;
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, char>
+	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, int>
 > CGameTextInptEvent;
 
 //TODO Check all rocket calls
