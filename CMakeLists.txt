@@ -56,17 +56,7 @@ if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
     include_directories(${ROCKET_INCLUDE_DIRS})
 endif()
 
-try_flag(WARNINGS           "-Wall")
-try_flag(WARNINGS           "-Wextra")
-if (USE_PEDANTIC)
-    try_flag(WARNINGS       "-pedantic")
-endif()
-if (USE_WERROR)
-    try_flag(WARNINGS       "-Werror")
-    if (USE_PEDANTIC)
-        try_flag(WARNINGS   "-pedantic-errors")
-    endif()
-endif()
+# Warning options
 # keep
 try_flag(WARNINGS           "/wd4068")
 try_flag(WARNINGS           "-Wno-pragmas")
