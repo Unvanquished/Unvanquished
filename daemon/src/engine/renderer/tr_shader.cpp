@@ -2096,9 +2096,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 				vec3_t color;
 
 				ParseVector( text, 3, color );
-				stage->constantColor.SetRed( 255 * color[ 0 ] );
-				stage->constantColor.SetGreen( 255 * color[ 1 ] );
-				stage->constantColor.SetAlpha( 255 * color[ 2 ] );
+				stage->constantColor = Color::Adapt( color );
 
 				stage->rgbGen = CGEN_CONST;
 			}

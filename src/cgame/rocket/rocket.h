@@ -43,6 +43,8 @@ Maryland 20850 USA.
 #include <Rocket/Core/Core.h>
 #pragma GCC diagnostic pop
 
+#include "common/Color.h"
+
 extern Rocket::Core::Context *menuContext;
 extern Rocket::Core::Context *hudContext;
 
@@ -68,4 +70,35 @@ public:
 
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
 Rocket::Core::String CG_KeyBinding( const char *bind, int team );
+
+
+namespace Color {
+
+template<class ColourType, int AlphaDefault>
+class ColorAdaptor<Rocket::Core::Colour<ColourType,AlphaDefault>>
+{
+public:
+	static constexpr const bool is_color = true;
+	typedef Rocket::Core::Colour<ColourType,AlphaDefault> color_type;
+	typedef ColourType component_type;
+	static constexpr const component_type component_max = AlphaDefault;
+	typedef ColorAdaptor adapter_type;
+
+	static adapter_type Adapt( const color_type& object )
+	{
+		return ColorAdaptor( object );
+	}
+
+	ColorAdaptor( const color_type& object ) : object( object ) {}
+
+	component_type Red() const { return object.red; }
+	component_type Green() const { return object.green; }
+	component_type Blue() const { return object.blue; }
+	component_type Alpha() const { return object.alpha; }
+
+private:
+	color_type object;
+};
+} // namespace Color
+
 #endif

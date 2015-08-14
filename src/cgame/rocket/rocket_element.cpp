@@ -281,9 +281,8 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 			{
 				if ( len == sizeof( Color::Color ) )
 				{
-					Color::Color32Bit color ( property->Get<Rocket::Core::Colourb>() );
 					Color::Color* outColor = ( Color::Color* ) out;
-					*outColor = Color::Color( color );
+					*outColor = Color::Adapt( property->Get<Rocket::Core::Colourb>() );
 				}
 
 				return;

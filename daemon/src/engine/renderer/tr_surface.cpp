@@ -278,7 +278,7 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const Color::C
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
-	Color::Color32Bit iColor ( color );
+	Color::Color32Bit iColor = Color::Adapt( color );
 
 	for ( i = 0; i < 4; i++ )
 	{
@@ -366,7 +366,7 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, fl
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
-	Color::Color32Bit iColor ( color );
+	Color::Color32Bit iColor = Color::Adapt( color );
 	for ( i = 0; i < 4; i++ )
 	{
 		tess.verts[ ndx + i ].color = iColor;
@@ -438,7 +438,7 @@ void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const Color::Color& colorf )
 
 	Tess_CheckOverflow( 12, 12 );
 
-	Color::Color32Bit color ( colorf  );
+	Color::Color32Bit color = Color::Adapt( colorf );
 
 	// ground triangle
 	for ( k = 0; k < 3; k++ )
@@ -668,9 +668,8 @@ static void Tess_SurfaceSprite()
 	if ( backEnd.viewParms.isMirror )
 		VectorSubtract( vec3_origin, left, left );
 
-	Color::Color color ( backEnd.currentEntity->e.shaderRGBA );
-
-	Tess_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, color );
+	Tess_AddQuadStamp( backEnd.currentEntity->e.origin, left, up,
+		Color::Adapt( backEnd.currentEntity->e.shaderRGBA ) );
 }
 
 /*
@@ -698,7 +697,7 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		tess.verts[ tess.numVertexes + i ].texCoords[ 0 ] = floatToHalf( p->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes + i ].texCoords[ 1 ] = floatToHalf( p->verts[ i ].st[ 1 ] );
 
-		tess.verts[ tess.numVertexes + i ].color = Color::Color32Bit( p->verts[ i ].modulate );
+		tess.verts[ tess.numVertexes + i ].color = Color::Adapt( p->verts[ i ].modulate );
 
 		numVertexes++;
 	}
@@ -817,7 +816,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 		tess.verts[ tess.numVertexes + i ].texCoords[ 0 ] = floatToHalf( st[ 0 ] );
 		tess.verts[ tess.numVertexes + i ].texCoords[ 1 ] = floatToHalf( st[ 1 ] );
 
-		tess.verts[ tess.numVertexes + i ].color = Color::Color32Bit( color );
+		tess.verts[ tess.numVertexes + i ].color = Color::Adapt( color );
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
@@ -841,7 +840,7 @@ void Tess_SurfaceDecal( srfDecal_t *srf )
 		tess.verts[ tess.numVertexes + i ].texCoords[ 0 ] = floatToHalf( srf->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes + i ].texCoords[ 1 ] = floatToHalf( srf->verts[ i ].st[ 1 ] );
 
-		tess.verts[ tess.numVertexes + i ].color = Color::Color32Bit( srf->verts[ i ].modulate );
+		tess.verts[ tess.numVertexes + i ].color = Color::Adapt( srf->verts[ i ].modulate );
 	}
 
 	// generate fan indexes into the tess array

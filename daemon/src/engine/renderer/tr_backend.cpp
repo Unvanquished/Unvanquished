@@ -4759,7 +4759,7 @@ const void     *RB_SetColor( const void *data )
 
 	cmd = ( const setColorCommand_t * ) data;
 
-	backEnd.color2D = Color::Color32Bit( cmd->color );
+	backEnd.color2D = Color::Adapt( cmd->color );
 
 	return ( const void * )( cmd + 1 );
 }
@@ -4976,7 +4976,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		tess.verts[ tess.numVertexes ].color = Color::Color32Bit( cmd->verts[ i ].modulate );
+		tess.verts[ tess.numVertexes ].color = Color::Adapt( cmd->verts[ i ].modulate );
 		tess.numVertexes++;
 	}
 
@@ -5039,7 +5039,7 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		tess.verts[ tess.numVertexes ].color = Color::Color32Bit( cmd->verts[ i ].modulate );
+		tess.verts[ tess.numVertexes ].color = Color::Adapt( cmd->verts[ i ].modulate );
 		tess.numVertexes++;
 	}
 

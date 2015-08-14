@@ -3925,9 +3925,8 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 
 		out->fogParms = shader->fogParms;
 
-		out->color.SetRed( shader->fogParms.color[0] * tr.identityLight );
-		out->color.SetGreen( shader->fogParms.color[1] * tr.identityLight );
-		out->color.SetBlue( shader->fogParms.color[2] * tr.identityLight );
+		out->color = Color::Adapt( shader->fogParms.color );
+		out->color *= tr.identityLight;
 		out->color.SetAlpha( 1 );
 
 		d = shader->fogParms.depthForOpaque < 1 ? 1 : shader->fogParms.depthForOpaque;

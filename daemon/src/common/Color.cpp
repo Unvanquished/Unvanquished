@@ -294,4 +294,5 @@ const char* CString ( const Color32Bit& color )
 }
 
 } // namespace detail
+
 } // namespace Color

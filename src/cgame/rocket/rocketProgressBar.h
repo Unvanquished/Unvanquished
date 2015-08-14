@@ -151,10 +151,7 @@ public:
 
 		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
-			Rocket::Core::Colourb tempColor = GetProperty( "color" )->Get<Rocket::Core::Colourb>();
-
-			/// \todo (color) Enough templates and traits to convert Colourb directly to Color
-			color = Color::Color( Color::Color32Bit{ tempColor.red, tempColor.green, tempColor.blue, tempColor.alpha } );
+			color = Color::Adapt( GetProperty( "color" )->Get<Rocket::Core::Colourb>() );
 		}
 
 		if ( changed_properties.find( "image" ) != changed_properties.end() )

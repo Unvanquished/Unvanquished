@@ -193,7 +193,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	/* basic setup */
 	temp.shader = R_GetShaderByHandle( hShader );  /* debug code */
 	temp.numPlanes = temp.shader->entityMergable;
-	temp.color = Color::Color32Bit( color );
+	temp.color = Color::Adapt( color );
 	temp.numPlanes = numPoints + 2;
 	temp.fadeStartTime = tr.refdef.time + lifeTime - fadeTime;
 	temp.fadeEndTime = temp.fadeStartTime + fadeTime;
