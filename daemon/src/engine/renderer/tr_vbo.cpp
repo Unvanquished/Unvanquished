@@ -273,7 +273,9 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo, bool noLightCoords )
 	}
 	else
 	{
-		ri.Error( ERR_DROP, "%sUnknown attribute layout for vbo: %s\n", Color::NamedString::Yellow, vbo->name );
+		ri.Error( ERR_DROP, "%sUnknown attribute layout for vbo: %s\n",
+			Color::CString( Color::Named::Yellow ),
+			vbo->name );
 	}
 }
 

@@ -3167,7 +3167,7 @@ void CG_Rocket_DrawPredictedRGSRate()
 {
 	playerState_t  *ps = &cg.snap->ps;
 	buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
-	const char* color;
+	Color::Color color;
 	int  delta = ps->stats[ STAT_PREDICTION ];
 
 	if ( buildable != BA_H_DRILL && buildable != BA_A_LEECH )
@@ -3178,25 +3178,25 @@ void CG_Rocket_DrawPredictedRGSRate()
 
 	if ( delta < 0 )
 	{
-		color = Color::NamedString::Red;
+		color = Color::Named::Red;
 	}
 
 	else if ( delta < 10 )
 	{
-		color = Color::NamedString::Orange;
+		color = Color::Named::Orange;
 	}
 
 	else if ( delta < 50 )
 	{
-		color = Color::NamedString::Yellow;
+		color = Color::Named::Yellow;
 	}
 
 	else
 	{
-		color = Color::NamedString::Green;
+		color = Color::Named::Green;
 	}
 
-	Rocket_SetInnerRML( va( "%s%+d%%", color, delta ), RP_QUAKE );
+	Rocket_SetInnerRML( va( "%s%+d%%", Color::CString( color ), delta ), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawWarmup()

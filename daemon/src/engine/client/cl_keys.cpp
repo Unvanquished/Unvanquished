@@ -2038,7 +2038,9 @@ void Key_SetTeam( int newTeam )
 
 	if ( bindTeam != newTeam )
 	{
-		Com_DPrintf( "%sSetting binding team index to %d\n", Color::NamedString::Green, newTeam );
+		Com_DPrintf( "%sSetting binding team index to %d\n",
+			Color::CString( Color::Named::Green ),
+			newTeam );
 	}
 
 	bindTeam = newTeam;

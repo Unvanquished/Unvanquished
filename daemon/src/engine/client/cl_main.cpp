@@ -506,7 +506,7 @@ void CL_CaptureVoip()
 	{
 		if ( ( cl_voip->integer ) && ( Cvar_VariableIntegerValue( "rate" ) < 25000 ) )
 		{
-			Com_Printf( "%s%s", Color::NamedString::Yellow
+			Com_Printf( "%s%s", Color::CString( Color::Named::Yellow )
 				       "Your network rate is too slow for VoIP.\n"
 				       "Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
 				       "Until then, VoIP is disabled.\n" );
@@ -3633,11 +3633,11 @@ void QDECL PRINTF_LIKE(2) CL_RefPrintf( int print_level, const char *fmt, ... )
 	}
 	else if ( print_level == PRINT_WARNING )
 	{
-		Com_Printf( "%s%s", Color::NamedString::Yellow, msg );  // yellow
+		Com_Printf( "%s%s", Color::CString( Color::Named::Yellow ), msg );  // yellow
 	}
 	else if ( print_level == PRINT_DEVELOPER )
 	{
-		Com_DPrintf( "%s%s", Color::NamedString::Red, msg );  // red
+		Com_DPrintf( "%s%s", Color::CString( Color::Named::Red ), msg );  // red
 	}
 }
 

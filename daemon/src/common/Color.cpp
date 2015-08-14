@@ -37,27 +37,6 @@ Maryland 20850 USA.
 
 namespace Color {
 
-namespace NamedString {
-const char* Black = "^0";
-const char* Red = "^1";
-const char* Green = "^2";
-const char* Blue = "^4";
-const char* Yellow = "^3";
-const char* Orange = "^8";
-const char* Magenta = "^6";
-const char* Cyan = "^5";
-const char* White = "^7";
-const char* LtGrey = "^:";
-const char* MdGrey = "^9";
-const char* MdRed = "^?";
-const char* MdGreen = "^<";
-const char* MdCyan = "^B";
-const char* MdYellow = "^=";
-const char* LtOrange = "^A";
-const char* MdBlue = "^>";
-const char* Null = "^*";
-} // namespace Named
-
 namespace Named {
 Color Black    = { 0.00, 0.00, 0.00, 1.00 };
 Color Red      = { 1.00, 0.00, 0.00, 1.00 };
@@ -77,6 +56,7 @@ Color DkGreen  = { 0.00, 0.20, 0.00, 1.00 };
 Color MdCyan   = { 0.00, 0.50, 0.50, 1.00 };
 Color MdYellow = { 0.50, 0.50, 0.00, 1.00 };
 Color MdOrange = { 0.50, 0.25, 0.00, 1.00 };
+Color LtOrange = { 0.50, 0.25, 0.00, 1.00 };
 Color MdBlue   = { 0.00, 0.00, 0.50, 1.00 };
 } // namespace Named
 
@@ -268,4 +248,50 @@ std::string StripColors( const std::string& input )
 	return output;
 }
 
+namespace detail {
+
+template<class Int>
+constexpr bool Has8Bits( Int v )
+{
+	return ( v / 0x11 * 0x11 ) != v;
+}
+
+/*
+ * This is to be used when colors are needed to be printed in C-like code
+ * Uses multiple character arrays to allow multiple calls
+ * within the same sequence point
+ */
+const char* CString ( const Color32Bit& color )
+{
+	static const int length = 9;
+	static const int nstrings = 4;
+	static char text[nstrings][length];
+	static int i = nstrings-1;
+
+	i = ( i + 1 ) % nstrings;
+
+	Color32Bit intcolor ( color );
+
+	if ( Has8Bits( intcolor.Red() ) || Has8Bits( intcolor.Green() ) || Has8Bits( intcolor.Blue() ) )
+	{
+		sprintf(text[i], "^#%02x%02x%02x",
+			(int)intcolor.Red(),
+			(int)intcolor.Green(),
+			(int)intcolor.Blue()
+		);
+	}
+	else
+	{
+		sprintf(text[i], "^x%x%x%x",
+			(int) ( intcolor.Red() & 0xf ) ,
+			(int) ( intcolor.Green() & 0xf ),
+			(int) ( intcolor.Blue() & 0xf )
+		);
+	}
+
+	return text[i];
+
+}
+
+} // namespace detail
 } // namespace Color

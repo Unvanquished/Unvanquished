@@ -1196,7 +1196,7 @@ static bool PM_CheckJetpack()
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_CheckJetpack] %sJetpack enabled\n", Color::NamedString::Cyan );
+			Com_Printf( "[PM_CheckJetpack] %sJetpack enabled\n", Color::CString( Color::Named::Cyan ) );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ENABLED;
@@ -1212,7 +1212,7 @@ static bool PM_CheckJetpack()
 		{
 			if ( pm->debugLevel > 0 && pm->cmd.upmove < 10 )
 			{
-				Com_Printf( "[PM_CheckJetpack] %sJetpack thrust stopped (jump key released)\n", Color::NamedString::LtOrange );
+				Com_Printf( "[PM_CheckJetpack] %sJetpack thrust stopped (jump key released)\n", Color::CString( Color::Named::LtOrange ) );
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1227,7 +1227,7 @@ static bool PM_CheckJetpack()
 	{
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_CheckJetpack] %sCan't start jetpack thrust (jetpack not enabled)\n", Color::NamedString::Red );
+			Com_Printf( "[PM_CheckJetpack] %sCan't start jetpack thrust (jetpack not enabled)\n", Color::CString( Color::Named::Red ) );
 		}
 
 		return false;
@@ -1280,7 +1280,7 @@ static bool PM_CheckJetpack()
 		{
 			if ( pm->debugLevel > 0 )
 			{
-				Com_Printf( "[PM_CheckJetpack] %sJetpack thrust stopped (out of fuel)\n", Color::NamedString::LtOrange );
+				Com_Printf( "[PM_CheckJetpack] %sJetpack thrust stopped (out of fuel)\n", Color::CString( Color::Named::LtOrange ) );
 			}
 
 			pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1301,7 +1301,7 @@ static bool PM_CheckJetpack()
 
 		if ( pm->debugLevel > 0 )
 		{
-			Com_Printf( "[PM_CheckJetpack] %sJetpack thrust started\n", Color::NamedString::Green );
+			Com_Printf( "[PM_CheckJetpack] %sJetpack thrust started\n", Color::CString( Color::Named::Green ) );
 		}
 
 		pm->ps->stats[ STAT_STATE2 ] |= SS2_JETPACK_ACTIVE;
@@ -1381,7 +1381,7 @@ static void PM_LandJetpack( bool force )
 		if ( pm->debugLevel > 0 )
 		{
 			Com_Printf( "[PM_LandJetpack] %sJetpack thrust stopped (hit surface at %.0f°)%s\n",
-			            Color::NamedString::LtOrange,
+			            Color::CString( Color::Named::LtOrange ),
 			            RAD2DEG( angle ),
 			            force ? " ^1(FORCED)" : "" );
 		}
@@ -1399,7 +1399,7 @@ static void PM_LandJetpack( bool force )
 		if ( pm->debugLevel > 0 )
 		{
 			Com_Printf( "[PM_LandJetpack] %sJetpack disabled (hit surface at %.0f°)%s\n",
-			            Color::NamedString::Yellow,
+			            Color::CString( Color::Named::Yellow ),
 			            RAD2DEG( angle ),
 			            force ? " ^1(FORCED)" : "" );
 		}

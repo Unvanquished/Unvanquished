@@ -128,8 +128,8 @@ namespace Console {
 
         //Print the matches if it is ambiguous
         if (candidates.size() >= 2) {
-            Com_Printf("%s-> %s%s\n",
-					   Color::NamedString::Yellow, Color::NamedString::Null,
+            Com_Printf("%s-> ^*%s\n",
+					   Color::CString( Color::Named::Yellow ),
 					   Str::UTF32To8(GetText()).c_str());
             for (const auto& candidate : candidates) {
                 std::string filler(maxCandidateLength - candidate.first.length(), ' ');

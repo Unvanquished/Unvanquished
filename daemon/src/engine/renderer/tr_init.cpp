@@ -984,18 +984,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		{
 			int contextFlags, profile;
 
-			ri.Printf( PRINT_ALL, "%sUsing OpenGL 3.x context\n", Color::NamedString::Green );
+			ri.Printf( PRINT_ALL, "%sUsing OpenGL 3.x context\n", Color::CString( Color::Named::Green ) );
 
 			// check if we have a core-profile
 			glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profile );
 
 			if ( profile == GL_CONTEXT_CORE_PROFILE_BIT )
 			{
-				ri.Printf( PRINT_DEVELOPER, "%sHaving a core profile\n", Color::NamedString::Green );
+				ri.Printf( PRINT_DEVELOPER, "%sHaving a core profile\n", Color::CString( Color::Named::Green ) );
 			}
 			else
 			{
-				ri.Printf( PRINT_DEVELOPER, "%sHaving a compatibility profile\n", Color::NamedString::Red );
+				ri.Printf( PRINT_DEVELOPER, "%sHaving a compatibility profile\n", Color::CString( Color::Named::Red ) );
 			}
 
 			// check if context is forward compatible
@@ -1003,11 +1003,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 			if ( contextFlags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT )
 			{
-				ri.Printf( PRINT_DEVELOPER, "%sContext is forward compatible\n", Color::NamedString::Green );
+				ri.Printf( PRINT_DEVELOPER, "%sContext is forward compatible\n", Color::CString( Color::Named::Green ) );
 			}
 			else
 			{
-				ri.Printf( PRINT_DEVELOPER, "%sContext is NOT forward compatible\n", Color::NamedString::Red );
+				ri.Printf( PRINT_DEVELOPER, "%sContext is NOT forward compatible\n", Color::CString( Color::Named::Red  ));
 			}
 		}
 

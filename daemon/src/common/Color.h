@@ -213,11 +213,11 @@ private:
 
 };
 
-template<class Component>
+template<class Component, class Traits = ColorComponentTraits<Component>>
 class BasicOptionalColor
 {
 public:
-	typedef BasicColor<Component> color_type;
+	typedef BasicColor<Component, Traits> color_type;
 
 	BasicOptionalColor() = default;
 	BasicOptionalColor( const color_type& color )
@@ -279,17 +279,33 @@ extern OptionalColor DefaultColor;
  * Blend two colors.
  * If factor is 0, the first color will be shown, it it's 1 the second one will
  */
-template<class ComponentType>
-inline BasicColor<ComponentType> Blend( const BasicColor<ComponentType>& a,
-									    const BasicColor<ComponentType>& b,
-									    float factor )
+template<class ComponentType, class Traits = ColorComponentTraits<ComponentType>>
+inline BasicColor<ComponentType, Traits> Blend(
+	const BasicColor<ComponentType, Traits>& a,
+	const BasicColor<ComponentType, Traits>& b,
+	float factor )
 {
-	return BasicColor<ComponentType> {
+	return BasicColor<ComponentType, Traits> {
 		ComponentType ( a.Red()   * ( 1 - factor ) + b.Red()   * factor ),
 		ComponentType ( a.Green() * ( 1 - factor ) + b.Green() * factor ),
 		ComponentType ( a.Blue()  * ( 1 - factor ) + b.Blue()  * factor ),
 		ComponentType ( a.Alpha() * ( 1 - factor ) + b.Alpha() * factor ),
 	};
+}
+
+namespace detail {
+
+const char* CString ( const Color32Bit& color );
+
+} // namespace detail
+
+/**
+ * Returns a C string for the given color, suitable for printf-like functions
+ */
+template<class Component, class Traits = ColorComponentTraits<Component>>
+const char* CString( const BasicColor<Component, Traits>& color )
+{
+	return detail::CString( Color32Bit( color ) );
 }
 
 namespace Constants {
@@ -301,27 +317,6 @@ enum {
 	DECOLOR_ON  = '\17', // will have to be checked whether they are really useful
 }; // enum
 } // namespace Constants
-
-namespace NamedString {
-extern const char* Black;
-extern const char* Red;
-extern const char* Green;
-extern const char* Blue;
-extern const char* Yellow;
-extern const char* Orange;
-extern const char* Magenta;
-extern const char* Cyan;
-extern const char* White;
-extern const char* LtGrey;
-extern const char* MdGrey;
-extern const char* MdRed;
-extern const char* MdGreen;
-extern const char* MdCyan;
-extern const char* MdYellow;
-extern const char* LtOrange;
-extern const char* MdBlue;
-extern const char* Null;
-} // namespace Named
 
 namespace Named {
 extern Color Black;
@@ -342,6 +337,7 @@ extern Color DkGreen;
 extern Color MdCyan;
 extern Color MdYellow;
 extern Color MdOrange;
+extern Color LtOrange;
 extern Color MdBlue;
 } // namespace Named
 

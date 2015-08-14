@@ -3649,7 +3649,7 @@ bool G_admin_listplayers( gentity_t *ent )
 {
 	int             i;
 	gclient_t       *p;
-	const char*     color = "";
+	Color::Color    color;
 	char            t; // color and team letter
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
@@ -3679,7 +3679,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		if ( p->pers.connected == CON_CONNECTING )
 		{
 			t = 'C';
-			color = Color::NamedString::Yellow;
+			color = Color::Named::Yellow;
 		}
 		else
 		{
@@ -3687,15 +3687,15 @@ bool G_admin_listplayers( gentity_t *ent )
 
 			if ( p->pers.team == TEAM_HUMANS )
 			{
-				color = Color::NamedString::Cyan;
+				color = Color::Named::Cyan;
 			}
 			else if ( p->pers.team == TEAM_ALIENS )
 			{
-				color = Color::NamedString::Red;
+				color = Color::Named::Red;
 			}
 			else
 			{
-				color = Color::NamedString::White;
+				color = Color::Named::White;
 			}
 		}
 
@@ -3744,7 +3744,7 @@ bool G_admin_listplayers( gentity_t *ent )
 
 		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s\n",
 		           i,
-		           color,
+		           Color::CString( color ),
 		           t,
 		           l ? l->level : 0,
 		           hint ? '*' : ' ',
@@ -3784,7 +3784,7 @@ static int ban_out( void *ban, char *str )
 	int           i, t;
 	char          duration[ MAX_DURATION_LENGTH ];
 	char          time[ MAX_DURATION_LENGTH ];
-	const char    *d_color = Color::NamedString::White;
+	Color::Color  d_color = Color::Named::White;
 	char          date[ 11 ];
 	g_admin_ban_t *b = ( g_admin_ban_t * ) ban;
 	char          *made = b->made;
@@ -3816,23 +3816,23 @@ static int ban_out( void *ban, char *str )
 	{
 		*time = 0;
 		Q_strncpyz( duration, "expired", sizeof( duration ) );
-		d_color = Color::NamedString::Cyan;
+		d_color = Color::Named::Cyan;
 	}
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%s\n"
 	             "         %s\\__ %s%s%-*s %s%-15s ^7%-8s %s\n"
 	             "          %s\\__ %s: ^7%s",
 	             b->name,
-	             G_ADMIN_BAN_IS_WARNING( b ) ? Color::NamedString::Yellow : Color::NamedString::Red,
-	             d_color,
+	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Named::Yellow : Color::Named::Red ),
+	             Color::CString( d_color ),
 	             time,
 	             MAX_DURATION_LENGTH - 1,
 	             duration,
-	             ( strchr( b->ip.str, '/' ) ) ? Color::NamedString::Red : Color::NamedString::White,
+	             Color::CString( ( strchr( b->ip.str, '/' ) ) ? Color::Named::Red : Color::Named::White ),
 	             b->ip.str,
 	             date,
 	             b->banner,
-	             G_ADMIN_BAN_IS_WARNING( b ) ? Color::NamedString::Yellow : Color::NamedString::Red,
+	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Named::Yellow : Color::Named::Red ),
 	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING" : "BAN",
 	             b->reason );
 
@@ -4406,7 +4406,7 @@ static int namelog_out( void *namelog, char *str )
 	namelog_t  *n = ( namelog_t * ) namelog;
 	char       *p = str;
 	int        l, l2 = MAX_STRING_CHARS, i;
-	const char *scolor;
+	Color::Color scolor;
 
 	if ( !str )
 	{
@@ -4415,8 +4415,8 @@ static int namelog_out( void *namelog, char *str )
 
 	if ( n->slot > -1 )
 	{
-		scolor = Color::NamedString::Yellow;
-		l = Q_snprintf( p, l2, "%s%-2d", scolor, n->slot );
+		scolor = Color::Named::Yellow;
+		l = Q_snprintf( p, l2, "%s%-2d", Color::CString( scolor ), n->slot );
 		p += l;
 		l2 -= l;
 	}
@@ -4426,7 +4426,7 @@ static int namelog_out( void *namelog, char *str )
 		*p++ = ' ';
 		*p = '\0';
 		l2 -= 2;
-		scolor = Color::NamedString::White;
+		scolor = Color::Named::White;
 	}
 
 	for ( i = 0; i < MAX_NAMELOG_ADDRS && n->ip[ i ].str[ 0 ]; i++ )
@@ -4438,7 +4438,7 @@ static int namelog_out( void *namelog, char *str )
 
 	for ( i = 0; i < MAX_NAMELOG_NAMES && n->name[ i ][ 0 ]; i++ )
 	{
-		l = Q_snprintf( p, l2, " '^7%s%s'%s", n->name[ i ], scolor,
+		l = Q_snprintf( p, l2, " '^7%s%s'%s", n->name[ i ], Color::CString( scolor ),
 		                i == n->nameOffset ? "*" : "" );
 		p += l;
 		l2 -= l;

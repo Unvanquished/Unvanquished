@@ -770,23 +770,24 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		clientInfo_t *ci = &cgs.clientinfo[ clientNum ];
-		const char *tcolor = Color::NamedString::White;
+		Color::Color tcolor = Color::Named::White;
 
 		name = ci->name;
 		team = ci->team;
 		if ( ci->team == TEAM_ALIENS )
 		{
-			tcolor = Color::NamedString::Red;
+			tcolor = Color::Named::Red;
 		}
 		else if ( ci->team == TEAM_HUMANS )
 		{
-			tcolor = Color::NamedString::Cyan;
+			tcolor = Color::Named::Cyan;
 		}
 
 		if ( cg_chatTeamPrefix.integer )
 		{
 			Com_sprintf( prefix, sizeof( prefix ), "[%s%c^*] ",
-			             tcolor, toupper( * ( BG_TeamName( ci->team ) ) ) );
+			             Color::CString( tcolor ),
+			             toupper( * ( BG_TeamName( ci->team ) ) ) );
 		}
 
 		if ( Com_ClientListContains( &cgs.ignoreList, clientNum ) )
@@ -846,7 +847,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		Q_strcat( prefix, sizeof( prefix ), "* " );
 	}
 
-	const char* color = UI_GetChatColour( mode, team );
+	const char* color = Color::CString( UI_GetChatColour( mode, team ) );
 
 	switch ( mode )
 	{
