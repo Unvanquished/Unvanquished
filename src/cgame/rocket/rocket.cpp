@@ -563,7 +563,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			if ( i->Type() == Color::Token::COLOR  )
 			{
 				char rgb[32];
-				Color::Color32Bit color32 = Color::Adapt( i->Color() );
+				Color::Color32Bit color32 = i->Color();
 				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
 						(int) color32.Red(),
 						(int) color32.Green(),

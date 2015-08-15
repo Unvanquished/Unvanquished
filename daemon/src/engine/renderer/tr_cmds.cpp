@@ -675,7 +675,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 	cmd->s2 = s2;
 	cmd->t2 = t2;
 
-	cmd->gradientColor = Color::Adapt( gradientColor );
+	cmd->gradientColor = gradientColor;
 	cmd->gradientType = gradientType;
 }
 

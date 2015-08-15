@@ -502,7 +502,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const C
 
 	if ( shaderRGBA )
 	{
-		re.shaderRGBA = Color::Adapt( shaderRGBA );
+		re.shaderRGBA = shaderRGBA.Color();
 	}
 
 	VectorCopy( center, re.origin );
@@ -534,7 +534,7 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 
 	if ( shaderRGBA )
 	{
-		re.shaderRGBA = Color::Adapt( shaderRGBA );
+		re.shaderRGBA = shaderRGBA.Color();
 	}
 
 	VectorCopy( tip, re.origin );
@@ -649,7 +649,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 		bshs = &cg.binaryShaderSettings[ cg.numBinaryShadersUsed ];
 
-		bshs->color = Color::Adapt( rgba * lineOpacity );
+		bshs->color = rgba * lineOpacity;
 
 		bshs->drawIntersection = !!cg_rangeMarkerDrawIntersection.integer;
 		bshs->drawFrontline = !!cg_rangeMarkerDrawFrontline.integer;

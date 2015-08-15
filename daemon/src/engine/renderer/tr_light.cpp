@@ -552,7 +552,7 @@ void R_TessLight( const trRefLight_t *light, const Color::OptionalColor& color )
 					// draw pyramid
 					for ( j = 0; j < 4; j++ )
 					{
-						Color::Color32Bit iColor = Color::Adapt( color.Color( Color::Named::Cyan ) );
+						Color::Color32Bit iColor = color.Color( Color::Named::Cyan );
 
 						VectorCopy( top, tess.verts[ tess.numVertexes ].xyz );
 						tess.verts[ tess.numVertexes ].color = iColor;

@@ -73,7 +73,6 @@ public:
 	static constexpr const bool is_color = true;
 	typedef Component component_type;
 	static constexpr const component_type component_max = ColorComponentTraits<Component>::component_max;
-	typedef ColorAdaptor adapter_type;
 
 	static ColorAdaptor Adapt( const Component* array )
 	{
@@ -99,8 +98,6 @@ template<class Component>
 class ColorAdaptor<Component[3]> : public ColorAdaptor<Component*>
 {
 public:
-	typedef ColorAdaptor adapter_type;
-
 	static ColorAdaptor Adapt( const Component array[3] )
 	{
 		return ColorAdaptor( array );
@@ -112,7 +109,7 @@ public:
 };
 
 template<class T>
-typename ColorAdaptor<T>::adapter_type Adapt( const T& object )
+auto Adapt( const T& object ) -> decltype( ColorAdaptor<T>::Adapt( object ) )
 {
 	return ColorAdaptor<T>::Adapt( object );
 }
@@ -122,6 +119,7 @@ template<class Component, class Traits = ColorComponentTraits<Component>>
 class BasicColor
 {
 public:
+	static constexpr const bool is_color = true;
 	typedef Traits color_traits;
 	typedef typename color_traits::component_type component_type;
 	static constexpr const component_type component_max = color_traits::component_max;
@@ -143,25 +141,25 @@ public:
 
 	constexpr BasicColor( BasicColor&& ) noexcept = default;
 
-	template<class T>
-		BasicColor( const ColorAdaptor<T>& adapter ) :
-			red  ( ConvertComponent<ColorAdaptor<T>>( adapter.Red()   ) ),
-			green( ConvertComponent<ColorAdaptor<T>>( adapter.Green() ) ),
-			blue ( ConvertComponent<ColorAdaptor<T>>( adapter.Blue()  ) ),
-			alpha( ConvertComponent<ColorAdaptor<T>>( adapter.Alpha() ) )
+	template<class T, class = std::enable_if<T::is_color>>
+		BasicColor( const T& adaptor ) :
+			red  ( ConvertComponent<T>( adaptor.Red()   ) ),
+			green( ConvertComponent<T>( adaptor.Green() ) ),
+			blue ( ConvertComponent<T>( adaptor.Blue()  ) ),
+			alpha( ConvertComponent<T>( adaptor.Alpha() ) )
 		{}
 
 	BasicColor& operator=( const BasicColor& ) noexcept = default;
 
 	BasicColor& operator=( BasicColor&& ) noexcept = default;
 
-	template<class T>
-		BasicColor& operator=( const ColorAdaptor<T>& adapter )
+	template<class T, class = std::enable_if<T::is_color>>
+		BasicColor& operator=( const T& adaptor )
 		{
-			red   = ConvertComponent<ColorAdaptor<T>>( adapter.Red()   );
-			green = ConvertComponent<ColorAdaptor<T>>( adapter.Green() );
-			blue  = ConvertComponent<ColorAdaptor<T>>( adapter.Blue()  );
-			alpha = ConvertComponent<ColorAdaptor<T>>( adapter.Alpha() );
+			red   = ConvertComponent<T>( adaptor.Red()   );
+			green = ConvertComponent<T>( adaptor.Green() );
+			blue  = ConvertComponent<T>( adaptor.Blue()  );
+			alpha = ConvertComponent<T>( adaptor.Alpha() );
 
 			return *this;
 		}
@@ -338,48 +336,6 @@ private:
 	bool  has_color = false;
 };
 
-template<class Component, class Traits>
-class ColorAdaptor<BasicColor<Component,Traits>>
-{
-public:
-	static constexpr const bool is_color = true;
-	typedef BasicColor<Component,Traits> color_type;
-	typedef typename color_type::component_type component_type;
-	static constexpr const component_type component_max = color_type::component_max;
-	typedef ColorAdaptor adapter_type;
-
-	static adapter_type Adapt( const color_type& object )
-	{
-		return ColorAdaptor( object );
-	}
-
-	ColorAdaptor( const color_type& object ) : object( object ) {}
-
-	component_type Red() const { return object.Red(); }
-	component_type Green() const { return object.Green(); }
-	component_type Blue() const { return object.Blue(); }
-	component_type Alpha() const { return object.Alpha(); }
-
-private:
-	color_type object;
-};
-
-template<class Component, class Traits>
-class ColorAdaptor<BasicOptionalColor<Component,Traits>>
-{
-public:
-	static constexpr const bool is_color = true;
-	typedef typename BasicOptionalColor<Component,Traits>::color_type color_type;
-	typedef typename color_type::component_type component_type;
-	static constexpr const component_type component_max = color_type::component_max;
-	typedef ColorAdaptor<color_type> adapter_type;
-
-	static adapter_type Adapt( const BasicOptionalColor<Component,Traits>& object )
-	{
-		return adapter_type( object.Color() );
-	}
-};
-
 typedef BasicColor<float>         Color;
 typedef BasicOptionalColor<float> OptionalColor;
 typedef BasicColor<uint8_t>       Color32Bit;
@@ -406,7 +362,7 @@ constexpr BasicColor<ComponentType, Traits> Blend(
 
 namespace detail {
 
-const char* CString ( const Color32Bit& color );
+const char* CString( const Color32Bit& color );
 
 } // namespace detail
 
@@ -416,7 +372,7 @@ const char* CString ( const Color32Bit& color );
 template<class Component, class Traits = ColorComponentTraits<Component>>
 const char* CString( const BasicColor<Component, Traits>& color )
 {
-	return detail::CString( Adapt( color ) );
+	return detail::CString( color );
 }
 
 namespace Constants {

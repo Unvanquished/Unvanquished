@@ -278,7 +278,7 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const Color::C
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
-	Color::Color32Bit iColor = Color::Adapt( color );
+	Color::Color32Bit iColor = color;
 
 	for ( i = 0; i < 4; i++ )
 	{
@@ -366,7 +366,7 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, fl
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
-	Color::Color32Bit iColor = Color::Adapt( color );
+	Color::Color32Bit iColor = color;
 	for ( i = 0; i < 4; i++ )
 	{
 		tess.verts[ ndx + i ].color = iColor;
@@ -438,7 +438,7 @@ void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const Color::Color& colorf )
 
 	Tess_CheckOverflow( 12, 12 );
 
-	Color::Color32Bit color = Color::Adapt( colorf );
+	Color::Color32Bit color = colorf;
 
 	// ground triangle
 	for ( k = 0; k < 3; k++ )
@@ -669,7 +669,7 @@ static void Tess_SurfaceSprite()
 		VectorSubtract( vec3_origin, left, left );
 
 	Tess_AddQuadStamp( backEnd.currentEntity->e.origin, left, up,
-		Color::Adapt( backEnd.currentEntity->e.shaderRGBA ) );
+		backEnd.currentEntity->e.shaderRGBA );
 }
 
 /*

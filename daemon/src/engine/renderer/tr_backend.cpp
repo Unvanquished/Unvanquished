@@ -4759,7 +4759,7 @@ const void     *RB_SetColor( const void *data )
 
 	cmd = ( const setColorCommand_t * ) data;
 
-	backEnd.color2D = Color::Adapt( cmd->color );
+	backEnd.color2D = cmd->color;
 
 	return ( const void * )( cmd + 1 );
 }

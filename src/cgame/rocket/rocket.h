@@ -82,9 +82,8 @@ public:
 	typedef Rocket::Core::Colour<ColourType,AlphaDefault> color_type;
 	typedef ColourType component_type;
 	static constexpr const component_type component_max = AlphaDefault;
-	typedef ColorAdaptor adapter_type;
 
-	static adapter_type Adapt( const color_type& object )
+	static ColorAdaptor Adapt( const color_type& object )
 	{
 		return ColorAdaptor( object );
 	}

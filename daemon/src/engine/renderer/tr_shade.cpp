@@ -2403,7 +2403,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_CONST:
 			{
-				tess.svars.color = Color::Adapt( pStage->constantColor );
+				tess.svars.color = pStage->constantColor;
 				break;
 			}
 
@@ -2416,7 +2416,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color = Color::Adapt( backEnd.currentEntity->e.shaderRGBA );
+					tess.svars.color = backEnd.currentEntity->e.shaderRGBA;
 					tess.svars.color.Clamp();
 				}
 				else
@@ -2438,7 +2438,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color = Color::Adapt( backEnd.currentEntity->e.shaderRGBA );
+					tess.svars.color = backEnd.currentEntity->e.shaderRGBA;
 					tess.svars.color.Clamp();
 				}
 				else
