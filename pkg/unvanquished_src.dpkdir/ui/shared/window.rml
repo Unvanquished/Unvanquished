@@ -12,10 +12,11 @@
 			padding: 1.5em;
 
 			background-color: rgba( 10%,10%,10%, 95%);
-			border-style:solid;
-			border-width:1px;
-			border-color: rgba( 0%, 0%, 0%, 40%);
 
+			border-left: 1px rgba( 0%, 0%, 0%, 35%);
+			border-right: 1px rgba( 0%, 0%, 0%, 35%);
+			border-top: 1px rgba( 0%, 0%, 0%, 35%);
+			border-bottom: 1px rgba( 0%, 0%, 0%, 35%);
 		}
 
 		closebutton {
