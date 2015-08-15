@@ -160,7 +160,17 @@ inline int my_open(Str::StringRef path, openMode_t mode)
 {
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 #ifdef _WIN32
-	int fd = _wopen(Str::UTF8To16(path).c_str(), modes[mode] | O_BINARY, _S_IREAD | _S_IWRITE);
+	// Allow open files to be deleted & renamed
+	DWORD access[] = {GENERIC_READ, GENERIC_WRITE, GENERIC_WRITE, GENERIC_READ | GENERIC_WRITE};
+	DWORD create[] = {OPEN_EXISTING, CREATE_ALWAYS, OPEN_ALWAYS, OPEN_ALWAYS};
+	HANDLE h = CreateFileW(Str::UTF8To16(path).c_str(), access[mode], FILE_SHARE_DELETE, NULL, create[mode], FILE_ATTRIBUTE_NORMAL, NULL);
+	if (h == INVALID_HANDLE_VALUE) {
+		_doserrno = GetLastError();
+		return -1;
+	}
+	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(h), modes[mode] | O_BINARY | O_NOINHERIT);
+	if (fd == -1)
+		CloseHandle(h);
 #elif defined(__APPLE__)
 	// O_CLOEXEC is supported from 10.7 onwards
 	int fd = open(path.c_str(), modes[mode] | O_CLOEXEC, 0666);
@@ -2399,7 +2409,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_MOVEFILE:
-		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool success) {
+		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool& success) {
 			std::error_code err;
 			HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src), err);
 			success = !err;
@@ -2407,7 +2417,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_DELETEFILE:
-		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool success) {
+		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool& success) {
 			std::error_code err;
 			HomePath::DeleteFile(Path::Build("game", path), err);
 			success = !err;
