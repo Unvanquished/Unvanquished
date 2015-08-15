@@ -423,7 +423,7 @@ static void CG_Missile( centity_t *cent )
 		ent.radius = ma->spriteSize + ma->spriteCharge * es->torsoAnim;
 		ent.rotation = 0;
 		ent.customShader = ma->sprite;
-		ent.shaderRGBA = Color::Color32Bit( 0xFF, 0xFF, 0xFF, 0xFF );
+		ent.shaderRGBA = Color::Named::White;
 	}
 	else if ( ma->model )
 	{
@@ -717,7 +717,7 @@ static void CG_LightFlare( centity_t *cent )
 
 	flare.reType = RT_SPRITE;
 	flare.customShader = cgs.gameShaders[ es->modelindex ];
-	flare.shaderRGBA = { 0xFF, 0xFF, 0xFF, 0xFF };
+	flare.shaderRGBA = Color::Named::White;
 
 	//flares always drawn before the rest of the scene
 	flare.renderfx |= RF_DEPTHHACK;

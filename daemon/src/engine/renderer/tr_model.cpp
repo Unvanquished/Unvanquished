@@ -291,7 +291,7 @@ bool RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfig2Out )
 	RE_ClearScene();
 
 	// HACK: give world entity white color for "colored" shader keyword
-	tr.worldEntity.e.shaderRGBA = Color::Color32Bit( 0xFF, 0xFF, 0xFF, 0xFF );
+	tr.worldEntity.e.shaderRGBA = Color::Named::White;
 
 	tr.worldEntity.e.nonNormalizedAxes = false;
 
