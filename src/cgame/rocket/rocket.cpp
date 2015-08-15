@@ -406,6 +406,7 @@ void Rocket_Shutdown()
 		hudContext = nullptr;
 	}
 
+	Rocket::Core::Lua::Interpreter::Shutdown();
 	Rocket::Core::Shutdown();
 
 	// Prevent memory leaks
