@@ -47,13 +47,22 @@ Maryland 20850 USA.
 
 namespace Color {
 
+/*
+ * Template class to get information on color components
+ */
 template<class T>
 	struct ColorComponentTraits
 {
+	// Type used to represent the components
 	typedef T component_type;
+	// Maxiumum value for a component
 	static constexpr const component_type component_max = std::numeric_limits<component_type>::max();
+	// Size of a component value in bytes
 	static constexpr const std::size_t component_size = sizeof(component_type);
 };
+/*
+ * Specialization for normalized floats
+ */
 template<>
 	struct ColorComponentTraits<float>
 {
@@ -62,10 +71,29 @@ template<>
 	static constexpr const std::size_t    component_size = sizeof(component_type);
 };
 
+/*
+ * ColorAdaptor to convert different representations of RGB(A) colors to BasicColor
+ *
+ * Specializations must provide the following members:
+ * 	static (AdaptedType) Adapt( TemplateType ); // Creates an object matching the Color concept
+ *
+ * Requirements for AdaptedType:
+ * 	static bool is_color = true;
+ * 	typedef (unspecified) component_type; // See ColorComponentTraits
+ * 	static component_type component_max = (unspecified); // See ColorComponentTraits
+ * 	component_type Red()   const; // Red component
+ * 	component_type Green() const; // Green component
+ * 	component_type Blue()  const; // Blue component
+ * 	component_type Alpha() const; // Alpha component
+ *
+ */
 template<class T>
 class ColorAdaptor;
 
-// Assume it has 4 Component
+/*
+ * Specializations for arrays
+ * Assumes it has 4 Component
+ */
 template<class Component>
 class ColorAdaptor<Component*>
 {
@@ -108,6 +136,10 @@ public:
 	Component Alpha() const { return ColorAdaptor<Component*>::component_max; }
 };
 
+/*
+ * Creates an adaptor for the given value
+ * T must have a proper specialization of ColorAdaptor
+ */
 template<class T>
 auto Adapt( const T& object ) -> decltype( ColorAdaptor<T>::Adapt( object ) )
 {
@@ -164,6 +196,7 @@ public:
 			return *this;
 		}
 
+	// Converts to an array
 	constexpr const component_type* ToArray() const noexcept
 	{
 		return &red;
@@ -245,6 +278,7 @@ public:
 		return BasicColor( red * factor, green * factor, blue * factor, alpha * factor );
 	}
 
+	// Fits the component values from 0 to component_max
 	void Clamp()
 	{
 		red = Math::Clamp( red, component_type(), component_max );
@@ -254,8 +288,7 @@ public:
 	}
 
 private:
-	// Converts a component, used by the explicit constructor converting between
-	// colors with different template arguments
+	// Converts a component, used by conversions from classes implementing the Color concepts
 	template<class T>
 	static constexpr
 		typename std::enable_if<component_max != T::component_max, component_type>::type
@@ -268,6 +301,7 @@ private:
 
 		return work_type( from )  / work_type( T::component_max ) * work_type( component_max );
 	}
+	// Specialization for when the value shouldn't change
 	template<class T>
 	static constexpr
 		typename std::enable_if<component_max == T::component_max, component_type>::type
@@ -280,6 +314,7 @@ private:
 
 };
 
+// A color that might need to fall back to a default value
 template<class Component, class Traits = ColorComponentTraits<Component>>
 class BasicOptionalColor
 {
@@ -497,10 +532,10 @@ public:
 
 private:
 
-	const charT*  begin = nullptr;
-	const charT*  end   = nullptr;
-	TokenType     type  = INVALID;
-	::Color::Color   color;
+	const charT*   begin = nullptr;
+	const charT*   end   = nullptr;
+	TokenType      type  = INVALID;
+	::Color::Color color;
 
 };
 
@@ -678,7 +713,6 @@ using Token = BasicToken<char>;
 // Default token iterator for Utf-8 C-strings
 using TokenIterator = BasicTokenIterator<char, TokenAdvanceUtf8>;
 
-
 // Returns the number of characters in a string discarding color codes
 // UTF-8 sequences are counted as a single character
 int StrlenNocolor( const char* string );
@@ -692,8 +726,6 @@ void StripColors( const char *in, char *out, int len );
 
 // Overload for C++ strings
 std::string StripColors( const std::string& input );
-
-
 
 } // namespace Color
 
