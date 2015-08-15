@@ -1,8 +1,8 @@
 #Unvanquished
 
 [![GitHub tag](https://img.shields.io/github/tag/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/tags)
-[![GitHub release](https://img.shields.io/github/release/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/releases)
-[![Github release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/latest/total.svg)]()
+[![GitHub release](https://img.shields.io/github/release/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
+[![Github release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/latest/total.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
 
 [![IRC](http://img.shields.io/irc/%23unvanquished%2C%23unvanquished-dev.png)](https://webchat.freenode.net/?channels=%23unvanquished%2C%23unvanquished-dev)
 

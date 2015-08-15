@@ -920,7 +920,7 @@ namespace Math {
 	template<size_t Dimension, typename Type, typename Enable = typename std::enable_if<std::is_floating_point<Type>::value>::type>
 	Type Distance(Vector<Dimension, Type> a, Vector<Dimension, Type> b)
 	{
-		return sqrt(distanceSq(a, b));
+		return sqrt(DistanceSq(a, b));
 	}
 
 	// Vector cross product

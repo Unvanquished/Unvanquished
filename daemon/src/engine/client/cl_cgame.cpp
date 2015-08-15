@@ -1493,7 +1493,7 @@ void CGameVM::CGameMouseEvent(int dx, int dy)
 	this->SendMsg<CGameMouseEventMsg>(dx, dy);
 }
 
-void CGameVM::CGameTextInputEvent(char c)
+void CGameVM::CGameTextInputEvent(int c)
 {
 	this->SendMsg<CGameTextInptEvent>(c);
 }
@@ -1981,8 +1981,8 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 			// All sounds
 
 			case CG_S_STARTSOUND:
-				HandleMsg<Audio::StartSoundMsg>(std::move(reader), [this] (bool isPositional, std::array<float, 3> origin, int entityNum, int sfx) {
-					Audio::StartSound(entityNum, (isPositional ? origin.data() : nullptr), sfx);
+				HandleMsg<Audio::StartSoundMsg>(std::move(reader), [this] (bool isPositional, Vec3 origin, int entityNum, int sfx) {
+					Audio::StartSound((isPositional ? -1 : entityNum), origin, sfx);
 				});
 				break;
 
@@ -2011,14 +2011,14 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 				break;
 
 			case CG_S_UPDATEENTITYPOSITION:
-				HandleMsg<Audio::UpdateEntityPositionMsg>(std::move(reader), [this] (int entityNum, std::array<float, 3> position) {
-					Audio::UpdateEntityPosition(entityNum, position.data());
+				HandleMsg<Audio::UpdateEntityPositionMsg>(std::move(reader), [this] (int entityNum, Vec3 position) {
+					Audio::UpdateEntityPosition(entityNum, position);
 				});
 				break;
 
 			case CG_S_RESPATIALIZE:
-				HandleMsg<Audio::RespatializeMsg>(std::move(reader), [this] (int entityNum, const std::array<float, 9>& axis) {
-					Audio::UpdateListener(entityNum, (vec3_t*) axis.data());
+				HandleMsg<Audio::RespatializeMsg>(std::move(reader), [this] (int entityNum, const std::array<Vec3, 3>& axis) {
+					Audio::UpdateListener(entityNum, axis.data());
 				});
 				break;
 
@@ -2035,8 +2035,8 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 				break;
 
 			case CG_S_UPDATEENTITYVELOCITY:
-				HandleMsg<Audio::UpdateEntityVelocityMsg>(std::move(reader), [this] (int entityNum, std::array<float, 3> velocity) {
-					Audio::UpdateEntityVelocity(entityNum, velocity.data());
+				HandleMsg<Audio::UpdateEntityVelocityMsg>(std::move(reader), [this] (int entityNum, Vec3 velocity) {
+					Audio::UpdateEntityVelocity(entityNum, velocity);
 				});
 				break;
 

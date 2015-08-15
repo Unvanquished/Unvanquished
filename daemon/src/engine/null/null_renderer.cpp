@@ -202,6 +202,21 @@ void                                RE_ScissorEnable( bool enable ) { }
 void                                RE_ScissorSet( int x, int y, int w, int h ) { }
 void     R_SetAltShaderTokens( const char *name ) { }
 
+void RE_GetTextureSize( int textureID, int *width, int *height )
+{
+    *width = 1;
+    *height = 1;
+}
+void RE_Add2dPolysIndexed( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader ) { }
+qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
+{
+    return 1;
+}
+const char *RE_ShaderNameFromHandle( qhandle_t shader )
+{
+    return "";
+}
+
 bool RE_BeginRegistration( glconfig_t *config, glconfig2_t *glconfig2 )
 {
 	Com_Memset( config, 0, sizeof( glconfig_t ) );
@@ -308,6 +323,11 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
 
     re.ScissorEnable = RE_ScissorEnable;
     re.ScissorSet = RE_ScissorSet;
+
+    re.GetTextureSize = RE_GetTextureSize;
+    re.Add2dPolysIndexed = RE_Add2dPolysIndexed;
+    re.GenerateTexture = RE_GenerateTexture;
+    re.ShaderNameFromHandle = RE_ShaderNameFromHandle;
 
     return &re;
 }

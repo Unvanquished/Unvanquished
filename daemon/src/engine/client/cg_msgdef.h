@@ -340,7 +340,7 @@ namespace Audio {
     //Command buffer syscalls
 
 	// StartSoundMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTSOUND>, bool, std::array<float, 3>, int, int> StartSoundMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTSOUND>, bool, Vec3, int, int> StartSoundMsg;
 	// StartLocalSoundMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTLOCALSOUND>, int> StartLocalSoundMsg;
 	// ClearLoopingSoundsMsg
@@ -350,15 +350,15 @@ namespace Audio {
 	// StopLoopingSoundMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STOPLOOPINGSOUND>, int> StopLoopingSoundMsg;
 	// UpdateEntityPositionMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYPOSITION>, int, std::array<float, 3>> UpdateEntityPositionMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYPOSITION>, int, Vec3> UpdateEntityPositionMsg;
 	// RespatializeMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_RESPATIALIZE>, int, std::array<float, 9>> RespatializeMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_RESPATIALIZE>, int, std::array<Vec3, 3>> RespatializeMsg;
 	// StartBackgroundTrackMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTBACKGROUNDTRACK>, std::string, std::string> StartBackgroundTrackMsg;
 	// StopBackgroundTrackMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STOPBACKGROUNDTRACK>> StopBackgroundTrackMsg;
 	// UpdateEntityVelocityMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYVELOCITY>, int, std::array<float, 3>> UpdateEntityVelocityMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYVELOCITY>, int, Vec3> UpdateEntityVelocityMsg;
 	// SetReverbMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_SETREVERB>, int, std::string, float> SetReverbMsg;
 	// BeginRegistrationMsg
@@ -807,7 +807,7 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
 > CGameMouseEventMsg;
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, char>
+	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, int>
 > CGameTextInptEvent;
 
 //TODO Check all rocket calls

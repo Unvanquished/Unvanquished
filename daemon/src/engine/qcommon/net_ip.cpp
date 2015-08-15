@@ -62,10 +62,12 @@ typedef int socklen_t;
 typedef unsigned short sa_family_t;
 #       endif
 
-#       define EAGAIN        WSAEWOULDBLOCK
-#       define EADDRNOTAVAIL WSAEADDRNOTAVAIL
-#       define EAFNOSUPPORT  WSAEAFNOSUPPORT
-#       define ECONNRESET    WSAECONNRESET
+#       ifndef __MINGW32__
+#               define EAGAIN        WSAEWOULDBLOCK
+#               define EADDRNOTAVAIL WSAEADDRNOTAVAIL
+#               define EAFNOSUPPORT  WSAEAFNOSUPPORT
+#               define ECONNRESET    WSAECONNRESET
+#       endif
 #       define socketError   WSAGetLastError()
 
 static WSADATA  winsockdata;
@@ -176,7 +178,7 @@ static int             numIP;
 NET_ErrorString
 ====================
 */
-char *NET_ErrorString()
+const char *NET_ErrorString()
 {
 #ifdef _WIN32
 
@@ -1561,7 +1563,7 @@ void NET_OpenSocks( int port )
 NET_AddLocalAddress
 =====================
 */
-static void NET_AddLocalAddress( char *ifname, struct sockaddr *addr, struct sockaddr *netmask )
+static void NET_AddLocalAddress( const char *ifname, struct sockaddr *addr, struct sockaddr *netmask )
 {
 	int         addrlen;
 	sa_family_t family;

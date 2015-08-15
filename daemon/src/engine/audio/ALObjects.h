@@ -155,9 +155,9 @@ namespace AL {
 
     // The Listener Gain is the global OpenAL Gain
     void SetListenerGain(float gain);
-    void SetListenerPosition(const vec3_t position);
-    void SetListenerVelocity(const vec3_t velocity);
-    void SetListenerOrientation(const vec3_t orientation[3]);
+    void SetListenerPosition(Vec3 position);
+    void SetListenerVelocity(Vec3 velocity);
+    void SetListenerOrientation(const Vec3 orientation[3]);
 
     void SetInverseDistanceModel();
     void SetSpeedOfSound(float speed);
@@ -193,8 +193,8 @@ namespace AL {
             void ResetBuffer();
 
             void SetGain(float gain);
-            void SetPosition(const vec3_t position);
-            void SetVelocity(const vec3_t velocity);
+            void SetPosition(Vec3 position);
+            void SetVelocity(Vec3 velocity);
             void SetLooping(bool loop);
             void SetRolloff(float factor);
             void SetReferenceDistance(float distance);

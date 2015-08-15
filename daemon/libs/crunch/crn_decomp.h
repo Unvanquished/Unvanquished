@@ -1270,15 +1270,16 @@ namespace crnd
 
       enum { cNumComps = 4 };
 
+      struct ColorFields {
+        component_type r;
+        component_type g;
+        component_type b;
+        component_type a;
+      };
+
       union
       {
-         struct
-         {
-            component_type r;
-            component_type g;
-            component_type b;
-            component_type a;
-         };
+         ColorFields f;
 
          component_type c[cNumComps];
       };
@@ -1288,13 +1289,16 @@ namespace crnd
       }
 
       inline color_quad(eClear) :
-         r(0), g(0), b(0), a(0)
+         f(0, 0, 0, 0)
       {
       }
 
-      inline color_quad(const color_quad& other) :
-         r(other.r), g(other.g), b(other.b), a(other.a)
+      inline color_quad(const color_quad& other)
       {
+          f.r = other.f.r;
+          f.g = other.f.g;
+          f.b = other.f.b;
+          f.a = other.f.a;
       }
 
       inline color_quad(parameter_type y, parameter_type alpha = component_traits::cMax)
@@ -1309,70 +1313,70 @@ namespace crnd
 
       template<typename other_component_type, typename other_parameter_type>
       inline color_quad(const color_quad<other_component_type, other_parameter_type>& other) :
-         r(clamp(other.r)), g(clamp(other.g)), b(clamp(other.b)), a(clamp(other.a))
+         f(clamp(other.f.r), clamp(other.f.g), clamp(other.f.b), clamp(other.f.a))
       {
       }
 
       inline void clear()
       {
-         r = 0;
-         g = 0;
-         b = 0;
-         a = 0;
+         f.r = 0;
+         f.g = 0;
+         f.b = 0;
+         f.a = 0;
       }
 
       inline color_quad& operator= (const color_quad& other)
       {
-         r = other.r;
-         g = other.g;
-         b = other.b;
-         a = other.a;
+         f.r = other.f.r;
+         f.g = other.f.g;
+         f.b = other.f.b;
+         f.a = other.f.a;
          return *this;
       }
 
       template<typename other_component_type, typename other_parameter_type>
       inline color_quad& operator=(const color_quad<other_component_type, other_parameter_type>& other)
       {
-         r = clamp(other.r);
-         g = clamp(other.g);
-         b = clamp(other.b);
-         a = clamp(other.a);
+         f.r = clamp(other.f.r);
+         f.g = clamp(other.f.g);
+         f.b = clamp(other.f.b);
+         f.a = clamp(other.f.a);
          return *this;
       }
 
       inline color_quad& set(parameter_type y, parameter_type alpha = component_traits::cMax)
       {
          y = clamp(y);
-         r = static_cast<component_type>(y);
-         g = static_cast<component_type>(y);
-         b = static_cast<component_type>(y);
-         a = static_cast<component_type>(alpha);
+         f.r = static_cast<component_type>(y);
+         f.g = static_cast<component_type>(y);
+         f.b = static_cast<component_type>(y);
+         f.a = static_cast<component_type>(alpha);
          return *this;
       }
 
       inline color_quad& set(parameter_type red, parameter_type green, parameter_type blue, parameter_type alpha = component_traits::cMax)
       {
-         r = static_cast<component_type>(clamp(red));
-         g = static_cast<component_type>(clamp(green));
-         b = static_cast<component_type>(clamp(blue));
-         a = static_cast<component_type>(clamp(alpha));
+         f.r = static_cast<component_type>(clamp(red));
+         f.g = static_cast<component_type>(clamp(green));
+         f.b = static_cast<component_type>(clamp(blue));
+         f.a = static_cast<component_type>(clamp(alpha));
          return *this;
       }
 
       inline color_quad& set_noclamp_rgba(parameter_type red, parameter_type green, parameter_type blue, parameter_type alpha)
       {
-         r = static_cast<component_type>(red);
-         g = static_cast<component_type>(green);
-         b = static_cast<component_type>(blue);
-         a = static_cast<component_type>(alpha);
+         f.r = static_cast<component_type>(red);
+         f.g = static_cast<component_type>(green);
+         f.b = static_cast<component_type>(blue);
+         f.a = static_cast<component_type>(alpha);
          return *this;
       }
 
       inline color_quad& set_noclamp_rgb(parameter_type red, parameter_type green, parameter_type blue)
       {
-         r = static_cast<component_type>(red);
-         g = static_cast<component_type>(green);
-         b = static_cast<component_type>(blue);
+         f.r = static_cast<component_type>(red);
+         f.g = static_cast<component_type>(green);
+         f.b = static_cast<component_type>(blue);
          return *this;
       }
 
@@ -1409,28 +1413,28 @@ namespace crnd
       // Returns CCIR 601 luma (consistent with color_utils::RGB_To_Y).
       inline parameter_type get_luma() const
       {
-         return static_cast<parameter_type>((19595U * r + 38470U * g + 7471U * b + 32768) >> 16U);
+         return static_cast<parameter_type>((19595U * f.r + 38470U * f.g + 7471U * f.b + 32768) >> 16U);
       }
 
       // Returns REC 709 luma.
       inline parameter_type get_luma_rec709() const
       {
-         return static_cast<parameter_type>((13938U * r + 46869U * g + 4729U * b + 32768U) >> 16U);
+         return static_cast<parameter_type>((13938U * f.r + 46869U * f.g + 4729U * f.b + 32768U) >> 16U);
       }
 
       inline uint32 squared_distance(const color_quad& c, bool alpha = true) const
       {
-         return math::square(r - c.r) + math::square(g - c.g) + math::square(b - c.b) + (alpha ? math::square(a - c.a) : 0);
+         return math::square(f.r - c.f.r) + math::square(f.g - c.f.g) + math::square(f.b - c.f.b) + (alpha ? math::square(f.a - c.f.a) : 0);
       }
 
       inline bool rgb_equals(const color_quad& rhs) const
       {
-         return (r == rhs.r) && (g == rhs.g) && (b == rhs.b);
+         return (f.r == rhs.f.r) && (f.g == rhs.f.g) && (f.b == rhs.f.b);
       }
 
       inline bool operator== (const color_quad& rhs) const
       {
-         return (r == rhs.r) && (g == rhs.g) && (b == rhs.b) && (a == rhs.a);
+         return (f.r == rhs.f.r) && (f.g == rhs.f.g) && (f.b == rhs.f.b) && (f.a == rhs.f.a);
       }
 
       inline bool operator< (const color_quad& rhs) const
@@ -1565,7 +1569,7 @@ namespace crnd
    struct scalar_type< color_quad<c, q> >
    {
       enum { cFlag = true };
-      static inline void construct(color_quad<c, q>* p) { }
+      static inline void construct(color_quad<c, q>*) { }
       static inline void construct(color_quad<c, q>* p, const color_quad<c, q>& init) { memcpy(p, &init, sizeof(color_quad<c, q>)); }
       static inline void construct_array(color_quad<c, q>* p, uint32 n) { p, n; }
       static inline void destruct(color_quad<c, q>* p) { p; }
@@ -3364,9 +3368,9 @@ namespace crnd
 
    uint16 dxt1_block::pack_color(const color_quad_u8& color, bool scaled, uint32 bias)
    {
-      uint32 r = color.r;
-      uint32 g = color.g;
-      uint32 b = color.b;
+      uint32 r = color.f.r;
+      uint32 g = color.f.g;
+      uint32 b = color.f.b;
 
       if (scaled)
       {
@@ -3406,9 +3410,9 @@ namespace crnd
    void dxt1_block::unpack_color(uint32& r, uint32& g, uint32& b, uint16 packed_color, bool scaled)
    {
       color_quad_u8 c(unpack_color(packed_color, scaled, 0));
-      r = c.r;
-      g = c.g;
-      b = c.b;
+      r = c.f.r;
+      g = c.f.g;
+      b = c.f.b;
    }
 
    uint32 dxt1_block::get_block_colors3(color_quad_u8* pDst, uint16 color0, uint16 color1)
@@ -3418,7 +3422,7 @@ namespace crnd
 
       pDst[0] = c0;
       pDst[1] = c1;
-      pDst[2].set( (c0.r + c1.r) >> 1U, (c0.g + c1.g) >> 1U, (c0.b + c1.b) >> 1U, 255U);
+      pDst[2].set( (c0.f.r + c1.f.r) >> 1U, (c0.f.g + c1.f.g) >> 1U, (c0.f.b + c1.f.b) >> 1U, 255U);
       pDst[3].set(0, 0, 0, 0);
 
       return 3;
@@ -3437,8 +3441,8 @@ namespace crnd
       //pDst[2].set( (c0.r * 2 + c1.r + 1) / 3, (c0.g * 2 + c1.g + 1) / 3, (c0.b * 2 + c1.b + 1) / 3, 255U);
       //pDst[3].set( (c1.r * 2 + c0.r + 1) / 3, (c1.g * 2 + c0.g + 1) / 3, (c1.b * 2 + c0.b + 1) / 3, 255U);
 
-      pDst[2].set( (c0.r * 2 + c1.r) / 3, (c0.g * 2 + c1.g) / 3, (c0.b * 2 + c1.b) / 3, 255U);
-      pDst[3].set( (c1.r * 2 + c0.r) / 3, (c1.g * 2 + c0.g) / 3, (c1.b * 2 + c0.b) / 3, 255U);
+      pDst[2].set( (c0.f.r * 2 + c1.f.r) / 3, (c0.f.g * 2 + c1.f.g) / 3, (c0.f.b * 2 + c1.f.b) / 3, 255U);
+      pDst[3].set( (c1.f.r * 2 + c0.f.r) / 3, (c1.f.g * 2 + c0.f.g) / 3, (c1.f.b * 2 + c0.f.b) / 3, 255U);
 
       return 4;
    }
@@ -3503,27 +3507,27 @@ namespace crnd
 
    uint32 dxt5_block::get_block_values6(color_quad_u8* pDst, uint32 l, uint32 h)
    {
-      pDst[0].a = static_cast<uint8>(l);
-      pDst[1].a = static_cast<uint8>(h);
-      pDst[2].a = static_cast<uint8>((l * 4 + h    ) / 5);
-      pDst[3].a = static_cast<uint8>((l * 3 + h * 2) / 5);
-      pDst[4].a = static_cast<uint8>((l * 2 + h * 3) / 5);
-      pDst[5].a = static_cast<uint8>((l     + h * 4) / 5);
-      pDst[6].a = 0;
-      pDst[7].a = 255;
+      pDst[0].f.a = static_cast<uint8>(l);
+      pDst[1].f.a = static_cast<uint8>(h);
+      pDst[2].f.a = static_cast<uint8>((l * 4 + h    ) / 5);
+      pDst[3].f.a = static_cast<uint8>((l * 3 + h * 2) / 5);
+      pDst[4].f.a = static_cast<uint8>((l * 2 + h * 3) / 5);
+      pDst[5].f.a = static_cast<uint8>((l     + h * 4) / 5);
+      pDst[6].f.a = 0;
+      pDst[7].f.a = 255;
       return 6;
    }
 
    uint32 dxt5_block::get_block_values8(color_quad_u8* pDst, uint32 l, uint32 h)
    {
-      pDst[0].a = static_cast<uint8>(l);
-      pDst[1].a = static_cast<uint8>(h);
-      pDst[2].a = static_cast<uint8>((l * 6 + h    ) / 7);
-      pDst[3].a = static_cast<uint8>((l * 5 + h * 2) / 7);
-      pDst[4].a = static_cast<uint8>((l * 4 + h * 3) / 7);
-      pDst[5].a = static_cast<uint8>((l * 3 + h * 4) / 7);
-      pDst[6].a = static_cast<uint8>((l * 2 + h * 5) / 7);
-      pDst[7].a = static_cast<uint8>((l     + h * 6) / 7);
+      pDst[0].f.a = static_cast<uint8>(l);
+      pDst[1].f.a = static_cast<uint8>(h);
+      pDst[2].f.a = static_cast<uint8>((l * 6 + h    ) / 7);
+      pDst[3].f.a = static_cast<uint8>((l * 5 + h * 2) / 7);
+      pDst[4].f.a = static_cast<uint8>((l * 4 + h * 3) / 7);
+      pDst[5].f.a = static_cast<uint8>((l * 3 + h * 4) / 7);
+      pDst[6].f.a = static_cast<uint8>((l * 2 + h * 5) / 7);
+      pDst[7].f.a = static_cast<uint8>((l     + h * 6) / 7);
       return 8;
    }
 

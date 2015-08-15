@@ -45,7 +45,9 @@ set(MSVC_INCREMENTAL_DEFAULT ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Default to Release builds. To use system CFLAGS only (for distro builds), set CMAKE_BUILD_TYPE to None
-set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
 
 if (Daemon_OUT)
     set(CMAKE_CURRENT_BINARY_DIR ${Daemon_OUT})
@@ -99,12 +101,13 @@ include(DaemonPlatform)
 ################################################################################
 
 # Dependencies version, this must match the number in external_deps/build.sh
-set(DEPS_VERSION 3)
+set(DEPS_VERSION 4)
 
 set(MOUNT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(MOUNT_DIR ${MOUNT_DIR} PARENT_SCOPE)
 include_directories(${MOUNT_DIR})
 set(OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
+set(OBJ_DIR ${OBJ_DIR} PARENT_SCOPE)
 set(ENGINE_DIR ${MOUNT_DIR}/engine)
 set(ENGINE_DIR ${ENGINE_DIR} PARENT_SCOPE)
 set(COMMON_DIR ${MOUNT_DIR}/common)
@@ -157,249 +160,24 @@ set(DEPS_DIR ${DEPS_DIR} PARENT_SCOPE)
 
 include(DaemonFlags)
 
-if (MSVC)
-    set_c_cxx_flag("/MP")
-    set_c_cxx_flag("/fp:fast")
-    set_c_cxx_flag("/d2Zi+" RELWITHDEBINFO)
-    if (ARCH STREQUAL "x86")
-        set_c_cxx_flag("/arch:SSE2")
-    endif()
-    if (USE_LTO)
-        set_c_cxx_flag("/GL" MINSIZEREL)
-        set_c_cxx_flag("/GL" RELWITHDEBINFO)
-        set_c_cxx_flag("/GL" RELEASE)
-        set_linker_flag("/LTCG" MINSIZEREL)
-        set_linker_flag("/LTCG" RELWITHDEBINFO)
-        set_linker_flag("/LTCG" RELEASE)
-    endif()
-    set_linker_flag("/LARGEADDRESSAWARE")
-
-    try_flag(WARNINGS   "/wd4068")
-
-    # Turn off C4503:, e.g:
-    # warning C4503: 'std::_Tree<std::_Tmap_traits<_Kty,_Ty,_Pr,_Alloc,false>>::_Insert_hint' : decorated name length exceeded, name was truncated
-    # No issue will be caused from this error as long as no two symbols become identical by being truncated.
-    # In practice this rarely happens and even the standard libraries are affected as in the example. So there really is not
-    # much that can to done about it and the warnings about each truncation really just make it more likely
-    # that other more real issues might get missed. So better to remove the distraction when it really is very unlikey to happen.
-    set_c_cxx_flag("/wd4503")
-
-    # Turn off warning C4996:, e.g:
-    # warning C4996: 'open': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _open. See online help for details.    set_c_cxx_flag("/wd4996")
-    # open seems far more popular than _open not to mention nicer. There doesn't seem to be any reason or will to change to _open.
-    # So until there is a specific plan to tackle all of these type of warnings it's best to turn them off to the distraction.
-    set_c_cxx_flag("/wd4996")
-elseif (NACL)
-    set_c_flag("-std=c11")
-    set_cxx_flag("-std=gnu++11")
-
-    set_c_cxx_flag("-ffast-math")
-    set_c_cxx_flag("-fvisibility=hidden")
-    set_c_cxx_flag("-stdlib=libc++")
-    set_c_cxx_flag("--pnacl-allow-exceptions")
-
-    set_c_cxx_flag("-O3 -DNDEBUG")
-    set_c_cxx_flag("-Os -DNDEBUG"       MinSizeRel)
-    set_c_cxx_flag("-O3 -DNDEBUG"       Release)
-    set_c_cxx_flag("-O2 -DNDEBUG -g3"   RelWithDebInfo)
-    set_c_cxx_flag("-O0          -g3"   Debug)
-
-    set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} PARENT_SCOPE)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} PARENT_SCOPE)
-else()
-    set_c_cxx_flag("-ffast-math")
-    set_c_cxx_flag("-fno-strict-aliasing")
-
-    # Set arch on x86 to SSE2 minimum and enable CMPXCHG16B
-    if (ARCH STREQUAL "x86")
-        set_c_cxx_flag("-m32")
-        set_c_cxx_flag("-msse2")
-        set_c_cxx_flag("-mtune=generic")
-        try_c_cxx_flag_werror(MFPMATH_SSE "-mfpmath=sse")
-    elseif (ARCH STREQUAL "x86_64")
-        set_c_cxx_flag("-m64")
-        set_c_cxx_flag("-mtune=generic")
-        try_c_cxx_flag_werror(MCX16 "-mcx16")
-    endif()
-
-    # Use hidden symbol visibility if possible
-    try_c_cxx_flag(FVISIBILITY_HIDDEN "-fvisibility=hidden")
-
-    # Extra debug flags
-    set_c_cxx_flag("-g3" DEBUG)
-    set_c_cxx_flag("-g3" RELWITHDEBINFO)
-    if (USE_DEBUG_OPTIMIZE)
-        try_c_cxx_flag(OPTIMIZE_DEBUG "-Og" DEBUG)
-    endif()
-
-    # C++11 support
-    try_cxx_flag(GNUXX11 "-std=gnu++11")
-    if (NOT FLAG_GNUXX11)
-        try_cxx_flag(GNUXX0X "-std=gnu++0x")
-        if (NOT FLAG_GNUXX0X)
-            message(FATAL_ERROR "C++11 not supported by compiler")
-        endif()
-    endif()
-
-    # Use MSVC-compatible bitfield layout
-    if (WIN32)
-        set_c_cxx_flag("-mms-bitfields")
-    endif()
-
-    # Use libc++ on Mac because the shipped libstdc++ version is too old
-    if (APPLE)
-        set_c_cxx_flag("-stdlib=libc++")
-        set_linker_flag("-stdlib=libc++")
-    endif()
-
-    # Hardening, don't set _FORTIFY_SOURCE in debug builds
-    set_c_cxx_flag("-D_FORTIFY_SOURCE=2" RELEASE)
-    set_c_cxx_flag("-D_FORTIFY_SOURCE=2" RELWITHDEBINFO)
-    set_c_cxx_flag("-D_FORTIFY_SOURCE=2" MINSIZEREL)
-    if (USE_HARDENING)
-        try_c_cxx_flag(FSTACK_PROTECTOR_STRONG "-fstack-protector-strong")
-        if (NOT FLAG_FSTACK_PROTECTOR_STRONG)
-            try_c_cxx_flag(FSTACK_PROTECTOR_ALL "-fstack-protector-all")
-        endif()
-        try_c_cxx_flag(FNO_STRICT_OVERFLOW "-fno-strict-overflow")
-        try_c_cxx_flag(WSTACK_PROTECTOR "-Wstack-protector")
-        try_c_cxx_flag(FPIE "-fPIE")
-        try_linker_flag(LINKER_PIE "-pie")
-    endif()
-
-    # Linker flags
-    if (NOT APPLE)
-        try_linker_flag(LINKER_O1 "-Wl,-O1")
-        try_linker_flag(LINKER_SORT_COMMON "-Wl,--sort-common")
-        try_linker_flag(LINKER_AS_NEEDED "-Wl,--as-needed")
-        if (NOT USE_ADDRESS_SANITIZER)
-            try_linker_flag(LINKER_NO_UNDEFINED "-Wl,--no-undefined")
-        endif()
-        try_linker_flag(LINKER_Z_RELRO "-Wl,-z,relro")
-        try_linker_flag(LINKER_Z_NOW "-Wl,-z,now")
-    endif()
-    if (WIN32)
-        try_linker_flag(LINKER_DYNAMICBASE "-Wl,--dynamicbase")
-        try_linker_flag(LINKER_NXCOMPAT "-Wl,--nxcompat")
-        try_linker_flag(LINKER_LARGE_ADDRESS_AWARE "-Wl,--large-address-aware")
-    endif()
-
-    # The -pthread flag sets some preprocessor defines,
-    # it is also used to link with libpthread on Linux
-    if (NOT APPLE)
-        try_c_cxx_flag(PTHREAD "-pthread")
-    endif()
-    if (LINUX)
-        set_linker_flag("-pthread")
-    endif()
-
-    # Warning options
-    try_flag(WARNINGS           "-Wall")
-    try_flag(WARNINGS           "-Wextra")
-    if (USE_PEDANTIC)
-        try_flag(WARNINGS       "-pedantic")
-    endif()
-    if (USE_WERROR)
-        try_flag(WARNINGS       "-Werror")
-        if (USE_PEDANTIC)
-            try_flag(WARNINGS   "-pedantic-errors")
-        endif()
-    endif()
-    # keep
-    try_flag(WARNINGS           "-Wno-pragmas")
-    try_flag(WARNINGS           "-Wno-unknown-pragmas")
-    try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
-    try_flag(WARNINGS           "-Woverloaded-virtual")
-    try_flag(WARNINGS           "-Wstrict-null-sentinel")
-    try_flag(WARNINGS           "-Wno-error=sign-promo")
-    # remove
-    try_flag(WARNINGS           "-Wno-error=maybe-uninitialized")
-    try_flag(WARNINGS           "-W${WARNMODE}missing-field-initializers")
-    try_flag(WARNINGS           "-W${WARNMODE}sign-compare")
-    try_flag(WARNINGS           "-Wno-error=switch")
-    try_flag(WARNINGS           "-Wno-error=unused-but-set-parameter")
-    try_flag(WARNINGS           "-Wno-error=unused-but-set-variable")
-    try_flag(WARNINGS           "-Wno-error=unused-function")
-    try_flag(WARNINGS           "-Wno-error=unused-parameter")
-    try_flag(WARNINGS           "-Wno-error=unused-variable")
-
-    if (USE_ADDRESS_SANITIZER)
-        set_cxx_flag("-fsanitize=address")
-        set_linker_flag("-fsanitize=address")
-    endif()
-
-    # Link-time optimization
-    if (USE_LTO)
-        set_c_cxx_flag("-flto")
-        set_linker_flag("-flto")
-
-        # For LTO compilation we must send a copy of all compile flags to the linker
-        set_linker_flag("${CMAKE_CXX_FLAGS}")
-
-        # Use gcc-ar and gcc-ranlib instead of ar and ranlib so that we can use
-        # slim LTO objects. This requires a recent version of GCC and binutils.
-        if (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-            if (USE_SLIM_LTO)
-                string(REGEX MATCH "^([0-9]+.[0-9]+)" _version "${CMAKE_CXX_COMPILER_VERSION}")
-                get_filename_component(COMPILER_BASENAME "${CMAKE_C_COMPILER}" NAME)
-                if (COMPILER_BASENAME MATCHES "^(.+-)g?cc(-[0-9]+\\.[0-9]+\\.[0-9]+)?(\\.exe)?$")
-                    set(TOOLCHAIN_PREFIX ${CMAKE_MATCH_1})
-                endif()
-
-                find_program(GCC_AR
-                    NAMES
-                        "${TOOLCHAIN_PREFIX}gcc-ar"
-                        "${TOOLCHAIN_PREFIX}gcc-ar-${_version}"
-                    DOC "gcc provided wrapper for ar which adds the --plugin option"
-                )
-
-                find_program(GCC_RANLIB
-                    NAMES
-                        "${TOOLCHAIN_PREFIX}gcc-ranlib"
-                        "${TOOLCHAIN_PREFIX}gcc-ranlib-${_version}"
-                    DOC "gcc provided wrapper for ranlib which adds the --plugin option"
-                )
-
-                mark_as_advanced(GCC_AR GCC_RANLIB)
-
-                # Override standard ar and ranlib with the gcc- versions
-                if (GCC_AR)
-                    set(CMAKE_AR ${GCC_AR})
-                endif()
-                if (GCC_RANLIB)
-                    set(CMAKE_RANLIB ${GCC_RANLIB})
-                endif()
-
-                try_c_cxx_flag(NO_FAT_LTO_OBJECTS "-fno-fat-lto-objects")
-            else()
-                try_c_cxx_flag(FAT_LTO_OBJECTS "-ffat-lto-objects")
-            endif()
-        endif()
-    endif()
-
-endif()
-
-# Windows-specific definitions
-if (WIN32)
-    add_definitions(
-        -DWINVER=0x501  # Minimum Windows version: XP
-        -DWIN32         # Define WIN32 for compatibility (compiler defines _WIN32)
-        -DNOMINMAX      # Define NOMINMAX to prevent conflics between std::min/max and the min/max macros in WinDef.h
-        -DSTRICT        # Enable STRICT type checking for windows.h
-    )
-    set(CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "" "lib")
-endif()
-if (MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-endif()
-
-# Mac-specific definitions
-if (APPLE)
-    add_definitions(-DMACOS_X)
-    set_linker_flag("-Wl,-no_pie")
-    set(CMAKE_INSTALL_RPATH "@executable_path/;${DEPS_DIR};${DEPS_DIR}/lib")
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-endif()
+# Warning options
+# keep
+try_flag(WARNINGS           "-Wno-pragmas")
+try_flag(WARNINGS           "-Wno-unknown-pragmas")
+try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
+try_flag(WARNINGS           "-Woverloaded-virtual")
+try_flag(WARNINGS           "-Wstrict-null-sentinel")
+try_flag(WARNINGS           "-Wno-error=sign-promo")
+try_flag(WARNINGS           "-Wno-error=extern-c-compat")
+# remove
+try_flag(WARNINGS           "-W${WARNMODE}missing-field-initializers")
+try_flag(WARNINGS           "-W${WARNMODE}sign-compare")
+try_flag(WARNINGS           "-Wno-error=switch")
+try_flag(WARNINGS           "-Wno-error=unused-but-set-parameter")
+try_flag(WARNINGS           "-Wno-error=unused-but-set-variable")
+try_flag(WARNINGS           "-Wno-error=unused-function")
+try_flag(WARNINGS           "-Wno-error=unused-parameter")
+try_flag(WARNINGS           "-Wno-error=unused-variable")
 
 ################################################################################
 # Git revision info
@@ -465,6 +243,7 @@ endif()
 if (USE_PRECOMPILED_HEADER AND MSVC)
     file(WRITE ${OBJ_DIR}/PrecompiledHeader.cpp "")
     set(PCH_FILE ${OBJ_DIR}/PrecompiledHeader.cpp)
+    set(PCH_FILE ${PCH_FILE} PARENT_SCOPE)
 endif()
 
 function(ADD_PRECOMPILED_HEADER Target)
@@ -523,14 +302,15 @@ function(ADD_PRECOMPILED_HEADER Target)
         add_custom_target(${Target}-pch DEPENDS "${OBJ_DIR}/${Target}.h.gch")
         add_dependencies(${Target} ${Target}-pch)
 
-        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-            set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include-pch ${OBJ_DIR}/${Target}.h.gch")
+        # PNaCl clang doesn't support -include-pch properly
+        if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT NACL)
+            set_property(TARGET ${Target} APPEND PROPERTY COMPILE_OPTIONS "-include-pch;${OBJ_DIR}/${Target}.h.gch")
         else()
-            set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "-include ${OBJ_DIR}/${Target}.h -Winvalid-pch")
+            set_property(TARGET ${Target} APPEND PROPERTY COMPILE_OPTIONS "-include;${OBJ_DIR}/${Target}.h;-Winvalid-pch")
         endif()
     elseif (MSVC)
         set_source_files_properties(${PCH_FILE} PROPERTIES COMPILE_FLAGS "/Yc${Header}")
-        set_target_properties(${Target} PROPERTIES COMPILE_FLAGS "/Yu${Header} /Fp${OBJ_DIR}/${Target}.pch /FI${Header}")
+        set_property(TARGET ${Target} APPEND PROPERTY COMPILE_FLAGS "/Yu${Header} /Fp${OBJ_DIR}/${Target}.pch /FI${Header}")
     endif()
 endfunction()
 
@@ -595,9 +375,24 @@ endif()
 # These variables are defined:
 # LIBS_BASE, LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
 
+# Native client
+include(DaemonNacl)
+if (NACL)
+    add_library(srclibs-nacl-module EXCLUDE_FROM_ALL ${NACLLIST_MODULE})
+    set_target_properties(srclibs-nacl-module PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set(LIBS_BASE ${LIBS_BASE} srclibs-nacl-module)
+else()
+    add_library(srclibs-nacl-native EXCLUDE_FROM_ALL ${NACLLIST_NATIVE})
+    set_target_properties(srclibs-nacl-native PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set(LIBS_BASE ${LIBS_BASE} srclibs-nacl-native)
+endif()
+
 # Base OS libs
 if (WIN32)
     set(LIBS_BASE ${LIBS_BASE} winmm ws2_32)
+elseif (NACL)
+    find_library(NACL_EXCEPTION nacl_exception)
+    set(LIBS_BASE ${LIBS_BASE} ${NACL_EXCEPTION})
 else()
     find_library(LIBM m)
     if (LIBM)
@@ -612,17 +407,9 @@ else()
         set(LIBS_ENGINE ${LIBS_ENGINE} ${LIBICONV})
     endif()
     mark_as_advanced(LIBM LIBRT LIBICONV)
-    if (NOT NACL)
-        set(LIBS_BASE ${LIBS_BASE} ${CMAKE_DL_LIBS})
-    endif()
-    if (NACL)
-        find_library(NACL_EXCEPTION nacl_exception)
-        set(LIBS_BASE ${LIBS_BASE} ${NACL_EXCEPTION})
-    endif()
-    if (NOT NACL)
-        find_package(Threads REQUIRED)
-        set(LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT})
-    endif()
+    set(LIBS_BASE ${LIBS_BASE} ${CMAKE_DL_LIBS})
+    find_package(Threads REQUIRED)
+    set(LIBS_BASE ${LIBS_BASE} ${CMAKE_THREAD_LIBS_INIT})
     if (APPLE)
         set(LIBS_CLIENT ${LIBS_CLIENT} "-framework Carbon" "-framework IOKit" "-framework Cocoa")
     endif()
@@ -647,13 +434,7 @@ include_directories(${ZLIB_INCLUDE_DIRS})
 
 set(LIBS_BASE ${LIBS_BASE} PARENT_SCOPE)
 
-if (NOT NACL)
-    # Native client
-    include(DaemonNacl)
-    add_library(nacl-source-libs EXCLUDE_FROM_ALL ${NACLLIST_NATIVE})
-    set_target_properties(nacl-source-libs PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-    set(LIBS_ENGINE ${LIBS_ENGINE} nacl-source-libs)
-
+if (BUILD_CLIENT OR BUILD_TTY_CLIENT OR BUILD_SERVER)
     if (NACL_RUNTIME_PATH)
         add_definitions("-DNACL_RUNTIME_PATH=${NACL_RUNTIME_PATH}")
     endif()
@@ -812,7 +593,7 @@ if (BUILD_CLIENT)
     endif()
     set_target_properties(client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" FOLDER "engine")
     set_property(TARGET client APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
-    set_property(TARGET client APPEND PROPERTY COMPILE_FLAGS ${WARNINGS})
+    set_property(TARGET client APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
     ADD_PRECOMPILED_HEADER(client)
 endif()
 
@@ -822,7 +603,7 @@ if (BUILD_SERVER)
     set_property(TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER)
     set_target_properties(server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" FOLDER "engine")
     set_property(TARGET server APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
-    set_property(TARGET server APPEND PROPERTY COMPILE_FLAGS ${WARNINGS})
+    set_property(TARGET server APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
     ADD_PRECOMPILED_HEADER(server)
 endif()
 
@@ -832,7 +613,7 @@ if (BUILD_TTY_CLIENT)
     set_property(TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT)
     set_target_properties(ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" FOLDER "engine")
     set_property(TARGET ttyclient APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
-    set_property(TARGET ttyclient APPEND PROPERTY COMPILE_FLAGS ${WARNINGS})
+    set_property(TARGET ttyclient APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
     ADD_PRECOMPILED_HEADER(ttyclient)
 endif()
 

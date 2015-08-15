@@ -183,8 +183,6 @@ vmCvar_t           g_specChat;
 vmCvar_t           g_publicAdminMessages;
 vmCvar_t           g_allowTeamOverlay;
 
-vmCvar_t           g_censorship;
-
 vmCvar_t           g_tag;
 
 vmCvar_t           g_showKillerHP;
@@ -283,7 +281,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH,                                      0, false           },
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                0,                                               0, false           },
 	{ &g_specChat,                    "g_specChat",                    "1",                                0,                                               0, false           },
-	{ &g_censorship,                  "g_censorship",                  "",                                 0,                                               0, false           },
 
 	// clients: voting
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                0,                                               0, false           },
@@ -811,7 +808,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 
 	G_RegisterCommands();
 	G_admin_readconfig( nullptr );
-	G_LoadCensors();
 
 	// initialize all entities for this game
 	memset( g_entities, 0, MAX_GENTITIES * sizeof( g_entities[ 0 ] ) );
