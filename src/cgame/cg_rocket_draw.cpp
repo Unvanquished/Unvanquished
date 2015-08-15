@@ -2458,11 +2458,8 @@ static void CG_DrawPlayerAmmoStack()
 	{
 		// low on ammo
 		// FIXME: don't hardcode this colour
-		Color::Color lowAmmoColor = { 1.f, 0.f, 0.f, 0.f };
-		// don't lerp alpha
-		/// \todo (color) that & 128 doesn't look quite right
-		localColor = Color::Blend( foreColor, lowAmmoColor, cg.time & 128 );
-		localColor.SetAlpha( foreColor.Alpha() );
+		Color::Color lowAmmoColor = { 1.f, 0.f, 0.f, foreColor.Alpha() };
+		localColor = Color::Blend( foreColor, lowAmmoColor, (cg.time & 128) / 255.0f );
 	}
 
 	else
