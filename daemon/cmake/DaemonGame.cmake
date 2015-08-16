@@ -71,12 +71,12 @@ function(GAMEMODULE)
             set(vm nacl-vms)
             ExternalProject_Add(${vm}
                 SOURCE_DIR ${CMAKE_SOURCE_DIR}
-                BUILD_IN_SOURCE 0
+                BINARY_DIR ${CMAKE_BINARY_DIR}/${vm}
                 CMAKE_GENERATOR ${VM_GENERATOR}
                 CMAKE_ARGS
                     -DFORK=2
                     -DCMAKE_TOOLCHAIN_FILE=${Daemon_SOURCE_DIR}/cmake/toolchain-pnacl.cmake
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=$<CONFIG>
                     -DDEPS_DIR=${DEPS_DIR}
                     -DBUILD_CGAME=${BUILD_CGAME}
                     -DBUILD_SGAME=${BUILD_SGAME}
@@ -90,7 +90,7 @@ function(GAMEMODULE)
             )
             ExternalProject_Add_Step(${vm} forcebuild
                 COMMAND ${CMAKE_COMMAND} -E remove
-                    ${CMAKE_CURRENT_BINARY_DIR}/${vm}-prefix/src/${vm}-stamp/${vm}-build
+                    ${CMAKE_CURRENT_BINARY_DIR}/${vm}-prefix/src/${vm}-stamp/${vm}-configure
                 COMMENT "Forcing build step for '${vm}'"
                 DEPENDEES build
                 ALWAYS 1
@@ -99,10 +99,8 @@ function(GAMEMODULE)
         endif()
     else()
         if (FORK EQUAL 2)
-            set(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}/..)
-            set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-            set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-            set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+            # Put the .nexe and .pexe files in the same directory as the engine
+            set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/..)
         endif()
 
         add_executable(${GAMEMODULE_NAME}-nacl ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST})
