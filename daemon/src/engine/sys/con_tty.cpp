@@ -200,11 +200,11 @@ static void CON_Back()
 //	size_t size;
 
 	key = '\b';
-	write( STDOUT_FILENO, &key, 1 );
+	ignore_result(write( STDOUT_FILENO, &key, 1 ));
 	key = ' ';
-	write( STDOUT_FILENO, &key, 1 );
+	ignore_result(write( STDOUT_FILENO, &key, 1 ));
 	key = '\b';
-	write( STDOUT_FILENO, &key, 1 );
+	ignore_result(write( STDOUT_FILENO, &key, 1 ));
 }
 
 /*
@@ -251,10 +251,10 @@ static void CON_Show()
 
 		if ( ttycon_hide == 0 )
 		{
-			write( STDOUT_FILENO, "]", 1 );
+			ignore_result(write( STDOUT_FILENO, "]", 1 ));
 
 			std::string text = Str::UTF32To8(TTY_field.GetText());
-			write( STDOUT_FILENO, text.c_str(), text.size());
+			ignore_result(write( STDOUT_FILENO, text.c_str(), text.size()));
 		}
 	}
 }
@@ -388,7 +388,7 @@ char *CON_Input_TTY()
 				if ( key == '\n' )
 				{
 					TTY_field.RunCommand(com_consoleCommand->string);
-					write( STDOUT_FILENO, "\n]", 2 );
+					ignore_result(write( STDOUT_FILENO, "\n]", 2 ));
 					return nullptr;
 				}
 
