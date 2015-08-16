@@ -100,6 +100,7 @@
 
 	</style>
 	<script>
+
 	function detectEscape(event, document)
 		if event.parameters["key_identifier"] == rocket.key_identifier.ESCAPE then
 			if document.context.documents["menu_ingame"].style["visibility"] == "hidden" then
@@ -111,9 +112,28 @@
 			end
 		end
 	end
+
+	function fadein(document)
+		opacity = document.style.opacity
+		document.style.opacity = "0"
+		s = function()
+			print(document.style.opacity)
+			if document.style.opacity < opacity then
+				document.style.opacity = "" .. document.style.opacity + 0.1
+			end
+			if document.style.opacity < opacity then
+				Timer.add(30, s)
+			else
+					document.style.opacity = opacity
+			end
+		end
+
+		Timer.add(30, s)
+	end
+
 	</script>
 </head>
-<body onkeydown="detectEscape(event, document)">
+<body onkeydown="detectEscape(event, document)" onshow="fadein(document)">
 
 	<window>
 		<handle move_target="#document" />
