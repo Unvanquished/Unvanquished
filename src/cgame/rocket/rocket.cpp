@@ -66,6 +66,7 @@ Maryland 20850 USA.
 #include "lua/Cvar.h"
 #include "lua/Cmd.h"
 #include "lua/Events.h"
+#include "lua/Timer.h"
 #include "../cg_local.h"
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -348,6 +349,7 @@ void Rocket_Init()
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cvar>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cmd>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Events>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Timer>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
@@ -464,6 +466,7 @@ void Rocket_Update()
 	{
 		hudContext->Update();
 	}
+	Rocket::Core::Lua::Timer::Update(rocketInfo.realtime);
 }
 
 static bool IsInvalidEmoticon( Rocket::Core::String emoticon )

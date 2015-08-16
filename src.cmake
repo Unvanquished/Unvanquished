@@ -85,6 +85,8 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Cvar.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.h
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.cpp
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.h
 
     ${ENGINE_DIR}/client/cg_api.h
     ${ENGINE_DIR}/client/cg_msgdef.h
