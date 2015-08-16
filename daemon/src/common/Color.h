@@ -54,7 +54,7 @@ template<class T>
 	struct ColorComponentTraits
 {
 	// Type used to represent the components
-	typedef T component_type;
+	using component_type = T;
 	// Maxiumum value for a component
 	static constexpr const component_type component_max = std::numeric_limits<component_type>::max();
 	// Size of a component value in bytes
@@ -66,7 +66,7 @@ template<class T>
 template<>
 	struct ColorComponentTraits<float>
 {
-	typedef float component_type;
+	using component_type = float;
 	static constexpr const component_type component_max = 1.0f;
 	static constexpr const std::size_t    component_size = sizeof(component_type);
 };
@@ -99,7 +99,7 @@ class ColorAdaptor<Component*>
 {
 public:
 	static constexpr const bool is_color = true;
-	typedef Component component_type;
+	using component_type = Component;
 	static constexpr const component_type component_max = ColorComponentTraits<Component>::component_max;
 
 	static ColorAdaptor Adapt( const Component* array )
@@ -152,8 +152,8 @@ class BasicColor
 {
 public:
 	static constexpr const bool is_color = true;
-	typedef Traits color_traits;
-	typedef typename color_traits::component_type component_type;
+	using color_traits = Traits;
+	using component_type = typename color_traits::component_type;
 	static constexpr const component_type component_max = color_traits::component_max;
 
 	// Returns the value of an indexed color
