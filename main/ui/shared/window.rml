@@ -104,10 +104,12 @@
 	function detectEscape(event, document)
 		if event.parameters["key_identifier"] == rocket.key_identifier.ESCAPE then
 			if document.context.documents["menu_ingame"].style["visibility"] == "hidden" then
-				document:Hide()
+				fadeout(document)
 			else
 				for k,v in pairs(document.context.documents) do
-					v:Hide()
+					if v.style.visibility == "visible" then
+						fadeout(v)
+					end
 				end
 			end
 		end
@@ -117,19 +119,35 @@
 		opacity = document.style.opacity
 		document.style.opacity = "0"
 		s = function()
-			print(document.style.opacity)
 			if document.style.opacity < opacity then
-				document.style.opacity = "" .. document.style.opacity + 0.1
+				document.style.opacity = tostring(document.style.opacity + 0.1)
 			end
 			if document.style.opacity < opacity then
 				Timer.add(30, s)
 			else
-					document.style.opacity = opacity
+				document.style.opacity = opacity
 			end
 		end
 
 		Timer.add(30, s)
 	end
+
+	function fadeout(document)
+		opacity = document.style.opacity
+		s = function()
+			if tonumber(document.style.opacity) > 0 then
+				document.style.opacity = tostring(document.style.opacity - 0.1)
+			end
+			if tonumber(document.style.opacity) > 0 then
+				Timer.add(30, s)
+			else
+				document.style.opacity = opacity
+				document:Hide()
+			end
+		end
+		Timer.add(30, s)
+	end
+
 
 	</script>
 </head>
@@ -137,7 +155,7 @@
 
 	<window>
 		<handle move_target="#document" />
-		<closebutton onClick="document:Hide()" />  <!-- Defined after the handle, so it's "ontop" -->
+		<closebutton onClick="fadeout(document)" />  <!-- Defined after the handle, so it's "ontop" -->
 		<div id="content"></div>
 	</window>
 
