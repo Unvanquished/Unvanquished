@@ -76,7 +76,7 @@ function(GAMEMODULE)
                 CMAKE_ARGS
                     -DFORK=2
                     -DCMAKE_TOOLCHAIN_FILE=${Daemon_SOURCE_DIR}/cmake/toolchain-pnacl.cmake
-                    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DCMAKE_BUILD_TYPE=$<CONFIG>
                     -DDEPS_DIR=${DEPS_DIR}
                     -DBUILD_CGAME=${BUILD_CGAME}
                     -DBUILD_SGAME=${BUILD_SGAME}
@@ -90,7 +90,7 @@ function(GAMEMODULE)
             )
             ExternalProject_Add_Step(${vm} forcebuild
                 COMMAND ${CMAKE_COMMAND} -E remove
-                    ${CMAKE_CURRENT_BINARY_DIR}/${vm}-prefix/src/${vm}-stamp/${vm}-build
+                    ${CMAKE_CURRENT_BINARY_DIR}/${vm}-prefix/src/${vm}-stamp/${vm}-configure
                 COMMENT "Forcing build step for '${vm}'"
                 DEPENDEES build
                 ALWAYS 1
