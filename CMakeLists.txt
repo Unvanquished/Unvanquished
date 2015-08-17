@@ -94,7 +94,8 @@ if (BUILD_SGAME)
     )
 endif()
 
-GAMEMODULE(NAME cgame
+if (BUILD_CGAME)
+  GAMEMODULE(NAME cgame
     DEFINITIONS
         BUILD_CGAME
         ROCKET_STATIC_LIB
@@ -106,4 +107,5 @@ GAMEMODULE(NAME cgame
         ROCKET_LIB
         ${FREETYPE_LIBRARIES}
         ${LUA_LIBRARY}
-)
+  )
+endif()
