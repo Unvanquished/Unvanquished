@@ -96,8 +96,9 @@ div.infobox {
 	height: 50%;
 }
 </style>
+<script src="lua/util.lua" />
 </head>
-<body id="alien_evo" class="circlemenu alien" onShow='Events.pushevent("buildDS alienEvolveList default; buildDS alienEvolveList upgrades", event)'>
+<body id="alien_evo" class="circlemenu alien" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS alienEvolveList default; buildDS alienEvolveList upgrades", event)'>
 <div id="foo">
 <tabset class="circlemenu">
 <tab></tab>
