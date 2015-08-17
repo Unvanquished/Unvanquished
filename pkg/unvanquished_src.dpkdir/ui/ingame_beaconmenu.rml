@@ -51,8 +51,9 @@
 				color: rgb(230,230,230);
 			}
 		</style>
+		<script src="lua/util.lua" />
 	</head>
-	<body id="ingame_beaconmenu" class="circlemenu" onShow='Events.pushevent("buildDS beaconList default", event)'>
+	<body id="ingame_beaconmenu" class="circlemenu" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS beaconList default", event)'>
 		<div id="foo">
 			<tabset class="circlemenu">
 				<tab>Beacons</tab>
