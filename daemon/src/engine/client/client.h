@@ -428,7 +428,7 @@ public:
 	int CGameCrosshairPlayer();
 	void CGameKeyEvent(int key, bool down);
 	void CGameMouseEvent(int dx, int dy);
-	void CGameTextInputEvent(int c);
+	void CGameTextInputEvent(char c);
 	//std::vector<std::string> CGameVoipString();
 	//void CGameInitCvars();
 

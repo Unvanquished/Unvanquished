@@ -1493,7 +1493,7 @@ void CGameVM::CGameMouseEvent(int dx, int dy)
 	this->SendMsg<CGameMouseEventMsg>(dx, dy);
 }
 
-void CGameVM::CGameTextInputEvent(int c)
+void CGameVM::CGameTextInputEvent(char c)
 {
 	this->SendMsg<CGameTextInptEvent>(c);
 }
