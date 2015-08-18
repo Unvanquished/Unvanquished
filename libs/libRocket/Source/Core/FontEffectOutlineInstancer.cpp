@@ -35,7 +35,7 @@ namespace Core {
 FontEffectOutlineInstancer::FontEffectOutlineInstancer()
 {
 	RegisterProperty("width", "1", true)
-		.AddParser("number");
+		.AddParser("length");
 }
 
 FontEffectOutlineInstancer::~FontEffectOutlineInstancer()

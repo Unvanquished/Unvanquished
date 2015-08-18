@@ -266,6 +266,16 @@ public:
 	{
 		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
 	}
+
+	void PushTransform( const Rocket::Core::Matrix4f& transform )
+	{
+		// TODO: Implement
+	}
+
+	void PopTransform( const Rocket::Core::Matrix4f& transform )
+	{
+		// TODO: Implement
+	}
 };
 
 // Rocket::Core::Input::KeyModifier RocketConvertSDLmod( SDLMod sdl )

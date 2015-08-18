@@ -2,6 +2,7 @@ body {
 	width:100%;
 	height:100%;
 	z-index: -10;
+	perspective: 0;
 }
 
 body.ingame {
@@ -133,4 +134,7 @@ body.ingame .black2{
        left:7%;
        top:13%;
        opacity:.6;
+    }
+    #sidebar_main {
+		transform: translateZ(10);
     }

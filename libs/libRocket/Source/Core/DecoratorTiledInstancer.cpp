@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,11 +39,11 @@ DecoratorTiledInstancer::~DecoratorTiledInstancer()
 // Adds the property declarations for a tile.
 void DecoratorTiledInstancer::RegisterTileProperty(const String& name, bool register_repeat_modes)
 {
-	RegisterProperty(String (32, "%s-src", name.CString()), "").AddParser("string");
-	RegisterProperty(String(32, "%s-s-begin", name.CString()), "0").AddParser("number");
-	RegisterProperty(String(32, "%s-s-end", name.CString()), "1").AddParser("number");
-	RegisterProperty(String(32, "%s-t-begin", name.CString()), "0").AddParser("number");
-	RegisterProperty(String(32, "%s-t-end", name.CString()), "1").AddParser("number");
+	RegisterProperty(String(32, "%s-src", name.CString()), "").AddParser("string");
+	RegisterProperty(String(32, "%s-s-begin", name.CString()), "0").AddParser("length");
+	RegisterProperty(String(32, "%s-s-end", name.CString()), "1").AddParser("length");
+	RegisterProperty(String(32, "%s-t-begin", name.CString()), "0").AddParser("length");
+	RegisterProperty(String(32, "%s-t-end", name.CString()), "1").AddParser("length");
 	RegisterShorthand(String(32, "%s-s", name.CString()), String(64, "%s-s-begin, %s-s-end", name.CString(), name.CString()));
 	RegisterShorthand(String(32, "%s-t", name.CString()), String(64, "%s-t-begin, %s-t-end", name.CString(), name.CString()));
 

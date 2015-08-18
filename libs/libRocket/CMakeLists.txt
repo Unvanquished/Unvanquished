@@ -158,6 +158,14 @@ set(Core_PUB_HDR_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/UnicodeRange.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/FontFaceHandle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Matrix4.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Reference.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Transform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/TransformPrimitive.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/TransformState.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Vector3.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Vector4.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/ViewState.h
 )
 
 set(Core_SRC_FILES
@@ -293,6 +301,15 @@ set(Core_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Factory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/ElementDefinition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/LayoutInlineBox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/PropertyParserTransform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/PropertyParserTransform.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Python/
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Transform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/TransformPrimitive.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/TransformState.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Vector3.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Vector4.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/ViewState.cpp
 )
 
 set(Controls_HDR_FILES

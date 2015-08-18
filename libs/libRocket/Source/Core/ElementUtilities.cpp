@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,9 +28,11 @@
 #include "precompiled.h"
 #include "../../Include/Rocket/Core/ElementUtilities.h"
 #include <queue>
-#include <Rocket/Core/FontFaceHandle.h>
+#include "../../Include/Rocket/Core/FontFaceHandle.h"
+#include <limits>
 #include "LayoutEngine.h"
 #include "../../Include/Rocket/Core.h"
+#include "../../Include/Rocket/Core/TransformPrimitive.h"
 
 namespace Rocket {
 namespace Core {
@@ -51,12 +53,12 @@ Element* ElementUtilities::GetElementById(Element* root_element, const String& i
 	{
 		Element* element = search_queue.front();
 		search_queue.pop();
-		
+
 		if (element->GetId() == id)
 		{
 			return element;
 		}
-		
+
 		// Add all children to search
 		for (int i = 0; i < element->GetNumChildren(); i++)
 			search_queue.push(element->GetChild(i));
@@ -129,7 +131,7 @@ int ElementUtilities::GetFontSize(Element* element)
 	FontFaceHandle* font_face_handle = element->GetFontFaceHandle();
 	if (font_face_handle == NULL)
 		return 0;
-	
+
 	return font_face_handle->GetSize();
 }
 
@@ -206,13 +208,13 @@ void ElementUtilities::BindEventAttributes(Element* element)
 		}
 	}
 }
-	
+
 // Generates the clipping region for an element.
 bool ElementUtilities::GetClippingRegion(Vector2i& clip_origin, Vector2i& clip_dimensions, Element* element)
 {
 	clip_origin = Vector2i(-1, -1);
 	clip_dimensions = Vector2i(-1, -1);
-	
+
 	int num_ignored_clips = element->GetClippingIgnoreDepth();
 	if (num_ignored_clips < 0)
 		return false;
@@ -230,13 +232,13 @@ bool ElementUtilities::GetClippingRegion(Vector2i& clip_origin, Vector2i& clip_d
 			// Ignore nodes that don't clip.
 			if (clipping_element->GetClientWidth() < clipping_element->GetScrollWidth()
 				|| clipping_element->GetClientHeight() < clipping_element->GetScrollHeight())
-			{				
+			{
 				Vector2f element_origin_f = clipping_element->GetAbsoluteOffset(Box::CONTENT);
 				Vector2f element_dimensions_f = clipping_element->GetBox().GetSize(Box::CONTENT);
-				
+
 				Vector2i element_origin(Math::RealToInteger(element_origin_f.x), Math::RealToInteger(element_origin_f.y));
 				Vector2i element_dimensions(Math::RealToInteger(element_dimensions_f.x), Math::RealToInteger(element_dimensions_f.y));
-				
+
 				if (clip_origin == Vector2i(-1, -1) && clip_dimensions == Vector2i(-1, -1))
 				{
 					clip_origin = element_origin;
@@ -246,10 +248,10 @@ bool ElementUtilities::GetClippingRegion(Vector2i& clip_origin, Vector2i& clip_d
 				{
 					Vector2i top_left(Math::Max(clip_origin.x, element_origin.x),
 									  Math::Max(clip_origin.y, element_origin.y));
-					
+
 					Vector2i bottom_right(Math::Min(clip_origin.x + clip_dimensions.x, element_origin.x + element_dimensions.x),
 										  Math::Min(clip_origin.y + clip_dimensions.y, element_origin.y + element_dimensions.y));
-					
+
 					clip_origin = top_left;
 					clip_dimensions.x = Math::Max(0, bottom_right.x - top_left.x);
 					clip_dimensions.y = Math::Max(0, bottom_right.y - top_left.y);
@@ -269,19 +271,19 @@ bool ElementUtilities::GetClippingRegion(Vector2i& clip_origin, Vector2i& clip_d
 		int clipping_element_ignore_clips = clipping_element->GetClippingIgnoreDepth();
 		if (clipping_element_ignore_clips < 0)
 			break;
-		
+
 		num_ignored_clips = Math::Max(num_ignored_clips, clipping_element_ignore_clips);
 
 		// Climb the tree to this region's parent.
 		clipping_element = clipping_element->GetParentNode();
 	}
-	
+
 	return clip_dimensions.x >= 0 && clip_dimensions.y >= 0;
 }
 
 // Sets the clipping region from an element and its ancestors.
 bool ElementUtilities::SetClippingRegion(Element* element, Context* context)
-{	
+{
 	Rocket::Core::RenderInterface* render_interface = NULL;
 	if (element)
 	{
@@ -298,10 +300,10 @@ bool ElementUtilities::SetClippingRegion(Element* element, Context* context)
 
 	if (!render_interface || !context)
 		return false;
-	
+
 	Vector2i clip_origin, clip_dimensions;
 	bool clip = element && GetClippingRegion(clip_origin, clip_dimensions, element);
-	
+
 	Vector2i current_origin;
 	Vector2i current_dimensions;
 	bool current_clip = context->GetActiveClipRegion(current_origin, current_dimensions);
@@ -318,7 +320,7 @@ void ElementUtilities::ApplyActiveClipRegion(Context* context, RenderInterface* 
 {
 	if (render_interface == NULL)
 		return;
-	
+
 	Vector2i origin;
 	Vector2i dimensions;
 	bool clip_enabled = context->GetActiveClipRegion(origin, dimensions);
@@ -411,6 +413,128 @@ static void SetElementOffset(Element* element, const Vector2f& offset)
 	relative_offset.y += element->GetBox().GetEdge(Box::MARGIN, Box::TOP);
 
 	element->SetOffset(relative_offset, element->GetParentNode());
+}
+
+// Applies an element's `perspective' and `transform' properties.
+bool ElementUtilities::ApplyTransform(Element &element, bool apply)
+{
+	Context *context = element.GetContext();
+	if (!context)
+	{
+		return false;
+	}
+
+	RenderInterface *render_interface = element.GetRenderInterface();
+	if (!render_interface)
+	{
+		return false;
+	}
+
+	const TransformState *local_perspective, *perspective, *transform;
+	element.GetEffectiveTransformState(&local_perspective, &perspective, &transform);
+
+	bool have_perspective = false;
+	float perspective_distance;
+	Matrix4f the_projection;
+	if (local_perspective)
+	{
+		TransformState::LocalPerspective the_local_perspective;
+		local_perspective->GetLocalPerspective(&the_local_perspective);
+		have_perspective = true;
+		perspective_distance = the_local_perspective.distance;
+		the_projection = the_local_perspective.GetProjection();
+	}
+	else if (perspective)
+	{
+		TransformState::Perspective the_perspective;
+		perspective->GetPerspective(&the_perspective);
+		have_perspective = true;
+		perspective_distance = the_perspective.distance;
+		the_projection = the_perspective.GetProjection();
+	}
+
+	bool have_transform = false;
+	Matrix4f the_transform;
+	if (transform)
+	{
+		transform->GetRecursiveTransform(&the_transform);
+		have_transform = true;
+	}
+
+	if (have_perspective && perspective_distance >= 0)
+	{
+		// If we are to apply a custom projection, then we need to cancel the global one first.
+		Matrix4f global_pv_inv;
+		bool have_global_pv_inv = context->GetViewState().GetProjectionViewInv(global_pv_inv);
+
+		if (have_global_pv_inv && have_transform)
+		{
+			if (apply)
+			{
+				render_interface->PushTransform(global_pv_inv * the_projection * the_transform);
+			}
+			else
+			{
+				render_interface->PopTransform(global_pv_inv * the_projection * the_transform);
+			}
+			return true;
+		}
+		else if (have_global_pv_inv)
+		{
+			if (apply)
+			{
+				render_interface->PushTransform(global_pv_inv * the_projection);
+			}
+			else
+			{
+				render_interface->PopTransform(global_pv_inv * the_projection);
+			}
+			return true;
+		}
+		else if (have_transform)
+		{
+			// The context has not received Process(Projection|View)Change() calls.
+			// Assume we don't really need to cancel.
+			if (apply)
+			{
+				render_interface->PushTransform(the_transform);
+			}
+			else
+			{
+				render_interface->PopTransform(the_transform);
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (have_transform)
+		{
+			if (apply)
+			{
+				render_interface->PushTransform(the_transform);
+			}
+			else
+			{
+				render_interface->PopTransform(the_transform);
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+// Unapplies an element's `perspective' and `transform' properties.
+bool ElementUtilities::UnapplyTransform(Element &element)
+{
+	return ApplyTransform(element, false);
 }
 
 }

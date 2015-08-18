@@ -42,7 +42,27 @@ namespace Core {
 class PropertyParserNumber : public PropertyParser
 {
 public:
-	PropertyParserNumber();
+	enum
+	{
+		ABS_NUMBER =	Property::NUMBER,
+		NUMBER =	Property::NUMBER
+				| Property::PERCENT,
+		LENGTH =	Property::NUMBER
+				| Property::PERCENT
+				| Property::PX
+				| Property::EM
+				| Property::INCH
+				| Property::CM
+				| Property::MM
+				| Property::PT
+				| Property::PC,
+		ANGLE =		Property::NUMBER
+				| Property::PERCENT
+				| Property::DEG
+				| Property::RAD
+	};
+
+	PropertyParserNumber(int units);
 	virtual ~PropertyParserNumber();
 
 	/// Called to parse a RCSS number declaration.
@@ -56,6 +76,9 @@ public:
 	void Release();
 
 private:
+	// Stores a bit mask of allowed units.
+	int units;
+
 	// Stores a list of the numerical units and their suffixes.
 	typedef std::pair< Property::Unit, String > UnitSuffix;
 	std::vector< UnitSuffix > unit_suffixes;

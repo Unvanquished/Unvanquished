@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,7 +28,9 @@
 #include "precompiled.h"
 #include "../../Include/Rocket/Core/Element.h"
 #include "../../Include/Rocket/Core/Dictionary.h"
+#include "../../Include/Rocket/Core/TransformPrimitive.h"
 #include <algorithm>
+#include <limits>
 #include "ElementBackground.h"
 #include "ElementBorder.h"
 #include "ElementDefinition.h"
@@ -73,7 +75,7 @@ public:
 };
 
 /// Constructs a new libRocket element.
-Element::Element(const String& _tag) : relative_offset_base(0, 0), relative_offset_position(0, 0), absolute_offset(0, 0), scroll_offset(0, 0), boxes(1), content_offset(0, 0), content_box(0, 0)
+Element::Element(const String& _tag) : relative_offset_base(0, 0), relative_offset_position(0, 0), absolute_offset(0, 0), scroll_offset(0, 0), boxes(1), content_offset(0, 0), content_box(0, 0), transform_state(), transform_state_perspective_dirty(true), transform_state_transform_dirty(true), transform_state_parent_transform_dirty(true)
 {
 	tag = _tag.ToLower();
 	parent = NULL;
@@ -98,7 +100,7 @@ Element::Element(const String& _tag) : relative_offset_base(0, 0), relative_offs
 	stacking_context_dirty = false;
 
 	font_face_handle = NULL;
-	
+
 	clipping_ignore_depth = 0;
 	clipping_enabled = false;
 	clipping_state_dirty = true;
@@ -113,7 +115,7 @@ Element::Element(const String& _tag) : relative_offset_base(0, 0), relative_offs
 
 Element::~Element()
 {
-	ROCKET_ASSERT(parent == NULL);	
+	ROCKET_ASSERT(parent == NULL);
 
 	PluginRegistry::NotifyElementDestroy(this);
 
@@ -159,6 +161,9 @@ void Element::Update()
 	// Force a definition reload, if necessary.
 	style->GetDefinition();
 
+	// Update the transform state, if necessary.
+	UpdateTransformState();
+
 	scroll->Update();
 	OnUpdate();
 }
@@ -168,6 +173,9 @@ void Element::Render()
 	// Rebuild our stacking context if necessary.
 	if (stacking_context_dirty)
 		BuildLocalStackingContext();
+
+	// Apply our transform
+	ElementUtilities::ApplyTransform(*this);
 
 	// Render all elements in our local stacking context that have a z-index beneath our local index of 0.
 	size_t i = 0;
@@ -187,6 +195,9 @@ void Element::Render()
 	// Render the rest of the elements in the stacking context.
 	for (; i < stacking_context.size(); ++i)
 		stacking_context[i]->Render();
+
+	// Unapply our transform
+	ElementUtilities::UnapplyTransform(*this);
 }
 
 // Clones this element, returning a new, unparented element.
@@ -273,7 +284,7 @@ String Element::GetAddress(bool include_pseudo_classes) const
 
 	if (include_pseudo_classes)
 	{
-		const PseudoClassList& pseudo_classes = style->GetActivePseudoClasses();		
+		const PseudoClassList& pseudo_classes = style->GetActivePseudoClasses();
 		for (PseudoClassList::const_iterator i = pseudo_classes.begin(); i != pseudo_classes.end(); ++i)
 		{
 			address += ":";
@@ -516,7 +527,7 @@ bool Element::SetProperty(const String& name, const Property& property)
 // Returns one of this element's properties.
 const Property* Element::GetProperty(const String& name)
 {
-	return style->GetProperty(name);	
+	return style->GetProperty(name);
 }
 
 // Returns one of this element's properties.
@@ -605,6 +616,238 @@ int Element::GetTextTransform()
 const Property *Element::GetVerticalAlignProperty()
 {
 	return style->GetVerticalAlignProperty();
+}
+
+// Returns 'perspective' property value from element's style or local cache.
+const Property *Element::GetPerspective()
+{
+	return style->GetPerspective();
+}
+
+// Returns 'perspective-origin-x' property value from element's style or local cache.
+const Property *Element::GetPerspectiveOriginX()
+{
+	return style->GetPerspectiveOriginX();
+}
+
+// Returns 'perspective-origin-y' property value from element's style or local cache.
+const Property *Element::GetPerspectiveOriginY()
+{
+	return style->GetPerspectiveOriginY();
+}
+
+// Returns 'transform' property value from element's style or local cache.
+const Property *Element::GetTransform()
+{
+	return style->GetTransform();
+}
+
+// Returns 'transform-origin-x' property value from element's style or local cache.
+const Property *Element::GetTransformOriginX()
+{
+	return style->GetTransformOriginX();
+}
+
+// Returns 'transform-origin-y' property value from element's style or local cache.
+const Property *Element::GetTransformOriginY()
+{
+	return style->GetTransformOriginY();
+}
+
+// Returns 'transform-origin-z' property value from element's style or local cache.
+const Property *Element::GetTransformOriginZ()
+{
+	return style->GetTransformOriginZ();
+}
+
+// Returns this element's TransformState
+const TransformState *Element::GetTransformState() const throw()
+{
+	return transform_state.get();
+}
+
+// Returns the TransformStates that are effective for this element.
+void Element::GetEffectiveTransformState(
+	const TransformState **local_perspective,
+	const TransformState **perspective,
+	const TransformState **transform
+) throw()
+{
+	UpdateTransformState();
+
+	if (local_perspective)
+	{
+		*local_perspective = 0;
+	}
+	if (perspective)
+	{
+		*perspective = 0;
+	}
+	if (transform)
+	{
+		*transform = 0;
+	}
+
+	Element *perspective_node = 0, *transform_node = 0;
+
+	// Find the TransformState to use for unprojecting.
+	if (transform_state.get() && transform_state->GetLocalPerspective(0))
+	{
+		if (local_perspective)
+		{
+			*local_perspective = transform_state.get();
+		}
+	}
+	else
+	{
+		Element *node = 0;
+		for (node = parent; node; node = node->parent)
+		{
+			if (node->transform_state.get() && node->transform_state->GetPerspective(0))
+			{
+				if (perspective)
+				{
+					*perspective = node->transform_state.get();
+				}
+				perspective_node = node;
+				break;
+			}
+		}
+	}
+
+	// Find the TransformState to use for transforming.
+	Element *node = 0;
+	for (node = this; node; node = node->parent)
+	{
+		if (node->transform_state.get() && node->transform_state->GetRecursiveTransform(0))
+		{
+			if (transform)
+			{
+				*transform = node->transform_state.get();
+			}
+			transform_node = node;
+			break;
+		}
+	}
+}
+
+// Project a 2D point in pixel coordinates onto the element's plane.
+const Vector2f Element::Project(const Vector2f& point) throw()
+{
+	UpdateTransformState();
+
+	Context *context = GetContext();
+	if (!context)
+	{
+		return point;
+	}
+
+	const TransformState *local_perspective, *perspective, *transform;
+	GetEffectiveTransformState(&local_perspective, &perspective, &transform);
+
+	Vector2i view_pos(0, 0);
+	Vector2i view_size = context->GetDimensions();
+
+	// Compute the line segment for ray picking, one point on the near and one on the far plane.
+	// These need to be in clip space coordinates ([-1; 1]³) so that we an unproject them.
+	Vector3f line_segment[2] =
+	{
+		// When unprojected, the intersection point on the near plane
+		Vector3f(
+			(point.x - view_pos.x) / (0.5f * view_size.x) - 1.0f,
+			(view_size.y - point.y - view_pos.y) / (0.5f * view_size.y) - 1.0f,
+			-1
+		),
+		// When unprojected, the intersection point on the far plane
+		Vector3f(
+			(point.x - view_pos.x) / (0.5f * view_size.x) - 1.0f,
+			(view_size.y - point.y - view_pos.y) / (0.5f * view_size.y) - 1.0f,
+			1
+		)
+	};
+
+	// Find the TransformState to use for unprojecting.
+	if (local_perspective)
+	{
+		TransformState::LocalPerspective the_local_perspective;
+		local_perspective->GetLocalPerspective(&the_local_perspective);
+		line_segment[0] = the_local_perspective.Unproject(line_segment[0]);
+		line_segment[1] = the_local_perspective.Unproject(line_segment[1]);
+	}
+	else if (perspective)
+	{
+		TransformState::Perspective the_perspective;
+		perspective->GetPerspective(&the_perspective);
+		line_segment[0] = the_perspective.Unproject(line_segment[0]);
+		line_segment[1] = the_perspective.Unproject(line_segment[1]);
+	}
+	else
+	{
+		line_segment[0] = context->GetViewState().Unproject(line_segment[0]);
+		line_segment[1] = context->GetViewState().Unproject(line_segment[1]);
+	}
+
+	// Compute three points on the context's corners to define the element's plane.
+	// It may seem elegant to base this computation on the element's size, but
+	// there are elements with zero length or height.
+	Vector3f element_rect[3] =
+	{
+		// Top-left corner
+		Vector3f(0, 0, 0),
+		// Top-right corner
+		Vector3f(view_size.x, 0, 0),
+		// Bottom-left corner
+		Vector3f(0, view_size.y, 0)
+	};
+	// Transform by the correct matrix
+	if (transform)
+	{
+		element_rect[0] = transform->Transform(element_rect[0]);
+		element_rect[1] = transform->Transform(element_rect[1]);
+		element_rect[2] = transform->Transform(element_rect[2]);
+	}
+
+	Vector3f u = line_segment[0] - line_segment[1];
+	Vector3f v = element_rect[1] - element_rect[0];
+	Vector3f w = element_rect[2] - element_rect[0];
+
+	// Now compute the intersection point of the line segment and the element's rectangle.
+	// This is based on the algorithm discussed at Wikipedia
+	// (http://en.wikipedia.org/wiki/Line-plane_intersection).
+	Matrix4f A = Matrix4f::FromColumns(
+		Vector4f(u, 0),
+		Vector4f(v, 0),
+		Vector4f(w, 0),
+		Vector4f(0, 0, 0, 1)
+	);
+	if (A.Invert())
+	{
+		Vector3f factors = A * (line_segment[0] - element_rect[0]);
+		Vector3f intersection3d = element_rect[0] + v * factors[1] + w * factors[2];
+		Vector3f projected;
+		if (transform)
+		{
+			projected = transform->Untransform(intersection3d);
+			//ROCKET_ASSERT(fabs(projected.z) < 0.0001);
+		}
+		else
+		{
+			// FIXME: Is this correct?
+			projected = intersection3d;
+		}
+		return Vector2f(projected.x, projected.y);
+	}
+	else
+	{
+		// The line segment is parallel to the element's plane.
+		// Although, mathematically, it could also lie within the plane
+		// (yielding infinitely many intersection points), we still
+		// return a value that's pretty sure to not match anything,
+		// since this case has nothing to do with the user `picking'
+		// anything.
+		float inf = std::numeric_limits< float >::infinity();
+		return Vector2f(-inf, -inf);
+	}
 }
 
 // Iterates over the properties defined on this element.
@@ -704,7 +947,7 @@ void Element::SetAttributes(const ElementAttributes* _attributes)
 	AttributeNameList changed_attributes;
 
 	while (_attributes->Iterate(index, key, value))
-	{		
+	{
 		changed_attributes.insert(key);
 		attributes.Set(key, *value);
 	}
@@ -873,7 +1116,7 @@ ElementDocument* Element::GetOwnerDocument()
 {
 	if (parent == NULL)
 		return NULL;
-	
+
 	if (!owner_document)
 	{
 		owner_document = parent->GetOwnerDocument();
@@ -1169,7 +1412,7 @@ void Element::InsertBefore(Element* child, Element* adjacent_element)
 	else
 	{
 		AppendChild(child);
-	}	
+	}
 }
 
 // Replaces the second node with the first node.
@@ -1332,25 +1575,25 @@ ElementScroll* Element::GetElementScroll() const
 {
 	return scroll;
 }
-	
+
 int Element::GetClippingIgnoreDepth()
 {
 	if (clipping_state_dirty)
 	{
 		IsClippingEnabled();
 	}
-	
+
 	return clipping_ignore_depth;
 }
-	
+
 bool Element::IsClippingEnabled()
 {
 	if (clipping_state_dirty)
 	{
 		// Is clipping enabled for this element, yes unless both overlow properties are set to visible
-		clipping_enabled = style->GetProperty(OVERFLOW_X)->Get< int >() != OVERFLOW_VISIBLE 
+		clipping_enabled = style->GetProperty(OVERFLOW_X)->Get< int >() != OVERFLOW_VISIBLE
 							|| style->GetProperty(OVERFLOW_Y)->Get< int >() != OVERFLOW_VISIBLE;
-		
+
 		// Get the clipping ignore depth from the clip property
 		clipping_ignore_depth = 0;
 		const Property* clip_property = GetProperty(CLIP);
@@ -1358,10 +1601,10 @@ bool Element::IsClippingEnabled()
 			clipping_ignore_depth = clip_property->Get< int >();
 		else if (clip_property->Get< int >() == CLIP_NONE)
 			clipping_ignore_depth = -1;
-		
+
 		clipping_state_dirty = false;
 	}
-	
+
 	return clipping_enabled;
 }
 
@@ -1483,7 +1726,7 @@ void Element::OnPropertyChange(const PropertyNameList& changed_properties)
 				parent->DirtyStackingContext();
 		}
 
-		if (all_dirty || 
+		if (all_dirty ||
 			changed_properties.find(DISPLAY) != changed_properties.end())
 		{
 			if (parent != NULL)
@@ -1503,7 +1746,7 @@ void Element::OnPropertyChange(const PropertyNameList& changed_properties)
 	}
 
 	// Update the z-index.
-	if (all_dirty || 
+	if (all_dirty ||
 		changed_properties.find(Z_INDEX) != changed_properties.end())
 	{
 		const Property* z_index_property = GetProperty(Z_INDEX);
@@ -1558,12 +1801,13 @@ void Element::OnPropertyChange(const PropertyNameList& changed_properties)
 	}
 
 	// Dirty the background if it's changed.
-	if (all_dirty ||
-		changed_properties.find(BACKGROUND_COLOR) != changed_properties.end())
+	if (all_dirty
+		|| changed_properties.find(BACKGROUND_COLOR) != changed_properties.end()
+		|| changed_properties.find(OPACITY) != changed_properties.end())
 		background->DirtyBackground();
 
 	// Dirty the border if it's changed.
-	if (all_dirty || 
+	if (all_dirty ||
 		changed_properties.find(BORDER_TOP_WIDTH) != changed_properties.end() ||
 		changed_properties.find(BORDER_RIGHT_WIDTH) != changed_properties.end() ||
 		changed_properties.find(BORDER_BOTTOM_WIDTH) != changed_properties.end() ||
@@ -1613,7 +1857,7 @@ void Element::OnPropertyChange(const PropertyNameList& changed_properties)
 		else if (new_font_face_handle != NULL)
 			new_font_face_handle->RemoveReference();
 	}
-	
+
 	// Check for clipping state changes
 	if (all_dirty ||
 		changed_properties.find(CLIP) != changed_properties.end() ||
@@ -1621,6 +1865,25 @@ void Element::OnPropertyChange(const PropertyNameList& changed_properties)
 		changed_properties.find(OVERFLOW_Y) != changed_properties.end())
 	{
 		clipping_state_dirty = true;
+	}
+
+	// Check for `perspective' and `perspective-origin' changes
+	if (all_dirty ||
+		changed_properties.find(PERSPECTIVE) != changed_properties.end() ||
+		changed_properties.find(PERSPECTIVE_ORIGIN_X) != changed_properties.end() ||
+		changed_properties.find(PERSPECTIVE_ORIGIN_Y) != changed_properties.end())
+	{
+		DirtyTransformState(true, false, false);
+	}
+
+	// Check for `transform' and `transform-origin' changes
+	if (all_dirty ||
+		changed_properties.find(TRANSFORM) != changed_properties.end() ||
+		changed_properties.find(TRANSFORM_ORIGIN_X) != changed_properties.end() ||
+		changed_properties.find(TRANSFORM_ORIGIN_Y) != changed_properties.end() ||
+		changed_properties.find(TRANSFORM_ORIGIN_Z) != changed_properties.end())
+	{
+		DirtyTransformState(false, true, false);
 	}
 }
 
@@ -1739,7 +2002,7 @@ void Element::GetRML(String& content)
 	int index = 0;
 	String name;
 	String value;
-	while (IterateAttributes(index, name, value))	
+	while (IterateAttributes(index, name, value))
 	{
 		size_t length = name.Length() + value.Length() + 8;
 		String attribute(length, " %s=\"%s\"", name.CString(), value.CString());
@@ -1763,7 +2026,7 @@ void Element::GetRML(String& content)
 }
 
 void Element::SetParent(Element* _parent)
-{	
+{
 	// If there's an old parent, detach from it first.
 	if (parent &&
 		parent != _parent)
@@ -1954,7 +2217,7 @@ void Element::DirtyStructure()
 {
 	// Clear the cached owner document
 	owner_document = NULL;
-	
+
 	// Inform all children that the structure is drity
 	for (size_t i = 0; i < children.size(); ++i)
 	{
@@ -1966,6 +2229,287 @@ void Element::DirtyStructure()
 		}
 
 		children[i]->DirtyStructure();
+	}
+}
+
+void Element::DirtyTransformState(bool perspective_changed, bool transform_changed, bool parent_transform_changed)
+{
+	for (size_t i = 0; i < children.size(); ++i)
+	{
+		children[i]->DirtyTransformState(false, false, transform_changed || parent_transform_changed);
+	}
+
+	if (perspective_changed)
+	{
+		this->transform_state_perspective_dirty = true;
+	}
+	if (transform_changed)
+	{
+		this->transform_state_transform_dirty = true;
+	}
+	if (parent_transform_changed)
+	{
+		this->transform_state_parent_transform_dirty = true;
+	}
+}
+
+void Element::UpdateTransformState()
+{
+	Context *context = GetContext();
+
+	Vector2f pos = GetAbsoluteOffset(Box::BORDER);
+	Vector2f size = GetBox().GetSize(Box::BORDER);
+
+	if (transform_state_perspective_dirty || transform_state_transform_dirty || transform_state_parent_transform_dirty)
+	{
+		if (!transform_state.get())
+		{
+			transform_state.reset(new TransformState());
+		}
+	}
+
+	if (transform_state_perspective_dirty)
+	{
+		bool have_perspective = false;
+		TransformState::Perspective perspective_value;
+
+		perspective_value.vanish = Vector2f(pos.x + size.x * 0.5f, pos.y + size.y * 0.5f);
+
+		const Property *perspective = GetPerspective();
+		if (perspective && (perspective->unit != Property::KEYWORD || perspective->value.Get< int >() != PERSPECTIVE_NONE))
+		{
+			have_perspective = true;
+
+			// Compute the perspective value
+			perspective_value.distance = ResolveProperty(perspective, Math::Max(size.x, size.y));
+
+			// Compute the perspective origin, if necessary
+			if (perspective_value.distance > 0)
+			{
+				const Property *perspective_origin_x = GetPerspectiveOriginX();
+				if (perspective_origin_x)
+				{
+					if (perspective_origin_x->unit == Property::KEYWORD)
+					{
+						switch (perspective_origin_x->value.Get< int >())
+						{
+							case PERSPECTIVE_ORIGIN_X_LEFT:
+								perspective_value.vanish.x = pos.x;
+								break;
+
+							case PERSPECTIVE_ORIGIN_X_CENTER:
+								perspective_value.vanish.x = pos.x + size.x * 0.5f;
+								break;
+
+							case PERSPECTIVE_ORIGIN_X_RIGHT:
+								perspective_value.vanish.x = pos.x + size.x;
+								break;
+						}
+					}
+					else
+					{
+						perspective_value.vanish.x = pos.x + ResolveProperty(perspective_origin_x, size.x);
+					}
+				}
+
+				const Property *perspective_origin_y = GetPerspectiveOriginY();
+				if (perspective_origin_y)
+				{
+					if (perspective_origin_y->unit == Property::KEYWORD)
+					{
+						switch (perspective_origin_y->value.Get< int >())
+						{
+							case PERSPECTIVE_ORIGIN_Y_TOP:
+								perspective_value.vanish.y = pos.y;
+								break;
+
+							case PERSPECTIVE_ORIGIN_Y_CENTER:
+								perspective_value.vanish.y = pos.y + size.y * 0.5f;
+								break;
+
+							case PERSPECTIVE_ORIGIN_Y_BOTTOM:
+								perspective_value.vanish.y = pos.y + size.y;
+								break;
+						}
+					}
+					else
+					{
+						perspective_value.vanish.y = pos.y + ResolveProperty(perspective_origin_y, size.y);
+					}
+				}
+			}
+		}
+
+		if (have_perspective && context)
+		{
+			perspective_value.view_size = context->GetDimensions();
+			transform_state->SetPerspective(&perspective_value);
+		}
+		else
+		{
+			transform_state->SetPerspective(0);
+		}
+
+		transform_state_perspective_dirty = false;
+	}
+
+	if (transform_state_transform_dirty)
+	{
+		bool have_local_perspective = false;
+		TransformState::LocalPerspective local_perspective;
+
+		bool have_transform = false;
+		Matrix4f transform_value = Matrix4f::Identity();
+		Vector3f transform_origin(pos.x + size.x * 0.5, pos.y + size.y * 0.5, 0);
+
+		const Property *transform = GetTransform();
+		if (transform && (transform->unit != Property::KEYWORD || transform->value.Get< int >() != TRANSFORM_NONE))
+		{
+			TransformRef transforms = transform->value.Get< TransformRef >();
+			int n = transforms->GetNumPrimitives();
+			for (int i = 0; i < n; ++i)
+			{
+				const Transforms::Primitive &primitive = transforms->GetPrimitive(i);
+
+				if (primitive.ResolvePerspective(local_perspective.distance, *this))
+				{
+					have_local_perspective = true;
+				}
+
+				Matrix4f matrix;
+				if (primitive.ResolveTransform(matrix, *this))
+				{
+					transform_value *= matrix;
+					have_transform = true;
+				}
+			}
+
+			// Compute the transform origin
+			const Property *transform_origin_x = GetTransformOriginX();
+			if (transform_origin_x)
+			{
+				if (transform_origin_x->unit == Property::KEYWORD)
+				{
+					switch (transform_origin_x->value.Get< int >())
+					{
+						case TRANSFORM_ORIGIN_X_LEFT:
+							transform_origin.x = pos.x;
+							break;
+
+						case TRANSFORM_ORIGIN_X_CENTER:
+							transform_origin.x = pos.x + size.x * 0.5f;
+							break;
+
+						case TRANSFORM_ORIGIN_X_RIGHT:
+							transform_origin.x = pos.x + size.x;
+							break;
+					}
+				}
+				else
+				{
+					transform_origin.x = pos.x + ResolveProperty(transform_origin_x, size.x);
+				}
+			}
+
+			const Property *transform_origin_y = GetTransformOriginY();
+			if (transform_origin_y)
+			{
+				if (transform_origin_y->unit == Property::KEYWORD)
+				{
+					switch (transform_origin_y->value.Get< int >())
+					{
+						case TRANSFORM_ORIGIN_Y_TOP:
+							transform_origin.y = pos.y;
+							break;
+
+						case TRANSFORM_ORIGIN_Y_CENTER:
+							transform_origin.y = pos.y + size.y * 0.5f;
+							break;
+
+						case TRANSFORM_ORIGIN_Y_BOTTOM:
+							transform_origin.y = pos.y + size.y;
+							break;
+					}
+				}
+				else
+				{
+					transform_origin.y = pos.y + ResolveProperty(transform_origin_y, size.y);
+				}
+			}
+
+			const Property *transform_origin_z = GetTransformOriginZ();
+			if (transform_origin_z)
+			{
+				transform_origin.z = ResolveProperty(transform_origin_z, Math::Max(size.x, size.y));
+			}
+		}
+
+		if (have_local_perspective && context)
+		{
+			local_perspective.view_size = context->GetDimensions();
+			transform_state->SetLocalPerspective(&local_perspective);
+		}
+		else
+		{
+			transform_state->SetLocalPerspective(0);
+		}
+
+		if (have_transform)
+		{
+			// TODO: If we're using the global projection matrix
+			// (perspective < 0), then scale the coordinates from
+			// pixel space to 3D unit space.
+
+			// Transform the Rocket context so that the computed `transform_origin'
+			// lies at the coordinate system origin.
+			transform_value =
+				  Matrix4f::Translate(transform_origin)
+				* transform_value
+				* Matrix4f::Translate(-transform_origin);
+		}
+
+		transform_state->SetTransform(have_transform ? &transform_value : 0);
+
+		transform_state_transform_dirty = false;
+	}
+
+	if (transform_state_parent_transform_dirty)
+	{
+		// We need to clean up from the top-most to the bottom-most dirt.
+		if (parent)
+		{
+			parent->UpdateTransformState();
+		}
+	}
+
+	if (transform_state.get())
+	{
+		// Store the parent's new full transform as our parent transform
+		Element *node = 0;
+		Matrix4f parent_transform;
+		for (node = parent; node; node = node->parent)
+		{
+			if (node->GetTransformState() && node->GetTransformState()->GetRecursiveTransform(&parent_transform))
+			{
+				transform_state->SetParentRecursiveTransform(&parent_transform);
+				break;
+			}
+		}
+		if (!node)
+		{
+			transform_state->SetParentRecursiveTransform(0);
+		}
+	}
+
+	transform_state_parent_transform_dirty = false;
+
+	// If we neither have a local perspective, nor a perspective nor a
+	// transform, we don't need to keep the large TransformState object
+	// around. GetEffectiveTransformState() will then recursively visit
+	// parents in order to find a non-trivial TransformState.
+	if (transform_state.get() && !transform_state->GetLocalPerspective(0) && !transform_state->GetPerspective(0) && !transform_state->GetTransform(0))
+	{
+		transform_state.reset(0);
 	}
 }
 
