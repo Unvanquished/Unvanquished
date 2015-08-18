@@ -269,12 +269,12 @@ public:
 
 	void PushTransform( const Rocket::Core::Matrix4f& transform )
 	{
-		// TODO: Implement
+		trap_R_PushMatrix(transform);
 	}
 
 	void PopTransform( const Rocket::Core::Matrix4f& transform )
 	{
-		// TODO: Implement
+		trap_R_PopMatrix();
 	}
 };
 

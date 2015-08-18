@@ -4935,6 +4935,24 @@ const void     *RB_ScissorSet( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void *RB_PushMatrix( const void *data )
+{
+	const pushPopMatrixCmd_t *cmd;
+	cmd = ( const pushPopMatrixCmd_t * ) data;
+	GL_PushMatrix();
+	GL_LoadProjectionMatrix(cmd->matrix);
+	GL_LoadModelViewMatrix( matrixIdentity );
+	return ( const void * )( cmd + 1 );
+}
+
+const void *RB_PopMatrix( const void *data )
+{
+	const pushPopMatrixCmd_t *cmd;
+	cmd = ( const pushPopMatrixCmd_t * ) data;
+	GL_PopMatrix();
+	return ( const void * )( cmd + 1 );
+}
+
 const void     *RB_Draw2dPolys( const void *data )
 {
 	const poly2dCommand_t *cmd;
@@ -5724,6 +5742,14 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_SCISSORSET:
 				data = RB_ScissorSet( data );
+				break;
+
+			case RC_PUSHMATRIX:
+				data = RB_PushMatrix( data );
+				break;
+
+			case RC_POPMATRIX:
+				data = RB_PopMatrix( data );
 				break;
 
 			case RC_END_OF_LIST:

@@ -2168,6 +2168,18 @@ void CGameVM::CmdBuffer::HandleCommandBufferSyscall(int major, int minor, Util::
 				});
                 break;
 
+			case CG_R_PUSHMATRIX:
+				HandleMsg<Render::PushMatrixMsg>(std::move(reader), [this] (const std::array<float, 16>& matrix) {
+					re.PushMatrix(matrix.data());
+				});
+				break;
+
+			case CG_R_POPMATRIX:
+				HandleMsg<Render::PopMatrixMsg>(std::move(reader), [this] {
+					re.PopMatrix();
+				});
+				break;
+
 		default:
 			Sys::Drop("Bad minor CGame QVM Command Buffer number: %d", minor);
 		}

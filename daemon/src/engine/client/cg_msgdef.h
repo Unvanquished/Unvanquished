@@ -162,6 +162,8 @@ typedef enum cgameImport_s
   CG_R_ADDADDITIVELIGHTTOSCENE,
   CG_R_RENDERSCENE,
   CG_R_ADD2DPOLYSINDEXED,
+  CG_R_PUSHMATRIX,
+  CG_R_POPMATRIX,
   CG_R_SETCOLOR,
   CG_R_SETCLIPREGION,
   CG_R_RESETCLIPREGION,
@@ -508,6 +510,8 @@ namespace Render {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RENDERSCENE>, refdef_t> RenderSceneMsg;
 	// Add2dPolysIndexedMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADD2DPOLYSINDEXED>, std::vector<polyVert_t>, int, std::vector<int>, int, int, int, qhandle_t> Add2dPolysIndexedMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_PUSHMATRIX>, std::array<float, 16>> PushMatrixMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_POPMATRIX>> PopMatrixMsg;
 }
 
 namespace Key {

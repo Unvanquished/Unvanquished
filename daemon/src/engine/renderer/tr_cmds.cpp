@@ -625,6 +625,39 @@ void RE_ScissorSet( int x, int y, int w, int h )
 
 /*
 =============
+RE_PushMatrix
+=============
+*/
+void RE_PushMatrix(const matrix_t matrix)
+{
+	pushPopMatrixCmd_t *cmd;
+	cmd = (pushPopMatrixCmd_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_PUSHMATRIX;
+	MatrixCopy(matrix, cmd->matrix);
+}
+
+/*
+============
+RE_PopMatrix
+============
+*/
+void RE_PopMatrix()
+{
+	pushPopMatrixCmd_t *cmd;
+	cmd = (pushPopMatrixCmd_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_POPMATRIX;
+}
+
+/*
+=============
 RE_RotatedPic
 =============
 */

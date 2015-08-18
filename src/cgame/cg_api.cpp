@@ -458,7 +458,17 @@ void trap_R_Add2dPolysIndexedToScene( polyVert_t* polys, int numPolys, int* inde
 	cmdBuffer.SendMsg<Render::Add2dPolysIndexedMsg>(mypolys, numPolys, myindices, numIndexes, trans_x, trans_y, shader);
 }
 
+void trap_R_PushMatrix( const matrix_t matrix )
+{
+	std::array<float, 16> mymatrix;
+	memcpy(mymatrix.data(), matrix, 16 * sizeof(float));
+	cmdBuffer.SendMsg<Render::PushMatrixMsg>(mymatrix);
+}
 
+void trap_R_PopMatrix()
+{
+	cmdBuffer.SendMsg<Render::PopMatrixMsg>();
+}
 void trap_R_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
 {
 	std::array<float, 3> myorg;

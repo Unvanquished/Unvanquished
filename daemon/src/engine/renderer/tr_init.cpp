@@ -1630,6 +1630,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		re.ScissorEnable = RE_ScissorEnable;
 		re.ScissorSet = RE_ScissorSet;
 		re.DrawStretchPicGradient = RE_StretchPicGradient;
+		re.PushMatrix = RE_PushMatrix;
+		re.PopMatrix = RE_PopMatrix;
 
 		re.Glyph = RE_Glyph;
 		re.GlyphChar = RE_GlyphChar;

@@ -117,7 +117,7 @@ static inline int16_t floatToHalf( float in ) {
 	floatint_t fi;
 
 	fi.f = in * scale;
-	
+
 	return (int16_t)(((fi.ui & 0x80000000) >> 16) | ((fi.ui & 0x0fffe000) >> 13));
 }
 static inline void floatToHalf( const vec4_t in, f16vec4_t out )
@@ -3343,7 +3343,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int           numSurfaceStages;
 		shaderStage_t **surfaceStages;
 
-		// preallocated host buffers for verts and indexes 
+		// preallocated host buffers for verts and indexes
 		shaderVertex_t *vertsBuffer;
 		glIndex_t      *indexesBuffer;
 
@@ -3780,6 +3780,12 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	typedef struct
 	{
+		int commandId;
+		matrix_t matrix;
+	} pushPopMatrixCmd_t;
+
+	typedef struct
+	{
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
@@ -3844,6 +3850,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  RC_2DPOLYS,
 	  RC_2DPOLYSINDEXED,
 	  RC_SCISSORSET,
+	  RC_PUSHMATRIX,
+	  RC_POPMATRIX,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
 	  RC_DRAW_VIEW,
@@ -3915,6 +3923,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader );
 	void                                RE_ScissorEnable( bool enable );
 	void                                RE_ScissorSet( int x, int y, int w, int h );
+	void                                RE_PushMatrix( const matrix_t matrix );
+	void                                RE_PopMatrix();
 
 	void                                RE_BeginFrame();
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
