@@ -4939,9 +4939,10 @@ const void *RB_PushMatrix( const void *data )
 {
 	const pushPopMatrixCmd_t *cmd;
 	cmd = ( const pushPopMatrixCmd_t * ) data;
-	GL_PushMatrix();
-	GL_LoadProjectionMatrix(cmd->matrix);
-	GL_LoadModelViewMatrix( matrixIdentity );
+	GL_PushMatrix( );
+	MatrixCopy( glState.projectionMatrix[ glState.stackIndex - 1 ],
+	            glState.projectionMatrix[ glState.stackIndex ] );
+	GL_LoadModelViewMatrix( cmd->matrix );
 	return ( const void * )( cmd + 1 );
 }
 
