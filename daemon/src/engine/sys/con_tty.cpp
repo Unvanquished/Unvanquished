@@ -32,8 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "qcommon/q_shared.h"
-#include "qcommon/qcommon.h"
+#include "con_common.h"
 
 #include <unistd.h>
 #include <signal.h>
@@ -86,7 +85,7 @@ static void CON_AnsiColorPrint( const char *msg )
 				buffer.clear();
 			}
 
-			auto c4b = i->Color().To4bit();
+			auto c4b = Color::To4bit( i->Color() );
 			bool bright = c4b & 8;
 			int number = c4b & ~8;
 

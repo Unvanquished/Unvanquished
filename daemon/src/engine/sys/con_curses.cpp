@@ -20,10 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "qcommon/q_shared.h"
-#include "qcommon/q_unicode.h"
-#include "qcommon/qcommon.h"
-
+#include "con_common.h"
 #include "framework/ConsoleField.h"
 
 #ifndef _WIN32
@@ -92,7 +89,7 @@ static void CON_SetColor( WINDOW *win, const Color::Color& color )
 	}
 	else
 	{
-		wattrset( win, COLOR_PAIR(color.To4bit()) );
+		wattrset( win, COLOR_PAIR(Color::To4bit( color )) );
 	}
 }
 

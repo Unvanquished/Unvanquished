@@ -106,60 +106,6 @@ const Color& Color::Indexed( int index )
 	return g_color_table[index%32];
 }
 
-template<>
-int Color::To4bit() const noexcept
-{
-    int color = 0;
-
-    float cmax = std::max({Red(),Green(),Blue()});
-    float cmin = std::min({Red(),Green(),Blue()});
-    float delta = cmax-cmin;
-
-    if ( delta > 0 )
-    {
-        float hue = 0;
-        if ( Red() == cmax )
-            hue = (Green()-Blue())/delta;
-        else if ( Green() == cmax )
-            hue = (Blue()-Red())/delta + 2;
-        else if ( Blue() == cmax )
-            hue = (Red()-Green())/delta + 4;
-
-        float sat = delta / cmax;
-        if ( sat >= 0.3 )
-        {
-            if ( hue < 0 )
-                hue += 6;
-
-            if ( hue <= 0.5 )      color = 0b001; // red
-            else if ( hue <= 1.5 ) color = 0b011; // yellow
-            else if ( hue <= 2.5 ) color = 0b010; // green
-            else if ( hue <= 3.5 ) color = 0b110; // cyan
-            else if ( hue <= 4.5 ) color = 0b100; // blue
-            else if ( hue <= 5.5 ) color = 0b101; // magenta
-            else                   color = 0b001; // red
-        }
-        else if ( cmax >= 0.5 )
-            color = 7;
-
-        if ( ( cmax + cmin ) / 2 >= 0.64 )
-            color |= 0b1000; // bright
-    }
-    else
-    {
-        if ( cmax > 0.8 )
-            color = 0b1111; // white
-        else if ( cmax > 0.53 )
-            color = 0b0111; // silver
-        else if ( cmax > 0.27 )
-            color = 0b1000; // gray
-        else
-            color = 0b0000; // black
-    }
-
-    return color;
-}
-
 int StrlenNocolor( const char *string )
 {
 	int len = 0;
