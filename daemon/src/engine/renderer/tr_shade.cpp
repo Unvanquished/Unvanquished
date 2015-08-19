@@ -571,6 +571,16 @@ static void Render_generic( int stage )
 	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
 	gl_genericShader->SetTCGenLightmap( pStage->tcGen_Lightmap );
 
+	if( backEnd.projection2D )
+	{
+		gl_genericShader->EnableMacro_USE_DEPTH_FLATTEN( );
+		glEnable( GL_DEPTH_CLAMP );
+	}
+	else
+	{
+		gl_genericShader->DisableMacro_USE_DEPTH_FLATTEN( );
+	}
+
 	if( pStage->hasDepthFade ) {
 		gl_genericShader->EnableMacro_USE_DEPTH_FADE();
 		needDepthMap = true;
@@ -673,6 +683,8 @@ static void Render_generic( int stage )
 	gl_genericShader->SetRequiredVertexPointers();
 
 	Tess_DrawElements();
+
+	glDisable( GL_DEPTH_CLAMP );
 
 	GL_CheckErrors();
 }

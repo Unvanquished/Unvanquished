@@ -51,4 +51,8 @@ void	main()
 
 	color *= var_Color;
 	gl_FragColor = color;
+
+#if defined(USE_DEPTH_FLATTEN)
+	gl_FragDepth = 0;
+#endif
 }

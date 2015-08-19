@@ -87,9 +87,9 @@ protected:
 	std::vector< GLUniform * >      _uniforms;
 	std::vector< GLCompileMacro * > _compileMacros;
 
-	
 
-	
+
+
 
 	GLShader( const std::string &name, uint32_t vertexAttribsRequired, GLShaderManager *manager ) :
 		_name( name ),
@@ -656,7 +656,8 @@ protected:
 	  USE_SHADOWING,
 	  LIGHT_DIRECTIONAL,
 	  USE_GLOW_MAPPING,
-	  USE_DEPTH_FADE
+	  USE_DEPTH_FADE,
+	  USE_DEPTH_FLATTEN
 	};
 
 public:
@@ -1240,6 +1241,49 @@ public:
 		}
 	}
 };
+
+class GLCompileMacro_USE_DEPTH_FLATTEN :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_DEPTH_FLATTEN( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_DEPTH_FLATTEN";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_DEPTH_FLATTEN;
+	}
+
+	void EnableMacro_USE_DEPTH_FLATTEN()
+	{
+		EnableMacro();
+	}
+
+	void DisableMacro_USE_DEPTH_FLATTEN()
+	{
+		DisableMacro();
+	}
+
+	void SetDepthFlatten( bool enable )
+	{
+		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
 
 class u_ColorTextureMatrix :
 	GLUniformMatrix4f
@@ -2140,7 +2184,8 @@ class GLShader_generic :
 	public GLCompileMacro_USE_VERTEX_SPRITE,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
 	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
-	public GLCompileMacro_USE_DEPTH_FADE
+	public GLCompileMacro_USE_DEPTH_FADE,
+	public GLCompileMacro_USE_DEPTH_FLATTEN
 {
 public:
 	GLShader_generic( GLShaderManager *manager );

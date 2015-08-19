@@ -121,7 +121,7 @@ namespace // Implementation details
 	{
 		// A windows user changing the shader file can put
 		// Windows can put CRLF's in the file. Make them LF's.
-		CRLFToLF(text); 
+		CRLFToLF(text);
 	}
 
 	std::string GetShaderFilename(Str::StringRef filename)
@@ -165,11 +165,11 @@ namespace // Implementation details
 			// Alert the user when a file does not match it's built-in version.
 			// There should be no differences in normal conditions.
 			// When testing shader file changes this is an expected message
-			// and helps the tester track which files have changed and need 
+			// and helps the tester track which files have changed and need
 			// to be recommmitted to git.
 			// If one is not making shader files changes this message
 			// indicates there is a mismatch between disk changes and builtins
-			// which the application is out of sync with it's files 
+			// which the application is out of sync with it's files
 			// and he translation script needs to be run.
 			auto textPtr = GetInternalShader(filename);
 			std::string internalShaderText;
@@ -1261,7 +1261,8 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	GLCompileMacro_USE_VERTEX_SPRITE( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
 	GLCompileMacro_USE_TCGEN_LIGHTMAP( this ),
-	GLCompileMacro_USE_DEPTH_FADE( this )
+	GLCompileMacro_USE_DEPTH_FADE( this ),
+	GLCompileMacro_USE_DEPTH_FLATTEN( this )
 {
 }
 
