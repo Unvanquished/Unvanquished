@@ -4947,6 +4947,7 @@ const void *RB_PushMatrix( const void *data )
 	            glState.modelViewMatrix[ glState.stackIndex ] );
 	MatrixMultiply( glState.projectionMatrix[ glState.stackIndex ], glState.modelViewMatrix[ glState.stackIndex ],
 	                glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+	tess.surfaceShader = nullptr;
 	return ( const void * )( cmd + 1 );
 }
 
@@ -4956,6 +4957,7 @@ const void *RB_PopMatrix( const void *data )
 	cmd = ( const pushPopMatrixCmd_t * ) data;
 	Tess_End( );
 	GL_PopMatrix();
+	tess.surfaceShader = nullptr;
 	return ( const void * )( cmd + 1 );
 }
 
