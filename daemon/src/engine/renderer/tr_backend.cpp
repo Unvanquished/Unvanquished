@@ -4939,10 +4939,14 @@ const void *RB_PushMatrix( const void *data )
 {
 	const pushPopMatrixCmd_t *cmd;
 	cmd = ( const pushPopMatrixCmd_t * ) data;
+	Tess_End( );
 	GL_PushMatrix( );
 	MatrixCopy( glState.projectionMatrix[ glState.stackIndex - 1 ],
 	            glState.projectionMatrix[ glState.stackIndex ] );
-	GL_LoadModelViewMatrix( cmd->matrix );
+	MatrixCopy( cmd->matrix,
+	            glState.modelViewMatrix[ glState.stackIndex ] );
+	MatrixMultiply( glState.projectionMatrix[ glState.stackIndex ], glState.modelViewMatrix[ glState.stackIndex ],
+	                glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 	return ( const void * )( cmd + 1 );
 }
 
@@ -4950,6 +4954,7 @@ const void *RB_PopMatrix( const void *data )
 {
 	const pushPopMatrixCmd_t *cmd;
 	cmd = ( const pushPopMatrixCmd_t * ) data;
+	Tess_End( );
 	GL_PopMatrix();
 	return ( const void * )( cmd + 1 );
 }
