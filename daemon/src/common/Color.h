@@ -303,68 +303,8 @@ private:
 
 };
 
-// A color that might need to fall back to a default value
-template<class Component, class Traits = ColorComponentTraits<Component>>
-class BasicOptionalColor
-{
-public:
-	typedef BasicColor<Component, Traits> color_type;
-
-	constexpr BasicOptionalColor() noexcept = default;
-	constexpr BasicOptionalColor( const color_type& color ) noexcept
-		: color( color ), has_color( true ) {}
-
-	constexpr operator const color_type&() const noexcept
-	{
-		return color;
-	}
-
-	constexpr explicit operator bool() const noexcept
-	{
-		return has_color;
-	}
-
-	constexpr const color_type& Color() const noexcept
-	{
-		return color;
-	}
-
-	constexpr color_type Color( const color_type& default_color ) const noexcept
-	{
-		return has_color ? color : default_color;
-	}
-
-	color_type* operator->() noexcept
-	{
-		return &color;
-	}
-
-	constexpr const color_type* operator->() const noexcept
-	{
-		return &color;
-	}
-
-	color_type& operator*() noexcept
-	{
-		return color;
-	}
-
-	constexpr const color_type& operator*() const noexcept
-	{
-		return color;
-	}
-
-private:
-	color_type color { color_type::component_max, color_type::component_max,
-	                   color_type::component_max, color_type::component_max };
-	bool  has_color = false;
-};
-
 typedef BasicColor<float>         Color;
-typedef BasicOptionalColor<float> OptionalColor;
 typedef BasicColor<uint8_t>       Color32Bit;
-
-extern OptionalColor DefaultColor;
 
 /*
  * Blend two colors.

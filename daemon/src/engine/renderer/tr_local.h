@@ -3449,7 +3449,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 				      float *factors[3], vec3_t ambientLight,
 				      vec3_t directedLight, vec2_t lightDir );
 	int      R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
-	void     R_TessLight( const trRefLight_t *light, const Color::OptionalColor& color );
+	void     R_TessLight( const trRefLight_t *light, const Color::Color& color );
 
 	void     R_SetupLightOrigin( trRefLight_t *light );
 	void     R_SetupLightLocalBounds( trRefLight_t *light );

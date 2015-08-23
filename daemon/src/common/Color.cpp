@@ -57,8 +57,6 @@ Color LtOrange = { 0.50, 0.25, 0.00, 1.00 };
 Color MdBlue   = { 0.00, 0.00, 0.50, 1.00 };
 } // namespace Named
 
-OptionalColor DefaultColor = {};
-
 static Color g_color_table[ 32 ] =
 {
 	{ 0.20f, 0.20f, 0.20f, 1.00f }, // 0 - black    0

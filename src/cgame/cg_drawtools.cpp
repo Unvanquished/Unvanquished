@@ -490,7 +490,7 @@ char CG_GetColorCharForHealth( int clientnum )
 CG_DrawSphere
 ================
 */
-void CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::OptionalColor& shaderRGBA )
+void CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::Color& shaderRGBA )
 {
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
@@ -500,10 +500,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const C
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA )
-	{
-		re.shaderRGBA = shaderRGBA.Color();
-	}
+    re.shaderRGBA = shaderRGBA;
 
 	VectorCopy( center, re.origin );
 
@@ -522,7 +519,7 @@ CG_DrawSphericalCone
 ================
 */
 void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
-                           bool a240, int customShader, const Color::OptionalColor& shaderRGBA )
+                           bool a240, int customShader, const Color::Color& shaderRGBA )
 {
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
@@ -532,10 +529,7 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA )
-	{
-		re.shaderRGBA = shaderRGBA.Color();
-	}
+	re.shaderRGBA = shaderRGBA;
 
 	VectorCopy( tip, re.origin );
 
