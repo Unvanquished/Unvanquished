@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
+#include "Application.h"
 #include "ConsoleHistory.h"
 #include "CommandSystem.h"
 #include "LogSystem.h"
@@ -283,16 +284,7 @@ static void Shutdown(bool error, Str::StringRef message)
 	// Stop accepting commands from other instances
 	CloseSingletonSocket();
 
-	// Catch any errors in one stage of shutdown and just skip to the next one
-	try {
-		CL_Shutdown();
-	} catch (Sys::DropErr&) {}
-	try {
-		SV_Shutdown(error ? va("Server fatal crashed: %s\n", message.c_str()) : va("%s\n", message.c_str()));
-	} catch (Sys::DropErr&) {}
-	try {
-		Com_Shutdown();
-	} catch (Sys::DropErr&) {}
+    Application::GetApp().Shutdown(error, message);
 
 	// Always run CON_Shutdown, because it restores the terminal to a usable state.
 	CON_Shutdown();
@@ -653,22 +645,8 @@ static void Init(int argc, char** argv)
 	// TODO: cvar names and FS_* stuff needs to be properly integrated
 	EarlyCvar("fs_basepak", cmdlineArgs);
 	EarlyCvar("fs_extrapaks", cmdlineArgs);
-	FS_LoadBasePak();
 
-	// Load configuration files
-	CL_InitKeyCommands(); // for binds
-#ifndef BUILD_SERVER
-	Cmd::BufferCommandText("preset default.cfg");
-#endif
-	if (!cmdlineArgs.reset_config) {
-#ifdef BUILD_SERVER
-		Cmd::BufferCommandText("exec -f " SERVERCONFIG_NAME);
-#else
-		Cmd::BufferCommandText("exec -f " CONFIG_NAME);
-		Cmd::BufferCommandText("exec -f " KEYBINDINGS_NAME);
-		Cmd::BufferCommandText("exec -f " AUTOEXEC_NAME);
-#endif
-	}
+    Application::GetApp().LoadInitialConfig(cmdlineArgs.reset_config);
 	Cmd::ExecuteCommandBuffer();
 
 	// Override any cvars set in configuration files with those on the command-line
@@ -680,7 +658,8 @@ static void Init(int argc, char** argv)
 
 	// Legacy initialization code, needs to be replaced
 	// TODO: eventually move all of Com_Init into here
-	Com_Init((char *) "");
+
+    Application::GetApp().Initialize();
 
 	// Buffer the commands that were specified on the command line so they are
 	// executed in the first frame.
@@ -717,14 +696,10 @@ ALIGN_STACK int main(int argc, char** argv)
 	try {
 		while (true) {
 			try {
-				Com_Frame();
+                Application::GetApp().Frame();
 			} catch (Sys::DropErr& err) {
 				Log::Notice("^1Error: %s", err.what());
-				FS::PakPath::ClearPaks();
-				FS_LoadBasePak();
-				SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", err.what()));
-				CL_Disconnect(true);
-				CL_FlushMemory();
+                Application::GetApp().OnDrop(err.what());
 			}
 		}
 	} catch (Sys::DropErr& err) {

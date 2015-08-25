@@ -96,6 +96,7 @@ set(WARNMODE ${WARNMODE} PARENT_SCOPE)
 
 set(NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries")
 
+include(CMakeParseArguments)
 include(DaemonPlatform)
 
 ################################################################################
@@ -381,7 +382,7 @@ if (DEPS_DIR)
 endif()
 
 # These variables are defined:
-# LIBS_BASE, LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
+# LIBS_BASE, LIBS_ENGINE_BASE LIBS_ENGINE, LIBS_BASECLIENT, LIBS_CLIENT
 
 # Native client
 include(DaemonNacl)
@@ -442,27 +443,27 @@ include_directories(${ZLIB_INCLUDE_DIRS})
 
 set(LIBS_BASE ${LIBS_BASE} PARENT_SCOPE)
 
+# Curses, pdcurses on Windows and ncursesw on Unix
+# Not supported on mac because the included version is too old
+if (WIN32)
+    set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} gdi32 comdlg32)
+
+    add_definitions(-DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
+    add_library(srclibs-pdcurses EXCLUDE_FROM_ALL ${PDCURSESLIST})
+    set_target_properties(srclibs-pdcurses PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} srclibs-pdcurses)
+    include_directories(${LIB_DIR}/pdcurses)
+elseif (NOT APPLE)
+    add_definitions(-DUSE_CURSES)
+    set(CURSES_NEED_NCURSES 1) # Tells FindCurses that ncurses is required
+    find_package(CursesW REQUIRED)
+    set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} ${CURSESW_LIBRARIES})
+    include_directories(${CURSESW_INCLUDE_DIR})
+endif()
+
 if (BUILD_CLIENT OR BUILD_TTY_CLIENT OR BUILD_SERVER)
     if (NACL_RUNTIME_PATH)
         add_definitions("-DNACL_RUNTIME_PATH=${NACL_RUNTIME_PATH}")
-    endif()
-
-    # Curses, pdcurses on Windows and ncursesw on Unix
-    # Not supported on mac because the included version is too old
-    if (WIN32)
-        set(LIBS_ENGINE ${LIBS_ENGINE} gdi32 comdlg32)
-
-        add_definitions(-DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
-        add_library(srclibs-pdcurses EXCLUDE_FROM_ALL ${PDCURSESLIST})
-        set_target_properties(srclibs-pdcurses PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-        set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-pdcurses)
-        include_directories(${LIB_DIR}/pdcurses)
-    elseif (NOT APPLE)
-        add_definitions(-DUSE_CURSES)
-        set(CURSES_NEED_NCURSES 1) # Tells FindCurses that ncurses is required
-        find_package(CursesW REQUIRED)
-        set(LIBS_ENGINE ${LIBS_ENGINE} ${CURSESW_LIBRARIES})
-        include_directories(${CURSESW_INCLUDE_DIR})
     endif()
 
     # Tinygettext
@@ -588,41 +589,78 @@ endif()
 # Engine
 ################################################################################
 
+add_library(engine-lib ${PCH_FILE} ${COMMONLIST} ${ENGINELIST})
+target_link_libraries(engine-lib ${LIBS_BASE} ${LIBS_ENGINE_BASE})
+set_property(TARGET engine-lib APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE)
+set_property(TARGET engine-lib APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
+set_property(TARGET engine-lib APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
+ADD_PRECOMPILED_HEADER(engine-lib)
+
+function(AddApplication)
+    set(oneValueArgs Target ExecutableName)
+    set(multiValueArgs Definitions Flags Files Libs)
+    cmake_parse_arguments(A "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    add_executable(${A_Target} ${PCH_FILE} ${A_Files})
+    target_link_libraries(${A_Target} engine-lib ${A_Libs})
+
+    set_property(TARGET ${A_Target} APPEND PROPERTY COMPILE_OPTIONS ${A_Flags})
+    set_property(TARGET ${A_Target} APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
+    set_property(TARGET ${A_Target} APPEND PROPERTY COMPILE_DEFINITIONS ${A_Definitions})
+    set_target_properties(${A_Target} PROPERTIES OUTPUT_NAME "${A_ExecutableName}" PREFIX "" FOLDER "engine")
+
+    message(STATUS ${A_Target})
+    ADD_PRECOMPILED_HEADER(${A_Target})
+endfunction()
+
+AddApplication(
+    Target dummyapp
+    ExecutableName dummyapp
+    Flags ${WARNINGS}
+    Files ${ENGINE_DIR}/null/NullApplication.cpp
+)
+
 if (BUILD_CLIENT)
-    add_executable(client WIN32 ${WIN_RC} ${PCH_FILE} ${COMMONLIST} ${ENGINELIST} ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST})
+    set(Definitions
+        BUILD_ENGINE BUILD_CLIENT
+    )
     if (USE_SMP)
-        set_property(TARGET client APPEND PROPERTY COMPILE_DEFINITIONS SMP)
+        list(APPEND Definitions USE_SMP)
     endif()
-    target_link_libraries(client ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE})
-    set_property(TARGET client APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_CLIENT)
     if (USE_VOIP)
-        # Set it here so the tty client doesn't need to depend on speex
-        set_property(TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP)
+        list(APPEND Definitions USE_VOIP)
     endif()
-    set_target_properties(client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" FOLDER "engine")
-    set_property(TARGET client APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
-    set_property(TARGET client APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
-    ADD_PRECOMPILED_HEADER(client)
+
+    AddApplication(
+        Target client
+        ExecutableName daemon
+        Definitions ${Definitions}
+        Flags ${WARNINGS}
+        Files WIN32 ${WIN_RC} ${QCOMMONLIST} ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST}
+        Libs ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE}
+    )
 endif()
 
 if (BUILD_SERVER)
-    add_executable(server WIN32 ${WIN_RC} ${PCH_FILE} ${COMMONLIST} ${ENGINELIST} ${SERVERLIST} ${DEDSERVERLIST})
-    target_link_libraries(server ${LIBS_ENGINE} ${LIBS_BASE})
-    set_property(TARGET server APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_SERVER)
-    set_target_properties(server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" FOLDER "engine")
-    set_property(TARGET server APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
-    set_property(TARGET server APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
-    ADD_PRECOMPILED_HEADER(server)
+    AddApplication(
+        Target server
+        ExecutableName daemonded
+        Definitions BUILD_ENGINE BUILD_SERVER
+        Flags ${WARNINGS}
+        Files WIN32 ${WIN_RC} ${QCOMMONLIST} ${SERVERLIST} ${DEDSERVERLIST}
+        Libs ${LIBS_ENGINE}
+    )
 endif()
 
 if (BUILD_TTY_CLIENT)
-    add_executable(ttyclient WIN32 ${WIN_RC} ${PCH_FILE} ${COMMONLIST} ${ENGINELIST} ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST})
-    target_link_libraries(ttyclient ${LIBS_CLIENTBASE} ${LIBS_ENGINE} ${LIBS_BASE})
-    set_property(TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE BUILD_TTY_CLIENT)
-    set_target_properties(ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" FOLDER "engine")
-    set_property(TARGET ttyclient APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
-    set_property(TARGET ttyclient APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
-    ADD_PRECOMPILED_HEADER(ttyclient)
+    AddApplication(
+        Target ttyclient
+        ExecutableName daemon-tty
+        Definitions BUILD_ENGINE BUILD_TTY_CLIENT
+        Flags ${WARNINGS}
+        Files WIN32 ${WIN_RC} ${QCOMMONLIST} ${SERVERLIST} ${CLIENTBASELIST} ${TTYCLIENTLIST}
+        Libs ${LIBS_CLIENTBASE} ${LIBS_ENGINE}
+    )
 endif()
 
 ################################################################################

@@ -136,6 +136,7 @@ set(SERVERLIST
 )
 
 set(ENGINELIST
+    ${ENGINE_DIR}/framework/Application.cpp
     ${ENGINE_DIR}/framework/BaseCommands.cpp
     ${ENGINE_DIR}/framework/BaseCommands.h
     ${ENGINE_DIR}/framework/CommandBufferHost.cpp
@@ -158,25 +159,8 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/System.h
     ${ENGINE_DIR}/framework/VirtualMachine.cpp
     ${ENGINE_DIR}/framework/VirtualMachine.h
-    ${ENGINE_DIR}/qcommon/cmd.cpp
-    ${ENGINE_DIR}/qcommon/common.cpp
-    ${ENGINE_DIR}/qcommon/crypto.cpp
-    ${ENGINE_DIR}/qcommon/crypto.h
-    ${ENGINE_DIR}/qcommon/cvar.cpp
-    ${ENGINE_DIR}/qcommon/cvar.h
-    ${ENGINE_DIR}/qcommon/files.cpp
-    ${ENGINE_DIR}/qcommon/huffman.cpp
-    ${ENGINE_DIR}/qcommon/md5.cpp
-    ${ENGINE_DIR}/qcommon/msg.cpp
-    ${ENGINE_DIR}/qcommon/net_chan.cpp
-    ${ENGINE_DIR}/qcommon/net_ip.cpp
-    ${ENGINE_DIR}/qcommon/parse.cpp
-    ${ENGINE_DIR}/qcommon/print_translated.h
-    ${ENGINE_DIR}/qcommon/qcommon.h
-    ${ENGINE_DIR}/qcommon/qfiles.h
-    ${ENGINE_DIR}/qcommon/surfaceflags.h
-    ${ENGINE_DIR}/qcommon/translation.cpp
     ${ENGINE_DIR}/sys/con_log.cpp
+    ${ENGINE_DIR}/qcommon/md5.cpp
 )
 
 if (WIN32)
@@ -188,6 +172,26 @@ else()
         ${ENGINE_DIR}/sys/con_tty.cpp
     )
 endif()
+
+set(QCOMMONLIST
+    ${ENGINE_DIR}/qcommon/cmd.cpp
+    ${ENGINE_DIR}/qcommon/common.cpp
+    ${ENGINE_DIR}/qcommon/crypto.cpp
+    ${ENGINE_DIR}/qcommon/crypto.h
+    ${ENGINE_DIR}/qcommon/cvar.cpp
+    ${ENGINE_DIR}/qcommon/cvar.h
+    ${ENGINE_DIR}/qcommon/files.cpp
+    ${ENGINE_DIR}/qcommon/huffman.cpp
+    ${ENGINE_DIR}/qcommon/msg.cpp
+    ${ENGINE_DIR}/qcommon/net_chan.cpp
+    ${ENGINE_DIR}/qcommon/net_ip.cpp
+    ${ENGINE_DIR}/qcommon/parse.cpp
+    ${ENGINE_DIR}/qcommon/print_translated.h
+    ${ENGINE_DIR}/qcommon/qcommon.h
+    ${ENGINE_DIR}/qcommon/qfiles.h
+    ${ENGINE_DIR}/qcommon/surfaceflags.h
+    ${ENGINE_DIR}/qcommon/translation.cpp
+)
 
 if (NOT APPLE)
     set(ENGINELIST ${ENGINELIST}
@@ -215,6 +219,7 @@ set(CLIENTBASELIST
     ${ENGINE_DIR}/client/dl_main.cpp
     ${ENGINE_DIR}/client/keycodes.h
     ${ENGINE_DIR}/client/keys.h
+    ${ENGINE_DIR}/client/ClientApplication.cpp
 )
 
 set(CLIENTLIST
@@ -249,6 +254,7 @@ set(TTYCLIENTLIST
 set(DEDSERVERLIST
     ${ENGINE_DIR}/null/null_client.cpp
     ${ENGINE_DIR}/null/null_input.cpp
+    ${ENGINE_DIR}/server/ServerApplication.cpp
 )
 
 set(WIN_RC ${ENGINE_DIR}/sys/daemon.rc)

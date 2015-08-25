@@ -28,10 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "CommandSystem.h"
+
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
 
-#include "CommandSystem.h"
+#include "Application.h"
 
 //TODO: use case-insensitive comparisons for commands (store the lower case version?)
 namespace Cmd {
@@ -215,10 +217,7 @@ namespace Cmd {
             return;
         }
 
-        //TODO: remove that and add default command handlers or something
-        // send it as a server command if we are connected
-        // (cvars are expanded locally)
-        CL_ForwardCommandToServer(args.EscapedArgs(0).c_str());
+        Application::GetApp().OnUnhandledCommand(args);
     }
 
     CompletionResult CompleteArgument(const Args& args, int argNum) {
