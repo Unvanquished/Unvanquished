@@ -543,13 +543,7 @@ bool Com_IsClient()
 
 bool Com_IsDedicatedServer()
 {
-#if BUILD_CLIENT || BUILD_TTY_CLIENT
-	return false;
-#elif BUILD_SERVER
-	return true;
-#else
-	#error
-#endif
+    return !Com_IsClient();
 }
 
 bool Com_ServerRunning()
