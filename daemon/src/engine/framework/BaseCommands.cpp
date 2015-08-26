@@ -730,14 +730,14 @@ namespace Cmd {
     static int aliasRun;
     static bool inAliasRun;
 
-    void WriteAliases(fileHandle_t f) {
-        std::string toWrite = "clearAliases\n";
-        FS_Write(toWrite.c_str(), toWrite.size(), f);
+    std::string GetAliasConfigText() {
+        std::ostringstream result;
+        result << "clearAliases\n";
 
         for (const auto& it: aliases) {
-            toWrite = "alias " + it.first + " " + it.second.command + "\n";
-            FS_Write(toWrite.c_str(), toWrite.size(), f);
+            result << "alias " << it.first << " " << it.second.command << "\n";
         }
+        return result.str();
     }
 
     Cmd::CompletionResult CompleteAliasName(Str::StringRef prefix) {

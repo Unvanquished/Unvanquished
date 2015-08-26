@@ -448,8 +448,9 @@ namespace Cvar {
         return nullptr;
     }
 
-    void WriteVariables(fileHandle_t f) {
+    std::string GetCvarConfigText() {
         CvarMap& cvars = GetCvarMap();
+        std::ostringstream result;
 
         for (auto& entry : cvars) {
             cvarRecord_t* cvar = entry.second;
@@ -461,9 +462,10 @@ namespace Cvar {
                 } else {
                     value = cvar->value.c_str();
                 }
-                FS_Printf(f, "seta %s %s\n", entry.first.c_str(), Cmd::Escape(value).c_str());
+                result << Str::Format("seta %s %s\n", entry.first.c_str(), Cmd::Escape(value).c_str());
             }
         }
+        return result.str();
     }
 
     char* InfoString(int flag, bool big) {
