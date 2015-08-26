@@ -637,7 +637,6 @@ void QDECL Com_Log( log_level_t level, const char* message );
 #define    PrintBanner(text) Com_Printf("----- %s -----\n", text );
 
 // *INDENT-ON*
-void NORETURN Com_Quit_f();
 int        Com_Milliseconds();
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );

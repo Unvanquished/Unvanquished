@@ -275,21 +275,6 @@ void CL_ShutdownCGame();
 // *INDENT-ON*
 
 /*
-=============
-Com_Quit_f
-
-Both client and server can use this, and it will
-do the appropriate things.
-=============
-*/
-void NORETURN Com_Quit_f()
-{
-	// don't try to shutdown if we are in a recursive error
-	char *p = Cmd_Args();
-	Sys::Quit(p[0] ? p : "Server quit");
-}
-
-/*
 ============================================================================
 
 COMMAND LINE FUNCTIONS
@@ -1660,7 +1645,6 @@ void Com_Init( char *commandLine )
 		Cmd_AddCommand( "freeze", Com_Freeze_f );
 	}
 
-	Cmd_AddCommand( "quit", Com_Quit_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
 #ifndef BUILD_SERVER
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
