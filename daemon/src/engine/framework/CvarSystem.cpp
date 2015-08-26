@@ -79,7 +79,7 @@ namespace Cvar {
                 modified = true;
             } else {
                 if (Q_stricmp(var.string, cvar.value.c_str())) {
-                    Com_Printf("The change will take effect after restart.");
+                    Log::Notice("The change will take effect after restart.");
                     if (var.latchedString) Z_Free(var.latchedString);
                     var.latchedString = CopyString(cvar.value.c_str());
                     modified = true;
@@ -202,7 +202,7 @@ namespace Cvar {
         //TODO: rom means the cvar should have been created before?
         if (it == cvars.end()) {
             if (!Cmd::IsValidCvarName(cvarName)) {
-                Com_Printf("Invalid cvar name '%s'", cvarName.c_str());
+                Log::Notice("Invalid cvar name '%s'", cvarName.c_str());
                 return;
             }
 
@@ -217,16 +217,16 @@ namespace Cvar {
 
             if (not (cvar->flags & CVAR_USER_CREATED)) {
                 if (cvar->flags & (CVAR_ROM | CVAR_INIT) and not rom) {
-                    Com_Printf("%s is read only.\n", cvarName.c_str());
+                    Log::Notice("%s is read only.\n", cvarName.c_str());
                     return;
                 }
 
                 if (rom and warnRom and not (cvar->flags & (CVAR_ROM | CVAR_INIT))) {
-                    Com_Printf("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
+                    Log::Notice("SetValueROM called on non-ROM cvar '%s'\n", cvarName.c_str());
                 }
 
                 if (not cheatsAllowed && cvar->flags & CHEAT) {
-                    Com_Printf("%s is cheat-protected.\n", cvarName.c_str());
+                    Log::Notice("%s is cheat-protected.\n", cvarName.c_str());
                     return;
                 }
             }
@@ -248,7 +248,7 @@ namespace Cvar {
                     ChangeCvarDescription(cvarName, cvar, result.description);
                 } else {
                     //The proxy could not parse the value, rollback
-                    Com_Printf("Value '%s' is not valid for cvar %s: %s\n",
+                    Log::Notice("Value '%s' is not valid for cvar %s: %s\n",
                             cvar->value.c_str(), cvarName.c_str(), result.description.c_str());
                     cvar->value = std::move(oldValue);
                 }
@@ -286,7 +286,7 @@ namespace Cvar {
         auto it = cvars.find(name);
         if (it == cvars.end()) {
             if (!Cmd::IsValidCvarName(name)) {
-                Com_Printf("Invalid cvar name '%s'", name.c_str());
+                Log::Notice("Invalid cvar name '%s'", name.c_str());
                 return false;
             }
 
@@ -301,7 +301,7 @@ namespace Cvar {
             cvar = it->second;
 
             if (proxy && cvar->proxy) {
-                Com_Printf("Cvar %s cannot be registered twice\n", name.c_str());
+                Log::Notice("Cvar %s cannot be registered twice\n", name.c_str());
             }
 
             //Register the cvar with the previous user_created value
@@ -327,7 +327,7 @@ namespace Cvar {
                     if (defaultValueResult.success) {
                         ChangeCvarDescription(name, cvar, result.description);
                     } else {
-                        Com_Printf("Default value '%s' is not correct for cvar '%s': %s\n",
+                        Log::Notice("Default value '%s' is not correct for cvar '%s': %s\n",
                                 defaultValue.c_str(), name.c_str(), defaultValueResult.description.c_str());
                     }
                 }
@@ -372,7 +372,7 @@ namespace Cvar {
             // User error. Possibly coder error too, but unlikely
             if ((cvar->flags & TEMPORARY) && (flags & (ARCHIVE | USER_ARCHIVE)))
             {
-                Com_Printf("Cvar '%s' is temporary and will not be archived\n", cvarName.c_str());
+                Log::Notice("Cvar '%s' is temporary and will not be archived\n", cvarName.c_str());
                 flags &= ~(ARCHIVE | USER_ARCHIVE);
             }
 
@@ -426,7 +426,7 @@ namespace Cvar {
                     if(result.success) {
                         ChangeCvarDescription(entry.first, cvar, result.description);
                     } else {
-                        Com_Printf("Default value '%s' is not correct for cvar '%s': %s\n",
+                        Log::Notice("Default value '%s' is not correct for cvar '%s': %s\n",
                                 cvar->resetValue.c_str(), entry.first.c_str(), result.description.c_str());
                     }
                 }
