@@ -2027,7 +2027,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			sepW = pad;
 			sepH = ( 0.5f * picH ) - pad;
 
-			trap_R_SetColor( Color::Named::Black );
+			trap_R_SetColor( Color::Black );
 			CG_DrawPic( sepX, sepY, sepW, sepH, cgs.media.whiteShader );
 			trap_R_ClearColor();
 		}
@@ -2078,7 +2078,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			markH = 0.5f * barH;
 			markW = ( bs->healthPadding * scale );
 
-			trap_R_SetColor( Color::Named::Black );
+			trap_R_SetColor( Color::Black );
 			CG_DrawPic( markX, barY, markW, markH, cgs.media.whiteShader );
 
 			trap_R_ClearColor();

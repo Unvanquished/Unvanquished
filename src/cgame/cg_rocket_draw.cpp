@@ -462,14 +462,14 @@ public:
 		{
 			if ( cg.crosshairFoe )
 			{
-				baseColor = Color::Named::Red;
+				baseColor = Color::Red;
 				baseColor.SetAlpha( color.Alpha() * 0.75f );
 				onRelevantEntity = true;
 			}
 
 			else if ( cg.crosshairFriend )
 			{
-				baseColor = Color::Named::Green;
+				baseColor = Color::Green;
 				baseColor.SetAlpha( color.Alpha() * 0.75f );
 				onRelevantEntity = true;
 			}
@@ -491,7 +491,7 @@ public:
 		if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
 		{
 			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
-			drawColor = Color::Blend( baseColor, Color::Named::White, dim );
+			drawColor = Color::Blend( baseColor, Color::White, dim );
 		}
 
 		else if ( !onRelevantEntity )
@@ -526,7 +526,7 @@ class CrosshairHudElement : public HudElement {
 public:
 	CrosshairHudElement( const Rocket::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, true ),
-			color( Color::Named::White ) {
+			color( Color::White ) {
 	}
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
@@ -1285,7 +1285,7 @@ public:
 	LagometerElement( const Rocket::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_GAME, true ),
 			shouldDrawLagometer( true ),
-			adjustedColor( Color::Named::White )
+			adjustedColor( Color::White )
 	{
 	}
 
@@ -1347,7 +1347,7 @@ public:
 				if ( color != 1 )
 				{
 					color = 1;
-					trap_R_SetColor( Color::Named::Yellow );
+					trap_R_SetColor( Color::Yellow );
 				}
 
 				if ( v > range )
@@ -1363,7 +1363,7 @@ public:
 				if ( color != 2 )
 				{
 					color = 2;
-					trap_R_SetColor( Color::Named::Blue );
+					trap_R_SetColor( Color::Blue );
 				}
 
 				v = -v;
@@ -1393,7 +1393,7 @@ public:
 					if ( color != 5 )
 					{
 						color = 5; // YELLOW for rate delay
-						trap_R_SetColor( Color::Named::Yellow );
+						trap_R_SetColor( Color::Yellow );
 					}
 				}
 
@@ -1403,7 +1403,7 @@ public:
 					{
 						color = 3;
 
-						trap_R_SetColor( Color::Named::Green );
+						trap_R_SetColor( Color::Green );
 					}
 				}
 
@@ -1422,7 +1422,7 @@ public:
 				if ( color != 4 )
 				{
 					color = 4; // RED for dropped snapshots
-					trap_R_SetColor( Color::Named::Red );
+					trap_R_SetColor( Color::Red );
 				}
 
 				trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );
@@ -2126,7 +2126,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 			cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
-		color = Color::Named::Red;
+		color = Color::Red;
 	}
 
 	ref_alpha = ref_color.Alpha();
@@ -3173,22 +3173,22 @@ void CG_Rocket_DrawPredictedRGSRate()
 
 	if ( delta < 0 )
 	{
-		color = Color::Named::Red;
+		color = Color::Red;
 	}
 
 	else if ( delta < 10 )
 	{
-		color = Color::Named::Orange;
+		color = Color::Orange;
 	}
 
 	else if ( delta < 50 )
 	{
-		color = Color::Named::Yellow;
+		color = Color::Yellow;
 	}
 
 	else
 	{
-		color = Color::Named::Green;
+		color = Color::Green;
 	}
 
 	Rocket_SetInnerRML( va( "%s%+d%%", Color::CString( color ), delta ), RP_QUAKE );

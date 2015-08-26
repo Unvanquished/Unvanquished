@@ -480,7 +480,7 @@ void trap_R_RenderScene( const refdef_t *fd )
 
 void trap_R_ClearColor()
 {
-	cmdBuffer.SendMsg<Render::SetColorMsg>(Color::Named::White);
+	cmdBuffer.SendMsg<Render::SetColorMsg>(Color::White);
 }
 void trap_R_SetColor( const Color::Color &rgba )
 {

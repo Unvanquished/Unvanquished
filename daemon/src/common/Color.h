@@ -349,7 +349,6 @@ enum {
 }; // enum
 } // namespace Constants
 
-namespace Named {
 extern Color Black;
 extern Color Red;
 extern Color Green;
@@ -361,16 +360,7 @@ extern Color Cyan;
 extern Color White;
 extern Color LtGrey;
 extern Color MdGrey;
-extern Color DkGrey;
-extern Color MdRed;
-extern Color MdGreen;
-extern Color DkGreen;
-extern Color MdCyan;
-extern Color MdYellow;
-extern Color MdOrange;
 extern Color LtOrange;
-extern Color MdBlue;
-} // namespace Named
 
 /*
  * Generic token for parsing colored strings

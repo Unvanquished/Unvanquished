@@ -274,7 +274,7 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo, bool noLightCoords )
 	else
 	{
 		ri.Error( ERR_DROP, "%sUnknown attribute layout for vbo: %s\n",
-			Color::CString( Color::Named::Yellow ),
+			Color::CString( Color::Yellow ),
 			vbo->name );
 	}
 }
@@ -885,7 +885,7 @@ static void R_InitUnitCubeVBO()
 
 	Tess_MapVBOs( true );
 
-	Tess_AddCube( vec3_origin, mins, maxs, Color::Named::White );
+	Tess_AddCube( vec3_origin, mins, maxs, Color::White );
 
 	memset( &data, 0, sizeof( data ) );
 	data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );

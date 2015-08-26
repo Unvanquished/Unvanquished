@@ -89,13 +89,13 @@ void CG_ClientList_f()
 		{
 			case TEAM_ALIENS:
 				Com_Printf( "%2d %sA   ^*%s\n", i,
-				            Color::CString( Color::Named::Red ),
+				            Color::CString( Color::Red ),
 				            ci->name );
 				break;
 
 			case TEAM_HUMANS:
 				Com_Printf( "%2d %sH   ^*%s\n", i,
-				            Color::CString( Color::Named::Cyan ),
+				            Color::CString( Color::Cyan ),
 				            ci->name );
 				break;
 

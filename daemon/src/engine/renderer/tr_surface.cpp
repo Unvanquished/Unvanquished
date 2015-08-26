@@ -580,25 +580,25 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 
 	Tess_MapVBOs( false );
 	VectorCopy( quadVerts[ 0 ], tess.verts[ tess.numVertexes ].xyz );
-	tess.verts[ tess.numVertexes ].color = Color::Named::White;
+	tess.verts[ tess.numVertexes ].color = Color::White;
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.0f );
 	tess.numVertexes++;
 
 	VectorCopy( quadVerts[ 1 ], tess.verts[ tess.numVertexes ].xyz );
-	tess.verts[ tess.numVertexes ].color = Color::Named::White;
+	tess.verts[ tess.numVertexes ].color = Color::White;
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 1.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.0f );
 	tess.numVertexes++;
 
 	VectorCopy( quadVerts[ 2 ], tess.verts[ tess.numVertexes ].xyz );
-	tess.verts[ tess.numVertexes ].color = Color::Named::White;
+	tess.verts[ tess.numVertexes ].color = Color::White;
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 1.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 1.0f );
 	tess.numVertexes++;
 
 	VectorCopy( quadVerts[ 3 ], tess.verts[ tess.numVertexes ].xyz );
-	tess.verts[ tess.numVertexes ].color = Color::Named::White;
+	tess.verts[ tess.numVertexes ].color = Color::White;
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 1.0f );
 	tess.numVertexes++;

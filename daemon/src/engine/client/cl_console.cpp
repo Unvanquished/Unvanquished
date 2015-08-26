@@ -41,7 +41,7 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 
-static const Color::Color console_color = Color::Named::White;
+static const Color::Color console_color = Color::White;
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
@@ -676,7 +676,7 @@ Draws the build and copyright info onto the console
 */
 void Con_DrawAboutText()
 {
-	Color::Color color = Color::Named::White;
+	Color::Color color = Color::White;
 
 	// draw the version number
 	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL_DOWN needs this, latter, since it might otherwise scroll out the console
@@ -697,7 +697,7 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	// draw arrows to show the buffer is backscrolled
 	const int hatWidth = SCR_ConsoleFontUnicharWidth( '^' );
 
-	Color::Color color = Color::Named::White;
+	Color::Color color = Color::White;
 	color.SetAlpha( 0.66f * consoleState.currentAlphaFactor );
 	re.SetColor( color );
 
@@ -753,7 +753,7 @@ void Con_DrawConsoleScrollbar()
 	}
 
 	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 6, Color::Named::White, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
+		Con_DrawRightFloatingTextLine( 6, Color::White, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
 	}
 }
 
@@ -832,8 +832,8 @@ void Con_DrawConsoleContent()
 	}
 
 	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 3, Color::Named::White, va( "Buffer (lines): ScrollbackLength %d", (int) consoleState.lines.size() ) );
-		Con_DrawRightFloatingTextLine( 4, Color::Named::White, va( "Display (lines): From %d to %d (%d a %i px)",
+		Con_DrawRightFloatingTextLine( 3, Color::White, va( "Buffer (lines): ScrollbackLength %d", (int) consoleState.lines.size() ) );
+		Con_DrawRightFloatingTextLine( 4, Color::White, va( "Display (lines): From %d to %d (%d a %i px)",
 			0, consoleState.scrollLineIndex, consoleState.visibleAmountOfLines, charHeight ) );
 	}
 
@@ -935,7 +935,7 @@ void Con_DrawAnimatedConsole()
 	Con_DrawAboutText();
 
 	if(con_debug->integer) {
-			Con_DrawRightFloatingTextLine( 8, Color::Named::White, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
+			Con_DrawRightFloatingTextLine( 8, Color::White, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
 	}
 
 	//input, scrollbackindicator, scrollback text

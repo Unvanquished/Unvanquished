@@ -3679,7 +3679,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		if ( p->pers.connected == CON_CONNECTING )
 		{
 			t = 'C';
-			color = Color::Named::Yellow;
+			color = Color::Yellow;
 		}
 		else
 		{
@@ -3687,15 +3687,15 @@ bool G_admin_listplayers( gentity_t *ent )
 
 			if ( p->pers.team == TEAM_HUMANS )
 			{
-				color = Color::Named::Cyan;
+				color = Color::Cyan;
 			}
 			else if ( p->pers.team == TEAM_ALIENS )
 			{
-				color = Color::Named::Red;
+				color = Color::Red;
 			}
 			else
 			{
-				color = Color::Named::White;
+				color = Color::White;
 			}
 		}
 
@@ -3784,7 +3784,7 @@ static int ban_out( void *ban, char *str )
 	int           i, t;
 	char          duration[ MAX_DURATION_LENGTH ];
 	char          time[ MAX_DURATION_LENGTH ];
-	Color::Color  d_color = Color::Named::White;
+	Color::Color  d_color = Color::White;
 	char          date[ 11 ];
 	g_admin_ban_t *b = ( g_admin_ban_t * ) ban;
 	char          *made = b->made;
@@ -3816,23 +3816,23 @@ static int ban_out( void *ban, char *str )
 	{
 		*time = 0;
 		Q_strncpyz( duration, "expired", sizeof( duration ) );
-		d_color = Color::Named::Cyan;
+		d_color = Color::Cyan;
 	}
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%s\n"
 	             "         %s\\__ %s%s%-*s %s%-15s ^7%-8s %s\n"
 	             "          %s\\__ %s: ^7%s",
 	             b->name,
-	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Named::Yellow : Color::Named::Red ),
+	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ),
 	             Color::CString( d_color ),
 	             time,
 	             MAX_DURATION_LENGTH - 1,
 	             duration,
-	             Color::CString( ( strchr( b->ip.str, '/' ) ) ? Color::Named::Red : Color::Named::White ),
+	             Color::CString( ( strchr( b->ip.str, '/' ) ) ? Color::Red : Color::White ),
 	             b->ip.str,
 	             date,
 	             b->banner,
-	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Named::Yellow : Color::Named::Red ),
+	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ),
 	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING" : "BAN",
 	             b->reason );
 
@@ -4415,7 +4415,7 @@ static int namelog_out( void *namelog, char *str )
 
 	if ( n->slot > -1 )
 	{
-		scolor = Color::Named::Yellow;
+		scolor = Color::Yellow;
 		l = Q_snprintf( p, l2, "%s%-2d", Color::CString( scolor ), n->slot );
 		p += l;
 		l2 -= l;
@@ -4426,7 +4426,7 @@ static int namelog_out( void *namelog, char *str )
 		*p++ = ' ';
 		*p = '\0';
 		l2 -= 2;
-		scolor = Color::Named::White;
+		scolor = Color::White;
 	}
 
 	for ( i = 0; i < MAX_NAMELOG_ADDRS && n->ip[ i ].str[ 0 ]; i++ )

@@ -770,17 +770,17 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		clientInfo_t *ci = &cgs.clientinfo[ clientNum ];
-		Color::Color tcolor = Color::Named::White;
+		Color::Color tcolor = Color::White;
 
 		name = ci->name;
 		team = ci->team;
 		if ( ci->team == TEAM_ALIENS )
 		{
-			tcolor = Color::Named::Red;
+			tcolor = Color::Red;
 		}
 		else if ( ci->team == TEAM_HUMANS )
 		{
-			tcolor = Color::Named::Cyan;
+			tcolor = Color::Cyan;
 		}
 
 		if ( cg_chatTeamPrefix.integer )

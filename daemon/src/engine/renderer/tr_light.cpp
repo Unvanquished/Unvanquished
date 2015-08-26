@@ -501,7 +501,7 @@ void R_TessLight( const trRefLight_t *light, const Color::Color& color, bool use
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
-			Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], use_default_color ? Color::Named::White : color );
+			Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], use_default_color ? Color::White : color );
 			break;
 		case RL_PROJ:
 			{
@@ -525,7 +525,7 @@ void R_TessLight( const trRefLight_t *light, const Color::Color& color, bool use
 						Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
 						Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
 						Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, use_default_color ? Color::Named::Cyan : color );
+						Tess_AddQuadStamp2( quadVerts, use_default_color ? Color::Cyan : color );
 					}
 
 					// draw far cap
@@ -533,14 +533,14 @@ void R_TessLight( const trRefLight_t *light, const Color::Color& color, bool use
 					Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, use_default_color ? Color::Named::Red : color );
+					Tess_AddQuadStamp2( quadVerts, use_default_color ? Color::Red : color );
 
 					// draw near cap
 					Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, use_default_color ? Color::Named::Green : color );
+					Tess_AddQuadStamp2( quadVerts, use_default_color ? Color::Green : color );
 				}
 				else
 				{
@@ -552,7 +552,7 @@ void R_TessLight( const trRefLight_t *light, const Color::Color& color, bool use
 					// draw pyramid
 					for ( j = 0; j < 4; j++ )
 					{
-						Color::Color32Bit iColor = use_default_color ? Color::Named::Cyan : color;
+						Color::Color32Bit iColor = use_default_color ? Color::Cyan : color;
 
 						VectorCopy( top, tess.verts[ tess.numVertexes ].xyz );
 						tess.verts[ tess.numVertexes ].color = iColor;
@@ -574,7 +574,7 @@ void R_TessLight( const trRefLight_t *light, const Color::Color& color, bool use
 					Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, use_default_color ? Color::Named::Red : color );
+					Tess_AddQuadStamp2( quadVerts, use_default_color ? Color::Red : color );
 				}
 			}
 		default:

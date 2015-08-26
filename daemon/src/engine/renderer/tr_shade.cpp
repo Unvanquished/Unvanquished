@@ -419,15 +419,15 @@ static void DrawTris()
 	}
 	else if ( glState.currentVBO == tess.vbo )
 	{
-		gl_genericShader->SetUniform_Color( Color::Named::Red );
+		gl_genericShader->SetUniform_Color( Color::Red );
 	}
 	else if ( glState.currentVBO )
 	{
-		gl_genericShader->SetUniform_Color( Color::Named::Blue );
+		gl_genericShader->SetUniform_Color( Color::Blue );
 	}
 	else
 	{
-		gl_genericShader->SetUniform_Color( Color::Named::White );
+		gl_genericShader->SetUniform_Color( Color::White );
 	}
 
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
@@ -2383,7 +2383,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	{
 		case CGEN_IDENTITY:
 			{
-				tess.svars.color = Color::Named::White;
+				tess.svars.color = Color::White;
 				break;
 			}
 
@@ -2397,7 +2397,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 		default:
 		case CGEN_IDENTITY_LIGHTING:
 			{
-				tess.svars.color = Color::Named::White * tr.identityLight;
+				tess.svars.color = Color::White * tr.identityLight;
 				break;
 			}
 
@@ -2421,7 +2421,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				}
 				else
 				{
-					tess.svars.color = Color::Named::White;
+					tess.svars.color = Color::White;
 				}
 
 				break;
@@ -2467,7 +2467,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 				glow = Com_Clamp( 0, 1, glow );
 
-				tess.svars.color = Color::Named::White * glow;
+				tess.svars.color = Color::White * glow;
 				tess.svars.color.SetAlpha( 1.0 );
 				break;
 			}
@@ -2476,7 +2476,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				rgb = Math::Clamp( RB_EvalExpression( &pStage->rgbExp, 1.0 ), 0.0f, 1.0f );
 
-				tess.svars.color = Color::Named::White * rgb;
+				tess.svars.color = Color::White * rgb;
 				break;
 			}
 

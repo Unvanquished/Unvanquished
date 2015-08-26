@@ -53,7 +53,7 @@ class RocketProgressBar : public Rocket::Core::Element
 {
 public:
 	RocketProgressBar( const Rocket::Core::String &tag ) :
-		Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 ), color( Color::Named::White )
+		Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 ), color( Color::White )
 	{
 	}
 

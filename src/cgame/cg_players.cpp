@@ -2817,7 +2817,7 @@ static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 	ent.customShader = shader;
 	ent.radius = 10;
 	ent.renderfx = rf;
-	ent.shaderRGBA = Color::Named::White;
+	ent.shaderRGBA = Color::White;
 	trap_R_AddRefEntityToScene( &ent );
 }
 

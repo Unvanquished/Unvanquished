@@ -347,17 +347,17 @@ Color::Color CG_FadeColor( int startMsec, int totalMsec )
 
 	if ( startMsec == 0 )
 	{
-		return Color::Named::White;
+		return Color::White;
 	}
 
 	t = cg.time - startMsec;
 
 	if ( t >= totalMsec )
 	{
-		return Color::Named::White;
+		return Color::White;
 	}
 
-	Color::Color color = Color::Named::White;
+	Color::Color color = Color::White;
 
 	// fade out
 	if ( totalMsec - t < FADE_TIME )
@@ -595,18 +595,18 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 			{
 				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
-					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, Color::Named::White );
+					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, Color::White );
 				}
 
-				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, Color::Named::White );
+				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, Color::White );
 			}
 
 			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
-				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, Color::Named::White );
+				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, Color::White );
 			}
 
-			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, Color::Named::White );
+			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, Color::White );
 		}
 		else
 		{
@@ -625,20 +625,20 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
-					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, Color::Named::White );
+					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, Color::White );
 				}
 
-				CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->f2, Color::Named::White );
+				CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->f2, Color::White );
 			}
 
 			VectorMA( origin, -f, forward, tip );
 
 			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
-				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, Color::Named::White );
+				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, Color::White );
 			}
 
-			CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->f1, Color::Named::White );
+			CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->f1, Color::White );
 		}
 
 		bshs = &cg.binaryShaderSettings[ cg.numBinaryShadersUsed ];

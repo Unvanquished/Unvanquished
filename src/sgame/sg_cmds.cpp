@@ -4501,7 +4501,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	}
 
 	// report the results
-	const char* color = Color::CString( teamonly ? Color::Named::Cyan : Color::Named::Yellow );
+	const char* color = Color::CString( teamonly ? Color::Cyan : Color::Yellow );
 
 	if ( !count )
 	{

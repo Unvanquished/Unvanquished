@@ -34,7 +34,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Color {
 
-namespace Named {
 Color Black    = { 0.00, 0.00, 0.00, 1.00 };
 Color Red      = { 1.00, 0.00, 0.00, 1.00 };
 Color Green    = { 0.00, 1.00, 0.00, 1.00 };
@@ -46,16 +45,7 @@ Color Cyan     = { 0.00, 1.00, 1.00, 1.00 };
 Color White    = { 1.00, 1.00, 1.00, 1.00 };
 Color LtGrey   = { 0.75, 0.75, 0.75, 1.00 };
 Color MdGrey   = { 0.50, 0.50, 0.50, 1.00 };
-Color DkGrey   = { 0.25, 0.25, 0.25, 1.00 };
-Color MdRed    = { 0.50, 0.00, 0.00, 1.00 };
-Color MdGreen  = { 0.00, 0.50, 0.00, 1.00 };
-Color DkGreen  = { 0.00, 0.20, 0.00, 1.00 };
-Color MdCyan   = { 0.00, 0.50, 0.50, 1.00 };
-Color MdYellow = { 0.50, 0.50, 0.00, 1.00 };
-Color MdOrange = { 0.50, 0.25, 0.00, 1.00 };
 Color LtOrange = { 0.50, 0.25, 0.00, 1.00 };
-Color MdBlue   = { 0.00, 0.00, 0.50, 1.00 };
-} // namespace Named
 
 static Color g_color_table[ 32 ] =
 {
