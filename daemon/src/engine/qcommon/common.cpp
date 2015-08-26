@@ -78,10 +78,6 @@ cvar_t *com_cl_running;
 cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print, 3 = append + flush
 cvar_t *com_version;
 
-cvar_t *com_ansiColor;
-
-cvar_t *com_consoleCommand;
-
 cvar_t *com_unfocused;
 cvar_t *com_minimized;
 
@@ -1430,7 +1426,7 @@ int Com_EventLoop()
 					 *
 					 * the additional space gets trimmed by the parser
 					 */
-					Cmd::BufferCommandTextAfter(va("%s %s", com_consoleCommand->string, cmd), true);
+					Cmd::BufferCommandTextAfter(va("%s %s", com_consoleCommand.Get().c_str(), cmd), true);
 				}
 
 				break;
@@ -1649,12 +1645,7 @@ void Com_Init( char *commandLine )
 	com_sv_running = Cvar_Get( "sv_running", "0", CVAR_ROM );
 	com_cl_running = Cvar_Get( "cl_running", "0", CVAR_ROM );
 
-	//on a server, commands have to be used a lot more often than say
-	//we could differentiate server and client, but would change the default behavior many might be used to
-	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", 0 );
-
 	com_introPlayed = Cvar_Get( "com_introplayed", "0", 0 );
-	com_ansiColor = Cvar_Get( "com_ansiColor", "1", 0 );
 	com_logosPlaying = Cvar_Get( "com_logosPlaying", "0", CVAR_ROM );
 	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", 0 );
 

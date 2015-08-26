@@ -117,11 +117,11 @@ static void CON_SetColor( WINDOW *win, int color )
 		}
 	};
 
-	if ( color == CURSES_NULL_COLOR || !com_ansiColor || !com_ansiColor->integer )
+	if ( color == CURSES_NULL_COLOR || !com_ansiColor.Get() )
 	{
 		wattrset( win, COLOR_PAIR( 0 ) );
 	}
-	else if ( COLORS >= 256 && com_ansiColor->integer > 0 )
+	else if ( COLORS >= 256 && com_ansiColor.Get() )
 	{
 #ifdef A_RGB  //macro producing color attribute for a 64-bit chtype in pdcurses
 		wattrset( win, A_RGB( (int)( g_color_table[color][0] * 31 ),
@@ -132,7 +132,7 @@ static void CON_SetColor( WINDOW *win, int color )
 	}
 	else
 	{
-		int index = abs( com_ansiColor->integer ) - 1;
+		int index = com_ansiColor.Get() ? 1 : 0;
 
 		if ( index >= ARRAY_LEN( colour16map ) )
 		{
@@ -564,11 +564,13 @@ char *CON_Input()
 		return CON_Input_TTY();
 	}
 
+    /*
 	if ( com_ansiColor->modified )
 	{
 		CON_Redraw();
 		com_ansiColor->modified = false;
 	}
+    */
 
 	if ( Com_Time( nullptr ) != lasttime )
 	{
@@ -611,7 +613,7 @@ char *CON_Input()
 			case '\r':
 			case KEY_ENTER:
 				Com_Printf( PROMPT S_COLOR_NULL "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
-				input_field.RunCommand(com_consoleCommand->string);
+				input_field.RunCommand(com_consoleCommand.Get());
 				werase( inputwin );
 				wnoutrefresh( inputwin );
 				continue;

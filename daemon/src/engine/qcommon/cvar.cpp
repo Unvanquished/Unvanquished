@@ -41,7 +41,6 @@ Maryland 20850 USA.
 #include "framework/CvarSystem.h"
 
 cvar_t        *cvar_vars;
-int           cvar_modifiedFlags;
 
 /*
 ============

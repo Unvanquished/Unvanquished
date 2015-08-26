@@ -36,8 +36,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //TODO: thread safety (not possible with the C API that doesn't care at all about this)
 
-namespace Cvar {
+int cvar_modifiedFlags;
 
+namespace Cvar {
 
     // A cvar is some info alongside a potential proxy for the cvar
     struct cvarRecord_t {
