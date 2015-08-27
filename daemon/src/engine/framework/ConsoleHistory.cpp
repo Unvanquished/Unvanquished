@@ -51,8 +51,8 @@ namespace Console {
                 f.Write(lines[i].data(), lines[i].size());
                 f.Write("\n", 1);
             }
-        } catch (const std::error_code& error) {
-            Log::Warn("Couldn't write %s.\n", HISTORY_FILE);
+        } catch (const std::system_error& error) {
+            Log::Warn("Couldn't write %s: %s", HISTORY_FILE, error.what());
         }
     }
 
@@ -62,8 +62,8 @@ namespace Console {
         try {
             FS::File f = FS::HomePath::OpenRead(HISTORY_FILE);
             buffer = f.ReadAll();
-        } catch (const std::error_code& error) {
-            Log::Warn("Couldn't read %s.\n", HISTORY_FILE);
+        } catch (const std::system_error& error) {
+            Log::Warn("Couldn't read %s: %s", HISTORY_FILE, error.what());
         }
 
         size_t currentPos = 0;
