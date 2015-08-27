@@ -1432,6 +1432,7 @@ Also called by bot code
 ==================
 */
 
+Log::Logger clientCommands("server.clientCommands");
 void SV_ExecuteClientCommand( client_t *cl, const char *s, bool clientOK, bool premaprestart )
 {
 	ucmd_t   *u;
@@ -1444,6 +1445,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, bool clientOK, bool p
 		return;
 	}
 
+    clientCommands.Debug("Client %s sent command '%s'", cl->name, s);
 	for (u = ucmds; u->name; u++) {
 		if (args.Argv(0) == u->name) {
 			if (premaprestart && !u->allowedpostmapchange) {

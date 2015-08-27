@@ -644,8 +644,10 @@ void CL_ParseDownload( msg_t *msg )
 			clc.downloadSize = MSG_ReadLong( msg );
 			clc.downloadFlags = MSG_ReadLong( msg );
 
+            downloadLogger.Debug("Server sent us a new WWW DL '%s', size %i, flags %i",
+                                 cls.downloadName, clc.downloadSize, clc.downloadFlags);
+
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
-			Com_DPrintf( "Server redirected download: %s\n", cls.downloadName );
 			clc.bWWWDl = true; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
 			cls.state = CA_DOWNLOADING;
@@ -696,6 +698,7 @@ void CL_ParseDownload( msg_t *msg )
 		// block zero is special, contains file size
 		clc.downloadSize = MSG_ReadLong( msg );
 
+        downloadLogger.Debug("Starting new direct download of size %i for '%s'", clc.downloadSize, cls.downloadTempName);
 		Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
 
 		if ( clc.downloadSize < 0 )
@@ -711,11 +714,13 @@ void CL_ParseDownload( msg_t *msg )
 		Com_Error( ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
 	}
 
+    downloadLogger.Debug("Received block of size %i", size);
+
 	MSG_ReadData( msg, data, size );
 
 	if ( clc.downloadBlock != block )
 	{
-		Com_DPrintf( "CL_ParseDownload: Expected block %d, got %d\n", clc.downloadBlock, block );
+		downloadLogger.Debug( "CL_ParseDownload: Expected block %i, got %i", clc.downloadBlock, block );
 		return;
 	}
 
@@ -748,6 +753,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( !size )
 	{
+        downloadLogger.Debug("Received EOF, closing '%s'", cls.downloadTempName);
 		// A zero length block means EOF
 		if ( clc.download )
 		{
