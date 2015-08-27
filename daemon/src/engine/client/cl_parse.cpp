@@ -625,6 +625,21 @@ void CL_ParseDownload( msg_t *msg )
 	if ( !*cls.downloadTempName )
 	{
 		Com_Printf( "Server sending download, but no download was requested\n" );
+        // Eat the packet anyway
+	    block = MSG_ReadShort( msg );
+        if (block == -1) {
+			MSG_ReadString( msg );
+			MSG_ReadLong( msg );
+			MSG_ReadLong( msg );
+        } else if (block != 0) {
+            size = MSG_ReadShort( msg );
+            if ( size < 0 || size > sizeof( data ) )
+            {
+                Com_Error( ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
+            }
+	        MSG_ReadData( msg, data, size );
+        }
+
 		CL_AddReliableCommand( "stopdl" );
 		return;
 	}
