@@ -612,7 +612,7 @@ char *CON_Input()
 			case '\n':
 			case '\r':
 			case KEY_ENTER:
-				Com_Printf( PROMPT S_COLOR_NULL "%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
+                Log::Notice( PROMPT S_COLOR_NULL "%s", Str::UTF32To8(input_field.GetText()).c_str() );
 				input_field.RunCommand(com_consoleCommand.Get());
 				werase( inputwin );
 				wnoutrefresh( inputwin );
