@@ -262,7 +262,7 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
         }
         else if ( input[1] == Constants::NULL_COLOR )
         {
-            return value_type( input, input+2, value_type::DEFAULT_COLOR );
+            return value_type( input, input+2, parent->DefaultColor() );
         }
         else if ( std::toupper( input[1] ) >= '0' && std::toupper( input[1] ) < 'P' )
         {

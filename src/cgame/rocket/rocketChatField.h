@@ -353,18 +353,11 @@ protected:
 			return;
 		}
 
-		for ( const auto& token : Color::Parser( in.CString() ) )
+		for ( const auto& token : Color::Parser( in.CString(), Color::White ) )
 		{
-			if ( token.Type() == Color::Token::COLOR ||
-				 token.Type() == Color::Token::DEFAULT_COLOR )
+			if ( token.Type() == Color::Token::COLOR )
 			{
 				Rocket::Core::XMLAttributes xml;
-
-				Color::Color color = Color::White;
-				if ( token.Type() == Color::Token::COLOR )
-				{
-					color = token.Color();
-				}
 
 				// Child element initialized
 				if ( span )
@@ -389,7 +382,7 @@ protected:
 
 
 				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-				Color::Color32Bit color32 = color;
+				Color::Color32Bit color32 = token.Color();
 				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
 				out.Append( token.Begin(), token.Size() );
 				span = true;

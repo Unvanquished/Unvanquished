@@ -291,22 +291,14 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 	xx = x;
 	re.SetColor( setColor );
 
-	for ( const auto& token : Color::Parser( string ) )
+	for ( const auto& token : Color::Parser( string, setColor ) )
 	{
-		if ( token.Type() == Color::Token::COLOR || token.Type() == Color::Token::DEFAULT_COLOR )
+		if ( token.Type() == Color::Token::COLOR )
 		{
 			if ( !forceColor )
 			{
-				Color::Color color;
-				if ( token.Type() == Color::Token::DEFAULT_COLOR )
-				{
-					color = setColor;
-				}
-				else
-				{
-					color = token.Color();
-					color.SetAlpha( setColor.Alpha() );
-				}
+				Color::Color color = token.Color();
+				color.SetAlpha( setColor.Alpha() );
 				re.SetColor( color );
 			}
 

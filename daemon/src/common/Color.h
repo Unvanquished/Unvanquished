@@ -381,7 +381,6 @@ public:
 		CHARACTER,     // A character
 		ESCAPE,        // Color escape
 		COLOR,         // Color code
-		DEFAULT_COLOR, // Color code to reset to the default
 	};
 
 	/*
@@ -465,6 +464,8 @@ private:
 
 };
 
+class Parser;
+
 /**
  * Class to parse C-style strings into tokens,
  * implements the InputIterator concept
@@ -480,7 +481,8 @@ public:
 
 	TokenIterator() = default;
 
-	explicit TokenIterator( const char* input )
+	explicit TokenIterator( const char* input, const Parser* parent )
+        : parent( parent )
 	{
 		token = NextToken( input );
 	}
@@ -532,6 +534,7 @@ private:
 	value_type NextToken(const char* input);
 
 	value_type token;
+    const Parser* parent = nullptr;
 };
 
 /**
@@ -551,12 +554,17 @@ public:
 
     iterator begin() const
     {
-        return iterator(input);
+        return iterator(input, this);
     }
 
     iterator end() const
     {
         return iterator();
+    }
+
+    Color DefaultColor() const
+    {
+        return default_color;
     }
 
 private:

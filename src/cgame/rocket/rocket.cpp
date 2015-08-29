@@ -496,7 +496,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 		return "";
 	}
 
-	for ( const auto& token : Color::Parser( in ) )
+	for ( const auto& token : Color::Parser( in, Color::Color() ) )
 	{
 		if ( token.Type() == Color::Token::CHARACTER )
 		{
@@ -544,7 +544,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( token.Begin(), token.Size() );
 			}
 		}
-		else if ( token.Type() == Color::Token::COLOR || token.Type() == Color::Token::DEFAULT_COLOR )
+		else if ( token.Type() == Color::Token::COLOR )
 		{
 			if ( span && spanHasContent )
 			{
@@ -553,7 +553,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = false;
 			}
 
-			if ( token.Type() == Color::Token::COLOR  )
+			if ( token.Color().Alpha() != 0  )
 			{
 				char rgb[32];
 				Color::Color32Bit color32 = token.Color();

@@ -116,7 +116,7 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 	Con_ClearColor( win );
 
 	std::string buffer;
-	for ( const auto& token : Color::Parser( msg ) )
+	for ( const auto& token : Color::Parser( msg, Color::Color() ) )
 	{
 
 		if ( token.Type() == Color::Token::COLOR )
@@ -127,22 +127,14 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 				buffer.clear();
 			}
 
-			CON_SetColor( win, token.Color() );
-
-			if ( !stripcodes )
+			if ( token.Color().Alpha() == 0 )
 			{
-				buffer.append( token.Begin(), token.Size() );
+				Con_ClearColor( win );
 			}
-		}
-		else if ( token.Type() == Color::Token::DEFAULT_COLOR )
-		{
-			if ( !buffer.empty() )
+			else
 			{
-				waddstr( win, buffer.c_str() );
-				buffer.clear();
+				CON_SetColor( win, token.Color() );
 			}
-
-			Con_ClearColor( win );
 
 			if ( !stripcodes )
 			{

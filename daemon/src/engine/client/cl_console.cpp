@@ -492,7 +492,7 @@ bool CL_InternalConsolePrint( const char *text )
 
 	for ( const auto& token : Color::Parser( text ) )
 	{
-		if ( token.Type() == Color::Token::COLOR || token.Type() == Color::Token::DEFAULT_COLOR )
+		if ( token.Type() == Color::Token::COLOR )
 		{
 			consoleState.lines.back().append( token.Begin(), token.Size() );
 			continue;
@@ -878,17 +878,13 @@ void Con_DrawConsoleContent()
 
 		re.SetColor( console_color_alpha );
 
-        for ( const auto& token : Color::Parser( consoleState.lines[row].c_str() ) )
+        for ( const auto& token : Color::Parser( consoleState.lines[row].c_str(), console_color_alpha ) )
 		{
 			if ( token.Type() == Color::Token::COLOR )
 			{
 				Color::Color color = token.Color();
 				color.SetAlpha( console_color_alpha.Alpha() );
 				re.SetColor( color );
-			}
-			else if ( token.Type() == Color::Token::DEFAULT_COLOR )
-			{
-				re.SetColor( console_color_alpha );
 			}
 			else if ( token.Type() == Color::Token::CHARACTER )
 			{
