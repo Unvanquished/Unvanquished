@@ -627,10 +627,46 @@ private:
 	value_type token;
 };
 
+/**
+ * Generic class to parse C-style strings into tokens
+ *
+ * CharT is the type for the input
+ * TokenAdvanceT is the advancement policy used to define characters
+ */
+template<class CharT, class TokenAdvanceT = TokenAdvanceOne>
+    class BasicParser
+{
+public:
+    using value_type = BasicToken<CharT>;
+    using reference = const value_type&;
+    using pointer = const value_type*;
+    using iterator = BasicTokenIterator<CharT, TokenAdvanceOne>;
+
+    explicit BasicParser(const CharT* input, const Color& default_color = White)
+        : input(input), default_color(default_color)
+    {}
+
+    iterator begin() const
+    {
+        return iterator(input);
+    }
+
+    iterator end() const
+    {
+        return iterator();
+    }
+
+private:
+    const CharT* input;
+    Color default_color;
+};
+
 // Default token type for Utf-8 C-strings
 using Token = BasicToken<char>;
 // Default token iterator for Utf-8 C-strings
 using TokenIterator = BasicTokenIterator<char, TokenAdvanceUtf8>;
+// Default parser for Utf-8 C-strings
+using Parser = BasicParser<char, TokenAdvanceUtf8>;
 
 // Returns the number of characters in a string discarding color codes
 // UTF-8 sequences are counted as a single character

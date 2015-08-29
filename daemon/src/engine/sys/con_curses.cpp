@@ -116,10 +116,10 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 	Con_ClearColor( win );
 
 	std::string buffer;
-	for ( Color::TokenIterator i ( msg ); *i; ++i )
+	for ( const auto& token : Color::Parser( msg ) )
 	{
 
-		if ( i->Type() == Color::Token::COLOR )
+		if ( token.Type() == Color::Token::COLOR )
 		{
 			if ( !buffer.empty() )
 			{
@@ -127,14 +127,14 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 				buffer.clear();
 			}
 
-			CON_SetColor( win, i->Color() );
+			CON_SetColor( win, token.Color() );
 
 			if ( !stripcodes )
 			{
-				buffer.append( i->Begin(), i->Size() );
+				buffer.append( token.Begin(), token.Size() );
 			}
 		}
-		else if ( i->Type() == Color::Token::DEFAULT_COLOR )
+		else if ( token.Type() == Color::Token::DEFAULT_COLOR )
 		{
 			if ( !buffer.empty() )
 			{
@@ -146,23 +146,23 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 
 			if ( !stripcodes )
 			{
-				buffer.append( i->Begin(), i->Size() );
+				buffer.append( token.Begin(), token.Size() );
 			}
 		}
-		else if ( i->Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::ESCAPE )
 		{
 			if ( !stripcodes )
 			{
-				buffer.append( i->Begin(), i->Size() );
+				buffer.append( token.Begin(), token.Size() );
 			}
 			else
 			{
 				buffer += Color::Constants::ESCAPE;
 			}
 		}
-		else if ( i->Type() == Color::Token::CHARACTER )
+		else if ( token.Type() == Color::Token::CHARACTER )
 		{
-			if ( *i->Begin() == '\n' )
+			if ( *token.Begin() == '\n' )
 			{
 				waddstr( win, buffer.c_str() );
 				buffer.clear();
@@ -171,7 +171,7 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 			}
 			else
 			{
-				buffer.append( i->Begin(), i->Size() );
+				buffer.append( token.Begin(), token.Size() );
 			}
 		}
 	}

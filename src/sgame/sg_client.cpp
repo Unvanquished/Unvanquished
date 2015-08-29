@@ -730,16 +730,16 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	bool        hasletter = false;
 	int         spaces = 0;
 	
-	for ( Color::TokenIterator i( in ); *i; ++i )
+	for ( const auto& token : Color::Parser( in ) )
 	{
-		if ( out_string.size() + i->Size() > outSize )
+		if ( out_string.size() + token.Size() > outSize )
 		{
 			break;
 		}
 
-		if ( i->Type() == Color::Token::CHARACTER )
+		if ( token.Type() == Color::Token::CHARACTER )
 		{
-			int cp = Q_UTF8_CodePoint(i->Begin());
+			int cp = Q_UTF8_CodePoint(token.Begin());
 
 			// don't allow leading spaces
 			if ( !has_visible_characters && std::isspace( cp ) )
@@ -756,7 +756,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 
 			bool escaped_emote = false;
 			// single trailing ^ will mess up some things
-			if ( cp == Color::Constants::ESCAPE && !*i->End() )
+			if ( cp == Color::Constants::ESCAPE && !*token.End() )
 			{
 				if ( out_string.size() + 2 > outSize )
 				{
@@ -766,7 +766,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			}
 			else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped_emote ) )
 			{
-				if ( out_string.size() + 2 + i->Size() > outSize )
+				if ( out_string.size() + 2 + token.Size() > outSize )
 				{
 					break;
 				}
@@ -798,12 +798,12 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 				has_visible_characters = true;
 			}
 		}
-		else if ( i->Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::ESCAPE )
 		{
 			has_visible_characters = true;
 		}
 
-		out_string.append(i->Begin(), i->Size());
+		out_string.append(token.Begin(), token.Size());
 	}
 
 	bool invalid = false;

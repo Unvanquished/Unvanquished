@@ -291,20 +291,20 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 	xx = x;
 	re.SetColor( setColor );
 
-	for ( Color::TokenIterator i( string ); *i; ++i )
+	for ( const auto& token : Color::Parser( string ) )
 	{
-		if ( i->Type() == Color::Token::COLOR || i->Type() == Color::Token::DEFAULT_COLOR )
+		if ( token.Type() == Color::Token::COLOR || token.Type() == Color::Token::DEFAULT_COLOR )
 		{
 			if ( !forceColor )
 			{
 				Color::Color color;
-				if ( i->Type() == Color::Token::DEFAULT_COLOR )
+				if ( token.Type() == Color::Token::DEFAULT_COLOR )
 				{
 					color = setColor;
 				}
 				else
 				{
-					color = i->Color();
+					color = token.Color();
 					color.SetAlpha( setColor.Alpha() );
 				}
 				re.SetColor( color );
@@ -312,14 +312,14 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 
 			if ( noColorEscape )
 			{
-				for ( const char *c = i->Begin(); c != i->End(); c++ )
+				for ( const char *c = token.Begin(); c != token.End(); c++ )
 				{
 					SCR_DrawConsoleFontUnichar( xx, y, *c );
 					xx += SCR_ConsoleFontUnicharWidth( *c );
 				}
 			}
 		}
-		else if ( i->Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::ESCAPE )
 		{
 			SCR_DrawConsoleFontUnichar( xx, y, Color::Constants::ESCAPE );
 			xx += SCR_ConsoleFontUnicharWidth( Color::Constants::ESCAPE );
@@ -332,7 +332,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 		}
 		else
 		{
-			int ch = Q_UTF8_CodePoint( i->Begin() );
+			int ch = Q_UTF8_CodePoint( token.Begin() );
 			SCR_DrawConsoleFontUnichar( xx, y, ch );
 			xx += SCR_ConsoleFontUnicharWidth( ch );
 		}

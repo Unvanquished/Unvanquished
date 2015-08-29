@@ -351,17 +351,17 @@ protected:
 			return;
 		}
 
-		for ( Color::BasicTokenIterator<Rocket::Core::word> i ( in.CString() ); *i; ++i )
+		for ( const auto& token : Color::BasicParser<Rocket::Core::word>( in.CString() ) )
 		{
-			if ( i->Type() == Color::BasicToken< Rocket::Core::word >::COLOR ||
-				 i->Type() == Color::BasicToken< Rocket::Core::word >::DEFAULT_COLOR )
+			if ( token.Type() == Color::BasicToken< Rocket::Core::word >::COLOR ||
+				 token.Type() == Color::BasicToken< Rocket::Core::word >::DEFAULT_COLOR )
 			{
 				Rocket::Core::XMLAttributes xml;
 
 				Color::Color color = Color::White;
-				if ( i->Type() == Color::BasicToken< Rocket::Core::word >::COLOR )
+				if ( token.Type() == Color::BasicToken< Rocket::Core::word >::COLOR )
 				{
-					color = i->Color();
+					color = token.Color();
 				}
 
 				// Child element initialized
@@ -389,16 +389,16 @@ protected:
 				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 				Color::Color32Bit color32 = color;
 				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
-				out.Append( i->Begin(), i->Size() );
+				out.Append( token.Begin(), token.Size() );
 				span = true;
 			}
-			else if ( i->Type() == Color::BasicToken< Rocket::Core::word >::ESCAPE )
+			else if ( token.Type() == Color::BasicToken< Rocket::Core::word >::ESCAPE )
 			{
 				out.Append( Color::Constants::ESCAPE );
 			}
-			else if ( i->Type() == Color::BasicToken< Rocket::Core::word >::CHARACTER )
+			else if ( token.Type() == Color::BasicToken< Rocket::Core::word >::CHARACTER )
 			{
-				auto c = *i->Begin();
+				auto c = *token.Begin();
 
 				if ( c == '<' )
 				{
@@ -437,7 +437,7 @@ protected:
 				}
 				else
 				{
-					out.Append( i->Begin(), i->Size() );
+					out.Append( token.Begin(), token.Size() );
 				}
 			}
 		}

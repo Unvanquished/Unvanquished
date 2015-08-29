@@ -44,14 +44,14 @@ Remove color codes and non-alphanumeric characters from a string
 void G_SanitiseString( const char *in, char *out, int len )
 {
 	--len;
-	for ( Color::TokenIterator i ( in ); *i; ++i )
+	for ( const auto& token : Color::Parser( in ) )
 	{
-		if ( i->Type() == Color::Token::CHARACTER )
+		if ( token.Type() == Color::Token::CHARACTER )
 		{
-			int cp = Q_UTF8_CodePoint( i->Begin() );
+			int cp = Q_UTF8_CodePoint( token.Begin() );
 			if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 			{
-				int sz = i->Size();
+				int sz = token.Size();
 				if ( Q_Unicode_IsUpper( cp ) )
 				{
 					cp = Q_Unicode_ToLower( cp );

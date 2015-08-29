@@ -75,9 +75,9 @@ Transform Q3 colour codes to ANSI escape sequences
 static void CON_AnsiColorPrint( const char *msg )
 {
 	std::string buffer;
-	for ( Color::TokenIterator i ( msg ); *i; ++i )
+	for ( const auto& token : Color::Parser( msg ) )
 	{
-		if ( i->Type() == Color::Token::COLOR )
+		if ( token.Type() == Color::Token::COLOR )
 		{
 			if ( !buffer.empty() )
 			{
@@ -85,18 +85,18 @@ static void CON_AnsiColorPrint( const char *msg )
 				buffer.clear();
 			}
 
-			auto c4b = Color::To4bit( i->Color() );
+			auto c4b = Color::To4bit( token.Color() );
 			bool bright = c4b & 8;
 			int number = c4b & ~8;
 
 			std::string ansi = "\x1b[3"+std::to_string(number)+";"+(bright ? "1" : "22")+"m";
 			fputs( ansi.c_str(), stderr );
 		}
-		else if ( i->Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::ESCAPE )
 		{
 			buffer += Color::Constants::ESCAPE;
 		}
-		else if ( i->Type() == Color::Token::DEFAULT_COLOR )
+		else if ( token.Type() == Color::Token::DEFAULT_COLOR )
 		{
 			if ( !buffer.empty() )
 			{
@@ -105,9 +105,9 @@ static void CON_AnsiColorPrint( const char *msg )
 			}
 			fputs( "\x1b[0m", stderr );
 		}
-		else if ( i->Type() == Color::Token::CHARACTER )
+		else if ( token.Type() == Color::Token::CHARACTER )
 		{
-			if ( *i->Begin() == '\n' )
+			if ( *token.Begin() == '\n' )
 			{
 				fputs( buffer.c_str(), stderr );
 				buffer.clear();
@@ -115,7 +115,7 @@ static void CON_AnsiColorPrint( const char *msg )
 			}
 			else
 			{
-				buffer.append( i->Begin(), i->Size() );
+				buffer.append( token.Begin(), token.Size() );
 			}
 		}
 	}

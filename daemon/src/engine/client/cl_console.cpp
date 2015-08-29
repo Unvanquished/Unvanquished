@@ -337,16 +337,16 @@ bool Con_CheckResize()
 				// Count the number of visible characters, adding a new line when too long
 				const char* begin = line.c_str();
 				int len = 0;
-				for ( Color::TokenIterator i ( line.c_str() ); *i; ++i )
+				for ( const auto& token : Color::Parser( line.c_str() ) )
 				{
-					if ( i->Type() == Color::Token::CHARACTER || i->Type() == Color::Token::ESCAPE )
+					if ( token.Type() == Color::Token::CHARACTER || token.Type() == Color::Token::ESCAPE )
 					{
 						len++;
 					}
 					if ( len > consoleState.textWidthInChars )
 					{
-						consoleState.lines.emplace_back( begin, i->Begin() );
-						begin = i->Begin();
+						consoleState.lines.emplace_back( begin, token.Begin() );
+						begin = token.Begin();
 						len = 0;
 					}
 				}
@@ -490,26 +490,26 @@ bool CL_InternalConsolePrint( const char *text )
 
 	Con_Linefeed();
 
-	for ( Color::TokenIterator it ( text ); *it; ++it )
+	for ( const auto& token : Color::Parser( text ) )
 	{
-		if ( it->Type() == Color::Token::COLOR || it->Type() == Color::Token::DEFAULT_COLOR )
+		if ( token.Type() == Color::Token::COLOR || token.Type() == Color::Token::DEFAULT_COLOR )
 		{
-			consoleState.lines.back().append( it->Begin(), it->Size() );
+			consoleState.lines.back().append( token.Begin(), token.Size() );
 			continue;
 		}
 
 		if ( !wordLen )
 		{
 			// count word length
-			for ( Color::TokenIterator i = it; *i; ++i )
+			for ( const auto& wordtoken : Color::Parser( token.Begin() ) )
 			{
-				if ( i->Type() == Color::Token::ESCAPE )
+				if ( token.Type() == Color::Token::ESCAPE )
 				{
 					wordLen++;
 				}
-				else if ( i->Type() == Color::Token::CHARACTER )
+				else if ( token.Type() == Color::Token::CHARACTER )
 				{
-					if ( std::isspace( *i->Begin() ) )
+					if ( std::isspace( *token.Begin() ) )
 					{
 						break;
 					}
@@ -524,14 +524,14 @@ bool CL_InternalConsolePrint( const char *text )
 			}
 		}
 
-		switch ( *it->Begin() )
+		switch ( *token.Begin() )
 		{
 			case '\n':
 				Con_Linefeed();
 				break;
 
 			default: // display character and advance
-				consoleState.lines.back().append( it->Begin(), it->Size() );
+				consoleState.lines.back().append( token.Begin(), token.Size() );
 				if ( wordLen > 0 )
 				{
 					--wordLen;
@@ -878,25 +878,25 @@ void Con_DrawConsoleContent()
 
 		re.SetColor( console_color_alpha );
 
-		for ( Color::TokenIterator it ( consoleState.lines[row].c_str() ); *it; ++it )
+        for ( const auto& token : Color::Parser( consoleState.lines[row].c_str() ) )
 		{
-			if ( it->Type() == Color::Token::COLOR )
+			if ( token.Type() == Color::Token::COLOR )
 			{
-				Color::Color color = it->Color();
+				Color::Color color = token.Color();
 				color.SetAlpha( console_color_alpha.Alpha() );
 				re.SetColor( color );
 			}
-			else if ( it->Type() == Color::Token::DEFAULT_COLOR )
+			else if ( token.Type() == Color::Token::DEFAULT_COLOR )
 			{
 				re.SetColor( console_color_alpha );
 			}
-			else if ( it->Type() == Color::Token::CHARACTER )
+			else if ( token.Type() == Color::Token::CHARACTER )
 			{
-				int ch = Q_UTF8_CodePoint( it->Begin() );
+				int ch = Q_UTF8_CodePoint( token.Begin() );
 				SCR_DrawConsoleFontUnichar( currentWidthLocation, floor( lineDrawPosition + 0.5 ), ch );
 				currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 			}
-			else if ( it->Type() == Color::Token::ESCAPE )
+			else if ( token.Type() == Color::Token::ESCAPE )
 			{
 				int ch = Color::Constants::ESCAPE;
 				SCR_DrawConsoleFontUnichar( currentWidthLocation, floor( lineDrawPosition + 0.5 ), ch );

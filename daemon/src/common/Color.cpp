@@ -94,9 +94,9 @@ const Color& Color::Indexed( int index )
 int StrlenNocolor( const char *string )
 {
 	int len = 0;
-	for ( TokenIterator i ( string ); *i; ++i )
+	for ( const auto& token : Parser( string ) )
 	{
-		if ( i->Type() == Token::CHARACTER || i->Type() == Token::ESCAPE )
+		if ( token.Type() == Token::CHARACTER || token.Type() == Token::ESCAPE )
 		{
 			len++;
 		}
@@ -109,13 +109,13 @@ char *StripColors( char *string )
 {
 	std::string output;
 
-	for ( TokenIterator i ( string ); *i; ++i )
+	for ( const auto& token : Parser( string ) )
 	{
-		if ( i->Type() == Token::CHARACTER )
+		if ( token.Type() == Token::CHARACTER )
 		{
-			output.append( i->Begin(), i->Size() );
+			output.append( token.Begin(), token.Size() );
 		}
-		else if ( i->Type() == Token::ESCAPE )
+		else if ( token.Type() == Token::ESCAPE )
 		{
 			output.push_back(Constants::ESCAPE);
 		}
@@ -130,24 +130,25 @@ void StripColors( const char *in, char *out, int len )
 {
 	--len;
 	bool decolor = true;
-	for ( TokenIterator i ( in ); *i; ++i )
+
+	for ( const auto& token : Parser( in ) )
 	{
-		if ( !decolor || i->Type() == Token::CHARACTER )
+		if ( !decolor || token.Type() == Token::CHARACTER )
 		{
-			if ( len < i->Size() )
+			if ( len < token.Size() )
 			{
 				break;
 			}
-			if ( *i->Begin() == Constants::DECOLOR_OFF || *i->Begin() == Constants::DECOLOR_ON )
+			if ( *token.Begin() == Constants::DECOLOR_OFF || *token.Begin() == Constants::DECOLOR_ON )
 			{
-				decolor = ( *i->Begin() == Constants::DECOLOR_ON );
+				decolor = ( *token.Begin() == Constants::DECOLOR_ON );
 				continue;
 			}
-			strncpy( out, i->Begin(), i->Size() );
-			out += i->Size();
-			len -= i->Size();
+			strncpy( out, token.Begin(), token.Size() );
+			out += token.Size();
+			len -= token.Size();
 		}
-		else if ( i->Type() == Token::ESCAPE )
+		else if ( token.Type() == Token::ESCAPE )
 		{
 			if ( len < 1 )
 			{
@@ -164,13 +165,13 @@ std::string StripColors( const std::string& input )
 {
 	std::string output;
 
-	for ( TokenIterator i ( input.c_str() ); *i; ++i )
+	for ( const auto& token : Parser( input.c_str() ) )
 	{
-		if ( i->Type() == Token::CHARACTER )
+		if ( token.Type() == Token::CHARACTER )
 		{
-			output.append( i->Begin(), i->Size() );
+			output.append( token.Begin(), token.Size() );
 		}
-		else if ( i->Type() == Token::ESCAPE )
+		else if ( token.Type() == Token::ESCAPE )
 		{
 			output.push_back(Constants::ESCAPE);
 		}
