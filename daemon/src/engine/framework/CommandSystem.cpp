@@ -217,7 +217,7 @@ namespace Cmd {
             return;
         }
 
-        Application::GetApp().OnUnhandledCommand(args);
+        Application::OnUnhandledCommand(args);
     }
 
     CompletionResult CompleteArgument(const Args& args, int argNum) {

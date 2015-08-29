@@ -32,6 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "framework/CommandSystem.h"
 #include "client.h"
 
+#if defined(_WIN32) || defined(BUILD_CLIENT)
+#include <SDL.h>
+#endif
+
 namespace Application {
 
 class ClientApplication : public Application {
@@ -59,8 +63,12 @@ class ClientApplication : public Application {
 	        }
         }
 
-        void Initialize() override {
+        void Initialize(Str::StringRef uri) override {
             Com_Init((char*) "");
+
+            if (!uri.empty()) {
+                Cmd::BufferCommandTextAfter(std::string("connect ") + Cmd::Escape(uri));
+            }
         }
 
         void Frame() override {
@@ -76,11 +84,22 @@ class ClientApplication : public Application {
         }
 
         void Shutdown(bool error, Str::StringRef message) override {
+            #if defined(_WIN32) || defined(BUILD_CLIENT)
+                if (error) {
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PRODUCT_NAME, message.c_str(), nullptr);
+                }
+            #endif
+
             TRY_SHUTDOWN(CL_Shutdown());
             TRY_SHUTDOWN(
                 SV_Shutdown(error ? va("Server fatal crashed: %s\n", message.c_str()) : va("%s\n", message.c_str()))
             );
             TRY_SHUTDOWN(Com_Shutdown());
+
+            #if defined(_WIN32) || defined(BUILD_CLIENT)
+                // Always run SDL_Quit, because it restores system resolution and gamma.
+                SDL_Quit();
+            #endif
         }
 
         void OnUnhandledCommand(const Cmd::Args& args) override {
@@ -88,6 +107,6 @@ class ClientApplication : public Application {
         }
 };
 
-INSTANCIATE_APPLICATION(ClientApplication);
+INSTANTIATE_APPLICATION(ClientApplication);
 
 }

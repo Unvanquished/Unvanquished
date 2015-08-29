@@ -38,6 +38,10 @@ struct Configuration {
     bool isClient = false;
     bool isTTYClient = false;
     bool isServer = false;
+
+    std::string uniqueHomepathSuffix = "";
+    bool useCurses = false;
+    bool supportsUri = false;
 };
 
 class Application {
@@ -45,13 +49,13 @@ class Application {
         Application();
 
         virtual void LoadInitialConfig(bool resetConfig);
-        virtual void Initialize() {}
+        virtual void Initialize(Str::StringRef uri);
         virtual void Frame() {}
 
         virtual void OnDrop(Str::StringRef reason);
         virtual void Shutdown(bool error, Str::StringRef message);
 
-        virtual void OnUnhandledCommand(const Cmd::Args&);
+        virtual void OnUnhandledCommand(const Cmd::Args& args);
 
         const Configuration& GetConfig() const;
 
@@ -59,10 +63,18 @@ class Application {
         Configuration config;
 };
 
-Application& GetApp();
-const Configuration& GetAppConfig();
+void LoadInitialConfig(bool resetConfig);
+void Initialize(Str::StringRef uri);
+void Frame();
 
-#define INSTANCIATE_APPLICATION(classname) \
+void OnDrop(Str::StringRef reason);
+void Shutdown(bool error, Str::StringRef message);
+
+void OnUnhandledCommand(const Cmd::Args& args);
+
+const Configuration& GetConfig();
+
+#define INSTANTIATE_APPLICATION(classname) \
     Application& GetApp() { \
         static classname app; \
         return app; \

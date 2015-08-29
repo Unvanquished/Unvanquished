@@ -32,14 +32,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Application {
 
-    static Application* globalApplication = nullptr;
+    // Forward declaration of the function declared by INSTANTIATE_APPLICATION
+    Application& GetApp();
 
     Application::Application()
     {
-        globalApplication = this;
     }
 
     void Application::LoadInitialConfig(bool) {
+    }
+
+    void Application::Initialize(Str::StringRef) {
     }
 
     void Application::OnDrop(Str::StringRef) {
@@ -56,7 +59,31 @@ namespace Application {
         return config;
     }
 
-    const Configuration& GetAppConfig() {
+    void LoadInitialConfig(bool resetConfig) {
+        GetApp().LoadInitialConfig(resetConfig);
+    }
+
+    void Initialize(Str::StringRef uri) {
+        GetApp().Initialize(uri);
+    }
+
+    void Frame() {
+        GetApp().Frame();
+    }
+
+    void OnDrop(Str::StringRef reason) {
+        GetApp().OnDrop(reason);
+    }
+
+    void Shutdown(bool error, Str::StringRef message) {
+        GetApp().Shutdown(error, message);
+    }
+
+    void OnUnhandledCommand(const Cmd::Args& args) {
+        GetApp().OnUnhandledCommand(args);
+    }
+
+    const Configuration& GetConfig() {
         return GetApp().GetConfig();
     }
 }

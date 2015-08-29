@@ -30,29 +30,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
+#include "framework/Application.h"
 #include "ConsoleHistory.h"
 
 //TODO: make it thread safe.
 namespace Console {
-#ifndef BUILD_SERVER
-    static const char* HISTORY_FILE = "conhistory";
-#else
-    static const char* HISTORY_FILE = "conhistory_server";
-#endif
     static const int SAVED_HISTORY_LINES = 512;
 
     static std::vector<std::string> lines;
 
+    static std::string GetHistoryFilename() {
+        return "conhistory" + Application::GetConfig().uniqueHomepathSuffix;
+    }
+
     void SaveHistory() {
         try {
-            FS::File f = FS::HomePath::OpenWrite(HISTORY_FILE);
+            FS::File f = FS::HomePath::OpenWrite(GetHistoryFilename());
 
             for (unsigned i = std::max(0L, ((long)lines.size()) - SAVED_HISTORY_LINES); i < lines.size(); i++) {
                 f.Write(lines[i].data(), lines[i].size());
                 f.Write("\n", 1);
             }
         } catch (const std::system_error& error) {
-            Log::Warn("Couldn't write %s: %s", HISTORY_FILE, error.what());
+            Log::Warn("Couldn't write %s: %s", GetHistoryFilename(), error.what());
         }
     }
 
@@ -60,10 +60,10 @@ namespace Console {
         std::string buffer;
 
         try {
-            FS::File f = FS::HomePath::OpenRead(HISTORY_FILE);
+            FS::File f = FS::HomePath::OpenRead(GetHistoryFilename());
             buffer = f.ReadAll();
         } catch (const std::system_error& error) {
-            Log::Warn("Couldn't read %s: %s", HISTORY_FILE, error.what());
+            Log::Warn("Couldn't read %s: %s", GetHistoryFilename(), error.what());
         }
 
         size_t currentPos = 0;

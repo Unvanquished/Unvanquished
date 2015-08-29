@@ -38,6 +38,7 @@ class ServerApplication : public Application {
     public:
         ServerApplication() {
             config.isServer = true;
+            config.uniqueHomepathSuffix = "-server";
         }
 
         void LoadInitialConfig(bool resetConfig) override {
@@ -48,7 +49,7 @@ class ServerApplication : public Application {
 	        }
         }
 
-        void Initialize() override {
+        void Initialize(Str::StringRef) override {
             Com_Init((char*) "");
         }
 
@@ -70,6 +71,6 @@ class ServerApplication : public Application {
         }
 };
 
-INSTANCIATE_APPLICATION(ServerApplication);
+INSTANTIATE_APPLICATION(ServerApplication);
 
 }

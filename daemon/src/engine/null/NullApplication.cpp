@@ -64,6 +64,6 @@ class NullApplication : public Application {
         }
 };
 
-INSTANCIATE_APPLICATION(NullApplication);
+INSTANTIATE_APPLICATION(NullApplication);
 
 }
