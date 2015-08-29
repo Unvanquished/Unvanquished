@@ -335,14 +335,16 @@ protected:
 		text_element->RemoveReference();
 		if ( !text.Empty() )
 		{
-			q2rml( text, text_element );
+            Rocket::Core::String utf8;
+            text.ToUTF8(utf8);
+			q2rml( utf8, text_element );
 		}
 	}
 
 	// Special q -> rml conversion function that preserves carets and codes
-	void q2rml( Rocket::Core::WString in, Rocket::Core::Element *parent )
+	void q2rml( Rocket::Core::String in, Rocket::Core::Element *parent )
 	{
-		Rocket::Core::WString out;
+		Rocket::Core::String out;
 		Rocket::Core::Element *child = nullptr;
 		bool span = false;
 
@@ -351,15 +353,15 @@ protected:
 			return;
 		}
 
-		for ( const auto& token : Color::BasicParser<Rocket::Core::word>( in.CString() ) )
+		for ( const auto& token : Color::Parser( in.CString() ) )
 		{
-			if ( token.Type() == Color::BasicToken< Rocket::Core::word >::COLOR ||
-				 token.Type() == Color::BasicToken< Rocket::Core::word >::DEFAULT_COLOR )
+			if ( token.Type() == Color::Token::COLOR ||
+				 token.Type() == Color::Token::DEFAULT_COLOR )
 			{
 				Rocket::Core::XMLAttributes xml;
 
 				Color::Color color = Color::White;
-				if ( token.Type() == Color::BasicToken< Rocket::Core::word >::COLOR )
+				if ( token.Type() == Color::Token::COLOR )
 				{
 					color = token.Color();
 				}
@@ -392,25 +394,25 @@ protected:
 				out.Append( token.Begin(), token.Size() );
 				span = true;
 			}
-			else if ( token.Type() == Color::BasicToken< Rocket::Core::word >::ESCAPE )
+			else if ( token.Type() == Color::Token::ESCAPE )
 			{
 				out.Append( Color::Constants::ESCAPE );
 			}
-			else if ( token.Type() == Color::BasicToken< Rocket::Core::word >::CHARACTER )
+			else if ( token.Type() == Color::Token::CHARACTER )
 			{
 				auto c = *token.Begin();
 
 				if ( c == '<' )
 				{
-					out.Append( Rocket::Core::WString( "&lt;" ) );
+					out.Append( "&lt;" );
 				}
 				else if ( c == '>' )
 				{
-					out.Append( Rocket::Core::WString( "&gt;" ) );
+					out.Append( "&gt;" );
 				}
 				else if ( c == '&' )
 				{
-					out.Append( Rocket::Core::WString( "&amp;" ) );
+					out.Append( "&amp;" );
 				}
 				else if ( c == '\n' )
 				{
