@@ -78,10 +78,10 @@ template<class ColourType, int AlphaDefault>
 class ColorAdaptor<Rocket::Core::Colour<ColourType,AlphaDefault>>
 {
 public:
-	static constexpr const bool is_color = true;
+	static CONSTEXPR bool is_color = true;
 	typedef Rocket::Core::Colour<ColourType,AlphaDefault> color_type;
 	typedef ColourType component_type;
-	static constexpr const component_type component_max = AlphaDefault;
+	static CONSTEXPR component_type component_max = AlphaDefault;
 
 	static ColorAdaptor Adapt( const color_type& object )
 	{

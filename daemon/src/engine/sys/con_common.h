@@ -34,6 +34,7 @@ Maryland 20850 USA.
 #include "common/Color.h"
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
+#include "qcommon/q_unicode.h"
 
 namespace Color {
 
@@ -44,6 +45,6 @@ namespace Color {
  *  4 blue
  *  8 bright
  */
-int To4bit( const Color& color ) noexcept;
+int To4bit( const Color& color ) NOEXCEPT;
 
 } // namespace Color

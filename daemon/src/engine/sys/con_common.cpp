@@ -42,7 +42,7 @@ namespace Color {
  *  4 blue
  *  8 bright
  */
-int To4bit(const Color& c) noexcept
+int To4bit(const Color& c) NOEXCEPT
 {
     int color = 0;
 

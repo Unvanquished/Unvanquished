@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Color.h"
 
 #include <algorithm>
+#include "../engine/qcommon/q_unicode.h"
 
 namespace Color {
 
@@ -181,7 +182,7 @@ const Color& Indexed( int index )
     return g_color_table[index%32];
 }
 
-constexpr bool Has8Bits( uint8_t v )
+CONSTEXPR_FUNCTION bool Has8Bits( uint8_t v )
 {
 	return ( v / 0x11 * 0x11 ) != v;
 }
@@ -231,7 +232,7 @@ const char* CString ( const Color32Bit& color )
  * Converts a hexadecimal character to the value of the digit it represents.
  * Pre: ishex(ch)
  */
-static constexpr int gethex( char ch )
+static CONSTEXPR_FUNCTION int gethex( char ch )
 {
     return ch > '9' ?
         ( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
@@ -240,7 +241,7 @@ static constexpr int gethex( char ch )
 }
 
 // Whether a character is a hexadecimal digit
-static constexpr bool ishex( char ch )
+static CONSTEXPR_FUNCTION bool ishex( char ch )
 {
     return ( ch >= '0' && ch <= '9' ) ||
            ( ch >= 'A' && ch <= 'F' ) ||

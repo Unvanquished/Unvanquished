@@ -40,8 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <type_traits>
 
-#include "../engine/qcommon/q_unicode.h"
 #include "Math.h"
+#include "Compiler.h"
 
 namespace Color {
 
@@ -54,9 +54,9 @@ template<class T>
 	// Type used to represent the components
 	using component_type = T;
 	// Maxiumum value for a component
-	static constexpr const component_type component_max = std::numeric_limits<component_type>::max();
+	static CONSTEXPR component_type component_max = std::numeric_limits<component_type>::max();
 	// Size of a component value in bytes
-	static constexpr const std::size_t component_size = sizeof(component_type);
+	static CONSTEXPR const std::size_t component_size = sizeof(component_type);
 };
 /*
  * Specialization for normalized floats
@@ -65,8 +65,8 @@ template<>
 	struct ColorComponentTraits<float>
 {
 	using component_type = float;
-	static constexpr const component_type component_max = 1.0f;
-	static constexpr const std::size_t    component_size = sizeof(component_type);
+	static CONSTEXPR component_type component_max = 1.0f;
+	static CONSTEXPR std::size_t    component_size = sizeof(component_type);
 };
 
 /*
@@ -96,9 +96,9 @@ template<class Component>
 class ColorAdaptor<Component*>
 {
 public:
-	static constexpr const bool is_color = true;
+	static CONSTEXPR bool is_color = true;
 	using component_type = Component;
-	static constexpr const component_type component_max = ColorComponentTraits<Component>::component_max;
+	static CONSTEXPR component_type component_max = ColorComponentTraits<Component>::component_max;
 
 	static ColorAdaptor Adapt( const Component* array )
 	{
@@ -154,10 +154,10 @@ template<class Component, class Traits = ColorComponentTraits<Component>>
 class BasicColor
 {
 public:
-	static constexpr const bool is_color = true;
+	static CONSTEXPR bool is_color = true;
 	using color_traits = Traits;
 	using component_type = typename color_traits::component_type;
-	static constexpr const component_type component_max = color_traits::component_max;
+	static CONSTEXPR component_type component_max = color_traits::component_max;
 
 	// Returns the value of an indexed color
 	static BasicColor Indexed( int i )
@@ -166,18 +166,18 @@ public:
     }
 
 	// Default constructor, all components set to zero
-	constexpr BasicColor() noexcept = default;
+	CONSTEXPR_FUNCTION BasicColor() NOEXCEPT = default;
 
 
 	// Initialize from the components
-	constexpr BasicColor( component_type r, component_type g, component_type b,
-	       component_type a = component_max ) noexcept
+	CONSTEXPR_FUNCTION BasicColor( component_type r, component_type g, component_type b,
+	       component_type a = component_max ) NOEXCEPT
 		: red( r ), green( g ), blue( b ), alpha( a )
 	{}
 
-	constexpr BasicColor( const BasicColor& ) noexcept = default;
+	CONSTEXPR_FUNCTION BasicColor( const BasicColor& ) NOEXCEPT = default;
 
-	constexpr BasicColor( BasicColor&& ) noexcept = default;
+	CONSTEXPR_FUNCTION BasicColor( BasicColor&& ) NOEXCEPT = default;
 
 	template<class T, class = std::enable_if<T::is_color>>
 		BasicColor( const T& adaptor ) :
@@ -187,9 +187,9 @@ public:
 			alpha( ConvertComponent<T>( adaptor.Alpha() ) )
 		{}
 
-	BasicColor& operator=( const BasicColor& ) noexcept = default;
+	BasicColor& operator=( const BasicColor& ) NOEXCEPT = default;
 
-	BasicColor& operator=( BasicColor&& ) noexcept = default;
+	BasicColor& operator=( BasicColor&& ) NOEXCEPT = default;
 
 	template<class T, class = std::enable_if<T::is_color>>
 		BasicColor& operator=( const T& adaptor )
@@ -203,12 +203,12 @@ public:
 		}
 
 	// Converts to an array
-	constexpr const component_type* ToArray() const noexcept
+	CONSTEXPR_FUNCTION const component_type* ToArray() const NOEXCEPT
 	{
 		return &red;
 	}
 
-	component_type* ToArray() noexcept
+	CONSTEXPR_FUNCTION_RELAXED component_type* ToArray() NOEXCEPT
 	{
 		return &red;
 	}
@@ -219,64 +219,64 @@ public:
 	}
 
 	// Size of the memory location returned by ToArray() in bytes
-	constexpr std::size_t ArrayBytes() const noexcept
+	CONSTEXPR_FUNCTION std::size_t ArrayBytes() const NOEXCEPT
 	{
 		return 4 * Traits::component_size;
 	}
 
-	constexpr component_type Red() const noexcept
+	CONSTEXPR_FUNCTION component_type Red() const NOEXCEPT
 	{
 		return red;
 	}
 
-	constexpr component_type Green() const noexcept
+	CONSTEXPR_FUNCTION component_type Green() const NOEXCEPT
 	{
 		return green;
 	}
 
-	constexpr component_type Blue() const noexcept
+	CONSTEXPR_FUNCTION component_type Blue() const NOEXCEPT
 	{
 		return blue;
 	}
 
-	constexpr component_type Alpha() const noexcept
+	CONSTEXPR_FUNCTION component_type Alpha() const NOEXCEPT
 	{
 		return alpha;
 	}
 
-	void SetRed( component_type v ) noexcept
+	CONSTEXPR_FUNCTION_RELAXED void SetRed( component_type v ) NOEXCEPT
 	{
 		red = v;
 	}
 
-	void SetGreen( component_type v ) noexcept
+	CONSTEXPR_FUNCTION_RELAXED void SetGreen( component_type v ) NOEXCEPT
 	{
 		green = v;
 	}
 
-	void SetBlue( component_type v ) noexcept
+	CONSTEXPR_FUNCTION_RELAXED void SetBlue( component_type v ) NOEXCEPT
 	{
 		blue = v;
 	}
 
-	void SetAlpha( component_type v ) noexcept
+	CONSTEXPR_FUNCTION_RELAXED void SetAlpha( component_type v ) NOEXCEPT
 	{
 		alpha = v;
 	}
 
-	BasicColor& operator*=( float factor ) noexcept
+	CONSTEXPR_FUNCTION_RELAXED BasicColor& operator*=( float factor ) NOEXCEPT
 	{
 		*this = *this * factor;
 		return *this;
 	}
 
-	constexpr BasicColor operator*( float factor ) const noexcept
+	CONSTEXPR_FUNCTION BasicColor operator*( float factor ) const NOEXCEPT
 	{
 		return BasicColor( red * factor, green * factor, blue * factor, alpha * factor );
 	}
 
 	// Fits the component values from 0 to component_max
-	void Clamp()
+	CONSTEXPR_FUNCTION_RELAXED void Clamp()
 	{
 		red = Math::Clamp( red, component_type(), component_max );
 		green = Math::Clamp( green, component_type(), component_max );
@@ -287,9 +287,9 @@ public:
 private:
 	// Converts a component, used by conversions from classes implementing the Color concepts
 	template<class T>
-	static constexpr
+	static CONSTEXPR_FUNCTION
 		typename std::enable_if<component_max != T::component_max, component_type>::type
-			ConvertComponent( typename T::component_type from ) noexcept
+			ConvertComponent( typename T::component_type from ) NOEXCEPT
 	{
 		using work_type = typename std::common_type<
 			component_type,
@@ -300,9 +300,9 @@ private:
 	}
 	// Specialization for when the value shouldn't change
 	template<class T>
-	static constexpr
+	static CONSTEXPR_FUNCTION
 		typename std::enable_if<component_max == T::component_max, component_type>::type
-			ConvertComponent( typename T::component_type from ) noexcept
+			ConvertComponent( typename T::component_type from ) NOEXCEPT
 	{
 		return from;
 	}
@@ -319,10 +319,10 @@ typedef BasicColor<uint8_t>       Color32Bit;
  * If factor is 0, the first color will be shown, it it's 1 the second one will
  */
 template<class ComponentType, class Traits = ColorComponentTraits<ComponentType>>
-constexpr BasicColor<ComponentType, Traits> Blend(
+CONSTEXPR_FUNCTION BasicColor<ComponentType, Traits> Blend(
 	const BasicColor<ComponentType, Traits>& a,
 	const BasicColor<ComponentType, Traits>& b,
-	float factor ) noexcept
+	float factor ) NOEXCEPT
 {
 	return BasicColor<ComponentType, Traits> {
 		ComponentType ( a.Red()   * ( 1 - factor ) + b.Red()   * factor ),

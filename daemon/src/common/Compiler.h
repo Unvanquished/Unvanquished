@@ -205,4 +205,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #define Q_EXPORT DLLEXPORT
 
+// Uses SD-6 Feature Test Recommendations
+#ifdef __cpp_constexpr
+#   if __cpp_constexpr >= 201304
+#       define CONSTEXPR_FUNCTION_RELAXED constexpr
+#   else
+#       define CONSTEXPR_FUNCTION_RELAXED
+#   endif
+#   define CONSTEXPR_FUNCTION constexpr
+#else
+// Work around lack of constexpr
+#   define CONSTEXPR_FUNCTION
+#   define CONSTEXPR_FUNCTION_RELAXED
+#endif
+
 #endif // COMMON_COMPILER_H_
