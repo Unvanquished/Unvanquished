@@ -62,22 +62,27 @@ project(Daemon C CXX)
 # Configuration options
 ################################################################################
 
-option(BUILD_CLIENT "Build Daemon client" 1)
-option(BUILD_SERVER "Build Daemonded server" 1)
-option(BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1)
-option(BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1)
-if (CMAKE_SYSTEM_NAME STREQUAL CMAKE_HOST_SYSTEM_NAME)
-    option(BUILD_GAME_NACL "Build PNaCl game logic" 1)
-    option(BUILD_GAME_NACL_NEXE "Build NaCl game logic" 1)
-else()
-    set(BUILD_GAME_NACL 0)
-    set(BUILD_GAME_NACL_NEXE 0)
-endif()
-option(BUILD_TTY_CLIENT "Build Daemon headless client" 1)
+if(NOT DAEMON_EXTERNAL_APP)
+    option(BUILD_CLIENT "Build Daemon client" 1)
+    option(BUILD_SERVER "Build Daemonded server" 1)
+    option(BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1)
+    option(BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1)
+    if (CMAKE_SYSTEM_NAME STREQUAL CMAKE_HOST_SYSTEM_NAME)
+        option(BUILD_GAME_NACL "Build PNaCl game logic" 1)
+        option(BUILD_GAME_NACL_NEXE "Build NaCl game logic" 1)
+    else()
+        set(BUILD_GAME_NACL 0)
+        set(BUILD_GAME_NACL_NEXE 0)
+    endif()
+    option(BUILD_TTY_CLIENT "Build Daemon headless client" 1)
 
-cmake_dependent_option(USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0)
-cmake_dependent_option(USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0)
-cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0)
+    set(NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries")
+
+    cmake_dependent_option(USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0)
+    cmake_dependent_option(USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0)
+    cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0)
+endif()
+
 option(USE_LTO "Use link-time optimization for release builds" 0)
 cmake_dependent_option(USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0)
 option(USE_HARDENING "Use stack protection and other hardening flags" 0)
@@ -93,8 +98,6 @@ else()
     set(WARNMODE "no-")
 endif()
 set(WARNMODE ${WARNMODE} PARENT_SCOPE)
-
-set(NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries")
 
 include(CMakeParseArguments)
 include(DaemonPlatform)
@@ -277,6 +280,7 @@ function(ADD_PRECOMPILED_HEADER Target)
     get_directory_property(DirCompileDefs COMPILE_DEFINITIONS)
     get_directory_property(DirIncludeDirs INCLUDE_DIRECTORIES)
     get_target_property(TargetCompileDefs ${Target} COMPILE_DEFINITIONS)
+    get_target_property(TargetIncludeDirs ${Target} INCLUDE_DIRECTORIES)
     set(Defs)
     foreach(Def ${TargetCompileDefs})
         set(Defs ${Defs} -D${Def})
@@ -285,6 +289,9 @@ function(ADD_PRECOMPILED_HEADER Target)
         set(Defs ${Defs} -D${Def})
     endforeach()
     foreach(Def ${DirIncludeDirs})
+        set(Defs ${Defs} -I${Def})
+    endforeach()
+    foreach(Def ${TargetIncludeDirs})
         set(Defs ${Defs} -I${Def})
     endforeach()
 
@@ -592,7 +599,7 @@ endif()
 add_library(engine-lib ${PCH_FILE} ${COMMONLIST} ${ENGINELIST})
 target_link_libraries(engine-lib ${LIBS_BASE} ${LIBS_ENGINE_BASE})
 set_property(TARGET engine-lib APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE)
-set_property(TARGET engine-lib APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
+set_property(TARGET engine-lib APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} ${MOUNT_DIR} ${LIB_DIR})
 set_property(TARGET engine-lib APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
 ADD_PRECOMPILED_HEADER(engine-lib)
 
@@ -605,7 +612,7 @@ function(AddApplication)
     target_link_libraries(${A_Target} engine-lib ${A_Libs})
 
     set_property(TARGET ${A_Target} APPEND PROPERTY COMPILE_OPTIONS ${A_Flags})
-    set_property(TARGET ${A_Target} APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR})
+    set_property(TARGET ${A_Target} APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} ${MOUNT_DIR} ${LIB_DIR})
     set_property(TARGET ${A_Target} APPEND PROPERTY COMPILE_DEFINITIONS ${A_Definitions})
     set_target_properties(${A_Target} PROPERTIES OUTPUT_NAME "${A_ExecutableName}" PREFIX "" FOLDER "engine")
 
@@ -613,12 +620,14 @@ function(AddApplication)
     ADD_PRECOMPILED_HEADER(${A_Target})
 endfunction()
 
+if(NOT DAEMON_EXTERNAL_APP)
 AddApplication(
     Target dummyapp
     ExecutableName dummyapp
     Flags ${WARNINGS}
     Files ${ENGINE_DIR}/null/NullApplication.cpp
 )
+endif()
 
 if (BUILD_CLIENT)
     set(Definitions
