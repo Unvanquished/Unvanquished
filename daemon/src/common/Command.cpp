@@ -499,4 +499,21 @@ namespace Cmd {
         AddCommand(std::move(name), *this, std::move(description));
     }
 
+    CompletionResult NoopComplete(int, const Args&, Str::StringRef) {
+        return {};
+    }
+
+    LambdaCmd::LambdaCmd(std::string name, std::string description, RunFn run, CompleteFn complete)
+    :StaticCmd(std::move(name), std::move(description)), run(run), complete(complete) {
+    }
+    LambdaCmd::LambdaCmd(std::string name, int flags, std::string description, RunFn run, CompleteFn complete)
+    :StaticCmd(std::move(name), flags, std::move(description)), run(run), complete(complete) {
+    }
+
+    void LambdaCmd::Run(const Args& args) const {
+        run(args);
+    }
+    CompletionResult LambdaCmd::Complete(int argNum, const Args& args, Str::StringRef prefix) const {
+        return complete(argNum, args, prefix);
+    }
 }

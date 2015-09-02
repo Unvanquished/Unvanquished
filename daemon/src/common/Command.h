@@ -121,7 +121,7 @@ namespace Cmd {
             // Called when the command is run with the command line args
             virtual void Run(const Args& args) const = 0;
             // Called when the user wants to autocomplete a call to this command.
-            virtual Cmd::CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const;
+            virtual CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const;
 
             // Prints the usage of this command with a standard formatting
             void PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description = "") const;
@@ -162,11 +162,41 @@ namespace Cmd {
     };
 
     /**
+     * Cmd::LambdaCmd an automatically registered command whose callbacks can be
+     * defined by lambdas. A typical usage is
+     *  static LambdaCMd MyCmd("my_command", NAMESPACE, "my_description",
+     *      [](const Args& args) {
+     *          // Do stuff
+     *      }
+     *  );
+     */
+    CompletionResult NoopComplete(int argNum, const Args& args, Str::StringRef prefix);
+
+    class LambdaCmd : public StaticCmd {
+        public:
+            using RunFn = std::function<void(const Args&)>;
+            using CompleteFn = std::function<CompletionResult(int, const Args&, Str::StringRef)>;
+            LambdaCmd(std::string name, std::string description, RunFn run, CompleteFn complete = NoopComplete);
+            LambdaCmd(std::string name, int flags, std::string description, RunFn run, CompleteFn complete = NoopComplete);
+
+            void Run(const Args& args) const OVERRIDE;
+            CompletionResult Complete(int argNum, const Args& args, Str::StringRef prefix) const OVERRIDE;
+
+        private:
+            RunFn run;
+            CompleteFn complete;
+    };
+
+    /**
      * Commands can be run from an environment. For now it is only
      * used to redirect some calls (Print, ...).
      *
      * A DefaultEnvironment in CommandSystem can be inherited from
      * when not all calls are redefined.
+     *
+     * Note that the environment is only used to support the print redirection
+     * for rcon. Changing that mechanism is TODO but will allow the removal of
+     * Environment.
      */
     class Environment {
         public:
