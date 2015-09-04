@@ -210,4 +210,7 @@ extern vmCvar_t g_bot_persistent;
 extern vmCvar_t g_bot_buildLayout;
 extern vmCvar_t g_bot_debug;
 
+// experimental gameplay cvars
+extern vmCvar_t g_freeUpgrades;
+
 #endif // SG_EXTERN_H_

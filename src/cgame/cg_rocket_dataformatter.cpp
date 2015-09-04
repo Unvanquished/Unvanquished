@@ -156,8 +156,7 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-
-	else if(BG_Weapon( weapon )->price > credits){
+	else if ( !trap_Cvar_VariableIntegerValue( "g_freeUpgrades" ) && BG_Weapon( weapon )->price > credits ){
 
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
@@ -194,8 +193,8 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if(BG_Upgrade( upgrade )->price > credits){
-
+	else if ( !trap_Cvar_VariableIntegerValue( "g_freeUpgrades" ) && BG_Upgrade( upgrade )->price > credits )
+	{
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
 		Icon = "<icon>\xEF\x83\x96</icon>";
@@ -415,9 +414,8 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if ( cost == -1 )
+	else if ( !trap_Cvar_VariableIntegerValue( "g_freeUpgrades" ) && cost == -1 )
 	{
-
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
 		Icon = "<icon>\xEF\x83\x96</icon>";

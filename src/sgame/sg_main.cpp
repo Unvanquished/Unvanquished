@@ -236,6 +236,9 @@ vmCvar_t g_bot_buildLayout;
 
 //</bot stuff>
 
+//experimental gameplay cvars
+vmCvar_t g_freeUpgrades;
+
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 
@@ -436,7 +439,10 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0",  CVAR_NORESTART, 0, false },
 	{ &g_bot_numInGroup, "g_bot_numInGroup", "3",  CVAR_NORESTART, 0, false },
 	{ &g_bot_debug, "g_bot_debug", "0",  CVAR_NORESTART, 0, false },
-	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  CVAR_NORESTART, 0, false }
+	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  CVAR_NORESTART, 0, false },
+
+	// experimental gameplay
+	{ &g_freeUpgrades,                "g_freeUpgrades",                "1",                                CVAR_SERVERINFO,                                 0, true }
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );

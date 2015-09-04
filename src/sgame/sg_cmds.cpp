@@ -2800,7 +2800,10 @@ static bool Cmd_Sell_weapons( gentity_t *ent )
 			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
 
 			// add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, false );
+			if ( !g_freeUpgrades.integer )
+			{
+				G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, false );
+			}
 
 			sold = true;
 		}
@@ -2845,7 +2848,10 @@ static bool Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 	BG_RemoveUpgradeFromInventory( item, ent->client->ps.stats );
 
 	// add to funds
-	G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, false );
+	if ( !g_freeUpgrades.integer )
+	{
+		G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( item )->price, false );
+	}
 
 	return true;
 }
@@ -2925,7 +2931,10 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 			ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 
 			//add to funds
-			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( weapon )->price, false );
+			if ( !g_freeUpgrades.integer )
+			{
+				G_AddCreditToClient( ent->client, ( short ) BG_Weapon( weapon )->price, false );
+			}
 		}
 
 		//if we have this weapon selected, force a new selection
@@ -3074,7 +3083,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 		for (;;)
 		{
 			//can afford this?
-			if ( BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
+			if ( !g_freeUpgrades.integer && BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
 			{
 				// if requested, try to sell then recheck
 				if ( sellConflicting && Cmd_Sell_weapons( ent ) )
@@ -3110,7 +3119,10 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 		ent->client->ps.stats[ STAT_MISC ] = 0;
 
 		//subtract from funds
-		G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, false );
+		if ( !g_freeUpgrades.integer )
+		{
+			G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, false );
+		}
 
 		return true;
 	}
@@ -3144,7 +3156,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 		for (;;)
 		{
 			//can afford this?
-			if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
+			if ( !g_freeUpgrades.integer && BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
 			{
 				// if requested, try to sell then recheck
 				if ( sellConflicting && Cmd_Sell_conflictingUpgrades( ent, upgrade ) )
@@ -3216,7 +3228,10 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 		BG_AddUpgradeToInventory( upgrade, ent->client->ps.stats );
 
 		//subtract from funds
-		G_AddCreditToClient( ent->client, - ( short ) BG_Upgrade( upgrade )->price, false );
+		if ( !g_freeUpgrades.integer )
+		{
+			G_AddCreditToClient( ent->client, - ( short ) BG_Upgrade( upgrade )->price, false );
+		}
 
 		return true;
 	}
