@@ -456,7 +456,7 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 		return -1;
 	}
 
-	if ( GetCvarInt( "g_freeUpgrades" ) )
+	if ( GetCvarInt( "x_freeUpgrades" ) )
 	{
 		return 0;
 	}
@@ -515,6 +515,8 @@ void BG_InitClassAttributes()
 	const classData_t *cd;
 	classAttributes_t *ca;
 
+	int noStamina = GetCvarInt( "x_noStamina" );
+
 	for ( i = 0; i < bg_numClasses; i++ )
 	{
 		cd = &bg_classData[i];
@@ -530,6 +532,35 @@ void BG_InitClassAttributes()
 		ca->abilities = 0;
 
 		BG_ParseClassAttributeFile( va( "configs/classes/%s.attr.cfg", ca->name ), ca );
+
+		if ( noStamina && ca->team == TEAM_HUMANS )
+		{
+			ca->sprintMod = 1.0f;
+			ca->staminaJumpCost = 0;
+			ca->staminaSprintCost = 0;
+			ca->staminaJogRestore = 0;
+			ca->staminaWalkRestore = 0;
+			ca->staminaStopRestore = 0;
+
+			switch ( ca->number )
+			{
+				case PCL_HUMAN_NAKED:
+				case PCL_HUMAN_LIGHT:
+					ca->speed = 0.85f;
+					break;
+
+				case PCL_HUMAN_MEDIUM:
+					ca->speed = 0.80f;
+					break;
+
+				case PCL_HUMAN_BSUIT:
+					ca->speed = 0.75f;
+					break;
+
+				default:
+					break;
+			}
+		}
 	}
 }
 

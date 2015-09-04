@@ -213,5 +213,6 @@ extern vmCvar_t g_bot_debug;
 // experimental gameplay cvars
 extern vmCvar_t x_freeUpgrades;
 extern vmCvar_t x_buildAnywhere;
+extern vmCvar_t x_noStamina;
 
 #endif // SG_EXTERN_H_
