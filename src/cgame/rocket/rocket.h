@@ -43,8 +43,6 @@ Maryland 20850 USA.
 #include <Rocket/Core/Core.h>
 #pragma GCC diagnostic pop
 
-#include "common/Color.h"
-
 extern Rocket::Core::Context *menuContext;
 extern Rocket::Core::Context *hudContext;
 

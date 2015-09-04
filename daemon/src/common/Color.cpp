@@ -28,9 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "Color.h"
+#include "Common.h"
 
-#include <algorithm>
 #include "../engine/qcommon/q_unicode.h"
 
 namespace Color {

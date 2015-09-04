@@ -31,18 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_COLOR_H_
 #define COMMON_COLOR_H_
 
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <iterator>
-#include <limits>
-#include <string>
-#include <type_traits>
-
-#include "Math.h"
-#include "Compiler.h"
-
 namespace Color {
 
 /*

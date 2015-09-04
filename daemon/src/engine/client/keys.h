@@ -35,7 +35,6 @@ Maryland 20850 USA.
 #include "keycodes.h"
 
 #include "framework/ConsoleField.h"
-#include "common/Color.h"
 
 #define MAX_TEAMS 4
 #define DEFAULT_BINDING 0

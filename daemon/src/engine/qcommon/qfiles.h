@@ -36,8 +36,6 @@ Maryland 20850 USA.
 #ifndef __QFILES_H__
 #define __QFILES_H__
 
-#include "common/Color.h"
-
 //
 // qfiles.h: quake file formats
 // This file must be identical in the quake and utils directories
