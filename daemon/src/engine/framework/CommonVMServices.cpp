@@ -320,7 +320,8 @@ namespace VM {
                 IPC::HandleMsg<FSLoadPakMsg>(channel, std::move(reader), [this](const std::string& pakName, const std::string& prefix, bool& found) {
                     std::error_code err;
                     FS::PakPath::LoadPakPrefix(*FS::FindPak(pakName), prefix, err);
-                    found = bool(err);
+                    // found if no error
+                    found = !err;
                 });
                 break;
 
