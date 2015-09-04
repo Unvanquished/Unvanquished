@@ -352,8 +352,6 @@ namespace Constants {
 enum {
 	ESCAPE = '^',
 	NULL_COLOR = '*',
-	DECOLOR_OFF = '\16', // these two are used by the second overload of StripColors (and a couple other places)
-	DECOLOR_ON  = '\17', // will have to be checked whether they are really useful
 }; // enum
 } // namespace Constants
 

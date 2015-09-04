@@ -122,21 +122,16 @@ char *StripColors( char *string )
 void StripColors( const char *in, char *out, int len )
 {
 	--len;
-	bool decolor = true;
 
 	for ( const auto& token : Parser( in ) )
 	{
-		if ( !decolor || token.Type() == Token::CHARACTER )
+		if ( token.Type() == Token::CHARACTER )
 		{
 			if ( len < token.Size() )
 			{
 				break;
 			}
-			if ( *token.Begin() == Constants::DECOLOR_OFF || *token.Begin() == Constants::DECOLOR_ON )
-			{
-				decolor = ( *token.Begin() == Constants::DECOLOR_ON );
-				continue;
-			}
+			
 			strncpy( out, token.Begin(), token.Size() );
 			out += token.Size();
 			len -= token.Size();

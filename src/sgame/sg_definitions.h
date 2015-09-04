@@ -43,9 +43,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define QUEUE_PLUS1(x)  ((( x ) + 1 ) % MAX_CLIENTS )
 #define QUEUE_MINUS1(x) ((( x ) + MAX_CLIENTS - 1 ) % MAX_CLIENTS )
 
-#define DECOLOR_OFF '\16'
-#define DECOLOR_ON  '\17'
-
 #define DAMAGE_RADIUS        0x00000001 // damage was indirect
 #define DAMAGE_NO_ARMOR      0x00000002 // armour does not protect from this damage
 #define DAMAGE_KNOCKBACK     0x00000004 // move the target in damage direction
