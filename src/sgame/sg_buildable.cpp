@@ -824,8 +824,11 @@ void AGeneric_Think( gentity_t *self )
 	// set power state
 	self->powered = ( G_ActiveOvermind() != nullptr );
 
-	// check if still on creep
-	AGeneric_CreepCheck( self );
+	if ( !x_buildAnywhere.integer )
+	{
+		// check if still on creep
+		AGeneric_CreepCheck( self );
+	}
 
 	// slow down close humans
 	AGeneric_CreepSlow( self );
@@ -2098,6 +2101,11 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 {
 	float range, power;
 
+	if ( x_buildAnywhere.integer )
+	{
+		return 0.0f;
+	}
+
 	// buildables that need no power don't receive interference
 	if ( !BG_Buildable( buildable )->powerConsumption )
 	{
@@ -2173,6 +2181,11 @@ Calculates the amount of power a buildable gives to or takes from a neighbor at 
 static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, float distance )
 {
 	float range, power;
+
+	if ( x_buildAnywhere.integer )
+	{
+		return 0.0f;
+	}
 
 	if ( !neighbor )
 	{
@@ -4708,7 +4721,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check for creep
-		if ( BG_Buildable( buildable )->creepTest )
+		if ( !x_buildAnywhere.integer && BG_Buildable( buildable )->creepTest )
 		{
 			if ( !IsCreepHere( entity_origin ) )
 			{
