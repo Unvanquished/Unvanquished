@@ -571,6 +571,139 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	self->client->pers.infoChangeTime = level.time;
 }
 
+static int ParseDmgScriptSimple( damageRegion_t *regions, const char *buf )
+{
+	char  *token;
+	int   count;
+
+	float modifier = 1.0f;
+	const float backModifier = 1.5f;
+
+	bool foundNonlocational = false;
+
+	for ( count = 0;; count++ )
+	{
+		token = COM_Parse( &buf );
+
+		if ( !token[ 0 ] )
+		{
+			break;
+		}
+
+		if ( strcmp( token, "{" ) )
+		{
+			COM_ParseError( "Missing {" );
+			break;
+		}
+
+		if ( count >= MAX_DAMAGE_REGIONS )
+		{
+			COM_ParseError( "Max damage regions exceeded" );
+			break;
+		}
+
+		while ( 1 )
+		{
+			token = COM_ParseExt( &buf, true );
+
+			if ( !token[ 0 ] )
+			{
+				COM_ParseError( "Unexpected end of file" );
+				break;
+			}
+
+			if ( !Q_stricmp( token, "}" ) )
+			{
+				break;
+			}
+			else if ( !strcmp( token, "name" ) || !strcmp( token, "minHeight" ) || !strcmp( token, "maxHeight" ) || !strcmp( token, "minAngle" ) || !strcmp( token, "maxAngle" ) || !strcmp( token, "crouch" ) )
+			{
+			}
+			else if ( !strcmp( token, "modifier" ) )
+			{
+				token = COM_ParseExt( &buf, false );
+
+				if ( !token[ 0 ] )
+				{
+					strcpy( token, "1.0" );
+				}
+
+				modifier = atof( token );
+			}
+			else if ( !strcmp( token, "nonlocational" ) )
+			{
+				foundNonlocational = true;
+			}
+			else
+			{
+				COM_ParseWarning( "Unknown token \"%s\"", token );
+			}
+		}
+
+		if ( foundNonlocational )
+		{
+			break;
+		}
+	}
+
+	//nonlocational
+	regions[ 0 ].name[ 0 ]     = '\0';
+	regions[ 0 ].minHeight     = 0.0f;
+	regions[ 0 ].maxHeight     = 1.0f;
+	regions[ 0 ].minAngle      = 0.0f;
+	regions[ 0 ].maxAngle      = 360.0f;
+	regions[ 0 ].modifier      = modifier;
+	regions[ 0 ].crouch        = false;
+	regions[ 0 ].nonlocational = true;
+	regions[ 0 ].area          = 1.0f;
+
+	//front
+	regions[ 1 ].name[ 0 ]     = '\0';
+	regions[ 1 ].minHeight     = 0.0f;
+	regions[ 1 ].maxHeight     = 1.0f;
+	regions[ 1 ].minAngle      = 220.0f;
+	regions[ 1 ].maxAngle      = 120.0f;
+	regions[ 1 ].modifier      = modifier;
+	regions[ 1 ].crouch        = false;
+	regions[ 1 ].nonlocational = false;
+	regions[ 1 ].area          = 240.0f / 360.0f;
+
+	//back
+	regions[ 2 ].name[ 0 ]     = '\0';
+	regions[ 2 ].minHeight     = 0.0f;
+	regions[ 2 ].maxHeight     = 1.0f;
+	regions[ 2 ].minAngle      = 120.0f;
+	regions[ 2 ].maxAngle      = 220.0f;
+	regions[ 2 ].modifier      = modifier * backModifier;
+	regions[ 2 ].crouch        = false;
+	regions[ 2 ].nonlocational = false;
+	regions[ 2 ].area          = 120.0f / 360.0f;
+
+	//front crouch
+	regions[ 3 ].name[ 0 ]     = '\0';
+	regions[ 3 ].minHeight     = 0.0f;
+	regions[ 3 ].maxHeight     = 1.0f;
+	regions[ 3 ].minAngle      = 220.0f;
+	regions[ 3 ].maxAngle      = 120.0f;
+	regions[ 3 ].modifier      = modifier;
+	regions[ 3 ].crouch        = true;
+	regions[ 3 ].nonlocational = false;
+	regions[ 3 ].area          = 240.0f / 360.0f;
+
+	//back crouch
+	regions[ 4 ].name[ 0 ]     = '\0';
+	regions[ 4 ].minHeight     = 0.0f;
+	regions[ 4 ].maxHeight     = 1.0f;
+	regions[ 4 ].minAngle      = 120.0f;
+	regions[ 4 ].maxAngle      = 220.0f;
+	regions[ 4 ].modifier      = modifier * backModifier;
+	regions[ 4 ].crouch        = true;
+	regions[ 4 ].nonlocational = false;
+	regions[ 4 ].area          = 120.0f / 360.0f;
+
+	return 5;
+}
+
 static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 {
 	char  *token;
@@ -932,7 +1065,9 @@ void G_InitDamageLocations()
 		buffer[ len ] = 0;
 		trap_FS_FCloseFile( fileHandle );
 
-		g_numDamageRegions[ i ] = ParseDmgScript( g_damageRegions[ i ], buffer );
+		g_numDamageRegions[ i ] = x_simpleLocationalDamage.integer && ( i == PCL_HUMAN_NAKED || i == PCL_HUMAN_LIGHT || i == PCL_HUMAN_MEDIUM || i == PCL_HUMAN_BSUIT ) ?
+			ParseDmgScriptSimple( g_damageRegions[ i ], buffer ) :
+			ParseDmgScript( g_damageRegions[ i ], buffer );
 	}
 }
 
