@@ -194,6 +194,21 @@ void Rocket_GetElementAbsoluteOffset( float *x, float *y )
 	}
 }
 
+void Rocket_GetElementDimensions( float *w, float *h )
+{
+	if ( activeElement )
+	{
+		Rocket::Core::Vector2f dimensions = activeElement->GetBox().GetSize();
+		*w = dimensions.x;
+		*h = dimensions.y;
+	}
+	else
+	{
+		*w = -1;
+		*h = -1;
+	}
+}
+
 void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type )
 {
 	if ( activeElement )
