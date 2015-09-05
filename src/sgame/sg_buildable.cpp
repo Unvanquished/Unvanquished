@@ -822,7 +822,7 @@ A generic think function for Alien buildables
 void AGeneric_Think( gentity_t *self )
 {
 	// set power state
-	self->powered = ( G_ActiveOvermind() != nullptr );
+	self->powered = ( x_buildAnywhere.integer >= 2 || G_ActiveOvermind() != nullptr );
 
 	if ( !x_buildAnywhere.integer )
 	{
@@ -2331,7 +2331,7 @@ void G_SetHumanBuildablePowerState()
 
 	static int nextCalculation = 0;
 
-	if ( level.time < nextCalculation )
+	if ( level.time < nextCalculation || x_buildAnywhere.integer >= 2 )
 	{
 		return;
 	}
@@ -4220,8 +4220,9 @@ static bool IsSetForDeconstruction( gentity_t *ent )
 static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, buildable_t newBuildable )
 {
 	// don't replace the main buildable with any other buildable
-	if (    ( oldBuildable == BA_H_REACTOR  && newBuildable != BA_H_REACTOR  )
-	     || ( oldBuildable == BA_A_OVERMIND && newBuildable != BA_A_OVERMIND ) )
+	if ( x_buildAnywhere.integer < 2 && (
+		      ( oldBuildable == BA_H_REACTOR  && newBuildable != BA_H_REACTOR  )
+	     || ( oldBuildable == BA_A_OVERMIND && newBuildable != BA_A_OVERMIND ) ) )
 	{
 		return IBE_MAINSTRUCTURE;
 	}
@@ -4262,7 +4263,7 @@ static bool PredictBuildablePower( buildable_t buildable, vec3_t origin )
 	}
 
 	// reactor enables base supply everywhere on the map
-	if ( G_AliveReactor() )
+	if ( x_buildAnywhere.integer >= 2 || G_AliveReactor() )
 	{
 		baseSupply = g_powerBaseSupply.integer;
 	}
@@ -4700,11 +4701,11 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	{
 		reason = tempReason;
 
-		if ( reason == IBE_NOPOWERHERE && !G_AliveReactor() )
+		if ( x_buildAnywhere.integer < 2 && reason == IBE_NOPOWERHERE && !G_AliveReactor() )
 		{
 			reason = IBE_NOREACTOR;
 		}
-		else if ( reason == IBE_NOCREEP && !G_ActiveOvermind() )
+		else if ( x_buildAnywhere.integer < 2 && reason == IBE_NOCREEP && !G_ActiveOvermind() )
 		{
 			reason = IBE_NOOVERMIND;
 		}
@@ -4712,12 +4713,9 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	else if ( ent->client->pers.team == TEAM_ALIENS )
 	{
 		// Check for Overmind
-		if ( buildable != BA_A_OVERMIND )
+		if ( x_buildAnywhere.integer < 2 && buildable != BA_A_OVERMIND && !G_ActiveOvermind() )
 		{
-			if ( !G_ActiveOvermind() )
-			{
-				reason = IBE_NOOVERMIND;
-			}
+			reason = IBE_NOOVERMIND;
 		}
 
 		// Check for creep
