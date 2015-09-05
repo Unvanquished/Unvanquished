@@ -397,7 +397,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MOMENTUM_HALF_LIFE       "5"   // in min
 #define DEFAULT_CONF_REWARD_DOUBLE_TIME  "30"  // in min
 #define DEFAULT_UNLOCKABLE_MIN_TIME      "30"  // in s
-#define DEFAULT_MOMENTUM_BASE_MOD        "0.7"
+#define DEFAULT_MOMENTUM_BASE_MOD        "1.4"
 #define DEFAULT_MOMENTUM_KILL_MOD        "1.3"
 #define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
 #define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod

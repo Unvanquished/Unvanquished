@@ -214,5 +214,6 @@ extern vmCvar_t g_bot_debug;
 extern vmCvar_t x_freeUpgrades;
 extern vmCvar_t x_buildAnywhere;
 extern vmCvar_t x_noStamina;
+extern vmCvar_t x_simpleMomentum;
 
 #endif // SG_EXTERN_H_

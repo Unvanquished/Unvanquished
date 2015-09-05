@@ -281,6 +281,11 @@ void G_RewardAttackers( gentity_t *self )
 		{
 			// Add score
 			G_AddMomentumToScore( player, reward );
+			
+			if ( x_simpleMomentum.integer && ( BG_Buildable( self->s.modelindex )->number != BA_A_SPAWN && BG_Buildable( self->s.modelindex )->number != BA_H_SPAWN ) )
+			{
+				reward = 0.0f;
+			}
 
 			// Add momentum
 			G_AddMomentumForDestroyingStep( self, player, reward );

@@ -187,6 +187,7 @@ static float MomentumMod( momentum_t type )
 			typeMod        = g_momentumDestroyMod.value;
 			timeMod        = MomentumTimeMod();
 			playerCountMod = 1.0f;
+
 			break;
 
 		case CONF_GENERIC:
@@ -225,8 +226,32 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 		return 0.0f;
 	}
 
+	float momentumMod;
+
 	// apply modifier
-	amount *= MomentumMod( type );
+	if ( !x_simpleMomentum.integer )
+	{
+		momentumMod = MomentumMod( type );
+	}
+	else
+	{
+		switch ( type )
+		{
+			case CONF_BUILDING:
+			case CONF_DECONSTRUCTING:
+				momentumMod = 0.0f;
+				break;
+
+			case CONF_DESTROYING:
+			case CONF_GENERIC:
+			case CONF_KILLING:
+			default:
+				momentumMod = MomentumMod( type );
+				break;
+		}
+	}
+
+	amount *= momentumMod;
 
 	// limit a team's total
 	if ( level.team[ team ].momentum + amount > MOMENTUM_MAX )
