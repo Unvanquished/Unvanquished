@@ -1416,7 +1416,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 		if ( target->health > 0 )
 		{
 			G_Damage( target, creator, creator, forward, target->s.origin, LEVEL2_AREAZAP_DMG,
-			          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP );
+			          x_simpleLocationalDamage.integer < 2 ? DAMAGE_NO_LOCDAMAGE : 0, MOD_LEVEL2_ZAP );
 
 			FindZapChainTargets( zap );
 
@@ -1594,7 +1594,7 @@ bool G_CheckPounceAttack( gentity_t *self )
 	damage = payload * LEVEL3_POUNCE_DMG / timeMax;
 	self->client->pmext.pouncePayload = 0;
 	G_Damage( traceEnt, self, self, forward, tr.endpos, damage,
-	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE );
+	          x_simpleLocationalDamage.integer < 2 ? DAMAGE_NO_LOCDAMAGE : 0, MOD_LEVEL3_POUNCE );
 
 	return true;
 }
@@ -1657,7 +1657,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	         LEVEL4_TRAMPLE_DURATION;
 
 	G_Damage( victim, self, self, forward, victim->s.origin, damage,
-	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE );
+	          x_simpleLocationalDamage.integer < 2 ? DAMAGE_NO_LOCDAMAGE : 0, MOD_LEVEL4_TRAMPLE );
 
 	self->client->ps.weaponTime += LEVEL4_TRAMPLE_REPEAT;
 }

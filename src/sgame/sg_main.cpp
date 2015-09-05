@@ -450,7 +450,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &x_buildAnywhere, "x_buildAnywhere", "2", CVAR_SERVERINFO, 0, true },
 	{ &x_noStamina, "x_noStamina", "1", CVAR_SERVERINFO, 0, true },
 	{ &x_simpleMomentum, "x_simpleMomentum", "1", CVAR_SERVERINFO, 0, true },
-	{ &x_simpleLocationalDamage, "x_simpleLocationalDamage", "1", CVAR_SERVERINFO, 0, true }
+	{ &x_simpleLocationalDamage, "x_simpleLocationalDamage", "2", CVAR_SERVERINFO, 0, true }
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
