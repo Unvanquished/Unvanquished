@@ -2415,6 +2415,7 @@ void Rocket_SetAttribute( const char *name, const char *id, const char *attribut
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
 void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
 void Rocket_GetElementAbsoluteOffset( float *x, float *y );
+void Rocket_GetElementDimensions( float *w, float *h );
 void Rocket_SetClass( const char *in, bool activate );
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
 void Rocket_SetActiveContext( int catcher );
