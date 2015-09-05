@@ -201,22 +201,13 @@ float G_CalcCampMod( gentity_t* self )
 	if ( self->client )
 	{
 		gentity_t *ent = nullptr;
-		float distance = range;
-		float newDistance;
-
 		while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, range ) ) )
 		{
 			if ( ent->s.eType == ET_BUILDABLE && G_OnSameTeam( self, ent ) && G_LineOfSight( self->s.origin, ent->s.origin ) )
 			{
-				newDistance = Distance( self->s.origin, ent->s.origin );
-				if ( newDistance < distance )
-				{
-					distance = newDistance;
-				}
+				campMod = Distance( self->s.origin, ent->s.origin ) / range;
 			}
 		}
-
-		campMod = distance / range;
 	}
 
 	return campMod;
