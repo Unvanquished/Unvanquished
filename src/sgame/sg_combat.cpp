@@ -192,6 +192,36 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	return assistant;
 }
 
+float G_CalcCampMod( gentity_t* self )
+{
+	const float range = 1000.0f;
+
+	float campMod = 1.0f;
+
+	if ( self->client )
+	{
+		gentity_t *ent = nullptr;
+		float distance = range;
+		float newDistance;
+
+		while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, range ) ) )
+		{
+			if ( ent->s.eType == ET_BUILDABLE && G_OnSameTeam( self, ent ) && G_LineOfSight( self->s.origin, ent->s.origin ) )
+			{
+				newDistance = Distance( self->s.origin, ent->s.origin );
+				if ( newDistance < distance )
+				{
+					distance = newDistance;
+				}
+			}
+		}
+
+		campMod = distance / range;
+	}
+
+	return campMod;
+}
+
 /**
  * @brief Function to distribute rewards to entities that killed this one.
  * @param self
@@ -292,6 +322,14 @@ void G_RewardAttackers( gentity_t *self )
 		}
 		else
 		{
+			if ( x_noCamping.integer )
+			{
+				float campMod = G_CalcCampMod( player );
+
+				reward *= campMod;
+				share *= campMod;
+			}
+
 			// Add score
 			G_AddCreditsToScore( player, ( int )reward );
 
