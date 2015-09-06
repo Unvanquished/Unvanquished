@@ -391,8 +391,10 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 #define DEFAULT_BP_LOSS_FRAC               "0.5"
 
-#define DEFAULT_BUILDPOINTS   100
+// x_buildPointPools
+#define DEFAULT_BUILDPOINTS   75 // layoutBuildPoints will be used if higher
 #define DEFAULT_QUEUE_TIME    8000
+#define DEFAULT_RGS_VALUE     24
 
 // momentum
 #define MOMENTUM_MAX                     300.0f

@@ -908,13 +908,21 @@ void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 	// Give both teams some build points to start out with.
 	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		int startBP = std::max( 0, g_initialBuildPoints.integer -
-		                        level.team[ (team_t)team ].layoutBuildPoints );
+		if ( !x_buildPointPools.integer )
+		{
+			int startBP = std::max( 0, g_initialBuildPoints.integer -
+															level.team[ (team_t)team ].layoutBuildPoints );
 
-		G_ModifyBuildPoints( (team_t)team, (float)startBP );
-		G_MarkBuildPointsMined( (team_t)team, (float)startBP );
+			G_ModifyBuildPoints( (team_t)team, (float)startBP );
+			G_MarkBuildPointsMined( (team_t)team, (float)startBP );
 
-		level.team[ (team_t)team ].mainStructAcquiredBP = std::max( (float)startBP, FLT_EPSILON );
+			level.team[ (team_t)team ].mainStructAcquiredBP = std::max( (float)startBP, FLT_EPSILON );
+		}
+		else
+		{
+			level.mineRate = g_initialMineRate.value;
+			level.team[ (team_t)team ].maxBuildPoints = std::max( DEFAULT_BUILDPOINTS, level.team[ (team_t)team ].layoutBuildPoints );
+		}
 	}
 
 	G_Printf( "-----------------------------------\n" );
@@ -2976,6 +2984,7 @@ void G_RunFrame( int levelTime )
 	}
 	else
 	{
+		G_CalculateMaxBuildPoints();
 		G_CalculateBuildPoints( TEAM_ALIENS );
 		G_CalculateBuildPoints( TEAM_HUMANS );
 	}

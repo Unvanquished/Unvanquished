@@ -796,8 +796,9 @@ struct level_locals_s
 		int              numSamples;
 		int              numAliveClients;
 		float            buildPoints;
+		float            maxBuildPoints; //x_buildPointPools
 		float            buildPointQueue; //x_buildPointPools
-		float            nextQueueTime; //x_buildPointPools
+		int              nextQueueTime; //x_buildPointPools
 		float            acquiredBuildPoints;
 		float            mainStructAcquiredBP;
 		float            mineEfficiency;
