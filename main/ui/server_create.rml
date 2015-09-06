@@ -19,7 +19,7 @@
 
 		</style>
 	</head>
-	<body template="window" id="createserver" onShow="buildDS mapList" style="width:40em; margin:10%;">
+	<body template="window" id="createserver" onShow='Events.pushevent("buildDS mapList", event)' style="width:40em; margin:10%;">
 		<h1> Start local/LAN game</h1>
 		<row>
 			<input type="text" cvar="sv_hostname" class="text" id="hostname"/>

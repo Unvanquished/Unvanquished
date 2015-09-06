@@ -409,6 +409,115 @@ set(Debugger_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Debugger/Geometry.cpp
 )
 
+set(LuaCore_HDR_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Colourb.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Colourf.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Context.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ContextDocumentsProxy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Document.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Element.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementAttributesProxy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementChildNodesProxy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementInstancer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementStyleProxy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementText.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Event.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/EventParametersProxy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/GlobalLuaFunctions.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Log.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaDocument.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaDocumentElementInstancer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaElement.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaElementInstancer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaEventListener.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaEventListenerInstancer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/precompiled.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Rocket.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/RocketContextsProxy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Vector2f.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Vector2i.h
+)
+
+set(LuaCore_PUB_HDR_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Lua/Header.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Lua/Interpreter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Lua/LuaType.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Core/Lua/Utilities.h
+)
+
+set(LuaCore_SRC_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Colourb.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Colourf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Context.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ContextDocumentsProxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Document.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Element.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementAttributesProxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementChildNodesProxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementInstancer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementStyleProxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/ElementText.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Event.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/EventParametersProxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/GlobalLuaFunctions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Interpreter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Log.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaDocument.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaDocumentElementInstancer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaElementInstancer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaEventListener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/LuaEventListenerInstancer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/precompiled.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Rocket.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/RocketContextsProxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Utilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Vector2f.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Core/Lua/Vector2i.cpp
+)
+
+set(LuaControls_HDR_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/As.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/DataFormatter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/DataSource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementDataGrid.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementDataGridRow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementForm.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControlDataSelect.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControlInput.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControlSelect.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControlTextArea.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementTabSet.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/LuaDataFormatter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/LuaDataSource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/precompiled.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/SelectOptionsProxy.h
+)
+
+set(LuaControls_PUB_HDR_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Controls/Lua/Controls.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/Rocket/Controls/Lua/Header.h
+)
+
+set(LuaControls_SRC_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/Controls.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/DataFormatter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/DataSource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementDataGrid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementDataGridRow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementForm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControlDataSelect.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControlInput.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControlSelect.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementFormControlTextArea.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/ElementTabSet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/LuaDataFormatter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/LuaDataSource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Controls/Lua/SelectOptionsProxy.cpp
+)
+
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}")
@@ -423,13 +532,15 @@ set(ROCKET_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/Include)
 set(ROCKET_INCLUDE_DIRS ${ROCKET_INCLUDE_DIRS} PARENT_SCOPE)
 include_directories(${ROCKET_INCLUDE_DIRS})
 add_library(ROCKET_LIB STATIC
-    ${Core_HDR_FILES}       ${Core_PUB_HDR_FILES}       ${Core_SRC_FILES}
-    ${Controls_HDR_FILES}   ${Controls_PUB_HDR_FILES}   ${Controls_SRC_FILES}
-    ${Debugger_HDR_FILES}   ${Debugger_PUB_HDR_FILES}   ${Debugger_SRC_FILES}
+    ${Core_HDR_FILES}        ${Core_PUB_HDR_FILES}        ${Core_SRC_FILES}
+    ${Controls_HDR_FILES}    ${Controls_PUB_HDR_FILES}    ${Controls_SRC_FILES}
+    ${Debugger_HDR_FILES}    ${Debugger_PUB_HDR_FILES}    ${Debugger_SRC_FILES}
+    ${LuaCore_HDR_FILES}     ${LuaCore_PUB_HDR_FILES}     ${LuaCore_SRC_FILES}
+    ${LuaControls_HDR_FILES} ${LuaControls_PUB_HDR_FILES} ${LuaControls_SRC_FILES}
 )
 
 set_property(TARGET ROCKET_LIB PROPERTY
-    COMPILE_DEFINITIONS ROCKET_STATIC_LIB
+COMPILE_DEFINITIONS ROCKET_STATIC_LIB LUA_COMPAT_APIINTCASTS
 )
 set_target_properties(ROCKET_LIB PROPERTIES
     POSITION_INDEPENDENT_CODE 1

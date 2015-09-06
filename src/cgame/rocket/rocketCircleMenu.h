@@ -374,7 +374,7 @@ private:
 	void AddCancelbutton()
 	{
 		init = true;
-		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
+		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"Events.pushevent('hide %s')\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
 		GetFirstChild()->SetClass( "cancelButton", true );
 	}
 

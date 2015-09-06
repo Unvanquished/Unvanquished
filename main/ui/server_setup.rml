@@ -21,7 +21,7 @@
 			<h3> Initial mining rate</h3>
 			<p class="inline"> 
 				Current: <inlinecvar cvar="g_initialMineRate" type="number" format="%.0f"/>
-				<ilink onclick="exec reset g_initialMineRate"> (reset) </ilink>
+				<ilink onclick='Events.pushevent("exec reset g_initialMineRate", event)'> (reset) </ilink>
 			</p>
 		</row>
 		<row>
@@ -53,7 +53,7 @@
 			<h3> Gravity</h3>
 			<p class="inline"> 
 				Current: <inlinecvar cvar="g_gravity" type="number" format="%.0f"/>
-				<ilink onclick="exec reset g_gravity"> (reset) </ilink>
+				<ilink onclick='Events.pushevent("exec reset g_gravity", event)'> (reset) </ilink>
 			</p>
 		</row>
 		<row>

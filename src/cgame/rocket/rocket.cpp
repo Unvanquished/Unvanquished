@@ -39,6 +39,9 @@ Maryland 20850 USA.
 #include <Rocket/Core/SystemInterface.h>
 #include <Rocket/Core/RenderInterface.h>
 #include <Rocket/Controls.h>
+#include <Rocket/Core/Lua/Interpreter.h>
+#include <Rocket/Core/Lua/LuaType.h>
+#include <Rocket/Controls/Lua/Controls.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
 #include "rocketEventInstancer.h"
@@ -60,6 +63,10 @@ Maryland 20850 USA.
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
 #include <Rocket/Debugger.h>
+#include "lua/Cvar.h"
+#include "lua/Cmd.h"
+#include "lua/Events.h"
+#include "lua/Timer.h"
 #include "../cg_local.h"
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -303,6 +310,10 @@ void Rocket_RocketDebug_f()
 	}
 }
 
+void Rocket_Lua_f( void )
+{
+	Rocket::Core::Lua::Interpreter::DoString( CG_Argv( 1 ), "commandline" );
+}
 
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
@@ -328,7 +339,16 @@ void Rocket_Init()
 		return;
 	}
 
+	// Initialize the controls plugin
 	Rocket::Controls::Initialise();
+
+	// Initialize Lua
+	Rocket::Core::Lua::Interpreter::Initialise();
+	Rocket::Controls::Lua::RegisterTypes(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cvar>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cmd>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Events>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Timer>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
@@ -348,11 +368,6 @@ void Rocket_Init()
 	// Create the HUD context
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
 
-	// Add the event listener instancer
-	EventInstancer* event_instancer = new EventInstancer();
-	Rocket::Core::Factory::RegisterEventListenerInstancer( event_instancer );
-	event_instancer->RemoveReference();
-
 	// Add custom client elements
 	Rocket::Core::Factory::RegisterElementInstancer( "datagrid", new Rocket::Core::ElementInstancerGeneric< SelectableDataGrid >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "progressbar", new Rocket::Core::ElementInstancerGeneric< RocketProgressBar >() )->RemoveReference();
@@ -362,7 +377,7 @@ void Rocket_Init()
 	Rocket::Core::Factory::RegisterElementInstancer( "datasource", new Rocket::Core::ElementInstancerGeneric< RocketDataSource >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "circlemenu", new Rocket::Core::ElementInstancerGeneric< RocketCircleMenu >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "keybind", new Rocket::Core::ElementInstancerGeneric< RocketKeyBinder >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
+// 	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "select", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlSelect >() )->RemoveReference();
@@ -392,6 +407,7 @@ void Rocket_Shutdown()
 		hudContext = nullptr;
 	}
 
+	Rocket::Core::Lua::Interpreter::Shutdown();
 	Rocket::Core::Shutdown();
 
 	// Prevent memory leaks
@@ -449,6 +465,7 @@ void Rocket_Update()
 	{
 		hudContext->Update();
 	}
+	Rocket::Core::Lua::Timer::Update(rocketInfo.realtime);
 }
 
 static bool IsInvalidEmoticon( Rocket::Core::String emoticon )

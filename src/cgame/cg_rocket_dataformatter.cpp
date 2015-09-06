@@ -105,7 +105,7 @@ static void CG_Rocket_DFUpgradeName( int handle, const char *data )
 
 static void CG_Rocket_DFVotePlayer( int handle, const char *data )
 {
-	Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;exec rocket ui/dialogs/editplayer.rml load; exec rocket editplayer show\">vote/moderate</button>", cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) , false );
+	Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"Events.pushevent('exec set ui_dialogCvar1 %s;exec rocket ui/dialogs/editplayer.rml load; exec rocket editplayer show', event)\">vote/moderate</button>", cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) , false );
 }
 
 static void CG_Rocket_DFVoteMap( int handle, const char *data )
@@ -113,7 +113,7 @@ static void CG_Rocket_DFVoteMap( int handle, const char *data )
 	int mapIndex = atoi( Info_ValueForKey( data, "1" ) );
 	if ( mapIndex < rocketInfo.data.mapCount )
 	{
-		Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"exec set ui_dialogCvar1 %s;hide maps;exec rocket ui/dialogs/mapdialog.rml load; exec rocket mapdialog show\" class=\"maps\"><div class=\"levelname\">%s</div> <img class=\"levelshot\"src='/meta/%s/%s'/><div class=\"hovertext\">Start Vote</div> </button>", rocketInfo.data.mapList[ mapIndex ].mapLoadName, CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].mapLoadName, rocketInfo.data.mapList[ mapIndex ].mapLoadName ) , false );
+		Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"Events.pushevent('exec set ui_dialogCvar1 %s;hide maps;exec rocket ui/dialogs/mapdialog.rml load; exec rocket mapdialog show', event)\" class=\"maps\"><div class=\"levelname\">%s</div> <img class=\"levelshot\"src='/meta/%s/%s'/><div class=\"hovertext\">Start Vote</div> </button>", rocketInfo.data.mapList[ mapIndex ].mapLoadName, CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapName ), rocketInfo.data.mapList[ mapIndex ].mapLoadName, rocketInfo.data.mapList[ mapIndex ].mapLoadName ) , false );
 	}
 }
 
@@ -166,10 +166,10 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 	else
 	{
 		Class = "available";
-		action =  va( "onClick='exec \"buy +%s\"'", BG_Weapon( weapon )->name );
+		action =  va( "onClick='Cmd.exec(\"buy +%s\")'", BG_Weapon( weapon )->name );
 	}
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='setDS armouryBuyList weapons %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon )), false );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='Events.pushevent(\"setDS armouryBuyList weapons %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon )), false );
 }
 
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
@@ -203,10 +203,10 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 	else
 	{
 		Class = "available";
-		action =  va( "onClick='exec \"buy +%s\"'", BG_Upgrade( upgrade )->name );
+		action =  va( "onClick='Cmd.exec(\"buy +%s\")'", BG_Upgrade( upgrade )->name );
 	}
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='setDS armouryBuyList upgrades %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon)), false );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='Events.pushevent(\"setDS armouryBuyList upgrades %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_upgrades[ upgrade ].upgradeIcon)), false );
 }
 
 static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )
@@ -357,10 +357,10 @@ static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
 	else
 	{
 		Class = "available";
-		action = va( "onClick='exec \"build %s\"; hide %s'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id );
+		action = va( "onClick='Cmd.exec(\"build %s\") Events.pushevent(\"hide %s\", event)'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id );
 	}
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS alienBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), false );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='Events.pushevent(\"setDS alienBuildList default %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), false );
 }
 
 static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
@@ -389,10 +389,10 @@ static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
 	else
 	{
 		Class = "available";
-		action = va( "onClick='exec \"build %s\"; hide %s'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id );
+		action = va( "onClick='Cmd.exec(\"build %s\") Events.pushevent(\"hide %s\", event)'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id );
 	}
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='setDS humanBuildList default %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), false );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='Events.pushevent(\"setDS humanBuildList default %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), false );
 }
 
 static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
@@ -425,10 +425,10 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	else
 	{
 		Class = "available";
-		action =  va( "onClick='exec \"class %s\"; hide %s'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
+		action =  va( "onClick='Cmd.exec(\"class %s\") Events.pushevent(\"hide %s\", event)'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
 	}
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='setDS alienEvolveList alienClasss %s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), false );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='Events.pushevent(\"setDS alienEvolveList alienClasss %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), false );
 }
 
 static void CG_Rocket_DFCMBeacons( int handle, const char *data )
@@ -443,9 +443,9 @@ static void CG_Rocket_DFCMBeacons( int handle, const char *data )
 		return;
 
 	icon = CG_GetShaderNameFromHandle( ba->icon[ 0 ][ 0 ] );
-	action = va( "onClick='exec \"beacon %s\"; hide ingame_beaconmenu'", ba->name );
+	action = va( "onClick='Cmd.exec(\"beacon %s\") Events.pushevent(\"hide ingame_beaconmenu\", event)'", ba->name );
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='beacons' onMouseover='setDS beacons default %s' %s><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), action, icon ), false );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='beacons' onMouseover='Events.pushevent(\"setDS beacons default %s\", event)' %s><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), action, icon ), false );
 }
 
 typedef struct

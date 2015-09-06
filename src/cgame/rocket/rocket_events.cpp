@@ -89,3 +89,8 @@ void Rocket_GetEventParameters( char *params, int /*length*/ )
 		}
 	}
 }
+
+void Rocket_AddEvent( RocketEvent_t *event )
+{
+	eventQueue.push( event );
+}
