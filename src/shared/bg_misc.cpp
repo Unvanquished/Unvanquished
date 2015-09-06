@@ -477,17 +477,6 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 	// don't allow devolving
 	if ( toCost <= fromCost )
 	{
-		return -1;
-	}
-
-	if ( GetCvarInt( "x_freeUpgrades" ) )
-	{
-		return 0;
-	}
-
-	// classes w/o a cost are for spawning only
-	if ( toCost == 0 )
-	{
 		// (adv.) granger may evolve into adv. granger or dretch at no cost
 		if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) &&
 		     ( to == PCL_ALIEN_BUILDER0_UPG || to == PCL_ALIEN_LEVEL0 ) )
@@ -496,6 +485,17 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 		}
 
 		return -1;
+	}
+
+	// classes w/o a cost are for spawning only
+	if ( toCost == 0 )
+	{
+		return -1;
+	}
+
+	if ( GetCvarInt( "x_freeUpgrades" ) )
+	{
+		return 0;
 	}
 
 	evolveCost = toCost - fromCost;
