@@ -218,5 +218,6 @@ extern vmCvar_t x_simpleMomentum;
 extern vmCvar_t x_simpleLocationalDamage;
 extern vmCvar_t x_noCamping;
 extern vmCvar_t x_buildPointPools;
+extern vmCvar_t x_unlockedBuildables;
 
 #endif // SG_EXTERN_H_

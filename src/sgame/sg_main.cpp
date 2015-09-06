@@ -244,6 +244,7 @@ vmCvar_t x_simpleMomentum;
 vmCvar_t x_simpleLocationalDamage;
 vmCvar_t x_noCamping;
 vmCvar_t x_buildPointPools;
+vmCvar_t x_unlockedBuildables;
 
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
@@ -454,7 +455,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &x_simpleMomentum,         "x_simpleMomentum",         "1", CVAR_SERVERINFO, 0, true },
 	{ &x_simpleLocationalDamage, "x_simpleLocationalDamage", "2", CVAR_SERVERINFO, 0, true },
 	{ &x_noCamping,              "x_noCamping",              "1", CVAR_SERVERINFO, 0, true },
-	{ &x_buildPointPools,        "x_buildPointPools",        "1", CVAR_SERVERINFO, 0, true }
+	{ &x_buildPointPools,        "x_buildPointPools",        "1", CVAR_SERVERINFO, 0, true },
+	{ &x_unlockedBuildables,     "x_unlockedBuildables",     "1", CVAR_SERVERINFO, 0, true }
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );

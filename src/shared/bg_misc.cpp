@@ -70,6 +70,15 @@ static buildableAttributes_t bg_buildableList[ ARRAY_LEN( bg_buildableNameList )
 
 static const buildableAttributes_t nullBuildable = { (buildable_t) 0, 0, 0 };
 
+int GetCvarInt(const char *varName) {
+    std::string value = Cvar::GetValue(varName);
+    int res;
+    if (Str::ParseInt(res, value)) {
+			return res;
+    }
+    return 0;
+}
+
 /*
 ==============
 BG_BuildableByName
@@ -132,6 +141,9 @@ void BG_InitBuildableAttributes()
 	const buildableName_t *bh;
 	buildableAttributes_t *ba;
 
+	int freeUpgrades = GetCvarInt( "x_freeUpgrades" );
+	int unlockedBuildables = GetCvarInt( "x_unlockedBuildables" );
+
 	for ( i = 0; i < bg_numBuildables; i++ )
 	{
 		bh = &bg_buildableNameList[i];
@@ -149,6 +161,27 @@ void BG_InitBuildableAttributes()
 		ba->minNormal = 0.0;
 
 		BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );
+
+		if ( unlockedBuildables )
+		{
+			ba->unlockThreshold = 0;
+		}
+		else if ( freeUpgrades )
+		{
+			switch ( ba->number )
+			{
+				case BA_A_TRAPPER:
+				case BA_A_BOOSTER:
+				case BA_A_HIVE:
+				case BA_A_SPIKER:
+				case BA_H_ROCKETPOD:
+					ba->unlockThreshold += 50; //bump everything except what would normally be free
+					break;
+
+				default:
+					break;
+			}
+		}
 	}
 }
 
@@ -417,15 +450,6 @@ bool BG_ClassHasAbility( int pClass, int ability )
 	return abilities & ability;
 }
 
-int GetCvarInt(const char *varName) {
-    std::string value = Cvar::GetValue(varName);
-    int res;
-    if (Str::ParseInt(res, value)) {
-			return res;
-    }
-    return 0;
-}
-
 /*
 ==============
 BG_ClassCanEvolveFromTo
@@ -516,6 +540,7 @@ void BG_InitClassAttributes()
 	classAttributes_t *ca;
 
 	int noStamina = GetCvarInt( "x_noStamina" );
+	int freeUpgrades = GetCvarInt( "x_freeUpgrades" );
 
 	for ( i = 0; i < bg_numClasses; i++ )
 	{
@@ -555,6 +580,25 @@ void BG_InitClassAttributes()
 
 				case PCL_HUMAN_BSUIT:
 					ca->speed = 0.75f;
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		if ( freeUpgrades )
+		{
+			switch ( ca->number )
+			{
+				case PCL_ALIEN_BUILDER0_UPG:
+				case PCL_ALIEN_LEVEL1:
+				case PCL_ALIEN_LEVEL2:
+				case PCL_ALIEN_LEVEL2_UPG:
+				case PCL_ALIEN_LEVEL3:
+				case PCL_ALIEN_LEVEL3_UPG:
+				case PCL_ALIEN_LEVEL4:
+					ca->unlockThreshold += 50; //bump everything except what would normally be free
 					break;
 
 				default:
@@ -678,6 +722,8 @@ void BG_InitWeaponAttributes()
 	const weaponData_t *wd;
 	weaponAttributes_t *wa;
 
+	int freeUpgrades = GetCvarInt( "x_freeUpgrades" );
+
 	for ( i = 0; i < bg_numWeapons; i++ )
 	{
 		wd = &bg_weaponsData[i];
@@ -692,6 +738,26 @@ void BG_InitWeaponAttributes()
 		wa->knockbackScale = 1.0f;
 
 		BG_ParseWeaponAttributeFile( va( "configs/weapon/%s.attr.cfg", wa->name ), wa );
+
+		if ( freeUpgrades )
+		{
+			switch ( wa->number )
+			{
+				case WP_PAIN_SAW:
+				case WP_SHOTGUN:
+				case WP_LAS_GUN:
+				case WP_MASS_DRIVER:
+				case WP_CHAINGUN:
+				case WP_FLAMER:
+				case WP_PULSE_RIFLE:
+				case WP_LUCIFER_CANNON:
+					wa->unlockThreshold += 50; //bump everything except what would normally be free
+					break;
+
+				default:
+					break;
+			}
+		}
 	}
 }
 
@@ -769,6 +835,8 @@ void BG_InitUpgradeAttributes()
 	const upgradeData_t *ud;
 	upgradeAttributes_t *ua;
 
+	int freeUpgrades = GetCvarInt( "x_freeUpgrades" );
+
 	for ( i = 0; i < bg_numUpgrades; i++ )
 	{
 		ud = &bg_upgradesData[i];
@@ -781,6 +849,25 @@ void BG_InitUpgradeAttributes()
 		ua->name = ud->name;
 
 		BG_ParseUpgradeAttributeFile( va( "configs/upgrades/%s.attr.cfg", ua->name ), ua );
+
+		if ( freeUpgrades )
+		{
+			switch ( ua->number )
+			{
+				case UP_LIGHTARMOUR:
+				case UP_MEDIUMARMOUR:
+				case UP_BATTLESUIT:
+				case UP_RADAR:
+				case UP_JETPACK:
+				case UP_GRENADE:
+				case UP_FIREBOMB:
+					ua->unlockThreshold += 50; //bump everything except what would normally be free
+					break;
+
+				default:
+					break;
+			}
+		}
 	}
 }
 
