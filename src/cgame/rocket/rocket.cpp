@@ -241,8 +241,7 @@ public:
 		trap_R_GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
 		return true;
 	}
-/*
-	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions, int source_samples )
+	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions, int )
 	{
 
 		texture_handle = trap_R_GenerateTexture( (const byte* )source, source_dimensions.x, source_dimensions.y );
@@ -251,11 +250,11 @@ public:
 		return ( texture_handle > 0 );
 	}
 
-	void ReleaseTexture( Rocket::Core::TextureHandle textureHandle )
+	void ReleaseTexture( Rocket::Core::TextureHandle )
 	{
 		// we free all textures after each map load, but this may have to be filled for the libRocket font system
 	}
-*/
+
 	void EnableScissorRegion( bool enable )
 	{
 		trap_R_ScissorEnable( enable );
@@ -267,22 +266,6 @@ public:
 		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
 	}
 };
-
-// Rocket::Core::Input::KeyModifier RocketConvertSDLmod( SDLMod sdl )
-// {
-// 	using namespace Rocket::Core::Input;
-//
-// 	int mod = 0;
-// 	if( sdl & KMOD_SHIFT )	mod |= KM_SHIFT;
-// 	if( sdl & KMOD_CTRL )	mod |= KM_CTRL;
-// 	if( sdl & KMOD_ALT )	mod |= KM_ALT;
-// 	if( sdl & KMOD_META )	mod |= KM_META;
-// 	if( sdl & KMOD_CAPS )	mod |= KM_CAPSLOCK;
-// 	if( sdl & KMOD_NUM )	mod |= KM_NUMLOCK;
-//
-// 	return KeyModifier( mod );
-// }
-
 
 void Rocket_Rocket_f()
 {
