@@ -2095,6 +2095,9 @@ TRAIN
 
 #define TRAIN_START_OFF   1
 #define TRAIN_BLOCK_STOPS 2
+#define CORNER_PAUSE      1
+
+void Stop_Train( gentity_t *self );
 
 /*
 ===============
@@ -2114,6 +2117,7 @@ void Think_BeginMoving( gentity_t *self )
 Reached_Train
 ===============
 */
+
 void func_train_reached( gentity_t *self )
 {
 	gentity_t *next;
@@ -2173,8 +2177,12 @@ void func_train_reached( gentity_t *self )
 		return;
 	}
 
+	if ( next->spawnflags & CORNER_PAUSE )
+	{
+		Stop_Train( self );
+	}
 	// if there is a "wait" value on the target, don't start moving yet
-	if ( next->config.wait.time )
+	else if ( next->config.wait.time )
 	{
 		self->nextthink = level.time + next->config.wait.time * 1000;
 		self->think = Think_BeginMoving;

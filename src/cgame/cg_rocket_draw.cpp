@@ -53,8 +53,7 @@ static void CG_GetRocketElementBGColor( vec4_t bgColor )
 static void CG_GetRocketElementRect( rectDef_t *rect )
 {
 	Rocket_GetElementAbsoluteOffset( &rect->x, &rect->y );
-	Rocket_GetProperty( "width", &rect->w, sizeof( rect->w ), ROCKET_FLOAT );
-	Rocket_GetProperty( "height", &rect->h, sizeof( rect->h ), ROCKET_FLOAT );
+	Rocket_GetElementDimensions( &rect->w, &rect->h );
 
 	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
 	rect->x = ( rect->x / cgs.glconfig.vidWidth ) * 640;
@@ -146,8 +145,9 @@ public:
 		auto offset = GetAbsoluteOffset();
 		rect.x = offset.x;
 		rect.y = offset.y;
-		rect.w = dimensions.x;
-		rect.h = dimensions.y;
+		auto size = GetBox().GetSize();
+		rect.w = size.x;
+		rect.h = size.y;
 
 		// Convert from absolute monitor coords to a virtual 640x480 coordinate system
 		rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;

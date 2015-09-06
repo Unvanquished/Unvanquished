@@ -310,6 +310,17 @@ void Quit(Str::StringRef message)
 	OSExit(0);
 }
 
+class QuitCmd : public Cmd::StaticCmd {
+    public:
+        QuitCmd(): StaticCmd("quit", Cmd::BASE, "quits the program") {
+        }
+
+        void Run(const Cmd::Args& args) const OVERRIDE {
+            Quit(args.ConcatArgs(1));
+        }
+};
+static QuitCmd QuitCmdRegistration;
+
 void Error(Str::StringRef message)
 {
 	// Crash immediately in case of a recursive error

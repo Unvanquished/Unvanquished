@@ -38,68 +38,25 @@ set(GAMELOGIC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${GAMELOGIC_DIR})
 include(src.cmake)
 
-set(NACL_DEPS_VERSION 2)
-set(NACL_DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_deps/pnacl-${NACL_DEPS_VERSION})
-# Download them if they not available
-if (NOT EXISTS ${NACL_DEPS_DIR})
-    file(MAKE_DIRECTORY ${NACL_DEPS_DIR})
-    set(OBJ_DIR ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
-    get_filename_component(BASENAME ${NACL_DEPS_DIR} NAME)
-    set(REMOTE "http://dl.unvanquished.net/deps/${BASENAME}.zip")
-    message(STATUS "Downloading dependencies from '${REMOTE}'")
-    file(DOWNLOAD ${REMOTE} ${OBJ_DIR}/${BASENAME}.zip
-        SHOW_PROGRESS
-        STATUS DOWNLOAD_RESULT
-        LOG DOWNLOAD_LOG
-    )
-    list(GET DOWNLOAD_RESULT 0 DOWNLOAD_STATUS)
-    list(GET DOWNLOAD_RESULT 1 DOWNLOAD_STRING)
-    if (NOT DOWNLOAD_STATUS EQUAL 0)
-        message(FATAL_ERROR "Error downloading '${REMOTE}':
-            Status code: ${DOWNLOAD_STATUS}
-            Error string: ${DOWNLOAD_STRING}
-            Download log: ${DOWNLOAD_LOG}"
-        )
+option(BUILD_CGAME "Build client-side gamelogic" 1)
+option(BUILD_SGAME "Build server-side gamelogic" 1)
+
+if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
+    if (NACL)
+        set(FREETYPE_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/libfreetype.a)
+        set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${DEPS_DIR}/pnacl_deps/lib/libpng16.a)
+        set(FREETYPE_INCLUDE_DIRS ${DEPS_DIR}/pnacl_deps/include/freetype2)
+    else()
+        find_package(Freetype REQUIRED)
     endif()
-    message(STATUS "Download completed successfully")
+    include_directories(${FREETYPE_INCLUDE_DIRS})
 
-    # Extract the downloaded archive
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar xzf ${OBJ_DIR}/${BASENAME}.zip
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external_deps
-        RESULT_VARIABLE EXTRACT_RESULT
-    )
-    if (NOT EXTRACT_RESULT EQUAL 0)
-        message(FATAL_ERROR "Could not extract ${BASENAME}.zip")
-    endif()
-endif()
-
-if (NACL)
-    set(FREETYPE_LIBRARY ${NACL_DEPS_DIR}/libfreetype.a)
-    set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${NACL_DEPS_DIR}/libpng16.a)
-    set(FREETYPE_INCLUDE_DIRS ${NACL_DEPS_DIR}/include/freetype2)
-else()
-    find_package(Freetype REQUIRED)
-endif()
-include_directories(${FREETYPE_INCLUDE_DIRS})
-
-if (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL)
     add_subdirectory(${LIB_DIR}/libRocket)
     set_target_properties(ROCKET_LIB PROPERTIES FOLDER "libs")
     include_directories(${ROCKET_INCLUDE_DIRS})
 endif()
 
-try_flag(WARNINGS           "-Wall")
-try_flag(WARNINGS           "-Wextra")
-if (USE_PEDANTIC)
-    try_flag(WARNINGS       "-pedantic")
-endif()
-if (USE_WERROR)
-    try_flag(WARNINGS       "-Werror")
-    if (USE_PEDANTIC)
-        try_flag(WARNINGS   "-pedantic-errors")
-    endif()
-endif()
+# Warning options
 # keep
 try_flag(WARNINGS           "/wd4068")
 try_flag(WARNINGS           "-Wno-pragmas")
@@ -109,23 +66,42 @@ try_flag(WARNINGS           "-Woverloaded-virtual")
 try_flag(WARNINGS           "-Wstrict-null-sentinel")
 try_flag(WARNINGS           "-Wno-error=sign-promo")
 
-GAMEMODULE(NAME sgame
-    DEFINITIONS
-        BUILD_SGAME
-    FLAGS
-        ${WARNINGS}
-    FILES
-        ${SGAMELIST}
-)
+if (NOT BE_VERBOSE)
+    try_flag(WARNINGS       "-Wno-error=strict-overflow")
+endif()
 
-GAMEMODULE(NAME cgame
-    DEFINITIONS
-        BUILD_CGAME
-    FLAGS
-        ${WARNINGS}
-    FILES
-        ${CGAMELIST}
-    LIBS
-        ROCKET_LIB
-        ${FREETYPE_LIBRARIES}
-)
+# remove
+try_flag(WARNINGS           "-Wno-error=maybe-uninitialized")
+try_flag(WARNINGS           "-W${WARNMODE}missing-field-initializers")
+try_flag(WARNINGS           "-W${WARNMODE}sign-compare")
+try_flag(WARNINGS           "-Wno-error=switch")
+try_flag(WARNINGS           "-Wno-error=unused-but-set-variable")
+try_flag(WARNINGS           "-Wno-error=unused-function")
+try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
+try_flag(WARNINGS           "-Wno-error=unused-private-field")
+
+if (BUILD_SGAME)
+    GAMEMODULE(NAME sgame
+        DEFINITIONS
+            BUILD_SGAME
+        FLAGS
+            ${WARNINGS}
+        FILES
+            ${SGAMELIST}
+    )
+endif()
+
+if (BUILD_CGAME)
+    GAMEMODULE(NAME cgame
+        DEFINITIONS
+            BUILD_CGAME
+            ROCKET_STATIC_LIB
+        FLAGS
+            ${WARNINGS}
+        FILES
+            ${CGAMELIST}
+        LIBS
+            ROCKET_LIB
+            ${FREETYPE_LIBRARIES}
+    )
+endif()

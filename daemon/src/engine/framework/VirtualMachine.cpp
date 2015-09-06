@@ -188,11 +188,10 @@ static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::S
 		execve(args[0], const_cast<char* const*>(args), env);
 
 		// If the exec fails, return errno to the parent through the pipe
-		if (write(pipefds[1], &errno, sizeof(int)) > 0) {
-		    _exit(-1);
-        } else {
-            _exit(-2);
-        }
+
+		ssize_t wrote = write(pipefds[1], &errno, sizeof(int));
+		Q_UNUSED(wrote);
+		_exit(-1);
 	}
 
 	// Try to read from the pipe to see if the child successfully exec'd

@@ -172,6 +172,8 @@ clientConnection_t clc;
 clientStatic_t     cls;
 CGameVM            cgvm;
 
+Log::Logger downloadLogger("client.pakDownload");
+
 // Structure containing functions exported from refresh DLL
 refexport_t        re;
 
@@ -1497,6 +1499,7 @@ Clear download information that we keep in cls (disconnected download support)
 */
 void CL_ClearStaticDownload()
 {
+    downloadLogger.Debug("Clearing the download info");
 	assert( !cls.bWWWDlDisconnected );  // reset before calling
 	cls.downloadRestart = false;
 	cls.downloadTempName[ 0 ] = '\0';
@@ -2351,6 +2354,9 @@ void CL_DownloadsComplete()
 	{
 		cls.downloadRestart = false;
 
+        downloadLogger.Debug("Downloaded something, reload the paks");
+        downloadLogger.Debug(" The paks to load are '%s'", Cvar_VariableString("sv_paks"));
+
 		FS::PakPath::ClearPaks();
 		FS_LoadServerPaks(Cvar_VariableString("sv_paks"), clc.demoplaying); // We possibly downloaded a pak, restart the file system to load it
 
@@ -2415,8 +2421,7 @@ game directory.
 */
 void CL_BeginDownload( const char *localName, const char *remoteName )
 {
-	Com_DPrintf( "***** CL_BeginDownload *****\n"
-	             "Localname: %s\n" "Remotename: %s\n" "****************************\n", localName, remoteName );
+    downloadLogger.Debug("Requesting the download of '%s', with remote name '%s'", localName, remoteName);
 
 	Q_strncpyz( cls.downloadName, localName, sizeof( cls.downloadName ) );
 	Com_sprintf( cls.downloadTempName, sizeof( cls.downloadTempName ), "%s.tmp", localName );
@@ -2448,6 +2453,7 @@ void CL_NextDownload()
 	// We are looking to start a download here
 	if ( *clc.downloadList )
 	{
+        downloadLogger.Debug("CL_NextDownload downloadList is '%s'", clc.downloadList);
 		s = clc.downloadList;
 
 		// format is:
@@ -2525,8 +2531,7 @@ void CL_InitDownloads()
 
 	if ( cl_allowDownload->integer && FS_ComparePaks( clc.downloadList, sizeof( clc.downloadList ), true ) )
 	{
-		// this gets printed to UI, i18n
-		Com_DPrintf( "Need paks: %s\n", clc.downloadList );
+        downloadLogger.Debug("Need paks: '%s'", clc.downloadList);
 
 		if ( *clc.downloadList )
 		{
@@ -3397,6 +3402,7 @@ void CL_WWWDownload()
 
 	if ( ret == DL_DONE )
 	{
+        downloadLogger.Debug("Finished WWW download of '%s', moving it to '%s'", cls.downloadTempName, cls.originalDownloadName);
 		// taken from CL_ParseDownload
 		clc.download = 0;
 

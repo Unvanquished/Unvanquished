@@ -160,7 +160,18 @@ inline int my_open(Str::StringRef path, openMode_t mode)
 {
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 #ifdef _WIN32
-	int fd = _wopen(Str::UTF8To16(path).c_str(), modes[mode] | O_BINARY, _S_IREAD | _S_IWRITE);
+	// Allow open files to be deleted & renamed
+	DWORD access[] = {GENERIC_READ, GENERIC_WRITE, GENERIC_WRITE, GENERIC_READ | GENERIC_WRITE};
+	DWORD create[] = {OPEN_EXISTING, CREATE_ALWAYS, OPEN_ALWAYS, OPEN_ALWAYS};
+	HANDLE h = CreateFileW(Str::UTF8To16(path).c_str(), access[mode], FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, create[mode], FILE_ATTRIBUTE_NORMAL, NULL);
+	if (h == INVALID_HANDLE_VALUE) {
+		_doserrno = GetLastError();
+		errno = _doserrno == ERROR_FILE_NOT_FOUND || _doserrno == ERROR_PATH_NOT_FOUND ? ENOENT : 0; // Needed to check if we need to create the path
+		return -1;
+	}
+	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(h), modes[mode] | O_BINARY | O_NOINHERIT);
+	if (fd == -1)
+		CloseHandle(h);
 #elif defined(__APPLE__)
 	// O_CLOEXEC is supported from 10.7 onwards
 	int fd = open(path.c_str(), modes[mode] | O_CLOEXEC, 0666);
@@ -2033,62 +2044,85 @@ void Initialize()
 	VM::SendMsg<VM::FSInitializeMsg>(homePath, libPath, availablePaks, PakPath::loadedPaks, PakPath::fileMap);
 }
 #else
+// Get an absolute path from a relative one. This may fail if the path does not
+// exist. An error string is returned in that case.
+static Util::optional<std::string> GetRealPath(Str::StringRef path, std::string& error)
+{
+#ifdef _WIN32
+	std::wstring path_u16 = Str::UTF8To16(path);
+	DWORD attr = GetFileAttributesW(path_u16.c_str());
+	if (attr == INVALID_FILE_ATTRIBUTES || !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
+		error = attr == INVALID_FILE_ATTRIBUTES ? Sys::Win32StrError(GetLastError()) : "Not a directory";
+		return {};
+	}
+
+	size_t len = GetFullPathNameW(path_u16.c_str(), 0, nullptr, nullptr);
+	if (!len) {
+		error = Sys::Win32StrError(GetLastError());
+		return {};
+	}
+	std::unique_ptr<wchar_t[]> realPath(new wchar_t[len]);
+	if (!GetFullPathNameW(path_u16.c_str(), len, realPath.get(), nullptr)) {
+		error = Sys::Win32StrError(GetLastError());
+		return {};
+	}
+
+	return Str::UTF16To8(realPath.get());
+#else
+	char* realPath = realpath(path.c_str(), nullptr);
+	if (!realPath) {
+		error = strerror(errno);
+		return {};
+	}
+
+	std::string out = realPath;
+	free(realPath);
+	return out;
+#endif
+}
+
 void Initialize(Str::StringRef homePath, Str::StringRef libPath, const std::vector<std::string>& paths)
 {
+	// Create the homepath and its pkg directory to avoid any issues later on
+	std::error_code err;
+	RawPath::CreatePathTo(FS::Path::Build(homePath, "pkg") + "/", err);
+	if (err)
+		Sys::Error("Could not create homepath: %s", err.message());
+
+	std::string error;
+	try {
+		FS::homePath = GetRealPath(homePath, error).value();
+	} catch (Util::bad_optional_access&) {
+		Sys::Error("Invalid homepath: %s", error);
+	}
+	try {
+		FS::libPath = GetRealPath(libPath, error).value();
+	} catch (Util::bad_optional_access&) {
+		Sys::Error("Invalid libpath: %s", error);
+	}
+
 	// The first path in the list is implicitly added by the engine, so don't
 	// print a warning if it is not valid.
 	bool first = true;
 
 	for (const std::string& path: paths) {
 		// Convert the given path to an absolute path and check that it exists
-#ifdef _WIN32
-		std::wstring path_u16 = Str::UTF8To16(path);
-		DWORD attr = GetFileAttributesW(path_u16.c_str());
-		if (attr == INVALID_FILE_ATTRIBUTES || !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
-			if (!first)
-				fsLogs.Warn("Ignoring path %s: %s", path, attr == INVALID_FILE_ATTRIBUTES ? Sys::Win32StrError(GetLastError()) : "Not a directory");
-			first = false;
-			continue;
-		}
-
-		size_t len = GetFullPathNameW(path_u16.c_str(), 0, nullptr, nullptr);
-		if (!len) {
-			if (!first)
-				fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
-			first = false;
-			continue;
-		}
-		std::unique_ptr<wchar_t[]> realPath(new wchar_t[len]);
-		if (!GetFullPathNameW(path_u16.c_str(), len, realPath.get(), nullptr)) {
-			if (!first)
-				fsLogs.Warn("Ignoring path %s: %s", path, Sys::Win32StrError(GetLastError()));
-			first = false;
-			continue;
-		}
-
-		if (std::find(FS::pakPaths.begin(), FS::pakPaths.end(), Str::UTF16To8(realPath.get())) == FS::pakPaths.end())
-			FS::pakPaths.push_back(Str::UTF16To8(realPath.get()));
-		first = false;
-#else
-		char* realPath = realpath(path.c_str(), nullptr);
+		Util::optional<std::string> realPath = GetRealPath(path, error);
 		if (!realPath) {
 			if (!first)
-				fsLogs.Warn("Ignoring path %s: %s", path, strerror(errno));
+				fsLogs.Warn("Ignoring path %s: %s", path, error);
 			first = false;
 			continue;
 		}
 
 		if (std::find(FS::pakPaths.begin(), FS::pakPaths.end(), realPath) == FS::pakPaths.end())
-			FS::pakPaths.push_back(realPath);
-		free(realPath);
+			FS::pakPaths.push_back(*realPath);
 		first = false;
-#endif
 	}
-	FS::homePath = homePath;
-	FS::libPath = libPath;
 	isInitialized = true;
 
-	fsLogs.Notice("Home path: %s", homePath.c_str());
+	fsLogs.Notice("Lib path: %s", FS::libPath.c_str());
+	fsLogs.Notice("Home path: %s", FS::homePath.c_str());
 	for (std::string& x: pakPaths)
 		fsLogs.Notice("Pak search path: %s", x.c_str());
 	if (pakPaths.empty())
@@ -2399,7 +2433,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_MOVEFILE:
-		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool success) {
+		IPC::HandleMsg<VM::FSHomePathMoveFileMsg>(channel, std::move(reader), [](std::string dest, std::string src, bool& success) {
 			std::error_code err;
 			HomePath::MoveFile(Path::Build("game", dest), Path::Build("game", src), err);
 			success = !err;
@@ -2407,7 +2441,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 		break;
 
 	case VM::FS_HOMEPATH_DELETEFILE:
-		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool success) {
+		IPC::HandleMsg<VM::FSHomePathDeleteFileMsg>(channel, std::move(reader), [](std::string path, bool& success) {
 			std::error_code err;
 			HomePath::DeleteFile(Path::Build("game", path), err);
 			success = !err;

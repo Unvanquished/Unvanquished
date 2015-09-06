@@ -81,6 +81,9 @@ Maryland 20850 USA.
 
 #define Q_UNUSED(x) (void)(x)
 
+template<class T>
+void ignore_result(T) {}
+
 #define EXTERN_C extern "C"
 
 // C standard library headers

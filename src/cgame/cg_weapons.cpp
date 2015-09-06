@@ -1381,10 +1381,10 @@ CG_CalculateWeaponPosition
 static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 {
 	const float
-		WI_X_LIMIT = 1.5f,
-		WI_X_SCALE = -15.0f,
-		WI_Y_LIMIT = 1.5f,
-		WI_Y_SCALE = 15.0f;
+		limitX = 1.5f,
+		scaleX = -2e-3,
+		limitY = 1.5f,
+		scaleY = 2e-3;
 	Vec3 origin, angles, right, up;
 	float        scale;
 	//weaponInfo_t *weapon = cg_weapons + cg.predictedPlayerState.weapon;
@@ -1399,7 +1399,7 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	// on odd legs, invert some angles
 	scale = ( cg.bobcycle & 1 ? -1 : 1 ) * cg.xyspeed;
 
-	filter.SetWidth( 500 );
+	filter.SetWidth( 350 );
 
 	// bobbing
 	if( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob )
@@ -1420,7 +1420,7 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 
 		dt = ( cg.time - last.first ) * 0.001f;
 
-		offsets.angvel = angles.Apply2( AngleDelta, last.second.angles ) * dt;
+		offsets.angvel = angles.Apply2( AngleDelta, last.second.angles ) / dt;
 	}
 
 	// accumulate and get the smoothed out values
@@ -1431,8 +1431,8 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	// offset angles and origin
 
 	angles += offsets.bob;
-	origin += up * atan( offsets.angvel[ 0 ] * WI_Y_SCALE ) * WI_Y_LIMIT;
-	origin += right * atan( offsets.angvel[ 1 ] * WI_X_SCALE ) * WI_X_LIMIT;
+	origin += up * atan( offsets.angvel[ 0 ] * scaleY ) * limitY;
+	origin += right * atan( offsets.angvel[ 1 ] * scaleX ) * limitX;
 
 	// FIXME: is this of any use?
 	/*if( !weapon->md5 && !weapon->noDrift )

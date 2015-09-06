@@ -1007,8 +1007,6 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 {
 	int       j;
 	gentity_t *other;
-	// don't let text be too long for malicious reasons
-	char      text[ MAX_SAY_TEXT ];
 
 	// check if blocked by g_specChat 0
 	if ( ( !g_specChat.integer ) && ( mode != SAY_TEAM ) &&
@@ -1062,7 +1060,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 	for ( j = 0; j < level.maxclients; j++ )
 	{
 		other = &g_entities[ j ];
-		G_SayTo( ent, other, mode, text );
+		G_SayTo( ent, other, mode, chatText );
 	}
 }
 
@@ -1240,7 +1238,6 @@ Cmd_VSay_f
 void Cmd_VSay_f( gentity_t *ent )
 {
 	char           arg[ MAX_TOKEN_CHARS ];
-	char           text[ MAX_TOKEN_CHARS ];
 	voiceChannel_t vchan;
 	voice_t        *voice;
 	voiceCmd_t     *cmd;
@@ -1364,19 +1361,19 @@ void Cmd_VSay_f( gentity_t *ent )
 		case VOICE_CHAN_ALL:
 			trap_SendServerCommand( -1, va(
 			                          "voice %ld %d %d %d %s\n",
-			                          ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
+			                          ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( arg ) ) );
 			break;
 
 		case VOICE_CHAN_TEAM:
 			G_TeamCommand( (team_t) ent->client->pers.team, va(
 			                 "voice %ld %d %d %d %s\n",
-			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
+			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( arg ) ) );
 			break;
 
 		case VOICE_CHAN_LOCAL:
 			G_AreaTeamCommand( ent, va(
 			                 "voice %ld %d %d %d %s\n",
-			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
+			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( arg ) ) );
 			break;
 
 		default:
@@ -4511,7 +4508,6 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	int      pids[ MAX_CLIENTS ];
 	char     name[ MAX_NAME_LENGTH ];
 	char     cmd[ 12 ];
-	char     text[ MAX_STRING_CHARS ];
 	char     *msg;
 	char     color;
 	int      i, pcount;
@@ -4546,7 +4542,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	for ( i = 0; i < pcount; i++ )
 	{
 		if ( G_SayTo( ent, &g_entities[ pids[ i ] ],
-		              teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, text ) )
+		              teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg ) )
 		{
 			count++;
 			Q_strcat( recipients, sizeof( recipients ), va( "%s" S_COLOR_WHITE ", ",
@@ -4564,7 +4560,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	}
 	else
 	{
-		ADMP( va( "%s %c %s", QQ( N_("^$1$Private message: ^7$2$\n") ), color, Quote( text ) ) );
+		ADMP( va( "%s %c %s", QQ( N_("^$1$Private message: ^7$2$\n") ), color, Quote( msg ) ) );
 		// remove trailing ", "
 		recipients[ strlen( recipients ) - 2 ] = '\0';
 		// FIXME PLURAL

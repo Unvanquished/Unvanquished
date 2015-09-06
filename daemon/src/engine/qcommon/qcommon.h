@@ -636,7 +636,6 @@ void QDECL Com_Log( log_level_t level, const char* message );
 #define    PrintBanner(text) Com_Printf("----- %s -----\n", text );
 
 // *INDENT-ON*
-void NORETURN Com_Quit_f();
 int        Com_Milliseconds();
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
@@ -666,9 +665,9 @@ extern cvar_t       *com_sv_running;
 extern cvar_t       *com_cl_running;
 extern cvar_t       *com_version;
 
-extern cvar_t       *com_consoleCommand;
+extern Cvar::Cvar<std::string> com_consoleCommand;
 
-extern cvar_t       *com_ansiColor;
+extern Cvar::Cvar<bool> com_ansiColor;
 
 extern cvar_t       *com_unfocused;
 extern cvar_t       *com_minimized;

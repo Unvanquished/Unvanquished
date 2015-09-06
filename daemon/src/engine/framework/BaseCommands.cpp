@@ -577,7 +577,8 @@ namespace Cmd {
     struct delayRecord_t {
         std::string name;
         std::string command;
-        int target;
+        Sys::SteadyClock::time_point targetTime;
+        int targetFrame;
         delayType_t type;
     };
 
@@ -585,13 +586,13 @@ namespace Cmd {
     static int delayFrame = 0;
 
     void DelayFrame() {
-        int time = Sys_Milliseconds();
+        auto time = Sys::SteadyClock::now();
         delayFrame ++;
 
         for (auto it = delays.begin(); it != delays.end();) {
             const delayRecord_t& delay = *it;
 
-            if ((delay.type == MSEC and delay.target <= time) or (delay.type == FRAME and delay.target < delayFrame)) {
+            if ((delay.type == MSEC and delay.targetTime <= time) or (delay.type == FRAME and delay.targetFrame < delayFrame)) {
                 Cmd::BufferCommandText(delay.command, true);
                 it = delays.erase(it);
             } else {
@@ -630,28 +631,26 @@ namespace Cmd {
                 const std::string& name = isNamed ? args.Argv(1) : "";
                 const std::string& command = args.EscapedArgs(2 + isNamed);
                 std::string delay = args.Argv(1 + isNamed);
-                int target;
-                delayType_t type;
                 bool frames = delay.back() == 'f';
 
                 if (frames) {
                     delay.erase(--delay.end()); //FIXME-gcc-4.6 delay.pop_back()
                 }
 
+                int target;
                 if (!Str::ParseInt(target, delay) || target < 1) {
                     Print("delay: the delay must be a positive integer");
                     return;
                 }
 
                 if (frames) {
-                    target += delayFrame;
-                    type = FRAME;
+                    int targetFrame = target + delayFrame;
+                    delays.emplace_back(delayRecord_t{name, command, {}, targetFrame, FRAME});
                 } else {
-                    target += Sys_Milliseconds();
-                    type = MSEC;
+                    auto targetTime = Sys::SteadyClock::now() + std::chrono::milliseconds(target);
+                    delays.emplace_back(delayRecord_t{name, command, targetTime, 0, MSEC});
                 }
 
-                delays.emplace_back(delayRecord_t{name, command, target, type});
             }
 
             Cmd::CompletionResult Complete(int argNum, const Args&, Str::StringRef prefix) const OVERRIDE {
@@ -731,14 +730,14 @@ namespace Cmd {
     static int aliasRun;
     static bool inAliasRun;
 
-    void WriteAliases(fileHandle_t f) {
-        std::string toWrite = "clearAliases\n";
-        FS_Write(toWrite.c_str(), toWrite.size(), f);
+    std::string GetAliasConfigText() {
+        std::ostringstream result;
+        result << "clearAliases\n";
 
         for (const auto& it: aliases) {
-            toWrite = "alias " + it.first + " " + it.second.command + "\n";
-            FS_Write(toWrite.c_str(), toWrite.size(), f);
+            result << "alias " << it.first << " " << it.second.command << "\n";
         }
+        return result.str();
     }
 
     Cmd::CompletionResult CompleteAliasName(Str::StringRef prefix) {

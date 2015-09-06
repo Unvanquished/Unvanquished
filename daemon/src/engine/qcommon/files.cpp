@@ -86,7 +86,7 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 		return FS_FileExists(path);
 
 	*handle = FS_AllocHandle();
-	int length;
+	int length = -1;
 	std::error_code err;
 	if (FS::PakPath::FileExists(path)) {
 		handleTable[*handle].fileData = FS::PakPath::ReadFile(path, err);
@@ -107,7 +107,7 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 	if (err) {
 		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.message().c_str());
 		*handle = 0;
-		return -1;
+		length = -1;
 	}
 	return length;
 }

@@ -41,7 +41,6 @@ Maryland 20850 USA.
 #include "framework/CvarSystem.h"
 
 cvar_t        *cvar_vars;
-int           cvar_modifiedFlags;
 
 /*
 ============
@@ -187,7 +186,8 @@ with the archive flag set that are not in a transient state.
 */
 void Cvar_WriteVariables( fileHandle_t f )
 {
-    Cvar::WriteVariables(f);
+    std::string text = Cvar::GetCvarConfigText();
+    FS_Write(text.c_str(), text.size(), f);
 }
 
 /*
