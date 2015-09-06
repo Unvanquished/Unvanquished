@@ -174,8 +174,8 @@ namespace Cmd {
 
     class LambdaCmd : public StaticCmd {
         public:
-            using RunFn = std::function<void(const Args&)>;
-            using CompleteFn = std::function<CompletionResult(int, const Args&, Str::StringRef)>;
+            typedef std::function<void(const Args&)> RunFn;
+            typedef std::function<CompletionResult(int, const Args&, Str::StringRef)> CompleteFn;
             LambdaCmd(std::string name, std::string description, RunFn run, CompleteFn complete = NoopComplete);
             LambdaCmd(std::string name, int flags, std::string description, RunFn run, CompleteFn complete = NoopComplete);
 
