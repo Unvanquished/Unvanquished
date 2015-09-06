@@ -113,8 +113,10 @@ function(GAMEMODULE)
         )
         ADD_PRECOMPILED_HEADER(${GAMEMODULE_NAME}-nacl)
 
-        # Generate NaCl executables for x86 and x86_64
-        pnacl_translate(${GAMEMODULE_NAME}-nacl i686 "-x86")
-        pnacl_translate(${GAMEMODULE_NAME}-nacl x86-64 "-x86_64")
+        if (BUILD_GAME_NACL_NEXE)
+            # Generate NaCl executables for x86 and x86_64
+            pnacl_translate(${GAMEMODULE_NAME}-nacl i686 "-x86")
+            pnacl_translate(${GAMEMODULE_NAME}-nacl x86-64 "-x86_64")
+        endif()
     endif()
 endfunction()

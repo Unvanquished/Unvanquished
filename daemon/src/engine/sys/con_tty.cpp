@@ -105,7 +105,7 @@ static void CON_AnsiColorPrint( const char *msg )
 	};
 	static const char modifier[][4] = { "", ";1", ";2", "" };
 
-	int index = abs( com_ansiColor->integer ) - 1;
+	int index = com_ansiColor.Get() ? 1 : 0;
 
 	if ( index >= ARRAY_LEN( colour16map ) )
 	{
@@ -320,7 +320,7 @@ void CON_Init_TTY()
 	                   !( term && ( !strcmp( term, "raw" ) || !strcmp( term, "dumb" ) ) );
 	if ( !stdinIsATTY )
 	{
-		Com_Printf( "tty console mode disabled\n" );
+        Log::Notice( "tty console mode disabled\n" );
 		ttycon_on = false;
 		stdin_active = true;
 		return;
@@ -387,7 +387,7 @@ char *CON_Input_TTY()
 			{
 				if ( key == '\n' )
 				{
-					TTY_field.RunCommand(com_consoleCommand->string);
+					TTY_field.RunCommand(com_consoleCommand.Get());
 					ignore_result(write( STDOUT_FILENO, "\n]", 2 ));
 					return nullptr;
 				}
@@ -445,7 +445,6 @@ char *CON_Input_TTY()
 					}
 				}
 
-				Com_DPrintf( "droping ISCTL sequence: %d, TTY_erase: %d\n", key, TTY_erase );
 				CON_FlushIn();
 				return nullptr;
 			}
@@ -504,7 +503,7 @@ void CON_Print_TTY( const char *msg )
 {
 	CON_Hide();
 
-	if ( ttycon_on && com_ansiColor && com_ansiColor->integer )
+	if ( ttycon_on && com_ansiColor.Get() )
 	{
 		CON_AnsiColorPrint( msg );
 	}

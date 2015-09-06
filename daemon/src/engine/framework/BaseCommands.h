@@ -28,9 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "qcommon/qcommon.h"
-#include "qcommon/q_shared.h"
-
 #ifndef FRAMEWORK_BASE_COMMANDS_H_
 #define FRAMEWORK_BASE_COMMANDS_H_
 
@@ -44,7 +41,7 @@ namespace Cmd {
     void DelayFrame();
 
     //Saves the aliases in a configuration file
-    void WriteAliases(fileHandle_t f);
+    std::string GetAliasConfigText();
 }
 
 #endif // FRAMEWORK_BASE_COMMANDS_H_

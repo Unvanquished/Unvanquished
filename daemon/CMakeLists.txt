@@ -67,9 +67,11 @@ option(BUILD_SERVER "Build Daemonded server" 1)
 option(BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1)
 option(BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1)
 if (CMAKE_SYSTEM_NAME STREQUAL CMAKE_HOST_SYSTEM_NAME)
-    option(BUILD_GAME_NACL "Build NaCl game logic" 1)
+    option(BUILD_GAME_NACL "Build PNaCl game logic" 1)
+    option(BUILD_GAME_NACL_NEXE "Build NaCl game logic" 1)
 else()
     set(BUILD_GAME_NACL 0)
+    set(BUILD_GAME_NACL_NEXE 0)
 endif()
 option(BUILD_TTY_CLIENT "Build Daemon headless client" 1)
 
@@ -295,7 +297,7 @@ function(ADD_PRECOMPILED_HEADER Target)
     # Compiler-specific PCH support
     if (CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
         add_custom_command(OUTPUT "${OBJ_DIR}/${Target}.h.gch"
-            COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
+            COMMAND ${PNACLPYTHON_PREFIX2} ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
             DEPENDS ${Header}
             IMPLICIT_DEPENDS CXX ${Header}
         )

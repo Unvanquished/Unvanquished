@@ -76,7 +76,7 @@ int Com_AddToGrowList( growList_t *list, void *data )
 
 	if ( list->maxElements < 0 )
 	{
-		Com_Error( ERR_FATAL, "Com_AddToGrowList: maxElements = %i", list->maxElements );
+        Sys::Error( "Com_AddToGrowList: maxElements = %i", list->maxElements );
 	}
 
 	if ( list->maxElements == 0 )
@@ -94,7 +94,7 @@ int Com_AddToGrowList( growList_t *list, void *data )
 
 	if ( !list->elements )
 	{
-		Com_Error( ERR_DROP, "Growlist alloc failed" );
+        Sys::Drop( "Growlist alloc failed" );
 	}
 
 	Com_Memcpy( list->elements, old, list->currentElements * sizeof( void * ) );
@@ -108,7 +108,7 @@ void           *Com_GrowListElement( const growList_t *list, int index )
 {
 	if ( index < 0 || index >= list->currentElements )
 	{
-		Com_Error( ERR_DROP, "Com_GrowListElement: %i out of range of %i", index, list->currentElements );
+        Sys::Drop( "Com_GrowListElement: %i out of range of %i", index, list->currentElements );
 	}
 
 	return list->elements[ index ];
@@ -177,7 +177,7 @@ int MemStreamRead( memStream_t *s, void *buffer, int len )
 		len = s->buffer + s->bufSize - s->curPos;
 		ret = 0;
 
-		Com_Error( ERR_FATAL, "MemStreamRead: EOF reached" );
+        Sys::Error( "MemStreamRead: EOF reached" );
 	}
 
 	Com_Memcpy( buffer, s->curPos, len );
@@ -783,7 +783,7 @@ void PRINTF_LIKE(1) COM_ParseError( const char *format, ... )
 	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end( argptr );
 
-	Com_Printf( S_ERROR "%s, line %d: %s\n", com_parsename, com_lines, string );
+    Log::Notice( S_ERROR "%s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
 void PRINTF_LIKE(1) COM_ParseWarning( const char *format, ... )
@@ -795,7 +795,7 @@ void PRINTF_LIKE(1) COM_ParseWarning( const char *format, ... )
 	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end( argptr );
 
-	Com_Printf( S_WARNING "%s, line %d: %s\n", com_parsename, com_lines, string );
+    Log::Notice( S_WARNING "%s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
 /*
@@ -1093,7 +1093,7 @@ char           *COM_ParseExt2( const char **data_p, bool allowLineBreaks )
 
 	if ( !data_p )
 	{
-		Com_Error( ERR_FATAL, "COM_ParseExt: NULL data_p" );
+        Sys::Error( "COM_ParseExt: NULL data_p" );
 	}
 
 	data = *data_p;
@@ -1363,7 +1363,7 @@ void COM_MatchToken( const char **buf_p, const char *match )
 
 	if ( strcmp( token, match ) )
 	{
-		Com_Error( ERR_DROP, "MatchToken: %s != %s", token, match );
+        Sys::Drop( "MatchToken: %s != %s", token, match );
 	}
 }
 
@@ -1528,13 +1528,13 @@ int Com_ParseInfos( const char *buf, int max, char infos[][ MAX_INFO_STRING ] )
 
 		if ( strcmp( token, "{" ) )
 		{
-			Com_Printf( "Missing { in info file\n" );
+            Log::Notice( "Missing { in info file\n" );
 			break;
 		}
 
 		if ( count == max )
 		{
-			Com_Printf( "Max infos exceeded\n" );
+            Log::Notice( "Max infos exceeded\n" );
 			break;
 		}
 
@@ -1546,7 +1546,7 @@ int Com_ParseInfos( const char *buf, int max, char infos[][ MAX_INFO_STRING ] )
 
 			if ( !token[ 0 ] )
 			{
-				Com_Printf( "Unexpected end of info file\n" );
+                Log::Notice( "Unexpected end of info file\n" );
 				break;
 			}
 
@@ -2006,34 +2006,34 @@ void Q_strncpyz( char *dest, const char *src, int destsize )
 
 	if ( !dest )
 	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest (%s, %i)", file, line );
+        Sys::Error( "Q_strncpyz: NULL dest (%s, %i)", file, line );
 	}
 
 	if ( !src )
 	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src (%s, %i)", file, line );
+        Sys::Error( "Q_strncpyz: NULL src (%s, %i)", file, line );
 	}
 
 	if ( destsize < 1 )
 	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: destsize < 1 (%s, %i)", file, line );
+        Sys::Error( "Q_strncpyz: destsize < 1 (%s, %i)", file, line );
 	}
 
 #else
 
 	if ( !dest )
 	{
-		Com_Error( ERR_DROP, "Q_strncpyz: NULL dest" );
+        Sys::Drop( "Q_strncpyz: NULL dest" );
 	}
 
 	if ( !src )
 	{
-		Com_Error( ERR_DROP, "Q_strncpyz: NULL src" );
+        Sys::Drop( "Q_strncpyz: NULL src" );
 	}
 
 	if ( destsize < 1 )
 	{
-		Com_Error( ERR_DROP, "Q_strncpyz: destsize < 1" );
+        Sys::Drop( "Q_strncpyz: destsize < 1" );
 	}
 
 #endif
@@ -2152,7 +2152,7 @@ void Q_strcat( char *dest, int size, const char *src )
 
 	if ( l1 >= size )
 	{
-		Com_Error( ERR_FATAL, "Q_strcat: already overflowed" );
+        Sys::Error( "Q_strcat: already overflowed" );
 	}
 
 	Q_strncpyz( dest + l1, src, size - l1 );
@@ -2449,7 +2449,7 @@ bool Q_strreplace( char *dest, int destsize, const char *find, const char *repla
 
 	if ( lend >= destsize )
 	{
-		Com_Error( ERR_FATAL, "Q_strreplace: already overflowed" );
+        Sys::Error( "Q_strreplace: already overflowed" );
 	}
 
 	s = strstr( dest, find );
@@ -2604,12 +2604,12 @@ int QDECL PRINTF_LIKE(3) Com_sprintf( char *dest, int size, const char *fmt, ...
 
 	if ( len >= size )
 	{
-		Com_Printf( "Com_sprintf: Output length %d too short, %d bytes required.\n", size, len + 1 );
+        Log::Notice( "Com_sprintf: Output length %d too short, %d bytes required.\n", size, len + 1 );
 	}
 
 	if ( len == -1 )
 	{
-		Com_Printf( "Com_sprintf: overflow of %i bytes buffer\n", size );
+        Log::Notice( "Com_sprintf: overflow of %i bytes buffer\n", size );
 	}
 
 	return len;
@@ -2644,7 +2644,7 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
 	{
-		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()" );
+        Sys::Drop( "Attempted to overrun string in call to va()" );
 	}
 
 	if ( len + index >= MAX_VA_STRING - 1 )
@@ -2691,7 +2691,7 @@ const char *Info_ValueForKey( const char *s, const char *key )
 
 	if ( strlen( s ) >= BIG_INFO_STRING )
 	{
-		Com_Error( ERR_DROP, "Info_ValueForKey: oversize infostring [%s] [%s]", s, key );
+        Sys::Drop( "Info_ValueForKey: oversize infostring [%s] [%s]", s, key );
 	}
 
 	valueindex ^= 1;
@@ -2810,7 +2810,7 @@ void Info_RemoveKey( char *s, const char *key, bool big )
 
 	if ( slen >= maxlen )
 	{
-		Com_Error( ERR_DROP, "Info_RemoveKey: oversize infostring [%s] [%s]", s, key );
+        Sys::Drop( "Info_RemoveKey: oversize infostring [%s] [%s]", s, key );
 	}
 
 	if ( strchr( key, '\\' ) )
@@ -2907,24 +2907,24 @@ void Info_SetValueForKey( char *s, const char *key, const char *value, bool big 
 
 	if ( slen >= maxlen )
 	{
-		Com_Error( ERR_DROP, "Info_SetValueForKey: oversize infostring [%s] [%s] [%s]", s, key, value );
+        Sys::Drop( "Info_SetValueForKey: oversize infostring [%s] [%s] [%s]", s, key, value );
 	}
 
 	if ( strchr( key, '\\' ) || ( value && strchr( value, '\\' ) ) )
 	{
-		Com_Printf( "Can't use keys or values with a \\\n" );
+        Log::Notice( "Can't use keys or values with a \\\n" );
 		return;
 	}
 
 	if ( strchr( key, ';' ) || ( value && strchr( value, ';' ) ) )
 	{
-		Com_Printf( "Can't use keys or values with a semicolon\n" );
+        Log::Notice( "Can't use keys or values with a semicolon\n" );
 		return;
 	}
 
 	if ( strchr( key, '\"' ) || ( value && strchr( value, '\"' ) ) )
 	{
-		Com_Printf( "Can't use keys or values with a \"\n" );
+        Log::Notice( "Can't use keys or values with a \"\n" );
 		return;
 	}
 
@@ -2939,7 +2939,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value, bool big 
 
 	if ( strlen( newi ) + slen >= maxlen )
 	{
-		Com_Printf( "Info string length exceeded\n" );
+        Log::Notice( "Info string length exceeded\n" );
 		return;
 	}
 
@@ -2954,12 +2954,12 @@ void Info_SetValueForKeyRocket( char *s, const char *key, const char *value, boo
 
 	if ( slen >= maxlen )
 	{
-		Com_Error( ERR_DROP, "Info_SetValueForKey: oversize infostring [%s] [%s] [%s]", s, key, value );
+        Sys::Drop( "Info_SetValueForKey: oversize infostring [%s] [%s] [%s]", s, key, value );
 	}
 
 	if ( strchr( key, '\\' ) || ( value && strchr( value, '\\' ) ) )
 	{
-		Com_Printf( "Can't use keys or values with a \\\n" );
+        Log::Notice( "Can't use keys or values with a \\\n" );
 		return;
 	}
 
@@ -2974,7 +2974,7 @@ void Info_SetValueForKeyRocket( char *s, const char *key, const char *value, boo
 
 	if ( strlen( newi ) + slen >= maxlen )
 	{
-		Com_Printf( "Info string length exceeded\n" );
+        Log::Notice( "Info string length exceeded\n" );
 		return;
 	}
 

@@ -577,6 +577,8 @@ extern  cvar_t *cl_voipShowSender;
 extern  cvar_t *cl_voip;
 #endif
 
+extern Log::Logger downloadLogger;
+
 //=================================================
 
 //
