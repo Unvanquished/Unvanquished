@@ -466,3 +466,46 @@ void G_MarkBuildPointsMined( team_t team, float amount )
 {
 	ModifyBuildPoints( team, amount, true );
 }
+
+
+int NextQueueTime( int queuedBP, int totalBP, int queueBaseRate )
+{
+  float fractionQueued;
+
+  if( totalBP == 0 )
+    return 0;
+
+  fractionQueued = queuedBP / (float)totalBP;
+  return ( 1.0f - fractionQueued ) * queueBaseRate;
+}
+
+void G_CalculateBuildPoints( team_t team )
+{
+	// BP queue updates
+	while( level.team[ team ].buildPointQueue > 0 &&
+			level.team[ team ].nextQueueTime < level.time )
+	{
+		level.team[ team ].buildPointQueue--;
+		level.team[ team ].nextQueueTime += NextQueueTime( level.team[ team ].buildPointQueue,
+				DEFAULT_BUILDPOINTS, //g_alienBuildPoints.integer,
+				DEFAULT_QUEUE_TIME ); //g_alienBuildQueueTime.integer );
+	}
+
+	level.team[ team ].buildPoints = DEFAULT_BUILDPOINTS - level.team[ team ].buildPointQueue;
+
+	// Iterate through entities
+	for( int i = MAX_CLIENTS; i < level.num_entities; i++ )
+	{
+		gentity_t *ent = &g_entities[ i ];
+
+		if( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD || ent->buildableTeam != team )
+			continue;
+
+		// Subtract the BP from the appropriate pool
+		level.team[ team ].buildPoints -= BG_Buildable( ent->s.modelindex )->buildPoints;
+	}
+
+	if( level.team[ team ].buildPoints < 0 )
+		level.team[ team ].buildPoints = 0;
+}
+

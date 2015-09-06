@@ -243,6 +243,7 @@ vmCvar_t x_noStamina;
 vmCvar_t x_simpleMomentum;
 vmCvar_t x_simpleLocationalDamage;
 vmCvar_t x_noCamping;
+vmCvar_t x_buildPointPools;
 
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
@@ -447,12 +448,13 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  CVAR_NORESTART, 0, false },
 
 	// experimental gameplay
-	{ &x_freeUpgrades, "x_freeUpgrades", "1", CVAR_SERVERINFO, 0, true },
-	{ &x_buildAnywhere, "x_buildAnywhere", "2", CVAR_SERVERINFO, 0, true },
-	{ &x_noStamina, "x_noStamina", "1", CVAR_SERVERINFO, 0, true },
-	{ &x_simpleMomentum, "x_simpleMomentum", "1", CVAR_SERVERINFO, 0, true },
+	{ &x_freeUpgrades,           "x_freeUpgrades",           "1", CVAR_SERVERINFO, 0, true },
+	{ &x_buildAnywhere,          "x_buildAnywhere",          "2", CVAR_SERVERINFO, 0, true },
+	{ &x_noStamina,              "x_noStamina",              "1", CVAR_SERVERINFO, 0, true },
+	{ &x_simpleMomentum,         "x_simpleMomentum",         "1", CVAR_SERVERINFO, 0, true },
 	{ &x_simpleLocationalDamage, "x_simpleLocationalDamage", "2", CVAR_SERVERINFO, 0, true },
-	{ &x_noCamping, "x_noCamping", "1", CVAR_SERVERINFO, 0, true }
+	{ &x_noCamping,              "x_noCamping",              "1", CVAR_SERVERINFO, 0, true },
+	{ &x_buildPointPools,        "x_buildPointPools",        "1", CVAR_SERVERINFO, 0, true }
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
@@ -2968,7 +2970,15 @@ void G_RunFrame( int levelTime )
 
 	G_CountSpawns();
 	G_SetHumanBuildablePowerState();
-	G_MineBuildPoints();
+	if ( !x_buildPointPools.integer )
+	{
+		G_MineBuildPoints();
+	}
+	else
+	{
+		G_CalculateBuildPoints( TEAM_ALIENS );
+		G_CalculateBuildPoints( TEAM_HUMANS );
+	}
 	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();
 	G_SpawnClients( TEAM_ALIENS );

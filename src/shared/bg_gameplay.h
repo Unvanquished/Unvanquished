@@ -391,6 +391,9 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 #define DEFAULT_BP_LOSS_FRAC               "0.5"
 
+#define DEFAULT_BUILDPOINTS   100
+#define DEFAULT_QUEUE_TIME    8000
+
 // momentum
 #define MOMENTUM_MAX                     300.0f
 #define MOMENTUM_PER_CREDIT              0.01f // used to award momentum based on credit rewards

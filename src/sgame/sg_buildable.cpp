@@ -617,6 +617,21 @@ static int    CompareEntityDistance( const void *a, const void *b )
 	}
 }
 
+void QueueBuildPoints( gentity_t *self )
+{
+	if ( self->buildableTeam == TEAM_NONE )
+	{
+		return;
+	}
+
+	if( !level.team[ self->buildableTeam ].buildPointQueue )
+	{
+		level.team[ self->buildableTeam ].nextQueueTime = level.time + DEFAULT_QUEUE_TIME;
+	}
+
+	level.team[ self-> buildableTeam ].buildPointQueue += BG_Buildable( self->s.modelindex )->buildPoints;
+}
+
 /*
 ================
 AGeneric_CreepRecede
@@ -630,6 +645,7 @@ void AGeneric_CreepRecede( gentity_t *self )
 	if ( !( self->s.eFlags & EF_DEAD ) )
 	{
 		self->s.eFlags |= EF_DEAD;
+    QueueBuildPoints( self );
 
 		G_AddEvent( self, EV_BUILD_DESTROY, 0 );
 
@@ -2432,6 +2448,7 @@ void HGeneric_Blast( gentity_t *self )
 	G_RadiusDamage( self->s.pos.trBase, g_entities + self->killedBy, self->splashDamage,
 	                self->splashRadius, self, DAMAGE_KNOCKBACK, self->splashMethodOfDeath );
 
+  QueueBuildPoints( self );
 	G_RewardAttackers( self );
 
 	// explode
@@ -2450,6 +2467,8 @@ Called when a human buildable is destroyed before it is spawned.
 void HGeneric_Cancel( gentity_t *self )
 {
 	self->timestamp = level.time;
+
+  QueueBuildPoints( self );
 
 	G_RewardAttackers( self );
 
@@ -5762,3 +5781,4 @@ void G_BuildLogRevert( int id )
 
 	G_AddMomentumEnd();
 }
+

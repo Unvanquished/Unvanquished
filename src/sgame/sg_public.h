@@ -115,6 +115,7 @@ bool          G_CanAffordBuildPoints( team_t team, float amount );
 void              G_GetBuildableResourceValue( int *teamValue );
 void              G_ModifyBuildPoints( team_t team, float amount );
 void              G_MarkBuildPointsMined( team_t team, float amount );
+void              G_CalculateBuildPoints( team_t team );
 
 // sg_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );
