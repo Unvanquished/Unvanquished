@@ -1734,7 +1734,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_R_LIGHTFORPOINT:
-			IPC::HandleMsg<Render::LightForPointMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, std::array<float, 3>& ambient, std::array<float, 3>& directed, std::array<float, 3>& dir, int res) {
+			IPC::HandleMsg<Render::LightForPointMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, std::array<float, 3>& ambient, std::array<float, 3>& directed, std::array<float, 3>& dir, int& res) {
 				res = re.LightForPoint(point.data(), ambient.data(), directed.data(), dir.data());
 			});
 			break;
