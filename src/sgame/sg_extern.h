@@ -214,10 +214,18 @@ extern vmCvar_t g_bot_debug;
 extern vmCvar_t x_freeUpgrades;
 extern vmCvar_t x_buildAnywhere;
 extern vmCvar_t x_noStamina;
+extern vmCvar_t x_larmourSpeed;
+extern vmCvar_t x_marmourSpeed;
+extern vmCvar_t x_bsuitSpeed;
 extern vmCvar_t x_simpleMomentum;
 extern vmCvar_t x_simpleLocationalDamage;
+extern vmCvar_t x_backStabMod;
 extern vmCvar_t x_noCamping;
+extern vmCvar_t x_campRange;
 extern vmCvar_t x_buildPointPools;
+extern vmCvar_t x_buildPoints;
+extern vmCvar_t x_queueTime;
+extern vmCvar_t x_rgsValue;
 extern vmCvar_t x_unlockedBuildables;
 
 #endif // SG_EXTERN_H_

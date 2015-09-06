@@ -391,18 +391,13 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 #define DEFAULT_BP_LOSS_FRAC               "0.5"
 
-// x_buildPointPools
-#define DEFAULT_BUILDPOINTS   75 // layoutBuildPoints will be used if higher
-#define DEFAULT_QUEUE_TIME    8000
-#define DEFAULT_RGS_VALUE     24
-
 // momentum
 #define MOMENTUM_MAX                     300.0f
 #define MOMENTUM_PER_CREDIT              0.01f // used to award momentum based on credit rewards
 #define DEFAULT_MOMENTUM_HALF_LIFE       "5"   // in min
 #define DEFAULT_CONF_REWARD_DOUBLE_TIME  "30"  // in min
 #define DEFAULT_UNLOCKABLE_MIN_TIME      "30"  // in s
-#define DEFAULT_MOMENTUM_BASE_MOD        "1.4"
+#define DEFAULT_MOMENTUM_BASE_MOD        "1.4" // doubled from 0.7 because of x_simpleMomentum
 #define DEFAULT_MOMENTUM_KILL_MOD        "1.3"
 #define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
 #define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
@@ -411,5 +406,22 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 #define BUILDABLE_START_HEALTH_FRAC        0.25f
+
+// x_buildPointPools
+#define DEFAULT_BUILDPOINTS   "75" // layoutBuildPoints will be used if higher
+#define DEFAULT_QUEUE_TIME    "8000"
+#define DEFAULT_RGS_VALUE     "24"
+
+// x_noStamina
+#define DEFAULT_LARMOUR_SPEED "0.85"
+#define DEFAULT_MARMOUR_SPEED "0.80"
+#define DEFAULT_BSUIT_SPEED "0.75"
+
+// x_simpleLocationalDamage
+#define DEFAULT_BACKSTAB_MOD "1.5"
+
+// x_noCamping
+#define DEFAULT_CAMP_RANGE "1000"
+
 
 #endif // G_GAMEPLAY_H_

@@ -626,7 +626,7 @@ void QueueBuildPoints( gentity_t *self )
 
 	if( !level.team[ self->buildableTeam ].buildPointQueue )
 	{
-		level.team[ self->buildableTeam ].nextQueueTime = level.time + DEFAULT_QUEUE_TIME;
+		level.team[ self->buildableTeam ].nextQueueTime = level.time + x_queueTime.integer;
 	}
 
 	level.team[ self-> buildableTeam ].buildPointQueue += BG_Buildable( self->s.modelindex )->buildPoints;

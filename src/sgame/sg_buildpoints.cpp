@@ -470,9 +470,8 @@ void G_MarkBuildPointsMined( team_t team, float amount )
 
 void G_CalculateMaxBuildPoints()
 {
-	int              i, playerNum;
-	gentity_t        *ent, *player;
-	gclient_t        *client;
+	int              i;
+	gentity_t        *ent;
 
 	static int       nextCalculation = 0;
 
@@ -500,8 +499,8 @@ void G_CalculateMaxBuildPoints()
 		}
 	}
 
-	level.team[ TEAM_HUMANS ].maxBuildPoints = std::max( DEFAULT_BUILDPOINTS, level.team[ TEAM_HUMANS ].layoutBuildPoints ) + DEFAULT_RGS_VALUE * level.team[ TEAM_HUMANS ].mineEfficiency;
-	level.team[ TEAM_ALIENS ].maxBuildPoints = std::max( DEFAULT_BUILDPOINTS, level.team[ TEAM_ALIENS ].layoutBuildPoints ) + DEFAULT_RGS_VALUE * level.team[ TEAM_ALIENS ].mineEfficiency;
+	level.team[ TEAM_HUMANS ].maxBuildPoints = std::max( x_buildPoints.integer, level.team[ TEAM_HUMANS ].layoutBuildPoints ) + x_rgsValue.integer * level.team[ TEAM_HUMANS ].mineEfficiency;
+	level.team[ TEAM_ALIENS ].maxBuildPoints = std::max( x_buildPoints.integer, level.team[ TEAM_ALIENS ].layoutBuildPoints ) + x_rgsValue.integer * level.team[ TEAM_ALIENS ].mineEfficiency;
 
 	nextCalculation = level.time + MINING_PERIOD;
 }
@@ -526,7 +525,7 @@ void G_CalculateBuildPoints( team_t team )
 		level.team[ team ].buildPointQueue--;
 		level.team[ team ].nextQueueTime += NextQueueTime( level.team[ team ].buildPointQueue,
 				level.team[ team ].maxBuildPoints,
-				DEFAULT_QUEUE_TIME );
+				x_queueTime.integer );
 	}
 
 	level.team[ team ].buildPoints = level.team[ team ].maxBuildPoints - level.team[ team ].buildPointQueue;

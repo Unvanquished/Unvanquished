@@ -79,6 +79,15 @@ int GetCvarInt(const char *varName) {
     return 0;
 }
 
+float GetCvarFloat(const char *varName) {
+    std::string value = Cvar::GetValue(varName);
+    float res;
+    if (Str::ToFloat(value, res)) {
+			return res;
+    }
+    return 0.0f;
+}
+
 /*
 ==============
 BG_BuildableByName
@@ -571,15 +580,15 @@ void BG_InitClassAttributes()
 			{
 				case PCL_HUMAN_NAKED:
 				case PCL_HUMAN_LIGHT:
-					ca->speed = 0.85f;
+					ca->speed = GetCvarFloat("x_larmourSpeed");
 					break;
 
 				case PCL_HUMAN_MEDIUM:
-					ca->speed = 0.80f;
+					ca->speed = GetCvarFloat("x_marmourSpeed");
 					break;
 
 				case PCL_HUMAN_BSUIT:
-					ca->speed = 0.75f;
+					ca->speed = GetCvarFloat("x_bsuitSpeed");
 					break;
 
 				default:

@@ -238,13 +238,29 @@ vmCvar_t g_bot_buildLayout;
 
 //experimental gameplay cvars
 vmCvar_t x_freeUpgrades;
+
 vmCvar_t x_buildAnywhere;
+
 vmCvar_t x_noStamina;
-vmCvar_t x_simpleMomentum;
+vmCvar_t x_larmourSpeed;
+vmCvar_t x_marmourSpeed;
+vmCvar_t x_bsuitSpeed;
+
+vmCvar_t x_simpleMomentum; //see also g_momentumBaseMod
+
 vmCvar_t x_simpleLocationalDamage;
+vmCvar_t x_backStabMod;
+
 vmCvar_t x_noCamping;
+vmCvar_t x_campRange;
+
 vmCvar_t x_buildPointPools;
+vmCvar_t x_buildPoints;
+vmCvar_t x_queueTime;
+vmCvar_t x_rgsValue;
+
 vmCvar_t x_unlockedBuildables;
+
 
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
@@ -449,14 +465,29 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  CVAR_NORESTART, 0, false },
 
 	// experimental gameplay
-	{ &x_freeUpgrades,           "x_freeUpgrades",           "1", CVAR_SERVERINFO, 0, true },
-	{ &x_buildAnywhere,          "x_buildAnywhere",          "2", CVAR_SERVERINFO, 0, true },
-	{ &x_noStamina,              "x_noStamina",              "1", CVAR_SERVERINFO, 0, true },
-	{ &x_simpleMomentum,         "x_simpleMomentum",         "1", CVAR_SERVERINFO, 0, true },
-	{ &x_simpleLocationalDamage, "x_simpleLocationalDamage", "2", CVAR_SERVERINFO, 0, true },
-	{ &x_noCamping,              "x_noCamping",              "1", CVAR_SERVERINFO, 0, true },
-	{ &x_buildPointPools,        "x_buildPointPools",        "1", CVAR_SERVERINFO, 0, true },
-	{ &x_unlockedBuildables,     "x_unlockedBuildables",     "1", CVAR_SERVERINFO, 0, true }
+	{ &x_freeUpgrades,           "x_freeUpgrades",           "1",                   CVAR_SERVERINFO, 0, true },
+
+	{ &x_buildAnywhere,          "x_buildAnywhere",          "2",                   CVAR_SERVERINFO, 0, true },
+
+	{ &x_noStamina,              "x_noStamina",              "1",                   CVAR_SERVERINFO, 0, true },
+	{ &x_larmourSpeed,           "x_larmourSpeed",           DEFAULT_LARMOUR_SPEED, CVAR_SERVERINFO, 0, true },
+	{ &x_marmourSpeed,           "x_marmourSpeed",           DEFAULT_MARMOUR_SPEED, CVAR_SERVERINFO, 0, true },
+	{ &x_bsuitSpeed,             "x_bsuitSpeed",             DEFAULT_BSUIT_SPEED,   CVAR_SERVERINFO, 0, true },
+
+	{ &x_simpleMomentum,         "x_simpleMomentum",         "1",                   CVAR_SERVERINFO, 0, true }, //see also existing cvar g_momentumBaseMod 
+
+	{ &x_simpleLocationalDamage, "x_simpleLocationalDamage", "2",                   CVAR_SERVERINFO, 0, true },
+	{ &x_backStabMod,            "x_backStabMod",            DEFAULT_BACKSTAB_MOD,  CVAR_SERVERINFO, 0, true },
+
+	{ &x_noCamping,              "x_noCamping",              "1",                   CVAR_SERVERINFO, 0, true },
+	{ &x_campRange,              "x_campRange",              DEFAULT_CAMP_RANGE,    CVAR_SERVERINFO, 0, true },
+
+	{ &x_buildPointPools,        "x_buildPointPools",        "1",                   CVAR_SERVERINFO, 0, true },
+	{ &x_buildPoints,            "x_buildPoints",            DEFAULT_BUILDPOINTS,   CVAR_SERVERINFO, 0, true },
+	{ &x_queueTime,              "x_queueTime",              DEFAULT_QUEUE_TIME,    CVAR_SERVERINFO, 0, true },
+	{ &x_rgsValue,               "x_rgsValue",               DEFAULT_RGS_VALUE,     CVAR_SERVERINFO, 0, true },
+
+	{ &x_unlockedBuildables,     "x_unlockedBuildables",     "1",                   CVAR_SERVERINFO, 0, true }
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
@@ -923,7 +954,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart, bool inClient )
 		else
 		{
 			level.mineRate = g_initialMineRate.value;
-			level.team[ (team_t)team ].maxBuildPoints = std::max( DEFAULT_BUILDPOINTS, level.team[ (team_t)team ].layoutBuildPoints );
+			level.team[ (team_t)team ].maxBuildPoints = std::max( x_buildPoints.integer, level.team[ (team_t)team ].layoutBuildPoints );
 		}
 	}
 

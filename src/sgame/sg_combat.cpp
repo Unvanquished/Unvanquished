@@ -194,7 +194,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 
 float G_CalcCampMod( gentity_t* self )
 {
-	const float range = 1000.0f;
+	const float range = x_campRange.value;
 
 	float campMod = 1.0f;
 
@@ -606,7 +606,7 @@ static int ParseDmgScriptSimple( damageRegion_t *regions, const char *buf )
 	int   count;
 
 	float modifier = 1.0f;
-	const float backModifier = 1.5f;
+	float backModifier = x_backStabMod.value;
 
 	bool foundNonlocational = false;
 
