@@ -61,13 +61,13 @@ typedef int socklen_t;
 #       else
 typedef unsigned short sa_family_t;
 #       endif
-
-#       ifndef __MINGW32__
-#               define EAGAIN        WSAEWOULDBLOCK
-#               define EADDRNOTAVAIL WSAEADDRNOTAVAIL
-#               define EAFNOSUPPORT  WSAEAFNOSUPPORT
-#               define ECONNRESET    WSAECONNRESET
-#       endif
+// HACK: Redefine these constants to their windows equivalents
+// TODO: Figure out a cleaner way to do this. Perhaps write a set of
+//       compatibility constants.
+#       define EAGAIN        WSAEWOULDBLOCK
+#       define EADDRNOTAVAIL WSAEADDRNOTAVAIL
+#       define EAFNOSUPPORT  WSAEAFNOSUPPORT
+#       define ECONNRESET    WSAECONNRESET
 #       define socketError   WSAGetLastError()
 
 static WSADATA  winsockdata;
