@@ -64,7 +64,7 @@ CG_RegisterRocketCvars
 */
 void CG_RegisterRocketCvars()
 {
-	int         i;
+	unsigned i;
 	const cvarTable_t *cv;
 
 	for ( i = 0, cv = rocketCvarTable; i < rocketCvarTableSize; i++, cv++ )
@@ -123,7 +123,7 @@ void CG_Rocket_Init( glconfig_t gl )
 		Com_Error( ERR_DROP, "Unable to load %s. No rocket menus loaded.", rocket_menuFile.string );
 	}
 
-	if ( len >= sizeof( text ) - 1 )
+	if ( len >= (int) sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
 		Com_Error( ERR_DROP, "File %s too long.", rocket_menuFile.string );
@@ -317,7 +317,7 @@ void CG_Rocket_LoadHuds()
 		Com_Error( ERR_DROP, "Unable to load %s. No rocket menus loaded.", rocket_menuFile.string );
 	}
 
-	if ( len >= sizeof( text ) - 1 )
+	if ( len >= (int) sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
 		Com_Error( ERR_DROP, "File %s too long.", rocket_hudFile.string );
@@ -599,6 +599,10 @@ void CG_Rocket_Frame( cgClientState_t state )
 
 			case CA_ACTIVE:
 				Rocket_DocumentAction( "", "blurall" );
+                break;
+
+            default:
+                break;
 		}
 
 		oldConnState = rocketInfo.cstate.connState;
@@ -730,6 +734,9 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			}
 
 			return false;
+
+        default:
+            return false;
 	}
 
 	return false;

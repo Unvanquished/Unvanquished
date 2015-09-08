@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #include "renderer/tr_public.h"
 
 
-void RE_Shutdown( bool destroyWindow ) { }
+void RE_Shutdown( bool ) { }
 qhandle_t RE_RegisterModel( const char *name )
 {
 	return FS_FOpenFileRead( name, nullptr, false );
@@ -46,15 +46,15 @@ qhandle_t RE_RegisterSkin( const char *name )
 {
 	return FS_FOpenFileRead( name, nullptr, false );
 }
-qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
+qhandle_t RE_RegisterShader( const char *, RegisterShaderFlags_t )
 {
 	return 1;
 }
-qhandle_t RE_RegisterShaderNoMip( const char *name )
+qhandle_t RE_RegisterShaderNoMip( const char * )
 {
 	return 1;
 }
-void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font )
+void RE_RegisterFont( const char *, const char *, int pointSize, fontInfo_t **font )
 {
 	if (!*font)
 		return;
@@ -63,7 +63,7 @@ void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointS
 	(*font)->glyphScale = 1.0f;
 	(*font)->name[0] = '\0';
 }
-void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
+void RE_Glyph( fontInfo_t *, const char *, glyphInfo_t *glyph )
 {
 	glyph->height = 1;
 	glyph->top = 1;
@@ -79,12 +79,12 @@ void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
 	glyph->glyph = 1;
 	glyph->shaderName[0] = '\0';
 }
-void RE_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
+void RE_GlyphChar( fontInfo_t *font, int, glyphInfo_t *glyph )
 {
 	RE_Glyph( font, nullptr, glyph );
 }
-void RE_UnregisterFont( fontInfo_t *font ) { }
-void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
+void RE_UnregisterFont( fontInfo_t* ) { }
+void RE_RegisterFontVM( const char *, const char *, int pointSize, fontMetrics_t *font )
 {
 	font->handle = 1;
 	font->isBitmap = true;
@@ -92,98 +92,95 @@ void RE_RegisterFontVM( const char *fontName, const char *fallbackName, int poin
 	font->height = 1;
 	font->glyphScale = 1.0f;
 }
-void RE_GlyphVM( fontHandle_t font, const char *ch, glyphInfo_t *glyph ) { }
-void RE_GlyphCharVM( fontHandle_t font, int ch, glyphInfo_t *glyph ) { }
-void RE_UnregisterFontVM( fontHandle_t font ) { }
-void RE_LoadWorldMap( const char *name ) { }
-void RE_SetWorldVisData( const byte *vis ) { }
+void RE_GlyphVM( fontHandle_t, const char *, glyphInfo_t * ) { }
+void RE_GlyphCharVM( fontHandle_t, int, glyphInfo_t * ) { }
+void RE_UnregisterFontVM( fontHandle_t ) { }
+void RE_LoadWorldMap( const char * ) { }
+void RE_SetWorldVisData( const byte * ) { }
 void RE_EndRegistration() { }
 void RE_ClearScene() { }
-void RE_AddRefEntityToScene( const refEntity_t *ref ) { }
-int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
+void RE_AddRefEntityToScene( const refEntity_t * ) { }
+int R_LightForPoint( vec3_t, vec3_t, vec3_t, vec3_t )
 {
 	return 0;
 }
-void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts ) { }
-void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys ) { }
-void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags ) { }
-void RE_AddLightToSceneQ3A( const vec3_t org, float intensity, float r, float g, float b ) { }
-void RE_RenderScene( const refdef_t *fd ) { }
-void RE_SetColor( const Color::Color& rgba ) { }
-void RE_SetClipRegion( const float *region ) { }
-void RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader ) { }
-void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle ) { }
-void RE_StretchPicGradient( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, const Color::Color& gradientColor, int gradientType ) { }
-void RE_2DPolyies( polyVert_t *polys, int numverts, qhandle_t hShader ) { }
-void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, bool dirty ) { }
-void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, bool dirty ) { }
+void RE_AddPolyToScene( qhandle_t, int, const polyVert_t* ) { }
+void RE_AddPolysToScene( qhandle_t, int, const polyVert_t*, int ) { }
+void RE_AddLightToScene( const vec3_t, float, float, float, float, float, qhandle_t, int ) { }
+void RE_AddLightToSceneQ3A( const vec3_t, float, float, float, float ) { }
+void RE_RenderScene( const refdef_t* ) { }
+void RE_SetColor( const Color::Color& ) { }
+void RE_SetClipRegion( const float* ) { }
+void RE_StretchPic( float, float, float, float, float, float, float, float, qhandle_t ) { }
+void RE_RotatedPic( float, float, float, float, float, float, float, float, qhandle_t, float ) { }
+void RE_StretchPicGradient( float, float, float, float, float, float, float, float, qhandle_t, const Color::Color&, int ) { }
+void RE_2DPolyies( polyVert_t*, int, qhandle_t ) { }
+void RE_StretchRaw( int, int, int, int, int, int, const byte*, int, bool ) { }
+void RE_UploadCinematic( int, int, const byte*, int, bool ) { }
 void RE_BeginFrame() { }
-void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) { }
-int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer )
+void RE_EndFrame( int*, int* ) { }
+int R_MarkFragments( int, const vec3_t*, const vec3_t, int, vec3_t, int, markFragment_t* )
 {
 	return 0;
 }
-void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, const Color::Color& color, int lifeTime, int fadeTime ) { }
+void RE_ProjectDecal( qhandle_t, int, vec3_t*, vec4_t, const Color::Color&, int, int ) { }
 void RE_ClearDecals() { }
-int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
+int R_LerpTag( orientation_t*, const refEntity_t*, const char*, int )
 {
 	return 0;
 }
-void R_ModelBounds( qhandle_t model, vec3_t mins, vec3_t maxs ) { }
-void R_RemapShader( const char *oldShader, const char *newShader, const char *offsetTime ) { }
-void R_DebugPolygon( int color, int numpoints, float *points ) { }
-void R_DebugText( const vec3_t org, float r, float g, float b, const char *text, bool neverOcclude ) { }
-bool R_GetEntityToken( char *buffer, int size )
+void R_ModelBounds( qhandle_t, vec3_t, vec3_t ) { }
+void R_RemapShader( const char*, const char*, const char* ) { }
+bool R_GetEntityToken( char*, int )
 {
 	return true;
 }
-void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer ) { }
-bool R_inPVS( const vec3_t p1, const vec3_t p2 )
+void RE_AddPolyBufferToScene( polyBuffer_t* ) { }
+bool R_inPVS( const vec3_t, const vec3_t )
 {
 	return false;
 }
-bool R_inPVVS( const vec3_t p1, const vec3_t p2 )
+bool R_inPVVS( const vec3_t, const vec3_t )
 {
 	return false;
 }
-bool RE_LoadDynamicShader( const char *shadername, const char *shadertext )
+bool RE_LoadDynamicShader( const char*, const char* )
 {
 	return true;
 }
-void RE_RenderToTexture( int textureid, int x, int y, int w, int h ) { }
-int R_GetTextureId( const char *imagename )
+int R_GetTextureId( const char* )
 {
 	return 0;
 }
 void RE_Finish() { }
-void RE_TakeVideoFrame( int h, int w, byte *captureBuffer, byte *encodeBuffer, bool motionJpeg ) { }
-void RE_AddRefLightToScene( const refLight_t *light ) { }
-int RE_RegisterAnimation( const char *name )
+void RE_TakeVideoFrame( int, int, byte*, byte*, bool ) { }
+void RE_AddRefLightToScene( const refLight_t* ) { }
+int RE_RegisterAnimation( const char* )
 {
 	return 1;
 }
-int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t model, qhandle_t anim )
+int RE_CheckSkeleton( refSkeleton_t*, qhandle_t, qhandle_t )
 {
 	return 1;
 }
-int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t anim, int startFrame, int endFrame, float frac, bool clearOrigin )
+int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t, int, int, float, bool )
 {
 	skel->numBones = 0;
 	return 1;
 }
-int RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float frac )
+int RE_BlendSkeleton( refSkeleton_t*, const refSkeleton_t*, float )
 {
 	return 1;
 }
-int RE_BoneIndex( qhandle_t hModel, const char *boneName )
+int RE_BoneIndex( qhandle_t, const char* )
 {
 	return 0;
 }
-int RE_AnimNumFrames( qhandle_t hAnim )
+int RE_AnimNumFrames( qhandle_t )
 {
 	return 1;
 }
-int RE_AnimFrameRate( qhandle_t hAnim )
+int RE_AnimFrameRate( qhandle_t )
 {
 	return 1;
 }
@@ -191,28 +188,28 @@ qhandle_t RE_RegisterVisTest()
 {
 	return 1;
 }
-void RE_AddVisTestToScene( qhandle_t hTest, const vec3_t pos, float depthAdjust, float area ) { }
-float RE_CheckVisibility( qhandle_t hTest )
+void RE_AddVisTestToScene( qhandle_t, const vec3_t, float, float ) { }
+float RE_CheckVisibility( qhandle_t )
 {
 	return 0.0f;
 }
-void RE_UnregisterVisTest( qhandle_t hTest ) { }
-void     RE_SetColorGrading( int slot, qhandle_t hShader ) { }
-void                                RE_ScissorEnable( bool enable ) { }
-void                                RE_ScissorSet( int x, int y, int w, int h ) { }
-void     R_SetAltShaderTokens( const char *name ) { }
+void RE_UnregisterVisTest( qhandle_t ) { }
+void     RE_SetColorGrading( int, qhandle_t ) { }
+void                                RE_ScissorEnable( bool ) { }
+void                                RE_ScissorSet( int, int, int, int ) { }
+void     R_SetAltShaderTokens( const char* ) { }
 
-void RE_GetTextureSize( int textureID, int *width, int *height )
+void RE_GetTextureSize( int, int *width, int *height )
 {
     *width = 1;
     *height = 1;
 }
-void RE_Add2dPolysIndexed( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader ) { }
-qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
+void RE_Add2dPolysIndexed( polyVert_t*, int, int*, int, int, int, qhandle_t ) { }
+qhandle_t RE_GenerateTexture( const byte*, int, int )
 {
     return 1;
 }
-const char *RE_ShaderNameFromHandle( qhandle_t shader )
+const char *RE_ShaderNameFromHandle( qhandle_t )
 {
     return "";
 }
@@ -228,7 +225,7 @@ bool RE_BeginRegistration( glconfig_t *config, glconfig2_t *glconfig2 )
 	return true;
 }
 
-refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
+refexport_t    *GetRefAPI( int, refimport_t* )
 {
     static refexport_t re;
 
@@ -285,8 +282,6 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
     re.ModelBounds = R_ModelBounds;
 
     re.RemapShader = R_RemapShader;
-    re.DrawDebugPolygon = R_DebugPolygon;
-    re.DrawDebugText = R_DebugText;
     re.GetEntityToken = R_GetEntityToken;
 
     re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
@@ -296,8 +291,6 @@ refexport_t    *GetRefAPI( int apiVersion, refimport_t *rimp )
 
     //bani
     re.LoadDynamicShader = RE_LoadDynamicShader;
-    // fretn
-    re.RenderToTexture = RE_RenderToTexture;
     //bani
     re.Finish = RE_Finish;
 

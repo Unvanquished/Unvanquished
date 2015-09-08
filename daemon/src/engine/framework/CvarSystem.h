@@ -81,7 +81,7 @@ namespace Cvar {
 
     // Used by the C API
     cvar_t* FindCCvar(const std::string& cvarName);
-    void WriteVariables(fileHandle_t f);
+    std::string GetCvarConfigText();
     char* InfoString(int flag, bool big);
     void SetValueCProxy(const std::string& cvarName, std::string value);
 

@@ -86,7 +86,7 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 		return FS_FileExists(path);
 
 	*handle = FS_AllocHandle();
-	int length;
+	int length = -1;
 	std::error_code err;
 	if (FS::PakPath::FileExists(path)) {
 		handleTable[*handle].fileData = FS::PakPath::ReadFile(path, err);
@@ -107,7 +107,7 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 	if (err) {
 		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.message().c_str());
 		*handle = 0;
-		return -1;
+		length = -1;
 	}
 	return length;
 }
@@ -719,7 +719,7 @@ public:
 			Print("File not found: \"%s\"", filename);
 	}
 
-	Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE
+	Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE
 	{
 		if (argNum == 1) {
 			return FS::PakPath::CompleteFilename(prefix, "", "", true, false);
@@ -735,7 +735,7 @@ public:
 	ListPathsCmd()
 		: Cmd::StaticCmd("listPaths", Cmd::SYSTEM, "list filesystem search paths") {}
 
-	void Run(const Cmd::Args& args) const OVERRIDE
+	void Run(const Cmd::Args&) const OVERRIDE
 	{
 		Print("Home path: %s", FS::GetHomePath());
 		for (auto& x: FS::PakPath::GetLoadedPaks())

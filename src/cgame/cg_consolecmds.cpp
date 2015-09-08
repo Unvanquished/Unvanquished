@@ -64,6 +64,20 @@ static void CG_Viewpos_f()
 	           ( int ) cg.refdefViewAngles[ YAW ] );
 }
 
+/*
+=============
+CG_SaveViewpos_f
+
+Save the current position to cg_savedviewpos
+=============
+*/
+static void CG_SaveViewpos_f()
+{
+	Cvar::SetValue("cg_savedviewpos", Str::Format("%f %f %f %f %f", cg.refdef.vieworg[0], cg.refdef.vieworg[1],
+	               cg.refdef.vieworg[2], cg.refdefViewAngles[YAW], cg.refdefViewAngles[PITCH]));
+	Cvar::AddFlags("cg_savedviewpos", Cvar::ARCHIVE);
+}
+
 void CG_RequestScores()
 {
 		cg.scoresRequestTime = cg.time;
@@ -115,7 +129,7 @@ void CG_ClientList_f()
 static void CG_ReloadHud_f()
 {
 	CG_Rocket_LoadHuds();
-	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
+	CG_OnPlayerWeaponChange();
 }
 
 static void CG_CompleteClass()
@@ -453,6 +467,7 @@ static const struct
 	{ "lcp",              CG_CenterPrint_f,        0                },
 	{ "listmaps",         0,                       0                },
 	{ "listrotation",     0,                       0                },
+	{ "luarocket",        Rocket_Lua_f,            0                },
 	{ "m",                0,                       CG_CompleteName  },
 	{ "maplog",           0,                       0                },
 	{ "me",               0,                       0                },
@@ -472,6 +487,7 @@ static const struct
 	{ "reloadHud",        CG_ReloadHud_f,          0                },
 	{ "rocket",           Rocket_Rocket_f,         0,               },
 	{ "rocketDebug",      Rocket_RocketDebug_f,    0,               },
+	{ "saveviewpos",      CG_SaveViewpos_f,        0                },
 	{ "say",              0,                       0                },
 	{ "say_area",         0,                       0                },
 	{ "say_area_team",    0,                       0                },

@@ -98,7 +98,7 @@ static bool Disabled( unlockable_t *unlockable )
 #endif // BUILD_CGAME
 
 #ifdef BUILD_CGAME
-static void InformUnlockableStatusChange( unlockable_t *unlockable, bool unlocked )
+static void InformUnlockableStatusChange( unlockable_t*, bool )
 {
 }
 #endif // BUILD_CGAME

@@ -73,7 +73,7 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 	// generate the delta update
 	if ( !from )
 	{
-		static const clientSnapshot_t nullfrom = { 0 };
+		static const clientSnapshot_t nullfrom{};
 
 		from = &nullfrom;
 		from_num_entities = 0;
@@ -500,7 +500,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 
 		l = 0;
 
-		for ( i = 0; i < ent->r.numClusters; i++ )
+		for ( i = 0; i < std::min(std::max(0, ent->r.numClusters), MAX_ENT_CLUSTERS); i++ )
 		{
 			l = ent->r.clusternums[ i ];
 

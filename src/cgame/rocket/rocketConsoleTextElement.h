@@ -83,7 +83,7 @@ public:
 			lastTime = lines[ line ].time;
 
 			// Find out how many lines
-			while ( line < lines.size() && lines[ line ].time >= lastTime )
+			while ( line < (int) lines.size() && lines[ line ].time >= lastTime )
 			{
 				line++;
 			}

@@ -53,8 +53,7 @@ static void CG_GetRocketElementBGColor( Color::Color& bgColor )
 static void CG_GetRocketElementRect( rectDef_t *rect )
 {
 	Rocket_GetElementAbsoluteOffset( &rect->x, &rect->y );
-	Rocket_GetProperty( "width", &rect->w, sizeof( rect->w ), ROCKET_FLOAT );
-	Rocket_GetProperty( "height", &rect->h, sizeof( rect->h ), ROCKET_FLOAT );
+	Rocket_GetElementDimensions( &rect->w, &rect->h );
 
 	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
 	rect->x = ( rect->x / cgs.glconfig.vidWidth ) * 640;
@@ -146,8 +145,9 @@ public:
 		auto offset = GetAbsoluteOffset();
 		rect.x = offset.x;
 		rect.y = offset.y;
-		rect.w = dimensions.x;
-		rect.h = dimensions.y;
+		auto size = GetBox().GetSize();
+		rect.w = size.x;
+		rect.h = size.y;
 
 		// Convert from absolute monitor coords to a virtual 640x480 coordinate system
 		rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
@@ -977,7 +977,6 @@ public:
 
 	}
 private:
-	Rocket::Core::Element* img;
 	int weapon;
 	bool isNoAmmo;
 };
@@ -2731,7 +2730,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	team_t        team;
 	bool      unlocked;
 
-	momentumThresholdIterator_t unlockableIter = { -1 };
+	momentumThresholdIterator_t unlockableIter = { -1, 0 };
 
 	// display
 	Color::Color  color;
@@ -2898,9 +2897,10 @@ static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 
 		case UNLT_CLASS:
 			return cg_classes[ index ].classIcon;
-	}
 
-	return 0;
+        default:
+            return 0;
+	}
 }
 
 static void CG_Rocket_DrawPlayerUnlockedItems()
@@ -3430,9 +3430,7 @@ void CG_Rocket_RenderElement( const char *tag )
 #define REGISTER_ELEMENT( tag, clazz ) Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< clazz >() )->RemoveReference();
 void CG_Rocket_RegisterElements()
 {
-	int i;
-
-	for ( i = 0; i < elementRenderCmdListCount; i++ )
+	for ( unsigned i = 0; i < elementRenderCmdListCount; i++ )
 	{
 		//Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp( elementRenderCmdList[ i - 1 ].name, elementRenderCmdList[ i ].name ) > 0 )

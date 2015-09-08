@@ -99,12 +99,13 @@
 
 
 	</style>
+	<script src="../lua/util.lua" />
 </head>
-<body>
+<body onkeydown="detectEscape(event, document)">
 
 	<window>
 		<handle move_target="#document" />
-		<closebutton onClick="hide" />  <!-- Defined after the handle, so it's "ontop" -->
+		<closebutton onClick="document:Hide()" />  <!-- Defined after the handle, so it's "ontop" -->
 		<div id="content"></div>
 	</window>
 

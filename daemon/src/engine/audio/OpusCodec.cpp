@@ -46,7 +46,7 @@ namespace Audio{
 
 struct OpusDataSource {
 	std::string* audioFile;
-	int position;
+	size_t position;
 };
 
 /*
@@ -81,12 +81,14 @@ int OpusCallbackRead(void* dataSource, unsigned char* ptr, int nBytes)
 	}
 
 	std::string* audioFile = data->audioFile;
-	int position = data->position;
-	int bytesRemaining = audioFile->size() - position;
-	int bytesToRead = nBytes;
+	size_t position = data->position;
+	size_t bytesRemaining = audioFile->size() - position;
+	size_t bytesToRead = nBytes;
+
 	if (bytesToRead > bytesRemaining) {
 		bytesToRead = bytesRemaining;
 	}
+
 	// char to unsigned char????
 	std::copy_n(reinterpret_cast<const unsigned char*>(audioFile->data()) + position, bytesToRead, ptr);
 	data->position += bytesToRead;

@@ -148,7 +148,7 @@ typedef ALIGNED(16, struct
 {
 	refSkeletonType_t type; // skeleton has been reset
 
-	short             numBones;
+	unsigned short numBones;
 
 	vec3_t            bounds[ 2 ]; // bounds of all applied animations
 	vec_t             scale;

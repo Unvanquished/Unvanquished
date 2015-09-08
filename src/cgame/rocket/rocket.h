@@ -69,6 +69,7 @@ public:
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
 Rocket::Core::String CG_KeyBinding( const char *bind, int team );
 
+void Rocket_AddEvent( RocketEvent_t *event );
 
 namespace Color {
 

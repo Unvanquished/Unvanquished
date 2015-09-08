@@ -37,6 +37,9 @@ Maryland 20850 USA.
 
 #define MAX_LOG 131072
 
+Cvar::Cvar<bool> com_ansiColor("com_ansiColor", "", Cvar::NONE, true);
+Cvar::Cvar<std::string> com_consoleCommand("com_consoleCommand", "", Cvar::NONE, "");
+
 static char         consoleLog[ MAX_LOG ];
 static unsigned int writePos = 0;
 static unsigned int readPos = 0;

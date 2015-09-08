@@ -44,42 +44,34 @@ namespace Console {
     static std::vector<std::string> lines;
 
     void SaveHistory() {
-        fileHandle_t f = FS_SV_FOpenFileWrite(HISTORY_FILE);
+        try {
+            FS::File f = FS::HomePath::OpenWrite(HISTORY_FILE);
 
-        if (!f) {
-            Com_Printf("Couldn't write %s.\n", HISTORY_FILE);
-            return;
+            for (unsigned i = std::max(0L, ((long)lines.size()) - SAVED_HISTORY_LINES); i < lines.size(); i++) {
+                f.Write(lines[i].data(), lines[i].size());
+                f.Write("\n", 1);
+            }
+        } catch (const std::system_error& error) {
+            Log::Warn("Couldn't write %s: %s", HISTORY_FILE, error.what());
         }
-
-        for (unsigned i = std::max(0L, ((long)lines.size()) - SAVED_HISTORY_LINES); i < lines.size(); i++) {
-            FS_Write(lines[i].data(), lines[i].size(), f);
-            FS_Write("\n", 1, f);
-        }
-
-        FS_FCloseFile(f);
     }
 
     void LoadHistory() {
-        fileHandle_t f;
-        int len = FS_SV_FOpenFileRead(HISTORY_FILE, &f);
+        std::string buffer;
 
-        if (!f) {
-            Com_Printf("Couldn't read %s.\n", HISTORY_FILE);
-            return;
+        try {
+            FS::File f = FS::HomePath::OpenRead(HISTORY_FILE);
+            buffer = f.ReadAll();
+        } catch (const std::system_error& error) {
+            Log::Warn("Couldn't read %s: %s", HISTORY_FILE, error.what());
         }
 
-        std::unique_ptr<char[]> buffer(new char[len + 1]);
-
-        FS_Read(buffer.get(), len, f);
-        buffer[len] = '\0';
-        FS_FCloseFile(f);
-
-        char* buf = buffer.get();
-        char* end;
-        while ((end = strchr(buf, '\n'))) {
-            *end = '\0';
-            lines.push_back(buf);
-            buf = end + 1;
+        size_t currentPos = 0;
+        size_t nextPos = 0;
+        while (nextPos != std::string::npos) {
+            nextPos = buffer.find('\n', currentPos);
+            lines.push_back(std::string(buffer, currentPos, (nextPos - currentPos)));
+            currentPos = nextPos + 1;
         }
     }
 

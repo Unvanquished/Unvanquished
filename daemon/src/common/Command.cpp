@@ -455,9 +455,9 @@ namespace Cmd {
 
     void CmdBase::PrintUsage(const Args& args, Str::StringRef syntax, Str::StringRef description) const {
         if(description.empty()) {
-            Print("%s: %s %s", _("usage"), args.Argv(0).c_str(), syntax.c_str());
+            Print("%s: %s %s", "usage", args.Argv(0).c_str(), syntax.c_str());
         } else {
-            Print("%s: %s %s — %s", _("usage"), args.Argv(0).c_str(), syntax.c_str(), description.c_str());
+            Print("%s: %s %s — %s", "usage", args.Argv(0).c_str(), syntax.c_str(), description.c_str());
         }
     }
 
@@ -499,4 +499,21 @@ namespace Cmd {
         AddCommand(std::move(name), *this, std::move(description));
     }
 
+    CompletionResult NoopComplete(int, const Args&, Str::StringRef) {
+        return {};
+    }
+
+    LambdaCmd::LambdaCmd(std::string name, std::string description, RunFn run, CompleteFn complete)
+    :StaticCmd(std::move(name), std::move(description)), run(run), complete(complete) {
+    }
+    LambdaCmd::LambdaCmd(std::string name, int flags, std::string description, RunFn run, CompleteFn complete)
+    :StaticCmd(std::move(name), flags, std::move(description)), run(run), complete(complete) {
+    }
+
+    void LambdaCmd::Run(const Args& args) const {
+        run(args);
+    }
+    CompletionResult LambdaCmd::Complete(int argNum, const Args& args, Str::StringRef prefix) const {
+        return complete(argNum, args, prefix);
+    }
 }

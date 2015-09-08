@@ -1765,49 +1765,6 @@ void CG_Shutdown()
 	BG_UnloadAllConfigs();
 }
 
-/*
-================
-CG_VoIPString
-================
-*/
-static char *CG_VoIPString()
-{
-	// a generous overestimate of the space needed for 0,1,2...61,62,63
-	static char voipString[ MAX_CLIENTS * 4 ];
-
-	int i, slen, nlen;
-
-	for ( slen = i = 0; i < cgs.maxclients; i++ )
-	{
-		if ( !cgs.clientinfo[ i ].infoValid || i == cg.clientNum )
-		{
-			continue;
-		}
-
-		if ( cgs.clientinfo[ i ].team != cgs.clientinfo[ cg.clientNum ].team )
-		{
-			continue;
-		}
-
-		nlen = Q_snprintf( &voipString[ slen ], sizeof( voipString ) - slen,
-							"%s%d", ( slen > 0 ) ? "," : "", i );
-
-		if ( slen + nlen + 1 >= (int) sizeof( voipString ) )
-		{
-			CG_Printf( S_WARNING "voipString overflowed\n" );
-			break;
-		}
-
-		slen += nlen;
-	}
-
-	// Notice that if the snprintf was truncated, slen was not updated
-	// so this will remove any trailing commas or partially-completed numbers
-	voipString[ slen ] = '\0';
-
-	return voipString;
-}
-
 const vec3_t cg_shaderColors[ SHC_NUM_SHADER_COLORS ] =
 {
 	{ 0.0f,   0.0f,     0.75f    }, // dark blue

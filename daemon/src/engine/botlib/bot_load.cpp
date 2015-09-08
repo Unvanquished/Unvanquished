@@ -309,7 +309,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	return true;
 }
 
-inline void *dtAllocCustom( int size, dtAllocHint hint )
+inline void *dtAllocCustom( int size, dtAllocHint )
 {
 	return Z_TagMalloc( size, TAG_BOTLIB );
 }

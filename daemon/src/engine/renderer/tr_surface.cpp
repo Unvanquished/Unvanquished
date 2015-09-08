@@ -157,7 +157,7 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 	tess.attribsSet =  ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR | ATTR_QTANGENT;
 }
 
-static bool Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numVerts, int numIndexes, int firstIndex )
+static bool Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numIndexes, int firstIndex )
 {
 	if ( !vbo || !ibo )
 	{
@@ -306,7 +306,7 @@ void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const Color::Colo
 Tess_AddQuadStampExt2
 ==============
 */
-void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, float s1, float t1, float s2, float t2, bool calcNormals )
+void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, float s1, float t1, float s2, float t2 )
 {
 	int    i;
 	vec3_t normal, tangent, binormal;
@@ -383,12 +383,12 @@ Tess_AddQuadStamp2
 */
 void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const Color::Color& color )
 {
-	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, false );
+	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1 );
 }
 
 void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const Color::Color& color )
 {
-	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1, true );
+	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1 );
 }
 
 void Tess_AddSprite( const vec3_t center, const Color::Color32Bit color, float radius, float rotation )
@@ -865,7 +865,7 @@ static void Tess_SurfaceFace( srfSurfaceFace_t *srf )
 {
 	GLimp_LogComment( "--- Tess_SurfaceFace ---\n" );
 
-	if ( !r_vboFaces->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numVerts, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
+	if ( !r_vboFaces->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
 	{
 		Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 	}
@@ -880,7 +880,7 @@ static void Tess_SurfaceGrid( srfGridMesh_t *srf )
 {
 	GLimp_LogComment( "--- Tess_SurfaceGrid ---\n" );
 
-	if ( !r_vboCurves->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numVerts, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
+	if ( !r_vboCurves->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
 	{
 		Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 	}
@@ -895,7 +895,7 @@ static void Tess_SurfaceTriangles( srfTriangles_t *srf )
 {
 	GLimp_LogComment( "--- Tess_SurfaceTriangles ---\n" );
 
-	if ( !r_vboTriangles->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numVerts, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
+	if ( !r_vboTriangles->integer || !Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numTriangles * 3, srf->firstTriangle * 3 ) )
 	{
 		Tess_SurfaceVertsAndTris( srf->verts, srf->triangles, srf->numVerts, srf->numTriangles );
 	}
@@ -1060,7 +1060,7 @@ Tess_SurfaceMD5
 */
 static void Tess_SurfaceMD5( md5Surface_t *srf )
 {
-	int             i, j, k;
+	int             j;
 	int             numIndexes = 0;
 	int             numVertexes;
 	md5Model_t      *model;
@@ -1075,7 +1075,8 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 	numIndexes = srf->numTriangles * 3;
 
-	for ( i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++ )
+    tri = srf->triangles;
+	for (unsigned i = 0; i < srf->numTriangles; i++, tri++ )
 	{
 		tess.indexes[ tess.numIndexes + i * 3 + 0 ] = tess.numVertexes + tri->indexes[ 0 ];
 		tess.indexes[ tess.numIndexes + i * 3 + 1 ] = tess.numVertexes + tri->indexes[ 1 ];
@@ -1087,7 +1088,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 	if ( tess.skipTangentSpaces )
 	{
 		// convert bones back to matrices
-		for ( i = 0; i < model->numBones; i++ )
+		for (unsigned i = 0; i < model->numBones; i++ )
 		{
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
@@ -1115,7 +1116,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			vec3_t tmp;
 
 			VectorClear( tess.verts[ tess.numVertexes + j ].xyz );
-			for ( k = 0; k < v->numWeights; k++ ) {
+			for (unsigned k = 0; k < v->numWeights; k++ ) {
 				TransformPoint( &bones[ v->boneIndexes[ k ] ],
 						v->position, tmp );
 				VectorMA( tess.verts[ tess.numVertexes + j ].xyz,
@@ -1133,7 +1134,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		tess.attribsSet |= ATTR_QTANGENT;
 
 		// convert bones back to matrices
-		for ( i = 0; i < model->numBones; i++ )
+		for (unsigned i = 0; i < model->numBones; i++ )
 		{
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
@@ -1164,7 +1165,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			VectorClear( binormal );
 			VectorClear( tangent );
 
-			for( k = 0; k < v->numWeights; k++ ) {
+			for(unsigned k = 0; k < v->numWeights; k++ ) {
 				TransformPoint( &bones[ v->boneIndexes[ k ] ],
 						v->position, tmp );
 				VectorMA( tess.verts[ tess.numVertexes + j ].xyz,
@@ -1340,7 +1341,7 @@ Tess_SurfaceEntity
 Entities that have a single procedurally generated surface
 ====================
 */
-static void Tess_SurfaceEntity( surfaceType_t *surfType )
+static void Tess_SurfaceEntity( surfaceType_t* )
 {
 	GLimp_LogComment( "--- Tess_SurfaceEntity ---\n" );
 
@@ -1354,7 +1355,7 @@ static void Tess_SurfaceEntity( surfaceType_t *surfType )
 	}
 }
 
-static void Tess_SurfaceBad( surfaceType_t *surfType )
+static void Tess_SurfaceBad( surfaceType_t* )
 {
 	GLimp_LogComment( "--- Tess_SurfaceBad ---\n" );
 
@@ -1395,7 +1396,7 @@ static void Tess_SurfaceVBOMesh( srfVBOMesh_t *srf )
 	GLimp_LogComment( "--- Tess_SurfaceVBOMesh ---\n" );
 
 
-	Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numVerts, srf->numIndexes, srf->firstIndex );
+	Tess_SurfaceVBO( srf->vbo, srf->ibo, srf->numIndexes, srf->firstIndex );
 }
 
 /*
@@ -1490,7 +1491,7 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 	Tess_End();
 }
 
-static void Tess_SurfaceSkip( void *surf )
+static void Tess_SurfaceSkip( void* )
 {
 }
 

@@ -28,104 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ==============
-CG_DrawFieldPadded
-
-Draws large numbers for status bar
-==============
-*/
-static void CG_DrawFieldPadded( int x, int y, int width, int cw, int ch, int value )
-{
-	char num[ 16 ], *ptr;
-	int  l, orgL;
-	int  frame;
-	int  charWidth, charHeight;
-
-	if ( !( charWidth = cw ) )
-	{
-		charWidth = CHAR_WIDTH;
-	}
-
-	if ( !( charHeight = ch ) )
-	{
-		charHeight = CHAR_HEIGHT;
-	}
-
-	if ( width < 1 )
-	{
-		return;
-	}
-
-	// draw number string
-	if ( width > 4 )
-	{
-		width = 4;
-	}
-
-	switch ( width )
-	{
-		case 1:
-			value = value > 9 ? 9 : value;
-			value = value < 0 ? 0 : value;
-			break;
-
-		case 2:
-			value = value > 99 ? 99 : value;
-			value = value < -9 ? -9 : value;
-			break;
-
-		case 3:
-			value = value > 999 ? 999 : value;
-			value = value < -99 ? -99 : value;
-			break;
-
-		case 4:
-			value = value > 9999 ? 9999 : value;
-			value = value < -999 ? -999 : value;
-			break;
-	}
-
-	Com_sprintf( num, sizeof( num ), "%d", value );
-	l = strlen( num );
-
-	if ( l > width )
-	{
-		l = width;
-	}
-
-	orgL = l;
-
-	x += ( 2.0f * cgs.aspectScale );
-
-	ptr = num;
-
-	while ( *ptr && l )
-	{
-		if ( width > orgL )
-		{
-			CG_DrawPic( x, y, charWidth, charHeight, cgs.media.numberShaders[ 0 ] );
-			width--;
-			x += charWidth;
-			continue;
-		}
-
-		if ( *ptr == '-' )
-		{
-			frame = STAT_MINUS;
-		}
-		else
-		{
-			frame = *ptr - '0';
-		}
-
-		CG_DrawPic( x, y, charWidth, charHeight, cgs.media.numberShaders[ frame ] );
-		x += charWidth;
-		ptr++;
-		l--;
-	}
-}
-
-/*
-==============
 CG_DrawField
 
 Draws large numbers for status bar
@@ -279,7 +181,7 @@ Called for important messages that should stay in the center of the screen
 for a few moments
 ==============
 */
-void CG_CenterPrint( const char *str, int y, int charWidth )
+void CG_CenterPrint( const char *str, int, int )
 {
 	Q_strncpyz( cg.centerPrint, str, sizeof( cg.centerPrint ) );
 	cg.centerPrintTime = cg.time;

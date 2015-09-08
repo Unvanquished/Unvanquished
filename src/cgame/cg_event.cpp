@@ -40,47 +40,47 @@ static const struct {
 	team_t   team;
 } meansOfDeath[] = {
 	// Icon            Envkill Assist? (Team)
-	{ "☠",             false, false },
-	{ "[shotgun]",     false, true  },
-	{ "[blaster]",     false, true  },
-	{ "[painsaw]",     false, true  },
-	{ "[rifle]",       false, true  },
-	{ "[chaingun]",    false, true  },
-	{ "[prifle]",      false, true  },
-	{ "[mdriver]",     false, true  },
-	{ "[lasgun]",      false, true  },
-	{ "[lcannon]",     false, true  },
-	{ "[lcannon]",     false, true  }, // splash
-	{ "[flamer]",      false, true  },
-	{ "[flamer]",      false, true  }, // splash
-	{ "[flamer]",      false, true  }, // burn
-	{ "[grenade]",     false, true  },
-	{ "[firebomb]",    false, true  },
-	{ "crushed",       true,  false }, // weight (H) // FIXME
-	{ LONGFORM,        true,  false }, // water
-	{ LONGFORM,        true,  false }, // slime
-	{ LONGFORM,        true,  false }, // lava
-	{ LONGFORM,        true,  false }, // crush
-	{ "[telenode]",    false, false }, // telefrag
-	{ LONGFORM,        true,  false }, // falling
-	{ "☠",             false, false }, // suicide
-	{ LONGFORM,        true,  false }, // target laser - shouldn't happen
-	{ LONGFORM,        true,  false }, // trigger hurt
+	{ "☠",             false, false, TEAM_HUMANS },
+	{ "[shotgun]",     false, true,  TEAM_HUMANS },
+	{ "[blaster]",     false, true,  TEAM_HUMANS },
+	{ "[painsaw]",     false, true,  TEAM_HUMANS },
+	{ "[rifle]",       false, true,  TEAM_HUMANS },
+	{ "[chaingun]",    false, true,  TEAM_HUMANS },
+	{ "[prifle]",      false, true,  TEAM_HUMANS },
+	{ "[mdriver]",     false, true,  TEAM_HUMANS },
+	{ "[lasgun]",      false, true,  TEAM_HUMANS },
+	{ "[lcannon]",     false, true,  TEAM_HUMANS },
+	{ "[lcannon]",     false, true,  TEAM_HUMANS }, // splash
+	{ "[flamer]",      false, true,  TEAM_HUMANS },
+	{ "[flamer]",      false, true,  TEAM_HUMANS }, // splash
+	{ "[flamer]",      false, true,  TEAM_HUMANS }, // burn
+	{ "[grenade]",     false, true,  TEAM_HUMANS },
+	{ "[firebomb]",    false, true,  TEAM_HUMANS },
+	{ "crushed",       true,  false, TEAM_NONE   }, // weight (H) // FIXME
+	{ LONGFORM,        true,  false, TEAM_NONE   }, // water
+	{ LONGFORM,        true,  false, TEAM_NONE   }, // slime
+	{ LONGFORM,        true,  false, TEAM_NONE   }, // lava
+	{ LONGFORM,        true,  false, TEAM_NONE   }, // crush
+	{ "[telenode]",    false, false, TEAM_NONE   }, // telefrag
+	{ LONGFORM,        true,  false, TEAM_NONE   }, // falling
+	{ "☠",             false, false, TEAM_NONE   }, // suicide
+	{ LONGFORM,        true,  false, TEAM_NONE   }, // target laser - shouldn't happen
+	{ LONGFORM,        true,  false, TEAM_NONE   }, // trigger hurt
 
-	{ "[granger]",     false, true  },
-	{ "[dretch]",      false, true  },
-	{ "[basilisk]",    false, true  },
-	{ "[dragoon]",     false, true  },
-	{ "[dragoon]",     false, true  }, // pounce
-	{ "[advdragoon]",  false, true  },
-	{ "[marauder]",    false, true  },
-	{ "[advmarauder]", false, true  },
-	{ "[tyrant]",      false, true  },
-	{ "[tyrant]",      false, true  }, // trample
-	{ "crushed",       false, true  }, // weight (A) // FIXME
+	{ "[granger]",     false, true,  TEAM_ALIENS },
+	{ "[dretch]",      false, true,  TEAM_ALIENS },
+	{ "[basilisk]",    false, true,  TEAM_ALIENS },
+	{ "[dragoon]",     false, true,  TEAM_ALIENS },
+	{ "[dragoon]",     false, true,  TEAM_ALIENS }, // pounce
+	{ "[advdragoon]",  false, true,  TEAM_ALIENS },
+	{ "[marauder]",    false, true,  TEAM_ALIENS },
+	{ "[advmarauder]", false, true,  TEAM_ALIENS },
+	{ "[tyrant]",      false, true,  TEAM_ALIENS },
+	{ "[tyrant]",      false, true,  TEAM_ALIENS }, // trample
+	{ "crushed",       false, true,  TEAM_ALIENS }, // weight (A) // FIXME
 
-	{ "[granger]",     false, true  }, // granger spit (slowblob)
-	{ "[booster]",     false, true  }, // poison
+	{ "[granger]",     false, true,  TEAM_ALIENS }, // granger spit (slowblob)
+	{ "[booster]",     false, true,  TEAM_ALIENS }, // poison
 	{ "[hive]",        true,  true,  TEAM_ALIENS },
 
 	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn
@@ -91,9 +91,9 @@ static const struct {
 	{ LONGFORM,        true,  false, TEAM_ALIENS }, // A spawn
 	{ "[acidtube]",    true,  true,  TEAM_ALIENS },
 	{ "[overmind]",    true,  true,  TEAM_ALIENS },
-	{ "",              true,  false },
-	{ "",              true,  false },
-	{ "",              true,  false },
+	{ "",              true,  false, TEAM_NONE },
+	{ "",              true,  false, TEAM_NONE },
+	{ "",              true,  false, TEAM_NONE },
 };
 
 static void CG_Obituary( entityState_t *ent )
@@ -184,7 +184,7 @@ static void CG_Obituary( entityState_t *ent )
 
 	if ( cg_emoticonsInMessages.integer )
 	{
-		if ( mod < MOD_UNKNOWN || mod >= ARRAY_LEN( meansOfDeath ) )
+		if ( mod < MOD_UNKNOWN || mod >= (int) ARRAY_LEN( meansOfDeath ) )
 		{
 			mod = MOD_UNKNOWN;
 		}
@@ -609,7 +609,7 @@ CG_OnPlayerWeaponChange
 Called on weapon change
 =========================
 */
-void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
+void CG_OnPlayerWeaponChange()
 {
 	playerState_t *ps = &cg.snap->ps;
 

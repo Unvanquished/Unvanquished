@@ -187,7 +187,7 @@ void SV_LocateGameData( const IPC::SharedMemory& shmRegion, int numGEntities, in
 {
 	if ( numGEntities < 0 || sizeofGEntity_t < 0 || sizeofGameClient < 0 )
 		Com_Error( ERR_DROP, "SV_LocateGameData: Invalid game data parameters" );
-	if ( shmRegion.GetSize() < numGEntities * sizeofGEntity_t + sv_maxclients->integer * sizeofGameClient )
+	if ( (int) shmRegion.GetSize() < numGEntities * sizeofGEntity_t + sv_maxclients->integer * sizeofGameClient )
 		Com_Error( ERR_DROP, "SV_LocateGameData: Shared memory region too small" );
 
 	char* base = static_cast<char*>(shmRegion.GetBase());
@@ -330,7 +330,7 @@ SV_InitGameVM
 Called for both a full init and a restart
 ==================
 */
-static void SV_InitGameVM( bool restart )
+static void SV_InitGameVM()
 {
 	int i;
 
@@ -346,7 +346,7 @@ static void SV_InitGameVM( bool restart )
 
 	// use the current msec count for a random seed
 	// init for this gamestate
-	gvm.GameInit( sv.time, Com_Milliseconds(), restart );
+	gvm.GameInit( sv.time, Com_Milliseconds());
 }
 
 /*
@@ -356,7 +356,7 @@ SV_RestartGameProgs
 Called on a map_restart, but not on a map change
 ===================
 */
-void SV_RestartGameProgs(Str::StringRef mapname)
+void SV_RestartGameProgs()
 {
 	if ( !gvm.IsActive() )
 	{
@@ -367,7 +367,7 @@ void SV_RestartGameProgs(Str::StringRef mapname)
 
 	gvm.Start();
 
-	SV_InitGameVM( true );
+	SV_InitGameVM();
 }
 
 /*
@@ -377,7 +377,7 @@ SV_InitGameProgs
 Called on a map change, not on a map_restart
 ===============
 */
-void SV_InitGameProgs(Str::StringRef mapname)
+void SV_InitGameProgs()
 {
 	sv.num_tagheaders = 0;
 	sv.num_tags = 0;
@@ -385,37 +385,7 @@ void SV_InitGameProgs(Str::StringRef mapname)
 	// load the game module
 	gvm.Start();
 
-	SV_InitGameVM( false );
-}
-
-/*
-====================
-SV_GetTag
-
-  return false if unable to retrieve tag information for this client
-====================
-*/
-bool SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t * org )
-{
-	int i;
-
-	if ( tagFileNumber > 0 && tagFileNumber <= sv.num_tagheaders )
-	{
-		for ( i = sv.tagHeadersExt[ tagFileNumber - 1 ].start;
-		      i < sv.tagHeadersExt[ tagFileNumber - 1 ].start + sv.tagHeadersExt[ tagFileNumber - 1 ].count; i++ )
-		{
-			if ( !Q_stricmp( sv.tags[ i ].name, tagname ) )
-			{
-				VectorCopy( sv.tags[ i ].origin, org ->origin );
-				VectorCopy( sv.tags[ i ].axis[ 0 ], org ->axis[ 0 ] );
-				VectorCopy( sv.tags[ i ].axis[ 1 ], org ->axis[ 1 ] );
-				VectorCopy( sv.tags[ i ].axis[ 2 ], org ->axis[ 2 ] );
-				return true;
-			}
-		}
-	}
-
-	return false;
+	SV_InitGameVM();
 }
 
 GameVM::GameVM(): VM::VMBase("sgame"), services(nullptr){
@@ -438,9 +408,9 @@ void GameVM::GameStaticInit()
 	this->SendMsg<GameStaticInitMsg>(Sys_Milliseconds());
 }
 
-void GameVM::GameInit(int levelTime, int randomSeed, bool restart)
+void GameVM::GameInit(int levelTime, int randomSeed)
 {
-	this->SendMsg<GameInitMsg>(levelTime, randomSeed, restart, Com_AreCheatsAllowed(), Com_IsClient());
+	this->SendMsg<GameInitMsg>(levelTime, randomSeed, Com_AreCheatsAllowed(), Com_IsClient());
 }
 
 void GameVM::GameShutdown(bool restart)
@@ -498,17 +468,17 @@ void GameVM::GameRunFrame(int levelTime)
 	this->SendMsg<GameRunFrameMsg>(levelTime);
 }
 
-bool GameVM::GameSnapshotCallback(int entityNum, int clientNum)
+bool GameVM::GameSnapshotCallback(int, int)
 {
 	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
 }
 
-void GameVM::BotAIStartFrame(int levelTime)
+void GameVM::BotAIStartFrame(int)
 {
 	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
-void GameVM::GameMessageRecieved(int clientNum, const char *buffer, int bufferSize, int commandTime)
+void GameVM::GameMessageRecieved(int, const char*, int, int)
 {
 	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
 }
@@ -624,18 +594,6 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 	case G_SEND_GAME_STAT:
 		IPC::HandleMsg<SendGameStatMsg>(channel, std::move(reader), [this](std::string text) {
 			SV_MasterGameStat(text.c_str());
-		});
-		break;
-
-	case G_GET_TAG:
-		IPC::HandleMsg<GetTagMsg>(channel, std::move(reader), [this](int clientNum, int tagFileNumber, std::string tagName, int& res, orientation_t& orientation) {
-			res = SV_GetTag(clientNum, tagFileNumber, tagName.c_str(), &orientation);
-		});
-		break;
-
-	case G_REGISTER_TAG:
-		IPC::HandleMsg<RegisterTagMsg>(channel, std::move(reader), [this](std::string tagFileName, int& res) {
-			res = SV_LoadTag(tagFileName.c_str());
 		});
 		break;
 

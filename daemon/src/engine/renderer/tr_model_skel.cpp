@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 bool AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri, int *numBoneReferences, int boneReferences[ MAX_BONES ] )
 {
-	int         i, j, k;
 	md5Vertex_t *v;
 	int         boneIndex;
 	int         numNewReferences;
@@ -37,12 +36,12 @@ bool AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri
 	numNewReferences = 0;
 	Com_Memset( newReferences, -1, sizeof( newReferences ) );
 
-	for ( i = 0; i < 3; i++ )
+	for (unsigned i = 0; i < 3; i++ )
 	{
 		v = tri->vertexes[ i ];
 
 		// can the bones be referenced?
-		for ( j = 0; j < MAX_WEIGHTS; j++ )
+		for (unsigned j = 0; j < MAX_WEIGHTS; j++ )
 		{
 			if ( j < v->numWeights )
 			{
@@ -59,6 +58,7 @@ bool AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri
 					}
 					else
 					{
+                        unsigned k;
 						for ( k = 0; k < ( MAX_WEIGHTS * 3 ); k++ )
 						{
 							if ( newReferences[ k ] == boneIndex )
@@ -79,7 +79,7 @@ bool AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri
 	}
 
 	// reference them!
-	for ( j = 0; j < numNewReferences; j++ )
+	for (int j = 0; j < numNewReferences; j++ )
 	{
 		boneIndex = newReferences[ j ];
 
@@ -97,9 +97,9 @@ bool AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri
 	return false;
 }
 
-void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriangles, md5Model_t *md5, md5Surface_t *surf, int skinIndex, int numBoneReferences, int boneReferences[ MAX_BONES ] )
+void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriangles, md5Model_t *md5, md5Surface_t *surf, int skinIndex, int boneReferences[ MAX_BONES ] )
 {
-	int             j, k;
+	int             j;
 
 	int             vertexesNum;
 	vboData_t       data;
@@ -156,7 +156,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	{
 		tri = ( skelTriangle_t * ) Com_GrowListElement( vboTriangles, j );
 
-		for ( k = 0; k < 3; k++ )
+		for (unsigned k = 0; k < 3; k++ )
 		{
 			indexes[ j * 3 + k ] = tri->indexes[ k ];
 		}
@@ -171,7 +171,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		data.st[ j ][ 0 ] = floatToHalf( surf->verts[ j ].texCoords[ 0 ] );
 		data.st[ j ][ 1 ] = floatToHalf( surf->verts[ j ].texCoords[ 1 ] );
 
-		for ( k = 0; k < MAX_WEIGHTS; k++ )
+		for (unsigned k = 0; k < MAX_WEIGHTS; k++ )
 		{
 			if ( k < surf->verts[ j ].numWeights )
 			{

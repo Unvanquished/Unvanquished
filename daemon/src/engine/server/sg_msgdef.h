@@ -42,8 +42,6 @@ typedef enum gameImport_s
   G_GET_USERCMD,
   G_GET_ENTITY_TOKEN,
   G_SEND_GAME_STAT,
-  G_GET_TAG,
-  G_REGISTER_TAG,
   G_SEND_MESSAGE,
   G_MESSAGE_STATUS,
   G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
@@ -117,16 +115,6 @@ typedef IPC::SyncMessage<
 > GetEntityTokenMsg;
 // SendGameStatMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_GAME_STAT>, std::string> SendGameStatMsg;
-// GetTagMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_GET_TAG>, int, int, std::string>,
-    IPC::Reply<int, orientation_t>
-> GetTagMsg;
-// RegisterTagMsg
-typedef IPC::SyncMessage<
-    IPC::Message<IPC::Id<VM::QVM, G_REGISTER_TAG>, std::string>,
-    IPC::Reply<int>
-> RegisterTagMsg;
 // SendMessageMsg
 typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_MESSAGE>, int, int, std::vector<char>> SendMessageMsg;
 // MessageStatusMsg
@@ -265,7 +253,7 @@ typedef IPC::SyncMessage<
 > GameStaticInitMsg;
 // GameInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, GAME_INIT>, int, int, bool, bool, bool>
+	IPC::Message<IPC::Id<VM::QVM, GAME_INIT>, int, int, bool, bool>
 > GameInitMsg;
 // GameShutdownMsg
 typedef IPC::SyncMessage<

@@ -145,7 +145,6 @@ static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	static consoleKey_t consoleKeys[ MAX_CONSOLE_KEYS ];
 	static int          numConsoleKeys = 0;
 	static int          ifMod, unlessMod = 0;
-	int                 i;
 
 	// Only parse the variable when it changes
 	if ( cl_consoleKeys->modified )
@@ -171,7 +170,7 @@ static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 
 			if ( token[ 0 ] == '+' && token[ 1 ] )
 			{
-				for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+				for (unsigned i = 0; i < ARRAY_LEN( modMap ); ++i )
 				{
 					if ( !Q_stricmp( token + 1, modMap[i].name ) )
 					{
@@ -181,7 +180,7 @@ static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 			}
 			else if ( token[ 0 ] == '-' && token[ 1 ] )
 			{
-				for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+				for (unsigned i = 0; i < ARRAY_LEN( modMap ); ++i )
 				{
 					if ( !Q_stricmp( token + 1, modMap[i].name ) )
 					{
@@ -223,7 +222,7 @@ static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	{
 		bool flag = false;
 
-		for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+		for (unsigned i = 0; i < ARRAY_LEN( modMap ); ++i )
 		{
 			if ( ( ifMod & 1 << i ) && keys[ modMap[i].key ].down )
 			{
@@ -241,7 +240,7 @@ static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	// require all -MOD not to be pressed
 	if ( unlessMod )
 	{
-		for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+		for (unsigned i = 0; i < ARRAY_LEN( modMap ); ++i )
 		{
 			if ( ( unlessMod & 1 << i ) && keys[ modMap[i].key ].down )
 			{
@@ -256,7 +255,7 @@ static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 		key = (keyNum_t) 0;
 	}
 
-	for ( i = 0; i < numConsoleKeys; i++ )
+	for (int i = 0; i < numConsoleKeys; i++ )
 	{
 		consoleKey_t *c = &consoleKeys[ i ];
 
@@ -869,7 +868,7 @@ static void IN_JoyMove()
 
 	if ( total > 0 )
 	{
-		if ( total > ARRAY_LEN( stick_state.buttons ) )
+		if ( total > (int) ARRAY_LEN( stick_state.buttons ) )
 		{
 			total = ARRAY_LEN( stick_state.buttons );
 		}
@@ -1168,7 +1167,7 @@ static void IN_Xbox360ControllerMove()
 
 	if ( total > 0 )
 	{
-		if ( total > ARRAY_LEN( stick_state.buttons ) )
+		if ( total > (int) ARRAY_LEN( stick_state.buttons ) )
 		{
 			total = ARRAY_LEN( stick_state.buttons );
 		}

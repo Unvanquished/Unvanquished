@@ -32,7 +32,6 @@ Determine which dynamic lights may effect this bmodel
 */
 void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType )
 {
-	int               i;
 	bspSurface_t      *surf;
 	bspModel_t        *bspModel = nullptr;
 	model_t           *pModel = nullptr;
@@ -93,7 +92,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 	cubeSideBits = R_CalcLightCubeSideBits( light, ent->worldBounds );
 
 	// set the light bits in all the surfaces
-	for ( i = 0; i < bspModel->numSurfaces; i++ )
+	for (unsigned i = 0; i < bspModel->numSurfaces; i++ )
 	{
 		surf = bspModel->firstSurface + i;
 
@@ -688,7 +687,6 @@ void R_SetupLightFrustum( trRefLight_t *light )
 
 	if ( light->isStatic )
 	{
-		int           i;
 		vboData_t     data;
 
 		R_SyncRenderThread();
@@ -702,7 +700,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		memset( &data, 0, sizeof( data ) );
 		data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );
 
-		for ( i = 0; i < tess.numVertexes; i++ )
+		for (unsigned i = 0; i < tess.numVertexes; i++ )
 		{
 			// transform to world space
 			MatrixTransformPoint( light->transformMatrix, tess.verts[ i ].xyz, data.xyz[ i ] );

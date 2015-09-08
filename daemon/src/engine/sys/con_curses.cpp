@@ -83,7 +83,7 @@ Use grey instead of black
 */
 static void CON_SetColor( WINDOW *win, const Color::Color& color )
 {
-	if ( !com_ansiColor || !com_ansiColor->integer )
+	if ( !com_ansiColor.Get() )
 	{
 		Con_ClearColor( win );
 	}
@@ -202,7 +202,7 @@ static void CON_Redraw()
 	if( logwin )
 	{
 #ifndef _WIN32
-		struct winsize winsz = { 0, };
+		struct winsize winsz;
 
 		ioctl( fileno( stdout ), TIOCGWINSZ, &winsz );
 
@@ -273,7 +273,7 @@ The window has just been resized, move everything back into place
 ==================
 */
 #ifndef _WIN32
-static void CON_Resize( int sig )
+static void CON_Resize( int )
 {
 	// Don't call Redraw() directly, because it is slow, and we might miss more
 	// resize signals while redrawing.
@@ -466,11 +466,13 @@ char *CON_Input()
 		return CON_Input_TTY();
 	}
 
+    /*
 	if ( com_ansiColor->modified )
 	{
 		CON_Redraw();
 		com_ansiColor->modified = false;
 	}
+    */
 
 	if ( Com_Time( nullptr ) != lasttime )
 	{
@@ -512,8 +514,8 @@ char *CON_Input()
 			case '\n':
 			case '\r':
 			case KEY_ENTER:
-				Com_Printf( PROMPT "^*%s\n", Str::UTF32To8(input_field.GetText()).c_str() );
-				input_field.RunCommand(com_consoleCommand->string);
+                Log::Notice( PROMPT "^*%s", Str::UTF32To8(input_field.GetText()).c_str() );
+				input_field.RunCommand(com_consoleCommand.Get());
 				werase( inputwin );
 				wnoutrefresh( inputwin );
 				continue;

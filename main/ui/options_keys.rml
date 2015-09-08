@@ -128,7 +128,7 @@
 					<p>Show Scores:</p>
 				</row>
 				<row>
-					<keybind cmd='modcase alt \"/deconstruct marked\" /deconstruct' />
+					<keybind cmd='modcase alt "/deconstruct marked" /deconstruct' />
 					<p>Deconstruct Structure:</p>
 				</row>
 				<row>

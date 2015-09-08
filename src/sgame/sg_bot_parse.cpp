@@ -64,7 +64,7 @@ AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 }
 
 // functions that are used to provide values to the behavior tree in condition nodes
-static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t *params )
+static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( self->botMind->closestDamagedBuilding.ent != nullptr );
 }
@@ -74,27 +74,27 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BG_InventoryContainsWeapon( AIUnBoxInt( params[ 0 ] ), self->client->ps.stats ) );
 }
 
-static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
+static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( self->botMind->bestEnemy.ent != nullptr );
 }
 
-static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
+static AIValue_t botTeam( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( self->client->pers.team );
 }
 
-static AIValue_t goalTeam( gentity_t *self, const AIValue_t *params )
+static AIValue_t goalTeam( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( BotGetTargetTeam( self->botMind->goal ) );
 }
 
-static AIValue_t goalType( gentity_t *self, const AIValue_t *params )
+static AIValue_t goalType( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( BotGetTargetType( self->botMind->goal ) );
 }
 
-static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
+static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 {
 	bool dead = false;
 	botTarget_t *goal = &self->botMind->goal;
@@ -123,7 +123,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( dead );
 }
 
-static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t *params )
+static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t* )
 {
 	if ( BotGetTargetType( self->botMind->goal ) != ET_BUILDABLE )
 	{
@@ -133,7 +133,7 @@ static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( self->botMind->goal.ent->s.modelindex );
 }
 
-static AIValue_t currentWeapon( gentity_t *self, const AIValue_t *params )
+static AIValue_t currentWeapon( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( BG_GetPlayerWeapon( &self->client->ps ) );
 }
@@ -144,7 +144,7 @@ static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
 }
 
-static AIValue_t percentAmmo( gentity_t *self, const AIValue_t *params )
+static AIValue_t percentAmmo( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxFloat( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) );
 }
@@ -162,22 +162,22 @@ static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 	return AIBoxFloat( ent.distance );
 }
 
-static AIValue_t baseRushScore( gentity_t *self, const AIValue_t *params )
+static AIValue_t baseRushScore( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxFloat( BotGetBaseRushScore( self ) );
 }
 
-static AIValue_t healScore( gentity_t *self, const AIValue_t *params )
+static AIValue_t healScore( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxFloat( BotGetHealScore( self ) );
 }
 
-static AIValue_t botClass( gentity_t *self, const AIValue_t *params )
+static AIValue_t botClass( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( self->client->ps.stats[ STAT_CLASS ] );
 }
 
-static AIValue_t botSkill( gentity_t *self, const AIValue_t *params )
+static AIValue_t botSkill( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( self->botMind->botSkill.level );
 }
@@ -254,22 +254,22 @@ static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BotCanEvolveToClass( self, c ) );
 }
 
-static AIValue_t humanMomentum( gentity_t *self, const AIValue_t *params )
+static AIValue_t humanMomentum( gentity_t*, const AIValue_t* )
 {
 	return AIBoxInt( level.team[ TEAM_HUMANS ].momentum );
 }
 
-static AIValue_t alienMomentum( gentity_t *self, const AIValue_t *params )
+static AIValue_t alienMomentum( gentity_t*, const AIValue_t* )
 {
 	return AIBoxInt( level.team[ TEAM_ALIENS ].momentum );
 }
 
-static AIValue_t randomChance( gentity_t *self, const AIValue_t *params )
+static AIValue_t randomChance( gentity_t*, const AIValue_t* )
 {
 	return AIBoxFloat( random() );
 }
 
-static AIValue_t cvarInt( gentity_t *self, const AIValue_t *params )
+static AIValue_t cvarInt( gentity_t*, const AIValue_t *params )
 {
 	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
 
@@ -281,7 +281,7 @@ static AIValue_t cvarInt( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( c->integer );
 }
 
-static AIValue_t cvarFloat( gentity_t *self, const AIValue_t *params )
+static AIValue_t cvarFloat( gentity_t*, const AIValue_t *params )
 {
 	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
 
@@ -376,13 +376,12 @@ static const struct AIOpMap_s
 
 static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 {
-	int i;
 	if ( token->type != TT_PUNCTUATION )
 	{
 		return OP_NONE;
 	}
 
-	for ( i = 0; i < ARRAY_LEN( conditionOps ); i++ )
+	for ( unsigned i = 0; i < ARRAY_LEN( conditionOps ); i++ )
 	{
 		if ( token->subtype == conditionOps[ i ].tokenSubtype )
 		{
@@ -394,8 +393,7 @@ static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 
 static const char *opTypeToString( AIOpType_t op )
 {
-	int i;
-	for ( i = 0; i < ARRAY_LEN( conditionOps ); i++ )
+	for ( unsigned i = 0; i < ARRAY_LEN( conditionOps ); i++ )
 	{
 		if ( conditionOps[ i ].opType == op )
 		{

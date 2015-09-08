@@ -479,6 +479,8 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	case GLHW_NV_DX10:
 		AddDefine(env, "GLHW_NV_DX10", 1);
 		break;
+    default:
+        break;
 	}
 
 	if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
@@ -1358,7 +1360,7 @@ void GLShader_vertexLighting_DBS_entity::BuildShaderFragmentLibNames( std::strin
 	fragmentInlines += "reliefMapping";
 }
 
-void GLShader_vertexLighting_DBS_entity::BuildShaderCompileMacros( std::string& compileMacros )
+void GLShader_vertexLighting_DBS_entity::BuildShaderCompileMacros( std::string& )
 {
 }
 
@@ -1410,7 +1412,7 @@ void GLShader_vertexLighting_DBS_world::BuildShaderFragmentLibNames( std::string
 	fragmentInlines += "reliefMapping";
 }
 
-void GLShader_vertexLighting_DBS_world::BuildShaderCompileMacros( std::string& compileMacros )
+void GLShader_vertexLighting_DBS_world::BuildShaderCompileMacros( std::string& )
 {
 }
 
@@ -1660,7 +1662,7 @@ void GLShader_reflection::BuildShaderVertexLibNames( std::string& vertexInlines 
 	vertexInlines += "vertexSimple vertexSkinning vertexAnimation ";
 }
 
-void GLShader_reflection::BuildShaderCompileMacros( std::string& compileMacros )
+void GLShader_reflection::BuildShaderCompileMacros( std::string& )
 {
 }
 

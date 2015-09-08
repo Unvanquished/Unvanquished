@@ -19,7 +19,7 @@
 
 		</style>
 	</head>
-	<body template="window" id="createserver" onShow="buildDS mapList" style="width:40em; margin:10%;">
+	<body template="window" id="createserver" onShow='Events.pushevent("buildDS mapList", event)' style="width:40em; margin:10%;">
 		<h1> Start local/LAN game</h1>
 		<row>
 			<input type="text" cvar="sv_hostname" class="text" id="hostname"/>
@@ -31,7 +31,7 @@
 			<h3> Password </h3>
 		</row>
 
-		<form onsubmit='execForm "map $map$"'>
+		<form onsubmit='Events.pushevent("execForm \"map $map$\"", event)'>
 			<row id="maplist">
 				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
 				<h3> Map </h3>

@@ -103,7 +103,7 @@ bool SV_IsBot( const client_t* client )
 SV_BotGetConsoleMessage
 ==================
 */
-int SV_BotGetConsoleMessage( int client, char *buf, int size )
+int SV_BotGetConsoleMessage( int client, char*, int )
 {
 	client_t *cl;
 	int      index;

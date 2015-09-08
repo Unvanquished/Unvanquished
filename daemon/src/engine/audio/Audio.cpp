@@ -577,7 +577,7 @@ namespace Audio {
                 }
             }
 
-            virtual Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+            virtual Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
                 if (argNum >= 1) {
                     //TODO have a list of supported extensions somewhere and use that?
                     return FS::PakPath::CompleteFilename(prefix, "", "", true, false);
@@ -602,7 +602,7 @@ namespace Audio {
                 }
             }
 
-            virtual Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+            virtual Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
                 if (argNum == 1) {
                     //TODO have a list of supported extensions somewhere and use that?
                     return FS::PakPath::CompleteFilename(prefix, "", "", true, false);
@@ -619,7 +619,7 @@ namespace Audio {
             StopMusicCmd(): StaticCmd("stopMusic", Cmd::AUDIO, "Stops the currently playing music") {
             }
 
-            virtual void Run(const Cmd::Args& args) const OVERRIDE {
+            virtual void Run(const Cmd::Args&) const OVERRIDE {
                 StopMusic();
             }
     };

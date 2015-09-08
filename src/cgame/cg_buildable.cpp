@@ -1241,6 +1241,7 @@ void CG_GhostBuildable( int buildableInfo )
 	trap_R_AddRefEntityToScene( &ent );
 }
 
+/*
 static void CG_GhostBuildableStatus( int buildableInfo )
 {
 	playerState_t *ps;
@@ -1353,6 +1354,7 @@ static void CG_GhostBuildableStatus( int buildableInfo )
 		}
 	}
 }
+*/
 
 /*
 ==================
@@ -2245,18 +2247,17 @@ CG_DrawBuildableStatus
 */
 void CG_DrawBuildableStatus()
 {
-	int           i;
 	centity_t     *cent;
 	entityState_t *es;
 	int           buildableList[ MAX_ENTITIES_IN_SNAPSHOT ];
-	int           buildables = 0;
+    unsigned      buildables = 0;
 
 	if ( !cg_drawBuildableHealth.integer )
 	{
 		return;
 	}
 
-	for ( i = 0; i < cg.snap->entities.size(); i++ )
+	for ( unsigned i = 0; i < cg.snap->entities.size(); i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		es = &cent->currentState;
@@ -2269,7 +2270,7 @@ void CG_DrawBuildableStatus()
 
 	qsort( buildableList, buildables, sizeof( int ), CG_SortDistance );
 
-	for ( i = 0; i < buildables; i++ )
+	for ( unsigned i = 0; i < buildables; i++ )
 	{
 		CG_BuildableStatusDisplay( &cg_entities[ buildableList[ i ] ] );
 	}

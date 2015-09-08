@@ -67,9 +67,11 @@ option(BUILD_SERVER "Build Daemonded server" 1)
 option(BUILD_GAME_NATIVE_EXE "Build native executable game logic" 1)
 option(BUILD_GAME_NATIVE_DLL "Build native shared library game logic" 1)
 if (CMAKE_SYSTEM_NAME STREQUAL CMAKE_HOST_SYSTEM_NAME)
-    option(BUILD_GAME_NACL "Build NaCl game logic" 1)
+    option(BUILD_GAME_NACL "Build PNaCl game logic" 1)
+    option(BUILD_GAME_NACL_NEXE "Build NaCl game logic" 1)
 else()
     set(BUILD_GAME_NACL 0)
+    set(BUILD_GAME_NACL_NEXE 0)
 endif()
 option(BUILD_TTY_CLIENT "Build Daemon headless client" 1)
 
@@ -79,7 +81,7 @@ cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT 
 option(USE_LTO "Use link-time optimization for release builds" 0)
 cmake_dependent_option(USE_SLIM_LTO "Generate slim LTO objects, improves build times" 1 "USE_LTO AND ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU" 0)
 option(USE_HARDENING "Use stack protection and other hardening flags" 0)
-option(USE_WERROR "Tell the compiler to make the build fail when warnings are present" 1)
+option(USE_WERROR "Tell the compiler to make the build fail when warnings are present" 0)
 option(USE_PEDANTIC "Tell the compiler to be pedantic" 0)
 option(USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1)
 option(USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1)
@@ -170,6 +172,7 @@ try_flag(WARNINGS           "-Wstrict-null-sentinel")
 try_flag(WARNINGS           "-Wno-error=sign-promo")
 try_flag(WARNINGS           "-Wno-error=extern-c-compat")
 # remove
+try_flag(WARNINGS           "-Wno-error=maybe-uninitialized")
 try_flag(WARNINGS           "-W${WARNMODE}missing-field-initializers")
 try_flag(WARNINGS           "-W${WARNMODE}sign-compare")
 try_flag(WARNINGS           "-Wno-error=switch")
@@ -294,7 +297,7 @@ function(ADD_PRECOMPILED_HEADER Target)
     # Compiler-specific PCH support
     if (CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
         add_custom_command(OUTPUT "${OBJ_DIR}/${Target}.h.gch"
-            COMMAND ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
+            COMMAND ${PNACLPYTHON_PREFIX2} ${CMAKE_CXX_COMPILER} ${Defs} ${Flags} -x c++-header ${Header} -o "${OBJ_DIR}/${Target}.h.gch"
             DEPENDS ${Header}
             IMPLICIT_DEPENDS CXX ${Header}
         )
@@ -364,6 +367,11 @@ if (DEPS_DIR)
     set(CMAKE_INCLUDE_PATH ${DEPS_DIR} ${DEPS_DIR}/include ${CMAKE_INCLUDE_PATH})
     set(CMAKE_FRAMEWORK_PATH ${DEPS_DIR} ${CMAKE_FRAMEWORK_PATH})
     set(CMAKE_LIBRARY_PATH ${DEPS_DIR}/lib ${CMAKE_LIBRARY_PATH})
+    # Also set parent scope so the top level CMakeLists can find precompiled deps
+    set(CMAKE_FIND_ROOT_PATH ${DEPS_DIR} ${CMAKE_FIND_ROOT_PATH} PARENT_SCOPE)
+    set(CMAKE_INCLUDE_PATH ${DEPS_DIR} ${DEPS_DIR}/include ${CMAKE_INCLUDE_PATH} PARENT_SCOPE)
+    set(CMAKE_FRAMEWORK_PATH ${DEPS_DIR} ${CMAKE_FRAMEWORK_PATH} PARENT_SCOPE)
+    set(CMAKE_LIBRARY_PATH ${DEPS_DIR}/lib ${CMAKE_LIBRARY_PATH} PARENT_SCOPE)
 
     # Force OpenAL Soft on Mac, otherwise the system framework will be selected
     if (APPLE)

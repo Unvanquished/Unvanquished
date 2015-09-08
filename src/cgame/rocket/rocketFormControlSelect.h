@@ -98,7 +98,7 @@ public:
 	{
 		Rocket::Core::String value = Cvar::GetValue( cvar.CString() ).c_str();
 
-		for ( size_t i = 0; i < GetNumOptions(); ++i )
+		for ( int i = 0; i < GetNumOptions(); ++i )
 		{
 			Rocket::Controls::SelectOption *o = GetOption( i );
 			if ( o->GetValue() == value )

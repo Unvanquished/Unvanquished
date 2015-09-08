@@ -305,7 +305,7 @@ typedef IPC::SyncMessage<
 typedef IPC::Message<IPC::Id<VM::QVM, CG_REGISTER_BUTTON_COMMANDS>, std::string> RegisterButtonCommandsMsg;
 // GetClipboardDataMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_GETCLIPBOARDDATA>, int, int>,
+	IPC::Message<IPC::Id<VM::QVM, CG_GETCLIPBOARDDATA>, int>,
 	IPC::Reply<std::string>
 > GetClipboardDataMsg;
 // QuoteStringMsg TODO using Command.h for that ?

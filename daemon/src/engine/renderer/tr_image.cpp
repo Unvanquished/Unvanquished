@@ -1959,7 +1959,7 @@ Loads any of the supported image types into a canonical
 */
 static void R_LoadImage( const char **buffer, byte **pic, int *width, int *height,
 			 int *numLayers, int *numMips,
-			 int *bits, const char *materialName )
+			 int *bits )
 {
 	char *token;
 
@@ -2059,7 +2059,7 @@ Finds or loads the given image.
 Returns nullptr if it fails, not a default image.
 ==============
 */
-image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName )
+image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType )
 {
 	image_t       *image = nullptr;
 	int           width = 0, height = 0, numLayers = 0, numMips = 0;
@@ -2090,12 +2090,12 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 
 				if ( diff & IF_NOPICMIP )
 				{
-					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image '%s' with mixed allowPicmip parm for shader '%s\n", imageName, materialName );
+					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image '%s' with mixed allowPicmip parm for shader\n", imageName );
 				}
 
 				if ( image->wrapType != wrapType )
 				{
-					ri.Printf( PRINT_ALL, "WARNING: reused image '%s' with mixed glWrapType parm for shader '%s'\n", imageName, materialName );
+					ri.Printf( PRINT_ALL, "WARNING: reused image '%s' with mixed glWrapType parm for shader\n", imageName);
 				}
 			}
 
@@ -2106,7 +2106,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	// load the pic from disk
 	pic[ 0 ] = nullptr;
 	buffer_p = &buffer[ 0 ];
-	R_LoadImage( &buffer_p, pic, &width, &height, &numLayers, &numMips, &bits, materialName );
+	R_LoadImage( &buffer_p, pic, &width, &height, &numLayers, &numMips, &bits );
 
 	if ( (mallocPtr = pic[ 0 ]) == nullptr || numLayers > 0 )
 	{
@@ -2255,7 +2255,7 @@ static void R_FreeCubePics( byte **pic, int count )
 	}
 }
 
-image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName )
+image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t filterType, wrapType_t wrapType )
 {
 	int         i;
 	image_t     *image = nullptr;
@@ -2324,7 +2324,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, openglSuffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits );
 
 		if ( IsImageCompressed( bits ) )
 		{
@@ -2355,7 +2355,7 @@ tryDoom3Suffices:
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, doom3Suffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits );
 
 		if ( IsImageCompressed( bits ) )
 		{
@@ -2399,7 +2399,7 @@ tryQuakeSuffices:
 		Com_sprintf( filename, sizeof( filename ), "%s_%s", buffer, quakeSuffices[ i ] );
 
 		filename_p = &filename[ 0 ];
-		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits, materialName );
+		R_LoadImage( &filename_p, &pic[ i ], &width, &height, &numLayers, &numMips, &bits );
 
 		if ( IsImageCompressed( bits ) )
 		{
@@ -3192,7 +3192,7 @@ void R_InitImages()
 	// create default texture and white texture
 	R_CreateBuiltinImages();
 
-	tr.charsetImage = R_FindImageFile( charsetImage, IF_NOCOMPRESSION | IF_NOPICMIP, FT_DEFAULT, WT_CLAMP, nullptr );
+	tr.charsetImage = R_FindImageFile( charsetImage, IF_NOCOMPRESSION | IF_NOPICMIP, FT_DEFAULT, WT_CLAMP );
 
 	if ( !tr.charsetImage )
 	{

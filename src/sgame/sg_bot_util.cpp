@@ -493,10 +493,9 @@ void BotFindClosestBuildings( gentity_t *self )
 {
 	gentity_t *testEnt;
 	botEntityAndDistance_t *ent;
-	int i;
 
 	// clear out building list
-	for ( i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
+	for ( unsigned i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
 	{
 		self->botMind->closestBuildings[ i ].ent = nullptr;
 		self->botMind->closestBuildings[ i ].distance = INT_MAX;
@@ -2143,7 +2142,7 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 	return true;
 }
 
-void BotPain( gentity_t *self, gentity_t *attacker, int damage )
+void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
 	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->pers.team )
 	{

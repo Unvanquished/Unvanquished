@@ -1400,7 +1400,7 @@ void func_door_block( gentity_t *self, gentity_t *other )
 Touch_DoorTrigger
 ================
 */
-void door_trigger_touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void door_trigger_touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	moverState_t groupState;
 
@@ -1850,7 +1850,7 @@ Touch_Plat
 Don't allow to descend if a live player is on it
 ===============
 */
-void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t *trace )
+void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t* )
 {
 	// DONT_WAIT
 	if ( ent->spawnflags & 1 )
@@ -1877,7 +1877,7 @@ Touch_PlatCenterTrigger
 If the plat is at the bottom position, start it going up
 ===============
 */
-void Touch_PlatCenterTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
+void Touch_PlatCenterTrigger( gentity_t *ent, gentity_t *other, trace_t* )
 {
 	if ( !other->client )
 	{
@@ -2009,7 +2009,7 @@ BUTTON
 ===============================================================================
 */
 
-void Touch_Button( gentity_t *ent, gentity_t *other, trace_t *trace )
+void Touch_Button( gentity_t *ent, gentity_t *other, trace_t* )
 {
 	if ( !other->client )
 	{
@@ -2095,6 +2095,9 @@ TRAIN
 
 #define TRAIN_START_OFF   1
 #define TRAIN_BLOCK_STOPS 2
+#define CORNER_PAUSE      1
+
+void Stop_Train( gentity_t *self );
 
 /*
 ===============
@@ -2114,6 +2117,7 @@ void Think_BeginMoving( gentity_t *self )
 Reached_Train
 ===============
 */
+
 void func_train_reached( gentity_t *self )
 {
 	gentity_t *next;
@@ -2173,8 +2177,12 @@ void func_train_reached( gentity_t *self )
 		return;
 	}
 
+	if ( next->spawnflags & CORNER_PAUSE )
+	{
+		Stop_Train( self );
+	}
 	// if there is a "wait" value on the target, don't start moving yet
-	if ( next->config.wait.time )
+	else if ( next->config.wait.time )
 	{
 		self->nextthink = level.time + next->config.wait.time * 1000;
 		self->think = Think_BeginMoving;
@@ -2222,7 +2230,7 @@ void Stop_Train( gentity_t *self )
 Use_Train
 ================
 */
-void func_train_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void func_train_act( gentity_t *ent, gentity_t*, gentity_t* )
 {
 	if ( ent->spawnflags & TRAIN_START_OFF )
 	{
@@ -2571,7 +2579,7 @@ void SP_func_pendulum( gentity_t *self )
 Use_func_spawn
 ====================
 */
-void func_spawn_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
+void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
   if( self->r.linked )
     trap_UnlinkEntity( self );
@@ -2615,7 +2623,7 @@ void SP_func_spawn( gentity_t *self )
   self->reset = func_spawn_reset;
 }
 
-void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod )
+void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
 {
 	self->takedamage = false;
 	trap_UnlinkEntity( self );

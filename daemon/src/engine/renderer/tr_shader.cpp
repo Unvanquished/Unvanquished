@@ -92,7 +92,7 @@ static long generateHashValue( const char *fname, const int size )
 	return hash;
 }
 
-void R_RemapShader( const char *shaderName, const char *newShaderName, const char *timeOffset )
+void R_RemapShader( const char *shaderName, const char *newShaderName, const char* )
 {
 	char      strippedName[ MAX_QPATH ];
 	int       hash;
@@ -1374,7 +1374,7 @@ static bool ParseTexMod( const char **text, shaderStage_t *stage )
 	return true;
 }
 
-static bool ParseMap( shaderStage_t *stage, const char **text, char *buffer, int bufferSize )
+static bool ParseMap( const char **text, char *buffer, int bufferSize )
 {
 	int  len;
 	char *token;
@@ -1496,7 +1496,7 @@ static bool LoadMap( shaderStage_t *stage, const char *buffer )
 	}
 
 	// try to load the image
-	stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( buffer, imageBits, filterType, wrapType, shader.name );
+	stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( buffer, imageBits, filterType, wrapType );
 
 	if ( !stage->bundle[ 0 ].image[ 0 ] )
 	{
@@ -1580,7 +1580,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 		// map <name>
 		else if ( !Q_stricmp( token, "map" ) )
 		{
-			if ( !ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+			if ( !ParseMap( text, buffer, sizeof( buffer ) ) )
 			{
 				return false;
 			}
@@ -1592,7 +1592,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 		// lightmap <name>
 		else if ( !Q_stricmp( token, "lightmap" ) )
 		{
-			if ( !ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+			if ( !ParseMap( text, buffer, sizeof( buffer ) ) )
 			{
 				return false;
 			}
@@ -1628,7 +1628,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 				filterType = shader.filterType;
 			}
 
-			stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, imageBits, filterType, WT_CLAMP, shader.name );
+			stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, imageBits, filterType, WT_CLAMP );
 
 			if ( !stage->bundle[ 0 ].image[ 0 ] )
 			{
@@ -1665,7 +1665,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 
 				if ( num < MAX_IMAGE_ANIMATIONS )
 				{
-					stage->bundle[ 0 ].image[ num ] = R_FindImageFile( token, IF_NONE, FT_DEFAULT, WT_REPEAT, shader.name );
+					stage->bundle[ 0 ].image[ num ] = R_FindImageFile( token, IF_NONE, FT_DEFAULT, WT_REPEAT );
 
 					if ( !stage->bundle[ 0 ].image[ num ] )
 					{
@@ -1723,7 +1723,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 				filterType = shader.filterType;
 			}
 
-			stage->bundle[ 0 ].image[ 0 ] = R_FindCubeImage( token, imageBits, filterType, WT_EDGE_CLAMP, shader.name );
+			stage->bundle[ 0 ].image[ 0 ] = R_FindCubeImage( token, imageBits, filterType, WT_EDGE_CLAMP );
 
 			if ( !stage->bundle[ 0 ].image[ 0 ] )
 			{
@@ -2783,7 +2783,7 @@ static void ParseSkyParms( const char **text )
 	{
 		Q_strncpyz( prefix, token, sizeof( prefix ) );
 
-		shader.sky.outerbox = R_FindCubeImage( prefix, IF_NONE, FT_DEFAULT, WT_EDGE_CLAMP, shader.name );
+		shader.sky.outerbox = R_FindCubeImage( prefix, IF_NONE, FT_DEFAULT, WT_EDGE_CLAMP );
 
 		if ( !shader.sky.outerbox )
 		{
@@ -2823,7 +2823,7 @@ static void ParseSkyParms( const char **text )
 	{
 		Q_strncpyz( prefix, token, sizeof( prefix ) );
 
-		shader.sky.innerbox = R_FindCubeImage( prefix, IF_NONE, FT_DEFAULT, WT_EDGE_CLAMP, shader.name );
+		shader.sky.innerbox = R_FindCubeImage( prefix, IF_NONE, FT_DEFAULT, WT_EDGE_CLAMP );
 
 		if ( !shader.sky.innerbox )
 		{
@@ -3076,7 +3076,7 @@ static void ParseDiffuseMap( shaderStage_t *stage, const char **text )
 		stage->uncompressed = true;
 	}
 
-	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
 	{
 		LoadMap( stage, buffer );
 	}
@@ -3104,7 +3104,7 @@ static void ParseNormalMap( shaderStage_t *stage, const char **text )
 		stage->overrideNoPicMip = true;
 	}
 
-	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
 	{
 		LoadMap( stage, buffer );
 	}
@@ -3124,7 +3124,7 @@ static void ParseSpecularMap( shaderStage_t *stage, const char **text )
 		stage->uncompressed = true;
 	}
 
-	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
 	{
 		LoadMap( stage, buffer );
 	}
@@ -3139,7 +3139,7 @@ static void ParseGlowMap( shaderStage_t *stage, const char **text )
 	stage->rgbGen = CGEN_IDENTITY;
 	stage->stateBits = GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE; // blend add
 
-	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
 	{
 		LoadMap( stage, buffer );
 	}
@@ -3156,7 +3156,7 @@ static void ParseReflectionMap( shaderStage_t *stage, const char **text )
 	stage->overrideWrapType = true;
 	stage->wrapType = WT_EDGE_CLAMP;
 
-	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
 	{
 		LoadMap( stage, buffer );
 	}
@@ -3173,7 +3173,7 @@ static void ParseReflectionMapBlended( shaderStage_t *stage, const char **text )
 	stage->overrideWrapType = true;
 	stage->wrapType = WT_EDGE_CLAMP;
 
-	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
 	{
 		LoadMap( stage, buffer );
 	}
@@ -3190,7 +3190,7 @@ static void ParseLightFalloffImage( shaderStage_t *stage, const char **text )
 	stage->overrideWrapType = true;
 	stage->wrapType = WT_EDGE_CLAMP;
 
-	if ( ParseMap( stage, text, buffer, sizeof( buffer ) ) )
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
 	{
 		LoadMap( stage, buffer );
 	}
@@ -4422,9 +4422,6 @@ static shader_t *FinishShader()
 		if ( ( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
 		     ( stages[ 0 ].stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) )
 		{
-			int blendSrcBits = pStage->stateBits & GLS_SRCBLEND_BITS;
-			int blendDstBits = pStage->stateBits & GLS_DSTBLEND_BITS;
-
 			// don't screw with sort order if this is a portal or environment
 			if ( !shader.sort )
 			{
@@ -4855,10 +4852,10 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 	// maybe it should be changed to type == SHADER_2D
 	if( !(bits & RSF_NOMIP) ) {
 		image = R_FindImageFile( fileName, bits, FT_DEFAULT,
-					 WT_REPEAT, shader.name );
+					 WT_REPEAT );
 	} else {
 		image = R_FindImageFile( fileName, bits, FT_LINEAR,
-					 WT_CLAMP, shader.name );
+					 WT_CLAMP );
 	}
 
 	if ( !image )

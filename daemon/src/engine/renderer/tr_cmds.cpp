@@ -224,7 +224,7 @@ make sure there is enough command space, waiting on the
 render thread if needed.
 ============
 */
-void           *R_GetCommandBuffer( int bytes )
+void           *R_GetCommandBuffer( unsigned bytes )
 {
 	renderCommandList_t *cmdList;
 
@@ -898,16 +898,6 @@ void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encode
 }
 
 //bani
-
-/*
-==================
-RE_RenderToTexture
-==================
-*/
-void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
-{
-	ri.Printf( PRINT_ALL, "^1TODO RE_RenderToTexture\n" );
-}
 
 /*
 ==================

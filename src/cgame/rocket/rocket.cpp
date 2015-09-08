@@ -39,6 +39,9 @@ Maryland 20850 USA.
 #include <Rocket/Core/SystemInterface.h>
 #include <Rocket/Core/RenderInterface.h>
 #include <Rocket/Controls.h>
+#include <Rocket/Core/Lua/Interpreter.h>
+#include <Rocket/Core/Lua/LuaType.h>
+#include <Rocket/Controls/Lua/Controls.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
 #include "rocketEventInstancer.h"
@@ -60,6 +63,10 @@ Maryland 20850 USA.
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
 #include <Rocket/Debugger.h>
+#include "lua/Cvar.h"
+#include "lua/Cmd.h"
+#include "lua/Events.h"
+#include "lua/Timer.h"
 #include "../cg_local.h"
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -241,8 +248,7 @@ public:
 		trap_R_GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
 		return true;
 	}
-
-	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions, int source_samples )
+	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions, int )
 	{
 
 		texture_handle = trap_R_GenerateTexture( (const byte* )source, source_dimensions.x, source_dimensions.y );
@@ -251,7 +257,7 @@ public:
 		return ( texture_handle > 0 );
 	}
 
-	void ReleaseTexture( Rocket::Core::TextureHandle textureHandle )
+	void ReleaseTexture( Rocket::Core::TextureHandle )
 	{
 		// we free all textures after each map load, but this may have to be filled for the libRocket font system
 	}
@@ -267,22 +273,6 @@ public:
 		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
 	}
 };
-
-// Rocket::Core::Input::KeyModifier RocketConvertSDLmod( SDLMod sdl )
-// {
-// 	using namespace Rocket::Core::Input;
-//
-// 	int mod = 0;
-// 	if( sdl & KMOD_SHIFT )	mod |= KM_SHIFT;
-// 	if( sdl & KMOD_CTRL )	mod |= KM_CTRL;
-// 	if( sdl & KMOD_ALT )	mod |= KM_ALT;
-// 	if( sdl & KMOD_META )	mod |= KM_META;
-// 	if( sdl & KMOD_CAPS )	mod |= KM_CAPSLOCK;
-// 	if( sdl & KMOD_NUM )	mod |= KM_NUMLOCK;
-//
-// 	return KeyModifier( mod );
-// }
-
 
 void Rocket_Rocket_f()
 {
@@ -320,6 +310,10 @@ void Rocket_RocketDebug_f()
 	}
 }
 
+void Rocket_Lua_f( void )
+{
+	Rocket::Core::Lua::Interpreter::DoString( CG_Argv( 1 ), "commandline" );
+}
 
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
@@ -345,7 +339,16 @@ void Rocket_Init()
 		return;
 	}
 
+	// Initialize the controls plugin
 	Rocket::Controls::Initialise();
+
+	// Initialize Lua
+	Rocket::Core::Lua::Interpreter::Initialise();
+	Rocket::Controls::Lua::RegisterTypes(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cvar>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cmd>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Events>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Timer>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
@@ -365,11 +368,6 @@ void Rocket_Init()
 	// Create the HUD context
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
 
-	// Add the event listener instancer
-	EventInstancer* event_instancer = new EventInstancer();
-	Rocket::Core::Factory::RegisterEventListenerInstancer( event_instancer );
-	event_instancer->RemoveReference();
-
 	// Add custom client elements
 	Rocket::Core::Factory::RegisterElementInstancer( "datagrid", new Rocket::Core::ElementInstancerGeneric< SelectableDataGrid >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "progressbar", new Rocket::Core::ElementInstancerGeneric< RocketProgressBar >() )->RemoveReference();
@@ -379,7 +377,7 @@ void Rocket_Init()
 	Rocket::Core::Factory::RegisterElementInstancer( "datasource", new Rocket::Core::ElementInstancerGeneric< RocketDataSource >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "circlemenu", new Rocket::Core::ElementInstancerGeneric< RocketCircleMenu >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "keybind", new Rocket::Core::ElementInstancerGeneric< RocketKeyBinder >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
+// 	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "select", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlSelect >() )->RemoveReference();
@@ -409,6 +407,7 @@ void Rocket_Shutdown()
 		hudContext = nullptr;
 	}
 
+	Rocket::Core::Lua::Interpreter::Shutdown();
 	Rocket::Core::Shutdown();
 
 	// Prevent memory leaks
@@ -466,13 +465,14 @@ void Rocket_Update()
 	{
 		hudContext->Update();
 	}
+	Rocket::Core::Lua::Timer::Update(rocketInfo.realtime);
 }
 
 static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 {
 	const char invalid[][2] = { "*", "/", "\\", ".", " ", "<", ">", "!", "@", "#", "$", "%", "^", "&", "(", ")", "-", "_", "+", "=", ",", "?", "[", "]", "{", "}", "|", ":", ";", "'", "\"", "`", "~" };
 
-	for ( int i = 0; i < ARRAY_LEN( invalid ); ++i )
+	for ( unsigned i = 0; i < ARRAY_LEN( invalid ); ++i )
 	{
 		if ( emoticon.Find( invalid[ i ] ) != Rocket::Core::String::npos )
 		{

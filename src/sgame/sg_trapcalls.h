@@ -73,8 +73,6 @@ bool         trap_GetEntityToken( char *buffer, int bufferSize );
 void             trap_SendGameStat( const char *data );
 void             trap_AddCommand( const char *cmdName );
 void             trap_RemoveCommand( const char *cmdName );
-bool         trap_GetTag( int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori );
-bool         trap_LoadTag( const char *filename );
 int              trap_GetSoundLength( sfxHandle_t sfxHandle );
 int              trap_Parse_AddGlobalDefine( const char *define );
 int              trap_Parse_LoadSource( const char *filename );

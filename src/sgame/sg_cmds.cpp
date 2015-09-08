@@ -110,7 +110,7 @@ int G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 				Com_sprintf( line, sizeof( line ), "%2i — %s^7\n",
 				             plist[p], cl->pers.netname );
 
-				if ( strlen( err ) + strlen( line ) > len )
+				if ( strlen( err ) + strlen( line ) > (unsigned) len )
 				{
 					break;
 				}
@@ -405,7 +405,7 @@ void ScoreboardMessage( gentity_t *ent )
 
 		j = strlen( entry );
 
-		if ( stringlength + j >= sizeof( string ) )
+		if ( stringlength + j >= (int) sizeof( string ) )
 		{
 			break;
 		}
@@ -1418,23 +1418,23 @@ static const struct {
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be true)
 } voteInfo[] = {
 	// Name           Stop?   Type      Target     Immune   Quorum  Reason  Vote percentage var        Extra
-	{ "kick",         false, V_ANY,    T_PLAYER,  true,   true,  qyes,   &g_kickVotesPercent },
-	{ "spectate",     false, V_ANY,    T_PLAYER,  true,   true,  qyes,   &g_kickVotesPercent },
-	{ "mute",         true,  V_PUBLIC, T_PLAYER,  true,   true,  qyes,   &g_denyVotesPercent },
-	{ "unmute",       true,  V_PUBLIC, T_PLAYER,  false,  true,  qno,    &g_denyVotesPercent },
-	{ "denybuild",    true,  V_TEAM,   T_PLAYER,  true,   true,  qyes,   &g_denyVotesPercent },
-	{ "allowbuild",   true,  V_TEAM,   T_PLAYER,  false,  true,  qno,    &g_denyVotesPercent },
-	{ "extend",       true,  V_PUBLIC, T_OTHER,   false,  false, qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
-	{ "admitdefeat",  true,  V_TEAM,   T_NONE,    false,  true,  qno,    &g_admitDefeatVotesPercent },
+	{ "kick",         false, V_ANY,    T_PLAYER,  true,   true,  qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "spectate",     false, V_ANY,    T_PLAYER,  true,   true,  qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "mute",         true,  V_PUBLIC, T_PLAYER,  true,   true,  qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "unmute",       true,  V_PUBLIC, T_PLAYER,  false,  true,  qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "denybuild",    true,  V_TEAM,   T_PLAYER,  true,   true,  qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "allowbuild",   true,  V_TEAM,   T_PLAYER,  false,  true,  qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "extend",       true,  V_PUBLIC, T_OTHER,   false,  false, qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime, nullptr },
+	{ "admitdefeat",  true,  V_TEAM,   T_NONE,    false,  true,  qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ "draw",         true,  V_PUBLIC, T_NONE,    true,   true,  qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "map_restart",  true,  V_PUBLIC, T_NONE,    false,  true,  qno,    &g_mapVotesPercent },
-	{ "map",          true,  V_PUBLIC, T_OTHER,   false,  true,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "layout",       true,  V_PUBLIC, T_OTHER,   false,  true,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false, qmaybe, &g_nextMapVotesPercent },
-	{ "poll",         false, V_ANY,    T_NONE,    false,  false, qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO },
-	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
-	{ "spectatebots", false, V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
-	{ nullptr }
+	{ "map_restart",  true,  V_PUBLIC, T_NONE,    false,  true,  qno,    &g_mapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "map",          true,  V_PUBLIC, T_OTHER,   false,  true,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
+	{ "layout",       true,  V_PUBLIC, T_OTHER,   false,  true,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
+	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false, qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "poll",         false, V_ANY,    T_NONE,    false,  false, qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
+	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
+	{ "spectatebots", false, V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
+	{ }
 	// note: map votes use the reason, if given, as the layout name
 };
 

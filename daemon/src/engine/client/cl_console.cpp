@@ -271,7 +271,13 @@ void Con_Grep_f()
 			break;
 		}
 
-		Com_Printf( "%s", it->c_str() );
+		// print out in chunks so we don't go over the MAXPRINTMSG limit
+		for (unsigned i = 0; i < it->size(); i += MAXPRINTMSG - 1 )
+		{
+			unsigned sub_size = std::min<unsigned>( it->size() - i, MAXPRINTMSG - 1 );
+			std::string substring = it->substr(i, sub_size);
+			Com_Printf( "%s", substring.c_str() );
+		}
 
 		++it;
 	}
@@ -503,13 +509,13 @@ bool CL_InternalConsolePrint( const char *text )
 			// count word length
 			for ( const auto& wordtoken : Color::Parser( token.Begin() ) )
 			{
-				if ( token.Type() == Color::Token::ESCAPE )
+				if ( wordtoken.Type() == Color::Token::ESCAPE )
 				{
 					wordLen++;
 				}
-				else if ( token.Type() == Color::Token::CHARACTER )
+				else if ( wordtoken.Type() == Color::Token::CHARACTER )
 				{
-					if ( std::isspace( *token.Begin() ) )
+					if ( std::isspace( *wordtoken.Begin() ) )
 					{
 						break;
 					}

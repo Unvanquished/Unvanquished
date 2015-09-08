@@ -333,7 +333,7 @@ bool CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 	snapshot->ps = clSnap->ps;
 
 	snapshot->entities.reserve(clSnap->numEntities);
-	for (int i = 0; i < clSnap->numEntities; i++) {
+	for (unsigned i = 0; i < clSnap->numEntities; i++) {
 		snapshot->entities.push_back(cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ]);
 	}
 
@@ -1393,24 +1393,6 @@ void CL_SetCGameTime()
 	}
 }
 
-/*
-====================
-CL_GetTag
-====================
-*/
-bool CL_GetTag( int clientNum, const char *tagname, orientation_t * orientation )
-{
-	if ( !cgvm.IsActive() )
-	{
-		return false;
-	}
-
-	// the current design of CG_GET_TAG is inappropriate for modules in sandboxed formats
-	//  (the direct pointer method to pass the tag name would work only with modules in native format)
-	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
-	return false;
-}
-
 /**
  * is notified by teamchanges.
  * while most notifications will come from the cgame, due to game semantics,
@@ -1609,10 +1591,10 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_GETCLIPBOARDDATA:
-			IPC::HandleMsg<GetClipboardDataMsg>(channel, std::move(reader), [this] (int len, int type, std::string& data) {
+			IPC::HandleMsg<GetClipboardDataMsg>(channel, std::move(reader), [this] (int len, std::string& data) {
 				if (cl_allowPaste->integer) {
 					std::unique_ptr<char[]> buffer(new char[len]);
-					CL_GetClipboardData(buffer.get(), len, (clipboard_t)type);
+					CL_GetClipboardData(buffer.get(), len);
 					data.assign(buffer.get(), len);
 				}
 			});
@@ -1752,7 +1734,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_R_LIGHTFORPOINT:
-			IPC::HandleMsg<Render::LightForPointMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, std::array<float, 3>& ambient, std::array<float, 3>& directed, std::array<float, 3>& dir, int res) {
+			IPC::HandleMsg<Render::LightForPointMsg>(channel, std::move(reader), [this] (std::array<float, 3> point, std::array<float, 3>& ambient, std::array<float, 3>& directed, std::array<float, 3>& dir, int& res) {
 				res = re.LightForPoint(point.data(), ambient.data(), directed.data(), dir.data());
 			});
 			break;
@@ -1876,7 +1858,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		case CG_KEY_KEYSDOWN:
 			IPC::HandleMsg<Key::KeysDownMsg>(channel, std::move(reader), [this] (std::vector<int> keys, std::vector<int>& list) {
 				list.reserve(keys.size());
-				for (int i = 0; i < keys.size(); ++i)
+				for (unsigned i = 0; i < keys.size(); ++i)
 				{
 					if (keys[i] == K_KP_NUMLOCK)
 					{

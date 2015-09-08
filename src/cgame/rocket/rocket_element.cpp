@@ -75,7 +75,7 @@ static Rocket::Core::String ReduceRML( const Rocket::Core::String &rml )
 	Rocket::Core::String::size_type length = rml.Length();
 	ret.Reserve( length );
 
-	for ( int i = 0; i < length; i++ )
+	for ( unsigned i = 0; i < length; i++ )
 	{
 		if ( rml[ i ] == ' ' || rml[ i ] == '\n' )
 		{
@@ -191,6 +191,21 @@ void Rocket_GetElementAbsoluteOffset( float *x, float *y )
 	{
 		*x = -1;
 		*y = -1;
+	}
+}
+
+void Rocket_GetElementDimensions( float *w, float *h )
+{
+	if ( activeElement )
+	{
+		Rocket::Core::Vector2f dimensions = activeElement->GetBox().GetSize();
+		*w = dimensions.x;
+		*h = dimensions.y;
+	}
+	else
+	{
+		*w = -1;
+		*h = -1;
 	}
 }
 

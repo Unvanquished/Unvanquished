@@ -152,7 +152,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
  */
 static bool LoadExplicitBeacons()
 {
-	int i;
+	unsigned i;
 	centity_t     *ent;
 	entityState_t *es;
 	cbeacon_t     *beacon;

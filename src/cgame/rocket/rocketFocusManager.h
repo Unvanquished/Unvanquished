@@ -50,7 +50,7 @@ public:
 
 		if ( context )
 		{
-			for ( size_t i = 0; i < context->GetNumDocuments(); ++i )
+			for ( int i = 0; i < context->GetNumDocuments(); ++i )
 			{
 				if ( context->GetDocument( i )->IsVisible() )
 				{

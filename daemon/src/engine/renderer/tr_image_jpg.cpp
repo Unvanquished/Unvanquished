@@ -66,12 +66,12 @@ static void R_JPGOutputMessage( j_common_ptr cinfo )
 }
 
 void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height,
-	      int *numLayers, int *numMips, int *bits, byte alphaByte )
+	      int*, int*, int*, byte )
 {
 	/* This struct contains the JPEG decompression parameters and pointers to
 	 * working space (which is allocated as needed by the JPEG library).
 	 */
-	struct jpeg_decompress_struct cinfo = { nullptr };
+	struct jpeg_decompress_struct cinfo {};
 
 	/* We use our private extension JPEG error handler.
 	 * Note that this struct must live as long as the main JPEG parameter
@@ -342,7 +342,7 @@ static          boolean empty_output_buffer( j_compress_ptr cinfo )
  * for error exit.
  */
 
-static void term_destination( j_compress_ptr cinfo )
+static void term_destination( j_compress_ptr )
 {
 }
 

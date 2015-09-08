@@ -253,7 +253,7 @@ static void R_SetAttributeLayoutsPosition( VBO_t *vbo )
 	vbo->vertexesSize = sizeof( vec3_t ) * vbo->vertexesNum;
 }
 
-static void R_SetVBOAttributeLayouts( VBO_t *vbo, bool noLightCoords )
+static void R_SetVBOAttributeLayouts( VBO_t *vbo )
 {
 	if ( vbo->layout == VBO_LAYOUT_VERTEX_ANIMATION )
 	{
@@ -498,7 +498,7 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_DYNAMIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo, false );
+	R_SetVBOAttributeLayouts( vbo );
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 
@@ -552,7 +552,7 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	vbo->attribBits = R_DeriveAttrBits( data );
 	vbo->usage = GL_STATIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo, data.noLightCoords );
+	R_SetVBOAttributeLayouts( vbo );
 
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
@@ -615,7 +615,7 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, shaderVertex_t *ve
 	vbo->attribBits = stateBits;
 	vbo->usage = GL_STATIC_DRAW;
 
-	R_SetVBOAttributeLayouts( vbo, false );
+	R_SetVBOAttributeLayouts( vbo );
 	
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
@@ -875,7 +875,6 @@ static void R_InitUnitCubeVBO()
 	vec3_t        mins = { -1, -1, -1 };
 	vec3_t        maxs = { 1,  1,  1 };
 	vboData_t     data;
-	int           i;
 
 	R_SyncRenderThread();
 
@@ -892,7 +891,7 @@ static void R_InitUnitCubeVBO()
 
 	data.numVerts = tess.numVertexes;
 
-	for ( i = 0; i < tess.numVertexes; i++ )
+	for (unsigned i = 0; i < tess.numVertexes; i++ )
 	{
 		VectorCopy( tess.verts[ i ].xyz, data.xyz[ i ] );
 	}
@@ -1050,7 +1049,7 @@ void Tess_MapVBOs( bool forceCPU ) {
 		if( glConfig2.bufferStorageAvailable &&
 		    glConfig2.syncAvailable ) {
 			GLsizei segmentEnd = (tess.vertexRB.activeSegment + 1) * tess.vertexRB.segmentElements;
-			if( tess.vertsWritten + SHADER_MAX_VERTEXES > segmentEnd ) {
+			if( tess.vertsWritten + SHADER_MAX_VERTEXES > (unsigned) segmentEnd ) {
 				tess.vertsWritten = R_RotateRingbuffer( &tess.vertexRB );
 			}
 			tess.verts = ( shaderVertex_t * )tess.vertexRB.baseAddr + tess.vertsWritten;
@@ -1077,7 +1076,7 @@ void Tess_MapVBOs( bool forceCPU ) {
 		if( glConfig2.bufferStorageAvailable &&
 		    glConfig2.syncAvailable ) {
 			GLsizei segmentEnd = (tess.indexRB.activeSegment + 1) * tess.indexRB.segmentElements;
-			if( tess.indexesWritten + SHADER_MAX_INDEXES > segmentEnd ) {
+			if( tess.indexesWritten + SHADER_MAX_INDEXES > (unsigned) segmentEnd ) {
 				tess.indexesWritten = R_RotateRingbuffer( &tess.indexRB );
 			}
 			tess.indexes = ( glIndex_t * )tess.indexRB.baseAddr + tess.indexesWritten;
