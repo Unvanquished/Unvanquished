@@ -43,7 +43,7 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
-class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
+class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener, Rocket::Core::EventListener
 {
 public:
 	RocketCircleMenu( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
@@ -326,6 +326,13 @@ public:
 				}
 			}
 		}
+		if ( event.GetTargetElement() == GetFirstChild() )
+		{
+			if ( event == "click" )
+			{
+				DispatchEvent( "cancel", Rocket::Core::Dictionary() );
+			}
+		}
 	}
 
 protected:
@@ -374,8 +381,9 @@ private:
 	void AddCancelbutton()
 	{
 		init = true;
-		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"Events.pushevent('hide %s')\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
+		Rocket::Core::Factory::InstanceElementText( this, "<button>Cancel</button>" );
 		GetFirstChild()->SetClass( "cancelButton", true );
+		GetFirstChild()->AddEventListener( "click", this );
 	}
 
 	bool dirty_query;

@@ -58,7 +58,7 @@
 			<tabset class="circlemenu">
 				<tab>Beacons</tab>
 				<panel>
-					<circlemenu id="default" source="beaconList.default" fields="num" formatter="CMBeacons" cancel="hide beacons"/>
+				<circlemenu id="default" source="beaconList.default" fields="num" formatter="CMBeacons" onCancel="Events.pushevent('hide ingame_beaconmenu', event)"/>
 					<div class="infobox">
 						<h2>
 							<datasource_single source="beaconList.default" fields="name" targetid="default"/>

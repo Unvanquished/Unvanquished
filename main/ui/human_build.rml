@@ -102,7 +102,7 @@ div.infobox {
 <tabset class="circlemenu">
 <tab></tab>
 <panel>
-<circlemenu id="default" source="humanBuildList.default" fields="num" formatter="CMHumanBuildables" cancel="hide humanbuild"/>
+<circlemenu id="default" source="humanBuildList.default" fields="num" formatter="CMHumanBuildables" onCancel="Events.pushevent('hide human_build', event)"/>
 <div class="infobox">
 <h2><datasource_single source="humanBuildList.default" fields="name" targetid="default" /></h2>
 <p class="text">Price: <datasource_single source="humanBuildList.default" fields="cost" targetid="default" /><br/>
