@@ -40,7 +40,7 @@ namespace Console {
     static std::vector<std::string> lines;
 
     static std::string GetHistoryFilename() {
-        return "conhistory" + Application::GetConfig().uniqueHomepathSuffix;
+        return "conhistory" + Application::GetTraits().uniqueHomepathSuffix;
     }
 
     void SaveHistory() {

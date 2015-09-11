@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Application {
 
-struct Configuration {
+struct Traits {
     // TODO remove the need for that
     bool isClient = false;
     bool isTTYClient = false;
@@ -57,10 +57,10 @@ class Application {
 
         virtual void OnUnhandledCommand(const Cmd::Args& args);
 
-        const Configuration& GetConfig() const;
+        const Traits& GetTraits() const;
 
     protected:
-        Configuration config;
+        Traits traits;
 };
 
 void LoadInitialConfig(bool resetConfig);
@@ -72,7 +72,7 @@ void Shutdown(bool error, Str::StringRef message);
 
 void OnUnhandledCommand(const Cmd::Args& args);
 
-const Configuration& GetConfig();
+const Traits& GetTraits();
 
 #define INSTANTIATE_APPLICATION(classname) \
     Application& GetApp() { \

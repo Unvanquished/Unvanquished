@@ -42,10 +42,10 @@ class ClientApplication : public Application {
     public:
         ClientApplication() {
             #ifdef BUILD_CLIENT
-                config.isClient = true;
+                traits.isClient = true;
             #endif
             #ifdef BUILD_TTYCLIENT
-                config.isTTYClient = true;
+                traits.isTTYClient = true;
             #endif
         }
 

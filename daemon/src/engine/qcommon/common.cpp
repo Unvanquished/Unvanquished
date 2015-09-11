@@ -512,7 +512,7 @@ bool Com_AreCheatsAllowed()
 
 bool Com_IsClient()
 {
-    auto config = Application::GetConfig();
+    auto config = Application::GetTraits();
     return config.isClient || config.isTTYClient;
 }
 

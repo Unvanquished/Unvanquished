@@ -55,8 +55,8 @@ namespace Application {
         Log::Notice("Unknown command '%s'", args[0]);
     }
 
-    const Configuration& Application::GetConfig() const {
-        return config;
+    const Traits& Application::GetTraits() const {
+        return traits;
     }
 
     void LoadInitialConfig(bool resetConfig) {
@@ -83,8 +83,8 @@ namespace Application {
         GetApp().OnUnhandledCommand(args);
     }
 
-    const Configuration& GetConfig() {
-        return GetApp().GetConfig();
+    const Traits& GetTraits() {
+        return GetApp().GetTraits();
     }
 }
 

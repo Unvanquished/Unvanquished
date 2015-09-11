@@ -61,7 +61,7 @@ static std::string singletonSocketPath;
 // Get the path of a singleton socket
 static std::string GetSingletonSocketPath()
 {
-    auto& suffix = Application::GetConfig().uniqueHomepathSuffix;
+    auto& suffix = Application::GetTraits().uniqueHomepathSuffix;
 	// Use the hash of the homepath to identify instances sharing a homepath
 	const std::string& homePath = FS::GetHomePath();
 	char homePathHash[33] = "";
@@ -88,7 +88,7 @@ static void CreateSingletonSocket()
 	// the process quits, but it may remain if the homepath is on a network filesystem.
 	// We restrict the permissions to owner-only to prevent other users from grabbing
 	// an exclusive lock (which only requires read access).
-    auto& suffix = Application::GetConfig().uniqueHomepathSuffix;
+    auto& suffix = Application::GetTraits().uniqueHomepathSuffix;
 	try {
 		mode_t oldMask = umask(0077);
 		lockFile = FS::HomePath::OpenWrite(std::string("lock") + suffix);
@@ -263,7 +263,7 @@ static void CloseSingletonSocket()
 	unlink(singletonSocketPath.c_str());
 	rmdir(dirName.c_str());
 	try {
-		FS::HomePath::DeleteFile(std::string("lock") + Application::GetConfig().uniqueHomepathSuffix);
+		FS::HomePath::DeleteFile(std::string("lock") + Application::GetTraits().uniqueHomepathSuffix);
 	} catch (std::system_error&) {}
 #endif
 }
@@ -393,7 +393,7 @@ struct cmdlineArgs_t {
 		// interface because they have no other usable interface.
 		use_curses = true;
 #else
-        use_curses = Application::GetConfig().useCurses;
+        use_curses = Application::GetTraits().useCurses;
 #endif
 	}
 
@@ -447,7 +447,7 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 		}
 
 		if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-help")) {
-            std::string helpUrl = Application::GetConfig().supportsUri ? " [" URI_SCHEME "ADDRESS[:PORT]]" : "";
+            std::string helpUrl = Application::GetTraits().supportsUri ? " [" URI_SCHEME "ADDRESS[:PORT]]" : "";
 			printf("Usage: %s [-OPTION]...%s [+COMMAND]...\n",  argv[0], helpUrl.c_str());
 			printf("Possible options are:\n"
 			       "  -homepath <path>         set the path used for user-specific configuration files and downloaded pk3 files\n"

@@ -37,8 +37,8 @@ namespace Application {
 class ServerApplication : public Application {
     public:
         ServerApplication() {
-            config.isServer = true;
-            config.uniqueHomepathSuffix = "-server";
+            traits.isServer = true;
+            traits.uniqueHomepathSuffix = "-server";
         }
 
         void LoadInitialConfig(bool resetConfig) override {
