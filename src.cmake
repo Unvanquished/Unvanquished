@@ -73,6 +73,7 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
     ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
     ${GAMELOGIC_DIR}/shared/bg_voice.cpp
+    ${GAMELOGIC_DIR}/shared/bg_lua.cpp
     ${GAMELOGIC_DIR}/shared/bot_nav_shared.h
     ${GAMELOGIC_DIR}/shared/parse.cpp
     ${GAMELOGIC_DIR}/shared/parse.h
