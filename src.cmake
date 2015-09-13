@@ -10,6 +10,7 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
     ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
     ${GAMELOGIC_DIR}/shared/bg_voice.cpp
+    ${GAMELOGIC_DIR}/shared/bg_lua.cpp
 )
 
 set(CGAMELIST
