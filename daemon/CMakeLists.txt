@@ -452,20 +452,22 @@ set(LIBS_BASE ${LIBS_BASE} PARENT_SCOPE)
 
 # Curses, pdcurses on Windows and ncursesw on Unix
 # Not supported on mac because the included version is too old
-if (WIN32)
-    set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} gdi32 comdlg32)
+if (NOT NACL)
+    if (WIN32)
+        set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} gdi32 comdlg32)
 
-    add_definitions(-DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
-    add_library(srclibs-pdcurses EXCLUDE_FROM_ALL ${PDCURSESLIST})
-    set_target_properties(srclibs-pdcurses PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-    set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} srclibs-pdcurses)
-    include_directories(${LIB_DIR}/pdcurses)
-elseif (NOT APPLE)
-    add_definitions(-DUSE_CURSES)
-    set(CURSES_NEED_NCURSES 1) # Tells FindCurses that ncurses is required
-    find_package(CursesW REQUIRED)
-    set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} ${CURSESW_LIBRARIES})
-    include_directories(${CURSESW_INCLUDE_DIR})
+        add_definitions(-DPDC_WIDE -DPDC_FORCE_UTF8 -DUSE_CURSES)
+        add_library(srclibs-pdcurses EXCLUDE_FROM_ALL ${PDCURSESLIST})
+        set_target_properties(srclibs-pdcurses PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+        set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} srclibs-pdcurses)
+        include_directories(${LIB_DIR}/pdcurses)
+    elseif (NOT APPLE)
+        add_definitions(-DUSE_CURSES)
+        set(CURSES_NEED_NCURSES 1) # Tells FindCurses that ncurses is required
+        find_package(CursesW REQUIRED)
+        set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} ${CURSESW_LIBRARIES})
+        include_directories(${CURSESW_INCLUDE_DIR})
+    endif()
 endif()
 
 if (BUILD_CLIENT OR BUILD_TTY_CLIENT OR BUILD_SERVER)
