@@ -597,13 +597,14 @@ endif()
 ################################################################################
 # Engine
 ################################################################################
-
-add_library(engine-lib ${PCH_FILE} ${COMMONLIST} ${ENGINELIST})
-target_link_libraries(engine-lib ${LIBS_BASE} ${LIBS_ENGINE_BASE})
-set_property(TARGET engine-lib APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE)
-set_property(TARGET engine-lib APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} ${MOUNT_DIR} ${LIB_DIR})
-set_property(TARGET engine-lib APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
-ADD_PRECOMPILED_HEADER(engine-lib)
+if (NOT NACL)
+    add_library(engine-lib ${PCH_FILE} ${COMMONLIST} ${ENGINELIST})
+    target_link_libraries(engine-lib ${LIBS_BASE} ${LIBS_ENGINE_BASE})
+    set_property(TARGET engine-lib APPEND PROPERTY COMPILE_DEFINITIONS BUILD_ENGINE)
+    set_property(TARGET engine-lib APPEND PROPERTY INCLUDE_DIRECTORIES ${ENGINE_DIR} ${MOUNT_DIR} ${LIB_DIR})
+    set_property(TARGET engine-lib APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
+    ADD_PRECOMPILED_HEADER(engine-lib)
+endif()
 
 function(AddApplication)
     set(oneValueArgs Target ExecutableName)
@@ -621,15 +622,6 @@ function(AddApplication)
     message(STATUS ${A_Target})
     ADD_PRECOMPILED_HEADER(${A_Target})
 endfunction()
-
-if(NOT DAEMON_EXTERNAL_APP)
-AddApplication(
-    Target dummyapp
-    ExecutableName dummyapp
-    Flags ${WARNINGS}
-    Files ${ENGINE_DIR}/null/NullApplication.cpp
-)
-endif()
 
 if (BUILD_CLIENT)
     set(Definitions
