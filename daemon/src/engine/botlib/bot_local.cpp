@@ -174,7 +174,7 @@ static void InvalidateRouteResults( Bot_t *bot )
 	}
 }
 
-static dtRouteResult *FindRouteResult( Bot_t *bot, dtPolyRef start, dtPolyRef end )
+static dtRouteResult *FindRouteResult( Bot_t *bot, dtPolyRef start )
 {
 	if ( bot->needReplan )
 	{
@@ -259,7 +259,7 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 	}
 
 	// cache failed results
-	dtRouteResult *res = FindRouteResult( bot, startRef, endRef );
+	dtRouteResult *res = FindRouteResult( bot, startRef );
 
 	if ( res )
 	{

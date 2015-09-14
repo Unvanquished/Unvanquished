@@ -13,7 +13,7 @@
 	<body id="callvote_draw" template="window" style="width: 35em; margin: 10%;">
 		<h1> Call a vote for a draw </h1>
 
-		<form onsubmit='execForm "callvote draw $reason$"; hide'>
+		<form onsubmit='Events.pushevent("execForm \"callvote draw $reason$\"; hide", event)'>
 			<row>
 				<input type="text" cvar="ui_dialogCvar1" class="text" style="width: 25em;" name="reason"/>
 				<h3> Reason </h3>

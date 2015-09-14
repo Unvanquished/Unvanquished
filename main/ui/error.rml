@@ -3,11 +3,11 @@
 <link type="text/rcss" href="/ui/shared/basics.rcss" />
 <link type="text/template" href="/ui/shared/window.rml" />
 </head>
-<body id="error" onhide="exec set com_errorMessage" template="window" style="width: 32em; margin: 10%;">
+<body id="error" onhide='Events.pushevent("exec set com_errorMessage", event)' template="window" style="width: 32em; margin: 10%;">
 <h1>Error!</h1>
 <p class="inline">
 <inlinecvar cvar="ui_errorMessage"/>
 </p>
-<button onClick="hide error">Ok</button>
+<button onClick='Events.pushevent("hide error", event)'>Ok</button>
 </body>
 </rml>

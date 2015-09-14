@@ -75,7 +75,7 @@ static Rocket::Core::String ReduceRML( const Rocket::Core::String &rml )
 	Rocket::Core::String::size_type length = rml.Length();
 	ret.Reserve( length );
 
-	for ( int i = 0; i < length; i++ )
+	for ( unsigned i = 0; i < length; i++ )
 	{
 		if ( rml[ i ] == ' ' || rml[ i ] == '\n' )
 		{

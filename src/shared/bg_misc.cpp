@@ -68,7 +68,7 @@ static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableNameList );
 
 static buildableAttributes_t bg_buildableList[ ARRAY_LEN( bg_buildableNameList ) ];
 
-static const buildableAttributes_t nullBuildable = { (buildable_t) 0, 0, 0 };
+static const buildableAttributes_t nullBuildable {};
 
 int GetCvarInt(const char *varName) {
     std::string value = Cvar::GetValue(varName);
@@ -95,9 +95,7 @@ BG_BuildableByName
 */
 const buildableAttributes_t *BG_BuildableByName( const char *name )
 {
-	int i;
-
-	for ( i = 0; i < bg_numBuildables; i++ )
+	for ( unsigned i = 0; i < bg_numBuildables; i++ )
 	{
 		if ( !Q_stricmp( bg_buildableList[ i ].name, name ) )
 		{
@@ -115,9 +113,7 @@ BG_BuildableByEntityName
 */
 const buildableAttributes_t *BG_BuildableByEntityName( const char *name )
 {
-	int i;
-
-	for ( i = 0; i < bg_numBuildables; i++ )
+	for ( unsigned i = 0; i < bg_numBuildables; i++ )
 	{
 		if ( !Q_stricmp( bg_buildableList[ i ].entityName, name ) )
 		{
@@ -146,14 +142,13 @@ BG_InitBuildableAttributes
 */
 void BG_InitBuildableAttributes()
 {
-	int i;
 	const buildableName_t *bh;
 	buildableAttributes_t *ba;
 
 	int freeUpgrades = GetCvarInt( "x_freeUpgrades" );
 	int unlockedBuildables = GetCvarInt( "x_unlockedBuildables" );
 
-	for ( i = 0; i < bg_numBuildables; i++ )
+	for ( unsigned i = 0; i < bg_numBuildables; i++ )
 	{
 		bh = &bg_buildableNameList[i];
 		ba = &bg_buildableList[i];
@@ -333,8 +328,8 @@ static const size_t bg_numClasses = ARRAY_LEN( bg_classData );
 
 static classAttributes_t bg_classList[ ARRAY_LEN( bg_classData ) ];
 
-static const classAttributes_t nullClass = { (class_t) 0, 0, 0 };
-static /*const*/ classModelConfig_t nullClassModelConfig = { "" };
+static const classAttributes_t nullClass {};
+static /*const*/ classModelConfig_t nullClassModelConfig {};
 
 /*
 ==============
@@ -343,11 +338,9 @@ BG_ClassByName
 */
 const classAttributes_t *BG_ClassByName( const char *name )
 {
-	int i;
-
 	if ( name )
 	{
-		for ( i = 0; i < bg_numClasses; i++ )
+		for ( unsigned i = 0; i < bg_numClasses; i++ )
 		{
 			if ( !Q_stricmp( bg_classList[ i ].name, name ) )
 			{
@@ -379,11 +372,9 @@ BG_ClassModelConfigByName
 */
 classModelConfig_t *BG_ClassModelConfigByName( const char *name )
 {
-	int i;
-
 	if ( name )
 	{
-		for ( i = 0; i < bg_numClasses; i++ )
+		for ( unsigned i = 0; i < bg_numClasses; i++ )
 		{
 			if ( !Q_stricmp( bg_classModelConfigList[ i ].humanName, name ) )
 			{
@@ -544,14 +535,13 @@ BG_InitClassAttributes
 */
 void BG_InitClassAttributes()
 {
-	int i;
 	const classData_t *cd;
 	classAttributes_t *ca;
 
 	int noStamina = GetCvarInt( "x_noStamina" );
 	int freeUpgrades = GetCvarInt( "x_freeUpgrades" );
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	for ( unsigned i = 0; i < bg_numClasses; i++ )
 	{
 		cd = &bg_classData[i];
 		ca = &bg_classList[i];
@@ -678,13 +668,11 @@ static const size_t bg_numWeapons = ARRAY_LEN( bg_weaponsData );
 
 static weaponAttributes_t bg_weapons[ ARRAY_LEN( bg_weaponsData ) ];
 
-static const weaponAttributes_t nullWeapon = { (weapon_t) 0, 0 };
+static const weaponAttributes_t nullWeapon {};
 
 weapon_t BG_WeaponNumberByName( const char *name )
 {
-	int i;
-
-	for ( i = 0; i < bg_numWeapons; i++ )
+	for ( unsigned i = 0; i < bg_numWeapons; i++ )
 	{
 		if ( !Q_stricmp( bg_weaponsData[ i ].name, name ) )
 		{
@@ -727,13 +715,12 @@ BG_InitWeaponAttributes
 */
 void BG_InitWeaponAttributes()
 {
-	int i;
 	const weaponData_t *wd;
 	weaponAttributes_t *wa;
 
 	int freeUpgrades = GetCvarInt( "x_freeUpgrades" );
 
-	for ( i = 0; i < bg_numWeapons; i++ )
+	for ( unsigned i = 0; i < bg_numWeapons; i++ )
 	{
 		wd = &bg_weaponsData[i];
 		wa = &bg_weapons[i];
@@ -800,7 +787,7 @@ static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgradesData );
 
 static upgradeAttributes_t bg_upgrades[ ARRAY_LEN( bg_upgradesData ) ];
 
-static const upgradeAttributes_t nullUpgrade = { (upgrade_t) 0, 0 };
+static const upgradeAttributes_t nullUpgrade {};
 
 /*
 ==============
@@ -809,9 +796,7 @@ BG_UpgradeByName
 */
 const upgradeAttributes_t *BG_UpgradeByName( const char *name )
 {
-	int i;
-
-	for ( i = 0; i < bg_numUpgrades; i++ )
+	for ( unsigned i = 0; i < bg_numUpgrades; i++ )
 	{
 		if ( !Q_stricmp( bg_upgrades[ i ].name, name ) )
 		{
@@ -840,13 +825,12 @@ BG_InitUpgradeAttributes
 */
 void BG_InitUpgradeAttributes()
 {
-	int i;
 	const upgradeData_t *ud;
 	upgradeAttributes_t *ua;
 
 	int freeUpgrades = GetCvarInt( "x_freeUpgrades" );
 
-	for ( i = 0; i < bg_numUpgrades; i++ )
+	for ( unsigned i = 0; i < bg_numUpgrades; i++ )
 	{
 		ud = &bg_upgradesData[i];
 		ua = &bg_upgrades[i];
@@ -908,7 +892,7 @@ static const missileData_t bg_missilesData[] =
 
 static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
 static missileAttributes_t       bg_missiles[ ARRAY_LEN( bg_missilesData ) ];
-static const missileAttributes_t nullMissile = { (missile_t) 0, 0 };
+static const missileAttributes_t nullMissile {};
 
 /*
 ==============
@@ -917,9 +901,7 @@ BG_MissileByName
 */
 const missileAttributes_t *BG_MissileByName( const char *name )
 {
-	int i;
-
-	for ( i = 0; i < bg_numMissiles; i++ )
+	for ( unsigned i = 0; i < bg_numMissiles; i++ )
 	{
 		if ( !Q_stricmp( bg_missiles[ i ].name, name ) )
 		{
@@ -948,11 +930,10 @@ BG_InitMissileAttributes
 */
 void BG_InitMissileAttributes()
 {
-	int                 i;
 	const missileData_t *md;
 	missileAttributes_t *ma;
 
-	for ( i = 0; i < bg_numMissiles; i++ )
+	for ( unsigned i = 0; i < bg_numMissiles; i++ )
 	{
 		md = &bg_missilesData[i];
 		ma = &bg_missiles[i];
@@ -1041,9 +1022,7 @@ BG_MeansOfDeathByName
 */
 meansOfDeath_t BG_MeansOfDeathByName( const char *name )
 {
-	int i;
-
-	for ( i = 0; i < bg_numMeansOfDeath; i++ )
+	for ( unsigned i = 0; i < bg_numMeansOfDeath; i++ )
 	{
 		if ( !Q_stricmp( bg_meansOfDeathData[ i ].name, name ) )
 		{
@@ -1063,7 +1042,7 @@ typedef struct
 	int           flags;
 } beaconData_t;
 
-static const beaconAttributes_t nullBeacon = { BCT_NONE };
+static const beaconAttributes_t nullBeacon {};
 
 static const beaconData_t bg_beaconsData[ ] =
 {
@@ -1088,9 +1067,7 @@ BG_BeaconByName
 */
 const beaconAttributes_t *BG_BeaconByName( const char *name )
 {
-	int i;
-
-	for ( i = 0; i < bg_numBeacons; i++ )
+	for ( unsigned i = 0; i < bg_numBeacons; i++ )
 		if ( !Q_stricmp( bg_beacons[ i ].name, name ) )
 			return bg_beacons + i;
 
@@ -1117,11 +1094,10 @@ BG_InitBeaconAttributes
 */
 void BG_InitBeaconAttributes()
 {
-	int i;
 	const beaconData_t *bd;
 	beaconAttributes_t *ba;
 
-	for ( i = 0; i < bg_numBeacons; i++ )
+	for ( unsigned i = 0; i < bg_numBeacons; i++ )
 	{
 		bd = bg_beaconsData + i;
 		ba = bg_beacons + i;
@@ -1176,7 +1152,6 @@ BG_UnloadAllConfigs
 void BG_UnloadAllConfigs()
 {
     // Frees all the strings that were allocated when the config files were read
-    int i;
 
     // When the game starts VMs are shutdown before they are even started
     if(!config_loaded){
@@ -1184,7 +1159,7 @@ void BG_UnloadAllConfigs()
     }
     config_loaded = false;
 
-    for ( i = 0; i < bg_numBuildables; i++ )
+    for ( unsigned i = 0; i < bg_numBuildables; i++ )
     {
         buildableAttributes_t *ba = &bg_buildableList[i];
 
@@ -1195,7 +1170,7 @@ void BG_UnloadAllConfigs()
         }
     }
 
-    for ( i = 0; i < bg_numClasses; i++ )
+    for ( unsigned i = 0; i < bg_numClasses; i++ )
     {
         classAttributes_t *ca = &bg_classList[i];
 
@@ -1214,12 +1189,12 @@ void BG_UnloadAllConfigs()
         }
     }
 
-    for ( i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
+    for ( unsigned i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
     {
         BG_Free(BG_ClassModelConfig( i )->humanName);
     }
 
-    for ( i = 0; i < bg_numWeapons; i++ )
+    for ( unsigned i = 0; i < bg_numWeapons; i++ )
     {
         weaponAttributes_t *wa = &bg_weapons[i];
 
@@ -1234,7 +1209,7 @@ void BG_UnloadAllConfigs()
         }
     }
 
-    for ( i = 0; i < bg_numUpgrades; i++ )
+    for ( unsigned i = 0; i < bg_numUpgrades; i++ )
     {
         upgradeAttributes_t *ua = &bg_upgrades[i];
 
@@ -1249,7 +1224,7 @@ void BG_UnloadAllConfigs()
         }
     }
 
-    for ( i = 0; i < bg_numBeacons; i++ )
+    for ( unsigned i = 0; i < bg_numBeacons; i++ )
     {
 		    beaconAttributes_t *ba = bg_beacons + i;
 
@@ -1511,7 +1486,7 @@ BG_EventName
 */
 const char *BG_EventName( int num )
 {
-	if ( num < 0 || num >= ARRAY_LEN( eventnames ) )
+	if ( num < 0 || num >= (int) ARRAY_LEN( eventnames ) )
 	{
 		return "UNKNOWN";
 	}

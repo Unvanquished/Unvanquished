@@ -98,12 +98,12 @@ div.infobox {
 
 		</style>
 	</head>
-	<body id="human_buy" class="circlemenu human" onShow="buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades">
+	<body id="human_buy" class="circlemenu human" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades", event)'>
 	<div id="foo">
 	<tabset class="circlemenu">
 		<tab>Weapons</tab>
 		<panel>
-			<circlemenu id="weapons" source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" cancel="hide armourybuy"/>
+		<circlemenu id="weapons" source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" onCancel="Events.pushevent('hide human_buy', event)"/>
 			<div class="infobox">
 			<h2><datasource_single source="armouryBuyList.weapons" fields="name" targetid="weapons" /></h2>
 			<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" /></div></p>
@@ -114,8 +114,8 @@ div.infobox {
 			</div>
 		</panel>
 		<tab>Upgrades</tab>
-		<panel>
-			<circlemenu id="upgrades" source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" cancel="hide armourybuy"/>
+		<panel>Events.pushevent('hide human_build', event)
+		<circlemenu id="upgrades" source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" onCancel="Events.pushevent('hide human_buy', event)"/>
 			<div class="infobox">
 			<h2><datasource_single source="armouryBuyList.upgrades" fields="name" targetid="upgrades" /></h2>
 			<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.upgrades" fields="price" targetid="upgrades" /></div></p>

@@ -38,6 +38,7 @@ set(GAMELOGIC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${GAMELOGIC_DIR})
 include(src.cmake)
 
+
 option(BUILD_CGAME "Build client-side gamelogic" 1)
 option(BUILD_SGAME "Build server-side gamelogic" 1)
 
@@ -46,11 +47,13 @@ if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
         set(FREETYPE_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/libfreetype.a)
         set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${DEPS_DIR}/pnacl_deps/lib/libpng16.a)
         set(FREETYPE_INCLUDE_DIRS ${DEPS_DIR}/pnacl_deps/include/freetype2)
+        set(LUA_INCLUDE_DIR ${DEPS_DIR}/pnacl_deps/include)
+        set(LUA_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/liblua.a)
     else()
         find_package(Freetype REQUIRED)
+        find_package(Lua REQUIRED)
     endif()
-    include_directories(${FREETYPE_INCLUDE_DIRS})
-
+    include_directories(${FREETYPE_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
     add_subdirectory(${LIB_DIR}/libRocket)
     set_target_properties(ROCKET_LIB PROPERTIES FOLDER "libs")
     include_directories(${ROCKET_INCLUDE_DIRS})
@@ -92,16 +95,17 @@ if (BUILD_SGAME)
 endif()
 
 if (BUILD_CGAME)
-    GAMEMODULE(NAME cgame
-        DEFINITIONS
-            BUILD_CGAME
-            ROCKET_STATIC_LIB
-        FLAGS
-            ${WARNINGS}
-        FILES
-            ${CGAMELIST}
-        LIBS
-            ROCKET_LIB
-            ${FREETYPE_LIBRARIES}
-    )
+  GAMEMODULE(NAME cgame
+    DEFINITIONS
+        BUILD_CGAME
+        ROCKET_STATIC_LIB
+    FLAGS
+        ${WARNINGS}
+    FILES
+        ${CGAMELIST}
+    LIBS
+        ROCKET_LIB
+        ${FREETYPE_LIBRARIES}
+        ${LUA_LIBRARY}
+  )
 endif()

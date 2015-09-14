@@ -533,7 +533,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
 			playerLength = strlen( player );
 
-			if ( statusLength + playerLength >= sizeof( status ) )
+			if ( statusLength + playerLength >= (int) sizeof( status ) )
 			{
 				break; // can't hold any more
 			}
@@ -796,7 +796,7 @@ Redirect all printfs
 
 class RconEnvironment: public Cmd::DefaultEnvironment {
     public:
-        RconEnvironment(netadr_t from, int bufferSize): from(from), bufferSize(bufferSize) {};
+        RconEnvironment(netadr_t from, size_t bufferSize): from(from), bufferSize(bufferSize) {};
 
         virtual void Print(Str::StringRef text) OVERRIDE {
             if (text.size() + buffer.size() > bufferSize - 1) {
@@ -814,7 +814,7 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
 
     private:
         netadr_t from;
-        int bufferSize;
+        size_t bufferSize;
         std::string buffer;
 };
 
@@ -1423,90 +1423,6 @@ void SV_Frame( int msec )
 		svs.stats.packets = 0;
 		svs.stats.count = 0;
 	}
-}
-
-/*
-=================
-SV_LoadTag
-=================
-*/
-int SV_LoadTag( const char *mod_name )
-{
-	unsigned char *buffer;
-	tagHeader_t   *pinmodel;
-	int           version;
-	md3Tag_t      *tag;
-	md3Tag_t      *readTag;
-	int           i, j;
-
-	for ( i = 0; i < sv.num_tagheaders; i++ )
-	{
-		if ( !Q_stricmp( mod_name, sv.tagHeadersExt[ i ].filename ) )
-		{
-			return i + 1;
-		}
-	}
-
-	FS_ReadFile( mod_name, ( void ** ) &buffer );
-
-	if ( !buffer )
-	{
-		return false;
-	}
-
-	pinmodel = ( tagHeader_t * ) buffer;
-
-	version = LittleLong( pinmodel->version );
-
-	if ( version != TAG_VERSION )
-	{
-		FS_FreeFile( buffer );
-		Com_Printf( S_WARNING "SV_LoadTag: %s has wrong version (%i should be %i)\n", mod_name, version,
-		            TAG_VERSION );
-		return 0;
-	}
-
-	if ( sv.num_tagheaders >= MAX_TAG_FILES )
-	{
-		FS_FreeFile( buffer );
-		Com_Error( ERR_DROP, "MAX_TAG_FILES reached" );
-	}
-
-	LL( pinmodel->ident );
-	LL( pinmodel->numTags );
-	LL( pinmodel->ofsEnd );
-	LL( pinmodel->version );
-
-	Q_strncpyz( sv.tagHeadersExt[ sv.num_tagheaders ].filename, mod_name, MAX_QPATH );
-	sv.tagHeadersExt[ sv.num_tagheaders ].start = sv.num_tags;
-	sv.tagHeadersExt[ sv.num_tagheaders ].count = pinmodel->numTags;
-
-	if ( sv.num_tags + pinmodel->numTags >= MAX_SERVER_TAGS )
-	{
-		FS_FreeFile( buffer );
-		Com_Error( ERR_DROP, "MAX_SERVER_TAGS reached" );
-	}
-
-	// swap all the tags
-	tag = &sv.tags[ sv.num_tags ];
-	sv.num_tags += pinmodel->numTags;
-	readTag = ( md3Tag_t * )( buffer + sizeof( tagHeader_t ) );
-
-	for ( i = 0; i < pinmodel->numTags; i++, tag++, readTag++ )
-	{
-		for ( j = 0; j < 3; j++ )
-		{
-			tag->origin[ j ] = LittleFloat( readTag->origin[ j ] );
-			tag->axis[ 0 ][ j ] = LittleFloat( readTag->axis[ 0 ][ j ] );
-			tag->axis[ 1 ][ j ] = LittleFloat( readTag->axis[ 1 ][ j ] );
-			tag->axis[ 2 ][ j ] = LittleFloat( readTag->axis[ 2 ][ j ] );
-		}
-
-		Q_strncpyz( tag->name, readTag->name, 64 );
-	}
-
-	FS_FreeFile( buffer );
-	return ++sv.num_tagheaders;
 }
 
 /*

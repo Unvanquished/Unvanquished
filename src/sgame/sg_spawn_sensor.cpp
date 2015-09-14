@@ -49,7 +49,7 @@ void InitBrushSensor( gentity_t *self )
 	trap_LinkEntity( self );
 }
 
-void sensor_act(gentity_t *self, gentity_t *other, gentity_t *activator)
+void sensor_act(gentity_t *self, gentity_t*, gentity_t*)
 {
 	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
 	// self->s.eFlags ^= EF_NODRAW;
@@ -67,7 +67,7 @@ void sensor_reset( gentity_t *self )
 }
 
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
-void trigger_compat_propagation_act( gentity_t *self, gentity_t *other, gentity_t *activator )
+void trigger_compat_propagation_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	G_FireEntity( self, self );
 
@@ -106,7 +106,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
-void trigger_multiple_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
+void trigger_multiple_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -121,7 +121,7 @@ void trigger_multiple_act( gentity_t *self, gentity_t *caller, gentity_t *activa
 	trigger_checkWaitForReactivation( self );
 }
 
-void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	trigger_multiple_act( self, other, other );
 }
@@ -157,7 +157,7 @@ void sensor_start_fireAndForget( gentity_t *self )
 	G_FreeEntity( self );
 }
 
-void SP_sensor_start( gentity_t *self )
+void SP_sensor_start( gentity_t* )
 {
 	//self->think = sensor_start_fireAndForget; //gonna reuse that later, when we make sensor_start delayable again (configurable though)
 }
@@ -190,7 +190,7 @@ void sensor_timer_think( gentity_t *self )
 	self->nextthink = VariatedLevelTime( self->config.wait );
 }
 
-void sensor_timer_act( gentity_t *self, gentity_t *other, gentity_t *activator )
+void sensor_timer_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -341,7 +341,7 @@ bool sensor_buildable_match( gentity_t *self, gentity_t *activator )
 	return false;
 }
 
-void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
+void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t* )
 {
 	//sanity check
 	if ( !activator || !(activator->s.eType == ET_BUILDABLE) )
@@ -459,7 +459,7 @@ bool sensor_equipment_match( gentity_t *self, gentity_t *activator )
 	return false;
 }
 
-void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
+void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t* )
 {
 	bool shouldFire;
 

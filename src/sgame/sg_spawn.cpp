@@ -191,57 +191,57 @@ typedef struct
 
 static const fieldDescriptor_t fields[] =
 {
-	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR  },
-	{ "alias",               FOFS( names[ 2 ] ),          F_STRING     },
-	{ "alpha",               FOFS( restingPosition ),     F_3D_VECTOR  }, // What's with the variable abuse everytime?
-	{ "amount",              FOFS( config.amount ),       F_INT        },
+	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
+	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "alpha",               FOFS( restingPosition ),     F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
+	{ "amount",              FOFS( config.amount ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
 	{ "angle",               FOFS( s.angles ),            F_YAW,       ENT_V_TMPNAME, "yaw"}, //radiants ui sadly strongly encourages the "angle" keyword
-	{ "angles",              FOFS( s.angles ),            F_3D_VECTOR  },
-	{ "animation",           FOFS( animation ),           F_4D_VECTOR  },
-	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT      },
-	{ "classname",           FOFS( classname ),           F_STRING     },
-	{ "delay",               FOFS( config.delay ),        F_TIME       },
-	{ "dmg",                 FOFS( config.damage ),       F_INT        },
-	{ "health",              FOFS( config.health ),       F_INT        },
-	{ "message",             FOFS( message ),             F_STRING     },
-	{ "model",               FOFS( model ),               F_STRING     },
-	{ "model2",              FOFS( model2 ),              F_STRING     },
-	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	   },
-	{ "noise",               FOFS( soundIndex ),          F_SOUNDINDEX },
-	{ "onAct",               FOFS( calltargets ),         F_CALLTARGET },
-	{ "onDie",               FOFS( calltargets ),         F_CALLTARGET },
-	{ "onDisable",           FOFS( calltargets ),         F_CALLTARGET },
-	{ "onEnable",            FOFS( calltargets ),         F_CALLTARGET },
-	{ "onFree",              FOFS( calltargets ),         F_CALLTARGET },
-	{ "onReach",             FOFS( calltargets ),         F_CALLTARGET },
-	{ "onReset",             FOFS( calltargets ),         F_CALLTARGET },
-	{ "onSpawn",             FOFS( calltargets ),         F_CALLTARGET },
-	{ "onTouch",             FOFS( calltargets ),         F_CALLTARGET },
-	{ "onUse",               FOFS( calltargets ),         F_CALLTARGET },
-	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR  },
-	{ "period",              FOFS( config.period ),       F_TIME       },
-	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR  }, // What's with the variable abuse everytime?
+	{ "angles",              FOFS( s.angles ),            F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
+	{ "animation",           FOFS( animation ),           F_4D_VECTOR ,ENT_V_UNCLEAR, nullptr },
+	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     ,ENT_V_UNCLEAR, nullptr },
+	{ "classname",           FOFS( classname ),           F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "delay",               FOFS( config.delay ),        F_TIME      ,ENT_V_UNCLEAR, nullptr },
+	{ "dmg",                 FOFS( config.damage ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "health",              FOFS( config.health ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "message",             FOFS( message ),             F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "model",               FOFS( model ),               F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "model2",              FOFS( model2 ),              F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  ,ENT_V_UNCLEAR, nullptr },
+	{ "noise",               FOFS( soundIndex ),          F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "onAct",               FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onDie",               FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onDisable",           FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onEnable",            FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onFree",              FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onReach",             FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onReset",             FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onSpawn",             FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onTouch",             FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onUse",               FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
+	{ "period",              FOFS( config.period ),       F_TIME      ,ENT_V_UNCLEAR, nullptr },
+	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
-	{ "replacement",         FOFS( shaderReplacement ),   F_STRING     },
-	{ "shader",              FOFS( shaderKey ),           F_STRING     },
-	{ "sound1to2",           FOFS( sound1to2 ),           F_SOUNDINDEX },
-	{ "sound2to1",           FOFS( sound2to1 ),           F_SOUNDINDEX },
-	{ "soundPos1",           FOFS( soundPos1 ),           F_SOUNDINDEX },
-	{ "soundPos2",           FOFS( soundPos2 ),           F_SOUNDINDEX },
-	{ "spawnflags",          FOFS( spawnflags ),          F_INT        },
-	{ "speed",               FOFS( config.speed ),        F_FLOAT      },
-	{ "stage",               FOFS( conditions.stage ),    F_INT        },
-	{ "target",              FOFS( targets ),             F_TARGET     },
-	{ "target2",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "target3",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "replacement",         FOFS( shaderReplacement ),   F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "shader",              FOFS( shaderKey ),           F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "sound1to2",           FOFS( sound1to2 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "sound2to1",           FOFS( sound2to1 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "soundPos1",           FOFS( soundPos1 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "soundPos2",           FOFS( soundPos2 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "spawnflags",          FOFS( spawnflags ),          F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "speed",               FOFS( config.speed ),        F_FLOAT     ,ENT_V_UNCLEAR, nullptr },
+	{ "stage",               FOFS( conditions.stage ),    F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "target",              FOFS( targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr },
+	{ "target2",             FOFS( targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "target3",             FOFS( targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "target4",             FOFS( targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_TMPNAME, "name" }, //radiants ui sadly strongly encourages the "targetname" keyword
 	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING,    ENT_V_RENAMED, "shader"},
 	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING,    ENT_V_RENAMED, "replacement"},
-	{ "team",                FOFS( conditions.team ),     F_INT        },
-	{ "wait",                FOFS( config.wait ),         F_TIME       },
-	{ "yaw",                 FOFS( s.angles ),            F_YAW        },
+	{ "team",                FOFS( conditions.team ),     F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "wait",                FOFS( config.wait ),         F_TIME      ,ENT_V_UNCLEAR, nullptr },
+	{ "yaw",                 FOFS( s.angles ),            F_YAW       ,ENT_V_UNCLEAR, nullptr },
 };
 
 typedef enum
@@ -290,8 +290,8 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *	Act essentially as Statemachines.
 	 *
 	 */
-	{ S_CTRL_LIMITED,             SP_ctrl_limited,           CHAIN_RELAY },
-	{ S_CTRL_RELAY,               SP_ctrl_relay,             CHAIN_RELAY },
+	{ S_CTRL_LIMITED,             SP_ctrl_limited,           CHAIN_RELAY, ENT_V_UNCLEAR, nullptr },
+	{ S_CTRL_RELAY,               SP_ctrl_relay,             CHAIN_RELAY, ENT_V_UNCLEAR, nullptr },
 
 	/**
 	 *
@@ -319,7 +319,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "func_door_model",          SP_func_door_model,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ "func_door_rotating",       SP_func_door_rotating,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ "func_dynamic",             SP_func_dynamic,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
-	{ "func_group",               SP_RemoveSelf,             (entityChainType_t) 0 },
+	{ "func_group",               SP_RemoveSelf,             (entityChainType_t) 0, ENT_V_UNCLEAR, nullptr },
 	{ "func_pendulum",            SP_func_pendulum,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ "func_plat",                SP_func_plat,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ "func_rotating",            SP_func_rotating,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
@@ -344,10 +344,10 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  Entities that have an major influence on the gameplay.
 	 *  These are actions and effects against the whole match, a team or a player.
 	 */
-	{ S_GAME_END,                 SP_game_end,               CHAIN_PASSIV },
-	{ S_GAME_FUNDS,               SP_game_funds,             CHAIN_PASSIV },
-	{ S_GAME_KILL,                SP_game_kill,              CHAIN_PASSIV },
-	{ S_GAME_SCORE,               SP_game_score,             CHAIN_PASSIV },
+	{ S_GAME_END,                 SP_game_end,               CHAIN_PASSIV, ENT_V_UNCLEAR, nullptr },
+	{ S_GAME_FUNDS,               SP_game_funds,             CHAIN_PASSIV, ENT_V_UNCLEAR, nullptr },
+	{ S_GAME_KILL,                SP_game_kill,              CHAIN_PASSIV, ENT_V_UNCLEAR, nullptr },
+	{ S_GAME_SCORE,               SP_game_score,             CHAIN_PASSIV, ENT_V_UNCLEAR, nullptr },
 
 	/**
 	 *
@@ -370,14 +370,14 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_ALIEN_INTERMISSION  },
 	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_HUMAN_INTERMISSION  },
 	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
-	{ "info_null",                SP_RemoveSelf,             (entityChainType_t) 0 },
+	{ "info_null",                SP_RemoveSelf,             (entityChainType_t) 0, ENT_V_UNCLEAR, nullptr },
 	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
 	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_INTERMISSION },
 	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
-	{ "light",                    SP_RemoveSelf,             (entityChainType_t) 0 },
+	{ "light",                    SP_RemoveSelf,             (entityChainType_t) 0, ENT_V_UNCLEAR, nullptr },
 	{ "misc_anim_model",          SP_gfx_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_animated_model },
 	{ "misc_light_flare",         SP_gfx_light_flare,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_light_flare },
-	{ "misc_model",               SP_RemoveSelf,             (entityChainType_t) 0 },
+	{ "misc_model",               SP_RemoveSelf,             (entityChainType_t) 0, ENT_V_UNCLEAR, nullptr },
 	{ "misc_particle_system",     SP_gfx_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_particle_system},
 	{ "misc_portal_camera",       SP_gfx_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, S_gfx_portal_camera },
 	{ "misc_portal_surface",      SP_gfx_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_portal_surface },
@@ -398,7 +398,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_POS_LOCATION,             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ S_POS_PLAYER_INTERMISSION,  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ S_POS_PLAYER_SPAWN,         SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
-	{ S_POS_TARGET,               SP_pos_target,             CHAIN_TARGET },
+	{ S_POS_TARGET,               SP_pos_target,             CHAIN_TARGET, ENT_V_UNCLEAR, nullptr },
 
 	/**
 	 *  Sensors
@@ -407,14 +407,14 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  of another entity, event, or gamestate (timer and start being aware of the game start).
 	 *  Enabling/Disabling Sensors generally changes their ability of perceiving other entities.
 	 */
-	{ S_SENSOR_BUILDABLE,         SP_sensor_buildable,       CHAIN_ACTIVE },
-	{ S_SENSOR_CREEP,             SP_sensor_creep,           CHAIN_ACTIVE },
-	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE },
-	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE },
-	{ S_SENSOR_POWER,             SP_sensor_power,           CHAIN_ACTIVE },
-	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE },
-	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE },
-	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE },
+	{ S_SENSOR_BUILDABLE,         SP_sensor_buildable,       CHAIN_ACTIVE, ENT_V_UNCLEAR, nullptr },
+	{ S_SENSOR_CREEP,             SP_sensor_creep,           CHAIN_ACTIVE, ENT_V_UNCLEAR, nullptr },
+	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE, ENT_V_UNCLEAR, nullptr },
+	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE, ENT_V_UNCLEAR, nullptr },
+	{ S_SENSOR_POWER,             SP_sensor_power,           CHAIN_ACTIVE, ENT_V_UNCLEAR, nullptr },
+	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE, ENT_V_UNCLEAR, nullptr },
+	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE, ENT_V_UNCLEAR, nullptr },
+	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE, ENT_V_UNCLEAR, nullptr },
 	{ S_SENSOR_TIMER,             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, nullptr },
 
    /**

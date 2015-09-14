@@ -3079,8 +3079,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 // Tr3B - visualisation tools to help debugging the renderer frontend
 	void     R_DebugAxis( const vec3_t origin, const matrix_t transformMatrix );
 	void     R_DebugBoundingBox( const vec3_t origin, const vec3_t mins, const vec3_t maxs, vec4_t color );
-	void     R_DebugPolygon( int color, int numPoints, float *points );
-	void     R_DebugText( const vec3_t org, float r, float g, float b, const char *text, bool neverOcclude );
 
 	void     DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv);
 	void     DebugDrawBegin( debugDrawMode_t mode, float size );
@@ -3143,7 +3141,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	*/
 
 	void      RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, bool dirty );
-	void      RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, bool dirty );
+	void      RE_UploadCinematic( int cols, int rows, const byte *data, int client, bool dirty );
 
 	void      RE_BeginFrame();
 	bool  RE_BeginRegistration( glconfig_t *glconfig, glconfig2_t *glconfig2 );
@@ -3186,8 +3184,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void    R_ShutdownImages();
 	int     R_SumOfUsedImages();
 
-	image_t *R_FindImageFile( const char *name, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName );
-	image_t *R_FindCubeImage( const char *name, int bits, filterType_t filterType, wrapType_t wrapType, const char *materialName );
+	image_t *R_FindImageFile( const char *name, int bits, filterType_t filterType, wrapType_t wrapType );
+	image_t *R_FindCubeImage( const char *name, int bits, filterType_t filterType, wrapType_t wrapType );
 
 	image_t *R_CreateImage( const char *name, const byte **pic,
 				int width, int height, int bits, int numMips,
@@ -3386,7 +3384,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color );
 	void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color, float s1, float t1, float s2, float t2 );
 
-	void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2, bool calcNormals );
+	void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2);
 	void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const vec4_t color );
 	void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const vec4_t color );
 
@@ -3787,16 +3785,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	typedef struct
 	{
-		int     commandId;
-		image_t *image;
-		int     x;
-		int     y;
-		int     w;
-		int     h;
-	} renderToTextureCommand_t;
-
-	typedef struct
-	{
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
@@ -3852,7 +3840,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  RC_SWAP_BUFFERS,
 	  RC_SCREENSHOT,
 	  RC_VIDEOFRAME,
-	  RC_RENDERTOTEXTURE, //bani
 	  RC_FINISH //bani
 	} renderCommand_t;
 
@@ -3896,7 +3883,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	extern volatile bool            renderThreadActive;
 
-	void                                *R_GetCommandBuffer( int bytes );
+	void                                *R_GetCommandBuffer( unsigned bytes );
 	void                                RB_ExecuteRenderCommands( const void *data );
 
 	void                                R_SyncRenderThread();
@@ -3957,8 +3944,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void       RE_GlyphVM( fontHandle_t, const char *str, glyphInfo_t *glyph);
 	void       RE_GlyphCharVM( fontHandle_t, int ch, glyphInfo_t *glyph);
 
-// bani
-	void       RE_RenderToTexture( int textureid, int x, int y, int w, int h );
 	void       RE_Finish();
 
 	void       R_SetAltShaderTokens( const char * );

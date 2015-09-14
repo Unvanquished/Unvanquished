@@ -43,7 +43,7 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
-class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
+class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener, Rocket::Core::EventListener
 {
 public:
 	RocketCircleMenu( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
@@ -185,22 +185,22 @@ public:
 
 	}
 
-	void OnRowAdd( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_added, int num_rows_added )
+	void OnRowAdd( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_changed, int num_rows_changed )
+	void OnRowChange( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table )
+	void OnRowChange( Rocket::Controls::DataSource*, const Rocket::Core::String& )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowRemove( Rocket::Controls::DataSource *data_source, const Rocket::Core::String &table, int first_row_removed, int num_rows_removed )
+	void OnRowRemove( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
@@ -326,6 +326,13 @@ public:
 				}
 			}
 		}
+		if ( event.GetTargetElement() == GetFirstChild() )
+		{
+			if ( event == "click" )
+			{
+				DispatchEvent( "cancel", Rocket::Core::Dictionary() );
+			}
+		}
 	}
 
 protected:
@@ -374,8 +381,9 @@ private:
 	void AddCancelbutton()
 	{
 		init = true;
-		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
+		Rocket::Core::Factory::InstanceElementText( this, "<button>Cancel</button>" );
 		GetFirstChild()->SetClass( "cancelButton", true );
+		GetFirstChild()->AddEventListener( "click", this );
 	}
 
 	bool dirty_query;

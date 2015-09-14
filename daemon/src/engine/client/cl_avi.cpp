@@ -125,17 +125,6 @@ static INLINE void WRITE_2BYTES( int x )
 
 /*
 ===============
-WRITE_1BYTES
-===============
-*/
-static INLINE void WRITE_1BYTES( int x )
-{
-	buffer[ bufIndex ] = x;
-	bufIndex += 1;
-}
-
-/*
-===============
 START_CHUNK
 ===============
 */

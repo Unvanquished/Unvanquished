@@ -82,9 +82,9 @@ typedef struct
 	yuv_buffer       th_yuvbuffer;
 
 	unsigned char *outputBuffer;
-	int           outputWidht;
-	int           outputHeight;
-	int           outputBufferSize; // in Pixel (so "real Bytesize" = outputBufferSize*4)
+	unsigned      outputWidht;
+	unsigned      outputHeight;
+	unsigned      outputBufferSize; // in Pixel (so "real Bytesize" = outputBufferSize*4)
 	int           VFrameCount; // output video-stream
 	ogg_int64_t   Vtime_unit;
 	int           currentTime; // input from Run-function
@@ -306,7 +306,6 @@ static int loadVideoFrameTheora()
 
 		if ( ( g_ogm.VFrameCount < th_frame && th_frame >= nextNeededVFrame() ) || !g_ogm.outputBuffer )
 		{
-//          int i,j;
 			int yWShift, uvWShift;
 			int yHShift, uvHShift;
 
@@ -522,9 +521,8 @@ typedef struct
 bool isPowerOf2( int x )
 {
 	int bitsSet = 0;
-	int i;
 
-	for ( i = 0; i < sizeof( int ) * 8; ++i )
+	for (unsigned i = 0; i < sizeof( int ) * 8; ++i )
 	{
 		if ( x & ( 1 << i ) )
 		{
@@ -793,17 +791,17 @@ void Cin_OGM_Shutdown()
 
 #else
 
-int Cin_OGM_Init( const char *filename )
+int Cin_OGM_Init( const char* )
 {
 	return 1;
 }
 
-int Cin_OGM_Run( int time )
+int Cin_OGM_Run( int )
 {
 	return 1;
 }
 
-unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
+unsigned char  *Cin_OGM_GetOutput( int*, int* )
 {
 	return 0;
 }

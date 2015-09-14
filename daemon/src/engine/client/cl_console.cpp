@@ -386,10 +386,9 @@ void Con_Grep_f()
 	if( printbuf )
 	{
 		char tmpbuf[ MAXPRINTMSG ];
-		int i;
 
 		// print out in chunks so we don't go over the MAXPRINTMSG limit
-		for ( i = 0; i < pbLength; i += MAXPRINTMSG - 1 )
+		for (unsigned i = 0; i < pbLength; i += MAXPRINTMSG - 1 )
 		{
 			Q_strncpyz( tmpbuf, printbuf + i, sizeof( tmpbuf ) );
 			Com_Printf( "%s", tmpbuf );

@@ -53,7 +53,7 @@ public:
 	}
 
 	/// Destroys the event.
-	void OnDetach(Rocket::Core::Element* element)
+	void OnDetach(Rocket::Core::Element*)
 	{
 		delete this;
 	}
@@ -69,7 +69,7 @@ public:
 	~EventInstancer() { }
 
 	/// Instances a new event handle for the CGame
-	Rocket::Core::EventListener* InstanceEventListener(const Rocket::Core::String& value, Rocket::Core::Element* element)
+	Rocket::Core::EventListener* InstanceEventListener(const Rocket::Core::String& value, Rocket::Core::Element*)
 	{
 		return new RocketEvent( value );
 	}

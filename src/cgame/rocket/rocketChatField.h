@@ -165,7 +165,7 @@ public:
 						break;
 
 					case Rocket::Core::Input::KI_DELETE:
-						if ( cursor_character_index < text.Length() )
+						if ( cursor_character_index < (int) text.Length() )
 						{
 							text.Erase( cursor_character_index, 1 );
 							UpdateText();
@@ -230,7 +230,7 @@ public:
 				{
 					Rocket::Core::word character = event.GetParameter< Rocket::Core::word >( "data", 0 );
 
-					if ( text.Length() == cursor_character_index )
+					if ( (int) text.Length() == cursor_character_index )
 					{
 						text.Append( character );
 					}

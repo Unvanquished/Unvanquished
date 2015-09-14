@@ -127,7 +127,7 @@ void CG_ClientList_f()
 static void CG_ReloadHud_f()
 {
 	CG_Rocket_LoadHuds();
-	CG_OnPlayerWeaponChange( (weapon_t) cg.snap->ps.weapon );
+	CG_OnPlayerWeaponChange();
 }
 
 static void CG_CompleteClass()
@@ -465,6 +465,7 @@ static const struct
 	{ "lcp",              CG_CenterPrint_f,        0                },
 	{ "listmaps",         0,                       0                },
 	{ "listrotation",     0,                       0                },
+	{ "luarocket",        Rocket_Lua_f,            0                },
 	{ "m",                0,                       CG_CompleteName  },
 	{ "maplog",           0,                       0                },
 	{ "me",               0,                       0                },

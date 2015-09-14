@@ -62,7 +62,7 @@ static size_t DL_cb_FWriteFile( void *ptr, size_t size, size_t nmemb, void *stre
 /*
 ** Print progress
 */
-static int DL_cb_Progress( void *clientp, double dltotal, double dlnow, double ultotal, double ulnow )
+static int DL_cb_Progress( void*, double, double dlnow, double, double )
 {
 	/* cl_downloadSize and cl_downloadTime are set by the Q3 protocol...
 	   and it would probably be expensive to verify them here.   -zinx */
@@ -114,7 +114,7 @@ inspired from http://www.w3.org/Library/Examples/LoadToFile.c
 setup the download, return once we have a connection
 ===============
 */
-int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
+int DL_BeginDownload( const char *localName, const char *remoteName )
 {
 	char referer[ MAX_STRING_CHARS + URI_SCHEME_LENGTH ];
 

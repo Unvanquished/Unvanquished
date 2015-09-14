@@ -113,7 +113,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
 			case CG_TEXT_INPUT_EVENT:
-				IPC::HandleMsg<CGameTextInptEvent>(VM::rootChannel, std::move(reader), [] (char c) {
+				IPC::HandleMsg<CGameTextInptEvent>(VM::rootChannel, std::move(reader), [] (int c) {
 					Rocket_ProcessTextInput(c);
 					cmdBuffer.TryFlush();
 				});
@@ -212,10 +212,10 @@ void trap_RegisterButtonCommands( const char *cmds )
 	VM::SendMsg<RegisterButtonCommandsMsg>(cmds);
 }
 
-void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
+void trap_GetClipboardData( char *buf, int bufsize )
 {
 	std::string data;
-	VM::SendMsg<GetClipboardDataMsg>(bufsize, clip, data);
+	VM::SendMsg<GetClipboardDataMsg>(bufsize, data);
 	Q_strncpyz(buf, data.c_str(), bufsize);
 }
 

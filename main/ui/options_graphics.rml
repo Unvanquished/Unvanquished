@@ -25,7 +25,7 @@
 
 
 	</head>
-	<body id="options_graphics" template="window" style="width: 45em; margin: 10%;" onload="buildDS resolutions">
+	<body id="options_graphics" template="window" style="width: 45em; margin: 10%;" onload='Events.pushevent("buildDS resolutions", event)'>
 		<h1> Graphics </h1>
 
 		<tabset>
@@ -40,7 +40,7 @@
 					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma"/>
 					<p class="inline">
 						Gamma: <inlinecvar cvar="r_gamma" type="number" format="%.2f"/>
-						<ilink onclick="exec reset r_gamma"> (reset) </ilink>
+						<ilink onclick='Events.pushevent("exec reset r_gamma", event)'> (reset) </ilink>
 					</p>
 				</row>
 
@@ -92,7 +92,7 @@
 				</row>
 
 				<buttonbar>
-					<button onClick="exec r_mode -1; exec vid_restart">Apply now</button>
+					<button onClick='Events.pushevent("exec r_mode -1; exec vid_restart", event)'>Apply now</button>
 				</buttonbar>
 
 			</panel>
@@ -192,7 +192,7 @@
 					<input type="range" min="10" max="1500" step="10" cvar="cg_motionblurMinSpeed"/>
 					<p class="inline">
 						Current: <inlinecvar cvar="cg_motionblurMinSpeed" type="number" format="%.0f"/>
-						<ilink onclick="exec reset cg_motionblurMinSpeed"> (reset) </ilink>
+						<ilink onclick='Events.pushevent("exec reset cg_motionblurMinSpeed", event)'> (reset) </ilink>
 					</p>
 				</row>
 			</panel>

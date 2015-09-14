@@ -80,6 +80,7 @@ function(GAMEMODULE)
                     -DDEPS_DIR=${DEPS_DIR}
                     -DBUILD_CGAME=${BUILD_CGAME}
                     -DBUILD_SGAME=${BUILD_SGAME}
+                    -DBUILD_GAME_NACL_NEXE=${BUILD_GAME_NACL_NEXE}
                     -DBUILD_GAME_NACL=1
                     -DBUILD_GAME_NATIVE_DLL=0
                     -DBUILD_GAME_NATIVE_EXE=0

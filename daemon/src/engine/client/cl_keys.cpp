@@ -431,18 +431,12 @@ Field_Paste
 */
 static void Field_Paste(Util::LineEditData& edit)
 {
-#ifdef BUILD_CLIENT
-	const char *cbd;
 	int        pasteLen, width;
-	char       *ptr = SDL_GetClipboardText();
+    char buffer[1024];
 
-	if ( !ptr )
-	{
-		return;
-	}
+    CL_GetClipboardData(buffer, sizeof(buffer));
 
-	cbd = Com_ClearForeignCharacters( ptr );
-	SDL_free( ptr );
+    const char* cbd = buffer;
 
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( cbd );
@@ -454,7 +448,6 @@ static void Field_Paste(Util::LineEditData& edit)
 		cbd += width;
 		pasteLen -= width;
 	}
-#endif
 }
 
 /*
@@ -919,7 +912,7 @@ int Key_GetTeam( const char *arg, const char *cmd )
 
 	l = strlen( arg );
 
-	for ( t = 0; t < ARRAY_LEN( labels ); ++t )
+	for ( unsigned t = 0; t < ARRAY_LEN( labels ); ++t )
 	{
 		// matching initial substring
 		if ( !Q_strnicmp( arg, labels[ t ].label, l ) )
@@ -1490,7 +1483,7 @@ void Key_CompleteTeambind( char *args, int argNum )
 	}
 }
 
-static void Key_CompleteEditbind( char *args, int argNum )
+static void Key_CompleteEditbind( char *, int argNum )
 {
 	if ( argNum < 4 )
 	{

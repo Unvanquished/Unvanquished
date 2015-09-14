@@ -73,7 +73,7 @@ void Rocket_DeleteEvent()
 	delete event;
 }
 
-void Rocket_GetEventParameters( char *params, int length )
+void Rocket_GetEventParameters( char *params, int /*length*/ )
 {
 	RocketEvent_t *event = eventQueue.front();
 	*params = '\0';
@@ -88,4 +88,9 @@ void Rocket_GetEventParameters( char *params, int length )
 			Info_SetValueForKeyRocket( params, key.CString(), value.CString(), true );
 		}
 	}
+}
+
+void Rocket_AddEvent( RocketEvent_t *event )
+{
+	eventQueue.push( event );
 }

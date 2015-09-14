@@ -137,17 +137,6 @@ typedef struct
 #define FOURCC_BC4U             MAKEFOURCC( 'B', 'C', '4', 'U' )
 #define FOURCC_BC5U             MAKEFOURCC( 'B', 'C', '5', 'U' )
 
-static INLINE void UnpackRGB565( byte rgb[ 3 ], uint16_t cl )
-{
-	byte r = ( byte )( ( cl >> 11 ) & 0x1F );
-	byte g = ( byte )( ( cl >> 5 ) & 0x3F );
-	byte b = ( byte )( cl & 0x1F );
-
-	rgb[ 0 ] = ( r << 3 ) | ( r >> 2 ); //multiply by 8.22 -> 8.25
-	rgb[ 1 ] = ( g << 2 ) | ( g >> 4 ); //multiply by 4.047 -> 4.0625
-	rgb[ 2 ] = ( b << 3 ) | ( b >> 2 ); //multiply by 8.22 -> 8.25
-}
-
 void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 			 int *width, int *height, int *numLayers,
 			 int *numMips, int *bits )
@@ -357,7 +346,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 }
 
 void LoadDDS( const char *name, byte **data, int *width, int *height,
-	      int *numLayers, int *numMips, int *bits, byte alphaByte )
+	      int *numLayers, int *numMips, int *bits, byte )
 {
 	byte    *buff;
 

@@ -19,7 +19,7 @@
 			<input type="range" min=" 0.5" max=" 20" step="0.01" cvar="sensitivity"/>
 			<p class="inline">
 				Current: <inlinecvar cvar="sensitivity" type="number" format="%.2f"/>
-				<ilink onclick="exec reset sensitivity"> (reset) </ilink>
+				<ilink onclick='Events.pushevent("exec reset sensitivity", event)'> (reset) </ilink>
 			</p>
 		</row>
 		<row>

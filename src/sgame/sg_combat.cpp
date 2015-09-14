@@ -393,7 +393,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		}
 	}
 
-	if ( meansOfDeath < 0 || meansOfDeath >= ARRAY_LEN( modNames ) )
+	if ( meansOfDeath < 0 || meansOfDeath >= (int) ARRAY_LEN( modNames ) )
 	{
 		// fall back on the number
 		obit = va( "%d", meansOfDeath );

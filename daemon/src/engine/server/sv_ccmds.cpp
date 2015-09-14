@@ -165,7 +165,7 @@ static void SV_MapRestart_f()
 	sv.state = SS_LOADING;
 	sv.restarting = true;
 
-	SV_RestartGameProgs(Cvar_VariableString("mapname"));
+	SV_RestartGameProgs();
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )

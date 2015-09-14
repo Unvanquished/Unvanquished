@@ -149,7 +149,7 @@ void Rocket_ShowHud( int weapon )
 	activeHud = currentHud;
 }
 
-void Rocket_ClearHud( int weapon )
+void Rocket_ClearHud( unsigned weapon )
 {
 	if ( weapon < huds.size() )
 	{

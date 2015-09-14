@@ -910,7 +910,6 @@ Loads in the map and all submodels
 */
 void CM_LoadMap(Str::StringRef name)
 {
-	int             i;
 	dheader_t       header;
 
 	cmLog.Debug( "CM_LoadMap(%s)\n", name);
@@ -939,7 +938,7 @@ void CM_LoadMap(Str::StringRef name)
 
 	header = * ( dheader_t * ) mapData.data();
 
-	for ( i = 0; i < sizeof( dheader_t ) / 4; i++ )
+	for (unsigned i = 0; i < sizeof( dheader_t ) / 4; i++ )
 	{
 		( ( int * ) &header ) [ i ] = LittleLong( ( ( int * ) &header ) [ i ] );
 	}

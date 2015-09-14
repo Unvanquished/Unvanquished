@@ -12,7 +12,7 @@
 			<colorinput type="text" cvar="name"/>
 			<h3>Nickname</h3>
 			<p>Your name visible to others.  </p>
-			<p><ilink onClick="show help_textentry">Colours and symbols</ilink> can be used.</p>
+			<p><ilink onClick='Events.pushevent("show help_textentry", event)'>Colours and symbols</ilink> can be used.</p>
 		</row>
 		<row>
 			<h3>Tutorial mode</h3>

@@ -25,11 +25,11 @@
 		</style>
 
 	</head>
-	<body id="callvote_map" template="window" style="width: 40em; margin: 10%;" onShow='buildDS mapList' >
+	<body id="callvote_map" template="window" style="width: 40em; margin: 10%;" onShow='Events.pushevent("buildDS mapList", event)' >
 		<h1> Change map </h1>
 
 
-		<form onsubmit='execForm "$action$ $map$"; hide'>
+		<form onsubmit='Events.pushevent("execForm \"$action$ $map$\"; hide", event)'>
 			<row>
 				<select cvar="ui_dialogCvar2" name="action">
 					<option value="callvote nextmap">Vote: change nextmap</option>

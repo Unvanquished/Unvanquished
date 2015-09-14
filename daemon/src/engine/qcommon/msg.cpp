@@ -540,7 +540,8 @@ float MSG_ReadFloat( msg_t *msg )
 char           *MSG_ReadString( msg_t *msg )
 {
 	static char string[ MAX_STRING_CHARS ];
-	int         l, c;
+	unsigned l;
+    int c;
 
 	l = 0;
 
@@ -566,7 +567,8 @@ char           *MSG_ReadString( msg_t *msg )
 char           *MSG_ReadBigString( msg_t *msg )
 {
 	static char string[ BIG_INFO_STRING ];
-	int         l, c;
+	unsigned l;
+    int c;
 
 	l = 0;
 
@@ -592,7 +594,8 @@ char           *MSG_ReadBigString( msg_t *msg )
 char           *MSG_ReadStringLine( msg_t *msg )
 {
 	static char string[ MAX_STRING_CHARS ];
-	int         l, c;
+	unsigned l;
+    int c;
 
 	l = 0;
 
@@ -915,67 +918,67 @@ typedef struct
 
 static netField_t entityStateFields[] =
 {
-	{ NETF( eType ),             8               },
-	{ NETF( eFlags ),            24              },
-	{ NETF( pos.trType ),        8               },
-	{ NETF( pos.trTime ),        32              },
-	{ NETF( pos.trDuration ),    32              },
-	{ NETF( pos.trBase[ 0 ] ),   0               },
-	{ NETF( pos.trBase[ 1 ] ),   0               },
-	{ NETF( pos.trBase[ 2 ] ),   0               },
-	{ NETF( pos.trDelta[ 0 ] ),  0               },
-	{ NETF( pos.trDelta[ 1 ] ),  0               },
-	{ NETF( pos.trDelta[ 2 ] ),  0               },
-	{ NETF( apos.trType ),       8               },
-	{ NETF( apos.trTime ),       32              },
-	{ NETF( apos.trDuration ),   32              },
-	{ NETF( apos.trBase[ 0 ] ),  0               },
-	{ NETF( apos.trBase[ 1 ] ),  0               },
-	{ NETF( apos.trBase[ 2 ] ),  0               },
-	{ NETF( apos.trDelta[ 0 ] ), 0               },
-	{ NETF( apos.trDelta[ 1 ] ), 0               },
-	{ NETF( apos.trDelta[ 2 ] ), 0               },
-	{ NETF( time ),              32              },
-	{ NETF( time2 ),             32              },
-	{ NETF( origin[ 0 ] ),       0               },
-	{ NETF( origin[ 1 ] ),       0               },
-	{ NETF( origin[ 2 ] ),       0               },
-	{ NETF( origin2[ 0 ] ),      0               },
-	{ NETF( origin2[ 1 ] ),      0               },
-	{ NETF( origin2[ 2 ] ),      0               },
-	{ NETF( angles[ 0 ] ),       0               },
-	{ NETF( angles[ 1 ] ),       0               },
-	{ NETF( angles[ 2 ] ),       0               },
-	{ NETF( angles2[ 0 ] ),      0               },
-	{ NETF( angles2[ 1 ] ),      0               },
-	{ NETF( angles2[ 2 ] ),      0               },
-	{ NETF( otherEntityNum ),    GENTITYNUM_BITS },
-	{ NETF( otherEntityNum2 ),   GENTITYNUM_BITS },
-	{ NETF( groundEntityNum ),   GENTITYNUM_BITS },
-	{ NETF( loopSound ),         8               },
-	{ NETF( constantLight ),     32              },
-	{ NETF( modelindex ),        MODELINDEX_BITS },
-	{ NETF( modelindex2 ),       MODELINDEX_BITS },
-	{ NETF( frame ),             16              },
-	{ NETF( clientNum ),         8               },
-	{ NETF( solid ),             24              },
-	{ NETF( event ),             10              },
-	{ NETF( eventParm ),         8               },
-	{ NETF( eventSequence ),     8               },  // warning: need to modify cg_event.c at "// check the sequencial list" if you change this
-	{ NETF( events[ 0 ] ),       8               },
-	{ NETF( events[ 1 ] ),       8               },
-	{ NETF( events[ 2 ] ),       8               },
-	{ NETF( events[ 3 ] ),       8               },
-	{ NETF( eventParms[ 0 ] ),   8               },
-	{ NETF( eventParms[ 1 ] ),   8               },
-	{ NETF( eventParms[ 2 ] ),   8               },
-	{ NETF( eventParms[ 3 ] ),   8               },
-	{ NETF( weapon ),            8               },
-	{ NETF( legsAnim ),          ANIM_BITS       },
-	{ NETF( torsoAnim ),         ANIM_BITS       },
-	{ NETF( generic1 ),          10              },
-	{ NETF( misc ),              MAX_MISC        },
-	{ NETF( weaponAnim ),        ANIM_BITS       },
+	{ NETF( eType ),             8              , 0 },
+	{ NETF( eFlags ),            24             , 0 },
+	{ NETF( pos.trType ),        8              , 0 },
+	{ NETF( pos.trTime ),        32             , 0 },
+	{ NETF( pos.trDuration ),    32             , 0 },
+	{ NETF( pos.trBase[ 0 ] ),   0              , 0 },
+	{ NETF( pos.trBase[ 1 ] ),   0              , 0 },
+	{ NETF( pos.trBase[ 2 ] ),   0              , 0 },
+	{ NETF( pos.trDelta[ 0 ] ),  0              , 0 },
+	{ NETF( pos.trDelta[ 1 ] ),  0              , 0 },
+	{ NETF( pos.trDelta[ 2 ] ),  0              , 0 },
+	{ NETF( apos.trType ),       8              , 0 },
+	{ NETF( apos.trTime ),       32             , 0 },
+	{ NETF( apos.trDuration ),   32             , 0 },
+	{ NETF( apos.trBase[ 0 ] ),  0              , 0 },
+	{ NETF( apos.trBase[ 1 ] ),  0              , 0 },
+	{ NETF( apos.trBase[ 2 ] ),  0              , 0 },
+	{ NETF( apos.trDelta[ 0 ] ), 0              , 0 },
+	{ NETF( apos.trDelta[ 1 ] ), 0              , 0 },
+	{ NETF( apos.trDelta[ 2 ] ), 0              , 0 },
+	{ NETF( time ),              32             , 0 },
+	{ NETF( time2 ),             32             , 0 },
+	{ NETF( origin[ 0 ] ),       0              , 0 },
+	{ NETF( origin[ 1 ] ),       0              , 0 },
+	{ NETF( origin[ 2 ] ),       0              , 0 },
+	{ NETF( origin2[ 0 ] ),      0              , 0 },
+	{ NETF( origin2[ 1 ] ),      0              , 0 },
+	{ NETF( origin2[ 2 ] ),      0              , 0 },
+	{ NETF( angles[ 0 ] ),       0              , 0 },
+	{ NETF( angles[ 1 ] ),       0              , 0 },
+	{ NETF( angles[ 2 ] ),       0              , 0 },
+	{ NETF( angles2[ 0 ] ),      0              , 0 },
+	{ NETF( angles2[ 1 ] ),      0              , 0 },
+	{ NETF( angles2[ 2 ] ),      0              , 0 },
+	{ NETF( otherEntityNum ),    GENTITYNUM_BITS, 0 },
+	{ NETF( otherEntityNum2 ),   GENTITYNUM_BITS, 0 },
+	{ NETF( groundEntityNum ),   GENTITYNUM_BITS, 0 },
+	{ NETF( loopSound ),         8              , 0 },
+	{ NETF( constantLight ),     32             , 0 },
+	{ NETF( modelindex ),        MODELINDEX_BITS, 0 },
+	{ NETF( modelindex2 ),       MODELINDEX_BITS, 0 },
+	{ NETF( frame ),             16             , 0 },
+	{ NETF( clientNum ),         8              , 0 },
+	{ NETF( solid ),             24             , 0 },
+	{ NETF( event ),             10             , 0 },
+	{ NETF( eventParm ),         8              , 0 },
+	{ NETF( eventSequence ),     8              , 0 },  // warning: need to modify cg_event.c at "// check the sequencial list" if you change this
+	{ NETF( events[ 0 ] ),       8              , 0 },
+	{ NETF( events[ 1 ] ),       8              , 0 },
+	{ NETF( events[ 2 ] ),       8              , 0 },
+	{ NETF( events[ 3 ] ),       8              , 0 },
+	{ NETF( eventParms[ 0 ] ),   8              , 0 },
+	{ NETF( eventParms[ 1 ] ),   8              , 0 },
+	{ NETF( eventParms[ 2 ] ),   8              , 0 },
+	{ NETF( eventParms[ 3 ] ),   8              , 0 },
+	{ NETF( weapon ),            8              , 0 },
+	{ NETF( legsAnim ),          ANIM_BITS      , 0 },
+	{ NETF( torsoAnim ),         ANIM_BITS      , 0 },
+	{ NETF( generic1 ),          10             , 0 },
+	{ NETF( misc ),              MAX_MISC       , 0 },
+	{ NETF( weaponAnim ),        ANIM_BITS      , 0 },
 };
 
 static int QDECL qsort_entitystatefields( const void *a, const void *b )
@@ -1382,113 +1385,113 @@ player_state_t communication
 
 static netField_t playerStateFields[] =
 {
-	{ PSF( commandTime ),          32              }
+	{ PSF( commandTime ),          32             , 0 }
 	,
-	{ PSF( pm_type ),              8               }
+	{ PSF( pm_type ),              8              , 0 }
 	,
-	{ PSF( bobCycle ),             8               }
+	{ PSF( bobCycle ),             8              , 0 }
 	,
-	{ PSF( pm_flags ),             16              }
+	{ PSF( pm_flags ),             16             , 0 }
 	,
-	{ PSF( pm_time ),              -16             }
+	{ PSF( pm_time ),              -16            , 0 }
 	,
-	{ PSF( origin[ 0 ] ),          0               }
+	{ PSF( origin[ 0 ] ),          0              , 0 }
 	,
-	{ PSF( origin[ 1 ] ),          0               }
+	{ PSF( origin[ 1 ] ),          0              , 0 }
 	,
-	{ PSF( origin[ 2 ] ),          0               }
+	{ PSF( origin[ 2 ] ),          0              , 0 }
 	,
-	{ PSF( velocity[ 0 ] ),        0               }
+	{ PSF( velocity[ 0 ] ),        0              , 0 }
 	,
-	{ PSF( velocity[ 1 ] ),        0               }
+	{ PSF( velocity[ 1 ] ),        0              , 0 }
 	,
-	{ PSF( velocity[ 2 ] ),        0               }
+	{ PSF( velocity[ 2 ] ),        0              , 0 }
 	,
-	{ PSF( weaponTime ),           -16             }
+	{ PSF( weaponTime ),           -16            , 0 }
 	,
-	{ PSF( gravity ),              16              }
+	{ PSF( gravity ),              16             , 0 }
 	,
-	{ PSF( speed ),                16              }
+	{ PSF( speed ),                16             , 0 }
 	,
-	{ PSF( delta_angles[ 0 ] ),    16              }
+	{ PSF( delta_angles[ 0 ] ),    16             , 0 }
 	,
-	{ PSF( delta_angles[ 1 ] ),    16              }
+	{ PSF( delta_angles[ 1 ] ),    16             , 0 }
 	,
-	{ PSF( delta_angles[ 2 ] ),    16              }
+	{ PSF( delta_angles[ 2 ] ),    16             , 0 }
 	,
-	{ PSF( groundEntityNum ),      GENTITYNUM_BITS }
+	{ PSF( groundEntityNum ),      GENTITYNUM_BITS, 0 }
 	,
-	{ PSF( legsTimer ),            16              }
+	{ PSF( legsTimer ),            16             , 0 }
 	,
-	{ PSF( torsoTimer ),           16              }
+	{ PSF( torsoTimer ),           16             , 0 }
 	,
-	{ PSF( legsAnim ),             ANIM_BITS       }
+	{ PSF( legsAnim ),             ANIM_BITS      , 0 }
 	,
-	{ PSF( torsoAnim ),            ANIM_BITS       }
+	{ PSF( torsoAnim ),            ANIM_BITS      , 0 }
 	,
-	{ PSF( movementDir ),          8               }
+	{ PSF( movementDir ),          8              , 0 }
 	,
-	{ PSF( eFlags ),               24              }
+	{ PSF( eFlags ),               24             , 0 }
 	,
-	{ PSF( eventSequence ),        8               }
+	{ PSF( eventSequence ),        8              , 0 }
 	,
-	{ PSF( events[ 0 ] ),          8               }
+	{ PSF( events[ 0 ] ),          8              , 0 }
 	,
-	{ PSF( events[ 1 ] ),          8               }
+	{ PSF( events[ 1 ] ),          8              , 0 }
 	,
-	{ PSF( events[ 2 ] ),          8               }
+	{ PSF( events[ 2 ] ),          8              , 0 }
 	,
-	{ PSF( events[ 3 ] ),          8               }
+	{ PSF( events[ 3 ] ),          8              , 0 }
 	,
-	{ PSF( eventParms[ 0 ] ),      8               }
+	{ PSF( eventParms[ 0 ] ),      8              , 0 }
 	,
-	{ PSF( eventParms[ 1 ] ),      8               }
+	{ PSF( eventParms[ 1 ] ),      8              , 0 }
 	,
-	{ PSF( eventParms[ 2 ] ),      8               }
+	{ PSF( eventParms[ 2 ] ),      8              , 0 }
 	,
-	{ PSF( eventParms[ 3 ] ),      8               }
+	{ PSF( eventParms[ 3 ] ),      8              , 0 }
 	,
-	{ PSF( clientNum ),            8               }
+	{ PSF( clientNum ),            8              , 0 }
 	,
-	{ PSF( weapon ),               7               }
+	{ PSF( weapon ),               7              , 0 }
 	,
-	{ PSF( weaponstate ),          4               }
+	{ PSF( weaponstate ),          4              , 0 }
 	,
-	{ PSF( viewangles[ 0 ] ),      0               }
+	{ PSF( viewangles[ 0 ] ),      0              , 0 }
 	,
-	{ PSF( viewangles[ 1 ] ),      0               }
+	{ PSF( viewangles[ 1 ] ),      0              , 0 }
 	,
-	{ PSF( viewangles[ 2 ] ),      0               }
+	{ PSF( viewangles[ 2 ] ),      0              , 0 }
 	,
-	{ PSF( viewheight ),           -8              }
+	{ PSF( viewheight ),           -8             , 0 }
 	,
-	{ PSF( damageEvent ),          8               }
+	{ PSF( damageEvent ),          8              , 0 }
 	,
-	{ PSF( damageYaw ),            8               }
+	{ PSF( damageYaw ),            8              , 0 }
 	,
-	{ PSF( damagePitch ),          8               }
+	{ PSF( damagePitch ),          8              , 0 }
 	,
-	{ PSF( damageCount ),          8               }
+	{ PSF( damageCount ),          8              , 0 }
 	,
-	{ PSF( generic1 ),             10              }
+	{ PSF( generic1 ),             10             , 0 }
 	,
-	{ PSF( loopSound ),            16              }
+	{ PSF( loopSound ),            16             , 0 }
 	,
-	{ PSF( grapplePoint[ 0 ] ),    0               }
+	{ PSF( grapplePoint[ 0 ] ),    0              , 0 }
 	,
-	{ PSF( grapplePoint[ 1 ] ),    0               }
+	{ PSF( grapplePoint[ 1 ] ),    0              , 0 }
 	,
-	{ PSF( grapplePoint[ 2 ] ),    0               }
+	{ PSF( grapplePoint[ 2 ] ),    0              , 0 }
 	,
-	{ PSF( ammo ),                 12              }
+	{ PSF( ammo ),                 12             , 0 }
 	,
-	{ PSF( clips ),                4               }
+	{ PSF( clips ),                4              , 0 }
 	,
-	{ PSF( tauntTimer ),           12              }
+	{ PSF( tauntTimer ),           12             , 0 }
 	,
-	{ PSF( otherEntityNum ),       10              }
+	{ PSF( otherEntityNum ),       10             , 0 }
 	,
-	{ PSF( weaponAnim ),           ANIM_BITS       }
+	{ PSF( weaponAnim ),           ANIM_BITS      , 0 }
 };
 
 static int QDECL qsort_playerstatefields( const void *a, const void *b )

@@ -335,12 +335,12 @@ void CL_KeyMove( usercmd_t *cmd )
 		// Which was last pressed or released?
 		for ( i = 1; i < DT_NUM; i++ )
 		{
-			if ( cl.doubleTap.pressedTime[ i ] > lastKeyTime )
+			if ( cl.doubleTap.pressedTime[ i ] > (int) lastKeyTime )
 			{
 				lastKeyTime = cl.doubleTap.pressedTime[ i ];
 				lastKey = i;
 			}
-			if ( cl.doubleTap.releasedTime[ i ] > lastKeyTime )
+			if ( cl.doubleTap.releasedTime[ i ] > (int) lastKeyTime )
 			{
 				lastKeyTime = cl.doubleTap.releasedTime[ i ];
 				lastKey = i;
@@ -400,7 +400,7 @@ void CL_KeyMove( usercmd_t *cmd )
 CL_MouseEvent
 =================
 */
-void CL_MouseEvent( int dx, int dy, int time )
+void CL_MouseEvent( int dx, int dy, int )
 {
 	if ( cls.keyCatchers & KEYCATCH_CGAME ||
 		cls.keyCatchers & KEYCATCH_UI )
@@ -421,7 +421,7 @@ CL_JoystickEvent
 Joystick values stay set until changed
 =================
 */
-void CL_JoystickEvent( int axis, int value, int time )
+void CL_JoystickEvent( int axis, int value, int )
 {
 	if ( axis < 0 || axis >= MAX_JOYSTICK_AXIS )
 	{
@@ -1405,9 +1405,7 @@ CL_ClearKeys
 */
 void CL_ClearKeys()
 {
-	int i;
-
-	for ( i = 0; i < ARRAY_LEN( keyup ); ++i )
+	for ( unsigned i = 0; i < ARRAY_LEN( keyup ); ++i )
 	{
 		if ( keyup[ i ] )
 		{

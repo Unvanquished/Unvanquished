@@ -981,7 +981,6 @@ public:
 
 	}
 private:
-	Rocket::Core::Element* img;
 	int weapon;
 	bool isNoAmmo;
 };
@@ -2738,7 +2737,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	team_t        team;
 	bool      unlocked;
 
-	momentumThresholdIterator_t unlockableIter = { -1 };
+	momentumThresholdIterator_t unlockableIter = { -1, 0 };
 
 	// display
 	vec4_t        color;
@@ -2908,9 +2907,10 @@ static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 
 		case UNLT_CLASS:
 			return cg_classes[ index ].classIcon;
-	}
 
-	return 0;
+        default:
+            return 0;
+	}
 }
 
 static void CG_Rocket_DrawPlayerUnlockedItems()
@@ -3440,9 +3440,7 @@ void CG_Rocket_RenderElement( const char *tag )
 #define REGISTER_ELEMENT( tag, clazz ) Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< clazz >() )->RemoveReference();
 void CG_Rocket_RegisterElements()
 {
-	int i;
-
-	for ( i = 0; i < elementRenderCmdListCount; i++ )
+	for ( unsigned i = 0; i < elementRenderCmdListCount; i++ )
 	{
 		//Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp( elementRenderCmdList[ i - 1 ].name, elementRenderCmdList[ i ].name ) > 0 )

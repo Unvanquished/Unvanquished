@@ -484,7 +484,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		j = strlen( entry );
 
 		// this should not happen if entry and string sizes are correct
-		if ( stringlength + j >= sizeof( string ) )
+		if ( stringlength + j >= (int) sizeof( string ) )
 		{
 			break;
 		}

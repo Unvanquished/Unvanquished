@@ -1316,7 +1316,7 @@ class DemoCmd: public Cmd::StaticCmd {
             //  }
         }
 
-        Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
+        Cmd::CompletionResult Complete(int argNum, const Cmd::Args&, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
                 return FS::HomePath::CompleteFilename(prefix, "demos", ".dm_" XSTRING(PROTOCOL_VERSION), false, true);
             }
@@ -1915,10 +1915,6 @@ void CL_Connect_f()
 
 	Cvar_Set( "cl_avidemo", "0" );
 
-	// show_bug.cgi?id=507
-	// prepare to catch a connection process that would turn bad
-	Cvar_Set( "com_errorDiagnoseIP", NET_AdrToString( clc.serverAddress ) );
-	// ATVI Wolfenstein Misc #439
 	// we need to setup a correct default for this, otherwise the first val we set might reappear
 	Cvar_Set( "com_errorMessage", "" );
 
@@ -2160,20 +2156,6 @@ void CL_Vid_Restart_f()
 		cls.cgameCVarsRegistered = true;
 		CL_InitCGame();
 	}
-}
-
-
-/*
-=================
-CL_Snd_Reload_f
-
-Reloads sounddata from disk, retains soundhandles.
-=================
-*/
-void CL_Snd_Reload_f()
-{
-	// FIXME
-	//S_Reload();
 }
 
 /*
@@ -2704,7 +2686,7 @@ print OOB are the only messages we handle markups in
   to 256 chars.
 ===================
 */
-void CL_PrintPacket( netadr_t from, msg_t *msg )
+void CL_PrintPacket( msg_t *msg )
 {
 	char *s;
 
@@ -2714,18 +2696,6 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 	{
 		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		// Cvar_Set("com_errorMessage", clc.serverMessage );
-		Com_Error( ERR_DROP, "%s", clc.serverMessage );
-	}
-	else if ( !Q_strnicmp( s, "[err_prot]", 10 ) )
-	{
-		Q_strncpyz( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
-		Com_Error( ERR_DROP, "%s", PROTOCOL_MISMATCH_ERROR_LONG );
-	}
-	else if ( !Q_strnicmp( s, "ET://", 5 ) )
-	{
-		// fretn
-		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
-		Cvar_Set( "com_errorMessage", clc.serverMessage );
 		Com_Error( ERR_DROP, "%s", clc.serverMessage );
 	}
 	else
@@ -2853,7 +2823,7 @@ void CL_GSRFeaturedLabel( byte **data, char *buf, int size )
 CL_ServerLinksResponsePacket
 ===================
 */
-void CL_ServerLinksResponsePacket( const netadr_t *from, msg_t *msg )
+void CL_ServerLinksResponsePacket( msg_t *msg )
 {
 	int      port;
 	byte      *buffptr;
@@ -2903,7 +2873,7 @@ CL_ServersResponsePacket
 */
 void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, bool extended )
 {
-	int      i, j, count, total;
+	int      i, count, total;
 	netadr_t addresses[ MAX_SERVERSPERPACKET ];
 	int      numservers;
 	byte      *buffptr;
@@ -2982,12 +2952,12 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, bool extended )
 		{
 			buffptr++;
 
-			if ( buffend - buffptr < sizeof( addresses[ numservers ].ip ) + sizeof( addresses[ numservers ].port ) + 1 )
+			if ( buffend - buffptr < (int) (sizeof( addresses[ numservers ].ip ) + sizeof( addresses[ numservers ].port ) + 1) )
 			{
 				break;
 			}
 
-			for ( i = 0; i < sizeof( addresses[ numservers ].ip ); i++ )
+			for (unsigned i = 0; i < sizeof( addresses[ numservers ].ip ); i++ )
 			{
 				addresses[ numservers ].ip[ i ] = *buffptr++;
 			}
@@ -3000,7 +2970,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, bool extended )
 			addresses[ numservers ].type = NA_IP;
 
 			// look up this address in the links list
-			for ( j = 0; j < cls.numserverLinks && !duplicate; ++j )
+			for (unsigned j = 0; j < cls.numserverLinks && !duplicate; ++j )
 			{
 				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port4 && !memcmp( addresses[ numservers ].ip, cls.serverLinks[ j ].ip, 4 ) )
 				{
@@ -3033,12 +3003,12 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, bool extended )
 		{
 			buffptr++;
 
-			if ( buffend - buffptr < sizeof( addresses[ numservers ].ip6 ) + sizeof( addresses[ numservers ].port ) + 1 )
+			if ( buffend - buffptr < (int) (sizeof( addresses[ numservers ].ip6 ) + sizeof( addresses[ numservers ].port ) + 1) )
 			{
 				break;
 			}
 
-			for ( i = 0; i < sizeof( addresses[ numservers ].ip6 ); i++ )
+			for ( unsigned i = 0; i < sizeof( addresses[ numservers ].ip6 ); i++ )
 			{
 				addresses[ numservers ].ip6[ i ] = *buffptr++;
 			}
@@ -3052,7 +3022,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, bool extended )
 			addresses[ numservers ].scope_id = from->scope_id;
 
 			// look up this address in the links list
-			for ( j = 0; j < cls.numserverLinks && !duplicate; ++j )
+			for ( unsigned j = 0; j < cls.numserverLinks && !duplicate; ++j )
 			{
 				if ( addresses[ numservers ].port == cls.serverLinks[ j ].port6 && !memcmp( addresses[ numservers ].ip6, cls.serverLinks[ j ].ip6, 16 ) )
 				{
@@ -3243,7 +3213,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	// echo request from server
 	if ( args.Argv(0) == "print" )
 	{
-		CL_PrintPacket( from, msg );
+		CL_PrintPacket( msg );
 		return;
 	}
 
@@ -3257,7 +3227,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	// list of servers with both IPv4 and IPv6 addresses; sent back by a master server (extended)
 	if ( args.Argv(0) == "getserversExtResponseLinks" )
 	{
-		CL_ServerLinksResponsePacket( &from, msg );
+		CL_ServerLinksResponsePacket( msg );
 		return;
 	}
 
@@ -4056,7 +4026,6 @@ void CL_Init()
 	Cmd_AddCommand( "cmd", CL_ForwardToServer_f );
 	Cmd_AddCommand( "configstrings", CL_Configstrings_f );
 	Cmd_AddCommand( "clientinfo", CL_Clientinfo_f );
-	Cmd_AddCommand( "snd_reload", CL_Snd_Reload_f );
 	Cmd_AddCommand( "snd_restart", CL_Snd_Restart_f );
 	Cmd_AddCommand( "vid_restart", CL_Vid_Restart_f );
 	Cmd_AddCommand( "disconnect", CL_Disconnect_f );
@@ -4149,7 +4118,6 @@ void CL_Shutdown()
 	Cmd_RemoveCommand( "cmd" );
 	Cmd_RemoveCommand( "configstrings" );
 	Cmd_RemoveCommand( "userinfo" );
-	Cmd_RemoveCommand( "snd_reload" );
 	Cmd_RemoveCommand( "snd_restart" );
 	Cmd_RemoveCommand( "vid_restart" );
 	Cmd_RemoveCommand( "disconnect" );
@@ -5188,7 +5156,7 @@ void CL_ShowIP_f()
 CL_GetClipboardData
 ====================
 */
-void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
+void CL_GetClipboardData( char *buf, int buflen )
 {
 #ifdef BUILD_CLIENT
 	int         i, j;

@@ -530,7 +530,7 @@ void SV_SpawnServer( const char *server )
 	sv.state = SS_LOADING;
 
 	// load and spawn all other entities
-	SV_InitGameProgs(server);
+	SV_InitGameProgs();
 
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )

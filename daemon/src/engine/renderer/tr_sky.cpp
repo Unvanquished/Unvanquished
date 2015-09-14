@@ -483,7 +483,7 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], bool ad
 	}
 }
 
-static void DrawSkyBox( shader_t *shader )
+static void DrawSkyBox()
 {
 	int i;
 
@@ -578,7 +578,7 @@ static void DrawSkyBox( shader_t *shader )
 	Tess_DrawElements();
 }
 
-static void FillCloudBox( const shader_t *shader, int stage )
+static void FillCloudBox( int stage )
 {
 	int i;
 
@@ -693,7 +693,7 @@ static void BuildCloudData()
 				break;
 			}
 
-			FillCloudBox( tess.surfaceShader, i );
+			FillCloudBox( i );
 		}
 	}
 }
@@ -845,7 +845,7 @@ void Tess_StageIteratorSky()
 			// bind u_ColorMap
 			GL_BindToTMU( 0, tess.surfaceShader->sky.outerbox );
 
-			DrawSkyBox( tess.surfaceShader );
+			DrawSkyBox();
 		}
 
 		// generate the vertexes for all the clouds, which will be drawn

@@ -573,7 +573,7 @@ typedef enum
   DL_FAILED
 } dlStatus_t;
 
-int        DL_BeginDownload( const char *localName, const char *remoteName, int debug );
+int        DL_BeginDownload( const char *localName, const char *remoteName );
 dlStatus_t DL_DownloadLoop();
 
 void       DL_Shutdown();
@@ -629,7 +629,6 @@ void       Info_Print( const char *s );
 
 // *INDENT-OFF*
 int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
-void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location );
 
 void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... );
 void QDECL Com_Log( log_level_t level, const char* message );

@@ -60,9 +60,9 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			break;
 
 		case GAME_INIT:
-			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool restart, bool cheats, bool inClient) {
+			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool cheats, bool inClient) {
 				g_cheats.integer = cheats;
-				G_InitGame(levelTime, randomSeed, restart, inClient);
+				G_InitGame(levelTime, randomSeed, inClient);
 			});
 			break;
 
@@ -144,7 +144,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 // Definition of the VM->Engine calls
 
 // The actual shared memory region is handled in this file, and is pretty much invisible to the rest of the code
-void trap_LocateGameData(gentity_t *, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient)
+void trap_LocateGameData(gentity_t*, int numGEntities, int sizeofGEntity_t, playerState_t*, int sizeofGClient)
 {
 	static bool firstTime = true;
 	if (firstTime) {
@@ -247,7 +247,7 @@ void trap_GetConfigstring(int num, char *buffer, int bufferSize)
 	Q_strncpyz(buffer, res.c_str(), bufferSize);
 }
 
-void trap_SetConfigstringRestrictions(int num, const clientList_t *clientList)
+void trap_SetConfigstringRestrictions(int, const clientList_t*)
 {
 	VM::SendMsg<SetConfigStringRestrictionsMsg>(); // not implemented
 }
@@ -288,20 +288,6 @@ bool trap_GetEntityToken(char *buffer, int bufferSize)
 void trap_SendGameStat(const char *data)
 {
 	VM::SendMsg<SendGameStatMsg>(data);
-}
-
-bool trap_GetTag(int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori)
-{
-	int res;
-	VM::SendMsg<GetTagMsg>(clientNum, tagFileNumber, tagName, res, *ori);
-	return res;
-}
-
-bool trap_LoadTag(const char *filename)
-{
-	int res;
-	VM::SendMsg<RegisterTagMsg>(filename, res);
-	return res;
 }
 
 void trap_SendMessage(int clientNum, char *buf, int buflen)
