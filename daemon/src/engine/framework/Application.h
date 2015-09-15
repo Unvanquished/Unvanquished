@@ -34,14 +34,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Application {
 
 struct Traits {
-    // TODO remove the need for that
-    bool isClient = false;
-    bool isTTYClient = false;
-    bool isServer = false;
+    Traits();
 
-    std::string uniqueHomepathSuffix = "";
-    bool useCurses = false;
-    bool supportsUri = false;
+    // TODO remove the need for these target traits
+    bool isClient;
+    bool isTTYClient;
+    bool isServer;
+
+    std::string uniqueHomepathSuffix;
+    bool useCurses;
+    bool supportsUri;
 };
 
 class Application {
