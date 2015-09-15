@@ -5156,9 +5156,9 @@ void CL_ShowIP_f()
 CL_GetClipboardData
 ====================
 */
+#ifdef BUILD_CLIENT
 void CL_GetClipboardData( char *buf, int buflen )
 {
-#ifdef BUILD_CLIENT
 	int         i, j;
 	char       *cbd = SDL_GetClipboardText();
 	const char *clean;
@@ -5205,7 +5205,10 @@ void CL_GetClipboardData( char *buf, int buflen )
 	}
 
 	buf[ j ] = '\0';
-#else
-	buf[ 0 ] = '\0';
-#endif
 }
+#else
+void CL_GetClipboardData( char *buf, int )
+{
+	buf[ 0 ] = '\0';
+}
+#endif
