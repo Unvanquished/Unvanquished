@@ -8,9 +8,9 @@ CMakeFiles
 Makefile
 cmake_install.cmake
 daemon
+!/daemon/
 daemonded
 daemon-tty
-*-qvm-native.*
 vm
 main/*.pk3
 Release
@@ -45,6 +45,8 @@ nacl_loader*
 .cproject
 .settings
 
+#ignore clion project files
+.idea/
 #ignore qtcreator project files
 CMakeLists.txt.user
 #ignore external deps
@@ -55,4 +57,3 @@ external_deps/*
 #never ignore these in subdirectories by accident
 !.gitattributes
 !.gitignore
-

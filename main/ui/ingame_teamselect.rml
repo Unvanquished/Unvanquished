@@ -52,7 +52,7 @@
 
 <body id="ingame_teamselect" template="window">
 
-	<button class="wide" onClick="hide ingame_teamselect; exec team auto" style="z-index: 10;">
+	<button class="wide" onClick='Events.pushevent("hide ingame_teamselect; exec team auto", event)' style="z-index: 10;">
 		<!-- High z-index, so we are placed 'ontop' of the drag-handle at the top of the window -->
 		Auto-select a team
 	</button>
@@ -66,12 +66,12 @@
 		They are flexible and lethal at a distance, but fragile.
 	</p>
 
-	<button class="alien" onClick="hide ingame_teamselect; exec team alien"> Join Aliens </button>
-	<button class="human" onClick="hide ingame_teamselect; exec team human"> Join Humans </button>
+	<button class="alien" onClick='Events.pushevent("hide ingame_teamselect; exec team alien", event)'> Join Aliens </button>
+	<button class="human" onClick='Events.pushevent("hide ingame_teamselect; exec team human", event)'> Join Humans </button>
 
 	<p> Alternatively you can watch the game without playing.</p>
 
-	<button class="wide"  onClick="hide ingame_teamselect; exec team spec"> Spectate </button>
+	<button class="wide"  onClick='Events.pushevent("hide ingame_teamselect; exec team spec", event)'> Spectate </button>
 
 </body>
 </rml>

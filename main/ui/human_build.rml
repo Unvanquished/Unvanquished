@@ -95,13 +95,14 @@ div.infobox {
 	height: 50%;
 }
 </style>
+<script src="lua/util.lua" />
 </head>
-<body id="human_build" class="circlemenu human" onShow="buildDS humanBuildList default; buildDS humanBuildList upgrades">
+<body id="human_build" class="circlemenu human" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS humanBuildList default; buildDS humanBuildList upgrades", event)'>
 <div id="foo">
 <tabset class="circlemenu">
 <tab></tab>
 <panel>
-<circlemenu id="default" source="humanBuildList.default" fields="num" formatter="CMHumanBuildables" cancel="hide humanbuild"/>
+<circlemenu id="default" source="humanBuildList.default" fields="num" formatter="CMHumanBuildables" onCancel="Events.pushevent('hide human_build', event)"/>
 <div class="infobox">
 <h2><datasource_single source="humanBuildList.default" fields="name" targetid="default" /></h2>
 <p class="text">Price: <datasource_single source="humanBuildList.default" fields="cost" targetid="default" /><br/>

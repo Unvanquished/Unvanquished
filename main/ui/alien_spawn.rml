@@ -42,13 +42,13 @@
 <body id="alien_spawn" template="window">
 	<p> Choose your starting form: </p>
 
-	<button class="dretch"  onClick="hide alien_spawn; exec class level0"> Dretch </button>
+	<button class="dretch"  onClick='Events.pushevent("hide alien_spawn; exec class level0", event)'> Dretch </button>
 	<!-- FIXME: always spawn as the correct granger version -->
-	<button class="builder" onClick="hide alien_spawn; exec class builderupg builder"> Granger </button>
+	<button class="builder" onClick='Events.pushevent("hide alien_spawn; exec class builderupg builder", event)'> Granger </button>
 
 	<p> Dretches are a stealthy attack form, and grangers are the alien construction form. You cannot morph into a granger from another form.</p>
 
-	<button class="teamselect"  onClick="hide alien_spawn; show ingame_teamselect"> Back to team selection </button>
+	<button class="teamselect"  onClick='Events.pushevent("hide alien_spawn; show ingame_teamselect", event)'> Back to team selection </button>
 
 </body>
 </rml>

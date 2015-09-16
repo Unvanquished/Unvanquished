@@ -42,12 +42,12 @@
 <body id="human_spawn" template="window">
 	<p> Choose your starting equipment: </p>
 
-	<button class="rifle" onClick="hide human_spawn; exec class rifle"> SMG </button>
-	<button class="ckit"  onClick="hide human_spawn; exec class ckit"> Construction Kit </button>
+	<button class="rifle" onClick='Events.pushevent("hide human_spawn; exec class rifle", event)'> SMG </button>
+	<button class="ckit"  onClick='Events.pushevent("hide human_spawn; exec class ckit", event)'> Construction Kit </button>
 
 	<p> The SMG is a rapid-fire starting weapon, and the construction kit builds and repairs human structures. All equipment can be traded at the armoury. </p>
 
-	<button class="teamselect"  onClick="hide human_spawn; show ingame_teamselect"> Back to team selection </button>
+	<button class="teamselect"  onClick='Events.pushevent("hide human_spawn; show ingame_teamselect", event)'> Back to team selection </button>
 
 </body>
 </rml>

@@ -96,13 +96,14 @@ div.infobox {
 	height: 50%;
 }
 </style>
+<script src="lua/util.lua" />
 </head>
-<body id="alien_evo" class="circlemenu alien" onShow="buildDS alienEvolveList default; buildDS alienEvolveList upgrades">
+<body id="alien_evo" class="circlemenu alien" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS alienEvolveList default; buildDS alienEvolveList upgrades", event)'>
 <div id="foo">
 <tabset class="circlemenu">
 <tab></tab>
 <panel>
-<circlemenu id="default" source="alienEvolveList.default" fields="num" formatter="CMAlienEvolve" cancel="hide alienevo"/>
+<circlemenu id="default" source="alienEvolveList.default" fields="num" formatter="CMAlienEvolve" onCancel="Events.pushevent('hide alien_evo', event)"/>
 <div class="infobox">
 <h2><datasource_single source="alienEvolveList.default" fields="name" targetid="default" /></h2>
 <p class="text"><datasource_single source="alienEvolveList.default" fields="description" targetid="default" /></p>

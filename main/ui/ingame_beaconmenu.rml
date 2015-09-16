@@ -51,13 +51,14 @@
 				color: rgb(230,230,230);
 			}
 		</style>
+		<script src="lua/util.lua" />
 	</head>
-	<body id="ingame_beaconmenu" class="circlemenu" onShow="buildDS beaconList default">
+	<body id="ingame_beaconmenu" class="circlemenu" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS beaconList default", event)'>
 		<div id="foo">
 			<tabset class="circlemenu">
 				<tab>Beacons</tab>
 				<panel>
-					<circlemenu id="default" source="beaconList.default" fields="num" formatter="CMBeacons" cancel="hide beacons"/>
+				<circlemenu id="default" source="beaconList.default" fields="num" formatter="CMBeacons" onCancel="Events.pushevent('hide ingame_beaconmenu', event)"/>
 					<div class="infobox">
 						<h2>
 							<datasource_single source="beaconList.default" fields="name" targetid="default"/>

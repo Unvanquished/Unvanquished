@@ -27,7 +27,7 @@
 			}
 		</style>
 	</head>
-	<body id="serverbrowser" template="window" style="width: 60em; margin:10%;" onshow="init_servers internet;buildDS server_browser internet" >
+	<body id="serverbrowser" template="window" style="width: 60em; margin:10%;" onshow='Events.pushevent("init_servers internet;buildDS server_browser internet", event)' >
 
 		<h1>Server Listings</h1>
 		<tabset>
@@ -36,35 +36,34 @@
 			<panel>
 				<datagrid id="iServers" source="server_browser.internet">
 					<col fields="label" width="30px" class="label" formatter="ServerLabel"></col>
-					<col fields="name" width="45%" class="name" ><ilink onClick="sortDS server_browser internet name">Name:</ilink></col>
-					<col fields="map" width="15%" class="map"><ilink onClick="sortDS server_browser internet map">Map:</ilink></col>
-					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><ilink onClick="sortDS server_browser internet players">Players (Bots)</ilink></col>
-					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><ilink onClick="sortDS server_browser internet ping">Ping</ilink></col>
+					<col fields="name" width="45%" class="name" ><ilink onClick='Events.pushevent("sortDS server_browser internet name", event)'>Name:</ilink></col>
+					<col fields="map" width="15%" class="map"><ilink onClick='Events.pushevent("sortDS server_browser internet map", event)'>Map:</ilink></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><ilink onClick='Events.pushevent("sortDS server_browser internet players", event)'>Players (Bots)</ilink></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><ilink onClick='Events.pushevent("sortDS server_browser internet ping", event)'>Ping</ilink></col>
 				</datagrid>
 
 				<buttonbar>
-					<button onClick="resetPings internet; buildDS server_browser internet">Refresh list</button>
-					<button onClick="execDS server_browser internet">Connect</button>
-					<button onClick="init_servers internet;buildDS server_browser internet">Fetch new list</button>
+					<button onClick='Events.pushevent("buildDS server_browser internet", event)'>Refresh list</button>
+					<button onClick='Events.pushevent("execDS server_browser internet", event)'>Connect</button>
+					<button onClick='Events.pushevent("init_servers internet;buildDS server_browser internet", event)'>Fetch new list</button>
 				</buttonbar>
 
 			</panel>
 
-			<tab onClick="init_servers local;buildDS server_browser local">LAN</tab>
+			<tab onClick='Events.pushevent("init_servers local;buildDS server_browser local", event)'>LAN</tab>
 			<panel>
 				<datagrid source="server_browser.local">
 					<col fields="label" width="30px" class="label" formatter="ServerLabel"></col>
 					<col fields="name" width="45%" class="name" >Name:</col>
-					<col fields="map" width="15%" class="map"><ilink onClick="sortDS server_browser local map">Map:</ilink></col>
-					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><ilink onClick="sortDS server_browser local players">Players (Bots)</ilink></col>
-					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><ilink onClick="sortDS server_browser local ping">Ping</ilink></col>
+					<col fields="map" width="15%" class="map"><ilink onClick='Events.pushevent("sortDS server_browser local map", event)'>Map:</ilink></col>
+					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><ilink onClick='Events.pushevent("sortDS server_browser local players", event)'>Players (Bots)</ilink></col>
+					<col fields="ping" width="5%" formatter="ServerPing" class="ping"><ilink onClick='Events.pushevent("sortDS server_browser local ping", event)'>Ping</ilink></col>
 				</datagrid>
 
 				<buttonbar>
-					<button onClick="resetPings local; buildDS server_browser local">Refresh list</button>
-					<button onClick="execDS server_browser local">Connect</button>
-					<button onClick="init_servers local;buildDS server_browser local">Scan for new</button>
-
+					<button onClick='Events.pushevent("buildDS server_browser local", event)'>Refresh list</button>
+					<button onClick='Events.pushevent("execDS server_browser local", event)'>Connect</button>
+					<button onClick='Events.pushevent("init_servers local;buildDS server_browser local", event)'>Scan for new</button>
 				</buttonbar>
 			</panel>
 
