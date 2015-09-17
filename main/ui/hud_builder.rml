@@ -15,8 +15,8 @@ div#mine
 	margin-top: 30%;
 	margin-left: auto;
 	margin-right: auto;
-	color: black;
-	background-color: #AAAAAA22;
+	color: white;
+	background-color: #666666CC;
 }
 div#timer
 {
