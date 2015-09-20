@@ -81,6 +81,7 @@ if(NOT DAEMON_EXTERNAL_APP)
     cmake_dependent_option(USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0)
     cmake_dependent_option(USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0)
     cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0)
+    option(USE_BREAKPAD "Use Breakpad crash logging" 0)
 endif()
 
 option(USE_LTO "Use link-time optimization for release builds" 0)
@@ -536,6 +537,32 @@ if (BUILD_CLIENT OR (WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER)))
         add_definitions(-DHAVE_SDL)
     endif()
     mark_as_advanced(SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR)
+endif()
+
+# Breakpad
+if (USE_BREAKPAD)
+    include_directories(${LIB_DIR}/breakpad)
+    
+    add_library(srclibs-breakpad-common STATIC ${BREAKPAD_COMMON_LIST})
+    add_library(srclibs-breakpad-crash_generation_server STATIC ${BREAKPAD_CRASHGENERATIONSERVER_LIST})
+    add_library(srclibs-breakpad-exception_handler STATIC ${BREAKPAD_EXCEPTIONHANDLER_LIST})
+    add_library(srclibs-breakpad-crash_generation_client STATIC ${BREAKPAD_CRASHGENERATIONCLIENT_LIST})
+    
+    set(BREAKPAD_LIBRARIES
+        srclibs-breakpad-common 
+        srclibs-breakpad-crash_generation_server
+        srclibs-breakpad-exception_handler
+        srclibs-breakpad-crash_generation_client
+    )
+    foreach(breaklib ${BREAKPAD_LIBRARIES})
+        set_target_properties(${breaklib} PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+        message(${breaklib} ${LIB_DIR}/breakpad)
+        target_include_directories(${breaklib} PRIVATE ${LIB_DIR}/breakpad)
+        if(WIN32)
+            #Breakpad library uses wide char versions of Windows API functions
+            target_compile_definitions(${breaklib} PRIVATE UNICODE)
+        endif()
+    endforeach(breaklib)
 endif()
 
 if (BUILD_CLIENT)

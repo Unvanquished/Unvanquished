@@ -197,3 +197,29 @@ set(ZLIBLIST
     ${LIB_DIR}/zlib/zutil.c
     ${LIB_DIR}/zlib/zutil.h
 )
+
+set(BREAKPAD_COMMON_LIST
+    ${LIB_DIR}/breakpad/common/windows/guid_string.cc
+    ${LIB_DIR}/breakpad/common/windows/guid_string.h
+    ${LIB_DIR}/breakpad/common/windows/http_upload.cc
+    ${LIB_DIR}/breakpad/common/windows/http_upload.h
+    ${LIB_DIR}/breakpad/common/windows/string_utils.cc
+)
+set(BREAKPAD_CRASHGENERATIONSERVER_LIST
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/client_info.cc
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/crash_generation_server.cc
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/minidump_generator.cc
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/client_info.h
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/crash_generation_client.h
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/crash_generation_server.h
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/minidump_generator.h
+)
+set(BREAKPAD_CRASHGENERATIONCLIENT_LIST
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/crash_generation_client.h
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/crash_generation_client.cc
+    ${LIB_DIR}/breakpad/client/windows/crash_generation/crash_generation_server.h
+)
+set(BREAKPAD_EXCEPTIONHANDLER_LIST
+    ${LIB_DIR}/breakpad/client/windows/handler/exception_handler.cc
+    ${LIB_DIR}/breakpad/client/windows/handler/exception_handler.h
+)
