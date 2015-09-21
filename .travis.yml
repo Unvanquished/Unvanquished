@@ -1,28 +1,39 @@
+sudo: required
+services:
+  - docker
+
 language:
   - cpp
 #  - objective-c
 
+env:
+  - MODE=0
+  - MODE=1
+  - MODE=2
+
 compiler:
-  - gcc
   - clang
+  - gcc
+
+matrix:
+  exclude:
+    - env: MODE=2
+      compiler: gcc
 
 install:
-  - sudo sh -c 'echo deb http://unv-debs.moreofthesa.me.uk precise main >>/etc/apt/sources.list'
-  - sudo apt-key adv --keyserver x-hkp://pool.sks-keyservers.net --recv-key 06AF4C14
-  - sudo sh -c 'echo deb http://ppa.launchpad.net/purplekarrot/ppa/ubuntu precise main >>/etc/apt/sources.list'
-  - sudo apt-key adv --keyserver x-hkp://pool.sks-keyservers.net --recv-key D4762858
-  - sudo add-apt-repository ppa:zoogie/sdl2-snapshots -y
-  - sudo apt-get remove --purge cmake cmake-data
-  - wget http://unvanquished.net/~modi/cmake_3.3.0-1_amd64.deb
-  - sudo dpkg -i cmake_3.3.0-1_amd64.deb
+  - sudo apt-get install software-properties-common
+  - sudo add-apt-repository ppa:george-edison55/cmake-3.x -y
   - sudo apt-get -qq update
-  - sudo apt-get -qq install libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev ninja-build liblua5.2-dev
-
-before_script:
-  - wget http://clang.llvm.org/libstdc++4.6-clang11.patch;
-  - wget "http://gcc.gnu.org/viewcvs/gcc/branches/gcc-4_7-branch/libstdc%2B%2B-v3/include/std/condition_variable?view=patch&r1=193528&r2=193527&pathrev=193528" -O libstdc++4.6-thread-fix.patch
-  - sudo patch /usr/include/c++/4.6/type_traits < libstdc++4.6-clang11.patch;
-  - sudo patch /usr/include/c++/4.6/condition_variable < libstdc++4.6-thread-fix.patch;
+  - sudo apt-get -qq install
+    cmake ninja-build
+    liblua5.2-dev
+    libgeoip-dev
+    libncursesw5-dev
+    libsdl2-dev libglew-dev libfreetype6-dev
+    libwebp-dev libjpeg8-dev libpng-dev
+    libcurl4-gnutls-dev zlib1g-dev
+    libopenal-dev libogg-dev libvorbis-dev libtheora-dev libxvidcore-dev libopusfile-dev libspeexdsp-dev
+    nettle-dev libgmp-dev
 
 #install:
 #  - brew update
@@ -31,7 +42,13 @@ before_script:
 script:
   - mkdir -p build
   - cd build
-  - CXXFLAGS="-D__extern_always_inline=inline" cmake -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "Ninja" -DBUILD_GAME_NACL_NEXE=0 -DCMAKE_BUILD_TYPE=Debug ..
+  - cmake --version
+  - CXXFLAGS="-D__extern_always_inline=inline" cmake
+    -DBUILD_CLIENT=$(($MODE == 0)) -DBUILD_TTY_CLIENT=$(($MODE == 0)) -DBUILD_SERVER=$(($MODE == 0))
+    -DBUILD_CGAME=$(($MODE >= 1)) -DBUILD_SGAME=$(($MODE >= 1))
+    -DBUILD_GAME_NATIVE_DLL=$(($MODE == 1)) -DBUILD_GAME_NATIVE_EXE=$(($MODE == 1))
+    -DBUILD_GAME_NACL=$(($MODE == 2))
+    -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "Ninja" -DBUILD_GAME_NACL_NEXE=0 -DCMAKE_BUILD_TYPE=Debug ..
   - cmake --build . -- -j8
 
 notifications:

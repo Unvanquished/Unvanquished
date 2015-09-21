@@ -495,6 +495,11 @@ static bool BuildToken(WString& token, const word*& token_begin, const word* str
 					character = ' ';
 					force_non_whitespace = true;
 				}
+				else if (WString(ucs2_escape_code.Substring(0, 2)) == "#x"
+					&& sscanf(escape_code.Substring(2).CString(), "%hx", &character) == 1)
+				{
+					// pass through
+				}
 				else
 					token_begin = escape_begin;
 			}

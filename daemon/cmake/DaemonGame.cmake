@@ -35,7 +35,7 @@ function(GAMEMODULE)
     # ParseArguments setup
     set(oneValueArgs NAME)
     set(multiValueArgs DEFINITIONS FLAGS FILES LIBS)
-    cmake_parse_arguments(GAMEMODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(GAMEMODULE "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     if (NOT NACL)
         if (BUILD_GAME_NATIVE_DLL)
             add_library(${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST})
