@@ -143,6 +143,30 @@ void CG_ParseServerinfo()
 	cgs.momentumHalfLife = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
 	cgs.unlockableMinTime  = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
 
+	cgs.freeUpgrades = atoi( Info_ValueForKey( info, "x_freeUpgrades" ) );
+
+	cgs.buildAnywhere = atoi( Info_ValueForKey( info, "x_buildAnywhere" ) );
+
+	cgs.noStamina = atoi( Info_ValueForKey( info, "x_noStamina" ) );
+	cgs.larmourSpeed = atoi( Info_ValueForKey( info, "x_larmourSpeed" ) );
+	cgs.marmourSpeed = atoi( Info_ValueForKey( info, "x_marmourSpeed" ) );
+	cgs.bsuitSpeed = atoi( Info_ValueForKey( info, "x_bsuitSpeed" ) );
+
+	cgs.simpleMomentum = atoi( Info_ValueForKey( info, "x_simpleMomentum" ) );
+
+	cgs.simpleLocationalDamage = atoi( Info_ValueForKey( info, "x_simpleLocationalDamage" ) );
+	cgs.backStabMod = atoi( Info_ValueForKey( info, "x_backStabMod" ) );
+
+	cgs.noCamping = atoi( Info_ValueForKey( info, "x_noCamping" ) );
+	cgs.campRange = atoi( Info_ValueForKey( info, "x_campRange" ) );
+
+	cgs.buildPointPools = atoi( Info_ValueForKey( info, "x_buildPointPools" ) );
+	cgs.buildPoints = atoi( Info_ValueForKey( info, "x_buildPoints" ) );
+	cgs.queueTime = atoi( Info_ValueForKey( info, "x_queueTime" ) );
+	cgs.rgsValue = atoi( Info_ValueForKey( info, "x_rgsValue" ) );
+
+	cgs.unlockedBuildables = atoi( Info_ValueForKey( info, "x_unlockedBuildables" ) );
+
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 
 	// pass some of these to UI

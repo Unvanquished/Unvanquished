@@ -1691,6 +1691,24 @@ typedef struct
 	int      powerRepeaterRange;
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
 	float    unlockableMinTime;  // used for momentum bar (un)lock markers
+	// experimental gameplay modifiers
+	int      freeUpgrades;
+	int      buildAnywhere;
+	int      noStamina;
+	int      larmourSpeed;
+	int      marmourSpeed;
+	int      bsuitSpeed;
+	int      simpleMomentum;
+	int      simpleLocationalDamage;
+	int      backStabMod;
+	int      noCamping;
+	int      campRange;
+	int      buildPointPools;
+	int      buildPoints;
+	int      queueTime;
+	int      rgsValue;
+	int      unlockedBuildables;
+
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];
