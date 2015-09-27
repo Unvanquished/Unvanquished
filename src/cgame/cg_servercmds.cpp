@@ -172,6 +172,17 @@ void CG_ParseServerinfo()
 	// pass some of these to UI
 	trap_Cvar_Set( "ui_momentumHalfLife", va( "%f", cgs.momentumHalfLife ) );
 	trap_Cvar_Set( "ui_unlockableMinTime",  va( "%f", cgs.unlockableMinTime ) );
+
+	const char *p = info;
+	char key[ MAX_INFO_STRING ];
+	char value[ MAX_INFO_STRING ];
+	while ( p && *p )
+	{
+		// TODO: Make it so that you cannot modify these values while connected
+		// to a remote server.
+		Info_NextPair( &p, key, value );
+		Cvar::SetValue( key, value );
+	}
 }
 
 /*
