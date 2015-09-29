@@ -61,48 +61,26 @@
  /** Used to remove repetitive typing at the cost of flexibility. When you use this, you @em must have
  functions with the same name as defined in the macro. For example, if you used @c Element as type, you would
  have to have functions named @c ElementMethods, @c ElementGetters, @c ElementSetters that return the appropriate
- types.
- @param is_reference_counted true if the type inherits from Rocket::Core::ReferenceCountable, false otherwise*/
-#define LUACORETYPEDEFINE(type,is_ref_counted) \
+ types. */
+#define LUACORETYPEDEFINE(type) \
     template<> const char* GetTClassName<type>() { return #type; } \
     template<> RegType<type>* GetMethodTable<type>() { return type##Methods; } \
     template<> luaL_Reg* GetAttrTable<type>() { return type##Getters; } \
-    template<> luaL_Reg* SetAttrTable<type>() { return type##Setters; } \
-    template<> bool IsReferenceCounted<type>() { return (is_ref_counted); } \
-
-//We can't use LUACORETYPEDEFINE due to namespace issues
-#define LUACONTROLSTYPEDEFINE(type,is_ref_counted) \
-    template<> const char* GetTClassName<type>() { return #type; } \
-    template<> RegType<type>* GetMethodTable<type>() { return Rocket::Controls::Lua::type##Methods; } \
-    template<> luaL_Reg* GetAttrTable<type>() { return Rocket::Controls::Lua::type##Getters; } \
-    template<> luaL_Reg* SetAttrTable<type>() { return Rocket::Controls::Lua::type##Setters; } \
-    template<> bool IsReferenceCounted<type>() { return (is_ref_counted); } \
+    template<> luaL_Reg* SetAttrTable<type>() { return type##Setters; }
 
 /** Used to remove repetitive typing at the cost of flexibility. It creates function prototypes for
 getting the name of the type, method tables, and if it is reference counted.
 When you use this, you either must also use
-the LUACORETYPEDEFINE macro, or make sure that the function signatures are @em exact.*/
+the LUACORETYPEDEFINE macro, or make sure that the function signatures are @em exact. */
 #define LUACORETYPEDECLARE(type) \
     template<> const char* GetTClassName<type>(); \
     template<> RegType<type>* GetMethodTable<type>(); \
     template<> luaL_Reg* GetAttrTable<type>(); \
-    template<> luaL_Reg* SetAttrTable<type>(); \
-    template<> bool IsReferenceCounted<type>(); \
+    template<> luaL_Reg* SetAttrTable<type>();
 
-/** Used to remove repetitive typing at the cost of flexibility. It creates function prototypes for
-getting the name of the type, method tables, and if it is reference counted.
-When you use this, you either must also use
-the LUACORETYPEDEFINE macro, or make sure that the function signatures are @em exact.*/
-#define LUACONTROLSTYPEDECLARE(type) \
-    template<> const char* GetTClassName<type>(); \
-    template<> RegType<type>* GetMethodTable<type>(); \
-    template<> luaL_Reg* GetAttrTable<type>(); \
-    template<> luaL_Reg* SetAttrTable<type>(); \
-    template<> bool IsReferenceCounted<type>(); \
-
-namespace Unvanquished {
 namespace Shared {
 namespace Lua {
+
 //replacement for luaL_Reg that uses a different function pointer signature, but similar syntax
 template<typename T>
 struct RegType
@@ -119,8 +97,6 @@ template<typename T> luaL_Reg* GetAttrTable();
 template<typename T> luaL_Reg* SetAttrTable();
 /** String representation of the class */
 template<typename T> const char* GetTClassName();
-/** bool for if it is reference counted */
-template<typename T> bool IsReferenceCounted();
 /** gets called from the LuaLib<T>::Register function, right before @c _regfunctions.
 If you want to inherit from another class, in the function you would want
 to call @c _regfunctions<superclass>, where method is metatable_index - 1. Anything
@@ -161,11 +137,11 @@ public:
     @return The value that RegType.func returns   */
     static inline int thunk(lua_State* L);
     /** String representation of the pointer. Called by the __tostring metamethod  */
-    static inline void tostring(char* buff, void* obj);
+    static inline void tostring(char* buff, size_t buff_size, void* obj);
     //these are metamethods
-    /** The __gc metamethod. If the object was pushed by push(lua_State*,T*,bool) with the third
-    argument as true, it will either decrease the reference count or call delete depending on if
-    the type is reference counted. If the third argument to push was false, then this does nothing.
+    /** The __gc metamethod. If the object was pushed by push(lua_State*,T*) with the third
+    argument as true, it will call delete on the object. If the third argument to push was false,
+    then this does nothing.
     @return 0, since it pushes nothing on to the stack*/
     static inline int gc_T(lua_State* L);
     /** The __tostring metamethod.
@@ -188,9 +164,8 @@ private:
 };
 
 
-}
-}
-}
+}  // namespace Lua
+}  // namespace Shared
 
 #include "LuaLib.inl"
 #endif
