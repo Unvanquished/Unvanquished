@@ -35,9 +35,9 @@ Maryland 20850 USA.
 #define BG_LUA_H
 extern "C"
 {
-	#include "lua.h"
-	#include "lauxlib.h"
-	#include "lualib.h"
+	#include <lua.h>
+	#include <lauxlib.h>
+	#include <lualib.h>
 }
 
 void BG_InitializeLuaConstants(lua_State* L);
