@@ -2,7 +2,7 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 2012 Unvanquished Developers
+Copyright (C) 2012 Unv Developers
 
 This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
@@ -32,11 +32,67 @@ Maryland 20850 USA.
 ===========================================================================
 */
 #if defined(BUILD_CGAME)
+// #if 1
 #include "bg_lua.h"
 #include "LuaLib.h"
+#include <common/Log.h>
+
+
+namespace Unv {
+namespace Shared {
+namespace Lua {
+class UnvGlobal
+{
+public:
+	static int GetWeapons( lua_State* L )
+	{
+		// TODO: return weapon obj
+		Log::Debug("weapons");
+		return 0;
+	}
+
+	static int GetUpgrades( lua_State* L )
+	{
+		// TODO: return upgrades obj
+		Log::Debug("upgrades");
+		return 0;
+	}
+
+	static int GetBuildables( lua_State* L )
+	{
+		// TODO: return buildables obj
+		Log::Debug("buildables");
+		return 0;
+	}
+};
+UnvGlobal global;
+template<> void ExtraInit<UnvGlobal>( lua_State* L, int metatable_index ) {}
+RegType<UnvGlobal> UnvGlobalMethods[] =
+{
+	{ nullptr, nullptr },
+};
+luaL_Reg UnvGlobalGetters[] =
+{
+	{ "weapons", UnvGlobal::GetWeapons },
+	{ "upgrades", UnvGlobal::GetUpgrades },
+	{ "buildables", UnvGlobal::GetBuildables },
+};
+luaL_Reg UnvGlobalSetters[] =
+{
+	{ nullptr, nullptr },
+};
+LUACORETYPEDEFINE(UnvGlobal, false)
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv
 
 void BG_InitializeLuaConstants( lua_State* L )
 {
+	using namespace Unv::Shared::Lua;
+	LuaLib< UnvGlobal >::Register( L );
+	LuaLib< UnvGlobal>::push( L, &global, false );
+	lua_setglobal( L, "unv" );
 }
+
 
 #endif

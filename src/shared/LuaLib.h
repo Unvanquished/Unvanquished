@@ -70,14 +70,6 @@
     template<> luaL_Reg* SetAttrTable<type>() { return type##Setters; } \
     template<> bool IsReferenceCounted<type>() { return (is_ref_counted); } \
 
-//We can't use LUACORETYPEDEFINE due to namespace issues
-#define LUACONTROLSTYPEDEFINE(type,is_ref_counted) \
-    template<> const char* GetTClassName<type>() { return #type; } \
-    template<> RegType<type>* GetMethodTable<type>() { return Rocket::Controls::Lua::type##Methods; } \
-    template<> luaL_Reg* GetAttrTable<type>() { return Rocket::Controls::Lua::type##Getters; } \
-    template<> luaL_Reg* SetAttrTable<type>() { return Rocket::Controls::Lua::type##Setters; } \
-    template<> bool IsReferenceCounted<type>() { return (is_ref_counted); } \
-
 /** Used to remove repetitive typing at the cost of flexibility. It creates function prototypes for
 getting the name of the type, method tables, and if it is reference counted.
 When you use this, you either must also use
@@ -100,7 +92,7 @@ the LUACORETYPEDEFINE macro, or make sure that the function signatures are @em e
     template<> luaL_Reg* SetAttrTable<type>(); \
     template<> bool IsReferenceCounted<type>(); \
 
-namespace Unvanquished {
+namespace Unv {
 namespace Shared {
 namespace Lua {
 //replacement for luaL_Reg that uses a different function pointer signature, but similar syntax
