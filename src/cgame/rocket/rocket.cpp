@@ -65,6 +65,7 @@ Maryland 20850 USA.
 #include "lua/Events.h"
 #include "lua/Timer.h"
 #include "../cg_local.h"
+#include "shared/bg_lua.h"
 
 class DaemonFileInterface : public Rml::FileInterface
 {
@@ -346,6 +347,7 @@ void Rocket_Init()
 	Rml::Lua::LuaType<Rml::Lua::Events>::Register(Rml::Lua::Interpreter::GetLuaState());
 	Rml::Lua::LuaType<Rml::Lua::Timer>::Register(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaCDataSource(Rml::Lua::Interpreter::GetLuaState());
+	BG_InitializeLuaConstants(Rml::Lua::Interpreter::GetLuaState());
 
 	// Register custom properties.
 	UnvPropertyId::Orientation = Rml::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
