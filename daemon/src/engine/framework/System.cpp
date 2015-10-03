@@ -37,6 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "System.h"
 #ifdef _WIN32
 #include <windows.h>
+#ifdef USE_BREAKPAD
+#include "breakpad/client/windows/handler/exception_handler.h"
+#endif
 #else
 #include <unistd.h>
 #include <signal.h>
@@ -268,6 +271,86 @@ static void CloseSingletonSocket()
 #endif
 }
 
+
+#ifdef USE_BREAKPAD
+
+static std::string CrashDumpPath() {
+    return FS::Path::Build(FS::GetHomePath(), "crashdump/");
+}
+
+#ifdef _WIN32
+
+static google_breakpad::ExceptionHandler* crashHandler;
+
+static void BreakpadInit() {
+    std::string crashDir = CrashDumpPath();
+    std::error_code createDirError;
+    FS::RawPath::CreatePathTo(FS::Path::Build(crashDir, "x"), createDirError);
+    if (createDirError != createDirError.default_error_condition()) {
+        Log::Warn("Failed to create crash dump directory: %s", Sys::Win32StrError(GetLastError()));
+        return;
+    }
+
+    std::string executable = FS::Path::Build(FS::GetLibPath(), "crash_server.exe");
+    std::string pipeName = singletonSocketPath + "-crash";
+    DWORD pid = GetCurrentProcessId();
+    std::string cmdLine = pipeName + " \"" + crashDir + " \" " + std::to_string(pid);
+
+    STARTUPINFOA startInfo{};
+    startInfo.cb = sizeof(startInfo);
+    startInfo.dwFlags = 0;
+
+    PROCESS_INFORMATION procInfo;
+    if (!CreateProcessA(&executable[0], &cmdLine[0],
+        NULL, NULL, FALSE, 0, NULL, NULL,
+        &startInfo, &procInfo))
+    {
+        Log::Warn("Failed to start crash logging server: %s", Sys::Win32StrError(GetLastError()));
+        return;
+    }
+    Log::Notice("Starting crash logging server");
+
+    CloseHandle(procInfo.hProcess);
+    CloseHandle(procInfo.hThread);
+
+    crashHandler = new google_breakpad::ExceptionHandler(
+        Str::UTF8To16(crashDir),
+        NULL,
+        NULL,
+        NULL,
+        google_breakpad::ExceptionHandler::HANDLER_ALL,
+        MiniDumpNormal,
+        &Str::UTF8To16(pipeName)[0],
+        NULL);
+}
+#endif
+
+// Records a crash dump sent from the VM in minidump format. This is the same
+// format that Breakpad uses, but nacl minidump does not require Breakpad to work.
+void NaclCrashDump(const void* data, size_t size) {
+    auto time = std::chrono::duration_cast<std::chrono::milliseconds>(SteadyClock::now().time_since_epoch()).count();
+    std::string path = FS::Path::Build(CrashDumpPath(), Str::Format("crash-nacl-%s.dmp", std::to_string(time)));
+    std::error_code err;
+
+    //Note: the file functions always use binary mode on Windows so there shouldn't be any lossiness.
+    auto file = FS::RawPath::OpenWrite(path, err);
+    if (err == err.default_error_condition()) file.Write(data, size, err);
+    if (err == err.default_error_condition()) file.Close(err);
+
+    if (err == err.default_error_condition()) {
+        Log::Notice("Wrote crash dump to %s", path);
+    } else {
+        Log::Warn("Error while writing crash dump");
+    }
+    delete[] (uint8_t*) data; //do something nicer
+}
+
+#else
+
+void NaclCrashDump(const void*, size_t) { }
+
+#endif //USE_BREAKPAD
+
 // Common code for fatal and non-fatal exit
 // TODO: Handle shutdown requests coming from multiple threads
 // TODO: Dump log files & other stuff
@@ -280,6 +363,9 @@ static void Shutdown(bool error, Str::StringRef message)
 
 	// Always run CON_Shutdown, because it restores the terminal to a usable state.
 	CON_Shutdown();
+#ifdef USE_BREAKPAD
+    delete crashHandler;
+#endif
 }
 
 void Quit(Str::StringRef message)
@@ -619,7 +705,9 @@ static void Init(int argc, char** argv)
 	// At this point we can safely open the log file since there are no existing
 	// instances running on this homepath.
 	Log::OpenLogFile();
-
+#ifdef USE_BREAKPAD
+	BreakpadInit();
+#endif
 	// Load the base paks
 	// TODO: cvar names and FS_* stuff needs to be properly integrated
 	EarlyCvar("fs_basepak", cmdlineArgs);

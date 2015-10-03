@@ -415,6 +415,21 @@ namespace Util {
 		}
 	};
 
+    template<> struct SerializeTraits <std::pair<const void*, size_t> > {
+        static void Write(Writer& stream, std::pair<const void*, size_t> value)
+        {
+            stream.WriteSize(value.second);
+            stream.WriteData(value.first, value.second);
+        }
+        static std::pair<const void*, size_t> Read(Reader& stream)
+        {
+            size_t size = stream.ReadSize<uint8_t>();
+            void* data = new uint8_t[size];
+            stream.ReadData(data, size);
+            return{ data, size };
+        }
+    };
+
 } // namespace Util
 
 #endif // COMMON_SERIALIZATION_H_

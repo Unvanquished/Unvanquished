@@ -39,6 +39,9 @@ namespace Sys {
 // Cleanly exit the engine, shutting down all subsystems.
 NORETURN void Quit(Str::StringRef message);
 
+// Record a crash dump from a crash occuring in the NaCl VMs
+void NaclCrashDump(const void* data, size_t size);
+
 } // namespace Sys
 
 #endif // FRAMEWORK_SYSTEM_H_

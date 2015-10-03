@@ -409,7 +409,8 @@ if (WIN32)
     set(LIBS_BASE ${LIBS_BASE} winmm ws2_32)
 elseif (NACL)
     find_library(NACL_EXCEPTION nacl_exception)
-    set(LIBS_BASE ${LIBS_BASE} ${NACL_EXCEPTION})
+    find_library(NACL_MINIDUMP minidump_generator)
+    set(LIBS_BASE ${LIBS_BASE} ${NACL_MINIDUMP} ${NACL_EXCEPTION} )
 else()
     find_library(LIBM m)
     if (LIBM)
@@ -541,12 +542,13 @@ endif()
 
 # Breakpad
 if (USE_BREAKPAD)
+    add_definitions(-DUSE_BREAKPAD)
     include_directories(${LIB_DIR}/breakpad)
-    
-    add_library(srclibs-breakpad-common STATIC ${BREAKPAD_COMMON_LIST})
-    add_library(srclibs-breakpad-crash_generation_server STATIC ${BREAKPAD_CRASHGENERATIONSERVER_LIST})
-    add_library(srclibs-breakpad-exception_handler STATIC ${BREAKPAD_EXCEPTIONHANDLER_LIST})
-    add_library(srclibs-breakpad-crash_generation_client STATIC ${BREAKPAD_CRASHGENERATIONCLIENT_LIST})
+
+    add_library(srclibs-breakpad-common EXCLUDE_FROM_ALL ${BREAKPAD_COMMON_LIST})
+    add_library(srclibs-breakpad-crash_generation_server EXCLUDE_FROM_ALL ${BREAKPAD_CRASHGENERATIONSERVER_LIST})
+    add_library(srclibs-breakpad-exception_handler EXCLUDE_FROM_ALL ${BREAKPAD_EXCEPTIONHANDLER_LIST})
+    add_library(srclibs-breakpad-crash_generation_client EXCLUDE_FROM_ALL ${BREAKPAD_CRASHGENERATIONCLIENT_LIST})
     
     set(BREAKPAD_LIBRARIES
         srclibs-breakpad-common 
@@ -556,13 +558,24 @@ if (USE_BREAKPAD)
     )
     foreach(breaklib ${BREAKPAD_LIBRARIES})
         set_target_properties(${breaklib} PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-        message(${breaklib} ${LIB_DIR}/breakpad)
-        target_include_directories(${breaklib} PRIVATE ${LIB_DIR}/breakpad)
-        if(WIN32)
-            #Breakpad library uses wide char versions of Windows API functions
+        if (WIN32)
+            # Breakpad library assumes wide char versions of Windows API functions
             target_compile_definitions(${breaklib} PRIVATE UNICODE)
         endif()
+        if (CMAKE_BUILD_TYPE MATCHES Debug)
+            target_compile_definitions(${breaklib} PRIVATE _DEBUG)
+        endif()
     endforeach(breaklib)
+
+    if (WIN32)
+        add_executable(crash_server src/engine/crash_server_windows.cpp)
+        target_link_libraries(crash_server
+            srclibs-breakpad-crash_generation_server srclibs-breakpad-common)
+        target_compile_definitions(crash_server PRIVATE UNICODE)
+
+        set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-breakpad-exception_handler
+            srclibs-breakpad-crash_generation_client srclibs-breakpad-common)
+    endif()
 endif()
 
 if (BUILD_CLIENT)
