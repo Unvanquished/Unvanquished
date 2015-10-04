@@ -46,11 +46,14 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define DECOLOR_OFF '\16'
 #define DECOLOR_ON  '\17'
 
-#define DAMAGE_RADIUS        0x00000001 // damage was indirect
-#define DAMAGE_NO_ARMOR      0x00000002 // armour does not protect from this damage
-#define DAMAGE_KNOCKBACK     0x00000004 // move the target in damage direction
-#define DAMAGE_NO_PROTECTION 0x00000008 // kills everything except godmode
-#define DAMAGE_NO_LOCDAMAGE  0x00000010 // do not apply locational damage
+// TODO: Move to HealthComponent.
+#define DAMAGE_PURE          0x00000001 /**< Amount won't be modified. */
+#define DAMAGE_KNOCKBACK     0x00000002 /**< Push the target in damage direction. */
+#define DAMAGE_NO_PROTECTION 0x00000004 /**< Game settings don't prevent damage. */
+#define DAMAGE_NO_LOCDAMAGE  0x00000008 /**< Don't apply locational modifier. */
+
+#define MAX_DAMAGE_REGIONS     16
+#define MAX_DAMAGE_REGION_TEXT 8192
 
 #define FOFS(x) ((size_t)&(((gentity_t *)0 )->x ))
 

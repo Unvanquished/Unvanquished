@@ -393,7 +393,7 @@ GameVM::GameVM(): VM::VMBase("sgame"), services(nullptr){
 
 void GameVM::Start()
 {
-	services = std::unique_ptr<VM::CommonVMServices>(new VM::CommonVMServices(*this, "SGame", Cmd::GAME_VM));
+	services = std::unique_ptr<VM::CommonVMServices>(new VM::CommonVMServices(*this, "SGame", Cmd::SGAME_VM));
 
 	uint32_t version = this->Create();
 	if ( version != GAME_API_VERSION ) {

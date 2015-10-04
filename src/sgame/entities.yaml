@@ -1,0 +1,457 @@
+general:
+    common_entity_attributes:
+        - name: oldEnt
+          type: struct gentity_s*
+
+messages:
+    # Make all components export their networked state.
+    PrepareNetCode:
+
+    FreeAt:
+        - name: freeTime
+          type: int
+
+    Ignite:
+        - name: fireStarter
+          type: gentity_t* # TODO: Use Entity
+
+    Extinguish:
+        - name: immunityTime
+          type: int
+
+    Heal:
+        - name: amount
+          type: float
+        - name: source
+          type: gentity_t* # TODO: Use Entity
+
+    Damage:
+        - name: amount
+          type: float
+        - name: source
+          type: gentity_t* # TODO: Use Entity
+        - name: location
+          type: Util::optional<Vec3>
+        - name: direction
+          type: Util::optional<Vec3>
+        - name: flags
+          type: int
+        - name: meansOfDeath
+          type: meansOfDeath_t
+
+    Die:
+        - name: killer
+          type: gentity_t* # TODO: Use Entity
+        - name: meansOfDeath
+          type: meansOfDeath_t
+
+    ApplyDamageModifier:
+        - name: damage
+          type: float&
+        - name: location
+          type: Util::optional<Vec3>
+        - name: direction
+          type: Util::optional<Vec3>
+        - name: flags
+          type: int
+        - name: meansOfDeath
+          type: meansOfDeath_t
+
+components:
+    #####################
+    # Common Components #
+    #####################
+
+    # TODO: See if we can do without this.
+    DeferredFreeing:
+        messages:
+            - FreeAt
+
+    Thinking:
+        requires:
+            # Thinking components can't free themselves instantly inside their
+            # thinkers, so allow them to free themselves afterwards.
+            - DeferredFreeing
+
+    Ignitable:
+        parameters:
+            alwaysOnFire: bool
+        defaults:
+            alwaysOnFire: false
+        messages:
+            - PrepareNetCode
+            - Ignite
+            - Extinguish
+        requires:
+            - Thinking
+
+    Health:
+        parameters:
+            maxHealth: float
+        messages:
+            - PrepareNetCode
+            - Heal
+            - Damage
+
+    #-----------------+
+    # Client Specific |
+    #-----------------+
+
+    Client:
+        parameters:
+            clientData: gclient_t*
+
+    # TODO: Get rid of dependency on gentity_t.client. Depend on
+    #       PhysicsComponent instead.
+    Armor:
+        messages:
+            - ApplyDamageModifier
+
+    # TODO: Get rid of dependency on gentity_t.client. Depend on
+    #       PhysicsComponent instead.
+    Knockback:
+        messages:
+            - Damage
+
+    AlienClass:
+        requires:
+            - Client
+            - Armor
+            - Knockback
+            - Health
+
+    HumanClass:
+        requires:
+            - Client
+            - Armor
+            - Knockback
+            - Health
+
+    #--------------------+
+    # Buildable Specific |
+    #--------------------+
+
+    Buildable:
+        messages:
+            - PrepareNetCode
+            - Die
+        requires:
+            - Health
+            - Thinking
+
+    AlienBuildable:
+        messages:
+            - Damage
+            - Die
+        requires:
+            - Buildable
+            - Ignitable
+
+    HumanBuildable:
+        messages:
+            - Die
+        requires:
+            - Buildable
+
+    # TODO: See if needed.
+    MainBuildable:
+        requires:
+            - Buildable
+            - ResourceStorage
+
+    Turret:
+        messages:
+            - Die
+
+    Mining:
+        messages:
+            - PrepareNetCode
+            - Die
+        requires:
+            - ResourceStorage
+            - Thinking
+
+    ResourceStorage:
+        messages:
+            - PrepareNetCode
+            - Die
+
+    ##############################
+    # Entity-specific components #
+    ##############################
+
+    # These are needed for various reasons:
+    #   - Register specific think methods.
+    #   - Export an entity type to the network. (TODO)
+    #   - Export a name/descriptions to the gamelogic. (TODO)
+
+    #------------------+
+    # Alien Buildables |
+    #------------------+
+
+    AcidTube:
+        requires:
+            - AlienBuildable
+
+    Barricade:
+        messages:
+            - Damage
+            - Die
+        requires:
+            # TODO: Check if this dependency lets us override animations
+            #       reliably in the Damage/Die handlers.
+            - AlienBuildable
+
+    Booster:
+        requires:
+            - AlienBuildable
+
+    Egg:
+        requires:
+            - AlienBuildable
+
+    Hive:
+        messages:
+            - Damage
+        requires:
+            - AlienBuildable
+
+    Leech:
+        requires:
+            - AlienBuildable
+            - Mining
+
+    Overmind:
+        messages:
+            - Die
+        requires:
+            - AlienBuildable
+            - MainBuildable
+
+    Spiker:
+        messages:
+            - Damage
+        requires:
+            - AlienBuildable
+
+    Trapper:
+        requires:
+            - AlienBuildable
+
+    #------------------+
+    # Human Buildables |
+    #------------------+
+
+    Armoury:
+        requires:
+            - HumanBuildable
+
+    Drill:
+        requires:
+            - HumanBuildable
+            - Mining
+
+    Medipad:
+        messages:
+            - Die
+        requires:
+            - HumanBuildable
+
+    MGTurret:
+        requires:
+            - HumanBuildable
+
+    Reactor:
+        messages:
+            - Die
+        requires:
+            - HumanBuildable
+            - MainBuildable
+
+    Repeater:
+        requires:
+            - HumanBuildable
+
+    Rocketpod:
+        requires:
+            - HumanBuildable
+
+    Telenode:
+        requires:
+            - HumanBuildable
+
+
+entities:
+    ###################
+    # Pseudo Entities #
+    ###################
+
+    # Every legacy entity without a specific new entity has this.
+    Empty:
+        components:
+
+    # A generic client entity, not spawned yet.
+    # TODO: Evaluate if HealthComponent is needed.
+    Client:
+        components:
+            Client:
+            Health:
+                maxHealth: 1
+
+    ##################
+    # Player Classes #
+    ##################
+
+    #---------------+
+    # Alien Classes |
+    #---------------+
+
+    Dretch:
+        components:
+            AlienClass:
+
+    Mantis:
+        components:
+            AlienClass:
+
+    Marauder:
+        components:
+            AlienClass:
+
+    AdvMarauder:
+        components:
+            AlienClass:
+
+    Dragoon:
+        components:
+            AlienClass:
+
+    AdvDragoon:
+        components:
+            AlienClass:
+
+    Tyrant:
+        components:
+            AlienClass:
+
+    Granger:
+        components:
+            AlienClass:
+
+    AdvGranger:
+        components:
+            AlienClass:
+
+    #---------------+
+    # Human Classes |
+    #---------------+
+
+    NakedHuman:
+        components:
+            HumanClass:
+
+    LightHuman:
+        components:
+            HumanClass:
+
+    MediumHuman:
+        components:
+            HumanClass:
+
+    HeavyHuman:
+        components:
+            HumanClass:
+
+    ######################
+    # Buildable Entities #
+    ######################
+
+    #------------------+
+    # Alien Buildables |
+    #------------------+
+
+    AcidTube:
+        components:
+            AcidTube:
+
+    Barricade:
+        components:
+            Barricade:
+
+    Booster:
+        components:
+            Booster:
+
+    Egg:
+        components:
+            Egg:
+
+    Hive:
+        components:
+            Hive:
+
+    Leech:
+        components:
+            Leech:
+
+    Overmind:
+        components:
+            Overmind:
+
+    Spiker:
+        components:
+            Spiker:
+
+    Trapper:
+        components:
+            Trapper:
+
+    #------------------+
+    # Human Buildables |
+    #------------------+
+
+    Armoury:
+        components:
+            HumanBuildable:
+
+    Drill:
+        components:
+            HumanBuildable:
+            Mining:
+
+    Medipad:
+        components:
+            Medipad:
+
+    MGTurret:
+        components:
+            HumanBuildable:
+            Turret:
+
+    Reactor:
+        components:
+            Reactor:
+
+    Repeater:
+        components:
+            HumanBuildable:
+
+    Rocketpod:
+        components:
+            HumanBuildable:
+            Turret:
+
+    Telenode:
+        components:
+            HumanBuildable:
+
+    #####################
+    # Unsorted Entities #
+    #####################
+
+    Fire:
+        components:
+            Ignitable:
+                alwaysOnFire: true
+
+# vi:ts=4:et:ai

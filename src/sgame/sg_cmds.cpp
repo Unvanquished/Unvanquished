@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
+#include "CBSE.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -583,7 +584,6 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 
 		G_ModifyBuildPoints( (team_t)ent->client->pers.team, amount );
-		G_MarkBuildPointsMined( (team_t)ent->client->pers.team, amount );
 	}
 
 	// give momentum
@@ -601,8 +601,7 @@ void Cmd_Give_f( gentity_t *ent )
 		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
 	}
 
-	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
-			ent->client->sess.spectatorState != SPECTATOR_NOT )
+	if ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		return;
 	}
@@ -611,13 +610,13 @@ void Cmd_Give_f( gentity_t *ent )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
-			ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
+			ent->entity->Heal(1000.0f, nullptr);
 			BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
 		}
 		else
 		{
-			int amount = atoi( name + strlen("health") );
-			ent->health = Math::Clamp(ent->health + amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
+			float amount = atof( name + strlen("health") );
+			ent->entity->Heal(amount, nullptr);
 		}
 	}
 
@@ -748,8 +747,7 @@ void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		G_PlayerDie( ent, ent, ent, MOD_SUICIDE );
+		G_Kill(ent, MOD_SUICIDE);
 	}
 	else
 	{
@@ -801,7 +799,7 @@ void Cmd_Team_f( gentity_t *ent )
 	     g_combatCooldown.integer &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
-	     ent->health > 0 &&
+	     G_Alive( ent ) &&
 	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
 	{
 		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
@@ -2336,7 +2334,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 		return false;
 	}
 
-	if ( ent->health <= 0 )
+	if ( G_Dead( ent ) )
 	{
 		return true; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
@@ -2417,8 +2415,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			{
 				if ( cost >= 0 )
 				{
-					ent->client->pers.evolveHealthFraction = ( float ) ent->client->ps.stats[ STAT_HEALTH ] /
-					    ( float ) BG_Class( currentClass )->health;
+					ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
 
 					if ( ent->client->pers.evolveHealthFraction < 0.0f )
 					{
@@ -2540,7 +2537,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	}
 
 	// always let the builder prevent the explosion of a buildable
-	if ( buildable->health <= 0 )
+	if ( G_Dead( buildable ) )
 	{
 		G_RewardAttackers( buildable );
 		G_FreeEntity( buildable );
@@ -2558,7 +2555,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 		instant = false;
 	}
 
-	if ( instant && buildable->deconstruct )
+	if ( instant && buildable->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 	{
 		if ( !g_cheats.integer )
 		{
@@ -2596,8 +2593,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	else
 	{
 		// toggle mark
-		buildable->deconstruct     = !buildable->deconstruct;
-		buildable->deconstructTime = level.time;
+		buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
 	}
 }
 
@@ -2610,20 +2606,18 @@ void Cmd_Ignite_f( gentity_t *player )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   trace;
-	gentity_t *target;
 
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 100, forward, end );
+	VectorMA( viewOrigin, 1000, forward, end );
 	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->s.number, MASK_PLAYERSOLID, 0 );
-	target = &g_entities[ trace.entityNum ];
 
-	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )
-	{
-		return;
+	if ( trace.entityNum == ENTITYNUM_WORLD ) {
+		G_SpawnFire( trace.endpos, trace.plane.normal, player );
+	} else {
+		g_entities[ trace.entityNum ].entity->Ignite( player );
 	}
 
-	G_IgniteBuildable( target, player );
 }
 
 /*
@@ -4156,8 +4150,9 @@ void Cmd_Damage_f( gentity_t *ent )
 	point[ 0 ] += dx;
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
-	G_Damage( ent, nullptr, nullptr, nullptr, point, damage,
-	          ( nonloc ? DAMAGE_NO_LOCDAMAGE : 0 ), MOD_TARGET_LASER );
+
+	ent->entity->Damage((float)damage, nullptr, Vec3::Load(point), Util::nullopt,
+	                    nonloc ? DAMAGE_NO_LOCDAMAGE : 0, MOD_TARGET_LASER);
 }
 
 /*
@@ -4438,8 +4433,7 @@ void ClientCommand( int clientNum )
 	}
 
 	if ( (command->cmdFlags & CMD_ALIVE) &&
-	     ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
-	       ent->client->sess.spectatorState != SPECTATOR_NOT ) )
+	     ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIVE );
 		return;

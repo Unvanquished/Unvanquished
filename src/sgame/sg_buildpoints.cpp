@@ -22,220 +22,63 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sg_local.h"
+#include "CBSE.h"
 
 #define MINING_PERIOD 1000
 
 /**
- * @brief Calculates modifier for the efficiency of one RGS when another one interfers at given
- *        distance.
+ * @brief Predict the efficiecy loss of a mining structre if another one is constructed closeby.
+ * @return Efficiency loss as negative value.
  */
-static float RGSInterferenceMod( float distance )
-{
-	float dr, q;
+static float RGSPredictInterferenceLoss(Entity& miner, vec3_t newMinerOrigin) {
+	float distance      = Distance(miner.oldEnt->s.origin, newMinerOrigin);
+	float currentRate   = miner.Get<MiningComponent>()->MineRate();
+	float predictedRate = currentRate * MiningComponent::InterferenceMod(distance);
+	float rateLoss      = predictedRate - currentRate;
 
-	if ( RGS_RANGE <= 0.0f )
-	{
-		return 1.0f;
-	}
-
-	// q is the ratio of the part of a sphere with radius RGS_RANGE that intersects
-	// with another sphere of equal size and given distance
-	dr = distance / RGS_RANGE;
-	q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
-
-	// Two RGS together should mine at a rate proportional to the volume of the
-	// union of their areas of effect. If more RGS intersect, this is just an
-	// approximation that tends to punish cluttering of RGS.
-	return ( (1.0f - q) + 0.5f * q );
+	return rateLoss / level.mineRate;
 }
 
 /**
- * @brief Adjust the rate of a RGS.
+ * @brief Predict the efficiency of a mining structure constructed at the given point.
+ * @return Predicted efficiency in percent points.
  */
-static void RGSCalculateRate( gentity_t *self )
-{
-	gentity_t       *rgs;
-	float           rate;
+float G_RGSPredictEfficiency( vec3_t origin ) {
+	// HACK: Create a pseudo leech entity on the stack and calculate its rate.
 
-	if ( self->s.modelindex != BA_A_LEECH && self->s.modelindex != BA_H_DRILL )
-	{
-		return;
-	}
+	gentity_t leechOldEntity;
+	VectorCopy(origin, leechOldEntity.s.origin);
+	leechOldEntity.powered = true;
 
-	if ( !self->spawned || !self->powered )
-	{
-		self->mineRate       = 0.0f;
-		self->mineEfficiency = 0.0f;
+	LeechEntity::Params params;
+	params.oldEnt = &leechOldEntity;
+	params.Health_maxHealth = 1.0f;
 
-		// HACK: Save RGS mining efficiency in entityState.weaponAnim
-		self->s.weaponAnim = 0;
-	}
-	else
-	{
-		rate = level.mineRate;
+	LeechEntity leechEntity(params);
 
-		for ( rgs = nullptr;
-		      ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
-		{
-			if ( rgs->s.eType == ET_BUILDABLE &&
-			     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-				 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
-			{
-				rate *= RGSInterferenceMod( Distance( self->s.origin, rgs->s.origin ) );
-			}
-		}
+	MiningComponent *miningComponent = leechEntity.Get<MiningComponent>();
+	BuildableComponent *buildableComponent = leechEntity.Get<BuildableComponent>();
 
-		self->mineRate       = rate;
-		self->mineEfficiency = rate / level.mineRate;
-
-		// HACK: Save RGS mining efficiency in entityState.weaponAnim
-		self->s.weaponAnim = std::round( self->mineEfficiency * 255.0f );
-	}
+	buildableComponent->SetState(BuildableComponent::CONSTRUCTED);
+	miningComponent->CalculateEfficiency();
+	return miningComponent->Efficiency();
 }
 
 /**
- * @brief Adjust the rate of all RGS in range.
+ * @brief Predict the total efficiency gain for a team when a miner is constructed at a given point.
+ * @return Predicted efficiency delta in percent points.
+ * @todo Consider RGS set for deconstruction.
  */
-static void RGSInformNeighbors( gentity_t *self )
-{
-	gentity_t *rgs;
+float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
+	float delta = G_RGSPredictEfficiency(origin);
 
-	for ( rgs = nullptr;
-	      ( rgs = G_IterateEntitiesWithinRadius( rgs, self->s.origin, RGS_RANGE * 2.0f ) ); )
-	{
-		if ( rgs->s.eType == ET_BUILDABLE &&
-		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-			 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
-		{
-			RGSCalculateRate( rgs );
-		}
-	}
-}
+	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
+		// HACK: This just works for miners that are buildables.
+		// TODO: Retrieve entity team properly.
+		if (miner.oldEnt->buildableTeam != team) return;
 
-/**
- * @brief Called when a RGS thinks.
- */
-void G_RGSThink( gentity_t *self )
-{
-	bool active          = ( self->spawned && self->powered );
-	bool lastThinkActive = ( self->mineEfficiency > 0.0f );
-
-	if ( active ^ lastThinkActive )
-	{
-		// If the state of this RGS has changed, adjust own rate and inform active closeby RGS so
-		// they can adjust their rate immediately.
-		RGSCalculateRate( self );
-		RGSInformNeighbors( self );
-	}
-
-	// HACK: Save fraction of stored build points in entityState.weapon
-	self->s.weapon = std::round( ( 255.0f * self->acquiredBuildPoints ) /
-	                             level.team[ self->buildableTeam ].acquiredBuildPoints );
-}
-
-/**
- * @brief Called when a main structure thinks in its role as a BP storage.
- */
-void G_MainStructBPStorageThink( gentity_t *self )
-{
-	self->acquiredBuildPoints = level.team[ self->buildableTeam ].mainStructAcquiredBP;
-
-	// HACK: Save fraction of stored build points in entityState.weapon
-	self->s.weapon = std::round( ( 255.0f * self->acquiredBuildPoints ) /
-	                             level.team[ self->buildableTeam ].acquiredBuildPoints );
-}
-
-/**
- * @brief Called when a BP storage dies or gets deconstructed.
- */
-void G_BPStorageDie( gentity_t *self )
-{
-	team_t team = self->buildableTeam;
-
-	// HACK: entityState.weapon stores BP fraction
-	self->s.weapon = 0;
-
-	// Removes some of the owner's team's build points, proportional to the amount this structure
-	// acquired and the amount of health lost (before deconstruction).
-	float acquiredFrac = self->acquiredBuildPoints / level.team[ team ].acquiredBuildPoints;
-	float loss         = ( 1.0f - self->deconHealthFrac ) * std::min( acquiredFrac, 1.0f ) *
-	                     level.team[ team ].buildPoints * g_buildPointLossFraction.value;
-	G_ModifyBuildPoints( team, -loss );
-}
-
-/**
- * @brief Called when a RGS dies or gets deconstructed.
- */
-void G_RGSDie( gentity_t *self )
-{
-	// HACK: entityState.weaponAnim stores mining efficiency
-	self->s.weaponAnim = 0;
-
-	G_BPStorageDie( self );
-
-	// The remaining BP storages take over this one's account
-	G_MarkBuildPointsMined( self->buildableTeam, -self->acquiredBuildPoints );
-
-	// Inform neighbours so they can increase their rate immediately.
-	RGSInformNeighbors( self );
-}
-
-/**
- * @brief Predict the efficiecy loss of a RGS if another one is constructed at given origin.
- * @return Efficiency loss as negative value
- */
-static float RGSPredictInterferenceLoss( gentity_t *self, vec3_t origin )
-{
-	float currentRate, predictedRate, rateLoss;
-
-	currentRate   = self->mineRate;
-	predictedRate = currentRate * RGSInterferenceMod( Distance( self->s.origin, origin ) );
-	rateLoss      = predictedRate - currentRate;
-
-	return ( rateLoss / level.mineRate );
-}
-
-/**
- * @brief Predict the efficiency of a RGS constructed at the given point.
- * @return Predicted efficiency in percent points
- */
-float G_RGSPredictEfficiency( vec3_t origin )
-{
-	gentity_t dummy;
-
-	memset( &dummy, 0, sizeof( gentity_t ) );
-	VectorCopy( origin, dummy.s.origin );
-	dummy.s.eType = ET_BUILDABLE;
-	dummy.s.modelindex = BA_A_LEECH;
-	dummy.spawned = true;
-	dummy.powered = true;
-
-	RGSCalculateRate( &dummy );
-
-	return dummy.mineEfficiency;
-}
-
-/**
- * @brief Predict the total efficiency gain for a team when a RGS is constructed at the given point.
- * @return Predicted efficiency delta in percent points
- * @todo Consider RGS set for deconstruction
- */
-float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
-{
-	gentity_t *rgs;
-	float     delta;
-
-	delta = G_RGSPredictEfficiency( origin );
-
-	for ( rgs = nullptr; ( rgs = G_IterateEntitiesWithinRadius( rgs, origin, RGS_RANGE * 2.0f ) ); )
-	{
-		if ( rgs->s.eType == ET_BUILDABLE &&
-		     ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-		     && rgs->spawned && rgs->powered && rgs->health > 0 && rgs->buildableTeam == team )
-		{
-			delta += RGSPredictInterferenceLoss( rgs, origin );
-		}
-	}
+		delta += RGSPredictInterferenceLoss(miner, origin);
+	});
 
 	return delta;
 }
@@ -243,92 +86,78 @@ float G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team )
 /**
  * @brief Calculate the level mine rate and the teams' mining efficiencies, add build points.
  */
-void G_MineBuildPoints()
-{
-	int              i, playerNum;
-	gentity_t        *ent, *player;
-	gclient_t        *client;
-	float            mineMod;
+void G_MineBuildPoints() {
+	static int nextCalculation = 0;
+	if (level.time < nextCalculation) return;
 
-	static int       nextCalculation = 0;
+	level.team[TEAM_HUMANS].mineEfficiency = 0.0f;
+	level.team[TEAM_ALIENS].mineEfficiency = 0.0f;
 
-	if ( level.time < nextCalculation )
-	{
-		return;
-	}
-
-	level.team[ TEAM_HUMANS ].mineEfficiency = 0.0f;
-	level.team[ TEAM_ALIENS ].mineEfficiency = 0.0f;
-
-	// calculate level wide mine rate
+	// Calculate current level wide mine rate.
 	level.mineRate = g_initialMineRate.value *
-	                 std::pow( 2.0f, -level.matchTime / ( 60000.0f * g_mineRateHalfLife.value ) );
+	                 std::pow(2.0f, -level.matchTime / (60000.0f * g_mineRateHalfLife.value));
 
-	// calculate efficiency to build point gain modifier
-	mineMod = ( level.mineRate / 60.0f ) * ( MINING_PERIOD / 1000.0f );
+	// Calculate current efficiency to build point gain modifier.
+	float mineMod = (level.mineRate / 60.0f) * (MINING_PERIOD / 1000.0f);
 
-	// sum up mine rates of RGS, store how many build points they mined
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( ent->s.eType != ET_BUILDABLE ) continue;
+	// Sum up efficiencies of miners and save amount of build points acquired by each miner.
+	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
+		float efficiency = miningComponent.Efficiency();
 
-		ent->acquiredBuildPoints += ent->mineEfficiency * mineMod;
+		miningComponent.GetResourceStorageComponent().AcquireBuildPoints(efficiency * mineMod);
 
-		switch ( ent->s.modelindex )
-		{
-			case BA_H_DRILL:
-				level.team[ TEAM_HUMANS ].mineEfficiency += ent->mineEfficiency;
-				break;
+		// HACK: This only works with miners that are buildables.
+		level.team[miner.oldEnt->buildableTeam].mineEfficiency += efficiency;
+	});
 
-			case BA_A_LEECH:
-				level.team[ TEAM_ALIENS ].mineEfficiency += ent->mineEfficiency;
-				break;
+	// Main structure provides the rest of the minimum mining efficiency.
+	float minEff = (g_minimumMineRate.value / 100.0f);
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+		gentity_t *mainStructure;
+		float     deltaEff;
+
+		switch (team) {
+			case TEAM_ALIENS: mainStructure = G_ActiveOvermind(); break;
+			case TEAM_HUMANS: mainStructure = G_ActiveReactor();  break;
+			default: continue;
+		}
+
+		if (mainStructure && (deltaEff = minEff - level.team[TEAM_HUMANS].mineEfficiency) > 0) {
+			level.team[team].mineEfficiency       += deltaEff;
+			level.team[team].mainStructAcquiredBP += deltaEff * mineMod;
+
+			// Copy acquired build points to the current main structure's ResourceStorageComponent.
+			mainStructure->entity->Get<ResourceStorageComponent>()->SetAcquiredBuildPoints(
+				level.team[team].mainStructAcquiredBP
+			);
 		}
 	}
 
-	// main structure provides the rest of the minimum mining efficiency
-	float minEff = ( g_minimumMineRate.value / 100.0f ), deltaEff;
-	if ( G_ActiveReactor() && ( deltaEff = minEff - level.team[ TEAM_HUMANS ].mineEfficiency ) > 0 )
-	{
-		level.team[ TEAM_HUMANS ].mineEfficiency       += deltaEff;
-		level.team[ TEAM_HUMANS ].mainStructAcquiredBP += deltaEff * mineMod;
-	}
-	if ( G_ActiveOvermind() &&( deltaEff = minEff - level.team[ TEAM_ALIENS ].mineEfficiency ) > 0 )
-	{
-		level.team[ TEAM_ALIENS ].mineEfficiency       += deltaEff;
-		level.team[ TEAM_ALIENS ].mainStructAcquiredBP += deltaEff * mineMod;
+	// Add build points.
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+		float earnedBP = level.team[team].mineEfficiency * mineMod;
+
+		G_ModifyBuildPoints(team, earnedBP);
+		G_ModifyTotalBuildPointsAcquired(team, earnedBP);
 	}
 
-	// add build points, mark them mined
-	for ( team_t team = TEAM_NONE; ( team = G_IterateTeams( team ) ); )
-	{
-		float earnedBP = mineMod * level.team[ team ].mineEfficiency;
+	// Send mine efficiencies to clients.
+	for (int playerNum = 0; playerNum < level.maxclients; playerNum++) {
+		gentity_t *player = &g_entities[playerNum];
+		gclient_t *client = player->client;
 
-		G_ModifyBuildPoints( team, earnedBP );
-		G_MarkBuildPointsMined( team, earnedBP );
-	}
+		if (!client) continue;
 
-	// send to clients
-	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
-	{
-		player = &g_entities[ playerNum ];
-		client = player->client;
-
-		if ( !client ) continue;
-
-		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
+		client->ps.persistant[PERS_MINERATE] = (short)(level.mineRate * 10.0f);
 
 		team_t team = (team_t)client->pers.team;
 
-		if ( G_IsPlayableTeam( team ) )
-		{
-			client->ps.persistant[ PERS_RGS_EFFICIENCY ] =
-				( short )( level.team[ team ].mineEfficiency * 100.0f );
-		}
-		else
-		{
-			// TODO: Check if this is related to efficiency display flickering for spectators
-			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
+		if (G_IsPlayableTeam(team)) {
+			client->ps.persistant[PERS_RGS_EFFICIENCY] =
+				(short)(level.team[team].mineEfficiency * 100.0f);
+		} else {
+			// TODO: Check if this is related to efficiency display flickering for spectators.
+			client->ps.persistant[PERS_RGS_EFFICIENCY] = 0;
 		}
 	}
 
@@ -362,14 +191,14 @@ int G_GetMarkedBuildPointsInt( team_t team )
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( ent->s.eType != ET_BUILDABLE || !ent->inuse || ent->health <= 0 ||
-		     ent->buildableTeam != team || !ent->deconstruct )
+		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || G_Dead( ent ) ||
+		     ent->buildableTeam != team || !ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
 			continue;
 		}
 
 		attr = BG_Buildable( ent->s.modelindex );
-		sum += attr->buildPoints * ( ent->health / (float)attr->health );
+		sum += attr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
 	}
 
 	return sum;
@@ -429,26 +258,26 @@ void G_GetBuildableResourceValue( int *teamValue )
 		team = ent->buildableTeam ;
 		attr = BG_Buildable( ent->s.modelindex );
 
-		teamValue[ team ] += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
+		teamValue[ team ] += attr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
 	}
 }
 
-static void ModifyBuildPoints( team_t team, float amount, bool mined )
+static void ModifyBuildPoints( team_t team, float amount, bool acquired )
 {
-	float *availBP, *minedBP;
+	float *availBP, *acquiredBP;
 
 	if ( G_IsPlayableTeam( team ) )
 	{
-		availBP = &level.team[ team ].buildPoints;
-		minedBP = &level.team[ team ].acquiredBuildPoints;
+		availBP    = &level.team[ team ].buildPoints;
+		acquiredBP = &level.team[ team ].acquiredBuildPoints;
 	}
 	else
 	{
 		return;
 	}
 
-	*availBP = mined ? *availBP : std::max( *availBP + amount, 0.0f );
-	*minedBP = mined ? std::max( *minedBP + amount, 0.0f ) : *minedBP;
+	*availBP    = acquired ? *availBP : std::max( *availBP + amount, 0.0f );
+	*acquiredBP = acquired ? std::max( *acquiredBP + amount, 0.0f ) : *acquiredBP;
 }
 
 /**
@@ -460,9 +289,11 @@ void G_ModifyBuildPoints( team_t team, float amount )
 }
 
 /**
- * @brief Adds or removes build points to the virtual pool of mined build points.
+ * @brief Adds or removes build points to the virtual pool of acquired build points.
+ * @note The sum of all resource storage's acquired build points plus the pool of build points
+ *       acquired by the main structure should equal this pool.
  */
-void G_MarkBuildPointsMined( team_t team, float amount )
+void G_ModifyTotalBuildPointsAcquired( team_t team, float amount )
 {
 	ModifyBuildPoints( team, amount, true );
 }
