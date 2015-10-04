@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/ElementInstancerGeneric.h>
 #include <Rocket/Core/Factory.h>
 #include <Rocket/Core/ElementText.h>
+#include <Rocket/Core/StyleSheetKeywords.h>
 
 static void CG_GetRocketElementColor( vec4_t color )
 {
@@ -2080,14 +2081,15 @@ class PredictedMineEfficiencyElement : public HudElement
 public:
 	PredictedMineEfficiencyElement( const Rocket::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, false ),
-			shouldBeVisible( true ) { }
+			shouldBeVisible( true ),
+			display( -1 ) { }
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( display.Empty() && changed_properties.find( "display" ) != changed_properties.end() )
+		if ( display < 0 && changed_properties.find( "display" ) != changed_properties.end() )
 		{
-			display = GetProperty<Rocket::Core::String>( "display" );
+			display = GetProperty<int>( "display" );
 		}
 	}
 
@@ -2097,16 +2099,18 @@ public:
 		buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
 		// If display hasn't been set yet explicitly, assume display is block
-		if ( display.Empty() )
+		if ( display < 0 )
 		{
-			display = "block";
+			display = Rocket::Core::DISPLAY_BLOCK;
 		}
 
 		if ( buildable != BA_H_DRILL && buildable != BA_A_LEECH )
 		{
 			if ( IsVisible() && shouldBeVisible )
 			{
-				SetProperty( "display", "none" );
+				SetProperty("display",
+							Rocket::Core::Property(Rocket::Core::DISPLAY_NONE,
+												   Rocket::Core::Property::KEYWORD));
 				SetInnerRML( "" );
 				shouldBeVisible = false;
 				// Pick impossible value
@@ -2117,7 +2121,8 @@ public:
 		{
 			if ( !IsVisible() && !shouldBeVisible )
 			{
-				SetProperty( "display", display );
+				SetProperty( "display", Rocket::Core::Property( display,
+															   Rocket::Core::Property::KEYWORD ) );
 				shouldBeVisible = true;
 			}
 		}
@@ -2164,7 +2169,7 @@ public:
 	}
 private:
 	bool shouldBeVisible;
-	Rocket::Core::String display;
+	int display;
 	int lastDelta;
 };
 
