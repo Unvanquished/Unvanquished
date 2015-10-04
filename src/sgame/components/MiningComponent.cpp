@@ -14,8 +14,6 @@ void MiningComponent::HandlePrepareNetCode() {
 }
 
 void MiningComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
-	team_t team = entity.oldEnt->buildableTeam;
-
 	efficiency = 0.0f;
 
 	// Inform neighbours so they can increase their rate immediately.
