@@ -60,11 +60,11 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
 If you want to mess around with the gamelogic code and modify entities, you'll need the cbse toolchain.
 Get it using:
 
-`
-cd src/utils/cbse
-git submodule init
-git submodule update
-`
+
+    cd src/utils/cbse
+    git submodule init
+    git submodule update
+
 Then you can modify the entities.yml file in src/sgame/. After modifying the entites.yml file,
 you can run the generate_entities.sh script o regenerate the auto generated component code.
 
