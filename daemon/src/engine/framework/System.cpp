@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "System.h"
 #ifdef _WIN32
 #include <windows.h>
+#include <SDL2/SDL.h>
 #else
 #include <unistd.h>
 #include <signal.h>
