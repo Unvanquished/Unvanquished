@@ -2082,7 +2082,11 @@ public:
 	PredictedMineEfficiencyElement( const Rocket::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, false ),
 			shouldBeVisible( true ),
-			display( -1 ) { }
+			display( -1 ),
+			pluralSuffix{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
+	{
+
+	}
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
@@ -2144,18 +2148,18 @@ public:
 				{
 					color = COLOR_RED;
 					// Error sign
-					msg = va( "<span class='material-icon error'>&#xE000;</span> You are losing efficiency. Build the %ss further apart for more efficiency.", BG_Buildable( buildable )->humanName );
+					msg = va( "<span class='material-icon error'>&#xE000;</span> You are losing efficiency. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				}
 				else if ( delta < 10 )
 				{
 					color = COLOR_ORANGE;
 					// Warning sign
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Minimal efficency gain. Build the %ss further apart for more efficiency.", BG_Buildable( buildable )->humanName );
+					msg = va( "<span class='material-icon warning'>&#xE002;</span> Minimal efficency gain. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				}
 				else if ( delta < 50 )
 				{
 					color = COLOR_YELLOW;
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Average efficency gain. Build the %ss further apart for more efficiency.", BG_Buildable( buildable )->humanName );
+					msg = va( "<span class='material-icon warning'>&#xE002;</span> Average efficency gain. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				}
 				else
 				{
@@ -2171,6 +2175,7 @@ private:
 	bool shouldBeVisible;
 	int display;
 	int lastDelta;
+	std::unordered_map<int, std::string> pluralSuffix;
 };
 
 void CG_Rocket_DrawPlayerHealth()
