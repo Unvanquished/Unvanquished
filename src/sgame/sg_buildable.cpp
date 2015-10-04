@@ -3571,7 +3571,6 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 {
 	int              entNum, listLen;
 	gentity_t        *ent, *list[ MAX_GENTITIES ];
-	itemBuildError_t reason;
 	const buildableAttributes_t *attr, *entAttr;
 
 	// power consumption related
