@@ -47,13 +47,26 @@ See below for build and launch instructions.
 
 `base-devel`
 
-64-bit: `mingw-w64-x86_64-{toolchain,cmake,aria2}`  
-*or*  
+64-bit: `mingw-w64-x86_64-{toolchain,cmake,aria2}`
+*or*
 32-bit: `mingw-w64-i686-{toolchain,cmake,aria2}`
 
 ##Build Instructions
 
 Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores to speed up compilation.
+
+###CBSE Toolchain
+
+If you want to mess around with the gamelogic code and modify entities, you'll need the cbse toolchain.
+Get it using:
+
+`
+cd src/utils/cbse
+git submodule init
+git submodule update
+`
+Then you can modify the entities.yml file in src/sgame/. After modifying the entites.yml file,
+you can run the generate_entities.sh script o regenerate the auto generated component code.
 
 ###Visual Studio
 
@@ -109,13 +122,13 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
     cd build
     mkdir pkg
 
-`../download-pk3-torrent.sh pkg # ¹`  
-*or*  
+`../download-pk3-torrent.sh pkg # ¹`
+*or*
 `../download-pk3.sh pkg # ²`
 
     ./daemon
 
-¹ *Fast, requires `aria2c`.*  
+¹ *Fast, requires `aria2c`.*
 ² *Unreliable speed, requires `curl`.*
 
 ####If you're a developer
@@ -133,7 +146,7 @@ You can now put loose assets into `assets_source.pk3dir` or you can put addition
   - `./daemon -pakpath PATH -set fs_extrapaks assets # ¹`
   - `./daemon -pakpath PATH -set fs_extrapaks assets -set vm.sgame.type 3 -set vm.cgame.type 3 -set vm.sgame.debug 1 -set vm.cgame.debug 1 +devmap plat23 # ²`
 
-¹ *Runs the game and loads the `assets` package and its dependencies. `PATH` is the path to Unvanquished's base packages and maps. Omit `-pakpath PATH` if `pkg` contains these assets.*  
+¹ *Runs the game and loads the `assets` package and its dependencies. `PATH` is the path to Unvanquished's base packages and maps. Omit `-pakpath PATH` if `pkg` contains these assets.*
 ² *In addition, load a shared-object gamelogic you compiled and allow it to be debugged. Launch the map Platform 23 with cheats enabled after startup.*
 
 ###Windows
