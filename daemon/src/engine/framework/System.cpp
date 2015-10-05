@@ -280,7 +280,7 @@ static std::string CrashDumpPath() {
 
 #ifdef _WIN32
 
-static google_breakpad::ExceptionHandler* crashHandler;
+std::unique_ptr<google_breakpad::ExceptionHandler> crashHandler;
 
 static void BreakpadInit() {
     std::string crashDir = CrashDumpPath();
@@ -313,15 +313,16 @@ static void BreakpadInit() {
     CloseHandle(procInfo.hProcess);
     CloseHandle(procInfo.hThread);
 
-    crashHandler = new google_breakpad::ExceptionHandler(
+    std::wstring wPipeName = Str::UTF8To16(pipeName);
+    crashHandler.reset(new google_breakpad::ExceptionHandler(
         Str::UTF8To16(crashDir),
-        NULL,
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
+        nullptr,
         google_breakpad::ExceptionHandler::HANDLER_ALL,
         MiniDumpNormal,
-        &Str::UTF8To16(pipeName)[0],
-        NULL);
+        wPipeName.c_str(),
+        nullptr));
 }
 #endif
 
@@ -363,9 +364,6 @@ static void Shutdown(bool error, Str::StringRef message)
 
 	// Always run CON_Shutdown, because it restores the terminal to a usable state.
 	CON_Shutdown();
-#ifdef USE_BREAKPAD
-    delete crashHandler;
-#endif
 }
 
 void Quit(Str::StringRef message)
