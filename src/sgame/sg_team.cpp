@@ -514,7 +514,7 @@ void CheckTeamStatus()
 		{
 			ent = g_entities + i;
 
-			if ( ent->client->pers.connected != CON_CONNECTED )
+			if ( ent->client && ent->client->pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
@@ -544,7 +544,7 @@ void CheckTeamStatus()
 		{
 			ent = g_entities + i;
 
-			if ( ent->client->pers.connected != CON_CONNECTED )
+			if ( ent->client && ent->client->pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
