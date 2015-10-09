@@ -465,7 +465,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  CVAR_NORESTART, 0, false },
 
 	// experimental gameplay
-	{ &x_freeUpgrades,           "x_freeUpgrades",           "1",                   CVAR_SERVERINFO, 0, true, nullptr },
+	{ &x_freeUpgrades,           "x_freeUpgrades",           "2",                   CVAR_SERVERINFO, 0, true, nullptr },
 
     { &x_buildAnywhere,          "x_buildAnywhere",          "2",                   CVAR_SERVERINFO, 0, true, nullptr },
 

@@ -170,7 +170,7 @@ void BG_InitBuildableAttributes()
 		{
 			ba->unlockThreshold = 0;
 		}
-		else if ( freeUpgrades )
+		else if ( freeUpgrades == 1 )
 		{
 			switch ( ba->number )
 			{
@@ -493,7 +493,7 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 		return -1;
 	}
 
-	if ( GetCvarInt( "x_freeUpgrades" ) )
+	if ( GetCvarInt( "x_freeUpgrades" ) == 1 )
 	{
 		return 0;
 	}
@@ -586,7 +586,7 @@ void BG_InitClassAttributes()
 			}
 		}
 
-		if ( freeUpgrades )
+		if ( freeUpgrades == 1 )
 		{
 			switch ( ca->number )
 			{
@@ -735,7 +735,7 @@ void BG_InitWeaponAttributes()
 
 		BG_ParseWeaponAttributeFile( va( "configs/weapon/%s.attr.cfg", wa->name ), wa );
 
-		if ( freeUpgrades )
+		if ( freeUpgrades == 1 )
 		{
 			switch ( wa->number )
 			{
@@ -843,7 +843,7 @@ void BG_InitUpgradeAttributes()
 
 		BG_ParseUpgradeAttributeFile( va( "configs/upgrades/%s.attr.cfg", ua->name ), ua );
 
-		if ( freeUpgrades )
+		if ( freeUpgrades == 1 )
 		{
 			switch ( ua->number )
 			{

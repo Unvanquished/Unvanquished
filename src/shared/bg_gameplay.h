@@ -381,7 +381,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
 #define PLAYER_BASE_VALUE                  200   // base credit value of a player
 #define PLAYER_PRICE_TO_VALUE              0.5f  // fraction of upgrade price added to player value
-#define DEFAULT_FREEKILL_PERIOD            "120" // in s
+#define DEFAULT_FREEKILL_PERIOD            "30" // in s (reduced from 120 because of x_freeUpgrades 2)
 
 // resources
 #define RGS_RANGE                          1000.0f // must be > 0

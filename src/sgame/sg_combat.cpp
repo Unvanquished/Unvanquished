@@ -325,7 +325,10 @@ void G_RewardAttackers( gentity_t *self )
 			G_AddCreditsToScore( player, ( int )reward );
 
 			// Add credits
-			G_AddCreditToClient( player->client, ( short )reward, true );
+			if ( !x_freeUpgrades.integer )
+			{
+				G_AddCreditToClient( player->client, ( short )reward, true );
+			}
 
 			// Add momentum
 			G_AddMomentumForKillingStep( self, player, share );
