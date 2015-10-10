@@ -1014,17 +1014,27 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		client->pers.aliveSeconds++;
 
-		if ( g_freeFundPeriod.integer > 0 &&
-		     client->pers.aliveSeconds % g_freeFundPeriod.integer == 0 )
+		if ( x_freeUpgrades.integer == 2 )
 		{
-			// Give clients some credit periodically
-			if ( client->pers.team == TEAM_ALIENS )
+			if ( g_freeFundPeriod.integer > 0 && ( client->pers.team == TEAM_ALIENS || client->pers.team == TEAM_HUMANS ) )
 			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
+				G_AddCreditToClient( client, PLAYER_BASE_VALUE / g_freeFundPeriod.integer, true );
 			}
-			else if ( client->pers.team == TEAM_HUMANS )
+		}
+		else if ( x_freeUpgrades.integer == 0 )
+		{
+			if ( g_freeFundPeriod.integer > 0 &&
+					 client->pers.aliveSeconds % g_freeFundPeriod.integer == 0 )
 			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
+				// Give clients some credit periodically
+				if ( client->pers.team == TEAM_ALIENS )
+				{
+					G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
+				}
+				else if ( client->pers.team == TEAM_HUMANS )
+				{
+					G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
+				}
 			}
 		}
 	}
