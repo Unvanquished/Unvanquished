@@ -28,10 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "CommandSystem.h"
+
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
 
-#include "CommandSystem.h"
+#include "Application.h"
 
 //TODO: use case-insensitive comparisons for commands (store the lower case version?)
 namespace Cmd {
@@ -215,10 +217,7 @@ namespace Cmd {
             return;
         }
 
-        //TODO: remove that and add default command handlers or something
-        // send it as a server command if we are connected
-        // (cvars are expanded locally)
-        CL_ForwardCommandToServer(args.EscapedArgs(0).c_str());
+        Application::OnUnhandledCommand(args);
     }
 
     CompletionResult CompleteArgument(const Args& args, int argNum) {
@@ -366,7 +365,7 @@ namespace Cmd {
     static ListCmdsCmd listRendererCmdsRegistration("listRendererCmds", BASE | RENDERER, "lists all the renderer commands", RENDERER);
     static ListCmdsCmd listAudioCmdsRegistration("listAudioCmds", BASE | AUDIO, "lists all the audio commands", AUDIO);
     static ListCmdsCmd listCGameCmdsRegistration("listCGameCmds", BASE | CGAME_VM, "lists all the client-side game commands", CGAME_VM);
-    static ListCmdsCmd listGameCmdsRegistration("listGameCmds", BASE | GAME_VM, "lists all the server-side game commands", CGAME_VM);
+    static ListCmdsCmd listGameCmdsRegistration("listGameCmds", BASE | SGAME_VM, "lists all the server-side game commands", CGAME_VM);
     static ListCmdsCmd listUICmdsRegistration("listUICmds", BASE | UI_VM, "lists all the UI commands", CGAME_VM);
     static ListCmdsCmd listOldStyleCmdsRegistration("listOldStyleCmds", BASE, "lists all the commands registered through the C interface", PROXY_FOR_OLD);
 }

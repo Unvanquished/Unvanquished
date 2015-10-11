@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include "q_unicode.h"
 #include "qcommon.h"
 
+#include "framework/Application.h"
 #include "framework/BaseCommands.h"
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
@@ -511,13 +512,8 @@ bool Com_AreCheatsAllowed()
 
 bool Com_IsClient()
 {
-#if BUILD_CLIENT || BUILD_TTY_CLIENT
-	return true;
-#elif BUILD_SERVER
-	return false;
-#else
-	#error
-#endif
+    auto config = Application::GetTraits();
+    return config.isClient || config.isTTYClient;
 }
 
 bool Com_IsDedicatedServer()

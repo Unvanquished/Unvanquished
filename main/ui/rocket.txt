@@ -8,6 +8,7 @@
 		fonts/Roboto-Regular.ttf
 		fonts/fontawesome-webfont.ttf
 		fonts/DejaVuSansCondensed.ttf
+		fonts/MaterialIcons-Regular.ttf
 	}
 	main
 	{

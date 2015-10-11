@@ -146,7 +146,7 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 
 	if( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) ){
 		Class = "active";
-		action =  va( "onClick='exec \"sell %s\"'", BG_Weapon( weapon )->name );
+		action =  va( "onClick='Cmd.exec(\"sell %s\")'", BG_Weapon( weapon )->name );
 		//Check mark icon. UTF-8 encoding of \uf00c
 		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
@@ -183,7 +183,7 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 
 	if( BG_InventoryContainsUpgrade( upgrade, cg.predictedPlayerState.stats ) ){
 		Class = "active";
-		action =  va( "onClick='exec \"sell %s\"'", BG_Upgrade( upgrade )->name );
+		action =  va( "onClick='Cmd.exec(\"sell %s\")'", BG_Upgrade( upgrade )->name );
 		//Check mark icon. UTF-8 encoding of \uf00c
 		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}

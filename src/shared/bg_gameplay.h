@@ -118,26 +118,6 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
 
-// TODO: Increase burn damage frequencies, make sure burn functions are called frequently
-// Average burn damage of an independent buildable is given by the limit of a geometric series:
-// ( BURN_SELFDAMAGE / BURN_SELFDAMAGE_PERIOD ) * ( BURN_STOP_PERIOD / BURN_STOP_CHANCE )
-#define BURN_SELFDAMAGE         10
-#define BURN_SELFDAMAGE_PERIOD  1000
-#define BURN_SPLDAMAGE          10
-#define BURN_SPLDAMAGE_RADIUS   60
-#define BURN_SPLDAMAGE_PERIOD   500
-// A burn action will first evaluate the stop chance, then a spread chance for each close neighbor
-#define BURN_ACTION_PERIOD      2500
-// The stop chance is lowered by a factor for every burning entity nearby
-// The factors decrease lineraly from BURN_STOP_CHANCE to 0.0 over the given radius
-#define BURN_STOP_CHANCE        0.5f
-#define BURN_STOP_RADIUS        150
-// Spread chance decreases linearly from 1.0 to 0.0 over this distance
-// A target entity that's already burning will reset its action timer
-#define BURN_SPREAD_RADIUS      120
-// Randomization applied to all burn periods
-#define BURN_PERIODS_RAND       0.25
-
 #define BARRICADE_SHRINKPROP    0.25f
 #define BARRICADE_SHRINKTIMEOUT 500
 
@@ -145,10 +125,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define BOOST_WARN_TIME         15000
 #define BOOST_REPEAT_ANIM       2000
 
-#define ACIDTUBE_DAMAGE         8
 #define ACIDTUBE_RANGE          300.0f
-#define ACIDTUBE_REPEAT         300
-#define ACIDTUBE_REPEAT_ANIM    2000
 
 #define SPIKER_SPIKE_RANGE      400.0f // reach of spikes, also used for scoring
 #define SPIKER_SENSE_RANGE      200.0f // an enemy needs to be this close to consider an attack
@@ -364,12 +341,15 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 // buildable explosion
 #define HUMAN_DETONATION_DELAY             4000
-#define ALIEN_DETONATION_DELAY             5000
 #define DETONATION_DELAY_RAND_RANGE        0.25f
 
 // buildable limits
 #define HUMAN_BUILDDELAY_MOD               0.6f
 #define ALIEN_BUILDDELAY_MOD               0.6f
+
+// base attack warnings
+#define ATTACKWARN_PRIMARY_PERIOD         7500
+#define ATTACKWARN_NEARBY_PERIOD          15000
 
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points

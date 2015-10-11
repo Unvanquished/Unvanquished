@@ -421,6 +421,24 @@ static void LoadRGBEToBytes( const char *name, byte **ldrImage, int *width, int 
 
 void LoadRGBEToHalfs( const char *name, unsigned short **halfImage, int *width, int *height );
 
+static char **R_LoadExternalLightmaps(
+		const char *mapName,
+		int *numLightmaps,
+		const std::initializer_list<char const *> &extensions = std::initializer_list<char const *>{".png", ".tga", ".webp", ".crn", ".jpg", ".jpeg"})
+{
+	int count = 0;
+	char **lightmapFiles = nullptr;
+	for (auto it : extensions) {
+		lightmapFiles = ri.FS_ListFiles(mapName, it, &count);
+		if (count && lightmapFiles) {
+			qsort(lightmapFiles, count, sizeof(char *), LightmapNameCompare);
+			break;
+		}
+	}
+	*numLightmaps = count;
+	return lightmapFiles;
+}
+
 /*
 ===============
 R_LoadLightmaps
@@ -429,19 +447,11 @@ R_LoadLightmaps
 #define LIGHTMAP_SIZE 128
 static void R_LoadLightmaps( lump_t *l, const char *bspName )
 {
-	int     len;
-	image_t *image;
-	int     i;
-	int     numLightmaps;
-
 	tr.fatLightmapSize = 0;
-
-	len = l->filelen;
-
+	int len = l->filelen;
 	if ( !len )
 	{
 		char mapName[ MAX_QPATH ];
-		char **lightmapFiles;
 
 		Q_strncpyz( mapName, bspName, sizeof( mapName ) );
 		COM_StripExtension3( mapName, mapName, sizeof( mapName ) );
@@ -452,134 +462,74 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 			R_SyncRenderThread();
 
 			// load HDR lightmaps
-			lightmapFiles = ri.FS_ListFiles( mapName, ".hdr", &numLightmaps );
-
-			qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
-
-			if ( !lightmapFiles || !numLightmaps )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+			int numLightmaps;
+			auto lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps, {".hdr"});
+			if (!lightmapFiles || !numLightmaps) {
+				ri.Printf(PRINT_WARNING, "WARNING: no lightmap files found\n");
 				return;
 			}
 
 			int  width, height;
 			byte *ldrImage;
 
-			for ( i = 0; i < numLightmaps; i++ )
+			for ( int i = 0; i < numLightmaps; i++ )
 			{
 				ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 				width = height = 0;
 				LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
 
-				image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), (const byte **)&ldrImage, width, height,
-									   1, IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
+				auto image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), (const byte **)&ldrImage, width, height, 1, IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 
 				Com_AddToGrowList( &tr.lightmaps, image );
 
 				ri.Free( ldrImage );
 			}
 
-			if ( tr.worldDeluxeMapping )
-			{
+			if (tr.worldDeluxeMapping) {
 				// load deluxemaps
-				lightmapFiles = ri.FS_ListFiles( mapName, ".png", &numLightmaps );
-
-				if ( !lightmapFiles || !numLightmaps )
-				{
-					lightmapFiles = ri.FS_ListFiles( mapName, ".tga", &numLightmaps );
-
-					if ( !lightmapFiles || !numLightmaps )
-					{
-						lightmapFiles = ri.FS_ListFiles( mapName, ".webp", &numLightmaps );
-
-						if ( !lightmapFiles || !numLightmaps )
-						{
-							lightmapFiles = ri.FS_ListFiles( mapName, ".crn", &numLightmaps );
-
-							if ( !lightmapFiles || !numLightmaps )
-							{
-								ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-								return;
-							}
-						}
-					}
+				lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps);
+				if (!lightmapFiles || !numLightmaps) {
+					ri.Printf(PRINT_WARNING, "WARNING: no lightmap files found\n");
+					return;
 				}
 
-				qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
+				ri.Printf(PRINT_DEVELOPER, "...loading %i deluxemaps\n", numLightmaps);
 
-				ri.Printf( PRINT_DEVELOPER, "...loading %i deluxemaps\n", numLightmaps );
-
-				for ( i = 0; i < numLightmaps; i++ )
-				{
-					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
-
-					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
-					Com_AddToGrowList( &tr.deluxemaps, image );
+				for (int i = 0; i < numLightmaps; i++) {
+					ri.Printf(PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[i]);
+					auto image = R_FindImageFile(va("%s/%s", mapName, lightmapFiles[i]), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP);
+					Com_AddToGrowList(&tr.deluxemaps, image);
 				}
 			}
 		}
 		else
 		{
-			lightmapFiles = ri.FS_ListFiles( mapName, ".png", &numLightmaps );
-
-			if ( !lightmapFiles || !numLightmaps )
-			{
-				lightmapFiles = ri.FS_ListFiles( mapName, ".tga", &numLightmaps );
-
-				if ( !lightmapFiles || !numLightmaps )
-				{
-					lightmapFiles = ri.FS_ListFiles( mapName, ".webp", &numLightmaps );
-
-					if ( !lightmapFiles || !numLightmaps )
-					{
-						lightmapFiles = ri.FS_ListFiles( mapName, ".crn", &numLightmaps );
-
-						if ( !lightmapFiles || !numLightmaps )
-						{
-							ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-							return;
-						}
-					}
-				}
+			int numLightmaps;
+			auto lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps);
+			if (!lightmapFiles || !numLightmaps) {
+				ri.Printf(PRINT_WARNING, "WARNING: no lightmap files found\n");
+				return;
 			}
-
-			qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
 
 			ri.Printf( PRINT_DEVELOPER, "...loading %i lightmaps\n", numLightmaps );
 
 			// we are about to upload textures
 			R_SyncRenderThread();
 
-			for ( i = 0; i < numLightmaps; i++ )
-			{
-				ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
+			for (int i = 0; i < numLightmaps; i++) {
+				ri.Printf(PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[i]);
 
-				if ( tr.worldDeluxeMapping )
-				{
-					if ( i % 2 == 0 )
-					{
-						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
-						Com_AddToGrowList( &tr.lightmaps, image );
-					}
-					else
-					{
-						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
-						Com_AddToGrowList( &tr.deluxemaps, image );
-					}
-				}
-				else
-				{
-					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
-					Com_AddToGrowList( &tr.lightmaps, image );
+				if (!tr.worldDeluxeMapping || i % 2 == 0) {
+					auto image = R_FindImageFile(va("%s/%s", mapName, lightmapFiles[i]), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP);
+					Com_AddToGrowList(&tr.lightmaps, image);
+				} else {
+					auto image = R_FindImageFile(va("%s/%s", mapName, lightmapFiles[i]), IF_NORMALMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP);
+					Com_AddToGrowList(&tr.deluxemaps, image);
 				}
 			}
 		}
-	}
-
-	else
-	{
-		int  i;
+	} else {
 		byte *buf, *buf_p;
 
 		//int       BIGSIZE=2048;
@@ -605,7 +555,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 		R_SyncRenderThread();
 
 		// create all the lightmaps
-		numLightmaps = len / ( LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3 );
+		int numLightmaps = len / ( LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3 );
 
 		if ( numLightmaps == 1 )
 		{
@@ -631,7 +581,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 		Com_Memset( fatbuffer, 128, tr.fatLightmapSize * tr.fatLightmapSize * 4 );
 
-		for ( i = 0; i < numLightmaps; i++ )
+		for ( int i = 0; i < numLightmaps; i++ )
 		{
 			// expand the 24 bit on-disk to 32 bit
 			buf_p = buf + i * LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3;
@@ -2982,7 +2932,7 @@ static void R_CreateWorldVBO()
 			{
 				surf1->viewCount = -1;
 				surf1->lightCount = -1;
-				// don't clear the leaf number so 
+				// don't clear the leaf number so
 				// surfaces that arn't merged are placed
 				// closer to other leafs in the vbo
 			}
