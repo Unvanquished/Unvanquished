@@ -66,30 +66,30 @@ int To4bit(const Color& c) NOEXCEPT
             if ( hue < 0 )
                 hue += 6;
 
-            if ( hue <= 0.5 )      color = 0b001; // red
-            else if ( hue <= 1.5 ) color = 0b011; // yellow
-            else if ( hue <= 2.5 ) color = 0b010; // green
-            else if ( hue <= 3.5 ) color = 0b110; // cyan
-            else if ( hue <= 4.5 ) color = 0b100; // blue
-            else if ( hue <= 5.5 ) color = 0b101; // magenta
-            else                   color = 0b001; // red
+            if ( hue <= 0.5 )      color = 1; // red
+            else if ( hue <= 1.5 ) color = 3; // yellow
+            else if ( hue <= 2.5 ) color = 2; // green
+            else if ( hue <= 3.5 ) color = 6; // cyan
+            else if ( hue <= 4.5 ) color = 4; // blue
+            else if ( hue <= 5.5 ) color = 5; // magenta
+            else                   color = 1; // red
         }
         else if ( cmax >= 0.5 )
             color = 7;
 
         if ( ( cmax + cmin ) / 2 >= 0.64 )
-            color |= 0b1000; // bright
+            color |= 8; // bright
     }
     else
     {
         if ( cmax > 0.8 )
-            color = 0b1111; // white
+            color = 15; // white
         else if ( cmax > 0.53 )
-            color = 0b0111; // silver
+            color = 7; // silver
         else if ( cmax > 0.27 )
-            color = 0b1000; // gray
+            color = 8; // gray
         else
-            color = 0b0000; // black
+            color = 0; // black
     }
 
     return color;
