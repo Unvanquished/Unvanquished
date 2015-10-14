@@ -44,7 +44,7 @@ template<class T>
 	// Maxiumum value for a component
 	static CONSTEXPR component_type component_max = std::numeric_limits<component_type>::max();
 	// Size of a component value in bytes
-	static CONSTEXPR const std::size_t component_size = sizeof(component_type);
+	static CONSTEXPR std::size_t component_size = sizeof(component_type);
 };
 /*
  * Specialization for normalized floats
@@ -53,7 +53,7 @@ template<>
 	struct ColorComponentTraits<float>
 {
 	using component_type = float;
-	static CONSTEXPR component_type component_max = 1.0f;
+	static CONSTEXPR int            component_max = 1;
 	static CONSTEXPR std::size_t    component_size = sizeof(component_type);
 };
 
@@ -86,7 +86,7 @@ class ColorAdaptor<Component*>
 public:
 	static CONSTEXPR bool is_color = true;
 	using component_type = Component;
-	static CONSTEXPR component_type component_max = ColorComponentTraits<Component>::component_max;
+	static CONSTEXPR auto component_max = ColorComponentTraits<Component>::component_max;
 
 	static ColorAdaptor Adapt( const Component* array )
 	{
@@ -145,7 +145,7 @@ public:
 	static CONSTEXPR bool is_color = true;
 	using color_traits = Traits;
 	using component_type = typename color_traits::component_type;
-	static CONSTEXPR component_type component_max = color_traits::component_max;
+	static CONSTEXPR auto component_max = color_traits::component_max;
 
 	// Returns the value of an indexed color
 	static BasicColor Indexed( int i )
@@ -266,10 +266,10 @@ public:
 	// Fits the component values from 0 to component_max
 	CONSTEXPR_FUNCTION_RELAXED void Clamp()
 	{
-		red = Math::Clamp( red, component_type(), component_max );
-		green = Math::Clamp( green, component_type(), component_max );
-		blue = Math::Clamp( blue, component_type(), component_max );
-		alpha = Math::Clamp( alpha, component_type(), component_max );
+		red = Math::Clamp<component_type>( red, component_type(), component_max );
+		green = Math::Clamp<component_type>( green, component_type(), component_max );
+		blue = Math::Clamp<component_type>( blue, component_type(), component_max );
+		alpha = Math::Clamp<component_type>( alpha, component_type(), component_max );
 	}
 
 private:

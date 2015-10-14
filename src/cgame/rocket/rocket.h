@@ -80,7 +80,7 @@ public:
 	static CONSTEXPR bool is_color = true;
 	typedef Rocket::Core::Colour<ColourType,AlphaDefault> color_type;
 	typedef ColourType component_type;
-	static CONSTEXPR component_type component_max = AlphaDefault;
+	static CONSTEXPR int component_max = AlphaDefault;
 
 	static ColorAdaptor Adapt( const color_type& object )
 	{
