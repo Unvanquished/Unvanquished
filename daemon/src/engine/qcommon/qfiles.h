@@ -575,7 +575,7 @@ typedef struct
 	float  st[ 2 ];
 	float  lightmap[ 2 ];
 	vec3_t normal;
-	Color::Color32Bit color;
+	byte   color[ 4 ];
 } drawVert_t;
 
 typedef enum

@@ -903,7 +903,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		cv->verts[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
 		cv->verts[ i ].lightmap[ 1 ] = FatPackV( LittleFloat( verts[ i ].lightmap[ 1 ] ), realLightmapNum );
 
-		cv->verts[ i ].lightColor = verts[ i ].color;
+		cv->verts[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
 
 		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor.ToArray(), cv->verts[ i ].lightColor.ToArray() );
@@ -1095,7 +1095,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 		points[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
 		points[ i ].lightmap[ 1 ] = FatPackV( LittleFloat( verts[ i ].lightmap[ 1 ] ), realLightmapNum );
 
-		points[ i ].lightColor = verts[ i ].color;
+		points[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
 		R_ColorShiftLightingBytes( points[ i ].lightColor.ToArray(), points[ i ].lightColor.ToArray() );
 	}
@@ -1219,7 +1219,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 			components[ i ].stBounds[ 1 ][ j ] = cv->verts[ i ].st[ j ];
 		}
 
-			cv->verts[ i ].lightColor = verts[ i ].color;
+			cv->verts[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
 		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor.ToArray(), cv->verts[ i ].lightColor.ToArray() );
 	}
