@@ -111,6 +111,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif
 
+// Support for explicitly defaulted functions
+#define HAS_EXPLICIT_DEFAULT
+
 // Microsoft Visual C++
 #elif defined( _MSC_VER )
 
@@ -170,6 +173,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NOEXCEPT noexcept
 #define NOEXCEPT_IF(x) noexcept(x)
 #define NOEXCEPT_EXPR(x) false
+#define HAS_EXPLICIT_DEFAULT
 #else
 #define NOEXCEPT
 #define NOEXCEPT_IF(x)

@@ -153,19 +153,25 @@ public:
         return detail::Indexed( i );
     }
 
-	// Default constructor, all components set to zero
-	CONSTEXPR_FUNCTION BasicColor() NOEXCEPT = default;
-
-
 	// Initialize from the components
 	CONSTEXPR_FUNCTION BasicColor( component_type r, component_type g, component_type b,
 	       component_type a = component_max ) NOEXCEPT
 		: red( r ), green( g ), blue( b ), alpha( a )
 	{}
 
-	CONSTEXPR_FUNCTION BasicColor( const BasicColor& ) NOEXCEPT = default;
+#ifdef HAS_EXPLICIT_DEFAULT
+    // Default constructor, all components set to zero
+    CONSTEXPR_FUNCTION BasicColor() NOEXCEPT = default;
 
+	CONSTEXPR_FUNCTION BasicColor( const BasicColor& ) NOEXCEPT = default;
 	CONSTEXPR_FUNCTION BasicColor( BasicColor&& ) NOEXCEPT = default;
+    BasicColor& operator=( const BasicColor& ) NOEXCEPT = default;
+    BasicColor& operator=( BasicColor&& ) NOEXCEPT = default;
+#else
+    BasicColor()
+        : red( 0 ), green( 0 ), blue( 0 ), alpha( 0 )
+    {}
+#endif
 
 	template<class T, class = std::enable_if<T::is_color>>
 		BasicColor( const T& adaptor ) :
@@ -175,9 +181,6 @@ public:
 			alpha( ConvertComponent<T>( adaptor.Alpha() ) )
 		{}
 
-	BasicColor& operator=( const BasicColor& ) NOEXCEPT = default;
-
-	BasicColor& operator=( BasicColor&& ) NOEXCEPT = default;
 
 	template<class T, class = std::enable_if<T::is_color>>
 		BasicColor& operator=( const T& adaptor )
@@ -372,7 +375,15 @@ public:
 	/*
 	 * Constructs an invalid token
 	 */
+#ifdef HAS_EXPLICIT_DEFAULT
 	Token() = default;
+#else
+    Token()
+        : begin( nullptr ),
+          end( nullptr ),
+          type( INVALID )
+    {}
+#endif
 
 
 	/*
