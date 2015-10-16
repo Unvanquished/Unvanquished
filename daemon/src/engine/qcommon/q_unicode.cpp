@@ -72,30 +72,6 @@ int Q_UTF8_Strlen( const char *str )
   return l;
 }
 
-int Q_UTF8_PrintStrlen( const char *str )
-{
-  int l = 0;
-
-  while( *str )
-  {
-    if( Q_IsColorString( str ) )
-    {
-      str += 2;
-      continue;
-    }
-    if( *str == Q_COLOR_ESCAPE && str[1] == Q_COLOR_ESCAPE )
-    {
-      ++str;
-    }
-
-    l++;
-
-    str += Q_UTF8_Width( str );
-  }
-
-  return l;
-}
-
 bool Q_UTF8_ContByte( char c )
 {
   return (unsigned char )0x80 <= (unsigned char)c && (unsigned char)c <= (unsigned char )0xBF;

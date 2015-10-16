@@ -108,14 +108,14 @@ CG_FillRect
 Coordinates are 640*480 virtual values
 =================
 */
-void CG_FillRect( float x, float y, float width, float height, const float *color )
+void CG_FillRect( float x, float y, float width, float height, const Color::Color& color )
 {
 	trap_R_SetColor( color );
 
 	CG_AdjustFrom640( &x, &y, &width, &height );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader );
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 /*
@@ -152,14 +152,14 @@ CG_DrawRect
 Coordinates are 640*480 virtual values
 =================
 */
-void CG_DrawRect( float x, float y, float width, float height, float size, const float *color )
+void CG_DrawRect( float x, float y, float width, float height, float size, const Color::Color& color )
 {
 	trap_R_SetColor( color );
 
 	CG_DrawTopBottom( x, y, width, height, size );
 	CG_DrawSides( x, y, width, height, size );
 
-	trap_R_SetColor( nullptr );
+	trap_R_ClearColor();
 }
 
 /*
@@ -265,57 +265,17 @@ CG_DrawFadePic
 Coordinates are 640*480 virtual values
 =================
 */
-void CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
-                     vec4_t tcolor, float amount, qhandle_t hShader )
+void CG_DrawFadePic( float x, float y, float width, float height, const Color::Color& fcolor,
+                     const Color::Color& tcolor, float amount, qhandle_t hShader )
 {
-	vec4_t finalcolor;
-	float  inverse;
-
-	inverse = 100 - amount;
 
 	CG_AdjustFrom640( &x, &y, &width, &height );
 
-	finalcolor[ 0 ] = ( ( inverse * fcolor[ 0 ] ) + ( amount * tcolor[ 0 ] ) ) / 100;
-	finalcolor[ 1 ] = ( ( inverse * fcolor[ 1 ] ) + ( amount * tcolor[ 1 ] ) ) / 100;
-	finalcolor[ 2 ] = ( ( inverse * fcolor[ 2 ] ) + ( amount * tcolor[ 2 ] ) ) / 100;
-	finalcolor[ 3 ] = ( ( inverse * fcolor[ 3 ] ) + ( amount * tcolor[ 3 ] ) ) / 100;
+	Color::Color finalcolor = Color::Blend( fcolor, tcolor, amount / 100 );
 
 	trap_R_SetColor( finalcolor );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
-	trap_R_SetColor( nullptr );
-}
-
-/*
-=================
-CG_DrawStrlen
-
-Returns character count, skiping color escape codes
-=================
-*/
-int CG_DrawStrlen( const char *str )
-{
-	const char *s = str;
-	int        count = 0;
-
-	while ( *s )
-	{
-		if ( Q_IsColorString( s ) )
-		{
-			s += 2;
-		}
-		else
-		{
-			if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-			{
-				++s;
-			}
-
-			count++;
-			s++;
-		}
-	}
-
-	return count;
+	trap_R_ClearColor();
 }
 
 /*
@@ -381,34 +341,29 @@ void CG_TileClear()
 CG_FadeColor
 ================
 */
-float *CG_FadeColor( int startMsec, int totalMsec )
+Color::Color CG_FadeColor( int startMsec, int totalMsec )
 {
-	static vec4_t color;
 	int           t;
 
 	if ( startMsec == 0 )
 	{
-		return nullptr;
+		return Color::White;
 	}
 
 	t = cg.time - startMsec;
 
 	if ( t >= totalMsec )
 	{
-		return nullptr;
+		return Color::White;
 	}
+
+	Color::Color color = Color::White;
 
 	// fade out
 	if ( totalMsec - t < FADE_TIME )
 	{
-		color[ 3 ] = ( totalMsec - t ) * 1.0 / FADE_TIME;
+		color.SetAlpha( ( totalMsec - t ) * 1.0 / FADE_TIME );
 	}
-	else
-	{
-		color[ 3 ] = 1.0;
-	}
-
-	color[ 0 ] = color[ 1 ] = color[ 2 ] = 1;
 
 	return color;
 }
@@ -535,7 +490,7 @@ char CG_GetColorCharForHealth( int clientnum )
 CG_DrawSphere
 ================
 */
-void CG_DrawSphere( const vec3_t center, float radius, int customShader, const float *shaderRGBA )
+void CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::Color& shaderRGBA )
 {
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
@@ -545,15 +500,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const f
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA != nullptr )
-	{
-		int i;
-
-		for ( i = 0; i < 4; ++i )
-		{
-			re.shaderRGBA[ i ] = 255 * shaderRGBA[ i ];
-		}
-	}
+    re.shaderRGBA = shaderRGBA;
 
 	VectorCopy( center, re.origin );
 
@@ -572,7 +519,7 @@ CG_DrawSphericalCone
 ================
 */
 void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
-                           bool a240, int customShader, const float *shaderRGBA )
+                           bool a240, int customShader, const Color::Color& shaderRGBA )
 {
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
@@ -582,15 +529,7 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if ( shaderRGBA != nullptr )
-	{
-		int i;
-
-		for ( i = 0; i < 4; ++i )
-		{
-			re.shaderRGBA[ i ] = 255 * shaderRGBA[ i ];
-		}
-	}
+	re.shaderRGBA = shaderRGBA;
 
 	VectorCopy( tip, re.origin );
 
@@ -609,14 +548,15 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 CG_DrawRangeMarker
 ================
 */
-void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, vec4_t rgba )
+void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, Color::Color rgba )
 {
 	if ( cg_rangeMarkerDrawSurface.integer )
 	{
 		qhandle_t pcsh;
 
 		pcsh = cgs.media.plainColorShader;
-		rgba[ 3 ] *= Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerSurfaceOpacity.value );
+
+		rgba.SetAlpha( rgba.Alpha() * Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerSurfaceOpacity.value ) );
 
 		switch( rmType )
 		{
@@ -637,7 +577,6 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 		float                       lineOpacity, lineThickness;
 		const cgMediaBinaryShader_t *mbsh;
 		cgBinaryShaderSetting_t     *bshs;
-		int                         i;
 
 		if ( cg.numBinaryShadersUsed >= NUM_BINARY_SHADERS )
 		{
@@ -656,18 +595,18 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 			{
 				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
-					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, nullptr );
+					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, Color::White );
 				}
 
-				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, nullptr );
+				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, Color::White );
 			}
 
 			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
-				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, nullptr );
+				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, Color::White );
 			}
 
-			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, nullptr );
+			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, Color::White );
 		}
 		else
 		{
@@ -686,28 +625,25 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
-					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, nullptr );
+					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, Color::White );
 				}
 
-				CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->f2, nullptr );
+				CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->f2, Color::White );
 			}
 
 			VectorMA( origin, -f, forward, tip );
 
 			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
-				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, nullptr );
+				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, Color::White );
 			}
 
-			CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->f1, nullptr );
+			CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->f1, Color::White );
 		}
 
 		bshs = &cg.binaryShaderSettings[ cg.numBinaryShadersUsed ];
 
-		for ( i = 0; i < 3; ++i )
-		{
-			bshs->color[ i ] = 255 * lineOpacity * rgba[ i ];
-		}
+		bshs->color = rgba * lineOpacity;
 
 		bshs->drawIntersection = !!cg_rangeMarkerDrawIntersection.integer;
 		bshs->drawFrontline = !!cg_rangeMarkerDrawFrontline.integer;

@@ -52,13 +52,9 @@ typedef enum
 class RocketProgressBar : public Rocket::Core::Element
 {
 public:
-	RocketProgressBar( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 )
+	RocketProgressBar( const Rocket::Core::String &tag ) :
+		Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 ), color( Color::White )
 	{
-		// Default to white
-		for (unsigned i = 0; i < ARRAY_LEN( color ); ++i )
-		{
-			color[ i ] = 1.0f;
-		}
 	}
 
 	~RocketProgressBar() {}
@@ -113,14 +109,14 @@ public:
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y, dimensions.x, height,
 						       0.0f, 0.0f, 1.0f, value, shader );
-				trap_R_SetColor( nullptr );
+				trap_R_ClearColor();
 			}
 			else
 			{
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y - height + dimensions.y, dimensions.x,
 						       height, 0.0f, 1.0f - value, 1.0f, 1.0f, shader );
-				trap_R_SetColor( nullptr );
+				trap_R_ClearColor();
 			}
 		}
 
@@ -137,14 +133,14 @@ public:
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x, position.y, width,
 						       dimensions.y, 0.0f, 0.0f, value, 1.0f, shader );
-				trap_R_SetColor( nullptr );
+				trap_R_ClearColor();
 			}
 			else
 			{
 				trap_R_SetColor( color );
 				trap_R_DrawStretchPic( position.x - width + dimensions.x, position.y, width,
 						       dimensions.y, 1.0f - value, 0.0f, 1.0f, 1.0f, shader );
-				trap_R_SetColor( nullptr );
+				trap_R_ClearColor();
 			}
 		}
 	}
@@ -155,12 +151,7 @@ public:
 
 		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
-			Rocket::Core::Colourb tempColor = GetProperty( "color" )->Get<Rocket::Core::Colourb>();
-
-			color[ 0 ] = tempColor.red / 255.0f;
-			color[ 1 ] = tempColor.blue / 255.0f;
-			color[ 2 ] = tempColor.green / 255.0f;
-			color[ 3 ] = tempColor.alpha / 255.0f;
+			color = Color::Adapt( GetProperty( "color" )->Get<Rocket::Core::Colourb>() );
 		}
 
 		if ( changed_properties.find( "image" ) != changed_properties.end() )
@@ -322,7 +313,7 @@ private:
 	progressBarOrientation_t orientation; // Direction progressbar grows
 	float value; // current value
 	qhandle_t shader;
-	vec4_t color;
+	Color::Color color;
 	Rocket::Core::Vector2f dimensions;
 	Rocket::Core::String source;
 };

@@ -512,27 +512,27 @@ static void DrawBeacon( cbeacon_t *b )
 		{
 			case TEAM_ALIENS:
 				if ( b->flags & EF_BC_ENEMY )
-					Vector4Copy( cgs.bc.colorHuman, b->color );
+					b->color = cgs.bc.colorHuman;
 				else
-					Vector4Copy( cgs.bc.colorAlien, b->color );
+					b->color = cgs.bc.colorAlien;
 				break;
 			case TEAM_HUMANS:
 				if ( b->flags & EF_BC_ENEMY )
-					Vector4Copy( cgs.bc.colorAlien, b->color );
+					b->color = cgs.bc.colorAlien;
 				else
-					Vector4Copy( cgs.bc.colorHuman, b->color );
+					b->color = cgs.bc.colorHuman;
 				break;
 			default:
-				Vector4Copy( cgs.bc.colorNeutral, b->color );
+				b->color = cgs.bc.colorNeutral;
 				break;
 		}
 	}
 	else
-		Vector4Copy( cgs.bc.colorNeutral, b->color );
-	b->color[ 3 ] *= alpha;
+		b->color = cgs.bc.colorNeutral;
+	b->color.SetAlpha( b->color.Alpha() * alpha );
 
-	if( b->color[ 3 ] > 1.0f )
-		b->color[ 3 ] = 1.0f;
+	if( b->color.Alpha() > 1.0f )
+		b->color.SetAlpha( 1.0f );
 
 	// calculate HUD size
 	b->size = cgs.bc.hudSize / sqrt( b->dist );

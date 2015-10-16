@@ -1320,7 +1320,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	handle = trap_Parse_LoadSource( treefilename );
 	if ( !handle )
 	{
-		G_Printf( S_COLOR_RED "ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
+		G_Printf( "^1ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
 		return nullptr;
 	}
 

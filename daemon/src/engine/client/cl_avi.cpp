@@ -337,7 +337,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 	// Don't start if a framerate has not been chosen
 	if ( cl_aviFrameRate->integer <= 0 )
 	{
-		Com_Printf( S_COLOR_RED "cl_aviFrameRate must be ≥ 1\n" );
+		Com_Log( LOG_ERROR, "cl_aviFrameRate must be ≥ 1\n" );
 		return false;
 	}
 

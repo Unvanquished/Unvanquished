@@ -624,7 +624,7 @@ bool G_IsUnnamed( const char *name )
 	char testName[ MAX_NAME_LENGTH ];
 	int  length;
 
-	G_DecolorString( (char *)name, testName, sizeof( testName ) );
+	Color::StripColors( (char *)name, testName, sizeof( testName ) );
 
 	if ( !Q_stricmp( testName, UNNAMED_PLAYER ) )
 	{
@@ -719,164 +719,125 @@ G_ClientCleanName
 */
 static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t *client )
 {
-	int      len, colorlessLen;
-	char     *p;
-	int      spaces;
-	bool escaped;
-	bool invalid = false;
-	bool hasletter = false;
+	--outSize;
 
-	//save room for trailing null byte
-	outSize--;
-
-	len = 0;
-	colorlessLen = 0;
-	p = out;
-	*p = 0;
-	spaces = 0;
-
-	for ( ; *in; in++ )
+	bool        has_visible_characters = false;
+	std::string out_string;
+	bool        hasletter = false;
+	int         spaces = 0;
+	
+	for ( const auto& token : Color::Parser( in ) )
 	{
-		int cp, w;
-
-		// don't allow leading spaces
-		if ( colorlessLen == 0 && *in == ' ' )
-		{
-			continue;
-		}
-
-		// don't allow nonprinting characters or (dead) console keys
-		// but do allow UTF-8 (unvalidated)
-		if ( *in >= 0 && *in < ' ' )
-		{
-			continue;
-		}
-
-		// check colors or escaped escape character
-		if ( Q_IsColorString(in) || ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE ) )
-		{
-			in++;
-
-			// make sure room in dest for both chars
-			if ( len > outSize - 2 )
-			{
-				break;
-			}
-
-			*out++ = Q_COLOR_ESCAPE;
-
-			*out++ = *in;
-
-			len += 2;
-			continue;
-		}
-		else if ( in[ 0 ] == '^' && !in[ 1 ] )
-		{
-			// single trailing ^ will mess up some things
-
-			// make sure room in dest for both chars
-			if ( len > outSize - 2 )
-			{
-				break;
-			}
-
-			*out++ = '^';
-			*out++ = '^';
-			len += 2;
-			continue;
-		}
-		else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped ) )
-		{
-			// make sure room in dest for both chars
-			if ( len > outSize - 2 )
-			{
-				break;
-			}
-
-			*out++ = '[';
-			*out++ = '[';
-			len += 2;
-
-			if ( escaped )
-			{
-				in++;
-			}
-
-			continue;
-		}
-
-		cp = Q_UTF8_CodePoint( in );
-
-		if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
-		{
-			hasletter = true;
-		}
-
-		// don't allow too many consecutive spaces
-		if ( *in == ' ' )
-		{
-			spaces++;
-
-			if ( spaces > 3 )
-			{
-				continue;
-			}
-		}
-		else
-		{
-			spaces = 0;
-		}
-
-		w = Q_UTF8_WidthCP( cp );
-
-		if ( len > outSize - w )
+		if ( out_string.size() + token.Size() > outSize )
 		{
 			break;
 		}
 
-		memcpy( out, in, w );
-		colorlessLen++;
-		len += w;
-		out += w;
-		in += w - 1; // allow for loop increment
+		if ( token.Type() == Color::Token::CHARACTER )
+		{
+			int cp = Q_UTF8_CodePoint(token.Begin());
+
+			// don't allow leading spaces
+			if ( !has_visible_characters && std::isspace( cp ) )
+			{
+				continue;
+			}
+
+			// don't allow nonprinting characters or (dead) console keys
+			// but do allow UTF-8 (unvalidated)
+			if ( cp >= 0 && cp < ' ' )
+			{
+				continue;
+			}
+
+			bool escaped_emote = false;
+			// single trailing ^ will mess up some things
+			if ( cp == Color::Constants::ESCAPE && !*token.End() )
+			{
+				if ( out_string.size() + 2 > outSize )
+				{
+					break;
+				}
+				out_string += Color::Constants::ESCAPE;
+			}
+			else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped_emote ) )
+			{
+				if ( out_string.size() + 2 + token.Size() > outSize )
+				{
+					break;
+				}
+
+				out_string += "[[";
+				if ( escaped_emote )
+				{
+					continue;
+				}
+			}
+
+			if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
+			{
+				hasletter = true;
+			}
+
+		// don't allow too many consecutive spaces
+			if ( std::isspace( cp ) )
+			{
+				spaces++;
+				if ( spaces > 3 )
+				{
+					continue;
+				}
+			}
+			else
+			{
+				spaces = 0;
+				has_visible_characters = true;
+			}
+		}
+		else if ( token.Type() == Color::Token::ESCAPE )
+		{
+			has_visible_characters = true;
+		}
+
+		out_string.append(token.Begin(), token.Size());
 	}
 
-	*out = 0;
+	bool invalid = false;
 
 	// don't allow names beginning with S_SKIPNOTIFY because it messes up /ignore-related code
-	if ( !Q_strnicmp( p, S_SKIPNOTIFY, 12 ) )
+	if ( !out_string.compare( 0, 12, S_SKIPNOTIFY ) )
 	{
 		invalid = true;
 	}
 
 	// don't allow comment-beginning strings because it messes up various parsers
-	if ( strstr( p, "//" ) || strstr( p, "/*" ) )
+	if ( out_string.find( "//" ) != std::string::npos ||
+		out_string.find( "/*" ) != std::string::npos )
 	{
-		invalid = true;
+		out_string.erase( std::remove( out_string.begin(), out_string.end(), '/' ) );
 	}
 
 	// don't allow empty names
-	if ( *p == 0 || colorlessLen == 0 )
+	if ( out_string.empty() || !hasletter )
 	{
 		invalid = true;
 	}
-
 	// don't allow names beginning with digits
-	if ( *p >= '0' && *p <= '9' )
+	else if ( std::isdigit( out_string[0] ) )
 	{
-		invalid = true;
-	}
-
-	// limit no. of code points
-	if ( Q_UTF8_PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
-	{
-		invalid = true;
+		out_string.erase( out_string.begin(),
+			std::find_if_not( out_string.begin(), out_string.end(),
+				(int (*)(int))std::isdigit ) );
 	}
 
 	// if something made the name bad, put them back to UnnamedPlayer
-	if ( invalid || !hasletter )
+	if ( invalid )
 	{
-		Q_strncpyz( p, G_UnnamedClientName( client ), outSize );
+		Q_strncpyz( out, G_UnnamedClientName( client ), outSize );
+	}
+	else
+	{
+		Q_strncpyz( out, out_string.c_str(), outSize );
 	}
 }
 
@@ -990,10 +951,10 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 
 			if ( *oldname )
 			{
-				G_LogPrintf( "ClientRename: %i [%s] (%s) \"%s^7\" -> \"%s^7\" \"%c%s%c^7\"\n",
+				G_LogPrintf( "ClientRename: %i [%s] (%s) \"%s^7\" -> \"%s^7\" \"%s^7\"\n",
 				             clientNum, client->pers.ip.str, client->pers.guid,
 				             oldname, client->pers.netname,
-				             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+				             client->pers.netname );
 			}
 		}
 
@@ -1269,10 +1230,10 @@ const char *ClientConnect( int clientNum, bool firstTime )
 		return userInfoError;
 	}
 
-	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\"\n",
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%s^7\"\n",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
-	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+	             client->pers.netname );
 
 	country = Info_ValueForKey( userinfo, "geoip" );
 	Q_strncpyz( client->pers.country, country, sizeof( client->pers.country ) );
@@ -1363,10 +1324,10 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
 	}
 
-	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\" [BOT]\n",
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%s^7\" [BOT]\n",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
-	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+	             client->pers.netname );
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )

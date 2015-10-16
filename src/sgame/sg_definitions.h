@@ -43,8 +43,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define QUEUE_PLUS1(x)  ((( x ) + 1 ) % MAX_CLIENTS )
 #define QUEUE_MINUS1(x) ((( x ) + MAX_CLIENTS - 1 ) % MAX_CLIENTS )
 
-#define DECOLOR_OFF '\16'
-#define DECOLOR_ON  '\17'
 
 // TODO: Move to HealthComponent.
 #define DAMAGE_PURE          0x00000001 /**< Amount won't be modified. */

@@ -93,7 +93,7 @@ void SP_pos_location( gentity_t *self )
 			self->customNumber = 7;
 		}
 
-		message = va( "%c%c%s" S_COLOR_WHITE, Q_COLOR_ESCAPE, self->customNumber + '0',
+		message = va( "%c%c%s^7", Color::Constants::ESCAPE, self->customNumber + '0',
 		              self->message );
 	}
 	else

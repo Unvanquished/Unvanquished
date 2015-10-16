@@ -415,19 +415,19 @@ static void DrawTris()
 
 	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
-		gl_genericShader->SetUniform_Color( g_color_table[ backEnd.pc.c_batches % 8 ] );
+		gl_genericShader->SetUniform_Color( Color::Color::Indexed( backEnd.pc.c_batches % 8 ) );
 	}
 	else if ( glState.currentVBO == tess.vbo )
 	{
-		gl_genericShader->SetUniform_Color( colorRed );
+		gl_genericShader->SetUniform_Color( Color::Red );
 	}
 	else if ( glState.currentVBO )
 	{
-		gl_genericShader->SetUniform_Color( colorBlue );
+		gl_genericShader->SetUniform_Color( Color::Blue );
 	}
 	else
 	{
-		gl_genericShader->SetUniform_Color( colorWhite );
+		gl_genericShader->SetUniform_Color( Color::White );
 	}
 
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
@@ -1207,7 +1207,6 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 static void Render_depthFill( int stage )
 {
 	shaderStage_t *pStage;
-	vec4_t        ambientColor;
 
 	GLimp_LogComment( "--- Render_depthFill ---\n" );
 
@@ -1245,8 +1244,8 @@ static void Render_depthFill( int stage )
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
 
 	// u_Color
-	VectorClear( ambientColor );
-	ambientColor[ 3 ] = 1;
+	Color::Color ambientColor;
+	ambientColor.SetAlpha( 1 );
 
 	gl_genericShader->SetUniform_Color( ambientColor );
 
@@ -1312,11 +1311,7 @@ static void Render_shadowFill( int stage )
 
 	if ( r_debugShadowMaps->integer )
 	{
-		vec4_t shadowMapColor;
-
-		Vector4Copy( g_color_table[ backEnd.pc.c_batches % 8 ], shadowMapColor );
-
-		gl_shadowFillShader->SetUniform_Color( shadowMapColor );
+		gl_shadowFillShader->SetUniform_Color( Color::Color::Indexed( backEnd.pc.c_batches % 8 ) );
 	}
 
 	gl_shadowFillShader->SetUniform_AlphaTest( pStage->stateBits );
@@ -1367,7 +1362,6 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightOrigin;
-	vec4_t     lightColor;
 	float      shadowTexelSize;
 	colorGen_t colorGen;
 	alphaGen_t alphaGen;
@@ -1438,7 +1432,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// set uniforms
 	VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );
 	VectorCopy( light->origin, lightOrigin );
-	VectorCopy( tess.svars.color, lightColor );
+	Color::Color lightColor = tess.svars.color;
 
 	if ( shadowCompare )
 	{
@@ -1452,7 +1446,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_omniXYZ->SetUniform_ViewOrigin( viewOrigin );
 
 	gl_forwardLightingShader_omniXYZ->SetUniform_LightOrigin( lightOrigin );
-	gl_forwardLightingShader_omniXYZ->SetUniform_LightColor( lightColor );
+	gl_forwardLightingShader_omniXYZ->SetUniform_LightColor( lightColor.ToArray() );
 	gl_forwardLightingShader_omniXYZ->SetUniform_LightRadius( light->sphereRadius );
 	gl_forwardLightingShader_omniXYZ->SetUniform_LightScale( light->l.scale );
 	gl_forwardLightingShader_omniXYZ->SetUniform_LightWrapAround( RB_EvalExpression( &diffuseStage->wrapAroundLightingExp, 0 ) );
@@ -1558,7 +1552,6 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightOrigin;
-	vec4_t     lightColor;
 	float      shadowTexelSize;
 	colorGen_t colorGen;
 	alphaGen_t alphaGen;
@@ -1629,7 +1622,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// set uniforms
 	VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );
 	VectorCopy( light->origin, lightOrigin );
-	VectorCopy( tess.svars.color, lightColor );
+	Color::Color lightColor = tess.svars.color;
 
 	if ( shadowCompare )
 	{
@@ -1643,7 +1636,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_projXYZ->SetUniform_ViewOrigin( viewOrigin );
 
 	gl_forwardLightingShader_projXYZ->SetUniform_LightOrigin( lightOrigin );
-	gl_forwardLightingShader_projXYZ->SetUniform_LightColor( lightColor );
+	gl_forwardLightingShader_projXYZ->SetUniform_LightColor( lightColor.ToArray() );
 	gl_forwardLightingShader_projXYZ->SetUniform_LightRadius( light->sphereRadius );
 	gl_forwardLightingShader_projXYZ->SetUniform_LightScale( light->l.scale );
 	gl_forwardLightingShader_projXYZ->SetUniform_LightWrapAround( RB_EvalExpression( &diffuseStage->wrapAroundLightingExp, 0 ) );
@@ -1748,7 +1741,6 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 {
 	vec3_t     viewOrigin;
 	vec3_t     lightDirection;
-	vec4_t     lightColor;
 	float      shadowTexelSize;
 	colorGen_t colorGen;
 	alphaGen_t alphaGen;
@@ -1821,7 +1813,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	VectorCopy( tr.sunDirection, lightDirection );
 
-	VectorCopy( tess.svars.color, lightColor );
+	Color::Color lightColor = tess.svars.color;
 
 	if ( shadowCompare )
 	{
@@ -1835,7 +1827,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_directionalSun->SetUniform_ViewOrigin( viewOrigin );
 
 	gl_forwardLightingShader_directionalSun->SetUniform_LightDir( lightDirection );
-	gl_forwardLightingShader_directionalSun->SetUniform_LightColor( lightColor );
+	gl_forwardLightingShader_directionalSun->SetUniform_LightColor( lightColor.ToArray() );
 	gl_forwardLightingShader_directionalSun->SetUniform_LightRadius( light->sphereRadius );
 	gl_forwardLightingShader_directionalSun->SetUniform_LightScale( light->l.scale );
 	gl_forwardLightingShader_directionalSun->SetUniform_LightWrapAround( RB_EvalExpression( &diffuseStage->wrapAroundLightingExp, 0 ) );
@@ -2060,7 +2052,7 @@ static void Render_screen( int stage )
 
 	{
 		GL_VertexAttribsState( ATTR_POSITION );
-		glVertexAttrib4fv( ATTR_INDEX_COLOR, tess.svars.color );
+		glVertexAttrib4fv( ATTR_INDEX_COLOR, tess.svars.color.ToArray() );
 	}
 
 	gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -2092,7 +2084,7 @@ static void Render_portal( int stage )
 
 	{
 		GL_VertexAttribsState( ATTR_POSITION );
-		glVertexAttrib4fv( ATTR_INDEX_COLOR, tess.svars.color );
+		glVertexAttrib4fv( ATTR_INDEX_COLOR, tess.svars.color.ToArray() );
 	}
 
 	gl_portalShader->SetUniform_PortalRange( tess.surfaceShader->portalRange );
@@ -2391,39 +2383,27 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	{
 		case CGEN_IDENTITY:
 			{
-				tess.svars.color[ 0 ] = 1.0;
-				tess.svars.color[ 1 ] = 1.0;
-				tess.svars.color[ 2 ] = 1.0;
-				tess.svars.color[ 3 ] = 1.0;
+				tess.svars.color = Color::White;
 				break;
 			}
 
 		case CGEN_VERTEX:
 		case CGEN_ONE_MINUS_VERTEX:
 			{
-				tess.svars.color[ 0 ] = 0.0;
-				tess.svars.color[ 1 ] = 0.0;
-				tess.svars.color[ 2 ] = 0.0;
-				tess.svars.color[ 3 ] = 0.0;
+				tess.svars.color = Color::Color();
 				break;
 			}
 
 		default:
 		case CGEN_IDENTITY_LIGHTING:
 			{
-				tess.svars.color[ 0 ] = tr.identityLight;
-				tess.svars.color[ 1 ] = tr.identityLight;
-				tess.svars.color[ 2 ] = tr.identityLight;
-				tess.svars.color[ 3 ] = tr.identityLight;
+				tess.svars.color = Color::White * tr.identityLight;
 				break;
 			}
 
 		case CGEN_CONST:
 			{
-				tess.svars.color[ 0 ] = pStage->constantColor[ 0 ] * ( 1.0 / 255.0 );
-				tess.svars.color[ 1 ] = pStage->constantColor[ 1 ] * ( 1.0 / 255.0 );
-				tess.svars.color[ 2 ] = pStage->constantColor[ 2 ] * ( 1.0 / 255.0 );
-				tess.svars.color[ 3 ] = pStage->constantColor[ 3 ] * ( 1.0 / 255.0 );
+				tess.svars.color = pStage->constantColor;
 				break;
 			}
 
@@ -2431,24 +2411,17 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					tess.svars.color[ 0 ] = Math::Clamp( backEnd.currentLight->l.color[ 0 ], 0.0f, 1.0f );
-					tess.svars.color[ 1 ] = Math::Clamp( backEnd.currentLight->l.color[ 1 ], 0.0f, 1.0f );
-					tess.svars.color[ 2 ] = Math::Clamp( backEnd.currentLight->l.color[ 2 ], 0.0f, 1.0f );
-					tess.svars.color[ 3 ] = 1.0;
+					tess.svars.color = Color::Adapt( backEnd.currentLight->l.color );
+					tess.svars.color.Clamp();
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 0 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
-					tess.svars.color[ 1 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
-					tess.svars.color[ 2 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
-					tess.svars.color[ 3 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color = backEnd.currentEntity->e.shaderRGBA;
+					tess.svars.color.Clamp();
 				}
 				else
 				{
-					tess.svars.color[ 0 ] = 1.0;
-					tess.svars.color[ 1 ] = 1.0;
-					tess.svars.color[ 2 ] = 1.0;
-					tess.svars.color[ 3 ] = 1.0;
+					tess.svars.color = Color::White;
 				}
 
 				break;
@@ -2458,24 +2431,19 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					tess.svars.color[ 0 ] = 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 0 ], 0.0f, 1.0f );
-					tess.svars.color[ 1 ] = 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 1 ], 0.0f, 1.0f );
-					tess.svars.color[ 2 ] = 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 2 ], 0.0f, 1.0f );
-					tess.svars.color[ 3 ] = 0.0; // FIXME
+					tess.svars.color.SetRed( 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 0 ], 0.0f, 1.0f ) );
+					tess.svars.color.SetGreen( 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 1 ], 0.0f, 1.0f ) );
+					tess.svars.color.SetBlue( 1.0 - Math::Clamp( backEnd.currentLight->l.color[ 2 ], 0.0f, 1.0f ) );
+					tess.svars.color.SetAlpha( 0.0 ); // FIXME
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 0 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
-					tess.svars.color[ 1 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
-					tess.svars.color[ 2 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
-					tess.svars.color[ 3 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color = backEnd.currentEntity->e.shaderRGBA;
+					tess.svars.color.Clamp();
 				}
 				else
 				{
-					tess.svars.color[ 0 ] = 0.0;
-					tess.svars.color[ 1 ] = 0.0;
-					tess.svars.color[ 2 ] = 0.0;
-					tess.svars.color[ 3 ] = 0.0;
+					tess.svars.color = Color::Color();
 				}
 
 				break;
@@ -2499,10 +2467,8 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 				glow = Com_Clamp( 0, 1, glow );
 
-				tess.svars.color[ 0 ] = glow;
-				tess.svars.color[ 1 ] = glow;
-				tess.svars.color[ 2 ] = glow;
-				tess.svars.color[ 3 ] = 1.0;
+				tess.svars.color = Color::White * glow;
+				tess.svars.color.SetAlpha( 1.0 );
 				break;
 			}
 
@@ -2510,9 +2476,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				rgb = Math::Clamp( RB_EvalExpression( &pStage->rgbExp, 1.0 ), 0.0f, 1.0f );
 
-				tess.svars.color[ 0 ] = rgb;
-				tess.svars.color[ 1 ] = rgb;
-				tess.svars.color[ 2 ] = rgb;
+				tess.svars.color = Color::White * rgb;
 				break;
 			}
 
@@ -2527,11 +2491,11 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				else if ( backEnd.currentEntity )
 				{
 					red =
-					  Math::Clamp( RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
+					  Math::Clamp( RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA.Red() * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
 					green =
-					  Math::Clamp( RB_EvalExpression( &pStage->greenExp, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
+					  Math::Clamp( RB_EvalExpression( &pStage->greenExp, backEnd.currentEntity->e.shaderRGBA.Green() * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
 					blue =
-					  Math::Clamp( RB_EvalExpression( &pStage->blueExp, backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
+					  Math::Clamp( RB_EvalExpression( &pStage->blueExp, backEnd.currentEntity->e.shaderRGBA.Blue() * ( 1.0 / 255.0 ) ), 0.0f, 1.0f );
 				}
 				else
 				{
@@ -2540,9 +2504,9 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 					blue = Math::Clamp( RB_EvalExpression( &pStage->blueExp, 1.0 ), 0.0f, 1.0f );
 				}
 
-				tess.svars.color[ 0 ] = red;
-				tess.svars.color[ 1 ] = green;
-				tess.svars.color[ 2 ] = blue;
+				tess.svars.color.SetRed( red );
+				tess.svars.color.SetGreen( green );
+				tess.svars.color.SetBlue( blue );
 				break;
 			}
 	}
@@ -2557,7 +2521,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				{
 					if ( ( pStage->rgbGen == CGEN_VERTEX && tr.identityLight != 1 ) || pStage->rgbGen != CGEN_VERTEX )
 					{
-						tess.svars.color[ 3 ] = 1.0;
+						tess.svars.color.SetAlpha( 1.0 );
 					}
 				}
 
@@ -2567,7 +2531,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 		case AGEN_VERTEX:
 		case AGEN_ONE_MINUS_VERTEX:
 			{
-				tess.svars.color[ 3 ] = 0.0;
+				tess.svars.color.SetAlpha( 0.0 );
 				break;
 			}
 
@@ -2575,7 +2539,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( pStage->rgbGen != CGEN_CONST )
 				{
-					tess.svars.color[ 3 ] = pStage->constantColor[ 3 ] * ( 1.0 / 255.0 );
+					tess.svars.color.SetAlpha( pStage->constantColor.Alpha() * ( 1.0 / 255.0 ) );
 				}
 
 				break;
@@ -2585,15 +2549,15 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					tess.svars.color[ 3 ] = 1.0; // FIXME ?
+					tess.svars.color.SetAlpha( 1.0 ); // FIXME ?
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 3 ] = Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color.SetAlpha( Math::Clamp( backEnd.currentEntity->e.shaderRGBA.Alpha() * ( 1.0 / 255.0 ), 0.0, 1.0 ) );
 				}
 				else
 				{
-					tess.svars.color[ 3 ] = 1.0;
+					tess.svars.color.SetAlpha( 1.0 );
 				}
 
 				break;
@@ -2603,15 +2567,15 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				if ( backEnd.currentLight )
 				{
-					tess.svars.color[ 3 ] = 0.0; // FIXME ?
+					tess.svars.color.SetAlpha( 0.0 ); // FIXME ?
 				}
 				else if ( backEnd.currentEntity )
 				{
-					tess.svars.color[ 3 ] = 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 0.0, 1.0 );
+					tess.svars.color.SetAlpha( 1.0 - Math::Clamp( backEnd.currentEntity->e.shaderRGBA.Alpha() * ( 1.0 / 255.0 ), 0.0, 1.0 ) );
 				}
 				else
 				{
-					tess.svars.color[ 3 ] = 0.0;
+					tess.svars.color.SetAlpha( 0.0 );
 				}
 
 				break;
@@ -2626,7 +2590,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 				glow = RB_EvalWaveFormClamped( wf );
 
-				tess.svars.color[ 3 ] = glow;
+				tess.svars.color.SetAlpha( glow );
 				break;
 			}
 
@@ -2634,7 +2598,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 			{
 				alpha = Math::Clamp( RB_EvalExpression( &pStage->alphaExp, 1.0 ), 0.0f, 1.0f );
 
-				tess.svars.color[ 3 ] = alpha;
+				tess.svars.color.SetAlpha( alpha );
 				break;
 			}
 	}

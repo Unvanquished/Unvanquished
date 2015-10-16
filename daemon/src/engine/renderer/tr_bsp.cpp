@@ -903,12 +903,10 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		cv->verts[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
 		cv->verts[ i ].lightmap[ 1 ] = FatPackV( LittleFloat( verts[ i ].lightmap[ 1 ] ), realLightmapNum );
 
-		for ( j = 0; j < 4; j++ )
-		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
-		}
+		cv->verts[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
-		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor.ToArray(), cv->verts[ i ].lightColor.ToArray() );
 	}
 
 	// copy triangles
@@ -1097,12 +1095,9 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 		points[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
 		points[ i ].lightmap[ 1 ] = FatPackV( LittleFloat( verts[ i ].lightmap[ 1 ] ), realLightmapNum );
 
-		for ( j = 0; j < 4; j++ )
-		{
-			points[ i ].lightColor[ j ] = verts[ i ].color[ j ];
-		}
+		points[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
-		R_ColorShiftLightingBytes( points[ i ].lightColor, points[ i ].lightColor );
+		R_ColorShiftLightingBytes( points[ i ].lightColor.ToArray(), points[ i ].lightColor.ToArray() );
 	}
 
 	// center texture coords
@@ -1224,12 +1219,9 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 			components[ i ].stBounds[ 1 ][ j ] = cv->verts[ i ].st[ j ];
 		}
 
-		for ( j = 0; j < 4; j++ )
-		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
-		}
+			cv->verts[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
-		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor.ToArray(), cv->verts[ i ].lightColor.ToArray() );
 	}
 
 	// copy triangles
@@ -2689,9 +2681,10 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 		out->lightmap[ j ] = in->lightmap[ j ];
 	}
 
+	out->lightColor = in->lightColor;
+
 	for ( j = 0; j < 4; j++ )
 	{
-		out->lightColor[ j ] = in->lightColor[ j ];
 		out->qtangent[ j ] = in->qtangent[ j ];
 	}
 }
@@ -3814,10 +3807,9 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 
 		out->fogParms = shader->fogParms;
 
-		out->color[ 0 ] = shader->fogParms.color[ 0 ] * tr.identityLight;
-		out->color[ 1 ] = shader->fogParms.color[ 1 ] * tr.identityLight;
-		out->color[ 2 ] = shader->fogParms.color[ 2 ] * tr.identityLight;
-		out->color[ 3 ] = 1;
+		out->color = Color::Adapt( shader->fogParms.color );
+		out->color *= tr.identityLight;
+		out->color.SetAlpha( 1 );
 
 		d = shader->fogParms.depthForOpaque < 1 ? 1 : shader->fogParms.depthForOpaque;
 		out->tcScale = 1.0f / ( d * 8 );

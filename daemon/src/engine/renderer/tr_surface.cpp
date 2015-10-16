@@ -150,7 +150,7 @@ static void Tess_SurfaceVertsAndTris( const srfVert_t *verts, const srfTriangle_
 		tess.verts[ tess.numVertexes + i ].texCoords[ 2 ] = floatToHalf( vert->lightmap[ 0 ] );
 		tess.verts[ tess.numVertexes + i ].texCoords[ 3 ] = floatToHalf( vert->lightmap[ 1 ] );
 
-		Vector4Copy( vert->lightColor, tess.verts[ tess.numVertexes + i ].color );
+		tess.verts[ tess.numVertexes + i ].color = vert->lightColor;
 	}
 
 	tess.numVertexes += numVerts;
@@ -218,7 +218,7 @@ static bool Tess_SurfaceVBO( VBO_t *vbo, IBO_t *ibo, int numIndexes, int firstIn
 Tess_AddQuadStampExt
 ==============
 */
-void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color, float s1, float t1, float s2, float t2 )
+void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const Color::Color& color, float s1, float t1, float s2, float t2 )
 {
 	int    i;
 	vec3_t normal;
@@ -278,11 +278,11 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t c
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
-	u8vec4_t iColor;
-	floatToUnorm8( color, iColor );
+	Color::Color32Bit iColor = color;
+
 	for ( i = 0; i < 4; i++ )
 	{
-		Vector4Copy( iColor, tess.verts[ ndx + i ].color );
+		tess.verts[ ndx + i ].color = iColor;
 	}
 
 	tess.numVertexes += 4;
@@ -296,7 +296,7 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t c
 Tess_AddQuadStamp
 ==============
 */
-void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color )
+void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const Color::Color& color )
 {
 	Tess_AddQuadStampExt( origin, left, up, color, 0, 0, 1, 1 );
 }
@@ -306,7 +306,7 @@ void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t colo
 Tess_AddQuadStampExt2
 ==============
 */
-void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1, float t1, float s2, float t2 )
+void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, float s1, float t1, float s2, float t2 )
 {
 	int    i;
 	vec3_t normal, tangent, binormal;
@@ -366,11 +366,10 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1,
 	// constant color all the way around
 	// should this be identity and let the shader specify from entity?
 
-	u8vec4_t iColor;
-	floatToUnorm8( color, iColor );
+	Color::Color32Bit iColor = color;
 	for ( i = 0; i < 4; i++ )
 	{
-		Vector4Copy( iColor, tess.verts[ ndx + i ].color );
+		tess.verts[ ndx + i ].color = iColor;
 	}
 
 	tess.numVertexes += 4;
@@ -382,17 +381,17 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const vec4_t color, float s1,
 Tess_AddQuadStamp2
 ==============
 */
-void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const vec4_t color )
+void Tess_AddQuadStamp2( vec4_t quadVerts[ 4 ], const Color::Color& color )
 {
 	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1 );
 }
 
-void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const vec4_t color )
+void Tess_AddQuadStamp2WithNormals( vec4_t quadVerts[ 4 ], const Color::Color& color )
 {
 	Tess_AddQuadStampExt2( quadVerts, color, 0, 0, 1, 1 );
 }
 
-void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, float rotation )
+void Tess_AddSprite( const vec3_t center, const Color::Color32Bit color, float radius, float rotation )
 {
 	int    i;
 	int    ndx;
@@ -421,7 +420,7 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 			    0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ) );
 
 		VectorCopy( center, tess.verts[ ndx + i ].xyz );
-		Vector4Copy( color, tess.verts[ ndx + i ].color );
+		tess.verts[ ndx + i ].color = color;
 		floatToHalf( texCoord, tess.verts[ ndx + i ].texCoords );
 		Vector4Set( orientation, rotation, 0.0f, 0.0f, radius );
 		floatToHalf( orientation, tess.verts[ ndx + i ].spriteOrientation );
@@ -433,20 +432,19 @@ void Tess_AddSprite( const vec3_t center, const u8vec4_t color, float radius, fl
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD | ATTR_ORIENTATION;
 }
 
-void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t colorf )
+void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const Color::Color& colorf )
 {
 	int k;
-	u8vec4_t color;
 
 	Tess_CheckOverflow( 12, 12 );
 
-	floatToUnorm8( colorf, color );
+	Color::Color32Bit color = colorf;
 
 	// ground triangle
 	for ( k = 0; k < 3; k++ )
 	{
 		VectorCopy( tetraVerts[ k ], tess.verts[ tess.numVertexes ].xyz );
-		Vector4Copy( color, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = color;
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 	}
@@ -455,17 +453,17 @@ void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t colorf )
 	for ( k = 0; k < 3; k++ )
 	{
 		VectorCopy( tetraVerts[ 3 ], tess.verts[ tess.numVertexes ].xyz );  // offset
-		Vector4Copy( color, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = color;
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 
 		VectorCopy( tetraVerts[ k ], tess.verts[ tess.numVertexes ].xyz );
-		Vector4Copy( color, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = color;
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 
 		VectorCopy( tetraVerts[( k + 1 ) % 3 ], tess.verts[ tess.numVertexes ].xyz );
-		Vector4Copy( color, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = color;
 		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
 		tess.numVertexes++;
 	}
@@ -473,7 +471,7 @@ void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], const vec4_t colorf )
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR;
 }
 
-void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color )
+void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const Color::Color& color )
 {
 	vec4_t quadVerts[ 4 ];
 	vec3_t mins;
@@ -519,7 +517,7 @@ void Tess_AddCube( const vec3_t position, const vec3_t minSize, const vec3_t max
 	Tess_AddQuadStamp2( quadVerts, color );
 }
 
-void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const vec4_t color )
+void Tess_AddCubeWithNormals( const vec3_t position, const vec3_t minSize, const vec3_t maxSize, const Color::Color& color )
 {
 	vec4_t quadVerts[ 4 ];
 	vec3_t mins;
@@ -582,25 +580,25 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 
 	Tess_MapVBOs( false );
 	VectorCopy( quadVerts[ 0 ], tess.verts[ tess.numVertexes ].xyz );
-	Vector4Set( tess.verts[ tess.numVertexes ].color, 255, 255, 255, 255 );
+	tess.verts[ tess.numVertexes ].color = Color::White;
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.0f );
 	tess.numVertexes++;
 
 	VectorCopy( quadVerts[ 1 ], tess.verts[ tess.numVertexes ].xyz );
-	Vector4Set( tess.verts[ tess.numVertexes ].color, 255, 255, 255, 255 );
+	tess.verts[ tess.numVertexes ].color = Color::White;
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 1.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 0.0f );
 	tess.numVertexes++;
 
 	VectorCopy( quadVerts[ 2 ], tess.verts[ tess.numVertexes ].xyz );
-	Vector4Set( tess.verts[ tess.numVertexes ].color, 255, 255, 255, 255 );
+	tess.verts[ tess.numVertexes ].color = Color::White;
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 1.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 1.0f );
 	tess.numVertexes++;
 
 	VectorCopy( quadVerts[ 3 ], tess.verts[ tess.numVertexes ].xyz );
-	Vector4Set( tess.verts[ tess.numVertexes ].color, 255, 255, 255, 255 );
+	tess.verts[ tess.numVertexes ].color = Color::White;
 	tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( 0.0f );
 	tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( 1.0f );
 	tess.numVertexes++;
@@ -635,7 +633,6 @@ static void Tess_SurfaceSprite()
 {
 	vec3_t delta, left, up;
 	float  radius;
-	vec4_t color;
 
 	GLimp_LogComment( "--- Tess_SurfaceSprite ---\n" );
 
@@ -671,12 +668,8 @@ static void Tess_SurfaceSprite()
 	if ( backEnd.viewParms.isMirror )
 		VectorSubtract( vec3_origin, left, left );
 
-	color[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
-	color[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
-	color[ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 );
-	color[ 3 ] = backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 );
-
-	Tess_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, color );
+	Tess_AddQuadStamp( backEnd.currentEntity->e.origin, left, up,
+		backEnd.currentEntity->e.shaderRGBA );
 }
 
 /*
@@ -704,7 +697,7 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		tess.verts[ tess.numVertexes + i ].texCoords[ 0 ] = floatToHalf( p->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes + i ].texCoords[ 1 ] = floatToHalf( p->verts[ i ].st[ 1 ] );
 
-		Vector4Copy( p->verts[ i ].modulate, tess.verts[ tess.numVertexes + i ].color );
+		tess.verts[ tess.numVertexes + i ].color = Color::Adapt( p->verts[ i ].modulate );
 
 		numVertexes++;
 	}
@@ -823,7 +816,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 		tess.verts[ tess.numVertexes + i ].texCoords[ 0 ] = floatToHalf( st[ 0 ] );
 		tess.verts[ tess.numVertexes + i ].texCoords[ 1 ] = floatToHalf( st[ 1 ] );
 
-		Vector4Copy( color, tess.verts[ tess.numVertexes + i ].color );
+		tess.verts[ tess.numVertexes + i ].color = Color::Adapt( color );
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
@@ -847,7 +840,7 @@ void Tess_SurfaceDecal( srfDecal_t *srf )
 		tess.verts[ tess.numVertexes + i ].texCoords[ 0 ] = floatToHalf( srf->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes + i ].texCoords[ 1 ] = floatToHalf( srf->verts[ i ].st[ 1 ] );
 
-		Vector4Copy( srf->verts[ i ].modulate, tess.verts[ tess.numVertexes + i ].color );
+		tess.verts[ tess.numVertexes + i ].color = Color::Adapt( srf->verts[ i ].modulate );
 	}
 
 	// generate fan indexes into the tess array

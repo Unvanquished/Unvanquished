@@ -233,7 +233,6 @@ typedef int clipHandle_t;
 // rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
 // with very long names
 #define MAX_NAME_LENGTH    128 // max length of a client name, in bytes
-#define MAX_NAME_LENGTH_CP 32  // max length of a client name, in Unicode chars
 
 #define MAX_SAY_TEXT       400
 
@@ -414,106 +413,8 @@ void  Com_Free_Aligned( void *ptr );
 #define GIANTCHAR_WIDTH  32
 #define GIANTCHAR_HEIGHT 48
 
-	extern vec4_t colorBlack;
-	extern vec4_t colorRed;
-	extern vec4_t colorGreen;
-	extern vec4_t colorBlue;
-	extern vec4_t colorYellow;
-	extern vec4_t colorOrange;
-	extern vec4_t colorMagenta;
-	extern vec4_t colorCyan;
-	extern vec4_t colorWhite;
-	extern vec4_t colorLtGrey;
-	extern vec4_t colorMdGrey;
-	extern vec4_t colorDkGrey;
-	extern vec4_t colorMdRed;
-	extern vec4_t colorMdGreen;
-	extern vec4_t colorDkGreen;
-	extern vec4_t colorMdCyan;
-	extern vec4_t colorMdYellow;
-	extern vec4_t colorMdOrange;
-	extern vec4_t colorMdBlue;
-
-	extern vec4_t clrBrown;
-	extern vec4_t clrBrownDk;
-	extern vec4_t clrBrownLine;
-	extern vec4_t clrBrownText;
-	extern vec4_t clrBrownTextDk;
-	extern vec4_t clrBrownTextDk2;
-	extern vec4_t clrBrownTextLt;
-	extern vec4_t clrBrownTextLt2;
-	extern vec4_t clrBrownLineFull;
-
 #define GAME_INIT_FRAMES 6
 #define FRAMETIME        100 // msec
-
-#define Q_COLOR_ESCAPE   '^'
-
-#define COLOR_BLACK      '0'
-#define COLOR_RED        '1'
-#define COLOR_GREEN      '2'
-#define COLOR_YELLOW     '3'
-#define COLOR_BLUE       '4'
-#define COLOR_CYAN       '5'
-#define COLOR_MAGENTA    '6'
-#define COLOR_WHITE      '7'
-#define COLOR_ORANGE     '8'
-#define COLOR_MDGREY     '9'
-#define COLOR_LTGREY     ':'
-//#define COLOR_LTGREY  ';'
-#define COLOR_MDGREEN    '<'
-#define COLOR_MDYELLOW   '='
-#define COLOR_MDBLUE     '>'
-#define COLOR_MDRED      '?'
-#define COLOR_LTORANGE   'A'
-#define COLOR_MDCYAN     'B'
-#define COLOR_MDPURPLE   'C'
-#define COLOR_NULL       '*'
-
-#define COLOR_BITS       31
-#define ColorIndex( c ) ( ( ( c ) - '0' ) & COLOR_BITS )
-
-#define S_COLOR_BLACK    "^0"
-#define S_COLOR_RED      "^1"
-#define S_COLOR_GREEN    "^2"
-#define S_COLOR_YELLOW   "^3"
-#define S_COLOR_BLUE     "^4"
-#define S_COLOR_CYAN     "^5"
-#define S_COLOR_MAGENTA  "^6"
-#define S_COLOR_WHITE    "^7"
-#define S_COLOR_ORANGE   "^8"
-#define S_COLOR_MDGREY   "^9"
-#define S_COLOR_LTGREY   "^:"
-//#define S_COLOR_LTGREY    "^;"
-#define S_COLOR_MDGREEN  "^<"
-#define S_COLOR_MDYELLOW "^="
-#define S_COLOR_MDBLUE   "^>"
-#define S_COLOR_MDRED    "^?"
-#define S_COLOR_LTORANGE "^A"
-#define S_COLOR_MDCYAN   "^B"
-#define S_COLOR_MDPURPLE "^C"
-#define S_COLOR_NULL     "^*"
-
-inline bool Q_IsColorString( const char *p )
-{
-	return ( p[0] == Q_COLOR_ESCAPE &&
-	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
-	       ) ? true : false;
-}
-
-#define INDENT_MARKER    '\v'
-
-	extern vec4_t g_color_table[ 32 ];
-
-#define MAKERGB( v, r, g, b )         v[ 0 ] = r; v[ 1 ] = g; v[ 2 ] = b
-#define MAKERGBA( v, r, g, b, a )     v[ 0 ] = r; v[ 1 ] = g; v[ 2 ] = b; v[ 3 ] = a
-
-// Hex Color string support
-#define gethex( ch )                  ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
-#define ishex( ch )                   ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
-// check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
-#define Q_IsHexColorString( p )       ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
-#define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
 
 #include "logging.h"
 
@@ -652,10 +553,6 @@ void         ByteToDir( int b, vec3_t dir );
 #define Vector4Copy( a,b )           ( ( b )[ 0 ] = ( a )[ 0 ],( b )[ 1 ] = ( a )[ 1 ],( b )[ 2 ] = ( a )[ 2 ],( b )[ 3 ] = ( a )[ 3 ] )
 #define Vector4MA( v, s, b, o )      ( ( o )[ 0 ] = ( v )[ 0 ] + ( b )[ 0 ] * ( s ),( o )[ 1 ] = ( v )[ 1 ] + ( b )[ 1 ] * ( s ),( o )[ 2 ] = ( v )[ 2 ] + ( b )[ 2 ] * ( s ),( o )[ 3 ] = ( v )[ 3 ] + ( b )[ 3 ] * ( s ) )
 #define Vector4Average( v, b, s, o ) ( ( o )[ 0 ] = ( ( v )[ 0 ] * ( 1 - ( s ) ) ) + ( ( b )[ 0 ] * ( s ) ),( o )[ 1 ] = ( ( v )[ 1 ] * ( 1 - ( s ) ) ) + ( ( b )[ 1 ] * ( s ) ),( o )[ 2 ] = ( ( v )[ 2 ] * ( 1 - ( s ) ) ) + ( ( b )[ 2 ] * ( s ) ),( o )[ 3 ] = ( ( v )[ 3 ] * ( 1 - ( s ) ) ) + ( ( b )[ 3 ] * ( s ) ) )
-#define Vector4Lerp( f, s, e, r )    (( r )[ 0 ] = ( s )[ 0 ] + ( f ) * (( e )[ 0 ] - ( s )[ 0 ] ), \
-                                      ( r )[ 1 ] = ( s )[ 1 ] + ( f ) * (( e )[ 1 ] - ( s )[ 1 ] ), \
-                                      ( r )[ 2 ] = ( s )[ 2 ] + ( f ) * (( e )[ 2 ] - ( s )[ 2 ] ), \
-                                      ( r )[ 3 ] = ( s )[ 3 ] + ( f ) * (( e )[ 3 ] - ( s )[ 3 ] ))
 
 #define DotProduct4(x, y)            (( x )[ 0 ] * ( y )[ 0 ] + ( x )[ 1 ] * ( y )[ 1 ] + ( x )[ 2 ] * ( y )[ 2 ] + ( x )[ 3 ] * ( y )[ 3 ] )
 
@@ -668,12 +565,6 @@ void         ByteToDir( int b, vec3_t dir );
 	void     _VectorCopy( const vec3_t in, vec3_t out );
 	void     _VectorScale( const vec3_t in, float scale, vec3_t out );
 	void     _VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc );
-
-	unsigned ColorBytes3( float r, float g, float b );
-	unsigned ColorBytes4( float r, float g, float b, float a );
-
-	float    NormalizeColor( const vec3_t in, vec3_t out );
-	void     ClampColor( vec4_t color );
 
 	float    RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
 	void     ZeroBounds( vec3_t mins, vec3_t maxs );
@@ -1800,12 +1691,6 @@ void         ByteToDir( int b, vec3_t dir );
 	bool Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );
-
-// strlen that discounts Quake color sequences
-	int      Q_PrintStrlen( const char *string );
-
-// removes color sequences from string
-	char     *Q_CleanStr( char *string );
 
 // parse "\n" into '\n'
 	void     Q_ParseNewlines( char *dest, const char *src, int destsize );

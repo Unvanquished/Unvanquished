@@ -1340,10 +1340,10 @@ public:
 				value = 0.5f;
 				break;
 			case GLS_ATEST_GT_ENT:
-				value = 1.0f - backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0f / 255.0f );
+				value = 1.0f - backEnd.currentEntity->e.shaderRGBA.Alpha() * ( 1.0f / 255.0f );
 				break;
 			case GLS_ATEST_LT_ENT:
-				value = -2.0f + backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0f / 255.0f );
+				value = -2.0f + backEnd.currentEntity->e.shaderRGBA.Alpha() * ( 1.0f / 255.0f );
 				break;
 			default:
 				value = 1.5f;
@@ -1678,9 +1678,9 @@ public:
 	{
 	}
 
-	void SetUniform_Color( const vec4_t v )
+	void SetUniform_Color( const Color::Color& color )
 	{
-		this->SetValue( v );
+		this->SetValue( color.ToArray() );
 	}
 };
 

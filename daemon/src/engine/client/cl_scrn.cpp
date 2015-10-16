@@ -101,7 +101,7 @@ SCR_FillRect
 Coordinates are 640*480 virtual values
 =================
 */
-void SCR_FillAdjustedRect( float x, float y, float width, float height, const float *color )
+void SCR_FillAdjustedRect( float x, float y, float width, float height, const Color::Color& color )
 {
 	SCR_AdjustFrom640( &x, &y, &width, &height );
 	SCR_FillRect( x, y, width, height, color );
@@ -114,11 +114,11 @@ SCR_FillRect
 Coordinates are the current screen resolution
 =================
 */
-void SCR_FillRect( float x, float y, float width, float height, const float *color )
+void SCR_FillRect( float x, float y, float width, float height, const Color::Color& color )
 {
 	re.SetColor( color );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
-	re.SetColor( nullptr );
+	re.SetColor( Color::White );
 }
 
 /*
@@ -274,121 +274,6 @@ void SCR_DrawSmallUnichar( int x, int y, int ch )
 
 /*
 ==================
-SCR_DrawBigString[Color]
-
-Draws a multi-colored string with a drop shadow, optionally forcing
-to a fixed color.
-
-Coordinates are at 640 by 480 virtual resolution
-==================
-*/
-
-void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, bool forceColor, bool noColorEscape )
-{
-	vec4_t     color;
-	const char *s;
-	int        xx;
-	bool   noColour = false;
-
-	// draw the drop shadow
-	color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
-	color[ 3 ] = setColor[ 3 ];
-	re.SetColor( color );
-	s = string;
-	xx = x;
-
-	while ( *s )
-	{
-		if ( !noColorEscape && Q_IsColorString( s ) )
-		{
-			s += 2;
-			continue;
-		}
-
-		if ( !noColorEscape && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-		{
-			++s;
-		}
-
-		auto ch = Q_UTF8_CodePoint( s );
-		SCR_DrawUnichar( xx + 2, y + 2, size, ch );
-		xx += size;
-		s += Q_UTF8_WidthCP( ch );
-	}
-
-	// draw the colored text
-	s = string;
-	xx = x;
-	re.SetColor( setColor );
-
-	while ( *s )
-	{
-		int ch;
-
-		if ( !noColour && Q_IsColorString( s ) )
-		{
-			if ( !forceColor )
-			{
-				if ( * ( s + 1 ) == COLOR_NULL )
-				{
-					memcpy( color, setColor, sizeof( color ) );
-				}
-				else
-				{
-					memcpy( color, g_color_table[ ColorIndex( * ( s + 1 ) ) ], sizeof( color ) );
-				}
-
-				color[ 3 ] = setColor[ 3 ];
-				re.SetColor( color );
-			}
-
-			if ( !noColorEscape )
-			{
-				s += 2;
-				continue;
-			}
-		}
-		else if ( !noColour && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-		{
-			if ( !noColorEscape )
-			{
-				++s;
-			}
-			else
-			{
-				noColour = true;
-			}
-		}
-		else
-		{
-			noColour = false;
-		}
-
-		ch = Q_UTF8_CodePoint( s );
-		SCR_DrawUnichar( xx, y, size, ch );
-		xx += size;
-		s += Q_UTF8_WidthCP( ch );
-	}
-
-	re.SetColor( nullptr );
-}
-
-void SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape )
-{
-	float color[ 4 ];
-
-	color[ 0 ] = color[ 1 ] = color[ 2 ] = 1.0;
-	color[ 3 ] = alpha;
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, false, noColorEscape );
-}
-
-void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, bool noColorEscape )
-{
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, true, noColorEscape );
-}
-
-/*
-==================
 SCR_DrawSmallString[Color]
 
 Draws a multi-colored string with a drop shadow, optionally forcing
@@ -397,104 +282,55 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape )
+void SCR_DrawSmallStringExt( int x, int y, const char *string,
+							 const Color::Color &setColor, bool forceColor, bool noColorEscape )
 {
-	vec4_t     color;
-	const char *s;
 	float      xx;
-	bool   noColour = false;
 
 	// draw the colored text
-	s = string;
 	xx = x;
 	re.SetColor( setColor );
 
-	while ( *s )
+	for ( const auto& token : Color::Parser( string, setColor ) )
 	{
-		int ch;
-
-		if ( !noColour && Q_IsColorString( s ) )
+		if ( token.Type() == Color::Token::COLOR )
 		{
 			if ( !forceColor )
 			{
-				if ( * ( s + 1 ) == COLOR_NULL )
-				{
-					memcpy( color, setColor, sizeof( color ) );
-				}
-				else
-				{
-					memcpy( color, g_color_table[ ColorIndex( * ( s + 1 ) ) ], sizeof( color ) );
-				}
-
-				color[ 3 ] = setColor[ 3 ];
+				Color::Color color = token.Color();
+				color.SetAlpha( setColor.Alpha() );
 				re.SetColor( color );
 			}
 
-			if ( !noColorEscape )
+			if ( noColorEscape )
 			{
-				s += 2;
-				continue;
+				for ( const char *c = token.Begin(); c != token.End(); c++ )
+				{
+					SCR_DrawConsoleFontUnichar( xx, y, *c );
+					xx += SCR_ConsoleFontUnicharWidth( *c );
+				}
 			}
 		}
-		else if ( !noColour && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		else if ( token.Type() == Color::Token::ESCAPE )
 		{
-			if ( !noColorEscape )
+			SCR_DrawConsoleFontUnichar( xx, y, Color::Constants::ESCAPE );
+			xx += SCR_ConsoleFontUnicharWidth( Color::Constants::ESCAPE );
+
+			if ( noColorEscape )
 			{
-				++s;
-			}
-			else
-			{
-				noColour = true;
+				SCR_DrawConsoleFontUnichar( xx, y, Color::Constants::ESCAPE );
+				xx += SCR_ConsoleFontUnicharWidth( Color::Constants::ESCAPE );
 			}
 		}
 		else
 		{
-			noColour = false;
-		}
-
-		ch = Q_UTF8_CodePoint( s );
-		SCR_DrawConsoleFontUnichar( xx, y, ch );
-		xx += SCR_ConsoleFontUnicharWidth( ch );
-		s += Q_UTF8_WidthCP( ch );
-	}
-
-	re.SetColor( nullptr );
-}
-
-/*
-** SCR_Strlen -- skips color escape codes
-*/
-static int SCR_Strlen( const char *str )
-{
-	const char *s = str;
-	int        count = 0;
-
-	while ( *s )
-	{
-		if ( Q_IsColorString( s ) )
-		{
-			s += 2;
-		}
-		else if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
-		{
-			++s;
-		}
-
-		{
-			count++;
-			s += Q_UTF8_Width( s );
+			int ch = Q_UTF8_CodePoint( token.Begin() );
+			SCR_DrawConsoleFontUnichar( xx, y, ch );
+			xx += SCR_ConsoleFontUnicharWidth( ch );
 		}
 	}
 
-	return count;
-}
-
-/*
-** SCR_GetBigStringWidth
-*/
-int SCR_GetBigStringWidth( const char *str )
-{
-	return SCR_Strlen( str ) * BIGCHAR_WIDTH;
+	re.SetColor( Color::White );
 }
 
 //===============================================================================
@@ -573,7 +409,7 @@ void SCR_DrawVoipMeter()
 	buffer[ i ] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[ 7 ], true, false );
+	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::White, true, false );
 }
 
 /*
@@ -622,27 +458,27 @@ void SCR_DrawVoipSender()
 
 		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::White, true, true );
 		}
 		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, Color::Color( 7 ], true, true );
 		}
 		else
 		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[ 7 ], true, true );
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, Color::Color( 7 ], true, true );
 		}
 	}
 #endif
@@ -678,9 +514,9 @@ void SCR_DrawScreenField()
 	{
 		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
 		{
-			re.SetColor( g_color_table[ 0 ] );
+			re.SetColor( Color::Black );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
-			re.SetColor( nullptr );
+			re.SetColor( Color::White );
 		}
 	}
 
