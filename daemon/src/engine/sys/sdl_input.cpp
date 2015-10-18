@@ -1577,7 +1577,10 @@ void IN_Frame()
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		// Console is down in windowed mode
-		IN_DeactivateMouse( false );
+		if ( in_nograb->integer )
+			IN_ActivateMouse();
+		else
+			IN_DeactivateMouse( false );
 	}
 	else if ( loading )
 	{
