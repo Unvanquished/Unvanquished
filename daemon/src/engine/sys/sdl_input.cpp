@@ -44,6 +44,10 @@ static SDL_Joystick *stick = nullptr;
 static bool     mouseAvailable = false;
 bool            mouseActive = false;
 
+// Mouse position to properly locate the cursor when the mouse is enabled
+static int mouse_absolute_x = 0;
+static int mouse_absolute_y = 0;
+
 static cvar_t       *in_mouse = nullptr;
 
 static cvar_t       *in_nograb;
@@ -612,14 +616,23 @@ static void IN_ActivateMouse()
 		{
 			if ( in_nograb->integer )
 			{
+				SDL_SetRelativeMouseMode( SDL_FALSE );
 				SDL_SetWindowGrab( window, SDL_FALSE );
 			}
 			else
 			{
+				SDL_SetRelativeMouseMode( SDL_TRUE );
 				SDL_SetWindowGrab( window, SDL_TRUE );
 			}
 
 			in_nograb->modified = false;
+
+			// Account the mouse movements from when the mouse was disabled
+			int mx = 0, my = 0;
+			SDL_GetMouseState( &mx, &my );
+			Com_QueueEvent( 0, SE_MOUSE, mx-mouse_absolute_x, my-mouse_absolute_y, 0, nullptr );
+			mouse_absolute_x = mx;
+			mouse_absolute_y = my;
 		}
 	}
 
@@ -649,6 +662,7 @@ void IN_DeactivateMouse( bool showCursor )
 
 	if ( mouseActive )
 	{
+		SDL_GetMouseState( &mouse_absolute_x, &mouse_absolute_y );
 		IN_GobbleMotionEvents();
 
 		SDL_SetWindowGrab( window, SDL_FALSE );
@@ -1434,6 +1448,7 @@ static void IN_ProcessEvents( bool dropInput )
 					{
 						Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, nullptr );
 #if defined( __linux__ ) || defined( __BSD__ )
+						if ( !in_nograb->integer )
 						{
 							// work around X window managers and edge-based workspace flipping
 							// - without this, we get LeaveNotify, no mouse button events, EnterNotify;
@@ -1572,7 +1587,7 @@ void IN_Frame()
 	else if ( !( SDL_GetWindowFlags( window ) & SDL_WINDOW_INPUT_FOCUS ) )
 	{
 		// Window doesn't have focus
-		IN_DeactivateMouse( false );
+		IN_DeactivateMouse( true );
 	}
 	else if ( com_minimized->integer )
 	{
