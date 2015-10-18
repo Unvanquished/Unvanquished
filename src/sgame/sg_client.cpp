@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
+#include "CBSE.h"
 
 // sg_client.c -- client functions that don't happen every frame
 
@@ -214,7 +215,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 			continue;
 		}
 
-		if ( search->health <= 0 )
+		if ( G_Dead( search ) )
 		{
 			continue;
 		}
@@ -492,11 +493,6 @@ static void SpawnCorpse( gentity_t *ent )
 		}
 	}
 
-	body->takedamage = false;
-
-	body->health = ent->health = ent->client->ps.stats[ STAT_HEALTH ];
-	ent->health = 0;
-
 	//change body dimensions
 	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, nullptr, nullptr, body->r.mins, body->r.maxs );
 
@@ -628,7 +624,7 @@ bool G_IsUnnamed( const char *name )
 	char testName[ MAX_NAME_LENGTH ];
 	int  length;
 
-	G_DecolorString( (char *)name, testName, sizeof( testName ) );
+	Color::StripColors( (char *)name, testName, sizeof( testName ) );
 
 	if ( !Q_stricmp( testName, UNNAMED_PLAYER ) )
 	{
@@ -723,164 +719,125 @@ G_ClientCleanName
 */
 static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t *client )
 {
-	int      len, colorlessLen;
-	char     *p;
-	int      spaces;
-	bool escaped;
-	bool invalid = false;
-	bool hasletter = false;
+	--outSize;
 
-	//save room for trailing null byte
-	outSize--;
-
-	len = 0;
-	colorlessLen = 0;
-	p = out;
-	*p = 0;
-	spaces = 0;
-
-	for ( ; *in; in++ )
+	bool        has_visible_characters = false;
+	std::string out_string;
+	bool        hasletter = false;
+	int         spaces = 0;
+	
+	for ( const auto& token : Color::Parser( in ) )
 	{
-		int cp, w;
-
-		// don't allow leading spaces
-		if ( colorlessLen == 0 && *in == ' ' )
-		{
-			continue;
-		}
-
-		// don't allow nonprinting characters or (dead) console keys
-		// but do allow UTF-8 (unvalidated)
-		if ( *in >= 0 && *in < ' ' )
-		{
-			continue;
-		}
-
-		// check colors or escaped escape character
-		if ( Q_IsColorString(in) || ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE ) )
-		{
-			in++;
-
-			// make sure room in dest for both chars
-			if ( len > outSize - 2 )
-			{
-				break;
-			}
-
-			*out++ = Q_COLOR_ESCAPE;
-
-			*out++ = *in;
-
-			len += 2;
-			continue;
-		}
-		else if ( in[ 0 ] == '^' && !in[ 1 ] )
-		{
-			// single trailing ^ will mess up some things
-
-			// make sure room in dest for both chars
-			if ( len > outSize - 2 )
-			{
-				break;
-			}
-
-			*out++ = '^';
-			*out++ = '^';
-			len += 2;
-			continue;
-		}
-		else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped ) )
-		{
-			// make sure room in dest for both chars
-			if ( len > outSize - 2 )
-			{
-				break;
-			}
-
-			*out++ = '[';
-			*out++ = '[';
-			len += 2;
-
-			if ( escaped )
-			{
-				in++;
-			}
-
-			continue;
-		}
-
-		cp = Q_UTF8_CodePoint( in );
-
-		if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
-		{
-			hasletter = true;
-		}
-
-		// don't allow too many consecutive spaces
-		if ( *in == ' ' )
-		{
-			spaces++;
-
-			if ( spaces > 3 )
-			{
-				continue;
-			}
-		}
-		else
-		{
-			spaces = 0;
-		}
-
-		w = Q_UTF8_WidthCP( cp );
-
-		if ( len > outSize - w )
+		if ( out_string.size() + token.Size() > outSize )
 		{
 			break;
 		}
 
-		memcpy( out, in, w );
-		colorlessLen++;
-		len += w;
-		out += w;
-		in += w - 1; // allow for loop increment
+		if ( token.Type() == Color::Token::CHARACTER )
+		{
+			int cp = Q_UTF8_CodePoint(token.Begin());
+
+			// don't allow leading spaces
+			if ( !has_visible_characters && std::isspace( cp ) )
+			{
+				continue;
+			}
+
+			// don't allow nonprinting characters or (dead) console keys
+			// but do allow UTF-8 (unvalidated)
+			if ( cp >= 0 && cp < ' ' )
+			{
+				continue;
+			}
+
+			bool escaped_emote = false;
+			// single trailing ^ will mess up some things
+			if ( cp == Color::Constants::ESCAPE && !*token.End() )
+			{
+				if ( out_string.size() + 2 > outSize )
+				{
+					break;
+				}
+				out_string += Color::Constants::ESCAPE;
+			}
+			else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped_emote ) )
+			{
+				if ( out_string.size() + 2 + token.Size() > outSize )
+				{
+					break;
+				}
+
+				out_string += "[[";
+				if ( escaped_emote )
+				{
+					continue;
+				}
+			}
+
+			if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
+			{
+				hasletter = true;
+			}
+
+		// don't allow too many consecutive spaces
+			if ( std::isspace( cp ) )
+			{
+				spaces++;
+				if ( spaces > 3 )
+				{
+					continue;
+				}
+			}
+			else
+			{
+				spaces = 0;
+				has_visible_characters = true;
+			}
+		}
+		else if ( token.Type() == Color::Token::ESCAPE )
+		{
+			has_visible_characters = true;
+		}
+
+		out_string.append(token.Begin(), token.Size());
 	}
 
-	*out = 0;
+	bool invalid = false;
 
 	// don't allow names beginning with S_SKIPNOTIFY because it messes up /ignore-related code
-	if ( !Q_strnicmp( p, S_SKIPNOTIFY, 12 ) )
+	if ( !out_string.compare( 0, 12, S_SKIPNOTIFY ) )
 	{
 		invalid = true;
 	}
 
 	// don't allow comment-beginning strings because it messes up various parsers
-	if ( strstr( p, "//" ) || strstr( p, "/*" ) )
+	if ( out_string.find( "//" ) != std::string::npos ||
+		out_string.find( "/*" ) != std::string::npos )
 	{
-		invalid = true;
+		out_string.erase( std::remove( out_string.begin(), out_string.end(), '/' ) );
 	}
 
 	// don't allow empty names
-	if ( *p == 0 || colorlessLen == 0 )
+	if ( out_string.empty() || !hasletter )
 	{
 		invalid = true;
 	}
-
 	// don't allow names beginning with digits
-	if ( *p >= '0' && *p <= '9' )
+	else if ( std::isdigit( out_string[0] ) )
 	{
-		invalid = true;
-	}
-
-	// limit no. of code points
-	if ( Q_UTF8_PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
-	{
-		invalid = true;
+		out_string.erase( out_string.begin(),
+			std::find_if_not( out_string.begin(), out_string.end(),
+				(int (*)(int))std::isdigit ) );
 	}
 
 	// if something made the name bad, put them back to UnnamedPlayer
-	if ( invalid || !hasletter )
+	if ( invalid )
 	{
-		Q_strncpyz( p, G_UnnamedClientName( client ), outSize );
+		Q_strncpyz( out, G_UnnamedClientName( client ), outSize );
+	}
+	else
+	{
+		Q_strncpyz( out, out_string.c_str(), outSize );
 	}
 }
 
@@ -994,10 +951,10 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 
 			if ( *oldname )
 			{
-				G_LogPrintf( "ClientRename: %i [%s] (%s) \"%s^7\" -> \"%s^7\" \"%c%s%c^7\"\n",
+				G_LogPrintf( "ClientRename: %i [%s] (%s) \"%s^7\" -> \"%s^7\" \"%s^7\"\n",
 				             clientNum, client->pers.ip.str, client->pers.guid,
 				             oldname, client->pers.netname,
-				             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+				             client->pers.netname );
 			}
 		}
 
@@ -1273,10 +1230,10 @@ const char *ClientConnect( int clientNum, bool firstTime )
 		return userInfoError;
 	}
 
-	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\"\n",
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%s^7\"\n",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
-	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+	             client->pers.netname );
 
 	country = Info_ValueForKey( userinfo, "geoip" );
 	Q_strncpyz( client->pers.country, country, sizeof( client->pers.country ) );
@@ -1367,10 +1324,10 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
 	}
 
-	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\" [BOT]\n",
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%s^7\" [BOT]\n",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
-	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+	             client->pers.netname );
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
@@ -1433,8 +1390,7 @@ void ClientBegin( int clientNum )
 	int             flags;
 	char            startMsg[ MAX_STRING_CHARS ];
 
-	ent = g_entities + clientNum;
-
+	ent    = g_entities + clientNum;
 	client = level.clients + clientNum;
 
 	// ignore if client already entered the game
@@ -1449,6 +1405,10 @@ void ClientBegin( int clientNum )
 	}
 
 	G_InitGentity( ent );
+
+	// Create a basic client entity, will be replaced by a more specific one later.
+	ent->entity = new ClientEntity({ent, client});
+
 	ent->touch = 0;
 	ent->pain = 0;
 	ent->client = client;
@@ -1507,6 +1467,115 @@ void ClientBegin( int clientNum )
 	}
 }
 
+/** Sets shared client entity parameters. */
+#define CLIENT_ENTITY_SET_PARAMS(params)\
+	params.oldEnt = ent;\
+	params.Client_clientData = client;\
+	params.Health_maxHealth = BG_Class(pcl)->health;
+
+/** Copies component state for components that all client entities share. */
+#define CLIENT_ENTITY_COPY_STATE()\
+	if (evolving) {\
+		*ent->entity->Get<HealthComponent>() = *oldEntity->Get<HealthComponent>();\
+	}
+
+/** Creates basic client entity of specific type, copying state from an old instance. */
+#define CLIENT_ENTITY_CREATE(entityType)\
+	entityType::Params params;\
+	CLIENT_ENTITY_SET_PARAMS(params);\
+	ent->entity = new entityType(params);\
+	CLIENT_ENTITY_COPY_STATE();
+
+/**
+ * @brief Handles re-spawning of clients and creation of appropriate entities.
+ */
+static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
+	Entity *oldEntity = ent->entity;
+	gclient_t *client = oldEntity->Get<ClientComponent>()->GetClientData();
+	class_t pcl = client->pers.classSelection;
+
+	switch (pcl) {
+		// Each entry does the following:
+		//   - Fill an appropriate parameter struct for the new entity.
+		//   - Create a new entity, passing the parameter struct.
+		//   - Call assignment operators on the new components to transfer state from old entity.
+
+		case PCL_NONE:
+			// TODO: Add SpectatorEntity.
+			return;
+
+		case PCL_ALIEN_BUILDER0: {
+			CLIENT_ENTITY_CREATE(GrangerEntity);
+			break;
+		}
+
+		case PCL_ALIEN_BUILDER0_UPG: {
+			CLIENT_ENTITY_CREATE(AdvGrangerEntity);
+			break;
+		}
+
+		case PCL_ALIEN_LEVEL0: {
+			CLIENT_ENTITY_CREATE(DretchEntity);
+			break;
+		}
+
+		case PCL_ALIEN_LEVEL1: {
+			CLIENT_ENTITY_CREATE(MantisEntity);
+			break;
+		}
+
+		case PCL_ALIEN_LEVEL2: {
+			CLIENT_ENTITY_CREATE(MarauderEntity);
+			break;
+		}
+
+		case PCL_ALIEN_LEVEL2_UPG: {
+			CLIENT_ENTITY_CREATE(AdvMarauderEntity);
+			break;
+		}
+
+		case PCL_ALIEN_LEVEL3: {
+			CLIENT_ENTITY_CREATE(DragoonEntity);
+			break;
+		}
+
+		case PCL_ALIEN_LEVEL3_UPG: {
+			CLIENT_ENTITY_CREATE(AdvDragoonEntity);
+			break;
+		}
+
+		case PCL_ALIEN_LEVEL4: {
+			CLIENT_ENTITY_CREATE(TyrantEntity);
+			break;
+		}
+
+		case PCL_HUMAN_NAKED: {
+			CLIENT_ENTITY_CREATE(NakedHumanEntity);
+			break;
+		}
+
+		case PCL_HUMAN_LIGHT: {
+			CLIENT_ENTITY_CREATE(LightHumanEntity);
+			break;
+		}
+
+		case PCL_HUMAN_MEDIUM: {
+			CLIENT_ENTITY_CREATE(MediumHumanEntity);
+			break;
+		}
+
+		case PCL_HUMAN_BSUIT: {
+			CLIENT_ENTITY_CREATE(HeavyHumanEntity);
+			break;
+		}
+
+		default:
+			assert(false);
+	}
+
+	delete oldEntity;
+}
+
 /*
 ===========
 ClientSpawn
@@ -1535,6 +1604,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	vec3_t             up = { 0.0f, 0.0f, 1.0f };
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
+
+	ClientSpawnCBSE(ent, ent == spawn);
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1605,8 +1676,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		{
 			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, true );
 
-			spawnPoint->buildableStatsCount++;
-
 			if ( spawnPoint->buildableTeam == TEAM_ALIENS )
 			{
 				spawnPoint->clientSpawnTime = ALIEN_SPAWN_REPEAT_TIME;
@@ -1664,7 +1733,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
-	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //true;
 	ent->classname = S_PLAYER_CLASSNAME;
 	if ( client->noclip )
 	{
@@ -1689,16 +1757,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.clientNum = index;
 
 	BG_ClassBoundingBox( ent->client->pers.classSelection, ent->r.mins, ent->r.maxs, nullptr, nullptr, nullptr );
-
-	if ( client->sess.spectatorState == SPECTATOR_NOT )
-	{
-		client->ps.stats[ STAT_MAX_HEALTH ] =
-		  BG_Class( ent->client->pers.classSelection )->health;
-	}
-	else
-	{
-		client->ps.stats[ STAT_MAX_HEALTH ] = 100;
-	}
 
 	// clear entity values
 	if ( ent->client->pers.classSelection == PCL_HUMAN_NAKED )
@@ -1736,17 +1794,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	VectorSet( client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 
-	// health will count down towards max_health
-	ent->health = client->ps.stats[ STAT_HEALTH ] = client->ps.stats[ STAT_MAX_HEALTH ]; //* 1.25;
-
-	//if evolving scale health
-	if ( ent == spawn )
-	{
-		ent->health *= ent->client->pers.evolveHealthFraction;
-		client->ps.stats[ STAT_HEALTH ] *= ent->client->pers.evolveHealthFraction;
-	}
-
 	//clear the credits array
+	// TODO: Handle in HealthComponent or ClientComponent.
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		ent->credits[ i ].value = 0.0f;
@@ -1928,12 +1977,12 @@ void ClientDisconnect( int clientNum )
 	G_LogPrintf( "ClientDisconnect: %i [%s] (%s) \"%s^7\"\n", clientNum,
 	             ent->client->pers.ip.str, ent->client->pers.guid, ent->client->pers.netname );
 
-	trap_UnlinkEntity( ent );
-	ent->inuse = false;
-	ent->classname = "disconnected";
 	ent->client->pers.connected = CON_DISCONNECTED;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;
 	ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_NOT;
+
+	G_FreeEntity(ent);
+	ent->classname = "disconnected";
 
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "" );
 

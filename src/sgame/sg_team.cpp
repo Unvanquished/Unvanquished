@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "CBSE.h"
 
 /*
 ================
@@ -315,7 +316,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	Beacon::PropagateAll( );
 
-	G_LogPrintf( "ChangeTeam: %d %s: %s" S_COLOR_WHITE " switched teams\n",
+	G_LogPrintf( "ChangeTeam: %d %s: %s^* switched teams\n",
 	             ( int )( ent - g_entities ), BG_TeamName( newTeam ), ent->client->pers.netname );
 
 	G_namelog_update_score( ent->client );
@@ -466,7 +467,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		{
 			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i", i,
 						 cl->pers.location,
-						 cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
+			             std::max((int)std::ceil(player->entity->Get<HealthComponent>()->Health()), 0),
 						 curWeaponClass,
 						 cl->pers.credit );
 		}
@@ -474,7 +475,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		{
 			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i %i", i,
 			             cl->pers.location,
-			             cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
+			             std::max((int)std::ceil(player->entity->Get<HealthComponent>()->Health()), 0),
 			             curWeaponClass,
 			             cl->pers.credit,
 			             upgrade );
@@ -513,7 +514,7 @@ void CheckTeamStatus()
 		{
 			ent = g_entities + i;
 
-			if ( ent->client->pers.connected != CON_CONNECTED )
+			if ( ent->client && ent->client->pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
@@ -543,7 +544,7 @@ void CheckTeamStatus()
 		{
 			ent = g_entities + i;
 
-			if ( ent->client->pers.connected != CON_CONNECTED )
+			if ( ent->client && ent->client->pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}

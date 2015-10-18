@@ -2096,9 +2096,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 				vec3_t color;
 
 				ParseVector( text, 3, color );
-				stage->constantColor[ 0 ] = 255 * color[ 0 ];
-				stage->constantColor[ 1 ] = 255 * color[ 1 ];
-				stage->constantColor[ 2 ] = 255 * color[ 2 ];
+				stage->constantColor = Color::Adapt( color );
 
 				stage->rgbGen = CGEN_CONST;
 			}
@@ -2216,7 +2214,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			else if ( !Q_stricmp( token, "const" ) )
 			{
 				token = COM_ParseExt2( text, false );
-				stage->constantColor[ 3 ] = 255 * atof( token );
+				stage->constantColor.SetAlpha( 255 * atof( token ) );
 				stage->alphaGen = AGEN_CONST;
 			}
 			else if ( !Q_stricmp( token, "identity" ) )
@@ -2248,7 +2246,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 				ri.Printf( PRINT_WARNING, "WARNING: alphaGen portal keyword not supported in shader '%s'\n", shader.name );
 				//stage->type = ST_PORTALMAP;
 				stage->alphaGen = AGEN_CONST;
-				stage->constantColor[3] = 0;
+				stage->constantColor.SetAlpha( 0 );
 				SkipRestOfLine( text );
 			}
 			else

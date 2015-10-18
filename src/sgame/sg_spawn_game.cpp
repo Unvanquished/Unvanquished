@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "CBSE.h"
 
 /*
 =================================================================================
@@ -143,7 +144,7 @@ void game_kill_act( gentity_t*, gentity_t*, gentity_t *activator )
 		return;
 	}
 
-	G_Damage( activator, nullptr, nullptr, nullptr, nullptr, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
+	G_Kill(activator, MOD_TELEFRAG);
 }
 
 void SP_game_kill( gentity_t *self )

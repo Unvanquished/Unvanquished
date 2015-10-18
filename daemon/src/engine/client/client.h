@@ -711,14 +711,7 @@ bool CL_UpdateVisiblePings_f( int source );
 //
 // console
 //
-#define     CON_TEXTSIZE 65536
 #define     CONSOLE_FONT_VPADDING 0.3
-
-typedef struct
-{
-	int ch :24;
-	int ink :8;
-} conChar_t;
 
 typedef struct
 {
@@ -728,27 +721,17 @@ typedef struct
 	int sides;
 } consoleBoxWidth_t;
 
-typedef struct
+struct console_t
 {
 	bool initialized;
 
-	conChar_t text[ CON_TEXTSIZE ];
-
-	int      currentLine; // line where next message will be printed
-	int      horizontalCharOffset; // offset in current line for next print
+	std::vector<std::string> lines;
 
 	int      lastReadLineIndex; // keep track fo the last read line, so we can show the user, what was added since he last opened the console
 	int      scrollLineIndex; // bottom of console is supposed displays this line
 	float    bottomDisplayedLine; // bottom of console displays this line, is trying to move towards:
 
 	int      textWidthInChars; // characters across screen
-	int      maxScrollbackLengthInLines; // total lines in console scrollback
-
-	/**
-	 * amount of lines in the scrollback that are filled with text,
-	 * so we e.g. can keep track how far it makes sense to scroll back
-	 */
-	int      usedScrollbackLengthInLines;
 
 	/**
 	 * the amount of lines that fit onto the screen
@@ -785,7 +768,7 @@ typedef struct
 	 * console as a whole
 	 */
 	float    currentAlphaFactor;
-} console_t;
+};
 
 extern console_t consoleState;
 
@@ -796,7 +779,7 @@ void             Con_Init();
 void             Con_Clear_f();
 void             Con_ToggleConsole_f();
 void             Con_OpenConsole_f();
-void             Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text );
+void             Con_DrawRightFloatingTextLine( const int linePosition, const Color::Color& color, const char* text );
 void             Con_DrawConsole();
 void             Con_RunConsole();
 void             Con_PageUp();
@@ -818,17 +801,13 @@ void             CL_SaveConsoleHistory();
 void  SCR_Init();
 void  SCR_UpdateScreen();
 
-int   SCR_GetBigStringWidth( const char *str );  // returns in virtual 640x480 coordinates
-
 void  SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
-void  SCR_FillAdjustedRect( float x, float y, float width, float height, const float *color );
-void  SCR_FillRect( float x, float y, float width, float height, const float *color );
+void  SCR_FillAdjustedRect( float x, float y, float width, float height, const Color::Color& color );
+void  SCR_FillRect( float x, float y, float width, float height, const Color::Color& color );
 void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
 void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 
-void  SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape );  // draws a string with embedded color control characters with fade
-void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, bool noColorEscape );  // ignores embedded color control characters
-void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape );
+void  SCR_DrawSmallStringExt( int x, int y, const char *string, const Color::Color& setColor, bool forceColor, bool noColorEscape );
 void  SCR_DrawSmallUnichar( int x, int y, int ch );
 void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
 void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );

@@ -106,7 +106,7 @@ static float GetOpValue( const expOperation_t *op )
 			}
 			else if ( backEnd.currentEntity )
 			{
-				value = backEnd.currentEntity->e.shaderRGBA[ 0 ] * inv255;
+				value = backEnd.currentEntity->e.shaderRGBA.Red() * inv255;
 			}
 			else
 			{
@@ -123,7 +123,7 @@ static float GetOpValue( const expOperation_t *op )
 			}
 			else if ( backEnd.currentEntity )
 			{
-				value = backEnd.currentEntity->e.shaderRGBA[ 1 ] * inv255;
+				value = backEnd.currentEntity->e.shaderRGBA.Green() * inv255;
 			}
 			else
 			{
@@ -140,7 +140,7 @@ static float GetOpValue( const expOperation_t *op )
 			}
 			else if ( backEnd.currentEntity )
 			{
-				value = backEnd.currentEntity->e.shaderRGBA[ 2 ] * inv255;
+				value = backEnd.currentEntity->e.shaderRGBA.Blue() * inv255;
 			}
 			else
 			{
@@ -157,7 +157,7 @@ static float GetOpValue( const expOperation_t *op )
 			}
 			else if ( backEnd.currentEntity )
 			{
-				value = backEnd.currentEntity->e.shaderRGBA[ 3 ] * inv255;
+				value = backEnd.currentEntity->e.shaderRGBA.Alpha() * inv255;
 			}
 			else
 			{

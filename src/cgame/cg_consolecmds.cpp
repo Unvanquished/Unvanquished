@@ -102,12 +102,14 @@ void CG_ClientList_f()
 		switch ( ci->team )
 		{
 			case TEAM_ALIENS:
-				Com_Printf( "%2d " S_COLOR_RED "A   " S_COLOR_WHITE "%s\n", i,
+				Com_Printf( "%2d %sA   ^*%s\n", i,
+				            Color::CString( Color::Red ),
 				            ci->name );
 				break;
 
 			case TEAM_HUMANS:
-				Com_Printf( "%2d " S_COLOR_CYAN "H   " S_COLOR_WHITE "%s\n", i,
+				Com_Printf( "%2d %sH   ^*%s\n", i,
+				            Color::CString( Color::Cyan ),
 				            ci->name );
 				break;
 
@@ -263,7 +265,7 @@ static void CG_CompleteName()
 			continue;
 		}
 
-		trap_CompleteCallback( Q_CleanStr( name ) );
+		trap_CompleteCallback( Color::StripColors( name ) );
 	}
 }
 

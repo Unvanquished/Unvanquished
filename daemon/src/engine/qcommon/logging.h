@@ -43,8 +43,8 @@
 /**
  * used for consistent representation within print or log statements, that don't use any severity enum yet
  */
-#define S_WARNING S_COLOR_YELLOW "Warning: " S_COLOR_WHITE
-#define S_ERROR   S_COLOR_RED "ERROR: " S_COLOR_WHITE
+#define S_WARNING "^3Warning: ^*"
+#define S_ERROR   "^1ERROR: ^*"
 #define S_DEBUG   "Debug: "
 
 typedef struct

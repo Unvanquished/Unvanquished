@@ -111,11 +111,9 @@ void BG_BuildEntityDescription( char *str, size_t size, entityState_t *es )
 	str[ size -1 ] = '\0';
 }
 
-bool BG_IsMainStructure( entityState_t *es )
+bool BG_IsMainStructure( buildable_t buildable )
 {
-	if ( es->eType != ET_BUILDABLE ) return false;
-
-	switch ( es->modelindex )
+	switch ( buildable )
 	{
 		case BA_A_OVERMIND:
 		case BA_H_REACTOR:
@@ -124,6 +122,14 @@ bool BG_IsMainStructure( entityState_t *es )
 		default:
 			return false;
 	}
+}
+
+
+bool BG_IsMainStructure( entityState_t *es )
+{
+	if ( es->eType != ET_BUILDABLE ) return false;
+
+	return BG_IsMainStructure( (buildable_t)es->modelindex );
 }
 
 /**

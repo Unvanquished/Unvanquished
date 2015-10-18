@@ -1884,7 +1884,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							// set uniforms
 							gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 							gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-							gl_genericShader->SetUniform_Color( colorBlack );
+							gl_genericShader->SetUniform_Color( Color::Black );
 
 							GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 							GL_Cull( CT_TWO_SIDED );
@@ -1915,7 +1915,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 								Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
 								Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
 								Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-								Tess_AddQuadStamp2( quadVerts, colorCyan );
+								Tess_AddQuadStamp2( quadVerts, Color::Cyan );
 							}
 
 							// draw far cap
@@ -1923,14 +1923,14 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
 							Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
 							Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-							Tess_AddQuadStamp2( quadVerts, colorBlue );
+							Tess_AddQuadStamp2( quadVerts, Color::Blue );
 
 							// draw near cap
 							Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
 							Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
 							Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
 							Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-							Tess_AddQuadStamp2( quadVerts, colorGreen );
+							Tess_AddQuadStamp2( quadVerts, Color::Green );
 
 							Tess_UpdateVBOs( );
 							GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR );
@@ -1940,7 +1940,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							if ( light->isStatic && light->frustumVBO && light->frustumIBO )
 							{
 								gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
-								gl_genericShader->SetUniform_Color( colorYellow );
+								gl_genericShader->SetUniform_Color( Color::Yellow );
 
 								R_BindVBO( light->frustumVBO );
 								R_BindIBO( light->frustumIBO );
@@ -2846,7 +2846,7 @@ void RB_RenderBloom()
 
 		gl_screenShader->BindProgram( 0 );
 		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-		glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
+		glVertexAttrib4fv( ATTR_INDEX_COLOR, Color::White.ToArray() );
 
 		gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
@@ -3061,7 +3061,6 @@ static void RB_RenderDebugUtils()
 		const interaction_t *ia;
 		trRefLight_t  *light;
 		vec3_t        forward, left, up;
-		vec4_t        lightColor; //unused
 
 		static const vec3_t minSize = { -2, -2, -2 };
 		static const vec3_t maxSize = { 2,  2,  2 };
@@ -3086,6 +3085,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		ia = nullptr;
+		Color::Color lightColor;
 		while ( ( ia = IterateLights( ia ) ) )
 		{
 			backEnd.currentLight = light = ia->light;
@@ -3094,39 +3094,39 @@ static void RB_RenderDebugUtils()
 			{
 				if ( light->shadowLOD == 0 )
 				{
-					Vector4Copy( colorRed, lightColor );
+					lightColor = Color::Red;
 				}
 				else if ( light->shadowLOD == 1 )
 				{
-					Vector4Copy( colorGreen, lightColor );
+					lightColor = Color::Green;
 				}
 				else if ( light->shadowLOD == 2 )
 				{
-					Vector4Copy( colorBlue, lightColor );
+					lightColor = Color::Blue;
 				}
 				else if ( light->shadowLOD == 3 )
 				{
-					Vector4Copy( colorYellow, lightColor );
+					lightColor = Color::Yellow;
 				}
 				else if ( light->shadowLOD == 4 )
 				{
-					Vector4Copy( colorMagenta, lightColor );
+					lightColor = Color::Magenta;
 				}
 				else if ( light->shadowLOD == 5 )
 				{
-					Vector4Copy( colorCyan, lightColor );
+					lightColor = Color::Cyan;
 				}
 				else
 				{
-					Vector4Copy( colorMdGrey, lightColor );
+					lightColor = Color::MdGrey;
 				}
 			}
 			else
 			{
-				Vector4Copy( colorBlue, lightColor );
+				lightColor = Color::Blue;
 			}
 
-			lightColor[ 3 ] = 0.2;
+			lightColor.SetAlpha( 0.2 );
 
 			gl_genericShader->SetUniform_Color( lightColor );
 
@@ -3172,7 +3172,7 @@ static void RB_RenderDebugUtils()
 						{
 							if ( !VectorCompare( light->l.center, vec3_origin ) )
 							{
-								Tess_AddCube( light->l.center, minSize, maxSize, colorYellow );
+								Tess_AddCube( light->l.center, minSize, maxSize, Color::Yellow );
 							}
 							break;
 						}
@@ -3180,18 +3180,18 @@ static void RB_RenderDebugUtils()
 					case RL_PROJ:
 						{
 							// draw light_target
-							Tess_AddCube( light->l.projTarget, minSize, maxSize, colorRed );
-							Tess_AddCube( light->l.projRight, minSize, maxSize, colorGreen );
-							Tess_AddCube( light->l.projUp, minSize, maxSize, colorBlue );
+							Tess_AddCube( light->l.projTarget, minSize, maxSize, Color::Red );
+							Tess_AddCube( light->l.projRight, minSize, maxSize, Color::Green );
+							Tess_AddCube( light->l.projUp, minSize, maxSize, Color::Blue );
 
 							if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 							{
-								Tess_AddCube( light->l.projStart, minSize, maxSize, colorYellow );
+								Tess_AddCube( light->l.projStart, minSize, maxSize, Color::Yellow );
 							}
 
 							if ( !VectorCompare( light->l.projEnd, vec3_origin ) )
 							{
-								Tess_AddCube( light->l.projEnd, minSize, maxSize, colorMagenta );
+								Tess_AddCube( light->l.projEnd, minSize, maxSize, Color::Magenta );
 							}
 							break;
 						}
@@ -3218,7 +3218,7 @@ static void RB_RenderDebugUtils()
 		trRefLight_t  *light;
 		trRefEntity_t *entity;
 		surfaceType_t *surface;
-		vec4_t        lightColor;
+		Color::Color lightColor;
 
 		static const vec3_t mins = { -1, -1, -1 };
 		static const vec3_t maxs = { 1, 1, 1 };
@@ -3235,7 +3235,7 @@ static void RB_RenderDebugUtils()
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-		gl_genericShader->SetUniform_Color( colorBlack );
+		gl_genericShader->SetUniform_Color( Color::Black );
 
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.whiteImage );
@@ -3274,20 +3274,14 @@ static void RB_RenderDebugUtils()
 						cubeSides++;
 					}
 				}
-
-				Vector4Copy( g_color_table[ cubeSides ], lightColor );
+				lightColor = Color::Color::Indexed( cubeSides );
 			}
 			else
 			{
-				Vector4Copy( colorMdGrey, lightColor );
+				lightColor = Color::MdGrey;
 			}
 
-			lightColor[ 0 ] *= 0.5f;
-			lightColor[ 1 ] *= 0.5f;
-			lightColor[ 2 ] *= 0.5f;
-			//lightColor[3] *= 0.2f;
-
-			Vector4Copy( colorWhite, lightColor );
+			lightColor = Color::White;
 
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
@@ -3301,24 +3295,24 @@ static void RB_RenderDebugUtils()
 
 				if ( *surface == SF_FACE )
 				{
-					Vector4Copy( colorMdGrey, lightColor );
+					lightColor = Color::MdGrey;
 				}
 				else if ( *surface == SF_GRID )
 				{
-					Vector4Copy( colorCyan, lightColor );
+					lightColor = Color::Cyan;
 				}
 				else if ( *surface == SF_TRIANGLES )
 				{
-					Vector4Copy( colorMagenta, lightColor );
+					lightColor = Color::Magenta;
 				}
 				else
 				{
-					Vector4Copy( colorMdGrey, lightColor );
+					lightColor = Color::MdGrey;
 				}
 
 				Tess_AddCube( vec3_origin, gen->bounds[ 0 ], gen->bounds[ 1 ], lightColor );
 
-				Tess_AddCube( gen->origin, mins, maxs, colorWhite );
+				Tess_AddCube( gen->origin, mins, maxs, Color::White );
 			}
 			else if ( *surface == SF_VBO_MESH )
 			{
@@ -3363,7 +3357,7 @@ static void RB_RenderDebugUtils()
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-		gl_genericShader->SetUniform_Color( colorBlack );
+		gl_genericShader->SetUniform_Color( Color::Black );
 
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.whiteImage );
@@ -3394,9 +3388,9 @@ static void RB_RenderDebugUtils()
 
 			Tess_MapVBOs( false );
 
-			Tess_AddCube( vec3_origin, ent->localBounds[ 0 ], ent->localBounds[ 1 ], colorBlue );
+			Tess_AddCube( vec3_origin, ent->localBounds[ 0 ], ent->localBounds[ 1 ], Color::Blue );
 
-			Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
+			Tess_AddCube( vec3_origin, mins, maxs,Color::White );
 
 			Tess_UpdateVBOs( );
 			GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR );
@@ -3435,7 +3429,7 @@ static void RB_RenderDebugUtils()
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-		gl_genericShader->SetUniform_Color( colorBlack );
+		gl_genericShader->SetUniform_Color( Color::Black );
 
 		// bind u_ColorMap
 		GL_BindToTMU( 0, tr.charsetImage );
@@ -3545,11 +3539,13 @@ static void RB_RenderDebugUtils()
 
 						VectorScale( origin, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
-						Tess_AddTetrahedron( tetraVerts, g_color_table[ ColorIndex( j ) ] );
+
+						Color::Color color = Color::Color::Indexed( j );
+						Tess_AddTetrahedron( tetraVerts, color );
 
 						VectorScale( offset, skel->scale, tetraVerts[ 3 ] );
 						tetraVerts[ 3 ][ 3 ] = 1;
-						Tess_AddTetrahedron( tetraVerts, g_color_table[ ColorIndex( j ) ] );
+						Tess_AddTetrahedron( tetraVerts, color );
 					}
 
 					MatrixTransformPoint( backEnd.orientation.transformMatrix, skel->bones[ j ].t.trans, worldOrigins[ j ] );
@@ -3615,7 +3611,7 @@ static void RB_RenderDebugUtils()
 							size = 0.0625;
 
 							VectorMA( worldOrigins[ j ], - ( k + 2.0f ), left, origin );
-							Tess_AddQuadStampExt( origin, left, up, colorWhite, fcol, frow, fcol + size, frow + size );
+							Tess_AddQuadStampExt( origin, left, up, Color::White, fcol, frow, fcol + size, frow + size );
 						}
 
 						Tess_UpdateVBOs( );
@@ -3674,7 +3670,7 @@ static void RB_RenderDebugUtils()
 
 		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
 		{
-			gl_genericShader->SetUniform_Color( colorWhite );
+			gl_genericShader->SetUniform_Color( Color::White );
 
 			Vector4Set( quadVerts[ 0 ], ia->scissorX, ia->scissorY, 0, 1 );
 			Vector4Set( quadVerts[ 1 ], ia->scissorX + ia->scissorWidth - 1, ia->scissorY, 0, 1 );
@@ -3750,7 +3746,7 @@ static void RB_RenderDebugUtils()
 			// bind u_ColorMap
 			GL_BindToTMU( 0, cubeProbe->cubemap );
 
-			Tess_AddCubeWithNormals( cubeProbe->origin, mins, maxs, colorWhite );
+			Tess_AddCubeWithNormals( cubeProbe->origin, mins, maxs, Color::White );
 		}
 
 		Tess_End();
@@ -3767,7 +3763,7 @@ static void RB_RenderDebugUtils()
 
 			gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 			gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-			gl_genericShader->SetUniform_Color( colorBlack );
+			gl_genericShader->SetUniform_Color( Color::Black );
 
 			gl_genericShader->SetRequiredVertexPointers();
 
@@ -3797,16 +3793,16 @@ static void RB_RenderDebugUtils()
 			}
 			else if ( cubeProbeNearest == nullptr )
 			{
-				Tess_AddCubeWithNormals( cubeProbeSecondNearest->origin, mins, maxs, colorBlue );
+				Tess_AddCubeWithNormals( cubeProbeSecondNearest->origin, mins, maxs, Color::Blue );
 			}
 			else if ( cubeProbeSecondNearest == nullptr )
 			{
-				Tess_AddCubeWithNormals( cubeProbeNearest->origin, mins, maxs, colorYellow );
+				Tess_AddCubeWithNormals( cubeProbeNearest->origin, mins, maxs, Color::Yellow );
 			}
 			else
 			{
-				Tess_AddCubeWithNormals( cubeProbeNearest->origin, mins, maxs, colorGreen );
-				Tess_AddCubeWithNormals( cubeProbeSecondNearest->origin, mins, maxs, colorRed );
+				Tess_AddCubeWithNormals( cubeProbeNearest->origin, mins, maxs, Color::Green );
+				Tess_AddCubeWithNormals( cubeProbeSecondNearest->origin, mins, maxs, Color::Red );
 			}
 
 			Tess_End();
@@ -3840,7 +3836,7 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-		gl_genericShader->SetUniform_Color( colorBlack );
+		gl_genericShader->SetUniform_Color( Color::Black );
 
 		gl_genericShader->SetRequiredVertexPointers();
 
@@ -3866,8 +3862,8 @@ static void RB_RenderDebugUtils()
 
 				for ( x = 0; x < tr.world->lightGridBounds[ 0 ]; x++ ) {
 					vec3_t origin;
-					vec3_t ambientColor;
-					vec3_t directedColor;
+					Color::Color ambientColor;
+					Color::Color directedColor;
 					vec3_t lightDir;
 
 					VectorCopy( tr.world->lightGridOrigin, origin );
@@ -3880,8 +3876,8 @@ static void RB_RenderDebugUtils()
 						continue;
 					}
 
-					R_LightForPoint( origin, ambientColor,
-							 directedColor, lightDir );
+					R_LightForPoint( origin, ambientColor.ToArray(),
+							 directedColor.ToArray(), lightDir );
 					VectorNegate( lightDir, lightDir );
 
 					length = 8;
@@ -3963,7 +3959,7 @@ static void RB_RenderDebugUtils()
 				GL_State( GLS_DEPTHTEST_DISABLE );
 
 				gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-				gl_genericShader->SetUniform_Color( colorBlack );
+				gl_genericShader->SetUniform_Color( Color::Black );
 
 				w = 300;
 				h = 300;
@@ -4026,7 +4022,7 @@ static void RB_RenderDebugUtils()
 
 					// set uniforms
 					gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-					gl_genericShader->SetUniform_Color( colorBlack );
+					gl_genericShader->SetUniform_Color( Color::Black );
 
 					GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 					GL_Cull( CT_TWO_SIDED );
@@ -4060,7 +4056,7 @@ static void RB_RenderDebugUtils()
 						Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
 						Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
 						Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, colorCyan );
+						Tess_AddQuadStamp2( quadVerts, Color::Cyan );
 					}
 
 					// draw far cap
@@ -4068,14 +4064,14 @@ static void RB_RenderDebugUtils()
 					Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, colorBlue );
+					Tess_AddQuadStamp2( quadVerts, Color::Blue );
 
 					// draw near cap
 					Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
 					Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-					Tess_AddQuadStamp2( quadVerts, colorGreen );
+					Tess_AddQuadStamp2( quadVerts, Color::Green );
 
 					Tess_UpdateVBOs( );
 					GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR );
@@ -4120,11 +4116,11 @@ static void RB_RenderDebugUtils()
 					//else
 					if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						gl_genericShader->SetUniform_Color( colorGreen );
+						gl_genericShader->SetUniform_Color( Color::Green );
 					}
 					else
 					{
-						gl_genericShader->SetUniform_Color( colorRed );
+						gl_genericShader->SetUniform_Color( Color::Red );
 					}
 				}
 				else
@@ -4136,11 +4132,11 @@ static void RB_RenderDebugUtils()
 
 					if ( node->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 					{
-						gl_genericShader->SetUniform_Color( colorYellow );
+						gl_genericShader->SetUniform_Color( Color::Yellow );
 					}
 					else
 					{
-						gl_genericShader->SetUniform_Color( colorBlue );
+						gl_genericShader->SetUniform_Color( Color::Blue );
 					}
 				}
 
@@ -4156,7 +4152,7 @@ static void RB_RenderDebugUtils()
 
 				Tess_MapVBOs( false );
 
-				Tess_AddCube( vec3_origin, node->mins, node->maxs, colorWhite );
+				Tess_AddCube( vec3_origin, node->mins, node->maxs, Color::White );
 
 				Tess_UpdateVBOs( );
 				GL_VertexAttribsState( ATTR_POSITION );
@@ -4223,7 +4219,7 @@ static void RB_RenderDebugUtils()
 		// set uniforms
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-		gl_genericShader->SetUniform_Color( colorBlack );
+		gl_genericShader->SetUniform_Color( Color::Black );
 
 		// set up the transformation matrix
 		backEnd.orientation = backEnd.viewParms.world;
@@ -4245,8 +4241,8 @@ static void RB_RenderDebugUtils()
 				continue;
 			}
 
-			Tess_AddCube( dp->center, mins, maxs, colorRed );
-			Tess_AddCube( vec3_origin, dp->mins, dp->maxs, colorBlue );
+			Tess_AddCube( dp->center, mins, maxs, Color::Red );
+			Tess_AddCube( vec3_origin, dp->mins, dp->maxs, Color::Blue );
 		}
 
 		glEnable( GL_POLYGON_OFFSET_FILL );
@@ -4279,7 +4275,7 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 
 	Tess_MapVBOs( false );
 
-	const vec4_t colorClear = { 0, 0, 0, 0 };
+	Color::Color colorClear = { 0, 0, 0, 0 };
 	currentDebugDrawMode = mode;
 	currentDebugSize = size;
 	switch(mode) {
@@ -4338,7 +4334,7 @@ void DebugDrawDepthMask(bool state)
 }
 
 void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
-	u8vec4_t colors = {
+	Color::Color32Bit colors = {
 		static_cast<byte>(color & 0xFF),
 		static_cast<byte>((color >> 8) & 0xFF),
 		static_cast<byte>((color >> 16) & 0xFF),
@@ -4356,7 +4352,7 @@ void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 	tess.verts[ tess.numVertexes ].xyz[ 0 ] = pos[ 0 ];
 	tess.verts[ tess.numVertexes ].xyz[ 1 ] = pos[ 1 ];
 	tess.verts[ tess.numVertexes ].xyz[ 2 ] = pos[ 2 ];
-	Vector4Copy( colors, tess.verts[ tess.numVertexes ].color );
+	tess.verts[ tess.numVertexes ].color = colors;
 	if( uv ) {
 		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( uv[ 0 ] );
 		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( uv[ 1 ] );
@@ -4626,7 +4622,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	// set uniforms
 	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
-	gl_genericShader->SetUniform_Color( colorBlack );
+	gl_genericShader->SetUniform_Color( Color::Black );
 
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
@@ -4735,7 +4731,7 @@ void RE_UploadCinematic( int cols, int rows, const byte *data, int client, bool 
 
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-		glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colorBlack );
+		glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, Color::Black.ToArray() );
 	}
 	else
 	{
@@ -4763,7 +4759,7 @@ const void     *RB_SetColor( const void *data )
 
 	cmd = ( const setColorCommand_t * ) data;
 
-	floatToUnorm8( cmd->color, backEnd.color2D );
+	backEnd.color2D = cmd->color;
 
 	return ( const void * )( cmd + 1 );
 }
@@ -4883,7 +4879,7 @@ const void     *RB_StretchPic( const void *data )
 	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
 	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;
 	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
+	tess.verts[ numVerts + 0 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
 	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
@@ -4891,7 +4887,7 @@ const void     *RB_StretchPic( const void *data )
 	tess.verts[ numVerts + 1 ].xyz[ 0 ] = cmd->x + cmd->w;
 	tess.verts[ numVerts + 1 ].xyz[ 1 ] = cmd->y;
 	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
+	tess.verts[ numVerts + 1 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
 	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
@@ -4899,7 +4895,7 @@ const void     *RB_StretchPic( const void *data )
 	tess.verts[ numVerts + 2 ].xyz[ 0 ] = cmd->x + cmd->w;
 	tess.verts[ numVerts + 2 ].xyz[ 1 ] = cmd->y + cmd->h;
 	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 2 ].color );
+	tess.verts[ numVerts + 2 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
 	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
@@ -4907,7 +4903,7 @@ const void     *RB_StretchPic( const void *data )
 	tess.verts[ numVerts + 3 ].xyz[ 0 ] = cmd->x;
 	tess.verts[ numVerts + 3 ].xyz[ 1 ] = cmd->y + cmd->h;
 	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 3 ].color );
+	tess.verts[ numVerts + 3 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
 	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
@@ -4980,7 +4976,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		Vector4Copy( cmd->verts[ i ].modulate, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = Color::Adapt( cmd->verts[ i ].modulate );
 		tess.numVertexes++;
 	}
 
@@ -5043,7 +5039,7 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
 		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
 
-		Vector4Copy( cmd->verts[ i ].modulate, tess.verts[ tess.numVertexes ].color );
+		tess.verts[ tess.numVertexes ].color = Color::Adapt( cmd->verts[ i ].modulate );
 		tess.numVertexes++;
 	}
 
@@ -5118,7 +5114,7 @@ const void     *RB_RotatedPic( const void *data )
 	tess.verts[ numVerts ].xyz[ 0 ] = mx - cw - sh;
 	tess.verts[ numVerts ].xyz[ 1 ] = my + sw - ch;
 	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
+	tess.verts[ numVerts + 0 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
 	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
@@ -5126,7 +5122,7 @@ const void     *RB_RotatedPic( const void *data )
 	tess.verts[ numVerts + 1 ].xyz[ 0 ] = mx + cw - sh;
 	tess.verts[ numVerts + 1 ].xyz[ 1 ] = my - sw - ch;
 	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
+	tess.verts[ numVerts + 1 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
 	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
@@ -5134,7 +5130,7 @@ const void     *RB_RotatedPic( const void *data )
 	tess.verts[ numVerts + 2 ].xyz[ 0 ] = mx + cw + sh;
 	tess.verts[ numVerts + 2 ].xyz[ 1 ] = my - sw + ch;
 	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 2 ].color );
+	tess.verts[ numVerts + 2 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
 	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
@@ -5142,7 +5138,7 @@ const void     *RB_RotatedPic( const void *data )
 	tess.verts[ numVerts + 3 ].xyz[ 0 ] = mx - cw + sh;
 	tess.verts[ numVerts + 3 ].xyz[ 1 ] = my + sw + ch;
 	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 3 ].color );
+	tess.verts[ numVerts + 3 ].color = backEnd.color2D;
 
 	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
 	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
@@ -5203,10 +5199,10 @@ const void     *RB_StretchPicGradient( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 0 ].color );
-	Vector4Copy( backEnd.color2D, tess.verts[ numVerts + 1 ].color );
-	Vector4Copy( cmd->gradientColor, tess.verts[ numVerts + 2 ].color );
-	Vector4Copy( cmd->gradientColor, tess.verts[ numVerts + 3 ].color );
+	tess.verts[ numVerts + 0 ].color = backEnd.color2D;
+	tess.verts[ numVerts + 1 ].color = backEnd.color2D;
+	tess.verts[ numVerts + 2 ].color = cmd->gradientColor;
+	tess.verts[ numVerts + 3 ].color = cmd->gradientColor;
 
 	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
 	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;
@@ -5378,7 +5374,7 @@ const void *RB_RunVisTests( const void *data )
 		gl_genericShader->BindProgram( 0 );
 
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
-		gl_genericShader->SetUniform_Color( colorWhite );
+		gl_genericShader->SetUniform_Color( Color::White );
 
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
 

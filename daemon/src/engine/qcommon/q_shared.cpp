@@ -2470,66 +2470,6 @@ bool Q_strreplace( char *dest, int destsize, const char *find, const char *repla
 	}
 }
 
-int Q_PrintStrlen( const char *string )
-{
-	int        len;
-	const char *p;
-
-	if ( !string )
-	{
-		return 0;
-	}
-
-	len = 0;
-	p = string;
-
-	while ( *p )
-	{
-		if ( Q_IsColorString( p ) )
-		{
-			p += 2;
-			continue;
-		}
-		if ( *p == Q_COLOR_ESCAPE && p[1] == Q_COLOR_ESCAPE )
-		{
-			++p;
-		}
-
-		p++;
-		len++;
-	}
-
-	return len;
-}
-
-char *Q_CleanStr( char *string )
-{
-	char *d;
-	char *s;
-	int c;
-
-	s = string;
-	d = string;
-
-	while ( ( c = *s ) != 0 )
-	{
-		if ( Q_IsColorString( s ) )
-		{
-			s++;
-		}
-		else if ( (byte) c >= 0x20 && c != 0x7F )
-		{
-			*d++ = c;
-		}
-
-		s++;
-	}
-
-	*d = '\0';
-
-	return string;
-}
-
 // strips whitespaces and bad characters
 bool Q_isBadDirChar( char c )
 {

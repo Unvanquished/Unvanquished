@@ -482,15 +482,14 @@ void trap_R_RenderScene( const refdef_t *fd )
 	cmdBuffer.SendMsg<Render::RenderSceneMsg>(*fd);
 }
 
-void trap_R_SetColor( const float *rgba )
+void trap_R_ClearColor()
 {
-	std::array<float, 4> myrgba = {{1.0f, 1.0f, 1.0f, 1.0f}};
-	if (rgba) {
-		memcpy(myrgba.data(), rgba, 4 * sizeof(float));
-	}
-	cmdBuffer.SendMsg<Render::SetColorMsg>(myrgba);
+	cmdBuffer.SendMsg<Render::SetColorMsg>(Color::White);
 }
-
+void trap_R_SetColor( const Color::Color &rgba )
+{
+	cmdBuffer.SendMsg<Render::SetColorMsg>(rgba);
+}
 void trap_R_SetClipRegion( const float *region )
 {
 	std::array<float, 4> myregion;

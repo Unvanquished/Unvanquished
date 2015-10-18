@@ -69,7 +69,16 @@ namespace Beacon
 	void DeleteTags( gentity_t *ent );
 }
 
+// Utility.cpp
+namespace Utility
+{
+	void Kill(Entity& entity, Entity *source, meansOfDeath_t meansOfDeath);
+	bool AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
+	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
+}
+
 // sg_buildable.c
+bool              G_IsWarnableMOD( int mod );
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
 gentity_t         *G_Reactor();
 gentity_t         *G_AliveReactor();
@@ -81,9 +90,7 @@ float             G_DistanceToBase( gentity_t *self, bool ownBase );
 bool          G_InsideBase( gentity_t *self, bool ownBase );
 bool          G_FindCreep( gentity_t *self );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
-void              G_BuildableThink( gentity_t *ent, int msec );
 bool          G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
-void              G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
 void              G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal, int *groundEntNum );
 bool          G_BuildIfValid( gentity_t *ent, buildable_t buildable );
@@ -100,21 +107,29 @@ void              G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void              G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void              G_BuildLogRevert( int id );
 void              G_SetHumanBuildablePowerState();
+gentity_t         *G_NearestPowerSourceInRange( gentity_t *self );
+void              G_BuildableTouchTriggers( gentity_t *ent );
+
+// TODO: Convert these functions to component methods.
+void AGeneric_Blast( gentity_t *self );
+void ABarricade_Shrink( gentity_t *self, bool shrink );
+void HGeneric_Blast( gentity_t *self );
+void HGeneric_Cancel( gentity_t *self );
+void AHive_Fire( gentity_t *self );
+bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDistance );
+bool ASpiker_Fire( gentity_t *self );
+void HTurret_PreBlast( gentity_t *self );
 
 // sg_buildpoints
-void              G_RGSThink( gentity_t *self );
-void              G_MainStructBPStorageThink( gentity_t *self );
-void              G_BPStorageDie( gentity_t *self );
-void              G_RGSDie( gentity_t *self );
 float             G_RGSPredictEfficiency( vec3_t origin );
 float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
 void              G_MineBuildPoints();
 int               G_GetBuildPointsInt( team_t team );
 int               G_GetMarkedBuildPointsInt( team_t team );
-bool          G_CanAffordBuildPoints( team_t team, float amount );
+bool              G_CanAffordBuildPoints( team_t team, float amount );
 void              G_GetBuildableResourceValue( int *teamValue );
 void              G_ModifyBuildPoints( team_t team, float amount );
-void              G_MarkBuildPointsMined( team_t team, float amount );
+void              G_ModifyTotalBuildPointsAcquired( team_t team, float amount );
 
 // sg_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );
@@ -156,7 +171,6 @@ int               G_ClientNumbersFromString( const char *s, int *plist, int max 
 char              *ConcatArgs( int start );
 char              *ConcatArgsPrintable( int start );
 void              G_Say( gentity_t *ent, saymode_t mode, const char *chatText );
-void              G_DecolorString( const char *in, char *out, int len );
 void              G_UnEscapeString( const char *in, char *out, int len );
 void              G_SanitiseString( const char *in, char *out, int len );
 void              Cmd_PrivateMessage_f( gentity_t *ent );
@@ -175,9 +189,6 @@ void              Cmd_MapLog_f( gentity_t *ent );
 
 // sg_combat.c
 bool          G_CanDamage( gentity_t *targ, vec3_t origin );
-void              G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength, bool ignoreMass );
-void              G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, bool ignoreMass );
-void              G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod );
 void              G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team );
 bool          G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int dflags, int mod, team_t testHit = TEAM_NONE );
 bool          G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod, int ignoreTeam );
@@ -185,8 +196,6 @@ void              G_RewardAttackers( gentity_t *self );
 void              G_AddCreditsToScore( gentity_t *self, int credits );
 void              G_AddMomentumToScore( gentity_t *self, float momentum );
 void              G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
-float             G_GetNonLocDamageMod( class_t pcl );
-float             G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float height );
 void              G_InitDamageLocations();
 void              G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 
@@ -233,6 +242,7 @@ void              G_ShutdownGame( int restart );
 vmCvar_t          *G_FindCvar( const char *name );
 void              G_CheckPmoveParamChanges();
 void              G_SendClientPmoveParams(int client);
+void              G_PrepareEntityNetCode();
 
 // sg_maprotation.c
 void              G_PrintRotations();
@@ -317,12 +327,15 @@ bool          G_LineOfSight( const gentity_t *from, const gentity_t *to, int mas
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfFire( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfSight( const vec3_t point1, const vec3_t point2 );
-int               G_Heal( gentity_t *self, int amount );
 bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 team_t            G_Enemy( team_t team );
-bool              G_Alive( gentity_t *ent );
+float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
+bool              G_Alive(gentity_t *ent);
+bool              G_Dead(gentity_t *ent);
+void              G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath);
+void              G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath);
 
 // sg_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
@@ -344,5 +357,8 @@ void              G_ClearPlayerZapEffects( gentity_t *player );
 void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
 bool              G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir );
+
+// Components
+void G_IgnitableThink();
 
 #endif // SG_PUBLIC_H_

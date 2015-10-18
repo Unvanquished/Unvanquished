@@ -78,6 +78,11 @@ if(NOT DAEMON_EXTERNAL_APP)
 
     set(NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries")
 
+    if (NOT APPLE AND NOT WIN32)
+	option(USE_CURSES "Compile with curses support" 1)
+    else()
+	option(USE_CURSES "Compile with curses support" 0)
+    endif()
     cmake_dependent_option(USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0)
     cmake_dependent_option(USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0)
     cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0)
@@ -454,7 +459,7 @@ set(LIBS_BASE ${LIBS_BASE} PARENT_SCOPE)
 
 # Curses, pdcurses on Windows and ncursesw on Unix
 # Not supported on mac because the included version is too old
-if (NOT NACL)
+if (NOT NACL AND USE_CURSES)
     if (WIN32)
         set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} gdi32 comdlg32)
 
@@ -651,7 +656,7 @@ function(AddApplication)
     set(multiValueArgs Definitions Flags Files Libs)
     cmake_parse_arguments(A "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    add_executable(${A_Target} ${PCH_FILE} ${A_Files})
+    add_executable(${A_Target} ${A_Files} ${PCH_FILE})
     target_link_libraries(${A_Target} engine-lib ${A_Libs})
 
     set_property(TARGET ${A_Target} APPEND PROPERTY COMPILE_OPTIONS ${A_Flags})

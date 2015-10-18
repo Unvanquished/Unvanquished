@@ -60,4 +60,5 @@ notifications:
 
 branches:
   except:
+    - /^cbse\/.*$/
     - debian

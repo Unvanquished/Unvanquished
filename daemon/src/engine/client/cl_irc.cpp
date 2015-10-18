@@ -1270,10 +1270,10 @@ static void IRC_NeutraliseString( char *buffer, const char *source )
 		{
 			* ( buffer++ ) = '?';
 		}
-		else if ( c == Q_COLOR_ESCAPE )
+		else if ( c == Color::Constants::ESCAPE )
 		{
-			* ( buffer++ ) = Q_COLOR_ESCAPE;
-			* ( buffer++ ) = Q_COLOR_ESCAPE;
+			* ( buffer++ ) = Color::Constants::ESCAPE;
+			* ( buffer++ ) = Color::Constants::ESCAPE;
 		}
 		else
 		{
@@ -2142,11 +2142,11 @@ static bool IRC_InitialiseUser( const char *name )
 				continue;
 			}
 
-			if ( source[ i ] == Q_COLOR_ESCAPE )
+			if ( source[ i ] == Color::Constants::ESCAPE )
 			{
 				i++;
 
-				if ( source[ i ] != Q_COLOR_ESCAPE )
+				if ( source[ i ] != Color::Constants::ESCAPE )
 				{
 					if ( source[ i ] )
 					{

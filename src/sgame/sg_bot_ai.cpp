@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
+#include "CBSE.h"
 
 /*
 ======================
@@ -915,8 +916,8 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->goal.ent )
 	{
-		// died
-		if ( self->botMind->goal.ent->health < 0 )
+		// Don't move to dead targets.
+		if ( G_Dead( self->botMind->goal.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -957,7 +958,8 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( self->botMind->goal.ent->health <= 0 )
+	// Can only rush living targets.
+	if ( !G_Alive( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1049,7 +1051,6 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 
 AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 {
-	const int maxHealth = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->health;
 	gentity_t *healTarget = nullptr;
 
 	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
@@ -1078,7 +1079,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 	if ( self->botMind->currentNode != node )
 	{
 		// already fully healed
-		if ( maxHealth == self->client->ps.stats[ STAT_HEALTH ] )
+		if ( self->entity->Get<HealthComponent>()->FullHealth() )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1092,7 +1093,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	//we are fully healed now
-	if ( maxHealth == self->client->ps.stats[STAT_HEALTH] )
+	if ( self->entity->Get<HealthComponent>()->FullHealth() )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -1102,8 +1103,8 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	//target has died, signal goal is unusable
-	if ( self->botMind->goal.ent->health <= 0 )
+	// Can't heal at dead targets.
+	if ( G_Dead( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1122,8 +1123,8 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
-	bool fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
-	                       BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
+	bool fullyHealed = self->entity->Get<HealthComponent>()->FullHealth() &&
+	                   BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
 	if ( self->client->pers.team != TEAM_HUMANS )
 	{
@@ -1155,8 +1156,8 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	//the medi has died so signal that the goal is unusable
-	if ( self->botMind->goal.ent->health <= 0 )
+	// Can't heal at dead targets.
+	if ( G_Dead( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1199,12 +1200,13 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( self->botMind->goal.ent->health <= 0 )
+	// Can only repair alive targets.
+	if ( !G_Alive( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}
 
-	if ( self->botMind->goal.ent->health >= BG_Buildable( ( buildable_t )self->botMind->goal.ent->s.modelindex )->health )
+	if ( self->botMind->goal.ent->entity->Get<HealthComponent>()->FullHealth() )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -1252,7 +1254,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 		if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 		{
-			BotDPrintf( S_COLOR_YELLOW "WARNING: parameter 1 to action buy out of range\n" );
+			BotDPrintf( "^3WARNING: parameter 1 to action buy out of range\n" );
 			weapon = WP_NONE;
 		}
 
@@ -1265,7 +1267,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 			if ( upgrades[ numUpgrades ] <= UP_NONE || upgrades[ numUpgrades ] >= UP_NUM_UPGRADES )
 			{
-				BotDPrintf( S_COLOR_YELLOW "WARNING: parameter %d to action buy out of range\n", i + 1 );
+				BotDPrintf( "^3WARNING: parameter %d to action buy out of range\n", i + 1 );
 				continue;
 			}
 
@@ -1326,7 +1328,8 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( self->botMind->goal.ent->health <= 0 )
+	// Can't buy at dead targets.
+	if ( G_Dead( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}

@@ -169,13 +169,13 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( !f )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Cannot open Navigaton Mesh file\n" );
+		Com_Log(LOG_ERROR, "Cannot open Navigaton Mesh file" );
 		return false;
 	}
 
 	if ( len < 0 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Negative Length for Navigation Mesh file\n" );
+		Com_Log( LOG_ERROR, "Negative Length for Navigation Mesh file");
 		return false;
 	}
 
@@ -187,14 +187,14 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( header.magic != NAVMESHSET_MAGIC )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: File is wrong magic\n" );
+		Com_Log( LOG_ERROR, "File is wrong magic" );
 		FS_FCloseFile( f );
 		return false;
 	}
 
 	if ( header.version != NAVMESHSET_VERSION )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: File is wrong version found: %d want: %d\n", header.version, NAVMESHSET_VERSION );
+		Com_Logf( LOG_ERROR, "File is wrong version found: %d want: %d", header.version, NAVMESHSET_VERSION );
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -203,7 +203,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( !nav.mesh )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Unable to allocate nav mesh\n" );
+		Com_Log( LOG_ERROR, "Unable to allocate nav mesh" );
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -212,7 +212,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( dtStatusFailed( status ) )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Could not init navmesh\n" );
+		Com_Log( LOG_ERROR, "Could not init navmesh" );
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = nullptr;
 		FS_FCloseFile( f );
@@ -223,7 +223,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( !nav.cache )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Could not allocate tile cache\n" );
+		Com_Log( LOG_ERROR, "Could not allocate tile cache" );
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = nullptr;
 		FS_FCloseFile( f );
@@ -234,7 +234,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( dtStatusFailed( status ) )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Could not init tile cache\n" );
+		Com_Log( LOG_ERROR, "Could not init tile cache" );
 		dtFreeNavMesh( nav.mesh );
 		dtFreeTileCache( nav.cache );
 		nav.mesh = nullptr;
@@ -253,7 +253,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 		if ( !tileHeader.tileRef || !tileHeader.dataSize )
 		{
-			Com_Printf( S_COLOR_RED "ERROR: NUll Tile in navmesh\n" );
+			Com_Log( LOG_ERROR, "NUll Tile in navmesh" );
 			dtFreeNavMesh( nav.mesh );
 			dtFreeTileCache( nav.cache );
 			nav.cache = nullptr;
@@ -266,7 +266,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 		if ( !data )
 		{
-			Com_Printf( S_COLOR_RED "ERROR: Failed to allocate memory for tile data\n" );
+			Com_Log( LOG_ERROR, "Failed to allocate memory for tile data" );
 			dtFreeNavMesh( nav.mesh );
 			dtFreeTileCache( nav.cache );
 			nav.cache = nullptr;
@@ -289,7 +289,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 		if ( dtStatusFailed( status ) )
 		{
-			Com_Printf( S_COLOR_RED "ERROR: Failed to add tile to navmesh\n" );
+			Com_Log( LOG_ERROR, "Failed to add tile to navmesh" );
 			dtFree( data );
 			dtFreeTileCache( nav.cache );
 			dtFreeNavMesh( nav.mesh );

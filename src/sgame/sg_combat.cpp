@@ -22,9 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-
-#define MAX_DAMAGE_REGION_TEXT 8192
-#define MAX_DAMAGE_REGIONS     16
+#include "CBSE.h"
 
 // damage region data
 damageRegion_t g_damageRegions[ PCL_NUM_CLASSES ][ MAX_DAMAGE_REGIONS ];
@@ -164,7 +162,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 
 	// Require that the assist was for, at least, 25% of the damage or
 	// as much damage as the killer did, whichever is lower
-	damage = self->client->ps.stats[ STAT_MAX_HEALTH ] / 4.0f;
+	damage = self->entity->Get<HealthComponent>()->MaxHealth() / 4.0f;
 	if ( killer )
 	{
 		damage = MIN( damage, self->credits[ killer - g_entities ].value );
@@ -207,13 +205,13 @@ void G_RewardAttackers( gentity_t *self )
 	if ( self->client )
 	{
 		ownTeam   = (team_t) self->client->pers.team;
-		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
+		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
 		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
 		ownTeam   = (team_t) self->buildableTeam;
-		maxHealth = BG_Buildable( self->s.modelindex )->health;
+		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
 		value     = BG_IsMainStructure( &self->s )
 		            ? MAIN_STRUCTURE_MOMENTUM_VALUE
 		            : BG_Buildable( self->s.modelindex )->buildPoints;
@@ -371,7 +369,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( assistant != ENTITYNUM_NONE )
 	{
-		G_LogPrintf( "Die: %d %d %s %d %d: %s" S_COLOR_WHITE " killed %s" S_COLOR_WHITE "; %s" S_COLOR_WHITE " assisted\n",
+		G_LogPrintf( "Die: %d %d %s %d %d: %s^* killed %s^*; %s^* assisted\n",
 		             killer,
 		             ( int )( self - g_entities ),
 		             obit,
@@ -383,7 +381,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 	else
 	{
-		G_LogPrintf( "Die: %d %d %s: %s" S_COLOR_WHITE " killed %s\n",
+		G_LogPrintf( "Die: %d %d %s: %s^* killed %s\n",
 		             killer,
 		             ( int )( self - g_entities ),
 		             obit,
@@ -426,7 +424,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		{
 			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^7, had $2$ HP.\n") ),
 			                        Quote( killerName ),
-			                        attacker->health ) );
+			                        (int)std::ceil(attacker->entity->Get<HealthComponent>()->Health()) ) );
 		}
 	}
 	else if ( attacker->s.eType != ET_BUILDABLE )
@@ -471,8 +469,6 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 
 	VectorCopy( self->s.origin, self->client->pers.lastDeathLocation );
-
-	self->takedamage = false; // can still be gibbed
 
 	self->s.weapon = WP_NONE;
 	if ( self->client->noclip )
@@ -730,167 +726,6 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 	return count;
 }
 
-float G_GetNonLocDamageMod( class_t pcl )
-{
-	int            regionNum;
-	damageRegion_t *region;
-
-	for ( regionNum = 0; regionNum < g_numDamageRegions[ pcl ]; regionNum++ )
-	{
-		region = &g_damageRegions[ pcl ][ regionNum ];
-
-		if ( !region->nonlocational )
-		{
-			continue;
-		}
-
-		if ( g_debugDamage.integer > 1 )
-		{
-			Com_Printf( "GetNonLocDamageModifier( pcl = %s ): "
-			            S_COLOR_GREEN "FOUND:" S_COLOR_WHITE " %.2f\n",
-			            BG_Class( pcl )->name, region->modifier );
-		}
-
-		return region->modifier;
-	}
-
-	if ( g_debugDamage.integer > 1 )
-	{
-		Com_Printf( "GetNonLocDamageModifier( pcl = %s ): "
-		            S_COLOR_YELLOW "NOT FOUND:" S_COLOR_WHITE " %.2f.\n",
-		            BG_Class( pcl )->name, 1.0f );
-	}
-
-	return 1.0f;
-}
-
-float G_GetPointDamageMod( gentity_t *target, class_t pcl, float angle, float height )
-{
-	int            regionNum;
-	damageRegion_t *region;
-	bool       crouching;
-
-	if ( !target || !target->client )
-	{
-		return 1.0f;
-	}
-
-	crouching = ( target->client->ps.pm_flags & PMF_DUCKED );
-
-	for ( regionNum = 0; regionNum < g_numDamageRegions[ pcl ]; regionNum++ )
-	{
-		region = &g_damageRegions[ pcl ][ regionNum ];
-
-		// ignore nonlocational
-		if ( region->nonlocational )
-		{
-			continue;
-		}
-
-		// crouch state must match
-		if ( region->crouch != crouching )
-		{
-			continue;
-		}
-
-		// height must be within range
-		if ( height < region->minHeight || height > region->maxHeight )
-		{
-			continue;
-		}
-
-		// angle must be within range
-		if ( ( region->minAngle <= region->maxAngle && ( angle < region->minAngle || angle > region->maxAngle ) ) ||
-		     ( region->minAngle >  region->maxAngle && ( angle > region->maxAngle && angle < region->minAngle ) ) )
-		{
-			continue;
-		}
-
-		if ( g_debugDamage.integer > 1 )
-		{
-			G_Printf( "GetPointDamageModifier( pcl = %s, angle = %.2f, height = %.2f ): "
-			          S_COLOR_GREEN "FOUND:" S_COLOR_WHITE " %.2f (%s)\n",
-			          BG_Class( pcl )->name, angle, height, region->modifier, region->name );
-		}
-
-		return region->modifier;
-	}
-
-	if ( g_debugDamage.integer > 1 )
-	{
-		G_Printf( "GetPointDamageModifier( pcl = %s, angle = %.2f, height = %.2f ): "
-		          S_COLOR_YELLOW "NOT FOUND:" S_COLOR_WHITE " %.2f\n",
-		          BG_Class( pcl )->name, angle, height, 1.0f );
-	}
-
-	return 1.0f;
-}
-
-static float CalcDamageModifier( vec3_t point, gentity_t *target, class_t pcl, int damageFlags )
-{
-	vec3_t targOrigin, bulletPath, bulletAngle, pMINUSfloor, floor, normal;
-	float  clientHeight, hitRelative, hitRatio, modifier;
-	int    hitRotation;
-
-	// handle nonlocational damage
-	if ( damageFlags & DAMAGE_NO_LOCDAMAGE )
-	{
-		return G_GetNonLocDamageMod( pcl );
-	}
-
-	// need a valid point and target client
-	if ( !point || !target || !target->client )
-	{
-		return 1.0f;
-	}
-
-	// Get the point location relative to the floor under the target
-	if ( g_unlagged.integer && target->client->unlaggedCalc.used )
-	{
-		VectorCopy( target->client->unlaggedCalc.origin, targOrigin );
-	}
-	else
-	{
-		VectorCopy( target->r.currentOrigin, targOrigin );
-	}
-
-	BG_GetClientNormal( &target->client->ps, normal );
-	VectorMA( targOrigin, target->r.mins[ 2 ], normal, floor );
-	VectorSubtract( point, floor, pMINUSfloor );
-
-	// Get the proportion of the target height where the hit landed
-	clientHeight = target->r.maxs[ 2 ] - target->r.mins[ 2 ];
-
-	if ( !clientHeight )
-	{
-		clientHeight = 1.0f;
-	}
-
-	hitRelative = DotProduct( normal, pMINUSfloor ) / VectorLength( normal );
-
-	if ( hitRelative < 0.0f )
-	{
-		hitRelative = 0.0f;
-	}
-
-	if ( hitRelative > clientHeight )
-	{
-		hitRelative = clientHeight;
-	}
-
-	hitRatio = hitRelative / clientHeight;
-
-	// Get the yaw of the attack relative to the target's view yaw
-	VectorSubtract( point, targOrigin, bulletPath );
-	vectoangles( bulletPath, bulletAngle );
-	hitRotation = AngleNormalize360( target->client->ps.viewangles[ YAW ] - bulletAngle[ YAW ] );
-
-	// Get damage region modifier
-	modifier = G_GetPointDamageMod( target, pcl, hitRotation, hitRatio );
-
-	return modifier;
-}
-
 void G_InitDamageLocations()
 {
 	const char   *modelName;
@@ -909,13 +744,13 @@ void G_InitDamageLocations()
 
 		if ( !fileHandle )
 		{
-			G_Printf( S_COLOR_RED "file not found: %s\n", filename );
+			G_Printf( "^1file not found: %s\n", filename );
 			continue;
 		}
 
 		if ( len >= MAX_DAMAGE_REGION_TEXT )
 		{
-			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n",
+			G_Printf( "^1file too large: %s is %i, max allowed is %i\n",
 			          filename, len, MAX_DAMAGE_REGION_TEXT );
 			trap_FS_FCloseFile( fileHandle );
 			continue;
@@ -931,422 +766,14 @@ void G_InitDamageLocations()
 	}
 }
 
-/**
- * @brief G_SelectiveDamage
- * @param targ
- * @param inflictor
- * @param attacker
- * @param dir
- * @param point
- * @param damage
- * @param dflags
- * @param mod
- * @param team team that is immune to this damage
- */
+// TODO: Move to HealthComponent.
 void G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                         vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team )
 {
 	if ( targ->client && ( team != targ->client->pers.team ) )
 	{
-		G_Damage( targ, inflictor, attacker, dir, point, damage, dflags, mod );
-	}
-}
-
-static void NotifyClientOfHit( gentity_t *attacker )
-{
-	gentity_t *event;
-
-	if ( !attacker->client )
-	{
-		return;
-	}
-
-	event = G_NewTempEntity( attacker->s.origin, EV_HIT );
-	event->r.svFlags = SVF_SINGLECLIENT;
-	event->r.singleClient = attacker->client->ps.clientNum;
-}
-
-#define KNOCKBACK_NORMAL_MASS 100
-#define KNOCKBACK_PMOVE_TIME  50
-
-void G_KnockbackByDir( gentity_t *target, const vec3_t direction, float strength,
-                       bool ignoreMass )
-{
-	vec3_t dir, vel;
-	int    mass;
-	float  massMod;
-	const classAttributes_t *ca;
-
-	// sanity check parameters
-	if ( !target || !target->client || VectorLength( direction ) == 0.0f || strength == 0 )
-	{
-		return;
-	}
-
-	// check target flags
-	if ( target->flags & FL_NO_KNOCKBACK )
-	{
-		return;
-	}
-
-	ca = BG_Class( target->client->ps.stats[ STAT_CLASS ] );
-
-	// normalize direction
-	VectorCopy( direction, dir );
-	VectorNormalize( dir );
-
-	// adjust strength according to client mass
-	if ( !ignoreMass )
-	{
-		if ( ca->mass <= 0 )
-		{
-			mass = KNOCKBACK_NORMAL_MASS;
-		}
-		else
-		{
-			mass = ca->mass;
-		}
-
-		massMod = ( float )KNOCKBACK_NORMAL_MASS / ( float )mass;
-
-		if ( massMod < 0.5f )
-		{
-			massMod = 0.5f;
-		}
-		else if ( massMod > 2.0f )
-		{
-			massMod = 2.0f;
-		}
-	}
-	else
-	{
-		// for debug print
-		massMod = 1.0f;
-	}
-
-	strength *= massMod;
-
-	// adjust client velocity
-	VectorScale( dir, strength, vel );
-	VectorAdd( target->client->ps.velocity, vel, target->client->ps.velocity );
-
-	// set pmove timer so that the client can't cancel out the movement immediately
-	if ( !target->client->ps.pm_time )
-	{
-		target->client->ps.pm_time = KNOCKBACK_PMOVE_TIME;
-		target->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-	}
-
-	// print debug info
-	if ( g_debugKnockback.integer )
-	{
-		G_Printf( "%i: Knockback: client: %i, strength: %.1f (massMod: %.1f)\n",
-		          level.time, target->s.number, strength, massMod );
-	}
-}
-
-void G_KnockbackBySource( gentity_t *target, gentity_t *source, float strength, bool ignoreMass )
-{
-	vec3_t dir;
-
-	if ( !target || !source )
-	{
-		return;
-	}
-
-	VectorSubtract( target->s.origin, source->s.origin, dir );
-	VectorNormalize( dir );
-
-	G_KnockbackByDir( target, dir, strength, ignoreMass );
-}
-
-#define DAMAGE_TO_KNOCKBACK   5
-#define MAX_FALLDMG_KNOCKBACK 50
-
-// TODO: Clean this mess further (split into helper functions)
-void G_Damage( gentity_t *target, gentity_t *inflictor, gentity_t *attacker,
-               vec3_t dir, vec3_t point, int damage, int damageFlags, int mod )
-{
-	gclient_t *client;
-	int       take, loss;
-	int       knockback;
-	float     modifier;
-
-	if ( !target || !target->takedamage || target->health <= 0 || level.intermissionQueued )
-	{
-		return;
-	}
-
-	client = target->client;
-
-	// don't handle noclip clients
-	if ( client && client->noclip )
-	{
-		return;
-	}
-
-	// set inflictor to world if missing
-	if ( !inflictor )
-	{
-		inflictor = &g_entities[ ENTITYNUM_WORLD ];
-	}
-
-	// set attacker to world if missing
-	if ( !attacker )
-	{
-		attacker = &g_entities[ ENTITYNUM_WORLD ];
-	}
-
-	// don't handle ET_MOVER w/o die or pain function
-	if ( target->s.eType == ET_MOVER && !( target->die || target->pain ) )
-	{
-		// special case for ET_MOVER with act function in initial position
-		if ( ( target->moverState == MOVER_POS1 || target->moverState == ROTATOR_POS1 ) &&
-		     target->act )
-		{
-			target->act( target, inflictor, attacker );
-		}
-
-		return;
-	}
-
-	// do knockback against clients
-	if ( client && ( damageFlags & DAMAGE_KNOCKBACK ) && dir )
-	{
-		// scale knockback by weapon
-		if ( inflictor->s.weapon != WP_NONE )
-		{
-			knockback = ( int )( ( float )damage * BG_Weapon( inflictor->s.weapon )->knockbackScale );
-		}
-		else
-		{
-			knockback = damage;
-		}
-
-		// apply generic damage to knockback modifier
-		knockback *= DAMAGE_TO_KNOCKBACK;
-
-		G_KnockbackByDir( target, dir, knockback, false );
-	}
-	else
-	{
-		// damage knockback gets saved, so initialize it here
-		knockback = 0;
-	}
-
-	// godmode prevents damage
-	if ( target->flags & FL_GODMODE )
-	{
-		return;
-	}
-
-	// check for protection
-	if ( !( damageFlags & DAMAGE_NO_PROTECTION ) )
-	{
-		// check for protection from friendly damage
-		if ( target != attacker && G_OnSameTeam( target, attacker ) )
-		{
-			// check if friendly fire has been disabled
-			if ( !g_friendlyFire.integer )
-			{
-				return;
-			}
-
-			// don't do friendly damage on movement attacks
-			switch ( mod )
-			{
-				case MOD_LEVEL3_POUNCE:
-				case MOD_LEVEL4_TRAMPLE:
-					return;
-
-				default:
-					break;
-			}
-
-			// if dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage
-			if ( g_dretchPunt.integer && target->client && target->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL0 )
-			{
-				vec3_t dir, push;
-
-				VectorSubtract( target->r.currentOrigin, attacker->r.currentOrigin, dir );
-				VectorNormalizeFast( dir );
-				VectorScale( dir, ( damage * 10.0f ), push );
-				push[ 2 ] = 64.0f;
-
-				VectorAdd( target->client->ps.velocity, push, target->client->ps.velocity );
-
-				return;
-			}
-		}
-
-		// for buildables, never protect from damage dealt by building actions
-		if ( target->s.eType == ET_BUILDABLE && attacker->client &&
-		     mod != MOD_DECONSTRUCT && mod != MOD_SUICIDE &&
-		     mod != MOD_REPLACE     && mod != MOD_NOCREEP )
-		{
-			// check for protection from friendly buildable damage
-			if ( G_OnSameTeam( target, attacker ) && !g_friendlyBuildableFire.integer )
-			{
-				return;
-			}
-		}
-	}
-
-	// update combat timers
-	if ( target->client && attacker->client && target != attacker )
-	{
-		target->client->lastCombatTime   = level.time;
-		attacker->client->lastCombatTime = level.time;
-	}
-
-	if ( client )
-	{
-		// save damage (w/o armor modifier), knockback
-		client->damage_received  += damage;
-		client->damage_knockback += knockback;
-
-		// save damage direction
-		if ( dir )
-		{
-			VectorCopy( dir, client->damage_from );
-			client->damage_fromWorld = false;
-		}
-		else
-		{
-			VectorCopy( target->r.currentOrigin, client->damage_from );
-			client->damage_fromWorld = true;
-		}
-
-		// drain jetpack fuel
-		client->ps.stats[ STAT_FUEL ] -= damage * JETPACK_FUEL_PER_DMG;
-		if ( client->ps.stats[ STAT_FUEL ] < 0 )
-		{
-			client->ps.stats[ STAT_FUEL ] = 0;
-		}
-
-		// apply damage modifier
-		modifier = CalcDamageModifier( point, target, (class_t) client->ps.stats[ STAT_CLASS ], damageFlags );
-		take = ( int )( ( float )damage * modifier + 0.5f );
-
-		// if boosted poison every attack
-		if ( attacker->client &&
-		     ( attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED ) &&
-		     target->client->pers.team == TEAM_HUMANS &&
-		     target->client->poisonImmunityTime < level.time )
-		{
-			switch ( mod )
-			{
-				case MOD_POISON:
-				case MOD_LEVEL2_ZAP:
-					break;
-
-				default:
-					target->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
-					target->client->lastPoisonTime   = level.time;
-					target->client->lastPoisonClient = attacker;
-			}
-		}
-	}
-	else
-	{
-		take = damage;
-	}
-
-	// make sure damage is done
-	if ( take < 1 )
-	{
-		take = 1;
-	}
-
-	if ( g_debugDamage.integer > 0 )
-	{
-		G_Printf( "G_Damage: %3i (%3i → %3i)\n",
-		          take, target->health, target->health - take );
-	}
-
-	// do the damage
-	target->health = target->health - take;
-
-	if ( target->client )
-	{
-		target->client->ps.stats[ STAT_HEALTH ] = target->health;
-		target->client->pers.infoChangeTime = level.time; // ?
-	}
-
-	target->lastDamageTime = level.time;
-
-	// TODO: gentity_t->nextRegenTime only affects alien clients, remove it and use lastDamageTime
-	// Optionally (if needed for some reason), move into client struct and add "Alien" to name
-	target->nextRegenTime = level.time + ALIEN_CLIENT_REGEN_WAIT;
-
-	// handle non-self damage
-	if ( attacker != target )
-	{
-		if ( target->health < 0 )
-		{
-			loss = ( take + target->health );
-		}
-		else
-		{
-			loss = take;
-		}
-
-		if ( attacker->client )
-		{
-			// add to the attacker's account on the target
-			target->credits[ attacker->client->ps.clientNum ].value += ( float )loss;
-			target->credits[ attacker->client->ps.clientNum ].time = level.time;
-			target->credits[ attacker->client->ps.clientNum ].team = (team_t)attacker->client->pers.team;
-
-			// notify the attacker of a hit
-			NotifyClientOfHit( attacker );
-		}
-
-		// update buildable stats
-		if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
-		{
-			attacker->buildableStatsTotal += loss;
-		}
-	}
-
-	// handle dying target
-	if ( target->health <= 0 )
-	{
-		// set no knockback flag for clients
-		if ( client )
-		{
-			target->flags |= FL_NO_KNOCKBACK;
-		}
-
-		// cap negative health
-		if ( target->health < -999 )
-		{
-			target->health = -999;
-		}
-
-		// call die function
-		if ( target->die )
-		{
-			target->die( target, inflictor, attacker, mod );
-		}
-
-		// update buildable stats
-		if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
-		{
-			attacker->buildableStatsCount++;
-		}
-
-		// for non-client victims, fire ON_DIE event
-		if( !target->client )
-		{
-			G_EventFireEntity( target, attacker, ON_DIE );
-		}
-
-		return;
-	}
-	else if ( target->pain )
-	{
-		target->pain( target, attacker, take );
+		targ->entity->Damage((float)damage, attacker, Vec3::Load(point), Vec3::Load(dir), dflags,
+		                     (meansOfDeath_t)mod);
 	}
 }
 
@@ -1454,11 +881,6 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 			continue;
 		}
 
-		if ( !ent->takedamage )
-		{
-			continue;
-		}
-
 		if ( ent->flags & FL_NOTARGET )
 		{
 			continue;
@@ -1493,10 +915,8 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		if ( G_CanDamage( ent, origin ) && ent->client &&
 		     ent->client->pers.team != ignoreTeam )
 		{
-			hitClient = true;
-
-			G_Damage( ent, nullptr, attacker, nullptr, origin, ( int ) points,
-			          DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );
+			hitClient = ent->entity->Damage(points, attacker, Vec3::Load(origin), Util::nullopt,
+			                                DAMAGE_NO_LOCDAMAGE, (meansOfDeath_t)mod);
 		}
 	}
 
@@ -1538,11 +958,6 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 			continue;
 		}
 
-		if ( !ent->takedamage )
-		{
-			continue;
-		}
-
 		// find the distance from the edge of the bounding box
 		for ( i = 0; i < 3; i++ )
 		{
@@ -1578,11 +993,11 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 				// get knocked into the air more
 				dir[ 2 ] += 24;
 				VectorNormalize( dir );
-				hitSomething = true;
-				G_Damage( ent, nullptr, attacker, dir, origin, ( int ) points,
-				          ( DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE | dflags ), mod );
+
+				hitSomething = ent->entity->Damage(points, attacker, Vec3::Load(origin), Vec3::Load(dir),
+				                                   (DAMAGE_NO_LOCDAMAGE | dflags), (meansOfDeath_t)mod);
 			}
-			else if ( G_Team( ent ) == testHit && ent->health > 0 )
+			else if ( G_Team( ent ) == testHit && G_Alive( ent ) )
 			{
 				return true;
 			}
@@ -1645,7 +1060,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 		return;
 	}
 
-	G_LogPrintf( S_COLOR_YELLOW "Deconstruct: %d %d %s %s: %s %s by %s\n",
+	G_LogPrintf( "^3Deconstruct: %d %d %s %s: %s %s by %s\n",
 	             ( int )( actor - g_entities ),
 	             ( int )( self - g_entities ),
 	             BG_Buildable( self->s.modelindex )->name,

@@ -33,7 +33,7 @@ const GLsizei sizeVertexAnim1 = sizeof( struct fmtVertexAnim1 );
 // interleaved texcoords and colour in part 2
 struct fmtVertexAnim2 {
 	i16vec2_t texcoord;
-	u8vec4_t  colour;
+	Color::Color32Bit colour;
 };
 const GLsizei sizeVertexAnim2 = sizeof( struct fmtVertexAnim2 );
 
@@ -41,7 +41,7 @@ const GLsizei sizeVertexAnim2 = sizeof( struct fmtVertexAnim2 );
 struct fmtSkeletal {
 	i16vec4_t position;
 	i16vec2_t texcoord;
-	u8vec4_t  colour;
+	Color::Color32Bit colour;
 	i16vec4_t qtangents;
 	u16vec4_t boneFactors;
 };
@@ -273,7 +273,9 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo )
 	}
 	else
 	{
-		ri.Error( ERR_DROP, S_COLOR_YELLOW "Unknown attribute layout for vbo: %s\n", vbo->name );
+		ri.Error( ERR_DROP, "%sUnknown attribute layout for vbo: %s\n",
+			Color::CString( Color::Yellow ),
+			vbo->name );
 	}
 }
 
@@ -331,7 +333,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
+				ptr[ v ].colour = Color::Adapt( inData.color[ v ] );
 			}
 
 			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
@@ -359,7 +361,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				Vector4Copy( inData.color[ v ], ptr[ v ].color );
+				ptr[ v ].color = Color::Adapt( inData.color[ v ] );
 			}
 
 			if ( ( vbo->attribBits & ATTR_QTANGENT ) )
@@ -392,7 +394,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 			if ( ( vbo->attribBits & ATTR_COLOR ) )
 			{
-				Vector4Copy( inData.color[ v ], ptr[ v ].colour );
+				ptr[ v ].colour = Color::Adapt( inData.color[ v ] );
 			}
 		}
 	}
@@ -882,7 +884,7 @@ static void R_InitUnitCubeVBO()
 
 	Tess_MapVBOs( true );
 
-	Tess_AddCube( vec3_origin, mins, maxs, colorWhite );
+	Tess_AddCube( vec3_origin, mins, maxs, Color::White );
 
 	memset( &data, 0, sizeof( data ) );
 	data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( *data.xyz ) );

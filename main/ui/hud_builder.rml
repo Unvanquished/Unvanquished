@@ -15,6 +15,8 @@ div#mine
 	margin-top: 30%;
 	margin-left: auto;
 	margin-right: auto;
+	color: white;
+	background-color: #666666CC;
 }
 div#timer
 {
@@ -32,7 +34,7 @@ div#rate
 	height: 1.5em;
 	bottom: 0em;
 	left: 0em;
-	margin-left: 1em;;
+	margin-left: 1em;
 }
 progressbar
 {
@@ -40,6 +42,14 @@ progressbar
 	height: 100%;
 	image: /white;
 	orientation: left;
+}
+
+.warning {
+	color: yellow;
+}
+
+.error {
+	color: red;
 }
 </style>
 </head>

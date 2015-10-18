@@ -149,7 +149,7 @@ omnidirectional decals use points[ 0 ] as center and projection[ 3 ] as radius
 pass in lifeTime < 0 for a temporary mark
 */
 
-void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color, int lifeTime,
+void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, const Color::Color& color, int lifeTime,
                       int fadeTime )
 {
 	int              i;
@@ -193,7 +193,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	/* basic setup */
 	temp.shader = R_GetShaderByHandle( hShader );  /* debug code */
 	temp.numPlanes = temp.shader->entityMergable;
-	floatToUnorm8( color, temp.color );
+	temp.color = color;
 	temp.numPlanes = numPoints + 2;
 	temp.fadeStartTime = tr.refdef.time + lifeTime - fadeTime;
 	temp.fadeEndTime = temp.fadeStartTime + fadeTime;
@@ -661,10 +661,8 @@ static void ProjectDecalOntoWinding( decalProjector_t *dp, int numPoints, vec3_t
 		}
 
 		/* set color */
-		vert->modulate[ 0 ] = Q_ftol( pd * alpha * dp->color[ 0 ] );
-		vert->modulate[ 1 ] = Q_ftol( pd * alpha * dp->color[ 1 ] );
-		vert->modulate[ 2 ] = Q_ftol( pd * alpha * dp->color[ 2 ] );
-		vert->modulate[ 3 ] = Q_ftol( alpha * dp->color[ 3 ] );
+		( dp->color * pd * alpha ).ToArray( vert->modulate );
+		vert->modulate[ 3 ] = alpha * dp->color.Alpha();
 	}
 }
 

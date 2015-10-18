@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "System.h"
 #ifdef _WIN32
 #include <windows.h>
+#include <SDL2/SDL.h>
 #ifdef USE_BREAKPAD
 #include "breakpad/client/windows/handler/exception_handler.h"
 #endif
@@ -470,16 +471,7 @@ static void StartSignalThread()
 // Command line arguments
 struct cmdlineArgs_t {
 	cmdlineArgs_t()
-		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_curses(false)
-	{
-#if defined(_WIN32)
-		// The windows dedicated server and tty client must enable the curses
-		// interface because they have no other usable interface.
-		use_curses = true;
-#else
-        use_curses = Application::GetTraits().useCurses;
-#endif
-	}
+		: homePath(FS::DefaultHomePath()), libPath(FS::DefaultBasePath()), reset_config(false), use_curses(Application::GetTraits().useCurses) {}
 
 	std::string homePath;
 	std::string libPath;
