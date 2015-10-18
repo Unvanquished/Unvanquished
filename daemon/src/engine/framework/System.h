@@ -40,7 +40,7 @@ namespace Sys {
 NORETURN void Quit(Str::StringRef message);
 
 // Record a crash dump from a crash occuring in the NaCl VMs
-void NaclCrashDump(const void* data, size_t size);
+void NaclCrashDump(Util::rawBytes dump);
 
 } // namespace Sys
 

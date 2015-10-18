@@ -329,14 +329,14 @@ static void BreakpadInit() {
 
 // Records a crash dump sent from the VM in minidump format. This is the same
 // format that Breakpad uses, but nacl minidump does not require Breakpad to work.
-void NaclCrashDump(const void* data, size_t size) {
+void NaclCrashDump(Util::rawBytes dump) {
     auto time = std::chrono::duration_cast<std::chrono::milliseconds>(SteadyClock::now().time_since_epoch()).count();
     std::string path = FS::Path::Build(CrashDumpPath(), Str::Format("crash-nacl-%s.dmp", std::to_string(time)));
     std::error_code err;
 
     //Note: the file functions always use binary mode on Windows so there shouldn't be any lossiness.
     auto file = FS::RawPath::OpenWrite(path, err);
-    if (err == err.default_error_condition()) file.Write(data, size, err);
+    if (err == err.default_error_condition()) file.Write(dump.data, dump.size, err);
     if (err == err.default_error_condition()) file.Close(err);
 
     if (err == err.default_error_condition()) {
@@ -344,12 +344,14 @@ void NaclCrashDump(const void* data, size_t size) {
     } else {
         Log::Warn("Error while writing crash dump");
     }
-    delete[] (uint8_t*) data; //do something nicer
+    delete[] dump.data;
 }
 
 #else
 
-void NaclCrashDump(const void*, size_t) { }
+void NaclCrashDump(Util::rawBytes dump) {
+    delete[] dump.data;
+}
 
 #endif //USE_BREAKPAD
 

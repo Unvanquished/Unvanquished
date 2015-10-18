@@ -264,8 +264,8 @@ bool trap_GetNews( bool force )
 	return res;
 }
 
-void trap_CrashDump(const void* data, size_t size) {
-    VM::SendMsg<CrashDumpMsg>(std::make_pair(data, size));
+void trap_CrashDump(Util::rawBytes dump) {
+    VM::SendMsg<CrashDumpMsg>(dump);
 }
 
 // All Sounds

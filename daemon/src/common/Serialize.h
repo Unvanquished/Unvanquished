@@ -415,16 +415,16 @@ namespace Util {
 		}
 	};
 
-    template<> struct SerializeTraits <std::pair<const void*, size_t> > {
-        static void Write(Writer& stream, std::pair<const void*, size_t> value)
+    template<> struct SerializeTraits <rawBytes> {
+        static void Write(Writer& stream, rawBytes value)
         {
-            stream.WriteSize(value.second);
-            stream.WriteData(value.first, value.second);
+            stream.WriteSize(value.size);
+            stream.WriteData(value.data, value.size);
         }
-        static std::pair<const void*, size_t> Read(Reader& stream)
+        static rawBytes Read(Reader& stream)
         {
             size_t size = stream.ReadSize<uint8_t>();
-            void* data = new uint8_t[size];
+            uint8_t* data = new uint8_t[size];
             stream.ReadData(data, size);
             return{ data, size };
         }

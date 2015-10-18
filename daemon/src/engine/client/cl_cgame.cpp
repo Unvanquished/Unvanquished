@@ -1652,8 +1652,8 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_CRASH_DUMP:
-			IPC::HandleMsg<CrashDumpMsg>(channel, std::move(reader), [this](std::pair<const void*, size_t> dump) {
-				Sys::NaclCrashDump(dump.first, dump.second);
+			IPC::HandleMsg<CrashDumpMsg>(channel, std::move(reader), [this](Util::rawBytes dump) {
+				Sys::NaclCrashDump(dump);
 			});
 			break;
 
