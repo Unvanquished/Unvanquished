@@ -1242,10 +1242,6 @@ void G_UnlaggedStore()
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		ent = &g_entities[ i ];
-		if ( !ent->inuse || !ent->client )
-		{
-			continue;
-		}
 		save = &ent->client->unlaggedHist[ level.unlaggedIndex ];
 		save->used = false;
 
