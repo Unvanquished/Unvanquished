@@ -725,7 +725,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	std::string out_string;
 	bool        hasletter = false;
 	int         spaces = 0;
-	
+
 	for ( const auto& token : Color::Parser( in ) )
 	{
 		if ( out_string.size() + token.Size() > outSize )
@@ -1983,6 +1983,7 @@ void ClientDisconnect( int clientNum )
 
 	G_FreeEntity(ent);
 	ent->classname = "disconnected";
+	ent->client = level.clients + clientNum;
 
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "" );
 
