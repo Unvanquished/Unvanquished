@@ -791,6 +791,9 @@ typedef enum
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
 
+  CG_MOUSE_POS_EVENT,
+//  void    (*CG_MousePosEvent)( int x, int y );
+
   CG_TEXT_INPUT_EVENT,
 // pass in text input events from the engine
 
@@ -832,6 +835,10 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
 > CGameMouseEventMsg;
+// CGameMousePosEventMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_POS_EVENT>, int, int>
+> CGameMousePosEventMsg;
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, int>
 > CGameTextInptEvent;

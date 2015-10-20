@@ -338,35 +338,12 @@ void Rocket_ProcessTextInput( int key )
 
 void Rocket_MouseMove( int x, int y )
 {
-	static int mousex, mousey;
 	if ( !menuContext || ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) )
 	{
 		return;
 	}
 
-	mousex += x;
-	mousey += y;
-
-	if ( mousex < 0 )
-	{
-		mousex = 0;
-	}
-	else if ( mousex > cgs.glconfig.vidWidth )
-	{
-		mousex = cgs.glconfig.vidWidth;
-	}
-
-	if ( mousey < 0 )
-	{
-		mousey = 0;
-	}
-	else if ( mousey > cgs.glconfig.vidHeight )
-	{
-		mousey = cgs.glconfig.vidHeight;
-	}
-
-
-	menuContext->ProcessMouseMove( mousex, mousey, Rocket_GetKeyModifiers() );
+	menuContext->ProcessMouseMove( x, y, Rocket_GetKeyModifiers() );
 }
 
 /*

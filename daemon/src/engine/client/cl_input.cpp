@@ -416,6 +416,17 @@ void CL_MouseEvent( int dx, int dy, int )
 
 /*
 =================
+CL_MouseEvent
+=================
+*/
+void CL_MousePosEvent( int x, int y )
+{
+	cgvm.CGameMousePosEvent(x, y);
+}
+
+
+/*
+=================
 CL_JoystickEvent
 
 Joystick values stay set until changed
@@ -1437,8 +1448,13 @@ void IN_SetCursorMode(bool cursor)
 	{
 		cursor_mode = cursor;
 		if ( cursor_mode )
+		{
 			IN_ActivateCursor();
+			IN_CenterMouse();
+		}
 		else
+		{
 			IN_DeactivateCursor();
+		}
 	}
 }

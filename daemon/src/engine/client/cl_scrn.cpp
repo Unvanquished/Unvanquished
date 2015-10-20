@@ -567,8 +567,6 @@ void SCR_DrawScreenField()
 
 void SCR_DrawConsoleAndPointer()
 {
-	extern bool mouseActive; // see sdl_input.c
-
 	// console draws next
 	Con_DrawConsole();
 }

@@ -557,6 +557,7 @@ void IN_Restart();
 void IN_Shutdown();
 bool IN_IsNumLockDown();
 void IN_DropInputsForFrame();
+void IN_CenterMouse();
 void IN_ActivateCursor();
 void IN_DeactivateCursor();
 
@@ -791,6 +792,7 @@ void     CL_CharEvent( int c );
 // char events are for field typing, not game control
 
 void CL_MouseEvent( int dx, int dy, int time );
+void CL_MousePosEvent( int dx, int dy);
 
 void CL_JoystickEvent( int axis, int value, int time );
 
@@ -871,6 +873,7 @@ typedef enum
   SE_KEY, // evValue is a key code, evValue2 is the down flag
   SE_CHAR, // evValue is an ascii char
   SE_MOUSE, // evValue and evValue2 are relative, signed x / y moves
+  SE_MOUSE_POS, // evValue and evValue2 are (x, y) coordinates
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
   SE_CONSOLE, // evPtr is a char*
   SE_PACKET // evPtr is a netadr_t followed by data bytes to evPtrLength

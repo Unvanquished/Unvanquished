@@ -49,6 +49,10 @@ void IN_Shutdown()
 {
 }
 
+void IN_CenterMouse()
+{
+}
+
 void Sys_SendKeyEvents()
 {
 }

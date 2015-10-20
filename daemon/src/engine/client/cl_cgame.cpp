@@ -1475,6 +1475,12 @@ void CGameVM::CGameMouseEvent(int dx, int dy)
 	this->SendMsg<CGameMouseEventMsg>(dx, dy);
 }
 
+void CGameVM::CGameMousePosEvent(int x, int y)
+{
+	this->SendMsg<CGameMousePosEventMsg>(x, y);
+}
+
+
 void CGameVM::CGameTextInputEvent(int c)
 {
 	this->SendMsg<CGameTextInptEvent>(c);
