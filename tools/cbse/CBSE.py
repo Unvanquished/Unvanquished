@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 # Daemon CBSE Source Code
 # Copyright (c) 2014-2015, Daemon Developers
