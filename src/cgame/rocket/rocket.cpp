@@ -648,12 +648,14 @@ void Rocket_SetActiveContext( int catcher )
 	{
 		case KEYCATCH_UI:
 			menuContext->ShowMouseCursor( true );
+			trap_Mouse_SetCursorMode( true );
 			break;
 
 		default:
 			if ( !( catcher & KEYCATCH_CONSOLE ) )
 			{
 				menuContext->ShowMouseCursor( false );
+				trap_Mouse_SetCursorMode( false );
 			}
 
 			break;

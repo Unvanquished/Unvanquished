@@ -586,6 +586,36 @@ static void IN_GobbleMotionEvents()
 	                        SDL_MOUSEMOTION, SDL_MOUSEMOTION ) ) { }
 }
 
+void IN_ActivateCursor()
+{
+	if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
+	{
+		return;
+	}
+
+	SDL_ShowCursor( 1 );
+	SDL_SetRelativeMouseMode( SDL_FALSE );
+	SDL_SetWindowGrab( window, SDL_FALSE );
+
+	mouseActive = true;
+
+}
+
+void IN_DeactivateCursor()
+{
+	if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
+	{
+		return;
+	}
+
+	SDL_ShowCursor( 0 );
+
+	SDL_SetRelativeMouseMode( SDL_TRUE );
+	SDL_SetWindowGrab( window, SDL_TRUE );
+
+	mouseActive = true;
+}
+
 /*
 ===============
 IN_ActivateMouse
@@ -593,7 +623,7 @@ IN_ActivateMouse
 */
 static void IN_ActivateMouse()
 {
-	if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
+	/*if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
 		return;
 	}
@@ -635,7 +665,7 @@ static void IN_ActivateMouse()
 		}
 	}
 
-	mouseActive = true;
+	mouseActive = true;*/
 }
 
 /*
@@ -645,7 +675,7 @@ IN_DeactivateMouse
 */
 void IN_DeactivateMouse( bool showCursor )
 {
-	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
+	/*if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
 		return;
 	}
@@ -669,7 +699,7 @@ void IN_DeactivateMouse( bool showCursor )
 
 		IN_GobbleMotionEvents();
 		mouseActive = false;
-	}
+	}*/
 }
 
 // We translate axes movement into keypresses
@@ -1648,6 +1678,7 @@ void IN_Init( void *windowData )
 	SDL_StartTextInput();
 	mouseAvailable = ( in_mouse->value != 0 );
 	IN_DeactivateMouse( true );
+	IN_ActivateCursor();
 
 	appState = SDL_GetWindowFlags( window );
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_WINDOW_INPUT_FOCUS ) );

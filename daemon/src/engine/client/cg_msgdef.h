@@ -209,6 +209,10 @@ typedef enum cgameImport_s
   CG_KEY_CLEARCMDBUTTONS,
   CG_KEY_KEYSDOWN,
 
+  // Mouse
+  CG_MOUSE_GETCURSORMODE,
+  CG_MOUSE_SETCURSORMODE,
+
   // Lan
   CG_LAN_GETSERVERCOUNT,
   CG_LAN_GETSERVERINFO,
@@ -553,6 +557,14 @@ namespace Key {
 		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYSDOWN>, std::vector<int>>,
 		IPC::Reply<std::vector<int>>
 	> KeysDownMsg;
+}
+
+namespace Mouse {
+    typedef IPC::SyncMessage<
+        IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_GETCURSORMODE>>,
+        IPC::Reply<bool>
+    > GetCursorMode;
+    typedef IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_SETCURSORMODE>, bool> SetCursorMode;
 }
 
 namespace LAN {

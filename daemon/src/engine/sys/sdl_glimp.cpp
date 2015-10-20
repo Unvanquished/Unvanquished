@@ -769,7 +769,7 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 				continue;
 			}
 			SDL_GL_SetSwapInterval( r_swapInterval->integer );
-			SDL_ShowCursor( 0 );
+			//SDL_ShowCursor( 0 );
 
 			glConfig.colorBits = testColorBits;
 			glConfig.depthBits = testDepthBits;

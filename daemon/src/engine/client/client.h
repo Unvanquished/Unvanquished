@@ -901,4 +901,11 @@ bool CL_VideoRecording();
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd();
 void CL_GetClipboardData( char *, int );
+
+//
+// cl_input.c
+//
+bool IN_GetCursorMode();
+void IN_SetCursorMode(bool cursor);
+
 #endif

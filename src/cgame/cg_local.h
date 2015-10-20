@@ -1727,8 +1727,8 @@ typedef struct
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
 
-	int          cursorX;
-	int          cursorY;
+	int          cursorX; // unused
+	int          cursorY; // unused
 	void         *capturedItem;
 	qhandle_t    activeCursor;
 

@@ -1416,3 +1416,29 @@ void CL_ClearKeys()
 
 	memset( kb, 0, sizeof( kb ) );
 }
+
+// Whether the cursor is enabled
+static bool cursor_mode = true;
+
+/*
+ * Returns whether the cursor is enabled
+ */
+bool IN_GetCursorMode()
+{
+	return cursor_mode;
+}
+
+/*
+ * Enables or disables the cursor
+ */
+void IN_SetCursorMode(bool cursor)
+{
+	if ( cursor != cursor_mode )
+	{
+		cursor_mode = cursor;
+		if ( cursor_mode )
+			IN_ActivateCursor();
+		else
+			IN_DeactivateCursor();
+	}
+}
