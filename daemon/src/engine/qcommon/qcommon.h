@@ -558,8 +558,7 @@ void IN_Shutdown();
 bool IN_IsNumLockDown();
 void IN_DropInputsForFrame();
 void IN_CenterMouse();
-void IN_ActivateCursor();
-void IN_DeactivateCursor();
+void IN_SetCursorActive( bool active );
 
 /*
 ==============================================================

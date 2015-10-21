@@ -1447,14 +1447,7 @@ void IN_SetCursorMode(bool cursor)
 	if ( cursor != cursor_mode )
 	{
 		cursor_mode = cursor;
-		if ( cursor_mode )
-		{
-			IN_ActivateCursor();
-			IN_CenterMouse();
-		}
-		else
-		{
-			IN_DeactivateCursor();
-		}
+		IN_SetCursorActive( cursor_mode );
+		IN_CenterMouse();
 	}
 }

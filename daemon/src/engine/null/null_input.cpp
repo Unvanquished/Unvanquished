@@ -75,10 +75,6 @@ bool IN_IsNumLockDown()
     return false;
 }
 
-void IN_ActivateCursor()
-{
-}
-
-void IN_DeactivateCursor()
+void IN_SetCursorActive( bool )
 {
 }

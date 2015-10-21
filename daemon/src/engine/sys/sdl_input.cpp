@@ -566,37 +566,36 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, bool down )
 	return key;
 }
 
+/*
+ * When this is true, the cursor is free to move and cgame will receive
+ * mouse coordinates.
+ * When this is false, the cursor will be locked in the window and cgame
+ * will receive deltas
+ */
 static bool cursor_active = true;
 
-void IN_ActivateCursor()
+/*
+ * Activates the cursor, the system cursor will still be disabled and
+ * the game is responsible of drawing the cursor image
+ */
+void IN_SetCursorActive( bool active )
 {
 	if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
 		return;
 	}
 
-	SDL_ShowCursor( 1 );
-	SDL_SetRelativeMouseMode( SDL_FALSE );
-	SDL_SetWindowGrab( window, SDL_FALSE );
+	SDL_ShowCursor( SDL_DISABLE );
+	auto grab = active || in_nograb->integer ? SDL_FALSE : SDL_TRUE;
+	SDL_SetRelativeMouseMode( grab );
+	SDL_SetWindowGrab( window, grab );
 
-	cursor_active = true;
-
+	cursor_active = active;
 }
 
-void IN_DeactivateCursor()
-{
-	if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
-	{
-		return;
-	}
-
-	SDL_ShowCursor( 0 );
-	SDL_SetRelativeMouseMode( SDL_TRUE );
-	SDL_SetWindowGrab( window, SDL_FALSE );
-
-	cursor_active = false;
-}
-
+/*
+ * Moves the mouse at the center of the window
+ */
 void IN_CenterMouse()
 {
 	int w, h;
@@ -604,6 +603,10 @@ void IN_CenterMouse()
 	SDL_WarpMouseInWindow( window, w / 2, h / 2 );
 }
 
+/*
+ * Toggles forced cursor, this ensure that the cursor is active and visible
+ * even when not in cursor mode
+ */
 static void ForceCursor(bool force)
 {
 	static bool forced_cursor = false;
@@ -617,14 +620,8 @@ static void ForceCursor(bool force)
 
 	if ( !IN_GetCursorMode() )
 	{
-		if ( forced_cursor )
-		{
-			IN_ActivateCursor();
-		}
-		else
-		{
-			IN_DeactivateCursor();
-		}
+		IN_SetCursorActive( forced_cursor );
+		SDL_ShowCursor( forced_cursor );
 	}
 
 }
@@ -1599,7 +1596,8 @@ void IN_Init( void *windowData )
 	in_xbox360ControllerDebug = Cvar_Get( "in_xbox360ControllerDebug", "0", CVAR_TEMP );
 	SDL_StartTextInput();
 	mouseAvailable = ( in_mouse->value != 0 );
-	IN_ActivateCursor();
+	ForceCursor( false );
+	IN_SetCursorActive( true );
 
 	appState = SDL_GetWindowFlags( window );
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_WINDOW_INPUT_FOCUS ) );
@@ -1616,7 +1614,7 @@ IN_Shutdown
 void IN_Shutdown()
 {
 	SDL_StopTextInput();
-	IN_SetCursorMode(true);
+	ForceCursor(true);
 	mouseAvailable = false;
 
 	IN_ShutdownJoystick();
