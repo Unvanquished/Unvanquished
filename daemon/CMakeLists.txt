@@ -78,6 +78,11 @@ if(NOT DAEMON_EXTERNAL_APP)
 
     set(NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries")
 
+    if (NOT APPLE AND NOT WIN32)
+	option(USE_CURSES "Compile with curses support" 1)
+    else()
+	option(USE_CURSES "Compile with curses support" 0)
+    endif()
     cmake_dependent_option(USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0)
     cmake_dependent_option(USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0)
     cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0)

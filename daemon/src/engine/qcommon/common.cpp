@@ -433,8 +433,8 @@ bool Com_AddStartupCommands()
 
 void Info_Print( const char *s )
 {
-	char key[ 512 ];
-	char value[ 512 ];
+	char key[ 8192 ];
+	char value[ 8192 ];
 	char *o;
 	int  l;
 
