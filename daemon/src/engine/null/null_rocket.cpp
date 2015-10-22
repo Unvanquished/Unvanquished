@@ -84,3 +84,4 @@ void Rocket_RegisterProperty( const char*, const char*, bool, bool, const char* 
 void Rocket_ShowScoreboard( const char*, bool ) {}
 void Rocket_SetDataSelectIndex( int ) {}
 void Rocket_LoadFont( const char* ) {}
+void Rocket_HideMouse() {}

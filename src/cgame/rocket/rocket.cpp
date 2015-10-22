@@ -663,3 +663,11 @@ void Rocket_LoadFont( const char *font )
 {
 	Rocket::Core::FontDatabase::LoadFontFace( font );
 }
+
+void Rocket_HideMouse()
+{
+	if ( menuContext )
+	{
+		menuContext->ShowMouseCursor( false );
+	}
+}

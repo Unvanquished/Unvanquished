@@ -113,6 +113,8 @@ typedef enum
 	SORT_FAVOURITES
 } serverSortField_t;
 
+void Rocket_HideMouse();
+
 void            trap_Print( const char *string );
 void NORETURN   trap_Error( const char *string );
 int             trap_Milliseconds();
