@@ -253,7 +253,6 @@ set(TTYCLIENTLIST
     ${ENGINE_DIR}/null/NullAudio.cpp
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_renderer.cpp
-    ${ENGINE_DIR}/null/null_rocket.cpp
 )
 
 set(DEDSERVERLIST
