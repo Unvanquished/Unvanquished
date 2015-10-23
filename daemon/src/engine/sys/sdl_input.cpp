@@ -618,7 +618,7 @@ static void ForceCursor(bool force)
 
 	forced_cursor = force;
 
-	if ( !IN_GetCursorMode() )
+	if ( IN_GetMouseMode() == MouseMode::Deltas )
 	{
 		IN_SetCursorActive( forced_cursor );
 		SDL_ShowCursor( forced_cursor );

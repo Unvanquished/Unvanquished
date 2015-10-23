@@ -1429,25 +1429,25 @@ void CL_ClearKeys()
 }
 
 // Whether the cursor is enabled
-static bool cursor_mode = true;
+static MouseMode mouse_mode = MouseMode::Absolute;
 
 /*
  * Returns whether the cursor is enabled
  */
-bool IN_GetCursorMode()
+MouseMode IN_GetMouseMode()
 {
-	return cursor_mode;
+	return mouse_mode;
 }
 
 /*
  * Enables or disables the cursor
  */
-void IN_SetCursorMode(bool cursor)
+void IN_SetMouseMode(MouseMode mode)
 {
-	if ( cursor != cursor_mode )
+	if ( mode != mouse_mode )
 	{
-		cursor_mode = cursor;
-		IN_SetCursorActive( cursor_mode );
+		mouse_mode = mode;
+		IN_SetCursorActive( mouse_mode == MouseMode::Absolute );
 		IN_CenterMouse();
 	}
 }

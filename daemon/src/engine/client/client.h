@@ -906,7 +906,7 @@ void CL_GetClipboardData( char *, int );
 //
 // cl_input.c
 //
-bool IN_GetCursorMode();
-void IN_SetCursorMode(bool cursor);
+MouseMode IN_GetMouseMode();
+void IN_SetMouseMode(MouseMode mode);
 
 #endif

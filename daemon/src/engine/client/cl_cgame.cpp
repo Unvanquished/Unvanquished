@@ -1880,14 +1880,8 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		// Mouse
 
-		case CG_MOUSE_GETCURSORMODE:
-			IPC::HandleMsg<Mouse::GetCursorMode>(channel, std::move(reader), [](bool& output) {
-				output = IN_GetCursorMode();
-			});
-			break;
-
-		case CG_MOUSE_SETCURSORMODE:
-			IPC::HandleMsg<Mouse::SetCursorMode>(channel, std::move(reader), &IN_SetCursorMode);
+		case CG_MOUSE_SETMOUSEMODE:
+			IPC::HandleMsg<Mouse::SetMouseMode>(channel, std::move(reader), &IN_SetMouseMode);
 			break;
 
 		// All LAN

@@ -726,16 +726,10 @@ std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys )
 }
 
 // Mouse
-bool trap_Mouse_GetCursorMode()
-{
-	bool ret = false;
-	VM::SendMsg<Mouse::GetCursorMode>( ret );
-	return ret;
-}
 
-void trap_Mouse_SetCursorMode( bool cursor )
+void trap_SetMouseMode( MouseMode mode )
 {
-	VM::SendMsg<Mouse::SetCursorMode>( cursor );
+	VM::SendMsg<Mouse::SetMouseMode>( mode );
 }
 
 // All LAN

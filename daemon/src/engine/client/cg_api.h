@@ -113,7 +113,11 @@ typedef enum
 	SORT_FAVOURITES
 } serverSortField_t;
 
-void Rocket_HideMouse();
+enum class MouseMode
+{
+    Deltas,
+    Absolute,
+};
 
 void            trap_Print( const char *string );
 void NORETURN   trap_Error( const char *string );
@@ -215,8 +219,7 @@ void            trap_Key_SetBinding( int keyNum, int team, const char *cmd );
 void            trap_Key_ClearCmdButtons( void );
 void            trap_Key_ClearStates( void );
 std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys );
-bool            trap_Mouse_GetCursorMode();
-void            trap_Mouse_SetCursorMode( bool cursor );
+void            trap_SetMouseMode( MouseMode mode );
 void            trap_S_StopBackgroundTrack();
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );

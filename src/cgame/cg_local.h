@@ -1726,9 +1726,7 @@ typedef struct
 
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
-
-	int          cursorX; // unused
-	int          cursorY; // unused
+    
 	void         *capturedItem;
 	qhandle_t    activeCursor;
 
@@ -2436,5 +2434,6 @@ void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
 void Rocket_RocketDebug_f();
+void Rocket_HideMouse();
 #endif
 
