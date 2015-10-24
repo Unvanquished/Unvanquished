@@ -277,6 +277,9 @@ static void Shutdown(bool error, Str::StringRef message)
 	// Stop accepting commands from other instances
 	CloseSingletonSocket();
 
+	// Save the console history
+	Console::History::Save();
+
     Application::Shutdown(error, message);
 
 	// Always run CON_Shutdown, because it restores the terminal to a usable state.
@@ -625,7 +628,7 @@ static void Init(int argc, char** argv)
 		Cvar::SetValue(cvar.first, cvar.second);
 
 	// Load the console history
-	Console::LoadHistory();
+	Console::History::Load();
 
 	// Legacy initialization code, needs to be replaced
 	// TODO: eventually move all of Com_Init into here
