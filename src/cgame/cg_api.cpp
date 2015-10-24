@@ -112,6 +112,13 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 });
                 break;
 
+			case CG_MOUSE_POS_EVENT:
+				IPC::HandleMsg<CGameMousePosEventMsg>(VM::rootChannel, std::move(reader), [] (int x, int y) {
+					CG_MousePosEvent(x, y);
+					cmdBuffer.TryFlush();
+				});
+				break;
+
 			case CG_TEXT_INPUT_EVENT:
 				IPC::HandleMsg<CGameTextInptEvent>(VM::rootChannel, std::move(reader), [] (int c) {
 					Rocket_ProcessTextInput(c);
@@ -718,6 +725,12 @@ std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys )
 	return list;
 }
 
+// Mouse
+
+void trap_SetMouseMode( MouseMode mode )
+{
+	VM::SendMsg<Mouse::SetMouseMode>( mode );
+}
 
 // All LAN
 

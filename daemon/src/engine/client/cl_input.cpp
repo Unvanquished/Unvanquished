@@ -416,6 +416,17 @@ void CL_MouseEvent( int dx, int dy, int )
 
 /*
 =================
+CL_MouseEvent
+=================
+*/
+void CL_MousePosEvent( int x, int y )
+{
+	cgvm.CGameMousePosEvent(x, y);
+}
+
+
+/*
+=================
 CL_JoystickEvent
 
 Joystick values stay set until changed
@@ -1415,4 +1426,28 @@ void CL_ClearKeys()
 	}
 
 	memset( kb, 0, sizeof( kb ) );
+}
+
+// Whether the cursor is enabled
+static MouseMode mouse_mode = MouseMode::Absolute;
+
+/*
+ * Returns whether the cursor is enabled
+ */
+MouseMode IN_GetMouseMode()
+{
+	return mouse_mode;
+}
+
+/*
+ * Enables or disables the cursor
+ */
+void IN_SetMouseMode(MouseMode mode)
+{
+	if ( mode != mouse_mode )
+	{
+		mouse_mode = mode;
+		IN_SetCursorActive( mouse_mode == MouseMode::Absolute );
+		IN_CenterMouse();
+	}
 }

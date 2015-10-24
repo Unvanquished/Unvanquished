@@ -428,6 +428,7 @@ public:
 	int CGameCrosshairPlayer();
 	void CGameKeyEvent(int key, bool down);
 	void CGameMouseEvent(int dx, int dy);
+    void CGameMousePosEvent(int x, int y);
 	void CGameTextInputEvent(int c);
 	//std::vector<std::string> CGameVoipString();
 	//void CGameInitCvars();
@@ -901,4 +902,11 @@ bool CL_VideoRecording();
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd();
 void CL_GetClipboardData( char *, int );
+
+//
+// cl_input.c
+//
+MouseMode IN_GetMouseMode();
+void IN_SetMouseMode(MouseMode mode);
+
 #endif

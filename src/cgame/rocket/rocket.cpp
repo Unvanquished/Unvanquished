@@ -453,9 +453,6 @@ void Rocket_Render()
 
 void Rocket_Update()
 {
-	// Mouse move is necessary to ensure the menus update, so fake one
-	Rocket_MouseMove( 0, 0 );
-
 	if ( menuContext )
 	{
 		menuContext->Update();
@@ -648,12 +645,14 @@ void Rocket_SetActiveContext( int catcher )
 	{
 		case KEYCATCH_UI:
 			menuContext->ShowMouseCursor( true );
+			trap_SetMouseMode( MouseMode::Absolute );
 			break;
 
 		default:
 			if ( !( catcher & KEYCATCH_CONSOLE ) )
 			{
 				menuContext->ShowMouseCursor( false );
+			trap_SetMouseMode( MouseMode::Deltas );
 			}
 
 			break;
@@ -663,4 +662,12 @@ void Rocket_SetActiveContext( int catcher )
 void Rocket_LoadFont( const char *font )
 {
 	Rocket::Core::FontDatabase::LoadFontFace( font );
+}
+
+void Rocket_HideMouse()
+{
+	if ( menuContext )
+	{
+		menuContext->ShowMouseCursor( false );
+	}
 }

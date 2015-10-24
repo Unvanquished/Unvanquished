@@ -1628,6 +1628,7 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	cg.pmoveParams.accurate = 1;
 	cg.pmoveParams.msec = 8;
 
+	Rocket_HideMouse();
 	CG_UpdateLoadingStep( LOAD_START );
 	cg.clientNum = clientNum;
 

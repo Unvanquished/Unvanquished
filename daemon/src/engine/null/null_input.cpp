@@ -49,6 +49,10 @@ void IN_Shutdown()
 {
 }
 
+void IN_CenterMouse()
+{
+}
+
 void Sys_SendKeyEvents()
 {
 }
@@ -69,4 +73,8 @@ void IN_DropInputsForFrame()
 bool IN_IsNumLockDown()
 {
     return false;
+}
+
+void IN_SetCursorActive( bool )
+{
 }

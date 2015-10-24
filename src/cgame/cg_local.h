@@ -1726,9 +1726,7 @@ typedef struct
 
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
-
-	int          cursorX;
-	int          cursorY;
+    
 	void         *capturedItem;
 	qhandle_t    activeCursor;
 
@@ -1980,7 +1978,8 @@ void       CG_UpdateCvars();
 int        CG_CrosshairPlayer();
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, bool down );
-void       CG_MouseEvent( int x, int y );
+void       CG_MouseEvent( int dx, int dy );
+void       CG_MousePosEvent( int x, int y );
 bool   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString();
 
@@ -2435,5 +2434,6 @@ void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
 void Rocket_RocketDebug_f();
+void Rocket_HideMouse();
 #endif
 

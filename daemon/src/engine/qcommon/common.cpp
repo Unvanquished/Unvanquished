@@ -1373,6 +1373,10 @@ int Com_EventLoop()
 				mouseTime += ev.evTime;
 				break;
 
+			case SE_MOUSE_POS:
+				CL_MousePosEvent( ev.evValue, ev.evValue2 );
+				break;
+
 			case SE_JOYSTICK_AXIS:
 				CL_JoystickEvent( ev.evValue, ev.evValue2, ev.evTime );
 				break;

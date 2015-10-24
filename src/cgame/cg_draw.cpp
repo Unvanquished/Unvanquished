@@ -114,7 +114,11 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 	}
 }
 
-void CG_MouseEvent( int x, int y )
+void CG_MouseEvent( int dx, int dy )
+{
+}
+
+void CG_MousePosEvent( int x, int y )
 {
 	if ( rocketInfo.keyCatcher & KEYCATCH_UI)
 	{
@@ -125,10 +129,7 @@ void CG_MouseEvent( int x, int y )
 	     cg.showScores == false )
 	{
 		CG_SetKeyCatcher( 0 );
-		return;
 	}
-
-
 }
 
 void CG_KeyEvent( int key, bool down )
