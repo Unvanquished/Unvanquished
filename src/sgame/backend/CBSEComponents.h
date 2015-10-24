@@ -1,0 +1,40 @@
+// THIS FILE IS AUTO GENERATED, EDIT AT YOUR OWN RISK
+
+#ifndef CBSE_COMPONENTS_H_
+#define CBSE_COMPONENTS_H_
+
+#include "../components/DeferredFreeingComponent.h"
+#include "../components/ThinkingComponent.h"
+#include "../components/IgnitableComponent.h"
+#include "../components/HealthComponent.h"
+#include "../components/ClientComponent.h"
+#include "../components/ArmorComponent.h"
+#include "../components/KnockbackComponent.h"
+#include "../components/AlienClassComponent.h"
+#include "../components/HumanClassComponent.h"
+#include "../components/BuildableComponent.h"
+#include "../components/AlienBuildableComponent.h"
+#include "../components/HumanBuildableComponent.h"
+#include "../components/ResourceStorageComponent.h"
+#include "../components/MainBuildableComponent.h"
+#include "../components/TurretComponent.h"
+#include "../components/MiningComponent.h"
+#include "../components/AcidTubeComponent.h"
+#include "../components/BarricadeComponent.h"
+#include "../components/BoosterComponent.h"
+#include "../components/EggComponent.h"
+#include "../components/HiveComponent.h"
+#include "../components/LeechComponent.h"
+#include "../components/OvermindComponent.h"
+#include "../components/SpikerComponent.h"
+#include "../components/TrapperComponent.h"
+#include "../components/ArmouryComponent.h"
+#include "../components/DrillComponent.h"
+#include "../components/MedipadComponent.h"
+#include "../components/MGTurretComponent.h"
+#include "../components/ReactorComponent.h"
+#include "../components/RepeaterComponent.h"
+#include "../components/RocketpodComponent.h"
+#include "../components/TelenodeComponent.h"
+
+#endif // CBSE_COMPONENTS_H_

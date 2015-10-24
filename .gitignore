@@ -32,12 +32,6 @@ build
 nacl_helper_bootstrap*
 nacl_loader*
 
-# pk3s
-*.pk3
-
-# CBSE
-src/sgame/backend
-
 #ignore editor temporary files
 .*.swp
 .#*
