@@ -29,10 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "qcommon/q_shared.h"
-#include "qcommon/qcommon.h"
 #include "framework/Application.h"
 #include "ConsoleHistory.h"
-#include <limits>
 
 namespace Console {
 History::Container History::lines;

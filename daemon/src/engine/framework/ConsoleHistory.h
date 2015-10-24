@@ -31,10 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_CONSOLE_HISTORY_H_
 #define FRAMEWORK_CONSOLE_HISTORY_H_
 
-#include <string>
-#include <vector>
-#include <mutex>
-
 namespace Console {
 
     class History
