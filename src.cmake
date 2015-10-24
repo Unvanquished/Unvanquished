@@ -146,8 +146,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
     ${GAMELOGIC_DIR}/sgame/Utility.cpp
 
-    ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.cpp
-
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AlienClassComponent.cpp

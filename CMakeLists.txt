@@ -84,6 +84,10 @@ try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
 try_flag(WARNINGS           "-Wno-error=unused-private-field")
 
 if (BUILD_SGAME)
+    include(DaemonCBSE)
+    CBSE("sgame"
+         "${GAMELOGIC_DIR}/sgame/entities.yaml"
+         "${GAMELOGIC_DIR}/sgame/")
     GAMEMODULE(NAME sgame
         DEFINITIONS
             BUILD_SGAME
@@ -91,6 +95,7 @@ if (BUILD_SGAME)
             ${WARNINGS}
         FILES
             ${SGAMELIST}
+            ${sgame_GENERATED_CBSE}
     )
 endif()
 
