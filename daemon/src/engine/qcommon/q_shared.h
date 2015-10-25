@@ -512,7 +512,6 @@ inline float Q_fabs( float x )
 
 byte         ClampByte( int i );
 signed char  ClampChar( int i );
-signed short ClampShort( int i );
 
 // this isn't a real cheap function to call!
 int          DirToByte( vec3_t dir );
@@ -1493,7 +1492,6 @@ void         ByteToDir( int b, vec3_t dir );
 	void Com_DestroyGrowList( growList_t *list );
 	int  Com_AddToGrowList( growList_t *list, void *data );
 	void *Com_GrowListElement( const growList_t *list, int index );
-	int  Com_IndexForGrowListElement( const growList_t *list, const void *element );
 
 //=============================================================================
 
@@ -1539,9 +1537,6 @@ void         ByteToDir( int b, vec3_t dir );
 	void       COM_DefaultExtension( char *path, int maxSize, const char *extension );
 
 	void       COM_BeginParseSession( const char *name );
-	void       COM_RestoreParseSession( char **data_p );
-	void       COM_SetCurrentParseLine( int line );
-	int        COM_GetCurrentParseLine();
 	char       *COM_Parse( const char **data_p );
 
 // RB: added COM_Parse2 for having a Doom 3 style tokenizer.
@@ -1582,10 +1577,6 @@ void         ByteToDir( int b, vec3_t dir );
 // data is an in/out parm, returns a parsed out token
 
 	void      COM_MatchToken( char **buf_p, char *match );
-
-	void      Com_Parse1DMatrix( const char **buf_p, int x, float *m, bool checkBrackets );
-	void      Com_Parse2DMatrix( const char **buf_p, int y, int x, float *m );
-	void      Com_Parse3DMatrix( const char **buf_p, int z, int y, int x, float *m );
 
 	bool  SkipBracedSection( const char **program );
 	bool  SkipBracedSection_Depth( const char **program, int depth );  // start at given depth if already
@@ -1651,9 +1642,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 // Count the number of char tocount encountered in string
 	int      Q_CountChar( const char *string, char tocount );
-
-// removes whitespaces and other bad directory characters
-	char     *Q_CleanDirName( char *dirname );
 
 //=============================================
 

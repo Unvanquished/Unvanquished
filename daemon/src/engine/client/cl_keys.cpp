@@ -710,18 +710,6 @@ void Console_Key( int key )
 
 //============================================================================
 
-// Unused
-bool Key_GetOverstrikeMode()
-{
-	return key_overstrikeMode;
-}
-
-// Unused, key_overstrikeMode overwritten directly elsewhere
-void Key_SetOverstrikeMode( bool state )
-{
-	key_overstrikeMode = state;
-}
-
 /*
 ===================
 Key_IsDown
@@ -987,32 +975,6 @@ const char *Key_GetBinding( int keynum, int team )
 
 	bind = keys[ keynum ].binding[ CLIP( team ) ];
 	return bind ? bind : keys[ keynum ].binding[ 0 ];
-}
-
-/*
-===================
-Key_GetKey
-===================
-*/
-// Unused
-int Key_GetKey( const char *binding, int team )
-{
-	int i;
-
-	while ( binding && team >= 0 )
-	{
-		for ( i = 0; i < MAX_KEYS; i++ )
-		{
-			if ( keys[ i ].binding[ team ] && Q_stricmp( binding, keys[ i ].binding[ team ] ) == 0 )
-			{
-				return i;
-			}
-		}
-
-		team = team ? 0 : -1;
-	}
-
-	return -1;
 }
 
 /*

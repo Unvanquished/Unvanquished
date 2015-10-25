@@ -638,7 +638,6 @@ unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_FilterPath( const char *filter, char *name, int casesensitive );
-bool   Com_SafeMode();
 
 bool   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
 
@@ -748,7 +747,6 @@ bool Hunk_CheckMark();
 void   Hunk_ClearTempMemory();
 void   *Hunk_AllocateTempMemory( int size );
 void   Hunk_FreeTempMemory( void *buf );
-int    Hunk_MemoryRemaining();
 void   Hunk_SmallLog();
 void   Hunk_Log();
 
@@ -902,12 +900,9 @@ void         CON_Init_TTY();
 char         *CON_Input();
 void         CON_Print( const char *message );
 
-void         CON_LogDump();
-
 // Console - other
 unsigned int CON_LogSize();
 unsigned int CON_LogWrite( const char *in );
-unsigned int CON_LogRead( char *out, unsigned int outSize );
 
 /* This is based on the Adaptive Huffman algorithm described in Sayood's Data
  * Compression book.  The ranks are not actually stored, but implicitly defined

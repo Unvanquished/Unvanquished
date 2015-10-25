@@ -186,23 +186,6 @@ signed char ClampChar( int i )
 	return i;
 }
 
-
-// Unused
-signed short ClampShort( int i )
-{
-	if ( i < -32768 )
-	{
-		return -32768;
-	}
-
-	if ( i > 0x7fff )
-	{
-		return 0x7fff;
-	}
-
-	return i;
-}
-
 // this isn't a real cheap function to call!
 int DirToByte( vec3_t dir )
 {
@@ -1431,7 +1414,7 @@ float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 )
 	VectorSubtract( p, proj, t );
 	return VectorLengthSquared( t );
 }
-// Unused
+
 /*
  * =================
  * AxisToAngles

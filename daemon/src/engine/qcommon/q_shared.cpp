@@ -114,22 +114,6 @@ void           *Com_GrowListElement( const growList_t *list, int index )
 	return list->elements[ index ];
 }
 
-// Unused
-int Com_IndexForGrowListElement( const growList_t *list, const void *element )
-{
-	int i;
-
-	for ( i = 0; i < list->currentElements; i++ )
-	{
-		if ( list->elements[ i ] == element )
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
 //=============================================================================
 
 float Com_Clamp( float min, float max, float value )
@@ -464,23 +448,6 @@ void COM_BackupParseSession( const char **data_p )
 {
 	backup_lines = com_lines;
 	backup_text = *data_p;
-}
-
-// Unused
-void COM_RestoreParseSession( const char **data_p )
-{
-	com_lines = backup_lines;
-	*data_p = backup_text;
-}
-// Unused
-void COM_SetCurrentParseLine( int line )
-{
-	com_lines = line;
-}
-// Unused
-int COM_GetCurrentParseLine()
-{
-	return com_lines;
 }
 
 char *COM_Parse( const char **data_p )
@@ -1244,57 +1211,6 @@ int Com_ParseInfos( const char *buf, int max, char infos[][ MAX_INFO_STRING ] )
 	return count;
 }
 
-void Com_Parse1DMatrix( const char **buf_p, int x, float *m, bool checkBrackets )
-{
-	char *token;
-	int  i;
-
-	if ( checkBrackets )
-	{
-		COM_MatchToken( buf_p, "(" );
-	}
-
-	for ( i = 0; i < x; i++ )
-	{
-		token = COM_Parse2( buf_p );
-		m[ i ] = atof( token );
-	}
-
-	if ( checkBrackets )
-	{
-		COM_MatchToken( buf_p, ")" );
-	}
-}
-
-void Com_Parse2DMatrix( const char **buf_p, int y, int x, float *m )
-{
-	int i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for ( i = 0; i < y; i++ )
-	{
-		Com_Parse1DMatrix( buf_p, x, m + i * x, true );
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
-// Unused. If removed, Com_Parse2DMatrix and Com_Parse1DMatrix can go as well
-void Com_Parse3DMatrix( const char **buf_p, int z, int y, int x, float *m )
-{
-	int i;
-
-	COM_MatchToken( buf_p, "(" );
-
-	for ( i = 0; i < z; i++ )
-	{
-		Com_Parse2DMatrix( buf_p, y, x, m + i * x * y );
-	}
-
-	COM_MatchToken( buf_p, ")" );
-}
-
 /*
 ===================
 Com_HexStrToInt
@@ -1887,36 +1803,6 @@ bool Q_isBadDirChar( char c )
 	}
 
 	return false;
-}
-
-// Unused
-char *Q_CleanDirName( char *dirname )
-{
-	char *d;
-	char *s;
-
-	s = dirname;
-	d = dirname;
-
-	// clear trailing '.'s
-	while ( *s == '.' )
-	{
-		s++;
-	}
-
-	while ( *s != '\0' )
-	{
-		if ( !Q_isBadDirChar( *s ) )
-		{
-			*d++ = *s;
-		}
-
-		s++;
-	}
-
-	*d = '\0';
-
-	return dirname;
 }
 
 int Q_CountChar( const char *string, char tocount )

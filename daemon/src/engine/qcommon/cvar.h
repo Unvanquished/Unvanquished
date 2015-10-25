@@ -87,11 +87,6 @@ void Cvar_Register(vmCvar_t *vmCvar, const char *varName,
 		const char *defaultValue, int flags);
 
 /**
- * updates a module's version of a cvar
- */
-void Cvar_Update(vmCvar_t *vmCvar);
-
-/**
  * will create the variable with no flags if it doesn't exist
  */
 void Cvar_Set(const char *var_name, const char *value);

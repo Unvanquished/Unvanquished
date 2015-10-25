@@ -867,8 +867,6 @@ void CL_ShutdownUI();
 int  Key_GetCatcher();
 void Key_SetCatcher( int catcher );
 void UI_GameCommandHandler();
-void LAN_LoadCachedServers();
-void LAN_SaveServersToCache();
 
 //
 // cl_net_chan.c
