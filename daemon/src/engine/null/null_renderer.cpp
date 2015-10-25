@@ -50,10 +50,6 @@ qhandle_t RE_RegisterShader( const char *, RegisterShaderFlags_t )
 {
 	return 1;
 }
-qhandle_t RE_RegisterShaderNoMip( const char * )
-{
-	return 1;
-}
 void RE_RegisterFont( const char *, const char *, int pointSize, fontInfo_t **font )
 {
 	if (!*font)
@@ -147,10 +143,6 @@ bool R_inPVVS( const vec3_t, const vec3_t )
 bool RE_LoadDynamicShader( const char*, const char* )
 {
 	return true;
-}
-int R_GetTextureId( const char* )
-{
-	return 0;
 }
 void RE_Finish() { }
 void RE_TakeVideoFrame( int, int, byte*, byte*, bool ) { }

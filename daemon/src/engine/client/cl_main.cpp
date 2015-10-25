@@ -4754,27 +4754,6 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 
 /*
 ==================
-CL_GetPingInfo
-==================
-*/
-void CL_GetPingInfo( int n, char *buf, int buflen )
-{
-	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
-	{
-		// invalid or empty slot
-		if ( buflen )
-		{
-			buf[ 0 ] = '\0';
-		}
-
-		return;
-	}
-
-	Q_strncpyz( buf, cl_pinglist[ n ].info, buflen );
-}
-
-/*
-==================
 CL_ClearPing
 ==================
 */

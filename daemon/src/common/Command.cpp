@@ -469,6 +469,7 @@ namespace Cmd {
         GetEnv().ExecuteAfter(text, parseCvars);
     }
 
+    // Unused
     CompletionResult FilterCompletion(Str::StringRef prefix, std::initializer_list<CompletionItem> list) {
         CompletionResult res;
         AddToCompletion(res, prefix, list);

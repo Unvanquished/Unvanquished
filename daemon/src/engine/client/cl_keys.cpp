@@ -710,11 +710,13 @@ void Console_Key( int key )
 
 //============================================================================
 
+// Unused
 bool Key_GetOverstrikeMode()
 {
 	return key_overstrikeMode;
 }
 
+// Unused, key_overstrikeMode overwritten directly elsewhere
 void Key_SetOverstrikeMode( bool state )
 {
 	key_overstrikeMode = state;
@@ -992,7 +994,7 @@ const char *Key_GetBinding( int keynum, int team )
 Key_GetKey
 ===================
 */
-
+// Unused
 int Key_GetKey( const char *binding, int team )
 {
 	int i;

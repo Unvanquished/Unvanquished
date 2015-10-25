@@ -2040,6 +2040,7 @@ void NET_Init()
 	Cmd_AddCommand( "net_restart", NET_Restart_f );
 }
 
+// Unused
 /*
 ====================
 NET_Shutdown

@@ -98,35 +98,6 @@ void Cvar_VariableStringBuffer(const char* name, char* buffer, int bufsize) {
 
 /*
 ============
-Cvar_VariableString
-============
-*/
-char* Cvar_LatchedVariableString(const char* name) {
-    cvar_t* var = Cvar_FindVar(name);
-    return var && var->latchedString ? var->latchedString : (char*)"";
-}
-
-/*
-============
-Cvar_LatchedVariableStringBuffer
-============
-*/
-void Cvar_LatchedVariableStringBuffer(const char* name, char* buffer, int bufsize) {
-    cvar_t* var = Cvar_FindVar(name);
-
-    if (not var) {
-        buffer[0] = '\0';
-    } else {
-        if (var->latchedString) {
-            Q_strncpyz(buffer, var->latchedString, bufsize);
-        } else {
-            Q_strncpyz(buffer, var->string, bufsize);
-        }
-    }
-}
-
-/*
-============
 Cvar_Get
 
 If the variable already exists, the value will not be set unless CVAR_ROM
@@ -201,15 +172,6 @@ char* Cvar_InfoString(int flag, bool big) {
 
 /*
 =====================
-Cvar_InfoStringBuffer
-=====================
-*/
-void Cvar_InfoStringBuffer(int bit, char* buff, int buffsize) {
-	Q_strncpyz(buff, Cvar_InfoString( bit, false), buffsize);
-}
-
-/*
-=====================
 Cvar_Register
 
 basically a slightly modified Cvar_Get for the interpreted modules
@@ -217,7 +179,7 @@ basically a slightly modified Cvar_Get for the interpreted modules
 */
 
 static std::vector<cvar_t*> vmCvarTable;
-
+// Unused, there's trap_Cvar_Register with the same signature but different implementation
 void Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags) {
 	// if the cvar was created by a script, it won't have the correct flags
 	cvar_t* cv = Cvar_Get(varName, defaultValue, flags);

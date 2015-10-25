@@ -366,6 +366,7 @@ void CL_ShutdownCGame()
 // libRocket UI stuff
 //
 
+// Unused
 /*
  * ====================
  * LAN_LoadCachedServers
@@ -400,6 +401,7 @@ void LAN_LoadCachedServers()
 	}
 }
 
+// Unused
 /*
  * ====================
  * LAN_SaveServersToCache
@@ -738,6 +740,7 @@ int LAN_GetServerStatus( const char *serverAddress, char *serverStatus, int maxL
 	return CL_ServerStatus( serverAddress, serverStatus, maxLen );
 }
 
+// Unused
 /*
  * =======================
  * LAN_ServerIsInFavoriteList
@@ -1458,6 +1461,7 @@ void CGameVM::CGameDrawActiveFrame(int serverTime,  bool demoPlayback)
 	this->SendMsg<CGameDrawActiveFrameMsg>(serverTime, demoPlayback);
 }
 
+// Handled in cgame but never called on the engine
 int CGameVM::CGameCrosshairPlayer()
 {
 	int player;

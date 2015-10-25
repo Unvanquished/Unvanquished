@@ -500,7 +500,7 @@ std::string StripExtension(Str::StringRef path)
 	}
 	return path;
 }
-
+// Unused
 std::string BaseNameStripExtension(Str::StringRef path)
 {
 	if (path.empty())
@@ -1563,6 +1563,7 @@ File OpenAppend(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, MODE_APPEND, err);
 }
+// Unused
 File OpenEdit(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, MODE_EDIT, err);
@@ -1807,6 +1808,7 @@ File OpenAppend(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, MODE_APPEND, err);
 }
+// Unused
 File OpenEdit(Str::StringRef path, std::error_code& err)
 {
 	return OpenMode(path, MODE_EDIT, err);

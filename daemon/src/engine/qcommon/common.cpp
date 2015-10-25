@@ -322,6 +322,7 @@ void Com_ParseCommandLine( char *commandLine )
 	}
 }
 
+// Unused
 /*
 ===================
 Com_SafeMode
@@ -391,6 +392,7 @@ void Com_StartupVariable( const char *match )
 	}
 }
 
+// Unused
 /*
 =================
 Com_AddStartupCommands
@@ -823,6 +825,7 @@ void Com_InitHunkMemory()
 #endif
 }
 
+// Unused
 /*
 ====================
 Hunk_MemoryRemaining

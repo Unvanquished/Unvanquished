@@ -384,7 +384,6 @@ void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 // as a clc_clientCommand instead of executed locally
 
 void Cmd_RemoveCommand( const char *cmd_name );
-void Cmd_RemoveCommandsByFunc( xcommand_t function );
 
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 
@@ -404,11 +403,8 @@ void Cmd_CompleteCfgName( char *args, int argNum );
 void Cmd_PrintUsage( const char *syntax, const char *description );
 int  Cmd_Argc();
 const char *Cmd_Argv( int arg );
-void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args();
 char *Cmd_ArgsFrom( int arg );
-void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength ); // from index 0
-void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength );
 const char *Cmd_Cmd();
 const char *Cmd_Cmd_FromNth( int );
 
@@ -423,7 +419,6 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 // if arg >= argc, so string operations are always safe.
 
 void Cmd_TokenizeString( const char *text );
-void Cmd_LiteralArgsBuffer( char *buffer, int bufferLength );
 void Cmd_SaveCmdContext();
 void Cmd_RestoreCmdContext();
 

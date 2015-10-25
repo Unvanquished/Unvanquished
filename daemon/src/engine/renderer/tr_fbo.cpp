@@ -127,6 +127,7 @@ R_CreateFBOColorBuffer
 Framebuffer must be bound
 ================
 */
+// Unused
 void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 {
 	bool absent;
@@ -199,6 +200,7 @@ void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 R_CreateFBOStencilBuffer
 ================
 */
+// Unused
 void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 {
 	bool absent;
@@ -276,6 +278,7 @@ void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 R_AttachFBOTexture1D
 =================
 */
+// Unused
 void R_AttachFBOTexture1D( int texId, int index )
 {
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
@@ -314,6 +317,7 @@ void R_AttachFBOTexture2D( int target, int texId, int index )
 R_AttachFBOTexture3D
 =================
 */
+// Unused
 void R_AttachFBOTexture3D( int texId, int index, int zOffset )
 {
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
@@ -340,6 +344,7 @@ void R_AttachFBOTextureDepth( int texId )
 R_AttachFBOTexturePackedDepthStencil
 =================
 */
+// Unused
 void R_AttachFBOTexturePackedDepthStencil( int texId )
 {
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texId, 0 );

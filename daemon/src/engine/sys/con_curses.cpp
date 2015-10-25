@@ -272,6 +272,7 @@ CON_Resize
 The window has just been resized, move everything back into place
 ==================
 */
+// Here is guarded with _WIN32, later is guarded with SIGWINCH
 #ifndef _WIN32
 static void CON_Resize( int )
 {
@@ -286,6 +287,7 @@ static void CON_Resize( int )
 CON_Clear_f
 ==================
 */
+// Unused, if removed the same function in con_tty.cpp can be removed as well
 void CON_Clear_f()
 {
 	if ( !curses_on )
@@ -341,6 +343,7 @@ Used for dumping log text to the tty.
 May be called on shutdown from a signal handler.
 ==================
 */
+// Unused, if removed the same function in con_tty.cpp can be removed as well
 void CON_LogDump()
 {
 	if ( dump_logs )

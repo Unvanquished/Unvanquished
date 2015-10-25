@@ -559,6 +559,8 @@ void         ByteToDir( int b, vec3_t dir );
 #define SnapVector( v )              do { ( v )[ 0 ] = ( floor( ( v )[ 0 ] + 0.5f ) ); ( v )[ 1 ] = ( floor( ( v )[ 1 ] + 0.5f ) ); ( v )[ 2 ] = ( floor( ( v )[ 2 ] + 0.5f ) ); } while ( 0 )
 
 // just in case you don't want to use the macros
+// Maybe these _Functions should be inlined and replace te macros defined above
+// Note that their current _Names are invalid in standard C++ (reserved for internal use to be exact)
 	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
 	void     _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
 	void     _VectorAdd( const vec3_t veca, const vec3_t vecb, vec3_t out );
@@ -570,9 +572,6 @@ void         ByteToDir( int b, vec3_t dir );
 	void     ZeroBounds( vec3_t mins, vec3_t maxs );
 	void     ClearBounds( vec3_t mins, vec3_t maxs );
 	void     AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs );
-
-// RB: same as BoundsIntersectPoint but kept for compatibility
-	bool PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs );
 
 	void     BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
 	bool BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
@@ -637,14 +636,8 @@ void         ByteToDir( int b, vec3_t dir );
 	void  VectorNormalizeFast( vec3_t v );  // does NOT return vector length, uses rsqrt approximation
 	vec_t VectorNormalize2( const vec3_t v, vec3_t out );
 	void  VectorInverse( vec3_t v );
-	void  Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
-
-	void  VectorRotate( vec3_t in, vec3_t matrix[ 3 ], vec3_t out );
 
 	int   NearestPowerOfTwo( int val );
-	int   Q_log2( int val );
-
-	int   Q_isnan( float x );
 
 	int   Q_rand( int *seed );
 	float Q_random( int *seed );
@@ -655,18 +648,12 @@ void         ByteToDir( int b, vec3_t dir );
 
 	void vectoangles( const vec3_t value1, vec3_t angles );
 
-	float vectoyaw( const vec3_t vec );
-
 	void  AnglesToAxis( const vec3_t angles, vec3_t axis[ 3 ] );
 // TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c
 	void  AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles );
 //void AxisToAngles ( const vec3_t axis[3], vec3_t angles );
-	float VectorDistance( vec3_t v1, vec3_t v2 );
 	float VectorDistanceSquared( vec3_t v1, vec3_t v2 );
-
-	float VectorMinComponent( vec3_t v );
-	float VectorMaxComponent( vec3_t v );
 
 	void  AxisClear( vec3_t axis[ 3 ] );
 	void  AxisCopy( vec3_t in[ 3 ], vec3_t out[ 3 ] );
@@ -676,11 +663,9 @@ void         ByteToDir( int b, vec3_t dir );
 
 	float AngleMod( float a );
 	float LerpAngle( float from, float to, float frac );
-	void  LerpPosition( vec3_t start, vec3_t end, float frac, vec3_t out );
 	float AngleSubtract( float a1, float a2 );
 	void  AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 );
 
-	float AngleNormalize2Pi( float angle );
 	float AngleNormalize360( float angle );
 	float AngleNormalize180( float angle );
 	float AngleDelta( float angle1, float angle2 );
@@ -699,7 +684,6 @@ void         ByteToDir( int b, vec3_t dir );
 	bool PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, bool cw );
 	void     ProjectPointOnPlane( vec3_t dst, const vec3_t point, const vec3_t normal );
 	void     RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
-	void     RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin );
 
 	void     RotateAroundDirection( vec3_t axis[ 3 ], float yaw );
 	void     MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
@@ -725,14 +709,11 @@ void         ByteToDir( int b, vec3_t dir );
 	void  ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
 	void  ProjectPointOntoVectorBounded( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
 	float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 );
-	float DistanceFromVectorSquared( vec3_t p, vec3_t lp1, vec3_t lp2 );
 
 // done.
 
 	vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 	    const vec3_t tP0, const vec3_t tP1, float *s, float *t );
-	vec_t DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1,
-	                                   const vec3_t tP0, const vec3_t tP1, float *s, float *t );
 
 //=============================================
 
@@ -1331,6 +1312,7 @@ void         ByteToDir( int b, vec3_t dir );
 		v = sseQuatTransform( t->sseRot, v );
 		sseStoreVec3( v, out );
 	}
+	// Unused
 	inline void TransformNormalVectorInverse( const transform_t *t,
 							 const vec3_t in, vec3_t out ) {
 		__m128 v = _mm_loadu_ps( in );
@@ -1350,11 +1332,13 @@ void         ByteToDir( int b, vec3_t dir );
 		t->sseRot = _mm_loadu_ps( quat );
 		t->sseTransScale = unitQuat();
 	}
+	// Unused
 	inline void TransInitRotation( const vec3_t axis, float angle,
 					      transform_t *t ) {
 		t->sseRot = sseAxisAngleToQuat( axis, angle );
 		t->sseTransScale = unitQuat();
 	}
+	// Unused
 	inline void TransInitTranslation( const vec3_t vec, transform_t *t ) {
 		__m128 v = _mm_loadu_ps( vec );
 		v = _mm_and_ps( v, mask_XYZ0() );
@@ -1371,6 +1355,7 @@ void         ByteToDir( int b, vec3_t dir );
 		__m128 q = _mm_loadu_ps( quat );
 		t->sseRot = sseQuatMul( t->sseRot, q );
 	}
+	// Unused
 	inline void TransInsRotation( const vec3_t axis, float angle,
 					     transform_t *t ) {
 		__m128 q = sseAxisAngleToQuat( axis, angle );
@@ -1383,6 +1368,7 @@ void         ByteToDir( int b, vec3_t dir );
 		t->sseTransScale = _mm_or_ps( _mm_and_ps( transformed, mask_XYZ0() ),
 					      _mm_and_ps( t->sseTransScale, mask_000W() ) );
 	}
+	// Unused
 	inline void TransAddRotation( const vec3_t axis, float angle,
 					     transform_t *t ) {
 		__m128 q = sseAxisAngleToQuat( axis, angle );
@@ -1398,6 +1384,7 @@ void         ByteToDir( int b, vec3_t dir );
 		__m128 f = _mm_set1_ps( factor );
 		t->sseTransScale = _mm_mul_ps( f, t->sseTransScale );
 	}
+	// Unused
 	inline void TransInsTranslation( const vec3_t vec,
 						transform_t *t ) {
 		__m128 v = _mm_loadu_ps( vec );
@@ -1523,32 +1510,17 @@ void         ByteToDir( int b, vec3_t dir );
 	  MEMSTREAM_FLAGS_ERR = BIT( 1 ),
 	};
 
-// helper struct for reading binary file formats
-	typedef struct memStream_s
-	{
-		byte *buffer;
-		int  bufSize;
-		byte *curPos;
-		int  flags;
-	}
-
-	memStream_t;
-
-	memStream_t *AllocMemStream( byte *buffer, int bufSize );
-	void        FreeMemStream( memStream_t *s );
-	int         MemStreamRead( memStream_t *s, void *buffer, int len );
-	int         MemStreamGetC( memStream_t *s );
-	int         MemStreamGetLong( memStream_t *s );
-	int         MemStreamGetShort( memStream_t *s );
-	float       MemStreamGetFloat( memStream_t *s );
 
 //=============================================
 
 #include <algorithm>
+
+// Could be replaced with std::max
 #ifndef MAX
 #define MAX(x,y) std::max((x), (y))
 #endif
 
+// Could be replaced with std::min
 #ifndef MIN
 #define MIN(x,y) std::min((x), (y))
 #endif
@@ -1559,13 +1531,11 @@ void         ByteToDir( int b, vec3_t dir );
 
 	char       *COM_SkipPath( char *pathname );
 	char       *Com_SkipTokens( char *s, int numTokens, const char *sep );
-	char       *Com_SkipCharset( char *s, char *sep );
 	void       COM_FixPath( char *pathname );
 	const char *COM_GetExtension( const char *name );
 	void       COM_StripExtension( const char *in, char *out );
 	void       COM_StripExtension2( const char *in, char *out, int destsize );
 	void       COM_StripExtension3( const char *src, char *dest, int destsize );
-	void       COM_StripFilename( char *in, char *out );
 	void       COM_DefaultExtension( char *path, int maxSize, const char *extension );
 
 	void       COM_BeginParseSession( const char *name );
@@ -1584,11 +1554,6 @@ void         ByteToDir( int b, vec3_t dir );
 	void       COM_ParseWarning( const char *format, ... ) PRINTF_LIKE(1);
 
 	int        Com_ParseInfos( const char *buf, int max, char infos[][ MAX_INFO_STRING ] );
-
-	bool   COM_BitCheck( const int array[], int bitNum );
-
-	void       COM_BitSet( int array[], int bitNum );
-	void       COM_BitClear( int array[], int bitNum );
 
 	int        Com_HashKey( char *string, int maxlen );
 
@@ -1657,16 +1622,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 //=============================================
 
-	int        Q_isprint( int c );
-	int        Q_islower( int c );
-	int        Q_isupper( int c );
-	int        Q_isalpha( int c );
-	int        Q_isnumeric( int c );
-	int        Q_isalphanumeric( int c );
-	int        Q_isforfilename( int c );
-
-	bool   Q_strtol( const char *s, long *out );
-	bool   Q_strtoi( const char *s, int *out );
+    bool Q_strtoi( const char *s, int *outNum );
 
 // portable case insensitive compare
 	int        Q_stricmp( const char *s1, const char *s2 );
@@ -1674,7 +1630,6 @@ void         ByteToDir( int b, vec3_t dir );
 	int        Q_strnicmp( const char *s1, const char *s2, int n );
 	char       *Q_strlwr( char *s1 );
 	char       *Q_strupr( char *s1 );
-	char       *Q_strrchr( const char *string, int c );
 	const char *Q_stristr( const char *s, const char *find );
 
 // buffer size safe library replacements
@@ -1688,7 +1643,6 @@ void         ByteToDir( int b, vec3_t dir );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
-	bool Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );
 

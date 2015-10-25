@@ -123,6 +123,7 @@ unsigned int CON_LogWrite( const char *in )
 CON_LogRead
 ==================
 */
+// Unused
 unsigned int CON_LogRead( char *out, unsigned int outSize )
 {
 	unsigned int firstChunk;
