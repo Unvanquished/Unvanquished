@@ -46,8 +46,8 @@ namespace Util {
 			snap.serverTime = stream.Read<uint32_t>();
 			stream.ReadData(&snap.areamask, MAX_MAP_AREA_BYTES);
 			snap.ps = stream.Read<playerState_t>();
-			snap.entities = std::move(stream.Read<std::vector<entityState_t>>());
-			snap.serverCommands = std::move(stream.Read<std::vector<std::string>>());
+			snap.entities = stream.Read<std::vector<entityState_t>>();
+			snap.serverCommands = stream.Read<std::vector<std::string>>();
 			return snap;
 		}
 	};

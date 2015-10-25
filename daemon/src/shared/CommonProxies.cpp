@@ -134,7 +134,7 @@ namespace Cmd {
                 return;
             }
 
-            res = std::move(it->second.cmd->Complete(argNum, args, prefix));
+            res = it->second.cmd->Complete(argNum, args, prefix);
         });
     }
 
