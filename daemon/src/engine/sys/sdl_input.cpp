@@ -1412,8 +1412,8 @@ static void IN_ProcessEvents( bool dropInput )
 							//   we would likely miss some button presses and releases.
 							IN_CenterMouse();
 						}
-					}
 #endif
+					}
 				}
 				break;
 
