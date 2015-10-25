@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "qcommon/q_shared.h"
 #include "framework/Application.h"
 #include "ConsoleHistory.h"
 
@@ -98,6 +97,8 @@ void History::Add( const Line& text )
 
 	current_line = lines.size();
 	unfinished.clear();
+
+	Save();
 }
 
 void History::PrevLine( Line& text )
