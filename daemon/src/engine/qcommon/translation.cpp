@@ -94,42 +94,6 @@ public:
 			FS_FCloseFile( fileHandle );
 		}
 	}
-
-	// Unused
-	int underflow()
-	{
-		if( gptr() < egptr() ) // buffer not exhausted
-		{
-			return traits_type::to_int_type( *gptr() );
-		}
-
-		if( !fileHandle )
-		{
-			return traits_type::eof();
-		}
-
-		char *base = buffer;
-		char *start = base;
-
-		if( eback() == base )
-		{
-			// Make arrangements for putback characters
-			memmove( base, egptr() - putBack, putBack );
-			start += putBack;
-		}
-
-		size_t n = FS_Read( start, BUFFER_SIZE - ( start - base ), fileHandle );
-
-		if( n == 0 )
-		{
-			return traits_type::eof();
-		}
-
-		// Set buffer pointers
-		setg( base, start, start + n );
-
-		return traits_type::to_int_type( *gptr() );
-	}
 };
 
 /*
