@@ -33,6 +33,27 @@ function(maybe_add_dep target dep)
 endfunction()
 
 function(CBSE target definition output)
+    # Check if we need to initialize submodule
+    file(GLOB RESULT ${CMAKE_SOURCE_DIR}/src/utils/cbse)
+    list(LENGTH ${RESULT} RES_LEN)
+    if(RES_LEN EQUAL 0)
+        if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+            find_package(Git REQUIRED)
+            if (GIT_FOUND)
+                execute_process(
+                    COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+            endif()
+        endif()
+    endif()
+    # Check if python has all the dependencies
+    # TODO: Execute pip directly here and install them
+    execute_process(
+        COMMAND ${PYTHON_EXECUTABLE} -c "import jinja2, yaml, collections.namedtuple, argparse, sys, os.path, re"
+        RESULT_VARIABLE RET)
+    if (NOT RET EQUAL 0)
+        message(FATAL_ERROR "Missing dependences for CBSE generation. Use pip -r install src/utils/cbse/requirements.txt to install")
+    endif()
     set(GENERATED_CBSE ${output}/backend/CBSEBackend.cpp
                        ${output}/backend/CBSEBackend.h
                        ${output}/backend/CBSEComponents.h)
