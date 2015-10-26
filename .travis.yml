@@ -34,7 +34,7 @@ install:
     libcurl4-gnutls-dev zlib1g-dev
     libopenal-dev libogg-dev libvorbis-dev libtheora-dev libxvidcore-dev libopusfile-dev libspeexdsp-dev
     nettle-dev libgmp-dev python-pip
-  - pip install --upgrade PyYAML jinja2
+  - sudo pip install --upgrade PyYAML jinja2
 
 #install:
 #  - brew update
