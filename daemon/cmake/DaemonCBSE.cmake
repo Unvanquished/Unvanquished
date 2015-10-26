@@ -49,7 +49,7 @@ function(CBSE target definition output)
     # Check if python has all the dependencies
     # TODO: Execute pip directly here and install them
     execute_process(
-        COMMAND ${PYTHON_EXECUTABLE} -c "import jinja2, yaml, collections.namedtuple, argparse, sys, os.path, re"
+        COMMAND ${PYTHON_EXECUTABLE} -c "import jinja2, yaml, collections, argparse, sys, os.path, re"
         RESULT_VARIABLE RET)
     if (NOT RET EQUAL 0)
         message(FATAL_ERROR "Missing dependences for CBSE generation. Use pip -r install src/utils/cbse/requirements.txt to install")
