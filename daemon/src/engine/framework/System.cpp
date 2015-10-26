@@ -277,9 +277,6 @@ static void Shutdown(bool error, Str::StringRef message)
 	// Stop accepting commands from other instances
 	CloseSingletonSocket();
 
-	// Save the console history
-	Console::History::Save();
-
     Application::Shutdown(error, message);
 
 	// Always run CON_Shutdown, because it restores the terminal to a usable state.
