@@ -46,7 +46,7 @@ namespace Console {
             void AutoComplete();
 
         private:
-            HistoryHandle hist;
+            History hist;
     };
 
 }
