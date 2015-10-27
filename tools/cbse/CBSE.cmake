@@ -69,7 +69,8 @@ function(CBSE target definition output)
                 "${output}"
                 "${definition}"
     )
-    string(REPLACE "/" "-" new_target ${definition})
+    string(REPLACE ${CMAKE_SOURCE_DIR}/ "" rel_path ${definition})
+    string(REPLACE "/" "-" new_target ${rel_path})
     add_custom_target(${new_target} ALL
         DEPENDS ${GENERATED_CBSE}
     )
