@@ -43,7 +43,6 @@ namespace Resource {
         return true;
     }
 
-    // Unused
     bool Resource::IsStillValid() {
         return true;
     }

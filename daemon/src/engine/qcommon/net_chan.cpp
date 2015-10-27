@@ -542,7 +542,6 @@ static void NET_QueuePacket( int length, const void *data, netadr_t to,
 	}
 }
 
-// Unused
 void NET_FlushPacketQueue()
 {
 	packetQueue_t *last;

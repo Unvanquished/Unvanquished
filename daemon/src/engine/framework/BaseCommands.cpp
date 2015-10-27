@@ -730,7 +730,6 @@ namespace Cmd {
     static int aliasRun;
     static bool inAliasRun;
 
-	// Unused
     std::string GetAliasConfigText() {
         std::ostringstream result;
         result << "clearAliases\n";

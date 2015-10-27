@@ -1598,7 +1598,6 @@ R_CullLightPoint
 Returns CULL_IN, CULL_CLIP, or CULL_OUT
 =================
 */
-// Unused
 int R_CullLightPoint( trRefLight_t *light, const vec3_t p )
 {
 	int      i;

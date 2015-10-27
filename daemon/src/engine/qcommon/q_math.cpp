@@ -270,7 +270,6 @@ bool PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t
 	plane[ 3 ] = DotProduct( a, plane );
 	return true;
 }
-// Unused
 /*
  * =====================
  * PlaneFromPoints
@@ -868,7 +867,6 @@ bool BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, 
 
 	return true;
 }
-// Unused
 bool BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius )
 {
 	if ( origin[ 0 ] - radius > maxs[ 0 ] ||
@@ -1375,7 +1373,6 @@ void ProjectPointOntoVectorBounded( vec3_t point, vec3_t vStart, vec3_t vEnd, ve
 	}
 }
 
-// Unused, equivalent implementation found in cm_trace.cpp as CM_DistanceFromLineSquared
 /*
  * ================
  * DistanceFromLineSquared
@@ -1523,7 +1520,6 @@ void MatrixIdentity( matrix_t m )
 	m[ 15 ] = 1;
 }
 
-// Unused
 void MatrixClear( matrix_t m )
 {
 	m[ 0 ] = 0;
@@ -1572,7 +1568,6 @@ bool MatrixCompare( const matrix_t a, const matrix_t b )
 	         a[ 3 ] == b[ 3 ] && a[ 7 ] == b[ 7 ] && a[ 11 ] == b[ 11 ] && a[ 15 ] == b[ 15 ] );
 }
 
-// Unused
 void MatrixTranspose( const matrix_t in, matrix_t out )
 {
 	out[ 0 ] = in[ 0 ];
@@ -1716,7 +1711,6 @@ bool MatrixInverse( matrix_t matrix )
 
 	return false;
 }
-// Unused
 void MatrixSetupXRotation( matrix_t m, vec_t degrees )
 {
 	vec_t a = DEG2RAD( degrees );
@@ -1738,7 +1732,6 @@ void MatrixSetupXRotation( matrix_t m, vec_t degrees )
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-// Unused
 void MatrixSetupYRotation( matrix_t m, vec_t degrees )
 {
 	vec_t a = DEG2RAD( degrees );
@@ -1760,7 +1753,6 @@ void MatrixSetupYRotation( matrix_t m, vec_t degrees )
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-// Unused
 void MatrixSetupZRotation( matrix_t m, vec_t degrees )
 {
 	vec_t a = DEG2RAD( degrees );
@@ -1822,7 +1814,6 @@ void MatrixSetupScale( matrix_t m, vec_t x, vec_t y, vec_t z )
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-// Unused
 void MatrixSetupShear( matrix_t m, vec_t x, vec_t y )
 {
 	m[ 0 ] = 1;
@@ -1906,7 +1897,6 @@ void MatrixMultiply2( matrix_t m, const matrix_t m2 )
 	MatrixCopy( m, tmp );
 	MatrixMultiply( tmp, m2, m );
 }
-// Unused
 void MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll )
 {
 	matrix_t tmp, rot;
@@ -2311,7 +2301,6 @@ void MatrixSetupTransformFromVectorsFLU( matrix_t m, const vec3_t forward, const
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-// Unused
 void MatrixSetupTransformFromVectorsFRU( matrix_t m, const vec3_t forward, const vec3_t right, const vec3_t up, const vec3_t origin )
 {
 	m[ 0 ] = forward[ 0 ];
@@ -2427,7 +2416,6 @@ void MatrixTransformPoint( const matrix_t m, const vec3_t in, vec3_t out )
 	out[ 1 ] = m[ 1 ] * in[ 0 ] + m[ 5 ] * in[ 1 ] + m[ 9 ] * in[ 2 ] + m[ 13 ];
 	out[ 2 ] = m[ 2 ] * in[ 0 ] + m[ 6 ] * in[ 1 ] + m[ 10 ] * in[ 2 ] + m[ 14 ];
 }
-// Unused
 void MatrixTransformPoint2( const matrix_t m, vec3_t inout )
 {
 	vec3_t tmp;
@@ -2461,7 +2449,6 @@ void MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out )
 
 	out[ 3 ] = DotProduct( out, planePos );
 }
-// Unused
 void MatrixTransformPlane2( const matrix_t m, vec4_t inout )
 {
 	vec4_t tmp;
@@ -2493,7 +2480,6 @@ void MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bot
 	m[ 11 ] = -1;
 	m[ 15 ] = 0;
 }
-// Unused
 /*
  * same as D3DXMatrixPerspectiveOffCenterLH
  *
@@ -2518,7 +2504,6 @@ void MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t b
 	m[ 11 ] = 1;
 	m[ 15 ] = 0;
 }
-// Unused
 /*
  * same as D3DXMatrixPerspectiveOffCenterRH
  *
@@ -2543,7 +2528,6 @@ void MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t b
 	m[ 11 ] = -1;
 	m[ 15 ] = 0;
 }
-// Unused
 /*
  * same as D3DXMatrixPerspectiveFovLH
  *
@@ -2573,7 +2557,6 @@ void MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, vec_t fov, vec_t aspec
 	m[ 11 ] = 1;
 	m[ 15 ] = 0;
 }
-// Unused
 void MatrixPerspectiveProjectionFovXYLH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far )
 {
 	vec_t width, height;
@@ -2673,7 +2656,6 @@ void MatrixOrthogonalProjection( matrix_t m, vec_t left, vec_t right, vec_t bott
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-// Unused
 /*
  * same as D3DXMatrixOrthoOffCenterLH
  *
@@ -2723,7 +2705,6 @@ void MatrixOrthogonalProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bo
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-// Unused
 /*
  * same as D3DXMatrixReflect
  *
@@ -2767,7 +2748,6 @@ void MatrixPlaneReflection( matrix_t m, const vec4_t plane )
 	MatrixTranspose( m2, m );
 #endif
 }
-// Unused
 void MatrixLookAtLH( matrix_t m, const vec3_t eye, const vec3_t dir, const vec3_t up )
 {
 	vec3_t dirN;
@@ -2839,7 +2819,6 @@ void MatrixLookAtRH( matrix_t m, const vec3_t eye, const vec3_t dir, const vec3_
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-// Unused
 void MatrixScaleTranslateToUnitCube( matrix_t m, const vec3_t mins, const vec3_t maxs )
 {
 	m[ 0 ] = 2 / ( maxs[ 0 ] - mins[ 0 ] );
@@ -3060,7 +3039,6 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 	QuatNormalize( q );
 #endif
 }
-// Unused
 void QuatToVectorsFLU( const quat_t q, vec3_t forward, vec3_t left, vec3_t up )
 {
 	matrix_t tmp;
@@ -3084,7 +3062,6 @@ void QuatToAxis( const quat_t q, vec3_t axis[ 3 ] )
 	MatrixFromQuat( tmp, q );
 	MatrixToVectorsFLU( tmp, axis[ 0 ], axis[ 1 ], axis[ 2 ] );
 }
-// Unused
 void QuatToAngles( const quat_t q, vec3_t angles )
 {
 	quat_t q2;
@@ -3123,7 +3100,6 @@ void QuatMultiply1( const quat_t qa, const quat_t qb, quat_t qc )
 	qc[ 2 ] = qa[ 3 ] * qb[ 2 ] + qa[ 2 ] * qb[ 3 ] + qa[ 0 ] * qb[ 1 ] - qa[ 1 ] * qb[ 0 ];
 	qc[ 3 ] = qa[ 3 ] * qb[ 3 ] - qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] - qa[ 2 ] * qb[ 2 ];
 }
-// Unused
 void QuatMultiply2( const quat_t qa, const quat_t qb, quat_t qc )
 {
 	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] + qa[ 0 ] * qb[ 3 ] + qa[ 1 ] * qb[ 2 ] + qa[ 2 ] * qb[ 1 ];
@@ -3131,7 +3107,6 @@ void QuatMultiply2( const quat_t qa, const quat_t qb, quat_t qc )
 	qc[ 2 ] = qa[ 3 ] * qb[ 2 ] - qa[ 2 ] * qb[ 3 ] - qa[ 0 ] * qb[ 1 ] + qa[ 1 ] * qb[ 0 ];
 	qc[ 3 ] = qa[ 3 ] * qb[ 3 ] - qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] + qa[ 2 ] * qb[ 2 ];
 }
-// Unused
 void QuatMultiply3( const quat_t qa, const quat_t qb, quat_t qc )
 {
 	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] + qa[ 0 ] * qb[ 3 ] + qa[ 1 ] * qb[ 2 ] + qa[ 2 ] * qb[ 1 ];
@@ -3139,7 +3114,6 @@ void QuatMultiply3( const quat_t qa, const quat_t qb, quat_t qc )
 	qc[ 2 ] = -qa[ 3 ] * qb[ 2 ] + qa[ 2 ] * qb[ 3 ] - qa[ 0 ] * qb[ 1 ] + qa[ 1 ] * qb[ 0 ];
 	qc[ 3 ] = -qa[ 3 ] * qb[ 3 ] + qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] + qa[ 2 ] * qb[ 2 ];
 }
-// Unused
 void QuatMultiply4( const quat_t qa, const quat_t qb, quat_t qc )
 {
 	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] - qa[ 0 ] * qb[ 3 ] - qa[ 1 ] * qb[ 2 ] - qa[ 2 ] * qb[ 1 ];
@@ -3298,7 +3272,6 @@ void TransformPoint( const transform_t *t, const vec3_t in, vec3_t out )
 	VectorScale( out, t->scale, out );
 	VectorAdd( out, t->trans, out );
 }
-// Unused
 // apply the inverse of a transform to a point
 void TransformPointInverse( const transform_t *t, const vec3_t in, vec3_t out )
 {
@@ -3312,7 +3285,6 @@ void TransformNormalVector( const transform_t *t, const vec3_t in, vec3_t out )
 {
 	QuatTransformVector( t->rot, in, out );
 }
-// Unused
 // apply the inverse of a transform to a normal vector (ignore scale
 // and translation)
 void TransformNormalVectorInverse( const transform_t *t, const vec3_t in,
@@ -3328,7 +3300,6 @@ void TransInitRotationQuat( const quat_t quat, transform_t *t )
 	VectorClear( t->trans );
 	t->scale = 1.0f;
 }
-// Unused
 void TransInitRotation( const vec3_t axis, float angle, transform_t *t )
 {
 	float sa = sin( 0.5f * angle );
@@ -3339,7 +3310,6 @@ void TransInitRotation( const vec3_t axis, float angle, transform_t *t )
 	q[3] = ca;
 	TransInitRotationQuat( q, t );
 }
-// Unused
 // initialize a transform with a pure translation
 void TransInitTranslation( const vec3_t vec, transform_t *t )
 {
@@ -3361,7 +3331,6 @@ void TransInsRotationQuat( const quat_t quat, transform_t *t )
 {
 	QuatMultiply0( t->rot, quat );
 }
-// Unused
 void TransInsRotation( const vec3_t axis, float angle, transform_t *t )
 {
 	float sa = sin( 0.5f * angle );
@@ -3383,7 +3352,6 @@ void TransAddRotationQuat( const quat_t quat, transform_t *t )
 	QuatMultiply0( tmp, t->rot );
 	QuatCopy( tmp, t->rot );
 }
-// Unused
 void TransAddRotation( const vec3_t axis, float angle, transform_t *t )
 {
 	float sa = sin( 0.5f * angle );
@@ -3407,7 +3375,6 @@ void TransAddScale( float factor, transform_t *t )
 	VectorScale( t->trans, factor, t->trans );
 	t->scale *= factor;
 }
-// Unused
 // add a translation at the start of an existing transformation
 void TransInsTranslation( const vec3_t vec, transform_t *t )
 {

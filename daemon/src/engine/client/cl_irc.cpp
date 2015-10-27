@@ -2685,7 +2685,6 @@ void CL_IRCWaitShutdown()
 	IRC_WaitThread();
 }
 
-// Unused
 /*
 ==================
 CL_IRCIsConnected
@@ -2697,7 +2696,6 @@ bool CL_IRCIsConnected()
 	return ( IRC_ThreadStatus == IRC_THREAD_JOINED );
 }
 
-// Unused
 /*
 ==================
 CL_IRCIsRunning

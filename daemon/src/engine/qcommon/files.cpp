@@ -307,13 +307,11 @@ int FS_Seek(fileHandle_t handle, long offset, int origin)
 	}
 }
 
-// Unused
 void FS_ForceFlush(fileHandle_t handle)
 {
 	FS_CheckHandle(handle, true);
 	handleTable[handle].forceFlush = true;
 }
-// Unused
 void FS_Flush(fileHandle_t handle)
 {
 	FS_CheckHandle(handle, true);

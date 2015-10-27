@@ -1311,7 +1311,6 @@ void         ByteToDir( int b, vec3_t dir );
 		v = sseQuatTransform( t->sseRot, v );
 		sseStoreVec3( v, out );
 	}
-	// Unused
 	inline void TransformNormalVectorInverse( const transform_t *t,
 							 const vec3_t in, vec3_t out ) {
 		__m128 v = _mm_loadu_ps( in );
@@ -1331,13 +1330,11 @@ void         ByteToDir( int b, vec3_t dir );
 		t->sseRot = _mm_loadu_ps( quat );
 		t->sseTransScale = unitQuat();
 	}
-	// Unused
 	inline void TransInitRotation( const vec3_t axis, float angle,
 					      transform_t *t ) {
 		t->sseRot = sseAxisAngleToQuat( axis, angle );
 		t->sseTransScale = unitQuat();
 	}
-	// Unused
 	inline void TransInitTranslation( const vec3_t vec, transform_t *t ) {
 		__m128 v = _mm_loadu_ps( vec );
 		v = _mm_and_ps( v, mask_XYZ0() );
@@ -1354,7 +1351,6 @@ void         ByteToDir( int b, vec3_t dir );
 		__m128 q = _mm_loadu_ps( quat );
 		t->sseRot = sseQuatMul( t->sseRot, q );
 	}
-	// Unused
 	inline void TransInsRotation( const vec3_t axis, float angle,
 					     transform_t *t ) {
 		__m128 q = sseAxisAngleToQuat( axis, angle );
@@ -1367,7 +1363,6 @@ void         ByteToDir( int b, vec3_t dir );
 		t->sseTransScale = _mm_or_ps( _mm_and_ps( transformed, mask_XYZ0() ),
 					      _mm_and_ps( t->sseTransScale, mask_000W() ) );
 	}
-	// Unused
 	inline void TransAddRotation( const vec3_t axis, float angle,
 					     transform_t *t ) {
 		__m128 q = sseAxisAngleToQuat( axis, angle );
@@ -1383,7 +1378,6 @@ void         ByteToDir( int b, vec3_t dir );
 		__m128 f = _mm_set1_ps( factor );
 		t->sseTransScale = _mm_mul_ps( f, t->sseTransScale );
 	}
-	// Unused
 	inline void TransInsTranslation( const vec3_t vec,
 						transform_t *t ) {
 		__m128 v = _mm_loadu_ps( vec );

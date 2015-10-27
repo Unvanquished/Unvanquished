@@ -110,7 +110,6 @@ void SleepFor(SteadyClock::duration time)
 #endif
 }
 
-// Unused
 SteadyClock::time_point SleepUntil(SteadyClock::time_point time)
 {
 	// Early exit if we are already past the deadline
@@ -355,7 +354,6 @@ void GenRandomBytes(void* dest, size_t size)
 
 } // namespace Sys
 
-// Suspicious, operator new throws by default
 // Global operator new/delete override to not throw an exception when out of
 // memory. Instead, it is preferable to simply crash with an error.
 void* operator new(size_t n)

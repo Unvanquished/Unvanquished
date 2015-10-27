@@ -185,7 +185,6 @@ namespace Audio {
         return not playing;
     }
 
-    // Unused
     void Sound::SetPositionalGain(float gain) {
         positionalGain = gain;
     }

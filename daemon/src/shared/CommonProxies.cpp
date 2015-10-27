@@ -565,7 +565,6 @@ int trap_FS_FileLength( fileHandle_t f )
 	return ret;
 }
 
-// Unused
 void trap_FS_Rename(const char *from, const char *to)
 {
 	VM::SendMsg<VM::FSRenameMsg>(from, to);

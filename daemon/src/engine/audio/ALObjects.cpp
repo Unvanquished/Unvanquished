@@ -696,7 +696,6 @@ namespace AL {
         CHECK_AL_ERROR();
     }
 
-    // Unused
     void Source::SetRolloff(float factor) {
         alSourcef(alHandle, AL_ROLLOFF_FACTOR, factor);
         CHECK_AL_ERROR();

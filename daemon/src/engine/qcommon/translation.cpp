@@ -357,12 +357,10 @@ const char* Trans_Gettext( const char *msgid )
 	return Trans_Gettext_Internal( msgid, trans_manager );
 }
 
-// Unused
 const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	return Trans_Pgettext_Internal( ctxt, msgid, trans_manager );
 }
-// Unused
 const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
 {
 	return Trans_GettextPlural_Internal( msgid, msgid_plural, num, trans_manager );

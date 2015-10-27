@@ -1146,7 +1146,6 @@ void SkipRestOfLine( const char **data )
 Com_ParseInfos
 ===============
 */
-// Unused
 int Com_ParseInfos( const char *buf, int max, char infos[][ MAX_INFO_STRING ] )
 {
 	const char *token;
