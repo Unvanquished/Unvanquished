@@ -1506,7 +1506,6 @@ void         ByteToDir( int b, vec3_t dir );
 //=============================================
 
 #include <algorithm>
-
 // Could be replaced with std::max
 #ifndef MAX
 #define MAX(x,y) std::max((x), (y))

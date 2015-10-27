@@ -1351,7 +1351,6 @@ void CGameVM::CGameDrawActiveFrame(int serverTime,  bool demoPlayback)
 	this->SendMsg<CGameDrawActiveFrameMsg>(serverTime, demoPlayback);
 }
 
-// Handled in cgame but never called on the engine
 int CGameVM::CGameCrosshairPlayer()
 {
 	int player;

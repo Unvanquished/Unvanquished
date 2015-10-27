@@ -272,7 +272,6 @@ CON_Resize
 The window has just been resized, move everything back into place
 ==================
 */
-// Here is guarded with _WIN32, later is guarded with SIGWINCH
 #ifndef _WIN32
 static void CON_Resize( int )
 {
