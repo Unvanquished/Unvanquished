@@ -2787,7 +2787,7 @@ void CG_Buildable( centity_t *cent )
 	// draw range marker if enabled
 	if( team == cg.predictedPlayerState.persistant[ PERS_TEAM ] ) {
 		bool drawRange;
-		float dist, maxDist = MAX( RADAR_RANGE, ALIENSENSE_RANGE );
+		float dist, maxDist = std::max( RADAR_RANGE, ALIENSENSE_RANGE );
 
 		if ( team == TEAM_HUMANS ) {
 			drawRange = BG_InventoryContainsWeapon( WP_HBUILD, cg.predictedPlayerState.stats );

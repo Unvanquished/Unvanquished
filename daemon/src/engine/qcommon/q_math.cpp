@@ -894,11 +894,11 @@ bool BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t or
 float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs ) {
 	float result = Q_fabs( mins[0] );
 
-	result = MAX( result, Q_fabs( mins[ 1 ] ) );
-	result = MAX( result, Q_fabs( mins[ 2 ] ) );
-	result = MAX( result, Q_fabs( maxs[ 0 ] ) );
-	result = MAX( result, Q_fabs( maxs[ 1 ] ) );
-	result = MAX( result, Q_fabs( maxs[ 2 ] ) );
+	result = std::max( result, Q_fabs( mins[ 1 ] ) );
+	result = std::max( result, Q_fabs( mins[ 2 ] ) );
+	result = std::max( result, Q_fabs( maxs[ 0 ] ) );
+	result = std::max( result, Q_fabs( maxs[ 1 ] ) );
+	result = std::max( result, Q_fabs( maxs[ 2 ] ) );
 
 	return result;
 }

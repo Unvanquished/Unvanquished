@@ -1719,7 +1719,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
 				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) *
 				                ( self->healthSourceTime - level.time ) );
-				modifier = MAX( modifier, ALIEN_REGEN_NOCREEP_MIN );
+				modifier = std::max( modifier, ALIEN_REGEN_NOCREEP_MIN );
 			}
 		}
 

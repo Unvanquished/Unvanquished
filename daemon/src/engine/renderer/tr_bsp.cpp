@@ -930,7 +930,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		updated = false;
 
 		for( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ ) {
-			int minVertex = MIN( MIN( components[ tri->indexes[ 0 ] ].minVertex,
+			int minVertex = std::min( std::min( components[ tri->indexes[ 0 ] ].minVertex,
 						  components[ tri->indexes[ 1 ] ].minVertex ),
 					     components[ tri->indexes[ 2 ] ].minVertex );
 			for( j = 0; j < 3; j++ ) {
@@ -938,13 +938,13 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 				if( components[ vertex ].minVertex != minVertex ) {
 					updated = true;
 					components[ vertex ].minVertex = minVertex;
-					components[ minVertex ].stBounds[ 0 ][ 0 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 0 ],
+					components[ minVertex ].stBounds[ 0 ][ 0 ] = std::min( components[ minVertex ].stBounds[ 0 ][ 0 ],
 											  components[ vertex ].stBounds[ 0 ][ 0 ] );
-					components[ minVertex ].stBounds[ 0 ][ 1 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 1 ],
+					components[ minVertex ].stBounds[ 0 ][ 1 ] = std::min( components[ minVertex ].stBounds[ 0 ][ 1 ],
 											  components[ vertex ].stBounds[ 0 ][ 1 ] );
-					components[ minVertex ].stBounds[ 1 ][ 0 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 0 ],
+					components[ minVertex ].stBounds[ 1 ][ 0 ] = std::max( components[ minVertex ].stBounds[ 1 ][ 0 ],
 											  components[ vertex ].stBounds[ 1 ][ 0 ] );
-					components[ minVertex ].stBounds[ 1 ][ 1 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 1 ],
+					components[ minVertex ].stBounds[ 1 ][ 1 ] = std::max( components[ minVertex ].stBounds[ 1 ][ 1 ],
 											  components[ vertex ].stBounds[ 1 ][ 1 ] );
 				}
 			}
@@ -1088,8 +1088,8 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 			points[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			points[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 
-			stBounds[ 0 ][ j ] = MIN( stBounds[ 0 ][ j ], points[ i ].st[ j ] );
-			stBounds[ 1 ][ j ] = MAX( stBounds[ 1 ][ j ], points[ i ].st[ j ] );
+			stBounds[ 0 ][ j ] = std::min( stBounds[ 0 ][ j ], points[ i ].st[ j ] );
+			stBounds[ 1 ][ j ] = std::max( stBounds[ 1 ][ j ], points[ i ].st[ j ] );
 		}
 
 		points[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
@@ -1245,7 +1245,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		updated = false;
 
 		for( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ ) {
-			int minVertex = MIN( MIN( components[ tri->indexes[ 0 ] ].minVertex,
+			int minVertex = std::min( std::min( components[ tri->indexes[ 0 ] ].minVertex,
 						  components[ tri->indexes[ 1 ] ].minVertex ),
 					     components[ tri->indexes[ 2 ] ].minVertex );
 			for( j = 0; j < 3; j++ ) {
@@ -1253,13 +1253,13 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 				if( components[ vertex ].minVertex != minVertex ) {
 					updated = true;
 					components[ vertex ].minVertex = minVertex;
-					components[ minVertex ].stBounds[ 0 ][ 0 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 0 ],
+					components[ minVertex ].stBounds[ 0 ][ 0 ] = std::min( components[ minVertex ].stBounds[ 0 ][ 0 ],
 											  components[ vertex ].stBounds[ 0 ][ 0 ] );
-					components[ minVertex ].stBounds[ 0 ][ 1 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 1 ],
+					components[ minVertex ].stBounds[ 0 ][ 1 ] = std::min( components[ minVertex ].stBounds[ 0 ][ 1 ],
 											  components[ vertex ].stBounds[ 0 ][ 1 ] );
-					components[ minVertex ].stBounds[ 1 ][ 0 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 0 ],
+					components[ minVertex ].stBounds[ 1 ][ 0 ] = std::max( components[ minVertex ].stBounds[ 1 ][ 0 ],
 											  components[ vertex ].stBounds[ 1 ][ 0 ] );
-					components[ minVertex ].stBounds[ 1 ][ 1 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 1 ],
+					components[ minVertex ].stBounds[ 1 ][ 1 ] = std::max( components[ minVertex ].stBounds[ 1 ][ 1 ],
 											  components[ vertex ].stBounds[ 1 ][ 1 ] );
 				}
 			}

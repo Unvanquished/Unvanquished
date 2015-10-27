@@ -1502,20 +1502,6 @@ void         ByteToDir( int b, vec3_t dir );
 	  MEMSTREAM_FLAGS_ERR = BIT( 1 ),
 	};
 
-
-//=============================================
-
-#include <algorithm>
-// Could be replaced with std::max
-#ifndef MAX
-#define MAX(x,y) std::max((x), (y))
-#endif
-
-// Could be replaced with std::min
-#ifndef MIN
-#define MIN(x,y) std::min((x), (y))
-#endif
-
 //=============================================
 
 	float      Com_Clamp( float min, float max, float value );

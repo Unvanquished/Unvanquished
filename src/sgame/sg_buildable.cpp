@@ -152,8 +152,8 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 		// Method 1
 		// This describes the worst case for any angle.
 		/*
-		displacement = MAX( VectorLength( mins ), VectorLength( maxs ) ) +
-		               MAX( VectorLength( cmins ), VectorLength( cmaxs ) ) + 1.0f;
+		displacement = std::max( VectorLength( mins ), VectorLength( maxs ) ) +
+		               std::max( VectorLength( cmins ), VectorLength( cmaxs ) ) + 1.0f;
 		*/
 
 		// Method 2
@@ -1582,9 +1582,9 @@ static int PowerRelevantRange()
 	lastCalculation = level.time;
 
 	relevantRange = 1;
-	relevantRange = MAX( relevantRange, g_powerReactorRange.integer );
-	relevantRange = MAX( relevantRange, g_powerRepeaterRange.integer );
-	relevantRange = MAX( relevantRange, g_powerCompetitionRange.integer );
+	relevantRange = std::max( relevantRange, g_powerReactorRange.integer );
+	relevantRange = std::max( relevantRange, g_powerRepeaterRange.integer );
+	relevantRange = std::max( relevantRange, g_powerCompetitionRange.integer );
 
 	return relevantRange;
 }
@@ -1705,7 +1705,7 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 		return 0.0f;
 	}
 
-	return power * MAX( 0.0f, 1.0f - ( distance / range ) );
+	return power * std::max( 0.0f, 1.0f - ( distance / range ) );
 }
 
 /*
@@ -1759,7 +1759,7 @@ static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, f
 		return 0.0f;
 	}
 
-	return power * MAX( 0.0f, 1.0f - ( distance / range ) );
+	return power * std::max( 0.0f, 1.0f - ( distance / range ) );
 }
 
 /*
@@ -3757,7 +3757,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 		cost -= entAttr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
 	}
-	cost = MAX( 0.0f, cost );
+	cost = std::max( 0.0f, cost );
 
 	// check if we can already afford the new buildable
 	if ( G_CanAffordBuildPoints( attr->team, cost ) )
@@ -3812,7 +3812,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
 
 		cost -= entAttr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
-		cost = MAX( 0.0f, cost );
+		cost = std::max( 0.0f, cost );
 
 		// check if we have enough resources now
 		if ( G_CanAffordBuildPoints( attr->team, cost ) )

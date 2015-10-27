@@ -35,7 +35,7 @@ Keybinding command
 */
 static void CG_SizeUp_f()
 {
-	trap_Cvar_Set( "cg_viewsize", va( "%i", MIN( cg_viewsize.integer + 10, 100 ) ) );
+	trap_Cvar_Set( "cg_viewsize", va( "%i", std::min( cg_viewsize.integer + 10, 100 ) ) );
 }
 
 /*
@@ -47,7 +47,7 @@ Keybinding command
 */
 static void CG_SizeDown_f()
 {
-	trap_Cvar_Set( "cg_viewsize", va( "%i", MAX( cg_viewsize.integer - 10, 30 ) ) );
+	trap_Cvar_Set( "cg_viewsize", va( "%i", std::max( cg_viewsize.integer - 10, 30 ) ) );
 }
 
 /*

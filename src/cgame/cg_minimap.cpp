@@ -473,7 +473,7 @@ static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
     {
         if( state->minimapFading != 0.0f )
         {
-            state->minimapFading = MAX( 0.0f, state->minimapFading - cg.frametime * MINIMAP_FADE_TIME );
+            state->minimapFading = std::max( 0.0f, state->minimapFading - cg.frametime * MINIMAP_FADE_TIME );
         }
 
         if( state->minimapFading == 0.0f )
@@ -494,7 +494,7 @@ static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
         {
             if( state->minimapFading != 1.0f )
             {
-                state->minimapFading = MIN( 1.0f, state->minimapFading + cg.frametime * MINIMAP_FADE_TIME );
+                state->minimapFading = std::min( 1.0f, state->minimapFading + cg.frametime * MINIMAP_FADE_TIME );
             }
 
             //Copy the current state so that we can use it once the player is out of the PVS

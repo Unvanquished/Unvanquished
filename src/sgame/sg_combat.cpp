@@ -165,7 +165,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	damage = self->entity->Get<HealthComponent>()->MaxHealth() / 4.0f;
 	if ( killer )
 	{
-		damage = MIN( damage, self->credits[ killer - g_entities ].value );
+		damage = std::min( damage, self->credits[ killer - g_entities ].value );
 	}
 
 	for ( playerNum = 0; playerNum < level.maxclients; ++playerNum )

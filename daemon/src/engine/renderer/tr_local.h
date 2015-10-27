@@ -54,7 +54,7 @@ static inline byte floatToUnorm8(float f) {
 	return lrintf(f * 255.0f);
 }
 static inline float snorm8ToFloat(int8_t snorm8) {
-	return MAX( snorm8 * (1.0f / 127.0f), -1.0f);
+	return std::max( snorm8 * (1.0f / 127.0f), -1.0f);
 }
 static inline int8_t floatToSnorm8(float f) {
 	// don't use Q_ftol here, as the semantics of Q_ftol
@@ -71,7 +71,7 @@ static inline uint16_t floatToUnorm16(float f) {
 	return lrintf(f * 65535.0f);
 }
 static inline float snorm16ToFloat(int16_t snorm16) {
-	return MAX( snorm16 * (1.0f / 32767.0f), -1.0f);
+	return std::max( snorm16 * (1.0f / 32767.0f), -1.0f);
 }
 static inline int16_t floatToSnorm16(float f) {
 	// don't use Q_ftol here, as the semantics of Q_ftol
