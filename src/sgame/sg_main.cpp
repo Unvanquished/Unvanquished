@@ -2073,7 +2073,7 @@ static void G_LogGameplayStats( int state )
 
 	if ( state == LOG_GAMEPLAY_STATS_BODY )
 	{
-		nextCalculation = level.time + MAX( 1, g_logGameplayStatsFrequency.integer ) * 1000;
+		nextCalculation = level.time + std::max( 1, g_logGameplayStatsFrequency.integer ) * 1000;
 	}
 	else
 	{

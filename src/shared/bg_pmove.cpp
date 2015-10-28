@@ -948,7 +948,7 @@ static bool PM_CheckPounce()
 				pitchToRef = M_PI_2 - acos( DotProduct( up, jumpDirection ) );
 
 				// use the advantageous pitch; allows using an upwards gradiant as a ramp
-				pitch = MIN( pitchToGround, pitchToRef );
+				pitch = std::min( pitchToGround, pitchToRef );
 
 				// pitches above 45° or below LEVEL1_POUNCE_MINPITCH will result in less than the maximum jump length
 				if ( pitch > M_PI_4 )

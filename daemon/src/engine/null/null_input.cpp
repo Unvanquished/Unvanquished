@@ -53,19 +53,6 @@ void IN_CenterMouse()
 {
 }
 
-void Sys_SendKeyEvents()
-{
-}
-
-// TTimo: added for win32 dedicated
-void IN_MouseEvent( int )
-{
-}
-
-void IN_Activate( bool )
-{
-}
-
 void IN_DropInputsForFrame()
 {
 }

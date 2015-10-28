@@ -987,7 +987,7 @@ static int CG_CalcFov()
 				if ( !usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) || cg.snap->ps.weaponstate == WEAPON_RELOADING )
 				{
 					cg.zoomed = false;
-					cg.zoomTime = MIN( cg.time,
+					cg.zoomTime = std::min( cg.time,
 					                   cg.time + cg.time - cg.zoomTime - ZOOM_TIME );
 				}
 			}
@@ -1004,7 +1004,7 @@ static int CG_CalcFov()
 				if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) && cg.snap->ps.weaponstate != WEAPON_RELOADING )
 				{
 					cg.zoomed = true;
-					cg.zoomTime = MIN( cg.time,
+					cg.zoomTime = std::min( cg.time,
 					                   cg.time + cg.time - cg.zoomTime - ZOOM_TIME );
 				}
 			}
@@ -1440,11 +1440,11 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 	{
 		if(currentFade < targetFade)
 		{
-			currentFade = MIN(targetFade, currentFade + fadeChange);
+			currentFade = std::min(targetFade, currentFade + fadeChange);
 		}
 		else if(currentFade > targetFade)
 		{
-			currentFade = MAX(targetFade, currentFade - fadeChange);
+			currentFade = std::max(targetFade, currentFade - fadeChange);
 		}
 	}
 	else if(currentFade <= 0.0f)
@@ -1453,7 +1453,7 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 	}
 	else
 	{
-		currentFade = MAX(0.0f, currentFade - fadeChange);
+		currentFade = std::max(0.0f, currentFade - fadeChange);
 	}
 
 	//Instant cgrading effects have the priority

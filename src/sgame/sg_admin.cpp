@@ -2134,7 +2134,7 @@ bool G_admin_time( gentity_t *ent )
 			timelimit = atoi( tstr );
 
 			// clip to 0 .. 6 hours
-			timelimit = MIN( 6 * 60, MAX( 0, timelimit ) );
+			timelimit = std::min( 6 * 60, std::max( 0, timelimit ) );
 			if ( timelimit != level.timelimit )
 			{
 				AP( va( "print_tr %s %d %d %s", QQ( N_("^3time: ^7time limit set to $1$m from $2$m by $3$\n") ),
@@ -2547,7 +2547,7 @@ bool G_admin_kick( gentity_t *ent )
 	                  vic->client->pers.netname,
 	                  vic->client->pers.guid,
 	                  &vic->client->pers.ip,
-	                  MAX( 1, time ),
+	                  std::max( 1, time ),
 	                  ( *reason ) ? reason : "kicked by admin" );
 	G_admin_writeconfig();
 
@@ -2598,7 +2598,7 @@ bool G_admin_ban( gentity_t *ent )
 	{
 		int maximum = G_admin_parse_time( g_adminMaxBan.string );
 
-		if ( seconds == 0 || seconds > MAX( 1, maximum ) )
+		if ( seconds == 0 || seconds > std::max( 1, maximum ) )
 		{
 			ADMP( QQ( N_("^3ban: ^7you may not issue permanent bans\n") ) );
 			seconds = maximum;
@@ -2753,7 +2753,7 @@ bool G_admin_unban( gentity_t *ent )
 	{
 		int maximum;
 		if ( ban->expires == 0 ||
-		     ( maximum = G_admin_parse_time( g_adminMaxBan.string ), ban->expires - time > MAX( 1, maximum ) ) )
+		     ( maximum = G_admin_parse_time( g_adminMaxBan.string ), ban->expires - time > std::max( 1, maximum ) ) )
 		{
 			ADMP( QQ( N_("^3unban: ^7you cannot remove permanent bans\n") ) );
 			return false;
@@ -2840,7 +2840,7 @@ bool G_admin_adjustban( gentity_t *ent )
 	}
 
 	maximum = G_admin_parse_time( g_adminMaxBan.string );
-	maximum = MAX( 1, maximum );
+	maximum = std::max( 1, maximum );
 
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
 	     ( ban->expires == 0 || ban->expires - time > maximum ) )
@@ -3096,7 +3096,7 @@ bool G_admin_speclock( gentity_t *ent )
 
 	Q_strncpyz( spec->guid, vic->client->pers.guid, sizeof( spec->guid ) );
 
-	lockTime = MIN( 86400, lockTime );
+	lockTime = std::min( 86400, lockTime );
 	if ( lockTime )
 	{
 		G_admin_duration( lockTime, time, sizeof( time ), duration, sizeof( duration ) );
@@ -3266,7 +3266,7 @@ bool G_admin_warn( gentity_t *ent )
 	if ( ent && !ent->client->pers.localClient )
 	{
 		int time = G_admin_parse_time( g_adminWarn.string );
-		admin_create_ban_entry( ent, vic->client->pers.netname, vic->client->pers.guid, &vic->client->pers.ip, MAX(1, time), ( *reason ) ? reason : "warned by admin" )->warnCount = -1;
+		admin_create_ban_entry( ent, vic->client->pers.netname, vic->client->pers.guid, &vic->client->pers.ip, std::max(1, time), ( *reason ) ? reason : "warned by admin" )->warnCount = -1;
 		vic->client->pers.hasWarnings = true;
 	}
 
@@ -3619,7 +3619,7 @@ bool G_admin_listgeoip( gentity_t *ent )
 		}
 
 		length = strlen( p->pers.country );
-		countryLength = MAX( length, countryLength );
+		countryLength = std::max( length, countryLength );
 	}
 
 	ADMBP_begin();
@@ -5177,12 +5177,12 @@ bool G_admin_buildlog( gentity_t *ent )
 	}
 	else
 	{
-		start = MAX( -MAX_ADMIN_LISTITEMS, -level.buildId );
+		start = std::max( -MAX_ADMIN_LISTITEMS, -level.buildId );
 	}
 
 	if ( start < 0 )
 	{
-		start = MAX( level.buildId - level.numBuildLogs, start + level.buildId );
+		start = std::max( level.buildId - level.numBuildLogs, start + level.buildId );
 	}
 	else
 	{

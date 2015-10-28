@@ -368,60 +368,6 @@ void CL_ShutdownCGame()
 
 /*
  * ====================
- * LAN_LoadCachedServers
- * ====================
- */
-void LAN_LoadCachedServers()
-{
-	int          size;
-	fileHandle_t fileIn;
-
-	cls.numglobalservers = cls.numfavoriteservers = 0;
-	cls.numGlobalServerAddresses = 0;
-
-	if ( FS_FOpenFileRead( "servercache.dat", &fileIn, true ) != -1 )
-	{
-		FS_Read( &cls.numglobalservers, sizeof( int ), fileIn );
-		FS_Read( &cls.numfavoriteservers, sizeof( int ), fileIn );
-		FS_Read( &size, sizeof( int ), fileIn );
-
-		if ( size == sizeof( cls.globalServers ) + sizeof( cls.favoriteServers ) )
-		{
-			FS_Read( &cls.globalServers, sizeof( cls.globalServers ), fileIn );
-			FS_Read( &cls.favoriteServers, sizeof( cls.favoriteServers ), fileIn );
-		}
-		else
-		{
-			cls.numglobalservers = cls.numfavoriteservers = 0;
-			cls.numGlobalServerAddresses = 0;
-		}
-
-		FS_FCloseFile( fileIn );
-	}
-}
-
-/*
- * ====================
- * LAN_SaveServersToCache
- * ====================
- */
-void LAN_SaveServersToCache()
-{
-	int          size;
-	fileHandle_t fileOut;
-
-	fileOut = FS_FOpenFileWrite( "servercache.dat" );
-	FS_Write( &cls.numglobalservers, sizeof( int ), fileOut );
-	FS_Write( &cls.numfavoriteservers, sizeof( int ), fileOut );
-	size = sizeof( cls.globalServers ) + sizeof( cls.favoriteServers );
-	FS_Write( &size, sizeof( int ), fileOut );
-	FS_Write( &cls.globalServers, sizeof( cls.globalServers ), fileOut );
-	FS_Write( &cls.favoriteServers, sizeof( cls.favoriteServers ), fileOut );
-	FS_FCloseFile( fileOut );
-}
-
-/*
- * ====================
  * GetNews
  * ====================
  */
@@ -736,59 +682,6 @@ bool LAN_UpdateVisiblePings( int source )
 int LAN_GetServerStatus( const char *serverAddress, char *serverStatus, int maxLen )
 {
 	return CL_ServerStatus( serverAddress, serverStatus, maxLen );
-}
-
-/*
- * =======================
- * LAN_ServerIsInFavoriteList
- * =======================
- */
-bool LAN_ServerIsInFavoriteList( int source, int n )
-{
-	int          i;
-	serverInfo_t *server = nullptr;
-
-	switch ( source )
-	{
-		case AS_LOCAL:
-			if ( n >= 0 && n < MAX_OTHER_SERVERS )
-			{
-				server = &cls.localServers[ n ];
-			}
-
-			break;
-
-		case AS_GLOBAL:
-			if ( n >= 0 && n < MAX_GLOBAL_SERVERS )
-			{
-				server = &cls.globalServers[ n ];
-			}
-
-			break;
-
-		case AS_FAVORITES:
-			if ( n >= 0 && n < MAX_OTHER_SERVERS )
-			{
-				return true;
-			}
-
-			break;
-	}
-
-	if ( !server )
-	{
-		return false;
-	}
-
-	for ( i = 0; i < cls.numfavoriteservers; i++ )
-	{
-		if ( NET_CompareAdr( cls.favoriteServers[ i ].adr, server->adr ) )
-		{
-			return true;
-		}
-	}
-
-	return false;
 }
 
 /*

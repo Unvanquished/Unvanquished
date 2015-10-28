@@ -331,7 +331,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 				Com_Error( ERR_FATAL, "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
 		}
 
-		unlockThreshold = MAX( unlockThreshold, 0 );
+		unlockThreshold = std::max( unlockThreshold, 0 );
 
 		unlockable->type            = unlockableType;
 		unlockable->num             = itemNum;
@@ -587,7 +587,7 @@ void G_UpdateUnlockables()
 				Com_Error( ERR_FATAL, "G_UpdateUnlockables: Unknown unlockable type" );
 		}
 
-		unlockThreshold = MAX( unlockThreshold, 0 );
+		unlockThreshold = std::max( unlockThreshold, 0 );
 		momentum = level.team[ team ].momentum;
 
 		unlockable->type            = unlockableType;

@@ -28,7 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "openexr/half.h"
 
 	void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height );
-
 	void LoadRGBEToHalfs( const char *name, unsigned short **halfImage, int *width, int *height )
 	{
 		int            i, j;

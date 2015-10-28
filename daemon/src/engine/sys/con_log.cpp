@@ -117,37 +117,3 @@ unsigned int CON_LogWrite( const char *in )
 
 	return length;
 }
-
-/*
-==================
-CON_LogRead
-==================
-*/
-unsigned int CON_LogRead( char *out, unsigned int outSize )
-{
-	unsigned int firstChunk;
-	unsigned int secondChunk;
-
-	if ( CON_LogSize() < outSize )
-	{
-		outSize = CON_LogSize();
-	}
-
-	if ( readPos + outSize > MAX_LOG )
-	{
-		firstChunk = MAX_LOG - readPos;
-		secondChunk = outSize - firstChunk;
-	}
-	else
-	{
-		firstChunk = outSize;
-		secondChunk = 0;
-	}
-
-	Com_Memcpy( out, consoleLog + readPos, firstChunk );
-	Com_Memcpy( out + firstChunk, out, secondChunk );
-
-	readPos = ( readPos + outSize ) % MAX_LOG;
-
-	return outSize;
-}

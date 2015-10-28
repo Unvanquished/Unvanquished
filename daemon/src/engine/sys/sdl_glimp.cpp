@@ -1465,10 +1465,6 @@ success:
 	return true;
 }
 
-void GLimp_ReleaseGL()
-{
-}
-
 /*
 ===============
 GLimp_EndFrame
@@ -1534,10 +1530,6 @@ void GLimp_HandleCvars()
 
 		r_fullscreen->modified = false;
 	}
-}
-
-void GLimp_AcquireGL()
-{
 }
 
 void GLimp_LogComment( const char *comment )

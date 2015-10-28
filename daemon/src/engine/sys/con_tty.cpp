@@ -480,10 +480,6 @@ void CON_Shutdown()
 	CON_Shutdown_TTY();
 }
 
-void CON_LogDump()
-{
-}
-
 char *CON_Input()
 {
 	return CON_Input_TTY();
@@ -494,7 +490,4 @@ void CON_Print( const char *message )
 	CON_Print_TTY( message );
 }
 
-void CON_Clear_f()
-{
-}
 #endif

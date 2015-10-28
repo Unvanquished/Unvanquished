@@ -608,7 +608,6 @@ void        CL_InitDownloads();
 void        CL_NextDownload();
 
 void        CL_GetPing( int n, char *buf, int buflen, int *pingtime );
-void        CL_GetPingInfo( int n, char *buf, int buflen );
 void        CL_ClearPing( int n );
 int         CL_GetPingQueueCount();
 
@@ -803,14 +802,10 @@ void  SCR_Init();
 void  SCR_UpdateScreen();
 
 void  SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
-void  SCR_FillAdjustedRect( float x, float y, float width, float height, const Color::Color& color );
 void  SCR_FillRect( float x, float y, float width, float height, const Color::Color& color );
-void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
-void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 
 void  SCR_DrawSmallStringExt( int x, int y, const char *string, const Color::Color& setColor, bool forceColor, bool noColorEscape );
 void  SCR_DrawSmallUnichar( int x, int y, int ch );
-void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
 void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
 float SCR_ConsoleFontUnicharWidth( int ch );
@@ -872,8 +867,6 @@ void CL_ShutdownUI();
 int  Key_GetCatcher();
 void Key_SetCatcher( int catcher );
 void UI_GameCommandHandler();
-void LAN_LoadCachedServers();
-void LAN_SaveServersToCache();
 
 //
 // cl_net_chan.c

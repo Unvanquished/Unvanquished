@@ -130,19 +130,6 @@ const char *Cmd_Argv( int arg )
 
 /*
 ============
-Cmd_ArgvBuffer
-
-The interpreted versions use this because
-they can't have pointers returned to them
-============
-*/
-void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength )
-{
-	Q_strncpyz( buffer, Cmd_Argv( arg ), bufferLength );
-}
-
-/*
-============
 Cmd_Args
 
 Returns a single string containing argv(arg) to argv(argc()-1)
@@ -157,32 +144,6 @@ char *Cmd_ArgsFrom( int arg )
 	Q_strncpyz(cmd_args, res.c_str(), BIG_INFO_STRING);
 
 	return cmd_args;
-}
-
-/*
-============
-Cmd_EscapedArgsBuffer
-============
-*/
-
-void Cmd_EscapedArgsBuffer( char* buffer, int bufferLength )
-{
-	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	std::string res = args.EscapedArgs(0);
-	Q_strncpyz( buffer, res.c_str(), bufferLength );
-}
-
-/*
-============
-Cmd_LiteralArgsBuffer
-============
-*/
-
-void Cmd_LiteralArgsBuffer( char* buffer, int bufferLength )
-{
-	const Cmd::Args& args = Cmd::GetCurrentArgs();
-	std::string res = args.ConcatArgs(0);
-	Q_strncpyz( buffer, res.c_str(), bufferLength );
 }
 
 /*
@@ -557,20 +518,3 @@ void Cmd_RemoveCommand( const char *cmd_name )
 	proxies.erase(cmd_name);
 	Cmd::RemoveCommand(cmd_name);
 }
-
-/*
-============
-Cmd_RemoveCommandByFunc
-============
-*/
-void Cmd_RemoveCommandsByFunc( xcommand_t function ) {
-    for (auto it = proxies.cbegin(); it != proxies.cend();) {
-        if (it->second.cmd == function) {
-            Cmd::RemoveCommand(it->first);
-            proxies.erase(it ++);
-        } else {
-            ++ it;
-        }
-    }
-}
-
