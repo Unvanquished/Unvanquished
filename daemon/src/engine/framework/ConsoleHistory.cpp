@@ -98,6 +98,7 @@ void History::Add( const Line& text )
 	current_line = lines.size();
 	unfinished.clear();
 
+	lock.unlock();
 	Save();
 }
 
