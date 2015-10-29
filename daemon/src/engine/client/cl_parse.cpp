@@ -118,6 +118,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
 	// delta from the entities present in oldframe
 	oldindex = 0;
 	oldstate = nullptr;
+    oldnum = MAX_GENTITIES;
 
 	if ( !oldframe )
 	{
@@ -125,20 +126,6 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapsho
         nullframe.valid = false;
 
 		oldframe = &nullframe;
-		oldnum = MAX_GENTITIES; // guaranteed out of range
-	}
-	else
-	{
-		if ( oldindex >= oldframe->numEntities )
-		{
-			oldnum = MAX_GENTITIES;
-		}
-		else
-		{
-			oldstate = &cl.parseEntities[
-			             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-			oldnum = oldstate->number;
-		}
 	}
 
 	while ( 1 )

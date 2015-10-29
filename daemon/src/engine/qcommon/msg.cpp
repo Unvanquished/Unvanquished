@@ -913,7 +913,6 @@ typedef struct
 	int  used;
 } netField_t;
 
-// using the stringizing operator to save typing...
 #define NETF( x ) # x,int((size_t)&( (entityState_t*)0 )->x)
 
 static netField_t entityStateFields[] =

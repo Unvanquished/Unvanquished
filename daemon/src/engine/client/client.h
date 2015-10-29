@@ -110,11 +110,7 @@ typedef struct
 // entities, so that when a delta compressed message arives from the server
 // it can be un-deltad from the original
 
-#ifdef USE_INCREASED_ENTITIES
-#define MAX_PARSE_ENTITIES ( MAX_GENTITIES * 2 )
-#else
 #define MAX_PARSE_ENTITIES 2048
-#endif
 
 extern int g_console_field_width;
 
