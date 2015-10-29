@@ -39,7 +39,6 @@ Maryland 20850 USA.
 static const char *const svc_strings[ 256 ] =
 {
 	"svc_bad",
-
 	"svc_nop",
 	"svc_gamestate",
 	"svc_configstring",
@@ -48,7 +47,6 @@ static const char *const svc_strings[ 256 ] =
 	"svc_download",
 	"svc_snapshot",
 	"svc_voip",
-	"svc_extension",
 	"svc_EOF"
 };
 
@@ -1090,22 +1088,6 @@ void CL_ParseServerMessage( msg_t *msg )
 		}
 
 		cmd = MSG_ReadByte( msg );
-
-		// See if this is an extension command after the EOF, which means we
-		//  got data that a legacy client should ignore.
-		if ( ( cmd == svc_EOF ) && ( MSG_LookaheadByte( msg ) == svc_extension ) )
-		{
-			SHOWNET( msg, "EXTENSION" );
-			MSG_ReadByte( msg );  // throw the svc_extension byte away.
-			cmd = MSG_ReadByte( msg );  // something legacy clients can't do!
-
-			// sometimes you get a svc_extension at end of stream...dangling
-			//  bits in the huffman decoder giving a bogus value?
-			if ( cmd == -1 )
-			{
-				cmd = svc_EOF;
-			}
-		}
 
 		if ( cmd == svc_EOF )
 		{
