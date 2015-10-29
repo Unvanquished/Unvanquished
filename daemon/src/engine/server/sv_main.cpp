@@ -674,6 +674,15 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 }
 
 /*
+ * Sends back a simple reply
+ * Used to check if the server is online without sending any other info
+ */
+void SVC_Ping( netadr_t from, const Cmd::Args& )
+{
+	NET_OutOfBandPrint( NS_SERVER, from, "ack\n" );
+}
+
+/*
 =================
 SV_CheckDRDoS
 
@@ -935,6 +944,10 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		// if a client starts up a local server, we may see some spurious
 		// server disconnect messages when their new server sees our final
 		// sequenced messages to the old client
+	}
+	else if ( args.Argv(0) == "ping" )
+	{
+		SVC_Ping( from, args );
 	}
 	else
 	{
