@@ -352,8 +352,6 @@ typedef struct
 	bool uiStarted;
 	bool cgameStarted;
 
-	bool cgameCVarsRegistered;
-
 	int      framecount;
 	int      frametime; // msec since last frame
 
@@ -849,7 +847,6 @@ void          Cin_OGM_Shutdown();
 // cl_cgame.c
 //
 void     CL_InitCGame();
-void     CL_InitCGameCVars();
 void     CL_ShutdownCGame();
 void     CL_GameCommandHandler();
 bool CL_GameConsoleText();
