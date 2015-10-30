@@ -413,9 +413,6 @@ void       SV_MasterHeartbeat( const char *hbname );
 void       SV_MasterShutdown();
 void       SV_MasterGameStat( const char *data );
 
-//bani - bugtraq 12534
-bool   SV_VerifyChallenge( const char *challenge );
-
 //
 // sv_init.c
 //

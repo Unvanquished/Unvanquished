@@ -456,26 +456,17 @@ CONNECTIONLESS COMMANDS
 //bani - bugtraq 12534
 //returns true if valid challenge
 //returns false if m4d h4x0rz
-bool SV_VerifyChallenge( const char *challenge )
+bool SV_VerifyChallenge( const std::string& challenge )
 {
-	int i, j;
-
-	if ( !challenge )
+	if ( challenge.empty() || challenge.size() > MAX_CHALLENGE_LEN )
 	{
 		return false;
 	}
 
-	j = strlen( challenge );
-
-	if ( j > 64 )
+	for ( char c : challenge )
 	{
-		return false;
-	}
-
-	for ( i = 0; i < j; i++ )
-	{
-		if ( challenge[ i ] == '\\' || challenge[ i ] == '/' || challenge[ i ] == '%' || challenge[ i ] == ';' || challenge[ i ] == '"' || challenge[ i ] < 32 || // non-ascii
-		     challenge[ i ] > 126 // non-ascii
+		if ( c == '\\' || c == '/' || c == '%' || c == ';' ||
+			 c == '"' || c < 32 || c > 126 // non-ascii
 		   )
 		{
 			return false;
@@ -496,54 +487,32 @@ the simple info query.
 */
 void SVC_Status( netadr_t from, const Cmd::Args& args )
 {
-	char          player[ 1024 ];
-	char          status[ MAX_MSGLEN ];
-	int           i;
-	client_t      *cl;
-	playerState_t *ps;
-	int           statusLength;
-	int           playerLength;
-	char          infostring[ MAX_INFO_STRING ];
-
-	//bani - bugtraq 12534
-	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv(1).c_str() ) )
-	{
-		return;
-	}
+	char infostring[ MAX_INFO_STRING ];
 
 	Q_strncpyz( infostring, Cvar_InfoString( CVAR_SERVERINFO, false ), MAX_INFO_STRING );
 
-	if ( args.Argc() > 1 )
+	if ( args.Argc() > 1 && SV_VerifyChallenge(args.Argv(1)) )
 	{
 		// echo back the parameter to status. so master servers can use it as a challenge
 		// to prevent timed spoofed reply packets that add ghost servers
 		Info_SetValueForKey( infostring, "challenge", args.Argv(1).c_str(), false );
 	}
 
-	status[ 0 ] = 0;
-	statusLength = 0;
-
-	for ( i = 0; i < sv_maxclients->integer; i++ )
+	char player[ 1024 ];
+	std::string status;
+	for ( int i = 0; i < sv_maxclients->integer; i++ )
 	{
-		cl = &svs.clients[ i ];
+		client_t* cl = &svs.clients[ i ];
 
 		if ( cl->state >= CS_CONNECTED )
 		{
-			ps = SV_GameClientNum( i );
+			playerState_t* ps = SV_GameClientNum( i );
 			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
-			playerLength = strlen( player );
-
-			if ( statusLength + playerLength >= (int) sizeof( status ) )
-			{
-				break; // can't hold any more
-			}
-
-			strcpy( status + statusLength, player );
-			statusLength += playerLength;
+			status += player;
 		}
 	}
 
-	NET_OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status );
+	NET_OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status.c_str() );
 }
 
 /*
@@ -556,38 +525,15 @@ if a user is interested in a server to do a full status
 */
 void SVC_Info( netadr_t from, const Cmd::Args& args )
 {
-	int  i, count, botCount;
 	char infostring[ MAX_INFO_STRING ];
-
-	if ( args.Argc() < 2 )
-	{
-		return;
-	}
-
-	const char *challenge = args.Argv(1).c_str();
-
-	/*
-	 * Check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led
-	 * to the Infostring bug discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
-	*/
-	// A maximum challenge length of 128 should be more than plenty.
-	if ( strlen( challenge ) > MAX_CHALLENGE_LEN  )
-	{
-		return;
-	}
-
-	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( challenge ) )
-	{
-		return;
-	}
 
 	SV_ResolveMasterServers();
 
 	// don't count privateclients
-	botCount = count = 0;
+	int botCount = 0;
+	int count = 0;
 
-	for ( i = sv_privateClients->integer; i < sv_maxclients->integer; i++ )
+	for ( int i = sv_privateClients->integer; i < sv_maxclients->integer; i++ )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
@@ -604,35 +550,39 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 	infostring[ 0 ] = 0;
 
-	// echo back the parameter to status. so servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", challenge, false );
-
-	// If the master server listens on IPv4 and IPv6, we want to send the
-	// most recent challenge received from it over the OTHER protocol
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	if ( args.Argc() > 1 && SV_VerifyChallenge(args.Argv(1)) )
 	{
-		// First, see if the challenge was sent by this master server
-		if ( !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv4 ) && !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv6 ) )
-		{
-			continue;
-		}
+		std::string  challenge = args.Argv(1);
+		// echo back the parameter to status. so master servers can use it as a challenge
+		// to prevent timed spoofed reply packets that add ghost servers
+		Info_SetValueForKey( infostring, "challenge", challenge.c_str(), false );
 
-		// It was - if the saved challenge is for the other protocol, send it and record the current one
-		if ( challenges[ i ].type == NA_IP || challenges[ i ].type == NA_IP6 )
+		// If the master server listens on IPv4 and IPv6, we want to send the
+		// most recent challenge received from it over the OTHER protocol
+		for ( int i = 0; i < MAX_MASTER_SERVERS; i++ )
 		{
-			if ( challenges[ i ].type != from.type )
+			// First, see if the challenge was sent by this master server
+			if ( !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv4 ) && !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv6 ) )
 			{
-				Info_SetValueForKey( infostring, "challenge2", challenges[ i ].text, false );
-				challenges[ i ].type = from.type;
-				strcpy( challenges[ i ].text, challenge );
-				break;
+				continue;
 			}
-		}
 
-		// Otherwise record the current one regardless and check the next server
-		challenges[ i ].type = from.type;
-		strcpy( challenges[ i ].text, challenge );
+			// It was - if the saved challenge is for the other protocol, send it and record the current one
+			if ( challenges[ i ].type == NA_IP || challenges[ i ].type == NA_IP6 )
+			{
+				if ( challenges[ i ].type != from.type )
+				{
+					Info_SetValueForKey( infostring, "challenge2", challenges[ i ].text, false );
+					challenges[ i ].type = from.type;
+					strcpy( challenges[ i ].text, challenge.c_str() );
+					break;
+				}
+			}
+
+			// Otherwise record the current one regardless and check the next server
+			challenges[ i ].type = from.type;
+			strcpy( challenges[ i ].text, challenge.c_str());
+		}
 	}
 
 	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), false );
