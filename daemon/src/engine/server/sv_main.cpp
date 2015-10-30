@@ -832,33 +832,38 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	bool     valid;
 	unsigned int time;
 
-	// show_bug.cgi?id=376
-	// if we send an OOB print message this size, 1.31 clients die in a Com_Printf buffer overflow
-	// the buffer overflow will be fixed in > 1.31 clients
-	// but we want a server side fix
-	// we must NEVER send an OOB message that will be > 1.31 MAXPRINTMSG (4096)
-#define SV_OUTPUTBUF_LENGTH ( 256 - 16 )
-	static unsigned int lasttime = 0;
-	// TTimo - show_bug.cgi?id=534
-	time = Com_Milliseconds();
-
-	if ( time < ( lasttime + 500 ) || args.Argc() < 3 )
+	if ( args.Argc() < 3 )
 	{
 		return;
 	}
 
-	lasttime = time;
+	static int lasttime = 0;
+	time = Com_Milliseconds();
 
 	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
 	{
+		// If the rconpassword is bad and one just happned recently, don't spam the log file, just die.
+		if ( time < lasttime + 600 )
+		{
+			return;
+		}
+
 		valid = false;
 		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 	else
 	{
+		// If the rconpassword is good, allow it much sooner than a bad one.
+		if ( time < lasttime + 180 )
+		{
+			return;
+		}
+
 		valid = true;
 		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
+
+	lasttime = time;
 
 	// start redirecting all print outputs to the packet
 	// FIXME TTimo our rcon redirection could be improved
@@ -867,7 +872,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	//   which leads to client overflows
 	//   see show_bug.cgi?id=51
 	//     (also a Q3 issue)
-	auto env = RconEnvironment(from, SV_OUTPUTBUF_LENGTH);
+	auto env = RconEnvironment(from, 1024 - 16);
 
 	if ( !strlen( sv_rconPassword->string ) )
 	{
