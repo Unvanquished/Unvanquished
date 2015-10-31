@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // sv_client.c -- server code for dealing with clients
 
 #include "server.h"
+#include "CryptoChallege.h"
 
 static void SV_CloseDownload( client_t *cl );
 
@@ -102,6 +103,12 @@ void SV_GetChallenge( netadr_t from )
 	NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i", challenge->challenge );
 
 	return;
+}
+
+void SV_GetChallengeNew( netadr_t from )
+{
+	auto challenge = ChallengeManager::Instance().GenerateChallenge( from );
+	NET_OutOfBandPrint( NS_SERVER, from, "challengeResponseNew %s", challenge.c_str() );
 }
 
 /*

@@ -436,6 +436,7 @@ void SV_SpawnServer( const char *server );
 // sv_client.c
 //
 void SV_GetChallenge( netadr_t from );
+void SV_GetChallengeNew( netadr_t from );
 
 void SV_DirectConnect( netadr_t from, const Cmd::Args& args );
 

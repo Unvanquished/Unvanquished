@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "server.h"
+#include "CryptoChallege.h"
 
 #include "framework/CommandSystem.h"
 
@@ -777,23 +778,30 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
         std::string buffer;
 };
 
+static int RemoteCommandThrottle()
+{
+	static int lasttime = 0;
+	int time = Com_Milliseconds();
+	int delta = time - lasttime;
+	lasttime = time;
+
+	return delta;
+}
+
 void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 {
-	bool     valid;
-	unsigned int time;
+	bool valid;
+	int throttle_delta = RemoteCommandThrottle();
 
-	if ( args.Argc() < 3 )
+	if ( args.Argc() < 3 || throttle_delta < 180 )
 	{
 		return;
 	}
 
-	static int lasttime = 0;
-	time = Com_Milliseconds();
-
 	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
 	{
 		// If the rconpassword is bad and one just happned recently, don't spam the log file, just die.
-		if ( time < lasttime + 600 )
+		if ( throttle_delta < 600 )
 		{
 			return;
 		}
@@ -803,17 +811,9 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 	else
 	{
-		// If the rconpassword is good, allow it much sooner than a bad one.
-		if ( time < lasttime + 180 )
-		{
-			return;
-		}
-
 		valid = true;
 		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
-
-	lasttime = time;
 
 	// start redirecting all print outputs to the packet
 	// FIXME TTimo our rcon redirection could be improved
@@ -840,6 +840,59 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 
 	env.Flush();
 }
+
+void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
+{
+	int throttle_delta = RemoteCommandThrottle();
+
+	if ( args.Argc() < 4 || throttle_delta < 180 )
+	{
+		return;
+	}
+
+	std::string algorithm = args.Argv(1);
+	std::string authentication = args.Argv(2);
+	Crypto::Data cyphertext = args.Argv(3);
+
+	auto env = RconEnvironment(from, 1024 - 16);
+
+	if ( !strlen( sv_rconPassword->string ) )
+	{
+		env.Print( "No rconpassword set on the server." );
+	}
+	else
+	{
+		try {
+			Crypto::Encryption::Encryptor enc( algorithm, sv_rconPassword->string );
+			std::string command = enc.Decrypt( Crypto::Encoding::Base64Decode( cyphertext ) ).str();
+			if ( authentication == "CHALLENGE" )
+			{
+				std::istringstream stream( command );
+				std::string challenge;
+				stream >> challenge;
+				std::getline( stream, command );
+
+				if ( !stream || !ChallengeManager::Instance().Match({from, challenge}) )
+				{
+					Crypto::Error("Mismatched challenge");
+				}
+			}
+
+			Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), command.c_str() );
+			Cmd::ExecuteCommand(command, true, &env);
+			Cmd::ExecuteCommandBuffer();
+		} catch ( const Crypto::Error& err ) {
+			if ( throttle_delta < 600 )
+			{
+				return;
+			}
+			Com_Printf( "Bad srcon from %s: %s\n", NET_AdrToString( from ), err.what() );
+		}
+	}
+
+	env.Flush();
+}
+
 
 /*
 =================
@@ -886,6 +939,10 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		SV_GetChallenge( from );
 	}
+	else if ( args.Argv(0) == "getchallenge_new" )
+	{
+		SV_GetChallengeNew( from );
+	}
 	else if ( args.Argv(0) == "connect" )
 	{
 		SV_DirectConnect( from, args );
@@ -893,6 +950,10 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	else if ( args.Argv(0) == "rcon" )
 	{
 		SVC_RemoteCommand( from, args );
+	}
+	else if ( args.Argv(0) == "srcon" )
+	{
+		SVC_SecureRemoteCommand( from, args );
 	}
 	else if ( args.Argv(0) == "disconnect" )
 	{
