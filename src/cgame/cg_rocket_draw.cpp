@@ -2174,6 +2174,129 @@ private:
 	std::unordered_map<int, std::string> pluralSuffix;
 };
 
+class BarbsHudElement : public HudElement
+{
+public:
+	BarbsHudElement ( const Rocket::Core::String& tag ) :
+	HudElement ( tag, ELEMENT_ALIENS ),
+	numBarbs( 0 ),
+	maxBarbs( BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ),
+	regenerationInterval ( 0 ),
+	t0 ( 0 ),
+	offset ( 0 ) {}
+
+	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	{
+		HudElement::OnAttributeChange( changed_attributes );
+		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
+		{
+			if ( maxBarbs > 0 )
+			{
+				Rocket::Core::String src = GetAttribute<Rocket::Core::String>( "src", "" );
+				Rocket::Core::String base( va("<img class='barbs' src='%s' />", src.CString() ) );
+				Rocket::Core::String rml;
+
+				for ( int i = 0; i < maxBarbs; i++ )
+				{
+					rml += base;
+				}
+				SetInnerRML( rml );
+			}
+			else
+			{
+				SetInnerRML( "" );
+			}
+		}
+	}
+
+	void DoOnUpdate()
+	{
+		int newNumBarbs = cg.snap->ps.ammo;
+		int interval = BG_GetBarbRegenerationInterval( cg.snap->ps );
+
+		if ( newNumBarbs < maxBarbs )
+		{
+			// start regenerating barb now
+			if ( newNumBarbs > numBarbs || ( newNumBarbs < numBarbs && numBarbs == maxBarbs ) )
+			{
+				t0 = cg.time;
+				// sin(-pi/2) is minimal
+				offset = -M_PI_2;
+			}
+			// change regeneration speed
+			else if ( interval != regenerationInterval )
+			{
+				float sinOld = GetSin();
+				float cosOld = GetCos();
+
+				// avoid sudden jumps in opacity
+				t0 = cg.time;
+				if ( cosOld >= 0.0 )
+				{
+					offset = asin( sinOld );
+				}
+				else
+				{
+					offset = M_PI - asin( sinOld );
+				}
+				regenerationInterval = interval;
+
+				assert( fabs(GetSin() - sinOld ) < 0.001);
+				assert( GetCos() * cosOld > 0 );
+			}
+		}
+		numBarbs = newNumBarbs;
+
+		for ( int i = 0; i < GetNumChildren(); i++ )
+		{
+			Element *barb = GetChild(i);
+			if (i < numBarbs ) // draw existing barbs
+			{
+				barb->SetProperty( "opacity", "1.0" );
+				barb->SetProperty( "color", "white" );
+			}
+			else if (i == numBarbs ) // draw regenerating barb
+			{
+				float opacity = GetSin() / 3 + 0.5;
+				barb->SetProperty( "opacity", va( "%f", opacity ) );
+				barb->SetProperty( "color", "grey" );
+			}
+			else // hide remaining (nonexistent) barbs
+			{
+				barb->SetProperty( "opacity", "0.0" );
+			}
+		}
+	}
+
+private:
+
+	float GetSin()
+	{
+		return sin( GetParam() );
+	}
+
+	float GetCos()
+	{
+		return cos( GetParam() );
+	}
+
+	float GetParam()
+	{
+		float t = (cg.time - t0) / 1000.0;
+		// frequency in Hz; Interval is in ms
+		float f = 4 * 1000.0 / regenerationInterval;
+		return offset + t * 2 * M_PI * f;
+	}
+
+	int numBarbs;
+	int maxBarbs;
+	int regenerationInterval;
+
+	// t0 and offset are used to make sure that there are no sudden jumps in opacity.
+	int t0;
+	float offset;
+};
+
 void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
@@ -2275,28 +2398,6 @@ void CG_Rocket_DrawPlayerHealthCross()
 	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
 	trap_R_ClearColor();
 
-}
-
-void CG_Rocket_DrawAlienBarbs()
-{
-	int numBarbs = cg.snap->ps.ammo;
-	char base[ MAX_STRING_CHARS ];
-	char rml[ MAX_STRING_CHARS ] = { 0 };
-
-	if ( !numBarbs )
-	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
-
-	Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", CG_Rocket_GetAttribute( "src" ) );
-
-	for ( ; numBarbs > 0; numBarbs-- )
-	{
-		Q_strcat( rml, sizeof( rml ), base );
-	}
-
-	Rocket_SetInnerRML( rml, 0 );
 }
 
 /*
@@ -3441,7 +3542,6 @@ typedef struct
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
-	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
 	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
@@ -3534,4 +3634,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "beacon_name", BeaconNameElement )
 	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
 	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
+	REGISTER_ELEMENT( "barbs", BarbsHudElement )
 }
