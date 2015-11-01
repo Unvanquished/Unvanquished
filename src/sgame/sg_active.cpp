@@ -1049,7 +1049,20 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	{
 		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
 		{
-			if ( ent->timestamp + LEVEL3_BOUNCEBALL_REGEN < level.time )
+			int bounceball_regen = LEVEL3_BOUNCEBALL_REGEN;
+
+			if ( ent->boosterUsed != nullptr )
+			{
+				// regenerate 3 times faster near booster
+				bounceball_regen /= 3;
+			}
+			else if ( ent->client->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+			{
+				// regenerate 1.5 times faster on creep
+				bounceball_regen = (bounceball_regen*2) / 3;
+			}
+
+			if ( ent->timestamp + bounceball_regen < level.time )
 			{
 				client->ps.ammo++;
 				ent->timestamp = level.time;
@@ -1593,7 +1606,7 @@ static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0, closeTeammates = 0;
 	float     distance, minBoosterDistance = FLT_MAX;
-	bool  needsHealing;
+	bool      needsHealing = false;
 	gentity_t *ent;
 
 	if ( !self || !self->client )
@@ -1601,7 +1614,14 @@ static int FindAlienHealthSource( gentity_t *self )
 		return 0;
 	}
 
-	needsHealing = !self->entity->Get<HealthComponent>()->FullHealth();
+	bool fullHealth = self->entity->Get<HealthComponent>()->FullHealth();
+	bool needsBarbs = ( self->client->ps.weapon == WP_ALEVEL3_UPG && // for adv goons
+	                    self->client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo );
+
+	if ( !fullHealth || needsBarbs )
+	{
+		needsHealing = true;
+	}
 
 	self->boosterUsed = nullptr;
 
