@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <nettle/base64.h>
 #include <nettle/md5.h>
 #include <nettle/sha2.h>
+#include <nettle/pbkdf2.h>
 
 namespace Crypto {
 
@@ -92,12 +93,15 @@ class Error : public std::invalid_argument
 
 namespace Encoding {
 
-inline std::string Hex( const Data& data )
+/*
+ * Translates binary data into a hexadecimal string
+ */
+inline std::string HexEncode( const Data& input )
 {
     std::ostringstream stream;
     stream.setf(std::ios::hex, std::ios::basefield);
     stream.fill('0');
-    for ( auto ch : data )
+    for ( auto ch : input )
     {
         stream.width(2);
         stream << int( ch );
@@ -105,7 +109,36 @@ inline std::string Hex( const Data& data )
     return stream.str();
 }
 
-inline Data Base64Encode( const Data& input )
+/*
+ * Translates a hexadecimal string into binary data
+ * Throws Crypto::Error if the data is not a valid hexadecimal string
+ */
+inline Data HexDecode( const std::string& input )
+{
+    if ( input.size() % 2 )
+    {
+        throw Error( "Invalid Hex string" );
+    }
+
+    Data output( input.size() / 2 );
+
+    for ( std::size_t i = 0; i < input.size(); i += 2 )
+    {
+        if ( !Str::cisxdigit( input[i] ) || !Str::cisxdigit( input[i+1] ) )
+        {
+            throw Error( "Invalid Hex string" );
+        }
+
+        output[ i / 2 ] = ( Str::gethex( input[i] ) << 4 ) | Str::gethex( input[i+1] );
+    }
+
+    return output;
+}
+
+/*
+ * Translates binary data into a base64 encoded string
+ */
+inline std::string Base64Encode( const Data& input )
 {
     base64_encode_ctx ctx;
     nettle_base64_encode_init( &ctx );
@@ -116,9 +149,13 @@ inline Data Base64Encode( const Data& input )
     );
     encoded_bytes += nettle_base64_encode_final( &ctx, output.data() + encoded_bytes );
     output.erase( encoded_bytes );
-    return output;
+    return output.str();
 }
 
+/*
+ * Translates a base64 encoded string into binary data
+ * Throws Crypto::Error if the data is not a valid hexadecimal string
+ */
 inline Data Base64Decode( const Data& input )
 {
     base64_decode_ctx ctx;
@@ -129,12 +166,12 @@ inline Data Base64Decode( const Data& input )
     if ( !nettle_base64_decode_update( &ctx, &decoded_bytes, output.data(),
                                        input.size(), input.data() ) )
     {
-        return {};
+        throw Error( "Invalid Base64 string" );
     }
 
     if ( !nettle_base64_decode_final( &ctx ) )
     {
-        return {};
+        throw Error( "Invalid Base64 string" );
     }
 
     output.erase( decoded_bytes );
@@ -144,7 +181,42 @@ inline Data Base64Decode( const Data& input )
 
 } // namespace Encoding
 
+
+namespace Hash {
+
+inline Data Sha256( const Data& input )
+{
+    sha256_ctx ctx;
+    nettle_sha256_init( &ctx );
+    nettle_sha256_update( &ctx, input.size(), input.data() );
+    Data output( SHA256_DIGEST_SIZE  );
+    nettle_sha256_digest( &ctx, SHA256_DIGEST_SIZE, output.data() );
+    return output;
+}
+
+inline Data Md5( const Data& input )
+{
+    md5_ctx ctx;
+    nettle_md5_init( &ctx );
+    nettle_md5_update( &ctx, input.size(), input.data() );
+    Data output( MD5_DIGEST_SIZE );
+    nettle_md5_digest( &ctx, MD5_DIGEST_SIZE, output.data() );
+    return output;
+}
+
+
+} // namespace Hash
+
 namespace Encryption {
+
+/*
+ * Adds PKCS#7 padding to the data
+ */
+inline void AddPadding( Data& target, std::size_t block_size = 8 )
+{
+    auto pad = block_size - target.size() % block_size;
+    target.resize( target.size() + pad, pad );
+}
 
 /*
  * Base class for symmetric key encryption algorithms
@@ -197,6 +269,62 @@ protected:
 };
 
 /*
+ * AES with 256 bit keys. Keys are generated from the SHA256 of the password
+ */
+class Aes256 : public Algorithm
+{
+public:
+    Data Encrypt( Data plain_text, const Data& key ) const override
+    {
+        ValidateKey( key );
+        aes256_ctx ctx;
+        nettle_aes256_set_encrypt_key( &ctx, key.data() );
+        AddPadding( plain_text, AES_BLOCK_SIZE );
+        Data output( plain_text.size(), 0 );
+        nettle_aes256_encrypt( &ctx, plain_text.length(),
+            output.data(), plain_text.data() );
+        nettle_aes256_decrypt( &ctx, plain_text.length(),
+            plain_text.data(), output.data() );
+        return output;
+    }
+
+    Data Decrypt( Data cypher_text, const Data& key ) const override
+    {
+        ValidateKey( key );
+        if ( cypher_text.size() % AES_BLOCK_SIZE )
+        {
+            throw Error( "Invalid cyphertext size for " + Name() );
+        }
+        aes256_ctx ctx;
+        nettle_aes256_set_decrypt_key( &ctx, key.data() );
+        Data output( cypher_text.size(), 0 );
+        nettle_aes256_decrypt( &ctx, cypher_text.length(),
+            output.data(), cypher_text.data() );
+        return output;
+    }
+
+    Data GenerateKey( const std::string& passphrase ) const
+    {
+        return Hash::Sha256( passphrase );
+    }
+
+    static std::string StaticName()
+    {
+        return "AES256";
+    }
+
+    std::string Name() const override
+    {
+        return StaticName();
+    }
+
+    std::size_t KeySize() const override
+    {
+        return 32;
+    }
+};
+
+/*
  * Library of available algorithms
  */
 class Library
@@ -242,7 +370,9 @@ public:
 
 private:
     Library()
-    {}
+    {
+        Register<Aes256>();
+    }
     Library( const Library& ) = delete;
     Library& operator=( const Library& ) = delete;
 
@@ -334,6 +464,8 @@ public:
           challenge( challenge ),
           source( source )
     {
+        // The port number might change in connectionless commands
+        this->source.port = this->source.port4 = this->source.port6 = 0;
     }
 
     explicit Challenge( const netadr_t& source )
@@ -373,7 +505,7 @@ public:
      */
     std::string String() const
     {
-        return Crypto::Encoding::Hex( challenge );
+        return Crypto::Encoding::HexEncode( challenge );
     }
 
 private:
@@ -451,6 +583,8 @@ public:
     {
         auto lock = Lock();
 
+        Cleanup();
+
         auto it = std::find_if( challenges.begin(), challenges.end(),
             [&challenge]( const Challenge& ch ) {
                 return ch.Matches( challenge );
@@ -459,11 +593,9 @@ public:
         if ( it != challenges.end() )
         {
             challenges.erase( it );
-            Cleanup();
             return true;
         }
 
-        Cleanup();
         return false;
     }
 

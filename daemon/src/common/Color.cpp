@@ -220,28 +220,6 @@ const char* CString ( const Color32Bit& color )
 
 } // namespace detail
 
-
-
-/*
- * Converts a hexadecimal character to the value of the digit it represents.
- * Pre: ishex(ch)
- */
-static CONSTEXPR_FUNCTION int gethex( char ch )
-{
-    return ch > '9' ?
-        ( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
-        : ch - '0'
-    ;
-}
-
-// Whether a character is a hexadecimal digit
-static CONSTEXPR_FUNCTION bool ishex( char ch )
-{
-    return ( ch >= '0' && ch <= '9' ) ||
-           ( ch >= 'A' && ch <= 'F' ) ||
-           ( ch >= 'a' && ch <= 'f' );
-}
-
 TokenIterator::value_type TokenIterator::NextToken(const char* input)
 {
     if ( !input || *input == '\0' )
@@ -263,12 +241,13 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
         {
             return value_type( input, input+2, detail::Indexed( input[1] - '0' ) );
         }
-        else if ( std::tolower( input[1] ) == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
+        else if ( std::tolower( input[1] ) == 'x' && Str::cisxdigit( input[2] ) &&
+				  Str::cisxdigit( input[3] ) && Str::cisxdigit( input[4] ) )
         {
             return value_type( input, input+5, Color(
-                gethex( input[2] ) / 15.f,
-                gethex( input[3] ) / 15.f,
-                gethex( input[4] ) / 15.f,
+                Str::gethex( input[2] ) / 15.f,
+                Str::gethex( input[3] ) / 15.f,
+                Str::gethex( input[4] ) / 15.f,
                 1
             ) );
         }
@@ -277,7 +256,7 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
             bool long_hex = true;
             for ( int i = 0; i < 6; i++ )
             {
-                if ( !ishex( input[i+2] ) )
+                if ( !Str::cisxdigit( input[i+2] ) )
                 {
                     long_hex = false;
                     break;
@@ -286,9 +265,9 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
             if ( long_hex )
             {
                 return value_type( input, input+8, Color(
-                    ( (gethex( input[2] ) << 4) | gethex( input[3] ) ) / 255.f,
-                    ( (gethex( input[4] ) << 4) | gethex( input[5] ) ) / 255.f,
-                    ( (gethex( input[6] ) << 4) | gethex( input[7] ) ) / 255.f,
+                    ( (Str::gethex( input[2] ) << 4) | Str::gethex( input[3] ) ) / 255.f,
+                    ( (Str::gethex( input[4] ) << 4) | Str::gethex( input[5] ) ) / 255.f,
+                    ( (Str::gethex( input[6] ) << 4) | Str::gethex( input[7] ) ) / 255.f,
                     1
                 ) );
             }

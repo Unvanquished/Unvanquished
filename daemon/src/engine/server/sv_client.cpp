@@ -108,7 +108,7 @@ void SV_GetChallenge( netadr_t from )
 void SV_GetChallengeNew( netadr_t from )
 {
 	auto challenge = ChallengeManager::Instance().GenerateChallenge( from );
-	NET_OutOfBandPrint( NS_SERVER, from, "challengeResponseNew %s", challenge.c_str() );
+	NET_OutOfBandPrint( NS_SERVER, from, "challengeResponseNew %s\n", challenge.c_str() );
 }
 
 /*

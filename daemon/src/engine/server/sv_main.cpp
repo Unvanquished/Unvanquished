@@ -854,43 +854,46 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 	std::string authentication = args.Argv(2);
 	Crypto::Data cyphertext = args.Argv(3);
 
-	auto env = RconEnvironment(from, 1024 - 16);
-
-	if ( !strlen( sv_rconPassword->string ) )
-	{
-		env.Print( "No rconpassword set on the server." );
-	}
-	else
-	{
-		try {
-			Crypto::Encryption::Encryptor enc( algorithm, sv_rconPassword->string );
-			std::string command = enc.Decrypt( Crypto::Encoding::Base64Decode( cyphertext ) ).str();
-			if ( authentication == "CHALLENGE" )
-			{
-				std::istringstream stream( command );
-				std::string challenge;
-				stream >> challenge;
-				std::getline( stream, command );
-
-				if ( !stream || !ChallengeManager::Instance().Match({from, challenge}) )
-				{
-					Crypto::Error("Mismatched challenge");
-				}
-			}
-
-			Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), command.c_str() );
-			Cmd::ExecuteCommand(command, true, &env);
-			Cmd::ExecuteCommandBuffer();
-		} catch ( const Crypto::Error& err ) {
-			if ( throttle_delta < 600 )
-			{
-				return;
-			}
-			Com_Printf( "Bad srcon from %s: %s\n", NET_AdrToString( from ), err.what() );
+	try {
+		if ( !strlen( sv_rconPassword->string ) )
+		{
+			throw Crypto::Error("rconPassword not set");
 		}
-	}
 
-	env.Flush();
+		Crypto::Encryption::Encryptor enc( algorithm, sv_rconPassword->string );
+		std::string command = enc.Decrypt( Crypto::Encoding::Base64Decode( cyphertext ) ).str();
+		if ( authentication == "CHALLENGE" )
+		{
+			std::istringstream stream( command );
+			std::string challenge_hex;
+			stream >> challenge_hex;
+
+			while ( Str::cisspace( stream.peek() ) )
+			{
+				stream.ignore();
+			}
+
+			std::getline( stream, command );
+
+			Challenge challenge( from, Crypto::Encoding::HexDecode(challenge_hex) );
+			if ( !stream || !ChallengeManager::Instance().Match(challenge) )
+			{
+				throw Crypto::Error("Mismatched challenge");
+			}
+		}
+
+		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), command.c_str() );
+		auto env = RconEnvironment(from, 1024 - 16);
+		Cmd::ExecuteCommand(command, true, &env);
+		Cmd::ExecuteCommandBuffer();
+		env.Flush();
+	} catch ( const Crypto::Error& err ) {
+		if ( throttle_delta < 600 )
+		{
+			return;
+		}
+		Com_Printf( "Bad srcon from %s: %s\n", NET_AdrToString( from ), err.what() );
+	}
 }
 
 
