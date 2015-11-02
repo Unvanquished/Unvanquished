@@ -1610,7 +1610,7 @@ static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0, closeTeammates = 0;
 	float     distance, minBoosterDistance = FLT_MAX;
-	bool      needsHealing = false;
+	bool      needsHealing;
 	gentity_t *ent;
 
 	if ( !self || !self->client )
@@ -1618,14 +1618,7 @@ static int FindAlienHealthSource( gentity_t *self )
 		return 0;
 	}
 
-	bool fullHealth = self->entity->Get<HealthComponent>()->FullHealth();
-	bool needsBarbs = ( self->client->ps.weapon == WP_ALEVEL3_UPG && // for adv goons
-	                    self->client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo );
-
-	if ( !fullHealth || needsBarbs )
-	{
-		needsHealing = true;
-	}
+	needsHealing = !self->entity->Get<HealthComponent>()->FullHealth();
 
 	self->boosterUsed = nullptr;
 
