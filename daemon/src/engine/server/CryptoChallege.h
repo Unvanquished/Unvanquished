@@ -129,7 +129,7 @@ inline Data HexDecode( const std::string& input )
             throw Error( "Invalid Hex string" );
         }
 
-        output[ i / 2 ] = ( Str::gethex( input[i] ) << 4 ) | Str::gethex( input[i+1] );
+        output[ i / 2 ] = ( Str::GetHex( input[i] ) << 4 ) | Str::GetHex( input[i+1] );
     }
 
     return output;

@@ -245,9 +245,9 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
 				  Str::cisxdigit( input[3] ) && Str::cisxdigit( input[4] ) )
         {
             return value_type( input, input+5, Color(
-                Str::gethex( input[2] ) / 15.f,
-                Str::gethex( input[3] ) / 15.f,
-                Str::gethex( input[4] ) / 15.f,
+                Str::GetHex( input[2] ) / 15.f,
+                Str::GetHex( input[3] ) / 15.f,
+                Str::GetHex( input[4] ) / 15.f,
                 1
             ) );
         }
@@ -265,9 +265,9 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
             if ( long_hex )
             {
                 return value_type( input, input+8, Color(
-                    ( (Str::gethex( input[2] ) << 4) | Str::gethex( input[3] ) ) / 255.f,
-                    ( (Str::gethex( input[4] ) << 4) | Str::gethex( input[5] ) ) / 255.f,
-                    ( (Str::gethex( input[6] ) << 4) | Str::gethex( input[7] ) ) / 255.f,
+                    ( (Str::GetHex( input[2] ) << 4) | Str::GetHex( input[3] ) ) / 255.f,
+                    ( (Str::GetHex( input[4] ) << 4) | Str::GetHex( input[5] ) ) / 255.f,
+                    ( (Str::GetHex( input[6] ) << 4) | Str::GetHex( input[7] ) ) / 255.f,
                     1
                 ) );
             }
