@@ -41,44 +41,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Crypto {
 
-class Data : public std::basic_string<uint8_t>
-{
-public:
-    using basic_string::basic_string;
-
-    explicit Data( std::size_t size )
-        : basic_string( size, 0 )
-    {}
-
-    Data( const char* cstr )
-        : basic_string( (const uint8_t*) cstr )
-    {}
-
-    Data( const std::string& str )
-        : basic_string( str.begin(), str.end() )
-    {}
-
-    uint8_t* data()
-    {
-        return const_cast<uint8_t*>( basic_string::data() );
-    }
-
-    const uint8_t* data() const
-    {
-        return basic_string::data();
-    }
-
-    std::string str()
-    {
-        return std::string( begin(), end() );
-    }
-};
+using Data = std::vector<uint8_t>;
 
 inline Data RandomData( std::size_t bytes )
 {
     Data data( bytes );
     Sys::GenRandomBytes(data.data(), data.size());
     return data;
+}
+
+inline Data String(const std::string& string)
+{
+    return Data(string.begin(), string.end());
+}
+
+inline std::string String(const Data string)
+{
+    return std::string(string.begin(), string.end());
 }
 
 
@@ -96,7 +75,7 @@ namespace Encoding {
 /*
  * Translates binary data into a hexadecimal string
  */
-inline std::string HexEncode( const Data& input )
+inline Data HexEncode( const Data& input )
 {
     std::ostringstream stream;
     stream.setf(std::ios::hex, std::ios::basefield);
@@ -106,14 +85,15 @@ inline std::string HexEncode( const Data& input )
         stream.width(2);
         stream << int( ch );
     }
-    return stream.str();
+    auto string = stream.str();
+    return Data(string.begin(), string.end());
 }
 
 /*
  * Translates a hexadecimal string into binary data
  * Throws Crypto::Error if the data is not a valid hexadecimal string
  */
-inline Data HexDecode( const std::string& input )
+inline Data HexDecode( const Data& input )
 {
     if ( input.size() % 2 )
     {
@@ -138,7 +118,7 @@ inline Data HexDecode( const std::string& input )
 /*
  * Translates binary data into a base64 encoded string
  */
-inline std::string Base64Encode( const Data& input )
+inline Data Base64Encode( const Data& input )
 {
     base64_encode_ctx ctx;
     nettle_base64_encode_init( &ctx );
@@ -148,8 +128,8 @@ inline std::string Base64Encode( const Data& input )
         &ctx, output.data(), input.size(), input.data()
     );
     encoded_bytes += nettle_base64_encode_final( &ctx, output.data() + encoded_bytes );
-    output.erase( encoded_bytes );
-    return output.str();
+    output.erase( output.begin() + encoded_bytes, output.end() );
+    return output;
 }
 
 /*
@@ -174,7 +154,7 @@ inline Data Base64Decode( const Data& input )
         throw Error( "Invalid Base64 string" );
     }
 
-    output.erase( decoded_bytes );
+    output.erase( output.begin() + decoded_bytes, output.end() );
     return output;
 }
 
@@ -281,9 +261,9 @@ public:
         nettle_aes256_set_encrypt_key( &ctx, key.data() );
         AddPadding( plain_text, AES_BLOCK_SIZE );
         Data output( plain_text.size(), 0 );
-        nettle_aes256_encrypt( &ctx, plain_text.length(),
+        nettle_aes256_encrypt( &ctx, plain_text.size(),
             output.data(), plain_text.data() );
-        nettle_aes256_decrypt( &ctx, plain_text.length(),
+        nettle_aes256_decrypt( &ctx, plain_text.size(),
             plain_text.data(), output.data() );
         return output;
     }
@@ -298,14 +278,14 @@ public:
         aes256_ctx ctx;
         nettle_aes256_set_decrypt_key( &ctx, key.data() );
         Data output( cypher_text.size(), 0 );
-        nettle_aes256_decrypt( &ctx, cypher_text.length(),
+        nettle_aes256_decrypt( &ctx, cypher_text.size(),
             output.data(), cypher_text.data() );
         return output;
     }
 
     Data GenerateKey( const std::string& passphrase ) const
     {
-        return Hash::Sha256( passphrase );
+        return Hash::Sha256( String( passphrase ) );
     }
 
     static std::string StaticName()
@@ -505,7 +485,7 @@ public:
      */
     std::string String() const
     {
-        return Crypto::Encoding::HexEncode( challenge );
+        return Crypto::String( Crypto::Encoding::HexEncode( challenge ) );
     }
 
 private:
@@ -619,7 +599,7 @@ private:
         challenges.erase(
             std::remove_if( challenges.begin(), challenges.end(),
                 [&now]( const Challenge& challenge ) {
-                    return challenge.ValidAt( now );
+                    return !challenge.ValidAt( now );
                 }
             ),
             challenges.end()

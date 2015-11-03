@@ -852,7 +852,7 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 
 	std::string algorithm = args.Argv(1);
 	std::string authentication = args.Argv(2);
-	Crypto::Data cyphertext = args.Argv(3);
+	Crypto::Data cyphertext = Crypto::String( args.Argv(3) );
 
 	try {
 		if ( !strlen( sv_rconPassword->string ) )
@@ -861,7 +861,7 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 		}
 
 		Crypto::Encryption::Encryptor enc( algorithm, sv_rconPassword->string );
-		std::string command = enc.Decrypt( Crypto::Encoding::Base64Decode( cyphertext ) ).str();
+		std::string command = Crypto::String( enc.Decrypt( Crypto::Encoding::Base64Decode( cyphertext ) ) );
 		if ( authentication == "CHALLENGE" )
 		{
 			std::istringstream stream( command );
@@ -875,7 +875,7 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 
 			std::getline( stream, command );
 
-			Challenge challenge( from, Crypto::Encoding::HexDecode(challenge_hex) );
+			Challenge challenge( from, Crypto::Encoding::HexDecode(Crypto::String(challenge_hex)) );
 			if ( !stream || !ChallengeManager::Instance().Match(challenge) )
 			{
 				throw Crypto::Error("Mismatched challenge");
