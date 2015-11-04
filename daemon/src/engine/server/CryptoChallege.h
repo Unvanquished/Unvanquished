@@ -310,7 +310,7 @@ public:
 class Library
 {
 public:
-    static Library& Instance()
+    static Library& Get()
     {
         static Library singleton;
         return singleton;
@@ -377,7 +377,7 @@ public:
 
     explicit Encryptor( const std::string& algo_name, const std::string& passphrase )
         : Encryptor(
-            Library::Instance().EncryptionAlgorithm(algo_name),
+            Library::Get().EncryptionAlgorithm(algo_name),
             passphrase
         )
     {}
@@ -516,7 +516,7 @@ private:
 class ChallengeManager
 {
 public:
-    static ChallengeManager& Instance()
+    static ChallengeManager& Get()
     {
         static ChallengeManager singleton;
         return singleton;

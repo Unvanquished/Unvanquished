@@ -876,7 +876,7 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 			std::getline( stream, command );
 
 			Challenge challenge( from, Crypto::Encoding::HexDecode(Crypto::String(challenge_hex)) );
-			if ( !stream || !ChallengeManager::Instance().Match(challenge) )
+			if ( !stream || !ChallengeManager::Get().Match(challenge) )
 			{
 				throw Crypto::Error("Mismatched challenge");
 			}
