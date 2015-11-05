@@ -70,6 +70,8 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 	int           oldnum, newnum;
 	int           from_num_entities;
 
+    MSG_WriteShort(msg, to->num_entities);
+
 	// generate the delta update
 	if ( !from )
 	{

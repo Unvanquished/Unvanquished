@@ -295,24 +295,13 @@ bool CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 		return false;
 	}
 
-	// if the entities in the frame have fallen out of their
-	// circular buffer, we can't return it
-	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES )
-	{
-		return false;
-	}
-
 	// write the snapshot
 	snapshot->snapFlags = clSnap->snapFlags;
 	snapshot->ping = clSnap->ping;
 	snapshot->serverTime = clSnap->serverTime;
 	memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ) );
 	snapshot->ps = clSnap->ps;
-
-	snapshot->entities.reserve(clSnap->numEntities);
-	for (unsigned i = 0; i < clSnap->numEntities; i++) {
-		snapshot->entities.push_back(cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ]);
-	}
+	snapshot->entities = clSnap->entities;
 
 	CL_FillServerCommands(snapshot->serverCommands, clc.lastExecutedServerCommand + 1, clSnap->serverCommandNum);
 	clc.lastExecutedServerCommand = clSnap->serverCommandNum;

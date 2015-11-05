@@ -66,38 +66,16 @@ MESSAGE PARSING
 =========================================================================
 */
 
-/*
-==================
-CL_DeltaEntity
-
-Parses deltas from the given base and adds the resulting entity
-to the current frame
-==================
-*/
-void CL_DeltaEntity( msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t *old, bool unchanged )
+// TODO(kangz) if we can make sure that the baseline entities have the correct entity
+// number, then we could grab the entity number from old directly, simplifying code a bit.
+void CL_DeltaEntity( msg_t *msg, clSnapshot_t *snapshot, int entityNum, const entityState_t &oldEntity)
 {
-	entityState_t *state;
+    entityState_t entity;
+	MSG_ReadDeltaEntity(msg, &oldEntity, &entity, entityNum);
 
-	// save the parsed entity state into the big circular buffer so
-	// it can be used as the source for a later delta
-	state = &cl.parseEntities[ cl.parseEntitiesNum & ( MAX_PARSE_ENTITIES - 1 ) ];
-
-	if ( unchanged )
-	{
-		*state = *old;
+	if (entity.number != MAX_GENTITIES - 1) {
+        snapshot->entities.push_back(entity);
 	}
-	else
-	{
-		MSG_ReadDeltaEntity( msg, old, state, newnum );
-	}
-
-	if ( state->number == ( MAX_GENTITIES - 1 ) )
-	{
-		return; // entity was delta removed
-	}
-
-	cl.parseEntitiesNum++;
-	frame->numEntities++;
 }
 
 /*
@@ -106,135 +84,83 @@ CL_ParsePacketEntities
 
 ==================
 */
-void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapshot_t *newframe )
+void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldSnapshot, clSnapshot_t *newSnapshot )
 {
-	unsigned int  newnum;
-	entityState_t *oldstate;
-	unsigned int  oldindex, oldnum;
+    // The entity packet contains the delta between the two snapshots, with data only
+    // for entities that were created, changed or removed. Entities entries are in
+    // order of increasing entity number, as are entities in a snapshot. Using this we
+    // have an efficient algorithm to create the new snapshot, that goes over the old
+    // snapshot once from the beginning to the end.
 
-	newframe->parseEntitiesNum = cl.parseEntitiesNum;
-	newframe->numEntities = 0;
+    // If we don't have an old snapshot or it is empty, we'll recreate all entities
+    // from the baseline entities as setting oldEntityNum to MAX_GENTITIES will force
+    // us to only do step (3) below.
+    unsigned int oldEntityNum = MAX_GENTITIES;
+    if (oldSnapshot && oldSnapshot->entities.size() > 0){
+        oldEntityNum = oldSnapshot->entities[0].number;
+    }
 
-	// delta from the entities present in oldframe
-	oldindex = 0;
-	oldstate = nullptr;
-    oldnum = MAX_GENTITIES;
+    // Likewise when we don't have an old snapshot, oldEntities just has to be an empty
+    // vector so that we skip step (4)
+    std::vector<entityState_t> dummyEntities;
+    auto& oldEntities = oldSnapshot? oldSnapshot->entities : dummyEntities;
+    auto& newEntities = newSnapshot->entities;
 
-	if ( !oldframe )
-	{
-		static clSnapshot_t nullframe{};
-        nullframe.valid = false;
+    unsigned int numEntities = MSG_ReadShort(msg);
+    newEntities.reserve(numEntities);
 
-		oldframe = &nullframe;
-	}
+	unsigned oldIndex = 0;
 
-	while ( 1 )
-	{
-		// read the entity index number
-		newnum = MSG_ReadBits( msg, GENTITYNUM_BITS );
+    while (true) {
+        unsigned int newEntityNum = MSG_ReadBits(msg, GENTITYNUM_BITS);
 
-		if ( newnum >= ( MAX_GENTITIES - 1 ) )
-		{
-			break;
-		}
+        if (newEntityNum == MAX_GENTITIES - 1) {
+            break;
+        }
 
-		if ( msg->readcount > msg->cursize )
-		{
-			Com_Error( ERR_DROP, "CL_ParsePacketEntities: end of message" );
-		}
+        if (msg->readcount > msg->cursize) {
+            Sys::Drop("CL_ParsePacketEntities: end of message");
+        }
 
-		while ( oldnum < newnum )
-		{
-			// one or more entities from the old packet are unchanged
-			if ( cl_shownet->integer == 3 )
-			{
-				Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
-			}
+        // (1) all entities that weren't specified between the previous newEntityNum and
+        // the current one are unchanged and just copied over.
+        while (oldEntityNum < newEntityNum) {
+            newEntities.push_back(oldEntities[oldIndex]);
 
-			CL_DeltaEntity( msg, newframe, oldnum, oldstate, true );
+            oldIndex ++;
+            if (oldIndex >= oldEntities.size()) {
+                oldEntityNum = MAX_GENTITIES;
+            } else {
+                oldEntityNum = oldEntities[oldIndex].number;
+            }
+        }
 
-			oldindex++;
+        // (2) there is an entry for an entity in the old snapshot, apply the delta
+        if (oldEntityNum == newEntityNum) {
+            CL_DeltaEntity(msg, newSnapshot, newEntityNum, oldEntities[oldIndex]);
 
-			if ( oldindex >= oldframe->numEntities )
-			{
-				oldnum = MAX_GENTITIES;
-			}
-			else
-			{
-				oldstate = &cl.parseEntities[
-				             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-				oldnum = oldstate->number;
-			}
-		}
+            oldIndex ++;
+            if (oldIndex >= oldEntities.size()) {
+                oldEntityNum = MAX_GENTITIES;
+            } else {
+                oldEntityNum = oldEntities[oldIndex].number;
+            }
+        } else {
+            // (3) the entry isn't in the old snapshot, so the entity will be specified
+            // from the baseline
+            assert(oldEntityNum > newEnityNum);
 
-		if ( oldnum == newnum )
-		{
-			// delta from previous state
-			if ( cl_shownet->integer == 3 )
-			{
-				Com_Printf( "%3i:  delta: %i\n", msg->readcount, newnum );
-			}
+            CL_DeltaEntity(msg, newSnapshot, newEntityNum, cl.entityBaselines[newEntityNum]);
+        }
+    }
 
-			CL_DeltaEntity( msg, newframe, newnum, oldstate, false );
+    // (4) All remaining entities in the oldSnapshot are unchanged and copied over
+    while (oldIndex < oldEntities.size()) {
+        newEntities.push_back(oldEntities[oldIndex]);
+        oldIndex ++;
+    }
 
-			oldindex++;
-
-			if ( oldindex >= oldframe->numEntities )
-			{
-				oldnum = MAX_GENTITIES;
-			}
-			else
-			{
-				oldstate = &cl.parseEntities[
-				             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-				oldnum = oldstate->number;
-			}
-
-			continue;
-		}
-
-		if ( oldnum > newnum )
-		{
-			// delta from baseline
-			if ( cl_shownet->integer == 3 )
-			{
-				Com_Printf( "%3i:  baseline: %i\n", msg->readcount, newnum );
-			}
-
-			CL_DeltaEntity( msg, newframe, newnum, &cl.entityBaselines[ newnum ], false );
-			continue;
-		}
-	}
-
-	// any remaining entities in the old frame are copied over
-	while ( oldnum != MAX_GENTITIES )
-	{
-		// one or more entities from the old packet are unchanged
-		if ( cl_shownet->integer == 3 )
-		{
-			Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
-		}
-
-		CL_DeltaEntity( msg, newframe, oldnum, oldstate, true );
-
-		oldindex++;
-
-		if ( oldindex >= oldframe->numEntities )
-		{
-			oldnum = MAX_GENTITIES;
-		}
-		else
-		{
-			oldstate = &cl.parseEntities[
-			             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-			oldnum = oldstate->number;
-		}
-	}
-
-	if ( cl_shownuments->integer )
-	{
-		Com_Printf( "Entities in packet: %i\n", newframe->numEntities );
-	}
+    assert(numEntities == newEntities.size());
 }
 
 /*
@@ -362,10 +288,6 @@ void CL_ParseSnapshot( msg_t *msg )
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
 			Com_DPrintf( "Delta frame too old.\n" );
-		}
-		else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES - 128 )
-		{
-			Com_DPrintf( "Delta parseEntitiesNum too old.\n" );
 		}
 		else
 		{

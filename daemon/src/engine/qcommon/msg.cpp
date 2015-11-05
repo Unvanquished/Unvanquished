@@ -1202,7 +1202,7 @@ Can go from either a baseline or a previous packet_entity
 */
 extern cvar_t *cl_shownet;
 
-void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, int number )
+void MSG_ReadDeltaEntity( msg_t *msg, const entityState_t *from, entityState_t *to, int number )
 {
 	int        i, lc;
 	int        numFields;
