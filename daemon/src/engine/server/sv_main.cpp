@@ -845,14 +845,14 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 {
 	int throttle_delta = RemoteCommandThrottle();
 
-	if ( args.Argc() < 4 || throttle_delta < 180 )
+	if ( args.Argc() < 3 || throttle_delta < 180 )
 	{
 		return;
 	}
 
-	std::string algorithm = args.Argv(1);
-	std::string authentication = args.Argv(2);
-	Crypto::Data cyphertext = Crypto::String( args.Argv(3) );
+	std::string authentication = args.Argv(1);
+	Crypto::Data cyphertext = Crypto::String( args.Argv(2) );
+	Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( sv_rconPassword->string ) );
 
 	try {
 		if ( !strlen( sv_rconPassword->string ) )
@@ -860,8 +860,7 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 			throw Crypto::Error("rconPassword not set");
 		}
 
-		Crypto::Encryption::Encryptor enc( algorithm, sv_rconPassword->string );
-		std::string command = Crypto::String( enc.Decrypt( Crypto::Encoding::Base64Decode( cyphertext ) ) );
+		std::string command = Crypto::String( Crypto::Aes256Decrypt( Crypto::Encoding::Base64Decode( cyphertext ), key ) );
 		if ( authentication == "CHALLENGE" )
 		{
 			std::istringstream stream( command );

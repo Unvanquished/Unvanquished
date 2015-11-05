@@ -187,8 +187,6 @@ inline Data Md5( const Data& input )
 
 } // namespace Hash
 
-namespace Encryption {
-
 /*
  * Adds PKCS#7 padding to the data
  */
@@ -198,219 +196,40 @@ inline void AddPadding( Data& target, std::size_t block_size = 8 )
     target.resize( target.size() + pad, pad );
 }
 
-/*
- * Base class for symmetric key encryption algorithms
- */
-class Algorithm
+inline Data Aes256Encrypt( Data plain_text, const Data& key )
 {
-public:
-
-    virtual ~Algorithm(){}
-
-    /*
-     * Encrypt from cleartext to cypthertext using the given key
-     * Might throw Error if the encryption fails
-     */
-    virtual Data Encrypt( Data plain_text, const Data& key ) const = 0;
-
-    /*
-     * Decrypt from cypthertext to cleartext using the given key
-     * Might throw Error if the decryption fails
-     */
-    virtual Data Decrypt( Data cypher_text, const Data& key ) const = 0;
-
-    /*
-     * Generates a suitable key to use for encryption
-     */
-    virtual Data GenerateKey( const std::string& passphrase ) const = 0;
-
-    /*
-     * Name of the algorithm
-     */
-    virtual std::string Name() const = 0;
-
-    /*
-     * Size of a generated key, in bytes
-     */
-    virtual std::size_t KeySize() const = 0;
-
-protected:
-    /*
-     * Checks whether a key is suitable to be used for encryption
-     * Throws Error if that is not the case
-     */
-    virtual void ValidateKey( const Data& key ) const
+    if ( key.size() != AES256_KEY_SIZE )
     {
-        if ( key.size() != KeySize() )
-        {
-            throw Error( "Invalid key passed to " + Name() );
-        }
+        throw Error( "Invalid key" );
     }
-};
+    aes256_ctx ctx;
+    nettle_aes256_set_encrypt_key( &ctx, key.data() );
+    AddPadding( plain_text, AES_BLOCK_SIZE );
+    Data output( plain_text.size(), 0 );
+    nettle_aes256_encrypt( &ctx, plain_text.size(),
+        output.data(), plain_text.data() );
+    nettle_aes256_decrypt( &ctx, plain_text.size(),
+        plain_text.data(), output.data() );
+    return output;
+}
 
-/*
- * AES with 256 bit keys. Keys are generated from the SHA256 of the password
- */
-class Aes256 : public Algorithm
+inline Data Aes256Decrypt( Data cypher_text, const Data& key )
 {
-public:
-    Data Encrypt( Data plain_text, const Data& key ) const override
+    if ( key.size() != AES256_KEY_SIZE )
     {
-        ValidateKey( key );
-        aes256_ctx ctx;
-        nettle_aes256_set_encrypt_key( &ctx, key.data() );
-        AddPadding( plain_text, AES_BLOCK_SIZE );
-        Data output( plain_text.size(), 0 );
-        nettle_aes256_encrypt( &ctx, plain_text.size(),
-            output.data(), plain_text.data() );
-        nettle_aes256_decrypt( &ctx, plain_text.size(),
-            plain_text.data(), output.data() );
-        return output;
+        throw Error( "Invalid key" );
     }
-
-    Data Decrypt( Data cypher_text, const Data& key ) const override
+    if ( cypher_text.size() % AES_BLOCK_SIZE )
     {
-        ValidateKey( key );
-        if ( cypher_text.size() % AES_BLOCK_SIZE )
-        {
-            throw Error( "Invalid cyphertext size for " + Name() );
-        }
-        aes256_ctx ctx;
-        nettle_aes256_set_decrypt_key( &ctx, key.data() );
-        Data output( cypher_text.size(), 0 );
-        nettle_aes256_decrypt( &ctx, cypher_text.size(),
-            output.data(), cypher_text.data() );
-        return output;
+        throw Error( "Invalid cyphertext " );
     }
-
-    Data GenerateKey( const std::string& passphrase ) const
-    {
-        return Hash::Sha256( String( passphrase ) );
-    }
-
-    static std::string StaticName()
-    {
-        return "AES256";
-    }
-
-    std::string Name() const override
-    {
-        return StaticName();
-    }
-
-    std::size_t KeySize() const override
-    {
-        return 32;
-    }
-};
-
-/*
- * Library of available algorithms
- */
-class Library
-{
-public:
-    static Library& Get()
-    {
-        static Library singleton;
-        return singleton;
-    }
-
-    /*
-     * Registers an algorithm class
-     * ALGORITHM must be derifed from Algorithm and have a static
-     * public function called StaticName contextually convertible to std::string
-     */
-    template<class ALGORITHM>
-        bool Register()
-        {
-            auto it = encryption_algorithms.find( ALGORITHM::StaticName() );
-            if ( it != encryption_algorithms.end() )
-            {
-                return false;
-            }
-            encryption_algorithms[ ALGORITHM::StaticName() ].reset( new ALGORITHM );
-            return true;
-        }
-
-    /*
-     * Returns the algorithm with the given name or nullptr if it hasn't been
-     * registered
-     */
-    Algorithm* EncryptionAlgorithm( const std::string& name )
-    {
-        auto it = encryption_algorithms.find( name );
-        if ( it != encryption_algorithms.end() )
-        {
-            return it->second.get();
-        }
-
-        return nullptr;
-    }
-
-private:
-    Library()
-    {
-        Register<Aes256>();
-    }
-    Library( const Library& ) = delete;
-    Library& operator=( const Library& ) = delete;
-
-    std::map<std::string, std::unique_ptr<Algorithm>> encryption_algorithms;
-};
-
-/*
- * Object that uses a specific algorithm to encrypt some data
- */
-class Encryptor
-{
-public:
-    explicit Encryptor( Algorithm* wrapped, const std::string& passphrase )
-        : wrapped( wrapped ),
-          key( wrapped->GenerateKey( passphrase ) )
-    {
-        if ( !wrapped )
-        {
-            throw Error( "Invalid encryption algorithm" );
-        }
-    }
-
-    explicit Encryptor( const std::string& algo_name, const std::string& passphrase )
-        : Encryptor(
-            Library::Get().EncryptionAlgorithm(algo_name),
-            passphrase
-        )
-    {}
-
-    Data Encrypt( const Data& plain_text ) const
-    {
-        return wrapped->Encrypt( plain_text, key );
-    }
-
-    Data Decrypt( const Data& plain_text ) const
-    {
-        return wrapped->Decrypt( plain_text, key );
-    }
-
-    const Data& Key() const
-    {
-        return key;
-    }
-
-    /*
-     * Name of the algorithm
-     */
-    std::string AlgorithmName() const
-    {
-        return wrapped->Name();
-    }
-
-private:
-    Algorithm* wrapped;
-    Data key;
-};
-
-} // namespace Encryption
+    aes256_ctx ctx;
+    nettle_aes256_set_decrypt_key( &ctx, key.data() );
+    Data output( cypher_text.size(), 0 );
+    nettle_aes256_decrypt( &ctx, cypher_text.size(),
+        output.data(), cypher_text.data() );
+    return output;
+}
 
 } // namespace Crypto
 
