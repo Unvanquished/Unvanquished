@@ -21,6 +21,7 @@ matrix:
       compiler: gcc
 
 install:
+  - sudo rm -rf /opt/python  # Delete conflicting python
   - sudo apt-get install software-properties-common
   - sudo add-apt-repository ppa:george-edison55/cmake-3.x -y
   - sudo apt-get -qq update
@@ -33,8 +34,7 @@ install:
     libwebp-dev libjpeg8-dev libpng-dev
     libcurl4-gnutls-dev zlib1g-dev
     libopenal-dev libogg-dev libvorbis-dev libtheora-dev libxvidcore-dev libopusfile-dev libspeexdsp-dev
-    nettle-dev libgmp-dev python-pip
-  - sudo pip install --upgrade PyYAML jinja2
+    nettle-dev libgmp-dev python-yaml python-jinja2
 
 #install:
 #  - brew update
