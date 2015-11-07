@@ -60,16 +60,6 @@ inline std::string String(const Data string)
     return std::string(string.begin(), string.end());
 }
 
-
-/*
- * Error thrown in case of an invalid operation
- */
-class Error : public std::invalid_argument
-{
-    using std::invalid_argument::invalid_argument;
-};
-
-
 namespace Encoding {
 
 /*
@@ -91,28 +81,32 @@ inline Data HexEncode( const Data& input )
 
 /*
  * Translates a hexadecimal string into binary data
- * Throws Crypto::Error if the data is not a valid hexadecimal string
+ * PRE: input is a valid hexadecimal string
+ * POST: output contains the decoded string
+ * Returns true on success
+ * Note: If the decoding fails, output is unchanged
  */
-inline Data HexDecode( const Data& input )
+inline bool HexDecode( const Data& input, Data& output )
 {
     if ( input.size() % 2 )
     {
-        throw Error( "Invalid Hex string" );
+            return false;
     }
 
-    Data output( input.size() / 2 );
+    Data mid( input.size() / 2 );
 
     for ( std::size_t i = 0; i < input.size(); i += 2 )
     {
         if ( !Str::cisxdigit( input[i] ) || !Str::cisxdigit( input[i+1] ) )
         {
-            throw Error( "Invalid Hex string" );
+            return false;
         }
 
-        output[ i / 2 ] = ( Str::GetHex( input[i] ) << 4 ) | Str::GetHex( input[i+1] );
+        mid[ i / 2 ] = ( Str::GetHex( input[i] ) << 4 ) | Str::GetHex( input[i+1] );
     }
 
-    return output;
+    output = mid;
+    return true;
 }
 
 /*
@@ -134,28 +128,32 @@ inline Data Base64Encode( const Data& input )
 
 /*
  * Translates a base64 encoded string into binary data
- * Throws Crypto::Error if the data is not a valid hexadecimal string
+ * PRE: input is a valid Base64 string
+ * POST: output contains the decoded string
+ * Returns true on success
+ * Note: If the decoding fails, output is unchanged
  */
-inline Data Base64Decode( const Data& input )
+inline bool Base64Decode( const Data& input, Data& output )
 {
     base64_decode_ctx ctx;
     nettle_base64_decode_init( &ctx );
 
-    Data output( BASE64_DECODE_LENGTH( input.size() ) );
+    Data temp( BASE64_DECODE_LENGTH( input.size() ) );
     std::size_t decoded_bytes = 0;
-    if ( !nettle_base64_decode_update( &ctx, &decoded_bytes, output.data(),
+    if ( !nettle_base64_decode_update( &ctx, &decoded_bytes, temp.data(),
                                        input.size(), input.data() ) )
     {
-        throw Error( "Invalid Base64 string" );
+        return false;
     }
 
     if ( !nettle_base64_decode_final( &ctx ) )
     {
-        throw Error( "Invalid Base64 string" );
+        return false;
     }
 
-    output.erase( output.begin() + decoded_bytes, output.end() );
-    return output;
+    temp.erase( temp.begin() + decoded_bytes, temp.end() );
+    output = temp;
+    return true;
 }
 
 
@@ -196,39 +194,51 @@ inline void AddPadding( Data& target, std::size_t block_size = 8 )
     target.resize( target.size() + pad, pad );
 }
 
-inline Data Aes256Encrypt( Data plain_text, const Data& key )
+/*
+ * Encrypts using the AES256 algorthim
+ * PRE: Key is 256-bit (32 octects) long
+ * POST: output contains the encrypted data
+ * Notes: plain_text will be padded using the PKCS#7 algorthm,
+ *        if the decoding fails, output is unchanged
+ * Returns true on success
+ */
+inline bool Aes256Encrypt( Data plain_text, const Data& key, Data& output )
 {
     if ( key.size() != AES256_KEY_SIZE )
     {
-        throw Error( "Invalid key" );
+        return false;
     }
     aes256_ctx ctx;
     nettle_aes256_set_encrypt_key( &ctx, key.data() );
     AddPadding( plain_text, AES_BLOCK_SIZE );
-    Data output( plain_text.size(), 0 );
+    output.resize( plain_text.size(), 0 );
     nettle_aes256_encrypt( &ctx, plain_text.size(),
         output.data(), plain_text.data() );
     nettle_aes256_decrypt( &ctx, plain_text.size(),
         plain_text.data(), output.data() );
-    return output;
+    return true;
 }
 
-inline Data Aes256Decrypt( Data cypher_text, const Data& key )
+/*
+ * Encrypts using the AES256 algorthim
+ * PRE: Key is 256-bit (32 octects) long,
+ *      cypher_text.size() is an integer multiple of the AES block size
+ * POST: output contains the decrypted data
+ * Note: If the decoding fails, output is unchanged
+ * Returns true on success
+ */
+inline bool Aes256Decrypt( Data cypher_text, const Data& key, Data& output )
 {
-    if ( key.size() != AES256_KEY_SIZE )
+    if ( key.size() != AES256_KEY_SIZE || cypher_text.size() % AES_BLOCK_SIZE )
     {
-        throw Error( "Invalid key" );
-    }
-    if ( cypher_text.size() % AES_BLOCK_SIZE )
-    {
-        throw Error( "Invalid cyphertext " );
+        return true;
     }
     aes256_ctx ctx;
     nettle_aes256_set_decrypt_key( &ctx, key.data() );
-    Data output( cypher_text.size(), 0 );
+    output.resize( cypher_text.size(), 0 );
     nettle_aes256_decrypt( &ctx, cypher_text.size(),
         output.data(), cypher_text.data() );
-    return output;
+    return true;
 }
 
 } // namespace Crypto

@@ -841,6 +841,75 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	env.Flush();
 }
 
+static bool SVC_SecureRemoteCommandHelper(netadr_t from,
+										  const Cmd::Args& args,
+										  std::string& error_string,
+										  std::string& command)
+{
+	if ( !strlen( sv_rconPassword->string ) )
+	{
+		error_string = "rconPassword not set";
+		return false;
+	}
+
+	std::string authentication = args.Argv(1);
+	Crypto::Data cyphertext = Crypto::String( args.Argv(2) );
+
+	Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( sv_rconPassword->string ) );
+	Crypto::Data data;
+	if ( !Crypto::Encoding::Base64Decode( cyphertext, data ) )
+	{
+		error_string = "Invalid Base64 string";
+		return false;
+	}
+
+
+	if ( !Crypto::Aes256Decrypt( data, key, data ) )
+	{
+		error_string = "Error during decryption";
+		return false;
+	}
+
+	command = Crypto::String( data );
+
+
+	if ( authentication == "CHALLENGE" )
+	{
+		std::istringstream stream( command );
+		std::string challenge_hex;
+		stream >> challenge_hex;
+
+		while ( Str::cisspace( stream.peek() ) )
+		{
+			stream.ignore();
+		}
+
+		std::getline( stream, command );
+
+		data = Crypto::String(challenge_hex);
+		if ( !Crypto::Encoding::HexDecode(data, data) )
+		{
+			error_string = "Invalid challenge";
+			return false;
+		}
+
+		Challenge challenge( from, data );
+		if ( !stream || !ChallengeManager::Get().Match(challenge) )
+		{
+			error_string = "Mismatched challenge";
+			return false;
+		}
+	}
+	else
+	{
+		error_string = "Unknown authentication method";
+		return false;
+	}
+
+	return true;
+
+}
+
 void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 {
 	int throttle_delta = RemoteCommandThrottle();
@@ -850,48 +919,23 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 		return;
 	}
 
-	std::string authentication = args.Argv(1);
-	Crypto::Data cyphertext = Crypto::String( args.Argv(2) );
-	Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( sv_rconPassword->string ) );
-
-	try {
-		if ( !strlen( sv_rconPassword->string ) )
-		{
-			throw Crypto::Error("rconPassword not set");
-		}
-
-		std::string command = Crypto::String( Crypto::Aes256Decrypt( Crypto::Encoding::Base64Decode( cyphertext ), key ) );
-		if ( authentication == "CHALLENGE" )
-		{
-			std::istringstream stream( command );
-			std::string challenge_hex;
-			stream >> challenge_hex;
-
-			while ( Str::cisspace( stream.peek() ) )
-			{
-				stream.ignore();
-			}
-
-			std::getline( stream, command );
-
-			Challenge challenge( from, Crypto::Encoding::HexDecode(Crypto::String(challenge_hex)) );
-			if ( !stream || !ChallengeManager::Get().Match(challenge) )
-			{
-				throw Crypto::Error("Mismatched challenge");
-			}
-		}
-
+	std::string command;
+	std::string error_string;
+	if ( SVC_SecureRemoteCommandHelper(from, args, error_string, command) )
+	{
 		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), command.c_str() );
 		auto env = RconEnvironment(from, 1024 - 16);
 		Cmd::ExecuteCommand(command, true, &env);
 		Cmd::ExecuteCommandBuffer();
 		env.Flush();
-	} catch ( const Crypto::Error& err ) {
+	}
+	else
+	{
 		if ( throttle_delta < 600 )
 		{
 			return;
 		}
-		Com_Printf( "Bad srcon from %s: %s\n", NET_AdrToString( from ), err.what() );
+		Com_Printf( "Bad srcon from %s: %s\n", NET_AdrToString( from ), error_string.c_str() );
 	}
 }
 
