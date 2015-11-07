@@ -1384,7 +1384,6 @@ void CL_ShutdownAll()
 	cls.uiStarted = false;
 	cls.cgameStarted = false;
 	cls.rendererStarted = false;
-	cls.cgameCVarsRegistered = false;
 	cls.soundRegistered = false;
 
 	// Gordon: stop recording on map change etc, demos aren't valid over map changes anyway
@@ -2124,7 +2123,6 @@ void CL_Vid_Restart_f()
 	cls.rendererStarted = false;
 	cls.uiStarted = false;
 	cls.cgameStarted = false;
-	cls.cgameCVarsRegistered = false;
 	cls.soundRegistered = false;
 
 	// unpause so the cgame definitely gets a snapshot and renders a frame
@@ -2153,7 +2151,6 @@ void CL_Vid_Restart_f()
 	if ( cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC )
 	{
 		cls.cgameStarted = true;
-		cls.cgameCVarsRegistered = true;
 		CL_InitCGame();
 	}
 }
@@ -2403,7 +2400,6 @@ void CL_DownloadsComplete()
 
 	// initialize the CGame
 	cls.cgameStarted = true;
-	cls.cgameCVarsRegistered = true;
 	CL_InitCGame();
 
 	CL_WritePacket();
@@ -3704,12 +3700,6 @@ void CL_StartHunkUsers()
 		//S_BeginRegistration();
 	}
 
-	if ( !cls.cgameStarted && !cls.cgameCVarsRegistered )
-	{
-		cls.cgameCVarsRegistered = true;
-		CL_InitCGameCVars();
-	}
-
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = true;
@@ -4750,27 +4740,6 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 	CL_SetServerInfoByAddress( cl_pinglist[ n ].adr, cl_pinglist[ n ].info, cl_pinglist[ n ].time );
 
 	*pingtime = time;
-}
-
-/*
-==================
-CL_GetPingInfo
-==================
-*/
-void CL_GetPingInfo( int n, char *buf, int buflen )
-{
-	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
-	{
-		// invalid or empty slot
-		if ( buflen )
-		{
-			buf[ 0 ] = '\0';
-		}
-
-		return;
-	}
-
-	Q_strncpyz( buf, cl_pinglist[ n ].info, buflen );
 }
 
 /*

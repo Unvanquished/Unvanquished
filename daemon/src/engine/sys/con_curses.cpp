@@ -283,29 +283,6 @@ static void CON_Resize( int )
 
 /*
 ==================
-CON_Clear_f
-==================
-*/
-void CON_Clear_f()
-{
-	if ( !curses_on )
-	{
-		//CON_Clear_TTY();
-		return;
-	}
-
-	// Clear the log and the window
-	memset( logbuf, 0, sizeof( logbuf ) );
-	werase( logwin );
-	pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
-
-	// Move the cursor back to the input field
-	CON_UpdateCursor();
-	doupdate();
-}
-
-/*
-==================
 CON_Shutdown
 
 Never exit without calling this, or your terminal will be left in a pretty bad state
@@ -331,44 +308,6 @@ void CON_Shutdown()
 		dup2( stderr_fd, STDERR_FILENO );
 	}
 #endif
-}
-
-/*
-==================
-CON_DumpLog
-
-Used for dumping log text to the tty.
-May be called on shutdown from a signal handler.
-==================
-*/
-void CON_LogDump()
-{
-	if ( dump_logs )
-	{
-		const char *ptr = insert;
-		int lines = 0;
-
-		dump_logs = 0;
-
-		while ( lines < 24 && --ptr >= logbuf )
-		{
-			if ( *ptr == '\n' )
-			{
-				++lines;
-			}
-		}
-
-		while ( *ptr == '\n' && ptr < insert )
-		{
-			++ptr;
-		}
-
-		if ( insert - ptr )
-		{
-			fputs( "\nPartial log dump:\n\n", stderr );
-			fwrite( ptr, 1, insert - ptr, stderr );
-		}
-	}
 }
 
 /*

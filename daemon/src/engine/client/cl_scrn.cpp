@@ -41,24 +41,6 @@ bool scr_initialized; // ready to draw
 
 /*
 ================
-SCR_DrawNamedPic
-
-Coordinates are 640*480 virtual values
-=================
-*/
-void SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname )
-{
-	qhandle_t hShader;
-
-	assert( width != 0 );
-
-	hShader = re.RegisterShader( picname, RSF_DEFAULT );
-	SCR_AdjustFrom640( &x, &y, &width, &height );
-	re.DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
-}
-
-/*
-================
 SCR_AdjustFrom640
 
 Adjusted for resolution and screen aspect ratio
@@ -98,19 +80,6 @@ void SCR_AdjustFrom640( float *x, float *y, float *w, float *h )
 ================
 SCR_FillRect
 
-Coordinates are 640*480 virtual values
-=================
-*/
-void SCR_FillAdjustedRect( float x, float y, float width, float height, const Color::Color& color )
-{
-	SCR_AdjustFrom640( &x, &y, &width, &height );
-	SCR_FillRect( x, y, width, height, color );
-}
-
-/*
-================
-SCR_FillRect
-
 Coordinates are the current screen resolution
 =================
 */
@@ -119,19 +88,6 @@ void SCR_FillRect( float x, float y, float width, float height, const Color::Col
 	re.SetColor( color );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
 	re.SetColor( Color::White );
-}
-
-/*
-================
-SCR_DrawPic
-
-Coordinates are 640*480 virtual values
-=================
-*/
-void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader )
-{
-	SCR_AdjustFrom640( &x, &y, &width, &height );
-	re.DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
 static glyphInfo_t *Glyph( int ch )
@@ -143,60 +99,6 @@ static glyphInfo_t *Glyph( int ch )
 	re.GlyphChar( cls.consoleFont, ch, glyph );
 
 	return glyph;
-}
-
-/*
-** SCR_DrawUnichar
-** chars are drawn at 640*480 virtual screen size
-*/
-static void SCR_DrawUnichar( int x, int y, float size, int ch )
-{
-	float ax, ay, aw, ah;
-
-	if ( ch == ' ' )
-	{
-		return;
-	}
-
-	if ( y < -size )
-	{
-		return;
-	}
-
-	ax = x;
-	ay = y;
-	aw = size;
-	ah = size;
-	SCR_AdjustFrom640( &ax, &ay, &aw, &ah );
-
-	if( cls.useLegacyConsoleFace )
-	{
-		int row, col;
-		float frow, fcol;
-
-		if ( ch >= 0x100 ) { ch = 0; }
-
-		row = ch >> 4;
-		col = ch & 15;
-
-		frow = row * 0.0625;
-		fcol = col * 0.0625;
-		size = 0.0625;
-
-		re.DrawStretchPic( ax, ay, aw, ah,
-				fcol, frow,
-				fcol + size, frow + size,
-				cls.charSetShader );
-	}
-	else
-	{
-	glyphInfo_t *glyph = Glyph( ch );
-
-	re.DrawStretchPic( ax, ay, aw, glyph->imageHeight,
-		glyph->s, glyph->t,
-		glyph->s2, glyph->t2,
-		glyph->glyph );
-	}
 }
 
 void SCR_DrawConsoleFontUnichar( float x, float y, int ch )
@@ -218,11 +120,6 @@ void SCR_DrawConsoleFontUnichar( float x, float y, int ch )
 		                   glyph->s2, glyph->t2,
 		                   glyph->glyph );
 	}
-}
-
-void SCR_DrawConsoleFontChar( float x, float y, const char *s )
-{
-	SCR_DrawConsoleFontUnichar( x, y, Q_UTF8_CodePoint( s ) );
 }
 
 /*

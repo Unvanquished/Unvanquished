@@ -136,7 +136,7 @@ float BotGetHealScore( gentity_t *self )
 
 	percentHealth = self->entity->Get<HealthComponent>()->HealthFraction();
 
-	distToHealer = MAX( MIN( MAX_HEAL_DIST, distToHealer ), MAX_HEAL_DIST * ( 3.0f / 4.0f ) );
+	distToHealer = std::max( std::min( MAX_HEAL_DIST, distToHealer ), MAX_HEAL_DIST * ( 3.0f / 4.0f ) );
 
 	if ( percentHealth == 1.0f )
 	{
@@ -893,7 +893,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	
 	for ( i = 0; i < 3; i++ )
 	{
-		routeTarget->polyExtents[ i ] = MAX( Q_fabs( mins[ i ] ), maxs[ i ] );
+		routeTarget->polyExtents[ i ] = std::max( Q_fabs( mins[ i ] ), maxs[ i ] );
 	}
 
 	BotGetTargetPos( target, routeTarget->pos );
@@ -1137,7 +1137,7 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 				{
 					range -= 150;
 				}
-				range = MAX( range, 100.0f );
+				range = std::max( range, 100.0f );
 				secondaryRange = 0;
 				width = height = FLAMER_SIZE;
 			}
@@ -1165,7 +1165,7 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 
 	if ( self->client->pers.team != BotGetEntityTeam( &g_entities[trace.entityNum] )
 		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
-		&& Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
+		&& Distance( muzzle, trace.endpos ) <= std::max( range, secondaryRange ) )
 	{
 		return true;
 	}
@@ -1235,7 +1235,7 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 
 int BotGetAimPredictionTime( gentity_t *self )
 {
-	return ( 10 - self->botMind->botSkill.level ) * 100 * MAX( ( ( float ) rand() ) / RAND_MAX, 0.5f );
+	return ( 10 - self->botMind->botSkill.level ) * 100 * std::max( ( ( float ) rand() ) / RAND_MAX, 0.5f );
 }
 
 void BotPredictPosition( gentity_t *self, gentity_t *predict, vec3_t pos, int time )

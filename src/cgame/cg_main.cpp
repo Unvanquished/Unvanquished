@@ -761,7 +761,7 @@ void CG_AddNotifyText()
 	Q_strncpyz( cg.consoleText + textLen, buffer, MAX_CONSOLE_TEXT - textLen );
 	cg.consoleLines[ cg.numConsoleLines ].time = cg.time;
 	cg.consoleLines[ cg.numConsoleLines ].length =
-		MIN( bufferLen, MAX_CONSOLE_TEXT - textLen - 1 );
+		std::min( bufferLen, MAX_CONSOLE_TEXT - textLen - 1 );
 	cg.numConsoleLines++;
 }
 

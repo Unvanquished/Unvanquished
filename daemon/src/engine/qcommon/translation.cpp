@@ -94,41 +94,6 @@ public:
 			FS_FCloseFile( fileHandle );
 		}
 	}
-
-	int underflow()
-	{
-		if( gptr() < egptr() ) // buffer not exhausted
-		{
-			return traits_type::to_int_type( *gptr() );
-		}
-
-		if( !fileHandle )
-		{
-			return traits_type::eof();
-		}
-
-		char *base = buffer;
-		char *start = base;
-
-		if( eback() == base )
-		{
-			// Make arrangements for putback characters
-			memmove( base, egptr() - putBack, putBack );
-			start += putBack;
-		}
-
-		size_t n = FS_Read( start, BUFFER_SIZE - ( start - base ), fileHandle );
-
-		if( n == 0 )
-		{
-			return traits_type::eof();
-		}
-
-		// Set buffer pointers
-		setg( base, start, start + n );
-
-		return traits_type::to_int_type( *gptr() );
-	}
 };
 
 /*
@@ -396,7 +361,6 @@ const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	return Trans_Pgettext_Internal( ctxt, msgid, trans_manager );
 }
-
 const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
 {
 	return Trans_GettextPlural_Internal( msgid, msgid_plural, num, trans_manager );

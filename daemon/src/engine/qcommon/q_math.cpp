@@ -186,21 +186,6 @@ signed char ClampChar( int i )
 	return i;
 }
 
-signed short ClampShort( int i )
-{
-	if ( i < -32768 )
-	{
-		return -32768;
-	}
-
-	if ( i > 0x7fff )
-	{
-		return 0x7fff;
-	}
-
-	return i;
-}
-
 // this isn't a real cheap function to call!
 int DirToByte( vec3_t dir )
 {
@@ -285,7 +270,6 @@ bool PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t
 	plane[ 3 ] = DotProduct( a, plane );
 	return true;
 }
-
 /*
  * =====================
  * PlaneFromPoints
@@ -391,48 +375,6 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 
 /*
  * ===============
- * RotatePointAroundVertex
- *
- * Rotate a point around a vertex
- * ===============
- */
-void RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin )
-{
-	float tmp[ 11 ];
-
-	//float rad_x, rad_y, rad_z;
-
-	/*rad_x = DEG2RAD( rot_x );
-	 *	   rad_y = DEG2RAD( rot_y );
-	 *	   rad_z = DEG2RAD( rot_z ); */
-
-	// move pnt to rel{0,0,0}
-	VectorSubtract( pnt, origin, pnt );
-
-	// init temp values
-	tmp[ 0 ] = sin( rot_x );
-	tmp[ 1 ] = cos( rot_x );
-	tmp[ 2 ] = sin( rot_y );
-	tmp[ 3 ] = cos( rot_y );
-	tmp[ 4 ] = sin( rot_z );
-	tmp[ 5 ] = cos( rot_z );
-	tmp[ 6 ] = pnt[ 1 ] * tmp[ 5 ];
-	tmp[ 7 ] = pnt[ 0 ] * tmp[ 4 ];
-	tmp[ 8 ] = pnt[ 0 ] * tmp[ 5 ];
-	tmp[ 9 ] = pnt[ 1 ] * tmp[ 4 ];
-	tmp[ 10 ] = pnt[ 2 ] * tmp[ 3 ];
-
-	// rotate point
-	pnt[ 0 ] = ( tmp[ 3 ] * ( tmp[ 8 ] - tmp[ 9 ] ) + pnt[ 3 ] * tmp[ 2 ] );
-	pnt[ 1 ] = ( tmp[ 0 ] * ( tmp[ 2 ] * tmp[ 8 ] - tmp[ 2 ] * tmp[ 9 ] - tmp[ 10 ] ) + tmp[ 1 ] * ( tmp[ 7 ] + tmp[ 6 ] ) );
-	pnt[ 2 ] = ( tmp[ 1 ] * ( -tmp[ 2 ] * tmp[ 8 ] + tmp[ 2 ] * tmp[ 9 ] + tmp[ 10 ] ) + tmp[ 0 ] * ( tmp[ 7 ] + tmp[ 6 ] ) );
-
-	// move pnt back
-	VectorAdd( pnt, origin, pnt );
-}
-
-/*
- * ===============
  * RotateAroundDirection
  * ===============
  */
@@ -452,18 +394,6 @@ void RotateAroundDirection( vec3_t axis[ 3 ], float yaw )
 
 	// cross to get axis[2]
 	CrossProduct( axis[ 0 ], axis[ 1 ], axis[ 2 ] );
-}
-
-/*
- * ================
- * Q_isnan
- *
- * Don't pass doubles to this
- * ================
- */
-int Q_isnan( float x )
-{
-	return ( Q_floatBitsToUint( x ) & 0x7fffffff ) > 0x7f800000;
 }
 
 void vectoangles( const vec3_t value1, vec3_t angles )
@@ -586,13 +516,6 @@ void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up )
 	CrossProduct( right, forward, up );
 }
 
-void VectorRotate( vec3_t in, vec3_t matrix[ 3 ], vec3_t out )
-{
-	out[ 0 ] = DotProduct( in, matrix[ 0 ] );
-	out[ 1 ] = DotProduct( in, matrix[ 1 ] );
-	out[ 2 ] = DotProduct( in, matrix[ 2 ] );
-}
-
 /*
 ==================
 ProjectPointOntoRectangleOutwards
@@ -659,21 +582,6 @@ float LerpAngle( float from, float to, float frac )
 
 /*
  * =================
- * LerpPosition
- *
- * =================
- */
-
-void LerpPosition( vec3_t start, vec3_t end, float frac, vec3_t out )
-{
-	vec3_t dist;
-
-	VectorSubtract( end, start, dist );
-	VectorMA( start, frac, dist, out );
-}
-
-/*
- * =================
  * AngleSubtract
  *
  * Always returns a value from -180 to 180
@@ -697,18 +605,6 @@ void AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 )
 float AngleMod( float a )
 {
 	return ( ( 360.0 / 65536 ) * ( ( int )( a * ( 65536 / 360.0 ) ) & 65535 ) );
-}
-
-/*
- * =================
- * AngleNormalize2Pi
- *
- * returns angle normalized to the range [0 <= angle < 2*M_PI]
- * =================
- */
-float AngleNormalize2Pi( float angle )
-{
-	return DEG2RAD( AngleNormalize360( RAD2DEG( angle ) ) );
 }
 
 /*
@@ -928,41 +824,6 @@ void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs )
 	}
 }
 
-bool PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs )
-{
-	if ( v[ 0 ] < mins[ 0 ] )
-	{
-		return false;
-	}
-
-	if ( v[ 0 ] > maxs[ 0 ] )
-	{
-		return false;
-	}
-
-	if ( v[ 1 ] < mins[ 1 ] )
-	{
-		return false;
-	}
-
-	if ( v[ 1 ] > maxs[ 1 ] )
-	{
-		return false;
-	}
-
-	if ( v[ 2 ] < mins[ 2 ] )
-	{
-		return false;
-	}
-
-	if ( v[ 2 ] > maxs[ 2 ] )
-	{
-		return false;
-	}
-
-	return true;
-}
-
 void BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
 {
 	if ( mins2[ 0 ] < mins[ 0 ] )
@@ -1006,7 +867,6 @@ bool BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, 
 
 	return true;
 }
-
 bool BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius )
 {
 	if ( origin[ 0 ] - radius > maxs[ 0 ] ||
@@ -1034,11 +894,11 @@ bool BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t or
 float BoundsMaxExtent( const vec3_t mins, const vec3_t maxs ) {
 	float result = Q_fabs( mins[0] );
 
-	result = MAX( result, Q_fabs( mins[ 1 ] ) );
-	result = MAX( result, Q_fabs( mins[ 2 ] ) );
-	result = MAX( result, Q_fabs( maxs[ 0 ] ) );
-	result = MAX( result, Q_fabs( maxs[ 1 ] ) );
-	result = MAX( result, Q_fabs( maxs[ 2 ] ) );
+	result = std::max( result, Q_fabs( mins[ 1 ] ) );
+	result = std::max( result, Q_fabs( mins[ 2 ] ) );
+	result = std::max( result, Q_fabs( maxs[ 0 ] ) );
+	result = std::max( result, Q_fabs( maxs[ 1 ] ) );
+	result = std::max( result, Q_fabs( maxs[ 2 ] ) );
 
 	return result;
 }
@@ -1185,14 +1045,6 @@ void VectorInverse( vec3_t v )
 	v[ 2 ] = -v[ 2 ];
 }
 
-void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out )
-{
-	out[ 0 ] = in[ 0 ] * scale;
-	out[ 1 ] = in[ 1 ] * scale;
-	out[ 2 ] = in[ 2 ] * scale;
-	out[ 3 ] = in[ 3 ] * scale;
-}
-
 int NearestPowerOfTwo( int val )
 {
 	int answer;
@@ -1200,20 +1052,6 @@ int NearestPowerOfTwo( int val )
 	for ( answer = 1; answer < val; answer <<= 1 )
 	{
 		;
-	}
-
-	return answer;
-}
-
-int Q_log2( int val )
-{
-	int answer;
-
-	answer = 0;
-
-	while ( ( val >>= 1 ) != 0 )
-	{
-		answer++;
 	}
 
 	return answer;
@@ -1498,19 +1336,6 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 
 /*
  * ================
- * DistanceBetweenLineSegments
- *
- * Return the smallest distance between two line segments
- * ================
- */
-
-vec_t DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, float *s, float *t )
-{
-	return ( vec_t ) sqrt( DistanceBetweenLineSegmentsSquared( sP0, sP1, tP0, tP1, s, t ) );
-}
-
-/*
- * ================
  * ProjectPointOntoVectorBounded
  * ================
  */
@@ -1588,55 +1413,6 @@ float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 )
 }
 
 /*
- * ================
- * DistanceFromVectorSquared
- * ================
- */
-float DistanceFromVectorSquared( vec3_t p, vec3_t lp1, vec3_t lp2 )
-{
-	vec3_t proj, t;
-
-	ProjectPointOntoVector( p, lp1, lp2, proj );
-	VectorSubtract( p, proj, t );
-	return VectorLengthSquared( t );
-}
-
-float vectoyaw( const vec3_t vec )
-{
-	float yaw;
-
-	if ( vec[ YAW ] == 0 && vec[ PITCH ] == 0 )
-	{
-		yaw = 0;
-	}
-
-	else
-	{
-		if ( vec[ PITCH ] )
-		{
-			yaw = ( atan2( vec[ YAW ], vec[ PITCH ] ) * 180 / M_PI );
-		}
-
-		else if ( vec[ YAW ] > 0 )
-		{
-			yaw = 90;
-		}
-
-		else
-		{
-			yaw = 270;
-		}
-
-		if ( yaw < 0 )
-		{
-			yaw += 360;
-		}
-	}
-
-	return yaw;
-}
-
-/*
  * =================
  * AxisToAngles
  *
@@ -1709,14 +1485,6 @@ void AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles )
 	angles[ ROLL ] = roll;
 }
 
-float VectorDistance( vec3_t v1, vec3_t v2 )
-{
-	vec3_t dir;
-
-	VectorSubtract( v2, v1, dir );
-	return VectorLength( dir );
-}
-
 float VectorDistanceSquared( vec3_t v1, vec3_t v2 )
 {
 	vec3_t dir;
@@ -1726,54 +1494,6 @@ float VectorDistanceSquared( vec3_t v1, vec3_t v2 )
 }
 
 // done.
-
-/*
- * ================
- * VectorMaxComponent
- *
- * Return the biggest component of some vector
- * ================
- */
-float VectorMaxComponent( vec3_t v )
-{
-	float biggest = v[ 0 ];
-
-	if ( v[ 1 ] > biggest )
-	{
-		biggest = v[ 1 ];
-	}
-
-	if ( v[ 2 ] > biggest )
-	{
-		biggest = v[ 2 ];
-	}
-
-	return biggest;
-}
-
-/*
- * ================
- * VectorMinComponent
- *
- * Return the smallest component of some vector
- * ================
- */
-float VectorMinComponent( vec3_t v )
-{
-	float smallest = v[ 0 ];
-
-	if ( v[ 1 ] < smallest )
-	{
-		smallest = v[ 1 ];
-	}
-
-	if ( v[ 2 ] < smallest )
-	{
-		smallest = v[ 2 ];
-	}
-
-	return smallest;
-}
 
 //=============================================
 
@@ -1991,7 +1711,6 @@ bool MatrixInverse( matrix_t matrix )
 
 	return false;
 }
-
 void MatrixSetupXRotation( matrix_t m, vec_t degrees )
 {
 	vec_t a = DEG2RAD( degrees );
@@ -2013,7 +1732,6 @@ void MatrixSetupXRotation( matrix_t m, vec_t degrees )
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-
 void MatrixSetupYRotation( matrix_t m, vec_t degrees )
 {
 	vec_t a = DEG2RAD( degrees );
@@ -2035,7 +1753,6 @@ void MatrixSetupYRotation( matrix_t m, vec_t degrees )
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-
 void MatrixSetupZRotation( matrix_t m, vec_t degrees )
 {
 	vec_t a = DEG2RAD( degrees );
@@ -2097,7 +1814,6 @@ void MatrixSetupScale( matrix_t m, vec_t x, vec_t y, vec_t z )
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-
 void MatrixSetupShear( matrix_t m, vec_t x, vec_t y )
 {
 	m[ 0 ] = 1;
@@ -2181,7 +1897,6 @@ void MatrixMultiply2( matrix_t m, const matrix_t m2 )
 	MatrixCopy( m, tmp );
 	MatrixMultiply( tmp, m2, m );
 }
-
 void MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll )
 {
 	matrix_t tmp, rot;
@@ -2586,7 +2301,6 @@ void MatrixSetupTransformFromVectorsFLU( matrix_t m, const vec3_t forward, const
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-
 void MatrixSetupTransformFromVectorsFRU( matrix_t m, const vec3_t forward, const vec3_t right, const vec3_t up, const vec3_t origin )
 {
 	m[ 0 ] = forward[ 0 ];
@@ -2702,7 +2416,6 @@ void MatrixTransformPoint( const matrix_t m, const vec3_t in, vec3_t out )
 	out[ 1 ] = m[ 1 ] * in[ 0 ] + m[ 5 ] * in[ 1 ] + m[ 9 ] * in[ 2 ] + m[ 13 ];
 	out[ 2 ] = m[ 2 ] * in[ 0 ] + m[ 6 ] * in[ 1 ] + m[ 10 ] * in[ 2 ] + m[ 14 ];
 }
-
 void MatrixTransformPoint2( const matrix_t m, vec3_t inout )
 {
 	vec3_t tmp;
@@ -2736,7 +2449,6 @@ void MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out )
 
 	out[ 3 ] = DotProduct( out, planePos );
 }
-
 void MatrixTransformPlane2( const matrix_t m, vec4_t inout )
 {
 	vec4_t tmp;
@@ -2768,7 +2480,6 @@ void MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bot
 	m[ 11 ] = -1;
 	m[ 15 ] = 0;
 }
-
 /*
  * same as D3DXMatrixPerspectiveOffCenterLH
  *
@@ -2793,7 +2504,6 @@ void MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t b
 	m[ 11 ] = 1;
 	m[ 15 ] = 0;
 }
-
 /*
  * same as D3DXMatrixPerspectiveOffCenterRH
  *
@@ -2818,7 +2528,6 @@ void MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t b
 	m[ 11 ] = -1;
 	m[ 15 ] = 0;
 }
-
 /*
  * same as D3DXMatrixPerspectiveFovLH
  *
@@ -2848,7 +2557,6 @@ void MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, vec_t fov, vec_t aspec
 	m[ 11 ] = 1;
 	m[ 15 ] = 0;
 }
-
 void MatrixPerspectiveProjectionFovXYLH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far )
 {
 	vec_t width, height;
@@ -2948,7 +2656,6 @@ void MatrixOrthogonalProjection( matrix_t m, vec_t left, vec_t right, vec_t bott
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-
 /*
  * same as D3DXMatrixOrthoOffCenterLH
  *
@@ -2998,7 +2705,6 @@ void MatrixOrthogonalProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bo
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-
 /*
  * same as D3DXMatrixReflect
  *
@@ -3042,7 +2748,6 @@ void MatrixPlaneReflection( matrix_t m, const vec4_t plane )
 	MatrixTranspose( m2, m );
 #endif
 }
-
 void MatrixLookAtLH( matrix_t m, const vec3_t eye, const vec3_t dir, const vec3_t up )
 {
 	vec3_t dirN;
@@ -3114,7 +2819,6 @@ void MatrixLookAtRH( matrix_t m, const vec3_t eye, const vec3_t dir, const vec3_
 	m[ 11 ] = 0;
 	m[ 15 ] = 1;
 }
-
 void MatrixScaleTranslateToUnitCube( matrix_t m, const vec3_t mins, const vec3_t maxs )
 {
 	m[ 0 ] = 2 / ( maxs[ 0 ] - mins[ 0 ] );
@@ -3335,7 +3039,6 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 	QuatNormalize( q );
 #endif
 }
-
 void QuatToVectorsFLU( const quat_t q, vec3_t forward, vec3_t left, vec3_t up )
 {
 	matrix_t tmp;
@@ -3359,7 +3062,6 @@ void QuatToAxis( const quat_t q, vec3_t axis[ 3 ] )
 	MatrixFromQuat( tmp, q );
 	MatrixToVectorsFLU( tmp, axis[ 0 ], axis[ 1 ], axis[ 2 ] );
 }
-
 void QuatToAngles( const quat_t q, vec3_t angles )
 {
 	quat_t q2;
@@ -3398,7 +3100,6 @@ void QuatMultiply1( const quat_t qa, const quat_t qb, quat_t qc )
 	qc[ 2 ] = qa[ 3 ] * qb[ 2 ] + qa[ 2 ] * qb[ 3 ] + qa[ 0 ] * qb[ 1 ] - qa[ 1 ] * qb[ 0 ];
 	qc[ 3 ] = qa[ 3 ] * qb[ 3 ] - qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] - qa[ 2 ] * qb[ 2 ];
 }
-
 void QuatMultiply2( const quat_t qa, const quat_t qb, quat_t qc )
 {
 	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] + qa[ 0 ] * qb[ 3 ] + qa[ 1 ] * qb[ 2 ] + qa[ 2 ] * qb[ 1 ];
@@ -3406,7 +3107,6 @@ void QuatMultiply2( const quat_t qa, const quat_t qb, quat_t qc )
 	qc[ 2 ] = qa[ 3 ] * qb[ 2 ] - qa[ 2 ] * qb[ 3 ] - qa[ 0 ] * qb[ 1 ] + qa[ 1 ] * qb[ 0 ];
 	qc[ 3 ] = qa[ 3 ] * qb[ 3 ] - qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] + qa[ 2 ] * qb[ 2 ];
 }
-
 void QuatMultiply3( const quat_t qa, const quat_t qb, quat_t qc )
 {
 	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] + qa[ 0 ] * qb[ 3 ] + qa[ 1 ] * qb[ 2 ] + qa[ 2 ] * qb[ 1 ];
@@ -3414,7 +3114,6 @@ void QuatMultiply3( const quat_t qa, const quat_t qb, quat_t qc )
 	qc[ 2 ] = -qa[ 3 ] * qb[ 2 ] + qa[ 2 ] * qb[ 3 ] - qa[ 0 ] * qb[ 1 ] + qa[ 1 ] * qb[ 0 ];
 	qc[ 3 ] = -qa[ 3 ] * qb[ 3 ] + qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] + qa[ 2 ] * qb[ 2 ];
 }
-
 void QuatMultiply4( const quat_t qa, const quat_t qb, quat_t qc )
 {
 	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] - qa[ 0 ] * qb[ 3 ] - qa[ 1 ] * qb[ 2 ] - qa[ 2 ] * qb[ 1 ];
@@ -3573,7 +3272,6 @@ void TransformPoint( const transform_t *t, const vec3_t in, vec3_t out )
 	VectorScale( out, t->scale, out );
 	VectorAdd( out, t->trans, out );
 }
-
 // apply the inverse of a transform to a point
 void TransformPointInverse( const transform_t *t, const vec3_t in, vec3_t out )
 {
@@ -3587,7 +3285,6 @@ void TransformNormalVector( const transform_t *t, const vec3_t in, vec3_t out )
 {
 	QuatTransformVector( t->rot, in, out );
 }
-
 // apply the inverse of a transform to a normal vector (ignore scale
 // and translation)
 void TransformNormalVectorInverse( const transform_t *t, const vec3_t in,
@@ -3613,7 +3310,6 @@ void TransInitRotation( const vec3_t axis, float angle, transform_t *t )
 	q[3] = ca;
 	TransInitRotationQuat( q, t );
 }
-
 // initialize a transform with a pure translation
 void TransInitTranslation( const vec3_t vec, transform_t *t )
 {
@@ -3656,7 +3352,6 @@ void TransAddRotationQuat( const quat_t quat, transform_t *t )
 	QuatMultiply0( tmp, t->rot );
 	QuatCopy( tmp, t->rot );
 }
-
 void TransAddRotation( const vec3_t axis, float angle, transform_t *t )
 {
 	float sa = sin( 0.5f * angle );
@@ -3680,7 +3375,6 @@ void TransAddScale( float factor, transform_t *t )
 	VectorScale( t->trans, factor, t->trans );
 	t->scale *= factor;
 }
-
 // add a translation at the start of an existing transformation
 void TransInsTranslation( const vec3_t vec, transform_t *t )
 {

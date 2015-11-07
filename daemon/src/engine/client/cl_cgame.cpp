@@ -368,60 +368,6 @@ void CL_ShutdownCGame()
 
 /*
  * ====================
- * LAN_LoadCachedServers
- * ====================
- */
-void LAN_LoadCachedServers()
-{
-	int          size;
-	fileHandle_t fileIn;
-
-	cls.numglobalservers = cls.numfavoriteservers = 0;
-	cls.numGlobalServerAddresses = 0;
-
-	if ( FS_FOpenFileRead( "servercache.dat", &fileIn, true ) != -1 )
-	{
-		FS_Read( &cls.numglobalservers, sizeof( int ), fileIn );
-		FS_Read( &cls.numfavoriteservers, sizeof( int ), fileIn );
-		FS_Read( &size, sizeof( int ), fileIn );
-
-		if ( size == sizeof( cls.globalServers ) + sizeof( cls.favoriteServers ) )
-		{
-			FS_Read( &cls.globalServers, sizeof( cls.globalServers ), fileIn );
-			FS_Read( &cls.favoriteServers, sizeof( cls.favoriteServers ), fileIn );
-		}
-		else
-		{
-			cls.numglobalservers = cls.numfavoriteservers = 0;
-			cls.numGlobalServerAddresses = 0;
-		}
-
-		FS_FCloseFile( fileIn );
-	}
-}
-
-/*
- * ====================
- * LAN_SaveServersToCache
- * ====================
- */
-void LAN_SaveServersToCache()
-{
-	int          size;
-	fileHandle_t fileOut;
-
-	fileOut = FS_FOpenFileWrite( "servercache.dat" );
-	FS_Write( &cls.numglobalservers, sizeof( int ), fileOut );
-	FS_Write( &cls.numfavoriteservers, sizeof( int ), fileOut );
-	size = sizeof( cls.globalServers ) + sizeof( cls.favoriteServers );
-	FS_Write( &size, sizeof( int ), fileOut );
-	FS_Write( &cls.globalServers, sizeof( cls.globalServers ), fileOut );
-	FS_Write( &cls.favoriteServers, sizeof( cls.favoriteServers ), fileOut );
-	FS_FCloseFile( fileOut );
-}
-
-/*
- * ====================
  * GetNews
  * ====================
  */
@@ -739,59 +685,6 @@ int LAN_GetServerStatus( const char *serverAddress, char *serverStatus, int maxL
 }
 
 /*
- * =======================
- * LAN_ServerIsInFavoriteList
- * =======================
- */
-bool LAN_ServerIsInFavoriteList( int source, int n )
-{
-	int          i;
-	serverInfo_t *server = nullptr;
-
-	switch ( source )
-	{
-		case AS_LOCAL:
-			if ( n >= 0 && n < MAX_OTHER_SERVERS )
-			{
-				server = &cls.localServers[ n ];
-			}
-
-			break;
-
-		case AS_GLOBAL:
-			if ( n >= 0 && n < MAX_GLOBAL_SERVERS )
-			{
-				server = &cls.globalServers[ n ];
-			}
-
-			break;
-
-		case AS_FAVORITES:
-			if ( n >= 0 && n < MAX_OTHER_SERVERS )
-			{
-				return true;
-			}
-
-			break;
-	}
-
-	if ( !server )
-	{
-		return false;
-	}
-
-	for ( i = 0; i < cls.numfavoriteservers; i++ )
-	{
-		if ( NET_CompareAdr( cls.favoriteServers[ i ].adr, server->adr ) )
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/*
  * ====================
  * Key_KeynumToStringBuf
  * ====================
@@ -852,133 +745,6 @@ void Key_SetCatcher( int catcher )
 
 /*
 ====================
-CL_UpdateLevelHunkUsage
-
-  This updates the "hunkusage.dat" file with the current map and its hunk usage count
-
-  This is used for level loading, so we can show a percentage bar dependent on the amount
-  of hunk memory allocated so far
-
-  This will be slightly inaccurate if some settings like sound quality are changed, but these
-  things should only account for a small variation (hopefully)
-====================
-*/
-void CL_UpdateLevelHunkUsage()
-{
-	int  handle;
-	const char *memlistfile = "hunkusage.dat";
-	char *buf, *outbuf;
-	const char *buftrav;
-	char *outbuftrav;
-	char *token;
-	char outstr[ 256 ];
-	int  len, memusage;
-
-	memusage = Cvar_VariableIntegerValue( "com_hunkused" ) + Cvar_VariableIntegerValue( "hunk_soundadjust" );
-
-	len = FS_FOpenFileRead( memlistfile, &handle, false );
-
-	if ( len >= 0 )
-	{
-		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
-		buf = ( char * ) Z_Malloc( len + 1 );
-		outbuf = ( char * ) Z_Malloc( len + 1 );
-
-		FS_Read( ( void * ) buf, len, handle );
-		FS_FCloseFile( handle );
-
-		// now parse the file, filtering out the current map
-		buftrav = buf;
-		outbuftrav = outbuf;
-		outbuftrav[ 0 ] = '\0';
-
-		while ( ( token = COM_Parse( &buftrav ) ) != nullptr && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, cl.mapname ) )
-			{
-				// found a match
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && token[ 0 ] )
-				{
-					if ( atoi( token ) == memusage )
-					{
-						// if it is the same, abort this process
-						Z_Free( buf );
-						Z_Free( outbuf );
-						return;
-					}
-				}
-			}
-			else
-			{
-				// send it to the outbuf
-				Q_strcat( outbuftrav, len + 1, token );
-				Q_strcat( outbuftrav, len + 1, " " );
-				token = COM_Parse( &buftrav );  // read the size
-
-				if ( token && token[ 0 ] )
-				{
-					Q_strcat( outbuftrav, len + 1, token );
-					Q_strcat( outbuftrav, len + 1, "\n" );
-				}
-				else
-				{
-					Z_Free( buf );
-					Z_Free( outbuf );
-					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt" );
-				}
-			}
-		}
-
-		handle = FS_FOpenFileWrite( memlistfile );
-
-		if ( handle < 0 )
-		{
-			Z_Free( buf );
-			Z_Free( outbuf );
-			Com_Error( ERR_DROP, "cannot create %s", memlistfile );
-		}
-
-		// input file is parsed, now output to the new file
-		len = strlen( outbuf );
-
-		if ( FS_Write( ( void * ) outbuf, len, handle ) != len )
-		{
-			Z_Free( buf );
-			Z_Free( outbuf );
-			Com_Error( ERR_DROP, "cannot write to %s", memlistfile );
-		}
-
-		FS_FCloseFile( handle );
-
-		Z_Free( buf );
-		Z_Free( outbuf );
-	}
-
-	// now append the current map to the current file
-	handle = FS_FOpenFileAppend( memlistfile );
-
-	if ( handle == 0 )
-	{
-		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full" );
-	}
-
-	Com_sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.mapname, memusage );
-	FS_Write( outstr, strlen( outstr ), handle );
-	FS_FCloseFile( handle );
-
-	// now just open it and close it, so it gets copied to the pak dir
-	len = FS_FOpenFileRead( memlistfile, &handle, false );
-
-	if ( len >= 0 )
-	{
-		FS_FCloseFile( handle );
-	}
-}
-
-/*
-====================
 CL_InitCGame
 
 Should only by called by CL_StartHunkUsers
@@ -1018,27 +784,10 @@ void CL_InitCGame()
 	// on the card even if the driver does deferred loading
 	re.EndRegistration();
 
-	// Ridah, update the memory usage file
-	CL_UpdateLevelHunkUsage();
-
 	// Cause any input while loading to be dropped and forget what's pressed
 	IN_DropInputsForFrame();
 	CL_ClearKeys();
 	Key_ClearStates();
-}
-
-void CL_InitCGameCVars()
-{/* TODO I don't understand that
-	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, (vmInterpret_t) Cvar_VariableIntegerValue( "vm_cgame" ) );
-
-	if ( !cgv_vm )
-	{
-		Com_Error( ERR_DROP, "VM_Create on cgame failed" );
-	}
-
-	VM_Call( cgv_vm, CG_INIT_CVARS );
-
-	VM_Free( cgv_vm );*/
 }
 
 /*
@@ -1658,11 +1407,11 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		// All sounds
 
-			case CG_S_REGISTERSOUND:
-				IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, std::move(reader), [this] (const std::string& sample, int& handle) {
-					handle = Audio::RegisterSFX(sample.c_str());
-				});
-				break;
+        case CG_S_REGISTERSOUND:
+            IPC::HandleMsg<Audio::RegisterSoundMsg>(channel, std::move(reader), [this] (const std::string& sample, int& handle) {
+                handle = Audio::RegisterSFX(sample.c_str());
+            });
+            break;
 
 		// All renderer
 
@@ -1854,7 +1603,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 				CL_ClearCmdButtons();
 			});
 			break;
-//
+
 		case CG_KEY_CLEARSTATES:
 			IPC::HandleMsg<Key::ClearStatesMsg>(channel, std::move(reader), [this] {
 				Key_ClearStates();

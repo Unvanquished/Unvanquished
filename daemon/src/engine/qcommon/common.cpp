@@ -323,32 +323,6 @@ void Com_ParseCommandLine( char *commandLine )
 }
 
 /*
-===================
-Com_SafeMode
-
-Check for "safe" on the command line, which will
-skip loading of wolfconfig.cfg
-===================
-*/
-bool Com_SafeMode()
-{
-	int i;
-
-	for ( i = 0; i < com_numConsoleLines; i++ )
-	{
-		Cmd::Args line(com_consoleLines[i]);
-
-		if ( line.size() > 1 && ( !Q_stricmp( line[0].c_str(), "safe" ) || !Q_stricmp( line[0].c_str(), "cvar_restart" ) ) )
-		{
-			com_consoleLines[ i ][ 0 ] = 0;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/*
 ===============
 Com_StartupVariable
 
@@ -389,44 +363,6 @@ void Com_StartupVariable( const char *match )
 			}
 		}
 	}
-}
-
-/*
-=================
-Com_AddStartupCommands
-
-Adds command-line arguments as script statements
-Commands are separated by + signs
-
-Returns true if any late commands were added, which
-will keep the demoloop from immediately starting
-=================
-*/
-bool Com_AddStartupCommands()
-{
-	int      i;
-	bool added;
-
-	added = false;
-
-	// quote every token, so args with semicolons can work
-	for ( i = 0; i < com_numConsoleLines; i++ )
-	{
-		if ( !com_consoleLines[ i ] || !com_consoleLines[ i ][ 0 ] )
-		{
-			continue;
-		}
-
-		// set commands won't override menu startup
-		if ( Q_strnicmp( com_consoleLines[ i ], "set", 3 ) )
-		{
-			added = true;
-		}
-
-		Cmd::BufferCommandText(com_consoleLines[i], true);
-	}
-
-	return added;
 }
 
 //============================================================================
@@ -821,21 +757,6 @@ void Com_InitHunkMemory()
 	Cmd_AddCommand( "hunklog", Hunk_Log );
 	Cmd_AddCommand( "hunksmalllog", Hunk_SmallLog );
 #endif
-}
-
-/*
-====================
-Hunk_MemoryRemaining
-====================
-*/
-int Hunk_MemoryRemaining()
-{
-	int low, high;
-
-	low = hunk_low.permanent > hunk_low.temp ? hunk_low.permanent : hunk_low.temp;
-	high = hunk_high.permanent > hunk_high.temp ? hunk_high.permanent : hunk_high.temp;
-
-	return s_hunkTotal - ( low + high );
 }
 
 /*
