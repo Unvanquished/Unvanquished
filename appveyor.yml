@@ -30,11 +30,15 @@ matrix:
 
 configuration: Debug
 
+install:
+  - "powershell appveyor\\install.ps1"
+
 build:
   parallel: true
 
 before_build:
   - git submodule update --init --recursive
+  - pip -r install --upgrade src/utils/cbse/requirements.txt
   - ps: |
       if ($env:COMPILER -eq "mingw64" -AND -Not (Test-Path "C:/mingw64")) {
           $url  = "http://sourceforge.net/projects/mingw-w64/files/"
