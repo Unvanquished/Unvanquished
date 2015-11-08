@@ -2174,38 +2174,38 @@ private:
 	std::unordered_map<int, std::string> pluralSuffix;
 };
 
-class AlienBarbsHudElement : public HudElement
+class BarbsHudElement : public HudElement
 {
-
 public:
-	AlienBarbsHudElement ( const Rocket::Core::String& tag ) :
+	BarbsHudElement ( const Rocket::Core::String& tag ) :
+	HudElement ( tag, ELEMENT_ALIENS ),
+	numBarbs( 0 ) {}
 
-	HudElement( tag, ELEMENT_ALIENS ),
-	numBarbs(0) {}
-
-	/*
 	void DoOnUpdate()
 	{
-		DoOnRender();
+		numBarbs = cg.snap->ps.ammo;
+		Q_strncpyz ( src, GetAttribute<Rocket::Core::String> ("src", "").CString(), sizeof(src) );
 	}
-	*/
 
 	void DoOnRender()
 	{
-		numBarbs = cg.snap->ps.ammo;
 		char base[ MAX_STRING_CHARS ];
 		char rml[ MAX_STRING_CHARS ] = { 0 };
 
-		if ( !numBarbs )
+		if ( numBarbs > 0 )
 		{
-			SetInnerRML( "" );
-			return;
+			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", src );
+			for ( int i=0; i<numBarbs; i++ )
+			{
+				Q_strcat( rml, sizeof( rml ), base );
+			}
 		}
 
-		Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' style='color: blue;' />", GetAttribute<Rocket::Core::String> ("src", "").CString() );
-
-		for ( int i=0; i<numBarbs; i++ )
+		if ( numBarbs < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ) //&& cg.time > cg.snap->ps.weaponTime + 2000 )
 		{
+			// blend
+			float opacity = sin ( 3.14 * cg.time/1000.0 ) / 2 + 0.5;
+			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' style='opacity: %s;' />", src, va("%.1f", opacity) );
 			Q_strcat( rml, sizeof( rml ), base );
 		}
 
@@ -2214,6 +2214,8 @@ public:
 
 private:
 	int numBarbs;
+	float opacity;
+	char src[ MAX_STRING_CHARS ];
 };
 
 void CG_Rocket_DrawPlayerHealth()
@@ -3553,5 +3555,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "beacon_name", BeaconNameElement )
 	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
 	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
-	REGISTER_ELEMENT( "barbs", AlienBarbsHudElement )
+	REGISTER_ELEMENT( "barbs", BarbsHudElement )
 }
