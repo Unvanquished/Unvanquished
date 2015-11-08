@@ -35,7 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <nettle/base64.h>
 #include <nettle/md5.h>
 #include <nettle/sha2.h>
-#include <nettle/version.h>
 
 // Compatibility with old nettle versions
 #if !defined(AES256_KEY_SIZE)
