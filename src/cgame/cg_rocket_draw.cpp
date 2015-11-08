@@ -2174,6 +2174,48 @@ private:
 	std::unordered_map<int, std::string> pluralSuffix;
 };
 
+class AlienBarbsHudElement : public HudElement
+{
+
+public:
+	AlienBarbsHudElement ( const Rocket::Core::String& tag ) :
+
+	HudElement( tag, ELEMENT_ALIENS ),
+	numBarbs(0) {}
+
+	/*
+	void DoOnUpdate()
+	{
+		DoOnRender();
+	}
+	*/
+
+	void DoOnRender()
+	{
+		numBarbs = cg.snap->ps.ammo;
+		char base[ MAX_STRING_CHARS ];
+		char rml[ MAX_STRING_CHARS ] = { 0 };
+
+		if ( !numBarbs )
+		{
+			SetInnerRML( "" );
+			return;
+		}
+
+		Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' style='color: blue;' />", GetAttribute<Rocket::Core::String> ("src", "").CString() );
+
+		for ( int i=0; i<numBarbs; i++ )
+		{
+			Q_strcat( rml, sizeof( rml ), base );
+		}
+
+		SetInnerRML( rml );
+	}
+
+private:
+	int numBarbs;
+};
+
 void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
@@ -2275,28 +2317,6 @@ void CG_Rocket_DrawPlayerHealthCross()
 	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
 	trap_R_ClearColor();
 
-}
-
-void CG_Rocket_DrawAlienBarbs()
-{
-	int numBarbs = cg.snap->ps.ammo;
-	char base[ MAX_STRING_CHARS ];
-	char rml[ MAX_STRING_CHARS ] = { 0 };
-
-	if ( !numBarbs )
-	{
-		Rocket_SetInnerRML( "", 0 );
-		return;
-	}
-
-	Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", CG_Rocket_GetAttribute( "src" ) );
-
-	for ( ; numBarbs > 0; numBarbs-- )
-	{
-		Q_strcat( rml, sizeof( rml ), base );
-	}
-
-	Rocket_SetInnerRML( rml, 0 );
 }
 
 /*
@@ -3441,7 +3461,6 @@ typedef struct
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
-	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
 	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
@@ -3534,4 +3553,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "beacon_name", BeaconNameElement )
 	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
 	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
+	REGISTER_ELEMENT( "barbs", AlienBarbsHudElement )
 }
