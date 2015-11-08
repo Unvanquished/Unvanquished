@@ -38,11 +38,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <nettle/version.h>
 
 // Compatibility with old nettle versions
-#if NETTLE_VERSION_MAJOR < 3
+#if !defined(AES256_KEY_SIZE)
 
-#ifndef AES256_KEY_SIZE
-#	define AES256_KEY_SIZE 32
-#endif
+#define AES256_KEY_SIZE 32
 
 typedef aes_ctx compat_aes256_ctx;
 
