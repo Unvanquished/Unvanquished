@@ -939,6 +939,47 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 }
 
+// TODO: Move to q_shared.h
+using InfoMap = std::map<std::string, std::string>;
+
+// TODO StringToMap
+std::string InfoMapToString( const InfoMap& map )
+{
+	std::string info_string;
+
+	for ( const auto& pair : map )
+	{
+		if ( pair.first.find( '\\' ) != std::string::npos ||
+			pair.second.find( '\\' ) != std::string::npos )
+		{
+			Log::Notice( "Can't use keys or values with a \\\n" );
+			continue;
+		}
+
+		if ( pair.second.empty() )
+		{
+			continue;
+		}
+
+		info_string += '\\' + pair.first + '\\' + pair.second;
+	}
+
+	return info_string;
+}
+
+// TODO: Cvars for all the settable properties
+static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
+{
+	std::string rcon_info_string = InfoMapToString({
+		{"secure", "0"},
+		{"encryption", "AES256"},
+		{"key", "SHA256"},
+		{"challenge", "1"},
+		{"timeout", "5"}
+	});
+	NET_OutOfBandPrint( NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string.c_str() );
+}
+
 
 /*
 =================
@@ -1000,6 +1041,10 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	else if ( args.Argv(0) == "srcon" )
 	{
 		SVC_SecureRemoteCommand( from, args );
+	}
+	else if ( args.Argv(0) == "rconinfo" )
+	{
+		SVC_RconInfo( from, args );
 	}
 	else if ( args.Argv(0) == "disconnect" )
 	{
