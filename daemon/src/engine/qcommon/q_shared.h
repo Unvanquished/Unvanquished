@@ -1631,6 +1631,26 @@ void         ByteToDir( int b, vec3_t dir );
 //
 // key / value info strings
 //
+	/*
+	 * Separator used by info strings
+	 */
+	static CONSTEXPR char INFO_SEPARATOR = '\\';
+
+	/*
+	 * Associative container with string values and keys
+	 */
+	using InfoMap = std::map<std::string, std::string>;
+	/*
+	 * Formats an InfoMap to an info string, it will discard elements with
+	 * an invalid key or value
+	 */
+	std::string InfoMapToString( const InfoMap& map );
+	/*
+	 * Formats an InfoMap to an info string, it will discard elements with
+	 * an invalid key or value
+	 */
+	InfoMap InfoStringToMap( const std::string& string );
+
 	const char *Info_ValueForKey( const char *s, const char *key );
 	void       Info_RemoveKey( char *s, const char *key , bool big );
 	void       Info_RemoveKey_big( char *s, const char *key );

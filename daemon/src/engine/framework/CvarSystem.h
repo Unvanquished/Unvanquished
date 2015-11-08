@@ -83,6 +83,7 @@ namespace Cvar {
     cvar_t* FindCCvar(const std::string& cvarName);
     std::string GetCvarConfigText();
     char* InfoString(int flag, bool big);
+	void PopulateInfoMap(int flag, InfoMap& map);
     void SetValueCProxy(const std::string& cvarName, std::string value);
 
     void SetCheatsAllowed(bool allowed);

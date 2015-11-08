@@ -36,6 +36,7 @@ Maryland 20850 USA.
 #include "CryptoChallege.h"
 
 #include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
 
 #ifdef USE_VOIP
 cvar_t         *sv_voip;
@@ -488,18 +489,16 @@ the simple info query.
 */
 void SVC_Status( netadr_t from, const Cmd::Args& args )
 {
-	char infostring[ MAX_INFO_STRING ];
-
-	Q_strncpyz( infostring, Cvar_InfoString( CVAR_SERVERINFO, false ), MAX_INFO_STRING );
+	InfoMap info_map;
+	Cvar::PopulateInfoMap(CVAR_SERVERINFO, info_map);
 
 	if ( args.Argc() > 1 && SV_VerifyChallenge(args.Argv(1)) )
 	{
 		// echo back the parameter to status. so master servers can use it as a challenge
 		// to prevent timed spoofed reply packets that add ghost servers
-		Info_SetValueForKey( infostring, "challenge", args.Argv(1).c_str(), false );
+		info_map["challenge"] = args.Argv(1);
 	}
 
-	char player[ 1024 ];
 	std::string status;
 	for ( int i = 0; i < sv_maxclients->integer; i++ )
 	{
@@ -508,12 +507,12 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 		if ( cl->state >= CS_CONNECTED )
 		{
 			playerState_t* ps = SV_GameClientNum( i );
-			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
-			status += player;
+			status +=  Str::Format( "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
 		}
 	}
 
-	NET_OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status.c_str() );
+	std::string info_string = InfoMapToString( info_map );
+	NET_OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s", info_string.c_str(), status.c_str() );
 }
 
 /*
@@ -526,8 +525,6 @@ if a user is interested in a server to do a full status
 */
 void SVC_Info( netadr_t from, const Cmd::Args& args )
 {
-	char infostring[ MAX_INFO_STRING ];
-
 	SV_ResolveMasterServers();
 
 	// don't count privateclients
@@ -549,14 +546,14 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 		}
 	}
 
-	infostring[ 0 ] = 0;
+	InfoMap info_map;
 
 	if ( args.Argc() > 1 && SV_VerifyChallenge(args.Argv(1)) )
 	{
 		std::string  challenge = args.Argv(1);
 		// echo back the parameter to status. so master servers can use it as a challenge
 		// to prevent timed spoofed reply packets that add ghost servers
-		Info_SetValueForKey( infostring, "challenge", challenge.c_str(), false );
+		info_map["challenge"] = challenge;
 
 		// If the master server listens on IPv4 and IPv6, we want to send the
 		// most recent challenge received from it over the OTHER protocol
@@ -573,7 +570,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 			{
 				if ( challenges[ i ].type != from.type )
 				{
-					Info_SetValueForKey( infostring, "challenge2", challenges[ i ].text, false );
+					info_map["challenge2"] = challenges[ i ].text;
 					challenges[ i ].type = from.type;
 					strcpy( challenges[ i ].text, challenge.c_str() );
 					break;
@@ -586,42 +583,43 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 		}
 	}
 
-	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), false );
-	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, false );
-	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ), false );
-	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, false );
-	Info_SetValueForKey( infostring, "clients", va( "%i", count ), false );
-	Info_SetValueForKey( infostring, "bots", va( "%i", botCount ), false );
-	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ), false );
-	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), false );
+	info_map["protocol"] = std::to_string( PROTOCOL_VERSION );
+	info_map["hostname"] = sv_hostname->string;
+	info_map["serverload"] = std::to_string( svs.serverLoad );
+	info_map["mapname"] = sv_mapname->string;
+	info_map["clients"] = std::to_string( count );
+	info_map["bots"] = std::to_string( botCount );
+	info_map["sv_maxclients"] = std::to_string( sv_maxclients->integer - sv_privateClients->integer );
+	info_map["pure"] = std::to_string( sv_pure->integer );
 
 	if ( sv_statsURL->string[0] )
 	{
-		Info_SetValueForKey( infostring, "stats", sv_statsURL->string, false );
+		info_map["stats"] = sv_statsURL->string;
 	}
 
 #ifdef USE_VOIP
 
 	if ( sv_voip->integer )
 	{
-		Info_SetValueForKey( infostring, "voip", va( "%i", sv_voip->integer ), false );
+		info_map["voip"] = std::to_string( sv_voip->integer );
 	}
 
 #endif
 
 	if ( sv_minPing->integer )
 	{
-		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ), false );
+		info_map["minPing"] = std::to_string( sv_minPing->integer );
 	}
 
 	if ( sv_maxPing->integer )
 	{
-		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ), false );
+		info_map["maxPing"] = std::to_string( sv_maxPing->integer );
 	}
 
-	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING, false );  // Arnout: to be able to filter out Quake servers
+	info_map["gamename"] = GAMENAME_STRING;  // Arnout: to be able to filter out Quake servers
 
-	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
+	std::string info_string = InfoMapToString( info_map );
+	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", info_string.c_str() );
 }
 
 /*
@@ -939,35 +937,7 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 }
 
-// TODO: Move to q_shared.h
-using InfoMap = std::map<std::string, std::string>;
-
-// TODO StringToMap
-std::string InfoMapToString( const InfoMap& map )
-{
-	std::string info_string;
-
-	for ( const auto& pair : map )
-	{
-		if ( pair.first.find( '\\' ) != std::string::npos ||
-			pair.second.find( '\\' ) != std::string::npos )
-		{
-			Log::Notice( "Can't use keys or values with a \\\n" );
-			continue;
-		}
-
-		if ( pair.second.empty() )
-		{
-			continue;
-		}
-
-		info_string += '\\' + pair.first + '\\' + pair.second;
-	}
-
-	return info_string;
-}
-
-// TODO: Cvars for all the settable properties
+// TODO: Cvars for all the settable properties, maybe it could use Cvar::PopulateInfoMap
 static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 {
 	std::string rcon_info_string = InfoMapToString({
