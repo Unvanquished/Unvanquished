@@ -135,6 +135,8 @@ set(SERVERLIST
     ${ENGINE_DIR}/server/sv_net_chan.cpp
     ${ENGINE_DIR}/server/sv_sgame.cpp
     ${ENGINE_DIR}/server/sv_snapshot.cpp
+    ${ENGINE_DIR}/server/Crypto.cpp
+    ${ENGINE_DIR}/server/Crypto.h
 )
 
 set(ENGINELIST
