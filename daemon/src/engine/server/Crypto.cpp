@@ -75,7 +75,7 @@ static int nettle_compat_base64_decode_update(base64_decode_ctx *ctx,
 		     const uint8_t *src)
 {
 	unsigned dst_length_uns = *dst_length;
-	nettle_base64_decode_update(ctx, &dst_length_uns, dst, src_length, src);
+	return nettle_base64_decode_update(ctx, &dst_length_uns, dst, src_length, src);
 }
 
 #undef aes256_set_encrypt_key

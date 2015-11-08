@@ -142,7 +142,7 @@ public:
         return singleton;
     }
 
-    int MaxChallenges() const
+    std::size_t MaxChallenges() const
     {
         // TODO Read this from a cvar
         return 1024;
