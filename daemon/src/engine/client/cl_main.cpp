@@ -2151,6 +2151,7 @@ void CL_Vid_Restart_f()
 	if ( cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC )
 	{
 		cls.cgameStarted = true;
+		CL_InitCGame();
 	}
 }
 

@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  *
  */
- 
+
 //#include "precompiled.h"
 #include <Rocket/Controls/Controls.h>
 #include <Rocket/Core/Core.h>
@@ -53,7 +53,7 @@ void LuaType<T>::Register(lua_State* L)
     //hide metatable from Lua getmetatable()
     lua_pushvalue(L, methods); //[methods = 1] -> [3] = copy of methods table, including modifications above
     lua_setfield(L, metatable, "__metatable"); //[metatable = 2] -> t[k] = v; t = [2 = ClassMT], k = "__metatable", v = [3 = 1]; pop [3]
-    
+
     lua_pushcfunction(L, index); //index = cfunction -> [3] = cfunction
     lua_setfield(L, metatable, "__index"); //[metatable = 2] -> t[k] = v; t = [2], k = "__index", v = cfunc; pop [3]
 
@@ -89,7 +89,7 @@ int LuaType<T>::push(lua_State *L, T* obj, bool gc)
     int ud = lua_gettop(L); //ud = 2
     if(ptrHold != NULL)
     {
-        *ptrHold = obj; 
+        *ptrHold = obj;
         lua_pushvalue(L, mt); // ->[3] = copy of [1]
         lua_setmetatable(L, -2); //[-2 = 2] -> [2]'s metatable = [3]; pop [3]
         char name[32];
@@ -298,7 +298,7 @@ int LuaType<T>::newindex(lua_State* L)
         lua_pushvalue(L,1); //userdata at [7]
         lua_pushvalue(L,3); //[8] = copy of [3]
         if(lua_pcall(L,2,0,0) != 0) //call function, pop 2 off push 0 on
-            Report(L, String(GetTClassName<T>()).Append(".__newindex for ").Append(lua_tostring(L,2)).Append(": ")); 
+            Report(L, String(GetTClassName<T>()).Append(".__newindex for ").Append(lua_tostring(L,2)).Append(": "));
     }
     else
         lua_pop(L,1); //not a setter function.
@@ -319,7 +319,7 @@ void LuaType<T>::_regfunctions(lua_State* L, int meta, int methods)
         lua_settable(L, methods); // represents t[k] = v, t = [methods] -> pop [2 = closure] to be v, pop [1 = name] to be k
     }
 
-    
+
     lua_getfield(L,methods, "__getters"); // -> table[1]
     if(lua_isnoneornil(L,-1))
     {

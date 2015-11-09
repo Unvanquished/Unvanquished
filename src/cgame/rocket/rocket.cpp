@@ -395,6 +395,9 @@ void Rocket_Shutdown()
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
 
+	// Shut down Lua before we clean up contexts
+	Rocket::Core::Lua::Interpreter::Shutdown();
+
 	if ( menuContext )
 	{
 		menuContext->RemoveReference();
@@ -407,7 +410,6 @@ void Rocket_Shutdown()
 		hudContext = nullptr;
 	}
 
-	Rocket::Core::Lua::Interpreter::Shutdown();
 	Rocket::Core::Shutdown();
 
 	// Prevent memory leaks
