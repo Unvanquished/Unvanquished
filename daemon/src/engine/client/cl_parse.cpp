@@ -114,12 +114,12 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldSnapshot, clSnap
     while (true) {
         unsigned int newEntityNum = MSG_ReadBits(msg, GENTITYNUM_BITS);
 
-        if (newEntityNum == MAX_GENTITIES - 1) {
-            break;
+        if (msg->readcount > msg->cursize) {
+            Sys::Drop("CL_ParsePacketEntities: Unexpected end of message");
         }
 
-        if (msg->readcount > msg->cursize) {
-            Sys::Drop("CL_ParsePacketEntities: end of message");
+        if (newEntityNum == MAX_GENTITIES - 1) {
+            break;
         }
 
         // (1) all entities that weren't specified between the previous newEntityNum and

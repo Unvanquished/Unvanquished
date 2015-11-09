@@ -77,7 +77,7 @@ typedef struct
 	int           serverCommandNum; // execute all commands up to this before
 	// making the snapshot current
 
-    std::vector<entityState_t> entities;
+	std::vector<entityState_t> entities;
 } clSnapshot_t;
 
 // Arnout: for double tapping

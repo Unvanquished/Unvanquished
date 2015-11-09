@@ -1239,8 +1239,8 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_GETCURRENTSNAPSHOTNUMBER:
 			IPC::HandleMsg<GetCurrentSnapshotNumberMsg>(channel, std::move(reader), [this] (int& number, int& serverTime) {
-	            number = cl.snap.messageNum;
-	            serverTime = cl.snap.serverTime;
+				number = cl.snap.messageNum;
+				serverTime = cl.snap.serverTime;
 			});
 			break;
 
@@ -1264,9 +1264,9 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_SETUSERCMDVALUE:
 			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale) {
-                cl.cgameUserCmdValue = stateValue;
-                cl.cgameFlags = flags;
-                cl.cgameSensitivity = scale;
+				cl.cgameUserCmdValue = stateValue;
+				cl.cgameFlags = flags;
+				cl.cgameSensitivity = scale;
 			});
 			break;
 
@@ -1525,7 +1525,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
 			IPC::HandleMsg<Key::KeyNumToStringMsg>(channel, std::move(reader), [this] (int keynum, std::string& result) {
-                result = Key_KeynumToString(keynum);
+				result = Key_KeynumToString(keynum);
 			});
 			break;
 
@@ -1606,7 +1606,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_LAN_UPDATEVISIBLEPINGS:
 			IPC::HandleMsg<LAN::UpdateVisiblePingsMsg>(channel, std::move(reader), [this] (int source, bool& res) {
-	            res = CL_UpdateVisiblePings_f(source);
+				res = CL_UpdateVisiblePings_f(source);
 			});
 			break;
 
@@ -1619,14 +1619,14 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		case CG_LAN_SERVERSTATUS:
 			IPC::HandleMsg<LAN::ServerStatusMsg>(channel, std::move(reader), [this] (const std::string& serverAddress, int len, std::string& status, int& res) {
 				std::unique_ptr<char[]> buffer(new char[len]);
-                res = CL_ServerStatus(serverAddress.c_str(), buffer.get(), len);
+				res = CL_ServerStatus(serverAddress.c_str(), buffer.get(), len);
 				status.assign(buffer.get(), len);
 			});
 			break;
 
 		case CG_LAN_RESETSERVERSTATUS:
 			IPC::HandleMsg<LAN::ResetServerStatusMsg>(channel, std::move(reader), [this] {
-                CL_ServerStatus(nullptr, nullptr, 0);
+				CL_ServerStatus(nullptr, nullptr, 0);
 			});
 			break;
 
