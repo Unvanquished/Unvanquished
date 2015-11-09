@@ -148,7 +148,7 @@ void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldSnapshot, clSnap
         } else {
             // (3) the entry isn't in the old snapshot, so the entity will be specified
             // from the baseline
-            assert(oldEntityNum > newEnityNum);
+            assert(oldEntityNum > newEntityNum);
 
             CL_DeltaEntity(msg, newSnapshot, newEntityNum, cl.entityBaselines[newEntityNum]);
         }
