@@ -63,9 +63,9 @@ namespace Cvar {
 
     // Generic ways to access cvars, might specialize it to parse and serialize automatically
 
-    void SetValue(const std::string& cvarName, std::string value);
+    void SetValue(const std::string& cvarName, const std::string& value);
     //Used for ROM cvars, will trigger a warning if the cvar is not ROM
-    void SetValueForce(const std::string& cvarName, std::string value);
+    void SetValueForce(const std::string& cvarName, const std::string& value);
     std::string GetValue(const std::string& cvarName);
 
     // Returns a list of cvars matching the prefix as well as their description
@@ -83,7 +83,7 @@ namespace Cvar {
     cvar_t* FindCCvar(const std::string& cvarName);
     std::string GetCvarConfigText();
     char* InfoString(int flag, bool big);
-    void SetValueCProxy(const std::string& cvarName, std::string value);
+    void SetValueCProxy(const std::string& cvarName, const std::string& value);
 
     void SetCheatsAllowed(bool allowed);
 

@@ -231,8 +231,7 @@ namespace Cvar {
                 }
             }
 
-            std::string oldValue = std::move(cvar->value);
-            cvar->value = std::move(value);
+            std::swap(cvar->value, value);
             cvar->flags |= flags;
 
             // mark for archival if flagged as archive-on-change
@@ -250,7 +249,7 @@ namespace Cvar {
                     //The proxy could not parse the value, rollback
                     Log::Notice("Value '%s' is not valid for cvar %s: %s\n",
                             cvar->value.c_str(), cvarName.c_str(), result.description.c_str());
-                    cvar->value = std::move(oldValue);
+                    cvar->value = value;
                 }
             }
             SetCCvar(*cvar);
@@ -259,12 +258,12 @@ namespace Cvar {
     }
 
     // Simple proxies for SetValueInternal
-    void SetValue(const std::string& cvarName, std::string value) {
-        InternalSetValue(cvarName, std::move(value), 0, false, true);
+    void SetValue(const std::string& cvarName, const std::string& value) {
+        InternalSetValue(cvarName, value, 0, false, true);
     }
 
-    void SetValueForce(const std::string& cvarName, std::string value) {
-        InternalSetValue(cvarName, std::move(value), 0, true, true);
+    void SetValueForce(const std::string& cvarName, const std::string& value) {
+        InternalSetValue(cvarName, value, 0, true, true);
     }
 
     std::string GetValue(const std::string& cvarName) {
@@ -308,7 +307,7 @@ namespace Cvar {
             cvar->flags |= flags;
             cvar->proxy = proxy;
 
-            cvar->resetValue = std::move(defaultValue);
+            cvar->resetValue = defaultValue;
             cvar->description = "";
 
             /*
@@ -483,8 +482,8 @@ namespace Cvar {
         return info;
     }
 
-    void SetValueCProxy(const std::string& cvarName, std::string value) {
-        InternalSetValue(cvarName, std::move(value), 0, true, false);
+    void SetValueCProxy(const std::string& cvarName, const std::string& value) {
+        InternalSetValue(cvarName, value, 0, true, false);
     }
 
     /*
