@@ -71,11 +71,11 @@ MESSAGE PARSING
 void CL_DeltaEntity( msg_t *msg, clSnapshot_t *snapshot, int entityNum, const entityState_t &oldEntity)
 {
     entityState_t entity;
-	MSG_ReadDeltaEntity(msg, &oldEntity, &entity, entityNum);
+    MSG_ReadDeltaEntity(msg, &oldEntity, &entity, entityNum);
 
-	if (entity.number != MAX_GENTITIES - 1) {
+    if (entity.number != MAX_GENTITIES - 1) {
         snapshot->entities.push_back(entity);
-	}
+    }
 }
 
 /*
