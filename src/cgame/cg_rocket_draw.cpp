@@ -2179,12 +2179,33 @@ class BarbsHudElement : public HudElement
 public:
 	BarbsHudElement ( const Rocket::Core::String& tag ) :
 	HudElement ( tag, ELEMENT_ALIENS ),
-	numBarbs( 0 ) {}
+	numBarbs( 0 ),
+	regenerationInterval ( 0 ),
+	t0 ( 0 ),
+	offset ( 0 ) {}
 
 	void DoOnUpdate()
 	{
-		numBarbs = cg.snap->ps.ammo;
+		// GetAttribute returns empty string when called in constuctor so it's here instead
 		Q_strncpyz ( src, GetAttribute<Rocket::Core::String> ("src", "").CString(), sizeof(src) );
+		int barbs = cg.snap->ps.ammo;
+		int interval = getInterval();
+
+		// start regenerating barb now
+		if ( barbs > numBarbs || ( barbs<numBarbs && numBarbs == BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ) )
+		{
+			t0 = cg.time;
+			// sin(-pi/2) is minimal
+			offset = -M_PI_2;
+		}
+		// change regeneration speed
+		else if ( interval != regenerationInterval )
+		{
+			t0 = cg.time;
+			offset = asin(getSin()) - M_PI_2;
+			regenerationInterval = interval;
+		}
+		numBarbs = barbs;
 	}
 
 	void DoOnRender()
@@ -2192,6 +2213,7 @@ public:
 		char base[ MAX_STRING_CHARS ];
 		char rml[ MAX_STRING_CHARS ] = { 0 };
 
+		// draw existing barbs
 		if ( numBarbs > 0 )
 		{
 			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", src );
@@ -2201,11 +2223,12 @@ public:
 			}
 		}
 
-		if ( numBarbs < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ) //&& cg.time > cg.snap->ps.weaponTime + 2000 )
+		// draw regenerating barb
+		if ( numBarbs < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
 		{
-			// blend
-			float opacity = sin ( 3.14 * cg.time/1000.0 ) / 2 + 0.5;
-			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' style='opacity: %s;' />", src, va("%.1f", opacity) );
+			// normalize
+			float opacity = getSin()/3 + 0.5;
+			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' style='opacity: %s; color: grey;' />", src, va("%f", opacity) );
 			Q_strcat( rml, sizeof( rml ), base );
 		}
 
@@ -2213,8 +2236,40 @@ public:
 	}
 
 private:
+
+	float getSin()
+	{
+		float t = (cg.time-t0) / 1000.0;
+		// frequency in Hz; Interval is in ms
+		float f = 4 * 1000.0/regenerationInterval;
+		return sin( offset + t * 2*M_PI * f );
+	}
+
+	int getInterval()
+	{
+		if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
+		{
+			// regeneration speed near booster
+			return  LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
+		}
+		else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+		{
+			// regeneration speed on creep
+			return LEVEL3_BOUNCEBALL_REGEN_CREEP;
+		}
+		else
+		{
+			return LEVEL3_BOUNCEBALL_REGEN;
+		}
+	}
+
 	int numBarbs;
-	float opacity;
+	int regenerationInterval;
+
+	// t0 and offset are used to make sure that there are no sudden jumps in opacity.
+	int t0;
+	float offset;
+
 	char src[ MAX_STRING_CHARS ];
 };
 
