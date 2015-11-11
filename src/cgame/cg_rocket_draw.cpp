@@ -2180,6 +2180,7 @@ public:
 	BarbsHudElement ( const Rocket::Core::String& tag ) :
 	HudElement ( tag, ELEMENT_ALIENS ),
 	numBarbs( 0 ),
+	maxBarbs( 0 ),
 	regenerationInterval ( 0 ),
 	t0 ( 0 ),
 	offset ( 0 ) {}
@@ -2189,23 +2190,22 @@ public:
 		HudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
-			int m = BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo;
-			if ( m > 0 )
+			maxBarbs = BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo;
+			if ( maxBarbs > 0 )
 			{
-				char base[ MAX_STRING_CHARS ];
-				char rml[ MAX_STRING_CHARS ] = { 0 };
 				src = GetAttribute<Rocket::Core::String>( "src", "" );
-				Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", src.CString() );
+				Rocket::Core::String base( va("<img class='barbs' src='%s' />", src.CString() ) );
+				Rocket::Core::String rml;
 
-				for ( int i=0; i<m; i++ )
+				for ( int i = 0; i < maxBarbs; i++ )
 				{
-					Q_strcat( rml, sizeof( rml ), base );
+					rml += base;
 				}
 
 				// SetInnerRML deletes all child Elements => bring children up to date
 				children.clear();
 				SetInnerRML( rml );
-				for( int i=0; i<m; i++) {
+				for( int i = 0; i < maxBarbs; i++) {
 					children.push_back( GetChild( i ) );
 				}
 			}
@@ -2223,7 +2223,7 @@ public:
 		int interval = GetInterval();
 
 		// start regenerating barb now
-		if ( barbs > numBarbs || ( barbs<numBarbs && numBarbs == BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ) )
+		if ( barbs > numBarbs || ( barbs < numBarbs && numBarbs == maxBarbs ) )
 		{
 			t0 = cg.time;
 			// sin(-pi/2) is minimal
@@ -2238,11 +2238,8 @@ public:
 			regenerationInterval = interval;
 		}
 		numBarbs = barbs;
-	}
 
-	void DoOnRender()
-	{
-		for ( int i=0; i<children.size(); i++)
+		for ( int i = 0; i < children.size(); i++)
 		{
 			if (i < numBarbs ) // draw existing barbs
 			{
@@ -2291,6 +2288,7 @@ private:
 	}
 
 	int numBarbs;
+	int maxBarbs;
 	int regenerationInterval;
 
 	// t0 and offset are used to make sure that there are no sudden jumps in opacity.
