@@ -1651,12 +1651,19 @@ void         ByteToDir( int b, vec3_t dir );
 	 */
 	InfoMap InfoStringToMap( const std::string& string );
 
+	// DEPRECATED: Use InfoMap
 	const char *Info_ValueForKey( const char *s, const char *key );
+	// DEPRECATED: Use InfoMap
 	void       Info_RemoveKey( char *s, const char *key , bool big );
+	// DEPRECATED: Use InfoMap
 	void       Info_RemoveKey_big( char *s, const char *key );
+	// DEPRECATED: Use InfoMap
 	void       Info_SetValueForKey( char *s, const char *key, const char *value , bool big );
+	// DEPRECATED: Use InfoMap
 	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value, bool big );
+	// DEPRECATED: Use InfoMap
 	bool   Info_Validate( const char *s );
+	// DEPRECATED: Use InfoMap
 	void       Info_NextPair( const char **s, char *key, char *value );
 
 //=============================================

@@ -622,6 +622,7 @@ MISC
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
 
+// DEPRECATED: Use InfoMap
 void       Info_Print( const char *s );
 
 // *INDENT-OFF*
