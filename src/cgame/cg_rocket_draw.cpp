@@ -2189,8 +2189,31 @@ public:
 		HudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
-			src = GetAttribute<Rocket::Core::String>( "src", "" );
-			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", src.CString() );
+			int m = BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo;
+			if ( m > 0 )
+			{
+				char base[ MAX_STRING_CHARS ];
+				char rml[ MAX_STRING_CHARS ] = { 0 };
+				src = GetAttribute<Rocket::Core::String>( "src", "" );
+				Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", src.CString() );
+
+				for ( int i=0; i<m; i++ )
+				{
+					Q_strcat( rml, sizeof( rml ), base );
+				}
+
+				// SetInnerRML deletes all child Elements => bring children up to date
+				children.clear();
+				SetInnerRML( rml );
+				for( int i=0; i<m; i++) {
+					children.push_back( GetChild( i ) );
+				}
+			}
+			else
+			{
+				children.clear();
+				SetInnerRML( "" );
+			}
 		}
 	}
 
@@ -2209,6 +2232,7 @@ public:
 		// change regeneration speed
 		else if ( interval != regenerationInterval )
 		{
+			// black math magic to avoid sudden jumps in opacity
 			t0 = cg.time;
 			offset = asin( GetSin() ) - M_PI_2;
 			regenerationInterval = interval;
@@ -2218,26 +2242,24 @@ public:
 
 	void DoOnRender()
 	{
-		char rml[ MAX_STRING_CHARS ] = { 0 };
-
-		// draw existing barbs
-		if ( numBarbs > 0 )
+		for ( int i=0; i<children.size(); i++)
 		{
-			for ( int i=0; i<numBarbs; i++ )
+			if (i < numBarbs ) // draw existing barbs
 			{
-				Q_strcat( rml, sizeof( rml ), base );
+				children[i]->SetProperty("color", "white");
+				children[i]->SetProperty("opacity", "1.0");
+			}
+			else if (i == numBarbs ) // draw regenerating barb
+			{
+				float opacity = GetSin() / 3 + 0.5; // normalize
+				children[i]->SetProperty("color", "grey");
+				children[i]->SetProperty("opacity", va( "%f", opacity ) );
+			}
+			else // hide remaining (nonexistent) barbs
+			{
+				children[i]->SetProperty("opacity", "0.0");
 			}
 		}
-
-		// draw regenerating barb
-		if ( numBarbs < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
-		{
-			// normalize
-			float opacity = GetSin() / 3 + 0.5;
-			Q_strcat( rml, sizeof( rml ), va( "<img class='barbs' src='%s' style='opacity: %s; color: grey;' />", src.CString(), va( "%f", opacity) ) );
-		}
-
-		SetInnerRML( rml );
 	}
 
 private:
@@ -2275,8 +2297,8 @@ private:
 	int t0;
 	float offset;
 
-	char base[ MAX_STRING_CHARS ];
 	Rocket::Core::String src;
+	std::vector<Element *> children;
 };
 
 void CG_Rocket_DrawPlayerHealth()
