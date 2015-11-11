@@ -2184,12 +2184,20 @@ public:
 	t0 ( 0 ),
 	offset ( 0 ) {}
 
+	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	{
+		HudElement::OnAttributeChange( changed_attributes );
+		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
+		{
+			src = GetAttribute<Rocket::Core::String>( "src", "" );
+			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", src.CString() );
+		}
+	}
+
 	void DoOnUpdate()
 	{
-		// GetAttribute returns empty string when called in constuctor so it's here instead
-		Q_strncpyz ( src, GetAttribute<Rocket::Core::String> ("src", "").CString(), sizeof(src) );
 		int barbs = cg.snap->ps.ammo;
-		int interval = getInterval();
+		int interval = GetInterval();
 
 		// start regenerating barb now
 		if ( barbs > numBarbs || ( barbs<numBarbs && numBarbs == BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ) )
@@ -2202,7 +2210,7 @@ public:
 		else if ( interval != regenerationInterval )
 		{
 			t0 = cg.time;
-			offset = asin(getSin()) - M_PI_2;
+			offset = asin( GetSin() ) - M_PI_2;
 			regenerationInterval = interval;
 		}
 		numBarbs = barbs;
@@ -2210,13 +2218,11 @@ public:
 
 	void DoOnRender()
 	{
-		char base[ MAX_STRING_CHARS ];
 		char rml[ MAX_STRING_CHARS ] = { 0 };
 
 		// draw existing barbs
 		if ( numBarbs > 0 )
 		{
-			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", src );
 			for ( int i=0; i<numBarbs; i++ )
 			{
 				Q_strcat( rml, sizeof( rml ), base );
@@ -2227,9 +2233,8 @@ public:
 		if ( numBarbs < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
 		{
 			// normalize
-			float opacity = getSin()/3 + 0.5;
-			Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' style='opacity: %s; color: grey;' />", src, va("%f", opacity) );
-			Q_strcat( rml, sizeof( rml ), base );
+			float opacity = GetSin() / 3 + 0.5;
+			Q_strcat( rml, sizeof( rml ), va( "<img class='barbs' src='%s' style='opacity: %s; color: grey;' />", src.CString(), va( "%f", opacity) ) );
 		}
 
 		SetInnerRML( rml );
@@ -2237,15 +2242,15 @@ public:
 
 private:
 
-	float getSin()
+	float GetSin()
 	{
-		float t = (cg.time-t0) / 1000.0;
+		float t = (cg.time - t0) / 1000.0;
 		// frequency in Hz; Interval is in ms
-		float f = 4 * 1000.0/regenerationInterval;
-		return sin( offset + t * 2*M_PI * f );
+		float f = 4 * 1000.0 / regenerationInterval;
+		return sin( offset + t * 2 * M_PI * f );
 	}
 
-	int getInterval()
+	int GetInterval()
 	{
 		if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
 		{
@@ -2270,7 +2275,8 @@ private:
 	int t0;
 	float offset;
 
-	char src[ MAX_STRING_CHARS ];
+	char base[ MAX_STRING_CHARS ];
+	Rocket::Core::String src;
 };
 
 void CG_Rocket_DrawPlayerHealth()
