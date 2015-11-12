@@ -786,12 +786,22 @@ static int RemoteCommandThrottle()
 	return delta;
 }
 
+static Cvar::Cvar<int> cvar_rcon_secure(
+	"rconSecure",
+	"How secure the Rcon protocol should be: "
+		"0: Allow unencrypted rcon, "
+		"1: Require encryption, "
+		"2: Require encryption and challege check",
+	Cvar::NONE,
+	0
+);
+
 void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 {
 	bool valid;
 	int throttle_delta = RemoteCommandThrottle();
 
-	if ( args.Argc() < 3 || throttle_delta < 180 )
+	if ( args.Argc() < 3 || throttle_delta < 180 || cvar_rcon_secure.Get() )
 	{
 		return;
 	}
@@ -898,6 +908,15 @@ static bool SVC_SecureRemoteCommandHelper(netadr_t from,
 			return false;
 		}
 	}
+	else if ( authentication == "PLAIN" )
+	{
+		if ( cvar_rcon_secure.Get() < 2 )
+		{
+			error_string = "Weak security";
+			return false;
+		}
+		return true;
+	}
 	else
 	{
 		error_string = "Unknown authentication method";
@@ -941,11 +960,11 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 {
 	std::string rcon_info_string = InfoMapToString({
-		{"secure", "0"},
+		{"secure",     std::to_string(cvar_rcon_secure.Get())},
 		{"encryption", "AES256"},
-		{"key", "SHA256"},
-		{"challenge", "1"},
-		{"timeout", "5"}
+		{"key",        "SHA256"},
+		{"challenge",  std::to_string(cvar_rcon_secure.Get() >= 2)},
+		{"timeout",    "5"}
 	});
 	NET_OutOfBandPrint( NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string.c_str() );
 }
