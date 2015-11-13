@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "server.h"
-#include "CryptoChallege.h"
+#include "CryptoChallenge.h"
 
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
@@ -49,7 +49,6 @@ GameVM         gvm; // game virtual machine
 cvar_t         *sv_fps; // time rate for running non-clients
 cvar_t         *sv_timeout; // seconds without any message
 cvar_t         *sv_zombietime; // seconds to sink messages after disconnect
-cvar_t         *sv_rconPassword; // password for remote server commands
 cvar_t         *sv_privatePassword; // password for the privateClient slots
 cvar_t         *sv_allowDownload;
 cvar_t         *sv_maxclients;
@@ -102,7 +101,26 @@ Cvar::Cvar<bool> isLanOnly(
 
 #define LL( x ) x = LittleLong( x )
 
-#define MAX_CHALLENGE_LEN 128
+static CONSTEXPR int MAX_CHALLENGE_LEN = 128;
+
+static Cvar::Cvar<std::string> cvar_server_rcon_password(
+	"server.rcon.password",
+	"Password used to protect the remote console",
+	Cvar::NONE,
+	""
+);
+
+static Cvar::Cvar<int> cvar_server_rcon_secure(
+	"server.rcon.secure",
+	"How secure the Rcon protocol should be: "
+		"0: Allow unencrypted rcon, "
+		"1: Require encryption, "
+		"2: Require encryption and challege check",
+	Cvar::NONE,
+	0
+);
+
+
 
 /*
 =============================================================================
@@ -786,27 +804,17 @@ static int RemoteCommandThrottle()
 	return delta;
 }
 
-static Cvar::Cvar<int> cvar_rcon_secure(
-	"rconSecure",
-	"How secure the Rcon protocol should be: "
-		"0: Allow unencrypted rcon, "
-		"1: Require encryption, "
-		"2: Require encryption and challege check",
-	Cvar::NONE,
-	0
-);
-
 void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 {
 	bool valid;
 	int throttle_delta = RemoteCommandThrottle();
 
-	if ( args.Argc() < 3 || throttle_delta < 180 || cvar_rcon_secure.Get() )
+	if ( args.Argc() < 3 || throttle_delta < 180 || cvar_server_rcon_secure.Get() )
 	{
 		return;
 	}
 
-	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
+	if ( !cvar_server_rcon_password.Get().empty() || args.Argv(1) != cvar_server_rcon_password.Get() )
 	{
 		// If the rconpassword is bad and one just happned recently, don't spam the log file, just die.
 		if ( throttle_delta < 600 )
@@ -832,13 +840,13 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	//     (also a Q3 issue)
 	auto env = RconEnvironment(from, 1024 - 16);
 
-	if ( !strlen( sv_rconPassword->string ) )
+	if ( cvar_server_rcon_password.Get().empty() )
 	{
-		env.Print( "No rconpassword set on the server." );
+		env.Print( "No server.rcon.password set on the server." );
 	}
 	else if ( !valid )
 	{
-		env.Print( "Bad rconpassword." );
+		env.Print( "Bad rcon password." );
 	}
 	else
 	{
@@ -854,16 +862,16 @@ static bool SVC_SecureRemoteCommandHelper(netadr_t from,
 										  std::string& error_string,
 										  std::string& command)
 {
-	if ( !strlen( sv_rconPassword->string ) )
+	if ( cvar_server_rcon_password.Get().empty() )
 	{
-		error_string = "rconPassword not set";
+		error_string = "server.rcon.password not set";
 		return false;
 	}
 
 	std::string authentication = args.Argv(1);
 	Crypto::Data cyphertext = Crypto::String( args.Argv(2) );
 
-	Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( sv_rconPassword->string ) );
+	Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( cvar_server_rcon_password.Get() ) );
 	Crypto::Data data;
 	if ( !Crypto::Encoding::Base64Decode( cyphertext, data ) )
 	{
@@ -910,7 +918,7 @@ static bool SVC_SecureRemoteCommandHelper(netadr_t from,
 	}
 	else if ( authentication == "PLAIN" )
 	{
-		if ( cvar_rcon_secure.Get() < 2 )
+		if ( cvar_server_rcon_secure.Get() < 2 )
 		{
 			error_string = "Weak security";
 			return false;
@@ -959,12 +967,13 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 // TODO: Cvars for all the settable properties, maybe it could use Cvar::PopulateInfoMap
 static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 {
+	int duration_seconds = std::chrono::duration_cast<std::chrono::seconds>(Challenge::Timeout()).count();
 	std::string rcon_info_string = InfoMapToString({
-		{"secure",     std::to_string(cvar_rcon_secure.Get())},
+		{"secure",     std::to_string(cvar_server_rcon_secure.Get())},
 		{"encryption", "AES256"},
 		{"key",        "SHA256"},
-		{"challenge",  std::to_string(cvar_rcon_secure.Get() >= 2)},
-		{"timeout",    "5"}
+		{"challenge",  std::to_string(cvar_server_rcon_secure.Get() >= 2)},
+		{"timeout",    std::to_string(duration_seconds)},
 	});
 	NET_OutOfBandPrint( NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string.c_str() );
 }

@@ -44,20 +44,12 @@ public:
     /*
      * Time duration a challenge will be valid for
      */
-    static Duration Timeout()
-    {
-        // TODO Read this from a cvar
-        return std::chrono::duration_cast<Duration>( std::chrono::seconds( 5 ) );
-    }
+    static Duration Timeout();
 
     /*
      * Size of the raw challenge data
      */
-    static std::size_t Bytes()
-    {
-        // TODO Read this from a cvar
-        return 8;
-    }
+    static std::size_t Bytes();
 
     Challenge( const netadr_t& source, const Crypto::Data& challenge )
         : valid_until( Clock::now() + Timeout() ),
@@ -112,20 +104,7 @@ private:
     /*
      * Generates a random challenge
      */
-    std::string GenerateString()
-    {
-        std::vector<uint8_t> data( Bytes() );
-        Sys::GenRandomBytes(data.data(), data.size());
-        std::ostringstream stream;
-        stream.setf(std::ios::hex, std::ios::basefield);
-        stream.fill('0');
-        for ( auto ch : data )
-        {
-            stream.width(2);
-            stream << int( ch );
-        }
-        return stream.str();
-    }
+    std::string GenerateString();
 
     TimePoint valid_until;
     Crypto::Data challenge;
@@ -142,62 +121,23 @@ public:
         return singleton;
     }
 
-    std::size_t MaxChallenges() const
-    {
-        // TODO Read this from a cvar
-        return 1024;
-    }
+    std::size_t MaxChallenges() const;
 
     /*
      * Generates a challenge for the given address and returns the challenge string
      */
-    std::string GenerateChallenge( const netadr_t& source )
-    {
-        auto challenge = Challenge( source );
-        Push( challenge );
-        return challenge.String();
-    }
+    std::string GenerateChallenge( const netadr_t& source );
 
     /*
      * Add a challenge to the pool
      */
-    void Push( const Challenge& challenge )
-    {
-        auto lock = Lock();
-
-        Cleanup();
-
-        if ( challenges.size() >= MaxChallenges() )
-        {
-            challenges.pop_front();
-        }
-
-        challenges.push_back( challenge );
-    }
+    void Push( const Challenge& challenge );
 
     /*
      * Check if a challenge matches any of the registered ones
      * If it does and it's valid, it'll return false
      */
-    bool Match( const Challenge& challenge )
-    {
-        auto lock = Lock();
-
-        Cleanup();
-
-        auto it = std::find_if( challenges.begin(), challenges.end(),
-            [&challenge]( const Challenge& ch ) {
-                return ch.Matches( challenge );
-        } );
-
-        if ( it != challenges.end() )
-        {
-            challenges.erase( it );
-            return true;
-        }
-
-        return false;
-    }
+    bool Match( const Challenge& challenge );
 
 private:
     ChallengeManager() = default;
@@ -213,18 +153,7 @@ private:
      * Removes outdated challenges
      * PRE: The caller has acquired a lock on mutex
      */
-    void Cleanup()
-    {
-        auto now = Challenge::Clock::now();
-        challenges.erase(
-            std::remove_if( challenges.begin(), challenges.end(),
-                [&now]( const Challenge& challenge ) {
-                    return !challenge.ValidAt( now );
-                }
-            ),
-            challenges.end()
-        );
-    }
+    void Cleanup();
 
     std::mutex mutex;
     std::deque<Challenge> challenges;

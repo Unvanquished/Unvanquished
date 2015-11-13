@@ -35,7 +35,7 @@ Maryland 20850 USA.
 // sv_client.c -- server code for dealing with clients
 
 #include "server.h"
-#include "CryptoChallege.h"
+#include "CryptoChallenge.h"
 
 static void SV_CloseDownload( client_t *cl );
 
