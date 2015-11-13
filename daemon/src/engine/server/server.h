@@ -47,6 +47,21 @@ Maryland 20850 USA.
 #define PERS_SCORE        0 // !!! MUST NOT CHANGE, SERVER AND
 // GAME BOTH REFERENCE !!!
 
+#ifdef USE_VOIP
+#define VOIP_QUEUE_LENGTH 64
+
+typedef struct voipServerPacket_s
+{
+	int  generation;
+	int  sequence;
+	int  frames;
+	int  len;
+	int  sender;
+	int  flags;
+	byte data[ 1024 ];
+} voipServerPacket_t;
+#endif
+
 #define MAX_BPS_WINDOW 20 // NERVE - SMF - net debugging
 
 typedef struct svEntity_s
@@ -210,6 +225,15 @@ typedef struct client_s
 
 	char             pubkey[ RSA_STRING_LENGTH ];
 
+#ifdef USE_VOIP
+	bool           hasVoip;
+	bool           muteAllVoip;
+	bool           ignoreVoipFromClient[ MAX_CLIENTS ];
+	voipServerPacket_t *voipPacket[ VOIP_QUEUE_LENGTH ];
+	int                queuedVoipPackets;
+	int                queuedVoipIndex;
+#endif
+
 	//bani
 	int downloadnotify;
 } client_t;
@@ -365,6 +389,10 @@ extern cvar_t *sv_packetdelay;
 //fretn
 extern cvar_t *sv_fullmsg;
 
+#ifdef USE_VOIP
+extern cvar_t *sv_voip;
+#endif
+
 extern Cvar::Cvar<bool> isLanOnly;
 
 //===========================================================
@@ -425,6 +453,11 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, bool clientOK, bool p
 void SV_ClientThink( client_t *cl, usercmd_t *cmd );
 
 void SV_WriteDownloadToClient( client_t *cl, msg_t *msg );
+
+#ifdef USE_VOIP
+void SV_WriteVoipToClient( client_t *cl, msg_t *msg );
+
+#endif
 
 //
 // sv_ccmds.c

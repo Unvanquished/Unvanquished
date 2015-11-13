@@ -29,6 +29,7 @@ See below for build and launch instructions.
 `OpenAL`,
 `libogg`,
 `libvorbis`,
+`libspeex`,
 `libtheora`,
 `libopus`,
 `libopusfile`

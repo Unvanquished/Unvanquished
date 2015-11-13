@@ -248,6 +248,140 @@ void SCR_DrawDemoRecording()
 	Cvar_Set( "cl_demooffset", va( "%d", FS_FTell( clc.demofile ) ) );
 }
 
+#ifdef USE_VOIP
+
+/*
+=================
+SCR_DrawVoipMeter
+=================
+*/
+void SCR_DrawVoipMeter()
+{
+	char buffer[ 16 ];
+	char string[ 256 ];
+	int  limit, i;
+
+	if ( !cl_voipShowMeter->integer )
+	{
+		return; // player doesn't want to show meter at all.
+	}
+	else if ( !cl_voipSend->integer )
+	{
+		return; // not recording at the moment.
+	}
+	else if ( cls.state != CA_ACTIVE )
+	{
+		return; // not connected to a server.
+	}
+	else if ( !clc.voipEnabled )
+	{
+		return; // server doesn't support VoIP.
+	}
+	else if ( clc.demoplaying )
+	{
+		return; // playing back a demo.
+	}
+	else if ( !cl_voip->integer )
+	{
+		return; // client has VoIP support disabled.
+	}
+
+	limit = ( int )( clc.voipPower * 10.0f );
+
+	if ( limit > 10 )
+	{
+		limit = 10;
+	}
+
+	for ( i = 0; i < limit; i++ )
+	{
+		buffer[ i ] = '*';
+	}
+
+	while ( i < 10 )
+	{
+		buffer[ i++ ] = ' ';
+	}
+
+	buffer[ i ] = '\0';
+
+	sprintf( string, "VoIP: [%s]", buffer );
+	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::White, true, false );
+}
+
+/*
+=================
+SCR_DrawVoipSender
+=================
+*/
+void SCR_DrawVoipSender()
+{
+#if 0 //FIXME we need to find another way to get the team CS_PLAYERS value, which will continuously change independently of the client, especially now with several cgames/games in development
+	char string[ 256 ];
+	char teamColor;
+
+	// Little bit of a hack here, but it's the only thing i could come up with
+	if ( cls.voipTime > cls.realtime )
+	{
+		if ( !cl_voipShowSender->integer )
+		{
+			return; // They don't want this on :(
+		}
+		else if ( cls.state != CA_ACTIVE )
+		{
+			return; // not connected to a server.
+		}
+		else if ( !clc.voipEnabled )
+		{
+			return; // server doesn't support VoIP.
+		}
+		else if ( clc.demoplaying )
+		{
+			return; // playing back a demo.
+		}
+		else if ( !cl_voip->integer )
+		{
+			return; // client has VoIP support disabled.
+		}
+
+		switch ( atoi( Info_ValueForKey(cl.gameState[CS_PLAYERS + cls.voipSender].c_str(), "t") ) )
+		{
+			case TEAM_ALIENS: teamColor = '1'; break;
+			case TEAM_HUMANS: teamColor = '4'; break;
+			default: teamColor = '3';
+		}
+
+		sprintf( string, "VoIP: ^%c%s", teamColor, Info_ValueForKey(cl.gameState[CS_PLAYERS + cls.voipSender].c_str(), "t" ) );
+
+		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
+		{
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::White, true, true );
+		}
+		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
+		{
+			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::White, true, true );
+		}
+		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
+		{
+			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::White, true, true );
+		}
+		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
+		{
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::White, true, true );
+		}
+		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
+		{
+			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, Color::Color( 7 ], true, true );
+		}
+		else
+		{
+			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, Color::Color( 7 ], true, true );
+		}
+	}
+#endif
+}
+#endif
+
 //=============================================================================
 
 /*
@@ -318,6 +452,10 @@ void SCR_DrawScreenField()
 			case CA_ACTIVE:
 				CL_CGameRendering();
 				SCR_DrawDemoRecording();
+#ifdef USE_VOIP
+				SCR_DrawVoipMeter();
+				SCR_DrawVoipSender();
+#endif
 				break;
 		}
 	}

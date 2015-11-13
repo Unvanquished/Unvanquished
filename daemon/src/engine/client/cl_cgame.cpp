@@ -941,6 +941,50 @@ void CL_FirstSnapshot()
 	// resend userinfo upon entering the game, as some cvars may
     // not have had the CVAR_USERINFO flag set until loading cgame
 	cvar_modifiedFlags |= CVAR_USERINFO;
+
+#ifdef USE_VOIP
+
+	if ( !clc.speexInitialized )
+	{
+		int i;
+		speex_bits_init( &clc.speexEncoderBits );
+		speex_bits_reset( &clc.speexEncoderBits );
+
+		clc.speexEncoder = speex_encoder_init( speex_lib_get_mode( SPEEX_MODEID_NB ) );
+
+		speex_encoder_ctl( clc.speexEncoder, SPEEX_GET_FRAME_SIZE,
+		                   &clc.speexFrameSize );
+		speex_encoder_ctl( clc.speexEncoder, SPEEX_GET_SAMPLING_RATE,
+		                   &clc.speexSampleRate );
+
+		clc.speexPreprocessor = speex_preprocess_state_init( clc.speexFrameSize,
+		                        clc.speexSampleRate );
+
+		i = 1;
+		speex_preprocess_ctl( clc.speexPreprocessor,
+		                      SPEEX_PREPROCESS_SET_DENOISE, &i );
+
+		i = 1;
+		speex_preprocess_ctl( clc.speexPreprocessor,
+		                      SPEEX_PREPROCESS_SET_AGC, &i );
+
+		for ( i = 0; i < MAX_CLIENTS; i++ )
+		{
+			speex_bits_init( &clc.speexDecoderBits[ i ] );
+			speex_bits_reset( &clc.speexDecoderBits[ i ] );
+			clc.speexDecoder[ i ] = speex_decoder_init( speex_lib_get_mode( SPEEX_MODEID_NB ) );
+			clc.voipIgnore[ i ] = false;
+			clc.voipGain[ i ] = 1.0f;
+		}
+
+		clc.speexInitialized = true;
+		clc.voipMuteAll = false;
+		Cmd_AddCommand( "voip", CL_Voip_f );
+		Cvar_Set( "cl_voipSendTarget", "spatial" );
+		Com_Memset( clc.voipTargets, ~0, sizeof( clc.voipTargets ) );
+	}
+
+#endif
 }
 
 /*

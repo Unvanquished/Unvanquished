@@ -48,6 +48,11 @@ Maryland 20850 USA.
 #include "framework/CommandBufferHost.h"
 #include "common/IPC/CommandBuffer.h"
 
+#if defined(USE_VOIP) && !defined(BUILD_SERVER)
+#include <speex/speex.h>
+#include <speex/speex_preprocess.h>
+#endif
+
 // file containing our RSA public and private keys
 #define RSAKEY_FILE        "pubkey"
 
@@ -247,6 +252,38 @@ typedef struct
 	bool     firstDemoFrameSkipped;
 	fileHandle_t demofile;
 
+#if defined(USE_VOIP) && !defined(BUILD_SERVER)
+	bool voipEnabled;
+	bool speexInitialized;
+	int      speexFrameSize;
+	int      speexSampleRate;
+
+	// incoming data...
+	// !!! FIXME: convert from parallel arrays to array of a struct.
+	SpeexBits speexDecoderBits[ MAX_CLIENTS ];
+	void      *speexDecoder[ MAX_CLIENTS ];
+	byte      voipIncomingGeneration[ MAX_CLIENTS ];
+	int       voipIncomingSequence[ MAX_CLIENTS ];
+	float     voipGain[ MAX_CLIENTS ];
+	bool  voipIgnore[ MAX_CLIENTS ];
+	bool  voipMuteAll;
+
+	// outgoing data...
+	// if voipTargets[i / 8] & (1 << (i % 8)),
+	// then we are sending to clientnum i.
+	uint8_t              voipTargets[( MAX_CLIENTS + 7 ) / 8 ];
+	uint8_t              voipFlags;
+	SpeexPreprocessState *speexPreprocessor;
+	SpeexBits            speexEncoderBits;
+	void                 *speexEncoder;
+	int                  voipOutgoingDataSize;
+	int                  voipOutgoingDataFrames;
+	int                  voipOutgoingSequence;
+	byte                 voipOutgoingGeneration;
+	byte                 voipOutgoingData[ 1024 ];
+	float                voipPower;
+#endif
+
 	bool     waverecording;
 	fileHandle_t wavefile;
 	int          wavetime;
@@ -320,6 +357,9 @@ typedef struct
 
 	int      realtime; // ignores pause
 	int      realFrametime; // ignoring pause, so console always works
+
+	int      voipTime;
+	int      voipSender;
 
 	// master server sequence information
 	int          numMasterPackets;
@@ -521,6 +561,21 @@ extern cvar_t *cl_allowPaste;
 extern cvar_t *cl_useMumble;
 extern cvar_t *cl_mumbleScale;
 
+#if defined(USE_VOIP) && !defined(BUILD_SERVER)
+// cl_voipSendTarget is a string: "all" to broadcast to everyone, "none" to
+//  send to no one, or a comma-separated list of client numbers:
+//  "0,7,2,23" ... an empty string is treated like "all".
+extern  cvar_t *cl_voipUseVAD;
+extern  cvar_t *cl_voipVADThreshold;
+extern  cvar_t *cl_voipSend;
+extern  cvar_t *cl_voipSendTarget;
+extern  cvar_t *cl_voipGainDuringCapture;
+extern  cvar_t *cl_voipCaptureMult;
+extern  cvar_t *cl_voipShowMeter;
+extern  cvar_t *cl_voipShowSender;
+extern  cvar_t *cl_voip;
+#endif
+
 extern Log::Logger downloadLogger;
 
 //=================================================
@@ -634,6 +689,11 @@ bool CL_IRCIsRunning();
 //
 // cl_parse.c
 //
+#if defined(USE_VOIP) && !defined(BUILD_SERVER)
+void       CL_Voip_f();
+
+#endif
+
 void CL_SystemInfoChanged();
 void CL_ParseServerMessage( msg_t *msg );
 
