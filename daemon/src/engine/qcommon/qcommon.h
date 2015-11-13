@@ -324,7 +324,6 @@ enum svc_ops_e
   // svc_extension follows a svc_EOF, followed by another svc_* ...
   //  this keeps legacy clients compatible.
   svc_extension,
-  svc_voip, // not wrapped in USE_VOIP, so this value is reserved.
 };
 
 //
@@ -338,7 +337,6 @@ enum clc_ops_e
   clc_moveNoDelta, // [usercmd_t]
   clc_clientCommand, // [string] message
   clc_EOF,
-  clc_voip, // not wrapped in USE_VOIP, so this value is reserved.
 };
 
 /*
@@ -638,8 +636,6 @@ unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_FilterPath( const char *filter, char *name, int casesensitive );
-
-bool   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
 
 void       Com_StartupVariable( const char *match );
 void       Com_SetRecommended();

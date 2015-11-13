@@ -1407,10 +1407,6 @@ typedef struct
 	int modCount;
 	int modIndex;
 
-	char *voipInputs[ MAX_INPUTS ];
-	int voipInputsCount;
-	int voipInputIndex;
-
 	char *alOutputs[ MAX_OUTPUTS ];
 	int alOutputsCount;
 	int alOutputIndex;
