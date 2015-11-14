@@ -30,25 +30,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CryptoChallenge.h"
 
-static Cvar::Cvar<int> cvar_server_challenge_timeout(
+static Cvar::Range<Cvar::Cvar<int>> cvar_server_challenge_timeout(
 	"server.rcon.challenge.timeout",
 	"Timeout (in seconds) of a rcon challenge",
 	Cvar::NONE,
-	5
+	5,
+	1,
+	std::numeric_limits<int>::max()
 );
 
-static Cvar::Cvar<int> cvar_server_challenge_length(
+static Cvar::Range<Cvar::Cvar<std::size_t>> cvar_server_challenge_length(
 	"server.rcon.challenge.length",
 	"Length in bytes of the challenge data (The hexadecimal representation will be twice as long",
 	Cvar::NONE,
-	8
+	8,
+	1,
+	Crypto::Data().max_size()
 );
 
-static Cvar::Cvar<int> cvar_server_challenge_count(
+static Cvar::Range<Cvar::Cvar<std::size_t>> cvar_server_challenge_count(
 	"server.rcon.challenge.count",
 	"Maximum number of active challenges kept in memory",
 	Cvar::NONE,
-	1024
+	1024,
+	1,
+	std::deque<Challenge>().max_size()
 );
 
 Challenge::Duration Challenge::Timeout()

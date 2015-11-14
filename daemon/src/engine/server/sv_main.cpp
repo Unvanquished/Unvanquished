@@ -110,16 +110,17 @@ static Cvar::Cvar<std::string> cvar_server_rcon_password(
 	""
 );
 
-static Cvar::Cvar<int> cvar_server_rcon_secure(
+static Cvar::Range<Cvar::Cvar<int>> cvar_server_rcon_secure(
 	"server.rcon.secure",
 	"How secure the Rcon protocol should be: "
 		"0: Allow unencrypted rcon, "
 		"1: Require encryption, "
 		"2: Require encryption and challege check",
 	Cvar::NONE,
-	0
+	0,
+	0,
+	2
 );
-
 
 
 /*
@@ -964,7 +965,6 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 }
 
-// TODO: Cvars for all the settable properties, maybe it could use Cvar::PopulateInfoMap
 static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 {
 	int duration_seconds = std::chrono::duration_cast<std::chrono::seconds>(Challenge::Timeout()).count();

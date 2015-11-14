@@ -227,6 +227,11 @@ namespace Cvar {
     std::string SerializeCvarValue(std::string value);
     template<>
     std::string GetCvarTypeName<std::string>();
+    std::string SerializeCvarValue(std::size_t value);
+    template<>
+    std::string GetCvarTypeName<std::size_t>();
+    bool ParseCvarValue(Str::StringRef value, std::size_t& result);
+
 
     // Engine calls available everywhere
 
