@@ -37,6 +37,7 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
+#include "common/Network.h"
 
 #ifdef USE_VOIP
 cvar_t         *sv_voip;
@@ -530,8 +531,8 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 		}
 	}
 
-	std::string info_string = InfoMapToString( info_map );
-	NET_OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s", info_string.c_str(), status.c_str() );
+	Net::OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s",
+		InfoMapToString( info_map ), status );
 }
 
 /*
@@ -637,8 +638,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 	info_map["gamename"] = GAMENAME_STRING;  // Arnout: to be able to filter out Quake servers
 
-	std::string info_string = InfoMapToString( info_map );
-	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", info_string.c_str() );
+	Net::OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", InfoMapToString( info_map ) );
 }
 
 /*
@@ -647,7 +647,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
  */
 void SVC_Ping( netadr_t from, const Cmd::Args& )
 {
-	NET_OutOfBandPrint( NS_SERVER, from, "ack\n" );
+	Net::OutOfBandPrint( NS_SERVER, from, "ack\n" );
 }
 
 /*
@@ -787,13 +787,13 @@ public:
 	}
 
 	void Flush() {
-		NET_OutOfBandPrint(NS_SERVER, from, "%s\n%s", prefix.c_str(), buffer.c_str());
+		Net::OutOfBandPrint(NS_SERVER, from, "%s\n%s", prefix, buffer);
 		buffer.clear();
 	}
 
 	static void PrintError(netadr_t to, const std::string& message)
 	{
-		NET_OutOfBandPrint(NS_SERVER, to, "error\n%s", message.c_str());
+		Net::OutOfBandPrint(NS_SERVER, to, "error\n%s", message);
 	}
 
 private:
@@ -978,7 +978,7 @@ static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 		{"challenge",  std::to_string(cvar_server_rcon_secure.Get() >= 2)},
 		{"timeout",    std::to_string(duration_seconds)},
 	});
-	NET_OutOfBandPrint( NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string.c_str() );
+	Net::OutOfBandPrint( NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string );
 }
 
 
