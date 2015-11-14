@@ -772,27 +772,35 @@ Redirect all printfs
 */
 
 class RconEnvironment: public Cmd::DefaultEnvironment {
-    public:
-        RconEnvironment(netadr_t from, size_t bufferSize): from(from), bufferSize(bufferSize) {};
+public:
+	RconEnvironment(netadr_t from)
+		: from(from), bufferSize(MAX_MSGLEN - prefix.size() - 1)
+	{}
 
-        virtual void Print(Str::StringRef text) OVERRIDE {
-            if (text.size() + buffer.size() > bufferSize - 1) {
-                Flush();
-            }
+	virtual void Print(Str::StringRef text) OVERRIDE {
+		if (text.size() + buffer.size() > bufferSize - 1) {
+			Flush();
+		}
 
-            buffer += text;
-            buffer += '\n';
-        }
+		buffer += text;
+		buffer += '\n';
+	}
 
-        void Flush() {
-            NET_OutOfBandPrint(NS_SERVER, from, "print\n%s", buffer.c_str());
-            buffer = "";
-        }
+	void Flush() {
+		NET_OutOfBandPrint(NS_SERVER, from, "%s\n%s", prefix.c_str(), buffer.c_str());
+		buffer.clear();
+	}
 
-    private:
-        netadr_t from;
-        size_t bufferSize;
-        std::string buffer;
+	static void PrintError(netadr_t to, const std::string& message)
+	{
+		NET_OutOfBandPrint(NS_SERVER, to, "error\n%s", message.c_str());
+	}
+
+private:
+	netadr_t from;
+	std::size_t bufferSize;
+	std::string buffer;
+	std::string prefix = "print";
 };
 
 static int RemoteCommandThrottle()
@@ -815,7 +823,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 		return;
 	}
 
-	if ( !cvar_server_rcon_password.Get().empty() || args.Argv(1) != cvar_server_rcon_password.Get() )
+	if ( cvar_server_rcon_password.Get().empty() || args.Argv(1) != cvar_server_rcon_password.Get() )
 	{
 		// If the rconpassword is bad and one just happned recently, don't spam the log file, just die.
 		if ( throttle_delta < 600 )
@@ -832,30 +840,24 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 
-	// start redirecting all print outputs to the packet
-	// FIXME TTimo our rcon redirection could be improved
-	//   big rcon commands such as status lead to sending
-	//   out of band packets on every single call to Com_Printf
-	//   which leads to client overflows
-	//   see show_bug.cgi?id=51
-	//     (also a Q3 issue)
-	auto env = RconEnvironment(from, 1024 - 16);
 
 	if ( cvar_server_rcon_password.Get().empty() )
 	{
-		env.Print( "No server.rcon.password set on the server." );
+		RconEnvironment::PrintError( from, "No server.rcon.password set on the server." );
 	}
 	else if ( !valid )
 	{
-		env.Print( "Bad rcon password." );
+		RconEnvironment::PrintError( from, "Bad rcon password." );
 	}
 	else
 	{
+		// start redirecting all print outputs to the packet
+		auto env = RconEnvironment(from);
 		Cmd::ExecuteCommand(args.EscapedArgs(2), true, &env);
 		Cmd::ExecuteCommandBuffer();
+		env.Flush();
 	}
 
-	env.Flush();
 }
 
 static bool SVC_SecureRemoteCommandHelper(netadr_t from,
@@ -950,7 +952,7 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 	if ( SVC_SecureRemoteCommandHelper(from, args, error_string, command) )
 	{
 		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), command.c_str() );
-		auto env = RconEnvironment(from, 1024 - 16);
+		auto env = RconEnvironment(from);
 		Cmd::ExecuteCommand(command, true, &env);
 		Cmd::ExecuteCommandBuffer();
 		env.Flush();
@@ -962,6 +964,7 @@ void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
 			return;
 		}
 		Com_Printf( "Bad srcon from %s: %s\n", NET_AdrToString( from ), error_string.c_str() );
+		RconEnvironment::PrintError( from, error_string );
 	}
 }
 
