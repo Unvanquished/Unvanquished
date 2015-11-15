@@ -31,7 +31,11 @@ See below for build and launch instructions.
 `libvorbis`,
 `libtheora`,
 `libopus`,
-`libopusfile`
+`libopusfile`,
+`python` ≥ 2,
+`python-yaml`,
+`python-jinja`
+
 
 ###Buildtime
 
@@ -53,17 +57,6 @@ See below for build and launch instructions.
 ##Build Instructions
 
 Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores to speed up compilation.
-
-###CBSE Toolchain
-
-If you want to build the gamelogic, you'll need the following tools:
-
-`python` ≥ 2
-`python-yaml`
-`python-jinja`
-
-Then you can modify the entities.yml file in src/sgame/. After modifying the entites.yml file,
-you can run the generate_entities.sh script o regenerate the auto generated component code.
 
 ###Visual Studio
 
