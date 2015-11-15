@@ -233,13 +233,6 @@ SV_Status_f
 */
 static void SV_Status_f()
 {
-	int           i, j, l;
-	client_t      *cl;
-	playerState_t *ps;
-	const char    *s;
-	int           ping;
-	float         cpu, avg;
-
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
@@ -247,74 +240,78 @@ static void SV_Status_f()
 		return;
 	}
 
-	cpu = ( svs.stats.latched_active + svs.stats.latched_idle );
+	float cpu = ( svs.stats.latched_active + svs.stats.latched_idle );
 
 	if ( cpu )
 	{
 		cpu = 100 * svs.stats.latched_active / cpu;
 	}
 
-	avg = 1000 * svs.stats.latched_active / STATFRAMES;
-
-	Com_Printf( "cpu utilization  : %3i%%\n"
-	            "avg response time: %i ms\n"
-	            "map: %s\n"
-	            "num score ping name            lastmsg address               qport rate\n"
-	            "--- ----- ---- --------------- ------- --------------------- ----- -----\n",
-	           ( int ) cpu, ( int ) avg, sv_mapname->string );
-
-	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
+	std::vector<std::string> players;
+	for ( int i = 0; i < sv_maxclients->integer; i++ )
 	{
-		if ( !cl->state )
+		const client_t& cl = svs.clients[i];
+		if ( !cl.state )
 		{
 			continue;
 		}
 
-		Com_Printf( "%3i ", i );
-		ps = SV_GameClientNum( i );
-		Com_Printf( "%5i ", ps->persistant[ PERS_SCORE ] );
+		std::string connection;
 
-		if ( cl->state == CS_CONNECTED )
+		if ( cl.state == CS_CONNECTED )
 		{
-			Com_Printf( "CNCT " );
+			connection = "CONNECTED";
 		}
-		else if ( cl->state == CS_ZOMBIE )
+		else if ( cl.state == CS_ZOMBIE )
 		{
-			Com_Printf( "ZMBI " );
+			connection = "ZOMBIE";
 		}
 		else
 		{
-			ping = cl->ping < 9999 ? cl->ping : 9999;
-			Com_Printf( "%4i ", ping );
+			connection = std::to_string(cl.ping);
+			if ( connection.size() > 10 )
+			{
+				connection = "ERROR";
+			}
 		}
+		playerState_t* ps = SV_GameClientNum( i );
 
-		Com_Printf( "%s", cl->name );
-		l = 16 - strlen( cl->name );
+		const char *address = NET_AdrToString( cl.netchan.remoteAddress );
 
-		for ( j = 0; j < l; j++ )
-		{
-			Com_Printf( " " );
-		}
-
-		Com_Printf( "%7i ", svs.time - cl->lastPacketTime );
-
-		s = NET_AdrToString( cl->netchan.remoteAddress );
-		Com_Printf( "%s", s );
-		l = 22 - strlen( s );
-
-		for ( j = 0; j < l; j++ )
-		{
-			Com_Printf( " " );
-		}
-
-		Com_Printf( "%5i", cl->netchan.qport );
-
-		Com_Printf( " %5i", cl->rate );
-
-		Com_Printf( "\n" );
+		players.push_back(Str::Format(
+			"%3i %5i %10s %-22s %-6i %s",
+			i,
+			ps->persistant[ PERS_SCORE ],
+			connection,
+			address,
+			cl.netchan.qport,
+			cl.name
+		));
 	}
 
-	Com_Printf( "\n" );
+	Com_Printf(
+		"(begin server status)\n"
+		"hostname: %s\n"
+		"version:  %s\n"
+		"cpu:      %i%%\n"
+		"map:      %s\n"
+		"players:  %d / %d\n"
+		"num score connection address                port   name\n"
+		"--- ----- ---------- ---------------------- ------ ----\n",
+		sv_hostname->string,
+		Q3_VERSION " on " Q3_ENGINE,
+		( int ) cpu,
+		sv_mapname->string,
+		(int)players.size(), sv_maxclients->integer
+	);
+
+	for ( const auto& player : players )
+	{
+		Com_Printf( "%s", player.c_str() );
+	}
+
+
+	Com_Printf( "(end server status)" );
 }
 
 /*
