@@ -2180,7 +2180,7 @@ public:
 	BarbsHudElement ( const Rocket::Core::String& tag ) :
 	HudElement ( tag, ELEMENT_ALIENS ),
 	numBarbs( 0 ),
-	maxBarbs( 0 ),
+	maxBarbs( BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ),
 	regenerationInterval ( 0 ),
 	t0 ( 0 ),
 	offset ( 0 ) {}
@@ -2190,10 +2190,9 @@ public:
 		HudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
-			maxBarbs = BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo;
 			if ( maxBarbs > 0 )
 			{
-				src = GetAttribute<Rocket::Core::String>( "src", "" );
+				Rocket::Core::String src = GetAttribute<Rocket::Core::String>( "src", "" );
 				Rocket::Core::String base( va("<img class='barbs' src='%s' />", src.CString() ) );
 				Rocket::Core::String rml;
 
@@ -2201,17 +2200,10 @@ public:
 				{
 					rml += base;
 				}
-
-				// SetInnerRML deletes all child Elements => bring children up to date
-				children.clear();
 				SetInnerRML( rml );
-				for( int i = 0; i < maxBarbs; i++) {
-					children.push_back( GetChild( i ) );
-				}
 			}
 			else
 			{
-				children.clear();
 				SetInnerRML( "" );
 			}
 		}
@@ -2219,11 +2211,11 @@ public:
 
 	void DoOnUpdate()
 	{
-		int barbs = cg.snap->ps.ammo;
+		int newNumBarbs = cg.snap->ps.ammo;
 		int interval = GetInterval();
 
 		// start regenerating barb now
-		if ( barbs > numBarbs || ( barbs < numBarbs && numBarbs == maxBarbs ) )
+		if ( newNumBarbs > numBarbs || ( newNumBarbs < numBarbs && numBarbs == maxBarbs ) )
 		{
 			t0 = cg.time;
 			// sin(-pi/2) is minimal
@@ -2237,24 +2229,25 @@ public:
 			offset = asin( GetSin() ) - M_PI_2;
 			regenerationInterval = interval;
 		}
-		numBarbs = barbs;
+		numBarbs = newNumBarbs;
 
-		for ( int i = 0; i < children.size(); i++)
+		for ( int i = 0; i < GetNumChildren(); i++)
 		{
+			Element *barb = GetChild(i);
 			if (i < numBarbs ) // draw existing barbs
 			{
-				children[i]->SetProperty("color", "white");
-				children[i]->SetProperty("opacity", "1.0");
+				barb->SetProperty("opacity", "1.0");
+				barb->SetProperty("color", "white");
 			}
 			else if (i == numBarbs ) // draw regenerating barb
 			{
-				float opacity = GetSin() / 3 + 0.5; // normalize
-				children[i]->SetProperty("color", "grey");
-				children[i]->SetProperty("opacity", va( "%f", opacity ) );
+				float opacity = GetSin() / 3 + 0.5;
+				barb->SetProperty("opacity", va( "%f", opacity ) );
+				barb->SetProperty("color", "grey");
 			}
 			else // hide remaining (nonexistent) barbs
 			{
-				children[i]->SetProperty("opacity", "0.0");
+				barb->SetProperty("opacity", "0.0");
 			}
 		}
 	}
@@ -2294,9 +2287,6 @@ private:
 	// t0 and offset are used to make sure that there are no sudden jumps in opacity.
 	int t0;
 	float offset;
-
-	Rocket::Core::String src;
-	std::vector<Element *> children;
 };
 
 void CG_Rocket_DrawPlayerHealth()
