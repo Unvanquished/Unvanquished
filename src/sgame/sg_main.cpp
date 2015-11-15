@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "CBSE.h"
+#include <common/String.h>
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -696,13 +697,28 @@ void G_MapConfigs( const char *mapname )
 	trap_SendConsoleCommand( "maprestarted\n" );
 }
 
+static void AssertEngineVersion( const std::string& version )
+{
+	std::vector<std::string> tokens = Str::Expand( version, '.' );
+	if ( tokens.size() < 2 )
+	{
+		G_Error( "Invalid game version: %s", version.c_str() );
+	}
+
+	// TODO: Don't hard code this.
+	if (std::stoi( tokens[ 1 ], nullptr) < 45)
+	{
+		G_Error("Incompatible game versions: Engine is %s, but gamelogic requires 0.45.0", version.c_str());
+	}
+}
+
 /*
 ============
 G_InitGame
 
 ============
 */
-void G_InitGame( int levelTime, int randomSeed, bool inClient )
+void G_InitGame( int levelTime, int randomSeed, bool inClient, const std::string& version )
 {
 	int i;
 
@@ -711,8 +727,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	G_RegisterCvars();
 
 	G_Printf( "------- Game Initialization -------\n" );
-	G_Printf( "gamename: %s\n", GAME_VERSION );
-	G_Printf( "gamedate: %s\n", __DATE__ );
+	G_Printf( "gamename: %s", GAME_VERSION );
+	G_Printf( "gamedate: %s", __DATE__ );
+	AssertEngineVersion( version );
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );

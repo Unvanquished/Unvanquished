@@ -60,9 +60,9 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			break;
 
 		case GAME_INIT:
-			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool cheats, bool inClient) {
+			IPC::HandleMsg<GameInitMsg>(VM::rootChannel, std::move(reader), [](int levelTime, int randomSeed, bool cheats, bool inClient, const std::string& version) {
 				g_cheats.integer = cheats;
-				G_InitGame(levelTime, randomSeed, inClient);
+				G_InitGame(levelTime, randomSeed, inClient, version);
 			});
 			break;
 

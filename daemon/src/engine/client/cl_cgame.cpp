@@ -1193,7 +1193,7 @@ void CGameVM::CGameTextInputEvent(int c)
 
 void CGameVM::CGameRocketInit()
 {
-	this->SendMsg<CGameRocketInitMsg>(cls.glconfig);
+	this->SendMsg<CGameRocketInitMsg>(cls.glconfig, ENGINE_VERSION);
 }
 
 void CGameVM::CGameRocketFrame()

@@ -841,7 +841,7 @@ typedef IPC::SyncMessage<
 //TODO Check all rocket calls
 // CGameRocketInitMsg
 typedef IPC::SyncMessage<
-	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_VM_INIT>, glconfig_t>
+	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_VM_INIT>, glconfig_t, std::string>
 > CGameRocketInitMsg;
 // CGameRocketFrameMsg
 typedef IPC::SyncMessage<

@@ -41,7 +41,7 @@ const char        *G_admin_name( gentity_t *ent );
 const char        *G_quoted_admin_name( gentity_t *ent );
 
 // Beacon.cpp
-namespace Beacon 
+namespace Beacon
 {
 	void Frame();
 	void Move( gentity_t *ent, const vec3_t origin );
@@ -235,7 +235,7 @@ void              G_ResetVote( team_t team );
 void              G_ExecuteVote( team_t team );
 void              G_CheckVote( team_t team );
 void              LogExit( const char *string );
-void              G_InitGame( int levelTime, int randomSeed, bool inClient );
+void              G_InitGame( int levelTime, int randomSeed, bool inClient, const std::string& version );
 void              G_RunFrame( int levelTime );
 void              G_ShutdownGame( int restart );
 vmCvar_t          *G_FindCvar( const char *name );

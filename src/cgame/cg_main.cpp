@@ -1681,8 +1681,10 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	// check version
 	s = CG_ConfigString( CS_GAME_VERSION );
 
-//   if( strcmp( s, GAME_VERSION ) )
-//     CG_Error( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+	if( Q_stricmp( s, GAME_VERSION ) )
+	{
+		CG_Error( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+	}
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );

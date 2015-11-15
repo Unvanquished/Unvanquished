@@ -1722,7 +1722,7 @@ typedef struct
 
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
-    
+
 	void         *capturedItem;
 	qhandle_t    activeCursor;
 
@@ -2322,7 +2322,7 @@ void CG_SetKeyCatcher( int catcher );
 // cg_rocket.c
 //
 
-void CG_Rocket_Init( glconfig_t gl );
+void CG_Rocket_Init( glconfig_t gl, const std::string& version );
 void CG_Rocket_LoadHuds();
 void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();
