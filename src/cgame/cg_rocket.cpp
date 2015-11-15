@@ -74,20 +74,38 @@ void CG_RegisterRocketCvars()
 	}
 }
 
+static void AssertEngineVersion( const std::string& version )
+{
+	std::vector<std::string> tokens = Str::Expand( version, '.' );
+	if ( tokens.size() < 2 )
+	{
+		CG_Error( "Invalid game version: %s", version.c_str() );
+	}
+
+	// TODO: Don't hard code this.
+	if (std::stoi( tokens[ 1 ], nullptr) < 45)
+	{
+		CG_Error("Incompatible game versions: Engine is %s, but gamelogic requires 0.45.0", version.c_str());
+	}
+}
+
 static connstate_t oldConnState;
 
-void CG_Rocket_Init( glconfig_t gl )
+void CG_Rocket_Init( glconfig_t gl, const std::string& version )
 {
 	int len;
 	const char *token, *text_p;
 	char text[ 20000 ];
 	fileHandle_t f;
 
+
 	oldConnState = CA_UNINITIALIZED;
 	cgs.glconfig = gl;
 
 	// Init Rocket
 	Rocket_Init();
+
+	AssertEngineVersion(version);
 
 	// rocket cvars
 	CG_RegisterRocketCvars();

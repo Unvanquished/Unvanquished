@@ -127,6 +127,16 @@ namespace Str {
         return LongestPrefixSize(ToLower(text1), ToLower(text2));
     }
 
+    std::vector< std::string > Expand( Str::StringRef string, char delimiter ) {
+        std::vector<std::string> ret;
+        std::istringstream buffer(string);
+        std::string token;
+        while (std::getline(buffer, token, delimiter)) {
+            ret.push_back(std::move(token));
+        }
+        return ret;
+    }
+
     // Unicode encoder/decoder based on http://utfcpp.sourceforge.net/
     static const uint32_t UNICODE_CODE_POINT_MAX = 0x10ffff;
     static const uint32_t UNICODE_SURROGATE_HEAD_START = 0xd800;
