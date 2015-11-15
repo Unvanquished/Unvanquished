@@ -56,13 +56,11 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
 
 ###CBSE Toolchain
 
-If you want to mess around with the gamelogic code and modify entities, you'll need the cbse toolchain.
-Get it using:
+If you want to build the gamelogic, you'll need the following tools:
 
-
-    cd src/utils/cbse
-    git submodule init
-    git submodule update
+`python` ≥ 2
+`python-yaml`
+`python-jinja`
 
 Then you can modify the entities.yml file in src/sgame/. After modifying the entites.yml file,
 you can run the generate_entities.sh script o regenerate the auto generated component code.
