@@ -550,29 +550,29 @@ if (USE_BREAKPAD)
     add_definitions(-DUSE_BREAKPAD)
     include_directories(${LIB_DIR}/breakpad)
 
-    add_library(srclibs-breakpad-common EXCLUDE_FROM_ALL ${BREAKPAD_COMMON_LIST})
-    add_library(srclibs-breakpad-crash_generation_server EXCLUDE_FROM_ALL ${BREAKPAD_CRASHGENERATIONSERVER_LIST})
-    add_library(srclibs-breakpad-exception_handler EXCLUDE_FROM_ALL ${BREAKPAD_EXCEPTIONHANDLER_LIST})
-    add_library(srclibs-breakpad-crash_generation_client EXCLUDE_FROM_ALL ${BREAKPAD_CRASHGENERATIONCLIENT_LIST})
-    
-    set(BREAKPAD_LIBRARIES
-        srclibs-breakpad-common 
-        srclibs-breakpad-crash_generation_server
-        srclibs-breakpad-exception_handler
-        srclibs-breakpad-crash_generation_client
-    )
-    foreach(breaklib ${BREAKPAD_LIBRARIES})
-        set_target_properties(${breaklib} PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-        if (WIN32)
+    if (WIN32)
+        add_library(srclibs-breakpad-common EXCLUDE_FROM_ALL ${BREAKPAD_COMMON_LIST})
+        add_library(srclibs-breakpad-crash_generation_server EXCLUDE_FROM_ALL ${BREAKPAD_CRASHGENERATIONSERVER_LIST})
+        add_library(srclibs-breakpad-exception_handler EXCLUDE_FROM_ALL ${BREAKPAD_EXCEPTIONHANDLER_LIST})
+        add_library(srclibs-breakpad-crash_generation_client EXCLUDE_FROM_ALL ${BREAKPAD_CRASHGENERATIONCLIENT_LIST})
+
+        set(BREAKPAD_LIBRARIES
+            srclibs-breakpad-common
+            srclibs-breakpad-crash_generation_server
+            srclibs-breakpad-exception_handler
+            srclibs-breakpad-crash_generation_client
+        )
+        foreach(breaklib ${BREAKPAD_LIBRARIES})
+            set_target_properties(${breaklib} PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+
             # Breakpad library assumes wide char versions of Windows API functions
             target_compile_definitions(${breaklib} PRIVATE UNICODE)
-        endif()
-        if (CMAKE_BUILD_TYPE MATCHES Debug)
-            target_compile_definitions(${breaklib} PRIVATE _DEBUG)
-        endif()
-    endforeach(breaklib)
 
-    if (WIN32)
+            if (CMAKE_BUILD_TYPE MATCHES Debug)
+                target_compile_definitions(${breaklib} PRIVATE _DEBUG)
+            endif()
+        endforeach(breaklib)
+
         add_executable(crash_server src/engine/crash_server_windows.cpp)
         target_link_libraries(crash_server
             srclibs-breakpad-crash_generation_server srclibs-breakpad-common)
@@ -580,6 +580,13 @@ if (USE_BREAKPAD)
 
         set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-breakpad-exception_handler
             srclibs-breakpad-crash_generation_client srclibs-breakpad-common)
+
+    elseif (LINUX)
+
+        add_library(srclibs-breakpad EXCLUDE_FROM_ALL ${BREAKPAD_LIST})
+        set_target_properties(srclibs-breakpad PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+        set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-breakpad)
+
     endif()
 endif()
 
