@@ -1049,23 +1049,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	{
 		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
 		{
-			int bounceballRegen;
-
-			if ( ent->client->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
-			{
-				// regeneration speed near booster
-				bounceballRegen = LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
-			}
-			else if ( ent->client->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
-			{
-				// regeneration speed on creep
-				bounceballRegen = LEVEL3_BOUNCEBALL_REGEN_CREEP;
-			}
-			else
-			{
-				bounceballRegen = LEVEL3_BOUNCEBALL_REGEN;
-			}
-
+			int bounceballRegen = BG_GetBarbRegenerationInterval(ent->client->ps);
 			if ( ent->timestamp + bounceballRegen < level.time )
 			{
 				client->ps.ammo++;

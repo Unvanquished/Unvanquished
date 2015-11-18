@@ -2212,7 +2212,7 @@ public:
 	void DoOnUpdate()
 	{
 		int newNumBarbs = cg.snap->ps.ammo;
-		int interval = GetInterval();
+		int interval = BG_GetBarbRegenerationInterval(cg.snap->ps);
 
 		// start regenerating barb now
 		if ( newNumBarbs > numBarbs || ( newNumBarbs < numBarbs && numBarbs == maxBarbs ) )
@@ -2260,24 +2260,6 @@ private:
 		// frequency in Hz; Interval is in ms
 		float f = 4 * 1000.0 / regenerationInterval;
 		return sin( offset + t * 2 * M_PI * f );
-	}
-
-	int GetInterval()
-	{
-		if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
-		{
-			// regeneration speed near booster
-			return  LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
-		}
-		else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
-		{
-			// regeneration speed on creep
-			return LEVEL3_BOUNCEBALL_REGEN_CREEP;
-		}
-		else
-		{
-			return LEVEL3_BOUNCEBALL_REGEN;
-		}
 	}
 
 	int numBarbs;

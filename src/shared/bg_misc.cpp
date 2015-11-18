@@ -483,6 +483,29 @@ bool BG_AlienCanEvolve( int from, int credits )
 
 /*
 ===============
+BG_GetBarbRegenerationInterval
+===============
+*/
+int BG_GetBarbRegenerationInterval(const playerState_t& ps)
+{
+	if ( ps.stats[ STAT_STATE ] & SS_HEALING_8X )
+	{
+		// regeneration interval near booster
+		return LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
+	}
+	else if ( ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+	{
+		// regeneration interval on creep
+		return LEVEL3_BOUNCEBALL_REGEN_CREEP;
+	}
+	else
+	{
+		return LEVEL3_BOUNCEBALL_REGEN;
+	}
+}
+
+/*
+===============
 BG_InitClassAttributes
 ===============
 */
