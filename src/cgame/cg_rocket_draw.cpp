@@ -2212,42 +2212,59 @@ public:
 	void DoOnUpdate()
 	{
 		int newNumBarbs = cg.snap->ps.ammo;
-		int interval = BG_GetBarbRegenerationInterval(cg.snap->ps);
+		int interval = BG_GetBarbRegenerationInterval( cg.snap->ps );
 
-		// start regenerating barb now
-		if ( newNumBarbs > numBarbs || ( newNumBarbs < numBarbs && numBarbs == maxBarbs ) )
+		if ( newNumBarbs < maxBarbs )
 		{
-			t0 = cg.time;
-			// sin(-pi/2) is minimal
-			offset = -M_PI_2;
-		}
-		// change regeneration speed
-		else if ( interval != regenerationInterval )
-		{
-			// black math magic to avoid sudden jumps in opacity
-			t0 = cg.time;
-			offset = asin( GetSin() ) - M_PI_2;
-			regenerationInterval = interval;
+			// start regenerating barb now
+			if ( newNumBarbs > numBarbs || ( newNumBarbs < numBarbs && numBarbs == maxBarbs ) )
+			{
+				t0 = cg.time;
+				// sin(-pi/2) is minimal
+				offset = -M_PI_2;
+				assert( GetSin() == -1.0 );
+			}
+			// change regeneration speed
+			else if ( interval != regenerationInterval )
+			{
+				float sOld = GetSin();
+				float cOld = GetCos();
+
+				// avoid sudden jumps in opacity
+				t0 = cg.time;
+				if ( cOld >= 0.0 )
+				{
+					offset = asin( sOld );
+				}
+				else
+				{
+					offset = M_PI - asin( sOld );
+				}
+				regenerationInterval = interval;
+
+				assert( fabs(GetSin() - sOld ) < 0.001);
+				assert( GetCos() * cOld > 0 );
+			}
 		}
 		numBarbs = newNumBarbs;
 
-		for ( int i = 0; i < GetNumChildren(); i++)
+		for ( int i = 0; i < GetNumChildren(); i++ )
 		{
 			Element *barb = GetChild(i);
 			if (i < numBarbs ) // draw existing barbs
 			{
-				barb->SetProperty("opacity", "1.0");
-				barb->SetProperty("color", "white");
+				barb->SetProperty( "opacity", "1.0" );
+				barb->SetProperty( "color", "white" );
 			}
 			else if (i == numBarbs ) // draw regenerating barb
 			{
 				float opacity = GetSin() / 3 + 0.5;
-				barb->SetProperty("opacity", va( "%f", opacity ) );
-				barb->SetProperty("color", "grey");
+				barb->SetProperty( "opacity", va( "%f", opacity ) );
+				barb->SetProperty( "color", "grey" );
 			}
 			else // hide remaining (nonexistent) barbs
 			{
-				barb->SetProperty("opacity", "0.0");
+				barb->SetProperty( "opacity", "0.0" );
 			}
 		}
 	}
@@ -2256,10 +2273,20 @@ private:
 
 	float GetSin()
 	{
+		return sin( GetParam() );
+	}
+
+	float GetCos()
+	{
+		return cos( GetParam() );
+	}
+
+	float GetParam()
+	{
 		float t = (cg.time - t0) / 1000.0;
 		// frequency in Hz; Interval is in ms
 		float f = 4 * 1000.0 / regenerationInterval;
-		return sin( offset + t * 2 * M_PI * f );
+		return offset + t * 2 * M_PI * f;
 	}
 
 	int numBarbs;
