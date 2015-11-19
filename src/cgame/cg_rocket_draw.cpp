@@ -2222,28 +2222,27 @@ public:
 				t0 = cg.time;
 				// sin(-pi/2) is minimal
 				offset = -M_PI_2;
-				assert( GetSin() == -1.0 );
 			}
 			// change regeneration speed
 			else if ( interval != regenerationInterval )
 			{
-				float sOld = GetSin();
-				float cOld = GetCos();
+				float sinOld = GetSin();
+				float cosOld = GetCos();
 
 				// avoid sudden jumps in opacity
 				t0 = cg.time;
-				if ( cOld >= 0.0 )
+				if ( cosOld >= 0.0 )
 				{
-					offset = asin( sOld );
+					offset = asin( sinOld );
 				}
 				else
 				{
-					offset = M_PI - asin( sOld );
+					offset = M_PI - asin( sinOld );
 				}
 				regenerationInterval = interval;
 
-				assert( fabs(GetSin() - sOld ) < 0.001);
-				assert( GetCos() * cOld > 0 );
+				assert( fabs(GetSin() - sinOld ) < 0.001);
+				assert( GetCos() * cosOld > 0 );
 			}
 		}
 		numBarbs = newNumBarbs;
