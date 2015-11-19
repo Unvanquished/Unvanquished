@@ -2220,8 +2220,7 @@ public:
 			if ( newNumBarbs > numBarbs || ( newNumBarbs < numBarbs && numBarbs == maxBarbs ) )
 			{
 				t0 = cg.time;
-				// sin(-pi/2) is minimal
-				offset = -M_PI_2;
+				offset = -M_PI_2; // sin(-pi/2) is minimal
 			}
 			// change regeneration speed
 			else if ( interval != regenerationInterval )
@@ -2240,9 +2239,6 @@ public:
 					offset = M_PI - asin( sinOld );
 				}
 				regenerationInterval = interval;
-
-				assert( fabs(GetSin() - sinOld ) < 0.001);
-				assert( GetCos() * cosOld > 0 );
 			}
 		}
 		numBarbs = newNumBarbs;
@@ -2253,15 +2249,13 @@ public:
 			if (i < numBarbs ) // draw existing barbs
 			{
 				barb->SetProperty( "opacity", "1.0" );
-				barb->SetProperty( "color", "white" );
 			}
 			else if (i == numBarbs ) // draw regenerating barb
 			{
-				float opacity = GetSin() / 3 + 0.5;
+				float opacity = GetSin() / 8.0f + ( 1.0f / 8.0f ); // in [0, 0.125]
 				barb->SetProperty( "opacity", va( "%f", opacity ) );
-				barb->SetProperty( "color", "grey" );
 			}
-			else // hide remaining (nonexistent) barbs
+			else
 			{
 				barb->SetProperty( "opacity", "0.0" );
 			}
@@ -2282,10 +2276,10 @@ private:
 
 	float GetParam()
 	{
-		float t = (cg.time - t0) / 1000.0;
-		// frequency in Hz; Interval is in ms
-		float f = 4 * 1000.0 / regenerationInterval;
-		return offset + t * 2 * M_PI * f;
+		float timeElapsed = ( cg.time - t0 ) / 1000.0f; // in s
+		float frequency = (float)LEVEL3_BOUNCEBALL_REGEN_CREEP
+		                / (float)regenerationInterval; // in Hz
+		return offset + 2.0f * M_PI * frequency * timeElapsed;
 	}
 
 	int numBarbs;

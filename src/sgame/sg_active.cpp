@@ -1043,27 +1043,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			G_AddCreditsToScore( ent, HUMAN_BUILDER_SCOREINC );
 		}
 	}
-
-	// Regenerate Adv. Dragoon barbs
-	if ( client->ps.weapon == WP_ALEVEL3_UPG )
-	{
-		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
-		{
-			float interval = BG_GetBarbRegenerationInterval(ent->client->ps);
-			ent->barbRegeneration += ( level.time - ent->timestamp ) / interval;
-			if ( ent->barbRegeneration >= 1 )
-			{
-				ent->barbRegeneration -= 1;
-				client->ps.ammo++;
-			}
-			ent->timestamp = level.time;
-		}
-		else
-		{
-			ent->barbRegeneration = 0;
-			ent->timestamp = level.time;
-		}
-	}
 }
 
 /*
@@ -1744,6 +1723,29 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	}
 }
 
+static void G_ReplenishDragoonBarbs( gentity_t *self, int msec )
+{
+	gclient_t *client = self->client;
+
+	if ( client->ps.weapon == WP_ALEVEL3_UPG )
+	{
+		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
+		{
+			float interval = BG_GetBarbRegenerationInterval(self->client->ps);
+			self->barbRegeneration += (float)msec / interval;
+			if ( self->barbRegeneration >= 1.0f )
+			{
+				self->barbRegeneration -= 1.0f;
+				client->ps.ammo++;
+			}
+		}
+		else
+		{
+			self->barbRegeneration = 0.0f;
+		}
+	}
+}
+
 /*
 ==============
 ClientThink_real
@@ -1953,6 +1955,8 @@ void ClientThink_real( gentity_t *self )
 
 	// Replenish alien health
 	G_ReplenishAlienHealth( self );
+
+	G_ReplenishDragoonBarbs( self, msec );
 
 	// Throw human grenade
 	if ( BG_InventoryContainsUpgrade( UP_GRENADE, client->ps.stats ) &&
