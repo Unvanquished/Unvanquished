@@ -1049,14 +1049,18 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	{
 		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
 		{
-			if ( ent->timestamp + LEVEL3_BOUNCEBALL_REGEN < level.time )
+			float interval = BG_GetBarbRegenerationInterval(ent->client->ps);
+			ent->barbRegeneration += ( level.time - ent->timestamp ) / interval;
+			if ( ent->barbRegeneration >= 1 )
 			{
+				ent->barbRegeneration -= 1;
 				client->ps.ammo++;
-				ent->timestamp = level.time;
 			}
+			ent->timestamp = level.time;
 		}
 		else
 		{
+			ent->barbRegeneration = 0;
 			ent->timestamp = level.time;
 		}
 	}
@@ -1593,7 +1597,7 @@ static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0, closeTeammates = 0;
 	float     distance, minBoosterDistance = FLT_MAX;
-	bool  needsHealing;
+	bool      needsHealing;
 	gentity_t *ent;
 
 	if ( !self || !self->client )
