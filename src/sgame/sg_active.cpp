@@ -1049,15 +1049,18 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	{
 		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
 		{
-			int bounceballRegen = BG_GetBarbRegenerationInterval(ent->client->ps);
-			if ( ent->timestamp + bounceballRegen < level.time )
+			float interval = BG_GetBarbRegenerationInterval(ent->client->ps);
+			ent->barbRegeneration += ( level.time - ent->timestamp ) / interval;
+			if ( ent->barbRegeneration >= 1 )
 			{
+				ent->barbRegeneration -= 1;
 				client->ps.ammo++;
-				ent->timestamp = level.time;
 			}
+			ent->timestamp = level.time;
 		}
 		else
 		{
+			ent->barbRegeneration = 0;
 			ent->timestamp = level.time;
 		}
 	}
