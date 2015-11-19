@@ -124,7 +124,7 @@ namespace Cmd {
     Args currentArgs;
     Args oldArgs;
 
-    void AddCommand(std::string name, const CmdBase& cmd, std::string description) {
+    void AddCommand(const std::string& name, const CmdBase& cmd, std::string description) {
         CommandMap& commands = GetCommandMap();
 
         if (!IsValidCmdName(name)) {
@@ -132,7 +132,7 @@ namespace Cmd {
             return;
         }
 
-        if (!commands.insert({std::move(name), commandRecord_t{std::move(description), &cmd}}).second) {
+        if (!commands.insert({name, commandRecord_t{std::move(description), &cmd}}).second) {
             commandLog.Warn("Cmd::AddCommand: %s already defined", name);
         }
     }
