@@ -38,9 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef _WIN32
 #include <windows.h>
 #include <SDL2/SDL.h>
-#ifdef USE_BREAKPAD
-#include "breakpad/client/windows/handler/exception_handler.h"
-#endif
 #else
 #include <unistd.h>
 #include <signal.h>
@@ -49,6 +46,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/un.h>
 #include <sys/stat.h>
 #include <sys/file.h>
+#endif
+#ifdef USE_BREAKPAD
+#ifdef _WIN32
+#include "breakpad/client/windows/handler/exception_handler.h"
+#elif defined(__linux__)
+#include "breakpad/client/linux/handler/exception_handler.h"
+#include "breakpad/client/linux/crash_generation/crash_generation_server.h"
+#endif
 #endif
 
 namespace Sys {
@@ -278,21 +283,32 @@ static void CloseSingletonSocket()
 static std::string CrashDumpPath() {
     return FS::Path::Build(FS::GetHomePath(), "crashdump/");
 }
+static std::string CrashServerPath() {
+#ifdef _WIN32
+    std::string name = "crash_server.exe";
+#else
+    std::string name = "crash_server";
+#endif
+    return FS::Path::Build(FS::GetLibPath(), name);
+}
+static bool CreateCrashDumpPath() {
+    std::error_code createDirError;
+    FS::RawPath::CreatePathTo(FS::Path::Build(CrashDumpPath(), "x"), createDirError);
+    return createDirError == createDirError.default_error_condition();
+}
 
 #ifdef _WIN32
 
 std::unique_ptr<google_breakpad::ExceptionHandler> crashHandler;
 
-static void BreakpadInit() {
-    std::string crashDir = CrashDumpPath();
-    std::error_code createDirError;
-    FS::RawPath::CreatePathTo(FS::Path::Build(crashDir, "x"), createDirError);
-    if (createDirError != createDirError.default_error_condition()) {
+static bool BreakpadInit() {
+    if (!CreateCrashDumpPath()) {
         Log::Warn("Failed to create crash dump directory: %s", Sys::Win32StrError(GetLastError()));
-        return;
+        return false;
     }
 
-    std::string executable = FS::Path::Build(FS::GetLibPath(), "crash_server.exe");
+    std::string crashDir = CrashDumpPath();
+    std::string executable = CrashServerPath();
     std::string pipeName = singletonSocketPath + "-crash";
     DWORD pid = GetCurrentProcessId();
     std::string cmdLine = pipeName + " \"" + crashDir + " \" " + std::to_string(pid);
@@ -307,9 +323,8 @@ static void BreakpadInit() {
         &startInfo, &procInfo))
     {
         Log::Warn("Failed to start crash logging server: %s", Sys::Win32StrError(GetLastError()));
-        return;
+        return false;
     }
-    Log::Notice("Starting crash logging server");
 
     CloseHandle(procInfo.hProcess);
     CloseHandle(procInfo.hThread);
@@ -324,8 +339,57 @@ static void BreakpadInit() {
         MiniDumpNormal,
         wPipeName.c_str(),
         nullptr));
+    return true;
 }
+#elif defined(__linux__)
+
+std::unique_ptr<google_breakpad::ExceptionHandler> crashHandler;
+
+static bool CreateReportChannel(int& fdServer, int& fdClient) {
+    if(!google_breakpad::CrashGenerationServer::CreateReportChannel(&fdServer, &fdClient)) {
+        return false;
+    }
+    // Breakpad's function makes the client inheritable and the server not,
+    // but we want the opposite.
+    int oldflags;
+    return -1 != (oldflags = fcntl(fdServer, F_GETFD))
+        && -1 != fcntl(fdServer, F_SETFD, oldflags & ~FD_CLOEXEC)
+        && -1 != (oldflags = fcntl(fdClient, F_GETFD))
+        && -1 != fcntl(fdClient, F_SETFD, oldflags | FD_CLOEXEC);
+}
+
+static bool BreakpadInit() {
+    if (!CreateCrashDumpPath()) {
+        Log::Warn("Failed to create crash dump directory: %s", strerror(errno));
+        return false;
+    }
+
+    int fdServer, fdClient;
+    if (!CreateReportChannel(fdServer, fdClient)) {
+        Log::Warn("Failed to start crash logging server");
+        return false;
+    }
+
+    pid_t pid = fork();
+    if (pid == -1) {
+        Log::Warn("Failed to start crash logging server: %s", strerror(errno));
+        return false;
+    } else if (pid == 0) {
+        std::string fdServerStr = std::to_string(fdServer),
+                    crashDir = CrashDumpPath();
+        const char* args[] = {fdServerStr.c_str(), crashDir.c_str(), nullptr};
+        execv(CrashServerPath().c_str(), (char * const *) args);
+        _exit(1);
+    }
+
+    crashHandler.reset(new google_breakpad::ExceptionHandler(
+        google_breakpad::MinidumpDescriptor{}, nullptr, nullptr,
+        nullptr, true, fdClient));
+    return true;
+}
+
 #endif
+
 
 // Records a crash dump sent from the VM in minidump format. This is the same
 // format that Breakpad uses, but nacl minidump does not require Breakpad to work.
@@ -352,6 +416,8 @@ void NaclCrashDump(Util::rawBytes dump) {
 }
 
 #else
+
+static bool BreakpadInit() {}
 
 void NaclCrashDump(Util::rawBytes dump) {
     delete[] dump.data;
@@ -701,8 +767,11 @@ static void Init(int argc, char** argv)
 	// At this point we can safely open the log file since there are no existing
 	// instances running on this homepath.
 	Log::OpenLogFile();
+
 #ifdef USE_BREAKPAD
-	BreakpadInit();
+    if (BreakpadInit()) {
+        Log::Notice("Starting crash logging server");
+    }
 #endif
 	// Load the base paks
 	// TODO: cvar names and FS_* stuff needs to be properly integrated

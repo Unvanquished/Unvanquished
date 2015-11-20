@@ -582,11 +582,12 @@ if (USE_BREAKPAD)
             srclibs-breakpad-crash_generation_client srclibs-breakpad-common)
 
     elseif (LINUX)
-
         add_library(srclibs-breakpad EXCLUDE_FROM_ALL ${BREAKPAD_LIST})
         set_target_properties(srclibs-breakpad PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
         set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-breakpad)
 
+        add_executable(crash_server src/engine/crash_server_linux.cpp)
+        target_link_libraries(crash_server srclibs-breakpad)
     endif()
 endif()
 
