@@ -723,7 +723,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 	return true;
 }
 
-// TODO: Move to MedikitComponent.
+// TODO: Move to MedkitComponent.
 static void G_ReplenishHumanHealth( gentity_t *self )
 {
 	gclient_t *client;
@@ -735,54 +735,79 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	client = self->client;
-
 	if ( !client || client->pers.team != TEAM_HUMANS )
 	{
 		return;
 	}
 
-	// check if medikit is active
-	if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_4X ) )
+	HealthComponent *healthComponent = self->entity->Get<HealthComponent>();
+
+	// handle medkit activation
+	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
+	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
 	{
-		return;
-	}
-
-	// stop if client is fully healed
-	if ( self->entity->Get<HealthComponent>()->FullHealth() )
-	{
-		client->medKitHealthToRestore = 0;
-		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_4X;
-
-		return;
-	}
-
-	// stop if client is dead or medikit is depleted
-	if ( client->medKitHealthToRestore <= 0 || client->ps.pm_type == PM_DEAD )
-	{
-		client->medKitHealthToRestore = 0;
-		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_4X;
-
-		return;
-	}
-
-	remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
-
-	// increase heal rate during startup
-	if ( remainingStartupTime > 0 )
-	{
-		if ( level.time < client->medKitIncrementTime )
+		// if currently using a medkit or have no need for a medkit now
+		if ( (client->ps.stats[ STAT_STATE ] & SS_HEALING_4X) ||
+		     ( healthComponent->FullHealth() &&
+		       !( client->ps.stats[ STAT_STATE ] & SS_POISONED ) ) )
 		{
+			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
+		}
+		else if ( G_Alive( self ) ) // activate medkit
+		{
+			// remove medkit from inventory
+			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
+			BG_RemoveUpgradeFromInventory( UP_MEDKIT, client->ps.stats );
+
+			// remove alien poison
+			client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
+			client->poisonImmunityTime = level.time + MEDKIT_POISON_IMMUNITY_TIME;
+
+			// initiate healing
+			client->ps.stats[ STAT_STATE ] |= SS_HEALING_4X;
+			client->lastMedKitTime = level.time;
+			client->medKitHealthToRestore = healthComponent->MaxHealth() - healthComponent->Health();
+			client->medKitIncrementTime = level.time + ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
+
+			G_AddEvent( self, EV_MEDKIT_USED, 0 );
+		}
+	}
+
+	// if medkit is active
+	if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+	{
+
+		// stop healing if
+		if ( healthComponent->FullHealth() ||     // client is fully healed or
+		     client->ps.pm_type == PM_DEAD ||     // client is dead or
+		     client->medKitHealthToRestore <= 0 ) // medkit is depleted
+		{
+			client->medKitHealthToRestore = 0;
+			client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_4X;
+
 			return;
 		}
-		else
+
+		if ( level.time >= client->medKitIncrementTime )
 		{
-			client->medKitIncrementTime = level.time + ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
+			// heal
+			self->entity->Heal(1.0f, nullptr);
+			client->medKitHealthToRestore --;
+
+			// set timer for next healing action
+			remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
+			if ( remainingStartupTime > 0 )
+			{
+				// heal slowly during startup
+				client->medKitIncrementTime += std::max( 100, remainingStartupTime / MEDKIT_STARTUP_SPEED );
+			}
+			else
+			{
+				// heal 1 hp every 100 ms later on
+				client->medKitIncrementTime += 100;
+			}
 		}
 	}
-
-	// heal
-	self->entity->Heal(1.0f, nullptr);
-	client->medKitHealthToRestore --;
 }
 
 static void BeaconAutoTag( gentity_t *self, int timePassed )
@@ -943,9 +968,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		}
 
 		BeaconAutoTag( ent, 100 );
-
-		// replenish human health
-		G_ReplenishHumanHealth( ent );
 
 		// refill weapon ammo
 		if ( ent->client->lastAmmoRefillTime + HUMAN_AMMO_REFILL_PERIOD < level.time &&
@@ -1921,37 +1943,7 @@ void ClientThink_real( gentity_t *self )
 	// copy global gravity to playerstate
 	client->ps.gravity = g_gravity.value;
 
-	HealthComponent *healthComponent = self->entity->Get<HealthComponent>();
-
-	// handle medkit (TODO: move into helper function)
-	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
-	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
-	{
-		//if currently using a medkit or have no need for a medkit now
-		if ( (client->ps.stats[ STAT_STATE ] & SS_HEALING_4X) ||
-		     ( healthComponent->FullHealth() &&
-		       !( client->ps.stats[ STAT_STATE ] & SS_POISONED ) ) )
-		{
-			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
-		}
-		else if ( G_Alive( self ) )
-		{
-			//remove anti toxin
-			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
-			BG_RemoveUpgradeFromInventory( UP_MEDKIT, client->ps.stats );
-
-			client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
-			client->poisonImmunityTime = level.time + MEDKIT_POISON_IMMUNITY_TIME;
-
-			client->ps.stats[ STAT_STATE ] |= SS_HEALING_4X;
-			client->lastMedKitTime = level.time;
-			client->medKitHealthToRestore = healthComponent->MaxHealth() - healthComponent->Health();
-			client->medKitIncrementTime = level.time +
-			                              ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
-
-			G_AddEvent( self, EV_MEDKIT_USED, 0 );
-		}
-	}
+	G_ReplenishHumanHealth( self );
 
 	// Replenish alien health
 	G_ReplenishAlienHealth( self );
