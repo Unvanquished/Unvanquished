@@ -32,14 +32,13 @@ See below for build and launch instructions.
 `libtheora`,
 `libopus`,
 `libopusfile`,
-`python` ≥ 2,
-`python-yaml`,
-`python-jinja`
-
 
 ###Buildtime
 
 `cmake`
+`python` ≥ 2,
+`python-yaml`,
+`python-jinja`
 
 ###Optional
 
