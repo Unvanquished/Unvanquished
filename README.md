@@ -31,11 +31,11 @@ See below for build and launch instructions.
 `libvorbis`,
 `libtheora`,
 `libopus`,
-`libopusfile`,
+`libopusfile`
 
 ###Buildtime
 
-`cmake`
+`cmake`,
 `python` ≥ 2,
 `python-yaml`,
 `python-jinja`
