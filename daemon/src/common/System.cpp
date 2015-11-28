@@ -238,7 +238,7 @@ void SetupCrashHandler()
 static void CrashHandler(const void* data, size_t n)
 {
 #ifdef BUILD_CGAME
-    trap_CrashDump(Util::RawBytes{(uint8_t*) data, n});
+    trap_CrashDump(Util::RawBytes{static_cast<uint8_t*>(const_cast<void*>(data)), n});
 #endif
     Sys::Error("Crashed with NaCl exception");
 }
