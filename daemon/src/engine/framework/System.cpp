@@ -311,7 +311,7 @@ static bool BreakpadInit() {
     std::string executable = CrashServerPath();
     std::string pipeName = singletonSocketPath + "-crash";
     DWORD pid = GetCurrentProcessId();
-    std::string cmdLine = pipeName + " \"" + crashDir + " \" " + std::to_string(pid);
+    std::string cmdLine = "\"" + executable + "\" " + pipeName + " \"" + crashDir + " \" " + std::to_string(pid);
 
     STARTUPINFOA startInfo{};
     startInfo.cb = sizeof(startInfo);
@@ -375,10 +375,11 @@ static bool BreakpadInit() {
         Log::Warn("Failed to start crash logging server: %s", strerror(errno));
         return false;
     } else if (pid == 0) {
-        std::string fdServerStr = std::to_string(fdServer),
-                    crashDir = CrashDumpPath();
-        const char* args[] = {fdServerStr.c_str(), crashDir.c_str(), nullptr};
-        execv(CrashServerPath().c_str(), (char * const *) args);
+        std::string fdServerStr = std::to_string(fdServer);
+        std::string crashDir = CrashDumpPath();
+        std::string exePath = CrashServerPath();
+        const char* args[] = {exePath.c_str(), fdServerStr.c_str(), crashDir.c_str(), nullptr};
+        execv(exePath.c_str(), (char * const *) args);
         _exit(1);
     }
 

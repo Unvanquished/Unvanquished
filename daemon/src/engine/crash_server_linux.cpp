@@ -22,7 +22,7 @@ void ShutdownServer(int) {
 */
 int main(int argc, char** argv) {
 
-    if (argc != 2) {
+    if (argc != 3) {
         return 1;
     }
 
@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
     // Receive a signal to quit when engine process dies
     if (prctl(PR_SET_PDEATHSIG, SIGTERM) != 0) return 1;
 
-    int fd = std::stoi(argv[0]);
-    std::string path = argv[1];
+    int fd = std::stoi(argv[1]);
+    std::string path = argv[2];
     server = new CrashGenerationServer(fd, nullptr, nullptr, nullptr, nullptr, true, &path);
     if (!server->Start()) {
         return 1;
