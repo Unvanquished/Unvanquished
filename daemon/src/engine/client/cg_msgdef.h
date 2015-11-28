@@ -542,7 +542,7 @@ namespace Key {
 	> GetKeynumForBindsMsg;
 	// KeyNumToStringMsg
 	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int, int>,
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int>,
 		IPC::Reply<std::string>
 	> KeyNumToStringMsg;
 	// SetBindingMsg

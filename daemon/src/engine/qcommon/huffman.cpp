@@ -61,16 +61,6 @@ void Huff_putBit( int bit, byte *fout, int *offset )
 	*offset = bloc;
 }
 
-int     Huff_getBloc()
-{
-	return bloc;
-}
-
-void Huff_setBloc( int _bloc )
-{
-	bloc = _bloc;
-}
-
 //bani - optimized version
 //optimization works on gcc 3.x, but not 2.95 ? most curious.
 int Huff_getBit( byte *fin, int *offset )
