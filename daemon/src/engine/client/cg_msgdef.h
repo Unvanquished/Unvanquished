@@ -343,7 +343,7 @@ typedef IPC::SyncMessage<
 	IPC::Reply<bool>
 > GetNewsMsg;
 typedef IPC::SyncMessage <
-    IPC::Message<IPC::Id<VM::QVM, CG_CRASH_DUMP>, Util::rawBytes >
+    IPC::Message<IPC::Id<VM::QVM, CG_CRASH_DUMP>, Util::RawBytes >
 > CrashDumpMsg;
 
 

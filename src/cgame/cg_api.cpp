@@ -264,7 +264,7 @@ bool trap_GetNews( bool force )
 	return res;
 }
 
-void trap_CrashDump(Util::rawBytes dump) {
+void trap_CrashDump(Util::RawBytes dump) {
     VM::SendMsg<CrashDumpMsg>(dump);
 }
 

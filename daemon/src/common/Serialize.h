@@ -415,13 +415,13 @@ namespace Util {
 		}
 	};
 
-    template<> struct SerializeTraits <rawBytes> {
-        static void Write(Writer& stream, rawBytes value)
+    template<> struct SerializeTraits <RawBytes> {
+        static void Write(Writer& stream, RawBytes value)
         {
             stream.WriteSize(value.size);
             stream.WriteData(value.data, value.size);
         }
-        static rawBytes Read(Reader& stream)
+        static RawBytes Read(Reader& stream)
         {
             size_t size = stream.ReadSize<uint8_t>();
             uint8_t* data = new uint8_t[size];

@@ -159,7 +159,7 @@ private:
 	uninitialized& operator=(uninitialized&&) = delete;
 };
 
-struct rawBytes {
+struct RawBytes {
     uint8_t* data;
     size_t size;
 };

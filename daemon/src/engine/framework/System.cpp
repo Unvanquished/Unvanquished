@@ -394,7 +394,7 @@ static bool BreakpadInit() {
 
 // Records a crash dump sent from the VM in minidump format. This is the same
 // format that Breakpad uses, but nacl minidump does not require Breakpad to work.
-void NaclCrashDump(Util::rawBytes dump) {
+void NaclCrashDump(Util::RawBytes dump) {
     if(dump.size > 600000) { //it shouldn't be bigger than the buffer in nacl's code
         Log::Warn("Ignoring NaCl crash dump request: size too large");
     } else {
@@ -420,7 +420,7 @@ void NaclCrashDump(Util::rawBytes dump) {
 
 static bool BreakpadInit() {}
 
-void NaclCrashDump(Util::rawBytes dump) {
+void NaclCrashDump(Util::RawBytes dump) {
     delete[] dump.data;
 }
 
