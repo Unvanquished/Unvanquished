@@ -349,7 +349,7 @@ static bool CreateReportChannel(int& fdServer, int& fdClient) {
     if(!google_breakpad::CrashGenerationServer::CreateReportChannel(&fdServer, &fdClient)) {
         return false;
     }
-    // Breakpad's function makes the client inheritable and the server not,
+    // Breakpad's function makes the client fd inheritable and the server not,
     // but we want the opposite.
     int oldflags;
     return -1 != (oldflags = fcntl(fdServer, F_GETFD))
@@ -374,12 +374,13 @@ static bool BreakpadInit() {
     if (pid == -1) {
         Log::Warn("Failed to start crash logging server: %s", strerror(errno));
         return false;
-    } else if (pid == 0) {
+    } else if (pid != 0) { //Breakpad server MUST be in parent of engine process
         std::string fdServerStr = std::to_string(fdServer);
         std::string crashDir = CrashDumpPath();
         std::string exePath = CrashServerPath();
-        const char* args[] = {exePath.c_str(), fdServerStr.c_str(), crashDir.c_str(), nullptr};
-        execv(exePath.c_str(), (char * const *) args);
+        std::string pidStr = std::to_string(pid);
+        const char* args[] = {exePath.c_str(), fdServerStr.c_str(), crashDir.c_str(), pidStr.c_str(), nullptr};
+        execv(exePath.c_str(), const_cast<char * const *>(args));
         _exit(1);
     }
 

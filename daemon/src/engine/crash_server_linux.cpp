@@ -1,44 +1,44 @@
 #include <unistd.h>
-#include <sys/prctl.h>
+#include <sys/wait.h>
 #include <signal.h>
 #include <string>
 
 #include "client/linux/crash_generation/crash_generation_server.h"
 
-using namespace google_breakpad;
-
-CrashGenerationServer* server;
+google_breakpad::CrashGenerationServer* server;
 
 void ShutdownServer(int) {
     // Destructor waits for crash dump to finish
     delete server;
 }
 
-
 /*
     Starts a Breakpad crash generation server to enable out-of-process crash dumps.
     First argument: file descriptor to listen on
     Second argument: crash dump directory
+    Third argument: PID of engine (child process)
 */
 int main(int argc, char** argv) {
 
-    if (argc != 3) {
+    if (argc != 4) {
         return 1;
     }
 
     struct sigaction sa{};
     sa.sa_handler = ShutdownServer;
     if (sigaction(SIGTERM, &sa, nullptr) != 0) return 1;
-    // Receive a signal to quit when engine process dies
-    if (prctl(PR_SET_PDEATHSIG, SIGTERM) != 0) return 1;
 
     int fd = std::stoi(argv[1]);
     std::string path = argv[2];
-    server = new CrashGenerationServer(fd, nullptr, nullptr, nullptr, nullptr, true, &path);
+    pid_t pid = std::stoi(argv[3]);
+
+    server = new google_breakpad::CrashGenerationServer(fd, nullptr, nullptr, nullptr, nullptr, true, &path);
     if (!server->Start()) {
         return 1;
     }
 
-    pause();
+    int _;
+    waitpid(pid, &_, 0); //wait for the game to exit
+    ShutdownServer(0);
     return 0;
 }
