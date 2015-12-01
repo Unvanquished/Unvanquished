@@ -691,9 +691,9 @@ void SaveImageKTX( const char *path, image_t *img )
 	if( i == GL_NEAREST_MIPMAP_NEAREST || i == GL_NEAREST_MIPMAP_LINEAR ||
 	    i == GL_LINEAR_MIPMAP_NEAREST || i == GL_LINEAR_MIPMAP_LINEAR ) {
 		
-		mipWidth = MAX(hdr.pixelWidth, 1u);
-		mipHeight = MAX(hdr.pixelHeight, 1u);
-		mipDepth = MAX(hdr.pixelDepth, 1u);
+		mipWidth = std::max(hdr.pixelWidth, 1u);
+		mipHeight = std::max(hdr.pixelHeight, 1u);
+		mipDepth = std::max(hdr.pixelDepth, 1u);
 
 		while( mipWidth > 1 || mipHeight > 1 || mipDepth > 1 ) {
 			hdr.numberOfMipmapLevels++;
@@ -707,9 +707,9 @@ void SaveImageKTX( const char *path, image_t *img )
 	hdr.bytesOfKeyValueData = 0;
 
 	size = 0;
-	mipWidth = MAX(hdr.pixelWidth, 1u);
-	mipHeight = MAX(hdr.pixelHeight, 1u);
-	mipDepth = MAX(hdr.pixelDepth, 1u);
+	mipWidth = std::max(hdr.pixelWidth, 1u);
+	mipHeight = std::max(hdr.pixelHeight, 1u);
+	mipDepth = std::max(hdr.pixelDepth, 1u);
 	for(unsigned i = size = 0; i < hdr.numberOfMipmapLevels; i++ ) {
 		size += 4;
 		if( !hdr.glFormat ) {
@@ -734,9 +734,9 @@ void SaveImageKTX( const char *path, image_t *img )
 	Com_Memcpy( ptr, &hdr, sizeof( hdr ) );
 	ptr += sizeof( hdr );
 	
-	mipWidth = MAX(hdr.pixelWidth, 1u);
-	mipHeight = MAX(hdr.pixelHeight, 1u);
-	mipDepth = MAX(hdr.pixelDepth, 1u);
+	mipWidth = std::max(hdr.pixelWidth, 1u);
+	mipHeight = std::max(hdr.pixelHeight, 1u);
+	mipDepth = std::max(hdr.pixelDepth, 1u);
 	for(unsigned i = 0; i < hdr.numberOfMipmapLevels; i++ ) {
 		if( !hdr.glFormat ) {
 			glGetTexLevelParameteriv( target, i,

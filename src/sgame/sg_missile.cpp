@@ -94,12 +94,12 @@ static float MissileTimePowerMod( gentity_t *self, missileTimePowerMod_t type,
 	{
 		case MTPR_LINEAR_DECREASE:
 			// time is zero time
-			fract = MIN( affectedTime, endTime ) / ( float )endTime;
+			fract = std::min( affectedTime, endTime ) / ( float )endTime;
 			return startMod - ( startMod - endMod ) * fract;
 
 		case MTPR_LINEAR_INCREASE:
 			// time is full time
-			fract = MIN( affectedTime, endTime ) / ( float )endTime;
+			fract = std::min( affectedTime, endTime ) / ( float )endTime;
 			return startMod + ( endMod - startMod ) * fract;
 
 		case MTPR_EXPONENTIAL_DECREASE:

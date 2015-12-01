@@ -206,7 +206,7 @@ namespace Cmd {
 
     // Engine calls available everywhere
 
-    void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    void AddCommand(const std::string& name, const CmdBase& cmd, std::string description);
     void RemoveCommand(const std::string& name);
     Environment* GetEnv();
 

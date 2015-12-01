@@ -769,7 +769,6 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 				continue;
 			}
 			SDL_GL_SetSwapInterval( r_swapInterval->integer );
-			SDL_ShowCursor( 0 );
 
 			glConfig.colorBits = testColorBits;
 			glConfig.depthBits = testDepthBits;
@@ -1466,10 +1465,6 @@ success:
 	return true;
 }
 
-void GLimp_ReleaseGL()
-{
-}
-
 /*
 ===============
 GLimp_EndFrame
@@ -1535,10 +1530,6 @@ void GLimp_HandleCvars()
 
 		r_fullscreen->modified = false;
 	}
-}
-
-void GLimp_AcquireGL()
-{
 }
 
 void GLimp_LogComment( const char *comment )

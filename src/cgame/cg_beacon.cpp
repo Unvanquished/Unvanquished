@@ -45,7 +45,7 @@ void CG_LoadBeaconsConfig()
 
 	vw = cgs.glconfig.vidWidth;
 	vh = cgs.glconfig.vidHeight;
-	base = MIN( vw, vh );
+	base = std::min( vw, vh );
 
 	memset( bc, 0, sizeof( beaconsConfig_t ) );
 

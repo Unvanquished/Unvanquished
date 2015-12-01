@@ -47,7 +47,6 @@ static const char *const svc_strings[ 256 ] =
 	"svc_serverCommand",
 	"svc_download",
 	"svc_snapshot",
-	"svc_voip",
 	"svc_extension",
 	"svc_EOF"
 };
@@ -507,11 +506,6 @@ void CL_SystemInfoChanged()
 		return;
 	}
 
-#ifdef USE_VOIP
-	s = Info_ValueForKey( systemInfo, "sv_voip" );
-	clc.voipEnabled = atoi( s );
-#endif
-
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
 
@@ -796,228 +790,6 @@ void CL_ParseDownload( msg_t *msg )
 	}
 }
 
-#ifdef USE_VOIP
-static
-bool CL_ShouldIgnoreVoipSender( int sender )
-{
-	if ( !cl_voip->integer )
-	{
-		return true; // VoIP is disabled.
-	}
-	else if ( ( sender == clc.clientNum ) && ( !clc.demoplaying ) )
-	{
-		return true; // ignore own voice (unless playing back a demo).
-	}
-	else if ( clc.voipMuteAll )
-	{
-		return true; // all channels are muted with extreme prejudice.
-	}
-	else if ( clc.voipIgnore[ sender ] )
-	{
-		return true; // just ignoring this guy.
-	}
-	else if ( clc.voipGain[ sender ] == 0.0f )
-	{
-		return true; // too quiet to play.
-	}
-
-	return false;
-}
-
-/*
-=====================
-CL_PlayVoip
-
-Play raw data
-=====================
-*/
-
-static void CL_PlayVoip( int sender, int samplecnt, const byte *data, int flags )
-{
-	if ( flags & VOIP_DIRECT )
-	{
-		Audio::StreamData( sender + 1, data, samplecnt, clc.speexSampleRate, 2, 1, clc.voipGain[ sender ], -1 );
-	}
-
-	if ( flags & VOIP_SPATIAL )
-	{
-		Audio::StreamData( sender + MAX_CLIENTS + 1, data, samplecnt, clc.speexSampleRate, 2, 1, 1.0f, sender );
-	}
-}
-
-/*
-=====================
-CL_ParseVoip
-
-A VoIP message has been received from the server
-=====================
-*/
-static
-void CL_ParseVoip( msg_t *msg )
-{
-    const int decodedSize = 4096 * sizeof(short); //FIXME: don't hardcode.
-
-	const int    sender = MSG_ReadShort( msg );
-	const int    generation = MSG_ReadByte( msg );
-	const int    sequence = MSG_ReadLong( msg );
-	const int    frames = MSG_ReadByte( msg );
-	const int    packetsize = MSG_ReadShort( msg );
-	const int    flags = MSG_ReadBits( msg, VOIP_FLAGCNT );
-	char         encoded[ 1024 ];
-	int          seqdiff = sequence - clc.voipIncomingSequence[ sender ];
-	int          written = 0;
-	int          i;
-
-	Com_DPrintf( "VoIP: %d-byte packet from client %d\n", packetsize, sender );
-
-	if ( sender < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-	else if ( generation < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-	else if ( sequence < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-	else if ( frames < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-	else if ( packetsize < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-
-	if ( packetsize > sizeof( encoded ) )  // overlarge packet?
-	{
-		int bytesleft = packetsize;
-
-		while ( bytesleft )
-		{
-			int br = bytesleft;
-
-			if ( br > sizeof( encoded ) )
-			{
-				br = sizeof( encoded );
-			}
-
-			MSG_ReadData( msg, encoded, br );
-			bytesleft -= br;
-		}
-
-		return; // overlarge packet, bail.
-	}
-
-	if ( !clc.speexInitialized )
-	{
-		MSG_ReadData( msg, encoded, packetsize );  // skip payload.
-		return; // can't handle VoIP without libspeex!
-	}
-	else if ( sender >= MAX_CLIENTS )
-	{
-		MSG_ReadData( msg, encoded, packetsize );  // skip payload.
-		return; // bogus sender.
-	}
-	else if ( CL_ShouldIgnoreVoipSender( sender ) )
-	{
-		MSG_ReadData( msg, encoded, packetsize );  // skip payload.
-		return; // Channel is muted, bail.
-	}
-
-	// !!! FIXME: make sure data is narrowband? Does decoder handle this?
-
-	Com_DPrintf( "VoIP: packet accepted!\n" );
-
-	// This is a new "generation" ... a new recording started, reset the bits.
-	if ( generation != clc.voipIncomingGeneration[ sender ] )
-	{
-		Com_DPrintf( "VoIP: new generation %d!\n", generation );
-		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
-		clc.voipIncomingGeneration[ sender ] = generation;
-		seqdiff = 0;
-	}
-	else if ( seqdiff < 0 ) // we're ahead of the sequence?!
-	{
-		// This shouldn't happen unless the packet is corrupted or something.
-		Com_DPrintf( "VoIP: misordered sequence! %d < %d!\n",
-		             sequence, clc.voipIncomingSequence[ sender ] );
-		// reset the bits just in case.
-		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
-		seqdiff = 0;
-	}
-	else if ( seqdiff * clc.speexFrameSize * 2 >= decodedSize ) // more than 2 seconds of audio dropped?
-	{
-		// just start over.
-		Com_DPrintf( "VoIP: Dropped way too many (%d) frames from client #%d\n",
-		             seqdiff, sender );
-		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
-		seqdiff = 0;
-	}
-
-    short *decoded = new short[decodedSize/sizeof(short)];
-
-	if ( seqdiff != 0 )
-	{
-		Com_DPrintf( "VoIP: Dropped %d frames from client #%d\n",
-		             seqdiff, sender );
-
-		// tell speex that we're missing frames...
-		for ( i = 0; i < seqdiff; i++ )
-		{
-			assert( ( written + clc.speexFrameSize ) * 2 < decodedSize );
-			speex_decode_int( clc.speexDecoder[ sender ], nullptr, decoded + written );
-			written += clc.speexFrameSize;
-		}
-	}
-
-	for ( i = 0; i < frames; i++ )
-	{
-		const int len = MSG_ReadByte( msg );
-
-		if ( len < 0 )
-		{
-			Com_DPrintf( "VoIP: Short packet!\n" );
-			break;
-		}
-
-		MSG_ReadData( msg, encoded, len );
-
-		// shouldn't happen, but just in case...
-		if ( ( written + clc.speexFrameSize ) * 2 > decodedSize )
-		{
-			Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
-			             written * 2, written, i );
-
-			CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
-			written = 0;
-            decoded = new short[decodedSize / sizeof(short)];
-		}
-
-		speex_bits_read_from( &clc.speexDecoderBits[ sender ], encoded, len );
-		speex_decode_int( clc.speexDecoder[ sender ],
-		                  &clc.speexDecoderBits[ sender ], decoded + written );
-
-		written += clc.speexFrameSize;
-	}
-
-	Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
-	             written * 2, written, i );
-
-	if ( written > 0 )
-	{
-		CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
-	}
-
-	cls.voipSender = sender;
-
-	clc.voipIncomingSequence[ sender ] = sequence + frames;
-}
-
-#endif
-
 /*
 =====================
 CL_ParseCommandString
@@ -1148,12 +920,6 @@ void CL_ParseServerMessage( msg_t *msg )
 
 			case svc_download:
 				CL_ParseDownload( msg );
-				break;
-
-			case svc_voip:
-#ifdef USE_VOIP
-				CL_ParseVoip( msg );
-#endif
 				break;
 		}
 	}

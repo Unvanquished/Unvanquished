@@ -42,12 +42,10 @@ static cvar_t       *in_keyboardDebug = nullptr;
 static SDL_Joystick *stick = nullptr;
 
 static bool     mouseAvailable = false;
-bool            mouseActive = false;
 
 static cvar_t       *in_mouse = nullptr;
 
 static cvar_t       *in_nograb;
-static cvar_t       *in_uigrab;
 
 static cvar_t       *in_joystick = nullptr;
 static cvar_t       *in_joystickDebug = nullptr;
@@ -64,11 +62,6 @@ static cvar_t *in_xbox360ControllerDebug = nullptr;
 #define CTRL(a) (( a ) - 'a' + 1 )
 
 static SDL_Window *window = nullptr;
-
-void *IN_GetWindow()
-{
-	return window;
-}
 
 /*
 ===============
@@ -569,94 +562,63 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, bool down )
 }
 
 /*
-===============
-IN_GobbleMotionEvents
-===============
-*/
-static void IN_GobbleMotionEvents()
-{
-	SDL_Event dummy[ 1 ];
-
-	// Gobble any mouse motion events
-	SDL_PumpEvents();
-	while ( SDL_PeepEvents( dummy, 1, SDL_GETEVENT,
-	                        SDL_MOUSEMOTION, SDL_MOUSEMOTION ) ) { }
-}
+ * When this is true, the cursor is free to move and cgame will receive
+ * mouse coordinates.
+ * When this is false, the cursor will be locked in the window and cgame
+ * will receive deltas
+ */
+static bool cursor_active = true;
 
 /*
-===============
-IN_ActivateMouse
-===============
-*/
-static void IN_ActivateMouse()
+ * Activates the cursor, the system cursor will still be disabled and
+ * the game is responsible of drawing the cursor image
+ */
+void IN_SetCursorActive( bool active )
 {
 	if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
 		return;
 	}
 
-	if ( !mouseActive )
-	{
-		SDL_ShowCursor( 0 );
+	SDL_ShowCursor( SDL_DISABLE );
+	auto grab = active || in_nograb->integer ? SDL_FALSE : SDL_TRUE;
+	SDL_SetRelativeMouseMode( grab );
+	SDL_SetWindowGrab( window, grab );
 
-		SDL_SetRelativeMouseMode( SDL_TRUE );
-		SDL_SetWindowGrab( window, SDL_TRUE );
-
-		IN_GobbleMotionEvents();
-	}
-
-	// in_nograb makes no sense in fullscreen mode
-	if ( !cls.glconfig.isFullscreen )
-	{
-		if ( in_nograb->modified || !mouseActive )
-		{
-			if ( in_nograb->integer )
-			{
-				SDL_SetWindowGrab( window, SDL_FALSE );
-			}
-			else
-			{
-				SDL_SetWindowGrab( window, SDL_TRUE );
-			}
-
-			in_nograb->modified = false;
-		}
-	}
-
-	mouseActive = true;
+	cursor_active = active;
 }
 
 /*
-===============
-IN_DeactivateMouse
-===============
-*/
-void IN_DeactivateMouse( bool showCursor )
+ * Moves the mouse at the center of the window
+ */
+void IN_CenterMouse()
 {
-	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
+	int w, h;
+	SDL_GetWindowSize( window, &w, &h );
+	SDL_WarpMouseInWindow( window, w / 2, h / 2 );
+}
+
+/*
+ * Toggles forced cursor, this ensure that the cursor is active and visible
+ * even when not in cursor mode
+ */
+static void ForceCursor(bool force)
+{
+	static bool forced_cursor = false;
+
+	if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) || force == forced_cursor )
 	{
 		return;
 	}
 
-	// Show the cursor when the mouse is disabled,
-	// but not when fullscreen
-	SDL_ShowCursor( showCursor );
+	forced_cursor = force;
 
-	if ( !mouseAvailable )
+	if ( IN_GetMouseMode() == MouseMode::Deltas )
 	{
-		return;
+		IN_SetCursorActive( forced_cursor );
+		SDL_ShowCursor( forced_cursor );
 	}
 
-	if ( mouseActive )
-	{
-		IN_GobbleMotionEvents();
-
-		SDL_SetWindowGrab( window, SDL_FALSE );
-		SDL_SetRelativeMouseMode( SDL_FALSE );
-
-		IN_GobbleMotionEvents();
-		mouseActive = false;
-	}
 }
 
 // We translate axes movement into keypresses
@@ -1430,17 +1392,20 @@ static void IN_ProcessEvents( bool dropInput )
 			case SDL_MOUSEMOTION:
 				if ( !dropInput )
 				{
-					if ( mouseActive )
+					if ( cursor_active )
+					{
+						Com_QueueEvent( 0, SE_MOUSE_POS, e.motion.x, e.motion.y, 0, nullptr );
+					}
+					else
 					{
 						Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, nullptr );
 #if defined( __linux__ ) || defined( __BSD__ )
+						if ( !in_nograb->integer )
 						{
 							// work around X window managers and edge-based workspace flipping
 							// - without this, we get LeaveNotify, no mouse button events, EnterNotify;
 							//   we would likely miss some button presses and releases.
-							int w, h;
-							SDL_GetWindowSize( window, &w, &h );
-							SDL_WarpMouseInWindow( window, w / 2, h / 2 );
+							IN_CenterMouse();
 						}
 #endif
 					}
@@ -1545,8 +1510,6 @@ static bool dropInput = false;
 
 void IN_Frame()
 {
-	bool loading;
-
 	if ( in_xbox360ControllerAvailable->integer )
 	{
 		IN_Xbox360ControllerMove();
@@ -1556,32 +1519,30 @@ void IN_Frame()
 		IN_JoyMove();
 	}
 
-	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
-	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
-
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		// Console is down in windowed mode
-		IN_DeactivateMouse( false );
+		ForceCursor( true );
 	}
-	else if ( loading )
+	else if ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE )
 	{
+		// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 		// Loading in windowed mode
-		IN_DeactivateMouse( true );
+		ForceCursor( true );
 	}
 	else if ( !( SDL_GetWindowFlags( window ) & SDL_WINDOW_INPUT_FOCUS ) )
 	{
 		// Window doesn't have focus
-		IN_DeactivateMouse( false );
+		ForceCursor( true );
 	}
 	else if ( com_minimized->integer )
 	{
 		// Minimized
-		IN_DeactivateMouse( true );
+		ForceCursor( true );
 	}
 	else
 	{
-		IN_ActivateMouse();
+		ForceCursor( false );
 	}
 
 	IN_ProcessEvents( dropInput );
@@ -1620,7 +1581,6 @@ void IN_Init( void *windowData )
 	// mouse variables
 	in_mouse = Cvar_Get( "in_mouse", "1", 0 );
 	in_nograb = Cvar_Get( "in_nograb", "0", 0 );
-	in_uigrab = Cvar_Get( "in_uigrab", "0", 0 );
 
 	in_joystick = Cvar_Get( "in_joystick", "0",  CVAR_LATCH );
 	in_joystickDebug = Cvar_Get( "in_joystickDebug", "0", CVAR_TEMP );
@@ -1631,7 +1591,8 @@ void IN_Init( void *windowData )
 	in_xbox360ControllerDebug = Cvar_Get( "in_xbox360ControllerDebug", "0", CVAR_TEMP );
 	SDL_StartTextInput();
 	mouseAvailable = ( in_mouse->value != 0 );
-	IN_DeactivateMouse( true );
+	ForceCursor( false );
+	IN_SetCursorActive( true );
 
 	appState = SDL_GetWindowFlags( window );
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_WINDOW_INPUT_FOCUS ) );
@@ -1648,7 +1609,7 @@ IN_Shutdown
 void IN_Shutdown()
 {
 	SDL_StopTextInput();
-	IN_DeactivateMouse( true );
+	ForceCursor(true);
 	mouseAvailable = false;
 
 	IN_ShutdownJoystick();

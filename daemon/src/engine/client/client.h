@@ -48,11 +48,6 @@ Maryland 20850 USA.
 #include "framework/CommandBufferHost.h"
 #include "common/IPC/CommandBuffer.h"
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-#include <speex/speex.h>
-#include <speex/speex_preprocess.h>
-#endif
-
 // file containing our RSA public and private keys
 #define RSAKEY_FILE        "pubkey"
 
@@ -252,38 +247,6 @@ typedef struct
 	bool     firstDemoFrameSkipped;
 	fileHandle_t demofile;
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-	bool voipEnabled;
-	bool speexInitialized;
-	int      speexFrameSize;
-	int      speexSampleRate;
-
-	// incoming data...
-	// !!! FIXME: convert from parallel arrays to array of a struct.
-	SpeexBits speexDecoderBits[ MAX_CLIENTS ];
-	void      *speexDecoder[ MAX_CLIENTS ];
-	byte      voipIncomingGeneration[ MAX_CLIENTS ];
-	int       voipIncomingSequence[ MAX_CLIENTS ];
-	float     voipGain[ MAX_CLIENTS ];
-	bool  voipIgnore[ MAX_CLIENTS ];
-	bool  voipMuteAll;
-
-	// outgoing data...
-	// if voipTargets[i / 8] & (1 << (i % 8)),
-	// then we are sending to clientnum i.
-	uint8_t              voipTargets[( MAX_CLIENTS + 7 ) / 8 ];
-	uint8_t              voipFlags;
-	SpeexPreprocessState *speexPreprocessor;
-	SpeexBits            speexEncoderBits;
-	void                 *speexEncoder;
-	int                  voipOutgoingDataSize;
-	int                  voipOutgoingDataFrames;
-	int                  voipOutgoingSequence;
-	byte                 voipOutgoingGeneration;
-	byte                 voipOutgoingData[ 1024 ];
-	float                voipPower;
-#endif
-
 	bool     waverecording;
 	fileHandle_t wavefile;
 	int          wavetime;
@@ -352,16 +315,11 @@ typedef struct
 	bool uiStarted;
 	bool cgameStarted;
 
-	bool cgameCVarsRegistered;
-
 	int      framecount;
 	int      frametime; // msec since last frame
 
 	int      realtime; // ignores pause
 	int      realFrametime; // ignoring pause, so console always works
-
-	int      voipTime;
-	int      voipSender;
 
 	// master server sequence information
 	int          numMasterPackets;
@@ -428,6 +386,7 @@ public:
 	int CGameCrosshairPlayer();
 	void CGameKeyEvent(int key, bool down);
 	void CGameMouseEvent(int dx, int dy);
+    void CGameMousePosEvent(int x, int y);
 	void CGameTextInputEvent(int c);
 	//std::vector<std::string> CGameVoipString();
 	//void CGameInitCvars();
@@ -562,21 +521,6 @@ extern cvar_t *cl_allowPaste;
 extern cvar_t *cl_useMumble;
 extern cvar_t *cl_mumbleScale;
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-// cl_voipSendTarget is a string: "all" to broadcast to everyone, "none" to
-//  send to no one, or a comma-separated list of client numbers:
-//  "0,7,2,23" ... an empty string is treated like "all".
-extern  cvar_t *cl_voipUseVAD;
-extern  cvar_t *cl_voipVADThreshold;
-extern  cvar_t *cl_voipSend;
-extern  cvar_t *cl_voipSendTarget;
-extern  cvar_t *cl_voipGainDuringCapture;
-extern  cvar_t *cl_voipCaptureMult;
-extern  cvar_t *cl_voipShowMeter;
-extern  cvar_t *cl_voipShowSender;
-extern  cvar_t *cl_voip;
-#endif
-
 extern Log::Logger downloadLogger;
 
 //=================================================
@@ -607,7 +551,6 @@ void        CL_InitDownloads();
 void        CL_NextDownload();
 
 void        CL_GetPing( int n, char *buf, int buflen, int *pingtime );
-void        CL_GetPingInfo( int n, char *buf, int buflen );
 void        CL_ClearPing( int n );
 int         CL_GetPingQueueCount();
 
@@ -691,11 +634,6 @@ bool CL_IRCIsRunning();
 //
 // cl_parse.c
 //
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-void       CL_Voip_f();
-
-#endif
-
 void CL_SystemInfoChanged();
 void CL_ParseServerMessage( msg_t *msg );
 
@@ -802,14 +740,10 @@ void  SCR_Init();
 void  SCR_UpdateScreen();
 
 void  SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
-void  SCR_FillAdjustedRect( float x, float y, float width, float height, const Color::Color& color );
 void  SCR_FillRect( float x, float y, float width, float height, const Color::Color& color );
-void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
-void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 
 void  SCR_DrawSmallStringExt( int x, int y, const char *string, const Color::Color& setColor, bool forceColor, bool noColorEscape );
 void  SCR_DrawSmallUnichar( int x, int y, int ch );
-void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
 void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
 float SCR_ConsoleFontUnicharWidth( int ch );
@@ -853,7 +787,6 @@ void          Cin_OGM_Shutdown();
 // cl_cgame.c
 //
 void     CL_InitCGame();
-void     CL_InitCGameCVars();
 void     CL_ShutdownCGame();
 void     CL_GameCommandHandler();
 bool CL_GameConsoleText();
@@ -871,8 +804,6 @@ void CL_ShutdownUI();
 int  Key_GetCatcher();
 void Key_SetCatcher( int catcher );
 void UI_GameCommandHandler();
-void LAN_LoadCachedServers();
-void LAN_SaveServersToCache();
 
 //
 // cl_net_chan.c
@@ -901,4 +832,11 @@ bool CL_VideoRecording();
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd();
 void CL_GetClipboardData( char *, int );
+
+//
+// cl_input.c
+//
+MouseMode IN_GetMouseMode();
+void IN_SetMouseMode(MouseMode mode);
+
 #endif

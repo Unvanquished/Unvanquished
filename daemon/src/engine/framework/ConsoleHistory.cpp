@@ -28,102 +28,121 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "qcommon/q_shared.h"
-#include "qcommon/qcommon.h"
 #include "framework/Application.h"
 #include "ConsoleHistory.h"
 
-//TODO: make it thread safe.
 namespace Console {
-    static const int SAVED_HISTORY_LINES = 512;
+History::Container History::lines;
+std::mutex History::lines_mutex;
 
-    static std::vector<std::string> lines;
+std::string History::GetFilename()
+{
+	return "conhistory" + Application::GetTraits().uniqueHomepathSuffix;
+}
 
-    static std::string GetHistoryFilename() {
-        return "conhistory" + Application::GetTraits().uniqueHomepathSuffix;
-    }
+void History::Save() {
+	try {
+		FS::File f = FS::HomePath::OpenWrite(GetFilename());
 
-    void SaveHistory() {
-        try {
-            FS::File f = FS::HomePath::OpenWrite(GetHistoryFilename());
+		auto lock = Lock();
+		Container::size_type i = 0;
+		if ( lines.size() > SAVED_HISTORY_LINES )
+			i = lines.size() - SAVED_HISTORY_LINES;
+		for (; i < lines.size(); i++)
+		{
+			f.Write(lines[i].data(), lines[i].size());
+			f.Write("\n", 1);
+		}
+	} catch (const std::system_error& error) {
+		Log::Warn("Couldn't write %s: %s", GetFilename(), error.what());
+	}
+}
 
-            for (unsigned i = std::max(0L, ((long)lines.size()) - SAVED_HISTORY_LINES); i < lines.size(); i++) {
-                f.Write(lines[i].data(), lines[i].size());
-                f.Write("\n", 1);
-            }
-        } catch (const std::system_error& error) {
-            Log::Warn("Couldn't write %s: %s", GetHistoryFilename(), error.what());
-        }
-    }
+void History::Load() {
+	std::string buffer;
 
-    void LoadHistory() {
-        std::string buffer;
+	try {
+		FS::File f = FS::HomePath::OpenRead(GetFilename());
+		buffer = f.ReadAll();
+	} catch (const std::system_error& error) {
+		Log::Warn("Couldn't read %s: %s", GetFilename(), error.what());
+	}
 
-        try {
-            FS::File f = FS::HomePath::OpenRead(GetHistoryFilename());
-            buffer = f.ReadAll();
-        } catch (const std::system_error& error) {
-            Log::Warn("Couldn't read %s: %s", GetHistoryFilename(), error.what());
-        }
+	auto lock = Lock();
+	lines.clear();
+	std::size_t currentPos = 0;
+	std::size_t nextPos = 0;
+	while (true)
+	{
+		nextPos = buffer.find('\n', currentPos);
+		if ( nextPos == std::string::npos )
+			break;
+		lines.emplace_back(buffer, currentPos, (nextPos - currentPos));
+		currentPos = nextPos + 1;
+	}
+}
 
-        size_t currentPos = 0;
-        size_t nextPos = 0;
-        while (nextPos != std::string::npos) {
-            nextPos = buffer.find('\n', currentPos);
-            lines.push_back(std::string(buffer, currentPos, (nextPos - currentPos)));
-            currentPos = nextPos + 1;
-        }
-    }
+History::History()
+	: current_line( std::numeric_limits<Container::size_type>::max() )
+{}
 
-    static const std::string& GetLine(HistoryHandle handle)
-    {
-        static std::string empty = "";
-        if (handle == HISTORY_END) {
-            return empty;
-        } else {
-            return lines[handle];
-        }
-    }
+void History::Add( const Line& text )
+{
+	auto lock = Lock();
 
-    void AddToHistory(HistoryHandle& handle, std::string current) {
-        if (lines.empty() || current != lines.back()) {
-            lines.push_back(std::move(current));
-        }
-        handle = HISTORY_END;
+	if ( lines.empty() || text != lines.back() )
+	{
+		lines.push_back(std::move( text ));
+	}
 
-        //TODO defer it more? when the programs exits?
-        SaveHistory();
-    }
+	current_line = lines.size();
+	unfinished.clear();
 
-    void PrevLine(HistoryHandle& handle, std::string& current) {
-        if (!current.empty() && current != GetLine(handle)) {
-            lines.push_back(current);
-        }
+	lock.unlock();
+	Save();
+}
 
-        if (handle == 0 || (handle == HISTORY_END && lines.empty())) {
-            return;
-        } else if (handle == HISTORY_END) {
-            handle = lines.size() -1;
-        } else {
-            handle --;
-        }
-        current = GetLine(handle);
-    }
+void History::PrevLine( Line& text )
+{
+	auto lock = Lock();
 
-    void NextLine(HistoryHandle& handle, std::string& current) {
-        if (!current.empty() && current != GetLine(handle)) {
-            lines.push_back(current);
-        }
+	if ( lines.empty() )
+	{
+		return;
+	}
 
-        if (handle == HISTORY_END) {
-            current.clear();
-        } else if (handle == lines.size() - 1) {
-            handle = HISTORY_END;
-            current.clear();
-        } else {
-            handle ++;
-            current = GetLine(handle);
-        }
-    }
+	if ( !text.empty() && ( current_line >= lines.size() || text != lines[current_line] ) )
+	{
+		unfinished = text;
+	}
+
+	if ( current_line >= lines.size() )
+	{
+		current_line = lines.size() - 1;
+	}
+	else if ( current_line > 0 )
+	{
+		current_line--;
+	}
+
+	text = lines[current_line];
+}
+
+void History::NextLine( Line& text )
+{
+	auto lock = Lock();
+
+	if ( lines.empty() || current_line >= lines.size() - 1 )
+	{
+		text = unfinished;
+		unfinished.clear();
+		current_line = lines.size();
+	}
+	else
+	{
+		current_line++;
+		text = lines[current_line];
+	}
+}
 
 }

@@ -41,24 +41,6 @@ bool scr_initialized; // ready to draw
 
 /*
 ================
-SCR_DrawNamedPic
-
-Coordinates are 640*480 virtual values
-=================
-*/
-void SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname )
-{
-	qhandle_t hShader;
-
-	assert( width != 0 );
-
-	hShader = re.RegisterShader( picname, RSF_DEFAULT );
-	SCR_AdjustFrom640( &x, &y, &width, &height );
-	re.DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
-}
-
-/*
-================
 SCR_AdjustFrom640
 
 Adjusted for resolution and screen aspect ratio
@@ -98,19 +80,6 @@ void SCR_AdjustFrom640( float *x, float *y, float *w, float *h )
 ================
 SCR_FillRect
 
-Coordinates are 640*480 virtual values
-=================
-*/
-void SCR_FillAdjustedRect( float x, float y, float width, float height, const Color::Color& color )
-{
-	SCR_AdjustFrom640( &x, &y, &width, &height );
-	SCR_FillRect( x, y, width, height, color );
-}
-
-/*
-================
-SCR_FillRect
-
 Coordinates are the current screen resolution
 =================
 */
@@ -119,19 +88,6 @@ void SCR_FillRect( float x, float y, float width, float height, const Color::Col
 	re.SetColor( color );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
 	re.SetColor( Color::White );
-}
-
-/*
-================
-SCR_DrawPic
-
-Coordinates are 640*480 virtual values
-=================
-*/
-void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader )
-{
-	SCR_AdjustFrom640( &x, &y, &width, &height );
-	re.DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
 static glyphInfo_t *Glyph( int ch )
@@ -143,60 +99,6 @@ static glyphInfo_t *Glyph( int ch )
 	re.GlyphChar( cls.consoleFont, ch, glyph );
 
 	return glyph;
-}
-
-/*
-** SCR_DrawUnichar
-** chars are drawn at 640*480 virtual screen size
-*/
-static void SCR_DrawUnichar( int x, int y, float size, int ch )
-{
-	float ax, ay, aw, ah;
-
-	if ( ch == ' ' )
-	{
-		return;
-	}
-
-	if ( y < -size )
-	{
-		return;
-	}
-
-	ax = x;
-	ay = y;
-	aw = size;
-	ah = size;
-	SCR_AdjustFrom640( &ax, &ay, &aw, &ah );
-
-	if( cls.useLegacyConsoleFace )
-	{
-		int row, col;
-		float frow, fcol;
-
-		if ( ch >= 0x100 ) { ch = 0; }
-
-		row = ch >> 4;
-		col = ch & 15;
-
-		frow = row * 0.0625;
-		fcol = col * 0.0625;
-		size = 0.0625;
-
-		re.DrawStretchPic( ax, ay, aw, ah,
-				fcol, frow,
-				fcol + size, frow + size,
-				cls.charSetShader );
-	}
-	else
-	{
-	glyphInfo_t *glyph = Glyph( ch );
-
-	re.DrawStretchPic( ax, ay, aw, glyph->imageHeight,
-		glyph->s, glyph->t,
-		glyph->s2, glyph->t2,
-		glyph->glyph );
-	}
 }
 
 void SCR_DrawConsoleFontUnichar( float x, float y, int ch )
@@ -218,11 +120,6 @@ void SCR_DrawConsoleFontUnichar( float x, float y, int ch )
 		                   glyph->s2, glyph->t2,
 		                   glyph->glyph );
 	}
-}
-
-void SCR_DrawConsoleFontChar( float x, float y, const char *s )
-{
-	SCR_DrawConsoleFontUnichar( x, y, Q_UTF8_CodePoint( s ) );
 }
 
 /*
@@ -351,140 +248,6 @@ void SCR_DrawDemoRecording()
 	Cvar_Set( "cl_demooffset", va( "%d", FS_FTell( clc.demofile ) ) );
 }
 
-#ifdef USE_VOIP
-
-/*
-=================
-SCR_DrawVoipMeter
-=================
-*/
-void SCR_DrawVoipMeter()
-{
-	char buffer[ 16 ];
-	char string[ 256 ];
-	int  limit, i;
-
-	if ( !cl_voipShowMeter->integer )
-	{
-		return; // player doesn't want to show meter at all.
-	}
-	else if ( !cl_voipSend->integer )
-	{
-		return; // not recording at the moment.
-	}
-	else if ( cls.state != CA_ACTIVE )
-	{
-		return; // not connected to a server.
-	}
-	else if ( !clc.voipEnabled )
-	{
-		return; // server doesn't support VoIP.
-	}
-	else if ( clc.demoplaying )
-	{
-		return; // playing back a demo.
-	}
-	else if ( !cl_voip->integer )
-	{
-		return; // client has VoIP support disabled.
-	}
-
-	limit = ( int )( clc.voipPower * 10.0f );
-
-	if ( limit > 10 )
-	{
-		limit = 10;
-	}
-
-	for ( i = 0; i < limit; i++ )
-	{
-		buffer[ i ] = '*';
-	}
-
-	while ( i < 10 )
-	{
-		buffer[ i++ ] = ' ';
-	}
-
-	buffer[ i ] = '\0';
-
-	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawSmallStringExt( 320 - strlen( string ) * 4, 10, 8, string, Color::White, true, false );
-}
-
-/*
-=================
-SCR_DrawVoipSender
-=================
-*/
-void SCR_DrawVoipSender()
-{
-#if 0 //FIXME we need to find another way to get the team CS_PLAYERS value, which will continuously change independently of the client, especially now with several cgames/games in development
-	char string[ 256 ];
-	char teamColor;
-
-	// Little bit of a hack here, but it's the only thing i could come up with
-	if ( cls.voipTime > cls.realtime )
-	{
-		if ( !cl_voipShowSender->integer )
-		{
-			return; // They don't want this on :(
-		}
-		else if ( cls.state != CA_ACTIVE )
-		{
-			return; // not connected to a server.
-		}
-		else if ( !clc.voipEnabled )
-		{
-			return; // server doesn't support VoIP.
-		}
-		else if ( clc.demoplaying )
-		{
-			return; // playing back a demo.
-		}
-		else if ( !cl_voip->integer )
-		{
-			return; // client has VoIP support disabled.
-		}
-
-		switch ( atoi( Info_ValueForKey(cl.gameState[CS_PLAYERS + cls.voipSender].c_str(), "t") ) )
-		{
-			case TEAM_ALIENS: teamColor = '1'; break;
-			case TEAM_HUMANS: teamColor = '4'; break;
-			default: teamColor = '3';
-		}
-
-		sprintf( string, "VoIP: ^%c%s", teamColor, Info_ValueForKey(cl.gameState[CS_PLAYERS + cls.voipSender].c_str(), "t" ) );
-
-		if ( cl_voipShowSender->integer == 1 ) // Lower right-hand corner, above HUD
-		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, Color::White, true, true );
-		}
-		else if ( cl_voipShowSender->integer == 2 ) // Lower left-hand corner, above HUD
-		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, Color::White, true, true );
-		}
-		else if ( cl_voipShowSender->integer == 3 ) // Top right-hand corner, below lag-o-meter/time
-		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, Color::White, true, true );
-		}
-		else if ( cl_voipShowSender->integer == 4 ) // Top center, below VOIP bar when it's displayed
-		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, Color::White, true, true );
-		}
-		else if ( cl_voipShowSender->integer == 5 ) // Bottom center, above HUD
-		{
-			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, Color::Color( 7 ], true, true );
-		}
-		else
-		{
-			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, Color::Color( 7 ], true, true );
-		}
-	}
-#endif
-}
-#endif
-
 //=============================================================================
 
 /*
@@ -555,10 +318,6 @@ void SCR_DrawScreenField()
 			case CA_ACTIVE:
 				CL_CGameRendering();
 				SCR_DrawDemoRecording();
-#ifdef USE_VOIP
-				SCR_DrawVoipMeter();
-				SCR_DrawVoipSender();
-#endif
 				break;
 		}
 	}
@@ -567,8 +326,6 @@ void SCR_DrawScreenField()
 
 void SCR_DrawConsoleAndPointer()
 {
-	extern bool mouseActive; // see sdl_input.c
-
 	// console draws next
 	Con_DrawConsole();
 }

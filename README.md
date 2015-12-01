@@ -29,14 +29,16 @@ See below for build and launch instructions.
 `OpenAL`,
 `libogg`,
 `libvorbis`,
-`libspeex`,
 `libtheora`,
 `libopus`,
 `libopusfile`
 
 ###Buildtime
 
-`cmake`
+`cmake`,
+`python` ≥ 2,
+`python-yaml`,
+`python-jinja`
 
 ###Optional
 
@@ -54,19 +56,6 @@ See below for build and launch instructions.
 ##Build Instructions
 
 Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores to speed up compilation.
-
-###CBSE Toolchain
-
-If you want to mess around with the gamelogic code and modify entities, you'll need the cbse toolchain.
-Get it using:
-
-
-    cd src/utils/cbse
-    git submodule init
-    git submodule update
-
-Then you can modify the entities.yml file in src/sgame/. After modifying the entites.yml file,
-you can run the generate_entities.sh script o regenerate the auto generated component code.
 
 ###Visual Studio
 

@@ -1043,23 +1043,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			G_AddCreditsToScore( ent, HUMAN_BUILDER_SCOREINC );
 		}
 	}
-
-	// Regenerate Adv. Dragoon barbs
-	if ( client->ps.weapon == WP_ALEVEL3_UPG )
-	{
-		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
-		{
-			if ( ent->timestamp + LEVEL3_BOUNCEBALL_REGEN < level.time )
-			{
-				client->ps.ammo++;
-				ent->timestamp = level.time;
-			}
-		}
-		else
-		{
-			ent->timestamp = level.time;
-		}
-	}
 }
 
 /*
@@ -1242,10 +1225,6 @@ void G_UnlaggedStore()
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		ent = &g_entities[ i ];
-		if ( !ent->inuse || !ent->client )
-		{
-			continue;
-		}
 		save = &ent->client->unlaggedHist[ level.unlaggedIndex ];
 		save->used = false;
 
@@ -1597,7 +1576,7 @@ static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0, closeTeammates = 0;
 	float     distance, minBoosterDistance = FLT_MAX;
-	bool  needsHealing;
+	bool      needsHealing;
 	gentity_t *ent;
 
 	if ( !self || !self->client )
@@ -1723,7 +1702,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
 				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) *
 				                ( self->healthSourceTime - level.time ) );
-				modifier = MAX( modifier, ALIEN_REGEN_NOCREEP_MIN );
+				modifier = std::max( modifier, ALIEN_REGEN_NOCREEP_MIN );
 			}
 		}
 
@@ -1741,6 +1720,29 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		// Don't immediately start regeneration to prevent players from quickly
 		// hopping in and out of a creep area to increase their heal rate
 		self->nextRegenTime = level.time + ( 1000 / regenBaseRate );
+	}
+}
+
+static void G_ReplenishDragoonBarbs( gentity_t *self, int msec )
+{
+	gclient_t *client = self->client;
+
+	if ( client->ps.weapon == WP_ALEVEL3_UPG )
+	{
+		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
+		{
+			float interval = BG_GetBarbRegenerationInterval(self->client->ps);
+			self->barbRegeneration += (float)msec / interval;
+			if ( self->barbRegeneration >= 1.0f )
+			{
+				self->barbRegeneration -= 1.0f;
+				client->ps.ammo++;
+			}
+		}
+		else
+		{
+			self->barbRegeneration = 0.0f;
+		}
 	}
 }
 
@@ -1953,6 +1955,8 @@ void ClientThink_real( gentity_t *self )
 
 	// Replenish alien health
 	G_ReplenishAlienHealth( self );
+
+	G_ReplenishDragoonBarbs( self, msec );
 
 	// Throw human grenade
 	if ( BG_InventoryContainsUpgrade( UP_GRENADE, client->ps.stats ) &&

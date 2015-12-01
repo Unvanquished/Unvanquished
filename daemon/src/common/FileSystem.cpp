@@ -500,7 +500,6 @@ std::string StripExtension(Str::StringRef path)
 	}
 	return path;
 }
-
 std::string BaseNameStripExtension(Str::StringRef path)
 {
 	if (path.empty())

@@ -113,6 +113,12 @@ typedef enum
 	SORT_FAVOURITES
 } serverSortField_t;
 
+enum class MouseMode
+{
+    Deltas,
+    Absolute,
+};
+
 void            trap_Print( const char *string );
 void NORETURN   trap_Error( const char *string );
 int             trap_Milliseconds();
@@ -120,7 +126,6 @@ void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const
 void            trap_Cvar_Update( vmCvar_t *vmCvar );
 void            trap_Cvar_Set( const char *var_name, const char *value );
 void            trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
-void            trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int             trap_Cvar_VariableIntegerValue( const char *var_name );
 float           trap_Cvar_VariableValue( const char *var_name );
 void            trap_Cvar_AddFlags( const char *var_name, int flags );
@@ -213,6 +218,7 @@ void            trap_Key_SetBinding( int keyNum, int team, const char *cmd );
 void            trap_Key_ClearCmdButtons( void );
 void            trap_Key_ClearStates( void );
 std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys );
+void            trap_SetMouseMode( MouseMode mode );
 void            trap_S_StopBackgroundTrack();
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );

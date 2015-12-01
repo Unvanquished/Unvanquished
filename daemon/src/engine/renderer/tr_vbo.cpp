@@ -283,7 +283,7 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo )
 static inline unsigned short
 boneFactor( int index, float weight ) {
 	int scaledWeight = lrintf( weight * 256.0 );
-	return (unsigned short)( ( index << 8 ) | MIN( scaledWeight, 255 ) );
+	return (unsigned short)( ( index << 8 ) | std::min( scaledWeight, 255 ) );
 }
 
 static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )

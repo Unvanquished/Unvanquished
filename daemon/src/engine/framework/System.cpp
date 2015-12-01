@@ -788,7 +788,7 @@ static void Init(int argc, char** argv)
 		Cvar::SetValue(cvar.first, cvar.second);
 
 	// Load the console history
-	Console::LoadHistory();
+	Console::History::Load();
 
 	// Legacy initialization code, needs to be replaced
 	// TODO: eventually move all of Com_Init into here

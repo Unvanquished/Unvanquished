@@ -34,18 +34,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Console {
 
-    Field::Field(int size): LineEditData(size), hist(HISTORY_END) {
+    Field::Field(int size): LineEditData(size) {
     }
 
     void Field::HistoryPrev() {
         std::string current = Str::UTF32To8(GetText());
-        PrevLine(hist, current);
+        hist.PrevLine(current);
         SetText(Str::UTF8To32(current));
     }
 
     void Field::HistoryNext() {
         std::string current = Str::UTF32To8(GetText());
-        NextLine(hist, current);
+        hist.NextLine(current);
         SetText(Str::UTF8To32(current));
     }
 
@@ -62,7 +62,7 @@ namespace Console {
         } else {
             Cmd::BufferCommandText(defaultCommand + " " + Cmd::Escape(current), true);
         }
-        AddToHistory(hist, std::move(current));
+        hist.Add(std::move(current));
 
         Clear();
     }

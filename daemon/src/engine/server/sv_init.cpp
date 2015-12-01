@@ -661,9 +661,6 @@ void SV_Init()
 	// from loading outdated vms pk3s. The correct vms pk3 will be loaded upon connecting to a pure server.
 	sv_pure = Cvar_Get( "sv_pure", "0", CVAR_SYSTEMINFO );
 #endif
-#ifdef USE_VOIP
-	sv_voip = Cvar_Get( "sv_voip", "1", CVAR_SYSTEMINFO | CVAR_LATCH );
-#endif
 	Cvar_Get( "sv_paks", "", CVAR_SYSTEMINFO | CVAR_ROM );
 
 	// server vars

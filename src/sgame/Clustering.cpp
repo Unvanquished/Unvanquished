@@ -25,104 +25,12 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Clustering {
 	/**
-	 * @brief A point in euclidean space.
-	 * @todo Use engine's vector class once available.
-	 */
-	template <int Dim>
-	class Point {
-		public:
-			float coords[Dim];
-
-			Point() = default;
-
-			Point(const float vec[Dim]) {
-				for (int i = 0; i < Dim; i++) coords[i] = vec[i];
-			}
-
-			Point(const Point& other) {
-				for (int i = 0; i < Dim; i++) coords[i] = other.coords[i];
-			}
-
-			void Clear() {
-				for (int i = 0; i < Dim; i++) coords[i] = 0;
-			}
-
-			float& operator[](int i) {
-				return coords[i];
-			}
-
-			const float& operator[](int i) const {
-				return coords[i];
-			}
-
-			Point<Dim> operator+(const Point<Dim>& other) const {
-				Point<Dim> result;
-				for (int i = 0; i < Dim; i++) result[i] = coords[i] + other[i];
-				return result;
-			}
-
-			Point<Dim> operator-(const Point<Dim>& other) const {
-				Point<Dim> result;
-				for (int i = 0; i < Dim; i++) result[i] = coords[i] - other[i];
-				return result;
-			}
-
-			Point<Dim> operator*(float value) const {
-				Point<Dim> result;
-				for (int i = 0; i < Dim; i++) result[i] = coords[i] * value;
-				return result;
-			}
-
-			Point<Dim> operator/(float value) const {
-				Point<Dim> result;
-				for (int i = 0; i < Dim; i++) result[i] = coords[i] / value;
-				return result;
-			}
-
-			void operator+=(const Point<Dim>& other) {
-				for (int i = 0; i < Dim; i++) coords[i] += other[i];
-			}
-
-			void operator-=(const Point<Dim>& other) {
-				for (int i = 0; i < Dim; i++) coords[i] -= other[i];
-			}
-
-			void operator*=(float value) {
-				for (int i = 0; i < Dim; i++) coords[i] *= value;
-			}
-
-			void operator/=(float value) {
-				for (int i = 0; i < Dim; i++) coords[i] /= value;
-			}
-
-			bool operator==(const Point<Dim>& other) const {
-				for (int i = 0; i < Dim; i++) if (coords[i] != other[i]) return false;
-				return true;
-			}
-
-			float Dot(const Point& other) const {
-				float product = 0;
-				for (int i = 0; i < Dim; i++) product += coords[i] * other[i];
-				return product;
-			}
-
-			float Distance(const Point& other) const {
-				float distanceSquared = 0;
-				for (int i = 0; i < Dim; i++) {
-					float delta = coords[i] - other[i];
-					distanceSquared += delta * delta;
-				}
-				return sqrtf(distanceSquared);
-			}
-	};
-
-	/**
 	 * @brief A cluster of objects located in euclidean space.
 	 */
 	template <typename Data, int Dim>
 	class EuclideanCluster {
 		public:
-			typedef Point<Dim>                                                    point_type;
+			typedef Math::Vector<Dim, float>                                      point_type;
 			typedef std::pair<Data, point_type>                                   record_type;
 			typedef typename std::unordered_map<Data, point_type>::const_iterator iter_type;
 
@@ -196,7 +104,7 @@ namespace Clustering {
 			void UpdateMetadata() {
 				dirty = false;
 
-				center.Clear();
+				center            *= 0.0f;
 				meanObject        = nullptr;
 				averageDistance   = 0;
 				standardDeviation = 0;
@@ -215,7 +123,7 @@ namespace Clustering {
 				// Find average distance and mean object
 				for (auto& record : records) {
 					point_type& location = record.second;
-					float distance = location.Distance(center);
+					float distance = Distance(location, center);
 					averageDistance += distance;
 					if (distance < smallestDistance) {
 						smallestDistance = distance;
@@ -226,7 +134,7 @@ namespace Clustering {
 
 				// Find standard deviation
 				for (auto& record : records) {
-					float deviation = averageDistance - record.second.Distance(center);
+					float deviation = averageDistance - Distance(record.second, center);
 					standardDeviation += deviation * deviation;
 				}
 				standardDeviation = sqrtf(standardDeviation / size);
@@ -282,7 +190,7 @@ namespace Clustering {
 			/**
 			 * @brief Adds or updates the location of objects.
 			 */
-			void Update(const Data& data, const Point<Dim>& location) {
+			void Update(const Data& data, const point_type& location) {
 				// TODO: Check if the location has actually changed.
 
 				// Remove the object first.
@@ -291,7 +199,7 @@ namespace Clustering {
 				// Iterate over all other objects and save the distance.
 				for (const vertex_record_type& record : records) {
 					if (edgeVisCallback == nullptr || edgeVisCallback(data, record.first)) {
-						float distance = location.Distance(record.second);
+						float distance = Distance(location, record.second);
 						edges.insert(std::make_pair(distance, edge_type(data, record.first)));
 					}
 				}
@@ -547,7 +455,7 @@ namespace Clustering {
 			{}
 
 			void Update(gentity_t *ent) {
-				super::Update(ent, point_type(ent->s.origin));
+				super::Update(ent, point_type::Load(ent->s.origin));
 			}
 
 			/**
@@ -638,7 +546,7 @@ namespace BaseClustering {
 			// Trace from mean buildable's origin towards cluster center, so that the beacon does
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
 			trace_t tr;
-			trap_Trace(&tr, mean->s.origin, nullptr, nullptr, center.coords, 0, MASK_SOLID, 0);
+			trap_Trace(&tr, mean->s.origin, nullptr, nullptr, center.Data(), 0, MASK_SOLID, 0);
 			Beacon::MoveTowardsRoom(tr.endpos);
 
 			// Prepare beacon flags.
@@ -649,7 +557,7 @@ namespace BaseClustering {
 			// If a fitting beacon close to the target location already exists, move it silently,
 			// otherwise add a new one.
 			gentity_t *beacon;
-			if (!(beacon = Beacon::MoveSimilar(center.coords, tr.endpos, BCT_BASE, 0, team, 0,
+			if (!(beacon = Beacon::MoveSimilar(center.Data(), tr.endpos, BCT_BASE, 0, team, 0,
 			                                   baseRadius, eFlags, EF_BC_BASE_RELEVANT))) {
 				beacon = Beacon::New(tr.endpos, BCT_BASE, (int)baseRadius, team );
 				beacon->s.eFlags |= eFlags;

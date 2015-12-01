@@ -3876,7 +3876,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	qsort( fileSort, count, sizeof( fileSort[ 0 ] ), SortMaps );
 
 	rows = ( count + 2 ) / 3;
-	pages = MAX( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
+	pages = std::max( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
 
 	if ( page >= pages )
 	{

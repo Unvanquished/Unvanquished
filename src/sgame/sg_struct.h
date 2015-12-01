@@ -348,6 +348,7 @@ struct gentity_s
 	int         healthSourceTime; // last time an alien had contact to a health source
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
+	float       barbRegeneration; // goon barb regeneration is complete if this value is >= 1
 
 	bool        deconMarkHack; // TODO: Remove.
 	int         attackTimer, attackLastEvent; // self being attacked

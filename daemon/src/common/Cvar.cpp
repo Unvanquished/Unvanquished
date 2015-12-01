@@ -99,7 +99,7 @@ namespace Cvar {
     }
 
     std::string SerializeCvarValue(std::string value) {
-		return std::move(value);
+		return value;
     }
 
     template<>

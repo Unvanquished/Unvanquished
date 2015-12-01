@@ -46,8 +46,8 @@ namespace Util {
 			snap.serverTime = stream.Read<uint32_t>();
 			stream.ReadData(&snap.areamask, MAX_MAP_AREA_BYTES);
 			snap.ps = stream.Read<playerState_t>();
-			snap.entities = std::move(stream.Read<std::vector<entityState_t>>());
-			snap.serverCommands = std::move(stream.Read<std::vector<std::string>>());
+			snap.entities = stream.Read<std::vector<entityState_t>>();
+			snap.serverCommands = stream.Read<std::vector<std::string>>();
 			return snap;
 		}
 	};
@@ -209,6 +209,9 @@ typedef enum cgameImport_s
   CG_KEY_CLEARSTATES,
   CG_KEY_CLEARCMDBUTTONS,
   CG_KEY_KEYSDOWN,
+
+  // Mouse
+  CG_MOUSE_SETMOUSEMODE,
 
   // Lan
   CG_LAN_GETSERVERCOUNT,
@@ -560,6 +563,10 @@ namespace Key {
 	> KeysDownMsg;
 }
 
+namespace Mouse {
+    typedef IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_SETMOUSEMODE>, MouseMode> SetMouseMode;
+}
+
 namespace LAN {
 	// GetServerCountMsg
 	typedef IPC::SyncMessage<
@@ -784,6 +791,9 @@ typedef enum
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
 
+  CG_MOUSE_POS_EVENT,
+//  void    (*CG_MousePosEvent)( int x, int y );
+
   CG_TEXT_INPUT_EVENT,
 // pass in text input events from the engine
 
@@ -825,6 +835,10 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
 > CGameMouseEventMsg;
+// CGameMousePosEventMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_POS_EVENT>, int, int>
+> CGameMousePosEventMsg;
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, int>
 > CGameTextInptEvent;

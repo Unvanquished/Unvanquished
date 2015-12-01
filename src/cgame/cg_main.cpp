@@ -761,7 +761,7 @@ void CG_AddNotifyText()
 	Q_strncpyz( cg.consoleText + textLen, buffer, MAX_CONSOLE_TEXT - textLen );
 	cg.consoleLines[ cg.numConsoleLines ].time = cg.time;
 	cg.consoleLines[ cg.numConsoleLines ].length =
-		MIN( bufferLen, MAX_CONSOLE_TEXT - textLen - 1 );
+		std::min( bufferLen, MAX_CONSOLE_TEXT - textLen - 1 );
 	cg.numConsoleLines++;
 }
 
@@ -1628,6 +1628,7 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	cg.pmoveParams.accurate = 1;
 	cg.pmoveParams.msec = 8;
 
+	Rocket_HideMouse();
 	CG_UpdateLoadingStep( LOAD_START );
 	cg.clientNum = clientNum;
 

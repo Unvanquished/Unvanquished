@@ -323,32 +323,6 @@ void Com_ParseCommandLine( char *commandLine )
 }
 
 /*
-===================
-Com_SafeMode
-
-Check for "safe" on the command line, which will
-skip loading of wolfconfig.cfg
-===================
-*/
-bool Com_SafeMode()
-{
-	int i;
-
-	for ( i = 0; i < com_numConsoleLines; i++ )
-	{
-		Cmd::Args line(com_consoleLines[i]);
-
-		if ( line.size() > 1 && ( !Q_stricmp( line[0].c_str(), "safe" ) || !Q_stricmp( line[0].c_str(), "cvar_restart" ) ) )
-		{
-			com_consoleLines[ i ][ 0 ] = 0;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/*
 ===============
 Com_StartupVariable
 
@@ -391,50 +365,12 @@ void Com_StartupVariable( const char *match )
 	}
 }
 
-/*
-=================
-Com_AddStartupCommands
-
-Adds command-line arguments as script statements
-Commands are separated by + signs
-
-Returns true if any late commands were added, which
-will keep the demoloop from immediately starting
-=================
-*/
-bool Com_AddStartupCommands()
-{
-	int      i;
-	bool added;
-
-	added = false;
-
-	// quote every token, so args with semicolons can work
-	for ( i = 0; i < com_numConsoleLines; i++ )
-	{
-		if ( !com_consoleLines[ i ] || !com_consoleLines[ i ][ 0 ] )
-		{
-			continue;
-		}
-
-		// set commands won't override menu startup
-		if ( Q_strnicmp( com_consoleLines[ i ], "set", 3 ) )
-		{
-			added = true;
-		}
-
-		Cmd::BufferCommandText(com_consoleLines[i], true);
-	}
-
-	return added;
-}
-
 //============================================================================
 
 void Info_Print( const char *s )
 {
-	char key[ 512 ];
-	char value[ 512 ];
+	char key[ 8192 ];
+	char value[ 8192 ];
 	char *o;
 	int  l;
 
@@ -821,21 +757,6 @@ void Com_InitHunkMemory()
 	Cmd_AddCommand( "hunklog", Hunk_Log );
 	Cmd_AddCommand( "hunksmalllog", Hunk_SmallLog );
 #endif
-}
-
-/*
-====================
-Hunk_MemoryRemaining
-====================
-*/
-int Hunk_MemoryRemaining()
-{
-	int low, high;
-
-	low = hunk_low.permanent > hunk_low.temp ? hunk_low.permanent : hunk_low.temp;
-	high = hunk_high.permanent > hunk_high.temp ? hunk_high.permanent : hunk_high.temp;
-
-	return s_hunkTotal - ( low + high );
 }
 
 /*
@@ -1371,6 +1292,10 @@ int Com_EventLoop()
 				mouseX += ev.evValue;
 				mouseY += ev.evValue2;
 				mouseTime += ev.evTime;
+				break;
+
+			case SE_MOUSE_POS:
+				CL_MousePosEvent( ev.evValue, ev.evValue2 );
 				break;
 
 			case SE_JOYSTICK_AXIS:
@@ -2081,42 +2006,6 @@ void Com_Shutdown()
 
 	FS::FlushAll();
 }
-
-/*
-==================
-Com_IsVoipTarget
-
-Returns non-zero if given clientNum is enabled in voipTargets, zero otherwise.
-If clientNum is negative return if any bit is set.
-==================
-*/
-bool Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum )
-{
-	int index;
-
-	if ( clientNum < 0 )
-	{
-		for ( index = 0; index < voipTargetsSize; index++ )
-		{
-			if ( voipTargets[ index ] )
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	index = clientNum >> 3;
-
-	if ( index < voipTargetsSize )
-	{
-		return ( voipTargets[ index ] & ( 1 << ( clientNum & 0x07 ) ) );
-	}
-
-	return false;
-}
-
 
 int Sys_Milliseconds()
 {
