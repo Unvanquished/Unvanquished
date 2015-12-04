@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CommandSystem.h"
 #include "LogSystem.h"
 #include "System.h"
+#include "CrashDump.h"
 #ifdef _WIN32
 #include <windows.h>
 #include <SDL2/SDL.h>
@@ -46,14 +47,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/un.h>
 #include <sys/stat.h>
 #include <sys/file.h>
-#endif
-#ifdef USE_BREAKPAD
-#ifdef _WIN32
-#include "breakpad/client/windows/handler/exception_handler.h"
-#elif defined(__linux__)
-#include "breakpad/client/linux/handler/exception_handler.h"
-#include "breakpad/client/linux/crash_generation/crash_generation_server.h"
-#endif
 #endif
 
 namespace Sys {
@@ -68,7 +61,7 @@ static bool haveSingletonLock = false;
 static std::string singletonSocketPath;
 
 // Get the path of a singleton socket
-static std::string GetSingletonSocketPath()
+std::string GetSingletonSocketPath()
 {
     auto& suffix = Application::GetTraits().uniqueHomepathSuffix;
 	// Use the hash of the homepath to identify instances sharing a homepath
@@ -276,156 +269,6 @@ static void CloseSingletonSocket()
 	} catch (std::system_error&) {}
 #endif
 }
-
-
-#ifdef USE_BREAKPAD
-
-static std::string CrashDumpPath() {
-    return FS::Path::Build(FS::GetHomePath(), "crashdump/");
-}
-static std::string CrashServerPath() {
-#ifdef _WIN32
-    std::string name = "crash_server.exe";
-#else
-    std::string name = "crash_server";
-#endif
-    return FS::Path::Build(FS::GetLibPath(), name);
-}
-static bool CreateCrashDumpPath() {
-    std::error_code createDirError;
-    FS::RawPath::CreatePathTo(FS::Path::Build(CrashDumpPath(), "x"), createDirError);
-    return createDirError == createDirError.default_error_condition();
-}
-
-#ifdef _WIN32
-
-std::unique_ptr<google_breakpad::ExceptionHandler> crashHandler;
-
-static bool BreakpadInit() {
-    if (!CreateCrashDumpPath()) {
-        Log::Warn("Failed to create crash dump directory: %s", Sys::Win32StrError(GetLastError()));
-        return false;
-    }
-
-    std::string crashDir = CrashDumpPath();
-    std::string executable = CrashServerPath();
-    std::string pipeName = singletonSocketPath + "-crash";
-    DWORD pid = GetCurrentProcessId();
-    std::string cmdLine = "\"" + executable + "\" " + pipeName + " \"" + crashDir + " \" " + std::to_string(pid);
-
-    STARTUPINFOA startInfo{};
-    startInfo.cb = sizeof(startInfo);
-    startInfo.dwFlags = 0;
-
-    PROCESS_INFORMATION procInfo;
-    if (!CreateProcessA(&executable[0], &cmdLine[0],
-        NULL, NULL, FALSE, 0, NULL, NULL,
-        &startInfo, &procInfo))
-    {
-        Log::Warn("Failed to start crash logging server: %s", Sys::Win32StrError(GetLastError()));
-        return false;
-    }
-
-    CloseHandle(procInfo.hProcess);
-    CloseHandle(procInfo.hThread);
-
-    std::wstring wPipeName = Str::UTF8To16(pipeName);
-    crashHandler.reset(new google_breakpad::ExceptionHandler(
-        Str::UTF8To16(crashDir),
-        nullptr,
-        nullptr,
-        nullptr,
-        google_breakpad::ExceptionHandler::HANDLER_ALL,
-        MiniDumpNormal,
-        wPipeName.c_str(),
-        nullptr));
-    return true;
-}
-#elif defined(__linux__)
-
-std::unique_ptr<google_breakpad::ExceptionHandler> crashHandler;
-
-static bool CreateReportChannel(int& fdServer, int& fdClient) {
-    if(!google_breakpad::CrashGenerationServer::CreateReportChannel(&fdServer, &fdClient)) {
-        return false;
-    }
-    // Breakpad's function makes the client fd inheritable and the server not,
-    // but we want the opposite.
-    int oldflags;
-    return -1 != (oldflags = fcntl(fdServer, F_GETFD))
-        && -1 != fcntl(fdServer, F_SETFD, oldflags & ~FD_CLOEXEC)
-        && -1 != (oldflags = fcntl(fdClient, F_GETFD))
-        && -1 != fcntl(fdClient, F_SETFD, oldflags | FD_CLOEXEC);
-}
-
-static bool BreakpadInit() {
-    if (!CreateCrashDumpPath()) {
-        Log::Warn("Failed to create crash dump directory: %s", strerror(errno));
-        return false;
-    }
-
-    int fdServer, fdClient;
-    if (!CreateReportChannel(fdServer, fdClient)) {
-        Log::Warn("Failed to start crash logging server");
-        return false;
-    }
-
-    pid_t pid = fork();
-    if (pid == -1) {
-        Log::Warn("Failed to start crash logging server: %s", strerror(errno));
-        return false;
-    } else if (pid != 0) { //Breakpad server MUST be in parent of engine process
-        std::string fdServerStr = std::to_string(fdServer);
-        std::string crashDir = CrashDumpPath();
-        std::string exePath = CrashServerPath();
-        std::string pidStr = std::to_string(pid);
-        const char* args[] = {exePath.c_str(), fdServerStr.c_str(), crashDir.c_str(), pidStr.c_str(), nullptr};
-        execv(exePath.c_str(), const_cast<char * const *>(args));
-        _exit(1);
-    }
-
-    crashHandler.reset(new google_breakpad::ExceptionHandler(
-        google_breakpad::MinidumpDescriptor{}, nullptr, nullptr,
-        nullptr, true, fdClient));
-    return true;
-}
-
-#endif
-
-
-// Records a crash dump sent from the VM in minidump format. This is the same
-// format that Breakpad uses, but nacl minidump does not require Breakpad to work.
-void NaclCrashDump(Util::RawBytes dump) {
-    if(dump.size > 600000) { //it shouldn't be bigger than the buffer in nacl's code
-        Log::Warn("Ignoring NaCl crash dump request: size too large");
-    } else {
-        auto time = std::chrono::duration_cast<std::chrono::milliseconds>(SteadyClock::now().time_since_epoch()).count();
-        std::string path = FS::Path::Build(CrashDumpPath(), Str::Format("crash-nacl-%s.dmp", std::to_string(time)));
-        std::error_code err;
-
-        //Note: the file functions always use binary mode on Windows so there shouldn't be any lossiness.
-        auto file = FS::RawPath::OpenWrite(path, err);
-        if (err == err.default_error_condition()) file.Write(dump.data, dump.size, err);
-        if (err == err.default_error_condition()) file.Close(err);
-
-        if (err == err.default_error_condition()) {
-            Log::Notice("Wrote crash dump to %s", path);
-        } else {
-            Log::Warn("Error while writing crash dump");
-        }
-    }
-    delete[] dump.data;
-}
-
-#else
-
-static bool BreakpadInit() {}
-
-void NaclCrashDump(Util::RawBytes dump) {
-    delete[] dump.data;
-}
-
-#endif //USE_BREAKPAD
 
 // Common code for fatal and non-fatal exit
 // TODO: Handle shutdown requests coming from multiple threads
@@ -681,7 +524,7 @@ static void Init(int argc, char** argv)
 	}
 	Log::Notice(argsString);
 
-	Sys::SetupCrashHandler();
+	Sys::SetupCrashHandler(); // If Breakpad is enabled, this handler will soon be replaced.
 	Sys::ParseCmdline(argc, argv, cmdlineArgs);
 
 	// Platform-specific initialization
@@ -770,11 +613,12 @@ static void Init(int argc, char** argv)
 	// instances running on this homepath.
 	Log::OpenLogFile();
 
-#ifdef USE_BREAKPAD
-    if (BreakpadInit()) {
-        Log::Notice("Starting crash logging server");
+    if (CreateCrashDumpPath()) {
+        if (BreakpadInit()) {
+            Log::Notice("Starting crash logging server");
+        }
     }
-#endif
+
 	// Load the base paks
 	// TODO: cvar names and FS_* stuff needs to be properly integrated
 	EarlyCvar("fs_basepak", cmdlineArgs);

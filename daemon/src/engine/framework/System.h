@@ -42,6 +42,9 @@ NORETURN void Quit(Str::StringRef message);
 // Record a crash dump from a crash occuring in the NaCl VMs
 void NaclCrashDump(Util::RawBytes dump);
 
+// Get the path of a singleton socket
+std::string GetSingletonSocketPath();
+
 } // namespace Sys
 
 #endif // FRAMEWORK_SYSTEM_H_
