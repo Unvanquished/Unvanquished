@@ -30,8 +30,6 @@ bool CreateCrashDumpPath() {
     return success;
 }
 
-
-
 // Records a crash dump sent from the VM in minidump format. This is the same
 // format that Breakpad uses, but nacl minidump does not require Breakpad to work.
 void NaclCrashDump(Util::RawBytes dump) {
@@ -67,14 +65,14 @@ static std::string CrashServerPath() {
     return FS::Path::Build(FS::GetLibPath(), name);
 }
 
+static Cvar::Cvar<bool> enableBreakpad("enableBreakpad", "If enabled on startup, starts a process for recording crash dumps", 0, true);
 
 #ifdef _WIN32
 
 static std::unique_ptr<google_breakpad::ExceptionHandler> crashHandler;
 
 bool BreakpadInit() {
-    if (!CreateCrashDumpPath()) {
-        Log::Warn("Failed to create crash dump directory: %s", Win32StrError(GetLastError()));
+    if (!enableBreakpad.Get()) {
         return false;
     }
 
@@ -131,8 +129,7 @@ static bool CreateReportChannel(int& fdServer, int& fdClient) {
 }
 
 bool BreakpadInit() {
-    if (!CreateCrashDumpPath()) {
-        Log::Warn("Failed to create crash dump directory: %s", strerror(errno));
+    if (!enableBreakpad.Get()) {
         return false;
     }
 

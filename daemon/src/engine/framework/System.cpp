@@ -614,6 +614,7 @@ static void Init(int argc, char** argv)
 	Log::OpenLogFile();
 
     if (CreateCrashDumpPath()) {
+        EarlyCvar("enableBreakpad", cmdlineArgs);
         if (BreakpadInit()) {
             Log::Notice("Starting crash logging server");
         }
