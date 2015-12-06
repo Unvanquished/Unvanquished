@@ -69,11 +69,10 @@ typedef struct
 	int           cmdNum; // the next cmdNum the server is expecting
 	playerState_t ps; // complete information about the current player at this time
 
-	unsigned      numEntities; // all of the entities that need to be presented
-	int           parseEntitiesNum; // at the time of this snapshot
-
 	int           serverCommandNum; // execute all commands up to this before
 	// making the snapshot current
+
+	std::vector<entityState_t> entities;
 } clSnapshot_t;
 
 // Arnout: for double tapping
@@ -101,15 +100,7 @@ typedef struct
 	int p_realtime; // cls.realtime when packet was sent
 } outPacket_t;
 
-// the parseEntities array must be large enough to hold PACKET_BACKUP frames of
-// entities, so that when a delta compressed message arives from the server
-// it can be un-deltad from the original
-
-#ifdef USE_INCREASED_ENTITIES
-#define MAX_PARSE_ENTITIES ( MAX_GENTITIES * 2 )
-#else
 #define MAX_PARSE_ENTITIES 2048
-#endif
 
 extern int g_console_field_width;
 
@@ -131,8 +122,6 @@ typedef struct
 	bool     newSnapshots; // set on parse of any valid packet
 
 	char         mapname[ MAX_QPATH ]; // extracted from CS_SERVERINFO
-
-	int          parseEntitiesNum; // index (not anded off) into cl_parse_entities[]
 
 	int          mouseDx[ 2 ], mouseDy[ 2 ]; // added to by mouse events
 	int          mouseIndex;
@@ -167,8 +156,6 @@ typedef struct
 	clSnapshot_t  snapshots[ PACKET_BACKUP ];
 
 	entityState_t entityBaselines[ MAX_GENTITIES ]; // for delta compression when not in previous frame
-
-	entityState_t parseEntities[ MAX_PARSE_ENTITIES ];
 } clientActive_t;
 
 extern clientActive_t cl;

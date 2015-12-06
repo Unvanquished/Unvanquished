@@ -464,18 +464,6 @@ int MSG_ReadChar( msg_t *msg )
 	return c;
 }
 
-int MSG_LookaheadByte( msg_t *msg )
-{
-	const int bloc = Huff_getBloc();
-	const int readcount = msg->readcount;
-	const int bit = msg->bit;
-	int       c = MSG_ReadByte( msg );
-	Huff_setBloc( bloc );
-	msg->readcount = readcount;
-	msg->bit = bit;
-	return c;
-}
-
 int MSG_ReadByte( msg_t *msg )
 {
 	int c;
@@ -913,7 +901,6 @@ typedef struct
 	int  used;
 } netField_t;
 
-// using the stringizing operator to save typing...
 #define NETF( x ) # x,int((size_t)&( (entityState_t*)0 )->x)
 
 static netField_t entityStateFields[] =
@@ -1215,7 +1202,7 @@ Can go from either a baseline or a previous packet_entity
 */
 extern cvar_t *cl_shownet;
 
-void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, int number )
+void MSG_ReadDeltaEntity( msg_t *msg, const entityState_t *from, entityState_t *to, int number )
 {
 	int        i, lc;
 	int        numFields;

@@ -296,13 +296,9 @@ void CL_KeyMove( usercmd_t *cmd )
 	forward += movespeed * CL_KeyState( &kb[ KB_FORWARD ] );
 	forward -= movespeed * CL_KeyState( &kb[ KB_BACK ] );
 
-	// fretn - moved this to bg_pmove.c
-	//if (!(cl.snap.ps.persistant[PERS_HWEAPON_USE]))
-	//{
 	cmd->forwardmove = ClampChar( forward );
 	cmd->rightmove = ClampChar( side );
 	cmd->upmove = ClampChar( up );
-	//}
 
 	// Arnout: double tap
 	cmd->doubleTap = DT_NONE; // reset
@@ -579,16 +575,6 @@ void CL_MouseMove( usercmd_t *cmd )
 			mx = cl_sensitivity->value * ( mx + ( ( mx < 0 ) ? -power[ 0 ] : power[ 0 ] ) * cl_mouseAccelOffset->value );
 			my = cl_sensitivity->value * ( my + ( ( my < 0 ) ? -power[ 1 ] : power[ 1 ] ) * cl_mouseAccelOffset->value );
 
-			/*  NERVE - SMF - this has moved to CG_CalcFov to fix zoomed-in/out transition movement bug
-			        if ( cl.snap.ps.stats[STAT_ZOOMED_VIEW] ) {
-			                if(cl.snap.ps.weapon == WP_SNIPERRIFLE) {
-			                        accelSensitivity *= 0.1;
-			                }
-			                else if(cl.snap.ps.weapon == WP_SNOOPERSCOPE) {
-			                        accelSensitivity *= 0.2;
-			                }
-			        }
-			*/
 			if ( cl_showMouseRate->integer )
 			{
 				Com_Printf( "ratex: %f, ratey: %f, powx: %f, powy: %f", rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );

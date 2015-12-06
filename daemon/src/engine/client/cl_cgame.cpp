@@ -90,29 +90,6 @@ int CL_GetCurrentCmdNumber()
 }
 
 /*
-====================
-CL_GetCurrentSnapshotNumber
-====================
-*/
-void CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
-{
-	*snapshotNumber = cl.snap.messageNum;
-	*serverTime = cl.snap.serverTime;
-}
-
-/*
-==============
-CL_SetUserCmdValue
-==============
-*/
-void CL_SetUserCmdValue( int userCmdValue, int flags, float sensitivityScale )
-{
-	cl.cgameUserCmdValue = userCmdValue;
-	cl.cgameFlags = flags;
-	cl.cgameSensitivity = sensitivityScale;
-}
-
-/*
 =====================
 CL_ConfigstringModified
 =====================
@@ -318,24 +295,13 @@ bool CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 		return false;
 	}
 
-	// if the entities in the frame have fallen out of their
-	// circular buffer, we can't return it
-	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES )
-	{
-		return false;
-	}
-
 	// write the snapshot
 	snapshot->snapFlags = clSnap->snapFlags;
 	snapshot->ping = clSnap->ping;
 	snapshot->serverTime = clSnap->serverTime;
 	memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ) );
 	snapshot->ps = clSnap->ps;
-
-	snapshot->entities.reserve(clSnap->numEntities);
-	for (unsigned i = 0; i < clSnap->numEntities; i++) {
-		snapshot->entities.push_back(cl.parseEntities[( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ]);
-	}
+	snapshot->entities = clSnap->entities;
 
 	CL_FillServerCommands(snapshot->serverCommands, clc.lastExecutedServerCommand + 1, clSnap->serverCommandNum);
 	clc.lastExecutedServerCommand = clSnap->serverCommandNum;
@@ -662,36 +628,6 @@ static int LAN_ServerIsVisible( int source, int n )
 	}
 
 	return false;
-}
-
-/*
- * =======================
- * LAN_UpdateVisiblePings
- * =======================
- */
-bool LAN_UpdateVisiblePings( int source )
-{
-	return CL_UpdateVisiblePings_f( source );
-}
-
-/*
- * ====================
- * LAN_GetServerStatus
- * ====================
- */
-int LAN_GetServerStatus( const char *serverAddress, char *serverStatus, int maxLen )
-{
-	return CL_ServerStatus( serverAddress, serverStatus, maxLen );
-}
-
-/*
- * ====================
- * Key_KeynumToStringBuf
- * ====================
- */
-void Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
-{
-	Q_strncpyz( buf, Key_KeynumToString( keynum ), buflen );
 }
 
 /*
@@ -1259,7 +1195,8 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_GETCURRENTSNAPSHOTNUMBER:
 			IPC::HandleMsg<GetCurrentSnapshotNumberMsg>(channel, std::move(reader), [this] (int& number, int& serverTime) {
-				CL_GetCurrentSnapshotNumber(&number, &serverTime);
+				number = cl.snap.messageNum;
+				serverTime = cl.snap.serverTime;
 			});
 			break;
 
@@ -1283,7 +1220,9 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_SETUSERCMDVALUE:
 			IPC::HandleMsg<SetUserCmdValueMsg>(channel, std::move(reader), [this] (int stateValue, int flags, float scale) {
-				CL_SetUserCmdValue(stateValue, flags, scale);
+				cl.cgameUserCmdValue = stateValue;
+				cl.cgameFlags = flags;
+				cl.cgameSensitivity = scale;
 			});
 			break;
 
@@ -1541,10 +1480,8 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
-			IPC::HandleMsg<Key::KeyNumToStringMsg>(channel, std::move(reader), [this] (int keynum, int len, std::string& result) {
-				std::unique_ptr<char[]> buffer(new char[len]);
-				Key_KeynumToStringBuf(keynum, buffer.get(), len);
-				result.assign(buffer.get(), len);
+			IPC::HandleMsg<Key::KeyNumToStringMsg>(channel, std::move(reader), [this] (int keynum, std::string& result) {
+				result = Key_KeynumToString(keynum);
 			});
 			break;
 
@@ -1625,7 +1562,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_LAN_UPDATEVISIBLEPINGS:
 			IPC::HandleMsg<LAN::UpdateVisiblePingsMsg>(channel, std::move(reader), [this] (int source, bool& res) {
-				res = LAN_UpdateVisiblePings(source);
+				res = CL_UpdateVisiblePings_f(source);
 			});
 			break;
 
@@ -1638,14 +1575,14 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		case CG_LAN_SERVERSTATUS:
 			IPC::HandleMsg<LAN::ServerStatusMsg>(channel, std::move(reader), [this] (const std::string& serverAddress, int len, std::string& status, int& res) {
 				std::unique_ptr<char[]> buffer(new char[len]);
-				res = LAN_GetServerStatus(serverAddress.c_str(), buffer.get(), len);
+				res = CL_ServerStatus(serverAddress.c_str(), buffer.get(), len);
 				status.assign(buffer.get(), len);
 			});
 			break;
 
 		case CG_LAN_RESETSERVERSTATUS:
 			IPC::HandleMsg<LAN::ResetServerStatusMsg>(channel, std::move(reader), [this] {
-				LAN_GetServerStatus(nullptr, nullptr, 0);
+				CL_ServerStatus(nullptr, nullptr, 0);
 			});
 			break;
 

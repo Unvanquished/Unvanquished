@@ -699,7 +699,7 @@ std::vector<std::vector<int>> trap_Key_GetKeynumForBinds(int team, std::vector<s
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 {
 	std::string result;
-	VM::SendMsg<Key::KeyNumToStringMsg>(keynum, buflen, result);
+	VM::SendMsg<Key::KeyNumToStringMsg>(keynum, result);
 	Q_strncpyz(buf, result.c_str(), buflen);
 }
 
