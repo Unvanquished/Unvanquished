@@ -41,7 +41,7 @@ namespace Application {
 class ClientApplication : public Application {
     public:
         ClientApplication() {
-            #if defined(_WIN32) && defined(BUILD_TTYCLIENT)
+            #if defined(_WIN32) && defined(BUILD_TTY_CLIENT)
                 // The windows dedicated server and tty client must enable the
                 // curses interface because they have no other usable interface.
                 traits.useCurses = true;
@@ -49,7 +49,7 @@ class ClientApplication : public Application {
             #ifdef BUILD_CLIENT
                 traits.isClient = true;
             #endif
-            #ifdef BUILD_TTYCLIENT
+            #ifdef BUILD_TTY_CLIENT
                 traits.isTTYClient = true;
             #endif
         }
