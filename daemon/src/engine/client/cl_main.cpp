@@ -1023,8 +1023,8 @@ Called before parsing a gamestate
 */
 void CL_ClearState()
 {
-	//cl.~clientActive_t();
-	//new(&cl) clientActive_t{}; // Using {} instead of () to work around MSVC bug
+	cl.~clientActive_t();
+	new(&cl) clientActive_t{}; // Using {} instead of () to work around MSVC bug
 }
 
 /*
