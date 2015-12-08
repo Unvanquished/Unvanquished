@@ -738,9 +738,12 @@ void SV_FinalCommand( char *cmd, bool disconnect )
 					}
 				}
 
-				// force a snapshot to be sent
-				cl->nextSnapshotTime = -1;
-				SV_SendClientSnapshot( cl );
+				if (sv.gameClients != nullptr)
+				{
+					// force a snapshot to be sent
+					cl->nextSnapshotTime = -1;
+					SV_SendClientSnapshot( cl );
+				}
 			}
 		}
 	}
