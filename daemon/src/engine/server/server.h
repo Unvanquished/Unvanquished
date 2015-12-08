@@ -448,9 +448,6 @@ void SV_SendClientIdle( client_t *client );
 //
 int SV_NumForGentity( sharedEntity_t *ent );
 
-//#define SV_GentityNum( num ) ((sharedEntity_t *)((byte *)sv.gentities + sv.gentitySize*(num)))
-//#define SV_GameClientNum( num ) ((playerState_t *)((byte *)sv.gameClients + sv.gameClientSize*(num)))
-
 sharedEntity_t *SV_GentityNum( int num );
 playerState_t  *SV_GameClientNum( int num );
 

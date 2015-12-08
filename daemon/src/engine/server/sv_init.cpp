@@ -463,7 +463,7 @@ void SV_SpawnServer( const char *server )
 	// also print some status stuff
 	CL_MapLoading();
 
-	// clear collision map data     // (SA) NOTE: TODO: used in missionpack
+	// clear collision map data
 	CM_ClearMap();
 
 	// wipe the entire per-level structure

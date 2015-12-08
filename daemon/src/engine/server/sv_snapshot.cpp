@@ -659,8 +659,6 @@ For viewing through other player's eyes, clent can be something other than clien
 static void SV_BuildClientSnapshot( client_t *client )
 {
 	vec3_t                  org;
-
-//  clientSnapshot_t            *frame, *oldframe;
 	clientSnapshot_t        *frame;
 	snapshotEntityNumbers_t entityNumbers;
 	int                     i;
