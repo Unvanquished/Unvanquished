@@ -2452,12 +2452,12 @@ void CheckExitRules()
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
 	}
-	else if( g_emptyTeamsSkipMapTime.integer &&
+	else if ( g_emptyTeamsSkipMapTime.integer &&
 		( level.time - level.startTime ) / 60000 >=
 		g_emptyTeamsSkipMapTime.integer &&
 		level.team[ TEAM_ALIENS ].numClients == 0 && level.team[ TEAM_HUMANS ].numClients == 0 )
 	{
-		//nobody wins because the teams are empty after x amount of game time
+		// nobody wins because the teams are empty after x amount of game time
 		level.lastWin = TEAM_NONE;
 		trap_SendServerCommand( -1, "print \"Empty teams skip map time exceeded.\n\"" );
 		trap_SetConfigstring( CS_WINNER, "Stalemate" );
