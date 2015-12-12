@@ -53,7 +53,7 @@ function(CBSE target definition output)
         RESULT_VARIABLE RET)
     if (NOT RET EQUAL 0)
         message(FATAL_ERROR "Missing dependences for CBSE generation. Please ensure you have python ≥ 2, python-yaml, and python-jinja installed.
-                             Use pip -r install src/utils/cbse/requirements.txt to install")
+                             Use pip install -r src/utils/cbse/requirements.txt to install")
     endif()
     set(GENERATED_CBSE ${output}/backend/CBSEBackend.cpp
                        ${output}/backend/CBSEBackend.h
