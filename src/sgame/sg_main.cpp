@@ -2455,7 +2455,7 @@ void CheckExitRules()
 	else if ( g_emptyTeamsSkipMapTime.integer &&
 		( level.time - level.startTime ) / 60000 >=
 		g_emptyTeamsSkipMapTime.integer &&
-		level.team[ TEAM_ALIENS ].numClients == 0 && level.team[ TEAM_HUMANS ].numClients == 0 )
+		level.team[ TEAM_ALIENS ].numPlayers == 0 && level.team[ TEAM_HUMANS ].numPlayers == 0 )
 	{
 		// nobody wins because the teams are empty after x amount of game time
 		level.lastWin = TEAM_NONE;
