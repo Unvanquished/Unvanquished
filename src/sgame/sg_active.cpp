@@ -2273,47 +2273,6 @@ void G_RunClient( gentity_t *ent )
 }
 
 /*
-==================
-SpectatorClientEndFrame
-
-==================
-*/
-void SpectatorClientEndFrame( gentity_t *ent )
-{
-	gclient_t *cl;
-	int       clientNum;
-	int       score, ping;
-
-	// if we are doing a chase cam or a remote view, grab the latest info
-	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
-	{
-		clientNum = ent->client->sess.spectatorClient;
-
-		if ( clientNum >= 0 && clientNum < level.maxclients )
-		{
-			cl = &level.clients[ clientNum ];
-
-			if ( cl->pers.connected == CON_CONNECTED )
-			{
-				// Save
-				score = ent->client->ps.persistant[ PERS_SCORE ];
-				ping = ent->client->ps.ping;
-
-				// Copy
-				ent->client->ps = cl->ps;
-
-				// Restore
-				ent->client->ps.persistant[ PERS_SCORE ] = score;
-				ent->client->ps.ping = ping;
-
-				ent->client->ps.pm_flags |= PMF_FOLLOW;
-				ent->client->ps.pm_flags &= ~PMF_QUEUED;
-			}
-		}
-	}
-}
-
-/*
 ==============
 ClientEndFrame
 
@@ -2326,7 +2285,6 @@ void ClientEndFrame( gentity_t *ent )
 {
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		SpectatorClientEndFrame( ent );
 		return;
 	}
 
