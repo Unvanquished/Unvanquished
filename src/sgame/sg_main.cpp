@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "CBSE.h"
+#include "backend/CBSEBackend.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -2991,12 +2992,10 @@ void G_RunFrame( int levelTime )
 void G_PrepareEntityNetCode() {
 	// TODO: Allow ForEntities with empty template arguments.
 	gentity_t *oldEnt = &g_entities[0];
-	std::list<Entity*> specEntities;
 	// Prepare netcode for all non-specs first.
 	for (int i = 0; i < level.num_entities; i++, oldEnt++) {
 		if (oldEnt->entity) {
 			if (oldEnt->entity->Get<SpectatorClassComponent>()) {
-				specEntities.push_back(oldEnt->entity);
 				continue;
 			}
 			oldEnt->entity->PrepareNetCode();
@@ -3004,7 +3003,7 @@ void G_PrepareEntityNetCode() {
 	}
 
 	// Prepare netcode for specs
-	for (Entity* e : specEntities) {
-		e->PrepareNetCode();
-	}
+	ForEntities<SpectatorClassComponent>([&](Entity& entity, SpectatorClassComponent& spectatorComponent){
+		entity.PrepareNetCode();
+	});
 }

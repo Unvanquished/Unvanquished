@@ -7,29 +7,25 @@ SpectatorClassComponent::SpectatorClassComponent(Entity& entity, ClientComponent
 void SpectatorClassComponent::HandlePrepareNetCode() {
 	gclient_t* cl = entity.oldEnt->client;
 
-	if (cl && cl->sess.spectatorState == SPECTATOR_FOLLOW) {
-		int clientNum = cl->sess.spectatorClient;
-
-		if ( clientNum >= 0 && clientNum < level.maxclients )
-		{
-			gclient_t* other = &level.clients[ clientNum ];
-
-			if ( cl->pers.connected == CON_CONNECTED )
-			{
-				// Save
-				int score = cl->ps.persistant[ PERS_SCORE ];
-				int ping = cl->ps.ping;
-
-				// Copy
-				cl->ps = other->ps;
-
-				// Restore
-				cl->ps.persistant[ PERS_SCORE ] = score;
-				cl->ps.ping = ping;
-
-				cl->ps.pm_flags |= PMF_FOLLOW;
-				cl->ps.pm_flags &= ~PMF_QUEUED;
-			}
-		}
+	if (!cl
+		|| cl->sess.spectatorState != SPECTATOR_FOLLOW
+		|| cl->sess.spectatorClient < 0
+		|| cl->sess.spectatorClient >= level.maxclients
+		|| level.clients[cl->sess.spectatorClient].pers.connected != CON_CONNECTED) {
+		return;
 	}
+
+	// Save
+	int score = cl->ps.persistant[PERS_SCORE];
+	int ping = cl->ps.ping;
+
+	// Copy
+	cl->ps = level.clients[cl->sess.spectatorClient].ps;
+
+	// Restore
+	cl->ps.persistant[PERS_SCORE] = score;
+	cl->ps.ping = ping;
+
+	cl->ps.pm_flags |= PMF_FOLLOW;
+	cl->ps.pm_flags &= ~PMF_QUEUED;
 }
