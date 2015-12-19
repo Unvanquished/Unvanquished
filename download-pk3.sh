@@ -16,17 +16,16 @@ set -e
 export LANG=C
 
 # Version of Unvanquished for which this script is built
-VERSION=0.45
+VERSION=0.46
 
 # Download from here
 CDN_URL="http://cdn.unvanquished.net/$VERSION/pkg/"
-BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Assets/'
+BASE_URL="$CDN_URL"
 MIRROR_DOMAIN='dl.sourceforge.net'
 MIRROR_URL="http://%s.$MIRROR_DOMAIN/project/unvanquished/Assets/"
 
-MD5SUMS_BASE="md5sums$VERSION"
 MD5SUMS_CDN='md5sums'
-MD5SUMS="$MD5SUMS_BASE"
+MD5SUMS="$MD5SUMS_CDN"
 
 # Default destination directory
 case "$(uname -s)" in
@@ -51,7 +50,6 @@ while test -z "$DONE"; do
       echo "Options:"
       echo "  -v, --verify     Verify downloaded .pk3s"
       echo "  --source MIRROR  Download from MIRROR"
-      echo "  --cdn            Download from cdn.unvanquished.net"
       echo
       echo "Mirror URL examples (not real URLs!):"
       echo "  http://example.com/unvanquished/"
@@ -75,12 +73,6 @@ while test -z "$DONE"; do
       if echo "$BASE_URL" | grep -vq '[./]'; then
         BASE_URL="$(printf "$MIRROR_URL" "$1")"
       fi
-      MD5SUMS="$MD5SUMS_BASE"
-      ;;
-
-    --cdn)
-      shift
-      BASE_URL="$CDN_URL"
       MD5SUMS="$MD5SUMS_CDN"
       ;;
 

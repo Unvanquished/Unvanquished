@@ -70,6 +70,8 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 	int           oldnum, newnum;
 	int           from_num_entities;
 
+    MSG_WriteShort(msg, to->num_entities);
+
 	// generate the delta update
 	if ( !from )
 	{
@@ -657,8 +659,6 @@ For viewing through other player's eyes, clent can be something other than clien
 static void SV_BuildClientSnapshot( client_t *client )
 {
 	vec3_t                  org;
-
-//  clientSnapshot_t            *frame, *oldframe;
 	clientSnapshot_t        *frame;
 	snapshotEntityNumbers_t entityNumbers;
 	int                     i;
