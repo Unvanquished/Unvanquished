@@ -13,10 +13,10 @@ void SpectatorComponent::HandlePrepareNetCode() {
 		|| cl->sess.spectatorClient >= level.maxclients
 		|| level.clients[cl->sess.spectatorClient].pers.connected != CON_CONNECTED) {
 		return;
-		}
+	}
 
-		// Save
-		int score = cl->ps.persistant[PERS_SCORE];
+	// Save
+	int score = cl->ps.persistant[PERS_SCORE];
 	int ping = cl->ps.ping;
 
 	// Copy
