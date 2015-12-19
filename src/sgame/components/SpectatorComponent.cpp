@@ -1,10 +1,10 @@
-#include "SpectatorClassComponent.h"
+#include "SpectatorComponent.h"
 
-SpectatorClassComponent::SpectatorClassComponent(Entity& entity, ClientComponent& r_ClientComponent)
-	: SpectatorClassComponentBase(entity, r_ClientComponent)
+SpectatorComponent::SpectatorComponent(Entity& entity, ClientComponent& r_ClientComponent)
+	: SpectatorComponentBase(entity, r_ClientComponent)
 {}
 
-void SpectatorClassComponent::HandlePrepareNetCode() {
+void SpectatorComponent::HandlePrepareNetCode() {
 	gclient_t* cl = entity.oldEnt->client;
 
 	if (!cl
@@ -13,10 +13,10 @@ void SpectatorClassComponent::HandlePrepareNetCode() {
 		|| cl->sess.spectatorClient >= level.maxclients
 		|| level.clients[cl->sess.spectatorClient].pers.connected != CON_CONNECTED) {
 		return;
-	}
+		}
 
-	// Save
-	int score = cl->ps.persistant[PERS_SCORE];
+		// Save
+		int score = cl->ps.persistant[PERS_SCORE];
 	int ping = cl->ps.ping;
 
 	// Copy

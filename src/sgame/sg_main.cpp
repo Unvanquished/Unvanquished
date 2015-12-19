@@ -2995,7 +2995,7 @@ void G_PrepareEntityNetCode() {
 	// Prepare netcode for all non-specs first.
 	for (int i = 0; i < level.num_entities; i++, oldEnt++) {
 		if (oldEnt->entity) {
-			if (oldEnt->entity->Get<SpectatorClassComponent>()) {
+			if (oldEnt->entity->Get<SpectatorComponent>()) {
 				continue;
 			}
 			oldEnt->entity->PrepareNetCode();
@@ -3003,7 +3003,7 @@ void G_PrepareEntityNetCode() {
 	}
 
 	// Prepare netcode for specs
-	ForEntities<SpectatorClassComponent>([&](Entity& entity, SpectatorClassComponent& spectatorComponent){
+	ForEntities<SpectatorComponent>([&](Entity& entity, SpectatorComponent& spectatorComponent){
 		entity.PrepareNetCode();
 	});
 }
