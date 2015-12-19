@@ -1170,6 +1170,102 @@ static bool PM_CheckWallJump()
 	return true;
 }
 
+/*
+=============
+PM_CheckWallRun
+=============
+*/
+static bool PM_CheckWallRun()
+{
+	vec3_t  dir, movedir, point;
+	trace_t trace;
+
+	static const vec3_t  refNormal = { 0.0f, 0.0f, 1.0f };
+
+	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLRUNNER ) )
+	{
+		return false;
+	}
+
+	ProjectPointOnPlane( movedir, pml.forward, refNormal );
+	VectorNormalize( movedir );
+
+	if ( pm->cmd.forwardmove < 0 )
+	{
+		VectorNegate( movedir, movedir );
+	}
+
+	//allow strafe transitions
+	if ( pm->cmd.rightmove )
+	{
+		ProjectPointOnPlane( movedir, pml.right, refNormal );
+		VectorNormalize( movedir );
+
+		if ( pm->cmd.rightmove < 0 )
+		{
+			VectorNegate( movedir, movedir );
+		}
+	}
+
+	// trace into direction we are moving
+	VectorMA( pm->ps->origin, 0.25f, movedir, point );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
+	           pm->tracemask, 0 );
+
+	if ( trace.fraction < 1.0f &&
+	     !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
+	     trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
+	{
+		VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
+	}
+	else
+	{
+		return false;
+	}
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
+	{
+		return false; // don't allow jump until all buttons are up
+	}
+
+	if ( pm->cmd.upmove < 10 )
+	{
+		// not holding jump
+		return false;
+	}
+
+	if ( pm->ps->pm_flags & PMF_TIME_WALLJUMP )
+	{
+		return false;
+	}
+
+	// must wait for jump to be released
+	if ( pm->ps->pm_flags & PMF_JUMP_HELD &&
+	     pm->ps->grapplePoint[ 2 ] == 1.0f )
+	{
+		return false;
+	}
+
+	pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
+	pm->ps->pm_time = 200;
+
+	pml.groundPlane = false; // jumping away
+	pml.walking = false;
+	pm->ps->pm_flags |= PMF_JUMP_HELD;
+
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+	float NdotV = DotProduct( pm->ps->velocity, pm->ps->grapplePoint );
+	VectorScale( pm->ps->grapplePoint, 2 * NdotV, dir );
+	VectorSubtract( dir, pm->ps->velocity, pm->ps->velocity );
+	VectorNegate( pm->ps->velocity, pm->ps->velocity );
+	pm->ps->velocity[ 2 ] += BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+
+	PM_AddEvent( EV_JUMP );
+	PM_PlayJumpingAnimation();
+
+	return true;
+}
+
 /**
  * @brief PM_CheckJetpack
  * @return true if and only if thrust was applied
@@ -1504,7 +1600,8 @@ static bool PM_CheckJump()
 
 	// don't allow walljump for a short while after jumping from the ground
 	// TODO: There was an issue about this potentially having side effects.
-	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER )
+		|| BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS], SCA_WALLRUNNER ) )
 	{
 		pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 		pm->ps->pm_time = 200;
@@ -1755,6 +1852,7 @@ static void PM_AirMove()
 	usercmd_t cmd;
 
 	PM_CheckWallJump();
+	PM_CheckWallRun();
 	PM_CheckJetpack();
 
 	PM_Friction();

@@ -1131,6 +1131,10 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		{
 			ca->abilities |= SCA_WALLJUMPER;
 		}
+		else if ( !Q_stricmp( token, "wallRunner" ) )
+		{
+			ca->abilities |= SCA_WALLRUNNER;
+		}
 		else if ( !Q_stricmp( token, "buildDistance" ) )
 		{
 			PARSE(text, token);
