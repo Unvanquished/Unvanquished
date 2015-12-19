@@ -18,13 +18,7 @@ void HealthComponent::HandlePrepareNetCode() {
 	gclient_t *client = entity.oldEnt->client;
 
 	if (client) {
-		// if we are doing a chase cam or a remote view, grab the latest info
-		if (client->sess.spectatorState == SPECTATOR_FOLLOW) {
-			gentity_t *otherEnt = &g_entities[ entity.oldEnt->client->sess.spectatorClient ];
-			const HealthComponent *otherComp = otherEnt->entity->Get<HealthComponent>();
-			maxHealth = otherComp->maxHealth;
-			transmittedHealth = Math::Clamp((int)std::ceil(otherComp->health), -999, 999);
-		} else if (client->ps.stats[STAT_HEALTH] != transmittedHealth) {
+		if (client->ps.stats[STAT_HEALTH] != transmittedHealth) {
 			client->pers.infoChangeTime = level.time;
 		}
 		client->ps.stats[STAT_HEALTH] = transmittedHealth;
