@@ -43,7 +43,7 @@ Maryland 20850 USA.
 #include "framework/CommonVMServices.h"
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
-#include "framework/System.h"
+#include "framework/CrashDump.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
