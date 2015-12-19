@@ -1179,10 +1179,18 @@ static bool PM_CheckWallRun()
 {
 	vec3_t  dir, movedir, point;
 	trace_t trace;
+	int cost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
 
 	static const vec3_t  refNormal = { 0.0f, 0.0f, 1.0f };
 
+	// Make sure we can wall run
 	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLRUNNER ) )
+	{
+		return false;
+	}
+
+	// not enough stamina
+	if ( pm->ps->stats[ STAT_STAMINA ] < cost )
 	{
 		return false;
 	}
@@ -1259,6 +1267,7 @@ static bool PM_CheckWallRun()
 	VectorSubtract( dir, pm->ps->velocity, pm->ps->velocity );
 	VectorNegate( pm->ps->velocity, pm->ps->velocity );
 	pm->ps->velocity[ 2 ] += BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+	pm->ps->stats[ STAT_STAMINA ] -= cost;
 
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();
