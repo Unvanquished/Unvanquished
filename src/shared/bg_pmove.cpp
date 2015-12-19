@@ -282,6 +282,11 @@ static void PM_Friction()
 				float stopSpeed = BG_Class( pm->ps->stats[ STAT_CLASS ] )->stopSpeed;
 				float friction = BG_Class( pm->ps->stats[ STAT_CLASS ] )->friction;
 
+				if ( pm->ps->stats[ STAT_STATE ] & SS_SLIDING )
+				{
+					friction *= HUMAN_SLIDE_FRICTION_MODIFIER;
+				}
+
 				control = speed < stopSpeed ? stopSpeed : speed;
 				drop += control * friction * pml.frametime;
 			}
@@ -1965,6 +1970,19 @@ static void PM_WalkMove()
 		}
 
 		return;
+	}
+
+	// Slide
+	if ( pm->cmd.upmove < 0 && VectorLength(pm->ps->velocity) > HUMAN_SLIDE_THRESHOLD )
+	{
+		pm->ps->stats[ STAT_STATE ] |= SS_SLIDING;
+		PM_SlideMove( false );
+		PM_Friction();
+		return;
+	}
+	else
+	{
+		pm->ps->stats[ STAT_STATE ] &= ~SS_SLIDING;
 	}
 
 	// if PM_Land didn't stop the jetpack (e.g. to allow for a jump) but we didn't get away
