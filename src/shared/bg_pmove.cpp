@@ -1181,7 +1181,7 @@ PM_CheckWallRun
 =============
 */
 static bool PM_CheckWallRun()
-{                        
+{
 	int cost;
 	float jumpMag;
 	Vec3 forward, origin, velocity, normal;
@@ -1201,10 +1201,6 @@ static bool PM_CheckWallRun()
 		return false; // not holding jump
 
 	if ( pm->ps->pm_flags & PMF_TIME_WALLJUMP )
-		return false;
-
-	// must wait for jump to be released
-	if ( pm->ps->pm_flags & PMF_JUMP_HELD && pm->ps->grapplePoint[ 2 ] == 1.0f )
 		return false;
 
 	if ( pm->ps->stats[ STAT_STAMINA ] < cost )
@@ -1239,7 +1235,7 @@ static bool PM_CheckWallRun()
 	normal = Vec3::Load( trace.plane.normal );
 	velocity = Vec3::Load( pm->ps->velocity );
 
-	velocity += Math::Normalize( ( normal + Vec3(0,0,1) ) ) * jumpMag;
+	velocity += Math::Normalize( normal + Vec3( 0, 0, 0.9 ) ) * jumpMag;
 
 	velocity.Store( pm->ps->velocity );
 	PM_AddEvent( EV_JUMP );
@@ -1538,12 +1534,6 @@ static bool PM_CheckJump()
 
 	// can't jump whilst grabbed
 	if ( pm->ps->pm_type == PM_GRABBED )
-	{
-		return false;
-	}
-
-	// must wait for jump to be released
-	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
 	{
 		return false;
 	}
