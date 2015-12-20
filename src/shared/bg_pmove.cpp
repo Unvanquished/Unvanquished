@@ -282,6 +282,11 @@ static void PM_Friction()
 				float stopSpeed = BG_Class( pm->ps->stats[ STAT_CLASS ] )->stopSpeed;
 				float friction = BG_Class( pm->ps->stats[ STAT_CLASS ] )->friction;
 
+				if ( pm->ps->stats[ STAT_STATE ] & SS_SLIDING )
+				{
+					friction *= HUMAN_SLIDE_FRICTION_MODIFIER;
+				}
+
 				control = speed < stopSpeed ? stopSpeed : speed;
 				drop += control * friction * pml.frametime;
 			}
@@ -2174,6 +2179,21 @@ static void PM_WalkMove()
 		return;
 	}
 
+	// Slide
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_SLIDER )
+		&& pm->cmd.upmove < 0
+		&& VectorLength(pm->ps->velocity) > HUMAN_SLIDE_THRESHOLD )
+	{
+		pm->ps->stats[ STAT_STATE ] |= SS_SLIDING;
+		PM_StepSlideMove( false, true );
+		PM_Friction();
+		return;
+	}
+	else
+	{
+		pm->ps->stats[ STAT_STATE ] &= ~SS_SLIDING;
+	}
+
 	// if PM_Land didn't stop the jetpack (e.g. to allow for a jump) but we didn't get away
 	// from the ground, stop it now
 	PM_LandJetpack( true );
@@ -3519,10 +3539,11 @@ static void PM_Footsteps()
 		return;
 	}
 
-	// if not trying to move
-	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove )
+	// if not trying to move or sliding
+	if ( pm->ps->stats[ STAT_STATE ] & SS_SLIDING ||
+	   ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) )
 	{
-		if ( pm->xyspeed < 5 )
+		if ( pm->xyspeed < 5 || pm->ps->stats[ STAT_STATE ] & SS_SLIDING )
 		{
 			pm->ps->bobCycle = 0; // start at beginning of cycle again
 
