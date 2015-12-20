@@ -3337,10 +3337,11 @@ static void PM_Footsteps()
 		return;
 	}
 
-	// if not trying to move
-	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove )
+	// if not trying to move or sliding
+	if ( pm->ps->stats[ STAT_STATE ] & SS_SLIDING ||
+	   ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) )
 	{
-		if ( pm->xyspeed < 5 )
+		if ( pm->xyspeed < 5 || pm->ps->stats[ STAT_STATE ] & SS_SLIDING )
 		{
 			pm->ps->bobCycle = 0; // start at beginning of cycle again
 
