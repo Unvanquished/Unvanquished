@@ -1234,7 +1234,7 @@ static bool PM_CheckWallRun()
 	normal = Vec3::Load( trace.plane.normal );
 	velocity = Vec3::Load( pm->ps->velocity );
 
-	velocity += Math::Normalize( ( normal + Vec3(0,0,1) ) ) * jumpMag;
+	velocity += Math::Normalize( normal + Vec3( 0, 0, 0.9 ) ) * jumpMag;
 
 	velocity.Store( pm->ps->velocity );
 	PM_AddEvent( EV_JUMP );
