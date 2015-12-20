@@ -249,7 +249,7 @@ typedef enum
 #define SCA_ALIENSENSE      0x00000010
 #define SCA_CANUSELADDERS   0x00000020
 #define SCA_WALLJUMPER      0x00000040
-#define SCA_SLIDING         0x00000100
+#define SCA_SLIDER          0x00000100
 
 // STAT_STATE fields. 16 bit available
 #define SS_WALLCLIMBING     BIT(0)

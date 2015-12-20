@@ -1973,10 +1973,12 @@ static void PM_WalkMove()
 	}
 
 	// Slide
-	if ( pm->cmd.upmove < 0 && VectorLength(pm->ps->velocity) > HUMAN_SLIDE_THRESHOLD )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_SLIDER )
+		&& pm->cmd.upmove < 0
+		&& VectorLength(pm->ps->velocity) > HUMAN_SLIDE_THRESHOLD )
 	{
 		pm->ps->stats[ STAT_STATE ] |= SS_SLIDING;
-		PM_SlideMove( false );
+		PM_StepSlideMove( false, true );
 		PM_Friction();
 		return;
 	}
