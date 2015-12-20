@@ -1181,82 +1181,50 @@ PM_CheckWallRun
 =============
 */
 static bool PM_CheckWallRun()
-{
-	vec3_t  dir, movedir, point;
+{                        
+	int cost;
+	float jumpMag;
+	Vec3 forward, origin, velocity, normal;
+	vec3_t trace_end;
 	trace_t trace;
-	int cost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
 
-	static const vec3_t  refNormal = { 0.0f, 0.0f, 1.0f };
+	cost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	jumpMag = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
 
-	// Make sure we can wall run
 	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLRUNNER ) )
-	{
 		return false;
-	}
 
-	// not enough stamina
-	if ( pm->ps->stats[ STAT_STAMINA ] < cost )
-	{
-		return false;
-	}
-
-	ProjectPointOnPlane( movedir, pml.forward, refNormal );
-	VectorNormalize( movedir );
-
-	if ( pm->cmd.forwardmove < 0 )
-	{
-		VectorNegate( movedir, movedir );
-	}
-
-	//allow strafe transitions
-	if ( pm->cmd.rightmove )
-	{
-		ProjectPointOnPlane( movedir, pml.right, refNormal );
-		VectorNormalize( movedir );
-
-		if ( pm->cmd.rightmove < 0 )
-		{
-			VectorNegate( movedir, movedir );
-		}
-	}
-
-	// trace into direction we are moving
-	VectorMA( pm->ps->origin, 0.25f, movedir, point );
-	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
-	           pm->tracemask, 0 );
-
-	if ( trace.fraction < 1.0f &&
-	     !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
-	     trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
-	{
-		VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
-	}
-	else
-	{
-		return false;
-	}
 	if ( pm->ps->pm_flags & PMF_RESPAWNED )
-	{
 		return false; // don't allow jump until all buttons are up
-	}
 
 	if ( pm->cmd.upmove < 10 )
-	{
-		// not holding jump
-		return false;
-	}
+		return false; // not holding jump
 
 	if ( pm->ps->pm_flags & PMF_TIME_WALLJUMP )
-	{
 		return false;
-	}
 
 	// must wait for jump to be released
-	if ( pm->ps->pm_flags & PMF_JUMP_HELD &&
-	     pm->ps->grapplePoint[ 2 ] == 1.0f )
-	{
+	if ( pm->ps->pm_flags & PMF_JUMP_HELD && pm->ps->grapplePoint[ 2 ] == 1.0f )
 		return false;
-	}
+
+	if ( pm->ps->stats[ STAT_STAMINA ] < cost )
+		return false;
+
+	origin = Vec3::Load( pm->ps->origin );
+	forward = Vec3::Load( pml.forward );
+
+	( origin + forward * 32 ).Store( trace_end );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, trace_end,
+	           pm->ps->clientNum, pm->tracemask, 0);
+
+	if ( trace.fraction == 1.0f )
+		return false;
+
+	if ( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) )
+		return false;
+
+	if ( trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
+		return false;
 
 	pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 	pm->ps->pm_time = 200;
@@ -1266,14 +1234,14 @@ static bool PM_CheckWallRun()
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-
-	float NdotV = DotProduct( pm->ps->velocity, pm->ps->grapplePoint );
-	VectorScale( pm->ps->grapplePoint, 2 * NdotV, dir );
-	VectorSubtract( dir, pm->ps->velocity, pm->ps->velocity );
-	VectorNegate( pm->ps->velocity, pm->ps->velocity );
-	pm->ps->velocity[ 2 ] += BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
 	pm->ps->stats[ STAT_STAMINA ] -= cost;
 
+	normal = Vec3::Load( trace.plane.normal );
+	velocity = Vec3::Load( pm->ps->velocity );
+
+	velocity += Math::Normalize( ( normal + Vec3(0,0,1) ) ) * jumpMag;
+
+	velocity.Store( pm->ps->velocity );
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();
 
