@@ -1505,7 +1505,7 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 			params.oldEnt = ent;
 			params.Client_clientData = client;
 			ent->entity = new SpectatorEntity(params);
-			return;
+			break;
 
 		case PCL_ALIEN_BUILDER0: {
 			CLIENT_ENTITY_CREATE(GrangerEntity);
