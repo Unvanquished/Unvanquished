@@ -101,7 +101,7 @@ struct gentity_s
 
 	// New style entity
 	Entity* entity;
-	
+
 	struct gclient_s *client; // nullptr if not a client
 
 	bool     inuse;
@@ -368,11 +368,6 @@ struct gentity_s
 	bool    turretSafeMode;
 	int         turretPrepareTime; // when the turret can start locking on and/or firing
 	int         turretLockonTime;  // when the turret can start firing
-
-	// spiker
-	int         spikerRestUntil;
-	float       spikerLastScoring;
-	bool    spikerLastSensing;
 
 	vec4_t      animation; // animated map objects
 
