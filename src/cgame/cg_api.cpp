@@ -271,6 +271,11 @@ bool trap_GetNews( bool force )
 	return res;
 }
 
+void trap_CrashDump(Util::RawBytes dump)
+{
+    VM::SendMsg<CrashDumpMsg>(dump);
+}
+
 // All Sounds
 
 void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )

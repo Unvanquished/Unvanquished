@@ -151,6 +151,8 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/ConsoleField.h
     ${ENGINE_DIR}/framework/ConsoleHistory.cpp
     ${ENGINE_DIR}/framework/ConsoleHistory.h
+    ${ENGINE_DIR}/framework/CrashDump.h
+    ${ENGINE_DIR}/framework/CrashDump.cpp
     ${ENGINE_DIR}/framework/CvarSystem.cpp
     ${ENGINE_DIR}/framework/CvarSystem.h
     ${ENGINE_DIR}/framework/LogSystem.cpp

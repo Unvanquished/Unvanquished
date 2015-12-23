@@ -39,6 +39,9 @@ namespace Sys {
 // Cleanly exit the engine, shutting down all subsystems.
 NORETURN void Quit(Str::StringRef message);
 
+// Get the path of a singleton socket
+std::string GetSingletonSocketPath();
+
 } // namespace Sys
 
 #endif // FRAMEWORK_SYSTEM_H_

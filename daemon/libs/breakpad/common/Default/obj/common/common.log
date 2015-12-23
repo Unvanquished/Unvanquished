@@ -1,0 +1,95 @@
+﻿Build started 9/10/2015 11:18:23 PM.
+     1>Project "C:\srcs\breakpad\src\common\common.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I.. /Zi /nologo /W1 /WX- /O2 /Oy- /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Default\obj\common\\" /Fd"Default\obj\common\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt dwarf\bytereader.cc dwarf_cu_to_module.cc dwarf_line_to_module.cc linux\dump_symbols.cc linux\elf_core_dump.cc linux\elf_symbols_to_module.cc linux\elfutils.cc linux\file_id.cc linux\google_crashdump_uploader.cc linux\guid_creator.cc linux\http_upload.cc linux\libcurl_wrapper.cc linux\linux_libc_support.cc linux\memory_mapped_file.cc linux\safe_readlink.cc linux\synth_elf.cc mac\arch_utilities.cc mac\bootstrap_compat.cc mac\file_id.cc mac\macho_id.cc mac\macho_reader.cc mac\macho_utilities.cc mac\macho_walker.cc mac\string_utilities.cc md5.cc solaris\dump_symbols.cc solaris\file_id.cc solaris\guid_creator.cc stabs_reader.cc stabs_to_module.cc string_conversion.cc windows\dia_util.cc windows\http_upload.cc windows\omap.cc windows\pdb_source_line_writer.cc
+         bytereader.cc
+         dwarf_cu_to_module.cc
+     1>dwarf_cu_to_module.cc(43): fatal error C1083: Cannot open include file: 'cxxabi.h': No such file or directory
+         dwarf_line_to_module.cc
+         dump_symbols.cc
+     1>linux\dump_symbols.cc(38): fatal error C1083: Cannot open include file: 'elf.h': No such file or directory
+         elf_core_dump.cc
+     1>C:\srcs\breakpad\src\common/linux/elf_core_dump.h(36): fatal error C1083: Cannot open include file: 'elf.h': No such file or directory
+         elf_symbols_to_module.cc
+     1>linux\elf_symbols_to_module.cc(35): fatal error C1083: Cannot open include file: 'cxxabi.h': No such file or directory
+         elfutils.cc
+     1>C:\srcs\breakpad\src\common/linux/elfutils.h(36): fatal error C1083: Cannot open include file: 'elf.h': No such file or directory
+         file_id.cc
+     1>linux\file_id.cc(37): fatal error C1083: Cannot open include file: 'arpa/inet.h': No such file or directory
+         google_crashdump_uploader.cc
+     1>C:\srcs\breakpad\src\third_party/curl/curlbuild.h(153): fatal error C1083: Cannot open include file: 'sys/socket.h': No such file or directory
+         guid_creator.cc
+     1>linux\guid_creator.cc(33): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         http_upload.cc
+     1>linux\http_upload.cc(33): fatal error C1083: Cannot open include file: 'dlfcn.h': No such file or directory
+         libcurl_wrapper.cc
+     1>linux\libcurl_wrapper.cc(30): fatal error C1083: Cannot open include file: 'dlfcn.h': No such file or directory
+         linux_libc_support.cc
+         memory_mapped_file.cc
+     1>linux\memory_mapped_file.cc(36): fatal error C1083: Cannot open include file: 'sys/mman.h': No such file or directory
+         safe_readlink.cc
+     1>linux\safe_readlink.cc(35): fatal error C1083: Cannot open include file: 'third_party/lss/linux_syscall_support.h': No such file or directory
+         synth_elf.cc
+     1>linux\synth_elf.cc(4): fatal error C1083: Cannot open include file: 'elf.h': No such file or directory
+         arch_utilities.cc
+     1>C:\srcs\breakpad\src\common/mac/arch_utilities.h(35): fatal error C1083: Cannot open include file: 'mach-o/arch.h': No such file or directory
+         bootstrap_compat.cc
+     1>C:\srcs\breakpad\src\common/mac/bootstrap_compat.h(33): fatal error C1083: Cannot open include file: 'servers/bootstrap.h': No such file or directory
+         file_id.cc
+     1>mac\file_id.cc(38): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
+         macho_id.cc
+     1>mac\macho_id.cc(38): fatal error C1083: Cannot open include file: 'mach-o/loader.h': No such file or directory
+         Generating Code...
+         Compiling...
+         macho_reader.cc
+     1>C:\srcs\breakpad\src\common/mac/macho_reader.h(39): fatal error C1083: Cannot open include file: 'mach-o/loader.h': No such file or directory
+         macho_utilities.cc
+     1>C:\srcs\breakpad\src\common/mac/byteswap.h(39): fatal error C1083: Cannot open include file: 'libkern/OSByteOrder.h': No such file or directory
+         macho_walker.cc
+     1>mac\macho_walker.cc(39): fatal error C1083: Cannot open include file: 'mach-o/arch.h': No such file or directory
+         string_utilities.cc
+     1>C:\srcs\breakpad\src\common/mac/string_utilities.h(35): fatal error C1083: Cannot open include file: 'CoreFoundation/CoreFoundation.h': No such file or directory
+         md5.cc
+         dump_symbols.cc
+     1>solaris\dump_symbols.cc(32): fatal error C1083: Cannot open include file: 'demangle.h': No such file or directory
+         file_id.cc
+     1>solaris\file_id.cc(36): fatal error C1083: Cannot open include file: 'elf.h': No such file or directory
+         guid_creator.cc
+     1>solaris\guid_creator.cc(37): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
+         stabs_reader.cc
+     1>stabs_reader.cc(37): fatal error C1083: Cannot open include file: 'stab.h': No such file or directory
+         stabs_to_module.cc
+     1>stabs_to_module.cc(35): fatal error C1083: Cannot open include file: 'cxxabi.h': No such file or directory
+         string_conversion.cc
+         dia_util.cc
+     1>C:\srcs\breakpad\src\common/windows/dia_util.h(35): fatal error C1083: Cannot open include file: 'dia2.h': No such file or directory
+         http_upload.cc
+     1>windows\http_upload.cc(86): error C2440: '=' : cannot convert from 'wchar_t [16]' to 'LPSTR'
+                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+     1>windows\http_upload.cc(88): error C2440: '=' : cannot convert from 'wchar_t [256]' to 'LPSTR'
+                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+     1>windows\http_upload.cc(90): error C2440: '=' : cannot convert from 'wchar_t [256]' to 'LPSTR'
+                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+     1>windows\http_upload.cc(93): error C2664: 'BOOL InternetCrackUrlA(LPCSTR,DWORD,DWORD,LPURL_COMPONENTSA)' : cannot convert argument 1 from 'const wchar_t *' to 'LPCSTR'
+                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+     1>windows\http_upload.cc(107): error C2664: 'HINTERNET InternetOpenA(LPCSTR,DWORD,LPCSTR,LPCSTR,DWORD)' : cannot convert argument 1 from 'const wchar_t [23]' to 'LPCSTR'
+                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+     1>windows\http_upload.cc(107): error C2512: 'google_breakpad::HTTPUpload::AutoInternetHandle' : no appropriate default constructor available
+     1>windows\http_upload.cc(119): error C2664: 'HINTERNET InternetConnectA(HINTERNET,LPCSTR,INTERNET_PORT,LPCSTR,LPCSTR,DWORD,DWORD,DWORD_PTR)' : cannot convert argument 2 from 'wchar_t [256]' to 'LPCSTR'
+                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+     1>windows\http_upload.cc(119): error C2512: 'google_breakpad::HTTPUpload::AutoInternetHandle' : no appropriate default constructor available
+     1>windows\http_upload.cc(133): error C2664: 'HINTERNET HttpOpenRequestA(HINTERNET,LPCSTR,LPCSTR,LPCSTR,LPCSTR,LPCSTR *,DWORD,DWORD_PTR)' : cannot convert argument 2 from 'const wchar_t [5]' to 'LPCSTR'
+                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+     1>windows\http_upload.cc(133): error C2512: 'google_breakpad::HTTPUpload::AutoInternetHandle' : no appropriate default constructor available
+     1>windows\http_upload.cc(143): error C2664: 'BOOL HttpAddRequestHeadersA(HINTERNET,LPCSTR,DWORD,DWORD)' : cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+         omap.cc
+     1>C:\srcs\breakpad\src\common/windows/omap_internal.h(36): fatal error C1083: Cannot open include file: 'dia2.h': No such file or directory
+         pdb_source_line_writer.cc
+     1>C:\srcs\breakpad\src\common/windows/pdb_source_line_writer.h(36): fatal error C1083: Cannot open include file: 'atlcomcli.h': No such file or directory
+         Generating Code...
+     1>Done Building Project "C:\srcs\breakpad\src\common\common.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:03.76
