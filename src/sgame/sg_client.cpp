@@ -1501,10 +1501,7 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 		//   - Call assignment operators on the new components to transfer state from old entity.
 
 		case PCL_NONE:
-			SpectatorEntity::Params params;
-			params.oldEnt = ent;
-			params.Client_clientData = client;
-			ent->entity = new SpectatorEntity(params);
+			CLIENT_ENTITY_CREATE(SpectatorEntity);
 			break;
 
 		case PCL_ALIEN_BUILDER0: {

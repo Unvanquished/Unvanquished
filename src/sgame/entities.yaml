@@ -118,6 +118,7 @@ components:
             - PrepareNetCode
         requires:
             - Client
+            - Health
 
     AlienClass:
         requires:
