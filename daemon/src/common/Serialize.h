@@ -415,6 +415,21 @@ namespace Util {
 		}
 	};
 
+    template<> struct SerializeTraits <RawBytes> {
+        static void Write(Writer& stream, RawBytes value)
+        {
+            stream.WriteSize(value.size);
+            stream.WriteData(value.data, value.size);
+        }
+        static RawBytes Read(Reader& stream)
+        {
+            size_t size = stream.ReadSize<uint8_t>();
+            uint8_t* data = new uint8_t[size];
+            stream.ReadData(data, size);
+            return{ data, size };
+        }
+    };
+
 } // namespace Util
 
 #endif // COMMON_SERIALIZATION_H_
