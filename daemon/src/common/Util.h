@@ -159,6 +159,11 @@ private:
 	uninitialized& operator=(uninitialized&&) = delete;
 };
 
+struct RawBytes {
+    uint8_t* data;
+    size_t size;
+};
+
 } // namespace Util
 
 #endif // COMMON_UTIL_H_

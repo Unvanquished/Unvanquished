@@ -286,4 +286,5 @@ void            trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocit
 void            trap_S_SetReverb( int slotNum, const char* presetName, float ratio );
 void            trap_S_BeginRegistration();
 void            trap_S_EndRegistration();
+void            trap_CrashDump(Util::RawBytes dump);
 #endif
