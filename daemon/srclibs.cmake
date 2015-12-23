@@ -197,3 +197,55 @@ set(ZLIBLIST
     ${LIB_DIR}/zlib/zutil.c
     ${LIB_DIR}/zlib/zutil.h
 )
+
+if (WIN32)
+    set(BREAKPAD_COMMON_LIST
+        ${LIB_DIR}/breakpad/src/common/windows/guid_string.cc
+        ${LIB_DIR}/breakpad/src/common/windows/guid_string.h
+        ${LIB_DIR}/breakpad/src/common/windows/http_upload.cc
+        ${LIB_DIR}/breakpad/src/common/windows/http_upload.h
+        ${LIB_DIR}/breakpad/src/common/windows/string_utils.cc
+    )
+    set(BREAKPAD_CRASHGENERATIONSERVER_LIST
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/client_info.cc
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/crash_generation_server.cc
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/minidump_generator.cc
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/client_info.h
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/crash_generation_client.h
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/crash_generation_server.h
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/minidump_generator.h
+    )
+    set(BREAKPAD_CRASHGENERATIONCLIENT_LIST
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/crash_generation_client.h
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/crash_generation_client.cc
+        ${LIB_DIR}/breakpad/src/client/windows/crash_generation/crash_generation_server.h
+    )
+    set(BREAKPAD_EXCEPTIONHANDLER_LIST
+        ${LIB_DIR}/breakpad/src/client/windows/handler/exception_handler.cc
+        ${LIB_DIR}/breakpad/src/client/windows/handler/exception_handler.h
+    )
+elseif (LINUX)
+    set(BREAKPAD_LIST
+        ${LIB_DIR}/breakpad/src/client/linux/crash_generation/crash_generation_client.cc
+        ${LIB_DIR}/breakpad/src/client/linux/crash_generation/crash_generation_server.cc
+        ${LIB_DIR}/breakpad/src/client/linux/dump_writer_common/thread_info.cc
+        ${LIB_DIR}/breakpad/src/client/linux/dump_writer_common/ucontext_reader.cc
+        ${LIB_DIR}/breakpad/src/client/linux/handler/exception_handler.cc
+        ${LIB_DIR}/breakpad/src/client/linux/handler/minidump_descriptor.cc
+        ${LIB_DIR}/breakpad/src/client/linux/log/log.cc
+        ${LIB_DIR}/breakpad/src/client/linux/microdump_writer/microdump_writer.cc
+        ${LIB_DIR}/breakpad/src/client/linux/minidump_writer/linux_dumper.cc
+        ${LIB_DIR}/breakpad/src/client/linux/minidump_writer/linux_ptrace_dumper.cc
+        ${LIB_DIR}/breakpad/src/client/linux/minidump_writer/minidump_writer.cc
+        ${LIB_DIR}/breakpad/src/client/minidump_file_writer.cc
+        ${LIB_DIR}/breakpad/src/common/convert_UTF.c
+        ${LIB_DIR}/breakpad/src/common/md5.cc
+        ${LIB_DIR}/breakpad/src/common/string_conversion.cc
+        ${LIB_DIR}/breakpad/src/common/linux/elfutils.cc
+        ${LIB_DIR}/breakpad/src/common/linux/file_id.cc
+        ${LIB_DIR}/breakpad/src/common/linux/guid_creator.cc
+        ${LIB_DIR}/breakpad/src/common/linux/linux_libc_support.cc
+        ${LIB_DIR}/breakpad/src/common/linux/memory_mapped_file.cc
+        ${LIB_DIR}/breakpad/src/common/linux/safe_readlink.cc
+    )
+endif()

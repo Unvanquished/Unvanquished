@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2015, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,20 +28,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "qcommon/qcommon.h"
+#ifndef FRAMEWORK_CRASHDUMP_H_
+#define FRAMEWORK_CRASHDUMP_H_
 
-#ifndef FRAMEWORK_SYSTEM_H_
-#define FRAMEWORK_SYSTEM_H_
+#include "common/Util.h"
 
-// Low-level system functions
 namespace Sys {
+    // Ensure existence of the subdirectory of homepath used for crash dumps. Return true if successful
+    bool CreateCrashDumpPath();
 
-// Cleanly exit the engine, shutting down all subsystems.
-NORETURN void Quit(Str::StringRef message);
+    // Launch the Breakpad server, if enabled in CMake and cvars. Return true if it is created
+    bool BreakpadInit();
 
-// Get the path of a singleton socket
-std::string GetSingletonSocketPath();
+    // Write a crash dump that came from an NaCl VM.
+    void NaclCrashDump(const std::vector<uint8_t>& dump);
+}
 
-} // namespace Sys
-
-#endif // FRAMEWORK_SYSTEM_H_
+#endif // FRAMEWORK_CRASHDUMP_H_

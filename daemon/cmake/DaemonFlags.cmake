@@ -102,6 +102,10 @@ macro(try_linker_flag PROP FLAG)
     endif()
 endmacro()
 
+if(MINGW AND USE_BREAKPAD)
+    set_linker_flag("-Wl,--build-id")
+endif()
+
 if (MSVC)
     set_c_cxx_flag("/MP")
     set_c_cxx_flag("/fp:fast")

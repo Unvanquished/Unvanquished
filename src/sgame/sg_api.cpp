@@ -342,6 +342,11 @@ void trap_QuoteString(const char *str, char *buffer, int size)
 	Q_strncpyz(buffer, Cmd::Escape(str).c_str(), size);
 }
 
+void trap_CrashDump(const uint8_t* data, size_t size)
+{
+	VM::SendMsg<CrashDumpMsg>(std::vector<uint8_t>{data, data + size});
+}
+
 int trap_BotAllocateClient()
 {
 	int res;

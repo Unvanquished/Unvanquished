@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2015, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,20 +28,47 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "qcommon/qcommon.h"
+#include <unistd.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <string>
 
-#ifndef FRAMEWORK_SYSTEM_H_
-#define FRAMEWORK_SYSTEM_H_
+#include "breakpad/src/client/linux/crash_generation/crash_generation_server.h"
 
-// Low-level system functions
-namespace Sys {
+google_breakpad::CrashGenerationServer* server;
 
-// Cleanly exit the engine, shutting down all subsystems.
-NORETURN void Quit(Str::StringRef message);
+void ShutdownServer(int) {
+    // Destructor waits for crash dump to finish
+    delete server;
+}
 
-// Get the path of a singleton socket
-std::string GetSingletonSocketPath();
+/*
+    Starts a Breakpad crash generation server to enable out-of-process crash dumps.
+    First argument: file descriptor to listen on
+    Second argument: crash dump directory
+    Third argument: PID of engine (child process)
+*/
+int main(int argc, char** argv) {
 
-} // namespace Sys
+    if (argc != 4) {
+        return 1;
+    }
 
-#endif // FRAMEWORK_SYSTEM_H_
+    struct sigaction sa{};
+    sa.sa_handler = ShutdownServer;
+    if (sigaction(SIGTERM, &sa, nullptr) != 0) return 1;
+
+    int fd = std::stoi(argv[1]);
+    std::string path = argv[2];
+    pid_t pid = std::stoi(argv[3]);
+
+    server = new google_breakpad::CrashGenerationServer(fd, nullptr, nullptr, nullptr, nullptr, true, &path);
+    if (!server->Start()) {
+        return 1;
+    }
+
+    int _;
+    waitpid(pid, &_, 0); //wait for the game to exit
+    ShutdownServer(0);
+    return 0;
+}

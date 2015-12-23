@@ -271,6 +271,11 @@ bool trap_GetNews( bool force )
 	return res;
 }
 
+void trap_CrashDump(const uint8_t* data, size_t size)
+{
+	VM::SendMsg<CrashDumpMsg>(std::vector<uint8_t>{data, data + size});
+}
+
 // All Sounds
 
 void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )

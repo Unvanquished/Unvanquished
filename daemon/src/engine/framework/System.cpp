@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CommandSystem.h"
 #include "LogSystem.h"
 #include "System.h"
+#include "CrashDump.h"
 #ifdef _WIN32
 #include <windows.h>
 #include <SDL2/SDL.h>
@@ -60,7 +61,7 @@ static bool haveSingletonLock = false;
 static std::string singletonSocketPath;
 
 // Get the path of a singleton socket
-static std::string GetSingletonSocketPath()
+std::string GetSingletonSocketPath()
 {
     auto& suffix = Application::GetTraits().uniqueHomepathSuffix;
 	// Use the hash of the homepath to identify instances sharing a homepath
@@ -523,7 +524,7 @@ static void Init(int argc, char** argv)
 	}
 	Log::Notice(argsString);
 
-	Sys::SetupCrashHandler();
+	Sys::SetupCrashHandler(); // If Breakpad is enabled, this handler will soon be replaced.
 	Sys::ParseCmdline(argc, argv, cmdlineArgs);
 
 	// Platform-specific initialization
@@ -611,6 +612,13 @@ static void Init(int argc, char** argv)
 	// At this point we can safely open the log file since there are no existing
 	// instances running on this homepath.
 	Log::OpenLogFile();
+
+    if (CreateCrashDumpPath()) {
+        EarlyCvar("common.breakpad.enabled", cmdlineArgs);
+        if (BreakpadInit()) {
+            Log::Notice("Starting crash logging server");
+        }
+    }
 
 	// Load the base paks
 	// TODO: cvar names and FS_* stuff needs to be properly integrated
