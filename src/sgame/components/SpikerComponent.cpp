@@ -6,7 +6,7 @@ SpikerComponent::SpikerComponent(
 	  restUntil(0),
 	  lastScoring(-1),
 	  lastSensing(false) {
-	RegisterAverageThinker();
+	RegisterDefaultThinker();
 }
 
 void SpikerComponent::HandleDamage(float amount, gentity_t *source,
@@ -87,8 +87,8 @@ void SpikerComponent::Think(int timeDelta) {
 		float diameter = VectorLength(ent->r.mins) + VectorLength(ent->r.maxs);
 		float distance = VectorLength(vecToTarget);
 		float effectArea = 2.0f * M_PI * distance * distance;  // half sphere
-		float targetArea = 0.5f * diameter *
-						   diameter;  // approx. proj. of target on effect area
+		// approx. proj. of target on effect area
+		float targetArea = 0.5f * diameter * diameter;
 		float expectedDamage = (targetArea / effectArea) *
 							   (float)SPIKER_MISSILES *
 							   (float)BG_Missile(MIS_SPIKER)->damage;
@@ -207,7 +207,7 @@ bool SpikerComponent::Fire() {
 	//                         MOD_SPIKER, TEAM_ALIENS );
 
 	restUntil = level.time + SPIKER_COOLDOWN;
-	RegisterAverageThinker();
+	RegisterDefaultThinker();
 	return true;
 }
 
@@ -221,7 +221,7 @@ void SpikerComponent::RegisterFastThinker() {
 		Think, ThinkingComponent::SCHEDULER_CLOSEST, 1);
 }
 
-void SpikerComponent::RegisterAverageThinker() {
+void SpikerComponent::RegisterDefaultThinker() {
 	GetBuildableComponent().GetThinkingComponent().UnregisterActiveThinker();
 	GetBuildableComponent().REGISTER_THINKER(
 		Think, ThinkingComponent::SCHEDULER_CLOSEST, 500);

@@ -37,7 +37,7 @@ class SpikerComponent: public SpikerComponentBase {
 		void Think(int timeDelta);
 		bool Fire();
 		void RegisterFastThinker();
-		void RegisterAverageThinker();
+		void RegisterDefaultThinker();
 
 		int restUntil;
 		float lastScoring;
