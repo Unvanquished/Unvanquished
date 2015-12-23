@@ -974,7 +974,6 @@ bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDistance 
 	// use tip instead of origin for distance and line of sight checks
 	// TODO: Evaluate
 	VectorMA( self->s.pos.trBase, self->r.maxs[ 2 ], self->s.origin2, tipOrigin );
-
 	// check if enemy in sense range
 	if ( !ignoreDistance && Distance( tipOrigin, target->s.origin ) > HIVE_SENSE_RANGE )
 	{

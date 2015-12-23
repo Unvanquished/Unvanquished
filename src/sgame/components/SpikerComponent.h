@@ -42,6 +42,7 @@ class SpikerComponent: public SpikerComponentBase {
 		int restUntil;
 		float lastScoring;
 		bool lastSensing;
+		std::vector<Vec3> directions;
 
 };
 

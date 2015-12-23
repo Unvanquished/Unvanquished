@@ -42,6 +42,8 @@ void SpikerComponent::Think(int timeDelta) {
 		return;
 	}
 
+	directions.clear();
+
 	// calculate a "scoring" of the situation to decide on the best moment to
 	// shoot
 	enemyDamage = friendlyDamage = 0.0f;
@@ -78,6 +80,7 @@ void SpikerComponent::Think(int timeDelta) {
 		vec3_t vecToTarget;
 		VectorSubtract(ent->s.origin, self->s.origin, vecToTarget);
 
+
 		// only entities in the spiker's upper hemisphere can be hit
 		if (DotProduct(self->s.origin2, vecToTarget) < 0) {
 			continue;
@@ -104,6 +107,7 @@ void SpikerComponent::Think(int timeDelta) {
 				}
 			}
 			enemyDamage += relativeDamage;
+			directions.push_back(Vec3::Load(vecToTarget));
 		}
 	}
 
@@ -139,66 +143,22 @@ bool SpikerComponent::Fire() {
 	if (restUntil > level.time) {
 		return false;
 	}
-
-	// play shooting animation
 	G_SetBuildableAnim(self, BANIM_ATTACK1, false);
-	// G_AddEvent( self, EV_ALIEN_SPIKER, DirToByte( self->s.origin2 ) );
-
-	// calculate total perimeter of all spike rows to allow for a more even
-	// spike
-	// distribution
-	float totalPerimeter = 0.0f;
-
-	for (int row = 0; row < SPIKER_MISSILEROWS; row++) {
-		float altitude = (((float)row + SPIKER_ROWOFFSET) * M_PI_2) /
-						 (float)SPIKER_MISSILEROWS;
-		float perimeter = 2.0f * M_PI * cos(altitude);
-
-		totalPerimeter += perimeter;
-	}
-
-	// distribute and launch missiles
-	vec3_t dir, rowBase, zenith, rotAxis;
-
-	VectorCopy(self->s.origin2, zenith);
-	PerpendicularVector(rotAxis, zenith);
-
-	for (int row = 0; row < SPIKER_MISSILEROWS; row++) {
-		float altitude = (((float)row + SPIKER_ROWOFFSET) * M_PI_2) /
-						 (float)SPIKER_MISSILEROWS;
-		float perimeter = 2.0f * M_PI * cos(altitude);
-
-		RotatePointAroundVector(rowBase, rotAxis, zenith,
-								RAD2DEG(M_PI_2 - altitude));
-
-		// attempt to distribute spikes with equal distance on all rows
-		int spikes =
-			(int)round(((float)SPIKER_MISSILES * perimeter) / totalPerimeter);
-
-		for (int spike = 0; spike < spikes; spike++) {
-			float azimuth = 2.0f * M_PI *
-							(((float)spike + 0.5f * crandom()) / (float)spikes);
-			float altitudeVariance =
-				0.5f * crandom() * M_PI_2 / (float)SPIKER_MISSILEROWS;
-
-			RotatePointAroundVector(dir, zenith, rowBase, RAD2DEG(azimuth));
-			RotatePointAroundVector(dir, rotAxis, dir,
-									RAD2DEG(altitudeVariance));
-
-			if (g_debugTurrets.integer) {
-				Com_Printf(
-					"Spiker #%d fires: Row %d/%d: Spike %2d/%2d: "
-					"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )\n",
-					self->s.number, row + 1, SPIKER_MISSILEROWS, spike + 1,
-					spikes, RAD2DEG(altitude + altitudeVariance),
-					RAD2DEG(azimuth), dir[0], dir[1], dir[2]);
-			}
-
-			G_SpawnMissile(
-				MIS_SPIKER, self, self->s.origin, dir, nullptr, G_FreeEntity,
-				level.time + (int)(1000.0f * SPIKER_SPIKE_RANGE /
-								   (float)BG_Missile(MIS_SPIKER)->speed));
+	int batches = std::min(SPIKER_MISSILES, static_cast<int>(directions.size()));
+	for (int i = 0; i < batches; ++i) {
+		for (int j = 0; j < SPIKER_MISSILES / batches; ++j) {
+		// play shooting animation
+		vec3_t dir;
+		directions[i].Store(dir);
+		for (int i = 0; i < 3; ++i) {
+			dir[i] += dir[i] * crandom() * 1.5f;
 		}
+		G_SpawnMissile(
+			MIS_SPIKER, self, self->s.origin, dir, nullptr, G_FreeEntity,
+			level.time + (int)(1000.0f * SPIKER_SPIKE_RANGE /
+			(float)BG_Missile(MIS_SPIKER)->speed));
+		}
+
 	}
 
 	// do radius damage in addition to spike missiles
