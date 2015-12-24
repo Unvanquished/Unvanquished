@@ -144,6 +144,10 @@ void ignore_result(T) {}
 #include <valarray>
 #include <sstream>
 #include <iostream>
+#ifdef _MSC_VER
+#include <locale>
+#include <cctype>
+#endif //  _MSVC_VER
 #endif // __cplusplus
 
 // vsnprintf is ISO/IEC 9899:1999

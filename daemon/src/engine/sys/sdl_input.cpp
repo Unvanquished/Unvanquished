@@ -31,7 +31,7 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-
+#include "sdl_compat.h"
 #include <SDL.h>
 #include "client/client.h"
 #include "qcommon/q_unicode.h"
