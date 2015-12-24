@@ -302,10 +302,13 @@ namespace Cvar {
                 Log::Notice("Cvar %s cannot be registered twice\n", name.c_str());
             }
 
-            //Register the cvar with the previous user_created value
+            // Register the cvar with the previous user_created value
             cvar->flags &= ~CVAR_USER_CREATED;
             cvar->flags |= flags;
             cvar->proxy = proxy;
+            if (flags & CHEAT) {
+                cvar->value = defaultValue;
+            }
 
             cvar->resetValue = defaultValue;
             cvar->description = "";
