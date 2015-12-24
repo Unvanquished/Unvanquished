@@ -306,18 +306,12 @@ namespace Cvar {
             cvar->flags &= ~CVAR_USER_CREATED;
             cvar->flags |= flags;
             cvar->proxy = proxy;
-            if (flags & CHEAT) {
+            if (flags & (CHEAT | ROM)) {
                 cvar->value = defaultValue;
             }
 
             cvar->resetValue = defaultValue;
             cvar->description = "";
-
-            /*
-            if (cvar->flags & CVAR_ROM) {
-                cvar->value = cvar->resetValue;
-            }
-            */
 
             if (proxy) { //TODO replace me with an assert once we do not need to support the C API
                 OnValueChangedResult result = proxy->OnValueChanged(cvar->value);
