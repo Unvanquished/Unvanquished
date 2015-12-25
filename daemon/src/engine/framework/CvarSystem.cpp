@@ -302,19 +302,16 @@ namespace Cvar {
                 Log::Notice("Cvar %s cannot be registered twice\n", name.c_str());
             }
 
-            //Register the cvar with the previous user_created value
+            // Register the cvar with the previous user_created value
             cvar->flags &= ~CVAR_USER_CREATED;
             cvar->flags |= flags;
             cvar->proxy = proxy;
+            if (flags & (CHEAT | ROM)) {
+                cvar->value = defaultValue;
+            }
 
             cvar->resetValue = defaultValue;
             cvar->description = "";
-
-            /*
-            if (cvar->flags & CVAR_ROM) {
-                cvar->value = cvar->resetValue;
-            }
-            */
 
             if (proxy) { //TODO replace me with an assert once we do not need to support the C API
                 OnValueChangedResult result = proxy->OnValueChanged(cvar->value);
