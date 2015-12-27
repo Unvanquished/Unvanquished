@@ -1170,6 +1170,81 @@ static bool PM_CheckWallJump()
 	return true;
 }
 
+/*
+=============
+PM_CheckWallRun
+=============
+*/
+static bool PM_CheckWallRun()
+{
+	float jumpMag;
+	Vec3 dir, origin, velocity, normal;
+	vec3_t trace_end;
+	trace_t trace;
+
+	jumpMag = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+
+	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLRUNNER ) )
+		return false;
+
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
+		return false; // don't allow jump until all buttons are up
+
+	if ( pm->cmd.upmove < 10 )
+		return false; // not holding jump
+
+	if ( pm->ps->pm_flags & PMF_TIME_WALLJUMP )
+		return false;
+
+	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove )
+		return false;
+
+	origin = Vec3::Load( pm->ps->origin );
+
+	if ( pm->cmd.rightmove )
+	{
+		dir = Vec3::Load( pml.right );
+		dir *= pm->cmd.rightmove < 0 ? -1 : 1;
+	}
+	else
+	{
+		dir = Vec3::Load( pml.forward );
+		dir *= pm->cmd.forwardmove < 0 ? -1 : 1;
+	}
+	( origin + dir * 0.25f ).Store( trace_end );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, trace_end,
+	           pm->ps->clientNum, pm->tracemask, 0);
+
+	if ( trace.fraction == 1.0f )
+		return false;
+
+	if ( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) )
+		return false;
+
+	if ( trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
+		return false;
+
+	pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
+	pm->ps->pm_time = 200;
+
+	pml.groundPlane = false; // jumping away
+	pml.walking = false;
+	pm->ps->pm_flags |= PMF_JUMP_HELD;
+
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+	normal = Vec3::Load( trace.plane.normal );
+	velocity = Vec3::Load( pm->ps->velocity );
+
+	velocity += Math::Normalize( normal + Vec3( 0, 0, 0.9 ) ) * jumpMag;
+
+	velocity.Store( pm->ps->velocity );
+	PM_AddEvent( EV_JUMP );
+	PM_PlayJumpingAnimation();
+
+	return true;
+}
+
 /**
  * @brief PM_CheckJetpack
  * @return true if and only if thrust was applied
@@ -1464,12 +1539,6 @@ static bool PM_CheckJump()
 		return false;
 	}
 
-	// must wait for jump to be released
-	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
-	{
-		return false;
-	}
-
 	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
 	jetpackJump     = false;
 
@@ -1504,7 +1573,8 @@ static bool PM_CheckJump()
 
 	// don't allow walljump for a short while after jumping from the ground
 	// TODO: There was an issue about this potentially having side effects.
-	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER )
+		|| BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS], SCA_WALLRUNNER ) )
 	{
 		pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 		pm->ps->pm_time = 200;
@@ -1855,6 +1925,7 @@ static void PM_AirMove()
 	usercmd_t cmd;
 
 	PM_CheckWallJump();
+	PM_CheckWallRun();
 	PM_CheckJetpack();
 
 	PM_Friction();
