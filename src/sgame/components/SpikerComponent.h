@@ -33,6 +33,16 @@ class SpikerComponent: public SpikerComponentBase {
 		// ///////////////////// //
 
 	private:
+		BuildableComponent& GetBuildableComponent();
+		void Think(int timeDelta);
+		bool Fire();
+		void RegisterFastThinker();
+		void RegisterDefaultThinker();
+
+		int restUntil;
+		float lastScoring;
+		bool lastSensing;
+		std::vector<Vec3> directions;
 
 };
 
