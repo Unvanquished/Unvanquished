@@ -2574,11 +2574,11 @@ void CG_Buildable( centity_t *cent )
 	{
 		ent.altShaderIndex = CG_ALTSHADER_UNPOWERED;
 	}
-	else if ( ( cent->buildableAnim == BANIM_IDLE1 ) )
+	else if ( cent->buildableAnim == BANIM_IDLE1 )
 	{
 		ent.altShaderIndex = CG_ALTSHADER_IDLE;
 	}
-	else if ( ( cent->buildableAnim == BANIM_IDLE2 ) )
+	else if ( cent->buildableAnim == BANIM_IDLE2 )
 	{
 		ent.altShaderIndex = CG_ALTSHADER_IDLE2;
 	}
