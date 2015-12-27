@@ -734,7 +734,7 @@ static void HiveMissileThink( gentity_t *self )
 
 	nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
 
-	//find the closest human
+	//find the closest target
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		ent = &g_entities[ i ];
@@ -742,7 +742,8 @@ static void HiveMissileThink( gentity_t *self )
 		if ( !ent->inuse ) continue;
 		if ( ent->flags & FL_NOTARGET ) continue;
 
-		if ( ent->client && G_Alive( ent ) && ent->client->pers.team == TEAM_HUMANS &&
+		if ( ( ent->client || ent->s.eType == ET_BUILDABLE )
+		     && G_Alive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
@@ -759,7 +760,7 @@ static void HiveMissileThink( gentity_t *self )
 	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, dir );
 	VectorNormalize( dir );
 
-	//change direction towards the player
+	//change direction towards the target
 	VectorScale( dir, HIVE_SPEED, self->s.pos.trDelta );
 	SnapVector( self->s.pos.trDelta );  // save net bandwidth
 	VectorCopy( self->r.currentOrigin, self->s.pos.trBase );

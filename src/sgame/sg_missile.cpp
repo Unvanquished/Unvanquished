@@ -288,7 +288,7 @@ static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 		ent->nextthink = level.time + FRAMETIME;
 
 		// Ddamage only humans and do so quietly.
-		if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
+		if ( ( hitEnt->client || hitEnt->s.eType == ET_BUILDABLE ) && G_Team( hitEnt ) == TEAM_HUMANS )
 		{
 			return MIF_NO_EFFECT;
 		}
