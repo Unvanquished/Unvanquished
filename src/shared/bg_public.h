@@ -250,6 +250,7 @@ typedef enum
 #define SCA_CANUSELADDERS   0x00000020
 #define SCA_WALLJUMPER      0x00000040
 #define SCA_WALLRUNNER      0x00000080
+#define SCA_SLIDER          0x00000100
 
 // STAT_STATE fields. 16 bit available
 #define SS_WALLCLIMBING     BIT(0)
@@ -266,6 +267,7 @@ typedef enum
 #define SS_HEALING_2X       BIT(11) // humans: medistation
 #define SS_HEALING_4X       BIT(12) // humans: medikit active
 #define SS_HEALING_8X       BIT(13)
+#define SS_SLIDING          BIT(14)
 
 // STAT_STATE2 fields. 16 bit available
 #define SS2_JETPACK_ENABLED BIT(0)  // whether jets/wings are extended
