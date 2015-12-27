@@ -930,7 +930,17 @@ static bool AHive_isBetterTarget(const gentity_t *const self, const gentity_t *c
 		return true;
 	}
 
-	// Always prefer target that isn't yet targeted.
+	// Prefer players to buildables
+	if ( self->target->s.eType == ET_BUILDABLE && candidate->client )
+	{
+		return true;
+	}
+	if ( self->target->client && candidate->s.eType == ET_BUILDABLE )
+	{
+		return false;
+	}
+
+	// Prefer target that isn't yet targeted.
 	if ( self->target->numTrackedBy == 0 && candidate->numTrackedBy > 0 )
 	{
 		return false;
@@ -963,8 +973,8 @@ bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDistance 
 	vec3_t  tipOrigin;
 
 	if (    !target
-	     || !target->client
-	     || target->client->pers.team != TEAM_HUMANS
+	     || !( target->client || target->s.eType == ET_BUILDABLE )
+		 || G_Team( target ) != TEAM_HUMANS
 	     || G_Dead( target )
 	     || ( target->flags & FL_NOTARGET ) )
 	{
@@ -2063,6 +2073,16 @@ static bool HMGTurret_IsBetterTarget( gentity_t *self, gentity_t *candidate )
 		return true;
 	}
 
+	// Prefer players to buildables
+	if ( self->target->s.eType == ET_BUILDABLE && candidate->client )
+	{
+		return true;
+	}
+	if ( self->target->client && candidate->s.eType == ET_BUILDABLE )
+	{
+		return false;
+	}
+
 	// Prefer target that isn't yet targeted.
 	// This makes group attacks more and dretch spam less efficient.
 	if ( self->target->numTrackedBy == 0 && candidate->numTrackedBy > 0 )
@@ -2132,6 +2152,16 @@ static bool HRocketpod_IsBetterTarget( gentity_t *self, gentity_t *candidate )
 		return true;
 	}
 
+	// Prefer players to buildables
+	if ( self->target->s.eType == ET_BUILDABLE && candidate->client )
+	{
+		return true;
+	}
+	if ( self->target->client && candidate->s.eType == ET_BUILDABLE )
+	{
+		return false;
+	}
+
 	// First, prefer target that is currently safe to shoot at.
 	// Then, prefer target that can be aimed at more quickly.
 	vec3_t aimDir, dir_t, dir_c;
@@ -2179,8 +2209,8 @@ static bool HTurret_TargetValid( gentity_t *self, gentity_t *target, bool newTar
                                      float range )
 {
 	if (    !target
-	     || !target->client
-	     || target->client->sess.spectatorState != SPECTATOR_NOT
+	     || !( ( target->client && target->client->sess.spectatorState == SPECTATOR_NOT )
+		      || target->s.eType == ET_BUILDABLE )
 	     || G_Dead( target )
 	     || target->flags & FL_NOTARGET
 	     || G_OnSameTeam( self, target )
