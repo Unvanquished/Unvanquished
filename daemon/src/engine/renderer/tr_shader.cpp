@@ -66,7 +66,7 @@ static long generateHashValue( const char *fname, const int size )
 
 	while ( fname[ i ] != '\0' )
 	{
-		letter = tolower( fname[ i ] );
+		letter = Str::ctolower( fname[ i ] );
 
 		if ( letter == '.' )
 		{

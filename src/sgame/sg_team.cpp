@@ -33,7 +33,7 @@ Return the team referenced by a string
 */
 team_t G_TeamFromString( const char *str )
 {
-	switch ( tolower( *str ) )
+	switch ( Str::ctolower( *str ) )
 	{
 		case '0':
 		case 's':

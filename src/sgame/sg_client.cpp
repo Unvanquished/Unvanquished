@@ -738,7 +738,8 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			int cp = Q_UTF8_CodePoint(token.Begin());
 
 			// don't allow leading spaces
-			if ( !has_visible_characters && std::isspace( cp ) )
+			// TODO: use a Unicode-aware isspace
+			if ( !has_visible_characters && Str::cisspace( cp ) )
 			{
 				continue;
 			}
@@ -780,7 +781,8 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			}
 
 		// don't allow too many consecutive spaces
-			if ( std::isspace( cp ) )
+			// TODO: use a Unicode-aware isspace
+			if ( Str::cisspace( cp ) )
 			{
 				spaces++;
 				if ( spaces > 3 )
@@ -823,11 +825,10 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		invalid = true;
 	}
 	// don't allow names beginning with digits
-	else if ( std::isdigit( out_string[0] ) )
+	else if ( Str::cisdigit( out_string[0] ) )
 	{
 		out_string.erase( out_string.begin(),
-			std::find_if_not( out_string.begin(), out_string.end(),
-				(int (*)(int))std::isdigit ) );
+			std::find_if_not( out_string.begin(), out_string.end(), Str::cisdigit ) );
 	}
 
 	// if something made the name bad, put them back to UnnamedPlayer

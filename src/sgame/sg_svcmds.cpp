@@ -336,7 +336,7 @@ static void Svcmd_LayoutSave_f()
 
 	while ( *s && i < (int) sizeof( str2 ) - 1 )
 	{
-		if ( isalnum( *s ) || *s == '-' || *s == '_' )
+		if ( Str::cisalnum( *s ) || *s == '-' || *s == '_' )
 		{
 			str2[ i++ ] = *s;
 			str2[ i ] = '\0';
