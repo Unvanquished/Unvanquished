@@ -196,6 +196,7 @@ vmCvar_t           g_debugEntities;
 
 vmCvar_t           g_instantBuilding;
 
+vmCvar_t           g_emptyTeamsSkipMapTime;
 
 // <bot stuff>
 
@@ -403,6 +404,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               0,                                               0, false    , nullptr       },
 
 	{ &g_instantBuilding,             "g_instantBuilding",             "0",                                0,                                               0, true     , nullptr       },
+
+	{ &g_emptyTeamsSkipMapTime,       "g_emptyTeamsSkipMapTime",       "0",                                0,                                               0, true     , nullptr       },
 
 	// bots: buying
 	{ &g_bot_buy, "g_bot_buy", "1",  CVAR_NORESTART, 0, false, nullptr },
@@ -2449,6 +2452,18 @@ void CheckExitRules()
 		G_notify_sensor_end( TEAM_ALIENS );
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
+	}
+	else if ( g_emptyTeamsSkipMapTime.integer &&
+		( level.time - level.startTime ) / 60000 >=
+		g_emptyTeamsSkipMapTime.integer &&
+		level.team[ TEAM_ALIENS ].numPlayers == 0 && level.team[ TEAM_HUMANS ].numPlayers == 0 )
+	{
+		// nobody wins because the teams are empty after x amount of game time
+		level.lastWin = TEAM_NONE;
+		trap_SendServerCommand( -1, "print \"Empty teams skip map time exceeded.\n\"" );
+		trap_SetConfigstring( CS_WINNER, "Stalemate" );
+		LogExit( "Timelimit hit." );
+		G_MapLog_Result( 't' );
 	}
 }
 
