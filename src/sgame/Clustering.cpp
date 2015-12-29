@@ -104,7 +104,9 @@ namespace Clustering {
 			void UpdateMetadata() {
 				dirty = false;
 
-				center            *= 0.0f;
+				for (int i = 0; i < Dim; ++i) {
+					center[i] = 0.0f;
+				}
 				meanObject        = nullptr;
 				averageDistance   = 0;
 				standardDeviation = 0;
