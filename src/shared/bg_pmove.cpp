@@ -2291,11 +2291,6 @@ static void PM_LadderMove()
 	VectorCopy( wishvel, wishdir );
 	wishspeed = VectorNormalize( wishdir );
 
-	if ( wishspeed > pm->ps->speed * pm_swimScale )
-	{
-		wishspeed = pm->ps->speed * pm_swimScale;
-	}
-
 	PM_Accelerate( wishdir, wishspeed, pm_accelerate );
 
 	//slanty ladders
