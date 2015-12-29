@@ -380,6 +380,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 	gclient_t *cl;
 	upgrade_t upgrade = UP_NONE;
 	int       curWeaponClass = WP_NONE; // sends weapon for humans, class for aliens
+	int       health = 0;
 
 	if ( !g_allowTeamOverlay.integer )
 	{
@@ -456,18 +457,20 @@ void TeamplayInfoMessage( gentity_t *ent )
 			{
 				upgrade = UP_NONE;
 			}
+			health = static_cast<int>( std::ceil( player->entity->Get<HealthComponent>()->Health() ) );
 		}
 		else if ( cl->pers.team == TEAM_ALIENS )
 		{
 			curWeaponClass = cl->ps.stats[ STAT_CLASS ];
 			upgrade = UP_NONE;
+			health = static_cast<int>( std::ceil( player->entity->Get<HealthComponent>()->Health() ) );
 		}
 
 		if( team == TEAM_ALIENS ) // aliens don't have upgrades
 		{
 			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i", i,
 						 cl->pers.location,
-			             std::max((int)std::ceil(player->entity->Get<HealthComponent>()->Health()), 0),
+			             health,
 						 curWeaponClass,
 						 cl->pers.credit );
 		}
@@ -475,7 +478,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		{
 			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i %i", i,
 			             cl->pers.location,
-			             std::max((int)std::ceil(player->entity->Get<HealthComponent>()->Health()), 0),
+			             health,
 			             curWeaponClass,
 			             cl->pers.credit,
 			             upgrade );

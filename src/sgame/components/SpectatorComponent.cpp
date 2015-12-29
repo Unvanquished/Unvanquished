@@ -1,7 +1,7 @@
 #include "SpectatorComponent.h"
 
-SpectatorComponent::SpectatorComponent(Entity& entity, ClientComponent& r_ClientComponent, HealthComponent& r_HealthComponent)
-: SpectatorComponentBase(entity, r_ClientComponent, r_HealthComponent)
+SpectatorComponent::SpectatorComponent(Entity& entity, ClientComponent& r_ClientComponent)
+	: SpectatorComponentBase(entity, r_ClientComponent)
 {}
 
 void SpectatorComponent::HandlePrepareNetCode() {
