@@ -48,7 +48,7 @@ float ResourceStorageComponent::GetStoredFraction() {
 	// The stored fraction is equal to the acquired fraction.
 	float storedFraction = acquiredBuildPoints / level.team[team].acquiredBuildPoints;
 
-	if (storedFraction < 0.0f || storedFraction > 1.0f) {
+	if (storedFraction < 0.0f || storedFraction > 1.0f + LINE_DISTANCE_EPSILON) {
 		resourceStorageLogger.Warn(
 			"A resource storage stores an invalid fraction of all build points: %.1f", storedFraction
 		);
