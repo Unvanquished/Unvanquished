@@ -374,6 +374,10 @@ void  Com_Free_Aligned( void *ptr );
 #define M_ROOT3 1.732050808f
 #endif
 
+#ifndef LINE_DISTANCE_EPSILON
+#define LINE_DISTANCE_EPSILON 1e-05f
+#endif
+
 #define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
 
 // angle indexes
