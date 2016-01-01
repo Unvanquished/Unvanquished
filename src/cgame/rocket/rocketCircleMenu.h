@@ -46,7 +46,15 @@ Maryland 20850 USA.
 class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener, Rocket::Core::EventListener
 {
 public:
-	RocketCircleMenu( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), formatter( nullptr ), data_source( nullptr )
+	RocketCircleMenu( const Rocket::Core::String &tag ) :
+		Rocket::Core::Element( tag ),
+		dirty_query( false ),
+		dirty_layout( false ),
+		init( false ),
+		startAngle( 0 ),
+		endAngle( 360 ),
+		formatter( nullptr ),
+		data_source( nullptr )
 	{
 	}
 
@@ -136,6 +144,18 @@ public:
 		Rocket::Core::Element::OnPropertyChange( changed_properties );
 		if ( changed_properties.find( "width" ) != changed_properties.end() || changed_properties.find( "height" ) != changed_properties.end() )
 		{
+			dirty_layout = true;
+		}
+
+		if ( changed_properties.find( "start-angle" ) != changed_properties.end() )
+		{
+			startAngle = GetProperty<int>( "start-angle" );
+			dirty_layout = true;
+		}
+
+		if ( changed_properties.find ( "end-angle" ) != changed_properties.end() )
+		{
+			endAngle = GetProperty<int>( "end-angle" );
 			dirty_layout = true;
 		}
 	}
@@ -317,7 +337,7 @@ protected:
 			return;
 		}
 
-		float angle = 360.0f / ( numChildren - 1 );
+		float angle = ( endAngle - startAngle ) / ( numChildren - 1 );
 
 		// Rest are the circular buttons
 		for ( int i = 1; i < numChildren; ++i )
@@ -326,8 +346,8 @@ protected:
 			childSize = child->GetBox().GetSize();
 			width = childSize.x;
 			height = childSize.y;
-			float y = sin( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * ( radiusY - ( height / 2.0f ) );
-			float x = cos( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * ( radiusX - ( width / 2.0f ) );
+			float y = sin( ( ( angle * ( i - 1 ) ) + startAngle ) * ( M_PI / 180.0f ) ) * ( radiusY - ( height / 2.0f ) );
+			float x = cos( ( ( angle * ( i - 1 ) ) + startAngle ) * ( M_PI / 180.0f ) ) * ( radiusX - ( width / 2.0f ) );
 
 			child->SetProperty( "position", "absolute" );
 			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x ) );
@@ -348,6 +368,8 @@ private:
 	bool dirty_query;
 	bool dirty_layout;
 	bool init;
+	int startAngle;
+	int endAngle;
 	Rocket::Controls::DataFormatter *formatter;
 	Rocket::Controls::DataSource *data_source;
 
