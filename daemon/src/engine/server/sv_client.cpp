@@ -463,19 +463,6 @@ Destructor for data allocated in a client structure
 */
 void SV_FreeClient( client_t *client )
 {
-#ifdef USE_VOIP
-	int index;
-
-	for ( index = client->queuedVoipIndex; index < client->queuedVoipPackets; index++ )
-	{
-		index %= ARRAY_LEN( client->voipPacket );
-
-		Z_Free( client->voipPacket[ index ] );
-	}
-
-	client->queuedVoipPackets = 0;
-#endif
-
 	// NA_BOT happens to be the default value for address types (value 0) and are
 	// never for clients that send challenges. For NA_BOT, skip the checks for
 	// challenges as it makes NET_CompareAdr yell at us.
@@ -526,7 +513,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	{
 		// tell everyone why they got dropped
 		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( nullptr, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
+		SV_SendServerCommand( nullptr, "print %s\"^* \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
 
 		// add the disconnect command
 		SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
@@ -1306,13 +1293,6 @@ void SV_UserinfoChanged( client_t *cl )
 		cl->snapshotMsec = 50;
 	}
 
-#ifdef USE_VOIP
-	// in the future, (val) will be a protocol version string, so only
-	//  accept explicitly 1, not generally non-zero.
-	val = Info_ValueForKey( cl->userinfo, "cl_voip" );
-	cl->hasVoip = ( atoi( val ) == 1 ) ? true : false;
-#endif
-
 	// TTimo
 	// maintain the IP information
 	// this is set in SV_DirectConnect (directly on the server, not transmitted), may be lost when client updates its userinfo
@@ -1355,53 +1335,6 @@ static void SV_UpdateUserinfo_f( client_t *cl, const Cmd::Args& args )
 	gvm.GameClientUserInfoChanged( cl - svs.clients );
 }
 
-#ifdef USE_VOIP
-static
-void SV_UpdateVoipIgnore( client_t *cl, const char *idstr, bool ignore )
-{
-	if ( ( *idstr >= '0' ) && ( *idstr <= '9' ) )
-	{
-		const int id = atoi( idstr );
-
-		if ( ( id >= 0 ) && ( id < MAX_CLIENTS ) )
-		{
-			cl->ignoreVoipFromClient[ id ] = ignore;
-		}
-	}
-}
-
-/*
-==================
-SV_Voip_f
-==================
-*/
-static void SV_Voip_f( client_t *cl, const Cmd::Args& args )
-{
-	if (args.Argc() < 2) {
-		return;
-	}
-	const char *cmd = args.Argv(1).c_str();
-
-	if ( strcmp( cmd, "ignore" ) == 0 and args.Argc() >= 3)
-	{
-		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), true );
-	}
-	else if ( strcmp( cmd, "unignore" ) == 0 and args.Argc() >= 3)
-	{
-		SV_UpdateVoipIgnore( cl, args.Argv(2).c_str(), false );
-	}
-	else if ( strcmp( cmd, "muteall" ) == 0 )
-	{
-		cl->muteAllVoip = true;
-	}
-	else if ( strcmp( cmd, "unmuteall" ) == 0 )
-	{
-		cl->muteAllVoip = false;
-	}
-}
-
-#endif
-
 typedef struct
 {
 	const char *name;
@@ -1417,9 +1350,6 @@ static ucmd_t ucmds[] =
 	{ "nextdl",     SV_NextDownload_f,    false },
 	{ "stopdl",     SV_StopDownload_f,    false },
 	{ "donedl",     SV_DoneDownload_f,    false },
-#ifdef USE_VOIP
-	{ "voip",       SV_Voip_f,            false },
-#endif
 	{ "wwwdl",      SV_WWWDownload_f,     false },
 	{ nullptr,         nullptr, false}
 };
@@ -1674,153 +1604,6 @@ static void SV_ParseBinaryMessage( client_t *cl, msg_t *msg )
 	SV_GameBinaryMessageReceived( cl - svs.clients, ( char * ) &msg->data[ msg->readcount ], size, cl->lastUsercmd.serverTime );
 }
 
-#ifdef USE_VOIP
-
-/*
-==================
-SV_ShouldIgnoreVoipSender
-
-Blocking of voip packets based on source client
-==================
-*/
-
-static bool SV_ShouldIgnoreVoipSender( const client_t *cl )
-{
-	if ( !sv_voip->integer )
-	{
-		return true; // VoIP disabled on this server.
-	}
-	else if ( !cl->hasVoip ) // client doesn't have VoIP support?!
-	{
-		return true;
-	}
-
-	// !!! FIXME: implement player blacklist.
-
-	return false; // don't ignore.
-}
-
-static
-void SV_UserVoip( client_t *cl, msg_t *msg )
-{
-	int                sender, generation, sequence, frames, packetsize;
-	uint8_t            recips[( MAX_CLIENTS + 7 ) / 8 ];
-	int                flags;
-	byte               encoded[ sizeof( cl->voipPacket[ 0 ]->data ) ];
-	client_t           *client = nullptr;
-	voipServerPacket_t *packet = nullptr;
-	int                i;
-
-	sender = cl - svs.clients;
-	generation = MSG_ReadByte( msg );
-	sequence = MSG_ReadLong( msg );
-	frames = MSG_ReadByte( msg );
-	MSG_ReadData( msg, recips, sizeof( recips ) );
-	flags = MSG_ReadByte( msg );
-	packetsize = MSG_ReadShort( msg );
-
-	if ( msg->readcount > msg->cursize )
-	{
-		return; // short/invalid packet, bail.
-	}
-
-	if ( packetsize > sizeof( encoded ) )  // overlarge packet?
-	{
-		int bytesleft = packetsize;
-
-		while ( bytesleft )
-		{
-			int br = bytesleft;
-
-			if ( br > sizeof( encoded ) )
-			{
-				br = sizeof( encoded );
-			}
-
-			MSG_ReadData( msg, encoded, br );
-			bytesleft -= br;
-		}
-
-		return; // overlarge packet, bail.
-	}
-
-	MSG_ReadData( msg, encoded, packetsize );
-
-	if ( SV_ShouldIgnoreVoipSender( cl ) )
-	{
-		return; // Blacklisted, disabled, etc.
-	}
-
-	// !!! FIXME: see if we read past end of msg...
-
-	// !!! FIXME: reject if not speex narrowband codec.
-	// !!! FIXME: decide if this is bogus data?
-
-	// decide who needs this VoIP packet sent to them...
-	for ( i = 0, client = svs.clients; i < sv_maxclients->integer; i++, client++ )
-	{
-		if ( client->state != CS_ACTIVE )
-		{
-			continue; // not in the game yet, don't send to this guy.
-		}
-		else if ( i == sender )
-		{
-			continue; // don't send voice packet back to original author.
-		}
-		else if ( !client->hasVoip )
-		{
-			continue; // no VoIP support, or unsupported protocol
-		}
-		else if ( client->muteAllVoip )
-		{
-			continue; // client is ignoring everyone.
-		}
-		else if ( client->ignoreVoipFromClient[ sender ] )
-		{
-			continue; // client is ignoring this talker.
-		}
-		else if ( *cl->downloadName ) // !!! FIXME: possible to DoS?
-		{
-			continue; // no VoIP allowed if downloading, to save bandwidth.
-		}
-
-		if ( Com_IsVoipTarget( recips, sizeof( recips ), i ) )
-		{
-			flags |= VOIP_DIRECT;
-		}
-		else
-		{
-			flags &= ~VOIP_DIRECT;
-		}
-
-		if ( !( flags & ( VOIP_SPATIAL | VOIP_DIRECT ) ) )
-		{
-			continue; // not addressed to this player.
-		}
-
-		// Transmit this packet to the client.
-		if ( client->queuedVoipPackets >= ARRAY_LEN( client->voipPacket ) )
-		{
-			Com_Printf( "Too many VoIP packets queued for client #%d\n", i );
-			continue; // no room for another packet right now.
-		}
-
-		packet = ( voipServerPacket_t* ) Z_Malloc( sizeof( *packet ) );
-		packet->sender = sender;
-		packet->frames = frames;
-		packet->len = packetsize;
-		packet->generation = generation;
-		packet->sequence = sequence;
-		packet->flags = flags;
-		memcpy( packet->data, encoded, packetsize );
-
-		client->voipPacket[( client->queuedVoipIndex + client->queuedVoipPackets ) % ARRAY_LEN( client->voipPacket ) ] = packet;
-		client->queuedVoipPackets++;
-	}
-}
-
-#endif
-
 /*
 ===========================================================================
 
@@ -1958,14 +1741,6 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 		}
 	}
 	while ( 1 );
-
-	if ( c == clc_voip )
-	{
-#ifdef USE_VOIP
-		SV_UserVoip( cl, msg );
-		c = MSG_ReadByte( msg );
-#endif
-	}
 
 	// read the usercmd_t
 	if ( c == clc_move )

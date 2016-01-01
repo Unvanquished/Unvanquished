@@ -550,7 +550,7 @@ SharedMemory SharedMemory::Create(size_t size)
 {
     IPC::SharedMemory result;
     VM::SendMsg<VM::CreateSharedMemoryMsg>(size, result);
-    return std::move(result);
+    return result;
 }
 #else
 SharedMemory SharedMemory::Create(size_t size)

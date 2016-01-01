@@ -300,7 +300,7 @@ RE_SetColor
 Passing nullptr will set the color to white
 =============
 */
-void RE_SetColor( const float *rgba )
+void RE_SetColor( const Color::Color& rgba )
 {
 	setColorCommand_t *cmd;
 
@@ -318,17 +318,7 @@ void RE_SetColor( const float *rgba )
 
 	cmd->commandId = RC_SET_COLOR;
 
-	if ( !rgba )
-	{
-		static float colorWhite[ 4 ] = { 1, 1, 1, 1 };
-
-		rgba = colorWhite;
-	}
-
-	cmd->color[ 0 ] = rgba[ 0 ];
-	cmd->color[ 1 ] = rgba[ 1 ];
-	cmd->color[ 2 ] = rgba[ 2 ];
-	cmd->color[ 3 ] = rgba[ 3 ];
+	cmd->color = rgba;
 }
 
 /*
@@ -661,7 +651,8 @@ RE_StretchPicGradient
 ==============
 */
 void RE_StretchPicGradient( float x, float y, float w, float h,
-                            float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
+                            float s1, float t1, float s2, float t2,
+                            qhandle_t hShader, const Color::Color& gradientColor,
                             int gradientType )
 {
 	stretchPicCommand_t *cmd;
@@ -684,14 +675,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 	cmd->s2 = s2;
 	cmd->t2 = t2;
 
-	if ( !gradientColor )
-	{
-		static float colorWhite[ 4 ] = { 1, 1, 1, 1 };
-
-		gradientColor = colorWhite;
-	}
-
-	floatToUnorm8( gradientColor, cmd->gradientColor );
+	cmd->gradientColor = gradientColor;
 	cmd->gradientType = gradientType;
 }
 

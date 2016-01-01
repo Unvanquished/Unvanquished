@@ -34,18 +34,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Console {
 
-    Field::Field(int size): LineEditData(size), hist(HISTORY_END) {
+    Field::Field(int size): LineEditData(size) {
     }
 
     void Field::HistoryPrev() {
         std::string current = Str::UTF32To8(GetText());
-        PrevLine(hist, current);
+        hist.PrevLine(current);
         SetText(Str::UTF8To32(current));
     }
 
     void Field::HistoryNext() {
         std::string current = Str::UTF32To8(GetText());
-        NextLine(hist, current);
+        hist.NextLine(current);
         SetText(Str::UTF8To32(current));
     }
 
@@ -62,7 +62,7 @@ namespace Console {
         } else {
             Cmd::BufferCommandText(defaultCommand + " " + Cmd::Escape(current), true);
         }
-        AddToHistory(hist, std::move(current));
+        hist.Add(std::move(current));
 
         Clear();
     }
@@ -128,7 +128,7 @@ namespace Console {
 
         //Print the matches if it is ambiguous
         if (candidates.size() >= 2) {
-            Log::Notice(S_COLOR_YELLOW "-> " S_COLOR_WHITE "%s", Str::UTF32To8(GetText()).c_str());
+            Log::Notice("^3-> ^*%s", Str::UTF32To8(GetText()).c_str());
             for (const auto& candidate : candidates) {
                 std::string filler(maxCandidateLength - candidate.first.length(), ' ');
                 Log::Notice("   %s%s %s", candidate.first.c_str(), filler.c_str(), candidate.second.c_str());

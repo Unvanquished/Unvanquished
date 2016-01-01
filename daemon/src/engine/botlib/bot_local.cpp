@@ -82,7 +82,7 @@ void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPo
 {
 	if ( !bot->corridor.getPathCount() )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: FindWaypoints Called without a path!\n" );
+		Com_Log( LOG_ERROR, "FindWaypoints Called without a path!" );
 		*numCorners = 0;
 		return;
 	}

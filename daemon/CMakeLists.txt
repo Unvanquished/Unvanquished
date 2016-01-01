@@ -78,7 +78,11 @@ if(NOT DAEMON_EXTERNAL_APP)
 
     set(NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries")
 
-    cmake_dependent_option(USE_VOIP "Compile with VOIP support" 0 "BUILD_CLIENT OR BUILD_SERVER OR BUILD_TTY_CLIENT" 0)
+    if (NOT APPLE AND NOT WIN32)
+	option(USE_CURSES "Compile with curses support" 1)
+    else()
+	option(USE_CURSES "Compile with curses support" 0)
+    endif()
     cmake_dependent_option(USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0)
     cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0)
 endif()
@@ -543,12 +547,6 @@ if (BUILD_CLIENT)
     set_target_properties(srclibs-openexr PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
     set(LIBS_CLIENT ${LIBS_CLIENT} srclibs-openexr)
 
-    if (USE_VOIP)
-        find_package(Speex REQUIRED)
-        include_directories(${SPEEX_INCLUDE_DIR})
-        set(LIBS_CLIENT ${LIBS_CLIENT} ${SPEEX_LIBRARIES})
-    endif()
-
     find_package(Ogg REQUIRED)
     include_directories(${OGG_INCLUDE_DIRS})
     set(LIBS_CLIENT ${LIBS_CLIENT} ${OGG_LIBRARIES})
@@ -611,7 +609,7 @@ function(AddApplication)
     set(multiValueArgs Definitions Flags Files Libs)
     cmake_parse_arguments(A "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    add_executable(${A_Target} ${PCH_FILE} ${A_Files})
+    add_executable(${A_Target} ${A_Files} ${PCH_FILE})
     target_link_libraries(${A_Target} engine-lib ${A_Libs})
 
     set_property(TARGET ${A_Target} APPEND PROPERTY COMPILE_OPTIONS ${A_Flags})
@@ -630,10 +628,6 @@ if (BUILD_CLIENT)
     if (USE_SMP)
         list(APPEND Definitions USE_SMP)
     endif()
-    if (USE_VOIP)
-        list(APPEND Definitions USE_VOIP)
-    endif()
-
     AddApplication(
         Target client
         ExecutableName daemon

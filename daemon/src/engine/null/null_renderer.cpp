@@ -50,10 +50,6 @@ qhandle_t RE_RegisterShader( const char *, RegisterShaderFlags_t )
 {
 	return 1;
 }
-qhandle_t RE_RegisterShaderNoMip( const char * )
-{
-	return 1;
-}
 void RE_RegisterFont( const char *, const char *, int pointSize, fontInfo_t **font )
 {
 	if (!*font)
@@ -109,11 +105,11 @@ void RE_AddPolysToScene( qhandle_t, int, const polyVert_t*, int ) { }
 void RE_AddLightToScene( const vec3_t, float, float, float, float, float, qhandle_t, int ) { }
 void RE_AddLightToSceneQ3A( const vec3_t, float, float, float, float ) { }
 void RE_RenderScene( const refdef_t* ) { }
-void RE_SetColor( const float* ) { }
+void RE_SetColor( const Color::Color& ) { }
 void RE_SetClipRegion( const float* ) { }
 void RE_StretchPic( float, float, float, float, float, float, float, float, qhandle_t ) { }
 void RE_RotatedPic( float, float, float, float, float, float, float, float, qhandle_t, float ) { }
-void RE_StretchPicGradient( float, float, float, float, float, float, float, float, qhandle_t, const float*, int ) { }
+void RE_StretchPicGradient( float, float, float, float, float, float, float, float, qhandle_t, const Color::Color&, int ) { }
 void RE_2DPolyies( polyVert_t*, int, qhandle_t ) { }
 void RE_StretchRaw( int, int, int, int, int, int, const byte*, int, bool ) { }
 void RE_UploadCinematic( int, int, const byte*, int, bool ) { }
@@ -123,7 +119,7 @@ int R_MarkFragments( int, const vec3_t*, const vec3_t, int, vec3_t, int, markFra
 {
 	return 0;
 }
-void RE_ProjectDecal( qhandle_t, int, vec3_t*, vec4_t, vec4_t, int, int ) { }
+void RE_ProjectDecal( qhandle_t, int, vec3_t*, vec4_t, const Color::Color&, int, int ) { }
 void RE_ClearDecals() { }
 int R_LerpTag( orientation_t*, const refEntity_t*, const char*, int )
 {
@@ -147,10 +143,6 @@ bool R_inPVVS( const vec3_t, const vec3_t )
 bool RE_LoadDynamicShader( const char*, const char* )
 {
 	return true;
-}
-int R_GetTextureId( const char* )
-{
-	return 0;
 }
 void RE_Finish() { }
 void RE_TakeVideoFrame( int, int, byte*, byte*, bool ) { }

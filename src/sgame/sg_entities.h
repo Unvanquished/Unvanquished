@@ -220,6 +220,7 @@ typedef struct
 // g_entities.c
 //
 //lifecycle
+void       G_InitGentityMinimal( gentity_t *e );
 void       G_InitGentity( gentity_t *e );
 gentity_t  *G_NewEntity();
 gentity_t  *G_NewTempEntity( const vec3_t origin, int event );

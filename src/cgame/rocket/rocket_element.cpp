@@ -294,16 +294,12 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 
 			case ROCKET_COLOR:
 			{
-				vec_t *outColor = ( vec_t * ) out;
-
-				if ( len != sizeof( vec4_t ) )
+				if ( len == sizeof( Color::Color ) )
 				{
-					return;
+					Color::Color* outColor = ( Color::Color* ) out;
+					*outColor = Color::Adapt( property->Get<Rocket::Core::Colourb>() );
 				}
 
-				Rocket::Core::Colourb color = property->Get<Rocket::Core::Colourb>();
-				outColor[ 0 ] = color.red, outColor[ 1 ] = color.green, outColor[ 2 ] = color.blue, outColor[ 3 ] = color.alpha;
-				Vector4Scale( outColor, 1 / 255.0f, outColor );
 				return;
 			}
 		}

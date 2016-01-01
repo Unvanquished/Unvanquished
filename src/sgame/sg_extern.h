@@ -37,6 +37,13 @@ extern gentity_t *g_entities;
 extern gclient_t *g_clients;
 #endif
 
+// ---------
+// temporary, compatibility layer between legacy code and CBSE logic
+// ---------
+
+extern damageRegion_t g_damageRegions[ PCL_NUM_CLASSES ][ MAX_DAMAGE_REGIONS ];
+extern int            g_numDamageRegions[ PCL_NUM_CLASSES ];
+
 // -----
 // cvars
 // -----

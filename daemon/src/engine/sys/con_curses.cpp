@@ -20,21 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "qcommon/q_shared.h"
-#include "qcommon/q_unicode.h"
-#include "qcommon/qcommon.h"
-
+#include "con_common.h"
 #include "framework/ConsoleField.h"
-
-// curses.h defines COLOR_*, which are already defined in q_shared.h
-#undef COLOR_BLACK
-#undef COLOR_RED
-#undef COLOR_GREEN
-#undef COLOR_YELLOW
-#undef COLOR_BLUE
-#undef COLOR_MAGENTA
-#undef COLOR_CYAN
-#undef COLOR_WHITE
 
 #ifndef _WIN32
 #include <fcntl.h>
@@ -45,11 +32,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <curses.h>
 
 #ifdef BUILD_SERVER
-#define TITLE         S_COLOR_GREEN "[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Server Console " S_COLOR_GREEN "]"
+#define TITLE         "^2[ ^3" CLIENT_WINDOW_TITLE " Server Console ^2]"
 #else
-#define TITLE         S_COLOR_GREEN "[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Console " S_COLOR_GREEN "]"
+#define TITLE         "^2[ ^3" CLIENT_WINDOW_TITLE " Console ^2]"
 #endif
-#define PROMPT        S_COLOR_YELLOW "-> "
+#define PROMPT        "^3-> "
 #define INPUT_SCROLL  15
 #define LOG_SCROLL    5
 #define MAX_LOG_LINES 1024
@@ -81,8 +68,12 @@ static int      stderr_fd;
 
 #define LOG_LINES      ( LINES - 3 )
 
-#define CURSES_NULL_COLOR -1
+static const int CURSES_DEFAULT_COLOR = 32;
 
+static void Con_ClearColor( WINDOW *win )
+{
+	wattrset( win, COLOR_PAIR( CURSES_DEFAULT_COLOR ) );
+}
 /*
 ==================
 CON_SetColor
@@ -90,56 +81,15 @@ CON_SetColor
 Use grey instead of black
 ==================
 */
-static void CON_SetColor( WINDOW *win, int color )
+static void CON_SetColor( WINDOW *win, const Color::Color& color )
 {
-	// Approximations of g_color_table (q_math.c)
-	// Colours are hard-wired below; see init_pair() calls
-	static const chtype colour16map[2][32] = {
-		{ // Variant 1 (xterm)
-			1 | A_BOLD, 2,          3,          4,
-			5,          6,          7,          8,
-			4 | A_DIM,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
-			3 | A_DIM,  4 | A_DIM,  5 | A_DIM,  2 | A_DIM,
-			4 | A_DIM,  4 | A_DIM,  6 | A_DIM,  7 | A_DIM,
-			6 | A_DIM,  7 | A_DIM,  6 | A_DIM,  3 | A_BOLD,
-			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
-			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
-		},
-		{ // Variant 2 (vte)
-			1 | A_BOLD, 2,          3,          4 | A_BOLD,
-			5,          6,          7,          8,
-			4        ,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
-			3 | A_DIM,  4,          5 | A_DIM,  2 | A_DIM,
-			4 | A_DIM,  4 | A_DIM,  6 | A_DIM,  7 | A_DIM,
-			6 | A_DIM,  7 | A_DIM,  6 | A_DIM,  3 | A_BOLD,
-			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
-			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
-		}
-	};
-
-	if ( color == CURSES_NULL_COLOR || !com_ansiColor.Get() )
+	if ( !com_ansiColor.Get() )
 	{
-		wattrset( win, COLOR_PAIR( 0 ) );
-	}
-	else if ( COLORS >= 256 && com_ansiColor.Get() )
-	{
-#ifdef A_RGB  //macro producing color attribute for a 64-bit chtype in pdcurses
-		wattrset( win, A_RGB( (int)( g_color_table[color][0] * 31 ),
-		    (int)( g_color_table[color][1] * 31 ), (int)( g_color_table[color][2] * 31 ), 0, 0, 0 ) );
-#else
-		wattrset( win, COLOR_PAIR( color + 9 ) ); // hard-wired below; see init_pair() calls
-#endif
+		Con_ClearColor( win );
 	}
 	else
 	{
-		int index = com_ansiColor.Get() ? 1 : 0;
-
-		if ( index >= (int) ARRAY_LEN( colour16map ) )
-		{
-			index = 0;
-		}
-
-		wattrset( win, COLOR_PAIR( colour16map[index][ color ] & 0xF ) | ( colour16map[index][color] & ~0xF ) );
+		wattrset( win, COLOR_PAIR(Color::To4bit( color )) );
 	}
 }
 
@@ -147,7 +97,7 @@ static INLINE void CON_UpdateCursor()
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
 #ifdef _WIN32
-	move( LINES - 1, Q_PrintStrlen( PROMPT ) + 8 + input_field.GetViewCursorPos() );
+	move( LINES - 1, Color::StrlenNocolor( PROMPT ) + 8 + input_field.GetViewCursorPos() );
 	wnoutrefresh( stdscr );
 #else
 	wmove( inputwin, 0, input_field.GetViewCursorPos() );
@@ -162,98 +112,63 @@ CON_ColorPrint
 */
 static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 {
-	static wchar_t buffer[ MAXPRINTMSG ];
-	int         length = 0;
-	bool    noColour = false;
 
-	CON_SetColor( win, CURSES_NULL_COLOR );
+	Con_ClearColor( win );
 
-	while ( *msg )
+	std::string buffer;
+	for ( const auto& token : Color::Parser( msg, Color::Color() ) )
 	{
-		if ( ( !noColour && Q_IsColorString( msg ) ) || *msg == '\n' )
-		{
-			noColour = false;
 
-			// First empty the buffer
-			if ( length > 0 )
+		if ( token.Type() == Color::Token::COLOR )
+		{
+			if ( !buffer.empty() )
 			{
-				buffer[ length ] = L'\0';
-				waddwstr( win, buffer );
-				length = 0;
+				waddstr( win, buffer.c_str() );
+				buffer.clear();
 			}
 
-			if ( *msg == '\n' )
+			if ( token.Color().Alpha() == 0 )
 			{
-				// Reset the color and then print a newline
-				CON_SetColor( win, CURSES_NULL_COLOR );
+				Con_ClearColor( win );
+			}
+			else
+			{
+				CON_SetColor( win, token.Color() );
+			}
+
+			if ( !stripcodes )
+			{
+				buffer.append( token.Begin(), token.Size() );
+			}
+		}
+		else if ( token.Type() == Color::Token::ESCAPE )
+		{
+			if ( !stripcodes )
+			{
+				buffer.append( token.Begin(), token.Size() );
+			}
+			else
+			{
+				buffer += Color::Constants::ESCAPE;
+			}
+		}
+		else if ( token.Type() == Color::Token::CHARACTER )
+		{
+			if ( *token.Begin() == '\n' )
+			{
+				waddstr( win, buffer.c_str() );
+				buffer.clear();
+				Con_ClearColor( win );
 				waddch( win, '\n' );
-				msg++;
 			}
 			else
 			{
-				// Set the color
-				CON_SetColor( win, *( msg + 1 ) == COLOR_NULL ? CURSES_NULL_COLOR : ColorIndex( *( msg + 1 ) ) );
-
-				if ( stripcodes )
-				{
-					msg += 2;
-				}
-				else
-				{
-					if ( length >= MAXPRINTMSG - 1 )
-					{
-						break;
-					}
-
-					buffer[ length ] = *msg;
-					length++;
-					msg++;
-
-					if ( length >= MAXPRINTMSG - 1 )
-					{
-						break;
-					}
-
-					buffer[ length ] = *msg;
-					length++;
-					msg++;
-				}
+				buffer.append( token.Begin(), token.Size() );
 			}
-		}
-		else
-		{
-			if ( length >= MAXPRINTMSG - 1 )
-			{
-				break;
-			}
-
-			if ( !noColour && *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
-			{
-				if ( stripcodes )
-				{
-					++msg;
-				}
-				else
-				{
-					noColour = true; // guaranteed a colour control next
-				}
-			}
-			else
-			{
-				noColour = false;
-			}
-			buffer[ length ] = (wchar_t) Q_UTF8_CodePoint( msg );
-			msg += Q_UTF8_WidthCP( buffer[ length ]);
-			length++;
 		}
 	}
 
-	// Empty anything still left in the buffer
-	if ( length > 0 )
-	{
-		buffer[ length ] = L'\0';
-		waddwstr( win, buffer );
-	}
+	waddstr( win, buffer.c_str() );
 }
 
 /*
@@ -323,8 +238,8 @@ static void CON_Redraw()
 	pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 
 	// Create the input field
-	inputwin = newwin( 1, COLS - Q_PrintStrlen( PROMPT ) - 8, LINES - 1, Q_PrintStrlen( PROMPT ) + 8 );
-	input_field.SetWidth(COLS - Q_PrintStrlen( PROMPT ) - 9);
+	inputwin = newwin( 1, COLS - Color::StrlenNocolor( PROMPT ) - 8, LINES - 1, Color::StrlenNocolor( PROMPT ) + 8 );
+	input_field.SetWidth(COLS - Color::StrlenNocolor( PROMPT ) - 9);
 	CON_ColorPrint( inputwin, Str::UTF32To8(input_field.GetViewText()).c_str(), false );
 	CON_UpdateCursor();
 	wnoutrefresh( inputwin );
@@ -334,14 +249,14 @@ static void CON_Redraw()
 	CON_UpdateClock();
 
 	// Create the border
-	CON_SetColor( stdscr, 2 );
+	CON_SetColor( stdscr, Color::Green );
 	for (int i = 0; i < COLS; i++) {
 		mvaddch(0, i, ACS_HLINE);
 		mvaddch(LINES - 2, i, ACS_HLINE);
 	}
 
 	// Display the title and input prompt
-	move( 0, ( COLS - Q_PrintStrlen( TITLE ) ) / 2 );
+	move( 0, ( COLS - Color::StrlenNocolor( TITLE ) ) / 2 );
 	CON_ColorPrint( stdscr, TITLE, true );
 	move( LINES - 1, 8 );
 	CON_ColorPrint( stdscr, PROMPT, true );
@@ -365,29 +280,6 @@ static void CON_Resize( int )
 	forceRedraw = true;
 }
 #endif
-
-/*
-==================
-CON_Clear_f
-==================
-*/
-void CON_Clear_f()
-{
-	if ( !curses_on )
-	{
-		//CON_Clear_TTY();
-		return;
-	}
-
-	// Clear the log and the window
-	memset( logbuf, 0, sizeof( logbuf ) );
-	werase( logwin );
-	pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
-
-	// Move the cursor back to the input field
-	CON_UpdateCursor();
-	doupdate();
-}
 
 /*
 ==================
@@ -416,44 +308,6 @@ void CON_Shutdown()
 		dup2( stderr_fd, STDERR_FILENO );
 	}
 #endif
-}
-
-/*
-==================
-CON_DumpLog
-
-Used for dumping log text to the tty.
-May be called on shutdown from a signal handler.
-==================
-*/
-void CON_LogDump()
-{
-	if ( dump_logs )
-	{
-		const char *ptr = insert;
-		int lines = 0;
-
-		dump_logs = 0;
-
-		while ( lines < 24 && --ptr >= logbuf )
-		{
-			if ( *ptr == '\n' )
-			{
-				++lines;
-			}
-		}
-
-		while ( *ptr == '\n' && ptr < insert )
-		{
-			++ptr;
-		}
-
-		if ( insert - ptr )
-		{
-			fputs( "\nPartial log dump:\n\n", stderr );
-			fwrite( ptr, 1, insert - ptr, stderr );
-		}
-	}
 }
 
 /*
@@ -503,27 +357,14 @@ void CON_Init()
 		// Set up colors
 		if ( has_colors() )
 		{
-			// Mappings used in CON_SetColor()
-			static const unsigned char colourmap[] = {
-				0, // <- dummy entry
-				// 8-colour terminal mappings (modified later with bold/dim)
-				COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW,
-				COLOR_BLUE, COLOR_CYAN, COLOR_MAGENTA, COLOR_WHITE,
-				// 256-colour terminal mappings
-				239, 196,  46, 226,  21,  51, 201, 231,
-				208, 244, 250, 250,  28, 100,  18,  88,
-				 94, 209,  30,  90,  33,  93,  68, 194,
-				 29, 197, 124,  94, 173, 101, 229, 228
-			};
-			int i;
-
 			use_default_colors();
 			start_color();
-			init_pair( 0, -1, -1 );
+			init_pair( CURSES_DEFAULT_COLOR, -1, -1 );
 
-			for ( i = ( COLORS >= 256 ) ? 40 : 8; i; --i )
+			// Pairs used for Color::Color
+			for ( int i = 0; i < 16; i++ )
 			{
-				init_pair( i, colourmap[i], -1 );
+				init_pair(i, i, -1);
 			}
 		}
 
@@ -612,7 +453,7 @@ char *CON_Input()
 			case '\n':
 			case '\r':
 			case KEY_ENTER:
-                Log::Notice( PROMPT S_COLOR_NULL "%s", Str::UTF32To8(input_field.GetText()).c_str() );
+                Log::Notice( PROMPT "^*%s", Str::UTF32To8(input_field.GetText()).c_str() );
 				input_field.RunCommand(com_consoleCommand.Get());
 				werase( inputwin );
 				wnoutrefresh( inputwin );
@@ -676,7 +517,7 @@ char *CON_Input()
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
 				if (scrollline >= lastline - LOG_LINES) {
-					CON_SetColor(stdscr, 2);
+					CON_SetColor( stdscr, Color::Green );
 					for (int i = COLS - 7; i < COLS - 1; i++)
 						mvaddch(LINES - 2, i, ACS_HLINE);
 				}
@@ -696,7 +537,7 @@ char *CON_Input()
 					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
 				}
 				if (scrollline < lastline - LOG_LINES) {
-					CON_SetColor(stdscr, 1);
+					CON_SetColor( stdscr, Color::Red );
 					mvaddstr(LINES - 2, COLS - 7, "(more)");
 				}
 

@@ -49,16 +49,7 @@ void IN_Shutdown()
 {
 }
 
-void Sys_SendKeyEvents()
-{
-}
-
-// TTimo: added for win32 dedicated
-void IN_MouseEvent( int )
-{
-}
-
-void IN_Activate( bool )
+void IN_CenterMouse()
 {
 }
 
@@ -69,4 +60,8 @@ void IN_DropInputsForFrame()
 bool IN_IsNumLockDown()
 {
     return false;
+}
+
+void IN_SetCursorActive( bool )
+{
 }

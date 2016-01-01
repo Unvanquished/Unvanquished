@@ -70,6 +70,8 @@ static void SV_EmitPacketEntities( const clientSnapshot_t *from, clientSnapshot_
 	int           oldnum, newnum;
 	int           from_num_entities;
 
+    MSG_WriteShort(msg, to->num_entities);
+
 	// generate the delta update
 	if ( !from )
 	{
@@ -657,8 +659,6 @@ For viewing through other player's eyes, clent can be something other than clien
 static void SV_BuildClientSnapshot( client_t *client )
 {
 	vec3_t                  org;
-
-//  clientSnapshot_t            *frame, *oldframe;
 	clientSnapshot_t        *frame;
 	snapshotEntityNumbers_t entityNumbers;
 	int                     i;
@@ -756,58 +756,6 @@ static void SV_BuildClientSnapshot( client_t *client )
 		frame->num_entities++;
 	}
 }
-
-#ifdef USE_VOIP
-
-/*
-==================
-SV_WriteVoipToClient
-
-Check to see if there is any VoIP queued for a client, and send if there is.
-==================
-*/
-void SV_WriteVoipToClient( client_t *cl, msg_t *msg )
-{
-	int                totalbytes = 0;
-	int                i;
-	voipServerPacket_t *packet;
-
-	if ( cl->queuedVoipPackets )
-	{
-		// Write as many VoIP packets as we reasonably can...
-		for ( i = 0; i < cl->queuedVoipPackets; i++ )
-		{
-			packet = cl->voipPacket[( i + cl->queuedVoipIndex ) % ARRAY_LEN( cl->voipPacket ) ];
-
-			if ( !*cl->downloadName )
-			{
-				totalbytes += packet->len;
-
-				if ( totalbytes > ( msg->maxsize - msg->cursize ) / 2 )
-				{
-					break;
-				}
-
-				MSG_WriteByte( msg, svc_voip );
-				MSG_WriteShort( msg, packet->sender );
-				MSG_WriteByte( msg, ( byte ) packet->generation );
-				MSG_WriteLong( msg, packet->sequence );
-				MSG_WriteByte( msg, packet->frames );
-				MSG_WriteShort( msg, packet->len );
-				MSG_WriteBits( msg, packet->flags, VOIP_FLAGCNT );
-				MSG_WriteData( msg, packet->data, packet->len );
-			}
-
-			Z_Free( packet );
-		}
-
-		cl->queuedVoipPackets -= i;
-		cl->queuedVoipIndex += i;
-		cl->queuedVoipIndex %= ARRAY_LEN( cl->voipPacket );
-	}
-}
-
-#endif
 
 /*
 ====================
@@ -1024,9 +972,6 @@ void SV_SendClientSnapshot( client_t *client )
 
 	// Add any download data if the client is downloading
 	SV_WriteDownloadToClient( client, &msg );
-#ifdef USE_VOIP
-	SV_WriteVoipToClient( client, &msg );
-#endif
 
 	// check for overflow
 	if ( msg.overflowed )

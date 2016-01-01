@@ -360,8 +360,7 @@ Handles horizontal scrolling and cursor blinking
 x, y, and width are in pixels
 ===================
 */
-void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int size, bool showCursor,
-        bool noColorEscape, float alpha )
+void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape, float alpha)
 {
     //TODO support UTF-8 once LineEditData does
     //Extract the text we want to draw
@@ -372,16 +371,12 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
     std::string text = Str::UTF32To8(std::u32string(edit.GetViewText(), drawWidth));
 
     // draw the text
-    if (size == SMALLCHAR_WIDTH) {
-        float color[4] = {1.0, 1.0, 1.0, alpha};
-        SCR_DrawSmallStringExt(x, y, text.c_str(), color, false, noColorEscape);
-    } else {
-        SCR_DrawBigString(x, y, text.c_str(), 1.0, noColorEscape);
-    }
+	Color::Color color { 1.0f, 1.0f, 1.0f, alpha };
+	SCR_DrawSmallStringExt(x, y, text.c_str(), color, false, noColorEscape);
 
     // draw the line scrollbar
     if (len > drawWidth) {
-        static const float yellow[] = { 1, 1, 0, 0.25 };
+        static const Color::Color yellow = { 1.0f, 1.0f, 0.0f, 0.25f };
         float width = SCR_ConsoleFontStringWidth(text.c_str(), drawWidth);
 
         re.SetColor( yellow );
@@ -395,33 +390,17 @@ void Field_VariableSizeDraw(const Util::LineEditData& edit, int x, int y, int si
             return;
         }
 
-        vec4_t supportElementsColor = {1.0f, 1.0f, 1.0f, 0.66f * consoleState.currentAlphaFactor};
+        Color::Color supportElementsColor = {1.0f, 1.0f, 1.0f, 0.66f * consoleState.currentAlphaFactor};
         re.SetColor( supportElementsColor );
 
         //Compute the position of the cursor
         float xpos, width, height;
-        if (size == SMALLCHAR_WIDTH) {
-            xpos = x + SCR_ConsoleFontStringWidth(text.c_str(), cursorPos);
-            height = key_overstrikeMode ? SMALLCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
-            width = SMALLCHAR_WIDTH;
-        } else {
-            xpos = x + cursorPos * size;
-            height = key_overstrikeMode ? BIGCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
-            width = BIGCHAR_WIDTH;
-        }
+		xpos = x + SCR_ConsoleFontStringWidth(text.c_str(), cursorPos);
+		height = key_overstrikeMode ? SMALLCHAR_HEIGHT / (CONSOLE_FONT_VPADDING + 1) : 2;
+		width = SMALLCHAR_WIDTH;
 
         re.DrawStretchPic(xpos, y + 2 - height, width, height, 0, 0, 0, 0, cls.whiteShader);
     }
-}
-
-void Field_Draw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape, float alpha)
-{
-	Field_VariableSizeDraw(edit, x, y, SMALLCHAR_WIDTH, showCursor, noColorEscape, alpha);
-}
-
-void Field_BigDraw(const Util::LineEditData& edit, int x, int y, bool showCursor, bool noColorEscape)
-{
-	Field_VariableSizeDraw(edit, x, y, BIGCHAR_WIDTH, showCursor, noColorEscape, 1.0f);
 }
 
 /*
@@ -630,7 +609,7 @@ void Console_Key( int key )
 
 		//scroll lock state 1 or smaller will scroll down on own output
 		if (con_scrollLock->integer <= 1) {
-			consoleState.scrollLineIndex = consoleState.currentLine;
+			consoleState.scrollLineIndex = consoleState.lines.size() - 1;
 		}
 
 		Com_Printf("]%s\n", Str::UTF32To8(g_consoleField.GetText()).c_str());
@@ -730,16 +709,6 @@ void Console_Key( int key )
 }
 
 //============================================================================
-
-bool Key_GetOverstrikeMode()
-{
-	return key_overstrikeMode;
-}
-
-void Key_SetOverstrikeMode( bool state )
-{
-	key_overstrikeMode = state;
-}
 
 /*
 ===================
@@ -1006,32 +975,6 @@ const char *Key_GetBinding( int keynum, int team )
 
 	bind = keys[ keynum ].binding[ CLIP( team ) ];
 	return bind ? bind : keys[ keynum ].binding[ 0 ];
-}
-
-/*
-===================
-Key_GetKey
-===================
-*/
-
-int Key_GetKey( const char *binding, int team )
-{
-	int i;
-
-	while ( binding && team >= 0 )
-	{
-		for ( i = 0; i < MAX_KEYS; i++ )
-		{
-			if ( keys[ i ].binding[ team ] && Q_stricmp( binding, keys[ i ].binding[ team ] ) == 0 )
-			{
-				return i;
-			}
-		}
-
-		team = team ? 0 : -1;
-	}
-
-	return -1;
 }
 
 /*
@@ -2052,7 +1995,9 @@ void Key_SetTeam( int newTeam )
 
 	if ( bindTeam != newTeam )
 	{
-		Com_DPrintf( S_COLOR_GREEN "Setting binding team index to %d\n", newTeam );
+		Com_DPrintf( "%sSetting binding team index to %d\n",
+			Color::CString( Color::Green ),
+			newTeam );
 	}
 
 	bindTeam = newTeam;

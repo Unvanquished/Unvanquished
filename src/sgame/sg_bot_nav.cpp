@@ -111,7 +111,7 @@ float RadiusFromBounds2D( vec3_t mins, vec3_t maxs )
 {
 	float rad1s = Square( mins[0] ) + Square( mins[1] );
 	float rad2s = Square( maxs[0] ) + Square( maxs[1] );
-	return sqrt( MAX( rad1s, rad2s ) );
+	return sqrt( std::max( rad1s, rad2s ) );
 }
 
 float BotGetGoalRadius( gentity_t *self )

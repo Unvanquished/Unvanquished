@@ -443,7 +443,7 @@ bool PC_Float_Parse( int handle, float *f )
 Color_Parse
 =================
 */
-bool Color_Parse( const char **p, vec4_t *c )
+bool Color_Parse( const char **p, Color::Color* c )
 {
 	int   i;
 	float f;
@@ -455,7 +455,7 @@ bool Color_Parse( const char **p, vec4_t *c )
 			return false;
 		}
 
-		( *c ) [ i ] = f;
+		c->ToArray()[ i ] = f;
 	}
 
 	return true;
@@ -466,7 +466,7 @@ bool Color_Parse( const char **p, vec4_t *c )
 PC_Color_Parse
 =================
 */
-bool PC_Color_Parse( int handle, vec4_t *c )
+bool PC_Color_Parse( int handle, Color::Color *c )
 {
 	int   i;
 	float f;
@@ -478,7 +478,7 @@ bool PC_Color_Parse( int handle, vec4_t *c )
 			return false;
 		}
 
-		( *c ) [ i ] = f;
+		c->ToArray()[ i ] = f;
 	}
 
 	return true;

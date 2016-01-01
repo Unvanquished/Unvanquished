@@ -37,6 +37,11 @@ namespace Application {
 class ServerApplication : public Application {
     public:
         ServerApplication() {
+            #ifdef _WIN32
+                // The windows dedicated server and tty client must enable the
+                // curses interface because they have no other usable interface.
+                traits.useCurses = true;
+            #endif
             traits.isServer = true;
             traits.uniqueHomepathSuffix = "-server";
         }

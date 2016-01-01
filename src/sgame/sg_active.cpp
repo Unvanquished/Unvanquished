@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "CBSE.h"
 
 bool ClientInactivityTimer( gentity_t *ent, bool active );
 
@@ -83,7 +84,9 @@ void P_DamageFeedback( gentity_t *player )
 	if ( ( level.time > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
 	{
 		player->pain_debounce_time = level.time + 700;
-		G_AddEvent( player, EV_PAIN, player->health > 255 ? 255 : player->health );
+		int transmittedHalth = (int)std::ceil(player->entity->Get<HealthComponent>()->Health());
+		transmittedHalth = Math::Clamp(transmittedHalth, 0, 255);
+		G_AddEvent( player, EV_PAIN, transmittedHalth );
 		client->ps.damageEvent++;
 	}
 
@@ -93,7 +96,6 @@ void P_DamageFeedback( gentity_t *player )
 	// clear totals
 	//
 	client->damage_received = 0;
-	client->damage_knockback = 0;
 }
 
 /*
@@ -126,7 +128,7 @@ void P_WorldEffects( gentity_t *ent )
 			// drown!
 			ent->client->airOutTime += 1000;
 
-			if ( ent->health > 0 )
+			if ( G_Alive( ent ) )
 			{
 				// take more damage the longer underwater
 				ent->damage += 2;
@@ -137,7 +139,7 @@ void P_WorldEffects( gentity_t *ent )
 				}
 
 				// play a gurp sound instead of a general pain sound
-				if ( ent->health <= ent->damage )
+				if ( ent->entity->Get<HealthComponent>()->Health() <= (float)ent->damage )
 				{
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
 				}
@@ -153,8 +155,8 @@ void P_WorldEffects( gentity_t *ent )
 				// don't play a general pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				G_Damage( ent, nullptr, nullptr, nullptr, nullptr,
-				          ent->damage, DAMAGE_NO_ARMOR, MOD_WATER );
+				ent->entity->Damage((float)ent->damage, nullptr, Util::nullopt, Util::nullopt,
+				                    DAMAGE_PURE, MOD_WATER);
 			}
 		}
 	}
@@ -170,19 +172,16 @@ void P_WorldEffects( gentity_t *ent )
 	if ( waterlevel &&
 	     ( ent->watertype & ( CONTENTS_LAVA | CONTENTS_SLIME ) ) )
 	{
-		if ( ent->health > 0 &&
-		     ent->pain_debounce_time <= level.time )
+		if ( G_Alive( ent ) && ent->pain_debounce_time <= level.time )
 		{
 			if ( ent->watertype & CONTENTS_LAVA )
 			{
-				G_Damage( ent, nullptr, nullptr, nullptr, nullptr,
-				          30 * waterlevel, 0, MOD_LAVA );
+				ent->entity->Damage(30.0f * waterlevel, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
 			}
 
 			if ( ent->watertype & CONTENTS_SLIME )
 			{
-				G_Damage( ent, nullptr, nullptr, nullptr, nullptr,
-				          10 * waterlevel, 0, MOD_SLIME );
+				ent->entity->Damage(10.0f * waterlevel, nullptr, Util::nullopt, Util::nullopt, 0, MOD_SLIME);
 			}
 		}
 	}
@@ -438,7 +437,7 @@ void  G_TouchTriggers( gentity_t *ent )
 	}
 
 	// dead clients don't activate triggers!
-	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( G_Dead( ent ) )
 	{
 		return;
 	}
@@ -724,6 +723,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 	return true;
 }
 
+// TODO: Move to MedikitComponent.
 static void G_ReplenishHumanHealth( gentity_t *self )
 {
 	gclient_t *client;
@@ -748,7 +748,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	// stop if client is fully healed
-	if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+	if ( self->entity->Get<HealthComponent>()->FullHealth() )
 	{
 		client->medKitHealthToRestore = 0;
 		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_4X;
@@ -781,7 +781,8 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	// heal
-	client->medKitHealthToRestore -= G_Heal( self, 1 );
+	self->entity->Heal(1.0f, nullptr);
+	client->medKitHealthToRestore --;
 }
 
 static void BeaconAutoTag( gentity_t *self, int timePassed )
@@ -984,22 +985,21 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		// deal poison damage
 		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
 		{
-			G_Damage( ent, client->lastPoisonClient, client->lastPoisonClient, nullptr,
-			          nullptr, ALIEN_POISON_DMG, DAMAGE_NO_LOCDAMAGE, MOD_POISON );
+			ent->entity->Damage(ALIEN_POISON_DMG, client->lastPoisonClient, Util::nullopt,
+			                    Util::nullopt, DAMAGE_NO_LOCDAMAGE, MOD_POISON);
 		}
 
 		// turn off life support when a team admits defeat
 		if ( client->pers.team == TEAM_ALIENS &&
 		     level.surrenderTeam == TEAM_ALIENS )
 		{
-			G_Damage( ent, nullptr, nullptr, nullptr, nullptr,
-			          BG_Class( client->ps.stats[ STAT_CLASS ] )->regenRate,
-			          DAMAGE_NO_ARMOR, MOD_SUICIDE );
+			ent->entity->Damage((float)BG_Class(client->ps.stats[STAT_CLASS])->regenRate,
+			                    nullptr, Util::nullopt, Util::nullopt, DAMAGE_PURE, MOD_SUICIDE);
 		}
 		else if ( client->pers.team == TEAM_HUMANS &&
 		          level.surrenderTeam == TEAM_HUMANS )
 		{
-			G_Damage( ent, nullptr, nullptr, nullptr, nullptr, 5, DAMAGE_NO_ARMOR, MOD_SUICIDE );
+			ent->entity->Damage(5.0f, nullptr, Util::nullopt, Util::nullopt, DAMAGE_PURE, MOD_SUICIDE);
 		}
 
 		// lose some voice enthusiasm
@@ -1041,23 +1041,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		else if ( ent->client->ps.weapon == WP_HBUILD )
 		{
 			G_AddCreditsToScore( ent, HUMAN_BUILDER_SCOREINC );
-		}
-	}
-
-	// Regenerate Adv. Dragoon barbs
-	if ( client->ps.weapon == WP_ALEVEL3_UPG )
-	{
-		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
-		{
-			if ( ent->timestamp + LEVEL3_BOUNCEBALL_REGEN < level.time )
-			{
-				client->ps.ammo++;
-				ent->timestamp = level.time;
-			}
-		}
-		else
-		{
-			ent->timestamp = level.time;
 		}
 	}
 }
@@ -1148,7 +1131,8 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				VectorAdd( client->ps.origin, mins, point );
 
 				ent->pain_debounce_time = level.time + 200; // no general pain sound
-				G_Damage( ent, nullptr, nullptr, dir, point, damage, DAMAGE_NO_LOCDAMAGE, MOD_FALLING );
+				ent->entity->Damage((float)damage, nullptr, Vec3::Load(point), Vec3::Load(dir),
+				                    DAMAGE_NO_LOCDAMAGE, MOD_FALLING);
 				break;
 
 			case EV_FIRE_WEAPON:
@@ -1592,7 +1576,7 @@ static int FindAlienHealthSource( gentity_t *self )
 {
 	int       ret = 0, closeTeammates = 0;
 	float     distance, minBoosterDistance = FLT_MAX;
-	bool  needsHealing;
+	bool      needsHealing;
 	gentity_t *ent;
 
 	if ( !self || !self->client )
@@ -1600,15 +1584,14 @@ static int FindAlienHealthSource( gentity_t *self )
 		return 0;
 	}
 
-	needsHealing = self->client->ps.stats[ STAT_HEALTH ] <
-	               BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
+	needsHealing = !self->entity->Get<HealthComponent>()->FullHealth();
 
 	self->boosterUsed = nullptr;
 
 	for ( ent = nullptr; ( ent = G_IterateEntities( ent, nullptr, true, 0, nullptr ) ); )
 	{
 		if ( !G_OnSameTeam( self, ent ) ) continue;
-		if ( ent->health <= 0 )           continue;
+		if ( G_Dead( ent ) )              continue;
 
 		distance = Distance( ent->s.origin, self->s.origin );
 
@@ -1664,6 +1647,7 @@ static int FindAlienHealthSource( gentity_t *self )
 }
 
 // TODO: Synchronize
+// TODO: Move to HealthRegenComponent.
 static void G_ReplenishAlienHealth( gentity_t *self )
 {
 	gclient_t *client;
@@ -1674,8 +1658,8 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client = self->client;
 
 	// Check if client is an alien and has the healing ability
-	if ( !client || client->pers.team != TEAM_ALIENS ||
-	     self->health <= 0 || level.surrenderTeam == client->pers.team )
+	if ( !client || client->pers.team != TEAM_ALIENS || G_Dead( self )
+	     || level.surrenderTeam == client->pers.team )
 	{
 		return;
 	}
@@ -1718,7 +1702,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
 				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) *
 				                ( self->healthSourceTime - level.time ) );
-				modifier = MAX( modifier, ALIEN_REGEN_NOCREEP_MIN );
+				modifier = std::max( modifier, ALIEN_REGEN_NOCREEP_MIN );
 			}
 		}
 
@@ -1727,7 +1711,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		// If recovery interval is less than frametime, compensate by healing more
 		count = 1 + ( level.time - self->nextRegenTime ) / interval;
 
-		G_Heal( self, count );
+		self->entity->Heal((float)count, nullptr);
 
 		self->nextRegenTime = level.time + count * interval;
 	}
@@ -1736,6 +1720,29 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		// Don't immediately start regeneration to prevent players from quickly
 		// hopping in and out of a creep area to increase their heal rate
 		self->nextRegenTime = level.time + ( 1000 / regenBaseRate );
+	}
+}
+
+static void G_ReplenishDragoonBarbs( gentity_t *self, int msec )
+{
+	gclient_t *client = self->client;
+
+	if ( client->ps.weapon == WP_ALEVEL3_UPG )
+	{
+		if ( client->ps.ammo < BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo )
+		{
+			float interval = BG_GetBarbRegenerationInterval(self->client->ps);
+			self->barbRegeneration += (float)msec / interval;
+			if ( self->barbRegeneration >= 1.0f )
+			{
+				self->barbRegeneration -= 1.0f;
+				client->ps.ammo++;
+			}
+		}
+		else
+		{
+			self->barbRegeneration = 0.0f;
+		}
 	}
 }
 
@@ -1847,7 +1854,7 @@ void ClientThink_real( gentity_t *self )
 	{
 		client->ps.pm_type = PM_NOCLIP;
 	}
-	else if ( client->ps.stats[ STAT_HEALTH ] <= 0 )
+	else if ( G_Dead( self ) )
 	{
 		client->ps.pm_type = PM_DEAD;
 	}
@@ -1914,18 +1921,20 @@ void ClientThink_real( gentity_t *self )
 	// copy global gravity to playerstate
 	client->ps.gravity = g_gravity.value;
 
+	HealthComponent *healthComponent = self->entity->Get<HealthComponent>();
+
 	// handle medkit (TODO: move into helper function)
 	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
 	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
 	{
 		//if currently using a medkit or have no need for a medkit now
 		if ( (client->ps.stats[ STAT_STATE ] & SS_HEALING_4X) ||
-		     ( client->ps.stats[ STAT_HEALTH ] == client->ps.stats[ STAT_MAX_HEALTH ] &&
+		     ( healthComponent->FullHealth() &&
 		       !( client->ps.stats[ STAT_STATE ] & SS_POISONED ) ) )
 		{
 			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
 		}
-		else if ( client->ps.stats[ STAT_HEALTH ] > 0 )
+		else if ( G_Alive( self ) )
 		{
 			//remove anti toxin
 			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
@@ -1936,8 +1945,7 @@ void ClientThink_real( gentity_t *self )
 
 			client->ps.stats[ STAT_STATE ] |= SS_HEALING_4X;
 			client->lastMedKitTime = level.time;
-			client->medKitHealthToRestore =
-			  client->ps.stats[ STAT_MAX_HEALTH ] - client->ps.stats[ STAT_HEALTH ];
+			client->medKitHealthToRestore = healthComponent->MaxHealth() - healthComponent->Health();
 			client->medKitIncrementTime = level.time +
 			                              ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
 
@@ -1947,6 +1955,8 @@ void ClientThink_real( gentity_t *self )
 
 	// Replenish alien health
 	G_ReplenishAlienHealth( self );
+
+	G_ReplenishDragoonBarbs( self, msec );
 
 	// Throw human grenade
 	if ( BG_InventoryContainsUpgrade( UP_GRENADE, client->ps.stats ) &&
@@ -2032,6 +2042,9 @@ void ClientThink_real( gentity_t *self )
 
 	// moved from after Pmove -- potentially the cause of future triggering bugs
 	G_TouchTriggers( self );
+
+	// Do this before Pmove because it is shared code and accesses networked fields.
+	G_PrepareEntityNetCode();
 
 	Pmove( &pm );
 
@@ -2137,7 +2150,7 @@ void ClientThink_real( gentity_t *self )
 	client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
 
 	// Don't think anymore if dead
-	if ( client->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( G_Dead( self ) )
 	{
 		return;
 	}
@@ -2149,7 +2162,7 @@ void ClientThink_real( gentity_t *self )
 
 	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) &&
 	     !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
-	     client->ps.stats[ STAT_HEALTH ] > 0 )
+	     G_Alive( self ) )
 	{
 		trace_t   trace;
 		vec3_t    view, point;
@@ -2220,9 +2233,7 @@ void ClientThink_real( gentity_t *self )
 
 	if ( self->suicideTime > 0 && self->suicideTime < level.time )
 	{
-		client->ps.stats[ STAT_HEALTH ] = self->health = 0;
-		G_PlayerDie( self, self, self, MOD_SUICIDE );
-
+		G_Kill(self, nullptr, MOD_SUICIDE);
 		self->suicideTime = 0;
 	}
 }
@@ -2262,47 +2273,6 @@ void G_RunClient( gentity_t *ent )
 }
 
 /*
-==================
-SpectatorClientEndFrame
-
-==================
-*/
-void SpectatorClientEndFrame( gentity_t *ent )
-{
-	gclient_t *cl;
-	int       clientNum;
-	int       score, ping;
-
-	// if we are doing a chase cam or a remote view, grab the latest info
-	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
-	{
-		clientNum = ent->client->sess.spectatorClient;
-
-		if ( clientNum >= 0 && clientNum < level.maxclients )
-		{
-			cl = &level.clients[ clientNum ];
-
-			if ( cl->pers.connected == CON_CONNECTED )
-			{
-				// Save
-				score = ent->client->ps.persistant[ PERS_SCORE ];
-				ping = ent->client->ps.ping;
-
-				// Copy
-				ent->client->ps = cl->ps;
-
-				// Restore
-				ent->client->ps.persistant[ PERS_SCORE ] = score;
-				ent->client->ps.ping = ping;
-
-				ent->client->ps.pm_flags |= PMF_FOLLOW;
-				ent->client->ps.pm_flags &= ~PMF_QUEUED;
-			}
-		}
-	}
-}
-
-/*
 ==============
 ClientEndFrame
 
@@ -2315,7 +2285,6 @@ void ClientEndFrame( gentity_t *ent )
 {
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		SpectatorClientEndFrame( ent );
 		return;
 	}
 
@@ -2344,14 +2313,8 @@ void ClientEndFrame( gentity_t *ent )
 		ent->client->ps.eFlags &= ~EF_CONNECTION;
 	}
 
-	if( ent->client->ps.stats[ STAT_HEALTH ] != ent->health )
-	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health; // FIXME: get rid of ent->health...
-		ent->client->pers.infoChangeTime = level.time;
-	}
-
 	// respawn if dead
-	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 && level.time >= ent->client->respawnTime )
+	if ( G_Dead( ent ) && level.time >= ent->client->respawnTime )
 	{
 		respawn( ent );
 	}

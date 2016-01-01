@@ -32,8 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "qcommon/q_shared.h"
-#include "qcommon/qcommon.h"
+#include "con_common.h"
 
 #include <unistd.h>
 #include <signal.h>
@@ -81,96 +80,52 @@ Transform Q3 colour codes to ANSI escape sequences
 */
 static void CON_AnsiColorPrint( const char *msg )
 {
-	static char buffer[ MAXPRINTMSG ];
-	int         length = 0;
-
-	// Approximations of g_color_table (q_math.c)
-#define A_BOLD 16
-#define A_DIM  32
-	static const char colour16map[2][32] = {
-		{ // Variant 1 (xterm)
-			0 | A_BOLD, 1,          2,          3,
-			4,          6,          5,          7,
-			3 | A_DIM,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
-			2 | A_DIM,  3 | A_DIM,  4 | A_DIM,  1 | A_DIM,
-			3 | A_DIM,  3 | A_DIM,  6 | A_DIM,  5 | A_DIM,
-			6 | A_DIM,  5 | A_DIM,  6 | A_DIM,  2 | A_BOLD,
-			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
-			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
-		},
-		{ // Variant 1 (vte)
-			0 | A_BOLD, 1,          2,          3 | A_BOLD,
-			4,          6,          5,          7,
-			3        ,  7 | A_DIM,  7 | A_DIM,  7 | A_DIM,
-			2 | A_DIM,  3,          4 | A_DIM,  1 | A_DIM,
-			3 | A_DIM,  3 | A_DIM,  6 | A_DIM,  5 | A_DIM,
-			6 | A_DIM,  5 | A_DIM,  6 | A_DIM,  2 | A_BOLD,
-			2 | A_DIM,  1,          1 | A_DIM,  3 | A_DIM,
-			3 | A_DIM,  2 | A_DIM,  5,          3 | A_BOLD
-		}
-	};
-	static const char modifier[][4] = { "", ";1", ";2", "" };
-
-	int index = com_ansiColor.Get() ? 1 : 0;
-
-	if ( index >= (int) ARRAY_LEN( colour16map ) )
+	std::string buffer;
+	for ( const auto& token : Color::Parser( msg, Color::Color() ) )
 	{
-		index = 0;
-	}
-
-	while ( *msg )
-	{
-		if ( Q_IsColorString( msg ) || *msg == '\n' )
+		if ( token.Type() == Color::Token::COLOR )
 		{
-			// First empty the buffer
-			if ( length > 0 )
+			if ( !buffer.empty() )
 			{
-				buffer[ length ] = '\0';
-				fputs( buffer, stderr );
-				length = 0;
+				fputs( buffer.c_str(), stderr );
+				buffer.clear();
 			}
 
-			if ( *msg == '\n' )
+			if ( token.Color().Alpha() == 0 )
 			{
-				// Issue a reset and then the newline
-				fputs( "\033[0;49;37m\n", stderr );
-				msg++;
+				fputs( "\x1b[0m", stderr );
 			}
 			else
 			{
-				// Print the color code
-				int colour = colour16map[ index ][ ( msg[ 1 ] - '0' ) & 31 ];
+				auto c4b = Color::To4bit( token.Color() );
+				bool bright = c4b & 8;
+				int number = c4b & ~8;
 
-				Com_sprintf( buffer, sizeof( buffer ), "\033[%s%d%sm",
-				             (colour & 0x30) == 0 ? "0;" : "",
-				             30 + ( colour & 15 ), modifier[ ( colour / 16 ) & 3 ] );
-				fputs( buffer, stderr );
-				msg += 2;
+				std::string ansi = "\x1b[3"+std::to_string(number)+";"+(bright ? "1" : "22")+"m";
+				fputs( ansi.c_str(), stderr );
 			}
 		}
-		else
+		else if ( token.Type() == Color::Token::ESCAPE )
 		{
-			if ( length >= MAXPRINTMSG - 1 )
+			buffer += Color::Constants::ESCAPE;
+		}
+		else if ( token.Type() == Color::Token::CHARACTER )
+		{
+			if ( *token.Begin() == '\n' )
 			{
-				break;
+				fputs( buffer.c_str(), stderr );
+				buffer.clear();
+				fputs( "\033[0;49;37m\n", stderr );
 			}
-
-			if ( *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
+			else
 			{
-				++msg;
+				buffer.append( token.Begin(), token.Size() );
 			}
-
-			buffer[ length ] = *msg;
-			length++;
-			msg++;
 		}
 	}
-
-	// Empty anything still left in the buffer
-	if ( length > 0 )
+	if ( !buffer.empty() )
 	{
-		buffer[ length ] = '\0';
-		fputs( buffer, stderr );
+		fputs( buffer.c_str(), stderr );
 	}
 }
 
@@ -525,10 +480,6 @@ void CON_Shutdown()
 	CON_Shutdown_TTY();
 }
 
-void CON_LogDump()
-{
-}
-
 char *CON_Input()
 {
 	return CON_Input_TTY();
@@ -539,7 +490,4 @@ void CON_Print( const char *message )
 	CON_Print_TTY( message );
 }
 
-void CON_Clear_f()
-{
-}
 #endif

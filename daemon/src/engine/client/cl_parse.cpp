@@ -39,7 +39,6 @@ Maryland 20850 USA.
 static const char *const svc_strings[ 256 ] =
 {
 	"svc_bad",
-
 	"svc_nop",
 	"svc_gamestate",
 	"svc_configstring",
@@ -48,7 +47,6 @@ static const char *const svc_strings[ 256 ] =
 	"svc_download",
 	"svc_snapshot",
 	"svc_voip",
-	"svc_extension",
 	"svc_EOF"
 };
 
@@ -68,38 +66,16 @@ MESSAGE PARSING
 =========================================================================
 */
 
-/*
-==================
-CL_DeltaEntity
-
-Parses deltas from the given base and adds the resulting entity
-to the current frame
-==================
-*/
-void CL_DeltaEntity( msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t *old, bool unchanged )
+// TODO(kangz) if we can make sure that the baseline entities have the correct entity
+// number, then we could grab the entity number from old directly, simplifying code a bit.
+void CL_DeltaEntity( msg_t *msg, clSnapshot_t *snapshot, int entityNum, const entityState_t &oldEntity)
 {
-	entityState_t *state;
+    entityState_t entity;
+    MSG_ReadDeltaEntity(msg, &oldEntity, &entity, entityNum);
 
-	// save the parsed entity state into the big circular buffer so
-	// it can be used as the source for a later delta
-	state = &cl.parseEntities[ cl.parseEntitiesNum & ( MAX_PARSE_ENTITIES - 1 ) ];
-
-	if ( unchanged )
-	{
-		*state = *old;
-	}
-	else
-	{
-		MSG_ReadDeltaEntity( msg, old, state, newnum );
-	}
-
-	if ( state->number == ( MAX_GENTITIES - 1 ) )
-	{
-		return; // entity was delta removed
-	}
-
-	cl.parseEntitiesNum++;
-	frame->numEntities++;
+    if (entity.number != MAX_GENTITIES - 1) {
+        snapshot->entities.push_back(entity);
+    }
 }
 
 /*
@@ -108,148 +84,83 @@ CL_ParsePacketEntities
 
 ==================
 */
-void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldframe, clSnapshot_t *newframe )
+void CL_ParsePacketEntities( msg_t *msg, const clSnapshot_t *oldSnapshot, clSnapshot_t *newSnapshot )
 {
-	unsigned int  newnum;
-	entityState_t *oldstate;
-	unsigned int  oldindex, oldnum;
+    // The entity packet contains the delta between the two snapshots, with data only
+    // for entities that were created, changed or removed. Entities entries are in
+    // order of increasing entity number, as are entities in a snapshot. Using this we
+    // have an efficient algorithm to create the new snapshot, that goes over the old
+    // snapshot once from the beginning to the end.
 
-	newframe->parseEntitiesNum = cl.parseEntitiesNum;
-	newframe->numEntities = 0;
+    // If we don't have an old snapshot or it is empty, we'll recreate all entities
+    // from the baseline entities as setting oldEntityNum to MAX_GENTITIES will force
+    // us to only do step (3) below.
+    unsigned int oldEntityNum = MAX_GENTITIES;
+    if (oldSnapshot && oldSnapshot->entities.size() > 0){
+        oldEntityNum = oldSnapshot->entities[0].number;
+    }
 
-	// delta from the entities present in oldframe
-	oldindex = 0;
-	oldstate = nullptr;
+    // Likewise when we don't have an old snapshot, oldEntities just has to be an empty
+    // vector so that we skip step (4)
+    std::vector<entityState_t> dummyEntities;
+    auto& oldEntities = oldSnapshot? oldSnapshot->entities : dummyEntities;
+    auto& newEntities = newSnapshot->entities;
 
-	if ( !oldframe )
-	{
-		static clSnapshot_t nullframe{};
-        nullframe.valid = false;
+    unsigned int numEntities = MSG_ReadShort(msg);
+    newEntities.reserve(numEntities);
 
-		oldframe = &nullframe;
-		oldnum = MAX_GENTITIES; // guaranteed out of range
-	}
-	else
-	{
-		if ( oldindex >= oldframe->numEntities )
-		{
-			oldnum = MAX_GENTITIES;
-		}
-		else
-		{
-			oldstate = &cl.parseEntities[
-			             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-			oldnum = oldstate->number;
-		}
-	}
+	unsigned oldIndex = 0;
 
-	while ( 1 )
-	{
-		// read the entity index number
-		newnum = MSG_ReadBits( msg, GENTITYNUM_BITS );
+    while (true) {
+        unsigned int newEntityNum = MSG_ReadBits(msg, GENTITYNUM_BITS);
 
-		if ( newnum >= ( MAX_GENTITIES - 1 ) )
-		{
-			break;
-		}
+        if (msg->readcount > msg->cursize) {
+            Sys::Drop("CL_ParsePacketEntities: Unexpected end of message");
+        }
 
-		if ( msg->readcount > msg->cursize )
-		{
-			Com_Error( ERR_DROP, "CL_ParsePacketEntities: end of message" );
-		}
+        if (newEntityNum == MAX_GENTITIES - 1) {
+            break;
+        }
 
-		while ( oldnum < newnum )
-		{
-			// one or more entities from the old packet are unchanged
-			if ( cl_shownet->integer == 3 )
-			{
-				Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
-			}
+        // (1) all entities that weren't specified between the previous newEntityNum and
+        // the current one are unchanged and just copied over.
+        while (oldEntityNum < newEntityNum) {
+            newEntities.push_back(oldEntities[oldIndex]);
 
-			CL_DeltaEntity( msg, newframe, oldnum, oldstate, true );
+            oldIndex ++;
+            if (oldIndex >= oldEntities.size()) {
+                oldEntityNum = MAX_GENTITIES;
+            } else {
+                oldEntityNum = oldEntities[oldIndex].number;
+            }
+        }
 
-			oldindex++;
+        // (2) there is an entry for an entity in the old snapshot, apply the delta
+        if (oldEntityNum == newEntityNum) {
+            CL_DeltaEntity(msg, newSnapshot, newEntityNum, oldEntities[oldIndex]);
 
-			if ( oldindex >= oldframe->numEntities )
-			{
-				oldnum = MAX_GENTITIES;
-			}
-			else
-			{
-				oldstate = &cl.parseEntities[
-				             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-				oldnum = oldstate->number;
-			}
-		}
+            oldIndex ++;
+            if (oldIndex >= oldEntities.size()) {
+                oldEntityNum = MAX_GENTITIES;
+            } else {
+                oldEntityNum = oldEntities[oldIndex].number;
+            }
+        } else {
+            // (3) the entry isn't in the old snapshot, so the entity will be specified
+            // from the baseline
+            assert(oldEntityNum > newEntityNum);
 
-		if ( oldnum == newnum )
-		{
-			// delta from previous state
-			if ( cl_shownet->integer == 3 )
-			{
-				Com_Printf( "%3i:  delta: %i\n", msg->readcount, newnum );
-			}
+            CL_DeltaEntity(msg, newSnapshot, newEntityNum, cl.entityBaselines[newEntityNum]);
+        }
+    }
 
-			CL_DeltaEntity( msg, newframe, newnum, oldstate, false );
+    // (4) All remaining entities in the oldSnapshot are unchanged and copied over
+    while (oldIndex < oldEntities.size()) {
+        newEntities.push_back(oldEntities[oldIndex]);
+        oldIndex ++;
+    }
 
-			oldindex++;
-
-			if ( oldindex >= oldframe->numEntities )
-			{
-				oldnum = MAX_GENTITIES;
-			}
-			else
-			{
-				oldstate = &cl.parseEntities[
-				             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-				oldnum = oldstate->number;
-			}
-
-			continue;
-		}
-
-		if ( oldnum > newnum )
-		{
-			// delta from baseline
-			if ( cl_shownet->integer == 3 )
-			{
-				Com_Printf( "%3i:  baseline: %i\n", msg->readcount, newnum );
-			}
-
-			CL_DeltaEntity( msg, newframe, newnum, &cl.entityBaselines[ newnum ], false );
-			continue;
-		}
-	}
-
-	// any remaining entities in the old frame are copied over
-	while ( oldnum != MAX_GENTITIES )
-	{
-		// one or more entities from the old packet are unchanged
-		if ( cl_shownet->integer == 3 )
-		{
-			Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
-		}
-
-		CL_DeltaEntity( msg, newframe, oldnum, oldstate, true );
-
-		oldindex++;
-
-		if ( oldindex >= oldframe->numEntities )
-		{
-			oldnum = MAX_GENTITIES;
-		}
-		else
-		{
-			oldstate = &cl.parseEntities[
-			             ( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-			oldnum = oldstate->number;
-		}
-	}
-
-	if ( cl_shownuments->integer )
-	{
-		Com_Printf( "Entities in packet: %i\n", newframe->numEntities );
-	}
+    assert(numEntities == newEntities.size());
 }
 
 /*
@@ -378,10 +289,6 @@ void CL_ParseSnapshot( msg_t *msg )
 			// is too old, so we can't reconstruct it properly.
 			Com_DPrintf( "Delta frame too old.\n" );
 		}
-		else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES - 128 )
-		{
-			Com_DPrintf( "Delta parseEntitiesNum too old.\n" );
-		}
 		else
 		{
 			newSnap.valid = true; // valid delta parse
@@ -507,11 +414,6 @@ void CL_SystemInfoChanged()
 		return;
 	}
 
-#ifdef USE_VOIP
-	s = Info_ValueForKey( systemInfo, "sv_voip" );
-	clc.voipEnabled = atoi( s );
-#endif
-
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
 
@@ -634,7 +536,7 @@ void CL_ParseDownload( msg_t *msg )
 			MSG_ReadLong( msg );
         } else if (block != 0) {
             size = MSG_ReadShort( msg );
-            if ( size < 0 || size > sizeof( data ) )
+            if ( size < 0 || size > (int) sizeof( data ) )
             {
                 Com_Error( ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
             }
@@ -796,228 +698,6 @@ void CL_ParseDownload( msg_t *msg )
 	}
 }
 
-#ifdef USE_VOIP
-static
-bool CL_ShouldIgnoreVoipSender( int sender )
-{
-	if ( !cl_voip->integer )
-	{
-		return true; // VoIP is disabled.
-	}
-	else if ( ( sender == clc.clientNum ) && ( !clc.demoplaying ) )
-	{
-		return true; // ignore own voice (unless playing back a demo).
-	}
-	else if ( clc.voipMuteAll )
-	{
-		return true; // all channels are muted with extreme prejudice.
-	}
-	else if ( clc.voipIgnore[ sender ] )
-	{
-		return true; // just ignoring this guy.
-	}
-	else if ( clc.voipGain[ sender ] == 0.0f )
-	{
-		return true; // too quiet to play.
-	}
-
-	return false;
-}
-
-/*
-=====================
-CL_PlayVoip
-
-Play raw data
-=====================
-*/
-
-static void CL_PlayVoip( int sender, int samplecnt, const byte *data, int flags )
-{
-	if ( flags & VOIP_DIRECT )
-	{
-		Audio::StreamData( sender + 1, data, samplecnt, clc.speexSampleRate, 2, 1, clc.voipGain[ sender ], -1 );
-	}
-
-	if ( flags & VOIP_SPATIAL )
-	{
-		Audio::StreamData( sender + MAX_CLIENTS + 1, data, samplecnt, clc.speexSampleRate, 2, 1, 1.0f, sender );
-	}
-}
-
-/*
-=====================
-CL_ParseVoip
-
-A VoIP message has been received from the server
-=====================
-*/
-static
-void CL_ParseVoip( msg_t *msg )
-{
-    const int decodedSize = 4096 * sizeof(short); //FIXME: don't hardcode.
-
-	const int    sender = MSG_ReadShort( msg );
-	const int    generation = MSG_ReadByte( msg );
-	const int    sequence = MSG_ReadLong( msg );
-	const int    frames = MSG_ReadByte( msg );
-	const int    packetsize = MSG_ReadShort( msg );
-	const int    flags = MSG_ReadBits( msg, VOIP_FLAGCNT );
-	char         encoded[ 1024 ];
-	int          seqdiff = sequence - clc.voipIncomingSequence[ sender ];
-	int          written = 0;
-	int          i;
-
-	Com_DPrintf( "VoIP: %d-byte packet from client %d\n", packetsize, sender );
-
-	if ( sender < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-	else if ( generation < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-	else if ( sequence < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-	else if ( frames < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-	else if ( packetsize < 0 )
-	{
-		return; // short/invalid packet, bail.
-	}
-
-	if ( packetsize > sizeof( encoded ) )  // overlarge packet?
-	{
-		int bytesleft = packetsize;
-
-		while ( bytesleft )
-		{
-			int br = bytesleft;
-
-			if ( br > sizeof( encoded ) )
-			{
-				br = sizeof( encoded );
-			}
-
-			MSG_ReadData( msg, encoded, br );
-			bytesleft -= br;
-		}
-
-		return; // overlarge packet, bail.
-	}
-
-	if ( !clc.speexInitialized )
-	{
-		MSG_ReadData( msg, encoded, packetsize );  // skip payload.
-		return; // can't handle VoIP without libspeex!
-	}
-	else if ( sender >= MAX_CLIENTS )
-	{
-		MSG_ReadData( msg, encoded, packetsize );  // skip payload.
-		return; // bogus sender.
-	}
-	else if ( CL_ShouldIgnoreVoipSender( sender ) )
-	{
-		MSG_ReadData( msg, encoded, packetsize );  // skip payload.
-		return; // Channel is muted, bail.
-	}
-
-	// !!! FIXME: make sure data is narrowband? Does decoder handle this?
-
-	Com_DPrintf( "VoIP: packet accepted!\n" );
-
-	// This is a new "generation" ... a new recording started, reset the bits.
-	if ( generation != clc.voipIncomingGeneration[ sender ] )
-	{
-		Com_DPrintf( "VoIP: new generation %d!\n", generation );
-		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
-		clc.voipIncomingGeneration[ sender ] = generation;
-		seqdiff = 0;
-	}
-	else if ( seqdiff < 0 ) // we're ahead of the sequence?!
-	{
-		// This shouldn't happen unless the packet is corrupted or something.
-		Com_DPrintf( "VoIP: misordered sequence! %d < %d!\n",
-		             sequence, clc.voipIncomingSequence[ sender ] );
-		// reset the bits just in case.
-		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
-		seqdiff = 0;
-	}
-	else if ( seqdiff * clc.speexFrameSize * 2 >= decodedSize ) // more than 2 seconds of audio dropped?
-	{
-		// just start over.
-		Com_DPrintf( "VoIP: Dropped way too many (%d) frames from client #%d\n",
-		             seqdiff, sender );
-		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
-		seqdiff = 0;
-	}
-
-    short *decoded = new short[decodedSize/sizeof(short)];
-
-	if ( seqdiff != 0 )
-	{
-		Com_DPrintf( "VoIP: Dropped %d frames from client #%d\n",
-		             seqdiff, sender );
-
-		// tell speex that we're missing frames...
-		for ( i = 0; i < seqdiff; i++ )
-		{
-			assert( ( written + clc.speexFrameSize ) * 2 < decodedSize );
-			speex_decode_int( clc.speexDecoder[ sender ], nullptr, decoded + written );
-			written += clc.speexFrameSize;
-		}
-	}
-
-	for ( i = 0; i < frames; i++ )
-	{
-		const int len = MSG_ReadByte( msg );
-
-		if ( len < 0 )
-		{
-			Com_DPrintf( "VoIP: Short packet!\n" );
-			break;
-		}
-
-		MSG_ReadData( msg, encoded, len );
-
-		// shouldn't happen, but just in case...
-		if ( ( written + clc.speexFrameSize ) * 2 > decodedSize )
-		{
-			Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
-			             written * 2, written, i );
-
-			CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
-			written = 0;
-            decoded = new short[decodedSize / sizeof(short)];
-		}
-
-		speex_bits_read_from( &clc.speexDecoderBits[ sender ], encoded, len );
-		speex_decode_int( clc.speexDecoder[ sender ],
-		                  &clc.speexDecoderBits[ sender ], decoded + written );
-
-		written += clc.speexFrameSize;
-	}
-
-	Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
-	             written * 2, written, i );
-
-	if ( written > 0 )
-	{
-		CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
-	}
-
-	cls.voipSender = sender;
-
-	clc.voipIncomingSequence[ sender ] = sequence + frames;
-}
-
-#endif
-
 /*
 =====================
 CL_ParseCommandString
@@ -1091,22 +771,6 @@ void CL_ParseServerMessage( msg_t *msg )
 
 		cmd = MSG_ReadByte( msg );
 
-		// See if this is an extension command after the EOF, which means we
-		//  got data that a legacy client should ignore.
-		if ( ( cmd == svc_EOF ) && ( MSG_LookaheadByte( msg ) == svc_extension ) )
-		{
-			SHOWNET( msg, "EXTENSION" );
-			MSG_ReadByte( msg );  // throw the svc_extension byte away.
-			cmd = MSG_ReadByte( msg );  // something legacy clients can't do!
-
-			// sometimes you get a svc_extension at end of stream...dangling
-			//  bits in the huffman decoder giving a bogus value?
-			if ( cmd == -1 )
-			{
-				cmd = svc_EOF;
-			}
-		}
-
 		if ( cmd == svc_EOF )
 		{
 			SHOWNET( msg, "END OF MESSAGE" );
@@ -1148,12 +812,6 @@ void CL_ParseServerMessage( msg_t *msg )
 
 			case svc_download:
 				CL_ParseDownload( msg );
-				break;
-
-			case svc_voip:
-#ifdef USE_VOIP
-				CL_ParseVoip( msg );
-#endif
 				break;
 		}
 	}

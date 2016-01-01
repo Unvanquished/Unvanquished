@@ -35,7 +35,7 @@ Keybinding command
 */
 static void CG_SizeUp_f()
 {
-	trap_Cvar_Set( "cg_viewsize", va( "%i", MIN( cg_viewsize.integer + 10, 100 ) ) );
+	trap_Cvar_Set( "cg_viewsize", va( "%i", std::min( cg_viewsize.integer + 10, 100 ) ) );
 }
 
 /*
@@ -47,7 +47,7 @@ Keybinding command
 */
 static void CG_SizeDown_f()
 {
-	trap_Cvar_Set( "cg_viewsize", va( "%i", MAX( cg_viewsize.integer - 10, 30 ) ) );
+	trap_Cvar_Set( "cg_viewsize", va( "%i", std::max( cg_viewsize.integer - 10, 30 ) ) );
 }
 
 /*
@@ -102,12 +102,14 @@ void CG_ClientList_f()
 		switch ( ci->team )
 		{
 			case TEAM_ALIENS:
-				Com_Printf( "%2d " S_COLOR_RED "A   " S_COLOR_WHITE "%s\n", i,
+				Com_Printf( "%2d %sA   ^*%s\n", i,
+				            Color::CString( Color::Red ),
 				            ci->name );
 				break;
 
 			case TEAM_HUMANS:
-				Com_Printf( "%2d " S_COLOR_CYAN "H   " S_COLOR_WHITE "%s\n", i,
+				Com_Printf( "%2d %sH   ^*%s\n", i,
+				            Color::CString( Color::Cyan ),
 				            ci->name );
 				break;
 
@@ -263,7 +265,7 @@ static void CG_CompleteName()
 			continue;
 		}
 
-		trap_CompleteCallback( Q_CleanStr( name ) );
+		trap_CompleteCallback( Color::StripColors( name ) );
 	}
 }
 
@@ -557,9 +559,14 @@ so it can perform tab completion
 */
 void CG_InitConsoleCommands()
 {
-	unsigned i;
+	static bool initialized = false;
 
-	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
+	if (initialized) {
+		return;
+	}
+	initialized = true;
+
+	for ( unsigned i = 0; i < ARRAY_LEN( commands ); i++ )
 	{
 		//Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp(commands[i-1].cmd, commands[i].cmd) > 0 )

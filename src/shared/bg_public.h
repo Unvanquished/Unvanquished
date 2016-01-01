@@ -1350,7 +1350,8 @@ typedef struct
 bool BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
                                 vec2_t angles, vec3_t dir1, vec3_t dir2 );
 void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
-bool BG_IsMainStructure( entityState_t *es );
+bool     BG_IsMainStructure( buildable_t buildable );
+bool     BG_IsMainStructure( entityState_t *es );
 void     BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t maxs );
 
 bool BG_WeaponIsFull(int weapon, int ammo, int clips );
@@ -1400,6 +1401,8 @@ bool                    BG_ClassHasAbility( int pClass, int ability );
 
 int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
 bool                    BG_AlienCanEvolve(int from, int credits);
+
+int                       BG_GetBarbRegenerationInterval(const playerState_t& ps);
 
 weapon_t                  BG_WeaponNumberByName( const char *name );
 const weaponAttributes_t  *BG_WeaponByName( const char *name );

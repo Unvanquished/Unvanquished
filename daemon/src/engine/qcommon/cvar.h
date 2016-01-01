@@ -87,11 +87,6 @@ void Cvar_Register(vmCvar_t *vmCvar, const char *varName,
 		const char *defaultValue, int flags);
 
 /**
- * updates a module's version of a cvar
- */
-void Cvar_Update(vmCvar_t *vmCvar);
-
-/**
  * will create the variable with no flags if it doesn't exist
  */
 void Cvar_Set(const char *var_name, const char *value);
@@ -109,16 +104,6 @@ int Cvar_VariableIntegerValue(const char *var_name);
 char *Cvar_VariableString(const char *var_name);
 void Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 
-// returns the latched value if there is one, and the current value otherwise
-char* Cvar_LatchedVariableString(const char* name);
-
-/**
- * returns the latched value if there is one, and the current value otherwise
- * (an empty string in case the cvar does not exist)
- */
-void Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer,
-		int bufsize);
-
 // reset all testing vars to a safe value
 void Cvar_Reset(const char *var_name);
 
@@ -133,8 +118,6 @@ void Cvar_WriteVariables(fileHandle_t f);
  * in their flags ( CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc )
  */
 char *Cvar_InfoString(int bit, bool big);
-
-void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
 
 /**
  *  whenever a cvar is modified, its flags will be OR'd into this, so

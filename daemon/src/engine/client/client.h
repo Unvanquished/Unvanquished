@@ -48,11 +48,6 @@ Maryland 20850 USA.
 #include "framework/CommandBufferHost.h"
 #include "common/IPC/CommandBuffer.h"
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-#include <speex/speex.h>
-#include <speex/speex_preprocess.h>
-#endif
-
 // file containing our RSA public and private keys
 #define RSAKEY_FILE        "pubkey"
 
@@ -74,11 +69,10 @@ typedef struct
 	int           cmdNum; // the next cmdNum the server is expecting
 	playerState_t ps; // complete information about the current player at this time
 
-	unsigned      numEntities; // all of the entities that need to be presented
-	int           parseEntitiesNum; // at the time of this snapshot
-
 	int           serverCommandNum; // execute all commands up to this before
 	// making the snapshot current
+
+	std::vector<entityState_t> entities;
 } clSnapshot_t;
 
 // Arnout: for double tapping
@@ -106,15 +100,7 @@ typedef struct
 	int p_realtime; // cls.realtime when packet was sent
 } outPacket_t;
 
-// the parseEntities array must be large enough to hold PACKET_BACKUP frames of
-// entities, so that when a delta compressed message arives from the server
-// it can be un-deltad from the original
-
-#ifdef USE_INCREASED_ENTITIES
-#define MAX_PARSE_ENTITIES ( MAX_GENTITIES * 2 )
-#else
 #define MAX_PARSE_ENTITIES 2048
-#endif
 
 extern int g_console_field_width;
 
@@ -136,8 +122,6 @@ typedef struct
 	bool     newSnapshots; // set on parse of any valid packet
 
 	char         mapname[ MAX_QPATH ]; // extracted from CS_SERVERINFO
-
-	int          parseEntitiesNum; // index (not anded off) into cl_parse_entities[]
 
 	int          mouseDx[ 2 ], mouseDy[ 2 ]; // added to by mouse events
 	int          mouseIndex;
@@ -172,8 +156,6 @@ typedef struct
 	clSnapshot_t  snapshots[ PACKET_BACKUP ];
 
 	entityState_t entityBaselines[ MAX_GENTITIES ]; // for delta compression when not in previous frame
-
-	entityState_t parseEntities[ MAX_PARSE_ENTITIES ];
 } clientActive_t;
 
 extern clientActive_t cl;
@@ -252,38 +234,6 @@ typedef struct
 	bool     firstDemoFrameSkipped;
 	fileHandle_t demofile;
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-	bool voipEnabled;
-	bool speexInitialized;
-	int      speexFrameSize;
-	int      speexSampleRate;
-
-	// incoming data...
-	// !!! FIXME: convert from parallel arrays to array of a struct.
-	SpeexBits speexDecoderBits[ MAX_CLIENTS ];
-	void      *speexDecoder[ MAX_CLIENTS ];
-	byte      voipIncomingGeneration[ MAX_CLIENTS ];
-	int       voipIncomingSequence[ MAX_CLIENTS ];
-	float     voipGain[ MAX_CLIENTS ];
-	bool  voipIgnore[ MAX_CLIENTS ];
-	bool  voipMuteAll;
-
-	// outgoing data...
-	// if voipTargets[i / 8] & (1 << (i % 8)),
-	// then we are sending to clientnum i.
-	uint8_t              voipTargets[( MAX_CLIENTS + 7 ) / 8 ];
-	uint8_t              voipFlags;
-	SpeexPreprocessState *speexPreprocessor;
-	SpeexBits            speexEncoderBits;
-	void                 *speexEncoder;
-	int                  voipOutgoingDataSize;
-	int                  voipOutgoingDataFrames;
-	int                  voipOutgoingSequence;
-	byte                 voipOutgoingGeneration;
-	byte                 voipOutgoingData[ 1024 ];
-	float                voipPower;
-#endif
-
 	bool     waverecording;
 	fileHandle_t wavefile;
 	int          wavetime;
@@ -352,16 +302,11 @@ typedef struct
 	bool uiStarted;
 	bool cgameStarted;
 
-	bool cgameCVarsRegistered;
-
 	int      framecount;
 	int      frametime; // msec since last frame
 
 	int      realtime; // ignores pause
 	int      realFrametime; // ignoring pause, so console always works
-
-	int      voipTime;
-	int      voipSender;
 
 	// master server sequence information
 	int          numMasterPackets;
@@ -428,6 +373,7 @@ public:
 	int CGameCrosshairPlayer();
 	void CGameKeyEvent(int key, bool down);
 	void CGameMouseEvent(int dx, int dy);
+    void CGameMousePosEvent(int x, int y);
 	void CGameTextInputEvent(int c);
 	//std::vector<std::string> CGameVoipString();
 	//void CGameInitCvars();
@@ -562,21 +508,6 @@ extern cvar_t *cl_allowPaste;
 extern cvar_t *cl_useMumble;
 extern cvar_t *cl_mumbleScale;
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-// cl_voipSendTarget is a string: "all" to broadcast to everyone, "none" to
-//  send to no one, or a comma-separated list of client numbers:
-//  "0,7,2,23" ... an empty string is treated like "all".
-extern  cvar_t *cl_voipUseVAD;
-extern  cvar_t *cl_voipVADThreshold;
-extern  cvar_t *cl_voipSend;
-extern  cvar_t *cl_voipSendTarget;
-extern  cvar_t *cl_voipGainDuringCapture;
-extern  cvar_t *cl_voipCaptureMult;
-extern  cvar_t *cl_voipShowMeter;
-extern  cvar_t *cl_voipShowSender;
-extern  cvar_t *cl_voip;
-#endif
-
 extern Log::Logger downloadLogger;
 
 //=================================================
@@ -607,7 +538,6 @@ void        CL_InitDownloads();
 void        CL_NextDownload();
 
 void        CL_GetPing( int n, char *buf, int buflen, int *pingtime );
-void        CL_GetPingInfo( int n, char *buf, int buflen );
 void        CL_ClearPing( int n );
 int         CL_GetPingQueueCount();
 
@@ -691,11 +621,6 @@ bool CL_IRCIsRunning();
 //
 // cl_parse.c
 //
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-void       CL_Voip_f();
-
-#endif
-
 void CL_SystemInfoChanged();
 void CL_ParseServerMessage( msg_t *msg );
 
@@ -711,14 +636,7 @@ bool CL_UpdateVisiblePings_f( int source );
 //
 // console
 //
-#define     CON_TEXTSIZE 65536
 #define     CONSOLE_FONT_VPADDING 0.3
-
-typedef struct
-{
-	int ch :24;
-	int ink :8;
-} conChar_t;
 
 typedef struct
 {
@@ -728,27 +646,17 @@ typedef struct
 	int sides;
 } consoleBoxWidth_t;
 
-typedef struct
+struct console_t
 {
 	bool initialized;
 
-	conChar_t text[ CON_TEXTSIZE ];
-
-	int      currentLine; // line where next message will be printed
-	int      horizontalCharOffset; // offset in current line for next print
+	std::vector<std::string> lines;
 
 	int      lastReadLineIndex; // keep track fo the last read line, so we can show the user, what was added since he last opened the console
 	int      scrollLineIndex; // bottom of console is supposed displays this line
 	float    bottomDisplayedLine; // bottom of console displays this line, is trying to move towards:
 
 	int      textWidthInChars; // characters across screen
-	int      maxScrollbackLengthInLines; // total lines in console scrollback
-
-	/**
-	 * amount of lines in the scrollback that are filled with text,
-	 * so we e.g. can keep track how far it makes sense to scroll back
-	 */
-	int      usedScrollbackLengthInLines;
 
 	/**
 	 * the amount of lines that fit onto the screen
@@ -785,7 +693,7 @@ typedef struct
 	 * console as a whole
 	 */
 	float    currentAlphaFactor;
-} console_t;
+};
 
 extern console_t consoleState;
 
@@ -796,7 +704,7 @@ void             Con_Init();
 void             Con_Clear_f();
 void             Con_ToggleConsole_f();
 void             Con_OpenConsole_f();
-void             Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text );
+void             Con_DrawRightFloatingTextLine( const int linePosition, const Color::Color& color, const char* text );
 void             Con_DrawConsole();
 void             Con_RunConsole();
 void             Con_PageUp();
@@ -818,19 +726,11 @@ void             CL_SaveConsoleHistory();
 void  SCR_Init();
 void  SCR_UpdateScreen();
 
-int   SCR_GetBigStringWidth( const char *str );  // returns in virtual 640x480 coordinates
-
 void  SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
-void  SCR_FillAdjustedRect( float x, float y, float width, float height, const float *color );
-void  SCR_FillRect( float x, float y, float width, float height, const float *color );
-void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
-void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
+void  SCR_FillRect( float x, float y, float width, float height, const Color::Color& color );
 
-void  SCR_DrawBigString( int x, int y, const char *s, float alpha, bool noColorEscape );  // draws a string with embedded color control characters with fade
-void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, bool noColorEscape );  // ignores embedded color control characters
-void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, bool forceColor, bool noColorEscape );
+void  SCR_DrawSmallStringExt( int x, int y, const char *string, const Color::Color& setColor, bool forceColor, bool noColorEscape );
 void  SCR_DrawSmallUnichar( int x, int y, int ch );
-void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
 void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
 float SCR_ConsoleFontUnicharWidth( int ch );
@@ -874,7 +774,6 @@ void          Cin_OGM_Shutdown();
 // cl_cgame.c
 //
 void     CL_InitCGame();
-void     CL_InitCGameCVars();
 void     CL_ShutdownCGame();
 void     CL_GameCommandHandler();
 bool CL_GameConsoleText();
@@ -892,8 +791,6 @@ void CL_ShutdownUI();
 int  Key_GetCatcher();
 void Key_SetCatcher( int catcher );
 void UI_GameCommandHandler();
-void LAN_LoadCachedServers();
-void LAN_SaveServersToCache();
 
 //
 // cl_net_chan.c
@@ -922,4 +819,11 @@ bool CL_VideoRecording();
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd();
 void CL_GetClipboardData( char *, int );
+
+//
+// cl_input.c
+//
+MouseMode IN_GetMouseMode();
+void IN_SetMouseMode(MouseMode mode);
+
 #endif

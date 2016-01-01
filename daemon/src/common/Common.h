@@ -43,6 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Log.h"
 #include "LineEditData.h"
 #include "Math.h"
+#include "Color.h"
 #include "System.h"
 #include "Serialize.h"
 #include "FileSystem.h"

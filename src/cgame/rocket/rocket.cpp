@@ -399,6 +399,9 @@ void Rocket_Shutdown()
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
 
+	// Shut down Lua before we clean up contexts
+	Rocket::Core::Lua::Interpreter::Shutdown();
+
 	if ( menuContext )
 	{
 		menuContext->RemoveReference();
@@ -411,7 +414,6 @@ void Rocket_Shutdown()
 		hudContext = nullptr;
 	}
 
-	Rocket::Core::Lua::Interpreter::Shutdown();
 	Rocket::Core::Shutdown();
 
 	// Prevent memory leaks
@@ -457,9 +459,6 @@ void Rocket_Render()
 
 void Rocket_Update()
 {
-	// Mouse move is necessary to ensure the menus update, so fake one
-	Rocket_MouseMove( 0, 0 );
-
 	if ( menuContext )
 	{
 		menuContext->Update();
@@ -490,7 +489,6 @@ static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 // TODO: Make this take Rocket::Core::String as an input.
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
-	const char *p;
 	Rocket::Core::String out;
 	Rocket::Core::String spanstr;
 	bool span = false;
@@ -501,42 +499,55 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 		return "";
 	}
 
-	for ( p = in; p && *p; ++p )
+	for ( const auto& token : Color::Parser( in, Color::Color() ) )
 	{
-		if ( *p == '<' )
+		if ( token.Type() == Color::Token::CHARACTER )
 		{
-			if ( span && !spanHasContent )
+			char c = *token.Begin();
+			if ( c == '<' )
 			{
-				spanHasContent = true;
-				out.Append( spanstr );
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.Append( spanstr );
+				}
+				out.Append( "&lt;" );
 			}
-			out.Append( "&lt;" );
-		}
-		else if ( *p == '>' )
-		{
-			if ( span && !spanHasContent )
+			else if ( c == '>' )
 			{
-				spanHasContent = true;
-				out.Append( spanstr );
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.Append( spanstr );
+				}
+				out.Append( "&gt;" );
 			}
-			out.Append( "&gt;" );
-		}
-		else if ( *p == '&' )
-		{
-			if ( span && !spanHasContent )
+			else if ( c == '&' )
 			{
-				spanHasContent = true;
-				out.Append( spanstr );
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.Append( spanstr );
+				}
+				out.Append( "&amp;" );
 			}
-			out.Append( "&amp;" );
+			else if ( c == '\n' )
+			{
+				out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
+				span = false;
+				spanHasContent = false;
+			}
+			else
+			{
+				if ( span && !spanHasContent )
+				{
+					out.Append( spanstr );
+					spanHasContent = true;
+				}
+				out.Append( token.Begin(), token.Size() );
+			}
 		}
-		else if ( *p == '\n' )
-		{
-			out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
-			span = false;
-			spanHasContent = false;
-		}
-		else if ( Q_IsColorString( p ) )
+		else if ( token.Type() == Color::Token::COLOR )
 		{
 			if ( span && spanHasContent )
 			{
@@ -545,40 +556,36 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = false;
 			}
 
-			char rgb[32];
-			int code = ColorIndex( *++p );
+			if ( token.Color().Alpha() != 0  )
+			{
+				char rgb[32];
+				Color::Color32Bit color32 = token.Color();
+				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
+						(int) color32.Red(),
+						(int) color32.Green(),
+						(int) color32.Blue() );
 
-			Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
-			          (int)( g_color_table[ code ][ 0 ] * 255 ),
-			          (int)( g_color_table[ code ][ 1 ] * 255 ),
-			          (int)( g_color_table[ code ][ 2 ] * 255 ) );
+				// don't add the span yet, because it might be empty
+				spanstr = rgb;
 
-			// don't add the span yet, because it might be empty
-			spanstr = rgb;
-
-			span = true;
-			spanHasContent = false;
+				span = true;
+				spanHasContent = false;
+			}
 		}
-		else
+		else if ( token.Type() == Color::Token::ESCAPE )
 		{
 			if ( span && !spanHasContent )
 			{
 				out.Append( spanstr );
 				spanHasContent = true;
 			}
-			out.Append( *p );
+			out.Append( Color::Constants::ESCAPE );
 		}
 	}
 
 	if ( span && spanHasContent )
 	{
 		out.Append( "</span>" );
-	}
-
-	// ^^ -> ^
-	while ( out.Find( "^^" ) != Rocket::Core::String::npos )
-	{
-		out = out.Replace( "^^", "^" );
 	}
 
 	if ( parseFlags & RP_EMOTICONS )
@@ -644,12 +651,14 @@ void Rocket_SetActiveContext( int catcher )
 	{
 		case KEYCATCH_UI:
 			menuContext->ShowMouseCursor( true );
+			trap_SetMouseMode( MouseMode::Absolute );
 			break;
 
 		default:
 			if ( !( catcher & KEYCATCH_CONSOLE ) )
 			{
 				menuContext->ShowMouseCursor( false );
+			trap_SetMouseMode( MouseMode::Deltas );
 			}
 
 			break;
@@ -659,4 +668,12 @@ void Rocket_SetActiveContext( int catcher )
 void Rocket_LoadFont( const char *font )
 {
 	Rocket::Core::FontDatabase::LoadFontFace( font );
+}
+
+void Rocket_HideMouse()
+{
+	if ( menuContext )
+	{
+		menuContext->ShowMouseCursor( false );
+	}
 }

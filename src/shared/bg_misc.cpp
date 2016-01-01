@@ -483,6 +483,29 @@ bool BG_AlienCanEvolve( int from, int credits )
 
 /*
 ===============
+BG_GetBarbRegenerationInterval
+===============
+*/
+int BG_GetBarbRegenerationInterval(const playerState_t& ps)
+{
+	if ( ps.stats[ STAT_STATE ] & SS_HEALING_8X )
+	{
+		// regeneration interval near booster
+		return LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
+	}
+	else if ( ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+	{
+		// regeneration interval on creep
+		return LEVEL3_BOUNCEBALL_REGEN_CREEP;
+	}
+	else
+	{
+		return LEVEL3_BOUNCEBALL_REGEN;
+	}
+}
+
+/*
+===============
 BG_InitClassAttributes
 ===============
 */
@@ -2700,21 +2723,21 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 		if ( fileLen < 9 || filePtr[ fileLen - 8 ] != '_' ||
 		     filePtr[ fileLen - 7 ] < '1' || filePtr[ fileLen - 7 ] > '9' )
 		{
-			Com_Printf( S_COLOR_YELLOW "skipping invalidly named emoticon \"%s\"\n",
+			Com_Printf( "^3skipping invalidly named emoticon \"%s\"\n",
 			            filePtr );
 			continue;
 		}
 
 		if ( fileLen - 8 >= MAX_EMOTICON_NAME_LEN )
 		{
-			Com_Printf( S_COLOR_YELLOW "emoticon file name \"%s\" too long (≥ %d)\n",
+			Com_Printf( "^3emoticon file name \"%s\" too long (≥ %d)\n",
 			            filePtr, MAX_EMOTICON_NAME_LEN + 8 );
 			continue;
 		}
 
 		if ( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), nullptr, FS_READ ) )
 		{
-			Com_Printf( S_COLOR_YELLOW "could not open \"emoticons/%s\"\n", filePtr );
+			Com_Printf( "^3could not open \"emoticons/%s\"\n", filePtr );
 			continue;
 		}
 

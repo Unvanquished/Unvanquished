@@ -652,7 +652,7 @@ typedef struct
 	vec2_t        pos;
 	float         scale;
 	float         size;
-	vec4_t        color;
+	Color::Color  color;
 	float         t_occlusion;
 
 	bool      clamped;
@@ -672,9 +672,9 @@ typedef struct
 	float         fadeMaxDist; //runtime
 
 	// drawing
-	vec4_t        colorNeutral;
-	vec4_t        colorAlien;
-	vec4_t        colorHuman;
+	Color::Color  colorNeutral;
+	Color::Color  colorAlien;
+	Color::Color  colorHuman;
 	float         fadeInAlpha;
 	float         fadeInScale;
 
@@ -1026,7 +1026,7 @@ typedef struct
     bool     defined;
     int          lastZone;
     int          nZones;
-    float        bgColor[4];
+    Color::Color bgColor;
     float        scale;
     struct
     {
@@ -1081,7 +1081,7 @@ typedef struct
 
 typedef struct
 {
-	byte     color[ 3 ];
+	Color::Color32Bit color;
 	bool drawIntersection;
 	bool drawFrontline;
 } cgBinaryShaderSetting_t;
@@ -1407,10 +1407,6 @@ typedef struct
 	int modCount;
 	int modIndex;
 
-	char *voipInputs[ MAX_INPUTS ];
-	int voipInputsCount;
-	int voipInputIndex;
-
 	char *alOutputs[ MAX_OUTPUTS ];
 	int alOutputsCount;
 	int alOutputIndex;
@@ -1651,20 +1647,20 @@ typedef struct
 	qhandle_t overlayShader;
 	qhandle_t noPowerShader;
 	qhandle_t markedShader;
-	vec4_t    healthSevereColor;
-	vec4_t    healthHighColor;
-	vec4_t    healthElevatedColor;
-	vec4_t    healthGuardedColor;
-	vec4_t    healthLowColor;
-	int       frameHeight;
-	int       frameWidth;
-	int       healthPadding;
-	int       overlayHeight;
-	int       overlayWidth;
-	float     verticalMargin;
-	float     horizontalMargin;
-	vec4_t    foreColor;
-	vec4_t    backColor;
+	Color::Color healthSevereColor;
+	Color::Color healthHighColor;
+	Color::Color healthElevatedColor;
+	Color::Color healthGuardedColor;
+	Color::Color healthLowColor;
+	int          frameHeight;
+	int          frameWidth;
+	int          healthPadding;
+	int          overlayHeight;
+	int          overlayWidth;
+	float        verticalMargin;
+	float        horizontalMargin;
+	Color::Color foreColor;
+	Color::Color backColor;
 	bool  loaded;
 } buildStat_t;
 
@@ -1726,9 +1722,7 @@ typedef struct
 
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
-
-	int          cursorX;
-	int          cursorY;
+    
 	void         *capturedItem;
 	qhandle_t    activeCursor;
 
@@ -1980,7 +1974,8 @@ void       CG_UpdateCvars();
 int        CG_CrosshairPlayer();
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, bool down );
-void       CG_MouseEvent( int x, int y );
+void       CG_MouseEvent( int dx, int dy );
+void       CG_MousePosEvent( int x, int y );
 bool   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString();
 
@@ -2015,31 +2010,29 @@ void     CG_EndShadowCaster();
 //
 void     CG_DrawPlane( vec3_t origin, vec3_t down, vec3_t right, qhandle_t shader );
 void     CG_AdjustFrom640( float *x, float *y, float *w, float *h );
-void     CG_FillRect( float x, float y, float width, float height, const float *color );
+void     CG_FillRect( float x, float y, float width, float height, const Color::Color& color );
 void     CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
 void     CG_DrawRotatedPic( float x, float y, float width, float height, qhandle_t hShader, float angle );
 void     CG_DrawNoStretchPic( float x, float y, float width, float height, qhandle_t hShader );
-void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
-                         vec4_t tcolor, float amount, qhandle_t hShader );
+void     CG_DrawFadePic( float x, float y, float width, float height, const Color::Color& fcolor,
+                         const Color::Color& tcolor, float amount, qhandle_t hShader );
 void     CG_SetClipRegion( float x, float y, float w, float h );
 void     CG_ClearClipRegion();
 void     CG_EnableScissor( bool enable );
 void     CG_SetScissor( int x, int y, int w, int h );
 
-int      CG_DrawStrlen( const char *str );
-
-float    *CG_FadeColor( int startMsec, int totalMsec );
+Color::Color CG_FadeColor( int startMsec, int totalMsec );
 float    CG_FadeAlpha( int startMsec, int totalMsec );
 void     CG_TileClear();
-void     CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
+void     CG_DrawRect( float x, float y, float width, float height, float size, const Color::Color& color );
 void     CG_DrawSides( float x, float y, float w, float h, float size );
 void     CG_DrawTopBottom( float x, float y, float w, float h, float size );
 bool CG_WorldToScreen( vec3_t point, float *x, float *y );
 char     CG_GetColorCharForHealth( int clientnum );
-void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const float *shaderRGBA );
+void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::Color& shaderRGBA );
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
-                               bool a240, int customShader, const float *shaderRGBA );
-void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, vec4_t rgba );
+                               bool a240, int customShader, const Color::Color& shaderRGBA );
+void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, Color::Color rgba );
 
 #define CG_ExponentialFade( value, target, lambda ) \
 ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001 );
@@ -2057,8 +2050,8 @@ void CG_DrawActive();
 void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float text_y, int ownerDraw, int ownerDrawFlags,
                    int align, int textalign, int textvalign,
-                   float borderSize, float scale, vec4_t foreColor,
-                   vec4_t backColor, qhandle_t shader, int textStyle );
+                   float borderSize, float scale, const Color::Color& foreColor,
+                   const Color::Color& backColor, qhandle_t shader, int textStyle );
 float      CG_GetValue( int ownerDraw );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
@@ -2182,7 +2175,7 @@ float CG_ChargeProgress();
 // cg_minimap.c
 //
 void CG_InitMinimap();
-void CG_DrawMinimap( const rectDef_t *rect, const vec4_t color );
+void CG_DrawMinimap( const rectDef_t *rect, const Color::Color& color );
 
 //
 // cg_marks.c
@@ -2437,5 +2430,6 @@ void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
 void Rocket_RocketDebug_f();
+void Rocket_HideMouse();
 #endif
 

@@ -45,7 +45,7 @@ namespace Cmd {
         SYSTEM           = BIT(3),
         RENDERER         = BIT(4),
         AUDIO            = BIT(5),
-        GAME_VM          = BIT(6),
+        SGAME_VM         = BIT(6),
         CGAME_VM         = BIT(7),
         UI_VM            = BIT(8),
         PROXY_FOR_OLD    = BIT(31) // OLD: The command has been registered through the proxy function in cmd.c
@@ -206,7 +206,7 @@ namespace Cmd {
 
     // Engine calls available everywhere
 
-    void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    void AddCommand(const std::string& name, const CmdBase& cmd, std::string description);
     void RemoveCommand(const std::string& name);
     Environment* GetEnv();
 

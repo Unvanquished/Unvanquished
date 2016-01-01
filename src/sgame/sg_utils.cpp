@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // sg_utils.c -- misc utility functions for game module
 
 #include "sg_local.h"
+#include "CBSE.h"
 
 typedef struct
 {
@@ -302,9 +303,7 @@ void G_KillBox( gentity_t *ent )
 			continue;
 		}
 
-		// nail it
-		G_Damage( hit, ent, ent, nullptr, nullptr,
-		          100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
+		G_Kill(hit, ent, MOD_TELEFRAG);
 	}
 }
 
@@ -321,7 +320,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 
   for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
   {
-    if( !e->takedamage || !e->r.linked || !e->clipmask || ( e->client && e->client->noclip ) )
+    if( !e->r.linked || !e->clipmask )
       continue;
 
     VectorAdd( e->r.currentOrigin, e->r.mins, mins );
@@ -333,8 +332,9 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
     trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
                 e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
-    if( tr.entityNum != ENTITYNUM_NONE )
-      G_Damage( e, ent, activator, nullptr, nullptr, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
+	if( tr.entityNum != ENTITYNUM_NONE ) {
+	  G_Kill(e, activator, MOD_CRUSH);
+	}
   }
 }
 
@@ -815,135 +815,6 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 
 /*
 ===============
-G_FireThink
-
-Run by fire entities and burning buildables.
-===============
-*/
-void G_FireThink( gentity_t *self )
-{
-	char descr[ 64 ];
-
-	if ( g_debugFire.integer )
-	{
-		BG_BuildEntityDescription( descr, sizeof( descr ), &self->s );
-	}
-	else
-	{
-		descr[ 0 ] = '\0';
-	}
-
-	// damage self
-	if ( self->takedamage )
-	{
-		if ( self->nextBurnDamage < level.time )
-		{
-			if ( g_debugFire.integer )
-			{
-				Com_Printf( "%s ^3took burn damage^7.", descr );
-			}
-
-			G_Damage( self, self, self->fireStarter, nullptr, nullptr, BURN_SELFDAMAGE, 0, MOD_BURN );
-
-			self->nextBurnDamage = level.time + BURN_SELFDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-		}
-	}
-
-	// damage close players
-	if ( self->nextBurnSplashDamage < level.time )
-	{
-		bool hit;
-
-		hit = G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_SPLDAMAGE,
-		                               BURN_SPLDAMAGE_RADIUS, self, MOD_BURN, TEAM_NONE );
-
-		if ( hit && g_debugFire.integer ) Com_Printf( "%s ^8dealt burn damage^7.", descr );
-
-		self->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-	}
-
-	// evaluate chances to stop burning or ignite close alien buildables
-	if ( self->nextBurnAction < level.time )
-	{
-		gentity_t *neighbor;
-		float     burnStopChance = BURN_STOP_CHANCE;
-
-		// lower burn stop chance if there are other burning entities nearby
-		neighbor = nullptr;
-		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_STOP_RADIUS ) ) )
-		{
-			if ( neighbor == self ) continue;
-
-			if ( neighbor->onFire && neighbor->health > 0 )
-			{
-				float frac = Distance( self->s.origin, neighbor->s.origin ) / (float)BURN_STOP_RADIUS;
-				float mod  = frac * 1.0f + ( 1.0f - frac ) * BURN_STOP_CHANCE;
-
-				burnStopChance *= mod;
-			}
-		}
-
-		// attempt to stop burning
-		if ( random() < burnStopChance )
-		{
-			if ( g_debugFire.integer )
-			{
-				Com_Printf( "%s has chance to stop burning of %.2f → ^1stop^7", descr, burnStopChance );
-			}
-
-			switch ( self->s.eType )
-			{
-				case ET_BUILDABLE: self->onFire = false; break;
-				case ET_FIRE:      G_FreeEntity( self );  break;
-				default:                                  break;
-			}
-
-			return;
-		}
-		else if ( g_debugFire.integer )
-		{
-			Com_Printf( "%s has chance to stop burning of %.2f → ^2continue^7", descr, burnStopChance );
-		}
-
-		// attempt to ignite close alien buildables
-		neighbor = nullptr;
-		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) ) )
-		{
-			float chance;
-
-			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_ALIENS ) continue;
-			if ( neighbor == self ) continue;
-
-			chance = 1.0f - ( Distance( self->s.origin, neighbor->s.origin ) / (float)BURN_SPREAD_RADIUS );
-
-			if ( random() < chance && G_LineOfSight( self, neighbor ) )
-			{
-				if ( g_debugFire.integer )
-				{
-					Com_Printf( "%s has chance to ignite a neighbour of %.2f → ^2ignite^7", descr, chance );
-				}
-
-				G_IgniteBuildable( neighbor, self->fireStarter );
-			}
-			else if ( g_debugFire.integer )
-			{
-				Com_Printf( "%s has chance to ignite a neighbour of %.2f → failed or no los", descr, chance );
-			}
-		}
-
-		self->nextBurnAction = level.time + BURN_ACTION_PERIOD * BURN_PERIODS_RAND_MOD;
-	}
-
-	// HACK: Assume that all non-ET_FIRE entities that can catch fire will think frequently enough.
-	// TODO: Add support for multiple think functions with individual timers.
-	if ( self->s.eType == ET_FIRE )
-	{
-		self->nextthink = level.time;
-	}
-}
-
-/*
-===============
 G_SpawnFire
 ===============
 */
@@ -978,15 +849,11 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire->s.eType   = ET_FIRE;
 	fire->clipmask  = 0;
 
-	// thinking
-	fire->think                = G_FireThink;
-	fire->nextthink            = level.time;
-	fire->nextBurnSplashDamage = level.time + BURN_SPLDAMAGE_PERIOD * BURN_PERIODS_RAND_MOD;
-	fire->nextBurnAction       = level.time + BURN_ACTION_PERIOD    * BURN_PERIODS_RAND_MOD;
+	fire->entity = new FireEntity(FireEntity::Params{fire});
+	fire->entity->Ignite(fireStarter);
 
 	// attacker
-	fire->r.ownerNum  = fireStarter->s.number;
-	fire->fireStarter = fireStarter;
+	fire->r.ownerNum = fireStarter->s.number;
 
 	// normal
 	VectorNormalize( normal ); // make sure normal is a direction
@@ -1057,112 +924,6 @@ bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }
 
-/**
- * @brief Heals an entity and scales/clears account array accordingly.
- * @param self
- * @param amount Positive health amount.
- * @return Health healed.
- */
-int G_Heal( gentity_t *self, int amount )
-{
-	int   clientNum, relevantClientNum, maxHealth, healed;
-	float totalCredits, scaleAccounts;
-	int   relevantClients[ MAX_CLIENTS ];
-
-	// amount must be positive
-	if ( amount <= 0 )
-	{
-		return 0;
-	}
-
-	// don't heal dead targets
-	if ( self->health <= 0 )
-	{
-		return 0;
-	}
-
-	// get max health
-	switch ( self->s.eType )
-	{
-		case ET_PLAYER:
-			maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
-			break;
-
-		case ET_BUILDABLE:
-			maxHealth = BG_Buildable( self->s.modelindex )->health;
-			break;
-
-		default:
-			maxHealth = 0;
-	}
-
-	// abort if already fully healed
-	if ( maxHealth )
-	{
-		if ( self->health == maxHealth )
-		{
-			return 0;
-		}
-		else if ( self->health > maxHealth )
-		{
-			// this shouldn't really happen, so print a warning
-			Com_Printf( S_WARNING "G_Heal: Target has health above max health (%i/%i).\n",
-			            self->health, maxHealth );
-			return 0;
-		}
-	}
-
-	// get total damage account and assemble list of relevant clients
-	totalCredits = 0;
-	for ( clientNum = 0, relevantClientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
-	{
-		if ( self->credits[ clientNum ].value > 0.0f )
-		{
-			relevantClients[ relevantClientNum++ ] = clientNum;
-			totalCredits += self->credits[ clientNum ].value;
-		}
-	}
-
-	// calculate account scale factor
-	if ( ( float )amount >= totalCredits )
-	{
-		// clear the account array
-		scaleAccounts = 0.0f;
-	}
-	else
-	{
-		scaleAccounts = ( totalCredits - ( float )amount ) / totalCredits;
-	}
-
-	// scale down or clear damage accounts
-	for ( clientNum = 0; clientNum < relevantClientNum; clientNum++ )
-	{
-		self->credits[ relevantClients[ clientNum ] ].value *= scaleAccounts;
-	}
-
-	// heal
-	self->health += amount;
-
-	// cap health
-	if ( maxHealth && self->health > maxHealth )
-	{
-		healed = amount - ( self->health - maxHealth );
-		self->health = maxHealth;
-	}
-	else
-	{
-		healed = amount;
-	}
-
-	// send to client
-	if ( self->client )
-	{
-		self->client->ps.stats[ STAT_HEALTH ] = self->health;
-	}
-
-	return healed;
-}
-
 bool G_IsPlayableTeam( team_t team )
 {
 	return ( team > TEAM_NONE && team < NUM_TEAMS );
@@ -1187,6 +948,7 @@ team_t G_IterateTeams( team_t team )
 	}
 }
 
+// TODO: Add TeamComponent
 team_t G_Enemy( team_t team )
 {
 	switch ( team )
@@ -1197,23 +959,39 @@ team_t G_Enemy( team_t team )
 	}
 }
 
+// TODO: Add LocationComponent
+float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
+	return Distance(ent1->s.origin, ent2->s.origin);
+}
+
 /**
- * @return Whether ent is a player or buildable with positive health.
+ * @return Whether entity has a health component and is alive.
+ * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
  */
-bool G_Alive( gentity_t *ent )
-{
-	if ( !ent->inuse ) return false;
+bool G_Alive(gentity_t *ent) {
+	if (!ent) return false;
+	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
+	return (healthComponent && healthComponent->Alive());
+}
 
-	switch ( ent->s.eType )
-	{
-		case ET_PLAYER:
-			return ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
-			         ent->client->ps.stats[ STAT_HEALTH ] > 0 );
+/**
+ * @return Whether entity has a health component and is dead.
+ * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
+ */
+bool G_Dead(gentity_t *ent) {
+	if (!ent) return false;
+	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
+	return (healthComponent && !healthComponent->Alive());
+}
 
-		case ET_BUILDABLE:
-			return ( ent->health > 0 );
+void G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
+	if (ent) Utility::Kill(*ent->entity, nullptr, meansOfDeath);
+}
 
-		default:
-			return false;
+void G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
+	if (!source) {
+		G_Kill(ent, meansOfDeath);
+	} else {
+		if (ent) Utility::Kill(*ent->entity, source->entity, meansOfDeath);
 	}
 }

@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "CBSE.h"
 
 /*
 ================
@@ -315,7 +316,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	Beacon::PropagateAll( );
 
-	G_LogPrintf( "ChangeTeam: %d %s: %s" S_COLOR_WHITE " switched teams\n",
+	G_LogPrintf( "ChangeTeam: %d %s: %s^* switched teams\n",
 	             ( int )( ent - g_entities ), BG_TeamName( newTeam ), ent->client->pers.netname );
 
 	G_namelog_update_score( ent->client );
@@ -379,6 +380,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 	gclient_t *cl;
 	upgrade_t upgrade = UP_NONE;
 	int       curWeaponClass = WP_NONE; // sends weapon for humans, class for aliens
+	int       health = 0;
 
 	if ( !g_allowTeamOverlay.integer )
 	{
@@ -455,18 +457,20 @@ void TeamplayInfoMessage( gentity_t *ent )
 			{
 				upgrade = UP_NONE;
 			}
+			health = static_cast<int>( std::ceil( player->entity->Get<HealthComponent>()->Health() ) );
 		}
 		else if ( cl->pers.team == TEAM_ALIENS )
 		{
 			curWeaponClass = cl->ps.stats[ STAT_CLASS ];
 			upgrade = UP_NONE;
+			health = static_cast<int>( std::ceil( player->entity->Get<HealthComponent>()->Health() ) );
 		}
 
 		if( team == TEAM_ALIENS ) // aliens don't have upgrades
 		{
 			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i", i,
 						 cl->pers.location,
-						 cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
+			             health,
 						 curWeaponClass,
 						 cl->pers.credit );
 		}
@@ -474,7 +478,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		{
 			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i %i", i,
 			             cl->pers.location,
-			             cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
+			             health,
 			             curWeaponClass,
 			             cl->pers.credit,
 			             upgrade );

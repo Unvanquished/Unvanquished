@@ -53,10 +53,7 @@ static void LerpSurfaceVert( srfVert_t *a, srfVert_t *b, srfVert_t *out )
 	out->lightmap[ 0 ] = 0.5f * ( a->lightmap[ 0 ] + b->lightmap[ 0 ] );
 	out->lightmap[ 1 ] = 0.5f * ( a->lightmap[ 1 ] + b->lightmap[ 1 ] );
 
-	out->lightColor[ 0 ] = floatToUnorm8( unorm8ToFloat( a->lightColor[ 0 ] ) * 0.5f + unorm8ToFloat( b->lightColor[ 0 ] ) * 0.5f );
-	out->lightColor[ 1 ] = floatToUnorm8( unorm8ToFloat( a->lightColor[ 1 ] ) * 0.5f + unorm8ToFloat( b->lightColor[ 1 ] ) * 0.5f );
-	out->lightColor[ 2 ] = floatToUnorm8( unorm8ToFloat( a->lightColor[ 2 ] ) * 0.5f + unorm8ToFloat( b->lightColor[ 2 ] ) * 0.5f );
-	out->lightColor[ 3 ] = floatToUnorm8( unorm8ToFloat( a->lightColor[ 3 ] ) * 0.5f + unorm8ToFloat( b->lightColor[ 3 ] ) * 0.5f );
+	out->lightColor = Color::Blend ( a->lightColor, b->lightColor, 0.5f );
 }
 
 /*

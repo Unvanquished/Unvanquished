@@ -114,7 +114,7 @@ div.infobox {
 			</div>
 		</panel>
 		<tab>Upgrades</tab>
-		<panel>Events.pushevent('hide human_build', event)
+		<panel>
 		<circlemenu id="upgrades" source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" onCancel="Events.pushevent('hide human_buy', event)"/>
 			<div class="infobox">
 			<h2><datasource_single source="armouryBuyList.upgrades" fields="name" targetid="upgrades" /></h2>

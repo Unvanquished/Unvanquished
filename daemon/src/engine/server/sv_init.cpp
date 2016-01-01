@@ -463,7 +463,7 @@ void SV_SpawnServer( const char *server )
 	// also print some status stuff
 	CL_MapLoading();
 
-	// clear collision map data     // (SA) NOTE: TODO: used in missionpack
+	// clear collision map data
 	CM_ClearMap();
 
 	// wipe the entire per-level structure
@@ -661,9 +661,6 @@ void SV_Init()
 	// from loading outdated vms pk3s. The correct vms pk3 will be loaded upon connecting to a pure server.
 	sv_pure = Cvar_Get( "sv_pure", "0", CVAR_SYSTEMINFO );
 #endif
-#ifdef USE_VOIP
-	sv_voip = Cvar_Get( "sv_voip", "1", CVAR_SYSTEMINFO | CVAR_LATCH );
-#endif
 	Cvar_Get( "sv_paks", "", CVAR_SYSTEMINFO | CVAR_ROM );
 
 	// server vars
@@ -741,9 +738,12 @@ void SV_FinalCommand( char *cmd, bool disconnect )
 					}
 				}
 
-				// force a snapshot to be sent
-				cl->nextSnapshotTime = -1;
-				SV_SendClientSnapshot( cl );
+				if (sv.gameClients != nullptr)
+				{
+					// force a snapshot to be sent
+					cl->nextSnapshotTime = -1;
+					SV_SendClientSnapshot( cl );
+				}
 			}
 		}
 	}

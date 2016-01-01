@@ -112,6 +112,13 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 });
                 break;
 
+			case CG_MOUSE_POS_EVENT:
+				IPC::HandleMsg<CGameMousePosEventMsg>(VM::rootChannel, std::move(reader), [] (int x, int y) {
+					CG_MousePosEvent(x, y);
+					cmdBuffer.TryFlush();
+				});
+				break;
+
 			case CG_TEXT_INPUT_EVENT:
 				IPC::HandleMsg<CGameTextInptEvent>(VM::rootChannel, std::move(reader), [] (int c) {
 					Rocket_ProcessTextInput(c);
@@ -478,15 +485,14 @@ void trap_R_RenderScene( const refdef_t *fd )
 	cmdBuffer.SendMsg<Render::RenderSceneMsg>(*fd);
 }
 
-void trap_R_SetColor( const float *rgba )
+void trap_R_ClearColor()
 {
-	std::array<float, 4> myrgba = {{1.0f, 1.0f, 1.0f, 1.0f}};
-	if (rgba) {
-		memcpy(myrgba.data(), rgba, 4 * sizeof(float));
-	}
-	cmdBuffer.SendMsg<Render::SetColorMsg>(myrgba);
+	cmdBuffer.SendMsg<Render::SetColorMsg>(Color::White);
 }
-
+void trap_R_SetColor( const Color::Color &rgba )
+{
+	cmdBuffer.SendMsg<Render::SetColorMsg>(rgba);
+}
 void trap_R_SetClipRegion( const float *region )
 {
 	std::array<float, 4> myregion;
@@ -693,7 +699,7 @@ std::vector<std::vector<int>> trap_Key_GetKeynumForBinds(int team, std::vector<s
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 {
 	std::string result;
-	VM::SendMsg<Key::KeyNumToStringMsg>(keynum, buflen, result);
+	VM::SendMsg<Key::KeyNumToStringMsg>(keynum, result);
 	Q_strncpyz(buf, result.c_str(), buflen);
 }
 
@@ -719,6 +725,12 @@ std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys )
 	return list;
 }
 
+// Mouse
+
+void trap_SetMouseMode( MouseMode mode )
+{
+	VM::SendMsg<Mouse::SetMouseMode>( mode );
+}
 
 // All LAN
 

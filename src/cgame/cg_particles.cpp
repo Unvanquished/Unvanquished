@@ -2535,7 +2535,6 @@ static void CG_RenderParticle( particle_t *p )
 	particleSystem_t     *ps = p->parent->parent;
 	baseParticleSystem_t *bps = ps->class_;
 	vec3_t               alight, dlight, lightdir;
-	int                  i;
 	vec3_t               up = { 0.0f, 0.0f, 1.0f };
 
 	memset( &re, 0, sizeof( refEntity_t ) );
@@ -2559,10 +2558,9 @@ static void CG_RenderParticle( particle_t *p )
 		{
 			trap_R_LightForPoint( p->origin, alight, dlight, lightdir );
 
-			for ( i = 0; i <= 2; i++ )
-			{
-				re.shaderRGBA[ i ] = ( byte ) alight[ i ];
-			}
+			re.shaderRGBA.SetRed( alight[0] );
+			re.shaderRGBA.SetGreen( alight[1] );
+			re.shaderRGBA.SetBlue( alight[2] );
 		}
 		else
 		{
@@ -2575,10 +2573,10 @@ static void CG_RenderParticle( particle_t *p )
 			          CG_CalculateTimeFrac( p->birthTime,
 			                                p->lifeTime,
 			                                p->colorDelay ),
-			          colorRange, re.shaderRGBA );
+			          colorRange, re.shaderRGBA.ToArray() );
 		}
 
-		re.shaderRGBA[ 3 ] = ( byte )( ( float ) 0xFF *
+		re.shaderRGBA.SetAlpha( ( float ) 0xFF *
 		                               CG_LerpValues( p->alpha.initial,
 		                                   p->alpha.final,
 		                                   CG_CalculateTimeFrac( p->birthTime,

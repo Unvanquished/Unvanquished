@@ -46,8 +46,8 @@ namespace Util {
 			snap.serverTime = stream.Read<uint32_t>();
 			stream.ReadData(&snap.areamask, MAX_MAP_AREA_BYTES);
 			snap.ps = stream.Read<playerState_t>();
-			snap.entities = std::move(stream.Read<std::vector<entityState_t>>());
-			snap.serverCommands = std::move(stream.Read<std::vector<std::string>>());
+			snap.entities = stream.Read<std::vector<entityState_t>>();
+			snap.serverCommands = stream.Read<std::vector<std::string>>();
 			return snap;
 		}
 	};
@@ -101,6 +101,20 @@ namespace Util {
 			stream.ReadData(&ent, offsetof(refEntity_t, skeleton));
 			ent.skeleton = stream.Read<refSkeleton_t>();
 			return ent;
+		}
+	};
+
+	template<>
+	struct SerializeTraits<Color::Color> {
+		static void Write(Writer& stream, const Color::Color& value)
+		{
+			stream.WriteData(value.ToArray(), value.ArrayBytes());
+		}
+		static Color::Color Read(Reader& stream)
+		{
+			Color::Color value;
+			stream.ReadData(value.ToArray(), value.ArrayBytes());
+			return value;
 		}
 	};
 }
@@ -194,6 +208,9 @@ typedef enum cgameImport_s
   CG_KEY_CLEARSTATES,
   CG_KEY_CLEARCMDBUTTONS,
   CG_KEY_KEYSDOWN,
+
+  // Mouse
+  CG_MOUSE_SETMOUSEMODE,
 
   // Lan
   CG_LAN_GETSERVERCOUNT,
@@ -489,7 +506,7 @@ namespace Render {
 	// AddAdditiveLightToSceneMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDADDITIVELIGHTTOSCENE>, std::array<float, 3>, float, float, float, float> AddAdditiveLightToSceneMsg;
 	// SetColorMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, std::array<float, 4>> SetColorMsg;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, Color::Color> SetColorMsg;
 	// SetClipRegionMsg
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>> SetClipRegionMsg;
 	// ResetClipRegionMsg
@@ -525,7 +542,7 @@ namespace Key {
 	> GetKeynumForBindsMsg;
 	// KeyNumToStringMsg
 	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int, int>,
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int>,
 		IPC::Reply<std::string>
 	> KeyNumToStringMsg;
 	// SetBindingMsg
@@ -539,6 +556,10 @@ namespace Key {
 		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYSDOWN>, std::vector<int>>,
 		IPC::Reply<std::vector<int>>
 	> KeysDownMsg;
+}
+
+namespace Mouse {
+    typedef IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_SETMOUSEMODE>, MouseMode> SetMouseMode;
 }
 
 namespace LAN {
@@ -765,6 +786,9 @@ typedef enum
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
 
+  CG_MOUSE_POS_EVENT,
+//  void    (*CG_MousePosEvent)( int x, int y );
+
   CG_TEXT_INPUT_EVENT,
 // pass in text input events from the engine
 
@@ -806,6 +830,10 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
 > CGameMouseEventMsg;
+// CGameMousePosEventMsg
+typedef IPC::SyncMessage<
+    IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_POS_EVENT>, int, int>
+> CGameMousePosEventMsg;
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, int>
 > CGameTextInptEvent;

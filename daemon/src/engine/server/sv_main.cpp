@@ -36,10 +36,6 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 
-#ifdef USE_VOIP
-cvar_t         *sv_voip;
-#endif
-
 serverStatic_t svs; // persistent server info
 server_t       sv; // local server
 GameVM         gvm; // game virtual machine
@@ -648,15 +644,6 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 	{
 		Info_SetValueForKey( infostring, "stats", sv_statsURL->string, false );
 	}
-
-#ifdef USE_VOIP
-
-	if ( sv_voip->integer )
-	{
-		Info_SetValueForKey( infostring, "voip", va( "%i", sv_voip->integer ), false );
-	}
-
-#endif
 
 	if ( sv_minPing->integer )
 	{

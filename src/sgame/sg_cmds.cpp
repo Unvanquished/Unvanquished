@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
+#include "CBSE.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -43,45 +44,33 @@ Remove color codes and non-alphanumeric characters from a string
 */
 void G_SanitiseString( const char *in, char *out, int len )
 {
-	len--;
-	while ( *in && len > 0 )
+	--len;
+	for ( const auto& token : Color::Parser( in ) )
 	{
-		int cp = Q_UTF8_CodePoint( in );
-		int w;
-
-		if ( Q_IsColorString( in ) )
+		if ( token.Type() == Color::Token::CHARACTER )
 		{
-			in += 2; // skip color code
-			continue;
-		}
-
-		w = Q_UTF8_WidthCP( cp );
-
-		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
-		{
-			int wm;
-
-			if ( Q_Unicode_IsUpper( cp ) )
+			int cp = Q_UTF8_CodePoint( token.Begin() );
+			if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 			{
-				cp = Q_Unicode_ToLower( cp );
-				wm = Q_UTF8_WidthCP( cp );
-				wm = MIN( len, wm );
-				memcpy( out, Q_UTF8_Encode( cp ), wm );
-			}
-			else
-			{
-				wm = MIN( len, w );
-				memcpy( out, in, wm );
-			}
+				int sz = token.Size();
+				if ( Q_Unicode_IsUpper( cp ) )
+				{
+					cp = Q_Unicode_ToLower( cp );
+					sz = Q_UTF8_WidthCP( cp );
+				}
 
-			out += wm;
-			len -= wm;
+				if ( len < sz )
+				{
+					break;
+				}
+
+				memcpy( out, Q_UTF8_Encode( cp ), sz );
+				out += sz;
+				len -= sz;
+			}
 		}
-
-		in += w;
 	}
-
-	*out = 0;
+	*out = '\0';
 }
 
 /*
@@ -583,7 +572,6 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 
 		G_ModifyBuildPoints( (team_t)ent->client->pers.team, amount );
-		G_MarkBuildPointsMined( (team_t)ent->client->pers.team, amount );
 	}
 
 	// give momentum
@@ -601,8 +589,7 @@ void Cmd_Give_f( gentity_t *ent )
 		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
 	}
 
-	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
-			ent->client->sess.spectatorState != SPECTATOR_NOT )
+	if ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		return;
 	}
@@ -611,13 +598,13 @@ void Cmd_Give_f( gentity_t *ent )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
-			ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
+			ent->entity->Heal(1000.0f, nullptr);
 			BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
 		}
 		else
 		{
-			int amount = atoi( name + strlen("health") );
-			ent->health = Math::Clamp(ent->health + amount, 1, ent->client->ps.stats[ STAT_MAX_HEALTH ]);
+			float amount = atof( name + strlen("health") );
+			ent->entity->Heal(amount, nullptr);
 		}
 	}
 
@@ -748,8 +735,7 @@ void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
-		G_PlayerDie( ent, ent, ent, MOD_SUICIDE );
+		G_Kill(ent, MOD_SUICIDE);
 	}
 	else
 	{
@@ -801,7 +787,7 @@ void Cmd_Team_f( gentity_t *ent )
 	     g_combatCooldown.integer &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
-	     ent->health > 0 &&
+	     G_Alive( ent ) &&
 	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
 	{
 		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
@@ -1021,13 +1007,13 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 	switch ( mode )
 	{
 		case SAY_ALL:
-			G_LogPrintf( "Say: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_GREEN "%s\n",
+			G_LogPrintf( "Say: %d \"%s^7\": ^2%s\n",
 			             ( ent ) ? ( int )( ent - g_entities ) : -1,
 			             ( ent ) ? ent->client->pers.netname : "console", chatText );
 			break;
 
 		case SAY_ALL_ADMIN:
-			G_LogPrintf( "Say: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_MAGENTA "%s\n",
+			G_LogPrintf( "Say: %d \"%s^7\": ^6%s\n",
 			             ( ent ) ? ( int )( ent - g_entities ) : -1,
 			             ( ent ) ? ent->client->pers.netname : "console", chatText );
 			break;
@@ -1040,7 +1026,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 				Com_Error( ERR_FATAL, "SAY_TEAM by non-client entity" );
 			}
 
-			G_LogPrintf( "SayTeam: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_CYAN "%s\n",
+			G_LogPrintf( "SayTeam: %d \"%s^7\": ^5%s\n",
 			             ( int )( ent - g_entities ), ent->client->pers.netname, chatText );
 			break;
 
@@ -1090,7 +1076,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 		range[ i ] = g_sayAreaRange.value;
 	}
 
-	G_LogPrintf( "SayArea: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_BLUE "%s\n",
+	G_LogPrintf( "SayArea: %d \"%s^7\": ^4%s\n",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, msg );
 
 	VectorAdd( ent->s.origin, range, maxs );
@@ -1135,7 +1121,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 		range[ i ] = g_sayAreaRange.value;
 	}
 
-	G_LogPrintf( "SayAreaTeam: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_BLUE "%s\n",
+	G_LogPrintf( "SayAreaTeam: %d \"%s^7\": ^4%s\n",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, msg );
 
 	VectorAdd( ent->s.origin, range, maxs );
@@ -1675,7 +1661,7 @@ vote_is_disabled:
 	if( voteInfo[voteId].reasonNeeded )
 	{
 		char *creason = ConcatArgs( voteInfo[voteId].target != T_NONE ? 3 : 2 );
-		G_DecolorString( creason, reason, sizeof( reason ) );
+		Color::StripColors( creason, reason, sizeof( reason ) );
 	}
 
 	if ( voteInfo[voteId].target == T_PLAYER )
@@ -1698,7 +1684,7 @@ vote_is_disabled:
 			return;
 		}
 
-		G_DecolorString( level.clients[ clientNum ].pers.netname, name, sizeof( name ) );
+		Color::StripColors( level.clients[ clientNum ].pers.netname, name, sizeof( name ) );
 		id = level.clients[ clientNum ].pers.namelog->id;
 
 		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
@@ -1988,7 +1974,7 @@ vote_is_disabled:
 		          sizeof( level.team[ team ].voteDisplayString ), va( " for '%s'", reason ) );
 	}
 
-	G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\": %s\n",
+	G_LogPrintf( "%s: %d \"%s^7\": %s\n",
 	             team == TEAM_NONE ? "CallVote" : "CallTeamVote",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, level.team[ team ].voteString );
 
@@ -2014,7 +2000,7 @@ vote_is_disabled:
 				}
 				else if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
 				{
-					trap_SendServerCommand( i, va( "chat -1 %d " S_COLOR_YELLOW "%s\"" S_COLOR_YELLOW " called a team vote (%ss): \"%s",
+					trap_SendServerCommand( i, va( "chat -1 %d ^3%s\"^3 called a team vote (%ss): \"%s",
 					                               SAY_ADMINS, Quote( ent->client->pers.netname ), BG_TeamName( team ),
 					                               Quote( level.team[ team ].voteDisplayString ) ) );
 				}
@@ -2022,7 +2008,7 @@ vote_is_disabled:
 		}
 	}
 
-	G_DecolorString( ent->client->pers.netname, caller, sizeof( caller ) );
+	Color::StripColors( ent->client->pers.netname, caller, sizeof( caller ) );
 
 	level.team[ team ].voteTime = level.time;
 	trap_SetConfigstring( CS_VOTE_TIME + team,
@@ -2336,7 +2322,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 		return false;
 	}
 
-	if ( ent->health <= 0 )
+	if ( G_Dead( ent ) )
 	{
 		return true; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
@@ -2417,8 +2403,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			{
 				if ( cost >= 0 )
 				{
-					ent->client->pers.evolveHealthFraction = ( float ) ent->client->ps.stats[ STAT_HEALTH ] /
-					    ( float ) BG_Class( currentClass )->health;
+					ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
 
 					if ( ent->client->pers.evolveHealthFraction < 0.0f )
 					{
@@ -2540,7 +2525,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	}
 
 	// always let the builder prevent the explosion of a buildable
-	if ( buildable->health <= 0 )
+	if ( G_Dead( buildable ) )
 	{
 		G_RewardAttackers( buildable );
 		G_FreeEntity( buildable );
@@ -2558,7 +2543,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 		instant = false;
 	}
 
-	if ( instant && buildable->deconstruct )
+	if ( instant && buildable->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 	{
 		if ( !g_cheats.integer )
 		{
@@ -2596,8 +2581,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	else
 	{
 		// toggle mark
-		buildable->deconstruct     = !buildable->deconstruct;
-		buildable->deconstructTime = level.time;
+		buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
 	}
 }
 
@@ -2610,20 +2594,18 @@ void Cmd_Ignite_f( gentity_t *player )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   trace;
-	gentity_t *target;
 
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 100, forward, end );
+	VectorMA( viewOrigin, 1000, forward, end );
 	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->s.number, MASK_PLAYERSOLID, 0 );
-	target = &g_entities[ trace.entityNum ];
 
-	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )
-	{
-		return;
+	if ( trace.entityNum == ENTITYNUM_WORLD ) {
+		G_SpawnFire( trace.endpos, trace.plane.normal, player );
+	} else {
+		g_entities[ trace.entityNum ].entity->Ignite( player );
 	}
 
-	G_IgniteBuildable( target, player );
 }
 
 /*
@@ -3894,7 +3876,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	qsort( fileSort, count, sizeof( fileSort[ 0 ] ), SortMaps );
 
 	rows = ( count + 2 ) / 3;
-	pages = MAX( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
+	pages = std::max( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
 
 	if ( page >= pages )
 	{
@@ -4156,8 +4138,9 @@ void Cmd_Damage_f( gentity_t *ent )
 	point[ 0 ] += dx;
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
-	G_Damage( ent, nullptr, nullptr, nullptr, point, damage,
-	          ( nonloc ? DAMAGE_NO_LOCDAMAGE : 0 ), MOD_TARGET_LASER );
+
+	ent->entity->Damage((float)damage, nullptr, Vec3::Load(point), Util::nullopt,
+	                    nonloc ? DAMAGE_NO_LOCDAMAGE : 0, MOD_TARGET_LASER);
 }
 
 /*
@@ -4438,51 +4421,13 @@ void ClientCommand( int clientNum )
 	}
 
 	if ( (command->cmdFlags & CMD_ALIVE) &&
-	     ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
-	       ent->client->sess.spectatorState != SPECTATOR_NOT ) )
+	     ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIVE );
 		return;
 	}
 
 	command->cmdHandler( ent );
-}
-
-void G_DecolorString( const char *in, char *out, int len )
-{
-	bool decolor = true;
-
-	len--;
-
-	while ( *in && len > 0 )
-	{
-		if ( *in == DECOLOR_OFF || *in == DECOLOR_ON )
-		{
-			decolor = ( *in == DECOLOR_ON );
-			in++;
-			continue;
-		}
-
-		if ( decolor )
-		{
-			if ( Q_IsColorString( in ) )
-			{
-				in += 2;
-				continue;
-			}
-
-			if ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE )
-			{
-				++in;
-				// at this point, we want the default 'copy' action
-			}
-		}
-
-		*out++ = *in++;
-		len--;
-	}
-
-	*out = '\0';
 }
 
 void G_UnEscapeString( const char *in, char *out, int len )
@@ -4509,7 +4454,6 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	char     name[ MAX_NAME_LENGTH ];
 	char     cmd[ 12 ];
 	char     *msg;
-	char     color;
 	int      i, pcount;
 	int      count = 0;
 	bool teamonly = false;
@@ -4545,13 +4489,13 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		              teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg ) )
 		{
 			count++;
-			Q_strcat( recipients, sizeof( recipients ), va( "%s" S_COLOR_WHITE ", ",
+			Q_strcat( recipients, sizeof( recipients ), va( "%s^7, ",
 			          level.clients[ pids[ i ] ].pers.netname ) );
 		}
 	}
 
 	// report the results
-	color = teamonly ? COLOR_CYAN : COLOR_YELLOW;
+	const char* color = Color::CString( teamonly ? Color::Cyan : Color::Yellow );
 
 	if ( !count )
 	{
@@ -4560,16 +4504,16 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	}
 	else
 	{
-		ADMP( va( "%s %c %s", QQ( N_("^$1$Private message: ^7$2$\n") ), color, Quote( msg ) ) );
+		ADMP( va( "%s %s %s", QQ( N_("$1$Private message: ^7$2$\n") ), color, Quote( msg ) ) );
 		// remove trailing ", "
 		recipients[ strlen( recipients ) - 2 ] = '\0';
 		// FIXME PLURAL
-		ADMP( va( "%s %c %i %s",
-		          Quote( P_( "^$1$sent to $2$ player: ^7$3$\n",
-		                     "^$1$sent to $2$ players: ^7$3$\n", count ) ),
+		ADMP( va( "%s %s %i %s",
+		          Quote( P_( "$1$sent to $2$ player: ^7$3$\n",
+		                     "$1$sent to $2$ players: ^7$3$\n", count ) ),
 		          color, count, Quote( recipients ) ) );
 
-		G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\" \"%s\": ^%c%s\n",
+		G_LogPrintf( "%s: %d \"%s^7\" \"%s\": %s%s\n",
 		             ( teamonly ) ? "TPrivMsg" : "PrivMsg",
 		             ( ent ) ? ( int )( ent - g_entities ) : -1,
 		             ( ent ) ? ent->client->pers.netname : "console",

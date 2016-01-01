@@ -111,6 +111,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif
 
+// Support for explicitly defaulted functions
+#define HAS_EXPLICIT_DEFAULT
+
 // Microsoft Visual C++
 #elif defined( _MSC_VER )
 
@@ -170,6 +173,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NOEXCEPT noexcept
 #define NOEXCEPT_IF(x) noexcept(x)
 #define NOEXCEPT_EXPR(x) false
+#define HAS_EXPLICIT_DEFAULT
 #else
 #define NOEXCEPT
 #define NOEXCEPT_IF(x)
@@ -204,5 +208,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INLINE inline
 #endif
 #define Q_EXPORT DLLEXPORT
+
+// Uses SD-6 Feature Test Recommendations
+#ifdef __cpp_constexpr
+#   if __cpp_constexpr >= 201304
+#       define CONSTEXPR_FUNCTION_RELAXED constexpr
+#   else
+#       define CONSTEXPR_FUNCTION_RELAXED
+#   endif
+#   define CONSTEXPR_FUNCTION constexpr
+#else
+// Work around lack of constexpr
+#   define CONSTEXPR_FUNCTION
+#   define CONSTEXPR_FUNCTION_RELAXED
+#endif
 
 #endif // COMMON_COMPILER_H_

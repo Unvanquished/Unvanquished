@@ -335,28 +335,16 @@ protected:
 		text_element->RemoveReference();
 		if ( !text.Empty() )
 		{
-			q2rml( text, text_element );
-		}
-	}
-
-	bool IsColorString( Rocket::Core::WString str, size_t position )
-	{
-		if ( position + 1 < str.Length() )
-		{
-			return ( str[position] == Q_COLOR_ESCAPE &&
-			( str[position + 1] == COLOR_NULL || ( str[position + 1] >= '0' && str[position + 1] != Q_COLOR_ESCAPE && str[position + 1] < 'p' ) )
-			) ? true : false;
-		}
-		else
-		{
-			return false;
+            Rocket::Core::String utf8;
+            text.ToUTF8(utf8);
+			q2rml( utf8, text_element );
 		}
 	}
 
 	// Special q -> rml conversion function that preserves carets and codes
-	void q2rml( Rocket::Core::WString in, Rocket::Core::Element *parent )
+	void q2rml( Rocket::Core::String in, Rocket::Core::Element *parent )
 	{
-		Rocket::Core::WString out;
+		Rocket::Core::String out;
 		Rocket::Core::Element *child = nullptr;
 		bool span = false;
 
@@ -365,57 +353,11 @@ protected:
 			return;
 		}
 
-		for ( size_t i = 0; i < in.Length(); ++i )
+		for ( const auto& token : Color::Parser( in.CString(), Color::White ) )
 		{
-			if ( in[i] == '<' )
-			{
-				out.Append( Rocket::Core::WString( "&lt;" ) );
-			}
-
-			else if ( in[i] == '>' )
-			{
-				out.Append( Rocket::Core::WString( "&gt;" ) );
-			}
-
-			else if ( in[i] == '&' )
-			{
-				out.Append( Rocket::Core::WString( "&amp;" ) );
-			}
-
-			else if ( in[i] == '\n' )
-			{
-				// Child element initialized.
-				if ( span )
-				{
-					span = false;
-				}
-
-				// If not intialized, probably the first one, and should be white.
-				else
-				{
-					Rocket::Core::XMLAttributes xml;
-					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-					child->SetProperty( "color", "#FFFFFF" );
-				}
-
-				static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-				parent->AppendChild( child );
-				child->RemoveReference();
-				parent->AppendChild( ( child = Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) ) );
-				child->RemoveReference();
-				out.Clear();
-			}
-			// Convert ^^ to ^
-			else if ( in[i] == '^' && i < in.Length() - 1 && in[i + 1] == '^' )
-			{
-				i++;
-				out.Append( Rocket::Core::WString( "^" ) );
-			}
-			else if ( IsColorString( in, i ) )
+			if ( token.Type() == Color::Token::COLOR )
 			{
 				Rocket::Core::XMLAttributes xml;
-				int code = ColorIndex( in[++i] );
-				auto c = in[i];
 
 				// Child element initialized
 				if ( span )
@@ -426,7 +368,6 @@ protected:
 					child->RemoveReference();
 					out.Clear();
 				}
-
 				// If not intialized, probably the first one, and should be white.
 				else if ( !out.Empty() )
 				{
@@ -441,16 +382,58 @@ protected:
 
 
 				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
-				child->SetProperty( "color", va( "#%02X%02X%02X",
-				                                 ( int )( g_color_table[ code ][ 0 ] * 255 ),
-				                                 ( int )( g_color_table[ code ][ 1 ] * 255 ),
-				                                 ( int )( g_color_table[ code ][ 2 ] * 255 ) ) );
-				out.Append( Rocket::Core::WString( va( "^%c", c ) ) );
+				Color::Color32Bit color32 = token.Color();
+				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
+				out.Append( token.Begin(), token.Size() );
 				span = true;
 			}
-			else
+			else if ( token.Type() == Color::Token::ESCAPE )
 			{
-				out.Append( in[i] );
+				out.Append( Color::Constants::ESCAPE );
+			}
+			else if ( token.Type() == Color::Token::CHARACTER )
+			{
+				auto c = *token.Begin();
+
+				if ( c == '<' )
+				{
+					out.Append( "&lt;" );
+				}
+				else if ( c == '>' )
+				{
+					out.Append( "&gt;" );
+				}
+				else if ( c == '&' )
+				{
+					out.Append( "&amp;" );
+				}
+				else if ( c == '\n' )
+				{
+					// Child element initialized.
+					if ( span )
+					{
+						span = false;
+					}
+
+					// If not intialized, probably the first one, and should be white.
+					else
+					{
+						Rocket::Core::XMLAttributes xml;
+						child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+						child->SetProperty( "color", "#FFFFFF" );
+					}
+
+					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+					parent->AppendChild( child );
+					child->RemoveReference();
+					parent->AppendChild( ( child = Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) ) );
+					child->RemoveReference();
+					out.Clear();
+				}
+				else
+				{
+					out.Append( token.Begin(), token.Size() );
+				}
 			}
 		}
 

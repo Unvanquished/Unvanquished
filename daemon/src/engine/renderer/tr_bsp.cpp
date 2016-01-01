@@ -421,6 +421,24 @@ static void LoadRGBEToBytes( const char *name, byte **ldrImage, int *width, int 
 
 void LoadRGBEToHalfs( const char *name, unsigned short **halfImage, int *width, int *height );
 
+static char **R_LoadExternalLightmaps(
+		const char *mapName,
+		int *numLightmaps,
+		const std::initializer_list<char const *> &extensions = std::initializer_list<char const *>{".png", ".tga", ".webp", ".crn", ".jpg", ".jpeg"})
+{
+	int count = 0;
+	char **lightmapFiles = nullptr;
+	for (auto it : extensions) {
+		lightmapFiles = ri.FS_ListFiles(mapName, it, &count);
+		if (count && lightmapFiles) {
+			qsort(lightmapFiles, count, sizeof(char *), LightmapNameCompare);
+			break;
+		}
+	}
+	*numLightmaps = count;
+	return lightmapFiles;
+}
+
 /*
 ===============
 R_LoadLightmaps
@@ -429,19 +447,11 @@ R_LoadLightmaps
 #define LIGHTMAP_SIZE 128
 static void R_LoadLightmaps( lump_t *l, const char *bspName )
 {
-	int     len;
-	image_t *image;
-	int     i;
-	int     numLightmaps;
-
 	tr.fatLightmapSize = 0;
-
-	len = l->filelen;
-
+	int len = l->filelen;
 	if ( !len )
 	{
 		char mapName[ MAX_QPATH ];
-		char **lightmapFiles;
 
 		Q_strncpyz( mapName, bspName, sizeof( mapName ) );
 		COM_StripExtension3( mapName, mapName, sizeof( mapName ) );
@@ -452,134 +462,74 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 			R_SyncRenderThread();
 
 			// load HDR lightmaps
-			lightmapFiles = ri.FS_ListFiles( mapName, ".hdr", &numLightmaps );
-
-			qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
-
-			if ( !lightmapFiles || !numLightmaps )
-			{
-				ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+			int numLightmaps;
+			auto lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps, {".hdr"});
+			if (!lightmapFiles || !numLightmaps) {
+				ri.Printf(PRINT_WARNING, "WARNING: no lightmap files found\n");
 				return;
 			}
 
 			int  width, height;
 			byte *ldrImage;
 
-			for ( i = 0; i < numLightmaps; i++ )
+			for ( int i = 0; i < numLightmaps; i++ )
 			{
 				ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 				width = height = 0;
 				LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
 
-				image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), (const byte **)&ldrImage, width, height,
-									   1, IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
+				auto image = R_CreateImage( va( "%s/%s", mapName, lightmapFiles[ i ] ), (const byte **)&ldrImage, width, height, 1, IF_NOPICMIP | IF_LIGHTMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
 
 				Com_AddToGrowList( &tr.lightmaps, image );
 
 				ri.Free( ldrImage );
 			}
 
-			if ( tr.worldDeluxeMapping )
-			{
+			if (tr.worldDeluxeMapping) {
 				// load deluxemaps
-				lightmapFiles = ri.FS_ListFiles( mapName, ".png", &numLightmaps );
-
-				if ( !lightmapFiles || !numLightmaps )
-				{
-					lightmapFiles = ri.FS_ListFiles( mapName, ".tga", &numLightmaps );
-
-					if ( !lightmapFiles || !numLightmaps )
-					{
-						lightmapFiles = ri.FS_ListFiles( mapName, ".webp", &numLightmaps );
-
-						if ( !lightmapFiles || !numLightmaps )
-						{
-							lightmapFiles = ri.FS_ListFiles( mapName, ".crn", &numLightmaps );
-
-							if ( !lightmapFiles || !numLightmaps )
-							{
-								ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-								return;
-							}
-						}
-					}
+				lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps);
+				if (!lightmapFiles || !numLightmaps) {
+					ri.Printf(PRINT_WARNING, "WARNING: no lightmap files found\n");
+					return;
 				}
 
-				qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
+				ri.Printf(PRINT_DEVELOPER, "...loading %i deluxemaps\n", numLightmaps);
 
-				ri.Printf( PRINT_DEVELOPER, "...loading %i deluxemaps\n", numLightmaps );
-
-				for ( i = 0; i < numLightmaps; i++ )
-				{
-					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
-
-					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP );
-					Com_AddToGrowList( &tr.deluxemaps, image );
+				for (int i = 0; i < numLightmaps; i++) {
+					ri.Printf(PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[i]);
+					auto image = R_FindImageFile(va("%s/%s", mapName, lightmapFiles[i]), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP);
+					Com_AddToGrowList(&tr.deluxemaps, image);
 				}
 			}
 		}
 		else
 		{
-			lightmapFiles = ri.FS_ListFiles( mapName, ".png", &numLightmaps );
-
-			if ( !lightmapFiles || !numLightmaps )
-			{
-				lightmapFiles = ri.FS_ListFiles( mapName, ".tga", &numLightmaps );
-
-				if ( !lightmapFiles || !numLightmaps )
-				{
-					lightmapFiles = ri.FS_ListFiles( mapName, ".webp", &numLightmaps );
-
-					if ( !lightmapFiles || !numLightmaps )
-					{
-						lightmapFiles = ri.FS_ListFiles( mapName, ".crn", &numLightmaps );
-
-						if ( !lightmapFiles || !numLightmaps )
-						{
-							ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-							return;
-						}
-					}
-				}
+			int numLightmaps;
+			auto lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps);
+			if (!lightmapFiles || !numLightmaps) {
+				ri.Printf(PRINT_WARNING, "WARNING: no lightmap files found\n");
+				return;
 			}
-
-			qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
 
 			ri.Printf( PRINT_DEVELOPER, "...loading %i lightmaps\n", numLightmaps );
 
 			// we are about to upload textures
 			R_SyncRenderThread();
 
-			for ( i = 0; i < numLightmaps; i++ )
-			{
-				ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
+			for (int i = 0; i < numLightmaps; i++) {
+				ri.Printf(PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[i]);
 
-				if ( tr.worldDeluxeMapping )
-				{
-					if ( i % 2 == 0 )
-					{
-						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
-						Com_AddToGrowList( &tr.lightmaps, image );
-					}
-					else
-					{
-						image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
-						Com_AddToGrowList( &tr.deluxemaps, image );
-					}
-				}
-				else
-				{
-					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
-					Com_AddToGrowList( &tr.lightmaps, image );
+				if (!tr.worldDeluxeMapping || i % 2 == 0) {
+					auto image = R_FindImageFile(va("%s/%s", mapName, lightmapFiles[i]), IF_LIGHTMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP);
+					Com_AddToGrowList(&tr.lightmaps, image);
+				} else {
+					auto image = R_FindImageFile(va("%s/%s", mapName, lightmapFiles[i]), IF_NORMALMAP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP);
+					Com_AddToGrowList(&tr.deluxemaps, image);
 				}
 			}
 		}
-	}
-
-	else
-	{
-		int  i;
+	} else {
 		byte *buf, *buf_p;
 
 		//int       BIGSIZE=2048;
@@ -605,7 +555,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 		R_SyncRenderThread();
 
 		// create all the lightmaps
-		numLightmaps = len / ( LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3 );
+		int numLightmaps = len / ( LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3 );
 
 		if ( numLightmaps == 1 )
 		{
@@ -631,7 +581,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 		Com_Memset( fatbuffer, 128, tr.fatLightmapSize * tr.fatLightmapSize * 4 );
 
-		for ( i = 0; i < numLightmaps; i++ )
+		for ( int i = 0; i < numLightmaps; i++ )
 		{
 			// expand the 24 bit on-disk to 32 bit
 			buf_p = buf + i * LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3;
@@ -953,12 +903,10 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		cv->verts[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
 		cv->verts[ i ].lightmap[ 1 ] = FatPackV( LittleFloat( verts[ i ].lightmap[ 1 ] ), realLightmapNum );
 
-		for ( j = 0; j < 4; j++ )
-		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
-		}
+		cv->verts[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
-		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor.ToArray(), cv->verts[ i ].lightColor.ToArray() );
 	}
 
 	// copy triangles
@@ -982,7 +930,7 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		updated = false;
 
 		for( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ ) {
-			int minVertex = MIN( MIN( components[ tri->indexes[ 0 ] ].minVertex,
+			int minVertex = std::min( std::min( components[ tri->indexes[ 0 ] ].minVertex,
 						  components[ tri->indexes[ 1 ] ].minVertex ),
 					     components[ tri->indexes[ 2 ] ].minVertex );
 			for( j = 0; j < 3; j++ ) {
@@ -990,13 +938,13 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 				if( components[ vertex ].minVertex != minVertex ) {
 					updated = true;
 					components[ vertex ].minVertex = minVertex;
-					components[ minVertex ].stBounds[ 0 ][ 0 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 0 ],
+					components[ minVertex ].stBounds[ 0 ][ 0 ] = std::min( components[ minVertex ].stBounds[ 0 ][ 0 ],
 											  components[ vertex ].stBounds[ 0 ][ 0 ] );
-					components[ minVertex ].stBounds[ 0 ][ 1 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 1 ],
+					components[ minVertex ].stBounds[ 0 ][ 1 ] = std::min( components[ minVertex ].stBounds[ 0 ][ 1 ],
 											  components[ vertex ].stBounds[ 0 ][ 1 ] );
-					components[ minVertex ].stBounds[ 1 ][ 0 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 0 ],
+					components[ minVertex ].stBounds[ 1 ][ 0 ] = std::max( components[ minVertex ].stBounds[ 1 ][ 0 ],
 											  components[ vertex ].stBounds[ 1 ][ 0 ] );
-					components[ minVertex ].stBounds[ 1 ][ 1 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 1 ],
+					components[ minVertex ].stBounds[ 1 ][ 1 ] = std::max( components[ minVertex ].stBounds[ 1 ][ 1 ],
 											  components[ vertex ].stBounds[ 1 ][ 1 ] );
 				}
 			}
@@ -1140,19 +1088,16 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 			points[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			points[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 
-			stBounds[ 0 ][ j ] = MIN( stBounds[ 0 ][ j ], points[ i ].st[ j ] );
-			stBounds[ 1 ][ j ] = MAX( stBounds[ 1 ][ j ], points[ i ].st[ j ] );
+			stBounds[ 0 ][ j ] = std::min( stBounds[ 0 ][ j ], points[ i ].st[ j ] );
+			stBounds[ 1 ][ j ] = std::max( stBounds[ 1 ][ j ], points[ i ].st[ j ] );
 		}
 
 		points[ i ].lightmap[ 0 ] = FatPackU( LittleFloat( verts[ i ].lightmap[ 0 ] ), realLightmapNum );
 		points[ i ].lightmap[ 1 ] = FatPackV( LittleFloat( verts[ i ].lightmap[ 1 ] ), realLightmapNum );
 
-		for ( j = 0; j < 4; j++ )
-		{
-			points[ i ].lightColor[ j ] = verts[ i ].color[ j ];
-		}
+		points[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
-		R_ColorShiftLightingBytes( points[ i ].lightColor, points[ i ].lightColor );
+		R_ColorShiftLightingBytes( points[ i ].lightColor.ToArray(), points[ i ].lightColor.ToArray() );
 	}
 
 	// center texture coords
@@ -1274,12 +1219,9 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 			components[ i ].stBounds[ 1 ][ j ] = cv->verts[ i ].st[ j ];
 		}
 
-		for ( j = 0; j < 4; j++ )
-		{
-			cv->verts[ i ].lightColor[ j ] = verts[ i ].color[ j ];
-		}
+			cv->verts[ i ].lightColor = Color::Adapt( verts[ i ].color );
 
-		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor, cv->verts[ i ].lightColor );
+		R_ColorShiftLightingBytes( cv->verts[ i ].lightColor.ToArray(), cv->verts[ i ].lightColor.ToArray() );
 	}
 
 	// copy triangles
@@ -1303,7 +1245,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		updated = false;
 
 		for( i = 0, tri = cv->triangles; i < numTriangles; i++, tri++ ) {
-			int minVertex = MIN( MIN( components[ tri->indexes[ 0 ] ].minVertex,
+			int minVertex = std::min( std::min( components[ tri->indexes[ 0 ] ].minVertex,
 						  components[ tri->indexes[ 1 ] ].minVertex ),
 					     components[ tri->indexes[ 2 ] ].minVertex );
 			for( j = 0; j < 3; j++ ) {
@@ -1311,13 +1253,13 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 				if( components[ vertex ].minVertex != minVertex ) {
 					updated = true;
 					components[ vertex ].minVertex = minVertex;
-					components[ minVertex ].stBounds[ 0 ][ 0 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 0 ],
+					components[ minVertex ].stBounds[ 0 ][ 0 ] = std::min( components[ minVertex ].stBounds[ 0 ][ 0 ],
 											  components[ vertex ].stBounds[ 0 ][ 0 ] );
-					components[ minVertex ].stBounds[ 0 ][ 1 ] = MIN( components[ minVertex ].stBounds[ 0 ][ 1 ],
+					components[ minVertex ].stBounds[ 0 ][ 1 ] = std::min( components[ minVertex ].stBounds[ 0 ][ 1 ],
 											  components[ vertex ].stBounds[ 0 ][ 1 ] );
-					components[ minVertex ].stBounds[ 1 ][ 0 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 0 ],
+					components[ minVertex ].stBounds[ 1 ][ 0 ] = std::max( components[ minVertex ].stBounds[ 1 ][ 0 ],
 											  components[ vertex ].stBounds[ 1 ][ 0 ] );
-					components[ minVertex ].stBounds[ 1 ][ 1 ] = MAX( components[ minVertex ].stBounds[ 1 ][ 1 ],
+					components[ minVertex ].stBounds[ 1 ][ 1 ] = std::max( components[ minVertex ].stBounds[ 1 ][ 1 ],
 											  components[ vertex ].stBounds[ 1 ][ 1 ] );
 				}
 			}
@@ -2739,9 +2681,10 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 		out->lightmap[ j ] = in->lightmap[ j ];
 	}
 
+	out->lightColor = in->lightColor;
+
 	for ( j = 0; j < 4; j++ )
 	{
-		out->lightColor[ j ] = in->lightColor[ j ];
 		out->qtangent[ j ] = in->qtangent[ j ];
 	}
 }
@@ -2989,7 +2932,7 @@ static void R_CreateWorldVBO()
 			{
 				surf1->viewCount = -1;
 				surf1->lightCount = -1;
-				// don't clear the leaf number so 
+				// don't clear the leaf number so
 				// surfaces that arn't merged are placed
 				// closer to other leafs in the vbo
 			}
@@ -3864,10 +3807,9 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 
 		out->fogParms = shader->fogParms;
 
-		out->color[ 0 ] = shader->fogParms.color[ 0 ] * tr.identityLight;
-		out->color[ 1 ] = shader->fogParms.color[ 1 ] * tr.identityLight;
-		out->color[ 2 ] = shader->fogParms.color[ 2 ] * tr.identityLight;
-		out->color[ 3 ] = 1;
+		out->color = Color::Adapt( shader->fogParms.color );
+		out->color *= tr.identityLight;
+		out->color.SetAlpha( 1 );
 
 		d = shader->fogParms.depthForOpaque < 1 ? 1 : shader->fogParms.depthForOpaque;
 		out->tcScale = 1.0f / ( d * 8 );

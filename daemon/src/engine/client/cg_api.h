@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "engine/renderer/tr_types.h"
 #include "common/cm/cm_public.h"
 
-#define CGAME_API_VERSION 1
+#define CGAME_API_VERSION 2
 
 #define CMD_BACKUP               64
 #define CMD_MASK                 ( CMD_BACKUP - 1 )
@@ -113,6 +113,12 @@ typedef enum
 	SORT_FAVOURITES
 } serverSortField_t;
 
+enum class MouseMode
+{
+    Deltas,
+    Absolute,
+};
+
 void            trap_Print( const char *string );
 void NORETURN   trap_Error( const char *string );
 int             trap_Milliseconds();
@@ -120,7 +126,6 @@ void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const
 void            trap_Cvar_Update( vmCvar_t *vmCvar );
 void            trap_Cvar_Set( const char *var_name, const char *value );
 void            trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
-void            trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int             trap_Cvar_VariableIntegerValue( const char *var_name );
 float           trap_Cvar_VariableValue( const char *var_name );
 void            trap_Cvar_AddFlags( const char *var_name, int flags );
@@ -192,7 +197,8 @@ int             trap_FS_Seek( fileHandle_t f, int offset, fsOrigin_t origin );
 int             trap_FS_Tell( fileHandle_t f );
 int             trap_FS_FileLength( fileHandle_t f );
 void            trap_R_RenderScene( const refdef_t *fd );
-void            trap_R_SetColor( const float *rgba );
+void            trap_R_ClearColor();
+void            trap_R_SetColor( const Color::Color &rgba );
 void            trap_R_SetClipRegion( const float *region );
 void            trap_R_ResetClipRegion();
 void            trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
@@ -212,6 +218,7 @@ void            trap_Key_SetBinding( int keyNum, int team, const char *cmd );
 void            trap_Key_ClearCmdButtons( void );
 void            trap_Key_ClearStates( void );
 std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys );
+void            trap_SetMouseMode( MouseMode mode );
 void            trap_S_StopBackgroundTrack();
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );

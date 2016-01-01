@@ -9,6 +9,8 @@ set(SHAREDLIST
 )
 
 set(COMMONLIST
+    ${COMMON_DIR}/Color.h
+    ${COMMON_DIR}/Color.cpp
     ${COMMON_DIR}/Command.cpp
     ${COMMON_DIR}/Command.h
     ${COMMON_DIR}/Common.h
@@ -191,6 +193,10 @@ set(QCOMMONLIST
     ${ENGINE_DIR}/qcommon/qfiles.h
     ${ENGINE_DIR}/qcommon/surfaceflags.h
     ${ENGINE_DIR}/qcommon/translation.cpp
+    ${ENGINE_DIR}/sys/con_log.cpp
+    ${ENGINE_DIR}/sys/con_common.h
+    ${ENGINE_DIR}/sys/con_common.cpp
+    ${ENGINE_DIR}/sys/sdl_compat.cpp
 )
 
 if (NOT APPLE)
@@ -248,7 +254,6 @@ set(TTYCLIENTLIST
     ${ENGINE_DIR}/null/NullAudio.cpp
     ${ENGINE_DIR}/null/null_input.cpp
     ${ENGINE_DIR}/null/null_renderer.cpp
-    ${ENGINE_DIR}/null/null_rocket.cpp
 )
 
 set(DEDSERVERLIST

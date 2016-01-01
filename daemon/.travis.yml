@@ -14,7 +14,7 @@ install:
   - sudo add-apt-repository ppa:zoogie/sdl2-snapshots -y
   - sudo add-apt-repository ppa:kalakris/cmake -y
   - sudo apt-get -qq update
-  - sudo apt-get -qq install libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl2-dev libspeexdsp-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev cmake ninja-build
+  - sudo apt-get -qq install libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libgeoip-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl2-dev libtheora-dev libvorbis-dev libopusfile-dev libxvidcore-dev nettle-dev zlib1g-dev cmake ninja-build
 
 before_script:
   - wget http://clang.llvm.org/libstdc++4.6-clang11.patch;

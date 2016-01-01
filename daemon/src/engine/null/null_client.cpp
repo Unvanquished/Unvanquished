@@ -45,6 +45,10 @@ void CL_MouseEvent( int, int, int )
 {
 }
 
+void CL_MousePosEvent( int, int )
+{
+}
+
 void Key_WriteBindings( fileHandle_t )
 {
 }
@@ -69,18 +73,8 @@ void CL_MapLoading()
 {
 }
 
-bool CL_GameCommand()
-{
-	return false;
-}
-
 void CL_KeyEvent( int, bool, unsigned )
 {
-}
-
-bool UI_GameCommand()
-{
-	return false;
 }
 
 void CL_ForwardCommandToServer( const char *cmd )

@@ -91,12 +91,12 @@ namespace Cmd {
         commandsInitialized = true;
     }
 
-    void AddCommand(std::string name, const Cmd::CmdBase& cmd, std::string description) {
+    void AddCommand(const std::string& name, const Cmd::CmdBase& cmd, std::string description) {
         if (commandsInitialized) {
             GetCommandMap()[name] = {&cmd, ""};
-            AddCommandRPC(std::move(name), std::move(description));
+            AddCommandRPC(name, std::move(description));
         } else {
-            GetCommandMap()[std::move(name)] = {&cmd, std::move(description)};
+            GetCommandMap()[name] = {&cmd, std::move(description)};
         }
     }
 
@@ -134,7 +134,7 @@ namespace Cmd {
                 return;
             }
 
-            res = std::move(it->second.cmd->Complete(argNum, args, prefix));
+            res = it->second.cmd->Complete(argNum, args, prefix);
         });
     }
 
@@ -317,7 +317,7 @@ namespace Cvar{
         return value;
     }
 
-    void SetValue(const std::string& name, std::string value) {
+    void SetValue(const std::string& name, const std::string& value) {
         VM::SendMsg<VM::SetCvarMsg>(name, value);
     }
 

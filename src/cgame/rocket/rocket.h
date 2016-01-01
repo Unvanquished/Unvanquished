@@ -68,5 +68,35 @@ public:
 
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
 Rocket::Core::String CG_KeyBinding( const char *bind, int team );
+
 void Rocket_AddEvent( RocketEvent_t *event );
+
+namespace Color {
+
+template<class ColourType, int AlphaDefault>
+class ColorAdaptor<Rocket::Core::Colour<ColourType,AlphaDefault>>
+{
+public:
+	static CONSTEXPR bool is_color = true;
+	typedef Rocket::Core::Colour<ColourType,AlphaDefault> color_type;
+	typedef ColourType component_type;
+	static CONSTEXPR int component_max = AlphaDefault;
+
+	static ColorAdaptor Adapt( const color_type& object )
+	{
+		return ColorAdaptor( object );
+	}
+
+	ColorAdaptor( const color_type& object ) : object( object ) {}
+
+	component_type Red() const { return object.red; }
+	component_type Green() const { return object.green; }
+	component_type Blue() const { return object.blue; }
+	component_type Alpha() const { return object.alpha; }
+
+private:
+	color_type object;
+};
+} // namespace Color
+
 #endif

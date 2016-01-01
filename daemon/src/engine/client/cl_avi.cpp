@@ -337,7 +337,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 	// Don't start if a framerate has not been chosen
 	if ( cl_aviFrameRate->integer <= 0 )
 	{
-		Com_Printf( S_COLOR_RED "cl_aviFrameRate must be ≥ 1\n" );
+		Com_Log( LOG_ERROR, "cl_aviFrameRate must be ≥ 1\n" );
 		return false;
 	}
 
@@ -514,78 +514,6 @@ void CL_WriteAVIVideoFrame( const byte *imageBuffer, int size )
 	SafeFS_Write( buffer, 16, afd.idxF );
 
 	afd.numIndices++;
-}
-
-#define PCM_BUFFER_SIZE 44100
-
-/*
-===============
-CL_WriteAVIAudioFrame
-===============
-*/
-void CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size )
-{
-	static byte pcmCaptureBuffer[ PCM_BUFFER_SIZE ] = { 0 };
-	static int  bytesInBuffer = 0;
-
-	if ( !afd.audio )
-	{
-		return;
-	}
-
-	if ( !afd.fileOpen )
-	{
-		return;
-	}
-
-	// Chunk header + contents + padding
-	if ( CL_CheckFileSize( 8 + bytesInBuffer + size + 2 ) )
-	{
-		return;
-	}
-
-	if ( bytesInBuffer + size > PCM_BUFFER_SIZE )
-	{
-		Com_Printf( S_WARNING "Audio capture buffer overflow — truncating\n" );
-		size = PCM_BUFFER_SIZE - bytesInBuffer;
-	}
-
-	Com_Memcpy( &pcmCaptureBuffer[ bytesInBuffer ], pcmBuffer, size );
-	bytesInBuffer += size;
-
-	// Only write if we have a frame's worth of audio
-	if ( bytesInBuffer >= ( int ) ceil( ( float ) afd.a.rate / ( float ) afd.frameRate ) * afd.a.sampleSize )
-	{
-		int  chunkOffset = afd.fileSize - afd.moviOffset - 8;
-		int  chunkSize = 8 + bytesInBuffer;
-		int  paddingSize = PAD( bytesInBuffer, 2 ) - bytesInBuffer;
-		byte padding[ 4 ] = { 0 };
-
-		bufIndex = 0;
-		WRITE_STRING( "01wb" );
-		WRITE_4BYTES( bytesInBuffer );
-
-		SafeFS_Write( buffer, 8, afd.f );
-		SafeFS_Write( pcmBuffer, bytesInBuffer, afd.f );
-		SafeFS_Write( padding, paddingSize, afd.f );
-		afd.fileSize += ( chunkSize + paddingSize );
-
-		afd.numAudioFrames++;
-		afd.moviSize += ( chunkSize + paddingSize );
-		afd.a.totalBytes = +bytesInBuffer;
-
-		// Index
-		bufIndex = 0;
-		WRITE_STRING( "01wb" );  //dwIdentifier
-		WRITE_4BYTES( 0 );  //dwFlags
-		WRITE_4BYTES( chunkOffset );  //dwOffset
-		WRITE_4BYTES( bytesInBuffer );  //dwLength
-		SafeFS_Write( buffer, 16, afd.idxF );
-
-		afd.numIndices++;
-
-		bytesInBuffer = 0;
-	}
 }
 
 /*

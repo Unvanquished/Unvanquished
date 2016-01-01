@@ -22,6 +22,7 @@
 
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
+#include "CBSE.h"
 
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
@@ -372,7 +373,8 @@ void G_BotThink( gentity_t *self )
 	BotFindDamagedFriendlyStructure( self );
 
 	//use medkit when hp is low
-	if ( self->health < BOT_USEMEDKIT_HP && BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats ) )
+	if ( self->entity->Get<HealthComponent>()->Health() < BOT_USEMEDKIT_HP &&
+	     BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats ) )
 	{
 		BG_ActivateUpgrade( UP_MEDKIT, self->client->ps.stats );
 	}

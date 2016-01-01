@@ -105,12 +105,12 @@ typedef struct
 
 	void ( *RenderScene )( const refdef_t *fd );
 
-	void ( *SetColor )( const float *rgba );             // nullptr = 1,1,1,1
+	void ( *SetColor )( const Color::Color& rgba );             // nullptr = 1,1,1,1
 	void ( *SetClipRegion )( const float *region );
 	void ( *DrawStretchPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );             // 0 = white
 	void ( *DrawRotatedPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );             // NERVE - SMF
 	void ( *DrawStretchPicGradient )( float x, float y, float w, float h, float s1, float t1, float s2, float t2,
-	                                  qhandle_t hShader, const float *gradientColor, int gradientType );
+	                                  qhandle_t hShader, const Color::Color& gradientColor, int gradientType );
 	void ( *Add2dPolys )( polyVert_t *polys, int numverts, qhandle_t hShader );
 
 	// Draw images for cinematic rendering, pass as 32 bit rgba
@@ -126,7 +126,7 @@ typedef struct
 	int ( *MarkFragments )( int numPoints, const vec3_t *points, const vec3_t projection,
 	                        int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
-	void ( *ProjectDecal )( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, vec4_t color,
+	void ( *ProjectDecal )( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t projection, const Color::Color& color,
 	                        int lifeTime, int fadeTime );
 	void ( *ClearDecals )();
 

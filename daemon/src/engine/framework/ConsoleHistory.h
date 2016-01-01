@@ -33,16 +33,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Console {
 
-    typedef unsigned HistoryHandle;
-    static const HistoryHandle HISTORY_END = -1;
+    class History
+    {
+    public:
+        using Container = std::vector<std::string>;
+        using Line = Container::value_type;
 
-    void SaveHistory();
-    void LoadHistory();
+        History();
 
-    void AddToHistory(HistoryHandle& handle, std::string current);
-    void PrevLine(HistoryHandle& handle, std::string& current);
-    void NextLine(HistoryHandle& handle, std::string& current);
+        static void Save();
+        static void Load();
 
+        void Add(const Line& text);
+        void PrevLine(Line& text);
+        void NextLine(Line& text);
+
+    private:
+        static std::string GetFilename();
+        static const Container::size_type SAVED_HISTORY_LINES = 512;
+        static Container lines;
+        static std::mutex lines_mutex;
+        static std::unique_lock<std::mutex> Lock()
+        {
+            return std::unique_lock<std::mutex>{lines_mutex};
+        }
+
+        Container::size_type  current_line;
+        Container::value_type unfinished;
+    };
 }
 
 #endif // FRAMEWORK_CONSOLE_HISTORY_H_

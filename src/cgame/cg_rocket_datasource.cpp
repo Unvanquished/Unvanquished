@@ -348,8 +348,8 @@ static int ServerListCmpByName( const void* one, const void* two )
 	Q_strncpyz( cleanName1, a->name, sizeof( cleanName1 ) );
 	Q_strncpyz( cleanName2, b->name, sizeof( cleanName2 ) );
 
-	Q_CleanStr( cleanName1 );
-	Q_CleanStr( cleanName2 );
+	Color::StripColors( cleanName1 );
+	Color::StripColors( cleanName2 );
 
 	return Q_stricmp( cleanName1, cleanName2 );
 }
@@ -457,7 +457,7 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 
 		Q_strncpyz( name, rocketInfo.data.servers[ netSrc ][ i ].name, sizeof( name ) );
 
-		if ( Q_stristr( Q_CleanStr( name ), filter ) )
+		if ( Q_stristr( Color::StripColors( name ), filter ) )
 		{
 			char data[ MAX_INFO_STRING ] = { 0 };
 
@@ -751,59 +751,6 @@ void CG_Rocket_CleanUpLanguageList( const char* )
 	}
 
 	rocketInfo.data.languageCount = 0;
-}
-
-static void AddToVoipInputs( char *name )
-{
-	if ( rocketInfo.data.voipInputsCount == MAX_INPUTS )
-	{
-		return;
-	}
-
-	rocketInfo.data.voipInputs[ rocketInfo.data.voipInputsCount++ ] = name;
-}
-
-void CG_Rocket_SetVoipInputsInput( const char*, int index )
-{
-	rocketInfo.data.voipInputIndex = index;
-}
-
-void CG_Rocket_BuildVoIPInputs( const char* )
-{
-	char buf[ MAX_STRING_CHARS ];
-	char *p, *head;
-	int inputs = 0;
-
-	trap_Cvar_VariableStringBuffer( "audio.al.availableCaptureDevices", buf, sizeof( buf ) );
-	head = buf;
-
-	while ( ( p = strchr( head, '\n' ) ) )
-	{
-		*p = '\0';
-		AddToVoipInputs( BG_strdup( head ) );
-		head = p + 1;
-	}
-
-	buf[ 0 ] = '\0';
-
-	for ( inputs = 0; inputs < rocketInfo.data.voipInputsCount; ++inputs )
-	{
-		Info_SetValueForKey( buf, "name", rocketInfo.data.voipInputs[ inputs ], false );
-
-		Rocket_DSAddRow( "voipInputs", "default", buf );
-	}
-}
-
-void CG_Rocket_CleanUpVoIPInputs( const char* )
-{
-	int i;
-
-	for ( i = 0; i < rocketInfo.data.voipInputsCount; ++i )
-	{
-		BG_Free( rocketInfo.data.voipInputs[ i ] );
-	}
-
-	rocketInfo.data.voipInputsCount = 0;
 }
 
 static void AddToAlOutputs( char *name )
@@ -2029,8 +1976,6 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetResolutionListIndex},
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList, &nullGetFunc },
 	{ "teamList", &CG_Rocket_BuildTeamList, &nullSortFunc, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamList, &nullFilterFunc, &CG_Rocket_ExecTeamList, &nullGetFunc },
-	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs, &CG_Rocket_SetVoipInputsInput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-
 };
 
 static const size_t dataSourceCmdListCount = ARRAY_LEN( dataSourceCmdList );

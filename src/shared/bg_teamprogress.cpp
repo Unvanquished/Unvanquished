@@ -126,13 +126,13 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 			if ( statusChanges[ unlockableNum ] > 0 )
 			{
 				Com_sprintf( text, sizeof( text ),
-				             S_COLOR_GREEN "ITEM%s UNLOCKED: " S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
+				             "^2ITEM%s UNLOCKED: ^*", ( count > 1 ) ? "S" : "" );
 			}
 			else
 			{
 				unlocked = false;
 				Com_sprintf( text, sizeof( text ),
-				             S_COLOR_RED   "ITEM%s LOCKED: "   S_COLOR_WHITE, ( count > 1 ) ? "S" : "" );
+				             "^1ITEM%s LOCKED: ^*", ( count > 1 ) ? "S" : "" );
 			}
 
 			textptr = text + strlen( text );
@@ -331,7 +331,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 				Com_Error( ERR_FATAL, "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
 		}
 
-		unlockThreshold = MAX( unlockThreshold, 0 );
+		unlockThreshold = std::max( unlockThreshold, 0 );
 
 		unlockable->type            = unlockableType;
 		unlockable->num             = itemNum;
@@ -587,7 +587,7 @@ void G_UpdateUnlockables()
 				Com_Error( ERR_FATAL, "G_UpdateUnlockables: Unknown unlockable type" );
 		}
 
-		unlockThreshold = MAX( unlockThreshold, 0 );
+		unlockThreshold = std::max( unlockThreshold, 0 );
 		momentum = level.team[ team ].momentum;
 
 		unlockable->type            = unlockableType;
