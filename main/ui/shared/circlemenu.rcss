@@ -33,12 +33,11 @@ tabset.circlemenu tabs{
 circlemenu
 {
 	display: block;
-	width: 100%;
-	margin-left:-17%;
-	margin-top:30px;
+	width: 25em;
+	margin-left:-10%;
+	margin-top:10%;
 	position:absolute;
-	height: 500px;
-	radius: 130px;
+	height: 25em;
 	vertical-align: middle;
 	text-align: center;
 }

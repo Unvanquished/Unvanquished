@@ -46,7 +46,7 @@ Maryland 20850 USA.
 class RocketCircleMenu : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener, Rocket::Core::EventListener
 {
 public:
-	RocketCircleMenu( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
+	RocketCircleMenu( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), formatter( nullptr ), data_source( nullptr )
 	{
 	}
 
@@ -68,9 +68,6 @@ public:
 	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimensions )
 	{
 		const Rocket::Core::Property *property;
-
-		dimensions.x = dimensions.y = -1;
-
 		property = GetProperty( "width" );
 
 		// Absolute unit. We can use it as is
@@ -78,61 +75,26 @@ public:
 		{
 			dimensions.x = property->value.Get<float>();
 		}
-
 		else
 		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
-
-			while ( ( parent = parent->GetParentNode() ) )
+			Rocket::Core::Element *parent = GetParentNode();
+			if ( parent != nullptr )
 			{
-				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
-				{
-					dimensions.x = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
-
-						stack.pop();
-					}
-					break;
-				}
-
-				stack.push( parent );
+				dimensions.x = ResolveProperty( "width", parent->GetBox().GetSize().x );
 			}
 		}
 
 		property = GetProperty( "height" );
-
 		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.y = property->value.Get<float>();
 		}
-
 		else
 		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
-
-			while ( ( parent = parent->GetParentNode() ) )
+			Rocket::Core::Element *parent = GetParentNode();
+			if ( parent != nullptr )
 			{
-				if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
-				{
-					dimensions.y = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
-
-						stack.pop();
-					}
-					break;
-				}
-
-				stack.push( parent );
+				dimensions.y = ResolveProperty( "height", parent->GetBox().GetSize().y );
 			}
 		}
 
@@ -144,7 +106,6 @@ public:
 			this->dimensions = dimensions;
 			dirty_layout = true;
 		}
-
 		return true;
 	}
 
@@ -177,12 +138,6 @@ public:
 		{
 			dirty_layout = true;
 		}
-
-		if ( changed_properties.find( "radius" ) != changed_properties.end() )
-		{
-			radius = GetProperty( "radius" )->Get<float>();
-		}
-
 	}
 
 	void OnRowAdd( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
@@ -344,11 +299,14 @@ protected:
 		float width, height;
 		Rocket::Core::Element *child;
 		Rocket::Core::Vector2f offset = GetRelativeOffset();
+		float radiusX = dimensions.x / 2.0f;
+		float radiusY = dimensions.y / 2.0f;
 
 		// First child is the cancel button. It should go in the center.
 		child = GetFirstChild();
-		width = child->GetOffsetWidth();
-		height = child->GetOffsetHeight();
+		Rocket::Core::Vector2f childSize = child->GetBox().GetSize();
+		width = childSize.x;
+		height = childSize.y;
 		child->SetProperty( "position", "absolute" );
 		child->SetProperty( "top", va( "%fpx", offset.y + ( dimensions.y / 2 ) - ( height / 2 ) ) );
 		child->SetProperty( "left", va( "%fpx", offset.x + ( dimensions.x / 2 ) - ( width / 2 ) ) );
@@ -365,10 +323,11 @@ protected:
 		for ( int i = 1; i < numChildren; ++i )
 		{
 			child = GetChild( i );
-			width = child->GetOffsetWidth();
-			height = child->GetOffsetHeight();
-			float y = sin( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
-			float x = cos( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
+			childSize = child->GetBox().GetSize();
+			width = childSize.x;
+			height = childSize.y;
+			float y = sin( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * ( radiusY - ( height / 2.0f ) );
+			float x = cos( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * ( radiusX - ( width / 2.0f ) );
 
 			child->SetProperty( "position", "absolute" );
 			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x ) );
@@ -389,7 +348,6 @@ private:
 	bool dirty_query;
 	bool dirty_layout;
 	bool init;
-	float radius;
 	Rocket::Controls::DataFormatter *formatter;
 	Rocket::Controls::DataSource *data_source;
 
