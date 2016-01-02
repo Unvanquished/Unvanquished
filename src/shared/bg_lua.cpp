@@ -31,24 +31,29 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#if defined(BUILD_CGAME)
-// #if 1
+#ifdef BUILD_CGAME
+
+#include "bg_public.h"
 #include "bg_lua.h"
-#include "LuaLib.h"
+#include "lua/LuaLib.h"
+#include "lua/Weapons.h"
 #include <common/Log.h>
+
 
 
 namespace Unv {
 namespace Shared {
 namespace Lua {
+
+static Weapons weapons;
+
 class UnvGlobal
 {
 public:
 	static int GetWeapons( lua_State* L )
 	{
-		// TODO: return weapon obj
-		Log::Debug("weapons");
-		return 0;
+		LuaLib<Weapons>::push( L, &weapons, false );
+		return 1;
 	}
 
 	static int GetUpgrades( lua_State* L )
@@ -90,9 +95,10 @@ void BG_InitializeLuaConstants( lua_State* L )
 {
 	using namespace Unv::Shared::Lua;
 	LuaLib< UnvGlobal >::Register( L );
+	LuaLib< Weapons >::Register( L );
+	LuaLib< WeaponProxy >::Register( L );
 	LuaLib< UnvGlobal>::push( L, &global, false );
 	lua_setglobal( L, "unv" );
 }
 
-
-#endif
+#endif // BUILD_CGAME

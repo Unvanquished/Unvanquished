@@ -54,7 +54,7 @@ void Report( lua_State* L, std::string& place )
 		msg = lua_tostring( L, -1 );
 	}
 }
-}
+} // namespace
 template<typename T>
 void LuaLib<T>::Register( lua_State* L )
 {
@@ -219,7 +219,7 @@ int LuaLib<T>::gc_T( lua_State* L )
 		// ReferenceCountables do not care about the "DO NOT TRASH" table.
 		// Because userdata is pushed which contains a pointer to the pointer
 		// of 'obj', 'obj' will be garbage collected for every time 'obj' was pushed.
-		// TODO: Remove
+		delete obj;
 		return 0;
 	}
 
@@ -235,6 +235,7 @@ int LuaLib<T>::gc_T( lua_State* L )
 		{
 			if ( !IsReferenceCounted<T>() )
 			{
+				Log::Debug("GC'ing %s", name);
 				delete obj;
 				obj = NULL;
 			}
