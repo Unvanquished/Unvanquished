@@ -33,75 +33,34 @@ Maryland 20850 USA.
 */
 #ifdef BUILD_CGAME
 
-#include "bg_public.h"
-#include "bg_lua.h"
-#include "lua/LuaLib.h"
-#include "lua/Weapons.h"
-#include "lua/Buildables.h"
-#include <common/Log.h>
-
-
-
+#include "../bg_lua.h"
+#include "../bg_public.h"
+#include "LuaLib.h"
 namespace Unv {
 namespace Shared {
 namespace Lua {
 
-static Weapons weapons;
-static Buildables buildables;
+struct BuildableProxy
+{
+	BuildableProxy( int buildable );
 
-class UnvGlobal
-{
-public:
-	static int GetWeapons( lua_State* L )
-	{
-		LuaLib<Weapons>::push( L, &weapons, false );
-		return 1;
-	}
+	const buildableAttributes_t* attributes;
+};
 
-	static int GetUpgrades( lua_State* L )
-	{
-		// TODO: return upgrades obj
-		Log::Debug("upgrades");
-		return 0;
-	}
+struct Buildables
+{
+	static int index( lua_State* L );
+	static int pairs( lua_State* L );
 
-	static int GetBuildables( lua_State* L )
-	{
-		LuaLib<Buildables>::push( L, &buildables, false );
-		return 1;
-	}
+	static std::vector<BuildableProxy> buildables;
 };
-UnvGlobal global;
-template<> void ExtraInit<UnvGlobal>( lua_State* L, int metatable_index ) {}
-RegType<UnvGlobal> UnvGlobalMethods[] =
-{
-	{ nullptr, nullptr },
-};
-luaL_Reg UnvGlobalGetters[] =
-{
-	{ "weapons", UnvGlobal::GetWeapons },
-	{ "upgrades", UnvGlobal::GetUpgrades },
-	{ "buildables", UnvGlobal::GetBuildables },
-};
-luaL_Reg UnvGlobalSetters[] =
-{
-	{ nullptr, nullptr },
-};
-LUACORETYPEDEFINE(UnvGlobal, false)
+
+template<>
+void ExtraInit<Buildables>( lua_State* L, int metatable_index );
+template<>
+void ExtraInit<BuildableProxy>( lua_State* L, int metatable_index );
+
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv
-
-void BG_InitializeLuaConstants( lua_State* L )
-{
-	using namespace Unv::Shared::Lua;
-	LuaLib< UnvGlobal >::Register( L );
-	LuaLib< Weapons >::Register( L );
-	LuaLib< WeaponProxy >::Register( L );
-	LuaLib< Buildables >::Register( L );
-	LuaLib< BuildableProxy >::Register( L );
-	LuaLib< UnvGlobal>::push( L, &global, false );
-	lua_setglobal( L, "unv" );
-}
-
 #endif // BUILD_CGAME
