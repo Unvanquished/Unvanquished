@@ -88,7 +88,6 @@ void ignore_result(T) {}
 
 // C standard library headers
 #include <assert.h>
-#include <ctype.h>
 #include <errno.h>
 //#include <fenv.h>
 #include <float.h>

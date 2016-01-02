@@ -72,7 +72,7 @@ static const char *TranslateText_Internal( bool plural, int firstTextArg )
 
 			while( *in )
 			{
-				if( isdigit( *in ) )
+				if( Str::cisdigit( *in ) )
 				{
 					in++;
 

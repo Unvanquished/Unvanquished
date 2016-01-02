@@ -259,11 +259,11 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
         {
             return value_type( input, input+2, parent->DefaultColor() );
         }
-        else if ( std::toupper( input[1] ) >= '0' && std::toupper( input[1] ) < 'P' )
+        else if ( Str::ctoupper( input[1] ) >= '0' && Str::ctoupper( input[1] ) < 'P' )
         {
             return value_type( input, input+2, detail::Indexed( input[1] - '0' ) );
         }
-        else if ( std::tolower( input[1] ) == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
+        else if ( Str::ctolower( input[1] ) == 'x' && ishex( input[2] ) && ishex( input[3] ) && ishex( input[4] ) )
         {
             return value_type( input, input+5, Color(
                 gethex( input[2] ) / 15.f,
