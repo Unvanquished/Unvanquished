@@ -11,6 +11,8 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
     ${GAMELOGIC_DIR}/shared/bg_voice.cpp
     ${GAMELOGIC_DIR}/shared/bg_lua.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Weapons.h
+    ${GAMELOGIC_DIR}/shared/lua/Weapons.cpp
 )
 
 set(CGAMELIST
