@@ -25,10 +25,11 @@
  *
  */
 
-#ifndef UNVSHAREDLUALUALIB_H
-#define UNVSHAREDLUALUALIB_H
+#ifndef SHARED_LUA_LUALIB_H_
+#define SHARED_LUA_LUALIB_H_
 
-#include "bg_lua.h"
+#include "common/Common.h"
+#include "shared/bg_lua.h"
 //As an example, if you used this macro like
 //LUAMETHOD(Unit,GetId)
 //it would result in code that looks like
@@ -168,4 +169,5 @@ private:
 }  // namespace Shared
 
 #include "LuaLib.inl"
-#endif
+
+#endif  // SHARED_LUA_LUALIB_H_
