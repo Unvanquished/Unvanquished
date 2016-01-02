@@ -82,6 +82,9 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/navgen/brush.cpp
     ${GAMELOGIC_DIR}/shared/navgen/nav.cpp
     ${GAMELOGIC_DIR}/shared/navgen/navgen.h
+
+    ${GAMELOGIC_DIR}/shared/lua/Weapons.h
+    ${GAMELOGIC_DIR}/shared/lua/Weapons.cpp
 )
 
 set(CGAMELIST
