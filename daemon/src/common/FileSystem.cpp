@@ -1475,7 +1475,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 #ifndef BUILD_VM
 namespace RawPath {
 
-static void CreatePathTo(Str::StringRef path, std::error_code& err)
+void CreatePathTo(Str::StringRef path, std::error_code& err)
 {
 #ifdef _WIN32
 	std::wstring buffer = Str::UTF8To16(path);

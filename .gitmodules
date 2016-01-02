@@ -1,3 +1,6 @@
 [submodule "src/utils/cbse"]
 	path = src/utils/cbse
 	url = https://github.com/DaemonDevelopers/CBSE-Toolchain.git 
+[submodule "daemon/libs/breakpad"]
+	path = daemon/libs/breakpad
+	url = https://github.com/Unvanquished/breakpad.git

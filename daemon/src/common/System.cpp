@@ -37,7 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <signal.h>
 #ifdef __native_client__
 #include <nacl/nacl_exception.h>
+#include <nacl/nacl_minidump.h>
 #include <nacl/nacl_random.h>
+#include "engine/client/cg_api.h"
 #else
 #include <dlfcn.h>
 #endif
@@ -233,15 +235,16 @@ void SetupCrashHandler()
 	SetUnhandledExceptionFilter(CrashHandler);
 }
 #elif defined(__native_client__)
-static void CrashHandler(struct NaClExceptionContext *)
+static void CrashHandler(const void* data, size_t n)
 {
-	// TODO: backtrace
-
-	Sys::Error("Crashed with NaCl exception");
+    trap_CrashDump(static_cast<const uint8_t*>(data), n);
+    Sys::Error("Crashed with NaCl exception");
 }
+
 void SetupCrashHandler()
 {
-	nacl_exception_set_handler(CrashHandler);
+    nacl_minidump_register_crash_handler();
+    nacl_minidump_set_callback(CrashHandler);
 }
 #else
 static void CrashHandler(int sig)

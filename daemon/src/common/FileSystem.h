@@ -358,6 +358,9 @@ namespace RawPath {
 	File OpenAppend(Str::StringRef path, std::error_code& err = throws());
 	File OpenEdit(Str::StringRef path, std::error_code& err = throws());
 
+    // Ensure existence of all directories in a path
+    void CreatePathTo(Str::StringRef path, std::error_code& err);
+
 	// Check if a file exists
 	bool FileExists(Str::StringRef path);
 
