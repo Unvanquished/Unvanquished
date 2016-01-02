@@ -33,36 +33,48 @@ Maryland 20850 USA.
 */
 #if defined(BUILD_CGAME)
 
-#include "bg_lua.h"
-#include "LuaLib.h"
+#include "shared/bg_lua.h"
+#include "shared/lua/LuaLib.h"
+#include "shared/lua/Buildables.h"
+#include "shared/lua/Weapons.h"
+#include "shared/lua/Classes.h"
+#include "shared/lua/Upgrades.h"
 #include "common/Log.h"
 
 
 namespace Shared {
 namespace Lua {
 
+static Weapons weapons;
+static Buildables buildables;
+static Classes classes;
+static Upgrades upgrades;
+
 class UnvGlobal
 {
 public:
-	static int GetWeapons( lua_State* /*L*/ )
+	static int GetWeapons( lua_State* L )
 	{
-		// TODO: return weapon obj
-		Log::Debug("weapons");
-		return 0;
+		LuaLib<Weapons>::push( L, &weapons, false );
+		return 1;
 	}
 
-	static int GetUpgrades( lua_State* /*L*/ )
+	static int GetUpgrades( lua_State* L )
 	{
-		// TODO: return upgrades obj
-		Log::Debug("upgrades");
-		return 0;
+		LuaLib<Upgrades>::push( L, &upgrades, false );
+		return 1;
 	}
 
-	static int GetBuildables( lua_State* /*L*/ )
+	static int GetBuildables( lua_State* L )
 	{
-		// TODO: return buildables obj
-		Log::Debug("buildables");
-		return 0;
+		LuaLib<Buildables>::push( L, &buildables, false );
+		return 1;
+	}
+
+	static int GetClasses( lua_State* L )
+	{
+			LuaLib<Classes>::push( L, &classes, false );
+			return 1;
 	}
 };
 
@@ -81,6 +93,9 @@ luaL_Reg UnvGlobalGetters[] =
 	{ "weapons", UnvGlobal::GetWeapons },
 	{ "upgrades", UnvGlobal::GetUpgrades },
 	{ "buildables", UnvGlobal::GetBuildables },
+	{ "classes", UnvGlobal::GetClasses },
+
+     { nullptr, nullptr  },
 };
 
 luaL_Reg UnvGlobalSetters[] =
@@ -88,7 +103,7 @@ luaL_Reg UnvGlobalSetters[] =
 	{ nullptr, nullptr },
 };
 
-LUACORETYPEDEFINE(UnvGlobal, false)
+LUACORETYPEDEFINE(UnvGlobal)
 
 } // namespace Lua
 } // namespace Shared
@@ -96,8 +111,17 @@ LUACORETYPEDEFINE(UnvGlobal, false)
 void BG_InitializeLuaConstants( lua_State* L )
 {
 	using namespace Shared::Lua;
-	LuaLib<UnvGlobal>::Register( L );
-	LuaLib<UnvGlobal>::push( L, &global, false );
+	LuaLib< UnvGlobal >::Register( L );
+	LuaLib< Weapons >::Register( L );
+	LuaLib< WeaponProxy >::Register( L );
+	LuaLib< Buildables >::Register( L );
+	LuaLib< BuildableProxy >::Register( L );
+	LuaLib< Classes >::Register( L );
+	LuaLib< ClassProxy >::Register( L );
+	LuaLib< Upgrades >::Register( L );
+	LuaLib< UpgradeProxy >::Register( L );
+	LuaLib< UnvGlobal>::push( L, &global, false );
 	lua_setglobal( L, "unv" );
 }
-#endif
+
+#endif // BUILD_CGAME
