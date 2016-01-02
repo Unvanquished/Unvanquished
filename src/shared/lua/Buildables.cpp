@@ -74,6 +74,7 @@ GET_FUNC2( weapon, BG_Weapon( proxy->attributes->weapon )->name, string )
 GET_FUNC2( build_weapon, BG_Weapon( proxy->attributes->buildWeapon )->name, string )
 GET_FUNC2( build_time, proxy->attributes->buildTime, integer )
 GET_FUNC( usable, boolean )
+GET_FUNC2( team, BG_TeamName( proxy->attributes->team ), string )
 
 template<> void ExtraInit<BuildableProxy>( lua_State* L, int metatable_index ) {}
 RegType<BuildableProxy> BuildableProxyMethods[] =
@@ -95,7 +96,8 @@ luaL_Reg BuildableProxyGetters[] =
 	GETTER(weapon),
 	GETTER(build_weapon),
 	GETTER(build_time),
-	GETTER(usable)
+	GETTER(usable),
+	GETTER(team),
 };
 
 luaL_Reg BuildableProxySetters[] =
