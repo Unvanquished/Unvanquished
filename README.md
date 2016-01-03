@@ -146,5 +146,5 @@ Run `daemon.exe -pakpath PATH`, where `PATH` is the path to the `pkg` directory 
 
 ####If you don't have the assets
 
-  1. Copy the `pkg` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](http://sourceforge.net/projects/unvanquished/files/Universal_Zip/)) into your build directory.
+  1. Copy the `pkg` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](https://github.com/Unvanquished/Unvanquished/releases)) into your build directory.
   2. Run `daemon.exe`.
