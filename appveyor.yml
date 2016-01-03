@@ -47,7 +47,10 @@ build:
 
 before_build:
   - git submodule update --init --recursive
-  - pip -r install --upgrade src/utils/cbse/requirements.txt
+  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
+  - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+  - python --version
+  - pip install -r src/utils/cbse/requirements.txt --upgrade
   - ps: |
       if ($env:COMPILER -eq "mingw64" -AND -Not (Test-Path "C:/mingw64")) {
           $url  = "http://sourceforge.net/projects/mingw-w64/files/"
