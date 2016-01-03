@@ -54,11 +54,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 namespace VM {
-// Map for each VM to its loading cvar flags.
-std::unordered_map<std::string, int> vmCvarFlagsMap = {
-	{ "cgame", Cvar::CHEAT },
-	{ "sgame", Cvar::NONE }
-};
 
 // Platform-specific code to load a module
 static std::pair<Sys::OSHandle, IPC::Socket> InternalLoadModule(std::pair<IPC::Socket, IPC::Socket> pair, const char* const* args, bool reserve_mem, FS::File stderrRedirect = FS::File())
