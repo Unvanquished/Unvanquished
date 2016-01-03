@@ -8,7 +8,7 @@
 
 | Windows | OSX | Linux |
 |---------|-----|-------|
-| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/osx-ci.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
+| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
 
 This repository contains the gamelogic of the game Unvanquished.
 You need to download the game's assets in addition to that to make it run.
