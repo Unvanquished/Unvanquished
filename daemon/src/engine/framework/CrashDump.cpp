@@ -65,13 +65,13 @@ bool CreateCrashDumpPath() {
 
 // Records a crash dump sent from the VM in minidump format. This is the same
 // format that Breakpad uses, but nacl minidump does not require Breakpad to work.
-void NaclCrashDump(const std::vector<uint8_t>& dump) {
+void NaclCrashDump(const std::vector<uint8_t>& dump, Str::StringRef vmName) {
     const size_t maxDumpSize = (512 + 64) * 1024; // from http://src.chromium.org/viewvc/native_client/trunk/src/native_client/src/untrusted/minidump_generator/minidump_generator.cc
     if(dump.size() > maxDumpSize) { // sanity check: shouldn't be bigger than the buffer in nacl
         Log::Warn("Ignoring NaCl crash dump request: size too large");
     } else {
         auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock().now().time_since_epoch()).count();
-        std::string path = FS::Path::Build(CrashDumpPath(), Str::Format("crash-nacl-%s.dmp", std::to_string(time)));
+        std::string path = FS::Path::Build(CrashDumpPath(), Str::Format("crash-nacl-%s-%s.dmp", vmName, std::to_string(time)));
 
         // Note: the file functions always use binary mode on Windows so there shouldn't be any lossiness.
         try {

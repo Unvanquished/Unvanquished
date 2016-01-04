@@ -41,7 +41,7 @@ namespace Sys {
     bool BreakpadInit();
 
     // Write a crash dump that came from an NaCl VM.
-    void NaclCrashDump(const std::vector<uint8_t>& dump);
+    void NaclCrashDump(const std::vector<uint8_t>& dump, Str::StringRef vmName);
 }
 
 #endif // FRAMEWORK_CRASHDUMP_H_
