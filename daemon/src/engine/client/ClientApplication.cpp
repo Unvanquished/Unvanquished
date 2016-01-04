@@ -83,7 +83,7 @@ class ClientApplication : public Application {
         void OnDrop(Str::StringRef reason) override {
             FS::PakPath::ClearPaks();
             FS_LoadBasePak();
-            SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", reason.c_str()));
+            SV_Shutdown(Str::Format("Server crashed: %s\n", reason).c_str());
             CL_Disconnect(true);
             CL_FlushMemory();
         }
@@ -97,7 +97,7 @@ class ClientApplication : public Application {
 
             TRY_SHUTDOWN(CL_Shutdown());
             TRY_SHUTDOWN(
-                SV_Shutdown(error ? va("Server fatal crashed: %s\n", message.c_str()) : va("%s\n", message.c_str()))
+                SV_Shutdown(error ? Str::Format("Server fatal crashed: %s\n", message).c_str() : Str::Format("%s\n", message).c_str())
             );
             TRY_SHUTDOWN(Com_Shutdown());
 
