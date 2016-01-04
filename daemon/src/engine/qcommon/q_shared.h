@@ -177,8 +177,8 @@ void ignore_result(T) {}
 
 //=============================================================
 
-#include "common/Compiler.h"
 #include "common/Platform.h"
+#include "common/Compiler.h"
 #include "common/Endian.h"
 
 typedef int qhandle_t;
