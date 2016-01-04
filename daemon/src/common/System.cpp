@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <nacl/nacl_exception.h>
 #include <nacl/nacl_minidump.h>
 #include <nacl/nacl_random.h>
-#include "engine/client/cg_api.h"
+#include "shared/CommonProxies.h"
 #else
 #include <dlfcn.h>
 #endif
@@ -237,7 +237,7 @@ void SetupCrashHandler()
 #elif defined(__native_client__)
 static void CrashHandler(const void* data, size_t n)
 {
-    trap_CrashDump(static_cast<const uint8_t*>(data), n);
+    VM::CrashDump(static_cast<const uint8_t*>(data), n);
     Sys::Error("Crashed with NaCl exception");
 }
 

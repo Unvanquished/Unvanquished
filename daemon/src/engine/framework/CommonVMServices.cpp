@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "common/IPC/CommonSyscalls.h"
 #include "CommonVMServices.h"
 #include "framework/CommandSystem.h"
+#include "framework/CrashDump.h"
 #include "framework/CvarSystem.h"
 #include "framework/LogSystem.h"
 #include "framework/VirtualMachine.h"
@@ -46,6 +47,11 @@ namespace VM {
                 IPC::HandleMsg<CreateSharedMemoryMsg>(channel, std::move(reader), [this](size_t size, IPC::SharedMemory& shm) {
                     shm = IPC::SharedMemory::Create(size);
                 });
+            case CRASH_DUMP:
+                IPC::HandleMsg<CrashDumpMsg>(channel, std::move(reader), [this](std::vector<uint8_t> dump) {
+                    Sys::NaclCrashDump(dump, vmName);
+                });
+                break;
         }
     }
 

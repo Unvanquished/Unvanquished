@@ -43,7 +43,6 @@ Maryland 20850 USA.
 #include "framework/CommonVMServices.h"
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
-#include "framework/CrashDump.h"
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
@@ -1298,12 +1297,6 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		case CG_GETNEWS:
 			IPC::HandleMsg<GetNewsMsg>(channel, std::move(reader), [this] (bool force, bool& res) {
 				res = GetNews(force);
-			});
-			break;
-
-		case CG_CRASH_DUMP:
-			IPC::HandleMsg<CrashDumpMsg>(channel, std::move(reader), [this](std::vector<uint8_t> dump) {
-				Sys::NaclCrashDump(dump, "cgame");
 			});
 			break;
 
