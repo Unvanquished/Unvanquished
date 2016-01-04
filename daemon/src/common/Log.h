@@ -37,11 +37,13 @@ namespace Log {
      * There are 4 log levels that code can use:
      *   - WARNING when something is not going as expected, it is very visible.
      *   - NOTICE when we want to say something interesting, not very visible.
-     *   - DEBUG shouldn't be visible by default.
+     *   - VERBOSE when we want to give status update, not visible by default.
+     *   - DEBUG when we want to give deep info useful only to developers.
      */
 
     enum Level {
         LOG_DEBUG,
+        LOG_VERBOSE,
         LOG_NOTICE,
         LOG_WARNING,
     };
@@ -81,6 +83,9 @@ namespace Log {
             void Notice(Str::StringRef format, Args&& ... args);
 
             template<typename ... Args>
+            void Verbose(Str::StringRef format, Args&& ... args);
+
+            template<typename ... Args>
             void Debug(Str::StringRef format, Args&& ... args);
 
             template<typename F>
@@ -88,6 +93,9 @@ namespace Log {
 
             template<typename F>
             void DoNoticeCode(F&& code);
+
+            template<typename F>
+            void DoVerboseCode(F&& code);
 
             template<typename F>
             void DoDebugCode(F&& code);
@@ -109,6 +117,9 @@ namespace Log {
 
     template<typename ... Args>
     void Notice(Str::StringRef format, Args&& ... args);
+
+    template<typename ... Args>
+    void Verbose(Str::StringRef format, Args&& ... args);
 
     template<typename ... Args>
     void Debug(Str::StringRef format, Args&& ... args);
@@ -149,6 +160,7 @@ namespace Log {
     // (decide to which log targets the event goes)
     void CodeSourceWarn(std::string message);
     void CodeSourceNotice(std::string message);
+    void CodeSourceVerbose(std::string message);
     void CodeSourceDebug(std::string message);
 
     // Engine calls available everywhere
@@ -174,6 +186,13 @@ namespace Log {
     }
 
     template<typename ... Args>
+    void Logger::Verbose(Str::StringRef format, Args&& ... args) {
+        if (filterLevel.Get() <= LOG_VERBOSE) {
+            CodeSourceVerbose(Str::Format(format, std::forward<Args>(args) ...));
+        }
+    }
+
+    template<typename ... Args>
     void Logger::Debug(Str::StringRef format, Args&& ... args) {
         if (filterLevel.Get() <= LOG_DEBUG) {
             CodeSourceDebug(Str::Format(format, std::forward<Args>(args) ...));
@@ -195,6 +214,13 @@ namespace Log {
     }
 
     template<typename F>
+    inline void Logger::DoVerboseCode(F&& code) {
+        if (filterLevel.Get() <= LOG_VERBOSE) {
+            code();
+        }
+    }
+
+    template<typename F>
     inline void Logger::DoDebugCode(F&& code) {
         if (filterLevel.Get() <= LOG_DEBUG) {
             code();
@@ -211,6 +237,11 @@ namespace Log {
     template<typename ... Args>
     void Notice(Str::StringRef format, Args&& ... args) {
         CodeSourceNotice(Str::Format(format, std::forward<Args>(args) ...));
+    }
+
+    template<typename ... Args>
+    void Verbose(Str::StringRef format, Args&& ... args) {
+        CodeSourceVerbose(Str::Format(format, std::forward<Args>(args) ...));
     }
 
     template<typename ... Args>

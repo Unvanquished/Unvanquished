@@ -47,6 +47,11 @@ namespace Log {
             return true;
         }
 
+        if (value == "verbose") {
+            result = Log::LOG_VERBOSE;
+            return true;
+        }
+
         if (value == "debug" or value == "all") {
             result = Log::LOG_DEBUG;
             return true;
@@ -61,6 +66,8 @@ namespace Log {
                 return "warning";
             case Log::LOG_NOTICE:
                 return "notice";
+            case Log::LOG_VERBOSE:
+                return "verbose";
             case Log::LOG_DEBUG:
                 return "debug";
             default:
@@ -77,6 +84,11 @@ namespace Log {
     static const int noticeTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceNotice(std::string message) {
         Log::Dispatch({message}, noticeTargets);
+    }
+
+    static const int verboseTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
+    void CodeSourceVerbose(std::string message) {
+        Log::Dispatch({message}, verboseTargets);
     }
 
     static const int debugTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);
