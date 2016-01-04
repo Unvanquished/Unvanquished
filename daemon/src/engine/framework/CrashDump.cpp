@@ -72,17 +72,15 @@ void NaclCrashDump(const std::vector<uint8_t>& dump) {
     } else {
         auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock().now().time_since_epoch()).count();
         std::string path = FS::Path::Build(CrashDumpPath(), Str::Format("crash-nacl-%s.dmp", std::to_string(time)));
-        std::error_code err;
 
         // Note: the file functions always use binary mode on Windows so there shouldn't be any lossiness.
-        auto file = FS::RawPath::OpenWrite(path, err);
-        if (err == err.default_error_condition()) file.Write(dump.data(), dump.size(), err);
-        if (err == err.default_error_condition()) file.Close(err);
-
-        if (err == err.default_error_condition()) {
+        try {
+            auto file = FS::RawPath::OpenWrite(path);
+            file.Write(dump.data(), dump.size());
+            file.Close();
             Log::Notice("Wrote crash dump to %s", path);
-        } else {
-            Log::Warn("Error while writing crash dump");
+        } catch (const std::system_error& error) {
+            Log::Warn("Error while writing crash dump: %s", error.what());
         }
     }
 }
