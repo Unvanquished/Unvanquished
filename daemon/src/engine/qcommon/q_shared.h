@@ -190,10 +190,6 @@ typedef int clipHandle_t;
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
 #define PADP(base, alignment)   ((void *) PAD((intptr_t) ( base ), ( alignment )))
 
-#ifndef NULL
-#define NULL ( (void *)0 )
-#endif
-
 #define STRING(s)  #s
 // expand constants before stringifying them
 #define XSTRING(s) STRING(s)
@@ -241,15 +237,6 @@ typedef int clipHandle_t;
 	  MESSAGE_WAITING, // rate/packet limited
 	  MESSAGE_WAITING_OVERFLOW, // packet too large with message
 	} messageStatus_t;
-
-// paramters for command buffer stuffing
-	typedef enum
-	{
-	  EXEC_NOW, // don't return until completed, a VM should NEVER use this,
-	  // because some commands might cause the VM to be unloaded...
-	  EXEC_INSERT, // insert at current position, but don't run yet
-	  EXEC_APPEND // add to end of the command buffer
-	} cbufExec_t;
 
 //
 // these aren't needed by any of the VMs.  put in another header?
