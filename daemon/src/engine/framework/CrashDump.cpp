@@ -43,6 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif // USE_BREAKPAD
 
+Log::Logger crashDumpLogs("common.breakpad", Log::LOG_NOTICE);
+
 namespace Sys {
 
 static std::string CrashDumpPath() {
@@ -50,14 +52,15 @@ static std::string CrashDumpPath() {
 }
 
 bool CreateCrashDumpPath() {
+    crashDumpLogs.Debug("Creating crash dump path: %s", CrashDumpPath());
     std::error_code createDirError;
     FS::RawPath::CreatePathTo(FS::Path::Build(CrashDumpPath(), "x"), createDirError);
     bool success = createDirError == createDirError.default_error_condition();
     if (!success) {
 #ifdef _WIN32
-        Log::Warn("Failed to create crash dump directory: %s", Win32StrError(GetLastError()));
+        crashDumpLogs.Warn("Failed to create crash dump directory: %s", Win32StrError(GetLastError()));
 #else
-        Log::Warn("Failed to create crash dump directory: %s", strerror(errno));
+        crashDumpLogs.Warn("Failed to create crash dump directory: %s", strerror(errno));
 #endif
     }
     return success;
@@ -68,7 +71,7 @@ bool CreateCrashDumpPath() {
 void NaclCrashDump(const std::vector<uint8_t>& dump, Str::StringRef vmName) {
     const size_t maxDumpSize = (512 + 64) * 1024; // from http://src.chromium.org/viewvc/native_client/trunk/src/native_client/src/untrusted/minidump_generator/minidump_generator.cc
     if(dump.size() > maxDumpSize) { // sanity check: shouldn't be bigger than the buffer in nacl
-        Log::Warn("Ignoring NaCl crash dump request: size too large");
+        crashDumpLogs.Warn("Ignoring NaCl crash dump request: size too large");
     } else {
         auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock().now().time_since_epoch()).count();
         std::string path = FS::Path::Build(CrashDumpPath(), Str::Format("crash-nacl-%s-%s.dmp", vmName, std::to_string(time)));
@@ -78,9 +81,9 @@ void NaclCrashDump(const std::vector<uint8_t>& dump, Str::StringRef vmName) {
             auto file = FS::RawPath::OpenWrite(path);
             file.Write(dump.data(), dump.size());
             file.Close();
-            Log::Notice("Wrote crash dump to %s", path);
+            crashDumpLogs.Notice("Wrote crash dump to %s", path);
         } catch (const std::system_error& error) {
-            Log::Warn("Error while writing crash dump: %s", error.what());
+            crashDumpLogs.Warn("Error while writing crash dump: %s", error.what());
         }
     }
 }
@@ -102,16 +105,13 @@ static Cvar::Cvar<bool> enableBreakpad("common.breakpad.enabled", "If enabled on
 
 static std::unique_ptr<google_breakpad::ExceptionHandler> crashHandler;
 
-bool BreakpadInit() {
-    if (!enableBreakpad.Get()) {
-        return false;
-    }
-
+static bool BreakpadInitInternal() {
     std::string crashDir = CrashDumpPath();
     std::string executable = CrashServerPath();
     std::string pipeName = GetSingletonSocketPath() + "-crash";
     DWORD pid = GetCurrentProcessId();
     std::string cmdLine = "\"" + executable + "\" " + pipeName + " \"" + crashDir + " \" " + std::to_string(pid);
+    crashDumpLogs.Debug("Starting crash server with the following command line: %s", cmdLine);
 
     STARTUPINFOA startInfo{};
     startInfo.cb = sizeof(startInfo);
@@ -122,7 +122,7 @@ bool BreakpadInit() {
         NULL, NULL, FALSE, 0, NULL, NULL,
         &startInfo, &procInfo))
     {
-        Log::Warn("Failed to start crash logging server: %s", Win32StrError(GetLastError()));
+        crashDumpLogs.Warn("Failed to start crash logging server: %s", Win32StrError(GetLastError()));
         return false;
     }
 
@@ -159,14 +159,10 @@ static bool CreateReportChannel(int& fdServer, int& fdClient) {
         && -1 != fcntl(fdClient, F_SETFD, oldflags | FD_CLOEXEC);
 }
 
-bool BreakpadInit() {
-    if (!enableBreakpad.Get()) {
-        return false;
-    }
-
+static bool BreakpadInitInternal() {
     int fdServer, fdClient;
     if (!CreateReportChannel(fdServer, fdClient)) {
-        Log::Warn("Failed to start crash logging server");
+        crashDumpLogs.Warn("Failed to start crash logging server");
         return false;
     }
 	// allocate exec arguments before forking to avoid malloc use
@@ -174,9 +170,14 @@ bool BreakpadInit() {
 	std::string crashDir = CrashDumpPath();
 	std::string exePath = CrashServerPath();
 
+    crashDumpLogs.Debug("Starting crash server with the following command line: %s %s %s <child pid>",
+                        exePath.c_str(),
+                        fdServerStr.c_str(),
+                        crashDir.c_str());
+
     pid_t pid = fork();
     if (pid == -1) {
-        Log::Warn("Failed to start crash logging server: %s", strerror(errno));
+        crashDumpLogs.Warn("Failed to start crash logging server: %s", strerror(errno));
         return false;
     } else if (pid != 0) { // Breakpad server MUST be in parent of engine process
 		char pidStr[16]; 
@@ -194,10 +195,19 @@ bool BreakpadInit() {
 
 #endif // linux
 
+void BreakpadInit() {
+    if (!enableBreakpad.Get()) {
+        return;
+    }
+
+    if (BreakpadInitInternal()) {
+        crashDumpLogs.Notice("Starting crash logging server");
+    }
+}
+
 #else // USE_BREAKPAD
 
-bool BreakpadInit() {
-    return false;
+void BreakpadInit() {
 }
 
 #endif // USE_BREAKPAD
