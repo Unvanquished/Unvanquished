@@ -163,8 +163,10 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/System.h
     ${ENGINE_DIR}/framework/VirtualMachine.cpp
     ${ENGINE_DIR}/framework/VirtualMachine.h
-    ${ENGINE_DIR}/sys/con_log.cpp
     ${ENGINE_DIR}/qcommon/md5.cpp
+    ${ENGINE_DIR}/sys/con_common.h
+    ${ENGINE_DIR}/sys/con_common.cpp
+    ${ENGINE_DIR}/sys/con_log.cpp
 )
 
 if (WIN32)
