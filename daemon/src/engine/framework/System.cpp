@@ -309,7 +309,7 @@ void Error(Str::StringRef message)
 	if (errorEntered.test_and_set())
 		_exit(-1);
 
-	Log::Notice("^1 Error: %s", message);
+	Log::Notice("^1Error: %s", message);
 	Shutdown(true, message);
 
 	OSExit(1);
