@@ -501,7 +501,7 @@ namespace VM {
     }
 }
 
-// Defintion of some additional trap_* that are common to all VMs
+// Definition of some additional trap_* that are common to all VMs
 
 void trap_Print(const char *string)
 {

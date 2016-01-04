@@ -96,7 +96,7 @@ void Sys::Error(Str::StringRef message)
 
 #ifdef BUILD_VM_IN_PROCESS
 
-// Entry point called in a new thread inside the existing server process
+// Entry point called in a new thread inside the existing process
 extern "C" DLLEXPORT void vmMain(Sys::OSHandle rootSocket)
 {
 	try {
