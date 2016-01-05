@@ -1486,6 +1486,34 @@ void Com_In_Restart_f()
 	IN_Restart();
 }
 
+void Com_ListMaps_f()
+{
+	std::vector<std::string> maps;
+
+	FS::RefreshPaks();
+    std::error_code ignore;
+	for ( const auto& pak : FS::GetAvailablePaks() )
+	{
+		FS::PakPath::LoadPakPrefix(pak, "maps", ignore);
+	}
+
+	for ( const auto& pak : FS::PakPath::ListFiles("maps", ignore) )
+	{
+		volatile auto foo = pak;
+		if ( Str::IsSuffix(".bsp", pak) )
+		{
+			maps.push_back( pak );
+		}
+	}
+
+	std::sort( maps.begin(), maps.end() );
+	maps.erase( std::unique( maps.begin(), maps.end() ), maps.end() );
+	for ( const auto& map: maps )
+	{
+		Com_Printf("%s", map.c_str());
+	}
+}
+
 /*
 =================
 Com_Init
@@ -1569,6 +1597,8 @@ void Com_Init( char *commandLine )
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
 
 	Cmd_AddCommand( "in_restart", Com_In_Restart_f );
+
+	Cmd_AddCommand( "listmaps", Com_ListMaps_f );
 
 	// Pick a qport value that is nice and random.
 	// As machines get faster, Com_Milliseconds() can't be used
