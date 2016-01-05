@@ -569,7 +569,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		}
 
 		//be sure that only valid team "numbers" can be used.
-		assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
+		ASSERT(team == TEAM_ALIENS || team == TEAM_HUMANS);
 		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
 
 		client->pers.classSelection = PCL_NONE;
@@ -655,7 +655,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		if ( client->ps.pm_flags & PMF_QUEUED )
 		{
 			/* team must exist, or there will be a sigsegv */
-			assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
+			ASSERT(team == TEAM_HUMANS || team == TEAM_ALIENS);
 			client->ps.persistant[ PERS_SPAWNQUEUE ] = level.team[ team ].numSpawns;
 			client->ps.persistant[ PERS_SPAWNQUEUE ] |= G_GetPosInSpawnQueue( &level.team[ team ].spawnQueue,
 			                                                                  client->ps.clientNum ) << 8;

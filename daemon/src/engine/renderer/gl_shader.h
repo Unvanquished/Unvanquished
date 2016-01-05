@@ -336,7 +336,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -376,7 +376,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -401,7 +401,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -442,7 +442,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -482,7 +482,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -522,7 +522,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -547,7 +547,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -589,7 +589,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -614,7 +614,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{

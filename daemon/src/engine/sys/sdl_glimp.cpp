@@ -260,7 +260,7 @@ void GLimp_WakeRenderer( void *data )
 
 	SDL_LockMutex( smpMutex );
 	{
-		assert( smpData == nullptr );
+		ASSERT(smpData == nullptr);
 		smpData = data;
 		smpDataReady = true;
 

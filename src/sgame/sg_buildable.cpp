@@ -4153,7 +4153,7 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 		}
 
 		default:
-			assert(false);
+			ASSERT(false);
 	}
 }
 

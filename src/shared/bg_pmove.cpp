@@ -4734,10 +4734,10 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 			temp[ i ] = ps->delta_angles[ i ];
 
 #ifdef BUILD_CGAME
-			// Assert here so that if cmd->angles[ i ] becomes non-zero
+			// Assert here so that if cmd->angles[i] becomes non-zero
 			// for a legitimate reason we can tell where and why it's
 			// being ignored
-			assert( cmd->angles[ i ] == 0 );
+			ASSERT_EQ(cmd->angles[i], 0);
 #endif
 		}
 		else

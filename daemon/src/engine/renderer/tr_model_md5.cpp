@@ -293,7 +293,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 		}
 
 		surf->verts = (md5Vertex_t*) ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
-		assert( ((intptr_t) surf->verts & 15) == 0 );
+		ASSERT_EQ(((intptr_t)surf->verts & 15), 0);
 
         v = surf->verts;
 		for (unsigned j = 0; j < surf->numVerts; j++, v++ )
