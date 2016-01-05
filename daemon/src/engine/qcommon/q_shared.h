@@ -85,7 +85,6 @@ void ignore_result(T) {}
 #define EXTERN_C extern "C"
 
 // C standard library headers
-#include <assert.h>
 #include <errno.h>
 //#include <fenv.h>
 #include <float.h>
