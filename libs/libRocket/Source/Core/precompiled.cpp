@@ -27,3 +27,6 @@
 
 #include "precompiled.h"
 
+// XCode's ranlib complain on empty object, adding any function prevents this
+void RocketDummyFunction() {
+}
