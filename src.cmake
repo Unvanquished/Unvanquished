@@ -89,7 +89,8 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/lua/Buildables.cpp
     ${GAMELOGIC_DIR}/shared/lua/Classes.h
     ${GAMELOGIC_DIR}/shared/lua/Classes.cpp
-
+    ${GAMELOGIC_DIR}/shared/lua/Upgrades.h
+    ${GAMELOGIC_DIR}/shared/lua/Upgrades.cpp
 )
 
 set(CGAMELIST
