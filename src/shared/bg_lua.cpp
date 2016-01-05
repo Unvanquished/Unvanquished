@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include "lua/Weapons.h"
 #include "lua/Buildables.h"
 #include "lua/Classes.h"
+#include "lua/Upgrades.h"
 #include <common/Log.h>
 
 
@@ -50,6 +51,7 @@ namespace Lua {
 static Weapons weapons;
 static Buildables buildables;
 static Classes classes;
+static Upgrades upgrades;
 
 class UnvGlobal
 {
@@ -62,9 +64,8 @@ public:
 
 	static int GetUpgrades( lua_State* L )
 	{
-		// TODO: return upgrades obj
-		Log::Debug("upgrades");
-		return 0;
+		LuaLib<Upgrades>::push( L, &upgrades, false );
+		return 1;
 	}
 
 	static int GetBuildables( lua_State* L )
@@ -111,6 +112,8 @@ void BG_InitializeLuaConstants( lua_State* L )
 	LuaLib< BuildableProxy >::Register( L );
 	LuaLib< Classes >::Register( L );
 	LuaLib< ClassProxy >::Register( L );
+	LuaLib< Upgrades >::Register( L );
+	LuaLib< UpgradeProxy >::Register( L );
 	LuaLib< UnvGlobal>::push( L, &global, false );
 	lua_setglobal( L, "unv" );
 }
