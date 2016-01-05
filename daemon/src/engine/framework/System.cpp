@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -309,7 +309,7 @@ void Error(Str::StringRef message)
 	if (errorEntered.test_and_set())
 		_exit(-1);
 
-	Log::Notice("^1 Error: %s", message);
+	Log::Notice("^1Error: %s", message);
 	Shutdown(true, message);
 
 	OSExit(1);

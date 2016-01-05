@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -501,7 +501,7 @@ namespace VM {
     }
 }
 
-// Defintion of some additional trap_* that are common to all VMs
+// Definition of some additional trap_* that are common to all VMs
 
 void trap_Print(const char *string)
 {

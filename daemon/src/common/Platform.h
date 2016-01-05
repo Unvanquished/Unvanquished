@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_PLATFORM_H_
 
 // Platform-specific configuration
-#ifdef _WIN32
+#if defined(_WIN32)
 #define DLL_EXT ".dll"
 #define EXE_EXT ".exe"
 #define PATH_SEP '\\'
