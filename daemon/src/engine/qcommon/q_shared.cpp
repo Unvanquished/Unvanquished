@@ -1922,7 +1922,7 @@ InfoMap InfoStringToMap( const std::string& string )
 {
 	if ( string.empty() )
 	{
-		return {};
+		return InfoMap{};
 	}
 
 	InfoMap map;
