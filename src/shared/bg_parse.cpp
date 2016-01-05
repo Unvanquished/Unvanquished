@@ -110,6 +110,8 @@ int   LEVEL3_BOUNCEBALL_DMG;
 float LEVEL3_BOUNCEBALL_SPEED;
 int   LEVEL3_BOUNCEBALL_RADIUS;
 int   LEVEL3_BOUNCEBALL_REGEN;
+int   LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
+int   LEVEL3_BOUNCEBALL_REGEN_CREEP;
 
 int   LEVEL4_CLAW_DMG;
 float LEVEL4_CLAW_RANGE;
@@ -271,6 +273,8 @@ static configVar_t bg_configVars[] =
 	{"w_level3upg_ballDmg", INTEGER, false, &LEVEL3_BOUNCEBALL_DMG},
 	{"w_level3upg_ballRadius", INTEGER, false, &LEVEL3_BOUNCEBALL_RADIUS},
 	{"w_level3upg_ballRegen", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN},
+	{"w_level3upg_ballRegenBooster", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN_BOOSTER},
+	{"w_level3upg_ballRegenCreep", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN_CREEP},
 	{"w_level3upg_ballSpeed", FLOAT, false, &LEVEL3_BOUNCEBALL_SPEED},
 	{"w_level3upg_clawRange", FLOAT, false, &LEVEL3_CLAW_UPG_RANGE},
 	{"w_level3upg_pounceDuration", INTEGER, false, &LEVEL3_POUNCE_TIME_UPG},
@@ -1126,6 +1130,14 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !Q_stricmp( token, "wallJumper" ) )
 		{
 			ca->abilities |= SCA_WALLJUMPER;
+		}
+		else if ( !Q_stricmp( token, "wallRunner" ) )
+		{
+			ca->abilities |= SCA_WALLRUNNER;
+		}
+		else if ( !Q_stricmp( token, "slider" ) )
+		{
+			ca->abilities |= SCA_SLIDER;
 		}
 		else if ( !Q_stricmp( token, "buildDistance" ) )
 		{

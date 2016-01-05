@@ -140,6 +140,7 @@ typedef enum cgameImport_s
   CG_NOTIFY_TEAMCHANGE,
   CG_PREPAREKEYUP,
   CG_GETNEWS,
+  CG_CRASH_DUMP,
 
   // Sound
   CG_S_STARTSOUND,
@@ -344,6 +345,10 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETNEWS>, bool>,
 	IPC::Reply<bool>
 > GetNewsMsg;
+typedef IPC::SyncMessage <
+    IPC::Message<IPC::Id<VM::QVM, CG_CRASH_DUMP>, std::vector<uint8_t> >
+> CrashDumpMsg;
+
 
 // All Sounds
 
@@ -542,7 +547,7 @@ namespace Key {
 	> GetKeynumForBindsMsg;
 	// KeyNumToStringMsg
 	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int, int>,
+		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int>,
 		IPC::Reply<std::string>
 	> KeyNumToStringMsg;
 	// SetBindingMsg

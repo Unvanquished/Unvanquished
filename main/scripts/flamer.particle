@@ -190,69 +190,13 @@ MuzzleFlashFlamer
     period 150 - ~0%
   }
 
-  ejector // early fire
-  {
-    particle
-    {
-      shader sync flamer0 flamer1 flamer2 flamer2 flamer2 flamer3 flamer3
-      displacement 1 0 0 ~0.0
-
-      parentVelocityFraction 1
-
-      velocityType      cent
-      velocityDir       linear
-      velocityMagnitude 100
-      velocity          0 0 0 ~0
-
-      accelerationType      static
-      accelerationDir       linear
-      accelerationMagnitude 0
-      acceleration          0 0 1 ~0
-
-      radius 0 10.0 15.0
-      alpha  0 1 0
-      rotation 0 340~40 340~40
-      bounce 0.1
-
-      lifeTime 75
-    }
-
-    count infinite
-    delay 0
-    period 10 - ~0%
-  }
-
   ejector // late fire
   {
-    particle
-    {
-      shader sync flamer4 flamer4 flamer5 flamer6 flamer7
-      displacement 8 0 0 ~0.0
-
-      parentVelocityFraction 0.65 // keep synchronized with FLAMER_LAG
-
-      velocityType      cent
-      velocityDir       linear
-      velocityMagnitude 250
-      velocity          0 0 0 ~5
-
-      accelerationType      static
-      accelerationDir       linear
-      accelerationMagnitude 0
-      acceleration          0 0 1 ~0
-
-      radius 0 5.0 10.0
-      alpha  0 1 0
-      rotation 0 350~20 340~40
-      bounce 0.01
-
-      lifeTime 150
-    }
 
     particle
     {
       shader sync flamer8 flamer8 flamer9 flamer10 flamer11 flamer12 flamer13 flamer14 flamer15 flamer16 flamer17 flamer18 flamer19 flamer20 flamer21 flamer22 flamer23
-      displacement 32 0 0 ~3.0
+      displacement 8 0 0 ~3.0
 
       parentVelocityFraction 0.65 // keep synchronized with FLAMER_LAG
 

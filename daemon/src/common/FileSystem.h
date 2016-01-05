@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -357,6 +357,9 @@ namespace RawPath {
 	File OpenWrite(Str::StringRef path, std::error_code& err = throws());
 	File OpenAppend(Str::StringRef path, std::error_code& err = throws());
 	File OpenEdit(Str::StringRef path, std::error_code& err = throws());
+
+    // Ensure existence of all directories in a path
+    void CreatePathTo(Str::StringRef path, std::error_code& err);
 
 	// Check if a file exists
 	bool FileExists(Str::StringRef path);

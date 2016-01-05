@@ -3,6 +3,15 @@ branches:
     - debian
 
 environment:
+  global:
+    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
+    # /E:ON and /V:ON options are not enabled in the batch script intepreter
+    # See: http://stackoverflow.com/a/13751649/163740
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    PYTHON: "C:\\Python27.10-x64"
+    PYTHON_VERSION: "2.7.10"
+    PYTHON_ARCH: "64"
+    
   matrix:
 #    - COMPILER: mingw64
 #      COMPILER_VERSION: "5.1.0"
@@ -30,11 +39,18 @@ matrix:
 
 configuration: Debug
 
+install:
+  - "powershell appveyor\\install.ps1"
+
 build:
   parallel: true
 
 before_build:
   - git submodule update --init --recursive
+  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
+  - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+  - python --version
+  - pip install -r src/utils/cbse/requirements.txt --upgrade
   - ps: |
       if ($env:COMPILER -eq "mingw64" -AND -Not (Test-Path "C:/mingw64")) {
           $url  = "http://sourceforge.net/projects/mingw-w64/files/"

@@ -585,28 +585,35 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs )
 
 	model = R_GetModelByHandle( handle );
 
-	if ( model->bsp )
+	switch ( model->type )
 	{
-		VectorCopy( model->bsp->bounds[ 0 ], mins );
-		VectorCopy( model->bsp->bounds[ 1 ], maxs );
-	}
-	else if ( model->mdv[ 0 ] )
-	{
-		header = model->mdv[ 0 ];
+		case MOD_BSP:
+			VectorCopy( model->bsp->bounds[ 0 ], mins );
+			VectorCopy( model->bsp->bounds[ 1 ], maxs );
+			break;
 
-		frame = header->frames;
+		case MOD_MESH:
+			header = model->mdv[ 0 ];
 
-		VectorCopy( frame->bounds[ 0 ], mins );
-		VectorCopy( frame->bounds[ 1 ], maxs );
-	}
-	else if ( model->md5 )
-	{
-		VectorCopy( model->md5->bounds[ 0 ], mins );
-		VectorCopy( model->md5->bounds[ 1 ], maxs );
-	}
-	else
-	{
-		VectorClear( mins );
-		VectorClear( maxs );
+			frame = header->frames;
+
+			VectorCopy( frame->bounds[ 0 ], mins );
+			VectorCopy( frame->bounds[ 1 ], maxs );
+			break;
+
+		case MOD_MD5:
+			VectorCopy( model->md5->bounds[ 0 ], mins );
+			VectorCopy( model->md5->bounds[ 1 ], maxs );
+			break;
+
+		case MOD_IQM:
+			VectorCopy( model->iqm->bounds[ 0 ], mins );
+			VectorCopy( model->iqm->bounds[ 1 ], maxs );
+			break;
+
+		default:
+			VectorClear( mins );
+			VectorClear( maxs );
+			break;
 	}
 }

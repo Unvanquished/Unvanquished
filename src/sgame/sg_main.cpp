@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "CBSE.h"
+#include "backend/CBSEBackend.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -195,6 +196,7 @@ vmCvar_t           g_debugEntities;
 
 vmCvar_t           g_instantBuilding;
 
+vmCvar_t           g_emptyTeamsSkipMapTime;
 
 // <bot stuff>
 
@@ -402,6 +404,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               0,                                               0, false    , nullptr       },
 
 	{ &g_instantBuilding,             "g_instantBuilding",             "0",                                0,                                               0, true     , nullptr       },
+
+	{ &g_emptyTeamsSkipMapTime,       "g_emptyTeamsSkipMapTime",       "0",                                0,                                               0, true     , nullptr       },
 
 	// bots: buying
 	{ &g_bot_buy, "g_bot_buy", "1",  CVAR_NORESTART, 0, false, nullptr },
@@ -2449,6 +2453,18 @@ void CheckExitRules()
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
 	}
+	else if ( g_emptyTeamsSkipMapTime.integer &&
+		( level.time - level.startTime ) / 60000 >=
+		g_emptyTeamsSkipMapTime.integer &&
+		level.team[ TEAM_ALIENS ].numPlayers == 0 && level.team[ TEAM_HUMANS ].numPlayers == 0 )
+	{
+		// nobody wins because the teams are empty after x amount of game time
+		level.lastWin = TEAM_NONE;
+		trap_SendServerCommand( -1, "print \"Empty teams skip map time exceeded.\n\"" );
+		trap_SetConfigstring( CS_WINNER, "Stalemate" );
+		LogExit( "Timelimit hit." );
+		G_MapLog_Result( 't' );
+	}
 }
 
 /*
@@ -2991,9 +3007,18 @@ void G_RunFrame( int levelTime )
 void G_PrepareEntityNetCode() {
 	// TODO: Allow ForEntities with empty template arguments.
 	gentity_t *oldEnt = &g_entities[0];
+	// Prepare netcode for all non-specs first.
 	for (int i = 0; i < level.num_entities; i++, oldEnt++) {
 		if (oldEnt->entity) {
+			if (oldEnt->entity->Get<SpectatorComponent>()) {
+				continue;
+			}
 			oldEnt->entity->PrepareNetCode();
 		}
 	}
+
+	// Prepare netcode for specs
+	ForEntities<SpectatorComponent>([&](Entity& entity, SpectatorComponent& spectatorComponent){
+		entity.PrepareNetCode();
+	});
 }

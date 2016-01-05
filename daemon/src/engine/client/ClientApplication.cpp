@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2015, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ namespace Application {
 class ClientApplication : public Application {
     public:
         ClientApplication() {
-            #if defined(_WIN32) && defined(BUILD_TTYCLIENT)
+            #if defined(_WIN32) && defined(BUILD_TTY_CLIENT)
                 // The windows dedicated server and tty client must enable the
                 // curses interface because they have no other usable interface.
                 traits.useCurses = true;
@@ -49,7 +49,7 @@ class ClientApplication : public Application {
             #ifdef BUILD_CLIENT
                 traits.isClient = true;
             #endif
-            #ifdef BUILD_TTYCLIENT
+            #ifdef BUILD_TTY_CLIENT
                 traits.isTTYClient = true;
             #endif
         }
@@ -83,7 +83,7 @@ class ClientApplication : public Application {
         void OnDrop(Str::StringRef reason) override {
             FS::PakPath::ClearPaks();
             FS_LoadBasePak();
-            SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", reason.c_str()));
+            SV_Shutdown(Str::Format("Server crashed: %s\n", reason).c_str());
             CL_Disconnect(true);
             CL_FlushMemory();
         }
@@ -97,7 +97,7 @@ class ClientApplication : public Application {
 
             TRY_SHUTDOWN(CL_Shutdown());
             TRY_SHUTDOWN(
-                SV_Shutdown(error ? va("Server fatal crashed: %s\n", message.c_str()) : va("%s\n", message.c_str()))
+                SV_Shutdown(error ? Str::Format("Server fatal crashed: %s\n", message).c_str() : Str::Format("%s\n", message).c_str())
             );
             TRY_SHUTDOWN(Com_Shutdown());
 

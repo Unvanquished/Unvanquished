@@ -39,10 +39,6 @@ Maryland 20850 USA.
 #include "framework/CvarSystem.h"
 #include "common/Network.h"
 
-#ifdef USE_VOIP
-cvar_t         *sv_voip;
-#endif
-
 serverStatic_t svs; // persistent server info
 server_t       sv; // local server
 GameVM         gvm; // game virtual machine
@@ -616,15 +612,6 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 	{
 		info_map["stats"] = sv_statsURL->string;
 	}
-
-#ifdef USE_VOIP
-
-	if ( sv_voip->integer )
-	{
-		info_map["voip"] = std::to_string( sv_voip->integer );
-	}
-
-#endif
 
 	if ( sv_minPing->integer )
 	{

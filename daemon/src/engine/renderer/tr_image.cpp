@@ -65,7 +65,7 @@ long GenerateImageHashValue( const char *fname )
 
 	while ( fname[ i ] != '\0' )
 	{
-		letter = tolower( fname[ i ] );
+		letter = Str::ctolower( fname[ i ] );
 
 		if ( letter == '\\' )
 		{
@@ -1758,7 +1758,7 @@ static void R_ExportTexture( image_t *image )
 
 	// quick and dirty sanitize path name
 	for( i = strlen( path ) - 1; i >= 7; i-- ) {
-		if( !isalnum( path[ i ] ) && path[ i ] != '.' && path[ i ] != '-' ) {
+		if( !Str::cisalnum( path[ i ] ) && path[ i ] != '.' && path[ i ] != '-' ) {
 			path[ i ] = 'z';
 		}
 	}

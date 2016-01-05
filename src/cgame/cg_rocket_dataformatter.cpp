@@ -83,7 +83,7 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 static void CG_Rocket_DFServerPing( int handle, const char *data )
 {
 	const char *str = Info_ValueForKey( data, "1" );
-	Rocket_DataFormatterFormattedData( handle, *str && std::isdigit( *str ) ? va( "%s ms", Info_ValueForKey( data, "1" ) ) : "", false );
+	Rocket_DataFormatterFormattedData( handle, *str && Str::cisdigit( *str ) ? va( "%s ms", Info_ValueForKey( data, "1" ) ) : "", false );
 }
 
 static void CG_Rocket_DFServerPlayers( int handle, const char *data )

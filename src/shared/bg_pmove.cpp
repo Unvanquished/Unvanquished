@@ -282,6 +282,11 @@ static void PM_Friction()
 				float stopSpeed = BG_Class( pm->ps->stats[ STAT_CLASS ] )->stopSpeed;
 				float friction = BG_Class( pm->ps->stats[ STAT_CLASS ] )->friction;
 
+				if ( pm->ps->stats[ STAT_STATE ] & SS_SLIDING )
+				{
+					friction *= HUMAN_SLIDE_FRICTION_MODIFIER;
+				}
+
 				control = speed < stopSpeed ? stopSpeed : speed;
 				drop += control * friction * pml.frametime;
 			}
@@ -1170,6 +1175,81 @@ static bool PM_CheckWallJump()
 	return true;
 }
 
+/*
+=============
+PM_CheckWallRun
+=============
+*/
+static bool PM_CheckWallRun()
+{
+	float jumpMag;
+	Vec3 dir, origin, velocity, normal;
+	vec3_t trace_end;
+	trace_t trace;
+
+	jumpMag = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+
+	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLRUNNER ) )
+		return false;
+
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
+		return false; // don't allow jump until all buttons are up
+
+	if ( pm->cmd.upmove < 10 )
+		return false; // not holding jump
+
+	if ( pm->ps->pm_flags & PMF_TIME_WALLJUMP )
+		return false;
+
+	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove )
+		return false;
+
+	origin = Vec3::Load( pm->ps->origin );
+
+	if ( pm->cmd.rightmove )
+	{
+		dir = Vec3::Load( pml.right );
+		dir *= pm->cmd.rightmove < 0 ? -1 : 1;
+	}
+	else
+	{
+		dir = Vec3::Load( pml.forward );
+		dir *= pm->cmd.forwardmove < 0 ? -1 : 1;
+	}
+	( origin + dir * 0.25f ).Store( trace_end );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, trace_end,
+	           pm->ps->clientNum, pm->tracemask, 0);
+
+	if ( trace.fraction == 1.0f )
+		return false;
+
+	if ( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) )
+		return false;
+
+	if ( trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
+		return false;
+
+	pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
+	pm->ps->pm_time = 200;
+
+	pml.groundPlane = false; // jumping away
+	pml.walking = false;
+	pm->ps->pm_flags |= PMF_JUMP_HELD;
+
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+	normal = Vec3::Load( trace.plane.normal );
+	velocity = Vec3::Load( pm->ps->velocity );
+
+	velocity += Math::Normalize( normal + Vec3( 0, 0, 0.9 ) ) * jumpMag;
+
+	velocity.Store( pm->ps->velocity );
+	PM_AddEvent( EV_JUMP );
+	PM_PlayJumpingAnimation();
+
+	return true;
+}
+
 /**
  * @brief PM_CheckJetpack
  * @return true if and only if thrust was applied
@@ -1464,12 +1544,6 @@ static bool PM_CheckJump()
 		return false;
 	}
 
-	// must wait for jump to be released
-	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
-	{
-		return false;
-	}
-
 	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
 	jetpackJump     = false;
 
@@ -1504,7 +1578,8 @@ static bool PM_CheckJump()
 
 	// don't allow walljump for a short while after jumping from the ground
 	// TODO: There was an issue about this potentially having side effects.
-	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER )
+		|| BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS], SCA_WALLRUNNER ) )
 	{
 		pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 		pm->ps->pm_time = 200;
@@ -1587,6 +1662,106 @@ static bool PM_CheckWaterJump()
 
 	pm->ps->pm_flags |= PMF_TIME_WATERJUMP;
 	pm->ps->pm_time = 2000;
+
+	return true;
+}
+
+/*
+ ==================
+ PM_CheckDodge
+
+ Checks the dodge key and starts a human dodge
+ ==================
+ */
+static bool PM_CheckDodge( void )
+{
+	vec3_t right, velocity = { 0.0f, 0.0f, 0.0f };
+	float jump, sideModifier;
+	int cost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+
+	if ( pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS )
+	{
+		return false;
+	}
+
+	// Landed a dodge
+	if ( ( pm->ps->pm_flags & PMF_CHARGE ) &&
+	        pm->ps->groundEntityNum != ENTITYNUM_NONE )
+	{
+		pm->ps->pm_flags = ( pm->ps->pm_flags & ~PMF_CHARGE );
+		return false;
+	}
+
+	// Reasons why we can't start a dodge or sprint
+	if ( pm->ps->pm_type != PM_NORMAL || pm->ps->stats[ STAT_STAMINA ] < cost ||
+	        ( pm->ps->pm_flags & PMF_DUCKED ) || pm->ps->pm_time > 0 )
+	{
+		return false;
+	}
+
+	// Reasons why we can't start a dodge only
+	if ( pm->ps->pm_flags & ( PMF_CHARGE ) ||
+	        pm->ps->groundEntityNum == ENTITYNUM_NONE ||
+	        ( pm->cmd.doubleTap != DT_MOVELEFT &&
+	          pm->cmd.doubleTap != DT_MOVERIGHT ) )
+	{
+		return false;
+	}
+
+	// don't allow jump until all buttons are up (?)
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
+	{
+		return false;
+	}
+
+	// can't jump whilst grabbed
+	if ( pm->ps->pm_type == PM_GRABBED )
+	{
+		return false;
+	}
+
+	// must wait for jump to be released
+	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
+	{
+		return false;
+	}
+
+	VectorCopy( pml.right, right );
+
+	// Dodge magnitude is based on the jump magnitude scaled by the modifiers
+	jump = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+
+	// Weaken dodge if slowed
+	if ( ( pm->ps->stats[ STAT_STATE ] & SS_SLOWLOCKED )  ||
+	        ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED ) )
+	{
+		sideModifier = HUMAN_DODGE_SLOW_MULTIPLIER;
+	}
+	else
+	{
+		sideModifier = HUMAN_DODGE_SIDE_MULTIPLIER;
+	}
+
+	// The dodge sets minimum velocity
+	if ( pm->cmd.doubleTap == DT_MOVELEFT )
+	{
+		VectorNegate( right, right );
+	}
+
+	VectorMA( velocity, jump * sideModifier, right, velocity );
+	velocity[ 2 ] = jump * HUMAN_DODGE_VERTICAL_MULTIPLIER;
+	VectorAdd( velocity, pm->ps->velocity, pm->ps->velocity );
+	pm->ps->stats[ STAT_STAMINA ] -= cost;
+
+	// Jumped away
+	pml.groundPlane = false;
+	pml.walking = false;
+	pm->ps->pm_flags |= PMF_JUMP_HELD;
+	pm->ps->pm_flags |= PMF_JUMPED;
+	pm->ps->pm_time = HUMAN_DODGE_COOLDOWN;
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+	PM_AddEvent( EV_JUMP );
+	PM_PlayJumpingAnimation();
 
 	return true;
 }
@@ -1755,6 +1930,7 @@ static void PM_AirMove()
 	usercmd_t cmd;
 
 	PM_CheckWallJump();
+	PM_CheckWallRun();
 	PM_CheckJetpack();
 
 	PM_Friction();
@@ -1967,6 +2143,21 @@ static void PM_WalkMove()
 		return;
 	}
 
+	// Slide
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_SLIDER )
+		&& pm->cmd.upmove < 0
+		&& VectorLength(pm->ps->velocity) > HUMAN_SLIDE_THRESHOLD )
+	{
+		pm->ps->stats[ STAT_STATE ] |= SS_SLIDING;
+		PM_StepSlideMove( false, true );
+		PM_Friction();
+		return;
+	}
+	else
+	{
+		pm->ps->stats[ STAT_STATE ] &= ~SS_SLIDING;
+	}
+
 	// if PM_Land didn't stop the jetpack (e.g. to allow for a jump) but we didn't get away
 	// from the ground, stop it now
 	PM_LandJetpack( true );
@@ -2099,11 +2290,6 @@ static void PM_LadderMove()
 
 	VectorCopy( wishvel, wishdir );
 	wishspeed = VectorNormalize( wishdir );
-
-	if ( wishspeed > pm->ps->speed * pm_swimScale )
-	{
-		wishspeed = pm->ps->speed * pm_swimScale;
-	}
 
 	PM_Accelerate( wishdir, wishspeed, pm_accelerate );
 
@@ -3317,10 +3503,11 @@ static void PM_Footsteps()
 		return;
 	}
 
-	// if not trying to move
-	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove )
+	// if not trying to move or sliding
+	if ( pm->ps->stats[ STAT_STATE ] & SS_SLIDING ||
+	   ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) )
 	{
-		if ( pm->xyspeed < 5 )
+		if ( pm->xyspeed < 5 || pm->ps->stats[ STAT_STATE ] & SS_SLIDING )
 		{
 			pm->ps->bobCycle = 0; // start at beginning of cycle again
 
@@ -4879,6 +5066,7 @@ void PmoveSingle( pmove_t *pmove )
 	}
 
 	PM_DropTimers();
+	PM_CheckDodge();
 
 	if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
 	{

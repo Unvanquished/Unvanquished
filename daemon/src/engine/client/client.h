@@ -48,11 +48,6 @@ Maryland 20850 USA.
 #include "framework/CommandBufferHost.h"
 #include "common/IPC/CommandBuffer.h"
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-#include <speex/speex.h>
-#include <speex/speex_preprocess.h>
-#endif
-
 // file containing our RSA public and private keys
 #define RSAKEY_FILE        "pubkey"
 
@@ -74,11 +69,10 @@ typedef struct
 	int           cmdNum; // the next cmdNum the server is expecting
 	playerState_t ps; // complete information about the current player at this time
 
-	unsigned      numEntities; // all of the entities that need to be presented
-	int           parseEntitiesNum; // at the time of this snapshot
-
 	int           serverCommandNum; // execute all commands up to this before
 	// making the snapshot current
+
+	std::vector<entityState_t> entities;
 } clSnapshot_t;
 
 // Arnout: for double tapping
@@ -106,15 +100,7 @@ typedef struct
 	int p_realtime; // cls.realtime when packet was sent
 } outPacket_t;
 
-// the parseEntities array must be large enough to hold PACKET_BACKUP frames of
-// entities, so that when a delta compressed message arives from the server
-// it can be un-deltad from the original
-
-#ifdef USE_INCREASED_ENTITIES
-#define MAX_PARSE_ENTITIES ( MAX_GENTITIES * 2 )
-#else
 #define MAX_PARSE_ENTITIES 2048
-#endif
 
 extern int g_console_field_width;
 
@@ -136,8 +122,6 @@ typedef struct
 	bool     newSnapshots; // set on parse of any valid packet
 
 	char         mapname[ MAX_QPATH ]; // extracted from CS_SERVERINFO
-
-	int          parseEntitiesNum; // index (not anded off) into cl_parse_entities[]
 
 	int          mouseDx[ 2 ], mouseDy[ 2 ]; // added to by mouse events
 	int          mouseIndex;
@@ -172,8 +156,6 @@ typedef struct
 	clSnapshot_t  snapshots[ PACKET_BACKUP ];
 
 	entityState_t entityBaselines[ MAX_GENTITIES ]; // for delta compression when not in previous frame
-
-	entityState_t parseEntities[ MAX_PARSE_ENTITIES ];
 } clientActive_t;
 
 extern clientActive_t cl;
@@ -252,38 +234,6 @@ typedef struct
 	bool     firstDemoFrameSkipped;
 	fileHandle_t demofile;
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-	bool voipEnabled;
-	bool speexInitialized;
-	int      speexFrameSize;
-	int      speexSampleRate;
-
-	// incoming data...
-	// !!! FIXME: convert from parallel arrays to array of a struct.
-	SpeexBits speexDecoderBits[ MAX_CLIENTS ];
-	void      *speexDecoder[ MAX_CLIENTS ];
-	byte      voipIncomingGeneration[ MAX_CLIENTS ];
-	int       voipIncomingSequence[ MAX_CLIENTS ];
-	float     voipGain[ MAX_CLIENTS ];
-	bool  voipIgnore[ MAX_CLIENTS ];
-	bool  voipMuteAll;
-
-	// outgoing data...
-	// if voipTargets[i / 8] & (1 << (i % 8)),
-	// then we are sending to clientnum i.
-	uint8_t              voipTargets[( MAX_CLIENTS + 7 ) / 8 ];
-	uint8_t              voipFlags;
-	SpeexPreprocessState *speexPreprocessor;
-	SpeexBits            speexEncoderBits;
-	void                 *speexEncoder;
-	int                  voipOutgoingDataSize;
-	int                  voipOutgoingDataFrames;
-	int                  voipOutgoingSequence;
-	byte                 voipOutgoingGeneration;
-	byte                 voipOutgoingData[ 1024 ];
-	float                voipPower;
-#endif
-
 	bool     waverecording;
 	fileHandle_t wavefile;
 	int          wavetime;
@@ -357,9 +307,6 @@ typedef struct
 
 	int      realtime; // ignores pause
 	int      realFrametime; // ignoring pause, so console always works
-
-	int      voipTime;
-	int      voipSender;
 
 	// master server sequence information
 	int          numMasterPackets;
@@ -561,21 +508,6 @@ extern cvar_t *cl_allowPaste;
 extern cvar_t *cl_useMumble;
 extern cvar_t *cl_mumbleScale;
 
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-// cl_voipSendTarget is a string: "all" to broadcast to everyone, "none" to
-//  send to no one, or a comma-separated list of client numbers:
-//  "0,7,2,23" ... an empty string is treated like "all".
-extern  cvar_t *cl_voipUseVAD;
-extern  cvar_t *cl_voipVADThreshold;
-extern  cvar_t *cl_voipSend;
-extern  cvar_t *cl_voipSendTarget;
-extern  cvar_t *cl_voipGainDuringCapture;
-extern  cvar_t *cl_voipCaptureMult;
-extern  cvar_t *cl_voipShowMeter;
-extern  cvar_t *cl_voipShowSender;
-extern  cvar_t *cl_voip;
-#endif
-
 extern Log::Logger downloadLogger;
 
 //=================================================
@@ -689,11 +621,6 @@ bool CL_IRCIsRunning();
 //
 // cl_parse.c
 //
-#if defined(USE_VOIP) && !defined(BUILD_SERVER)
-void       CL_Voip_f();
-
-#endif
-
 void CL_SystemInfoChanged();
 void CL_ParseServerMessage( msg_t *msg );
 

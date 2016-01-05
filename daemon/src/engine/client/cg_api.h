@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "engine/renderer/tr_types.h"
 #include "common/cm/cm_public.h"
 
-#define CGAME_API_VERSION 1
+#define CGAME_API_VERSION 2
 
 #define CMD_BACKUP               64
 #define CMD_MASK                 ( CMD_BACKUP - 1 )
@@ -286,4 +286,5 @@ void            trap_S_UpdateEntityVelocity( int entityNum, const vec3_t velocit
 void            trap_S_SetReverb( int slotNum, const char* presetName, float ratio );
 void            trap_S_BeginRegistration();
 void            trap_S_EndRegistration();
+void            trap_CrashDump(const uint8_t* data, size_t size);
 #endif

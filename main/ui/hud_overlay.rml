@@ -16,11 +16,16 @@
 			margin: auto auto;
 			text-align: center;
 		}
+		warmup_time
+		{
+			font-size: 10em;
+		}
 	</style>
 </head>
 <body id="hud_overlay">
 <div>
 	<center_print/>
+	<warmup_time/>
 </div>
 </body>
 </rml>

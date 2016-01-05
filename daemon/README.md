@@ -4,7 +4,7 @@ This repository contains the engine of the game Unvanquished. See below for buil
 
 ##Dependencies##
 
-`zlib`, `libgmp`, `libnettle`, `libcurl`, `SDL2`, `GLEW`, `libpng`, `libjpeg` ≥ 8, `libwebp` ≥ 0.2.0, `Freetype`, `OpenAL`, `libogg`, `libvorbis`, `libspeex`, `libtheora`, `libopus`, `libopusfile`
+`zlib`, `libgmp`, `libnettle`, `libcurl`, `SDL2`, `GLEW`, `libpng`, `libjpeg` ≥ 8, `libwebp` ≥ 0.2.0, `Freetype`, `OpenAL`, `libogg`, `libvorbis`, `libtheora`, `libopus`, `libopusfile`
 
 ####Buildtime####
 

@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -124,7 +124,7 @@ namespace Cmd {
     Args currentArgs;
     Args oldArgs;
 
-    void AddCommand(std::string name, const CmdBase& cmd, std::string description) {
+    void AddCommand(const std::string& name, const CmdBase& cmd, std::string description) {
         CommandMap& commands = GetCommandMap();
 
         if (!IsValidCmdName(name)) {
@@ -132,7 +132,7 @@ namespace Cmd {
             return;
         }
 
-        if (!commands.insert({std::move(name), commandRecord_t{std::move(description), &cmd}}).second) {
+        if (!commands.insert({name, commandRecord_t{std::move(description), &cmd}}).second) {
             commandLog.Warn("Cmd::AddCommand: %s already defined", name);
         }
     }
@@ -365,7 +365,7 @@ namespace Cmd {
     static ListCmdsCmd listRendererCmdsRegistration("listRendererCmds", BASE | RENDERER, "lists all the renderer commands", RENDERER);
     static ListCmdsCmd listAudioCmdsRegistration("listAudioCmds", BASE | AUDIO, "lists all the audio commands", AUDIO);
     static ListCmdsCmd listCGameCmdsRegistration("listCGameCmds", BASE | CGAME_VM, "lists all the client-side game commands", CGAME_VM);
-    static ListCmdsCmd listGameCmdsRegistration("listGameCmds", BASE | SGAME_VM, "lists all the server-side game commands", CGAME_VM);
+    static ListCmdsCmd listGameCmdsRegistration("listSGameCmds", BASE | SGAME_VM, "lists all the server-side game commands", CGAME_VM);
     static ListCmdsCmd listUICmdsRegistration("listUICmds", BASE | UI_VM, "lists all the UI commands", CGAME_VM);
     static ListCmdsCmd listOldStyleCmdsRegistration("listOldStyleCmds", BASE, "lists all the commands registered through the C interface", PROXY_FOR_OLD);
 }

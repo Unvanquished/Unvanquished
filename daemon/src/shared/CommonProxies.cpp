@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -91,12 +91,12 @@ namespace Cmd {
         commandsInitialized = true;
     }
 
-    void AddCommand(std::string name, const Cmd::CmdBase& cmd, std::string description) {
+    void AddCommand(const std::string& name, const Cmd::CmdBase& cmd, std::string description) {
         if (commandsInitialized) {
             GetCommandMap()[name] = {&cmd, ""};
-            AddCommandRPC(std::move(name), std::move(description));
+            AddCommandRPC(name, std::move(description));
         } else {
-            GetCommandMap()[std::move(name)] = {&cmd, std::move(description)};
+            GetCommandMap()[name] = {&cmd, std::move(description)};
         }
     }
 
@@ -317,7 +317,7 @@ namespace Cvar{
         return value;
     }
 
-    void SetValue(const std::string& name, std::string value) {
+    void SetValue(const std::string& name, const std::string& value) {
         VM::SendMsg<VM::SetCvarMsg>(name, value);
     }
 
@@ -501,7 +501,7 @@ namespace VM {
     }
 }
 
-// Defintion of some additional trap_* that are common to all VMs
+// Definition of some additional trap_* that are common to all VMs
 
 void trap_Print(const char *string)
 {

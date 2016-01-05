@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -206,7 +206,7 @@ namespace Cmd {
 
     // Engine calls available everywhere
 
-    void AddCommand(std::string name, const CmdBase& cmd, std::string description);
+    void AddCommand(const std::string& name, const CmdBase& cmd, std::string description);
     void RemoveCommand(const std::string& name);
     Environment* GetEnv();
 

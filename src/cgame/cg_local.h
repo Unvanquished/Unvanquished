@@ -1407,10 +1407,6 @@ typedef struct
 	int modCount;
 	int modIndex;
 
-	char *voipInputs[ MAX_INPUTS ];
-	int voipInputsCount;
-	int voipInputIndex;
-
 	char *alOutputs[ MAX_OUTPUTS ];
 	int alOutputsCount;
 	int alOutputIndex;
@@ -1726,7 +1722,7 @@ typedef struct
 
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
-    
+
 	void         *capturedItem;
 	qhandle_t    activeCursor;
 
@@ -1787,7 +1783,9 @@ typedef enum
 {
   CG_ALTSHADER_DEFAULT, // must be first
   CG_ALTSHADER_UNPOWERED,
-  CG_ALTSHADER_DEAD
+  CG_ALTSHADER_DEAD,
+  CG_ALTSHADER_IDLE,
+  CG_ALTSHADER_IDLE2
 } altShader_t;
 
 //==============================================================================

@@ -1,8 +1,8 @@
-models/weapons/flamer/bluepipe
+models/weapons/flamer/flamer
 {
-	diffuseMap models/weapons/flamer/bluepipe_d
-	normalMap models/weapons/flamer/bluepipe_n
-	specularMap models/weapons/flamer/bluepipe_s
+	diffuseMap models/weapons/flamer/flamer_d
+	normalMap models/weapons/flamer/flamer_n
+	specularMap models/weapons/flamer/flamer_s
 }
 
 models/weapons/flamer/flash
@@ -13,27 +13,6 @@ models/weapons/flamer/flash
 		map	models/weapons/flamer/flash
 		blendfunc GL_ONE GL_ONE
 	}
-}
-
-models/weapons/flamer/redpipe
-{
-	diffuseMap models/weapons/flamer/redpipe_d
-	normalMap models/weapons/flamer/redpipe_n
-	specularMap models/weapons/flamer/redpipe_s
-}
-
-models/weapons/flamer/weaponbody
-{
-	diffuseMap models/weapons/flamer/weaponbody_d
-	normalMap models/weapons/flamer/weaponbody_n
-	specularMap models/weapons/flamer/weaponbody_s
-}
-
-models/weapons/flamer/weapongrip
-{
-	diffuseMap models/weapons/flamer/weapongrip_d
-	normalMap models/weapons/flamer/weapongrip_n
-	specularMap models/weapons/flamer/weapongrip_s
 }
 
 //   BEST FLAM THROEWR EVAR!

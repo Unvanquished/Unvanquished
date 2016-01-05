@@ -28,19 +28,31 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #include "../backend/CBSEBackend.h"
 #include "../backend/CBSEComponents.h"
 
+#include <random>
+
 class IgnitableComponent: public IgnitableComponentBase {
 	public:
 		const static float SELF_DAMAGE;
 		const static float SPLASH_DAMAGE;
 		const static float SPLASH_DAMAGE_RADIUS;
+
+		/** The minimum time any fire will burn. */
 		const static int   MIN_BURN_TIME;
-		const static int   STOP_CHECK_TIME;
-		const static float STOP_CHANCE;
-		/** Every burning entity in this radius results in a stop chance reduction factor with
-		 *  a size that increases linearly from STOP_CHANCE to 1 depending on entity distance. */
-		const static float STOP_RADIUS;
-		const static int   SPREAD_CHECK_TIME;
-		/** Fire spread chance decreases linearly from 1.0 to 0.0 over this distance. */
+
+		/** The average time an independent fire will burn. Includes the minimum burn period. */
+		const static int   BASE_AVERAGE_BURN_TIME;
+
+		/** The maximum additional average burn time per burning neighbour in range. */
+		const static int   EXTRA_AVERAGE_BURN_TIME;
+
+		/** The radius used to check for burning neighbours in range for the extra burn time. */
+		const static float EXTRA_BURN_TIME_RADIUS;
+
+		/** During the average lifetime of a fire, this is for each neighbour in range the
+		 *  cummulated maximum chance to spread to it. */
+		const static float LIFETIME_SPREAD_CHANCE;
+
+		/** The radius in which fire can spread. */
 		const static float SPREAD_RADIUS;
 
 		// ///////////////////// //
@@ -85,9 +97,13 @@ class IgnitableComponent: public IgnitableComponentBase {
 
 	private:
 		bool onFire;
-		int igniteTime;
-		int immuneUntil; /**< Fire immunity time after being extinguished. */
+		int igniteTime;         /**< Time of (re-)ignition. */
+		int immuneUntil;        /**< Fire immunity time after being extinguished. */
+		int spreadAt;           /**< Will try to spread to neighbours at this time. */
 		gentity_t* fireStarter; /**< Client who orginally started the fire. */
+
+		std::default_random_engine randomGenerator;
+		std::normal_distribution<float> normalDistribution;
 };
 
 #endif // IGNITABLE_COMPONENT_H_

@@ -92,6 +92,7 @@ void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
 bool         trap_FindPak( const char *name );
+void         trap_CrashDump(const uint8_t* data, size_t size);
 
 bool         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void             trap_BotShutdownNav();

@@ -20,7 +20,7 @@ void AcidTubeComponent::ConsiderAttack(int timeDelta) {
 	// TODO: Port gentity_t.powered.
 	if (!entity.oldEnt->powered) return;
 
-	float attacking = Utility::AntiHumanRadiusDamage(entity, ATTACK_DAMAGE * timeDelta * 0.001f,
+	bool attacking = Utility::AntiHumanRadiusDamage(entity, ATTACK_DAMAGE * timeDelta * 0.001f,
 	                                                 ATTACK_RANGE, MOD_ATUBE);
 
 	if (attacking && (lastAttackAnimation < 0 || level.time - lastAttackAnimation > 2000)) {

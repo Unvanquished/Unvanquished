@@ -559,9 +559,14 @@ so it can perform tab completion
 */
 void CG_InitConsoleCommands()
 {
-	unsigned i;
+	static bool initialized = false;
 
-	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
+	if (initialized) {
+		return;
+	}
+	initialized = true;
+
+	for ( unsigned i = 0; i < ARRAY_LEN( commands ); i++ )
 	{
 		//Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp(commands[i-1].cmd, commands[i].cmd) > 0 )

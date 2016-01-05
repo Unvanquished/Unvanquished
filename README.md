@@ -8,7 +8,7 @@
 
 | Windows | OSX | Linux |
 |---------|-----|-------|
-| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/osx-ci.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
+| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
 
 This repository contains the gamelogic of the game Unvanquished.
 You need to download the game's assets in addition to that to make it run.
@@ -29,14 +29,16 @@ See below for build and launch instructions.
 `OpenAL`,
 `libogg`,
 `libvorbis`,
-`libspeex`,
 `libtheora`,
 `libopus`,
 `libopusfile`
 
 ###Buildtime
 
-`cmake`
+`cmake`,
+`python` ≥ 2,
+`python-yaml`,
+`python-jinja`
 
 ###Optional
 
@@ -54,19 +56,6 @@ See below for build and launch instructions.
 ##Build Instructions
 
 Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores to speed up compilation.
-
-###CBSE Toolchain
-
-If you want to mess around with the gamelogic code and modify entities, you'll need the cbse toolchain.
-Get it using:
-
-
-    cd src/utils/cbse
-    git submodule init
-    git submodule update
-
-Then you can modify the entities.yml file in src/sgame/. After modifying the entites.yml file,
-you can run the generate_entities.sh script o regenerate the auto generated component code.
 
 ###Visual Studio
 
@@ -157,5 +146,5 @@ Run `daemon.exe -pakpath PATH`, where `PATH` is the path to the `pkg` directory 
 
 ####If you don't have the assets
 
-  1. Copy the `pkg` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](http://sourceforge.net/projects/unvanquished/files/Universal_Zip/)) into your build directory.
+  1. Copy the `pkg` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](https://github.com/Unvanquished/Unvanquished/releases)) into your build directory.
   2. Run `daemon.exe`.

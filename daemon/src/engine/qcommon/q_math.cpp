@@ -524,7 +524,7 @@ Traces a ray from inside a rectangle and returns the point of
 intersection with the rectangle
 ==================
 */
-float ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir, 
+float ProjectPointOntoRectangleOutwards( vec2_t out, const vec2_t point, const vec2_t dir,
                                          const vec2_t bounds[ 2 ] )
 {
 	float t, ty;
@@ -1214,7 +1214,6 @@ void ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vP
 	VectorMA( vStart, DotProduct( pVec, vec ), vec, vProj );
 }
 
-#define LINE_DISTANCE_EPSILON 1e-05f
 
 /*
  * ================

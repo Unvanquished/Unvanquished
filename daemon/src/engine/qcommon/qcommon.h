@@ -104,13 +104,12 @@ char  *MSG_ReadBigString( msg_t *sb );
 char  *MSG_ReadStringLine( msg_t *sb );
 float MSG_ReadAngle16( msg_t *sb );
 void  MSG_ReadData( msg_t *sb, void *buffer, int size );
-int   MSG_LookaheadByte( msg_t *msg );
 
 void  MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
 void  MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
 
 void  MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, bool force );
-void  MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, int number );
+void  MSG_ReadDeltaEntity( msg_t *msg, const entityState_t *from, entityState_t *to, int number );
 
 void  MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
 void  MSG_ReadDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
@@ -320,12 +319,8 @@ enum svc_ops_e
   svc_serverCommand, // [string] to be executed by client game module
   svc_download, // [short] size [size bytes]
   svc_snapshot,
-  svc_EOF,
-
-  // svc_extension follows a svc_EOF, followed by another svc_* ...
-  //  this keeps legacy clients compatible.
-  svc_extension,
   svc_voip, // not wrapped in USE_VOIP, so this value is reserved.
+  svc_EOF,
 };
 
 //
@@ -338,8 +333,8 @@ enum clc_ops_e
   clc_move, // [usercmd_t]
   clc_moveNoDelta, // [usercmd_t]
   clc_clientCommand, // [string] message
-  clc_EOF,
   clc_voip, // not wrapped in USE_VOIP, so this value is reserved.
+  clc_EOF,
 };
 
 /*
@@ -640,8 +635,6 @@ unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_FilterPath( const char *filter, char *name, int casesensitive );
-
-bool   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
 
 void       Com_StartupVariable( const char *match );
 void       Com_SetRecommended();
@@ -958,10 +951,6 @@ void             Huff_offsetReceive( node_t *node, int *ch, byte *fin, int *offs
 void             Huff_offsetTransmit( huff_t *huff, int ch, byte *fout, int *offset );
 void             Huff_putBit( int bit, byte *fout, int *offset );
 int              Huff_getBit( byte *fout, int *offset );
-
-// don't use if you don't know what you're doing.
-int              Huff_getBloc();
-void             Huff_setBloc( int _bloc );
 
 extern huffman_t clientHuffTables;
 

@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,9 @@ namespace Sys {
 
 // Cleanly exit the engine, shutting down all subsystems.
 NORETURN void Quit(Str::StringRef message);
+
+// Get the path of a singleton socket
+std::string GetSingletonSocketPath();
 
 } // namespace Sys
 

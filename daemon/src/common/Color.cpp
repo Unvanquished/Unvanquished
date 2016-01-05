@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2015, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -237,12 +237,12 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
         {
             return value_type( input, input+2, parent->DefaultColor() );
         }
-        else if ( std::toupper( input[1] ) >= '0' && std::toupper( input[1] ) < 'P' )
+        else if ( Str::ctoupper( input[1] ) >= '0' && Str::ctoupper( input[1] ) < 'P' )
         {
             return value_type( input, input+2, detail::Indexed( input[1] - '0' ) );
         }
         else if ( std::tolower( input[1] ) == 'x' && Str::cisxdigit( input[2] ) &&
-				  Str::cisxdigit( input[3] ) && Str::cisxdigit( input[4] ) )
+                  Str::cisxdigit( input[3] ) && Str::cisxdigit( input[4] ) )
         {
             return value_type( input, input+5, Color(
                 Str::GetHex( input[2] ) / 15.f,

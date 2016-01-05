@@ -2037,42 +2037,6 @@ void Com_Shutdown()
 	FS::FlushAll();
 }
 
-/*
-==================
-Com_IsVoipTarget
-
-Returns non-zero if given clientNum is enabled in voipTargets, zero otherwise.
-If clientNum is negative return if any bit is set.
-==================
-*/
-bool Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum )
-{
-	int index;
-
-	if ( clientNum < 0 )
-	{
-		for ( index = 0; index < voipTargetsSize; index++ )
-		{
-			if ( voipTargets[ index ] )
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	index = clientNum >> 3;
-
-	if ( index < voipTargetsSize )
-	{
-		return ( voipTargets[ index ] & ( 1 << ( clientNum & 0x07 ) ) );
-	}
-
-	return false;
-}
-
-
 int Sys_Milliseconds()
 {
 	static Sys::SteadyClock::time_point baseTime = Sys::SteadyClock::now();

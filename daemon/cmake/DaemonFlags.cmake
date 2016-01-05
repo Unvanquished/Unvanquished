@@ -1,5 +1,5 @@
 # Daemon BSD Source Code
-# Copyright (c) 2013-2014, Daemon Developers
+# Copyright (c) 2013-2016, Daemon Developers
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -101,6 +101,10 @@ macro(try_linker_flag PROP FLAG)
         set_linker_flag(${FLAG} ${ARGN})
     endif()
 endmacro()
+
+if(MINGW AND USE_BREAKPAD)
+    set_linker_flag("-Wl,--build-id")
+endif()
 
 if (MSVC)
     set_c_cxx_flag("/MP")

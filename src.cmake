@@ -146,8 +146,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
     ${GAMELOGIC_DIR}/sgame/Utility.cpp
 
-    ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.cpp
-
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AlienClassComponent.cpp
@@ -181,6 +179,7 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/ThinkingComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/TrapperComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/TurretComponent.cpp
+    ${GAMELOGIC_DIR}/sgame/components/SpectatorComponent.cpp
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h

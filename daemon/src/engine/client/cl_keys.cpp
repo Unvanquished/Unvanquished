@@ -440,7 +440,7 @@ Key events are used for non-printable characters, others are gotten from char ev
 =================
 */
 void Field_KeyDownEvent(Util::LineEditData& edit, int key) {
-    key = tolower(key);
+    key = Str::ctolower(key);
 
     switch (key) {
         case K_DEL:
@@ -639,7 +639,7 @@ void Console_Key( int key )
 
 	//----(SA)  added some mousewheel functionality to the console
 	if ( ( key == K_MWHEELUP && keys[ K_SHIFT ].down ) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
-			( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
+			( ( Str::ctolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
 		g_consoleField.HistoryPrev();
 		return;
@@ -647,7 +647,7 @@ void Console_Key( int key )
 
 	//----(SA)  added some mousewheel functionality to the console
 	if ( ( key == K_MWHEELDOWN && keys[ K_SHIFT ].down ) || ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ||
-			( ( tolower( key ) == 'n' ) && keys[ K_CTRL ].down ) )
+			( ( Str::ctolower( key ) == 'n' ) && keys[ K_CTRL ].down ) )
 	{
 		g_consoleField.HistoryNext();
 		return;
@@ -860,7 +860,7 @@ int Key_GetTeam( const char *arg, const char *cmd )
 
 	for ( t = 0; arg[ t ]; ++t )
 	{
-		if ( !isdigit( arg[ t ] ) )
+		if ( !Str::cisdigit( arg[ t ] ) )
 		{
 			break;
 		}

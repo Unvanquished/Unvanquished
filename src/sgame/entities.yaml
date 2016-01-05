@@ -113,6 +113,12 @@ components:
         messages:
             - Damage
 
+    Spectator:
+        messages:
+            - PrepareNetCode
+        requires:
+            - Client
+
     AlienClass:
         requires:
             - Client
@@ -301,6 +307,13 @@ entities:
     ##################
     # Player Classes #
     ##################
+
+    #-----------------+
+    # Spectator Class |
+    #-----------------+
+    Spectator:
+        components:
+            Spectator:
 
     #---------------+
     # Alien Classes |
