@@ -32,8 +32,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Log {
 
-    Logger::Logger(Str::StringRef name, Level defaultLevel)
-    :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel) {
+    Logger::Logger(Str::StringRef name, std::string prefix, Level defaultLevel)
+    :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel), prefix(prefix) {
+    }
+
+    std::string Logger::Prefix(std::string message) {
+        if (prefix.empty()) {
+            return message;
+        } else {
+            return prefix + " " + message;
+        }
     }
 
     bool ParseCvarValue(std::string value, Log::Level& result) {

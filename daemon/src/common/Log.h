@@ -56,7 +56,8 @@ namespace Log {
      * to be filtered by log level by subsystem. They are used like so
      * in a submodule "Foo" in a module "bar"
      *
-     *   static Logger fooLog("bar.foo"); // filters with the default filtering level
+     *   static Logger fooLog("bar.foo", "[foo]"); // filters with the default filtering level
+     *   // and adds [foo] before all messages
      *
      *   fooLog.Warn("%s %i", string, int); // "appends" the newline automatically
      *   fooLog.Debug(<expensive formatting>); // if the log is filtered, no formatting occurs
@@ -69,12 +70,12 @@ namespace Log {
      *   });
      *
      * In addition the user/developer can control the filtering level with
-     *   /set logs.logLevel.foo.bar {error, warning, info, debug}
+     *   /set logs.logLevel.foo.bar {warning, info, verbose, debug}
      */
 
     class Logger {
         public:
-            Logger(Str::StringRef name, Level defaultLevel = DEFAULT_FILTER_LEVEL);
+            Logger(Str::StringRef name, std::string prefix = "", Level defaultLevel = DEFAULT_FILTER_LEVEL);
 
             template<typename ... Args>
             void Warn(Str::StringRef format, Args&& ... args);
@@ -101,8 +102,13 @@ namespace Log {
             void DoDebugCode(F&& code);
 
         private:
+            std::string Prefix(std::string message);
+
             // the cvar logs.logLevel.<name>
             Cvar::Cvar<Level> filterLevel;
+
+            // a prefix appended to all the messages of this logger
+            std::string prefix;
     };
 
     /*
@@ -174,28 +180,28 @@ namespace Log {
     template<typename ... Args>
     void Logger::Warn(Str::StringRef format, Args&& ... args) {
         if (filterLevel.Get() <= LOG_WARNING) {
-            CodeSourceWarn(Str::Format(format, std::forward<Args>(args) ...));
+            CodeSourceWarn(Prefix(Str::Format(format, std::forward<Args>(args) ...)));
         }
     }
 
     template<typename ... Args>
     void Logger::Notice(Str::StringRef format, Args&& ... args) {
         if (filterLevel.Get() <= LOG_NOTICE) {
-            CodeSourceNotice(Str::Format(format, std::forward<Args>(args) ...));
+            CodeSourceNotice(Prefix(Str::Format(format, std::forward<Args>(args) ...)));
         }
     }
 
     template<typename ... Args>
     void Logger::Verbose(Str::StringRef format, Args&& ... args) {
         if (filterLevel.Get() <= LOG_VERBOSE) {
-            CodeSourceVerbose(Str::Format(format, std::forward<Args>(args) ...));
+            CodeSourceVerbose(Prefix(Str::Format(format, std::forward<Args>(args) ...)));
         }
     }
 
     template<typename ... Args>
     void Logger::Debug(Str::StringRef format, Args&& ... args) {
         if (filterLevel.Get() <= LOG_DEBUG) {
-            CodeSourceDebug(Str::Format(format, std::forward<Args>(args) ...));
+            CodeSourceDebug(Prefix(Str::Format(format, std::forward<Args>(args) ...)));
         }
     }
 
