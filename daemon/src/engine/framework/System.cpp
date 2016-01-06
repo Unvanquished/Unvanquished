@@ -615,9 +615,7 @@ static void Init(int argc, char** argv)
 
     if (CreateCrashDumpPath()) {
         EarlyCvar("common.breakpad.enabled", cmdlineArgs);
-        if (BreakpadInit()) {
-            Log::Notice("Starting crash logging server");
-        }
+        BreakpadInit();
     }
 
 	// Load the base paks

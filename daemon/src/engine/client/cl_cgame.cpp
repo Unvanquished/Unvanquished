@@ -1303,7 +1303,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_CRASH_DUMP:
 			IPC::HandleMsg<CrashDumpMsg>(channel, std::move(reader), [this](std::vector<uint8_t> dump) {
-				Sys::NaclCrashDump(dump);
+				Sys::NaclCrashDump(dump, "cgame");
 			});
 			break;
 
