@@ -66,3 +66,8 @@ bool IN_IsNumLockDown()
 void IN_SetMouseMode(MouseMode)
 {
 }
+
+bool IN_GetFocus()
+{
+	return true;
+}

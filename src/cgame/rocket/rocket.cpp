@@ -642,18 +642,16 @@ void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 }
 
 static bool cursor = true;
-static bool focus = true;
 
 void ShowCursor(bool show)
 {
 	cursor = show;
-	if ( focus )
+	if ( trap_GetFocus() )
 	{
 		menuContext->ShowMouseCursor( cursor );
 		trap_SetMouseMode( cursor ? MouseMode::CustomCursor : MouseMode::Deltas );
 	}
 }
-
 
 void Rocket_SetActiveContext( int catcher )
 {
@@ -675,8 +673,7 @@ void Rocket_SetActiveContext( int catcher )
 
 void CG_FocusEvent( bool has_focus )
 {
-	focus = has_focus;
-	if ( focus )
+	if ( has_focus )
 	{
 		ShowCursor(cursor);
 	}

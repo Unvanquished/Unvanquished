@@ -220,6 +220,7 @@ void            trap_Key_ClearCmdButtons( void );
 void            trap_Key_ClearStates( void );
 std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys );
 void            trap_SetMouseMode( MouseMode mode );
+bool            trap_GetFocus();
 void            trap_S_StopBackgroundTrack();
 int             trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
 e_status        trap_CIN_StopCinematic( int handle );

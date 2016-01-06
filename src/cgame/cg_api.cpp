@@ -744,6 +744,13 @@ void trap_SetMouseMode( MouseMode mode )
 	VM::SendMsg<Mouse::SetMouseMode>( mode );
 }
 
+bool trap_GetFocus()
+{
+	bool focus = true;
+	VM::SendMsg<Mouse::GetFocus>( focus );
+	return focus;
+}
+
 // All LAN
 
 int trap_LAN_GetServerCount( int source )

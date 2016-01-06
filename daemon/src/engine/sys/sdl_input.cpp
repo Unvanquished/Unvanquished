@@ -598,17 +598,23 @@ void IN_SetMouseMode(MouseMode new_mode)
 	}
 }
 
-static void MouseFocus(bool has_focus)
+static bool in_focus = true;
+
+bool IN_GetFocus()
 {
-	static bool focus = true;
-	if ( has_focus == focus )
+	return in_focus;
+}
+
+static void IN_SetFocus(bool has_focus)
+{
+	if ( has_focus == in_focus )
 	{
 		return;
 	}
 
-	focus = has_focus;
+	in_focus = has_focus;
 
-	Com_QueueEvent( 0, SE_FOCUS, focus, 0, 0, nullptr );
+	Com_QueueEvent( 0, SE_FOCUS, in_focus, 0, 0, nullptr );
 
 }
 
@@ -1523,21 +1529,21 @@ void IN_Frame()
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		// Console is down in windowed mode
-		MouseFocus( false );
+		IN_SetFocus( false );
 	}
 	else if ( !( SDL_GetWindowFlags( window ) & SDL_WINDOW_INPUT_FOCUS ) )
 	{
 		// Window doesn't have focus
-		MouseFocus( false );
+		IN_SetFocus( false );
 	}
 	else if ( com_minimized->integer )
 	{
 		// Minimized
-		MouseFocus( false );
+		IN_SetFocus( false );
 	}
 	else
 	{
-		MouseFocus( true );
+		IN_SetFocus( true );
 	}
 
 	IN_ProcessEvents( dropInput );
