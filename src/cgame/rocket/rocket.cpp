@@ -641,23 +641,49 @@ void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).CString(), length );
 }
 
+static bool cursor = true;
+static bool focus = true;
+
+void ShowCursor(bool show)
+{
+	cursor = show;
+	if ( focus )
+	{
+		menuContext->ShowMouseCursor( cursor );
+		trap_SetMouseMode( cursor ? MouseMode::CustomCursor : MouseMode::Deltas );
+	}
+}
+
+
 void Rocket_SetActiveContext( int catcher )
 {
 	switch ( catcher )
 	{
 		case KEYCATCH_UI:
-			menuContext->ShowMouseCursor( true );
-			trap_SetMouseMode( MouseMode::Absolute );
+			ShowCursor( true );
 			break;
 
 		default:
 			if ( !( catcher & KEYCATCH_CONSOLE ) )
 			{
-				menuContext->ShowMouseCursor( false );
-			trap_SetMouseMode( MouseMode::Deltas );
+				ShowCursor( false );
 			}
 
 			break;
+	}
+}
+
+void CG_FocusEvent( bool has_focus )
+{
+	focus = has_focus;
+	if ( focus )
+	{
+		ShowCursor(cursor);
+	}
+	else
+	{
+		menuContext->ShowMouseCursor( false );
+		trap_SetMouseMode( MouseMode::SystemCursor );
 	}
 }
 

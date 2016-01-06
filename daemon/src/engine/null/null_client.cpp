@@ -49,6 +49,10 @@ void CL_MousePosEvent( int, int )
 {
 }
 
+void CL_FocusEvent( bool )
+{
+}
+
 void Key_WriteBindings( fileHandle_t )
 {
 }

@@ -133,6 +133,13 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 				});
 				break;
 
+			case CG_FOCUS_EVENT:
+				IPC::HandleMsg<CGameFocusEventMsg>(VM::rootChannel, std::move(reader), [] (bool focus) {
+					CG_FocusEvent(focus);
+					cmdBuffer.TryFlush();
+				});
+				break;
+
             default:
                 CG_Error("VMMain(): unknown cgame command %i", minor);
 

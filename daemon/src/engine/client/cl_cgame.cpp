@@ -1122,6 +1122,11 @@ void CGameVM::CGameMousePosEvent(int x, int y)
 	this->SendMsg<CGameMousePosEventMsg>(x, y);
 }
 
+void CGameVM::CGameFocusEvent(bool focus)
+{
+	this->SendMsg<CGameFocusEventMsg>(focus);
+}
+
 
 void CGameVM::CGameTextInputEvent(int c)
 {

@@ -375,6 +375,7 @@ public:
 	void CGameMouseEvent(int dx, int dy);
     void CGameMousePosEvent(int x, int y);
 	void CGameTextInputEvent(int c);
+	void CGameFocusEvent(bool focus);
 	//std::vector<std::string> CGameVoipString();
 	//void CGameInitCvars();
 
