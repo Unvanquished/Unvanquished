@@ -248,10 +248,6 @@ typedef int clipHandle_t;
 #define BLINK_DIVISOR         200
 #define PULSE_DIVISOR         75
 
-#if !defined( NDEBUG )
-#define HUNK_DEBUG
-#endif
-
 	typedef enum
 	{
 	  h_high,
@@ -259,14 +255,7 @@ typedef int clipHandle_t;
 	  h_dontcare
 	} ha_pref;
 
-#ifdef HUNK_DEBUG
-#define Hunk_Alloc( size, preference ) Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
-	void *Hunk_AllocDebug( int size, ha_pref preference, const char *label, const char *file, int line );
-
-#else
 	void *Hunk_Alloc( int size, ha_pref preference );
-
-#endif
 
 #define Com_Memset   memset
 #define Com_Memcpy   memcpy
