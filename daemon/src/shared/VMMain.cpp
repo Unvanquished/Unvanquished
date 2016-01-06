@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ void Sys::Error(Str::StringRef message)
 
 #ifdef BUILD_VM_IN_PROCESS
 
-// Entry point called in a new thread inside the existing server process
+// Entry point called in a new thread inside the existing process
 extern "C" DLLEXPORT void vmMain(Sys::OSHandle rootSocket)
 {
 	try {

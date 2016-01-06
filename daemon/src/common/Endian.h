@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # define Q3_BYTE_ORDER _BYTE_ORDER
 
 #elif defined( __ANDROID__ )
-// Adroid specific code, see: https://svn.boost.org/trac/boost/ticket/7528
+// Android specific code, see: https://svn.boost.org/trac/boost/ticket/7528
 // Here we can use machine/_types.h, see:
 // http://stackoverflow.com/questions/6212951/endianness-of-android-ndk
 # include "machine/_types.h"

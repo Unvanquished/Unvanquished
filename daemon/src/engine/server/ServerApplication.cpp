@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2015, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -65,12 +65,12 @@ class ServerApplication : public Application {
         void OnDrop(Str::StringRef reason) override {
             FS::PakPath::ClearPaks();
             FS_LoadBasePak();
-            SV_Shutdown(va("********************\nServer crashed: %s\n********************\n", reason.c_str()));
+            SV_Shutdown(Str::Format("Server crashed: %s\n", reason).c_str());
         }
 
         void Shutdown(bool error, Str::StringRef message) override {
             TRY_SHUTDOWN(
-                SV_Shutdown(error ? va("Server fatal crashed: %s\n", message.c_str()) : va("%s\n", message.c_str()))
+                SV_Shutdown(error ? Str::Format("Server fatal crashed: %s\n", message).c_str() : Str::Format("%s\n", message).c_str())
             );
             TRY_SHUTDOWN(Com_Shutdown());
         }

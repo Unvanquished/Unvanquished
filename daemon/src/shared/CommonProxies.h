@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ namespace Cmd {
 
 namespace VM {
 
+    void CrashDump(const uint8_t* data, size_t size);
     void InitializeProxies(int milliseconds);
     void HandleCommonSyscall(int major, int minor, Util::Reader reader, IPC::Channel& channel);
 
