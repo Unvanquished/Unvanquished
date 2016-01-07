@@ -68,6 +68,7 @@ Maryland 20850 USA.
 #include "lua/Cmd.h"
 #include "lua/Events.h"
 #include "lua/Timer.h"
+#include "lua/Player.h"
 #include "../cg_local.h"
 
 void BG_InitializeLuaConstants( lua_State* L );
@@ -340,6 +341,7 @@ void Rocket_Init()
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Timer>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaCDataSource(Rocket::Core::Lua::Interpreter::GetLuaState());
 	BG_InitializeLuaConstants( Rocket::Core::Lua::Interpreter::GetLuaState() );
+	CG_InitializeLuaPlayer( Rocket::Core::Lua::Interpreter::GetLuaState() );
 
 
 	// Set backup font
