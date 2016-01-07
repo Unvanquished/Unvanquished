@@ -60,6 +60,7 @@ Maryland 20850 USA.
 #include "rocketCvarInlineElement.h"
 #include <RmlUi/Debugger.h>
 #include "lua/register_lua_extensions.h"
+#include "lua/Player.h"
 #include "../cg_local.h"
 #include "shared/bg_lua.h"
 
@@ -344,6 +345,7 @@ void Rocket_Init()
 	CG_Rocket_RegisterLuaEvents(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaTimer(Rml::Lua::Interpreter::GetLuaState());
 	BG_InitializeLuaConstants(Rml::Lua::Interpreter::GetLuaState());
+	CG_InitializeLuaPlayer(Rml::Lua::Interpreter::GetLuaState());
 
 	// Register custom properties.
 	UnvPropertyId::Orientation = Rml::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
