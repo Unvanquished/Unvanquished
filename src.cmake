@@ -179,6 +179,8 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.h
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.h
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.cpp
 
     ${ENGINE_DIR}/client/cg_api.h
     ${ENGINE_DIR}/client/cg_msgdef.h
