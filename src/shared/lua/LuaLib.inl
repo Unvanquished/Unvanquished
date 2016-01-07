@@ -375,4 +375,4 @@ void LuaLib<T>::_regfunctions(lua_State* L, int /*meta*/, int methods)
 }
 
 }  // namespace Lua
-}  // namespace Shared
+}  // naemspace Shared

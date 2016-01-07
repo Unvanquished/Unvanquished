@@ -86,6 +86,8 @@ set(GAMESHAREDLIST
 
     ${GAMELOGIC_DIR}/shared/lua/Utils.h
     ${GAMELOGIC_DIR}/shared/lua/Utils.cpp
+    ${GAMELOGIC_DIR}/shared/lua/LuaLib.h
+    ${GAMELOGIC_DIR}/shared/lua/LuaLib.inl
     ${GAMELOGIC_DIR}/shared/lua/Weapons.h
     ${GAMELOGIC_DIR}/shared/lua/Weapons.cpp
     ${GAMELOGIC_DIR}/shared/lua/Buildables.h
@@ -177,6 +179,8 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/register_lua_extensions.h
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.h
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.cpp
 
     ${ENGINE_DIR}/client/cg_api.h
     ${ENGINE_DIR}/client/cg_msgdef.h

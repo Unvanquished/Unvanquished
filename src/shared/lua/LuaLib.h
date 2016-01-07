@@ -164,7 +164,6 @@ private:
 
 };
 
-
 }  // namespace Lua
 }  // namespace Shared
 
