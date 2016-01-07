@@ -64,6 +64,7 @@ Maryland 20850 USA.
 #include "lua/Cmd.h"
 #include "lua/Events.h"
 #include "lua/Timer.h"
+#include "lua/Player.h"
 #include "../cg_local.h"
 #include "shared/bg_lua.h"
 
@@ -348,6 +349,7 @@ void Rocket_Init()
 	Rml::Lua::LuaType<Rml::Lua::Timer>::Register(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaCDataSource(Rml::Lua::Interpreter::GetLuaState());
 	BG_InitializeLuaConstants(Rml::Lua::Interpreter::GetLuaState());
+	CG_InitializeLuaPlayer(Rml::Lua::Interpreter::GetLuaState());
 
 	// Register custom properties.
 	UnvPropertyId::Orientation = Rml::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
