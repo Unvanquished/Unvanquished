@@ -36,24 +36,7 @@ namespace Lua
 
 namespace
 {
-void Report( lua_State* L, std::string& place )
-{
-	const char* msg = lua_tostring( L, -1 );
-	std::string strmsg;
 
-	while ( msg )
-	{
-		lua_pop( L, 1 );
-
-		if ( place == "" )
-			strmsg = msg;
-		else
-			strmsg = place.append( " " ).append( msg );
-
-		Log::Warn( strmsg );
-		msg = lua_tostring( L, -1 );
-	}
-}
 } // namespace
 template<typename T>
 void LuaLib<T>::Register( lua_State* L )
@@ -410,6 +393,6 @@ void LuaLib<T>::_regfunctions( lua_State* L, int meta, int methods )
 	lua_pop( L, 1 ); //pop __setters
 }
 
-}
-}
-}
+}  // namespace Lua
+}  // naemspace Shared
+}  // namespace Unv

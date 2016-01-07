@@ -179,10 +179,12 @@ private:
 
 };
 
+void Report( lua_State* L, std::string& place );
 
-}
-}
-}
+
+}  // namespace Lua
+}  // namespace Shared
+}  // namespace Unv
 
 #include "LuaLib.inl"
 #endif
