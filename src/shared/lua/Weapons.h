@@ -33,8 +33,6 @@ Maryland 20850 USA.
 */
 #ifndef LUAWEAPONS_H_
 #define LUAWEAPONS_H_
-#ifdef BUILD_CGAME
-
 #include "../bg_lua.h"
 #include "../bg_public.h"
 #include "LuaLib.h"
@@ -65,5 +63,4 @@ void ExtraInit<WeaponProxy>( lua_State* L, int metatable_index );
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv
-#endif // BUILD_CGAME
 #endif // LUAWEAPONS_H_

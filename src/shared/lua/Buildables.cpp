@@ -31,7 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
 #include "Buildables.h"
 
 namespace Unv {
@@ -168,4 +167,3 @@ LUACORETYPEDEFINE(Buildables, false)
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv
-#endif // BUILD_CGAME

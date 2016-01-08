@@ -31,7 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
 #include "Weapons.h"
 namespace Unv {
 namespace Shared {
@@ -172,4 +171,3 @@ LUACORETYPEDEFINE(Weapons, false)
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv
-#endif // BUILD_CGAME
