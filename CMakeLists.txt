@@ -78,7 +78,7 @@ include(src.cmake)
 option(BUILD_CGAME "Build client-side gamelogic" 1)
 option(BUILD_SGAME "Build server-side gamelogic" 1)
 
-if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
+if (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL)
     if (NACL)
         set(FREETYPE_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/libfreetype.a)
         set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${DEPS_DIR}/pnacl_deps/lib/libpng16.a)
@@ -161,6 +161,7 @@ if (BUILD_SGAME)
             srclibs-detour
             srclibs-recast
             srclibs-fastlz
+            ${LUA_LIBRARY}
     )
 endif()
 

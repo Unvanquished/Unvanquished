@@ -31,8 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
-
 #include "bg_public.h"
 #include "bg_lua.h"
 #include "lua/LuaLib.h"
@@ -41,7 +39,6 @@ Maryland 20850 USA.
 #include "lua/Classes.h"
 #include "lua/Upgrades.h"
 #include <common/Log.h>
-
 
 
 namespace Unv {
@@ -117,5 +114,3 @@ void BG_InitializeLuaConstants( lua_State* L )
 	LuaLib< UnvGlobal>::push( L, &global, false );
 	lua_setglobal( L, "unv" );
 }
-
-#endif // BUILD_CGAME
