@@ -28,7 +28,9 @@
 #ifndef UNVSHAREDLUALUALIB_H
 #define UNVSHAREDLUALUALIB_H
 
-#include "../bg_lua.h"
+#include "shared/bg_lua.h"
+#include "Utils.h"
+
 //As an example, if you used this macro like
 //LUAMETHOD(Unit,GetId)
 //it would result in code that looks like

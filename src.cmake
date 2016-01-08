@@ -84,6 +84,8 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/navgen/nav.cpp
     ${GAMELOGIC_DIR}/shared/navgen/navgen.h
 
+    ${GAMELOGIC_DIR}/shared/lua/Utils.h
+    ${GAMELOGIC_DIR}/shared/lua/Utils.cpp
     ${GAMELOGIC_DIR}/shared/lua/Weapons.h
     ${GAMELOGIC_DIR}/shared/lua/Weapons.cpp
     ${GAMELOGIC_DIR}/shared/lua/Buildables.h
@@ -333,6 +335,9 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/TrapperComponent.h
     ${GAMELOGIC_DIR}/sgame/components/TurretComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/TurretComponent.h
+
+    ${GAMELOGIC_DIR}/sgame/lua/Interpreter.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Interpreter.h
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h
