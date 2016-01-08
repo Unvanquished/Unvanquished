@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "CBSE.h"
 #include "backend/CBSEBackend.h"
+#include "lua/Interpreter.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -920,6 +921,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 
 	G_notify_sensor_start();
+
+	Unv::SGame::Lua::Initialize();
 }
 
 /*

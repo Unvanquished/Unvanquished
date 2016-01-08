@@ -11,6 +11,8 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
     ${GAMELOGIC_DIR}/shared/bg_voice.cpp
     ${GAMELOGIC_DIR}/shared/bg_lua.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Utils.h
+    ${GAMELOGIC_DIR}/shared/lua/Utils.cpp
     ${GAMELOGIC_DIR}/shared/lua/Weapons.h
     ${GAMELOGIC_DIR}/shared/lua/Weapons.cpp
     ${GAMELOGIC_DIR}/shared/lua/Buildables.h
@@ -191,6 +193,9 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/TrapperComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/TurretComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/SpectatorComponent.cpp
+
+    ${GAMELOGIC_DIR}/sgame/lua/Interpreter.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Interpreter.h
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h
