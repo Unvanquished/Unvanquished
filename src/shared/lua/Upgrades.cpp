@@ -31,7 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
 #include "Upgrades.h"
 
 namespace Unv {
@@ -156,4 +155,3 @@ LUACORETYPEDEFINE(Upgrades, false)
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv
-#endif // BUILD_CGAME
