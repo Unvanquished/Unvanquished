@@ -31,7 +31,6 @@
  *
  * ===========================================================================
  */
-#ifdef BUILD_CGAME
 #include "Classes.h"
 
 namespace Unv {
@@ -161,4 +160,3 @@ LUACORETYPEDEFINE(Classes, false)
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv
-#endif // BUILD_CGAME
