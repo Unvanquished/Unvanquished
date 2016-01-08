@@ -31,8 +31,8 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef BG_LUA_H
-#define BG_LUA_H
+#ifndef BG_LUA_H_
+#define BG_LUA_H_
 extern "C"
 {
 	#include <lua.h>
