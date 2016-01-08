@@ -34,10 +34,6 @@ namespace Shared
 namespace Lua
 {
 
-namespace
-{
-
-} // namespace
 template<typename T>
 void LuaLib<T>::Register( lua_State* L )
 {
