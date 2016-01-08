@@ -31,6 +31,8 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
+#ifndef LUACLASSES_H_
+#define LUACLASSES_H_
 #ifdef BUILD_CGAME
 
 #include "../bg_lua.h"
@@ -64,3 +66,4 @@ void ExtraInit<ClassProxy>( lua_State* L, int metatable_index );
 } // namespace Shared
 } // namespace Unv
 #endif // BUILD_CGAME
+#endif // LUACLASSES_H_
