@@ -32,30 +32,72 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUACVAR_H
-#define LUACVAR_H
+#include "Cvar.h"
+#include "LuaLib.h"
 
-#include "../rocket.h"
-#include <RmlUi/Core.h>
-#include <RmlUi/Lua/LuaType.h>
-
-namespace Rml {
+namespace Unv {
+namespace Shared {
 namespace Lua {
-// Dummy class for cvars
-class Cvar
-{
 
+int Cvarget(lua_State* L)
+{
+	const char *cvar = luaL_checkstring(L, 1);
+	lua_pushstring(L, ::Cvar::GetValue(cvar).c_str());
+	return 1;
+}
+
+int Cvarset(lua_State* L)
+{
+	const char *cvar = luaL_checkstring(L, 1);
+	const char *value = luaL_checkstring(L, 2);
+	::Cvar::SetValue(cvar, value);
+	return 0;
+}
+
+int Cvararchive(lua_State* L)
+{
+	const char *cvar  = luaL_checkstring(L, 1);
+	::Cvar::AddFlags(cvar, ::Cvar::USER_ARCHIVE);
+	return 0;
+}
+
+template<>
+void ExtraInit<Lua::Cvar>(lua_State* L, int metatable_index)
+{
+	//due to they way that LuaType::Register is made, we know that the method table is at the index
+	//directly below the metatable
+	int method_index = metatable_index - 1;
+
+	lua_pushcfunction(L, Cvarget);
+	lua_setfield(L, method_index, "get");
+
+	lua_pushcfunction(L, Cvarset);
+	lua_setfield(L, method_index, "set");
+
+	lua_pushcfunction(L, Cvararchive);
+	lua_setfield(L, method_index, "archive");
+
+	return;
+}
+
+
+RegType<Cvar> CvarMethods[] =
+{
+	{ nullptr, nullptr },
 };
 
-template<> void ExtraInit<Cvar>(lua_State* L, int metatable_index);
-int Cvarget(lua_State* L);
-int Cvarset(lua_State* L);
-int Cvararchive(lua_State* L);
+luaL_Reg CvarGetters[] =
+{
+	{ nullptr, nullptr },
+};
 
-extern RegType<Cvar> CvarMethods[];
-extern luaL_Reg CvarGetters[];
-extern luaL_Reg CvarSetters[];
+luaL_Reg CvarSetters[] =
+{
+	{ nullptr, nullptr },
+};
 
-}  // namespace Lua
-}  // namespace Rml
-#endif
+LUACORETYPEDEFINE(Cvar, false)
+
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv

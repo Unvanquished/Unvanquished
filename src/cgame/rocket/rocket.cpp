@@ -60,10 +60,10 @@ Maryland 20850 USA.
 #include "rocketCvarInlineElement.h"
 #include "lua/CDataSource.h"
 #include <RmlUi/Debugger.h>
-#include "lua/Cvar.h"
-#include "lua/Cmd.h"
+#include "shared/lua/Cvar.h"
+#include "shared/lua/Cmd.h"
+#include "shared/lua/Timer.h"
 #include "lua/Events.h"
-#include "lua/Timer.h"
 #include "lua/Player.h"
 #include "../cg_local.h"
 #include "shared/bg_lua.h"
@@ -343,10 +343,7 @@ void Rocket_Init()
 	// Initialize Lua
 	Rml::Lua::Initialise();
 	Rml::Lua::Interpreter::DoString("math.randomseed(os.time())");
-	Rml::Lua::LuaType<Rml::Lua::Cvar>::Register(Rml::Lua::Interpreter::GetLuaState());
-	Rml::Lua::LuaType<Rml::Lua::Cmd>::Register(Rml::Lua::Interpreter::GetLuaState());
 	Rml::Lua::LuaType<Rml::Lua::Events>::Register(Rml::Lua::Interpreter::GetLuaState());
-	Rml::Lua::LuaType<Rml::Lua::Timer>::Register(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaCDataSource(Rml::Lua::Interpreter::GetLuaState());
 	BG_InitializeLuaConstants(Rml::Lua::Interpreter::GetLuaState());
 	CG_InitializeLuaPlayer(Rml::Lua::Interpreter::GetLuaState());
@@ -486,7 +483,7 @@ void Rocket_Update()
 	{
 		hudContext->Update();
 	}
-	Rml::Lua::Timer::Update(rocketInfo.realtime);
+	Unv::Shared::Lua::Timer::Update(rocketInfo.realtime);
 }
 
 std::string CG_EscapeHTMLText( Str::StringRef text )

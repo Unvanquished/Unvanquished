@@ -33,23 +33,14 @@ Maryland 20850 USA.
 */
 
 #include "Cmd.h"
-#include "../../cg_local.h"
+#include "LuaLib.h"
 
-namespace Rml {
+void trap_SendConsoleCommand(const char* text);
+
+
+namespace Unv {
+namespace Shared {
 namespace Lua {
-
-template<> void ExtraInit<Lua::Cmd>(lua_State* L, int metatable_index)
-{
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
-
-	lua_pushcfunction(L, Cmdexec);
-	lua_setfield(L, method_index, "exec");
-
-
-	return;
-}
 
 int Cmdexec(lua_State* L)
 {
@@ -58,23 +49,34 @@ int Cmdexec(lua_State* L)
 	return 0;
 }
 
+template<>
+void ExtraInit<Cmd>(lua_State* L, int metatable_index)
+{
+	//due to they way that LuaType::Register is made, we know that the method table is at the index
+	//directly below the metatable
+	int method_index = metatable_index - 1;
+
+	lua_pushcfunction(L, Cmdexec);
+	lua_setfield(L, method_index, "exec");
+}
 
 RegType<Cmd> CmdMethods[] =
 {
-	{ NULL, NULL },
+	{ nullptr, nullptr },
 };
 
 luaL_Reg CmdGetters[] =
 {
-	{ NULL, NULL },
+	{ nullptr, nullptr },
 };
 
 luaL_Reg CmdSetters[] =
 {
-	{ NULL, NULL },
+	{ nullptr, nullptr },
 };
 
-RMLUI_LUATYPE_DEFINE(Cmd)
+LUACORETYPEDEFINE(Cmd, false)
 
-}  // namespace Lua
-}  // namespace Rml
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv

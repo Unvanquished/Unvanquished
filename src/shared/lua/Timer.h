@@ -32,17 +32,16 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUATIMER_H
-#define LUATIMER_H
+#ifndef LUATIMER_H_
+#define LUATIMER_H_
 
-#include <list>
+#include "../bg_lua.h"
+#include "../bg_public.h"
 
-#include "../rocket.h"
-#include <RmlUi/Core.h>
-#include <RmlUi/Lua/LuaType.h>
-
-namespace Rml {
+namespace Unv {
+namespace Shared {
 namespace Lua {
+
 class Timer
 {
 public:
@@ -60,13 +59,8 @@ private:
 	int lastTime;
 	std::list<TimerEvent> events;
 };
-template<> void ExtraInit<Timer>(lua_State* L, int metatable_index);
-int Timeradd(lua_State* L);
 
-extern RegType<Timer> TimerMethods[];
-extern luaL_Reg TimerGetters[];
-extern luaL_Reg TimerSetters[];
-
-}  // namespace Lua
-}  // namespace Rml
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv
 #endif
