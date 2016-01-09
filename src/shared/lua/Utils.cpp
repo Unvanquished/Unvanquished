@@ -30,7 +30,7 @@
 namespace Unv {
 namespace Shared {
 namespace Lua {
-void Report( lua_State* L, std::string& place )
+void Report( lua_State* L, std::string place )
 {
 	const char* msg = lua_tostring( L, -1 );
 	std::string strmsg;

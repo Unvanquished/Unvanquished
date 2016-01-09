@@ -36,7 +36,6 @@ namespace Lua {
 
 static lua_State* L = nullptr;
 
-// TODO: Unhack report
 /*
  * Below here are global functions and their helper functions that help overwrite the Lua global functions. The majority of this file was copied from LibRocket.
  */
@@ -51,8 +50,8 @@ int rocket_pairsaux(lua_State* L)
 	lua_insert(L,1); // move __pairs to the bottom
 	lua_pushvalue(L,lua_upvalueindex(2)); // push userdata
 	// stack looks like [1] = __pairs, [2] = object, [3] = latest key, [4] = userdata
-	if(lua_pcall(L,lua_gettop(L)-1,LUA_MULTRET,0) != 0);
-// 		Unv::Shared::Lua::Report(L,"__pairs");
+	if(lua_pcall(L,lua_gettop(L)-1,LUA_MULTRET,0) != 0)
+		Unv::Shared::Lua::Report(L,"__pairs");
 	return lua_gettop(L);
 }
 
@@ -93,8 +92,8 @@ int rocket_ipairsaux(lua_State* L)
 	lua_insert(L,1); // move __ipairs to the bottom
 	lua_pushvalue(L,lua_upvalueindex(2)); // push userdata
 	// stack looks like [1] = __ipairs, [2] = object, [3] = latest key, [4] = userdata
-	if(lua_pcall(L,lua_gettop(L)-1,LUA_MULTRET,0) != 0);
-// 		Unv::Shared::Lua::Report(L,"__ipairs");
+	if(lua_pcall(L,lua_gettop(L)-1,LUA_MULTRET,0) != 0)
+		Unv::Shared::Lua::Report(L,"__ipairs");
 	return lua_gettop(L);
 }
 
@@ -201,13 +200,13 @@ public:
 		const std::string& code = args.Argv(1);
 		if (luaL_loadbuffer(L, code.c_str(), code.size(), "code") != 0)
 		{
-// 			Shared::Lua::Report(L, std::string("Loading buffer"));
+			Shared::Lua::Report(L, std::string("Loading buffer"));
 			return;
 		}
 
 		if(lua_pcall(L,0,0,0) != 0)
 		{
-// 			Shared::Lua::Report(L, std::string("Executing code"));
+			Shared::Lua::Report(L, std::string("Executing code"));
 		}
 	}
 };

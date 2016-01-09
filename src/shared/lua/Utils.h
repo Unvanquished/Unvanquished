@@ -28,10 +28,11 @@
 #ifndef LUAUTILS_H_
 #define LUAUTILS_H_
 #include "shared/bg_lua.h"
+#include "common/String.h"
 namespace Unv {
 namespace Shared {
 namespace Lua {
-void Report(lua_State* L, std::string& place);
+void Report(lua_State* L, std::string place);
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv
