@@ -49,12 +49,10 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.46"
+#define PRODUCT_VERSION         "0.47"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
-
-#define RSQRT_PRECISE 1
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -88,7 +86,6 @@ void ignore_result(T) {}
 
 // C standard library headers
 #include <assert.h>
-#include <ctype.h>
 #include <errno.h>
 //#include <fenv.h>
 #include <float.h>
@@ -193,10 +190,6 @@ typedef int clipHandle_t;
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
 #define PADP(base, alignment)   ((void *) PAD((intptr_t) ( base ), ( alignment )))
 
-#ifndef NULL
-#define NULL ( (void *)0 )
-#endif
-
 #define STRING(s)  #s
 // expand constants before stringifying them
 #define XSTRING(s) STRING(s)
@@ -244,15 +237,6 @@ typedef int clipHandle_t;
 	  MESSAGE_WAITING, // rate/packet limited
 	  MESSAGE_WAITING_OVERFLOW, // packet too large with message
 	} messageStatus_t;
-
-// paramters for command buffer stuffing
-	typedef enum
-	{
-	  EXEC_NOW, // don't return until completed, a VM should NEVER use this,
-	  // because some commands might cause the VM to be unloaded...
-	  EXEC_INSERT, // insert at current position, but don't run yet
-	  EXEC_APPEND // add to end of the command buffer
-	} cbufExec_t;
 
 //
 // these aren't needed by any of the VMs.  put in another header?
@@ -501,9 +485,7 @@ extern quat_t   quatIdentity;
 		y = Q_uintBitsToFloat( 0x5f3759df - (Q_floatBitsToUint( number ) >> 1) );
 		y *= ( 1.5f - ( x * y * y ) ); // initial iteration
 #endif
-#ifdef RSQRT_PRECISE
 		y *= ( 1.5f - ( x * y * y ) ); // second iteration for higher precision
-#endif
 		return y;
 	}
 
@@ -1249,12 +1231,10 @@ void         ByteToDir( int b, vec3_t dir );
 		p = _mm_add_ps( sseSwizzle( p, XXXX ),
 				sseSwizzle( p, ZZZZ ) );
 		t = _mm_rsqrt_ps( p );
-#ifdef RSQRT_PRECISE
 		h = _mm_mul_ps( _mm_set1_ps( 0.5f ), t );
 		t = _mm_mul_ps( _mm_mul_ps( t, t ), p );
 		t = _mm_sub_ps( _mm_set1_ps( 3.0f ), t );
 		t = _mm_mul_ps( h, t );
-#endif
 		return _mm_mul_ps( q, t );
 	}
 	inline __m128 sseQuatTransform( __m128 q, __m128 vec ) {

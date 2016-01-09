@@ -2,9 +2,12 @@ sudo: required
 services:
   - docker
 
+os:
+  - linux
+  - osx
+
 language:
   - cpp
-#  - objective-c
 
 env:
   - MODE=0
@@ -17,15 +20,15 @@ compiler:
 
 matrix:
   exclude:
-    - env: MODE=2
+    - env: MODE=2  # Don't build NaCl gamelogic with gcc
       compiler: gcc
 
 install:
-  - sudo rm -rf /opt/python  # Delete conflicting python
-  - sudo apt-get install software-properties-common
-  - sudo add-apt-repository ppa:george-edison55/cmake-3.x -y
-  - sudo apt-get -qq update
-  - sudo apt-get -qq install
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm -rf /opt/python; fi  # Delete conflicting python
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install software-properties-common; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:george-edison55/cmake-3.x -y; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq update; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq install
     cmake ninja-build
     liblua5.2-dev
     libgeoip-dev
@@ -34,11 +37,10 @@ install:
     libwebp-dev libjpeg8-dev libpng-dev
     libcurl4-gnutls-dev zlib1g-dev
     libopenal-dev libogg-dev libvorbis-dev libtheora-dev libxvidcore-dev libopusfile-dev libspeexdsp-dev
-    nettle-dev libgmp-dev python-yaml python-jinja2
-
-#install:
-#  - brew update
-#  - brew install ninja
+    nettle-dev libgmp-dev python-yaml python-jinja2; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ninja; fi
+  - sudo pip install -r src/utils/cbse/requirements.txt
 
 script:
   - mkdir -p build

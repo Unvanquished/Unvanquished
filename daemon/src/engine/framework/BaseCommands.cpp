@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -627,7 +627,7 @@ namespace Cmd {
                 }
 
                 //Get all the parameters!
-                bool isNamed = !isdigit(args.Argv(1)[0]);
+                bool isNamed = !Str::cisdigit(args.Argv(1)[0]);
                 const std::string& name = isNamed ? args.Argv(1) : "";
                 const std::string& command = args.EscapedArgs(2 + isNamed);
                 std::string delay = args.Argv(1 + isNamed);

@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -1475,7 +1475,7 @@ Cmd::CompletionResult CompleteFilename(Str::StringRef prefix, Str::StringRef roo
 #ifndef BUILD_VM
 namespace RawPath {
 
-static void CreatePathTo(Str::StringRef path, std::error_code& err)
+void CreatePathTo(Str::StringRef path, std::error_code& err)
 {
 #ifdef _WIN32
 	std::wstring buffer = Str::UTF8To16(path);

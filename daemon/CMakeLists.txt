@@ -1,5 +1,5 @@
 # Daemon BSD Source Code
-# Copyright (c) 2013-2014, Daemon Developers
+# Copyright (c) 2013-2016, Daemon Developers
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,14 +24,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.0)
 if (POLICY CMP0017)
     cmake_policy(SET CMP0017 NEW)
-endif()
-
-# Need 2.8.12 for RPATH support
-if (APPLE)
-    cmake_minimum_required(VERSION 2.8.12)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -85,6 +80,7 @@ if(NOT DAEMON_EXTERNAL_APP)
     endif()
     cmake_dependent_option(USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0)
     cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0)
+    option(USE_BREAKPAD "Use Breakpad crash logging" 0)
 endif()
 
 option(USE_LTO "Use link-time optimization for release builds" 0)
@@ -412,7 +408,8 @@ if (WIN32)
     set(LIBS_BASE ${LIBS_BASE} winmm ws2_32)
 elseif (NACL)
     find_library(NACL_EXCEPTION nacl_exception)
-    set(LIBS_BASE ${LIBS_BASE} ${NACL_EXCEPTION})
+    find_library(NACL_MINIDUMP minidump_generator)
+    set(LIBS_BASE ${LIBS_BASE} ${NACL_MINIDUMP} ${NACL_EXCEPTION} )
 else()
     find_library(LIBM m)
     if (LIBM)
@@ -540,6 +537,52 @@ if (BUILD_CLIENT OR (WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER)))
         add_definitions(-DHAVE_SDL)
     endif()
     mark_as_advanced(SDL2MAIN_LIBRARY SDL2_LIBRARY SDL2_INCLUDE_DIR)
+endif()
+
+# Breakpad
+if (USE_BREAKPAD)
+    add_definitions(-DUSE_BREAKPAD)
+    include_directories(${LIB_DIR}/breakpad/src)
+
+    if (WIN32)
+        add_library(srclibs-breakpad-common EXCLUDE_FROM_ALL ${BREAKPAD_COMMON_LIST})
+        add_library(srclibs-breakpad-crash_generation_server EXCLUDE_FROM_ALL ${BREAKPAD_CRASHGENERATIONSERVER_LIST})
+        add_library(srclibs-breakpad-exception_handler EXCLUDE_FROM_ALL ${BREAKPAD_EXCEPTIONHANDLER_LIST})
+        add_library(srclibs-breakpad-crash_generation_client EXCLUDE_FROM_ALL ${BREAKPAD_CRASHGENERATIONCLIENT_LIST})
+
+        set(BREAKPAD_LIBRARIES
+            srclibs-breakpad-common
+            srclibs-breakpad-crash_generation_server
+            srclibs-breakpad-exception_handler
+            srclibs-breakpad-crash_generation_client
+        )
+        foreach(breaklib ${BREAKPAD_LIBRARIES})
+            set_target_properties(${breaklib} PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+
+            # Breakpad library assumes wide char versions of Windows API functions
+            target_compile_definitions(${breaklib} PRIVATE UNICODE)
+
+            if (CMAKE_BUILD_TYPE MATCHES Debug)
+                target_compile_definitions(${breaklib} PRIVATE _DEBUG)
+            endif()
+        endforeach(breaklib)
+
+        add_executable(crash_server src/engine/crash_server/crash_server_windows.cpp)
+        target_link_libraries(crash_server
+            srclibs-breakpad-crash_generation_server srclibs-breakpad-common)
+        target_compile_definitions(crash_server PRIVATE UNICODE)
+
+        set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-breakpad-exception_handler
+            srclibs-breakpad-crash_generation_client srclibs-breakpad-common)
+
+    elseif (LINUX)
+        add_library(srclibs-breakpad EXCLUDE_FROM_ALL ${BREAKPAD_LIST})
+        set_target_properties(srclibs-breakpad PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+        set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-breakpad)
+
+        add_executable(crash_server src/engine/crash_server/crash_server_linux.cpp)
+        target_link_libraries(crash_server srclibs-breakpad)
+    endif()
 endif()
 
 if (BUILD_CLIENT)

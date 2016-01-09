@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Daemon BSD Source Code
-Copyright (c) 2013-2014, Daemon Developers
+Copyright (c) 2013-2016, Daemon Developers
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -269,6 +269,11 @@ bool trap_GetNews( bool force )
 	bool res;
 	VM::SendMsg<GetNewsMsg>(force, res);
 	return res;
+}
+
+void trap_CrashDump(const uint8_t* data, size_t size)
+{
+	VM::SendMsg<CrashDumpMsg>(std::vector<uint8_t>{data, data + size});
 }
 
 // All Sounds

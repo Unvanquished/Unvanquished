@@ -292,6 +292,12 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define HUMAN_BACK_MODIFIER           0.8f
 #define HUMAN_SIDE_MODIFIER           0.9f
 #define HUMAN_LAND_FRICTION           3.0f
+#define HUMAN_DODGE_COOLDOWN          1500
+#define HUMAN_DODGE_SIDE_MULTIPLIER   2.0f
+#define HUMAN_DODGE_SLOW_MULTIPLIER   0.5f
+#define HUMAN_DODGE_VERTICAL_MULTIPLIER 0.5f
+#define HUMAN_SLIDE_FRICTION_MODIFIER 0.05f
+#define HUMAN_SLIDE_THRESHOLD         400.0f
 
 #define STAMINA_MAX                   30000
 #define STAMINA_MEDISTAT_RESTORE      450  // 1/(100 ms). stacks.

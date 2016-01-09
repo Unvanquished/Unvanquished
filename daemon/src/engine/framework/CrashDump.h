@@ -28,34 +28,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#ifndef FRAMEWORK_COMMAND_BUFFER_HOST_H_
-#define FRAMEWORK_COMMAND_BUFFER_HOST_H_
+#ifndef FRAMEWORK_CRASHDUMP_H_
+#define FRAMEWORK_CRASHDUMP_H_
 
-#include "common/IPC/CommandBuffer.h"
-#include "common/Serialize.h"
+#include "common/Util.h"
 
-namespace IPC {
+namespace Sys {
+    // Ensure existence of the subdirectory of homepath used for crash dumps. Return true if successful
+    bool CreateCrashDumpPath();
 
-    class CommandBufferHost {
-        public:
-            CommandBufferHost(std::string name);
+    // Launch the Breakpad server, if enabled in CMake and cvars.
+    void BreakpadInit();
 
-            void Syscall(int index, Util::Reader& reader, IPC::Channel& channel);
-            void Close();
-
-        private:
-            std::string name;
-            Log::Logger logs;
-            IPC::CommandBuffer buffer;
-            IPC::SharedMemory shm;
-
-            virtual void HandleCommandBufferSyscall(int major, int minor, Util::Reader& reader) = 0;
-
-            void Init(IPC::SharedMemory mem);
-
-            void Consume();
-            bool ConsumeOne(Util::Reader& reader);
-    };
+    // Write a crash dump that came from an NaCl VM.
+    void NaclCrashDump(const std::vector<uint8_t>& dump, Str::StringRef vmName);
 }
 
-#endif // FRAMEWORK_COMMAND_BUFFER_HOST_H_
+#endif // FRAMEWORK_CRASHDUMP_H_

@@ -8,7 +8,7 @@
 
 | Windows | OSX | Linux |
 |---------|-----|-------|
-| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/osx-ci.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
+| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
 
 This repository contains the gamelogic of the game Unvanquished.
 You need to download the game's assets in addition to that to make it run.
@@ -146,5 +146,5 @@ Run `daemon.exe -pakpath PATH`, where `PATH` is the path to the `pkg` directory 
 
 ####If you don't have the assets
 
-  1. Copy the `pkg` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](http://sourceforge.net/projects/unvanquished/files/Universal_Zip/)) into your build directory.
+  1. Copy the `pkg` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](https://github.com/Unvanquished/Unvanquished/releases)) into your build directory.
   2. Run `daemon.exe`.

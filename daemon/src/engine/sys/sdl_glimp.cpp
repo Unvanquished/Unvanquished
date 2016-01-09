@@ -1255,6 +1255,8 @@ bool GLimp_Init()
 	r_allowResize = ri.Cvar_Get( "r_allowResize", "0", 0 );
 	r_centerWindow = ri.Cvar_Get( "r_centerWindow", "0", 0 );
 	r_displayIndex = ri.Cvar_Get( "r_displayIndex", "0", 0 );
+	ri.Cvar_Get( "r_availableModes", "", CVAR_ROM );
+
 	ri.Cmd_AddCommand( "minimize", GLimp_Minimize );
 
 	if ( ri.Cvar_VariableIntegerValue( "com_abnormalExit" ) )
@@ -1456,8 +1458,6 @@ success:
 
 	// initialize extensions
 	GLimp_InitExtensions();
-
-	ri.Cvar_Get( "r_availableModes", "", CVAR_ROM );
 
 	// This depends on SDL_INIT_VIDEO, hence having it here
 	ri.IN_Init( window );
