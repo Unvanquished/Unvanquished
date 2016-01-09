@@ -1012,6 +1012,8 @@ void G_ShutdownGame( int restart )
 	G_ShutdownMapRotations();
 	BG_UnloadAllConfigs();
 
+	Unv::SGame::Lua::Shutdown();
+
 	level.restarted = false;
 	level.surrenderTeam = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "" );
