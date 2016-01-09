@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "backend/CBSEBackend.h"
 #include "lua/Interpreter.h"
+#include <shared/lua/Timer.h>
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -2975,6 +2976,8 @@ void G_RunFrame( int levelTime )
 
 	// save position information for all active clients
 	G_UnlaggedStore();
+
+	Unv::Shared::Lua::Timer::Update( levelTime );
 
 	G_CountSpawns();
 	G_SetHumanBuildablePowerState();

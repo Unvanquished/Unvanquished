@@ -33,23 +33,13 @@ Maryland 20850 USA.
 */
 
 #include "Timer.h"
-#include "../../cg_local.h"
+#include "LuaLib.h"
 
-namespace Rocket {
-namespace Core {
+namespace Unv {
+namespace Shared {
 namespace Lua {
 
 Timer timer;
-
-template<> void ExtraInit<Lua::Timer>(lua_State* L, int metatable_index)
-{
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
-
-	lua_pushcfunction(L, Timeradd);
-	lua_setfield(L, method_index, "add");
-}
 
 void Timer::Add( int delayMs, int callbackRef, lua_State* L )
 {
@@ -94,6 +84,16 @@ int Timeradd( lua_State* L )
 	return 0;
 }
 
+template<>
+void ExtraInit<Lua::Timer>(lua_State* L, int metatable_index)
+{
+	//due to they way that LuaType::Register is made, we know that the method table is at the index
+	//directly below the metatable
+	int method_index = metatable_index - 1;
+
+	lua_pushcfunction(L, Timeradd);
+	lua_setfield(L, method_index, "add");
+}
 
 RegType<Timer> TimerMethods[] =
 {
@@ -109,7 +109,7 @@ luaL_Reg TimerSetters[] =
 {
 	{ nullptr, nullptr },
 };
-LUACORETYPEDEFINE(Timer,false)
-}
-}
-}
+LUACORETYPEDEFINE(Timer, false)
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv

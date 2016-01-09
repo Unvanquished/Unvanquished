@@ -32,15 +32,14 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUATIMER_H
-#define LUATIMER_H
-#include "../rocket.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Core/Lua/lua.hpp>
-#include <Rocket/Core/Lua/LuaType.h>
+#ifndef LUATIMER_H_
+#define LUATIMER_H_
 
-namespace Rocket {
-namespace Core {
+#include "../bg_lua.h"
+#include "../bg_public.h"
+
+namespace Unv {
+namespace Shared {
 namespace Lua {
 class Timer
 {
@@ -59,13 +58,8 @@ private:
 	int lastTime;
 	std::list<TimerEvent> events;
 };
-template<> void ExtraInit<Timer>(lua_State* L, int metatable_index);
-int Timeradd(lua_State* L);
 
-extern RegType<Timer> TimerMethods[];
-extern luaL_Reg TimerGetters[];
-extern luaL_Reg TimerSetters[];
-}
-}
-}
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv
 #endif
