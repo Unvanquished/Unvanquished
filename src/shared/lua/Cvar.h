@@ -31,31 +31,22 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
+#ifndef LUACVAR_H_
+#define LUACVAR_H_
 
-#ifndef LUACMD_H
-#define LUACMD_H
+#include "../bg_lua.h"
+#include "../bg_public.h"
 
-#include "../rocket.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Core/Lua/lua.hpp>
-#include <Rocket/Core/Lua/LuaType.h>
-
-namespace Rocket {
-namespace Core {
+namespace Unv {
+namespace Shared {
 namespace Lua {
-// Dummy class for Cmds
-class Cmd
+// Dummy class for cvars
+class Cvar
 {
 
 };
 
-template<> void ExtraInit<Cmd>(lua_State* L, int metatable_index);
-int Cmdexec(lua_State* L);
-
-extern RegType<Cmd> CmdMethods[];
-extern luaL_Reg CmdGetters[];
-extern luaL_Reg CmdSetters[];
-}
-}
-}
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv
 #endif

@@ -93,6 +93,12 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/lua/Classes.cpp
     ${GAMELOGIC_DIR}/shared/lua/Upgrades.h
     ${GAMELOGIC_DIR}/shared/lua/Upgrades.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Timer.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Timer.h
+    ${GAMELOGIC_DIR}/shared/lua/Cmd.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Cmd.h
+    ${GAMELOGIC_DIR}/shared/lua/Cvar.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Cvar.h
 )
 
 set(CGAMELIST
@@ -173,14 +179,8 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_keys.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.h
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Cmd.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Cmd.h
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Cvar.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Cvar.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.h
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.cpp
 

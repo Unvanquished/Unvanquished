@@ -32,41 +32,51 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUATIMER_H
-#define LUATIMER_H
+#include "Cmd.h"
+#include "LuaLib.h"
 
-#include "../rocket.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Core/Lua/lua.hpp>
-#include <Rocket/Core/Lua/LuaType.h>
+void trap_SendConsoleCommand(const char* text);
 
-namespace Rocket {
-namespace Core {
+
+namespace Unv {
+namespace Shared {
 namespace Lua {
-class Timer
+
+int Cmdexec(lua_State* L)
 {
-public:
-	void Add(int delayMs, int callbackRef, lua_State* L);
-	void RunUpdate( int time );
-	static void Update(int time);
+	const char *cmd = luaL_checkstring(L, 1);
+	trap_SendConsoleCommand(cmd);
+	return 0;
+}
 
-private:
-	struct TimerEvent
-	{
-		int delayMs;
-		int callbackRef;
-		lua_State* L;
-	};
-	int lastTime;
-	std::list<TimerEvent> events;
+template<>
+void ExtraInit<Lua::Cmd>(lua_State* L, int metatable_index)
+{
+	//due to they way that LuaType::Register is made, we know that the method table is at the index
+	//directly below the metatable
+	int method_index = metatable_index - 1;
+
+	lua_pushcfunction(L, Cmdexec);
+	lua_setfield(L, method_index, "exec");
+}
+
+RegType<Cmd> CmdMethods[] =
+{
+	{ NULL, NULL },
 };
-template<> void ExtraInit<Timer>(lua_State* L, int metatable_index);
-int Timeradd(lua_State* L);
 
-extern RegType<Timer> TimerMethods[];
-extern luaL_Reg TimerGetters[];
-extern luaL_Reg TimerSetters[];
-}
-}
-}
-#endif
+luaL_Reg CmdGetters[] =
+{
+	{ NULL, NULL },
+};
+
+luaL_Reg CmdSetters[] =
+{
+	{ NULL, NULL },
+};
+
+LUACORETYPEDEFINE(Cmd, false)
+
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv

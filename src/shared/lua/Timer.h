@@ -32,84 +32,34 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "Timer.h"
-#include "../../cg_local.h"
+#ifndef LUATIMER_H_
+#define LUATIMER_H_
 
-namespace Rocket {
-namespace Core {
+#include "../bg_lua.h"
+#include "../bg_public.h"
+
+namespace Unv {
+namespace Shared {
 namespace Lua {
-
-Timer timer;
-
-template<> void ExtraInit<Lua::Timer>(lua_State* L, int metatable_index)
+class Timer
 {
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
+public:
+	void Add(int delayMs, int callbackRef, lua_State* L);
+	void RunUpdate( int time );
+	static void Update(int time);
 
-	lua_pushcfunction(L, Timeradd);
-	lua_setfield(L, method_index, "add");
-}
-
-void Timer::Add( int delayMs, int callbackRef, lua_State* L )
-{
-	events.push_back({delayMs, callbackRef, L});
-}
-
-void Timer::RunUpdate(int time)
-{
-	int dtMs = time - lastTime;
-	lastTime = time;
-
-	auto it = events.begin();
-	while (it != events.end())
+private:
+	struct TimerEvent
 	{
-		it->delayMs -= dtMs;
-		if (it->delayMs <= 0)
-		{
-			lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-			luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-			if (lua_pcall(it->L, 0, 0, 0) != 0)
-				::Log::Warn( "Could not run lua timer callback: %s",
-							lua_tostring(it->L, -1));
-			it = events.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
-}
-
-void Timer::Update( int time )
-{
-	timer.RunUpdate(time);
-}
-
-int Timeradd( lua_State* L )
-{
-	int delayMs = luaL_checkinteger(L, 1);
-	int ref = luaL_ref(L, LUA_REGISTRYINDEX);
-	timer.Add(delayMs, ref, L);
-	return 0;
-}
-
-
-RegType<Timer> TimerMethods[] =
-{
-	{ nullptr, nullptr },
+		int delayMs;
+		int callbackRef;
+		lua_State* L;
+	};
+	int lastTime;
+	std::list<TimerEvent> events;
 };
 
-luaL_Reg TimerGetters[] =
-{
-	{ nullptr, nullptr },
-};
-
-luaL_Reg TimerSetters[] =
-{
-	{ nullptr, nullptr },
-};
-LUACORETYPEDEFINE(Timer,false)
-}
-}
-}
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv
+#endif

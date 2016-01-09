@@ -38,6 +38,9 @@ Maryland 20850 USA.
 #include "lua/Buildables.h"
 #include "lua/Classes.h"
 #include "lua/Upgrades.h"
+#include "lua/Cvar.h"
+#include "lua/Cmd.h"
+#include "lua/Timer.h"
 #include <common/Log.h>
 
 
@@ -111,6 +114,10 @@ void BG_InitializeLuaConstants( lua_State* L )
 	LuaLib< ClassProxy >::Register( L );
 	LuaLib< Upgrades >::Register( L );
 	LuaLib< UpgradeProxy >::Register( L );
+	// Have to qualify these two
+	LuaLib< Unv::Shared::Lua::Cmd >::Register( L );
+	LuaLib< Unv::Shared::Lua::Cvar >::Register( L );
+	LuaLib< Timer >::Register( L );
 	LuaLib< UnvGlobal>::push( L, &global, false );
 	lua_setglobal( L, "unv" );
 }
