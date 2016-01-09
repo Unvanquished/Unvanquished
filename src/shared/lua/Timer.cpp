@@ -32,39 +32,92 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include <list>
+
 #include "common/Common.h"
 #include "register_lua_extensions.h"
 
-static int Cvar_get(lua_State* L)
+namespace Unv
 {
-	const char *cvar = luaL_checkstring(L, 1);
-	lua_pushstring(L, Cvar::GetValue(cvar).c_str());
-	return 1;
-}
+namespace Shared
+{
+namespace Lua
+{
 
-static int Cvar_set(lua_State* L)
+namespace
 {
-	const char *cvar = luaL_checkstring(L, 1);
-	const char *value = luaL_checkstring(L, 2);
-	Cvar::SetValue(cvar, value);
+class Timer
+{
+   public:
+	void Add( int delayMs, int callbackRef, lua_State* L )
+	{
+		events.push_back( { delayMs, callbackRef, L } );
+	}
+
+	void RunUpdate( int time )
+	{
+		int dtMs = time - lastTime;
+		lastTime = time;
+
+		auto it = events.begin();
+		while ( it != events.end() )
+		{
+			it->delayMs -= dtMs;
+			if ( it->delayMs <= 0 )
+			{
+				lua_rawgeti( it->L, LUA_REGISTRYINDEX, it->callbackRef );
+				luaL_unref( it->L, LUA_REGISTRYINDEX, it->callbackRef );
+				if ( lua_pcall( it->L, 0, 0, 0 ) != 0 )
+					Log::Warn( "Could not run lua timer callback: %s", lua_tostring( it->L, -1 ) );
+				it = events.erase( it );
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+
+   private:
+	struct TimerEvent
+	{
+		int delayMs;
+		int callbackRef;
+		lua_State* L;
+	};
+
+	int lastTime;
+	std::list<TimerEvent> events;
+};
+
+static Timer timer;
+
+int Timer_add( lua_State* L )
+{
+	int delayMs = luaL_checkinteger( L, 1 );
+	int ref = luaL_ref( L, LUA_REGISTRYINDEX );
+	timer.Add( delayMs, ref, L );
 	return 0;
 }
 
-static int Cvar_archive(lua_State* L)
+
+}  // namespace
+
+
+
+void RegisterTimer( lua_State* L )
 {
-	const char *cvar  = luaL_checkstring(L, 1);
-	Cvar::AddFlags(cvar, Cvar::USER_ARCHIVE);
-	return 0;
+	lua_newtable( L );
+	lua_pushcfunction( L, Timer_add );
+	lua_setfield( L, -2, "add" );
+	lua_setglobal( L, "Timer" );
 }
 
-void CG_Rocket_RegisterLuaCvar(lua_State* L)
+void UpdateTimers( int time )
 {
-	lua_newtable(L);
-	lua_pushcfunction(L, Cvar_get);
-	lua_setfield(L, -2, "get");
-	lua_pushcfunction(L, Cvar_set);
-	lua_setfield(L, -2, "set");
-	lua_pushcfunction(L, Cvar_archive);
-	lua_setfield(L, -2, "archive");
-	lua_setglobal(L, "Cvar");
+	timer.RunUpdate( time );
 }
+
+}  // namespace Lua
+}  // namespace Shared
+}  // namespace Unv

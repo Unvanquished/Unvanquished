@@ -32,15 +32,24 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "cgame/cg_local.h"
 #include "cgame/rocket/rocket.h"
+#include "shared/bg_lua.h"
+
 #include <RmlUi/Core.h>
 #include <RmlUi/Core/Elements/DataSource.h>
+
 #include "register_lua_extensions.h"
-#include "cgame/cg_local.h"
+
+namespace Unv {
+namespace CGame {
+namespace Lua {
+
+namespace {
 
 // Lua function to request the datasource be (re)built, e.g.
 // CDataSource.Build('beaconList', 'default')
-static int CDataSource_Build(lua_State* L)
+int CDataSource_Build(lua_State* L)
 {
 	const char* sourceName = luaL_checkstring(L, 1);
 	const char* table = luaL_checkstring(L, 2);
@@ -51,7 +60,7 @@ static int CDataSource_Build(lua_State* L)
 // Lua function to read selected columns of a data source, e.g.
 // CDataSource.Read('beaconList', 'default', 'name,desc')
 // -> [["Pointer", "Attract teammates' attention to a very specific point."], ["Attack", "Tell your team to attack a specific place."], ...]
-static int CDataSource_Read(lua_State* L)
+int CDataSource_Read(lua_State* L)
 {
 	const char* sourceName = luaL_checkstring(L, 1);
 	const char* table = luaL_checkstring(L, 2);
@@ -79,7 +88,9 @@ static int CDataSource_Read(lua_State* L)
 	return 1;
 }
 
-void CG_Rocket_RegisterLuaCDataSource(lua_State* L)
+}  // namespace
+
+void RegisterCDataSource(lua_State* L)
 {
 	lua_newtable(L);
 	lua_pushcfunction(L, CDataSource_Build);
@@ -88,3 +99,7 @@ void CG_Rocket_RegisterLuaCDataSource(lua_State* L)
 	lua_setfield(L, -2, "Read");
 	lua_setglobal(L, "CDataSource");
 }
+
+}  // namespace Lua
+}  // namespace CGame
+}  // namespace Unv

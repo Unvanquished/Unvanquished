@@ -38,7 +38,8 @@ Maryland 20850 USA.
 #include "lua/Buildables.h"
 #include "lua/Classes.h"
 #include "lua/Upgrades.h"
-#include <common/Log.h>
+#include "lua/register_lua_extensions.h"
+#include "common/Log.h"
 
 
 namespace Unv {
@@ -101,7 +102,13 @@ LUACORETYPEDEFINE(UnvGlobal, false)
 
 void BG_InitializeLuaConstants( lua_State* L )
 {
+
 	using namespace Unv::Shared::Lua;
+
+	RegisterCmd( L );
+	RegisterCvar( L );
+	RegisterTimer( L );
+
 	LuaLib< UnvGlobal >::Register( L );
 	LuaLib< Weapons >::Register( L );
 	LuaLib< WeaponProxy >::Register( L );

@@ -32,66 +32,33 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "shared/bg_lua.h"
-#include "cgame/rocket/rocket.h"
 #include "register_lua_extensions.h"
 
-#include <RmlUi/Lua.h>
-
+void trap_SendConsoleCommand(const char *text);
 
 namespace Unv {
-namespace CGame {
+namespace Shared {
 namespace Lua {
 
 namespace {
 
-int Events_pushcmd(lua_State* L)
+int Cmd_exec(lua_State* L)
 {
-	Rml::StringList list;
-	const char *cmds = luaL_checkstring(L, 1);
-
-	Rml::StringUtilities::ExpandString( list, cmds, ';' );
-	for ( size_t i = 0; i < list.size(); ++i )
-	{
-		Rocket_AddEvent( new RocketEvent_t( list[ i ] ) );
-	}
-
-	return 0;
-}
-
-int Events_pushevent(lua_State* L)
-{
-	Rml::StringList list;
-	const char *cmds = luaL_checkstring(L, 1);
-	Rml::Event *event = ::Rml::Lua::LuaType<Rml::Event>::check(L, 2);
-
-	if (event == nullptr)
-	{
-		Log::Warn("pushevent: invalid event argument");
-		return 0;
-	}
-
-	Rml::StringUtilities::ExpandString( list, cmds, ';' );
-	for ( size_t i = 0; i < list.size(); ++i )
-	{
-		Rocket_AddEvent( new RocketEvent_t( *event, list[ i ] ) );
-	}
-
+	const char *cmd = luaL_checkstring(L, 1);
+	trap_SendConsoleCommand(cmd);
 	return 0;
 }
 
 }  // namespace
 
-void RegisterEvents(lua_State* L)
+void RegisterCmd(lua_State* L)
 {
 	lua_newtable(L);
-	lua_pushcfunction(L, Events_pushcmd);
-	lua_setfield(L, -2, "pushcmd");
-	lua_pushcfunction(L, Events_pushevent);
-	lua_setfield(L, -2, "pushevent");
-	lua_setglobal(L, "Events");
+	lua_pushcfunction(L, Cmd_exec);
+	lua_setfield(L, -2, "exec");
+	lua_setglobal(L, "Cmd");
 }
 
 }  // namespace Lua
-}  // namespace CGame
+}  // namespace Shared
 }  // namespace Unv

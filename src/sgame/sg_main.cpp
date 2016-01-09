@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib/bot_api.h"
 #include "common/FileSystem.h"
 #include "lua/Interpreter.h"
+#include "shared/lua/register_lua_extensions.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -2341,6 +2342,9 @@ void G_RunFrame( int levelTime )
 	G_SpawnClients( TEAM_HUMANS );
 	G_UpdateZaps( msec );
 	Beacon::Frame( );
+
+	// Run Lua timers, if any...
+	Unv::Shared::Lua::UpdateTimers( levelTime );
 
 	G_PrepareEntityNetCode();
 
