@@ -55,7 +55,7 @@ int rocket_pairsaux(lua_State* L)
 	return lua_gettop(L);
 }
 
-// A version of paris that respects a __pairs metamethod.
+// A version of pairs that respects a __pairs metamethod.
 // "next" function is upvalue 1
 int rocket_pairs(lua_State* L)
 {
