@@ -157,6 +157,8 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/CvarSystem.h
     ${ENGINE_DIR}/framework/LogSystem.cpp
     ${ENGINE_DIR}/framework/LogSystem.h
+    ${ENGINE_DIR}/framework/Profiler.cpp
+    ${ENGINE_DIR}/framework/Profiler.h
     ${ENGINE_DIR}/framework/Resource.cpp
     ${ENGINE_DIR}/framework/Resource.h
     ${ENGINE_DIR}/framework/System.cpp
