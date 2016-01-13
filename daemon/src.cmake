@@ -198,7 +198,6 @@ set(QCOMMONLIST
     ${ENGINE_DIR}/sys/con_log.cpp
     ${ENGINE_DIR}/sys/con_common.h
     ${ENGINE_DIR}/sys/con_common.cpp
-    ${ENGINE_DIR}/sys/sdl_compat.cpp
 )
 
 if (NOT APPLE)

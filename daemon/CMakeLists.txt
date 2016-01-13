@@ -522,12 +522,12 @@ if (BUILD_CLIENT OR BUILD_TTY_CLIENT)
     set(LIBS_CLIENTBASE ${LIBS_CLIENTBASE} srclibs-mumblelink)
 endif()
 
-# SDL, required for all targets on win32 because of iconv
-if (BUILD_CLIENT OR (WIN32 AND (BUILD_TTY_CLIENT OR BUILD_SERVER)))
+# SDL, required for all targets on win32 because of iconv and SDL_SetHint(SDL_TIMER_RESOLUTION, 0)
+if (BUILD_CLIENT OR WIN32)
     find_package(SDL2 REQUIRED)
     include_directories(${SDL2_INCLUDE_DIR})
     if (WIN32)
-        set(LIBS_ENGINE ${LIBS_ENGINE} ${SDL2_LIBRARY})
+        set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} ${SDL2_LIBRARY})
     else()
         set(LIBS_CLIENT ${LIBS_CLIENT} ${SDL2_LIBRARY})
     endif()
@@ -653,7 +653,10 @@ function(AddApplication)
     set(multiValueArgs Definitions Flags Files Libs)
     cmake_parse_arguments(A "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    add_executable(${A_Target} ${A_Files} ${PCH_FILE})
+    # HACK: Because of the linking rules on Windows, linking SDLCompat in engine-lib is not
+    # enough for SDLMain to see __iob_func so we add SDLCompat to the executable source
+    # list directly.
+    add_executable(${A_Target} ${A_Files} ${ENGINE_DIR}/framework/SDLCompat.cpp ${PCH_FILE})
     target_link_libraries(${A_Target} engine-lib ${A_Libs})
 
     set_property(TARGET ${A_Target} APPEND PROPERTY COMPILE_OPTIONS ${A_Flags})
