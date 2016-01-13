@@ -641,30 +641,70 @@ void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).CString(), length );
 }
 
-static bool cursor = true;
-
-void ShowCursor(bool show)
+class EngineCursor
 {
-	cursor = show;
-	if ( trap_GetFocus() )
-	{
-		menuContext->ShowMouseCursor( cursor );
-		trap_SetMouseMode( cursor ? MouseMode::CustomCursor : MouseMode::Deltas );
-	}
-}
+public:
+    void Show(bool show)
+    {
+        if ( show != show_cursor )
+        {
+            show_cursor = show;
+            Update();
+        }
+    }
+
+    void SetFocus(bool focus)
+    {
+        this->focus = focus;
+        Update();
+    }
+
+private:
+    void Update()
+    {
+        if ( menuContext )
+        {
+            menuContext->ShowMouseCursor( show_cursor && focus );
+        }
+
+        MouseMode mode;
+
+        if ( !focus )
+        {
+            mode = MouseMode::SystemCursor;
+        }
+        else if ( show_cursor )
+        {
+            mode = MouseMode::CustomCursor;
+        }
+        else
+        {
+            mode = MouseMode::Deltas;
+        }
+
+        trap_SetMouseMode( mode );
+
+    }
+
+    bool show_cursor = true;
+    bool focus = true;
+};
+
+static EngineCursor engineCursor;
+
 
 void Rocket_SetActiveContext( int catcher )
 {
 	switch ( catcher )
 	{
 		case KEYCATCH_UI:
-			ShowCursor( true );
+			engineCursor.Show( true );
 			break;
 
 		default:
 			if ( !( catcher & KEYCATCH_CONSOLE ) )
 			{
-				ShowCursor( false );
+				engineCursor.Show( false );
 			}
 
 			break;
@@ -673,15 +713,7 @@ void Rocket_SetActiveContext( int catcher )
 
 void CG_FocusEvent( bool has_focus )
 {
-	if ( has_focus )
-	{
-		ShowCursor(cursor);
-	}
-	else
-	{
-		menuContext->ShowMouseCursor( false );
-		trap_SetMouseMode( MouseMode::SystemCursor );
-	}
+    engineCursor.SetFocus( has_focus );
 }
 
 void Rocket_LoadFont( const char *font )
@@ -691,8 +723,5 @@ void Rocket_LoadFont( const char *font )
 
 void Rocket_HideMouse()
 {
-	if ( menuContext )
-	{
-		menuContext->ShowMouseCursor( false );
-	}
+	engineCursor.Show( false );
 }
