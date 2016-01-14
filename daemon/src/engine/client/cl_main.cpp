@@ -2054,7 +2054,7 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend()
 {
-    Profiler::Profile p("CL_CheckForResend");
+    PROFILE()
 	int  port;
 	char info[ MAX_INFO_STRING ];
 	char data[ MAX_INFO_STRING ];
@@ -2817,7 +2817,7 @@ CL_CheckTimeout
 */
 void CL_CheckTimeout()
 {
-    Profiler::Profile p("CL_CheckTimeout");
+    PROFILE()
 	//
 	// check timeout
 	//
@@ -2848,7 +2848,7 @@ CL_CheckUserinfo
 */
 void CL_CheckUserinfo()
 {
-    Profiler::Profile p("CL_CheckUserinfo");
+    PROFILE()
 	// don't add reliable commands when not yet connected
 	if ( cls.state < CA_CHALLENGING )
 	{
@@ -2999,7 +2999,7 @@ CL_Frame
 */
 void CL_Frame( int msec )
 {
-    Profiler::Profile p("CL_Frame");
+    PROFILE()
 
 	if ( !com_cl_running->integer )
 	{

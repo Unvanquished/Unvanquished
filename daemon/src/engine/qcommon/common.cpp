@@ -1072,7 +1072,7 @@ extern bool consoleButtonWasPressed;
 
 int Com_EventLoop()
 {
-    Profiler::Profile p("Com_EventLoop");
+    PROFILE()
 	sysEvent_t ev;
 	netadr_t   evFrom;
 	byte       bufData[ MAX_MSGLEN ];
@@ -1481,7 +1481,7 @@ Writes key bindings and archived cvars to config file if modified
 */
 void Com_WriteConfiguration()
 {
-    Profiler::Profile p("Com_WriteConfiguration");
+    PROFILE()
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything
 	if ( !com_fullyInitialized )

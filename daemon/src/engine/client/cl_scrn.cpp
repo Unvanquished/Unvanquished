@@ -270,7 +270,7 @@ SCR_DrawScreenField
 */
 void SCR_DrawScreenField()
 {
-    Profiler::Profile p("SCR_DrawScreenField");
+    PROFILE()
 	re.BeginFrame();
 
 	// wide aspect ratio screens need to have the sides cleared
@@ -342,7 +342,7 @@ text to the screen.
 */
 void SCR_UpdateScreen()
 {
-    Profiler::Profile p("SCR_UpdateScreen");
+    PROFILE()
 	static int recursive = 0;
 
 	if ( !scr_initialized )

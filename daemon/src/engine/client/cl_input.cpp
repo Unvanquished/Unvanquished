@@ -1034,7 +1034,7 @@ Called every frame to builds and sends a command packet to the server.
 */
 void CL_SendCmd()
 {
-    Profiler::Profile p("CL_SendCmd");
+    PROFILE()
 	// don't send any message if not connected
 	if ( cls.state < CA_CONNECTED )
 	{

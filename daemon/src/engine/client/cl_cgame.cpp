@@ -735,7 +735,7 @@ CL_CGameRendering
 */
 void CL_CGameRendering()
 {
-    Profiler::Profile p("CL_CGameRendering");
+    PROFILE()
 	cgvm.CGameDrawActiveFrame(cl.serverTime, clc.demoplaying);
 }
 
@@ -889,7 +889,7 @@ CL_SetCGameTime
 */
 void CL_SetCGameTime()
 {
-    Profiler::Profile p("CL_SetCGameTime");
+    PROFILE()
 	// getting a valid frame message ends the connection process
 	if ( cls.state != CA_ACTIVE )
 	{
@@ -1138,7 +1138,7 @@ void CGameVM::CGameRocketInit()
 
 void CGameVM::CGameRocketFrame()
 {
-    Profiler::Profile p("CGameVM::CGameRocketFrame");
+    PROFILE()
 	cgClientState_t state;
 	state.connectPacketCount = clc.connectPacketCount;
 	state.connState = cls.state;

@@ -41,4 +41,6 @@ namespace Profiler{
 
 }
 
+#define PROFILE() Profiler::Profile Profile_Function(__PRETTY_FUNCTION__);
+
 #endif //COMMON_PROFILER_H_

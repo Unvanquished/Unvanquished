@@ -183,7 +183,7 @@ namespace Audio {
     }
 
     void Update() {
-        Profiler::Profile p("Audio::Update");
+        PROFILE()
         if (not initialized) {
             return;
         }
