@@ -40,13 +40,13 @@ std::string label;
 std::chrono::high_resolution_clock::time_point start;
 
 
-long long time_elapsed(std::chrono::high_resolution_clock::time_point since){
+std::chrono::microseconds::rep TimeElapsed(std::chrono::high_resolution_clock::time_point since){
     auto tmp=std::chrono::high_resolution_clock::now() - since;
 
     return std::chrono::duration_cast<std::chrono::microseconds>(tmp).count();
 }
 
-void update(){
+void Update(){
 
     times.push_back(Point(FRAME));
 
@@ -54,7 +54,7 @@ void update(){
 }
 
 
-void print_raw(){
+void PrintRaw(){
     for (auto& i : times) {
         std::string type;
 
@@ -76,10 +76,10 @@ void print_raw(){
     times.clear();
 }
 
-void show(){
+void Show(){
 
-    unsigned padding=0;
-    std::map <unsigned, long long> levels;
+    uint padding=0;
+    std::map <uint, std::chrono::microseconds::rep> levels;
 
     for (auto& i : times) {
 
@@ -111,12 +111,11 @@ void show(){
 
 Profile::Profile(std::string label_){
     label=label_;
-    times.push_back(Point(START,label,time_elapsed(start)));
+    times.push_back(Point(START,label,TimeElapsed(start)));
 }
 
 Profile::~Profile(){
-
-    times.push_back(Point(END,label,time_elapsed(start)));
+    times.push_back(Point(END,label,TimeElapsed(start)));
 }
 
 

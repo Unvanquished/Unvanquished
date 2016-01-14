@@ -10,24 +10,24 @@ namespace Profiler{
 
         public:
             std::string label;
-            long long time;
+            std::chrono::microseconds::rep time;
             char type;
 
-            Point(char type,std::string label="", long long time=0): label(label), time(time), type(type){   }
+            Point(char type,std::string label="", std::chrono::microseconds::rep time=0): label(label), time(time), type(type){   }
         };
 
 
 
 
 
-        long long time_elapsed(std::chrono::high_resolution_clock::time_point since);
+        std::chrono::microseconds::rep TimeElapsed(std::chrono::high_resolution_clock::time_point since);
 
-        void update();
+        void Update();
 
 
-        void print_raw();
+        void PrintRaw();
 
-        void show();
+        void Show();
 
 
 
