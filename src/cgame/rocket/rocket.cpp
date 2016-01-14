@@ -649,7 +649,10 @@ public:
         if ( show != show_cursor )
         {
             show_cursor = show;
-            Update();
+            if ( focus )
+            {
+                Update();
+            }
         }
     }
 
@@ -719,9 +722,4 @@ void CG_FocusEvent( bool has_focus )
 void Rocket_LoadFont( const char *font )
 {
 	Rocket::Core::FontDatabase::LoadFontFace( font );
-}
-
-void Rocket_HideMouse()
-{
-	engineCursor.Show( false );
 }
