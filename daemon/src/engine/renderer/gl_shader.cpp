@@ -449,8 +449,8 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	AddDefine( env, "M_PI", static_cast<float>( M_PI ) );
 	AddDefine( env, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 
-	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
-	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
+	float fbufWidthScale = 1.0f / glConfig.vidWidth;
+	float fbufHeightScale = 1.0f / glConfig.vidHeight;
 
 	AddDefine( env, "r_FBufScale", fbufWidthScale, fbufHeightScale );
 
