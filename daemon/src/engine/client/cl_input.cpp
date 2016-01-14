@@ -36,7 +36,7 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "framework/CommandSystem.h"
-#include "framework/Profiler.h"
+#include "../common/Profiler.h"
 
 unsigned frame_msec;
 int      old_com_frameTime;

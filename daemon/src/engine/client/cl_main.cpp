@@ -39,7 +39,7 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
-#include "framework/Profiler.h"
+#include "../common/Profiler.h"
 
 #include "botlib/bot_debug.h"
 

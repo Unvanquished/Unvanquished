@@ -21,6 +21,8 @@ set(COMMONLIST
     ${COMMON_DIR}/Endian.h
     ${COMMON_DIR}/FileSystem.cpp
     ${COMMON_DIR}/FileSystem.h
+    ${COMMON_DIR}/Profiler.cpp
+    ${COMMON_DIR}/Profiler.h
     ${COMMON_DIR}/IPC/Channel.h
     ${COMMON_DIR}/IPC/CommandBuffer.cpp
     ${COMMON_DIR}/IPC/CommandBuffer.h
@@ -157,8 +159,6 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/CvarSystem.h
     ${ENGINE_DIR}/framework/LogSystem.cpp
     ${ENGINE_DIR}/framework/LogSystem.h
-    ${ENGINE_DIR}/framework/Profiler.cpp
-    ${ENGINE_DIR}/framework/Profiler.h
     ${ENGINE_DIR}/framework/Resource.cpp
     ${ENGINE_DIR}/framework/Resource.h
     ${ENGINE_DIR}/framework/System.cpp

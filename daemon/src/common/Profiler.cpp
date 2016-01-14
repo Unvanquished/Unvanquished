@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "Profiler.h"
-#include "LogSystem.h"
+#include "../engine/framework/LogSystem.h"
 
 
 namespace Profiler{

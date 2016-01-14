@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "AudioPrivate.h"
 #include "AudioData.h"
-#include "framework/Profiler.h"
+#include "../common/Profiler.h"
 
 namespace Audio {
 

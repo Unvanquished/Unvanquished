@@ -45,7 +45,7 @@ Maryland 20850 USA.
 #include "framework/CvarSystem.h"
 #include "framework/ConsoleHistory.h"
 #include "framework/LogSystem.h"
-#include "framework/Profiler.h"
+#include "../common/Profiler.h"
 #include "framework/System.h"
 
 // htons

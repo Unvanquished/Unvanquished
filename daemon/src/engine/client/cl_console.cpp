@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "qcommon/q_unicode.h"
 #include "framework/LogSystem.h"
-#include "framework/Profiler.h"
+#include "../common/Profiler.h"
 #include "framework/CommandSystem.h"
 
 static const Color::Color console_color = Color::White;
