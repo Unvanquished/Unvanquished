@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include <common/FileSystem.h>
 #include "AudioPrivate.h"
 #include "AudioData.h"
 

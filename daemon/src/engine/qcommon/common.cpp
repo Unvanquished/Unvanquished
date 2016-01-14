@@ -46,6 +46,7 @@ Maryland 20850 USA.
 #include "framework/ConsoleHistory.h"
 #include "framework/LogSystem.h"
 #include "framework/System.h"
+#include <common/FileSystem.h>
 
 // htons
 #ifdef _WIN32

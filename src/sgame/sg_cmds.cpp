@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
+#include <common/FileSystem.h>
 #include "CBSE.h"
 
 #define CMD_CHEAT        0x0001

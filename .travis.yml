@@ -46,7 +46,7 @@ script:
   - mkdir -p build
   - cd build
   - cmake --version
-  - CXXFLAGS="-D__extern_always_inline=inline" cmake
+  - CXXFLAGS="-D__extern_always_inline=inline" cmake -DUSE_PRECOMPILED_HEADER=0
     -DBUILD_CLIENT=$(($MODE == 0)) -DBUILD_TTY_CLIENT=$(($MODE == 0)) -DBUILD_SERVER=$(($MODE == 0))
     -DBUILD_CGAME=$(($MODE >= 1)) -DBUILD_SGAME=$(($MODE >= 1))
     -DBUILD_GAME_NATIVE_DLL=$(($MODE == 1)) -DBUILD_GAME_NATIVE_EXE=$(($MODE == 1))

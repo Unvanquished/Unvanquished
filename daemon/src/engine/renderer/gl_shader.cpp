@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // gl_shader.cpp -- GLSL shader handling
 
+#include <common/FileSystem.h>
 #include "gl_shader.h"
 
 // We currently write GLShaderHeader to a file and memcpy all over it.
