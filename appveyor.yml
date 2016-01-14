@@ -80,5 +80,5 @@ build_script:
           $env:CC="gcc"
           $env:CXX="g++"
       }
-      cmake -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "${env:GENERATOR}" -DBUILD_GAME_NACL=0 -DCMAKE_BUILD_TYPE=Debug ..
+      cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "${env:GENERATOR}" -DBUILD_GAME_NACL=0 -DCMAKE_BUILD_TYPE=Debug ..
       cmake --build .
