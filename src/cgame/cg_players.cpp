@@ -435,6 +435,9 @@ static bool CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon, cli
 
 	if ( !handle )
 	{
+#ifndef NDEBUG
+		Log::Warn("Missing %s delta for %s.", BG_Weapon( weapon )->name, modelName );
+#endif
 		return false;
 	}
 
@@ -974,9 +977,8 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_RALLY, "rally", false, false, false, iqm ) )
 			{
-				ci->animations[ TORSO_RALLY ] = ci->animations[ LEGS_IDLE ];
+				ci->animations[ TORSO_RALLY ] = ci->animations[ TORSO_GESTURE ];
 			}
-
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK, "attack", false, false, false, iqm ) )
 			{
@@ -985,12 +987,12 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK_BLASTER, "blaster_attack", false, false, false, iqm ) )
 			{
-				ci->animations[ TORSO_ATTACK_BLASTER ] = ci->animations[ LEGS_IDLE ];
+				ci->animations[ TORSO_ATTACK_BLASTER ] = ci->animations[ TORSO_ATTACK ];
 			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK_PSAW, "psaw_attack", false, false, false, iqm ) )
 			{
-				ci->animations[ TORSO_ATTACK_BLASTER ] = ci->animations[ LEGS_IDLE ];
+				ci->animations[ TORSO_ATTACK_PSAW ] = ci->animations[ TORSO_ATTACK ];
 			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND, "stand", true, false, false, iqm ) )
@@ -1000,7 +1002,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND_BLASTER, "stand_blaster", true, false, false, iqm ) )
 			{
-				ci->animations[ TORSO_STAND_BLASTER ] = ci->animations[ LEGS_IDLE ];
+				ci->animations[ TORSO_STAND_BLASTER ] = ci->animations[ TORSO_STAND];
 			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", false, false, false, iqm ) )
@@ -1060,7 +1062,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_LANDB, "land_back", false, false, false, iqm ) )
 			{
-				ci->animations[ LEGS_LANDB ] = ci->animations[ LEGS_IDLE ];
+				ci->animations[ LEGS_LANDB ] = ci->animations[ LEGS_LAND ];
 			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_TURN, "step", true, false, false, iqm ) )
@@ -2179,8 +2181,6 @@ static void CG_PlayerAngles( centity_t *cent, const vec3_t srcAngles,
 {
 	float        dest;
 	static int   movementOffsets[ 8 ] = { 0, 22, 45, -22, 0, 22, -45, -22 };
-	vec3_t       velocity;
-	float        speed;
 	int          dir, clientNum;
 	clientInfo_t *ci;
 
@@ -2269,40 +2269,6 @@ static void CG_PlayerAngles( centity_t *cent, const vec3_t srcAngles,
 	}
 
 	// --------- roll -------------
-
-	// lean towards the direction of travel
-	VectorCopy( cent->currentState.pos.trDelta, velocity );
-	speed = VectorNormalize( velocity );
-
-	if ( speed )
-	{
-		vec3_t axis[ 3 ];
-		float  side;
-
-		speed *= 0.03f;
-
-		AnglesToAxis( legsAngles, axis );
-		side = speed * DotProduct( velocity, axis[ 1 ] );
-		legsAngles[ ROLL ] -= side;
-
-		side = speed * DotProduct( velocity, axis[ 0 ] );
-		legsAngles[ PITCH ] += side;
-	}
-
-	//
-	clientNum = cent->currentState.clientNum;
-
-	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
-	{
-		ci = &cgs.clientinfo[ clientNum ];
-
-		if ( ci->fixedlegs )
-		{
-			legsAngles[ YAW ] = torsoAngles[ YAW ];
-			legsAngles[ PITCH ] = 0.0f;
-			legsAngles[ ROLL ] = 0.0f;
-		}
-	}
 
 	// pain twitch
 	CG_AddPainTwitch( cent, torsoAngles );
@@ -2434,8 +2400,6 @@ Resolve Axis for non-segmented models
 static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSegAxis[ 3 ] )
 {
 	vec3_t        localAngles;
-	vec3_t        velocity;
-	float         speed;
 	int           dir;
 	entityState_t *es = &cent->currentState;
 	vec3_t        surfNormal;
@@ -2509,27 +2473,6 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	//NO PITCH!
 
 	// --------- roll -------------
-
-	// lean towards the direction of travel
-	VectorCopy( cent->currentState.pos.trDelta, velocity );
-	speed = VectorNormalize( velocity );
-
-	if ( speed )
-	{
-		vec3_t axis[ 3 ];
-		float  side;
-
-		//much less than with the regular model system
-		speed *= 0.01f;
-
-		AnglesToAxis( localAngles, axis );
-		side = speed * DotProduct( velocity, axis[ 1 ] );
-		localAngles[ ROLL ] -= side;
-
-		side = speed * DotProduct( velocity, axis[ 0 ] );
-		localAngles[ PITCH ] += side;
-	}
-
 	//FIXME: PAIN[123] animations?
 	// pain twitch
 	//CG_AddPainTwitch( cent, torsoAngles );
