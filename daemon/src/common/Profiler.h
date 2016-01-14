@@ -1,5 +1,5 @@
-#ifndef FRAMEWORK_PROFILER_H_
-#define FRAMEWORK_PROFILER_H_
+#ifndef COMMON_PROFILER_H_
+#define COMMON_PROFILER_H_
 
 
 namespace Profiler{
@@ -41,4 +41,4 @@ namespace Profiler{
 
 }
 
-#endif //FRAMEWORK_PROFILER_H_
+#endif //COMMON_PROFILER_H_
