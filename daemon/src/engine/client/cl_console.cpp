@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "client.h"
 #include "qcommon/q_unicode.h"
 #include "framework/LogSystem.h"
-
+#include "framework/Profiler.h"
 #include "framework/CommandSystem.h"
 
 static const Color::Color console_color = Color::White;
@@ -1102,6 +1102,7 @@ runs each render-frame
 */
 void Con_DrawConsole()
 {
+    Profiler::Profile p("Con_DrawConsole");
 	// render console only if flag is set or is within an animation but also in special disconnected states
 	if ( !consoleState.isOpened && consoleState.currentAnimationFraction <= 0
 		&& !( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) ) )
@@ -1127,6 +1128,7 @@ static std::mutex cl_bufferedLinesLock;
 
 void Con_RunConsole()
 {
+    Profiler::Profile p("Con_RunConsole");
 	//check whether or not the console should be in opened state
 	consoleState.isOpened = cls.keyCatchers & KEYCATCH_CONSOLE;
 

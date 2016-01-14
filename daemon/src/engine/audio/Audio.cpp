@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "AudioPrivate.h"
 #include "AudioData.h"
+#include "framework/Profiler.h"
 
 namespace Audio {
 
@@ -182,6 +183,7 @@ namespace Audio {
     }
 
     void Update() {
+        Profiler::Profile p("Audio::Update");
         if (not initialized) {
             return;
         }

@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "qcommon/q_unicode.h"
+#include "framework/Profiler.h"
 
 bool scr_initialized; // ready to draw
 
@@ -269,6 +270,7 @@ SCR_DrawScreenField
 */
 void SCR_DrawScreenField()
 {
+    Profiler::Profile p("SCR_DrawScreenField");
 	re.BeginFrame();
 
 	// wide aspect ratio screens need to have the sides cleared
@@ -340,6 +342,7 @@ text to the screen.
 */
 void SCR_UpdateScreen()
 {
+    Profiler::Profile p("SCR_UpdateScreen");
 	static int recursive = 0;
 
 	if ( !scr_initialized )
