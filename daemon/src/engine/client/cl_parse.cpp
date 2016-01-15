@@ -771,7 +771,7 @@ void CL_ParseServerMessage( msg_t *msg )
 
 		cmd = MSG_ReadByte( msg );
 
-		if ( cmd == svc_EOF )
+		if ( cmd < 0 || cmd == svc_EOF )
 		{
 			SHOWNET( msg, "END OF MESSAGE" );
 			break;
