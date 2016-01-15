@@ -827,9 +827,4 @@ void CL_GetClipboardData( char *, int );
 MouseMode IN_GetMouseMode();
 void IN_SetMouseMode(MouseMode mode);
 
-//
-// sdl_input.c
-//
-bool IN_GetFocus();
-
 #endif

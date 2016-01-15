@@ -600,11 +600,6 @@ void IN_SetMouseMode(MouseMode new_mode)
 
 static bool in_focus = true;
 
-bool IN_GetFocus()
-{
-	return in_focus;
-}
-
 static void IN_SetFocus(bool has_focus)
 {
 	if ( has_focus == in_focus )

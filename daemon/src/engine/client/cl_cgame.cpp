@@ -1538,12 +1538,6 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			IPC::HandleMsg<Mouse::SetMouseMode>(channel, std::move(reader), &IN_SetMouseMode);
 			break;
 
-		case CG_MOUSE_GETFOCUS:
-			IPC::HandleMsg<Mouse::GetFocus>(channel, std::move(reader), [](bool& output) {
-				output = IN_GetFocus();
-			});
-			break;
-
 		// All LAN
 
 		case CG_LAN_GETSERVERCOUNT:

@@ -212,7 +212,6 @@ typedef enum cgameImport_s
 
   // Mouse
   CG_MOUSE_SETMOUSEMODE,
-  CG_MOUSE_GETFOCUS,
 
   // Lan
   CG_LAN_GETSERVERCOUNT,
@@ -566,11 +565,6 @@ namespace Key {
 
 namespace Mouse {
 	typedef IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_SETMOUSEMODE>, MouseMode> SetMouseMode;
-
-	typedef IPC::SyncMessage<
-		IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_GETFOCUS>>,
-		IPC::Reply<bool>
-	> GetFocus;
 }
 
 namespace LAN {
