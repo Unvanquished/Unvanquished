@@ -44,7 +44,7 @@ Maryland 20850 USA.
 //
 // msg.c
 //
-typedef struct
+struct msg_t
 {
     bool allowoverflow; // if false, do a Com_Error
     bool overflowed; // set to true if the buffer size failed (with allowoverflow set)
@@ -55,7 +55,7 @@ typedef struct
     int      uncompsize; // NERVE - SMF - net debugging
     int      readcount;
     int      bit; // for bitwise reads and writes
-} msg_t;
+};
 
 void MSG_Init( msg_t *buf, byte *data, int length );
 void MSG_InitOOB( msg_t *buf, byte *data, int length );
@@ -71,11 +71,11 @@ void MSG_Uncompressed( msg_t *buf );
 // sets data buffer as MSG_Init does prior to do the copy
 void MSG_Copy( msg_t *buf, byte *data, int length, msg_t *src );
 
-struct usercmd_s;
+struct usercmd_t;
 
-struct entityState_s;
+struct entityState_t;
 
-struct playerState_s;
+struct playerState_t;
 
 void  MSG_WriteBits( msg_t *msg, int value, int bits );
 
@@ -108,11 +108,11 @@ void  MSG_ReadData( msg_t *sb, void *buffer, int size );
 void  MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
 void  MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
 
-void  MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, bool force );
+void  MSG_WriteDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, bool force );
 void  MSG_ReadDeltaEntity( msg_t *msg, const entityState_t *from, entityState_t *to, int number );
 
-void  MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
-void  MSG_ReadDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
+void  MSG_WriteDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *to );
+void  MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *to );
 
 //============================================================================
 
@@ -154,7 +154,7 @@ NET
 //#define   MAX_RELIABLE_COMMANDS   128         // max string commands buffered for restransmit
 #define MAX_RELIABLE_COMMANDS 256 // bigger!
 
-typedef enum
+enum netadrtype_t
 {
   NA_BOT,
   NA_BAD, // an address lookup failed
@@ -165,13 +165,13 @@ typedef enum
   NA_IP_DUAL,
   NA_MULTICAST6,
   NA_UNSPEC
-} netadrtype_t;
+};
 
-typedef enum
+enum netsrc_t
 {
   NS_CLIENT,
   NS_SERVER
-} netsrc_t;
+};
 
 // maximum length of an IPv6 address string including trailing '\0'
 #define NET_ADDR_STR_MAX_LEN 48
@@ -180,7 +180,7 @@ typedef enum
 // format [%s]:%hu - 48 for %s (address), 3 for []: and 5 for %hu (port number, max value 65535)
 #define NET_ADDR_W_PORT_STR_MAX_LEN ( NET_ADDR_STR_MAX_LEN + 3 + 5 )
 
-typedef struct
+struct netadr_t
 {
     netadrtype_t   type;
 
@@ -190,7 +190,7 @@ typedef struct
     unsigned short port; // port which is in use
     unsigned short port4, port6; // ports to choose from
     unsigned long  scope_id; // Needed for IPv6 link-local addresses
-} netadr_t;
+};
 
 extern cvar_t       *net_enabled;
 
@@ -230,7 +230,7 @@ const char *NET_GeoIP_Country( const netadr_t *a );
 Netchan handles packet fragmentation and out of order / duplicate suppression
 */
 
-typedef struct
+struct netchan_t
 {
     netsrc_t sock;
 
@@ -254,7 +254,7 @@ typedef struct
     int      unsentFragmentStart;
     int      unsentLength;
     byte     unsentBuffer[ MAX_MSGLEN ];
-} netchan_t;
+};
 
 void     Netchan_Init( int qport );
 void     Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );
@@ -367,8 +367,8 @@ then searches for a command or variable that matches the first token.
 
 */
 
-typedef void ( *xcommand_t )();
-typedef void ( *xcommand_arg_t )( int );
+using xcommand_t = void (*)();
+using xcommand_arg_t = void (*)(int);
 
 void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 
@@ -382,7 +382,7 @@ void Cmd_RemoveCommand( const char *cmd_name );
 
 void Cmd_CommandCompletion( void ( *callback )( const char *s ) );
 
-typedef void ( *completionFunc_t )( char *args, int argNum );
+using completionFunc_t = void (*)(char *args, int argNum);
 
 void Cmd_OnCompleteMatch(const char* s);
 void Cmd_AliasCompletion( void ( *callback )( const char *s ) );
@@ -557,12 +557,12 @@ DOWNLOAD
 ==============================================================
 */
 
-typedef enum
+enum dlStatus_t
 {
   DL_CONTINUE,
   DL_DONE,
   DL_FAILED
-} dlStatus_t;
+};
 
 int        DL_BeginDownload( const char *localName, const char *remoteName );
 dlStatus_t DL_DownloadLoop();
@@ -570,10 +570,10 @@ dlStatus_t DL_DownloadLoop();
 void       DL_Shutdown();
 
 // bitmask
-typedef enum
+enum dlFlags_t
 {
   DL_FLAG_DISCON = 0
-} dlFlags_t;
+};
 
 /*
 ==============================================================
@@ -584,13 +584,13 @@ Edit fields and command line history/completion
 */
 
 #define MAX_EDIT_LINE 256
-typedef struct
+struct field_t
 {
     int  cursor;
     int  scroll;
     int  widthInChars;
     char buffer[ MAX_EDIT_LINE ];
-} field_t;
+};
 
 // Field_Complete{Key,Team}name
 #define FIELD_TEAM            1
@@ -676,7 +676,7 @@ extern int          com_frameTime;
 extern int          com_frameMsec;
 extern int          com_hunkusedvalue;
 
-typedef enum
+enum memtag_t
 {
   TAG_FREE,
   TAG_GENERAL,
@@ -685,7 +685,7 @@ typedef enum
   TAG_SMALL,
   TAG_CRYPTO,
   TAG_STATIC
-} memtag_t;
+};
 
 /*
 
@@ -841,7 +841,7 @@ NON-PORTABLE SYSTEM SERVICES
 ==============================================================
 */
 
-typedef enum
+enum joystickAxis_t
 {
   AXIS_SIDE,
   AXIS_FORWARD,
@@ -850,7 +850,7 @@ typedef enum
   AXIS_YAW,
   AXIS_PITCH,
   MAX_JOYSTICK_AXIS
-} joystickAxis_t;
+};
 
 enum sysEventType_t
 {
@@ -863,17 +863,17 @@ enum sysEventType_t
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
   SE_CONSOLE, // evPtr is a char*
   SE_PACKET, // evPtr is a netadr_t followed by data bytes to evPtrLength
-  SE_FOCUS // evValue is a boolean indicating whether the game has focus
+  SE_FOCUS, // evValue is a boolean indicating whether the game has focus
 };
 
-typedef struct
+struct sysEvent_t
 {
     int            evTime;
     sysEventType_t evType;
     int            evValue, evValue2;
     int            evPtrLength; // bytes of data pointed to by evPtr, for journaling
     void           *evPtr; // this must be manually freed if not nullptr
-} sysEvent_t;
+};
 
 void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 int        Com_EventLoop();
@@ -906,21 +906,21 @@ unsigned int CON_LogWrite( const char *in );
 #define NYT           HMAX /* NYT = Not Yet Transmitted */
 #define INTERNAL_NODE ( HMAX + 1 )
 
-typedef struct nodetype
+struct node_t
 {
-    struct nodetype *left, *right, *parent; /* tree structure */
+    node_t *left, *right, *parent; /* tree structure */
 
-    struct nodetype *next, *prev; /* doubly-linked list */
+    node_t *next, *prev; /* doubly-linked list */
 
-    struct nodetype **head; /* highest ranked node in block */
+    node_t **head; /* highest ranked node in block */
 
     int             weight;
     int             symbol;
-} node_t;
+};
 
 #define HMAX 256 /* Maximum symbol */
 
-typedef struct
+struct huff_t
 {
     int    blocNode;
     int    blocPtrs;
@@ -933,13 +933,13 @@ typedef struct
 
     node_t nodeList[ 768 ];
     node_t *nodePtrs[ 768 ];
-} huff_t;
+};
 
-typedef struct
+struct huffman_t
 {
     huff_t compressor;
     huff_t decompressor;
-} huffman_t;
+};
 
 void             Huff_Compress( msg_t *buf, int offset );
 void             Huff_Decompress( msg_t *buf, int offset );

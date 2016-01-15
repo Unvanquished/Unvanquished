@@ -60,7 +60,7 @@ theora:
 
 #define OGG_BUFFER_SIZE 8 * 1024 //4096
 
-typedef struct
+struct cin_ogm_t
 {
 	fileHandle_t     ogmFile;
 
@@ -88,7 +88,7 @@ typedef struct
 	int           VFrameCount; // output video-stream
 	ogg_int64_t   Vtime_unit;
 	int           currentTime; // input from Run-function
-} cin_ogm_t;
+};
 
 static cin_ogm_t g_ogm;
 
@@ -462,7 +462,7 @@ static bool loadFrame()
 }
 
 //from VLC ogg.c ( http://trac.videolan.org/vlc/browser/trunk/modules/demux/ogg.c )
-typedef struct
+struct stream_header_t
 {
 	char        streamtype[ 8 ];
 	char        subtype[ 4 ];
@@ -491,7 +491,7 @@ typedef struct
 			ogg_int32_t avgbytespersec;
 		} stream_header_audio;
 	} sh;
-} stream_header_t;
+};
 
 bool isPowerOf2( int x )
 {

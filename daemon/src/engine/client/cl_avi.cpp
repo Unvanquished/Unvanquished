@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_RIFF_CHUNKS      16
 
-typedef struct audioFormat_s
+struct audioFormat_t
 {
 	int rate;
 	int format;
@@ -35,9 +35,9 @@ typedef struct audioFormat_s
 
 	int sampleSize;
 	int totalBytes;
-} audioFormat_t;
+};
 
-typedef struct aviFileData_s
+struct aviFileData_t
 {
 	bool      fileOpen;
 	fileHandle_t  f;
@@ -64,7 +64,7 @@ typedef struct aviFileData_s
 	int           chunkStackTop;
 
 	byte          *cBuffer, *eBuffer;
-} aviFileData_t;
+};
 
 static aviFileData_t afd;
 

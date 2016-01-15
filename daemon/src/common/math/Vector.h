@@ -36,12 +36,12 @@ namespace Math {
 	template<size_t Dimension> class BoolVectorNe;
 
 	// Shortcut typedefs
-	typedef Vector<2, float> Vec2;
-	typedef Vector<3, float> Vec3;
-	typedef Vector<4, float> Vec4;
-	typedef Vector<2, bool> Vec2b;
-	typedef Vector<3, bool> Vec3b;
-	typedef Vector<4, bool> Vec4b;
+	using Vec2 = Vector<2, float>;
+	using Vec3 = Vector<3, float>;
+	using Vec4 = Vector<4, float>;
+	using Vec2b = Vector<2, bool>;
+	using Vec3b = Vector<3, bool>;
+	using Vec4b = Vector<4, bool>;
 
 	// Base vector class containing operations common to all vector types
 	template<size_t Dimension, typename Type> class VectorBase {

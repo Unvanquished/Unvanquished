@@ -319,11 +319,11 @@ int readInt()
 	return i;
 }
 
-typedef union
+union poor
 {
 	byte  fred[ 4 ];
 	float ffred;
-} poor;
+};
 
 float readFloat()
 {

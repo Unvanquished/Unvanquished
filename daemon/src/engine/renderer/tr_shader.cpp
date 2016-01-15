@@ -2916,11 +2916,11 @@ static void ParseSort( const char **text )
 
 // this table is also present in xmap
 
-typedef struct
+struct infoParm_t
 {
 	const char *name;
 	int  clearSolid, surfaceFlags, contents;
-} infoParm_t;
+};
 
 // *INDENT-OFF*
 static const infoParm_t infoParms[] =
@@ -4497,8 +4497,7 @@ static shader_t *FinishShader()
 //========================================================================================
 
 //bani - dynamic shader list
-typedef struct dynamicshader dynamicshader_t;
-struct dynamicshader
+struct dynamicshader_t
 {
 	char            *shadertext;
 	dynamicshader_t *next;

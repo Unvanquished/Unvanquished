@@ -56,11 +56,11 @@ Maryland 20850 USA.
 #               include <ws2spi.h>
 #       endif
 
-typedef int socklen_t;
+using socklen_t = int;
 #       ifdef ADDRESS_FAMILY
 #               define sa_family_t ADDRESS_FAMILY
 #       else
-typedef unsigned short sa_family_t;
+using sa_family_t = unsigned short;
 #       endif
 // HACK: Redefine these constants to their windows equivalents
 // TODO: Figure out a cleaner way to do this. Perhaps write a set of
@@ -98,7 +98,7 @@ static bool winsockInitialized = false;
 #               include <sys/filio.h>
 #       endif
 
-typedef int SOCKET;
+using SOCKET = int;
 #       define INVALID_SOCKET -1
 #       define SOCKET_ERROR   -1
 #       define closesocket    close
@@ -158,7 +158,7 @@ static struct sockaddr_in6 boundto;
 
 #define MAX_IPS           32
 
-typedef struct
+struct nip_localaddr_t
 {
 	char                    ifname[ IF_NAMESIZE ];
 
@@ -167,7 +167,7 @@ typedef struct
 	struct sockaddr_storage addr;
 
 	struct sockaddr_storage netmask;
-} nip_localaddr_t;
+};
 
 static nip_localaddr_t localIP[ MAX_IPS ];
 static int             numIP;

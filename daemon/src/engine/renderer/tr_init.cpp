@@ -433,12 +433,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	/*
 	** R_GetModeInfo
 	*/
-	typedef struct vidmode_s
+	struct vidmode_t
 	{
 		const char *description;
 		int        width, height;
 		float      pixelAspect; // pixel width / height
-	} vidmode_t;
+	};
 
 	static const vidmode_t r_vidModes[] =
 	{

@@ -275,15 +275,15 @@ JPEG SAVING
 
 /* Expanded data destination object for stdio output */
 
-typedef struct
+struct my_destination_mgr
 {
 	struct jpeg_destination_mgr pub; /* public fields */
 
 	byte                        *outfile; /* target stream */
 	int                         size;
-} my_destination_mgr;
+};
 
-typedef my_destination_mgr *my_dest_ptr;
+using my_dest_ptr = my_destination_mgr *;
 
 /*
  * Initialize destination --- called by jpeg_start_compress

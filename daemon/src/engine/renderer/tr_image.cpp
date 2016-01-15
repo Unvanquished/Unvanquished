@@ -32,11 +32,11 @@ image_t              *r_imageHashTable[ IMAGE_FILE_HASH_SIZE ];
 #define Tex_ByteToFloat(v) ( ( (int)(v) - 128 ) / 127.0f )
 #define Tex_FloatToByte(v) ( 128 + (int) ( (v) * 127.0f + 0.5 ) )
 
-typedef struct
+struct textureMode_t
 {
 	const char *name;
 	int  minimize, maximize;
-} textureMode_t;
+};
 
 static const textureMode_t modes[] =
 {
@@ -1928,11 +1928,11 @@ image_t        *R_Create3DImage( const char *name,
 	return image;
 }
 
-typedef struct
+struct imageExtToLoaderMap_t
 {
 	const char *ext;
 	void ( *ImageLoader )( const char *, unsigned char **, int *, int *, int *, int *, int *, byte );
-} imageExtToLoaderMap_t;
+};
 
 // Note that the ordering indicates the order of preference used
 // when there are multiple images of different formats available

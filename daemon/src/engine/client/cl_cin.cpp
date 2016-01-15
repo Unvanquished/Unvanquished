@@ -54,12 +54,12 @@ static long ROQ_UG_tab[ 256 ];
 static long ROQ_VG_tab[ 256 ];
 static long ROQ_VR_tab[ 256 ];
 
-typedef enum
+enum filetype_t
 {
   FT_OGM // ogm (ogg wrapper, vorbis audio, xvid/theora video) for WoP
-} filetype_t;
+};
 
-typedef struct
+struct cin_cache
 {
 	char         fileName[ MAX_OSPATH ];
 	int          CIN_WIDTH, CIN_HEIGHT;
@@ -73,12 +73,12 @@ typedef struct
 	byte         *buf;
 	long         drawX, drawY;
 	filetype_t   fileType;
-} cin_cache;
+};
 
-typedef struct
+struct cinematics_t
 {
 	int   currentHandle;
-} cinematics_t;
+};
 
 static cinematics_t cin;
 static cin_cache    cinTable[ MAX_VIDEO_HANDLES ];

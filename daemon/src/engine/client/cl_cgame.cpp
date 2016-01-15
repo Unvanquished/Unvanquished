@@ -1354,7 +1354,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_R_REGISTERSHADER:
 			IPC::HandleMsg<Render::RegisterShaderMsg>(channel, std::move(reader), [this] (const std::string& name, int flags, int& handle) {
-				handle = re.RegisterShader(name.c_str(), (RegisterShaderFlags) flags);
+				handle = re.RegisterShader(name.c_str(), (RegisterShaderFlags_t) flags);
 			});
 			break;
 
@@ -1599,7 +1599,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 //TODO move somewhere else
 template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
 {
-    typedef IPC::Message<Id, MsgArgs...> Message;
+    using Message = IPC::Message<Id, MsgArgs...>;
 
     typename IPC::detail::MapTuple<typename Message::Inputs>::type inputs;
     reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);

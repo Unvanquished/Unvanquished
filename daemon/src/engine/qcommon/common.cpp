@@ -500,34 +500,32 @@ Goals:
 #define HUNK_MAGIC      0x89537892
 #define HUNK_FREE_MAGIC 0x89537893
 
-typedef struct
+struct hunkHeader_t
 {
 	int magic;
 	int size;
-} hunkHeader_t;
+};
 
-typedef struct
+struct hunkUsed_t
 {
 	int mark;
 	int permanent;
 	int temp;
 	int tempHighwater;
-} hunkUsed_t;
+};
 
-typedef struct hunkblock_s
+struct hunkblock_t
 {
 	int                size;
 	byte               printed;
-	struct hunkblock_s *next;
+	hunkblock_t *next;
 
 	const char         *label;
 	const char         *file;
 	int                line;
-} hunkblock_t;
+};
 // for alignment purposes
 #define SIZEOF_HUNKBLOCK_T ( ( sizeof( hunkblock_t ) + 31 ) & ~31 )
-
-static hunkblock_t *hunkblocks;
 
 static hunkUsed_t  hunk_low, hunk_high;
 static hunkUsed_t  *hunk_permanent, *hunk_temp;

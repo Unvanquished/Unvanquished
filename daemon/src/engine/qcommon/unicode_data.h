@@ -28,9 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __Q_UNICODE_H
 #define __Q_UNICODE_H
 
-typedef struct {
+struct ucs2_pair_t {
   uint32_t c1, c2;
-} ucs2_pair_t;
+};
 
 static const ucs2_pair_t uc_prop_uppercase[] = {
 	{ 0x0041, 0x005b }, { 0x00c0, 0x00d7 }, { 0x00d8, 0x00df }, { 0x0100, 0x0101 },

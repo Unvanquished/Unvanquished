@@ -59,8 +59,8 @@ namespace detail {
 
 // GCC 4.6 is missing some type traits
 #ifdef LIBSTDCXX_BROKEN_CXX11
-typedef char one[1];
-typedef char two[2];
+using one = char[1];
+using two = char[2];
 template<typename T, typename Arg, typename = decltype(std::declval<T>() = std::declval<Arg>())>
 two& is_assignable_helper(int);
 template<typename T, typename Arg>
@@ -84,7 +84,7 @@ template<typename T> struct is_nothrow_swappable: public std::integral_constant<
 
 template<typename T> class optional {
 public:
-	typedef T value_type;
+	using value_type = T;
 
 	optional()
 		: engaged(false) {}

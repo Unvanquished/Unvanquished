@@ -163,16 +163,16 @@ void ignore_result(T) {}
 
 //=============================================================
 
-	typedef unsigned char        byte;
-	typedef unsigned int         uint;
-	typedef enum {qno, qyes, qmaybe} qtrinary;
+	using byte = uint8_t;
+	using uint = unsigned int;
+	enum qtrinary {qno, qyes, qmaybe};
 
-	typedef union
+	union floatint_t
 	{
-		float        f;
-		int          i;
-		unsigned int ui;
-	} floatint_t;
+		float f;
+		int i;
+		uint ui;
+	};
 
 //=============================================================
 
@@ -180,10 +180,10 @@ void ignore_result(T) {}
 #include "common/Compiler.h"
 #include "common/Endian.h"
 
-typedef int qhandle_t;
-typedef int sfxHandle_t;
-typedef int fileHandle_t;
-typedef int clipHandle_t;
+using qhandle_t = int;
+using sfxHandle_t = int;
+using fileHandle_t = int;
+using clipHandle_t = int;
 
 #define PAD(x,y)                ((( x ) + ( y ) - 1 ) & ~(( y ) - 1 ))
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
@@ -230,24 +230,24 @@ typedef int clipHandle_t;
 
 #define MAX_BINARY_MESSAGE 32768 // max length of binary message
 
-	typedef enum
+	enum messageStatus_t
 	{
 	  MESSAGE_EMPTY = 0,
 	  MESSAGE_WAITING, // rate/packet limited
 	  MESSAGE_WAITING_OVERFLOW, // packet too large with message
-	} messageStatus_t;
+	};
 
 //
 // these aren't needed by any of the VMs.  put in another header?
 //
 #define MAX_MAP_AREA_BYTES 32 // bit vector of area visibility
 
-	typedef enum
+	enum ha_pref
 	{
 	  h_high,
 	  h_low,
 	  h_dontcare
-	} ha_pref;
+	};
 
 	void *Hunk_Alloc( int size, ha_pref preference );
 
@@ -274,16 +274,16 @@ void  Com_Free_Aligned( void *ptr );
 	==============================================================
 	*/
 
-	typedef float  vec_t;
-	typedef vec_t  vec2_t[ 2 ];
+	using vec_t = float;
+	using vec2_t = vec_t[2];
 
-	typedef vec_t  vec3_t[ 3 ];
-	typedef vec_t  vec4_t[ 4 ];
+	using vec3_t = vec_t[3];
+	using vec4_t = vec_t[4];
 
-	typedef vec3_t axis_t[ 3 ];
-	typedef vec_t  matrix3x3_t[ 9 ];
-	typedef vec_t  matrix_t[ 16 ];
-	typedef vec_t  quat_t[ 4 ];
+	using axis_t = vec3_t[3];
+	using matrix3x3_t = vec_t[3 * 3];
+	using matrix_t = vec_t[4 * 4];
+	using quat_t = vec_t[4];
 
 	// A transform_t represents a product of basic
 	// transformations, which are a rotation about an arbitrary
@@ -295,13 +295,13 @@ void  Com_Free_Aligned( void *ptr );
 	// float vectors.
 #if idx86_sse
     // Here we have a union of scalar struct and sse struct, transform_u and the
-    // scalar struct must match transform_s so we have to use anonymous structs.
+    // scalar struct must match transform_t so we have to use anonymous structs.
     // We disable compiler warnings when using -Wpedantic for this specific case.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
-	typedef ALIGNED( 16, union transform_u {
+	ALIGNED(16, union transform_t {
 		struct {
 			quat_t rot;
 			vec3_t trans;
@@ -311,21 +311,21 @@ void  Com_Free_Aligned( void *ptr );
 			__m128 sseRot;
 			__m128 sseTransScale;
 		};
-	} ) transform_t;
+	});
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 #else
-	typedef ALIGNED( 16, struct transform_s {
+	ALIGNED(16, struct transform_t {
 		quat_t rot;
 		vec3_t trans;
 		vec_t  scale;
-	} ) transform_t;
+	});
 #endif
 
-	typedef int    fixed4_t;
-	typedef int    fixed8_t;
-	typedef int    fixed16_t;
+	using fixed4_t = int;
+	using fixed8_t = int;
+	using fixed16_t = int;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f // matches value in gcc v2 math.h
@@ -351,13 +351,13 @@ void  Com_Free_Aligned( void *ptr );
 #define ROLL  2 // fall over
 
 // plane sides
-	typedef enum
+	enum planeSide_t
 	{
 	  SIDE_FRONT = 0,
 	  SIDE_BACK = 1,
 	  SIDE_ON = 2,
 	  SIDE_CROSS = 3
-	} planeSide_t;
+	};
 
 #define NUMVERTEXNORMALS 162
 	extern vec3_t bytedirs[ NUMVERTEXNORMALS ];
@@ -393,7 +393,7 @@ void  Com_Free_Aligned( void *ptr );
 #define Q_clamp( a, b, c )            Math::Clamp( (a), (b), (c) )
 #define Q_lerp( from, to, frac )      ( ( from ) + ( frac ) * ( ( to ) - ( from ) ) )
 
-struct cplane_s;
+struct cplane_t;
 
 extern vec3_t   vec3_origin;
 extern vec3_t   axisDefault[ 3 ];
@@ -576,8 +576,8 @@ void         ByteToDir( int b, vec3_t dir );
 	void  AxisClear( vec3_t axis[ 3 ] );
 	void  AxisCopy( vec3_t in[ 3 ], vec3_t out[ 3 ] );
 
-	void  SetPlaneSignbits( struct cplane_s *out );
-	int   BoxOnPlaneSide( const vec3_t emins, const vec3_t emaxs, const struct cplane_s *plane );
+	void  SetPlaneSignbits( struct cplane_t *out );
+	int   BoxOnPlaneSide( const vec3_t emins, const vec3_t emaxs, const struct cplane_t *plane );
 
 	float AngleMod( float a );
 	float LerpAngle( float from, float to, float frac );
@@ -1373,13 +1373,13 @@ void         ByteToDir( int b, vec3_t dir );
 
 //=============================================
 
-	typedef struct
+	struct growList_t
 	{
 		bool frameMemory;
 		int      currentElements;
 		int      maxElements; // will reallocate and move when exceeded
 		void     **elements;
-	} growList_t;
+	};
 
 // you don't need to init the growlist if you don't mind it growing and moving
 // the list as it expands
@@ -1443,7 +1443,7 @@ void         ByteToDir( int b, vec3_t dir );
 #define TT_PUNCTUATION 5 // punctuation
 #endif
 
-	typedef struct pc_token_s
+	struct pc_token_t
 	{
 		int   type;
 		int   subtype;
@@ -1452,7 +1452,7 @@ void         ByteToDir( int b, vec3_t dir );
 		char  string[ MAX_TOKENLENGTH ];
 		int   line;
 		int   linescrossed;
-	} pc_token_t;
+	};
 
 // data is an in/out parm, returns a parsed out token
 
@@ -1469,7 +1469,7 @@ void         ByteToDir( int b, vec3_t dir );
 	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) PRINTF_LIKE(3);
 
 // mode parm for FS_FOpenFile
-	typedef enum
+	enum fsMode_t
 	{
 	  FS_READ,
 	  FS_WRITE,
@@ -1478,14 +1478,14 @@ void         ByteToDir( int b, vec3_t dir );
 	  FS_READ_DIRECT,
 	  FS_UPDATE,
 	  FS_WRITE_VIA_TEMPORARY,
-	} fsMode_t;
+	};
 
-	typedef enum
+	enum fsOrigin_t
 	{
 	  FS_SEEK_CUR,
 	  FS_SEEK_END,
 	  FS_SEEK_SET
-	} fsOrigin_t;
+	};
 
 	int        Com_HexStrToInt( const char *str );
 
@@ -1589,20 +1589,20 @@ void         ByteToDir( int b, vec3_t dir );
 
 #define MAX_CVAR_VALUE_STRING 256
 
-	typedef int cvarHandle_t;
+	using cvarHandle_t = int;
 
 /**
  * the modules that run in the virtual machine can't access the cvar_t directly,
  * so they must ask for structured updates
  */
-	typedef struct
+	struct vmCvar_t
 	{
 		cvarHandle_t handle;
 		int          modificationCount;
 		float        value;
 		int          integer;
 		char         string[ MAX_CVAR_VALUE_STRING ];
-	} vmCvar_t;
+	};
 
 	/*
 	==============================================================
@@ -1631,16 +1631,16 @@ void         ByteToDir( int b, vec3_t dir );
 #define PlaneTypeForNormal( x ) ( x[ 0 ] == 1.0 ? PLANE_X : ( x[ 1 ] == 1.0 ? PLANE_Y : ( x[ 2 ] == 1.0 ? PLANE_Z : ( x[ 0 ] == 0.f && x[ 1 ] == 0.f && x[ 2 ] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL ) ) ) )
 
 // plane_t structure
-	typedef struct cplane_s
+	struct cplane_t
 	{
 		vec3_t normal;
 		float  dist;
 		byte   type; // for fast side tests: 0,1,2 = axial, 3 = nonaxial
 		byte   signbits; // signx + (signy<<1) + (signz<<2), used as lookup during collision
 		byte   pad[ 2 ];
-	} cplane_t;
+	};
 
-	typedef enum
+	enum traceType_t
 	{
 	  TT_NONE,
 
@@ -1649,10 +1649,10 @@ void         ByteToDir( int b, vec3_t dir );
 	  TT_BISPHERE,
 
 	  TT_NUM_TRACE_TYPES
-	} traceType_t;
+	};
 
 // a trace is returned when a box is swept through the world
-	typedef struct
+	struct trace_t
 	{
 		bool allsolid; // if true, plane is not valid
 		bool startsolid; // if true, the initial point was in a solid area
@@ -1663,23 +1663,23 @@ void         ByteToDir( int b, vec3_t dir );
 		int      contents; // contents on other side of surface hit
 		int      entityNum; // entity the contacted sirface is a part of
 		float    lateralFraction; // fraction of collision tangetially to the trace direction
-	} trace_t;
+	};
 
 // trace->entityNum can also be 0 to (MAX_GENTITIES-1)
 // or ENTITYNUM_NONE, ENTITYNUM_WORLD
 
 // markfragments are returned by CM_MarkFragments()
-	typedef struct
+	struct markFragment_t
 	{
 		int firstPoint;
 		int numPoints;
-	} markFragment_t;
+	};
 
-	typedef struct
+	struct orientation_t
 	{
 		vec3_t origin;
 		vec3_t axis[ 3 ];
-	} orientation_t;
+	};
 
 //=====================================================================
 
@@ -1697,7 +1697,7 @@ void         ByteToDir( int b, vec3_t dir );
 // sound channels
 // channel 0 never willingly overrides
 // other channels will always override a playing sound on that channel
-	typedef enum
+	enum soundChannel_t
 	{
 	  CHAN_AUTO,
 	  CHAN_LOCAL, // menu sounds, etc
@@ -1708,7 +1708,7 @@ void         ByteToDir( int b, vec3_t dir );
 	  CHAN_LOCAL_SOUND, // chat messages, etc
 	  CHAN_ANNOUNCER, // announcer voices, etc
 	  CHAN_VOICE_BG, // xkan - background sound for voice (radio static, etc.)
-	} soundChannel_t;
+	};
 
 	/*
 	========================================================================
@@ -1765,7 +1765,7 @@ void         ByteToDir( int b, vec3_t dir );
 
 #define MAX_GAMESTATE_CHARS    16000
 
-typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
+using GameStateCSs = std::array<std::string, MAX_CONFIGSTRINGS>;
 
 #define REF_FORCE_DLIGHT       ( 1 << 31 ) // RF, passed in through overdraw parameter, force this dlight under all conditions
 #define REF_JUNIOR_DLIGHT      ( 1 << 30 ) // (SA) this dlight does not light surfaces.  it only affects dynamic light grid
@@ -1795,7 +1795,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 // from it.
 //
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
-	typedef struct playerState_s
+	struct playerState_t
 	{
 		int    commandTime; // cmd->serverTime of last executed command
 		int    pm_type;
@@ -1875,7 +1875,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 		int           clips; // clips held
 		int           tauntTimer; // don't allow another taunt until this runs out
 		int           misc[ MAX_MISC ]; // misc data
-	} playerState_t;
+	};
 
 //====================================================================
 
@@ -1911,7 +1911,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 // then BUTTON_WALKING should be set
 
 // Arnout: doubleTap buttons - DT_NUM can be max 8
-	typedef enum
+	enum dtType_t
 	{
 	  DT_NONE,
 	  DT_MOVELEFT,
@@ -1920,10 +1920,10 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 	  DT_BACK,
 	  DT_UP,
 	  DT_NUM
-	} dtType_t;
+	};
 
 // usercmd_t is sent to the server each client frame
-	typedef struct usercmd_s
+	struct usercmd_t
 	{
 		int         serverTime;
 		int         angles[ 3 ];
@@ -1935,7 +1935,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 		byte        flags;
 
 		byte        buttons[ USERCMD_BUTTONS / 8 ];
-	} usercmd_t;
+	};
 
 // Some functions for buttons manipulation & testing
 	inline void usercmdPressButton( byte *buttons, int bit )
@@ -1982,7 +1982,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 // if entityState->solid == SOLID_BMODEL, modelindex is an inline model number
 #define SOLID_BMODEL 0xffffff
 
-	typedef enum
+	enum trType_t
 	{
 	  TR_STATIONARY,
 	  TR_INTERPOLATE, // non-parametric, but interpolate between snapshots
@@ -1991,9 +1991,9 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 	  TR_SINE, // value = base + sin( time / duration ) * delta
 	  TR_GRAVITY,
 	  TR_BUOYANCY,
-	} trType_t;
+	};
 
-	typedef struct
+	struct trajectory_t
 	{
 		trType_t trType;
 		int      trTime;
@@ -2002,7 +2002,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 		vec3_t   trBase;
 		vec3_t   trDelta; // velocity, etc
 //----(SA)  removed
-	} trajectory_t;
+	};
 
 // entityState_t is the information conveyed from the server
 // in an update message about entities that the client will
@@ -2014,7 +2014,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
 //
 // You can use Com_EntityTypeName to get a String representation of this enum
-	typedef enum
+	enum entityType_t
 	{
 		ET_GENERAL,
 		ET_PLAYER,
@@ -2046,11 +2046,11 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 		ET_EVENTS       // any of the EV_* events can be added freestanding
 		// by setting eType to ET_EVENTS + eventNum
 		// this avoids having to set eFlags and eventNum
-	} entityType_t;
+	};
 
 	const char *Com_EntityTypeName(entityType_t entityType);
 
-	typedef struct entityState_s
+	struct entityState_t
 	{
 		int          number; // entity index
 		entityType_t eType; // entityType_t
@@ -2102,9 +2102,9 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 		int           misc; // bit flags
 		int           generic1;
 		int           weaponAnim; // mask off ANIM_TOGGLEBIT
-	} entityState_t;
+	};
 
-	typedef enum
+	enum connstate_t
 	{
 	  CA_UNINITIALIZED,
 	  CA_DISCONNECTED, // not talking to a server
@@ -2116,7 +2116,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 	  CA_PRIMED, // got gamestate, waiting for first frame
 	  CA_ACTIVE, // game views should be displayed
 	  CA_CINEMATIC // playing a cinematic or a static pic, not connected to a server
-	} connstate_t;
+	};
 
 // font support
 
@@ -2125,7 +2125,7 @@ typedef std::array<std::string, MAX_CONFIGSTRINGS> GameStateCSs;
 #define GLYPH_CHARSTART 32
 #define GLYPH_CHAREND   127
 #define GLYPHS_PER_FONT ( GLYPH_END - GLYPH_START + 1 )
-typedef struct
+struct glyphInfo_t
 {
 	int       height; // number of scan lines
 	int       top; // top of glyph in buffer
@@ -2140,13 +2140,13 @@ typedef struct
 	float     t2;
 	qhandle_t glyph; // handle to the shader with the glyph
 	char      shaderName[ 32 ];
-} glyphInfo_t;
+};
 
-typedef int fontHandle_t;
+using fontHandle_t = int;
 
-typedef glyphInfo_t glyphBlock_t[256];
+using glyphBlock_t = glyphInfo_t[256];
 
-typedef struct
+struct fontInfo_t
 {
 	void         *face, *faceData, *fallback, *fallbackData;
 	glyphInfo_t  *glyphBlock[0x110000 / 256]; // glyphBlock_t
@@ -2154,23 +2154,23 @@ typedef struct
 	int           height;
 	float         glyphScale;
 	char          name[ MAX_QPATH ];
-} fontInfo_t;
+};
 
-typedef struct
+struct fontMetrics_t
 {
 	fontHandle_t  handle;
 	bool      isBitmap;
 	int           pointSize;
 	int           height;
 	float         glyphScale;
-} fontMetrics_t;
+};
 
 #define Square( x ) ( ( x ) * ( x ) )
 
 // real time
 //=============================================
 
-typedef struct qtime_s
+struct qtime_t
 {
     int tm_sec; /* seconds after the minute - [0,59] */
     int tm_min; /* minutes after the hour - [0,59] */
@@ -2181,7 +2181,7 @@ typedef struct qtime_s
     int tm_wday; /* days since Sunday - [0,6] */
     int tm_yday; /* days since January 1 - [0,365] */
     int tm_isdst; /* daylight savings time flag */
-} qtime_t;
+};
 
 int        Com_RealTime( qtime_t *qtime );
 int        Com_GMTime( qtime_t *qtime );
@@ -2198,7 +2198,7 @@ int        Com_GMTime( qtime_t *qtime );
 #define AS_FAVORITES 2
 
 // cinematic states
-	typedef enum
+	enum e_status
 	{
 	  FMV_IDLE,
 	  FMV_PLAY, // play
@@ -2207,15 +2207,15 @@ int        Com_GMTime( qtime_t *qtime );
 	  FMV_ID_IDLE,
 	  FMV_LOOPED,
 	  FMV_ID_WAIT
-	} e_status;
+	};
 
-	typedef enum
+	enum demoState_t
 	{
 	  DS_NONE,
 	  DS_PLAYBACK,
 	  DS_RECORDING,
 	  DS_NUM_DEMO_STATES
-	} demoState_t;
+	};
 
 #define MAX_GLOBAL_SERVERS       4096
 #define MAX_OTHER_SERVERS        128
@@ -2238,20 +2238,20 @@ int        Com_GMTime( qtime_t *qtime );
 #define MAX_HOSTNAME_LENGTH       80
 #define MAX_NEWS_STRING           10000
 
-	typedef struct
+	struct emoticon_t
 	{
 		char      name[ MAX_EMOTICON_NAME_LEN ];
 #ifndef GAME
 		int       width;
 		qhandle_t shader;
 #endif
-	} emoticon_t;
+	};
 
-	typedef struct
+	struct clientList_t
 	{
-		unsigned int hi;
-		unsigned int lo;
-	} clientList_t;
+		uint hi;
+		uint lo;
+	};
 
 	bool Com_ClientListContains( const clientList_t *list, int clientNum );
 	void     Com_ClientListAdd( clientList_t *list, int clientNum );

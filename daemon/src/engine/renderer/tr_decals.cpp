@@ -39,13 +39,11 @@ Maryland 20850 USA.
 
 extern int r_numDecalProjectors;
 
-typedef struct decalVert_s
+struct decalVert_t
 {
 	vec3_t xyz;
 	float  st[ 2 ];
-}
-
-decalVert_t;
+};
 
 /*
 MakeTextureMatrix()
@@ -53,7 +51,7 @@ generates a texture projection matrix for a triangle
 returns false if a texture matrix cannot be created
 */
 
-typedef double dvec3_t[ 3 ];
+using dvec3_t = double[3];
 
 static bool MakeTextureMatrix( vec4_t texMat[ 2 ], vec4_t projection, decalVert_t *a, decalVert_t *b, decalVert_t *c )
 {

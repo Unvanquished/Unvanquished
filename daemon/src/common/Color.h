@@ -71,7 +71,7 @@ template<>
  *
  * Requirements for AdaptedType:
  * 	static bool is_color = true;
- * 	typedef (unspecified) component_type; // See ColorComponentTraits
+ * 	using component_type = (unspecified); // See ColorComponentTraits
  * 	static component_type component_max = (unspecified); // See ColorComponentTraits
  * 	component_type Red()   const; // Red component
  * 	component_type Green() const; // Green component
@@ -308,8 +308,8 @@ private:
 
 };
 
-typedef BasicColor<float>         Color;
-typedef BasicColor<uint8_t>       Color32Bit;
+using Color = BasicColor<float>;
+using Color32Bit = BasicColor<uint8_t>;
 
 /*
  * Blend two colors.

@@ -110,7 +110,7 @@ TODO: If the SDL_Scancode situation improves, use it instead of
 */
 static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 {
-	typedef struct consoleKey_s
+	struct consoleKey_t
 	{
 		enum
 		{
@@ -123,7 +123,7 @@ static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 			keyNum_t      key;
 			int           character;
 		} u;
-	} consoleKey_t;
+	};
 
 	static const struct {
 		char name[8];

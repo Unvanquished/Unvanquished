@@ -306,7 +306,7 @@ void GLimp_WakeRenderer( void* )
 
 #endif
 
-typedef enum
+enum rserr_t
 {
   RSERR_OK,
 
@@ -315,7 +315,7 @@ typedef enum
   RSERR_OLD_GL,
 
   RSERR_UNKNOWN
-} rserr_t;
+};
 
 cvar_t                     *r_allowResize; // make window resizable
 cvar_t                     *r_centerWindow;

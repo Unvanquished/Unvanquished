@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Snapshots are generated at regular time intervals by the server,
 // but they may not be sent if a client's rate level is exceeded, or
 // they may be dropped by the network.
-typedef struct
+struct snapshot_t
 {
 	int           snapFlags; // SNAPFLAG_RATE_DELAYED, etc
 	int           ping;
@@ -59,16 +59,16 @@ typedef struct
 
 	// text based server commands to execute when this snapshot becomes current
 	std::vector<std::string> serverCommands;
-} snapshot_t;
+};
 
-typedef enum {
+enum rocketVarType_t {
 	ROCKET_STRING,
 	ROCKET_FLOAT,
 	ROCKET_INT,
 	ROCKET_COLOR
-} rocketVarType_t;
+};
 
-typedef enum {
+enum rocketMenuType_t {
 	ROCKETMENU_MAIN,
 	ROCKETMENU_CONNECTING,
 	ROCKETMENU_LOADING,
@@ -85,14 +85,14 @@ typedef enum {
 	ROCKETMENU_BEACONS,
 	ROCKETMENU_ERROR,
 	ROCKETMENU_NUM_TYPES
-} rocketMenuType_t;
+};
 
-typedef enum {
+enum rocketInnerRMLParseTypes_t {
 	RP_QUAKE = 1 << 0,
 	RP_EMOTICONS = 1 << 1,
-} rocketInnerRMLParseTypes_t;
+};
 
-typedef struct
+struct cgClientState_t
 {
 	connstate_t connState;
 	int         connectPacketCount;
@@ -100,9 +100,9 @@ typedef struct
 	char        servername[ MAX_STRING_CHARS ];
 	char        updateInfoString[ MAX_STRING_CHARS ];
 	char        messageString[ MAX_STRING_CHARS ];
-} cgClientState_t;
+};
 
-typedef enum
+enum serverSortField_t
 {
 	SORT_HOST,
 	SORT_MAP,
@@ -111,7 +111,7 @@ typedef enum
 	SORT_GAME,
 	SORT_FILTERS,
 	SORT_FAVOURITES
-} serverSortField_t;
+};
 
 enum class MouseMode
 {

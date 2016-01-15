@@ -27,12 +27,12 @@
 
 #else
 
-typedef struct MD5Context
+struct MD5Context
 {
 	uint32_t      buf[ 4 ];
 	uint32_t      bits[ 2 ];
 	unsigned char in[ 64 ];
-} MD5_CTX;
+};
 
 #ifndef Q3_BIG_ENDIAN
 #define byteReverse(buf, len) /* Nothing */
@@ -292,7 +292,7 @@ static void MD5Final( struct MD5Context *ctx, unsigned char *digest )
 
 void Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize )
 {
-	MD5_CTX       md5;
+	MD5Context       md5;
 	unsigned char digest[ 16 ];
 	int           i;
 
@@ -308,7 +308,7 @@ void Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize )
 
 unsigned Com_BlockChecksum( const void *buffer, int length )
 {
-	MD5_CTX  md5;
+	MD5Context  md5;
 	unsigned digest[ 4 ];
 	unsigned val;
 

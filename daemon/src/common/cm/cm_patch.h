@@ -39,9 +39,9 @@ Maryland 20850 USA.
 This file does not reference any globals, and has these entry points:
 
 void CM_ClearLevelPatches();
-struct patchCollide_s *CM_GeneratePatchCollide( int width, int height, const vec3_t *points );
-void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
-bool CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
+struct patchCollide_t *CM_GeneratePatchCollide( int width, int height, const vec3_t *points );
+void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_t *pc );
+bool CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_t *pc );
 void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, flaot *points) );
 
 
@@ -73,13 +73,13 @@ properly.
 
 #define MAX_GRID_SIZE    129
 
-typedef struct
+struct cGrid_t
 {
 	int      width;
 	int      height;
 	bool wrapWidth;
 	bool wrapHeight;
 	vec3_t   points[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ]; // [width][height]
-} cGrid_t;
+};
 
-//struct patchCollide_s *CM_GeneratePatchCollide(int width, int height, vec3_t * points, bool addBevels);
+//struct patchCollide_t *CM_GeneratePatchCollide(int width, int height, vec3_t * points, bool addBevels);

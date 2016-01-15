@@ -190,7 +190,7 @@ namespace Str {
         const T* ptr;
         size_t len;
     };
-    typedef BasicStringRef<char> StringRef;
+    using StringRef = BasicStringRef<char>;
 
     bool ParseInt(int& value, Str::StringRef text);
 

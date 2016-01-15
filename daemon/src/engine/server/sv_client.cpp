@@ -1335,12 +1335,12 @@ static void SV_UpdateUserinfo_f( client_t *cl, const Cmd::Args& args )
 	gvm.GameClientUserInfoChanged( cl - svs.clients );
 }
 
-typedef struct
+struct ucmd_t
 {
 	const char *name;
 	void ( *func )( client_t *cl, const Cmd::Args& args );
 	bool allowedpostmapchange;
-} ucmd_t;
+};
 
 static ucmd_t ucmds[] =
 {

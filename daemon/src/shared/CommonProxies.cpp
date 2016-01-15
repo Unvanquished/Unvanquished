@@ -70,7 +70,7 @@ namespace Cmd {
         std::string description;
     };
 
-    typedef std::unordered_map<std::string, CommandRecord, Str::IHash, Str::IEqual> CommandMap;
+    using CommandMap = std::unordered_map<std::string, CommandRecord, Str::IHash, Str::IEqual>;
 
     CommandMap& GetCommandMap() {
         static CommandMap map;
@@ -280,7 +280,7 @@ namespace Cvar{
         std::string defaultValue;
     };
 
-    typedef std::unordered_map<std::string, CvarRecord> CvarMap;
+    using CvarMap = std::unordered_map<std::string, CvarRecord>;
 
     CvarMap& GetCvarMap() {
         static CvarMap map;

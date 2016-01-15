@@ -119,7 +119,7 @@ namespace Util {
 	};
 }
 
-typedef enum cgameImport_s
+enum cgameImport_t
 {
   // Misc
   CG_SENDCLIENTCOMMAND,
@@ -259,503 +259,387 @@ typedef enum cgameImport_s
   CG_ROCKET_SHOWSCOREBOARD,
   CG_ROCKET_SETDATASELECTINDEX,
   CG_ROCKET_LOADFONT
-} cgameImport_t;
+};
 
 // All Miscs
 
-// SendClientCommandMsg TODO really sync?
-typedef IPC::SyncMessage<
+// TODO really sync?
+using SendClientCommandMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_SENDCLIENTCOMMAND>, std::string>
-> SendClientCommandMsg;
-// UpdateScreenMsg TODO really sync?
-typedef IPC::SyncMessage<
+>;
+// TODO really sync?
+using UpdateScreenMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_UPDATESCREEN>>
-> UpdateScreenMsg;
-// CMMarkFragmentsMsg TODO can move to VM too ?
-typedef IPC::SyncMessage<
+>;
+// TODO can move to VM too ?
+using CMMarkFragmentsMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_CM_MARKFRAGMENTS>, std::vector<std::array<float, 3>>, std::array<float, 3>, int, int>,
 	IPC::Reply<std::vector<std::array<float, 3>>, std::vector<markFragment_t>>
-> CMMarkFragmentsMsg;
+>;
 // TODO send all snapshots at the beginning of the frame
-// GetCurrentSnapshotNumberMsg
-typedef IPC::SyncMessage<
+using GetCurrentSnapshotNumberMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETCURRENTSNAPSHOTNUMBER>>,
 	IPC::Reply<int, int>
-> GetCurrentSnapshotNumberMsg;
-// GetSnapshotMsg
-typedef IPC::SyncMessage<
+>;
+using GetSnapshotMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETSNAPSHOT>, int>,
 	IPC::Reply<bool, snapshot_t>
-> GetSnapshotMsg;
-// GetCurrentCmdNumberMsg
-typedef IPC::SyncMessage<
+>;
+using GetCurrentCmdNumberMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETCURRENTCMDNUMBER>>,
 	IPC::Reply<int>
-> GetCurrentCmdNumberMsg;
-// GetUserCmdMsg
-typedef IPC::SyncMessage<
+>;
+using GetUserCmdMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETUSERCMD>, int>,
 	IPC::Reply<bool, usercmd_t>
-> GetUserCmdMsg;
-// SetUserCmdValueMsg
-typedef IPC::Message<IPC::Id<VM::QVM, CG_SETUSERCMDVALUE>, int, int, float> SetUserCmdValueMsg;
-// GetEntityTokenMsg TODO what?
-typedef IPC::SyncMessage<
+>;
+using SetUserCmdValueMsg = IPC::Message<IPC::Id<VM::QVM, CG_SETUSERCMDVALUE>, int, int, float>;
+// TODO what?
+using GetEntityTokenMsg =  IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GET_ENTITY_TOKEN>, int>,
 	IPC::Reply<bool, std::string>
-> GetEntityTokenMsg;
-// RegisterButtonCommandsMsg
-typedef IPC::Message<IPC::Id<VM::QVM, CG_REGISTER_BUTTON_COMMANDS>, std::string> RegisterButtonCommandsMsg;
-// GetClipboardDataMsg
-typedef IPC::SyncMessage<
+>;
+using RegisterButtonCommandsMsg = IPC::Message<IPC::Id<VM::QVM, CG_REGISTER_BUTTON_COMMANDS>, std::string>;
+using GetClipboardDataMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETCLIPBOARDDATA>, int>,
 	IPC::Reply<std::string>
-> GetClipboardDataMsg;
-// QuoteStringMsg TODO using Command.h for that ?
-typedef IPC::SyncMessage<
+>;
+// TODO using Command.h for that ?
+using QuoteStringMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_QUOTESTRING>, int, std::string>,
 	IPC::Reply<std::string>
-> QuoteStringMsg;
-// GettextMsg
-typedef IPC::SyncMessage<
+>;
+using GettextMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETTEXT>, int, std::string>,
 	IPC::Reply<std::string>
-> GettextMsg;
-// PGettextMsg
-typedef IPC::SyncMessage<
+>;
+using PGettextMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_PGETTEXT>, int, std::string, std::string>,
 	IPC::Reply<std::string>
-> PGettextMsg;
-// GettextPluralMsg
-typedef IPC::SyncMessage<
+>;
+using GettextPluralMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETTEXT_PLURAL>, int, std::string, std::string, int>,
 	IPC::Reply<std::string>
-> GettextPluralMsg;
-// NotifyTeamChangeMsg
-typedef IPC::SyncMessage<
+>;
+using NotifyTeamChangeMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_NOTIFY_TEAMCHANGE>, int>
-> NotifyTeamChangeMsg;
-// PrepareKeyUpMsg
-typedef IPC::SyncMessage<
+>;
+using PrepareKeyUpMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_PREPAREKEYUP>>
-> PrepareKeyUpMsg;
-// GetNewsMsg
-typedef IPC::SyncMessage<
+>;
+using GetNewsMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETNEWS>, bool>,
 	IPC::Reply<bool>
-> GetNewsMsg;
+>;
 
 // All Sounds
 
 namespace Audio {
-	// RegisterSoundMsg
-	typedef IPC::SyncMessage<
+	using RegisterSoundMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_S_REGISTERSOUND>, std::string>,
 		IPC::Reply<int>
-	> RegisterSoundMsg;
+	>;
 
     //Command buffer syscalls
 
-	// StartSoundMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTSOUND>, bool, Vec3, int, int> StartSoundMsg;
-	// StartLocalSoundMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTLOCALSOUND>, int> StartLocalSoundMsg;
-	// ClearLoopingSoundsMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_CLEARLOOPINGSOUNDS>> ClearLoopingSoundsMsg;
-	// AddLoopingSoundMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_ADDLOOPINGSOUND>, int, int> AddLoopingSoundMsg;
-	// StopLoopingSoundMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STOPLOOPINGSOUND>, int> StopLoopingSoundMsg;
-	// UpdateEntityPositionMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYPOSITION>, int, Vec3> UpdateEntityPositionMsg;
-	// RespatializeMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_RESPATIALIZE>, int, std::array<Vec3, 3>> RespatializeMsg;
-	// StartBackgroundTrackMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STARTBACKGROUNDTRACK>, std::string, std::string> StartBackgroundTrackMsg;
-	// StopBackgroundTrackMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_STOPBACKGROUNDTRACK>> StopBackgroundTrackMsg;
-	// UpdateEntityVelocityMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYVELOCITY>, int, Vec3> UpdateEntityVelocityMsg;
-	// SetReverbMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_SETREVERB>, int, std::string, float> SetReverbMsg;
-	// BeginRegistrationMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_BEGINREGISTRATION>> BeginRegistrationMsg;
-	// EndRegistrationMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_S_ENDREGISTRATION>> EndRegistrationMsg;
+	using StartSoundMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_STARTSOUND>, bool, Vec3, int, int>;
+	using StartLocalSoundMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_STARTLOCALSOUND>, int>;
+	using ClearLoopingSoundsMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_CLEARLOOPINGSOUNDS>>;
+	using AddLoopingSoundMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_ADDLOOPINGSOUND>, int, int>;
+	using StopLoopingSoundMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_STOPLOOPINGSOUND>, int>;
+	using UpdateEntityPositionMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYPOSITION>, int, Vec3>;
+	using RespatializeMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_RESPATIALIZE>, int, std::array<Vec3, 3>>;
+	using StartBackgroundTrackMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_STARTBACKGROUNDTRACK>, std::string, std::string>;
+	using StopBackgroundTrackMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_STOPBACKGROUNDTRACK>>;
+	using UpdateEntityVelocityMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_UPDATEENTITYVELOCITY>, int, Vec3>;
+	using SetReverbMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_SETREVERB>, int, std::string, float>;
+	using BeginRegistrationMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_BEGINREGISTRATION>>;
+	using EndRegistrationMsg = IPC::Message<IPC::Id<VM::QVM, CG_S_ENDREGISTRATION>>;
 }
 
 namespace Render {
-	// SetAltShaderTokenMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETALTSHADERTOKENS>, std::string> SetAltShaderTokenMsg;
-	// GetShaderNameFromHandleMsg
-	typedef IPC::SyncMessage<
+	using SetAltShaderTokenMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_SETALTSHADERTOKENS>, std::string>;
+	using GetShaderNameFromHandleMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_GETSHADERNAMEFROMHANDLE>, int>,
 		IPC::Reply<std::string>
-	> GetShaderNameFromHandleMsg;
-	// InPVVSMsg //TODO not a renderer call, handle in CM in the VM?
-	typedef IPC::SyncMessage<
+	>;
+	// TODO not a renderer call, handle in CM in the VM?
+	using InPVVSMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_INPVVS>, std::array<float, 3>, std::array<float, 3>>,
 		IPC::Reply<bool>
-	> InPVVSMsg;
-	// LoadWorldMapMsg //TODO is it really async?
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_LOADWORLDMAP>, std::string> LoadWorldMapMsg;
-	// RegisterModelMsg
-	typedef IPC::SyncMessage<
+	>;
+	// TODO is it really async?
+	using LoadWorldMapMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_LOADWORLDMAP>, std::string>;
+	using RegisterModelMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERMODEL>, std::string>,
 		IPC::Reply<int>
-	> RegisterModelMsg;
-	// RegisterSkinMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterSkinMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERSKIN>, std::string>,
 		IPC::Reply<int>
-	> RegisterSkinMsg;
-	// RegisterShaderMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterShaderMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERSHADER>, std::string, int>,
 		IPC::Reply<int>
-	> RegisterShaderMsg;
-	// RegisterFontMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterFontMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERFONT>, std::string, std::string, int>,
 		IPC::Reply<fontMetrics_t>
-	> RegisterFontMsg;
-	// ModelBoundsMsg
-	typedef IPC::SyncMessage<
+	>;
+	using ModelBoundsMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_MODELBOUNDS>, int>,
 		IPC::Reply<std::array<float, 3>, std::array<float, 3>>
-	> ModelBoundsMsg;
-	// LerpTagMsg
-	typedef IPC::SyncMessage<
+	>;
+	using LerpTagMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_LERPTAG>, refEntity_t, std::string, int>,
 		IPC::Reply<orientation_t, int>
-	> LerpTagMsg;
-	// RemapShaderMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_REMAP_SHADER>, std::string, std::string, std::string> RemapShaderMsg;
-	// InPVSMsg //TODO not a renderer call, handle in CM in the VM?
-	typedef IPC::SyncMessage<
+	>;
+	using RemapShaderMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_REMAP_SHADER>, std::string, std::string, std::string>;
+	// TODO not a renderer call, handle in CM in the VM?
+	using InPVSMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_INPVS>, std::array<float, 3>, std::array<float, 3>>,
 		IPC::Reply<bool>
-	> InPVSMsg;
-	// LightForPointMsg
-	typedef IPC::SyncMessage<
+	>;
+	using LightForPointMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_LIGHTFORPOINT>, std::array<float, 3>>,
 		IPC::Reply<std::array<float, 3>, std::array<float, 3>, std::array<float, 3>, int>
-	> LightForPointMsg;
-	// RegisterAnimationMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterAnimationMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_REGISTERANIMATION>, std::string>,
 		IPC::Reply<int>
-	> RegisterAnimationMsg;
-	// BuildSkeletonMsg
-	typedef IPC::SyncMessage<
+	>;
+	using BuildSkeletonMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_BUILDSKELETON>, int, int, int, float, bool>,
 		IPC::Reply<refSkeleton_t, int>
-	> BuildSkeletonMsg;
-	// BoneIndexMsg
-	typedef IPC::SyncMessage<
+	>;
+	using BoneIndexMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_BONEINDEX>, int, std::string>,
 		IPC::Reply<int>
-	> BoneIndexMsg;
-	// AnimNumFramesMsg
-	typedef IPC::SyncMessage<
+	>;
+	using AnimNumFramesMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_ANIMNUMFRAMES>, int>,
 		IPC::Reply<int>
-	> AnimNumFramesMsg;
-	// AnimFrameRateMsg
-	typedef IPC::SyncMessage<
+	>;
+	using AnimFrameRateMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_ANIMFRAMERATE>, int>,
 		IPC::Reply<int>
-	> AnimFrameRateMsg;
-	// RegisterVisTestMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterVisTestMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_REGISTERVISTEST>>,
 		IPC::Reply<int>
-	> RegisterVisTestMsg;
-	// CheckVisibilityMsg
-	typedef IPC::SyncMessage<
+	>;
+	using CheckVisibilityMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_CHECKVISIBILITY>, int>,
 		IPC::Reply<float>
-	> CheckVisibilityMsg;
-	// GetTextureSizeMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetTextureSizeMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_GETTEXTURESIZE>, qhandle_t>,
 		IPC::Reply<int, int>
-	> GetTextureSizeMsg;
-	// GenerateTextureMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GenerateTextureMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_R_GENERATETEXTURE>, std::vector<byte>, int, int>,
 		IPC::Reply<qhandle_t>
-	> GenerateTextureMsg;
+	>;
 
     // All command buffer syscalls
 
-	// ScissorEnableMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_ENABLE>, bool> ScissorEnableMsg;
-	// ScissorSetMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_SET>, int, int, int, int> ScissorSetMsg;
-	// ClearSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_CLEARSCENE>> ClearSceneMsg;
-	// AddRefEntityToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDREFENTITYTOSCENE>, refEntity_t> AddRefEntityToSceneMsg;
-	// AddPolyToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYTOSCENE>, int, std::vector<polyVert_t>> AddPolyToSceneMsg;
-	// AddPolysToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int, int> AddPolysToSceneMsg;
-	// AddLightToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDLIGHTTOSCENE>, std::array<float, 3>, float, float, float, float, float, int, int> AddLightToSceneMsg;
-	// AddAdditiveLightToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADDADDITIVELIGHTTOSCENE>, std::array<float, 3>, float, float, float, float> AddAdditiveLightToSceneMsg;
-	// SetColorMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, Color::Color> SetColorMsg;
-	// SetClipRegionMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>> SetClipRegionMsg;
-	// ResetClipRegionMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RESETCLIPREGION>> ResetClipRegionMsg;
-	// DrawStretchPicMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWSTRETCHPIC>, float, float, float, float, float, float, float, float, int> DrawStretchPicMsg;
-	// DrawRotatedPicMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWROTATEDPIC>, float, float, float, float, float, float, float, float, int, float> DrawRotatedPicMsg;
-	// AddVisTextToSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_ADDVISTESTTOSCENE>, int, std::array<float, 3>, float, float> AddVisTestToSceneMsg;
-	// UnregisterVisTestMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_UNREGISTERVISTEST>, int> UnregisterVisTestMsg;
-	// SetColorGradingMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_SETCOLORGRADING>, int, int> SetColorGradingMsg;
-	// RenderSceneMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_RENDERSCENE>, refdef_t> RenderSceneMsg;
-	// Add2dPolysIndexedMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_R_ADD2DPOLYSINDEXED>, std::vector<polyVert_t>, int, std::vector<int>, int, int, int, qhandle_t> Add2dPolysIndexedMsg;
+	using ScissorEnableMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_ENABLE>, bool>;
+	using ScissorSetMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_SCISSOR_SET>, int, int, int, int>;
+	using ClearSceneMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_CLEARSCENE>>;
+	using AddRefEntityToSceneMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_ADDREFENTITYTOSCENE>, refEntity_t>;
+	using AddPolyToSceneMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYTOSCENE>, int, std::vector<polyVert_t>>;
+	using AddPolysToSceneMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_ADDPOLYSTOSCENE>, int, std::vector<polyVert_t>, int, int>;
+	using AddLightToSceneMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_ADDLIGHTTOSCENE>, std::array<float, 3>, float, float, float, float, float, int, int>;
+	using AddAdditiveLightToSceneMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_ADDADDITIVELIGHTTOSCENE>, std::array<float, 3>, float, float, float, float>;
+	using SetColorMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_SETCOLOR>, Color::Color>;
+	using SetClipRegionMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_SETCLIPREGION>, std::array<float, 4>>;
+	using ResetClipRegionMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_RESETCLIPREGION>>;
+	using DrawStretchPicMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWSTRETCHPIC>, float, float, float, float, float, float, float, float, int>;
+	using DrawRotatedPicMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_DRAWROTATEDPIC>, float, float, float, float, float, float, float, float, int, float>;
+	using AddVisTestToSceneMsg = IPC::Message<IPC::Id<VM::QVM, CG_ADDVISTESTTOSCENE>, int, std::array<float, 3>, float, float>;
+	using UnregisterVisTestMsg = IPC::Message<IPC::Id<VM::QVM, CG_UNREGISTERVISTEST>, int>;
+	using SetColorGradingMsg = IPC::Message<IPC::Id<VM::QVM, CG_SETCOLORGRADING>, int, int>;
+	using RenderSceneMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_RENDERSCENE>, refdef_t>;
+	using Add2dPolysIndexedMsg = IPC::Message<IPC::Id<VM::QVM, CG_R_ADD2DPOLYSINDEXED>, std::vector<polyVert_t>, int, std::vector<int>, int, int, int, qhandle_t>;
 }
 
 namespace Key {
-	// GetCatcherMsg
-	typedef IPC::SyncMessage<
+	using GetCatcherMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_KEY_GETCATCHER>>,
 		IPC::Reply<int>
-	> GetCatcherMsg;
-	// SetCatcherMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_SETCATCHER>, int> SetCatcherMsg;
-	// GetKeynumForBindsMsg
-	typedef IPC::SyncMessage<
+	>;
+	using SetCatcherMsg = IPC::Message<IPC::Id<VM::QVM, CG_KEY_SETCATCHER>, int>;
+	using GetKeynumForBindsMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_KEY_GETKEYNUMFORBINDS>, int, std::vector<std::string>>,
 		IPC::Reply<std::vector<std::vector<int>>>
-	> GetKeynumForBindsMsg;
-	// KeyNumToStringMsg
-	typedef IPC::SyncMessage<
+	>;
+	using KeyNumToStringMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYNUMTOSTRINGBUF>, int>,
 		IPC::Reply<std::string>
-	> KeyNumToStringMsg;
-	// SetBindingMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_SETBINDING>, int, int, std::string> SetBindingMsg;
-	// ClearCmdButtonsMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_CLEARCMDBUTTONS>> ClearCmdButtonsMsg;
-	// ClearStatesMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_KEY_CLEARSTATES>> ClearStatesMsg;
-	// KeysDownMsg
-	typedef IPC::SyncMessage<
+	>;
+	using SetBindingMsg = IPC::Message<IPC::Id<VM::QVM, CG_KEY_SETBINDING>, int, int, std::string>;
+	using ClearCmdButtonsMsg = IPC::Message<IPC::Id<VM::QVM, CG_KEY_CLEARCMDBUTTONS>>;
+	using ClearStatesMsg = IPC::Message<IPC::Id<VM::QVM, CG_KEY_CLEARSTATES>>;
+	using KeysDownMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_KEY_KEYSDOWN>, std::vector<int>>,
 		IPC::Reply<std::vector<int>>
-	> KeysDownMsg;
+	>;
 }
 
 namespace Mouse {
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_SETMOUSEMODE>, MouseMode> SetMouseMode;
+	using SetMouseMode = IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_SETMOUSEMODE>, MouseMode>;
 }
 
 namespace LAN {
-	// GetServerCountMsg
-	typedef IPC::SyncMessage<
+	using GetServerCountMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_LAN_GETSERVERCOUNT>, int>,
 		IPC::Reply<int>
-	> GetServerCountMsg;
-	// GetServerInfoMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetServerInfoMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_LAN_GETSERVERINFO>, int, int, int>,
 		IPC::Reply<std::string>
-	> GetServerInfoMsg;
-	// GetServerPingMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetServerPingMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_LAN_GETSERVERPING>, int, int>,
 		IPC::Reply<int>
-	> GetServerPingMsg;
-	// MarkServerVisibleMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_LAN_MARKSERVERVISIBLE>, int, int, bool> MarkServerVisibleMsg;
-	// ServerIsVisibleMsg
-	typedef IPC::SyncMessage<
+	>;
+	using MarkServerVisibleMsg = IPC::Message<IPC::Id<VM::QVM, CG_LAN_MARKSERVERVISIBLE>, int, int, bool>;
+	using ServerIsVisibleMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_LAN_SERVERISVISIBLE>, int, int>,
 		IPC::Reply<bool>
-	> ServerIsVisibleMsg;
-	// UpdateVisiblePingsMsg
-	typedef IPC::SyncMessage<
+	>;
+	using UpdateVisiblePingsMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_LAN_UPDATEVISIBLEPINGS>, int>,
 		IPC::Reply<bool>
-	> UpdateVisiblePingsMsg;
-	// ResetPingsMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_LAN_RESETPINGS>, int> ResetPingsMsg;
-	// ServerStatusMsg
-	typedef IPC::SyncMessage<
+	>;
+	using ResetPingsMsg = IPC::Message<IPC::Id<VM::QVM, CG_LAN_RESETPINGS>, int>;
+	using ServerStatusMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_LAN_SERVERSTATUS>, std::string, int>,
 		IPC::Reply<std::string, int>
-	> ServerStatusMsg;
-	// ResetServerStatusMsg
-	typedef IPC::Message<IPC::Id<VM::QVM, CG_LAN_RESETSERVERSTATUS>> ResetServerStatusMsg;
+	>;
+	using ResetServerStatusMsg = IPC::Message<IPC::Id<VM::QVM, CG_LAN_RESETSERVERSTATUS>>;
 }
 
 namespace Rocket {
 	// TODO all of these are declared as sync but some might be async
 	// it is not really important as librocket will be moved to nacl
 
-	// InitMsg
-	typedef IPC::SyncMessage<
+	using InitMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_INIT>>
-	> InitMsg;
-	// ShutdownMsg
-	typedef IPC::SyncMessage<
+	>;
+	using ShutdownMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SHUTDOWN>>
-	> ShutdownMsg;
-	// LoadDocumentMsg
-	typedef IPC::SyncMessage<
+	>;
+	using LoadDocumentMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_LOADDOCUMENT>, std::string>
-	> LoadDocumentMsg;
-	// LoadCursorMsg
-	typedef IPC::SyncMessage<
+	>;
+	using LoadCursorMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_LOADCURSOR>, std::string>
-	> LoadCursorMsg;
-	// DocumentActionMsg
-	typedef IPC::SyncMessage<
+	>;
+	using DocumentActionMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DOCUMENTACTION>, std::string, std::string>
-	> DocumentActionMsg;
-	// GetEventMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetEventMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETEVENT>>,
 		IPC::Reply<bool, std::string>
-	> GetEventMsg;
-	// DeleteEventMsg
-	typedef IPC::SyncMessage<
+	>;
+	using DeleteEventMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DELETEEVENT>>
-	> DeleteEventMsg;
-	// RegisterDataSourceMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterDataSourceMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_REGISTERDATASOURCE>, std::string>
-	> RegisterDataSourceMsg;
-	// DSAddRowMsg
-	typedef IPC::SyncMessage<
+	>;
+	using DSAddRowMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DSADDROW>, std::string, std::string, std::string>
-	> DSAddRowMsg;
-	// DSClearTableMsg
-	typedef IPC::SyncMessage<
+	>;
+	using DSClearTableMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DSCLEARTABLE>, std::string, std::string>
-		> DSClearTableMsg;
-	// SetInnerRMLMsg
-	typedef IPC::SyncMessage<
+	>;
+	using SetInnerRMLMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETINNERRML>, std::string, int>
-	> SetInnerRMLMsg;
-	// GetAttributeMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetAttributeMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETATTRIBUTE>, std::string, int>,
 		IPC::Reply<std::string>
-	> GetAttributeMsg;
-	// SetAttributeMsg
-	typedef IPC::SyncMessage<
+	>;
+	using SetAttributeMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETATTRIBUTE>, std::string, std::string>
-	> SetAttributeMsg;
-	// GetPropertyMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetPropertyMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETPROPERTY>, std::string, int, int>,
 		IPC::Reply<std::vector<char>>
-	> GetPropertyMsg;
-	// SetPropertyMsg
-	typedef IPC::SyncMessage<
+	>;
+	using SetPropertyMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETPROPERTYBYID>, std::string, std::string>
-	> SetPropertyMsg;
-	// GetEventParametersMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetEventParametersMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETEVENTPARAMETERS>, int>,
 		IPC::Reply<std::string>
-	> GetEventParametersMsg;
-	// RegisterDataFormatterMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterDataFormatterMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_REGISTERDATAFORMATTER>, std::string>
-	> RegisterDataFormatterMsg;
-	// DataFormatterDataMsg
-	typedef IPC::SyncMessage<
+	>;
+	using DataFormatterDataMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DATAFORMATTERRAWDATA>, int, int, int>,
 		IPC::Reply<std::string, std::string>
-	> DataFormatterDataMsg;
-	// DataFormatterFormattedDataMsg
-	typedef IPC::SyncMessage<
+	>;
+	using DataFormatterFormattedDataMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_DATAFORMATTERFORMATTEDDATA>, int, std::string, bool>
-	> DataFormatterFormattedDataMsg;
-	// RegisterElementMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterElementMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_REGISTERELEMENT>, std::string>
-	> RegisterElementMsg;
-	// GetElementTagMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetElementTagMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETELEMENTTAG>, int>,
 		IPC::Reply<std::string>
-	> GetElementTagMsg;
-	// GetElementAbsoluteOffsetMsg
-	typedef IPC::SyncMessage<
+	>;
+	using GetElementAbsoluteOffsetMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_GETELEMENTABSOLUTEOFFSET>>,
 		IPC::Reply<float, float>
-	> GetElementAbsoluteOffsetMsg;
-	// QuakeToRMLMsg
-	typedef IPC::SyncMessage<
+	>;
+	using QuakeToRMLMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_QUAKETORML>, std::string, int>,
 		IPC::Reply<std::string>
-	> QuakeToRMLMsg;
-	// SetClassMsg
-	typedef IPC::SyncMessage<
+	>;
+	using SetClassMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETCLASS>, std::string, bool>
-	> SetClassMsg;
-	// InitHUDsMsg
-	typedef IPC::SyncMessage<
+	>;
+	using InitHUDsMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_INITHUDS>, int>
-	> InitHUDsMsg;
-	// LoadUnitMsg
-	typedef IPC::SyncMessage<
+	>;
+	using LoadUnitMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_LOADUNIT>, std::string>
-	> LoadUnitMsg;
-	// AddUnitToHUDMsg
-	typedef IPC::SyncMessage<
+	>;
+	using AddUnitToHUDMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_ADDUNITTOHUD>, int, std::string>
-	> AddUnitToHUDMsg;
-	// ShowHUDMsg
-	typedef IPC::SyncMessage<
+	>;
+	using ShowHUDMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SHOWHUD>, int>
-	> ShowHUDMsg;
-	// ClearHUDMsg
-	typedef IPC::SyncMessage<
+	>;
+	using ClearHUDMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_CLEARHUD>, int>
-	> ClearHUDMsg;
-	// AddTextMsg
-	typedef IPC::SyncMessage<
+	>;
+	using AddTextMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_ADDTEXT>, std::string, std::string, float, float>
-	> AddTextMsg;
-	// ClearTextMsg
-	typedef IPC::SyncMessage<
+	>;
+	using ClearTextMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_CLEARTEXT>>
-	> ClearTextMsg;
-	// RegisterPropertyMsg
-	typedef IPC::SyncMessage<
+	>;
+	using RegisterPropertyMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_REGISTERPROPERTY>, std::string, std::string, bool, bool, std::string>
-	> RegisterPropertyMsg;
-	// ShowScoreboardMsg
-	typedef IPC::SyncMessage<
+	>;
+	using ShowScoreboardMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SHOWSCOREBOARD>, std::string, bool>
-	> ShowScoreboardMsg;
-	// SetDataSelectIndexMsg
-	typedef IPC::SyncMessage<
+	>;
+	using SetDataSelectIndexMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_SETDATASELECTINDEX>, int>
-	> SetDataSelectIndexMsg;
-	// LoadFontMsg
-	typedef IPC::SyncMessage<
+	>;
+	using LoadFontMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_LOADFONT>, std::string>
-	> LoadFontMsg;
+	>;
 }
 
-typedef enum
+enum cgameExport_t
 {
   CG_STATIC_INIT,
 
@@ -802,60 +686,50 @@ typedef enum
 
   CG_FOCUS_EVENT
 // void (*CG_FocusEvent)( bool focus);
-} cgameExport_t;
+};
 
-// CGameStaticInitMsg
-typedef IPC::SyncMessage<
+using CGameStaticInitMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_STATIC_INIT>, int>
-> CGameStaticInitMsg;
-// CGameInitMsg
-typedef IPC::SyncMessage<
+>;
+using CGameInitMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_INIT>, int, int, glconfig_t, GameStateCSs>
-> CGameInitMsg;
-// CGameShutdownMsg
-typedef IPC::SyncMessage<
+>;
+using CGameShutdownMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_SHUTDOWN>>
-> CGameShutdownMsg;
-// CGameDrawActiveFrameMsg
-typedef IPC::SyncMessage<
+>;
+using CGameDrawActiveFrameMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_DRAW_ACTIVE_FRAME>, int, bool>
-> CGameDrawActiveFrameMsg;
-// CGameCrosshairPlayerMsg
-typedef IPC::SyncMessage<
+>;
+using CGameCrosshairPlayerMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_CROSSHAIR_PLAYER>>,
 	IPC::Reply<int>
-> CGameCrosshairPlayerMsg;
-// CGameKeyEventMsg
-typedef IPC::SyncMessage<
+>;
+using CGameKeyEventMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_KEY_EVENT>, int, bool>
-> CGameKeyEventMsg;
-// CGameMouseEventMsg
-typedef IPC::SyncMessage<
+>;
+using CGameMouseEventMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_EVENT>, int, int>
-> CGameMouseEventMsg;
-// CGameMousePosEventMsg
-typedef IPC::SyncMessage<
+>;
+using CGameMousePosEventMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_POS_EVENT>, int, int>
-> CGameMousePosEventMsg;
-typedef IPC::SyncMessage<
+>;
+using CGameTextInptEvent = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, int>
-> CGameTextInptEvent;
-typedef IPC::SyncMessage<
+>;
+using CGameFocusEventMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_FOCUS_EVENT>, bool>
-> CGameFocusEventMsg;
+>;
 
 //TODO Check all rocket calls
-// CGameRocketInitMsg
-typedef IPC::SyncMessage<
+using CGameRocketInitMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_VM_INIT>, glconfig_t>
-> CGameRocketInitMsg;
-// CGameRocketFrameMsg
-typedef IPC::SyncMessage<
+>;
+using CGameRocketFrameMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_ROCKET_FRAME>, cgClientState_t>
-> CGameRocketFrameMsg;
+>;
 
-typedef IPC::SyncMessage<
+using CGameConsoleLineMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_CONSOLE_LINE>, std::string>
-> CGameConsoleLineMsg;
+>;
 
 #endif

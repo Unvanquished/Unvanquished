@@ -46,7 +46,7 @@ Maryland 20850 USA.
 //
 // these are the functions exported by the refresh module
 //
-typedef struct
+struct refexport_t
 {
 	// called before the library is unloaded
 	// if the system is just reconfiguring, pass destroyWindow = false,
@@ -68,7 +68,7 @@ typedef struct
 	//qhandle_t   (*RegisterModelAllLODs) (const char *name);
 	qhandle_t ( *RegisterSkin )( const char *name );
 	qhandle_t ( *RegisterShader )( const char *name,
-				       RegisterShaderFlags_t flags );
+								   RegisterShaderFlags_t flags );
 	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t **font );
 	void   ( *UnregisterFont )( fontInfo_t *font );
 	void   ( *RegisterFontVM )( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
@@ -185,12 +185,12 @@ typedef struct
 	void ( *Add2dPolysIndexed )( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
 	qhandle_t ( *GenerateTexture )( const byte *pic, int width, int height );
 	const char *( *ShaderNameFromHandle )( qhandle_t shader );
-} refexport_t;
+};
 
 //
 // these are the functions imported by the refresh module
 //
-typedef struct
+struct refimport_t
 {
 	// print message on the local console
 	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
@@ -263,13 +263,13 @@ typedef struct
 	void ( *IN_Shutdown )();
 	void ( *IN_Restart )();
 	void ( *Bot_DrawDebugMesh )( BotDebugInterface_t *in );
-} refimport_t;
+};
 
 // this is the only function actually exported at the linker level
 // If the module can't init to a valid rendering state, nullptr will be
 // returned.
 
 // RB: changed to GetRefAPI_t
-typedef refexport_t *( *GetRefAPI_t )( int apiVersion, refimport_t *rimp );
+using GetRefAPI_t = refexport_t *(*)(int apiVersion, refimport_t *rimp);
 
 #endif // __TR_PUBLIC_H

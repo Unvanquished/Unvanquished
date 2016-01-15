@@ -65,11 +65,11 @@ static struct {
 	int          check;
 } plusCommand;
 
-typedef struct
+struct keyname_t
 {
 	const char *name;
 	int        keynum;
-} keyname_t;
+};
 
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 static const keyname_t keynames[] =
@@ -1462,11 +1462,11 @@ static const struct
 // (it doesn't reflect the array length)
 #define NUM_RECOGNISED_MODIFIERS 8
 
-typedef struct
+struct modifierMask_t
 {
 	uint16_t down, up;
 	int bits;
-} modifierMask_t;
+};
 
 static modifierMask_t getModifierMask( const char *mods )
 {

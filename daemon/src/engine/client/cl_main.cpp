@@ -167,7 +167,7 @@ refexport_t        re;
 
 ping_t             cl_pinglist[ MAX_PINGREQUESTS ];
 
-typedef struct serverStatus_s
+struct serverStatus_t
 {
 	char     string[ BIG_INFO_STRING ];
 	netadr_t address;
@@ -175,7 +175,7 @@ typedef struct serverStatus_s
 	bool pending;
 	bool print;
 	bool retrieved;
-} serverStatus_t;
+};
 
 serverStatus_t cl_serverStatusList[ MAX_SERVERSTATUSREQUESTS ];
 int            serverStatusCount;
@@ -644,7 +644,7 @@ void CL_WavFilename( int number, char *fileName )
 	Com_sprintf( fileName, MAX_OSPATH, "wav%04i", number );
 }
 
-typedef struct wav_hdr_s
+struct wav_hdr_t
 {
 	unsigned int   ChunkID; // big endian
 	unsigned int   ChunkSize; // little endian
@@ -663,7 +663,7 @@ typedef struct wav_hdr_s
 	unsigned int   Subchunk2Size; // little endian
 
 	unsigned int   NumSamples;
-} wav_hdr_t;
+};
 
 wav_hdr_t hdr;
 

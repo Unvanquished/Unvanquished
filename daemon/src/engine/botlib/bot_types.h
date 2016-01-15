@@ -35,45 +35,45 @@ Maryland 20850 USA.
 #ifndef __BOT_TYPE_H
 #define __BOT_TYPE_H
 
-typedef struct
+struct botClass_t
 {
 	char name[ 64 ];
 	unsigned short polyFlagsInclude;
 	unsigned short polyFlagsExclude;
-} botClass_t;
+};
 
-typedef struct
+struct botTrace_t
 {
 	float frac;
 	float normal[ 3 ];
-} botTrace_t;
+};
 
 // parameters outputted by navigation
 // if they are followed exactly, the bot will not go off the nav mesh
-typedef struct
+struct botNavCmd_t
 {
 	float    pos[ 3 ];
 	float    tpos[ 3 ];
 	float    dir[ 3 ];
 	int      directPathToGoal;
 	int      havePath;
-} botNavCmd_t;
+};
 
-typedef enum
+enum botRouteTargetType_t
 {
 	BOT_TARGET_STATIC, // target stays in one place always
 	BOT_TARGET_DYNAMIC // target can move
-} botRouteTargetType_t;
+};
 
 // type: determines if the object can move or not
 // pos: the object's position 
 // polyExtents: how far away from pos to search for a nearby navmesh polygon for finding a route
-typedef struct
+struct botRouteTarget_t
 {
 	botRouteTargetType_t type;
 	float pos[ 3 ];
 	float polyExtents[ 3 ];
-} botRouteTarget_t;
+};
 
 enum navPolyFlags
 {

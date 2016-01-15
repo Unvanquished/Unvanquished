@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // when applicable, keys should be passed as lowercased ASCII
 
-typedef enum
+enum keyNum_t
 {
   K_NONE = -1,
   K_TAB = 9,
@@ -290,6 +290,6 @@ typedef enum
   K_CONSOLE,
 
   MAX_KEYS
-} keyNum_t;
+};
 
 #endif

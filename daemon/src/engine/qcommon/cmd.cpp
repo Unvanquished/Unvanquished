@@ -42,13 +42,13 @@ Maryland 20850 USA.
 
 #define MAX_CMD_BUFFER 131072
 
-typedef struct cmdContext_s
+struct cmdContext_t
 {
 	int  argc;
 	char *argv[ MAX_STRING_TOKENS ]; // points into cmd.tokenized
 	char tokenized[ BIG_INFO_STRING + MAX_STRING_TOKENS ]; // will have 0 bytes inserted
 	char cmd[ BIG_INFO_STRING ]; // the original command we received (no token processing)
-} cmdContext_t;
+};
 
 static cmdContext_t cmd;
 

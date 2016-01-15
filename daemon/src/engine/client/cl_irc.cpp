@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef WIN32
 # include <winsock.h>
 # include <process.h>
-typedef SOCKET irc_socket_t;
+using irc_socket_t = SOCKET;
 #else
 # include <unistd.h>
 # include <sys/socket.h>
@@ -45,7 +45,7 @@ typedef SOCKET irc_socket_t;
 # include <sys/ioctl.h>
 # include <sys/uio.h>
 # include <pthread.h>
-typedef int irc_socket_t;
+using irc_socket_t = int;
 # if !defined HAVE_CLOSESOCKET
 #  define closesocket    close
 # endif
@@ -209,14 +209,14 @@ static struct irc_message_t IRC_ReceivedMessage;
  * they are stored in hash tables.
  */
 
-typedef int ( *irc_handler_func_t )();
-typedef int ( *ctcp_handler_func_t )( bool is_channel, const char *message );
+using irc_handler_func_t = int (*)();
+using ctcp_handler_func_t = int (*)(bool is_channel, const char *message);
 
-typedef struct
+struct irc_handler_t
 {
 	char cmd_string[ 33 ];
 	void ( *handler )();
-}irc_handler_t;
+};
 
 static std::unordered_map<std::string, irc_handler_func_t>  IRC_Handlers;
 static std::unordered_map<std::string, ctcp_handler_func_t> IRC_CTCPHandlers;

@@ -39,12 +39,12 @@ Maryland 20850 USA.
 #define MAX_TEAMS 4
 #define DEFAULT_BINDING 0
 
-typedef struct
+struct qkey_t
 {
 	bool down;
 	int      repeats; // if > 1, it is autorepeating
 	char     *binding[ MAX_TEAMS ];
-} qkey_t;
+};
 
 extern bool key_overstrikeMode;
 extern qkey_t   keys[ MAX_KEYS ];

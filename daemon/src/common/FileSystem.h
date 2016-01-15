@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace FS {
 
 // File offset type. Using 64bit to allow large files.
-typedef int64_t offset_t;
+using offset_t = int64_t;
 
 // Special value to indicate the function should throw a system_error instead
 // of returning an error code. This avoids the need to have 2 overloads for each
@@ -456,11 +456,11 @@ namespace HomePath {
 	// List all files in the given subdirectory, optionally recursing into subdirectories
 	// Directory names are returned with a trailing slash to differentiate them from files
 #ifdef BUILD_VM
-	typedef std::vector<std::string> DirectoryRange;
-	typedef std::vector<std::string> RecursiveDirectoryRange;
+	using DirectoryRange = std::vector<std::string>;
+	using RecursiveDirectoryRange = std::vector<std::string>;
 #else
-	typedef RawPath::DirectoryRange DirectoryRange;
-	typedef RawPath::RecursiveDirectoryRange RecursiveDirectoryRange;
+	using DirectoryRange = RawPath::DirectoryRange;
+	using RecursiveDirectoryRange = RawPath::RecursiveDirectoryRange;
 #endif
 	DirectoryRange ListFiles(Str::StringRef path, std::error_code& err = throws());
 	RecursiveDirectoryRange ListFilesRecursive(Str::StringRef path, std::error_code& err = throws());

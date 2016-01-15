@@ -97,7 +97,7 @@ void SleepFor(SteadyClock::duration time)
 	pNtSetTimerResolution(maxRes, TRUE, &curRes);
 
 	// Convert to NT units of 100ns
-	typedef std::chrono::duration<int64_t, std::ratio<1, 10000000>> NTDuration;
+	using NTDuration = std::chrono::duration<int64_t, std::ratio<1, 10000000>>;
 	auto ntTime = std::chrono::duration_cast<NTDuration>(time);
 
 	// Store the delay as a negative number to indicate a relative sleep

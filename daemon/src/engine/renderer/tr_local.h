@@ -36,13 +36,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DYN_BUFFER_SEGMENTS 4
 #define BUFFER_OFFSET(i) ((char *)nullptr + ( i ))
 
-typedef int8_t   i8vec4_t[ 4 ];
-typedef uint8_t  u8vec4_t[ 4 ];
-typedef int16_t  i16vec4_t [ 4 ];
-typedef uint16_t u16vec4_t [ 4 ];
-typedef int16_t  i16vec2_t [ 2 ];
-typedef uint16_t u16vec2_t [ 2 ];
-typedef int16_t  f16vec4_t [ 4 ]; // half float vector
+using i8vec4_t = int8_t[4];
+using u8vec4_t = uint8_t[4];
+using i16vec4_t = int16_t[4];
+using u16vec4_t = uint16_t[4];
+using i16vec2_t = int16_t[2];
+using u16vec2_t = uint16_t[2];
+using f16vec4_t = int16_t[4]; // half float vector
 
 // GL conversion helpers
 static inline float unorm8ToFloat(byte unorm8) {
@@ -182,7 +182,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define MAX_INTERACTIONS   MAX_DRAWSURFS * 8
 #define INTERACTION_MASK   ( MAX_INTERACTIONS - 1 )
 
-	typedef enum
+	enum renderSpeeds_t
 	{
 	  RSPEEDS_GENERAL = 1,
 	  RSPEEDS_CULLING,
@@ -195,9 +195,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  RSPEEDS_CHC,
 	  RSPEEDS_NEAR_FAR,
 	  RSPEEDS_DECALS
-	} renderSpeeds_t;
+	};
 
-	typedef enum
+	enum glDebugModes_t
 	{
 		GLDEBUG_NONE,
 		GLDEBUG_ERROR,
@@ -207,7 +207,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		GLDEBUG_PERFORMANCE,
 		GLDEBUG_OTHER,
 		GLDEBUG_ALL
-	} glDebugModes_t;
+	};
 
 #define REF_CUBEMAP_SIZE       32
 #define REF_CUBEMAP_STORE_SIZE 1024
@@ -217,20 +217,20 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define REF_COLORGRADEMAP_SIZE 16
 #define REF_COLORGRADEMAP_STORE_SIZE ( REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE )
 
-	typedef enum
+	enum cullResult_t
 	{
 	  CULL_IN, // completely unclipped
 	  CULL_CLIP, // clipped by one or more planes
 	  CULL_OUT, // completely outside the clipping planes
-	} cullResult_t;
+	};
 
-	typedef struct screenRect_s
+	struct screenRect_t
 	{
 		int                 coords[ 4 ];
-		struct screenRect_s *next;
-	} screenRect_t;
+		screenRect_t *next;
+	};
 
-	typedef enum
+	enum frustumBits_t
 	{
 	  FRUSTUM_LEFT,
 	  FRUSTUM_RIGHT,
@@ -240,9 +240,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  FRUSTUM_FAR,
 	  FRUSTUM_PLANES = 5,
 	  FRUSTUM_CLIPALL = 1 | 2 | 4 | 8 | 16 //| 32
-	} frustumBits_t;
+	};
 
-	typedef cplane_t frustum_t[ 6 ];
+	using frustum_t = cplane_t[6];
 
 	enum
 	{
@@ -255,12 +255,12 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  CUBESIDE_CLIPALL = 1 | 2 | 4 | 8 | 16 | 32
 	};
 
-	typedef struct link_s
+	struct link_t
 	{
 		void          *data;
 		int           numElements; // only used by sentinels
-		struct link_s *prev, *next;
-	} link_t;
+		link_t *prev, *next;
+	};
 
 	static INLINE void InitLink( link_t *l, void *data )
 	{
@@ -382,7 +382,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 // a trRefLight_t has all the information passed in by
 // the client game, as well as some locally derived info
-	typedef struct trRefLight_s
+	struct trRefLight_t
 	{
 		// public from client game
 		refLight_t l;
@@ -418,28 +418,28 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		frustum_t                 frustum;
 		vec4_t                    localFrustum[ 6 ];
-		struct VBO_s              *frustumVBO;
+		struct VBO_t              *frustumVBO;
 
-		struct IBO_s              *frustumIBO;
+		struct IBO_t              *frustumIBO;
 
 		uint16_t                  frustumIndexes;
 		uint16_t                  frustumVerts;
 
 		screenRect_t              scissor;
 
-		struct shader_s           *shader;
+		struct shader_t           *shader;
 
-		struct interactionCache_s *firstInteractionCache; // only used by static lights
+		struct interactionCache_t *firstInteractionCache; // only used by static lights
 
-		struct interactionCache_s *lastInteractionCache; // only used by static lights
+		struct interactionCache_t *lastInteractionCache; // only used by static lights
 
-		struct interactionVBO_s   *firstInteractionVBO; // only used by static lights
+		struct interactionVBO_t   *firstInteractionVBO; // only used by static lights
 
-		struct interactionVBO_s   *lastInteractionVBO; // only used by static lights
+		struct interactionVBO_t   *lastInteractionVBO; // only used by static lights
 
-		struct interaction_s      *firstInteraction;
+		struct interaction_t      *firstInteraction;
 
-		struct interaction_s      *lastInteraction;
+		struct interaction_t      *lastInteraction;
 
 		uint16_t                  numInteractions; // total interactions
 		uint16_t                  numShadowOnlyInteractions;
@@ -449,11 +449,11 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		link_t                    leafs;
 
 		int                       visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
-	} trRefLight_t;
+	};
 
 // a trRefEntity_t has all the information passed in by
 // the client game, as well as some locally derived info
-	typedef struct
+	struct trRefEntity_t
 	{
 		// public from client game
 		refEntity_t e;
@@ -469,9 +469,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec3_t       localBounds[ 2 ];
 		vec3_t       worldBounds[ 2 ]; // only set when not completely culled. use them for light interactions
 		vec3_t       worldCorners[ 8 ];
-	} trRefEntity_t;
+	};
 
-	typedef struct
+	struct orientationr_t
 	{
 		vec3_t   origin; // in world coordinates
 		vec3_t   axis[ 3 ]; // orientation in world
@@ -480,16 +480,16 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		matrix_t viewMatrix; // affine inverse of transform matrix to transform other objects into this space
 		matrix_t viewMatrix2; // without quake2opengl conversion
 		matrix_t modelViewMatrix; // only used by models, camera viewMatrix * transformMatrix
-	} orientationr_t;
+	};
 
 // useful helper struct
-	typedef struct vertexHash_s
+	struct vertexHash_t
 	{
 		vec3_t              xyz;
 		void                *data;
 
-		struct vertexHash_s *next;
-	} vertexHash_t;
+		vertexHash_t *next;
+	};
 
 	enum
 	{
@@ -520,14 +520,14 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  IF_BC5 = BIT( 23 )
 	};
 
-	typedef enum
+	enum filterType_t
 	{
 	  FT_DEFAULT,
 	  FT_LINEAR,
 	  FT_NEAREST
-	} filterType_t;
+	};
 
-	typedef enum
+	enum wrapTypeEnum_t
 	{
 	  WT_REPEAT,
 	  WT_CLAMP, // don't repeat the texture for texture coords outside [0, 1]
@@ -535,25 +535,25 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  WT_ONE_CLAMP,
 	  WT_ZERO_CLAMP, // guarantee 0,0,0,255 edge for projected textures
 	  WT_ALPHA_ZERO_CLAMP // guarante 0 alpha edge for projected textures
-	} wrapTypeEnum_t;
+	};
 
-	typedef struct wrapType_s
+	struct wrapType_t
 	{
 		wrapTypeEnum_t s, t;
 
-		wrapType_s() : s(WT_CLAMP), t(WT_CLAMP) {}
-		wrapType_s( wrapTypeEnum_t w ) : s(w), t(w) {}
-		wrapType_s( wrapTypeEnum_t s, wrapTypeEnum_t t ) : s(s), t(t) {}
+		wrapType_t() : s(WT_CLAMP), t(WT_CLAMP) {}
+		wrapType_t( wrapTypeEnum_t w ) : s(w), t(w) {}
+		wrapType_t( wrapTypeEnum_t s, wrapTypeEnum_t t ) : s(s), t(t) {}
 
-		inline struct wrapType_s &operator =( wrapTypeEnum_t w ) { this->s = this->t = w; return *this; }
+		inline wrapType_t &operator =( wrapTypeEnum_t w ) { this->s = this->t = w; return *this; }
 
-	} wrapType_t;
+	};
 
 	static inline bool operator ==( const wrapType_t &a, const wrapType_t &b ) { return a.s == b.s && a.t == b.t; }
 	static inline bool operator !=( const wrapType_t &a, const wrapType_t &b ) { return a.s != b.s || a.t != b.t; }
 
 
-	typedef struct image_s
+	struct image_t
 	{
 		char name[ 1024 ]; // formerly MAX_QPATH, game path, including extension
 		// can contain stuff like this now:
@@ -574,12 +574,12 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		filterType_t   filterType;
 		wrapType_t     wrapType;
 
-		struct image_s *next;
-	} image_t;
+		image_t *next;
+	};
 
 	inline bool IsImageCompressed(int bits) { return bits & (IF_BC1 | IF_BC3 | IF_BC4 | IF_BC5); }
 
-	typedef struct FBO_s
+	struct FBO_t
 	{
 		char     name[ MAX_QPATH ];
 
@@ -601,7 +601,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int      width;
 		int      height;
-	} FBO_t;
+	};
 
 	enum
 	{
@@ -660,7 +660,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	              //ATTR_BONE_WEIGHTS
 	};
 
-	typedef struct
+	struct vboAttributeLayout_t
 	{
 		GLint   numComponents; // how many components in a single attribute for a single vertex
 		GLenum  componentType; // the input type for a single component
@@ -669,17 +669,17 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		GLsizei realStride;
 		GLsizei ofs;
 		GLsizei frameOffset; // for vertex animation, real offset computed as ofs + frame * frameOffset
-	} vboAttributeLayout_t;
+	};
 
-	typedef enum
+	enum vboLayout_t
 	{
 		VBO_LAYOUT_VERTEX_ANIMATION,
 		VBO_LAYOUT_SKELETAL,
 		VBO_LAYOUT_STATIC,
 		VBO_LAYOUT_POSITION
-	} vboLayout_t;
+	};
 
-	typedef struct
+	struct vboData_t
 	{
 		vec3_t *xyz;
 		i16vec4_t *qtangent;
@@ -692,9 +692,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int	numFrames;
 		int     numVerts;
 		bool noLightCoords;
-	} vboData_t;
+	};
 
-	typedef struct VBO_s
+	struct VBO_t
 	{
 		char     name[ MAX_QPATH ];
 
@@ -710,20 +710,20 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vboLayout_t layout;
 		uint32_t attribBits;
 		GLenum      usage;
-	} VBO_t;
+	};
 
-	typedef struct IBO_s
+	struct IBO_t
 	{
 		char     name[ MAX_QPATH ];
 
 		uint32_t indexesVBO;
 		uint32_t indexesSize; // amount of memory data allocated for all triangles in bytes
 		uint32_t indexesNum;
-	} IBO_t;
+	};
 
 //===============================================================================
 
-	typedef enum
+	enum shaderSort_t
 	{
 	  SS_BAD,
 	  SS_PORTAL, // mirrors, portals, viewscreens
@@ -759,9 +759,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	  SS_NEAREST, // blood blobs
 	  SS_POST_PROCESS
-	} shaderSort_t;
+	};
 
-	typedef struct shaderTable_s
+	struct shaderTable_t
 	{
 		char                 name[ MAX_QPATH ];
 
@@ -773,10 +773,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float                *values;
 		uint16_t             numValues;
 
-		struct shaderTable_s *next;
-	} shaderTable_t;
+		shaderTable_t *next;
+	};
 
-	typedef enum
+	enum genFunc_t
 	{
 	  GF_NONE,
 
@@ -786,9 +786,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  GF_SAWTOOTH,
 	  GF_INVERSE_SAWTOOTH,
 	  GF_NOISE
-	} genFunc_t;
+	};
 
-	typedef enum
+	enum deform_t
 	{
 	  DEFORM_NONE,
 	  DEFORM_WAVE,
@@ -796,9 +796,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  DEFORM_BULGE,
 	  DEFORM_MOVE,
 	  DEFORM_ROTGROW
-	} deform_t;
+	};
 
-	typedef enum
+	enum alphaGen_t
 	{
 	  AGEN_IDENTITY,
 	  AGEN_ENTITY,
@@ -808,9 +808,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  AGEN_WAVEFORM,
 	  AGEN_CONST,
 	  AGEN_CUSTOM
-	} alphaGen_t;
+	};
 
-	typedef enum
+	enum colorGen_t
 	{
 	  CGEN_BAD,
 	  CGEN_IDENTITY_LIGHTING, // tr.identityLight
@@ -823,9 +823,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  CGEN_CONST, // fixed color
 	  CGEN_CUSTOM_RGB, // like fixed color but generated dynamically, single arithmetic expression
 	  CGEN_CUSTOM_RGBs, // multiple expressions
-	} colorGen_t;
+	};
 
-	typedef enum
+	enum opcode_t
 	{
 	  OP_BAD,
 	  // logic operators
@@ -879,30 +879,30 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  OP_DISTANCE,
 	  // table access
 	  OP_TABLE
-	} opcode_t;
+	};
 
-	typedef struct
+	struct opstring_t
 	{
 		const char *s;
 		opcode_t   type;
-	} opstring_t;
+	};
 
-	typedef struct
+	struct expOperation_t
 	{
 		opcode_t type;
 		float    value;
-	} expOperation_t;
+	};
 
 #define MAX_EXPRESSION_OPS 32
-	typedef struct
+	struct expression_t
 	{
 		expOperation_t ops[ MAX_EXPRESSION_OPS ];
 		uint8_t        numOps;
 
 		bool       active; // no parsing problems
-	} expression_t;
+	};
 
-	typedef struct
+	struct waveForm_t
 	{
 		genFunc_t func;
 
@@ -910,11 +910,11 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float     amplitude;
 		float     phase;
 		float     frequency;
-	} waveForm_t;
+	};
 
 #define TR_MAX_TEXMODS 4
 
-	typedef enum
+	enum texMod_t
 	{
 	  TMOD_NONE,
 	  TMOD_TRANSFORM,
@@ -930,12 +930,12 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  TMOD_CENTERSCALE,
 	  TMOD_SHEAR,
 	  TMOD_ROTATE2
-	} texMod_t;
+	};
 
 #define MAX_SHADER_DEFORMS      3
 #define MAX_SHADER_DEFORM_STEPS	4
 #define MAX_SHADER_DEFORM_PARMS ( MAX_SHADER_DEFORMS * MAX_SHADER_DEFORM_STEPS )
-	typedef struct
+	struct deformStage_t
 	{
 		deform_t   deformation; // vertex coordinate modification type
 
@@ -948,9 +948,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float      bulgeSpeed;
 
 		float      flareSize;
-	} deformStage_t;
+	};
 
-	typedef struct
+	struct texModInfo_t
 	{
 		texMod_t type;
 
@@ -977,7 +977,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		expression_t sExp;
 		expression_t tExp;
 		expression_t rExp;
-	} texModInfo_t;
+	};
 
 #define MAX_IMAGE_ANIMATIONS 24
 
@@ -991,7 +991,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  MAX_TEXTURE_BUNDLES = 4
 	};
 
-	typedef struct
+	struct textureBundle_t
 	{
 		uint8_t      numImages;
 		float        imageAnimationSpeed;
@@ -1002,9 +1002,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int          videoMapHandle;
 		bool     isVideoMap;
-	} textureBundle_t;
+	};
 
-	typedef enum
+	enum stageType_t
 	{
 	  // material shader stage types
 	  ST_COLORMAP, // vanilla Q3A style shader treatening
@@ -1030,9 +1030,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  // light shader stage types
 	  ST_ATTENUATIONMAP_XY,
 	  ST_ATTENUATIONMAP_Z
-	} stageType_t;
+	};
 
-	typedef enum
+	enum collapseType_t
 	{
 	  COLLAPSE_none,
 	  COLLAPSE_genericMulti,
@@ -1042,9 +1042,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  COLLAPSE_lighting_DBSG,
 	  COLLAPSE_reflection_CB,
 	  COLLAPSE_color_lightmap
-	} collapseType_t;
+	};
 
-	typedef struct
+	struct shaderStage_t
 	{
 		stageType_t     type;
 
@@ -1111,48 +1111,48 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		expression_t    wrapAroundLightingExp;
 
 		bool        noFog; // used only for shaders that have fog disabled, so we can enable it for individual stages
-	} shaderStage_t;
+	};
 
-	struct shaderCommands_s;
+	struct shaderCommands_t;
 
-	typedef enum
+	enum cullType_t
 	{
 		CT_FRONT_SIDED = 0,
 		CT_TWO_SIDED   = 1,
 		CT_BACK_SIDED  = 2
-	} cullType_t;
+	};
 
 	// reverse the cull operation
 #       define ReverseCull(c) (2 - (c))
 
-	typedef enum
+	enum fogPass_t
 	{
 	  FP_NONE, // surface is translucent and will just be adjusted properly
 	  FP_EQUAL, // surface is opaque but possibly alpha tested
 	  FP_LE // surface is translucent, but still needs a fog pass (fog surface)
-	} fogPass_t;
+	};
 
-	typedef struct
+	struct skyParms_t
 	{
 		float   cloudHeight;
 		image_t *outerbox, *innerbox;
-	} skyParms_t;
+	};
 
-	typedef struct
+	struct fogParms_t
 	{
 		vec3_t color;
 		float  depthForOpaque;
-	} fogParms_t;
+	};
 
-	typedef enum
+	enum shaderType_t
 	{
 	  SHADER_2D, // surface material: shader is for 2D rendering
 	  SHADER_3D_DYNAMIC, // surface material: shader is for cGen diffuseLighting lighting
 	  SHADER_3D_STATIC, // surface material: pre-lit triangle models
 	  SHADER_LIGHT // light material: attenuation
-	} shaderType_t;
+	};
 
-	typedef struct shader_s
+	struct shader_t
 	{
 		char         name[ MAX_QPATH ]; // game path, including extension
 		shaderType_t type;
@@ -1220,15 +1220,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int             currentState; // current state index for cycle purposes
 
-		struct shader_s *remappedShader; // current shader this one is remapped too
+		struct shader_t *remappedShader; // current shader this one is remapped too
 
 		struct {
 			char *name;
 			int  index;
 		} altShader[ MAX_ALTSHADERS ]; // state-based remapping; note that index 0 is unused
 
-		struct shader_s *next;
-	} shader_t;
+		struct shader_t *next;
+	};
 
 // *INDENT-OFF*
 	enum
@@ -1311,18 +1311,18 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 // Tr3B - shaderProgram_t represents a pair of one
 // GLSL vertex and one GLSL fragment shader
-	typedef struct shaderProgram_s
+	struct shaderProgram_t
 	{
 		GLuint    program;
 		GLuint    VS, FS;
 		uint32_t  attribs; // vertex array attributes
 		GLint    *uniformLocations;
 		byte     *uniformFirewall;
-	} shaderProgram_t;
+	};
 
 // trRefdef_t holds everything that comes in refdef_t,
 // as well as the locally generated scene information
-	typedef struct
+	struct trRefdef_t
 	{
 		int           x, y, width, height;
 		float         fov_x, fov_y;
@@ -1346,36 +1346,36 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		trRefLight_t            *lights;
 
 		int                     numPolys;
-		struct srfPoly_s        *polys;
+		struct srfPoly_t        *polys;
 
 		int                     numPolybuffers;
-		struct srfPolyBuffer_s  *polybuffers;
+		struct srfPolyBuffer_t  *polybuffers;
 
 		int                     decalBits; // ydnar: optimization
 		int                     numDecalProjectors;
-		struct decalProjector_s *decalProjectors;
+		struct decalProjector_t *decalProjectors;
 
 		int                     numDecals;
-		struct srfDecal_s       *decals;
+		struct srfDecal_t       *decals;
 
 		int                     numDrawSurfs;
-		struct drawSurf_s       *drawSurfs;
+		struct drawSurf_t       *drawSurfs;
 
 		int                     numInteractions;
-		struct interaction_s    *interactions;
+		struct interaction_t    *interactions;
 
 		byte                    *pixelTarget; //set this to Non Null to copy to a buffer after scene rendering
 		int                     pixelTargetWidth;
 		int                     pixelTargetHeight;
 
 		int                    numVisTests;
-		struct visTestResult_s *visTests;
-	} trRefdef_t;
+		struct visTestResult_t *visTests;
+	};
 
 //=================================================================================
 
 // ydnar: decal projection
-	typedef struct decalProjector_s
+	struct decalProjector_t
 	{
 		shader_t *shader;
 		Color::Color32Bit color;
@@ -1387,11 +1387,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int      numPlanes; // either 5 or 6, for quad or triangle projectors
 		vec4_t   planes[ 6 ];
 		vec4_t   texMat[ 3 ][ 2 ];
-	}
+	};
 
-	decalProjector_t;
-
-	typedef struct corona_s
+	struct corona_t
 	{
 		vec3_t   origin;
 		vec3_t   color; // range from 0.0 to 1.0, should be color normalized
@@ -1399,41 +1397,41 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float    scale; // uses r_flaresize as the baseline (1.0)
 		int      id;
 		bool visible; // still send the corona request, even if not visible, for proper fading
-	} corona_t;
+	};
 
 //=================================================================================
 
 // skins allow models to be retextured without modifying the model file
-	typedef struct
+	struct skinSurface_t
 	{
 		char     name[ MAX_QPATH ];
 		shader_t *shader;
-	} skinSurface_t;
+	};
 
 //----(SA) modified
 #define MAX_PART_MODELS 5
 
-	typedef struct
+	struct skinModel_t
 	{
 		char type[ MAX_QPATH ]; // md3_lower, md3_lbelt, md3_rbelt, etc.
 		char model[ MAX_QPATH ]; // lower.md3, belt1.md3, etc.
 		int  hash;
-	} skinModel_t;
+	};
 
-	typedef struct skin_s
+	struct skin_t
 	{
 		char          name[ MAX_QPATH ]; // game path, including extension
 		int           numSurfaces;
 		int           numModels;
 		skinSurface_t *surfaces[ MD3_MAX_SURFACES ];
 		skinModel_t   *models[ MAX_PART_MODELS ];
-	} skin_t;
+	};
 
 //----(SA) end
 
 //=================================================================================
 
-	typedef struct
+	struct fog_t
 	{
 		int        originalBrushNumber;
 		vec3_t     bounds[ 2 ];
@@ -1445,9 +1443,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// for clipping distance in fog when outside
 		bool hasSurface;
 		float    surface[ 4 ];
-	} fog_t;
+	};
 
-	typedef struct
+	struct viewParms_t
 	{
 		orientationr_t orientation;
 		orientationr_t world;
@@ -1480,11 +1478,11 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float                zFar;
 
 		int                  numDrawSurfs;
-		struct drawSurf_s    *drawSurfs;
+		struct drawSurf_t    *drawSurfs;
 
 		int                  numInteractions;
-		struct interaction_s *interactions;
-	} viewParms_t;
+		struct interaction_t *interactions;
+	};
 
 	/*
 	==============================================================================
@@ -1495,7 +1493,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	*/
 
 // any changes in surfaceType must be mirrored in rb_surfaceTable[]
-	typedef enum
+	enum surfaceType_t
 	{
 	  SF_MIN = -1, // partially ensures that sizeof(surfaceType_t) == sizeof(int)
 
@@ -1524,7 +1522,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  SF_NUM_SURFACE_TYPES,
 
 	  SF_MAX = 0x7fffffff // partially (together, fully) ensures that sizeof(surfaceType_t) == sizeof(int)
-	} surfaceType_t;
+	};
 
 
 	// drawSurf components are packed into a single 64bit integer for
@@ -1573,7 +1571,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	static_assert( SORT_SHADER_MASK >= MAX_SHADERS - 1, "not enough qshader bits" );
 
-	typedef struct drawSurf_s
+	struct drawSurf_t
 	{
 		trRefEntity_t *entity;
 		surfaceType_t *surface; // any of surface*_t
@@ -1604,9 +1602,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 				( uint64_t( lightmapNum & SORT_LIGHTMAP_MASK ) << SORT_LIGHTMAP_SHIFT ) |
 				( uint64_t( shaderNum & SORT_SHADER_MASK ) << SORT_SHADER_SHIFT );
 		}
-	} drawSurf_t;
+	};
 
-	typedef enum
+	enum interactionType_t
 	{
 		IA_LIGHT = 1,		// the received light if not in shadow
 		IA_SHADOW = 2,		// the surface shadows the light
@@ -1614,39 +1612,39 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		IA_DEFAULT = IA_LIGHT | IA_SHADOW, // lighting and shadowing
 		IA_DEFAULTCLIP = IA_LIGHT | IA_SHADOWCLIP
-	} interactionType_t;
+	};
 
 // an interactionCache is a node between a light and a precached world surface
-	typedef struct interactionCache_s
+	struct interactionCache_t
 	{
 		interactionType_t         type;
 
-		struct bspSurface_s       *surface;
+		struct bspSurface_t       *surface;
 
 		byte                      cubeSideBits;
 		bool                  redundant;
 		bool                  mergedIntoVBO;
 
-		struct interactionCache_s *next;
-	} interactionCache_t;
+		interactionCache_t *next;
+	};
 
-	typedef struct interactionVBO_s
+	struct interactionVBO_t
 	{
 		interactionType_t       type;
 
 		byte                    cubeSideBits;
 
-		struct shader_s         *shader;
+		struct shader_t         *shader;
 
-		struct srfVBOMesh_s     *vboLightMesh;
+		struct srfVBOMesh_t     *vboLightMesh;
 
-		struct srfVBOMesh_s     *vboShadowMesh;
+		struct srfVBOMesh_t     *vboShadowMesh;
 
-		struct interactionVBO_s *next;
-	} interactionVBO_t;
+		interactionVBO_t *next;
+	};
 
 // an interaction is a node between a light and any surface
-	typedef struct interaction_s
+	struct interaction_t
 	{
 		interactionType_t    type;
 
@@ -1660,10 +1658,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int16_t              scissorX, scissorY, scissorWidth, scissorHeight;
 
-		struct interaction_s *next;
-	} interaction_t;
+		interaction_t *next;
+	};
 
-	typedef struct
+	struct shadowState_t
 	{
 		int      numDegenerated; // number of bad triangles
 		bool degenerated[ SHADER_MAX_TRIANGLES ];
@@ -1673,7 +1671,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int      numIndexes;
 		int      indexes[ SHADER_MAX_INDEXES ];
-	} shadowState_t;
+	};
 
 	extern shadowState_t shadowState;
 
@@ -1684,44 +1682,42 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 // when cgame directly specifies a polygon, it becomes a srfPoly_t
 // as soon as it is called
-	typedef struct srfPoly_s
+	struct srfPoly_t
 	{
 		surfaceType_t surfaceType;
 		qhandle_t     hShader;
 		int16_t       numVerts;
 		int16_t       fogIndex;
 		polyVert_t    *verts;
-	} srfPoly_t;
+	};
 
-	typedef struct srfPolyBuffer_s
+	struct srfPolyBuffer_t
 	{
 		surfaceType_t surfaceType;
 		int16_t       fogIndex;
 		polyBuffer_t  *pPolyBuffer;
-	} srfPolyBuffer_t;
+	};
 
 // ydnar: decals
 #define MAX_DECAL_VERTS   10 // worst case is triangle clipped by 6 planes
 #define MAX_WORLD_DECALS  1024
 #define MAX_ENTITY_DECALS 128
-	typedef struct srfDecal_s
+	struct srfDecal_t
 	{
 		surfaceType_t surfaceType;
 		int           numVerts;
 		polyVert_t    verts[ MAX_DECAL_VERTS ];
-	}
+	};
 
-	srfDecal_t;
-
-	typedef struct srfFlare_s
+	struct srfFlare_t
 	{
 		surfaceType_t surfaceType;
 		vec3_t        origin;
 		vec3_t        normal;
 		vec3_t        color;
-	} srfFlare_t;
+	};
 
-	typedef struct
+	struct srfVert_t
 	{
 		vec3_t xyz;
 		vec2_t st;
@@ -1729,16 +1725,16 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec3_t normal;
 		i16vec4_t qtangent;
 		Color::Color32Bit lightColor;
-	} srfVert_t;
+	};
 
-	typedef struct
+	struct srfTriangle_t
 	{
 		int      indexes[ 3 ];
 		bool facingLight;
-	} srfTriangle_t;
+	};
 
 // ydnar: plain map drawsurfaces must match this header
-	typedef struct srfGeneric_s
+	struct srfGeneric_t
 	{
 		surfaceType_t surfaceType;
 
@@ -1746,11 +1742,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec3_t   bounds[ 2 ];
 		vec3_t   origin;
 		float    radius;
-	}
+	};
 
-	srfGeneric_t;
-
-	typedef struct srfGridMesh_s : srfGeneric_s
+	struct srfGridMesh_t : srfGeneric_t
 	{
 		// lod information, which may be different
 		// than the culling information to allow for
@@ -1778,9 +1772,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// static render data
 		VBO_t *vbo; // points to bsp model VBO
 		IBO_t *ibo;
-	} srfGridMesh_t;
+	};
 
-	typedef struct srfSurfaceFace_s : srfGeneric_s
+	struct srfSurfaceFace_t : srfGeneric_t
 	{
 		cplane_t     plane;
 
@@ -1798,10 +1792,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// static render data
 		VBO_t *vbo; // points to bsp model VBO
 		IBO_t *ibo;
-	} srfSurfaceFace_t;
+	};
 
 // misc_models in maps are turned into direct geometry by xmap
-	typedef struct srfTriangles_s : srfGeneric_s
+	struct srfTriangles_t : srfGeneric_t
 	{
 		// triangle definitions
 		int           numTriangles;
@@ -1817,11 +1811,11 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// static render data
 		VBO_t *vbo; // points to bsp model VBO
 		IBO_t *ibo;
-	} srfTriangles_t;
+	};
 
-	typedef struct srfVBOMesh_s : srfGeneric_s
+	struct srfVBOMesh_t : srfGeneric_t
 	{
-		struct shader_s *shader; // FIXME move this to somewhere else
+		struct shader_t *shader; // FIXME move this to somewhere else
 
 		int             lightmapNum; // FIXME get rid of this by merging all lightmaps at level load
 		int             fogIndex;
@@ -1834,15 +1828,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// static render data
 		VBO_t *vbo;
 		IBO_t *ibo;
-	} srfVBOMesh_t;
+	};
 
-	typedef struct srfVBOMD5Mesh_s
+	struct srfVBOMD5Mesh_t
 	{
 		surfaceType_t     surfaceType;
 
-		struct md5Model_s *md5Model;
+		struct md5Model_t *md5Model;
 
-		struct shader_s   *shader; // FIXME move this to somewhere else
+		shader_t   *shader; // FIXME move this to somewhere else
 
 		int               skinIndex;
 
@@ -1857,15 +1851,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// static render data
 		VBO_t *vbo;
 		IBO_t *ibo;
-	} srfVBOMD5Mesh_t;
+	};
 
-	typedef struct srfVBOMDVMesh_s
+	struct srfVBOMDVMesh_t
 	{
 		surfaceType_t       surfaceType;
 
-		struct mdvModel_s   *mdvModel;
+		struct mdvModel_t   *mdvModel;
 
-		struct mdvSurface_s *mdvSurface;
+		struct mdvSurface_t *mdvSurface;
 
 		// backEnd stats
 		int numIndexes;
@@ -1874,7 +1868,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// static render data
 		VBO_t *vbo;
 		IBO_t *ibo;
-	} srfVBOMDVMesh_t;
+	};
 
 	extern void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * );
 
@@ -1883,22 +1877,22 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	BRUSH MODELS - in memory representation
 	==============================================================================
 	*/
-	typedef struct bspSurface_s
+	struct bspSurface_t
 	{
 		int             viewCount; // if == tr.viewCount, already added
 		int             lightCount;
 		int             interactionBits;
 
-		struct shader_s *shader;
+		struct shader_t *shader;
 
 		int16_t         lightmapNum; // -1 = no lightmap
 		int16_t         fogIndex;
 
 		surfaceType_t   *data; // any of srf*_t
-	} bspSurface_t;
+	};
 
 // ydnar: bsp model decal surfaces
-	typedef struct decal_s
+	struct decal_t
 	{
 		bspSurface_t *parent;
 		shader_t     *shader;
@@ -1906,23 +1900,21 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int16_t      fogIndex;
 		int          numVerts;
 		polyVert_t   verts[ MAX_DECAL_VERTS ];
-	}
-
-	decal_t;
+	};
 
 #define CONTENTS_NODE -1
-	typedef struct bspNode_s
+	struct bspNode_t
 	{
 		// common with leaf and node
 		int              contents; // -1 for nodes, to differentiate from leafs
 		int              visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
 
 		vec3_t           mins, maxs; // for bounding box culling
-		struct bspNode_s *parent;
+		bspNode_t *parent;
 
 		// node specific
 		cplane_t         *plane;
-		struct bspNode_s *children[ 2 ];
+		bspNode_t *children[ 2 ];
 
 		// leaf specific
 		int          cluster;
@@ -1930,9 +1922,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int          firstMarkSurface;
 		int          numMarkSurfaces;
-	} bspNode_t;
+	};
 
-	typedef struct
+	struct bspModel_t
 	{
 		vec3_t       bounds[ 2 ]; // for culling
 
@@ -1941,28 +1933,28 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		// ydnar: decals
 		decal_t *decals;
-	} bspModel_t;
+	};
 
 	// The light direction vector is stored as the x/y coordinates
 	// of the vector projected on an unit octahedron. To disambiguate
 	// the upper and lower half of the octahedron, the four lower
 	// triangles of the octahedron are flipped into the outer corners
 	// of the unit square.
-	typedef struct bspGridPoint1_s
+	struct bspGridPoint1_t
 	{
 		byte  ambient[3];
 		byte  lightVecX;
-	} bspGridPoint1_t;
-	typedef struct bspGridPoint2_s
+	};
+	struct bspGridPoint2_t
 	{
 		byte  directed[3];
 		byte  lightVecY;
-	} bspGridPoint2_t;
+	};
 
 // ydnar: optimization
 #define WORLD_MAX_SKY_NODES 32
 
-	typedef struct
+	struct world_t
 	{
 		char          name[ MAX_QPATH ]; // ie: maps/tim_dm2.bsp
 		char          baseName[ MAX_QPATH ]; // ie: tim_dm2
@@ -2041,47 +2033,47 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		const char     *entityParsePoint;
 
 		bool hasSkyboxPortal;
-	} world_t;
+	};
 
 	/*
 	==============================================================================
 	MDV MODELS - meta format for vertex animation models like .md2, .md3, .mdc
 	==============================================================================
 	*/
-	typedef struct
+	struct mdvFrame_t
 	{
 		float bounds[ 2 ][ 3 ];
 		float localOrigin[ 3 ];
 		float radius;
-	} mdvFrame_t;
+	};
 
-	typedef struct
+	struct mdvTag_t
 	{
 		float origin[ 3 ];
 		float axis[ 3 ][ 3 ];
-	} mdvTag_t;
+	};
 
-	typedef struct
+	struct mdvTagName_t
 	{
 		char name[ MAX_QPATH ]; // tag name
-	} mdvTagName_t;
+	};
 
-	typedef struct
+	struct mdvXyz_t
 	{
 		vec3_t xyz;
-	} mdvXyz_t;
+	};
 
-	typedef struct
+	struct mdvNormal_t
 	{
 		vec3_t normal;
-	} mdvNormal_t;
+	};
 
-	typedef struct
+	struct mdvSt_t
 	{
 		float st[ 2 ];
-	} mdvSt_t;
+	};
 
-	typedef struct mdvSurface_s
+	struct mdvSurface_t
 	{
 		surfaceType_t     surfaceType;
 
@@ -2097,10 +2089,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int               numTriangles;
 		srfTriangle_t     *triangles;
 
-		struct mdvModel_s *model;
-	} mdvSurface_t;
+		struct mdvModel_t *model;
+	};
 
-	typedef struct mdvModel_s
+	struct mdvModel_t
 	{
 		int             numFrames;
 		mdvFrame_t      *frames;
@@ -2116,7 +2108,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		srfVBOMDVMesh_t **vboSurfaces;
 
 		int             numSkins;
-	} mdvModel_t;
+	};
 
 	/*
 	==============================================================================
@@ -2126,15 +2118,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define MD5_IDENTSTRING "MD5Version"
 #define MD5_VERSION     10
 
-	typedef struct
+	struct md5Weight_t
 	{
 		uint8_t boneIndex; // these are indexes into the boneReferences,
 		float   boneWeight; // not the global per-frame bone list
 		vec3_t  offset;
-	} md5Weight_t;
+	};
 
 	// align for sse skinning
-	typedef ALIGNED( 16, struct
+	ALIGNED(16, struct md5Vertex_t
 	{
 		vec4_t      position;
 		vec4_t      tangent;
@@ -2146,9 +2138,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		uint32_t    numWeights;
 		uint32_t    boneIndexes[ MAX_WEIGHTS ];
 		float       boneWeights[ MAX_WEIGHTS ];
-	} ) md5Vertex_t;
+	});
 
-	typedef struct
+	struct md5Surface_t
 	{
 		surfaceType_t surfaceType;
 
@@ -2164,18 +2156,18 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		uint32_t          numWeights;
 		md5Weight_t       *weights;
 
-		struct md5Model_s *model;
-	} md5Surface_t;
+		struct md5Model_t *model;
+	};
 
-	typedef struct
+	struct md5Bone_t
 	{
 		char     name[ MAX_QPATH ];
 		int8_t   parentIndex; // parent index (-1 if root)
 		vec3_t   origin;
 		quat_t   rotation;
-	} md5Bone_t;
+	};
 
-	typedef struct md5Model_s
+	struct md5Model_t
 	{
 		uint16_t        numBones;
 		md5Bone_t       *bones;
@@ -2188,14 +2180,14 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		vec3_t          bounds[ 2 ];
 		float		internalScale;
-	} md5Model_t;
+	};
 
-	typedef enum
+	enum animType_t
 	{
 	  AT_BAD,
 	  AT_MD5,
 	  AT_IQM,
-	} animType_t;
+	};
 
 	enum
 	{
@@ -2207,7 +2199,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  COMPONENT_BIT_QZ = 1 << 5
 	};
 
-	typedef struct
+	struct md5Channel_t
 	{
 		char     name[ MAX_QPATH ];
 		int8_t   parentIndex;
@@ -2217,15 +2209,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		vec3_t   baseOrigin;
 		quat_t   baseQuat;
-	} md5Channel_t;
+	};
 
-	typedef struct
+	struct md5Frame_t
 	{
 		vec3_t bounds[ 2 ]; // bounds of all surfaces of all LODs for this frame
 		float  *components; // numAnimatedComponents many
-	} md5Frame_t;
+	};
 
-	typedef struct md5Animation_s
+	struct md5Animation_t
 	{
 		uint16_t     numFrames;
 		md5Frame_t   *frames;
@@ -2236,22 +2228,22 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int16_t      frameRate;
 
 		uint32_t     numAnimatedComponents;
-	} md5Animation_t;
+	};
 
 	//======================================================================
 	// inter-quake-model format
 	//======================================================================
-	typedef struct iqmheader      iqmHeader_t;
-	typedef struct iqmmesh        iqmMesh_t;
-	typedef struct iqmtriangle    iqmTriangle_t;
-	typedef struct iqmadjacency   iqmAdjacency_t;
-	typedef struct iqmjoint       iqmJoint_t;
-	typedef struct iqmpose        iqmPose_t;
-	typedef struct iqmanim        iqmAnim_t;
-	typedef struct iqmvertexarray iqmVertexArray_t;
-	typedef struct iqmbounds      iqmBounds_t;
+	using iqmHeader_t = struct iqmheader;
+	using iqmMesh_t = struct iqmmesh;
+	using iqmTriangle_t = struct iqmtriangle;
+	using iqmAdjacency_t = struct iqmadjacency;
+	using iqmJoint_t = struct iqmjoint;
+	using iqmPose_t = struct iqmpose;
+	using iqmAnim_t = struct iqmanim;
+	using iqmVertexArray_t = struct iqmvertexarray;
+	using iqmBounds_t = struct iqmbounds;
 
-	typedef struct {
+	struct IQModel_t {
 		int             num_vertexes;
 		int             num_triangles;
 		int             num_frames;
@@ -2259,8 +2251,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int             num_joints;
 		int             num_anims;
 
-		struct srfIQModel_s     *surfaces;
-		struct IQAnim_s         *anims;
+		struct srfIQModel_t     *surfaces;
+		struct IQAnim_t         *anims;
 
 		vec3_t          bounds[2];
 		float		internalScale;
@@ -2280,9 +2272,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int             *jointParents;
 		transform_t     *joints;
 		char            *jointNames;
-	} IQModel_t;
+	};
 
-	typedef struct IQAnim_s {
+	struct IQAnim_t {
 		int             num_frames;
 		int             num_joints;
 		int             framerate;
@@ -2294,10 +2286,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float           *bounds;
 		char            *name;
 		char            *jointNames;
-	} IQAnim_t;
+	};
 
 	// inter-quake-model surface
-	typedef struct srfIQModel_s {
+	struct srfIQModel_t {
 		surfaceType_t   surfaceType;
 		char            *name;
 		shader_t        *shader;
@@ -2307,9 +2299,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		VBO_t *vbo;
 		IBO_t *ibo;
-	} srfIQModel_t;
+	};
 
-	typedef struct
+	struct skelAnimation_t
 	{
 		char           name[ MAX_QPATH ]; // game path, including extension
 		animType_t     type;
@@ -2319,27 +2311,27 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 			md5Animation_t *md5;
 			IQAnim_t       *iqm;
 		};
-	} skelAnimation_t;
+	};
 
-	typedef struct
+	struct skelTriangle_t
 	{
 		int         indexes[ 3 ];
 		md5Vertex_t *vertexes[ 3 ];
 		bool    referenced;
-	} skelTriangle_t;
+	};
 
 //======================================================================
 
-	typedef enum
+	enum modtype_t
 	{
 	  MOD_BAD,
 	  MOD_BSP,
 	  MOD_MESH,
 	  MOD_MD5,
 	  MOD_IQM
-	} modtype_t;
+	};
 
-	typedef struct model_s
+	struct model_t
 	{
 		char        name[ MAX_QPATH ];
 		modtype_t   type;
@@ -2354,7 +2346,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		};
 
 		int         numLods;
-	} model_t;
+	};
 
 	void               R_ModelInit();
 	model_t            *R_GetModelByHandle( qhandle_t hModel );
@@ -2373,10 +2365,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	extern int gl_filter_min, gl_filter_max;
 
-	/*
-	** performanceCounters_t
-	*/
-	typedef struct
+	struct frontEndCounters_t
 	{
 		int c_box_cull_in, c_box_cull_clip, c_box_cull_out;
 		int c_plane_cull_in, c_plane_cull_out;
@@ -2403,7 +2392,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int c_dlightInteractions;
 
 		int c_decalProjectors, c_decalTestSurfaces, c_decalClipSurfaces, c_decalSurfaces, c_decalSurfacesCreated;
-	} frontEndCounters_t;
+	};
 
 #define FOG_TABLE_SIZE  256
 #define FUNCTABLE_SIZE  1024
@@ -2413,7 +2402,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define MAX_GLSTACK     5
 
 // the renderer front end should never modify glState_t
-	typedef struct
+	struct glstate_t
 	{
 		int    blendSrc, blendDst;
 		float  clearColorRed, clearColorGreen, clearColorBlue, clearColorAlpha;
@@ -2451,9 +2440,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		VBO_t           *currentVBO;
 		IBO_t           *currentIBO;
 		image_t         *colorgradeSlots[ REF_COLORGRADE_SLOTS ];
-	} glstate_t;
+	};
 
-	typedef struct
+	struct backEndCounters_t
 	{
 		int   c_views;
 		int   c_portals;
@@ -2484,18 +2473,18 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int   c_multiVboIndexes;
 
 		int   msec; // total msec for backend run
-	} backEndCounters_t;
+	};
 
 	// for the backend to keep track of vis tests
-	typedef struct
+	struct visTestQueries_t
 	{
 		GLuint   hQuery, hQueryRef;
 		bool running;
-	} visTestQueries_t;
+	};
 
 // all state modified by the back end is separated
 // from the front end state
-	typedef struct
+	struct backEndState_t
 	{
 		int               smpFrame;
 		trRefdef_t        refdef;
@@ -2513,18 +2502,18 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		Color::Color32Bit color2D;
 		bool          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
-	} backEndState_t;
+	};
 
-	typedef struct visTest_s
+	struct visTest_t
 	{
 		vec3_t   position;
 		float    depthAdjust;
 		float    area;
 		bool registered;
 		float    lastResult;
-	} visTest_t;
+	};
 
-	typedef struct visTestResult_s
+	struct visTestResult_t
 	{
 		qhandle_t visTestHandle;
 		vec3_t    position;
@@ -2534,25 +2523,25 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		bool  discardExisting; // true if the currently running vis test should be discarded
 
 		float     lastResult; // updated by backend
-	} visTestResult_t;
+	};
 
-	typedef struct
+	struct cubemapProbe_t
 	{
 		vec3_t  origin;
 		image_t *cubemap;
-	} cubemapProbe_t;
+	};
 
 	class GLShader;
 	class GLShader_vertexLighting_DBS_entity;
 
-	typedef struct
+	struct scissorState_t
 	{
 		bool status;
 		int       x;
 		int       y;
 		int       w;
 		int       h;
-	} scissorState_t;
+	};
 
 	/*
 	** trGlobals_t
@@ -2562,7 +2551,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	** but may read fields that aren't dynamically modified
 	** by the frontend.
 	*/
-	typedef struct
+	struct trGlobals_t
 	{
 		bool registered; // cleared at shutdown, set at beginRegistration
 
@@ -2739,7 +2728,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float         fogTable[ FOG_TABLE_SIZE ];
 
 		scissorState_t scissor;
-	} trGlobals_t;
+	};
 
 	extern const matrix_t quakeToOpenGLMatrix;
 	extern const matrix_t openGLToQuakeMatrix;
@@ -3263,16 +3252,16 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	====================================================================
 	*/
 
-	typedef struct stageVars
+	struct stageVars_t
 	{
 		Color::Color color;
 		bool texMatricesChanged[ MAX_TEXTURE_BUNDLES ];
 		matrix_t texMatrices[ MAX_TEXTURE_BUNDLES ];
-	} stageVars_t;
+	};
 
 #define MAX_MULTIDRAW_PRIMITIVES 1000
 
-	typedef struct shaderVertex_s {
+	struct shaderVertex_t {
 		vec3_t    xyz;
 		Color::Color32Bit color;
 		union {
@@ -3280,10 +3269,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 			f16vec4_t spriteOrientation;
 		};
 		i16vec4_t texCoords;
-	} shaderVertex_t;
+	};
 
 #ifdef GLEW_ARB_sync
-	typedef struct glRingbuffer_s {
+	struct glRingbuffer_t {
 		// the BO is logically split into DYN_BUFFER_SEGMENTS
 		// segments, the active segment is the one the CPU may write
 		// into, while the GPU may read from the inactive segments.
@@ -3295,10 +3284,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// always defined and waitable, the active segment's
 		// sync is always undefined
 		GLsync         syncs[ DYN_BUFFER_SEGMENTS ];
-	} glRingbuffer_t;
+	};
 #endif
 
-	typedef struct shaderCommands_s
+	struct shaderCommands_t
 	{
 		shaderVertex_t *verts;	 // at least SHADER_MAX_VERTEXES accessible
 		glIndex_t      *indexes; // at least SHADER_MAX_INDEXES accessible
@@ -3349,7 +3338,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		glRingbuffer_t  vertexRB;
 		glRingbuffer_t  indexRB;
 #endif
-	} shaderCommands_t;
+	};
 
 	extern shaderCommands_t tess;
 
@@ -3689,52 +3678,52 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 #define MAX_RENDER_COMMANDS ( 0x40000 * 8 ) // Tr3B: was 0x40000
 
-	typedef struct
+	struct renderCommandList_t
 	{
 		byte cmds[ MAX_RENDER_COMMANDS ];
 		int  used;
-	} renderCommandList_t;
+	};
 
-	typedef struct
+	struct setColorCommand_t
 	{
 		int   commandId;
 		Color::Color color;
-	} setColorCommand_t;
+	};
 
-	typedef struct
+	struct setColorGradingCommand_t
 	{
 		int     commandId;
 		image_t *image;
 		int     slot;
-	} setColorGradingCommand_t;
+	};
 
-	typedef struct
+	struct drawBufferCommand_t
 	{
 		int commandId;
 		int buffer;
-	} drawBufferCommand_t;
+	};
 
-	typedef struct
+	struct subImageCommand_t
 	{
 		int     commandId;
 		image_t *image;
 		int     width;
 		int     height;
 		void    *data;
-	} subImageCommand_t;
+	};
 
-	typedef struct
+	struct swapBuffersCommand_t
 	{
 		int commandId;
-	} swapBuffersCommand_t;
+	};
 
-	typedef struct
+	struct endFrameCommand_t
 	{
 		int commandId;
 		int buffer;
-	} endFrameCommand_t;
+	};
 
-	typedef struct
+	struct stretchPicCommand_t
 	{
 		int      commandId;
 		shader_t *shader;
@@ -3746,17 +3735,17 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		Color::Color32Bit gradientColor; // color values 0-255
 		int      gradientType; //----(SA)  added
 		float    angle; // NERVE - SMF
-	} stretchPicCommand_t;
+	};
 
-	typedef struct
+	struct poly2dCommand_t
 	{
 		int        commandId;
 		polyVert_t *verts;
 		int        numverts;
 		shader_t   *shader;
-	} poly2dCommand_t;
+	};
 
-	typedef struct
+	struct poly2dIndexedCommand_t
 	{
 		int        commandId;
 		polyVert_t *verts;
@@ -3765,39 +3754,39 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int        numIndexes;
 		shader_t   *shader;
 		int         translation[2];
-	} poly2dIndexedCommand_t;
+	};
 
-	typedef struct
+	struct scissorSetCommand_t
 	{
 		int       commandId;
 		int       x;
 		int       y;
 		int       w;
 		int       h;
-	} scissorSetCommand_t;
+	};
 
-	typedef struct
+	struct drawViewCommand_t
 	{
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
-	} drawViewCommand_t;
+	};
 
-	typedef struct
+	struct runVisTestsCommand_t
 	{
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
-	} runVisTestsCommand_t;
+	};
 
-	typedef enum
+	enum ssFormat_t
 	{
 	  SSF_TGA,
 	  SSF_JPEG,
 	  SSF_PNG
-	} ssFormat_t;
+	};
 
-	typedef struct
+	struct screenshotCommand_t
 	{
 		int        commandId;
 		int        x;
@@ -3806,9 +3795,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int        height;
 		char       *fileName;
 		ssFormat_t format;
-	} screenshotCommand_t;
+	};
 
-	typedef struct
+	struct videoFrameCommand_t
 	{
 		int      commandId;
 		int      width;
@@ -3816,14 +3805,14 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		byte     *captureBuffer;
 		byte     *encodeBuffer;
 		bool motionJpeg;
-	} videoFrameCommand_t;
+	};
 
-	typedef struct
+	struct renderFinishCommand_t
 	{
 		int commandId;
-	} renderFinishCommand_t;
+	};
 
-	typedef enum
+	enum renderCommand_t
 	{
 	  RC_END_OF_LIST,
 	  RC_SET_COLORGRADING,
@@ -3841,7 +3830,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  RC_SCREENSHOT,
 	  RC_VIDEOFRAME,
 	  RC_FINISH //bani
-	} renderCommand_t;
+	};
 
 // ydnar: max decal projectors per frame, each can generate lots of polys
 #define MAX_DECAL_PROJECTORS 32 // uses bitmasks, don't increase
@@ -3853,7 +3842,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 // contained in a backEndData_t.  This entire structure is
 // duplicated so the front and back end can run in parallel
 // on an SMP machine
-	typedef struct
+	struct backEndData_t
 	{
 		drawSurf_t          drawSurfs[ MAX_DRAWSURFS ];
 		interaction_t       interactions[ MAX_INTERACTIONS ];
@@ -3877,7 +3866,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int                 traversalLength;
 
 		renderCommandList_t commands;
-	} backEndData_t;
+	};
 
 	extern backEndData_t                *backEndData[ SMP_FRAMES ]; // the second one may not be allocated
 

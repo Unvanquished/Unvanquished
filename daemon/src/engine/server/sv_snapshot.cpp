@@ -276,11 +276,11 @@ Build a client snapshot structure
 //#define   MAX_SNAPSHOT_ENTITIES   1024
 #define MAX_SNAPSHOT_ENTITIES 2048
 
-typedef struct
+struct snapshotEntityNumbers_t
 {
 	int numSnapshotEntities;
 	int snapshotEntities[ MAX_SNAPSHOT_ENTITIES ];
-} snapshotEntityNumbers_t;
+};
 
 /*
 =======================

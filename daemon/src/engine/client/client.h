@@ -54,7 +54,7 @@ Maryland 20850 USA.
 #define RETRANSMIT_TIMEOUT 3000 // time between connection packet retransmits
 
 // snapshots are a view of the server at a given time
-typedef struct
+struct clSnapshot_t
 {
 	bool      valid; // cleared if delta parsing was invalid
 	int           snapFlags; // rate delayed and dropped commands
@@ -73,16 +73,16 @@ typedef struct
 	// making the snapshot current
 
 	std::vector<entityState_t> entities;
-} clSnapshot_t;
+};
 
 // Arnout: for double tapping
-typedef struct
+struct doubleTap_t
 {
 	int pressedTime[ DT_NUM ];
 	int releasedTime[ DT_NUM ];
 
 	int lastdoubleTap;
-} doubleTap_t;
+};
 
 /*
 =============================================================================
@@ -93,18 +93,18 @@ new gameState_t, potentially several times during an established connection
 =============================================================================
 */
 
-typedef struct
+struct outPacket_t
 {
 	int p_cmdNumber; // cl.cmdNumber when packet was sent
 	int p_serverTime; // usercmd->serverTime when packet was sent
 	int p_realtime; // cls.realtime when packet was sent
-} outPacket_t;
+};
 
 #define MAX_PARSE_ENTITIES 2048
 
 extern int g_console_field_width;
 
-typedef struct
+struct clientActive_t
 {
 	GameStateCSs gameState; // configstrings
 	int timeoutcount; // it requres several frames in a timeout condition
@@ -156,7 +156,7 @@ typedef struct
 	clSnapshot_t  snapshots[ PACKET_BACKUP ];
 
 	entityState_t entityBaselines[ MAX_GENTITIES ]; // for delta compression when not in previous frame
-} clientActive_t;
+};
 
 extern clientActive_t cl;
 
@@ -172,7 +172,7 @@ demo through a file.
 =============================================================================
 */
 
-typedef struct
+struct clientConnection_t
 {
 	int      clientNum;
 	int      lastPacketSentTime; // for retransmits during connection
@@ -244,7 +244,7 @@ typedef struct
 
 	// big stuff at end of structure so most offsets are 15 bits or less
 	netchan_t netchan;
-} clientConnection_t;
+};
 
 extern clientConnection_t clc;
 
@@ -257,16 +257,16 @@ no client connection is active at all
 ==================================================================
 */
 
-typedef struct
+struct ping_t
 {
 	netadr_t adr;
 	int      start;
 	int      time;
 	char     info[ MAX_INFO_STRING ];
-} ping_t;
+};
 
 #define MAX_FEATLABEL_CHARS 32
-typedef struct
+struct serverInfo_t
 {
 	netadr_t adr;
 	char     hostName[ MAX_NAME_LENGTH ];
@@ -285,9 +285,9 @@ typedef struct
 	int      friendlyFire; // NERVE - SMF
 	int      needpass;
 	char     gameName[ MAX_NAME_LENGTH ]; // Arnout
-} serverInfo_t;
+};
 
-typedef struct
+struct clientStatic_t
 {
 	connstate_t state; // connection status
 	int         keyCatchers; // bit flags
@@ -355,7 +355,7 @@ typedef struct
 	char     downloadTempName[ MAX_OSPATH ]; // in wwwdl mode, this is OS path (it's a qpath otherwise)
 	char     originalDownloadName[ MAX_QPATH ]; // if we get a redirect, keep a copy of the original file path
 	bool downloadRestart; // if true, we need to do another FS_Restart because we downloaded a pak
-} clientStatic_t;
+};
 
 extern clientStatic_t cls;
 
@@ -558,16 +558,16 @@ unsigned int    Key_GetKeyTime();
 //
 // cl_input
 //
-typedef struct
+struct kbutton_t
 {
 	int      down[ 2 ]; // key nums holding it down
 	unsigned downtime; // msec timestamp
 	unsigned msec; // msec down this frame if both a down and up happened
 	bool active; // current state
 	bool wasPressed; // set when down, not cleared when up
-} kbutton_t;
+};
 
-typedef enum
+enum kbuttons_t
 {
   KB_LEFT = 0,
   KB_RIGHT,
@@ -587,7 +587,7 @@ typedef enum
 
   KB_BUTTONS, // must be second-last
   NUM_BUTTONS = KB_BUTTONS + USERCMD_BUTTONS
-} kbuttons_t;
+};
 
 void CL_ClearKeys();
 void CL_ClearCmdButtons();
@@ -639,13 +639,13 @@ bool CL_UpdateVisiblePings_f( int source );
 //
 #define     CONSOLE_FONT_VPADDING 0.3
 
-typedef struct
+struct consoleBoxWidth_t
 {
 	int top;
 	int bottom;
 	/* the sides of the console always get treated equally */
 	int sides;
-} consoleBoxWidth_t;
+};
 
 struct console_t
 {

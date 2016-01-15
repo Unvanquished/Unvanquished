@@ -73,7 +73,7 @@ Iter binary_find(Iter begin, Iter end, const T& value, Compare comp)
 
 // Compile-time integer sequences
 template<size_t...> struct seq {
-	typedef seq type;
+	using type = seq;
 };
 
 template<class S1, class S2> struct concat;

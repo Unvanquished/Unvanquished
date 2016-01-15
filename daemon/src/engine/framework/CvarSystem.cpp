@@ -157,7 +157,7 @@ namespace Cvar {
         SetCStyleDescription(cvar);
     }
 
-    typedef std::unordered_map<std::string, cvarRecord_t*, Str::IHash, Str::IEqual> CvarMap;
+    using CvarMap = std::unordered_map<std::string, cvarRecord_t*, Str::IHash, Str::IEqual>;
     bool cheatsAllowed = true;
 
     // The order in which static global variables are initialized is undefined and cvar

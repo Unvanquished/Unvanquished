@@ -1996,7 +1996,7 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	int    i;
 	vec3_t mins, maxs, mids;
 	vec3_t forward, right, up;
-	float  radius, dist;
+	float  radius;
 
 	if( !light->l.inverseShadows || light->l.rlType != RL_OMNI ||
 	    light->restrictInteractionFirst < 0 )
@@ -2015,7 +2015,6 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	VectorAdd( mins, maxs, mids );
 	VectorScale( mids, 0.5f, mids );
 	radius = Distance( mids, maxs );
-	dist = Distance( light->l.origin, mids );
 
 	light->l.rlType = RL_PROJ;
 	VectorSubtract( mids, light->l.origin, forward );

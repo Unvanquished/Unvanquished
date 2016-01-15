@@ -569,13 +569,13 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid,
 	}
 }
 
-typedef enum
+enum edgeName_e
 {
   EN_TOP,
   EN_RIGHT,
   EN_BOTTOM,
   EN_LEFT
-} edgeName_t;
+};
 
 /*
 ==================
