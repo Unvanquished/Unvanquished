@@ -144,7 +144,7 @@ void IN_KeyUp( kbutton_t *b )
 	b->active = false;
 
 	// save timestamp for partial frame summing
-	uptime = nokey ? 0 : Key_GetKeyTime();
+	uptime = Key_GetKeyTime();
 
 	if ( uptime )
 	{
