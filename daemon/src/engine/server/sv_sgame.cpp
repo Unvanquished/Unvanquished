@@ -49,7 +49,7 @@ sharedEntity_t *SV_GentityNum( int num )
 
 	if ( num < 0 || num >= MAX_GENTITIES )
 	{
-		Com_Error( ERR_DROP, "SV_GentityNum: bad num %d", num );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GentityNum: bad num %d", num );
 	}
 
 	ent = ( sharedEntity_t * )( ( byte * ) sv.gentities + sv.gentitySize * ( num ) );
@@ -63,7 +63,7 @@ playerState_t  *SV_GameClientNum( int num )
 
 	if ( num >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_GameClientNum: bad num" );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GameClientNum: bad num" );
 	}
 
 	ps = ( playerState_t * )( ( byte * ) sv.gameClients + sv.gameClientSize * ( num ) );
@@ -75,7 +75,7 @@ svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt )
 {
 	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
 	{
-		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
+		Com_Error( errorParm_t::ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
 	}
 
 	return &sv.svEntities[ gEnt->s.number ];
@@ -169,7 +169,7 @@ void SV_GetServerinfo( char *buffer, int bufferSize )
 {
 	if ( bufferSize < 1 )
 	{
-		Com_Error( ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
 	}
 
 	Q_strncpyz( buffer, Cvar_InfoString( CVAR_SERVERINFO, false ), bufferSize );
@@ -186,9 +186,9 @@ void SV_LocateGameData( const IPC::SharedMemory& shmRegion, int numGEntities, in
                         int sizeofGameClient )
 {
 	if ( numGEntities < 0 || sizeofGEntity_t < 0 || sizeofGameClient < 0 )
-		Com_Error( ERR_DROP, "SV_LocateGameData: Invalid game data parameters" );
+		Com_Error( errorParm_t::ERR_DROP, "SV_LocateGameData: Invalid game data parameters" );
 	if ( (int) shmRegion.GetSize() < numGEntities * sizeofGEntity_t + sv_maxclients->integer * sizeofGameClient )
-		Com_Error( ERR_DROP, "SV_LocateGameData: Shared memory region too small" );
+		Com_Error( errorParm_t::ERR_DROP, "SV_LocateGameData: Shared memory region too small" );
 
 	char* base = static_cast<char*>(shmRegion.GetBase());
 	sv.gentities = reinterpret_cast<sharedEntity_t*>(base);
@@ -209,7 +209,7 @@ void SV_GetUsercmd( int clientNum, usercmd_t *cmd )
 {
 	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum );
 	}
 
 	*cmd = svs.clients[ clientNum ].lastUsercmd;
@@ -224,12 +224,12 @@ static void SV_SendBinaryMessage( int cno, const char *buf, int buflen )
 {
 	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno );
+		Com_Error( errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno );
 	}
 
 	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
 	{
-		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen );
+		Com_Error( errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen );
 	}
 
 	svs.clients[ cno ].binaryMessageLength = buflen;
@@ -241,24 +241,24 @@ static void SV_SendBinaryMessage( int cno, const char *buf, int buflen )
 SV_BinaryMessageStatus
 ====================
 */
-static int SV_BinaryMessageStatus( int cno )
+static messageStatus_t SV_BinaryMessageStatus( int cno )
 {
 	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
-		return false;
+		return messageStatus_t::MESSAGE_EMPTY;
 	}
 
 	if ( svs.clients[ cno ].binaryMessageLength == 0 )
 	{
-		return MESSAGE_EMPTY;
+		return messageStatus_t::MESSAGE_EMPTY;
 	}
 
 	if ( svs.clients[ cno ].binaryMessageOverflowed )
 	{
-		return MESSAGE_WAITING_OVERFLOW;
+		return messageStatus_t::MESSAGE_WAITING_OVERFLOW;
 	}
 
-	return MESSAGE_WAITING;
+	return messageStatus_t::MESSAGE_WAITING;
 }
 
 /*
@@ -397,7 +397,7 @@ void GameVM::Start()
 
 	uint32_t version = this->Create();
 	if ( version != GAME_API_VERSION ) {
-		Com_Error( ERR_DROP, "SGame ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
+		Com_Error( errorParm_t::ERR_DROP, "SGame ABI mismatch, expected %d, got %d", GAME_API_VERSION, version );
 	}
 
 	this->GameStaticInit();
@@ -470,12 +470,12 @@ void GameVM::GameRunFrame(int levelTime)
 
 bool GameVM::GameSnapshotCallback(int, int)
 {
-	Com_Error(ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
+	Com_Error(errorParm_t::ERR_DROP, "GameVM::GameSnapshotCallback not implemented");
 }
 
 void GameVM::BotAIStartFrame(int)
 {
-	Com_Error(ERR_DROP, "GameVM::BotAIStartFrame not implemented");
+	Com_Error(errorParm_t::ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
 void GameVM::GameMessageRecieved(int, const char*, int, int)
@@ -494,7 +494,7 @@ void GameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
         services->Syscall(major, minor, std::move(reader), channel);
 
     } else {
-		Com_Error(ERR_DROP, "Bad major game syscall number: %d", major);
+		Com_Error(errorParm_t::ERR_DROP, "Bad major game syscall number: %d", major);
 	}
 }
 
@@ -605,7 +605,7 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 	case G_MESSAGE_STATUS:
 		IPC::HandleMsg<MessageStatusMsg>(channel, std::move(reader), [this](int index, int& status) {
-			status = SV_BinaryMessageStatus(index);
+			status = Util::ordinal(SV_BinaryMessageStatus(index));
 		});
 		break;
 
@@ -742,6 +742,6 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	default:
-		Com_Error(ERR_DROP, "Bad game system trap: %d", index);
+		Com_Error(errorParm_t::ERR_DROP, "Bad game system trap: %d", index);
 	}
 }

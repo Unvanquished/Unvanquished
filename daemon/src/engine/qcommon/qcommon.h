@@ -132,10 +132,10 @@ NET
 #define NET_DISABLEMCAST    0x08
 
 // right type anyway || ( DUAL && proto enabled && ( other proto disabled || appropriate IPv6 pref ) )
-#define NET_IS_IPv4( type ) ( ( type ) == NA_IP  || ( ( type ) == NA_IP_DUAL && ( net_enabled->integer & NET_ENABLEV4 ) && ( ( ~net_enabled->integer & NET_ENABLEV6) || ( ~net_enabled->integer & NET_PRIOV6 ) ) ) )
-#define NET_IS_IPv6( type ) ( ( type ) == NA_IP6 || ( ( type ) == NA_IP_DUAL && ( net_enabled->integer & NET_ENABLEV6 ) && ( ( ~net_enabled->integer & NET_ENABLEV4) || (  net_enabled->integer & NET_PRIOV6 ) ) ) )
+#define NET_IS_IPv4( type ) ( ( type ) == netadrtype_t::NA_IP  || ( ( type ) == netadrtype_t::NA_IP_DUAL && ( net_enabled->integer & NET_ENABLEV4 ) && ( ( ~net_enabled->integer & NET_ENABLEV6) || ( ~net_enabled->integer & NET_PRIOV6 ) ) ) )
+#define NET_IS_IPv6( type ) ( ( type ) == netadrtype_t::NA_IP6 || ( ( type ) == netadrtype_t::NA_IP_DUAL && ( net_enabled->integer & NET_ENABLEV6 ) && ( ( ~net_enabled->integer & NET_ENABLEV4) || (  net_enabled->integer & NET_PRIOV6 ) ) ) )
 // if NA_IP_DUAL, get the preferred type (falling back on NA_IP)
-#define NET_TYPE( type )    ( NET_IS_IPv4( type ) ? NA_IP : NET_IS_IPv6( type ) ? NA_IP6 : ( ( type ) == NA_IP_DUAL ) ? NA_IP : ( type ) )
+#define NET_TYPE( type )    ( NET_IS_IPv4( type ) ? netadrtype_t::NA_IP : NET_IS_IPv6( type ) ? netadrtype_t::NA_IP6 : ( ( type ) == netadrtype_t::NA_IP_DUAL ) ? netadrtype_t::NA_IP : ( type ) )
 
 #define PACKET_BACKUP       32 // number of old messages that must be kept on client and
 // server for delta comrpession and ping estimation
@@ -154,7 +154,7 @@ NET
 //#define   MAX_RELIABLE_COMMANDS   128         // max string commands buffered for restransmit
 #define MAX_RELIABLE_COMMANDS 256 // bigger!
 
-enum netadrtype_t
+enum class netadrtype_t : int
 {
   NA_BOT,
   NA_BAD, // an address lookup failed
@@ -167,7 +167,7 @@ enum netadrtype_t
   NA_UNSPEC
 };
 
-enum netsrc_t
+enum class netsrc_t
 {
   NS_CLIENT,
   NS_SERVER
@@ -513,7 +513,7 @@ int FS_Game_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode )
 
 // opens a file for reading, writing, or appending depending on the value of mode
 
-int FS_Seek( fileHandle_t f, long offset, int origin );
+int FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin );
 
 // seek on a file (doesn't work for zip files!!!!!!!!)
 
@@ -557,7 +557,7 @@ DOWNLOAD
 ==============================================================
 */
 
-enum dlStatus_t
+enum class dlStatus_t
 {
   DL_CONTINUE,
   DL_DONE,
@@ -572,7 +572,7 @@ void       DL_Shutdown();
 // bitmask
 enum dlFlags_t
 {
-  DL_FLAG_DISCON = 0
+  DL_FLAG_DISCON = 1 << 0
 };
 
 /*
@@ -676,7 +676,7 @@ extern int          com_frameTime;
 extern int          com_frameMsec;
 extern int          com_hunkusedvalue;
 
-enum memtag_t
+enum class memtag_t
 {
   TAG_FREE,
   TAG_GENERAL,
@@ -707,7 +707,7 @@ temp file loading
 */
 
 // Use malloc instead of the zone allocator
-static inline void* Z_TagMalloc(size_t size, int tag)
+static inline void* Z_TagMalloc(size_t size, memtag_t tag)
 {
   Q_UNUSED(tag);
   return calloc(size, 1);
@@ -841,7 +841,7 @@ NON-PORTABLE SYSTEM SERVICES
 ==============================================================
 */
 
-enum joystickAxis_t
+enum class joystickAxis_t
 {
   AXIS_SIDE,
   AXIS_FORWARD,
@@ -852,7 +852,7 @@ enum joystickAxis_t
   MAX_JOYSTICK_AXIS
 };
 
-enum sysEventType_t
+enum class sysEventType_t
 {
   // bk001129 - make sure SE_NONE is zero
   SE_NONE = 0, // evTime is still valid

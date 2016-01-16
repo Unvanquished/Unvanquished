@@ -59,7 +59,7 @@ struct botNavCmd_t
 	int      havePath;
 };
 
-enum botRouteTargetType_t
+enum class botRouteTargetType_t
 {
 	BOT_TARGET_STATIC, // target stays in one place always
 	BOT_TARGET_DYNAMIC // target can move
@@ -93,12 +93,12 @@ enum navPolyFlags
 
 enum navPolyAreas
 {
-	POLYAREA_GROUND = 1 << 0,
-	POLYAREA_LADDER = 1 << 1,
-	POLYAREA_WATER = 1 << 2,
-	POLYAREA_DOOR = 1 << 3,
-	POLYAREA_JUMPPAD = 1 << 4,
-	POLYAREA_TELEPORTER = 1 << 5
+	POLYAREA_GROUND     = 1 << 0,
+	POLYAREA_LADDER     = 1 << 1,
+	POLYAREA_WATER      = 1 << 2,
+	POLYAREA_DOOR       = 1 << 3,
+	POLYAREA_JUMPPAD    = 1 << 4,
+	POLYAREA_TELEPORTER = 1 << 5,
 };
 
 //route status flags

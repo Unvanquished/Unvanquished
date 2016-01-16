@@ -60,19 +60,19 @@ at the same time.
 ===============================================================================
 */
 
-static kbutton_t  kb[ NUM_BUTTONS ];
-static char       *keyup[ MAX_KEYS ];
+static kbutton_t  kb[Util::ordinal(kbuttons_t::NUM_BUTTONS)];
+static char       *keyup[Util::ordinal(keyNum_t::MAX_KEYS)];
 
 // Arnout: doubleTap button mapping
 // FIXME: should be registered by cgame code
 static kbuttons_t dtmapping[] =
 {
-	KB_BUTTONS, // DT_NONE
-	KB_MOVELEFT, // DT_MOVELEFT
-	KB_MOVERIGHT, // DT_MOVERIGHT
-	KB_FORWARD, // DT_FORWARD
-	KB_BACK, // DT_BACK
-	KB_UP // DT_UP
+	kbuttons_t::KB_BUTTONS, // DT_NONE
+	kbuttons_t::KB_MOVELEFT, // DT_MOVELEFT
+	kbuttons_t::KB_MOVERIGHT, // DT_MOVERIGHT
+	kbuttons_t::KB_FORWARD, // DT_FORWARD
+	kbuttons_t::KB_BACK, // DT_BACK
+	kbuttons_t::KB_UP // DT_UP
 };
 
 void IN_KeyDown( kbutton_t *b )
@@ -301,7 +301,7 @@ void CL_KeyMove( usercmd_t *cmd )
 	cmd->upmove = ClampChar( up );
 
 	// Arnout: double tap
-	cmd->doubleTap = DT_NONE; // reset
+	cmd->doubleTap = dtType_t::DT_NONE; // reset
 
 	if ( !cl.doubleTap.lastdoubleTap || com_frameTime - cl.doubleTap.lastdoubleTap > cl_doubletapdelay->integer + cls.frametime )
 	{
@@ -312,7 +312,7 @@ void CL_KeyMove( usercmd_t *cmd )
 		unsigned int lastKeyTime = 0;
 
 		// Which was last pressed or released?
-		for ( i = 1; i < DT_NUM; i++ )
+		for ( i = 1; i < Util::ordinal(dtType_t::DT_NUM); i++ )
 		{
 			if ( cl.doubleTap.pressedTime[ i ] > (int) lastKeyTime )
 			{
@@ -329,7 +329,7 @@ void CL_KeyMove( usercmd_t *cmd )
 		// Clear the others; don't want e.g. left-right-left causing dodge left
 		if ( lastKey )
 		{
-			for ( i = 1; i < DT_NUM; i++ )
+			for ( i = 1; i < Util::ordinal(dtType_t::DT_NUM); i++ )
 			{
 				if ( i != lastKey )
 				{
@@ -338,7 +338,7 @@ void CL_KeyMove( usercmd_t *cmd )
 			}
 		}
 
-		for ( i = 1; i < DT_NUM; i++ )
+		for ( i = 1; i < Util::ordinal(dtType_t::DT_NUM); i++ )
 		{
 			key_down = dtmapping[ i ] == KB_BUTTONS || kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
 
@@ -360,7 +360,7 @@ void CL_KeyMove( usercmd_t *cmd )
 			          com_frameTime - cl.doubleTap.releasedTime[ i ] < cl_doubletapdelay->integer + cls.frametime )
 			{
 				cl.doubleTap.pressedTime[ i ] = cl.doubleTap.releasedTime[ i ] = 0;
-				cmd->doubleTap = i;
+				cmd->doubleTap = Util::enum_cast<dtType_t>(i);
 				cl.doubleTap.lastdoubleTap = com_frameTime;
 			}
 			else if ( !key_down && ( cl.doubleTap.pressedTime[ i ] || cl.doubleTap.releasedTime[ i ] ) )
@@ -419,9 +419,9 @@ Joystick values stay set until changed
 */
 void CL_JoystickEvent( int axis, int value, int )
 {
-	if ( axis < 0 || axis >= MAX_JOYSTICK_AXIS )
+	if ( axis < 0 || axis >= Util::ordinal(joystickAxis_t::MAX_JOYSTICK_AXIS))
 	{
-		Com_Error( ERR_DROP, "CL_JoystickEvent: bad axis %i", axis );
+		Com_Error( errorParm_t::ERR_DROP, "CL_JoystickEvent: bad axis %i", axis );
 	}
 
 	cl.joystickAxis[ axis ] = value;
@@ -507,12 +507,12 @@ void CL_Xbox360ControllerMove( usercmd_t *cmd )
 		anglespeed = 0.001 * cls.frametime;
 	}
 
-	cl.viewangles[ PITCH ] += anglespeed * cl_pitchspeed->value * ( cl.joystickAxis[ AXIS_PITCH ] / 127.0f );
-	cl.viewangles[ YAW ] += anglespeed * cl_yawspeed->value * ( cl.joystickAxis[ AXIS_YAW ] / 127.0f );
+	cl.viewangles[ PITCH ] += anglespeed * cl_pitchspeed->value * ( cl.joystickAxis[ Util::ordinal(joystickAxis_t::AXIS_PITCH) ] / 127.0f );
+	cl.viewangles[ YAW ] += anglespeed * cl_yawspeed->value * ( cl.joystickAxis[ Util::ordinal(joystickAxis_t::AXIS_YAW) ] / 127.0f );
 
-	cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[ AXIS_SIDE ] );
-	cmd->forwardmove = ClampChar( cmd->forwardmove + cl.joystickAxis[ AXIS_FORWARD ] );
-	cmd->upmove = ClampChar( cmd->upmove + cl.joystickAxis[ AXIS_UP ] );
+	cmd->rightmove = ClampChar( cmd->rightmove + cl.joystickAxis[ Util::ordinal(joystickAxis_t::AXIS_SIDE) ] );
+	cmd->forwardmove = ClampChar( cmd->forwardmove + cl.joystickAxis[ Util::ordinal(joystickAxis_t::AXIS_FORWARD) ] );
+	cmd->upmove = ClampChar( cmd->upmove + cl.joystickAxis[ Util::ordinal(joystickAxis_t::AXIS_UP) ] );
 }
 
 /*
@@ -665,7 +665,7 @@ void CL_CmdButtons( usercmd_t *cmd )
 	}
 
 	// Arnout: clear 'waspressed' from double tap buttons
-	for ( i = 1; i < DT_NUM; i++ )
+	for ( i = 1; i < Util::ordinal(dtType_t::DT_NUM); i++ )
 	{
 		if ( dtmapping[ i ] != KB_BUTTONS )
 		{
@@ -762,7 +762,7 @@ void CL_CreateNewCommands()
 	int cmdNum;
 
 	// no need to create usercmds until we have a gamestate
-	if ( cls.state < CA_PRIMED )
+	if ( cls.state < connstate_t::CA_PRIMED )
 	{
 		return;
 	}
@@ -802,7 +802,7 @@ bool CL_ReadyToSendPacket()
 	int delta;
 
 	// don't send anything if playing back a demo
-	if ( clc.demoplaying || cls.state == CA_CINEMATIC )
+	if ( clc.demoplaying || cls.state == connstate_t::CA_CINEMATIC )
 	{
 		return false;
 	}
@@ -815,13 +815,13 @@ bool CL_ReadyToSendPacket()
 
 	// if we don't have a valid gamestate yet, only send
 	// one packet a second
-	if ( cls.state != CA_ACTIVE && cls.state != CA_PRIMED && !*cls.downloadTempName && cls.realtime - clc.lastPacketSentTime < 1000 )
+	if ( cls.state != connstate_t::CA_ACTIVE && cls.state != connstate_t::CA_PRIMED && !*cls.downloadTempName && cls.realtime - clc.lastPacketSentTime < 1000 )
 	{
 		return false;
 	}
 
 	// send every frame for loopbacks
-	if ( clc.netchan.remoteAddress.type == NA_LOOPBACK )
+	if ( clc.netchan.remoteAddress.type == netadrtype_t::NA_LOOPBACK )
 	{
 		return true;
 	}
@@ -912,7 +912,7 @@ void CL_WritePacket()
 	int       count;
 
 	// don't send anything if playing back a demo
-	if ( clc.demoplaying || cls.state == CA_CINEMATIC )
+	if ( clc.demoplaying || cls.state == connstate_t::CA_CINEMATIC )
 	{
 		return;
 	}
@@ -1040,7 +1040,7 @@ Called every frame to builds and sends a command packet to the server.
 void CL_SendCmd()
 {
 	// don't send any message if not connected
-	if ( cls.state < CA_CONNECTED )
+	if ( cls.state < connstate_t::CA_CONNECTED )
 	{
 		return;
 	}

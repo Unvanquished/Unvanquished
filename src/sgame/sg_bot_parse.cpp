@@ -92,7 +92,7 @@ static AIValue_t goalTeam( gentity_t *self, const AIValue_t* )
 
 static AIValue_t goalType( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( BotGetTargetType( self->botMind->goal ) );
+	return AIBoxInt( Util::ordinal(BotGetTargetType( self->botMind->goal )) );
 }
 
 // TODO: Check if we can just check for HealthComponent.
@@ -117,7 +117,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 	{
 		dead = true;
 	}
-	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
+	else if ( goal->ent->s.eType == entityType_t::ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
 	{
 		dead = true;
 	}
@@ -127,7 +127,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 
 static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t* )
 {
-	if ( BotGetTargetType( self->botMind->goal ) != ET_BUILDABLE )
+	if ( BotGetTargetType( self->botMind->goal ) != entityType_t::ET_BUILDABLE )
 	{
 		return AIBoxInt( BA_NONE );
 	}
@@ -1303,7 +1303,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( MOVE_RIGHT );
 	D( MOVE_LEFT );
 
-	D( ET_BUILDABLE );
+	D2( ET_BUILDABLE, Util::ordinal(entityType_t::ET_BUILDABLE) );
 
 	// node return status
 	D( STATUS_RUNNING );

@@ -69,22 +69,22 @@ void CG_BuildSolidList()
 		cent = &cg_entities[ snap->entities[ i ].number ];
 		ent = &cent->currentState;
 
-		if ( ent->eType == ET_ITEM || ent->eType == ET_PUSHER || ent->eType == ET_TELEPORTER )
+		if ( ent->eType == entityType_t::ET_ITEM || ent->eType == entityType_t::ET_PUSHER || ent->eType == entityType_t::ET_TELEPORTER )
 		{
 			cg_triggerEntities[ cg_numTriggerEntities ] = cent;
 			cg_numTriggerEntities++;
 			continue;
 		}
 
-		if ( cent->nextState.solid && ent->eType != ET_MISSILE )
+		if ( cent->nextState.solid && ent->eType != entityType_t::ET_MISSILE )
 		{
 			cent->contents |= CONTENTS_SOLID;
 
 			// retreive some content flags from the entity type
 			switch ( ent->eType )
 			{
-				case ET_MOVER:
-				case ET_MODELDOOR:
+				case entityType_t::ET_MOVER:
+				case entityType_t::ET_MODELDOOR:
 					cent->contents |= CONTENTS_MOVER;
 					break;
 
@@ -192,17 +192,17 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 
 		switch ( collisionType )
 		{
-		case TT_CAPSULE:
+		case traceType_t::TT_CAPSULE:
 			trap_CM_TransformedCapsuleTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask,
 			                                 origin, angles );
 			break;
 
-		case TT_AABB:
+		case traceType_t::TT_AABB:
 			trap_CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask,
 			                             origin, angles );
 			break;
 
-		case TT_BISPHERE:
+        case traceType_t::TT_BISPHERE:
 			ASSERT(maxs != nullptr);
 			ASSERT(mins != nullptr);
 			trap_CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
@@ -264,7 +264,7 @@ void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 	trap_CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, TT_AABB );
+	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_AABB );
 
 	*result = t;
 }
@@ -292,7 +292,7 @@ void  CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const
 	trap_CM_CapsuleTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, TT_CAPSULE );
+	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_CAPSULE );
 
 	*result = t;
 }
@@ -315,7 +315,7 @@ void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
 	trap_CM_BiSphereTrace( &t, start, end, startRadius, endRadius, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, TT_BISPHERE );
+	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_BISPHERE );
 
 	*result = t;
 }
@@ -487,7 +487,7 @@ static void CG_TouchTriggerPrediction()
 			continue;
 		}
 
-		if ( ent->eType == ET_TELEPORTER )
+		if ( ent->eType == entityType_t::ET_TELEPORTER )
 		{
 			cg.hyperspace = true;
 		}

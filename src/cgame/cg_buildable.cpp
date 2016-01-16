@@ -179,7 +179,7 @@ void CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir )
 {
 	particleSystem_t *ps;
 
-	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.alienBuildableExplosion );
+	trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.alienBuildableExplosion );
 
 	//particle system
 	ps = CG_SpawnNewParticleSystem( cgs.media.alienBuildableDestroyedPS );
@@ -205,7 +205,7 @@ void CG_HumanBuildableDying( buildable_t buildable, vec3_t origin )
 	{
 		case BA_H_REPEATER:
 		case BA_H_REACTOR:
-			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableDying );
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.humanBuildableDying );
 		default:
 			return;
 	}
@@ -228,7 +228,7 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 		nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
 	}
 
-	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
+	trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.humanBuildableExplosion );
 	explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
 
 	if ( CG_IsParticleSystemValid( &nova ) )
@@ -316,7 +316,7 @@ static void CG_OnFire( centity_t *cent )
 	entityState_t *es = &cent->currentState;
 	team_t        team = BG_Buildable( es->modelindex )->team;
 
-	if ( es->eType != ET_BUILDABLE )
+	if ( es->eType != entityType_t::ET_BUILDABLE )
 	{
 		return;
 	}
@@ -374,7 +374,7 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 	animations = cg_buildables[ buildable ].animations;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -482,7 +482,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 	sounds = cg_buildables[ buildable ].sounds;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -707,7 +707,7 @@ void CG_InitBuildables()
 
 			if ( cg_buildables[ buildable ].sounds[ j ].enabled )
 			{
-				if ( trap_FS_FOpenFile( filename, &f, FS_READ ) > 0 )
+				if ( trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ ) > 0 )
 				{
 					//file exists so close it
 					trap_FS_FCloseFile( f );
@@ -870,7 +870,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		if ( bSkeleton.type != SK_INVALID )
+		if ( bSkeleton.type != refSkeletonType_t::SK_INVALID )
 		{
 			oldbSkeleton = bSkeleton;
 
@@ -962,7 +962,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 				           newAnimation, BG_Buildable( buildable )->humanName );
 			}
 
-			trap_S_StartSound( cent->lerpOrigin, cent->currentState.number, CHAN_AUTO,
+			trap_S_StartSound( cent->lerpOrigin, cent->currentState.number, soundChannel_t::CHAN_AUTO,
 			                   cg_buildables[ buildable ].sounds[ newAnimation ].sound );
 		}
 	}
@@ -1797,7 +1797,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			hit = &cg_entities[ tr.entityNum ].currentState;
 
-			if ( tr.entityNum < MAX_CLIENTS || ( hit->eType == ET_BUILDABLE &&
+			if ( tr.entityNum < MAX_CLIENTS || ( hit->eType == entityType_t::ET_BUILDABLE &&
 			                                     ( !( es->eFlags & EF_B_SPAWNED ) ||
 			                                       BG_Buildable( hit->modelindex )->transparentTest ) ) )
 			{
@@ -2262,7 +2262,7 @@ void CG_DrawBuildableStatus()
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		es = &cent->currentState;
 
-		if ( es->eType == ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
+		if ( es->eType == entityType_t::ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
 		{
 			buildableList[ buildables++ ] = cg.snap->entities[ i ].number;
 		}
@@ -2331,7 +2331,7 @@ void CG_Buildable( centity_t *cent )
 	VectorCopy( es->angles, angles );
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
 
-	if ( es->pos.trType == TR_STATIONARY )
+	if ( es->pos.trType == trType_t::TR_STATIONARY )
 	{
 		// seeing as buildables rarely move, we cache the results and recalculate
 		// only if the buildable moves or changes orientation
@@ -2434,7 +2434,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	// add inverse shadow map
-	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
+	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.integer )
 	{
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
@@ -2778,7 +2778,7 @@ void CG_Buildable( centity_t *cent )
 			if ( team == TEAM_HUMANS )
 			{
 				int i = rand() % 4;
-				trap_S_StartSound( nullptr, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
+				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
 			}
 
 			cent->lastBuildableDamageSoundTime = cg.time;
@@ -2822,7 +2822,7 @@ void CG_Buildable( centity_t *cent )
 		}
 	}
 
-	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
+	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.integer )
 	{
 		CG_EndShadowCaster( );
 	}

@@ -178,12 +178,12 @@ dlStatus_t DL_DownloadLoop()
 	if ( !dl_request )
 	{
 		Com_DPrintf( "DL_DownloadLoop: unexpected call with dl_request == NULL\n" );
-		return DL_DONE;
+		return dlStatus_t::DL_DONE;
 	}
 
 	if ( ( status = curl_multi_perform( dl_multi, &dls ) ) == CURLM_CALL_MULTI_PERFORM && dls )
 	{
-		return DL_CONTINUE;
+		return dlStatus_t::DL_CONTINUE;
 	}
 
 	while ( ( msg = curl_multi_info_read( dl_multi, &dls ) ) && msg->easy_handle != dl_request )
@@ -193,7 +193,7 @@ dlStatus_t DL_DownloadLoop()
 
 	if ( !msg || msg->msg != CURLMSG_DONE )
 	{
-		return DL_CONTINUE;
+		return dlStatus_t::DL_CONTINUE;
 	}
 
 	if ( msg->data.result != CURLE_OK )
@@ -222,8 +222,8 @@ dlStatus_t DL_DownloadLoop()
 	if ( err )
 	{
 		Com_DPrintf( "DL_DownloadLoop: request terminated with failure status '%s'\n", err );
-		return DL_FAILED;
+		return dlStatus_t::DL_FAILED;
 	}
 
-	return DL_DONE;
+	return dlStatus_t::DL_DONE;
 }

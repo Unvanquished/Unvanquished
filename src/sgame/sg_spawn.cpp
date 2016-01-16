@@ -1136,7 +1136,7 @@ void G_SpawnFakeEntities()
 	level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
 	level.fakeLocation->message = nullptr;
 
-	level.fakeLocation->s.eType = ET_LOCATION;
+	level.fakeLocation->s.eType = entityType_t::ET_LOCATION;
 	level.fakeLocation->r.svFlags = SVF_BROADCAST;
 
 	level.fakeLocation->nextPathSegment = level.locationHead;

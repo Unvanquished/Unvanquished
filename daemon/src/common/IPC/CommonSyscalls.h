@@ -106,7 +106,7 @@ namespace VM {
         IPC::Reply<int>
     >;
     using FSSeekMsg = IPC::SyncMessage<
-        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_SEEK>, int, int, int>,
+        IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_FS_SEEK>, int, /* FIXME: long? */ int, int>,
         IPC::Reply<int>
     >;
     using FSTellMsg = IPC::SyncMessage<
@@ -169,7 +169,7 @@ namespace VM {
 
     // CreateSharedMemoryMsg
     using CreateSharedMemoryMsg = IPC::SyncMessage<
-        IPC::Message<IPC::Id<MISC, CREATE_SHARED_MEMORY>, uint32_t>,
+        IPC::Message<IPC::Id<MISC, EngineMiscMessages::CREATE_SHARED_MEMORY>, uint32_t>,
         IPC::Reply<IPC::SharedMemory>
     >;
     // CrashDumpMsg

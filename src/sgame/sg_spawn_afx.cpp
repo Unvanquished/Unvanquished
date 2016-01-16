@@ -99,7 +99,7 @@ void SP_env_afx_push( gentity_t *self )
 {
 	SP_WaitFields(self, 0.5f, 0);
 
-	self->s.eType = ET_PUSHER;
+	self->s.eType = entityType_t::ET_PUSHER;
 	self->touch = env_afx_push_touch;
 	self->think = think_aimAtTarget;
 	self->nextthink = level.time + FRAMETIME;
@@ -170,7 +170,7 @@ void SP_env_afx_teleport( gentity_t *self )
 		self->s.eFlags |= EF_NODRAW;
 	}
 
-	self->s.eType = ET_TELEPORTER;
+	self->s.eType = entityType_t::ET_TELEPORTER;
 	self->touch = env_afx_teleporter_touch;
 	self->act = env_afx_teleporter_act;
 
@@ -216,7 +216,7 @@ void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t* )
 	// play sound
 	if ( !( self->spawnflags & 4 ) )
 	{
-		G_Sound( other, CHAN_AUTO, self->soundIndex );
+		G_Sound( other, soundChannel_t::CHAN_AUTO, self->soundIndex );
 	}
 
 	if ( self->spawnflags & 8 )

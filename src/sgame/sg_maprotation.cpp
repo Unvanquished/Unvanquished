@@ -506,7 +506,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 	fileHandle_t f;
 
 	// load the file
-	len = trap_FS_FOpenFile( fileName, &f, FS_READ );
+	len = trap_FS_FOpenFile( fileName, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -1436,7 +1436,7 @@ void G_InitMapRotations()
 	const char *fileName = "maprotation.cfg";
 
 	// Load the file if it exists
-	if ( trap_FS_FOpenFile( fileName, nullptr, FS_READ ) )
+	if ( trap_FS_FOpenFile( fileName, nullptr, fsMode_t::FS_READ ) )
 	{
 		if ( !G_ParseMapRotationFile( fileName ) )
 		{

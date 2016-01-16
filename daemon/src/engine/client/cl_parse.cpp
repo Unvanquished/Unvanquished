@@ -300,7 +300,7 @@ void CL_ParseSnapshot( msg_t *msg )
 
 	if ( len > (int) sizeof( newSnap.areamask ) )
 	{
-		Com_Error( ERR_DROP, "CL_ParseSnapshot: Invalid size %d for areamask.", len );
+		Com_Error( errorParm_t::ERR_DROP, "CL_ParseSnapshot: Invalid size %d for areamask.", len );
 	}
 
 	MSG_ReadData( msg, &newSnap.areamask, len );
@@ -401,9 +401,9 @@ void CL_SystemInfoChanged()
 		FS::PakPath::ClearPaks();
 		if (!FS_LoadServerPaks(Info_ValueForKey(systemInfo, "sv_paks"), clc.demoplaying)) {
 			if (!cl_allowDownload->integer) {
-				Com_Error(ERR_DROP, "Client is missing paks but downloads are disabled");
+				Com_Error(errorParm_t::ERR_DROP, "Client is missing paks but downloads are disabled");
 			} else if (clc.demoplaying) {
-				Com_Error(ERR_DROP, "Client is missing paks needed by the demo");
+				Com_Error(errorParm_t::ERR_DROP, "Client is missing paks needed by the demo");
 			}
 		}
 	}
@@ -469,7 +469,7 @@ void CL_ParseGamestate( msg_t *msg )
 
 			if ( i < 0 || i >= MAX_CONFIGSTRINGS )
 			{
-				Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
+				Com_Error( errorParm_t::ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 			}
 
             const char* str = MSG_ReadBigString( msg );
@@ -482,7 +482,7 @@ void CL_ParseGamestate( msg_t *msg )
 
 			if ( newnum < 0 || newnum >= MAX_GENTITIES )
 			{
-				Com_Error( ERR_DROP, "Baseline number out of range: %i", newnum );
+				Com_Error( errorParm_t::ERR_DROP, "Baseline number out of range: %i", newnum );
 			}
 
 			memset( &nullstate, 0, sizeof( nullstate ) );
@@ -491,7 +491,7 @@ void CL_ParseGamestate( msg_t *msg )
 		}
 		else
 		{
-			Com_Error( ERR_DROP, "CL_ParseGamestate: bad command byte" );
+			Com_Error( errorParm_t::ERR_DROP, "CL_ParseGamestate: bad command byte" );
 		}
 	}
 
@@ -538,7 +538,7 @@ void CL_ParseDownload( msg_t *msg )
             size = MSG_ReadShort( msg );
             if ( size < 0 || size > (int) sizeof( data ) )
             {
-                Com_Error( ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
+                Com_Error( errorParm_t::ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
             }
 	        MSG_ReadData( msg, data, size );
         }
@@ -568,7 +568,7 @@ void CL_ParseDownload( msg_t *msg )
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
 			clc.bWWWDl = true; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
-			cls.state = CA_DOWNLOADING;
+			cls.state = connstate_t::CA_DOWNLOADING;
 
 			// make sure the server is not trying to redirect us again on a bad checksum
 			if ( strstr( clc.badChecksumList, va( "@%s", cls.originalDownloadName ) ) )
@@ -592,7 +592,7 @@ void CL_ParseDownload( msg_t *msg )
 
 			// Check for a disconnected download
 			// we'll let the server disconnect us when it gets the bbl8r message
-			if ( clc.downloadFlags & ( 1 << DL_FLAG_DISCON ) )
+			if ( clc.downloadFlags & DL_FLAG_DISCON )
 			{
 				CL_AddReliableCommand( "wwwdl bbl8r" );
 				cls.bWWWDlDisconnected = true;
@@ -621,7 +621,7 @@ void CL_ParseDownload( msg_t *msg )
 
 		if ( clc.downloadSize < 0 )
 		{
-			Com_Error( ERR_DROP, "%s", MSG_ReadString( msg ) );
+			Com_Error( errorParm_t::ERR_DROP, "%s", MSG_ReadString( msg ) );
 		}
 	}
 
@@ -629,7 +629,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( size < 0 || size > (int) sizeof( data ) )
 	{
-		Com_Error( ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
+		Com_Error( errorParm_t::ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
 	}
 
     downloadLogger.Debug("Received block of size %i", size);
@@ -766,7 +766,7 @@ void CL_ParseServerMessage( msg_t *msg )
 	{
 		if ( msg->readcount > msg->cursize )
 		{
-			Com_Error( ERR_DROP, "CL_ParseServerMessage: read past end of server message" );
+			Com_Error( errorParm_t::ERR_DROP, "CL_ParseServerMessage: read past end of server message" );
 		}
 
 		cmd = MSG_ReadByte( msg );
@@ -793,7 +793,7 @@ void CL_ParseServerMessage( msg_t *msg )
 		switch ( cmd )
 		{
 			default:
-				Com_Error( ERR_DROP, "CL_ParseServerMessage: Illegible server message %d", cmd );
+				Com_Error( errorParm_t::ERR_DROP, "CL_ParseServerMessage: Illegible server message %d", cmd );
 
 			case svc_nop:
 				break;

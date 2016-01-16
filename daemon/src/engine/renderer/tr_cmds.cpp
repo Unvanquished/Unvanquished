@@ -40,79 +40,79 @@ void R_PerformanceCounters()
 		return;
 	}
 
-	if ( r_speeds->integer == RSPEEDS_GENERAL )
+	if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_GENERAL))
 	{
-		ri.Printf( PRINT_ALL, "%i views %i portals %i batches %i surfs %i leafs %i verts %i tris\n",
+		ri.Printf( printParm_t::PRINT_ALL, "%i views %i portals %i batches %i surfs %i leafs %i verts %i tris\n",
 		           backEnd.pc.c_views, backEnd.pc.c_portals, backEnd.pc.c_batches, backEnd.pc.c_surfaces, tr.pc.c_leafs,
 		           backEnd.pc.c_vertexes, backEnd.pc.c_indexes / 3 );
 
-		ri.Printf( PRINT_ALL, "%i lights %i bout %i pvsout %i interactions\n",
+		ri.Printf( printParm_t::PRINT_ALL, "%i lights %i bout %i pvsout %i interactions\n",
 		           tr.pc.c_dlights + tr.pc.c_slights,
 		           tr.pc.c_box_cull_light_out,
 		           tr.pc.c_pvs_cull_light_out,
 		           tr.pc.c_dlightInteractions + tr.pc.c_slightInteractions );
 
-		ri.Printf( PRINT_ALL, "%i draws %i vbos %i ibos %i verts %i tris\n",
+		ri.Printf( printParm_t::PRINT_ALL, "%i draws %i vbos %i ibos %i verts %i tris\n",
 		           backEnd.pc.c_drawElements,
 		           backEnd.pc.c_vboVertexBuffers, backEnd.pc.c_vboIndexBuffers,
 		           backEnd.pc.c_vboVertexes, backEnd.pc.c_vboIndexes / 3 );
 
-		ri.Printf( PRINT_ALL, "%i multidraws %i primitives %i tris\n",
+		ri.Printf( printParm_t::PRINT_ALL, "%i multidraws %i primitives %i tris\n",
 		           backEnd.pc.c_multiDrawElements,
 		           backEnd.pc.c_multiDrawPrimitives,
 		           backEnd.pc.c_multiVboIndexes / 3 );
 	}
-	else if ( r_speeds->integer == RSPEEDS_CULLING )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_CULLING ))
 	{
-		ri.Printf( PRINT_ALL, "(gen) %i pin %i pout %i bin %i bclip %i bout\n",
+		ri.Printf( printParm_t::PRINT_ALL, "(gen) %i pin %i pout %i bin %i bclip %i bout\n",
 		           tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out, tr.pc.c_box_cull_in,
 		           tr.pc.c_box_cull_clip, tr.pc.c_box_cull_out );
 
-		ri.Printf( PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
+		ri.Printf( printParm_t::PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
 		           tr.pc.c_sphere_cull_mdv_in, tr.pc.c_sphere_cull_mdv_clip,
 		           tr.pc.c_sphere_cull_mdv_out, tr.pc.c_box_cull_mdv_in, tr.pc.c_box_cull_mdv_clip, tr.pc.c_box_cull_mdv_out );
 
-		ri.Printf( PRINT_ALL, "(md5) %i bin %i bclip %i bout\n",
+		ri.Printf( printParm_t::PRINT_ALL, "(md5) %i bin %i bclip %i bout\n",
 		           tr.pc.c_box_cull_md5_in, tr.pc.c_box_cull_md5_clip, tr.pc.c_box_cull_md5_out );
 	}
-	else if ( r_speeds->integer == RSPEEDS_VIEWCLUSTER )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_VIEWCLUSTER ))
 	{
-		ri.Printf( PRINT_ALL, "viewcluster: %i\n", tr.visClusters[ tr.visIndex ] );
+		ri.Printf( printParm_t::PRINT_ALL, "viewcluster: %i\n", tr.visClusters[ tr.visIndex ] );
 	}
-	else if ( r_speeds->integer == RSPEEDS_LIGHTS )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_LIGHTS ))
 	{
-		ri.Printf( PRINT_ALL, "dlight srf:%i culled:%i\n", tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled );
+		ri.Printf( printParm_t::PRINT_ALL, "dlight srf:%i culled:%i\n", tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled );
 
-		ri.Printf( PRINT_ALL, "dlights:%i interactions:%i\n", tr.pc.c_dlights, tr.pc.c_dlightInteractions );
+		ri.Printf( printParm_t::PRINT_ALL, "dlights:%i interactions:%i\n", tr.pc.c_dlights, tr.pc.c_dlightInteractions );
 
-		ri.Printf( PRINT_ALL, "slights:%i interactions:%i\n", tr.pc.c_slights, tr.pc.c_slightInteractions );
+		ri.Printf( printParm_t::PRINT_ALL, "slights:%i interactions:%i\n", tr.pc.c_slights, tr.pc.c_slightInteractions );
 	}
-	else if ( r_speeds->integer == RSPEEDS_SHADOWCUBE_CULLING )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_SHADOWCUBE_CULLING ))
 	{
-		ri.Printf( PRINT_ALL, "omni pyramid tests:%i bin:%i bclip:%i bout:%i\n",
+		ri.Printf(printParm_t::PRINT_ALL, "omni pyramid tests:%i bin:%i bclip:%i bout:%i\n",
 		           tr.pc.c_pyramidTests, tr.pc.c_pyramid_cull_ent_in, tr.pc.c_pyramid_cull_ent_clip, tr.pc.c_pyramid_cull_ent_out );
 	}
-	else if ( r_speeds->integer == RSPEEDS_FOG )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_FOG ))
 	{
-		ri.Printf( PRINT_ALL, "fog srf:%i batches:%i\n", backEnd.pc.c_fogSurfaces, backEnd.pc.c_fogBatches );
+		ri.Printf(printParm_t::PRINT_ALL, "fog srf:%i batches:%i\n", backEnd.pc.c_fogSurfaces, backEnd.pc.c_fogBatches );
 	}
-	else if ( r_speeds->integer == RSPEEDS_FLARES )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_FLARES ))
 	{
-		ri.Printf( PRINT_ALL, "flare adds:%i tests:%i renders:%i\n",
+		ri.Printf(printParm_t::PRINT_ALL, "flare adds:%i tests:%i renders:%i\n",
 		           backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders );
 	}
-	else if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_SHADING_TIMES ))
 	{
-		ri.Printf( PRINT_ALL, "forward shading times: ambient:%i lighting:%i\n", backEnd.pc.c_forwardAmbientTime,
+		ri.Printf(printParm_t::PRINT_ALL, "forward shading times: ambient:%i lighting:%i\n", backEnd.pc.c_forwardAmbientTime,
 			           backEnd.pc.c_forwardLightingTime );
 	}
-	else if ( r_speeds->integer == RSPEEDS_NEAR_FAR )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_NEAR_FAR ))
 	{
-		ri.Printf( PRINT_ALL, "zNear: %.0f zFar: %.0f\n", tr.viewParms.zNear, tr.viewParms.zFar );
+		ri.Printf(printParm_t::PRINT_ALL, "zNear: %.0f zFar: %.0f\n", tr.viewParms.zNear, tr.viewParms.zFar );
 	}
-	else if ( r_speeds->integer == RSPEEDS_DECALS )
+	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_DECALS ))
 	{
-		ri.Printf( PRINT_ALL, "decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d\n",
+		ri.Printf(printParm_t::PRINT_ALL, "decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d\n",
 		           tr.pc.c_decalProjectors, tr.pc.c_decalTestSurfaces, tr.pc.c_decalClipSurfaces, tr.pc.c_decalSurfaces,
 		           tr.pc.c_decalSurfacesCreated );
 	}
@@ -136,7 +136,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters )
 	cmdList = &backEndData[ tr.smpFrame ]->commands;
 	ASSERT(cmdList != nullptr);
 	// add an end-of-list command
-	* ( int * )( cmdList->cmds + cmdList->used ) = RC_END_OF_LIST;
+	*reinterpret_cast<renderCommand_t*>(&cmdList->cmds[cmdList->used]) = renderCommand_t::RC_END_OF_LIST;
 
 	// clear it out, in case this is a sync and not a buffer flip
 	cmdList->used = 0;
@@ -150,7 +150,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters )
 
 			if ( r_showSmp->integer )
 			{
-				ri.Printf( PRINT_ALL, "R" );
+				ri.Printf(printParm_t::PRINT_ALL, "R" );
 			}
 		}
 		else
@@ -159,7 +159,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters )
 
 			if ( r_showSmp->integer )
 			{
-				ri.Printf( PRINT_ALL, "." );
+				ri.Printf(printParm_t::PRINT_ALL, "." );
 			}
 		}
 
@@ -236,7 +236,7 @@ void           *R_GetCommandBuffer( unsigned bytes )
 	{
 		if ( bytes > MAX_RENDER_COMMANDS - ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) )
 		{
-			ri.Error( ERR_FATAL, "R_GetCommandBuffer: bad size %i", bytes );
+			ri.Error( errorParm_t::ERR_FATAL, "R_GetCommandBuffer: bad size %i", bytes );
 		}
 
 		// if we run out of room, just start dropping commands
@@ -264,7 +264,7 @@ void R_AddDrawViewCmd()
 		return;
 	}
 
-	cmd->commandId = RC_DRAW_VIEW;
+	cmd->commandId = renderCommand_t::RC_DRAW_VIEW;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -287,7 +287,7 @@ void R_AddRunVisTestsCmd()
 		return;
 	}
 
-	cmd->commandId = RC_RUN_VISTESTS;
+	cmd->commandId = renderCommand_t::RC_RUN_VISTESTS;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -316,7 +316,7 @@ void RE_SetColor( const Color::Color& rgba )
 		return;
 	}
 
-	cmd->commandId = RC_SET_COLOR;
+	cmd->commandId = renderCommand_t::RC_SET_COLOR;
 
 	cmd->color = rgba;
 }
@@ -373,7 +373,7 @@ void RE_SetColorGrading( int slot, qhandle_t hShader )
 
 	cmd->slot = slot;
 	cmd->image = image;
-	cmd->commandId = RC_SET_COLORGRADING;
+	cmd->commandId = renderCommand_t::RC_SET_COLORGRADING;
 }
 
 /*
@@ -495,7 +495,7 @@ void RE_StretchPic ( float x, float y, float w, float h,
 		return;
 	}
 
-	cmd->commandId = RC_STRETCH_PIC;
+	cmd->commandId = renderCommand_t::RC_STRETCH_PIC;
 	cmd->shader = R_GetShaderByHandle( hShader );
 	cmd->x = x;
 	cmd->y = y;
@@ -531,7 +531,7 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 		return;
 	}
 
-	cmd->commandId = RC_2DPOLYS;
+	cmd->commandId = renderCommand_t::RC_2DPOLYS;
 	cmd->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
 	cmd->numverts = numverts;
 	memcpy( cmd->verts, verts, sizeof( polyVert_t ) * numverts );
@@ -561,7 +561,7 @@ void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int num
 		return;
 	}
 
-	cmd->commandId = RC_2DPOLYSINDEXED;
+	cmd->commandId = renderCommand_t::RC_2DPOLYSINDEXED;
 	cmd->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
 	cmd->numverts = numverts;
 	memcpy( cmd->verts, verts, sizeof( polyVert_t ) * numverts );
@@ -606,7 +606,7 @@ void RE_ScissorSet( int x, int y, int w, int h )
 		return;
 	}
 
-	cmd->commandId = RC_SCISSORSET;
+	cmd->commandId = renderCommand_t::RC_SCISSORSET;
 	cmd->x = x;
 	cmd->y = y;
 	cmd->w = w;
@@ -629,7 +629,7 @@ void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, floa
 		return;
 	}
 
-	cmd->commandId = RC_ROTATED_PIC;
+	cmd->commandId = renderCommand_t::RC_ROTATED_PIC;
 	cmd->shader = R_GetShaderByHandle( hShader );
 	cmd->x = x;
 	cmd->y = y;
@@ -664,7 +664,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 		return;
 	}
 
-	cmd->commandId = RC_STRETCH_PIC_GRADIENT;
+	cmd->commandId = renderCommand_t::RC_STRETCH_PIC_GRADIENT;
 	cmd->shader = R_GetShaderByHandle( hShader );
 	cmd->x = x;
 	cmd->y = y;
@@ -706,7 +706,7 @@ void RE_BeginFrame()
 	{
 		if ( glConfig.stencilBits < 4 )
 		{
-			ri.Printf( PRINT_ALL, "Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits );
+			ri.Printf(printParm_t::PRINT_ALL, "Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits );
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
 			r_measureOverdraw->modified = false;
 		}
@@ -792,7 +792,7 @@ void RE_BeginFrame()
 			}
 
 			//ri.Error(ERR_FATAL, "caught OpenGL error: %s in file %s line %i", s, filename, line);
-			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (%s)!", s );
+			ri.Error( errorParm_t::ERR_FATAL, "RE_BeginFrame() - glGetError() failed (%s)!", s );
 		}
 	}
 
@@ -804,7 +804,7 @@ void RE_BeginFrame()
 		return;
 	}
 
-	cmd->commandId = RC_DRAW_BUFFER;
+	cmd->commandId = renderCommand_t::RC_DRAW_BUFFER;
 
 	if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
 	{
@@ -841,7 +841,7 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 		return;
 	}
 
-	cmd->commandId = RC_SWAP_BUFFERS;
+	cmd->commandId = renderCommand_t::RC_SWAP_BUFFERS;
 
 	R_IssueRenderCommands( true );
 
@@ -888,7 +888,7 @@ void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encode
 		return;
 	}
 
-	cmd->commandId = RC_VIDEOFRAME;
+	cmd->commandId = renderCommand_t::RC_VIDEOFRAME;
 
 	cmd->width = width;
 	cmd->height = height;
@@ -908,7 +908,7 @@ void RE_Finish()
 {
 	renderFinishCommand_t *cmd;
 
-	ri.Printf( PRINT_ALL, "RE_Finish\n" );
+	ri.Printf(printParm_t::PRINT_ALL, "RE_Finish\n" );
 
 	cmd = (renderFinishCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 
@@ -917,5 +917,5 @@ void RE_Finish()
 		return;
 	}
 
-	cmd->commandId = RC_FINISH;
+	cmd->commandId = renderCommand_t::RC_FINISH;
 }

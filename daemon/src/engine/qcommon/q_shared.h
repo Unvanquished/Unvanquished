@@ -165,7 +165,7 @@ void ignore_result(T) {}
 
 	using byte = uint8_t;
 	using uint = unsigned int;
-	enum qtrinary {qno, qyes, qmaybe};
+	enum class qtrinary {qno, qyes, qmaybe};
 
 	union floatint_t
 	{
@@ -230,7 +230,7 @@ using clipHandle_t = int;
 
 #define MAX_BINARY_MESSAGE 32768 // max length of binary message
 
-	enum messageStatus_t
+	enum class messageStatus_t
 	{
 	  MESSAGE_EMPTY = 0,
 	  MESSAGE_WAITING, // rate/packet limited
@@ -242,7 +242,7 @@ using clipHandle_t = int;
 //
 #define MAX_MAP_AREA_BYTES 32 // bit vector of area visibility
 
-	enum ha_pref
+	enum class ha_pref
 	{
 	  h_high,
 	  h_low,
@@ -351,7 +351,7 @@ void  Com_Free_Aligned( void *ptr );
 #define ROLL  2 // fall over
 
 // plane sides
-	enum planeSide_t
+	enum class planeSide_t : int
 	{
 	  SIDE_FRONT = 0,
 	  SIDE_BACK = 1,
@@ -1469,7 +1469,7 @@ void         ByteToDir( int b, vec3_t dir );
 	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) PRINTF_LIKE(3);
 
 // mode parm for FS_FOpenFile
-	enum fsMode_t
+	enum class fsMode_t
 	{
 	  FS_READ,
 	  FS_WRITE,
@@ -1480,7 +1480,7 @@ void         ByteToDir( int b, vec3_t dir );
 	  FS_WRITE_VIA_TEMPORARY,
 	};
 
-	enum fsOrigin_t
+	enum class fsOrigin_t : int
 	{
 	  FS_SEEK_CUR,
 	  FS_SEEK_END,
@@ -1640,7 +1640,7 @@ void         ByteToDir( int b, vec3_t dir );
 		byte   pad[ 2 ];
 	};
 
-	enum traceType_t
+	enum class traceType_t
 	{
 	  TT_NONE,
 
@@ -1697,7 +1697,7 @@ void         ByteToDir( int b, vec3_t dir );
 // sound channels
 // channel 0 never willingly overrides
 // other channels will always override a playing sound on that channel
-	enum soundChannel_t
+	enum class soundChannel_t
 	{
 	  CHAN_AUTO,
 	  CHAN_LOCAL, // menu sounds, etc
@@ -1911,7 +1911,7 @@ using GameStateCSs = std::array<std::string, MAX_CONFIGSTRINGS>;
 // then BUTTON_WALKING should be set
 
 // Arnout: doubleTap buttons - DT_NUM can be max 8
-	enum dtType_t
+	enum class dtType_t : byte
 	{
 	  DT_NONE,
 	  DT_MOVELEFT,
@@ -1929,7 +1929,7 @@ using GameStateCSs = std::array<std::string, MAX_CONFIGSTRINGS>;
 		int         angles[ 3 ];
 
 		signed char forwardmove, rightmove, upmove;
-		byte        doubleTap; // Arnout: only 3 bits used
+		dtType_t    doubleTap; // Arnout: only 3 bits used
 
 		byte        weapon;
 		byte        flags;
@@ -1982,7 +1982,7 @@ using GameStateCSs = std::array<std::string, MAX_CONFIGSTRINGS>;
 // if entityState->solid == SOLID_BMODEL, modelindex is an inline model number
 #define SOLID_BMODEL 0xffffff
 
-	enum trType_t
+	enum class trType_t
 	{
 	  TR_STATIONARY,
 	  TR_INTERPOLATE, // non-parametric, but interpolate between snapshots
@@ -2014,7 +2014,7 @@ using GameStateCSs = std::array<std::string, MAX_CONFIGSTRINGS>;
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
 //
 // You can use Com_EntityTypeName to get a String representation of this enum
-	enum entityType_t
+	enum class entityType_t
 	{
 		ET_GENERAL,
 		ET_PLAYER,
@@ -2104,7 +2104,7 @@ using GameStateCSs = std::array<std::string, MAX_CONFIGSTRINGS>;
 		int           weaponAnim; // mask off ANIM_TOGGLEBIT
 	};
 
-	enum connstate_t
+	enum class connstate_t
 	{
 	  CA_UNINITIALIZED,
 	  CA_DISCONNECTED, // not talking to a server
@@ -2198,7 +2198,7 @@ int        Com_GMTime( qtime_t *qtime );
 #define AS_FAVORITES 2
 
 // cinematic states
-	enum e_status
+	enum class e_status
 	{
 	  FMV_IDLE,
 	  FMV_PLAY, // play
@@ -2209,7 +2209,7 @@ int        Com_GMTime( qtime_t *qtime );
 	  FMV_ID_WAIT
 	};
 
-	enum demoState_t
+	enum class demoState_t
 	{
 	  DS_NONE,
 	  DS_PLAYBACK,

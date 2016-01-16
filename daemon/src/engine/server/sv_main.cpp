@@ -196,7 +196,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 	// send the data to all relevent clients
 	for ( j = 0, client = svs.clients; j < sv_maxclients->integer; j++, client++ )
 	{
-		if ( client->state < CS_PRIMED )
+		if ( client->state < clientState_t::CS_PRIMED )
 		{
 			continue;
 		}
@@ -239,21 +239,21 @@ static void SV_ResolveMasterServers()
 		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
 		{
 			challenges[ i ].type =
-			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = netadrtype_t::NA_BAD;
 			continue;
 		}
 
 		// see if we haven't already resolved the name
 		// resolving usually causes hitches on win95, so only
 		// do it when needed
-		if ( sv_master[ i ]->modified || ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD ) )
+		if ( sv_master[ i ]->modified || ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD ) )
 		{
 			sv_master[ i ]->modified = false;
 
 			if ( netenabled & NET_ENABLEV4 )
 			{
 				Com_Printf( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, NA_IP );
+				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, netadrtype_t::NA_IP );
 
 				if ( res == 2 )
 				{
@@ -274,7 +274,7 @@ static void SV_ResolveMasterServers()
 			if ( netenabled & NET_ENABLEV6 )
 			{
 				Com_Printf( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, NA_IP6 );
+				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, netadrtype_t::NA_IP6 );
 
 				if ( res == 2 )
 				{
@@ -292,7 +292,7 @@ static void SV_ResolveMasterServers()
 				}
 			}
 
-			if ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD )
+			if ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD )
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
@@ -318,7 +318,7 @@ void SV_NET_Config()
 
 	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
 	{
-		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = netadrtype_t::NA_BAD;
 	}
 }
 
@@ -362,7 +362,7 @@ void SV_MasterHeartbeat( const char *hbname )
 	// send to group masters
 	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
 	{
-		if ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD )
+		if ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD )
 		{
 			continue;
 		}
@@ -372,14 +372,14 @@ void SV_MasterHeartbeat( const char *hbname )
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
 
-		if ( masterServerAddr[ i ].ipv4.type != NA_BAD )
+		if ( masterServerAddr[ i ].ipv4.type != netadrtype_t::NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
+			NET_OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
 		}
 
-		if ( masterServerAddr[ i ].ipv6.type != NA_BAD )
+		if ( masterServerAddr[ i ].ipv6.type != netadrtype_t::NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
+			NET_OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
 		}
 	}
 }
@@ -421,7 +421,7 @@ void SV_MasterGameStat( const char *data )
 
 	Com_Printf( "Resolving %s\n", MASTER_SERVER_NAME );
 
-	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &adr, NA_UNSPEC ) )
+	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &adr, netadrtype_t::NA_UNSPEC ) )
 	{
 		case 0:
 			Com_Printf( "Couldn't resolve master address: %s\n", MASTER_SERVER_NAME );
@@ -438,7 +438,7 @@ void SV_MasterGameStat( const char *data )
 	            NET_AdrToStringwPort( adr ) );
 
 	Com_Printf( "Sending gamestat to %s\n", MASTER_SERVER_NAME );
-	NET_OutOfBandPrint( NS_SERVER, adr, "gamestat %s", data );
+	NET_OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
 }
 
 /*
@@ -523,7 +523,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	{
 		cl = &svs.clients[ i ];
 
-		if ( cl->state >= CS_CONNECTED )
+		if ( cl->state >= clientState_t::CS_CONNECTED )
 		{
 			ps = SV_GameClientNum( i );
 			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
@@ -539,7 +539,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 		}
 	}
 
-	NET_OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status );
+	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status );
 }
 
 /*
@@ -585,7 +585,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 	for ( i = sv_privateClients->integer; i < sv_maxclients->integer; i++ )
 	{
-		if ( svs.clients[ i ].state >= CS_CONNECTED )
+		if ( svs.clients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
 			if ( SV_IsBot(&svs.clients[ i ]) )
 			{
@@ -615,7 +615,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 		}
 
 		// It was - if the saved challenge is for the other protocol, send it and record the current one
-		if ( challenges[ i ].type == NA_IP || challenges[ i ].type == NA_IP6 )
+		if ( challenges[ i ].type == netadrtype_t::NA_IP || challenges[ i ].type == netadrtype_t::NA_IP6 )
 		{
 			if ( challenges[ i ].type != from.type )
 			{
@@ -657,7 +657,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING, false );  // Arnout: to be able to filter out Quake servers
 
-	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
+	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "infoResponse\n%s", infostring );
 }
 
 /*
@@ -691,11 +691,11 @@ bool SV_CheckDRDoS( netadr_t from )
 
 	exactFrom = from;
 
-	if ( from.type == NA_IP )
+	if ( from.type == netadrtype_t::NA_IP )
 	{
 		from.ip[ 3 ] = 0; // xx.xx.xx.0
 	}
-	else if ( from.type == NA_IP6 )
+	else if ( from.type == netadrtype_t::NA_IP6 )
 	{
 		memset( from.ip6 + 7, 0, 9 ); // mask to /56
 	}
@@ -795,7 +795,7 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
         }
 
         void Flush() {
-            NET_OutOfBandPrint(NS_SERVER, from, "print\n%s", buffer.c_str());
+            NET_OutOfBandPrint(netsrc_t::NS_SERVER, from, "print\n%s", buffer.c_str());
             buffer = "";
         }
 
@@ -958,7 +958,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 	// find which client the message is from
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
-		if ( cl->state == CS_FREE )
+		if ( cl->state == clientState_t::CS_FREE )
 		{
 			continue;
 		}
@@ -990,7 +990,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 			// zombie clients still need to do the Netchan_Process
 			// to make sure they don't need to retransmit the final
 			// reliable message, but they don't do any other processing
-			if ( cl->state != CS_ZOMBIE )
+			if ( cl->state != clientState_t::CS_ZOMBIE )
 			{
 				cl->lastPacketTime = svs.time; // don't timeout
 				SV_ExecuteClientMessage( cl, msg );
@@ -1002,7 +1002,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 
 	// if we received a sequenced packet from an address we don't recognize,
 	// send an out of band disconnect packet to it
-	NET_OutOfBandPrint( NS_SERVER, from, "disconnect" );
+	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "disconnect" );
 }
 
 /*
@@ -1024,7 +1024,7 @@ void SV_CalcPings()
 	{
 		cl = &svs.clients[ i ];
 
-		if ( cl->state != CS_ACTIVE )
+		if ( cl->state != clientState_t::CS_ACTIVE )
 		{
 			cl->ping = 999;
 			continue;
@@ -1108,23 +1108,23 @@ void SV_CheckTimeouts()
 			cl->lastPacketTime = svs.time;
 		}
 
-		if ( cl->state == CS_ZOMBIE && cl->lastPacketTime < zombiepoint )
+		if ( cl->state == clientState_t::CS_ZOMBIE && cl->lastPacketTime < zombiepoint )
 		{
 			// using the client id cause the cl->name is empty at this point
 			Com_DPrintf( "Going from CS_ZOMBIE to CS_FREE for client %d\n", i );
-			cl->state = CS_FREE; // can now be reused
+			cl->state = clientState_t::CS_FREE; // can now be reused
 
 			continue;
 		}
 
-		if ( cl->state >= CS_CONNECTED && cl->lastPacketTime < droppoint )
+		if ( cl->state >= clientState_t::CS_CONNECTED && cl->lastPacketTime < droppoint )
 		{
 			// wait several frames so a debugger session doesn't
 			// cause a timeout
 			if ( ++cl->timeoutCount > 5 )
 			{
 				SV_DropClient( cl, "timed out" );
-				cl->state = CS_FREE; // don't bother with zombie state
+				cl->state = clientState_t::CS_FREE; // don't bother with zombie state
 			}
 		}
 		else
@@ -1155,7 +1155,7 @@ bool SV_CheckPaused()
 
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
-		if ( cl->state >= CS_CONNECTED && cl->netchan.remoteAddress.type != NA_BOT )
+		if ( cl->state >= clientState_t::CS_CONNECTED && cl->netchan.remoteAddress.type != netadrtype_t::NA_BOT )
 		{
 			count++;
 		}

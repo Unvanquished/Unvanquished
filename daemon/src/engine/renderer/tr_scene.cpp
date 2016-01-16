@@ -194,7 +194,7 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 
 	if ( !hShader )
 	{
-		ri.Printf( PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: NULL poly shader\n" );
+		ri.Printf(printParm_t::PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: NULL poly shader\n" );
 		return;
 	}
 
@@ -203,17 +203,17 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 		if ( r_numPolyVerts + numVerts >= r_maxPolyVerts->integer || r_numPolys >= r_maxPolys->integer )
 		{
 			/*
-			   NOTE TTimo this was initially a PRINT_WARNING
+			   NOTE TTimo this was initially aprintParm_t::PRINT_WARNING
 			   but it happens a lot with high fighting scenes and particles
 			   since we don't plan on changing the const and making for room for those effects
 			   simply cut this message to developer only
 			 */
-			ri.Printf( PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: r_max_polys or r_max_polyverts reached\n" );
+			ri.Printf(printParm_t::PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: r_max_polys or r_max_polyverts reached\n" );
 			return;
 		}
 
 		poly = &backEndData[ tr.smpFrame ]->polys[ r_numPolys ];
-		poly->surfaceType = SF_POLY;
+		poly->surfaceType = surfaceType_t::SF_POLY;
 		poly->hShader = hShader;
 		poly->numVerts = numVerts;
 		poly->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
@@ -311,7 +311,7 @@ void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer )
 	pPolySurf = &backEndData[ tr.smpFrame ]->polybuffers[ r_numPolybuffers ];
 	r_numPolybuffers++;
 
-	pPolySurf->surfaceType = SF_POLYBUFFER;
+	pPolySurf->surfaceType = surfaceType_t::SF_POLYBUFFER;
 	pPolySurf->pPolyBuffer = pPolyBuffer;
 
 	VectorCopy( pPolyBuffer->xyz[ 0 ], bounds[ 0 ] );
@@ -360,9 +360,9 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 		return;
 	}
 
-	if ( ( unsigned ) ent->reType >= RT_MAX_REF_ENTITY_TYPE )
+	if (ent->reType >= refEntityType_t::RT_MAX_REF_ENTITY_TYPE)
 	{
-		ri.Error( ERR_DROP, "RE_AddRefEntityToScene: bad reType %i", ent->reType );
+		ri.Error(errorParm_t::ERR_DROP, "RE_AddRefEntityToScene: bad reType %s", Util::enum_str(ent->reType));
 	}
 
 	Com_Memcpy( &backEndData[ tr.smpFrame ]->entities[ r_numEntities ].e, ent, sizeof( refEntity_t ) );
@@ -395,9 +395,9 @@ void RE_AddRefLightToScene( const refLight_t *l )
 		return;
 	}
 
-	if ( ( unsigned ) l->rlType >= RL_MAX_REF_LIGHT_TYPE )
+	if (l->rlType >= refLightType_t::RL_MAX_REF_LIGHT_TYPE)
 	{
-		ri.Error( ERR_DROP, "RE_AddRefLightToScene: bad rlType %i", l->rlType );
+		ri.Error(errorParm_t::ERR_DROP, "RE_AddRefLightToScene: bad rlType %s", Util::enum_str(l->rlType));
 	}
 
 	light = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
@@ -498,7 +498,7 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 
 	light = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
 
-	light->l.rlType = RL_OMNI;
+	light->l.rlType = refLightType_t::RL_OMNI;
 	VectorCopy( org, light->l.origin );
 
 	QuatClear( light->l.rotation );
@@ -572,7 +572,7 @@ void RE_RenderScene( const refdef_t *fd )
 
 	if ( !tr.world && !( fd->rdflags & RDF_NOWORLDMODEL ) )
 	{
-		ri.Error( ERR_DROP, "R_RenderScene: NULL worldmodel" );
+		ri.Error(errorParm_t::ERR_DROP, "R_RenderScene: NULL worldmodel" );
 	}
 
 	tr.refdef.x = fd->x;
@@ -769,7 +769,7 @@ qhandle_t RE_RegisterVisTest()
 
 	if ( tr.numVisTests >= MAX_VISTESTS )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: RE_RegisterVisTest - MAX_VISTESTS hit\n" );
+		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: RE_RegisterVisTest - MAX_VISTESTS hit\n" );
 	}
 
 	for ( hTest = 0; hTest < MAX_VISTESTS; hTest++ )
@@ -804,7 +804,7 @@ void RE_AddVisTestToScene( qhandle_t hTest, const vec3_t pos, float depthAdjust,
 
 	if ( r_numVisTests == MAX_VISTESTS )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: RE_AddVisTestToScene - MAX_VISTESTS hit\n" );
+		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: RE_AddVisTestToScene - MAX_VISTESTS hit\n" );
 		return;
 	}
 

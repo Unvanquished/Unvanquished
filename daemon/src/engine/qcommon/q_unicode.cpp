@@ -145,7 +145,7 @@ unsigned long Q_UTF8_CodePoint( const char *str )
   /*
   if( n > 8 * sizeof(codepoint) )
   {
-		Com_Error( ERR_DROP, "Q_UTF8_CodePoint: overflow caught" );
+		Com_Error( errorParm_t::ERR_DROP, "Q_UTF8_CodePoint: overflow caught" );
 
     return 0;
   }

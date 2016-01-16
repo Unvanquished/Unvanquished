@@ -172,20 +172,20 @@ void QDECL Com_LogEvent( log_event_t *event )
 {
 	switch (event->level)
 	{
-	case LOG_OFF:
-		return;
-	case LOG_WARN:
+	case log_level_t::LOG_OFF:
+		break;
+	case log_level_t::LOG_WARN:
 		Com_Printf("^3Warning: ^7%s\n", event->message);
 		break;
-	case LOG_ERROR:
+	case log_level_t::LOG_ERROR:
 		Com_Printf("^1Error: ^7%s\n", event->message);
 		break;
-	case LOG_DEBUG:
+	case log_level_t::LOG_DEBUG:
 		Com_Printf("Debug: %s\n", event->message);
 		break;
-	case LOG_TRACE:
+	case log_level_t::LOG_TRACE:
 		Com_Printf("Trace: %s\n", event->message);
-		return;
+		break;
 	default:
 		Com_Printf("%s\n", event->message);
 		break;
@@ -249,7 +249,7 @@ do the appropriate things.
 =============
 */
 // *INDENT-OFF*
-void QDECL PRINTF_LIKE(2) Com_Error( int code, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) Com_Error( errorParm_t code, const char *fmt, ... )
 {
 	char buf[ 4096 ];
 	va_list argptr;
@@ -258,7 +258,7 @@ void QDECL PRINTF_LIKE(2) Com_Error( int code, const char *fmt, ... )
 	Q_vsnprintf( buf, sizeof( buf ), fmt, argptr );
 	va_end( argptr );
 
-	if ( code == ERR_FATAL )
+	if ( code == errorParm_t::ERR_FATAL )
 		Sys::Error( buf );
 	else
 		Sys::Drop( buf );
@@ -642,7 +642,7 @@ void Com_InitHunkMemory()
 
 	if ( !s_hunkData )
 	{
-		Com_Error( ERR_FATAL, "Hunk data failed to allocate %iMB", s_hunkTotal / ( 1024 * 1024 ) );
+		Com_Error( errorParm_t::ERR_FATAL, "Hunk data failed to allocate %iMB", s_hunkTotal / ( 1024 * 1024 ) );
 	}
 
 	Hunk_Clear();
@@ -746,7 +746,7 @@ void           *Hunk_Alloc( int size, ha_pref)
 
 	if ( s_hunkData == nullptr )
 	{
-		Com_Error( ERR_FATAL, "Hunk_Alloc: Hunk memory system not initialized" );
+		Com_Error( errorParm_t::ERR_FATAL, "Hunk_Alloc: Hunk memory system not initialized" );
 	}
 
 	Hunk_SwapBanks();
@@ -756,7 +756,7 @@ void           *Hunk_Alloc( int size, ha_pref)
 
 	if ( hunk_low.temp + hunk_high.temp + size > s_hunkTotal )
 	{
-		Com_Error( ERR_DROP, "Hunk_Alloc failed on %i", size );
+		Com_Error( errorParm_t::ERR_DROP, "Hunk_Alloc failed on %i", size );
 	}
 
 	if ( hunk_permanent == &hunk_low )
@@ -814,7 +814,7 @@ void           *Hunk_AllocateTempMemory( int size )
 
 	if ( hunk_temp->temp + hunk_permanent->permanent + size > s_hunkTotal )
 	{
-		Com_Error( ERR_DROP, "Hunk_AllocateTempMemory: failed on %i", size );
+		Com_Error( errorParm_t::ERR_DROP, "Hunk_AllocateTempMemory: failed on %i", size );
 	}
 
 	if ( hunk_temp == &hunk_low )
@@ -866,7 +866,7 @@ void Hunk_FreeTempMemory( void *buf )
 
 	if ( hdr->magic != (int) HUNK_MAGIC )
 	{
-		Com_Error( ERR_FATAL, "Hunk_FreeTempMemory: bad magic" );
+		Com_Error( errorParm_t::ERR_FATAL, "Hunk_FreeTempMemory: bad magic" );
 	}
 
 	hdr->magic = HUNK_FREE_MAGIC;
@@ -992,12 +992,12 @@ sysEvent_t Com_GetEvent()
 		len = strlen( s ) + 1;
 		b = ( char * ) Z_Malloc( len );
 		strcpy( b, s );
-		Com_QueueEvent( 0, SE_CONSOLE, 0, 0, len, b );
+		Com_QueueEvent( 0, sysEventType_t::SE_CONSOLE, 0, 0, len, b );
 	}
 
 	// check for network packets
 	MSG_Init( &netmsg, sys_packetReceived, sizeof( sys_packetReceived ) );
-	adr.type = NA_UNSPEC;
+	adr.type = netadrtype_t::NA_UNSPEC;
 
 	if ( Sys_GetPacket( &adr, &netmsg ) )
 	{
@@ -1009,7 +1009,7 @@ sysEvent_t Com_GetEvent()
 		buf = ( netadr_t * ) Z_Malloc( len );
 		*buf = adr;
 		memcpy( buf + 1, &netmsg.data[ netmsg.readcount ], netmsg.cursize - netmsg.readcount );
-		Com_QueueEvent( 0, SE_PACKET, 0, 0, len, buf );
+		Com_QueueEvent( 0, sysEventType_t::SE_PACKET, 0, 0, len, buf );
 	}
 
 	// return if we have data
@@ -1085,19 +1085,19 @@ int Com_EventLoop()
 		ev = Com_GetEvent();
 
 		// if no more events are available
-		if ( ev.evType == SE_NONE )
+		if ( ev.evType == sysEventType_t::SE_NONE )
 		{
 			if ( mouseHaveEvent ){
 				CL_MouseEvent( mouseX, mouseY, mouseTime );
 			}
 
 			// manually send packet events for the loopback channel
-			while ( NET_GetLoopPacket( NS_CLIENT, &evFrom, &buf ) )
+			while ( NET_GetLoopPacket( netsrc_t::NS_CLIENT, &evFrom, &buf ) )
 			{
 				CL_PacketEvent( evFrom, &buf );
 			}
 
-			while ( NET_GetLoopPacket( NS_SERVER, &evFrom, &buf ) )
+			while ( NET_GetLoopPacket( netsrc_t::NS_SERVER, &evFrom, &buf ) )
 			{
 				// if the server just shut down, flush the events
 				if ( com_sv_running->integer )
@@ -1113,16 +1113,16 @@ int Com_EventLoop()
 		{
 			default:
 				// bk001129 - was ev.evTime
-				Com_Error( ERR_FATAL, "Com_EventLoop: bad event type %i", ev.evType );
+				Com_Error( errorParm_t::ERR_FATAL, "Com_EventLoop: bad event type %s", Util::enum_str(ev.evType) );
 
-			case SE_NONE:
+			case sysEventType_t::SE_NONE:
 				break;
 
-			case SE_KEY:
+			case sysEventType_t::SE_KEY:
 				CL_KeyEvent( ev.evValue, ev.evValue2, ev.evTime );
 				break;
 
-			case SE_CHAR:
+			case sysEventType_t::SE_CHAR:
 #ifdef BUILD_CLIENT
 
 				// fretn
@@ -1140,26 +1140,26 @@ int Com_EventLoop()
 				CL_CharEvent( ev.evValue );
 				break;
 
-			case SE_MOUSE:
+			case sysEventType_t::SE_MOUSE:
 				mouseHaveEvent = true;
 				mouseX += ev.evValue;
 				mouseY += ev.evValue2;
 				mouseTime += ev.evTime;
 				break;
 
-			case SE_MOUSE_POS:
+			case sysEventType_t::SE_MOUSE_POS:
 				CL_MousePosEvent( ev.evValue, ev.evValue2 );
 				break;
 
-			case SE_FOCUS:
+            case sysEventType_t::SE_FOCUS:
 				CL_FocusEvent( ev.evValue );
 				break;
 
-			case SE_JOYSTICK_AXIS:
+			case sysEventType_t::SE_JOYSTICK_AXIS:
 				CL_JoystickEvent( ev.evValue, ev.evValue2, ev.evTime );
 				break;
 
-			case SE_CONSOLE:
+			case sysEventType_t::SE_CONSOLE:
 			{
 				char *cmd = (char *) ev.evPtr;
 
@@ -1183,7 +1183,7 @@ int Com_EventLoop()
 				break;
 			}
 
-			case SE_PACKET:
+			case sysEventType_t::SE_PACKET:
 
 				// this cvar allows simulation of connections that
 				// drop a lot of packets.  Note that loopback connections
@@ -1259,11 +1259,11 @@ static void Com_Error_f()
 {
 	if ( Cmd_Argc() > 1 )
 	{
-		Com_Error( ERR_DROP, "Testing drop error" );
+		Com_Error( errorParm_t::ERR_DROP, "Testing drop error" );
 	}
 	else
 	{
-		Com_Error( ERR_FATAL, "Testing fatal error" );
+		Com_Error( errorParm_t::ERR_FATAL, "Testing fatal error" );
 	}
 }
 
@@ -1785,7 +1785,7 @@ void Com_Frame()
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( watchdogThreshold.Get() - 4 ) * 1000 )
 			{
-				Com_Log( LOG_WARN, "watchdog will trigger in 4 seconds" );
+				Com_Log( log_level_t::LOG_WARN, "watchdog will trigger in 4 seconds" );
 				watchWarn = true;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )

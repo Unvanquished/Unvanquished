@@ -43,12 +43,12 @@ static void png_read_data( png_structp png, png_bytep data, png_size_t length )
 
 static void png_user_warning_fn( png_structp, png_const_charp warning_message )
 {
-	ri.Printf( PRINT_WARNING, "libpng warning: %s\n", warning_message );
+	ri.Printf(printParm_t::PRINT_WARNING, "libpng warning: %s\n", warning_message );
 }
 
 static void NORETURN png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
 {
-	ri.Printf( PRINT_ERROR, "libpng error: %s\n", error_message );
+	ri.Printf( printParm_t::PRINT_ERROR, "libpng error: %s\n", error_message );
 	longjmp( png_jmpbuf( png_ptr ), 0 );
 }
 
@@ -78,7 +78,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 
 	if ( !png )
 	{
-		ri.Printf( PRINT_WARNING, "LoadPNG: png_create_write_struct() failed for (%s)\n", name );
+		ri.Printf(printParm_t::PRINT_WARNING, "LoadPNG: png_create_write_struct() failed for (%s)\n", name );
 		ri.FS_FreeFile( data );
 		return;
 	}
@@ -88,7 +88,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 
 	if ( !info )
 	{
-		ri.Printf( PRINT_WARNING, "LoadPNG: png_create_info_struct() failed for (%s)\n", name );
+		ri.Printf(printParm_t::PRINT_WARNING, "LoadPNG: png_create_info_struct() failed for (%s)\n", name );
 		ri.FS_FreeFile( data );
 		png_destroy_read_struct( &png, ( png_infopp ) nullptr, ( png_infopp ) nullptr );
 		return;
@@ -102,7 +102,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 	if ( setjmp( png_jmpbuf( png ) ) )
 	{
 		// if we get here, we had a problem reading the file
-		ri.Printf( PRINT_WARNING, "LoadPNG: first exception handler called for (%s)\n", name );
+		ri.Printf(printParm_t::PRINT_WARNING, "LoadPNG: first exception handler called for (%s)\n", name );
 		ri.FS_FreeFile( data );
 		png_destroy_read_struct( &png, ( png_infopp ) & info, ( png_infopp ) nullptr );
 		return;
@@ -170,7 +170,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height,
 	// set a new exception handler
 	if ( setjmp( png_jmpbuf( png ) ) )
 	{
-		ri.Printf( PRINT_WARNING, "LoadPNG: second exception handler called for (%s)\n", name );
+		ri.Printf(printParm_t::PRINT_WARNING, "LoadPNG: second exception handler called for (%s)\n", name );
 		ri.Hunk_FreeTempMemory( row_pointers );
 		ri.FS_FreeFile( data );
 		png_destroy_read_struct( &png, ( png_infopp ) & info, ( png_infopp ) nullptr );

@@ -57,7 +57,7 @@ struct log_location_info_t
 //func should be defined in global.h or somewhere else in a compiler independend manner
 #define LOCATION_INFO { __FILE__, __LINE__, __func__ }
 
-enum log_level_t
+enum class log_level_t
 {
 	LOG_OFF = -3,
 	LOG_ERROR = -2,
@@ -79,7 +79,7 @@ struct log_event_t
 /**
  * print levels as currently used by the renderer
  */
-enum printParm_t
+enum class printParm_t
 {
 	PRINT_ALL,
 	PRINT_DEVELOPER, // only print when "developer 1"
@@ -92,7 +92,7 @@ enum printParm_t
 #endif
 
 // parameters to the main Error routine
-enum errorParm_t
+enum class errorParm_t
 {
 	ERR_FATAL, // exit the entire game with a popup window
 	ERR_DROP, // print to console and disconnect from game
@@ -100,7 +100,7 @@ enum errorParm_t
 };
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL NORETURN Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2);
+void QDECL NORETURN Com_Error( errorParm_t level, const char *error, ... ) PRINTF_LIKE(2);
 void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 

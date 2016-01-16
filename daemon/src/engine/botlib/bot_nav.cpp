@@ -178,7 +178,7 @@ void UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
 {
 	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
 
-	if ( target.type == BOT_TARGET_DYNAMIC )
+	if ( target.type == botRouteTargetType_t::BOT_TARGET_DYNAMIC )
 	{
 		bot->corridor.moveTargetPosition( target.pos, bot->nav->query, &bot->nav->filter );
 	}
@@ -248,7 +248,7 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 			bot->needReplan = true;
 		}
 
-		if ( rtarget.type == BOT_TARGET_DYNAMIC )
+		if ( rtarget.type == botRouteTargetType_t::BOT_TARGET_DYNAMIC )
 		{
 			if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) )
 			{

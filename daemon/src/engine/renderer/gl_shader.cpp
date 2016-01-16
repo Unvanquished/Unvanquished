@@ -302,10 +302,10 @@ static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 
 		switch ( ds.deformation )
 		{
-		case DEFORM_WAVE:
+		case deform_t::DEFORM_WAVE:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
 			steps += Str::Format("%s(%f, %f, %f) ",
-				    genFuncNames[ ds.deformationWave.func ],
+				    genFuncNames[ Util::ordinal(ds.deformationWave.func) ],
 				    ds.deformationWave.phase,
 				    ds.deformationSpread,
 				    ds.deformationWave.frequency );
@@ -315,7 +315,7 @@ static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 				    ds.deformationWave.amplitude );
 			break;
 
-		case DEFORM_BULGE:
+		case deform_t::DEFORM_BULGE:
 			steps += "DSTEP_LOAD_TC(1.0, 0.0, 0.0) ";
 			steps += Str::Format("DSTEP_SIN(0.0, %f, %f) ",
 				    ds.bulgeWidth,
@@ -325,9 +325,9 @@ static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 				    ds.bulgeHeight );
 			break;
 
-		case DEFORM_MOVE:
+		case deform_t::DEFORM_MOVE:
 			steps += Str::Format("%s(%f, 0.0, %f) ",
-				    genFuncNames[ ds.deformationWave.func ],
+				    genFuncNames[ Util::ordinal(ds.deformationWave.func) ],
 				    ds.deformationWave.phase,
 				    ds.deformationWave.frequency );
 			steps += Str::Format("DSTEP_LOAD_VEC(%f, %f, %f) ",
@@ -339,7 +339,7 @@ static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 				    ds.deformationWave.amplitude );
 			break;
 
-		case DEFORM_NORMALS:
+		case deform_t::DEFORM_NORMALS:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
 			steps += Str::Format("DSTEP_NOISE(0.0, 0.0, %f) ",
 				    ds.deformationWave.frequency );
@@ -347,7 +347,7 @@ static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 				    0.98f * ds.deformationWave.amplitude );
 			break;
 
-		case DEFORM_ROTGROW:
+		case deform_t::DEFORM_ROTGROW:
 			steps += "DSTEP_LOAD_POS(1.0, 1.0, 1.0) ";
 			steps += Str::Format("DSTEP_ROTGROW(%f, %f, %f) ",
 				    ds.moveVector[0],
@@ -466,31 +466,31 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 
 	AddDefine( env, "r_NPOTScale", npotWidthScale, npotHeightScale );
 
-	if ( glConfig.driverType == GLDRV_MESA )
+	if ( glConfig.driverType == glDriverType_t::GLDRV_MESA )
 		AddDefine( env, "GLDRV_MESA", 1 );
 
 	switch (glConfig.hardwareType)
 	{
-	case GLHW_ATI:
+		case glHardwareType_t::GLHW_ATI:
 		AddDefine(env, "GLHW_ATI", 1);
 		break;
-	case GLHW_ATI_DX10:
+	case glHardwareType_t::GLHW_ATI_DX10:
 		AddDefine(env, "GLHW_ATI_DX10", 1);
 		break;
-	case GLHW_NV_DX10:
+	case glHardwareType_t::GLHW_NV_DX10:
 		AddDefine(env, "GLHW_NV_DX10", 1);
 		break;
     default:
         break;
 	}
 
-	if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
+	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
 	{
-		if ( r_shadows->integer == SHADOWING_ESM16 || r_shadows->integer == SHADOWING_ESM32 )
+		if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM16) || r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM32) )
 		{
 			AddDefine( env, "ESM", 1 );
 		}
-		else if ( r_shadows->integer == SHADOWING_EVSM32 )
+		else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_EVSM32) )
 		{
 			AddDefine( env, "EVSM", 1 );
 			// The exponents for the EVSM techniques should be less than ln(FLT_MAX/FILTER_SIZE)/2 {ln(FLT_MAX/1)/2 ~44.3}
@@ -504,11 +504,11 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 		{
 			AddDefine( env, "VSM", 1 );
 
-			if ( glConfig.hardwareType == GLHW_ATI )
+			if ( glConfig.hardwareType == glHardwareType_t::GLHW_ATI )
 				AddDefine( env, "VSM_CLAMP", 1 );
 		}
 
-		if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
+		if ( ( glConfig.hardwareType == glHardwareType_t::GLHW_NV_DX10 || glConfig.hardwareType == glHardwareType_t::GLHW_ATI_DX10 ) && r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_VSM32) )
 			AddDefine( env, "VSM_EPSILON", 0.000001f );
 		else
 			AddDefine( env, "VSM_EPSILON", 0.0001f );
@@ -1041,7 +1041,7 @@ bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutatio
 		//if(GLCompileMacro_USE_VERTEX_ANIMATION* m = dynamic_cast<GLCompileMacro_USE_VERTEX_ANIMATION*>(macro))
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_ANIMATION )
 		{
-			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
+			//ri.Printf(printParm_t::PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
 			return true;
 		}
 	}
@@ -1060,7 +1060,7 @@ bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutati
 	{
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_SKINNING )
 		{
-			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
+			//ri.Printf(printParm_t::PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
 			return true;
 		}
 	}
@@ -1081,7 +1081,7 @@ bool GLCompileMacro_USE_VERTEX_SPRITE::HasConflictingMacros( size_t permutation,
 	{
 		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_ANIMATION))
 		{
-			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
+			//ri.Printf(printParm_t::PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
 			return true;
 		}
 	}
@@ -1104,7 +1104,7 @@ bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutati
 
 	if ( !foundUSE_NORMAL_MAPPING )
 	{
-		//ri.Printf(PRINT_ALL, "missing macro! canceling '%s' <= '%s'\n", GetName(), "USE_NORMAL_MAPPING");
+		//ri.Printf(printParm_t::PRINT_ALL, "missing macro! canceling '%s' <= '%s'\n", GetName(), "USE_NORMAL_MAPPING");
 		return true;
 	}
 
@@ -1126,7 +1126,7 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permut
 
 	if ( !foundUSE_NORMAL_MAPPING )
 	{
-		//ri.Printf(PRINT_ALL, "missing macro! canceling '%s' <= '%s'\n", GetName(), "USE_NORMAL_MAPPING");
+		//ri.Printf(printParm_t::PRINT_ALL, "missing macro! canceling '%s' <= '%s'\n", GetName(), "USE_NORMAL_MAPPING");
 		return true;
 	}
 
@@ -1143,7 +1143,7 @@ bool GLShader::GetCompileMacrosString( size_t permutation, std::string &compileM
 		{
 			if ( macro->HasConflictingMacros( permutation, _compileMacros ) )
 			{
-				//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s'\n", macro->GetName());
+				//ri.Printf(printParm_t::PRINT_ALL, "conflicting macro! canceling '%s'\n", macro->GetName());
 				return false;
 			}
 

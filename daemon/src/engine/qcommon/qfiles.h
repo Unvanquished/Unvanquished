@@ -578,7 +578,7 @@ struct drawVert_t
 	byte   color[ 4 ];
 };
 
-enum mapSurfaceType_t
+enum class mapSurfaceType_t : int
 {
   MST_BAD,
   MST_PLANAR,
@@ -592,7 +592,7 @@ struct dsurface_t
 {
 	int    shaderNum;
 	int    fogNum;
-	int    surfaceType;
+	mapSurfaceType_t    surfaceType;
 
 	int    firstVert;
 	int    numVerts; // ydnar: num verts + foliage origins (for cleaner lighting code in q3map)

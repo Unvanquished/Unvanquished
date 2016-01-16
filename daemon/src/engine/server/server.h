@@ -55,7 +55,7 @@ struct svEntity_t
 	int                  snapshotCounter; // used to prevent double adding from portal views
 };
 
-enum serverState_t
+enum class serverState_t
 {
   SS_DEAD, // no map loaded
   SS_LOADING, // spawning level entities
@@ -126,7 +126,7 @@ struct clientSnapshot_t
 	int messageSize; // used to rate drop packets
 };
 
-enum clientState_t
+enum class clientState_t
 {
   CS_FREE, // can be reused for a new connection
   CS_ZOMBIE, // client has been disconnected, but don't reuse connection for a couple seconds

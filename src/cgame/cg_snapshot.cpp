@@ -45,7 +45,7 @@ static void CG_ResetEntity( centity_t *cent )
 	VectorCopy( cent->currentState.origin, cent->lerpOrigin );
 	VectorCopy( cent->currentState.angles, cent->lerpAngles );
 
-	if ( cent->currentState.eType == ET_PLAYER )
+	if ( cent->currentState.eType == entityType_t::ET_PLAYER )
 	{
 		CG_ResetPlayerEntity( cent );
 	}

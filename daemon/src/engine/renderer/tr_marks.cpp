@@ -40,7 +40,7 @@ static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_O
                                    vec3_t normal, vec_t dist, vec_t epsilon )
 {
 	float dists[ MAX_VERTS_ON_POLY + 4 ];
-	int   sides[ MAX_VERTS_ON_POLY + 4 ];
+	planeSide_t sides[ MAX_VERTS_ON_POLY + 4 ];
 	int   counts[ 3 ];
 	float dot;
 	int   i, j;
@@ -65,18 +65,18 @@ static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_O
 
 		if ( dot > epsilon )
 		{
-			sides[ i ] = SIDE_FRONT;
+			sides[ i ] = planeSide_t::SIDE_FRONT;
 		}
 		else if ( dot < -epsilon )
 		{
-			sides[ i ] = SIDE_BACK;
+			sides[ i ] = planeSide_t::SIDE_BACK;
 		}
 		else
 		{
-			sides[ i ] = SIDE_ON;
+			sides[ i ] = planeSide_t::SIDE_ON;
 		}
 
-		counts[ sides[ i ] ]++;
+		counts[ Util::ordinal(sides[ i ]) ]++;
 	}
 
 	sides[ i ] = sides[ 0 ];
@@ -101,21 +101,21 @@ static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_O
 		p1 = inPoints[ i ];
 		clip = outPoints[ *numOutPoints ];
 
-		if ( sides[ i ] == SIDE_ON )
+		if ( sides[ i ] == planeSide_t::SIDE_ON )
 		{
 			VectorCopy( p1, clip );
 			( *numOutPoints ) ++;
 			continue;
 		}
 
-		if ( sides[ i ] == SIDE_FRONT )
+		if ( sides[ i ] == planeSide_t::SIDE_FRONT )
 		{
 			VectorCopy( p1, clip );
 			( *numOutPoints ) ++;
 			clip = outPoints[ *numOutPoints ];
 		}
 
-		if ( sides[ i + 1 ] == SIDE_ON || sides[ i + 1 ] == sides[ i ] )
+		if ( sides[ i + 1 ] == planeSide_t::SIDE_ON || sides[ i + 1 ] == sides[ i ] )
 		{
 			continue;
 		}
@@ -196,7 +196,7 @@ void R_BoxSurfaces_r( bspNode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t *
 			surf->viewCount = tr.viewCountNoReset;
 		}
 		// extra check for surfaces to avoid list overflows
-		else if ( * ( surf->data ) == SF_FACE )
+		else if ( * ( surf->data ) == surfaceType_t::SF_FACE )
 		{
 			// the face plane should go through the box
 			s = BoxOnPlaneSide( mins, maxs, & ( ( srfSurfaceFace_t * ) surf->data )->plane );
@@ -211,8 +211,8 @@ void R_BoxSurfaces_r( bspNode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t *
 				surf->viewCount = tr.viewCountNoReset;
 			}
 		}
-		else if ( * ( surfaceType_t * )( surf->data ) != SF_GRID
-		          && * ( surfaceType_t * )( surf->data ) != SF_TRIANGLES )
+		else if ( * ( surfaceType_t * )( surf->data ) != surfaceType_t::SF_GRID
+		          && * ( surfaceType_t * )( surf->data ) != surfaceType_t::SF_TRIANGLES )
 		{
 			surf->viewCount = tr.viewCountNoReset;
 		}
@@ -362,7 +362,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 
 	for ( i = 0; i < numsurfaces; i++ )
 	{
-		if ( *surfaces[ i ] == SF_GRID )
+		if ( *surfaces[ i ] == surfaceType_t::SF_GRID )
 		{
 			cv = ( srfGridMesh_t * ) surfaces[ i ];
 
@@ -449,7 +449,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 				}
 			}
 		}
-		else if ( *surfaces[ i ] == SF_FACE )
+		else if ( *surfaces[ i ] == surfaceType_t::SF_FACE )
 		{
 			face = ( srfSurfaceFace_t * ) surfaces[ i ];
 
@@ -479,7 +479,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 				}
 			}
 		}
-		else if ( *surfaces[ i ] == SF_TRIANGLES && !r_noMarksOnTrisurfs->integer )
+		else if ( *surfaces[ i ] == surfaceType_t::SF_TRIANGLES && !r_noMarksOnTrisurfs->integer )
 		{
 			trisurf = ( srfTriangles_t * ) surfaces[ i ];
 

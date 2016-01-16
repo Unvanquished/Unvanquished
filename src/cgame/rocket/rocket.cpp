@@ -75,7 +75,7 @@ public:
 	Rocket::Core::FileHandle Open( const Rocket::Core::String &filePath )
 	{
 		fileHandle_t fileHandle;
-		trap_FS_FOpenFile( filePath.CString(), &fileHandle, FS_READ );
+		trap_FS_FOpenFile( filePath.CString(), &fileHandle, fsMode_t::FS_READ );
 		return ( Rocket::Core::FileHandle )fileHandle;
 	}
 
@@ -502,7 +502,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 	for ( const auto& token : Color::Parser( in, Color::Color() ) )
 	{
-		if ( token.Type() == Color::Token::CHARACTER )
+		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			char c = *token.Begin();
 			if ( c == '<' )
@@ -548,7 +548,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( token.Begin(), token.Size() );
 			}
 		}
-		else if ( token.Type() == Color::Token::COLOR )
+		else if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			if ( span && spanHasContent )
 			{
@@ -573,7 +573,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = false;
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			if ( span && !spanHasContent )
 			{

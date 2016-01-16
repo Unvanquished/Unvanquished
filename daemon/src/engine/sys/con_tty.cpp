@@ -83,7 +83,7 @@ static void CON_AnsiColorPrint( const char *msg )
 	std::string buffer;
 	for ( const auto& token : Color::Parser( msg, Color::Color() ) )
 	{
-		if ( token.Type() == Color::Token::COLOR )
+		if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			if ( !buffer.empty() )
 			{
@@ -105,11 +105,11 @@ static void CON_AnsiColorPrint( const char *msg )
 				fputs( ansi.c_str(), stderr );
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			buffer += Color::Constants::ESCAPE;
 		}
-		else if ( token.Type() == Color::Token::CHARACTER )
+		else if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			if ( *token.Begin() == '\n' )
 			{

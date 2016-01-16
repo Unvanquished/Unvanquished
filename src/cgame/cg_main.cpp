@@ -789,7 +789,7 @@ void QDECL PRINTF_LIKE(1) NORETURN CG_Error( const char *msg, ... )
 	trap_Error( text );
 }
 
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( errorParm_t level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -886,7 +886,7 @@ Test if a specific file exists or not
 */
 bool CG_FileExists( const char *filename )
 {
-	return trap_FS_FOpenFile( filename, nullptr, FS_READ );
+	return trap_FS_FOpenFile( filename, nullptr, fsMode_t::FS_READ );
 }
 
 /*
@@ -896,11 +896,11 @@ CG_UpdateLoadingProgress
 ======================
 */
 
-enum {
+enum loadingBar_t {
 	LOADBAR_MEDIA,
 	LOADBAR_CHARACTER_MODELS,
 	LOADBAR_BUILDABLES
-} typedef loadingBar_t;
+};
 
 static void CG_UpdateLoadingProgress( loadingBar_t progressBar, float progress, const char *label )
 {

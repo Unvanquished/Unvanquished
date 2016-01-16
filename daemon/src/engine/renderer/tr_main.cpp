@@ -42,7 +42,7 @@ refimport_t    ri;
 
 // entities that will have procedurally generated surfaces will just
 // point at this for their sorting surface
-surfaceType_t entitySurface = SF_ENTITY;
+surfaceType_t entitySurface = surfaceType_t::SF_ENTITY;
 
 /*
 =============
@@ -333,7 +333,7 @@ cullResult_t R_CullBox( vec3_t worldBounds[ 2 ] )
 
 	if ( r_nocull->integer )
 	{
-		return CULL_CLIP;
+		return cullResult_t::CULL_CLIP;
 	}
 
 	// check against frustum planes
@@ -348,7 +348,7 @@ cullResult_t R_CullBox( vec3_t worldBounds[ 2 ] )
 		if ( r == 2 )
 		{
 			// completely outside frustum
-			return CULL_OUT;
+			return cullResult_t::CULL_OUT;
 		}
 
 		if ( r == 3 )
@@ -360,11 +360,11 @@ cullResult_t R_CullBox( vec3_t worldBounds[ 2 ] )
 	if ( !anyClip )
 	{
 		// completely inside frustum
-		return CULL_IN;
+		return cullResult_t::CULL_IN;
 	}
 
 	// partially clipped
-	return CULL_CLIP;
+	return cullResult_t::CULL_CLIP;
 }
 
 /*
@@ -403,7 +403,7 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 R_CullLocalPointAndRadius
 =================
 */
-int R_CullLocalPointAndRadius( vec3_t pt, float radius )
+cullResult_t R_CullLocalPointAndRadius( vec3_t pt, float radius )
 {
 	vec3_t transformed;
 
@@ -417,7 +417,7 @@ int R_CullLocalPointAndRadius( vec3_t pt, float radius )
 R_CullPointAndRadius
 =================
 */
-int R_CullPointAndRadius( vec3_t pt, float radius )
+cullResult_t R_CullPointAndRadius( vec3_t pt, float radius )
 {
 	int      i;
 	float    dist;
@@ -426,11 +426,11 @@ int R_CullPointAndRadius( vec3_t pt, float radius )
 
 	if ( r_nocull->integer )
 	{
-		return CULL_CLIP;
+		return cullResult_t::CULL_CLIP;
 	}
 
 	// check against frustum planes
-	for ( i = 0; i < FRUSTUM_PLANES; i++ )
+	for ( i = 0; i < Util::ordinal(frustumBits_t::FRUSTUM_PLANES); i++ )
 	{
 		frust = &tr.viewParms.frustums[ 0 ][ i ];
 
@@ -438,7 +438,7 @@ int R_CullPointAndRadius( vec3_t pt, float radius )
 
 		if ( dist < -radius )
 		{
-			return CULL_OUT;
+			return cullResult_t::CULL_OUT;
 		}
 		else if ( dist <= radius )
 		{
@@ -448,10 +448,10 @@ int R_CullPointAndRadius( vec3_t pt, float radius )
 
 	if ( mightBeClipped )
 	{
-		return CULL_CLIP;
+		return cullResult_t::CULL_CLIP;
 	}
 
-	return CULL_IN; // completely inside frustum
+	return cullResult_t::CULL_IN; // completely inside frustum
 }
 
 /*
@@ -654,7 +654,7 @@ void R_RotateEntityForViewParms( const trRefEntity_t *ent, const viewParms_t *vi
 	vec3_t delta;
 	float  axisLength;
 
-	if ( ent->e.reType != RT_MODEL )
+	if ( ent->e.reType != refEntityType_t::RT_MODEL )
 	{
 		* orientation = viewParms->world;
 		return;
@@ -712,7 +712,7 @@ void R_RotateEntityForLight( const trRefEntity_t *ent, const trRefLight_t *light
 	vec3_t delta;
 	float  axisLength;
 
-	if ( ent->e.reType != RT_MODEL )
+	if ( ent->e.reType != refEntityType_t::RT_MODEL )
 	{
 		Com_Memset( orientation , 0, sizeof( * orientation ) );
 
@@ -1212,11 +1212,11 @@ void R_PlaneForSurface( surfaceType_t *surfType, cplane_t *plane )
 
 	switch ( *surfType )
 	{
-		case SF_FACE:
+		case surfaceType_t::SF_FACE:
 			*plane = ( ( srfSurfaceFace_t * ) surfType )->plane;
 			return;
 
-		case SF_TRIANGLES:
+		case surfaceType_t::SF_TRIANGLES:
 			tri = ( srfTriangles_t * ) surfType;
 			v1 = tri->verts + tri->triangles[ 0 ].indexes[ 0 ];
 			v2 = tri->verts + tri->triangles[ 0 ].indexes[ 1 ];
@@ -1226,7 +1226,7 @@ void R_PlaneForSurface( surfaceType_t *surfType, cplane_t *plane )
 			plane->dist = plane4[ 3 ];
 			return;
 
-		case SF_POLY:
+		case surfaceType_t::SF_POLY:
 			poly = ( srfPoly_t * ) surfType;
 			PlaneFromPoints( plane4, poly->verts[ 0 ].xyz, poly->verts[ 1 ].xyz, poly->verts[ 2 ].xyz );
 			VectorCopy( plane4, plane->normal );
@@ -1294,7 +1294,7 @@ static bool R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *surfac
 	{
 		e = &tr.refdef.entities[ i ];
 
-		if ( e->e.reType != RT_PORTALSURFACE )
+		if ( e->e.reType != refEntityType_t::RT_PORTALSURFACE )
 		{
 			continue;
 		}
@@ -1415,7 +1415,7 @@ static bool IsMirror( const drawSurf_t *drawSurf )
 	{
 		e = &tr.refdef.entities[ i ];
 
-		if ( e->e.reType != RT_PORTALSURFACE )
+		if ( e->e.reType != refEntityType_t::RT_PORTALSURFACE )
 		{
 			continue;
 		}
@@ -1473,7 +1473,7 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
 	}
 
 	Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, true, true, -1, 0 );
-	rb_surfaceTable[ *drawSurf->surface ]( drawSurf->surface );
+	rb_surfaceTable[ Util::ordinal(*drawSurf->surface) ]( drawSurf->surface );
 
 	// Tr3B: former assertion
 	if ( tess.numVertexes >= 128 )
@@ -1578,7 +1578,7 @@ static bool R_MirrorViewBySurface( drawSurf_t *drawSurf )
 	// don't recursively mirror
 	if ( tr.viewParms.isPortal )
 	{
-		ri.Printf( PRINT_DEVELOPER, "WARNING: recursive mirror/portal found\n" );
+		ri.Printf(printParm_t::PRINT_DEVELOPER, "WARNING: recursive mirror/portal found\n" );
 		return false;
 	}
 
@@ -1753,15 +1753,15 @@ static void R_SortDrawSurfs()
 	{
 		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
 
-		if ( shader->sort > SS_PORTAL )
+		if ( shader->sort > Util::ordinal(shaderSort_t::SS_PORTAL) )
 		{
 			break;
 		}
 
 		// no shader should ever have this sort type
-		if ( shader->sort == SS_BAD )
+		if ( shader->sort == Util::ordinal(shaderSort_t::SS_BAD) )
 		{
-			ri.Error( ERR_DROP, "Shader '%s'with sort == SS_BAD", shader->name );
+			ri.Error(errorParm_t::ERR_DROP, "Shader '%s'with sort == SS_BAD", shader->name );
 		}
 
 		// if the mirror was completely clipped away, we may need to check another surface
@@ -1814,10 +1814,10 @@ void R_AddEntitySurfaces()
 		// simple generated models, like sprites and beams, are not culled
 		switch ( ent->e.reType )
 		{
-			case RT_PORTALSURFACE:
+			case refEntityType_t::RT_PORTALSURFACE:
 				break; // don't draw anything
 
-			case RT_SPRITE:
+			case refEntityType_t::RT_SPRITE:
 
 				// self blood sprites, talk balloons, etc should not be drawn in the primary
 				// view.  We can't just do this check for all entities, because md3
@@ -1831,7 +1831,7 @@ void R_AddEntitySurfaces()
 				R_AddDrawSurf( &entitySurface, shader, -1, R_SpriteFogNum( ent ) );
 				break;
 
-			case RT_MODEL:
+			case refEntityType_t::RT_MODEL:
 				// we must set up parts of tr.or for model culling
 				R_RotateEntityForViewParms( ent, &tr.viewParms, &tr.orientation );
 
@@ -1845,23 +1845,23 @@ void R_AddEntitySurfaces()
 				{
 					switch ( tr.currentModel->type )
 					{
-						case MOD_MESH:
+						case modtype_t::MOD_MESH:
 							R_AddMDVSurfaces( ent );
 							break;
 
-						case MOD_MD5:
+						case modtype_t::MOD_MD5:
 							R_AddMD5Surfaces( ent );
 							break;
 
-						case MOD_IQM:
+						case modtype_t::MOD_IQM:
 							R_AddIQMSurfaces( ent );
 							break;
 
-						case MOD_BSP:
+						case modtype_t::MOD_BSP:
 							R_AddBSPModelSurfaces( ent );
 							break;
 
-						case MOD_BAD: // null model axis
+						case modtype_t::MOD_BAD: // null model axis
 							if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal )
 							{
 								break;
@@ -1876,14 +1876,14 @@ void R_AddEntitySurfaces()
 							break;
 
 						default:
-							ri.Error( ERR_DROP, "R_AddEntitySurfaces: Bad modeltype" );
+							ri.Error(errorParm_t::ERR_DROP, "R_AddEntitySurfaces: Bad modeltype" );
 					}
 				}
 
 				break;
 
 			default:
-				ri.Error( ERR_DROP, "R_AddEntitySurfaces: Bad reType" );
+				ri.Error(errorParm_t::ERR_DROP, "R_AddEntitySurfaces: Bad reType" );
 		}
 	}
 }
@@ -1908,7 +1908,7 @@ void R_AddEntityInteractions( trRefLight_t *light )
 	{
 		iaType = IA_DEFAULT;
 
-		if ( r_shadows->integer <= SHADOWING_BLOB ||
+		if ( r_shadows->integer <= Util::ordinal(shadowingMode_t::SHADOWING_BLOB) ||
 		     light->l.noShadows ) {
 			iaType = (interactionType_t) (iaType & (~IA_SHADOW));
 		}
@@ -1940,47 +1940,47 @@ void R_AddEntityInteractions( trRefLight_t *light )
 		// simple generated models, like sprites and beams, are not culled
 		switch ( ent->e.reType )
 		{
-			case RT_PORTALSURFACE:
+			case refEntityType_t::RT_PORTALSURFACE:
 				break; // don't draw anything
 
-			case RT_SPRITE:
+			case refEntityType_t::RT_SPRITE:
 				break;
 
-			case RT_MODEL:
+			case refEntityType_t::RT_MODEL:
 				tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 
 				if ( tr.currentModel )
 				{
 					switch ( tr.currentModel->type )
 					{
-						case MOD_MESH:
+						case modtype_t::MOD_MESH:
 							R_AddMDVInteractions( ent, light, iaType );
 							break;
 
-						case MOD_MD5:
+						case modtype_t::MOD_MD5:
 							R_AddMD5Interactions( ent, light, iaType );
 							break;
 
-						case MOD_IQM:
+						case modtype_t::MOD_IQM:
 							R_AddIQMInteractions( ent, light, iaType );
 							break;
 
-						case MOD_BSP:
+						case modtype_t::MOD_BSP:
 							R_AddBrushModelInteractions( ent, light, iaType );
 							break;
 
-						case MOD_BAD: // null model axis
+						case modtype_t::MOD_BAD: // null model axis
 							break;
 
 						default:
-							ri.Error( ERR_DROP, "R_AddEntityInteractions: Bad modeltype" );
+							ri.Error(errorParm_t::ERR_DROP, "R_AddEntityInteractions: Bad modeltype" );
 					}
 				}
 
 				break;
 
 			default:
-				ri.Error( ERR_DROP, "R_AddEntityInteractions: Bad reType" );
+				ri.Error(errorParm_t::ERR_DROP, "R_AddEntityInteractions: Bad reType" );
 		}
 	}
 }
@@ -1998,7 +1998,7 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	vec3_t forward, right, up;
 	float  radius;
 
-	if( !light->l.inverseShadows || light->l.rlType != RL_OMNI ||
+	if( !light->l.inverseShadows || light->l.rlType != refLightType_t::RL_OMNI ||
 	    light->restrictInteractionFirst < 0 )
 		return;
 
@@ -2016,7 +2016,7 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	VectorScale( mids, 0.5f, mids );
 	radius = Distance( mids, maxs );
 
-	light->l.rlType = RL_PROJ;
+	light->l.rlType = refLightType_t::RL_PROJ;
 	VectorSubtract( mids, light->l.origin, forward );
 	VectorNormalize( forward );
 	PerpendicularVector( right, forward );
@@ -2049,7 +2049,7 @@ void R_AddLightInteractions()
 		{
 			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
-				light->cull = CULL_OUT;
+				light->cull = cullResult_t::CULL_OUT;
 				continue;
 			}
 		}
@@ -2057,7 +2057,7 @@ void R_AddLightInteractions()
 		{
 			if ( !r_dynamicLight->integer )
 			{
-				light->cull = CULL_OUT;
+				light->cull = cullResult_t::CULL_OUT;
 				continue;
 			}
 		}
@@ -2092,7 +2092,7 @@ void R_AddLightInteractions()
 				if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 				{
 					tr.pc.c_pvs_cull_light_out++;
-					light->cull = CULL_OUT;
+					light->cull = cullResult_t::CULL_OUT;
 					continue;
 				}
 			}
@@ -2100,21 +2100,21 @@ void R_AddLightInteractions()
 			// look if we have to draw the light including its interactions
 			switch ( R_CullLocalBox( light->localBounds ) )
 			{
-				case CULL_IN:
+				case cullResult_t::CULL_IN:
 				default:
 					tr.pc.c_box_cull_light_in++;
-					light->cull = CULL_IN;
+					light->cull = cullResult_t::CULL_IN;
 					break;
 
-				case CULL_CLIP:
+				case cullResult_t::CULL_CLIP:
 					tr.pc.c_box_cull_light_clip++;
-					light->cull = CULL_CLIP;
+					light->cull = cullResult_t::CULL_CLIP;
 					break;
 
-				case CULL_OUT:
+				case cullResult_t::CULL_OUT:
 					// light is not visible so skip other light setup stuff to save speed
 					tr.pc.c_box_cull_light_out++;
-					light->cull = CULL_OUT;
+					light->cull = cullResult_t::CULL_OUT;
 					continue;
 			}
 		}
@@ -2138,21 +2138,21 @@ void R_AddLightInteractions()
 			// look if we have to draw the light including its interactions
 			switch ( R_CullLocalBox( light->localBounds ) )
 			{
-				case CULL_IN:
+				case cullResult_t::CULL_IN:
 				default:
 					tr.pc.c_box_cull_light_in++;
-					light->cull = CULL_IN;
+					light->cull = cullResult_t::CULL_IN;
 					break;
 
-				case CULL_CLIP:
+				case cullResult_t::CULL_CLIP:
 					tr.pc.c_box_cull_light_clip++;
-					light->cull = CULL_CLIP;
+					light->cull = cullResult_t::CULL_CLIP;
 					break;
 
-				case CULL_OUT:
+				case cullResult_t::CULL_OUT:
 					// light is not visible so skip other light setup stuff to save speed
 					tr.pc.c_box_cull_light_out++;
-					light->cull = CULL_OUT;
+					light->cull = cullResult_t::CULL_OUT;
 					continue;
 			}
 
@@ -2166,7 +2166,7 @@ void R_AddLightInteractions()
 			if ( !BoundsIntersect
 			     ( light->worldBounds[ 0 ], light->worldBounds[ 1 ], tr.viewParms.visBounds[ 0 ], tr.viewParms.visBounds[ 1 ] ) )
 			{
-				light->cull = CULL_OUT;
+				light->cull = cullResult_t::CULL_OUT;
 				continue;
 			}
 		}
@@ -2218,7 +2218,7 @@ void R_AddLightInteractions()
 			// skip all interactions of this light because it caused only shadow volumes
 			// but no lighting
 			tr.refdef.numInteractions -= light->numInteractions;
-			light->cull = CULL_OUT;
+			light->cull = cullResult_t::CULL_OUT;
 		}
 	}
 }
@@ -2283,14 +2283,14 @@ void R_AddLightBoundsToVisBounds()
 			// look if we have to draw the light including its interactions
 			switch ( R_CullLocalBox( light->localBounds ) )
 			{
-				case CULL_IN:
+				case cullResult_t::CULL_IN:
 				default:
 					break;
 
-				case CULL_CLIP:
+				case cullResult_t::CULL_CLIP:
 					break;
 
-				case CULL_OUT:
+				case cullResult_t::CULL_OUT:
 					continue;
 			}
 		}
@@ -2314,14 +2314,14 @@ void R_AddLightBoundsToVisBounds()
 			// look if we have to draw the light including its interactions
 			switch ( R_CullLocalBox( light->localBounds ) )
 			{
-				case CULL_IN:
+				case cullResult_t::CULL_IN:
 				default:
 					break;
 
-				case CULL_CLIP:
+				case cullResult_t::CULL_CLIP:
 					break;
 
-				case CULL_OUT:
+				case cullResult_t::CULL_OUT:
 					continue;
 			}
 
@@ -2383,7 +2383,7 @@ static void R_DebugGraphics()
 		GL_SelectTexture( 0 );
 		GL_Bind( tr.whiteImage );
 
-		GL_Cull( CT_FRONT_SIDED );
+		GL_Cull( cullType_t::CT_FRONT_SIDED );
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 		ri.Bot_DrawDebugMesh( &bi );
@@ -2414,7 +2414,7 @@ void R_RenderView( viewParms_t *parms )
 
 	if ( tr.viewCount >= MAX_VIEWS )
 	{
-		ri.Printf( PRINT_ALL, "MAX_VIEWS (%i) hit. Don't add more mirrors or portals. Skipping view ...\n", MAX_VIEWS );
+		ri.Printf(printParm_t::PRINT_ALL, "MAX_VIEWS (%i) hit. Don't add more mirrors or portals. Skipping view ...\n", MAX_VIEWS );
 		return;
 	}
 

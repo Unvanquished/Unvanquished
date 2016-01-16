@@ -195,16 +195,16 @@ struct MeshProcess : public dtTileCacheMeshProcess
 		{
 			if ( polyAreas[ i ] == DT_TILECACHE_WALKABLE_AREA )
 			{
-				polyAreas[ i ] = POLYAREA_GROUND;
-				polyFlags[ i ] = POLYFLAGS_WALK;
+				polyAreas[ i ] = navPolyAreas::POLYAREA_GROUND;
+				polyFlags[ i ] = navPolyFlags::POLYFLAGS_WALK;
 			}
-			else if ( polyAreas[ i ] == POLYAREA_WATER )
+			else if ( polyAreas[ i ] == navPolyAreas::POLYAREA_WATER )
 			{
-				polyFlags[ i ] = POLYFLAGS_SWIM;
+				polyFlags[ i ] = navPolyFlags::POLYFLAGS_SWIM;
 			}
-			else if ( polyAreas[ i ] == POLYAREA_DOOR )
+			else if ( polyAreas[ i ] == navPolyAreas::POLYAREA_DOOR )
 			{
-				polyFlags[ i ] = POLYFLAGS_WALK | POLYFLAGS_DOOR;
+				polyFlags[ i ] = navPolyFlags::POLYFLAGS_WALK | navPolyFlags::POLYFLAGS_DOOR;
 			}
 		}
 

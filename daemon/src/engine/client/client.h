@@ -78,8 +78,8 @@ struct clSnapshot_t
 // Arnout: for double tapping
 struct doubleTap_t
 {
-	int pressedTime[ DT_NUM ];
-	int releasedTime[ DT_NUM ];
+	int pressedTime[Util::ordinal(dtType_t::DT_NUM)];
+	int releasedTime[Util::ordinal(dtType_t::DT_NUM)];
 
 	int lastdoubleTap;
 };
@@ -125,7 +125,7 @@ struct clientActive_t
 
 	int          mouseDx[ 2 ], mouseDy[ 2 ]; // added to by mouse events
 	int          mouseIndex;
-	int          joystickAxis[ MAX_JOYSTICK_AXIS ]; // set by joystick events
+	int          joystickAxis[Util::ordinal(joystickAxis_t::MAX_JOYSTICK_AXIS)]; // set by joystick events
 
 	// cgame communicates a few values to the client system
 	int    cgameUserCmdValue; // current weapon to add to usercmd_t
@@ -274,7 +274,7 @@ struct serverInfo_t
 	char     mapName[ MAX_NAME_LENGTH ];
 	char     game[ MAX_NAME_LENGTH ];
 	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, nullptr otherwise
-	int      netType;
+	netadrtype_t netType;
 	int      clients;
 	int      bots;
 	int      maxClients;

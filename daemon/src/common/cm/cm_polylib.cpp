@@ -211,7 +211,7 @@ void ChopWindingInPlace( winding_t **inout, vec3_t normal, vec_t dist, vec_t eps
 {
 	winding_t    *in;
 	vec_t        dists[ MAX_POINTS_ON_WINDING + 4 ];
-	int          sides[ MAX_POINTS_ON_WINDING + 4 ];
+	planeSide_t  sides[ MAX_POINTS_ON_WINDING + 4 ];
 	int          counts[ 3 ];
 	static vec_t dot; // VC 4.2 optimizer bug if not static
 	int          i, j;
@@ -232,18 +232,18 @@ void ChopWindingInPlace( winding_t **inout, vec3_t normal, vec_t dist, vec_t eps
 
 		if ( dot > epsilon )
 		{
-			sides[ i ] = SIDE_FRONT;
+			sides[ i ] = planeSide_t::SIDE_FRONT;
 		}
 		else if ( dot < -epsilon )
 		{
-			sides[ i ] = SIDE_BACK;
+			sides[ i ] = planeSide_t::SIDE_BACK;
 		}
 		else
 		{
-			sides[ i ] = SIDE_ON;
+			sides[ i ] = planeSide_t::SIDE_ON;
 		}
 
-		counts[ sides[ i ] ]++;
+		counts[ Util::ordinal(sides[ i ]) ]++;
 	}
 
 	sides[ i ] = sides[ 0 ];
@@ -270,20 +270,20 @@ void ChopWindingInPlace( winding_t **inout, vec3_t normal, vec_t dist, vec_t eps
 	{
 		p1 = in->p[ i ];
 
-		if ( sides[ i ] == SIDE_ON )
+		if ( sides[ i ] == planeSide_t::SIDE_ON )
 		{
 			VectorCopy( p1, f->p[ f->numpoints ] );
 			f->numpoints++;
 			continue;
 		}
 
-		if ( sides[ i ] == SIDE_FRONT )
+		if ( sides[ i ] == planeSide_t::SIDE_FRONT )
 		{
 			VectorCopy( p1, f->p[ f->numpoints ] );
 			f->numpoints++;
 		}
 
-		if ( sides[ i + 1 ] == SIDE_ON || sides[ i + 1 ] == sides[ i ] )
+		if ( sides[ i + 1 ] == planeSide_t::SIDE_ON || sides[ i + 1 ] == sides[ i ] )
 		{
 			continue;
 		}

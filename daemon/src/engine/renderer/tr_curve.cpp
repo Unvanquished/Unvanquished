@@ -440,26 +440,26 @@ static srfGridMesh_t *R_CreateSurfaceGridMesh( int width, int height,
 	}
 	else
 	{
-		grid = (srfGridMesh_t*) ri.Hunk_Alloc( size, h_low );
+		grid = (srfGridMesh_t*) ri.Hunk_Alloc( size, ha_pref::h_low );
 		Com_Memset( grid, 0, size );
 
-		grid->widthLodError = (float*) ri.Hunk_Alloc( width * 4, h_low );
+		grid->widthLodError = (float*) ri.Hunk_Alloc( width * 4, ha_pref::h_low );
 		Com_Memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );
 
-		grid->heightLodError = (float*) ri.Hunk_Alloc( height * 4, h_low );
+		grid->heightLodError = (float*) ri.Hunk_Alloc( height * 4, ha_pref::h_low );
 		Com_Memcpy( grid->heightLodError, errorTable[ 1 ], height * 4 );
 
 		grid->numTriangles = numTriangles;
-		grid->triangles = (srfTriangle_t*) ri.Hunk_Alloc( grid->numTriangles * sizeof( srfTriangle_t ), h_low );
+		grid->triangles = (srfTriangle_t*) ri.Hunk_Alloc( grid->numTriangles * sizeof( srfTriangle_t ), ha_pref::h_low );
 		Com_Memcpy( grid->triangles, triangles, numTriangles * sizeof( srfTriangle_t ) );
 
 		grid->numVerts = ( width * height );
-		grid->verts = (srfVert_t*) ri.Hunk_Alloc( grid->numVerts * sizeof( srfVert_t ), h_low );
+		grid->verts = (srfVert_t*) ri.Hunk_Alloc( grid->numVerts * sizeof( srfVert_t ), ha_pref::h_low );
 	}
 
 	grid->width = width;
 	grid->height = height;
-	grid->surfaceType = SF_GRID;
+	grid->surfaceType = surfaceType_t::SF_GRID;
 	ClearBounds( grid->bounds[ 0 ], grid->bounds[ 1 ] );
 
 	for ( i = 0; i < width; i++ )

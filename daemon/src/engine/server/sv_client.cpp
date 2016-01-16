@@ -99,7 +99,7 @@ void SV_GetChallenge( netadr_t from )
 
 	challenge->pingTime = svs.time;
 
-	NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i", challenge->challenge );
+	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "challengeResponse %i", challenge->challenge );
 
 	return;
 }
@@ -147,7 +147,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 
 	if ( version != PROTOCOL_VERSION )
 	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).", PROTOCOL_VERSION, version );
+		NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).", PROTOCOL_VERSION, version );
 		Com_DPrintf( "    rejected connect from version %i\n", version );
 		return;
 	}
@@ -188,7 +188,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 
 	if ( ( strlen( ip ) + strlen( userinfo ) + 4 ) >= MAX_INFO_STRING )
 	{
-		NET_OutOfBandPrint( NS_SERVER, from,
+		NET_OutOfBandPrint( netsrc_t::NS_SERVER, from,
 		                    "print\nUserinfo string length exceeded.  "
 		                    "Try removing setu cvars from your config." );
 		return;
@@ -214,7 +214,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 
 		if ( i == MAX_CHALLENGES )
 		{
-			NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address." );
+			NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address." );
 			return;
 		}
 
@@ -253,14 +253,14 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		{
 			if ( sv_minPing->value && ping < sv_minPing->value )
 			{
-				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for high pings only" );
+				NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]Server is for high pings only" );
 				Com_DPrintf( "Client %i rejected on a too low ping\n", i );
 				return;
 			}
 
 			if ( sv_maxPing->value && ping > sv_maxPing->value )
 			{
-				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for low pings only" );
+				NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]Server is for low pings only" );
 				Com_DPrintf( "Client %i rejected on a too high ping: %i\n", i, ping );
 				return;
 			}
@@ -278,7 +278,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	// if there is already a slot for this IP address, reuse it
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
-		if ( cl->state == CS_FREE )
+		if ( cl->state == clientState_t::CS_FREE )
 		{
 			continue;
 		}
@@ -329,7 +329,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	{
 		cl = &svs.clients[ i ];
 
-		if ( cl->state == CS_FREE )
+		if ( cl->state == clientState_t::CS_FREE )
 		{
 			newcl = cl;
 			break;
@@ -360,12 +360,12 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			}
 			else
 			{
-				Com_Error( ERR_FATAL, "server is full on local connect" );
+				Com_Error( errorParm_t::ERR_FATAL, "server is full on local connect" );
 			}
 		}
 		else
 		{
-			NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", sv_fullmsg->string );
+			NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n%s", sv_fullmsg->string );
 			Com_DPrintf( "Rejected a connection.\n" );
 			return;
 		}
@@ -397,7 +397,7 @@ gotnewcl:
 	newcl->challenge = challenge;
 
 	// save the address
-	Netchan_Setup( NS_SERVER, &newcl->netchan, from, qport );
+	Netchan_Setup( netsrc_t::NS_SERVER, &newcl->netchan, from, qport );
 	// init the netchan queue
 
 	// Save the pubkey
@@ -411,7 +411,7 @@ gotnewcl:
 
 	if ( denied )
 	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]%s", reason );
+		NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]%s", reason );
 		Com_DPrintf( "Game rejected a connection: %s.\n", reason );
 		return;
 	}
@@ -422,11 +422,11 @@ gotnewcl:
 	svs.challenges[ i ].firstPing = 0;
 
 	// send the connect packet to the client
-	NET_OutOfBandPrint( NS_SERVER, from, "connectResponse" );
+	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "connectResponse" );
 
 	Com_DPrintf( "Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name );
 
-	newcl->state = CS_CONNECTED;
+	newcl->state = clientState_t::CS_CONNECTED;
 	newcl->nextSnapshotTime = svs.time;
 	newcl->lastPacketTime = svs.time;
 	newcl->lastConnectTime = svs.time;
@@ -442,7 +442,7 @@ gotnewcl:
 
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
-		if ( svs.clients[ i ].state >= CS_CONNECTED )
+		if ( svs.clients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
 			count++;
 		}
@@ -466,7 +466,7 @@ void SV_FreeClient( client_t *client )
 	// NA_BOT happens to be the default value for address types (value 0) and are
 	// never for clients that send challenges. For NA_BOT, skip the checks for
 	// challenges as it makes NET_CompareAdr yell at us.
-	if (client->netchan.remoteAddress.type != NA_BOT) {
+	if (client->netchan.remoteAddress.type != netadrtype_t::NA_BOT) {
 		// see if we already have a challenge for this IP address
 		challenge_t* challenge = &svs.challenges[ 0 ];
 		for (int i = 0; i < MAX_CHALLENGES; i++, challenge++)
@@ -494,12 +494,12 @@ or crashing -- SV_FinalCommand() will handle that
 */
 void SV_DropClient( client_t *drop, const char *reason )
 {
-	if ( drop->state == CS_ZOMBIE )
+	if ( drop->state == clientState_t::CS_ZOMBIE )
 	{
 		return; // already dropped
 	}
 	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );
-	drop->state = CS_ZOMBIE; // become free in a few seconds
+	drop->state = clientState_t::CS_ZOMBIE; // become free in a few seconds
 
 	// call the prog function for removing a client
 	// this will remove the body, among other things
@@ -531,7 +531,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	int i;
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
-		if ( svs.clients[ i ].state >= CS_CONNECTED )
+		if ( svs.clients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
 			break;
 		}
@@ -563,7 +563,7 @@ void SV_SendClientGameState( client_t *client )
 
 	Com_DPrintf( "SV_SendClientGameState() for %s\n", client->name );
 	Com_DPrintf( "Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name );
-	client->state = CS_PRIMED;
+	client->state = clientState_t::CS_PRIMED;
 
 	// when we receive the first packet from the client, we will
 	// notice that it is from a different serverid and that the
@@ -638,7 +638,7 @@ void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd )
 	sharedEntity_t *ent;
 
 	Com_DPrintf( "Going from CS_PRIMED to CS_ACTIVE for %s\n", client->name );
-	client->state = CS_ACTIVE;
+	client->state = clientState_t::CS_ACTIVE;
 
 	// set up the entity for the client
 	clientNum = client - svs.clients;
@@ -719,7 +719,7 @@ Downloads are finished
 */
 void SV_DoneDownload_f( client_t *cl, const Cmd::Args& )
 {
-	if ( cl->state == CS_ACTIVE )
+	if ( cl->state == clientState_t::CS_ACTIVE )
 	{
 		return;
 	}
@@ -817,7 +817,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	{
 		if ( cl->bWWWing )
 		{
-			Com_Logf(LOG_WARN, "dupe wwwdl ack from client '%s'", cl->name );
+			Com_Logf(log_level_t::LOG_WARN, "dupe wwwdl ack from client '%s'", cl->name );
 		}
 
 		cl->bWWWing = true;
@@ -854,7 +854,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	}
 	else if ( !Q_stricmp( subcmd, "chkfail" ) )
 	{
-		Com_Logf(LOG_WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
+		Com_Logf(log_level_t::LOG_WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
 				cl->name, cl->downloadName );
 		*cl->downloadName = 0;
 		cl->bWWWing = false;
@@ -1020,7 +1020,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 					if ( sv_wwwDlDisconnected->integer )
 					{
-						download_flag |= ( 1 << DL_FLAG_DISCON );
+						download_flag |= DL_FLAG_DISCON;
 					}
 
 					MSG_WriteLong( msg, download_flag );  // flags
@@ -1029,7 +1029,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 				else
 				{
 					// that should NOT happen - even regular download would fail then anyway
-					Com_Logf(LOG_ERROR, "Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
+					Com_Logf(log_level_t::LOG_ERROR, "Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
 				}
 			}
 			else
@@ -1042,7 +1042,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					return;
 				}
 
-				Com_Logf(LOG_ERROR, "Client '%s': falling back to regular downloading for failed file %s", cl->name,
+				Com_Logf(log_level_t::LOG_ERROR, "Client '%s': falling back to regular downloading for failed file %s", cl->name,
 							cl->downloadName );
 			}
 		}
@@ -1391,7 +1391,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, bool clientOK, bool p
 	if ( clientOK )
 	{
 		// pass unknown strings to the game
-		if ( !u->name && sv.state == SS_GAME )
+		if ( !u->name && sv.state == serverState_t::SS_GAME )
 		{
 			gvm.GameClientCommand( cl - svs.clients, s );
 		}
@@ -1448,7 +1448,7 @@ static bool SV_ClientCommand( client_t *cl, msg_t *msg, bool premaprestart )
 	// but not other people
 	// We don't do this when the client hasn't been active yet, since it is
 	// by protocol to spam a lot of commands when downloading
-	if ( !com_cl_running->integer && cl->state >= CS_ACTIVE && // (SA) this was commented out in Wolf.  Did we do that?
+	if ( !com_cl_running->integer && cl->state >= clientState_t::CS_ACTIVE && // (SA) this was commented out in Wolf.  Did we do that?
 	     sv_floodProtect->integer && svs.time < cl->nextReliableTime && floodprotect )
 	{
 		// ignore any other text messages from this client but let them keep playing
@@ -1483,7 +1483,7 @@ void SV_ClientThink( client_t *cl, usercmd_t *cmd )
 {
 	cl->lastUsercmd = *cmd;
 
-	if ( cl->state != CS_ACTIVE )
+	if ( cl->state != clientState_t::CS_ACTIVE )
 	{
 		return; // may have been kicked during the last usercmd
 	}
@@ -1550,13 +1550,13 @@ static void SV_UserMove( client_t *cl, msg_t *msg, bool delta )
 
 	// if this is the first usercmd we have received
 	// this gamestate, put the client into the world
-	if ( cl->state == CS_PRIMED )
+	if ( cl->state == clientState_t::CS_PRIMED )
 	{
 		SV_ClientEnterWorld( cl, &cmds[ 0 ] );
 		// the moves can be processed normaly
 	}
 
-	if ( cl->state != CS_ACTIVE )
+	if ( cl->state != clientState_t::CS_ACTIVE )
 	{
 		cl->deltaMessage = -1;
 		return;
@@ -1705,7 +1705,7 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 				return; // we couldn't execute it because of the flood protection
 			}
 
-			if ( cl->state == CS_ZOMBIE )
+			if ( cl->state == clientState_t::CS_ZOMBIE )
 			{
 				return; // disconnect command
 			}
@@ -1735,7 +1735,7 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 			return; // we couldn't execute it because of the flood protection
 		}
 
-		if ( cl->state == CS_ZOMBIE )
+		if ( cl->state == clientState_t::CS_ZOMBIE )
 		{
 			return; // disconnect command
 		}

@@ -123,7 +123,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	fileHandle_t f;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len <= 0 )
 	{
@@ -478,7 +478,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 	animations = ci->animations;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -1402,7 +1402,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 	for ( i = 0; i < MAX_GENTITIES; i++ )
 	{
 		if ( cg_entities[ i ].currentState.clientNum == clientNum &&
-		     cg_entities[ i ].currentState.eType == ET_PLAYER )
+		     cg_entities[ i ].currentState.eType == entityType_t::ET_PLAYER )
 		{
 			CG_ResetPlayerEntity( &cg_entities[ i ] );
 		}
@@ -2008,7 +2008,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	       ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_ATTACK3 ) ||
 	     ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_GESTURE )
 	{
-		blend.type = SK_RELATIVE; // Tell game to blend
+		blend.type = refSkeletonType_t::SK_RELATIVE; // Tell game to blend
 
 		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN &&
 			( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) != NSPA_GESTURE )
@@ -2018,7 +2018,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	}
 	else
 	{
-		blend.type = SK_INVALID;
+		blend.type = refSkeletonType_t::SK_INVALID;
 	}
 
 	// do the shuffle turn frames locally
@@ -2031,7 +2031,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton, speedScale );
 	}
 
-	if ( blend.type == SK_RELATIVE )
+	if ( blend.type == refSkeletonType_t::SK_RELATIVE )
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, &blend, speedScale );
 		trap_R_BlendSkeleton( &legsSkeleton, &blend, 0.5 );
@@ -2562,7 +2562,7 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 
 		if( JETPACK_USES_SKELETAL_ANIMATION )
 		{
-			if ( jetpackSkeleton.type != SK_INVALID )
+			if ( jetpackSkeleton.type != refSkeletonType_t::SK_INVALID )
 			{
 				oldSkeleton = jetpackSkeleton;
 
@@ -2813,7 +2813,7 @@ static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 	memset( &ent, 0, sizeof( ent ) );
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	ent.origin[ 2 ] += 48;
-	ent.reType = RT_SPRITE;
+	ent.reType = refEntityType_t::RT_SPRITE;
 	ent.customShader = shader;
 	ent.radius = 10;
 	ent.renderfx = rf;
@@ -2871,7 +2871,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		}
 	}
 
-	if ( cg_shadows.integer == SHADOWING_NONE )
+	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return false;
 	}
@@ -2888,7 +2888,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		return false;
 	}
 
-	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
 	     cg_playerShadows.integer ) {
 		// add inverse shadow map
 		{
@@ -2896,7 +2896,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		}
 	}
 
-	if ( cg_shadows.integer != SHADOWING_BLOB ) // no mark for stencil or projection shadows
+	if ( cg_shadows.integer != Util::ordinal(shadowingMode_t::SHADOWING_BLOB)) // no mark for stencil or projection shadows
 	{
 		return true;
 	}
@@ -2915,12 +2915,12 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 
 static void CG_PlayerShadowEnd()
 {
-	if ( cg_shadows.integer == SHADOWING_NONE )
+	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return;
 	}
 
-	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
 	     cg_playerShadows.integer ) {
 		CG_EndShadowCaster( );
 	}
@@ -2940,7 +2940,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	trace_t trace;
 	int     contents;
 
-	if ( cg_shadows.integer == SHADOWING_NONE )
+	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return;
 	}
@@ -3941,7 +3941,7 @@ void CG_PlayerDisconnect( vec3_t org )
 {
 	particleSystem_t *ps;
 
-	trap_S_StartSound( org, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.disconnectSound );
+	trap_S_StartSound( org, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.disconnectSound );
 
 	ps = CG_SpawnNewParticleSystem( cgs.media.disconnectPS );
 
@@ -3965,7 +3965,7 @@ centity_t *CG_GetLocation( vec3_t origin )
 	{
 		eloc = &cg_entities[ i ];
 
-		if ( !eloc->valid || eloc->currentState.eType != ET_LOCATION )
+		if ( !eloc->valid || eloc->currentState.eType != entityType_t::ET_LOCATION )
 		{
 			continue;
 		}

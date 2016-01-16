@@ -47,7 +47,7 @@ struct qkey_t
 };
 
 extern bool key_overstrikeMode;
-extern qkey_t   keys[ MAX_KEYS ];
+extern qkey_t   keys[Util::ordinal(keyNum_t::MAX_KEYS)];
 extern int      bindTeam;
 
 // NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h

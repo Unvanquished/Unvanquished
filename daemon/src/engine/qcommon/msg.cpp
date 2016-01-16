@@ -118,7 +118,7 @@ void MSG_Copy( msg_t *buf, byte *data, int length, msg_t *src )
 {
 	if ( length < src->cursize )
 	{
-		Com_Error( ERR_DROP, "MSG_Copy: can't copy %d into a smaller %d msg_t buffer", src->cursize, length );
+		Com_Error( errorParm_t::ERR_DROP, "MSG_Copy: can't copy %d into a smaller %d msg_t buffer", src->cursize, length );
 	}
 
 	Com_Memcpy( buf, src, sizeof( msg_t ) );
@@ -150,7 +150,7 @@ void MSG_WriteBits( msg_t *msg, int value, int bits )
 
 	if ( bits == 0 || bits < -31 || bits > 32 )
 	{
-		Com_Error( ERR_DROP, "MSG_WriteBits: bad bits %i", bits );
+		Com_Error( errorParm_t::ERR_DROP, "MSG_WriteBits: bad bits %i", bits );
 	}
 
 	if ( bits < 0 )
@@ -184,7 +184,7 @@ void MSG_WriteBits( msg_t *msg, int value, int bits )
 		}
 		else
 		{
-			Com_Error( ERR_DROP, "can't read %d bits", bits );
+			Com_Error( errorParm_t::ERR_DROP, "can't read %d bits", bits );
 		}
 	}
 	else
@@ -264,7 +264,7 @@ int MSG_ReadBits( msg_t *msg, int bits )
 		}
 		else
 		{
-			Com_Error( ERR_DROP, "can't read %d bits", bits );
+			Com_Error( errorParm_t::ERR_DROP, "can't read %d bits", bits );
 		}
 	}
 	else
@@ -827,7 +827,7 @@ void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 	}
 	MSG_WriteDelta( msg, from->weapon, to->weapon, 8 );
 	MSG_WriteDelta( msg, from->flags, to->flags, 8 );
-	MSG_WriteDelta( msg, from->doubleTap, to->doubleTap, 3 );
+	MSG_WriteDelta( msg, Util::ordinal(from->doubleTap), Util::ordinal(to->doubleTap), 3 );
 }
 
 /*
@@ -868,7 +868,7 @@ void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 		}
 		to->weapon = MSG_ReadDelta( msg, from->weapon, 8 );
 		to->flags = MSG_ReadDelta( msg, from->flags, 8 );
-		to->doubleTap = MSG_ReadDelta( msg, from->doubleTap, 3 ) & 0x7;
+		to->doubleTap = Util::enum_cast<dtType_t>(MSG_ReadDelta(msg, Util::ordinal(from->doubleTap), 3) & 0x7);
 	}
 	else
 	{
@@ -1064,7 +1064,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, b
 
 	if ( to->number < 0 || to->number >= MAX_GENTITIES )
 	{
-		Com_Error( ERR_FATAL, "MSG_WriteDeltaEntity: Bad entity number: %i", to->number );
+		Com_Error( errorParm_t::ERR_FATAL, "MSG_WriteDeltaEntity: Bad entity number: %i", to->number );
 	}
 
 	lc = 0;
@@ -1213,7 +1213,7 @@ void MSG_ReadDeltaEntity( msg_t *msg, const entityState_t *from, entityState_t *
 
 	if ( number < 0 || number >= MAX_GENTITIES )
 	{
-		Com_Error( ERR_DROP, "Bad delta entity number: %i", number );
+		Com_Error( errorParm_t::ERR_DROP, "Bad delta entity number: %i", number );
 	}
 
 	if ( msg->bit == 0 )
@@ -1252,7 +1252,7 @@ void MSG_ReadDeltaEntity( msg_t *msg, const entityState_t *from, entityState_t *
 
 	if ( lc > numFields || lc < 0 )
 	{
-		Com_Error( ERR_DROP, "invalid entityState field count" );
+		Com_Error( errorParm_t::ERR_DROP, "invalid entityState field count" );
 	}
 
 	// shownet 2/3 will interleave with other printed info, -1 will
@@ -1803,7 +1803,7 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *t
 
 	if ( lc > numFields || lc < 0 )
 	{
-		Com_Error( ERR_DROP, "invalid playerState field count" );
+		Com_Error( errorParm_t::ERR_DROP, "invalid playerState field count" );
 	}
 
 	for ( i = 0, field = playerStateFields; i < lc; i++, field++ )

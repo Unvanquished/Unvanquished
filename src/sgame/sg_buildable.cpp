@@ -269,7 +269,7 @@ static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 		blocker->client->pers.cmd.rightmove = nudge[1];
 		blocker->client->pers.cmd.upmove = nudge[2];
 		// bots don't double-tap, so use as a nudge flag
-		blocker->client->pers.cmd.doubleTap = 1;
+		blocker->client->pers.cmd.doubleTap = Util::enum_cast<dtType_t>(1);
 	}
 	else
 	{
@@ -297,7 +297,7 @@ gentity_t *G_Reactor()
 	static gentity_t *rc;
 
 	// If cache becomes invalid renew it
-	if ( !rc || rc->s.eType != ET_BUILDABLE || rc->s.modelindex != BA_H_REACTOR )
+	if ( !rc || rc->s.eType != entityType_t::ET_BUILDABLE || rc->s.modelindex != BA_H_REACTOR )
 	{
 		rc = FindBuildable( BA_H_REACTOR );
 	}
@@ -334,7 +334,7 @@ gentity_t *G_Overmind()
 	static gentity_t *om;
 
 	// If cache becomes invalid renew it
-	if ( !om || om->s.eType != ET_BUILDABLE || om->s.modelindex != BA_A_OVERMIND )
+	if ( !om || om->s.eType != entityType_t::ET_BUILDABLE || om->s.modelindex != BA_A_OVERMIND )
 	{
 		om = FindBuildable( BA_A_OVERMIND );
 	}
@@ -375,7 +375,7 @@ static gentity_t* GetMainBuilding( gentity_t *self, bool ownBase )
 	{
 		team = (team_t) self->client->pers.team;
 	}
-	else if ( self->s.eType == ET_BUILDABLE )
+	else if ( self->s.eType == entityType_t::ET_BUILDABLE )
 	{
 		team = BG_Buildable( self->s.modelindex )->team;
 	}
@@ -484,7 +484,7 @@ bool G_FindCreep( gentity_t *self )
 	{
 		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 		{
-			if ( ent->s.eType != ET_BUILDABLE )
+			if ( ent->s.eType != entityType_t::ET_BUILDABLE )
 			{
 				continue;
 			}
@@ -616,14 +616,14 @@ void ASpawn_Think( gentity_t *self )
 		{
 			// If the thing blocking the spawn is a buildable, kill it.
 			// If it's part of the map, kill self.
-			if ( ent->s.eType == ET_BUILDABLE )
+			if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 			{
 				G_Kill(ent, (ent->builtBy && ent->builtBy->slot >= 0) ?
 				       &g_entities[ent->builtBy->slot] : nullptr, MOD_SUICIDE);
 
 				G_SetBuildableAnim( self, BANIM_SPAWN1, true );
 			}
-			else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
+			else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == entityType_t::ET_MOVER )
 			{
 				G_Kill(ent, MOD_SUICIDE);
 				return;
@@ -634,7 +634,7 @@ void ASpawn_Think( gentity_t *self )
 				PuntBlocker( self, ent );
 			}
 
-			if ( ent->s.eType == ET_CORPSE )
+			if ( ent->s.eType == entityType_t::ET_CORPSE )
 			{
 				G_FreeEntity( ent );
 			}
@@ -1028,7 +1028,7 @@ void ASpiker_Think( gentity_t *self )
 
 		if ( G_OnSameTeam( self, ent ) ) {
 			health = healthComponent->Health();
-		} else if ( ent->s.eType == ET_BUILDABLE ) {
+		} else if ( ent->s.eType == entityType_t::ET_BUILDABLE ) {
 			// Enemy buildables don't count in the scoring.
 			continue;
 		} else {
@@ -1612,7 +1612,7 @@ gentity_t *G_NearestPowerSourceInRange( gentity_t *self )
 
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) ) )
 	{
-		if ( neighbor->s.eType != ET_BUILDABLE )
+		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}
@@ -1655,7 +1655,7 @@ static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
 	}
 
 	// interference from human buildables
-	if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_HUMANS )
+	if ( neighbor->s.eType == entityType_t::ET_BUILDABLE && neighbor->buildableTeam == TEAM_HUMANS )
 	{
 		// Only take unpowered and constructing buildables in consideration when predicting
 		if ( !prediction && ( !neighbor->spawned || !neighbor->powered ) )
@@ -1725,7 +1725,7 @@ static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, f
 	}
 
 	// can only influence human buildables
-	if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
+	if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 	{
 		return 0.0f;
 	}
@@ -1775,7 +1775,7 @@ static void CalculateSparePower( gentity_t *self )
 	float     distance;
 	int       powerConsumption, currentBaseSupply, expectedBaseSupply;
 
-	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
+	if ( self->s.eType != entityType_t::ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -1873,7 +1873,7 @@ void G_SetHumanBuildablePowerState()
 	while ( ( ent = G_IterateEntities( ent, nullptr, false, 0, nullptr ) ) )
 	{
 		// discard irrelevant entities
-		if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
+		if ( ent->s.eType != entityType_t::ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
 		{
 			continue;
 		}
@@ -1896,7 +1896,7 @@ void G_SetHumanBuildablePowerState()
 		while ( ( ent = G_IterateEntities( ent, nullptr, false, 0, nullptr ) ) )
 		{
 			// discard irrelevant entities
-			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
+			if ( ent->s.eType != entityType_t::ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
 			{
 				continue;
 			}
@@ -1960,12 +1960,12 @@ void HSpawn_Think( gentity_t *self )
 			{
 				// If the thing blocking the spawn is a buildable, kill it.
 				// If it's part of the map, kill self.
-				if ( ent->s.eType == ET_BUILDABLE )
+				if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 				{
 					G_Kill(ent, MOD_SUICIDE);
 					G_SetBuildableAnim( self, BANIM_SPAWN1, true );
 				}
-				else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == ET_MOVER )
+				else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == entityType_t::ET_MOVER )
 				{
 					G_Kill(self, MOD_SUICIDE);
 					return;
@@ -1976,7 +1976,7 @@ void HSpawn_Think( gentity_t *self )
 					PuntBlocker( self, ent );
 				}
 
-				if ( ent->s.eType == ET_CORPSE )
+				if ( ent->s.eType == entityType_t::ET_CORPSE )
 				{
 					G_FreeEntity( ent );  //quietly remove
 				}
@@ -2579,7 +2579,7 @@ static void HTurret_SetBaseDir( gentity_t *self )
 	VectorMA( self->s.origin, ( float )MGTURRET_RANGE / ( float )MGTURRET_ZONES, dir, end );
 	trap_Trace( &tr, self->s.pos.trBase, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
 
-	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[ tr.entityNum ].s.eType == ET_BUILDABLE )
+	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[ tr.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
 	{
 		VectorNegate( dir, self->turretBaseDir );
 	}
@@ -3128,7 +3128,7 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
-		if ( neighbor->s.eType != ET_BUILDABLE || !neighbor->spawned || G_Dead( neighbor ) ||
+		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !neighbor->spawned || G_Dead( neighbor ) ||
 		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
 		{
 			continue;
@@ -3158,7 +3158,7 @@ static gentity_t *FindBuildable( buildable_t buildable )
 	for ( i = MAX_CLIENTS, ent = g_entities + i;
 	      i < level.num_entities; i++, ent++ )
 	{
-		if ( ent->s.eType != ET_BUILDABLE )
+		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}
@@ -3329,7 +3329,7 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
-	if ( !self || self->s.eType != ET_BUILDABLE )
+	if ( !self || self->s.eType != entityType_t::ET_BUILDABLE )
 	{
 		return;
 	}
@@ -3519,7 +3519,7 @@ static bool PredictBuildablePower( buildable_t buildable, vec3_t origin )
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
 	{
 		// only predict interference with friendly buildables
-		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
+		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 		{
 			continue;
 		}
@@ -3670,7 +3670,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		// assemble a list of closeby human buildable IDs
 		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
 		{
-			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
+			if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 			{
 				continue;
 			}
@@ -3702,7 +3702,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				neighbor = &g_entities[ neighbors[ neighborNum ] ];
 
 				// when predicting, only take human buildables into account
-				if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
+				if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 				{
 					continue;
 				}
@@ -3773,7 +3773,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		ent = &g_entities[ entNum ];
 
 		// check if buildable of own team
-		if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != attr->team )
+		if ( ent->s.eType != entityType_t::ET_BUILDABLE || ent->buildableTeam != attr->team )
 		{
 			continue;
 		}
@@ -3851,7 +3851,7 @@ static void SetBuildableLinkState( bool link )
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( ent->s.eType != ET_BUILDABLE )
+		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}
@@ -4015,7 +4015,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 					break;
 
 				default:
-					Com_Error( ERR_FATAL, "No reason for denying build of %d", buildable );
+					Com_Error( errorParm_t::ERR_FATAL, "No reason for denying build of %d", buildable );
 					break;
 			}
 		}
@@ -4190,7 +4190,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 	G_FreeMarkedBuildables( builder, readable, sizeof( readable ), buildnums, sizeof( buildnums ) );
 
 	// Spawn the buildable
-	built->s.eType = ET_BUILDABLE;
+	built->s.eType = entityType_t::ET_BUILDABLE;
 	built->killedBy = ENTITYNUM_NONE;
 	built->classname = attr->entityName;
 	built->s.modelindex = buildable;
@@ -4500,7 +4500,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	{
 		VectorCopy( ent->s.origin2, normal );
 	}
-	else if ( BG_Buildable( buildable )->traj == TR_BUOYANCY )
+	else if ( BG_Buildable( buildable )->traj == trType_t::TR_BUOYANCY )
 	{
 		VectorSet( normal, 0.0f, 0.0f, -1.0f );
 	}
@@ -4601,7 +4601,7 @@ void G_LayoutSave( const char *name )
 
 	Com_sprintf( fileName, sizeof( fileName ), "layouts/%s/%s.dat", map, name );
 
-	len = trap_FS_FOpenFile( fileName, &f, FS_WRITE );
+	len = trap_FS_FOpenFile( fileName, &f, fsMode_t::FS_WRITE );
 
 	if ( len < 0 )
 	{
@@ -4615,7 +4615,7 @@ void G_LayoutSave( const char *name )
 	{
 		ent = &level.gentities[ i ];
 
-		if ( ent->s.eType != ET_BUILDABLE )
+		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}
@@ -4748,7 +4748,7 @@ void G_LayoutSelect()
 
 		Com_sprintf( fileName, sizeof( fileName ), "layouts/%s/%s.dat", map, layout );
 
-		if ( trap_FS_FOpenFile( fileName, nullptr, FS_READ ) > 0 )
+		if ( trap_FS_FOpenFile( fileName, nullptr, fsMode_t::FS_READ ) > 0 )
 		{
 			Q_strcat( layouts, sizeof( layouts ), layout );
 			Q_strcat( layouts, sizeof( layouts ), " " );
@@ -4822,7 +4822,7 @@ void G_LayoutLoad()
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-	len = trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, level.layout ), &f, FS_READ );
+	len = trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, level.layout ), &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -4887,7 +4887,7 @@ void G_BaseSelfDestruct( team_t team )
 	{
 		ent = &level.gentities[ i ];
 
-		if ( ent->s.eType != ET_BUILDABLE )
+		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}
@@ -5020,15 +5020,15 @@ void G_BuildLogRevert( int id )
 			{
 				ent = &g_entities[ team ];
 
-				if ( ( ( ent->s.eType == ET_BUILDABLE && G_Alive( ent ) ) ||
-					   ( ent->s.eType == ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
+				if ( ( ( ent->s.eType == entityType_t::ET_BUILDABLE && G_Alive( ent ) ) ||
+					   ( ent->s.eType == entityType_t::ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
 					 ent->s.modelindex == log->modelindex )
 				{
 					VectorSubtract( ent->s.pos.trBase, log->origin, dist );
 
 					if ( VectorLengthSquared( dist ) <= 2.0f )
 					{
-						if ( ent->s.eType == ET_BUILDABLE )
+						if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 						{
 							G_LogPrintf( "revert: remove %d %s\n",
 										 ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );

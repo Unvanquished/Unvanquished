@@ -197,8 +197,8 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale )
 
 	switch ( skel->type )
 	{
-		case SK_INVALID:
-		case SK_ABSOLUTE:
+		case refSkeletonType_t::SK_INVALID:
+		case refSkeletonType_t::SK_ABSOLUTE:
 			return;
 
 		default:
@@ -218,7 +218,7 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale )
 		}
 	}
 
-	skel->type = SK_ABSOLUTE;
+	skel->type = refSkeletonType_t::SK_ABSOLUTE;
 }
 
 /*
@@ -269,7 +269,7 @@ static void CG_EntityEffects( centity_t *cent )
 	// add loop sound
 	if ( cent->currentState.loopSound )
 	{
-		if ( cent->currentState.eType != ET_SPEAKER )
+		if ( cent->currentState.eType != entityType_t::ET_SPEAKER )
 		{
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin,
 			                        cgs.gameSounds[ cent->currentState.loopSound ] );
@@ -282,7 +282,7 @@ static void CG_EntityEffects( centity_t *cent )
 	}
 
 	// constant light glow
-	if ( cent->currentState.constantLight && ( cent->currentState.eType == ET_MOVER || cent->currentState.eType == ET_MODELDOOR ) )
+	if ( cent->currentState.constantLight && ( cent->currentState.eType == entityType_t::ET_MOVER || cent->currentState.eType == entityType_t::ET_MODELDOOR ) )
 	{
 		int cl;
 		int i, r, g, b;
@@ -369,7 +369,7 @@ static void CG_Speaker( centity_t *cent )
 		return;
 	}
 
-	trap_S_StartSound( nullptr, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[ cent->currentState.eventParm ] );
+	trap_S_StartSound( nullptr, cent->currentState.number, soundChannel_t::CHAN_ITEM, cgs.gameSounds[ cent->currentState.eventParm ] );
 
 	//  ent->s.frame = ent->wait * 10;
 	//  ent->s.clientNum = ent->random * 10;
@@ -419,7 +419,7 @@ static void CG_Missile( centity_t *cent )
 
 	if ( ma->usesSprite )
 	{
-		ent.reType = RT_SPRITE;
+		ent.reType = refEntityType_t::RT_SPRITE;
 		ent.radius = ma->spriteSize + ma->spriteCharge * es->torsoAnim;
 		ent.rotation = 0;
 		ent.customShader = ma->sprite;
@@ -466,7 +466,7 @@ static void CG_Missile( centity_t *cent )
 		}
 
 		// spin as it moves
-		if ( es->pos.trType != TR_STATIONARY && ma->rotates )
+		if ( es->pos.trType != trType_t::TR_STATIONARY && ma->rotates )
 		{
 			RotateAroundDirection( ent.axis, cg.time / 4 );
 		}
@@ -635,7 +635,7 @@ static void CG_Portal( centity_t *cent )
 	VectorSubtract( vec3_origin, ent.axis[ 1 ], ent.axis[ 1 ] );
 
 	CrossProduct( ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
-	ent.reType = RT_PORTALSURFACE;
+	ent.reType = refEntityType_t::RT_PORTALSURFACE;
 	ent.oldframe = s1->misc;
 	ent.frame = s1->frame; // rotation speed
 	ent.skinNum = s1->clientNum / 256.0 * 360; // roll offset
@@ -715,7 +715,7 @@ static void CG_LightFlare( centity_t *cent )
 
 	memset( &flare, 0, sizeof( flare ) );
 
-	flare.reType = RT_SPRITE;
+	flare.reType = refEntityType_t::RT_SPRITE;
 	flare.customShader = cgs.gameShaders[ es->modelindex ];
 	flare.shaderRGBA = Color::White;
 
@@ -903,7 +903,7 @@ void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int
 
 	cent = &cg_entities[ moverNum ];
 
-	if ( cent->currentState.eType != ET_MOVER )
+	if ( cent->currentState.eType != entityType_t::ET_MOVER )
 	{
 		VectorCopy( in, out );
 		VectorCopy( angles_in, angles_out );
@@ -978,12 +978,12 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 		// make sure the clients use TR_INTERPOLATE
 		if ( cent->currentState.number < MAX_CLIENTS )
 		{
-			cent->currentState.pos.trType = TR_INTERPOLATE;
-			cent->nextState.pos.trType = TR_INTERPOLATE;
+			cent->currentState.pos.trType = trType_t::TR_INTERPOLATE;
+			cent->nextState.pos.trType = trType_t::TR_INTERPOLATE;
 		}
 	}
 
-	if ( cent->interpolate && cent->currentState.pos.trType == TR_INTERPOLATE )
+	if ( cent->interpolate && cent->currentState.pos.trType == trType_t::TR_INTERPOLATE )
 	{
 		CG_InterpolateEntityPosition( cent );
 		return;
@@ -991,7 +991,7 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 
 	// first see if we can interpolate between two snaps for
 	// linear extrapolated clients
-	if ( cent->interpolate && cent->currentState.pos.trType == TR_LINEAR_STOP &&
+	if ( cent->interpolate && cent->currentState.pos.trType == trType_t::TR_LINEAR_STOP &&
 	     cent->currentState.number < MAX_CLIENTS )
 	{
 		CG_InterpolateEntityPosition( cent );
@@ -1000,7 +1000,7 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 
 	if ( cg_projectileNudge.integer &&
 	     !cg.demoPlayback &&
-	     cent->currentState.eType == ET_MISSILE &&
+	     cent->currentState.eType == entityType_t::ET_MISSILE &&
 	     !( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
 	{
 		timeshift = cg.ping;
@@ -1055,11 +1055,11 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 
 	switch ( es->eType )
 	{
-		case ET_BUILDABLE:
+		case entityType_t::ET_BUILDABLE:
 			cent->lastBuildableHealth = es->generic1;
 			break;
 
-		case ET_LIGHTFLARE:
+		case entityType_t::ET_LIGHTFLARE:
 			cent->lfs.hTest = trap_RegisterVisTest();
 			break;
 
@@ -1107,7 +1107,7 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 
 	switch ( es->eType )
 	{
-		case ET_LEV2_ZAP_CHAIN:
+		case entityType_t::ET_LEV2_ZAP_CHAIN:
 			for ( i = 0; i <= LEVEL2_AREAZAP_MAX_TARGETS; i++ )
 			{
 				if ( CG_IsTrailSystemValid( &cent->level2ZapTS[ i ] ) )
@@ -1117,12 +1117,12 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 			}
 			break;
 
-		case ET_LIGHTFLARE:
+		case entityType_t::ET_LIGHTFLARE:
 			trap_UnregisterVisTest( cent->lfs.hTest );
 			cent->lfs.hTest = 0;
 			break;
 
-		case ET_FIRE:
+		case entityType_t::ET_FIRE:
 			if ( CG_IsParticleSystemValid( &cent->entityPS ) )
 			{
 				CG_DestroyParticleSystem( &cent->entityPS );
@@ -1179,7 +1179,7 @@ CG_AddCEntity
 static void CG_AddCEntity( centity_t *cent )
 {
 	// event-only entities will have been dealt with already
-	if ( cent->currentState.eType >= ET_EVENTS )
+	if ( cent->currentState.eType >= entityType_t::ET_EVENTS )
 	{
 		return;
 	}
@@ -1193,68 +1193,68 @@ static void CG_AddCEntity( centity_t *cent )
 	switch ( cent->currentState.eType )
 	{
 		default:
-			CG_Error( "Bad entity type: %i", cent->currentState.eType );
+			CG_Error( "Bad entity type: %s", Util::enum_str(cent->currentState.eType));
 
-		case ET_INVISIBLE:
-		case ET_PUSHER:
-		case ET_TELEPORTER:
-		case ET_LOCATION:
-		case ET_BEACON:
+		case entityType_t::ET_INVISIBLE:
+		case entityType_t::ET_PUSHER:
+		case entityType_t::ET_TELEPORTER:
+		case entityType_t::ET_LOCATION:
+		case entityType_t::ET_BEACON:
 			break;
 
-		case ET_GENERAL:
+		case entityType_t::ET_GENERAL:
 			CG_General( cent );
 			break;
 
-		case ET_CORPSE:
+		case entityType_t::ET_CORPSE:
 			CG_Corpse( cent );
 			break;
 
-		case ET_PLAYER:
+		case entityType_t::ET_PLAYER:
 			CG_Player( cent );
 			break;
 
-		case ET_BUILDABLE:
+		case entityType_t::ET_BUILDABLE:
 			CG_Buildable( cent );
 			break;
 
-		case ET_MISSILE:
+		case entityType_t::ET_MISSILE:
 			CG_Missile( cent );
 			break;
 
-		case ET_MOVER:
+		case entityType_t::ET_MOVER:
 			CG_Mover( cent );
 			break;
 
-		case ET_PORTAL:
+		case entityType_t::ET_PORTAL:
 			CG_Portal( cent );
 			break;
 
-		case ET_SPEAKER:
+		case entityType_t::ET_SPEAKER:
 			CG_Speaker( cent );
 			break;
 
-		case ET_FIRE:
+		case entityType_t::ET_FIRE:
 			CG_Fire( cent );
 			break;
 
-		case ET_PARTICLE_SYSTEM:
+		case entityType_t::ET_PARTICLE_SYSTEM:
 			CG_ParticleSystemEntity( cent );
 			break;
 
-		case ET_ANIMMAPOBJ:
+		case entityType_t::ET_ANIMMAPOBJ:
 			CG_AnimMapObj( cent );
 			break;
 
-		case ET_MODELDOOR:
+		case entityType_t::ET_MODELDOOR:
 			CG_ModelDoor( cent );
 			break;
 
-		case ET_LIGHTFLARE:
+		case entityType_t::ET_LIGHTFLARE:
 			CG_LightFlare( cent );
 			break;
 
-		case ET_LEV2_ZAP_CHAIN:
+		case entityType_t::ET_LEV2_ZAP_CHAIN:
 			CG_Lev2ZapChain( cent );
 			break;
 	}
@@ -1363,8 +1363,8 @@ void CG_AddPacketEntities()
 
 			switch ( es->eType )
 			{
-				case ET_MISSILE:
-				case ET_CORPSE:
+				case entityType_t::ET_MISSILE:
+				case entityType_t::ET_CORPSE:
 					x = ( es->solid & 255 );
 					zd = ( ( es->solid >> 8 ) & 255 );
 					zu = ( ( es->solid >> 16 ) & 255 ) - 32;

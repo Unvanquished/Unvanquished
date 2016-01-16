@@ -179,7 +179,7 @@ int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxc
 
 bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
 {
-	return G_CM_EntityContact( mins, maxs, ent, TT_AABB );
+	return G_CM_EntityContact( mins, maxs, ent, traceType_t::TT_AABB );
 }
 
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
@@ -192,7 +192,7 @@ void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 	if (!maxs) {
 		mins = origin;
 	}
-	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, TT_AABB);
+	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, traceType_t::TT_AABB);
 }
 
 int trap_PointContents(const vec3_t point, int passEntityNum)

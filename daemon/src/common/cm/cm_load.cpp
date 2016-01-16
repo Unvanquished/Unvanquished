@@ -809,13 +809,13 @@ void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts
 	// scan through all the surfaces
 	for ( i = 0; i < count; i++, in++ )
 	{
-		if ( LittleLong( in->surfaceType ) == MST_PATCH )
+		if ( LittleLong( in->surfaceType ) == mapSurfaceType_t::MST_PATCH )
 		{
 			int j = 0;
 
 			// FIXME: check for non-colliding patches
 			cm.surfaces[ i ] = surface = ( cSurface_t * ) CM_Alloc( sizeof( *surface ) );
-			surface->type = MST_PATCH;
+			surface->type = mapSurfaceType_t::MST_PATCH;
 
 			// load the full drawverts onto the stack
 			width = LittleLong( in->patchWidth );
@@ -843,12 +843,12 @@ void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts
 			// create the internal facet structure
 			surface->sc = CM_GeneratePatchCollide( width, height, vertexes );
 		}
-		else if ( LittleLong( in->surfaceType ) == MST_TRIANGLE_SOUP && ( cm.perPolyCollision || cm_forceTriangles.Get() ) )
+		else if ( LittleLong( in->surfaceType ) == mapSurfaceType_t::MST_TRIANGLE_SOUP && ( cm.perPolyCollision || cm_forceTriangles.Get() ) )
 		{
 			// FIXME: check for non-colliding triangle soups
 
 			cm.surfaces[ i ] = surface = ( cSurface_t * ) CM_Alloc( sizeof( *surface ) );
-			surface->type = MST_TRIANGLE_SOUP;
+			surface->type = mapSurfaceType_t::MST_TRIANGLE_SOUP;
 
 			// load the full drawverts onto the stack
 			numVertexes = LittleLong( in->numVerts );

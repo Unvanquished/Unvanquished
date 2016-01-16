@@ -355,14 +355,14 @@ void G_BotThink( gentity_t *self )
 	usercmdClearButtons( botCmdBuffer->buttons );
 
 	// for nudges, e.g. spawn blocking
-	nudge[0] = botCmdBuffer->doubleTap ? botCmdBuffer->forwardmove : 0;
-	nudge[1] = botCmdBuffer->doubleTap ? botCmdBuffer->rightmove : 0;
-	nudge[2] = botCmdBuffer->doubleTap ? botCmdBuffer->upmove : 0;
+	nudge[0] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->forwardmove : 0;
+	nudge[1] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->rightmove : 0;
+	nudge[2] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->upmove : 0;
 
 	botCmdBuffer->forwardmove = 0;
 	botCmdBuffer->rightmove = 0;
 	botCmdBuffer->upmove = 0;
-	botCmdBuffer->doubleTap = 0;
+	botCmdBuffer->doubleTap = dtType_t::DT_NONE;
 
 	//acknowledge recieved server commands
 	//MUST be done

@@ -51,7 +51,7 @@ static void NORETURN BG_VoiceParseError( fileHandle_t handle, const char *err )
 
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 	trap_Parse_FreeSource( handle );
-	Com_Error( ERR_FATAL, "%s on line %d of %s", err, line, filename );
+	Com_Error( errorParm_t::ERR_FATAL, "%s on line %d of %s", err, line, filename );
 }
 
 /*
@@ -78,7 +78,7 @@ static voice_t *BG_VoiceList()
 
 	// special case for default.voice.  this file is REQUIRED and will
 	// always be loaded first in the event of overflow of voice definitions
-	if ( !trap_FS_FOpenFile( "voice/default.voice", nullptr, FS_READ ) )
+	if ( !trap_FS_FOpenFile( "voice/default.voice", nullptr, fsMode_t::FS_READ ) )
 	{
 		Com_Printf( "voice/default.voice missing, voice system disabled.\n" );
 		return nullptr;
@@ -112,7 +112,7 @@ static voice_t *BG_VoiceList()
 		}
 
 		// trap_FS_GetFileList() buffer has overflowed
-		if ( !trap_FS_FOpenFile( va( "voice/%s", filePtr ), nullptr, FS_READ ) )
+		if ( !trap_FS_FOpenFile( va( "voice/%s", filePtr ), nullptr, fsMode_t::FS_READ ) )
 		{
 			Com_Printf( S_WARNING "BG_VoiceList(): detected "
 			            "an invalid .voice file \"%s\" in directory listing.  You have "
@@ -385,7 +385,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 			voiceTracks = voiceTracks->next;
 		}
 
-		if ( !trap_FS_FOpenFile( token.string, nullptr, FS_READ ) )
+		if ( !trap_FS_FOpenFile( token.string, nullptr, fsMode_t::FS_READ ) )
 		{
 			int  line;
 			char filename[ MAX_QPATH ];
@@ -451,7 +451,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 				char filename[ MAX_QPATH ];
 
 				trap_Parse_SourceFileAndLine( handle, filename, &line );
-				Com_Error( ERR_FATAL, "BG_VoiceParse(): "
+				Com_Error( errorParm_t::ERR_FATAL, "BG_VoiceParse(): "
 				           "parse error on line %d of %s", line, filename );
 			}
 		}
@@ -462,7 +462,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 			char filename[ MAX_QPATH ];
 
 			trap_Parse_SourceFileAndLine( handle, filename, &line );
-			Com_Error( ERR_FATAL, "BG_VoiceParse(): "
+			Com_Error( errorParm_t::ERR_FATAL, "BG_VoiceParse(): "
 			           "command \"%s\" exceeds MAX_VOICE_CMD_LEN (%d) on line %d of %s",
 			           token.string, MAX_VOICE_CMD_LEN, line, filename );
 		}

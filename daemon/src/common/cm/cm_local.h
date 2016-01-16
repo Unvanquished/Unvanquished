@@ -131,7 +131,7 @@ struct cSurface_t
 	int               surfaceFlags;
 	int               contents;
 	cSurfaceCollide_t *sc;
-	int               type;
+	mapSurfaceType_t type;
 };
 
 struct cArea_t
@@ -281,7 +281,7 @@ extern cFacet_t facets[];
 void     CM_ResetPlaneCounts();
 int      CM_FindPlane2( float plane[ 4 ], bool *flipped );
 int      CM_FindPlane( const float *p1, const float *p2, const float *p3 );
-int      CM_PointOnPlaneSide( float *p, int planeNum );
+planeSide_t CM_PointOnPlaneSide( float *p, int planeNum );
 bool CM_ValidateFacet( cFacet_t *facet );
 void     CM_AddFacetBevels( cFacet_t *facet );
 bool CM_GenerateFacetFor3Points( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3 );

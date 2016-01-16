@@ -389,27 +389,27 @@ const char *Com_EntityTypeName(entityType_t entityType)
 {
 	switch (entityType)
 	{
-	case ET_GENERAL:          return "GENERAL";
-	case ET_PLAYER:           return "PLAYER";
-	case ET_ITEM:             return "ITEM";
-	case ET_BUILDABLE:        return "BUILDABLE";
-	case ET_LOCATION:         return "LOCATION";
-	case ET_MISSILE:          return "MISSILE";
-	case ET_MOVER:            return "MOVER";
-	case ET_PORTAL:           return "PORTAL";
-	case ET_SPEAKER:          return "SPEAKER";
-	case ET_PUSHER:           return "PUSHER";
-	case ET_TELEPORTER:       return "TELEPORTER";
-	case ET_INVISIBLE:        return "INVISIBLE";
-	case ET_FIRE:             return "FIRE";
-	case ET_CORPSE:           return "CORPSE";
-	case ET_PARTICLE_SYSTEM:  return "PARTICLE_SYSTEM";
-	case ET_ANIMMAPOBJ:       return "ANIMMAPOBJ";
-	case ET_MODELDOOR:        return "MODELDOOR";
-	case ET_LIGHTFLARE:       return "LIGHTFLARE";
-	case ET_LEV2_ZAP_CHAIN:   return "LEV2_ZAP_CHAIN";
+	case entityType_t::ET_GENERAL:          return "GENERAL";
+	case entityType_t::ET_PLAYER:           return "PLAYER";
+	case entityType_t::ET_ITEM:             return "ITEM";
+	case entityType_t::ET_BUILDABLE:        return "BUILDABLE";
+	case entityType_t::ET_LOCATION:         return "LOCATION";
+	case entityType_t::ET_MISSILE:          return "MISSILE";
+	case entityType_t::ET_MOVER:            return "MOVER";
+	case entityType_t::ET_PORTAL:           return "PORTAL";
+	case entityType_t::ET_SPEAKER:          return "SPEAKER";
+	case entityType_t::ET_PUSHER:           return "PUSHER";
+	case entityType_t::ET_TELEPORTER:       return "TELEPORTER";
+	case entityType_t::ET_INVISIBLE:        return "INVISIBLE";
+	case entityType_t::ET_FIRE:             return "FIRE";
+	case entityType_t::ET_CORPSE:           return "CORPSE";
+	case entityType_t::ET_PARTICLE_SYSTEM:  return "PARTICLE_SYSTEM";
+	case entityType_t::ET_ANIMMAPOBJ:       return "ANIMMAPOBJ";
+	case entityType_t::ET_MODELDOOR:        return "MODELDOOR";
+	case entityType_t::ET_LIGHTFLARE:       return "LIGHTFLARE";
+	case entityType_t::ET_LEV2_ZAP_CHAIN:   return "LEV2_ZAP_CHAIN";
 	default:
-		if(entityType >= ET_EVENTS)
+		if(entityType >= entityType_t::ET_EVENTS)
 			return "EVENT";
 		return nullptr;
 	}

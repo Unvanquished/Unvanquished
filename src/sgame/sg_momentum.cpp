@@ -376,7 +376,7 @@ float G_AddMomentumGenericStep( team_t team, float amount )
  */
 float G_PredictMomentumForBuilding( gentity_t *buildable )
 {
-	if ( !buildable || buildable->s.eType != ET_BUILDABLE )
+	if ( !buildable || buildable->s.eType != entityType_t::ET_BUILDABLE )
 	{
 		return 0.0f;
 	}
@@ -395,7 +395,7 @@ float G_AddMomentumForBuilding( gentity_t *buildable )
 	team_t    team;
 	gentity_t *builder;
 
-	if ( !buildable || buildable->s.eType != ET_BUILDABLE )
+	if ( !buildable || buildable->s.eType != entityType_t::ET_BUILDABLE )
 	{
 		return 0.0f;
 	}
@@ -429,7 +429,7 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 	team_t    team;
 
 	// sanity check buildable
-	if ( !buildable || buildable->s.eType != ET_BUILDABLE )
+	if ( !buildable || buildable->s.eType != entityType_t::ET_BUILDABLE )
 	{
 		return 0.0f;
 	}
@@ -460,7 +460,7 @@ float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker,
 	team_t team;
 
 	// sanity check buildable
-	if ( !buildable || buildable->s.eType != ET_BUILDABLE )
+	if ( !buildable || buildable->s.eType != entityType_t::ET_BUILDABLE )
 	{
 		return 0.0f;
 	}

@@ -56,7 +56,7 @@ namespace Util {
 	template<> struct SerializeTraits<refSkeleton_t> {
 		static void Write(Writer& stream, const refSkeleton_t& skel)
 		{
-			stream.Write<uint32_t>(skel.type);
+			stream.Write<uint32_t>(Util::ordinal(skel.type));
 			stream.WriteSize(skel.numBones);
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 3; j++) {

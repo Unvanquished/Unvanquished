@@ -171,7 +171,7 @@ void G_FreeEntity( gentity_t *entity )
 		entity->eclass->instanceCounter--;
 	}
 
-	if ( entity->s.eType == ET_BEACON && entity->s.modelindex == BCT_TAG )
+	if ( entity->s.eType == entityType_t::ET_BEACON && entity->s.modelindex == BCT_TAG )
 	{
 		// It's possible that this happened before, but we need to be sure.
 		BaseClustering::Remove(entity);
@@ -205,7 +205,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 	vec3_t    snapped;
 
 	newEntity = G_NewEntity();
-	newEntity->s.eType = (entityType_t) ( ET_EVENTS + event );
+	newEntity->s.eType = Util::enum_cast<entityType_t>( Util::ordinal(entityType_t::ET_EVENTS) + event );
 
 	newEntity->classname = "tempEntity";
 	newEntity->eventTime = level.time;
@@ -993,7 +993,7 @@ Sets the pos trajectory for a fixed position
 void G_SetOrigin( gentity_t *self, const vec3_t origin )
 {
 	VectorCopy( origin, self->s.pos.trBase );
-	self->s.pos.trType = TR_STATIONARY;
+	self->s.pos.trType = trType_t::TR_STATIONARY;
 	self->s.pos.trTime = 0;
 	self->s.pos.trDuration = 0;
 	VectorClear( self->s.pos.trDelta );

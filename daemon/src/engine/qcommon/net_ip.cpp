@@ -330,26 +330,26 @@ const char *NET_ErrorString()
 static void NetadrToSockadr( netadr_t *a, struct sockaddr *s )
 {
 	memset( s, 0, sizeof( struct sockaddr ) );
-	if ( a->type == NA_BROADCAST )
+	if ( a->type == netadrtype_t::NA_BROADCAST )
 	{
 		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
 		( ( struct sockaddr_in * ) s )->sin_port = a->port;
 		( ( struct sockaddr_in * ) s )->sin_addr.s_addr = INADDR_BROADCAST;
 	}
-	else if ( a->type == NA_IP )
+	else if ( a->type == netadrtype_t::NA_IP )
 	{
 		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
 		( ( struct sockaddr_in * ) s )->sin_addr.s_addr = * ( int * ) &a->ip;
-		( ( struct sockaddr_in * ) s )->sin_port = ( a->type == NA_IP_DUAL ? a->port4 : a->port );
+		( ( struct sockaddr_in * ) s )->sin_port = ( a->type == netadrtype_t::NA_IP_DUAL ? a->port4 : a->port );
 	}
 	else if ( NET_IS_IPv6( a->type ) )
 	{
 		( ( struct sockaddr_in6 * ) s )->sin6_family = AF_INET6;
 		( ( struct sockaddr_in6 * ) s )->sin6_addr = * ( ( struct in6_addr * ) &a->ip6 );
-		( ( struct sockaddr_in6 * ) s )->sin6_port = ( a->type == NA_IP_DUAL ? a->port6 : a->port );
+		( ( struct sockaddr_in6 * ) s )->sin6_port = ( a->type == netadrtype_t::NA_IP_DUAL ? a->port6 : a->port );
 		( ( struct sockaddr_in6 * ) s )->sin6_scope_id = a->scope_id;
 	}
-	else if ( a->type == NA_MULTICAST6 )
+	else if ( a->type == netadrtype_t::NA_MULTICAST6 )
 	{
 		( ( struct sockaddr_in6 * ) s )->sin6_family = AF_INET6;
 		( ( struct sockaddr_in6 * ) s )->sin6_addr = curgroup.ipv6mr_multiaddr;
@@ -361,13 +361,13 @@ static void SockadrToNetadr( struct sockaddr *s, netadr_t *a )
 {
 	if ( s->sa_family == AF_INET )
 	{
-		a->type = NA_IP;
+		a->type = netadrtype_t::NA_IP;
 		* ( int * ) &a->ip = ( ( struct sockaddr_in * ) s )->sin_addr.s_addr;
 		a->port = ( ( struct sockaddr_in * ) s )->sin_port;
 	}
 	else if ( s->sa_family == AF_INET6 )
 	{
-		a->type = NA_IP6;
+		a->type = netadrtype_t::NA_IP6;
 		memcpy( a->ip6, & ( ( struct sockaddr_in6 * ) s )->sin6_addr, sizeof( a->ip6 ) );
 		a->port = ( ( struct sockaddr_in6 * ) s )->sin6_port;
 		a->scope_id = ( ( struct sockaddr_in6 * ) s )->sin6_scope_id;
@@ -515,11 +515,11 @@ bool Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 
 	switch ( family )
 	{
-		case NA_IP:
+		case netadrtype_t::NA_IP:
 			fam = AF_INET;
 			break;
 
-		case NA_IP6:
+		case netadrtype_t::NA_IP6:
 			fam = AF_INET6;
 			break;
 
@@ -556,12 +556,12 @@ bool NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 		return false;
 	}
 
-	if ( a_type == NA_LOOPBACK )
+	if ( a_type == netadrtype_t::NA_LOOPBACK )
 	{
 		return true;
 	}
 
-	if ( a_type == NA_IP )
+	if ( a_type == netadrtype_t::NA_IP )
 	{
 		addra = ( byte * ) &a.ip;
 		addrb = ( byte * ) &b.ip;
@@ -571,7 +571,7 @@ bool NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 			netmask = 32;
 		}
 	}
-	else if ( a_type == NA_IP6 )
+	else if ( a_type == netadrtype_t::NA_IP6 )
 	{
 		addra = ( byte * ) &a.ip6;
 		addrb = ( byte * ) &b.ip6;
@@ -630,15 +630,15 @@ const char      *NET_AdrToString( netadr_t a )
 {
 	static  char s[ NET_ADDR_STR_MAX_LEN ];
 
-	if ( a.type == NA_LOOPBACK )
+	if ( a.type == netadrtype_t::NA_LOOPBACK )
 	{
 		Com_sprintf( s, sizeof( s ), "loopback" );
 	}
-	else if ( a.type == NA_BOT )
+	else if ( a.type == netadrtype_t::NA_BOT )
 	{
 		Com_sprintf( s, sizeof( s ), "bot" );
 	}
-	else if ( a.type == NA_IP || a.type == NA_IP6 || a.type == NA_IP_DUAL )
+	else if ( a.type == netadrtype_t::NA_IP || a.type == netadrtype_t::NA_IP6 || a.type == netadrtype_t::NA_IP_DUAL )
 	{
 		struct sockaddr_storage sadr;
 
@@ -654,21 +654,21 @@ const char      *NET_AdrToStringwPort( netadr_t a )
 {
 	static  char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
-	if ( a.type == NA_LOOPBACK )
+	if ( a.type == netadrtype_t::NA_LOOPBACK )
 	{
 		Com_sprintf( s, sizeof( s ), "loopback" );
 	}
-	else if ( a.type == NA_BOT )
+	else if ( a.type == netadrtype_t::NA_BOT )
 	{
 		Com_sprintf( s, sizeof( s ), "bot" );
 	}
 	else if ( NET_IS_IPv4( a.type ) )
 	{
-		Com_sprintf( s, sizeof( s ), "%s:%hu", NET_AdrToString( a ), ntohs( a.type == NA_IP_DUAL ? a.port4 : a.port ) );
+		Com_sprintf( s, sizeof( s ), "%s:%hu", NET_AdrToString( a ), ntohs( a.type == netadrtype_t::NA_IP_DUAL ? a.port4 : a.port ) );
 	}
 	else if ( NET_IS_IPv6( a.type ) )
 	{
-		Com_sprintf( s, sizeof( s ), "[%s]:%hu", NET_AdrToString( a ), ntohs( a.type == NA_IP_DUAL ? a.port6 : a.port ) );
+		Com_sprintf( s, sizeof( s ), "[%s]:%hu", NET_AdrToString( a ), ntohs( a.type == netadrtype_t::NA_IP_DUAL ? a.port6 : a.port ) );
 	}
 	return s;
 }
@@ -680,7 +680,7 @@ bool        NET_CompareAdr( netadr_t a, netadr_t b )
 		return false;
 	}
 
-	if ( a.type == NA_IP || a.type == NA_IP6 )
+	if ( a.type == netadrtype_t::NA_IP || a.type == netadrtype_t::NA_IP6 )
 	{
 		if ( a.port == b.port )
 		{
@@ -697,7 +697,7 @@ bool        NET_CompareAdr( netadr_t a, netadr_t b )
 
 bool        NET_IsLocalAddress( netadr_t adr )
 {
-	return adr.type == NA_LOOPBACK;
+	return adr.type == netadrtype_t::NA_LOOPBACK;
 }
 
 //=============================================================================
@@ -742,7 +742,7 @@ bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 					return false;
 				}
 
-				net_from->type = NA_IP;
+				net_from->type = netadrtype_t::NA_IP;
 				net_from->ip[ 0 ] = net_message->data[ 4 ];
 				net_from->ip[ 1 ] = net_message->data[ 5 ];
 				net_from->ip[ 2 ] = net_message->data[ 6 ];
@@ -844,20 +844,20 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 	int                     ret = SOCKET_ERROR;
 	struct sockaddr_storage addr;
 
-	if ( to.type != NA_BROADCAST && to.type != NA_IP && to.type != NA_IP_DUAL && to.type != NA_IP6 && to.type != NA_MULTICAST6 )
+	if ( to.type != netadrtype_t::NA_BROADCAST && to.type != netadrtype_t::NA_IP && to.type != netadrtype_t::NA_IP_DUAL && to.type != netadrtype_t::NA_IP6 && to.type != netadrtype_t::NA_MULTICAST6 )
 	{
-		Com_Error( ERR_FATAL, "Sys_SendPacket: bad address type" );
+		Com_Error( errorParm_t::ERR_FATAL, "Sys_SendPacket: bad address type" );
 	}
 
 	if ( ( ip_socket == INVALID_SOCKET && NET_IS_IPv4( to.type ) ) ||
-	     ( ip_socket == INVALID_SOCKET && to.type == NA_BROADCAST ) ||
+	     ( ip_socket == INVALID_SOCKET && to.type == netadrtype_t::NA_BROADCAST ) ||
 	     ( ip6_socket == INVALID_SOCKET && NET_IS_IPv6( to.type ) ) ||
-	     ( ip6_socket == INVALID_SOCKET && to.type == NA_MULTICAST6 ) )
+	     ( ip6_socket == INVALID_SOCKET && to.type == netadrtype_t::NA_MULTICAST6 ) )
 	{
 		return;
 	}
 
-	if ( to.type == NA_MULTICAST6 && ( net_enabled->integer & NET_DISABLEMCAST ) )
+	if ( to.type == netadrtype_t::NA_MULTICAST6 && ( net_enabled->integer & NET_DISABLEMCAST ) )
 	{
 		return;
 	}
@@ -899,7 +899,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 		}
 
 		// some PPP links do not allow broadcasts and return an error
-		if ( ( err == EADDRNOTAVAIL ) && ( ( to.type == NA_BROADCAST ) ) )
+		if ( ( err == EADDRNOTAVAIL ) && ( ( to.type == netadrtype_t::NA_BROADCAST ) ) )
 		{
 			return;
 		}
@@ -934,12 +934,12 @@ bool Sys_IsLANAddress( netadr_t adr )
 	bool differed;
 	byte     *compareadr, *comparemask, *compareip;
 
-	if ( adr.type == NA_LOOPBACK )
+	if ( adr.type == netadrtype_t::NA_LOOPBACK )
 	{
 		return true;
 	}
 
-	if ( adr.type == NA_IP )
+	if ( adr.type == netadrtype_t::NA_IP )
 	{
 		// RFC1918:
 		// 10.0.0.0        -   10.255.255.255  (10/8 prefix)
@@ -968,7 +968,7 @@ bool Sys_IsLANAddress( netadr_t adr )
 			return true;
 		}
 	}
-	else if ( adr.type == NA_IP6 )
+	else if ( adr.type == netadrtype_t::NA_IP6 )
 	{
 		if ( adr.ip6[ 0 ] == 0xfe && ( adr.ip6[ 1 ] & 0xc0 ) == 0x80 )
 		{
@@ -986,7 +986,7 @@ bool Sys_IsLANAddress( netadr_t adr )
 	{
 		if ( localIP[ index ].type == adr.type )
 		{
-			if ( adr.type == NA_IP )
+			if ( adr.type == netadrtype_t::NA_IP )
 			{
 				compareip = ( byte * ) & ( ( struct sockaddr_in * ) &localIP[ index ].addr )->sin_addr.s_addr;
 				comparemask = ( byte * ) & ( ( struct sockaddr_in * ) &localIP[ index ].netmask )->sin_addr.s_addr;
@@ -1040,11 +1040,11 @@ void Sys_ShowIP()
 	{
 		Sys_SockaddrToString( addrbuf, sizeof( addrbuf ), ( struct sockaddr * ) &localIP[ i ].addr );
 
-		if ( localIP[ i ].type == NA_IP )
+		if ( localIP[ i ].type == netadrtype_t::NA_IP )
 		{
 			Com_Printf( "IP: %s\n", addrbuf );
 		}
-		else if ( localIP[ i ].type == NA_IP6 )
+		else if ( localIP[ i ].type == netadrtype_t::NA_IP6 )
 		{
 			Com_Printf( "IP6: %s\n", addrbuf );
 		}
@@ -1582,12 +1582,12 @@ static void NET_AddLocalAddress( const char *ifname, struct sockaddr *addr, stru
 		if ( family == AF_INET && ( net_enabled->integer & NET_ENABLEV4 ) )
 		{
 			addrlen = sizeof( struct sockaddr_in );
-			localIP[ numIP ].type = NA_IP;
+			localIP[ numIP ].type = netadrtype_t::NA_IP;
 		}
 		else if ( family == AF_INET6 && ( net_enabled->integer & NET_ENABLEV6 ) )
 		{
 			addrlen = sizeof( struct sockaddr_in6 );
-			localIP[ numIP ].type = NA_IP6;
+			localIP[ numIP ].type = netadrtype_t::NA_IP6;
 		}
 		else
 		{
@@ -1975,10 +1975,10 @@ const char *NET_GeoIP_Country( const netadr_t *from )
 {
 	switch ( from->type )
 	{
-	case NA_IP:
+	case netadrtype_t::NA_IP:
 		return geoip_data_4 ? GeoIP_country_name_by_ipnum( geoip_data_4, htonl( *(uint32_t *)from->ip ) ) : nullptr;
 
-	case NA_IP6:
+	case netadrtype_t::NA_IP6:
 		return geoip_data_6 ? GeoIP_country_name_by_ipnum_v6( geoip_data_6, *(struct in6_addr *)from->ip6 ) : nullptr;
 
 	default:

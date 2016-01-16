@@ -63,17 +63,17 @@ static fileHandle_t FS_AllocHandle()
 		if (!handleTable[i].isOpen)
 			return i;
 	}
-	Com_Error(ERR_DROP, "FS_AllocHandle: none free");
+	Com_Error(errorParm_t::ERR_DROP, "FS_AllocHandle: none free");
 }
 
 static void FS_CheckHandle(fileHandle_t handle, bool write)
 {
 	if (handle < 0 || handle >= MAX_FILE_HANDLES)
-		Com_Error(ERR_DROP, "FS_CheckHandle: invalid handle");
+		Com_Error(errorParm_t::ERR_DROP, "FS_CheckHandle: invalid handle");
 	if (!handleTable[handle].isOpen)
-		Com_Error(ERR_DROP, "FS_CheckHandle: closed handle");
+		Com_Error(errorParm_t::ERR_DROP, "FS_CheckHandle: closed handle");
 	if (write && handleTable[handle].isPakFile)
-		Com_Error(ERR_DROP, "FS_CheckHandle: writing to file in pak");
+		Com_Error(errorParm_t::ERR_DROP, "FS_CheckHandle: writing to file in pak");
 }
 
 bool FS_FileExists(const char* path)
@@ -182,7 +182,7 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mode)
 {
 	switch (mode) {
-	case FS_READ:
+	case fsMode_t::FS_READ:
 		if (FS::PakPath::FileExists(path))
 			return FS_FOpenFileRead(path, handle, false);
 		else {
@@ -190,19 +190,19 @@ int FS_Game_FOpenFileByMode(const char* path, fileHandle_t* handle, fsMode_t mod
 			return (!handle || *handle) ? size : -1;
 		}
 
-	case FS_WRITE:
-	case FS_WRITE_VIA_TEMPORARY:
-		*handle = FS_FOpenFileWrite_internal(FS::Path::Build("game", path).c_str(), mode == FS_WRITE_VIA_TEMPORARY);
+	case fsMode_t::FS_WRITE:
+	case fsMode_t::FS_WRITE_VIA_TEMPORARY:
+		*handle = FS_FOpenFileWrite_internal(FS::Path::Build("game", path).c_str(), mode == fsMode_t::FS_WRITE_VIA_TEMPORARY);
 		return *handle == 0 ? -1 : 0;
 
-	case FS_APPEND:
-	case FS_APPEND_SYNC:
+	case fsMode_t::FS_APPEND:
+	case fsMode_t::FS_APPEND_SYNC:
 		*handle = FS_FOpenFileAppend(FS::Path::Build("game", path).c_str());
-		handleTable[*handle].forceFlush = mode == FS_APPEND_SYNC;
+		handleTable[*handle].forceFlush = mode == fsMode_t::FS_APPEND_SYNC;
 		return *handle == 0 ? -1 : 0;
 
 	default:
-		Com_Error(ERR_DROP, "FS_Game_FOpenFileByMode: bad mode %d", mode);
+		Com_Error(errorParm_t::ERR_DROP, "FS_Game_FOpenFileByMode: bad mode %s", Util::enum_str(mode));
 	}
 }
 
@@ -261,44 +261,44 @@ int FS_FTell(fileHandle_t handle)
 		return handleTable[handle].file.Tell();
 }
 
-int FS_Seek(fileHandle_t handle, long offset, int origin)
+int FS_Seek(fileHandle_t handle, long offset, fsOrigin_t origin)
 {
 	FS_CheckHandle(handle, false);
 	if (handleTable[handle].isPakFile) {
 		switch (origin) {
-		case FS_SEEK_CUR:
+			case fsOrigin_t::FS_SEEK_CUR:
 			handleTable[handle].filePos += offset;
 			break;
 
-		case FS_SEEK_SET:
+		case fsOrigin_t::FS_SEEK_SET:
 			handleTable[handle].filePos = offset;
 			break;
 
-		case FS_SEEK_END:
+		case fsOrigin_t::FS_SEEK_END:
 			handleTable[handle].filePos = handleTable[handle].fileData.size() + offset;
 			break;
 
 		default:
-			Com_Error(ERR_DROP, "Bad origin in FS_Seek");
+			Com_Error(errorParm_t::ERR_DROP, "Bad origin in FS_Seek");
 		}
 		return 0;
 	} else {
 		try {
 			switch (origin) {
-			case FS_SEEK_CUR:
+			case fsOrigin_t::FS_SEEK_CUR:
 				handleTable[handle].file.SeekCur(offset);
 				break;
 
-			case FS_SEEK_SET:
+			case fsOrigin_t::FS_SEEK_SET:
 				handleTable[handle].file.SeekSet(offset);
 				break;
 
-			case FS_SEEK_END:
+			case fsOrigin_t::FS_SEEK_END:
 				handleTable[handle].file.SeekEnd(offset);
 				break;
 
 			default:
-				Com_Error(ERR_DROP, "Bad origin in FS_Seek");
+				Com_Error(errorParm_t::ERR_DROP, "Bad origin in FS_Seek");
 			}
 			return 0;
 		} catch (std::system_error& err) {
@@ -342,7 +342,7 @@ int FS_Read(void* buffer, int len, fileHandle_t handle)
 	FS_CheckHandle(handle, false);
 	if (handleTable[handle].isPakFile) {
 		if (len < 0)
-			Com_Error(ERR_DROP, "FS_Read: invalid length");
+			Com_Error(errorParm_t::ERR_DROP, "FS_Read: invalid length");
 		if (handleTable[handle].filePos >= handleTable[handle].fileData.size())
 			return 0;
 		len = std::min<size_t>(len, handleTable[handle].fileData.size() - handleTable[handle].filePos);
@@ -603,13 +603,13 @@ void FS_LoadBasePak()
 	Cmd::Args extrapaks(fs_extrapaks.Get());
 	for (const auto& x: extrapaks) {
 		if (!FS_LoadPak(x.c_str()))
-			Com_Error(ERR_FATAL, "Could not load extra pak '%s'\n", x.c_str());
+			Com_Error(errorParm_t::ERR_FATAL, "Could not load extra pak '%s'\n", x.c_str());
 	}
 
 	if (!FS_LoadPak(fs_basepak.Get().c_str())) {
 		Com_Printf("Could not load base pak '%s', falling back to default\n", fs_basepak.Get().c_str());
 		if (!FS_LoadPak(DEFAULT_BASE_PAK))
-			Com_Error(ERR_FATAL, "Could not load default base pak '%s'", DEFAULT_BASE_PAK);
+			Com_Error(errorParm_t::ERR_FATAL, "Could not load default base pak '%s'", DEFAULT_BASE_PAK);
 	}
 }
 
@@ -636,11 +636,11 @@ bool FS_LoadServerPaks(const char* paks, bool isDemo)
 		std::string name, version;
 		Util::optional<uint32_t> checksum;
 		if (!FS::ParsePakName(x.data(), x.data() + x.size(), name, version, checksum)) {
-			Com_Error(ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
+			Com_Error(errorParm_t::ERR_DROP, "Invalid pak reference from server: %s", x.c_str());
 		} else if (!checksum) {
 			if (isDemo || allowRemotePakDir.Get())
 				continue;
-			Com_Error(ERR_DROP, "The server is configured to load game data from a directory which makes it incompatible with remote clients.");
+			Com_Error(errorParm_t::ERR_DROP, "The server is configured to load game data from a directory which makes it incompatible with remote clients.");
 		}
 
 		// Keep track of all missing paks
@@ -661,7 +661,7 @@ bool FS_LoadServerPaks(const char* paks, bool isDemo)
 		Cmd::Args extrapaks(fs_extrapaks.Get());
 		for (auto& x: extrapaks) {
 			if (!FS_LoadPak(x.c_str()))
-				Com_Error(ERR_FATAL, "Could not load extra pak '%s'\n", x.c_str());
+				Com_Error(errorParm_t::ERR_FATAL, "Could not load extra pak '%s'\n", x.c_str());
 		}
 	}
 

@@ -431,7 +431,7 @@ void G_BroadcastEvent( int event, int eventParm, team_t team )
 G_Sound
 =============
 */
-void G_Sound( gentity_t *ent, int, int soundIndex )
+void G_Sound( gentity_t *ent, soundChannel_t, int soundIndex )
 {
 	gentity_t *te;
 
@@ -836,7 +836,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire = nullptr;
 	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
 	{
-		if ( fire->s.eType == ET_FIRE )
+		if ( fire->s.eType == entityType_t::ET_FIRE )
 		{
 			return nullptr;
 		}
@@ -846,7 +846,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 
 	// create a fire entity
 	fire->classname = "fire";
-	fire->s.eType   = ET_FIRE;
+	fire->s.eType   = entityType_t::ET_FIRE;
 	fire->clipmask  = 0;
 
 	fire->entity = new FireEntity(FireEntity::Params{fire});

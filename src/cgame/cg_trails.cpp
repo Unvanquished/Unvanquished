@@ -1167,7 +1167,7 @@ static bool CG_ParseTrailFile( const char *fileName )
 	fileHandle_t f;
 
 	// load the file
-	len = trap_FS_FOpenFile( fileName, &f, FS_READ );
+	len = trap_FS_FOpenFile( fileName, &f, fsMode_t::FS_READ );
 
 	if ( len <= 0 )
 	{

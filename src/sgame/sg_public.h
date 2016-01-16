@@ -306,7 +306,7 @@ int               G_LocationIndex( const char *name );
 void              G_KillBox( gentity_t *ent );
 void              G_KillBrushModel( gentity_t *ent, gentity_t *activator );
 void              G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
-void              G_Sound( gentity_t *ent, int channel, int soundIndex );
+void              G_Sound( gentity_t *ent, soundChannel_t channel, int soundIndex );
 char              *G_CopyString( const char *str );
 char              *vtos( const vec3_t v );
 void              G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );

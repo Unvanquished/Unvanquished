@@ -525,7 +525,7 @@ void trap_SendConsoleCommand(const char *text)
 int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
 {
 	int ret, handle;
-	VM::SendMsg<VM::FSFOpenFileMsg>(qpath, f != nullptr, mode, ret, handle);
+	VM::SendMsg<VM::FSFOpenFileMsg>(qpath, f != nullptr, Util::ordinal(mode), ret, handle);
 	if (f)
 		*f = handle;
 	return ret;
@@ -551,7 +551,7 @@ int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
 int trap_FS_Seek( fileHandle_t f, int offset, fsOrigin_t origin )
 {
     int res;
-	VM::SendMsg<VM::FSSeekMsg>(f, offset, origin, res);
+	VM::SendMsg<VM::FSSeekMsg>(f, offset, Util::ordinal(origin), res);
     return res;
 }
 

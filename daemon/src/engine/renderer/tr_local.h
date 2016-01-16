@@ -182,7 +182,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define MAX_INTERACTIONS   MAX_DRAWSURFS * 8
 #define INTERACTION_MASK   ( MAX_INTERACTIONS - 1 )
 
-	enum renderSpeeds_t
+	enum class renderSpeeds_t
 	{
 	  RSPEEDS_GENERAL = 1,
 	  RSPEEDS_CULLING,
@@ -197,7 +197,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  RSPEEDS_DECALS
 	};
 
-	enum glDebugModes_t
+	enum class glDebugModes_t
 	{
 		GLDEBUG_NONE,
 		GLDEBUG_ERROR,
@@ -520,14 +520,14 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  IF_BC5 = BIT( 23 )
 	};
 
-	enum filterType_t
+	enum class filterType_t
 	{
 	  FT_DEFAULT,
 	  FT_LINEAR,
 	  FT_NEAREST
 	};
 
-	enum wrapTypeEnum_t
+	enum class wrapTypeEnum_t
 	{
 	  WT_REPEAT,
 	  WT_CLAMP, // don't repeat the texture for texture coords outside [0, 1]
@@ -541,7 +541,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	{
 		wrapTypeEnum_t s, t;
 
-		wrapType_t() : s(WT_CLAMP), t(WT_CLAMP) {}
+		wrapType_t() : s(wrapTypeEnum_t::WT_CLAMP), t(wrapTypeEnum_t::WT_CLAMP) {}
 		wrapType_t( wrapTypeEnum_t w ) : s(w), t(w) {}
 		wrapType_t( wrapTypeEnum_t s, wrapTypeEnum_t t ) : s(s), t(t) {}
 
@@ -671,7 +671,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		GLsizei frameOffset; // for vertex animation, real offset computed as ofs + frame * frameOffset
 	};
 
-	enum vboLayout_t
+	enum class vboLayout_t
 	{
 		VBO_LAYOUT_VERTEX_ANIMATION,
 		VBO_LAYOUT_SKELETAL,
@@ -723,7 +723,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 //===============================================================================
 
-	enum shaderSort_t
+	enum class shaderSort_t
 	{
 	  SS_BAD,
 	  SS_PORTAL, // mirrors, portals, viewscreens
@@ -776,7 +776,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		shaderTable_t *next;
 	};
 
-	enum genFunc_t
+	enum class genFunc_t
 	{
 	  GF_NONE,
 
@@ -788,7 +788,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  GF_NOISE
 	};
 
-	enum deform_t
+	enum class deform_t
 	{
 	  DEFORM_NONE,
 	  DEFORM_WAVE,
@@ -798,7 +798,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  DEFORM_ROTGROW
 	};
 
-	enum alphaGen_t
+	enum class alphaGen_t
 	{
 	  AGEN_IDENTITY,
 	  AGEN_ENTITY,
@@ -810,7 +810,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  AGEN_CUSTOM
 	};
 
-	enum colorGen_t
+	enum class colorGen_t
 	{
 	  CGEN_BAD,
 	  CGEN_IDENTITY_LIGHTING, // tr.identityLight
@@ -825,7 +825,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  CGEN_CUSTOM_RGBs, // multiple expressions
 	};
 
-	enum opcode_t
+	enum class opcode_t
 	{
 	  OP_BAD,
 	  // logic operators
@@ -914,7 +914,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 #define TR_MAX_TEXMODS 4
 
-	enum texMod_t
+	enum class texMod_t
 	{
 	  TMOD_NONE,
 	  TMOD_TRANSFORM,
@@ -1004,7 +1004,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		bool     isVideoMap;
 	};
 
-	enum stageType_t
+	enum class stageType_t
 	{
 	  // material shader stage types
 	  ST_COLORMAP, // vanilla Q3A style shader treatening
@@ -1032,7 +1032,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  ST_ATTENUATIONMAP_Z
 	};
 
-	enum collapseType_t
+	enum class collapseType_t
 	{
 	  COLLAPSE_none,
 	  COLLAPSE_genericMulti,
@@ -1115,7 +1115,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct shaderCommands_t;
 
-	enum cullType_t
+	enum cullType_t : int
 	{
 		CT_FRONT_SIDED = 0,
 		CT_TWO_SIDED   = 1,
@@ -1123,9 +1123,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	};
 
 	// reverse the cull operation
-#       define ReverseCull(c) (2 - (c))
+#       define ReverseCull(c) Util::enum_cast<cullType_t>(2 - (c))
 
-	enum fogPass_t
+	enum class fogPass_t
 	{
 	  FP_NONE, // surface is translucent and will just be adjusted properly
 	  FP_EQUAL, // surface is opaque but possibly alpha tested
@@ -1144,7 +1144,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float  depthForOpaque;
 	};
 
-	enum shaderType_t
+	enum class shaderType_t
 	{
 	  SHADER_2D, // surface material: shader is for 2D rendering
 	  SHADER_3D_DYNAMIC, // surface material: shader is for cGen diffuseLighting lighting
@@ -1493,7 +1493,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	*/
 
 // any changes in surfaceType must be mirrored in rb_surfaceTable[]
-	enum surfaceType_t
+	enum class surfaceType_t
 	{
 	  SF_MIN = -1, // partially ensures that sizeof(surfaceType_t) == sizeof(int)
 
@@ -1606,9 +1606,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	enum interactionType_t
 	{
-		IA_LIGHT = 1,		// the received light if not in shadow
-		IA_SHADOW = 2,		// the surface shadows the light
-		IA_SHADOWCLIP = 4,	// the surface clips the shadow
+		IA_LIGHT = 1 << 0,		// the received light if not in shadow
+		IA_SHADOW = 1 << 1,		// the surface shadows the light
+		IA_SHADOWCLIP = 1 << 2,	// the surface clips the shadow
 
 		IA_DEFAULT = IA_LIGHT | IA_SHADOW, // lighting and shadowing
 		IA_DEFAULTCLIP = IA_LIGHT | IA_SHADOWCLIP
@@ -1870,7 +1870,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		IBO_t *ibo;
 	};
 
-	extern void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * );
+	extern void ( *rb_surfaceTable[Util::ordinal(surfaceType_t::SF_NUM_SURFACE_TYPES)] )(void * );
 
 	/*
 	==============================================================================
@@ -2182,7 +2182,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		float		internalScale;
 	};
 
-	enum animType_t
+	enum class animType_t
 	{
 	  AT_BAD,
 	  AT_MD5,
@@ -2322,7 +2322,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 //======================================================================
 
-	enum modtype_t
+	enum class modtype_t
 	{
 	  MOD_BAD,
 	  MOD_BSP,
@@ -2428,7 +2428,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		matrix_t        modelViewProjectionMatrix[ MAX_GLSTACK ];
 
 		bool        finishCalled;
-		int             faceCulling; // FIXME redundant cullFace
+		cullType_t      faceCulling; // FIXME redundant cullFace
 		uint32_t        glStateBits;
 		uint32_t        vertexAttribsState;
 		uint32_t        vertexAttribPointersSet;
@@ -3007,8 +3007,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	cullResult_t   R_CullBox( vec3_t worldBounds[ 2 ] );
 	cullResult_t   R_CullLocalBox( vec3_t bounds[ 2 ] );
-	int            R_CullLocalPointAndRadius( vec3_t origin, float radius );
-	int            R_CullPointAndRadius( vec3_t origin, float radius );
+	cullResult_t   R_CullLocalPointAndRadius( vec3_t origin, float radius );
+	cullResult_t   R_CullPointAndRadius( vec3_t origin, float radius );
 
 	int            R_FogLocalPointAndRadius( const vec3_t pt, float radius );
 	int            R_FogPointAndRadius( const vec3_t pt, float radius );
@@ -3022,8 +3022,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void           R_RotateLightForViewParms( const trRefLight_t *ent, const viewParms_t *viewParms, orientationr_t *orien );
 
 	void           R_SetupFrustum2( frustum_t frustum, const matrix_t modelViewProjectionMatrix );
-	void           R_CalcFrustumNearCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
-	void           R_CalcFrustumFarCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
+	void           R_CalcFrustumNearCorners(const vec4_t frustum[Util::ordinal(frustumBits_t::FRUSTUM_PLANES)], vec3_t corners[ 4 ] );
+	void           R_CalcFrustumFarCorners( const vec4_t frustum[Util::ordinal(frustumBits_t::FRUSTUM_PLANES)], vec3_t corners[ 4 ] );
 	bool       R_CompareVert( srfVert_t *v1, srfVert_t *v2, bool checkst );
 
 	/* Tangent/normal vector calculation functions */
@@ -3118,7 +3118,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void GL_State( uint32_t stateVector );
 	void GL_VertexAttribsState( uint32_t stateBits );
 	void GL_VertexAttribPointers( uint32_t attribBits );
-	void GL_Cull( int cullType );
+	void GL_Cull( cullType_t cullType );
 	void R_ShutdownBackend();
 
 	/*
@@ -3458,10 +3458,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	byte     R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] );
 
-	int      R_CullLightPoint( trRefLight_t *light, const vec3_t p );
+	cullResult_t R_CullLightPoint( trRefLight_t *light, const vec3_t p );
 
-	int      R_CullLightTriangle( trRefLight_t *light, vec3_t verts[ 3 ] );
-	int      R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] );
+	cullResult_t R_CullLightTriangle( trRefLight_t *light, vec3_t verts[ 3 ] );
+	cullResult_t R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] );
 
 	void     R_ComputeFinalAttenuation( shaderStage_t *pStage, trRefLight_t *light );
 
@@ -3684,22 +3684,42 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int  used;
 	};
 
+	enum class renderCommand_t : int
+	{
+		RC_END_OF_LIST,
+		RC_SET_COLORGRADING,
+		RC_SET_COLOR,
+		RC_STRETCH_PIC,
+		RC_2DPOLYS,
+		RC_2DPOLYSINDEXED,
+		RC_SCISSORSET,
+		RC_ROTATED_PIC,
+		RC_STRETCH_PIC_GRADIENT, // (SA) added
+		RC_DRAW_VIEW,
+		RC_DRAW_BUFFER,
+		RC_RUN_VISTESTS,
+		RC_SWAP_BUFFERS,
+		RC_SCREENSHOT,
+		RC_VIDEOFRAME,
+		RC_FINISH //bani
+	};
+
 	struct setColorCommand_t
 	{
-		int   commandId;
+		renderCommand_t commandId;
 		Color::Color color;
 	};
 
 	struct setColorGradingCommand_t
 	{
-		int     commandId;
+		renderCommand_t commandId;
 		image_t *image;
 		int     slot;
 	};
 
 	struct drawBufferCommand_t
 	{
-		int commandId;
+		renderCommand_t commandId;
 		int buffer;
 	};
 
@@ -3714,7 +3734,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct swapBuffersCommand_t
 	{
-		int commandId;
+		renderCommand_t commandId;
 	};
 
 	struct endFrameCommand_t
@@ -3725,7 +3745,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct stretchPicCommand_t
 	{
-		int      commandId;
+		renderCommand_t commandId;
 		shader_t *shader;
 		float    x, y;
 		float    w, h;
@@ -3739,7 +3759,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct poly2dCommand_t
 	{
-		int        commandId;
+		renderCommand_t commandId;
 		polyVert_t *verts;
 		int        numverts;
 		shader_t   *shader;
@@ -3747,7 +3767,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct poly2dIndexedCommand_t
 	{
-		int        commandId;
+		renderCommand_t commandId;
 		polyVert_t *verts;
 		int        numverts;
 		int        *indexes;
@@ -3758,7 +3778,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct scissorSetCommand_t
 	{
-		int       commandId;
+		renderCommand_t commandId;
 		int       x;
 		int       y;
 		int       w;
@@ -3767,19 +3787,19 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct drawViewCommand_t
 	{
-		int         commandId;
+		renderCommand_t commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
 	};
 
 	struct runVisTestsCommand_t
 	{
-		int         commandId;
+		renderCommand_t commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
 	};
 
-	enum ssFormat_t
+	enum class ssFormat_t
 	{
 	  SSF_TGA,
 	  SSF_JPEG,
@@ -3788,7 +3808,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct screenshotCommand_t
 	{
-		int        commandId;
+		renderCommand_t commandId;
 		int        x;
 		int        y;
 		int        width;
@@ -3799,7 +3819,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct videoFrameCommand_t
 	{
-		int      commandId;
+		renderCommand_t commandId;
 		int      width;
 		int      height;
 		byte     *captureBuffer;
@@ -3809,27 +3829,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	struct renderFinishCommand_t
 	{
-		int commandId;
-	};
-
-	enum renderCommand_t
-	{
-	  RC_END_OF_LIST,
-	  RC_SET_COLORGRADING,
-	  RC_SET_COLOR,
-	  RC_STRETCH_PIC,
-	  RC_2DPOLYS,
-	  RC_2DPOLYSINDEXED,
-	  RC_SCISSORSET,
-	  RC_ROTATED_PIC,
-	  RC_STRETCH_PIC_GRADIENT, // (SA) added
-	  RC_DRAW_VIEW,
-	  RC_DRAW_BUFFER,
-	  RC_RUN_VISTESTS,
-	  RC_SWAP_BUFFERS,
-	  RC_SCREENSHOT,
-	  RC_VIDEOFRAME,
-	  RC_FINISH //bani
+		renderCommand_t commandId;
 	};
 
 // ydnar: max decal projectors per frame, each can generate lots of polys

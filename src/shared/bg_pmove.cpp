@@ -1702,8 +1702,8 @@ static bool PM_CheckDodge( void )
 	// Reasons why we can't start a dodge only
 	if ( pm->ps->pm_flags & ( PMF_CHARGE ) ||
 	        pm->ps->groundEntityNum == ENTITYNUM_NONE ||
-	        ( pm->cmd.doubleTap != DT_MOVELEFT &&
-	          pm->cmd.doubleTap != DT_MOVERIGHT ) )
+	        ( pm->cmd.doubleTap != dtType_t::DT_MOVELEFT &&
+	          pm->cmd.doubleTap != dtType_t::DT_MOVERIGHT ) )
 	{
 		return false;
 	}
@@ -1743,7 +1743,7 @@ static bool PM_CheckDodge( void )
 	}
 
 	// The dodge sets minimum velocity
-	if ( pm->cmd.doubleTap == DT_MOVELEFT )
+	if ( pm->cmd.doubleTap == dtType_t::DT_MOVELEFT )
 	{
 		VectorNegate( right, right );
 	}

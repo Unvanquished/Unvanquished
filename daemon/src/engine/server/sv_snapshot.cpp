@@ -159,7 +159,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK ];
 
 	// try to use a previous frame as the source for delta compressing the snapshot
-	if ( client->deltaMessage <= 0 || client->state != CS_ACTIVE )
+	if ( client->deltaMessage <= 0 || client->state != clientState_t::CS_ACTIVE )
 	{
 		// client is asking for a retransmit
 		oldframe = nullptr;
@@ -207,7 +207,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 		snapFlags |= SNAPFLAG_RATE_DELAYED;
 	}
 
-	if ( client->state != CS_ACTIVE )
+	if ( client->state != clientState_t::CS_ACTIVE )
 	{
 		snapFlags |= SNAPFLAG_NOT_ACTIVE;
 	}
@@ -296,7 +296,7 @@ static int QDECL SV_QsortEntityNumbers( const void *a, const void *b )
 
 	if ( *ea == *eb )
 	{
-		Com_Error( ERR_DROP, "SV_QsortEntityStates: duplicated entity" );
+		Com_Error( errorParm_t::ERR_DROP, "SV_QsortEntityStates: duplicated entity" );
 	}
 
 	if ( *ea < *eb )
@@ -364,7 +364,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 	// during an error shutdown message we may need to transmit
 	// the shutdown message after the server has shutdown, so
 	// specfically check for it
-	if ( !sv.state )
+	if (sv.state == serverState_t::SS_DEAD)
 	{
 		return;
 	}
@@ -684,7 +684,7 @@ static void SV_BuildClientSnapshot( client_t *client )
 
 	clent = client->gentity;
 
-	if ( !clent || client->state == CS_ZOMBIE )
+	if ( !clent || client->state == clientState_t::CS_ZOMBIE )
 	{
 		return;
 	}
@@ -699,7 +699,7 @@ static void SV_BuildClientSnapshot( client_t *client )
 
 	if ( clientNum < 0 || clientNum >= MAX_GENTITIES )
 	{
-		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
+		Com_Error( errorParm_t::ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
 	}
 
 	svEnt = &sv.svEntities[ clientNum ];
@@ -750,7 +750,7 @@ static void SV_BuildClientSnapshot( client_t *client )
 		// this should never hit, map should always be restarted first in SV_Frame
 		if ( svs.nextSnapshotEntities >= 0x7FFFFFFE )
 		{
-			Com_Error( ERR_FATAL, "svs.nextSnapshotEntities wrapped" );
+			Com_Error( errorParm_t::ERR_FATAL, "svs.nextSnapshotEntities wrapped" );
 		}
 
 		frame->num_entities++;
@@ -834,7 +834,7 @@ void SV_SendMessageToClient( msg_t *msg, client_t *client )
 	// local clients get snapshots every frame
 	// TTimo - show_bug.cgi?id=491
 	// added sv_lanForceRate check
-	if ( client->netchan.remoteAddress.type == NA_LOOPBACK ||
+	if ( client->netchan.remoteAddress.type == netadrtype_t::NA_LOOPBACK ||
 	     ( sv_lanForceRate->integer && Sys_IsLANAddress( client->netchan.remoteAddress ) ) )
 	{
 		client->nextSnapshotTime = svs.time - 1;
@@ -860,7 +860,7 @@ void SV_SendMessageToClient( msg_t *msg, client_t *client )
 	client->nextSnapshotTime = svs.time + rateMsec;
 
 	// don't pile up empty snapshots while connecting
-	if ( client->state != CS_ACTIVE )
+	if ( client->state != clientState_t::CS_ACTIVE )
 	{
 		// a gigantic connection message may have already put the nextSnapshotTime
 		// more than a second away, so don't shorten it
@@ -935,11 +935,11 @@ void SV_SendClientSnapshot( client_t *client )
 	msg_t msg;
 
 	//bani
-	if ( client->state < CS_ACTIVE )
+	if ( client->state < clientState_t::CS_ACTIVE )
 	{
 		// bani - #760 - zombie clients need full snaps so they can still process reliable commands
 		// (eg so they can pick up the disconnect reason)
-		if ( client->state != CS_ZOMBIE )
+		if ( client->state != clientState_t::CS_ZOMBIE )
 		{
 			SV_SendClientIdle( client );
 			return;
@@ -976,7 +976,7 @@ void SV_SendClientSnapshot( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Logf(LOG_WARN, "msg overflowed for %s", client->name );
+		Com_Logf(log_level_t::LOG_WARN, "msg overflowed for %s", client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );
@@ -1014,7 +1014,7 @@ void SV_SendClientMessages()
 
 		// rain - changed <= CS_ZOMBIE to < CS_ZOMBIE so that the
 		// disconnect reason is properly sent in the network stream
-		if ( c->state < CS_ZOMBIE )
+		if ( c->state < clientState_t::CS_ZOMBIE )
 		{
 			continue; // not connected
 		}

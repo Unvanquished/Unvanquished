@@ -319,14 +319,14 @@ int CM_FindPlane( const float *p1, const float *p2, const float *p3 )
 CM_PointOnPlaneSide
 ==================
 */
-int CM_PointOnPlaneSide( float *p, int planeNum )
+planeSide_t CM_PointOnPlaneSide( float *p, int planeNum )
 {
 	float *plane;
 	float d;
 
 	if ( planeNum == -1 )
 	{
-		return SIDE_ON;
+		return planeSide_t::SIDE_ON;
 	}
 
 	plane = planes[ planeNum ].plane;
@@ -335,15 +335,15 @@ int CM_PointOnPlaneSide( float *p, int planeNum )
 
 	if ( d > PLANE_TRI_EPSILON )
 	{
-		return SIDE_FRONT;
+		return planeSide_t::SIDE_FRONT;
 	}
 
 	if ( d < -PLANE_TRI_EPSILON )
 	{
-		return SIDE_BACK;
+		return planeSide_t::SIDE_BACK;
 	}
 
-	return SIDE_ON;
+	return planeSide_t::SIDE_ON;
 }
 
 /*

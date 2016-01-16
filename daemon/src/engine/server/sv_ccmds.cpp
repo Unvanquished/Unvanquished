@@ -162,7 +162,7 @@ static void SV_MapRestart_f()
 	// reset all the VM data in place without changing memory allocation
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
-	sv.state = SS_LOADING;
+	sv.state = serverState_t::SS_LOADING;
 	sv.restarting = true;
 
 	SV_RestartGameProgs();
@@ -179,7 +179,7 @@ static void SV_MapRestart_f()
 	// Gordon: meh, this won't work here as the client doesn't know it has happened
 //  SV_CreateBaseline ();
 
-	sv.state = SS_GAME;
+	sv.state = serverState_t::SS_GAME;
 	sv.restarting = false;
 
 	// connect and begin all the clients
@@ -188,7 +188,7 @@ static void SV_MapRestart_f()
 		client = &svs.clients[ i ];
 
 		// send the new gamestate to all connected clients
-		if ( client->state < CS_CONNECTED )
+		if ( client->state < clientState_t::CS_CONNECTED )
 		{
 			continue;
 		}
@@ -215,7 +215,7 @@ static void SV_MapRestart_f()
 			continue;
 		}
 
-		client->state = CS_ACTIVE;
+		client->state = clientState_t::CS_ACTIVE;
 
 		SV_ClientEnterWorld( client, &client->lastUsercmd );
 	}
@@ -265,7 +265,7 @@ static void SV_Status_f()
 
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
-		if ( !cl->state )
+		if ( cl->state == clientState_t::CS_FREE )
 		{
 			continue;
 		}
@@ -274,11 +274,11 @@ static void SV_Status_f()
 		ps = SV_GameClientNum( i );
 		Com_Printf( "%5i ", ps->persistant[ PERS_SCORE ] );
 
-		if ( cl->state == CS_CONNECTED )
+		if ( cl->state == clientState_t::CS_CONNECTED )
 		{
 			Com_Printf( "CNCT " );
 		}
-		else if ( cl->state == CS_ZOMBIE )
+		else if ( cl->state == clientState_t::CS_ZOMBIE )
 		{
 			Com_Printf( "ZMBI " );
 		}

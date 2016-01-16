@@ -47,12 +47,12 @@ static bool R_CullSurface( surfaceType_t *surface, shader_t *shader, int planeBi
 	}
 
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
-	if ( *surface == SF_GRID && r_nocurves->integer )
+	if ( *surface == surfaceType_t::SF_GRID && r_nocurves->integer )
 	{
 		return true;
 	}
 
-	if ( *surface != SF_FACE && *surface != SF_TRIANGLES && *surface != SF_VBO_MESH && *surface != SF_GRID )
+	if ( *surface != surfaceType_t::SF_FACE && *surface != surfaceType_t::SF_TRIANGLES && *surface != surfaceType_t::SF_VBO_MESH && *surface != surfaceType_t::SF_GRID )
 	{
 		return true;
 	}
@@ -61,7 +61,7 @@ static bool R_CullSurface( surfaceType_t *surface, shader_t *shader, int planeBi
 	gen = ( srfGeneric_t * ) surface;
 
 	// plane cull
-	if ( *surface == SF_FACE && r_facePlaneCull->integer )
+	if ( *surface == surfaceType_t::SF_FACE && r_facePlaneCull->integer )
 	{
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )gen;
 		d = DotProduct( tr.orientation.viewOrigin, srf->plane.normal ) - srf->plane.dist;
@@ -133,12 +133,12 @@ static bool R_CullLightSurface( surfaceType_t *surface, shader_t *shader, trRefL
 	}
 
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
-	if ( *surface == SF_GRID && r_nocurves->integer )
+	if ( *surface == surfaceType_t::SF_GRID && r_nocurves->integer )
 	{
 		return true;
 	}
 
-	if ( *surface != SF_FACE && *surface != SF_TRIANGLES && *surface != SF_VBO_MESH && *surface != SF_GRID )
+	if ( *surface != surfaceType_t::SF_FACE && *surface != surfaceType_t::SF_TRIANGLES && *surface != surfaceType_t::SF_VBO_MESH && *surface != surfaceType_t::SF_GRID )
 	{
 		return true;
 	}
@@ -161,10 +161,10 @@ static bool R_CullLightSurface( surfaceType_t *surface, shader_t *shader, trRefL
 	}
 
 	// plane cull
-	if ( *surface == SF_FACE && r_facePlaneCull->integer )
+	if ( *surface == surfaceType_t::SF_FACE && r_facePlaneCull->integer )
 	{
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )gen;
-		if ( light->l.rlType == RL_DIRECTIONAL )
+		if ( light->l.rlType == refLightType_t::RL_DIRECTIONAL )
 		{
 			d = DotProduct( tr.sunDirection, srf->plane.normal );
 		}
@@ -642,7 +642,7 @@ static bspNode_t *R_PointInLeaf( const vec3_t p )
 
 	if ( !tr.world )
 	{
-		ri.Error( ERR_DROP, "R_PointInLeaf: bad model" );
+		ri.Error(errorParm_t::ERR_DROP, "R_PointInLeaf: bad model" );
 	}
 
 	node = tr.world->nodes;
@@ -786,7 +786,7 @@ static void R_MarkLeaves()
 				{
 					if ( tr.visClusters[ i ] != tr.visClusters[ tr.visIndex ] && r_showcluster->integer )
 					{
-						ri.Printf( PRINT_ALL, "found cluster:%i  area:%i  index:%i\n", cluster, leaf->area, i );
+						ri.Printf(printParm_t::PRINT_ALL, "found cluster:%i  area:%i  index:%i\n", cluster, leaf->area, i );
 					}
 
 					tr.visIndex = i;
@@ -806,7 +806,7 @@ static void R_MarkLeaves()
 
 		if ( r_showcluster->integer )
 		{
-			ri.Printf( PRINT_ALL, "update cluster:%i  area:%i  index:%i\n", cluster, leaf->area, tr.visIndex );
+			ri.Printf(printParm_t::PRINT_ALL, "update cluster:%i  area:%i  index:%i\n", cluster, leaf->area, tr.visIndex );
 		}
 	}
 
@@ -958,7 +958,7 @@ void R_AddWorldInteractions( trRefLight_t *light )
 		interactionBits = IA_DEFAULTCLIP;
 	}
 
-	if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
+	if ( r_shadows->integer <= Util::ordinal(shadowingMode_t::SHADOWING_BLOB) || light->l.noShadows )
 	{
 		interactionBits = interactionBits & IA_LIGHT;
 	}
@@ -1014,12 +1014,12 @@ void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 
 			switch ( light->l.rlType )
 			{
-				case RL_OMNI:
+				case refLightType_t::RL_OMNI:
 					R_AddLightInteraction( light, ( surfaceType_t * ) srf, shader, CUBESIDE_CLIPALL, IA_LIGHT );
 					break;
 
-				case RL_DIRECTIONAL:
-				case RL_PROJ:
+				case refLightType_t::RL_DIRECTIONAL:
+				case refLightType_t::RL_PROJ:
 					R_AddLightInteraction( light, ( surfaceType_t * ) srf, shader, CUBESIDE_CLIPALL, IA_LIGHT );
 					break;
 
@@ -1062,7 +1062,7 @@ void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 			// into this view
 			if ( surface->viewCount != tr.viewCountNoReset )
 			{
-				if ( r_shadows->integer < SHADOWING_ESM16 || light->l.noShadows )
+				if ( r_shadows->integer < Util::ordinal(shadowingMode_t::SHADOWING_ESM16) || light->l.noShadows )
 				{
 					continue;
 				}
@@ -1097,7 +1097,7 @@ void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 			// into this view
 			if ( surface->viewCount != tr.viewCountNoReset )
 			{
-				if ( r_shadows->integer < SHADOWING_ESM16 || light->l.noShadows )
+				if ( r_shadows->integer < Util::ordinal(shadowingMode_t::SHADOWING_ESM16) || light->l.noShadows )
 				{
 					continue;
 				}

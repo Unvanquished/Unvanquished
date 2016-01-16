@@ -119,7 +119,7 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 	for ( const auto& token : Color::Parser( msg, Color::Color() ) )
 	{
 
-		if ( token.Type() == Color::Token::COLOR )
+		if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			if ( !buffer.empty() )
 			{
@@ -141,7 +141,7 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 				buffer.append( token.Begin(), token.Size() );
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			if ( !stripcodes )
 			{
@@ -152,7 +152,7 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, bool stripcodes )
 				buffer += Color::Constants::ESCAPE;
 			}
 		}
-		else if ( token.Type() == Color::Token::CHARACTER )
+		else if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			if ( *token.Begin() == '\n' )
 			{

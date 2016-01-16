@@ -71,6 +71,25 @@ Iter binary_find(Iter begin, Iter end, const T& value, Compare comp)
 		return end;
 }
 
+/**
+ * Enum to integral
+ */
+template<class E, class R = typename std::underlying_type<E>::type>
+CONSTEXPR R ordinal(E e) { return static_cast<R>(e); }
+
+/**
+ * Integral to enum
+ * Prefer ordinal, as that's guaranteed to be valid
+ */
+template<class E, class I = typename std::underlying_type<E>::type>
+CONSTEXPR E enum_cast(I i) { return static_cast<E>(i); }
+
+/**
+ * Enum to string
+ */
+template<class E>
+const char *enum_str(E e) { return va("%d", ordinal(e)); }
+
 // Compile-time integer sequences
 template<size_t...> struct seq {
 	using type = seq;

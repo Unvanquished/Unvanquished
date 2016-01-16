@@ -110,7 +110,7 @@ struct poly_t
 	polyVert_t *verts;
 };
 
-enum refEntityType_t
+enum class refEntityType_t
 {
   RT_MODEL,
   RT_SPRITE,
@@ -137,7 +137,7 @@ struct refBone_t
 	transform_t t;
 };
 
-enum refSkeletonType_t
+enum class refSkeletonType_t
 {
   SK_INVALID,
   SK_RELATIVE,
@@ -215,7 +215,7 @@ struct refEntity_t
 
 // XreaL BEGIN
 
-enum refLightType_t
+enum class refLightType_t
 {
   RL_OMNI, // point light
   RL_PROJ, // spot light
@@ -282,7 +282,7 @@ struct refdef_t
 // XreaL BEGIN
 
 // cg_shadows modes
-enum shadowingMode_t
+enum class shadowingMode_t
 {
   SHADOWING_NONE,
   SHADOWING_BLOB,
@@ -294,14 +294,7 @@ enum shadowingMode_t
 };
 // XreaL END
 
-/*
-** glconfig_t
-**
-** Contains variables specific to the OpenGL configuration
-** being run right now.  These are constant once the OpenGL
-** subsystem is initialized.
-*/
-enum textureCompression_t
+enum class textureCompression_t
 {
   TC_NONE,
   TC_S3TC,
@@ -309,7 +302,7 @@ enum textureCompression_t
 };
 
 // Keep the list in sdl_glimp.c:reportDriverType in sync with this
-enum glDriverType_t
+enum class glDriverType_t
 {
   GLDRV_UNKNOWN = -1,
   GLDRV_ICD, // driver is integrated with window system
@@ -326,7 +319,7 @@ enum glDriverType_t
 };
 
 // Keep the list in sdl_glimp.c:reportHardwareType in sync with this
-enum glHardwareType_t
+enum class glHardwareType_t
 {
   GLHW_UNKNOWN = -1,
   GLHW_GENERIC, // where everthing works the way it should
@@ -338,6 +331,11 @@ enum glHardwareType_t
 // XreaL END
 };
 
+/**
+ * Contains variables specific to the OpenGL configuration
+ * being run right now.  These are constant once the OpenGL
+ * subsystem is initialized.
+ */
 struct glconfig_t
 {
 	char                 renderer_string[ MAX_STRING_CHARS ];

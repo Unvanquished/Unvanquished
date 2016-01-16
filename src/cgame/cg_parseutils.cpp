@@ -367,7 +367,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 					break;
 
 				default:
-					Com_Error( ERR_FATAL, "Unknown operator '%c' in postfix string", op );
+					Com_Error( errorParm_t::ERR_FATAL, "Unknown operator '%c' in postfix string", op );
 			}
 
 			PUSH_VAL( stack, result );

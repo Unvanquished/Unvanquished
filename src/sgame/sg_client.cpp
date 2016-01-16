@@ -426,7 +426,7 @@ static void SpawnCorpse( gentity_t *ent )
 
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;
-	body->s.eType = ET_CORPSE;
+	body->s.eType = entityType_t::ET_CORPSE;
 	body->timestamp = level.time;
 	body->s.event = 0;
 	body->r.contents = CONTENTS_CORPSE;
@@ -500,7 +500,7 @@ static void SpawnCorpse( gentity_t *ent )
 	origin[2] += mins[ 2 ] - body->r.mins[ 2 ];
 
 	G_SetOrigin( body, origin );
-	body->s.pos.trType = TR_GRAVITY;
+	body->s.pos.trType = trType_t::TR_GRAVITY;
 	body->s.pos.trTime = level.time;
 	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
 
@@ -733,7 +733,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			break;
 		}
 
-		if ( token.Type() == Color::Token::CHARACTER )
+		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			int cp = Q_UTF8_CodePoint(token.Begin());
 
@@ -796,7 +796,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 				has_visible_characters = true;
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			has_visible_characters = true;
 		}
@@ -1676,7 +1676,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 		spawnPoint = spawn;
 
-		if ( spawnPoint->s.eType == ET_BUILDABLE )
+		if ( spawnPoint->s.eType == entityType_t::ET_BUILDABLE )
 		{
 			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, true );
 

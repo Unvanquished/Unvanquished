@@ -280,7 +280,7 @@ bool trap_GetNews( bool force )
 
 // All Sounds
 
-void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
+void trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t, sfxHandle_t sfx )
 {
     Vec3 myorigin = Vec3(0.0f, 0.0f, 0.0f);
 	if (origin) {
@@ -289,7 +289,7 @@ void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
 	cmdBuffer.SendMsg<Audio::StartSoundMsg>(!!origin, myorigin, entityNum, sfx);
 }
 
-void trap_S_StartLocalSound( sfxHandle_t sfx, int )
+void trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t )
 {
 	cmdBuffer.SendMsg<Audio::StartLocalSoundMsg>(sfx);
 }

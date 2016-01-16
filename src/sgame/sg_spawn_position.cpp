@@ -77,7 +77,7 @@ pos_location
 void SP_pos_location( gentity_t *self )
 {
 	char       *message;
-	self->s.eType = ET_LOCATION;
+	self->s.eType = entityType_t::ET_LOCATION;
 	self->r.svFlags = SVF_BROADCAST;
 	trap_LinkEntity( self );  // make the server send them to the clients
 

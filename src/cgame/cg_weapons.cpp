@@ -86,7 +86,7 @@ static void CG_LoadCustomCrosshairs()
 	fileHandle_t f;
 	weapon_t     weapon;
 
-	len = trap_FS_FOpenFile( cg_crosshairFile.string, &f, FS_READ );
+	len = trap_FS_FOpenFile( cg_crosshairFile.string, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -238,7 +238,7 @@ static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi 
 	animations = wi->animations;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -647,7 +647,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 	int          i;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -2421,7 +2421,7 @@ static void PlayHitSound( vec3_t origin, const sfxHandle_t *impactSound )
 
 		if ( impactSound[ c ] )
 		{
-			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, impactSound[ c ] );
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, impactSound[ c ] );
 		}
 	}
 }
@@ -2458,7 +2458,7 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 
 	target = &cg_entities[ targetNum ];
 
-	if ( cg_blood.integer && target->currentState.eType == ET_PLAYER )
+	if ( cg_blood.integer && target->currentState.eType == entityType_t::ET_PLAYER )
 	{
 		team = cgs.clientinfo[ targetNum ].team;
 
@@ -2475,7 +2475,7 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 			return;
 		}
 	}
-	else if ( target->currentState.eType == ET_BUILDABLE )
+	else if ( target->currentState.eType == entityType_t::ET_BUILDABLE )
 	{
 		team = BG_Buildable( target->currentState.modelindex )->team;
 
@@ -2628,8 +2628,8 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 			dummy.otherEntityNum2 = attackerNum;
 			dummy.torsoAnim       = 0; // Make sure it is not used uninitialized
 
-			if ( cg_entities[ tr.entityNum ].currentState.eType == ET_PLAYER ||
-			     cg_entities[ tr.entityNum ].currentState.eType == ET_BUILDABLE )
+			if ( cg_entities[ tr.entityNum ].currentState.eType == entityType_t::ET_PLAYER ||
+			     cg_entities[ tr.entityNum ].currentState.eType == entityType_t::ET_BUILDABLE )
 			{
 				CG_HandleWeaponHitEntity( &dummy, tr.endpos );
 			}
@@ -2697,7 +2697,7 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 
 		if ( wi->wim[ weaponMode ].flashSound[ c ] )
 		{
-			trap_S_StartSound( nullptr, es->number, CHAN_WEAPON, wi->wim[ weaponMode ].flashSound[ c ] );
+			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_WEAPON, wi->wim[ weaponMode ].flashSound[ c ] );
 		}
 	}
 }
@@ -2749,11 +2749,11 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 	DrawEntityHitEffect( origin, normal, victimNum );
 
 	// sound
-	if ( victim->currentState.eType == ET_PLAYER )
+	if ( victim->currentState.eType == entityType_t::ET_PLAYER )
 	{
 		PlayHitSound( origin, wim->impactFleshSound );
 	}
-	else if ( victim->currentState.eType == ET_BUILDABLE &&
+	else if ( victim->currentState.eType == entityType_t::ET_BUILDABLE &&
 			  BG_Buildable( victim->currentState.modelindex )->team == TEAM_ALIENS )
 	{
 		PlayHitSound( origin, wim->impactFleshSound );
@@ -2840,11 +2840,11 @@ void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin )
 	DrawEntityHitEffect( origin, normal, victimNum );
 
 	// sound
-	if ( victim->currentState.eType == ET_PLAYER )
+	if ( victim->currentState.eType == entityType_t::ET_PLAYER )
 	{
 		PlayHitSound( origin, ma->impactFleshSound );
 	}
-	else if ( victim->currentState.eType == ET_BUILDABLE &&
+	else if ( victim->currentState.eType == entityType_t::ET_BUILDABLE &&
 			  BG_Buildable( victim->currentState.modelindex )->team == TEAM_ALIENS )
 	{
 		PlayHitSound( origin, ma->impactFleshSound );

@@ -41,7 +41,7 @@ namespace Log {
      *   - DEBUG when we want to give deep info useful only to developers.
      */
 
-    enum Level {
+    enum class Level {
         LOG_DEBUG,
         LOG_VERBOSE,
         LOG_NOTICE,
@@ -49,7 +49,7 @@ namespace Log {
     };
 
     // The default filtering level
-    const Level DEFAULT_FILTER_LEVEL = LOG_WARNING;
+    const Level DEFAULT_FILTER_LEVEL = Level::LOG_WARNING;
 
     /*
      * Loggers are used to group logs by subsystems and allow logs
@@ -179,56 +179,56 @@ namespace Log {
 
     template<typename ... Args>
     void Logger::Warn(Str::StringRef format, Args&& ... args) {
-        if (filterLevel.Get() <= LOG_WARNING) {
+        if (filterLevel.Get() <= Level::LOG_WARNING) {
             CodeSourceWarn(Prefix(Str::Format(format, std::forward<Args>(args) ...)));
         }
     }
 
     template<typename ... Args>
     void Logger::Notice(Str::StringRef format, Args&& ... args) {
-        if (filterLevel.Get() <= LOG_NOTICE) {
+        if (filterLevel.Get() <= Level::LOG_NOTICE) {
             CodeSourceNotice(Prefix(Str::Format(format, std::forward<Args>(args) ...)));
         }
     }
 
     template<typename ... Args>
     void Logger::Verbose(Str::StringRef format, Args&& ... args) {
-        if (filterLevel.Get() <= LOG_VERBOSE) {
+        if (filterLevel.Get() <= Level::LOG_VERBOSE) {
             CodeSourceVerbose(Prefix(Str::Format(format, std::forward<Args>(args) ...)));
         }
     }
 
     template<typename ... Args>
     void Logger::Debug(Str::StringRef format, Args&& ... args) {
-        if (filterLevel.Get() <= LOG_DEBUG) {
+        if (filterLevel.Get() <= Level::LOG_DEBUG) {
             CodeSourceDebug(Prefix(Str::Format(format, std::forward<Args>(args) ...)));
         }
     }
 
     template<typename F>
     inline void Logger::DoWarnCode(F&& code) {
-        if (filterLevel.Get() <= LOG_WARNING) {
+        if (filterLevel.Get() <= Level::LOG_WARNING) {
             code();
         }
     }
 
     template<typename F>
     inline void Logger::DoNoticeCode(F&& code) {
-        if (filterLevel.Get() <= LOG_NOTICE) {
+        if (filterLevel.Get() <= Level::LOG_NOTICE) {
             code();
         }
     }
 
     template<typename F>
     inline void Logger::DoVerboseCode(F&& code) {
-        if (filterLevel.Get() <= LOG_VERBOSE) {
+        if (filterLevel.Get() <= Level::LOG_VERBOSE) {
             code();
         }
     }
 
     template<typename F>
     inline void Logger::DoDebugCode(F&& code) {
-        if (filterLevel.Get() <= LOG_DEBUG) {
+        if (filterLevel.Get() <= Level::LOG_DEBUG) {
             code();
         }
     }

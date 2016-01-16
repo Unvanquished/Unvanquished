@@ -140,7 +140,7 @@ bool GLimp_SpawnRenderThread( void ( *function )() )
 
 	if ( renderThread == nullptr )
 	{
-		ri.Printf( PRINT_ALL, "SDL_CreateThread() returned %s\n", SDL_GetError() );
+		ri.Printf(printParm_t::PRINT_ALL, "SDL_CreateThread() returned %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
 		return false;
 	}
@@ -279,7 +279,7 @@ void GLimp_RenderThreadWrapper( void* )
 
 bool GLimp_SpawnRenderThread( void ( * )() )
 {
-	ri.Printf( PRINT_WARNING, "ERROR: SMP support was disabled at compile time\n" );
+	ri.Printf(printParm_t::PRINT_WARNING, "ERROR: SMP support was disabled at compile time\n" );
 	return false;
 }
 
@@ -306,7 +306,7 @@ void GLimp_WakeRenderer( void* )
 
 #endif
 
-enum rserr_t
+enum class rserr_t
 {
   RSERR_OK,
 
@@ -329,7 +329,7 @@ GLimp_Shutdown
 */
 void GLimp_Shutdown()
 {
-	ri.Printf( PRINT_DEVELOPER, "Shutting down OpenGL subsystem\n" );
+	ri.Printf(printParm_t::PRINT_DEVELOPER, "Shutting down OpenGL subsystem\n" );
 
 	ri.IN_Shutdown();
 
@@ -416,7 +416,7 @@ static void GLimp_DetectAvailableModes()
 
 	if ( SDL_GetWindowDisplayMode( window, &windowMode ) < 0 )
 	{
-		ri.Printf( PRINT_WARNING, "Couldn't get window display mode: %s\n", SDL_GetError() );
+		ri.Printf(printParm_t::PRINT_WARNING, "Couldn't get window display mode: %s\n", SDL_GetError() );
 		return;
 	}
 
@@ -431,7 +431,7 @@ static void GLimp_DetectAvailableModes()
 
 		if ( !mode.w || !mode.h )
 		{
-			ri.Printf( PRINT_ALL, "Display supports any resolution\n" );
+			ri.Printf(printParm_t::PRINT_ALL, "Display supports any resolution\n" );
 			return;
 		}
 
@@ -460,13 +460,13 @@ static void GLimp_DetectAvailableModes()
 		}
 		else
 		{
-			ri.Printf( PRINT_WARNING, "Skipping mode %ux%x, buffer too small\n", modes[ i ].w, modes[ i ].h );
+			ri.Printf(printParm_t::PRINT_WARNING, "Skipping mode %ux%x, buffer too small\n", modes[ i ].w, modes[ i ].h );
 		}
 	}
 
 	if ( *buf )
 	{
-		ri.Printf( PRINT_ALL, "Available modes: '%s'\n", buf );
+		ri.Printf(printParm_t::PRINT_ALL, "Available modes: '%s'\n", buf );
 		ri.Cvar_Set( "r_availableModes", buf );
 	}
 }
@@ -476,7 +476,7 @@ static void GLimp_DetectAvailableModes()
 GLimp_SetMode
 ===============
 */
-static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
+static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 {
 	const char  *glstring;
 	int         perChannelColorBits;
@@ -489,7 +489,7 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	int         x, y;
 	GLenum      glewResult;
 
-	ri.Printf( PRINT_ALL, "Initializing OpenGL display\n" );
+	ri.Printf(printParm_t::PRINT_ALL, "Initializing OpenGL display\n" );
 
 	if ( r_allowResize->integer )
 	{
@@ -524,16 +524,16 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	{
 		displayAspect = ( float ) desktopMode.w / ( float ) desktopMode.h;
 
-		ri.Printf( PRINT_ALL, "Display aspect: %.3f\n", displayAspect );
+		ri.Printf(printParm_t::PRINT_ALL, "Display aspect: %.3f\n", displayAspect );
 	}
 	else
 	{
 		Com_Memset( &desktopMode, 0, sizeof( SDL_DisplayMode ) );
 
-		ri.Printf( PRINT_ALL, "Cannot determine display aspect (%s), assuming 1.333\n", SDL_GetError() );
+		ri.Printf(printParm_t::PRINT_ALL, "Cannot determine display aspect (%s), assuming 1.333\n", SDL_GetError() );
 	}
 
-	ri.Printf( PRINT_ALL, "...setting mode %d:", mode );
+	ri.Printf(printParm_t::PRINT_ALL, "...setting mode %d:", mode );
 
 	if ( mode == -2 )
 	{
@@ -547,18 +547,18 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 		{
 			glConfig.vidWidth = 640;
 			glConfig.vidHeight = 480;
-			ri.Printf( PRINT_ALL, "Cannot determine display resolution, assuming 640x480\n" );
+			ri.Printf(printParm_t::PRINT_ALL, "Cannot determine display resolution, assuming 640x480\n" );
 		}
 
 		glConfig.windowAspect = ( float ) glConfig.vidWidth / ( float ) glConfig.vidHeight;
 	}
 	else if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )
 	{
-		ri.Printf( PRINT_ALL, " invalid mode\n" );
-		return RSERR_INVALID_MODE;
+		ri.Printf(printParm_t::PRINT_ALL, " invalid mode\n" );
+		return rserr_t::RSERR_INVALID_MODE;
 	}
 
-	ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight );
+	ri.Printf(printParm_t::PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight );
 	Cvar_Set( "r_customwidth", va("%d", glConfig.vidWidth ) );
 	Cvar_Set( "r_customheight", va("%d", glConfig.vidHeight ) );
 
@@ -573,7 +573,7 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 		if ( window != nullptr )
 		{
 			SDL_GetWindowPosition( window, &x, &y );
-			ri.Printf( PRINT_DEVELOPER, "Existing window at %dx%d before being destroyed\n", x, y );
+			ri.Printf(printParm_t::PRINT_DEVELOPER, "Existing window at %dx%d before being destroyed\n", x, y );
 			SDL_DestroyWindow( window );
 			window = nullptr;
 		}
@@ -755,7 +755,7 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 
 			if ( !window )
 			{
-				ri.Printf( PRINT_DEVELOPER, "SDL_CreateWindow failed: %s\n", SDL_GetError() );
+				ri.Printf(printParm_t::PRINT_DEVELOPER, "SDL_CreateWindow failed: %s\n", SDL_GetError() );
 				continue;
 			}
 
@@ -765,7 +765,7 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 
 			if ( !glContext )
 			{
-				ri.Printf( PRINT_DEVELOPER, "SDL_GL_CreateContext failed: %s\n", SDL_GetError() );
+				ri.Printf(printParm_t::PRINT_DEVELOPER, "SDL_GL_CreateContext failed: %s\n", SDL_GetError() );
 				continue;
 			}
 			SDL_GL_SetSwapInterval( r_swapInterval->integer );
@@ -774,7 +774,7 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 			glConfig.depthBits = testDepthBits;
 			glConfig.stencilBits = testStencilBits;
 
-			ri.Printf( PRINT_ALL, "Using %d Color bits, %d depth, %d stencil display.\n",
+			ri.Printf(printParm_t::PRINT_ALL, "Using %d Color bits, %d depth, %d stencil display.\n",
 				glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );
 
 			break;
@@ -794,11 +794,11 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	if ( glewResult != GLEW_OK )
 	{
 		// glewInit failed, something is seriously wrong
-		ri.Error( ERR_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem: %s", glewGetErrorString( glewResult ) );
+		ri.Error( errorParm_t::ERR_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem: %s", glewGetErrorString( glewResult ) );
 	}
 	else
 	{
-		ri.Printf( PRINT_ALL, "Using GLEW %s\n", glewGetString( GLEW_VERSION ) );
+		ri.Printf(printParm_t::PRINT_ALL, "Using GLEW %s\n", glewGetString( GLEW_VERSION ) );
 	}
 
 	int GLmajor, GLminor;
@@ -806,25 +806,25 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	if ( GLmajor < 2 || ( GLmajor == 2 && GLminor < 1 ) )
 	{
 		// missing shader support, switch to 1.x renderer
-		return RSERR_OLD_GL;
+		return rserr_t::RSERR_OLD_GL;
 	}
 
 	if ( GLmajor < 3 || ( GLmajor == 3 && GLminor < 2 ) )
 	{
 		// shaders are supported, but not all GL3.x features
-		ri.Printf( PRINT_ALL, "Using enhanced (GL3) Renderer in GL 2.x mode...\n" );
+		ri.Printf(printParm_t::PRINT_ALL, "Using enhanced (GL3) Renderer in GL 2.x mode...\n" );
 	}
 	else
 	{
-		ri.Printf( PRINT_ALL, "Using enhanced (GL3) Renderer in GL 3.x mode...\n" );
-		glConfig.driverType = GLDRV_OPENGL3;
+		ri.Printf(printParm_t::PRINT_ALL, "Using enhanced (GL3) Renderer in GL 3.x mode...\n" );
+		glConfig.driverType = glDriverType_t::GLDRV_OPENGL3;
 	}
 	GLimp_DetectAvailableModes();
 
 	glstring = ( char * ) glGetString( GL_RENDERER );
-	ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glstring );
+	ri.Printf(printParm_t::PRINT_ALL, "GL_RENDERER: %s\n", glstring );
 
-	return RSERR_OK;
+	return rserr_t::RSERR_OK;
 }
 
 static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, bool shouldBeIntegral )
@@ -833,19 +833,19 @@ static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, bool should
 	{
 		if ( ( int ) cv->value != cv->integer )
 		{
-			ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value );
+			ri.Printf(printParm_t::PRINT_WARNING, "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value );
 			ri.Cvar_Set( cv->name, va( "%d", cv->integer ) );
 		}
 	}
 
 	if ( cv->value < minVal )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
+		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
 		ri.Cvar_Set( cv->name, va( "%f", minVal ) );
 	}
 	else if ( cv->value > maxVal )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
+		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
 		ri.Cvar_Set( cv->name, va( "%f", maxVal ) );
 	}
 }
@@ -857,7 +857,6 @@ GLimp_StartDriverAndSetMode
 */
 static bool GLimp_StartDriverAndSetMode( int mode, bool fullscreen, bool noborder )
 {
-	rserr_t err;
 	int numDisplays;
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
@@ -866,12 +865,12 @@ static bool GLimp_StartDriverAndSetMode( int mode, bool fullscreen, bool noborde
 		SDL_version v;
 		SDL_GetVersion( &v );
 
-		ri.Printf( PRINT_ALL, "SDL_Init( SDL_INIT_VIDEO )... " );
-		ri.Printf( PRINT_ALL, "Using SDL Version %u.%u.%u\n", v.major, v.minor, v.patch );
+		ri.Printf(printParm_t::PRINT_ALL, "SDL_Init( SDL_INIT_VIDEO )... " );
+		ri.Printf(printParm_t::PRINT_ALL, "Using SDL Version %u.%u.%u\n", v.major, v.minor, v.patch );
 
 		if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) == -1 )
 		{
-			ri.Printf( PRINT_ALL, "SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) FAILED (%s)\n", SDL_GetError() );
+			ri.Printf(printParm_t::PRINT_ALL, "SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) FAILED (%s)\n", SDL_GetError() );
 			return false;
 		}
 
@@ -879,10 +878,10 @@ static bool GLimp_StartDriverAndSetMode( int mode, bool fullscreen, bool noborde
 
 		if ( !driverName )
 		{
-			ri.Error( ERR_FATAL, "No video driver initialized\n" );
+			ri.Error( errorParm_t::ERR_FATAL, "No video driver initialized\n" );
 		}
 
-		ri.Printf( PRINT_ALL, "SDL using driver \"%s\"\n", driverName );
+		ri.Printf(printParm_t::PRINT_ALL, "SDL using driver \"%s\"\n", driverName );
 		ri.Cvar_Set( "r_sdlDriver", driverName );
 	}
 
@@ -890,33 +889,33 @@ static bool GLimp_StartDriverAndSetMode( int mode, bool fullscreen, bool noborde
 
 	if ( numDisplays <= 0 )
 	{
-		ri.Error( ERR_FATAL, "SDL_GetNumVideoDisplays FAILED (%s)\n", SDL_GetError() );
+		ri.Error( errorParm_t::ERR_FATAL, "SDL_GetNumVideoDisplays FAILED (%s)\n", SDL_GetError() );
 	}
 
 	AssertCvarRange( r_displayIndex, 0, numDisplays - 1, true );
 
 	if ( fullscreen && ri.Cvar_VariableIntegerValue( "in_nograb" ) )
 	{
-		ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
+		ri.Printf(printParm_t::PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
 		ri.Cvar_Set( "r_fullscreen", "0" );
 		r_fullscreen->modified = false;
 		fullscreen = false;
 	}
 
-	err = (rserr_t) GLimp_SetMode( mode, fullscreen, noborder );
+	rserr_t err = GLimp_SetMode(mode, fullscreen, noborder);
 
 	switch ( err )
 	{
-		case RSERR_INVALID_FULLSCREEN:
-			ri.Printf( PRINT_ALL, "...WARNING: fullscreen unavailable in this mode\n" );
+		case rserr_t::RSERR_INVALID_FULLSCREEN:
+			ri.Printf(printParm_t::PRINT_ALL, "...WARNING: fullscreen unavailable in this mode\n" );
 			return false;
 
-		case RSERR_INVALID_MODE:
-			ri.Printf( PRINT_ALL, "...WARNING: could not set the given mode (%d)\n", mode );
+		case rserr_t::RSERR_INVALID_MODE:
+			ri.Printf(printParm_t::PRINT_ALL, "...WARNING: could not set the given mode (%d)\n", mode );
 			return false;
 
-		case RSERR_OLD_GL:
-			ri.Printf( PRINT_ALL, "...WARNING: OpenGL too old\n" );
+		case rserr_t::RSERR_OLD_GL:
+			ri.Printf(printParm_t::PRINT_ALL, "...WARNING: OpenGL too old\n" );
 			return false;
 
 		default:
@@ -948,12 +947,12 @@ static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum, GLenum type, GLuint
 	const char *debugTypeName;
 	const char *debugSeverity;
 
-	if ( r_glDebugMode->integer <= GLDEBUG_NONE )
+	if ( r_glDebugMode->integer <= Util::ordinal(glDebugModes_t::GLDEBUG_NONE))
 	{
 		return;
 	}
 
-	if ( r_glDebugMode->integer < GLDEBUG_ALL )
+	if ( r_glDebugMode->integer < Util::ordinal(glDebugModes_t::GLDEBUG_ALL))
 	{
 		if ( debugTypes[ r_glDebugMode->integer ] != type )
 		{
@@ -1002,7 +1001,7 @@ static void DEBUG_CALLBACK_CALL GLimp_DebugCallback( GLenum, GLenum type, GLuint
 			break;
 	}
 
-	ri.Printf( PRINT_ALL, "%s: severity: %s msg: %s\n", debugTypeName, debugSeverity, message );
+	ri.Printf(printParm_t::PRINT_ALL, "%s: severity: %s msg: %s\n", debugTypeName, debugSeverity, message );
 }
 
 /*
@@ -1015,11 +1014,11 @@ static void RequireExt( bool hasExt, const char* name )
 {
 	if ( hasExt )
 	{
-		ri.Printf( PRINT_ALL, "...using GL_%s\n", name );
+		ri.Printf(printParm_t::PRINT_ALL, "...using GL_%s\n", name );
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_%s not found\n", name );
+		ri.Error( errorParm_t::ERR_FATAL, "...GL_%s not found\n", name );
 	}
 }
 
@@ -1029,17 +1028,17 @@ static bool LoadExtWithCvar( bool hasExt, const char* name, bool cvarValue )
 	{
 		if ( cvarValue )
 		{
-			ri.Printf( PRINT_ALL, "...using GL_%s\n", name );
+			ri.Printf(printParm_t::PRINT_ALL, "...using GL_%s\n", name );
 			return true;
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_%s\n", name );
+			ri.Printf(printParm_t::PRINT_ALL, "...ignoring GL_%s\n", name );
 		}
 	}
 	else
 	{
-		ri.Printf( PRINT_ALL, "...GL_%s not found\n", name );
+		ri.Printf(printParm_t::PRINT_ALL, "...GL_%s not found\n", name );
 	}
 	return false;
 }
@@ -1050,7 +1049,7 @@ static bool LoadExtWithCvar( bool hasExt, const char* name, bool cvarValue )
 
 static void GLimp_InitExtensions()
 {
-	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
+	ri.Printf(printParm_t::PRINT_ALL, "Initializing OpenGL extensions\n" );
 
 	if ( LOAD_EXTENSION_WITH_CVAR(ARB_debug_output, r_glDebugProfile) )
 	{
@@ -1077,11 +1076,11 @@ static void GLimp_InitExtensions()
 	int majorVersion, minorVersion;
 	if ( sscanf( glConfig2.shadingLanguageVersionString, "%i.%i", &majorVersion, &minorVersion ) != 2 )
 	{
-		ri.Printf( PRINT_ALL, "WARNING: unrecognized shading language version string format\n" );
+		ri.Printf(printParm_t::PRINT_ALL, "WARNING: unrecognized shading language version string format\n" );
 	}
 	glConfig2.shadingLanguageVersion = majorVersion * 100 + minorVersion;
 
-	ri.Printf( PRINT_ALL, "...found shading language version %i\n", glConfig2.shadingLanguageVersion );
+	ri.Printf(printParm_t::PRINT_ALL, "...found shading language version %i\n", glConfig2.shadingLanguageVersion );
 
 	// Texture formats and compression
 	REQUIRE_EXTENSION( ARB_depth_texture );
@@ -1094,13 +1093,13 @@ static void GLimp_InitExtensions()
 	glConfig2.textureRGAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
 
 	// TODO figure out what was the problem with MESA
-	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != GLDRV_MESA && LOAD_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
+	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != glDriverType_t::GLDRV_MESA && LOAD_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
 
 	glConfig2.ARBTextureCompressionAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_compression, r_ext_compressed_textures);
-	glConfig.textureCompression = TC_NONE;
+	glConfig.textureCompression = textureCompression_t::TC_NONE;
 	if( LOAD_EXTENSION_WITH_CVAR(EXT_texture_compression_s3tc, r_ext_compressed_textures) )
 	{
-		glConfig.textureCompression = TC_S3TC;
+		glConfig.textureCompression = textureCompression_t::TC_S3TC;
 	}
 	//REQUIRE_EXTENSION(EXT_texture3D);
 
@@ -1150,11 +1149,11 @@ static void GLimp_InitExtensions()
 	// gDEBugger debug
 	if ( GLEW_GREMEDY_string_marker )
 	{
-		ri.Printf( PRINT_ALL, "...using GL_GREMEDY_string_marker\n" );
+		ri.Printf(printParm_t::PRINT_ALL, "...using GL_GREMEDY_string_marker\n" );
 	}
 	else
 	{
-		ri.Printf( PRINT_ALL, "...GL_GREMEDY_string_marker not found\n" );
+		ri.Printf(printParm_t::PRINT_ALL, "...GL_GREMEDY_string_marker not found\n" );
 	}
 
 #ifdef GLEW_ARB_get_program_binary
@@ -1166,19 +1165,19 @@ static void GLimp_InitExtensions()
 
 		if ( !formats )
 		{
-			ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary found, but with no binary formats\n");
+			ri.Printf(printParm_t::PRINT_ALL, "...GL_ARB_get_program_binary found, but with no binary formats\n");
 			glConfig2.getProgramBinaryAvailable = false;
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
+			ri.Printf(printParm_t::PRINT_ALL, "...using GL_ARB_get_program_binary\n");
 			glConfig2.getProgramBinaryAvailable = true;
 		}
 	}
 	else
 #endif
 	{
-		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
+		ri.Printf(printParm_t::PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
 		glConfig2.getProgramBinaryAvailable = false;
 	}
 
@@ -1187,19 +1186,19 @@ static void GLimp_InitExtensions()
 	{
 		if ( r_arb_buffer_storage->integer )
 		{
-			ri.Printf( PRINT_ALL, "...using GL_ARB_buffer_storage\n" );
+			ri.Printf(printParm_t::PRINT_ALL, "...using GL_ARB_buffer_storage\n" );
 			glConfig2.bufferStorageAvailable = true;
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_buffer_storage\n" );
+			ri.Printf(printParm_t::PRINT_ALL, "...ignoring GL_ARB_buffer_storage\n" );
 			glConfig2.bufferStorageAvailable = false;
 		}
 	}
 	else
 #endif
 	{
-		ri.Printf( PRINT_ALL, "...GL_ARB_buffer_storage not found\n" );
+		ri.Printf(printParm_t::PRINT_ALL, "...GL_ARB_buffer_storage not found\n" );
 		glConfig2.bufferStorageAvailable = false;
 	}
 
@@ -1218,11 +1217,11 @@ static void reportDriverType( bool force )
 	static const char *const drivers[] = {
 		"integrated", "stand-alone", "OpenGL 3+", "Mesa"
 	};
-	if (glConfig.driverType > GLDRV_UNKNOWN && (unsigned) glConfig.driverType < ARRAY_LEN( drivers ) )
+	if (glConfig.driverType > glDriverType_t::GLDRV_UNKNOWN && (unsigned) glConfig.driverType < ARRAY_LEN( drivers ) )
 	{
-		ri.Printf( PRINT_ALL, "%s graphics driver class '%s'\n",
+		ri.Printf(printParm_t::PRINT_ALL, "%s graphics driver class '%s'\n",
 		           force ? "User has forced" : "Detected",
-		           drivers[glConfig.driverType] );
+		           drivers[Util::ordinal(glConfig.driverType)] );
 	}
 }
 
@@ -1231,11 +1230,11 @@ static void reportHardwareType( bool force )
 	static const char *const hardware[] = {
 		"generic", "ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
-	if (glConfig.hardwareType > GLHW_UNKNOWN && (unsigned) glConfig.hardwareType < ARRAY_LEN( hardware ) )
+	if (glConfig.hardwareType > glHardwareType_t::GLHW_UNKNOWN && (unsigned) glConfig.hardwareType < ARRAY_LEN( hardware ) )
 	{
-		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
+		ri.Printf(printParm_t::PRINT_ALL, "%s graphics hardware class '%s'\n",
 		           force ? "User has forced" : "Detected",
-		           hardware[glConfig.hardwareType] );
+		           hardware[Util::ordinal(glConfig.hardwareType)] );
 	}
 }
 
@@ -1249,7 +1248,7 @@ of OpenGL
 */
 bool GLimp_Init()
 {
-	glConfig.driverType = GLDRV_ICD;
+	glConfig.driverType = glDriverType_t::GLDRV_ICD;
 
 	r_sdlDriver = ri.Cvar_Get( "r_sdlDriver", "", CVAR_ROM );
 	r_allowResize = ri.Cvar_Get( "r_allowResize", "0", 0 );
@@ -1276,7 +1275,7 @@ bool GLimp_Init()
 	// Finally, try the default screen resolution
 	if ( r_mode->integer != R_MODE_FALLBACK )
 	{
-		ri.Printf( PRINT_ALL, "Setting r_mode %d failed, falling back on r_mode %d\n", r_mode->integer, R_MODE_FALLBACK );
+		ri.Printf(printParm_t::PRINT_ALL, "Setting r_mode %d failed, falling back on r_mode %d\n", r_mode->integer, R_MODE_FALLBACK );
 
 		if ( GLimp_StartDriverAndSetMode( R_MODE_FALLBACK, false, false ) )
 		{
@@ -1290,7 +1289,7 @@ bool GLimp_Init()
 
 success:
 	// These values force the UI to disable driver selection
-	glConfig.hardwareType = GLHW_GENERIC;
+	glConfig.hardwareType = glHardwareType_t::GLHW_GENERIC;
 
 	// get our config strings
 	Q_strncpyz( glConfig.vendor_string, ( char * ) glGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
@@ -1303,7 +1302,7 @@ success:
 
 	Q_strncpyz( glConfig.version_string, ( char * ) glGetString( GL_VERSION ), sizeof( glConfig.version_string ) );
 
-	if ( glConfig.driverType == GLDRV_OPENGL3 )
+	if ( glConfig.driverType == glDriverType_t::GLDRV_OPENGL3 )
 	{
 		GLint numExts, i;
 
@@ -1324,7 +1323,7 @@ success:
 	     Q_stristr( glConfig.vendor_string, "mesa" ) )
 	{
 		// suckage
-		glConfig.driverType = GLDRV_MESA;
+		glConfig.driverType = glDriverType_t::GLDRV_MESA;
 	}
 
 	if ( Q_stristr( glConfig.renderer_string, "geforce" ) )
@@ -1367,21 +1366,21 @@ success:
 		     Q_stristr( glConfig.renderer_string, "gtx 580" ) ||
 		     Q_stristr( glConfig.renderer_string, "gtx 590" ) )
 		{
-			glConfig.hardwareType = GLHW_NV_DX10;
+			glConfig.hardwareType = glHardwareType_t::GLHW_NV_DX10;
 		}
 	}
 	else if ( Q_stristr( glConfig.renderer_string, "quadro fx" ) )
 	{
 		if ( Q_stristr( glConfig.renderer_string, "3600" ) )
 		{
-			glConfig.hardwareType = GLHW_NV_DX10;
+			glConfig.hardwareType = glHardwareType_t::GLHW_NV_DX10;
 		}
 	}
 	else if ( Q_stristr( glConfig.renderer_string, "gallium" ) &&
 	          Q_stristr( glConfig.renderer_string, " amd " ) )
 	{
 		// anything prior to R600 is listed as ATI.
-		glConfig.hardwareType = GLHW_ATI_DX10;
+		glConfig.hardwareType = glHardwareType_t::GLHW_ATI_DX10;
 	}
 	else if ( Q_stristr( glConfig.renderer_string, "rv770" ) ||
 	          Q_stristr( glConfig.renderer_string, "eah4850" ) ||
@@ -1389,11 +1388,11 @@ success:
 	          // previous three are too specific?
 	          Q_stristr( glConfig.renderer_string, "radeon hd" ) )
 	{
-		glConfig.hardwareType = GLHW_ATI_DX10;
+		glConfig.hardwareType = glHardwareType_t::GLHW_ATI_DX10;
 	}
 	else if ( Q_stristr( glConfig.renderer_string, "radeon" ) )
 	{
-		glConfig.hardwareType = GLHW_ATI;
+		glConfig.hardwareType = glHardwareType_t::GLHW_ATI;
 	}
 
 	reportDriverType( false );
@@ -1401,55 +1400,55 @@ success:
 
 	{ // allow overriding where the user really does know better
 		cvar_t          *forceGL;
-		glDriverType_t   driverType   = GLDRV_UNKNOWN;
-		glHardwareType_t hardwareType = GLHW_UNKNOWN;
+		glDriverType_t   driverType   = glDriverType_t::GLDRV_UNKNOWN;
+		glHardwareType_t hardwareType = glHardwareType_t::GLHW_UNKNOWN;
 
 		forceGL = ri.Cvar_Get( "r_glForceDriver", "", CVAR_LATCH );
 
 		if      ( !Q_stricmp( forceGL->string, "icd" ))
 		{
-			driverType = GLDRV_ICD;
+			driverType = glDriverType_t::GLDRV_ICD;
 		}
 		else if ( !Q_stricmp( forceGL->string, "standalone" ))
 		{
-			driverType = GLDRV_STANDALONE;
+			driverType = glDriverType_t::GLDRV_STANDALONE;
 		}
 		else if ( !Q_stricmp( forceGL->string, "opengl3" ))
 		{
-			driverType = GLDRV_OPENGL3;
+			driverType = glDriverType_t::GLDRV_OPENGL3;
 		}
 		else if ( !Q_stricmp( forceGL->string, "mesa" ))
 		{
-			driverType = GLDRV_MESA;
+			driverType = glDriverType_t::GLDRV_MESA;
 		}
 
 		forceGL = ri.Cvar_Get( "r_glForceHardware", "", CVAR_LATCH );
 
 		if      ( !Q_stricmp( forceGL->string, "generic" ))
 		{
-			hardwareType = GLHW_GENERIC;
+			hardwareType = glHardwareType_t::GLHW_GENERIC;
 		}
 		else if ( !Q_stricmp( forceGL->string, "ati" ))
 		{
-			hardwareType = GLHW_ATI;
+			hardwareType = glHardwareType_t::GLHW_ATI;
 		}
 		else if ( !Q_stricmp( forceGL->string, "atidx10" ) ||
 		          !Q_stricmp( forceGL->string, "radeonhd" ))
 		{
-			hardwareType = GLHW_ATI_DX10;
+			hardwareType = glHardwareType_t::GLHW_ATI_DX10;
 		}
 		else if ( !Q_stricmp( forceGL->string, "nvdx10" ))
 		{
-			hardwareType = GLHW_NV_DX10;
+			hardwareType = glHardwareType_t::GLHW_NV_DX10;
 		}
 
-		if ( driverType != GLDRV_UNKNOWN )
+		if ( driverType != glDriverType_t::GLDRV_UNKNOWN )
 		{
 			glConfig.driverType = driverType;
 			reportDriverType( true );
 		}
 
-		if ( hardwareType != GLHW_UNKNOWN )
+		if ( hardwareType != glHardwareType_t::GLHW_UNKNOWN )
 		{
 			glConfig.hardwareType = hardwareType;
 			reportHardwareType( true );
@@ -1508,7 +1507,7 @@ void GLimp_HandleCvars()
 
 		if ( r_fullscreen->integer && ri.Cvar_VariableIntegerValue( "in_nograb" ) )
 		{
-			ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
+			ri.Printf(printParm_t::PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
 			ri.Cvar_Set( "r_fullscreen", "0" );
 			r_fullscreen->modified = false;
 		}

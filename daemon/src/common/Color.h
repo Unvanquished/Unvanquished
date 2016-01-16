@@ -371,7 +371,7 @@ extern Color LtOrange;
 class Token
 {
 public:
-	enum TokenType {
+	enum class TokenType {
 		INVALID,       // Invalid/empty token
 		CHARACTER,     // A character
 		ESCAPE,        // Color escape
@@ -407,7 +407,7 @@ public:
 	Token( const char* begin, const char* end, const ::Color::Color& color )
 		: begin( begin ),
 		  end( end ),
-		  type( COLOR ),
+		  type( TokenType::COLOR ),
 		  color( color )
 	{}
 
@@ -455,14 +455,14 @@ public:
 	 */
 	explicit operator bool() const
 	{
-		return type != INVALID && begin && begin < end;
+		return type != TokenType::INVALID && begin && begin < end;
 	}
 
 private:
 
 	const char*   begin = nullptr;
 	const char*   end   = nullptr;
-	TokenType      type  = INVALID;
+	TokenType      type  = TokenType::INVALID;
 	::Color::Color color;
 
 };

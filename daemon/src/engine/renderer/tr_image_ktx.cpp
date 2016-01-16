@@ -659,7 +659,7 @@ void SaveImageKTX( const char *path, image_t *img )
 		components               = 0;
 		break;
 	default:
-		ri.Printf(PRINT_WARNING, "Unknown texture format %x\n",
+		ri.Printf(printParm_t::PRINT_WARNING, "Unknown texture format %x\n",
 			  hdr.glInternalFormat );
 		return;
 	}

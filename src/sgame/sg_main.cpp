@@ -730,11 +730,11 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	{
 		if ( g_logFileSync.integer )
 		{
-			trap_FS_FOpenFile( g_logFile.string, &level.logFile, FS_APPEND_SYNC );
+			trap_FS_FOpenFile( g_logFile.string, &level.logFile, fsMode_t::FS_APPEND_SYNC );
 		}
 		else
 		{
-			trap_FS_FOpenFile( g_logFile.string, &level.logFile, FS_APPEND );
+			trap_FS_FOpenFile( g_logFile.string, &level.logFile, fsMode_t::FS_APPEND );
 		}
 
 		if ( !level.logFile )
@@ -778,7 +778,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 		             qt.tm_hour, qt.tm_min, qt.tm_sec,
 		             mapname );
 
-		trap_FS_FOpenFile( logfile, &level.logGameplayFile, FS_WRITE );
+		trap_FS_FOpenFile( logfile, &level.logGameplayFile, fsMode_t::FS_WRITE );
 
 		if ( !level.logGameplayFile )
 		{
@@ -1015,7 +1015,7 @@ void G_ShutdownGame( int restart )
 
 //===================================================================
 
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( errorParm_t, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -1409,7 +1409,7 @@ void G_CountSpawns()
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || G_Dead( ent ) )
+		if ( !ent->inuse || ent->s.eType != entityType_t::ET_BUILDABLE || G_Dead( ent ) )
 		{
 			continue;
 			// is it really useful? Seriously?
@@ -1650,7 +1650,7 @@ void MoveClientToIntermission( gentity_t *ent )
 
 	ent->client->ps.eFlags = 0;
 	ent->s.eFlags = 0;
-	ent->s.eType = ET_GENERAL;
+	ent->s.eType = entityType_t::ET_GENERAL;
 	ent->s.loopSound = 0;
 	ent->s.event = 0;
 	ent->r.contents = 0;
@@ -2915,21 +2915,21 @@ void G_RunFrame( int levelTime )
 		// think/run entitiy by type
 		switch ( ent->s.eType )
 		{
-			case ET_MISSILE:
+			case entityType_t::ET_MISSILE:
 				G_RunMissile( ent );
 				continue;
 
-			case ET_BUILDABLE:
+			case entityType_t::ET_BUILDABLE:
 				// TODO: Do buildables make any use of G_Physics' functionality apart from the call
 				//       to G_RunThink?
 				G_Physics( ent, msec );
 				continue;
 
-			case ET_CORPSE:
+			case entityType_t::ET_CORPSE:
 				G_Physics( ent, msec );
 				continue;
 
-			case ET_MOVER:
+			case entityType_t::ET_MOVER:
 				G_RunMover( ent );
 				continue;
 

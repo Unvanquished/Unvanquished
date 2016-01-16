@@ -166,7 +166,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	/* dummy check */
 	if ( numPoints != 1 && numPoints != 3 && numPoints != 4 )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: Invalid number of decal points (%d)\n", numPoints );
+		ri.Printf( printParm_t::PRINT_WARNING, "WARNING: Invalid number of decal points (%d)\n", numPoints );
 		return;
 	}
 
@@ -281,7 +281,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	temp.radius2 = temp.radius * temp.radius;
 
 	/* frustum cull the projector (fixme: this uses a stale frustum!) */
-	if ( R_CullPointAndRadius( temp.center, temp.radius ) == CULL_OUT )
+	if ( R_CullPointAndRadius( temp.center, temp.radius ) == cullResult_t::CULL_OUT )
 	{
 		return;
 	}
@@ -675,7 +675,7 @@ static void ProjectDecalOntoTriangles( decalProjector_t *dp, bspSurface_t *surf,
 	srfTriangle_t *tri;
 	vec3_t        points[ 2 ][ MAX_DECAL_VERTS ];
 
-	if ( *surf->data == SF_FACE )
+	if ( *surf->data == surfaceType_t::SF_FACE )
 	{
 		/* get surface */
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * ) surf->data;
@@ -692,7 +692,7 @@ static void ProjectDecalOntoTriangles( decalProjector_t *dp, bspSurface_t *surf,
 			ProjectDecalOntoWinding( dp, 3, points, surf, bmodel );
 		}
 	}
-	else if ( *surf->data == SF_TRIANGLES )
+	else if ( *surf->data == surfaceType_t::SF_TRIANGLES )
 	{
 		/* get surface */
 		srfTriangles_t *srf = ( srfTriangles_t * ) surf->data;
@@ -780,7 +780,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 	gen = ( srfGeneric_t * ) surf->data;
 
 	/* ignore certain surfacetypes */
-	if ( gen->surfaceType != SF_FACE && gen->surfaceType != SF_TRIANGLES && gen->surfaceType != SF_GRID )
+	if ( gen->surfaceType != surfaceType_t::SF_FACE && gen->surfaceType != surfaceType_t::SF_TRIANGLES && gen->surfaceType != surfaceType_t::SF_GRID )
 	{
 		return;
 	}
@@ -792,7 +792,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 	}
 
 	/* planar surface */
-	if ( gen->surfaceType == SF_FACE )
+	if ( gen->surfaceType == surfaceType_t::SF_FACE )
 	{
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )surf->data;
 
@@ -822,12 +822,12 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 	/* switch on type */
 	switch ( gen->surfaceType )
 	{
-		case SF_FACE:
-		case SF_TRIANGLES:
+		case surfaceType_t::SF_FACE:
+		case surfaceType_t::SF_TRIANGLES:
 			ProjectDecalOntoTriangles( dp, surf, bmodel );
 			break;
 
-		case SF_GRID:
+		case surfaceType_t::SF_GRID:
 			ProjectDecalOntoGrid( dp, surf, bmodel );
 			break;
 
@@ -858,7 +858,7 @@ void R_AddDecalSurface( decal_t *decal )
 	tr.refdef.numDecals++;
 
 	/* set it up */
-	srf->surfaceType = SF_DECAL;
+	srf->surfaceType = surfaceType_t::SF_DECAL;
 	srf->numVerts = decal->numVerts;
 	Com_Memcpy( srf->verts, decal->verts, srf->numVerts * sizeof( *srf->verts ) );
 
@@ -931,7 +931,7 @@ void R_CullDecalProjectors()
 
 	for ( i = 0, dp = tr.refdef.decalProjectors; i < tr.refdef.numDecalProjectors; i++, dp++ )
 	{
-		if ( R_CullPointAndRadius( dp->center, dp->radius ) == CULL_OUT )
+		if ( R_CullPointAndRadius( dp->center, dp->radius ) == cullResult_t::CULL_OUT )
 		{
 			dp->shader = nullptr;
 		}

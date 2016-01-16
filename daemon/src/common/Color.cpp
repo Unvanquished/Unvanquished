@@ -88,7 +88,7 @@ int StrlenNocolor( const char *string )
 	int len = 0;
 	for ( const auto& token : Parser( string ) )
 	{
-		if ( token.Type() == Token::CHARACTER || token.Type() == Token::ESCAPE )
+		if ( token.Type() == Token::TokenType::CHARACTER || token.Type() == Token::TokenType::ESCAPE )
 		{
 			len++;
 		}
@@ -103,11 +103,11 @@ char *StripColors( char *string )
 
 	for ( const auto& token : Parser( string ) )
 	{
-		if ( token.Type() == Token::CHARACTER )
+		if ( token.Type() == Token::TokenType::CHARACTER )
 		{
 			output.append( token.Begin(), token.Size() );
 		}
-		else if ( token.Type() == Token::ESCAPE )
+		else if ( token.Type() == Token::TokenType::ESCAPE )
 		{
 			output.push_back(Constants::ESCAPE);
 		}
@@ -124,7 +124,7 @@ void StripColors( const char *in, char *out, int len )
 
 	for ( const auto& token : Parser( in ) )
 	{
-		if ( token.Type() == Token::CHARACTER )
+		if ( token.Type() == Token::TokenType::CHARACTER )
 		{
 			if ( len < token.Size() )
 			{
@@ -135,7 +135,7 @@ void StripColors( const char *in, char *out, int len )
 			out += token.Size();
 			len -= token.Size();
 		}
-		else if ( token.Type() == Token::ESCAPE )
+		else if ( token.Type() == Token::TokenType::ESCAPE )
 		{
 			if ( len < 1 )
 			{
@@ -154,11 +154,11 @@ std::string StripColors( const std::string& input )
 
 	for ( const auto& token : Parser( input.c_str() ) )
 	{
-		if ( token.Type() == Token::CHARACTER )
+		if ( token.Type() == Token::TokenType::CHARACTER )
 		{
 			output.append( token.Begin(), token.Size() );
 		}
-		else if ( token.Type() == Token::ESCAPE )
+		else if ( token.Type() == Token::TokenType::ESCAPE )
 		{
 			output.push_back(Constants::ESCAPE);
 		}
@@ -253,7 +253,7 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
     {
         if ( input[1] == Constants::ESCAPE )
         {
-            return value_type( input, input+2, value_type::ESCAPE );
+            return value_type( input, input+2, value_type::TokenType::ESCAPE );
         }
         else if ( input[1] == Constants::NULL_COLOR )
         {
@@ -295,7 +295,7 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
         }
     }
 
-    return value_type( input, input + Q_UTF8_Width( input ), value_type::CHARACTER );
+    return value_type( input, input + Q_UTF8_Width( input ), value_type::TokenType::CHARACTER );
 }
 
 } // namespace Color

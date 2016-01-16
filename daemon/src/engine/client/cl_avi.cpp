@@ -82,7 +82,7 @@ static INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f )
 {
 	if ( FS_Write( buffer, len, f ) < len )
 	{
-		Com_Error( ERR_DROP, "Failed to write avi file" );
+		Com_Error( errorParm_t::ERR_DROP, "Failed to write avi file" );
 	}
 }
 
@@ -132,7 +132,7 @@ static INLINE void START_CHUNK( const char *s )
 {
 	if ( afd.chunkStackTop == MAX_RIFF_CHUNKS )
 	{
-		Com_Error( ERR_DROP, "ERROR: Top of chunkstack breached" );
+		Com_Error( errorParm_t::ERR_DROP, "ERROR: Top of chunkstack breached" );
 	}
 
 	afd.chunkStack[ afd.chunkStackTop ] = bufIndex;
@@ -152,7 +152,7 @@ static INLINE void END_CHUNK()
 
 	if ( afd.chunkStackTop <= 0 )
 	{
-		Com_Error( ERR_DROP, "ERROR: Bottom of chunkstack breached" );
+		Com_Error( errorParm_t::ERR_DROP, "ERROR: Bottom of chunkstack breached" );
 	}
 
 	afd.chunkStackTop--;
@@ -337,7 +337,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 	// Don't start if a framerate has not been chosen
 	if ( cl_aviFrameRate->integer <= 0 )
 	{
-		Com_Log( LOG_ERROR, "cl_aviFrameRate must be ≥ 1\n" );
+		Com_Log( log_level_t::LOG_ERROR, "cl_aviFrameRate must be ≥ 1\n" );
 		return false;
 	}
 
@@ -553,7 +553,7 @@ bool CL_CloseAVI()
 
 	afd.fileOpen = false;
 
-	FS_Seek( afd.idxF, 4, FS_SEEK_SET );
+	FS_Seek( afd.idxF, 4, fsOrigin_t::FS_SEEK_SET );
 	bufIndex = 0;
 	WRITE_4BYTES( indexSize );
 	SafeFS_Write( buffer, bufIndex, afd.idxF );
@@ -588,7 +588,7 @@ bool CL_CloseAVI()
 	FS_Delete( idxFileName );
 
 	// Write the real header
-	FS_Seek( afd.f, 0, FS_SEEK_SET );
+	FS_Seek( afd.f, 0, fsOrigin_t::FS_SEEK_SET );
 	CL_WriteAVIHeader();
 
 	bufIndex = 4;

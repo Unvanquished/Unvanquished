@@ -343,7 +343,7 @@ bool BG_ReadWholeFile( const char *filename, char *buffer, int size)
 	fileHandle_t f;
 	int len;
 
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -493,36 +493,36 @@ static trType_t ParseTrajectoryType( const char *token )
 {
 	if      ( !Q_stricmp( token, "TR_STATIONARY" ) )
 	{
-		return TR_STATIONARY;
+		return trType_t::TR_STATIONARY;
 	}
 	else if ( !Q_stricmp( token, "TR_INTERPOLATE" ) )
 	{
-		return TR_INTERPOLATE;
+		return trType_t::TR_INTERPOLATE;
 	}
 	else if ( !Q_stricmp( token, "TR_LINEAR" ) )
 	{
-		return TR_LINEAR;
+		return trType_t::TR_LINEAR;
 	}
 	else if ( !Q_stricmp( token, "TR_LINEAR_STOP" ) )
 	{
-		return TR_LINEAR_STOP;
+		return trType_t::TR_LINEAR_STOP;
 	}
 	else if ( !Q_stricmp( token, "TR_SINE" ) )
 	{
-		return TR_SINE;
+		return trType_t::TR_SINE;
 	}
 	else if ( !Q_stricmp( token, "TR_GRAVITY" ) )
 	{
-		return TR_GRAVITY;
+		return trType_t::TR_GRAVITY;
 	}
 	else if ( !Q_stricmp( token, "TR_BUOYANCY" ) )
 	{
-		return TR_BUOYANCY;
+		return trType_t::TR_BUOYANCY;
 	}
 	else
 	{
 		Com_Printf( S_ERROR "unknown trajectory value '%s'\n", token );
-		return TR_STATIONARY;
+		return trType_t::TR_STATIONARY;
 	}
 }
 

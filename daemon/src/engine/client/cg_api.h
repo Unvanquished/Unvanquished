@@ -61,7 +61,7 @@ struct snapshot_t
 	std::vector<std::string> serverCommands;
 };
 
-enum rocketVarType_t {
+enum class rocketVarType_t {
 	ROCKET_STRING,
 	ROCKET_FLOAT,
 	ROCKET_INT,
@@ -102,7 +102,7 @@ struct cgClientState_t
 	char        messageString[ MAX_STRING_CHARS ];
 };
 
-enum serverSortField_t
+enum class serverSortField_t
 {
 	SORT_HOST,
 	SORT_MAP,
@@ -155,17 +155,17 @@ void            trap_UpdateScreen();
 #define trap_CM_TempCapsuleModel(...) CM_TempBoxModel(__VA_ARGS__, true)
 #define trap_CM_PointContents CM_PointContents
 #define trap_CM_TransformedPointContents CM_TransformedPointContents
-#define trap_CM_BoxTrace(...) CM_BoxTrace(__VA_ARGS__, TT_AABB)
-#define trap_CM_TransformedBoxTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, TT_AABB)
-#define trap_CM_CapsuleTrace(...) CM_BoxTrace(__VA_ARGS__, TT_CAPSULE)
-#define trap_CM_TransformedCapsuleTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, TT_CAPSULE)
+#define trap_CM_BoxTrace(...) CM_BoxTrace(__VA_ARGS__, traceType_t::TT_AABB)
+#define trap_CM_TransformedBoxTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, traceType_t::TT_AABB)
+#define trap_CM_CapsuleTrace(...) CM_BoxTrace(__VA_ARGS__, traceType_t::TT_CAPSULE)
+#define trap_CM_TransformedCapsuleTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, traceType_t::TT_CAPSULE)
 #define trap_CM_BiSphereTrace CM_BiSphereTrace
 #define trap_CM_TransformedBiSphereTrace CM_TransformedBiSphereTrace
 #define trap_CM_DistanceToModel CM_DistanceToModel
 int             trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
-void            trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
+void            trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t entchannel, sfxHandle_t sfx );
 void            trap_S_StartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int flags );
-void            trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
+void            trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum );
 void            trap_S_ClearLoopingSounds( bool killall );
 void            trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
 void            trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );

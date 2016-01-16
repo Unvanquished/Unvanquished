@@ -770,7 +770,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 					BotStrafeDodge( self );
 				}
 
-				if ( inAttackRange && BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE )
+				if ( inAttackRange && BotGetTargetType( self->botMind->goal ) == entityType_t::ET_BUILDABLE )
 				{
 					BotStandStill( self );
 				}

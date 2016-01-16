@@ -1731,7 +1731,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 	fileHandle_t f;
 
 	// load the file
-	len = trap_FS_FOpenFile( fileName, &f, FS_READ );
+	len = trap_FS_FOpenFile( fileName, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -2391,7 +2391,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 
 	if ( bp->bounceSoundName[ 0 ] && p->bounceSoundCount > 0 )
 	{
-		trap_S_StartSound( trace.endpos, ENTITYNUM_WORLD, CHAN_AUTO, bp->bounceSound );
+		trap_S_StartSound( trace.endpos, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, bp->bounceSound );
 		p->bounceSoundCount--;
 	}
 
@@ -2551,7 +2551,7 @@ static void CG_RenderParticle( particle_t *p )
 
 	if ( bp->numFrames ) //shader based
 	{
-		re.reType = RT_SPRITE;
+		re.reType = refEntityType_t::RT_SPRITE;
 
 		//apply environmental lighting to the particle
 		if ( bp->realLight )
@@ -2619,7 +2619,7 @@ static void CG_RenderParticle( particle_t *p )
 	}
 	else if ( bp->numModels ) //model based
 	{
-		re.reType = RT_MODEL;
+		re.reType = refEntityType_t::RT_MODEL;
 
 		re.hModel = p->model;
 

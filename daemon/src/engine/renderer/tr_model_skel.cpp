@@ -115,10 +115,10 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	indexesNum = vboTriangles->currentElements * 3;
 
 	// create surface
-	vboSurf = (srfVBOMD5Mesh_t*) ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
+	vboSurf = (srfVBOMD5Mesh_t*) ri.Hunk_Alloc( sizeof( *vboSurf ), ha_pref::h_low );
 	Com_AddToGrowList( vboSurfaces, vboSurf );
 
-	vboSurf->surfaceType = SF_VBO_MD5MESH;
+	vboSurf->surfaceType = surfaceType_t::SF_VBO_MD5MESH;
 	vboSurf->md5Model = md5;
 	vboSurf->shader = R_GetShaderByHandle( surf->shaderIndex );
 	vboSurf->skinIndex = skinIndex;
@@ -186,7 +186,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		}
 	}
 
-	vboSurf->vbo = R_CreateStaticVBO( va( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, VBO_LAYOUT_SKELETAL );
+	vboSurf->vbo = R_CreateStaticVBO( va( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, vboLayout_t::VBO_LAYOUT_SKELETAL );
 
 	vboSurf->ibo = R_CreateStaticIBO( va( "staticMD5Mesh_IBO %i", vboSurfaces->currentElements ), indexes, indexesNum );
 

@@ -201,7 +201,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 	// allocate a new skin
 	if ( tr.numSkins == MAX_SKINS )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: RE_RegisterSkin( '%s' ) MAX_SKINS hit\n", name );
+		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: RE_RegisterSkin( '%s' ) MAX_SKINS hit\n", name );
 		return 0;
 	}
 
@@ -221,7 +221,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 	}
 
 	tr.numSkins++;
-	skin = (skin_t*) ri.Hunk_Alloc( sizeof( skin_t ), h_low );
+	skin = (skin_t*) ri.Hunk_Alloc( sizeof( skin_t ), ha_pref::h_low );
 	tr.skins[ hSkin ] = skin;
 	Q_strncpyz( skin->name, name, sizeof( skin->name ) );
 	skin->numSurfaces = 0;
@@ -258,7 +258,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 		if ( !Q_strnicmp( token, "md3_", 4 ) )
 		{
 			// this is specifying a model
-			model = skin->models[ skin->numModels ] = (skinModel_t*) ri.Hunk_Alloc( sizeof( *skin->models[ 0 ] ), h_low );
+			model = skin->models[ skin->numModels ] = (skinModel_t*) ri.Hunk_Alloc( sizeof( *skin->models[ 0 ] ), ha_pref::h_low );
 			Q_strncpyz( model->type, token, sizeof( model->type ) );
 			model->hash = Com_HashKey( model->type, sizeof( model->type ) );
 
@@ -274,11 +274,11 @@ qhandle_t RE_RegisterSkin( const char *name )
 		// parse the shader name
 		token = CommaParse( &text_p );
 
-		surf = skin->surfaces[ skin->numSurfaces ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), h_low );
+		surf = skin->surfaces[ skin->numSurfaces ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), ha_pref::h_low );
 		Q_strncpyz( surf->name, surfName, sizeof( surf->name ) );
 
 		// RB: bspSurface_t does not have ::hash yet
-		surf->shader = R_FindShader( token, SHADER_3D_DYNAMIC, RSF_DEFAULT );
+		surf->shader = R_FindShader( token, shaderType_t::SHADER_3D_DYNAMIC, RSF_DEFAULT );
 		skin->numSurfaces++;
 	}
 
@@ -305,10 +305,10 @@ void R_InitSkins()
 	tr.numSkins = 1;
 
 	// make the default skin have all default shaders
-	skin = tr.skins[ 0 ] = (skin_t*) ri.Hunk_Alloc( sizeof( skin_t ), h_low );
+	skin = tr.skins[ 0 ] = (skin_t*) ri.Hunk_Alloc( sizeof( skin_t ), ha_pref::h_low );
 	Q_strncpyz( skin->name, "<default skin>", sizeof( skin->name ) );
 	skin->numSurfaces = 1;
-	skin->surfaces[ 0 ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), h_low );
+	skin->surfaces[ 0 ] = (skinSurface_t*) ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), ha_pref::h_low );
 	skin->surfaces[ 0 ]->shader = tr.defaultShader;
 }
 
@@ -337,19 +337,19 @@ void R_SkinList_f()
 	int    i, j;
 	skin_t *skin;
 
-	ri.Printf( PRINT_ALL, "------------------\n" );
+	ri.Printf(printParm_t::PRINT_ALL, "------------------\n" );
 
 	for ( i = 0; i < tr.numSkins; i++ )
 	{
 		skin = tr.skins[ i ];
 
-		ri.Printf( PRINT_ALL, "%3i:%s\n", i, skin->name );
+		ri.Printf(printParm_t::PRINT_ALL, "%3i:%s\n", i, skin->name );
 
 		for ( j = 0; j < skin->numSurfaces; j++ )
 		{
-			ri.Printf( PRINT_ALL, "       %s = %s\n", skin->surfaces[ j ]->name, skin->surfaces[ j ]->shader->name );
+			ri.Printf(printParm_t::PRINT_ALL, "       %s = %s\n", skin->surfaces[ j ]->name, skin->surfaces[ j ]->shader->name );
 		}
 	}
 
-	ri.Printf( PRINT_ALL, "------------------\n" );
+	ri.Printf(printParm_t::PRINT_ALL, "------------------\n" );
 }

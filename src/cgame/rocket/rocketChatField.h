@@ -355,7 +355,7 @@ protected:
 
 		for ( const auto& token : Color::Parser( in.CString(), Color::White ) )
 		{
-			if ( token.Type() == Color::Token::COLOR )
+			if ( token.Type() == Color::Token::TokenType::COLOR )
 			{
 				Rocket::Core::XMLAttributes xml;
 
@@ -387,11 +387,11 @@ protected:
 				out.Append( token.Begin(), token.Size() );
 				span = true;
 			}
-			else if ( token.Type() == Color::Token::ESCAPE )
+			else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 			{
 				out.Append( Color::Constants::ESCAPE );
 			}
-			else if ( token.Type() == Color::Token::CHARACTER )
+			else if ( token.Type() == Color::Token::TokenType::CHARACTER )
 			{
 				auto c = *token.Begin();
 

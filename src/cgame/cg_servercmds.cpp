@@ -929,17 +929,17 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		case SAY_TPRIVMSG:
 			if ( cgs.clientinfo[ clientNum ].team == TEAM_ALIENS )
 			{
-				trap_S_StartLocalSound( cgs.media.alienTalkSound, CHAN_LOCAL_SOUND );
+				trap_S_StartLocalSound( cgs.media.alienTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 				break;
 			}
 			else if ( cgs.clientinfo[ clientNum ].team == TEAM_HUMANS )
 			{
-				trap_S_StartLocalSound( cgs.media.humanTalkSound, CHAN_LOCAL_SOUND );
+				trap_S_StartLocalSound( cgs.media.humanTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 				break;
 			}
 
 		default:
-			trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+			trap_S_StartLocalSound( cgs.media.talkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 	}
 }
 
@@ -1106,15 +1106,15 @@ static void CG_ParseVoice()
 	switch ( vChan )
 	{
 		case VOICE_CHAN_ALL:
-			trap_S_StartLocalSound( track->track, CHAN_VOICE );
+			trap_S_StartLocalSound( track->track, soundChannel_t::CHAN_VOICE );
 			break;
 
 		case VOICE_CHAN_TEAM:
-			trap_S_StartLocalSound( track->track, CHAN_VOICE );
+			trap_S_StartLocalSound( track->track, soundChannel_t::CHAN_VOICE );
 			break;
 
 		case VOICE_CHAN_LOCAL:
-			trap_S_StartSound( nullptr, clientNum, CHAN_VOICE, track->track );
+			trap_S_StartSound( nullptr, clientNum, soundChannel_t::CHAN_VOICE, track->track );
 			break;
 
 		default:

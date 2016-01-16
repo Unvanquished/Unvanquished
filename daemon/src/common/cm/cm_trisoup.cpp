@@ -146,16 +146,14 @@ static void CM_SetBorderInward( cFacet_t *facet, cTriangleSoup_t *triSoup, int i
 
 		for ( l = 0; l < numPoints; l++ )
 		{
-			int side;
+			auto side = CM_PointOnPlaneSide( points[ l ], facet->borderPlanes[ k ] );
 
-			side = CM_PointOnPlaneSide( points[ l ], facet->borderPlanes[ k ] );
-
-			if ( side == SIDE_FRONT )
+			if ( side == planeSide_t::SIDE_FRONT )
 			{
 				front++;
 			}
 
-			if ( side == SIDE_BACK )
+			if ( side == planeSide_t::SIDE_BACK )
 			{
 				back++;
 			}

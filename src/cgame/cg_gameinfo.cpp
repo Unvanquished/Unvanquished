@@ -121,7 +121,7 @@ static void CG_LoadArenasFromFile( char *filename )
 	fileHandle_t f;
 	char         buf[ MAX_ARENAS_TEXT ];
 
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( !f )
 	{

@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #ifndef BOT_DEBUG_H
 #define BOT_DEBUG_H
 
-enum debugDrawMode_t
+enum class debugDrawMode_t
 {
 	D_DRAW_POINTS,
 	D_DRAW_LINES,

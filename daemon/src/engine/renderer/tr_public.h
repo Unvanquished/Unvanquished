@@ -193,10 +193,10 @@ struct refexport_t
 struct refimport_t
 {
 	// print message on the local console
-	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
+	void ( QDECL *Printf )( printParm_t printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
 
 	// abort the game
-	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN_PTR;
+	void ( QDECL *Error )( errorParm_t errorLevel, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN_PTR;
 
 	// milliseconds should only be used for profiling, never
 	// for anything game related.  Get time from the refdef
@@ -242,7 +242,7 @@ struct refimport_t
 	void ( *FS_FreeFileList )( char **filelist );
 	void ( *FS_WriteFile )( const char *qpath, const void *buffer, int size );
 	bool( *FS_FileExists )( const char *file );
-	int ( *FS_Seek )( fileHandle_t f, long offset, int origin );
+	int ( *FS_Seek )( fileHandle_t f, long offset, fsOrigin_t origin );
 	int ( *FS_FTell )( fileHandle_t f );
 	int ( *FS_Read )( void *buffer, int len, fileHandle_t f );
 	int ( *FS_FCloseFile )( fileHandle_t f );

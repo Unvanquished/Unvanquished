@@ -229,7 +229,7 @@ private:
 };
 
 // Type of pak
-enum pakType_t {
+enum class pakType_t {
 	PAK_ZIP, // Zip archive
 	PAK_DIR // Directory
 };

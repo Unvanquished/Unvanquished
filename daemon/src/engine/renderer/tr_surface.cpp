@@ -104,12 +104,12 @@ void Tess_CheckOverflow( int verts, int indexes )
 
 	if ( verts >= SHADER_MAX_VERTEXES )
 	{
-		ri.Error( ERR_DROP, "Tess_CheckOverflow: verts > std::max (%d > %d)", verts, SHADER_MAX_VERTEXES );
+		ri.Error(errorParm_t::ERR_DROP, "Tess_CheckOverflow: verts > std::max (%d > %d)", verts, SHADER_MAX_VERTEXES );
 	}
 
 	if ( indexes >= SHADER_MAX_INDEXES )
 	{
-		ri.Error( ERR_DROP, "Tess_CheckOverflow: indexes > std::max (%d > %d)", indexes, SHADER_MAX_INDEXES );
+		ri.Error(errorParm_t::ERR_DROP, "Tess_CheckOverflow: indexes > std::max (%d > %d)", indexes, SHADER_MAX_INDEXES );
 	}
 
 	Tess_Begin( tess.stageIteratorFunc, tess.stageIteratorFunc2, tess.surfaceShader, tess.lightShader, tess.skipTangentSpaces, tess.skipVBO,
@@ -1090,7 +1090,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// convert bones back to matrices
 		for (unsigned i = 0; i < model->numBones; i++ )
 		{
-			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
+			if ( backEnd.currentEntity->e.skeleton.type == refSkeletonType_t::SK_ABSOLUTE )
 			{
 				refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
 
@@ -1136,7 +1136,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// convert bones back to matrices
 		for (unsigned i = 0; i < model->numBones; i++ )
 		{
-			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
+			if ( backEnd.currentEntity->e.skeleton.type == refSkeletonType_t::SK_ABSOLUTE )
 			{
 				refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
 				TransInitRotationQuat( model->bones[ i ].rotation, &bones[ i ] );
@@ -1219,7 +1219,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 	for ( i = 0; i < model->num_joints; i++ )
 	{
 
-		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
+		if ( backEnd.currentEntity->e.skeleton.type == refSkeletonType_t::SK_ABSOLUTE )
 		{
 			refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ i ];
 
@@ -1347,7 +1347,7 @@ static void Tess_SurfaceEntity( surfaceType_t* )
 
 	switch ( backEnd.currentEntity->e.reType )
 	{
-		case RT_SPRITE:
+		case refEntityType_t::RT_SPRITE:
 			Tess_SurfaceSprite();
 			break;
 		default:
@@ -1359,7 +1359,7 @@ static void Tess_SurfaceBad( surfaceType_t* )
 {
 	GLimp_LogComment( "--- Tess_SurfaceBad ---\n" );
 
-	ri.Printf( PRINT_ALL, "Bad surface tesselated.\n" );
+	ri.Printf(printParm_t::PRINT_ALL, "Bad surface tesselated.\n" );
 }
 
 static void Tess_SurfaceFlare( srfFlare_t *surf )
@@ -1475,7 +1475,7 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 	{
 		refBone_t *bone = &backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ];
 
-		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
+		if ( backEnd.currentEntity->e.skeleton.type == refSkeletonType_t::SK_ABSOLUTE )
 		{
 			TransInitRotationQuat( model->bones[ srf->boneRemapInverse[ i ] ].rotation, &tess.bones[ i ] );
 			TransAddTranslation( model->bones[ srf->boneRemapInverse[ i ] ].origin, &tess.bones[ i ] );
@@ -1496,7 +1496,7 @@ static void Tess_SurfaceSkip( void* )
 }
 
 // *INDENT-OFF*
-void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * ) =
+void ( *rb_surfaceTable[ Util::ordinal(surfaceType_t::SF_NUM_SURFACE_TYPES) ] )( void * ) =
 {
 	( void ( * )( void * ) ) Tess_SurfaceBad,  // SF_BAD,
 	( void ( * )( void * ) ) Tess_SurfaceSkip,  // SF_SKIP,
