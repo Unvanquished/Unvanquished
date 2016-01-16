@@ -44,6 +44,7 @@ std::chrono::high_resolution_clock::time_point  start;
 bool                                            enabled = false;
 
 
+
 std::chrono::microseconds::rep TimeElapsed( std::chrono::high_resolution_clock::time_point since )
 {
     auto tmp = std::chrono::high_resolution_clock::now() - since;
@@ -51,12 +52,15 @@ std::chrono::microseconds::rep TimeElapsed( std::chrono::high_resolution_clock::
     return std::chrono::duration_cast < std::chrono::microseconds > (tmp).count();
 }
 
+
+
 void Update(){
     if( !enabled )
         return;
 
     times.push_back(Point(FRAME));
 }
+
 
 
 //void PrintRaw(){
@@ -80,13 +84,14 @@ void Update(){
 
 
 
-
 Profile::Profile( std::string label ): label( label ){
     if( !enabled )
         return;
 
     times.push_back( Point(START, label, TimeElapsed(start) ) );
 }
+
+
 
 Profile::~Profile(){
     if( !enabled )
@@ -97,7 +102,6 @@ Profile::~Profile(){
 
 
 
-
 class ProfilerStartCmd: public Cmd::StaticCmd {
 public:
     ProfilerStartCmd(): Cmd::StaticCmd("profiler.start", Cmd::RENDERER, "prints to the console") {
@@ -105,8 +109,8 @@ public:
 
     void Run(const Cmd::Args& args) const OVERRIDE {
 
-        enabled=true;
-        start=std::chrono::high_resolution_clock::now();
+        enabled = true;
+        start   = std::chrono::high_resolution_clock::now();
 
     }
 };
@@ -127,24 +131,23 @@ public:
         uint padding=0;
         std::map <uint, std::chrono::microseconds::rep> levels;
 
-        for (auto& i : times) {
+        for ( auto& i : times ) {
 
-            if(i.type==FRAME){
+            if( i.type == FRAME ){
                 Print("\n");
                 continue;
             }
 
-            if(i.type==START){
+            if( i.type == START ){
                 padding++;
                 levels[padding]=i.time;
-            }else if (i.type==END){
+            } else if ( i.type == END ){
                 std::string padstr;
-                for(char j=0;j<padding;j++)
-                    padstr+= "    ";
+                for( char j=0; j<padding; j++ )
+                    padstr += "    ";
 
                 Print("%s %s %d",padstr, i.label, i.time - levels[padding] );
                 padstr="";
-
                 padding--;
             }
         }
@@ -152,6 +155,9 @@ public:
         times.clear();
     }
 };
+
 static ProfilerStopCmd ProfilerStopCmdRegistration;
+
+
 
 }
