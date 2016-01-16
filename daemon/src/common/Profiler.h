@@ -11,9 +11,9 @@ namespace Profiler{
         public:
             std::string label;
             std::chrono::microseconds::rep time;
-            char type;
+            Type type;
 
-            Point(char type,std::string label="", std::chrono::microseconds::rep time=0): label(label), time(time), type(type){   }
+            Point(Type type,std::string label="", std::chrono::microseconds::rep time=0): label(label), time(time), type(type){   }
         };
 
 
@@ -25,16 +25,12 @@ namespace Profiler{
         void Update();
 
 
-        void PrintRaw();
+        class Profile
+        {
+        std::string label;
 
-        void Show();
-
-
-
-        class Profile{
-            std::string label;
         public:
-            Profile(std::string label_);
+            Profile(std::string);
 
             ~Profile();
         };

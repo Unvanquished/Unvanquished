@@ -1845,7 +1845,7 @@ void Com_Frame()
 		c_pointcontents = 0;
 	}
 
-    Profiler::Show();
+    //Profiler::Show();
 	// old net chan encryption key
 	//key = lastTime * 0x87243987;
 

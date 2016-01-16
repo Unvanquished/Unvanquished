@@ -31,22 +31,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Profiler.h"
 #include "../engine/framework/LogSystem.h"
 
+#include "../engine/framework/CommandSystem.h"
+#include "../engine/framework/BaseCommands.h"
+
+
 
 namespace Profiler{
 
-std::vector <Profiler::Point> times;
-std::string label;
+std::vector <Profiler::Point>                   times;
+std::string                                     label;
+std::chrono::high_resolution_clock::time_point  start;
+bool                                            enabled = false;
 
-std::chrono::high_resolution_clock::time_point start;
 
+std::chrono::microseconds::rep TimeElapsed( std::chrono::high_resolution_clock::time_point since )
+{
+    auto tmp = std::chrono::high_resolution_clock::now() - since;
 
-std::chrono::microseconds::rep TimeElapsed(std::chrono::high_resolution_clock::time_point since){
-    auto tmp=std::chrono::high_resolution_clock::now() - since;
-
-    return std::chrono::duration_cast<std::chrono::microseconds>(tmp).count();
+    return std::chrono::duration_cast < std::chrono::microseconds > (tmp).count();
 }
 
 void Update(){
+    if( !enabled )
+        return;
 
     times.push_back(Point(FRAME));
 
@@ -54,69 +61,97 @@ void Update(){
 }
 
 
-void PrintRaw(){
-    for (auto& i : times) {
-        std::string type;
-
-        switch(i.type){
-        case START:
-            type="start";
-            break;
-        case END:
-            type="end";
-            break;
-        case FRAME:
-            type="frame";
-            break;
-        }
-
-        //std::cout << type << ", "<< i.label << ", " << i.time <<"\n";
-    }
-
-    times.clear();
-}
-
-void Show(){
-
-    uint padding=0;
-    std::map <uint, std::chrono::microseconds::rep> levels;
-
-    for (auto& i : times) {
-
-        if(i.type==FRAME){
-            Log::Debug("");
-            continue;
-        }
-
-        if(i.type==START){
-            padding++;
-            levels[padding]=i.time;
-        }else if (i.type==END){
-            std::string padstr;
-            for(char j=0;j<padding;j++)
-                padstr+= "    ";
-
-            Log::Debug("%s %s %d",padstr, i.label, i.time - levels[padding] );
-            padstr="";
-
-            padding--;
-        }
-
-    }
-
-    times.clear();
-}
+//void PrintRaw(){
+//    for (auto& i : times) {
+//        std::string type;
+//        switch(i.type){
+//        case START:
+//            type="start";
+//            break;
+//        case END:
+//            type="end";
+//            break;
+//        case FRAME:
+//            type="frame";
+//            break;
+//        }
+//        std::cout << type << ", "<< i.label << ", " << i.time <<"\n";
+//    }
+//    times.clear();
+//}
 
 
 
-Profile::Profile(std::string label_){
-    label=label_;
-    times.push_back(Point(START,label,TimeElapsed(start)));
+
+Profile::Profile( std::string label ): label( label ){
+    if( !enabled )
+        return;
+
+    times.push_back( Point(START, label, TimeElapsed(start) ) );
 }
 
 Profile::~Profile(){
-    times.push_back(Point(END,label,TimeElapsed(start)));
+    if( !enabled )
+        return;
+
+    times.push_back( Point(END, label, TimeElapsed(start) ) );
 }
 
+
+
+
+class ProfilerStartCmd: public Cmd::StaticCmd {
+public:
+    ProfilerStartCmd(): Cmd::StaticCmd("profiler.start", Cmd::RENDERER, "prints to the console") {
+    }
+
+    void Run(const Cmd::Args& args) const OVERRIDE {
+        enabled=1;
+
+    }
+};
+
+static ProfilerStartCmd ProfilerStartCmdRegistration;
+
+
+
+class ProfilerStopCmd: public Cmd::StaticCmd {
+public:
+    ProfilerStopCmd(): Cmd::StaticCmd("profiler.stop", Cmd::RENDERER, "prints to the console") {
+    }
+
+    void Run(const Cmd::Args& args) const OVERRIDE {
+
+        enabled=0;
+
+        uint padding=0;
+        std::map <uint, std::chrono::microseconds::rep> levels;
+
+        for (auto& i : times) {
+
+            if(i.type==FRAME){
+                Print("\n");
+                continue;
+            }
+
+            if(i.type==START){
+                padding++;
+                levels[padding]=i.time;
+            }else if (i.type==END){
+                std::string padstr;
+                for(char j=0;j<padding;j++)
+                    padstr+= "    ";
+
+                Print("%s %s %d",padstr, i.label, i.time - levels[padding] );
+                padstr="";
+
+                padding--;
+            }
+        }
+
+        times.clear();
+    }
+};
+static ProfilerStopCmd ProfilerStopCmdRegistration;
 
 }
