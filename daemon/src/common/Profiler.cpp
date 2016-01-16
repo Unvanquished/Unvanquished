@@ -38,8 +38,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Profiler{
 
+
 std::vector <Profiler::Point>                   times;
-std::string                                     label;
 std::chrono::high_resolution_clock::time_point  start;
 bool                                            enabled = false;
 
@@ -56,8 +56,6 @@ void Update(){
         return;
 
     times.push_back(Point(FRAME));
-
-    start=std::chrono::high_resolution_clock::now();
 }
 
 
@@ -106,7 +104,9 @@ public:
     }
 
     void Run(const Cmd::Args& args) const OVERRIDE {
-        enabled=1;
+
+        enabled=true;
+        start=std::chrono::high_resolution_clock::now();
 
     }
 };
@@ -122,7 +122,7 @@ public:
 
     void Run(const Cmd::Args& args) const OVERRIDE {
 
-        enabled=0;
+        enabled=false;
 
         uint padding=0;
         std::map <uint, std::chrono::microseconds::rep> levels;
