@@ -33,131 +33,121 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../engine/framework/CommandSystem.h"
 #include "../engine/framework/BaseCommands.h"
-
+#include <fstream>
 
 
 namespace Profiler{
 
-
-std::vector <Profiler::Point>                   times;
-std::chrono::high_resolution_clock::time_point  start;
-bool                                            enabled = false;
-
-
-
-std::chrono::microseconds::rep TimeElapsed( std::chrono::high_resolution_clock::time_point since )
-{
-    auto tmp = std::chrono::high_resolution_clock::now() - since;
-
-    return std::chrono::duration_cast < std::chrono::microseconds > (tmp).count();
-}
+    /*
+     * Function execution times are saved in the samples vector, every element
+     * contains the name of the function, the type of sample (function start,
+     * function end, and if there's a new frame), and a timestamp.
+     */
+    std::vector <Profiler::Point>                   samples;
+    std::chrono::high_resolution_clock::time_point  start;
+    bool                                            enabled = false;
 
 
 
-void Update(){
-    if( !enabled )
-        return;
+    std::chrono::microseconds::rep TimeElapsed( std::chrono::high_resolution_clock::time_point since )
+    {
+        auto tmp = std::chrono::high_resolution_clock::now() - since;
 
-    times.push_back(Point(FRAME));
-}
-
-
-
-//void PrintRaw(){
-//    for (auto& i : times) {
-//        std::string type;
-//        switch(i.type){
-//        case START:
-//            type="start";
-//            break;
-//        case END:
-//            type="end";
-//            break;
-//        case FRAME:
-//            type="frame";
-//            break;
-//        }
-//        std::cout << type << ", "<< i.label << ", " << i.time <<"\n";
-//    }
-//    times.clear();
-//}
-
-
-
-Profile::Profile( std::string label ): label( label ){
-    if( !enabled )
-        return;
-
-    times.push_back( Point(START, label, TimeElapsed(start) ) );
-}
-
-
-
-Profile::~Profile(){
-    if( !enabled )
-        return;
-
-    times.push_back( Point(END, label, TimeElapsed(start) ) );
-}
-
-
-
-class ProfilerStartCmd: public Cmd::StaticCmd {
-public:
-    ProfilerStartCmd(): Cmd::StaticCmd("profiler.start", Cmd::RENDERER, "prints to the console") {
+        return std::chrono::duration_cast < std::chrono::microseconds > (tmp).count();
     }
 
-    void Run(const Cmd::Args& args) const OVERRIDE {
-
-        enabled = true;
-        start   = std::chrono::high_resolution_clock::now();
-
-    }
-};
-
-static ProfilerStartCmd ProfilerStartCmdRegistration;
 
 
+    void Update(){
+        if(!enabled)
+            return;
 
-class ProfilerStopCmd: public Cmd::StaticCmd {
-public:
-    ProfilerStopCmd(): Cmd::StaticCmd("profiler.stop", Cmd::RENDERER, "prints to the console") {
+        samples.push_back(Point(FRAME,"", TimeElapsed(start)));
     }
 
-    void Run(const Cmd::Args& args) const OVERRIDE {
 
-        enabled=false;
 
-        uint padding=0;
-        std::map <uint, std::chrono::microseconds::rep> levels;
+    Profile::Profile( std::string label ): label( label ){
+        if(!enabled)
+            return;
 
-        for ( auto& i : times ) {
+        samples.push_back( Point( START, label, TimeElapsed(start) ) );
+    }
 
-            if( i.type == FRAME ){
-                Print("\n");
-                continue;
-            }
 
-            if( i.type == START ){
-                padding++;
-                levels[padding]=i.time;
-            } else if ( i.type == END ){
-                std::string padstr;
-                for( char j=0; j<padding; j++ )
-                    padstr += "    ";
 
-                Print("%s %s %d",padstr, i.label, i.time - levels[padding] );
-                padstr="";
-                padding--;
-            }
+    Profile::~Profile(){
+        if(!enabled)
+            return;
+
+        samples.push_back( Point( END, label, TimeElapsed(start) ) );
+    }
+
+
+
+    class ProfilerStartCmd: public Cmd::StaticCmd {
+    public:
+        ProfilerStartCmd(): Cmd::StaticCmd("profiler.start", Cmd::RENDERER, "prints to the console") {
         }
 
-        times.clear();
-    }
-};
+        void Run(const Cmd::Args& args) const OVERRIDE {
 
-static ProfilerStopCmd ProfilerStopCmdRegistration;
+            if(enabled){
+                Print("Profiling is already active!");
+                return;
+            }
 
+            enabled = true;
+            start   = std::chrono::high_resolution_clock::now();
+
+        }
+    };
+
+    static ProfilerStartCmd ProfilerStartCmdRegistration;
+
+
+
+    class ProfilerStopCmd: public Cmd::StaticCmd {
+    public:
+        ProfilerStopCmd(): Cmd::StaticCmd("profiler.stop", Cmd::RENDERER, "prints to the console") {
+        }
+
+        void Run(const Cmd::Args& args) const OVERRIDE {
+
+            enabled=false;
+
+
+            auto file = FS::HomePath::OpenWrite("profiler.log");
+
+            std::string line;
+
+                std::string type;
+
+                for (auto& i : samples) {
+
+                    switch(i.type){
+                    case START:
+                        type="START";
+                        break;
+                    case END:
+                        type="END";
+                        break;
+                    case FRAME:
+                        type="FRAME";
+                        break;
+                    }
+
+                    line=type + ", " + i.label + ", " + std::to_string(i.time) + ";\n";
+                    file.Write(line.c_str(), line.length());
+
+                }
+
+            file.Close();
+            samples.clear();
+        }
+    };
+
+    static ProfilerStopCmd ProfilerStopCmdRegistration;
 
 
 }
