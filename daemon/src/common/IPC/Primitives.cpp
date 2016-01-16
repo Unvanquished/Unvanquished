@@ -160,7 +160,7 @@ FileHandle FileHandle::FromDesc(const FileDesc& desc)
 #endif
 #ifdef _WIN32
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
-	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(desc.handle), modes[mode]);
+	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(desc.handle), modes[Util::ordinal(mode)]);
 	if (fd == -1) {
 		CloseHandle(desc.handle);
 		return FileHandle();

@@ -75,14 +75,14 @@ Iter binary_find(Iter begin, Iter end, const T& value, Compare comp)
  * Enum to integral
  */
 template<class E, class R = typename std::underlying_type<E>::type>
-CONSTEXPR R ordinal(E e) { return static_cast<R>(e); }
+constexpr R ordinal(E e) { return static_cast<R>(e); }
 
 /**
  * Integral to enum
  * Prefer ordinal, as that's guaranteed to be valid
  */
 template<class E, class I = typename std::underlying_type<E>::type>
-CONSTEXPR E enum_cast(I i) { return static_cast<E>(i); }
+constexpr E enum_cast(I i) { return static_cast<E>(i); }
 
 /**
  * Enum to string

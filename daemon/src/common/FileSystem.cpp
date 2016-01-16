@@ -236,7 +236,7 @@ inline int my_fseek(FILE* fd, offset_t off, int whence)
 #endif
 }
 #ifdef _WIN32
-using my_stat_t = struct _stati64;
+typedef struct _stati64 my_stat_t;
 #elif defined(__APPLE__) || defined(__native_client__)
 using my_stat_t = struct stat;
 #elif defined(__linux__)
