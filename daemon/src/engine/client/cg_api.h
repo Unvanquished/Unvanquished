@@ -216,8 +216,8 @@ void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivi
 int             trap_Key_GetCatcher();
 void            trap_Key_SetCatcher( int catcher );
 void            trap_Key_SetBinding( int keyNum, int team, const char *cmd );
-void            trap_Key_ClearCmdButtons( void );
-void            trap_Key_ClearStates( void );
+void            trap_Key_ClearCmdButtons();
+void            trap_Key_ClearStates();
 std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys );
 void            trap_SetMouseMode( MouseMode mode );
 void            trap_S_StopBackgroundTrack();
