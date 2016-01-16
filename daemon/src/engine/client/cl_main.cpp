@@ -3260,11 +3260,7 @@ bool CL_InitRef( )
 	ri.Free = Z_Free;
 	ri.Tag_Free = CL_RefTagFree;
 	ri.Hunk_Clear = Hunk_ClearToMark;
-#ifdef HUNK_DEBUG
-	ri.Hunk_AllocDebug = Hunk_AllocDebug;
-#else
 	ri.Hunk_Alloc = Hunk_Alloc;
-#endif
 	ri.Hunk_AllocateTempMemory = Hunk_AllocateTempMemory;
 	ri.Hunk_FreeTempMemory = Hunk_FreeTempMemory;
 

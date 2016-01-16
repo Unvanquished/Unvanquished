@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // gl_shader.cpp -- GLSL shader handling
 
+#include <common/FileSystem.h>
 #include "gl_shader.h"
 
 // We currently write GLShaderHeader to a file and memcpy all over it.
@@ -449,8 +450,8 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	AddDefine( env, "M_PI", static_cast<float>( M_PI ) );
 	AddDefine( env, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 
-	float fbufWidthScale = Q_recip( ( float ) glConfig.vidWidth );
-	float fbufHeightScale = Q_recip( ( float ) glConfig.vidHeight );
+	float fbufWidthScale = 1.0f / glConfig.vidWidth;
+	float fbufHeightScale = 1.0f / glConfig.vidHeight;
 
 	AddDefine( env, "r_FBufScale", fbufWidthScale, fbufHeightScale );
 

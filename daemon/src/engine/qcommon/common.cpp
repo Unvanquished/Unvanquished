@@ -46,6 +46,7 @@ Maryland 20850 USA.
 #include "framework/ConsoleHistory.h"
 #include "framework/LogSystem.h"
 #include "framework/System.h"
+#include <common/FileSystem.h>
 
 // htons
 #ifdef _WIN32
@@ -618,110 +619,6 @@ void Com_Free_Aligned( void *ptr )
 
 /*
 =================
-Hunk_Log
-=================
-*/
-void Hunk_Log()
-{
-	hunkblock_t *block;
-	char        buf[ 4096 ];
-	int         size, numBlocks;
-
-	if ( !logfile || !FS::IsInitialized() )
-	{
-		return;
-	}
-
-	size = 0;
-	numBlocks = 0;
-	Com_sprintf( buf, sizeof( buf ), "\r\n================\r\nHunk log\r\n================\r\n" );
-	FS_Write( buf, strlen( buf ), logfile );
-
-	for ( block = hunkblocks; block; block = block->next )
-	{
-#ifdef HUNK_DEBUG
-		Com_sprintf( buf, sizeof( buf ), "size = %8d: %s, line: %d (%s)\r\n", block->size, block->file, block->line, block->label );
-		FS_Write( buf, strlen( buf ), logfile );
-#endif
-		size += block->size;
-		numBlocks++;
-	}
-
-	Com_sprintf( buf, sizeof( buf ), "%d Hunk memory\r\n", size );
-	FS_Write( buf, strlen( buf ), logfile );
-	Com_sprintf( buf, sizeof( buf ), "%d hunk blocks\r\n", numBlocks );
-	FS_Write( buf, strlen( buf ), logfile );
-}
-
-/*
-=================
-Hunk_SmallLog
-=================
-*/
-void Hunk_SmallLog()
-{
-	hunkblock_t *block, *block2;
-	char        buf[ 4096 ];
-	int         size, locsize, numBlocks;
-
-	if ( !logfile || !FS::IsInitialized() )
-	{
-		return;
-	}
-
-	for ( block = hunkblocks; block; block = block->next )
-	{
-		block->printed = false;
-	}
-
-	size = 0;
-	numBlocks = 0;
-	Com_sprintf( buf, sizeof( buf ), "\r\n================\r\nHunk Small log\r\n================\r\n" );
-	FS_Write( buf, strlen( buf ), logfile );
-
-	for ( block = hunkblocks; block; block = block->next )
-	{
-		if ( block->printed )
-		{
-			continue;
-		}
-
-		locsize = block->size;
-
-		for ( block2 = block->next; block2; block2 = block2->next )
-		{
-			if ( block->line != block2->line )
-			{
-				continue;
-			}
-
-			if ( Q_stricmp( block->file, block2->file ) )
-			{
-				continue;
-			}
-
-			size += block2->size;
-			locsize += block2->size;
-			block2->printed = true;
-		}
-
-#ifdef HUNK_DEBUG
-		Com_sprintf( buf, sizeof( buf ), "size = %8d (%6.2f MB / %6.2f MB): %s, line: %d (%s)\r\n", locsize,
-		             locsize / Square( 1024.f ), ( size + block->size ) / Square( 1024.f ), block->file, block->line, block->label );
-		FS_Write( buf, strlen( buf ), logfile );
-#endif
-		size += block->size;
-		numBlocks++;
-	}
-
-	Com_sprintf( buf, sizeof( buf ), "%d Hunk memory\r\n", size );
-	FS_Write( buf, strlen( buf ), logfile );
-	Com_sprintf( buf, sizeof( buf ), "%d hunk blocks\r\n", numBlocks );
-	FS_Write( buf, strlen( buf ), logfile );
-}
-
-/*
-=================
 Com_InitHunkMemory
 =================
 */
@@ -753,10 +650,6 @@ void Com_InitHunkMemory()
 	Hunk_Clear();
 
 	Cmd_AddCommand( "meminfo", Com_Meminfo_f );
-#ifdef HUNK_DEBUG
-	Cmd_AddCommand( "hunklog", Hunk_Log );
-	Cmd_AddCommand( "hunksmalllog", Hunk_SmallLog );
-#endif
 }
 
 /*
@@ -820,9 +713,6 @@ void Hunk_Clear()
 	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
 	Com_DPrintf( "Hunk_Clear: reset the hunk ok\n" );
-#ifdef HUNK_DEBUG
-	hunkblocks = nullptr;
-#endif
 }
 
 static void Hunk_SwapBanks()
@@ -852,13 +742,8 @@ Hunk_Alloc
 Allocate permanent (until the hunk is cleared) memory
 =================
 */
-#ifdef HUNK_DEBUG
-void           *Hunk_AllocDebug( int size, ha_pref, const char *label, const char *file, int line )
-{
-#else
 void           *Hunk_Alloc( int size, ha_pref)
 {
-#endif
 	void *buf;
 
 	if ( s_hunkData == nullptr )
@@ -868,23 +753,12 @@ void           *Hunk_Alloc( int size, ha_pref)
 
 	Hunk_SwapBanks();
 
-#ifdef HUNK_DEBUG
-	size += SIZEOF_HUNKBLOCK_T;
-#endif
-
 	// round to cacheline
 	size = ( size + 31 ) & ~31;
 
 	if ( hunk_low.temp + hunk_high.temp + size > s_hunkTotal )
 	{
-#ifdef HUNK_DEBUG
-		Hunk_Log();
-		Hunk_SmallLog();
-
-		Com_Error( ERR_DROP, "Hunk_Alloc failed on %i: %s, line: %d (%s)", size, file, line, label );
-#else
 		Com_Error( ERR_DROP, "Hunk_Alloc failed on %i", size );
-#endif
 	}
 
 	if ( hunk_permanent == &hunk_low )
@@ -901,21 +775,6 @@ void           *Hunk_Alloc( int size, ha_pref)
 	hunk_permanent->temp = hunk_permanent->permanent;
 
 	memset( buf, 0, size );
-
-#ifdef HUNK_DEBUG
-	{
-		hunkblock_t *block;
-
-		block = ( hunkblock_t * ) buf;
-		block->size = size - SIZEOF_HUNKBLOCK_T;
-		block->file = file;
-		block->label = label;
-		block->line = line;
-		block->next = hunkblocks;
-		hunkblocks = block;
-		buf = ( ( byte * ) buf ) + SIZEOF_HUNKBLOCK_T;
-	}
-#endif
 
 	// Ridah, update the com_hunkused cvar in increments, so we don't update it too often, since this cvar call isn't very efficent
 	if ( ( hunk_low.permanent + hunk_high.permanent ) > com_hunkused->integer + 2500 )
@@ -957,10 +816,6 @@ void           *Hunk_AllocateTempMemory( int size )
 
 	if ( hunk_temp->temp + hunk_permanent->permanent + size > s_hunkTotal )
 	{
-#ifdef HUNK_DEBUG
-		Hunk_Log();
-		Hunk_SmallLog();
-#endif
 		Com_Error( ERR_DROP, "Hunk_AllocateTempMemory: failed on %i", size );
 	}
 
