@@ -1460,7 +1460,7 @@ static const struct
 };
 // Following is no. of bits required for modifiers in the above list
 // (it doesn't reflect the array length)
-#define NUM_RECOGNISED_MODIFIERS 8
+static const int NUM_RECOGNISED_MODIFIERS = 8;
 
 struct modifierMask_t
 {

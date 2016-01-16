@@ -58,7 +58,7 @@ theora:
 
 #include "client.h"
 
-#define OGG_BUFFER_SIZE 8 * 1024 //4096
+static const int OGG_BUFFER_SIZE = 8 * 1024; //4096
 
 struct cin_ogm_t
 {
@@ -172,10 +172,10 @@ static int loadPagesToStreams()
 	return r;
 }
 
-#define SIZEOF_RAWBUFF    4 * 1024
+static const int SIZEOF_RAWBUFF = 4 * 1024;
 
-#define MIN_AUDIO_PRELOAD 400 // in ms
-#define MAX_AUDIO_PRELOAD 500 // in ms
+static const int MIN_AUDIO_PRELOAD = 400; // in ms
+static const int MAX_AUDIO_PRELOAD = 500; // in ms
 
 /*
 

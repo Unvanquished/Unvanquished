@@ -50,7 +50,7 @@ struct handleData_t {
 	size_t filePos;
 };
 
-#define MAX_FILE_HANDLES 64
+static const int MAX_FILE_HANDLES = 64;
 static handleData_t handleTable[MAX_FILE_HANDLES];
 static std::vector<std::tuple<std::string, std::string, uint32_t>> fs_missingPaks;
 

@@ -308,7 +308,7 @@ static void CM_SubdivideGridColumns( cGrid_t *grid )
 CM_ComparePoints
 ======================
 */
-#define POINT_EPSILON 0.1
+static const float POINT_EPSILON = 0.1;
 static bool CM_ComparePoints( float *a, float *b )
 {
 	float d;

@@ -390,9 +390,11 @@ ChopWindingBehindPlane()
 clips a winding to the fragment behind the plane
 */
 
-#define SIDE_FRONT 0
-#define SIDE_BACK  1
-#define SIDE_ON    2
+enum {
+	SIDE_FRONT,
+	SIDE_BACK,
+	SIDE_ON,
+};
 
 static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_VERTS ],
                                     int *numOutPoints, vec3_t outPoints[ MAX_DECAL_VERTS ], vec4_t plane, vec_t epsilon )

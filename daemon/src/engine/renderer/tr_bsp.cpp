@@ -444,7 +444,7 @@ static char **R_LoadExternalLightmaps(
 R_LoadLightmaps
 ===============
 */
-#define LIGHTMAP_SIZE 128
+static const int LIGHTMAP_SIZE = 128;
 static void R_LoadLightmaps( lump_t *l, const char *bspName )
 {
 	tr.fatLightmapSize = 0;
@@ -6073,7 +6073,7 @@ void R_PrecacheInteractions()
 	ri.Printf( printParm_t::PRINT_DEVELOPER, "lights precaching time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
 }
 
-#define HASHTABLE_SIZE 7919 // 32749 // 2039    /* prime, use % */
+static const int HASHTABLE_SIZE = 7919; // 32749 // 2039    /* prime, use % */
 #define HASH_USE_EPSILON
 
 #ifdef HASH_USE_EPSILON

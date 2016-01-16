@@ -40,7 +40,7 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 
-#define MAX_CMD_BUFFER 131072
+static const int MAX_CMD_BUFFER = 131072;
 
 struct cmdContext_t
 {
@@ -305,7 +305,7 @@ Escape all '\' '"' '$', '/' if marking a comment, and ';' if not in quotation ma
 Optionally wrap in ""
 ============
 */
-#define ESCAPEBUFFER_SIZE BIG_INFO_STRING
+static const int ESCAPEBUFFER_SIZE = BIG_INFO_STRING;
 static char *GetEscapeBuffer()
 {
 	static char escapeBuffer[ 4 ][ ESCAPEBUFFER_SIZE ];

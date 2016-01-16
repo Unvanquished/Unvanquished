@@ -1429,7 +1429,7 @@ void CL_Connect_f()
 	Cvar_Set( "cl_currentServerIP", serverString );
 }
 
-#define MAX_RCON_MESSAGE 1024
+static const int MAX_RCON_MESSAGE = 1024;
 
 /*
 =====================
@@ -2315,7 +2315,7 @@ void CL_GSRFeaturedLabel( byte **data, char *buf, int size )
 	}
 }
 
-#define MAX_SERVERSPERPACKET 256
+static const int MAX_SERVERSPERPACKET = 256;
 
 /*
 ===================

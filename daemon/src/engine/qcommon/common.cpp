@@ -59,10 +59,10 @@ Maryland 20850 USA.
 #include <SDL_mutex.h>
 #endif
 
-#define MAX_NUM_ARGVS             50
+static const int MAX_NUM_ARGVS = 50;
 
-#define MIN_COMHUNKMEGS 256
-#define DEF_COMHUNKMEGS 512
+static const int MIN_COMHUNKMEGS = 256;
+static const int DEF_COMHUNKMEGS = 512;
 
 static fileHandle_t logfile;
 
@@ -287,7 +287,7 @@ quake3 set test blah + map test
 ============================================================================
 */
 
-#define MAX_CONSOLE_LINES 32
+static const int MAX_CONSOLE_LINES = 32;
 int  com_numConsoleLines;
 char *com_consoleLines[ MAX_CONSOLE_LINES ];
 
@@ -497,8 +497,8 @@ Goals:
 ==============================================================================
 */
 
-#define HUNK_MAGIC      0x89537892
-#define HUNK_FREE_MAGIC 0x89537893
+static const int HUNK_MAGIC      = 0x89537892;
+static const int HUNK_FREE_MAGIC = 0x89537893;
 
 struct hunkHeader_t
 {
@@ -911,8 +911,8 @@ EVENT LOOP
 ========================================================================
 */
 
-#define MAX_QUEUED_EVENTS  1024
-#define MASK_QUEUED_EVENTS ( MAX_QUEUED_EVENTS - 1 )
+static const int MAX_QUEUED_EVENTS  = 1024;
+static const int MASK_QUEUED_EVENTS = ( MAX_QUEUED_EVENTS - 1 );
 
 static sysEvent_t eventQueue[ MAX_QUEUED_EVENTS ];
 static int        eventHead = 0;

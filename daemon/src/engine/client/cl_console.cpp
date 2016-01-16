@@ -42,8 +42,8 @@ Maryland 20850 USA.
 #include "framework/CommandSystem.h"
 
 static const Color::Color console_color = Color::White;
-#define DEFAULT_CONSOLE_WIDTH 78
-#define MAX_CONSOLE_WIDTH   1024
+static const int DEFAULT_CONSOLE_WIDTH = 78;
+static const int MAX_CONSOLE_WIDTH   = 1024;
 
 int g_console_field_width = DEFAULT_CONSOLE_WIDTH;
 
@@ -85,10 +85,10 @@ cvar_t    *con_colorGreen;
  */
 cvar_t    *con_debug;
 
-#define ANIMATION_TYPE_NONE   0
-#define ANIMATION_TYPE_SCROLL_DOWN 1
-#define ANIMATION_TYPE_FADE   2
-#define ANIMATION_TYPE_BOTH   3
+static const int ANIMATION_TYPE_NONE   = 0;
+static const int ANIMATION_TYPE_SCROLL_DOWN = 1;
+static const int ANIMATION_TYPE_FADE   = 2;
+static const int ANIMATION_TYPE_BOTH   = 3;
 
 /*
 ================

@@ -74,9 +74,9 @@ cvar_t *cl_IRC_reconnect_delay;
  * The constants below control the timeouts.
  */
 
-#define IRC_TIMEOUT_MS       250
-#define IRC_TIMEOUT_US       ( IRC_TIMEOUT_MS * 1000 )
-#define IRC_TIMEOUTS_PER_SEC ( 1000 / IRC_TIMEOUT_MS )
+static const int IRC_TIMEOUT_MS       = 250;
+static const int IRC_TIMEOUT_US       = ( IRC_TIMEOUT_MS * 1000 );
+static const int IRC_TIMEOUTS_PER_SEC = ( 1000 / IRC_TIMEOUT_MS );
 
 /* Ctype-like macros */
 #define IS_UPPER(c) ( ( c ) >= 'A' && ( c ) <= 'Z' )
@@ -89,22 +89,22 @@ cvar_t *cl_IRC_reconnect_delay;
 #define IS_CLEAN(c) ( IS_ALNUM(c) || IS_SPECL(c)) /* RFC 2812 */
 
 /* IRC command status; used to determine if connection should be re-attempted or not */
-#define IRC_CMD_SUCCESS         0 // Success
-#define IRC_CMD_FATAL           1 // Fatal error, don't bother retrying
-#define IRC_CMD_RETRY           2 // Recoverable error, command should be attempted again
+enum {
+	IRC_CMD_SUCCESS, // Success
+	IRC_CMD_FATAL, // Fatal error, don't bother retrying
+	IRC_CMD_RETRY, // Recoverable error, command should be attempted again
+};
 
 /* Constants that indicate the state of the IRC thread. */
-#define IRC_THREAD_DEAD         0 // Thread is dead or hasn't been started
-#define IRC_THREAD_INITIALISING 1 // Thread is being initialised
-#define IRC_THREAD_CONNECTING   2 // Thread is attempting to connect
-#define IRC_THREAD_SETNICK      3 // Thread is trying to set the player's
-// nick
-#define IRC_THREAD_CONNECTED    4 // Thread established a connection to
-// the server and will attempt to join
-// the channel
-#define IRC_THREAD_JOINED       5 // Channel joined, ready to send or
-// receive messages
-#define IRC_THREAD_QUITTING     6 // The thread is being killed
+enum {
+	IRC_THREAD_DEAD, // Thread is dead or hasn't been started
+	IRC_THREAD_INITIALISING, // Thread is being initialised
+	IRC_THREAD_CONNECTING, // Thread is attempting to connect
+	IRC_THREAD_SETNICK, // Thread is trying to set the player's nick
+	IRC_THREAD_CONNECTED, // Thread established a connection to the server and will attempt to join the channel
+	IRC_THREAD_JOINED, // Channel joined, ready to send or receive messages
+	IRC_THREAD_QUITTING, // The thread is being killed
+};
 
 /* Function that sets the thread status when the thread dies. Since that is
  * system-dependent, it can't be done in the thread's main code.
@@ -125,23 +125,23 @@ static irc_socket_t IRC_Socket; // Socket
  * states' definitions as well as a variable containing the current state
  * and various other variables for message building.
  */
-#define IRC_PARSER_RECOVERY       ( -1 ) // Error recovery
-#define IRC_PARSER_START          0 // Start of a message
-#define IRC_PARSER_PFX_NOS_START  1 // Prefix start
-#define IRC_PARSER_PFX_NOS        2 // Prefix, server or nick name
-#define IRC_PARSER_PFX_USER_START 3 // Prefix, start of user name
-#define IRC_PARSER_PFX_USER       4 // Prefix, user name
-#define IRC_PARSER_PFX_HOST_START 5 // Prefix, start of host name
-#define IRC_PARSER_PFX_HOST       6 // Prefix, host name
-#define IRC_PARSER_COMMAND_START  7 // Start of command after a prefix
-#define IRC_PARSER_STR_COMMAND    8 // String command
-#define IRC_PARSER_NUM_COMMAND_2  9 // Numeric command, second character
-#define IRC_PARSER_NUM_COMMAND_3  10 // Numeric command, third character
-#define IRC_PARSER_NUM_COMMAND_4  11 // Numeric command end
-#define IRC_PARSER_PARAM_START    12 // Parameter start
-#define IRC_PARSER_MID_PARAM      13 // "Middle" parameter
-#define IRC_PARSER_TRAILING_PARAM 14 // Trailing parameter
-#define IRC_PARSER_LF             15 // End of line
+static const int IRC_PARSER_RECOVERY       = ( -1 ); // Error recovery
+static const int IRC_PARSER_START          = 0; // Start of a message
+static const int IRC_PARSER_PFX_NOS_START  = 1; // Prefix start
+static const int IRC_PARSER_PFX_NOS        = 2; // Prefix, server or nick name
+static const int IRC_PARSER_PFX_USER_START = 3; // Prefix, start of user name
+static const int IRC_PARSER_PFX_USER       = 4; // Prefix, user name
+static const int IRC_PARSER_PFX_HOST_START = 5; // Prefix, start of host name
+static const int IRC_PARSER_PFX_HOST       = 6; // Prefix, host name
+static const int IRC_PARSER_COMMAND_START  = 7; // Start of command after a prefix
+static const int IRC_PARSER_STR_COMMAND    = 8; // String command
+static const int IRC_PARSER_NUM_COMMAND_2  = 9; // Numeric command, second character
+static const int IRC_PARSER_NUM_COMMAND_3  = 10; // Numeric command, third character
+static const int IRC_PARSER_NUM_COMMAND_4  = 11; // Numeric command end
+static const int IRC_PARSER_PARAM_START    = 12; // Parameter start
+static const int IRC_PARSER_MID_PARAM      = 13; // "Middle" parameter
+static const int IRC_PARSER_TRAILING_PARAM = 14; // Trailing parameter
+static const int IRC_PARSER_LF             = 15; // End of line
 
 static int      IRC_ParserState;
 static bool IRC_ParserInMessage;
@@ -240,14 +240,14 @@ static struct irc_user_t IRC_User;
  * Events that can be displayed and flags that apply to them.
  */
 
-#define IRC_EVT_SAY         0x00000000 // Standard message
-#define IRC_EVT_ACT         0x00000001 // /me message
-#define IRC_EVT_JOIN        0x00000002 // Join
-#define IRC_EVT_PART        0x00000003 // Part
-#define IRC_EVT_QUIT        0x00000004 // Quit
-#define IRC_EVT_KICK        0x00000005 // Kick
-#define IRC_EVT_NICK_CHANGE 0x00000006 // Nick change
-#define IRC_EVTF_SELF       0x00000100 // Event applies to current user
+static const int IRC_EVT_SAY         = 0x00000000; // Standard message
+static const int IRC_EVT_ACT         = 0x00000001; // /me message
+static const int IRC_EVT_JOIN        = 0x00000002; // Join
+static const int IRC_EVT_PART        = 0x00000003; // Part
+static const int IRC_EVT_QUIT        = 0x00000004; // Quit
+static const int IRC_EVT_KICK        = 0x00000005; // Kick
+static const int IRC_EVT_NICK_CHANGE = 0x00000006; // Nick change
+static const int IRC_EVTF_SELF       = 0x00000100; // Event applies to current user
 
 #define IRC_EventType(evt)         ( evt & 0xff )
 #define IRC_EventIsSelf(evt)       ( ( evt & IRC_EVTF_SELF ) == IRC_EVTF_SELF )
@@ -264,14 +264,14 @@ static struct irc_user_t IRC_User;
  */
 
 /* Rate limiter threshold - above that, no response */
-#define IRC_LIMIT_THRESHOLD 3
+static const int IRC_LIMIT_THRESHOLD = 3;
 
 /* Rate limiter increase per check */
-#define IRC_LIMIT_INCREASE  1
+static const int IRC_LIMIT_INCREASE  = 1;
 
-#define IRC_RL_MESSAGE      0
-#define IRC_RL_PING         1
-#define IRC_RL_VERSION      2
+static const int IRC_RL_MESSAGE      = 0;
+static const int IRC_RL_PING         = 1;
+static const int IRC_RL_VERSION      = 2;
 
 static unsigned int IRC_RateLimiter[ 3 ];
 
@@ -1917,7 +1917,7 @@ static int CTCP_Version( bool is_channel, const char * )
 /*--------------------------------------------------------------------------*/
 
 /* Maximal message length */
-#define IRC_MAX_SEND_LEN 400
+static const int IRC_MAX_SEND_LEN = 400;
 
 /*
  * The message sending queue is used to avoid having to send stuff from the
@@ -1933,7 +1933,7 @@ struct irc_sendqueue_t
 };
 
 /* Length of the IRC send queue */
-#define IRC_SENDQUEUE_SIZE 16
+static const int IRC_SENDQUEUE_SIZE = 16;
 
 /* Index of the next message to process */
 static int                    IRC_SendQueue_Process = 0;

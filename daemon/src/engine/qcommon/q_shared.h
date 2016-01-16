@@ -1434,14 +1434,14 @@ void         ByteToDir( int b, vec3_t dir );
 
 #define MAX_TOKENLENGTH 1024
 
-#ifndef TT_STRING
 //token types
-#define TT_STRING      1 // string
-#define TT_LITERAL     2 // literal
-#define TT_NUMBER      3 // number
-#define TT_NAME        4 // name
-#define TT_PUNCTUATION 5 // punctuation
-#endif
+enum {
+    TT_STRING, // string
+    TT_LITERAL, // literal
+    TT_NUMBER, // number
+    TT_NAME, // name
+    TT_PUNCTUATION, // punctuation
+};
 
 	struct pc_token_t
 	{

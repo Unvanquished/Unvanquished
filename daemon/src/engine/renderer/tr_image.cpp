@@ -2507,8 +2507,8 @@ float R_FogFactor( float s, float t )
 R_CreateFogImage
 ================
 */
-#define FOG_S 256
-#define FOG_T 32
+static const int FOG_S = 256;
+static const int FOG_T = 32;
 static void R_CreateFogImage()
 {
 	int   x, y;
@@ -2551,7 +2551,7 @@ static void R_CreateFogImage()
 R_CreateDefaultImage
 ==================
 */
-#define DEFAULT_SIZE 128
+static const int DEFAULT_SIZE = 128;
 static void R_CreateDefaultImage()
 {
 	int  x;
@@ -2623,7 +2623,7 @@ static void R_CreateNoFalloffImage()
 					   8, 8, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
 }
 
-#define ATTENUATION_XY_SIZE 128
+static const int ATTENUATION_XY_SIZE = 128;
 static void R_CreateAttenuationXYImage()
 {
 	int  x, y;

@@ -43,10 +43,10 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 
-#define DEFAULT_CIN_WIDTH  512
-#define DEFAULT_CIN_HEIGHT 512
+static const int DEFAULT_CIN_WIDTH  = 512;
+static const int DEFAULT_CIN_HEIGHT = 512;
 
-#define MAX_VIDEO_HANDLES  16
+static const int MAX_VIDEO_HANDLES  = 16;
 
 static long ROQ_YY_tab[ 256 ];
 static long ROQ_UB_tab[ 256 ];

@@ -118,7 +118,7 @@ static bool            networkingEnabled = false;
 #ifndef BUILD_SERVER
 static bool            serverMode = false;
 #else
-#define serverMode (true)
+static const bool serverMode = true;
 #endif
 
 cvar_t                     *net_enabled;
@@ -156,7 +156,7 @@ static struct sockaddr_in6 boundto;
 // use an admin local address per default so that network admins can decide on how to handle quake3 traffic.
 #define NET_MULTICAST_IP6 "ff04::696f:7175:616b:6533"
 
-#define MAX_IPS           32
+static const int MAX_IPS = 32;
 
 struct nip_localaddr_t
 {
@@ -1697,7 +1697,7 @@ static void NET_GetLocalAddress()
 
 #endif
 
-#define MAX_TRY_PORTS 10
+static const int MAX_TRY_PORTS = 10;
 
 static int NET_EnsureValidPortNo( int port )
 {

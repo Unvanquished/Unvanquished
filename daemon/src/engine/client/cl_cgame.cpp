@@ -756,7 +756,7 @@ or bursted delayed packets.
 =================
 */
 
-#define RESET_TIME 500
+static const int RESET_TIME = 500;
 
 void CL_AdjustTimeDelta()
 {

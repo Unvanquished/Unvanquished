@@ -96,7 +96,7 @@ Cvar::Cvar<bool> isLanOnly(
 
 #define LL( x ) x = LittleLong( x )
 
-#define MAX_CHALLENGE_LEN 128
+static const int MAX_CHALLENGE_LEN = 128;
 
 /*
 =============================================================================
@@ -333,7 +333,7 @@ changes from empty to non-empty, and full to non-full,
 but not on every player enter or exit.
 ================
 */
-#define HEARTBEAT_MSEC (300 * 1000)
+static const int HEARTBEAT_MSEC = (300 * 1000);
 #define HEARTBEAT_GAME "Unvanquished"
 #define HEARTBEAT_DEAD "Unvanquished-dead"
 
@@ -815,7 +815,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	// the buffer overflow will be fixed in > 1.31 clients
 	// but we want a server side fix
 	// we must NEVER send an OOB message that will be > 1.31 MAXPRINTMSG (4096)
-#define SV_OUTPUTBUF_LENGTH ( 256 - 16 )
+	const int SV_OUTPUTBUF_LENGTH = ( 256 - 16 );
 	static unsigned int lasttime = 0;
 	// TTimo - show_bug.cgi?id=534
 	time = Com_Milliseconds();

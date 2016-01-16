@@ -95,10 +95,10 @@ Maryland 20850 USA.
 
 FT_Library ftLibrary = nullptr;
 
-#define FONT_SIZE 512
+static const int FONT_SIZE = 512;
 
-#define MAX_FONTS 16
-#define MAX_FILES ( MAX_FONTS )
+static const int MAX_FONTS = 16;
+static const int MAX_FILES = ( MAX_FONTS );
 static fontInfo_t registeredFont[ MAX_FONTS ];
 static unsigned int fontUsage[ MAX_FONTS ];
 static unsigned int fontUsageVM[ MAX_FONTS ];

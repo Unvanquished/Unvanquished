@@ -40,7 +40,7 @@ Maryland 20850 USA.
 #include "bot_navdraw.h"
 #include "nav.h"
 
-#define DEFAULT_CONNECTION_SIZE 50
+static const int DEFAULT_CONNECTION_SIZE = 50;
 static int connectionSize = DEFAULT_CONNECTION_SIZE;
 
 bool GetPointPointedTo( NavData_t *nav, rVec &p )

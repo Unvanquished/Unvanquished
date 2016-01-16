@@ -1014,8 +1014,8 @@ void MSG_PrioritiseEntitystateFields()
 
 // if (int)f == f and (int)f + ( 1<<(FLOAT_INT_BITS-1) ) < ( 1 << FLOAT_INT_BITS )
 // the float will be sent with FLOAT_INT_BITS, otherwise all 32 bits will be sent
-#define FLOAT_INT_BITS 13
-#define FLOAT_INT_BIAS ( 1 << ( FLOAT_INT_BITS - 1 ) )
+static const int FLOAT_INT_BITS = 13;
+static const int FLOAT_INT_BIAS = ( 1 << ( FLOAT_INT_BITS - 1 ) );
 
 /*
 ==================

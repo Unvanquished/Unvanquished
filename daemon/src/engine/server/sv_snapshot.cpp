@@ -274,7 +274,7 @@ Build a client snapshot structure
 */
 
 //#define   MAX_SNAPSHOT_ENTITIES   1024
-#define MAX_SNAPSHOT_ENTITIES 2048
+static const int MAX_SNAPSHOT_ENTITIES = 2048;
 
 struct snapshotEntityNumbers_t
 {
@@ -766,7 +766,7 @@ to take to clear, based on the current rate
 TTimo - use sv_maxRate or sv_dl_maxRate depending on regular or downloading client
 ====================
 */
-#define HEADER_RATE_BYTES 48 // include our header, IP header, and some overhead
+static const int HEADER_RATE_BYTES = 48; // include our header, IP header, and some overhead
 static int SV_RateMsec( client_t *client, int messageSize )
 {
 	int rate;

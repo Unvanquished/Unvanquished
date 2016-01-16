@@ -1208,7 +1208,7 @@ static void GLimp_InitExtensions()
 	GL_CheckErrors();
 }
 
-#define R_MODE_FALLBACK 3 // 640 * 480
+static const int R_MODE_FALLBACK = 3; // 640 * 480
 
 /* Support code for GLimp_Init */
 

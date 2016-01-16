@@ -37,10 +37,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define TITLE         "^2[ ^3" CLIENT_WINDOW_TITLE " Console ^2]"
 #endif
 #define PROMPT        "^3-> "
-#define INPUT_SCROLL  15
-#define LOG_SCROLL    5
-#define MAX_LOG_LINES 1024
-#define LOG_BUF_SIZE  65536
+static const int INPUT_SCROLL  = 15;
+static const int LOG_SCROLL    = 5;
+static const int MAX_LOG_LINES = 1024;
+static const int LOG_BUF_SIZE  = 65536;
 
 // TTY Console prototypes
 void CON_Shutdown_TTY();
@@ -66,7 +66,7 @@ static bool     forceRedraw = false;
 static int      stderr_fd;
 #endif
 
-#define LOG_LINES      ( LINES - 3 )
+static const int LOG_LINES = ( LINES - 3 );
 
 static const int CURSES_DEFAULT_COLOR = 32;
 

@@ -75,7 +75,7 @@ struct flare_t
 	vec3_t         color;
 };
 
-#define                 MAX_FLARES 128
+static const int MAX_FLARES = 128;
 
 flare_t r_flareStructs[ MAX_FLARES ];
 flare_t *r_activeFlares, *r_inactiveFlares;

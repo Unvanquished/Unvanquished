@@ -98,7 +98,7 @@ static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, bool down )
 		    SDL_GetKeyName( keysym->sym ), key, Key_KeynumToString( key ) );
 }
 
-#define MAX_CONSOLE_KEYS 16
+static const int MAX_CONSOLE_KEYS = 16;
 
 /*
 ===============

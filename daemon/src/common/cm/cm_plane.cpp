@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cm_local.h"
 
-#define PLANE_HASHES 8192
+static const int PLANE_HASHES = 8192;
 static cPlane_t *planeHashTable[ PLANE_HASHES ];
 
 int      numPlanes;
@@ -102,8 +102,8 @@ bool CM_PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec
 	return true;
 }
 
-#define NORMAL_EPSILON    0.0001
-#define DIST_EPSILON      0.02
+static const double NORMAL_EPSILON    = 0.0001;
+static const double DIST_EPSILON      = 0.02;
 
 /*
 ==================

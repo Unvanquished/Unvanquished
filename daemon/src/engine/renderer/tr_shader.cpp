@@ -24,13 +24,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "gl_shader.h"
 
-#define MAX_SHADERTABLE_HASH 1024
+static const int MAX_SHADERTABLE_HASH = 1024;
 static shaderTable_t *shaderTableHashTable[ MAX_SHADERTABLE_HASH ];
 
-#define FILE_HASH_SIZE       1024
+static const int FILE_HASH_SIZE       = 1024;
 static shader_t      *shaderHashTable[ FILE_HASH_SIZE ];
 
-#define MAX_SHADERTEXT_HASH  2048
+static const int MAX_SHADERTEXT_HASH  = 2048;
 static const char          **shaderTextHashTable[ MAX_SHADERTEXT_HASH ];
 
 static char          *s_shaderText;
@@ -5234,7 +5234,7 @@ Finds and loads all .shader files, combining them into
 a single large text block that can be scanned for shader names
 =====================
 */
-#define MAX_SHADER_FILES 4096
+static const int MAX_SHADER_FILES = 4096;
 static void ScanAndLoadShaderFiles()
 {
 	char **shaderFiles;

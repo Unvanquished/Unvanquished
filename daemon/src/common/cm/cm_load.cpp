@@ -38,11 +38,11 @@ Maryland 20850 USA.
 
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
-#define BOX_LEAF_BRUSHES 1 // ydnar
-#define BOX_BRUSHES      1
-#define BOX_SIDES        6
-#define BOX_LEAFS        2
-#define BOX_PLANES       12
+static const int BOX_LEAF_BRUSHES = 1; // ydnar
+static const int BOX_BRUSHES      = 1;
+static const int BOX_SIDES        = 6;
+static const int BOX_LEAFS        = 2;
+static const int BOX_PLANES       = 12;
 
 #define LL( x ) x = LittleLong( x )
 
@@ -508,7 +508,7 @@ void CMod_LoadBrushSides(const byte *const cmod_base, lump_t *l)
 	}
 }
 
-#define CM_EDGE_VERTEX_EPSILON 0.1f
+static const float CM_EDGE_VERTEX_EPSILON = 0.1f;
 
 /*
 =================
@@ -735,7 +735,7 @@ void CMod_LoadEntityString(const byte *const cmod_base, lump_t *l)
 CMod_LoadVisibility
 =================
 */
-#define VIS_HEADER 8
+static const int VIS_HEADER = 8;
 void CMod_LoadVisibility(const byte *const cmod_base, lump_t *l)
 {
 	int len = l->filelen;
@@ -764,8 +764,8 @@ void CMod_LoadVisibility(const byte *const cmod_base, lump_t *l)
 CMod_LoadSurfaces
 =================
 */
-#define MAX_PATCH_SIZE  64
-#define MAX_PATCH_VERTS ( MAX_PATCH_SIZE * MAX_PATCH_SIZE )
+static const int MAX_PATCH_SIZE  = 64;
+static const int MAX_PATCH_VERTS = ( MAX_PATCH_SIZE * MAX_PATCH_SIZE );
 void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts, lump_t *indexesLump)
 {
 	drawVert_t    *dv, *dv_p;

@@ -627,7 +627,7 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 Tess_SurfaceSprite
 ==============
 */
-#define NORMAL_EPSILON 0.0001
+static const float NORMAL_EPSILON = 0.0001;
 
 static void Tess_SurfaceSprite()
 {

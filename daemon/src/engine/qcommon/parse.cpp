@@ -25,20 +25,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 
 //script flags
-#define SCFL_NOERRORS            0x0001
-#define SCFL_NOWARNINGS          0x0002
-#define SCFL_NOSTRINGWHITESPACES 0x0004
-#define SCFL_NOSTRINGESCAPECHARS 0x0008
-#define SCFL_PRIMITIVE           0x0010
-#define SCFL_NOBINARYNUMBERS     0x0020
-#define SCFL_NONUMBERVALUES      0x0040
-
-//token types
-#define TT_STRING                1 // string
-#define TT_LITERAL               2 // literal
-#define TT_NUMBER                3 // number
-#define TT_NAME                  4 // name
-#define TT_PUNCTUATION           5 // punctuation
+static const int SCFL_NOERRORS            = 0x0001;
+static const int SCFL_NOWARNINGS          = 0x0002;
+static const int SCFL_NOSTRINGWHITESPACES = 0x0004;
+static const int SCFL_NOSTRINGESCAPECHARS = 0x0008;
+static const int SCFL_PRIMITIVE           = 0x0010;
+static const int SCFL_NOBINARYNUMBERS     = 0x0020;
+static const int SCFL_NONUMBERVALUES      = 0x0040;
 
 //string sub type
 //---------------
@@ -48,78 +41,79 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //    the ASCII code of the literal
 //number sub type
 //---------------
-#define TT_DECIMAL         0x0008 // decimal number
-#define TT_HEX             0x0100 // hexadecimal number
-#define TT_OCTAL           0x0200 // octal number
-#define TT_BINARY          0x0400 // binary number
-#define TT_FLOAT           0x0800 // floating point number
-#define TT_INTEGER         0x1000 // integer number
-#define TT_LONG            0x2000 // long number
-#define TT_UNSIGNED        0x4000 // unsigned number
+static const int TT_DECIMAL         = 0x0008; // decimal number
+static const int TT_HEX             = 0x0100; // hexadecimal number
+static const int TT_OCTAL           = 0x0200; // octal number
+static const int TT_BINARY          = 0x0400; // binary number
+static const int TT_FLOAT           = 0x0800; // floating point number
+static const int TT_INTEGER         = 0x1000; // integer number
+static const int TT_LONG            = 0x2000; // long number
+static const int TT_UNSIGNED        = 0x4000; // unsigned number
 //punctuation sub type
 //--------------------
-#define P_RSHIFT_ASSIGN    1
-#define P_LSHIFT_ASSIGN    2
-#define P_PARMS            3
-#define P_PRECOMPMERGE     4
+enum {
+	P_RSHIFT_ASSIGN,
+	P_LSHIFT_ASSIGN,
+	P_PARMS,
+	P_PRECOMPMERGE,
 
-#define P_LOGIC_AND        5
-#define P_LOGIC_OR         6
-#define P_LOGIC_GEQ        7
-#define P_LOGIC_LEQ        8
-#define P_LOGIC_EQ         9
-#define P_LOGIC_UNEQ       10
+	P_LOGIC_AND,
+	P_LOGIC_OR,
+	P_LOGIC_GEQ,
+	P_LOGIC_LEQ,
+	P_LOGIC_EQ,
+	P_LOGIC_UNEQ,
 
-#define P_MUL_ASSIGN       11
-#define P_DIV_ASSIGN       12
-#define P_MOD_ASSIGN       13
-#define P_ADD_ASSIGN       14
-#define P_SUB_ASSIGN       15
-#define P_INC              16
-#define P_DEC              17
+	P_MUL_ASSIGN,
+	P_DIV_ASSIGN,
+	P_MOD_ASSIGN,
+	P_ADD_ASSIGN,
+	P_SUB_ASSIGN,
+	P_INC,
+	P_DEC,
 
-#define P_BIN_AND_ASSIGN   18
-#define P_BIN_OR_ASSIGN    19
-#define P_BIN_XOR_ASSIGN   20
-#define P_RSHIFT           21
-#define P_LSHIFT           22
+	P_BIN_AND_ASSIGN,
+	P_BIN_OR_ASSIGN,
+	P_BIN_XOR_ASSIGN,
+	P_RSHIFT,
+	P_LSHIFT,
 
-#define P_POINTERREF       23
-#define P_CPP1             24
-#define P_CPP2             25
-#define P_MUL              26
-#define P_DIV              27
-#define P_MOD              28
-#define P_ADD              29
-#define P_SUB              30
-#define P_ASSIGN           31
+	P_POINTERREF,
+	P_CPP1,
+	P_CPP2,
+	P_MUL,
+	P_DIV,
+	P_MOD,
+	P_ADD,
+	P_SUB,
+	P_ASSIGN,
 
-#define P_BIN_AND          32
-#define P_BIN_OR           33
-#define P_BIN_XOR          34
-#define P_BIN_NOT          35
+	P_BIN_AND,
+	P_BIN_OR,
+	P_BIN_XOR,
+	P_BIN_NOT,
 
-#define P_LOGIC_NOT        36
-#define P_LOGIC_GREATER    37
-#define P_LOGIC_LESS       38
+	P_LOGIC_NOT,
+	P_LOGIC_GREATER,
+	P_LOGIC_LESS,
 
-#define P_REF              39
-#define P_COMMA            40
-#define P_SEMICOLON        41
-#define P_COLON            42
-#define P_QUESTIONMARK     43
+	P_REF,
+	P_COMMA,
+	P_SEMICOLON,
+	P_COLON,
+	P_QUESTIONMARK,
 
-#define P_PARENTHESESOPEN  44
-#define P_PARENTHESESCLOSE 45
-#define P_BRACEOPEN        46
-#define P_BRACECLOSE       47
-#define P_SQBRACKETOPEN    48
-#define P_SQBRACKETCLOSE   49
-#define P_BACKSLASH        50
+	P_PARENTHESESOPEN,
+	P_PARENTHESESCLOSE,
+	P_BRACEOPEN,
+	P_BRACECLOSE,
+	P_SQBRACKETOPEN,
+	P_SQBRACKETCLOSE,
+	P_BACKSLASH,
 
-#define P_PRECOMP          51
-#define P_DOLLAR           52
-
+	P_PRECOMP,
+	P_DOLLAR,
+};
 //name sub type
 //-------------
 //    the length of the name
@@ -4237,7 +4231,7 @@ static void Parse_FreeSource( source_t *source )
 	Z_Free( source );
 }
 
-#define MAX_SOURCEFILES 64
+static const int MAX_SOURCEFILES = 64;
 
 source_t *sourceFiles[ MAX_SOURCEFILES ];
 

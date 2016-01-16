@@ -593,7 +593,7 @@ void CM_TestBoundingBoxInCapsule( traceWork_t *tw, clipHandle_t model )
 CM_PositionTest
 ==================
 */
-#define MAX_POSITION_LEAFS 1024
+static const int MAX_POSITION_LEAFS = 1024;
 void CM_PositionTest( traceWork_t *tw )
 {
 	int        leafs[ MAX_POSITION_LEAFS ];
@@ -1583,7 +1583,7 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 	}
 }
 
-#define RADIUS_EPSILON 1.0f
+static const float RADIUS_EPSILON = 1.0f;
 
 /*
 ================
