@@ -1,7 +1,6 @@
 #ifndef COMMON_PROFILER_H_
 #define COMMON_PROFILER_H_
 
-
 namespace Profiler{
 
         enum Type{ START, END, FRAME };
@@ -16,14 +15,9 @@ namespace Profiler{
             Point(Type type,std::string label="", std::chrono::microseconds::rep time=0): label(label), time(time), type(type){   }
         };
 
-
-
-
-
         std::chrono::microseconds::rep TimeElapsed(std::chrono::high_resolution_clock::time_point since);
 
         void Update();
-
 
         class Profile
         {
