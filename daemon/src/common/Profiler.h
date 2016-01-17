@@ -12,18 +12,15 @@ namespace Profiler{
             std::chrono::microseconds::rep time;
             Type type;
 
-            Point(Type type,std::string label="", std::chrono::microseconds::rep time=0): label(label), time(time), type(type){   }
+            Point(Type,std::string);
         };
-
-        std::chrono::microseconds::rep TimeElapsed(std::chrono::high_resolution_clock::time_point since);
 
         void Update();
 
         class Profile
         {
-        std::string label;
-
         public:
+            std::string label;
             Profile(std::string);
 
             ~Profile();

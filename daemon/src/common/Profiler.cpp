@@ -44,35 +44,35 @@ namespace Profiler{
      * function end, and if there's a new frame), and a timestamp.
      */
     std::vector <Profiler::Point>                   samples;
-    std::chrono::high_resolution_clock::time_point  start;
+    std::chrono::high_resolution_clock::time_point  startTime;
     bool                                            enabled = false;
-
-
-    std::chrono::microseconds::rep TimeElapsed( std::chrono::high_resolution_clock::time_point since )
-    {
-        auto tmp = std::chrono::high_resolution_clock::now() - since;
-        return std::chrono::duration_cast < std::chrono::microseconds > (tmp).count();
-    }
-
 
     void Update(){
         if(!enabled)
             return;
-        samples.push_back(Point(FRAME,"", TimeElapsed(start)));
+        samples.push_back(Point(FRAME,""));
     }
 
 
+    /// Point saves the time it's constructed
+    Point::Point(Type type,std::string label=""): type(type), label(label){
+        auto timeElapsed = std::chrono::high_resolution_clock::now() - startTime;
+        time = std::chrono::duration_cast < std::chrono::microseconds > (timeElapsed).count();
+    }
+
+
+    /// At the beginning of every function
     Profile::Profile( std::string label ): label( label ){
         if(!enabled)
             return;
-        samples.push_back( Point( START, label, TimeElapsed(start) ) );
+        samples.push_back( Point( START, label ) );
     }
 
-
+    /// At the end of every function
     Profile::~Profile(){
         if(!enabled)
             return;
-        samples.push_back( Point( END, label, TimeElapsed(start) ) );
+        samples.push_back( Point( END, label ) );
     }
 
 
@@ -82,6 +82,7 @@ namespace Profiler{
         }
 
         void Run(const Cmd::Args& args) const OVERRIDE {
+            (void)args;
 
             if(enabled){
                 Print("Profiling is already active!");
@@ -89,7 +90,7 @@ namespace Profiler{
             }
 
             enabled = true;
-            start   = std::chrono::high_resolution_clock::now();
+            startTime   = std::chrono::high_resolution_clock::now();
         }
     };
 
@@ -103,6 +104,7 @@ namespace Profiler{
         }
 
         void Run(const Cmd::Args& args) const OVERRIDE {
+            (void)args;
 
             enabled=false;
 
