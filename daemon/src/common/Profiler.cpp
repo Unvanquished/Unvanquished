@@ -48,41 +48,32 @@ namespace Profiler{
     bool                                            enabled = false;
 
 
-
     std::chrono::microseconds::rep TimeElapsed( std::chrono::high_resolution_clock::time_point since )
     {
         auto tmp = std::chrono::high_resolution_clock::now() - since;
-
         return std::chrono::duration_cast < std::chrono::microseconds > (tmp).count();
     }
-
 
 
     void Update(){
         if(!enabled)
             return;
-
         samples.push_back(Point(FRAME,"", TimeElapsed(start)));
     }
-
 
 
     Profile::Profile( std::string label ): label( label ){
         if(!enabled)
             return;
-
         samples.push_back( Point( START, label, TimeElapsed(start) ) );
     }
-
 
 
     Profile::~Profile(){
         if(!enabled)
             return;
-
         samples.push_back( Point( END, label, TimeElapsed(start) ) );
     }
-
 
 
     class ProfilerStartCmd: public Cmd::StaticCmd {
@@ -99,7 +90,6 @@ namespace Profiler{
 
             enabled = true;
             start   = std::chrono::high_resolution_clock::now();
-
         }
     };
 
@@ -115,7 +105,6 @@ namespace Profiler{
         void Run(const Cmd::Args& args) const OVERRIDE {
 
             enabled=false;
-
 
             auto file = FS::HomePath::OpenWrite("profiler.log");
 
@@ -139,7 +128,6 @@ namespace Profiler{
 
                     line=type + ";" + i.label + ";" + std::to_string(i.time) + "$\n";
                     file.Write(line.c_str(), line.length());
-
                 }
 
             file.Close();
@@ -148,6 +136,5 @@ namespace Profiler{
     };
 
     static ProfilerStopCmd ProfilerStopCmdRegistration;
-
 
 }
