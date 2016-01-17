@@ -137,7 +137,7 @@ namespace Profiler{
                         break;
                     }
 
-                    line=type + ", " + i.label + ", " + std::to_string(i.time) + ";\n";
+                    line=type + ";" + i.label + ";" + std::to_string(i.time) + "$\n";
                     file.Write(line.c_str(), line.length());
 
                 }

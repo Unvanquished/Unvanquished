@@ -328,6 +328,7 @@ void SCR_DrawScreenField()
 
 void SCR_DrawConsoleAndPointer()
 {
+    PROFILE()
 	// console draws next
 	Con_DrawConsole();
 }

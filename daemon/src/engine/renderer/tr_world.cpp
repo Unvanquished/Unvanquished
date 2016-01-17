@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 #include "gl_shader.h"
+#include "common/Profiler.h"
 
 /*
 ================
@@ -37,6 +38,7 @@ This will also allow mirrors on both sides of a model without recursion.
 */
 static bool R_CullSurface( surfaceType_t *surface, shader_t *shader, int planeBits )
 {
+    PROFILE()
 	srfGeneric_t *gen;
 	float        d;
 
@@ -123,6 +125,7 @@ static bool R_CullSurface( surfaceType_t *surface, shader_t *shader, int planeBi
 
 static bool R_CullLightSurface( surfaceType_t *surface, shader_t *shader, trRefLight_t *light, byte *cubeSideBits )
 {
+    PROFILE()
 	srfGeneric_t *gen;
 	float        d;
 
@@ -206,6 +209,7 @@ R_AddInteractionSurface
 */
 static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, int interactionBits )
 {
+    PROFILE()
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
 	bool          firstAddition = false;
 	int               bits;
@@ -260,6 +264,7 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light, in
 
 static void R_AddDecalSurface( bspSurface_t *surf, int decalBits )
 {
+    PROFILE()
 	int i;
 
 	// add decals
@@ -283,6 +288,7 @@ R_AddWorldSurface
 */
 static bool R_AddWorldSurface( bspSurface_t *surf, int fogIndex, int planeBits )
 {
+    PROFILE()
 	if ( surf->viewCount == tr.viewCountNoReset )
 	{
 		return false; // already in this view
@@ -315,6 +321,7 @@ R_AddBSPModelSurfaces
 */
 void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 {
+    PROFILE()
 	bspModel_t *bspModel;
 	model_t    *pModel;
 	unsigned int i;
@@ -379,6 +386,7 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 
 static void R_AddLeafSurfaces( bspNode_t *node, int decalBits, int planeBits )
 {
+    PROFILE()
 	int          c;
 	bspSurface_t **mark;
 	bspSurface_t **view;
@@ -444,6 +452,7 @@ R_RecursiveWorldNode
 */
 static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits )
 {
+    PROFILE()
 	do
 	{
 		// if the node wasn't marked as potentially visible, exit
@@ -532,6 +541,7 @@ R_RecursiveInteractionNode
 */
 static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, int planeBits, int interactionBits )
 {
+    PROFILE()
 	int i;
 	int r;
 
@@ -636,6 +646,7 @@ R_PointInLeaf
 */
 static bspNode_t *R_PointInLeaf( const vec3_t p )
 {
+    PROFILE()
 	bspNode_t *node;
 	float     d;
 	cplane_t  *plane;
@@ -677,6 +688,7 @@ R_ClusterPVS
 */
 static const byte *R_ClusterPVS( int cluster )
 {
+    PROFILE()
 	if ( !tr.world || !tr.world->vis || cluster < 0 || cluster >= tr.world->numClusters )
 	{
 		return tr.world->novis;
@@ -692,6 +704,7 @@ R_ClusterPVVS
 */
 static const byte *R_ClusterPVVS( int cluster )
 {
+    PROFILE()
 	if ( !tr.world || !tr.world->vis || cluster < 0 || cluster >= tr.world->numClusters )
 	{
 		return tr.world->novis;
@@ -707,6 +720,7 @@ R_inPVS
 */
 bool R_inPVS( const vec3_t p1, const vec3_t p2 )
 {
+    PROFILE()
 	bspNode_t  *leaf;
 	const byte *vis;
 
@@ -729,6 +743,7 @@ R_inPVVS
 */
 bool R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
+    PROFILE()
 	bspNode_t  *leaf;
 	const byte *vis;
 
@@ -754,6 +769,7 @@ cluster
 */
 static void R_MarkLeaves()
 {
+    PROFILE()
 	const byte *vis;
 	bspNode_t  *leaf, *parent;
 	int        i;
@@ -885,6 +901,7 @@ R_AddWorldSurfaces
 */
 void R_AddWorldSurfaces()
 {
+    PROFILE()
 	if ( !r_drawworld->integer )
 	{
 		return;
@@ -934,6 +951,7 @@ R_AddWorldInteractions
 */
 void R_AddWorldInteractions( trRefLight_t *light )
 {
+    PROFILE()
 	int interactionBits;
 
 	if ( !r_drawworld->integer )
@@ -973,6 +991,7 @@ R_AddPrecachedWorldInteractions
 */
 void R_AddPrecachedWorldInteractions( trRefLight_t *light )
 {
+    PROFILE()
 	interactionType_t iaType = IA_DEFAULT;
 
 	if ( !r_drawworld->integer )
