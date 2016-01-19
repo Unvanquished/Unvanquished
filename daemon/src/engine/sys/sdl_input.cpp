@@ -598,7 +598,7 @@ void IN_SetMouseMode(MouseMode new_mode)
 	}
 }
 
-static bool in_focus = true;
+static bool in_focus = false;
 
 static void IN_SetFocus(bool has_focus)
 {
@@ -1547,6 +1547,7 @@ void IN_Frame()
 void IN_DropInputsForFrame()
 {
 	dropInput = true;
+	in_focus = false;
 }
 
 void IN_FrameEnd()

@@ -690,7 +690,7 @@ private:
     }
 
     bool show_cursor = true;
-    bool focus = true;
+    bool focus = false;
 };
 
 static EngineCursor engineCursor;
