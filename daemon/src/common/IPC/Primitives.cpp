@@ -81,7 +81,7 @@ enum NaClDescTypeTag {
   NACL_DESC_CUSTOM,
   NACL_DESC_NULL
 };
-static const int NACL_DESC_TYPE_MAX      = (NACL_DESC_NULL + 1);
+#define NACL_DESC_TYPE_MAX (NACL_DESC_NULL + 1)
 static const int NACL_DESC_TYPE_END_TAG  = (0xff);
 
 struct NaClInternalRealHeader {
