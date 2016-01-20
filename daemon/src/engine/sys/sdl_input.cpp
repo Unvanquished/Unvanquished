@@ -576,17 +576,17 @@ MouseMode IN_GetMouseMode()
 /*
  * Enables or disables the cursor
  */
-void IN_SetMouseMode(MouseMode new_mode)
+void IN_SetMouseMode(MouseMode newMode)
 {
-	if ( new_mode != mouse_mode )
+	if ( newMode != mouse_mode )
 	{
 		if ( !mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
 		{
 			return;
 		}
 
-		SDL_ShowCursor( new_mode == MouseMode::SystemCursor ? SDL_ENABLE : SDL_DISABLE );
-		auto grab = new_mode != MouseMode::Deltas || in_nograb->integer ? SDL_FALSE : SDL_TRUE;
+		SDL_ShowCursor( newMode == MouseMode::SystemCursor ? SDL_ENABLE : SDL_DISABLE );
+		auto grab = newMode != MouseMode::Deltas || in_nograb->integer ? SDL_FALSE : SDL_TRUE;
 		SDL_SetRelativeMouseMode( grab );
 		SDL_SetWindowGrab( window, grab );
 
@@ -594,20 +594,20 @@ void IN_SetMouseMode(MouseMode new_mode)
 		{
 			IN_CenterMouse();
 		}
-		mouse_mode = new_mode;
+		mouse_mode = newMode;
 	}
 }
 
 static bool in_focus = false;
 
-static void IN_SetFocus(bool has_focus)
+static void IN_SetFocus(bool hasFocus)
 {
-	if ( has_focus == in_focus )
+	if ( hasFocus == in_focus )
 	{
 		return;
 	}
 
-	in_focus = has_focus;
+	in_focus = hasFocus;
 
 	Com_QueueEvent( 0, SE_FOCUS, in_focus, 0, 0, nullptr );
 
