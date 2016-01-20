@@ -354,13 +354,13 @@ void CL_Record_f()
 
 	if ( clc.demorecording )
 	{
-		Com_Log( log_level_t::LOG_ERROR, "Already recording." );
+		Com_Log(log_level_t::ERROR, "Already recording." );
 		return;
 	}
 
 	if ( cls.state != connstate_t::CA_ACTIVE )
 	{
-		Com_Log( log_level_t::LOG_ERROR, "You must be in a level to record." );
+		Com_Log(log_level_t::ERROR, "You must be in a level to record." );
 		return;
 	}
 
@@ -368,7 +368,7 @@ void CL_Record_f()
 	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
 	if ( NET_IsLocalAddress( clc.serverAddress ) && !Cvar_VariableValue( "g_synchronousClients" ) )
 	{
-		Com_Logf( log_level_t::LOG_WARN, "You should set '%s' for smoother demo recording" , "g_synchronousClients 1" );
+		Com_Logf(log_level_t::WARN, "You should set '%s' for smoother demo recording" , "g_synchronousClients 1" );
 	}
 
 	if ( Cmd_Argc() == 2 )
@@ -435,7 +435,7 @@ void CL_Record( const char *name )
 
 	if ( !clc.demofile )
 	{
-		Com_Log( log_level_t::LOG_ERROR, "couldn't open." );
+		Com_Log(log_level_t::ERROR, "couldn't open." );
 		return;
 	}
 
@@ -754,7 +754,7 @@ void CL_WriteWaveOpen()
 
 	if ( !clc.wavefile )
 	{
-		Com_Logf( log_level_t::LOG_ERROR, "couldn't open %s for writing.", name );
+		Com_Logf(log_level_t::ERROR, "couldn't open %s for writing.", name );
 		return;
 	}
 
@@ -1334,7 +1334,7 @@ void CL_Connect_f()
 		}
 		else
 		{
-			Com_Log(log_level_t::LOG_WARN, "only -4 or -6 as address type understood." );
+			Com_Log(log_level_t::WARN, "only -4 or -6 as address type understood." );
 		}
 
 		server = (char *) Cmd_Argv( 2 );
@@ -1819,7 +1819,7 @@ void CL_Video_f()
 
 		if ( i > 9999 )
 		{
-			Com_Log(log_level_t::LOG_ERROR, "no free file names to create video" );
+			Com_Log(log_level_t::ERROR, "no free file names to create video" );
 			return;
 		}
 	}
@@ -2969,12 +2969,12 @@ bool CL_WWWBadChecksum( const char *pakname )
 {
 	if ( strstr( clc.redirectedList, va( "@%s@", pakname ) ) )
 	{
-		Com_Logf(log_level_t::LOG_WARN, "file %s obtained through download redirect has wrong checksum\n"
+		Com_Logf(log_level_t::WARN, "file %s obtained through download redirect has wrong checksum\n"
 		              "\tthis likely means the server configuration is broken", pakname );
 
 		if ( strlen( clc.badChecksumList ) + strlen( pakname ) + 1 >= sizeof( clc.badChecksumList ) )
 		{
-			Com_Logf( log_level_t::LOG_ERROR, "badChecksumList overflowed (%s)", clc.badChecksumList );
+			Com_Logf(log_level_t::ERROR, "badChecksumList overflowed (%s)", clc.badChecksumList );
 			return false;
 		}
 

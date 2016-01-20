@@ -331,5 +331,5 @@ endif()
 
 # Configuration specific definitions
 if (CMAKE_BUILD_TYPE STREQUAL Debug OR CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
-    add_definitions(-DDEBUG)
+    add_definitions(-DDEBUG_BUILD)
 endif()

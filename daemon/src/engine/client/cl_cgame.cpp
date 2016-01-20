@@ -606,7 +606,7 @@ static int LAN_ServerIsVisible( int source, int n )
 
 		if ( Cmd_Argc() == 1 )
 		{
-			Com_Log(log_level_t::LOG_ERROR, "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
+			Com_Log(log_level_t::ERROR, "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
 			return false;
 		}
 

@@ -817,7 +817,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	{
 		if ( cl->bWWWing )
 		{
-			Com_Logf(log_level_t::LOG_WARN, "dupe wwwdl ack from client '%s'", cl->name );
+			Com_Logf(log_level_t::WARN, "dupe wwwdl ack from client '%s'", cl->name );
 		}
 
 		cl->bWWWing = true;
@@ -854,8 +854,8 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	}
 	else if ( !Q_stricmp( subcmd, "chkfail" ) )
 	{
-		Com_Logf(log_level_t::LOG_WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
-				cl->name, cl->downloadName );
+		Com_Logf(log_level_t::WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
+				 cl->name, cl->downloadName );
 		*cl->downloadName = 0;
 		cl->bWWWing = false;
 		cl->bFallback = true;
@@ -1029,7 +1029,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 				else
 				{
 					// that should NOT happen - even regular download would fail then anyway
-					Com_Logf(log_level_t::LOG_ERROR, "Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
+					Com_Logf(log_level_t::ERROR, "Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
 				}
 			}
 			else
@@ -1042,8 +1042,8 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					return;
 				}
 
-				Com_Logf(log_level_t::LOG_ERROR, "Client '%s': falling back to regular downloading for failed file %s", cl->name,
-							cl->downloadName );
+				Com_Logf(log_level_t::ERROR, "Client '%s': falling back to regular downloading for failed file %s", cl->name,
+						 cl->downloadName );
 			}
 		}
 

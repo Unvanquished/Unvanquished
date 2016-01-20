@@ -172,18 +172,18 @@ void QDECL Com_LogEvent( log_event_t *event )
 {
 	switch (event->level)
 	{
-	case log_level_t::LOG_OFF:
+	case log_level_t::OFF:
 		break;
-	case log_level_t::LOG_WARN:
+	case log_level_t::WARN:
 		Com_Printf("^3Warning: ^7%s\n", event->message);
 		break;
-	case log_level_t::LOG_ERROR:
+	case log_level_t::ERROR:
 		Com_Printf("^1Error: ^7%s\n", event->message);
 		break;
-	case log_level_t::LOG_DEBUG:
+	case log_level_t::DEBUG:
 		Com_Printf("Debug: %s\n", event->message);
 		break;
-	case log_level_t::LOG_TRACE:
+	case log_level_t::TRACE:
 		Com_Printf("Trace: %s\n", event->message);
 		break;
 	default:
@@ -1785,7 +1785,7 @@ void Com_Frame()
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( watchdogThreshold.Get() - 4 ) * 1000 )
 			{
-				Com_Log( log_level_t::LOG_WARN, "watchdog will trigger in 4 seconds" );
+				Com_Log(log_level_t::WARN, "watchdog will trigger in 4 seconds" );
 				watchWarn = true;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )

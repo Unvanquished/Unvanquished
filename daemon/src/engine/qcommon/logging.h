@@ -59,14 +59,14 @@ struct log_location_info_t
 
 enum class log_level_t
 {
-	LOG_OFF = -3,
-	LOG_ERROR = -2,
-	LOG_WARN = -1,
-	LOG_NOTICE = 0, /*< information regarded worth notifying about; the default */
-	LOG_INFO = 1, /*< general helpful (even outside of debugging) but not necessary information */
-	LOG_DEBUG = 2,
-	LOG_TRACE = 3, /*< this is for finest grained debug-tracing, that should not be executed in NDEBUG */
-	LOG_ALL = 4
+	OFF = -3,
+	ERROR = -2,
+	WARN = -1,
+	NOTICE = 0, /*< information regarded worth notifying about; the default */
+	INFO = 1, /*< general helpful (even outside of debugging) but not necessary information */
+	DEBUG = 2,
+	TRACE = 3, /*< this is for finest grained debug-tracing, that should not be executed in NDEBUG */
+	ALL = 4
 };
 
 struct log_event_t

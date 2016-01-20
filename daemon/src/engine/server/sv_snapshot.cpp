@@ -976,7 +976,7 @@ void SV_SendClientSnapshot( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Logf(log_level_t::LOG_WARN, "msg overflowed for %s", client->name );
+		Com_Logf(log_level_t::WARN, "msg overflowed for %s", client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );
