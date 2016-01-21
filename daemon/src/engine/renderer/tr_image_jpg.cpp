@@ -61,8 +61,7 @@ static void R_JPGOutputMessage( j_common_ptr cinfo )
 	/* Create the message */
 	( *cinfo->err->format_message )( cinfo, buffer );
 
-	/* Send it to stderr, adding a newline */
-	ri.Printf(printParm_t::PRINT_ALL, "%s\n", buffer );
+	Log::Notice(buffer);
 }
 
 void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height,

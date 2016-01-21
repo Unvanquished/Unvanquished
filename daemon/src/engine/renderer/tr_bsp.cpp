@@ -257,22 +257,22 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 						}
 						else
 						{
-							ri.Printf( printParm_t::PRINT_ALL, "LoadRGBE: Expected 'bit_rle_rgbe' found instead '%s'\n", token );
+							Log::Warn("LoadRGBE: Expected 'bit_rle_rgbe' found instead '%s'", token );
 						}
 					}
 					else
 					{
-						ri.Printf( printParm_t::PRINT_ALL, "LoadRGBE: Expected '-' found instead '%s'\n", token );
+						Log::Warn("LoadRGBE: Expected '-' found instead '%s'", token );
 					}
 				}
 				else
 				{
-					ri.Printf( printParm_t::PRINT_ALL, "LoadRGBE: Expected '32' found instead '%s'\n", token );
+					Log::Warn("LoadRGBE: Expected '32' found instead '%s'", token );
 				}
 			}
 			else
 			{
-				ri.Printf( printParm_t::PRINT_ALL, "LoadRGBE: Expected '=' found instead '%s'\n", token );
+				Log::Warn("LoadRGBE: Expected '=' found instead '%s'", token );
 			}
 		}
 
@@ -299,17 +299,17 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 					}
 					else
 					{
-						ri.Printf( printParm_t::PRINT_ALL, "LoadRGBE: Expected 'X' found instead '%s'\n", token );
+						Log::Warn("LoadRGBE: Expected 'X' found instead '%s'", token );
 					}
 				}
 				else
 				{
-					ri.Printf( printParm_t::PRINT_ALL, "LoadRGBE: Expected '+' found instead '%s'\n", token );
+					Log::Warn("LoadRGBE: Expected '+' found instead '%s'", token );
 				}
 			}
 			else
 			{
-				ri.Printf( printParm_t::PRINT_ALL, "LoadRGBE: Expected 'Y' found instead '%s'\n", token );
+				Log::Warn("LoadRGBE: Expected 'Y' found instead '%s'", token );
 			}
 		}
 	}
@@ -465,7 +465,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 			int numLightmaps;
 			auto lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps, {".hdr"});
 			if (!lightmapFiles || !numLightmaps) {
-				ri.Printf(printParm_t::PRINT_WARNING, "WARNING: no lightmap files found\n");
+				Log::Warn("no lightmap files found");
 				return;
 			}
 
@@ -474,7 +474,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 			for ( int i = 0; i < numLightmaps; i++ )
 			{
-				ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
+				Log::Debug("...loading external lightmap as RGB8 LDR '%s/%s'", mapName, lightmapFiles[ i ] );
 
 				width = height = 0;
 				LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
@@ -490,14 +490,14 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 				// load deluxemaps
 				lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps);
 				if (!lightmapFiles || !numLightmaps) {
-					ri.Printf(printParm_t::PRINT_WARNING, "WARNING: no lightmap files found\n");
+					Log::Warn("no lightmap files found");
 					return;
 				}
 
-				ri.Printf(printParm_t::PRINT_DEVELOPER, "...loading %i deluxemaps\n", numLightmaps);
+				Log::Debug("...loading %i deluxemaps", numLightmaps);
 
 				for (int i = 0; i < numLightmaps; i++) {
-					ri.Printf(printParm_t::PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[i]);
+					Log::Debug("...loading external lightmap '%s/%s'", mapName, lightmapFiles[i]);
 					auto image = R_FindImageFile(va("%s/%s", mapName, lightmapFiles[i]), IF_NORMALMAP | IF_NOCOMPRESSION, filterType_t::FT_DEFAULT, wrapTypeEnum_t::WT_CLAMP);
 					Com_AddToGrowList(&tr.deluxemaps, image);
 				}
@@ -508,17 +508,17 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 			int numLightmaps;
 			auto lightmapFiles = R_LoadExternalLightmaps(mapName, &numLightmaps);
 			if (!lightmapFiles || !numLightmaps) {
-				ri.Printf(printParm_t::PRINT_WARNING, "WARNING: no lightmap files found\n");
+				Log::Warn("no lightmap files found");
 				return;
 			}
 
-			ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading %i lightmaps\n", numLightmaps );
+			Log::Debug("...loading %i lightmaps", numLightmaps );
 
 			// we are about to upload textures
 			R_SyncRenderThread();
 
 			for (int i = 0; i < numLightmaps; i++) {
-				ri.Printf(printParm_t::PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[i]);
+				Log::Debug("...loading external lightmap '%s/%s'", mapName, lightmapFiles[i]);
 
 				if (!tr.worldDeluxeMapping || i % 2 == 0) {
 					auto image = R_FindImageFile(va("%s/%s", mapName, lightmapFiles[i]), IF_LIGHTMAP | IF_NOCOMPRESSION, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_CLAMP);
@@ -566,7 +566,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 		else if ( numLightmaps >= MAX_LIGHTMAPS )
 		{
 			// 20051020 misantropia
-			ri.Printf( printParm_t::PRINT_WARNING, "WARNING: number of lightmaps > MAX_LIGHTMAPS\n" );
+			Log::Warn("number of lightmaps > MAX_LIGHTMAPS" );
 			numLightmaps = MAX_LIGHTMAPS;
 		}
 
@@ -661,7 +661,7 @@ static void R_LoadVisibility( lump_t *l )
 	int  len, i, j, k;
 	byte *buf;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading visibility\n" );
+	Log::Debug("...loading visibility" );
 
 	len = ( s_worldData.numClusters + 63 ) & ~63;
 	s_worldData.novis = (byte*) ri.Hunk_Alloc( len, ha_pref::h_low );
@@ -2582,7 +2582,7 @@ void R_StitchAllPatches()
 	int           i, stitched, numstitches;
 	srfGridMesh_t *grid1;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...stitching LoD cracks\n" );
+	Log::Debug("...stitching LoD cracks" );
 
 	numstitches = 0;
 
@@ -2616,7 +2616,7 @@ void R_StitchAllPatches()
 	}
 	while ( stitched );
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "stitched %d LoD cracks\n", numstitches );
+	Log::Debug("stitched %d LoD cracks", numstitches );
 }
 
 /*
@@ -2959,7 +2959,7 @@ static void R_CreateWorldVBO()
 
 	qsort( surfaces, numSurfaces, sizeof( *surfaces ), LeafSurfaceCompare );
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...calculating world VBO ( %i verts %i tris )\n", numVerts, numTriangles );
+	Log::Debug("...calculating world VBO ( %i verts %i tris )", numVerts, numTriangles );
 
 	// create arrays
 	s_worldData.numVerts = numVerts;
@@ -3253,11 +3253,11 @@ static void R_CreateWorldVBO()
 			mergedSurf++;
 		}
 
-		ri.Printf( printParm_t::PRINT_DEVELOPER, "Processed %d surfaces into %d merged, %d unmerged\n", numSurfaces, numMergedSurfaces, numUnmergedSurfaces );
+		Log::Debug("Processed %d surfaces into %d merged, %d unmerged", numSurfaces, numMergedSurfaces, numUnmergedSurfaces );
 	}
 
 	endTime = ri.Milliseconds();
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
+	Log::Debug("world VBO calculation time = %5.2f seconds", ( endTime - startTime ) / 1000.0 );
 
 	// point triangle surfaces to world VBO
 	for ( k = 0; k < numSurfaces; k++ )
@@ -3307,7 +3307,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 	int          numFaces, numMeshes, numTriSurfs, numFlares, numFoliages;
 	int          i;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading surfaces\n" );
+	Log::Debug("...loading surfaces" );
 
 	numFaces = 0;
 	numMeshes = 0;
@@ -3378,7 +3378,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 		}
 	}
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliages\n", numFaces, numMeshes, numTriSurfs,
+	Log::Debug("...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliages", numFaces, numMeshes, numTriSurfs,
 	           numFlares, numFoliages );
 
 	if ( r_stitchCurves->integer )
@@ -3405,7 +3405,7 @@ static void R_LoadSubmodels( lump_t *l )
 	bspModel_t *out;
 	int        i, j, count;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading submodels\n" );
+	Log::Debug("...loading submodels" );
 
 	in = ( dmodel_t * )( fileBase + l->fileofs );
 
@@ -3486,7 +3486,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	int           numNodes, numLeafs;
 	vboData_t     data;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading nodes and leaves\n" );
+	Log::Debug("...loading nodes and leaves" );
 
 	memset( &data, 0, sizeof( data ) );
 
@@ -3587,7 +3587,7 @@ static void R_LoadShaders( lump_t *l )
 	int       i, count;
 	dshader_t *in, *out;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading shaders\n" );
+	Log::Debug("...loading shaders" );
 
 	in = ( dshader_t * )( fileBase + l->fileofs );
 
@@ -3606,7 +3606,7 @@ static void R_LoadShaders( lump_t *l )
 
 	for ( i = 0; i < count; i++ )
 	{
-		ri.Printf( printParm_t::PRINT_DEVELOPER, "shader: '%s'\n", out[ i ].shader );
+		Log::Debug("shader: '%s'", out[ i ].shader );
 
 		out[ i ].surfaceFlags = LittleLong( out[ i ].surfaceFlags );
 		out[ i ].contentFlags = LittleLong( out[ i ].contentFlags );
@@ -3624,7 +3624,7 @@ static void R_LoadMarksurfaces( lump_t *l )
 	int          *in;
 	bspSurface_t **out;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading mark surfaces\n" );
+	Log::Debug("...loading mark surfaces" );
 
 	in = ( int * )( fileBase + l->fileofs );
 
@@ -3660,7 +3660,7 @@ static void R_LoadPlanes( lump_t *l )
 	dplane_t *in;
 	int      count;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading planes\n" );
+	Log::Debug("...loading planes" );
 
 	in = ( dplane_t * )( fileBase + l->fileofs );
 
@@ -3707,7 +3707,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 	float        d;
 	int          firstSide = 0;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading fogs\n" );
+	Log::Debug("...loading fogs" );
 
 	fogs = ( dfog_t* )( fileBase + l->fileofs );
 
@@ -3728,7 +3728,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 
 	if ( !count )
 	{
-		ri.Printf( printParm_t::PRINT_DEVELOPER, "no fog volumes loaded\n" );
+		Log::Debug("no fog volumes loaded" );
 		return;
 	}
 
@@ -3841,7 +3841,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 		out++;
 	}
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i fog volumes loaded\n", s_worldData.numFogs );
+	Log::Debug("%i fog volumes loaded", s_worldData.numFogs );
 }
 
 /*
@@ -3866,7 +3866,7 @@ void R_LoadLightGrid( lump_t *l )
 	float          scale;
 
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading light grid\n" );
+	Log::Debug("...loading light grid" );
 
 	w = &s_worldData;
 
@@ -3893,14 +3893,14 @@ void R_LoadLightGrid( lump_t *l )
 
 	w->numLightGridPoints = w->lightGridBounds[ 0 ] * w->lightGridBounds[ 1 ] * w->lightGridBounds[ 2 ];
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "grid size (%i %i %i)\n", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
+	Log::Debug("grid size (%i %i %i)", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
 	           ( int ) w->lightGridSize[ 2 ] );
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "grid bounds (%i %i %i)\n", w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
+	Log::Debug("grid bounds (%i %i %i)", w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
 			   w->lightGridBounds[ 2 ]);
 
 	if ( l->filelen != w->numLightGridPoints * sizeof( dgridPoint_t ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "WARNING: light grid mismatch\n" );
+		Log::Warn("light grid mismatch" );
 		w->lightGridData1 = nullptr;
 		w->lightGridData2 = nullptr;
 		return;
@@ -4067,7 +4067,7 @@ void R_LoadLightGrid( lump_t *l )
 					     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
 					     filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i light grid points created\n", w->numLightGridPoints );
+	Log::Debug("%i light grid points created", w->numLightGridPoints );
 }
 
 /*
@@ -4091,7 +4091,7 @@ void R_LoadEntities( lump_t *l )
 	int          numParallelLights = 0;
 	trRefLight_t *light;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...loading entities\n" );
+	Log::Debug("...loading entities" );
 
 	w = &s_worldData;
 	w->lightGridSize[ 0 ] = 64;
@@ -4114,7 +4114,7 @@ void R_LoadEntities( lump_t *l )
 
 		if ( !*token )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "WARNING: unexpected end of entities string while parsing worldspawn\n" );
+			Log::Warn("unexpected end of entities string while parsing worldspawn" );
 			break;
 		}
 
@@ -4149,7 +4149,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( !s )
 			{
-				ri.Printf( printParm_t::PRINT_WARNING, "WARNING: no semi colon in vertexshaderremap '%s'\n", value );
+				Log::Warn("no semi colon in vertexshaderremap '%s'", value );
 				break;
 			}
 
@@ -4166,7 +4166,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( !s )
 			{
-				ri.Printf( printParm_t::PRINT_WARNING, "WARNING: no semi colon in shaderremap '%s'\n", value );
+				Log::Warn("no semi colon in shaderremap '%s'", value );
 				break;
 			}
 
@@ -4198,7 +4198,7 @@ void R_LoadEntities( lump_t *l )
 		// check for deluxe mapping support
 		if ( !Q_stricmp( keyname, "deluxeMapping" ) && !Q_stricmp( value, "1" ) )
 		{
-			ri.Printf( printParm_t::PRINT_DEVELOPER, "map features directional light mapping\n" );
+			Log::Debug("map features directional light mapping" );
 			tr.worldDeluxeMapping = true;
 			continue;
 		}
@@ -4216,7 +4216,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( s )
 			{
-				ri.Printf( printParm_t::PRINT_DEVELOPER, "map features directional light mapping\n" );
+				Log::Debug("map features directional light mapping" );
 				tr.worldDeluxeMapping = true;
 			}
 
@@ -4226,14 +4226,14 @@ void R_LoadEntities( lump_t *l )
 		// check for HDR light mapping support
 		if ( !Q_stricmp( keyname, "hdrRGBE" ) && !Q_stricmp( value, "1" ) )
 		{
-			ri.Printf( printParm_t::PRINT_DEVELOPER, "map features HDR light mapping\n" );
+			Log::Debug("map features HDR light mapping" );
 			tr.worldHDR_RGBE = true;
 			continue;
 		}
 
 		if ( !Q_stricmp( keyname, "classname" ) && Q_stricmp( value, "worldspawn" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "WARNING: expected worldspawn found '%s'\n", value );
+			Log::Warn("expected worldspawn found '%s'", value );
 			continue;
 		}
 	}
@@ -4255,7 +4255,7 @@ void R_LoadEntities( lump_t *l )
 
 		if ( *token != '{' )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "WARNING: expected { found '%s'\n", token );
+			Log::Warn("expected { found '%s'", token );
 			break;
 		}
 
@@ -4275,7 +4275,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( !*token )
 			{
-				ri.Printf( printParm_t::PRINT_WARNING, "WARNING: EOF without closing bracket\n" );
+				Log::Warn("EOF without closing bracket" );
 				break;
 			}
 
@@ -4286,7 +4286,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( !*token )
 			{
-				ri.Printf( printParm_t::PRINT_WARNING, "WARNING: missing value for key '%s'\n", keyname );
+				Log::Warn("missing value for key '%s'", keyname );
 				continue;
 			}
 
@@ -4301,7 +4301,7 @@ void R_LoadEntities( lump_t *l )
 
 		if ( *token != '}' )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "WARNING: expected } found '%s'\n", token );
+			Log::Warn("expected } found '%s'", token );
 			break;
 		}
 
@@ -4313,8 +4313,8 @@ void R_LoadEntities( lump_t *l )
 		numEntities++;
 	}
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i total entities counted\n", numEntities );
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i total lights counted\n", numLights );
+	Log::Debug("%i total entities counted", numEntities );
+	Log::Debug("%i total lights counted", numLights );
 
 	s_worldData.numLights = numLights;
 
@@ -4370,7 +4370,7 @@ void R_LoadEntities( lump_t *l )
 
 		if ( *token != '{' )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "WARNING: expected { found '%s'\n", token );
+			Log::Warn("expected { found '%s'", token );
 			break;
 		}
 
@@ -4390,7 +4390,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( !*token )
 			{
-				ri.Printf( printParm_t::PRINT_WARNING, "WARNING: EOF without closing bracket\n" );
+				Log::Warn("EOF without closing bracket" );
 				break;
 			}
 
@@ -4401,7 +4401,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( !*token )
 			{
-				ri.Printf( printParm_t::PRINT_WARNING, "WARNING: missing value for key '%s'\n", keyname );
+				Log::Warn("missing value for key '%s'", keyname );
 				continue;
 			}
 
@@ -4525,7 +4525,7 @@ void R_LoadEntities( lump_t *l )
 
 		if ( *token != '}' )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "WARNING: expected } found '%s'\n", token );
+			Log::Warn("expected } found '%s'", token );
 			break;
 		}
 
@@ -4568,11 +4568,11 @@ void R_LoadEntities( lump_t *l )
 		ri.Error( errorParm_t::ERR_DROP, "counted %i lights and parsed %i lights", s_worldData.numLights, ( numOmniLights + numProjLights + numParallelLights ) );
 	}
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i total entities parsed\n", numEntities );
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i total lights parsed\n", numOmniLights + numProjLights );
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i omni-directional lights parsed\n", numOmniLights );
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i projective lights parsed\n", numProjLights );
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i directional lights parsed\n", numParallelLights );
+	Log::Debug("%i total entities parsed", numEntities );
+	Log::Debug("%i total lights parsed", numOmniLights + numProjLights );
+	Log::Debug("%i omni-directional lights parsed", numOmniLights );
+	Log::Debug("%i projective lights parsed", numProjLights );
+	Log::Debug("%i directional lights parsed", numParallelLights );
 }
 
 /*
@@ -5988,7 +5988,7 @@ void R_PrecacheInteractions()
 	c_vboLightSurfaces = 0;
 	c_vboShadowSurfaces = 0;
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "...precaching %i lights\n", s_worldData.numLights );
+	Log::Debug("...precaching %i lights", s_worldData.numLights );
 
 	for ( i = 0; i < s_worldData.numLights; i++ )
 	{
@@ -6056,21 +6056,21 @@ void R_PrecacheInteractions()
 
 	Com_DestroyGrowList( &s_interactions );
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i interactions precached\n", s_worldData.numInteractions );
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "%i interactions were hidden in shadows\n", c_redundantInteractions );
+	Log::Debug("%i interactions precached", s_worldData.numInteractions );
+	Log::Debug("%i interactions were hidden in shadows", c_redundantInteractions );
 
 	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16))
 	{
 		// only interesting for omni-directional shadow mapping
-		ri.Printf( printParm_t::PRINT_DEVELOPER, "%i omni pyramid tests\n", tr.pc.c_pyramidTests );
-		ri.Printf( printParm_t::PRINT_DEVELOPER, "%i omni pyramid surfaces visible\n", tr.pc.c_pyramid_cull_ent_in );
-		ri.Printf( printParm_t::PRINT_DEVELOPER, "%i omni pyramid surfaces clipped\n", tr.pc.c_pyramid_cull_ent_clip );
-		ri.Printf( printParm_t::PRINT_DEVELOPER, "%i omni pyramid surfaces culled\n", tr.pc.c_pyramid_cull_ent_out );
+		Log::Debug("%i omni pyramid tests", tr.pc.c_pyramidTests );
+		Log::Debug("%i omni pyramid surfaces visible", tr.pc.c_pyramid_cull_ent_in );
+		Log::Debug("%i omni pyramid surfaces clipped", tr.pc.c_pyramid_cull_ent_clip );
+		Log::Debug("%i omni pyramid surfaces culled", tr.pc.c_pyramid_cull_ent_out );
 	}
 
 	endTime = ri.Milliseconds();
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "lights precaching time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
+	Log::Debug("lights precaching time = %5.2f seconds", ( endTime - startTime ) / 1000.0 );
 }
 
 static const int HASHTABLE_SIZE = 7919; // 32749 // 2039    /* prime, use % */
@@ -6380,15 +6380,15 @@ void R_BuildCubeMaps()
 		VectorClear( cubeProbe->origin );
 	}
 
-	ri.Printf( printParm_t::PRINT_ALL, "...pre-rendering %d cubemaps\n", tr.cubeProbes.currentElements );
-	ri.Printf( printParm_t::PRINT_ALL, "0%%  10   20   30   40   50   60   70   80   90   100%%\n" );
-	ri.Printf( printParm_t::PRINT_ALL, "|----|----|----|----|----|----|----|----|----|----|\n" );
+	Log::Notice("...pre-rendering %d cubemaps", tr.cubeProbes.currentElements );
+	Log::Notice("0%%  10   20   30   40   50   60   70   80   90   100%%" );
+	Log::Notice("|----|----|----|----|----|----|----|----|----|----|" );
 
 	for ( j = 0; j < tr.cubeProbes.currentElements; j++ )
 	{
 		cubeProbe = (cubemapProbe_t*) Com_GrowListElement( &tr.cubeProbes, j );
 
-		//ri.Printf(printParm_t::PRINT_ALL, "rendering cubemap at (%i %i %i)\n", (int)cubeProbe->origin[0], (int)cubeProbe->origin[1],
+		//Log::Notice("rendering cubemap at (%i %i %i)", (int)cubeProbe->origin[0], (int)cubeProbe->origin[1],
 		//      (int)cubeProbe->origin[2]);
 
 		if ( ( j + 1 ) >= nextTicCount )
@@ -6397,7 +6397,7 @@ void R_BuildCubeMaps()
 
 			do
 			{
-				ri.Printf( printParm_t::PRINT_ALL, "*" );
+				Log::Notice("*");
 				Cmd::ExecuteCommand("updatescreen");
 			}
 			while ( ++tics < ticsNeeded );
@@ -6408,10 +6408,10 @@ void R_BuildCubeMaps()
 			{
 				if ( tics < 51 )
 				{
-					ri.Printf( printParm_t::PRINT_ALL, "*" );
+					Log::Notice("*");
 				}
 
-				ri.Printf( printParm_t::PRINT_ALL, "\n" );
+				Log::Notice("\n");
 			}
 		}
 
@@ -6633,14 +6633,14 @@ void R_BuildCubeMaps()
 		R_UploadImage( ( const byte ** ) tr.cubeTemp, 6, 1, cubeProbe->cubemap );
 	}
 
-	ri.Printf( printParm_t::PRINT_ALL, "\n" );
+	Log::Notice("\n");
 
 	// turn pixel targets off
 	tr.refdef.pixelTarget = nullptr;
 
 	// assign the surfs a cubemap
 	endTime = ri.Milliseconds();
-	ri.Printf( printParm_t::PRINT_ALL, "cubemap probes pre-rendering time of %i cubes = %5.2f seconds\n", tr.cubeProbes.currentElements,
+	Log::Notice("cubemap probes pre-rendering time of %i cubes = %5.2f seconds", tr.cubeProbes.currentElements,
 	           ( endTime - startTime ) / 1000.0 );
 }
 
@@ -6663,7 +6663,7 @@ void RE_LoadWorldMap( const char *name )
 		ri.Error( errorParm_t::ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
 
-	ri.Printf( printParm_t::PRINT_DEVELOPER, "----- RE_LoadWorldMap( %s ) -----\n", name );
+	Log::Debug("----- RE_LoadWorldMap( %s ) -----", name );
 
 	// set default sun direction to be used if it isn't
 	// overridden by a shader

@@ -97,7 +97,7 @@ qhandle_t RE_RegisterModel( const char *name )
 
 	if ( !name || !name[ 0 ] )
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "RE_RegisterModel: NULL name\n" );
+		Log::Notice("RE_RegisterModel: NULL name" );
 		return 0;
 	}
 
@@ -126,7 +126,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	// allocate a new model_t
 	if ( ( mod = R_AllocModel() ) == nullptr )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "RE_RegisterModel: R_AllocModel() failed for '%s'\n", name );
+		Log::Warn("RE_RegisterModel: R_AllocModel() failed for '%s'", name );
 		return 0;
 	}
 
@@ -211,7 +211,7 @@ qhandle_t RE_RegisterModel( const char *name )
 		{
 			ri.FS_FreeFile( buffer );
 
-			ri.Printf(printParm_t::PRINT_WARNING, "RE_RegisterModel: unknown fileid for %s\n", name );
+			Log::Warn("RE_RegisterModel: unknown fileid for %s", name );
 			goto fail;
 		}
 
@@ -249,7 +249,7 @@ qhandle_t RE_RegisterModel( const char *name )
 #ifndef NDEBUG
 	else
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "couldn't load '%s'\n", name );
+		Log::Warn("couldn't load '%s'", name );
 	}
 
 #endif
@@ -353,35 +353,35 @@ void R_Modellist_f()
 					mdvModel = mod->mdv[ j ];
 
 					total++;
-					ri.Printf(printParm_t::PRINT_ALL, "%d.%02d MB '%s' LOD = %i\n",      mod->dataSize / ( 1024 * 1024 ),
+					Log::Notice("%d.%02d MB '%s' LOD = %i",      mod->dataSize / ( 1024 * 1024 ),
 					           ( mod->dataSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ),
 					           mod->name, j );
 
 					if ( showFrames && mdvModel->numFrames > 1 )
 					{
-						ri.Printf(printParm_t::PRINT_ALL, "\tnumSurfaces = %i\n", mdvModel->numSurfaces );
-						ri.Printf(printParm_t::PRINT_ALL, "\tnumFrames = %i\n", mdvModel->numFrames );
+						Log::Notice("\tnumSurfaces = %i", mdvModel->numSurfaces );
+						Log::Notice("\tnumFrames = %i", mdvModel->numFrames );
 
 						for ( k = 0, mdvSurface = mdvModel->surfaces; k < mdvModel->numSurfaces; k++, mdvSurface++ )
 						{
-							ri.Printf(printParm_t::PRINT_ALL, "\t\tmesh = '%s'\n", mdvSurface->name );
-							ri.Printf(printParm_t::PRINT_ALL, "\t\t\tnumVertexes = %i\n", mdvSurface->numVerts );
-							ri.Printf(printParm_t::PRINT_ALL, "\t\t\tnumTriangles = %i\n", mdvSurface->numTriangles );
+							Log::Notice("\t\tmesh = '%s'", mdvSurface->name );
+							Log::Notice("\t\t\tnumVertexes = %i", mdvSurface->numVerts );
+							Log::Notice("\t\t\tnumTriangles = %i", mdvSurface->numTriangles );
 						}
 					}
 
-					ri.Printf(printParm_t::PRINT_ALL, "\t\tnumTags = %i\n", mdvModel->numTags );
+					Log::Notice("\t\tnumTags = %i", mdvModel->numTags );
 
 					for ( k = 0, mdvTagName = mdvModel->tagNames; k < mdvModel->numTags; k++, mdvTagName++ )
 					{
-						ri.Printf(printParm_t::PRINT_ALL, "\t\t\ttagName = '%s'\n", mdvTagName->name );
+						Log::Notice("\t\t\ttagName = '%s'", mdvTagName->name );
 					}
 				}
 			}
 		}
 		else
 		{
-			ri.Printf(printParm_t::PRINT_ALL, "%d.%02d MB '%s'\n",       mod->dataSize / ( 1024 * 1024 ),
+			Log::Notice("%d.%02d MB '%s'",       mod->dataSize / ( 1024 * 1024 ),
 			           ( mod->dataSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ),
 			           mod->name );
 
@@ -391,9 +391,9 @@ void R_Modellist_f()
 		totalDataSize += mod->dataSize;
 	}
 
-	ri.Printf(printParm_t::PRINT_ALL, " %d.%02d MB total model memory\n", totalDataSize / ( 1024 * 1024 ),
+	Log::Notice(" %d.%02d MB total model memory", totalDataSize / ( 1024 * 1024 ),
 	           ( totalDataSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ) );
-	ri.Printf(printParm_t::PRINT_ALL, " %i total models\n\n", total );
+	Log::Notice(" %i total models\n", total );
 }
 
 //=============================================================================

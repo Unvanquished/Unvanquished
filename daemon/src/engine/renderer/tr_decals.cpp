@@ -166,7 +166,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	/* dummy check */
 	if ( numPoints != 1 && numPoints != 3 && numPoints != 4 )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "WARNING: Invalid number of decal points (%d)\n", numPoints );
+		Log::Warn("Invalid number of decal points (%d)", numPoints );
 		return;
 	}
 

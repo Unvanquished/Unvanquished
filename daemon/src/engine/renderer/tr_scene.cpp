@@ -194,7 +194,7 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 
 	if ( !hShader )
 	{
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: NULL poly shader\n" );
+		Log::Warn("RE_AddPolyToScene: NULL poly shader" );
 		return;
 	}
 
@@ -203,12 +203,12 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 		if ( r_numPolyVerts + numVerts >= r_maxPolyVerts->integer || r_numPolys >= r_maxPolys->integer )
 		{
 			/*
-			   NOTE TTimo this was initially aprintParm_t::PRINT_WARNING
+			   NOTE TTimo this was initially Log::Warn
 			   but it happens a lot with high fighting scenes and particles
 			   since we don't plan on changing the const and making for room for those effects
 			   simply cut this message to developer only
 			 */
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: r_max_polys or r_max_polyverts reached\n" );
+			Log::Debug("RE_AddPolyToScene: r_max_polys or r_max_polyverts reached\n" );
 			return;
 		}
 
@@ -769,7 +769,7 @@ qhandle_t RE_RegisterVisTest()
 
 	if ( tr.numVisTests >= MAX_VISTESTS )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: RE_RegisterVisTest - MAX_VISTESTS hit\n" );
+		Log::Warn("RE_RegisterVisTest - MAX_VISTESTS hit" );
 	}
 
 	for ( hTest = 0; hTest < MAX_VISTESTS; hTest++ )
@@ -804,7 +804,7 @@ void RE_AddVisTestToScene( qhandle_t hTest, const vec3_t pos, float depthAdjust,
 
 	if ( r_numVisTests == MAX_VISTESTS )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: RE_AddVisTestToScene - MAX_VISTESTS hit\n" );
+		Log::Warn("RE_AddVisTestToScene - MAX_VISTESTS hit" );
 		return;
 	}
 

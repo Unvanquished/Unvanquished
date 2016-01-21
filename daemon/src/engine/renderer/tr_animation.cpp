@@ -92,7 +92,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( version != MD5_VERSION )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: '%s' has wrong version (%i should be %i)\n", name, version, MD5_VERSION );
+		Log::Warn("RE_RegisterAnimation: '%s' has wrong version (%i should be %i)", name, version, MD5_VERSION );
 		return false;
 	}
 
@@ -105,7 +105,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "numFrames" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected 'numFrames' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected 'numFrames' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -117,7 +117,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "numJoints" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected 'numJoints' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected 'numJoints' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -129,7 +129,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "frameRate" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected 'frameRate' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected 'frameRate' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -141,7 +141,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "numAnimatedComponents" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected 'numAnimatedComponents' found '%s' in model '%s'\n", token,
+		Log::Warn("RE_RegisterAnimation: expected 'numAnimatedComponents' found '%s' in model '%s'", token,
 		           name );
 		return false;
 	}
@@ -154,7 +154,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "hierarchy" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected 'hierarchy' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected 'hierarchy' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -162,7 +162,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "{" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '{' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected '{' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -174,7 +174,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 		token = COM_ParseExt2( &buf_p, true );
 		Q_strncpyz( channel->name, token, sizeof( channel->name ) );
 
-		//ri.Printf(printParm_t::PRINT_ALL, "RE_RegisterAnimation: '%s' has channel '%s'\n", name, channel->name);
+		//Log::Notice("RE_RegisterAnimation: '%s' has channel '%s'", name, channel->name);
 
 		token = COM_ParseExt2( &buf_p, false );
 		channel->parentIndex = atoi( token );
@@ -197,7 +197,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "}" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '}' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected '}' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -206,7 +206,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "bounds" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected 'bounds' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected 'bounds' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -214,7 +214,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "{" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '{' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected '{' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -227,7 +227,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, "(" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '(' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected '(' found '%s' in model '%s'", token, name );
 			return false;
 		}
 
@@ -242,7 +242,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, ")" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected ')' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected ')' found '%s' in model '%s'", token, name );
 			return false;
 		}
 
@@ -251,7 +251,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, "(" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '(' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected '(' found '%s' in model '%s'", token, name );
 			return false;
 		}
 
@@ -266,7 +266,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, ")" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected ')' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected ')' found '%s' in model '%s'", token, name );
 			return false;
 		}
 	}
@@ -276,7 +276,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "}" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '}' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected '}' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -285,7 +285,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "baseframe" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected 'baseframe' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected 'baseframe' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -293,7 +293,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "{" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '{' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected '{' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -304,7 +304,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, "(" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '(' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected '(' found '%s' in model '%s'", token, name );
 			return false;
 		}
 
@@ -319,7 +319,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, ")" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected ')' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected ')' found '%s' in model '%s'", token, name );
 			return false;
 		}
 
@@ -328,7 +328,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, "(" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '(' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected '(' found '%s' in model '%s'", token, name );
 			return false;
 		}
 
@@ -345,7 +345,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, ")" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected ')' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected ')' found '%s' in model '%s'", token, name );
 			return false;
 		}
 	}
@@ -355,7 +355,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 	if ( Q_stricmp( token, "}" ) )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '}' found '%s' in model '%s'\n", token, name );
+		Log::Warn("RE_RegisterAnimation: expected '}' found '%s' in model '%s'", token, name );
 		return false;
 	}
 
@@ -366,7 +366,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, "frame" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected 'baseframe' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected 'baseframe' found '%s' in model '%s'", token, name );
 			return false;
 		}
 
@@ -374,7 +374,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, va( "%i", i ) ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '%i' found '%s' in model '%s'\n", i, token, name );
+			Log::Warn("RE_RegisterAnimation: expected '%i' found '%s' in model '%s'", i, token, name );
 			return false;
 		}
 
@@ -382,7 +382,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, "{" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '{' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected '{' found '%s' in model '%s'", token, name );
 			return false;
 		}
 
@@ -399,7 +399,7 @@ static bool R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, const char *
 
 		if ( Q_stricmp( token, "}" ) )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: expected '}' found '%s' in model '%s'\n", token, name );
+			Log::Warn("RE_RegisterAnimation: expected '}' found '%s' in model '%s'", token, name );
 			return false;
 		}
 	}
@@ -422,13 +422,13 @@ qhandle_t RE_RegisterAnimationIQM( const char *name, IQAnim_t *data )
 
 	if ( !name || !name[ 0 ] )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "Empty name passed to RE_RegisterAnimationIQM" );
+		Log::Warn("Empty name passed to RE_RegisterAnimationIQM" );
 		return 0;
 	}
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "Animation name exceeds MAX_QPATH\n" );
+		Log::Warn("Animation name exceeds MAX_QPATH" );
 			return 0;
 	}
 
@@ -451,7 +451,7 @@ qhandle_t RE_RegisterAnimationIQM( const char *name, IQAnim_t *data )
 	// allocate a new model_t
 	if ( ( anim = R_AllocAnimation() ) == nullptr )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimationIQM: R_AllocAnimation() failed for '%s'\n", name );
+		Log::Warn("RE_RegisterAnimationIQM: R_AllocAnimation() failed for '%s'", name );
 		return 0;
 	}
 
@@ -478,15 +478,15 @@ qhandle_t RE_RegisterAnimation( const char *name )
 
 	if ( !name || !name[ 0 ] )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "Empty name passed to RE_RegisterAnimation\n" );
+		Log::Warn("Empty name passed to RE_RegisterAnimation" );
 		return 0;
 	}
 
-	//ri.Printf(printParm_t::PRINT_ALL, "RE_RegisterAnimation(%s)\n", name);
+	//Log::Notice("RE_RegisterAnimation(%s)", name);
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "Animation name exceeds MAX_QPATH\n" );
+		Log::Warn("Animation name exceeds MAX_QPATH" );
 		return 0;
 	}
 
@@ -509,7 +509,7 @@ qhandle_t RE_RegisterAnimation( const char *name )
 	// allocate a new model_t
 	if ( ( anim = R_AllocAnimation() ) == nullptr )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: R_AllocAnimation() failed for '%s'\n", name );
+		Log::Warn("RE_RegisterAnimation: R_AllocAnimation() failed for '%s'", name );
 		return 0;
 	}
 
@@ -533,14 +533,14 @@ qhandle_t RE_RegisterAnimation( const char *name )
 	}
 	else
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_RegisterAnimation: unknown fileid for '%s'\n", name );
+		Log::Warn("RE_RegisterAnimation: unknown fileid for '%s'", name );
 	}
 
 	ri.FS_FreeFile( buffer );
 
 	if ( !loaded )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "couldn't load '%s'\n", name );
+		Log::Warn("couldn't load '%s'", name );
 
 		// we still keep the model_t around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
@@ -584,10 +584,10 @@ void R_AnimationList_f()
 	{
 		anim = tr.animations[ i ];
 
-		ri.Printf( printParm_t::PRINT_ALL, "'%s'\n", anim->name );
+		Log::Notice("'%s'", anim->name );
 	}
 
-	ri.Printf( printParm_t::PRINT_ALL, "%8i : Total animations\n", tr.numAnimations );
+	Log::Warn("%8i : Total animations", tr.numAnimations );
 }
 
 /*
@@ -704,11 +704,11 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 
 				if ( shader == tr.defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: no shader for surface %i in skin %s\n", i, skin->name );
+					Log::Warn("no shader for surface %i in skin %s", i, skin->name );
 				}
 				else if ( shader->defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
+					Log::Warn("shader %s in skin %s not found", shader->name, skin->name );
 				}
 			}
 			else
@@ -762,11 +762,11 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 
 				if ( shader == tr.defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: no shader for surface %i in skin %s\n", i, skin->name );
+					Log::Warn("no shader for surface %i in skin %s", i, skin->name );
 				}
 				else if ( shader->defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
+					Log::Warn("shader %s in skin %s not found", shader->name, skin->name );
 				}
 			}
 			else
@@ -876,11 +876,11 @@ void R_AddIQMInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 				if ( shader == tr.defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: no shader for surface %i in skin %s\n", i, skin->name );
+					Log::Warn("no shader for surface %i in skin %s", i, skin->name );
 				}
 				else if ( shader->defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
+					Log::Warn("shader %s in skin %s not found", shader->name, skin->name );
 				}
 			}
 			else
@@ -1002,11 +1002,11 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 				if ( shader == tr.defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: no shader for surface %i in skin %s\n", i, skin->name );
+					Log::Warn("no shader for surface %i in skin %s", i, skin->name );
 				}
 				else if ( shader->defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
+					Log::Warn("shader %s in skin %s not found", shader->name, skin->name );
 				}
 			}
 			else
@@ -1061,11 +1061,11 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 
 				if ( shader == tr.defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: no shader for surface %i in skin %s\n", i, skin->name );
+					Log::Warn("no shader for surface %i in skin %s", i, skin->name );
 				}
 				else if ( shader->defaultShader )
 				{
-					ri.Printf( printParm_t::PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
+					Log::Warn("shader %s in skin %s not found", shader->name, skin->name );
 				}
 			}
 			else
@@ -1105,13 +1105,13 @@ static bool IQMCheckSkeleton( refSkeleton_t *skel, model_t *model,
 
 	if ( IQModel->num_joints < 1 )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "R_IQMCheckSkeleton: '%s' has no bones\n", model->name );
+		Log::Warn("R_IQMCheckSkeleton: '%s' has no bones", model->name );
 		return false;
 	}
 
 	if ( IQModel->num_joints > MAX_BONES )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_CheckSkeleton: '%s' has more than %i bones (%i)\n", model->name, MAX_BONES, IQModel->num_joints );
+		Log::Warn("RE_CheckSkeleton: '%s' has more than %i bones (%i)", model->name, MAX_BONES, IQModel->num_joints );
 		return false;
 	}
 
@@ -1132,7 +1132,7 @@ static bool IQMCheckSkeleton( refSkeleton_t *skel, model_t *model,
 
 		if ( IQModel->num_joints != IQAnim->num_joints )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "R_IQMCheckSkeleton: model '%s' has different number of bones than animation '%s': %d != %d\n", model->name, IQAnim->name, IQModel->num_joints, IQAnim->num_joints );
+			Log::Warn("R_IQMCheckSkeleton: model '%s' has different number of bones than animation '%s': %d != %d", model->name, IQAnim->name, IQModel->num_joints, IQAnim->num_joints );
 			return false;
 		}
 
@@ -1154,7 +1154,7 @@ static bool IQMCheckSkeleton( refSkeleton_t *skel, model_t *model,
 		return true;
 	}
 
-	ri.Printf( printParm_t::PRINT_WARNING, "R_IQMCheckSkeleton: bad animation\n" );
+	Log::Warn("R_IQMCheckSkeleton: bad animation" );
 
 	return false;
 }
@@ -1182,7 +1182,7 @@ int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim )
 	}
 	else if ( model->type != modtype_t::MOD_MD5 || !model->md5 )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_CheckSkeleton: '%s' is not a skeletal model\n", model->name );
+		Log::Warn("RE_CheckSkeleton: '%s' is not a skeletal model", model->name );
 		return false;
 	}
 
@@ -1190,13 +1190,13 @@ int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim )
 
 	if ( md5Model->numBones < 1 )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_CheckSkeleton: '%s' has no bones\n", model->name );
+		Log::Warn("RE_CheckSkeleton: '%s' has no bones", model->name );
 		return false;
 	}
 
 	if ( md5Model->numBones > MAX_BONES )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_CheckSkeleton: '%s' has more than %i bones (%i)\n", model->name, MAX_BONES, md5Model->numBones );
+		Log::Warn("RE_CheckSkeleton: '%s' has more than %i bones (%i)", model->name, MAX_BONES, md5Model->numBones );
 		return false;
 	}
 
@@ -1210,7 +1210,7 @@ int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim )
 
 		if ( md5Model->numBones != md5Animation->numChannels )
 		{
-			ri.Printf( printParm_t::PRINT_WARNING, "RE_CheckSkeleton: model '%s' has different number of bones than animation '%s': %d != %d\n", model->name, skelAnim->name, md5Model->numBones, md5Animation->numChannels );
+			Log::Warn("RE_CheckSkeleton: model '%s' has different number of bones than animation '%s': %d != %d", model->name, skelAnim->name, md5Model->numBones, md5Animation->numChannels );
 			return false;
 		}
 
@@ -1228,7 +1228,7 @@ int RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim )
 		return true;
 	}
 
-	ri.Printf( printParm_t::PRINT_WARNING, "RE_BuildSkeleton: bad animation '%s' with handle %i\n", skelAnim->name, hAnim );
+	Log::Warn("RE_BuildSkeleton: bad animation '%s' with handle %i", skelAnim->name, hAnim );
 
 	return false;
 }
@@ -1329,7 +1329,7 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 		/*
 		   if((startFrame >= anim->numFrames) || (startFrame < 0) || (endFrame >= anim->numFrames) || (endFrame < 0))
 		   {
-		   ri.Printf(printParm_t::PRINT_DEVELOPER, "RE_BuildSkeleton: no such frame %d to %d for '%s'\n", startFrame, endFrame, anim->name);
+		   Log::Debug("RE_BuildSkeleton: no such frame %d to %d for '%s'\n", startFrame, endFrame, anim->name);
 		   //startFrame = 0;
 		   //endFrame = 0;
 		   }
@@ -1465,7 +1465,7 @@ int RE_BlendSkeleton( refSkeleton_t *skel, const refSkeleton_t *blend, float fra
 
 	if ( skel->numBones != blend->numBones )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "RE_BlendSkeleton: different number of bones %d != %d\n", skel->numBones, blend->numBones );
+		Log::Warn("RE_BlendSkeleton: different number of bones %d != %d", skel->numBones, blend->numBones );
 		return false;
 	}
 

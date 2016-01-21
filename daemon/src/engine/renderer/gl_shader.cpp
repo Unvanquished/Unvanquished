@@ -1041,7 +1041,7 @@ bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutatio
 		//if(GLCompileMacro_USE_VERTEX_ANIMATION* m = dynamic_cast<GLCompileMacro_USE_VERTEX_ANIMATION*>(macro))
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_ANIMATION )
 		{
-			//ri.Printf(printParm_t::PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
+			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
 			return true;
 		}
 	}
@@ -1060,7 +1060,7 @@ bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutati
 	{
 		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_SKINNING )
 		{
-			//ri.Printf(printParm_t::PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
+			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
 			return true;
 		}
 	}
@@ -1081,7 +1081,7 @@ bool GLCompileMacro_USE_VERTEX_SPRITE::HasConflictingMacros( size_t permutation,
 	{
 		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_ANIMATION))
 		{
-			//ri.Printf(printParm_t::PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s'\n", GetName(), macro->GetName());
+			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
 			return true;
 		}
 	}
@@ -1104,7 +1104,7 @@ bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutati
 
 	if ( !foundUSE_NORMAL_MAPPING )
 	{
-		//ri.Printf(printParm_t::PRINT_ALL, "missing macro! canceling '%s' <= '%s'\n", GetName(), "USE_NORMAL_MAPPING");
+		//Log::Notice("missing macro! canceling '%s' <= '%s'", GetName(), "USE_NORMAL_MAPPING");
 		return true;
 	}
 
@@ -1126,7 +1126,7 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permut
 
 	if ( !foundUSE_NORMAL_MAPPING )
 	{
-		//ri.Printf(printParm_t::PRINT_ALL, "missing macro! canceling '%s' <= '%s'\n", GetName(), "USE_NORMAL_MAPPING");
+		//Log::Notice("missing macro! canceling '%s' <= '%s'", GetName(), "USE_NORMAL_MAPPING");
 		return true;
 	}
 
@@ -1143,7 +1143,7 @@ bool GLShader::GetCompileMacrosString( size_t permutation, std::string &compileM
 		{
 			if ( macro->HasConflictingMacros( permutation, _compileMacros ) )
 			{
-				//ri.Printf(printParm_t::PRINT_ALL, "conflicting macro! canceling '%s'\n", macro->GetName());
+				//Log::Notice("conflicting macro! canceling '%s'", macro->GetName());
 				return false;
 			}
 

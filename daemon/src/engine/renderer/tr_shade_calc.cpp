@@ -258,7 +258,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 				{
 					if ( numOps < 1 )
 					{
-						ri.Printf(printParm_t::PRINT_ALL, "WARNING: shader %s has numOps < 1 for unary - operator\n", tess.surfaceShader->name );
+						Log::Warn("shader %s has numOps < 1 for unary - operator", tess.surfaceShader->name );
 						return defaultValue;
 					}
 
@@ -314,7 +314,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 
 					if ( numOps < 1 )
 					{
-						ri.Printf(printParm_t::PRINT_ALL, "WARNING: shader %s has numOps < 1 for table operator\n", tess.surfaceShader->name );
+						Log::Warn("shader %s has numOps < 1 for table operator", tess.surfaceShader->name );
 						return defaultValue;
 					}
 
@@ -355,7 +355,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 						value = table->values[ oldIndex ] + ( ( table->values[ newIndex ] - table->values[ oldIndex ] ) * lerp );
 					}
 
-					//ri.Printf(printParm_t::PRINT_ALL, "%s: %i %i %f\n", table->name, oldIndex, newIndex, value);
+					//Log::Notice("%s: %i %i %f", table->name, oldIndex, newIndex, value);
 
 					// push result
 					op.type = opcode_t::OP_NUM;
@@ -368,7 +368,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 				{
 					if ( numOps < 2 )
 					{
-						ri.Printf(printParm_t::PRINT_ALL, "WARNING: shader %s has numOps < 2 for binary operator %s\n", tess.surfaceShader->name,
+						Log::Warn("shader %s has numOps < 2 for binary operator %s", tess.surfaceShader->name,
 						           GetOpName( op.type ) );
 						return defaultValue;
 					}
@@ -528,12 +528,12 @@ static void AutospriteDeform( int firstVertex, int numVertexes, int numIndexes )
 
 	if ( numVertexes & 3 )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "Autosprite shader %s had odd vertex count\n", tess.surfaceShader->name );
+		Log::Warn("Autosprite shader %s had odd vertex count", tess.surfaceShader->name );
 	}
 
 	if ( numIndexes != ( numVertexes >> 2 ) * 6 )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "Autosprite shader %s had odd index count\n", tess.surfaceShader->name );
+		Log::Warn("Autosprite shader %s had odd index count", tess.surfaceShader->name );
 	}
 
 	for ( i = 0; i < numVertexes; i += 4 )
@@ -581,12 +581,12 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 
 	if ( numVertexes & 3 )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "Autosprite2 shader %s had odd vertex count\n", tess.surfaceShader->name );
+		Log::Warn("Autosprite2 shader %s had odd vertex count", tess.surfaceShader->name );
 	}
 
 	if ( numIndexes != ( numVertexes >> 2 ) * 6 )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "Autosprite2 shader %s had odd index count\n", tess.surfaceShader->name );
+		Log::Warn("Autosprite2 shader %s had odd index count", tess.surfaceShader->name );
 	}
 
 	// this is a lot of work for two triangles...

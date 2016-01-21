@@ -1578,7 +1578,7 @@ static bool R_MirrorViewBySurface( drawSurf_t *drawSurf )
 	// don't recursively mirror
 	if ( tr.viewParms.isPortal )
 	{
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "WARNING: recursive mirror/portal found\n" );
+		Log::Warn("recursive mirror/portal found" );
 		return false;
 	}
 
@@ -2414,7 +2414,7 @@ void R_RenderView( viewParms_t *parms )
 
 	if ( tr.viewCount >= MAX_VIEWS )
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "MAX_VIEWS (%i) hit. Don't add more mirrors or portals. Skipping view ...\n", MAX_VIEWS );
+		Log::Notice("MAX_VIEWS (%i) hit. Don't add more mirrors or portals. Skipping view ...", MAX_VIEWS );
 		return;
 	}
 

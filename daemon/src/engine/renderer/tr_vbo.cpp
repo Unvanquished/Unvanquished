@@ -441,7 +441,7 @@ static GLsizei R_RotateRingbuffer( glRingbuffer_t *rb ) {
 	// wait until next segment is ready in 1 sec intervals
 	while( glClientWaitSync( rb->syncs[ rb->activeSegment ], GL_SYNC_FLUSH_COMMANDS_BIT,
 				 10000000 ) == GL_TIMEOUT_EXPIRED ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "long wait for GL buffer" );
+		Log::Warn("long wait for GL buffer" );
 	};
 	glDeleteSync( rb->syncs[ rb->activeSegment ] );
 
@@ -920,7 +920,7 @@ void R_InitVBOs()
 {
 	uint32_t attribs = ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT | ATTR_COLOR;
 
-	ri.Printf(printParm_t::PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );
+	Log::Debug("------- R_InitVBOs -------" );
 
 	Com_InitGrowList( &tr.vbos, 100 );
 	Com_InitGrowList( &tr.ibos, 100 );
@@ -965,7 +965,7 @@ void R_ShutdownVBOs()
 	VBO_t *vbo;
 	IBO_t *ibo;
 
-	ri.Printf(printParm_t::PRINT_DEVELOPER, "------- R_ShutdownVBOs -------\n" );
+	Log::Debug("------- R_ShutdownVBOs -------" );
 
 	if( !glConfig2.mapBufferRangeAvailable ) {
 		// nothing
@@ -1193,14 +1193,14 @@ void R_VBOList_f()
 	int   vertexesSize = 0;
 	int   indexesSize = 0;
 
-	ri.Printf(printParm_t::PRINT_ALL, " size          name\n" );
-	ri.Printf(printParm_t::PRINT_ALL, "----------------------------------------------------------\n" );
+	Log::Notice(" size          name" );
+	Log::Notice("----------------------------------------------------------" );
 
 	for ( i = 0; i < tr.vbos.currentElements; i++ )
 	{
 		vbo = ( VBO_t * ) Com_GrowListElement( &tr.vbos, i );
 
-		ri.Printf(printParm_t::PRINT_ALL, "%d.%02d MB %s\n", vbo->vertexesSize / ( 1024 * 1024 ),
+		Log::Notice("%d.%02d MB %s", vbo->vertexesSize / ( 1024 * 1024 ),
 		           ( vbo->vertexesSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ), vbo->name );
 
 		vertexesSize += vbo->vertexesSize;
@@ -1210,17 +1210,17 @@ void R_VBOList_f()
 	{
 		ibo = ( IBO_t * ) Com_GrowListElement( &tr.ibos, i );
 
-		ri.Printf(printParm_t::PRINT_ALL, "%d.%02d MB %s\n", ibo->indexesSize / ( 1024 * 1024 ),
+		Log::Notice("%d.%02d MB %s", ibo->indexesSize / ( 1024 * 1024 ),
 		           ( ibo->indexesSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ), ibo->name );
 
 		indexesSize += ibo->indexesSize;
 	}
 
-	ri.Printf(printParm_t::PRINT_ALL, " %i total VBOs\n", tr.vbos.currentElements );
-	ri.Printf(printParm_t::PRINT_ALL, " %d.%02d MB total vertices memory\n", vertexesSize / ( 1024 * 1024 ),
+	Log::Notice(" %i total VBOs", tr.vbos.currentElements );
+	Log::Notice(" %d.%02d MB total vertices memory", vertexesSize / ( 1024 * 1024 ),
 	           ( vertexesSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ) );
 
-	ri.Printf(printParm_t::PRINT_ALL, " %i total IBOs\n", tr.ibos.currentElements );
-	ri.Printf(printParm_t::PRINT_ALL, " %d.%02d MB total triangle indices memory\n", indexesSize / ( 1024 * 1024 ),
+	Log::Notice(" %i total IBOs", tr.ibos.currentElements );
+	Log::Notice(" %d.%02d MB total triangle indices memory", indexesSize / ( 1024 * 1024 ),
 	           ( indexesSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ) );
 }

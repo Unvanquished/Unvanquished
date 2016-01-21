@@ -59,7 +59,7 @@ long GenerateImageHashValue( const char *fname )
 	long hash;
 	char letter;
 
-//  ri.Printf(printParm_t::PRINT_ALL, "tr_image::GenerateImageHashValue: '%s'\n", fname);
+//  Log::Notice("tr_image::GenerateImageHashValue: '%s'", fname);
 
 	hash = 0;
 	i = 0;
@@ -101,7 +101,7 @@ void GL_TextureMode( const char *string )
 
 	if ( i == 6 )
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "bad filter name\n" );
+		Log::Warn("bad filter name" );
 		return;
 	}
 
@@ -161,7 +161,7 @@ void R_ImageList_f()
 	};
 	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv(1) : nullptr;
 
-	ri.Printf(printParm_t::PRINT_ALL, "\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------\n" );
+	Log::Notice("\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------" );
 
 	texels = 0;
 	dataSize = 0;
@@ -421,14 +421,14 @@ void R_ImageList_f()
 
 		dataSize += imageDataSize;
 
-		ri.Printf(printParm_t::PRINT_ALL, "%s %s\n", out.c_str(), image->name );
+		Log::Notice("%s %s", out.c_str(), image->name );
 	}
 
-	ri.Printf(printParm_t::PRINT_ALL, " ---------\n" );
-	ri.Printf(printParm_t::PRINT_ALL, " %i total texels (not including mipmaps)\n", texels );
-	ri.Printf(printParm_t::PRINT_ALL, " %d.%02d MB total image memory\n", dataSize / ( 1024 * 1024 ),
+	Log::Notice(" ---------" );
+	Log::Notice(" %i total texels (not including mipmaps)", texels );
+	Log::Notice(" %d.%02d MB total image memory", dataSize / ( 1024 * 1024 ),
 	           ( dataSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ) );
-	ri.Printf(printParm_t::PRINT_ALL, " %i total images\n\n", tr.images.currentElements );
+	Log::Notice(" %i total images\n", tr.images.currentElements );
 }
 
 //=======================================================================
@@ -1160,7 +1160,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	else if ( image->bits & ( IF_RGBA16F | IF_RGBA32F | IF_RGBA16 | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_ONECOMP16F | IF_ONECOMP32F ) )
 	{
 		if( !glConfig2.textureFloatAvailable ) {
-			ri.Printf(printParm_t::PRINT_WARNING, "WARNING: floating point image '%s' cannot be loaded\n", image->name );
+			Log::Warn("floating point image '%s' cannot be loaded", image->name );
 			internalFormat = GL_RGBA8;
 		}
 		else if ( image->bits & IF_RGBA16F )
@@ -1200,7 +1200,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	{
 		if( !GLEW_EXT_texture_compression_dxt1 &&
 		    !GLEW_EXT_texture_compression_s3tc ) {
-			ri.Printf(printParm_t::PRINT_WARNING, "WARNING: compressed image '%s' cannot be loaded\n", image->name );
+			Log::Warn("compressed image '%s' cannot be loaded", image->name );
 			internalFormat = GL_RGBA8;
 		}
 		else if( image->bits & IF_BC1 ) {
@@ -1578,7 +1578,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			break;
 
 		default:
-			ri.Printf(printParm_t::PRINT_WARNING, "WARNING: unknown filter type for image '%s'\n", image->name );
+			Log::Warn("unknown filter type for image '%s'", image->name );
 			glTexParameterf( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 			glTexParameterf( image->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 			break;
@@ -1619,7 +1619,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
                                 break;
 
                         default:
-                                ri.Printf(printParm_t::PRINT_WARNING, "WARNING: unknown wrap type for image '%s'\n", image->name );
+								Log::Warn("unknown wrap type for image '%s'", image->name );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
                                 break;
@@ -1629,7 +1629,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
                 if ( ( image->wrapType.s == wrapTypeEnum_t::WT_ZERO_CLAMP || image->wrapType.s == wrapTypeEnum_t::WT_ONE_CLAMP || image->wrapType.s == wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP ) &&
 	             ( image->wrapType.t == wrapTypeEnum_t::WT_ZERO_CLAMP || image->wrapType.t == wrapTypeEnum_t::WT_ONE_CLAMP || image->wrapType.t == wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP ) )
         	{
-	                ri.Printf(printParm_t::PRINT_WARNING, "WARNING: mismatched wrap types for image '%s'\n", image->name );
+					Log::Warn("mismatched wrap types for image '%s'", image->name );
                 }
 
                 switch ( image->wrapType.s )
@@ -1659,7 +1659,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
                                 break;
 
                         default:
-                                ri.Printf(printParm_t::PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis S\n", image->name );
+								Log::Warn("unknown wrap type for image '%s' axis S", image->name );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
                                 break;
                 }
@@ -1691,7 +1691,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
                                 break;
 
                         default:
-                                ri.Printf(printParm_t::PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis T\n", image->name );
+								Log::Warn("unknown wrap type for image '%s' axis T", image->name );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
                                 break;
                 }
@@ -1972,7 +1972,7 @@ static void R_LoadImage( const char **buffer, byte **pic, int *width, int *heigh
 
 	if ( !token[ 0 ] )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: NULL parameter for R_LoadImage\n" );
+		Log::Warn("NULL parameter for R_LoadImage" );
 		return;
 	}
 
@@ -2091,12 +2091,12 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 
 				if ( diff & IF_NOPICMIP )
 				{
-					ri.Printf(printParm_t::PRINT_DEVELOPER, "WARNING: reused image '%s' with mixed allowPicmip parm for shader\n", imageName );
+					Log::Warn("reused image '%s' with mixed allowPicmip parm for shader", imageName );
 				}
 
 				if ( image->wrapType != wrapType )
 				{
-					ri.Printf(printParm_t::PRINT_ALL, "WARNING: reused image '%s' with mixed glWrapType parm for shader\n", imageName);
+					Log::Warn("reused image '%s' with mixed glWrapType parm for shader", imageName);
 				}
 			}
 
@@ -2329,7 +2329,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf(printParm_t::PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+				Log::Warn("DXTn compression found in multi-file cube map; ignoring '%s'", imageName );
 		        goto skipCubeImage;
 		}
 
@@ -2360,7 +2360,7 @@ tryDoom3Suffices:
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf(printParm_t::PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+				Log::Warn("DXTn compression found in multi-file cube map; ignoring '%s'", imageName );
 		        goto skipCubeImage;
 		}
 
@@ -2404,7 +2404,7 @@ tryQuakeSuffices:
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf(printParm_t::PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+				Log::Warn("DXTn compression found in multi-file cube map; ignoring '%s'", imageName );
 		        goto skipCubeImage;
 		}
 
@@ -3176,7 +3176,7 @@ void R_InitImages()
 {
 	const char *charsetImage = "gfx/2d/consolechars";
 
-	ri.Printf(printParm_t::PRINT_DEVELOPER, "------- R_InitImages -------\n" );
+	Log::Debug("------- R_InitImages -------" );
 
 	Com_Memset( r_imageHashTable, 0, sizeof( r_imageHashTable ) );
 	Com_InitGrowList( &tr.images, 4096 );
@@ -3210,7 +3210,7 @@ void R_ShutdownImages()
 	int     i;
 	image_t *image;
 
-	ri.Printf(printParm_t::PRINT_DEVELOPER, "------- R_ShutdownImages -------\n" );
+	Log::Debug("------- R_ShutdownImages -------" );
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{

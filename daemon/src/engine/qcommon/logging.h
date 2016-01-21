@@ -46,17 +46,6 @@
 #define S_WARNING "^3Warning: ^*"
 #define S_ERROR   "^1ERROR: ^*"
 
-/**
- * print levels as currently used by the renderer
- */
-enum class printParm_t
-{
-	PRINT_ALL,
-	PRINT_DEVELOPER, // only print when "developer 1"
-	PRINT_WARNING,
-	PRINT_ERROR
-};
-
 #ifdef ERR_FATAL
 #undef ERR_FATAL // this is possibly defined in malloc.h
 #endif

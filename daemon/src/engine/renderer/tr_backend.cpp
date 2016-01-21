@@ -34,7 +34,7 @@ void GL_Bind( image_t *image )
 
 	if ( !image )
 	{
-		ri.Printf( printParm_t::PRINT_WARNING, "GL_Bind: NULL image\n" );
+		Log::Warn("GL_Bind: NULL image" );
 		image = tr.defaultImage;
 	}
 	else
@@ -4658,7 +4658,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	{
 		glFinish();
 		end = ri.Milliseconds();
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "glTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
+		Log::Debug("glTexSubImage2D %i, %i: %i msec", cols, rows, end - start );
 	}
 
 	tess.multiDrawPrimitives = 0;
@@ -5516,7 +5516,7 @@ void RB_ShowImages()
 	glFinish();
 
 	end = ri.Milliseconds();
-	ri.Printf(printParm_t::PRINT_DEVELOPER, "%i msec to draw all images\n", end - start );
+	Log::Debug("%i msec to draw all images", end - start );
 
 	GL_CheckErrors();
 }

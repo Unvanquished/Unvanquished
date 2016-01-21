@@ -312,7 +312,7 @@ breakOut:
 		unsigned char *flip;
 		unsigned char *src, *dst;
 
-		//ri.Printf(printParm_t::PRINT_WARNING, "WARNING: '%s' TGA file header declares top-down image, flipping\n", name);
+		//Log::Warn("'%s' TGA file header declares top-down image, flipping", name);
 
 		flip = ( unsigned char * ) ri.Hunk_AllocateTempMemory( columns * 4 );
 

@@ -1359,7 +1359,7 @@ static void Tess_SurfaceBad( surfaceType_t* )
 {
 	GLimp_LogComment( "--- Tess_SurfaceBad ---\n" );
 
-	ri.Printf(printParm_t::PRINT_ALL, "Bad surface tesselated.\n" );
+	Log::Notice("Bad surface tesselated." );
 }
 
 static void Tess_SurfaceFlare( srfFlare_t *surf )

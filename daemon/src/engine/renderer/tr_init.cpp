@@ -265,19 +265,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		{
 			if ( ( int ) cv->value != cv->integer )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value );
+				Log::Warn("cvar '%s' must be integral (%f)", cv->name, cv->value );
 				ri.Cvar_Set( cv->name, va( "%d", cv->integer ) );
 			}
 		}
 
 		if ( cv->value < minVal )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
+			Log::Warn("cvar '%s' out of range (%f < %f)", cv->name, cv->value, minVal );
 			ri.Cvar_Set( cv->name, va( "%f", minVal ) );
 		}
 		else if ( cv->value > maxVal )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
+			Log::Warn("cvar '%s' out of range (%f > %f)", cv->name, cv->value, maxVal );
 			ri.Cvar_Set( cv->name, va( "%f", maxVal ) );
 		}
 	}
@@ -337,16 +337,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 			if ( r_smp->integer )
 			{
-				ri.Printf(printParm_t::PRINT_ALL, "Trying SMP acceleration...\n" );
+				Log::Notice("Trying SMP acceleration..." );
 
 				if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
 				{
-					ri.Printf(printParm_t::PRINT_ALL, "...succeeded.\n" );
+					Log::Notice("...succeeded." );
 					glConfig.smpActive = true;
 				}
 				else
 				{
-					ri.Printf(printParm_t::PRINT_ALL, "...failed.\n" );
+					Log::Notice("...failed." );
 				}
 			}
 		}
@@ -511,7 +511,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		for ( i = 0; i < s_numVidModes; i++ )
 		{
-			ri.Printf(printParm_t::PRINT_ALL, "Mode %-2d: %s", i, r_vidModes[ i ].description );
+			Log::Notice("Mode %-2d: %s", i, r_vidModes[ i ].description );
 		}
 	}
 
@@ -703,14 +703,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 			if ( lastNumber == 1000 )
 			{
-				ri.Printf(printParm_t::PRINT_ALL, "ScreenShot: Couldn't create a file\n" );
+				Log::Notice("ScreenShot: Couldn't create a file" );
 				return;
 			}
 
 			lastNumber++;
 		}
 
-		ri.Printf(printParm_t::PRINT_ALL, "Wrote %s\n", fileName );
+		Log::Notice("Wrote %s", fileName );
 
 		cmd->commandId = renderCommand_t::RC_SCREENSHOT;
 		cmd->x = 0;
@@ -931,71 +931,71 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			"fullscreen"
 		};
 
-		ri.Printf(printParm_t::PRINT_ALL, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
-		ri.Printf(printParm_t::PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
-		ri.Printf(printParm_t::PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
+		Log::Notice("\nGL_VENDOR: %s", glConfig.vendor_string );
+		Log::Notice("GL_RENDERER: %s", glConfig.renderer_string );
+		Log::Notice("GL_VERSION: %s", glConfig.version_string );
+		Log::Debug("GL_EXTENSIONS: %s", glConfig.extensions_string );
+		Log::Debug("GL_MAX_TEXTURE_SIZE: %d", glConfig.maxTextureSize );
 
-		ri.Printf(printParm_t::PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersionString );
+		Log::Notice("GL_SHADING_LANGUAGE_VERSION: %s", glConfig2.shadingLanguageVersionString );
 
-		ri.Printf(printParm_t::PRINT_ALL, "GL_MAX_VERTEX_UNIFORM_COMPONENTS %d\n", glConfig2.maxVertexUniforms );
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "GL_MAX_VERTEX_ATTRIBS %d\n", glConfig2.maxVertexAttribs );
+		Log::Notice("GL_MAX_VERTEX_UNIFORM_COMPONENTS %d", glConfig2.maxVertexUniforms );
+		Log::Debug("GL_MAX_VERTEX_ATTRIBS %d", glConfig2.maxVertexAttribs );
 
 		if ( glConfig2.occlusionQueryAvailable )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "%d occlusion query bits\n", glConfig2.occlusionQueryBits );
+			Log::Debug("%d occlusion query bits", glConfig2.occlusionQueryBits );
 		}
 
 		if ( glConfig2.drawBuffersAvailable )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "GL_MAX_DRAW_BUFFERS: %d\n", glConfig2.maxDrawBuffers );
+			Log::Debug("GL_MAX_DRAW_BUFFERS: %d", glConfig2.maxDrawBuffers );
 		}
 
 		if ( glConfig2.textureAnisotropyAvailable )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "GL_TEXTURE_MAX_ANISOTROPY_EXT: %f\n", glConfig2.maxTextureAnisotropy );
+			Log::Debug("GL_TEXTURE_MAX_ANISOTROPY_EXT: %f", glConfig2.maxTextureAnisotropy );
 		}
 
 		if ( glConfig2.framebufferObjectAvailable )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "GL_MAX_RENDERBUFFER_SIZE: %d\n", glConfig2.maxRenderbufferSize );
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "GL_MAX_COLOR_ATTACHMENTS: %d\n", glConfig2.maxColorAttachments );
+			Log::Debug("GL_MAX_RENDERBUFFER_SIZE: %d", glConfig2.maxRenderbufferSize );
+			Log::Debug("GL_MAX_COLOR_ATTACHMENTS: %d", glConfig2.maxColorAttachments );
 		}
 
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits,
+		Log::Debug("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)", glConfig.colorBits,
 		           glConfig.depthBits, glConfig.stencilBits );
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight,
+		Log::Debug("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight,
 		           fsstrings[ r_fullscreen->integer == 1 ] );
 
 		if ( glConfig.displayFrequency )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "%d\n", glConfig.displayFrequency );
+			Log::Debug("%d", glConfig.displayFrequency );
 		}
 		else
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "N/A\n" );
+			Log::Debug("N/A" );
 		}
 
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "texturemode: %s\n", r_textureMode->string );
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "picmip: %d\n", r_picmip->integer );
+		Log::Debug("texturemode: %s", r_textureMode->string );
+		Log::Debug("picmip: %d", r_picmip->integer );
 
 		if ( glConfig.driverType == glDriverType_t::GLDRV_OPENGL3 )
 		{
 			int contextFlags, profile;
 
-			ri.Printf(printParm_t::PRINT_ALL, "%sUsing OpenGL 3.x context\n", Color::CString( Color::Green ) );
+			Log::Notice("%sUsing OpenGL 3.x context", Color::CString( Color::Green ) );
 
 			// check if we have a core-profile
 			glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profile );
 
 			if ( profile == GL_CONTEXT_CORE_PROFILE_BIT )
 			{
-				ri.Printf(printParm_t::PRINT_DEVELOPER, "%sHaving a core profile\n", Color::CString( Color::Green ) );
+				Log::Debug("%sHaving a core profile", Color::CString( Color::Green ) );
 			}
 			else
 			{
-				ri.Printf(printParm_t::PRINT_DEVELOPER, "%sHaving a compatibility profile\n", Color::CString( Color::Red ) );
+				Log::Debug("%sHaving a compatibility profile", Color::CString( Color::Red ) );
 			}
 
 			// check if context is forward compatible
@@ -1003,47 +1003,47 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 			if ( contextFlags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT )
 			{
-				ri.Printf(printParm_t::PRINT_DEVELOPER, "%sContext is forward compatible\n", Color::CString( Color::Green ) );
+				Log::Debug("%sContext is forward compatible", Color::CString( Color::Green ) );
 			}
 			else
 			{
-				ri.Printf(printParm_t::PRINT_DEVELOPER, "%sContext is NOT forward compatible\n", Color::CString( Color::Red  ));
+				Log::Debug("%sContext is NOT forward compatible", Color::CString( Color::Red  ));
 			}
 		}
 
 		if ( glConfig.hardwareType == glHardwareType_t::GLHW_ATI )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "HACK: ATI approximations\n" );
+			Log::Debug("HACK: ATI approximations" );
 		}
 
 		if ( glConfig.textureCompression != textureCompression_t::TC_NONE )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "Using S3TC (DXTC) texture compression\n" );
+			Log::Debug("Using S3TC (DXTC) texture compression" );
 		}
 
 		if ( glConfig.hardwareType == glHardwareType_t::GLHW_ATI_DX10 )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "Using ATI DirectX 10 hardware features\n" );
+			Log::Debug("Using ATI DirectX 10 hardware features" );
 		}
 
 		if ( glConfig.hardwareType == glHardwareType_t::GLHW_NV_DX10 )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "Using NVIDIA DirectX 10 hardware features\n" );
+			Log::Debug("Using NVIDIA DirectX 10 hardware features" );
 		}
 
 		if ( glConfig2.vboVertexSkinningAvailable )
 		{
-			ri.Printf(printParm_t::PRINT_ALL, "Using GPU vertex skinning with max %i bones in a single pass\n", glConfig2.maxVertexSkinningBones );
+			Log::Notice("Using GPU vertex skinning with max %i bones in a single pass", glConfig2.maxVertexSkinningBones );
 		}
 
 		if ( glConfig.smpActive )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "Using dual processor acceleration\n" );
+			Log::Debug("Using dual processor acceleration" );
 		}
 
 		if ( r_finish->integer )
 		{
-			ri.Printf(printParm_t::PRINT_DEVELOPER, "Forcing glFinish\n" );
+			Log::Debug("Forcing glFinish" );
 		}
 	}
 
@@ -1368,7 +1368,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	{
 		int i;
 
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "----- R_Init -----\n" );
+		Log::Debug("----- R_Init -----" );
 
 		// clear all our internal state
 		Com_Memset( &tr, 0, sizeof( tr ) );
@@ -1477,7 +1477,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		GfxInfo_f();
 		GL_CheckErrors();
 
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "----- finished R_Init -----\n" );
+		Log::Debug("----- finished R_Init -----" );
 
 		return true;
 	}
@@ -1489,7 +1489,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	*/
 	void RE_Shutdown( bool destroyWindow )
 	{
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "RE_Shutdown( destroyWindow = %i )\n", destroyWindow );
+		Log::Debug("RE_Shutdown( destroyWindow = %i )", destroyWindow );
 
 		ri.Cmd_RemoveCommand( "modellist" );
 		ri.Cmd_RemoveCommand( "screenshotPNG" );
@@ -1573,13 +1573,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		ri = *rimp;
 
-		ri.Printf(printParm_t::PRINT_DEVELOPER, "GetRefAPI()\n" );
+		Log::Debug("GetRefAPI()" );
 
 		Com_Memset( &re, 0, sizeof( re ) );
 
 		if ( apiVersion != REF_API_VERSION )
 		{
-			ri.Printf(printParm_t::PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n", REF_API_VERSION, apiVersion );
+			Log::Notice("Mismatched REF_API_VERSION: expected %i, got %i", REF_API_VERSION, apiVersion );
 			return nullptr;
 		}
 

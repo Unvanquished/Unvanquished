@@ -3083,36 +3083,6 @@ void CL_SetRecommended_f()
 }
 
 /*
-================
-CL_RefPrintf
-
-DLL glue
-================
-*/
-void QDECL PRINTF_LIKE(2) CL_RefPrintf( printParm_t print_level, const char *fmt, ... )
-{
-	va_list argptr;
-	char    msg[ MAXPRINTMSG ];
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( msg, sizeof( msg ), fmt, argptr );
-	va_end( argptr );
-
-	if ( print_level == printParm_t::PRINT_ALL )
-	{
-		Com_Printf( "%s", msg );
-	}
-	else if ( print_level == printParm_t::PRINT_WARNING )
-	{
-		Com_Printf( "%s%s", Color::CString( Color::Yellow ), msg );  // yellow
-	}
-	else if ( print_level == printParm_t::PRINT_DEVELOPER )
-	{
-		Log::Debug( "%s%s", Color::CString( Color::Red ), msg );  // red
-	}
-}
-
-/*
 ============
 CL_InitRenderer
 ============
@@ -3250,7 +3220,6 @@ bool CL_InitRef( )
 	ri.Cmd_Argv = Cmd_Argv;
 	ri.Cmd_QuoteString = Cmd_QuoteString;
 
-	ri.Printf = CL_RefPrintf;
 	ri.Error = Com_Error;
 
 	ri.Milliseconds = CL_ScaledMilliseconds;

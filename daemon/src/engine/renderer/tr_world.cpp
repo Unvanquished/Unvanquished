@@ -786,7 +786,7 @@ static void R_MarkLeaves()
 				{
 					if ( tr.visClusters[ i ] != tr.visClusters[ tr.visIndex ] && r_showcluster->integer )
 					{
-						ri.Printf(printParm_t::PRINT_ALL, "found cluster:%i  area:%i  index:%i\n", cluster, leaf->area, i );
+						Log::Notice("found cluster:%i  area:%i  index:%i", cluster, leaf->area, i );
 					}
 
 					tr.visIndex = i;
@@ -806,7 +806,7 @@ static void R_MarkLeaves()
 
 		if ( r_showcluster->integer )
 		{
-			ri.Printf(printParm_t::PRINT_ALL, "update cluster:%i  area:%i  index:%i\n", cluster, leaf->area, tr.visIndex );
+			Log::Notice("update cluster:%i  area:%i  index:%i", cluster, leaf->area, tr.visIndex );
 		}
 	}
 

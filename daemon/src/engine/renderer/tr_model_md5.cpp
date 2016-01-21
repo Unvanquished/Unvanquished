@@ -65,7 +65,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( version != MD5_VERSION )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: %s has wrong version (%i should be %i)\n", modName, version, MD5_VERSION );
+		Log::Warn("R_LoadMD5: %s has wrong version (%i should be %i)", modName, version, MD5_VERSION );
 		return false;
 	}
 
@@ -82,7 +82,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "numJoints" ) )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'numJoints' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected 'numJoints' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
@@ -94,7 +94,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "numMeshes" ) )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'numMeshes' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected 'numMeshes' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
@@ -103,13 +103,13 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( md5->numBones < 1 )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: '%s' has no bones\n", modName );
+		Log::Warn("R_LoadMD5: '%s' has no bones", modName );
 		return false;
 	}
 
 	if ( md5->numBones > MAX_BONES )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: '%s' has more than %i bones (%i)\n", modName, MAX_BONES, md5->numBones );
+		Log::Warn("R_LoadMD5: '%s' has more than %i bones (%i)", modName, MAX_BONES, md5->numBones );
 		return false;
 	}
 
@@ -121,7 +121,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "joints" ) )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'joints' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected 'joints' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
@@ -129,7 +129,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "{" ) )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '{' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected '{' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
@@ -153,7 +153,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "(" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -168,7 +168,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, ")" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected ')' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -177,7 +177,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "(" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -198,7 +198,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, ")" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 	}
@@ -208,14 +208,14 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "}" ) )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '}' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected '}' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
 	// parse all the surfaces
 	if ( md5->numSurfaces < 1 )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: '%s' has no surfaces\n", modName );
+		Log::Warn("R_LoadMD5: '%s' has no surfaces", modName );
 		return false;
 	}
 
@@ -229,7 +229,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "mesh" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'mesh' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'mesh' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -237,7 +237,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "{" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '{' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '{' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -252,7 +252,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "shader" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'shader' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'shader' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -279,7 +279,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "numVerts" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'numVerts' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'numVerts' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -303,7 +303,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "vert" ) )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'vert' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected 'vert' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -314,7 +314,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "(" ) )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -329,7 +329,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, ")" ) )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected ')' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -351,7 +351,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "numTris" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'numTris' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'numTris' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -374,7 +374,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "tri" ) )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'tri' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected 'tri' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -392,7 +392,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "numWeights" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'numWeights' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'numWeights' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -409,7 +409,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "weight" ) )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected 'weight' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected 'weight' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -426,7 +426,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "(" ) )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -441,7 +441,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, ")" ) )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected ')' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 		}
@@ -451,7 +451,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "}" ) )
 		{
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: expected '}' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '}' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -613,7 +613,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( !vboTriangles.currentElements )
 			{
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD5: could not add triangles to a remaining VBO surfaces for model '%s'\n", modName );
+				Log::Warn("R_LoadMD5: could not add triangles to a remaining VBO surfaces for model '%s'", modName );
 				Com_DestroyGrowList( &vboTriangles );
 				break;
 			}

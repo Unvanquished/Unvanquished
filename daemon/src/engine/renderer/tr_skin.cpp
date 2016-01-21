@@ -201,7 +201,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 	// allocate a new skin
 	if ( tr.numSkins == MAX_SKINS )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "WARNING: RE_RegisterSkin( '%s' ) MAX_SKINS hit\n", name );
+		Log::Warn("RE_RegisterSkin( '%s' ) MAX_SKINS hit", name );
 		return 0;
 	}
 
@@ -337,19 +337,19 @@ void R_SkinList_f()
 	int    i, j;
 	skin_t *skin;
 
-	ri.Printf(printParm_t::PRINT_ALL, "------------------\n" );
+	Log::Notice("------------------" );
 
 	for ( i = 0; i < tr.numSkins; i++ )
 	{
 		skin = tr.skins[ i ];
 
-		ri.Printf(printParm_t::PRINT_ALL, "%3i:%s\n", i, skin->name );
+		Log::Notice("%3i:%s", i, skin->name );
 
 		for ( j = 0; j < skin->numSurfaces; j++ )
 		{
-			ri.Printf(printParm_t::PRINT_ALL, "       %s = %s\n", skin->surfaces[ j ]->name, skin->surfaces[ j ]->shader->name );
+			Log::Notice("       %s = %s", skin->surfaces[ j ]->name, skin->surfaces[ j ]->shader->name );
 		}
 	}
 
-	ri.Printf(printParm_t::PRINT_ALL, "------------------\n" );
+	Log::Notice("------------------" );
 }

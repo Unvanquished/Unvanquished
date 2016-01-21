@@ -63,7 +63,7 @@ bool R_LoadMD3( model_t *mod, int lod, void *buffer, const char *modName )
 
 	if ( version != MD3_VERSION )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD3: %s has wrong version (%i should be %i)\n", modName, version, MD3_VERSION );
+		Log::Warn("R_LoadMD3: %s has wrong version (%i should be %i)", modName, version, MD3_VERSION );
 		return false;
 	}
 
@@ -84,7 +84,7 @@ bool R_LoadMD3( model_t *mod, int lod, void *buffer, const char *modName )
 
 	if ( md3Model->numFrames < 1 )
 	{
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadMD3: %s has no frames\n", modName );
+		Log::Warn("R_LoadMD3: %s has no frames", modName );
 		return false;
 	}
 

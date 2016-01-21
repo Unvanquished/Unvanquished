@@ -42,77 +42,77 @@ void R_PerformanceCounters()
 
 	if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_GENERAL))
 	{
-		ri.Printf( printParm_t::PRINT_ALL, "%i views %i portals %i batches %i surfs %i leafs %i verts %i tris\n",
+		Log::Notice("%i views %i portals %i batches %i surfs %i leafs %i verts %i tris",
 		           backEnd.pc.c_views, backEnd.pc.c_portals, backEnd.pc.c_batches, backEnd.pc.c_surfaces, tr.pc.c_leafs,
 		           backEnd.pc.c_vertexes, backEnd.pc.c_indexes / 3 );
 
-		ri.Printf( printParm_t::PRINT_ALL, "%i lights %i bout %i pvsout %i interactions\n",
+		Log::Notice("%i lights %i bout %i pvsout %i interactions",
 		           tr.pc.c_dlights + tr.pc.c_slights,
 		           tr.pc.c_box_cull_light_out,
 		           tr.pc.c_pvs_cull_light_out,
 		           tr.pc.c_dlightInteractions + tr.pc.c_slightInteractions );
 
-		ri.Printf( printParm_t::PRINT_ALL, "%i draws %i vbos %i ibos %i verts %i tris\n",
+		Log::Notice("%i draws %i vbos %i ibos %i verts %i tris",
 		           backEnd.pc.c_drawElements,
 		           backEnd.pc.c_vboVertexBuffers, backEnd.pc.c_vboIndexBuffers,
 		           backEnd.pc.c_vboVertexes, backEnd.pc.c_vboIndexes / 3 );
 
-		ri.Printf( printParm_t::PRINT_ALL, "%i multidraws %i primitives %i tris\n",
+		Log::Notice("%i multidraws %i primitives %i tris",
 		           backEnd.pc.c_multiDrawElements,
 		           backEnd.pc.c_multiDrawPrimitives,
 		           backEnd.pc.c_multiVboIndexes / 3 );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_CULLING ))
 	{
-		ri.Printf( printParm_t::PRINT_ALL, "(gen) %i pin %i pout %i bin %i bclip %i bout\n",
+		Log::Notice("(gen) %i pin %i pout %i bin %i bclip %i bout",
 		           tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out, tr.pc.c_box_cull_in,
 		           tr.pc.c_box_cull_clip, tr.pc.c_box_cull_out );
 
-		ri.Printf( printParm_t::PRINT_ALL, "(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout\n",
+		Log::Notice("(mdv) %i sin %i sclip %i sout %i bin %i bclip %i bout",
 		           tr.pc.c_sphere_cull_mdv_in, tr.pc.c_sphere_cull_mdv_clip,
 		           tr.pc.c_sphere_cull_mdv_out, tr.pc.c_box_cull_mdv_in, tr.pc.c_box_cull_mdv_clip, tr.pc.c_box_cull_mdv_out );
 
-		ri.Printf( printParm_t::PRINT_ALL, "(md5) %i bin %i bclip %i bout\n",
+		Log::Notice("(md5) %i bin %i bclip %i bout",
 		           tr.pc.c_box_cull_md5_in, tr.pc.c_box_cull_md5_clip, tr.pc.c_box_cull_md5_out );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_VIEWCLUSTER ))
 	{
-		ri.Printf( printParm_t::PRINT_ALL, "viewcluster: %i\n", tr.visClusters[ tr.visIndex ] );
+		Log::Notice("viewcluster: %i", tr.visClusters[ tr.visIndex ] );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_LIGHTS ))
 	{
-		ri.Printf( printParm_t::PRINT_ALL, "dlight srf:%i culled:%i\n", tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled );
+		Log::Notice("dlight srf:%i culled:%i", tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled );
 
-		ri.Printf( printParm_t::PRINT_ALL, "dlights:%i interactions:%i\n", tr.pc.c_dlights, tr.pc.c_dlightInteractions );
+		Log::Notice("dlights:%i interactions:%i", tr.pc.c_dlights, tr.pc.c_dlightInteractions );
 
-		ri.Printf( printParm_t::PRINT_ALL, "slights:%i interactions:%i\n", tr.pc.c_slights, tr.pc.c_slightInteractions );
+		Log::Notice("slights:%i interactions:%i", tr.pc.c_slights, tr.pc.c_slightInteractions );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_SHADOWCUBE_CULLING ))
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "omni pyramid tests:%i bin:%i bclip:%i bout:%i\n",
+		Log::Notice("omni pyramid tests:%i bin:%i bclip:%i bout:%i",
 		           tr.pc.c_pyramidTests, tr.pc.c_pyramid_cull_ent_in, tr.pc.c_pyramid_cull_ent_clip, tr.pc.c_pyramid_cull_ent_out );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_FOG ))
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "fog srf:%i batches:%i\n", backEnd.pc.c_fogSurfaces, backEnd.pc.c_fogBatches );
+		Log::Notice("fog srf:%i batches:%i", backEnd.pc.c_fogSurfaces, backEnd.pc.c_fogBatches );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_FLARES ))
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "flare adds:%i tests:%i renders:%i\n",
+		Log::Notice("flare adds:%i tests:%i renders:%i",
 		           backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_SHADING_TIMES ))
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "forward shading times: ambient:%i lighting:%i\n", backEnd.pc.c_forwardAmbientTime,
+		Log::Notice("forward shading times: ambient:%i lighting:%i", backEnd.pc.c_forwardAmbientTime,
 			           backEnd.pc.c_forwardLightingTime );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_NEAR_FAR ))
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "zNear: %.0f zFar: %.0f\n", tr.viewParms.zNear, tr.viewParms.zFar );
+		Log::Notice("zNear: %.0f zFar: %.0f", tr.viewParms.zNear, tr.viewParms.zFar );
 	}
 	else if ( r_speeds->integer == Util::ordinal(renderSpeeds_t::RSPEEDS_DECALS ))
 	{
-		ri.Printf(printParm_t::PRINT_ALL, "decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d\n",
+		Log::Notice("decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d",
 		           tr.pc.c_decalProjectors, tr.pc.c_decalTestSurfaces, tr.pc.c_decalClipSurfaces, tr.pc.c_decalSurfaces,
 		           tr.pc.c_decalSurfacesCreated );
 	}
@@ -150,7 +150,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters )
 
 			if ( r_showSmp->integer )
 			{
-				ri.Printf(printParm_t::PRINT_ALL, "R" );
+				Log::Notice("R");
 			}
 		}
 		else
@@ -159,7 +159,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters )
 
 			if ( r_showSmp->integer )
 			{
-				ri.Printf(printParm_t::PRINT_ALL, "." );
+				Log::Notice(".");
 			}
 		}
 
@@ -706,7 +706,7 @@ void RE_BeginFrame()
 	{
 		if ( glConfig.stencilBits < 4 )
 		{
-			ri.Printf(printParm_t::PRINT_ALL, "Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits );
+			Log::Warn("not enough stencil bits to measure overdraw: %d", glConfig.stencilBits );
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
 			r_measureOverdraw->modified = false;
 		}
@@ -908,7 +908,7 @@ void RE_Finish()
 {
 	renderFinishCommand_t *cmd;
 
-	ri.Printf(printParm_t::PRINT_ALL, "RE_Finish\n" );
+	Log::Notice("RE_Finish\n" );
 
 	cmd = (renderFinishCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
 

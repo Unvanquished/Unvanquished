@@ -48,24 +48,24 @@ static bool IQM_CheckRange( iqmHeader_t *header, int offset,
 	// return true if the range specified by offset, count and size
 	// doesn't fit into the file
 	if( count <= 0 ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: %s has a negative count in the %s section (%d).\n",
+		Log::Warn("R_LoadIQM: %s has a negative count in the %s section (%d).",
 			  mod_name, section, count );
 		return true;
 	}
 	if( offset < 0 ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: %s has a negative offset to the %s section (%d).\n",
+		Log::Warn("R_LoadIQM: %s has a negative offset to the %s section (%d).",
 			  mod_name, section, offset );
 		return true;
 	}
 	if( offset > (int) header->filesize ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: %s has an offset behind the end of file to the %s section (%d).\n",
+		Log::Warn("R_LoadIQM: %s has an offset behind the end of file to the %s section (%d).",
 			  mod_name, section, offset );
 		return true;
 	}
 
 	section_end = offset + count * size;
 	if( section_end > (int) header->filesize || section_end < 0 ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: %s has the section %s exceeding the end of file (%d).\n",
+		Log::Warn("R_LoadIQM: %s has the section %s exceeding the end of file (%d).",
 			  mod_name, section, section_end );
 		return true;
 	}
@@ -85,28 +85,28 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 	iqmAnim_t		*anim;
 
 	if( filesize < sizeof(iqmHeader_t) ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQModel: file size of %s is too small.\n",
+		Log::Warn("R_LoadIQModel: file size of %s is too small.",
 			  mod_name );
 		return false;
 	}
 
 	header = (iqmHeader_t *)buffer;
 	if( Q_strncmp( header->magic, IQM_MAGIC, sizeof(header->magic) ) ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQModel: file %s doesn't contain an IQM header.\n",
+		Log::Warn("R_LoadIQModel: file %s doesn't contain an IQM header.",
 			  mod_name );
 		return false;
 	}
 
 	LL( header->version );
 	if( header->version != IQM_VERSION ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: %s is a unsupported IQM version (%d), only version %d is supported.\n",
+		Log::Warn("R_LoadIQM: %s is a unsupported IQM version (%d), only version %d is supported.",
 			  mod_name, header->version, IQM_VERSION);
 		return false;
 	}
 
 	LL( header->filesize );
 	if( header->filesize > filesize || header->filesize > 1<<24 ) {
-		ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: %s has an invalid file size %d.\n",
+		Log::Warn("R_LoadIQM: %s has an invalid file size %d.",
 			  mod_name, header->filesize );
 		return false;
 	}
@@ -149,7 +149,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		int	j, n, *intPtr;
 
 		if( vertexarray->size <= 0 || vertexarray->size > 4 ) {
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: %s contains an invalid vertexarray size.\n",
+			Log::Warn("R_LoadIQM: %s contains an invalid vertexarray size.",
 				  mod_name );
 			return false;
 		}
@@ -181,7 +181,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 			break;
 		default:
 			// not supported
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+			Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 				  mod_name );
 			return false;
 			break;
@@ -192,7 +192,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_NORMAL:
 			if( vertexarray->format != IQM_FLOAT ||
 			    vertexarray->size != 3 ) {
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -200,7 +200,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_TANGENT:
 			if( vertexarray->format != IQM_FLOAT ||
 			    vertexarray->size != 4 ) {
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -208,7 +208,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_TEXCOORD:
 			if( vertexarray->format != IQM_FLOAT ||
 			    vertexarray->size != 2 ) {
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -217,7 +217,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_BLENDWEIGHTS:
 			if( vertexarray->format != IQM_UBYTE ||
 			    vertexarray->size != 4 ) {
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -225,7 +225,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_COLOR:
 			if( vertexarray->format != IQM_UBYTE ||
 			    vertexarray->size != 4 ) {
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -275,7 +275,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		    mesh->first_triangle + mesh->num_triangles > header->num_triangles ||
 		    mesh->name >= header->num_text ||
 		    mesh->material >= header->num_text ) {
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s contains an invalid mesh.\n",
+			Log::Warn("R_LoadIQM: file %s contains an invalid mesh.",
 				  mod_name );
 			return false;
 		}
@@ -308,14 +308,14 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		if( joint->parent < -1 ||
 		    joint->parent >= (int)header->num_joints ||
 		    joint->name >= header->num_text ) {
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s contains an invalid joint.\n",
+			Log::Warn("R_LoadIQM: file %s contains an invalid joint.",
 				  mod_name );
 			return false;
 		}
 		if( joint->scale[0] < 0.0f ||
 			(int)( joint->scale[0] - joint->scale[1] ) ||
 			(int)( joint->scale[1] - joint->scale[2] ) ) {
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s contains an invalid scale.\n%f %f %f",
+			Log::Warn("R_LoadIQM: file %s contains an invalid scale: %f %f %f",
 				  mod_name, joint->scale[0], joint->scale[1], joint->scale[2] );
 			return false;
 		}
@@ -604,7 +604,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
 	for(unsigned i = 0; i < header->num_joints; i++, joint++, trans++ ) {
 		if( joint->parent >= (int) i ) {
-			ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQModel: file %s contains an invalid parent joint number.\n",
+			Log::Warn("R_LoadIQModel: file %s contains an invalid parent joint number.",
 				  mod_name );
 			return false;
 		}
@@ -665,8 +665,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			if( scale[0] < 0.0f ||
 			    (int)( scale[0] - scale[1] ) ||
 			    (int)( scale[1] - scale[2] ) ) {
-				ri.Printf(printParm_t::PRINT_WARNING, "R_LoadIQM: file %s contains an invalid scale.",
-				mod_name );
+				Log::Warn("R_LoadIQM: file %s contains an invalid scale.", mod_name );
 				return false;
 			    }
 

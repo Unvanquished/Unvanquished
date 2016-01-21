@@ -192,9 +192,6 @@ struct refexport_t
 //
 struct refimport_t
 {
-	// print message on the local console
-	void ( QDECL *Printf )( printParm_t printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
-
 	// abort the game
 	void ( QDECL *Error )( errorParm_t errorLevel, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN_PTR;
 
