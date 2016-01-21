@@ -489,7 +489,7 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 	{
 		if ( self->botMind->numRunningNodes == MAX_NODE_DEPTH )
 		{
-			G_Printf( "ERROR: MAX_NODE_DEPTH exceeded\n" );
+			Log::Warn( "MAX_NODE_DEPTH exceeded" );
 			return status;
 		}
 

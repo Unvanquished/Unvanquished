@@ -82,7 +82,7 @@ void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPo
 {
 	if ( !bot->corridor.getPathCount() )
 	{
-		Com_Log(log_level_t::ERROR, "FindWaypoints Called without a path!" );
+		Log::Warn("FindWaypoints Called without a path!" );
 		*numCorners = 0;
 		return;
 	}

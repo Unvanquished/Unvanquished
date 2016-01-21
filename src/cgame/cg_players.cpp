@@ -132,7 +132,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 	if ( len + 1 >= (int) sizeof( text ) )
 	{
-		CG_Printf( "File %s is too long\n", filename );
+		Log::Warn( "File %s is too long", filename );
 		trap_FS_FCloseFile( f );
 		return false;
 	}
@@ -193,7 +193,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			}
 			else
 			{
-				CG_Printf( "Bad footsteps parm in %s: %s\n", filename, token);
+				Log::Warn( "Bad footsteps parm in %s: %s", filename, token);
 			}
 			continue;
 		}
@@ -487,7 +487,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
-		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
+		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
 		trap_FS_FCloseFile( f );
 		return false;
 	}
@@ -545,7 +545,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			}
 			else
 			{
-				CG_Printf( "Bad footsteps parm in %s: %s\n", filename, token );
+				Log::Warn( "Bad footsteps parm in %s: %s", filename, token );
 			}
 
 			continue;
@@ -700,7 +700,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_PLAYER_ANIMATIONS )
 		{
-			CG_Printf( "Error parsing animation file: %s\n", filename );
+			Log::Warn( "Error parsing animation file: %s", filename );
 			return false;
 		}
 
@@ -793,7 +793,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_NONSEG_PLAYER_ANIMATIONS )
 		{
-			CG_Printf( "Error parsing animation file: %s\n", filename );
+			Log::Warn( "Error parsing animation file: %s", filename );
 			return false;
 		}
 
@@ -1570,24 +1570,24 @@ static void CG_StatusMessages( clientInfo_t *new_, clientInfo_t *old )
 
 	if ( strcmp( new_->name, old->name ) )
 	{
-		CG_Printf(_( "%s^7 renamed to %s\n"), old->name, new_->name );
+		Log::Notice(_( "%s^7 renamed to %s"), old->name, new_->name );
 	}
 
 	if ( old->team != new_->team )
 	{
 		if ( new_->team == TEAM_NONE )
 		{
-			CG_Printf(_( "%s^7 left the %s\n"), new_->name,
+			Log::Notice(_( "%s^7 left the %s"), new_->name,
 			           BG_TeamNamePlural( old->team ) );
 		}
 		else if ( old->team == TEAM_NONE )
 		{
-			CG_Printf(_( "%s^7 joined the %s\n"), new_->name,
+			Log::Notice(_( "%s^7 joined the %s"), new_->name,
 			           BG_TeamNamePlural( new_->team ) );
 		}
 		else
 		{
-			CG_Printf(_( "%s^7 left the %s and joined the %s\n"),
+			Log::Notice(_( "%s^7 left the %s and joined the %s"),
 			           new_->name, BG_TeamNamePlural( old->team ), BG_TeamNamePlural( new_->team ) );
 		}
 	}
@@ -1753,7 +1753,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
-				CG_Printf( "Can't blend skeleton\n" );
+				Log::Warn( "Can't blend skeleton" );
 				return;
 			}
 		}
@@ -1770,7 +1770,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 	if ( cg_debugAnim.integer )
 	{
-		CG_Printf( "Anim: %i\n", newAnimation );
+		Log::Warn( "Anim: %i", newAnimation );
 	}
 
 }
@@ -1844,7 +1844,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	{
 		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames - 1, anim->numFrames - 1, 0, lf->animation->clearOrigin ) )
 		{
-			CG_Printf( "Can't build lf->skeleton\n" );
+			Log::Warn( "Can't build lf->skeleton" );
 		}
 	}
 }
@@ -2570,7 +2570,7 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 				{
 					if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 					{
-						CG_Printf( "Can't build old jetpack skeleton\n" );
+						Log::Warn( "Can't build old jetpack skeleton" );
 						return;
 					}
 				}
@@ -3297,7 +3297,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !body.hModel )
 		{
-			CG_Printf( "No body model for player %i\n", clientNum );
+			Log::Warn( "No body model for player %i", clientNum );
 			return;
 		}
 
@@ -3368,7 +3368,7 @@ void CG_Player( centity_t *cent )
 				// while spectating (switching between players on the human team)
 				// - don't treat as fatal, but doing so will (briefly?) cause rendering
 				// glitches if chasing; also, brief spam
-				CG_Printf( "[skipnotify]WARNING: cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones\n" );
+				Log::Warn( S_SKIPNOTIFY "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 			}
 
 			// combine legs and torso skeletons
@@ -3926,7 +3926,7 @@ void CG_ResetPlayerEntity( centity_t *cent )
 
 	if ( cg_debugPosition.integer )
 	{
-		CG_Printf( "%i ResetPlayerEntity yaw=%.2f\n", cent->currentState.number, cent->pe.torso.yawAngle );
+		Log::Debug( "%i ResetPlayerEntity yaw=%.2f", cent->currentState.number, cent->pe.torso.yawAngle );
 	}
 }
 

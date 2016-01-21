@@ -372,15 +372,15 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm )
 
 	if ( !event )
 	{
-		G_Printf( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
+		Log::Warn( "G_AddEvent: zero event added for entity %i", ent->s.number );
 		return;
 	}
 
 	// eventParm is converted to uint8_t (0 - 255) in msg.c
 	if ( eventParm & ~0xFF )
 	{
-		G_Printf( S_WARNING "G_AddEvent( %s ) has eventParm %d, "
-		          "which will overflow\n", BG_EventName( event ), eventParm );
+		Log::Warn( "G_AddEvent( %s ) has eventParm %d, "
+		          "which will overflow", BG_EventName( event ), eventParm );
 	}
 
 	// clients need to add the event in playerState_t instead of entityState_t

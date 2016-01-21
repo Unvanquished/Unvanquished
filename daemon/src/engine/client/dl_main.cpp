@@ -83,7 +83,7 @@ void DL_InitDownload()
 
 	dl_multi = curl_multi_init();
 
-	Com_DPrintf( "Client download subsystem initialized\n" );
+	Log::Debug( "Client download subsystem initialized" );
 	dl_initialized = 1;
 }
 
@@ -133,7 +133,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName )
 
 	if ( !localName || !remoteName )
 	{
-		Com_DPrintf( "Empty download URL or empty local file name\n" );
+		Log::Debug( "Empty download URL or empty local file name" );
 		return 0;
 	}
 
@@ -177,7 +177,7 @@ dlStatus_t DL_DownloadLoop()
 
 	if ( !dl_request )
 	{
-		Com_DPrintf( "DL_DownloadLoop: unexpected call with dl_request == NULL\n" );
+		Log::Debug( "DL_DownloadLoop: unexpected call with dl_request == NULL" );
 		return dlStatus_t::DL_DONE;
 	}
 
@@ -221,7 +221,7 @@ dlStatus_t DL_DownloadLoop()
 
 	if ( err )
 	{
-		Com_DPrintf( "DL_DownloadLoop: request terminated with failure status '%s'\n", err );
+		Log::Debug( "DL_DownloadLoop: request terminated with failure status '%s'", err );
 		return dlStatus_t::DL_FAILED;
 	}
 

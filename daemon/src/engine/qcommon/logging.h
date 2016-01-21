@@ -45,36 +45,6 @@
  */
 #define S_WARNING "^3Warning: ^*"
 #define S_ERROR   "^1ERROR: ^*"
-#define S_DEBUG   "Debug: "
-
-struct log_location_info_t
-{
-	const char* file;
-	int line;
-	const char* function;
-};
-
-//func should be defined in global.h or somewhere else in a compiler independend manner
-#define LOCATION_INFO { __FILE__, __LINE__, __func__ }
-
-enum class log_level_t
-{
-	OFF = -3,
-	ERROR = -2,
-	WARN = -1,
-	NOTICE = 0, /*< information regarded worth notifying about; the default */
-	INFO = 1, /*< general helpful (even outside of debugging) but not necessary information */
-	DEBUG = 2,
-	TRACE = 3, /*< this is for finest grained debug-tracing, that should not be executed in NDEBUG */
-	ALL = 4
-};
-
-struct log_event_t
-{
-	const char* source;
-	log_level_t level;
-	const char* message;
-};
 
 /**
  * print levels as currently used by the renderer
@@ -102,6 +72,5 @@ enum class errorParm_t
 // this is only here so the functions in q_shared.c and bg_*.c can link
 void QDECL NORETURN Com_Error( errorParm_t level, const char *error, ... ) PRINTF_LIKE(2);
 void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 
 #endif /* LOGGING_H_ */

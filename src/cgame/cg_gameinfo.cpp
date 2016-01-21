@@ -186,7 +186,7 @@ void CG_LoadArenas()
 		CG_LoadArenasFromFile( filename );
 	}
 
-	trap_Print( va( "[skipnotify]%i arenas parsed\n", cg_numArenas ) );
+	trap_Print( va( S_SKIPNOTIFY "%i arenas parsed\n", cg_numArenas ) );
 
 	for ( n = 0; n < cg_numArenas; n++ )
 	{

@@ -96,7 +96,7 @@ e_status CIN_StopCinematic( int handle )
 
 	currentHandle = handle;
 
-	Com_DPrintf( "trFMV::stop(), closing %s\n", cinTable[ currentHandle ].fileName );
+	Log::Debug( "trFMV::stop(), closing %s", cinTable[ currentHandle ].fileName );
 
 	if ( !cinTable[ currentHandle ].buf )
 	{
@@ -371,7 +371,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 		}
 	}
 
-	Com_DPrintf( "SCR_PlayCinematic( %s )\n", arg );
+	Log::Debug( "SCR_PlayCinematic( %s )", arg );
 
 	Com_Memset( &cin, 0, sizeof( cinematics_t ) );
 	currentHandle = CIN_HandleForVideo();
@@ -556,7 +556,7 @@ void CL_PlayCinematic_f()
 		return;
 	}
 
-	Com_DPrintf( "CL_PlayCinematic_f\n" );
+	Log::Debug( "CL_PlayCinematic_f" );
 
 	if ( cls.state == connstate_t::CA_CINEMATIC )
 	{

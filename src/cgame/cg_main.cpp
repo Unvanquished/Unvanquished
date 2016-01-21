@@ -765,18 +765,6 @@ void CG_AddNotifyText()
 	cg.numConsoleLines++;
 }
 
-void QDECL PRINTF_LIKE(1) CG_Printf( const char *msg, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
-
 void QDECL PRINTF_LIKE(1) NORETURN CG_Error( const char *msg, ... )
 {
 	va_list argptr;
@@ -958,14 +946,14 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 	switch (step) {
 		case LOAD_START:
 			startTime = thisStepTime;
-			CG_Printf("^4%%^5 Start loading.\n");
+			Log::Notice("^4%%^5 Start loading.");
 			break;
 		case LOAD_DONE:
-			CG_Printf("^4%%^5 Done loading everything after %is (%ims).\n",
+			Log::Notice("^4%%^5 Done loading everything after %is (%ims).",
 					(thisStepTime - startTime)/1000, (thisStepTime - startTime));
 			break;
 		default:
-			CG_Printf("^4%%^5 Done with Step %i after %is (%ims)… Starting Step %i\n",
+			Log::Notice("^4%%^5 Done with Step %i after %is (%ims)… Starting Step %i",
 					step - 1, (thisStepTime - lastStepTime)/1000, (thisStepTime - lastStepTime), step );
 			break;
 	}

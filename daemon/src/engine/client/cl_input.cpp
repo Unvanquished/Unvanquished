@@ -95,7 +95,7 @@ void IN_KeyDown( kbutton_t *b )
 	}
 	else
 	{
-		Com_DPrintf( "Three keys down for a button!" );
+		Log::Debug( "Three keys down for a button!" );
 		return;
 	}
 

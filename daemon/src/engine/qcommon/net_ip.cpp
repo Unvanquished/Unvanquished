@@ -1179,7 +1179,7 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 		if ( setsockopt( newsocket, IPPROTO_IPV6, IPV6_V6ONLY, ( char * ) &i, sizeof( i ) ) == SOCKET_ERROR )
 		{
 			// win32 systems don't seem to support this anyways.
-			Com_DPrintf( "WARNING: NET_IP6Socket: setsockopt IPV6_V6ONLY: %s\n", NET_ErrorString() );
+			Log::Debug( "WARNING: NET_IP6Socket: setsockopt IPV6_V6ONLY: %s", NET_ErrorString() );
 		}
 	}
 #endif

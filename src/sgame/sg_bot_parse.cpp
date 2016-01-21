@@ -1320,7 +1320,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	handle = trap_Parse_LoadSource( treefilename );
 	if ( !handle )
 	{
-		G_Printf( "^1ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
+		Log::Warn( "Cannot load behavior tree %s: File not found", treefilename );
 		return nullptr;
 	}
 
@@ -1604,6 +1604,6 @@ void FreeBehaviorTree( AIBehaviorTree_t *tree )
 	}
 	else
 	{
-		G_Printf( "WARNING: Attempted to free NULL behavior tree\n" );
+		Log::Warn( "Attempted to free NULL behavior tree" );
 	}
 }

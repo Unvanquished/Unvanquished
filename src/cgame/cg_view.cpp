@@ -98,7 +98,7 @@ void CG_TestModel_f()
 
 	if ( !cg.testModelEntity.hModel )
 	{
-		CG_Printf( "Can't register model\n" );
+		Log::Warn( "Can't register model" );
 		return;
 	}
 
@@ -137,7 +137,7 @@ void CG_TestGun_f()
 void CG_TestModelNextFrame_f()
 {
 	cg.testModelEntity.frame++;
-	CG_Printf( "frame %i\n", cg.testModelEntity.frame );
+	Log::Notice( "frame %i", cg.testModelEntity.frame );
 }
 
 void CG_TestModelPrevFrame_f()
@@ -149,13 +149,13 @@ void CG_TestModelPrevFrame_f()
 		cg.testModelEntity.frame = 0;
 	}
 
-	CG_Printf( "frame %i\n", cg.testModelEntity.frame );
+	Log::Notice( "frame %i", cg.testModelEntity.frame );
 }
 
 void CG_TestModelNextSkin_f()
 {
 	cg.testModelEntity.skinNum++;
-	CG_Printf( "skin %i\n", cg.testModelEntity.skinNum );
+	Log::Notice( "skin %i", cg.testModelEntity.skinNum );
 }
 
 void CG_TestModelPrevSkin_f()
@@ -167,7 +167,7 @@ void CG_TestModelPrevSkin_f()
 		cg.testModelEntity.skinNum = 0;
 	}
 
-	CG_Printf( "skin %i\n", cg.testModelEntity.skinNum );
+	Log::Notice( "skin %i", cg.testModelEntity.skinNum );
 }
 
 static void CG_AddTestModel()
@@ -180,7 +180,7 @@ static void CG_AddTestModel()
 
 	if ( !cg.testModelEntity.hModel )
 	{
-		CG_Printf( "Can't register model\n" );
+		Log::Warn( "Can't register model" );
 		return;
 	}
 
@@ -1990,6 +1990,6 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 
 	if ( cg_stats.integer )
 	{
-		CG_Printf( "cg.clientFrame:%i\n", cg.clientFrame );
+		Log::Notice( "cg.clientFrame:%i", cg.clientFrame );
 	}
 }

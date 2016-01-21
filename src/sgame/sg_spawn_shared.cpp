@@ -161,7 +161,7 @@ void G_ResetTimeField( variatingTime_t *result,
 
 		if( g_debugEntities.integer >= 0 )
 		{
-			G_Printf( S_WARNING "negative variance (%f); resetting to 0\n", result->variance );
+			Log::Warn( "negative variance (%f); resetting to 0", result->variance );
 		}
 	}
 	else if ( result->variance >= result->time && result->variance > 0)
@@ -170,7 +170,7 @@ void G_ResetTimeField( variatingTime_t *result,
 
 		if( g_debugEntities.integer > 0 )
 		{
-			G_Printf( S_WARNING "limitting variance (%f) to be smaller than time (%f)\n", result->variance, result->time );
+			Log::Warn( "limitting variance (%f) to be smaller than time (%f)", result->variance, result->time );
 		}
 	}
 }
@@ -226,7 +226,7 @@ void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVarianc
 
 		if( g_debugEntities.integer > -1)
 		{
-			G_Printf( S_WARNING "Entity %s has wait.variance >= wait.time\n", etos( self ) );
+			Log::Warn( "Entity %s has wait.variance >= wait.time", etos( self ) );
 		}
 	}
 }

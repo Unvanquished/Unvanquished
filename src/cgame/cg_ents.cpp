@@ -1050,7 +1050,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 
 	if ( cg_debugPVS.integer )
 	{
-		CG_Printf( "Entity %d entered PVS\n", cent->currentState.number );
+		Log::Debug( "Entity %d entered PVS", cent->currentState.number );
 	}
 
 	switch ( es->eType )
@@ -1102,7 +1102,7 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 
 	if ( cg_debugPVS.integer )
 	{
-		CG_Printf( "Entity %d left PVS\n", cent->currentState.number );
+		Log::Debug( "Entity %d left PVS", cent->currentState.number );
 	}
 
 	switch ( es->eType )

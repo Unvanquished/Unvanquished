@@ -354,13 +354,13 @@ void CL_Record_f()
 
 	if ( clc.demorecording )
 	{
-		Com_Log(log_level_t::ERROR, "Already recording." );
+		Log::Warn("Already recording." );
 		return;
 	}
 
 	if ( cls.state != connstate_t::CA_ACTIVE )
 	{
-		Com_Log(log_level_t::ERROR, "You must be in a level to record." );
+		Log::Warn("You must be in a level to record." );
 		return;
 	}
 
@@ -368,7 +368,7 @@ void CL_Record_f()
 	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
 	if ( NET_IsLocalAddress( clc.serverAddress ) && !Cvar_VariableValue( "g_synchronousClients" ) )
 	{
-		Com_Logf(log_level_t::WARN, "You should set '%s' for smoother demo recording" , "g_synchronousClients 1" );
+		Log::Warn("You should set '%s' for smoother demo recording" , "g_synchronousClients 1" );
 	}
 
 	if ( Cmd_Argc() == 2 )
@@ -435,7 +435,7 @@ void CL_Record( const char *name )
 
 	if ( !clc.demofile )
 	{
-		Com_Log(log_level_t::ERROR, "couldn't open." );
+		Log::Warn("couldn't open." );
 		return;
 	}
 
@@ -754,7 +754,7 @@ void CL_WriteWaveOpen()
 
 	if ( !clc.wavefile )
 	{
-		Com_Logf(log_level_t::ERROR, "couldn't open %s for writing.", name );
+		Log::Warn("couldn't open %s for writing.", name );
 		return;
 	}
 
@@ -877,7 +877,7 @@ void CL_NextDemo()
 
 	Q_strncpyz( v, Cvar_VariableString( "nextdemo" ), sizeof( v ) );
 	v[ MAX_STRING_CHARS - 1 ] = 0;
-	Com_DPrintf( "CL_NextDemo: %s\n", v );
+	Log::Debug( "CL_NextDemo: %s", v );
 
 	if ( !v[ 0 ] )
 	{
@@ -1207,7 +1207,7 @@ void CL_RequestMotd()
 		return;
 	}
 
-	Com_DPrintf( "Resolving %s\n", MASTER_SERVER_NAME );
+	Log::Debug( "Resolving %s", MASTER_SERVER_NAME );
 
 	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &cls.updateServer,
 	                          netadrtype_t::NA_UNSPEC ) )
@@ -1223,7 +1223,7 @@ void CL_RequestMotd()
 			break;
 	}
 
-	Com_DPrintf( "%s resolved to %s\n", MASTER_SERVER_NAME,
+	Log::Debug( "%s resolved to %s", MASTER_SERVER_NAME,
 	             NET_AdrToStringwPort( cls.updateServer ) );
 
 	info[ 0 ] = 0;
@@ -1334,7 +1334,7 @@ void CL_Connect_f()
 		}
 		else
 		{
-			Com_Log(log_level_t::WARN, "only -4 or -6 as address type understood." );
+			Log::Warn("only -4 or -6 as address type understood." );
 		}
 
 		server = (char *) Cmd_Argv( 2 );
@@ -1402,7 +1402,7 @@ void CL_Connect_f()
 
 	serverString = NET_AdrToStringwPort( clc.serverAddress );
 
-	Com_DPrintf( "%s resolved to %s\n", cls.servername, serverString );
+	Log::Debug( "%s resolved to %s", cls.servername, serverString );
 
 	// if we aren't playing on a LAN, we need to authenticate
 	// with the cd key
@@ -1819,7 +1819,7 @@ void CL_Video_f()
 
 		if ( i > 9999 )
 		{
-			Com_Log(log_level_t::ERROR, "no free file names to create video" );
+			Log::Warn("no free file names to create video" );
 			return;
 		}
 	}
@@ -2271,7 +2271,7 @@ int CL_GSRSequenceInformation( byte **data )
 	{
 		// Assume we sent two getservers and somehow they changed in
 		// between - only use the results that arrive later
-		Com_DPrintf( "Master changed its mind about packet count!\n" );
+		Log::Debug( "Master changed its mind about packet count!" );
 		cls.receivedMasterPackets = 0;
 		cls.numglobalservers = 0;
 		cls.numGlobalServerAddresses = 0;
@@ -2308,7 +2308,7 @@ void CL_GSRFeaturedLabel( byte **data, char *buf, int size )
 		}
 		else if ( l == &buf[ size - 1 ] )
 		{
-			Com_DPrintf( "%s", S_WARNING "CL_GSRFeaturedLabel: overflow\n" );
+			Log::Warn( "CL_GSRFeaturedLabel: overflow" );
 		}
 
 		l++, ( *data ) ++;
@@ -2328,7 +2328,7 @@ void CL_ServerLinksResponsePacket( msg_t *msg )
 	byte      *buffptr;
 	byte      *buffend;
 
-	Com_DPrintf( "CL_ServerLinksResponsePacket\n" );
+	Log::Debug( "CL_ServerLinksResponsePacket" );
 
 	if ( msg->data[ 30 ] != 0 )
 	{
@@ -2362,7 +2362,7 @@ void CL_ServerLinksResponsePacket( msg_t *msg )
 		++cls.numserverLinks;
 	}
 
-	Com_DPrintf( "%d server address pairs parsed\n", cls.numserverLinks );
+	Log::Debug( "%d server address pairs parsed", cls.numserverLinks );
 }
 
 /*
@@ -2379,7 +2379,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, bool extended )
 	byte      *buffend;
 	char     label[ MAX_FEATLABEL_CHARS ] = "";
 
-	Com_DPrintf( "CL_ServersResponsePacket\n" );
+	Log::Debug( "CL_ServersResponsePacket" );
 
 	if ( cls.numglobalservers == -1 )
 	{
@@ -2422,16 +2422,16 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, bool extended )
 			// have we already received this packet?
 			if ( cls.receivedMasterPackets & ( 1 << ( ind - 1 ) ) )
 			{
-				Com_DPrintf( "CL_ServersResponsePacket: "
-				             "received packet %d again, ignoring\n",
+				Log::Debug( "CL_ServersResponsePacket: "
+				             "received packet %d again, ignoring",
 				             ind );
 				return;
 			}
 
 			// TODO: detect dropped packets and make another
 			// request
-			Com_DPrintf( "CL_ServersResponsePacket: packet "
-			             "%d of %d\n", ind, cls.numMasterPackets );
+			Log::Debug( "CL_ServersResponsePacket: packet "
+			             "%d of %d", ind, cls.numMasterPackets );
 			cls.receivedMasterPackets |= ( 1 << ( ind - 1 ) );
 
 			CL_GSRFeaturedLabel( &buffptr, label, sizeof( label ) );
@@ -2599,7 +2599,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, bool extended )
 	cls.numglobalservers = count;
 	total = count + cls.numGlobalServerAddresses;
 
-	Com_DPrintf( "%d servers parsed (total %d)\n", numservers, total );
+	Log::Debug( "%d servers parsed (total %d)", numservers, total );
 }
 
 /*
@@ -2621,7 +2621,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToStringwPort( from ), args.Argv(0).c_str() );
+	Log::Debug( "CL packet %s: %s", NET_AdrToStringwPort( from ), args.Argv(0).c_str() );
 
 	// challenge from the server we are connecting to
 	if ( args.Argv(0) == "challengeResponse" )
@@ -2645,7 +2645,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 			// take this address as the new server address.  This allows
 			// a server proxy to hand off connections to multiple servers
 			clc.serverAddress = from;
-			Com_DPrintf( "challenge: %d\n", clc.challenge );
+			Log::Debug( "challenge: %d", clc.challenge );
 		}
 
 		return;
@@ -2737,7 +2737,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	Com_DPrintf( "Unknown connectionless packet command.\n" );
+	Log::Debug( "Unknown connectionless packet command." );
 }
 
 /*
@@ -2775,7 +2775,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 	//
 	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) )
 	{
-		Com_DPrintf( "%s: sequenced packet without connection\n", NET_AdrToStringwPort( from ) );
+		Log::Debug( "%s: sequenced packet without connection", NET_AdrToStringwPort( from ) );
 		// FIXME: send a client disconnect?
 		return;
 	}
@@ -2879,7 +2879,7 @@ void CL_WWWDownload()
 	{
 		if ( !bAbort )
 		{
-			Com_DPrintf( "CL_WWWDownload: WWWDlAborting\n" );
+			Log::Debug( "CL_WWWDownload: WWWDlAborting" );
 			bAbort = true;
 		}
 
@@ -2888,7 +2888,7 @@ void CL_WWWDownload()
 
 	if ( bAbort )
 	{
-		Com_DPrintf( "CL_WWWDownload: WWWDlAborting done\n" );
+		Log::Debug( "CL_WWWDownload: WWWDlAborting done" );
 		bAbort = false;
 	}
 
@@ -2969,18 +2969,18 @@ bool CL_WWWBadChecksum( const char *pakname )
 {
 	if ( strstr( clc.redirectedList, va( "@%s@", pakname ) ) )
 	{
-		Com_Logf(log_level_t::WARN, "file %s obtained through download redirect has wrong checksum\n"
+		Log::Warn("file %s obtained through download redirect has wrong checksum\n"
 		              "\tthis likely means the server configuration is broken", pakname );
 
 		if ( strlen( clc.badChecksumList ) + strlen( pakname ) + 1 >= sizeof( clc.badChecksumList ) )
 		{
-			Com_Logf(log_level_t::ERROR, "badChecksumList overflowed (%s)", clc.badChecksumList );
+			Log::Warn("badChecksumList overflowed (%s)", clc.badChecksumList );
 			return false;
 		}
 
 		strcat( clc.badChecksumList, "@" );
 		strcat( clc.badChecksumList, pakname );
-		Com_DPrintf( "bad checksums: %s\n", clc.badChecksumList );
+		Log::Debug( "bad checksums: %s", clc.badChecksumList );
 		return true;
 	}
 
@@ -3108,7 +3108,7 @@ void QDECL PRINTF_LIKE(2) CL_RefPrintf( printParm_t print_level, const char *fmt
 	}
 	else if ( print_level == printParm_t::PRINT_DEVELOPER )
 	{
-		Com_DPrintf( "%s%s", Color::CString( Color::Red ), msg );  // red
+		Log::Debug( "%s%s", Color::CString( Color::Red ), msg );  // red
 	}
 }
 
@@ -3553,7 +3553,7 @@ void CL_Shutdown()
 		return;
 	}
 
-	Com_DPrintf( "----- CL_Shutdown -----\n" );
+	Log::Debug( "----- CL_Shutdown -----" );
 	if ( recursive )
 	{
 		printf( "recursive shutdown\n" );
@@ -3614,7 +3614,7 @@ void CL_Shutdown()
 
 	memset( &cls, 0, sizeof( cls ) );
 
-	Com_DPrintf( "-----------------------\n" );
+	Log::Debug( "-----------------------" );
 
 }
 
@@ -3693,7 +3693,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	if ( prot != PROTOCOL_VERSION )
 	{
-		Com_DPrintf( "Different protocol info packet: %s\n", infoString );
+		Log::Debug( "Different protocol info packet: %s", infoString );
 		return;
 	}
 
@@ -3702,7 +3702,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	if ( !gameName[ 0 ] || Q_stricmp( gameName, GAMENAME_STRING ) )
 	{
-		Com_DPrintf( "Different game info packet: %s\n", infoString );
+		Log::Debug( "Different game info packet: %s", infoString );
 		return;
 	}
 
@@ -3714,7 +3714,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 			// calc ping time
 			cl_pinglist[ i ].time = Sys_Milliseconds() - cl_pinglist[ i ].start;
 
-			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[ i ].time, NET_AdrToString( from ) );
+			Log::Debug( "ping time %dms from %s", cl_pinglist[ i ].time, NET_AdrToString( from ) );
 
 			// save of info
 			Q_strncpyz( cl_pinglist[ i ].info, infoString, sizeof( cl_pinglist[ i ].info ) );
@@ -3769,7 +3769,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	if ( i == MAX_OTHER_SERVERS )
 	{
-		Com_DPrintf("MAX_OTHER_SERVERS hit, dropping infoResponse\n" );
+		Log::Debug("MAX_OTHER_SERVERS hit, dropping infoResponse" );
 		return;
 	}
 
@@ -4070,7 +4070,7 @@ void CL_LocalServers_f()
 	int      i, j;
 	netadr_t to;
 
-	Com_DPrintf( "Scanning for servers on the local network…\n" );
+	Log::Debug( "Scanning for servers on the local network…" );
 
 	// reset the list, waiting for response
 	cls.numlocalservers = 0;
@@ -4151,7 +4151,7 @@ void CL_GlobalServers_f()
 		to.port = BigShort( PORT_MASTER );
 	}
 
-	Com_DPrintf( "Requesting servers from master %s…\n", masteraddress );
+	Log::Debug( "Requesting servers from master %s…", masteraddress );
 
 	cls.numglobalservers = -1;
 	cls.numserverLinks = 0;

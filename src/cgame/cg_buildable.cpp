@@ -384,7 +384,7 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
+		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
 		return false;
 	}
 
@@ -454,7 +454,7 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Printf( "Error parsing animation file: %s\n", filename );
+		Log::Warn( "Error parsing animation file: %s", filename );
 		return false;
 	}
 
@@ -492,7 +492,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
+		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
 		return false;
 	}
 
@@ -527,7 +527,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Printf( "Error parsing sound file: %s\n", filename );
+		Log::Warn( "Error parsing sound file: %s", filename );
 		return false;
 	}
 
@@ -878,7 +878,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 			{
 				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
-					CG_Printf( "Can't build old buildable bSkeleton\n" );
+					Log::Warn( "Can't build old buildable bSkeleton" );
 					return;
 				}
 			}
@@ -909,7 +909,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( cg_debugAnim.integer )
 	{
-		CG_Printf( "Anim: %i\n", newAnimation );
+		Log::Debug( "Anim: %i", newAnimation );
 	}
 
 	if ( lf->old_animationNumber <= 0 ) // Skip initial / invalid blending
@@ -947,7 +947,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	{
 		if ( cg_debugRandom.integer )
 		{
-			CG_Printf( "newAnimation: %d lf->animationNumber: %d lf->animation: %p\n",
+			Log::Debug( "newAnimation: %d lf->animationNumber: %d lf->animation: %p",
 			           newAnimation, lf->animationNumber, (void *) lf->animation );
 		}
 
@@ -958,7 +958,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 		{
 			if ( cg_debugRandom.integer )
 			{
-				CG_Printf( "Sound for animation %d for a %s\n",
+				Log::Debug( "Sound for animation %d for a %s",
 				           newAnimation, BG_Buildable( buildable )->humanName );
 			}
 
@@ -1028,7 +1028,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 		{
 			if ( cg_debugAnim.integer )
 			{
-				CG_Printf( "%d->%d l:%d t:%d %s(%d)\n",
+				Log::Debug( "%d->%d l:%d t:%d %s(%d)",
 				           cent->oldBuildableAnim, cent->buildableAnim,
 				           es->legsAnim, es->torsoAnim,
 				           BG_Buildable( es->modelindex )->humanName, es->number );

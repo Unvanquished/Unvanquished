@@ -287,7 +287,7 @@ void CL_ParseSnapshot( msg_t *msg )
 		{
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
-			Com_DPrintf( "Delta frame too old.\n" );
+			Log::Debug( "Delta frame too old." );
 		}
 		else
 		{

@@ -330,7 +330,7 @@ void SP_env_afx_heal( gentity_t *self )
 	if ( self->damage <= 0 )
 	{
 		self->damage = 1;
-		G_Printf( S_WARNING "trigger_heal with negative damage key\n" );
+		Log::Warn( "trigger_heal with negative damage key" );
 	}
 
 	self->touch = env_afx_heal_touch;
@@ -425,7 +425,7 @@ void SP_env_afx_ammo( gentity_t *self )
 	if ( self->config.amount <= 0 )
 	{
 		self->config.amount = 1;
-		G_Printf( S_WARNING "%s with negative or unset ammo amount key\n", etos(self) );
+		Log::Warn( "%s with negative or unset ammo amount key", etos(self) );
 	}
 
 	self->touch = env_afx_ammo_touch;

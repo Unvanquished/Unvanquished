@@ -185,12 +185,12 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 
 	if ( !botMind->behaviorTree )
 	{
-		G_Printf( "Problem when loading behavior tree %s, trying default\n", behavior );
+		Log::Warn( "Problem when loading behavior tree %s, trying default", behavior );
 		botMind->behaviorTree = ReadBehaviorTree( "default", &treeList );
 
 		if ( !botMind->behaviorTree )
 		{
-			G_Printf( "Problem when loading default behavior tree\n" );
+			Log::Warn( "Problem when loading default behavior tree" );
 			return false;
 		}
 	}
@@ -390,7 +390,7 @@ void G_BotThink( gentity_t *self )
 
 	if ( !self->botMind->behaviorTree )
 	{
-		G_Printf( "ERROR: NULL behavior tree\n" );
+		Log::Warn( "NULL behavior tree" );
 		return;
 	}
 

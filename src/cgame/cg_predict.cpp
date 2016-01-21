@@ -512,7 +512,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 	{
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "origin delta: %.2f  ", VectorLength( delta ) );
+			Log::Debug( "origin delta: %.2f  ", VectorLength( delta ) );
 		}
 
 		return 2;
@@ -524,7 +524,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 	{
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "velocity delta: %.2f  ", VectorLength( delta ) );
+			Log::Debug( "velocity delta: %.2f  ", VectorLength( delta ) );
 		}
 
 		return 3;
@@ -734,7 +734,7 @@ void CG_PredictPlayerState()
 		// special check for map_restart
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "exceeded PACKET_BACKUP on commands\n" );
+			Log::Debug( "exceeded PACKET_BACKUP on commands" );
 		}
 
 		return;
@@ -823,7 +823,7 @@ void CG_PredictPlayerState()
 				{
 					if ( cg_showmiss.integer )
 					{
-						CG_Printf( "error code %d at %d\n", errorcode, cg.time );
+						Log::Debug( "error code %d at %d", errorcode, cg.time );
 					}
 
 					break;
@@ -897,7 +897,7 @@ void CG_PredictPlayerState()
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf( "PredictionTeleport\n" );
+					Log::Debug( "PredictionTeleport" );
 				}
 
 				cg.thisFrameTeleport = false;
@@ -912,7 +912,7 @@ void CG_PredictPlayerState()
 				{
 					if ( !VectorCompare( oldPlayerState.origin, adjusted ) )
 					{
-						CG_Printf( "prediction error\n" );
+						Log::Debug( "prediction error" );
 					}
 				}
 
@@ -923,7 +923,7 @@ void CG_PredictPlayerState()
 				{
 					if ( cg_showmiss.integer )
 					{
-						CG_Printf( "Prediction miss: %f\n", len );
+						Log::Debug( "Prediction miss: %f", len );
 					}
 
 					if ( cg_errorDecay.integer )
@@ -941,7 +941,7 @@ void CG_PredictPlayerState()
 
 						if ( f > 0 && cg_showmiss.integer )
 						{
-							CG_Printf( "Double prediction decay: %f\n", f );
+							Log::Debug( "Double prediction decay: %f", f );
 						}
 
 						VectorScale( cg.predictedError, f, cg.predictedError );

@@ -318,7 +318,7 @@ static int loadVideoFrameTheora()
 			{
 				g_ogm.outputWidht = g_ogm.th_info.width;
 				g_ogm.outputHeight = g_ogm.th_info.height;
-				Com_DPrintf( "[Theora(ogg)]new resolution %dx%d\n", g_ogm.outputWidht, g_ogm.outputHeight );
+				Log::Debug( "[Theora(ogg)]new resolution %dx%d", g_ogm.outputWidht, g_ogm.outputHeight );
 			}
 
 			if ( g_ogm.outputBufferSize < g_ogm.th_info.width * g_ogm.th_info.height )
@@ -688,7 +688,7 @@ int Cin_OGM_Init( const char *filename )
 		g_ogm.Vtime_unit = ( ( ogg_int64_t ) g_ogm.th_info.fps_denominator * 1000 * 10000 / g_ogm.th_info.fps_numerator );
 	}
 
-	Com_DPrintf( "OGM-Init done (%s)\n", filename );
+	Log::Debug( "OGM-Init done (%s)", filename );
 
 	return 0;
 }

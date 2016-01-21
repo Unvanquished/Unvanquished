@@ -270,7 +270,7 @@ static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 	{
 		if ( !ent->parent )
 		{
-			G_Printf( S_WARNING "Hive missile returned to hive that is not its parent.\n" );
+			Log::Warn("Hive missile returned to hive that is not its parent." );
 		}
 		else
 		{

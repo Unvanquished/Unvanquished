@@ -789,8 +789,8 @@ void G_admin_writeconfig()
 
 	if ( !g_admin.string[ 0 ] )
 	{
-		G_Printf( S_WARNING "g_admin is not set. "
-		          " configuration will not be saved to a file.\n" );
+		Log::Warn("g_admin is not set. "
+		          " configuration will not be saved to a file." );
 		return;
 	}
 
@@ -798,7 +798,7 @@ void G_admin_writeconfig()
 
 	if ( trap_FS_FOpenFile( g_admin.string, &f, fsMode_t::FS_WRITE_VIA_TEMPORARY ) < 0 )
 	{
-		G_Printf( "admin_writeconfig: could not open g_admin file \"%s\"\n",
+		Log::Warn( "admin_writeconfig: could not open g_admin file \"%s\"",
 		          g_admin.string );
 		return;
 	}
@@ -1814,7 +1814,7 @@ bool G_admin_readconfig( gentity_t *ent )
 
 	if ( len < 0 )
 	{
-		G_Printf( "^3readconfig: ^7could not open admin config file %s\n",
+		Log::Warn( "^3readconfig: ^7could not open admin config file %s",
 		          g_admin.string );
 		admin_default_levels();
 		return false;

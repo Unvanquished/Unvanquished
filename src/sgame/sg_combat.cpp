@@ -744,13 +744,13 @@ void G_InitDamageLocations()
 
 		if ( !fileHandle )
 		{
-			G_Printf( "^1file not found: %s\n", filename );
+			Log::Warn( "^1file not found: %s", filename );
 			continue;
 		}
 
 		if ( len >= MAX_DAMAGE_REGION_TEXT )
 		{
-			G_Printf( "^1file too large: %s is %i, max allowed is %i\n",
+			Log::Warn( "^1file too large: %s is %i, max allowed is %i",
 			          filename, len, MAX_DAMAGE_REGION_TEXT );
 			trap_FS_FCloseFile( fileHandle );
 			continue;

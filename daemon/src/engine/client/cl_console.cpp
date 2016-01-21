@@ -166,7 +166,7 @@ void Con_Dump_f()
 
 	if ( !f )
 	{
-		Com_Log(log_level_t::ERROR, "couldn't open." );
+		Log::Warn("couldn't open." );
 		return;
 	}
 

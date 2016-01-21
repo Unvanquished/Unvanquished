@@ -73,7 +73,7 @@ void trigger_compat_propagation_act( gentity_t *self, gentity_t*, gentity_t *act
 
 	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
-		G_Printf( S_ERROR "It appears as if %s is targeted by %s to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", etos( self ), etos( activator ) );
+		Log::Warn( "It appears as if %s is targeted by %s to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.", etos( self ), etos( activator ) );
 	}
 }
 
@@ -138,7 +138,7 @@ void trigger_multiple_compat_reset( gentity_t *self )
 
 	if ( self->spawnflags && g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
-		G_Printf( S_ERROR "It appears as if %s has set spawnflags that were not defined behavior of the entities.def; this is likely to break in the future\n", etos( self ));
+		Log::Warn( "It appears as if %s has set spawnflags that were not defined behavior of the entities.def; this is likely to break in the future", etos( self ));
 	}
 }
 
@@ -167,7 +167,7 @@ void G_notify_sensor_start()
 	gentity_t *sensor = nullptr;
 
 	if( g_debugEntities.integer >= 2 )
-		G_Printf( S_DEBUG "Notification of match start.\n");
+		Log::Debug( "Notification of match start.");
 
 	while ((sensor = G_IterateEntitiesOfClass(sensor, S_SENSOR_START)) != nullptr )
 	{
@@ -241,7 +241,7 @@ void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 	gentity_t *entities = nullptr;
 
 	if( g_debugEntities.integer >= 2 )
-		G_Printf( S_DEBUG "Notification of team %i changing stage from %i to %i (0-2).\n", team, previousStage, newStage );
+		Log::Debug( "Notification of team %i changing stage from %i to %i (0-2).", team, previousStage, newStage );
 
 	if(newStage <= previousStage) //not supporting stage down yet, also no need to fire if stage didn't change at all
 		return;
@@ -282,7 +282,7 @@ void G_notify_sensor_end( team_t winningTeam )
 	gentity_t *entity = nullptr;
 
 	if( g_debugEntities.integer >= 2 )
-		G_Printf( S_DEBUG "Notification of game end. Winning team %i.\n", winningTeam );
+		Log::Debug( "Notification of game end. Winning team %i.", winningTeam );
 
 	while ((entity = G_IterateEntitiesOfClass(entity, S_SENSOR_END)) != nullptr )
 	{
@@ -546,7 +546,7 @@ void sensor_support_think( gentity_t *self )
 			self->powered = G_FindCreep( self );
 			break;
 		default:
-			G_Printf(S_ERROR "missing team field for %s\n", etos( self ));
+			Log::Warn("missing team field for %s", etos( self ));
 			G_FreeEntity( self );
 			break;
 	}

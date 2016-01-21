@@ -4527,7 +4527,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	if ( tr.startsolid && !force )
 	{
-		G_Printf( "^3G_FinishSpawningBuildable: %s startsolid at %s\n",
+		Log::Debug( "^3G_FinishSpawningBuildable: %s startsolid at %s",
 		          built->classname, vtos( built->s.origin ) );
 		G_FreeEntity( built );
 		return nullptr;
@@ -4595,7 +4595,7 @@ void G_LayoutSave( const char *name )
 
 	if ( !map[ 0 ] )
 	{
-		G_Printf( "layoutsave: mapname is null\n" );
+		Log::Warn( "layoutsave: mapname is null" );
 		return;
 	}
 
@@ -4605,11 +4605,11 @@ void G_LayoutSave( const char *name )
 
 	if ( len < 0 )
 	{
-		G_Printf( "layoutsave: could not open %s\n", fileName );
+		Log::Warn( "layoutsave: could not open %s", fileName );
 		return;
 	}
 
-	G_Printf( "layoutsave: saving layout to %s\n", fileName );
+	Log::Notice( "layoutsave: saving layout to %s", fileName );
 
 	for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
 	{
@@ -4681,8 +4681,8 @@ int G_LayoutList( const char *map, char *list, int len )
 
 	if ( count != numFiles )
 	{
-		G_Printf( S_WARNING "layout list was truncated to %d "
-		          "layouts, but %d layout files exist in layouts/%s/.\n",
+		Log::Warn( "layout list was truncated to %d "
+		          "layouts, but %d layout files exist in layouts/%s/.",
 		          count, numFiles, map );
 	}
 
@@ -4756,13 +4756,13 @@ void G_LayoutSelect()
 		}
 		else
 		{
-			G_Printf( S_WARNING "Layout \"%s\" does not exist.\n", layout );
+			Log::Warn( "Layout \"%s\" does not exist.", layout );
 		}
 	}
 
 	if ( !cnt )
 	{
-		G_Printf( S_ERROR "None of the specified layouts could be found, using map default.\n" );
+		Log::Warn( "None of the specified layouts could be found, using map default." );
 		return;
 	}
 
@@ -4775,7 +4775,7 @@ void G_LayoutSelect()
 		Q_strncpyz( level.layout, layout, sizeof( level.layout ) );
 	}
 
-	G_Printf( "Using layout \"%s\" from list (%s).\n", level.layout, layouts );
+	Log::Notice( "Using layout \"%s\" from list (%s).", level.layout, layouts );
 	trap_Cvar_Set( "layout", level.layout );
 }
 
@@ -4826,7 +4826,7 @@ void G_LayoutLoad()
 
 	if ( len < 0 )
 	{
-		G_Printf( "ERROR: layout %s could not be opened\n", level.layout );
+		Log::Warn( "layout %s could not be opened", level.layout );
 		return;
 	}
 
@@ -4839,7 +4839,7 @@ void G_LayoutLoad()
 	{
 		if ( i >= (int) sizeof( line ) - 1 )
 		{
-			G_Printf( S_ERROR "line overflow in %s before \"%s\"\n",
+			Log::Warn( "line overflow in %s before \"%s\"",
 			          va( "layouts/%s/%s.dat", map, level.layout ), line );
 			break;
 		}
@@ -4862,8 +4862,8 @@ void G_LayoutLoad()
 
 			if ( buildable <= BA_NONE || buildable >= BA_NUM_BUILDABLES )
 			{
-				G_Printf( S_WARNING "bad buildable name (%s) in layout."
-				          " skipping\n", buildName );
+				Log::Warn( "bad buildable name (%s) in layout."
+				          " skipping", buildName );
 			}
 			else
 			{

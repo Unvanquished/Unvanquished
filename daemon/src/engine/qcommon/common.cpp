@@ -168,78 +168,6 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 	va_end( argptr );
 }
 
-void QDECL Com_LogEvent( log_event_t *event )
-{
-	switch (event->level)
-	{
-	case log_level_t::OFF:
-		break;
-	case log_level_t::WARN:
-		Com_Printf("^3Warning: ^7%s\n", event->message);
-		break;
-	case log_level_t::ERROR:
-		Com_Printf("^1Error: ^7%s\n", event->message);
-		break;
-	case log_level_t::DEBUG:
-		Com_Printf("Debug: %s\n", event->message);
-		break;
-	case log_level_t::TRACE:
-		Com_Printf("Trace: %s\n", event->message);
-		break;
-	default:
-		Com_Printf("%s\n", event->message);
-		break;
-	}
-}
-
-void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... )
-{
-	va_list argptr;
-	char    text[ MAXPRINTMSG ];
-	log_event_t event;
-
-	event.level = level;
-	event.message = text;
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-	va_end( argptr );
-
-	Com_LogEvent( &event );
-}
-
-void QDECL Com_Log( log_level_t level, const char* message )
-{
-	log_event_t event;
-	event.level = level;
-	event.message = message;
-	Com_LogEvent( &event );
-}
-
-/*
-================
-Com_DPrintf
-
-A Com_Printf that only shows up if the "developer" cvar is set
-================
-*/
-void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *fmt, ... )
-{
-	va_list argptr;
-	char    msg[ MAXPRINTMSG ];
-
-	if ( !com_developer || com_developer->integer != 1 )
-	{
-		return; // don't confuse non-developers with techie stuff...
-	}
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( msg, sizeof( msg ), fmt, argptr );
-	va_end( argptr );
-
-	Com_Printf( "%s", msg );
-}
-
 /*
 =============
 Com_Error
@@ -710,7 +638,7 @@ void Hunk_Clear()
 	Cvar_Set( "com_hunkused", va( "%i", hunk_low.permanent + hunk_high.permanent ) );
 	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
-	Com_DPrintf( "Hunk_Clear: reset the hunk ok\n" );
+	Log::Debug( "Hunk_Clear: reset the hunk ok" );
 }
 
 static void Hunk_SwapBanks()
@@ -1785,7 +1713,7 @@ void Com_Frame()
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( watchdogThreshold.Get() - 4 ) * 1000 )
 			{
-				Com_Log(log_level_t::WARN, "watchdog will trigger in 4 seconds" );
+				Log::Warn("watchdog will trigger in 4 seconds" );
 				watchWarn = true;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )

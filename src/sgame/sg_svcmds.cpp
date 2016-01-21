@@ -48,7 +48,7 @@ void Svcmd_EntityFire_f()
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
-		G_Printf( "usage: entityFire <entityNum> [<action>]\n" );
+		Log::Notice( "usage: entityFire <entityNum> [<action>]" );
 		return;
 	}
 
@@ -57,7 +57,7 @@ void Svcmd_EntityFire_f()
 
 	if ( entityNum >= level.num_entities || entityNum < MAX_CLIENTS )
 	{
-		G_Printf( "invalid entityId %d\n", entityNum );
+		Log::Notice( "invalid entityId %d", entityNum );
 		return;
 	}
 
@@ -65,7 +65,7 @@ void Svcmd_EntityFire_f()
 
 	if (!selection->inuse)
 	{
-		G_Printf("entity slot %d is not in use\n", entityNum);
+		Log::Notice("entity slot %d is not in use", entityNum);
 		return;
 	}
 
@@ -76,7 +76,7 @@ void Svcmd_EntityFire_f()
 		callDefinition.actionType = G_GetCallActionTypeFor( callDefinition.action );
 	}
 
-	G_Printf( "firing %s:%s\n", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
+	Log::Notice( "firing %s:%s", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
 
 	if(selection->names[0])
 		callDefinition.name = selection->names[0];
@@ -91,7 +91,7 @@ void Svcmd_EntityFire_f()
 
 static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
-	G_Printf( "%3i: %15s/^5%-24s^*%s%s\n",
+	Log::Notice( "%3i: %15s/^5%-24s^*%s%s",
 			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
 			entity->names[0] ? entity->names[0] : "", entity->names[1] ? " …" : "");
 }
@@ -112,7 +112,7 @@ void Svcmd_EntityShow_f()
 
 	if (trap_Argc() != 2)
 	{
-		G_Printf("usage: entityShow <entityId>\n");
+		Log::Notice("usage: entityShow <entityId>");
 		return;
 	}
 
@@ -121,7 +121,7 @@ void Svcmd_EntityShow_f()
 
 	if (entityNum >= level.num_entities || entityNum < MAX_CLIENTS)
 	{
-		G_Printf("entityId %d is out of range\n", entityNum);
+		Log::Notice("entityId %d is out of range", entityNum);
 		return;
 	}
 
@@ -129,19 +129,19 @@ void Svcmd_EntityShow_f()
 
 	if (!selection->inuse)
 	{
-		G_Printf("entity slot %d is unused/free\n", entityNum);
+		Log::Notice("entity slot %d is unused/free", entityNum);
 		return;
 	}
 
-	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "^5#%3i^*: %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
+	Log::Notice( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
+	Log::Notice( "^5#%3i^*: %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
 	if (IS_NON_NULL_VEC3(selection->s.origin))
 	{
-		G_Printf("%26s", vtos( selection->s.origin ) );
+		Log::Notice("%26s", vtos( selection->s.origin ) );
 	}
-	G_Printf( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "Classname: ^5%s^*\n", selection->classname );
-	G_Printf( "Capabilities:%s%s%s%s%s%s%s\n\n",
+	Log::Notice( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
+	Log::Notice( "Classname: ^5%s^*", selection->classname );
+	Log::Notice( "Capabilities:%s%s%s%s%s%s%s\n",
 			selection->act ? " acts" : "",
 			selection->think ? " thinks" : "",
 			selection->pain ? " pains" : "",
@@ -151,28 +151,28 @@ void Svcmd_EntityShow_f()
 			selection->use ? " usable" : "");
 	if (selection->names[0])
 	{
-		G_Printf( "Names: ");
+		Log::Notice( "Names: ");
 		G_PrintEntityNameList( selection );
 	}
 
-	G_Printf("State: %s\n", selection->enabled ? "enabled" : "disabled");
+	Log::Notice("State: %s", selection->enabled ? "enabled" : "disabled");
 
 	if (selection->groupName)
 	{
-		G_Printf("Member of Group: %s%s\n", selection->groupName, !selection->groupMaster ? " [master]" : "");
+		Log::Notice("Member of Group: %s%s", selection->groupName, !selection->groupMaster ? " [master]" : "");
 	}
 
-	G_Printf( "\n");
+	Log::Notice( "");
 
 	if(selection->targetCount)
 	{
-		G_Printf( "Aims at\n");
+		Log::Notice( "Aims at");
 
 		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != nullptr )
 		{
-			G_Printf(" • %s %s\n", etos( possibleTarget ), vtos( possibleTarget->s.origin));
+			Log::Notice(" • %s %s", etos( possibleTarget ), vtos( possibleTarget->s.origin));
 		}
-		G_Printf( "\n");
+		Log::Notice( "");
 	}
 
 	if(selection->callTargetCount)
@@ -183,23 +183,23 @@ void Svcmd_EntityShow_f()
 
 			if(lastTargetIndex != targetIndex)
 			{
-				G_Printf("Calls %s \"%s:%s\"\n",
+				Log::Notice("Calls %s \"%s:%s\"",
 						selection->calltargets[ targetIndex ].event ? selection->calltargets[ targetIndex ].event : "onUnknown",
 						selection->calltargets[ targetIndex ].name,
 						selection->calltargets[ targetIndex ].action ? selection->calltargets[ targetIndex ].action : "default");
 				lastTargetIndex = targetIndex;
 			}
 
-			G_Printf(" • %s", etos(possibleTarget));
+			Log::Notice(" • %s", etos(possibleTarget));
 			if(possibleTarget->names[1])
 			{
-				G_Printf(" using \"%s\" ∈ ", selection->calltargets[ targetIndex ].name);
+				Log::Notice(" using \"%s\" ∈ ", selection->calltargets[ targetIndex ].name);
 				G_PrintEntityNameList( possibleTarget );
 			}
-			G_Printf("\n");
+			Log::Notice("");
 		}
 	}
-	G_Printf( "\n" );
+	Log::Notice( "" );
 }
 
 /*
@@ -250,7 +250,7 @@ void  Svcmd_EntityList_f()
 		PrintEntityOverviewLine( displayedEntity );
 	}
 
-	G_Printf( "A total of %i entities are currently in use.\n", currentEntityCount);
+	Log::Notice( "A total of %i entities are currently in use.", currentEntityCount);
 }
 
 static gclient_t *ClientForString( char *s )
@@ -262,7 +262,7 @@ static gclient_t *ClientForString( char *s )
 
 	if ( idnum == -1 )
 	{
-		G_Printf( "%s", err );
+		Log::Notice( "%s", err );
 		return nullptr;
 	}
 
@@ -284,7 +284,7 @@ static void Svcmd_ForceTeam_f()
 
 	if ( trap_Argc() != 3 )
 	{
-		G_Printf( "usage: forceteam <player> <team>\n" );
+		Log::Notice( "usage: forceteam <player> <team>" );
 		return;
 	}
 
@@ -301,7 +301,7 @@ static void Svcmd_ForceTeam_f()
 
 	if ( team == NUM_TEAMS )
 	{
-		G_Printf( "forceteam: invalid team \"%s\"\n", str );
+		Log::Notice( "forceteam: invalid team \"%s\"", str );
 		return;
 	}
 
@@ -324,7 +324,7 @@ static void Svcmd_LayoutSave_f()
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "usage: layoutsave <name>\n" );
+		Log::Notice( "usage: layoutsave <name>" );
 		return;
 	}
 
@@ -347,7 +347,7 @@ static void Svcmd_LayoutSave_f()
 
 	if ( !str2[ 0 ] )
 	{
-		G_Printf( "layoutsave: invalid name \"%s\"\n", str );
+		Log::Notice( "layoutsave: invalid name \"%s\"", str );
 		return;
 	}
 
@@ -374,7 +374,7 @@ static void Svcmd_LayoutLoad_f()
 
 	if ( trap_Argc() < 2 )
 	{
-		G_Printf( "usage: layoutload <name> …\n" );
+		Log::Notice( "usage: layoutload <name> …" );
 		return;
 	}
 
@@ -392,7 +392,7 @@ static void Svcmd_AdmitDefeat_f()
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "admitdefeat: must provide a team\n" );
+		Log::Notice( "admitdefeat: must provide a team" );
 		return;
 	}
 
@@ -411,7 +411,7 @@ static void Svcmd_AdmitDefeat_f()
 	}
 	else
 	{
-		G_Printf( "admitdefeat: invalid team\n" );
+		Log::Notice( "admitdefeat: invalid team" );
 		return;
 	}
 
@@ -454,7 +454,7 @@ static void Svcmd_MapRotation_f()
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "usage: maprotation <name>\n" );
+		Log::Notice( "usage: maprotation <name>" );
 		return;
 	}
 
@@ -464,7 +464,7 @@ static void Svcmd_MapRotation_f()
 
 	if ( !G_StartMapRotation( rotationName, false, true, false, 0 ) )
 	{
-		G_Printf( "maprotation: invalid map rotation \"%s\"\n", rotationName );
+		Log::Notice( "maprotation: invalid map rotation \"%s\"", rotationName );
 	}
 }
 
@@ -476,7 +476,7 @@ static void Svcmd_TeamMessage_f()
 
 	if ( trap_Argc() < 3 )
 	{
-		G_Printf( "usage: say_team <team> <message>\n" );
+		Log::Notice( "usage: say_team <team> <message>" );
 		return;
 	}
 
@@ -485,7 +485,7 @@ static void Svcmd_TeamMessage_f()
 
 	if ( team == NUM_TEAMS )
 	{
-		G_Printf( "say_team: invalid team \"%s\"\n", teamNum );
+		Log::Notice( "say_team: invalid team \"%s\"", teamNum );
 		return;
 	}
 
@@ -498,7 +498,7 @@ static void Svcmd_CenterPrint_f()
 {
 	if ( trap_Argc() < 2 )
 	{
-		G_Printf( "usage: cp <message>\n" );
+		Log::Notice( "usage: cp <message>" );
 		return;
 	}
 
@@ -511,7 +511,7 @@ static void Svcmd_EjectClient_f()
 
 	if ( trap_Argc() < 2 )
 	{
-		G_Printf( "usage: eject <player|-1> <reason>\n" );
+		Log::Notice( "usage: eject <player|-1> <reason>" );
 		return;
 	}
 
@@ -548,7 +548,7 @@ static void Svcmd_EjectClient_f()
 
 		if ( cl->pers.localClient )
 		{
-			G_Printf( "eject: cannot eject local clients\n" );
+			Log::Notice( "eject: cannot eject local clients" );
 			return;
 		}
 
@@ -565,7 +565,7 @@ static void Svcmd_DumpUser_f()
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "usage: dumpuser <player>\n" );
+		Log::Notice( "usage: dumpuser <player>" );
 		return;
 	}
 
@@ -579,7 +579,7 @@ static void Svcmd_DumpUser_f()
 
 	trap_GetUserinfo( cl - level.clients, userinfo, sizeof( userinfo ) );
 	info = &userinfo[ 0 ];
-	G_Printf( "userinfo\n--------\n" );
+	Log::Notice( "userinfo\n--------" );
 
 	//Info_Print( userinfo );
 	while ( 1 )
@@ -591,7 +591,7 @@ static void Svcmd_DumpUser_f()
 			return;
 		}
 
-		G_Printf( "%-20s%s\n", key, value );
+		Log::Notice( "%-20s%s", key, value );
 	}
 }
 
@@ -602,7 +602,7 @@ static void Svcmd_Pr_f()
 
 	if ( trap_Argc() < 3 )
 	{
-		G_Printf( "usage: <clientnum|-1> <message>\n" );
+		Log::Notice( "usage: <clientnum|-1> <message>" );
 		return;
 	}
 
@@ -611,7 +611,7 @@ static void Svcmd_Pr_f()
 
 	if ( cl >= MAX_CLIENTS || cl < -1 )
 	{
-		G_Printf( "invalid clientnum %d\n", cl );
+		Log::Notice( "invalid clientnum %d", cl );
 		return;
 	}
 
@@ -625,7 +625,7 @@ static void Svcmd_PrintQueue_f()
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "usage: printqueue <team>\n" );
+		Log::Notice( "usage: printqueue <team>" );
 		return;
 	}
 
@@ -638,7 +638,7 @@ static void Svcmd_PrintQueue_f()
 	}
 	else
 	{
-		G_Printf( "unknown team\n" );
+		Log::Notice( "unknown team" );
 	}
 }
 
@@ -740,7 +740,7 @@ bool  ConsoleCommand()
 
 		if ( level.inClient )
 		{
-			G_Printf( "unknown command server console command: %s\n", cmd );
+			Log::Warn( "unknown command server console command: %s", cmd );
 		}
 
 		return false;

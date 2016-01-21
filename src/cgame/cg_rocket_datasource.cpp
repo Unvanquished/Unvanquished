@@ -2074,7 +2074,7 @@ void CG_Rocket_RegisterDataSources()
 		// Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp( dataSourceCmdList[ i - 1 ].name, dataSourceCmdList[ i ].name ) > 0 )
 		{
-			CG_Printf( "CGame dataSourceCmdList is in the wrong order for %s and %s\n", dataSourceCmdList[i - 1].name, dataSourceCmdList[ i ].name );
+			Log::Warn( "CGame dataSourceCmdList is in the wrong order for %s and %s", dataSourceCmdList[i - 1].name, dataSourceCmdList[ i ].name );
 		}
 
 		Rocket_RegisterDataSource( dataSourceCmdList[ i ].name );

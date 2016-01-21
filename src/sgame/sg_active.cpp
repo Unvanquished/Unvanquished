@@ -1780,13 +1780,13 @@ void ClientThink_real( gentity_t *self )
 	if ( ucmd->serverTime > level.time + 200 )
 	{
 		ucmd->serverTime = level.time + 200;
-//    G_Printf("serverTime <<<<<\n" );
+//    Log::Debug("serverTime <<<<<" );
 	}
 
 	if ( ucmd->serverTime < level.time - 1000 )
 	{
 		ucmd->serverTime = level.time - 1000;
-//    G_Printf("serverTime >>>>>\n" );
+//    Log::Debug("serverTime >>>>>" );
 	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
@@ -2181,7 +2181,7 @@ void ClientThink_real( gentity_t *self )
 		{
 			if ( g_debugEntities.integer > 1 )
 			{
-				G_Printf("Debug: Calling entity->use for player facing %s\n", etos(ent));
+				Log::Debug("Calling entity->use for player facing %s", etos(ent));
 			}
 
 			ent->use( ent, self, self ); // other and activator are the same in this context
@@ -2195,7 +2195,7 @@ void ClientThink_real( gentity_t *self )
 				{
 					if ( g_debugEntities.integer > 1 )
 					{
-						G_Printf("Debug: Calling entity->use after an area-search for %s\n", etos(ent));
+						Log::Debug("Calling entity->use after an area-search for %s", etos(ent));
 					}
 
 					ent->use( ent, self, self ); // other and activator are the same in this context

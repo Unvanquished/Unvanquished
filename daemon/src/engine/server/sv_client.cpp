@@ -137,7 +137,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		return;
 	}
 
-	Com_DPrintf( "SVC_DirectConnect ()\n" );
+	Log::Debug( "SVC_DirectConnect ()" );
 
 	Q_strncpyz( userinfo, args.Argv(1).c_str(), sizeof( userinfo ) );
 
@@ -148,7 +148,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	if ( version != PROTOCOL_VERSION )
 	{
 		NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).", PROTOCOL_VERSION, version );
-		Com_DPrintf( "    rejected connect from version %i\n", version );
+		Log::Debug( "    rejected connect from version %i", version );
 		return;
 	}
 
@@ -169,7 +169,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			if ( ( svs.time - cl->lastConnectTime )
 			     < ( sv_reconnectlimit->integer * 1000 ) )
 			{
-				Com_DPrintf( "%s: reconnect rejected: too soon\n", NET_AdrToString( from ) );
+				Log::Debug( "%s: reconnect rejected: too soon", NET_AdrToString( from ) );
 				return;
 			}
 
@@ -254,14 +254,14 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			if ( sv_minPing->value && ping < sv_minPing->value )
 			{
 				NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]Server is for high pings only" );
-				Com_DPrintf( "Client %i rejected on a too low ping\n", i );
+				Log::Debug( "Client %i rejected on a too low ping", i );
 				return;
 			}
 
 			if ( sv_maxPing->value && ping > sv_maxPing->value )
 			{
 				NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]Server is for low pings only" );
-				Com_DPrintf( "Client %i rejected on a too high ping: %i\n", i, ping );
+				Log::Debug( "Client %i rejected on a too high ping: %i", i, ping );
 				return;
 			}
 		}
@@ -366,7 +366,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		else
 		{
 			NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n%s", sv_fullmsg->string );
-			Com_DPrintf( "Rejected a connection.\n" );
+			Log::Debug( "Rejected a connection." );
 			return;
 		}
 	}
@@ -412,7 +412,7 @@ gotnewcl:
 	if ( denied )
 	{
 		NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]%s", reason );
-		Com_DPrintf( "Game rejected a connection: %s.\n", reason );
+		Log::Debug( "Game rejected a connection: %s.", reason );
 		return;
 	}
 
@@ -424,7 +424,7 @@ gotnewcl:
 	// send the connect packet to the client
 	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "connectResponse" );
 
-	Com_DPrintf( "Going from CS_FREE to CS_CONNECTED for %s\n", newcl->name );
+	Log::Debug( "Going from CS_FREE to CS_CONNECTED for %s", newcl->name );
 
 	newcl->state = clientState_t::CS_CONNECTED;
 	newcl->nextSnapshotTime = svs.time;
@@ -498,7 +498,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	{
 		return; // already dropped
 	}
-	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );
+	Log::Debug( "Going to CS_ZOMBIE for %s", drop->name );
 	drop->state = clientState_t::CS_ZOMBIE; // become free in a few seconds
 
 	// call the prog function for removing a client
@@ -561,8 +561,8 @@ void SV_SendClientGameState( client_t *client )
 	msg_t         msg;
 	byte          msgBuffer[ MAX_MSGLEN ];
 
-	Com_DPrintf( "SV_SendClientGameState() for %s\n", client->name );
-	Com_DPrintf( "Going from CS_CONNECTED to CS_PRIMED for %s\n", client->name );
+	Log::Debug( "SV_SendClientGameState() for %s", client->name );
+	Log::Debug( "Going from CS_CONNECTED to CS_PRIMED for %s", client->name );
 	client->state = clientState_t::CS_PRIMED;
 
 	// when we receive the first packet from the client, we will
@@ -621,7 +621,7 @@ void SV_SendClientGameState( client_t *client )
 	MSG_WriteLong( &msg, sv.checksumFeed );
 
 	// NERVE - SMF - debug info
-	Com_DPrintf( "Sending %i bytes in gamestate to client: %li\n", msg.cursize, ( long )( client - svs.clients ) );
+	Log::Debug( "Sending %i bytes in gamestate to client: %li", msg.cursize, ( long )( client - svs.clients ) );
 
 	// deliver this to the client
 	SV_SendMessageToClient( &msg, client );
@@ -637,7 +637,7 @@ void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd )
 	int            clientNum;
 	sharedEntity_t *ent;
 
-	Com_DPrintf( "Going from CS_PRIMED to CS_ACTIVE for %s\n", client->name );
+	Log::Debug( "Going from CS_PRIMED to CS_ACTIVE for %s", client->name );
 	client->state = clientState_t::CS_ACTIVE;
 
 	// set up the entity for the client
@@ -704,7 +704,7 @@ void SV_StopDownload_f( client_t *cl, const Cmd::Args& )
 {
 	if ( *cl->downloadName )
 	{
-		Com_DPrintf( "clientDownload: %d: file \"%s^7\" aborted\n", ( int )( cl - svs.clients ), cl->downloadName );
+		Log::Debug( "clientDownload: %d: file \"%s^7\" aborted", ( int )( cl - svs.clients ), cl->downloadName );
 	}
 
 	SV_CloseDownload( cl );
@@ -724,7 +724,7 @@ void SV_DoneDownload_f( client_t *cl, const Cmd::Args& )
 		return;
 	}
 
-	Com_DPrintf( "clientDownload: %s^7 Done\n", cl->name );
+	Log::Debug( "clientDownload: %s^7 Done", cl->name );
 	// resend the game state to update any clients that entered during the download
 	SV_SendClientGameState( cl );
 }
@@ -746,7 +746,7 @@ void SV_NextDownload_f( client_t *cl, const Cmd::Args& args )
 
 	if ( block == cl->downloadClientBlock )
 	{
-		Com_DPrintf( "clientDownload: %d: client acknowledge of block %d\n", ( int )( cl - svs.clients ), block );
+		Log::Debug( "clientDownload: %d: client acknowledge of block %d", ( int )( cl - svs.clients ), block );
 
 		// Find out if we are done.  A zero-length block indicates EOF
 		if ( cl->downloadBlockSize[ cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW ] == 0 )
@@ -817,7 +817,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	{
 		if ( cl->bWWWing )
 		{
-			Com_Logf(log_level_t::WARN, "dupe wwwdl ack from client '%s'", cl->name );
+			Log::Warn("dupe wwwdl ack from client '%s'", cl->name );
 		}
 
 		cl->bWWWing = true;
@@ -854,7 +854,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	}
 	else if ( !Q_stricmp( subcmd, "chkfail" ) )
 	{
-		Com_Logf(log_level_t::WARN, "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
+		Log::Warn("client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration.",
 				 cl->name, cl->downloadName );
 		*cl->downloadName = 0;
 		cl->bWWWing = false;
@@ -1029,7 +1029,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 				else
 				{
 					// that should NOT happen - even regular download would fail then anyway
-					Com_Logf(log_level_t::ERROR, "Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
+					Log::Warn("Client '%s': couldn't extract file size for %s", cl->name, cl->downloadName );
 				}
 			}
 			else
@@ -1042,7 +1042,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					return;
 				}
 
-				Com_Logf(log_level_t::ERROR, "Client '%s': falling back to regular downloading for failed file %s", cl->name,
+				Log::Warn("Client '%s': falling back to regular downloading for failed file %s", cl->name,
 						 cl->downloadName );
 			}
 		}
@@ -1200,7 +1200,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			MSG_WriteData( msg, cl->downloadBlocks[ curindex ], cl->downloadBlockSize[ curindex ] );
 		}
 
-		Com_DPrintf( "clientDownload: %d: writing block %d\n", ( int )( cl - svs.clients ), cl->downloadXmitBlock );
+		Log::Debug( "clientDownload: %d: writing block %d", ( int )( cl - svs.clients ), cl->downloadXmitBlock );
 
 		// Move on to the next block
 		// It will get sent with next snap shot.  The rate will keep us in line.
@@ -1299,7 +1299,7 @@ void SV_UserinfoChanged( client_t *cl )
 	// the banning code relies on this being consistently present
 	// zinx - modified to always keep this consistent, instead of only
 	// when "ip" is 0-length, so users can't supply their own IP address
-	//Com_DPrintf("Maintain IP address in userinfo for '%s'\n", cl->name);
+	//Log::Debug("Maintain IP address in userinfo for '%s'", cl->name);
 	if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) )
 	{
 		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), false );
@@ -1368,7 +1368,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, bool clientOK, bool p
 	ucmd_t   *u;
 	bool bProcessed = false;
 
-	Com_DPrintf( "EXCL: %s\n", s );
+	Log::Debug( "EXCL: %s", s );
 	Cmd::Args args(s);
 
 	if (args.Argc() == 0) {
@@ -1398,7 +1398,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, bool clientOK, bool p
 	}
 	else if ( !bProcessed )
 	{
-		Com_DPrintf( "client text ignored for %s^7: %s\n", cl->name, args.Argv(0).c_str());
+		Log::Debug( "client text ignored for %s^7: %s", cl->name, args.Argv(0).c_str());
 	}
 }
 
@@ -1423,7 +1423,7 @@ static bool SV_ClientCommand( client_t *cl, msg_t *msg, bool premaprestart )
 		return true;
 	}
 
-	Com_DPrintf( "clientCommand: %s^7 : %i : %s\n", cl->name, seq, s );
+	Log::Debug( "clientCommand: %s^7 : %i : %s", cl->name, seq, s );
 
 	// drop the connection if we have somehow lost commands
 	if ( seq > cl->lastClientCommand + 1 )
@@ -1437,7 +1437,7 @@ static bool SV_ClientCommand( client_t *cl, msg_t *msg, bool premaprestart )
 	// NERVE - SMF - some server game-only commands we cannot have flood protect
 	if ( !Q_strncmp( "team", s, 4 ) || !Q_strncmp( "setspawnpt", s, 10 ) || !Q_strncmp( "score", s, 5 ) || !Q_stricmp( "forcetapout", s ) )
 	{
-//      Com_DPrintf( "Skipping flood protection for: %s\n", s );
+//      Log::Debug( "Skipping flood protection for: %s", s );
 		floodprotect = false;
 	}
 
@@ -1673,7 +1673,7 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 		{
 			// TTimo - use a comparison here to catch multiple map_restart
 			// they just haven't caught the map_restart yet
-			Com_DPrintf( "%s^7: ignoring pre map_restart / outdated client message\n", cl->name );
+			Log::Debug( "%s^7: ignoring pre map_restart / outdated client message", cl->name );
 			return;
 		}
 
@@ -1681,7 +1681,7 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 		// gamestate we sent them, resend it
 		if ( cl->messageAcknowledge > cl->gamestateMessageNum )
 		{
-			Com_DPrintf( "%s^7: dropped gamestate, resending\n", cl->name );
+			Log::Debug( "%s^7: dropped gamestate, resending", cl->name );
 			SV_SendClientGameState( cl );
 		}
 

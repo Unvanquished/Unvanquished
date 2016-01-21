@@ -106,7 +106,7 @@ int FS_FOpenFileRead(const char* path, fileHandle_t* handle, bool)
 		}
 	}
 	if (err) {
-		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.message().c_str());
+		Log::Debug("Failed to open '%s' for reading: %s", path, err.message().c_str());
 		*handle = 0;
 		length = -1;
 	}
@@ -170,7 +170,7 @@ int FS_SV_FOpenFileRead(const char* path, fileHandle_t* handle)
 	std::error_code err;
 	handleTable[*handle].file = FS::HomePath::OpenRead(path, err);
 	if (err) {
-		Com_DPrintf("Failed to open '%s' for reading: %s\n", path, err.message().c_str());
+		Log::Debug("Failed to open '%s' for reading: %s", path, err.message().c_str());
 		*handle = 0;
 		return 0;
 	}

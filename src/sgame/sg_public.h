@@ -228,7 +228,6 @@ void              G_RunThink( gentity_t *ent );
 void              G_AdminMessage( gentity_t *ent, const char *string );
 void QDECL        G_LogPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
 void              SendScoreboardMessageToAllClients();
-void QDECL        G_Printf( const char *fmt, ... ) PRINTF_LIKE(1);
 void QDECL NORETURN G_Error( const char *fmt, ... ) PRINTF_LIKE(1);
 void              G_Vote( gentity_t *ent, team_t team, bool voting );
 void              G_ResetVote( team_t team );

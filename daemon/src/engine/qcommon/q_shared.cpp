@@ -88,7 +88,7 @@ int Com_AddToGrowList( growList_t *list, void *data )
 
 	list->maxElements *= 2;
 
-//  Com_DPrintf("Resizing growlist to %i maxElements\n", list->maxElements);
+//  Log::Debug("Resizing growlist to %i maxElements", list->maxElements);
 
 	list->elements = ( void ** ) Com_Allocate( list->maxElements * sizeof( void * ) );
 
@@ -464,7 +464,7 @@ void PRINTF_LIKE(1) COM_ParseError( const char *format, ... )
 	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end( argptr );
 
-    Log::Notice( S_ERROR "%s, line %d: %s\n", com_parsename, com_lines, string );
+    Log::Warn( "%s, line %d: %s", com_parsename, com_lines, string );
 }
 
 void PRINTF_LIKE(1) COM_ParseWarning( const char *format, ... )
@@ -476,7 +476,7 @@ void PRINTF_LIKE(1) COM_ParseWarning( const char *format, ... )
 	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end( argptr );
 
-    Log::Notice( S_WARNING "%s, line %d: %s\n", com_parsename, com_lines, string );
+    Log::Warn( "%s, line %d: %s", com_parsename, com_lines, string );
 }
 
 /*

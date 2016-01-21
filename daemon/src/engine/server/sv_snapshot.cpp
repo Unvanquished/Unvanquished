@@ -168,7 +168,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 	else if ( client->netchan.outgoingSequence - client->deltaMessage >= ( PACKET_BACKUP - 3 ) )
 	{
 		// client hasn't gotten a good message through in a long time
-		Com_DPrintf( "%s^7: Delta request from out of date packet.\n", client->name );
+		Log::Debug( "%s^7: Delta request from out of date packet.", client->name );
 		oldframe = nullptr;
 		lastframe = 0;
 	}
@@ -181,7 +181,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 		// the snapshot's entities may still have rolled off the buffer, though
 		if ( oldframe->first_entity <= svs.nextSnapshotEntities - svs.numSnapshotEntities )
 		{
-			Com_DPrintf( "%s^7: Delta request from out of date entities.\n", client->name );
+			Log::Debug( "%s^7: Delta request from out of date entities.", client->name );
 			oldframe = nullptr;
 			lastframe = 0;
 		}
@@ -399,7 +399,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 
 		if ( ent->s.number != e )
 		{
-			Com_DPrintf( "FIXING ENT->S.NUMBER!!!\n" );
+			Log::Debug( "FIXING ENT->S.NUMBER!!!" );
 			ent->s.number = e;
 		}
 
@@ -594,7 +594,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 
 					if ( ment->s.number != h )
 					{
-						Com_DPrintf( "FIXING vis dummy multiple ment->S.NUMBER!!!\n" );
+						Log::Debug( "FIXING vis dummy multiple ment->S.NUMBER!!!" );
 						ment->s.number = h;
 					}
 
@@ -976,7 +976,7 @@ void SV_SendClientSnapshot( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Logf(log_level_t::WARN, "msg overflowed for %s", client->name );
+		Log::Warn("msg overflowed for %s", client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );
@@ -1091,7 +1091,7 @@ void SV_SendClientMessages()
 			sv.ucompAve += comp_ratio;
 			sv.ucompNum++;
 
-			Com_DPrintf( "bpspc(%2.0f) bps(%2.0f) pk(%i) ubps(%2.0f) upk(%i) cr(%2.2f) acr(%2.2f)\n",
+			Log::Debug( "bpspc(%2.0f) bps(%2.0f) pk(%i) ubps(%2.0f) upk(%i) cr(%2.2f) acr(%2.2f)",
 			             ave / ( float ) numclients, ave, sv.bpsMaxBytes, uave, sv.ubpsMaxBytes, comp_ratio,
 			             sv.ucompAve / sv.ucompNum );
 		}

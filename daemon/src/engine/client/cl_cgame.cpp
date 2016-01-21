@@ -606,7 +606,7 @@ static int LAN_ServerIsVisible( int source, int n )
 
 		if ( Cmd_Argc() == 1 )
 		{
-			Com_Log(log_level_t::ERROR, "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
+			Log::Warn("Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
 			return false;
 		}
 
@@ -714,7 +714,7 @@ void CL_InitCGame()
 
 	t2 = Sys_Milliseconds();
 
-	Com_DPrintf( "CL_InitCGame: %5.2fs\n", ( t2 - t1 ) / 1000.0 );
+	Log::Debug( "CL_InitCGame: %5.2fs", ( t2 - t1 ) / 1000.0 );
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading

@@ -2102,13 +2102,13 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 		if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
 		{
-			G_Printf("entityId %d is out of range\n", entityId);
+			Log::Warn("entityId %d is out of range", entityId);
 			return;
 		}
 		selection = &g_entities[entityId];
 		if (!selection->inuse)
 		{
-			G_Printf("entity slot %d is not in use\n", entityId);
+			Log::Warn("entity slot %d is not in use", entityId);
 			return;
 		}
 

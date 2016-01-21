@@ -468,7 +468,7 @@ bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
 	{
 		if ( g_debugEntities.integer > -2 )
-			G_Printf(S_ERROR "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
+			Log::Warn("Class %s has been marked deprecated but no replacement has been supplied", etos( entity ) );
 
 		return false;
 	}
@@ -478,7 +478,7 @@ bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_
 		if( spawnDescription->versionState < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
 		{
-			G_Printf( S_WARNING "Entity %s uses a deprecated classtype — use the class ^5%s^* instead\n", etos( entity ), spawnDescription->replacement );
+			Log::Warn("Entity %s uses a deprecated classtype — use the class ^5%s^* instead", etos( entity ), spawnDescription->replacement );
 		}
 	}
 	entity->classname = spawnDescription->replacement;
@@ -492,7 +492,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 			if(!entity->callTargetCount) //check target usage for backward compatibility
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_WARNING "Entity %s needs to call or target to something — Removing it.\n", etos( entity ) );
+					Log::Warn("Entity %s needs to call or target to something — Removing it.", etos( entity ) );
 				return false;
 			}
 			break;
@@ -501,7 +501,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 			if(!entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_WARNING "Entity %s needs a name, so other entities can target it — Removing it.\n", etos( entity ) );
+					Log::Warn("Entity %s needs a name, so other entities can target it — Removing it.", etos( entity ) );
 				return false;
 			}
 			break;
@@ -510,7 +510,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 					|| !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_WARNING "Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.\n", etos( entity ) );
+					Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
 				return false;
 			}
 			break;
@@ -540,7 +540,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( S_ERROR "Entity ^5#%i^* is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
+			Log::Warn("Entity ^5#%i^* is missing classname – we are unable to spawn it.", spawnedEntity->s.number );
 		return false;
 	}
 
@@ -586,7 +586,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 		spawnedEntity->spawned = true;
 
 		if ( g_debugEntities.integer > 2 )
-			G_Printf( S_DEBUG "Successfully spawned entity ^5#%i^* as ^3#%i^*th instance of ^5%s\n",
+			Log::Warn("Successfully spawned entity ^5#%i^* as ^3#%i^*th instance of ^5%s",
 					spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name);
 
 		/*
@@ -605,11 +605,11 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
 		{
-			G_Printf( S_ERROR "a ^5" S_WORLDSPAWN "^7 class was misplaced into position ^5#%i^* of the spawn string – Ignoring\n", spawnedEntity->s.number );
+			Log::Warn("a ^5" S_WORLDSPAWN "^7 class was misplaced into position ^5#%i^* of the spawn string – Ignoring", spawnedEntity->s.number );
 		}
 		else
 		{
-			G_Printf( S_ERROR "Unknown entity class \"^5%s^*\".\n", spawnedEntity->classname );
+			Log::Warn("Unknown entity class \"^5%s^*\".", spawnedEntity->classname );
 		}
 	}
 
@@ -778,14 +778,14 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 		case F_SOUNDINDEX:
 			if ( strlen( rawString ) >= MAX_QPATH )
 			{
-				G_Error( S_ERROR "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
+				G_Error( "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
 			}
 
 			* ( int * ) entityDataField  = G_SoundIndex( rawString );
 			break;
 
 		default:
-			G_Printf( S_ERROR "unknown datatype %i for field %s\n", fieldDescriptor->type, fieldDescriptor->name );
+			Log::Warn("unknown datatype %i for field %s", fieldDescriptor->type, fieldDescriptor->name );
 			break;
 	}
 
@@ -828,7 +828,7 @@ void G_SpawnGEntityFromSpawnVars()
 	 */
 	if( level.numSpawnVars <= 1 )
 	{
-		G_Printf( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		Log::Warn("encountered ghost-entity #%i with only one field: %s = %s", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
 		G_FreeEntity( spawningEntity );
 		return;
 	}
@@ -910,7 +910,7 @@ bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFi
 		if( typeOfDeprecation < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
 		{
-			G_Printf( S_WARNING "Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead\n", entity->s.number, actualFieldname, expectedFieldname );
+			Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->s.number, actualFieldname, expectedFieldname );
 		}
 	}
 

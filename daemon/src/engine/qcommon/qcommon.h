@@ -621,9 +621,6 @@ void       Info_Print( const char *s );
 // *INDENT-OFF*
 int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
 
-void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... );
-void QDECL Com_Log( log_level_t level, const char* message );
-
 #define    PrintBanner(text) Com_Printf("----- %s -----\n", text );
 
 // *INDENT-ON*

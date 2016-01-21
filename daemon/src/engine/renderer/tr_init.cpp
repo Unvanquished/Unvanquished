@@ -1377,7 +1377,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		if ( ( intptr_t ) tess.verts & 15 )
 		{
-			Com_DPrintf( "WARNING: tess.verts not 16 byte aligned\n" );
+			Log::Debug( "WARNING: tess.verts not 16 byte aligned" );
 		}
 
 		// init function tables

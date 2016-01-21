@@ -126,14 +126,14 @@ void SV_AddServerCommand( client_t *client, const char *cmd )
 	// doesn't cause a recursive drop client
 	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1 )
 	{
-		Com_DPrintf("===== pending server commands =====\n");
+		Log::Debug("===== pending server commands =====");
 
 		for ( i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++ )
 		{
-			Com_DPrintf( "cmd %5d: %s\n", i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
+			Log::Debug( "cmd %5d: %s", i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
 		}
 
-		Com_DPrintf( "cmd %5d: %s\n", i, cmd );
+		Log::Debug( "cmd %5d: %s", i, cmd );
 		SV_DropClient( client, "Server command overflow" );
 		return;
 	}
@@ -891,7 +891,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	Com_DPrintf( "SV packet %s : %s\n", NET_AdrToString( from ), args.Argv(0).c_str() );
+	Log::Debug( "SV packet %s : %s", NET_AdrToString( from ), args.Argv(0).c_str() );
 
 	if ( args.Argv(0) == "getstatus" )
 	{
@@ -925,7 +925,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 	else
 	{
-		Com_DPrintf( "bad connectionless packet from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
+		Log::Debug( "bad connectionless packet from %s:\n%s", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
 	}
 }
 
@@ -1111,7 +1111,7 @@ void SV_CheckTimeouts()
 		if ( cl->state == clientState_t::CS_ZOMBIE && cl->lastPacketTime < zombiepoint )
 		{
 			// using the client id cause the cl->name is empty at this point
-			Com_DPrintf( "Going from CS_ZOMBIE to CS_FREE for client %d\n", i );
+			Log::Debug( "Going from CS_ZOMBIE to CS_FREE for client %d", i );
 			cl->state = clientState_t::CS_FREE; // can now be reused
 
 			continue;

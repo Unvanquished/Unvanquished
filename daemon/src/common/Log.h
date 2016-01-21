@@ -234,15 +234,16 @@ namespace Log {
     }
 
     // Quick Logs
+    extern Logger defaultLogger;
 
     template<typename ... Args>
     void Warn(Str::StringRef format, Args&& ... args) {
-        CodeSourceWarn(Str::Format(format, std::forward<Args>(args) ...));
+        defaultLogger.Warn(format, std::forward<Args>(args) ...);
     }
 
     template<typename ... Args>
     void Notice(Str::StringRef format, Args&& ... args) {
-        CodeSourceNotice(Str::Format(format, std::forward<Args>(args) ...));
+        defaultLogger.Notice(format, std::forward<Args>(args) ...);
     }
 
     template<typename ... Args>
@@ -252,7 +253,7 @@ namespace Log {
 
     template<typename ... Args>
     void Debug(Str::StringRef format, Args&& ... args) {
-        CodeSourceDebug(Str::Format(format, std::forward<Args>(args) ...));
+        defaultLogger.Debug(format, std::forward<Args>(args) ...);
     }
 }
 

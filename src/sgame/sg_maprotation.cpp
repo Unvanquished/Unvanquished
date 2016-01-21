@@ -311,7 +311,7 @@ static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool
 			}
 			else
 			{
-				G_Printf( S_ERROR "invalid operator in expression: %s\n", token );
+				Log::Warn("invalid operator in expression: %s", token );
 				return false;
 			}
 
@@ -345,7 +345,7 @@ static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool
 			}
 			else
 			{
-				G_Printf( S_ERROR "invalid right hand side in expression: %s\n", token );
+				Log::Warn("invalid right hand side in expression: %s", token );
 				return false;
 			}
 		}
@@ -355,7 +355,7 @@ static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool
 		}
 		else
 		{
-			G_Printf( S_ERROR "invalid left hand side in expression: %s\n", token );
+			Log::Warn("invalid left hand side in expression: %s", token );
 			return false;
 		}
 
@@ -395,7 +395,7 @@ static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool
 
 		if ( !*token )
 		{
-			G_Printf( S_ERROR "goto or resume without label\n" );
+			Log::Warn("goto or resume without label" );
 			return false;
 		}
 
@@ -450,13 +450,13 @@ static bool G_ParseMapRotation( mapRotation_t *mr, const char **text_p )
 		{
 			if ( node == nullptr )
 			{
-				G_Printf( S_ERROR "map command section with no associated map\n" );
+				Log::Warn("map command section with no associated map" );
 				return false;
 			}
 
 			if ( !G_ParseMapCommandSection( node, text_p ) )
 			{
-				G_Printf( S_ERROR "failed to parse map command section\n" );
+				Log::Warn("failed to parse map command section" );
 				return false;
 			}
 
@@ -470,7 +470,7 @@ static bool G_ParseMapRotation( mapRotation_t *mr, const char **text_p )
 
 		if ( mr->numNodes == MAX_MAP_ROTATION_MAPS )
 		{
-			G_Printf( S_ERROR "maximum number of maps in one rotation (%d) reached\n",
+			Log::Warn("maximum number of maps in one rotation (%d) reached",
 			          MAX_MAP_ROTATION_MAPS );
 			return false;
 		}
@@ -516,7 +516,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 	if ( len == 0 || len >= (int) sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		G_Printf( S_ERROR "map rotation file %s is %s\n", fileName,
+		Log::Warn("map rotation file %s is %s", fileName,
 		          len == 0 ? "empty" : "too long" );
 		return false;
 	}
@@ -545,13 +545,13 @@ static bool G_ParseMapRotationFile( const char *fileName )
 				//check for name space clashes
 				if ( G_RotationExists( mrName ) )
 				{
-					G_Printf( S_ERROR "a map rotation is already named %s\n", mrName );
+					Log::Warn("a map rotation is already named %s", mrName );
 					return false;
 				}
 
 				if ( mapRotations.numRotations == MAX_MAP_ROTATIONS )
 				{
-					G_Printf( S_ERROR "maximum number of map rotations (%d) reached\n",
+					Log::Warn("maximum number of map rotations (%d) reached",
 					          MAX_MAP_ROTATIONS );
 					return false;
 				}
@@ -560,7 +560,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 
 				if ( !G_ParseMapRotation( &mapRotations.rotations[ mapRotations.numRotations ], &text_p ) )
 				{
-					G_Printf( S_ERROR "%s: failed to parse map rotation %s\n", fileName, mrName );
+					Log::Warn("%s: failed to parse map rotation %s", fileName, mrName );
 					return false;
 				}
 
@@ -573,7 +573,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 			}
 			else
 			{
-				G_Printf( S_ERROR "unnamed map rotation\n" );
+				Log::Warn("unnamed map rotation" );
 				return false;
 			}
 		}
@@ -585,7 +585,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 		}
 		else
 		{
-			G_Printf( S_ERROR "map rotation already named\n" );
+			Log::Warn("map rotation already named" );
 			return false;
 		}
 	}
@@ -605,7 +605,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 
 				if ( !G_MapExists( node->u.map.name ) )
 				{
-					G_Printf( S_ERROR "rotation map \"%s\" doesn't exist\n",
+					Log::Warn("rotation map \"%s\" doesn't exist",
 					          node->u.map.name );
 					return false;
 				}
@@ -632,7 +632,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 			     !G_LabelExists( i, node->u.label.name ) &&
 			     !G_RotationExists( node->u.label.name ) )
 			{
-				G_Printf( S_ERROR "goto destination named \"%s\" doesn't exist\n",
+				Log::Warn("goto destination named \"%s\" doesn't exist",
 				          node->u.label.name );
 				return false;
 			}
@@ -640,7 +640,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 
 		if ( mapCount == 0 )
 		{
-			G_Printf( S_ERROR "rotation \"%s\" needs at least one map entry\n",
+			Log::Warn("rotation \"%s\" needs at least one map entry",
 			          mr->name );
 			return false;
 		}
@@ -718,13 +718,13 @@ void G_PrintRotations()
 	int i, j;
 	int size = sizeof( mapRotations );
 
-	G_Printf( "Map rotations as parsed:\n\n" );
+	Log::Notice( "Map rotations as parsed:\n" );
 
 	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
 
-		G_Printf( "rotation: %s\n{\n", mr->name );
+		Log::Notice( "rotation: %s\n{", mr->name );
 
 		size += mr->numNodes * sizeof( mrNode_t );
 
@@ -735,7 +735,7 @@ void G_PrintRotations()
 
 			while ( node->type == NT_CONDITION )
 			{
-				G_Printf( "%*s%s\n", indentation, "", G_RotationNode_ToString( node ) );
+				Log::Notice( "%*s%s", indentation, "", G_RotationNode_ToString( node ) );
 				node = node->u.condition.target;
 
 				size += sizeof( mrNode_t );
@@ -743,19 +743,19 @@ void G_PrintRotations()
 				indentation += 2;
 			}
 
-			G_Printf( "%*s%s\n", indentation, "", G_RotationNode_ToString( node ) );
+			Log::Notice( "%*s%s", indentation, "", G_RotationNode_ToString( node ) );
 
 			if ( node->type == NT_MAP && strlen( node->u.map.postCommand ) > 0 )
 			{
-				G_Printf( MAP_CONTROL "    command: %s", node->u.map.postCommand ); // assume that there's an LF there... if not, well...
+				Log::Notice( MAP_CONTROL "    command: %s", node->u.map.postCommand ); // assume that there's an LF there... if not, well...
 			}
 
 		}
 
-		G_Printf( MAP_DEFAULT "}\n" );
+		Log::Notice( MAP_DEFAULT "}" );
 	}
 
-	G_Printf( "Total memory used: %d bytes\n", size );
+	Log::Notice( "Total memory used: %d bytes", size );
 }
 
 /*
@@ -1171,7 +1171,7 @@ static bool G_EvaluateMapCondition( mrCondition_t **condition )
 
 		default:
 		case CV_ERR:
-			G_Printf( S_ERROR "malformed map switch localCondition\n" );
+			Log::Warn("malformed map switch localCondition" );
 			break;
 	}
 
@@ -1219,12 +1219,12 @@ bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
 	{
 		if ( depth > 64 )
 		{
-			G_Printf( S_ERROR "infinite loop protection stopped at map rotation %s\n",
+			Log::Warn("infinite loop protection stopped at map rotation %s",
 			          G_RotationNameByIndex( rotation ) );
 			return false;
 		}
 
-		G_Printf( S_WARNING "possible infinite loop in map rotation %s\n",
+		Log::Warn("possible infinite loop in map rotation %s",
 		          G_RotationNameByIndex( rotation ) );
 		return true;
 	}
@@ -1278,7 +1278,7 @@ bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
 					return false;
 				}
 
-				G_Printf( S_WARNING "skipped missing map %s in rotation %s\n",
+				Log::Warn("skipped missing map %s in rotation %s",
 				          node->u.map.name, G_RotationNameByIndex( rotation ) );
 				break;
 
@@ -1296,7 +1296,7 @@ bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
 					return false;
 				}
 
-				G_Printf( S_WARNING "label, map, or rotation %s not found in %s\n",
+				Log::Warn("label, map, or rotation %s not found in %s",
 				          node->u.label.name, G_RotationNameByIndex( rotation ) );
 				break;
 		}
@@ -1330,7 +1330,7 @@ void G_AdvanceMapRotation( int depth )
 
 	if ( !node )
 	{
-		G_Printf( S_WARNING "index incorrect for map rotation %s, trying 0\n",
+		Log::Warn("index incorrect for map rotation %s, trying 0",
 		          G_RotationNameByIndex( rotation ) );
 		nodeIndex = 0;
 		node = G_NodeByIndex( nodeIndex, rotation );
@@ -1345,7 +1345,7 @@ void G_AdvanceMapRotation( int depth )
 
 	if ( !node )
 	{
-		G_Printf( S_ERROR "unexpected end of maprotation '%s'\n",
+		Log::Warn("unexpected end of maprotation '%s'",
 		          G_RotationNameByIndex( rotation ) );
 	}
 }
@@ -1440,12 +1440,12 @@ void G_InitMapRotations()
 	{
 		if ( !G_ParseMapRotationFile( fileName ) )
 		{
-			G_Printf( S_ERROR "failed to parse %s file\n", fileName );
+			Log::Warn("failed to parse %s file", fileName );
 		}
 	}
 	else
 	{
-		G_Printf( "%s file not found.\n", fileName );
+		Log::Warn( "%s file not found.", fileName );
 	}
 
 	if ( g_currentMapRotation.integer == NOT_ROTATING )

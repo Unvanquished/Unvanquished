@@ -458,18 +458,6 @@ enum
 	LOG_GAMEPLAY_STATS_FOOTER
 };
 
-void QDECL PRINTF_LIKE(1) G_Printf( const char *fmt, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
-
 void QDECL PRINTF_LIKE(1) NORETURN G_Error( const char *fmt, ... )
 {
 	va_list argptr;
@@ -548,7 +536,7 @@ void G_FindEntityGroups()
 		}
 	}
 
-	G_Printf( "%i groups with %i entities\n", groupCount, entityCount );
+	Log::Notice( "%i groups with %i entities", groupCount, entityCount );
 }
 /*
 ================
@@ -714,9 +702,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	G_RegisterCvars();
 
-	G_Printf( "------- Game Initialization -------\n" );
-	G_Printf( "gamename: %s\n", GAME_VERSION );
-	G_Printf( "gamedate: %s\n", __DATE__ );
+	Log::Notice( "------- Game Initialization -------" );
+	Log::Notice( "gamename: %s", GAME_VERSION );
+	Log::Notice( "gamedate: %s", __DATE__ );
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
@@ -739,7 +727,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 		if ( !level.logFile )
 		{
-			G_Printf( "WARNING: Couldn't open logfile: %s\n", g_logFile.string );
+			Log::Warn("Couldn't open logfile: %s", g_logFile.string );
 		}
 		else
 		{
@@ -759,7 +747,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 	else
 	{
-		G_Printf( "Not logging to disk\n" );
+		Log::Notice( "Not logging to disk" );
 	}
 
 	// gameplay statistics logging
@@ -782,7 +770,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 		if ( !level.logGameplayFile )
 		{
-			G_Printf( "WARNING: Couldn't open gameplay statistics logfile: %s\n", logfile );
+			Log::Warn("Couldn't open gameplay statistics logfile: %s", logfile );
 		}
 		else
 		{
@@ -903,7 +891,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 		G_ModifyBuildPoints(team, startBP);
 	}
 
-	G_Printf( "-----------------------------------\n" );
+	Log::Notice( "-----------------------------------" );
 
 	// So the server counts the spawns without a client attached
 	G_CountSpawns();
@@ -978,7 +966,7 @@ void G_ShutdownGame( int restart )
 
 	G_RestoreCvars();
 
-	G_Printf( "==== ShutdownGame ====\n" );
+	Log::Notice( "==== ShutdownGame ====" );
 
 	if ( level.logFile )
 	{
@@ -1323,7 +1311,7 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 	int i = sq->front;
 	int length = G_GetSpawnQueueLength( sq );
 
-	G_Printf( "l:%d f:%d b:%d    :", length, sq->front, sq->back );
+	Log::Notice( "l:%d f:%d b:%d    :", length, sq->front, sq->back );
 
 	if ( length > 0 )
 	{
@@ -1331,11 +1319,11 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 		{
 			if ( sq->clients[ i ] == -1 )
 			{
-				G_Printf( "*:" );
+				Log::Notice( "*:" );
 			}
 			else
 			{
-				G_Printf( "%d:", sq->clients[ i ] );
+				Log::Notice( "%d:", sq->clients[ i ] );
 			}
 
 			i = QUEUE_PLUS1( i );
@@ -1343,7 +1331,7 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 		while ( i != QUEUE_PLUS1( sq->back ) );
 	}
 
-	G_Printf( "\n" );
+	Log::Notice( "\n" );
 }
 
 /*
@@ -1874,7 +1862,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	if ( !level.inClient )
 	{
 		G_UnEscapeString( string, decolored, sizeof( decolored ) );
-		G_Printf( "%s", decolored + 7 );
+		Log::Notice( "%s", decolored + 7 );
 	}
 
 	if ( !level.logFile )

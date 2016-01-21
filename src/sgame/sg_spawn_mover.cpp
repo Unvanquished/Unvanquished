@@ -1669,7 +1669,7 @@ void SP_func_door_rotating( gentity_t *self )
 	// leave out, so we'll tell him if he does.
 	if ( !self->rotatorAngle )
 	{
-		G_Printf( "%s at %s with no rotatorAngle set.\n",
+		Log::Warn( "%s at %s with no rotatorAngle set.",
 		          self->classname, vtos( self->s.origin ) );
 
 		self->rotatorAngle = 90.0;
@@ -1785,7 +1785,7 @@ void SP_func_door_model( gentity_t *self )
 	// for drawing, but clip against the brushes
 	if ( !self->model2 )
 	{
-		G_Printf( S_WARNING "func_door_model %d spawned with no model2 key\n", self->s.number );
+		Log::Warn("func_door_model %d spawned with no model2 key", self->s.number );
 	}
 	else
 	{
@@ -2261,7 +2261,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 
 	if ( !self->nextPathSegment )
 	{
-		G_Printf( "func_train at %s with an unfound target\n",
+		Log::Warn( "func_train at %s with an unfound target",
 		          vtos( self->r.absmin ) );
 		return;
 	}
@@ -2277,7 +2277,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 
 		if ( !path->targetCount )
 		{
-			G_Printf( "Train corner at %s without a target\n",
+			Log::Warn( "Train corner at %s without a target",
 			          vtos( path->s.origin ) );
 			return;
 		}
@@ -2293,7 +2293,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 
 			if ( !next )
 			{
-				G_Printf( "Train corner at %s without a referenced " S_PATH_CORNER "\n",
+				Log::Warn( "Train corner at %s without a referenced " S_PATH_CORNER,
 				          vtos( path->s.origin ) );
 				return;
 			}

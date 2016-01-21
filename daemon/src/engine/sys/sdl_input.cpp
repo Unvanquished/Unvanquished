@@ -679,11 +679,11 @@ static void IN_InitJoystick()
 
 	if ( !in_joystick->integer && !in_xbox360Controller->integer )
 	{
-		Com_DPrintf( "Joystick is not active.\n" );
+		Log::Debug( "Joystick is not active." );
 
 		if ( !in_xbox360Controller->integer )
 		{
-			Com_DPrintf( "Gamepad is not active.\n" );
+			Log::Debug( "Gamepad is not active." );
 			Cvar_Set( "in_xbox360ControllerAvailable", "0" );
 		}
 
@@ -692,23 +692,23 @@ static void IN_InitJoystick()
 
 	if ( !SDL_WasInit( SDL_INIT_JOYSTICK ) )
 	{
-		Com_DPrintf( "Calling SDL_Init(SDL_INIT_JOYSTICK)...\n" );
+		Log::Debug( "Calling SDL_Init(SDL_INIT_JOYSTICK)..." );
 
 		if ( SDL_Init( SDL_INIT_JOYSTICK ) == -1 )
 		{
-			Com_DPrintf( "SDL_Init(SDL_INIT_JOYSTICK) failed: %s\n", SDL_GetError() );
+			Log::Debug( "SDL_Init(SDL_INIT_JOYSTICK) failed: %s", SDL_GetError() );
 			return;
 		}
 
-		Com_DPrintf( "SDL_Init(SDL_INIT_JOYSTICK) passed.\n" );
+		Log::Debug( "SDL_Init(SDL_INIT_JOYSTICK) passed." );
 	}
 
 	total = SDL_NumJoysticks();
-	Com_DPrintf( "%d possible joysticks\n", total );
+	Log::Debug( "%d possible joysticks", total );
 
 	for ( i = 0; i < total; i++ )
 	{
-		Com_DPrintf( "[%d] %s\n", i, SDL_JoystickNameForIndex( i ) );
+		Log::Debug( "[%d] %s", i, SDL_JoystickNameForIndex( i ) );
 	}
 
 	in_joystickNo = Cvar_Get( "in_joystickNo", "0", 0 );
@@ -724,17 +724,17 @@ static void IN_InitJoystick()
 
 	if ( stick == nullptr )
 	{
-		Com_DPrintf( "No joystick opened.\n" );
+		Log::Debug( "No joystick opened." );
 		return;
 	}
 
-	Com_DPrintf( "Joystick %d opened\n", in_joystickNo->integer );
-	Com_DPrintf( "Name:    %s\n", SDL_JoystickNameForIndex( in_joystickNo->integer ) );
-	Com_DPrintf( "Axes:    %d\n", SDL_JoystickNumAxes( stick ) );
-	Com_DPrintf( "Hats:    %d\n", SDL_JoystickNumHats( stick ) );
-	Com_DPrintf( "Buttons: %d\n", SDL_JoystickNumButtons( stick ) );
-	Com_DPrintf( "Balls: %d\n", SDL_JoystickNumBalls( stick ) );
-	Com_DPrintf( "Use Analog: %s\n", in_joystickUseAnalog->integer ? "Yes" : "No" );
+	Log::Debug( "Joystick %d opened", in_joystickNo->integer );
+	Log::Debug( "Name:    %s", SDL_JoystickNameForIndex( in_joystickNo->integer ) );
+	Log::Debug( "Axes:    %d", SDL_JoystickNumAxes( stick ) );
+	Log::Debug( "Hats:    %d", SDL_JoystickNumHats( stick ) );
+	Log::Debug( "Buttons: %d", SDL_JoystickNumButtons( stick ) );
+	Log::Debug( "Balls: %d", SDL_JoystickNumBalls( stick ) );
+	Log::Debug( "Use Analog: %s", in_joystickUseAnalog->integer ? "Yes" : "No" );
 
 	SDL_JoystickEventState( SDL_QUERY );
 
@@ -1571,7 +1571,7 @@ void IN_Init( void *windowData )
 
 	window = (SDL_Window*) windowData;
 
-	Com_DPrintf( "\n------- Input Initialization -------\n" );
+	Log::Debug( "\n------- Input Initialization -------" );
 
 	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_TEMP );
 
@@ -1594,7 +1594,7 @@ void IN_Init( void *windowData )
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_WINDOW_INPUT_FOCUS ) );
 	Cvar_SetValue( "com_minimized", ( appState & SDL_WINDOW_MINIMIZED ) );
 	IN_InitJoystick();
-	Com_DPrintf( "------------------------------------\n" );
+	Log::Debug( "------------------------------------" );
 }
 
 /*

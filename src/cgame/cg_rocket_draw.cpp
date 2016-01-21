@@ -3595,7 +3595,7 @@ void CG_Rocket_RegisterElements()
 		//Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp( elementRenderCmdList[ i - 1 ].name, elementRenderCmdList[ i ].name ) > 0 )
 		{
-			CG_Printf( "CGame elementRenderCmdList is in the wrong order for %s and %s\n", elementRenderCmdList[i - 1].name, elementRenderCmdList[ i ].name );
+			Log::Warn( "CGame elementRenderCmdList is in the wrong order for %s and %s", elementRenderCmdList[i - 1].name, elementRenderCmdList[ i ].name );
 		}
 
 		Rocket_RegisterElement( elementRenderCmdList[ i ].name );
