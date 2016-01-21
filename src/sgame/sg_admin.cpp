@@ -1527,10 +1527,10 @@ bool G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		// and don't fill the console
 		else if ( ban->warnCount < 10 )
 		{
-			trap_Print( va( "%s%s\n", warningMessage,
+			Log::Warn( "%s%s\n", warningMessage,
 			                ban->warnCount + 1 == 10 ?
 			                "^7 — future messages for this ban will be suppressed" :
-			                "" ) );
+			                "" );
 		}
 
 		return true;

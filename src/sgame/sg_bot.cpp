@@ -220,7 +220,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 
 	if ( !navMeshLoaded )
 	{
-		trap_Print( "No Navigation Mesh file is available for this map\n" );
+		Log::Warn( "No Navigation Mesh file is available for this map" );
 		return false;
 	}
 
@@ -229,7 +229,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 
 	if ( clientNum < 0 )
 	{
-		trap_Print( "no more slots for bot\n" );
+		Log::Warn( "no more slots for bot" );
 		return false;
 	}
 	bot = &g_entities[ clientNum ];
@@ -267,7 +267,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	if ( ( s = ClientBotConnect( clientNum, true, team ) ) )
 	{
 		// won't let us join
-		trap_Print( s );
+		Log::Warn( s );
 		okay = false;
 	}
 
@@ -295,7 +295,7 @@ void G_BotDel( int clientNum )
 
 	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
 	{
-		trap_Print( va( "'^7%s^7' is not a bot\n", bot->client->pers.netname ) );
+		Log::Warn( "'^7%s^7' is not a bot\n", bot->client->pers.netname );
 		return;
 	}
 

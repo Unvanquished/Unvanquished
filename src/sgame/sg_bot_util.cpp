@@ -23,36 +23,6 @@
 #include "sg_bot_util.h"
 #include "CBSE.h"
 
-void BotDPrintf( const char* fmt, ... )
-{
-	if ( g_bot_debug.integer )
-	{
-		va_list argptr;
-		char    text[ 1024 ];
-
-		va_start( argptr, fmt );
-		Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-		va_end( argptr );
-
-		trap_Print( text );
-	}
-}
-
-void BotError( const char* fmt, ... )
-{
-	va_list argptr;
-	size_t  len;
-	char    text[ 1024 ] = "^1ERROR: ";
-
-	len = strlen( text );
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text + len, sizeof( text ) - len, fmt, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
-
 /*
  = *======================
  Scoring functions for logic

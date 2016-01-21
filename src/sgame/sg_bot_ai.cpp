@@ -1254,7 +1254,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 		if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 		{
-			BotDPrintf( "^3WARNING: parameter 1 to action buy out of range\n" );
+			Log::Warn("parameter 1 to action buy out of range" );
 			weapon = WP_NONE;
 		}
 
@@ -1267,7 +1267,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 			if ( upgrades[ numUpgrades ] <= UP_NONE || upgrades[ numUpgrades ] >= UP_NUM_UPGRADES )
 			{
-				BotDPrintf( "^3WARNING: parameter %d to action buy out of range\n", i + 1 );
+				Log::Warn("parameter %d to action buy out of range", i + 1 );
 				continue;
 			}
 

@@ -125,14 +125,14 @@ static void CG_LoadArenasFromFile( char *filename )
 
 	if ( !f )
 	{
-		trap_Print( va( "%sfile not found: %s\n", Color::CString( Color::Red ), filename ) );
+		Log::Warn( "%sfile not found: %s", Color::CString( Color::Red ), filename );
 		return;
 	}
 
 	if ( len >= MAX_ARENAS_TEXT )
 	{
-		trap_Print( va( "%sfile too large: %s is %i, max allowed is %i\n",
-			Color::CString( Color::Red ), filename, len, MAX_ARENAS_TEXT ) );
+		Log::Warn( "%sfile too large: %s is %i, max allowed is %i",
+			Color::CString( Color::Red ), filename, len, MAX_ARENAS_TEXT );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -186,7 +186,7 @@ void CG_LoadArenas()
 		CG_LoadArenasFromFile( filename );
 	}
 
-	trap_Print( va( S_SKIPNOTIFY "%i arenas parsed\n", cg_numArenas ) );
+	Log::Warn( S_SKIPNOTIFY "%i arenas parsed\n", cg_numArenas );
 
 	for ( n = 0; n < cg_numArenas; n++ )
 	{

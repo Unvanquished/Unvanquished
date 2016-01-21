@@ -27,8 +27,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot.h"
 
 //g_bot.c
-void     BotError( const char* fmt, ... ) PRINTF_LIKE(1);
-void     BotDPrintf( const char* fmt, ... ) PRINTF_LIKE(1);
 bool PlayersBehindBotInSpawnQueue( gentity_t *self );
 void     BotSetSkillLevel( gentity_t *self, int skill );
 

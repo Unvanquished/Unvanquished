@@ -435,7 +435,7 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	playerMins[2] += STEPSIZE;
 	playerMaxs[2] += STEPSIZE;
 
-	//trap_Print(vtos(self->movedir));
+	//Log::Debug(vtos(self->movedir));
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	//make sure we are moving into a block
