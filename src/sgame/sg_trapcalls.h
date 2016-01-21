@@ -25,8 +25,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SG_TRAPCALLS_H_
 #define SG_TRAPCALLS_H_
 
-void             trap_Print( const char *string );
-void NORETURN    trap_Error( const char *string );
 int              trap_Milliseconds();
 void             trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
 void             trap_Cvar_Set( const char *var_name, const char *value );

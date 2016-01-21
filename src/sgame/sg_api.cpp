@@ -128,24 +128,24 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			break;
 
 		case GAME_SNAPSHOT_CALLBACK:
-			G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
+			Com_Error(errorParm_t::ERR_DROP, "GAME_SNAPSHOT_CALLBACK not implemented");
 			break;
 
 		case BOTAI_START_FRAME:
-			G_Error("BOTAI_START_FRAME not implemented");
+			Com_Error(errorParm_t::ERR_DROP, "BOTAI_START_FRAME not implemented");
 			break;
 
 		case GAME_MESSAGERECEIVED:
-			G_Error("GAME_MESSAGERECEIVED not implemented");
+			Com_Error(errorParm_t::ERR_DROP, "GAME_MESSAGERECEIVED not implemented");
 			break;
 
 		default:
-			G_Error("VMMain(): unknown game command %i", minor);
+			Com_Error(errorParm_t::ERR_DROP, "VMMain(): unknown game command %i", minor);
 		}
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
 		VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootChannel);
 	} else {
-		G_Error("unhandled VM major syscall number %i", major);
+		Com_Error(errorParm_t::ERR_DROP, "unhandled VM major syscall number %i", major);
 	}
 }
 

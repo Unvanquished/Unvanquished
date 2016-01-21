@@ -507,16 +507,6 @@ namespace VM {
 
 // Definition of some additional trap_* that are common to all VMs
 
-void trap_Print(const char *string)
-{
-	VM::SendMsg<VM::PrintMsg>(string);
-}
-
-void NORETURN trap_Error(const char *string)
-{
-	Sys::Drop(string);
-}
-
 void trap_SendConsoleCommand(const char *text)
 {
 	VM::SendMsg<VM::SendConsoleCommandMsg>(text);

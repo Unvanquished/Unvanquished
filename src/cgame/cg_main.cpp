@@ -765,32 +765,6 @@ void CG_AddNotifyText()
 	cg.numConsoleLines++;
 }
 
-void QDECL PRINTF_LIKE(1) NORETURN CG_Error( const char *msg, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
-
-	trap_Error( text );
-}
-
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( errorParm_t level, const char *error, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	Q_UNUSED(level);
-
-	va_start( argptr, error );
-	Q_vsnprintf( text, sizeof( text ), error, argptr );
-	va_end( argptr );
-
-	trap_Error( text );
-}
-
 /*
 ================
 CG_Argv
@@ -1341,7 +1315,7 @@ static void CG_RegisterGraphics()
 
 	if ( cgs.numInlineModels > MAX_SUBMODELS )
 	{
-		CG_Error( "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
+		Com_Error(errorParm_t::ERR_DROP,  "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
 	}
 
 	for ( i = 1; i < cgs.numInlineModels; i++ )
@@ -1538,7 +1512,7 @@ const char *CG_ConfigString( int index )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		CG_Error( "CG_ConfigString: bad index: %i", index );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_ConfigString: bad index: %i", index );
 	}
 
 	return cgs.gameState[index].c_str();
@@ -1657,7 +1631,7 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	s = CG_ConfigString( CS_GAME_VERSION );
 
 //   if( strcmp( s, GAME_VERSION ) )
-//     CG_Error( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+//     Com_Error(errorParm_t::ERR_DROP,  "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );

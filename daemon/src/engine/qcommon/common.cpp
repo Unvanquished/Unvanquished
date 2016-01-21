@@ -114,30 +114,6 @@ void     CIN_CloseAllVideos();
 
 //============================================================================
 
-/*
-=============
-Com_Error
-
-Both client and server can use this, and it will
-do the appropriate things.
-=============
-*/
-// *INDENT-OFF*
-void QDECL PRINTF_LIKE(2) Com_Error( errorParm_t code, const char *fmt, ... )
-{
-	char buf[ 4096 ];
-	va_list argptr;
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( buf, sizeof( buf ), fmt, argptr );
-	va_end( argptr );
-
-	if ( code == errorParm_t::ERR_FATAL )
-		Sys::Error( buf );
-	else
-		Sys::Drop( buf );
-}
-
 // *INDENT-OFF*
 //bani - moved
 void CL_ShutdownCGame();

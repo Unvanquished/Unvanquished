@@ -952,7 +952,7 @@ public:
 
 			if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 			{
-				CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
+				Com_Error(errorParm_t::ERR_DROP,  "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
 			}
 
 			if ( !cg_weapons[ weapon ].registered )

@@ -1965,8 +1965,6 @@ const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 const char *CG_Args();
 
-void QDECL NORETURN CG_Error( const char *msg, ... ) PRINTF_LIKE(1);
-
 void       CG_StartMusic();
 
 void       CG_NotifyHooks();

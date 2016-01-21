@@ -372,3 +372,22 @@ void operator delete(void* p) NOEXCEPT
 		free(p);
 	}
 }
+
+/**
+ * Both client and server can use this, and it will
+ * do the appropriate things.
+ */
+void QDECL PRINTF_LIKE(2) Com_Error(errorParm_t code, const char *fmt, ...)
+{
+	char buf[4096];
+	va_list argptr;
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(buf, sizeof(buf), fmt, argptr);
+	va_end(argptr);
+
+	if (code == errorParm_t::ERR_FATAL)
+		Sys::Error(buf);
+	else
+		Sys::Drop(buf);
+}

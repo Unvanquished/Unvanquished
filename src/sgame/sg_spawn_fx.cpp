@@ -81,7 +81,7 @@ void SP_sfx_speaker( gentity_t *self )
 
 	if ( !G_SpawnString( "noise", "NOSOUND", &tmpString ) )
 	{
-		G_Error( "speaker %s without a noise key", etos( self ) );
+		Com_Error(errorParm_t::ERR_DROP,  "speaker %s without a noise key", etos( self ) );
 	}
 
 	// force all client-relative sounds to be "activator" speakers that

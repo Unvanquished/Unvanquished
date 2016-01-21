@@ -42,7 +42,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 
 	if ( upgradeNum <= UP_NONE || upgradeNum >= UP_NUM_UPGRADES )
 	{
-		CG_Error( "CG_RegisterUpgrade: out of range: %d", upgradeNum );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_RegisterUpgrade: out of range: %d", upgradeNum );
 	}
 
 	upgradeInfo = &cg_upgrades[ upgradeNum ];
@@ -58,7 +58,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 
 	if ( !BG_Upgrade( upgradeNum )->name[ 0 ] )
 	{
-		CG_Error( "Couldn't find upgrade %i", upgradeNum );
+		Com_Error(errorParm_t::ERR_DROP,  "Couldn't find upgrade %i", upgradeNum );
 	}
 
 	upgradeInfo->humanName = BG_Upgrade( upgradeNum )->humanName;
@@ -733,7 +733,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				if ( !CG_RegisterWeaponAnimation( &wi->animations[ WANIM_IDLE ],
 				                                  va( "%s_view.iqm:idle", token2 ), true, false, false ) )
 				{
-					//CG_Error( "could not find '%s'", path );
+					//Com_Error(errorParm_t::ERR_DROP,  "could not find '%s'", path );
 				}
 
 				// default all weapon animations to the idle animation
@@ -823,7 +823,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				if ( !CG_RegisterWeaponAnimation( &wi->animations[ WANIM_IDLE ],
 					va( "%s_view_idle.md5anim", token2 ), true, false, false ) )
 				{
-					//CG_Error( "could not find '%s'", path );
+					//Com_Error(errorParm_t::ERR_DROP,  "could not find '%s'", path );
 				}
 
 				// default all weapon animations to the idle animation
@@ -1155,7 +1155,7 @@ void CG_RegisterWeapon( int weaponNum )
 
 	if ( weaponNum <= WP_NONE || weaponNum >= WP_NUM_WEAPONS )
 	{
-		CG_Error( "CG_RegisterWeapon: out of range: %d", weaponNum );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_RegisterWeapon: out of range: %d", weaponNum );
 	}
 
 	weaponInfo = &cg_weapons[ weaponNum ];
@@ -1171,7 +1171,7 @@ void CG_RegisterWeapon( int weaponNum )
 
 	if ( !BG_Weapon( weaponNum )->name[ 0 ] )
 	{
-		CG_Error( "Couldn't find weapon %i", weaponNum );
+		Com_Error(errorParm_t::ERR_DROP,  "Couldn't find weapon %i", weaponNum );
 	}
 
 	Com_sprintf( path, MAX_QPATH, "models/weapons/%s/weapon.cfg", BG_Weapon( weaponNum )->name );
@@ -1245,7 +1245,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 
 	if ( newAnimation < 0 || newAnimation >= MAX_WEAPON_ANIMATIONS )
 	{
-		CG_Error( "Bad animation number: %i", newAnimation );
+		Com_Error(errorParm_t::ERR_DROP,  "Bad animation number: %i", newAnimation );
 	}
 
 	anim = &cg_weapons[ weapon ].animations[ newAnimation ];
@@ -2664,7 +2664,7 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 
 	if ( weaponNum >= WP_NUM_WEAPONS )
 	{
-		CG_Error( "CG_FireWeapon: ent->weapon >= WP_NUM_WEAPONS" );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_FireWeapon: ent->weapon >= WP_NUM_WEAPONS" );
 	}
 
 	wi = &cg_weapons[ weaponNum ];

@@ -120,8 +120,6 @@ enum class MouseMode
 	SystemCursor, // The input is sent as positions, the cursor should be rendered by the system
 };
 
-void            trap_Print( const char *string );
-void NORETURN   trap_Error( const char *string );
 int             trap_Milliseconds();
 void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
 void            trap_Cvar_Update( vmCvar_t *vmCvar );

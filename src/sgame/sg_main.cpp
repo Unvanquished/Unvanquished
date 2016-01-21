@@ -458,18 +458,6 @@ enum
 	LOG_GAMEPLAY_STATS_FOOTER
 };
 
-void QDECL PRINTF_LIKE(1) NORETURN G_Error( const char *fmt, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-	va_end( argptr );
-
-	trap_Error( text );
-}
-
 /*
 ================
 G_FindEntityGroups
@@ -1002,18 +990,6 @@ void G_ShutdownGame( int restart )
 }
 
 //===================================================================
-
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( errorParm_t, const char *error, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, error );
-	Q_vsnprintf( text, sizeof( text ), error, argptr );
-	va_end( argptr );
-
-	trap_Error( text );
-}
 
 void G_CheckPmoveParamChanges() {
 	if ( pmove_msec.integer < 8 )

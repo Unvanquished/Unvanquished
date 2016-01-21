@@ -160,7 +160,7 @@ bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, vec3_
 	// save off the old position
 	if ( pushed_p > &pushed[ MAX_GENTITIES ] )
 	{
-		G_Error( "pushed_p > &pushed[MAX_GENTITIES]" );
+		Com_Error(errorParm_t::ERR_DROP,  "pushed_p > &pushed[MAX_GENTITIES]" );
 	}
 
 	pushed_p->ent = check;
@@ -938,7 +938,7 @@ void BinaryMover_reached( gentity_t *ent )
 	}
 	else
 	{
-		G_Error( "Reached_BinaryMover: bad moverState" );
+		Com_Error(errorParm_t::ERR_DROP,  "Reached_BinaryMover: bad moverState" );
 	}
 }
 
@@ -1179,7 +1179,7 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	float    distance;
 
 	if(!fallbackSpeed)
-		G_Error("No default speed was supplied to reset_moverspeed for entity #%i of type %s.\n", self->s.number, self->classname);
+		Com_Error(errorParm_t::ERR_DROP, "No default speed was supplied to reset_moverspeed for entity #%i of type %s.\n", self->s.number, self->classname);
 
 	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
@@ -1296,7 +1296,7 @@ void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 	float    angle;
 
 	if(!fallbackSpeed)
-		G_Error("No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.\n", self->s.number, self->classname);
+		Com_Error(errorParm_t::ERR_DROP, "No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.\n", self->s.number, self->classname);
 
 	// calculate time to reach second position from speed
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );

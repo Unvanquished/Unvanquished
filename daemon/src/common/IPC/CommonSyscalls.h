@@ -86,6 +86,7 @@ namespace VM {
         QVM_COMMON_PARSE_SOURCE_FILE_AND_LINE,
     };
 
+    /** @deprecated */
     using PrintMsg = IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_PRINT>, std::string>;
     using ErrorMsg = IPC::SyncMessage<
         IPC::Message<IPC::Id<VM::QVM_COMMON, QVM_COMMON_ERROR>, std::string>
