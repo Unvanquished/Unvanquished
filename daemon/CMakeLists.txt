@@ -567,7 +567,8 @@ if (USE_BREAKPAD)
             endif()
         endforeach(breaklib)
 
-        add_executable(crash_server src/engine/crash_server/crash_server_windows.cpp)
+        # WIN32 option prevents a console from being created for the process
+        add_executable(crash_server WIN32 src/engine/crash_server/crash_server_windows.cpp)
         target_link_libraries(crash_server
             srclibs-breakpad-crash_generation_server srclibs-breakpad-common)
         target_compile_definitions(crash_server PRIVATE UNICODE)
