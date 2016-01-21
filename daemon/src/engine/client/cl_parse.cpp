@@ -54,7 +54,7 @@ static void SHOWNET( msg_t *msg, const char *s )
 {
 	if ( cl_shownet->integer >= 2 )
 	{
-		Com_Printf( "%3i:%s\n", msg->readcount - 1, s );
+		Log::Notice( "%3i:%s\n", msg->readcount - 1, s );
 	}
 }
 
@@ -281,7 +281,7 @@ void CL_ParseSnapshot( msg_t *msg )
 		if ( !old->valid )
 		{
 			// should never happen
-			Com_Printf( "Delta from invalid frame (not supposed to happen!).\n" );
+			Log::Notice( "Delta from invalid frame (not supposed to happen!).\n" );
 		}
 		else if ( old->messageNum != newSnap.deltaNum )
 		{
@@ -365,7 +365,7 @@ void CL_ParseSnapshot( msg_t *msg )
 
 	if ( cl_shownet->integer == 3 )
 	{
-		Com_Printf( "   snapshot:%i  delta:%i  ping:%i\n", cl.snap.messageNum, cl.snap.deltaNum, cl.snap.ping );
+		Log::Notice( "   snapshot:%i  delta:%i  ping:%i\n", cl.snap.messageNum, cl.snap.deltaNum, cl.snap.ping );
 	}
 
 	cl.newSnapshots = true;
@@ -527,7 +527,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( !*cls.downloadTempName )
 	{
-		Com_Printf( "Server sending download, but no download was requested\n" );
+		Log::Notice( "Server sending download, but no download was requested\n" );
         // Eat the packet anyway
 	    block = MSG_ReadShort( msg );
         if (block == -1) {
@@ -573,7 +573,7 @@ void CL_ParseDownload( msg_t *msg )
 			// make sure the server is not trying to redirect us again on a bad checksum
 			if ( strstr( clc.badChecksumList, va( "@%s", cls.originalDownloadName ) ) )
 			{
-				Com_Printf( "refusing redirect to %s by server (bad checksum)\n", cls.downloadName );
+				Log::Notice( "refusing redirect to %s by server (bad checksum)\n", cls.downloadName );
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = true;
 				return;
@@ -587,7 +587,7 @@ void CL_ParseDownload( msg_t *msg )
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = true;
-				Com_Printf( "Failed to initialize download for '%s'\n", cls.downloadName );
+				Log::Notice( "Failed to initialize download for '%s'\n", cls.downloadName );
 			}
 
 			// Check for a disconnected download
@@ -649,7 +649,7 @@ void CL_ParseDownload( msg_t *msg )
 
 		if ( !clc.download )
 		{
-			Com_Printf( "Could not create %s\n", cls.downloadTempName );
+			Log::Notice( "Could not create %s\n", cls.downloadTempName );
 			CL_AddReliableCommand( "stopdl" );
 			CL_NextDownload();
 			return;
@@ -741,11 +741,11 @@ void CL_ParseServerMessage( msg_t *msg )
 
 	if ( cl_shownet->integer == 1 )
 	{
-		Com_Printf("%i ", msg->cursize );
+		Log::Notice("%i ", msg->cursize );
 	}
 	else if ( cl_shownet->integer >= 2 )
 	{
-		Com_Printf( "------------------\n" );
+		Log::Notice( "------------------\n" );
 	}
 
 	MSG_Bitstream( msg );
@@ -781,7 +781,7 @@ void CL_ParseServerMessage( msg_t *msg )
 		{
 			if ( !svc_strings[ cmd ] )
 			{
-				Com_Printf( "%3i:BAD CMD %i\n", msg->readcount - 1, cmd );
+				Log::Notice( "%3i:BAD CMD %i\n", msg->readcount - 1, cmd );
 			}
 			else
 			{

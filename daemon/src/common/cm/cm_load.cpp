@@ -659,7 +659,7 @@ static void CMod_CreateBrushSideWindings()
 		totalEdges += brush->numEdges;
 	}
 
-	cmLog.Debug( "Allocated %d bytes for %d collision map edges...\n", totalEdgesAlloc, totalEdges );
+	cmLog.Debug( "Allocated %d bytes for %d collision map edges...", totalEdgesAlloc, totalEdges );
 }
 
 /*
@@ -909,7 +909,7 @@ void CM_LoadMap(Str::StringRef name)
 {
 	dheader_t       header;
 
-	cmLog.Debug( "CM_LoadMap(%s)\n", name);
+	cmLog.Debug( "CM_LoadMap(%s)", name);
 
 	std::string mapFile = "maps/" + name + ".bsp";
 	std::string mapData;

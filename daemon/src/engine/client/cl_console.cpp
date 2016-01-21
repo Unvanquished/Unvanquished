@@ -170,7 +170,7 @@ void Con_Dump_f()
 		return;
 	}
 
-	Com_Printf( "Dumped console text to %s.\n", name.c_str() );
+	Log::Notice( "Dumped console text to %s.\n", name.c_str() );
 
 	// write the remaining lines
 	for ( const std::string& line : consoleState.lines )
@@ -276,7 +276,7 @@ void Con_Grep_f()
 		{
 			unsigned sub_size = std::min<unsigned>( it->size() - i, MAXPRINTMSG - 1 );
 			std::string substring = it->substr(i, sub_size);
-			Com_Printf( "%s", substring.c_str() );
+			Log::Notice( "%s", substring.c_str() );
 		}
 
 		++it;

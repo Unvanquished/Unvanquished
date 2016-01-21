@@ -4471,7 +4471,7 @@ returns true if request was successful, false if the gods were angered
 */
 bool RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 {
-	const char      *func_err = "WARNING: RE_LoadDynamicShader";
+	const char      *func_err = "RE_LoadDynamicShader";
 	dynamicshader_t *dptr, *lastdptr;
 	const char            *q, *token;
 
@@ -4952,7 +4952,7 @@ qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
+		Log::Notice( "Shader name exceeds MAX_QPATH\n" );
 		return 0;
 	}
 

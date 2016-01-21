@@ -189,7 +189,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		// hack to echo broadcast prints to console
 		else if ( !strncmp( ( char * ) message, "print ", 6 ) )
 		{
-			Com_Printf( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
+			Log::Notice( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
 		}
 	}
 
@@ -252,7 +252,7 @@ static void SV_ResolveMasterServers()
 
 			if ( netenabled & NET_ENABLEV4 )
 			{
-				Com_Printf( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
+				Log::Notice( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
 				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, netadrtype_t::NA_IP );
 
 				if ( res == 2 )
@@ -263,17 +263,17 @@ static void SV_ResolveMasterServers()
 
 				if ( res )
 				{
-					Com_Printf( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
+					Log::Notice( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
 				}
 				else
 				{
-					Com_Printf( "%s has no IPv4 address.\n", sv_master[ i ]->string );
+					Log::Notice( "%s has no IPv4 address.\n", sv_master[ i ]->string );
 				}
 			}
 
 			if ( netenabled & NET_ENABLEV6 )
 			{
-				Com_Printf( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
+				Log::Notice( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
 				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, netadrtype_t::NA_IP6 );
 
 				if ( res == 2 )
@@ -284,11 +284,11 @@ static void SV_ResolveMasterServers()
 
 				if ( res )
 				{
-					Com_Printf( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
+					Log::Notice( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
 				}
 				else
 				{
-					Com_Printf( "%s has no IPv6 address.\n", sv_master[ i ]->string );
+					Log::Notice( "%s has no IPv6 address.\n", sv_master[ i ]->string );
 				}
 			}
 
@@ -296,7 +296,7 @@ static void SV_ResolveMasterServers()
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Com_Printf( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
+				Log::Notice( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
 				Cvar_Set( sv_master[ i ]->name, "" );
 				sv_master[ i ]->modified = false;
 				continue;
@@ -367,7 +367,7 @@ void SV_MasterHeartbeat( const char *hbname )
 			continue;
 		}
 
-		Com_Printf( "Sending heartbeat to %s\n", sv_master[ i ]->string );
+		Log::Notice( "Sending heartbeat to %s\n", sv_master[ i ]->string );
 
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
@@ -419,12 +419,12 @@ void SV_MasterGameStat( const char *data )
 		return; // only dedicated servers send stats
 	}
 
-	Com_Printf( "Resolving %s\n", MASTER_SERVER_NAME );
+	Log::Notice( "Resolving %s\n", MASTER_SERVER_NAME );
 
 	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &adr, netadrtype_t::NA_UNSPEC ) )
 	{
 		case 0:
-			Com_Printf( "Couldn't resolve master address: %s\n", MASTER_SERVER_NAME );
+			Log::Notice( "Couldn't resolve master address: %s\n", MASTER_SERVER_NAME );
 			return;
 
 		case 2:
@@ -434,10 +434,10 @@ void SV_MasterGameStat( const char *data )
 			break;
 	}
 
-	Com_Printf( "%s resolved to %s\n", MASTER_SERVER_NAME,
+	Log::Notice( "%s resolved to %s\n", MASTER_SERVER_NAME,
 	            NET_AdrToStringwPort( adr ) );
 
-	Com_Printf( "Sending gamestat to %s\n", MASTER_SERVER_NAME );
+	Log::Notice( "Sending gamestat to %s\n", MASTER_SERVER_NAME );
 	NET_OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
 }
 
@@ -746,7 +746,7 @@ bool SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastGlobalLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Com_Printf( "Detected flood of getinfo/getstatus connectionless packets\n" );
+			Log::Notice( "Detected flood of getinfo/getstatus connectionless packets\n" );
 			lastGlobalLogTime = svs.time;
 		}
 
@@ -757,7 +757,7 @@ bool SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastSpecificLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Com_Printf( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n",
+			Log::Notice( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n",
 			            exactFrom.ip[ 0 ], exactFrom.ip[ 1 ], exactFrom.ip[ 2 ], exactFrom.ip[ 3 ] );
 			lastSpecificLogTime = svs.time;
 		}
@@ -811,7 +811,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	unsigned int time;
 
 	// show_bug.cgi?id=376
-	// if we send an OOB print message this size, 1.31 clients die in a Com_Printf buffer overflow
+	// if we send an OOB print message this size, 1.31 clients die in a Log::Notice buffer overflow
 	// the buffer overflow will be fixed in > 1.31 clients
 	// but we want a server side fix
 	// we must NEVER send an OOB message that will be > 1.31 MAXPRINTMSG (4096)
@@ -830,18 +830,18 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
 	{
 		valid = false;
-		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Log::Notice( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 	else
 	{
 		valid = true;
-		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Log::Notice( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 
 	// start redirecting all print outputs to the packet
 	// FIXME TTimo our rcon redirection could be improved
 	//   big rcon commands such as status lead to sending
-	//   out of band packets on every single call to Com_Printf
+	//   out of band packets on every single call to Log::Notice
 	//   which leads to client overflows
 	//   see show_bug.cgi?id=51
 	//     (also a Q3 issue)
@@ -980,7 +980,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 		// port assignments
 		if ( cl->netchan.remoteAddress.port != from.port )
 		{
-			Com_Printf( "SV_PacketEvent: fixing up a translated port\n" );
+			Log::Notice( "SV_PacketEvent: fixing up a translated port\n" );
 			cl->netchan.remoteAddress.port = from.port;
 		}
 
@@ -1358,7 +1358,7 @@ void SV_Frame( int msec )
 	svs.currentFrameIndex++;
 
 	//if( svs.currentFrameIndex % 50 == 0 )
-	//  Com_Printf( "currentFrameIndex: %i\n", svs.currentFrameIndex );
+	//  Log::Notice( "currentFrameIndex: %i\n", svs.currentFrameIndex );
 
 	if ( svs.currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES )
 	{
@@ -1390,7 +1390,7 @@ void SV_Frame( int msec )
 			svs.serverLoad = ( averageFrameTime / ( float ) frameMsec ) * 100;
 		}
 
-		//Com_Printf( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
+		//Log::Notice( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
 
 		svs.totalFrameTime = 0;
 		svs.currentFrameIndex = 0;
@@ -1425,7 +1425,7 @@ void SV_PrintTranslatedText( const char *text, bool broadcast, bool plural )
 {
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
-	Com_Printf( "%s%s", broadcast ? "Broadcast: " : "", TranslateText_Internal( plural, 1 ) );
+	Log::Notice( "%s%s", broadcast ? "Broadcast: " : "", TranslateText_Internal( plural, 1 ) );
 	Cmd_RestoreCmdContext();
 }
 

@@ -234,7 +234,7 @@ namespace VM {
         switch (minor) {
             case QVM_COMMON_PRINT:
                 IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](const std::string& text) {
-                    Com_Printf("%s", text.c_str());
+                    Log::Notice("%s", text.c_str());
                 });
                 break;
 

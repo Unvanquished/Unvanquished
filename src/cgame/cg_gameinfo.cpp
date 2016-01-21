@@ -58,13 +58,13 @@ int CG_ParseInfos( const char *buf, int max, char *infos[] )
 
 		if ( strcmp( token, "{" ) )
 		{
-			Com_Printf( "Missing { in info file\n" );
+			Log::Notice( "Missing { in info file\n" );
 			break;
 		}
 
 		if ( count == max )
 		{
-			Com_Printf( "Max infos exceeded\n" );
+			Log::Notice( "Max infos exceeded\n" );
 			break;
 		}
 
@@ -76,7 +76,7 @@ int CG_ParseInfos( const char *buf, int max, char *infos[] )
 
 			if ( !token[ 0 ] )
 			{
-				Com_Printf( "Unexpected end of info file\n" );
+				Log::Notice( "Unexpected end of info file\n" );
 				break;
 			}
 

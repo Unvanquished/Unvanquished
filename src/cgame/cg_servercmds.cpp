@@ -733,7 +733,7 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		default:
-			Com_Printf(_( "cgame: debug: no such menu %d\n"), menu );
+			Log::Notice(_( "cgame: debug: no such menu %d\n"), menu );
 	}
 
 	if ( menu > 0 )
@@ -1191,12 +1191,12 @@ CG_PrintTR_f
 */
 static void CG_PrintTR_f()
 {
-	Com_Printf( "%s", TranslateText_Internal( false, 1 ) );
+	Log::Notice( "%s", TranslateText_Internal( false, 1 ) );
 }
 
 static void CG_PrintTR_plural_f()
 {
-	Com_Printf("%s", TranslateText_Internal( true, 1 ) );
+	Log::Notice("%s", TranslateText_Internal( true, 1 ) );
 }
 
 /*

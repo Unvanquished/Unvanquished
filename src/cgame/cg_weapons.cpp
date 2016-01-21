@@ -597,7 +597,7 @@ bool CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, bool l
 
 	if ( !anim->handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		Log::Notice( "Failed to load animation file %s\n", filename );
 		return false;
 	}
 
@@ -1134,7 +1134,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 			continue;
 		}
 
-		Com_Printf( S_ERROR "unknown token '%s'\n", token );
+		Log::Warn( "unknown token '%s'", token );
 		return false;
 	}
 
@@ -1180,7 +1180,7 @@ void CG_RegisterWeapon( int weaponNum )
 
 	if ( !CG_ParseWeaponFile( path, weaponNum, weaponInfo ) )
 	{
-		Com_Printf( S_ERROR "failed to parse %s\n", path );
+		Log::Warn( "failed to parse %s", path );
 	}
 
 	if( !weaponInfo->md5 )
@@ -1546,8 +1546,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	if ( !weapon->registered )
 	{
-		Com_Printf( S_WARNING "CG_AddPlayerWeapon: weapon %d (%s) "
-		            "is not registered\n", weaponNum, BG_Weapon( weaponNum )->name );
+		Log::Warn( "CG_AddPlayerWeapon: weapon %d (%s) "
+		            "is not registered", weaponNum, BG_Weapon( weaponNum )->name );
 		return;
 	}
 
@@ -1644,7 +1644,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 				if ( boneIndex < 0 )
 				{
-					Com_Printf( S_WARNING "Cannot find bone index %s, using root bone\n",
+					Log::Warn( "Cannot find bone index %s, using root bone",
 								weapon->rotationBone );
 					weapon->rotationBone[ 0 ] = '\0'; // avoid repeated warnings
 					boneIndex = 0;
@@ -1861,8 +1861,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	if ( !wi->registered )
 	{
-		Com_Printf( S_WARNING "CG_AddViewWeapon: weapon %d (%s) "
-		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
+		Log::Warn( "CG_AddViewWeapon: weapon %d (%s) "
+		            "is not registered", weapon, BG_Weapon( weapon )->name );
 		return;
 	}
 
@@ -2095,8 +2095,8 @@ void CG_DrawHumanInventory()
 
 		if ( !cg_weapons[ i ].registered )
 		{
-			Com_Printf( S_WARNING "CG_DrawItemSelect: weapon %d (%s) "
-			            "is not registered\n", i, BG_Weapon( i )->name );
+			Log::Warn( "CG_DrawItemSelect: weapon %d (%s) "
+			            "is not registered", i, BG_Weapon( i )->name );
 			continue;
 		}
 
@@ -2121,8 +2121,8 @@ void CG_DrawHumanInventory()
 
 		if ( !cg_upgrades[ i ].registered )
 		{
-			Com_Printf( S_WARNING "CG_DrawItemSelect: upgrade %d (%s) "
-			            "is not registered\n", i, BG_Upgrade( i )->name );
+			Log::Warn( "CG_DrawItemSelect: upgrade %d (%s) "
+			            "is not registered", i, BG_Upgrade( i )->name );
 			continue;
 		}
 

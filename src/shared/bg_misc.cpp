@@ -1396,11 +1396,11 @@ void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerSta
 		if ( atof( buf ) != 0 )
 		{
 #ifdef BUILD_SGAME
-			Com_Printf( " game event svt %5d -> %5d: num = %20s parm %d\n",
+			Log::Notice( " game event svt %5d -> %5d: num = %20s parm %d\n",
 			ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence,
 			BG_EventName( newEvent ), eventParm );
 #else
-			Com_Printf( "Cgame event svt %5d -> %5d: num = %20s parm %d\n",
+			Log::Notice( "Cgame event svt %5d -> %5d: num = %20s parm %d\n",
 			ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence,
 			BG_EventName( newEvent ), eventParm );
 #endif
@@ -1772,8 +1772,8 @@ int BG_SlotsForInventory( int stats[] )
 			// this check should never be true
 			if ( slots & slot )
 			{
-				Com_Printf( S_WARNING "held item %d conflicts with "
-				            "inventory slot %d\n", i, slot );
+				Log::Warn( "held item %d conflicts with "
+				            "inventory slot %d", i, slot );
 			}
 
 			slots |= slot;
@@ -2173,8 +2173,8 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
 		count = MAX_NUM_PACKED_ENTITY_NUMS;
-		Com_Printf( S_WARNING "A maximum of %d entity numbers can be "
-		            "packed, but BG_PackEntityNumbers was passed %d entities\n",
+		Log::Warn( "A maximum of %d entity numbers can be "
+		            "packed, but BG_PackEntityNumbers was passed %d entities",
 		            MAX_NUM_PACKED_ENTITY_NUMS, count );
 	}
 
@@ -2375,7 +2375,7 @@ void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weapon
 		if ( weaponsSize && weapons[ i ] == WP_NONE &&
 		     upgradesSize && upgrades[ j ] == UP_NONE )
 		{
-			Com_Printf( S_WARNING "unknown equipment %s\n", q );
+			Log::Warn( "unknown equipment %s", q );
 		}
 		else if ( weaponsSize && weapons[ i ] != WP_NONE )
 		{
@@ -2454,7 +2454,7 @@ void BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize
 
 		if ( classes[ i ] == PCL_NONE )
 		{
-			Com_Printf( S_WARNING "unknown class %s\n", q );
+			Log::Warn( "unknown class %s", q );
 		}
 		else
 		{
@@ -2516,7 +2516,7 @@ void BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int 
 
 		if ( buildables[ i ] == BA_NONE )
 		{
-			Com_Printf( S_WARNING "unknown buildable %s\n", q );
+			Log::Warn( "unknown buildable %s", q );
 		}
 		else
 		{
@@ -2723,21 +2723,21 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 		if ( fileLen < 9 || filePtr[ fileLen - 8 ] != '_' ||
 		     filePtr[ fileLen - 7 ] < '1' || filePtr[ fileLen - 7 ] > '9' )
 		{
-			Com_Printf( "^3skipping invalidly named emoticon \"%s\"\n",
+			Log::Notice( "^3skipping invalidly named emoticon \"%s\"\n",
 			            filePtr );
 			continue;
 		}
 
 		if ( fileLen - 8 >= MAX_EMOTICON_NAME_LEN )
 		{
-			Com_Printf( "^3emoticon file name \"%s\" too long (≥ %d)\n",
+			Log::Notice( "^3emoticon file name \"%s\" too long (≥ %d)\n",
 			            filePtr, MAX_EMOTICON_NAME_LEN + 8 );
 			continue;
 		}
 
 		if ( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), nullptr, fsMode_t::FS_READ ) )
 		{
-			Com_Printf( "^3could not open \"emoticons/%s\"\n", filePtr );
+			Log::Notice( "^3could not open \"emoticons/%s\"\n", filePtr );
 			continue;
 		}
 
@@ -2748,7 +2748,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 		count++;
 	}
 
-	// Com_Printf( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
+	// Log::Notice( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
 	//             count, numFiles, MAX_EMOTICONS );
 
 	return count;

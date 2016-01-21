@@ -135,7 +135,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			bc->highlightAngle = cos( angle / 180.0 * M_PI );
 		}
 		else
-			Com_Printf( "^3WARNING: bad keyword \"%s\" in \"%s\"\n", token.string, path );
+			Log::Warn( "bad keyword \"%s\" in \"%s\"\n", token.string, path );
 	}
 
 	bc->fadeMinDist = Square( bc->hudSize / bc->hudMaxSize );

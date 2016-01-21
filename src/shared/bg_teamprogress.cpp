@@ -185,7 +185,7 @@ static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
 		dummy.type = type;
 		dummy.num  = itemNum;
 
-		Com_Printf( S_WARNING "Asked for the status of unlockable item %s but the status is unknown.\n",
+		Log::Warn( "Asked for the status of unlockable item %s but the status is unknown.",
 		            UnlockableHumanName( &dummy ) );
 	}
 }
@@ -605,7 +605,7 @@ void G_UpdateUnlockables()
 
 		itemNum++;
 
-		/*Com_Printf( "G_UpdateUnlockables: Team %s, Type %s, Item %s, Momentum %d, Threshold %d, "
+		/*Log::Notice( "G_UpdateUnlockables: Team %s, Type %s, Item %s, Momentum %d, Threshold %d, "
 		            "Unlocked %d, Synchronize %d\n",
 		            BG_TeamName( team ), UnlockableTypeName( unlockable ), UnlockableName( unlockable ),
 		            momentum, unlockThreshold, unlockable->unlocked, unlockable->synchronize );*/

@@ -76,13 +76,13 @@ GLimp_RenderThreadWrapper
 static int GLimp_RenderThreadWrapper( void* )
 {
 	// These printfs cause race conditions which mess up the console output
-	Com_Printf( "Render thread starting\n" );
+	Log::Notice( "Render thread starting\n" );
 
 	renderThreadFunction();
 
 	GLimp_SetCurrentContext( false );
 
-	Com_Printf( "Render thread terminating\n" );
+	Log::Notice( "Render thread terminating\n" );
 
 	return 0;
 }
@@ -98,13 +98,13 @@ bool GLimp_SpawnRenderThread( void ( *function )() )
 
 	if ( !warned )
 	{
-		Com_Printf( "WARNING: You enable r_smp at your own risk!\n" );
+		Log::Warn( "You enable r_smp at your own risk!\n" );
 		warned = true;
 	}
 
 	if ( renderThread != nullptr ) /* hopefully just a zombie at this point... */
 	{
-		Com_Printf( "Already a render thread? Trying to clean it up...\n" );
+		Log::Notice( "Already a render thread? Trying to clean it up...\n" );
 		GLimp_ShutdownRenderThread();
 	}
 
@@ -112,7 +112,7 @@ bool GLimp_SpawnRenderThread( void ( *function )() )
 
 	if ( smpMutex == nullptr )
 	{
-		Com_Printf( "smpMutex creation failed: %s\n", SDL_GetError() );
+		Log::Notice( "smpMutex creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
 		return false;
 	}
@@ -121,7 +121,7 @@ bool GLimp_SpawnRenderThread( void ( *function )() )
 
 	if ( renderCommandsEvent == nullptr )
 	{
-		Com_Printf( "renderCommandsEvent creation failed: %s\n", SDL_GetError() );
+		Log::Notice( "renderCommandsEvent creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
 		return false;
 	}
@@ -130,7 +130,7 @@ bool GLimp_SpawnRenderThread( void ( *function )() )
 
 	if ( renderCompletedEvent == nullptr )
 	{
-		Com_Printf( "renderCompletedEvent creation failed: %s\n", SDL_GetError() );
+		Log::Notice( "renderCompletedEvent creation failed: %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
 		return false;
 	}
@@ -337,7 +337,7 @@ void GLimp_Shutdown()
 
 	if ( renderThread != nullptr )
 	{
-		Com_Printf( "Destroying renderer thread...\n" );
+		Log::Notice( "Destroying renderer thread...\n" );
 		GLimp_ShutdownRenderThread();
 	}
 

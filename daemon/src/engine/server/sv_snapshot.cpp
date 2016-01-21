@@ -908,7 +908,7 @@ void SV_SendClientIdle( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Printf( "WARNING: msg overflowed for %s\n", client->name );
+		Log::Warn( "msg overflowed for %s\n", client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );

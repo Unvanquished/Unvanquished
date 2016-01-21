@@ -560,7 +560,7 @@ void CL_MouseMove( usercmd_t *cmd )
 
 			if ( cl_showMouseRate->integer )
 			{
-				Com_Printf( "rate: %f, accelSensitivity: %f", rate, accelSensitivity );
+				Log::Notice( "rate: %f, accelSensitivity: %f", rate, accelSensitivity );
 			}
 		}
 		else
@@ -583,7 +583,7 @@ void CL_MouseMove( usercmd_t *cmd )
 
 			if ( cl_showMouseRate->integer )
 			{
-				Com_Printf( "ratex: %f, ratey: %f, powx: %f, powy: %f", rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );
+				Log::Notice( "ratex: %f, ratey: %f, powx: %f, powy: %f", rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );
 			}
 		}
 	}
@@ -963,14 +963,14 @@ void CL_WritePacket()
 	if ( count > MAX_PACKET_USERCMDS )
 	{
 		count = MAX_PACKET_USERCMDS;
-		Com_Printf( "MAX_PACKET_USERCMDS" );
+		Log::Notice( "MAX_PACKET_USERCMDS" );
 	}
 
 	if ( count >= 1 )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( "(%i)", count );
+			Log::Notice( "(%i)", count );
 		}
 
 		// begin a client move command
@@ -1007,7 +1007,7 @@ void CL_WritePacket()
 
 	if ( cl_showSend->integer )
 	{
-		Com_Printf("%i ", buf.cursize );
+		Log::Notice("%i ", buf.cursize );
 	}
 
 	MSG_WriteByte( &buf, clc_EOF );
@@ -1023,7 +1023,7 @@ void CL_WritePacket()
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( "WARNING: unsent fragments (not supposed to happen!)" );
+			Log::Warn( "unsent fragments (not supposed to happen!)" );
 		}
 
 		Netchan_TransmitNextFragment( &clc.netchan );
@@ -1059,7 +1059,7 @@ void CL_SendCmd()
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( ". " );
+			Log::Notice( ". " );
 		}
 
 		return;
@@ -1297,7 +1297,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 	if ( cmd_names )
 	{
-		Com_Printf( S_WARNING "cgame: some button commands left unregistered (\"%s\")", cmd_names );
+		Log::Warn( "cgame: some button commands left unregistered (\"%s\")", cmd_names );
 	}
 }
 

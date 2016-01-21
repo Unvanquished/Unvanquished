@@ -550,7 +550,7 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 	case G_SET_CONFIGSTRING_RESTRICTIONS:
 		IPC::HandleMsg<SetConfigStringRestrictionsMsg>(channel, std::move(reader), [this] {
-			//Com_Printf("SV_SetConfigstringRestrictions not implemented\n");
+			//Log::Notice("SV_SetConfigstringRestrictions not implemented\n");
 		});
 		break;
 

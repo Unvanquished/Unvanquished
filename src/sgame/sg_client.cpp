@@ -1733,7 +1733,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	trap_GetUserinfo( index, userinfo, sizeof( userinfo ) );
 	client->ps.eFlags = flags;
 
-	//Com_Printf( "ent->client->pers->pclass = %i\n", ent->client->pers.classSelection );
+	//Log::Notice( "ent->client->pers->pclass = %i\n", ent->client->pers.classSelection );
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];

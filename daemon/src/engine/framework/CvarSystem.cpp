@@ -299,7 +299,7 @@ namespace Cvar {
             cvar = it->second;
 
             if (proxy && cvar->proxy) {
-                Log::Notice("Cvar %s cannot be registered twice\n", name.c_str());
+                Log::Warn("Cvar %s cannot be registered twice", name.c_str());
             }
 
             // Register the cvar with the previous user_created value

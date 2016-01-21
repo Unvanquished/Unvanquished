@@ -163,7 +163,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	Cvar_VariableStringBuffer( "fs_game", gameName, sizeof( gameName ) );
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navMesh", mapname, filename );
-	Com_Printf( " loading navigation mesh file '%s'...\n", filePath );
+	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
 	int len = FS_FOpenFileRead( filePath, &f, true );
 
@@ -388,7 +388,7 @@ bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 
 	if ( numNavData == MAX_NAV_DATA )
 	{
-		Com_Printf( "^3ERROR: maximum number of navigation meshes exceeded\n" );
+		Log::Warn( "maximum number of navigation meshes exceeded" );
 		return false;
 	}
 
@@ -406,14 +406,14 @@ bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 
 	if ( !nav->query )
 	{
-		Com_Printf( "Could not allocate Detour Navigation Mesh Query for navmesh %s\n", filename );
+		Log::Notice( "Could not allocate Detour Navigation Mesh Query for navmesh %s", filename );
 		BotShutdownNav();
 		return false;
 	}
 
 	if ( dtStatusFailed( nav->query->init( nav->mesh, maxNavNodes->integer ) ) )
 	{
-		Com_Printf( "Could not init Detour Navigation Mesh Query for navmesh %s\n", filename );
+		Log::Notice( "Could not init Detour Navigation Mesh Query for navmesh %s", filename );
 		BotShutdownNav();
 		return false;
 	}

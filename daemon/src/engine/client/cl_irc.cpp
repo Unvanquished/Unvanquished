@@ -506,7 +506,7 @@ static int IRC_ProcessDEQueue()
 #if defined DEBUG_DUMP_IRC
 #define P_ERROR(S)        { \
     if ( !IRC_ParserError ) { \
-      Com_Printf( "IRC PARSER ERROR (state: %d , received: %d)\n", IRC_ParserState, next ); \
+      Log::Notice( "IRC PARSER ERROR (state: %d , received: %d)\n", IRC_ParserState, next ); \
     } \
     P_SET_STATE(S); \
     IRC_ParserError = true; \
@@ -929,16 +929,16 @@ static void IRC_DumpMessage()
 {
 	int i;
 
-	Com_Printf( "----------- IRC MESSAGE RECEIVED -----------\n" );
-	Com_Printf( " (pfx) nick/server .... [%.3d]%s\n", IRC_Length( pfx_nickOrServer ), IRC_String( pfx_nickOrServer ) );
-	Com_Printf( " (pfx) user ........... [%.3d]%s\n", IRC_Length( pfx_user ), IRC_String( pfx_user ) );
-	Com_Printf( " (pfx) host ........... [%.3d]%s\n", IRC_Length( pfx_host ), IRC_String( pfx_host ) );
-	Com_Printf( " command string ....... [%.3d]%s\n", IRC_Length( cmd_string ), IRC_String( cmd_string ) );
-	Com_Printf( " arguments ............  %.3d\n", IRC_ReceivedMessage.arg_count );
+	Log::Notice( "----------- IRC MESSAGE RECEIVED -----------\n" );
+	Log::Notice( " (pfx) nick/server .... [%.3d]%s\n", IRC_Length( pfx_nickOrServer ), IRC_String( pfx_nickOrServer ) );
+	Log::Notice( " (pfx) user ........... [%.3d]%s\n", IRC_Length( pfx_user ), IRC_String( pfx_user ) );
+	Log::Notice( " (pfx) host ........... [%.3d]%s\n", IRC_Length( pfx_host ), IRC_String( pfx_host ) );
+	Log::Notice( " command string ....... [%.3d]%s\n", IRC_Length( cmd_string ), IRC_String( cmd_string ) );
+	Log::Notice( " arguments ............  %.3d\n", IRC_ReceivedMessage.arg_count );
 
 	for ( i = 0; i < IRC_ReceivedMessage.arg_count; i++ )
 	{
-		Com_Printf( " ARG %d = [%.3d]%s\n", i + 1, IRC_Length( arg_values[ i ] ), IRC_String( arg_values[ i ] ) );
+		Log::Notice( " ARG %d = [%.3d]%s\n", i + 1, IRC_Length( arg_values[ i ] ), IRC_String( arg_values[ i ] ) );
 	}
 }
 
@@ -962,99 +962,99 @@ static void IRC_HandleError()
 			return;
 
 		case WSANOTINITIALISED:
-			Com_Printf( "Unable to initialise socket.\n" );
+			Log::Notice( "Unable to initialise socket.\n" );
 			break;
 
 		case WSAEAFNOSUPPORT:
-			Com_Printf( "The specified address family is not supported.\n" );
+			Log::Notice( "The specified address family is not supported.\n" );
 			break;
 
 		case WSAEADDRNOTAVAIL:
-			Com_Printf( "Specified address is not available from the local machine.\n" );
+			Log::Notice( "Specified address is not available from the local machine.\n" );
 			break;
 
 		case WSAECONNREFUSED:
-			Com_Printf( "The attempt to connect was forcefully rejected.\n" );
+			Log::Notice( "The attempt to connect was forcefully rejected.\n" );
 			break;
 
 		case WSAEDESTADDRREQ:
-			Com_Printf( "address destination address is required.\n" );
+			Log::Notice( "address destination address is required.\n" );
 			break;
 
 		case WSAEFAULT:
-			Com_Printf( "The namelen argument is incorrect.\n" );
+			Log::Notice( "The namelen argument is incorrect.\n" );
 			break;
 
 		case WSAEINVAL:
-			Com_Printf( "The socket is not already bound to an address.\n" );
+			Log::Notice( "The socket is not already bound to an address.\n" );
 			break;
 
 		case WSAEISCONN:
-			Com_Printf( "The socket is already connected.\n" );
+			Log::Notice( "The socket is already connected.\n" );
 			break;
 
 		case WSAEADDRINUSE:
-			Com_Printf( "The specified address is already in use.\n" );
+			Log::Notice( "The specified address is already in use.\n" );
 			break;
 
 		case WSAEMFILE:
-			Com_Printf( "No more file descriptors are available.\n" );
+			Log::Notice( "No more file descriptors are available.\n" );
 			break;
 
 		case WSAENOBUFS:
-			Com_Printf( "No buffer space available. The socket cannot be created.\n" );
+			Log::Notice( "No buffer space available. The socket cannot be created.\n" );
 			break;
 
 		case WSAEPROTONOSUPPORT:
-			Com_Printf( "The specified protocol is not supported.\n" );
+			Log::Notice( "The specified protocol is not supported.\n" );
 			break;
 
 		case WSAEPROTOTYPE:
-			Com_Printf( "The specified protocol is the wrong type for this socket.\n" );
+			Log::Notice( "The specified protocol is the wrong type for this socket.\n" );
 			break;
 
 		case WSAENETUNREACH:
-			Com_Printf( "The network can't be reached from this host at this time.\n" );
+			Log::Notice( "The network can't be reached from this host at this time.\n" );
 			break;
 
 		case WSAENOTSOCK:
-			Com_Printf( "The descriptor is not a socket.\n" );
+			Log::Notice( "The descriptor is not a socket.\n" );
 			break;
 
 		case WSAETIMEDOUT:
-			Com_Printf( "Attempt timed out without establishing a connection.\n" );
+			Log::Notice( "Attempt timed out without establishing a connection.\n" );
 			break;
 
 		case WSAESOCKTNOSUPPORT:
-			Com_Printf( "Socket type is not supported in this address family.\n" );
+			Log::Notice( "Socket type is not supported in this address family.\n" );
 			break;
 
 		case WSAENETDOWN:
-			Com_Printf( "Network subsystem failure.\n" );
+			Log::Notice( "Network subsystem failure.\n" );
 			break;
 
 		case WSAHOST_NOT_FOUND:
-			Com_Printf( "Authoritative Answer Host not found.\n" );
+			Log::Notice( "Authoritative Answer Host not found.\n" );
 			break;
 
 		case WSATRY_AGAIN:
-			Com_Printf( "Non-Authoritative Host not found or SERVERFAIL.\n" );
+			Log::Notice( "Non-Authoritative Host not found or SERVERFAIL.\n" );
 			break;
 
 		case WSANO_RECOVERY:
-			Com_Printf( "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n" );
+			Log::Notice( "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n" );
 			break;
 
 		case WSANO_DATA:
-			Com_Printf( "Valid name, no data record of requested type.\n" );
+			Log::Notice( "Valid name, no data record of requested type.\n" );
 			break;
 
 		case WSAEINPROGRESS:
-			Com_Printf( "address blocking Windows Sockets operation is in progress.\n" );
+			Log::Notice( "address blocking Windows Sockets operation is in progress.\n" );
 			break;
 
 		default:
-			Com_Printf( "Unknown connection error.\n" );
+			Log::Notice( "Unknown connection error.\n" );
 			break;
 	}
 
@@ -1064,7 +1064,7 @@ static void IRC_HandleError()
 #elif defined __linux__ || defined MACOS_X || defined __FreeBSD__ || defined __OpenBSD__
 static void IRC_HandleError()
 {
-	Com_Printf( "IRC: %s: %s\n", "socket connection error", strerror( errno ) );
+	Log::Notice( "IRC: %s: %s\n", "socket connection error", strerror( errno ) );
 }
 
 #endif
@@ -1097,13 +1097,13 @@ static int PRINTF_LIKE(1) IRC_Send( const char *format, ... )
 	if ( len >= IRC_SEND_BUF_SIZE - 1 )
 	{
 		// This is a bug, return w/ a fatal error
-		Com_Printf( "…IRC: send buffer overflow (%d characters)\n", len );
+		Log::Notice( "…IRC: send buffer overflow (%d characters)\n", len );
 		return IRC_CMD_FATAL;
 	}
 
 	// Add CRLF terminator
 #if defined DEBUG_DUMP_IRC
-	Com_Printf( "SENDING IRC MESSAGE: %s\n", buffer );
+	Log::Notice( "SENDING IRC MESSAGE: %s\n", buffer );
 #endif
 	buffer[ len++ ] = '\r';
 	buffer[ len++ ] = '\n';
@@ -1464,7 +1464,7 @@ static void IRC_Display( int event, const char *nick, const char *message )
 		Q_strncpyz( buffer, fmt_string, sizeof( buffer ) );
 	}
 
-	Com_Printf( "^1IRC: %s", buffer );
+	Log::Notice( "^1IRC: %s", buffer );
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1528,11 +1528,11 @@ static int IRCH_ServerError()
 
 	if ( IRC_ReceivedMessage.arg_count == 1 )
 	{
-		Com_Printf("IRC: %s: %s\n", "server error" , IRC_String( arg_values[ 0 ] ));
+		Log::Notice("IRC: %s: %s\n", "server error" , IRC_String( arg_values[ 0 ] ));
 	}
 	else
 	{
-		Com_Printf("IRC: %s\n", "server error" );
+		Log::Notice("IRC: %s\n", "server error" );
 	}
 
 	return IRC_CMD_RETRY;
@@ -1590,7 +1590,7 @@ static int IRCH_NickError()
 	}
 	else
 	{
-		Com_Printf("…IRC: %s\n", "got spurious nickname error" );
+		Log::Notice("…IRC: %s\n", "got spurious nickname error" );
 	}
 
 	return IRC_CMD_SUCCESS;
@@ -1722,7 +1722,7 @@ static int IRCH_Nick()
 	if ( !strcmp( IRC_String( pfx_nickOrServer ), IRC_User.nick ) )
 	{
 		Q_strncpyz( IRC_User.nick, IRC_String( arg_values[ 0 ] ), sizeof( IRC_User.nick ) );
-		Com_Printf("%s\n", IRC_User.nick );
+		Log::Notice("%s\n", IRC_User.nick );
 		event = IRC_MakeEvent( NICK_CHANGE, 1 );
 	}
 	else
@@ -1784,7 +1784,7 @@ static int IRC_HandleCTCP( bool is_channel, char *string, int string_len )
 	}
 
 #if defined DEBUG_DUMP_IRC
-	Com_Printf( "--- IRC/CTCP ---\n Command:     %s\n Argument(s): %s\n", string, end_of_action );
+	Log::Notice( "--- IRC/CTCP ---\n Command:     %s\n Argument(s): %s\n", string, end_of_action );
 #endif
 
 	return IRC_ExecuteCTCPHandler( is_channel, end_of_action );
@@ -1996,7 +1996,7 @@ void CL_IRCSay()
 
 	if ( IRC_ThreadStatus != IRC_THREAD_JOINED )
 	{
-		Com_Printf("IRC: %s\n", "Not connected" );
+		Log::Notice("IRC: %s\n", "Not connected" );
 		return;
 	}
 
@@ -2018,7 +2018,7 @@ void CL_IRCSay()
 
 	if ( !send_result )
 	{
-		Com_Printf("IRC: %s\n", "flood detected, message not sent" );
+		Log::Notice("IRC: %s\n", "flood detected, message not sent" );
 	}
 }
 
@@ -2214,21 +2214,21 @@ static int IRC_AttemptConnection()
 	int                port;
 
 	CHECK_SHUTDOWN;
-	Com_Printf("…IRC: %s\n", "connecting to server" );
+	Log::Notice("…IRC: %s\n", "connecting to server" );
 
 	// Force players to use a non-default name
 	Q_strncpyz( name, Cvar_VariableString( "name" ), sizeof( name ) );
 
 	if ( !Q_strnicmp( name, "player", 7 ) )
 	{
-		Com_Printf("…IRC: %s\n", "rejected due to unset player name" );
+		Log::Notice("…IRC: %s\n", "rejected due to unset player name" );
 		return IRC_CMD_FATAL;
 	}
 
 	// Prepare USER record
 	if ( !IRC_InitialiseUser( name ) )
 	{
-		Com_Printf("…IRC: %s\n", "rejected due to mostly unusable player name" );
+		Log::Notice("…IRC: %s\n", "rejected due to mostly unusable player name" );
 		return IRC_CMD_FATAL;
 	}
 
@@ -2237,7 +2237,7 @@ static int IRC_AttemptConnection()
 
 	if ( ( host = gethostbyname( host_name ) ) == nullptr )
 	{
-		Com_Printf("…IRC: %s\n", "unknown server" );
+		Log::Notice("…IRC: %s\n", "unknown server" );
 		return IRC_CMD_FATAL;
 	}
 
@@ -2255,7 +2255,7 @@ static int IRC_AttemptConnection()
 
 	if ( port <= 0 || port >= 65536 )
 	{
-		Com_Printf("IRC: %s\n", "invalid port number, defaulting to 6667" );
+		Log::Notice("IRC: %s\n", "invalid port number, defaulting to 6667" );
 		port = 6667;
 	}
 
@@ -2268,7 +2268,7 @@ static int IRC_AttemptConnection()
 	if ( ( connect( IRC_Socket, ( struct sockaddr * ) &address, sizeof( address ) ) ) != 0 )
 	{
 		closesocket( IRC_Socket );
-		Com_Printf("…IRC: %s\n", "connection refused" );
+		Log::Notice("…IRC: %s\n", "connection refused" );
 		return IRC_CMD_RETRY;
 	}
 
@@ -2292,7 +2292,7 @@ static int IRC_AttemptConnection()
 	IRC_ThreadStatus = IRC_THREAD_SETNICK;
 
 	CHECK_SHUTDOWN_CLOSE;
-	Com_Printf( "…Connected to IRC server\n" );
+	Log::Notice( "…Connected to IRC server\n" );
 	return IRC_CMD_SUCCESS;
 }
 
@@ -2493,7 +2493,7 @@ static void IRC_Thread()
 	IRC_MainLoop();
 
 	// Clean up
-	Com_Printf("…IRC: %s\n", "disconnected from server" );
+	Log::Notice("…IRC: %s\n", "disconnected from server" );
 	IRC_FlushDEQueue();
 	IRC_SetThreadDead();
 }
@@ -2656,7 +2656,7 @@ void CL_InitIRC()
 {
 	if ( IRC_ThreadStatus != IRC_THREAD_DEAD )
 	{
-		Com_Printf("…IRC: %s\n", "thread is already running" );
+		Log::Notice("…IRC: %s\n", "thread is already running" );
 		return;
 	}
 

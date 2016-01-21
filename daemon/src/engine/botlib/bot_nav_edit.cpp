@@ -171,17 +171,17 @@ void Cmd_NavEdit()
 {
 	int argc = Cmd_Argc();
 	const char *arg = nullptr;
-	const char usage[] = "Usage: navedit enable/disable/save <navmesh>\n";
+	const char usage[] = "Usage: navedit enable/disable/save <navmesh>";
 
 	if ( !Cvar_VariableIntegerValue( "sv_cheats" ) )
 	{
-		Com_Printf( "navedit only available in local devmap\n" );
+		Log::Notice( "navedit only available in local devmap" );
 		return;
 	}
 
 	if ( argc < 2 )
 	{
-		Com_Printf( "%s", usage );
+		Log::Notice( "%s", usage );
 		return;
 	}
 
@@ -192,7 +192,7 @@ void Cmd_NavEdit()
 		int i;
 		if ( argc < 3 )
 		{
-			Com_Printf( "%s", usage );
+			Log::Notice( "%s", usage );
 			return;
 		}
 
@@ -208,7 +208,7 @@ void Cmd_NavEdit()
 
 		if ( i == numNavData )
 		{
-			Com_Printf( "\'%s\' is not a valid navmesh name\n", arg );
+			Log::Notice( "\'%s\' is not a valid navmesh name", arg );
 			return;
 		}
 
@@ -234,20 +234,20 @@ void Cmd_NavEdit()
 	}
 	else
 	{
-		Com_Printf( "%s", usage );
+		Log::Notice( "%s", usage );
 	}
 }
 
 void Cmd_AddConnection()
 {
 	const char usage[] = "Usage: addcon start <dir> (radius)\n"
-	                     " addcon end\n";
+	                     " addcon end";
 	const char *arg = nullptr;
 	int argc = Cmd_Argc();
 
 	if ( argc < 2 )
 	{
-		Com_Printf( "%s", usage );
+		Log::Notice( "%s", usage );
 		return;
 	}
 
@@ -262,7 +262,7 @@ void Cmd_AddConnection()
 
 		if ( argc < 3 )
 		{
-			Com_Printf( "%s", usage );
+			Log::Notice( "%s", usage );
 			return;
 		}
 
@@ -278,7 +278,7 @@ void Cmd_AddConnection()
 		}
 		else
 		{
-			Com_Printf( "Invalid argument for direction, specify oneway or twoway\n" );
+			Log::Notice( "Invalid argument for direction, specify oneway or twoway" );
 			return;
 		}
 
@@ -337,7 +337,7 @@ void Cmd_AddConnection()
 	}
 	else
 	{
-		Com_Printf( "%s", usage );
+		Log::Notice( "%s", usage );
 	}
 }
 
@@ -357,7 +357,7 @@ static void adjustConnectionSize( int dir )
 	if ( newConnectionSize != connectionSize )
 	{
 		connectionSize = newConnectionSize;
-		Com_Printf( "Default connection size = %d\n", connectionSize );
+		Log::Notice( "Default connection size = %d", connectionSize );
 	}
 }
 
@@ -373,19 +373,19 @@ void Cmd_ConnectionSizeDown()
 
 void Cmd_NavTest()
 {
-	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath\n";
+	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath";
 	const char *arg = nullptr;
 	int argc = Cmd_Argc();
 
 	if ( !cmd.enabled )
 	{
-		Com_Printf( "%s", "Can't test navmesh without enabling navedit" );
+		Log::Notice( "%s", "Can't test navmesh without enabling navedit" );
 		return;
 	}
 
 	if ( argc < 2 )
 	{
-		Com_Printf( "%s", usage );
+		Log::Notice( "%s", usage );
 		return;
 	}
 
@@ -439,7 +439,7 @@ void Cmd_NavTest()
 	}
 	else
 	{
-		Com_Printf( "%s", usage );
+		Log::Notice( "%s", usage );
 	}
 }
 

@@ -40,12 +40,6 @@
  */
 #define S_SKIPNOTIFY "[skipnotify]"
 
-/**
- * used for consistent representation within print or log statements, that don't use any severity enum yet
- */
-#define S_WARNING "^3Warning: ^*"
-#define S_ERROR   "^1ERROR: ^*"
-
 #ifdef ERR_FATAL
 #undef ERR_FATAL // this is possibly defined in malloc.h
 #endif
@@ -60,6 +54,5 @@ enum class errorParm_t
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
 void QDECL NORETURN Com_Error( errorParm_t level, const char *error, ... ) PRINTF_LIKE(2);
-void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 
 #endif /* LOGGING_H_ */

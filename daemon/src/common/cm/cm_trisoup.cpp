@@ -175,7 +175,7 @@ static void CM_SetBorderInward( cFacet_t *facet, cTriangleSoup_t *triSoup, int i
 		else
 		{
 			// bisecting side border
-			cmLog.Debug( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
+			cmLog.Debug( "WARNING: CM_SetBorderInward: mixed plane sides" );
 			facet->borderInward[ k ] = false;
 		}
 	}
@@ -342,7 +342,7 @@ cSurfaceCollide_t *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vert
 	sc->bounds[ 1 ][ 1 ] += 1;
 	sc->bounds[ 1 ][ 2 ] += 1;
 
-	cmLog.Debug( "CM_GenerateTriangleSoupCollide: %i planes %i facets\n", sc->numPlanes, sc->numFacets );
+	cmLog.Debug( "CM_GenerateTriangleSoupCollide: %i planes %i facets", sc->numPlanes, sc->numFacets );
 
 	return sc;
 }

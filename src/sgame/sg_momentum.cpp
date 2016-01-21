@@ -201,7 +201,7 @@ static float MomentumMod( momentum_t type )
 
 	if ( g_debugMomentum.integer > 1 )
 	{
-		Com_Printf( "Momentum mod for %s: Base %.2f, Type %.2f, Time %.2f, Playercount %.2f → %.2f\n",
+		Log::Notice( "Momentum mod for %s: Base %.2f, Type %.2f, Time %.2f, Playercount %.2f → %.2f\n",
 		            MomentumTypeToReason( type ), baseMod, typeMod, timeMod, playerCountMod, mod );
 	}
 
@@ -287,7 +287,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 			clientName = "no source";
 		}
 
-		Com_Printf( "Momentum: %.2f to %s (%s by %s for %s)\n",
+		Log::Notice( "Momentum: %.2f to %s (%s by %s for %s)\n",
 		            amount, BG_TeamNamePlural( team ), amount < 0.0f ? "lost" : "earned",
 		            clientName, MomentumTypeToReason( type ) );
 	}

@@ -621,7 +621,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 
 					if ( !w2 )
 					{
-						cmLog.Debug( "WARNING: CM_AddFacetBevels... invalid bevel\n" );
+						cmLog.Debug( "WARNING: CM_AddFacetBevels... invalid bevel" );
 						continue;
 					}
 					else

@@ -89,11 +89,11 @@ void Cmd_PrintUsage( const char *syntax, const char *description )
 {
 	if(!description)
 	{
-		Com_Printf( "%s: %s %s\n", "usage", Cmd_Argv( 0 ), syntax );
+		Log::Notice( "%s: %s %s\n", "usage", Cmd_Argv( 0 ), syntax );
 	}
 	else
 	{
-		Com_Printf( "%s: %s %s — %s\n", "usage",  Cmd_Argv( 0 ), syntax, description );
+		Log::Notice( "%s: %s %s — %s\n", "usage",  Cmd_Argv( 0 ), syntax, description );
 	}
 }
 

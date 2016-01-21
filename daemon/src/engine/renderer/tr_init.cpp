@@ -931,7 +931,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			"fullscreen"
 		};
 
-		Log::Notice("\nGL_VENDOR: %s", glConfig.vendor_string );
+		Log::Notice("GL_VENDOR: %s", glConfig.vendor_string );
 		Log::Notice("GL_RENDERER: %s", glConfig.renderer_string );
 		Log::Notice("GL_VERSION: %s", glConfig.version_string );
 		Log::Debug("GL_EXTENSIONS: %s", glConfig.extensions_string );
@@ -1377,7 +1377,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		if ( ( intptr_t ) tess.verts & 15 )
 		{
-			Log::Debug( "WARNING: tess.verts not 16 byte aligned" );
+			Log::Warn( "tess.verts not 16 byte aligned" );
 		}
 
 		// init function tables

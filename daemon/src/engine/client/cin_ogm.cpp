@@ -349,7 +349,7 @@ static int loadVideoFrameTheora()
 
 			if ( yWShift < 0 || uvWShift < 0 || yHShift < 0 || uvHShift < 0 )
 			{
-				Com_Printf( "[Theora] unexpected resolution in a YUV frame\n" );
+				Log::Notice( "[Theora] unexpected resolution in a YUV frame\n" );
 				r = -1;
 			}
 			else
@@ -522,7 +522,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( g_ogm.ogmFile )
 	{
-		Com_Printf( S_WARNING "there is already an OGM running, which will be stopped before starting %s\n", filename );
+		Log::Warn( "there is already an OGM running, which will be stopped before starting %s", filename );
 		Cin_OGM_Shutdown();
 	}
 
@@ -532,7 +532,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( !g_ogm.ogmFile )
 	{
-		Com_Printf( S_WARNING "Can't open OGM file for reading (%s)\n", filename );
+		Log::Warn( "Can't open OGM file for reading (%s)", filename );
 		return -1;
 	}
 
@@ -549,7 +549,7 @@ int Cin_OGM_Init( const char *filename )
 				//FIXME? better way to find audio stream
 				if ( g_ogm.os_audio.serialno )
 				{
-					Com_Printf( S_WARNING "more than one audio stream in OGM file(%s). We will stay at the first one\n", filename );
+					Log::Warn( "more than one audio stream in OGM file(%s). We will stay at the first one", filename );
 				}
 				else
 				{
@@ -562,7 +562,7 @@ int Cin_OGM_Init( const char *filename )
 			{
 				if ( g_ogm.os_video.serialno )
 				{
-					Com_Printf( S_WARNING "more than one video stream in OGM file(%s). We will stay at the first one\n", filename );
+					Log::Warn( "more than one video stream in OGM file(%s). We will stay at the first one", filename );
 				}
 				else
 				{
@@ -581,13 +581,13 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( !g_ogm.os_audio.serialno )
 	{
-		Com_Printf( S_WARNING "Didn't find a Vorbis audio stream in %s\n", filename );
+		Log::Warn( "Didn't find a Vorbis audio stream in %s", filename );
 		return -2;
 	}
 
 	if ( !g_ogm.os_video.serialno )
 	{
-		Com_Printf( S_WARNING "Haven't found a video stream in OGM file (%s)\n", filename );
+		Log::Warn( "Haven't found a video stream in OGM file (%s)", filename );
 		return -3;
 	}
 
@@ -602,7 +602,7 @@ int Cin_OGM_Init( const char *filename )
 
 		if ( status < 0 )
 		{
-			Com_Printf( S_WARNING "Corrupt Ogg packet while loading Vorbis headers (%s)\n", filename );
+			Log::Warn( "Corrupt Ogg packet while loading Vorbis headers (%s)", filename );
 			return -8;
 		}
 
@@ -612,7 +612,7 @@ int Cin_OGM_Init( const char *filename )
 
 			if ( i == 0 && status < 0 )
 			{
-				Com_Printf( S_WARNING "This Ogg bitstream does not contain Vorbis audio data (%s)\n", filename );
+				Log::Warn( "This Ogg bitstream does not contain Vorbis audio data (%s)", filename );
 				return -9;
 			}
 
@@ -622,7 +622,7 @@ int Cin_OGM_Init( const char *filename )
 		{
 			if ( loadBlockToSync() )
 			{
-				Com_Printf( S_WARNING "Couldn't find all Vorbis headers before end of OGM file (%s)\n", filename );
+				Log::Warn( "Couldn't find all Vorbis headers before end of OGM file (%s)", filename );
 				return -10;
 			}
 		}
@@ -645,7 +645,7 @@ int Cin_OGM_Init( const char *filename )
 
 			if ( status < 0 )
 			{
-				Com_Printf( S_WARNING "Corrupt Ogg packet while loading Theora headers (%s)\n", filename );
+				Log::Warn( "Corrupt Ogg packet while loading Theora headers (%s)", filename );
 				return -8;
 			}
 
@@ -655,7 +655,7 @@ int Cin_OGM_Init( const char *filename )
 
 				if ( i == 0 && status != 0 )
 				{
-					Com_Printf( S_WARNING "This Ogg bitstream does not contain Theora data (%s)\n", filename );
+					Log::Warn( "This Ogg bitstream does not contain Theora data (%s)", filename );
 					return -9;
 				}
 
@@ -665,7 +665,7 @@ int Cin_OGM_Init( const char *filename )
 			{
 				if ( loadBlockToSync() )
 				{
-					Com_Printf( S_WARNING "Couldn't find all Theora headers before end of OGM file (%s)\n", filename );
+					Log::Warn( "Couldn't find all Theora headers before end of OGM file (%s)", filename );
 					return -10;
 				}
 			}
@@ -675,13 +675,13 @@ int Cin_OGM_Init( const char *filename )
 
 		if ( !isPowerOf2( g_ogm.th_info.width ) )
 		{
-			Com_Printf( S_WARNING "Video width of the OGM file isn't a power of 2 (%s)\n", filename );
+			Log::Warn( "Video width of the OGM file isn't a power of 2 (%s)", filename );
 			return -5;
 		}
 
 		if ( !isPowerOf2( g_ogm.th_info.height ) )
 		{
-			Com_Printf( S_WARNING "Video height of the OGM file isn't a power of 2 (%s)\n", filename );
+			Log::Warn( "Video height of the OGM file isn't a power of 2 (%s)", filename );
 			return -6;
 		}
 

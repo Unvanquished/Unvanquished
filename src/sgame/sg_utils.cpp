@@ -872,7 +872,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	{
 		char descr[ 64 ];
 		BG_BuildEntityDescription( descr, sizeof( descr ), &fire->s );
-		Com_Printf("%s spawned.", descr);
+		Log::Notice("%s spawned.", descr);
 	}
 
 	return fire;

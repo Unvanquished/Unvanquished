@@ -612,7 +612,7 @@ void Console_Key( int key )
 			consoleState.scrollLineIndex = consoleState.lines.size() - 1;
 		}
 
-		Com_Printf("]%s\n", Str::UTF32To8(g_consoleField.GetText()).c_str());
+		Log::Notice("]%s\n", Str::UTF32To8(g_consoleField.GetText()).c_str());
 
 		// if not in the game always treat the input as a command
 		if (cls.state != connstate_t::CA_ACTIVE) {
@@ -872,7 +872,7 @@ int Key_GetTeam( const char *arg, const char *cmd )
 
 		if ( t != CLIP( t ) )
 		{
-			Com_Printf( "^3%s:^7 %d is not a valid team number\n", cmd, t );
+			Log::Notice( "^3%s:^7 %d is not a valid team number\n", cmd, t );
 			return -1;
 		}
 
@@ -891,7 +891,7 @@ int Key_GetTeam( const char *arg, const char *cmd )
 	}
 
 fail:
-	Com_Printf( "^3%s:^7 '%s^7' is not a valid team name\n", cmd, arg );
+	Log::Notice( "^3%s:^7 '%s^7' is not a valid team name\n", cmd, arg );
 	return -1;
 }
 
@@ -1007,7 +1007,7 @@ void Key_Unbind_f()
 
 	if ( b == -1 )
 	{
-		Com_Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
+		Log::Notice( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
 		return;
 	}
 
@@ -1070,7 +1070,7 @@ void Key_Bind_f()
 
 	if ( b == -1 )
 	{
-		Com_Printf( "\"%s\" isn't a valid key\n", key );
+		Log::Notice( "\"%s\" isn't a valid key\n", key );
 		return;
 	}
 
@@ -1082,11 +1082,11 @@ void Key_Bind_f()
 		{
 			if ( keys[ b ].binding[ team ] )
 			{
-				Com_Printf( "\"%s\"[%s] = %s\n", key, teamName[ team ], Cmd_QuoteString( keys[ b ].binding[ team ] ) );
+				Log::Notice( "\"%s\"[%s] = %s\n", key, teamName[ team ], Cmd_QuoteString( keys[ b ].binding[ team ] ) );
 			}
 			else
 			{
-				Com_Printf( "\"%s\"[%s] is not bound\n", key, teamName[ team ] );
+				Log::Notice( "\"%s\"[%s] is not bound\n", key, teamName[ team ] );
 			}
 		}
 		else
@@ -1098,14 +1098,14 @@ void Key_Bind_f()
 			{
 				if ( keys[ b ].binding[ i ] )
 				{
-					Com_Printf( "\"%s\"[%s] = %s\n", key, teamName[ i ], Cmd_QuoteString( keys[ b ].binding[ i ] ) );
+					Log::Notice( "\"%s\"[%s] = %s\n", key, teamName[ i ], Cmd_QuoteString( keys[ b ].binding[ i ] ) );
 					bound = true;
 				}
 			}
 
 			if ( !bound )
 			{
-				Com_Printf( "\"%s\" is not bound\n", key );
+				Log::Notice( "\"%s\" is not bound\n", key );
 			}
 		}
 
@@ -1159,7 +1159,7 @@ void Key_EditBind_f()
 
 	if ( b == -1 )
 	{
-		Com_Printf( "\"%s\" isn't a valid key\n", key );
+		Log::Notice( "\"%s\" isn't a valid key\n", key );
 		return;
 	}
 
@@ -1245,7 +1245,7 @@ void Key_Bindlist_f()
 		{
 			if ( keys[ i ].binding[ 0 ] && keys[ i ].binding[ 0 ][ 0 ] )
 			{
-				Com_Printf( "%s = %s\n", Key_KeynumToString( i ), keys[ i ].binding[ 0 ] );
+				Log::Notice( "%s = %s\n", Key_KeynumToString( i ), keys[ i ].binding[ 0 ] );
 			}
 		}
 		else
@@ -1254,7 +1254,7 @@ void Key_Bindlist_f()
 			{
 				if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
 				{
-					Com_Printf( "%s[%s] = %s\n", Key_KeynumToString( i ), teamName[ team ], keys[ i ].binding[ team ] );
+					Log::Notice( "%s[%s] = %s\n", Key_KeynumToString( i ), teamName[ team ], keys[ i ].binding[ team ] );
 				}
 			}
 		}
@@ -1511,7 +1511,7 @@ static modifierMask_t getModifierMask( const char *mods )
 
 				if ( ( mask.down & mask.up ) & modifierKeys[ i ].bit )
 				{
-					Com_Printf( "can't have %s both pressed and not pressed\n", modifierKeys[ i ].name );
+					Log::Notice( "can't have %s both pressed and not pressed\n", modifierKeys[ i ].name );
 					return none;
 				}
 
@@ -1532,7 +1532,7 @@ static modifierMask_t getModifierMask( const char *mods )
 
 		if ( !modifierKeys[ i ].bit )
 		{
-			Com_Printf( "unknown modifier key name in \"%s\"\n", mods );
+			Log::Notice( "unknown modifier key name in \"%s\"\n", mods );
 			return none;
 		}
 	}

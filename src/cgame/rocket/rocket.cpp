@@ -132,19 +132,14 @@ public:
 		switch ( type )
 		{
 			case Rocket::Core::Log::LT_ALWAYS :
-				Com_Printf( "ALWAYS: %s\n", message.CString() );
-				break;
 			case Rocket::Core::Log::LT_ERROR :
-				Com_Printf( "ERROR: %s\n", message.CString() );
-				break;
 			case Rocket::Core::Log::LT_WARNING :
-				Com_Printf( "WARNING: %s\n", message.CString() );
-				break;
-			case Rocket::Core::Log::LT_INFO :
-				Com_Printf( "INFO: %s\n", message.CString() );
+				Log::Warn( message.CString() );
 				break;
 			default:
-				Com_Printf( "%s\n", message.CString() );
+			case Rocket::Core::Log::LT_INFO :
+				Log::Notice( message.CString() );
+				break;
 		}
 		return true;
 	}
@@ -335,7 +330,7 @@ void Rocket_Init()
 
 	if ( !Rocket::Core::Initialise() )
 	{
-		Com_Printf( "Could not init libRocket\n" );
+		Log::Notice( "Could not init libRocket\n" );
 		return;
 	}
 

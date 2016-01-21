@@ -273,7 +273,7 @@ void CON_Init_TTY()
 	                   !( term && ( !strcmp( term, "raw" ) || !strcmp( term, "dumb" ) ) );
 	if ( !stdinIsATTY )
 	{
-        Log::Notice( "tty console mode disabled\n" );
+        Log::Notice( "tty console mode disabled" );
 		ttycon_on = false;
 		stdin_active = true;
 		return;

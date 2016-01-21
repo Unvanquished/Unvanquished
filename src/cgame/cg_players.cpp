@@ -285,7 +285,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( "^1ERROR^7: Expected '{' but found '%s' in character.cfg", token );
+				Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in character.cfg", token );
 			}
 
 			i = 0;
@@ -311,7 +311,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n", token );
+				Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n", token );
 			}
 
 			i = 0;
@@ -332,7 +332,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			continue;
 		}
 
-		Com_Printf( "unknown token '%s' is %s\n", token, filename );
+		Log::Notice( "unknown token '%s' is %s\n", token, filename );
 	}
 
 	return true;
@@ -372,7 +372,7 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 	{
 		if ( cg_debugAnim.integer )
 		{
-			Com_Printf( "Failed to load animation file %s\n", filename );
+			Log::Notice( "Failed to load animation file %s\n", filename );
 		}
 
 		return false;
@@ -613,7 +613,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			break;
 		}
 
-		Com_Printf( "unknown token '%s' is %s\n", token, filename );
+		Log::Notice( "unknown token '%s' is %s\n", token, filename );
 	}
 
 	if ( !ci->nonsegmented )
@@ -821,7 +821,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->bodySkin )
 		{
-			Com_Printf( "MD5 skin load failure: %s\n", filename );
+			Log::Notice( "MD5 skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->bodySkin )
@@ -836,7 +836,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->legsSkin )
 		{
-			Com_Printf( "Leg skin load failure: %s\n", filename );
+			Log::Notice( "Leg skin load failure: %s\n", filename );
 		}
 
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/upper_%s.skin", modelName, skinName );
@@ -844,7 +844,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->torsoSkin )
 		{
-			Com_Printf( "Torso skin load failure: %s\n", filename );
+			Log::Notice( "Torso skin load failure: %s\n", filename );
 		}
 
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/head_%s.skin", modelName, skinName );
@@ -852,7 +852,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->headSkin )
 		{
-			Com_Printf( "Head skin load failure: %s\n", filename );
+			Log::Notice( "Head skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->legsSkin || !ci->torsoSkin || !ci->headSkin )
@@ -867,7 +867,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->nonSegSkin )
 		{
-			Com_Printf( "Non-segmented skin load failure: %s\n", filename );
+			Log::Notice( "Non-segmented skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->nonSegSkin )
@@ -922,7 +922,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !CG_ParseCharacterFile( filename, ci ) )
 		{
-			Com_Printf( "Failed to load character file %s\n", filename );
+			Log::Notice( "Failed to load character file %s\n", filename );
 			return false;
 		}
 
@@ -933,7 +933,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		{
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLE, "idle", true, false, false, iqm ) )
 			{
-				Com_Printf( "Failed to load idle animation file %s\n", filename );
+				Log::Notice( "Failed to load idle animation file %s\n", filename );
 				return false;
 			}
 
@@ -1103,7 +1103,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			// Load Alien animations
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_STAND, "stand", true, false, false, iqm ) )
 			{
-				Com_Printf( "Failed to load standing animation file %s\n", filename );
+				Log::Notice( "Failed to load standing animation file %s\n", filename );
 				return false;
 			}
 
@@ -1246,7 +1246,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		// if any skins failed to load, return failure
 		if ( !CG_RegisterClientSkin( ci, modelName, skinName ) )
 		{
-			Com_Printf( "Failed to load skin file: %s : %s\n", modelName, skinName );
+			Log::Notice( "Failed to load skin file: %s : %s\n", modelName, skinName );
 			return false;
 		}
 
@@ -1259,7 +1259,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 	if ( !CG_ParseAnimationFile( filename, ci ) )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		Log::Notice( "Failed to load animation file %s\n", filename );
 		return false;
 	}
 
@@ -1271,7 +1271,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !ci->legsModel )
 		{
-			Com_Printf( "Failed to load model file %s\n", filename );
+			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
 		}
 
@@ -1280,7 +1280,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !ci->torsoModel )
 		{
-			Com_Printf( "Failed to load model file %s\n", filename );
+			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
 		}
 
@@ -1289,7 +1289,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !ci->headModel )
 		{
-			Com_Printf( "Failed to load model file %s\n", filename );
+			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
 		}
 	}
@@ -1300,7 +1300,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !ci->nonSegModel )
 		{
-			Com_Printf( "Failed to load model file %s\n", filename );
+			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
 		}
 	}
@@ -1308,7 +1308,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, modelName, skinName ) )
 	{
-		Com_Printf( "Failed to load skin file: %s : %s\n", modelName, skinName );
+		Log::Notice( "Failed to load skin file: %s : %s\n", modelName, skinName );
 		return false;
 	}
 
@@ -1747,7 +1747,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 		oldSkeleton = *skel;
 
-		//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
+		//Log::Notice(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
 
 		if ( lf->old_animation->handle && oldSkeleton.numBones == skel->numBones )
 		{
@@ -4013,7 +4013,7 @@ void CG_InitClasses()
 
 			if ( !cg_classes[ i ].classIcon )
 			{
-				Com_Printf( S_ERROR "Failed to load class icon file %s\n", icon );
+				Log::Warn( "Failed to load class icon file %s", icon );
 			}
 		}
 	}

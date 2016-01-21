@@ -132,7 +132,7 @@ static void SV_MapRestart_f()
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Log::Notice( "Server is not running.\n" );
 		return;
 	}
 
@@ -142,7 +142,7 @@ static void SV_MapRestart_f()
 	{
 		char mapname[ MAX_QPATH ];
 
-		Com_Printf( "sv_maxclients variable change — restarting.\n" );
+		Log::Notice( "sv_maxclients variable change — restarting.\n" );
 		// restart the map the slow way
 		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
@@ -209,7 +209,7 @@ static void SV_MapRestart_f()
 
 			if ( !isBot )
 			{
-				Com_Printf( "SV_MapRestart_f: dropped client %i: denied!\n", i );
+				Log::Notice( "SV_MapRestart_f: dropped client %i: denied!\n", i );
 			}
 
 			continue;
@@ -243,7 +243,7 @@ static void SV_Status_f()
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Log::Notice( "Server is not running.\n" );
 		return;
 	}
 
@@ -256,7 +256,7 @@ static void SV_Status_f()
 
 	avg = 1000 * svs.stats.latched_active / STATFRAMES;
 
-	Com_Printf( "cpu utilization  : %3i%%\n"
+	Log::Notice( "cpu utilization  : %3i%%\n"
 	            "avg response time: %i ms\n"
 	            "map: %s\n"
 	            "num score ping name            lastmsg address               qport rate\n"
@@ -270,51 +270,51 @@ static void SV_Status_f()
 			continue;
 		}
 
-		Com_Printf( "%3i ", i );
+		Log::Notice( "%3i ", i );
 		ps = SV_GameClientNum( i );
-		Com_Printf( "%5i ", ps->persistant[ PERS_SCORE ] );
+		Log::Notice( "%5i ", ps->persistant[ PERS_SCORE ] );
 
 		if ( cl->state == clientState_t::CS_CONNECTED )
 		{
-			Com_Printf( "CNCT " );
+			Log::Notice( "CNCT " );
 		}
 		else if ( cl->state == clientState_t::CS_ZOMBIE )
 		{
-			Com_Printf( "ZMBI " );
+			Log::Notice( "ZMBI " );
 		}
 		else
 		{
 			ping = cl->ping < 9999 ? cl->ping : 9999;
-			Com_Printf( "%4i ", ping );
+			Log::Notice( "%4i ", ping );
 		}
 
-		Com_Printf( "%s", cl->name );
+		Log::Notice( "%s", cl->name );
 		l = 16 - strlen( cl->name );
 
 		for ( j = 0; j < l; j++ )
 		{
-			Com_Printf( " " );
+			Log::Notice( " " );
 		}
 
-		Com_Printf( "%7i ", svs.time - cl->lastPacketTime );
+		Log::Notice( "%7i ", svs.time - cl->lastPacketTime );
 
 		s = NET_AdrToString( cl->netchan.remoteAddress );
-		Com_Printf( "%s", s );
+		Log::Notice( "%s", s );
 		l = 22 - strlen( s );
 
 		for ( j = 0; j < l; j++ )
 		{
-			Com_Printf( " " );
+			Log::Notice( " " );
 		}
 
-		Com_Printf( "%5i", cl->netchan.qport );
+		Log::Notice( "%5i", cl->netchan.qport );
 
-		Com_Printf( " %5i", cl->rate );
+		Log::Notice( " %5i", cl->rate );
 
-		Com_Printf( "\n" );
+		Log::Notice( "\n" );
 	}
 
-	Com_Printf( "\n" );
+	Log::Notice( "\n" );
 }
 
 /*
@@ -341,11 +341,11 @@ static void SV_Serverinfo_f()
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Log::Notice( "Server is not running.\n" );
 		return;
 	}
 
-	Com_Printf( "Server info settings:\n" );
+	Log::Notice( "Server info settings:\n" );
 	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, false ) );
 }
 
@@ -361,11 +361,11 @@ static void SV_Systeminfo_f()
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Log::Notice( "Server is not running.\n" );
 		return;
 	}
 
-	Com_Printf( "System info settings:\n" );
+	Log::Notice( "System info settings:\n" );
 	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, false ) );
 }
 

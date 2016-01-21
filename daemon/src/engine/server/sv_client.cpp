@@ -236,14 +236,14 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 
 		if ( country )
 		{
-			Com_Printf( "Client %i connecting from %s with %i challenge ping\n", i, country, ping );
+			Log::Notice( "Client %i connecting from %s with %i challenge ping\n", i, country, ping );
 		}
 		else
 		{
-			Com_Printf( "Client %i connecting from somewhere unknown with %i challenge ping\n", i, ping );
+			Log::Notice( "Client %i connecting from somewhere unknown with %i challenge ping\n", i, ping );
 		}
 #else
-		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
+		Log::Notice( "Client %i connecting with %i challenge ping\n", i, ping );
 #endif
 
 		svs.challenges[ i ].connected = true;
@@ -287,7 +287,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		     && ( cl->netchan.qport == qport
 		          || from.port == cl->netchan.remoteAddress.port ) )
 		{
-			Com_Printf( "%s:reconnect\n", NET_AdrToString( from ) );
+			Log::Notice( "%s:reconnect\n", NET_AdrToString( from ) );
 			newcl = cl;
 
 			// this doesn't work because it nukes the players userinfo
@@ -751,7 +751,7 @@ void SV_NextDownload_f( client_t *cl, const Cmd::Args& args )
 		// Find out if we are done.  A zero-length block indicates EOF
 		if ( cl->downloadBlockSize[ cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW ] == 0 )
 		{
-			Com_Printf( "clientDownload: %d : file \"%s\" completed\n", ( int )( cl - svs.clients ), cl->downloadName );
+			Log::Notice( "clientDownload: %d : file \"%s\" completed\n", ( int )( cl - svs.clients ), cl->downloadName );
 			SV_CloseDownload( cl );
 			return;
 		}
@@ -808,7 +808,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	// only accept wwwdl commands for clients which we first flagged as wwwdl ourselves
 	if ( !cl->bWWWDl )
 	{
-		Com_Printf( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
+		Log::Notice( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
 		SV_DropClient( cl, va( "SV_WWWDownload: unexpected wwwdl %s", subcmd ) );
 		return;
 	}
@@ -832,7 +832,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 	// below for messages that only happen during/after download
 	if ( !cl->bWWWing )
 	{
-		Com_Printf( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
+		Log::Notice( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
 		SV_DropClient( cl, va( "SV_WWWDownload: unexpected wwwdl %s", subcmd ) );
 		return;
 	}
@@ -864,7 +864,7 @@ void SV_WWWDownload_f( client_t *cl, const Cmd::Args& args )
 		return;
 	}
 
-	Com_Printf("SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name );
+	Log::Notice("SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name );
 	SV_DropClient( cl, va( "SV_WWWDownload: unknown wwwdl subcommand '%s'", subcmd ) );
 }
 
@@ -894,7 +894,7 @@ static bool SV_CheckFallbackURL( client_t *cl, const char* pakName, msg_t *msg )
 		return false;
 	}
 
-	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
+	Log::Notice( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
 
 	Q_strncpyz(cl->downloadURL, va("%s/%s", sv_wwwFallbackURL->string, pakName), sizeof(cl->downloadURL));
 
@@ -943,12 +943,12 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		if ( cl->downloadnotify & DLNOTIFY_BEGIN )
 		{
 			cl->downloadnotify &= ~DLNOTIFY_BEGIN;
-			Com_Printf( "clientDownload: %d : beginning \"%s\"\n", ( int )( cl - svs.clients ), cl->downloadName );
+			Log::Notice( "clientDownload: %d : beginning \"%s\"\n", ( int )( cl - svs.clients ), cl->downloadName );
 		}
 
 		if ( !sv_allowDownload->integer )
 		{
-			Com_Printf( "clientDownload: %d : \"%s\" download disabled\n", ( int )( cl - svs.clients ), cl->downloadName );
+			Log::Notice( "clientDownload: %d : \"%s\" download disabled\n", ( int )( cl - svs.clients ), cl->downloadName );
 
 			if ( sv_pure->integer )
 			{
@@ -1005,7 +1005,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					if ( cl->downloadnotify & DLNOTIFY_REDIRECT )
 					{
 						cl->downloadnotify &= ~DLNOTIFY_REDIRECT;
-						Com_Printf( "Redirecting client '%s' to %s\n", cl->name, cl->downloadURL );
+						Log::Notice( "Redirecting client '%s' to %s\n", cl->name, cl->downloadURL );
 					}
 
 					// once cl->downloadName is set (and possibly we have our listening socket), let the client know
@@ -1067,7 +1067,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		if ( !success )
 		{
-			Com_Printf( "clientDownload: %d : \"%s\" file not found on server\n", ( int )( cl - svs.clients ), cl->downloadName );
+			Log::Notice( "clientDownload: %d : \"%s\" file not found on server\n", ( int )( cl - svs.clients ), cl->downloadName );
 			Com_sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n",
 			             cl->downloadName );
 			SV_BadDownload( cl, msg );
@@ -1132,12 +1132,12 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		if ( bTellRate )
 		{
-			Com_Printf( "'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, sv_dl_maxRate->integer );
+			Log::Notice( "'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, sv_dl_maxRate->integer );
 		}
 	}
 	else if ( bTellRate )
 	{
-		Com_Printf( "'%s' downloading at rate %d\n", cl->name, rate );
+		Log::Notice( "'%s' downloading at rate %d\n", cl->name, rate );
 	}
 
 	if ( !rate )
@@ -1428,7 +1428,7 @@ static bool SV_ClientCommand( client_t *cl, msg_t *msg, bool premaprestart )
 	// drop the connection if we have somehow lost commands
 	if ( seq > cl->lastClientCommand + 1 )
 	{
-		Com_Printf( "Client %s lost %i clientCommands\n", cl->name, seq - cl->lastClientCommand + 1 );
+		Log::Notice( "Client %s lost %i clientCommands\n", cl->name, seq - cl->lastClientCommand + 1 );
 		SV_DropClient( cl, "Lost reliable commands" );
 		return false;
 	}
@@ -1524,13 +1524,13 @@ static void SV_UserMove( client_t *cl, msg_t *msg, bool delta )
 
 	if ( cmdCount < 1 )
 	{
-		Com_Printf( "cmdCount < 1\n" );
+		Log::Notice( "cmdCount < 1\n" );
 		return;
 	}
 
 	if ( cmdCount > MAX_PACKET_USERCMDS )
 	{
-		Com_Printf( "cmdCount > MAX_PACKET_USERCMDS\n" );
+		Log::Notice( "cmdCount > MAX_PACKET_USERCMDS\n" );
 		return;
 	}
 
@@ -1753,12 +1753,12 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	}
 	else if ( c != clc_EOF )
 	{
-		Com_Printf( "WARNING: bad command byte for client %i\n", ( int )( cl - svs.clients ) );
+		Log::Warn( "bad command byte for client %i\n", ( int )( cl - svs.clients ) );
 	}
 
 	SV_ParseBinaryMessage( cl, msg );
 
 //  if ( msg->readcount != msg->cursize ) {
-//      Com_Printf( "WARNING: Junk at end of packet for client %i\n", cl - svs.clients );
+//      Log::Notice( "WARNING: Junk at end of packet for client %i\n", cl - svs.clients );
 //  }
 }

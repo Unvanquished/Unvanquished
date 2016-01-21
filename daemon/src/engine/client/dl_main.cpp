@@ -141,7 +141,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName )
 
 	if ( !dl_file )
 	{
-		Com_Printf( "ERROR: DL_BeginDownload unable to open '%s' for writing\n", localName );
+		Log::Warn( "DL_BeginDownload unable to open '%s' for writing\n", localName );
 		return 0;
 	}
 

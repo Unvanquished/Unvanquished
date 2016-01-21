@@ -159,14 +159,14 @@ Logging functions used by tinygettext
 
 void Trans_Error( const std::string& str )
 {
-	Com_Printf( "^1%s^7", str.c_str() );
+	Log::Notice( "^1%s^7", str.c_str() );
 }
 
 void Trans_Warning( const std::string& str )
 {
 	if( trans_debug->integer != 0 )
 	{
-		Com_Printf( "^3%s^7", str.c_str() );
+		Log::Notice( "^3%s^7", str.c_str() );
 	}
 }
 
@@ -174,7 +174,7 @@ void Trans_Info( const std::string& str )
 {
 	if( trans_debug->integer != 0 )
 	{
-		Com_Printf( "%s", str.c_str() );
+		Log::Notice( "%s", str.c_str() );
 	}
 }
 
@@ -211,7 +211,7 @@ void Trans_SetLanguage( const char* lang )
 	// language not found, display warning
 	if( bestScore == 0 )
 	{
-		Com_Printf( S_WARNING "Language \"%s\" (%s) not found. Default to \"English\" (en)\n",
+		Log::Warn( "Language \"%s\" (%s) not found. Default to \"English\" (en)",
 					requestLang.get_name().empty() ? "Unknown Language" : requestLang.get_name().c_str(),
 					lang );
 	}
@@ -221,7 +221,7 @@ void Trans_SetLanguage( const char* lang )
 
 	Cvar_Set( "language", bestLang.str().c_str() );
 
-	Com_Printf( "Set language to %s" , bestLang.get_name().c_str() );
+	Log::Notice( "Set language to %s" , bestLang.get_name().c_str() );
 }
 
 void Trans_UpdateLanguage_f()
@@ -276,7 +276,7 @@ void Trans_Init()
 	Cvar_Set( "trans_languages", langList );
 	Cvar_Set( "trans_encodings", encList );
 
-	Com_Printf( "Loaded %lu language%s\n", ( unsigned long ) langs.size(), ( langs.size() == 1 ? "" : "s" ) );
+	Log::Notice( "Loaded %lu language%s", ( unsigned long ) langs.size(), ( langs.size() == 1 ? "" : "s" ) );
 }
 
 void Trans_LoadDefaultLanguage()

@@ -214,7 +214,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 		mpz_t        message;
 
 		if (argc == 1) {
-			Com_Printf("%s", "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n");
+			Log::Notice("%s", "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n");
 			return false;
 		}
 
@@ -796,7 +796,7 @@ void CL_AdjustTimeDelta()
 
 		if ( cl_showTimeDelta->integer )
 		{
-			Com_Printf( "<RESET> " );
+			Log::Notice( "<RESET> " );
 		}
 	}
 	else if ( deltaDelta > 100 )
@@ -804,7 +804,7 @@ void CL_AdjustTimeDelta()
 		// fast adjust, cut the difference in half
 		if ( cl_showTimeDelta->integer )
 		{
-			Com_Printf( "<FAST> " );
+			Log::Notice( "<FAST> " );
 		}
 
 		cl.serverTimeDelta = ( cl.serverTimeDelta + newDelta ) >> 1;
@@ -833,7 +833,7 @@ void CL_AdjustTimeDelta()
 
 	if ( cl_showTimeDelta->integer )
 	{
-		Com_Printf("%i ", cl.serverTimeDelta );
+		Log::Notice("%i ", cl.serverTimeDelta );
 	}
 }
 
@@ -871,7 +871,7 @@ void CL_FirstSnapshot()
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf("%s", ret == 0 ? "Mumble: Linking to Mumble application okay\n" : "Mumble: Linking to Mumble application failed\n" );
+		Log::Notice("%s", ret == 0 ? "Mumble: Linking to Mumble application okay\n" : "Mumble: Linking to Mumble application failed\n" );
 	}
 
 	// resend userinfo upon entering the game, as some cvars may

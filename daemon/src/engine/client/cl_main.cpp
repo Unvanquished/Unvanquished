@@ -313,7 +313,7 @@ void CL_StopRecord_f()
 
 	if ( !clc.demorecording )
 	{
-		Com_Printf("%s", "Not recording a demo.\n" );
+		Log::Notice("%s", "Not recording a demo.\n" );
 		return;
 	}
 
@@ -327,7 +327,7 @@ void CL_StopRecord_f()
 	clc.demorecording = false;
 	Cvar_Set( "cl_demorecording", "0" );  // fretn
 	Cvar_Set( "cl_demofilename", "" );  // bani
-	Com_Printf("%s", "Stopped demo.\n" );
+	Log::Notice("%s", "Stopped demo.\n" );
 }
 
 /*
@@ -430,7 +430,7 @@ void CL_Record( const char *name )
 
 	// open the demo file
 
-	Com_Printf( "recording to %s.\n", name );
+	Log::Notice( "recording to %s.\n", name );
 	clc.demofile = FS_FOpenFileWrite( name );
 
 	if ( !clc.demofile )
@@ -533,7 +533,7 @@ void CL_DemoCompleted()
 
 		if ( time > 0 )
 		{
-			Com_Printf( "%i frames, %3.1fs: %3.1f fps\n", clc.timeDemoFrames,
+			Log::Notice( "%i frames, %3.1fs: %3.1f fps\n", clc.timeDemoFrames,
 			            time / 1000.0, clc.timeDemoFrames * 1000.0 / time );
 		}
 	}
@@ -608,7 +608,7 @@ void CL_ReadDemoMessage()
 
 	if ( r != buf.cursize )
 	{
-		Com_Printf("%s", "Demo file was truncated.\n" );
+		Log::Notice("%s", "Demo file was truncated.\n" );
 		CL_DemoCompleted();
 		return;
 	}
@@ -716,7 +716,7 @@ void CL_WriteWaveOpen()
 
 	if ( clc.waverecording )
 	{
-		Com_Printf("%s", "Already recording a wav file\n" );
+		Log::Notice("%s", "Already recording a wav file\n" );
 		return;
 	}
 
@@ -749,7 +749,7 @@ void CL_WriteWaveOpen()
 		}
 	}
 
-	Com_Printf( "recording to %s.\n", name );
+	Log::Notice( "recording to %s.\n", name );
 	clc.wavefile = FS_FOpenFileWrite( name );
 
 	if ( !clc.wavefile )
@@ -770,7 +770,7 @@ void CL_WriteWaveOpen()
 
 void CL_WriteWaveClose()
 {
-	Com_Printf("%s", "Stopped recording\n" );
+	Log::Notice("%s", "Stopped recording\n" );
 
 	hdr.Subchunk2Size = hdr.NumSamples * hdr.NumChannels * ( hdr.BitsPerSample / 8 );
 	hdr.ChunkSize = 36 + hdr.Subchunk2Size;
@@ -1092,7 +1092,7 @@ void CL_Disconnect( bool showMainMenu )
 
 	if ( cl_useMumble->integer && mumble_islinked() )
 	{
-		Com_Printf("%s", "Mumble: Unlinking from Mumble application\n" );
+		Log::Notice("%s", "Mumble: Unlinking from Mumble application\n" );
 		mumble_unlink();
 	}
 
@@ -1178,7 +1178,7 @@ void CL_ForwardCommandToServer( const char *string )
 
 	if ( clc.demoplaying || cls.state < connstate_t::CA_CONNECTED || cmd[ 0 ] == '+' || cmd[ 0 ] == '\0' )
 	{
-		Com_Printf( "Unknown command \"%s\"\n", cmd );
+		Log::Notice( "Unknown command \"%s\"\n", cmd );
 		return;
 	}
 
@@ -1213,7 +1213,7 @@ void CL_RequestMotd()
 	                          netadrtype_t::NA_UNSPEC ) )
 	{
 		case 0:
-			Com_Printf("%s", "Couldn't resolve master address\n" );
+			Log::Notice("%s", "Couldn't resolve master address\n" );
 			return;
 
 		case 2:
@@ -1254,7 +1254,7 @@ void CL_ForwardToServer_f()
 {
 	if ( cls.state != connstate_t::CA_ACTIVE || clc.demoplaying )
 	{
-		Com_Printf("%s", "Not connected to a server.\n" );
+		Log::Notice("%s", "Not connected to a server.\n" );
 		return;
 	}
 
@@ -1285,11 +1285,11 @@ void CL_Reconnect_f()
 {
 	if ( !*cls.servername )
 	{
-		Com_Printf("%s", "Can't reconnect to nothing.\n" );
+		Log::Notice("%s", "Can't reconnect to nothing.\n" );
 	}
 	else if ( !*cls.reconnectCmd )
 	{
-		Com_Printf("%s", "Can't reconnect to localhost.\n" );
+		Log::Notice("%s", "Can't reconnect to localhost.\n" );
 	}
 	else
 	{
@@ -1389,7 +1389,7 @@ void CL_Connect_f()
 
 	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress, family ) )
 	{
-		Com_Printf("%s", "Bad server address\n" );
+		Log::Notice("%s", "Bad server address\n" );
 		cls.state = connstate_t::CA_DISCONNECTED;
 		Cvar_Set( "ui_connecting", "0" );
 		return;
@@ -1446,7 +1446,7 @@ void CL_Rcon_f()
 
 	if ( !rcon_client_password->string )
 	{
-		Com_Printf( "%s", "You must set 'rconPassword' before\n"
+		Log::Notice( "%s", "You must set 'rconPassword' before\n"
 		            "issuing an rcon command.\n" );
 		return;
 	}
@@ -1473,7 +1473,7 @@ void CL_Rcon_f()
 	{
 		if ( !strlen( rconAddress->string ) )
 		{
-			Com_Printf( "%s", "Connect to a server "
+			Log::Notice( "%s", "Connect to a server "
 			            "or set the 'rconAddress' cvar "
 			            "to issue rcon commands\n");
 
@@ -1515,7 +1515,7 @@ static void CL_GenerateRSAKeys( const char *fileName )
 		Com_Error( errorParm_t::ERR_FATAL, "Error converting RSA keypair to sexp" );
 	}
 
-	Com_Printf( "^5Regenerating RSA keypair; writing to %s\n" , fileName );
+	Log::Notice( "^5Regenerating RSA keypair; writing to %s\n" , fileName );
 
 #ifndef _WIN32
 	int old_umask = umask(0077);
@@ -1534,7 +1534,7 @@ static void CL_GenerateRSAKeys( const char *fileName )
 	FS_FCloseFile( f );
 
 	nettle_buffer_clear( &key_buffer );
-	Com_Printf( "%s", "Daemon RSA keys generated\n"  );
+	Log::Notice( "%s", "Daemon RSA keys generated\n"  );
 }
 
 /*
@@ -1557,13 +1557,13 @@ static void CL_LoadRSAKeys()
 
 	CL_GetRSAKeysFileName( fileName, sizeof( fileName ) );
 
-	Com_Printf( "^5Loading RSA keys from %s\n" , fileName );
+	Log::Notice( "Loading RSA keys from %s" , fileName );
 
 	len = FS_FOpenFileRead( fileName, &f, true );
 
 	if ( !f || len < 1 )
 	{
-		Com_Printf( "^2%s", "Daemon RSA public-key file not found, regenerating\n" );
+		Log::Notice( "^2%s", "Daemon RSA public-key file not found, regenerating\n" );
 		CL_GenerateRSAKeys( fileName );
 		return;
 	}
@@ -1574,14 +1574,14 @@ static void CL_LoadRSAKeys()
 
 	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
 	{
-		Com_Printf( "^1%s", "Invalid RSA keypair in file, regenerating\n"  );
+		Log::Notice( "^1%s", "Invalid RSA keypair in file, regenerating"  );
 		Z_Free( buf );
 		CL_GenerateRSAKeys( fileName );
 		return;
 	}
 
 	Z_Free( buf );
-	Com_Printf( "%s", "Daemon RSA public-key found.\n" );
+	Log::Notice( "%s", "Daemon RSA public-key found." );
 }
 
 
@@ -1698,7 +1698,7 @@ void CL_Configstrings_f()
 
 	if ( cls.state != connstate_t::CA_ACTIVE )
 	{
-		Com_Printf("%s", "Not connected to a server.\n" );
+		Log::Notice("%s", "Not connected to a server.\n" );
 		return;
 	}
 
@@ -1709,7 +1709,7 @@ void CL_Configstrings_f()
 			continue;
 		}
 
-		Com_Printf( "%4i: %s\n", i, cl.gameState[i].c_str() );
+		Log::Notice( "%4i: %s\n", i, cl.gameState[i].c_str() );
 	}
 }
 
@@ -1720,12 +1720,12 @@ CL_Clientinfo_f
 */
 void CL_Clientinfo_f()
 {
-	Com_Printf("%s",  "--------- Client Information ---------\n" );
-	Com_Printf( "state: %s\n", Util::enum_str(cls.state));
-	Com_Printf( "Server: %s\n", cls.servername );
-	Com_Printf("%s", "User info settings:\n" );
+	Log::Notice("%s",  "--------- Client Information ---------" );
+	Log::Notice( "state: %s", Util::enum_str(cls.state));
+	Log::Notice( "Server: %s", cls.servername );
+	Log::Notice("%s", "User info settings:" );
 	Info_Print( Cvar_InfoString( CVAR_USERINFO, false ) );
-	Com_Printf("%s", "--------------------------------------\n" );
+	Log::Notice("%s", "--------------------------------------" );
 }
 
 /*
@@ -1738,7 +1738,7 @@ void CL_WavRecord_f()
 {
 	if ( clc.wavefile )
 	{
-		Com_Printf("%s", "Already recording a wav file\n" );
+		Log::Notice("%s", "Already recording a wav file\n" );
 		return;
 	}
 
@@ -1755,7 +1755,7 @@ void CL_WavStopRecord_f()
 {
 	if ( !clc.wavefile )
 	{
-		Com_Printf("%s", "Not recording a wav file\n" );
+		Log::Notice("%s", "Not recording a wav file\n" );
 		return;
 	}
 
@@ -1783,7 +1783,7 @@ void CL_Video_f()
 
 	if ( !clc.demoplaying )
 	{
-		Com_Printf("%s", "The video command can only be used when playing back demos\n" );
+		Log::Notice("%s", "The video command can only be used when playing back demos\n" );
 		return;
 	}
 
@@ -2160,7 +2160,7 @@ void CL_DisconnectPacket( netadr_t from )
 	{
 		// drop the connection
 		message = "Server disconnected for unknown reason";
-		Com_Printf( "%s\n", message );
+		Log::Notice( "%s\n", message );
 		Cvar_Set( "com_errorMessage", message );
 		CL_Disconnect( true );
 	}
@@ -2202,7 +2202,7 @@ void CL_PrintPacket( msg_t *msg )
 		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 	}
 
-	Com_Printf("%s\n", clc.serverMessage );
+	Log::Notice("%s\n", clc.serverMessage );
 }
 
 /*
@@ -2628,7 +2628,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		if ( cls.state != connstate_t::CA_CONNECTING )
 		{
-			Com_Printf( "Unwanted challenge response received.  Ignored.\n" );
+			Log::Notice( "Unwanted challenge response received.  Ignored.\n" );
 		}
 		else
 		{
@@ -2656,20 +2656,20 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		if ( cls.state >= connstate_t::CA_CONNECTED )
 		{
-			Com_Printf( "Dup connect received. Ignored.\n" );
+			Log::Notice( "Dup connect received. Ignored.\n" );
 			return;
 		}
 
 		if ( cls.state != connstate_t::CA_CHALLENGING )
 		{
-			Com_Printf( "connectResponse packet while not connecting. Ignored.\n" );
+			Log::Notice( "connectResponse packet while not connecting. Ignored.\n" );
 			return;
 		}
 
 		if ( !NET_CompareAdr( from, clc.serverAddress ) )
 		{
-			Com_Printf( "connectResponse from a different address. Ignored.\n" );
-			Com_Printf( "%s should have been %s\n", NET_AdrToString( from ),
+			Log::Notice( "connectResponse from a different address. Ignored.\n" );
+			Log::Notice( "%s should have been %s\n", NET_AdrToString( from ),
 			            NET_AdrToStringwPort( clc.serverAddress ) );
 			return;
 		}
@@ -2766,7 +2766,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 
 	if ( msg->cursize < 4 )
 	{
-		Com_Printf( "%s: Runt packet\n", NET_AdrToStringwPort( from ) );
+		Log::Notice( "%s: Runt packet\n", NET_AdrToStringwPort( from ) );
 		return;
 	}
 
@@ -2918,7 +2918,7 @@ void CL_WWWDownload()
 			if ( strlen( clc.redirectedList ) + strlen( cls.originalDownloadName ) + 1 >= sizeof( clc.redirectedList ) )
 			{
 				// just to be safe
-				Com_Printf( "ERROR: redirectedList overflow (%s)\n", clc.redirectedList );
+				Log::Warn( "redirectedList overflow (%s)\n", clc.redirectedList );
 			}
 			else
 			{
@@ -2944,7 +2944,7 @@ void CL_WWWDownload()
 		else
 		{
 			// see CL_ParseDownload, same abort strategy
-			Com_Printf( "Download failure while getting '%s'\n", cls.downloadName );
+			Log::Notice( "Download failure while getting '%s'\n", cls.downloadName );
 			CL_AddReliableCommand( "wwwdl fail" );
 			clc.bWWWDlAborting = true;
 		}
@@ -3272,12 +3272,12 @@ bool CL_InitRef( )
 
 	ri.Bot_DrawDebugMesh = BotDebugDrawMesh;
 
-	Com_Printf("%s", "Calling GetRefAPI…\n" );
+	Log::Notice("%s", "Calling GetRefAPI…" );
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 
 	if ( !ret )
 	{
-		Com_Printf( "Couldn't initialize refresh module\n" );
+		Log::Notice( "Couldn't initialize refresh module\n" );
 		return false;
 	}
 
@@ -3764,9 +3764,9 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 	if ( info[ 0 ] )
 	{
 		if ( info[ strlen( info ) - 1 ] == '\n' )
-			Com_Printf( "%s: %s", NET_AdrToStringwPort( from ), info );
+			Log::Notice( "%s: %s", NET_AdrToStringwPort( from ), info );
 		else
-			Com_Printf( "%s: %s\n", NET_AdrToStringwPort( from ), info );
+			Log::Notice( "%s: %s\n", NET_AdrToStringwPort( from ), info );
 	}
 }
 
@@ -3932,7 +3932,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 
 	if ( serverStatus->print )
 	{
-		Com_Printf("%s", "Server settings:\n" );
+		Log::Notice("%s", "Server settings:\n" );
 
 		// print cvars
 		while ( *s )
@@ -3967,11 +3967,11 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 
 				if ( i )
 				{
-					Com_Printf("%s\n", info );
+					Log::Notice("%s\n", info );
 				}
 				else
 				{
-					Com_Printf("%-24s", info );
+					Log::Notice("%-24s", info );
 				}
 			}
 		}
@@ -3982,8 +3982,8 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 
 	if ( serverStatus->print )
 	{
-		Com_Printf( "\nPlayers:\n" );
-		Com_Printf( "num: score: ping: name:\n" );
+		Log::Notice( "\nPlayers:\n" );
+		Log::Notice( "num: score: ping: name:\n" );
 	}
 
 	for ( i = 0, s = MSG_ReadStringLine( msg ); *s; s = MSG_ReadStringLine( msg ), i++ )
@@ -4011,7 +4011,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 				s = "unknown";
 			}
 
-			Com_Printf( "%-2d   %-3d    %-3d   %s\n", i, score, ping, s );
+			Log::Notice( "%-2d   %-3d    %-3d   %s\n", i, score, ping, s );
 		}
 	}
 
@@ -4101,7 +4101,7 @@ void CL_GlobalServers_f()
 
 	if ( !*masteraddress )
 	{
-		Com_Printf( "CL_GlobalServers_f: Error: No master server address given.\n" );
+		Log::Warn( "CL_GlobalServers_f: No master server address given.\n" );
 		return;
 	}
 
@@ -4112,7 +4112,7 @@ void CL_GlobalServers_f()
 
 	if ( !i )
 	{
-		Com_Printf( "CL_GlobalServers_f: Error: could not resolve address of master %s\n", masteraddress );
+		Log::Warn( "CL_GlobalServers_f: could not resolve address of master %s\n", masteraddress );
 		return;
 	}
 	else if ( i == 2 )
@@ -4327,7 +4327,7 @@ void CL_Ping_f()
 		}
 		else
 		{
-			Com_Printf("%s", "warning: only -4 or -6 as address type understood.\n" );
+			Log::Warn("only -4 or -6 as address type understood." );
 		}
 
 		server = Cmd_Argv( 2 );
@@ -4508,7 +4508,7 @@ void CL_ServerStatus_f()
 	{
 		if ( cls.state != connstate_t::CA_ACTIVE || clc.demoplaying )
 		{
-			Com_Printf( "Not connected to a server.\n" );
+			Log::Notice( "Not connected to a server.\n" );
 			Cmd_PrintUsage("[-4|-6] <server>", nullptr);
 			return;
 		}
@@ -4536,7 +4536,7 @@ void CL_ServerStatus_f()
 			}
 			else
 			{
-				Com_Printf( "warning: only -4 or -6 as address type understood.\n" );
+				Log::Warn( "only -4 or -6 as address type understood." );
 			}
 
 			server = Cmd_Argv( 2 );

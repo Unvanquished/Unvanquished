@@ -36,7 +36,7 @@ void G_BotNavInit()
 {
 	int i;
 
-	Com_Printf( "==== Bot Navigation Initialization ==== \n" );
+	Log::Notice( "==== Bot Navigation Initialization ==== \n" );
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
@@ -50,7 +50,7 @@ void G_BotNavInit()
 		{
 			if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass )
 			{
-				Com_Printf( S_ERROR "class '%s': navmesh reference target class '%s' must have its own navmesh\n",
+				Log::Warn( "class '%s': navmesh reference target class '%s' must have its own navmesh",
 				            BG_Class( i )->name, BG_Class( model->navMeshClass )->name );
 				return;
 			}

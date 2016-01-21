@@ -322,7 +322,7 @@ void PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal )
 
 	if ( pm->debugLevel > 1 )
 	{
-		Com_Printf( "%i:stepped\n", c_pmove );
+		Log::Notice( "%i:stepped\n", c_pmove );
 	}
 }
 
@@ -359,7 +359,7 @@ bool PM_StepSlideMove( bool gravity, bool predictive )
 		{
 			if ( pm->debugLevel > 1 )
 			{
-				Com_Printf( "%d: step down\n", c_pmove );
+				Log::Notice( "%d: step down\n", c_pmove );
 			}
 
 			stepped = true;
@@ -397,7 +397,7 @@ bool PM_StepSlideMove( bool gravity, bool predictive )
 		{
 			if ( pm->debugLevel > 1 )
 			{
-				Com_Printf( "%i:bend can't step\n", c_pmove );
+				Log::Notice( "%i:bend can't step\n", c_pmove );
 			}
 
 			return stepped; // can't step up
@@ -416,7 +416,7 @@ bool PM_StepSlideMove( bool gravity, bool predictive )
 		{
 			if ( pm->debugLevel > 1 )
 			{
-				Com_Printf( "%d: step up\n", c_pmove );
+				Log::Notice( "%d: step up\n", c_pmove );
 			}
 
 			stepped = true;

@@ -970,7 +970,7 @@ bool ASpiker_Fire( gentity_t *self )
 
 			if ( g_debugTurrets.integer )
 			{
-				Com_Printf( "Spiker #%d fires: Row %d/%d: Spike %2d/%2d: "
+				Log::Notice( "Spiker #%d fires: Row %d/%d: Spike %2d/%2d: "
 				            "( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )\n",
 				            self->s.number, row + 1, SPIKER_MISSILEROWS, spike + 1, spikes,
 				            RAD2DEG( altitude + altitudeVariance ), RAD2DEG( azimuth ),
@@ -1088,7 +1088,7 @@ void ASpiker_Think( gentity_t *self )
 	{
 		if ( g_debugTurrets.integer )
 		{
-			Com_Printf( "Spiker #%i scoring %.1f - %.1f = %.1f%s%s\n",
+			Log::Notice( "Spiker #%i scoring %.1f - %.1f = %.1f%s%s\n",
 			            self->s.number, enemyDamage, friendlyDamage, scoring,
 			            sensing ? " (sensing)" : "", senseLost ? " (lost target)" : "" );
 		}
@@ -2376,7 +2376,7 @@ static bool HTurret_TargetValid( gentity_t *self, gentity_t *target, bool newTar
 	{
 		if ( g_debugTurrets.integer > 0 && self->target )
 		{
-			Com_Printf( "Turret %d: Target %d lost: Eliminated or out of range.\n",
+			Log::Notice( "Turret %d: Target %d lost: Eliminated or out of range.\n",
 			            self->s.number, self->target->s.number );
 		}
 
@@ -2398,7 +2398,7 @@ static bool HTurret_TargetValid( gentity_t *self, gentity_t *target, bool newTar
 	{
 		if ( g_debugTurrets.integer > 0 && self->target )
 		{
-			Com_Printf( "Turret %d: Target %d lost: No clear LOS for %d ms.\n",
+			Log::Notice( "Turret %d: Target %d lost: No clear LOS for %d ms.\n",
 						self->s.number, self->target->s.number, TURRET_GIVEUP_TARGET );
 		}
 
@@ -2669,7 +2669,7 @@ static void HMGTurret_Shoot( gentity_t *self )
 	if ( g_debugTurrets.integer > 1 )
 	{
 		const static char color[] = {'1', '8', '3', '2'};
-		Com_Printf( "MGTurret %d: Shooting at %d: ^%cZone %d/%d → %d damage\n",
+		Log::Notice( "MGTurret %d: Shooting at %d: ^%cZone %d/%d → %d damage\n",
 		            self->s.number, self->target->s.number, color[zone], zone + 1,
 		            MGTURRET_ZONES, self->turretCurrentDamage );
 	}
@@ -2741,7 +2741,7 @@ void HMGTurret_Think( gentity_t *self )
 		if ( HTurret_FindTarget( self, MGTURRET_RANGE, HMGTurret_IsBetterTarget ) &&
 		     g_debugTurrets.integer > 0 )
 		{
-			Com_Printf( "MGTurret %d: New target %d.\n", self->s.number, self->target->s.number );
+			Log::Notice( "MGTurret %d: New target %d.\n", self->s.number, self->target->s.number );
 		}
 	}
 
@@ -2792,7 +2792,7 @@ static void HRocketpod_Shoot( gentity_t *self )
 
 	if ( g_debugTurrets.integer > 1 )
 	{
-		Com_Printf( "Rocketpod %d: Shooting at %d\n", self->s.number, self->target->s.number );
+		Log::Notice( "Rocketpod %d: Shooting at %d\n", self->s.number, self->target->s.number );
 	}
 
 	G_AddEvent( self, EV_FIRE_WEAPON, 0 );
@@ -2957,7 +2957,7 @@ void HRocketpod_Think( gentity_t *self )
 		if ( HTurret_FindTarget( self, ROCKETPOD_RANGE, HRocketpod_IsBetterTarget ) &&
 		     g_debugTurrets.integer > 0 )
 		{
-			Com_Printf( "Rocketpod %d: New target %d.\n", self->s.number, self->target->s.number );
+			Log::Notice( "Rocketpod %d: New target %d.\n", self->s.number, self->target->s.number );
 		}
 	}
 

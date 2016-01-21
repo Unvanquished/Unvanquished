@@ -70,31 +70,31 @@ IN_PrintKey
 */
 static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, bool down )
 {
-	if ( keysym->mod & KMOD_LSHIFT ) { Com_Printf( " KMOD_LSHIFT" ); }
+	if ( keysym->mod & KMOD_LSHIFT ) { Log::Notice( " KMOD_LSHIFT" ); }
 
-	if ( keysym->mod & KMOD_RSHIFT ) { Com_Printf( " KMOD_RSHIFT" ); }
+	if ( keysym->mod & KMOD_RSHIFT ) { Log::Notice( " KMOD_RSHIFT" ); }
 
-	if ( keysym->mod & KMOD_LCTRL ) { Com_Printf( " KMOD_LCTRL" ); }
+	if ( keysym->mod & KMOD_LCTRL ) { Log::Notice( " KMOD_LCTRL" ); }
 
-	if ( keysym->mod & KMOD_RCTRL ) { Com_Printf( " KMOD_RCTRL" ); }
+	if ( keysym->mod & KMOD_RCTRL ) { Log::Notice( " KMOD_RCTRL" ); }
 
-	if ( keysym->mod & KMOD_LALT ) { Com_Printf( " KMOD_LALT" ); }
+	if ( keysym->mod & KMOD_LALT ) { Log::Notice( " KMOD_LALT" ); }
 
-	if ( keysym->mod & KMOD_RALT ) { Com_Printf( " KMOD_RALT" ); }
+	if ( keysym->mod & KMOD_RALT ) { Log::Notice( " KMOD_RALT" ); }
 
-	if ( keysym->mod & KMOD_LGUI ) { Com_Printf( " KMOD_LGUI" ); }
+	if ( keysym->mod & KMOD_LGUI ) { Log::Notice( " KMOD_LGUI" ); }
 
-	if ( keysym->mod & KMOD_RGUI ) { Com_Printf( " KMOD_RGUI" ); }
+	if ( keysym->mod & KMOD_RGUI ) { Log::Notice( " KMOD_RGUI" ); }
 
-	if ( keysym->mod & KMOD_NUM ) { Com_Printf( " KMOD_NUM" ); }
+	if ( keysym->mod & KMOD_NUM ) { Log::Notice( " KMOD_NUM" ); }
 
-	if ( keysym->mod & KMOD_CAPS ) { Com_Printf( " KMOD_CAPS" ); }
+	if ( keysym->mod & KMOD_CAPS ) { Log::Notice( " KMOD_CAPS" ); }
 
-	if ( keysym->mod & KMOD_MODE ) { Com_Printf( " KMOD_MODE" ); }
+	if ( keysym->mod & KMOD_MODE ) { Log::Notice( " KMOD_MODE" ); }
 
-	if ( keysym->mod & KMOD_RESERVED ) { Com_Printf( " KMOD_RESERVED" ); }
+	if ( keysym->mod & KMOD_RESERVED ) { Log::Notice( " KMOD_RESERVED" ); }
 
-	Com_Printf( "%c 0x%02x \"%s\" Q:0x%02x(%s)\n", down ? '+' : ' ', keysym->scancode,
+	Log::Notice( "%c 0x%02x \"%s\" Q:0x%02x(%s)\n", down ? '+' : ' ', keysym->scancode,
 		    SDL_GetKeyName( keysym->sym ), key, Key_KeynumToString( key ) );
 }
 
@@ -1046,7 +1046,7 @@ static void IN_XBox360Axis( int controllerAxis, joystickAxis_t gameAxis, float s
 	{
 		if ( in_xbox360ControllerDebug->integer )
 		{
-			Com_Printf( "xbox axis %i = %f\n", controllerAxis, f );
+			Log::Notice( "xbox axis %i = %f\n", controllerAxis, f );
 		}
 
 		Com_QueueEvent( 0, sysEventType_t::SE_JOYSTICK_AXIS, Util::ordinal(gameAxis), f * scale, 0, nullptr );
@@ -1082,7 +1082,7 @@ static int IN_XBox360AxisToButton( int controllerAxis, int key, float expectedSt
 
 		if ( in_xbox360ControllerDebug->integer )
 		{
-			Com_Printf( "xbox axis = %i to key = Q:0x%02x(%s), value = %f\n", controllerAxis, key, Key_KeynumToString( key ), f );
+			Log::Notice( "xbox axis = %i to key = Q:0x%02x(%s), value = %f\n", controllerAxis, key, Key_KeynumToString( key ), f );
 		}
 	}
 
@@ -1092,7 +1092,7 @@ static int IN_XBox360AxisToButton( int controllerAxis, int key, float expectedSt
 
 		if ( in_xbox360ControllerDebug->integer )
 		{
-			Com_Printf( "xbox axis = %i to key = Q:0x%02x(%s), value = %f\n", controllerAxis, key, Key_KeynumToString( key ), f );
+			Log::Notice( "xbox axis = %i to key = Q:0x%02x(%s), value = %f\n", controllerAxis, key, Key_KeynumToString( key ), f );
 		}
 	}
 
@@ -1146,7 +1146,7 @@ static void IN_Xbox360ControllerMove()
 
 				if ( in_xbox360ControllerDebug->integer )
 				{
-					Com_Printf( "xbox button = %i to key = Q:0x%02x(%s)\n", i, K_XBOX360_A + i, Key_KeynumToString( K_XBOX360_A + i ) );
+					Log::Notice( "xbox button = %i to key = Q:0x%02x(%s)\n", i, K_XBOX360_A + i, Key_KeynumToString( K_XBOX360_A + i ) );
 				}
 
 				stick_state.buttons[ i ] = pressed;
@@ -1213,7 +1213,7 @@ static void IN_Xbox360ControllerMove()
 
 				if ( hat != SDL_HAT_CENTERED )
 				{
-					Com_Printf( "xbox hat bits = %i to key = Q:0x%02x(%s)\n", hat, key, Key_KeynumToString( key ) );
+					Log::Notice( "xbox hat bits = %i to key = Q:0x%02x(%s)\n", hat, key, Key_KeynumToString( key ) );
 				}
 			}
 
@@ -1571,7 +1571,7 @@ void IN_Init( void *windowData )
 
 	window = (SDL_Window*) windowData;
 
-	Log::Debug( "\n------- Input Initialization -------" );
+	Log::Debug( "------- Input Initialization -------" );
 
 	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_TEMP );
 

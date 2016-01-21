@@ -116,7 +116,7 @@ void BotSetNavMesh( int botClientNum, qhandle_t nav )
 {
 	if ( nav < 0 || nav >= numNavData )
 	{
-		Com_Printf( "^3ERROR: Navigation handle out of bounds\n" );
+		Log::Warn( "Navigation handle out of bounds" );
 		return;
 	}
 

@@ -552,7 +552,7 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid,
 		else
 		{
 			// bisecting side border
-			cmLog.Debug( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
+			cmLog.Debug( "WARNING: CM_SetBorderInward: mixed plane sides" );
 			facet->borderInward[ k ] = false;
 
 			if ( !debugBlock )

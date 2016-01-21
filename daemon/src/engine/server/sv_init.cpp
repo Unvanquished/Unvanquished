@@ -454,7 +454,7 @@ void SV_SpawnServer( const char *server )
 	SV_ShutdownGameProgs();
 
 	PrintBanner( "Server Initialization" )
-	Com_Printf( "Server: %s\n", server );
+	Log::Notice( "Server: %s", server );
 
 	// clear the whole hunk because we're (re)loading the server
 	Hunk_Clear();
@@ -621,7 +621,7 @@ void SV_SpawnServer( const char *server )
 
 	SV_AddOperatorCommands();
 
-	Com_Printf( "-----------------------------------\n" );
+	Log::Notice( "-----------------------------------\n" );
 }
 
 /*
@@ -801,7 +801,7 @@ void SV_Shutdown( const char *finalmsg )
 	NET_Config( true );
 #endif
 
-	Com_Printf( "---------------------------\n" );
+	Log::Notice( "---------------------------\n" );
 
 	// disconnect any local clients
 	CL_Disconnect( false );

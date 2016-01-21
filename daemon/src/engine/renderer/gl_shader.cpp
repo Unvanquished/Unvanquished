@@ -656,7 +656,7 @@ void GLShaderManager::buildAll()
 		_shaderBuildQueue.pop();
 	}
 
-	Log::Notice( "glsl shaders took %d msec to build\n", _totalBuildTime );
+	Log::Notice( "glsl shaders took %d msec to build", _totalBuildTime );
 
 	if( r_recompileShaders->integer )
 	{

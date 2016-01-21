@@ -957,8 +957,8 @@ public:
 
 			if ( !cg_weapons[ weapon ].registered )
 			{
-				Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
-				"is not registered\n", weapon, BG_Weapon( weapon )->name );
+				Log::Warn( "CG_DrawWeaponIcon: weapon %d (%s) "
+				"is not registered", weapon, BG_Weapon( weapon )->name );
 				SetProperty( "display", "none" );
 				return;
 			}

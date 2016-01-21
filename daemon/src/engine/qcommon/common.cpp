@@ -61,8 +61,8 @@ Maryland 20850 USA.
 
 static const int MAX_NUM_ARGVS = 50;
 
-static const int MIN_COMHUNKMEGS = 256;
-static const int DEF_COMHUNKMEGS = 512;
+#define MIN_COMHUNKMEGS 256
+#define DEF_COMHUNKMEGS 512
 
 static fileHandle_t logfile;
 
@@ -113,60 +113,6 @@ void     Com_WriteBindings_f();
 void     CIN_CloseAllVideos();
 
 //============================================================================
-
-/*
-=============
-Com_Printf
-
-Both client and server can use this, and it will output
-to the appropriate place.
-
-A raw string should NEVER be passed as fmt, because of "%f" type crashers.
-=============
-*/
-int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
-{
-#ifdef SMP
-	static SDL_mutex *lock = nullptr;
-
-	// would be racy, but this gets called prior to renderer threads etc. being started
-	if ( !lock )
-	{
-		lock = SDL_CreateMutex();
-	}
-
-	SDL_LockMutex( lock );
-#endif
-
-	//Build the message
-	char msg[MAXPRINTMSG];
-	memset( msg, 0, sizeof( msg ) );
-	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
-	msg[ MAXPRINTMSG - 1 ] = '\0';
-
-	//Remove a trailing newline, this is handled by Log::*
-	int len = strlen(msg);
-	if (msg[len - 1] == '\n')
-	{
-		msg[len - 1] = '\0';
-	}
-
-	Cmd::GetEnv()->Print( msg );
-
-#ifdef SMP
-	SDL_UnlockMutex( lock );
-#endif
-	return strlen( msg );
-}
-
-void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
-{
-	va_list argptr;
-
-	va_start( argptr, fmt );
-	Com_VPrintf( fmt, argptr );
-	va_end( argptr );
-}
 
 /*
 =============
@@ -329,11 +275,11 @@ void Info_Print( const char *s )
 			*o = 0;
 		}
 
-		Com_Printf( "%s", key );
+		Log::Notice( "%s", key );
 
 		if ( !*s )
 		{
-			Com_Printf( "MISSING VALUE\n" );
+			Log::Notice( "MISSING VALUE\n" );
 			return;
 		}
 
@@ -352,7 +298,7 @@ void Info_Print( const char *s )
 			s++;
 		}
 
-		Com_Printf( "%s\n", value );
+		Log::Notice( "%s\n", value );
 	}
 }
 
@@ -468,29 +414,29 @@ Com_Meminfo_f
 */
 void Com_Meminfo_f()
 {
-	Com_Printf( "%9i bytes (%6.2f MB) total hunk\n", s_hunkTotal, s_hunkTotal / Square( 1024.f ) );
-	Com_Printf( "\n" );
-	Com_Printf( "%9i bytes (%6.2f MB) low mark\n", hunk_low.mark, hunk_low.mark / Square( 1024.f ) );
-	Com_Printf( "%9i bytes (%6.2f MB) low permanent\n", hunk_low.permanent, hunk_low.permanent / Square( 1024.f ) );
+	Log::Notice( "%9i bytes (%6.2f MB) total hunk\n", s_hunkTotal, s_hunkTotal / Square( 1024.f ) );
+	Log::Notice( "\n" );
+	Log::Notice( "%9i bytes (%6.2f MB) low mark\n", hunk_low.mark, hunk_low.mark / Square( 1024.f ) );
+	Log::Notice( "%9i bytes (%6.2f MB) low permanent\n", hunk_low.permanent, hunk_low.permanent / Square( 1024.f ) );
 
 	if ( hunk_low.temp != hunk_low.permanent )
 	{
-		Com_Printf( "%9i bytes (%6.2f MB) low temp\n", hunk_low.temp, hunk_low.temp / Square( 1024.f ) );
+		Log::Notice( "%9i bytes (%6.2f MB) low temp\n", hunk_low.temp, hunk_low.temp / Square( 1024.f ) );
 	}
 
-	Com_Printf( "%9i bytes (%6.2f MB) low tempHighwater\n", hunk_low.tempHighwater, hunk_low.tempHighwater / Square( 1024.f ) );
-	Com_Printf( "\n" );
-	Com_Printf( "%9i bytes (%6.2f MB) high mark\n", hunk_high.mark, hunk_high.mark / Square( 1024.f ) );
-	Com_Printf( "%9i bytes (%6.2f MB) high permanent\n", hunk_high.permanent, hunk_high.permanent / Square( 1024.f ) );
+	Log::Notice( "%9i bytes (%6.2f MB) low tempHighwater\n", hunk_low.tempHighwater, hunk_low.tempHighwater / Square( 1024.f ) );
+	Log::Notice( "\n" );
+	Log::Notice( "%9i bytes (%6.2f MB) high mark\n", hunk_high.mark, hunk_high.mark / Square( 1024.f ) );
+	Log::Notice( "%9i bytes (%6.2f MB) high permanent\n", hunk_high.permanent, hunk_high.permanent / Square( 1024.f ) );
 
 	if ( hunk_high.temp != hunk_high.permanent )
 	{
-		Com_Printf( "%9i bytes (%6.2f MB) high temp\n", hunk_high.temp, hunk_high.temp / Square( 1024.f ) );
+		Log::Notice( "%9i bytes (%6.2f MB) high temp\n", hunk_high.temp, hunk_high.temp / Square( 1024.f ) );
 	}
 
-	Com_Printf( "%9i bytes (%6.2f MB) high tempHighwater\n", hunk_high.tempHighwater, hunk_high.tempHighwater / Square( 1024.f ) );
-	Com_Printf( "\n" );
-	Com_Printf( "%9i bytes (%6.2f MB) total hunk in use\n", hunk_low.permanent + hunk_high.permanent,
+	Log::Notice( "%9i bytes (%6.2f MB) high tempHighwater\n", hunk_high.tempHighwater, hunk_high.tempHighwater / Square( 1024.f ) );
+	Log::Notice( "\n" );
+	Log::Notice( "%9i bytes (%6.2f MB) total hunk in use\n", hunk_low.permanent + hunk_high.permanent,
 	            ( hunk_low.permanent + hunk_high.permanent ) / Square( 1024.f ) );
 	int unused = 0;
 
@@ -504,7 +450,7 @@ void Com_Meminfo_f()
 		unused += hunk_high.tempHighwater - hunk_high.permanent;
 	}
 
-	Com_Printf( "%9i bytes (%6.2f MB) unused highwater\n", unused, unused / Square( 1024.f ) );
+	Log::Notice( "%9i bytes (%6.2f MB) unused highwater\n", unused, unused / Square( 1024.f ) );
 }
 
 /*
@@ -558,7 +504,7 @@ void Com_InitHunkMemory()
 	if ( cv->integer < MIN_COMHUNKMEGS )
 	{
 		s_hunkTotal = 1024 * 1024 * MIN_COMHUNKMEGS;
-		Com_Printf( "Minimum com_hunkMegs is " XSTRING(MIN_COMHUNKMEGS) ", allocating " XSTRING(MIN_COMHUNKMEGS) "MB.\n" );
+		Log::Notice( "Minimum com_hunkMegs is " XSTRING(MIN_COMHUNKMEGS) ", allocating " XSTRING(MIN_COMHUNKMEGS) "MB." );
 	}
 	else
 	{
@@ -809,7 +755,7 @@ void Hunk_FreeTempMemory( void *buf )
 		}
 		else
 		{
-			Com_Printf( "Hunk_FreeTempMemory: not the final block\n" );
+			Log::Notice( "Hunk_FreeTempMemory: not the final block\n" );
 		}
 	}
 	else
@@ -820,7 +766,7 @@ void Hunk_FreeTempMemory( void *buf )
 		}
 		else
 		{
-			Com_Printf( "Hunk_FreeTempMemory: not the final block\n" );
+			Log::Notice( "Hunk_FreeTempMemory: not the final block\n" );
 		}
 	}
 }
@@ -864,7 +810,7 @@ void Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int p
 
 	if ( eventHead - eventTail >= MAX_QUEUED_EVENTS )
 	{
-		Com_Printf( "Com_QueueEvent: overflow\n" );
+		Log::Notice( "Com_QueueEvent: overflow" );
 
 		// we are discarding an event, but don't leak memory
 		if ( ev->evPtr )
@@ -979,7 +925,7 @@ void Com_RunAndTimeServerPacket( netadr_t *evFrom, msg_t *buf )
 
 		if ( com_speeds->integer == 3 )
 		{
-			Com_Printf( "SV_PacketEvent time: %i\n", msec );
+			Log::Notice( "SV_PacketEvent time: %i\n", msec );
 		}
 	}
 }
@@ -1135,7 +1081,7 @@ int Com_EventLoop()
 				// enough to hold fragment reassembly
 				if ( buf.cursize > buf.maxsize )
 				{
-					Com_Printf( "Com_EventLoop: oversize packet\n" );
+					Log::Notice( "Com_EventLoop: oversize packet\n" );
 					continue;
 				}
 
@@ -1210,7 +1156,7 @@ static void Com_Freeze_f()
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "freeze <seconds>\n" );
+		Log::Notice( "freeze <seconds>\n" );
 		return;
 	}
 
@@ -1254,13 +1200,13 @@ void Com_SetRecommended()
 
 	if ( goodVideo )
 	{
-		Com_Printf( "Found high quality video and slow CPU\n" );
+		Log::Notice( "Found high quality video and slow CPU\n" );
 		Cmd::BufferCommandText("preset preset_fast.cfg");
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
-		Com_Printf( "Found low quality video and slow CPU\n" );
+		Log::Notice( "Found low quality video and slow CPU\n" );
 		Cmd::BufferCommandText("preset preset_fastest.cfg");
 		Cvar_Set( "com_recommended", "3" );
 	}
@@ -1374,7 +1320,7 @@ void Com_Init( char *commandLine )
 	CL_StartHunkUsers();
 
 	com_fullyInitialized = true;
-	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
+	Log::Notice( "%s", "--- Common Initialization Complete ---" );
 
 	NET_Init();
 }
@@ -1392,7 +1338,7 @@ void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandl
 
 	if ( !f )
 	{
-		Com_Printf( "Couldn't write %s.\n", filename );
+		Log::Notice( "Couldn't write %s.\n", filename );
 		return;
 	}
 
@@ -1453,7 +1399,7 @@ void Com_WriteConfig_f()
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf( "Writing %s.\n", filename );
+	Log::Notice( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename, Cvar_WriteVariables );
 }
 
@@ -1477,7 +1423,7 @@ void Com_WriteBindings_f()
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf( "Writing %s.\n", filename );
+	Log::Notice( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename, Key_WriteBindings );
 }
 #endif
@@ -1518,7 +1464,7 @@ int Com_ModifyMsec( int msec )
 		// of time.
 		if ( msec > 500 && msec < 500000 )
 		{
-			Com_Printf( "Hitch warning: %i msec frame time\n", msec );
+			Log::Warn( "Hitch: %i msec frame time", msec );
 		}
 
 		clampTime = 5000;
@@ -1718,7 +1664,7 @@ void Com_Frame()
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > watchdogThreshold.Get() * 1000 )
 			{
-				Com_Printf( "Idle server with no map — triggering watchdog\n" );
+				Log::Notice( "Idle server with no map — triggering watchdog\n" );
 				watchdogTime = 0;
 				watchWarn = false;
 
@@ -1749,7 +1695,7 @@ void Com_Frame()
 		sv -= time_game;
 		cl -= time_frontend + time_backend;
 
-		Com_Printf( "frame:%i all:%3i sv:%3i sev:%3i cev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
+		Log::Notice( "frame:%i all:%3i sv:%3i sev:%3i cev:%3i cl:%3i gm:%3i rf:%3i bk:%3i\n",
 		            com_frameNumber, all, sv, sev, cev, cl, time_game, time_frontend, time_backend );
 	}
 
@@ -1761,7 +1707,7 @@ void Com_Frame()
 		extern int c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces;
 		extern int c_pointcontents;
 
-		Com_Printf( "%4i traces  (%ib %ip %it) %4i points\n", c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces,
+		Log::Notice( "%4i traces  (%ib %ip %it) %4i points\n", c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces,
 		            c_pointcontents );
 		c_traces = 0;
 		c_brush_traces = 0;

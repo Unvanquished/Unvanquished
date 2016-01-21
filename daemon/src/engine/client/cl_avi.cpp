@@ -394,7 +394,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 			suggestRate--;
 		}
 
-		Com_Printf( S_WARNING "cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n", suggestRate );
+		Log::Warn( "cl_aviFrameRate is not a divisor of the audio rate, suggest %d", suggestRate );
 	}
 
 	if ( !Cvar_VariableIntegerValue( "s_initsound" ) )
@@ -415,7 +415,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 	else
 	{
 		afd.audio = false;
-		Com_Printf( S_WARNING "Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 for audio capture\n" );
+		Log::Warn( "Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 for audio capture" );
 	}
 
 	// This doesn't write a real header, but allocates the
@@ -603,7 +603,7 @@ bool CL_CloseAVI()
 	Z_Free( afd.eBuffer );
 	FS_FCloseFile( afd.f );
 
-	Com_Printf( "Wrote %d:%d frames to %s\n", afd.numVideoFrames, afd.numAudioFrames, afd.fileName );
+	Log::Notice( "Wrote %d:%d frames to %s\n", afd.numVideoFrames, afd.numAudioFrames, afd.fileName );
 
 	return true;
 }

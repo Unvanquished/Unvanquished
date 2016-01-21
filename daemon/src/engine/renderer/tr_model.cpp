@@ -103,7 +103,7 @@ qhandle_t RE_RegisterModel( const char *name )
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		Com_Printf( "Model name exceeds MAX_QPATH\n" );
+		Log::Notice( "Model name exceeds MAX_QPATH\n" );
 		return 0;
 	}
 

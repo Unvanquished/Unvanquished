@@ -126,7 +126,7 @@ static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
         }
         else
         {
-            Com_Printf( S_ERROR "unknown token '%s'\n", token );
+            Log::Warn( "unknown token '%s'", token );
         }
     }
 

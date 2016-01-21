@@ -247,7 +247,7 @@ void CG_Rocket_Init( glconfig_t gl )
 				// Skip non-RML files
 				if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
 				{
-					Com_Printf( "^3WARNING: Non-RML file listed in %s: \"%s\" . Skipping.", rocket_menuFile.string, token );
+					Log::Warn( "Non-RML file listed in %s: \"%s\" . Skipping.", rocket_menuFile.string, token );
 					continue;
 				}
 

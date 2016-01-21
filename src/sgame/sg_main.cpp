@@ -1015,18 +1015,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( errorParm_t, const char *error, ..
 	trap_Error( text );
 }
 
-void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
-
 void G_CheckPmoveParamChanges() {
 	if ( pmove_msec.integer < 8 )
 	{

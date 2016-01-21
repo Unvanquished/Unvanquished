@@ -675,7 +675,7 @@ void CG_InitBuildables()
 				                                     IsLooped( buildable, anim ),
 				                                     IsReversed( buildable, anim ), false, iqm ) )
 				{
-					Com_Printf( S_ERROR "Failed to load animation '%s' for buildable '%s' and "
+					Log::Warn( "Failed to load animation '%s' for buildable '%s' and "
 					            "animation slot #%d.", animName, buildableName, anim );
 				}
 			}
@@ -687,7 +687,7 @@ void CG_InitBuildables()
 
 			if ( !CG_ParseBuildableAnimationFile( filename, (buildable_t) buildable ) )
 			{
-				Com_Printf( S_WARNING "failed to load animation file %s\n", filename );
+				Log::Warn( "failed to load animation file %s", filename );
 			}
 		}
 
@@ -696,7 +696,7 @@ void CG_InitBuildables()
 
 		if ( !CG_ParseBuildableSoundFile( filename, (buildable_t) buildable ) )
 		{
-			Com_Printf( S_WARNING "failed to load sound file %s\n", filename );
+			Log::Warn( "failed to load sound file %s", filename );
 		}
 
 		//sounds
@@ -1606,7 +1606,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		}
 		else
 		{
-			Com_Printf( "CG_BuildableStatusParse: unknown token %s in %s\n",
+			Log::Notice( "CG_BuildableStatusParse: unknown token %s in %s\n",
 			            token.string, filename );
 			bs->loaded = false;
 			trap_Parse_FreeSource( handle );

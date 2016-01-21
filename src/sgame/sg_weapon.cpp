@@ -1926,13 +1926,13 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 {
 	if ( !self || !self->client )
 	{
-		Com_Printf( S_WARNING "G_FireUpgrade: Called with non-player parameter.\n" );
+		Log::Warn( "G_FireUpgrade: Called with non-player parameter." );
 		return;
 	}
 
 	if ( upgrade <= UP_NONE || upgrade >= UP_NUM_UPGRADES )
 	{
-		Com_Printf( S_WARNING "G_FireUpgrade: Called with unknown upgrade.\n" );
+		Log::Warn( "G_FireUpgrade: Called with unknown upgrade." );
 		return;
 	}
 

@@ -46,7 +46,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // File handle for the root socket
-static const int ROOT_SOCKET_FD = 100;
+#define ROOT_SOCKET_FD 100
 
 // MinGW doesn't define JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
 #ifndef JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
@@ -239,7 +239,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 		try {
 			FS::File out = FS::HomePath::OpenWrite(module);
 			if (const FS::LoadedPakInfo* pak = FS::PakPath::LocateFile(module))
-				Com_Printf("Extracting VM module %s from %s...\n", module.c_str(), pak->path.c_str());
+				Log::Notice("Extracting VM module %s from %s...\n", module.c_str(), pak->path.c_str());
 			FS::PakPath::CopyFile(module, out);
 			out.Close();
 		} catch (std::system_error& err) {
@@ -295,7 +295,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 	args.push_back(XSTRING(ROOT_SOCKET_FD));
 	args.push_back(nullptr);
 
-	Com_Printf("Loading VM module %s...\n", module.c_str());
+	Log::Notice("Loading VM module %s...", module.c_str());
 
 	if (debugLoader) {
 		std::string commandLine;
@@ -305,7 +305,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNaClVM(std::pair<IPC::Socket, IPC::S
 				commandLine += arg;
 			}
 		}
-		Com_Printf("Using loader args: %s", commandLine.c_str());
+		Log::Notice("Using loader args: %s", commandLine.c_str());
 	}
 
 	return InternalLoadModule(std::move(pair), args.data(), true, std::move(stderrRedirect));
@@ -326,7 +326,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC:
 	args.push_back(handleArg.c_str());
 	args.push_back(nullptr);
 
-	Com_Printf("Loading VM module %s...\n", module.c_str());
+	Log::Notice("Loading VM module %s...", module.c_str());
 
 	return InternalLoadModule(std::move(pair), args.data(), true);
 }
@@ -334,7 +334,7 @@ std::pair<Sys::OSHandle, IPC::Socket> CreateNativeVM(std::pair<IPC::Socket, IPC:
 IPC::Socket CreateInProcessNativeVM(std::pair<IPC::Socket, IPC::Socket> pair, Str::StringRef name, VM::VMBase::InProcessInfo& inProcess) {
 	std::string filename = FS::Path::Build(FS::GetLibPath(), name + "-native-dll" + DLL_EXT);
 
-	Com_Printf("Loading VM module %s...\n", filename.c_str());
+	Log::Notice("Loading VM module %s...", filename.c_str());
 
 	std::string errorString;
 	inProcess.sharedLib = Sys::DynamicLib::Open(filename, errorString);
@@ -400,7 +400,7 @@ uint32_t VMBase::Create()
 	rootChannel = IPC::Channel(std::move(rootSocket));
 
 	if (type != TYPE_NATIVE_DLL && params.debug.Get())
-		Com_Printf("Waiting for GDB connection on localhost:4014\n");
+		Log::Notice("Waiting for GDB connection on localhost:4014\n");
 
 	// Only set a recieve timeout for non-debug configurations, otherwise it
 	// would get triggered by breakpoints.
@@ -410,7 +410,7 @@ uint32_t VMBase::Create()
 	// Read the ABI version from the root socket.
 	// If this fails, we assume the remote process failed to start
 	Util::Reader reader = rootChannel.RecvMsg();
-	Com_Printf("Loaded VM module in %d msec\n", Sys_Milliseconds() - loadStartTime);
+	Log::Notice("Loaded VM module in %d msec", Sys_Milliseconds() - loadStartTime);
 	return reader.Read<uint32_t>();
 }
 
@@ -426,10 +426,10 @@ void VMBase::FreeInProcessVM() {
 		}
 
 		if (wait) {
-			Com_Printf("Waiting for the VM thread...\n");
+			Log::Notice("Waiting for the VM thread...");
 			inProcess.thread.join();
 		} else {
-			Com_Printf("The VM thread doesn't seem to stop, detaching it (bad things WILL ensue)\n");
+			Log::Notice("The VM thread doesn't seem to stop, detaching it (bad things WILL ensue)");
 			inProcess.thread.detach();
 		}
 	}

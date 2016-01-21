@@ -600,7 +600,7 @@ void CG_UpdateBuildableRangeMarkerMask()
 				}
 				else
 				{
-					Com_Printf( S_WARNING "unknown buildable or group: %s\n", p );
+					Log::Warn( "unknown buildable or group: %s", p );
 				}
 			}
 
@@ -789,18 +789,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( errorParm_t level, const char *err
 	va_end( argptr );
 
 	trap_Error( text );
-}
-
-void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
 }
 
 /*
