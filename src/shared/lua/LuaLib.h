@@ -87,12 +87,12 @@ the LUACORETYPEDEFINE macro, or make sure that the function signatures are @em e
 getting the name of the type, method tables, and if it is reference counted.
 When you use this, you either must also use
 the LUACORETYPEDEFINE macro, or make sure that the function signatures are @em exact.*/
-#define LUACONTROLSTYPEDECLARE(type) \
-    template<> const char* GetTClassName<type>(); \
-    template<> RegType<type>* GetMethodTable<type>(); \
-    template<> luaL_Reg* GetAttrTable<type>(); \
-    template<> luaL_Reg* SetAttrTable<type>(); \
-    template<> bool IsReferenceCounted<type>(); \
+#define LUASGAMETYPEDEFINE(type, is_ref_counted) \
+    template<> const char* GetTClassName<Unv::SGame::Lua::type>() { return #type; } \
+    template<> RegType<Unv::SGame::Lua::type>* GetMethodTable<Unv::SGame::Lua::type>() { return Unv::SGame::Lua::type##Methods; } \
+    template<> luaL_Reg* GetAttrTable<Unv::SGame::Lua::type>() { return Unv::SGame::Lua::type##Getters; } \
+    template<> luaL_Reg* SetAttrTable<Unv::SGame::Lua::type>() { return Unv::SGame::Lua::type##Setters; } \
+    template<> bool IsReferenceCounted<Unv::SGame::Lua::type>() { return (is_ref_counted); } \
 
 namespace Unv {
 namespace Shared {
