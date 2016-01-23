@@ -42,6 +42,38 @@ void Report( lua_State* L, Str::StringRef place )
 		msg = lua_tostring( L, -1 );
 	}
 }
+
+void PushVec3(lua_State* L, const vec3_t vec)
+{
+	lua_newtable(L);
+	for (int i = 0; i < 3; ++i)
+	{
+		lua_pushnumber(L, vec[i]);
+		lua_rawseti(L, -2, i + 1); // lua arrays start at 1
+	}
+}
+
+void CheckVec3(lua_State* L, vec3_t vec)
+{
+	if (lua_istable(L, -2))
+	{
+		Log::Warn("CheckVec3: Input must be a table.");
+		return;
+	}
+	int index = 0;
+	lua_pushnil(L);
+	while (lua_next(L, -2) != 0) {
+		/* uses 'key' (at index -2) and 'value' (at index -1) */
+		vec[index++] = luaL_checknumber(L, -1);
+		/* removes 'value'; keeps 'key' for next iteration */
+		lua_pop(L, 1);
+
+		if (index >= 3) {
+			break;
+		}
+	}
+}
+
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv

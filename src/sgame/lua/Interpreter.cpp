@@ -28,8 +28,15 @@
 
 #include "shared/bg_lua.h"
 #include "shared/lua/Utils.h"
+#include "shared/lua/LuaLib.h"
 #include "common/Command.h"
 #include "Interpreter.h"
+
+#include "Entity.h"
+#include "EntityProxy.h"
+
+using Unv::Shared::Lua::LuaLib;
+
 namespace Unv {
 namespace SGame {
 namespace Lua {
@@ -156,7 +163,7 @@ static void OverrideGlobalLuaFunctions()
 	lua_pushcclosure(L,rocket_pairs,1);
 	lua_setfield(L,-2,"pairs");
 
-	lua_pushcfunction(L,ipairsaux);
+	lua_getglobal(L,"next");
 	lua_pushcclosure(L,rocket_ipairs,1);
 	lua_setfield(L,-2,"ipairs");
 
@@ -171,6 +178,8 @@ void Initialize()
 		luaL_openlibs(L);
 		OverrideGlobalLuaFunctions();
 		BG_InitializeLuaConstants(L);
+		LuaLib<Entity>::Register(L);
+		LuaLib<EntityProxy>::Register(L);
 	}
 }
 
