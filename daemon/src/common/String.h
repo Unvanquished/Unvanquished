@@ -31,6 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_STRING_H_
 #define COMMON_STRING_H_
 
+#include <algorithm>
+
 #include "tinyformat/tinyformat.h"
 
 namespace Str {

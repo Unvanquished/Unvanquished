@@ -22,6 +22,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include <common/FileSystem.h>
 #include "q_shared.h"
 #include "qcommon.h"
 

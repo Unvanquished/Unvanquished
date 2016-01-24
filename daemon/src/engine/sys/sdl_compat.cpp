@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #if _MSC_VER >= 1900
+#include <stdio.h>
 /* In versions of Visual Studio before VS2015, the streams in stdio.h were defined like
 
     _CRTIMP FILE * __cdecl __iob_func(void);

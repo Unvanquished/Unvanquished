@@ -31,6 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_FILESYSTEM_H_
 #define COMMON_FILESYSTEM_H_
 
+#include "Command.h"
+
 #ifdef BUILD_ENGINE
 #include "IPC/Channel.h"
 #endif

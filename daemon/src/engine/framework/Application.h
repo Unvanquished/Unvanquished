@@ -31,6 +31,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_APPLICATION_H_
 #define FRAMEWORK_APPLICATION_H_
 
+#include <string>
+#include <common/String.h>
+#include <common/Command.h>
+
 namespace Application {
 
 struct Traits {

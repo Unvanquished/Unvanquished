@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "SoundCodec.h"
 #include "AudioPrivate.h"
+#include <common/FileSystem.h>
 
 namespace Audio {
 

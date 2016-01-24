@@ -31,7 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef FRAMEWORK_CRASHDUMP_H_
 #define FRAMEWORK_CRASHDUMP_H_
 
-#include "common/Util.h"
+#include <common/String.h>
+#include <common/Util.h>
 
 namespace Sys {
     // Ensure existence of the subdirectory of homepath used for crash dumps. Return true if successful
