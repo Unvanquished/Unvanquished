@@ -100,7 +100,7 @@ static std::string CrashServerPath() {
     return FS::Path::Build(FS::GetLibPath(), name);
 }
 
-static Cvar::Cvar<bool> enableBreakpad("common.breakpad.enabled", "If enabled on startup, starts a process for recording crash dumps", Cvar::NONE, true);
+static Cvar::Cvar<bool> enableBreakpad("common.breakpad.enabled", "If enabled on startup, starts a process for recording crash dumps", Cvar::TEMPORARY, true);
 
 #ifdef _WIN32
 
