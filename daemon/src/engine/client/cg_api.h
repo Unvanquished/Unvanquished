@@ -115,8 +115,9 @@ typedef enum
 
 enum class MouseMode
 {
-    Deltas,
-    Absolute,
+	Deltas,       // The input is sent as movement deltas, the cursor is hidden
+	CustomCursor, // The input is sent as positions, the cursor should be rendered by the game
+	SystemCursor, // The input is sent as positions, the cursor should be rendered by the system
 };
 
 void            trap_Print( const char *string );

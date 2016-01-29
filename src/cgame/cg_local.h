@@ -1978,6 +1978,7 @@ void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, bool down );
 void       CG_MouseEvent( int dx, int dy );
 void       CG_MousePosEvent( int x, int y );
+void       CG_FocusEvent( bool focus );
 bool   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString();
 
@@ -2432,6 +2433,5 @@ void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
 void Rocket_RocketDebug_f();
-void Rocket_HideMouse();
 #endif
 
