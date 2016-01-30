@@ -44,7 +44,7 @@ namespace Profiler{
          * function end, and if there's a new frame), and a timestamp.
          */
     std::vector <Profiler::Point>                   samples;
-    std::chrono::high_resolution_clock::time_point  startTime;
+    std::chrono::steady_clock::time_point  startTime;
     bool                                            enabled    = false; ///TODO those bools are silly
     bool                                            nextFrame  = false;
     bool                                            shouldStop = false;
@@ -57,7 +57,7 @@ namespace Profiler{
             enabled=true;
             shouldStop=true;
             nextFrame=false;
-            startTime   = std::chrono::high_resolution_clock::now();
+            startTime   = std::chrono::steady_clock::now();
             return;
         }
 
@@ -76,7 +76,7 @@ namespace Profiler{
 
     /// Point saves the time it's constructed
     Point::Point(Type type,std::string label=""): type(type), label(label){
-        auto timeElapsed = std::chrono::high_resolution_clock::now() - startTime;
+        auto timeElapsed = std::chrono::steady_clock::now() - startTime;
         time = std::chrono::duration_cast < std::chrono::microseconds > (timeElapsed).count();
     }
 
@@ -146,7 +146,7 @@ namespace Profiler{
             }
 
             enabled = true;
-            startTime   = std::chrono::high_resolution_clock::now();
+            startTime   = std::chrono::steady_clock::now();
         }
     };
 
