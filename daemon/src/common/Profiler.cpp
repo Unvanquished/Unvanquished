@@ -99,8 +99,7 @@ namespace Profiler{
     void Stop(){
         enabled=false;
 
-        auto file = FS::HomePath::OpenWrite("profile.log"
-                                            ""); ///TODO add timestamp to file
+        auto file = FS::HomePath::OpenWrite("profile.log"); ///TODO add timestamp to file
 
         // commented lines are a [failed] attempt to support the chrome json format
         //file.Write("[",1);
