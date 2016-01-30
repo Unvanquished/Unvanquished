@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
+#include <common/FileSystem.h>
 #include "CrashDump.h"
 #include "System.h"
 #ifdef _WIN32

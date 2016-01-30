@@ -46,7 +46,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Color.h"
 #include "System.h"
 #include "Serialize.h"
-#include "FileSystem.h"
 #include "DisjointSets.h"
 
 using Math::Vec2;

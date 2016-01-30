@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_COMMON_SYSCALLS_H_
 
 #include "Primitives.h"
+#include <common/FileSystem.h>
 
 namespace VM {
 
