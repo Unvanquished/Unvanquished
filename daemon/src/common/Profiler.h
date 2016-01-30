@@ -16,6 +16,7 @@ namespace Profiler{
         };
 
         void Update();
+        void Stop();
 
         class Profile
         {
