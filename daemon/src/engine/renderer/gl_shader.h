@@ -59,6 +59,7 @@ struct GLShaderHeader
 };
 
 class GLUniform;
+class GLUniformBlock;
 class GLCompileMacro;
 class GLShaderManager;
 
@@ -85,6 +86,7 @@ protected:
 
 
 	std::vector< GLUniform * >      _uniforms;
+	std::vector< GLUniformBlock * > _uniformBlocks;
 	std::vector< GLCompileMacro * > _compileMacros;
 
 	
@@ -147,6 +149,11 @@ protected:
 			{
 				ri.Free( p->uniformLocations );
 			}
+
+			if ( p->uniformBlockIndexes )
+			{
+				ri.Free( p->uniformBlockIndexes );
+			}
 		}
 	}
 
@@ -155,6 +162,11 @@ public:
 	void RegisterUniform( GLUniform *uniform )
 	{
 		_uniforms.push_back( uniform );
+	}
+
+	void RegisterUniformBlock( GLUniformBlock *uniformBlock )
+	{
+		_uniformBlocks.push_back( uniformBlock );
 	}
 
 	void RegisterCompileMacro( GLCompileMacro *compileMacro )
@@ -321,6 +333,46 @@ public:
 	virtual size_t GetSize()
 	{
 		return 0;
+	}
+};
+
+class GLUniform1i : protected GLUniform
+{
+protected:
+	GLUniform1i( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( int value )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+
+		ASSERT_EQ(p, glState.currentProgram);
+
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform1i( %s, shader: %s, value: %d ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), value ) );
+		}
+#endif
+#if defined( USE_UNIFORM_FIREWALL )
+		int *firewall = ( int * ) &p->uniformFirewall[ _firewallIndex ];
+
+		if ( *firewall == value )
+		{
+			return;
+		}
+
+		*firewall = value;
+#endif
+		glUniform1i( p->uniformLocations[ _locationIndex ], value );
+	}
+public:
+	size_t GetSize()
+	{
+		return sizeof( int );
 	}
 };
 
@@ -623,6 +675,46 @@ protected:
 		}
 #endif
 		glUniformMatrix3x4fv( p->uniformLocations[ _locationIndex ], numMatrices, transpose, m );
+	}
+};
+
+class GLUniformBlock
+{
+protected:
+	GLShader   *_shader;
+	std::string _name;
+	size_t      _locationIndex;
+
+	GLUniformBlock( GLShader *shader, const char *name ) :
+		_shader( shader ),
+		_name( name ),
+		_locationIndex( 0 )
+	{
+		_shader->RegisterUniformBlock( this );
+	}
+
+public:
+	void SetLocationIndex( size_t index )
+	{
+		_locationIndex = index;
+	}
+
+	const char *GetName()
+	{
+		return _name.c_str();
+	}
+
+	void UpdateShaderProgramUniformBlockIndex( shaderProgram_t *shaderProgram )
+	{
+		shaderProgram->uniformBlockIndexes[ _locationIndex ] = glGetUniformBlockIndex( shaderProgram->program, GetName() );
+	}
+
+	void SetBuffer( GLuint buffer ) {
+		shaderProgram_t *p = _shader->GetProgram();
+
+		ASSERT_EQ(p, glState.currentProgram);
+
+		glBindBufferBase( GL_UNIFORM_BUFFER, p->uniformBlockIndexes[ _locationIndex ], buffer );
 	}
 };
 

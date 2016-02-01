@@ -1322,6 +1322,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		GLuint    VS, FS;
 		uint32_t  attribs; // vertex array attributes
 		GLint    *uniformLocations;
+		GLuint   *uniformBlockIndexes;
 		byte     *uniformFirewall;
 	};
 
