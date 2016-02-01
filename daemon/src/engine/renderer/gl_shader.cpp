@@ -244,6 +244,7 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 {
 	size_t uniformSize = shader->_uniformStorageSize;
 	size_t numUniforms = shader->_uniforms.size();
+	size_t numUniformBlocks = shader->_uniformBlocks.size();
 
 	// create buffer for storing uniform locations
 	shaderProgram->uniformLocations = ( GLint * ) ri.Z_Malloc( sizeof( GLint ) * numUniforms );
@@ -251,10 +252,18 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 	// create buffer for uniform firewall
 	shaderProgram->uniformFirewall = ( byte * ) ri.Z_Malloc( uniformSize );
 
+	// create buffer for storing uniform block indexes
+	shaderProgram->uniformBlockIndexes = ( GLuint * ) ri.Z_Malloc( sizeof( GLuint ) * numUniformBlocks );
+
 	// update uniforms
 	for (GLUniform *uniform : shader->_uniforms)
 	{
 		uniform->UpdateShaderProgramUniformLocation( shaderProgram );
+	}
+	// update uniform blocks
+	for (GLUniformBlock *uniformBlock : shader->_uniformBlocks)
+	{
+		uniformBlock->UpdateShaderProgramUniformBlockIndex( shaderProgram );
 	}
 }
 
@@ -675,6 +684,12 @@ void GLShaderManager::InitShader( GLShader *shader )
 		uniform->SetLocationIndex( i );
 		uniform->SetFirewallIndex( shader->_uniformStorageSize );
 		shader->_uniformStorageSize += uniform->GetSize();
+	}
+
+	for ( std::size_t i = 0; i < shader->_uniformBlocks.size(); i++ )
+	{
+		GLUniformBlock *uniformBlock = shader->_uniformBlocks[ i ];
+		uniformBlock->SetLocationIndex( i );
 	}
 
 	std::string vertexInlines;
