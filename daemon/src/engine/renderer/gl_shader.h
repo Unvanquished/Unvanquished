@@ -2212,6 +2212,36 @@ public:
 	}
 };
 
+class u_numLights :
+	GLUniform1i
+{
+public:
+	u_numLights( GLShader *shader ) :
+		GLUniform1i( shader, "u_numLights" )
+	{
+	}
+
+	void SetUniform_numLights( int value )
+	{
+		this->SetValue( value );
+	}
+};
+
+class u_Lights :
+	GLUniformBlock
+{
+ public:
+	u_Lights( GLShader *shader ) :
+		GLUniformBlock( shader, "u_Lights" )
+	{
+	}
+
+	void SetUniformBlock_Lights( GLuint buffer )
+	{
+		this->SetBuffer( buffer );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,

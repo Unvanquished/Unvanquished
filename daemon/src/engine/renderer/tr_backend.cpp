@@ -5185,6 +5185,58 @@ const void     *RB_StretchPicGradient( const void *data )
 
 /*
 =============
+RB_SetupLights
+=============
+*/
+static const void *RB_SetupLights( const void *data )
+{
+	const setupLightsCommand_t *cmd;
+	int numLights;
+
+	GLimp_LogComment( "--- RB_SetupLights ---\n" );
+
+	cmd = ( const setupLightsCommand_t * ) data;
+
+	if( GLEW_ARB_uniform_buffer_object &&
+	    (numLights = cmd->refdef.numLights) > 0 ) {
+		shaderLight_t *buffer;
+
+		glBindBuffer( GL_UNIFORM_BUFFER, tr.dlightUBO );
+		buffer = (shaderLight_t *)glMapBufferRange( GL_UNIFORM_BUFFER,
+							    0, numLights * sizeof( shaderLight_t ),
+							    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT );
+
+		for( int i = 0; i < numLights; i++ ) {
+			trRefLight_t *light = &cmd->refdef.lights[i];
+
+			VectorCopy( light->l.origin, buffer[i].center );
+			buffer[i].radius = light->l.radius;
+			VectorCopy( light->l.color, buffer[i].color );
+			buffer[i].type = Util::ordinal( light->l.rlType );
+			switch( light->l.rlType ) {
+			case refLightType_t::RL_PROJ:
+				VectorCopy( light->l.projTarget,
+					    buffer[i].direction );
+				buffer[i].angle = cosf( atan2f( VectorLength( light->l.projUp), VectorLength( light->l.projTarget ) ) );
+				break;
+			case refLightType_t::RL_DIRECTIONAL:
+				VectorCopy( light->l.projTarget,
+					    buffer[i].direction );
+				break;
+			default:
+				break;
+			}
+		}
+
+		glUnmapBuffer( GL_UNIFORM_BUFFER );
+		glBindBuffer( GL_UNIFORM_BUFFER, 0 );
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
 RB_DrawView
 =============
 */
@@ -5598,6 +5650,10 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case Util::ordinal(renderCommand_t::RC_STRETCH_PIC_GRADIENT):
 				data = RB_StretchPicGradient( data );
+				break;
+
+			case Util::ordinal(renderCommand_t::RC_SETUP_LIGHTS):
+				data = RB_SetupLights( data );
 				break;
 
 			case Util::ordinal(renderCommand_t::RC_DRAW_VIEW):

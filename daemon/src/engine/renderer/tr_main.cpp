@@ -2495,6 +2495,8 @@ void R_RenderView( viewParms_t *parms )
 	tr.viewParms.interactions = tr.refdef.interactions + firstInteraction;
 	tr.viewParms.numInteractions = tr.refdef.numInteractions - firstInteraction;
 
+	R_AddSetupLightsCmd();
+
 	R_SortDrawSurfs();
 
 	R_AddRunVisTestsCmd();
