@@ -4439,6 +4439,55 @@ static shader_t *FinishShader()
 
 	ret = GeneratePermanentShader();
 
+	// generate depth-only shader if necessary
+	if( !shader.isSky &&
+	    shader.numStages > 0 &&
+	    (stages[0].stateBits & GLS_DEPTHMASK_TRUE) &&
+	    !(stages[0].stateBits & GLS_DEPTHFUNC_EQUAL) &&
+	    !(shader.type == shaderType_t::SHADER_2D) &&
+	    !shader.polygonOffset ) {
+		// keep only the first stage
+		stages[1].active = false;
+		shader.numStages = 1;
+		strcat(shader.name, "$depth");
+
+		if( stages[0].stateBits & GLS_ATEST_BITS ) {
+			// alpha test requires a custom depth shader
+			shader.sort = Util::ordinal( shaderSort_t::SS_DEPTH );
+			stages[0].stateBits &= ~GLS_SRCBLEND_BITS & ~GLS_DSTBLEND_BITS;
+			stages[0].stateBits |= GLS_COLORMASK_BITS;
+			stages[0].type = stageType_t::ST_COLORMAP;
+
+			ret->depthShader = GeneratePermanentShader();
+		} else if ( shader.cullType == 0 &&
+			    shader.numDeforms == 0 &&
+			    tr.defaultShader ) {
+			// can use the default depth shader
+			ret->depthShader = tr.defaultShader->depthShader;
+		} else {
+			// requires a custom depth shader, but can skip
+			// the texturing
+			shader.sort = Util::ordinal( shaderSort_t::SS_DEPTH );
+			stages[0].stateBits &= ~GLS_SRCBLEND_BITS & ~GLS_DSTBLEND_BITS;
+			stages[0].stateBits |= GLS_COLORMASK_BITS;
+			stages[0].type = stageType_t::ST_COLORMAP;
+
+			stages[0].bundle[0].image[0] = tr.whiteImage;
+			stages[0].bundle[0].numTexMods = 0;
+			stages[0].tcGen_Environment = false;
+			stages[0].tcGen_Lightmap = false;
+			stages[0].rgbGen = colorGen_t::CGEN_IDENTITY;
+			stages[0].alphaGen = alphaGen_t::AGEN_IDENTITY;
+
+			ret->depthShader = GeneratePermanentShader();
+		}
+		// disable depth writes in the main pass
+		ret->stages[0]->stateBits &= ~GLS_DEPTHMASK_TRUE;
+	} else {
+		ret->depthShader = NULL;
+	}
+
+	// load all altShaders recursively
 	for ( i = 1; i < MAX_ALTSHADERS; ++i )
 	{
 		if ( ret->altShader[ i ].name )
@@ -5089,6 +5138,10 @@ void R_ShaderList_f()
 		else if ( shader->sort == Util::ordinal(shaderSort_t::SS_PORTAL) )
 		{
 			str += "SS_PORTAL           ";
+		}
+		else if ( shader->sort == Util::ordinal(shaderSort_t::SS_DEPTH) )
+		{
+			str += "SS_DEPTH            ";
 		}
 		else if ( shader->sort == Util::ordinal(shaderSort_t::SS_ENVIRONMENT_FOG) )
 		{

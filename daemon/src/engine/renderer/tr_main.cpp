@@ -1699,6 +1699,10 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int lightmapNum, i
 	drawSurf->setSort( shader->sortedIndex, lightmapNum, entityNum, fogNum, index );
 
 	tr.refdef.numDrawSurfs++;
+
+	if ( shader->depthShader != nullptr ) {
+		R_AddDrawSurf( surface, shader->depthShader, 0, 0 );
+	}
 }
 
 /*
@@ -1708,9 +1712,9 @@ R_SortDrawSurfs
 */
 static void R_SortDrawSurfs()
 {
-	drawSurf_t *drawSurf;
-	shader_t   *shader;
-	int        i;
+	drawSurf_t   *drawSurf;
+	shader_t     *shader;
+	int          i, sort;
 
 	// it is possible for some views to not have any surfaces
 	if ( tr.viewParms.numDrawSurfs < 1 )
@@ -1747,22 +1751,34 @@ static void R_SortDrawSurfs()
 	               return a.sort < b.sort;
 	           } );
 
-	// check for any pass through drawing, which
-	// may cause another view to be rendered first
-	for ( i = 0, drawSurf = tr.viewParms.drawSurfs; i < tr.viewParms.numDrawSurfs; i++, drawSurf++ )
+	// compute the offsets of the first surface of each SS_* type
+	sort = Util::ordinal( shaderSort_t::SS_BAD ) - 1;
+	for ( i = 0; i < tr.viewParms.numDrawSurfs; i++ )
 	{
+		drawSurf = &tr.viewParms.drawSurfs[ i ];
 		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
-
-		if ( shader->sort > Util::ordinal(shaderSort_t::SS_PORTAL) )
-		{
-			break;
-		}
 
 		// no shader should ever have this sort type
 		if ( shader->sort == Util::ordinal(shaderSort_t::SS_BAD) )
 		{
 			ri.Error(errorParm_t::ERR_DROP, "Shader '%s'with sort == SS_BAD", shader->name );
 		}
+
+		while ( sort < Util::ordinal( shaderSort_t::SS_NUM_SORTS ) - 1 && shader->sort > sort ) {
+			tr.viewParms.firstDrawSurf[ ++sort ] = i;
+		}
+	}
+	while ( sort < Util::ordinal( shaderSort_t::SS_NUM_SORTS ) ) {
+		tr.viewParms.firstDrawSurf[ ++sort ] = tr.viewParms.numDrawSurfs;
+	}
+
+	// check for any pass through drawing, which
+	// may cause another view to be rendered first
+	for ( i = tr.viewParms.firstDrawSurf[ Util::ordinal(shaderSort_t::SS_PORTAL) ];
+	      i < tr.viewParms.firstDrawSurf[ Util::ordinal(shaderSort_t::SS_PORTAL) + 1 ]; i++ )
+	{
+		drawSurf = &tr.viewParms.drawSurfs[ i ];
+		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
 
 		// if the mirror was completely clipped away, we may need to check another surface
 		if ( R_MirrorViewBySurface( drawSurf ) )

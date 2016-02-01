@@ -728,6 +728,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  SS_BAD,
 	  SS_PORTAL, // mirrors, portals, viewscreens
 
+	  SS_DEPTH, // depth pre-pass
+
 	  SS_ENVIRONMENT_FOG, // sky
 
 	  SS_OPAQUE, // opaque
@@ -758,7 +760,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  SS_ALMOST_NEAREST, // gun smoke puffs
 
 	  SS_NEAREST, // blood blobs
-	  SS_POST_PROCESS
+	  SS_POST_PROCESS,
+
+	  SS_NUM_SORTS
 	};
 
 	struct shaderTable_t
@@ -1227,6 +1231,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 			int  index;
 		} altShader[ MAX_ALTSHADERS ]; // state-based remapping; note that index 0 is unused
 
+		struct shader_t *depthShader;
 		struct shader_t *next;
 	};
 
@@ -1479,6 +1484,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int                  numDrawSurfs;
 		struct drawSurf_t    *drawSurfs;
+		int                  firstDrawSurf[ Util::ordinal(shaderSort_t::SS_NUM_SORTS) + 1 ];
 
 		int                  numInteractions;
 		struct interaction_t *interactions;

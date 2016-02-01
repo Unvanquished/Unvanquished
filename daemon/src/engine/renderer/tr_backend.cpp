@@ -828,7 +828,8 @@ enum renderDrawSurfaces_e
   DRAWSURFACES_ALL           = DRAWSURFACES_WORLD | DRAWSURFACES_ALL_ENTITIES
 };
 
-static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFilter )
+static void RB_RenderDrawSurfaces( shaderSort_t fromSort, shaderSort_t toSort,
+				   renderDrawSurfaces_e drawSurfFilter )
 {
 	trRefEntity_t *entity, *oldEntity;
 	shader_t      *shader, *oldShader;
@@ -837,6 +838,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	bool      depthRange, oldDepthRange;
 	int           i;
 	drawSurf_t    *drawSurf;
+	int           lastSurf;
 
 	GLimp_LogComment( "--- RB_RenderDrawSurfaces ---\n" );
 
@@ -849,8 +851,11 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	depthRange = false;
 	backEnd.currentLight = nullptr;
 
-	for ( i = 0, drawSurf = backEnd.viewParms.drawSurfs; i < backEnd.viewParms.numDrawSurfs; i++, drawSurf++ )
+	lastSurf = backEnd.viewParms.firstDrawSurf[ Util::ordinal(toSort) + 1 ];
+	for ( i = backEnd.viewParms.firstDrawSurf[ Util::ordinal(fromSort) ]; i < lastSurf; i++ )
 	{
+		drawSurf = &backEnd.viewParms.drawSurfs[ i ];
+
 		// update locals
 		entity = drawSurf->entity;
 		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
@@ -866,23 +871,6 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 		} else {
 			if( !( drawSurfFilter & DRAWSURFACES_NEAR_ENTITIES ) )
 				continue;
-		}
-
-		if ( opaque )
-		{
-			// skip all translucent surfaces that don't matter for this pass
-			if ( shader->sort > Util::ordinal(shaderSort_t::SS_OPAQUE) )
-			{
-				break;
-			}
-		}
-		else
-		{
-			// skip all opaque surfaces that don't matter for this pass
-			if ( shader->sort <= Util::ordinal(shaderSort_t::SS_OPAQUE) )
-			{
-				continue;
-			}
 		}
 
 		if ( entity == oldEntity && shader == oldShader && lightmapNum == oldLightmapNum && fogNum == oldFogNum )
@@ -4420,22 +4408,24 @@ static void RB_RenderView()
 		startTime = ri.Milliseconds();
 	}
 
+	RB_RenderDrawSurfaces( shaderSort_t::SS_DEPTH, shaderSort_t::SS_DEPTH, DRAWSURFACES_ALL );
+
 	if( tr.refdef.blurVec[0] != 0.0f ||
 			tr.refdef.blurVec[1] != 0.0f ||
 			tr.refdef.blurVec[2] != 0.0f )
 	{
 		// draw everything that is not the gun
-		RB_RenderDrawSurfaces( true, DRAWSURFACES_ALL_FAR );
+		RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_FOG, shaderSort_t::SS_OPAQUE, DRAWSURFACES_ALL_FAR );
 
 		RB_RenderMotionBlur();
 
 		// draw the gun and other "near" stuff
-		RB_RenderDrawSurfaces( true, DRAWSURFACES_NEAR_ENTITIES );
+		RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_FOG, shaderSort_t::SS_OPAQUE, DRAWSURFACES_NEAR_ENTITIES );
 	}
 	else
 	{
 		// draw everything that is opaque
-		RB_RenderDrawSurfaces( true, DRAWSURFACES_ALL );
+		RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_FOG, shaderSort_t::SS_OPAQUE, DRAWSURFACES_ALL );
 	}
 
 	if ( r_ssao->integer && GLEW_ARB_texture_gather ) {
@@ -4464,7 +4454,7 @@ static void RB_RenderView()
 	RB_RenderGlobalFog();
 
 	// draw everything that is translucent
-	RB_RenderDrawSurfaces( false, DRAWSURFACES_ALL );
+	RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_NOFOG, shaderSort_t::SS_POST_PROCESS, DRAWSURFACES_ALL );
 
 	GL_CheckErrors();
 	// render bloom post process effect
