@@ -239,7 +239,7 @@ struct refLight_t
 	float     scale; // r_lightScale if not set
 
 	// omni-directional light specific
-	vec3_t radius;
+	float     radius;
 
 	// projective light specific
 	vec3_t   projTarget;

@@ -2026,7 +2026,7 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	VectorScale( up, 2.0f * radius, light->l.projUp );
 	VectorCopy( vec3_origin, light->l.projStart );
 	VectorCopy( vec3_origin, light->l.projEnd );
-	VectorScale( forward, light->l.radius[0], light->l.projTarget );
+	VectorScale( forward, light->l.radius, light->l.projTarget );
 }
 
 /*

@@ -390,7 +390,7 @@ void RE_AddRefLightToScene( const refLight_t *l )
 		return;
 	}
 
-	if ( l->radius[ 0 ] <= 0 && !VectorLength( l->radius ) && !VectorLength( l->projTarget ) )
+	if ( l->radius <= 0 && !VectorLength( l->projTarget ) )
 	{
 		return;
 	}
@@ -507,9 +507,7 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	// HACK: this will tell the renderer backend to use tr.defaultLightShader
 	light->l.attenuationShader = 0;
 
-	light->l.radius[ 0 ] = radius;
-	light->l.radius[ 1 ] = radius;
-	light->l.radius[ 2 ] = radius;
+	light->l.radius = radius;
 
 	light->l.color[ 0 ] = r;
 	light->l.color[ 1 ] = g;

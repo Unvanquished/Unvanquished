@@ -1817,8 +1817,8 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 		case refLightType_t::RL_OMNI:
 			{
 				MatrixAffineInverse( light->transformMatrix, light->viewMatrix );
-				MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius[ 0 ], 1.0 / light->l.radius[ 1 ],
-							        1.0 / light->l.radius[ 2 ] );
+				MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius, 1.0 / light->l.radius,
+							        1.0 / light->l.radius );
 				break;
 			}
 
