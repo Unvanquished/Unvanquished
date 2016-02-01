@@ -182,6 +182,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define MAX_INTERACTIONS   MAX_DRAWSURFS * 8
 #define INTERACTION_MASK   ( MAX_INTERACTIONS - 1 )
 
+// 16x16 pixels per tile
+#define TILE_SHIFT 4
+#define TILE_SIZE  (1 << TILE_SHIFT)
+#define TILE_SHIFT_STEP1 2
+#define TILE_SIZE_STEP1  (1 << TILE_SHIFT_STEP1)
+
+// max. 16 dynamic lights per plane
+#define LIGHT_PLANES ( MAX_REF_LIGHTS / 16 )
+
 	enum class renderSpeeds_t
 	{
 	  RSPEEDS_GENERAL = 1,
@@ -687,7 +696,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		VBO_LAYOUT_VERTEX_ANIMATION,
 		VBO_LAYOUT_SKELETAL,
 		VBO_LAYOUT_STATIC,
-		VBO_LAYOUT_POSITION
+		VBO_LAYOUT_POSITION,
+		VBO_LAYOUT_XYST
 	};
 
 	struct vboData_t
@@ -695,7 +705,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec3_t *xyz;
 		i16vec4_t *qtangent;
 		u8vec4_t *color;
-		union { i16vec2_t *st; i16vec4_t *stpq; };
+		union { i16vec2_t *st; i16vec4_t *stpq; vec2_t *stf; };
 		int    (*boneIndexes)[ 4 ];
 		vec4_t *boneWeights;
 		vec4_t *spriteOrientation;
@@ -1360,6 +1370,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		trRefEntity_t           *entities;
 
 		int                     numLights;
+		int                     numShaderLights;
 		trRefLight_t            *lights;
 
 		int                     numPolys;
@@ -2436,6 +2447,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int    scissorX, scissorY, scissorWidth, scissorHeight;
 		int    viewportX, viewportY, viewportWidth, viewportHeight;
 		float  polygonOffsetFactor, polygonOffsetUnits;
+		vec2_t tileStep;
 
 		int    currenttextures[ 32 ];
 		int    currenttmu;
@@ -2617,6 +2629,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		image_t    *currentRenderImage[ 2 ];
 		image_t    *currentDepthImage;
 		image_t    *depthRenderImage;
+		image_t    *depthtile1RenderImage;
+		image_t    *depthtile2RenderImage;
+		image_t    *lighttileRenderImage;
 		image_t    *portalRenderImage;
 
 		image_t    *occlusionRenderFBOImage;
@@ -2638,6 +2653,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		// framebuffer objects
 		FBO_t *mainFBO[ 2 ];
+		FBO_t *depthtile1FBO;
+		FBO_t *depthtile2FBO;
+		FBO_t *lighttileFBO;
 		FBO_t *portalRenderFBO; // holds a copy of the last currentRender that was rendered into a FBO
 		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;
@@ -2650,6 +2668,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// vertex buffer objects
 		VBO_t *unitCubeVBO;
 		IBO_t *unitCubeIBO;
+		VBO_t *lighttileVBO;
 
 		// internal shaders
 		shader_t *defaultShader;
@@ -3380,6 +3399,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void Tess_End();
 	void Tess_EndBegin();
 	void Tess_DrawElements();
+	void Tess_DrawArrays( GLenum elementType );
 	void Tess_CheckOverflow( int verts, int indexes );
 
 	void Tess_ComputeColor( shaderStage_t *pStage );

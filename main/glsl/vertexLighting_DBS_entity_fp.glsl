@@ -34,7 +34,6 @@ uniform float		u_EnvironmentInterpolation;
 uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
-uniform vec2        u_SpecularExponent;
 
 uniform sampler3D       u_LightGrid1;
 uniform sampler3D       u_LightGrid2;
@@ -150,23 +149,9 @@ void	main()
 
 	specBase.rgb *= mix(envColor0, envColor1, u_EnvironmentInterpolation).rgb;
 
-	// Blinn-Phong
-	float NH = clamp(dot(N, H), 0, 1);
-	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
-
-#if 0
-	gl_FragColor = vec4(specular, 1.0);
-	// gl_FragColor = vec4(u_EnvironmentInterpolation, u_EnvironmentInterpolation, u_EnvironmentInterpolation, 1.0);
-	// gl_FragColor = envColor0;
-	return;
-#endif
-
 #else
-
 	// simple Blinn-Phong
-	float NH = clamp(dot(N, H), 0, 1);
 	vec4 specBase = texture2D(u_SpecularMap, texSpecular).rgba;
-	vec3 specMult = lgtCol * pow(NH, u_SpecularExponent.x * specBase.a + u_SpecularExponent.y) * r_SpecularScale;
 
 #endif // USE_REFLECTIVE_SPECULAR
 
@@ -175,8 +160,7 @@ void	main()
 
 	vec3 N = normalize(var_Normal);
 
-	vec3 specBase = vec3(0.0);
-	vec3 specMult = vec3(0.0);
+	vec4 specBase = vec4(0.0);
 
 #endif // USE_NORMAL_MAPPING
 
@@ -194,59 +178,27 @@ void	main()
 	float rim = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), r_RimExponent);
 	specBase.rgb = mix(specBase.rgb, vec3(1.0), rim);
 	vec3 emission = ambCol * rim * rim * 0.2;
-
-	//gl_FragColor = vec4(emission, 1.0);
-	//return;
-
 #endif
-
-	// compute the light term
-#if defined(r_HalfLambertLighting)
-	// http://developer.valvesoftware.com/wiki/Half_Lambert
-	float NL = dot(N, L) * 0.5 + 0.5;
-	NL *= NL;
-#elif defined(r_WrapAroundLighting)
-	float NL = clamp(dot(N, L) + r_WrapAroundLighting, 0.0, 1.0) / clamp(1.0 + r_WrapAroundLighting, 0.0, 1.0);
-#else
-	float NL = clamp(dot(N, L), 0.0, 1.0);
-#endif
-
-	vec3 light = ambCol + lgtCol * NL;
-	light *= r_AmbientScale;
 
 	// compute final color
-	vec4 color = diffuse;
-	color.rgb *= light;
-	color.rgb += specBase.rgb * specMult;
+	vec4 color = vec4(ambCol * r_AmbientScale * diffuse.xyz, 1.0);
+	computeLight( L, N, N, V, lgtCol, diffuse, specBase, color );
+
+#ifdef USE_SHADER_LIGHTS
+	computeDLights( var_Position, N, V, diffuse, specBase, color );
+#endif
+
 #if defined(r_RimLighting)
 	color.rgb += 0.7 * emission;
 #endif
+
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, var_TexGlow).rgb;
 #endif
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 
-#if defined(r_DeferredShading)
-	gl_FragData[0] = color;
-	gl_FragData[1] = vec4(diffuse.rgb, 0.0);
-	gl_FragData[2] = vec4(N, 0.0);
-	gl_FragData[3] = vec4(specBase.rgb, 0.0);
-#else
 	gl_FragColor = color;
-#endif
-
-	// gl_FragColor = vec4(vec3(NL, NL, NL), diffuse.a);
-
-#if 0
-#if defined(USE_PARALLAX_MAPPING)
-	gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
-#elif defined(USE_NORMAL_MAPPING)
-	gl_FragColor = vec4(vec3(0.0, 0.0, 1.0), diffuse.a);
-#else
-	gl_FragColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
-#endif
-#endif
 
 // Debugging
 #if defined(r_showEntityNormals)

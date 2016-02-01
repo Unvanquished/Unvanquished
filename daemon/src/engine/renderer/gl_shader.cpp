@@ -61,6 +61,9 @@ GLShader_liquid                          *gl_liquidShader = nullptr;
 GLShader_volumetricFog                   *gl_volumetricFogShader = nullptr;
 GLShader_motionblur                      *gl_motionblurShader = nullptr;
 GLShader_ssao                            *gl_ssaoShader = nullptr;
+GLShader_depthtile1                      *gl_depthtile1Shader = nullptr;
+GLShader_depthtile2                      *gl_depthtile2Shader = nullptr;
+GLShader_lighttile                       *gl_lighttileShader = nullptr;
 GLShader_fxaa                            *gl_fxaaShader = nullptr;
 GLShaderManager                           gl_shaderManager;
 
@@ -459,6 +462,7 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	AddDefine( env, "M_PI", static_cast<float>( M_PI ) );
 	AddDefine( env, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 	AddDefine( env, "MAX_REF_LIGHTS", MAX_REF_LIGHTS );
+	AddDefine( env, "TILE_SIZE", TILE_SIZE );
 
 	float fbufWidthScale = 1.0f / glConfig.vidWidth;
 	float fbufHeightScale = 1.0f / glConfig.vidHeight;
@@ -475,6 +479,7 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	}
 
 	AddDefine( env, "r_NPOTScale", npotWidthScale, npotHeightScale );
+	AddDefine( env, "r_tileStep", glState.tileStep[ 0 ], glState.tileStep[ 1 ] );
 
 	if ( glConfig.driverType == glDriverType_t::GLDRV_MESA )
 		AddDefine( env, "GLDRV_MESA", 1 );
@@ -1274,13 +1279,16 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	u_Bones( this ),
 	u_VertexInterpolation( this ),
 	u_DepthScale( this ),
+	u_numLights( this ),
+	u_Lights( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_VERTEX_SPRITE( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
 	GLCompileMacro_USE_TCGEN_LIGHTMAP( this ),
-	GLCompileMacro_USE_DEPTH_FADE( this )
+	GLCompileMacro_USE_DEPTH_FADE( this ),
+	GLCompileMacro_USE_SHADER_LIGHTS( this )
 {
 }
 
@@ -1309,10 +1317,13 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	u_ModelMatrix( this ),
 	u_ModelViewProjectionMatrix( this ),
 	u_DepthScale( this ),
+	u_numLights( this ),
+	u_Lights( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_GLOW_MAPPING( this )
+	GLCompileMacro_USE_GLOW_MAPPING( this ),
+	GLCompileMacro_USE_SHADER_LIGHTS( this )
 {
 }
 
@@ -1338,6 +1349,7 @@ void GLShader_lightMapping::SetShaderProgramUniforms( shaderProgram_t *shaderPro
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DeluxeMap" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightTiles" ), 8 );
 }
 
 GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShaderManager *manager ) :
@@ -1357,13 +1369,16 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	u_EnvironmentInterpolation( this ),
 	u_LightGridOrigin( this ),
 	u_LightGridScale( this ),
+	u_numLights( this ),
+	u_Lights( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this ),
-	GLCompileMacro_USE_GLOW_MAPPING( this )
+	GLCompileMacro_USE_GLOW_MAPPING( this ),
+	GLCompileMacro_USE_SHADER_LIGHTS( this )
 {
 }
 
@@ -1391,6 +1406,7 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightTiles" ), 8 );
 }
 
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
@@ -1413,10 +1429,13 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	u_LightWrapAround( this ),
 	u_LightGridOrigin( this ),
 	u_LightGridScale( this ),
+	u_numLights( this ),
+	u_Lights( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
-	GLCompileMacro_USE_GLOW_MAPPING( this )
+	GLCompileMacro_USE_GLOW_MAPPING( this ),
+	GLCompileMacro_USE_SHADER_LIGHTS( this )
 {
 }
 
@@ -1441,6 +1460,7 @@ void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 3 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightTiles" ), 8 );
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderManager *manager ):
@@ -1973,6 +1993,41 @@ GLShader_ssao::GLShader_ssao( GLShaderManager *manager ) :
 }
 
 void GLShader_ssao::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 0 );
+}
+
+GLShader_depthtile1::GLShader_depthtile1( GLShaderManager *manager ) :
+	GLShader( "depthtile1", ATTR_POSITION, manager ),
+	u_zFar( this )
+{
+}
+
+void GLShader_depthtile1::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 0 );
+}
+
+GLShader_depthtile2::GLShader_depthtile2( GLShaderManager *manager ) :
+	GLShader( "depthtile2", ATTR_POSITION, manager )
+{
+}
+
+void GLShader_depthtile2::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 0 );
+}
+
+GLShader_lighttile::GLShader_lighttile( GLShaderManager *manager ) :
+	GLShader( "lighttile", ATTR_POSITION | ATTR_TEXCOORD, manager ),
+	u_ModelMatrix( this ),
+	u_numLights( this ),
+	u_lightLayer( this ),
+	u_Lights( this )
+{
+}
+
+void GLShader_lighttile::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 0 );
 }

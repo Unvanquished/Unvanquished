@@ -2057,22 +2057,29 @@ void R_AddLightInteractions()
 	bspNode_t    *leaf;
 	link_t       *l;
 
+	tr.refdef.numShaderLights = 0;
 	for ( i = 0; i < tr.refdef.numLights; i++ )
 	{
 		light = tr.currentLight = &tr.refdef.lights[ i ];
 
 		if ( light->isStatic )
 		{
-			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
+			if ( r_staticLight->integer != 1 || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
+				if( r_staticLight->integer == 2 ) {
+					tr.refdef.numShaderLights++;
+				}
 				light->cull = cullResult_t::CULL_OUT;
 				continue;
 			}
 		}
 		else
 		{
-			if ( !r_dynamicLight->integer )
+			if ( r_dynamicLight->integer != 1 )
 			{
+				if( r_dynamicLight->integer == 2 ) {
+					tr.refdef.numShaderLights++;
+				}
 				light->cull = cullResult_t::CULL_OUT;
 				continue;
 			}
@@ -2252,14 +2259,14 @@ void R_AddLightBoundsToVisBounds()
 
 		if ( light->isStatic )
 		{
-			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
+			if ( r_staticLight->integer != 1 || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
 				continue;
 			}
 		}
 		else
 		{
-			if ( !r_dynamicLight->integer )
+			if ( r_dynamicLight->integer != 1 )
 			{
 				continue;
 			}

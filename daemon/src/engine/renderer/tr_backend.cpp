@@ -2626,6 +2626,90 @@ static void RB_RenderInteractionsShadowMapped()
 	}
 }
 
+void RB_RenderPostDepth()
+{
+	static vec4_t quadVerts[4] = {
+		{ -1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f,  1.0f, 0.0f, 1.0f },
+		{ -1.0f,  1.0f, 0.0f, 1.0f }
+	};
+	vec3_t zParams;
+	int w, h;
+
+	GLimp_LogComment( "--- RB_RenderPostDepth ---\n" );
+
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
+	{
+		return;
+	}
+
+	// 1st step
+	GL_State( GLS_DEPTHTEST_DISABLE );
+	GL_Cull( CT_TWO_SIDED );
+
+	R_BindFBO( tr.depthtile1FBO );
+	w = (glConfig.vidWidth + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	h = (glConfig.vidHeight + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	GL_Viewport( 0, 0, w, h );
+	gl_depthtile1Shader->BindProgram( 0 );
+
+	zParams[ 0 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_x * 0.5f) ) / glConfig.vidWidth;
+	zParams[ 1 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_y * 0.5f) ) / glConfig.vidHeight;
+	zParams[ 2 ] = backEnd.viewParms.zFar;
+
+	gl_depthtile1Shader->SetUniform_zFar( zParams );
+	GL_BindToTMU( 0, tr.currentDepthImage );
+
+	Tess_InstantQuad( quadVerts );
+
+	// 2nd step
+	R_BindFBO( tr.depthtile2FBO );
+
+	w = (glConfig.vidWidth + TILE_SIZE - 1) >> TILE_SHIFT;
+	h = (glConfig.vidHeight + TILE_SIZE - 1) >> TILE_SHIFT;
+	GL_Viewport( 0, 0, w, h );
+	gl_depthtile2Shader->BindProgram( 0 );
+
+	GL_BindToTMU( 0, tr.depthtile1RenderImage );
+
+	Tess_InstantQuad( quadVerts );
+
+	// render lights
+	R_BindFBO( tr.lighttileFBO );
+	gl_lighttileShader->BindProgram( 0 );
+	gl_lighttileShader->SetUniform_ModelMatrix( backEnd.viewParms.world.modelViewMatrix );
+	gl_lighttileShader->SetUniform_numLights( backEnd.refdef.numLights );
+	gl_lighttileShader->SetUniformBlock_Lights( tr.dlightUBO );
+
+	GL_BindToTMU( 0, tr.depthtile2RenderImage );
+
+	R_BindVBO( tr.lighttileVBO );
+
+	for( int layer = 0; layer < MAX_REF_LIGHTS / 256; layer++ ) {
+		R_AttachFBOTexture3D( tr.lighttileRenderImage->texnum, 0, layer );
+		gl_lighttileShader->SetUniform_lightLayer( layer );
+
+		GL_Viewport( 0, 0, tr.lighttileRenderImage->width, tr.lighttileRenderImage->height );
+		tess.numIndexes = 0;
+		tess.numVertexes = tr.depthtile2RenderImage->width * tr.depthtile2RenderImage->height;
+
+		GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD );
+		glEnable( GL_POINT_SPRITE );
+		glEnable( GL_PROGRAM_POINT_SIZE );
+		Tess_DrawArrays( GL_POINTS );
+		glDisable( GL_PROGRAM_POINT_SIZE );
+		glDisable( GL_POINT_SPRITE );
+	}
+
+	// back to main image
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
+	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
+		     backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+
+	GL_CheckErrors();
+}
+
 void RB_RenderGlobalFog()
 {
 	vec3_t   local;
@@ -4409,6 +4493,7 @@ static void RB_RenderView()
 	}
 
 	RB_RenderDrawSurfaces( shaderSort_t::SS_DEPTH, shaderSort_t::SS_DEPTH, DRAWSURFACES_ALL );
+	RB_RenderPostDepth();
 
 	if( tr.refdef.blurVec[0] != 0.0f ||
 			tr.refdef.blurVec[1] != 0.0f ||
@@ -5211,7 +5296,7 @@ static const void *RB_SetupLights( const void *data )
 
 			VectorCopy( light->l.origin, buffer[i].center );
 			buffer[i].radius = light->l.radius;
-			VectorCopy( light->l.color, buffer[i].color );
+			VectorScale( light->l.color, light->l.scale, buffer[i].color );
 			buffer[i].type = Util::ordinal( light->l.rlType );
 			switch( light->l.rlType ) {
 			case refLightType_t::RL_PROJ:
