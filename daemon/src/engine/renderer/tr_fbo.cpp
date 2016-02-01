@@ -420,6 +420,18 @@ void R_InitFBOs()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
+	tr.mainFBO[0] = R_CreateFBO( "_main[0]", width, height );
+	R_BindFBO( tr.mainFBO[0] );
+	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.currentRenderImage[0]->texnum, 0 );
+	R_AttachFBOTextureDepth( tr.currentDepthImage->texnum );
+	R_CheckFBO( tr.mainFBO[0] );
+
+	tr.mainFBO[1] = R_CreateFBO( "_main[1]", width, height );
+	R_BindFBO( tr.mainFBO[1] );
+	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.currentRenderImage[1]->texnum, 0 );
+	R_AttachFBOTextureDepth( tr.currentDepthImage->texnum );
+	R_CheckFBO( tr.mainFBO[1] );
+
 	tr.occlusionRenderFBO = R_CreateFBO( "_occlusionRender", width, height );
 	R_BindFBO( tr.occlusionRenderFBO );
 

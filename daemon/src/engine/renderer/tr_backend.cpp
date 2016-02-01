@@ -1402,7 +1402,6 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, shadowMapResolutions[ light->shadowLOD ], shadowMapResolutions[ light->shadowLOD ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = false;
 
 				switch ( cubeSide )
 				{
@@ -1523,7 +1522,6 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, shadowMapResolutions[ light->shadowLOD ], shadowMapResolutions[ light->shadowLOD ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = false;
 
 				GL_LoadProjectionMatrix( light->projectionMatrix );
 				break;
@@ -1576,7 +1574,6 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, sunShadowMapResolutions[ splitFrustumIndex ], sunShadowMapResolutions[ splitFrustumIndex ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = false;
 
 				VectorCopy( tr.sunDirection, lightDirection );
 
@@ -1794,7 +1791,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 		GLimp_LogComment( va( "----- First Light Interaction: %i -----\n", (int)( light->firstInteraction - backEnd.viewParms.interactions ) ) );
 	}
 
-	R_BindNullFBO();
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 	// set the window clipping
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
@@ -2709,14 +2706,7 @@ void RB_RenderGlobalFog()
 	GL_BindToTMU( 0, tr.fogImage );
 
 	// bind u_DepthMap
-	GL_SelectTexture( 1 );
-
-	// depth texture is not bound to a FBO
-	if( !backEnd.depthRenderImageValid ) {
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = true;
-	}
+	GL_BindToTMU( 1, tr.depthRenderImage );
 
 	// set 2D virtual screen size
 	GL_PushMatrix();
@@ -2776,10 +2766,7 @@ void RB_RenderBloom()
 
 		gl_contrastShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-		GL_SelectTexture( 0 );
-		GL_Bind( tr.currentRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth,
-							 tr.currentRenderImage->uploadHeight );
+		GL_BindToTMU( 0, tr.currentRenderImage[ backEnd.currentMainFBO ] );
 
 		GL_PopMatrix(); // special 1/4th of the screen contrastRenderFBO ortho
 
@@ -2839,7 +2826,7 @@ void RB_RenderBloom()
 			}
 		}
 
-		R_BindNullFBO();
+		R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 		gl_screenShader->BindProgram( 0 );
 		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -2875,25 +2862,15 @@ void RB_RenderMotionBlur()
 	GL_State( GLS_DEPTHTEST_DISABLE );
 	GL_Cull( cullType_t::CT_TWO_SIDED );
 
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.currentRenderImage );
-	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-			     tr.currentRenderImage->uploadWidth,
-			     tr.currentRenderImage->uploadHeight );
-
-	if( !backEnd.depthRenderImageValid ) {
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-				     tr.depthRenderImage->uploadWidth,
-				     tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = true;
-	}
+	// Swap main FBOs
+	GL_BindToTMU( 0, tr.currentRenderImage[ backEnd.currentMainFBO ] );
+	backEnd.currentMainFBO = 1 - backEnd.currentMainFBO;
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 	gl_motionblurShader->BindProgram( 0 );
 	gl_motionblurShader->SetUniform_blurVec(tr.refdef.blurVec);
 
-	GL_BindToTMU( 0, tr.currentRenderImage );
-	GL_BindToTMU( 1, tr.depthRenderImage );
+	GL_BindToTMU( 1, tr.currentDepthImage );
 
 	// draw quad
 	Tess_InstantQuad( quadVerts );
@@ -2925,14 +2902,6 @@ void RB_RenderSSAO()
 	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO );
 	GL_Cull( cullType_t::CT_TWO_SIDED );
 
-	if( !backEnd.depthRenderImageValid ) {
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-				     tr.depthRenderImage->uploadWidth,
-				     tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = true;
-	}
-
 	if ( r_ssao->integer < 0 ) {
 		// clear the screen to show only SSAO
 		GL_ClearColor( 1.0f, 1.0f, 1.0f, 1.0f);
@@ -2947,7 +2916,7 @@ void RB_RenderSSAO()
 
 	gl_ssaoShader->SetUniform_zFar( zParams );
 
-	GL_BindToTMU( 0, tr.depthRenderImage );
+	GL_BindToTMU( 0, tr.currentDepthImage );
 
 	// draw quad
 	Tess_InstantQuad( quadVerts );
@@ -2980,20 +2949,13 @@ void RB_FXAA()
 	GL_State( GLS_DEPTHTEST_DISABLE );
 	GL_Cull( cullType_t::CT_TWO_SIDED );
 
-	// copy the framebuffer in a texture
-	// TODO: it is pretty inefficient
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.currentRenderImage );
-	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth,
-						 tr.currentRenderImage->uploadHeight );
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Swap main FBOs
+	GL_BindToTMU( 0, tr.currentRenderImage[ backEnd.currentMainFBO ] );
+	backEnd.currentMainFBO = 1 - backEnd.currentMainFBO;
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 	// set the shader parameters
 	gl_fxaaShader->BindProgram( 0 );
-
-	R_BindNullFBO();
 
 	Tess_InstantQuad( quadVerts );
 
@@ -3032,12 +2994,10 @@ void RB_CameraPostFX()
 
 	gl_cameraEffectsShader->SetUniform_InverseGamma( 1.0 / r_gamma->value );
 
-	// bind u_CurrentMap
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.occlusionRenderFBOImage );
-
-	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.occlusionRenderFBOImage->uploadWidth, tr.occlusionRenderFBOImage->uploadHeight );
-
+	// This shader is run last, so let it render to screen instead of
+	// tr.mainFBO
+	R_BindNullFBO();
+	GL_BindToTMU( 0, tr.currentRenderImage[ backEnd.currentMainFBO ] );
 	GL_BindToTMU( 3, tr.colorGradeImage );
 
 	// draw viewport
@@ -4418,7 +4378,7 @@ static void RB_RenderView()
 	}
 
 	// disable offscreen rendering
-	R_BindNullFBO();
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 	// we will need to change the projection matrix before drawing
 	// 2D images again
@@ -4434,7 +4394,6 @@ static void RB_RenderView()
 	clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
 	glClear( clearBits );
-	backEnd.depthRenderImageValid = false;
 
 	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
 	{
@@ -5419,7 +5378,6 @@ const void     *RB_DrawBuffer( const void *data )
 //      GL_ClearColor(1, 0, 0.5, 1);
 		GL_ClearColor( 0, 0, 0, 1 );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		backEnd.depthRenderImageValid = false;
 	}
 
 	glState.finishCalled = false;

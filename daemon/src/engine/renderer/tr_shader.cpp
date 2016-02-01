@@ -2496,6 +2496,12 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 		shader.alphaTest = true;
 	}
 
+	// check that depthFade and depthWrite are mutually exclusive
+	if ( depthMaskBits && stage->hasDepthFade ) {
+		Log::Warn( "depth fade conflicts with depth mask in shader '%s'\n", shader.name );
+		stage->hasDepthFade = false;
+	}
+
 	// compute state bits
 	stage->stateBits = colorMaskBits | depthMaskBits | blendSrcBits | blendDstBits | atestBits | depthFuncBits | polyModeBits;
 
