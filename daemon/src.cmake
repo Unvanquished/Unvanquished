@@ -22,6 +22,8 @@ set(COMMONLIST
     ${COMMON_DIR}/Endian.h
     ${COMMON_DIR}/FileSystem.cpp
     ${COMMON_DIR}/FileSystem.h
+    ${COMMON_DIR}/Profiler.cpp
+    ${COMMON_DIR}/Profiler.h
     ${COMMON_DIR}/IPC/Channel.h
     ${COMMON_DIR}/IPC/CommandBuffer.cpp
     ${COMMON_DIR}/IPC/CommandBuffer.h

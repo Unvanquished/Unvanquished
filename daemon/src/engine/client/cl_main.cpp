@@ -39,6 +39,7 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
+#include "../common/Profiler.h"
 
 #include "botlib/bot_debug.h"
 
@@ -2053,6 +2054,7 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend()
 {
+    PROFILE()
 	int  port;
 	char info[ MAX_INFO_STRING ];
 	char data[ MAX_INFO_STRING ];
@@ -2815,6 +2817,7 @@ CL_CheckTimeout
 */
 void CL_CheckTimeout()
 {
+    PROFILE()
 	//
 	// check timeout
 	//
@@ -2845,6 +2848,7 @@ CL_CheckUserinfo
 */
 void CL_CheckUserinfo()
 {
+    PROFILE()
 	// don't add reliable commands when not yet connected
 	if ( cls.state < CA_CHALLENGING )
 	{
@@ -2995,6 +2999,8 @@ CL_Frame
 */
 void CL_Frame( int msec )
 {
+    PROFILE()
+
 	if ( !com_cl_running->integer )
 	{
 		return;

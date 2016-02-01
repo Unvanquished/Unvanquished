@@ -45,6 +45,7 @@ Maryland 20850 USA.
 #include "framework/CvarSystem.h"
 #include "framework/ConsoleHistory.h"
 #include "framework/LogSystem.h"
+#include "../common/Profiler.h"
 #include "framework/System.h"
 #include <common/FileSystem.h>
 
@@ -1072,6 +1073,7 @@ extern bool consoleButtonWasPressed;
 
 int Com_EventLoop()
 {
+    PROFILE()
 	sysEvent_t ev;
 	netadr_t   evFrom;
 	byte       bufData[ MAX_MSGLEN ];
@@ -1480,6 +1482,7 @@ Writes key bindings and archived cvars to config file if modified
 */
 void Com_WriteConfiguration()
 {
+    PROFILE()
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything
 	if ( !com_fullyInitialized )
@@ -1615,6 +1618,7 @@ int Com_ModifyMsec( int msec )
 	return msec;
 }
 
+
 /*
 =================
 Com_Frame
@@ -1653,6 +1657,8 @@ void Com_Frame()
 	timeBeforeEvents = 0;
 	timeBeforeClient = 0;
 	timeAfter = 0;
+
+    Profiler::Update();
 
 	// Check to make sure we don't have any http data waiting
 	// comment this out until I get things going better under win32
@@ -1840,6 +1846,7 @@ void Com_Frame()
 		c_pointcontents = 0;
 	}
 
+    //Profiler::Show();
 	// old net chan encryption key
 	//key = lastTime * 0x87243987;
 

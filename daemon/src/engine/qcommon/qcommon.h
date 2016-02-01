@@ -976,4 +976,5 @@ const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, in
 const char* Trans_GettextGame( const char *msgid ) PRINTF_TRANSLATE_ARG(1);
 const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) PRINTF_TRANSLATE_ARG(2);
 const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) PRINTF_TRANSLATE_ARG(1) PRINTF_TRANSLATE_ARG(2);
+
 #endif // QCOMMON_H_

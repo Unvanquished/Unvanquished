@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_light.c
 #include "tr_local.h"
+#include "common/Profiler.h"
 
 /*
 =============
@@ -32,6 +33,7 @@ Determine which dynamic lights may effect this bmodel
 */
 void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType )
 {
+    PROFILE()
 	bspSurface_t      *surf;
 	bspModel_t        *bspModel = nullptr;
 	model_t           *pModel = nullptr;
@@ -118,6 +120,7 @@ LIGHT SAMPLING
 float R_InterpolateLightGrid( world_t *w, int from[3], int to[3],
 			      float *factors[3], vec3_t ambientLight,
 			      vec3_t directedLight, vec2_t lightDir ) {
+    PROFILE()
 	float           totalFactor = 0.0f, factor;
 	float           *xFactor, *yFactor, *zFactor;
 	int             gridStep[ 3 ];
@@ -183,6 +186,7 @@ R_LightForPoint
 */
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
 {
+    PROFILE()
 	int             i;
 	int             from[ 3 ], to[ 3 ];
 	float           frac[ 3 ][ 2 ];
@@ -263,6 +267,7 @@ R_SetupEntityLightingGrid
 */
 static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 {
+    PROFILE()
 	vec3_t         lightOrigin;
 
 	if ( forcedOrigin )
@@ -298,6 +303,7 @@ by the Calc_* functions
 */
 void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t forcedOrigin )
 {
+    PROFILE()
 	// lighting calculations
 	if ( ent->lightingCalculated )
 	{
@@ -346,6 +352,7 @@ Tr3B - needs finished transformMatrix
 */
 void R_SetupLightOrigin( trRefLight_t *light )
 {
+    PROFILE()
 	vec3_t transformed;
 
 	if ( light->l.rlType == RL_DIRECTIONAL )
@@ -384,6 +391,7 @@ R_SetupLightLocalBounds
 */
 void R_SetupLightLocalBounds( trRefLight_t *light )
 {
+    PROFILE()
 	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
@@ -453,6 +461,7 @@ Tr3B - needs finished transformMatrix
 */
 void R_SetupLightWorldBounds( trRefLight_t *light )
 {
+    PROFILE()
 	int    j;
 	vec3_t v, transformed;
 
@@ -478,6 +487,7 @@ R_SetupLightView
 */
 void R_SetupLightView( trRefLight_t *light )
 {
+    PROFILE()
 	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
@@ -494,6 +504,7 @@ void R_SetupLightView( trRefLight_t *light )
 
 void R_TessLight( const trRefLight_t *light, const Color::Color& color, bool use_default_color )
 {
+    PROFILE()
 	int j;
 
 	switch( light->l.rlType )
@@ -598,6 +609,7 @@ R_SetupLightFrustum
 */
 void R_SetupLightFrustum( trRefLight_t *light )
 {
+    PROFILE()
 	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
@@ -729,6 +741,7 @@ R_SetupLightProjection
 // *INDENT-OFF*
 void R_SetupLightProjection( trRefLight_t *light )
 {
+    PROFILE()
 	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
@@ -876,6 +889,7 @@ R_AddLightInteraction
 bool R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, shader_t *surfaceShader, byte cubeSideBits,
                                 interactionType_t iaType )
 {
+    PROFILE()
 	int           iaIndex;
 	interaction_t *ia;
 
@@ -959,6 +973,7 @@ compare function for qsort()
 */
 static int InteractionCompare( const void *a, const void *b )
 {
+    PROFILE()
 	// shader first
 	if ( ( ( interaction_t * ) a )->shaderNum < ( ( interaction_t * ) b )->shaderNum )
 	{
@@ -1001,6 +1016,7 @@ R_SortInteractions
 */
 void R_SortInteractions( trRefLight_t *light )
 {
+    PROFILE()
 	int           i;
 	int           iaFirstIndex;
 	interaction_t *iaFirst;
@@ -1048,6 +1064,7 @@ R_IntersectRayPlane
 */
 static void R_IntersectRayPlane( const vec3_t v1, const vec3_t v2, cplane_t *plane, vec3_t res )
 {
+    PROFILE()
 	vec3_t v;
 	float  sect;
 
@@ -1064,6 +1081,7 @@ R_AddPointToLightScissor
 */
 static void R_AddPointToLightScissor( trRefLight_t *light, const vec3_t world )
 {
+    PROFILE()
 	vec4_t eye, clip, normalized, window;
 
 	R_TransformWorldToClip( world, tr.viewParms.world.viewMatrix, tr.viewParms.projectionMatrix, eye, clip );
@@ -1077,6 +1095,7 @@ static void R_AddPointToLightScissor( trRefLight_t *light, const vec3_t world )
 
 static int R_ClipEdgeToPlane( cplane_t plane, const vec3_t in_world1, const vec3_t in_world2, vec3_t out_world1, vec3_t out_world2 )
 {
+    PROFILE()
 	vec3_t intersect;
 
 	// check edge to frustrum plane
@@ -1123,6 +1142,7 @@ R_AddEdgeToLightScissor
 */
 static void R_AddEdgeToLightScissor( trRefLight_t *light, const vec3_t in_world1, const vec3_t in_world2 )
 {
+    PROFILE()
 	int      i;
 	cplane_t *frust;
 	vec3_t  clip1, clip2;
@@ -1169,6 +1189,7 @@ Tr3B - recoded from Tenebrae2
 */
 void R_SetupLightScissor( trRefLight_t *light )
 {
+    PROFILE()
 	vec3_t v1, v2;
 
 	light->scissor.coords[ 0 ] = tr.viewParms.viewportX;
@@ -1311,6 +1332,7 @@ R_CalcLightCubeSideBits
 // *INDENT-OFF*
 byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 {
+    PROFILE()
 	int        i;
 	int        cubeSide;
 	byte       cubeSideBits;
@@ -1460,6 +1482,7 @@ R_SetupLightLOD
 */
 void R_SetupLightLOD( trRefLight_t *light )
 {
+    PROFILE()
 	float radius;
 	float flod, lodscale;
 	float projectedRadius;
@@ -1538,6 +1561,7 @@ R_SetupLightShader
 */
 void R_SetupLightShader( trRefLight_t *light )
 {
+    PROFILE()
 	if ( !light->l.attenuationShader )
 	{
 		if ( light->isStatic )
@@ -1582,6 +1606,7 @@ R_ComputeFinalAttenuation
 */
 void R_ComputeFinalAttenuation( shaderStage_t *pStage, trRefLight_t *light )
 {
+    PROFILE()
 	matrix_t matrix;
 
 	GLimp_LogComment( "--- R_ComputeFinalAttenuation ---\n" );
@@ -1600,6 +1625,7 @@ Returns CULL_IN, CULL_CLIP, or CULL_OUT
 */
 int R_CullLightPoint( trRefLight_t *light, const vec3_t p )
 {
+    PROFILE()
 	int      i;
 	cplane_t *frust;
 	float    dist;
@@ -1631,6 +1657,7 @@ Returns CULL_IN, CULL_CLIP, or CULL_OUT
 */
 int R_CullLightTriangle( trRefLight_t *light, vec3_t verts[ 3 ] )
 {
+    PROFILE()
 	int    i;
 	vec3_t worldBounds[ 2 ];
 
@@ -1659,6 +1686,7 @@ Returns CULL_IN, CULL_CLIP, or CULL_OUT
 */
 int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 {
+    PROFILE()
 	int      i;
 	cplane_t *frust;
 	bool anyClip;
