@@ -58,7 +58,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mach-o/dyld.h>
 #endif
 
-Log::Logger fsLogs(VM_STRING_PREFIX "fs", Log::LOG_NOTICE);
+Log::Logger fsLogs(VM_STRING_PREFIX "fs", "[FS]", Log::LOG_NOTICE);
 
 // SerializeTraits for PakInfo/LoadedPakInfo
 namespace Util {

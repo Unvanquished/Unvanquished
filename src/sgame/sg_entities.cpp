@@ -769,13 +769,10 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
  */
 void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 {
-	/**
-	 * assertions against programmatic errors
-	 */
-	assert( entity->act != nullptr );
-	assert( call != nullptr );
+	ASSERT(entity->act != nullptr);
+	ASSERT(call != nullptr);
 
-	//assert( entity->callIn->activator != nullptr );
+	//ASSERT(entity->callIn->activator != nullptr);
 
 	if( entity->active )
 	{
@@ -799,7 +796,7 @@ void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 {
 	variatingTime_t delay = {0, 0};
 
-	assert( call != nullptr );
+	ASSERT(call != nullptr);
 	entity->callIn = *call;
 
 	G_ResetTimeField(&delay, entity->config.delay, entity->eclass->config.delay, delay );

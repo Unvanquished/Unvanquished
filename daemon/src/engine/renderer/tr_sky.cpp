@@ -671,7 +671,7 @@ static void BuildCloudData()
 {
 	int      i;
 
-	assert( tess.surfaceShader->isSky );
+	ASSERT(tess.surfaceShader->isSky);
 
 	sky_min = 1.0 / 256.0f; // FIXME: not correct?
 	sky_max = 255.0 / 256.0f;

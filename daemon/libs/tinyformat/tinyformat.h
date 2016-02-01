@@ -118,11 +118,11 @@ namespace tfm = tinyformat;
 
 //------------------------------------------------------------------------------
 // Implementation details.
-#include <cassert>
 #include <iostream>
 #include <sstream>
 
 #ifndef TINYFORMAT_ERROR
+#   include <cassert>
 #   define TINYFORMAT_ERROR(reason) assert(0 && reason)
 #endif
 
@@ -195,7 +195,7 @@ template<int n> struct is_wchar<wchar_t[n]> {};
 template<typename T, typename fmtT, bool convertible = is_convertible<T, fmtT>::value>
 struct formatValueAsType
 {
-    static void invoke(std::ostream& /*out*/, const T& /*value*/) { assert(0); }
+    static void invoke(std::ostream& /*out*/, const T& /*value*/) { TINYFORMAT_ERROR("invoke not overloaded"); }
 };
 // Specialized version for types that can actually be converted to fmtT, as
 // indicated by the "convertible" template parameter.

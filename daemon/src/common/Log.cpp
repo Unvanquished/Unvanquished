@@ -32,8 +32,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Log {
 
-    Logger::Logger(Str::StringRef name, Level defaultLevel)
-    :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel) {
+    Logger::Logger(Str::StringRef name, std::string prefix, Level defaultLevel)
+    :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel), prefix(prefix) {
+    }
+
+    std::string Logger::Prefix(std::string message) {
+        if (prefix.empty()) {
+            return message;
+        } else {
+            return prefix + " " + message;
+        }
     }
 
     bool ParseCvarValue(std::string value, Log::Level& result) {
@@ -44,6 +52,11 @@ namespace Log {
 
         if (value == "info" or value == "notice") {
             result = Log::LOG_NOTICE;
+            return true;
+        }
+
+        if (value == "verbose") {
+            result = Log::LOG_VERBOSE;
             return true;
         }
 
@@ -61,6 +74,8 @@ namespace Log {
                 return "warning";
             case Log::LOG_NOTICE:
                 return "notice";
+            case Log::LOG_VERBOSE:
+                return "verbose";
             case Log::LOG_DEBUG:
                 return "debug";
             default:
@@ -77,6 +92,11 @@ namespace Log {
     static const int noticeTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceNotice(std::string message) {
         Log::Dispatch({message}, noticeTargets);
+    }
+
+    static const int verboseTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
+    void CodeSourceVerbose(std::string message) {
+        Log::Dispatch({message}, verboseTargets);
     }
 
     static const int debugTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);

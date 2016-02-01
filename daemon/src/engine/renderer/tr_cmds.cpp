@@ -134,7 +134,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters )
 	renderCommandList_t *cmdList;
 
 	cmdList = &backEndData[ tr.smpFrame ]->commands;
-	assert( cmdList );  // bk001205
+	ASSERT(cmdList != nullptr);
 	// add an end-of-list command
 	* ( int * )( cmdList->cmds + cmdList->used ) = RC_END_OF_LIST;
 

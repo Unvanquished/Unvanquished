@@ -3237,7 +3237,7 @@ void RE_GetTextureSize( int textureID, int *width, int *height )
 
 	shader = R_GetShaderByHandle( textureID );
 
-	assert( shader );
+	ASSERT(shader != nullptr);
 	if ( !shader )
 	{
 		return;

@@ -173,6 +173,8 @@ bool IsProcessTerminating();
 // because it is not implemented correctly on some platforms.
 void GenRandomBytes(void* dest, size_t size);
 
+bool IsDebuggerAttached();
+
 } // namespace Sys
 
 #endif // COMMON_SYSTEM_H_

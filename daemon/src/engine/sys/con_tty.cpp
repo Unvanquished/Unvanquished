@@ -199,7 +199,7 @@ static void CON_Show()
 {
 	if ( ttycon_on )
 	{
-		assert( ttycon_hide > 0 );
+		ASSERT_GT(ttycon_hide, 0);
 		ttycon_hide--;
 
 		if ( ttycon_hide == 0 )

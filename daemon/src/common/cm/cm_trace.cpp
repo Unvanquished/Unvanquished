@@ -2313,15 +2313,6 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 		VectorLerp( start, end, tw.trace.fraction, tw.trace.endpos );
 	}
 
-	// If allsolid is set (was entirely inside something solid), the plane is not valid.
-	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
-	// Otherwise, the normal on the plane should have unit length
-
-	// Tr3B: these asserts don't make sense as it is the task of the gamecode to check if the trace was successful or not
-//	assert(!tw.trace.allsolid);
-//	assert(tw.trace.fraction != 1.0);
-//	assert(VectorLength(tw.trace.plane.normal) > 0.9999);
-
 	*results = tw.trace;
 }
 
@@ -2536,15 +2527,6 @@ void CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, f
 			tw.trace.endpos[ i ] = start[ i ] + tw.trace.fraction * ( end[ i ] - start[ i ] );
 		}
 	}
-
-	// If allsolid is set (was entirely inside something solid), the plane is not valid.
-	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
-	// Otherwise, the normal on the plane should have unit length
-
-	// Tr3B: these asserts don't make sense as it is the task of the gamecode to check if the trace was successful or not
-	//  assert(!tw.trace.allsolid);
-	//  assert(tw.trace.fraction != 1.0);
-	//  assert(VectorLength(tw.trace.plane.normal) > 0.9999);
 
 	*results = tw.trace;
 }

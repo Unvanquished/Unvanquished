@@ -1036,7 +1036,7 @@ Clear download information that we keep in cls (disconnected download support)
 void CL_ClearStaticDownload()
 {
     downloadLogger.Debug("Clearing the download info");
-	assert( !cls.bWWWDlDisconnected );  // reset before calling
+	ASSERT(!cls.bWWWDlDisconnected);  // reset before calling
 	cls.downloadRestart = false;
 	cls.downloadTempName[ 0 ] = '\0';
 	cls.downloadName[ 0 ] = '\0';

@@ -40,9 +40,8 @@
 // implementation of the scoped_ptr class, and its closely-related brethren,
 // scoped_array, scoped_ptr_malloc.
 
-#include <assert.h>
-// TODO(sehr,noelallen): replace the C standard asserts with asserts that
-// use the same output as the logging interface when we have that.
+#inclue "common/Common.h"
+
 #include <stdlib.h>
 #include <cstddef>
 
@@ -89,11 +88,11 @@ class scoped_ptr {
   // Accessors to get the owned object.
   // operator* and operator-> will assert() if there is no current object.
   C& operator*() const {
-    assert(ptr_ != NULL);
+    ASSERT(ptr_ != NULL);
     return *ptr_;
   }
   C* operator->() const  {
-    assert(ptr_ != NULL);
+    ASSERT(ptr_ != NULL);
     return ptr_;
   }
   C* get() const { return ptr_; }
@@ -193,8 +192,8 @@ class scoped_array {
   // Get one element of the current object.
   // Will assert() if there is no current object, or index i is negative.
   C& operator[](std::ptrdiff_t i) const {
-    assert(i >= 0);
-    assert(array_ != NULL);
+    ASSERT(i >= 0);
+    ASSERT(array_ != NULL);
     return array_[i];
   }
 

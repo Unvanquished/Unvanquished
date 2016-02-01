@@ -76,7 +76,7 @@ function(GAMEMODULE)
                 CMAKE_ARGS
                     -DFORK=2
                     -DCMAKE_TOOLCHAIN_FILE=${Daemon_SOURCE_DIR}/cmake/toolchain-pnacl.cmake
-                    -DCMAKE_BUILD_TYPE=$<CONFIGURATION>
+                    -DCMAKE_BUILD_TYPE=$<CONFIG>
                     -DDEPS_DIR=${DEPS_DIR}
                     -DBUILD_CGAME=${BUILD_CGAME}
                     -DBUILD_SGAME=${BUILD_SGAME}
