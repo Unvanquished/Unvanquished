@@ -395,6 +395,7 @@ typedef struct
 	bool drawBuffersAvailable;
 	bool textureHalfFloatAvailable;
 	bool textureFloatAvailable;
+	bool textureIntegerAvailable;
 	bool textureRGAvailable;
 	int      maxDrawBuffers;
 

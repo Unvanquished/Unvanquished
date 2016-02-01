@@ -527,7 +527,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  IF_BC1 = BIT( 20 ),
 	  IF_BC3 = BIT( 21 ),
 	  IF_BC4 = BIT( 22 ),
-	  IF_BC5 = BIT( 23 )
+	  IF_BC5 = BIT( 23 ),
+	  IF_RGBA32UI = BIT( 24 )
 	};
 
 	typedef enum
@@ -2862,6 +2863,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_ext_vertex_array_object;
 	extern cvar_t *r_ext_half_float_pixel;
 	extern cvar_t *r_ext_texture_float;
+	extern cvar_t *r_ext_texture_integer;
 	extern cvar_t *r_ext_texture_rg;
 	extern cvar_t *r_ext_texture_filter_anisotropic;
 	extern cvar_t *r_ext_packed_depth_stencil;
