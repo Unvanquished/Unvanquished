@@ -4393,6 +4393,10 @@ static void RB_RenderView()
 	// clear relevant buffers
 	clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
+	if ( r_clear->integer && !backEnd.viewParms.isPortal ) {
+		clearBits |= GL_COLOR_BUFFER_BIT;
+	}
+
 	glClear( clearBits );
 
 	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
@@ -5371,14 +5375,6 @@ const void     *RB_DrawBuffer( const void *data )
 	cmd = ( const drawBufferCommand_t * ) data;
 
 	GL_DrawBuffer( cmd->buffer );
-
-	// clear screen for debugging
-	if ( r_clear->integer )
-	{
-//      GL_ClearColor(1, 0, 0.5, 1);
-		GL_ClearColor( 0, 0, 0, 1 );
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	}
 
 	glState.finishCalled = false;
 	return ( const void * )( cmd + 1 );
