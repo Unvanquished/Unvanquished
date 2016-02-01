@@ -1196,6 +1196,14 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			  GL_R32F : GL_ALPHA32F_ARB;
 		}
 	}
+	else if ( image->bits & ( IF_RGBA32UI ) )
+	{
+		if( !glConfig2.textureIntegerAvailable ) {
+			ri.Printf( PRINT_WARNING, "WARNING: integer image '%s' cannot be loaded\n", image->name );
+		}
+		internalFormat = GL_RGBA32UI;
+		format = GL_RGBA_INTEGER;
+	}
 	else if ( IsImageCompressed( image->bits ) )
 	{
 		if( !GLEW_EXT_texture_compression_dxt1 &&
@@ -1405,10 +1413,12 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			switch ( image->type )
 			{
 			case GL_TEXTURE_3D:
-				glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
-						 scaledWidth, scaledHeight, 1,
-						 format, GL_UNSIGNED_BYTE,
-						 scaledBuffer );
+				if( scaledBuffer ) {
+					glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
+							 scaledWidth, scaledHeight, 1,
+							 format, GL_UNSIGNED_BYTE,
+							 scaledBuffer );
+				}
 				break;
 			case GL_TEXTURE_CUBE_MAP:
 				glTexImage2D( target + i, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE,
@@ -1842,9 +1852,13 @@ image_t        *R_Create3DImage( const char *name,
 	image->width = width;
 	image->height = height;
 
-	pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
-	for( i = 0; i < depth; i++ ) {
-		pics[i] = pic + i * width * height * sizeof(u8vec4_t);
+	if( pic ) {
+		pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
+		for( i = 0; i < depth; i++ ) {
+			pics[i] = pic + i * width * height * sizeof(u8vec4_t);
+		}
+	} else {
+		pics = nullptr;
 	}
 
 	image->bits = bits;
@@ -1853,7 +1867,9 @@ image_t        *R_Create3DImage( const char *name,
 
 	R_UploadImage( pics, depth, 1, image );
 
-	ri.Hunk_FreeTempMemory( pics );
+	if( pics ) {
+		ri.Hunk_FreeTempMemory( pics );
+	}
 
 	if( r_exportTextures->integer ) {
 		R_ExportTexture( image );

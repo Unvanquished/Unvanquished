@@ -1090,6 +1090,7 @@ static void GLimp_InitExtensions()
 
 	glConfig2.textureHalfFloatAvailable =  LOAD_EXTENSION_WITH_CVAR(ARB_half_float_pixel, r_ext_half_float_pixel);
 	glConfig2.textureFloatAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_float, r_ext_texture_float);
+	glConfig2.textureIntegerAvailable = LOAD_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer);
 	glConfig2.textureRGAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
 
 	// TODO figure out what was the problem with MESA

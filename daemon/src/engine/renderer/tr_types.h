@@ -393,6 +393,7 @@ struct glconfig2_t
 	bool drawBuffersAvailable;
 	bool textureHalfFloatAvailable;
 	bool textureFloatAvailable;
+	bool textureIntegerAvailable;
 	bool textureRGAvailable;
 	int      maxDrawBuffers;
 
