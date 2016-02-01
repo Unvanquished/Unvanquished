@@ -2676,7 +2676,7 @@ static void R_CreateCurrentRenderImage()
 
 static void R_CreateDepthRenderImage()
 {
-	int  width, height;
+	int  width, height, w, h;
 
 	if ( glConfig2.textureNPOTAvailable )
 	{
@@ -2689,8 +2689,20 @@ static void R_CreateDepthRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	{
-		tr.depthRenderImage = R_CreateImage( "_depthRender", nullptr, width, height, 1, IF_NOPICMIP | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
+	tr.depthRenderImage = R_CreateImage( "_depthRender", nullptr, width, height, 1, IF_NOPICMIP | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
+
+	w = (width + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	h = (height + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	tr.depthtile1RenderImage = R_CreateImage( "_depthtile1Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, FT_NEAREST, WT_CLAMP );
+
+	w = (width + TILE_SIZE - 1) >> TILE_SHIFT;
+	h = (height + TILE_SIZE - 1) >> TILE_SHIFT;
+	tr.depthtile2RenderImage = R_CreateImage( "_depthtile2Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, FT_NEAREST, WT_CLAMP );
+
+	if ( glConfig2.textureIntegerAvailable ) {
+		tr.lighttileRenderImage = R_Create3DImage( "_lighttileRender", nullptr, w, h, 4, IF_NOPICMIP | IF_RGBA32UI, FT_NEAREST, WT_CLAMP );
+	} else {
+		tr.lighttileRenderImage = R_Create3DImage( "_lighttileRender", nullptr, w, h, 4, IF_NOPICMIP, FT_NEAREST, WT_CLAMP );
 	}
 }
 

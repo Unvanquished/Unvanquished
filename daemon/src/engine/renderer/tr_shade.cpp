@@ -126,6 +126,9 @@ static void GLSL_InitGPUShadersOrError()
 		Log::Warn("SSAO not used because GL_ARB_texture_gather is not available.");
 	}
 
+	gl_shaderManager.load( gl_depthtile1Shader );
+	gl_shaderManager.load( gl_depthtile2Shader );
+	gl_shaderManager.load( gl_lighttileShader );
 	gl_shaderManager.load( gl_fxaaShader );
 
 	if ( !r_lazyShaders->integer )
@@ -233,6 +236,9 @@ void GLSL_ShutdownGPUShaders()
 	gl_volumetricFogShader = nullptr;
 	gl_motionblurShader = nullptr;
 	gl_ssaoShader = nullptr;
+	gl_depthtile1Shader = nullptr;
+	gl_depthtile2Shader = nullptr;
+	gl_lighttileShader = nullptr;
 	gl_fxaaShader = nullptr;
 
 	GL_BindNullProgram();
@@ -304,6 +310,33 @@ void Tess_DrawElements()
 
 		backEnd.pc.c_indexes += tess.numIndexes;
 		backEnd.pc.c_vertexes += tess.numVertexes;
+	}
+}
+
+/*
+==================
+Tess_DrawArrays
+==================
+*/
+void Tess_DrawArrays( GLenum elementType )
+{
+	if ( tess.numVertexes == 0 )
+	{
+		return;
+	}
+
+	// move tess data through the GPU, finally
+	glDrawArrays( elementType, 0, tess.numVertexes );
+
+	backEnd.pc.c_drawElements++;
+
+	backEnd.pc.c_indexes += tess.numIndexes;
+	backEnd.pc.c_vertexes += tess.numVertexes;
+
+	if ( glState.currentVBO )
+	{
+		backEnd.pc.c_vboVertexes += tess.numVertexes;
+		backEnd.pc.c_vboIndexes += tess.numIndexes;
 	}
 }
 
@@ -573,6 +606,13 @@ static void Render_generic( int stage )
 		gl_genericShader->DisableMacro_USE_DEPTH_FADE();
 	}
 
+	if( backEnd.refdef.numShaderLights > 0 ) {
+		gl_genericShader->EnableMacro_USE_SHADER_LIGHTS();
+		GL_BindToTMU( 8, tr.lighttileRenderImage );
+	} else {
+		gl_genericShader->DisableMacro_USE_SHADER_LIGHTS();
+	}
+
 	if( tess.surfaceShader->autoSpriteMode ) {
 		gl_genericShader->EnableVertexSprite();
 		needDepthMap = true;
@@ -591,6 +631,11 @@ static void Render_generic( int stage )
 		// calculate the environment texcoords in object space
 		gl_genericShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
 		gl_genericShader->SetUniform_ViewUp( backEnd.orientation.axis[ 2 ] );
+	}
+
+	if( backEnd.refdef.numShaderLights > 0 ) {
+		gl_genericShader->SetUniform_numLights( backEnd.refdef.numLights );
+		gl_genericShader->SetUniformBlock_Lights( tr.dlightUBO );
 	}
 
 	// u_AlphaTest
@@ -686,6 +731,13 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	tess.vboVertexSprite = false;
 
+	if( backEnd.refdef.numShaderLights > 0 ) {
+		gl_vertexLightingShader_DBS_entity->EnableMacro_USE_SHADER_LIGHTS();
+		GL_BindToTMU( 8, tr.lighttileRenderImage );
+	} else {
+		gl_vertexLightingShader_DBS_entity->DisableMacro_USE_SHADER_LIGHTS();
+	}
+
 	gl_vertexLightingShader_DBS_entity->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_entity->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 
@@ -706,6 +758,11 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	// set uniforms
 	VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );  // in world space
+
+	if( backEnd.refdef.numShaderLights > 0 ) {
+		gl_vertexLightingShader_DBS_entity->SetUniform_numLights( backEnd.refdef.numLights );
+		gl_vertexLightingShader_DBS_entity->SetUniformBlock_Lights( tr.dlightUBO );
+	}
 
 	// u_AlphaTest
 	gl_vertexLightingShader_DBS_entity->SetUniform_AlphaTest( pStage->stateBits );
@@ -892,6 +949,13 @@ static void Render_vertexLighting_DBS_world( int stage )
 	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != nullptr );
 
 	// choose right shader program ----------------------------------
+	if( backEnd.refdef.numShaderLights > 0 ) {
+		gl_vertexLightingShader_DBS_world->EnableMacro_USE_SHADER_LIGHTS();
+		GL_BindToTMU( 8, tr.lighttileRenderImage );
+	} else {
+		gl_vertexLightingShader_DBS_world->DisableMacro_USE_SHADER_LIGHTS();
+	}
+
 	gl_vertexLightingShader_DBS_world->SetNormalMapping( normalMapping );
 	gl_vertexLightingShader_DBS_world->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 	gl_vertexLightingShader_DBS_world->SetGlowMapping( glowMapping );
@@ -906,6 +970,11 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 	// set uniforms
 	VectorCopy( backEnd.orientation.viewOrigin, viewOrigin );
+
+	if( backEnd.refdef.numShaderLights > 0 ) {
+		gl_vertexLightingShader_DBS_world->SetUniform_numLights( backEnd.refdef.numLights );
+		gl_vertexLightingShader_DBS_world->SetUniformBlock_Lights( tr.dlightUBO );
+	}
 
 	GL_CheckErrors();
 
@@ -1079,6 +1148,13 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	}
 
 	// choose right shader program ----------------------------------
+	if( backEnd.refdef.numShaderLights > 0 ) {
+		gl_lightMappingShader->EnableMacro_USE_SHADER_LIGHTS();
+		GL_BindToTMU( 8, tr.lighttileRenderImage );
+	} else {
+		gl_lightMappingShader->DisableMacro_USE_SHADER_LIGHTS();
+	}
+
 	gl_lightMappingShader->SetNormalMapping( normalMapping );
 	gl_lightMappingShader->SetParallaxMapping( normalMapping && r_parallaxMapping->integer && tess.surfaceShader->parallax );
 	gl_lightMappingShader->SetGlowMapping( glowMapping );
@@ -1090,6 +1166,11 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	// end choose right shader program ------------------------------
 
 	// now we are ready to set the shader program uniforms
+
+	if( backEnd.refdef.numShaderLights > 0 ) {
+		gl_lightMappingShader->SetUniform_numLights( backEnd.refdef.numLights );
+		gl_lightMappingShader->SetUniformBlock_Lights( tr.dlightUBO );
+	}
 
 	// u_DeformGen
 	gl_lightMappingShader->SetUniform_Time( backEnd.refdef.floatTime - backEnd.currentEntity->e.shaderTime );
