@@ -405,11 +405,6 @@ void R_InitFBOs()
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitFBOs -------\n" );
 
-	if ( !glConfig2.framebufferObjectAvailable )
-	{
-		return;
-	}
-
 	tr.numFBOs = 0;
 
 	GL_CheckErrors();
@@ -591,11 +586,6 @@ void R_ShutdownFBOs()
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownFBOs -------\n" );
 
-	if ( !glConfig2.framebufferObjectAvailable )
-	{
-		return;
-	}
-
 	R_BindNullFBO();
 
 	for ( i = 0; i < tr.numFBOs; i++ )
@@ -636,12 +626,6 @@ void R_FBOList_f()
 {
 	int   i;
 	FBO_t *fbo;
-
-	if ( !glConfig2.framebufferObjectAvailable )
-	{
-		ri.Printf( PRINT_ALL, "GL_ARB_framebuffer_object is not available.\n" );
-		return;
-	}
 
 	ri.Printf( PRINT_ALL, "             size       name\n" );
 	ri.Printf( PRINT_ALL, "----------------------------------------------------------\n" );

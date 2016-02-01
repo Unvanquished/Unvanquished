@@ -401,7 +401,6 @@ typedef struct
 	float    maxTextureAnisotropy;
 	bool textureAnisotropyAvailable;
 
-	bool framebufferObjectAvailable;
 	int      maxRenderbufferSize;
 	int      maxColorAttachments;
 	bool framebufferPackedDepthStencilAvailable;
