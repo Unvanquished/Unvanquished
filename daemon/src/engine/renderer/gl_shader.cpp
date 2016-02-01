@@ -484,7 +484,7 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
         break;
 	}
 
-	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
+	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && glConfig2.textureFloatAvailable )
 	{
 		if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM16) || r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM32) )
 		{

@@ -4477,7 +4477,7 @@ void R_LoadEntities( lump_t *l )
 				vec_t rad_y, rad_z;
 				sscanf( value, "%f %f %f", &light->l.radius, &rad_y, &rad_z );
 				if( rad_y != light->l.radius || rad_z != light->l.radius )
-					ri.Printf( PRINT_WARNING, "WARNING: non-spherical light\n" );
+					Log::Warn( "non-spherical light\n" );
 				s = &value[ 0 ];
 			}
 			// check for light_target

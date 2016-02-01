@@ -796,10 +796,7 @@ static void RB_SetGL2D()
 	GLimp_LogComment( "--- RB_SetGL2D ---\n" );
 
 	// disable offscreen rendering
-	if ( glConfig2.framebufferObjectAvailable )
-	{
-		R_BindNullFBO();
-	}
+	R_BindNullFBO();
 
 	backEnd.projection2D = true;
 
@@ -2080,7 +2077,7 @@ static void RB_RenderInteractionsShadowMapped()
 	                               0.5,     0.5, 0.5, 1.0
 	                      };
 
-	if ( !glConfig2.framebufferObjectAvailable || !glConfig2.textureFloatAvailable )
+	if ( !glConfig2.textureFloatAvailable )
 	{
 		RB_RenderInteractions();
 		return;
@@ -2748,7 +2745,7 @@ void RB_RenderBloom()
 
 	GLimp_LogComment( "--- RB_RenderBloom ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOBLOOM ) ) || !r_bloom->integer || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
+	if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOBLOOM ) ) || !r_bloom->integer || backEnd.viewParms.isPortal )
 	{
 		return;
 	}
@@ -2870,7 +2867,7 @@ void RB_RenderMotionBlur()
 
 	GLimp_LogComment( "--- RB_RenderMotionBlur ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal )
 	{
 		return;
 	}
@@ -2920,7 +2917,7 @@ void RB_RenderSSAO()
 		return;
 	}
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal )
 	{
 		return;
 	}
@@ -4421,10 +4418,7 @@ static void RB_RenderView()
 	}
 
 	// disable offscreen rendering
-	if ( glConfig2.framebufferObjectAvailable )
-	{
-		R_BindNullFBO();
-	}
+	R_BindNullFBO();
 
 	// we will need to change the projection matrix before drawing
 	// 2D images again

@@ -399,7 +399,6 @@ struct glconfig2_t
 	float    maxTextureAnisotropy;
 	bool textureAnisotropyAvailable;
 
-	bool framebufferObjectAvailable;
 	int      maxRenderbufferSize;
 	int      maxColorAttachments;
 	bool framebufferPackedDepthStencilAvailable;

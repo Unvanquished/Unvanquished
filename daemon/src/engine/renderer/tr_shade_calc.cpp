@@ -201,7 +201,7 @@ static float GetOpValue( const expOperation_t *op )
 			break;
 
 		case opcode_t::OP_FRAMEBUFFEROBJECTS:
-			value = glConfig2.framebufferObjectAvailable;
+			value = 1.0f;
 			break;
 
 		case opcode_t::OP_SOUND:

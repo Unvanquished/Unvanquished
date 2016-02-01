@@ -1430,75 +1430,9 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 			if ( image->filterType == filterType_t::FT_DEFAULT )
 			{
-				if ( glConfig.driverType == glDriverType_t::GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
-				{
-					if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
-						glGenerateMipmap( image->type );
-						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
-					}
-				}
-				else if ( glConfig2.generateMipmapAvailable )
-				{
-					glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
+				if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
+					glGenerateMipmap( image->type );
 					glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
-				}
-			}
-
-			if ( glConfig.driverType != glDriverType_t::GLDRV_OPENGL3 && !glConfig2.framebufferObjectAvailable && !glConfig2.generateMipmapAvailable )
-			{
-				if ( image->filterType == filterType_t::FT_DEFAULT && !( image->bits & ( IF_DEPTH16 | IF_DEPTH24 | IF_DEPTH32 | IF_PACKED_DEPTH24_STENCIL8 ) ) )
-				{
-					int mipLevel;
-					int mipWidth, mipHeight;
-
-					mipLevel = 0;
-					mipWidth = scaledWidth;
-					mipHeight = scaledHeight;
-
-					while ( mipWidth > 1 || mipHeight > 1 )
-					{
-						if ( image->bits & IF_NORMALMAP )
-						{
-							R_MipNormalMap( scaledBuffer, mipWidth, mipHeight );
-						}
-						else
-						{
-							R_MipMap( scaledBuffer, mipWidth, mipHeight );
-						}
-
-						mipWidth >>= 1;
-						mipHeight >>= 1;
-
-						if ( mipWidth < 1 )
-						{
-							mipWidth = 1;
-						}
-
-						if ( mipHeight < 1 )
-						{
-							mipHeight = 1;
-						}
-
-						mipLevel++;
-
-						if ( r_colorMipLevels->integer && !( image->bits & IF_NORMALMAP ) )
-						{
-							R_BlendOverTexture( scaledBuffer, mipWidth * mipHeight, mipBlendColors[ mipLevel ] );
-						}
-
-						switch ( image->type )
-						{
-						case GL_TEXTURE_CUBE_MAP:
-							glTexImage2D( target + i, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
-							              scaledBuffer );
-							break;
-
-						default:
-							glTexImage2D( target, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
-							              scaledBuffer );
-							break;
-						}
-					}
 				}
 			}
 		}
