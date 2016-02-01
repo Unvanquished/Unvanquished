@@ -451,6 +451,16 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int                       visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
 	} trRefLight_t;
 
+	// a structure matching the GLSL struct shaderLight in std140 layout
+	struct shaderLight_t {
+		vec3_t  center;
+		float   radius;
+		vec3_t  color;
+		float   type;
+		vec3_t  direction;
+		float   angle;
+	};
+
 // a trRefEntity_t has all the information passed in by
 // the client game, as well as some locally derived info
 	typedef struct
@@ -2716,6 +2726,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		FBO_t           *fbos[ MAX_FBOS ];
 
 		GLuint          vao;
+		GLuint          dlightUBO;
 
 		growList_t      vbos;
 		growList_t      ibos;
@@ -3788,6 +3799,12 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	{
 		int         commandId;
 		trRefdef_t  refdef;
+	} setupLightsCommand_t;
+
+	typedef struct
+	{
+		int         commandId;
+		trRefdef_t  refdef;
 		viewParms_t viewParms;
 	} drawViewCommand_t;
 
@@ -3842,6 +3859,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
+	  RC_SETUP_LIGHTS,
 	  RC_DRAW_VIEW,
 	  RC_DRAW_BUFFER,
 	  RC_RUN_VISTESTS,
@@ -3896,6 +3914,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	void                                R_SyncRenderThread();
 
+	void                                R_AddSetupLightsCmd();
 	void                                R_AddDrawViewCmd();
 
 	void                                RE_SetColor( const Color::Color& rgba );
