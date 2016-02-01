@@ -2504,7 +2504,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		backEndCounters_t pc;
 		visTestQueries_t  visTestQueries[ MAX_VISTESTS ];
 		bool          isHyperspace;
-		bool          depthRenderImageValid;
 		trRefEntity_t     *currentEntity;
 		trRefLight_t      *currentLight; // only used when lighting interactions
 		bool          skyRenderedThisView; // flag for drawing sun
@@ -2513,6 +2512,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		Color::Color32Bit color2D;
 		bool          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
+		int               currentMainFBO;
 	} backEndState_t;
 
 	typedef struct visTest_s
@@ -2607,7 +2607,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		image_t    *contrastRenderFBOImage;
 		image_t    *bloomRenderFBOImage[ 2 ];
-		image_t    *currentRenderImage;
+		image_t    *currentRenderImage[ 2 ];
+		image_t    *currentDepthImage;
 		image_t    *depthRenderImage;
 		image_t    *portalRenderImage;
 
@@ -2629,6 +2630,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		GLuint   colorGradePBO;
 
 		// framebuffer objects
+		FBO_t *mainFBO[ 2 ];
 		FBO_t *portalRenderFBO; // holds a copy of the last currentRender that was rendered into a FBO
 		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;

@@ -2653,7 +2653,9 @@ static void R_CreateCurrentRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	tr.currentRenderImage = R_CreateImage( "_currentRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.currentRenderImage[0] = R_CreateImage( "_currentRender[0]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.currentRenderImage[1] = R_CreateImage( "_currentRender[1]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.currentDepthImage = R_CreateImage( "_currentDepth", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
 }
 
 static void R_CreateDepthRenderImage()
