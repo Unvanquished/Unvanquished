@@ -700,7 +700,7 @@ static void Render_generic( int stage )
 		gl_genericShader->SetUniform_DepthScale( pStage->depthFadeValue );
 	}
 	if( needDepthMap ) {
-		GL_BindToTMU( 1, tr.depthRenderImage );
+		GL_BindToTMU( 1, tr.currentDepthImage );
 	}
 
 	gl_genericShader->SetRequiredVertexPointers();
@@ -2259,7 +2259,7 @@ static void Render_liquid( int stage )
 	GL_BindToTMU( 1, tr.portalRenderImage );
 
 	// depth texture
-	GL_BindToTMU( 2, tr.depthRenderImage );
+	GL_BindToTMU( 2, tr.currentDepthImage );
 
 	// bind u_NormalMap
 	GL_BindToTMU( 3, pStage->bundle[ TB_COLORMAP ].image[ 0 ] );

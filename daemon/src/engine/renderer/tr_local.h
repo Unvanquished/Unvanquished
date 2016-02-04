@@ -2628,7 +2628,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		image_t    *bloomRenderFBOImage[ 2 ];
 		image_t    *currentRenderImage[ 2 ];
 		image_t    *currentDepthImage;
-		image_t    *depthRenderImage;
 		image_t    *depthtile1RenderImage;
 		image_t    *depthtile2RenderImage;
 		image_t    *lighttileRenderImage;
