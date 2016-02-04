@@ -2778,7 +2778,7 @@ void RB_RenderGlobalFog()
 	GL_BindToTMU( 0, tr.fogImage );
 
 	// bind u_DepthMap
-	GL_BindToTMU( 1, tr.depthRenderImage );
+	GL_BindToTMU( 1, tr.currentDepthImage );
 
 	// set 2D virtual screen size
 	GL_PushMatrix();

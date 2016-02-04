@@ -2689,8 +2689,6 @@ static void R_CreateDepthRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	tr.depthRenderImage = R_CreateImage( "_depthRender", nullptr, width, height, 1, IF_NOPICMIP | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
-
 	w = (width + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
 	h = (height + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
 	tr.depthtile1RenderImage = R_CreateImage( "_depthtile1Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, FT_NEAREST, WT_CLAMP );
