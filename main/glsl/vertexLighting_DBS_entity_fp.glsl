@@ -181,8 +181,8 @@ void	main()
 #endif
 
 	// compute final color
-	vec4 color = vec4(ambCol * r_AmbientScale * diffuse.xyz, 1.0);
-	computeLight( L, N, N, V, lgtCol, diffuse, specBase, color );
+	vec4 color = vec4(ambCol * r_AmbientScale * diffuse.xyz, diffuse.a);
+	computeLight( L, N, V, lgtCol, diffuse, specBase, color );
 
 #ifdef USE_SHADER_LIGHTS
 	computeDLights( var_Position, N, V, diffuse, specBase, color );
