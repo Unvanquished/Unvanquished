@@ -135,8 +135,8 @@ void	main()
 	N = normalize(N);
 
 	// compute final color
-	vec4 color = vec4( ambCol, 1.0 );
-	computeLight( L, N, N, V, dirCol, diffuse, specular, color );
+	vec4 color = vec4( ambCol, diffuse.a );
+	computeLight( L, N, V, dirCol, diffuse, specular, color );
 
 	#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
@@ -158,8 +158,8 @@ void	main()
 
 	vec4 specular = vec4(0.0);
 
-	vec4 color = vec4( 0.0, 0.0, 0.0, 1.0 );
-	computeLight( N, N, N, N, vec3(1.0), diffuse, specular, color );
+	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
+	computeLight( N, N, N, vec3(1.0), diffuse, specular, color );
 
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
