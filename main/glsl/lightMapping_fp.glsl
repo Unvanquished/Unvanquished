@@ -111,9 +111,12 @@ void	main()
 	// compute light color from world space lightmap
 	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
 
+	// divide by cosine term to restore original light color
+	lightColor /= clamp(dot(normalize(var_Normal), L), 0.004, 1.0);
+
 	// compute final color
-	vec4 color = vec4( 0.0, 0.0, 0.0, 1.0 );
-	computeLight( L, L, N, I, lightColor, diffuse, specular, color );
+	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
+	computeLight( L, N, I, lightColor, diffuse, specular, color );
 
 #else // USE_NORMAL_MAPPING
 
@@ -133,8 +136,8 @@ void	main()
 	// compute light color from object space lightmap
 	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
 
-	vec4 color = vec4( 0.0, 0.0, 0.0, 1.0 );
-	computeLight( N, N, N, I, lightColor, diffuse, specular, color );
+	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
+	computeLight( N, N, I, lightColor, diffuse, specular, color );
 #endif
 
 #if defined( USE_SHADER_LIGHTS )

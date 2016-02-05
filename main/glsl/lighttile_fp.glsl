@@ -79,18 +79,18 @@ void pushIdxs(in int idx, inout vec4 idxs ) {
 #define exportIdxs(x) gl_fragColor = ( x ) * (1.0/255.0)
 #endif
 
-bool lightOutsidePlane( in vec4 plane, inout vec3 center, inout float radius ) {
+void lightOutsidePlane( in vec4 plane, inout vec3 center, inout float radius ) {
   float dist = dot( plane, vec4( center, 1.0 ) );
-  if( dist >= radius )
-    return true; // light completely outside plane
+  if( dist >= radius ) {
+    radius = 0.0; // light completely outside plane
+    return;
+  }
 
   if( dist >= 0.0 ) {
     // light is outside plane, but intersects the volume
     center = center - dist * plane.xyz;
     radius = sqrt( radius * radius - dist * dist );
   }
-
-  return false;
 }
 
 void main() {
@@ -106,23 +106,19 @@ void main() {
 
   for( int i = u_lightLayer; i < u_numLights; i += numLayers ) {
     vec3 center = ( u_ModelMatrix * vec4( lights[ i ].center, 1.0 ) ).xyz;
-    float radius = lights[ i ].radius;
+    float radius = 2.0 * lights[ i ].radius;
 
     // todo: better checks for spotlights
-    if( lightOutsidePlane( plane1, center, radius ) )
-      continue;
-    if( lightOutsidePlane( plane2, center, radius ) )
-      continue;
-    if( lightOutsidePlane( plane3, center, radius ) )
-      continue;
-    if( lightOutsidePlane( plane4, center, radius ) )
-      continue;
-    if( lightOutsidePlane( plane5, center, radius ) )
-      continue;
-    if( lightOutsidePlane( plane6, center, radius ) )
-      continue;
+    lightOutsidePlane( plane1, center, radius );
+    lightOutsidePlane( plane2, center, radius );
+    lightOutsidePlane( plane3, center, radius );
+    lightOutsidePlane( plane4, center, radius );
+    lightOutsidePlane( plane5, center, radius );
+    lightOutsidePlane( plane6, center, radius );
 
-    pushIdxs( i, idxs );
+    if( radius > 0.0 ) {
+      pushIdxs( i, idxs );
+    }
   }
 
   exportIdxs( idxs );

@@ -52,17 +52,24 @@ uniform int u_numLights;
 uniform vec2 u_SpecularExponent;
 
 // lighting helper functions
-void computeLight( vec3 lightDir, vec3 normalDiff, vec3 normalSpec,
-		   vec3 eyeDir, vec3 lightColor,
+void computeLight( vec3 lightDir, vec3 normal, vec3 eyeDir, vec3 lightColor,
 		   vec4 diffuseColor, vec4 specularColor,
 		   inout vec4 accumulator ) {
   vec3 H = normalize( lightDir + eyeDir );
-  float NdotL = clamp( dot( normalDiff, lightDir ), 0.0, 1.0 );
-  float NdotH = clamp( dot( normalSpec, H ), 0.0, 1.0 );
+  float NdotL = dot( normal, lightDir );
+#if defined(r_HalfLambertLighting)
+  // http://developer.valvesoftware.com/wiki/Half_Lambert
+  NdotL = NdotL * 0.5 + 0.5;
+  NdotL *= NdotL;
+#elif defined(r_WrapAroundLighting)
+  NdotL = clamp( NdotL + r_WrapAroundLighting, 0.0, 1.0) / clamp(1.0 + r_WrapAroundLighting, 0.0, 1.0);
+#else
+  NdotL = clamp( NdotL, 0.0, 1.0 );
+#endif
+  float NdotH = clamp( dot( normal, H ), 0.0, 1.0 );
 
   accumulator.xyz += diffuseColor.xyz * lightColor.xyz * NdotL;
   accumulator.xyz += specularColor.xyz * lightColor.xyz * pow( NdotH, u_SpecularExponent.x * specularColor.w + u_SpecularExponent.y) * r_SpecularScale;
-  accumulator.w *= diffuseColor.w;
 }
 
 #if defined( USE_SHADER_LIGHTS )
@@ -100,7 +107,7 @@ void computeDLight( int idx, vec3 P, vec3 N, vec3 I, vec4 diffuse,
 		    vec4 specular, inout vec4 color ) {
   vec3 L = lights[idx].center - P;
   float attenuation = 1.0 / (1.0 + 8.0 * length(L) / lights[idx].radius);
-  computeLight( normalize( L ), N, N, I,
+  computeLight( normalize( L ), N, I,
 		attenuation * attenuation * lights[idx].color,
 		diffuse, specular, color );
 }
