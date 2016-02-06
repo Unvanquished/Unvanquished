@@ -28,6 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
+#include "client/client.h"
 
 void IN_Init( void* )
 {
@@ -62,6 +63,6 @@ bool IN_IsNumLockDown()
     return false;
 }
 
-void IN_SetCursorActive( bool )
+void IN_SetMouseMode(MouseMode)
 {
 }

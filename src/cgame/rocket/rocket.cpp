@@ -641,35 +641,85 @@ void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).CString(), length );
 }
 
+class EngineCursor
+{
+public:
+    void Show(bool show)
+    {
+        if ( show != show_cursor )
+        {
+            show_cursor = show;
+            if ( focus )
+            {
+                Update();
+            }
+        }
+    }
+
+    void SetFocus(bool focus)
+    {
+        this->focus = focus;
+        Update();
+    }
+
+private:
+    void Update()
+    {
+        if ( menuContext )
+        {
+            menuContext->ShowMouseCursor( show_cursor && focus );
+        }
+
+        MouseMode mode;
+
+        if ( !focus )
+        {
+            mode = MouseMode::SystemCursor;
+        }
+        else if ( show_cursor )
+        {
+            mode = MouseMode::CustomCursor;
+        }
+        else
+        {
+            mode = MouseMode::Deltas;
+        }
+
+        trap_SetMouseMode( mode );
+
+    }
+
+    bool show_cursor = true;
+    bool focus = false;
+};
+
+static EngineCursor engineCursor;
+
+
 void Rocket_SetActiveContext( int catcher )
 {
 	switch ( catcher )
 	{
 		case KEYCATCH_UI:
-			menuContext->ShowMouseCursor( true );
-			trap_SetMouseMode( MouseMode::Absolute );
+			engineCursor.Show( true );
 			break;
 
 		default:
 			if ( !( catcher & KEYCATCH_CONSOLE ) )
 			{
-				menuContext->ShowMouseCursor( false );
-			trap_SetMouseMode( MouseMode::Deltas );
+				engineCursor.Show( false );
 			}
 
 			break;
 	}
 }
 
+void CG_FocusEvent( bool has_focus )
+{
+    engineCursor.SetFocus( has_focus );
+}
+
 void Rocket_LoadFont( const char *font )
 {
 	Rocket::Core::FontDatabase::LoadFontFace( font );
-}
-
-void Rocket_HideMouse()
-{
-	if ( menuContext )
-	{
-		menuContext->ShowMouseCursor( false );
-	}
 }
