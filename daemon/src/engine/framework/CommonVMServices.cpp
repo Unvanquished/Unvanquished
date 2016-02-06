@@ -47,6 +47,8 @@ namespace VM {
                 IPC::HandleMsg<CreateSharedMemoryMsg>(channel, std::move(reader), [this](size_t size, IPC::SharedMemory& shm) {
                     shm = IPC::SharedMemory::Create(size);
                 });
+                break;
+
             case CRASH_DUMP:
                 IPC::HandleMsg<CrashDumpMsg>(channel, std::move(reader), [this](std::vector<uint8_t> dump) {
                     Sys::NaclCrashDump(dump, vmName);
