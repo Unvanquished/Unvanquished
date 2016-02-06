@@ -78,7 +78,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #if defined(_MSC_VER)
         #define DAEMON_ASSERT_CALLSITE_HELPER(file, func, line, directExpression, _1, _2, _3) \
             __assume(directExpression)
-    #elif defined(__clang__) && __has_builtin(__builtin_assume)
+    #elif defined(__clang__) && defined(__builtin_assume)
         #define DAEMON_ASSERT_CALLSITE_HELPER(file, func, line, directExpression, _1, _2, _3) \
             __builtin_assume(directExpression)
     #else
