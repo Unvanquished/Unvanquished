@@ -395,8 +395,13 @@ void Rocket_Shutdown()
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
 
-	// Shut down Lua before we clean up contexts
-	Rocket::Core::Lua::Interpreter::Shutdown();
+	// If the game crashes, Lua won't have been initialized it and will crash
+	// if we try to shut it down.
+	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
+	{
+		// Shut down Lua before we clean up contexts
+		Rocket::Core::Lua::Interpreter::Shutdown();
+	}
 
 	if ( menuContext )
 	{
