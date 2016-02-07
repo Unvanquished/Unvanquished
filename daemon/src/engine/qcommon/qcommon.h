@@ -515,7 +515,7 @@ int FS_Game_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode )
 
 int FS_Seek( fileHandle_t f, long offset, int origin );
 
-// seek on a file (doesn't work for zip files!!!!!!!!)
+// seek on a file (doesn't work for zip files!)
 
 const char* FS_LoadedPaks();
 

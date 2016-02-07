@@ -44,8 +44,8 @@ Maryland 20850 USA.
 
 //=============================================================================
 
-#define PERS_SCORE        0 // !!! MUST NOT CHANGE, SERVER AND
-// GAME BOTH REFERENCE !!!
+#define PERS_SCORE        0 // ! MUST NOT CHANGE, SERVER AND
+// GAME BOTH REFERENCE !
 
 #define MAX_BPS_WINDOW 20 // NERVE - SMF - net debugging
 

@@ -31,7 +31,7 @@
 #include "Platform.h"
 
 // Note: Changing a ROCKETCORE_API_INLINE method
-// breaks ABI compatibility!!
+// breaks ABI compatibility!
 
 #ifdef STATIC_LIB
 	#define ROCKET_STATIC_LIB
@@ -43,7 +43,7 @@
 		#if defined RocketCore_EXPORTS
 			#define ROCKETCORE_API __declspec(dllexport)
 			// Note: Changing a ROCKETCORE_API_INLINE method
-			// breaks ABI compatibility!!
+			// breaks ABI compatibility!
 			
 			// This results in an exported method from the DLL
 			// that may be inlined in DLL clients, or if not
@@ -53,7 +53,7 @@
 		#else
 			#define ROCKETCORE_API __declspec(dllimport)
 			// Note: Changing a ROCKETCORE_API_INLINE method
-			// breaks ABI compatibility!!
+			// breaks ABI compatibility!
 
 			// Based on the warnngs emitted by GCC/MinGW if using
 			// dllimport and inline together, the information at
@@ -77,13 +77,13 @@
 	#else
 		#define ROCKETCORE_API __attribute__((visibility("default")))
 		// Note: Changing a ROCKETCORE_API_INLINE method
-		// breaks ABI compatibility!!
+		// breaks ABI compatibility!
 		#define ROCKETCORE_API_INLINE __attribute__((visibility("default"))) inline
 	#endif
 #else
 	#define ROCKETCORE_API
 	// Note: Changing a ROCKETCORE_API_INLINE method
-	// breaks ABI compatibility!!
+	// breaks ABI compatibility!
 	#define ROCKETCORE_API_INLINE inline
 #endif
 

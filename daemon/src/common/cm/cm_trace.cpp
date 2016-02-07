@@ -1976,7 +1976,7 @@ static void CM_TraceThroughTree( traceWork_t *tw, int num, float p1f, float p2f,
 		}
 		else
 		{
-			// FIXME: this is silly !!!
+			// FIXME: this is silly !
 			offset = 2048;
 		}
 	}
