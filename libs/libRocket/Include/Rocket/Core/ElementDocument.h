@@ -123,7 +123,7 @@ public:
 	/// Load a script into the document. Note that the base implementation does nothing, scripting language addons hook
 	/// this method.
 	/// @param[in] stream Stream of code to process.
-	/// @param[in] source_name Name of the the script the source comes from, useful for debug information.
+	/// @param[in] source_name Name of the script the source comes from, useful for debug information.
 	virtual void LoadScript(Stream* stream, const String& source_name);
 
 	/// Updates the layout if necessary.
