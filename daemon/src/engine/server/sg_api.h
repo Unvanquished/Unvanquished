@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "engine/qcommon/q_shared.h"
 #include "engine/botlib/bot_api.h"
 
-#define GAME_API_VERSION          2
+#define GAME_API_VERSION          3
 
 #define SVF_NOCLIENT              0x00000001
 #define SVF_CLIENTMASK            0x00000002

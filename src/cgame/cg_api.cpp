@@ -133,6 +133,13 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 				});
 				break;
 
+			case CG_FOCUS_EVENT:
+				IPC::HandleMsg<CGameFocusEventMsg>(VM::rootChannel, std::move(reader), [] (bool focus) {
+					CG_FocusEvent(focus);
+					cmdBuffer.TryFlush();
+				});
+				break;
+
             default:
                 CG_Error("VMMain(): unknown cgame command %i", minor);
 
@@ -269,11 +276,6 @@ bool trap_GetNews( bool force )
 	bool res;
 	VM::SendMsg<GetNewsMsg>(force, res);
 	return res;
-}
-
-void trap_CrashDump(const uint8_t* data, size_t size)
-{
-	VM::SendMsg<CrashDumpMsg>(std::vector<uint8_t>{data, data + size});
 }
 
 // All Sounds

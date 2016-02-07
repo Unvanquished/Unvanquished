@@ -479,6 +479,10 @@ int trap_Milliseconds()
 
 namespace VM {
 
+    void CrashDump(const uint8_t* data, size_t size) {
+        SendMsg<CrashDumpMsg>(std::vector<uint8_t>{data, data + size});
+    }
+
     void InitializeProxies(int milliseconds) {
         baseTime = Sys::SteadyClock::now() - std::chrono::milliseconds(milliseconds);
         Cmd::InitializeProxy();

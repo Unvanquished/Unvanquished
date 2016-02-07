@@ -48,7 +48,6 @@ typedef enum gameImport_s
   G_GEN_FINGERPRINT,
   G_GET_PLAYER_PUBKEY,
   G_GET_TIME_STRING,
-  G_CRASH_DUMP,
 
   BOT_ALLOCATE_CLIENT,
   BOT_FREE_CLIENT,
@@ -143,10 +142,6 @@ typedef IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_TIME_STRING>, int, std::string, qtime_t>,
     IPC::Reply<std::string>
 > GetTimeStringMsg;
-// CrashDumpMsg
-typedef IPC::SyncMessage <
-    IPC::Message<IPC::Id<VM::QVM, G_CRASH_DUMP>, std::vector<uint8_t> >
-> CrashDumpMsg;
 
 // BotAllocateClientMsg
 typedef IPC::SyncMessage<

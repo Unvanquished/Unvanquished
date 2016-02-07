@@ -39,7 +39,6 @@ Maryland 20850 USA.
 #include "qcommon/crypto.h"
 #include "framework/CommonVMServices.h"
 #include "framework/CommandSystem.h"
-#include "framework/CrashDump.h"
 
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
@@ -644,12 +643,6 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			buffer[0] = '\0';
 			SV_GetTimeString(buffer.get(), len, format.c_str(), &time);
 			res.assign(buffer.get(), len);
-		});
-		break;
-
-	case G_CRASH_DUMP:
-		IPC::HandleMsg<CrashDumpMsg>(channel, std::move(reader), [this](std::vector<uint8_t> dump) {
-			Sys::NaclCrashDump(dump, "sgame");
 		});
 		break;
 
