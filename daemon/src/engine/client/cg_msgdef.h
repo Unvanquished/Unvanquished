@@ -140,7 +140,6 @@ typedef enum cgameImport_s
   CG_NOTIFY_TEAMCHANGE,
   CG_PREPAREKEYUP,
   CG_GETNEWS,
-  CG_CRASH_DUMP,
 
   // Sound
   CG_S_STARTSOUND,
@@ -345,10 +344,6 @@ typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETNEWS>, bool>,
 	IPC::Reply<bool>
 > GetNewsMsg;
-typedef IPC::SyncMessage <
-    IPC::Message<IPC::Id<VM::QVM, CG_CRASH_DUMP>, std::vector<uint8_t> >
-> CrashDumpMsg;
-
 
 // All Sounds
 
@@ -564,7 +559,7 @@ namespace Key {
 }
 
 namespace Mouse {
-    typedef IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_SETMOUSEMODE>, MouseMode> SetMouseMode;
+	typedef IPC::Message<IPC::Id<VM::QVM, CG_MOUSE_SETMOUSEMODE>, MouseMode> SetMouseMode;
 }
 
 namespace LAN {
@@ -803,7 +798,10 @@ typedef enum
   CG_ROCKET_FRAME,
 // Rocket runs through a frame, including event processing, and rendering
 
-  CG_CONSOLE_LINE
+  CG_CONSOLE_LINE,
+
+  CG_FOCUS_EVENT
+// void (*CG_FocusEvent)( bool focus);
 } cgameExport_t;
 
 // CGameStaticInitMsg
@@ -842,6 +840,9 @@ typedef IPC::SyncMessage<
 typedef IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_TEXT_INPUT_EVENT>, int>
 > CGameTextInptEvent;
+typedef IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_FOCUS_EVENT>, bool>
+> CGameFocusEventMsg;
 
 //TODO Check all rocket calls
 // CGameRocketInitMsg

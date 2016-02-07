@@ -31,6 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_MATH_H_
 #define COMMON_MATH_H_
 
+#include <algorithm>
+
 namespace Math {
 
 	template<typename T> static inline T Clamp(T value, T min, T max)

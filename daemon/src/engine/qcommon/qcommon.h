@@ -548,7 +548,6 @@ void IN_Shutdown();
 bool IN_IsNumLockDown();
 void IN_DropInputsForFrame();
 void IN_CenterMouse();
-void IN_SetCursorActive( bool active );
 
 /*
 ==============================================================
@@ -778,6 +777,8 @@ void     CL_CharEvent( int c );
 
 void CL_MouseEvent( int dx, int dy, int time );
 void CL_MousePosEvent( int dx, int dy);
+void CL_FocusEvent( bool focus );
+
 
 void CL_JoystickEvent( int axis, int value, int time );
 
@@ -851,7 +852,7 @@ typedef enum
   MAX_JOYSTICK_AXIS
 } joystickAxis_t;
 
-typedef enum
+enum sysEventType_t
 {
   // bk001129 - make sure SE_NONE is zero
   SE_NONE = 0, // evTime is still valid
@@ -861,8 +862,9 @@ typedef enum
   SE_MOUSE_POS, // evValue and evValue2 are (x, y) coordinates
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
   SE_CONSOLE, // evPtr is a char*
-  SE_PACKET // evPtr is a netadr_t followed by data bytes to evPtrLength
-} sysEventType_t;
+  SE_PACKET, // evPtr is a netadr_t followed by data bytes to evPtrLength
+  SE_FOCUS // evValue is a boolean indicating whether the game has focus
+};
 
 typedef struct
 {

@@ -38,6 +38,8 @@ Maryland 20850 USA.
 #undef DotProduct
 #endif
 
+#include "common/Color.h"
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-pedantic"
 #include <Rocket/Core/Core.h>

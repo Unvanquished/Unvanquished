@@ -3425,7 +3425,7 @@ static void R_LoadSubmodels( lump_t *l )
 
 		model = R_AllocModel();
 
-		assert( model != nullptr );  // this should never happen
+		ASSERT(model != nullptr);
 
 		if ( model == nullptr )
 		{

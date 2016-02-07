@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "LogSystem.h"
 #include "System.h"
 #include "CrashDump.h"
+#include <common/FileSystem.h>
 #ifdef _WIN32
 #include <windows.h>
 #include <SDL2/SDL.h>

@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <unistd.h>
-#include <sys/wait.h>
 #include <signal.h>
 #include <string>
 
@@ -37,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 google_breakpad::CrashGenerationServer* server;
 
-void ShutdownServer(int) {
+void ShutdownServer() {
     // Destructor waits for crash dump to finish
     delete server;
 }
@@ -54,21 +53,24 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    struct sigaction sa{};
-    sa.sa_handler = ShutdownServer;
-    if (sigaction(SIGTERM, &sa, nullptr) != 0) return 1;
-
     int fd = std::stoi(argv[1]);
     std::string path = argv[2];
     pid_t pid = std::stoi(argv[3]);
 
-    server = new google_breakpad::CrashGenerationServer(fd, nullptr, nullptr, nullptr, nullptr, true, &path);
+    if (atexit(ShutdownServer) != 0) return 1;
+    server = new google_breakpad::CrashGenerationServer(fd, nullptr,
+            nullptr, nullptr, nullptr, true, &path);
     if (!server->Start()) {
         return 1;
     }
 
+    sigset_t set;
+    if (0 != sigemptyset(&set) ||
+        0 != sigaddset(&set, SIGCHLD) ||
+        0 != sigprocmask(SIG_BLOCK, &set, nullptr)) {
+        return 1;
+    }
     int _;
-    waitpid(pid, &_, 0); //wait for the game to exit
-    ShutdownServer(0);
+    sigwait(&set, &_);
     return 0;
 }

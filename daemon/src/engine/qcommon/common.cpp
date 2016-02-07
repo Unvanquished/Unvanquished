@@ -47,6 +47,7 @@ Maryland 20850 USA.
 #include "framework/LogSystem.h"
 #include "../common/Profiler.h"
 #include "framework/System.h"
+#include <common/FileSystem.h>
 
 // htons
 #ifdef _WIN32
@@ -1152,6 +1153,10 @@ int Com_EventLoop()
 
 			case SE_MOUSE_POS:
 				CL_MousePosEvent( ev.evValue, ev.evValue2 );
+				break;
+
+			case SE_FOCUS:
+				CL_FocusEvent( ev.evValue );
 				break;
 
 			case SE_JOYSTICK_AXIS:

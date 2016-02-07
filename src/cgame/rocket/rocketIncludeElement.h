@@ -37,6 +37,7 @@ Maryland 20850 USA.
 
 #include "../cg_local.h"
 #include "rocket.h"
+#include <common/FileSystem.h>
 
 class RocketIncludeElement : public Rocket::Core::Element
 {

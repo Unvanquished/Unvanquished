@@ -24,7 +24,7 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* source, Util::opt
 
 	// TODO: Remove dependency on client.
 	gclient_t *client = entity.oldEnt->client;
-	assert(client);
+	ASSERT(client != nullptr);
 
 	// Check for immunity.
 	if (client->noclip) return;

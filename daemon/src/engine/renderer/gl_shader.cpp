@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // gl_shader.cpp -- GLSL shader handling
 
+#include <common/FileSystem.h>
 #include "gl_shader.h"
 
 // We currently write GLShaderHeader to a file and memcpy all over it.
@@ -202,7 +203,7 @@ namespace // Implementation details
 			return shaderText;
 		}
 		// Will never reach here.
-		assert(false);
+		ASSERT(false);
 		ThrowShaderError("Internal error. ShaderKind not set.");
 		return std::string();
 	}

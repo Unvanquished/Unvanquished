@@ -1031,19 +1031,18 @@ identical, under the assumption that the in-order delta code will catch it.
 void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, bool force )
 {
 	int        i, lc;
-	int        numFields;
 	netField_t *field;
 	int        trunc;
 	float      fullFloat;
 	int        *fromF, *toF;
 
-	numFields = ARRAY_LEN( entityStateFields );
+	const int numFields = ARRAY_LEN(entityStateFields);
 
 	// all fields should be 32 bits to avoid any compiler packing issues
 	// the "number" field is not part of the field list
 	// if this assert fails, someone added a field to the entityState_t
 	// struct without updating the message fields
-	assert( numFields + 1 == sizeof( *from ) / 4 );
+	static_assert(numFields + 1 == sizeof(*from) / 4, "entityState_t out of sync with entityStateFields");
 
 	// a nullptr to is a delta remove message
 	if ( to == nullptr )

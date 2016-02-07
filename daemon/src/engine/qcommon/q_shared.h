@@ -85,7 +85,6 @@ void ignore_result(T) {}
 #define EXTERN_C extern "C"
 
 // C standard library headers
-#include <assert.h>
 #include <errno.h>
 //#include <fenv.h>
 #include <float.h>
@@ -177,8 +176,8 @@ void ignore_result(T) {}
 
 //=============================================================
 
-#include "common/Compiler.h"
 #include "common/Platform.h"
+#include "common/Compiler.h"
 #include "common/Endian.h"
 
 typedef int qhandle_t;

@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
+#include <common/FileSystem.h>
 #include "CrashDump.h"
 #include "System.h"
 #ifdef _WIN32
@@ -43,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif // USE_BREAKPAD
 
-Log::Logger crashDumpLogs("common.breakpad", Log::LOG_NOTICE);
+Log::Logger crashDumpLogs("common.breakpad", "", Log::LOG_NOTICE);
 
 namespace Sys {
 
@@ -99,7 +100,7 @@ static std::string CrashServerPath() {
     return FS::Path::Build(FS::GetLibPath(), name);
 }
 
-static Cvar::Cvar<bool> enableBreakpad("common.breakpad.enabled", "If enabled on startup, starts a process for recording crash dumps", Cvar::NONE, true);
+static Cvar::Cvar<bool> enableBreakpad("common.breakpad.enabled", "If enabled on startup, starts a process for recording crash dumps", Cvar::TEMPORARY, true);
 
 #ifdef _WIN32
 

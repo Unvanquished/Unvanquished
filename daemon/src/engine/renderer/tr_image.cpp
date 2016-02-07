@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 // tr_image.c
+#include <common/FileSystem.h>
 #include "tr_local.h"
 
 int                  gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
@@ -3236,7 +3237,7 @@ void RE_GetTextureSize( int textureID, int *width, int *height )
 
 	shader = R_GetShaderByHandle( textureID );
 
-	assert( shader );
+	ASSERT(shader != nullptr);
 	if ( !shader )
 	{
 		return;

@@ -198,7 +198,9 @@ namespace Audio {
     }
 
     void UpdateReverbSlot(int slotNum, std::string name, float ratio) {
-        assert(slotNum >= 0 && slotNum < N_REVERB_SLOTS && !std::isnan(ratio));
+        ASSERT_GE(slotNum, 0);
+        ASSERT_LT(slotNum, N_REVERB_SLOTS);
+        ASSERT(!std::isnan(ratio));
 
         auto& slot = reverbSlots[slotNum];
 

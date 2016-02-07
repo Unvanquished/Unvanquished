@@ -1361,7 +1361,7 @@ void G_SpawnClients( team_t team )
 	spawnQueue_t *sq = nullptr;
 	int          numSpawns = 0;
 
-	assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
+	ASSERT(team == TEAM_ALIENS || team == TEAM_HUMANS);
 	sq = &level.team[ team ].spawnQueue;
 
 	numSpawns = level.team[ team ].numSpawns;

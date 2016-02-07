@@ -395,8 +395,13 @@ void Rocket_Shutdown()
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
 
-	// Shut down Lua before we clean up contexts
-	Rocket::Core::Lua::Interpreter::Shutdown();
+	// If the game crashes, Lua won't have been initialized it and will crash
+	// if we try to shut it down.
+	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
+	{
+		// Shut down Lua before we clean up contexts
+		Rocket::Core::Lua::Interpreter::Shutdown();
+	}
 
 	if ( menuContext )
 	{
@@ -641,35 +646,85 @@ void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).CString(), length );
 }
 
+class EngineCursor
+{
+public:
+    void Show(bool show)
+    {
+        if ( show != show_cursor )
+        {
+            show_cursor = show;
+            if ( focus )
+            {
+                Update();
+            }
+        }
+    }
+
+    void SetFocus(bool focus)
+    {
+        this->focus = focus;
+        Update();
+    }
+
+private:
+    void Update()
+    {
+        if ( menuContext )
+        {
+            menuContext->ShowMouseCursor( show_cursor && focus );
+        }
+
+        MouseMode mode;
+
+        if ( !focus )
+        {
+            mode = MouseMode::SystemCursor;
+        }
+        else if ( show_cursor )
+        {
+            mode = MouseMode::CustomCursor;
+        }
+        else
+        {
+            mode = MouseMode::Deltas;
+        }
+
+        trap_SetMouseMode( mode );
+
+    }
+
+    bool show_cursor = true;
+    bool focus = false;
+};
+
+static EngineCursor engineCursor;
+
+
 void Rocket_SetActiveContext( int catcher )
 {
 	switch ( catcher )
 	{
 		case KEYCATCH_UI:
-			menuContext->ShowMouseCursor( true );
-			trap_SetMouseMode( MouseMode::Absolute );
+			engineCursor.Show( true );
 			break;
 
 		default:
 			if ( !( catcher & KEYCATCH_CONSOLE ) )
 			{
-				menuContext->ShowMouseCursor( false );
-			trap_SetMouseMode( MouseMode::Deltas );
+				engineCursor.Show( false );
 			}
 
 			break;
 	}
 }
 
+void CG_FocusEvent( bool has_focus )
+{
+    engineCursor.SetFocus( has_focus );
+}
+
 void Rocket_LoadFont( const char *font )
 {
 	Rocket::Core::FontDatabase::LoadFontFace( font );
-}
-
-void Rocket_HideMouse()
-{
-	if ( menuContext )
-	{
-		menuContext->ShowMouseCursor( false );
-	}
 }

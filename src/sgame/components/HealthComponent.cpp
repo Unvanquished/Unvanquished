@@ -231,7 +231,7 @@ void HealthComponent::SetHealth(float health) {
 }
 
 void HealthComponent::SetMaxHealth(float maxHealth, bool scaleHealth) {
-	assert(maxHealth > 0.0f);
+	ASSERT_GT(maxHealth, 0.0f);
 
 	healthLogger.Debug("Changing maximum health: %3.1f → %3.1f.", this->maxHealth, maxHealth);
 

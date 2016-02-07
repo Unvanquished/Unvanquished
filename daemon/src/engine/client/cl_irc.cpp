@@ -381,7 +381,7 @@ static void IRC_SetTimeout( irc_handler_func_t function, int time )
 {
 	struct irc_delayed_t *qe, * find;
 
-	assert( time > 0 );
+	ASSERT_GT(time, 0);
 
 	// Create entry
 	qe = ( struct irc_delayed_t * ) malloc( sizeof( struct irc_delayed_t ) );
@@ -1179,7 +1179,7 @@ Wait for some seconds.
 static void IRC_Sleep( int seconds )
 {
 	int i;
-	assert( seconds > 0 );
+	ASSERT_GT(seconds, 0);
 
 	for ( i = 0; i < seconds * IRC_TIMEOUTS_PER_SEC && !IRC_QuitRequested; i++ )
 	{
