@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #if defined(_WIN32)
 
-    #include "Windows.h"
+    #include "windows.h"
 
     namespace Sys {
         bool IsDebuggerAttached() {
