@@ -1435,7 +1435,7 @@ void         ByteToDir( int b, vec3_t dir );
 #define MAX_TOKENLENGTH 1024
 
 //token types
-enum {
+enum class tokenType_t {
     TT_STRING, // string
     TT_LITERAL, // literal
     TT_NUMBER, // number
@@ -1445,7 +1445,7 @@ enum {
 
 	struct pc_token_t
 	{
-		int   type;
+		tokenType_t type;
 		int   subtype;
 		int   intvalue;
 		float floatvalue;

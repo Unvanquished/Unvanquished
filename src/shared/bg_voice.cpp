@@ -317,7 +317,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 		{
 			foundToken = trap_Parse_ReadToken( handle, &token );
 
-			if ( token.type == TT_NUMBER )
+			if ( token.type == tokenType_t::TT_NUMBER )
 			{
 				voiceTrack->enthusiasm = token.intvalue;
 			}

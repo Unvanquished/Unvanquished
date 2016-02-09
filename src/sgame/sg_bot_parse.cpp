@@ -49,7 +49,7 @@ static bool expectToken( const char *s, pc_token_list **list, bool next )
 
 AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 {
-	if ( token->type == TT_STRING )
+	if ( token->type == tokenType_t::TT_STRING )
 	{
 		return AIBoxString( token->string );
 	}
@@ -369,7 +369,7 @@ static const struct AIOpMap_s
 
 static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 {
-	if ( token->type != TT_PUNCTUATION )
+	if ( token->type != tokenType_t::TT_PUNCTUATION )
 	{
 		return OP_NONE;
 	}
@@ -506,7 +506,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 	while ( parse != parenEnd )
 	{
-		if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
+		if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
 		{
 			numParams++;
 		}
@@ -545,7 +545,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 		parse = parenBegin->next;
 		while ( parse != parenEnd )
 		{
-			if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
+			if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
 			{
 				params[ numParams ] = AIBoxToken( &parse->token );
 				numParams++;
@@ -701,11 +701,11 @@ static AIExpType_t *Primary( pc_token_list **list )
 			return nullptr;
 		}
 	}
-	else if ( current->token.type == TT_NUMBER )
+	else if ( current->token.type == tokenType_t::TT_NUMBER )
 	{
 		tree = ( AIExpType_t * ) newValueLiteral( list );
 	}
-	else if ( current->token.type == TT_NAME )
+	else if ( current->token.type == tokenType_t::TT_NAME )
 	{
 		tree = ( AIExpType_t * ) newValueFunc( list );
 	}

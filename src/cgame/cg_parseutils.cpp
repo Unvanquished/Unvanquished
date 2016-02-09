@@ -250,7 +250,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 			token.floatvalue = -token.floatvalue;
 		}
 
-		if ( token.type == TT_NUMBER )
+		if ( token.type == tokenType_t::TT_NUMBER )
 		{
 			if ( !expectingNumber )
 			{
@@ -420,7 +420,7 @@ bool PC_Float_Parse( int handle, float *f )
 		negative = true;
 	}
 
-	if ( token.type != TT_NUMBER )
+	if ( token.type != tokenType_t::TT_NUMBER )
 	{
 		PC_SourceError( handle, "expected float but found %s", token.string );
 		return false;
@@ -545,7 +545,7 @@ bool PC_Int_Parse( int handle, int *i )
 		negative = true;
 	}
 
-	if ( token.type != TT_NUMBER )
+	if ( token.type != tokenType_t::TT_NUMBER )
 	{
 		PC_SourceError( handle, "expected integer but found %s", token.string );
 		return false;

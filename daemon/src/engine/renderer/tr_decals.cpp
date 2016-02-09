@@ -390,12 +390,6 @@ ChopWindingBehindPlane()
 clips a winding to the fragment behind the plane
 */
 
-enum {
-	SIDE_FRONT,
-	SIDE_BACK,
-	SIDE_ON,
-};
-
 static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_VERTS ],
                                     int *numOutPoints, vec3_t outPoints[ MAX_DECAL_VERTS ], vec4_t plane, vec_t epsilon )
 {
@@ -404,7 +398,7 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 	float *p1, *p2, *clip;
 	float d;
 	float dists[ MAX_DECAL_VERTS + 4 ];
-	int   sides[ MAX_DECAL_VERTS + 4 ];
+	planeSide_t sides[ MAX_DECAL_VERTS + 4 ];
 	int   counts[ 3 ];
 
 	/* set initial count */
@@ -417,9 +411,9 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 	}
 
 	/* determine sides for each point */
-	counts[ SIDE_FRONT ] = 0;
-	counts[ SIDE_BACK ] = 0;
-	counts[ SIDE_ON ] = 0;
+	counts[ Util::ordinal(planeSide_t::SIDE_FRONT) ] = 0;
+	counts[ Util::ordinal(planeSide_t::SIDE_BACK) ] = 0;
+	counts[ Util::ordinal(planeSide_t::SIDE_ON) ] = 0;
 
 	for ( i = 0; i < numInPoints; i++ )
 	{
@@ -427,31 +421,31 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 
 		if ( dists[ i ] > epsilon )
 		{
-			sides[ i ] = SIDE_FRONT;
+			sides[ i ] = planeSide_t::SIDE_FRONT;
 		}
 		else if ( dists[ i ] < -epsilon )
 		{
-			sides[ i ] = SIDE_BACK;
+			sides[ i ] = planeSide_t::SIDE_BACK;
 		}
 		else
 		{
-			sides[ i ] = SIDE_ON;
+			sides[ i ] = planeSide_t::SIDE_ON;
 		}
 
-		counts[ sides[ i ] ]++;
+		counts[ Util::ordinal(sides[ i ]) ]++;
 	}
 
 	sides[ i ] = sides[ 0 ];
 	dists[ i ] = dists[ 0 ];
 
 	/* all points on front */
-	if ( counts[ SIDE_BACK ] == 0 )
+	if ( counts[ Util::ordinal(planeSide_t::SIDE_BACK) ] == 0 )
 	{
 		return;
 	}
 
 	/* all points on back */
-	if ( counts[ SIDE_FRONT ] == 0 )
+	if ( counts[ Util::ordinal(planeSide_t::SIDE_FRONT) ] == 0 )
 	{
 		*numOutPoints = numInPoints;
 		Com_Memcpy( outPoints, inPoints, numInPoints * sizeof( vec3_t ) );
@@ -464,13 +458,13 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 		p1 = inPoints[ i ];
 		clip = outPoints[ *numOutPoints ];
 
-		if ( sides[ i ] == SIDE_ON || sides[ i ] == SIDE_BACK )
+		if ( sides[ i ] == planeSide_t::SIDE_ON || sides[ i ] == planeSide_t::SIDE_BACK )
 		{
 			VectorCopy( p1, clip );
 			( *numOutPoints ) ++;
 		}
 
-		if ( sides[ i + 1 ] == SIDE_ON || sides[ i + 1 ] == sides[ i ] )
+		if ( sides[ i + 1 ] == planeSide_t::SIDE_ON || sides[ i + 1 ] == sides[ i ] )
 		{
 			continue;
 		}

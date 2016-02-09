@@ -43,7 +43,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef struct
 {
-	int   type;
+	tokenType_t type;
 	int   subtype;
 	int   intvalue;
 	float floatvalue;

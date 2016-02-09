@@ -473,7 +473,6 @@ qhandle_t RE_RegisterAnimation( const char *name )
 	qhandle_t       hAnim;
 	skelAnimation_t *anim;
 	char            *buffer;
-	int             bufferLen;
 	bool        loaded = false;
 
 	if ( !name || !name[ 0 ] )
@@ -520,7 +519,7 @@ qhandle_t RE_RegisterAnimation( const char *name )
 	R_SyncRenderThread();
 
 	// load and parse the .md5anim file
-	bufferLen = ri.FS_ReadFile( name, ( void ** ) &buffer );
+	int bufferLen = ri.FS_ReadFile( name, ( void ** ) &buffer );
 
 	if ( !buffer )
 	{
@@ -587,7 +586,7 @@ void R_AnimationList_f()
 		Log::Notice("'%s'", anim->name );
 	}
 
-	Log::Warn("%8i : Total animations", tr.numAnimations );
+	Log::Notice("%8i : Total animations", tr.numAnimations );
 }
 
 /*
