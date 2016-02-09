@@ -2091,7 +2091,7 @@ and attempt to execute a handler for each complete message.
 static ircCmd_t IRC_ProcessData()
 {
 	char buffer[ IRC_RECV_BUF_SIZE ];
-	ssize_t len = recv( IRC_Socket, buffer, IRC_RECV_BUF_SIZE, 0 );
+	int len = recv( IRC_Socket, buffer, IRC_RECV_BUF_SIZE, 0 );
 
 	// Handle errors / remote disconnects
 	if ( len <= 0 )
