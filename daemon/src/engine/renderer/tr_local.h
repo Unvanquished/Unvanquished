@@ -1012,6 +1012,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  TB_DIFFUSEMAP = 0,
 	  TB_NORMALMAP,
 	  TB_SPECULARMAP,
+	  TB_MATERIALMAP = TB_SPECULARMAP,
 	  TB_GLOWMAP,
 	  MAX_TEXTURE_BUNDLES = 4
 	};
@@ -1037,6 +1038,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  ST_DIFFUSEMAP,
 	  ST_NORMALMAP,
 	  ST_SPECULARMAP,
+	  ST_MATERIALMAP,
 	  ST_REFLECTIONMAP, // cubeMap based reflection
 	  ST_REFRACTIONMAP,
 	  ST_DISPERSIONMAP,
@@ -1050,6 +1052,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  ST_COLLAPSE_lighting_DBG, // diffusemap + bumpmap + glowmap
 	  ST_COLLAPSE_lighting_DBS, // diffusemap + bumpmap + specularmap
 	  ST_COLLAPSE_lighting_DBSG, // diffusemap + bumpmap + specularmap + glowmap
+	  ST_COLLAPSE_lighting_DBM, // diffusemap + bumpmap + materialmap
+	  ST_COLLAPSE_lighting_DBMG, // diffusemap + bumpmap + materialmap + glowmap
 	  ST_COLLAPSE_reflection_CB, // color cubemap + bumpmap
 
 	  // light shader stage types
@@ -1065,6 +1069,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  COLLAPSE_lighting_DBG,
 	  COLLAPSE_lighting_DBS,
 	  COLLAPSE_lighting_DBSG,
+	  COLLAPSE_lighting_DBM,
+	  COLLAPSE_lighting_DBMG,
 	  COLLAPSE_reflection_CB,
 	  COLLAPSE_color_lightmap
 	};

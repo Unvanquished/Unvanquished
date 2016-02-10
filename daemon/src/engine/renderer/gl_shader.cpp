@@ -1154,6 +1154,28 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permut
 	return false;
 }
 
+bool GLCompileMacro_USE_PHYSICAL_SHADING::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
+{
+	bool foundUSE_NORMAL_MAPPING = false;
+
+	for (const GLCompileMacro* macro : macros)
+	{
+		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
+		{
+			foundUSE_NORMAL_MAPPING = true;
+			break;
+		}
+	}
+
+	if ( !foundUSE_NORMAL_MAPPING )
+	{
+		//ri.Printf(PRINT_ALL, "missing macro! canceling '%s' <= '%s'\n", GetName(), "USE_NORMAL_MAPPING");
+		return true;
+	}
+
+	return false;
+}
+
 bool GLShader::GetCompileMacrosString( size_t permutation, std::string &compileMacrosOut ) const
 {
 	compileMacrosOut.clear();
@@ -1323,7 +1345,8 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_GLOW_MAPPING( this ),
-	GLCompileMacro_USE_SHADER_LIGHTS( this )
+	GLCompileMacro_USE_SHADER_LIGHTS( this ),
+	GLCompileMacro_USE_PHYSICAL_SHADING( this )
 {
 }
 
@@ -1378,7 +1401,8 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this ),
 	GLCompileMacro_USE_GLOW_MAPPING( this ),
-	GLCompileMacro_USE_SHADER_LIGHTS( this )
+	GLCompileMacro_USE_SHADER_LIGHTS( this ),
+	GLCompileMacro_USE_PHYSICAL_SHADING( this )
 {
 }
 
@@ -1435,7 +1459,8 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_GLOW_MAPPING( this ),
-	GLCompileMacro_USE_SHADER_LIGHTS( this )
+	GLCompileMacro_USE_SHADER_LIGHTS( this ),
+	GLCompileMacro_USE_PHYSICAL_SHADING( this )
 {
 }
 

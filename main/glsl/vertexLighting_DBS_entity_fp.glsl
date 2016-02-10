@@ -176,7 +176,6 @@ void	main()
 // add Rim Lighting to highlight the edges
 #if defined(r_RimLighting)
 	float rim = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), r_RimExponent);
-	specBase.rgb = mix(specBase.rgb, vec3(1.0), rim);
 	vec3 emission = ambCol * rim * rim * 0.2;
 #endif
 

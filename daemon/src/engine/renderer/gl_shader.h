@@ -752,7 +752,8 @@ protected:
 	  LIGHT_DIRECTIONAL,
 	  USE_GLOW_MAPPING,
 	  USE_DEPTH_FADE,
-	  USE_SHADER_LIGHTS
+	  USE_SHADER_LIGHTS,
+	  USE_PHYSICAL_SHADING
 	};
 
 public:
@@ -1367,6 +1368,50 @@ public:
 	}
 
 	void SetShaderLights( bool enable )
+	{
+		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
+class GLCompileMacro_USE_PHYSICAL_SHADING :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_PHYSICAL_SHADING( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_PHYSICAL_SHADING";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_PHYSICAL_SHADING;
+	}
+
+	bool MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
+
+	void EnableMacro_USE_PHYSICAL_SHADING()
+	{
+		EnableMacro();
+	}
+
+	void DisableMacro_USE_PHYSICAL_SHADING()
+	{
+		DisableMacro();
+	}
+
+	void SetPhysicalShading( bool enable )
 	{
 		if ( enable )
 		{
@@ -2354,7 +2399,8 @@ class GLShader_lightMapping :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING,
-	public GLCompileMacro_USE_SHADER_LIGHTS
+	public GLCompileMacro_USE_SHADER_LIGHTS,
+	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
 	GLShader_lightMapping( GLShaderManager *manager );
@@ -2390,7 +2436,8 @@ class GLShader_vertexLighting_DBS_entity :
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
 	public GLCompileMacro_USE_GLOW_MAPPING,
-	public GLCompileMacro_USE_SHADER_LIGHTS
+	public GLCompileMacro_USE_SHADER_LIGHTS,
+	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
 	GLShader_vertexLighting_DBS_entity( GLShaderManager *manager );
@@ -2423,7 +2470,8 @@ class GLShader_vertexLighting_DBS_world :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_GLOW_MAPPING,
-	public GLCompileMacro_USE_SHADER_LIGHTS
+	public GLCompileMacro_USE_SHADER_LIGHTS,
+	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
 	GLShader_vertexLighting_DBS_world( GLShaderManager *manager );
