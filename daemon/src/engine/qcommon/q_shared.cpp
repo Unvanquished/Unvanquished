@@ -44,10 +44,6 @@ GROWLISTS
 ============================================================================
 */
 
-// malloc / free all in one place for debugging
-//extern          "C" void *malloc(int bytes);
-//extern          "C" void free(void *ptr);
-
 void Com_InitGrowList( growList_t *list, int maxElements )
 {
 	list->maxElements = maxElements;
