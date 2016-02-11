@@ -3828,7 +3828,7 @@ static void CollapseStages()
 
 	Com_Memcpy( &tmpShader, &shader, sizeof( shader ) );
 
-	Com_Memset( &tmpStages[ 0 ], 0, sizeof( stages ) );
+	memset( &tmpStages[ 0 ], 0, sizeof( stages ) );
 
 	for ( j = 0; j < MAX_SHADER_STAGES; j++ )
 	{
@@ -3838,13 +3838,13 @@ static void CollapseStages()
 		hasReflectionStage = false;
 		hasGlowStage = false;
 
-		Com_Memset( &tmpDiffuseStage, 0, sizeof( shaderStage_t ) );
-		Com_Memset( &tmpNormalStage, 0, sizeof( shaderStage_t ) );
-		Com_Memset( &tmpSpecularStage, 0, sizeof( shaderStage_t ) );
-		Com_Memset( &tmpGlowStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpDiffuseStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpNormalStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpSpecularStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpGlowStage, 0, sizeof( shaderStage_t ) );
 
-		Com_Memset( &tmpColorStage, 0, sizeof( shaderStage_t ) );
-		Com_Memset( &tmpLightmapStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpColorStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpLightmapStage, 0, sizeof( shaderStage_t ) );
 
 		if ( !stages[ j ].active )
 		{
@@ -4011,7 +4011,7 @@ static void CollapseStages()
 	}
 
 	// clear unused stages
-	Com_Memset( &tmpStages[ numStages ], 0, sizeof( stages[ 0 ] ) * ( MAX_SHADER_STAGES - numStages ) );
+	memset( &tmpStages[ numStages ], 0, sizeof( stages[ 0 ] ) * ( MAX_SHADER_STAGES - numStages ) );
 	tmpShader.numStages = numStages;
 
 	// copy result
@@ -4828,8 +4828,8 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 	}
 
 	// clear the global shader
-	Com_Memset( &shader, 0, sizeof( shader ) );
-	Com_Memset( &stages, 0, sizeof( stages ) );
+	memset( &shader, 0, sizeof( shader ) );
+	memset( &stages, 0, sizeof( stages ) );
 	Q_strncpyz( shader.name, strippedName, sizeof( shader.name ) );
 	shader.type = type;
 
@@ -5014,8 +5014,8 @@ qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image )
 	}
 
 	// clear the global shader
-	Com_Memset( &shader, 0, sizeof( shader ) );
-	Com_Memset( &stages, 0, sizeof( stages ) );
+	memset( &shader, 0, sizeof( shader ) );
+	memset( &stages, 0, sizeof( stages ) );
 	Q_strncpyz( shader.name, name, sizeof( shader.name ) );
 	shader.type = SHADER_2D;
 	shader.cullType = CT_TWO_SIDED;
@@ -5450,7 +5450,7 @@ static void ScanAndLoadShaderFiles()
 	// free up memory
 	ri.FS_FreeFileList( shaderFiles );
 
-	Com_Memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
+	memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
 	size = 0;
 
 	p = s_shaderText;
@@ -5492,7 +5492,7 @@ static void ScanAndLoadShaderFiles()
 		hashMem += shaderTextHashTableSizes[ i ] + 1;
 	}
 
-	Com_Memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
+	memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
 
 	p = s_shaderText;
 
@@ -5516,7 +5516,7 @@ static void ScanAndLoadShaderFiles()
 			shaderTable_t *tb;
 			bool      alreadyCreated;
 
-			Com_Memset( &table, 0, sizeof( table ) );
+			memset( &table, 0, sizeof( table ) );
 
 			token = COM_ParseExt2( &p, true );
 
@@ -5604,8 +5604,8 @@ static void CreateInternalShaders()
 	tr.numShaders = 0;
 
 	// init the default shader
-	Com_Memset( &shader, 0, sizeof( shader ) );
-	Com_Memset( &stages, 0, sizeof( stages ) );
+	memset( &shader, 0, sizeof( shader ) );
+	memset( &stages, 0, sizeof( stages ) );
 
 	Q_strncpyz( shader.name, "<default>", sizeof( shader.name ) );
 
@@ -5636,8 +5636,8 @@ R_InitShaders
 */
 void R_InitShaders()
 {
-	Com_Memset( shaderTableHashTable, 0, sizeof( shaderTableHashTable ) );
-	Com_Memset( shaderHashTable, 0, sizeof( shaderHashTable ) );
+	memset( shaderTableHashTable, 0, sizeof( shaderTableHashTable ) );
+	memset( shaderHashTable, 0, sizeof( shaderHashTable ) );
 
 	CreateInternalShaders();
 

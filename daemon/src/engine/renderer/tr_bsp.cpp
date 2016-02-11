@@ -579,7 +579,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 		fatbuffer = (byte*) ri.Hunk_AllocateTempMemory( sizeof( byte ) * tr.fatLightmapSize * tr.fatLightmapSize * 4 );
 
-		Com_Memset( fatbuffer, 128, tr.fatLightmapSize * tr.fatLightmapSize * 4 );
+		memset( fatbuffer, 128, tr.fatLightmapSize * tr.fatLightmapSize * 4 );
 
 		for ( int i = 0; i < numLightmaps; i++ )
 		{
@@ -665,7 +665,7 @@ static void R_LoadVisibility( lump_t *l )
 
 	len = ( s_worldData.numClusters + 63 ) & ~63;
 	s_worldData.novis = (byte*) ri.Hunk_Alloc( len, h_low );
-	Com_Memset( s_worldData.novis, 0xff, len );
+	memset( s_worldData.novis, 0xff, len );
 
 	len = l->filelen;
 
@@ -6113,7 +6113,7 @@ vertexHash_t **NewVertexHashTable()
 {
 	vertexHash_t **hashTable = (vertexHash_t**) Com_Allocate( HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
 
-	Com_Memset( hashTable, 0, HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
+	memset( hashTable, 0, HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
 
 	return hashTable;
 }
@@ -6692,7 +6692,7 @@ void RE_LoadWorldMap( const char *name )
 	tr.worldDeluxeMapping = false;
 	tr.worldHDR_RGBE = false;
 
-	Com_Memset( &s_worldData, 0, sizeof( s_worldData ) );
+	memset( &s_worldData, 0, sizeof( s_worldData ) );
 	Q_strncpyz( s_worldData.name, name, sizeof( s_worldData.name ) );
 
 	Q_strncpyz( s_worldData.baseName, COM_SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );

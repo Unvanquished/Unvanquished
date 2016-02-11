@@ -147,7 +147,7 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 		bit2->buffer = (unsigned char*) ri.Z_Malloc( pitch * height );
 		bit2->num_grays = 256;
 
-		Com_Memset( bit2->buffer, 0, size );
+		memset( bit2->buffer, 0, size );
 
 		FT_Outline_Translate( &glyph->outline, -left, -bottom );
 
@@ -177,7 +177,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 	float              scaledWidth, scaledHeight;
 	FT_Bitmap          *bitmap = nullptr;
 
-	Com_Memset( &glyph, 0, sizeof( glyphInfo_t ) );
+	memset( &glyph, 0, sizeof( glyphInfo_t ) );
 
 	// make sure everything is here
 	if ( face != nullptr )
@@ -487,7 +487,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 		return;
 	}
 
-	Com_Memset( out, 0, FONT_SIZE * FONT_SIZE );
+	memset( out, 0, FONT_SIZE * FONT_SIZE );
 
 	// calculate max height
 	maxHeight = 0;
@@ -526,7 +526,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 		if ( xOut == -1 )
 		{
 			RE_StoreImage( font, chunk, page++, lastStart, i, out, yOut + maxHeight + 1 );
-			Com_Memset( out, 0, FONT_SIZE * FONT_SIZE );
+			memset( out, 0, FONT_SIZE * FONT_SIZE );
 			xOut = yOut = 0;
 			rendered = false;
 			lastStart = i;

@@ -2232,7 +2232,7 @@ static void RB_RenderInteractionsShadowMapped()
 					else
 					{
 						// set up the transformation matrix
-						Com_Memset( &backEnd.orientation, 0, sizeof( backEnd.orientation ) );
+						memset( &backEnd.orientation, 0, sizeof( backEnd.orientation ) );
 
 						backEnd.orientation.axis[ 0 ][ 0 ] = 1;
 						backEnd.orientation.axis[ 1 ][ 1 ] = 1;
@@ -2411,7 +2411,7 @@ static void RB_RenderInteractionsShadowMapped()
 						else
 						{
 							// set up the transformation matrix
-							Com_Memset( &backEnd.orientation, 0, sizeof( backEnd.orientation ) );
+							memset( &backEnd.orientation, 0, sizeof( backEnd.orientation ) );
 
 							backEnd.orientation.axis[ 0 ][ 0 ] = 1;
 							backEnd.orientation.axis[ 1 ][ 1 ] = 1;

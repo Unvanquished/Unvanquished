@@ -214,7 +214,7 @@ static void CM_SurfaceCollideFromTriangleSoup( cTriangleSoup_t *triSoup, cSurfac
 	for ( i = 0; i < triSoup->numTriangles; i++ )
 	{
 		facet = &facets[ numFacets ];
-		Com_Memset( facet, 0, sizeof( *facet ) );
+		memset( facet, 0, sizeof( *facet ) );
 
 		p1 = triSoup->points[ i ][ 0 ];
 		p2 = triSoup->points[ i ][ 1 ];

@@ -251,7 +251,6 @@ typedef int clipHandle_t;
 
 	void *Hunk_Alloc( int size, ha_pref preference );
 
-#define Com_Memset   memset
 #define Com_Memcpy   memcpy
 
 #define Com_Allocate malloc

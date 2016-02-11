@@ -665,7 +665,7 @@ void RE_RenderScene( const refdef_t *fd )
 	// The refdef takes 0-at-the-top y coordinates, so
 	// convert to GL's 0-at-the-bottom space
 	//
-	Com_Memset( &parms, 0, sizeof( parms ) );
+	memset( &parms, 0, sizeof( parms ) );
 
 	if ( tr.refdef.pixelTarget == nullptr )
 	{

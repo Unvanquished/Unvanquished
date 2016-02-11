@@ -490,7 +490,7 @@ static void DrawSkyBox()
 	sky_min = 0;
 	sky_max = 1;
 
-	Com_Memset( s_skyTexCoords, 0, sizeof( s_skyTexCoords ) );
+	memset( s_skyTexCoords, 0, sizeof( s_skyTexCoords ) );
 
 	// set up for drawing
 	tess.multiDrawPrimitives = 0;

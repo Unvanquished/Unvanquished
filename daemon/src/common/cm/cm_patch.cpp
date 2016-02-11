@@ -693,7 +693,7 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 			}
 
 			facet = &facets[ numFacets ];
-			Com_Memset( facet, 0, sizeof( *facet ) );
+			memset( facet, 0, sizeof( *facet ) );
 
 			if ( gridPlanes[ i ][ j ][ 0 ] == gridPlanes[ i ][ j ][ 1 ] )
 			{
@@ -755,7 +755,7 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 				}
 
 				facet = &facets[ numFacets ];
-				Com_Memset( facet, 0, sizeof( *facet ) );
+				memset( facet, 0, sizeof( *facet ) );
 
 				facet->surfacePlane = gridPlanes[ i ][ j ][ 1 ];
 				facet->numBorders = 3;

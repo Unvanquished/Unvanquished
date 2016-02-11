@@ -98,7 +98,7 @@ called to open a channel to a remote system
 */
 void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport )
 {
-	Com_Memset( chan, 0, sizeof( *chan ) );
+	memset( chan, 0, sizeof( *chan ) );
 
 	chan->sock = sock;
 	chan->remoteAddress = adr;
@@ -473,7 +473,7 @@ bool        NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_mes
 
 	Com_Memcpy( net_message->data, loop->msgs[ i ].data, loop->msgs[ i ].datalen );
 	net_message->cursize = loop->msgs[ i ].datalen;
-	Com_Memset( net_from, 0, sizeof( *net_from ) );
+	memset( net_from, 0, sizeof( *net_from ) );
 	net_from->type = NA_LOOPBACK;
 	return true;
 }
@@ -680,7 +680,7 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 
 	if ( !strcmp( s, "localhost" ) )
 	{
-		Com_Memset( a, 0, sizeof( *a ) );
+		memset( a, 0, sizeof( *a ) );
 		a->type = NA_LOOPBACK;
 // as NA_LOOPBACK doesn't require ports report port was given.
 		return 1;

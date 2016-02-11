@@ -583,7 +583,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		// with 18 bytes for the TGA file header
 		buffer = RB_ReadPixels( x, y, width, height, 18 );
-		Com_Memset( buffer, 0, 18 );
+		memset( buffer, 0, 18 );
 
 		buffer[ 2 ] = 2; // uncompressed type
 		buffer[ 12 ] = width & 255;
@@ -1368,9 +1368,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		ri.Printf( PRINT_DEVELOPER, "----- R_Init -----\n" );
 
 		// clear all our internal state
-		Com_Memset( &tr, 0, sizeof( tr ) );
-		Com_Memset( &backEnd, 0, sizeof( backEnd ) );
-		Com_Memset( &tess, 0, sizeof( tess ) );
+		memset( &tr, 0, sizeof( tr ) );
+		memset( &backEnd, 0, sizeof( backEnd ) );
+		memset( &tess, 0, sizeof( tess ) );
 
 		if ( ( intptr_t ) tess.verts & 15 )
 		{
@@ -1572,7 +1572,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		ri.Printf( PRINT_DEVELOPER, "GetRefAPI()\n" );
 
-		Com_Memset( &re, 0, sizeof( re ) );
+		memset( &re, 0, sizeof( re ) );
 
 		if ( apiVersion != REF_API_VERSION )
 		{

@@ -35,8 +35,8 @@ void R_PerformanceCounters()
 	if ( !r_speeds->integer )
 	{
 		// clear the counters even if we aren't printing
-		Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
-		Com_Memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
+		memset( &tr.pc, 0, sizeof( tr.pc ) );
+		memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
 		return;
 	}
 
@@ -117,8 +117,8 @@ void R_PerformanceCounters()
 		           tr.pc.c_decalSurfacesCreated );
 	}
 
-	Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
-	Com_Memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
+	memset( &tr.pc, 0, sizeof( tr.pc ) );
+	memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
 }
 
 /*
@@ -483,7 +483,7 @@ void RE_SetClipRegion( const float *region )
 {
 	if ( region == nullptr )
 	{
-		Com_Memset( tr.clipRegion, 0, sizeof( vec4_t ) );
+		memset( tr.clipRegion, 0, sizeof( vec4_t ) );
 	}
 	else
 	{

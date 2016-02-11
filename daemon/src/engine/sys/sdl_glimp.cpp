@@ -357,8 +357,8 @@ void GLimp_Shutdown()
 
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
 
-	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
-	Com_Memset( &glState, 0, sizeof( glState ) );
+	memset( &glConfig, 0, sizeof( glConfig ) );
+	memset( &glState, 0, sizeof( glState ) );
 }
 
 static void GLimp_Minimize()
@@ -528,7 +528,7 @@ static int GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	}
 	else
 	{
-		Com_Memset( &desktopMode, 0, sizeof( SDL_DisplayMode ) );
+		memset( &desktopMode, 0, sizeof( SDL_DisplayMode ) );
 
 		ri.Printf( PRINT_ALL, "Cannot determine display aspect (%s), assuming 1.333\n", SDL_GetError() );
 	}

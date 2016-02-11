@@ -1669,7 +1669,7 @@ image_t        *R_AllocImage( const char *name, bool linkIntoHashTable )
 	}
 
 	image = (image_t*) ri.Hunk_Alloc( sizeof( image_t ), h_low );
-	Com_Memset( image, 0, sizeof( image_t ) );
+	memset( image, 0, sizeof( image_t ) );
 
 	glGenTextures( 1, &image->texnum );
 
@@ -2509,7 +2509,7 @@ static void R_CreateDefaultImage()
 	byte *dataPtr = &data[0][0][0];
 
 	// the default image will be a box, to allow you to see the mapping coordinates
-	Com_Memset( data, 32, sizeof( data ) );
+	memset( data, 32, sizeof( data ) );
 
 	for ( x = 0; x < DEFAULT_SIZE; x++ )
 	{
@@ -2535,7 +2535,7 @@ static void R_CreateRandomNormalsImage()
 	byte *dataPtr = &data[0][0][0];
 
 	// the default image will be a box, to allow you to see the mapping coordinates
-	Com_Memset( data, 32, sizeof( data ) );
+	memset( data, 32, sizeof( data ) );
 
 	for ( y = 0; y < DEFAULT_SIZE; y++ )
 	{
@@ -2568,7 +2568,7 @@ static void R_CreateNoFalloffImage()
 	byte *dataPtr = &data[0][0][0];
 
 	// we use a solid white image instead of disabling texturing
-	Com_Memset( data, 255, sizeof( data ) );
+	memset( data, 255, sizeof( data ) );
 	tr.noFalloffImage = R_CreateImage( "_noFalloff", ( const byte ** ) &dataPtr,
 					   8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
 }
@@ -2937,7 +2937,7 @@ static void R_CreateBlackCubeImage()
 	for ( i = 0; i < 6; i++ )
 	{
 		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
-		Com_Memset( data[ i ], 0, width * height * 4 );
+		memset( data[ i ], 0, width * height * 4 );
 	}
 
 	tr.blackCubeImage = R_CreateCubeImage( "_blackCube", ( const byte ** ) data, width, height, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
@@ -2964,7 +2964,7 @@ static void R_CreateWhiteCubeImage()
 	for ( i = 0; i < 6; i++ )
 	{
 		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
-		Com_Memset( data[ i ], 0xFF, width * height * 4 );
+		memset( data[ i ], 0xFF, width * height * 4 );
 	}
 
 	tr.whiteCubeImage = R_CreateCubeImage( "_whiteCube", ( const byte ** ) data, width, height, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
@@ -3028,12 +3028,12 @@ void R_CreateBuiltinImages()
 	R_CreateDefaultImage();
 
 	// we use a solid white image instead of disabling texturing
-	Com_Memset( data, 255, sizeof( data ) );
+	memset( data, 255, sizeof( data ) );
 	tr.whiteImage = R_CreateImage( "_white", ( const byte ** ) &dataPtr,
 				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// we use a solid black image instead of disabling texturing
-	Com_Memset( data, 0, sizeof( data ) );
+	memset( data, 0, sizeof( data ) );
 	tr.blackImage = R_CreateImage( "_black", ( const byte ** ) &dataPtr,
 				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
@@ -3141,7 +3141,7 @@ void R_InitImages()
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitImages -------\n" );
 
-	Com_Memset( r_imageHashTable, 0, sizeof( r_imageHashTable ) );
+	memset( r_imageHashTable, 0, sizeof( r_imageHashTable ) );
 	Com_InitGrowList( &tr.images, 4096 );
 	Com_InitGrowList( &tr.lightmaps, 128 );
 	Com_InitGrowList( &tr.deluxemaps, 128 );
@@ -3182,7 +3182,7 @@ void R_ShutdownImages()
 		glDeleteTextures( 1, &image->texnum );
 	}
 
-	Com_Memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
+	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 
 	Com_DestroyGrowList( &tr.images );
 	Com_DestroyGrowList( &tr.lightmaps );

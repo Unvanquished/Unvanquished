@@ -133,7 +133,7 @@ void BG_InitBuildableAttributes()
 		ba = &bg_buildableList[i];
 
 		//Initialise default values for buildables
-		Com_Memset( ba, 0, sizeof( buildableAttributes_t ) );
+		memset( ba, 0, sizeof( buildableAttributes_t ) );
 
 		ba->number = bh->number;
 		ba->name = bh->name;
@@ -193,7 +193,7 @@ void BG_InitBuildableModelConfigs()
 	for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++ )
 	{
 		bc = BG_BuildableModelConfig( i );
-		Com_Memset( bc, 0, sizeof( buildableModelConfig_t ) );
+		memset( bc, 0, sizeof( buildableModelConfig_t ) );
 
 		BG_ParseBuildableModelFile( va( "configs/buildables/%s.model.cfg",
 		                           BG_Buildable( i )->name ), bc );
@@ -648,7 +648,7 @@ void BG_InitWeaponAttributes()
 		wd = &bg_weaponsData[i];
 		wa = &bg_weapons[i];
 
-		Com_Memset( wa, 0, sizeof( weaponAttributes_t ) );
+		memset( wa, 0, sizeof( weaponAttributes_t ) );
 
 		wa->number = wd->number;
 		wa->name   = wd->name;
@@ -737,7 +737,7 @@ void BG_InitUpgradeAttributes()
 		ua = &bg_upgrades[i];
 
 		//Initialise default values for buildables
-		Com_Memset( ua, 0, sizeof( upgradeAttributes_t ) );
+		memset( ua, 0, sizeof( upgradeAttributes_t ) );
 
 		ua->number = ud->number;
 		ua->name = ud->name;
@@ -820,7 +820,7 @@ void BG_InitMissileAttributes()
 		md = &bg_missilesData[i];
 		ma = &bg_missiles[i];
 
-		Com_Memset( ma, 0, sizeof( missileAttributes_t ) );
+		memset( ma, 0, sizeof( missileAttributes_t ) );
 
 		ma->name   = md->name;
 		ma->number = md->number;
@@ -984,7 +984,7 @@ void BG_InitBeaconAttributes()
 		bd = bg_beaconsData + i;
 		ba = bg_beacons + i;
 
-		Com_Memset( ba, 0, sizeof( beaconAttributes_t ) );
+		memset( ba, 0, sizeof( beaconAttributes_t ) );
 
 		ba->number = bd->number;
 		ba->name = bd->name;

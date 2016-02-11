@@ -203,7 +203,7 @@ void CG_InitUpgrades()
 {
 	int i;
 
-	Com_Memset( cg_upgrades, 0, sizeof( cg_upgrades ) );
+	memset( cg_upgrades, 0, sizeof( cg_upgrades ) );
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
@@ -1209,7 +1209,7 @@ void CG_InitWeapons()
 {
 	int i;
 
-	Com_Memset( cg_weapons, 0, sizeof( cg_weapons ) );
+	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{
@@ -1552,9 +1552,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 
 	// add the weapon
-	Com_Memset( &gun, 0, sizeof( gun ) );
-	Com_Memset( &barrel, 0, sizeof( barrel ) );
-	Com_Memset( &flash, 0, sizeof( flash ) );
+	memset( &gun, 0, sizeof( gun ) );
+	memset( &barrel, 0, sizeof( barrel ) );
+	memset( &flash, 0, sizeof( flash ) );
 
 	VectorCopy( parent->lightingOrigin, gun.lightingOrigin );
 	gun.renderfx = parent->renderfx;
@@ -1929,7 +1929,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	fovOffset = -0.03f * cg.refdef.fov_y;
 
-	Com_Memset( &hand, 0, sizeof( hand ) );
+	memset( &hand, 0, sizeof( hand ) );
 
 	// set up gun position
 	CG_CalculateWeaponPosition( hand.origin, angles );

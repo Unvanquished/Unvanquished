@@ -423,7 +423,7 @@ static srfGridMesh_t *R_CreateSurfaceGridMesh( int width, int height,
 	if ( r_stitchCurves->integer )
 	{
 		grid = (srfGridMesh_t*)/*ri.Hunk_Alloc */ Com_Allocate( size );
-		Com_Memset( grid, 0, size );
+		memset( grid, 0, size );
 
 		grid->widthLodError = (float*)/*ri.Hunk_Alloc */ Com_Allocate( width * 4 );
 		Com_Memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );
@@ -441,7 +441,7 @@ static srfGridMesh_t *R_CreateSurfaceGridMesh( int width, int height,
 	else
 	{
 		grid = (srfGridMesh_t*) ri.Hunk_Alloc( size, h_low );
-		Com_Memset( grid, 0, size );
+		memset( grid, 0, size );
 
 		grid->widthLodError = (float*) ri.Hunk_Alloc( width * 4, h_low );
 		Com_Memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );

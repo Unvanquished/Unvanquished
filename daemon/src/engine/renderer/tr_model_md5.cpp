@@ -592,7 +592,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 		while ( numRemaining )
 		{
 			numBoneReferences = 0;
-			Com_Memset( boneReferences, 0, sizeof( boneReferences ) );
+			memset( boneReferences, 0, sizeof( boneReferences ) );
 
 			Com_InitGrowList( &vboTriangles, 1000 );
 

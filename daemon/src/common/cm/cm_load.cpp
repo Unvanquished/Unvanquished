@@ -981,7 +981,7 @@ CM_ClearMap
 */
 void CM_ClearMap()
 {
-	Com_Memset( &cm, 0, sizeof( cm ) );
+	memset( &cm, 0, sizeof( cm ) );
 	CM_ClearLevelPatches();
 }
 
