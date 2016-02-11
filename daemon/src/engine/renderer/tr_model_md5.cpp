@@ -628,7 +628,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 		{
 			skelTriangle_t *sortTri = (skelTriangle_t*) Com_GrowListElement( &sortedTriangles, j );
 
-			Com_Dealloc( sortTri );
+			free( sortTri );
 		}
 
 		Com_DestroyGrowList( &sortedTriangles );

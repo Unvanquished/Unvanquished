@@ -416,7 +416,7 @@ static void LoadRGBEToBytes( const char *name, byte **ldrImage, int *width, int 
 		*pixbuf++ = ( byte ) 255;
 	}
 
-	Com_Dealloc( hdrImage );
+	free( hdrImage );
 }
 
 void LoadRGBEToHalfs( const char *name, unsigned short **halfImage, int *width, int *height );
@@ -6139,12 +6139,12 @@ void FreeVertexHashTable( vertexHash_t **hashTable )
 			{
 				nextVertexHash = vertexHash->next;
 
-				Com_Dealloc( vertexHash );
+				free( vertexHash );
 			}
 		}
 	}
 
-	Com_Dealloc( hashTable );
+	free( hashTable );
 }
 
 vertexHash_t *FindVertexInHashTable( vertexHash_t **hashTable, const vec3_t xyz, float distance )

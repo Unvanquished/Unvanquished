@@ -252,7 +252,6 @@ typedef int clipHandle_t;
 	void *Hunk_Alloc( int size, ha_pref preference );
 
 
-#define Com_Dealloc  free
 
 void *malloc_Aligned( size_t alignment, size_t size );
 void  Com_Free_Aligned( void *ptr );

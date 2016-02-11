@@ -334,7 +334,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		RemoveLink( top );
 		data = top->data;
-		Com_Dealloc( top );
+		free( top );
 
 		return data;
 	}
@@ -377,7 +377,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		RemoveLink( tail );
 		data = tail->data;
-		Com_Dealloc( tail );
+		free( tail );
 
 		l->numElements--;
 

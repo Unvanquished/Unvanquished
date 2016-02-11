@@ -491,11 +491,11 @@ R_FreeSurfaceGridMesh
 */
 void R_FreeSurfaceGridMesh( srfGridMesh_t *grid )
 {
-	Com_Dealloc( grid->widthLodError );
-	Com_Dealloc( grid->heightLodError );
-	Com_Dealloc( grid->triangles );
-	Com_Dealloc( grid->verts );
-	Com_Dealloc( grid );
+	free( grid->widthLodError );
+	free( grid->heightLodError );
+	free( grid->triangles );
+	free( grid->verts );
+	free( grid );
 }
 
 static srfTriangle_t gridtriangles[ SHADER_MAX_TRIANGLES ];

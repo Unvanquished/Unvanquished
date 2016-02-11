@@ -46,7 +46,7 @@ GROWLISTS
 
 // malloc / free all in one place for debugging
 //extern          "C" void *malloc(int bytes);
-//extern          "C" void Com_Dealloc(void *ptr);
+//extern          "C" void free(void *ptr);
 
 void Com_InitGrowList( growList_t *list, int maxElements )
 {
@@ -57,7 +57,7 @@ void Com_InitGrowList( growList_t *list, int maxElements )
 
 void Com_DestroyGrowList( growList_t *list )
 {
-	Com_Dealloc( list->elements );
+	free( list->elements );
 	memset( list, 0, sizeof( *list ) );
 }
 
@@ -99,7 +99,7 @@ int Com_AddToGrowList( growList_t *list, void *data )
 
 	memcpy( list->elements, old, list->currentElements * sizeof( void * ) );
 
-	Com_Dealloc( old );
+	free( old );
 
 	return Com_AddToGrowList( list, data );
 }
