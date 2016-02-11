@@ -574,7 +574,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
         tri = surf->triangles;
 		for (unsigned j = 0; j < surf->numTriangles; j++, tri++ )
 		{
-			skelTriangle_t *sortTri = (skelTriangle_t*) Com_Allocate( sizeof( *sortTri ) );
+			skelTriangle_t *sortTri = (skelTriangle_t*) malloc( sizeof( *sortTri ) );
 
 			for (unsigned k = 0; k < 3; k++ )
 			{

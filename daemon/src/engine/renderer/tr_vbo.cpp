@@ -996,8 +996,8 @@ void R_InitVBOs()
 	Com_InitGrowList( &tr.vbos, 100 );
 	Com_InitGrowList( &tr.ibos, 100 );
 
-	tess.vertsBuffer = ( shaderVertex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ) );
-	tess.indexesBuffer = ( glIndex_t * ) Com_Allocate_Aligned( 64, SHADER_MAX_INDEXES * sizeof( glIndex_t ) );
+	tess.vertsBuffer = ( shaderVertex_t * ) malloc_Aligned( 64, SHADER_MAX_VERTEXES * sizeof( shaderVertex_t ) );
+	tess.indexesBuffer = ( glIndex_t * ) malloc_Aligned( 64, SHADER_MAX_INDEXES * sizeof( glIndex_t ) );
 
 	if( glConfig2.mapBufferRangeAvailable ) {
 		tess.vbo = R_CreateDynamicVBO( "tessVertexArray_VBO", vertexCapacity, attribs, VBO_LAYOUT_STATIC );

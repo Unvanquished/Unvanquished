@@ -583,12 +583,12 @@ void Com_Meminfo_f()
 
 /*
 =================
-Com_Allocate_Aligned
+malloc_Aligned
 
 Aligned Memory Allocations for Posix and Win32
 =================
 */
-void *Com_Allocate_Aligned( size_t alignment, size_t size )
+void *malloc_Aligned( size_t alignment, size_t size )
 {
 #ifdef _WIN32
 	return _aligned_malloc( size, alignment );
@@ -640,7 +640,7 @@ void Com_InitHunkMemory()
 	}
 
 	// cacheline aligned
-	s_hunkData = ( byte * ) Com_Allocate_Aligned( 64, s_hunkTotal );
+	s_hunkData = ( byte * ) malloc_Aligned( 64, s_hunkTotal );
 
 	if ( !s_hunkData )
 	{

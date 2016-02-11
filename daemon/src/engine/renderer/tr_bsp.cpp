@@ -345,7 +345,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 		ri.Error( ERR_DROP, "LoadRGBE: %s has an invalid image size", name );
 	}
 
-	*pic = (float*) Com_Allocate( w * h * 3 * sizeof( float ) );
+	*pic = (float*) malloc( w * h * 3 * sizeof( float ) );
 	floatbuf = *pic;
 
 	for ( i = 0; i < ( w * h ); i++ )
@@ -6111,7 +6111,7 @@ unsigned int VertexCoordGenerateHash( const vec3_t xyz )
 
 vertexHash_t **NewVertexHashTable()
 {
-	vertexHash_t **hashTable = (vertexHash_t**) Com_Allocate( HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
+	vertexHash_t **hashTable = (vertexHash_t**) malloc( HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
 
 	memset( hashTable, 0, HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
 
@@ -6202,7 +6202,7 @@ vertexHash_t *AddVertexToHashTable( vertexHash_t **hashTable, vec3_t xyz, void *
 		return nullptr;
 	}
 
-	vertexHash = (vertexHash_t*) Com_Allocate( sizeof( vertexHash_t ) );
+	vertexHash = (vertexHash_t*) malloc( sizeof( vertexHash_t ) );
 
 	if ( !vertexHash )
 	{
