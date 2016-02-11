@@ -3826,7 +3826,7 @@ static void CollapseStages()
 		return;
 	}
 
-	Com_Memcpy( &tmpShader, &shader, sizeof( shader ) );
+	memcpy( &tmpShader, &shader, sizeof( shader ) );
 
 	memset( &tmpStages[ 0 ], 0, sizeof( stages ) );
 
@@ -4015,8 +4015,8 @@ static void CollapseStages()
 	tmpShader.numStages = numStages;
 
 	// copy result
-	Com_Memcpy( &stages[ 0 ], &tmpStages[ 0 ], sizeof( stages ) );
-	Com_Memcpy( &shader, &tmpShader, sizeof( shader ) );
+	memcpy( &stages[ 0 ], &tmpStages[ 0 ], sizeof( stages ) );
+	memcpy( &shader, &tmpShader, sizeof( shader ) );
 }
 
 // *INDENT-ON*
@@ -4194,7 +4194,7 @@ static shader_t *GeneratePermanentShader()
 		{
 			size = newShader->stages[ i ]->bundle[ b ].numTexMods * sizeof( texModInfo_t );
 			newShader->stages[ i ]->bundle[ b ].texMods = (texModInfo_t*) ri.Hunk_Alloc( size, h_low );
-			Com_Memcpy( newShader->stages[ i ]->bundle[ b ].texMods, stages[ i ].bundle[ b ].texMods, size );
+			memcpy( newShader->stages[ i ]->bundle[ b ].texMods, stages[ i ].bundle[ b ].texMods, size );
 		}
 	}
 

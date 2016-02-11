@@ -599,7 +599,7 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 		}
 	}
 
-	Com_Memcpy( in, temp, outWidth * outHeight * 4 );
+	memcpy( in, temp, outWidth * outHeight * 4 );
 	ri.Hunk_FreeTempMemory( temp );
 }
 
@@ -990,7 +990,7 @@ R_ConvertBC5Image(const byte **in, byte **out, int numMips, int numLayers,
 
 			for( k = 0; k < mipSize; k++ ) {
 				// red channel is unchanged
-				Com_Memcpy( to, from, 8 );
+				memcpy( to, from, 8 );
 
 				// green channel is converted to DXT1
 				R_UnpackDXT5A( from + 8, data );
@@ -1379,7 +1379,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				// copy or resample data as appropriate for first MIP level
 				if ( ( scaledWidth == image->width ) && ( scaledHeight == image->height ) )
 				{
-					Com_Memcpy( scaledBuffer, data, scaledWidth * scaledHeight * 4 );
+					memcpy( scaledBuffer, data, scaledWidth * scaledHeight * 4 );
 				}
 				else
 				{

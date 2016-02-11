@@ -1236,7 +1236,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 
 	if( surf->vbo && surf->ibo ) {
 		if( model->num_joints > 0 ) {
-			Com_Memcpy( tess.bones, bones, model->num_joints * sizeof(transform_t) );
+			memcpy( tess.bones, bones, model->num_joints * sizeof(transform_t) );
 			tess.numBones = model->num_joints;
 		} else {
 			TransInitScale( model->internalScale * backEnd.currentEntity->e.skeleton.scale, &tess.bones[ 0 ] );

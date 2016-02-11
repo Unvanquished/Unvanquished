@@ -790,9 +790,9 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 	sc->numPlanes = numPlanes;
 	sc->numFacets = numFacets;
 	sc->facets = ( cFacet_t * ) CM_Alloc( numFacets * sizeof( *sc->facets ) );
-	Com_Memcpy( sc->facets, facets, numFacets * sizeof( *sc->facets ) );
+	memcpy( sc->facets, facets, numFacets * sizeof( *sc->facets ) );
 	sc->planes = ( cPlane_t * ) CM_Alloc( numPlanes * sizeof( *sc->planes ) );
-	Com_Memcpy( sc->planes, planes, numPlanes * sizeof( *sc->planes ) );
+	memcpy( sc->planes, planes, numPlanes * sizeof( *sc->planes ) );
 }
 
 /*

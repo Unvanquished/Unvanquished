@@ -1037,7 +1037,7 @@ static int Parse_ReadPrimitive( script_t *script, token_t *token )
 	token->string[ len ] = 0;
 
 	//copy the token into the script structure
-	Com_Memcpy( &script->token, token, sizeof( token_t ) );
+	memcpy( &script->token, token, sizeof( token_t ) );
 
 	//primitive reading successful
 	return 1;
@@ -1054,7 +1054,7 @@ static int Parse_ReadScriptToken( script_t *script, token_t *token )
 	if ( script->tokenavailable )
 	{
 		script->tokenavailable = 0;
-		Com_Memcpy( token, &script->token, sizeof( token_t ) );
+		memcpy( token, &script->token, sizeof( token_t ) );
 		return 1;
 	}
 
@@ -1116,7 +1116,7 @@ static int Parse_ReadScriptToken( script_t *script, token_t *token )
 	}
 
 	//copy the token into the script structure
-	Com_Memcpy( &script->token, token, sizeof( token_t ) );
+	memcpy( &script->token, token, sizeof( token_t ) );
 	//successfully read a token
 	return 1;
 }
@@ -1228,7 +1228,7 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 	//
 	Parse_SetScriptPunctuations( script, nullptr );
 	//
-	Com_Memcpy( script->buffer, ptr, length );
+	memcpy( script->buffer, ptr, length );
 	//
 	return script;
 }
@@ -1364,7 +1364,7 @@ static token_t *Parse_CopyToken( token_t *token )
 	}
 
 //  freetokens = freetokens->next;
-	Com_Memcpy( t, token, sizeof( token_t ) );
+	memcpy( t, token, sizeof( token_t ) );
 	t->next = nullptr;
 	numtokens++;
 	return t;
@@ -1432,7 +1432,7 @@ static int Parse_ReadSourceToken( source_t *source, token_t *token )
 	}
 
 	//copy the already available token
-	Com_Memcpy( token, source->tokens, sizeof( token_t ) );
+	memcpy( token, source->tokens, sizeof( token_t ) );
 	//free the read token
 	t = source->tokens;
 	source->tokens = source->tokens->next;
@@ -3957,7 +3957,7 @@ static bool Parse_ReadToken( source_t *source, token_t *token )
 		}
 
 		//copy token for unreading
-		Com_Memcpy( &source->token, token, sizeof( token_t ) );
+		memcpy( &source->token, token, sizeof( token_t ) );
 		//found a token
 		return true;
 	}

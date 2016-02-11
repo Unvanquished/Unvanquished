@@ -97,7 +97,7 @@ int Com_AddToGrowList( growList_t *list, void *data )
         Sys::Drop( "Growlist alloc failed" );
 	}
 
-	Com_Memcpy( list->elements, old, list->currentElements * sizeof( void * ) );
+	memcpy( list->elements, old, list->currentElements * sizeof( void * ) );
 
 	Com_Dealloc( old );
 
@@ -1012,7 +1012,7 @@ char           *COM_ParseExt2( const char **data_p, bool allowLineBreaks )
 		if ( j == l )
 		{
 			// a valid multi-character punctuation
-			Com_Memcpy( com_token, *punc, l );
+			memcpy( com_token, *punc, l );
 			com_token[ l ] = 0;
 			data += l;
 			*data_p = ( char * ) data;

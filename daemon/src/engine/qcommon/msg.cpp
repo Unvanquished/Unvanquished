@@ -121,9 +121,9 @@ void MSG_Copy( msg_t *buf, byte *data, int length, msg_t *src )
 		Com_Error( ERR_DROP, "MSG_Copy: can't copy %d into a smaller %d msg_t buffer", src->cursize, length );
 	}
 
-	Com_Memcpy( buf, src, sizeof( msg_t ) );
+	memcpy( buf, src, sizeof( msg_t ) );
 	buf->data = data;
-	Com_Memcpy( buf->data, src->data, src->cursize );
+	memcpy( buf->data, src->data, src->cursize );
 }
 
 /*

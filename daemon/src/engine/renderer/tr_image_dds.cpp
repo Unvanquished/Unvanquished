@@ -336,7 +336,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 	}
 
 	data[0] = (byte*) ri.Z_Malloc( size );
-	Com_Memcpy( data[0], ddsd + 1, size );
+	memcpy( data[0], ddsd + 1, size );
 
 	if( compressed ) {
 		for( i = 1; i < *numMips; i++ ) {

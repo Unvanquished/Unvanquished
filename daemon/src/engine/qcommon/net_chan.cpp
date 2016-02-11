@@ -193,7 +193,7 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data )
 	{
 		chan->unsentFragments = true;
 		chan->unsentLength = length;
-		Com_Memcpy( chan->unsentBuffer, data, length );
+		memcpy( chan->unsentBuffer, data, length );
 
 		// only send the first fragment now
 		Netchan_TransmitNextFragment( chan );
@@ -378,7 +378,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 			return false;
 		}
 
-		Com_Memcpy( chan->fragmentBuffer + chan->fragmentLength,
+		memcpy( chan->fragmentBuffer + chan->fragmentLength,
 		            msg->data + msg->readcount, fragmentLength );
 
 		chan->fragmentLength += fragmentLength;
@@ -402,7 +402,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 		// make sure the sequence number is still there
 		* ( int * ) msg->data = LittleLong( sequence );
 
-		Com_Memcpy( msg->data + 4, chan->fragmentBuffer, chan->fragmentLength );
+		memcpy( msg->data + 4, chan->fragmentBuffer, chan->fragmentLength );
 		msg->cursize = chan->fragmentLength + 4;
 		chan->fragmentLength = 0;
 		msg->readcount = 4; // past the sequence number
@@ -471,7 +471,7 @@ bool        NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_mes
 	i = loop->get & ( MAX_LOOPBACK - 1 );
 	loop->get++;
 
-	Com_Memcpy( net_message->data, loop->msgs[ i ].data, loop->msgs[ i ].datalen );
+	memcpy( net_message->data, loop->msgs[ i ].data, loop->msgs[ i ].datalen );
 	net_message->cursize = loop->msgs[ i ].datalen;
 	memset( net_from, 0, sizeof( *net_from ) );
 	net_from->type = NA_LOOPBACK;
@@ -488,7 +488,7 @@ void NET_SendLoopPacket( netsrc_t sock, int length, const void *data )
 	i = loop->send & ( MAX_LOOPBACK - 1 );
 	loop->send++;
 
-	Com_Memcpy( loop->msgs[ i ].data, data, length );
+	memcpy( loop->msgs[ i ].data, data, length );
 	loop->msgs[ i ].datalen = length;
 }
 
@@ -518,7 +518,7 @@ static void NET_QueuePacket( int length, const void *data, netadr_t to,
 
 	newp = (packetQueue_t*) S_Malloc( sizeof( packetQueue_t ) );
 	newp->data = (byte*) S_Malloc( length );
-	Com_Memcpy( newp->data, data, length );
+	memcpy( newp->data, data, length );
 	newp->length = length;
 	newp->to = to;
 	newp->release = Sys_Milliseconds() + ( int )( ( float ) offset / com_timescale->value );

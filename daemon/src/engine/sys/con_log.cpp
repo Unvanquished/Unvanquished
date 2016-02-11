@@ -110,8 +110,8 @@ unsigned int CON_LogWrite( const char *in )
 		secondChunk = 0;
 	}
 
-	Com_Memcpy( consoleLog + writePos, in, firstChunk );
-	Com_Memcpy( consoleLog, in + firstChunk, secondChunk );
+	memcpy( consoleLog + writePos, in, firstChunk );
+	memcpy( consoleLog, in + firstChunk, secondChunk );
 
 	writePos = ( writePos + length ) % MAX_LOG;
 

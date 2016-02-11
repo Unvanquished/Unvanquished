@@ -93,7 +93,7 @@ WRITE_STRING
 */
 static INLINE void WRITE_STRING( const char *s )
 {
-	Com_Memcpy( &buffer[ bufIndex ], s, strlen( s ) );
+	memcpy( &buffer[ bufIndex ], s, strlen( s ) );
 	bufIndex += strlen( s );
 }
 

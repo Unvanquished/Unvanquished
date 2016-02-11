@@ -537,7 +537,7 @@ void Huff_Decompress( msg_t *mbuf, int offset )
 	}
 
 	mbuf->cursize = cch + offset;
-	Com_Memcpy( mbuf->data + offset, seq, cch );
+	memcpy( mbuf->data + offset, seq, cch );
 }
 
 void Huff_Compress( msg_t *mbuf, int offset )
@@ -579,7 +579,7 @@ void Huff_Compress( msg_t *mbuf, int offset )
 	bloc += 8; // next byte
 
 	mbuf->cursize = ( bloc >> 3 ) + offset;
-	Com_Memcpy( mbuf->data + offset, seq, ( bloc >> 3 ) );
+	memcpy( mbuf->data + offset, seq, ( bloc >> 3 ) );
 }
 
 void Huff_Init( huffman_t *huff )

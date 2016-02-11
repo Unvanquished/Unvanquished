@@ -756,7 +756,7 @@ static void SetViewportAndScissor()
 	float	mat[16], scale;
 	vec4_t	q, c;
 
-	Com_Memcpy( mat, backEnd.viewParms.projectionMatrix, sizeof(mat) );
+	memcpy( mat, backEnd.viewParms.projectionMatrix, sizeof(mat) );
 	if( backEnd.viewParms.isPortal ) {
 		c[0] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[1] );
 		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );

@@ -690,7 +690,7 @@ static void R_LoadVisibility( lump_t *l )
 		byte *dest;
 
 		dest = (byte*) ri.Hunk_Alloc( len - 8, h_low );
-		Com_Memcpy( dest, buf + 8, len - 8 );
+		memcpy( dest, buf + 8, len - 8 );
 		s_worldData.vis = dest;
 	}
 
@@ -2643,21 +2643,21 @@ void R_MovePatchSurfacesToHunk()
 		//
 		size = sizeof( *grid );
 		hunkgrid = (srfGridMesh_t*) ri.Hunk_Alloc( size, h_low );
-		Com_Memcpy( hunkgrid, grid, size );
+		memcpy( hunkgrid, grid, size );
 
 		hunkgrid->widthLodError = (float*) ri.Hunk_Alloc( grid->width * 4, h_low );
-		Com_Memcpy( hunkgrid->widthLodError, grid->widthLodError, grid->width * 4 );
+		memcpy( hunkgrid->widthLodError, grid->widthLodError, grid->width * 4 );
 
 		hunkgrid->heightLodError = (float*) ri.Hunk_Alloc( grid->height * 4, h_low );
-		Com_Memcpy( hunkgrid->heightLodError, grid->heightLodError, grid->height * 4 );
+		memcpy( hunkgrid->heightLodError, grid->heightLodError, grid->height * 4 );
 
 		hunkgrid->numTriangles = grid->numTriangles;
 		hunkgrid->triangles = (srfTriangle_t*) ri.Hunk_Alloc( grid->numTriangles * sizeof( srfTriangle_t ), h_low );
-		Com_Memcpy( hunkgrid->triangles, grid->triangles, grid->numTriangles * sizeof( srfTriangle_t ) );
+		memcpy( hunkgrid->triangles, grid->triangles, grid->numTriangles * sizeof( srfTriangle_t ) );
 
 		hunkgrid->numVerts = grid->numVerts;
 		hunkgrid->verts = (srfVert_t*) ri.Hunk_Alloc( grid->numVerts * sizeof( srfVert_t ), h_low );
-		Com_Memcpy( hunkgrid->verts, grid->verts, grid->numVerts * sizeof( srfVert_t ) );
+		memcpy( hunkgrid->verts, grid->verts, grid->numVerts * sizeof( srfVert_t ) );
 
 		R_FreeSurfaceGridMesh( grid );
 
@@ -3602,7 +3602,7 @@ static void R_LoadShaders( lump_t *l )
 	s_worldData.shaders = out;
 	s_worldData.numShaders = count;
 
-	Com_Memcpy( out, in, count * sizeof( *out ) );
+	memcpy( out, in, count * sizeof( *out ) );
 
 	for ( i = 0; i < count; i++ )
 	{

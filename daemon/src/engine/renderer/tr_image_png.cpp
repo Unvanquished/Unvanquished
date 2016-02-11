@@ -37,7 +37,7 @@ PNG LOADING
 static void png_read_data( png_structp png, png_bytep data, png_size_t length )
 {
 	byte *io_ptr = (byte*) png_get_io_ptr( png );
-	Com_Memcpy( data, io_ptr, length );
+	memcpy( data, io_ptr, length );
 	png_init_io( png, ( png_FILE_p )( io_ptr + length ) );
 }
 
@@ -207,7 +207,7 @@ static int png_compressed_size;
 static void png_write_data( png_structp png, png_bytep data, png_size_t length )
 {
 	byte *io_ptr = (byte*) png_get_io_ptr( png );
-	Com_Memcpy( io_ptr, data, length );
+	memcpy( io_ptr, data, length );
 	png_init_io( png, ( png_FILE_p )( io_ptr + length ) );
 	png_compressed_size += length;
 }

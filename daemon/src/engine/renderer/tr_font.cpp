@@ -279,7 +279,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 		{
 			for ( i = 0; i < glyph.height; i++ )
 			{
-				Com_Memcpy( dst, src, glyph.pitch );
+				memcpy( dst, src, glyph.pitch );
 				src += glyph.pitch;
 				dst += FONT_SIZE;
 			}
@@ -520,7 +520,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 		if ( glyph )
 		{
 			rendered = true;
-			Com_Memcpy( glyphs + i, glyph, sizeof( glyphInfo_t ) );
+			memcpy( glyphs + i, glyph, sizeof( glyphInfo_t ) );
 		}
 
 		if ( xOut == -1 )
