@@ -5291,8 +5291,12 @@ static const void *RB_SetupLights( const void *data )
 							    0, numLights * sizeof( shaderLight_t ),
 							    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT );
 
-		for( int i = 0; i < numLights; i++ ) {
-			trRefLight_t *light = &cmd->refdef.lights[i];
+		for( int i = 0, j = 0; i < numLights; i++, j++ ) {
+			trRefLight_t *light = &cmd->refdef.lights[j];
+
+			while( light->l.inverseShadows ) {
+				light = &cmd->refdef.lights[++j];
+			}
 
 			VectorCopy( light->l.origin, buffer[i].center );
 			buffer[i].radius = light->l.radius;
