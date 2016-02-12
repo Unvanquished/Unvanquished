@@ -3744,7 +3744,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		RC_SETUP_LIGHTS,
 		RC_DRAW_VIEW,
 		RC_DRAW_BUFFER,
-		RC_RUN_VISTESTS,
 		RC_SWAP_BUFFERS,
 		RC_SCREENSHOT,
 		RC_VIDEOFRAME,
@@ -3934,7 +3933,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void                                R_AddDrawViewCmd();
 
 	void                                RE_SetColor( const Color::Color& rgba );
-	void                                R_AddRunVisTestsCmd();
 	void                                RE_SetClipRegion( const float *region );
 	void                                RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 	void                                RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );  // NERVE - SMF

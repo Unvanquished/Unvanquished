@@ -293,29 +293,6 @@ void R_AddDrawViewCmd()
 
 /*
 =============
-R_AddRunVisTestsCmd
-
-=============
-*/
-void R_AddRunVisTestsCmd()
-{
-	runVisTestsCommand_t *cmd;
-
-	cmd = ( runVisTestsCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
-
-	if ( !cmd )
-	{
-		return;
-	}
-
-	cmd->commandId = renderCommand_t::RC_RUN_VISTESTS;
-
-	cmd->refdef = tr.refdef;
-	cmd->viewParms = tr.viewParms;
-}
-
-/*
-=============
 RE_SetColor
 
 Passing nullptr will set the color to white
