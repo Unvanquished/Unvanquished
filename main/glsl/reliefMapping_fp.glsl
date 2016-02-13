@@ -34,12 +34,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 struct light {
-  vec3  center;
-  float radius;
-  vec3  color;
-  float type;
-  vec3  direction;
-  float angle;
+  vec4  center_radius;
+  vec4  color_type;
+  vec4  direction_angle;
 };
 
 layout(std140) uniform u_Lights {
@@ -133,10 +130,10 @@ const int numLayers = MAX_REF_LIGHTS / 256;
 
 void computeDLight( int idx, vec3 P, vec3 N, vec3 I, vec4 diffuse,
 		    vec4 specular, inout vec4 color ) {
-  vec3 L = lights[idx].center - P;
-  float attenuation = 1.0 / (1.0 + 8.0 * length(L) / lights[idx].radius);
+  vec3 L = lights[idx].center_radius.xyz - P;
+  float attenuation = 1.0 / (1.0 + 8.0 * length(L) / lights[idx].center_radius.w);
   computeLight( normalize( L ), N, I,
-		attenuation * attenuation * lights[idx].color,
+		attenuation * attenuation * lights[idx].color_type.xyz,
 		diffuse, specular, color );
 }
 

@@ -36,12 +36,9 @@ varying vec2 vPosition;
 varying vec2 vTexCoord;
 
 struct light {
-  vec3  center;
-  float radius;
-  vec3  color;
-  float type;
-  vec3  direction;
-  float angle;
+  vec4  center_radius;
+  vec4  color_type;
+  vec4  direction_angle;
 };
 
 layout(std140) uniform u_Lights {
@@ -105,8 +102,8 @@ void main() {
   idxs_t idxs = idx_initializer;
 
   for( int i = u_lightLayer; i < u_numLights; i += numLayers ) {
-    vec3 center = ( u_ModelMatrix * vec4( lights[ i ].center, 1.0 ) ).xyz;
-    float radius = 2.0 * lights[ i ].radius;
+    vec3 center = ( u_ModelMatrix * vec4( lights[ i ].center_radius.xyz, 1.0 ) ).xyz;
+    float radius = 2.0 * lights[ i ].center_radius.w;
 
     // todo: better checks for spotlights
     lightOutsidePlane( plane1, center, radius );
