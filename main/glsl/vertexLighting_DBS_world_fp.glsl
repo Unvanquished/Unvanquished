@@ -135,7 +135,7 @@ void	main()
 	N = normalize(N);
 
 	// compute final color
-	vec4 color = vec4( ambCol, diffuse.a );
+	vec4 color = vec4( ambCol * diffuse.xyz, diffuse.a );
 	computeLight( L, N, V, dirCol, diffuse, specular, color );
 
 	#if defined(USE_GLOW_MAPPING)

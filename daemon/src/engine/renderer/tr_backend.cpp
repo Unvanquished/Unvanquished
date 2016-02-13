@@ -2626,6 +2626,138 @@ static void RB_RenderInteractionsShadowMapped()
 	}
 }
 
+/*
+=============
+RB_RunVisTests
+=============
+*/
+void RB_RunVisTests( )
+{
+	int i;
+
+	// finish any 2D drawing if needed
+	if ( tess.numIndexes )
+	{
+		Tess_End();
+	}
+
+	for ( i = 0; i < backEnd.refdef.numVisTests; i++ )
+	{
+		vec3_t           diff;
+		vec3_t           center, left, up;
+		visTestResult_t  *test = &backEnd.refdef.visTests[ i ];
+		visTestQueries_t *testState = &backEnd.visTestQueries[ test->visTestHandle - 1 ];
+
+		if ( testState->running && !test->discardExisting )
+		{
+			GLint  available;
+			GLuint result, resultRef;
+
+			glGetQueryObjectiv( testState->hQuery,
+					    GL_QUERY_RESULT_AVAILABLE,
+					    &available );
+			if( !available )
+			{
+				continue;
+			}
+
+			glGetQueryObjectiv( testState->hQueryRef,
+					    GL_QUERY_RESULT_AVAILABLE,
+					    &available );
+			if ( !available )
+			{
+				continue;
+			}
+
+			glGetQueryObjectuiv( testState->hQueryRef, GL_QUERY_RESULT,
+					     &resultRef );
+			glGetQueryObjectuiv( testState->hQuery, GL_QUERY_RESULT,
+					     &result );
+
+			if ( resultRef > 0 )
+			{
+				test->lastResult = (float)result / (float)resultRef;
+			}
+			else
+			{
+				test->lastResult = 0.0f;
+			}
+
+			testState->running = false;
+		}
+
+		Tess_MapVBOs( false );
+		VectorSubtract( backEnd.orientation.viewOrigin,
+				test->position, diff );
+		VectorNormalize( diff );
+		VectorMA( test->position, test->depthAdjust, diff, center );
+
+		VectorScale( backEnd.viewParms.orientation.axis[ 1 ],
+			     test->area, left );
+		VectorScale( backEnd.viewParms.orientation.axis[ 2 ],
+			     test->area, up );
+
+		tess.verts[ 0 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
+		tess.verts[ 0 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
+		tess.verts[ 0 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
+		tess.verts[ 1 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
+		tess.verts[ 1 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
+		tess.verts[ 1 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
+		tess.verts[ 2 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
+		tess.verts[ 2 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
+		tess.verts[ 2 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
+		tess.verts[ 3 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
+		tess.verts[ 3 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
+		tess.verts[ 3 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
+		tess.numVertexes = 4;
+
+		tess.indexes[ 0 ] = 0;
+		tess.indexes[ 1 ] = 1;
+		tess.indexes[ 2 ] = 2;
+		tess.indexes[ 3 ] = 0;
+		tess.indexes[ 4 ] = 2;
+		tess.indexes[ 5 ] = 3;
+		tess.numIndexes = 6;
+
+		Tess_UpdateVBOs( );
+		GL_VertexAttribsState( ATTR_POSITION );
+
+		gl_genericShader->DisableVertexSkinning();
+		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableTCGenEnvironment();
+		gl_genericShader->DisableTCGenLightmap();
+
+		gl_genericShader->BindProgram( 0 );
+
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		gl_genericShader->SetUniform_Color( Color::White );
+
+		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
+
+		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
+		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+
+		// bind u_ColorMap
+		GL_BindToTMU( 0, tr.whiteImage );
+		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
+
+		GL_State( GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
+		glBeginQuery( GL_SAMPLES_PASSED, testState->hQueryRef );
+		Tess_DrawElements();
+		glEndQuery( GL_SAMPLES_PASSED );
+
+		GL_State( GLS_COLORMASK_BITS );
+		glBeginQuery( GL_SAMPLES_PASSED, testState->hQuery );
+		Tess_DrawElements();
+		glEndQuery( GL_SAMPLES_PASSED );
+
+		tess.numIndexes = 0;
+		tess.numVertexes = 0;
+		tess.multiDrawPrimitives = 0;
+		testState->running = true;
+	}
+}
+
 void RB_RenderPostDepth()
 {
 	static vec4_t quadVerts[4] = {
@@ -4493,6 +4625,7 @@ static void RB_RenderView()
 	}
 
 	RB_RenderDrawSurfaces( SS_DEPTH, SS_DEPTH, DRAWSURFACES_ALL );
+	RB_RunVisTests();
 	RB_RenderPostDepth();
 
 	if( tr.refdef.blurVec[0] != 0.0f ||
@@ -5291,8 +5424,12 @@ static const void *RB_SetupLights( const void *data )
 							    0, numLights * sizeof( shaderLight_t ),
 							    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT );
 
-		for( int i = 0; i < numLights; i++ ) {
-			trRefLight_t *light = &cmd->refdef.lights[i];
+		for( int i = 0, j = 0; i < numLights; i++, j++ ) {
+			trRefLight_t *light = &cmd->refdef.lights[j];
+
+			while( light->l.inverseShadows ) {
+				light = &cmd->refdef.lights[++j];
+			}
 
 			VectorCopy( light->l.origin, buffer[i].center );
 			buffer[i].radius = light->l.radius;
@@ -5343,147 +5480,6 @@ const void     *RB_DrawView( const void *data )
 	backEnd.viewParms = cmd->viewParms;
 
 	RB_RenderView();
-
-	return ( const void * )( cmd + 1 );
-}
-
-/*
-=============
-RB_RunVisTests
-
-=============
-*/
-const void *RB_RunVisTests( const void *data )
-{
-	const runVisTestsCommand_t *cmd;
-	int i;
-
-	// finish any 2D drawing if needed
-	if ( tess.numIndexes )
-	{
-		Tess_End();
-	}
-
-	cmd = ( const runVisTestsCommand_t * ) data;
-
-	backEnd.refdef = cmd->refdef;
-	backEnd.viewParms = cmd->viewParms;
-
-	for ( i = 0; i < backEnd.refdef.numVisTests; i++ )
-	{
-		vec3_t           diff;
-		vec3_t           center, left, up;
-		visTestResult_t  *test = &backEnd.refdef.visTests[ i ];
-		visTestQueries_t *testState = &backEnd.visTestQueries[ test->visTestHandle - 1 ];
-
-		if ( testState->running && !test->discardExisting )
-		{
-			GLint  available;
-			GLuint result, resultRef;
-
-			glGetQueryObjectiv( testState->hQuery,
-					    GL_QUERY_RESULT_AVAILABLE,
-					    &available );
-			if( !available )
-			{
-				continue;
-			}
-
-			glGetQueryObjectiv( testState->hQueryRef,
-					    GL_QUERY_RESULT_AVAILABLE,
-					    &available );
-			if ( !available )
-			{
-				continue;
-			}
-
-			glGetQueryObjectuiv( testState->hQueryRef, GL_QUERY_RESULT,
-					     &resultRef );
-			glGetQueryObjectuiv( testState->hQuery, GL_QUERY_RESULT,
-					     &result );
-
-			if ( resultRef > 0 )
-			{
-				test->lastResult = (float)result / (float)resultRef;
-			}
-			else
-			{
-				test->lastResult = 0.0f;
-			}
-
-			testState->running = false;
-		}
-
-		Tess_MapVBOs( false );
-		VectorSubtract( backEnd.orientation.viewOrigin,
-				test->position, diff );
-		VectorNormalize( diff );
-		VectorMA( test->position, test->depthAdjust, diff, center );
-
-		VectorScale( backEnd.viewParms.orientation.axis[ 1 ],
-			     test->area, left );
-		VectorScale( backEnd.viewParms.orientation.axis[ 2 ],
-			     test->area, up );
-
-		tess.verts[ 0 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
-		tess.verts[ 0 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
-		tess.verts[ 0 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
-		tess.verts[ 1 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
-		tess.verts[ 1 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
-		tess.verts[ 1 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
-		tess.verts[ 2 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
-		tess.verts[ 2 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
-		tess.verts[ 2 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
-		tess.verts[ 3 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
-		tess.verts[ 3 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
-		tess.verts[ 3 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
-		tess.numVertexes = 4;
-
-		tess.indexes[ 0 ] = 0;
-		tess.indexes[ 1 ] = 1;
-		tess.indexes[ 2 ] = 2;
-		tess.indexes[ 3 ] = 0;
-		tess.indexes[ 4 ] = 2;
-		tess.indexes[ 5 ] = 3;
-		tess.numIndexes = 6;
-
-		Tess_UpdateVBOs( );
-		GL_VertexAttribsState( ATTR_POSITION );
-
-		gl_genericShader->DisableVertexSkinning();
-		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableTCGenEnvironment();
-		gl_genericShader->DisableTCGenLightmap();
-
-		gl_genericShader->BindProgram( 0 );
-
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
-		gl_genericShader->SetUniform_Color( Color::White );
-
-		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
-
-		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
-		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage );
-		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
-
-		GL_State( GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
-		glBeginQuery( GL_SAMPLES_PASSED, testState->hQueryRef );
-		Tess_DrawElements();
-		glEndQuery( GL_SAMPLES_PASSED );
-
-		GL_State( GLS_COLORMASK_BITS );
-		glBeginQuery( GL_SAMPLES_PASSED, testState->hQuery );
-		Tess_DrawElements();
-		glEndQuery( GL_SAMPLES_PASSED );
-
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
-		tess.multiDrawPrimitives = 0;
-		testState->running = true;
-	}
 
 	return ( const void * )( cmd + 1 );
 }
@@ -5743,10 +5739,6 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_DRAW_VIEW:
 				data = RB_DrawView( data );
-				break;
-
-			case RC_RUN_VISTESTS:
-				data = RB_RunVisTests( data );
 				break;
 
 			case RC_DRAW_BUFFER:

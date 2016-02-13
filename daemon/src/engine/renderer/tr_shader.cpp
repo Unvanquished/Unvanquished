@@ -1963,6 +1963,10 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			{
 				stage->type = ST_SPECULARMAP;
 			}
+			else if ( !Q_stricmp( token, "materialMap" ) )
+			{
+				stage->type = ST_MATERIALMAP;
+			}
 			else if ( !Q_stricmp( token, "glowMap" ) )
 			{
 				stage->type = ST_GLOWMAP;
@@ -2024,6 +2028,10 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			else if ( !Q_stricmp( token, "specularMap" ) )
 			{
 				stage->type = ST_SPECULARMAP;
+			}
+			else if ( !Q_stricmp( token, "materialMap" ) )
+			{
+				stage->type = ST_MATERIALMAP;
 			}
 			else if ( !Q_stricmp( token, "glowMap" ) )
 			{
@@ -3136,6 +3144,26 @@ static void ParseSpecularMap( shaderStage_t *stage, const char **text )
 	}
 }
 
+static void ParseMaterialMap( shaderStage_t *stage, const char **text )
+{
+	char buffer[ 1024 ] = "";
+
+	stage->active = true;
+	stage->type = ST_MATERIALMAP;
+	stage->rgbGen = CGEN_IDENTITY;
+	stage->stateBits = GLS_DEFAULT;
+
+	if ( !r_compressSpecularMaps->integer )
+	{
+		stage->uncompressed = true;
+	}
+
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
+	{
+		LoadMap( stage, buffer );
+	}
+}
+
 static void ParseGlowMap( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
@@ -3674,6 +3702,13 @@ static bool ParseShader( const char *_text )
 			s++;
 			continue;
 		}
+		// materialMap <image>
+		else if ( !Q_stricmp( token, "materialMap" ) )
+		{
+			ParseMaterialMap( &stages[ s ], text );
+			s++;
+			continue;
+		}
 		// glowMap <image>
 		else if ( !Q_stricmp( token, "glowMap" ) )
 		{
@@ -3804,12 +3839,14 @@ static void CollapseStages()
 	bool      hasDiffuseStage;
 	bool      hasNormalStage;
 	bool      hasSpecularStage;
+	bool      hasMaterialStage;
 	bool      hasReflectionStage;
 	bool      hasGlowStage;
 
 	shaderStage_t tmpDiffuseStage;
 	shaderStage_t tmpNormalStage;
 	shaderStage_t tmpSpecularStage;
+	shaderStage_t tmpMaterialStage;
 	shaderStage_t tmpReflectionStage;
 	shaderStage_t tmpGlowStage;
 
@@ -3835,6 +3872,7 @@ static void CollapseStages()
 		hasDiffuseStage = false;
 		hasNormalStage = false;
 		hasSpecularStage = false;
+		hasMaterialStage = false;
 		hasReflectionStage = false;
 		hasGlowStage = false;
 
@@ -3895,6 +3933,11 @@ static void CollapseStages()
 				hasSpecularStage = true;
 				tmpSpecularStage = stages[ j + i ];
 			}
+			else if ( stages[ j + i ].type == ST_MATERIALMAP && !hasMaterialStage )
+			{
+				hasMaterialStage = true;
+				tmpMaterialStage = stages[ j + i ];
+			}
 			else if ( stages[ j + i ].type == ST_REFLECTIONMAP && !hasReflectionStage )
 			{
 				hasReflectionStage = true;
@@ -3908,6 +3951,10 @@ static void CollapseStages()
 		}
 
 		// NOTE: Tr3B - merge as many stages as possible
+		if( hasSpecularStage && hasMaterialStage ) {
+			ri.Printf( PRINT_WARNING, "WARNING: specularMap disabled in favor of materialMap in shader '%s'\n", shader.name );
+			hasSpecularStage = false;
+		}
 
 		// try to merge diffuse/normal/specular/glow
 		if ( hasDiffuseStage         &&
@@ -3948,6 +3995,46 @@ static void CollapseStages()
 			tmpStages[ numStages ].bundle[ TB_SPECULARMAP ] = tmpSpecularStage.bundle[ 0 ];
 			tmpStages[ numStages ].specularExponentMin = tmpSpecularStage.specularExponentMin;
 			tmpStages[ numStages ].specularExponentMax = tmpSpecularStage.specularExponentMax;
+
+			numStages++;
+			j += 2;
+			continue;
+		}
+		// try to merge diffuse/normal/material/glow
+		else if ( hasDiffuseStage         &&
+			  hasNormalStage          &&
+			  hasMaterialStage        &&
+			  hasGlowStage
+		   )
+		{
+			tmpShader.collapseType = COLLAPSE_lighting_DBMG;
+
+			tmpStages[ numStages ] = tmpDiffuseStage;
+			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBMG;
+
+			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+
+			tmpStages[ numStages ].bundle[ TB_MATERIALMAP ] = tmpMaterialStage.bundle[ 0 ];
+
+			tmpStages[ numStages ].bundle[ TB_GLOWMAP ] = tmpGlowStage.bundle[ 0 ];
+			numStages++;
+			j += 3;
+			continue;
+		}
+		// try to merge diffuse/normal/material
+		else if ( hasDiffuseStage         &&
+		          hasNormalStage          &&
+		          hasMaterialStage
+		   )
+		{
+			tmpShader.collapseType = COLLAPSE_lighting_DBM;
+
+			tmpStages[ numStages ] = tmpDiffuseStage;
+			tmpStages[ numStages ].type = ST_COLLAPSE_lighting_DBM;
+
+			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+
+			tmpStages[ numStages ].bundle[ TB_MATERIALMAP ] = tmpMaterialStage.bundle[ 0 ];
 
 			numStages++;
 			j += 2;
@@ -5169,6 +5256,10 @@ void R_ShaderList_f()
 		else if ( shader->collapseType == COLLAPSE_lighting_DBS )
 		{
 			str += "lighting_DBS   ";
+		}
+		else if ( shader->collapseType == COLLAPSE_lighting_DBM )
+		{
+			str += "lighting_DBM   ";
 		}
 		else if ( shader->collapseType == COLLAPSE_reflection_CB )
 		{
