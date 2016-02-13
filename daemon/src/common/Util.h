@@ -31,6 +31,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef COMMON_UTIL_H_
 #define COMMON_UTIL_H_
 
+#include <algorithm>
+#include <tuple>
+
 // Various utilities
 
 // Workaround for broken tuples in GCC 4.6

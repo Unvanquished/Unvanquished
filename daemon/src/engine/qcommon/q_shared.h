@@ -243,15 +243,6 @@ typedef int clipHandle_t;
 //
 #define MAX_MAP_AREA_BYTES 32 // bit vector of area visibility
 
-// font rendering values used by ui and cgame
-
-#define BLINK_DIVISOR         200
-#define PULSE_DIVISOR         75
-
-#if !defined( NDEBUG )
-#define HUNK_DEBUG
-#endif
-
 	typedef enum
 	{
 	  h_high,
@@ -259,14 +250,7 @@ typedef int clipHandle_t;
 	  h_dontcare
 	} ha_pref;
 
-#ifdef HUNK_DEBUG
-#define Hunk_Alloc( size, preference ) Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
-	void *Hunk_AllocDebug( int size, ha_pref preference, const char *label, const char *file, int line );
-
-#else
 	void *Hunk_Alloc( int size, ha_pref preference );
-
-#endif
 
 #define Com_Memset   memset
 #define Com_Memcpy   memcpy
@@ -296,8 +280,6 @@ void  Com_Free_Aligned( void *ptr );
 
 	typedef vec_t  vec3_t[ 3 ];
 	typedef vec_t  vec4_t[ 4 ];
-
-	typedef vec_t  vec5_t[ 5 ];
 
 	typedef vec3_t axis_t[ 3 ];
 	typedef vec_t  matrix3x3_t[ 9 ];
@@ -425,29 +407,6 @@ extern quat_t   quatIdentity;
 
 #define Q_ftol(x) ((long)(x))
 
-	/*
-	// if your system does not have lrintf() and round() you can try this block. Please also open a bug report at bugzilla.icculus.org
-	// or write a mail to the ioq3 mailing list.
-#else
-#	define Q_ftol(v) ((long) (v))
-#	define Q_round(v) do { if((v) < 0) (v) -= 0.5f; else (v) += 0.5f; (v) = Q_ftol((v)); } while(0)
-#	define Q_SnapVector(vec) \
-	        do\
-	        {\
-	                vec3_t *temp = (vec);\
-	                \
-	                Q_round((*temp)[0]);\
-	                Q_round((*temp)[1]);\
-	                Q_round((*temp)[2]);\
-	        } while(0)
-#endif
-	*/
-
-	inline long XreaL_Q_ftol( float f )
-	{
-		return ( long ) f;
-	}
-
 	inline unsigned int Q_floatBitsToUint( float number )
 	{
 		floatint_t t;
@@ -494,16 +453,12 @@ inline float Q_fabs( float x )
 	return fabsf( x );
 }
 
-#define Q_recip(x) ( 1.0f / (x) )
-
 byte         ClampByte( int i );
 signed char  ClampChar( int i );
 
 // this isn't a real cheap function to call!
 int          DirToByte( vec3_t dir );
 void         ByteToDir( int b, vec3_t dir );
-
-#if 1
 
 #define DotProduct( x,y )            ( ( x )[ 0 ] * ( y )[ 0 ] + ( x )[ 1 ] * ( y )[ 1 ] + ( x )[ 2 ] * ( y )[ 2 ] )
 #define VectorSubtract( a,b,c )      ( ( c )[ 0 ] = ( a )[ 0 ] - ( b )[ 0 ],( c )[ 1 ] = ( a )[ 1 ] - ( b )[ 1 ],( c )[ 2 ] = ( a )[ 2 ] - ( b )[ 2 ] )
@@ -514,17 +469,6 @@ void         ByteToDir( int b, vec3_t dir );
 #define VectorLerpTrem( f, s, e, r ) (( r )[ 0 ] = ( s )[ 0 ] + ( f ) * (( e )[ 0 ] - ( s )[ 0 ] ), \
                                       ( r )[ 1 ] = ( s )[ 1 ] + ( f ) * (( e )[ 1 ] - ( s )[ 1 ] ), \
                                       ( r )[ 2 ] = ( s )[ 2 ] + ( f ) * (( e )[ 2 ] - ( s )[ 2 ] ))
-
-#else
-
-#define DotProduct( x,y )       _DotProduct( x,y )
-#define VectorSubtract( a,b,c ) _VectorSubtract( a,b,c )
-#define VectorAdd( a,b,c )      _VectorAdd( a,b,c )
-#define VectorCopy( a,b )       _VectorCopy( a,b )
-#define VectorScale( v, s, o )  _VectorScale( v,s,o )
-#define VectorMA( v, s, b, o )  _VectorMA( v,s,b,o )
-
-#endif
 
 #define VectorClear( a )             ( ( a )[ 0 ] = ( a )[ 1 ] = ( a )[ 2 ] = 0 )
 #define VectorNegate( a,b )          ( ( b )[ 0 ] = -( a )[ 0 ],( b )[ 1 ] = -( a )[ 1 ],( b )[ 2 ] = -( a )[ 2 ] )
@@ -542,16 +486,6 @@ void         ByteToDir( int b, vec3_t dir );
 #define DotProduct4(x, y)            (( x )[ 0 ] * ( y )[ 0 ] + ( x )[ 1 ] * ( y )[ 1 ] + ( x )[ 2 ] * ( y )[ 2 ] + ( x )[ 3 ] * ( y )[ 3 ] )
 
 #define SnapVector( v )              do { ( v )[ 0 ] = ( floor( ( v )[ 0 ] + 0.5f ) ); ( v )[ 1 ] = ( floor( ( v )[ 1 ] + 0.5f ) ); ( v )[ 2 ] = ( floor( ( v )[ 2 ] + 0.5f ) ); } while ( 0 )
-
-// just in case you don't want to use the macros
-// Maybe these _Functions should be inlined and replace te macros defined above
-// Note that their current _Names are invalid in standard C++ (reserved for internal use to be exact)
-	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
-	void     _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
-	void     _VectorAdd( const vec3_t veca, const vec3_t vecb, vec3_t out );
-	void     _VectorCopy( const vec3_t in, vec3_t out );
-	void     _VectorScale( const vec3_t in, float scale, vec3_t out );
-	void     _VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc );
 
 	float    RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
 	void     ZeroBounds( vec3_t mins, vec3_t maxs );
@@ -814,20 +748,8 @@ void         ByteToDir( int b, vec3_t dir );
 		o[ 3 ] = p[ 3 ] + f * q[ 3 ];
 	}
 
-	/*
-	inline int QuatCompare(const quat_t a, const quat_t b)
-	{
-	        if(a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3])
-	        {
-	                return 0;
-	        }
-	        return 1;
-	}
-	*/
-
 	inline void QuatCalcW( quat_t q )
 	{
-#if 1
 		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
 
 		if ( term < 0.0 )
@@ -838,10 +760,6 @@ void         ByteToDir( int b, vec3_t dir );
 		{
 			q[ 3 ] = -sqrt( term );
 		}
-
-#else
-		q[ 3 ] = sqrt( fabs( 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] ) ) );
-#endif
 	}
 
 	inline void QuatInverse( quat_t q )
@@ -1587,15 +1505,8 @@ void         ByteToDir( int b, vec3_t dir );
 	const char *Q_stristr( const char *s, const char *find );
 
 // buffer size safe library replacements
-// NOTE : had problem with loading QVM modules
-#ifdef NDEBUG
 	void Q_strncpyz( char *dest, const char *src, int destsize );
 
-#else
-#define         Q_strncpyz(string1,string2,length) Q_strncpyzDebug( string1, string2, length, __FILE__, __LINE__ )
-	void     Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *file, int line );
-
-#endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );
@@ -1745,27 +1656,9 @@ void         ByteToDir( int b, vec3_t dir );
 	=================
 	*/
 
-//#define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL) ) )
 #define PlaneTypeForNormal( x ) ( x[ 0 ] == 1.0 ? PLANE_X : ( x[ 1 ] == 1.0 ? PLANE_Y : ( x[ 2 ] == 1.0 ? PLANE_Z : ( x[ 0 ] == 0.f && x[ 1 ] == 0.f && x[ 2 ] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL ) ) ) )
 
-	/*
-	inline int PlaneTypeForNormal(vec3_t normal)
-	{
-	        if(normal[0] == 1.0)
-	                return PLANE_X;
-
-	        if(normal[1] == 1.0)
-	                return PLANE_Y;
-
-	        if(normal[2] == 1.0)
-	                return PLANE_Z;
-
-	        return PLANE_NON_AXIAL;
-	}
-	*/
-
 // plane_t structure
-// !!! if this is changed, it must be changed in asm code too !!!
 	typedef struct cplane_s
 	{
 		vec3_t normal;

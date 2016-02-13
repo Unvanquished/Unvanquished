@@ -1347,34 +1347,11 @@ Safe strncpy that ensures a trailing zero
 =============
 */
 
-#ifndef NDEBUG
-void Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *file, int line )
-#else
 void Q_strncpyz( char *dest, const char *src, int destsize )
-#endif
 {
 	char *d;
 	const char *s;
 	size_t n;
-
-#ifndef NDEBUG
-
-	if ( !dest )
-	{
-        Sys::Error( "Q_strncpyz: NULL dest (%s, %i)", file, line );
-	}
-
-	if ( !src )
-	{
-        Sys::Error( "Q_strncpyz: NULL src (%s, %i)", file, line );
-	}
-
-	if ( destsize < 1 )
-	{
-        Sys::Error( "Q_strncpyz: destsize < 1 (%s, %i)", file, line );
-	}
-
-#else
 
 	if ( !dest )
 	{
@@ -1390,8 +1367,6 @@ void Q_strncpyz( char *dest, const char *src, int destsize )
 	{
         Sys::Drop( "Q_strncpyz: destsize < 1" );
 	}
-
-#endif
 
 	/*
 	 * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>

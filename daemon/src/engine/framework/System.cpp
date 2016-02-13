@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "LogSystem.h"
 #include "System.h"
 #include "CrashDump.h"
+#include <common/FileSystem.h>
 #ifdef _WIN32
 #include <windows.h>
 #include <SDL2/SDL.h>
@@ -615,9 +616,7 @@ static void Init(int argc, char** argv)
 
     if (CreateCrashDumpPath()) {
         EarlyCvar("common.breakpad.enabled", cmdlineArgs);
-        if (BreakpadInit()) {
-            Log::Notice("Starting crash logging server");
-        }
+        BreakpadInit();
     }
 
 	// Load the base paks

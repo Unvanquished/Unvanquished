@@ -24,7 +24,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 2.8.12)
 if (POLICY CMP0017)
     cmake_policy(SET CMP0017 NEW)
 endif()
@@ -567,7 +567,8 @@ if (USE_BREAKPAD)
             endif()
         endforeach(breaklib)
 
-        add_executable(crash_server src/engine/crash_server/crash_server_windows.cpp)
+        # WIN32 option prevents a console from being created for the process
+        add_executable(crash_server WIN32 src/engine/crash_server/crash_server_windows.cpp)
         target_link_libraries(crash_server
             srclibs-breakpad-crash_generation_server srclibs-breakpad-common)
         target_compile_definitions(crash_server PRIVATE UNICODE)

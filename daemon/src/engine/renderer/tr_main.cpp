@@ -955,7 +955,7 @@ static void R_SetupUnprojection()
 	MatrixInverse( unprojectMatrix );
 
 	MatrixMultiplyTranslation( unprojectMatrix, -1.0, -1.0, -1.0 );
-	MatrixMultiplyScale( unprojectMatrix, 2.0 * Q_recip( ( float ) glConfig.vidWidth ), 2.0 * Q_recip( ( float ) glConfig.vidHeight ), 2.0 );
+	MatrixMultiplyScale( unprojectMatrix, 2.0f / glConfig.vidWidth, 2.0f / glConfig.vidHeight, 2.0 );
 }
 
 /*
