@@ -27,11 +27,11 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
-
+#include "qcommon/qcommon.h"
 #include "CryptoChallenge.h"
 
 static Cvar::Range<Cvar::Cvar<int>> cvar_server_challenge_timeout(
-	"server.rcon.challenge.timeout",
+	"rcon.server.challenge.timeout",
 	"Timeout (in seconds) of a rcon challenge",
 	Cvar::NONE,
 	5,
@@ -40,8 +40,8 @@ static Cvar::Range<Cvar::Cvar<int>> cvar_server_challenge_timeout(
 );
 
 static Cvar::Range<Cvar::Cvar<std::size_t>> cvar_server_challenge_length(
-	"server.rcon.challenge.length",
-	"Length in bytes of the challenge data (The hexadecimal representation will be twice as long",
+	"rcon.server.challenge.length",
+	"Length in bytes of the challenge data (The hexadecimal representation will be twice as long)",
 	Cvar::NONE,
 	8,
 	1,
@@ -49,7 +49,7 @@ static Cvar::Range<Cvar::Cvar<std::size_t>> cvar_server_challenge_length(
 );
 
 static Cvar::Range<Cvar::Cvar<std::size_t>> cvar_server_challenge_count(
-	"server.rcon.challenge.count",
+	"rcon.server.challenge.count",
 	"Maximum number of active challenges kept in memory",
 	Cvar::NONE,
 	1024,

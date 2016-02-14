@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "server.h"
 #include "CryptoChallenge.h"
+#include "common/Rcon.h"
 
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
@@ -96,29 +97,7 @@ Cvar::Cvar<bool> isLanOnly(
 #endif
 );
 
-#define LL( x ) x = LittleLong( x )
-
 static CONSTEXPR int MAX_CHALLENGE_LEN = 128;
-
-static Cvar::Cvar<std::string> cvar_server_rcon_password(
-	"server.rcon.password",
-	"Password used to protect the remote console",
-	Cvar::NONE,
-	""
-);
-
-static Cvar::Range<Cvar::Cvar<int>> cvar_server_rcon_secure(
-	"server.rcon.secure",
-	"How secure the Rcon protocol should be: "
-		"0: Allow unencrypted rcon, "
-		"1: Require encryption, "
-		"2: Require encryption and challege check",
-	Cvar::NONE,
-	0,
-	0,
-	2
-);
-
 
 /*
 =============================================================================
@@ -802,15 +781,18 @@ static int RemoteCommandThrottle()
 
 void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 {
-	bool valid;
 	int throttle_delta = RemoteCommandThrottle();
 
-	if ( args.Argc() < 3 || throttle_delta < 180 || cvar_server_rcon_secure.Get() )
+	if ( throttle_delta < 180 )
 	{
 		return;
 	}
 
-	if ( cvar_server_rcon_password.Get().empty() || args.Argv(1) != cvar_server_rcon_password.Get() )
+	Rcon::Message message = Rcon::Message::decode(from, args);
+
+	std::string invalid_reason;
+
+	if ( !message.acceptable(&invalid_reason) )
 	{
 		// If the rconpassword is bad and one just happned recently, don't spam the log file, just die.
 		if ( throttle_delta < 600 )
@@ -818,151 +800,34 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 			return;
 		}
 
-		valid = false;
-		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Com_Printf( "Bad rcon from %s:\n%s\n%s\n",
+			NET_AdrToString( from ),
+			invalid_reason.c_str(),
+			args.ConcatArgs(2).c_str() );
+
+		RconEnvironment::PrintError( from, invalid_reason );
 	}
 	else
 	{
-		valid = true;
-		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
-	}
+		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), message.command().c_str() );
 
-
-	if ( cvar_server_rcon_password.Get().empty() )
-	{
-		RconEnvironment::PrintError( from, "No server.rcon.password set on the server." );
-	}
-	else if ( !valid )
-	{
-		RconEnvironment::PrintError( from, "Bad rcon password." );
-	}
-	else
-	{
 		// start redirecting all print outputs to the packet
 		auto env = RconEnvironment(from);
-		Cmd::ExecuteCommand(args.EscapedArgs(2), true, &env);
+		Cmd::ExecuteCommand(message.command(), true, &env);
 		Cmd::ExecuteCommandBuffer();
 		env.Flush();
 	}
 
-}
-
-static bool SVC_SecureRemoteCommandHelper(netadr_t from,
-										  const Cmd::Args& args,
-										  std::string& error_string,
-										  std::string& command)
-{
-	if ( cvar_server_rcon_password.Get().empty() )
-	{
-		error_string = "server.rcon.password not set";
-		return false;
-	}
-
-	std::string authentication = args.Argv(1);
-	Crypto::Data cyphertext = Crypto::String( args.Argv(2) );
-
-	Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( cvar_server_rcon_password.Get() ) );
-	Crypto::Data data;
-	if ( !Crypto::Encoding::Base64Decode( cyphertext, data ) )
-	{
-		error_string = "Invalid Base64 string";
-		return false;
-	}
-
-
-	if ( !Crypto::Aes256Decrypt( data, key, data ) )
-	{
-		error_string = "Error during decryption";
-		return false;
-	}
-
-	command = Crypto::String( data );
-
-
-	if ( authentication == "CHALLENGE" )
-	{
-		std::istringstream stream( command );
-		std::string challenge_hex;
-		stream >> challenge_hex;
-
-		while ( Str::cisspace( stream.peek() ) )
-		{
-			stream.ignore();
-		}
-
-		std::getline( stream, command );
-
-		data = Crypto::String(challenge_hex);
-		if ( !Crypto::Encoding::HexDecode(data, data) )
-		{
-			error_string = "Invalid challenge";
-			return false;
-		}
-
-		Challenge challenge( from, data );
-		if ( !stream || !ChallengeManager::Get().Match(challenge) )
-		{
-			error_string = "Mismatched challenge";
-			return false;
-		}
-	}
-	else if ( authentication == "PLAIN" )
-	{
-		if ( cvar_server_rcon_secure.Get() < 2 )
-		{
-			error_string = "Weak security";
-			return false;
-		}
-		return true;
-	}
-	else
-	{
-		error_string = "Unknown authentication method";
-		return false;
-	}
-
-	return true;
-
-}
-
-void SVC_SecureRemoteCommand( netadr_t from, const Cmd::Args& args )
-{
-	int throttle_delta = RemoteCommandThrottle();
-
-	if ( args.Argc() < 3 || throttle_delta < 180 )
-	{
-		return;
-	}
-
-	std::string command;
-	std::string error_string;
-	if ( SVC_SecureRemoteCommandHelper(from, args, error_string, command) )
-	{
-		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), command.c_str() );
-		auto env = RconEnvironment(from);
-		Cmd::ExecuteCommand(command, true, &env);
-		Cmd::ExecuteCommandBuffer();
-		env.Flush();
-	}
-	else
-	{
-		if ( throttle_delta < 600 )
-		{
-			return;
-		}
-		Com_Printf( "Bad srcon from %s: %s\n", NET_AdrToString( from ), error_string.c_str() );
-		RconEnvironment::PrintError( from, error_string );
-	}
 }
 
 static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 {
 	int duration_seconds = std::chrono::duration_cast<std::chrono::seconds>(Challenge::Timeout()).count();
 	std::string rcon_info_string = InfoMapToString({
-		{"secure",     std::to_string(cvar_server_rcon_secure.Get())},
+		{"secure",     std::to_string(Rcon::cvar_server_secure.Get())},
 		{"encryption", "AES256"},
 		{"key",        "SHA256"},
-		{"challenge",  std::to_string(cvar_server_rcon_secure.Get() >= 2)},
+		{"challenge",  std::to_string(Rcon::cvar_server_secure.Get() >= 2)},
 		{"timeout",    std::to_string(duration_seconds)},
 	});
 	Net::OutOfBandPrint( NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string );
@@ -1022,13 +887,9 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		SV_DirectConnect( from, args );
 	}
-	else if ( args.Argv(0) == "rcon" )
+	else if ( args.Argv(0) == "rcon" || args.Argv(0) == "srcon" )
 	{
 		SVC_RemoteCommand( from, args );
-	}
-	else if ( args.Argv(0) == "srcon" )
-	{
-		SVC_SecureRemoteCommand( from, args );
 	}
 	else if ( args.Argv(0) == "rconinfo" )
 	{

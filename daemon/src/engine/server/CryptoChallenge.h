@@ -31,8 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef CRYPTOCHALLENGE_H
 #define CRYPTOCHALLENGE_H
 
-#include "Crypto.h"
-#include "qcommon/qcommon.h"
+#include "common/Crypto.h"
 
 class Challenge
 {

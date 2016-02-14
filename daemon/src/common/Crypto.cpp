@@ -271,11 +271,19 @@ bool Aes256Decrypt( Data cypher_text, const Data& key, Data& output )
     {
         return true;
     }
+
     aes256_ctx ctx;
     nettle_aes256_set_decrypt_key( &ctx, key.data() );
     output.resize( cypher_text.size(), 0 );
     nettle_aes256_decrypt( &ctx, cypher_text.size(),
         output.data(), cypher_text.data() );
+
+    // Strip the PKCS#7 padding
+    if ( !output.empty() )
+    {
+        output.erase(output.end() - output.back(), output.end());
+    }
+
     return true;
 }
 

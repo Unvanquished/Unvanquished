@@ -27,24 +27,73 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
-#ifndef COMMON_NETWORK_H
-#define COMMON_NETWORK_H
+#ifndef COMMON_RCON_H_
+#define COMMON_RCON_H_
 
-namespace Net {
+#include <string>
+#include "common/Cvar.h"
 
-inline const std::string& OOBHeader()
+namespace Rcon {
+
+/*
+ * Secure RCon algorithm
+ */
+enum class Secure {
+	Unencrypted,        // Allow unencrypted rcon
+	EncryptedPlain,     // Require encryption
+	EncryptedChallenge, // Require encryption and challege check
+	Invalid             // Invalid protocol
+};
+
+/*
+ * RCon message sent from a client to a server
+ */
+class Message
 {
-	static std::string header ="\xff\xff\xff\xff";
-	return header;
-}
+public:
+	Message(const netadr_t& remote, std::string command,
+			Secure secure, std::string password, std::string challenge = {});
 
-template<class... Args>
-void OutOfBandPrint( netsrc_t net_socket, netadr_t adr, Str::StringRef format, Args&&... args )
-{
-	std::string message = OOBHeader() + Str::Format( format, std::forward<Args>(args)... );
-	NET_SendPacket( net_socket, message.size(), message.c_str(), adr );
-}
+	explicit Message(std::string error_message);
 
-} // namespace Net
+	/*
+	 * Checks whether the message is valid (fits its own constraints)
+	 */
+	bool valid(std::string *invalid_reason = nullptr) const;
 
-#endif // COMMON_NETWORK_H
+	/*
+	 * Checks whether the message is acceptable by the server,
+	 * it must be valid and match the rcon settings and challenges.
+	 */
+	bool acceptable(std::string *invalid_reason = nullptr) const;
+
+	/*
+	 * Sends the message to the remote server
+	 */
+	void send() const;
+
+	/*
+	 * Command to be executed
+	 */
+	const std::string& command() const;
+
+	/*
+	 * Decodes the arguments of an out of band message received by the server
+	 */
+	static Message decode(const netadr_t& remote, const Cmd::Args& args);
+
+private:
+	Secure      secure_;
+	std::string challenge_;
+	std::string command_;
+	std::string password_;
+	netadr_t 	remote_;
+	std::string error_;
+};
+
+extern Cvar::Cvar<std::string> cvar_server_password;
+extern Cvar::Range<Cvar::Cvar<int>> cvar_server_secure;
+extern Cvar::Cvar<std::string> cvar_client_destination;
+
+} // namespace Rcon
+#endif // COMMON_RCON_H_

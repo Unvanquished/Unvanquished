@@ -46,6 +46,7 @@ cvar_t *cl_wavefilerecord;
 
 #include "mumblelink/libmumblelink.h"
 #include "qcommon/crypto.h"
+#include "common/Rcon.h"
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -61,9 +62,6 @@ cvar_t *cl_nodelta;
 
 cvar_t *cl_noprint;
 cvar_t *cl_motd;
-
-cvar_t *rcon_client_password;
-cvar_t *rconAddress;
 
 cvar_t *cl_timeout;
 cvar_t *cl_maxpackets;
@@ -1441,46 +1439,30 @@ CL_Rcon_f
 */
 void CL_Rcon_f()
 {
-	char     message[ MAX_RCON_MESSAGE ];
-	netadr_t to;
-
-	if ( !rcon_client_password->string )
+	if ( Rcon::cvar_server_password.Get().empty() )
 	{
-		Com_Printf( "%s", "You must set 'rconPassword' before\n"
-		            "issuing an rcon command.\n" );
+		Com_Printf("You must set '%s' before issuing an rcon command.\n",
+				   "rcon.server.password");
 		return;
 	}
 
-	message[ 0 ] = -1;
-	message[ 1 ] = -1;
-	message[ 2 ] = -1;
-	message[ 3 ] = -1;
-	message[ 4 ] = 0;
-
-	Q_strcat( message, MAX_RCON_MESSAGE, "rcon " );
-
-	Q_strcat( message, MAX_RCON_MESSAGE, rcon_client_password->string );
-	Q_strcat( message, MAX_RCON_MESSAGE, " " );
-
-	// ATVI Wolfenstein Misc #284
-	Q_strcat( message, MAX_RCON_MESSAGE, Cmd::GetCurrentArgs().EscapedArgs(1).c_str() );
-
+	netadr_t to;
 	if ( cls.state >= CA_CONNECTED )
 	{
 		to = clc.netchan.remoteAddress;
 	}
 	else
 	{
-		if ( !strlen( rconAddress->string ) )
+		if ( Rcon::cvar_client_destination.Get().empty() )
 		{
-			Com_Printf( "%s", "Connect to a server "
-			            "or set the 'rconAddress' cvar "
-			            "to issue rcon commands\n");
+			Com_Printf( "Connect to a server or set the '%s' cvar to issue rcon commands\n",
+				"rcon.client.destination"
+			);
 
 			return;
 		}
 
-		NET_StringToAdr( rconAddress->string, &to, NA_UNSPEC );
+		NET_StringToAdr( Rcon::cvar_client_destination.Get().c_str(), &to, NA_UNSPEC );
 
 		if ( to.port == 0 )
 		{
@@ -1488,7 +1470,23 @@ void CL_Rcon_f()
 		}
 	}
 
-	NET_SendPacket( NS_CLIENT, strlen( message ) + 1, message, to );
+	Rcon::Message message(
+		to,
+		Cmd::GetCurrentArgs().EscapedArgs(1),
+		Rcon::Secure(Rcon::cvar_server_secure.Get()),
+		Rcon::cvar_server_password.Get(),
+		"" // TODO challenge
+	);
+
+	std::string invalid_reason;
+	if ( message.valid(&invalid_reason) )
+	{
+		message.send();
+	}
+	else
+	{
+		Com_Printf("Invalid rcon message: %s\n", invalid_reason.c_str());
+	}
 }
 
 static void CL_GetRSAKeysFileName( char *buffer, size_t size )
@@ -3378,7 +3376,6 @@ void CL_Init()
 	cl_showSend = Cvar_Get( "cl_showSend", "0", CVAR_TEMP );
 	cl_showTimeDelta = Cvar_Get( "cl_showTimeDelta", "0", CVAR_TEMP );
 	cl_freezeDemo = Cvar_Get( "cl_freezeDemo", "0", CVAR_TEMP );
-	rcon_client_password = Cvar_Get( "rconPassword", "", CVAR_TEMP );
 	cl_activeAction = Cvar_Get( "activeAction", "", CVAR_TEMP );
 	cl_autorecord = Cvar_Get( "cl_autorecord", "0", CVAR_TEMP );
 
@@ -3389,8 +3386,6 @@ void CL_Init()
 	// XreaL BEGIN
 	cl_aviMotionJpeg = Cvar_Get( "cl_aviMotionJpeg", "1", 0 );
 	// XreaL END
-
-	rconAddress = Cvar_Get( "rconAddress", "", 0 );
 
 	cl_yawspeed = Cvar_Get( "cl_yawspeed", "140", 0 );
 	cl_pitchspeed = Cvar_Get( "cl_pitchspeed", "140", 0 );
