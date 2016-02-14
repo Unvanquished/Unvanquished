@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "server.h"
 #include "CryptoChallenge.h"
-#include "common/Rcon.h"
+#include "framework/Rcon.h"
 
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"

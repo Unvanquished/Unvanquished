@@ -46,7 +46,7 @@ cvar_t *cl_wavefilerecord;
 
 #include "mumblelink/libmumblelink.h"
 #include "qcommon/crypto.h"
-#include "common/Rcon.h"
+#include "framework/Rcon.h"
 
 #ifndef _WIN32
 #include <sys/stat.h>

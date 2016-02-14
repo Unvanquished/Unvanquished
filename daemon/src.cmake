@@ -165,12 +165,12 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/System.h
     ${ENGINE_DIR}/framework/VirtualMachine.cpp
     ${ENGINE_DIR}/framework/VirtualMachine.h
+    ${ENGINE_DIR}/framework/Crypto.cpp
+    ${ENGINE_DIR}/framework/Crypto.h
+    ${ENGINE_DIR}/framework/Rcon.cpp
+    ${ENGINE_DIR}/framework/Rcon.h
     ${ENGINE_DIR}/sys/con_log.cpp
     ${ENGINE_DIR}/qcommon/md5.cpp
-    ${COMMON_DIR}/Crypto.cpp
-    ${COMMON_DIR}/Crypto.h
-    ${COMMON_DIR}/Rcon.cpp
-    ${COMMON_DIR}/Rcon.h
 )
 
 if (WIN32)
