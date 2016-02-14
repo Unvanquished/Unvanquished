@@ -84,6 +84,7 @@ void Message::send() const
 	if ( secure_ == Secure::Unencrypted )
 	{
 		Net::OutOfBandPrint(NS_CLIENT, remote_, "rcon %s %s", password_, command_);
+		return;
 	}
 
 	std::string method = "PLAIN";
@@ -97,7 +98,7 @@ void Message::send() const
 	}
 
 	Crypto::Data cypher;
-	if ( Crypto::Aes256Encrypt(Crypto::String(command_), key, cypher) )
+	if ( Crypto::Aes256Encrypt(Crypto::String(plaintext), key, cypher) )
 	{
 		Net::OutOfBandPrint(NS_CLIENT, remote_, "srcon %s %s",
 			method,

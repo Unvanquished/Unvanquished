@@ -879,7 +879,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		SV_GetChallenge( from );
 	}
-	else if ( args.Argv(0) == "getchallenge_new" )
+	else if ( args.Argv(0) == "getchallengenew" )
 	{
 		SV_GetChallengeNew( from );
 	}

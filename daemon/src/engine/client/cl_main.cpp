@@ -47,6 +47,7 @@ cvar_t *cl_wavefilerecord;
 #include "mumblelink/libmumblelink.h"
 #include "qcommon/crypto.h"
 #include "framework/Rcon.h"
+#include <common/Network.h>
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -1427,7 +1428,61 @@ void CL_Connect_f()
 	Cvar_Set( "cl_currentServerIP", serverString );
 }
 
-#define MAX_RCON_MESSAGE 1024
+static void CL_RconSend(const Rcon::Message &message)
+{
+	std::string invalid_reason;
+	if ( message.valid(&invalid_reason) )
+	{
+		message.send();
+	}
+	else
+	{
+		Com_Printf("Invalid rcon message: %s\n", invalid_reason.c_str());
+	}
+}
+
+struct RconChallengeQueue
+{
+public:
+	struct Request
+	{
+		netadr_t    server;
+		std::string command;
+	};
+
+	void Push(const Request& request)
+	{
+		auto lock = std::unique_lock<std::mutex>(mutex);
+		requests.push_back(request);
+	}
+
+	void Pop(const netadr_t &server, const std::string& challenge)
+	{
+		auto lock = std::unique_lock<std::mutex>(mutex);
+		auto it = std::find_if(requests.begin(), requests.end(),
+			[server](const Request& req) {
+				return NET_CompareAdr(req.server, server);
+			});
+
+		if ( it != requests.end() )
+		{
+			CL_RconSend(Rcon::Message(
+				server,
+				it->command,
+				Rcon::Secure::EncryptedChallenge,
+				Rcon::cvar_server_password.Get(),
+				challenge
+			));
+		}
+	}
+
+
+private:
+	std::vector<Request> requests;
+	std::mutex mutex;
+};
+
+static RconChallengeQueue CL_RconChallengeQueue;
 
 /*
 =====================
@@ -1470,22 +1525,19 @@ void CL_Rcon_f()
 		}
 	}
 
-	Rcon::Message message(
-		to,
-		Cmd::GetCurrentArgs().EscapedArgs(1),
-		Rcon::Secure(Rcon::cvar_server_secure.Get()),
-		Rcon::cvar_server_password.Get(),
-		"" // TODO challenge
-	);
-
-	std::string invalid_reason;
-	if ( message.valid(&invalid_reason) )
+	if ( Rcon::Secure(Rcon::cvar_server_secure.Get()) == Rcon::Secure::EncryptedChallenge )
 	{
-		message.send();
+		CL_RconChallengeQueue.Push({to, Cmd::GetCurrentArgs().EscapedArgs(1)});
+		Net::OutOfBandPrint(NS_CLIENT, to, "getchallengenew");
 	}
 	else
 	{
-		Com_Printf("Invalid rcon message: %s\n", invalid_reason.c_str());
+		CL_RconSend(Rcon::Message(
+			to,
+			Cmd::GetCurrentArgs().EscapedArgs(1),
+			Rcon::Secure(Rcon::cvar_server_secure.Get()),
+			Rcon::cvar_server_password.Get()
+		));
 	}
 }
 
@@ -2732,6 +2784,12 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	if ( args.Argv(0) == "getserversExtResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, true );
+		return;
+	}
+
+	if ( args.Argv(0) == "challengeResponseNew" )
+	{
+		CL_RconChallengeQueue.Pop(from, args.Argv(1));
 		return;
 	}
 
