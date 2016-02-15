@@ -541,7 +541,7 @@ static void CG_Obituary( entityState_t *ent )
 			}
 			else
 			{
-				Log::Notice( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, attackerClassName );
+				Log::Notice( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName );
 			}
 
 			if ( attackerTeam == ci->team && attacker == cg.clientNum && attacker != target )
