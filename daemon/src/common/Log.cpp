@@ -44,7 +44,7 @@ namespace Log {
         }
     }
 
-    Logger defaultLogger("common.default", "", Level::NOTICE);
+    Logger defaultLogger(VM_STRING_PREFIX "default", "", Level::NOTICE);
 
     bool ParseCvarValue(std::string value, Log::Level& result) {
         if (value == "warning" or value == "warn") {
