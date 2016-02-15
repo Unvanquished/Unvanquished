@@ -222,7 +222,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 
 		switch ( type )
 		{
-			case ROCKET_STRING:
+			case rocketVarType_t::ROCKET_STRING:
 			{
 				char *string = ( char * ) out;
 
@@ -234,7 +234,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 				return;
 			}
 
-			case ROCKET_FLOAT:
+			case rocketVarType_t::ROCKET_FLOAT:
 			{
 				float *f = ( float * ) out;
 
@@ -279,7 +279,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 				return;
 			}
 
-			case ROCKET_INT:
+			case rocketVarType_t::ROCKET_INT:
 			{
 				int *i = ( int * ) out;
 
@@ -292,7 +292,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 				return;
 			}
 
-			case ROCKET_COLOR:
+			case rocketVarType_t::ROCKET_COLOR:
 			{
 				if ( len == sizeof( Color::Color ) )
 				{

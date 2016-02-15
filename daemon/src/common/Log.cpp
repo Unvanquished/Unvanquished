@@ -44,24 +44,26 @@ namespace Log {
         }
     }
 
+    Logger defaultLogger("common.default", "", Level::NOTICE);
+
     bool ParseCvarValue(std::string value, Log::Level& result) {
         if (value == "warning" or value == "warn") {
-            result = Log::LOG_WARNING;
+            result = Log::Level::WARNING;
             return true;
         }
 
         if (value == "info" or value == "notice") {
-            result = Log::LOG_NOTICE;
+            result = Log::Level::NOTICE;
             return true;
         }
 
         if (value == "verbose") {
-            result = Log::LOG_VERBOSE;
+            result = Log::Level::VERBOSE;
             return true;
         }
 
         if (value == "debug" or value == "all") {
-            result = Log::LOG_DEBUG;
+            result = Log::Level::DEBUG;
             return true;
         }
 
@@ -70,13 +72,13 @@ namespace Log {
 
     std::string SerializeCvarValue(Log::Level value) {
         switch(value) {
-            case Log::LOG_WARNING:
+            case Log::Level::WARNING:
                 return "warning";
-            case Log::LOG_NOTICE:
+            case Log::Level::NOTICE:
                 return "notice";
-            case Log::LOG_VERBOSE:
+            case Log::Level::VERBOSE:
                 return "verbose";
-            case Log::LOG_DEBUG:
+            case Log::Level::DEBUG:
                 return "debug";
             default:
                 return "";

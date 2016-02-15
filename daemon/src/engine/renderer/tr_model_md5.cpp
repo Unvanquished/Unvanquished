@@ -65,13 +65,13 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( version != MD5_VERSION )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: %s has wrong version (%i should be %i)\n", modName, version, MD5_VERSION );
+		Log::Warn("R_LoadMD5: %s has wrong version (%i should be %i)", modName, version, MD5_VERSION );
 		return false;
 	}
 
-	mod->type = MOD_MD5;
+	mod->type = modtype_t::MOD_MD5;
 	mod->dataSize += sizeof( md5Model_t );
-	md5 = mod->md5 = (md5Model_t*) ri.Hunk_Alloc( sizeof( md5Model_t ), h_low );
+	md5 = mod->md5 = (md5Model_t*) ri.Hunk_Alloc( sizeof( md5Model_t ), ha_pref::h_low );
 
 	// skip commandline <arguments string>
 	token = COM_ParseExt2( &buf_p, true );
@@ -82,7 +82,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "numJoints" ) )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numJoints' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected 'numJoints' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
@@ -94,7 +94,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "numMeshes" ) )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numMeshes' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected 'numMeshes' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
@@ -103,25 +103,25 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( md5->numBones < 1 )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: '%s' has no bones\n", modName );
+		Log::Warn("R_LoadMD5: '%s' has no bones", modName );
 		return false;
 	}
 
 	if ( md5->numBones > MAX_BONES )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: '%s' has more than %i bones (%i)\n", modName, MAX_BONES, md5->numBones );
+		Log::Warn("R_LoadMD5: '%s' has more than %i bones (%i)", modName, MAX_BONES, md5->numBones );
 		return false;
 	}
 
 	// parse all the bones
-	md5->bones = (md5Bone_t*) ri.Hunk_Alloc( sizeof( *bone ) * md5->numBones, h_low );
+	md5->bones = (md5Bone_t*) ri.Hunk_Alloc( sizeof( *bone ) * md5->numBones, ha_pref::h_low );
 
 	// parse joints {
 	token = COM_ParseExt2( &buf_p, true );
 
 	if ( Q_stricmp( token, "joints" ) )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'joints' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected 'joints' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
@@ -129,7 +129,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "{" ) )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '{' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected '{' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
@@ -144,7 +144,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( bone->parentIndex >= md5->numBones )
 		{
-			ri.Error( ERR_DROP, "R_LoadMD5: '%s' has bone '%s' with bad parent index %i while numBones is %i", modName,
+			ri.Error(errorParm_t::ERR_DROP, "R_LoadMD5: '%s' has bone '%s' with bad parent index %i while numBones is %i", modName,
 			          bone->name, bone->parentIndex, md5->numBones );
 		}
 
@@ -153,7 +153,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "(" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -168,7 +168,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, ")" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected ')' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -177,7 +177,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "(" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -198,7 +198,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, ")" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 	}
@@ -208,18 +208,18 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	if ( Q_stricmp( token, "}" ) )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '}' found '%s' in model '%s'\n", token, modName );
+		Log::Warn("R_LoadMD5: expected '}' found '%s' in model '%s'", token, modName );
 		return false;
 	}
 
 	// parse all the surfaces
 	if ( md5->numSurfaces < 1 )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadMD5: '%s' has no surfaces\n", modName );
+		Log::Warn("R_LoadMD5: '%s' has no surfaces", modName );
 		return false;
 	}
 
-	md5->surfaces = (md5Surface_t*) ri.Hunk_Alloc( sizeof( *surf ) * md5->numSurfaces, h_low );
+	md5->surfaces = (md5Surface_t*) ri.Hunk_Alloc( sizeof( *surf ) * md5->numSurfaces, ha_pref::h_low );
 
     surf = md5->surfaces;
 	for ( unsigned i = 0; i < md5->numSurfaces; i++, surf++ )
@@ -229,7 +229,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "mesh" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'mesh' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'mesh' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -237,12 +237,12 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "{" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '{' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '{' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
 		// change to surface identifier
-		surf->surfaceType = SF_MD5;
+		surf->surfaceType = surfaceType_t::SF_MD5;
 
 		// give pointer to model for Tess_SurfaceMD5
 		surf->model = md5;
@@ -252,7 +252,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "shader" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'shader' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'shader' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -263,7 +263,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 		// lowercase the surface name so skin compares are faster
 
 		// register the shaders
-		sh = R_FindShader( surf->shader, SHADER_3D_DYNAMIC, RSF_DEFAULT );
+		sh = R_FindShader( surf->shader, shaderType_t::SHADER_3D_DYNAMIC, RSF_DEFAULT );
 
 		if ( sh->defaultShader )
 		{
@@ -279,7 +279,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "numVerts" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numVerts' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'numVerts' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -288,12 +288,12 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( surf->numVerts > SHADER_MAX_VERTEXES )
 		{
-			ri.Error( ERR_DROP, "R_LoadMD5: '%s' has more than %i verts on a surface (%i)",
+			ri.Error(errorParm_t::ERR_DROP, "R_LoadMD5: '%s' has more than %i verts on a surface (%i)",
 			          modName, SHADER_MAX_VERTEXES, surf->numVerts );
 		}
 
-		surf->verts = (md5Vertex_t*) ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
-		ASSERT_EQ(((intptr_t)surf->verts & 15), 0);
+		surf->verts = (md5Vertex_t*) ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, ha_pref::h_low );
+		ASSERT_EQ(((intptr_t) surf->verts & 15), 0);
 
         v = surf->verts;
 		for (unsigned j = 0; j < surf->numVerts; j++, v++ )
@@ -303,7 +303,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "vert" ) )
 			{
-				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'vert' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected 'vert' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -314,7 +314,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "(" ) )
 			{
-				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -329,7 +329,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, ")" ) )
 			{
-				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected ')' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -341,7 +341,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( v->numWeights > MAX_WEIGHTS )
 			{
-				ri.Error( ERR_DROP, "R_LoadMD5: vertex %i requires more than %i weights on surface (%i) in model '%s'",
+				ri.Error(errorParm_t::ERR_DROP, "R_LoadMD5: vertex %i requires more than %i weights on surface (%i) in model '%s'",
 				          j, MAX_WEIGHTS, i, modName );
 			}
 		}
@@ -351,7 +351,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "numTris" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numTris' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'numTris' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -360,11 +360,11 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( surf->numTriangles > SHADER_MAX_TRIANGLES )
 		{
-			ri.Error( ERR_DROP, "R_LoadMD5: '%s' has more than %i triangles on a surface (%i)",
+			ri.Error(errorParm_t::ERR_DROP, "R_LoadMD5: '%s' has more than %i triangles on a surface (%i)",
 			          modName, SHADER_MAX_TRIANGLES, surf->numTriangles );
 		}
 
-		surf->triangles = (srfTriangle_t*) ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, h_low );
+		surf->triangles = (srfTriangle_t*) ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, ha_pref::h_low );
 
         tri = surf->triangles;
 		for (unsigned j = 0; j < surf->numTriangles; j++, tri++ )
@@ -374,7 +374,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "tri" ) )
 			{
-				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'tri' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected 'tri' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -392,14 +392,14 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "numWeights" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numWeights' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected 'numWeights' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
 		token = COM_ParseExt2( &buf_p, false );
 		surf->numWeights = atoi( token );
 
-		surf->weights = (md5Weight_t*) ri.Hunk_Alloc( sizeof( *weight ) * surf->numWeights, h_low );
+		surf->weights = (md5Weight_t*) ri.Hunk_Alloc( sizeof( *weight ) * surf->numWeights, ha_pref::h_low );
 
         weight = surf->weights;
 		for (unsigned j = 0; j < surf->numWeights; j++, weight++ )
@@ -409,7 +409,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "weight" ) )
 			{
-				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'weight' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected 'weight' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -426,7 +426,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, "(" ) )
 			{
-				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected '(' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 
@@ -441,7 +441,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( Q_stricmp( token, ")" ) )
 			{
-				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
+				Log::Warn("R_LoadMD5: expected ')' found '%s' in model '%s'", token, modName );
 				return false;
 			}
 		}
@@ -451,7 +451,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 		if ( Q_stricmp( token, "}" ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '}' found '%s' in model '%s'\n", token, modName );
+			Log::Warn("R_LoadMD5: expected '}' found '%s' in model '%s'", token, modName );
 			return false;
 		}
 
@@ -613,7 +613,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 			if ( !vboTriangles.currentElements )
 			{
-				ri.Printf( PRINT_WARNING, "R_LoadMD5: could not add triangles to a remaining VBO surfaces for model '%s'\n", modName );
+				Log::Warn("R_LoadMD5: could not add triangles to a remaining VBO surfaces for model '%s'", modName );
 				Com_DestroyGrowList( &vboTriangles );
 				break;
 			}
@@ -636,7 +636,7 @@ bool R_LoadMD5( model_t *mod, void *buffer, const char *modName )
 
 	// move VBO surfaces list to hunk
 	md5->numVBOSurfaces = vboSurfaces.currentElements;
-	md5->vboSurfaces = (srfVBOMD5Mesh_t**) ri.Hunk_Alloc( md5->numVBOSurfaces * sizeof( *md5->vboSurfaces ), h_low );
+	md5->vboSurfaces = (srfVBOMD5Mesh_t**) ri.Hunk_Alloc( md5->numVBOSurfaces * sizeof( *md5->vboSurfaces ), ha_pref::h_low );
 
 	for ( unsigned i = 0; i < md5->numVBOSurfaces; i++ )
 	{

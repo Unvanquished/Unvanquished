@@ -70,35 +70,35 @@ IN_PrintKey
 */
 static void IN_PrintKey( const SDL_Keysym *keysym, keyNum_t key, bool down )
 {
-	if ( keysym->mod & KMOD_LSHIFT ) { Com_Printf( " KMOD_LSHIFT" ); }
+	if ( keysym->mod & KMOD_LSHIFT ) { Log::Notice( " KMOD_LSHIFT" ); }
 
-	if ( keysym->mod & KMOD_RSHIFT ) { Com_Printf( " KMOD_RSHIFT" ); }
+	if ( keysym->mod & KMOD_RSHIFT ) { Log::Notice( " KMOD_RSHIFT" ); }
 
-	if ( keysym->mod & KMOD_LCTRL ) { Com_Printf( " KMOD_LCTRL" ); }
+	if ( keysym->mod & KMOD_LCTRL ) { Log::Notice( " KMOD_LCTRL" ); }
 
-	if ( keysym->mod & KMOD_RCTRL ) { Com_Printf( " KMOD_RCTRL" ); }
+	if ( keysym->mod & KMOD_RCTRL ) { Log::Notice( " KMOD_RCTRL" ); }
 
-	if ( keysym->mod & KMOD_LALT ) { Com_Printf( " KMOD_LALT" ); }
+	if ( keysym->mod & KMOD_LALT ) { Log::Notice( " KMOD_LALT" ); }
 
-	if ( keysym->mod & KMOD_RALT ) { Com_Printf( " KMOD_RALT" ); }
+	if ( keysym->mod & KMOD_RALT ) { Log::Notice( " KMOD_RALT" ); }
 
-	if ( keysym->mod & KMOD_LGUI ) { Com_Printf( " KMOD_LGUI" ); }
+	if ( keysym->mod & KMOD_LGUI ) { Log::Notice( " KMOD_LGUI" ); }
 
-	if ( keysym->mod & KMOD_RGUI ) { Com_Printf( " KMOD_RGUI" ); }
+	if ( keysym->mod & KMOD_RGUI ) { Log::Notice( " KMOD_RGUI" ); }
 
-	if ( keysym->mod & KMOD_NUM ) { Com_Printf( " KMOD_NUM" ); }
+	if ( keysym->mod & KMOD_NUM ) { Log::Notice( " KMOD_NUM" ); }
 
-	if ( keysym->mod & KMOD_CAPS ) { Com_Printf( " KMOD_CAPS" ); }
+	if ( keysym->mod & KMOD_CAPS ) { Log::Notice( " KMOD_CAPS" ); }
 
-	if ( keysym->mod & KMOD_MODE ) { Com_Printf( " KMOD_MODE" ); }
+	if ( keysym->mod & KMOD_MODE ) { Log::Notice( " KMOD_MODE" ); }
 
-	if ( keysym->mod & KMOD_RESERVED ) { Com_Printf( " KMOD_RESERVED" ); }
+	if ( keysym->mod & KMOD_RESERVED ) { Log::Notice( " KMOD_RESERVED" ); }
 
-	Com_Printf( "%c 0x%02x \"%s\" Q:0x%02x(%s)\n", down ? '+' : ' ', keysym->scancode,
+	Log::Notice( "%c 0x%02x \"%s\" Q:0x%02x(%s)\n", down ? '+' : ' ', keysym->scancode,
 		    SDL_GetKeyName( keysym->sym ), key, Key_KeynumToString( key ) );
 }
 
-#define MAX_CONSOLE_KEYS 16
+static const int MAX_CONSOLE_KEYS = 16;
 
 /*
 ===============
@@ -110,7 +110,7 @@ TODO: If the SDL_Scancode situation improves, use it instead of
 */
 static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 {
-	typedef struct consoleKey_s
+	struct consoleKey_t
 	{
 		enum
 		{
@@ -123,7 +123,7 @@ static bool IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 			keyNum_t      key;
 			int           character;
 		} u;
-	} consoleKey_t;
+	};
 
 	static const struct {
 		char name[8];
@@ -609,7 +609,7 @@ static void IN_SetFocus(bool hasFocus)
 
 	in_focus = hasFocus;
 
-	Com_QueueEvent( 0, SE_FOCUS, in_focus, 0, 0, nullptr );
+	Com_QueueEvent( 0, sysEventType_t::SE_FOCUS, in_focus, 0, 0, nullptr );
 
 }
 
@@ -679,11 +679,11 @@ static void IN_InitJoystick()
 
 	if ( !in_joystick->integer && !in_xbox360Controller->integer )
 	{
-		Com_DPrintf( "Joystick is not active.\n" );
+		Log::Debug( "Joystick is not active." );
 
 		if ( !in_xbox360Controller->integer )
 		{
-			Com_DPrintf( "Gamepad is not active.\n" );
+			Log::Debug( "Gamepad is not active." );
 			Cvar_Set( "in_xbox360ControllerAvailable", "0" );
 		}
 
@@ -692,23 +692,23 @@ static void IN_InitJoystick()
 
 	if ( !SDL_WasInit( SDL_INIT_JOYSTICK ) )
 	{
-		Com_DPrintf( "Calling SDL_Init(SDL_INIT_JOYSTICK)...\n" );
+		Log::Debug( "Calling SDL_Init(SDL_INIT_JOYSTICK)..." );
 
 		if ( SDL_Init( SDL_INIT_JOYSTICK ) == -1 )
 		{
-			Com_DPrintf( "SDL_Init(SDL_INIT_JOYSTICK) failed: %s\n", SDL_GetError() );
+			Log::Debug( "SDL_Init(SDL_INIT_JOYSTICK) failed: %s", SDL_GetError() );
 			return;
 		}
 
-		Com_DPrintf( "SDL_Init(SDL_INIT_JOYSTICK) passed.\n" );
+		Log::Debug( "SDL_Init(SDL_INIT_JOYSTICK) passed." );
 	}
 
 	total = SDL_NumJoysticks();
-	Com_DPrintf( "%d possible joysticks\n", total );
+	Log::Debug( "%d possible joysticks", total );
 
 	for ( i = 0; i < total; i++ )
 	{
-		Com_DPrintf( "[%d] %s\n", i, SDL_JoystickNameForIndex( i ) );
+		Log::Debug( "[%d] %s", i, SDL_JoystickNameForIndex( i ) );
 	}
 
 	in_joystickNo = Cvar_Get( "in_joystickNo", "0", 0 );
@@ -724,17 +724,17 @@ static void IN_InitJoystick()
 
 	if ( stick == nullptr )
 	{
-		Com_DPrintf( "No joystick opened.\n" );
+		Log::Debug( "No joystick opened." );
 		return;
 	}
 
-	Com_DPrintf( "Joystick %d opened\n", in_joystickNo->integer );
-	Com_DPrintf( "Name:    %s\n", SDL_JoystickNameForIndex( in_joystickNo->integer ) );
-	Com_DPrintf( "Axes:    %d\n", SDL_JoystickNumAxes( stick ) );
-	Com_DPrintf( "Hats:    %d\n", SDL_JoystickNumHats( stick ) );
-	Com_DPrintf( "Buttons: %d\n", SDL_JoystickNumButtons( stick ) );
-	Com_DPrintf( "Balls: %d\n", SDL_JoystickNumBalls( stick ) );
-	Com_DPrintf( "Use Analog: %s\n", in_joystickUseAnalog->integer ? "Yes" : "No" );
+	Log::Debug( "Joystick %d opened", in_joystickNo->integer );
+	Log::Debug( "Name:    %s", SDL_JoystickNameForIndex( in_joystickNo->integer ) );
+	Log::Debug( "Axes:    %d", SDL_JoystickNumAxes( stick ) );
+	Log::Debug( "Hats:    %d", SDL_JoystickNumHats( stick ) );
+	Log::Debug( "Buttons: %d", SDL_JoystickNumButtons( stick ) );
+	Log::Debug( "Balls: %d", SDL_JoystickNumBalls( stick ) );
+	Log::Debug( "Use Analog: %s", in_joystickUseAnalog->integer ? "Yes" : "No" );
 
 	SDL_JoystickEventState( SDL_QUERY );
 
@@ -823,7 +823,7 @@ static void IN_JoyMove()
 				balldy *= 2;
 			}
 
-			Com_QueueEvent( 0, SE_MOUSE, balldx, balldy, 0, nullptr );
+			Com_QueueEvent( 0, sysEventType_t::SE_MOUSE, balldx, balldy, 0, nullptr );
 		}
 	}
 
@@ -847,12 +847,12 @@ static void IN_JoyMove()
 				{
 					if ( i == 0 )
 					{
-						Com_QueueEvent( 0, SE_KEY, K_XBOX360_A, pressed, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_A, pressed, 0, nullptr );
 					}
 				}
 				else
 				{
-					Com_QueueEvent( 0, SE_KEY, K_JOY1 + i, pressed, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_JOY1 + i, pressed, 0, nullptr );
 				}
 
 				stick_state.buttons[ i ] = pressed;
@@ -884,39 +884,39 @@ static void IN_JoyMove()
 				switch ( ( ( Uint8 * ) &stick_state.oldhats ) [ i ] )
 				{
 					case SDL_HAT_UP:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 0 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 0 ], false, 0, nullptr );
 						break;
 
 					case SDL_HAT_RIGHT:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 1 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 1 ], false, 0, nullptr );
 						break;
 
 					case SDL_HAT_DOWN:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 2 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 2 ], false, 0, nullptr );
 						break;
 
 					case SDL_HAT_LEFT:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 3 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 3 ], false, 0, nullptr );
 						break;
 
 					case SDL_HAT_RIGHTUP:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 0 ], false, 0, nullptr );
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 1 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 0 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 1 ], false, 0, nullptr );
 						break;
 
 					case SDL_HAT_RIGHTDOWN:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 2 ], false, 0, nullptr );
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 1 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 2 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 1 ], false, 0, nullptr );
 						break;
 
 					case SDL_HAT_LEFTUP:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 0 ], false, 0, nullptr );
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 3 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 0 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 3 ], false, 0, nullptr );
 						break;
 
 					case SDL_HAT_LEFTDOWN:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 2 ], false, 0, nullptr );
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 3 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 2 ], false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 3 ], false, 0, nullptr );
 						break;
 
 					default:
@@ -927,39 +927,39 @@ static void IN_JoyMove()
 				switch ( ( ( Uint8 * ) &hats ) [ i ] )
 				{
 					case SDL_HAT_UP:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 0 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 0 ], true, 0, nullptr );
 						break;
 
 					case SDL_HAT_RIGHT:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 1 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 1 ], true, 0, nullptr );
 						break;
 
 					case SDL_HAT_DOWN:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 2 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 2 ], true, 0, nullptr );
 						break;
 
 					case SDL_HAT_LEFT:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 3 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 3 ], true, 0, nullptr );
 						break;
 
 					case SDL_HAT_RIGHTUP:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 0 ], true, 0, nullptr );
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 1 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 0 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 1 ], true, 0, nullptr );
 						break;
 
 					case SDL_HAT_RIGHTDOWN:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 2 ], true, 0, nullptr );
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 1 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 2 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 1 ], true, 0, nullptr );
 						break;
 
 					case SDL_HAT_LEFTUP:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 0 ], true, 0, nullptr );
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 3 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 0 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 3 ], true, 0, nullptr );
 						break;
 
 					case SDL_HAT_LEFTDOWN:
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 2 ], true, 0, nullptr );
-						Com_QueueEvent( 0, SE_KEY, hat_keys[ 4 * i + 3 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 2 ], true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, hat_keys[ 4 * i + 3 ], true, 0, nullptr );
 						break;
 
 					default:
@@ -1004,7 +1004,7 @@ static void IN_JoyMove()
 
 				if ( axis != stick_state.oldaaxes[ i ] )
 				{
-					Com_QueueEvent( 0, SE_JOYSTICK_AXIS, i, axis, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_JOYSTICK_AXIS, i, axis, 0, nullptr );
 
 					stick_state.oldaaxes[ i ] = axis;
 				}
@@ -1019,12 +1019,12 @@ static void IN_JoyMove()
 		{
 			if ( ( axes & ( 1 << i ) ) && !( stick_state.oldaxes & ( 1 << i ) ) )
 			{
-				Com_QueueEvent( 0, SE_KEY, joy_keys[ i ], true, 0, nullptr );
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, joy_keys[ i ], true, 0, nullptr );
 			}
 
 			if ( !( axes & ( 1 << i ) ) && ( stick_state.oldaxes & ( 1 << i ) ) )
 			{
-				Com_QueueEvent( 0, SE_KEY, joy_keys[ i ], false, 0, nullptr );
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, joy_keys[ i ], false, 0, nullptr );
 			}
 		}
 	}
@@ -1033,23 +1033,23 @@ static void IN_JoyMove()
 	stick_state.oldaxes = axes;
 }
 
-static void IN_XBox360Axis( int controllerAxis, int gameAxis, float scale )
+static void IN_XBox360Axis( int controllerAxis, joystickAxis_t gameAxis, float scale )
 {
 	Sint16 axis = SDL_JoystickGetAxis( stick, controllerAxis );
 	float  f = ( ( float ) axis ) / 32767.0f;
 
 	if ( f > -in_joystickThreshold->value && f < in_joystickThreshold->value )
 	{
-		Com_QueueEvent( 0, SE_JOYSTICK_AXIS, gameAxis, 0, 0, nullptr );
+		Com_QueueEvent( 0, sysEventType_t::SE_JOYSTICK_AXIS, Util::ordinal(gameAxis), 0, 0, nullptr );
 	}
 	else
 	{
 		if ( in_xbox360ControllerDebug->integer )
 		{
-			Com_Printf( "xbox axis %i = %f\n", controllerAxis, f );
+			Log::Notice( "xbox axis %i = %f\n", controllerAxis, f );
 		}
 
-		Com_QueueEvent( 0, SE_JOYSTICK_AXIS, gameAxis, f * scale, 0, nullptr );
+		Com_QueueEvent( 0, sysEventType_t::SE_JOYSTICK_AXIS, Util::ordinal(gameAxis), f * scale, 0, nullptr );
 	}
 }
 
@@ -1078,21 +1078,21 @@ static int IN_XBox360AxisToButton( int controllerAxis, int key, float expectedSt
 
 	if ( ( axes & ( 1 << controllerAxis ) ) && !( stick_state.oldaxes & ( 1 << controllerAxis ) ) )
 	{
-		Com_QueueEvent( 0, SE_KEY, key, true, 0, nullptr );
+		Com_QueueEvent( 0, sysEventType_t::SE_KEY, key, true, 0, nullptr );
 
 		if ( in_xbox360ControllerDebug->integer )
 		{
-			Com_Printf( "xbox axis = %i to key = Q:0x%02x(%s), value = %f\n", controllerAxis, key, Key_KeynumToString( key ), f );
+			Log::Notice( "xbox axis = %i to key = Q:0x%02x(%s), value = %f\n", controllerAxis, key, Key_KeynumToString( key ), f );
 		}
 	}
 
 	if ( !( axes & ( 1 << controllerAxis ) ) && ( stick_state.oldaxes & ( 1 << controllerAxis ) ) )
 	{
-		Com_QueueEvent( 0, SE_KEY, key, false, 0, nullptr );
+		Com_QueueEvent( 0, sysEventType_t::SE_KEY, key, false, 0, nullptr );
 
 		if ( in_xbox360ControllerDebug->integer )
 		{
-			Com_Printf( "xbox axis = %i to key = Q:0x%02x(%s), value = %f\n", controllerAxis, key, Key_KeynumToString( key ), f );
+			Log::Notice( "xbox axis = %i to key = Q:0x%02x(%s), value = %f\n", controllerAxis, key, Key_KeynumToString( key ), f );
 		}
 	}
 
@@ -1142,11 +1142,11 @@ static void IN_Xbox360ControllerMove()
 
 			if ( pressed != stick_state.buttons[ i ] )
 			{
-				Com_QueueEvent( 0, SE_KEY, K_XBOX360_A + i, pressed, 0, nullptr );
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_A + i, pressed, 0, nullptr );
 
 				if ( in_xbox360ControllerDebug->integer )
 				{
-					Com_Printf( "xbox button = %i to key = Q:0x%02x(%s)\n", i, K_XBOX360_A + i, Key_KeynumToString( K_XBOX360_A + i ) );
+					Log::Notice( "xbox button = %i to key = Q:0x%02x(%s)\n", i, K_XBOX360_A + i, Key_KeynumToString( K_XBOX360_A + i ) );
 				}
 
 				stick_state.buttons[ i ] = pressed;
@@ -1213,7 +1213,7 @@ static void IN_Xbox360ControllerMove()
 
 				if ( hat != SDL_HAT_CENTERED )
 				{
-					Com_Printf( "xbox hat bits = %i to key = Q:0x%02x(%s)\n", hat, key, Key_KeynumToString( key ) );
+					Log::Notice( "xbox hat bits = %i to key = Q:0x%02x(%s)\n", hat, key, Key_KeynumToString( key ) );
 				}
 			}
 
@@ -1221,35 +1221,35 @@ static void IN_Xbox360ControllerMove()
 			switch ( stick_state.oldhats & allHatDirections )
 			{
 				case SDL_HAT_UP:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_UP, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_UP, false, 0, nullptr );
 					break;
 
 				case SDL_HAT_RIGHT:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_RIGHT, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHT, false, 0, nullptr );
 					break;
 
 				case SDL_HAT_DOWN:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_DOWN, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_DOWN, false, 0, nullptr );
 					break;
 
 				case SDL_HAT_LEFT:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_LEFT, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFT, false, 0, nullptr );
 					break;
 
 				case SDL_HAT_RIGHTUP:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_RIGHTUP, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTUP, false, 0, nullptr );
 					break;
 
 				case SDL_HAT_RIGHTDOWN:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_RIGHTDOWN, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTDOWN, false, 0, nullptr );
 					break;
 
 				case SDL_HAT_LEFTUP:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_LEFTUP, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTUP, false, 0, nullptr );
 					break;
 
 				case SDL_HAT_LEFTDOWN:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_LEFTDOWN, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTDOWN, false, 0, nullptr );
 					break;
 
 				default:
@@ -1260,35 +1260,35 @@ static void IN_Xbox360ControllerMove()
 			switch ( hat & allHatDirections )
 			{
 				case SDL_HAT_UP:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_UP, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_UP, true, 0, nullptr );
 					break;
 
 				case SDL_HAT_RIGHT:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_RIGHT, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHT, true, 0, nullptr );
 					break;
 
 				case SDL_HAT_DOWN:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_DOWN, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_DOWN, true, 0, nullptr );
 					break;
 
 				case SDL_HAT_LEFT:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_LEFT, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFT, true, 0, nullptr );
 					break;
 
 				case SDL_HAT_RIGHTUP:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_RIGHTUP, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTUP, true, 0, nullptr );
 					break;
 
 				case SDL_HAT_RIGHTDOWN:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_RIGHTDOWN, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTDOWN, true, 0, nullptr );
 					break;
 
 				case SDL_HAT_LEFTUP:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_LEFTUP, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTUP, true, 0, nullptr );
 					break;
 
 				case SDL_HAT_LEFTDOWN:
-					Com_QueueEvent( 0, SE_KEY, K_XBOX360_DPAD_LEFTDOWN, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTDOWN, true, 0, nullptr );
 					break;
 
 				default:
@@ -1302,23 +1302,23 @@ static void IN_Xbox360ControllerMove()
 
 #if defined( WIN32 )
 	// use left stick for strafing
-	IN_XBox360Axis( 0, AXIS_SIDE, 127 );
-	IN_XBox360Axis( 1, AXIS_FORWARD, -127 );
+	IN_XBox360Axis( 0, joystickAxis_t::AXIS_SIDE, 127 );
+	IN_XBox360Axis( 1, joystickAxis_t::AXIS_FORWARD, -127 );
 
 	// use right stick for viewing
-	IN_XBox360Axis( 4, AXIS_YAW, -127 );
-	IN_XBox360Axis( 3, AXIS_PITCH, 127 );
+	IN_XBox360Axis( 4, joystickAxis_t::AXIS_YAW, -127 );
+	IN_XBox360Axis( 3, joystickAxis_t::AXIS_PITCH, 127 );
 
 	axes |= IN_XBox360AxisToButton( 2, K_XBOX360_LT, -1, 0 );
 	axes |= IN_XBox360AxisToButton( 5, K_XBOX360_RT, -1, 0 );
 #else
 	// use left stick for strafing
-	IN_XBox360Axis( 0, AXIS_SIDE, 127 );
-	IN_XBox360Axis( 1, AXIS_FORWARD, -127 );
+	IN_XBox360Axis( 0, joystickAxis_t::AXIS_SIDE, 127 );
+	IN_XBox360Axis( 1, joystickAxis_t::AXIS_FORWARD, -127 );
 
 	// use right stick for viewing
-	IN_XBox360Axis( 3, AXIS_YAW, -127 );
-	IN_XBox360Axis( 4, AXIS_PITCH, 127 );
+	IN_XBox360Axis( 3, joystickAxis_t::AXIS_YAW, -127 );
+	IN_XBox360Axis( 4, joystickAxis_t::AXIS_PITCH, 127 );
 
 	axes |= IN_XBox360AxisToButton( 2, K_XBOX360_LT, -1, 0 );
 	axes |= IN_XBox360AxisToButton( 5, K_XBOX360_RT, -1, 0 );
@@ -1355,7 +1355,7 @@ static void IN_ProcessEvents( bool dropInput )
 
 					if ( key )
 					{
-						Com_QueueEvent( 0, SE_KEY, key, true, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, key, true, 0, nullptr );
 					}
 
 					lastKeyDown = key;
@@ -1370,7 +1370,7 @@ static void IN_ProcessEvents( bool dropInput )
 
 					if ( key )
 					{
-						Com_QueueEvent( 0, SE_KEY, key, false, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_KEY, key, false, 0, nullptr );
 					}
 
 					lastKeyDown = (keyNum_t) 0;
@@ -1386,7 +1386,7 @@ static void IN_ProcessEvents( bool dropInput )
 					{
 						int width = Q_UTF8_Width( c );
 						int sc = Q_UTF8_Store( c );
-						Com_QueueEvent( 0, SE_CHAR, sc, 0, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_CHAR, sc, 0, 0, nullptr );
 						c += width;
 					}
 				}
@@ -1396,11 +1396,11 @@ static void IN_ProcessEvents( bool dropInput )
 				{
 					if ( mouse_mode != MouseMode::Deltas )
 					{
-						Com_QueueEvent( 0, SE_MOUSE_POS, e.motion.x, e.motion.y, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_MOUSE_POS, e.motion.x, e.motion.y, 0, nullptr );
 					}
 					else
 					{
-						Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, nullptr );
+						Com_QueueEvent( 0, sysEventType_t::SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, nullptr );
 #if defined( __linux__ ) || defined( __BSD__ )
 						if ( !in_nograb->integer )
 						{
@@ -1446,7 +1446,7 @@ static void IN_ProcessEvents( bool dropInput )
 							break;
 					}
 
-					Com_QueueEvent( 0, SE_KEY, b,
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, b,
 					                ( e.type == SDL_MOUSEBUTTONDOWN ? true : false ), 0, nullptr );
 				}
 				break;
@@ -1454,13 +1454,13 @@ static void IN_ProcessEvents( bool dropInput )
 				// FIXME: mouse wheel support shouldn't use keys!
 				if ( e.wheel.y > 0 )
 				{
-					Com_QueueEvent( 0, SE_KEY, K_MWHEELUP, true, 0, nullptr );
-					Com_QueueEvent( 0, SE_KEY, K_MWHEELUP, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_MWHEELUP, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_MWHEELUP, false, 0, nullptr );
 				}
 				else
 				{
-					Com_QueueEvent( 0, SE_KEY, K_MWHEELDOWN, true, 0, nullptr );
-					Com_QueueEvent( 0, SE_KEY, K_MWHEELDOWN, false, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_MWHEELDOWN, true, 0, nullptr );
+					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_MWHEELDOWN, false, 0, nullptr );
 				}
 				break;
 
@@ -1566,12 +1566,12 @@ void IN_Init( void *windowData )
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
-		Com_Error( ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )" );
+		Com_Error( errorParm_t::ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )" );
 	}
 
 	window = (SDL_Window*) windowData;
 
-	Com_DPrintf( "\n------- Input Initialization -------\n" );
+	Log::Debug( "------- Input Initialization -------" );
 
 	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_TEMP );
 
@@ -1594,7 +1594,7 @@ void IN_Init( void *windowData )
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_WINDOW_INPUT_FOCUS ) );
 	Cvar_SetValue( "com_minimized", ( appState & SDL_WINDOW_MINIMIZED ) );
 	IN_InitJoystick();
-	Com_DPrintf( "------------------------------------\n" );
+	Log::Debug( "------------------------------------" );
 }
 
 /*

@@ -40,15 +40,15 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 
-#define MAX_CMD_BUFFER 131072
+static const int MAX_CMD_BUFFER = 131072;
 
-typedef struct cmdContext_s
+struct cmdContext_t
 {
 	int  argc;
 	char *argv[ MAX_STRING_TOKENS ]; // points into cmd.tokenized
 	char tokenized[ BIG_INFO_STRING + MAX_STRING_TOKENS ]; // will have 0 bytes inserted
 	char cmd[ BIG_INFO_STRING ]; // the original command we received (no token processing)
-} cmdContext_t;
+};
 
 static cmdContext_t cmd;
 
@@ -89,11 +89,11 @@ void Cmd_PrintUsage( const char *syntax, const char *description )
 {
 	if(!description)
 	{
-		Com_Printf( "%s: %s %s\n", "usage", Cmd_Argv( 0 ), syntax );
+		Log::Notice( "%s: %s %s\n", "usage", Cmd_Argv( 0 ), syntax );
 	}
 	else
 	{
-		Com_Printf( "%s: %s %s — %s\n", "usage",  Cmd_Argv( 0 ), syntax, description );
+		Log::Notice( "%s: %s %s — %s\n", "usage",  Cmd_Argv( 0 ), syntax, description );
 	}
 }
 
@@ -305,7 +305,7 @@ Escape all '\' '"' '$', '/' if marking a comment, and ';' if not in quotation ma
 Optionally wrap in ""
 ============
 */
-#define ESCAPEBUFFER_SIZE BIG_INFO_STRING
+static const int ESCAPEBUFFER_SIZE = BIG_INFO_STRING;
 static char *GetEscapeBuffer()
 {
 	static char escapeBuffer[ 4 ][ ESCAPEBUFFER_SIZE ];

@@ -141,15 +141,15 @@ void P_WorldEffects( gentity_t *ent )
 				// play a gurp sound instead of a general pain sound
 				if ( ent->entity->Get<HealthComponent>()->Health() <= (float)ent->damage )
 				{
-					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
+					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
 				}
 				else if ( rand() < RAND_MAX / 2 + 1 )
 				{
-					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "sound/player/gurp1.wav" ) );
+					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "sound/player/gurp1.wav" ) );
 				}
 				else
 				{
-					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "sound/player/gurp2.wav" ) );
+					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "sound/player/gurp2.wav" ) );
 				}
 
 				// don't play a general pain sound
@@ -477,7 +477,7 @@ void  G_TouchTriggers( gentity_t *ent )
 		}
 
 		// ignore most entities if a spectator
-		if ( ent->client->sess.spectatorState != SPECTATOR_NOT && hit->s.eType != ET_TELEPORTER )
+		if ( ent->client->sess.spectatorState != SPECTATOR_NOT && hit->s.eType != entityType_t::ET_TELEPORTER )
 		{
 			continue;
 		}
@@ -816,14 +816,14 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 		      Distance( self->s.origin, target->s.origin ) < RADAR_RANGE &&
 		      Beacon::EntityTaggable( target->s.number, team, false ) &&
 		      trap_InPVSIgnorePortals( self->s.origin, target->s.origin ) &&
-		      ( target->s.eType != ET_BUILDABLE ||
+		      ( target->s.eType != entityType_t::ET_BUILDABLE ||
 		        G_LineOfSight( self, target, MASK_SOLID, false ) ) ) )
 		{
 			target->tagScore     += timePassed;
 			target->tagScoreTime  = level.time;
 
 			if( target->tagScore > 1000 )
-				Beacon::Tag( target, team, ( target->s.eType == ET_BUILDABLE ) );
+				Beacon::Tag( target, team, ( target->s.eType == entityType_t::ET_BUILDABLE ) );
 
 			client->ps.stats[ STAT_TAGSCORE ] = Math::Clamp(
 				target->tagScore, client->ps.stats[ STAT_TAGSCORE ], 1000 );
@@ -965,7 +965,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			gentity_t *other = nullptr;
 			while ( ( other = G_IterateEntities( other ) ) )
 			{
-				if ( other->s.eType == ET_BEACON &&
+				if ( other->s.eType == entityType_t::ET_BEACON &&
 				     other->s.modelindex == BCT_TAG &&
 				     ( other->s.eFlags & EF_BC_ENEMY ) &&
 				     !other->tagAttachment &&
@@ -1105,7 +1105,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 		{
 			case EV_FALL_MEDIUM:
 			case EV_FALL_FAR:
-				if ( ent->s.eType != ET_PLAYER )
+				if ( ent->s.eType != entityType_t::ET_PLAYER )
 				{
 					break; // not in the player model
 				}
@@ -1182,7 +1182,7 @@ void SendPendingPredictableEvents( playerState_t *ps )
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, true );
 		t->s.number = number;
-		t->s.eType = (entityType_t) ( ET_EVENTS + event );
+		t->s.eType = Util::enum_cast<entityType_t>(Util::ordinal(entityType_t::ET_EVENTS) + event );
 		t->s.eFlags |= EF_PLAYER_EVENT;
 		t->s.otherEntityNum = ps->clientNum;
 		// send to everyone except the client who generated the event
@@ -1601,7 +1601,7 @@ static int FindAlienHealthSource( gentity_t *self )
 			closeTeammates++;
 			ret |= ( closeTeammates > 1 ) ? SS_HEALING_4X : SS_HEALING_2X;
 		}
-		else if ( ent->s.eType == ET_BUILDABLE && ent->spawned && ent->powered )
+		else if ( ent->s.eType == entityType_t::ET_BUILDABLE && ent->spawned && ent->powered )
 		{
 			if ( ent->s.modelindex == BA_A_BOOSTER && ent->powered &&
 			     distance < REGEN_BOOSTER_RANGE )
@@ -1780,13 +1780,13 @@ void ClientThink_real( gentity_t *self )
 	if ( ucmd->serverTime > level.time + 200 )
 	{
 		ucmd->serverTime = level.time + 200;
-//    G_Printf("serverTime <<<<<\n" );
+//    Log::Debug("serverTime <<<<<" );
 	}
 
 	if ( ucmd->serverTime < level.time - 1000 )
 	{
 		ucmd->serverTime = level.time - 1000;
-//    G_Printf("serverTime >>>>>\n" );
+//    Log::Debug("serverTime >>>>>" );
 	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
@@ -2181,7 +2181,7 @@ void ClientThink_real( gentity_t *self )
 		{
 			if ( g_debugEntities.integer > 1 )
 			{
-				G_Printf("Debug: Calling entity->use for player facing %s\n", etos(ent));
+				Log::Debug("Calling entity->use for player facing %s", etos(ent));
 			}
 
 			ent->use( ent, self, self ); // other and activator are the same in this context
@@ -2195,7 +2195,7 @@ void ClientThink_real( gentity_t *self )
 				{
 					if ( g_debugEntities.integer > 1 )
 					{
-						G_Printf("Debug: Calling entity->use after an area-search for %s\n", etos(ent));
+						Log::Debug("Calling entity->use after an area-search for %s", etos(ent));
 					}
 
 					ent->use( ent, self, self ); // other and activator are the same in this context

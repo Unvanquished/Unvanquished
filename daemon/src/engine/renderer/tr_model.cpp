@@ -64,7 +64,7 @@ model_t        *R_AllocModel()
 		return nullptr;
 	}
 
-	mod = (model_t*) ri.Hunk_Alloc( sizeof( *tr.models[ tr.numModels ] ), h_low );
+	mod = (model_t*) ri.Hunk_Alloc( sizeof( *tr.models[ tr.numModels ] ), ha_pref::h_low );
 	mod->index = tr.numModels;
 	tr.models[ tr.numModels ] = mod;
 	tr.numModels++;
@@ -97,13 +97,13 @@ qhandle_t RE_RegisterModel( const char *name )
 
 	if ( !name || !name[ 0 ] )
 	{
-		ri.Printf( PRINT_ALL, "RE_RegisterModel: NULL name\n" );
+		Log::Notice("RE_RegisterModel: NULL name" );
 		return 0;
 	}
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		Com_Printf( "Model name exceeds MAX_QPATH\n" );
+		Log::Notice( "Model name exceeds MAX_QPATH\n" );
 		return 0;
 	}
 
@@ -114,7 +114,7 @@ qhandle_t RE_RegisterModel( const char *name )
 
 		if ( !strcmp( mod->name, name ) )
 		{
-			if ( mod->type == MOD_BAD )
+			if ( mod->type == modtype_t::MOD_BAD )
 			{
 				return 0;
 			}
@@ -126,7 +126,7 @@ qhandle_t RE_RegisterModel( const char *name )
 	// allocate a new model_t
 	if ( ( mod = R_AllocModel() ) == nullptr )
 	{
-		ri.Printf( PRINT_WARNING, "RE_RegisterModel: R_AllocModel() failed for '%s'\n", name );
+		Log::Warn("RE_RegisterModel: R_AllocModel() failed for '%s'", name );
 		return 0;
 	}
 
@@ -211,7 +211,7 @@ qhandle_t RE_RegisterModel( const char *name )
 		{
 			ri.FS_FreeFile( buffer );
 
-			ri.Printf( PRINT_WARNING, "RE_RegisterModel: unknown fileid for %s\n", name );
+			Log::Warn("RE_RegisterModel: unknown fileid for %s", name );
 			goto fail;
 		}
 
@@ -249,7 +249,7 @@ qhandle_t RE_RegisterModel( const char *name )
 #ifndef NDEBUG
 	else
 	{
-		ri.Printf( PRINT_WARNING, "couldn't load '%s'\n", name );
+		Log::Warn("couldn't load '%s'", name );
 	}
 
 #endif
@@ -257,7 +257,7 @@ qhandle_t RE_RegisterModel( const char *name )
 fail:
 	// we still keep the model_t around, so if the model name is asked for
 	// again, we won't bother scanning the filesystem
-	mod->type = MOD_BAD;
+	mod->type = modtype_t::MOD_BAD;
 
 	return 0;
 }
@@ -315,7 +315,7 @@ void R_ModelInit()
 	tr.numModels = 0;
 
 	mod = R_AllocModel();
-	mod->type = MOD_BAD;
+	mod->type = modtype_t::MOD_BAD;
 }
 
 /*
@@ -340,7 +340,7 @@ void R_Modellist_f()
 	{
 		mod = tr.models[ i ];
 
-		if ( mod->type == MOD_MESH )
+		if ( mod->type == modtype_t::MOD_MESH )
 		{
 			for ( j = 0; j < MD3_MAX_LODS; j++ )
 			{
@@ -353,35 +353,35 @@ void R_Modellist_f()
 					mdvModel = mod->mdv[ j ];
 
 					total++;
-					ri.Printf( PRINT_ALL, "%d.%02d MB '%s' LOD = %i\n",      mod->dataSize / ( 1024 * 1024 ),
+					Log::Notice("%d.%02d MB '%s' LOD = %i",      mod->dataSize / ( 1024 * 1024 ),
 					           ( mod->dataSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ),
 					           mod->name, j );
 
 					if ( showFrames && mdvModel->numFrames > 1 )
 					{
-						ri.Printf( PRINT_ALL, "\tnumSurfaces = %i\n", mdvModel->numSurfaces );
-						ri.Printf( PRINT_ALL, "\tnumFrames = %i\n", mdvModel->numFrames );
+						Log::Notice("\tnumSurfaces = %i", mdvModel->numSurfaces );
+						Log::Notice("\tnumFrames = %i", mdvModel->numFrames );
 
 						for ( k = 0, mdvSurface = mdvModel->surfaces; k < mdvModel->numSurfaces; k++, mdvSurface++ )
 						{
-							ri.Printf( PRINT_ALL, "\t\tmesh = '%s'\n", mdvSurface->name );
-							ri.Printf( PRINT_ALL, "\t\t\tnumVertexes = %i\n", mdvSurface->numVerts );
-							ri.Printf( PRINT_ALL, "\t\t\tnumTriangles = %i\n", mdvSurface->numTriangles );
+							Log::Notice("\t\tmesh = '%s'", mdvSurface->name );
+							Log::Notice("\t\t\tnumVertexes = %i", mdvSurface->numVerts );
+							Log::Notice("\t\t\tnumTriangles = %i", mdvSurface->numTriangles );
 						}
 					}
 
-					ri.Printf( PRINT_ALL, "\t\tnumTags = %i\n", mdvModel->numTags );
+					Log::Notice("\t\tnumTags = %i", mdvModel->numTags );
 
 					for ( k = 0, mdvTagName = mdvModel->tagNames; k < mdvModel->numTags; k++, mdvTagName++ )
 					{
-						ri.Printf( PRINT_ALL, "\t\t\ttagName = '%s'\n", mdvTagName->name );
+						Log::Notice("\t\t\ttagName = '%s'", mdvTagName->name );
 					}
 				}
 			}
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "%d.%02d MB '%s'\n",       mod->dataSize / ( 1024 * 1024 ),
+			Log::Notice("%d.%02d MB '%s'",       mod->dataSize / ( 1024 * 1024 ),
 			           ( mod->dataSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ),
 			           mod->name );
 
@@ -391,9 +391,9 @@ void R_Modellist_f()
 		totalDataSize += mod->dataSize;
 	}
 
-	ri.Printf( PRINT_ALL, " %d.%02d MB total model memory\n", totalDataSize / ( 1024 * 1024 ),
+	Log::Notice(" %d.%02d MB total model memory", totalDataSize / ( 1024 * 1024 ),
 	           ( totalDataSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ) );
-	ri.Printf( PRINT_ALL, " %i total models\n\n", total );
+	Log::Notice(" %i total models\n", total );
 }
 
 //=============================================================================
@@ -464,7 +464,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 	backLerp = 1.0 - frac;
 
 	start = end = nullptr;
-	if ( model->type == MOD_MD5 || model->type == MOD_IQM )
+	if ( model->type == modtype_t::MOD_MD5 || model->type == modtype_t::MOD_IQM )
 	{
 		vec3_t tmp;
 
@@ -487,7 +487,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 		VectorNormalize( tag->axis[ 2 ] );
 		return retval;
 	}
-	else if ( model->type == MOD_MESH )
+	else if ( model->type == modtype_t::MOD_MESH )
 	{
 		// old MD3 style
 		retval = R_GetTag( model->mdv[ 0 ], startFrame, tagName, startIndex, &start );
@@ -533,7 +533,7 @@ int RE_BoneIndex( qhandle_t hModel, const char *boneName )
 
 	switch ( model->type )
 	{
-		case MOD_MD5:
+		case modtype_t::MOD_MD5:
 		{
 			md5Bone_t  *bone;
 			md5Model_t *md5 = model->md5;
@@ -548,7 +548,7 @@ int RE_BoneIndex( qhandle_t hModel, const char *boneName )
 		}
 		break;
 
-		case MOD_IQM:
+		case modtype_t::MOD_IQM:
 		{
 			char *str = model->iqm->jointNames;
 
@@ -587,12 +587,12 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs )
 
 	switch ( model->type )
 	{
-		case MOD_BSP:
+		case modtype_t::MOD_BSP:
 			VectorCopy( model->bsp->bounds[ 0 ], mins );
 			VectorCopy( model->bsp->bounds[ 1 ], maxs );
 			break;
 
-		case MOD_MESH:
+		case modtype_t::MOD_MESH:
 			header = model->mdv[ 0 ];
 
 			frame = header->frames;
@@ -601,12 +601,12 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs )
 			VectorCopy( frame->bounds[ 1 ], maxs );
 			break;
 
-		case MOD_MD5:
+		case modtype_t::MOD_MD5:
 			VectorCopy( model->md5->bounds[ 0 ], mins );
 			VectorCopy( model->md5->bounds[ 1 ], maxs );
 			break;
 
-		case MOD_IQM:
+		case modtype_t::MOD_IQM:
 			VectorCopy( model->iqm->bounds[ 0 ], mins );
 			VectorCopy( model->iqm->bounds[ 1 ], maxs );
 			break;

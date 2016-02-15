@@ -191,7 +191,7 @@ int G_GetMarkedBuildPointsInt( team_t team )
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || G_Dead( ent ) ||
+		if ( !ent->inuse || ent->s.eType != entityType_t::ET_BUILDABLE || G_Dead( ent ) ||
 		     ent->buildableTeam != team || !ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
 			continue;
@@ -250,7 +250,7 @@ void G_GetBuildableResourceValue( int *teamValue )
 	{
 		ent = &g_entities[ entityNum ];
 
-		if ( ent->s.eType != ET_BUILDABLE )
+		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}

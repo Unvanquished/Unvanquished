@@ -56,11 +56,11 @@ Maryland 20850 USA.
 #               include <ws2spi.h>
 #       endif
 
-typedef int socklen_t;
+using socklen_t = int;
 #       ifdef ADDRESS_FAMILY
 #               define sa_family_t ADDRESS_FAMILY
 #       else
-typedef unsigned short sa_family_t;
+using sa_family_t = unsigned short;
 #       endif
 // HACK: Redefine these constants to their windows equivalents
 // TODO: Figure out a cleaner way to do this. Perhaps write a set of
@@ -98,7 +98,7 @@ static bool winsockInitialized = false;
 #               include <sys/filio.h>
 #       endif
 
-typedef int SOCKET;
+using SOCKET = int;
 #       define INVALID_SOCKET -1
 #       define SOCKET_ERROR   -1
 #       define closesocket    close
@@ -118,7 +118,7 @@ static bool            networkingEnabled = false;
 #ifndef BUILD_SERVER
 static bool            serverMode = false;
 #else
-#define serverMode (true)
+static const bool serverMode = true;
 #endif
 
 cvar_t                     *net_enabled;
@@ -156,9 +156,9 @@ static struct sockaddr_in6 boundto;
 // use an admin local address per default so that network admins can decide on how to handle quake3 traffic.
 #define NET_MULTICAST_IP6 "ff04::696f:7175:616b:6533"
 
-#define MAX_IPS           32
+static const int MAX_IPS = 32;
 
-typedef struct
+struct nip_localaddr_t
 {
 	char                    ifname[ IF_NAMESIZE ];
 
@@ -167,7 +167,7 @@ typedef struct
 	struct sockaddr_storage addr;
 
 	struct sockaddr_storage netmask;
-} nip_localaddr_t;
+};
 
 static nip_localaddr_t localIP[ MAX_IPS ];
 static int             numIP;
@@ -330,26 +330,26 @@ const char *NET_ErrorString()
 static void NetadrToSockadr( netadr_t *a, struct sockaddr *s )
 {
 	memset( s, 0, sizeof( struct sockaddr ) );
-	if ( a->type == NA_BROADCAST )
+	if ( a->type == netadrtype_t::NA_BROADCAST )
 	{
 		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
 		( ( struct sockaddr_in * ) s )->sin_port = a->port;
 		( ( struct sockaddr_in * ) s )->sin_addr.s_addr = INADDR_BROADCAST;
 	}
-	else if ( a->type == NA_IP )
+	else if ( a->type == netadrtype_t::NA_IP )
 	{
 		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
 		( ( struct sockaddr_in * ) s )->sin_addr.s_addr = * ( int * ) &a->ip;
-		( ( struct sockaddr_in * ) s )->sin_port = ( a->type == NA_IP_DUAL ? a->port4 : a->port );
+		( ( struct sockaddr_in * ) s )->sin_port = ( a->type == netadrtype_t::NA_IP_DUAL ? a->port4 : a->port );
 	}
 	else if ( NET_IS_IPv6( a->type ) )
 	{
 		( ( struct sockaddr_in6 * ) s )->sin6_family = AF_INET6;
 		( ( struct sockaddr_in6 * ) s )->sin6_addr = * ( ( struct in6_addr * ) &a->ip6 );
-		( ( struct sockaddr_in6 * ) s )->sin6_port = ( a->type == NA_IP_DUAL ? a->port6 : a->port );
+		( ( struct sockaddr_in6 * ) s )->sin6_port = ( a->type == netadrtype_t::NA_IP_DUAL ? a->port6 : a->port );
 		( ( struct sockaddr_in6 * ) s )->sin6_scope_id = a->scope_id;
 	}
-	else if ( a->type == NA_MULTICAST6 )
+	else if ( a->type == netadrtype_t::NA_MULTICAST6 )
 	{
 		( ( struct sockaddr_in6 * ) s )->sin6_family = AF_INET6;
 		( ( struct sockaddr_in6 * ) s )->sin6_addr = curgroup.ipv6mr_multiaddr;
@@ -361,13 +361,13 @@ static void SockadrToNetadr( struct sockaddr *s, netadr_t *a )
 {
 	if ( s->sa_family == AF_INET )
 	{
-		a->type = NA_IP;
+		a->type = netadrtype_t::NA_IP;
 		* ( int * ) &a->ip = ( ( struct sockaddr_in * ) s )->sin_addr.s_addr;
 		a->port = ( ( struct sockaddr_in * ) s )->sin_port;
 	}
 	else if ( s->sa_family == AF_INET6 )
 	{
-		a->type = NA_IP6;
+		a->type = netadrtype_t::NA_IP6;
 		memcpy( a->ip6, & ( ( struct sockaddr_in6 * ) s )->sin6_addr, sizeof( a->ip6 ) );
 		a->port = ( ( struct sockaddr_in6 * ) s )->sin6_port;
 		a->scope_id = ( ( struct sockaddr_in6 * ) s )->sin6_scope_id;
@@ -462,12 +462,12 @@ static bool Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, unsigned
 		}
 		else
 		{
-			Com_Printf( "Sys_StringToSockaddr: Error resolving %s: No address of required type found.\n", s );
+			Log::Notice( "Sys_StringToSockaddr: Error resolving %s: No address of required type found.\n", s );
 		}
 	}
 	else
 	{
-		Com_Printf( "Sys_StringToSockaddr: Error resolving %s: %s\n", s, gai_strerror( retval ) );
+		Log::Notice( "Sys_StringToSockaddr: Error resolving %s: %s\n", s, gai_strerror( retval ) );
 	}
 
 	if ( res )
@@ -515,11 +515,11 @@ bool Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 
 	switch ( family )
 	{
-		case NA_IP:
+		case netadrtype_t::NA_IP:
 			fam = AF_INET;
 			break;
 
-		case NA_IP6:
+		case netadrtype_t::NA_IP6:
 			fam = AF_INET6;
 			break;
 
@@ -556,12 +556,12 @@ bool NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 		return false;
 	}
 
-	if ( a_type == NA_LOOPBACK )
+	if ( a_type == netadrtype_t::NA_LOOPBACK )
 	{
 		return true;
 	}
 
-	if ( a_type == NA_IP )
+	if ( a_type == netadrtype_t::NA_IP )
 	{
 		addra = ( byte * ) &a.ip;
 		addrb = ( byte * ) &b.ip;
@@ -571,7 +571,7 @@ bool NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 			netmask = 32;
 		}
 	}
-	else if ( a_type == NA_IP6 )
+	else if ( a_type == netadrtype_t::NA_IP6 )
 	{
 		addra = ( byte * ) &a.ip6;
 		addrb = ( byte * ) &b.ip6;
@@ -583,7 +583,7 @@ bool NET_CompareBaseAdrMask( netadr_t a, netadr_t b, int netmask )
 	}
 	else
 	{
-		Com_Printf( "NET_CompareBaseAdr: bad address type\n" );
+		Log::Notice( "NET_CompareBaseAdr: bad address type\n" );
 		return false;
 	}
 
@@ -630,15 +630,15 @@ const char      *NET_AdrToString( netadr_t a )
 {
 	static  char s[ NET_ADDR_STR_MAX_LEN ];
 
-	if ( a.type == NA_LOOPBACK )
+	if ( a.type == netadrtype_t::NA_LOOPBACK )
 	{
 		Com_sprintf( s, sizeof( s ), "loopback" );
 	}
-	else if ( a.type == NA_BOT )
+	else if ( a.type == netadrtype_t::NA_BOT )
 	{
 		Com_sprintf( s, sizeof( s ), "bot" );
 	}
-	else if ( a.type == NA_IP || a.type == NA_IP6 || a.type == NA_IP_DUAL )
+	else if ( a.type == netadrtype_t::NA_IP || a.type == netadrtype_t::NA_IP6 || a.type == netadrtype_t::NA_IP_DUAL )
 	{
 		struct sockaddr_storage sadr;
 
@@ -654,21 +654,21 @@ const char      *NET_AdrToStringwPort( netadr_t a )
 {
 	static  char s[ NET_ADDR_W_PORT_STR_MAX_LEN ];
 
-	if ( a.type == NA_LOOPBACK )
+	if ( a.type == netadrtype_t::NA_LOOPBACK )
 	{
 		Com_sprintf( s, sizeof( s ), "loopback" );
 	}
-	else if ( a.type == NA_BOT )
+	else if ( a.type == netadrtype_t::NA_BOT )
 	{
 		Com_sprintf( s, sizeof( s ), "bot" );
 	}
 	else if ( NET_IS_IPv4( a.type ) )
 	{
-		Com_sprintf( s, sizeof( s ), "%s:%hu", NET_AdrToString( a ), ntohs( a.type == NA_IP_DUAL ? a.port4 : a.port ) );
+		Com_sprintf( s, sizeof( s ), "%s:%hu", NET_AdrToString( a ), ntohs( a.type == netadrtype_t::NA_IP_DUAL ? a.port4 : a.port ) );
 	}
 	else if ( NET_IS_IPv6( a.type ) )
 	{
-		Com_sprintf( s, sizeof( s ), "[%s]:%hu", NET_AdrToString( a ), ntohs( a.type == NA_IP_DUAL ? a.port6 : a.port ) );
+		Com_sprintf( s, sizeof( s ), "[%s]:%hu", NET_AdrToString( a ), ntohs( a.type == netadrtype_t::NA_IP_DUAL ? a.port6 : a.port ) );
 	}
 	return s;
 }
@@ -680,7 +680,7 @@ bool        NET_CompareAdr( netadr_t a, netadr_t b )
 		return false;
 	}
 
-	if ( a.type == NA_IP || a.type == NA_IP6 )
+	if ( a.type == netadrtype_t::NA_IP || a.type == netadrtype_t::NA_IP6 )
 	{
 		if ( a.port == b.port )
 		{
@@ -697,7 +697,7 @@ bool        NET_CompareAdr( netadr_t a, netadr_t b )
 
 bool        NET_IsLocalAddress( netadr_t adr )
 {
-	return adr.type == NA_LOOPBACK;
+	return adr.type == netadrtype_t::NA_LOOPBACK;
 }
 
 //=============================================================================
@@ -728,7 +728,7 @@ bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 
 			if ( err != EAGAIN && err != ECONNRESET )
 			{
-				Com_Printf( "NET_GetPacket: %s\n", NET_ErrorString() );
+				Log::Notice( "NET_GetPacket: %s\n", NET_ErrorString() );
 			}
 		}
 		else
@@ -742,7 +742,7 @@ bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 					return false;
 				}
 
-				net_from->type = NA_IP;
+				net_from->type = netadrtype_t::NA_IP;
 				net_from->ip[ 0 ] = net_message->data[ 4 ];
 				net_from->ip[ 1 ] = net_message->data[ 5 ];
 				net_from->ip[ 2 ] = net_message->data[ 6 ];
@@ -758,7 +758,7 @@ bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 
 			if ( ret == net_message->maxsize )
 			{
-				Com_Printf( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
+				Log::Notice( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
 				return false;
 			}
 
@@ -778,7 +778,7 @@ bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 
 			if ( err != EAGAIN && err != ECONNRESET )
 			{
-				Com_Printf( "NET_GetPacket: %s\n", NET_ErrorString() );
+				Log::Notice( "NET_GetPacket: %s\n", NET_ErrorString() );
 			}
 		}
 		else
@@ -788,7 +788,7 @@ bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 
 			if ( ret == net_message->maxsize )
 			{
-				Com_Printf( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
+				Log::Notice( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
 				return false;
 			}
 
@@ -808,7 +808,7 @@ bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 
 			if ( err != EAGAIN && err != ECONNRESET )
 			{
-				Com_Printf( "NET_GetPacket: %s\n", NET_ErrorString() );
+				Log::Notice( "NET_GetPacket: %s\n", NET_ErrorString() );
 			}
 		}
 		else
@@ -818,7 +818,7 @@ bool Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 
 			if ( ret == net_message->maxsize )
 			{
-				Com_Printf( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
+				Log::Notice( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
 				return false;
 			}
 
@@ -844,20 +844,20 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 	int                     ret = SOCKET_ERROR;
 	struct sockaddr_storage addr;
 
-	if ( to.type != NA_BROADCAST && to.type != NA_IP && to.type != NA_IP_DUAL && to.type != NA_IP6 && to.type != NA_MULTICAST6 )
+	if ( to.type != netadrtype_t::NA_BROADCAST && to.type != netadrtype_t::NA_IP && to.type != netadrtype_t::NA_IP_DUAL && to.type != netadrtype_t::NA_IP6 && to.type != netadrtype_t::NA_MULTICAST6 )
 	{
-		Com_Error( ERR_FATAL, "Sys_SendPacket: bad address type" );
+		Com_Error( errorParm_t::ERR_FATAL, "Sys_SendPacket: bad address type" );
 	}
 
 	if ( ( ip_socket == INVALID_SOCKET && NET_IS_IPv4( to.type ) ) ||
-	     ( ip_socket == INVALID_SOCKET && to.type == NA_BROADCAST ) ||
+	     ( ip_socket == INVALID_SOCKET && to.type == netadrtype_t::NA_BROADCAST ) ||
 	     ( ip6_socket == INVALID_SOCKET && NET_IS_IPv6( to.type ) ) ||
-	     ( ip6_socket == INVALID_SOCKET && to.type == NA_MULTICAST6 ) )
+	     ( ip6_socket == INVALID_SOCKET && to.type == netadrtype_t::NA_MULTICAST6 ) )
 	{
 		return;
 	}
 
-	if ( to.type == NA_MULTICAST6 && ( net_enabled->integer & NET_DISABLEMCAST ) )
+	if ( to.type == netadrtype_t::NA_MULTICAST6 && ( net_enabled->integer & NET_DISABLEMCAST ) )
 	{
 		return;
 	}
@@ -899,22 +899,22 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 		}
 
 		// some PPP links do not allow broadcasts and return an error
-		if ( ( err == EADDRNOTAVAIL ) && ( ( to.type == NA_BROADCAST ) ) )
+		if ( ( err == EADDRNOTAVAIL ) && ( ( to.type == netadrtype_t::NA_BROADCAST ) ) )
 		{
 			return;
 		}
 
 		if ( addr.ss_family == AF_INET )
 		{
-			Com_Printf( "Sys_SendPacket (ipv4): %s\n", NET_ErrorString() );
+			Log::Notice( "Sys_SendPacket (ipv4): %s\n", NET_ErrorString() );
 		}
 		else if ( addr.ss_family == AF_INET6 )
 		{
-			Com_Printf( "Sys_SendPacket (ipv6): %s\n", NET_ErrorString() );
+			Log::Notice( "Sys_SendPacket (ipv6): %s\n", NET_ErrorString() );
 		}
 		else
 		{
-			Com_Printf( "Sys_SendPacket (%i): %s\n", addr.ss_family , NET_ErrorString() );
+			Log::Notice( "Sys_SendPacket (%i): %s\n", addr.ss_family , NET_ErrorString() );
 		}
 	}
 }
@@ -934,12 +934,12 @@ bool Sys_IsLANAddress( netadr_t adr )
 	bool differed;
 	byte     *compareadr, *comparemask, *compareip;
 
-	if ( adr.type == NA_LOOPBACK )
+	if ( adr.type == netadrtype_t::NA_LOOPBACK )
 	{
 		return true;
 	}
 
-	if ( adr.type == NA_IP )
+	if ( adr.type == netadrtype_t::NA_IP )
 	{
 		// RFC1918:
 		// 10.0.0.0        -   10.255.255.255  (10/8 prefix)
@@ -968,7 +968,7 @@ bool Sys_IsLANAddress( netadr_t adr )
 			return true;
 		}
 	}
-	else if ( adr.type == NA_IP6 )
+	else if ( adr.type == netadrtype_t::NA_IP6 )
 	{
 		if ( adr.ip6[ 0 ] == 0xfe && ( adr.ip6[ 1 ] & 0xc0 ) == 0x80 )
 		{
@@ -986,7 +986,7 @@ bool Sys_IsLANAddress( netadr_t adr )
 	{
 		if ( localIP[ index ].type == adr.type )
 		{
-			if ( adr.type == NA_IP )
+			if ( adr.type == netadrtype_t::NA_IP )
 			{
 				compareip = ( byte * ) & ( ( struct sockaddr_in * ) &localIP[ index ].addr )->sin_addr.s_addr;
 				comparemask = ( byte * ) & ( ( struct sockaddr_in * ) &localIP[ index ].netmask )->sin_addr.s_addr;
@@ -1040,13 +1040,13 @@ void Sys_ShowIP()
 	{
 		Sys_SockaddrToString( addrbuf, sizeof( addrbuf ), ( struct sockaddr * ) &localIP[ i ].addr );
 
-		if ( localIP[ i ].type == NA_IP )
+		if ( localIP[ i ].type == netadrtype_t::NA_IP )
 		{
-			Com_Printf( "IP: %s\n", addrbuf );
+			Log::Notice( "IP: %s", addrbuf );
 		}
-		else if ( localIP[ i ].type == NA_IP6 )
+		else if ( localIP[ i ].type == netadrtype_t::NA_IP6 )
 		{
-			Com_Printf( "IP6: %s\n", addrbuf );
+			Log::Notice( "IP6: %s", addrbuf );
 		}
 	}
 }
@@ -1068,19 +1068,19 @@ SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bi
 
 	*err = 0;
 
-	Com_Printf( "Opening IP socket: %s:%s\n", net_interface ? net_interface : "0.0.0.0", port ? va( "%i", port ) : "*" );
+	Log::Notice( "Opening IP socket: %s:%s", net_interface ? net_interface : "0.0.0.0", port ? va( "%i", port ) : "*" );
 
 	if ( ( newsocket = socket( PF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET )
 	{
 		*err = socketError;
-		Com_Printf( "WARNING: NET_IPSocket: socket: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_IPSocket: socket: %s", NET_ErrorString() );
 		return newsocket;
 	}
 
 	// make it non-blocking
 	if ( ioctlsocket( newsocket, FIONBIO, &_true ) == SOCKET_ERROR )
 	{
-		Com_Printf( "WARNING: NET_IPSocket: ioctl FIONBIO: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_IPSocket: ioctl FIONBIO: %s", NET_ErrorString() );
 		*err = socketError;
 		closesocket( newsocket );
 		return INVALID_SOCKET;
@@ -1089,7 +1089,7 @@ SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bi
 	// make it broadcast capable
 	if ( setsockopt( newsocket, SOL_SOCKET, SO_BROADCAST, ( char * ) &i, sizeof( i ) ) == SOCKET_ERROR )
 	{
-		Com_Printf( "WARNING: NET_IPSocket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_IPSocket: setsockopt SO_BROADCAST: %s", NET_ErrorString() );
 	}
 
 	if ( !net_interface || !net_interface[ 0 ] )
@@ -1111,7 +1111,7 @@ SOCKET NET_IPSocket( const char *net_interface, int port, struct sockaddr_in *bi
 
 	if ( bind( newsocket, ( struct sockaddr * ) &address, sizeof( address ) ) == SOCKET_ERROR )
 	{
-		Com_Printf( "WARNING: NET_IPSocket: bind: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_IPSocket: bind: %s", NET_ErrorString() );
 		*err = socketError;
 		closesocket( newsocket );
 		return INVALID_SOCKET;
@@ -1153,19 +1153,19 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 	*err = 0;
 
 	// Print the name in brackets if there is a colon:
-	Com_Printf( "Opening IP6 socket: %s%s%s:%s\n", brackets ? "[" : "", net_interface ? net_interface : "[::]", brackets ? "]" : "", port ? va( "%i", port ) : "*" );
+	Log::Notice( "Opening IP6 socket: %s%s%s:%s", brackets ? "[" : "", net_interface ? net_interface : "[::]", brackets ? "]" : "", port ? va( "%i", port ) : "*" );
 
 	if ( ( newsocket = socket( PF_INET6, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET )
 	{
 		*err = socketError;
-		Com_Printf( "WARNING: NET_IP6Socket: socket: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_IP6Socket: socket: %s", NET_ErrorString() );
 		return newsocket;
 	}
 
 	// make it non-blocking
 	if ( ioctlsocket( newsocket, FIONBIO, &_true ) == SOCKET_ERROR )
 	{
-		Com_Printf( "WARNING: NET_IP6Socket: ioctl FIONBIO: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_IP6Socket: ioctl FIONBIO: %s", NET_ErrorString() );
 		*err = socketError;
 		closesocket( newsocket );
 		return INVALID_SOCKET;
@@ -1179,7 +1179,7 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 		if ( setsockopt( newsocket, IPPROTO_IPV6, IPV6_V6ONLY, ( char * ) &i, sizeof( i ) ) == SOCKET_ERROR )
 		{
 			// win32 systems don't seem to support this anyways.
-			Com_DPrintf( "WARNING: NET_IP6Socket: setsockopt IPV6_V6ONLY: %s\n", NET_ErrorString() );
+			Log::Warn( "NET_IP6Socket: setsockopt IPV6_V6ONLY: %s", NET_ErrorString() );
 		}
 	}
 #endif
@@ -1203,7 +1203,7 @@ SOCKET NET_IP6Socket( const char *net_interface, int port, struct sockaddr_in6 *
 
 	if ( bind( newsocket, ( struct sockaddr * ) &address, sizeof( address ) ) == SOCKET_ERROR )
 	{
-		Com_Printf( "WARNING: NET_IP6Socket: bind: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_IP6Socket: bind: %s\n", NET_ErrorString() );
 		*err = socketError;
 		closesocket( newsocket );
 		return INVALID_SOCKET;
@@ -1240,7 +1240,7 @@ void NET_SetMulticast6()
 
 	if ( !*net_mcast6addr->string || !Sys_StringToSockaddr( net_mcast6addr->string, ( struct sockaddr * ) &addr, sizeof( addr ), AF_INET6 ) )
 	{
-		Com_Printf( "WARNING: NET_JoinMulticast6: Incorrect multicast address given, "
+		Log::Warn( "NET_JoinMulticast6: Incorrect multicast address given, "
 		            "please set cvar %s to a sane value.\n", net_mcast6addr->name );
 
 		Cvar_SetValue( net_enabled->name, net_enabled->integer | NET_DISABLEMCAST );
@@ -1298,7 +1298,7 @@ void NET_JoinMulticast6()
 		if ( setsockopt( multicast6_socket, IPPROTO_IPV6, IPV6_MULTICAST_IF,
 		                 ( char * ) &curgroup.ipv6mr_interface, sizeof( curgroup.ipv6mr_interface ) ) < 0 )
 		{
-			Com_Printf( "NET_JoinMulticast6: Couldn't set scope on multicast socket: %s\n", NET_ErrorString() );
+			Log::Notice( "NET_JoinMulticast6: Couldn't set scope on multicast socket: %s\n", NET_ErrorString() );
 
 			if ( multicast6_socket != ip6_socket )
 			{
@@ -1311,7 +1311,7 @@ void NET_JoinMulticast6()
 
 	if ( setsockopt( multicast6_socket, IPPROTO_IPV6, IPV6_JOIN_GROUP, ( char * ) &curgroup, sizeof( curgroup ) ) )
 	{
-		Com_Printf( "NET_JoinMulticast6: Couldn't join multicast group: %s\n", NET_ErrorString() );
+		Log::Notice( "NET_JoinMulticast6: Couldn't join multicast group: %s\n", NET_ErrorString() );
 
 		if ( multicast6_socket != ip6_socket )
 		{
@@ -1356,11 +1356,11 @@ void NET_OpenSocks( int port )
 
 	usingSocks = false;
 
-	Com_Printf( "Opening connection to SOCKS server.\n" );
+	Log::Notice( "Opening connection to SOCKS server.\n" );
 
 	if ( ( socks_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ) ) == INVALID_SOCKET )
 	{
-		Com_Printf( "WARNING: NET_OpenSocks: socket: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_OpenSocks: socket: %s", NET_ErrorString() );
 		return;
 	}
 
@@ -1368,13 +1368,13 @@ void NET_OpenSocks( int port )
 
 	if ( h == nullptr )
 	{
-		Com_Printf( "WARNING: NET_OpenSocks: gethostbyname: %s\n", NET_ErrorString() );
+		Log::Warn( "NET_OpenSocks: gethostbyname: %s", NET_ErrorString() );
 		return;
 	}
 
 	if ( h->h_addrtype != AF_INET )
 	{
-		Com_Printf( "WARNING: NET_OpenSocks: gethostbyname: address type was not AF_INET\n" );
+		Log::Warn( "NET_OpenSocks: gethostbyname: address type was not AF_INET" );
 		return;
 	}
 
@@ -1385,7 +1385,7 @@ void NET_OpenSocks( int port )
 
 	if ( connect( socks_socket, ( struct sockaddr * ) &address, sizeof( address ) ) == SOCKET_ERROR )
 	{
-		Com_Printf( "NET_OpenSocks: connect: %s\n", NET_ErrorString() );
+		Log::Notice( "NET_OpenSocks: connect: %s\n", NET_ErrorString() );
 		return;
 	}
 
@@ -1422,7 +1422,7 @@ void NET_OpenSocks( int port )
 
 	if ( send( socks_socket, ( char * ) buf, len, 0 ) == SOCKET_ERROR )
 	{
-		Com_Printf( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
+		Log::Notice( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
 		return;
 	}
 
@@ -1431,13 +1431,13 @@ void NET_OpenSocks( int port )
 
 	if ( len == SOCKET_ERROR )
 	{
-		Com_Printf( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
+		Log::Notice( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
 		return;
 	}
 
 	if ( len != 2 || buf[ 0 ] != 5 )
 	{
-		Com_Printf( "NET_OpenSocks: bad response\n" );
+		Log::Notice( "NET_OpenSocks: bad response\n" );
 		return;
 	}
 
@@ -1450,7 +1450,7 @@ void NET_OpenSocks( int port )
 			break;
 
 		default:
-			Com_Printf( "NET_OpenSocks: request denied\n" );
+			Log::Notice( "NET_OpenSocks: request denied\n" );
 			return;
 	}
 
@@ -1482,7 +1482,7 @@ void NET_OpenSocks( int port )
 		// send it
 		if ( send( socks_socket, ( char * ) buf, 3 + ulen + plen, 0 ) == SOCKET_ERROR )
 		{
-			Com_Printf( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
+			Log::Notice( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
 			return;
 		}
 
@@ -1491,19 +1491,19 @@ void NET_OpenSocks( int port )
 
 		if ( len == SOCKET_ERROR )
 		{
-			Com_Printf( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
+			Log::Notice( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
 			return;
 		}
 
 		if ( len != 2 || buf[ 0 ] != 1 )
 		{
-			Com_Printf( "NET_OpenSocks: bad response\n" );
+			Log::Notice( "NET_OpenSocks: bad response\n" );
 			return;
 		}
 
 		if ( buf[ 1 ] != 0 )
 		{
-			Com_Printf( "NET_OpenSocks: authentication failed\n" );
+			Log::Notice( "NET_OpenSocks: authentication failed\n" );
 			return;
 		}
 	}
@@ -1518,7 +1518,7 @@ void NET_OpenSocks( int port )
 
 	if ( send( socks_socket, ( char * ) buf, 10, 0 ) == SOCKET_ERROR )
 	{
-		Com_Printf( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
+		Log::Notice( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
 		return;
 	}
 
@@ -1527,26 +1527,26 @@ void NET_OpenSocks( int port )
 
 	if ( len == SOCKET_ERROR )
 	{
-		Com_Printf( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
+		Log::Notice( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
 		return;
 	}
 
 	if ( len < 2 || buf[ 0 ] != 5 )
 	{
-		Com_Printf( "NET_OpenSocks: bad response\n" );
+		Log::Notice( "NET_OpenSocks: bad response\n" );
 		return;
 	}
 
 	// check completion code
 	if ( buf[ 1 ] != 0 )
 	{
-		Com_Printf( "NET_OpenSocks: request denied: %i\n", buf[ 1 ] );
+		Log::Notice( "NET_OpenSocks: request denied: %i\n", buf[ 1 ] );
 		return;
 	}
 
 	if ( buf[ 3 ] != 1 )
 	{
-		Com_Printf( "NET_OpenSocks: relay address is not IPV4: %i\n", buf[ 3 ] );
+		Log::Notice( "NET_OpenSocks: relay address is not IPV4: %i\n", buf[ 3 ] );
 		return;
 	}
 
@@ -1582,12 +1582,12 @@ static void NET_AddLocalAddress( const char *ifname, struct sockaddr *addr, stru
 		if ( family == AF_INET && ( net_enabled->integer & NET_ENABLEV4 ) )
 		{
 			addrlen = sizeof( struct sockaddr_in );
-			localIP[ numIP ].type = NA_IP;
+			localIP[ numIP ].type = netadrtype_t::NA_IP;
 		}
 		else if ( family == AF_INET6 && ( net_enabled->integer & NET_ENABLEV6 ) )
 		{
 			addrlen = sizeof( struct sockaddr_in6 );
-			localIP[ numIP ].type = NA_IP6;
+			localIP[ numIP ].type = netadrtype_t::NA_IP6;
 		}
 		else
 		{
@@ -1614,7 +1614,7 @@ static void NET_GetLocalAddress()
 
 	if ( getifaddrs( &ifap ) )
 	{
-		Com_Printf( "NET_GetLocalAddress: Unable to get list of network interfaces: %s\n", NET_ErrorString() );
+		Log::Notice( "NET_GetLocalAddress: Unable to get list of network interfaces: %s\n", NET_ErrorString() );
 	}
 	else
 	{
@@ -1648,7 +1648,7 @@ static void NET_GetLocalAddress()
 		return;
 	}
 
-	Com_Printf( "Hostname: %s\n", hostname );
+	Log::Notice( "Hostname: %s\n", hostname );
 
 	memset( &hint, 0, sizeof( hint ) );
 
@@ -1697,7 +1697,7 @@ static void NET_GetLocalAddress()
 
 #endif
 
-#define MAX_TRY_PORTS 10
+static const int MAX_TRY_PORTS = 10;
 
 static int NET_EnsureValidPortNo( int port )
 {
@@ -1758,7 +1758,7 @@ static void NET_OpenIP()
 
 		if ( ip6_socket == INVALID_SOCKET || err == EAFNOSUPPORT )
 		{
-			Com_Printf( "WARNING: Couldn't bind to an IPv6 address.\n" );
+			Log::Warn( "Couldn't bind to an IPv6 address." );
 			port6 = PORT_ANY;
 		}
 	}
@@ -1785,7 +1785,7 @@ static void NET_OpenIP()
 
 		if ( ip_socket == INVALID_SOCKET )
 		{
-			Com_Printf( "WARNING: Couldn't bind to an IPv4 address.\n" );
+			Log::Warn( "Couldn't bind to an IPv4 address." );
 			port = PORT_ANY;
 		}
 	}
@@ -1975,10 +1975,10 @@ const char *NET_GeoIP_Country( const netadr_t *from )
 {
 	switch ( from->type )
 	{
-	case NA_IP:
+	case netadrtype_t::NA_IP:
 		return geoip_data_4 ? GeoIP_country_name_by_ipnum( geoip_data_4, htonl( *(uint32_t *)from->ip ) ) : nullptr;
 
-	case NA_IP6:
+	case netadrtype_t::NA_IP6:
 		return geoip_data_6 ? GeoIP_country_name_by_ipnum_v6( geoip_data_6, *(struct in6_addr *)from->ip6 ) : nullptr;
 
 	default:
@@ -2022,18 +2022,18 @@ void NET_Init()
 
 	if ( r )
 	{
-		Com_Printf( "WARNING: Winsock initialization failed, returned %d\n", r );
+		Log::Warn( "Winsock initialization failed, returned %d", r );
 		return;
 	}
 
 	winsockInitialized = true;
-	Com_Printf( "Winsock Initialized\n" );
+	Log::Notice( "Winsock Initialized\n" );
 #endif
 
 #ifdef HAVE_GEOIP
 	geoip_data_4 = NET_GeoIP_LoadData( GEOIP_COUNTRY_EDITION );
 	geoip_data_6 = NET_GeoIP_LoadData( GEOIP_COUNTRY_EDITION_V6 );
-	Com_Printf( "Loaded GeoIP data: ^%dIPv4 ^%dIPv6\n", geoip_data_4 ? 2 : 1, geoip_data_6 ? 2 : 1 );
+	Log::Notice( "Loaded GeoIP data: ^%dIPv4 ^%dIPv6", geoip_data_4 ? 2 : 1, geoip_data_6 ? 2 : 1 );
 #endif
 
 	NET_Config( true );

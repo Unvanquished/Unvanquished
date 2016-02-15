@@ -308,7 +308,7 @@ static void CM_SubdivideGridColumns( cGrid_t *grid )
 CM_ComparePoints
 ======================
 */
-#define POINT_EPSILON 0.1
+static const float POINT_EPSILON = 0.1;
 static bool CM_ComparePoints( float *a, float *b )
 {
 	float d;
@@ -523,16 +523,14 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid,
 
 		for ( l = 0; l < numPoints; l++ )
 		{
-			int side;
+			planeSide_t side = CM_PointOnPlaneSide( points[ l ], facet->borderPlanes[ k ] );
 
-			side = CM_PointOnPlaneSide( points[ l ], facet->borderPlanes[ k ] );
-
-			if ( side == SIDE_FRONT )
+			if ( side == planeSide_t::SIDE_FRONT )
 			{
 				front++;
 			}
 
-			if ( side == SIDE_BACK )
+			if ( side == planeSide_t::SIDE_BACK )
 			{
 				back++;
 			}
@@ -554,7 +552,7 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid,
 		else
 		{
 			// bisecting side border
-			cmLog.Debug( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
+			cmLog.Debug( "WARNING: CM_SetBorderInward: mixed plane sides" );
 			facet->borderInward[ k ] = false;
 
 			if ( !debugBlock )
@@ -569,13 +567,13 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid,
 	}
 }
 
-typedef enum
+enum edgeName_e
 {
   EN_TOP,
   EN_RIGHT,
   EN_BOTTOM,
   EN_LEFT
-} edgeName_t;
+};
 
 /*
 ==================

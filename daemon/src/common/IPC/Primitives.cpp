@@ -81,8 +81,8 @@ enum NaClDescTypeTag {
   NACL_DESC_CUSTOM,
   NACL_DESC_NULL
 };
-#define NACL_DESC_TYPE_MAX      (NACL_DESC_NULL + 1)
-#define NACL_DESC_TYPE_END_TAG  (0xff)
+#define NACL_DESC_TYPE_MAX (NACL_DESC_NULL + 1)
+static const int NACL_DESC_TYPE_END_TAG  = (0xff);
 
 struct NaClInternalRealHeader {
   uint32_t  xfer_protocol_version;
@@ -95,7 +95,7 @@ struct NaClInternalHeader {
                 - sizeof(struct NaClInternalRealHeader)];
 };
 
-#define NACL_HANDLE_TRANSFER_PROTOCOL 0xd3c0de01
+static const uint32_t NACL_HANDLE_TRANSFER_PROTOCOL = 0xd3c0de01;
 // End of imported definitions
 
 namespace IPC {
@@ -114,21 +114,21 @@ FileDesc FileHandle::GetDesc() const
 	out.handle = handle;
 #endif
 #ifndef __native_client__
-	out.type = NACL_DESC_HOST_IO;
+	out.type = Util::ordinal(NaClDescTypeTag::NACL_DESC_HOST_IO);
 	switch (mode) {
-	case MODE_READ:
+	case FileOpenMode::MODE_READ:
 		out.flags = NACL_ABI_O_RDONLY;
 		break;
-	case MODE_WRITE:
+	case FileOpenMode::MODE_WRITE:
 		out.flags = NACL_ABI_O_WRONLY;
 		break;
-	case MODE_RW:
+	case FileOpenMode::MODE_RW:
 		out.flags = NACL_ABI_O_RDWR;
 		break;
-	case MODE_WRITE_APPEND:
+	case FileOpenMode::MODE_WRITE_APPEND:
 		out.flags = NACL_ABI_O_WRONLY | NACL_ABI_O_APPEND;
 		break;
-	case MODE_RW_APPEND:
+	case FileOpenMode::MODE_RW_APPEND:
 		out.flags = NACL_ABI_O_RDWR | NACL_ABI_O_APPEND;
 		break;
 	}
@@ -138,29 +138,29 @@ FileDesc FileHandle::GetDesc() const
 
 FileHandle FileHandle::FromDesc(const FileDesc& desc)
 {
-	FileOpenMode mode = MODE_READ;
+	auto mode = FileOpenMode::MODE_READ;
 #ifndef __native_client__
 	switch (desc.flags) {
 	case NACL_ABI_O_RDONLY:
-		mode = MODE_READ;
+		mode = FileOpenMode::MODE_READ;
 		break;
 	case NACL_ABI_O_WRONLY:
-		mode = MODE_WRITE;
+		mode = FileOpenMode::MODE_WRITE;
 		break;
 	case NACL_ABI_O_RDWR:
-		mode = MODE_RW;
+		mode = FileOpenMode::MODE_RW;
 		break;
 	case NACL_ABI_O_WRONLY | NACL_ABI_O_APPEND:
-		mode = MODE_WRITE_APPEND;
+		mode = FileOpenMode::MODE_WRITE_APPEND;
 		break;
 	case NACL_ABI_O_RDWR | NACL_ABI_O_APPEND:
-		mode = MODE_RW_APPEND;
+		mode = FileOpenMode::MODE_RW_APPEND;
 		break;
 	}
 #endif
 #ifdef _WIN32
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
-	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(desc.handle), modes[mode]);
+	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(desc.handle), modes[Util::ordinal(mode)]);
 	if (fd == -1) {
 		CloseHandle(desc.handle);
 		return FileHandle();
@@ -188,7 +188,7 @@ FileDesc Socket::GetDesc() const
 	FileDesc out;
 	out.handle = handle;
 #ifndef __native_client__
-	out.type = NACL_DESC_TRANSFERABLE_DATA_SOCKET;
+	out.type = NaClDescTypeTag::NACL_DESC_TRANSFERABLE_DATA_SOCKET;
 #endif
 	return out;
 }
@@ -243,9 +243,9 @@ static void InternalSendMsg(Sys::OSHandle handle, bool more, const FileDesc* han
 			// size: 8 bytes (only for SHM)
 			descBytes++;
 			descBytes += sizeof(uint32_t);
-			if (handles[i].type == NACL_DESC_SHM)
+			if (handles[i].type == NaClDescTypeTag::NACL_DESC_SHM)
 				descBytes += sizeof(uint64_t);
-			else if (handles[i].type == NACL_DESC_HOST_IO)
+			else if (handles[i].type == NaClDescTypeTag::NACL_DESC_HOST_IO)
 				descBytes += sizeof(int32_t);
 		}
 		// Add 1 byte end tag and round to 16 bytes
@@ -257,10 +257,10 @@ static void InternalSendMsg(Sys::OSHandle handle, bool more, const FileDesc* han
 			*descBuffer_ptr++ = handles[i].type;
 			memset(descBuffer_ptr, 0, sizeof(uint32_t));
 			descBuffer_ptr += sizeof(uint32_t);
-			if (handles[i].type == NACL_DESC_SHM) {
+			if (handles[i].type == NaClDescTypeTag::NACL_DESC_SHM) {
 				memcpy(descBuffer_ptr, &handles[i].size, sizeof(uint64_t));
 				descBuffer_ptr += sizeof(uint64_t);
-			} else if (handles[i].type == NACL_DESC_HOST_IO) {
+			} else if (handles[i].type == NaClDescTypeTag::NACL_DESC_HOST_IO) {
 				memcpy(descBuffer_ptr, &handles[i].flags, sizeof(int32_t));
 				descBuffer_ptr += sizeof(int32_t);
 			}

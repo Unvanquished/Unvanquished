@@ -58,16 +58,16 @@ const int MAX_ROUTE_PLANS = 2;
 const int MAX_ROUTE_CACHE = 20;
 const int ROUTE_CACHE_TIME = 200;
 
-typedef struct
+struct dtRouteResult
 {
 	dtPolyRef startRef;
 	dtPolyRef endRef;
 	int       time;
 	dtStatus  status;
 	bool      invalid;
-} dtRouteResult;
+};
 
-typedef struct
+struct NavData_t
 {
 	dtTileCache      *cache;
 	dtNavMesh        *mesh;
@@ -75,9 +75,9 @@ typedef struct
 	dtQueryFilter    filter;
 	MeshProcess      process;
 	char             name[ 64 ];
-} NavData_t;
+};
 
-typedef struct
+struct Bot_t
 {
 	NavData_t         *nav;
 	dtPathCorridor    corridor;
@@ -92,7 +92,7 @@ typedef struct
 	rVec              offMeshEnd;
 	dtPolyRef         offMeshPoly;
 	dtRouteResult     routeResults[ MAX_ROUTE_CACHE ];
-} Bot_t;
+};
 
 extern int numNavData;
 extern NavData_t BotNavData[ MAX_NAV_DATA ];

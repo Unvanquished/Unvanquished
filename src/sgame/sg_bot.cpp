@@ -185,12 +185,12 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 
 	if ( !botMind->behaviorTree )
 	{
-		G_Printf( "Problem when loading behavior tree %s, trying default\n", behavior );
+		Log::Warn( "Problem when loading behavior tree %s, trying default", behavior );
 		botMind->behaviorTree = ReadBehaviorTree( "default", &treeList );
 
 		if ( !botMind->behaviorTree )
 		{
-			G_Printf( "Problem when loading default behavior tree\n" );
+			Log::Warn( "Problem when loading default behavior tree" );
 			return false;
 		}
 	}
@@ -220,7 +220,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 
 	if ( !navMeshLoaded )
 	{
-		trap_Print( "No Navigation Mesh file is available for this map\n" );
+		Log::Warn( "No Navigation Mesh file is available for this map" );
 		return false;
 	}
 
@@ -229,7 +229,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 
 	if ( clientNum < 0 )
 	{
-		trap_Print( "no more slots for bot\n" );
+		Log::Warn( "no more slots for bot" );
 		return false;
 	}
 	bot = &g_entities[ clientNum ];
@@ -267,7 +267,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	if ( ( s = ClientBotConnect( clientNum, true, team ) ) )
 	{
 		// won't let us join
-		trap_Print( s );
+		Log::Warn( s );
 		okay = false;
 	}
 
@@ -295,7 +295,7 @@ void G_BotDel( int clientNum )
 
 	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
 	{
-		trap_Print( va( "'^7%s^7' is not a bot\n", bot->client->pers.netname ) );
+		Log::Warn( "'^7%s^7' is not a bot\n", bot->client->pers.netname );
 		return;
 	}
 
@@ -355,14 +355,14 @@ void G_BotThink( gentity_t *self )
 	usercmdClearButtons( botCmdBuffer->buttons );
 
 	// for nudges, e.g. spawn blocking
-	nudge[0] = botCmdBuffer->doubleTap ? botCmdBuffer->forwardmove : 0;
-	nudge[1] = botCmdBuffer->doubleTap ? botCmdBuffer->rightmove : 0;
-	nudge[2] = botCmdBuffer->doubleTap ? botCmdBuffer->upmove : 0;
+	nudge[0] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->forwardmove : 0;
+	nudge[1] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->rightmove : 0;
+	nudge[2] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->upmove : 0;
 
 	botCmdBuffer->forwardmove = 0;
 	botCmdBuffer->rightmove = 0;
 	botCmdBuffer->upmove = 0;
-	botCmdBuffer->doubleTap = 0;
+	botCmdBuffer->doubleTap = dtType_t::DT_NONE;
 
 	//acknowledge recieved server commands
 	//MUST be done
@@ -390,7 +390,7 @@ void G_BotThink( gentity_t *self )
 
 	if ( !self->botMind->behaviorTree )
 	{
-		G_Printf( "ERROR: NULL behavior tree\n" );
+		Log::Warn( "NULL behavior tree" );
 		return;
 	}
 

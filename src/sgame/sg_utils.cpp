@@ -129,7 +129,7 @@ static int G_FindConfigstringIndex( const char *name, int start, int max, bool c
 
 	if ( i == max )
 	{
-		G_Error( "G_FindConfigstringIndex: overflow" );
+		Com_Error(errorParm_t::ERR_DROP,  "G_FindConfigstringIndex: overflow" );
 	}
 
 	trap_SetConfigstring( start + i, name );
@@ -372,15 +372,15 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm )
 
 	if ( !event )
 	{
-		G_Printf( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
+		Log::Warn( "G_AddEvent: zero event added for entity %i", ent->s.number );
 		return;
 	}
 
 	// eventParm is converted to uint8_t (0 - 255) in msg.c
 	if ( eventParm & ~0xFF )
 	{
-		G_Printf( S_WARNING "G_AddEvent( %s ) has eventParm %d, "
-		          "which will overflow\n", BG_EventName( event ), eventParm );
+		Log::Warn( "G_AddEvent( %s ) has eventParm %d, "
+		          "which will overflow", BG_EventName( event ), eventParm );
 	}
 
 	// clients need to add the event in playerState_t instead of entityState_t
@@ -431,7 +431,7 @@ void G_BroadcastEvent( int event, int eventParm, team_t team )
 G_Sound
 =============
 */
-void G_Sound( gentity_t *ent, int, int soundIndex )
+void G_Sound( gentity_t *ent, soundChannel_t, int soundIndex )
 {
 	gentity_t *te;
 
@@ -836,7 +836,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire = nullptr;
 	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
 	{
-		if ( fire->s.eType == ET_FIRE )
+		if ( fire->s.eType == entityType_t::ET_FIRE )
 		{
 			return nullptr;
 		}
@@ -846,7 +846,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 
 	// create a fire entity
 	fire->classname = "fire";
-	fire->s.eType   = ET_FIRE;
+	fire->s.eType   = entityType_t::ET_FIRE;
 	fire->clipmask  = 0;
 
 	fire->entity = new FireEntity(FireEntity::Params{fire});
@@ -872,7 +872,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	{
 		char descr[ 64 ];
 		BG_BuildEntityDescription( descr, sizeof( descr ), &fire->s );
-		Com_Printf("%s spawned.", descr);
+		Log::Notice("%s spawned.", descr);
 	}
 
 	return fire;

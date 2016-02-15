@@ -252,7 +252,7 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps )
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf( "^4WARNING: changed predicted event\n" );
+					Log::Debug( "changed predicted event" );
 				}
 			}
 		}

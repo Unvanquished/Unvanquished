@@ -163,7 +163,7 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 		// initialize skeleton if animation handle is invalid
 		int i;
 
-		newSkeleton->type = SK_ABSOLUTE;
+		newSkeleton->type = refSkeletonType_t::SK_ABSOLUTE;
 		newSkeleton->numBones = MAX_BONES;
 		for( i = 0; i < MAX_BONES; i++ ) {
 			newSkeleton->bones[i].parentIndex = -1;
@@ -175,17 +175,17 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 
 	if ( !trap_R_BuildSkeleton( newSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1 - lf->backlerp, lf->animation->clearOrigin ) )
 	{
-		CG_Printf( "CG_BuildAnimSkeleton: Can't build skeleton\n" );
+		Log::Warn( "CG_BuildAnimSkeleton: Can't build skeleton" );
 	}
 
 	// lerp between old and new animation if possible
 	if ( lf->blendlerp >= 0.0f )
 	{
-		if ( newSkeleton->type != SK_INVALID && oldSkeleton->type != SK_INVALID && newSkeleton->numBones == oldSkeleton->numBones )
+		if ( newSkeleton->type != refSkeletonType_t::SK_INVALID && oldSkeleton->type != refSkeletonType_t::SK_INVALID && newSkeleton->numBones == oldSkeleton->numBones )
 		{
 			if ( !trap_R_BlendSkeleton( newSkeleton, oldSkeleton, lf->blendlerp ) )
 			{
-				CG_Printf( "CG_BuildAnimSkeleton: Can't blend skeletons\n" );
+				Log::Warn( "CG_BuildAnimSkeleton: Can't blend skeletons" );
 				return;
 			}
 		}

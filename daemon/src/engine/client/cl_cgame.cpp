@@ -69,7 +69,7 @@ bool CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
 	// can't return anything that we haven't created yet
 	if ( cmdNumber > cl.cmdNumber )
 	{
-		Com_Error( ERR_DROP, "CL_GetUserCmd: %i >= %i", cmdNumber, cl.cmdNumber );
+		Com_Error( errorParm_t::ERR_DROP, "CL_GetUserCmd: %i >= %i", cmdNumber, cl.cmdNumber );
 	}
 
 	// the usercmd has been overwritten in the wrapping
@@ -97,14 +97,14 @@ CL_ConfigstringModified
 void CL_ConfigstringModified( Cmd::Args& csCmd )
 {
 	if (csCmd.Argc() < 3) {
-		Com_Error( ERR_DROP, "CL_ConfigstringModified: wrong command received" );
+		Com_Error( errorParm_t::ERR_DROP, "CL_ConfigstringModified: wrong command received" );
 	}
 
 	int index = atoi( csCmd.Argv(1).c_str() );
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "CL_ConfigstringModified: bad index %i", index );
+		Com_Error( errorParm_t::ERR_DROP, "CL_ConfigstringModified: bad index %i", index );
 	}
 
 	if ( cl.gameState[index] == csCmd.Argv(2) )
@@ -141,9 +141,9 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 	if (cmd == "disconnect") {
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if (argc >= 2) {
-			Com_Error(ERR_SERVERDISCONNECT, "Server disconnected: %s", args.Argv(1).c_str());
+			Com_Error(errorParm_t::ERR_SERVERDISCONNECT, "Server disconnected: %s", args.Argv(1).c_str());
 		} else {
-			Com_Error(ERR_SERVERDISCONNECT, "Server disconnected");
+			Com_Error(errorParm_t::ERR_SERVERDISCONNECT, "Server disconnected");
 		}
 	}
 
@@ -164,7 +164,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 			const char* s = Cmd_QuoteString( args[2].c_str() );
 
 			if (strlen(bigConfigString) + strlen(s) >= BIG_INFO_STRING) {
-				Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
+				Com_Error(errorParm_t::ERR_DROP, "bcs exceeded BIG_INFO_STRING");
 			}
 
 			Q_strcat(bigConfigString, sizeof(bigConfigString), s);
@@ -177,7 +177,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 			const char* s = Cmd_QuoteString( args[2].c_str() );
 
 			if (strlen(bigConfigString) + strlen(s) + 1 >= BIG_INFO_STRING) {
-				Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
+				Com_Error(errorParm_t::ERR_DROP, "bcs exceeded BIG_INFO_STRING");
 			}
 
 			Q_strcat(bigConfigString, sizeof(bigConfigString), s);
@@ -202,7 +202,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 
 	if (cmd == "popup") {
 		// direct server to client popup request, bypassing cgame
-		if (cls.state == CA_ACTIVE && !clc.demoplaying && argc >=1) {
+		if (cls.state == connstate_t::CA_ACTIVE && !clc.demoplaying && argc >=1) {
 			// TODO: Pass to the cgame
 		}
 		return false;
@@ -214,7 +214,7 @@ bool CL_HandleServerCommand(Str::StringRef text, std::string& newText) {
 		mpz_t        message;
 
 		if (argc == 1) {
-			Com_Printf("%s", "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n");
+			Log::Notice("%s", "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n");
 			return false;
 		}
 
@@ -249,12 +249,12 @@ void CL_FillServerCommands(std::vector<std::string>& commands, int start, int en
 			return;
 		}
 
-		Com_Error( ERR_DROP, "CL_FillServerCommand: a reliable command was cycled out" );
+		Com_Error( errorParm_t::ERR_DROP, "CL_FillServerCommand: a reliable command was cycled out" );
 	}
 
 	if ( end > clc.serverCommandSequence )
 	{
-		Com_Error( ERR_DROP, "CL_FillServerCommand: requested a command not received" );
+		Com_Error( errorParm_t::ERR_DROP, "CL_FillServerCommand: requested a command not received" );
 	}
 
 	for (int i = start; i <= end; i++) {
@@ -278,7 +278,7 @@ bool CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 
 	if ( snapshotNumber > cl.snap.messageNum )
 	{
-		Com_Error( ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum" );
+		Com_Error( errorParm_t::ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum" );
 	}
 
 	// if the frame has fallen out of the circular buffer, we can't return it
@@ -462,7 +462,7 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ), false );
 		Info_SetValueForKey( info, "maxping", va( "%i", server->maxPing ), false );
 		Info_SetValueForKey( info, "game", server->game, false );
-		Info_SetValueForKey( info, "nettype", va( "%i", server->netType ), false );
+		Info_SetValueForKey( info, "nettype", Util::enum_str(server->netType), false );
 		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort( server->adr ), false );
 		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), false );   // NERVE - SMF
 		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ), false );   // NERVE - SMF
@@ -606,7 +606,7 @@ static int LAN_ServerIsVisible( int source, int n )
 
 		if ( Cmd_Argc() == 1 )
 		{
-			Com_Log(LOG_ERROR, "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
+			Log::Warn("Server sent a pubkey_decrypt command, but sent nothing to decrypt!" );
 			return false;
 		}
 
@@ -703,18 +703,18 @@ void CL_InitCGame()
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
 
-	cls.state = CA_LOADING;
+	cls.state = connstate_t::CA_LOADING;
 
 	// init for this gamestate
 	cgvm.CGameInit(clc.serverMessageSequence, clc.clientNum);
 
 	// we will send a usercmd this frame, which
 	// will cause the server to send us the first snapshot
-	cls.state = CA_PRIMED;
+	cls.state = connstate_t::CA_PRIMED;
 
 	t2 = Sys_Milliseconds();
 
-	Com_DPrintf( "CL_InitCGame: %5.2fs\n", ( t2 - t1 ) / 1000.0 );
+	Log::Debug( "CL_InitCGame: %5.2fs", ( t2 - t1 ) / 1000.0 );
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
@@ -756,7 +756,7 @@ or bursted delayed packets.
 =================
 */
 
-#define RESET_TIME 500
+static const int RESET_TIME = 500;
 
 void CL_AdjustTimeDelta()
 {
@@ -796,7 +796,7 @@ void CL_AdjustTimeDelta()
 
 		if ( cl_showTimeDelta->integer )
 		{
-			Com_Printf( "<RESET> " );
+			Log::Notice( "<RESET> " );
 		}
 	}
 	else if ( deltaDelta > 100 )
@@ -804,7 +804,7 @@ void CL_AdjustTimeDelta()
 		// fast adjust, cut the difference in half
 		if ( cl_showTimeDelta->integer )
 		{
-			Com_Printf( "<FAST> " );
+			Log::Notice( "<FAST> " );
 		}
 
 		cl.serverTimeDelta = ( cl.serverTimeDelta + newDelta ) >> 1;
@@ -833,7 +833,7 @@ void CL_AdjustTimeDelta()
 
 	if ( cl_showTimeDelta->integer )
 	{
-		Com_Printf("%i ", cl.serverTimeDelta );
+		Log::Notice("%i ", cl.serverTimeDelta );
 	}
 }
 
@@ -850,7 +850,7 @@ void CL_FirstSnapshot()
 		return;
 	}
 
-	cls.state = CA_ACTIVE;
+	cls.state = connstate_t::CA_ACTIVE;
 
 	// set the timedelta so we are exactly on this first frame
 	cl.serverTimeDelta = cl.snap.serverTime - cls.realtime;
@@ -871,7 +871,7 @@ void CL_FirstSnapshot()
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf("%s", ret == 0 ? "Mumble: Linking to Mumble application okay\n" : "Mumble: Linking to Mumble application failed\n" );
+		Log::Notice("%s", ret == 0 ? "Mumble: Linking to Mumble application okay\n" : "Mumble: Linking to Mumble application failed\n" );
 	}
 
 	// resend userinfo upon entering the game, as some cvars may
@@ -887,9 +887,9 @@ CL_SetCGameTime
 void CL_SetCGameTime()
 {
 	// getting a valid frame message ends the connection process
-	if ( cls.state != CA_ACTIVE )
+	if ( cls.state != connstate_t::CA_ACTIVE )
 	{
-		if ( cls.state != CA_PRIMED )
+		if ( cls.state != connstate_t::CA_PRIMED )
 		{
 			return;
 		}
@@ -913,7 +913,7 @@ void CL_SetCGameTime()
 			CL_FirstSnapshot();
 		}
 
-		if ( cls.state != CA_ACTIVE )
+		if ( cls.state != connstate_t::CA_ACTIVE )
 		{
 			return;
 		}
@@ -922,7 +922,7 @@ void CL_SetCGameTime()
 	// if we have gotten to this point, cl.snap is guaranteed to be valid
 	if ( !cl.snap.valid )
 	{
-		Com_Error( ERR_DROP, "CL_SetCGameTime: !cl.snap.valid" );
+		Com_Error( errorParm_t::ERR_DROP, "CL_SetCGameTime: !cl.snap.valid" );
 	}
 
 	if ( sv_paused->integer && cl_paused->integer && com_sv_running->integer )
@@ -941,7 +941,7 @@ void CL_SetCGameTime()
 		}
 		else
 		{
-			Com_Error( ERR_DROP, "cl.snap.serverTime < cl.oldFrameServerTime" );
+			Com_Error( errorParm_t::ERR_DROP, "cl.snap.serverTime < cl.oldFrameServerTime" );
 		}
 	}
 
@@ -1026,7 +1026,7 @@ void CL_SetCGameTime()
 		// the contents of cl.snap
 		CL_ReadDemoMessage();
 
-		if ( cls.state != CA_ACTIVE )
+		if ( cls.state != connstate_t::CA_ACTIVE )
 		{
 			Cvar_Set( "timescale", "1" );
 			return; // end of demo
@@ -1069,7 +1069,7 @@ void CGameVM::Start()
 	services = std::unique_ptr<VM::CommonVMServices>(new VM::CommonVMServices(*this, "CGame", Cmd::CGAME_VM));
 	uint32_t version = this->Create();
 	if ( version != CGAME_API_VERSION ) {
-		Com_Error( ERR_DROP, "CGame ABI mismatch, expected %d, got %d", CGAME_API_VERSION, version );
+		Com_Error( errorParm_t::ERR_DROP, "CGame ABI mismatch, expected %d, got %d", CGAME_API_VERSION, version );
 	}
 	this->CGameStaticInit();
 }
@@ -1354,7 +1354,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 
 		case CG_R_REGISTERSHADER:
 			IPC::HandleMsg<Render::RegisterShaderMsg>(channel, std::move(reader), [this] (const std::string& name, int flags, int& handle) {
-				handle = re.RegisterShader(name.c_str(), (RegisterShaderFlags) flags);
+				handle = re.RegisterShader(name.c_str(), (RegisterShaderFlags_t) flags);
 			});
 			break;
 
@@ -1466,7 +1466,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			IPC::HandleMsg<Key::GetKeynumForBindsMsg>(channel, std::move(reader), [this] (int team, const std::vector<std::string>& binds, std::vector<std::vector<int>>& result) {
                 for (const auto& bind : binds) {
                     result.push_back({});
-                    for (int i = 0; i < MAX_KEYS; i++) {
+                    for (int i = 0; i < Util::ordinal(keyNum_t::MAX_KEYS); i++) {
                         char buffer[MAX_STRING_CHARS];
 
                         Key_GetBindingBuf(i, team, buffer, MAX_STRING_CHARS);
@@ -1513,7 +1513,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 				list.reserve(keys.size());
 				for (unsigned i = 0; i < keys.size(); ++i)
 				{
-					if (keys[i] == K_KP_NUMLOCK)
+					if (keys[i] == Util::ordinal(keyNum_t::K_KP_NUMLOCK))
 					{
 						list.push_back(IN_IsNumLockDown());
 					}
@@ -1599,7 +1599,7 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 //TODO move somewhere else
 template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(IPC::Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
 {
-    typedef IPC::Message<Id, MsgArgs...> Message;
+    using Message = IPC::Message<Id, MsgArgs...>;
 
     typename IPC::detail::MapTuple<typename Message::Inputs>::type inputs;
     reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);

@@ -30,13 +30,13 @@ static bool expectToken( const char *s, pc_token_list **list, bool next )
 
 	if ( !current )
 	{
-		BotError( "Expected token %s but found end of file\n", s );
+		Log::Warn( "Expected token %s but found end of file", s );
 		return false;
 	}
 	
 	if ( Q_stricmp( current->token.string, s ) != 0 )
 	{
-		BotError( "Expected token %s but found %s on line %d\n", s, current->token.string, current->token.line );
+		Log::Warn( "Expected token %s but found %s on line %d", s, current->token.string, current->token.line );
 		return false;
 	}
 	
@@ -49,7 +49,7 @@ static bool expectToken( const char *s, pc_token_list **list, bool next )
 
 AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 {
-	if ( token->type == TT_STRING )
+	if ( token->type == tokenType_t::TT_STRING )
 	{
 		return AIBoxString( token->string );
 	}
@@ -92,7 +92,7 @@ static AIValue_t goalTeam( gentity_t *self, const AIValue_t* )
 
 static AIValue_t goalType( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( BotGetTargetType( self->botMind->goal ) );
+	return AIBoxInt( Util::ordinal(BotGetTargetType( self->botMind->goal )) );
 }
 
 // TODO: Check if we can just check for HealthComponent.
@@ -117,7 +117,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 	{
 		dead = true;
 	}
-	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
+	else if ( goal->ent->s.eType == entityType_t::ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
 	{
 		dead = true;
 	}
@@ -127,7 +127,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 
 static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t* )
 {
-	if ( BotGetTargetType( self->botMind->goal ) != ET_BUILDABLE )
+	if ( BotGetTargetType( self->botMind->goal ) != entityType_t::ET_BUILDABLE )
 	{
 		return AIBoxInt( BA_NONE );
 	}
@@ -369,7 +369,7 @@ static const struct AIOpMap_s
 
 static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 {
-	if ( token->type != TT_PUNCTUATION )
+	if ( token->type != tokenType_t::TT_PUNCTUATION )
 	{
 		return OP_NONE;
 	}
@@ -496,7 +496,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 	if ( !parenEnd )
 	{
-		BotError( "could not find matching ')' for '(' on line %d", parenBegin->token.line );
+		Log::Warn( "could not find matching ')' for '(' on line %d", parenBegin->token.line );
 		*list = parenBegin->next;
 		return nullptr;
 	}
@@ -506,13 +506,13 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 	while ( parse != parenEnd )
 	{
-		if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
+		if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
 		{
 			numParams++;
 		}
 		else if ( parse->token.string[ 0 ] != ',' )
 		{
-			BotError( "Invalid token %s in parameter list on line %d\n", parse->token.string, parse->token.line );
+			Log::Warn( "Invalid token %s in parameter list on line %d", parse->token.string, parse->token.line );
 			*list = parenEnd->next; // skip invalid function expression
 			return nullptr;
 		}
@@ -522,14 +522,14 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	// warn if too many or too few parameters
 	if ( numParams < minparams )
 	{
-		BotError( "too few parameters for %s on line %d\n", current->token.string, current->token.line );
+		Log::Warn( "too few parameters for %s on line %d", current->token.string, current->token.line );
 		*list = parenEnd->next;
 		return nullptr;
 	}
 
 	if ( numParams > maxparams )
 	{
-		BotError( "too many parameters for %s on line %d\n", current->token.string, current->token.line );
+		Log::Warn( "too many parameters for %s on line %d", current->token.string, current->token.line );
 		*list = parenEnd->next;
 		return nullptr;
 	}
@@ -545,7 +545,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 		parse = parenBegin->next;
 		while ( parse != parenEnd )
 		{
-			if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
+			if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
 			{
 				params[ numParams ] = AIBoxToken( &parse->token );
 				numParams++;
@@ -571,7 +571,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 
 	if ( !f )
 	{
-		BotError( "Unknown function: %s on line %d\n", current->token.string, current->token.line );
+		Log::Warn( "Unknown function: %s on line %d", current->token.string, current->token.line );
 		*list = current->next;
 		return nullptr;
 	}
@@ -634,7 +634,7 @@ static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op
 
 	if ( !*list )
 	{
-		BotError( "Unexpected end of file\n" );
+		Log::Warn( "Unexpected end of file" );
 		return nullptr;
 	}
 
@@ -657,7 +657,7 @@ static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op
 
 		if ( !t1 )
 		{
-			BotError( "Missing right operand for %s on line %d\n", opTypeToString( op ), prev->token.line );
+			Log::Warn( "Missing right operand for %s on line %d", opTypeToString( op ), prev->token.line );
 			FreeExpression( t );
 			FreeOp( exp );
 			return nullptr;
@@ -685,7 +685,7 @@ static AIExpType_t *Primary( pc_token_list **list )
 
 		if ( !t )
 		{
-			BotError( "Missing right operand for %s on line %d\n", opTypeToString( op->opType ), current->token.line );
+			Log::Warn( "Missing right operand for %s on line %d", opTypeToString( op->opType ), current->token.line );
 			FreeOp( op );
 			return nullptr;
 		}
@@ -701,17 +701,17 @@ static AIExpType_t *Primary( pc_token_list **list )
 			return nullptr;
 		}
 	}
-	else if ( current->token.type == TT_NUMBER )
+	else if ( current->token.type == tokenType_t::TT_NUMBER )
 	{
 		tree = ( AIExpType_t * ) newValueLiteral( list );
 	}
-	else if ( current->token.type == TT_NAME )
+	else if ( current->token.type == tokenType_t::TT_NAME )
 	{
 		tree = ( AIExpType_t * ) newValueFunc( list );
 	}
 	else
 	{
-		BotError( "token %s on line %d is not valid\n", current->token.string, current->token.line );
+		Log::Warn( "token %s on line %d is not valid", current->token.string, current->token.line );
 	}
 	return tree;
 }
@@ -760,7 +760,7 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 	if ( !current )
 	{
 		*tokenlist = current;
-		BotError( "Unexpected end of file\n" );
+		Log::Warn( "Unexpected end of file" );
 		FreeConditionNode( condition );
 		return nullptr;
 	}
@@ -785,7 +785,7 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 
 	if ( !condition->child )
 	{
-		BotError( "Failed to parse child node of condition on line %d\n", (*tokenlist)->token.line );
+		Log::Warn( "Failed to parse child node of condition on line %d", (*tokenlist)->token.line );
 		*tokenlist = current;
 		FreeConditionNode( condition );
 		return nullptr;
@@ -830,7 +830,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 
 	if ( !current )
 	{
-		BotError( "Unexpected end of file after line %d\n", (*list)->token.line );
+		Log::Warn( "Unexpected end of file after line %d", (*list)->token.line );
 		*list = current;
 		return nullptr;
 	}
@@ -839,7 +839,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 
 	if ( !dec )
 	{
-		BotError( "%s on line %d is not a valid decorator\n", current->token.string, current->token.line );
+		Log::Warn( "%s on line %d is not a valid decorator", current->token.string, current->token.line );
 		*list = current;
 		return nullptr;
 	}
@@ -877,7 +877,7 @@ AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 
 	if ( !node.child )
 	{
-		BotError( "Failed to parse child node of decorator on line %d\n",  (*list)->token.line );
+		Log::Warn( "Failed to parse child node of decorator on line %d",  (*list)->token.line );
 		*list = current;
 		return nullptr;
 	}
@@ -957,7 +957,7 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	if ( !current )
 	{
-		BotError( "Unexpected end of file after line %d\n", (*tokenlist)->token.line );
+		Log::Warn( "Unexpected end of file after line %d", (*tokenlist)->token.line );
 		return nullptr;
 	}
 
@@ -965,7 +965,7 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	if ( !action )
 	{
-		BotError( "%s on line %d is not a valid action\n", current->token.string, current->token.line );
+		Log::Warn( "%s on line %d is not a valid action", current->token.string, current->token.line );
 		*tokenlist = current;
 		return nullptr;
 	}
@@ -1077,7 +1077,7 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 
 		if ( node && list->numNodes >= MAX_NODE_LIST )
 		{
-			BotError( "Max selector children limit exceeded at line %d\n", (*tokenlist)->token.line );
+			Log::Warn( "Max selector children limit exceeded at line %d", (*tokenlist)->token.line );
 			FreeNode( node );
 			FreeNodeList( list );
 			*tokenlist = current;
@@ -1123,7 +1123,7 @@ AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 
 	if ( !current )
 	{
-		BotError( "Unexpected end of file after line %d\n", first->token.line );
+		Log::Warn( "Unexpected end of file after line %d", first->token.line );
 		*tokenlist = current;
 		return nullptr;
 	}
@@ -1132,14 +1132,14 @@ AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 
 	if ( !behavior )
 	{
-		BotError( "Could not load behavior %s on line %d\n", current->token.string, current->token.line );
+		Log::Warn( "Could not load behavior %s on line %d", current->token.string, current->token.line );
 		*tokenlist = current->next;
 		return nullptr;
 	}
 
 	if ( !behavior->root )
 	{
-		BotError( "Recursive behavior %s on line %d\n", current->token.string, current->token.line );
+		Log::Warn( "Recursive behavior %s on line %d", current->token.string, current->token.line );
 		*tokenlist = current->next;
 		return nullptr;
 	}
@@ -1195,7 +1195,7 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	}
 	else
 	{
-		BotError( "Invalid token on line %d found: %s\n", current->token.line, current->token.string );
+		Log::Warn( "Invalid token on line %d found: %s", current->token.line, current->token.string );
 		node = nullptr;
 	}
 
@@ -1303,7 +1303,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( MOVE_RIGHT );
 	D( MOVE_LEFT );
 
-	D( ET_BUILDABLE );
+	D2( ET_BUILDABLE, Util::ordinal(entityType_t::ET_BUILDABLE) );
 
 	// node return status
 	D( STATUS_RUNNING );
@@ -1320,7 +1320,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	handle = trap_Parse_LoadSource( treefilename );
 	if ( !handle )
 	{
-		G_Printf( "^1ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
+		Log::Warn( "Cannot load behavior tree %s: File not found", treefilename );
 		return nullptr;
 	}
 
@@ -1604,6 +1604,6 @@ void FreeBehaviorTree( AIBehaviorTree_t *tree )
 	}
 	else
 	{
-		G_Printf( "WARNING: Attempted to free NULL behavior tree\n" );
+		Log::Warn( "Attempted to free NULL behavior tree" );
 	}
 }

@@ -25,20 +25,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 
 //script flags
-#define SCFL_NOERRORS            0x0001
-#define SCFL_NOWARNINGS          0x0002
-#define SCFL_NOSTRINGWHITESPACES 0x0004
-#define SCFL_NOSTRINGESCAPECHARS 0x0008
-#define SCFL_PRIMITIVE           0x0010
-#define SCFL_NOBINARYNUMBERS     0x0020
-#define SCFL_NONUMBERVALUES      0x0040
-
-//token types
-#define TT_STRING                1 // string
-#define TT_LITERAL               2 // literal
-#define TT_NUMBER                3 // number
-#define TT_NAME                  4 // name
-#define TT_PUNCTUATION           5 // punctuation
+static const int SCFL_NOERRORS            = 0x0001;
+static const int SCFL_NOWARNINGS          = 0x0002;
+static const int SCFL_NOSTRINGWHITESPACES = 0x0004;
+static const int SCFL_NOSTRINGESCAPECHARS = 0x0008;
+static const int SCFL_PRIMITIVE           = 0x0010;
+static const int SCFL_NOBINARYNUMBERS     = 0x0020;
+static const int SCFL_NONUMBERVALUES      = 0x0040;
 
 //string sub type
 //---------------
@@ -48,95 +41,96 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //    the ASCII code of the literal
 //number sub type
 //---------------
-#define TT_DECIMAL         0x0008 // decimal number
-#define TT_HEX             0x0100 // hexadecimal number
-#define TT_OCTAL           0x0200 // octal number
-#define TT_BINARY          0x0400 // binary number
-#define TT_FLOAT           0x0800 // floating point number
-#define TT_INTEGER         0x1000 // integer number
-#define TT_LONG            0x2000 // long number
-#define TT_UNSIGNED        0x4000 // unsigned number
+static const int TT_DECIMAL         = 0x0008; // decimal number
+static const int TT_HEX             = 0x0100; // hexadecimal number
+static const int TT_OCTAL           = 0x0200; // octal number
+static const int TT_BINARY          = 0x0400; // binary number
+static const int TT_FLOAT           = 0x0800; // floating point number
+static const int TT_INTEGER         = 0x1000; // integer number
+static const int TT_LONG            = 0x2000; // long number
+static const int TT_UNSIGNED        = 0x4000; // unsigned number
 //punctuation sub type
 //--------------------
-#define P_RSHIFT_ASSIGN    1
-#define P_LSHIFT_ASSIGN    2
-#define P_PARMS            3
-#define P_PRECOMPMERGE     4
+enum class punctuationSub_t {
+	P_RSHIFT_ASSIGN,
+	P_LSHIFT_ASSIGN,
+	P_PARMS,
+	P_PRECOMPMERGE,
 
-#define P_LOGIC_AND        5
-#define P_LOGIC_OR         6
-#define P_LOGIC_GEQ        7
-#define P_LOGIC_LEQ        8
-#define P_LOGIC_EQ         9
-#define P_LOGIC_UNEQ       10
+	P_LOGIC_AND,
+	P_LOGIC_OR,
+	P_LOGIC_GEQ,
+	P_LOGIC_LEQ,
+	P_LOGIC_EQ,
+	P_LOGIC_UNEQ,
 
-#define P_MUL_ASSIGN       11
-#define P_DIV_ASSIGN       12
-#define P_MOD_ASSIGN       13
-#define P_ADD_ASSIGN       14
-#define P_SUB_ASSIGN       15
-#define P_INC              16
-#define P_DEC              17
+	P_MUL_ASSIGN,
+	P_DIV_ASSIGN,
+	P_MOD_ASSIGN,
+	P_ADD_ASSIGN,
+	P_SUB_ASSIGN,
+	P_INC,
+	P_DEC,
 
-#define P_BIN_AND_ASSIGN   18
-#define P_BIN_OR_ASSIGN    19
-#define P_BIN_XOR_ASSIGN   20
-#define P_RSHIFT           21
-#define P_LSHIFT           22
+	P_BIN_AND_ASSIGN,
+	P_BIN_OR_ASSIGN,
+	P_BIN_XOR_ASSIGN,
+	P_RSHIFT,
+	P_LSHIFT,
 
-#define P_POINTERREF       23
-#define P_CPP1             24
-#define P_CPP2             25
-#define P_MUL              26
-#define P_DIV              27
-#define P_MOD              28
-#define P_ADD              29
-#define P_SUB              30
-#define P_ASSIGN           31
+	P_POINTERREF,
+	P_CPP1,
+	P_CPP2,
+	P_MUL,
+	P_DIV,
+	P_MOD,
+	P_ADD,
+	P_SUB,
+	P_ASSIGN,
 
-#define P_BIN_AND          32
-#define P_BIN_OR           33
-#define P_BIN_XOR          34
-#define P_BIN_NOT          35
+	P_BIN_AND,
+	P_BIN_OR,
+	P_BIN_XOR,
+	P_BIN_NOT,
 
-#define P_LOGIC_NOT        36
-#define P_LOGIC_GREATER    37
-#define P_LOGIC_LESS       38
+	P_LOGIC_NOT,
+	P_LOGIC_GREATER,
+	P_LOGIC_LESS,
 
-#define P_REF              39
-#define P_COMMA            40
-#define P_SEMICOLON        41
-#define P_COLON            42
-#define P_QUESTIONMARK     43
+	P_REF,
+	P_COMMA,
+	P_SEMICOLON,
+	P_COLON,
+	P_QUESTIONMARK,
 
-#define P_PARENTHESESOPEN  44
-#define P_PARENTHESESCLOSE 45
-#define P_BRACEOPEN        46
-#define P_BRACECLOSE       47
-#define P_SQBRACKETOPEN    48
-#define P_SQBRACKETCLOSE   49
-#define P_BACKSLASH        50
+	P_PARENTHESESOPEN,
+	P_PARENTHESESCLOSE,
+	P_BRACEOPEN,
+	P_BRACECLOSE,
+	P_SQBRACKETOPEN,
+	P_SQBRACKETCLOSE,
+	P_BACKSLASH,
 
-#define P_PRECOMP          51
-#define P_DOLLAR           52
-
+	P_PRECOMP,
+	P_DOLLAR,
+};
 //name sub type
 //-------------
 //    the length of the name
 
 //punctuation
-typedef struct punctuation_s
+struct punctuation_t
 {
 	const char           *p; //punctuation character(s)
-	int                  n; //punctuation indication
-	struct punctuation_s *next; //next punctuation
-} punctuation_t;
+	punctuationSub_t n; //punctuation indication
+	punctuation_t *next; //next punctuation
+};
 
 //token
-typedef struct token_s
+struct token_t
 {
 	char              string[ MAX_TOKEN_CHARS ]; //available token
-	int               type; //last read token type
+	tokenType_t       type; //last read token type
 	int               subtype; //last read token sub type
 	unsigned long int intvalue; //integer value
 	double            floatvalue; //floating point value
@@ -144,11 +138,11 @@ typedef struct token_s
 	char              *endwhitespace_p; //start of white space before token
 	int               line; //line the token was on
 	int               linescrossed; //lines crossed in white space
-	struct token_s    *next; //next token in chain
-} token_t;
+	token_t    *next; //next token in chain
+};
 
 //script file
-typedef struct script_s
+struct script_t
 {
 	char            filename[ 1024 ]; //file name of the script
 	char            *buffer; //buffer containing the script
@@ -165,8 +159,8 @@ typedef struct script_s
 	punctuation_t   *punctuations; //the punctuations used in the script
 	punctuation_t   **punctuationtable;
 	token_t         token; //available token
-	struct script_s *next; //next script in a chain
-} script_t;
+	script_t *next; //next script in a chain
+};
 
 #define DEFINE_FIXED  0x0001
 
@@ -183,7 +177,7 @@ typedef struct script_s
 #define INDENT_IFNDEF 0x0010
 
 //macro definitions
-typedef struct define_s
+struct define_t
 {
 	char            *name; //define name
 	int             flags; //define flags
@@ -191,24 +185,24 @@ typedef struct define_s
 	int             numparms; //number of define parameters
 	token_t         *parms; //define parameters
 	token_t         *tokens; //macro tokens (possibly containing parm tokens)
-	struct define_s *next; //next defined macro in a list
+	define_t *next; //next defined macro in a list
 
-	struct define_s *hashnext; //next define in the hash chain
-} define_t;
+	define_t *hashnext; //next define in the hash chain
+};
 
 //indents
 //used for conditional compilation directives:
 //#if, #else, #elif, #ifdef, #ifndef
-typedef struct indent_s
+struct indent_t
 {
 	int             type; //indent type
 	int             skip; //true if skipping current indent
 	script_t        *script; //script the indent was in
-	struct indent_s *next; //next indent on the indent stack
-} indent_t;
+	indent_t *next; //next indent on the indent stack
+};
 
 //source file
-typedef struct source_s
+struct source_t
 {
 	char          filename[ MAX_QPATH ]; //file name of the script
 	char          includepath[ MAX_QPATH ]; //path to include files
@@ -220,16 +214,16 @@ typedef struct source_s
 	indent_t      *indentstack; //stack with indents
 	int           skip; // > 0 if skipping conditional code
 	token_t       token; //last read token
-} source_t;
+};
 
 #define MAX_DEFINEPARMS 128
 
 //directive name with parse function
-typedef struct directive_s
+struct directive_t
 {
 	const char *name;
 	int ( *func )( source_t *source );
-} directive_t;
+};
 
 #define DEFINEHASHSIZE 1024
 
@@ -246,76 +240,76 @@ define_t        *globaldefines;
 punctuation_t   Default_Punctuations[] =
 {
 	//binary operators
-	{ ">>=", P_RSHIFT_ASSIGN,    nullptr },
-	{ "<<=", P_LSHIFT_ASSIGN,    nullptr },
+	{ ">>=", punctuationSub_t::P_RSHIFT_ASSIGN,    nullptr },
+	{ "<<=", punctuationSub_t::P_LSHIFT_ASSIGN,    nullptr },
 	//
-	{ "...", P_PARMS,            nullptr },
+	{ "...", punctuationSub_t::P_PARMS,            nullptr },
 	//define merge operator
-	{ "##", P_PRECOMPMERGE,     nullptr },
+	{ "##", punctuationSub_t::P_PRECOMPMERGE,     nullptr },
 	//logic operators
-	{ "&&", P_LOGIC_AND,        nullptr },
-	{ "||", P_LOGIC_OR,         nullptr },
-	{ ">=", P_LOGIC_GEQ,        nullptr },
-	{ "<=", P_LOGIC_LEQ,        nullptr },
-	{ "==", P_LOGIC_EQ,         nullptr },
-	{ "!=", P_LOGIC_UNEQ,       nullptr },
+	{ "&&", punctuationSub_t::P_LOGIC_AND,        nullptr },
+	{ "||", punctuationSub_t::P_LOGIC_OR,         nullptr },
+	{ ">=", punctuationSub_t::P_LOGIC_GEQ,        nullptr },
+	{ "<=", punctuationSub_t::P_LOGIC_LEQ,        nullptr },
+	{ "==", punctuationSub_t::P_LOGIC_EQ,         nullptr },
+	{ "!=", punctuationSub_t::P_LOGIC_UNEQ,       nullptr },
 	//arithmatic operators
-	{ "*=", P_MUL_ASSIGN,       nullptr },
-	{ "/=", P_DIV_ASSIGN,       nullptr },
-	{ "%=", P_MOD_ASSIGN,       nullptr },
-	{ "+=", P_ADD_ASSIGN,       nullptr },
-	{ "-=", P_SUB_ASSIGN,       nullptr },
-	{ "++", P_INC,              nullptr },
-	{ "--", P_DEC,              nullptr },
+	{ "*=", punctuationSub_t::P_MUL_ASSIGN,       nullptr },
+	{ "/=", punctuationSub_t::P_DIV_ASSIGN,       nullptr },
+	{ "%=", punctuationSub_t::P_MOD_ASSIGN,       nullptr },
+	{ "+=", punctuationSub_t::P_ADD_ASSIGN,       nullptr },
+	{ "-=", punctuationSub_t::P_SUB_ASSIGN,       nullptr },
+	{ "++", punctuationSub_t::P_INC,              nullptr },
+	{ "--", punctuationSub_t::P_DEC,              nullptr },
 	//binary operators
-	{ "&=", P_BIN_AND_ASSIGN,   nullptr },
-	{ "|=", P_BIN_OR_ASSIGN,    nullptr },
-	{ "^=", P_BIN_XOR_ASSIGN,   nullptr },
-	{ ">>", P_RSHIFT,           nullptr },
-	{ "<<", P_LSHIFT,           nullptr },
+	{ "&=", punctuationSub_t::P_BIN_AND_ASSIGN,   nullptr },
+	{ "|=", punctuationSub_t::P_BIN_OR_ASSIGN,    nullptr },
+	{ "^=", punctuationSub_t::P_BIN_XOR_ASSIGN,   nullptr },
+	{ ">>", punctuationSub_t::P_RSHIFT,           nullptr },
+	{ "<<", punctuationSub_t::P_LSHIFT,           nullptr },
 	//reference operators
-	{ "->", P_POINTERREF,       nullptr },
+	{ "->", punctuationSub_t::P_POINTERREF,       nullptr },
 	//C++
-	{ "::", P_CPP1,             nullptr },
-	{ ".*", P_CPP2,             nullptr },
+	{ "::", punctuationSub_t::P_CPP1,             nullptr },
+	{ ".*", punctuationSub_t::P_CPP2,             nullptr },
 	//arithmatic operators
-	{ "*",  P_MUL,              nullptr },
-	{ "/",  P_DIV,              nullptr },
-	{ "%",  P_MOD,              nullptr },
-	{ "+",  P_ADD,              nullptr },
-	{ "-",  P_SUB,              nullptr },
-	{ "=",  P_ASSIGN,           nullptr },
+	{ "*",  punctuationSub_t::P_MUL,              nullptr },
+	{ "/",  punctuationSub_t::P_DIV,              nullptr },
+	{ "%",  punctuationSub_t::P_MOD,              nullptr },
+	{ "+",  punctuationSub_t::P_ADD,              nullptr },
+	{ "-",  punctuationSub_t::P_SUB,              nullptr },
+	{ "=",  punctuationSub_t::P_ASSIGN,           nullptr },
 	//binary operators
-	{ "&",  P_BIN_AND,          nullptr },
-	{ "|",  P_BIN_OR,           nullptr },
-	{ "^",  P_BIN_XOR,          nullptr },
-	{ "~",  P_BIN_NOT,          nullptr },
+	{ "&",  punctuationSub_t::P_BIN_AND,          nullptr },
+	{ "|",  punctuationSub_t::P_BIN_OR,           nullptr },
+	{ "^",  punctuationSub_t::P_BIN_XOR,          nullptr },
+	{ "~",  punctuationSub_t::P_BIN_NOT,          nullptr },
 	//logic operators
-	{ "!",  P_LOGIC_NOT,        nullptr },
-	{ ">",  P_LOGIC_GREATER,    nullptr },
-	{ "<",  P_LOGIC_LESS,       nullptr },
+	{ "!",  punctuationSub_t::P_LOGIC_NOT,        nullptr },
+	{ ">",  punctuationSub_t::P_LOGIC_GREATER,    nullptr },
+	{ "<",  punctuationSub_t::P_LOGIC_LESS,       nullptr },
 	//reference operator
-	{ ".",  P_REF,              nullptr },
+	{ ".",  punctuationSub_t::P_REF,              nullptr },
 	//separators
-	{ ",",  P_COMMA,            nullptr },
-	{ ";",  P_SEMICOLON,        nullptr },
+	{ ",",  punctuationSub_t::P_COMMA,            nullptr },
+	{ ";",  punctuationSub_t::P_SEMICOLON,        nullptr },
 	//label indication
-	{ ":",  P_COLON,            nullptr },
+	{ ":",  punctuationSub_t::P_COLON,            nullptr },
 	//if statement
-	{ "?",  P_QUESTIONMARK,     nullptr },
+	{ "?",  punctuationSub_t::P_QUESTIONMARK,     nullptr },
 	//embracements
-	{ "(",  P_PARENTHESESOPEN,  nullptr },
-	{ ")",  P_PARENTHESESCLOSE, nullptr },
-	{ "{",  P_BRACEOPEN,        nullptr },
-	{ "}",  P_BRACECLOSE,       nullptr },
-	{ "[",  P_SQBRACKETOPEN,    nullptr },
-	{ "]",  P_SQBRACKETCLOSE,   nullptr },
+	{ "(",  punctuationSub_t::P_PARENTHESESOPEN,  nullptr },
+	{ ")",  punctuationSub_t::P_PARENTHESESCLOSE, nullptr },
+	{ "{",  punctuationSub_t::P_BRACEOPEN,        nullptr },
+	{ "}",  punctuationSub_t::P_BRACECLOSE,       nullptr },
+	{ "[",  punctuationSub_t::P_SQBRACKETOPEN,    nullptr },
+	{ "]",  punctuationSub_t::P_SQBRACKETCLOSE,   nullptr },
 	//
-	{ "\\", P_BACKSLASH,        nullptr },
+	{ "\\", punctuationSub_t::P_BACKSLASH,        nullptr },
 	//precompiler operator
-	{ "#",  P_PRECOMP,          nullptr },
-	{ "$",  P_DOLLAR,           nullptr },
-	{ nullptr, 0, nullptr }
+	{ "#",  punctuationSub_t::P_PRECOMP,          nullptr },
+	{ "$",  punctuationSub_t::P_DOLLAR,           nullptr },
+	{ nullptr, Util::enum_cast<punctuationSub_t>(0), nullptr }
 };
 
 /*
@@ -384,7 +378,7 @@ static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, const char
 	va_start( ap, str );
 	vsprintf( text, str, ap );
 	va_end( ap );
-	Com_Printf( "file %s, line %d: %s\n", script->filename, script->line, text );
+	Log::Notice( "file %s, line %d: %s\n", script->filename, script->line, text );
 }
 
 /*
@@ -402,7 +396,7 @@ static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( script_t *script, const ch
 	va_start( ap, str );
 	vsprintf( text, str, ap );
 	va_end( ap );
-	Com_Printf( "file %s, line %d: %s\n", script->filename, script->line, text );
+	Log::Notice( "file %s, line %d: %s\n", script->filename, script->line, text );
 }
 
 /*
@@ -630,8 +624,8 @@ static int Parse_ReadString( script_t *script, token_t *token, int quote )
 	int  len, tmpline;
 	char *tmpscript_p;
 
-	if ( quote == '\"' ) { token->type = TT_STRING; }
-	else { token->type = TT_LITERAL; }
+	if ( quote == '\"' ) { token->type = tokenType_t::TT_STRING; }
+	else { token->type = tokenType_t::TT_LITERAL; }
 
 	len = 0;
 	//leading quote
@@ -730,7 +724,7 @@ static int Parse_ReadName( script_t *script, token_t *token )
 	int  len = 0;
 	char c;
 
-	token->type = TT_NAME;
+	token->type = tokenType_t::TT_NAME;
 
 	do
 	{
@@ -854,7 +848,7 @@ static int Parse_ReadNumber( script_t *script, token_t *token )
 //  unsigned long int intvalue = 0;
 //  double floatvalue = 0;
 
-	token->type = TT_NUMBER;
+	token->type = tokenType_t::TT_NUMBER;
 
 	//check for a hexadecimal number
 	if ( *script->script_p == '0' &&
@@ -994,9 +988,9 @@ static int Parse_ReadPunctuation( script_t *script, token_t *token )
 			{
 				Q_strncpyz( token->string, p, MAX_TOKEN_CHARS );
 				script->script_p += len;
-				token->type = TT_PUNCTUATION;
+				token->type = tokenType_t::TT_PUNCTUATION;
 				//sub type is the number of the punctuation
-				token->subtype = punc->n;
+				token->subtype = Util::ordinal(punc->n);
 				return 1;
 			}
 		}
@@ -1258,7 +1252,7 @@ static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, const char
 	va_start( ap, str );
 	vsprintf( text, str, ap );
 	va_end( ap );
-	Com_Printf( "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text );
+	Log::Notice( "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text );
 }
 
 /*
@@ -1274,7 +1268,7 @@ static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( source_t *source, const ch
 	va_start( ap, str );
 	vsprintf( text, str, ap );
 	va_end( ap );
-	Com_Printf( "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text );
+	Log::Notice( "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text );
 }
 
 /*
@@ -1359,7 +1353,7 @@ static token_t *Parse_CopyToken( token_t *token )
 //  t = freetokens;
 	if ( !t )
 	{
-		Com_Error( ERR_FATAL, "out of token space" );
+		Com_Error( errorParm_t::ERR_FATAL, "out of token space" );
 		return nullptr;
 	}
 
@@ -1580,7 +1574,7 @@ static int Parse_StringizeTokens( token_t *tokens, token_t *token )
 {
 	token_t *t;
 
-	token->type = TT_STRING;
+	token->type = tokenType_t::TT_STRING;
 	token->whitespace_p = nullptr;
 	token->endwhitespace_p = nullptr;
 	token->string[ 0 ] = '\0';
@@ -1603,14 +1597,14 @@ Parse_MergeTokens
 static int Parse_MergeTokens( token_t *t1, token_t *t2 )
 {
 	//merging of a name with a name or number
-	if ( t1->type == TT_NAME && ( t2->type == TT_NAME || t2->type == TT_NUMBER ) )
+	if ( t1->type == tokenType_t::TT_NAME && ( t2->type == tokenType_t::TT_NAME || t2->type == tokenType_t::TT_NUMBER ) )
 	{
 		strcat( t1->string, t2->string );
 		return true;
 	}
 
 	//merging of two strings
-	if ( t1->type == TT_STRING && t2->type == TT_STRING )
+	if ( t1->type == tokenType_t::TT_STRING && t2->type == tokenType_t::TT_STRING )
 	{
 		//remove trailing double quote
 		t1->string[ strlen( t1->string ) - 1 ] = '\0';
@@ -1751,7 +1745,7 @@ static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, defin
 				sprintf( token->string, "%d", deftoken->line );
 				token->intvalue = deftoken->line;
 				token->floatvalue = deftoken->line;
-				token->type = TT_NUMBER;
+				token->type = tokenType_t::TT_NUMBER;
 				token->subtype = TT_DECIMAL | TT_INTEGER;
 				*firsttoken = token;
 				*lasttoken = token;
@@ -1761,7 +1755,7 @@ static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, defin
 		case BUILTIN_FILE:
 			{
 				strcpy( token->string, source->scriptstack->filename );
-				token->type = TT_NAME;
+				token->type = tokenType_t::TT_NAME;
 				token->subtype = strlen( token->string );
 				*firsttoken = token;
 				*lasttoken = token;
@@ -1777,7 +1771,7 @@ static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, defin
 				strncat( token->string + 7, curtime + 20, 4 );
 				strcat( token->string, "\"" );
 				free( curtime );
-				token->type = TT_NAME;
+				token->type = tokenType_t::TT_NAME;
 				token->subtype = strlen( token->string );
 				*firsttoken = token;
 				*lasttoken = token;
@@ -1792,7 +1786,7 @@ static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, defin
 				strncat( token->string, curtime + 11, 8 );
 				strcat( token->string, "\"" );
 				free( curtime );
-				token->type = TT_NAME;
+				token->type = tokenType_t::TT_NAME;
 				token->subtype = strlen( token->string );
 				*firsttoken = token;
 				*lasttoken = token;
@@ -1845,7 +1839,7 @@ static int Parse_ExpandDefine( source_t *source, token_t *deftoken, define_t *de
 		parmnum = -1;
 
 		//if the token is a name, it could be a define parameter
-		if ( dt->type == TT_NAME )
+		if ( dt->type == tokenType_t::TT_NAME )
 		{
 			parmnum = Parse_FindDefineParm( define, dt->string );
 		}
@@ -2042,94 +2036,95 @@ static int Parse_ReadLine( source_t *source, token_t *token )
 Parse_OperatorPriority
 ===============
 */
-typedef struct operator_s
+struct operator_t
 {
 	int               op;
 	int               priority;
 	int               parentheses;
-	struct operator_s *prev, *next;
-} operator_t;
+	operator_t *prev, *next;
+};
 
-typedef struct value_s
+struct value_t
 {
 	signed long int intvalue;
 	double          floatvalue;
 	int             parentheses;
-	struct value_s  *prev, *next;
-} value_t;
+	value_t  *prev, *next;
+};
 
-static int Parse_OperatorPriority( int op )
+static int Parse_OperatorPriority( punctuationSub_t op )
 {
 	switch ( op )
 	{
-		case P_MUL:
+		default:
+			return 0;
+
+		case punctuationSub_t::P_MUL:
 			return 15;
 
-		case P_DIV:
+		case punctuationSub_t::P_DIV:
 			return 15;
 
-		case P_MOD:
+		case punctuationSub_t::P_MOD:
 			return 15;
 
-		case P_ADD:
+		case punctuationSub_t::P_ADD:
 			return 14;
 
-		case P_SUB:
+		case punctuationSub_t::P_SUB:
 			return 14;
 
-		case P_LOGIC_AND:
+		case punctuationSub_t::P_LOGIC_AND:
 			return 7;
 
-		case P_LOGIC_OR:
+		case punctuationSub_t::P_LOGIC_OR:
 			return 6;
 
-		case P_LOGIC_GEQ:
+		case punctuationSub_t::P_LOGIC_GEQ:
 			return 12;
 
-		case P_LOGIC_LEQ:
+		case punctuationSub_t::P_LOGIC_LEQ:
 			return 12;
 
-		case P_LOGIC_EQ:
+		case punctuationSub_t::P_LOGIC_EQ:
 			return 11;
 
-		case P_LOGIC_UNEQ:
+		case punctuationSub_t::P_LOGIC_UNEQ:
 			return 11;
 
-		case P_LOGIC_NOT:
+		case punctuationSub_t::P_LOGIC_NOT:
 			return 16;
 
-		case P_LOGIC_GREATER:
+		case punctuationSub_t::P_LOGIC_GREATER:
 			return 12;
 
-		case P_LOGIC_LESS:
+		case punctuationSub_t::P_LOGIC_LESS:
 			return 12;
 
-		case P_RSHIFT:
+		case punctuationSub_t::P_RSHIFT:
 			return 13;
 
-		case P_LSHIFT:
+		case punctuationSub_t::P_LSHIFT:
 			return 13;
 
-		case P_BIN_AND:
+		case punctuationSub_t::P_BIN_AND:
 			return 10;
 
-		case P_BIN_OR:
+		case punctuationSub_t::P_BIN_OR:
 			return 8;
 
-		case P_BIN_XOR:
+		case punctuationSub_t::P_BIN_XOR:
 			return 9;
 
-		case P_BIN_NOT:
+		case punctuationSub_t::P_BIN_NOT:
 			return 16;
 
-		case P_COLON:
+		case punctuationSub_t::P_COLON:
 			return 5;
 
-		case P_QUESTIONMARK:
+		case punctuationSub_t::P_QUESTIONMARK:
 			return 5;
 	}
-
-	return false;
 }
 
 #define MAX_VALUES    64
@@ -2191,7 +2186,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 	{
 		switch ( t->type )
 		{
-			case TT_NAME:
+			case tokenType_t::TT_NAME:
 				{
 					if ( lastwasvalue || negativevalue )
 					{
@@ -2215,7 +2210,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 						t = t->next;
 					}
 
-					if ( !t || t->type != TT_NAME )
+					if ( !t || t->type != tokenType_t::TT_NAME )
 					{
 						Parse_SourceError( source, "defined without name in #if/#elif" );
 						error = 1;
@@ -2263,7 +2258,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 					break;
 				}
 
-			case TT_NUMBER:
+			case tokenType_t::TT_NUMBER:
 				{
 					if ( lastwasvalue )
 					{
@@ -2301,7 +2296,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 					break;
 				}
 
-			case TT_PUNCTUATION:
+			case tokenType_t::TT_PUNCTUATION:
 				{
 					if ( negativevalue )
 					{
@@ -2310,12 +2305,14 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 						break;
 					}
 
-					if ( t->subtype == P_PARENTHESESOPEN )
+					punctuationSub_t sub = Util::enum_cast<punctuationSub_t>(t->subtype);
+
+					if ( sub == punctuationSub_t::P_PARENTHESESOPEN )
 					{
 						parentheses++;
 						break;
 					}
-					else if ( t->subtype == P_PARENTHESESCLOSE )
+					else if ( sub == punctuationSub_t::P_PARENTHESESCLOSE )
 					{
 						parentheses--;
 
@@ -2331,10 +2328,10 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 					//check for invalid operators on floating point values
 					if ( !integer )
 					{
-						if ( t->subtype == P_BIN_NOT || t->subtype == P_MOD ||
-						     t->subtype == P_RSHIFT || t->subtype == P_LSHIFT ||
-						     t->subtype == P_BIN_AND || t->subtype == P_BIN_OR ||
-						     t->subtype == P_BIN_XOR )
+						if ( sub == punctuationSub_t::P_BIN_NOT || sub == punctuationSub_t::P_MOD ||
+						     sub == punctuationSub_t::P_RSHIFT  || sub == punctuationSub_t::P_LSHIFT ||
+						     sub == punctuationSub_t::P_BIN_AND || sub == punctuationSub_t::P_BIN_OR ||
+						     sub == punctuationSub_t::P_BIN_XOR )
 						{
 							Parse_SourceError( source, "illegal operator %s on floating point operands", t->string );
 							error = 1;
@@ -2342,10 +2339,10 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 						}
 					}
 
-					switch ( t->subtype )
+					switch (sub)
 					{
-						case P_LOGIC_NOT:
-						case P_BIN_NOT:
+						case punctuationSub_t::P_LOGIC_NOT:
+						case punctuationSub_t::P_BIN_NOT:
 							{
 								if ( lastwasvalue )
 								{
@@ -2357,14 +2354,14 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 								break;
 							}
 
-						case P_INC:
-						case P_DEC:
+						case punctuationSub_t::P_INC:
+						case punctuationSub_t::P_DEC:
 							{
 								Parse_SourceError( source, "++ or -- used in #if/#elif" );
 								break;
 							}
 
-						case P_SUB:
+						case punctuationSub_t::P_SUB:
 							{
 								if ( !lastwasvalue )
 								{
@@ -2373,30 +2370,30 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 								}
 							}
 
-						case P_MUL:
-						case P_DIV:
-						case P_MOD:
-						case P_ADD:
+						case punctuationSub_t::P_MUL:
+						case punctuationSub_t::P_DIV:
+						case punctuationSub_t::P_MOD:
+						case punctuationSub_t::P_ADD:
 
-						case P_LOGIC_AND:
-						case P_LOGIC_OR:
-						case P_LOGIC_GEQ:
-						case P_LOGIC_LEQ:
-						case P_LOGIC_EQ:
-						case P_LOGIC_UNEQ:
+						case punctuationSub_t::P_LOGIC_AND:
+						case punctuationSub_t::P_LOGIC_OR:
+						case punctuationSub_t::P_LOGIC_GEQ:
+						case punctuationSub_t::P_LOGIC_LEQ:
+						case punctuationSub_t::P_LOGIC_EQ:
+						case punctuationSub_t::P_LOGIC_UNEQ:
 
-						case P_LOGIC_GREATER:
-						case P_LOGIC_LESS:
+						case punctuationSub_t::P_LOGIC_GREATER:
+						case punctuationSub_t::P_LOGIC_LESS:
 
-						case P_RSHIFT:
-						case P_LSHIFT:
+						case punctuationSub_t::P_RSHIFT:
+						case punctuationSub_t::P_LSHIFT:
 
-						case P_BIN_AND:
-						case P_BIN_OR:
-						case P_BIN_XOR:
+						case punctuationSub_t::P_BIN_AND:
+						case punctuationSub_t::P_BIN_OR:
+						case punctuationSub_t::P_BIN_XOR:
 
-						case P_COLON:
-						case P_QUESTIONMARK:
+						case punctuationSub_t::P_COLON:
+						case punctuationSub_t::P_QUESTIONMARK:
 							{
 								if ( !lastwasvalue )
 								{
@@ -2421,7 +2418,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 						//o = (operator_t *) Z_Malloc(sizeof(operator_t));
 						AllocOperator( o );
 						o->op = t->subtype;
-						o->priority = Parse_OperatorPriority( t->subtype );
+						o->priority = Parse_OperatorPriority(sub);
 						o->parentheses = parentheses;
 						o->next = nullptr;
 						o->prev = lastoperator;
@@ -2486,8 +2483,8 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 			}
 
 			//if the arity of the operator isn't equal to 1
-			if ( o->op != P_LOGIC_NOT
-			     && o->op != P_BIN_NOT ) { v = v->next; }
+			if ( o->op != Util::ordinal(punctuationSub_t::P_LOGIC_NOT)
+			     && o->op != Util::ordinal(punctuationSub_t::P_BIN_NOT)) { v = v->next; }
 
 			//if there's no value or no next value
 			if ( !v )
@@ -2503,23 +2500,26 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 		v1 = v;
 		v2 = v->next;
 
-		switch ( o->op )
+		punctuationSub_t op = Util::enum_cast<punctuationSub_t>(o->op);
+		switch ( op )
 		{
-			case P_LOGIC_NOT:
+			default:
+				break;
+			case punctuationSub_t::P_LOGIC_NOT:
 				v1->intvalue = !v1->intvalue;
 				v1->floatvalue = !v1->floatvalue;
 				break;
 
-			case P_BIN_NOT:
+			case punctuationSub_t::P_BIN_NOT:
 				v1->intvalue = ~v1->intvalue;
 				break;
 
-			case P_MUL:
+			case punctuationSub_t::P_MUL:
 				v1->intvalue *= v2->intvalue;
 				v1->floatvalue *= v2->floatvalue;
 				break;
 
-			case P_DIV:
+			case punctuationSub_t::P_DIV:
 				if ( !v2->intvalue || !v2->floatvalue )
 				{
 					Parse_SourceError( source, "divide by zero in #if/#elif" );
@@ -2531,7 +2531,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 				v1->floatvalue /= v2->floatvalue;
 				break;
 
-			case P_MOD:
+			case punctuationSub_t::P_MOD:
 				if ( !v2->intvalue )
 				{
 					Parse_SourceError( source, "divide by zero in #if/#elif" );
@@ -2542,77 +2542,77 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 				v1->intvalue %= v2->intvalue;
 				break;
 
-			case P_ADD:
+			case punctuationSub_t::P_ADD:
 				v1->intvalue += v2->intvalue;
 				v1->floatvalue += v2->floatvalue;
 				break;
 
-			case P_SUB:
+			case punctuationSub_t::P_SUB:
 				v1->intvalue -= v2->intvalue;
 				v1->floatvalue -= v2->floatvalue;
 				break;
 
-			case P_LOGIC_AND:
+			case punctuationSub_t::P_LOGIC_AND:
 				v1->intvalue = v1->intvalue && v2->intvalue;
 				v1->floatvalue = v1->floatvalue && v2->floatvalue;
 				break;
 
-			case P_LOGIC_OR:
+			case punctuationSub_t::P_LOGIC_OR:
 				v1->intvalue = v1->intvalue || v2->intvalue;
 				v1->floatvalue = v1->floatvalue || v2->floatvalue;
 				break;
 
-			case P_LOGIC_GEQ:
+			case punctuationSub_t::P_LOGIC_GEQ:
 				v1->intvalue = v1->intvalue >= v2->intvalue;
 				v1->floatvalue = v1->floatvalue >= v2->floatvalue;
 				break;
 
-			case P_LOGIC_LEQ:
+			case punctuationSub_t::P_LOGIC_LEQ:
 				v1->intvalue = v1->intvalue <= v2->intvalue;
 				v1->floatvalue = v1->floatvalue <= v2->floatvalue;
 				break;
 
-			case P_LOGIC_EQ:
+			case punctuationSub_t::P_LOGIC_EQ:
 				v1->intvalue = v1->intvalue == v2->intvalue;
 				v1->floatvalue = v1->floatvalue == v2->floatvalue;
 				break;
 
-			case P_LOGIC_UNEQ:
+			case punctuationSub_t::P_LOGIC_UNEQ:
 				v1->intvalue = v1->intvalue != v2->intvalue;
 				v1->floatvalue = v1->floatvalue != v2->floatvalue;
 				break;
 
-			case P_LOGIC_GREATER:
+			case punctuationSub_t::P_LOGIC_GREATER:
 				v1->intvalue = v1->intvalue > v2->intvalue;
 				v1->floatvalue = v1->floatvalue > v2->floatvalue;
 				break;
 
-			case P_LOGIC_LESS:
+			case punctuationSub_t::P_LOGIC_LESS:
 				v1->intvalue = v1->intvalue < v2->intvalue;
 				v1->floatvalue = v1->floatvalue < v2->floatvalue;
 				break;
 
-			case P_RSHIFT:
+			case punctuationSub_t::P_RSHIFT:
 				v1->intvalue >>= v2->intvalue;
 				break;
 
-			case P_LSHIFT:
+			case punctuationSub_t::P_LSHIFT:
 				v1->intvalue <<= v2->intvalue;
 				break;
 
-			case P_BIN_AND:
+			case punctuationSub_t::P_BIN_AND:
 				v1->intvalue &= v2->intvalue;
 				break;
 
-			case P_BIN_OR:
+			case punctuationSub_t::P_BIN_OR:
 				v1->intvalue |= v2->intvalue;
 				break;
 
-			case P_BIN_XOR:
+			case punctuationSub_t::P_BIN_XOR:
 				v1->intvalue ^= v2->intvalue;
 				break;
 
-			case P_COLON:
+			case punctuationSub_t::P_COLON:
 				{
 					if ( !gotquestmarkvalue )
 					{
@@ -2634,7 +2634,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 					break;
 				}
 
-			case P_QUESTIONMARK:
+			case punctuationSub_t::P_QUESTIONMARK:
 				{
 					if ( gotquestmarkvalue )
 					{
@@ -2654,11 +2654,11 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 
 //    lastoperatortype = o->operator;
 		//if not an operator with arity 1
-		if ( o->op != P_LOGIC_NOT
-		     && o->op != P_BIN_NOT )
+		if ( op != punctuationSub_t::P_LOGIC_NOT
+		     && op != punctuationSub_t::P_BIN_NOT )
 		{
 			//remove the second value if not question mark operator
-			if ( o->op != P_QUESTIONMARK ) { v = v->next; }
+			if ( op != punctuationSub_t::P_QUESTIONMARK ) { v = v->next; }
 
 			//
 			if ( v->prev ) { v->prev->next = v->next; }
@@ -2742,7 +2742,7 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 	do
 	{
 		//if the token is a name
-		if ( token.type == TT_NAME )
+		if ( token.type == tokenType_t::TT_NAME )
 		{
 			if ( defined )
 			{
@@ -2781,7 +2781,7 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 			}
 		}
 		//if the token is a number or a punctuation
-		else if ( token.type == TT_NUMBER || token.type == TT_PUNCTUATION )
+		else if ( token.type == tokenType_t::TT_NUMBER || token.type == tokenType_t::TT_PUNCTUATION )
 		{
 			t = Parse_CopyToken( &token );
 			t->next = nullptr;
@@ -2850,7 +2850,7 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 	do
 	{
 		//if the token is a name
-		if ( token.type == TT_NAME )
+		if ( token.type == tokenType_t::TT_NAME )
 		{
 			if ( defined )
 			{
@@ -2902,7 +2902,7 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 			}
 		}
 		//if the token is a number or a punctuation
-		else if ( token.type == TT_NUMBER || token.type == TT_PUNCTUATION )
+		else if ( token.type == tokenType_t::TT_NUMBER || token.type == tokenType_t::TT_PUNCTUATION )
 		{
 			if ( *token.string == '(' ) { indent++; }
 			else if ( *token.string == ')' ) { indent--; }
@@ -2965,7 +2965,7 @@ static int Parse_Directive_include( source_t *source )
 		return false;
 	}
 
-	if ( token.type == TT_STRING )
+	if ( token.type == tokenType_t::TT_STRING )
 	{
 		Parse_StripDoubleQuotes( token.string );
 		Parse_ConvertPath( token.string );
@@ -2980,7 +2980,7 @@ static int Parse_Directive_include( source_t *source )
 			script = Parse_LoadScriptFile( path );
 		}
 	}
-	else if ( token.type == TT_PUNCTUATION && *token.string == '<' )
+	else if ( token.type == tokenType_t::TT_PUNCTUATION && *token.string == '<' )
 	{
 		strcpy( path, source->includepath );
 
@@ -2992,7 +2992,7 @@ static int Parse_Directive_include( source_t *source )
 				break;
 			}
 
-			if ( token.type == TT_PUNCTUATION && *token.string == '>' ) { break; }
+			if ( token.type == tokenType_t::TT_PUNCTUATION && *token.string == '>' ) { break; }
 
 			strncat( path, token.string, MAX_QPATH - 1 );
 		}
@@ -3069,7 +3069,7 @@ static int Parse_Directive_undef( source_t *source )
 		return false;
 	}
 
-	if ( token.type != TT_NAME )
+	if ( token.type != tokenType_t::TT_NAME )
 	{
 		Parse_UnreadSourceToken( source, &token );
 		Parse_SourceError( source, "expected name, found %s", token.string );
@@ -3201,8 +3201,8 @@ static void Parse_UnreadSignToken( source_t *source )
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
 	strcpy( token.string, "-" );
-	token.type = TT_PUNCTUATION;
-	token.subtype = P_SUB;
+	token.type = tokenType_t::TT_PUNCTUATION;
+	token.subtype = Util::ordinal(punctuationSub_t::P_SUB);
 	Parse_UnreadSourceToken( source, &token );
 }
 
@@ -3224,7 +3224,7 @@ static int Parse_Directive_eval( source_t *source )
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
 	sprintf( token.string, "%ld", std::abs( value ) );
-	token.type = TT_NUMBER;
+	token.type = tokenType_t::TT_NUMBER;
 	token.subtype = TT_INTEGER | TT_LONG | TT_DECIMAL;
 	Parse_UnreadSourceToken( source, &token );
 
@@ -3250,7 +3250,7 @@ static int Parse_Directive_evalfloat( source_t *source )
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
 	sprintf( token.string, "%1.2f", fabs( value ) );
-	token.type = TT_NUMBER;
+	token.type = tokenType_t::TT_NUMBER;
 	token.subtype = TT_FLOAT | TT_LONG | TT_DECIMAL;
 	Parse_UnreadSourceToken( source, &token );
 
@@ -3277,7 +3277,7 @@ static int Parse_DollarDirective_evalint( source_t *source )
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
 	sprintf( token.string, "%ld", std::abs( value ) );
-	token.type = TT_NUMBER;
+	token.type = tokenType_t::TT_NUMBER;
 	token.subtype = TT_INTEGER | TT_LONG | TT_DECIMAL;
 	token.intvalue = value;
 	token.floatvalue = value;
@@ -3305,7 +3305,7 @@ static int Parse_DollarDirective_evalfloat( source_t *source )
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
 	sprintf( token.string, "%1.2f", fabs( value ) );
-	token.type = TT_NUMBER;
+	token.type = tokenType_t::TT_NUMBER;
 	token.subtype = TT_FLOAT | TT_LONG | TT_DECIMAL;
 	token.intvalue = ( unsigned long ) value;
 	token.floatvalue = value;
@@ -3349,7 +3349,7 @@ static int Parse_ReadDollarDirective( source_t *source )
 	}
 
 	//if it's a name
-	if ( token.type == TT_NAME )
+	if ( token.type == tokenType_t::TT_NAME )
 	{
 		//find the precompiler directive
 		for ( i = 0; DollarDirectives[ i ].name; i++ )
@@ -3383,7 +3383,7 @@ static int Parse_Directive_if_def( source_t *source, int type )
 		return false;
 	}
 
-	if ( token.type != TT_NAME )
+	if ( token.type != tokenType_t::TT_NAME )
 	{
 		Parse_UnreadSourceToken( source, &token );
 		Parse_SourceError( source, "expected name after #ifdef, found %s", token.string );
@@ -3501,7 +3501,7 @@ static int Parse_Directive_define( source_t *source )
 		return false;
 	}
 
-	if ( token.type != TT_NAME )
+	if ( token.type != tokenType_t::TT_NAME )
 	{
 		Parse_UnreadSourceToken( source, &token );
 		Parse_SourceError( source, "expected name after #define, found %s", token.string );
@@ -3557,7 +3557,7 @@ static int Parse_Directive_define( source_t *source )
 				}
 
 				//if it isn't a name
-				if ( token.type != TT_NAME )
+				if ( token.type != tokenType_t::TT_NAME )
 				{
 					Parse_SourceError( source, "invalid define parameter" );
 					return false;
@@ -3610,7 +3610,7 @@ static int Parse_Directive_define( source_t *source )
 	{
 		t = Parse_CopyToken( &token );
 
-		if ( t->type == TT_NAME && !strcmp( t->string, define->name ) )
+		if ( t->type == tokenType_t::TT_NAME && !strcmp( t->string, define->name ) )
 		{
 			Parse_SourceError( source, "recursive define (removed recursion)" );
 			continue;
@@ -3686,7 +3686,7 @@ static int Parse_ReadDirective( source_t *source )
 	}
 
 	//if it's a name
-	if ( token.type == TT_NAME )
+	if ( token.type == tokenType_t::TT_NAME )
 	{
 		//find the precompiler directive
 		for ( i = 0; Directives[ i ].name; i++ )
@@ -3731,7 +3731,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 		return false;
 	}
 
-	if ( newtoken.type != TT_PUNCTUATION || newtoken.subtype != P_BRACEOPEN )
+	if ( newtoken.type != tokenType_t::TT_PUNCTUATION || newtoken.subtype != Util::ordinal(punctuationSub_t::P_BRACEOPEN))
 	{
 		Parse_SourceError( source, "Found %s when expecting {",
 		                   newtoken.string );
@@ -3749,7 +3749,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 		}
 
 		// it's ok for the enum to end immediately
-		if ( name.type == TT_PUNCTUATION && name.subtype == P_BRACECLOSE )
+		if ( name.type == tokenType_t::TT_PUNCTUATION && name.subtype == Util::ordinal(punctuationSub_t::P_BRACECLOSE))
 		{
 			if ( !Parse_ReadToken( source, &name ) )
 			{
@@ -3757,7 +3757,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 			}
 
 			// ignore trailing semicolon
-			if ( name.type != TT_PUNCTUATION || name.subtype != P_SEMICOLON )
+			if ( name.type != tokenType_t::TT_PUNCTUATION || name.subtype != Util::ordinal(punctuationSub_t::P_SEMICOLON))
 			{
 				Parse_UnreadToken( source, &name );
 			}
@@ -3766,7 +3766,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 		}
 
 		// ... but not for it to do anything else
-		if ( name.type != TT_NAME )
+		if ( name.type != tokenType_t::TT_NAME )
 		{
 			Parse_SourceError( source, "Found %s when expecting identifier",
 			                   name.string );
@@ -3778,14 +3778,14 @@ static bool Parse_ReadEnumeration( source_t *source )
 			break;
 		}
 
-		if ( newtoken.type != TT_PUNCTUATION )
+		if ( newtoken.type != tokenType_t::TT_PUNCTUATION )
 		{
 			Parse_SourceError( source, "Found %s when expecting , or = or }",
 			                   newtoken.string );
 			return false;
 		}
 
-		if ( newtoken.subtype == P_ASSIGN )
+		if ( newtoken.subtype == Util::ordinal(punctuationSub_t::P_ASSIGN))
 		{
 			int neg = 1;
 
@@ -3796,7 +3796,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 
 			// Parse_ReadToken doesn't seem to read negative numbers, so we do it
 			// ourselves
-			if ( newtoken.type == TT_PUNCTUATION && newtoken.subtype == P_SUB )
+			if ( newtoken.type == tokenType_t::TT_PUNCTUATION && newtoken.subtype == Util::ordinal(punctuationSub_t::P_SUB))
 			{
 				neg = -1;
 
@@ -3807,7 +3807,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 				}
 			}
 
-			if ( newtoken.type != TT_NUMBER || !( newtoken.subtype & TT_INTEGER ) )
+			if ( newtoken.type != tokenType_t::TT_NUMBER || !( newtoken.subtype & TT_INTEGER ) )
 			{
 				Parse_SourceError( source, "Found %s when expecting integer",
 				                   newtoken.string );
@@ -3830,8 +3830,8 @@ static bool Parse_ReadEnumeration( source_t *source )
 			}
 		}
 
-		if ( newtoken.type != TT_PUNCTUATION || ( newtoken.subtype != P_COMMA &&
-		     newtoken.subtype != P_BRACECLOSE ) )
+		if ( newtoken.type != tokenType_t::TT_PUNCTUATION || ( newtoken.subtype != Util::ordinal(punctuationSub_t::P_COMMA) &&
+		     newtoken.subtype != Util::ordinal(punctuationSub_t::P_BRACECLOSE) ) )
 		{
 			Parse_SourceError( source, "Found %s when expecting , or }",
 			                   newtoken.string );
@@ -3846,7 +3846,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 			return false;
 		}
 
-		if ( newtoken.subtype == P_BRACECLOSE )
+		if ( newtoken.subtype == Util::ordinal(punctuationSub_t::P_BRACECLOSE) )
 		{
 			if ( !Parse_ReadToken( source, &name ) )
 			{
@@ -3854,7 +3854,7 @@ static bool Parse_ReadEnumeration( source_t *source )
 			}
 
 			// ignore trailing semicolon
-			if ( name.type != TT_PUNCTUATION || name.subtype != P_SEMICOLON )
+			if ( name.type != tokenType_t::TT_PUNCTUATION || name.subtype != Util::ordinal(punctuationSub_t::P_SEMICOLON) )
 			{
 				Parse_UnreadToken( source, &name );
 			}
@@ -3881,7 +3881,7 @@ static bool Parse_ReadToken( source_t *source, token_t *token )
 		if ( !Parse_ReadSourceToken( source, token ) ) { return false; }
 
 		//check for precompiler directives
-		if ( token->type == TT_PUNCTUATION && *token->string == '#' )
+		if ( token->type == tokenType_t::TT_PUNCTUATION && *token->string == '#' )
 		{
 			{
 				//read the precompiler directive
@@ -3891,7 +3891,7 @@ static bool Parse_ReadToken( source_t *source, token_t *token )
 			}
 		}
 
-		if ( token->type == TT_PUNCTUATION && *token->string == '$' )
+		if ( token->type == tokenType_t::TT_PUNCTUATION && *token->string == '$' )
 		{
 			{
 				//read the precompiler directive
@@ -3901,7 +3901,7 @@ static bool Parse_ReadToken( source_t *source, token_t *token )
 			}
 		}
 
-		if ( token->type == TT_NAME && !Q_stricmp( token->string, "enum" ) )
+		if ( token->type == tokenType_t::TT_NAME && !Q_stricmp( token->string, "enum" ) )
 		{
 			if ( !Parse_ReadEnumeration( source ) )
 			{
@@ -3912,13 +3912,13 @@ static bool Parse_ReadToken( source_t *source, token_t *token )
 		}
 
 		// recursively concatenate strings that are behind each other still resolving defines
-		if ( token->type == TT_STRING )
+		if ( token->type == tokenType_t::TT_STRING )
 		{
 			token_t newtoken;
 
 			if ( Parse_ReadToken( source, &newtoken ) )
 			{
-				if ( newtoken.type == TT_STRING )
+				if ( newtoken.type == tokenType_t::TT_STRING )
 				{
 					token->string[ strlen( token->string ) - 1 ] = '\0';
 
@@ -3941,7 +3941,7 @@ static bool Parse_ReadToken( source_t *source, token_t *token )
 		if ( source->skip ) { continue; }
 
 		//if the token is a name
-		if ( token->type == TT_NAME )
+		if ( token->type == tokenType_t::TT_NAME )
 		{
 			//check if the name is a define macro
 			define = Parse_FindHashedDefine( source->definehash, token->string );
@@ -4237,7 +4237,7 @@ static void Parse_FreeSource( source_t *source )
 	Z_Free( source );
 }
 
-#define MAX_SOURCEFILES 64
+static const int MAX_SOURCEFILES = 64;
 
 source_t *sourceFiles[ MAX_SOURCEFILES ];
 
@@ -4324,7 +4324,7 @@ bool Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
 	pc_token->intvalue = token.intvalue;
 	pc_token->floatvalue = token.floatvalue;
 
-	if ( pc_token->type == TT_STRING )
+	if ( pc_token->type == tokenType_t::TT_STRING )
 	{
 		Parse_StripDoubleQuotes( pc_token->string );
 	}

@@ -47,7 +47,7 @@
  *
  * nothing outside the Cvar_*() functions should modify these fields!
  */
-typedef struct cvar_s
+struct cvar_t
 {
 	char *name;
 	char *string;
@@ -67,10 +67,10 @@ typedef struct cvar_s
 	 */
 	bool transient;
 
-	struct cvar_s *next;
+	cvar_t *next;
 
-	struct cvar_s *hashNext;
-} cvar_t;
+	cvar_t *hashNext;
+};
 
 /**
  * creates the variable if it doesn't exist, or returns the existing one if it exists.

@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define INDEX_FILE_EXTENSION ".index.dat"
 
-#define MAX_RIFF_CHUNKS      16
+static const int MAX_RIFF_CHUNKS = 16;
 
-typedef struct audioFormat_s
+struct audioFormat_t
 {
 	int rate;
 	int format;
@@ -35,9 +35,9 @@ typedef struct audioFormat_s
 
 	int sampleSize;
 	int totalBytes;
-} audioFormat_t;
+};
 
-typedef struct aviFileData_s
+struct aviFileData_t
 {
 	bool      fileOpen;
 	fileHandle_t  f;
@@ -64,11 +64,11 @@ typedef struct aviFileData_s
 	int           chunkStackTop;
 
 	byte          *cBuffer, *eBuffer;
-} aviFileData_t;
+};
 
 static aviFileData_t afd;
 
-#define MAX_AVI_BUFFER 2048
+static const int MAX_AVI_BUFFER = 2048;
 
 static byte buffer[ MAX_AVI_BUFFER ];
 static int  bufIndex;
@@ -82,7 +82,7 @@ static INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f )
 {
 	if ( FS_Write( buffer, len, f ) < len )
 	{
-		Com_Error( ERR_DROP, "Failed to write avi file" );
+		Com_Error( errorParm_t::ERR_DROP, "Failed to write avi file" );
 	}
 }
 
@@ -132,7 +132,7 @@ static INLINE void START_CHUNK( const char *s )
 {
 	if ( afd.chunkStackTop == MAX_RIFF_CHUNKS )
 	{
-		Com_Error( ERR_DROP, "ERROR: Top of chunkstack breached" );
+		Com_Error( errorParm_t::ERR_DROP, "ERROR: Top of chunkstack breached" );
 	}
 
 	afd.chunkStack[ afd.chunkStackTop ] = bufIndex;
@@ -152,7 +152,7 @@ static INLINE void END_CHUNK()
 
 	if ( afd.chunkStackTop <= 0 )
 	{
-		Com_Error( ERR_DROP, "ERROR: Bottom of chunkstack breached" );
+		Com_Error( errorParm_t::ERR_DROP, "ERROR: Bottom of chunkstack breached" );
 	}
 
 	afd.chunkStackTop--;
@@ -337,7 +337,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 	// Don't start if a framerate has not been chosen
 	if ( cl_aviFrameRate->integer <= 0 )
 	{
-		Com_Log( LOG_ERROR, "cl_aviFrameRate must be ≥ 1\n" );
+		Log::Warn("cl_aviFrameRate must be ≥ 1" );
 		return false;
 	}
 
@@ -371,7 +371,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 	// Buffers only need to store RGB pixels.
 	// Allocate a bit more space for the capture buffer to account for possible
 	// padding at the end of pixel lines, and padding for alignment
-#define MAX_PACK_LEN 16
+	const int MAX_PACK_LEN = 16;
 	afd.cBuffer = (byte*) Z_Malloc( ( afd.width * 3 + MAX_PACK_LEN - 1 ) * afd.height + MAX_PACK_LEN - 1 );
 	// raw avi files have pixel lines start on 4-byte boundaries
 	afd.eBuffer = (byte*) Z_Malloc( PAD( afd.width * 3, AVI_LINE_PADDING ) * afd.height );
@@ -394,7 +394,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 			suggestRate--;
 		}
 
-		Com_Printf( S_WARNING "cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n", suggestRate );
+		Log::Warn( "cl_aviFrameRate is not a divisor of the audio rate, suggest %d", suggestRate );
 	}
 
 	if ( !Cvar_VariableIntegerValue( "s_initsound" ) )
@@ -415,7 +415,7 @@ bool CL_OpenAVIForWriting( const char *fileName )
 	else
 	{
 		afd.audio = false;
-		Com_Printf( S_WARNING "Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 for audio capture\n" );
+		Log::Warn( "Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 for audio capture" );
 	}
 
 	// This doesn't write a real header, but allocates the
@@ -553,7 +553,7 @@ bool CL_CloseAVI()
 
 	afd.fileOpen = false;
 
-	FS_Seek( afd.idxF, 4, FS_SEEK_SET );
+	FS_Seek( afd.idxF, 4, fsOrigin_t::FS_SEEK_SET );
 	bufIndex = 0;
 	WRITE_4BYTES( indexSize );
 	SafeFS_Write( buffer, bufIndex, afd.idxF );
@@ -588,7 +588,7 @@ bool CL_CloseAVI()
 	FS_Delete( idxFileName );
 
 	// Write the real header
-	FS_Seek( afd.f, 0, FS_SEEK_SET );
+	FS_Seek( afd.f, 0, fsOrigin_t::FS_SEEK_SET );
 	CL_WriteAVIHeader();
 
 	bufIndex = 4;
@@ -603,7 +603,7 @@ bool CL_CloseAVI()
 	Z_Free( afd.eBuffer );
 	FS_FCloseFile( afd.f );
 
-	Com_Printf( "Wrote %d:%d frames to %s\n", afd.numVideoFrames, afd.numAudioFrames, afd.fileName );
+	Log::Notice( "Wrote %d:%d frames to %s\n", afd.numVideoFrames, afd.numAudioFrames, afd.fileName );
 
 	return true;
 }

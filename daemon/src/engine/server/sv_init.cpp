@@ -50,7 +50,7 @@ void SV_SetConfigstring( int index, const char *val )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i", index );
+		Com_Error( errorParm_t::ERR_DROP, "SV_SetConfigstring: bad index %i", index );
 	}
 
 	if ( !val )
@@ -87,12 +87,12 @@ void SV_UpdateConfigStrings()
 
 		// send it to all the clients if we aren't
 		// spawning a new server
-		if ( sv.state == SS_GAME || sv.restarting )
+		if ( sv.state == serverState_t::SS_GAME || sv.restarting )
 		{
 			// send the data to all relevent clients
 			for ( i = 0, client = svs.clients; i < sv_maxclients->integer; i++, client++ )
 			{
-				if ( client->state < CS_PRIMED )
+				if ( client->state < clientState_t::CS_PRIMED )
 				{
 					continue;
 				}
@@ -155,12 +155,12 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize )
 {
 	if ( bufferSize < 1 )
 	{
-		Com_Error( ERR_DROP, "SV_GetConfigstring: bufferSize == %i", bufferSize );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GetConfigstring: bufferSize == %i", bufferSize );
 	}
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "SV_GetConfigstring: bad index %i", index );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GetConfigstring: bad index %i", index );
 	}
 
 	if ( !sv.configstrings[ index ] )
@@ -182,7 +182,7 @@ void SV_SetUserinfo( int index, const char *val )
 {
 	if ( index < 0 || index >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_SetUserinfo: bad index %i", index );
+		Com_Error( errorParm_t::ERR_DROP, "SV_SetUserinfo: bad index %i", index );
 	}
 
 	if ( !val )
@@ -204,12 +204,12 @@ void SV_GetUserinfo( int index, char *buffer, int bufferSize )
 {
 	if ( bufferSize < 1 )
 	{
-		Com_Error( ERR_DROP, "SV_GetUserinfo: bufferSize == %i", bufferSize );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GetUserinfo: bufferSize == %i", bufferSize );
 	}
 
 	if ( index < 0 || index >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_GetUserinfo: bad index %i", index );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GetUserinfo: bad index %i", index );
 	}
 
 	Q_strncpyz( buffer, svs.clients[ index ].userinfo, bufferSize );
@@ -226,12 +226,12 @@ void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size )
 {
 	if ( size < 1 )
 	{
-		Com_Error( ERR_DROP, "SV_GetPlayerPubkey: size == %i", size );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GetPlayerPubkey: size == %i", size );
 	}
 
 	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_GetPlayerPubkey: bad clientNum %i", clientNum );
+		Com_Error( errorParm_t::ERR_DROP, "SV_GetPlayerPubkey: bad clientNum %i", clientNum );
 	}
 
 	Q_strncpyz( pubkey, svs.clients[ clientNum ].pubkey, size );
@@ -307,7 +307,7 @@ void SV_Startup()
 {
 	if ( svs.initialized )
 	{
-		Com_Error( ERR_FATAL, "SV_Startup: svs.initialized" );
+		Com_Error( errorParm_t::ERR_FATAL, "SV_Startup: svs.initialized" );
 	}
 
 	SV_BoundMaxClients( 1 );
@@ -317,7 +317,7 @@ void SV_Startup()
 
 	if ( !svs.clients )
 	{
-		Com_Error( ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
+		Com_Error( errorParm_t::ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
 	}
 
 	svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * 64;
@@ -350,7 +350,7 @@ void SV_ChangeMaxClients()
 
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
-		if ( svs.clients[ i ].state >= CS_CONNECTED )
+		if ( svs.clients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
 			if ( i > count )
 			{
@@ -376,7 +376,7 @@ void SV_ChangeMaxClients()
 	// copy the clients to hunk memory
 	for ( i = 0; i < count; i++ )
 	{
-		if ( svs.clients[ i ].state >= CS_CONNECTED )
+		if ( svs.clients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
 			oldClients[ i ] = std::move(svs.clients[ i ]);
 		}
@@ -396,7 +396,7 @@ void SV_ChangeMaxClients()
 
 	if ( !svs.clients )
 	{
-		Com_Error( ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
+		Com_Error( errorParm_t::ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
 	}
 
 	Com_Memset( svs.clients, 0, sv_maxclients->integer * sizeof( client_t ) );
@@ -404,7 +404,7 @@ void SV_ChangeMaxClients()
 	// copy the clients over
 	for ( i = 0; i < count; i++ )
 	{
-		if ( oldClients[ i ].state >= CS_CONNECTED )
+		if ( oldClients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
 			svs.clients[ i ] = std::move(oldClients[ i ]);
 		}
@@ -454,7 +454,7 @@ void SV_SpawnServer( const char *server )
 	SV_ShutdownGameProgs();
 
 	PrintBanner( "Server Initialization" )
-	Com_Printf( "Server: %s\n", server );
+	Log::Notice( "Server: %s", server );
 
 	// clear the whole hunk because we're (re)loading the server
 	Hunk_Clear();
@@ -491,7 +491,7 @@ void SV_SpawnServer( const char *server )
 	}
 
 	// allocate the snapshot entities on the hunk
-	svs.snapshotEntities = ( entityState_t * ) Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, h_high );
+	svs.snapshotEntities = ( entityState_t * ) Hunk_Alloc( sizeof( entityState_t ) * svs.numSnapshotEntities, ha_pref::h_high );
 	svs.nextSnapshotEntities = 0;
 
 	// toggle the server bit so clients can detect that a
@@ -512,7 +512,7 @@ void SV_SpawnServer( const char *server )
 	FS::PakPath::ClearPaks();
 	FS_LoadBasePak();
 	if (!FS_LoadPak(va("map-%s", server)))
-		Com_Error(ERR_DROP, "Could not load map pak\n");
+		Com_Error(errorParm_t::ERR_DROP, "Could not load map pak\n");
 
 	CM_LoadMap(server);
 
@@ -527,7 +527,7 @@ void SV_SpawnServer( const char *server )
 	// media configstring setting should be done during
 	// the loading stage, so connected clients don't have
 	// to load during actual gameplay
-	sv.state = SS_LOADING;
+	sv.state = serverState_t::SS_LOADING;
 
 	// load and spawn all other entities
 	SV_InitGameProgs();
@@ -546,7 +546,7 @@ void SV_SpawnServer( const char *server )
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
 		// send the new gamestate to all connected clients
-		if ( svs.clients[ i ].state >= CS_CONNECTED )
+		if ( svs.clients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
 			bool denied;
 			char reason[ MAX_STRING_CHARS ];
@@ -568,7 +568,7 @@ void SV_SpawnServer( const char *server )
 				{
 					// when we get the next packet from a connected client,
 					// the new gamestate will be sent
-					svs.clients[ i ].state = CS_CONNECTED;
+					svs.clients[ i ].state = clientState_t::CS_CONNECTED;
 				}
 				else
 				{
@@ -576,7 +576,7 @@ void SV_SpawnServer( const char *server )
 					sharedEntity_t *ent;
 
 					client = &svs.clients[ i ];
-					client->state = CS_ACTIVE;
+					client->state = clientState_t::CS_ACTIVE;
 					ent = SV_GentityNum( i );
 					ent->s.number = i;
 					client->gentity = ent;
@@ -610,7 +610,7 @@ void SV_SpawnServer( const char *server )
 	// any media configstring setting now should issue a warning
 	// and any configstring changes should be reliably transmitted
 	// to all clients
-	sv.state = SS_GAME;
+	sv.state = serverState_t::SS_GAME;
 
 	// send a heartbeat now so the master will get up to date info
 	SV_Heartbeat_f();
@@ -621,7 +621,7 @@ void SV_SpawnServer( const char *server )
 
 	SV_AddOperatorCommands();
 
-	Com_Printf( "-----------------------------------\n" );
+	Log::Notice( "-----------------------------------\n" );
 }
 
 /*
@@ -723,10 +723,10 @@ void SV_FinalCommand( char *cmd, bool disconnect )
 	{
 		for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 		{
-			if ( cl->state >= CS_CONNECTED )
+			if ( cl->state >= clientState_t::CS_CONNECTED )
 			{
 				// don't send a disconnect to a local client
-				if ( cl->netchan.remoteAddress.type != NA_LOOPBACK )
+				if ( cl->netchan.remoteAddress.type != netadrtype_t::NA_LOOPBACK )
 				{
 					//% SV_SendServerCommand( cl, "print \"%s\"", message );
 					SV_SendServerCommand( cl, "%s", cmd );
@@ -801,7 +801,7 @@ void SV_Shutdown( const char *finalmsg )
 	NET_Config( true );
 #endif
 
-	Com_Printf( "---------------------------\n" );
+	Log::Notice( "---------------------------\n" );
 
 	// disconnect any local clients
 	CL_Disconnect( false );

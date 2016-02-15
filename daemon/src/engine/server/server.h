@@ -49,20 +49,20 @@ Maryland 20850 USA.
 
 #define MAX_BPS_WINDOW 20 // NERVE - SMF - net debugging
 
-typedef struct svEntity_s
+struct svEntity_t
 {
 	entityState_t        baseline; // for delta compression of initial sighting
 	int                  snapshotCounter; // used to prevent double adding from portal views
-} svEntity_t;
+};
 
-typedef enum
+enum class serverState_t
 {
   SS_DEAD, // no map loaded
   SS_LOADING, // spawning level entities
   SS_GAME // actively running
-} serverState_t;
+};
 
-typedef struct
+struct server_t
 {
 	serverState_t state;
 	bool      restarting; // if true, send configstring changes during SS_LOADING
@@ -72,7 +72,7 @@ typedef struct
 	int             snapshotCounter; // incremented for each snapshot built
 	int             timeResidual; // <= 1000 / sv_frame->value
 	int             nextFrameTime; // when time > nextFrameTime, process world
-	struct cmodel_s *models[ MAX_MODELS ];
+	struct cmodel_t *models[ MAX_MODELS ];
 
 	char            *configstrings[ MAX_CONFIGSTRINGS ];
 	bool        configstringsmodified[ MAX_CONFIGSTRINGS ];
@@ -110,9 +110,9 @@ typedef struct
 
 	int            num_tagheaders;
 	int            num_tags;
-} server_t;
+};
 
-typedef struct
+struct clientSnapshot_t
 {
 	int           areabytes;
 	byte          areabits[ MAX_MAP_AREA_BYTES ]; // portalarea visibility bits
@@ -124,26 +124,26 @@ typedef struct
 	int messageSent; // time the message was transmitted
 	int messageAcked; // time the message was acked
 	int messageSize; // used to rate drop packets
-} clientSnapshot_t;
+};
 
-typedef enum
+enum class clientState_t
 {
   CS_FREE, // can be reused for a new connection
   CS_ZOMBIE, // client has been disconnected, but don't reuse connection for a couple seconds
   CS_CONNECTED, // has been assigned to a client_t, but no gamestate yet
   CS_PRIMED, // gamestate has been sent, but client hasn't sent a usercmd
   CS_ACTIVE // client is fully in game
-} clientState_t;
+};
 
-typedef struct netchan_buffer_s
+struct netchan_buffer_t
 {
 	msg_t                   msg;
 	byte                    msgBuffer[ MAX_MSGLEN ];
 	char                    lastClientCommandString[ MAX_STRING_CHARS ];
-	struct netchan_buffer_s *next;
-} netchan_buffer_t;
+	netchan_buffer_t *next;
+};
 
-typedef struct client_s
+struct client_t
 {
 	clientState_t  state;
 	char           userinfo[ MAX_INFO_STRING ]; // name, etc
@@ -212,12 +212,12 @@ typedef struct client_s
 
 	//bani
 	int downloadnotify;
-} client_t;
+};
 
 //=============================================================================
 
 #define STATFRAMES 100
-typedef struct
+struct svstats_t
 {
 	double active;
 	double idle;
@@ -227,14 +227,14 @@ typedef struct
 	double latched_active;
 	double latched_idle;
 	int    latched_packets;
-} svstats_t;
+};
 
 // MAX_CHALLENGES is made large to prevent a denial
 // of service attack that could cycle all of them
 // out before legitimate users connected
 #define MAX_CHALLENGES    1024
 
-typedef struct
+struct challenge_t
 {
 	netadr_t adr;
 	int      challenge;
@@ -243,13 +243,13 @@ typedef struct
 	int      firstTime; // time the adr was first used, for authorize timeout checks
 	int      firstPing; // Used for min and max ping checks
 	bool connected;
-} challenge_t;
+};
 
-typedef struct
+struct receipt_t
 {
 	netadr_t adr;
 	int      time;
-} receipt_t;
+};
 
 // MAX_INFO_RECEIPTS is the maximum number of getstatus+getinfo responses that we send
 // in a two second time period.
@@ -259,7 +259,7 @@ typedef struct
 #define SERVER_PERFORMANCECOUNTER_SAMPLES 6
 
 // this structure will be cleared only when the game module changes
-typedef struct
+struct serverStatic_t
 {
 	bool      initialized; // sv_init has completed
 
@@ -281,7 +281,7 @@ typedef struct
 	int       currentFrameIndex;
 	int       serverLoad;
 	svstats_t stats;
-} serverStatic_t;
+};
 
 //=============================================================================
 

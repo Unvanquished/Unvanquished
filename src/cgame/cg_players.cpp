@@ -92,7 +92,7 @@ sfxHandle_t CG_CustomSound( int clientNum, const char *soundName )
 		}
 	}
 
-	CG_Error( "Unknown custom sound: %s", soundName );
+	Com_Error(errorParm_t::ERR_DROP,  "Unknown custom sound: %s", soundName );
 	return 0;
 }
 
@@ -123,7 +123,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	fileHandle_t f;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len <= 0 )
 	{
@@ -132,7 +132,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 	if ( len + 1 >= (int) sizeof( text ) )
 	{
-		CG_Printf( "File %s is too long\n", filename );
+		Log::Warn( "File %s is too long", filename );
 		trap_FS_FCloseFile( f );
 		return false;
 	}
@@ -193,7 +193,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			}
 			else
 			{
-				CG_Printf( "Bad footsteps parm in %s: %s\n", filename, token);
+				Log::Warn( "Bad footsteps parm in %s: %s", filename, token);
 			}
 			continue;
 		}
@@ -285,7 +285,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( "^1ERROR^7: Expected '{' but found '%s' in character.cfg", token );
+				Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in character.cfg", token );
 			}
 
 			i = 0;
@@ -311,7 +311,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n", token );
+				Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n", token );
 			}
 
 			i = 0;
@@ -332,7 +332,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			continue;
 		}
 
-		Com_Printf( "unknown token '%s' is %s\n", token, filename );
+		Log::Notice( "unknown token '%s' is %s\n", token, filename );
 	}
 
 	return true;
@@ -372,7 +372,7 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 	{
 		if ( cg_debugAnim.integer )
 		{
-			Com_Printf( "Failed to load animation file %s\n", filename );
+			Log::Notice( "Failed to load animation file %s\n", filename );
 		}
 
 		return false;
@@ -478,7 +478,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 	animations = ci->animations;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -487,7 +487,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
-		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
+		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
 		trap_FS_FCloseFile( f );
 		return false;
 	}
@@ -545,7 +545,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			}
 			else
 			{
-				CG_Printf( "Bad footsteps parm in %s: %s\n", filename, token );
+				Log::Warn( "Bad footsteps parm in %s: %s", filename, token );
 			}
 
 			continue;
@@ -613,7 +613,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			break;
 		}
 
-		Com_Printf( "unknown token '%s' is %s\n", token, filename );
+		Log::Notice( "unknown token '%s' is %s\n", token, filename );
 	}
 
 	if ( !ci->nonsegmented )
@@ -700,7 +700,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_PLAYER_ANIMATIONS )
 		{
-			CG_Printf( "Error parsing animation file: %s\n", filename );
+			Log::Warn( "Error parsing animation file: %s", filename );
 			return false;
 		}
 
@@ -793,7 +793,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_NONSEG_PLAYER_ANIMATIONS )
 		{
-			CG_Printf( "Error parsing animation file: %s\n", filename );
+			Log::Warn( "Error parsing animation file: %s", filename );
 			return false;
 		}
 
@@ -821,7 +821,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->bodySkin )
 		{
-			Com_Printf( "MD5 skin load failure: %s\n", filename );
+			Log::Notice( "MD5 skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->bodySkin )
@@ -836,7 +836,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->legsSkin )
 		{
-			Com_Printf( "Leg skin load failure: %s\n", filename );
+			Log::Notice( "Leg skin load failure: %s\n", filename );
 		}
 
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/upper_%s.skin", modelName, skinName );
@@ -844,7 +844,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->torsoSkin )
 		{
-			Com_Printf( "Torso skin load failure: %s\n", filename );
+			Log::Notice( "Torso skin load failure: %s\n", filename );
 		}
 
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/head_%s.skin", modelName, skinName );
@@ -852,7 +852,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->headSkin )
 		{
-			Com_Printf( "Head skin load failure: %s\n", filename );
+			Log::Notice( "Head skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->legsSkin || !ci->torsoSkin || !ci->headSkin )
@@ -867,7 +867,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->nonSegSkin )
 		{
-			Com_Printf( "Non-segmented skin load failure: %s\n", filename );
+			Log::Notice( "Non-segmented skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->nonSegSkin )
@@ -922,7 +922,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !CG_ParseCharacterFile( filename, ci ) )
 		{
-			Com_Printf( "Failed to load character file %s\n", filename );
+			Log::Notice( "Failed to load character file %s\n", filename );
 			return false;
 		}
 
@@ -933,7 +933,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		{
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLE, "idle", true, false, false, iqm ) )
 			{
-				Com_Printf( "Failed to load idle animation file %s\n", filename );
+				Log::Notice( "Failed to load idle animation file %s\n", filename );
 				return false;
 			}
 
@@ -1103,7 +1103,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			// Load Alien animations
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_STAND, "stand", true, false, false, iqm ) )
 			{
-				Com_Printf( "Failed to load standing animation file %s\n", filename );
+				Log::Notice( "Failed to load standing animation file %s\n", filename );
 				return false;
 			}
 
@@ -1246,7 +1246,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		// if any skins failed to load, return failure
 		if ( !CG_RegisterClientSkin( ci, modelName, skinName ) )
 		{
-			Com_Printf( "Failed to load skin file: %s : %s\n", modelName, skinName );
+			Log::Notice( "Failed to load skin file: %s : %s\n", modelName, skinName );
 			return false;
 		}
 
@@ -1259,7 +1259,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 	if ( !CG_ParseAnimationFile( filename, ci ) )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		Log::Notice( "Failed to load animation file %s\n", filename );
 		return false;
 	}
 
@@ -1271,7 +1271,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !ci->legsModel )
 		{
-			Com_Printf( "Failed to load model file %s\n", filename );
+			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
 		}
 
@@ -1280,7 +1280,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !ci->torsoModel )
 		{
-			Com_Printf( "Failed to load model file %s\n", filename );
+			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
 		}
 
@@ -1289,7 +1289,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !ci->headModel )
 		{
-			Com_Printf( "Failed to load model file %s\n", filename );
+			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
 		}
 	}
@@ -1300,7 +1300,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( !ci->nonSegModel )
 		{
-			Com_Printf( "Failed to load model file %s\n", filename );
+			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
 		}
 	}
@@ -1308,7 +1308,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, modelName, skinName ) )
 	{
-		Com_Printf( "Failed to load skin file: %s : %s\n", modelName, skinName );
+		Log::Notice( "Failed to load skin file: %s : %s\n", modelName, skinName );
 		return false;
 	}
 
@@ -1331,7 +1331,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 
 	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName ) )
 	{
-		CG_Error( "CG_RegisterClientModelname( %s, %s ) failed", ci->modelName, ci->skinName );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_RegisterClientModelname( %s, %s ) failed", ci->modelName, ci->skinName );
 	}
 
 	// sounds
@@ -1402,7 +1402,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 	for ( i = 0; i < MAX_GENTITIES; i++ )
 	{
 		if ( cg_entities[ i ].currentState.clientNum == clientNum &&
-		     cg_entities[ i ].currentState.eType == ET_PLAYER )
+		     cg_entities[ i ].currentState.eType == entityType_t::ET_PLAYER )
 		{
 			CG_ResetPlayerEntity( &cg_entities[ i ] );
 		}
@@ -1570,24 +1570,24 @@ static void CG_StatusMessages( clientInfo_t *new_, clientInfo_t *old )
 
 	if ( strcmp( new_->name, old->name ) )
 	{
-		CG_Printf(_( "%s^7 renamed to %s\n"), old->name, new_->name );
+		Log::Notice(_( "%s^7 renamed to %s"), old->name, new_->name );
 	}
 
 	if ( old->team != new_->team )
 	{
 		if ( new_->team == TEAM_NONE )
 		{
-			CG_Printf(_( "%s^7 left the %s\n"), new_->name,
+			Log::Notice(_( "%s^7 left the %s"), new_->name,
 			           BG_TeamNamePlural( old->team ) );
 		}
 		else if ( old->team == TEAM_NONE )
 		{
-			CG_Printf(_( "%s^7 joined the %s\n"), new_->name,
+			Log::Notice(_( "%s^7 joined the %s"), new_->name,
 			           BG_TeamNamePlural( new_->team ) );
 		}
 		else
 		{
-			CG_Printf(_( "%s^7 left the %s and joined the %s\n"),
+			Log::Notice(_( "%s^7 left the %s and joined the %s"),
 			           new_->name, BG_TeamNamePlural( old->team ), BG_TeamNamePlural( new_->team ) );
 		}
 	}
@@ -1708,7 +1708,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 	if ( newAnimation < 0 || newAnimation >= MAX_PLAYER_TOTALANIMATIONS )
 	{
-		CG_Error( "Bad animation number: %i", newAnimation );
+		Com_Error(errorParm_t::ERR_DROP,  "Bad animation number: %i", newAnimation );
 	}
 
 	anim = &ci->animations[ newAnimation ];
@@ -1747,13 +1747,13 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 		oldSkeleton = *skel;
 
-		//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
+		//Log::Notice(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
 
 		if ( lf->old_animation->handle && oldSkeleton.numBones == skel->numBones )
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
-				CG_Printf( "Can't blend skeleton\n" );
+				Log::Warn( "Can't blend skeleton" );
 				return;
 			}
 		}
@@ -1770,7 +1770,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 	if ( cg_debugAnim.integer )
 	{
-		CG_Printf( "Anim: %i\n", newAnimation );
+		Log::Warn( "Anim: %i", newAnimation );
 	}
 
 }
@@ -1844,7 +1844,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	{
 		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames - 1, anim->numFrames - 1, 0, lf->animation->clearOrigin ) )
 		{
-			CG_Printf( "Can't build lf->skeleton\n" );
+			Log::Warn( "Can't build lf->skeleton" );
 		}
 	}
 }
@@ -2008,7 +2008,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	       ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_ATTACK3 ) ||
 	     ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_GESTURE )
 	{
-		blend.type = SK_RELATIVE; // Tell game to blend
+		blend.type = refSkeletonType_t::SK_RELATIVE; // Tell game to blend
 
 		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN &&
 			( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) != NSPA_GESTURE )
@@ -2018,7 +2018,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	}
 	else
 	{
-		blend.type = SK_INVALID;
+		blend.type = refSkeletonType_t::SK_INVALID;
 	}
 
 	// do the shuffle turn frames locally
@@ -2031,7 +2031,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton, speedScale );
 	}
 
-	if ( blend.type == SK_RELATIVE )
+	if ( blend.type == refSkeletonType_t::SK_RELATIVE )
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, &blend, speedScale );
 		trap_R_BlendSkeleton( &legsSkeleton, &blend, 0.5 );
@@ -2214,7 +2214,7 @@ static void CG_PlayerAngles( centity_t *cent, const vec3_t srcAngles,
 
 		if ( dir < 0 || dir > 7 )
 		{
-			CG_Error( "Bad player movement angle" );
+			Com_Error(errorParm_t::ERR_DROP,  "Bad player movement angle" );
 		}
 	}
 
@@ -2486,7 +2486,7 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 
 		if ( dir < 0 || dir > 7 )
 		{
-			CG_Error( "Bad player movement angle" );
+			Com_Error(errorParm_t::ERR_DROP,  "Bad player movement angle" );
 		}
 	}
 
@@ -2557,12 +2557,12 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 		lf->animationNumber = cent->jetpackAnim;
 
 		if( cent->jetpackAnim < 0 || cent->jetpackAnim >= MAX_JETPACK_ANIMATIONS )
-			CG_Error( "Bad animation number: %i", cent->jetpackAnim );
+			Com_Error(errorParm_t::ERR_DROP,  "Bad animation number: %i", cent->jetpackAnim );
 
 
 		if( JETPACK_USES_SKELETAL_ANIMATION )
 		{
-			if ( jetpackSkeleton.type != SK_INVALID )
+			if ( jetpackSkeleton.type != refSkeletonType_t::SK_INVALID )
 			{
 				oldSkeleton = jetpackSkeleton;
 
@@ -2570,7 +2570,7 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 				{
 					if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 					{
-						CG_Printf( "Can't build old jetpack skeleton\n" );
+						Log::Warn( "Can't build old jetpack skeleton" );
 						return;
 					}
 				}
@@ -2813,7 +2813,7 @@ static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 	memset( &ent, 0, sizeof( ent ) );
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	ent.origin[ 2 ] += 48;
-	ent.reType = RT_SPRITE;
+	ent.reType = refEntityType_t::RT_SPRITE;
 	ent.customShader = shader;
 	ent.radius = 10;
 	ent.renderfx = rf;
@@ -2871,7 +2871,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		}
 	}
 
-	if ( cg_shadows.integer == SHADOWING_NONE )
+	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return false;
 	}
@@ -2888,7 +2888,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		return false;
 	}
 
-	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
 	     cg_playerShadows.integer ) {
 		// add inverse shadow map
 		{
@@ -2896,7 +2896,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		}
 	}
 
-	if ( cg_shadows.integer != SHADOWING_BLOB ) // no mark for stencil or projection shadows
+	if ( cg_shadows.integer != Util::ordinal(shadowingMode_t::SHADOWING_BLOB)) // no mark for stencil or projection shadows
 	{
 		return true;
 	}
@@ -2915,12 +2915,12 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 
 static void CG_PlayerShadowEnd()
 {
-	if ( cg_shadows.integer == SHADOWING_NONE )
+	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return;
 	}
 
-	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
 	     cg_playerShadows.integer ) {
 		CG_EndShadowCaster( );
 	}
@@ -2940,7 +2940,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	trace_t trace;
 	int     contents;
 
-	if ( cg_shadows.integer == SHADOWING_NONE )
+	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return;
 	}
@@ -3155,7 +3155,7 @@ void CG_Player( centity_t *cent )
 
 	if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
 	{
-		CG_Error( "Bad clientNum on player entity" );
+		Com_Error(errorParm_t::ERR_DROP,  "Bad clientNum on player entity" );
 	}
 
 	ci = &cgs.clientinfo[ clientNum ];
@@ -3297,7 +3297,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !body.hModel )
 		{
-			CG_Printf( "No body model for player %i\n", clientNum );
+			Log::Warn( "No body model for player %i", clientNum );
 			return;
 		}
 
@@ -3368,7 +3368,7 @@ void CG_Player( centity_t *cent )
 				// while spectating (switching between players on the human team)
 				// - don't treat as fatal, but doing so will (briefly?) cause rendering
 				// glitches if chasing; also, brief spam
-				CG_Printf( "[skipnotify]WARNING: cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones\n" );
+				Log::Warn( S_SKIPNOTIFY "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 			}
 
 			// combine legs and torso skeletons
@@ -3690,7 +3690,7 @@ void CG_Corpse( centity_t *cent )
 
 	if ( corpseNum < 0 || corpseNum >= MAX_CLIENTS )
 	{
-		CG_Error( "Bad corpseNum on corpse entity: %d", corpseNum );
+		Com_Error(errorParm_t::ERR_DROP,  "Bad corpseNum on corpse entity: %d", corpseNum );
 	}
 
 	ci = &cgs.corpseinfo[ corpseNum ];
@@ -3926,7 +3926,7 @@ void CG_ResetPlayerEntity( centity_t *cent )
 
 	if ( cg_debugPosition.integer )
 	{
-		CG_Printf( "%i ResetPlayerEntity yaw=%.2f\n", cent->currentState.number, cent->pe.torso.yawAngle );
+		Log::Debug( "%i ResetPlayerEntity yaw=%.2f", cent->currentState.number, cent->pe.torso.yawAngle );
 	}
 }
 
@@ -3941,7 +3941,7 @@ void CG_PlayerDisconnect( vec3_t org )
 {
 	particleSystem_t *ps;
 
-	trap_S_StartSound( org, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.disconnectSound );
+	trap_S_StartSound( org, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.disconnectSound );
 
 	ps = CG_SpawnNewParticleSystem( cgs.media.disconnectPS );
 
@@ -3965,7 +3965,7 @@ centity_t *CG_GetLocation( vec3_t origin )
 	{
 		eloc = &cg_entities[ i ];
 
-		if ( !eloc->valid || eloc->currentState.eType != ET_LOCATION )
+		if ( !eloc->valid || eloc->currentState.eType != entityType_t::ET_LOCATION )
 		{
 			continue;
 		}
@@ -4013,7 +4013,7 @@ void CG_InitClasses()
 
 			if ( !cg_classes[ i ].classIcon )
 			{
-				Com_Printf( S_ERROR "Failed to load class icon file %s\n", icon );
+				Log::Warn( "Failed to load class icon file %s", icon );
 			}
 		}
 	}

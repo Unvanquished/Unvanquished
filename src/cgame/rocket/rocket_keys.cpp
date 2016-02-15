@@ -151,7 +151,7 @@ KeyIdentifier Rocket_FromQuake( int key )
 {
 	if ( !init )
 	{
-		CG_Printf( "^3WARNING: ^7Tried to convert keyMap before key array initialized." );
+		Log::Warn( "Tried to convert keyMap before key array initialized." );
 		return KI_UNKNOWN;
 	}
 	std::map< int, int >::iterator it;
@@ -161,7 +161,7 @@ KeyIdentifier Rocket_FromQuake( int key )
 		return static_cast< KeyIdentifier >( it->second );
 	}
 
-	CG_Printf( "^3WARNING: ^7Rocket_FromQuake: Could not find keynum %d", key );
+	Log::Warn( "Rocket_FromQuake: Could not find keynum %d", key );
 	return KI_UNKNOWN;
 }
 
@@ -169,7 +169,7 @@ keyNum_t Rocket_ToQuake( int key )
 {
 	if ( !init )
 	{
-		CG_Printf( "^3WARNING: ^7Tried to convert keyMap before key array initialized." );
+		Log::Warn( "Tried to convert keyMap before key array initialized." );
 		return K_NONE;
 	}
 
@@ -181,7 +181,7 @@ keyNum_t Rocket_ToQuake( int key )
 		}
 	}
 
-	CG_Printf( "^3WARNING: ^7Rocket_ToQuake: Could not find keynum %d", key );
+	Log::Warn( "Rocket_ToQuake: Could not find keynum %d", key );
 	return K_NONE;
 }
 

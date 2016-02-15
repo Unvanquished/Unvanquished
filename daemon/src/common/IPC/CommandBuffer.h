@@ -122,13 +122,13 @@ namespace IPC {
         COMMAND_BUFFER_CONSUME,
     };
 
-    typedef IPC::SyncMessage<
+    using CommandBufferLocateMsg = IPC::SyncMessage<
         IPC::Message<IPC::Id<VM::COMMAND_BUFFER, COMMAND_BUFFER_LOCATE>, IPC::SharedMemory>
-    > CommandBufferLocateMsg;
+    >;
 
-    typedef IPC::SyncMessage<
+    using CommandBufferConsumeMsg = IPC::SyncMessage<
         IPC::Message<IPC::Id<VM::COMMAND_BUFFER, COMMAND_BUFFER_CONSUME>>
-    > CommandBufferConsumeMsg;
+    >;
 
 } // namespace IPC
 

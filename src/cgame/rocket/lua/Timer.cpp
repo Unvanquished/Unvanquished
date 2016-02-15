@@ -70,7 +70,7 @@ void Timer::RunUpdate(int time)
 			lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
 			luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
 			if (lua_pcall(it->L, 0, 0, 0) != 0)
-				Com_Printf( "Error: Could not run lua timer callback: %s",
+				::Log::Warn( "Could not run lua timer callback: %s",
 							lua_tostring(it->L, -1));
 			it = events.erase(it);
 		}

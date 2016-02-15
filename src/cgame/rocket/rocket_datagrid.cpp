@@ -67,7 +67,7 @@ void Rocket_DSAddRow( const char *name, const char *table, const char *data )
 
 	if ( !ds )
 	{
-		Com_Printf( "^1ERROR: ^7Rocket_DSAddRow: data source %s does not exist.\n", name );
+		Log::Warn( "Rocket_DSAddRow: data source %s does not exist.\n", name );
 		return;
 	}
 
@@ -80,7 +80,7 @@ void Rocket_DSChangeRow( const char *name, const char *table, const int row, con
 
 	if ( !ds )
 	{
-		Com_Printf( "^1ERROR: ^7Rocket_DSChangeRow: data source %s does not exist.\n", name );
+		Log::Warn( "Rocket_DSChangeRow: data source %s does not exist.\n", name );
 		return;
 	}
 
@@ -93,7 +93,7 @@ void Rocket_DSRemoveRow( const char *name, const char *table, const int row )
 
 	if ( !ds )
 	{
-		Com_Printf( "^1ERROR: ^7Rocket_DSRemoveRow: data source %s does not exist.\n", name );
+		Log::Warn( "Rocket_DSRemoveRow: data source %s does not exist.\n", name );
 		return;
 	}
 
@@ -106,7 +106,7 @@ void Rocket_DSClearTable( const char *name, const char *table )
 
 	if ( !ds )
 	{
-		Com_Printf( "^1ERROR: ^7Rocket_DSClearTable: data source %s does not exist.\n", name );
+		Log::Warn( "Rocket_DSClearTable: data source %s does not exist.\n", name );
 		return;
 	}
 

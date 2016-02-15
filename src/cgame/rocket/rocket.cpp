@@ -75,7 +75,7 @@ public:
 	Rocket::Core::FileHandle Open( const Rocket::Core::String &filePath )
 	{
 		fileHandle_t fileHandle;
-		trap_FS_FOpenFile( filePath.CString(), &fileHandle, FS_READ );
+		trap_FS_FOpenFile( filePath.CString(), &fileHandle, fsMode_t::FS_READ );
 		return ( Rocket::Core::FileHandle )fileHandle;
 	}
 
@@ -132,19 +132,14 @@ public:
 		switch ( type )
 		{
 			case Rocket::Core::Log::LT_ALWAYS :
-				Com_Printf( "ALWAYS: %s\n", message.CString() );
-				break;
 			case Rocket::Core::Log::LT_ERROR :
-				Com_Printf( "ERROR: %s\n", message.CString() );
-				break;
 			case Rocket::Core::Log::LT_WARNING :
-				Com_Printf( "WARNING: %s\n", message.CString() );
-				break;
-			case Rocket::Core::Log::LT_INFO :
-				Com_Printf( "INFO: %s\n", message.CString() );
+				Log::Warn( message.CString() );
 				break;
 			default:
-				Com_Printf( "%s\n", message.CString() );
+			case Rocket::Core::Log::LT_INFO :
+				Log::Notice( message.CString() );
+				break;
 		}
 		return true;
 	}
@@ -252,7 +247,7 @@ public:
 	{
 
 		texture_handle = trap_R_GenerateTexture( (const byte* )source, source_dimensions.x, source_dimensions.y );
-// 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
+// 		Log::Debug( "RE_GenerateTexture [ %lu ( %d x %d )]", textureHandle, sourceDimensions.x, sourceDimensions.y );
 
 		return ( texture_handle > 0 );
 	}
@@ -335,7 +330,7 @@ void Rocket_Init()
 
 	if ( !Rocket::Core::Initialise() )
 	{
-		Com_Printf( "Could not init libRocket\n" );
+		Log::Notice( "Could not init libRocket\n" );
 		return;
 	}
 
@@ -502,7 +497,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 	for ( const auto& token : Color::Parser( in, Color::Color() ) )
 	{
-		if ( token.Type() == Color::Token::CHARACTER )
+		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			char c = *token.Begin();
 			if ( c == '<' )
@@ -548,7 +543,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( token.Begin(), token.Size() );
 			}
 		}
-		else if ( token.Type() == Color::Token::COLOR )
+		else if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			if ( span && spanHasContent )
 			{
@@ -573,7 +568,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = false;
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			if ( span && !spanHasContent )
 			{

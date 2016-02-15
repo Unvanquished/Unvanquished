@@ -43,21 +43,21 @@ Maryland 20850 USA.
 #define CAPSULE_MODEL_HANDLE ( MAX_SUBMODELS )
 #define BOX_MODEL_HANDLE     ( MAX_SUBMODELS + 1)
 
-typedef struct cbrushedge_s
+struct cbrushedge_t
 {
 	vec3_t p0;
 	vec3_t p1;
-} cbrushedge_t;
+};
 
-typedef struct
+struct cNode_t
 {
 	cplane_t  *plane;
 	int       planeNum;
 	int       children[ 2 ]; // negative numbers are leafs
 	winding_t *winding;
-} cNode_t;
+};
 
-typedef struct
+struct cLeaf_t
 {
 	int cluster;
 	int area;
@@ -67,23 +67,23 @@ typedef struct
 
 	int firstLeafSurface;
 	int numLeafSurfaces;
-} cLeaf_t;
+};
 
-typedef struct cmodel_s
+struct cmodel_t
 {
 	vec3_t  mins, maxs;
 	cLeaf_t leaf; // submodels don't reference the main tree
-} cmodel_t;
+};
 
-typedef struct
+struct cbrushside_t
 {
 	cplane_t  *plane;
 	int       planeNum;
 	int       surfaceFlags;
 	winding_t *winding;
-} cbrushside_t;
+};
 
-typedef struct
+struct cbrush_t
 {
 	int          contents;
 	vec3_t       bounds[ 2 ];
@@ -93,29 +93,29 @@ typedef struct
 	bool     collided; // marker for optimisation
 	cbrushedge_t *edges;
 	int          numEdges;
-} cbrush_t;
+};
 
-typedef struct cPlane_s
+struct cPlane_t
 {
 	float           plane[ 4 ];
 	int             signbits; // signx + (signy<<1) + (signz<<2), used as lookup during collision
-	struct cPlane_s *hashChain;
-} cPlane_t;
+	cPlane_t *hashChain;
+};
 
 // 3 or four + 6 axial bevels + 4 or 3 * 4 edge bevels
 #define MAX_FACET_BEVELS ( 4 + 6 + 16 )
 
 // a facet is a subdivided element of a patch approximation or model
-typedef struct
+struct cFacet_t
 {
 	int      surfacePlane;
 	int      numBorders;
 	int      borderPlanes[ MAX_FACET_BEVELS ];
 	bool     borderInward[ MAX_FACET_BEVELS ];
 	bool borderNoAdjust[ MAX_FACET_BEVELS ];
-} cFacet_t;
+};
 
-typedef struct cSurfaceCollide_s
+struct cSurfaceCollide_t
 {
 	vec3_t   bounds[ 2 ];
 	int      numPlanes; // surface planes plus edge planes
@@ -123,24 +123,24 @@ typedef struct cSurfaceCollide_s
 
 	int      numFacets;
 	cFacet_t *facets;
-} cSurfaceCollide_t;
+};
 
-typedef struct
+struct cSurface_t
 {
 	int               checkcount; // to avoid repeated testings
 	int               surfaceFlags;
 	int               contents;
 	cSurfaceCollide_t *sc;
-	int               type;
-} cSurface_t;
+	mapSurfaceType_t type;
+};
 
-typedef struct
+struct cArea_t
 {
 	int floodnum;
 	int floodvalid;
-} cArea_t;
+};
 
-typedef struct
+struct clipMap_t
 {
 	int          numShaders;
 	dshader_t    *shaders;
@@ -187,7 +187,7 @@ typedef struct
 	int          floodvalid;
 	int          checkcount; // incremented on each trace
 	bool     perPolyCollision;
-} clipMap_t;
+};
 
 // keep 1/8 unit away to keep the position valid before network snapping
 // and to avoid various numeric issues
@@ -201,21 +201,21 @@ extern Log::Logger cmLog;
 
 // cm_test.c
 
-typedef struct
+struct biSphere_t
 {
 	float startRadius;
 	float endRadius;
-} biSphere_t;
+};
 
 // Used for oriented capsule collision detection
-typedef struct
+struct sphere_t
 {
 	float  radius;
 	float  halfheight;
 	vec3_t offset;
-} sphere_t;
+};
 
-typedef struct
+struct traceWork_t
 {
 	traceType_t type;
 	vec3_t      start;
@@ -233,9 +233,9 @@ typedef struct
 	sphere_t    sphere; // sphere for oriendted capsule collision
 	biSphere_t  biSphere;
 	bool    testLateralCollision; // whether or not to test for lateral collision
-} traceWork_t;
+};
 
-typedef struct leafList_s
+struct leafList_t
 {
 	int      count;
 	int      maxcount;
@@ -243,8 +243,8 @@ typedef struct leafList_s
 	int      *list;
 	vec3_t   bounds[ 2 ];
 	int      lastLeaf; // for overflows where each leaf can't be stored individually
-	void ( *storeLeafs )( struct leafList_s *ll, int nodenum );
-} leafList_t;
+	void ( *storeLeafs )( leafList_t *ll, int nodenum );
+};
 
 #define SUBDIVIDE_DISTANCE 16 //4 // never more than this units away from curve
 #define PLANE_TRI_EPSILON  0.1
@@ -255,7 +255,7 @@ void              CM_ClearLevelPatches();
 
 // cm_trisoup.c
 
-typedef struct
+struct cTriangleSoup_t
 {
 	int    numTriangles;
 	int    indexes[ SHADER_MAX_INDEXES ];
@@ -263,7 +263,7 @@ typedef struct
 	int    trianglePlanes[ SHADER_MAX_TRIANGLES ];
 
 	vec3_t points[ SHADER_MAX_TRIANGLES ][ 3 ];
-} cTriangleSoup_t;
+};
 
 cSurfaceCollide_t              *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vertexes, int numIndexes, int *indexes );
 
@@ -281,7 +281,7 @@ extern cFacet_t facets[];
 void     CM_ResetPlaneCounts();
 int      CM_FindPlane2( float plane[ 4 ], bool *flipped );
 int      CM_FindPlane( const float *p1, const float *p2, const float *p3 );
-int      CM_PointOnPlaneSide( float *p, int planeNum );
+planeSide_t CM_PointOnPlaneSide( float *p, int planeNum );
 bool CM_ValidateFacet( cFacet_t *facet );
 void     CM_AddFacetBevels( cFacet_t *facet );
 bool CM_GenerateFacetFor3Points( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3 );

@@ -154,7 +154,7 @@ namespace Resource {
     template<typename T>
     class Manager {
         private:
-            typedef typename std::unordered_map<Str::StringRef, std::shared_ptr<T>>::iterator iterator;
+            using iterator = typename std::unordered_map<Str::StringRef, std::shared_ptr<T>>::iterator;
 
         public:
             Manager(Str::StringRef name = "", std::shared_ptr<T> defaultResource = nullptr);

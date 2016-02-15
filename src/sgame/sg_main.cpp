@@ -458,30 +458,6 @@ enum
 	LOG_GAMEPLAY_STATS_FOOTER
 };
 
-void QDECL PRINTF_LIKE(1) G_Printf( const char *fmt, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
-
-void QDECL PRINTF_LIKE(1) NORETURN G_Error( const char *fmt, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-	va_end( argptr );
-
-	trap_Error( text );
-}
-
 /*
 ================
 G_FindEntityGroups
@@ -548,7 +524,7 @@ void G_FindEntityGroups()
 		}
 	}
 
-	G_Printf( "%i groups with %i entities\n", groupCount, entityCount );
+	Log::Notice( "%i groups with %i entities", groupCount, entityCount );
 }
 /*
 ================
@@ -714,9 +690,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	G_RegisterCvars();
 
-	G_Printf( "------- Game Initialization -------\n" );
-	G_Printf( "gamename: %s\n", GAME_VERSION );
-	G_Printf( "gamedate: %s\n", __DATE__ );
+	Log::Notice( "------- Game Initialization -------" );
+	Log::Notice( "gamename: %s", GAME_VERSION );
+	Log::Notice( "gamedate: %s", __DATE__ );
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
@@ -730,16 +706,16 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	{
 		if ( g_logFileSync.integer )
 		{
-			trap_FS_FOpenFile( g_logFile.string, &level.logFile, FS_APPEND_SYNC );
+			trap_FS_FOpenFile( g_logFile.string, &level.logFile, fsMode_t::FS_APPEND_SYNC );
 		}
 		else
 		{
-			trap_FS_FOpenFile( g_logFile.string, &level.logFile, FS_APPEND );
+			trap_FS_FOpenFile( g_logFile.string, &level.logFile, fsMode_t::FS_APPEND );
 		}
 
 		if ( !level.logFile )
 		{
-			G_Printf( "WARNING: Couldn't open logfile: %s\n", g_logFile.string );
+			Log::Warn("Couldn't open logfile: %s", g_logFile.string );
 		}
 		else
 		{
@@ -759,7 +735,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 	else
 	{
-		G_Printf( "Not logging to disk\n" );
+		Log::Notice( "Not logging to disk" );
 	}
 
 	// gameplay statistics logging
@@ -778,11 +754,11 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 		             qt.tm_hour, qt.tm_min, qt.tm_sec,
 		             mapname );
 
-		trap_FS_FOpenFile( logfile, &level.logGameplayFile, FS_WRITE );
+		trap_FS_FOpenFile( logfile, &level.logGameplayFile, fsMode_t::FS_WRITE );
 
 		if ( !level.logGameplayFile )
 		{
-			G_Printf( "WARNING: Couldn't open gameplay statistics logfile: %s\n", logfile );
+			Log::Warn("Couldn't open gameplay statistics logfile: %s", logfile );
 		}
 		else
 		{
@@ -903,7 +879,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 		G_ModifyBuildPoints(team, startBP);
 	}
 
-	G_Printf( "-----------------------------------\n" );
+	Log::Notice( "-----------------------------------" );
 
 	// So the server counts the spawns without a client attached
 	G_CountSpawns();
@@ -978,7 +954,7 @@ void G_ShutdownGame( int restart )
 
 	G_RestoreCvars();
 
-	G_Printf( "==== ShutdownGame ====\n" );
+	Log::Notice( "==== ShutdownGame ====" );
 
 	if ( level.logFile )
 	{
@@ -1014,30 +990,6 @@ void G_ShutdownGame( int restart )
 }
 
 //===================================================================
-
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int, const char *error, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, error );
-	Q_vsnprintf( text, sizeof( text ), error, argptr );
-	va_end( argptr );
-
-	trap_Error( text );
-}
-
-void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
 
 void G_CheckPmoveParamChanges() {
 	if ( pmove_msec.integer < 8 )
@@ -1323,7 +1275,7 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 	int i = sq->front;
 	int length = G_GetSpawnQueueLength( sq );
 
-	G_Printf( "l:%d f:%d b:%d    :", length, sq->front, sq->back );
+	Log::Notice( "l:%d f:%d b:%d    :", length, sq->front, sq->back );
 
 	if ( length > 0 )
 	{
@@ -1331,11 +1283,11 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 		{
 			if ( sq->clients[ i ] == -1 )
 			{
-				G_Printf( "*:" );
+				Log::Notice( "*:" );
 			}
 			else
 			{
-				G_Printf( "%d:", sq->clients[ i ] );
+				Log::Notice( "%d:", sq->clients[ i ] );
 			}
 
 			i = QUEUE_PLUS1( i );
@@ -1343,7 +1295,7 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 		while ( i != QUEUE_PLUS1( sq->back ) );
 	}
 
-	G_Printf( "\n" );
+	Log::Notice( "\n" );
 }
 
 /*
@@ -1409,7 +1361,7 @@ void G_CountSpawns()
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || G_Dead( ent ) )
+		if ( !ent->inuse || ent->s.eType != entityType_t::ET_BUILDABLE || G_Dead( ent ) )
 		{
 			continue;
 			// is it really useful? Seriously?
@@ -1650,7 +1602,7 @@ void MoveClientToIntermission( gentity_t *ent )
 
 	ent->client->ps.eFlags = 0;
 	ent->s.eFlags = 0;
-	ent->s.eType = ET_GENERAL;
+	ent->s.eType = entityType_t::ET_GENERAL;
 	ent->s.loopSound = 0;
 	ent->s.event = 0;
 	ent->r.contents = 0;
@@ -1874,7 +1826,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	if ( !level.inClient )
 	{
 		G_UnEscapeString( string, decolored, sizeof( decolored ) );
-		G_Printf( "%s", decolored + 7 );
+		Log::Notice( "%s", decolored + 7 );
 	}
 
 	if ( !level.logFile )
@@ -2915,21 +2867,21 @@ void G_RunFrame( int levelTime )
 		// think/run entitiy by type
 		switch ( ent->s.eType )
 		{
-			case ET_MISSILE:
+			case entityType_t::ET_MISSILE:
 				G_RunMissile( ent );
 				continue;
 
-			case ET_BUILDABLE:
+			case entityType_t::ET_BUILDABLE:
 				// TODO: Do buildables make any use of G_Physics' functionality apart from the call
 				//       to G_RunThink?
 				G_Physics( ent, msec );
 				continue;
 
-			case ET_CORPSE:
+			case entityType_t::ET_CORPSE:
 				G_Physics( ent, msec );
 				continue;
 
-			case ET_MOVER:
+			case entityType_t::ET_MOVER:
 				G_RunMover( ent );
 				continue;
 

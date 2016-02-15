@@ -70,26 +70,25 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 		{
 			switch ( R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius ) )
 			{
-				case CULL_OUT:
+				case cullResult_t::CULL_OUT:
 					tr.pc.c_sphere_cull_mdv_out++;
-					ent->cull = CULL_OUT;
+					ent->cull = cullResult_t::CULL_OUT;
 					return;
 
-				case CULL_IN:
+				case cullResult_t::CULL_IN:
 					tr.pc.c_sphere_cull_mdv_in++;
-					ent->cull = CULL_IN;
+					ent->cull = cullResult_t::CULL_IN;
 					return;
 
-				case CULL_CLIP:
+				case cullResult_t::CULL_CLIP:
 					tr.pc.c_sphere_cull_mdv_clip++;
 					break;
 			}
 		}
 		else
 		{
-			int sphereCull, sphereCullB;
-
-			sphereCull = R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius );
+			cullResult_t sphereCullB;
+			cullResult_t sphereCull = R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius );
 
 			if ( newFrame == oldFrame )
 			{
@@ -102,16 +101,16 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 
 			if ( sphereCull == sphereCullB )
 			{
-				if ( sphereCull == CULL_OUT )
+				if ( sphereCull == cullResult_t::CULL_OUT )
 				{
 					tr.pc.c_sphere_cull_mdv_out++;
-					ent->cull = CULL_OUT;
+					ent->cull = cullResult_t::CULL_OUT;
 					return;
 				}
-				else if ( sphereCull == CULL_IN )
+				else if ( sphereCull == cullResult_t::CULL_IN )
 				{
 					tr.pc.c_sphere_cull_mdv_in++;
-					ent->cull = CULL_IN;
+					ent->cull = cullResult_t::CULL_IN;
 					return;
 				}
 				else
@@ -124,20 +123,20 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 
 	switch ( R_CullLocalBox( ent->localBounds ) )
 	{
-		case CULL_IN:
+		case cullResult_t::CULL_IN:
 			tr.pc.c_box_cull_mdv_in++;
-			ent->cull = CULL_IN;
+			ent->cull = cullResult_t::CULL_IN;
 			return;
 
-		case CULL_CLIP:
+		case cullResult_t::CULL_CLIP:
 			tr.pc.c_box_cull_mdv_clip++;
-			ent->cull = CULL_CLIP;
+			ent->cull = cullResult_t::CULL_CLIP;
 			return;
 
-		case CULL_OUT:
+		case cullResult_t::CULL_OUT:
 		default:
 			tr.pc.c_box_cull_mdv_out++;
-			ent->cull = CULL_OUT;
+			ent->cull = cullResult_t::CULL_OUT;
 			return;
 	}
 }
@@ -245,11 +244,11 @@ static shader_t *GetMDVSurfaceShader( const trRefEntity_t *ent, mdvSurface_t *md
 
 		if ( shader == tr.defaultShader )
 		{
-			ri.Printf( PRINT_DEVELOPER, "WARNING: no shader for surface %s in skin %s\n", mdvSurface->name, skin->name );
+			Log::Warn("no shader for surface %s in skin %s", mdvSurface->name, skin->name );
 		}
 		else if ( shader->defaultShader )
 		{
-			ri.Printf( PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
+			Log::Warn("shader %s in skin %s not found", shader->name, skin->name );
 		}
 	}
 	else
@@ -301,7 +300,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	if ( ( ent->e.frame >= tr.currentModel->mdv[ lod ]->numFrames )
 	     || ( ent->e.frame < 0 ) || ( ent->e.oldframe >= tr.currentModel->mdv[ lod ]->numFrames ) || ( ent->e.oldframe < 0 ) )
 	{
-		ri.Printf( PRINT_DEVELOPER, "R_AddMDVSurfaces: no such frame %d to %d for '%s' (%d)\n",
+		Log::Warn("R_AddMDVSurfaces: no such frame %d to %d for '%s' (%d)",
 		           ent->e.oldframe, ent->e.frame, tr.currentModel->name, tr.currentModel->mdv[ lod ]->numFrames );
 		ent->e.frame = 0;
 		ent->e.oldframe = 0;
@@ -319,7 +318,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	}
 
 	// set up lighting now that we know we aren't culled
-	if ( !personalModel || r_shadows->integer > SHADOWING_BLOB )
+	if ( !personalModel || r_shadows->integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) )
 	{
 		R_SetupEntityLighting( &tr.refdef, ent, nullptr );
 	}

@@ -33,11 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Audio {
 
-typedef struct
+struct soundExtToLoaderMap_t
 {
 	const char *ext;
 	AudioData (*SoundLoader) (std::string);
-} soundExtToLoaderMap_t;
+};
 
 // Note that the ordering indicates the order of preference used
 // when there are multiple sound files of different formats available

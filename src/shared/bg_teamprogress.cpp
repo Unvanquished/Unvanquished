@@ -77,7 +77,7 @@ static const char *UnlockableHumanName( unlockable_t *unlockable )
 		case UNLT_CLASS:     return BG_ClassModelConfig( unlockable->num )->humanName;
 	}
 
-	Com_Error( ERR_FATAL, "UnlockableHumanName: Unlockable has unknown type" );
+	Com_Error( errorParm_t::ERR_FATAL, "UnlockableHumanName: Unlockable has unknown type" );
 	return nullptr;
 }
 
@@ -92,7 +92,7 @@ static bool Disabled( unlockable_t *unlockable )
 		case UNLT_CLASS:     return BG_ClassDisabled( unlockable->num );
 	}
 
-	Com_Error( ERR_FATAL, "Disabled: Unlockable has unknown type" );
+	Com_Error( errorParm_t::ERR_FATAL, "Disabled: Unlockable has unknown type" );
 	return false;
 }
 #endif // BUILD_CGAME
@@ -154,7 +154,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 		case TEAM_ALIENS:
 			if ( unlocked )
 			{
-				trap_S_StartLocalSound( cgs.media.weHaveEvolved, CHAN_ANNOUNCER );
+				trap_S_StartLocalSound( cgs.media.weHaveEvolved, soundChannel_t::CHAN_ANNOUNCER );
 			}
 			break;
 
@@ -162,7 +162,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 		default:
 			if ( unlocked )
 			{
-				trap_S_StartLocalSound( cgs.media.reinforcement, CHAN_ANNOUNCER );
+				trap_S_StartLocalSound( cgs.media.reinforcement, soundChannel_t::CHAN_ANNOUNCER );
 			}
 			break;
 	}
@@ -185,7 +185,7 @@ static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
 		dummy.type = type;
 		dummy.num  = itemNum;
 
-		Com_Printf( S_WARNING "Asked for the status of unlockable item %s but the status is unknown.\n",
+		Log::Warn( "Asked for the status of unlockable item %s but the status is unknown.",
 		            UnlockableHumanName( &dummy ) );
 	}
 }
@@ -328,7 +328,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 				break;
 
 			default:
-				Com_Error( ERR_FATAL, "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
+				Com_Error( errorParm_t::ERR_FATAL, "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
 		}
 
 		unlockThreshold = std::max( unlockThreshold, 0 );
@@ -398,7 +398,7 @@ int BG_UnlockablesMask( int team )
 {
 	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
 	{
-		Com_Error( ERR_FATAL, "G_GetUnlockablesMask: Requested mask for a team with unknown unlockable status" );
+		Com_Error( errorParm_t::ERR_FATAL, "G_GetUnlockablesMask: Requested mask for a team with unknown unlockable status" );
 	}
 
 	return unlockablesMask[ team ];
@@ -521,12 +521,12 @@ static void UpdateUnlockablesMask()
 
 			if ( unlockableNum[ team ] > 15 ) // 16 bit available for transmission
 			{
-				Com_Error( ERR_FATAL, "UpdateUnlockablesMask: Number of unlockable items for a team exceeded" );
+				Com_Error( errorParm_t::ERR_FATAL, "UpdateUnlockablesMask: Number of unlockable items for a team exceeded" );
 			}
 
 			if ( !unlockables[ unlockable ].statusKnown )
 			{
-				Com_Error( ERR_FATAL, "UpdateUnlockablesMask: Called before G_UpdateUnlockables" );
+				Com_Error( errorParm_t::ERR_FATAL, "UpdateUnlockablesMask: Called before G_UpdateUnlockables" );
 			}
 
 			if ( unlockables[ unlockable ].unlocked )
@@ -584,7 +584,7 @@ void G_UpdateUnlockables()
 				break;
 
 			default:
-				Com_Error( ERR_FATAL, "G_UpdateUnlockables: Unknown unlockable type" );
+				Com_Error( errorParm_t::ERR_FATAL, "G_UpdateUnlockables: Unknown unlockable type" );
 		}
 
 		unlockThreshold = std::max( unlockThreshold, 0 );
@@ -605,7 +605,7 @@ void G_UpdateUnlockables()
 
 		itemNum++;
 
-		/*Com_Printf( "G_UpdateUnlockables: Team %s, Type %s, Item %s, Momentum %d, Threshold %d, "
+		/*Log::Notice( "G_UpdateUnlockables: Team %s, Type %s, Item %s, Momentum %d, Threshold %d, "
 		            "Unlocked %d, Synchronize %d\n",
 		            BG_TeamName( team ), UnlockableTypeName( unlockable ), UnlockableName( unlockable ),
 		            momentum, unlockThreshold, unlockable->unlocked, unlockable->synchronize );*/

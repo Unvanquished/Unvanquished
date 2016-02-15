@@ -90,18 +90,18 @@ namespace IPC {
      * Asynchronous message which does not wait for a reply, the argument types
      * can be any serializable type, you can declare a message type like so:
      *
-     *     typedef IPC::Message<IPC::Id<MY_MODULE, MY_METHOD>, std::string, int, bool> MyMethodMsg;
+     *     using MyMethodMsg = IPC::Message<IPC::Id<MY_MODULE, MY_METHOD>, std::string, int, bool>;
      */
 	template<typename Id, typename... T> struct Message {
 		enum {
 			id = Id::value
 		};
-		typedef std::tuple<T...> Inputs;
+		using Inputs = std::tuple<T...>;
 	};
 
 	// Reply class which should only be used for the second parameter of SyncMessage
 	template<typename... T> struct Reply {
-		typedef std::tuple<T...> Outputs;
+		using Outputs = std::tuple<T...>;
 	};
 
     /*
@@ -109,10 +109,10 @@ namespace IPC {
      * the input and output types can be any serializable type, you can declare a
      * synchronous message type like so:
      *
-     *     typedef IPC::SyncMessage<
+     *     using MyMethodMsg = IPC::SyncMessage<
      *         Message<IPC::Id<MY_MODULE, MY_METHOD>, std::string, int, bool>,
      *         IPC::Reply<std::string>
-     *     > MyMethodMsg;
+     *     >;
      *
      * You can skip the Reply part if there is no return value, this is useful for
      * messages whose invocation will contain other sync messages, such as most
@@ -122,8 +122,8 @@ namespace IPC {
 		enum {
 			id = Msg::id
 		};
-		typedef typename Msg::Inputs Inputs;
-		typedef typename Reply::Outputs Outputs;
+		using Inputs = typename Msg::Inputs;
+		using Outputs = typename Reply::Outputs;
 	};
 
 } // namespace IPC

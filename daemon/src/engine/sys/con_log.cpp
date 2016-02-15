@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
 
-#define MAX_LOG 131072
+static const int MAX_LOG = 131072;
 
 Cvar::Cvar<bool> com_ansiColor("com_ansiColor", "", Cvar::NONE, true);
 Cvar::Cvar<std::string> com_consoleCommand("com_consoleCommand", "", Cvar::NONE, "");

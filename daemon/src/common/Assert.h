@@ -61,7 +61,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // DAEMON_ASSERT_CALLSITE_HELPER generates the actual assert code. In Debug it does what you would
 // expect of an assert and in release it tries to give hints to make the compiler generate better code.
-#if defined(DEBUG)
+#if defined(DEBUG_BUILD)
     #define DAEMON_ASSERT_CALLSITE_HELPER(file, func, line, _0, code, condition, message) \
         do { \
             code; \

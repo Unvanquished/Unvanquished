@@ -234,7 +234,7 @@ namespace VM {
         switch (minor) {
             case QVM_COMMON_PRINT:
                 IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](const std::string& text) {
-                    Com_Printf("%s", text.c_str());
+                    Log::Notice("%s", text.c_str());
                 });
                 break;
 
@@ -274,7 +274,7 @@ namespace VM {
 
             case QVM_COMMON_FS_SEEK:
                 IPC::HandleMsg<VM::FSSeekMsg>(channel, std::move(reader), [this] (int f, long offset, int origin, int& res) {
-                    res = FS_Seek(f, offset, origin);
+                    res = FS_Seek(f, offset, Util::enum_cast<fsOrigin_t>(origin));
                 });
                 break;
 
@@ -372,7 +372,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
+                Com_Error(errorParm_t::ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
         }
     }
 

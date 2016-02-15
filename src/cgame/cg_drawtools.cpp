@@ -495,7 +495,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const C
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
 
-	re.reType = RT_MODEL;
+	re.reType = refEntityType_t::RT_MODEL;
 	re.hModel = cgs.media.sphereModel;
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
@@ -524,7 +524,7 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	static refEntity_t re; // static for proper alignment in QVMs
 	memset( &re, 0, sizeof( re ) );
 
-	re.reType = RT_MODEL;
+	re.reType = refEntityType_t::RT_MODEL;
 	re.hModel = a240 ? cgs.media.sphericalCone240Model : cgs.media.sphericalCone64Model;
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;

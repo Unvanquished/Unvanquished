@@ -71,7 +71,7 @@ template<>
  *
  * Requirements for AdaptedType:
  * 	static bool is_color = true;
- * 	typedef (unspecified) component_type; // See ColorComponentTraits
+ * 	using component_type = (unspecified); // See ColorComponentTraits
  * 	static component_type component_max = (unspecified); // See ColorComponentTraits
  * 	component_type Red()   const; // Red component
  * 	component_type Green() const; // Green component
@@ -308,8 +308,8 @@ private:
 
 };
 
-typedef BasicColor<float>         Color;
-typedef BasicColor<uint8_t>       Color32Bit;
+using Color = BasicColor<float>;
+using Color32Bit = BasicColor<uint8_t>;
 
 /*
  * Blend two colors.
@@ -371,7 +371,7 @@ extern Color LtOrange;
 class Token
 {
 public:
-	enum TokenType {
+	enum class TokenType {
 		INVALID,       // Invalid/empty token
 		CHARACTER,     // A character
 		ESCAPE,        // Color escape
@@ -407,7 +407,7 @@ public:
 	Token( const char* begin, const char* end, const ::Color::Color& color )
 		: begin( begin ),
 		  end( end ),
-		  type( COLOR ),
+		  type( TokenType::COLOR ),
 		  color( color )
 	{}
 
@@ -455,14 +455,14 @@ public:
 	 */
 	explicit operator bool() const
 	{
-		return type != INVALID && begin && begin < end;
+		return type != TokenType::INVALID && begin && begin < end;
 	}
 
 private:
 
 	const char*   begin = nullptr;
 	const char*   end   = nullptr;
-	TokenType      type  = INVALID;
+	TokenType      type  = TokenType::INVALID;
 	::Color::Color color;
 
 };

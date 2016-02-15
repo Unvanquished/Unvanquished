@@ -789,16 +789,16 @@ void G_admin_writeconfig()
 
 	if ( !g_admin.string[ 0 ] )
 	{
-		G_Printf( S_WARNING "g_admin is not set. "
-		          " configuration will not be saved to a file.\n" );
+		Log::Warn("g_admin is not set. "
+		          " configuration will not be saved to a file." );
 		return;
 	}
 
 	t = Com_GMTime( nullptr );
 
-	if ( trap_FS_FOpenFile( g_admin.string, &f, FS_WRITE_VIA_TEMPORARY ) < 0 )
+	if ( trap_FS_FOpenFile( g_admin.string, &f, fsMode_t::FS_WRITE_VIA_TEMPORARY ) < 0 )
 	{
-		G_Printf( "admin_writeconfig: could not open g_admin file \"%s\"\n",
+		Log::Warn( "admin_writeconfig: could not open g_admin file \"%s\"",
 		          g_admin.string );
 		return;
 	}
@@ -1527,10 +1527,10 @@ bool G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		// and don't fill the console
 		else if ( ban->warnCount < 10 )
 		{
-			trap_Print( va( "%s%s\n", warningMessage,
+			Log::Warn( "%s%s\n", warningMessage,
 			                ban->warnCount + 1 == 10 ?
 			                "^7 — future messages for this ban will be suppressed" :
-			                "" ) );
+			                "" );
 		}
 
 		return true;
@@ -1810,11 +1810,11 @@ bool G_admin_readconfig( gentity_t *ent )
 		return false;
 	}
 
-	len = trap_FS_FOpenFile( g_admin.string, &f, FS_READ );
+	len = trap_FS_FOpenFile( g_admin.string, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
-		G_Printf( "^3readconfig: ^7could not open admin config file %s\n",
+		Log::Warn( "^3readconfig: ^7could not open admin config file %s",
 		          g_admin.string );
 		admin_default_levels();
 		return false;
@@ -3200,7 +3200,7 @@ bool G_admin_changemap( gentity_t *ent )
 
 		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) ||
 		     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
-		                        nullptr, FS_READ ) > 0 )
+		                        nullptr, fsMode_t::FS_READ ) > 0 )
 		{
 			// nothing to do
 		}
@@ -4256,7 +4256,7 @@ bool G_admin_restart( gentity_t *ent )
 	// check that the layout's available
 	builtin = !*layout || !Q_stricmp( layout, S_BUILTIN_LAYOUT );
 
-	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), nullptr, FS_READ ) )
+	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), nullptr, fsMode_t::FS_READ ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3restart: ^7layout '$1$' does not exist\n") ), layout ) );
 		return false;
@@ -5010,7 +5010,7 @@ bool G_admin_builder( gentity_t *ent )
 	trap_Trace( &tr, start, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
 
-	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == ET_BUILDABLE ) )
+	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == entityType_t::ET_BUILDABLE ) )
 	{
 		const char *builder, *buildingName;
 

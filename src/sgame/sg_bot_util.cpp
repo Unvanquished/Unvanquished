@@ -23,36 +23,6 @@
 #include "sg_bot_util.h"
 #include "CBSE.h"
 
-void BotDPrintf( const char* fmt, ... )
-{
-	if ( g_bot_debug.integer )
-	{
-		va_list argptr;
-		char    text[ 1024 ];
-
-		va_start( argptr, fmt );
-		Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-		va_end( argptr );
-
-		trap_Print( text );
-	}
-}
-
-void BotError( const char* fmt, ... )
-{
-	va_list argptr;
-	size_t  len;
-	char    text[ 1024 ] = "^1ERROR: ";
-
-	len = strlen( text );
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text + len, sizeof( text ) - len, fmt, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
-
 /*
  = *======================
  Scoring functions for logic
@@ -472,7 +442,7 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 		{
 			continue;
 		}
-		if ( target->s.eType == ET_BUILDABLE && target->s.modelindex == buildingType &&
+		if ( target->s.eType == entityType_t::ET_BUILDABLE && target->s.modelindex == buildingType &&
 		     ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) &&
 		     G_Alive( target ) )
 		{
@@ -513,7 +483,7 @@ void BotFindClosestBuildings( gentity_t *self )
 		}
 
 		//skip non buildings
-		if ( testEnt->s.eType != ET_BUILDABLE )
+		if ( testEnt->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}
@@ -561,7 +531,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( target->s.eType != ET_BUILDABLE )
+		if ( target->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}
@@ -628,7 +598,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( target->s.eType == ET_PLAYER && self->client->pers.team == TEAM_HUMANS
+		if ( target->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
 		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
 		{
 			continue;
@@ -685,7 +655,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 		}
 
 		//ignore buildings if we cant attack them
-		if ( target->s.eType == ET_BUILDABLE )
+		if ( target->s.eType == entityType_t::ET_BUILDABLE )
 		{
 			if ( !g_bot_attackStruct.integer )
 			{
@@ -864,7 +834,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		{
 			BG_ClassBoundingBox( ( class_t ) target.ent->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
 		}
-		else if ( target.ent->s.eType == ET_BUILDABLE )
+		else if ( target.ent->s.eType == entityType_t::ET_BUILDABLE )
 		{
 			BG_BuildableBoundingBox( ( buildable_t ) target.ent->s.modelindex, mins, maxs );
 		}
@@ -876,11 +846,11 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 
 		if ( BotTargetIsPlayer( target ) )
 		{
-			routeTarget->type = BOT_TARGET_DYNAMIC;
+			routeTarget->type = botRouteTargetType_t::BOT_TARGET_DYNAMIC;
 		}
 		else
 		{
-			routeTarget->type = BOT_TARGET_STATIC;
+			routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
 		}
 	}
 	else
@@ -888,7 +858,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		// point target
 		VectorSet( maxs, 96, 96, 96 );
 		VectorSet( mins, -96, -96, -96 );
-		routeTarget->type = BOT_TARGET_STATIC;
+		routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
 	}
 	
 	for ( i = 0; i < 3; i++ )
@@ -905,10 +875,10 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	// account for buildings on walls or cielings
 	if ( BotTargetIsEntity( target ) )
 	{
-		if ( target.ent->s.eType == ET_BUILDABLE || target.ent->s.eType == ET_PLAYER )
+		if ( target.ent->s.eType == entityType_t::ET_BUILDABLE || target.ent->s.eType == entityType_t::ET_PLAYER )
 		{
 			// building on wall or cieling ( 0.7 == MIN_WALK_NORMAL )
-			if ( target.ent->s.origin2[ 2 ] < 0.7 || target.ent->s.eType == ET_PLAYER )
+			if ( target.ent->s.origin2[ 2 ] < 0.7 || target.ent->s.eType == entityType_t::ET_PLAYER )
 			{
 				vec3_t targetPos;
 				vec3_t end;
@@ -945,7 +915,7 @@ team_t BotGetEntityTeam( gentity_t *ent )
 	{
 		return ( team_t )ent->client->pers.team;
 	}
-	else if ( ent->s.eType == ET_BUILDABLE )
+	else if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return ent->buildableTeam;
 	}
@@ -967,7 +937,7 @@ team_t BotGetTargetTeam( botTarget_t target )
 	}
 }
 
-int BotGetTargetType( botTarget_t target )
+entityType_t BotGetTargetType( botTarget_t target )
 {
 	if ( BotTargetIsEntity( target ) )
 	{
@@ -975,7 +945,7 @@ int BotGetTargetType( botTarget_t target )
 	}
 	else
 	{
-		return -1;
+		return Util::enum_cast<entityType_t>(-1);
 	}
 }
 
@@ -1105,7 +1075,7 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 				VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
 				SnapVector( t.trDelta );
 				VectorCopy( muzzle, t.trBase );
-				t.trType = TR_LINEAR;
+				t.trType = trType_t::TR_LINEAR;
 				t.trTime = level.time - 50;
 			
 				// find projectile's final position
@@ -1128,7 +1098,7 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 				// FIXME: depend on the value of the flamer damage falloff cvar
 				// FIXME: have to stand further away from acid or will be
 				//        pushed back and will stop attacking (too far away)
-				if ( BotGetTargetType( target ) == ET_BUILDABLE &&
+				if ( BotGetTargetType( target ) == entityType_t::ET_BUILDABLE &&
 				     target.ent->s.modelindex != BA_A_ACIDTUBE )
 				{
 					range -= 300;
@@ -1216,14 +1186,14 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 	//get the position of the target
 	BotGetTargetPos( target, aimLocation );
 
-	if ( BotGetTargetType( target ) != ET_BUILDABLE && BotTargetIsEntity( target ) && BotGetTargetTeam( target ) == TEAM_HUMANS )
+	if ( BotGetTargetType( target ) != entityType_t::ET_BUILDABLE && BotTargetIsEntity( target ) && BotGetTargetTeam( target ) == TEAM_HUMANS )
 	{
 
 		//aim at head
 		aimLocation[2] += target.ent->r.maxs[2] * 0.85;
 
 	}
-	else if ( BotGetTargetType( target ) == ET_BUILDABLE || BotGetTargetTeam( target ) == TEAM_ALIENS )
+	else if ( BotGetTargetType( target ) == entityType_t::ET_BUILDABLE || BotGetTargetTeam( target ) == TEAM_ALIENS )
 	{
 		//make lucifer cannons aim ahead based on the target's velocity
 		if ( self->client->ps.weapon == WP_LUCIFER_CANNON && self->botMind->botSkill.level >= 5 )
@@ -1516,7 +1486,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 		case PCL_ALIEN_LEVEL3:
 			break;
 		case PCL_ALIEN_LEVEL3_UPG:
-			if ( BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE && self->client->ps.ammo > 0
+			if ( BotGetTargetType( self->botMind->goal ) == entityType_t::ET_BUILDABLE && self->client->ps.ammo > 0
 				&& inAttackRange )
 			{
 				//dont move when sniping buildings
@@ -1753,7 +1723,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			other = &g_entities[ entityList[ i ] ];
 
 			if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
+				( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
 			{
 				return false;
 			}
@@ -2120,7 +2090,7 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 	}
 
 	//ignore buildings if we cant attack them
-	if ( enemy->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
+	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
 	                                         self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
 	{
 		return false;
@@ -2148,7 +2118,7 @@ void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
 	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->pers.team )
 	{
-		if ( attacker->s.eType == ET_PLAYER )
+		if ( attacker->s.eType == entityType_t::ET_PLAYER )
 		{
 			BotPushEnemy( &self->botMind->enemyQueue, attacker );
 		}

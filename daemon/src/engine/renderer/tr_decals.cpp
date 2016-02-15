@@ -39,13 +39,11 @@ Maryland 20850 USA.
 
 extern int r_numDecalProjectors;
 
-typedef struct decalVert_s
+struct decalVert_t
 {
 	vec3_t xyz;
 	float  st[ 2 ];
-}
-
-decalVert_t;
+};
 
 /*
 MakeTextureMatrix()
@@ -53,7 +51,7 @@ generates a texture projection matrix for a triangle
 returns false if a texture matrix cannot be created
 */
 
-typedef double dvec3_t[ 3 ];
+using dvec3_t = double[3];
 
 static bool MakeTextureMatrix( vec4_t texMat[ 2 ], vec4_t projection, decalVert_t *a, decalVert_t *b, decalVert_t *c )
 {
@@ -168,7 +166,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	/* dummy check */
 	if ( numPoints != 1 && numPoints != 3 && numPoints != 4 )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: Invalid number of decal points (%d)\n", numPoints );
+		Log::Warn("Invalid number of decal points (%d)", numPoints );
 		return;
 	}
 
@@ -283,7 +281,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 	temp.radius2 = temp.radius * temp.radius;
 
 	/* frustum cull the projector (fixme: this uses a stale frustum!) */
-	if ( R_CullPointAndRadius( temp.center, temp.radius ) == CULL_OUT )
+	if ( R_CullPointAndRadius( temp.center, temp.radius ) == cullResult_t::CULL_OUT )
 	{
 		return;
 	}
@@ -392,10 +390,6 @@ ChopWindingBehindPlane()
 clips a winding to the fragment behind the plane
 */
 
-#define SIDE_FRONT 0
-#define SIDE_BACK  1
-#define SIDE_ON    2
-
 static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_VERTS ],
                                     int *numOutPoints, vec3_t outPoints[ MAX_DECAL_VERTS ], vec4_t plane, vec_t epsilon )
 {
@@ -404,7 +398,7 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 	float *p1, *p2, *clip;
 	float d;
 	float dists[ MAX_DECAL_VERTS + 4 ];
-	int   sides[ MAX_DECAL_VERTS + 4 ];
+	planeSide_t sides[ MAX_DECAL_VERTS + 4 ];
 	int   counts[ 3 ];
 
 	/* set initial count */
@@ -417,9 +411,9 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 	}
 
 	/* determine sides for each point */
-	counts[ SIDE_FRONT ] = 0;
-	counts[ SIDE_BACK ] = 0;
-	counts[ SIDE_ON ] = 0;
+	counts[ Util::ordinal(planeSide_t::SIDE_FRONT) ] = 0;
+	counts[ Util::ordinal(planeSide_t::SIDE_BACK) ] = 0;
+	counts[ Util::ordinal(planeSide_t::SIDE_ON) ] = 0;
 
 	for ( i = 0; i < numInPoints; i++ )
 	{
@@ -427,31 +421,31 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 
 		if ( dists[ i ] > epsilon )
 		{
-			sides[ i ] = SIDE_FRONT;
+			sides[ i ] = planeSide_t::SIDE_FRONT;
 		}
 		else if ( dists[ i ] < -epsilon )
 		{
-			sides[ i ] = SIDE_BACK;
+			sides[ i ] = planeSide_t::SIDE_BACK;
 		}
 		else
 		{
-			sides[ i ] = SIDE_ON;
+			sides[ i ] = planeSide_t::SIDE_ON;
 		}
 
-		counts[ sides[ i ] ]++;
+		counts[ Util::ordinal(sides[ i ]) ]++;
 	}
 
 	sides[ i ] = sides[ 0 ];
 	dists[ i ] = dists[ 0 ];
 
 	/* all points on front */
-	if ( counts[ SIDE_BACK ] == 0 )
+	if ( counts[ Util::ordinal(planeSide_t::SIDE_BACK) ] == 0 )
 	{
 		return;
 	}
 
 	/* all points on back */
-	if ( counts[ SIDE_FRONT ] == 0 )
+	if ( counts[ Util::ordinal(planeSide_t::SIDE_FRONT) ] == 0 )
 	{
 		*numOutPoints = numInPoints;
 		Com_Memcpy( outPoints, inPoints, numInPoints * sizeof( vec3_t ) );
@@ -464,13 +458,13 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 		p1 = inPoints[ i ];
 		clip = outPoints[ *numOutPoints ];
 
-		if ( sides[ i ] == SIDE_ON || sides[ i ] == SIDE_BACK )
+		if ( sides[ i ] == planeSide_t::SIDE_ON || sides[ i ] == planeSide_t::SIDE_BACK )
 		{
 			VectorCopy( p1, clip );
 			( *numOutPoints ) ++;
 		}
 
-		if ( sides[ i + 1 ] == SIDE_ON || sides[ i + 1 ] == sides[ i ] )
+		if ( sides[ i + 1 ] == planeSide_t::SIDE_ON || sides[ i + 1 ] == sides[ i ] )
 		{
 			continue;
 		}
@@ -677,7 +671,7 @@ static void ProjectDecalOntoTriangles( decalProjector_t *dp, bspSurface_t *surf,
 	srfTriangle_t *tri;
 	vec3_t        points[ 2 ][ MAX_DECAL_VERTS ];
 
-	if ( *surf->data == SF_FACE )
+	if ( *surf->data == surfaceType_t::SF_FACE )
 	{
 		/* get surface */
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * ) surf->data;
@@ -694,7 +688,7 @@ static void ProjectDecalOntoTriangles( decalProjector_t *dp, bspSurface_t *surf,
 			ProjectDecalOntoWinding( dp, 3, points, surf, bmodel );
 		}
 	}
-	else if ( *surf->data == SF_TRIANGLES )
+	else if ( *surf->data == surfaceType_t::SF_TRIANGLES )
 	{
 		/* get surface */
 		srfTriangles_t *srf = ( srfTriangles_t * ) surf->data;
@@ -782,7 +776,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 	gen = ( srfGeneric_t * ) surf->data;
 
 	/* ignore certain surfacetypes */
-	if ( gen->surfaceType != SF_FACE && gen->surfaceType != SF_TRIANGLES && gen->surfaceType != SF_GRID )
+	if ( gen->surfaceType != surfaceType_t::SF_FACE && gen->surfaceType != surfaceType_t::SF_TRIANGLES && gen->surfaceType != surfaceType_t::SF_GRID )
 	{
 		return;
 	}
@@ -794,7 +788,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 	}
 
 	/* planar surface */
-	if ( gen->surfaceType == SF_FACE )
+	if ( gen->surfaceType == surfaceType_t::SF_FACE )
 	{
 		srfSurfaceFace_t *srf = ( srfSurfaceFace_t * )surf->data;
 
@@ -824,12 +818,12 @@ void R_ProjectDecalOntoSurface( decalProjector_t *dp, bspSurface_t *surf, bspMod
 	/* switch on type */
 	switch ( gen->surfaceType )
 	{
-		case SF_FACE:
-		case SF_TRIANGLES:
+		case surfaceType_t::SF_FACE:
+		case surfaceType_t::SF_TRIANGLES:
 			ProjectDecalOntoTriangles( dp, surf, bmodel );
 			break;
 
-		case SF_GRID:
+		case surfaceType_t::SF_GRID:
 			ProjectDecalOntoGrid( dp, surf, bmodel );
 			break;
 
@@ -860,7 +854,7 @@ void R_AddDecalSurface( decal_t *decal )
 	tr.refdef.numDecals++;
 
 	/* set it up */
-	srf->surfaceType = SF_DECAL;
+	srf->surfaceType = surfaceType_t::SF_DECAL;
 	srf->numVerts = decal->numVerts;
 	Com_Memcpy( srf->verts, decal->verts, srf->numVerts * sizeof( *srf->verts ) );
 
@@ -933,7 +927,7 @@ void R_CullDecalProjectors()
 
 	for ( i = 0, dp = tr.refdef.decalProjectors; i < tr.refdef.numDecalProjectors; i++, dp++ )
 	{
-		if ( R_CullPointAndRadius( dp->center, dp->radius ) == CULL_OUT )
+		if ( R_CullPointAndRadius( dp->center, dp->radius ) == cullResult_t::CULL_OUT )
 		{
 			dp->shader = nullptr;
 		}

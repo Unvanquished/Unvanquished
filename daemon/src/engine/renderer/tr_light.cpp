@@ -39,7 +39,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 
 	// cull the entire model if it is outside the view frustum
 	// and we don't care about proper shadowing
-	if ( ent->cull == CULL_OUT )
+	if ( ent->cull == cullResult_t::CULL_OUT )
 	{
 		iaType = (interactionType_t) (iaType & ~IA_LIGHT);
 	}
@@ -82,7 +82,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, inter
 	// do a more expensive and precise light frustum cull
 	if ( !r_noLightFrustums->integer )
 	{
-		if ( R_CullLightWorldBounds( light, ent->worldBounds ) == CULL_OUT )
+		if ( R_CullLightWorldBounds( light, ent->worldBounds ) == cullResult_t::CULL_OUT )
 		{
 			tr.pc.c_dlightSurfacesCulled += bspModel->numSurfaces;
 			return;
@@ -348,7 +348,7 @@ void R_SetupLightOrigin( trRefLight_t *light )
 {
 	vec3_t transformed;
 
-	if ( light->l.rlType == RL_DIRECTIONAL )
+	if ( light->l.rlType == refLightType_t::RL_DIRECTIONAL )
 	{
 		if ( !VectorCompare( light->l.center, vec3_origin ) )
 		{
@@ -386,8 +386,8 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 {
 	switch ( light->l.rlType )
 	{
-		case RL_OMNI:
-		case RL_DIRECTIONAL:
+		case refLightType_t::RL_OMNI:
+		case refLightType_t::RL_DIRECTIONAL:
 			{
 				light->localBounds[ 0 ][ 0 ] = -light->l.radius[ 0 ];
 				light->localBounds[ 0 ][ 1 ] = -light->l.radius[ 1 ];
@@ -398,7 +398,7 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 				break;
 			}
 
-		case RL_PROJ:
+		case refLightType_t::RL_PROJ:
 			{
 				int    j;
 				vec3_t farCorners[ 4 ];
@@ -480,15 +480,15 @@ void R_SetupLightView( trRefLight_t *light )
 {
 	switch ( light->l.rlType )
 	{
-		case RL_OMNI:
-		case RL_PROJ:
-		case RL_DIRECTIONAL:
+		case refLightType_t::RL_OMNI:
+		case refLightType_t::RL_PROJ:
+		case refLightType_t::RL_DIRECTIONAL:
 			{
 				MatrixAffineInverse( light->transformMatrix, light->viewMatrix );
 				break;
 			}
 		default:
-			ri.Error( ERR_DROP, "R_SetupLightView: Bad rlType" );
+			ri.Error(errorParm_t::ERR_DROP, "R_SetupLightView: Bad rlType" );
 	}
 }
 
@@ -498,11 +498,11 @@ void R_TessLight( const trRefLight_t *light, const Color::Color& color, bool use
 
 	switch( light->l.rlType )
 	{
-		case RL_OMNI:
-		case RL_DIRECTIONAL:
+		case refLightType_t::RL_OMNI:
+		case refLightType_t::RL_DIRECTIONAL:
 			Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], use_default_color ? Color::White : color );
 			break;
-		case RL_PROJ:
+		case refLightType_t::RL_PROJ:
 			{
 				vec3_t farCorners[ 4 ];
 				vec4_t quadVerts[ 4 ];
@@ -600,8 +600,8 @@ void R_SetupLightFrustum( trRefLight_t *light )
 {
 	switch ( light->l.rlType )
 	{
-		case RL_OMNI:
-		case RL_DIRECTIONAL:
+		case refLightType_t::RL_OMNI:
+		case refLightType_t::RL_DIRECTIONAL:
 			{
 				int    i;
 				vec3_t planeNormal;
@@ -654,7 +654,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 				break;
 			}
 
-		case RL_PROJ:
+		case refLightType_t::RL_PROJ:
 			{
 				int    i;
 				vec4_t worldFrustum[ 6 ];
@@ -707,7 +707,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		}
 		data.numVerts = tess.numVertexes;
 
-		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, VBO_LAYOUT_POSITION );
+		light->frustumVBO = R_CreateStaticVBO( "staticLightFrustum_VBO", data, vboLayout_t::VBO_LAYOUT_POSITION );
 		light->frustumIBO = R_CreateStaticIBO( "staticLightFrustum_IBO", tess.indexes, tess.numIndexes );
 
 		ri.Hunk_FreeTempMemory( data.xyz );
@@ -731,14 +731,14 @@ void R_SetupLightProjection( trRefLight_t *light )
 {
 	switch ( light->l.rlType )
 	{
-		case RL_OMNI:
-		case RL_DIRECTIONAL:
+		case refLightType_t::RL_OMNI:
+		case refLightType_t::RL_DIRECTIONAL:
 			{
 				MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius[ 0 ], 1.0 / light->l.radius[ 1 ], 1.0 / light->l.radius[ 2 ] );
 				break;
 			}
 
-		case RL_PROJ:
+		case refLightType_t::RL_PROJ:
 			{
 				int    i;
 				float  *proj = light->projectionMatrix;
@@ -862,7 +862,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 			}
 
 		default:
-			ri.Error( ERR_DROP, "R_SetupLightProjection: Bad rlType" );
+			ri.Error(errorParm_t::ERR_DROP, "R_SetupLightProjection: Bad rlType" );
 	}
 }
 
@@ -1185,7 +1185,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 
 	switch ( light->l.rlType )
 	{
-		case RL_OMNI:
+		case refLightType_t::RL_OMNI:
 			{
 				// top plane
 				VectorSet( v1, light->worldBounds[ 1 ][ 0 ], light->worldBounds[ 1 ][ 1 ], light->worldBounds[ 1 ][ 2 ] );
@@ -1240,7 +1240,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 				break;
 			}
 
-		case RL_PROJ:
+		case refLightType_t::RL_PROJ:
 			{
 				int    j;
 				vec3_t farCorners[ 4 ];
@@ -1325,7 +1325,7 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	bool   anyClip;
 	bool   culled;
 
-	if ( light->l.rlType != RL_OMNI || r_shadows->integer < SHADOWING_ESM16 || r_noShadowPyramids->integer )
+	if ( light->l.rlType != refLightType_t::RL_OMNI || r_shadows->integer < Util::ordinal(shadowingMode_t::SHADOWING_ESM16) || r_noShadowPyramids->integer )
 	{
 		return CUBESIDE_CLIPALL;
 	}
@@ -1523,7 +1523,7 @@ void R_SetupLightLOD( trRefLight_t *light )
 	}
 
 	// never give ultra quality for point lights
-	if ( lod == 0 && light->l.rlType == RL_OMNI )
+	if ( lod == 0 && light->l.rlType == refLightType_t::RL_OMNI )
 	{
 		lod = 1;
 	}
@@ -1545,11 +1545,11 @@ void R_SetupLightShader( trRefLight_t *light )
 			switch ( light->l.rlType )
 			{
 				default:
-				case RL_OMNI:
+				case refLightType_t::RL_OMNI:
 					light->shader = tr.defaultPointLightShader;
 					break;
 
-				case RL_PROJ:
+				case refLightType_t::RL_PROJ:
 					light->shader = tr.defaultProjectedLightShader;
 					break;
 			}
@@ -1559,11 +1559,11 @@ void R_SetupLightShader( trRefLight_t *light )
 			switch ( light->l.rlType )
 			{
 				default:
-				case RL_OMNI:
+				case refLightType_t::RL_OMNI:
 					light->shader = tr.defaultDynamicLightShader;
 					break;
 
-				case RL_PROJ:
+				case refLightType_t::RL_PROJ:
 					light->shader = tr.defaultProjectedLightShader;
 					break;
 			}
@@ -1598,7 +1598,7 @@ R_CullLightPoint
 Returns CULL_IN, CULL_CLIP, or CULL_OUT
 =================
 */
-int R_CullLightPoint( trRefLight_t *light, const vec3_t p )
+cullResult_t R_CullLightPoint( trRefLight_t *light, const vec3_t p )
 {
 	int      i;
 	cplane_t *frust;
@@ -1614,12 +1614,12 @@ int R_CullLightPoint( trRefLight_t *light, const vec3_t p )
 		if ( dist < 0 )
 		{
 			// completely outside frustum
-			return CULL_OUT;
+			return cullResult_t::CULL_OUT;
 		}
 	}
 
 	// completely inside frustum
-	return CULL_IN;
+	return cullResult_t::CULL_IN;
 }
 
 /*
@@ -1629,14 +1629,14 @@ R_CullLightTriangle
 Returns CULL_IN, CULL_CLIP, or CULL_OUT
 =================
 */
-int R_CullLightTriangle( trRefLight_t *light, vec3_t verts[ 3 ] )
+cullResult_t R_CullLightTriangle( trRefLight_t *light, vec3_t verts[ 3 ] )
 {
 	int    i;
 	vec3_t worldBounds[ 2 ];
 
 	if ( r_nocull->integer )
 	{
-		return CULL_CLIP;
+		return cullResult_t::CULL_CLIP;
 	}
 
 	// calc AABB of the triangle
@@ -1657,7 +1657,7 @@ R_CullLightTriangle
 Returns CULL_IN, CULL_CLIP, or CULL_OUT
 =================
 */
-int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
+cullResult_t R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 {
 	int      i;
 	cplane_t *frust;
@@ -1666,7 +1666,7 @@ int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 
 	if ( r_nocull->integer )
 	{
-		return CULL_CLIP;
+		return cullResult_t::CULL_CLIP;
 	}
 
 	// check against frustum planes
@@ -1681,7 +1681,7 @@ int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 		if ( r == 2 )
 		{
 			// completely outside frustum
-			return CULL_OUT;
+			return cullResult_t::CULL_OUT;
 		}
 
 		if ( r == 3 )
@@ -1693,9 +1693,9 @@ int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	if ( !anyClip )
 	{
 		// completely inside frustum
-		return CULL_IN;
+		return cullResult_t::CULL_IN;
 	}
 
 	// partially clipped
-	return CULL_CLIP;
+	return cullResult_t::CULL_CLIP;
 }

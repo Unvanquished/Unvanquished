@@ -58,7 +58,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mach-o/dyld.h>
 #endif
 
-Log::Logger fsLogs(VM_STRING_PREFIX "fs", "[FS]", Log::LOG_NOTICE);
+Log::Logger fsLogs(VM_STRING_PREFIX "fs", "[FS]", Log::Level::NOTICE);
 
 // SerializeTraits for PakInfo/LoadedPakInfo
 namespace Util {
@@ -69,7 +69,7 @@ template<> struct SerializeTraits<FS::PakInfo> {
 		stream.Write<std::string>(value.name);
 		stream.Write<std::string>(value.version);
 		stream.Write<Util::optional<uint32_t>>(value.checksum);
-		stream.Write<uint32_t>(value.type);
+		stream.Write<uint32_t>(Util::ordinal(value.type));
 		stream.Write<std::string>(value.path);
 	}
 	static FS::PakInfo Read(Reader& stream)
@@ -90,13 +90,13 @@ template<> struct SerializeTraits<FS::LoadedPakInfo> {
 		stream.Write<std::string>(value.name);
 		stream.Write<std::string>(value.version);
 		stream.Write<Util::optional<uint32_t>>(value.checksum);
-		stream.Write<uint32_t>(value.type);
+		stream.Write<uint32_t>(Util::ordinal(value.type));
 		stream.Write<std::string>(value.path);
 		stream.Write<Util::optional<uint32_t>>(value.realChecksum);
 		stream.Write<uint64_t>(std::chrono::system_clock::to_time_t(value.timestamp));
 		stream.Write<bool>(value.fd != -1);
 		if (value.fd != -1)
-			stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::MODE_READ));
+			stream.Write<IPC::FileHandle>(IPC::FileHandle(value.fd, IPC::FileOpenMode::MODE_READ));
 		stream.Write<std::string>(value.pathPrefix);
 	}
 	static FS::LoadedPakInfo Read(Reader& stream)
@@ -150,7 +150,7 @@ static std::string homePath;
 static std::vector<PakInfo> availablePaks;
 
 // Clean up platform compatibility issues
-enum openMode_t {
+enum class openMode_t {
 	MODE_READ,
 	MODE_WRITE,
 	MODE_APPEND,
@@ -158,33 +158,34 @@ enum openMode_t {
 };
 inline int my_open(Str::StringRef path, openMode_t mode)
 {
+	int mode_ = Util::ordinal(mode);
 	int modes[] = {O_RDONLY, O_WRONLY | O_TRUNC | O_CREAT, O_WRONLY | O_APPEND | O_CREAT, O_RDWR | O_CREAT};
 #ifdef _WIN32
 	// Allow open files to be deleted & renamed
 	DWORD access[] = {GENERIC_READ, GENERIC_WRITE, GENERIC_WRITE, GENERIC_READ | GENERIC_WRITE};
 	DWORD create[] = {OPEN_EXISTING, CREATE_ALWAYS, OPEN_ALWAYS, OPEN_ALWAYS};
-	HANDLE h = CreateFileW(Str::UTF8To16(path).c_str(), access[mode], FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, create[mode], FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE h = CreateFileW(Str::UTF8To16(path).c_str(), access[mode_], FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, create[mode_], FILE_ATTRIBUTE_NORMAL, NULL);
 	if (h == INVALID_HANDLE_VALUE) {
 		_doserrno = GetLastError();
 		errno = _doserrno == ERROR_FILE_NOT_FOUND || _doserrno == ERROR_PATH_NOT_FOUND ? ENOENT : 0; // Needed to check if we need to create the path
 		return -1;
 	}
-	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(h), modes[mode] | O_BINARY | O_NOINHERIT);
+	int fd = _open_osfhandle(reinterpret_cast<intptr_t>(h), modes[mode_] | O_BINARY | O_NOINHERIT);
 	if (fd == -1)
 		CloseHandle(h);
 #elif defined(__APPLE__)
 	// O_CLOEXEC is supported from 10.7 onwards
-	int fd = open(path.c_str(), modes[mode] | O_CLOEXEC, 0666);
+	int fd = open(path.c_str(), modes[mode_] | O_CLOEXEC, 0666);
 #elif defined(__linux__)
-	int fd = open64(path.c_str(), modes[mode] | O_CLOEXEC | O_LARGEFILE, 0666);
+	int fd = open64(path.c_str(), modes[mode_] | O_CLOEXEC | O_LARGEFILE, 0666);
 #elif defined(__native_client__)
 	// This doesn't actually work, but it's not used anyways
-	int fd = open(path.c_str(), modes[mode], 0666);
+	int fd = open(path.c_str(), modes[mode_], 0666);
 #endif
 
 #ifndef _WIN32
 	// Don't allow opening directories
-	if (mode == MODE_READ && fd != -1) {
+	if (mode == openMode_t::MODE_READ && fd != -1) {
 		struct stat st;
 		if (fstat(fd, &st) == -1) {
 			close(fd);
@@ -207,7 +208,8 @@ inline FILE* my_fopen(Str::StringRef path, openMode_t mode)
 		return nullptr;
 
 	const char* modes[] = {"rb", "wb", "ab", "rb+"};
-	FILE* fp = fdopen(fd, modes[mode]);
+	int mode_ = Util::ordinal(mode);
+	FILE* fp = fdopen(fd, modes[mode_]);
 
 	if (!fp)
 		close(fd);
@@ -236,9 +238,9 @@ inline int my_fseek(FILE* fd, offset_t off, int whence)
 #ifdef _WIN32
 typedef struct _stati64 my_stat_t;
 #elif defined(__APPLE__) || defined(__native_client__)
-typedef struct stat my_stat_t;
+using my_stat_t = struct stat;
 #elif defined(__linux__)
-typedef struct stat64 my_stat_t;
+using my_stat_t = struct stat64;
 #endif
 inline int my_fstat(int fd, my_stat_t* st)
 {
@@ -317,7 +319,7 @@ static const minizip_category_impl& minizip_category()
 }
 
 // Filesystem-specific error codes
-enum filesystem_error {
+enum class filesystem_error {
 	no_filesystem_error,
 	invalid_filename,
 	no_such_file,
@@ -334,7 +336,7 @@ public:
 	}
 	virtual std::string message(int ev) const OVERRIDE FINAL
 	{
-		switch (ev) {
+		switch (Util::enum_cast<filesystem_error>(ev)) {
 		case filesystem_error::invalid_filename:
 			return "Filename contains invalid characters";
 		case filesystem_error::no_such_file:
@@ -380,7 +382,7 @@ static void SetErrorCodeSystem(std::error_code& err)
 }
 static void SetErrorCodeFilesystem(std::error_code& err, filesystem_error ec)
 {
-	SetErrorCode(err, ec, filesystem_category());
+	SetErrorCode(err, Util::ordinal(ec), filesystem_category());
 }
 static void SetErrorCodeZlib(std::error_code& err, int num)
 {
@@ -651,7 +653,7 @@ static File FileFromIPC(Util::optional<IPC::OwnedFileHandle> ipcFile, openMode_t
 	int fd = ipcFile->GetHandle();
 
 	const char* modes[] = {"rb", "wb", "ab", "rb+"};
-	FILE* fp = fdopen(fd, modes[mode]);
+	FILE* fp = fdopen(fd, modes[Util::ordinal(mode)]);
 	if (!fp) {
 		close(fd);
 		SetErrorCodeSystem(err);
@@ -666,19 +668,20 @@ static File FileFromIPC(Util::optional<IPC::OwnedFileHandle> ipcFile, openMode_t
 // Convert a File object to an ipc file handle
 static IPC::OwnedFileHandle FileToIPC(File file, openMode_t mode)
 {
-	IPC::FileOpenMode ipcMode = IPC::MODE_READ;
+	IPC::FileOpenMode ipcMode;
 	switch (mode) {
-	case MODE_READ:
-		ipcMode = IPC::MODE_READ;
+	default:
+    case openMode_t::MODE_READ:
+		ipcMode = IPC::FileOpenMode::MODE_READ;
 		break;
-	case MODE_WRITE:
-		ipcMode = IPC::MODE_WRITE;
+	case openMode_t::MODE_WRITE:
+		ipcMode = IPC::FileOpenMode::MODE_WRITE;
 		break;
-	case MODE_APPEND:
-		ipcMode = IPC::MODE_WRITE_APPEND;
+	case openMode_t::MODE_APPEND:
+		ipcMode = IPC::FileOpenMode::MODE_WRITE_APPEND;
 		break;
-	case MODE_EDIT:
-		ipcMode = IPC::MODE_RW;
+	case openMode_t::MODE_EDIT:
+		ipcMode = IPC::FileOpenMode::MODE_RW;
 		break;
 	}
 
@@ -1059,7 +1062,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	loadedPaks.back().path = pak.path;
 
 	// Update the list of files, but don't overwrite existing files, so the sort order is preserved
-	if (pak.type == PAK_DIR) {
+	if (pak.type == pakType_t::PAK_DIR) {
 		loadedPaks.back().fd = -1;
 		auto dirRange = RawPath::ListFilesRecursive(pak.path, err);
 		if (err)
@@ -1080,7 +1083,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 		}
 	} else {
 		// Open file
-		loadedPaks.back().fd = my_open(pak.path, MODE_READ);
+		loadedPaks.back().fd = my_open(pak.path, openMode_t::MODE_READ);
 		if (loadedPaks.back().fd == -1) {
 			SetErrorCodeSystem(err);
 			return;
@@ -1141,7 +1144,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 	// Load dependencies, but not if a checksum was specified
 	if (hasDeps && !expectedChecksum) {
 		std::string depsData;
-		if (pak.type == PAK_DIR) {
+		if (pak.type == pakType_t::PAK_DIR) {
 			File depsFile = RawPath::OpenRead(Path::Build(pak.path, PAK_DEPS_FILE), err);
 			if (err)
 				return;
@@ -1221,12 +1224,12 @@ std::string ReadFile(Str::StringRef path, std::error_code& err)
 	}
 
 	const LoadedPakInfo& pak = loadedPaks[it->second.first];
-	if (pak.type == PAK_DIR) {
+	if (pak.type == pakType_t::PAK_DIR) {
 		// Open file
 #ifdef BUILD_VM
 		Util::optional<IPC::OwnedFileHandle> handle;
 		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
-		File file = FileFromIPC(std::move(handle), MODE_READ, err);
+		File file = FileFromIPC(std::move(handle), openMode_t::MODE_READ, err);
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 #endif
@@ -1284,11 +1287,11 @@ void CopyFile(Str::StringRef path, const File& dest, std::error_code& err)
 	}
 
 	const LoadedPakInfo& pak = loadedPaks[it->second.first];
-	if (pak.type == PAK_DIR) {
+	if (pak.type == pakType_t::PAK_DIR) {
 #ifdef BUILD_VM
 		Util::optional<IPC::OwnedFileHandle> handle;
 		VM::SendMsg<VM::FSPakPathOpenMsg>(it->second.first, path, handle);
-		File file = FileFromIPC(std::move(handle), MODE_READ, err);
+		File file = FileFromIPC(std::move(handle), openMode_t::MODE_READ, err);
 #else
 		File file = RawPath::OpenRead(Path::Build(pak.path, path), err);
 #endif
@@ -1347,7 +1350,7 @@ std::chrono::system_clock::time_point FileTimestamp(Str::StringRef path, std::er
 	}
 
 	const LoadedPakInfo& pak = loadedPaks[it->second.first];
-	if (pak.type == PAK_DIR) {
+	if (pak.type == pakType_t::PAK_DIR) {
 #ifdef BUILD_VM
 		Util::optional<uint64_t> result;
 		VM::SendMsg<VM::FSPakPathTimestampMsg>(it->second.first, path, result);
@@ -1535,7 +1538,7 @@ void CreatePathTo(Str::StringRef path, std::error_code& err)
 static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
 	FILE* fd = my_fopen(path, mode);
-	if (!fd && mode != MODE_READ && errno == ENOENT) {
+	if (!fd && mode != openMode_t::MODE_READ && errno == ENOENT) {
 		// Create the directories and try again
 		CreatePathTo(path, err);
 		if (err)
@@ -1552,19 +1555,19 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 }
 File OpenRead(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, MODE_READ, err);
+	return OpenMode(path, openMode_t::MODE_READ, err);
 }
 File OpenWrite(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, MODE_WRITE, err);
+	return OpenMode(path, openMode_t::MODE_WRITE, err);
 }
 File OpenAppend(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, MODE_APPEND, err);
+	return OpenMode(path, openMode_t::MODE_APPEND, err);
 }
 File OpenEdit(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, MODE_EDIT, err);
+	return OpenMode(path, openMode_t::MODE_EDIT, err);
 }
 
 bool FileExists(Str::StringRef path)
@@ -1781,7 +1784,7 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 {
 #ifdef BUILD_VM
 	Util::optional<IPC::OwnedFileHandle> handle;
-	VM::SendMsg<VM::FSHomePathOpenModeMsg>(path, mode, handle);
+	VM::SendMsg<VM::FSHomePathOpenModeMsg>(path, Util::ordinal(mode), handle);
 	File file = FileFromIPC(std::move(handle), mode, err);
 	if (err)
 		return {};
@@ -1796,19 +1799,19 @@ static File OpenMode(Str::StringRef path, openMode_t mode, std::error_code& err)
 }
 File OpenRead(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, MODE_READ, err);
+	return OpenMode(path, openMode_t::MODE_READ, err);
 }
 File OpenWrite(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, MODE_WRITE, err);
+	return OpenMode(path, openMode_t::MODE_WRITE, err);
 }
 File OpenAppend(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, MODE_APPEND, err);
+	return OpenMode(path, openMode_t::MODE_APPEND, err);
 }
 File OpenEdit(Str::StringRef path, std::error_code& err)
 {
-	return OpenMode(path, MODE_EDIT, err);
+	return OpenMode(path, openMode_t::MODE_EDIT, err);
 }
 
 bool FileExists(Str::StringRef path)
@@ -2147,10 +2150,10 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 {
 	std::string fullPath = Path::Build(basePath, filename);
 
-	size_t suffixLen = type == PAK_DIR ? strlen(PAK_DIR_EXT) : strlen(PAK_ZIP_EXT);
+	size_t suffixLen = type == pakType_t::PAK_DIR ? strlen(PAK_DIR_EXT) : strlen(PAK_ZIP_EXT);
 	std::string name, version;
 	Util::optional<uint32_t> checksum;
-	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == PAK_DIR && checksum)) {
+	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == pakType_t::PAK_DIR && checksum)) {
 		fsLogs.Warn("Invalid pak name: %s", fullPath);
 		return;
 	}
@@ -2165,9 +2168,9 @@ static void FindPaksInPath(Str::StringRef basePath, Str::StringRef subPath)
 	try {
 		for (auto& filename: RawPath::ListFiles(fullPath)) {
 			if (Str::IsSuffix(PAK_ZIP_EXT, filename)) {
-				AddPak(PAK_ZIP, Path::Build(subPath, filename), basePath);
+				AddPak(pakType_t::PAK_ZIP, Path::Build(subPath, filename), basePath);
 			} else if (Str::IsSuffix(PAK_DIR_EXT, filename)) {
-				AddPak(PAK_DIR, Path::Build(subPath, filename), basePath);
+				AddPak(pakType_t::PAK_DIR, Path::Build(subPath, filename), basePath);
 			} else if (Str::IsSuffix("/", filename))
 				FindPaksInPath(basePath, Path::Build(subPath, filename));
 		}
@@ -2265,7 +2268,7 @@ void RefreshPaks()
 			return a.checksum > b.checksum;
 
 		// Prefer zip packages to directory packages
-		if (b.type == PAK_ZIP && a.type != PAK_ZIP)
+		if (b.type == pakType_t::PAK_ZIP && a.type != pakType_t::PAK_ZIP)
 			return true;
 
 		return false;
@@ -2328,7 +2331,7 @@ const PakInfo* FindPak(Str::StringRef name, Str::StringRef version, uint32_t che
 		});
 
 		// Only allow zip packages because directories don't have a checksum
-		if (iter == availablePaks.begin() || (iter - 1)->type == PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->checksum)
+		if (iter == availablePaks.begin() || (iter - 1)->type == pakType_t::PAK_DIR || (iter - 1)->name != name || (iter - 1)->version != version || (iter - 1)->checksum)
 			return nullptr;
 	}
 
@@ -2474,14 +2477,14 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
 			if (loadedPaks.size() <= pakIndex)
 				return;
-			if (loadedPaks[pakIndex].type != PAK_DIR)
+			if (loadedPaks[pakIndex].type != pakType_t::PAK_DIR)
 				return;
 			if (!Path::IsValid(path, false))
 				return;
 			std::error_code err;
 			FS::File file = RawPath::OpenRead(Path::Build(loadedPaks[pakIndex].path, path), err);
 			if (!err)
-				out = FileToIPC(std::move(file), MODE_READ);
+				out = FileToIPC(std::move(file), openMode_t::MODE_READ);
 		});
 		break;
 
@@ -2490,7 +2493,7 @@ void HandleFileSystemSyscall(int minor, Util::Reader& reader, IPC::Channel& chan
 			auto& loadedPaks = FS::PakPath::GetLoadedPaks();
 			if (loadedPaks.size() <= pakIndex)
 				return;
-			if (loadedPaks[pakIndex].type != PAK_DIR)
+			if (loadedPaks[pakIndex].type != pakType_t::PAK_DIR)
 				return;
 			if (!Path::IsValid(path, false))
 				return;

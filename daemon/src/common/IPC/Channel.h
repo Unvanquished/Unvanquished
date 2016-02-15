@@ -138,7 +138,7 @@ namespace IPC {
         // Implementations of SendMsg for Message and SyncMessage
         template<typename Func, typename Id, typename... MsgArgs, typename... Args> void SendMsg(Channel& channel, Func&&, Message<Id, MsgArgs...>, Args&&... args)
         {
-            typedef Message<Id, MsgArgs...> Message;
+            using Message = Message<Id, MsgArgs...>;
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
             if (!channel.canSendAsyncMsg)
@@ -151,7 +151,7 @@ namespace IPC {
         }
         template<typename Func, typename Msg, typename Reply, typename... Args> void SendMsg(Channel& channel, Func&& messageHandler, SyncMessage<Msg, Reply>, Args&&... args)
         {
-            typedef SyncMessage<Msg, Reply> Message;
+            using Message = SyncMessage<Msg, Reply>;
             static_assert(sizeof...(Args) == std::tuple_size<typename Message::Inputs>::value + std::tuple_size<typename Message::Outputs>::value, "Incorrect number of arguments for IPC::SendMsg");
 
             if (!channel.canSendSyncMsg)
@@ -177,17 +177,17 @@ namespace IPC {
 
         // Map a tuple to get the actual types returned by SerializeTraits::Read instead of the declared types
         template<typename T> struct MapTupleHelper {
-            typedef decltype(Util::SerializeTraits<T>::Read(std::declval<Util::Reader&>())) type;
+            using type = decltype(Util::SerializeTraits<T>::Read(std::declval<Util::Reader&>()));
         };
         template<typename T> struct MapTuple {};
         template<typename... T> struct MapTuple<std::tuple<T...>> {
-            typedef std::tuple<typename MapTupleHelper<T>::type...> type;
+            using type = std::tuple<typename MapTupleHelper<T>::type...>;
         };
 
         // Implementations of HandleMsg for Message and SyncMessage
         template<typename Func, typename Id, typename... MsgArgs> void HandleMsg(Channel& channel, Message<Id, MsgArgs...>, Util::Reader reader, Func&& func)
         {
-            typedef Message<Id, MsgArgs...> Message;
+            using Message = Message<Id, MsgArgs...>;
 
             typename MapTuple<typename Message::Inputs>::type inputs;
             reader.FillTuple<0>(Util::TypeListFromTuple<typename Message::Inputs>(), inputs);
@@ -203,7 +203,7 @@ namespace IPC {
         }
         template<typename Func, typename Msg, typename Reply> void HandleMsg(Channel& channel, SyncMessage<Msg, Reply>, Util::Reader reader, Func&& func)
         {
-            typedef SyncMessage<Msg, Reply> Message;
+            using Message = SyncMessage<Msg, Reply>;
 
             typename MapTuple<typename Message::Inputs>::type inputs;
             typename Message::Outputs outputs;

@@ -120,7 +120,7 @@ team_t G_Team( gentity_t *ent )
 	{
 		return (team_t)ent->client->pers.team;
 	}
-	else if ( ent->s.eType == ET_BUILDABLE )
+	else if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return ent->buildableTeam;
 	}
@@ -243,7 +243,7 @@ void G_LeaveTeam( gentity_t *self )
 				ent->client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 			}
 		}
-		else if ( ent->s.eType == ET_MISSILE && ent->r.ownerNum == self->s.number )
+		else if ( ent->s.eType == entityType_t::ET_MISSILE && ent->r.ownerNum == self->s.number )
 		{
 			G_FreeEntity( ent );
 		}

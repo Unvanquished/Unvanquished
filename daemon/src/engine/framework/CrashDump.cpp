@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif // USE_BREAKPAD
 
-Log::Logger crashDumpLogs("common.breakpad", "", Log::LOG_NOTICE);
+Log::Logger crashDumpLogs("common.breakpad", "", Log::Level::NOTICE);
 
 namespace Sys {
 

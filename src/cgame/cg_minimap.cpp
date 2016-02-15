@@ -73,7 +73,7 @@ static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
 
     if( !*(token = COM_Parse( text )) || Q_stricmp( token, "{" ) )
     {
-        CG_Printf( S_ERROR "expected a { at the beginning of a zones\n" );
+        Log::Warn("expected a { at the beginning of a zones" );
         return false;
     }
 
@@ -88,7 +88,7 @@ static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
         {
             if( !ParseFloats( z->boundsMin, 3, text) || !ParseFloats( z->boundsMax, 3, text) )
             {
-                CG_Printf( S_ERROR "error while parsing 'bounds'\n" );
+                Log::Warn("error while parsing 'bounds'" );
                 return false;
             }
 
@@ -98,14 +98,14 @@ static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
         {
             if( !*(token = COM_Parse( text )) )
             {
-                CG_Printf( S_ERROR "error while parsing the image name while parsing 'image'\n" );
+                Log::Warn("error while parsing the image name while parsing 'image'" );
             }
 
             z->image = trap_R_RegisterShader( token, RSF_DEFAULT );
 
             if( !ParseFloats( z->imageMin, 2, text) || !ParseFloats( z->imageMax, 2, text) )
             {
-                CG_Printf( S_ERROR "error while parsing 'image'\n" );
+                Log::Warn("error while parsing 'image'" );
                 return false;
             }
 
@@ -115,7 +115,7 @@ static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
         {
             if( !*(token = COM_Parse( text )) )
             {
-                CG_Printf( S_ERROR "error while parsing the value  while parsing 'scale'\n" );
+                Log::Warn("error while parsing the value  while parsing 'scale'" );
             }
 
             z->scale = atof( token );
@@ -126,25 +126,25 @@ static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
         }
         else
         {
-            Com_Printf( S_ERROR "unknown token '%s'\n", token );
+            Log::Warn( "unknown token '%s'", token );
         }
     }
 
     if( Q_stricmp( token, "}" ) )
     {
-        CG_Printf( S_ERROR "expected a } at the end of a zone\n");
+        Log::Warn("expected a } at the end of a zone");
         return false;
     }
 
     if( !hasBounds )
     {
-        CG_Printf( S_ERROR "missing bounds in the zone\n" );
+        Log::Warn("missing bounds in the zone" );
         return false;
     }
 
     if( !hasImage )
     {
-        CG_Printf( S_ERROR "missing image in the zone\n" );
+        Log::Warn("missing image in the zone");
         return false;
     }
 
@@ -176,7 +176,7 @@ static bool CG_ParseMinimap( minimap_t* m, const char* filename )
 
     if( !*(token = COM_Parse( &text )) || Q_stricmp( token, "{" ) )
     {
-        CG_Printf( S_ERROR "expected a { at the beginning of %s\n", filename );
+        Log::Warn("expected a { at the beginning of %s", filename);
         return false;
     }
 
@@ -192,13 +192,13 @@ static bool CG_ParseMinimap( minimap_t* m, const char* filename )
 
             if( m->nZones > MAX_MINIMAP_ZONES )
             {
-                CG_Printf( S_ERROR "reached the zone number limit (%i) in %s\n", MAX_MINIMAP_ZONES, filename );
+                Log::Warn("reached the zone number limit (%i) in %s", MAX_MINIMAP_ZONES, filename );
                 return false;
             }
 
             if( !CG_ParseMinimapZone( &m->zones[m->nZones - 1], &text ) )
             {
-                CG_Printf( S_ERROR "error while reading zone n°%i in %s\n", m->nZones, filename );
+                Log::Warn("error while reading zone n°%i in %s", m->nZones, filename );
                 return false;
             }
         }
@@ -206,7 +206,7 @@ static bool CG_ParseMinimap( minimap_t* m, const char* filename )
         {
             if( !ParseFloats( m->bgColor.ToArray(), 4, &text) )
             {
-                CG_Printf( S_ERROR "error while parsing 'backgroundColor' in %s\n", filename );
+                Log::Warn("error while parsing 'backgroundColor' in %s", filename );
                 return false;
             }
         }
@@ -214,7 +214,7 @@ static bool CG_ParseMinimap( minimap_t* m, const char* filename )
         {
             if( !ParseFloats( &m->scale, 1, &text) )
             {
-                CG_Printf( S_ERROR "error while parsing 'globalScale' in %s\n", filename );
+                Log::Warn("error while parsing 'globalScale' in %s", filename );
                 return false;
             }
         }
@@ -224,13 +224,13 @@ static bool CG_ParseMinimap( minimap_t* m, const char* filename )
         }
         else
         {
-            Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
+            Log::Warn("%s: unknown token '%s'", filename, token );
         }
     }
 
     if( Q_stricmp( token, "}" ) )
     {
-        CG_Printf( S_ERROR "expected a } at the end of %s\n", filename );
+        Log::Warn("expected a } at the end of %s", filename );
         return false;
     }
 
@@ -638,12 +638,12 @@ void CG_InitMinimap()
     if( !CG_ParseMinimap( m, va( "minimaps/%s.minimap", cgs.mapname ) ) )
     {
         m->defined = false;
-        CG_Printf( S_WARNING "could not parse the minimap, defaulting to no minimap.\n" );
+        Log::Warn("could not parse the minimap, defaulting to no minimap." );
     }
     else if( m->nZones == 0 )
     {
         m->defined = false;
-        CG_Printf( S_ERROR "the minimap did not define any zone.\n" );
+        Log::Warn("the minimap did not define any zone." );
     }
 
     m->gfx.playerArrow = trap_R_RegisterShader( "gfx/2d/player-arrow", RSF_DEFAULT );

@@ -42,7 +42,7 @@ bool G_SpawnString( const char *key, const char *defaultString, char **out )
 	if ( !level.spawning )
 	{
 		*out = ( char * ) defaultString;
-//    G_Error( "G_SpawnString() called while not spawning" );
+//    Com_Error(errorParm_t::ERR_DROP,  "G_SpawnString() called while not spawning" );
 		return false;
 	}
 
@@ -468,7 +468,7 @@ bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
 	{
 		if ( g_debugEntities.integer > -2 )
-			G_Printf(S_ERROR "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
+			Log::Warn("Class %s has been marked deprecated but no replacement has been supplied", etos( entity ) );
 
 		return false;
 	}
@@ -478,7 +478,7 @@ bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_
 		if( spawnDescription->versionState < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
 		{
-			G_Printf( S_WARNING "Entity %s uses a deprecated classtype — use the class ^5%s^* instead\n", etos( entity ), spawnDescription->replacement );
+			Log::Warn("Entity %s uses a deprecated classtype — use the class ^5%s^* instead", etos( entity ), spawnDescription->replacement );
 		}
 	}
 	entity->classname = spawnDescription->replacement;
@@ -492,7 +492,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 			if(!entity->callTargetCount) //check target usage for backward compatibility
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_WARNING "Entity %s needs to call or target to something — Removing it.\n", etos( entity ) );
+					Log::Warn("Entity %s needs to call or target to something — Removing it.", etos( entity ) );
 				return false;
 			}
 			break;
@@ -501,7 +501,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 			if(!entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_WARNING "Entity %s needs a name, so other entities can target it — Removing it.\n", etos( entity ) );
+					Log::Warn("Entity %s needs a name, so other entities can target it — Removing it.", etos( entity ) );
 				return false;
 			}
 			break;
@@ -510,7 +510,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 					|| !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_WARNING "Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.\n", etos( entity ) );
+					Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
 				return false;
 			}
 			break;
@@ -540,7 +540,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( S_ERROR "Entity ^5#%i^* is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
+			Log::Warn("Entity ^5#%i^* is missing classname – we are unable to spawn it.", spawnedEntity->s.number );
 		return false;
 	}
 
@@ -586,7 +586,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 		spawnedEntity->spawned = true;
 
 		if ( g_debugEntities.integer > 2 )
-			G_Printf( S_DEBUG "Successfully spawned entity ^5#%i^* as ^3#%i^*th instance of ^5%s\n",
+			Log::Warn("Successfully spawned entity ^5#%i^* as ^3#%i^*th instance of ^5%s",
 					spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name);
 
 		/*
@@ -605,11 +605,11 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
 		{
-			G_Printf( S_ERROR "a ^5" S_WORLDSPAWN "^7 class was misplaced into position ^5#%i^* of the spawn string – Ignoring\n", spawnedEntity->s.number );
+			Log::Warn("a ^5" S_WORLDSPAWN "^7 class was misplaced into position ^5#%i^* of the spawn string – Ignoring", spawnedEntity->s.number );
 		}
 		else
 		{
-			G_Printf( S_ERROR "Unknown entity class \"^5%s^*\".\n", spawnedEntity->classname );
+			Log::Warn("Unknown entity class \"^5%s^*\".", spawnedEntity->classname );
 		}
 	}
 
@@ -727,14 +727,14 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 
 		case F_TARGET:
 			if(entity->targetCount >= MAX_ENTITY_TARGETS)
-				G_Error("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
+				Com_Error(errorParm_t::ERR_DROP, "Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
 
 			( ( char ** ) entityDataField ) [ entity->targetCount++ ] = G_NewString( rawString );
 			break;
 
 		case F_CALLTARGET:
 			if(entity->callTargetCount >= MAX_ENTITY_CALLTARGETS)
-				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
+				Com_Error(errorParm_t::ERR_DROP, "Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
 
 			( ( gentityCallDefinition_t * ) entityDataField ) [ entity->callTargetCount++ ] = G_NewCallDefinition( fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name, rawString );
 			break;
@@ -778,14 +778,14 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 		case F_SOUNDINDEX:
 			if ( strlen( rawString ) >= MAX_QPATH )
 			{
-				G_Error( S_ERROR "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
+				Com_Error(errorParm_t::ERR_DROP,  "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
 			}
 
 			* ( int * ) entityDataField  = G_SoundIndex( rawString );
 			break;
 
 		default:
-			G_Printf( S_ERROR "unknown datatype %i for field %s\n", fieldDescriptor->type, fieldDescriptor->name );
+			Log::Warn("unknown datatype %i for field %s", fieldDescriptor->type, fieldDescriptor->name );
 			break;
 	}
 
@@ -828,7 +828,7 @@ void G_SpawnGEntityFromSpawnVars()
 	 */
 	if( level.numSpawnVars <= 1 )
 	{
-		G_Printf( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		Log::Warn("encountered ghost-entity #%i with only one field: %s = %s", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
 		G_FreeEntity( spawningEntity );
 		return;
 	}
@@ -910,7 +910,7 @@ bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFi
 		if( typeOfDeprecation < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
 		{
-			G_Printf( S_WARNING "Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead\n", entity->s.number, actualFieldname, expectedFieldname );
+			Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->s.number, actualFieldname, expectedFieldname );
 		}
 	}
 
@@ -931,7 +931,7 @@ char *G_AddSpawnVarToken( const char *string )
 
 	if ( level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
 	{
-		G_Error( "G_AddSpawnVarToken: MAX_SPAWN_VARS_CHARS" );
+		Com_Error(errorParm_t::ERR_DROP,  "G_AddSpawnVarToken: MAX_SPAWN_VARS_CHARS" );
 	}
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;
@@ -969,7 +969,7 @@ bool G_ParseSpawnVars()
 
 	if ( com_token[ 0 ] != '{' )
 	{
-		G_Error( "G_ParseSpawnVars: found %s when expecting {", com_token );
+		Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: found %s when expecting {", com_token );
 	}
 
 	// go through all the key / value pairs
@@ -978,7 +978,7 @@ bool G_ParseSpawnVars()
 		// parse key
 		if ( !trap_GetEntityToken( keyname, sizeof( keyname ) ) )
 		{
-			G_Error( "G_ParseSpawnVars: EOF without closing brace" );
+			Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: EOF without closing brace" );
 		}
 
 		if ( keyname[ 0 ] == '}' )
@@ -989,17 +989,17 @@ bool G_ParseSpawnVars()
 		// parse value
 		if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
 		{
-			G_Error( "G_ParseSpawnVars: EOF without closing brace" );
+			Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: EOF without closing brace" );
 		}
 
 		if ( com_token[ 0 ] == '}' )
 		{
-			G_Error( "G_ParseSpawnVars: closing brace without data" );
+			Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: closing brace without data" );
 		}
 
 		if ( level.numSpawnVars == MAX_SPAWN_VARS )
 		{
-			G_Error( "G_ParseSpawnVars: MAX_SPAWN_VARS" );
+			Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: MAX_SPAWN_VARS" );
 		}
 
 		level.spawnVars[ level.numSpawnVars ][ 0 ] = G_AddSpawnVarToken( keyname );
@@ -1039,7 +1039,7 @@ void SP_worldspawn()
 
 	if ( Q_stricmp( s, S_WORLDSPAWN ) )
 	{
-		G_Error( "SP_worldspawn: The first entry in the spawn string isn't of expected type '" S_WORLDSPAWN "'" );
+		Com_Error(errorParm_t::ERR_DROP,  "SP_worldspawn: The first entry in the spawn string isn't of expected type '" S_WORLDSPAWN "'" );
 	}
 
 	// make some data visible to connecting client
@@ -1058,7 +1058,7 @@ void SP_worldspawn()
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", -1, 0.0f, s ) );
 
 	if(G_SpawnString( "colorGrade", "", &s )) {
-		Com_Printf("^3Warning: ^7\"colorGrade\" deprecated. Please use \"gradingTexture\"");
+		Log::Warn("\"colorGrade\" deprecated. Please use \"gradingTexture\"");
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", -1, 0.0f, s ) );
 	}
 
@@ -1116,7 +1116,7 @@ void G_SpawnEntitiesFromString()
 	// needed by a level (setting configstrings or cvars, etc)
 	if ( !G_ParseSpawnVars() )
 	{
-		G_Error( "SpawnEntities: no entities" );
+		Com_Error(errorParm_t::ERR_DROP,  "SpawnEntities: no entities" );
 	}
 
 	SP_worldspawn();
@@ -1136,7 +1136,7 @@ void G_SpawnFakeEntities()
 	level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
 	level.fakeLocation->message = nullptr;
 
-	level.fakeLocation->s.eType = ET_LOCATION;
+	level.fakeLocation->s.eType = entityType_t::ET_LOCATION;
 	level.fakeLocation->r.svFlags = SVF_BROADCAST;
 
 	level.fakeLocation->nextPathSegment = level.locationHead;

@@ -190,7 +190,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 
 	for ( const auto& token : Color::Parser( string, setColor ) )
 	{
-		if ( token.Type() == Color::Token::COLOR )
+		if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			if ( !forceColor )
 			{
@@ -208,7 +208,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string,
 				}
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			SCR_DrawConsoleFontUnichar( xx, y, Color::Constants::ESCAPE );
 			xx += SCR_ConsoleFontUnicharWidth( Color::Constants::ESCAPE );
@@ -273,7 +273,7 @@ void SCR_DrawScreenField()
 
 	// wide aspect ratio screens need to have the sides cleared
 	// unless they are displaying game renderings
-	if ( cls.state != CA_ACTIVE )
+	if ( cls.state != connstate_t::CA_ACTIVE )
 	{
 		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
 		{
@@ -288,25 +288,25 @@ void SCR_DrawScreenField()
 		switch ( cls.state )
 		{
 			default:
-				Com_Error( ERR_FATAL, "SCR_DrawScreenField: bad cls.state" );
+				Com_Error( errorParm_t::ERR_FATAL, "SCR_DrawScreenField: bad cls.state" );
 
-			case CA_CINEMATIC:
+			case connstate_t::CA_CINEMATIC:
 				SCR_DrawCinematic();
 				break;
 
-			case CA_DISCONNECTED:
+			case connstate_t::CA_DISCONNECTED:
 				break;
 
-			case CA_CONNECTING:
-			case CA_CHALLENGING:
-			case CA_CONNECTED:
-			case CA_DOWNLOADING:
+			case connstate_t::CA_CONNECTING:
+			case connstate_t::CA_CHALLENGING:
+			case connstate_t::CA_CONNECTED:
+			case connstate_t::CA_DOWNLOADING:
 				// connecting clients will only show the connection dialog
 				// refresh to update the time
 				break;
 
-			case CA_LOADING:
-			case CA_PRIMED:
+			case connstate_t::CA_LOADING:
+			case connstate_t::CA_PRIMED:
 				// draw the game information screen and loading progress
 				CL_CGameRendering();
 
@@ -315,7 +315,7 @@ void SCR_DrawScreenField()
 				//if (!com_sv_running->value || Cvar_VariableIntegerValue("sv_cheats")) // Ridah, don't draw useless text if not in dev mode
 				break;
 
-			case CA_ACTIVE:
+			case connstate_t::CA_ACTIVE:
 				CL_CGameRendering();
 				SCR_DrawDemoRecording();
 				break;

@@ -600,7 +600,7 @@ void CG_UpdateBuildableRangeMarkerMask()
 				}
 				else
 				{
-					Com_Printf( S_WARNING "unknown buildable or group: %s\n", p );
+					Log::Warn( "unknown buildable or group: %s", p );
 				}
 			}
 
@@ -765,56 +765,6 @@ void CG_AddNotifyText()
 	cg.numConsoleLines++;
 }
 
-void QDECL PRINTF_LIKE(1) CG_Printf( const char *msg, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
-
-void QDECL PRINTF_LIKE(1) NORETURN CG_Error( const char *msg, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
-
-	trap_Error( text );
-}
-
-void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	Q_UNUSED(level);
-
-	va_start( argptr, error );
-	Q_vsnprintf( text, sizeof( text ), error, argptr );
-	va_end( argptr );
-
-	trap_Error( text );
-}
-
-void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
-{
-	va_list argptr;
-	char    text[ 1024 ];
-
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
-
-	trap_Print( text );
-}
-
 /*
 ================
 CG_Argv
@@ -886,7 +836,7 @@ Test if a specific file exists or not
 */
 bool CG_FileExists( const char *filename )
 {
-	return trap_FS_FOpenFile( filename, nullptr, FS_READ );
+	return trap_FS_FOpenFile( filename, nullptr, fsMode_t::FS_READ );
 }
 
 /*
@@ -896,11 +846,11 @@ CG_UpdateLoadingProgress
 ======================
 */
 
-enum {
+enum loadingBar_t {
 	LOADBAR_MEDIA,
 	LOADBAR_CHARACTER_MODELS,
 	LOADBAR_BUILDABLES
-} typedef loadingBar_t;
+};
 
 static void CG_UpdateLoadingProgress( loadingBar_t progressBar, float progress, const char *label )
 {
@@ -958,14 +908,14 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 	switch (step) {
 		case LOAD_START:
 			startTime = thisStepTime;
-			CG_Printf("^4%%^5 Start loading.\n");
+			Log::Notice("^4%%^5 Start loading.");
 			break;
 		case LOAD_DONE:
-			CG_Printf("^4%%^5 Done loading everything after %is (%ims).\n",
+			Log::Notice("^4%%^5 Done loading everything after %is (%ims).",
 					(thisStepTime - startTime)/1000, (thisStepTime - startTime));
 			break;
 		default:
-			CG_Printf("^4%%^5 Done with Step %i after %is (%ims)… Starting Step %i\n",
+			Log::Notice("^4%%^5 Done with Step %i after %is (%ims)… Starting Step %i",
 					step - 1, (thisStepTime - lastStepTime)/1000, (thisStepTime - lastStepTime), step );
 			break;
 	}
@@ -1365,7 +1315,7 @@ static void CG_RegisterGraphics()
 
 	if ( cgs.numInlineModels > MAX_SUBMODELS )
 	{
-		CG_Error( "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
+		Com_Error(errorParm_t::ERR_DROP,  "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
 	}
 
 	for ( i = 1; i < cgs.numInlineModels; i++ )
@@ -1562,7 +1512,7 @@ const char *CG_ConfigString( int index )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		CG_Error( "CG_ConfigString: bad index: %i", index );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_ConfigString: bad index: %i", index );
 	}
 
 	return cgs.gameState[index].c_str();
@@ -1681,7 +1631,7 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	s = CG_ConfigString( CS_GAME_VERSION );
 
 //   if( strcmp( s, GAME_VERSION ) )
-//     CG_Error( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+//     Com_Error(errorParm_t::ERR_DROP,  "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );

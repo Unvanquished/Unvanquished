@@ -51,7 +51,7 @@ bool CG_ParseColor( byte *c, const char **text_p )
 
 	if ( strcmp( token, "}" ) )
 	{
-		CG_Printf( S_ERROR "missing '}'\n" );
+		Log::Warn( "missing '}'" );
 		return false;
 	}
 

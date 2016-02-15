@@ -51,7 +51,7 @@ static void NORETURN R_JPGErrorExit( j_common_ptr cinfo )
 	/* Let the memory manager delete any temp files before we die */
 	jpeg_destroy( cinfo );
 
-	ri.Error( ERR_FATAL, "%s", buffer );
+	ri.Error( errorParm_t::ERR_FATAL, "%s", buffer );
 }
 
 static void R_JPGOutputMessage( j_common_ptr cinfo )
@@ -61,8 +61,7 @@ static void R_JPGOutputMessage( j_common_ptr cinfo )
 	/* Create the message */
 	( *cinfo->err->format_message )( cinfo, buffer );
 
-	/* Send it to stderr, adding a newline */
-	ri.Printf( PRINT_ALL, "%s\n", buffer );
+	Log::Notice(buffer);
 }
 
 void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height,
@@ -189,7 +188,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 		fclose( jpegfd );
 #endif
 
-		ri.Error( ERR_DROP, "LoadJPG: %s has an invalid image format: %dx%d*4=%d, components: %d", filename,
+		ri.Error(errorParm_t::ERR_DROP, "LoadJPG: %s has an invalid image format: %dx%d*4=%d, components: %d", filename,
 		          cinfo.output_width, cinfo.output_height, pixelcount * 4, cinfo.output_components );
 	}
 
@@ -275,15 +274,15 @@ JPEG SAVING
 
 /* Expanded data destination object for stdio output */
 
-typedef struct
+struct my_destination_mgr
 {
 	struct jpeg_destination_mgr pub; /* public fields */
 
 	byte                        *outfile; /* target stream */
 	int                         size;
-} my_destination_mgr;
+};
 
-typedef my_destination_mgr *my_dest_ptr;
+using my_dest_ptr = my_destination_mgr *;
 
 /*
  * Initialize destination --- called by jpeg_start_compress
@@ -328,7 +327,7 @@ static          boolean empty_output_buffer( j_compress_ptr cinfo )
 	jpeg_destroy_compress( cinfo );
 
 	// Make crash fatal or we would probably leak memory.
-	ri.Error( ERR_FATAL, "Output buffer for encoded JPEG image has insufficient size of %d bytes", dest->size );
+	ri.Error( errorParm_t::ERR_FATAL, "Output buffer for encoded JPEG image has insufficient size of %d bytes", dest->size );
 
 	return FALSE;
 }

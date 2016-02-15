@@ -58,12 +58,12 @@ to the new value before sending out any replies.
 
 */
 
-#define MAX_PACKETLEN 1400 // max size of a network packet
+static const int MAX_PACKETLEN = 1400; // max size of a network packet
 
-#define FRAGMENT_SIZE ( MAX_PACKETLEN - 100 )
-#define PACKET_HEADER 10 // two ints and a short
+static const int FRAGMENT_SIZE = ( MAX_PACKETLEN - 100 );
+static const int PACKET_HEADER = 10; // two ints and a short
 
-#define FRAGMENT_BIT  ( 1 << 31 )
+static const int FRAGMENT_BIT  = ( 1 << 31 );
 
 cvar_t      *showpackets;
 cvar_t      *showdrop;
@@ -126,7 +126,7 @@ void Netchan_TransmitNextFragment( netchan_t *chan )
 	MSG_WriteLong( &send, chan->outgoingSequence | FRAGMENT_BIT );
 
 	// send the qport if we are a client
-	if ( chan->sock == NS_CLIENT )
+	if ( chan->sock == netsrc_t::NS_CLIENT )
 	{
 		MSG_WriteShort( &send, qport->integer );
 	}
@@ -148,8 +148,8 @@ void Netchan_TransmitNextFragment( netchan_t *chan )
 
 	if ( showpackets->integer )
 	{
-		Com_Printf( "%s send %4i : s=%i fragment=%i,%i\n"
-		            , netsrcString[ chan->sock ]
+		Log::Notice( "%s send %4i : s=%i fragment=%i,%i\n"
+		            , netsrcString[Util::ordinal(chan->sock)]
 		            , send.cursize
 		            , chan->outgoingSequence
 		            , chan->unsentFragmentStart, fragmentLength );
@@ -183,7 +183,7 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data )
 
 	if ( length > MAX_MSGLEN )
 	{
-		Com_Error( ERR_DROP, "Netchan_Transmit: length = %i", length );
+		Com_Error( errorParm_t::ERR_DROP, "Netchan_Transmit: length = %i", length );
 	}
 
 	chan->unsentFragmentStart = 0;
@@ -208,7 +208,7 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data )
 	chan->outgoingSequence++;
 
 	// send the qport if we are a client
-	if ( chan->sock == NS_CLIENT )
+	if ( chan->sock == netsrc_t::NS_CLIENT )
 	{
 		MSG_WriteShort( &send, qport->integer );
 	}
@@ -220,8 +220,8 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data )
 
 	if ( showpackets->integer )
 	{
-		Com_Printf( "%s send %4i : s=%i ack=%i\n"
-		            , netsrcString[ chan->sock ]
+		Log::Notice( "%s send %4i : s=%i ack=%i\n"
+		            , netsrcString[Util::ordinal(chan->sock)]
 		            , send.cursize
 		            , chan->outgoingSequence - 1
 		            , chan->incomingSequence );
@@ -266,7 +266,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 	}
 
 	// read the qport if we are a server
-	if ( chan->sock == NS_SERVER )
+	if ( chan->sock == netsrc_t::NS_SERVER )
 	{
 		/*qport = */ MSG_ReadShort( msg );
 	}
@@ -287,16 +287,16 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 	{
 		if ( fragmented )
 		{
-			Com_Printf( "%s recv %4i : s=%i fragment=%i,%i\n"
-			            , netsrcString[ chan->sock ]
+			Log::Notice( "%s recv %4i : s=%i fragment=%i,%i\n"
+			            , netsrcString[Util::ordinal(chan->sock)]
 			            , msg->cursize
 			            , sequence
 			            , fragmentStart, fragmentLength );
 		}
 		else
 		{
-			Com_Printf( "%s recv %4i : s=%i\n"
-			            , netsrcString[ chan->sock ]
+			Log::Notice( "%s recv %4i : s=%i\n"
+			            , netsrcString[Util::ordinal(chan->sock)]
 			            , msg->cursize
 			            , sequence );
 		}
@@ -309,7 +309,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 	{
 		if ( showdrop->integer || showpackets->integer )
 		{
-			Com_Printf( "%s: Out-of-order packet %i at %i\n"
+			Log::Notice( "%s: Out-of-order packet %i at %i\n"
 			            , NET_AdrToString( chan->remoteAddress )
 			            ,  sequence
 			            , chan->incomingSequence );
@@ -327,7 +327,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 	{
 		if ( showdrop->integer || showpackets->integer )
 		{
-			Com_Printf( "%s: Dropped %i packets at %i\n"
+			Log::Notice( "%s: Dropped %i packets at %i\n"
 			            , NET_AdrToString( chan->remoteAddress )
 			            , chan->dropped
 			            , sequence );
@@ -356,7 +356,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 		{
 			if ( showdrop->integer || showpackets->integer )
 			{
-				Com_Printf( "%s: Dropped a message fragment\n"
+				Log::Notice( "%s: Dropped a message fragment\n"
 				            , NET_AdrToString( chan->remoteAddress ) );
 			}
 
@@ -371,7 +371,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 		{
 			if ( showdrop->integer || showpackets->integer )
 			{
-				Com_Printf( "%s: illegal fragment length\n"
+				Log::Notice( "%s: illegal fragment length\n"
 				            , NET_AdrToString( chan->remoteAddress ) );
 			}
 
@@ -391,7 +391,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 
 		if ( chan->fragmentLength > msg->maxsize )
 		{
-			Com_Printf( "%s: fragmentLength %i > msg->maxsize\n"
+			Log::Notice( "%s: fragmentLength %i > msg->maxsize\n"
 			            , NET_AdrToString( chan->remoteAddress ),
 			            chan->fragmentLength );
 			return false;
@@ -435,19 +435,19 @@ LOOPBACK BUFFERS FOR LOCAL PLAYER
 
 // there needs to be enough loopback messages to hold a complete
 // gamestate of maximum size
-#define MAX_LOOPBACK 16
+static const int MAX_LOOPBACK = 16;
 
-typedef struct
+struct loopmsg_t
 {
 	byte data[ MAX_PACKETLEN ];
 	int  datalen;
-} loopmsg_t;
+};
 
-typedef struct
+struct loopback_t
 {
 	loopmsg_t msgs[ MAX_LOOPBACK ];
 	int       get, send;
-} loopback_t;
+};
 
 loopback_t loopbacks[ 2 ];
 
@@ -456,7 +456,7 @@ bool        NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_mes
 	int        i;
 	loopback_t *loop;
 
-	loop = &loopbacks[ sock ];
+	loop = &loopbacks[Util::ordinal(sock)];
 
 	if ( loop->send - loop->get > MAX_LOOPBACK )
 	{
@@ -474,7 +474,7 @@ bool        NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_mes
 	Com_Memcpy( net_message->data, loop->msgs[ i ].data, loop->msgs[ i ].datalen );
 	net_message->cursize = loop->msgs[ i ].datalen;
 	Com_Memset( net_from, 0, sizeof( *net_from ) );
-	net_from->type = NA_LOOPBACK;
+	net_from->type = netadrtype_t::NA_LOOPBACK;
 	return true;
 }
 
@@ -483,7 +483,7 @@ void NET_SendLoopPacket( netsrc_t sock, int length, const void *data )
 	int        i;
 	loopback_t *loop;
 
-	loop = &loopbacks[ sock ^ 1 ];
+	loop = &loopbacks[Util::ordinal(sock) ^ 1 ];
 
 	i = loop->send & ( MAX_LOOPBACK - 1 );
 	loop->send++;
@@ -494,15 +494,15 @@ void NET_SendLoopPacket( netsrc_t sock, int length, const void *data )
 
 //=============================================================================
 
-typedef struct packetQueue_s
+struct packetQueue_t
 {
-	struct packetQueue_s *next;
+	packetQueue_t *next;
 
 	int                  length;
 	byte                 *data;
 	netadr_t             to;
 	int                  release;
-} packetQueue_t;
+};
 
 packetQueue_t *packetQueue = nullptr;
 
@@ -570,33 +570,33 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 	// sequenced packets are shown in netchan, so just show oob
 	if ( showpackets->integer && * ( int * ) data == -1 )
 	{
-		Com_Printf( "send packet %4i\n", length );
+		Log::Notice( "send packet %4i\n", length );
 	}
 
-	if ( to.type == NA_LOOPBACK )
+	if ( to.type == netadrtype_t::NA_LOOPBACK )
 	{
 		NET_SendLoopPacket( sock, length, data );
 		return;
 	}
 
-	if ( to.type == NA_BOT )
+	if ( to.type == netadrtype_t::NA_BOT )
 	{
 		return;
 	}
 
-	if ( to.type == NA_BAD )
+	if ( to.type == netadrtype_t::NA_BAD )
 	{
 		return;
 	}
 
 #ifndef BUILD_SERVER
-	if ( sock == NS_CLIENT && cl_packetdelay->integer > 0 )
+	if ( sock == netsrc_t::NS_CLIENT && cl_packetdelay->integer > 0 )
 	{
 		NET_QueuePacket( length, data, to, cl_packetdelay->integer );
 	}
 	else
 #endif
-	if ( sock == NS_SERVER && sv_packetdelay->integer > 0 )
+	if ( sock == netsrc_t::NS_SERVER && sv_packetdelay->integer > 0 )
 	{
 		NET_QueuePacket( length, data, to, sv_packetdelay->integer );
 	}
@@ -681,7 +681,7 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 	if ( !strcmp( s, "localhost" ) )
 	{
 		Com_Memset( a, 0, sizeof( *a ) );
-		a->type = NA_LOOPBACK;
+		a->type = netadrtype_t::NA_LOOPBACK;
 // as NA_LOOPBACK doesn't require ports report port was given.
 		return 1;
 	}
@@ -729,7 +729,7 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 
 	if ( !Sys_StringToAdr( search, a, family ) )
 	{
-		a->type = NA_BAD;
+		a->type = netadrtype_t::NA_BAD;
 		return 0;
 	}
 

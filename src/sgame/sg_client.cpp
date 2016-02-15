@@ -176,7 +176,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 		if ( !spot )
 		{
-			G_Error( "Couldn't find a spawn point" );
+			Com_Error(errorParm_t::ERR_DROP,  "Couldn't find a spawn point" );
 		}
 
 		VectorCopy( spot->s.origin, origin );
@@ -426,7 +426,7 @@ static void SpawnCorpse( gentity_t *ent )
 
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;
-	body->s.eType = ET_CORPSE;
+	body->s.eType = entityType_t::ET_CORPSE;
 	body->timestamp = level.time;
 	body->s.event = 0;
 	body->r.contents = CONTENTS_CORPSE;
@@ -500,7 +500,7 @@ static void SpawnCorpse( gentity_t *ent )
 	origin[2] += mins[ 2 ] - body->r.mins[ 2 ];
 
 	G_SetOrigin( body, origin );
-	body->s.pos.trType = TR_GRAVITY;
+	body->s.pos.trType = trType_t::TR_GRAVITY;
 	body->s.pos.trTime = level.time;
 	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
 
@@ -733,7 +733,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			break;
 		}
 
-		if ( token.Type() == Color::Token::CHARACTER )
+		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			int cp = Q_UTF8_CodePoint(token.Begin());
 
@@ -796,7 +796,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 				has_visible_characters = true;
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			has_visible_characters = true;
 		}
@@ -1671,12 +1671,12 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		if ( spawn == nullptr )
 		{
-			G_Error( "ClientSpawn: spawn is NULL" );
+			Com_Error(errorParm_t::ERR_DROP,  "ClientSpawn: spawn is NULL" );
 		}
 
 		spawnPoint = spawn;
 
-		if ( spawnPoint->s.eType == ET_BUILDABLE )
+		if ( spawnPoint->s.eType == entityType_t::ET_BUILDABLE )
 		{
 			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, true );
 
@@ -1733,7 +1733,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	trap_GetUserinfo( index, userinfo, sizeof( userinfo ) );
 	client->ps.eFlags = flags;
 
-	//Com_Printf( "ent->client->pers->pclass = %i\n", ent->client->pers.classSelection );
+	//Log::Notice( "ent->client->pers->pclass = %i\n", ent->client->pers.classSelection );
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];

@@ -1463,7 +1463,7 @@ typedef struct
 	int keyCatcher;
 	char downloadName[ MAX_STRING_CHARS ];
 	cgClientState_t cstate;
-	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
+	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;
 } rocketInfo_t;
@@ -1964,9 +1964,6 @@ extern vmCvar_t            rocket_menuFile;
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 const char *CG_Args();
-
-void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-void QDECL NORETURN CG_Error( const char *msg, ... ) PRINTF_LIKE(1);
 
 void       CG_StartMusic();
 

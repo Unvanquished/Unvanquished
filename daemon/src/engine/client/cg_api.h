@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Snapshots are generated at regular time intervals by the server,
 // but they may not be sent if a client's rate level is exceeded, or
 // they may be dropped by the network.
-typedef struct
+struct snapshot_t
 {
 	int           snapFlags; // SNAPFLAG_RATE_DELAYED, etc
 	int           ping;
@@ -59,16 +59,16 @@ typedef struct
 
 	// text based server commands to execute when this snapshot becomes current
 	std::vector<std::string> serverCommands;
-} snapshot_t;
+};
 
-typedef enum {
+enum class rocketVarType_t {
 	ROCKET_STRING,
 	ROCKET_FLOAT,
 	ROCKET_INT,
 	ROCKET_COLOR
-} rocketVarType_t;
+};
 
-typedef enum {
+enum rocketMenuType_t {
 	ROCKETMENU_MAIN,
 	ROCKETMENU_CONNECTING,
 	ROCKETMENU_LOADING,
@@ -85,14 +85,14 @@ typedef enum {
 	ROCKETMENU_BEACONS,
 	ROCKETMENU_ERROR,
 	ROCKETMENU_NUM_TYPES
-} rocketMenuType_t;
+};
 
-typedef enum {
+enum rocketInnerRMLParseTypes_t {
 	RP_QUAKE = 1 << 0,
 	RP_EMOTICONS = 1 << 1,
-} rocketInnerRMLParseTypes_t;
+};
 
-typedef struct
+struct cgClientState_t
 {
 	connstate_t connState;
 	int         connectPacketCount;
@@ -100,9 +100,9 @@ typedef struct
 	char        servername[ MAX_STRING_CHARS ];
 	char        updateInfoString[ MAX_STRING_CHARS ];
 	char        messageString[ MAX_STRING_CHARS ];
-} cgClientState_t;
+};
 
-typedef enum
+enum class serverSortField_t
 {
 	SORT_HOST,
 	SORT_MAP,
@@ -111,7 +111,7 @@ typedef enum
 	SORT_GAME,
 	SORT_FILTERS,
 	SORT_FAVOURITES
-} serverSortField_t;
+};
 
 enum class MouseMode
 {
@@ -120,8 +120,6 @@ enum class MouseMode
 	SystemCursor, // The input is sent as positions, the cursor should be rendered by the system
 };
 
-void            trap_Print( const char *string );
-void NORETURN   trap_Error( const char *string );
 int             trap_Milliseconds();
 void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
 void            trap_Cvar_Update( vmCvar_t *vmCvar );
@@ -155,17 +153,17 @@ void            trap_UpdateScreen();
 #define trap_CM_TempCapsuleModel(...) CM_TempBoxModel(__VA_ARGS__, true)
 #define trap_CM_PointContents CM_PointContents
 #define trap_CM_TransformedPointContents CM_TransformedPointContents
-#define trap_CM_BoxTrace(...) CM_BoxTrace(__VA_ARGS__, TT_AABB)
-#define trap_CM_TransformedBoxTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, TT_AABB)
-#define trap_CM_CapsuleTrace(...) CM_BoxTrace(__VA_ARGS__, TT_CAPSULE)
-#define trap_CM_TransformedCapsuleTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, TT_CAPSULE)
+#define trap_CM_BoxTrace(...) CM_BoxTrace(__VA_ARGS__, traceType_t::TT_AABB)
+#define trap_CM_TransformedBoxTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, traceType_t::TT_AABB)
+#define trap_CM_CapsuleTrace(...) CM_BoxTrace(__VA_ARGS__, traceType_t::TT_CAPSULE)
+#define trap_CM_TransformedCapsuleTrace(...) CM_TransformedBoxTrace(__VA_ARGS__, traceType_t::TT_CAPSULE)
 #define trap_CM_BiSphereTrace CM_BiSphereTrace
 #define trap_CM_TransformedBiSphereTrace CM_TransformedBiSphereTrace
 #define trap_CM_DistanceToModel CM_DistanceToModel
 int             trap_CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
-void            trap_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
+void            trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t entchannel, sfxHandle_t sfx );
 void            trap_S_StartSoundEx( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int flags );
-void            trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
+void            trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t channelNum );
 void            trap_S_ClearLoopingSounds( bool killall );
 void            trap_S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
 void            trap_S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
@@ -216,8 +214,8 @@ void            trap_SetUserCmdValue( int stateValue, int flags, float sensitivi
 int             trap_Key_GetCatcher();
 void            trap_Key_SetCatcher( int catcher );
 void            trap_Key_SetBinding( int keyNum, int team, const char *cmd );
-void            trap_Key_ClearCmdButtons( void );
-void            trap_Key_ClearStates( void );
+void            trap_Key_ClearCmdButtons();
+void            trap_Key_ClearStates();
 std::vector<int> trap_Key_KeysDown( const std::vector<int>& keys );
 void            trap_SetMouseMode( MouseMode mode );
 void            trap_S_StopBackgroundTrack();

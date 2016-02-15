@@ -41,7 +41,7 @@ namespace IPC {
      * are file descriptor-backed OS resources.
      */
 
-	enum FileOpenMode {
+	enum class FileOpenMode {
 		MODE_READ,
 		MODE_WRITE,
 		MODE_RW,

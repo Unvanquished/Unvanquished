@@ -127,7 +127,7 @@ bool BG_IsMainStructure( buildable_t buildable )
 
 bool BG_IsMainStructure( entityState_t *es )
 {
-	if ( es->eType != ET_BUILDABLE ) return false;
+	if ( es->eType != entityType_t::ET_BUILDABLE ) return false;
 
 	return BG_IsMainStructure( (buildable_t)es->modelindex );
 }

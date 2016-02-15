@@ -189,7 +189,7 @@ protected:
 			}
 		}
 
-		Com_Printf( "^3Warning: Team %s not found", team.CString() );
+		Log::Warn( "Team %s not found", team.CString() );
 		return -1;
 	}
 

@@ -48,7 +48,7 @@ void G_SanitiseString( const char *in, char *out, int len )
 	--len;
 	for ( const auto& token : Color::Parser( in ) )
 	{
-		if ( token.Type() == Color::Token::CHARACTER )
+		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			int cp = Q_UTF8_CodePoint( token.Begin() );
 			if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
@@ -1024,7 +1024,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 			// console say_team is handled in g_svscmds, not here
 			if ( !ent || !ent->client )
 			{
-				Com_Error( ERR_FATAL, "SAY_TEAM by non-client entity" );
+				Com_Error( errorParm_t::ERR_FATAL, "SAY_TEAM by non-client entity" );
 			}
 
 			G_LogPrintf( "SayTeam: %d \"%s^7\": ^5%s\n",
@@ -1034,7 +1034,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 		case SAY_RAW:
 			if ( ent )
 			{
-				Com_Error( ERR_FATAL, "SAY_RAW by client entity" );
+				Com_Error( errorParm_t::ERR_FATAL, "SAY_RAW by client entity" );
 			}
 
 			G_LogPrintf( "Chat: -1 \"console\": %s\n", chatText );
@@ -1238,7 +1238,7 @@ void Cmd_VSay_f( gentity_t *ent )
 
 	if ( !ent || !ent->client )
 	{
-		Com_Error( ERR_FATAL, "Cmd_VSay_f() called by non-client entity" );
+		Com_Error( errorParm_t::ERR_FATAL, "Cmd_VSay_f() called by non-client entity" );
 	}
 
 	trap_Argv( 0, arg, sizeof( arg ) );
@@ -1416,23 +1416,23 @@ static const struct {
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be true)
 } voteInfo[] = {
-	// Name           Stop?   Type      Target     Immune   Quorum  Reason  Vote percentage var        Extra
-	{ "kick",         false, V_ANY,    T_PLAYER,  true,   true,  qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "spectate",     false, V_ANY,    T_PLAYER,  true,   true,  qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "mute",         true,  V_PUBLIC, T_PLAYER,  true,   true,  qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "unmute",       true,  V_PUBLIC, T_PLAYER,  false,  true,  qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "denybuild",    true,  V_TEAM,   T_PLAYER,  true,   true,  qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "allowbuild",   true,  V_TEAM,   T_PLAYER,  false,  true,  qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "extend",       true,  V_PUBLIC, T_OTHER,   false,  false, qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime, nullptr },
-	{ "admitdefeat",  true,  V_TEAM,   T_NONE,    false,  true,  qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "draw",         true,  V_PUBLIC, T_NONE,    true,   true,  qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "map_restart",  true,  V_PUBLIC, T_NONE,    false,  true,  qno,    &g_mapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "map",          true,  V_PUBLIC, T_OTHER,   false,  true,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
-	{ "layout",       true,  V_PUBLIC, T_OTHER,   false,  true,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
-	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false, qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "poll",         false, V_ANY,    T_NONE,    false,  false, qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
-	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
-	{ "spectatebots", false, V_PUBLIC, T_NONE,    false,  false, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
+	// Name           Stop?  Type      Target     Immune  Quorum    Reason            Vote percentage var  Extra
+	{ "kick",         false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "spectate",     false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "mute",         true,  V_PUBLIC, T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "unmute",       true,  V_PUBLIC, T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "denybuild",    true,  V_TEAM,   T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "allowbuild",   true,  V_TEAM,   T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "extend",       true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime, nullptr },
+	{ "admitdefeat",  true,  V_TEAM,   T_NONE,    false,  true,     qtrinary::qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "draw",         true,  V_PUBLIC, T_NONE,    true,   true,     qtrinary::qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "map_restart",  true,  V_PUBLIC, T_NONE,    false,  true,     qtrinary::qno,    &g_mapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "map",          true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
+	{ "layout",       true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
+	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "poll",         false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
+	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
+	{ "spectatebots", false, V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
 	{ }
 	// note: map votes use the reason, if given, as the layout name
 };
@@ -1659,7 +1659,7 @@ vote_is_disabled:
 		trap_Argv( 2, arg, sizeof( arg ) );
 	}
 
-	if( voteInfo[voteId].reasonNeeded )
+	if( voteInfo[voteId].reasonNeeded != qtrinary::qno )
 	{
 		char *creason = ConcatArgs( voteInfo[voteId].target != T_NONE ? 3 : 2 );
 		Color::StripColors( creason, reason, sizeof( reason ) );
@@ -1725,7 +1725,7 @@ vote_is_disabled:
 		}
 	}
 
-	if ( voteInfo[voteId].reasonNeeded == qyes && !reason[ 0 ] &&
+	if ( voteInfo[voteId].reasonNeeded == qtrinary::qyes && !reason[ 0 ] &&
 	     !( voteInfo[voteId].adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
 	     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->integer ) )
 	{
@@ -1907,7 +1907,7 @@ vote_is_disabled:
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
 			if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
-			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), nullptr, FS_READ ) )
+			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), nullptr, fsMode_t::FS_READ ) )
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
 				                        "layout '$1$' could not be found on the server\n") ), Quote( arg ) ) );
@@ -2102,13 +2102,13 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 		if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
 		{
-			G_Printf("entityId %d is out of range\n", entityId);
+			Log::Warn("entityId %d is out of range", entityId);
 			return;
 		}
 		selection = &g_entities[entityId];
 		if (!selection->inuse)
 		{
-			G_Printf("entity slot %d is not in use\n", entityId);
+			Log::Warn("entity slot %d is not in use", entityId);
 			return;
 		}
 
@@ -2365,7 +2365,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				other = &g_entities[ entityList[ i ] ];
 
 				if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				     ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
+				     ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
 				       other->powered ) )
 				{
 					if ( report )
@@ -2507,7 +2507,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 
 	// check if target is valid
 	if ( trace.fraction >= 1.0f ||
-	     buildable->s.eType != ET_BUILDABLE ||
+	     buildable->s.eType != entityType_t::ET_BUILDABLE ||
 	     !G_OnSameTeam( ent, buildable ) )
 	{
 		return;

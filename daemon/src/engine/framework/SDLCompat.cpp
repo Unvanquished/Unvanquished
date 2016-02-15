@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    away by defining something named __iob_func.
 */
 extern "C" {
-    FILE* __iob_func(void) {
+    FILE* __iob_func() {
         return stderr - 2;
     }
 }

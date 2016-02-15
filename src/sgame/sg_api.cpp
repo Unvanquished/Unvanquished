@@ -128,24 +128,24 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			break;
 
 		case GAME_SNAPSHOT_CALLBACK:
-			G_Error("GAME_SNAPSHOT_CALLBACK not implemented");
+			Com_Error(errorParm_t::ERR_DROP, "GAME_SNAPSHOT_CALLBACK not implemented");
 			break;
 
 		case BOTAI_START_FRAME:
-			G_Error("BOTAI_START_FRAME not implemented");
+			Com_Error(errorParm_t::ERR_DROP, "BOTAI_START_FRAME not implemented");
 			break;
 
 		case GAME_MESSAGERECEIVED:
-			G_Error("GAME_MESSAGERECEIVED not implemented");
+			Com_Error(errorParm_t::ERR_DROP, "GAME_MESSAGERECEIVED not implemented");
 			break;
 
 		default:
-			G_Error("VMMain(): unknown game command %i", minor);
+			Com_Error(errorParm_t::ERR_DROP, "VMMain(): unknown game command %i", minor);
 		}
 	} else if (major < VM::LAST_COMMON_SYSCALL) {
 		VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootChannel);
 	} else {
-		G_Error("unhandled VM major syscall number %i", major);
+		Com_Error(errorParm_t::ERR_DROP, "unhandled VM major syscall number %i", major);
 	}
 }
 
@@ -179,7 +179,7 @@ int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxc
 
 bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
 {
-	return G_CM_EntityContact( mins, maxs, ent, TT_AABB );
+	return G_CM_EntityContact( mins, maxs, ent, traceType_t::TT_AABB );
 }
 
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
@@ -192,7 +192,7 @@ void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 	if (!maxs) {
 		mins = origin;
 	}
-	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, TT_AABB);
+	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, traceType_t::TT_AABB);
 }
 
 int trap_PointContents(const vec3_t point, int passEntityNum)
