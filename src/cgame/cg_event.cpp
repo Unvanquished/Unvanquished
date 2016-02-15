@@ -1242,11 +1242,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				if ( location && *location )
 				{
-					Log::Notice( _( "%s Under attack – %s\n" ), base ? "[reactor]" : "[repeater]", location );
+					Log::Notice( _( "%s Under attack – %s" ), base ? "[reactor]" : "[repeater]", location );
 				}
 				else
 				{
-					Log::Notice( _( "%s Under attack\n" ), base ? "[reactor]" : "[repeater]" );
+					Log::Notice( _( "%s Under attack" ), base ? "[reactor]" : "[repeater]" );
 				}
 			}
 			else // this is for aliens, and the overmind is in range

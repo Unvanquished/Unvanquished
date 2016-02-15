@@ -53,7 +53,7 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team
 
 		for ( i = 0; i < botNames[team].count; ++i )
 		{
-			ADMBP( va( "  %s^7 %s\n", botNames[team].name[i].inUse ? marker : " ", botNames[team].name[i].name ) );
+			ADMBP( va( "  %s^7 %s", botNames[team].name[i].inUse ? marker : " ", botNames[team].name[i].name ) );
 		}
 
 		ADMBP_end();
@@ -62,8 +62,8 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team
 
 void G_BotListNames( gentity_t *ent )
 {
-	G_BotListTeamNames( ent, QQ( N_( "^3Alien bot names:\n" ) ), TEAM_ALIENS, "^1*" );
-	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:\n" ) ), TEAM_HUMANS, "^5*" );
+	G_BotListTeamNames( ent, QQ( N_( "^3Alien bot names:" ) ), TEAM_ALIENS, "^1*" );
+	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:" ) ), TEAM_HUMANS, "^5*" );
 }
 
 bool G_BotClearNames()
@@ -295,7 +295,7 @@ void G_BotDel( int clientNum )
 
 	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
 	{
-		Log::Warn( "'^7%s^7' is not a bot\n", bot->client->pers.netname );
+		Log::Warn( "'^7%s^7' is not a bot", bot->client->pers.netname );
 		return;
 	}
 
@@ -307,7 +307,7 @@ void G_BotDel( int clientNum )
 		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, false );
 	}
 
-	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected\n" ) ),
+	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected" ) ),
 					Quote( bot->client->pers.netname ) ) );
 	trap_DropClient( clientNum, "disconnected" );
 }
@@ -401,7 +401,7 @@ void G_BotThink( gentity_t *self )
 		trap_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
 		//BotClampPos( self );
 	}
-	
+
 	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
 
 	// if we were nudged...

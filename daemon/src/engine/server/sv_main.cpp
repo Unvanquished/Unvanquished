@@ -367,7 +367,7 @@ void SV_MasterHeartbeat( const char *hbname )
 			continue;
 		}
 
-		Log::Notice( "Sending heartbeat to %s\n", sv_master[ i ]->string );
+		Log::Notice( "Sending heartbeat to %s", sv_master[ i ]->string );
 
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
@@ -419,12 +419,12 @@ void SV_MasterGameStat( const char *data )
 		return; // only dedicated servers send stats
 	}
 
-	Log::Notice( "Resolving %s\n", MASTER_SERVER_NAME );
+	Log::Notice( "Resolving %s", MASTER_SERVER_NAME );
 
 	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &adr, netadrtype_t::NA_UNSPEC ) )
 	{
 		case 0:
-			Log::Notice( "Couldn't resolve master address: %s\n", MASTER_SERVER_NAME );
+			Log::Warn( "Couldn't resolve master address: %s", MASTER_SERVER_NAME );
 			return;
 
 		case 2:
@@ -434,10 +434,10 @@ void SV_MasterGameStat( const char *data )
 			break;
 	}
 
-	Log::Notice( "%s resolved to %s\n", MASTER_SERVER_NAME,
+	Log::Notice( "%s resolved to %s", MASTER_SERVER_NAME,
 	            NET_AdrToStringwPort( adr ) );
 
-	Log::Notice( "Sending gamestat to %s\n", MASTER_SERVER_NAME );
+	Log::Notice( "Sending gamestat to %s", MASTER_SERVER_NAME );
 	NET_OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
 }
 
@@ -746,7 +746,7 @@ bool SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastGlobalLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Log::Notice( "Detected flood of getinfo/getstatus connectionless packets\n" );
+			Log::Notice( "Detected flood of getinfo/getstatus connectionless packets" );
 			lastGlobalLogTime = svs.time;
 		}
 
@@ -757,7 +757,7 @@ bool SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastSpecificLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Log::Notice( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n",
+			Log::Notice( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet",
 			            exactFrom.ip[ 0 ], exactFrom.ip[ 1 ], exactFrom.ip[ 2 ], exactFrom.ip[ 3 ] );
 			lastSpecificLogTime = svs.time;
 		}
@@ -791,7 +791,6 @@ class RconEnvironment: public Cmd::DefaultEnvironment {
             }
 
             buffer += text;
-            buffer += '\n';
         }
 
         void Flush() {
@@ -830,12 +829,12 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
 	{
 		valid = false;
-		Log::Notice( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Log::Notice( "Bad rcon from %s:\n%s", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 	else
 	{
 		valid = true;
-		Log::Notice( "Rcon from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		Log::Notice( "Rcon from %s:\n%s", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
 	}
 
 	// start redirecting all print outputs to the packet
@@ -925,7 +924,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 	else
 	{
-		Log::Debug( "bad connectionless packet from %s:\n%s", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
+		Log::Debug( "bad connectionless packet from %s: %s", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
 	}
 }
 
@@ -980,7 +979,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 		// port assignments
 		if ( cl->netchan.remoteAddress.port != from.port )
 		{
-			Log::Notice( "SV_PacketEvent: fixing up a translated port\n" );
+			Log::Notice( "SV_PacketEvent: fixing up a translated port" );
 			cl->netchan.remoteAddress.port = from.port;
 		}
 
@@ -1232,7 +1231,7 @@ void SV_Frame( int msec )
 	// the menu kills the server with this cvar
 	if ( sv_killserver->integer )
 	{
-		SV_Shutdown( "Server was killed.\n" );
+		SV_Shutdown( "Server was killed." );
 		Cvar_Set( "sv_killserver", "0" );
 		return;
 	}

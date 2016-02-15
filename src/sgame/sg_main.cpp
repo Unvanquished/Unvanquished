@@ -604,7 +604,7 @@ void G_UpdateCvars()
 
 				if ( cv->trackChange )
 				{
-					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$\n") ),
+					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$") ),
 					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
 				}
 
@@ -668,12 +668,12 @@ void G_MapConfigs( const char *mapname )
 		return;
 	}
 
-	trap_SendConsoleCommand( va( "exec %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
+	trap_SendConsoleCommand( va( "exec %s/default.cfg", Quote( g_mapConfigs.string ) ) );
 
-	trap_SendConsoleCommand( va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
+	trap_SendConsoleCommand( va( "exec %s/%s.cfg", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
-	trap_SendConsoleCommand( "maprestarted\n" );
+	trap_SendConsoleCommand( "maprestarted" );
 }
 
 /*
@@ -724,11 +724,11 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
 
-			G_LogPrintf( "------------------------------------------------------------\n" );
-			G_LogPrintf( "InitGame: %s\n", serverinfo );
+			G_LogPrintf( "------------------------------------------------------------" );
+			G_LogPrintf( "InitGame: %s", serverinfo );
 
 			Com_GMTime( &qt );
-			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z\n",
+			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z",
 			             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 			             qt.tm_hour, qt.tm_min, qt.tm_sec );
 		}
@@ -958,8 +958,8 @@ void G_ShutdownGame( int restart )
 
 	if ( level.logFile )
 	{
-		G_LogPrintf( "ShutdownGame:\n" );
-		G_LogPrintf( "------------------------------------------------------------\n" );
+		G_LogPrintf( "ShutdownGame:" );
+		G_LogPrintf( "------------------------------------------------------------" );
 		trap_FS_FCloseFile( level.logFile );
 		level.logFile = 0;
 	}
@@ -1295,7 +1295,7 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 		while ( i != QUEUE_PLUS1( sq->back ) );
 	}
 
-	Log::Notice( "\n" );
+	Log::Notice( "" );
 }
 
 /*
@@ -1717,7 +1717,7 @@ void ExitLevel()
 	}
 	else if ( G_MapExists( g_nextMap.string ) )
 	{
-		trap_SendConsoleCommand( va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
+		trap_SendConsoleCommand( va( "map %s %s", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
 	}
 	else if ( G_MapRotationActive() )
 	{
@@ -1725,7 +1725,7 @@ void ExitLevel()
 	}
 	else
 	{
-		trap_SendConsoleCommand( "map_restart\n" );
+		trap_SendConsoleCommand( "map_restart" );
 	}
 
 	trap_Cvar_Set( "g_nextMap", "" );
@@ -1788,7 +1788,7 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	}
 
 	// Send to the logfile and server console
-	G_LogPrintf( "%s: %d \"%s^*\": ^6%s\n",
+	G_LogPrintf( "%s: %d \"%s^*\": ^6%s",
 	             G_admin_permission( ent, ADMF_ADMINCHAT ) ? "AdminMsg" : "AdminMsgPublic",
 	             ent ? ( int )( ent - g_entities ) : -1, ent ? ent->client->pers.netname : "console",
 	             msg );
@@ -1798,7 +1798,8 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 =================
 G_LogPrintf
 
-Print to the logfile with a time stamp if it is open, and to the server console
+Print to the logfile with a time stamp if it is open, and to the server console.
+Will append a newline for you.
 =================
 */
 void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
@@ -1836,6 +1837,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 	Color::StripColors( string, decolored, sizeof( decolored ) );
 	trap_FS_Write( decolored, strlen( decolored ), level.logFile );
+    trap_FS_Write( "", 1, level.logFile );
 }
 
 /*
@@ -1914,22 +1916,22 @@ static void G_LogGameplayStats( int state )
 			Com_GMTime( &t );
 
 			Com_sprintf( logline, sizeof( logline ),
-			             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-			             "#\n"
-			             "# Version: %s\n"
-			             "# Map:     %s\n"
-			             "# Date:    %04i-%02i-%02i\n"
-			             "# Time:    %02i:%02i:%02i\n"
-			             "# Format:  %i\n"
-			             "#\n"
-			             "# g_momentumHalfLife:        %4i\n"
-			             "# g_initialBuildPoints:      %4i\n"
-			             "# g_initialMineRate:         %4i\n"
-			             "# g_mineRateHalfLife:        %4i\n"
-			             "#\n"
-			             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16\n"
-			             "#  T #A #H AMom HMom  LMR  AME  HME  ABP  HBP ABRV HBRV ACre HCre AVal HVal\n"
-			             "# -------------------------------------------------------------------------\n",
+			             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+			             "#"
+			             "# Version: %s"
+			             "# Map:     %s"
+			             "# Date:    %04i-%02i-%02i"
+			             "# Time:    %02i:%02i:%02i"
+			             "# Format:  %i"
+			             "#"
+			             "# g_momentumHalfLife:        %4i"
+			             "# g_initialBuildPoints:      %4i"
+			             "# g_initialMineRate:         %4i"
+			             "# g_mineRateHalfLife:        %4i"
+			             "#"
+			             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16"
+			             "#  T #A #H AMom HMom  LMR  AME  HME  ABP  HBP ABRV HBRV ACre HCre AVal HVal"
+			             "# -------------------------------------------------------------------------",
 			             Q3_VERSION,
 			             mapname,
 			             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
@@ -1975,7 +1977,7 @@ static void G_LogGameplayStats( int state )
 			GetAverageCredits( Cre, Val );
 
 			Com_sprintf( logline, sizeof( logline ),
-			             "%4i %2i %2i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i\n",
+			             "%4i %2i %2i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i",
 			             time, num[ TEAM_ALIENS ], num[ TEAM_HUMANS ], Mom[ TEAM_ALIENS ], Mom[ TEAM_HUMANS ],
 			             LMR, ME[ TEAM_ALIENS ], ME[ TEAM_HUMANS ], BP[ TEAM_ALIENS ], BP[ TEAM_HUMANS ],
 			             BRV[ TEAM_ALIENS ], BRV[ TEAM_HUMANS ], Cre[ TEAM_ALIENS ], Cre[ TEAM_HUMANS ],
@@ -2005,14 +2007,14 @@ static void G_LogGameplayStats( int state )
 			sec = ( level.matchTime / 1000 ) % 60;
 
 			Com_sprintf( logline, sizeof( logline ),
-			             "# -------------------------------------------------------------------------\n"
-			             "#\n"
-			             "# Match duration:  %i:%02i\n"
-			             "# Winning team:    %s\n"
-			             "# Average Players: %.1f + %.1f\n"
-			             "# Average Aliens:  %.1f + %.1f\n"
-			             "# Average Humans:  %.1f + %.1f\n"
-			             "#\n",
+			             "# -------------------------------------------------------------------------"
+			             "#"
+			             "# Match duration:  %i:%02i"
+			             "# Winning team:    %s"
+			             "# Average Players: %.1f + %.1f"
+			             "# Average Aliens:  %.1f + %.1f"
+			             "# Average Humans:  %.1f + %.1f"
+			             "#",
 			             min, sec,
 			             winner,
 			             level.team[ TEAM_ALIENS ].averageNumPlayers + level.team[ TEAM_HUMANS ].averageNumPlayers,
@@ -2157,7 +2159,7 @@ void LogExit( const char *string )
 	int       i, numSorted;
 	gclient_t *cl;
 
-	G_LogPrintf( "Exit: %s\n", string );
+	G_LogPrintf( "Exit: %s", string );
 
 	level.intermissionQueued = level.time;
 
@@ -2191,7 +2193,7 @@ void LogExit( const char *string )
 
 		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 
-		G_LogPrintf( "score: %i  ping: %i  client: %i %s\n",
+		G_LogPrintf( "score: %i  ping: %i  client: %i %s",
 		             cl->ps.persistant[ PERS_SCORE ], ping, level.sortedClients[ i ],
 		             cl->pers.netname );
 	}
@@ -2356,7 +2358,7 @@ void CheckExitRules()
 		if ( level.matchTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
-			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit\n") "\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit") "\"" );
 			trap_SetConfigstring( CS_WINNER, "Stalemate" );
 			G_notify_sensor_end( TEAM_NONE );
 			LogExit( "Timelimit hit." );
@@ -2385,7 +2387,7 @@ void CheckExitRules()
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
-		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win\n") "\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
 		G_notify_sensor_end( TEAM_HUMANS );
 		LogExit( "Humans win." );
@@ -2399,7 +2401,7 @@ void CheckExitRules()
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;
-		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win\n") "\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
 		G_notify_sensor_end( TEAM_ALIENS );
 		LogExit( "Aliens win." );
@@ -2518,7 +2520,7 @@ void G_ExecuteVote( team_t team )
 {
 	level.team[ team ].voteExecuteTime = 0;
 
-	trap_SendConsoleCommand( va( "%s\n", level.team[ team ].voteString ) );
+	trap_SendConsoleCommand( va( "%s", level.team[ team ].voteString ) );
 
 	if ( !Q_stricmp( level.team[ team ].voteString, "map_restart" ) )
 	{
@@ -2587,24 +2589,24 @@ void G_CheckVote( team_t team )
 		level.team[ team ].voteExecuteTime = level.time + level.team[ team ].voteDelay;
 	}
 
-	G_LogPrintf( "EndVote: %s %s %d %d %d %d\n",
+	G_LogPrintf( "EndVote: %s %s %d %d %d %d",
 	             team == TEAM_NONE ? "global" : BG_TeamName( team ),
 	             pass ? "pass" : "fail",
 	             level.team[ team ].voteYes, level.team[ team ].voteNo, level.team[ team ].numPlayers, level.team[ team ].voted );
 
 	if ( !quorum )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached)\n") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached)\n") ),
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached)") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached)") ),
 		            level.team[ team ].voteYes + level.team[ team ].voteNo, level.team[ team ].numPlayers );
 	}
 	else if ( pass )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)\n") ) : QQ( N_("Team vote passed ($1$ — $2$)\n") ),
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)") ) : QQ( N_("Team vote passed ($1$ — $2$)") ),
 		            level.team[ team ].voteYes, level.team[ team ].voteNo );
 	}
 	else
 	{
-		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed)\n") ),
+		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed)") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed)") ),
 		            level.team[ team ].voteYes, level.team[ team ].voteNo, votePassThreshold * 100 );
 	}
 
@@ -2778,7 +2780,7 @@ void G_RunFrame( int levelTime )
 
 			if ( level.pausedTime >= 110000  && level.pausedTime <= 119000 )
 			{
-				trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Server: Game will auto-unpause in $1$ seconds\n") ),
+				trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Server: Game will auto-unpause in $1$ seconds") ),
 				                                ( int )( ( float )( 120000 - level.pausedTime ) / 1000.0f ) ) );
 			}
 		}
@@ -2794,7 +2796,7 @@ void G_RunFrame( int levelTime )
 
 		if ( level.pausedTime > 120000 )
 		{
-			trap_SendServerCommand( -1, "print_tr \"" N_("Server: The game has been unpaused automatically (2 minute max)\n") "\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Server: The game has been unpaused automatically (2 minute max)") "\"" );
 			trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );
 			level.pausedTime = 0;
 		}

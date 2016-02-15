@@ -316,7 +316,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	Beacon::PropagateAll( );
 
-	G_LogPrintf( "ChangeTeam: %d %s: %s^* switched teams\n",
+	G_LogPrintf( "ChangeTeam: %d %s: %s^* switched teams",
 	             ( int )( ent - g_entities ), BG_TeamName( newTeam ), ent->client->pers.netname );
 
 	G_namelog_update_score( ent->client );
@@ -571,14 +571,14 @@ void CheckTeamStatus()
 		     level.team[ TEAM_HUMANS ].numClients - level.team[ TEAM_ALIENS ].numClients > 2 )
 		{
 			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
-			                        "Humans have more players.\n") "\"" );
+			                        "Humans have more players.") "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
 		else if ( level.team[ TEAM_HUMANS ].numSpawns > 0 &&
 		          level.team[ TEAM_ALIENS ].numClients - level.team[ TEAM_HUMANS ].numClients > 2 )
 		{
 			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
-			                        "Aliens have more players.\n") "\"" );
+			                        "Aliens have more players.") "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
 		else

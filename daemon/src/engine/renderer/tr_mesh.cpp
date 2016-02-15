@@ -300,7 +300,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	if ( ( ent->e.frame >= tr.currentModel->mdv[ lod ]->numFrames )
 	     || ( ent->e.frame < 0 ) || ( ent->e.oldframe >= tr.currentModel->mdv[ lod ]->numFrames ) || ( ent->e.oldframe < 0 ) )
 	{
-		Log::Warn("R_AddMDVSurfaces: no such frame %d to %d for '%s' (%d)",
+		Log::Debug("R_AddMDVSurfaces: no such frame %d to %d for '%s' (%d)",
 		           ent->e.oldframe, ent->e.frame, tr.currentModel->name, tr.currentModel->mdv[ lod ]->numFrames );
 		ent->e.frame = 0;
 		ent->e.oldframe = 0;
