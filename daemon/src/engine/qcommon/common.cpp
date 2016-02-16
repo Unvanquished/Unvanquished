@@ -1354,10 +1354,9 @@ void Com_ListMaps_f()
 
 	for ( const auto& pak : FS::PakPath::ListFiles("maps", ignore) )
 	{
-		volatile auto foo = pak;
 		if ( Str::IsSuffix(".bsp", pak) )
 		{
-			maps.push_back( pak );
+			maps.push_back( pak.substr(0, pak.size() - 4) );
 		}
 	}
 
