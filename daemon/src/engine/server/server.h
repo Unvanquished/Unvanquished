@@ -159,7 +159,6 @@ struct client_t
 	bool       binaryMessageOverflowed;
 
 	int            gamestateMessageNum; // netchan->outgoingSequence of gamestate
-	int            challenge;
 
 	usercmd_t      lastUsercmd;
 	int            lastMessageNum; // for delta compression
@@ -229,22 +228,6 @@ struct svstats_t
 	int    latched_packets;
 };
 
-// MAX_CHALLENGES is made large to prevent a denial
-// of service attack that could cycle all of them
-// out before legitimate users connected
-#define MAX_CHALLENGES    1024
-
-struct challenge_t
-{
-	netadr_t adr;
-	int      challenge;
-	int      time; // time the last packet was sent to the autherize server
-	int      pingTime; // time the challenge response was sent to client
-	int      firstTime; // time the adr was first used, for authorize timeout checks
-	int      firstPing; // Used for min and max ping checks
-	bool connected;
-};
-
 struct receipt_t
 {
 	netadr_t adr;
@@ -272,7 +255,6 @@ struct serverStatic_t
 	int           nextSnapshotEntities; // next snapshotEntities to use
 	entityState_t *snapshotEntities; // [numSnapshotEntities]
 	int           nextHeartbeatTime;
-	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IP addresses from connecting
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
 
 	int       sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
@@ -337,8 +319,6 @@ extern cvar_t         *sv_mapname;
 extern cvar_t         *sv_mapChecksum;
 extern cvar_t         *sv_serverid;
 extern cvar_t         *sv_maxRate;
-extern cvar_t         *sv_minPing;
-extern cvar_t         *sv_maxPing;
 
 extern cvar_t *sv_pure;
 extern cvar_t *sv_floodProtect;
@@ -407,7 +387,6 @@ void SV_SpawnServer( const char *server );
 // sv_client.c
 //
 void SV_GetChallenge( netadr_t from );
-void SV_GetChallengeNew( netadr_t from );
 
 void SV_DirectConnect( netadr_t from, const Cmd::Args& args );
 

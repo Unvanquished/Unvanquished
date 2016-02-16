@@ -112,7 +112,7 @@ void ChallengeManager::Push( const Challenge& challenge )
 	challenges.push_back( challenge );
 }
 
-bool ChallengeManager::Match( const Challenge& challenge )
+bool ChallengeManager::Match( const Challenge& challenge, Challenge::Duration* ping )
 {
 	auto lock = Lock();
 
@@ -125,11 +125,21 @@ bool ChallengeManager::Match( const Challenge& challenge )
 
 	if ( it != challenges.end() )
 	{
+		if ( ping )
+		{
+			*ping = it->Lifetime();
+		}
 		challenges.erase( it );
 		return true;
 	}
 
 	return false;
+}
+
+void ChallengeManager::Clear()
+{
+	auto lock = Lock();
+	challenges.clear();
 }
 
 void ChallengeManager::Cleanup()
@@ -143,4 +153,17 @@ void ChallengeManager::Cleanup()
 		),
 		challenges.end()
 	);
+}
+
+bool ChallengeManager::MatchString( const netadr_t& source,
+									const std::string& challenge,
+									Challenge::Duration* ping )
+{
+	auto challenge_data = Crypto::String(challenge);
+	if ( Crypto::Encoding::HexDecode(challenge_data, challenge_data) )
+	{
+		return Match({source, challenge_data}, ping);
+	}
+
+	return false;
 }

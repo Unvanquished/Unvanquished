@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "engine/qcommon/qcommon.h"
 #include "Rcon.h"
 #include "Crypto.h"
-#include "common/Network.h"
+#include "framework/Network.h"
 #include "engine/server/CryptoChallenge.h"
 
 namespace Rcon {
@@ -176,14 +176,7 @@ bool Message::acceptable(std::string *invalid_reason) const
 
 	if ( secure_ == Secure::EncryptedChallenge )
 	{
-		auto data = Crypto::String(challenge_);
-		if ( !Crypto::Encoding::HexDecode(data, data) )
-		{
-			return invalid("Invalid challenge");
-		}
-
-		Challenge challenge(remote_, data);
-		if ( !ChallengeManager::Get().Match(challenge) )
+		if ( !ChallengeManager::Get().MatchString(remote_, challenge_) )
 		{
 			return invalid("Mismatched challenge");
 		}

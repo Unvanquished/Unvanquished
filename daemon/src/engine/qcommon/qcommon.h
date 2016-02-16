@@ -202,6 +202,7 @@ void       NET_Config( bool enableNetworking );
 void       NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
 // DEPRECATED: use Net::OutOfBandPrint
 void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) PRINTF_LIKE(3);
+// DEPRECATED: use Net::OutOfBandData
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
 bool   NET_CompareAdr( netadr_t a, netadr_t b );

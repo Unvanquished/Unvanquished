@@ -170,6 +170,8 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/Crypto.h
     ${ENGINE_DIR}/framework/Rcon.cpp
     ${ENGINE_DIR}/framework/Rcon.h
+    ${ENGINE_DIR}/framework/Network.h
+    ${ENGINE_DIR}/framework/Network.cpp
     ${ENGINE_DIR}/qcommon/md5.cpp
     ${ENGINE_DIR}/sys/con_common.h
     ${ENGINE_DIR}/sys/con_common.cpp

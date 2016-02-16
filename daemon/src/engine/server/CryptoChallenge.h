@@ -51,7 +51,8 @@ public:
     static std::size_t Bytes();
 
     Challenge( const netadr_t& source, const Crypto::Data& challenge )
-        : valid_until( Clock::now() + Timeout() ),
+        : created( Clock::now() ),
+          timeout( Timeout() ),
           challenge( challenge ),
           source( source )
     {
@@ -69,7 +70,7 @@ public:
      */
     TimePoint ValidUntil() const
     {
-        return valid_until;
+        return created + timeout;
     }
 
     /*
@@ -77,7 +78,7 @@ public:
      */
     bool ValidAt( const TimePoint& time ) const
     {
-        return valid_until >= time;
+        return created + timeout >= time;
     }
 
     /*
@@ -99,15 +100,32 @@ public:
         return Crypto::String( Crypto::Encoding::HexEncode( challenge ) );
     }
 
+    /*
+     * Time when this challenge has been created
+     */
+    TimePoint Created() const
+    {
+        return created;
+    }
+
+    /*
+     * Duration this challenge has been alive for
+     */
+    Duration Lifetime() const
+    {
+        return Clock::now() - created;
+    }
+
 private:
     /*
      * Generates a random challenge
      */
     std::string GenerateString();
 
-    TimePoint valid_until;
+    TimePoint    created;
+	Duration     timeout;
     Crypto::Data challenge;
-    netadr_t source;
+    netadr_t     source;
 
 };
 
@@ -134,9 +152,27 @@ public:
 
     /*
      * Check if a challenge matches any of the registered ones
-     * If it does and it's valid, it'll return false
+     * If it does and it's valid, it'll return true and remove it
+     *
+     * If ping is not null, it will be set to the challenge ping time
      */
-    bool Match( const Challenge& challenge );
+    bool Match( const Challenge& challenge, Challenge::Duration* ping = nullptr );
+
+
+    /*
+     * Removes all active challenges
+     */
+    void Clear();
+
+    /*
+     * Matches a challenge, the challenge string should be equal to what
+     * GenerateChallenge() returned for the same source.
+     *
+     * If ping is not null, it will be set to the challenge ping time
+     */
+    bool MatchString( const netadr_t& source,
+                      const std::string& challenge,
+                      Challenge::Duration* ping = nullptr);
 
 private:
     ChallengeManager() = default;

@@ -47,7 +47,7 @@ cvar_t *cl_wavefilerecord;
 #include "mumblelink/libmumblelink.h"
 #include "qcommon/crypto.h"
 #include "framework/Rcon.h"
-#include <common/Network.h>
+#include "framework/Network.h"
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -1456,6 +1456,12 @@ public:
 		requests.push_back(request);
 	}
 
+	bool Empty() const
+	{
+		auto lock = std::unique_lock<std::mutex>(mutex);
+		return requests.empty();
+	}
+
 	void Pop(const netadr_t &server, const std::string& challenge)
 	{
 		auto lock = std::unique_lock<std::mutex>(mutex);
@@ -1479,7 +1485,7 @@ public:
 
 private:
 	std::vector<Request> requests;
-	std::mutex mutex;
+	mutable std::mutex mutex;
 };
 
 static RconChallengeQueue CL_RconChallengeQueue;
@@ -1528,7 +1534,7 @@ void CL_Rcon_f()
 	if ( Rcon::Secure(Rcon::cvar_server_secure.Get()) == Rcon::Secure::EncryptedChallenge )
 	{
 		CL_RconChallengeQueue.Push({to, Cmd::GetCurrentArgs().EscapedArgs(1)});
-		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, to, "getchallengenew");
+		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, to, "getchallenge");
 	}
 	else
 	{
@@ -2106,8 +2112,6 @@ void CL_CheckForResend()
 	int  port;
 	char info[ MAX_INFO_STRING ];
 	char data[ MAX_INFO_STRING ];
-	char pkt[ 1024 + 1 ]; // EVEN BALANCE - T.RAY
-	int  pktlen; // EVEN BALANCE - T.RAY
 
 	// don't send anything if playing back a demo
 	if ( clc.demoplaying )
@@ -2132,10 +2136,7 @@ void CL_CheckForResend()
 	switch ( cls.state )
 	{
 		case connstate_t::CA_CONNECTING:
-			// EVEN BALANCE - T.RAY
-			strcpy( pkt, "getchallenge" );
-			pktlen = strlen( pkt );
-			NET_OutOfBandPrint( netsrc_t::NS_CLIENT, clc.serverAddress, "%s", pkt );
+			Net::OutOfBandPrint( netsrc_t::NS_CLIENT, clc.serverAddress, "getchallenge" );
 			break;
 
 		case connstate_t::CA_CHALLENGING:
@@ -2149,16 +2150,12 @@ void CL_CheckForResend()
 			Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO, false ), sizeof( info ) );
 			Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ), false );
 			Info_SetValueForKey( info, "qport", va( "%i", port ), false );
-			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), false );
+			Info_SetValueForKey( info, "challenge", clc.challenge.c_str(), false );
 			Info_SetValueForKey( info, "pubkey", key, false );
 
 			Com_sprintf( data, sizeof(data), "connect %s", Cmd_QuoteString( info ) );
 
-			// EVEN BALANCE - T.RAY
-			pktlen = strlen( data );
-			memcpy( pkt, &data[ 0 ], pktlen );
-
-			NET_OutOfBandData( netsrc_t::NS_CLIENT, clc.serverAddress, ( byte * ) pkt, pktlen );
+			Net::OutOfBandData( netsrc_t::NS_CLIENT, clc.serverAddress, (byte*)data, strlen( data ) );
 			// the most current userinfo has been sent, so watch for any
 			// newer changes to userinfo variables
 			cvar_modifiedFlags &= ~CVAR_USERINFO;
@@ -2674,20 +2671,21 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	Log::Debug( "CL packet %s: %s", NET_AdrToStringwPort( from ), args.Argv(0).c_str() );
 
 	// challenge from the server we are connecting to
+
 	if ( args.Argv(0) == "challengeResponse" )
 	{
-		if ( cls.state != connstate_t::CA_CONNECTING )
+		if ( !CL_RconChallengeQueue.Empty() )
 		{
-			Log::Notice( "Unwanted challenge response received.  Ignored.\n" );
+			CL_RconChallengeQueue.Pop(from, args.Argv(1));
 		}
-		else
+		else if ( cls.state == connstate_t::CA_CONNECTING )
 		{
 			if ( args.Argc() < 2 )
 			{
 				return;
 			}
 			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = atoi(args.Argv(1).c_str());
+			clc.challenge = args.Argv(1);
 			cls.state = connstate_t::CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -2695,7 +2693,11 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 			// take this address as the new server address.  This allows
 			// a server proxy to hand off connections to multiple servers
 			clc.serverAddress = from;
-			Log::Debug( "challenge: %d", clc.challenge );
+			Log::Debug( "challenge: %s", clc.challenge.c_str() );
+		}
+		else
+		{
+			Log::Notice( "Unwanted challenge response received.  Ignored.\n" );
 		}
 
 		return;
@@ -2784,12 +2786,6 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	if ( args.Argv(0) == "getserversExtResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, true );
-		return;
-	}
-
-	if ( args.Argv(0) == "challengeResponseNew" )
-	{
-		CL_RconChallengeQueue.Pop(from, args.Argv(1));
 		return;
 	}
 

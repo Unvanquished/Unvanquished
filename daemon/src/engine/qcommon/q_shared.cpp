@@ -1902,9 +1902,9 @@ InfoMap InfoStringToMap( const std::string& string )
 
 	InfoMap map;
 	std::istringstream input( string );
+	input.ignore( 1, INFO_SEPARATOR );
 	while ( input.good() )
 	{
-		input.ignore( 1, INFO_SEPARATOR );
 		std::string key;
 		std::getline( input, key, INFO_SEPARATOR );
 		std::string value;

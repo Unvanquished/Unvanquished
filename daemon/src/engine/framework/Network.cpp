@@ -27,24 +27,30 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
-#ifndef COMMON_NETWORK_H
-#define COMMON_NETWORK_H
+#include "engine/qcommon/qcommon.h"
+#include "Network.h"
 
 namespace Net {
 
-inline const std::string& OOBHeader()
+void OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, std::size_t len )
 {
-	static std::string header ="\xff\xff\xff\xff";
-	return header;
+	if ( len == 0 )
+	{
+		return;
+	}
+
+	std::basic_string<byte> message;
+	message.reserve(OOBHeader().size() + len);
+	message.append(OOBHeader().begin(), OOBHeader().end());
+	message.append(format, len);
+
+	msg_t mbuf;
+	mbuf.data = &message[0];
+	mbuf.cursize = message.size();
+	Huff_Compress( &mbuf, 12 );
+	// send the datagram
+	NET_SendPacket( sock, mbuf.cursize, mbuf.data, adr );
 }
 
-template<class... Args>
-void OutOfBandPrint( netsrc_t net_socket, netadr_t adr, Str::StringRef format, Args&&... args )
-{
-	std::string message = OOBHeader() + Str::Format( format, std::forward<Args>(args)... );
-	NET_SendPacket( net_socket, message.size(), message.c_str(), adr );
-}
 
 } // namespace Net
-
-#endif // COMMON_NETWORK_H

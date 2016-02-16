@@ -183,7 +183,7 @@ struct clientConnection_t
 	int      connectPacketCount; // for display on connection dialog
 	char     serverMessage[ MAX_STRING_TOKENS ]; // for display on connection dialog
 
-	int      challenge; // from the server to use for connecting
+	std::string challenge; // from the server to use for connecting
 	int      checksumFeed; // from the server for checksum calculations
 
 	// these are our reliable messages that go to the server

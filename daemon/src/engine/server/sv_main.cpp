@@ -38,7 +38,7 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
-#include "common/Network.h"
+#include "framework/Network.h"
 
 serverStatic_t svs; // persistent server info
 server_t       sv; // local server
@@ -61,8 +61,6 @@ cvar_t         *sv_killserver; // menu system can set to 1 to shut server down
 cvar_t         *sv_mapname;
 cvar_t         *sv_serverid;
 cvar_t         *sv_maxRate;
-cvar_t         *sv_minPing;
-cvar_t         *sv_maxPing;
 
 cvar_t         *sv_pure;
 cvar_t         *sv_floodProtect;
@@ -592,16 +590,6 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 		info_map["stats"] = sv_statsURL->string;
 	}
 
-	if ( sv_minPing->integer )
-	{
-		info_map["minPing"] = std::to_string( sv_minPing->integer );
-	}
-
-	if ( sv_maxPing->integer )
-	{
-		info_map["maxPing"] = std::to_string( sv_maxPing->integer );
-	}
-
 	info_map["gamename"] = GAMENAME_STRING;  // Arnout: to be able to filter out Quake servers
 
 	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "infoResponse\n%s", InfoMapToString( info_map ) );
@@ -879,10 +867,6 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	else if ( args.Argv(0) == "getchallenge" )
 	{
 		SV_GetChallenge( from );
-	}
-	else if ( args.Argv(0) == "getchallengenew" )
-	{
-		SV_GetChallengeNew( from );
 	}
 	else if ( args.Argv(0) == "connect" )
 	{
