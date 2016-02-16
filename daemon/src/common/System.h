@@ -38,22 +38,22 @@ namespace Sys {
 #ifdef _WIN32
 class SteadyClock {
 public:
-	typedef std::chrono::nanoseconds duration;
-	typedef duration::rep rep;
-	typedef duration::period period;
-	typedef std::chrono::time_point<SteadyClock> time_point;
+	using duration = std::chrono::nanoseconds;
+	using rep = duration::rep;
+	using period = duration::period;
+	using time_point = std::chrono::time_point<SteadyClock>;
 	static const bool is_steady = true;
 
 	static time_point now() NOEXCEPT;
 };
 #else
 # ifdef LIBSTDCXX_BROKEN_CXX11
-typedef std::chrono::monotonic_clock SteadyClock;
+using SteadyClock = std::chrono::monotonic_clock;
 # else
-typedef std::chrono::steady_clock SteadyClock;
+using SteadyClock = std::chrono::steady_clock;
 # endif
 #endif
-typedef std::chrono::system_clock RealClock;
+using RealClock = std::chrono::system_clock;
 
 // High precision sleep until the specified time point. Use this instead of
 // std::this_thread::sleep_until. The function returns the time which should be
@@ -99,14 +99,14 @@ void SetupCrashHandler();
 #ifdef _WIN32
 // HANDLE is defined as void* in windows.h, but we don't want to include that
 // everywhere. Windows also has 2 different invalid handle values: 0 and -1
-typedef void* OSHandle;
+using OSHandle = void*;
 const OSHandle INVALID_HANDLE = reinterpret_cast<void*>(-1);
 inline bool IsValidHandle(OSHandle handle)
 {
 	return handle != nullptr && handle != INVALID_HANDLE;
 }
 #else
-typedef int OSHandle;
+using OSHandle = int;
 const OSHandle INVALID_HANDLE = -1;
 inline bool IsValidHandle(OSHandle handle)
 {
@@ -172,6 +172,8 @@ bool IsProcessTerminating();
 // Generate cryptographically-secure random bytes. Don't use std::random_device
 // because it is not implemented correctly on some platforms.
 void GenRandomBytes(void* dest, size_t size);
+
+bool IsDebuggerAttached();
 
 } // namespace Sys
 

@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_noise.c
 #include "tr_local.h"
 
-#define NOISE_SIZE 256
-#define NOISE_MASK ( NOISE_SIZE - 1 )
+static const int NOISE_SIZE = 256;
+static const int NOISE_MASK = ( NOISE_SIZE - 1 );
 
 #define VAL( a )            s_noise_perm[ ( a ) & ( NOISE_MASK ) ]
 #define INDEX( x, y, z, t ) VAL( x + VAL( y + VAL( z + VAL( t ) ) ) )

@@ -163,19 +163,19 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	Cvar_VariableStringBuffer( "fs_game", gameName, sizeof( gameName ) );
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navMesh", mapname, filename );
-	Com_Printf( " loading navigation mesh file '%s'...\n", filePath );
+	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
 	int len = FS_FOpenFileRead( filePath, &f, true );
 
 	if ( !f )
 	{
-		Com_Log(LOG_ERROR, "Cannot open Navigaton Mesh file" );
+		Log::Warn("Cannot open Navigaton Mesh file" );
 		return false;
 	}
 
 	if ( len < 0 )
 	{
-		Com_Log( LOG_ERROR, "Negative Length for Navigation Mesh file");
+		Log::Warn("Negative Length for Navigation Mesh file");
 		return false;
 	}
 
@@ -187,14 +187,14 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( header.magic != NAVMESHSET_MAGIC )
 	{
-		Com_Log( LOG_ERROR, "File is wrong magic" );
+		Log::Warn("File is wrong magic" );
 		FS_FCloseFile( f );
 		return false;
 	}
 
 	if ( header.version != NAVMESHSET_VERSION )
 	{
-		Com_Logf( LOG_ERROR, "File is wrong version found: %d want: %d", header.version, NAVMESHSET_VERSION );
+		Log::Warn("File is wrong version found: %d want: %d", header.version, NAVMESHSET_VERSION );
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -203,7 +203,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( !nav.mesh )
 	{
-		Com_Log( LOG_ERROR, "Unable to allocate nav mesh" );
+		Log::Warn("Unable to allocate nav mesh" );
 		FS_FCloseFile( f );
 		return false;
 	}
@@ -212,7 +212,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( dtStatusFailed( status ) )
 	{
-		Com_Log( LOG_ERROR, "Could not init navmesh" );
+		Log::Warn("Could not init navmesh" );
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = nullptr;
 		FS_FCloseFile( f );
@@ -223,7 +223,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( !nav.cache )
 	{
-		Com_Log( LOG_ERROR, "Could not allocate tile cache" );
+		Log::Warn("Could not allocate tile cache" );
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = nullptr;
 		FS_FCloseFile( f );
@@ -234,7 +234,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	if ( dtStatusFailed( status ) )
 	{
-		Com_Log( LOG_ERROR, "Could not init tile cache" );
+		Log::Warn("Could not init tile cache" );
 		dtFreeNavMesh( nav.mesh );
 		dtFreeTileCache( nav.cache );
 		nav.mesh = nullptr;
@@ -253,7 +253,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 		if ( !tileHeader.tileRef || !tileHeader.dataSize )
 		{
-			Com_Log( LOG_ERROR, "NUll Tile in navmesh" );
+			Log::Warn("NUll Tile in navmesh" );
 			dtFreeNavMesh( nav.mesh );
 			dtFreeTileCache( nav.cache );
 			nav.cache = nullptr;
@@ -266,7 +266,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 		if ( !data )
 		{
-			Com_Log( LOG_ERROR, "Failed to allocate memory for tile data" );
+			Log::Warn("Failed to allocate memory for tile data" );
 			dtFreeNavMesh( nav.mesh );
 			dtFreeTileCache( nav.cache );
 			nav.cache = nullptr;
@@ -289,7 +289,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 		if ( dtStatusFailed( status ) )
 		{
-			Com_Log( LOG_ERROR, "Failed to add tile to navmesh" );
+			Log::Warn("Failed to add tile to navmesh" );
 			dtFree( data );
 			dtFreeTileCache( nav.cache );
 			dtFreeNavMesh( nav.mesh );
@@ -311,7 +311,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 inline void *dtAllocCustom( int size, dtAllocHint )
 {
-	return Z_TagMalloc( size, TAG_BOTLIB );
+	return Z_TagMalloc( size, memtag_t::TAG_BOTLIB );
 }
 
 inline void dtFreeCustom( void *ptr )
@@ -388,7 +388,7 @@ bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 
 	if ( numNavData == MAX_NAV_DATA )
 	{
-		Com_Printf( "^3ERROR: maximum number of navigation meshes exceeded\n" );
+		Log::Warn( "maximum number of navigation meshes exceeded" );
 		return false;
 	}
 
@@ -406,14 +406,14 @@ bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 
 	if ( !nav->query )
 	{
-		Com_Printf( "Could not allocate Detour Navigation Mesh Query for navmesh %s\n", filename );
+		Log::Notice( "Could not allocate Detour Navigation Mesh Query for navmesh %s", filename );
 		BotShutdownNav();
 		return false;
 	}
 
 	if ( dtStatusFailed( nav->query->init( nav->mesh, maxNavNodes->integer ) ) )
 	{
-		Com_Printf( "Could not init Detour Navigation Mesh Query for navmesh %s\n", filename );
+		Log::Notice( "Could not init Detour Navigation Mesh Query for navmesh %s", filename );
 		BotShutdownNav();
 		return false;
 	}

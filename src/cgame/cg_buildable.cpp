@@ -179,7 +179,7 @@ void CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir )
 {
 	particleSystem_t *ps;
 
-	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.alienBuildableExplosion );
+	trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.alienBuildableExplosion );
 
 	//particle system
 	ps = CG_SpawnNewParticleSystem( cgs.media.alienBuildableDestroyedPS );
@@ -205,7 +205,7 @@ void CG_HumanBuildableDying( buildable_t buildable, vec3_t origin )
 	{
 		case BA_H_REPEATER:
 		case BA_H_REACTOR:
-			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableDying );
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.humanBuildableDying );
 		default:
 			return;
 	}
@@ -228,7 +228,7 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 		nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
 	}
 
-	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
+	trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.humanBuildableExplosion );
 	explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
 
 	if ( CG_IsParticleSystemValid( &nova ) )
@@ -316,7 +316,7 @@ static void CG_OnFire( centity_t *cent )
 	entityState_t *es = &cent->currentState;
 	team_t        team = BG_Buildable( es->modelindex )->team;
 
-	if ( es->eType != ET_BUILDABLE )
+	if ( es->eType != entityType_t::ET_BUILDABLE )
 	{
 		return;
 	}
@@ -374,7 +374,7 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 	animations = cg_buildables[ buildable ].animations;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -384,7 +384,7 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
+		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
 		return false;
 	}
 
@@ -454,7 +454,7 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Printf( "Error parsing animation file: %s\n", filename );
+		Log::Warn( "Error parsing animation file: %s", filename );
 		return false;
 	}
 
@@ -482,7 +482,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 	sounds = cg_buildables[ buildable ].sounds;
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -492,7 +492,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
+		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
 		return false;
 	}
 
@@ -527,7 +527,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Printf( "Error parsing sound file: %s\n", filename );
+		Log::Warn( "Error parsing sound file: %s", filename );
 		return false;
 	}
 
@@ -675,7 +675,7 @@ void CG_InitBuildables()
 				                                     IsLooped( buildable, anim ),
 				                                     IsReversed( buildable, anim ), false, iqm ) )
 				{
-					Com_Printf( S_ERROR "Failed to load animation '%s' for buildable '%s' and "
+					Log::Warn( "Failed to load animation '%s' for buildable '%s' and "
 					            "animation slot #%d.", animName, buildableName, anim );
 				}
 			}
@@ -687,7 +687,7 @@ void CG_InitBuildables()
 
 			if ( !CG_ParseBuildableAnimationFile( filename, (buildable_t) buildable ) )
 			{
-				Com_Printf( S_WARNING "failed to load animation file %s\n", filename );
+				Log::Warn( "failed to load animation file %s", filename );
 			}
 		}
 
@@ -696,7 +696,7 @@ void CG_InitBuildables()
 
 		if ( !CG_ParseBuildableSoundFile( filename, (buildable_t) buildable ) )
 		{
-			Com_Printf( S_WARNING "failed to load sound file %s\n", filename );
+			Log::Warn( "failed to load sound file %s", filename );
 		}
 
 		//sounds
@@ -707,7 +707,7 @@ void CG_InitBuildables()
 
 			if ( cg_buildables[ buildable ].sounds[ j ].enabled )
 			{
-				if ( trap_FS_FOpenFile( filename, &f, FS_READ ) > 0 )
+				if ( trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ ) > 0 )
 				{
 					//file exists so close it
 					trap_FS_FCloseFile( f );
@@ -865,12 +865,12 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( newAnimation < 0 || newAnimation >= MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Error( "Bad animation number: %i", newAnimation );
+		Com_Error(errorParm_t::ERR_DROP,  "Bad animation number: %i", newAnimation );
 	}
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		if ( bSkeleton.type != SK_INVALID )
+		if ( bSkeleton.type != refSkeletonType_t::SK_INVALID )
 		{
 			oldbSkeleton = bSkeleton;
 
@@ -878,7 +878,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 			{
 				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
-					CG_Printf( "Can't build old buildable bSkeleton\n" );
+					Log::Warn( "Can't build old buildable bSkeleton" );
 					return;
 				}
 			}
@@ -909,7 +909,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( cg_debugAnim.integer )
 	{
-		CG_Printf( "Anim: %i\n", newAnimation );
+		Log::Debug( "Anim: %i", newAnimation );
 	}
 
 	if ( lf->old_animationNumber <= 0 ) // Skip initial / invalid blending
@@ -947,7 +947,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	{
 		if ( cg_debugRandom.integer )
 		{
-			CG_Printf( "newAnimation: %d lf->animationNumber: %d lf->animation: %p\n",
+			Log::Debug( "newAnimation: %d lf->animationNumber: %d lf->animation: %p",
 			           newAnimation, lf->animationNumber, (void *) lf->animation );
 		}
 
@@ -958,11 +958,11 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 		{
 			if ( cg_debugRandom.integer )
 			{
-				CG_Printf( "Sound for animation %d for a %s\n",
+				Log::Debug( "Sound for animation %d for a %s",
 				           newAnimation, BG_Buildable( buildable )->humanName );
 			}
 
-			trap_S_StartSound( cent->lerpOrigin, cent->currentState.number, CHAN_AUTO,
+			trap_S_StartSound( cent->lerpOrigin, cent->currentState.number, soundChannel_t::CHAN_AUTO,
 			                   cg_buildables[ buildable ].sounds[ newAnimation ].sound );
 		}
 	}
@@ -1028,7 +1028,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 		{
 			if ( cg_debugAnim.integer )
 			{
-				CG_Printf( "%d->%d l:%d t:%d %s(%d)\n",
+				Log::Debug( "%d->%d l:%d t:%d %s(%d)",
 				           cent->oldBuildableAnim, cent->buildableAnim,
 				           es->legsAnim, es->torsoAnim,
 				           BG_Buildable( es->modelindex )->humanName, es->number );
@@ -1606,7 +1606,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		}
 		else
 		{
-			Com_Printf( "CG_BuildableStatusParse: unknown token %s in %s\n",
+			Log::Notice( "CG_BuildableStatusParse: unknown token %s in %s\n",
 			            token.string, filename );
 			bs->loaded = false;
 			trap_Parse_FreeSource( handle );
@@ -1797,7 +1797,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			hit = &cg_entities[ tr.entityNum ].currentState;
 
-			if ( tr.entityNum < MAX_CLIENTS || ( hit->eType == ET_BUILDABLE &&
+			if ( tr.entityNum < MAX_CLIENTS || ( hit->eType == entityType_t::ET_BUILDABLE &&
 			                                     ( !( es->eFlags & EF_B_SPAWNED ) ||
 			                                       BG_Buildable( hit->modelindex )->transparentTest ) ) )
 			{
@@ -2262,7 +2262,7 @@ void CG_DrawBuildableStatus()
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		es = &cent->currentState;
 
-		if ( es->eType == ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
+		if ( es->eType == entityType_t::ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
 		{
 			buildableList[ buildables++ ] = cg.snap->entities[ i ].number;
 		}
@@ -2331,7 +2331,7 @@ void CG_Buildable( centity_t *cent )
 	VectorCopy( es->angles, angles );
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
 
-	if ( es->pos.trType == TR_STATIONARY )
+	if ( es->pos.trType == trType_t::TR_STATIONARY )
 	{
 		// seeing as buildables rarely move, we cache the results and recalculate
 		// only if the buildable moves or changes orientation
@@ -2434,7 +2434,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	// add inverse shadow map
-	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
+	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.integer )
 	{
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
@@ -2778,7 +2778,7 @@ void CG_Buildable( centity_t *cent )
 			if ( team == TEAM_HUMANS )
 			{
 				int i = rand() % 4;
-				trap_S_StartSound( nullptr, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
+				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
 			}
 
 			cent->lastBuildableDamageSoundTime = cg.time;
@@ -2822,7 +2822,7 @@ void CG_Buildable( centity_t *cent )
 		}
 	}
 
-	if ( cg_shadows.integer > SHADOWING_BLOB && cg_buildableShadows.integer )
+	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.integer )
 	{
 		CG_EndShadowCaster( );
 	}

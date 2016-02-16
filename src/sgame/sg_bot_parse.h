@@ -24,25 +24,26 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_ai.h"
 
-#define allocNode( T ) ( T * ) BG_Alloc( sizeof( T ) );
-#define stringify( v ) va( #v " %d", v )
-#define D( T ) trap_Parse_AddGlobalDefine( stringify( T ) )
+#define allocNode(T) ( T * ) BG_Alloc( sizeof( T ) );
+#define stringify2(T, val) va( #T " %d", val )
+#define D2(T, val) trap_Parse_AddGlobalDefine( stringify2( T, val ) )
+#define D(T) D2(T, T)
 
 // FIXME: copied from parse.c
-#define P_LOGIC_AND        5
-#define P_LOGIC_OR         6
-#define P_LOGIC_GEQ        7
-#define P_LOGIC_LEQ        8
-#define P_LOGIC_EQ         9
-#define P_LOGIC_UNEQ       10
+#define P_LOGIC_AND        4
+#define P_LOGIC_OR         5
+#define P_LOGIC_GEQ        6
+#define P_LOGIC_LEQ        7
+#define P_LOGIC_EQ         8
+#define P_LOGIC_UNEQ       9
 
-#define P_LOGIC_NOT        36
-#define P_LOGIC_GREATER    37
-#define P_LOGIC_LESS       38
+#define P_LOGIC_NOT        35
+#define P_LOGIC_GREATER    36
+#define P_LOGIC_LESS       37
 
 typedef struct
 {
-	int   type;
+	tokenType_t type;
 	int   subtype;
 	int   intvalue;
 	float floatvalue;

@@ -159,7 +159,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 	frame = &client->frames[ client->netchan.outgoingSequence & PACKET_MASK ];
 
 	// try to use a previous frame as the source for delta compressing the snapshot
-	if ( client->deltaMessage <= 0 || client->state != CS_ACTIVE )
+	if ( client->deltaMessage <= 0 || client->state != clientState_t::CS_ACTIVE )
 	{
 		// client is asking for a retransmit
 		oldframe = nullptr;
@@ -168,7 +168,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 	else if ( client->netchan.outgoingSequence - client->deltaMessage >= ( PACKET_BACKUP - 3 ) )
 	{
 		// client hasn't gotten a good message through in a long time
-		Com_DPrintf( "%s^7: Delta request from out of date packet.\n", client->name );
+		Log::Debug( "%s^7: Delta request from out of date packet.", client->name );
 		oldframe = nullptr;
 		lastframe = 0;
 	}
@@ -181,7 +181,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 		// the snapshot's entities may still have rolled off the buffer, though
 		if ( oldframe->first_entity <= svs.nextSnapshotEntities - svs.numSnapshotEntities )
 		{
-			Com_DPrintf( "%s^7: Delta request from out of date entities.\n", client->name );
+			Log::Debug( "%s^7: Delta request from out of date entities.", client->name );
 			oldframe = nullptr;
 			lastframe = 0;
 		}
@@ -207,7 +207,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 		snapFlags |= SNAPFLAG_RATE_DELAYED;
 	}
 
-	if ( client->state != CS_ACTIVE )
+	if ( client->state != clientState_t::CS_ACTIVE )
 	{
 		snapFlags |= SNAPFLAG_NOT_ACTIVE;
 	}
@@ -274,13 +274,13 @@ Build a client snapshot structure
 */
 
 //#define   MAX_SNAPSHOT_ENTITIES   1024
-#define MAX_SNAPSHOT_ENTITIES 2048
+static const int MAX_SNAPSHOT_ENTITIES = 2048;
 
-typedef struct
+struct snapshotEntityNumbers_t
 {
 	int numSnapshotEntities;
 	int snapshotEntities[ MAX_SNAPSHOT_ENTITIES ];
-} snapshotEntityNumbers_t;
+};
 
 /*
 =======================
@@ -296,7 +296,7 @@ static int QDECL SV_QsortEntityNumbers( const void *a, const void *b )
 
 	if ( *ea == *eb )
 	{
-		Com_Error( ERR_DROP, "SV_QsortEntityStates: duplicated entity" );
+		Com_Error( errorParm_t::ERR_DROP, "SV_QsortEntityStates: duplicated entity" );
 	}
 
 	if ( *ea < *eb )
@@ -364,7 +364,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 	// during an error shutdown message we may need to transmit
 	// the shutdown message after the server has shutdown, so
 	// specfically check for it
-	if ( !sv.state )
+	if (sv.state == serverState_t::SS_DEAD)
 	{
 		return;
 	}
@@ -399,7 +399,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 
 		if ( ent->s.number != e )
 		{
-			Com_DPrintf( "FIXING ENT->S.NUMBER!!!\n" );
+			Log::Debug( "FIXING ENT->S.NUMBER!!!" );
 			ent->s.number = e;
 		}
 
@@ -594,7 +594,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 
 					if ( ment->s.number != h )
 					{
-						Com_DPrintf( "FIXING vis dummy multiple ment->S.NUMBER!!!\n" );
+						Log::Debug( "FIXING vis dummy multiple ment->S.NUMBER!!!" );
 						ment->s.number = h;
 					}
 
@@ -684,7 +684,7 @@ static void SV_BuildClientSnapshot( client_t *client )
 
 	clent = client->gentity;
 
-	if ( !clent || client->state == CS_ZOMBIE )
+	if ( !clent || client->state == clientState_t::CS_ZOMBIE )
 	{
 		return;
 	}
@@ -699,7 +699,7 @@ static void SV_BuildClientSnapshot( client_t *client )
 
 	if ( clientNum < 0 || clientNum >= MAX_GENTITIES )
 	{
-		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
+		Com_Error( errorParm_t::ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
 	}
 
 	svEnt = &sv.svEntities[ clientNum ];
@@ -750,7 +750,7 @@ static void SV_BuildClientSnapshot( client_t *client )
 		// this should never hit, map should always be restarted first in SV_Frame
 		if ( svs.nextSnapshotEntities >= 0x7FFFFFFE )
 		{
-			Com_Error( ERR_FATAL, "svs.nextSnapshotEntities wrapped" );
+			Com_Error( errorParm_t::ERR_FATAL, "svs.nextSnapshotEntities wrapped" );
 		}
 
 		frame->num_entities++;
@@ -766,7 +766,7 @@ to take to clear, based on the current rate
 TTimo - use sv_maxRate or sv_dl_maxRate depending on regular or downloading client
 ====================
 */
-#define HEADER_RATE_BYTES 48 // include our header, IP header, and some overhead
+static const int HEADER_RATE_BYTES = 48; // include our header, IP header, and some overhead
 static int SV_RateMsec( client_t *client, int messageSize )
 {
 	int rate;
@@ -834,7 +834,7 @@ void SV_SendMessageToClient( msg_t *msg, client_t *client )
 	// local clients get snapshots every frame
 	// TTimo - show_bug.cgi?id=491
 	// added sv_lanForceRate check
-	if ( client->netchan.remoteAddress.type == NA_LOOPBACK ||
+	if ( client->netchan.remoteAddress.type == netadrtype_t::NA_LOOPBACK ||
 	     ( sv_lanForceRate->integer && Sys_IsLANAddress( client->netchan.remoteAddress ) ) )
 	{
 		client->nextSnapshotTime = svs.time - 1;
@@ -860,7 +860,7 @@ void SV_SendMessageToClient( msg_t *msg, client_t *client )
 	client->nextSnapshotTime = svs.time + rateMsec;
 
 	// don't pile up empty snapshots while connecting
-	if ( client->state != CS_ACTIVE )
+	if ( client->state != clientState_t::CS_ACTIVE )
 	{
 		// a gigantic connection message may have already put the nextSnapshotTime
 		// more than a second away, so don't shorten it
@@ -908,7 +908,7 @@ void SV_SendClientIdle( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Printf( "WARNING: msg overflowed for %s\n", client->name );
+		Log::Warn( "msg overflowed for %s\n", client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );
@@ -935,11 +935,11 @@ void SV_SendClientSnapshot( client_t *client )
 	msg_t msg;
 
 	//bani
-	if ( client->state < CS_ACTIVE )
+	if ( client->state < clientState_t::CS_ACTIVE )
 	{
 		// bani - #760 - zombie clients need full snaps so they can still process reliable commands
 		// (eg so they can pick up the disconnect reason)
-		if ( client->state != CS_ZOMBIE )
+		if ( client->state != clientState_t::CS_ZOMBIE )
 		{
 			SV_SendClientIdle( client );
 			return;
@@ -976,7 +976,7 @@ void SV_SendClientSnapshot( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Logf(LOG_WARN, "msg overflowed for %s", client->name );
+		Log::Warn("msg overflowed for %s", client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );
@@ -1014,7 +1014,7 @@ void SV_SendClientMessages()
 
 		// rain - changed <= CS_ZOMBIE to < CS_ZOMBIE so that the
 		// disconnect reason is properly sent in the network stream
-		if ( c->state < CS_ZOMBIE )
+		if ( c->state < clientState_t::CS_ZOMBIE )
 		{
 			continue; // not connected
 		}
@@ -1091,7 +1091,7 @@ void SV_SendClientMessages()
 			sv.ucompAve += comp_ratio;
 			sv.ucompNum++;
 
-			Com_DPrintf( "bpspc(%2.0f) bps(%2.0f) pk(%i) ubps(%2.0f) upk(%i) cr(%2.2f) acr(%2.2f)\n",
+			Log::Debug( "bpspc(%2.0f) bps(%2.0f) pk(%i) ubps(%2.0f) upk(%i) cr(%2.2f) acr(%2.2f)",
 			             ave / ( float ) numclients, ave, sv.bpsMaxBytes, uave, sv.ubpsMaxBytes, comp_ratio,
 			             sv.ucompAve / sv.ucompNum );
 		}

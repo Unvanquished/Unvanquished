@@ -32,23 +32,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Log {
 
-    Logger::Logger(Str::StringRef name, Level defaultLevel)
-    :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel) {
+    Logger::Logger(Str::StringRef name, std::string prefix, Level defaultLevel)
+    :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel), prefix(prefix) {
     }
+
+    std::string Logger::Prefix(std::string message) {
+        if (prefix.empty()) {
+            return message;
+        } else {
+            return prefix + " " + message;
+        }
+    }
+
+    Logger defaultLogger(VM_STRING_PREFIX "default", "", Level::NOTICE);
 
     bool ParseCvarValue(std::string value, Log::Level& result) {
         if (value == "warning" or value == "warn") {
-            result = Log::LOG_WARNING;
+            result = Log::Level::WARNING;
             return true;
         }
 
         if (value == "info" or value == "notice") {
-            result = Log::LOG_NOTICE;
+            result = Log::Level::NOTICE;
+            return true;
+        }
+
+        if (value == "verbose") {
+            result = Log::Level::VERBOSE;
             return true;
         }
 
         if (value == "debug" or value == "all") {
-            result = Log::LOG_DEBUG;
+            result = Log::Level::DEBUG;
             return true;
         }
 
@@ -57,11 +72,13 @@ namespace Log {
 
     std::string SerializeCvarValue(Log::Level value) {
         switch(value) {
-            case Log::LOG_WARNING:
+            case Log::Level::WARNING:
                 return "warning";
-            case Log::LOG_NOTICE:
+            case Log::Level::NOTICE:
                 return "notice";
-            case Log::LOG_DEBUG:
+            case Log::Level::VERBOSE:
+                return "verbose";
+            case Log::Level::DEBUG:
                 return "debug";
             default:
                 return "";
@@ -77,6 +94,11 @@ namespace Log {
     static const int noticeTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
     void CodeSourceNotice(std::string message) {
         Log::Dispatch({message}, noticeTargets);
+    }
+
+    static const int verboseTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE) | (1 << CRASHLOG) | (1 << LOGFILE);
+    void CodeSourceVerbose(std::string message) {
+        Log::Dispatch({message}, verboseTargets);
     }
 
     static const int debugTargets = (1 << GRAPHICAL_CONSOLE) | (1 << TTY_CONSOLE);

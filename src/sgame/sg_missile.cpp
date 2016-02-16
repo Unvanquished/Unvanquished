@@ -256,7 +256,7 @@ static int ImpactSlowblob( gentity_t*, trace_t *trace, gentity_t *hitEnt )
 		hitEnt->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
 		hitEnt->client->lastSlowTime = level.time;
 	}
-	else if ( hitEnt->s.eType == ET_BUILDABLE && hitEnt->buildableTeam == TEAM_ALIENS )
+	else if ( hitEnt->s.eType == entityType_t::ET_BUILDABLE && hitEnt->buildableTeam == TEAM_ALIENS )
 	{
 		impactFlags &= ~MIF_NO_DAMAGE;
 	}
@@ -266,11 +266,11 @@ static int ImpactSlowblob( gentity_t*, trace_t *trace, gentity_t *hitEnt )
 
 static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 {
-	if ( hitEnt->s.eType == ET_BUILDABLE && hitEnt->s.modelindex == BA_A_HIVE )
+	if ( hitEnt->s.eType == entityType_t::ET_BUILDABLE && hitEnt->s.modelindex == BA_A_HIVE )
 	{
 		if ( !ent->parent )
 		{
-			G_Printf( S_WARNING "Hive missile returned to hive that is not its parent.\n" );
+			Log::Warn("Hive missile returned to hive that is not its parent." );
 		}
 		else
 		{
@@ -411,7 +411,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		ent->freeAfterEvent = true;
 
 		// HACK: Change over to a general entity at the point of impact.
-		ent->s.eType = ET_GENERAL;
+		ent->s.eType = entityType_t::ET_GENERAL;
 
 		// Prevent map models from appearing at impact point.
 		ent->s.modelindex = 0;
@@ -449,7 +449,7 @@ void G_ExplodeMissile( gentity_t *ent )
 	dir[ 2 ] = 1;
 
 	// turn the missile into an event carrier
-	ent->s.eType = ET_INVISIBLE;
+	ent->s.eType = entityType_t::ET_INVISIBLE;
 	ent->freeAfterEvent = true;
 	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
 
@@ -549,7 +549,7 @@ void G_RunMissile( gentity_t *ent )
 
 		// HACK: The missile has turned into an explosion and will free itself later.
 		//       See MissileImpact for more.
-		if ( ent->s.eType != ET_MISSILE )
+		if ( ent->s.eType != entityType_t::ET_MISSILE )
 		{
 			return;
 		}
@@ -586,7 +586,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, v
 	m = G_NewEntity();
 
 	// generic
-	m->s.eType             = ET_MISSILE;
+	m->s.eType             = entityType_t::ET_MISSILE;
 	m->s.modelindex        = missile;
 	m->r.ownerNum          = parent->s.number;
 	m->parent              = parent;

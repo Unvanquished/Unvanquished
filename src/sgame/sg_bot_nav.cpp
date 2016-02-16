@@ -36,7 +36,7 @@ void G_BotNavInit()
 {
 	int i;
 
-	Com_Printf( "==== Bot Navigation Initialization ==== \n" );
+	Log::Notice( "==== Bot Navigation Initialization ==== \n" );
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
@@ -50,7 +50,7 @@ void G_BotNavInit()
 		{
 			if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass )
 			{
-				Com_Printf( S_ERROR "class '%s': navmesh reference target class '%s' must have its own navmesh\n",
+				Log::Warn( "class '%s': navmesh reference target class '%s' must have its own navmesh",
 				            BG_Class( i )->name, BG_Class( model->navMeshClass )->name );
 				return;
 			}
@@ -406,14 +406,11 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
-	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f ) || g_entities[ trace.entityNum ].s.eType == ET_BUILDABLE )
+	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
 	}
-	else
-	{
-		return nullptr;
-	}
+	return nullptr;
 }
 
 bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
@@ -438,7 +435,7 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	playerMins[2] += STEPSIZE;
 	playerMaxs[2] += STEPSIZE;
 
-	//trap_Print(vtos(self->movedir));
+	//Log::Debug(vtos(self->movedir));
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	//make sure we are moving into a block

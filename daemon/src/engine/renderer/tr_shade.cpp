@@ -430,7 +430,7 @@ static void DrawTris()
 		gl_genericShader->SetUniform_Color( Color::White );
 	}
 
-	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
+	gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CONST, alphaGen_t::AGEN_CONST );
 
 	gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
@@ -511,7 +511,7 @@ void Tess_Begin( void ( *stageIteratorFunc )(),
 
 	if ( !tess.stageIteratorFunc )
 	{
-		ri.Error( ERR_FATAL, "tess.stageIteratorFunc == NULL" );
+		ri.Error( errorParm_t::ERR_FATAL, "tess.stageIteratorFunc == NULL" );
 	}
 
 	if ( tess.stageIteratorFunc == &Tess_StageIteratorGeneric )
@@ -610,26 +610,26 @@ static void Render_generic( int stage )
 	// u_ColorGen
 	switch ( pStage->rgbGen )
 	{
-		case CGEN_VERTEX:
-		case CGEN_ONE_MINUS_VERTEX:
+		case colorGen_t::CGEN_VERTEX:
+		case colorGen_t::CGEN_ONE_MINUS_VERTEX:
 			rgbGen = pStage->rgbGen;
 			break;
 
 		default:
-			rgbGen = CGEN_CONST;
+			rgbGen = colorGen_t::CGEN_CONST;
 			break;
 	}
 
 	// u_AlphaGen
 	switch ( pStage->alphaGen )
 	{
-		case AGEN_VERTEX:
-		case AGEN_ONE_MINUS_VERTEX:
+		case alphaGen_t::AGEN_VERTEX:
+		case alphaGen_t::AGEN_ONE_MINUS_VERTEX:
 			alphaGen = pStage->alphaGen;
 			break;
 
 		default:
-			alphaGen = AGEN_CONST;
+			alphaGen = alphaGen_t::AGEN_CONST;
 			break;
 	}
 
@@ -932,28 +932,28 @@ static void Render_vertexLighting_DBS_world( int stage )
 	// u_ColorModulate
 	switch ( pStage->rgbGen )
 	{
-		case CGEN_VERTEX:
-		case CGEN_ONE_MINUS_VERTEX:
+		case colorGen_t::CGEN_VERTEX:
+		case colorGen_t::CGEN_ONE_MINUS_VERTEX:
 			colorGen = pStage->rgbGen;
 			break;
 
 		default:
-			colorGen = CGEN_CONST;
+			colorGen = colorGen_t::CGEN_CONST;
 			break;
 	}
 
 	switch ( pStage->alphaGen )
 	{
-		case AGEN_VERTEX:
+		case alphaGen_t::AGEN_VERTEX:
 			alphaGen = pStage->alphaGen;
 			break;
 
-		case AGEN_ONE_MINUS_VERTEX:
+		case alphaGen_t::AGEN_ONE_MINUS_VERTEX:
 			alphaGen = pStage->alphaGen;
 			break;
 
 		default:
-			alphaGen = AGEN_CONST;
+			alphaGen = alphaGen_t::AGEN_CONST;
 			break;
 	}
 
@@ -1061,25 +1061,25 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	switch ( pStage->rgbGen )
 	{
-		case CGEN_VERTEX:
-		case CGEN_ONE_MINUS_VERTEX:
+		case colorGen_t::CGEN_VERTEX:
+		case colorGen_t::CGEN_ONE_MINUS_VERTEX:
 			rgbGen = pStage->rgbGen;
 			break;
 
 		default:
-			rgbGen = CGEN_CONST;
+			rgbGen = colorGen_t::CGEN_CONST;
 			break;
 	}
 
 	switch ( pStage->alphaGen )
 	{
-		case AGEN_VERTEX:
-		case AGEN_ONE_MINUS_VERTEX:
+		case alphaGen_t::AGEN_VERTEX:
+		case alphaGen_t::AGEN_ONE_MINUS_VERTEX:
 			alphaGen = pStage->alphaGen;
 			break;
 
 		default:
-			alphaGen = AGEN_CONST;
+			alphaGen = alphaGen_t::AGEN_CONST;
 			break;
 	}
 
@@ -1241,7 +1241,7 @@ static void Render_depthFill( int stage )
 	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
 
 	// u_ColorModulate
-	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
+	gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CONST, alphaGen_t::AGEN_CONST );
 
 	// u_Color
 	Color::Color ambientColor;
@@ -1303,7 +1303,7 @@ static void Render_shadowFill( int stage )
 	gl_shadowFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_shadowFillShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
-	gl_shadowFillShader->SetMacro_LIGHT_DIRECTIONAL( backEnd.currentLight->l.rlType == RL_DIRECTIONAL );
+	gl_shadowFillShader->SetMacro_LIGHT_DIRECTIONAL( backEnd.currentLight->l.rlType == refLightType_t::RL_DIRECTIONAL );
 
 	gl_shadowFillShader->BindProgram( pStage->deformIndex );
 
@@ -1316,7 +1316,7 @@ static void Render_shadowFill( int stage )
 
 	gl_shadowFillShader->SetUniform_AlphaTest( pStage->stateBits );
 
-	if ( backEnd.currentLight->l.rlType != RL_DIRECTIONAL )
+	if ( backEnd.currentLight->l.rlType != refLightType_t::RL_DIRECTIONAL )
 	{
 		gl_shadowFillShader->SetUniform_LightOrigin( backEnd.currentLight->origin );
 		gl_shadowFillShader->SetUniform_LightRadius( backEnd.currentLight->sphereRadius );
@@ -1370,7 +1370,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 
 	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
 
-	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
+	bool shadowCompare = ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && !light->l.noShadows && light->shadowLOD >= 0 );
 
 	backEnd.depthRenderImageValid = false;
 
@@ -1392,25 +1392,25 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// u_ColorModulate
 	switch ( diffuseStage->rgbGen )
 	{
-		case CGEN_VERTEX:
-		case CGEN_ONE_MINUS_VERTEX:
+		case colorGen_t::CGEN_VERTEX:
+		case colorGen_t::CGEN_ONE_MINUS_VERTEX:
 			colorGen = diffuseStage->rgbGen;
 			break;
 
 		default:
-			colorGen = CGEN_CONST;
+			colorGen = colorGen_t::CGEN_CONST;
 			break;
 	}
 
 	switch ( diffuseStage->alphaGen )
 	{
-		case AGEN_VERTEX:
-		case AGEN_ONE_MINUS_VERTEX:
+		case alphaGen_t::AGEN_VERTEX:
+		case alphaGen_t::AGEN_ONE_MINUS_VERTEX:
 			alphaGen = diffuseStage->alphaGen;
 			break;
 
 		default:
-			alphaGen = AGEN_CONST;
+			alphaGen = alphaGen_t::AGEN_CONST;
 			break;
 	}
 
@@ -1560,7 +1560,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 
 	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
 
-	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
+	bool shadowCompare = ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && !light->l.noShadows && light->shadowLOD >= 0 );
 
 	backEnd.depthRenderImageValid = false;
 
@@ -1582,25 +1582,25 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// u_ColorModulate
 	switch ( diffuseStage->rgbGen )
 	{
-		case CGEN_VERTEX:
-		case CGEN_ONE_MINUS_VERTEX:
+		case colorGen_t::CGEN_VERTEX:
+		case colorGen_t::CGEN_ONE_MINUS_VERTEX:
 			colorGen = diffuseStage->rgbGen;
 			break;
 
 		default:
-			colorGen = CGEN_CONST;
+			colorGen = colorGen_t::CGEN_CONST;
 			break;
 	}
 
 	switch ( diffuseStage->alphaGen )
 	{
-		case AGEN_VERTEX:
-		case AGEN_ONE_MINUS_VERTEX:
+		case alphaGen_t::AGEN_VERTEX:
+		case alphaGen_t::AGEN_ONE_MINUS_VERTEX:
 			alphaGen = diffuseStage->alphaGen;
 			break;
 
 		default:
-			alphaGen = AGEN_CONST;
+			alphaGen = alphaGen_t::AGEN_CONST;
 			break;
 	}
 
@@ -1749,7 +1749,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	bool normalMapping = r_normalMapping->integer && ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
 
-	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
+	bool shadowCompare = ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && !light->l.noShadows && light->shadowLOD >= 0 );
 
 	backEnd.depthRenderImageValid = false;
 
@@ -1771,25 +1771,25 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	// u_ColorModulate
 	switch ( diffuseStage->rgbGen )
 	{
-		case CGEN_VERTEX:
-		case CGEN_ONE_MINUS_VERTEX:
+		case colorGen_t::CGEN_VERTEX:
+		case colorGen_t::CGEN_ONE_MINUS_VERTEX:
 			colorGen = diffuseStage->rgbGen;
 			break;
 
 		default:
-			colorGen = CGEN_CONST;
+			colorGen = colorGen_t::CGEN_CONST;
 			break;
 	}
 
 	switch ( diffuseStage->alphaGen )
 	{
-		case AGEN_VERTEX:
-		case AGEN_ONE_MINUS_VERTEX:
+		case alphaGen_t::AGEN_VERTEX:
+		case alphaGen_t::AGEN_ONE_MINUS_VERTEX:
 			alphaGen = diffuseStage->alphaGen;
 			break;
 
 		default:
-			alphaGen = AGEN_CONST;
+			alphaGen = alphaGen_t::AGEN_CONST;
 			break;
 	}
 
@@ -2268,7 +2268,7 @@ static void Render_fog()
 	fog = tr.world->fogs + tess.fogNum;
 
 	// Tr3B: use this only to render fog brushes
-	if ( fog->originalBrushNumber < 0 && tess.surfaceShader->sort <= SS_OPAQUE )
+	if ( fog->originalBrushNumber < 0 && tess.surfaceShader->sort <= Util::ordinal(shaderSort_t::SS_OPAQUE) )
 	{
 		return;
 	}
@@ -2315,7 +2315,7 @@ static void Render_fog()
 
 	fogDistanceVector[ 3 ] += 1.0 / 512;
 
-	if ( tess.surfaceShader->fogPass == FP_EQUAL )
+	if ( tess.surfaceShader->fogPass == fogPass_t::FP_EQUAL )
 	{
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL );
 	}
@@ -2381,33 +2381,33 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	// rgbGen
 	switch ( pStage->rgbGen )
 	{
-		case CGEN_IDENTITY:
+		case colorGen_t::CGEN_IDENTITY:
 			{
 				tess.svars.color = Color::White;
 				break;
 			}
 
-		case CGEN_VERTEX:
-		case CGEN_ONE_MINUS_VERTEX:
+		case colorGen_t::CGEN_VERTEX:
+		case colorGen_t::CGEN_ONE_MINUS_VERTEX:
 			{
 				tess.svars.color = Color::Color();
 				break;
 			}
 
 		default:
-		case CGEN_IDENTITY_LIGHTING:
+		case colorGen_t::CGEN_IDENTITY_LIGHTING:
 			{
 				tess.svars.color = Color::White * tr.identityLight;
 				break;
 			}
 
-		case CGEN_CONST:
+		case colorGen_t::CGEN_CONST:
 			{
 				tess.svars.color = pStage->constantColor;
 				break;
 			}
 
-		case CGEN_ENTITY:
+		case colorGen_t::CGEN_ENTITY:
 			{
 				if ( backEnd.currentLight )
 				{
@@ -2427,7 +2427,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case CGEN_ONE_MINUS_ENTITY:
+		case colorGen_t::CGEN_ONE_MINUS_ENTITY:
 			{
 				if ( backEnd.currentLight )
 				{
@@ -2449,14 +2449,14 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case CGEN_WAVEFORM:
+		case colorGen_t::CGEN_WAVEFORM:
 			{
 				float      glow;
 				waveForm_t *wf;
 
 				wf = &pStage->rgbWave;
 
-				if ( wf->func == GF_NOISE )
+				if ( wf->func == genFunc_t::GF_NOISE )
 				{
 					glow = wf->base + R_NoiseGet4f( 0, 0, 0, ( backEnd.refdef.floatTime + wf->phase ) * wf->frequency ) * wf->amplitude;
 				}
@@ -2472,7 +2472,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case CGEN_CUSTOM_RGB:
+		case colorGen_t::CGEN_CUSTOM_RGB:
 			{
 				rgb = Math::Clamp( RB_EvalExpression( &pStage->rgbExp, 1.0 ), 0.0f, 1.0f );
 
@@ -2480,7 +2480,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case CGEN_CUSTOM_RGBs:
+		case colorGen_t::CGEN_CUSTOM_RGBs:
 			{
 				if ( backEnd.currentLight )
 				{
@@ -2515,11 +2515,11 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	switch ( pStage->alphaGen )
 	{
 		default:
-		case AGEN_IDENTITY:
+		case alphaGen_t::AGEN_IDENTITY:
 			{
-				if ( pStage->rgbGen != CGEN_IDENTITY )
+				if ( pStage->rgbGen != colorGen_t::CGEN_IDENTITY )
 				{
-					if ( ( pStage->rgbGen == CGEN_VERTEX && tr.identityLight != 1 ) || pStage->rgbGen != CGEN_VERTEX )
+					if ( ( pStage->rgbGen == colorGen_t::CGEN_VERTEX && tr.identityLight != 1 ) || pStage->rgbGen != colorGen_t::CGEN_VERTEX )
 					{
 						tess.svars.color.SetAlpha( 1.0 );
 					}
@@ -2528,16 +2528,16 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case AGEN_VERTEX:
-		case AGEN_ONE_MINUS_VERTEX:
+		case alphaGen_t::AGEN_VERTEX:
+		case alphaGen_t::AGEN_ONE_MINUS_VERTEX:
 			{
 				tess.svars.color.SetAlpha( 0.0 );
 				break;
 			}
 
-		case AGEN_CONST:
+		case alphaGen_t::AGEN_CONST:
 			{
-				if ( pStage->rgbGen != CGEN_CONST )
+				if ( pStage->rgbGen != colorGen_t::CGEN_CONST )
 				{
 					tess.svars.color.SetAlpha( pStage->constantColor.Alpha() * ( 1.0 / 255.0 ) );
 				}
@@ -2545,7 +2545,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case AGEN_ENTITY:
+		case alphaGen_t::AGEN_ENTITY:
 			{
 				if ( backEnd.currentLight )
 				{
@@ -2563,7 +2563,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case AGEN_ONE_MINUS_ENTITY:
+		case alphaGen_t::AGEN_ONE_MINUS_ENTITY:
 			{
 				if ( backEnd.currentLight )
 				{
@@ -2581,7 +2581,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case AGEN_WAVEFORM:
+		case alphaGen_t::AGEN_WAVEFORM:
 			{
 				float      glow;
 				waveForm_t *wf;
@@ -2594,7 +2594,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 				break;
 			}
 
-		case AGEN_CUSTOM:
+		case alphaGen_t::AGEN_CUSTOM:
 			{
 				alpha = Math::Clamp( RB_EvalExpression( &pStage->alphaExp, 1.0 ), 0.0f, 1.0f );
 
@@ -2707,23 +2707,23 @@ void Tess_StageIteratorGeneric()
 
 		switch ( pStage->type )
 		{
-			case ST_COLORMAP:
+			case stageType_t::ST_COLORMAP:
 				{
 					Render_generic( stage );
 					break;
 				}
 
-			case ST_LIGHTMAP:
+			case stageType_t::ST_LIGHTMAP:
 				{
 					Render_lightMapping( stage, true, false );
 					break;
 				}
 
-			case ST_DIFFUSEMAP:
-			case ST_COLLAPSE_lighting_DBSG:
-			case ST_COLLAPSE_lighting_DBG:
-			case ST_COLLAPSE_lighting_DB:
-			case ST_COLLAPSE_lighting_DBS:
+			case stageType_t::ST_DIFFUSEMAP:
+			case stageType_t::ST_COLLAPSE_lighting_DBSG:
+			case stageType_t::ST_COLLAPSE_lighting_DBG:
+			case stageType_t::ST_COLLAPSE_lighting_DB:
+			case stageType_t::ST_COLLAPSE_lighting_DBS:
 				{
 					{
 						if ( r_precomputedLighting->integer || r_vertexLighting->integer )
@@ -2756,8 +2756,8 @@ void Tess_StageIteratorGeneric()
 					break;
 				}
 
-			case ST_COLLAPSE_reflection_CB:
-			case ST_REFLECTIONMAP:
+			case stageType_t::ST_COLLAPSE_reflection_CB:
+			case stageType_t::ST_REFLECTIONMAP:
 				{
 					if ( r_reflectionMapping->integer )
 					{
@@ -2767,35 +2767,35 @@ void Tess_StageIteratorGeneric()
 					break;
 				}
 
-			case ST_REFRACTIONMAP:
+			case stageType_t::ST_REFRACTIONMAP:
 				{
 					break;
 				}
 
-			case ST_DISPERSIONMAP:
+			case stageType_t::ST_DISPERSIONMAP:
 				{
 					break;
 				}
 
-			case ST_SKYBOXMAP:
+			case stageType_t::ST_SKYBOXMAP:
 				{
 					Render_skybox( stage );
 					break;
 				}
 
-			case ST_SCREENMAP:
+			case stageType_t::ST_SCREENMAP:
 				{
 					Render_screen( stage );
 					break;
 				}
 
-			case ST_PORTALMAP:
+			case stageType_t::ST_PORTALMAP:
 				{
 					Render_portal( stage );
 					break;
 				}
 
-			case ST_HEATHAZEMAP:
+			case stageType_t::ST_HEATHAZEMAP:
 				{
 					if ( r_heatHaze->integer )
 					{
@@ -2805,7 +2805,7 @@ void Tess_StageIteratorGeneric()
 					break;
 				}
 
-			case ST_LIQUIDMAP:
+			case stageType_t::ST_LIQUIDMAP:
 				{
 					Render_liquid( stage );
 					break;
@@ -2815,13 +2815,13 @@ void Tess_StageIteratorGeneric()
 				break;
 		}
 
-		if ( r_showLightMaps->integer && pStage->type == ST_LIGHTMAP )
+		if ( r_showLightMaps->integer && pStage->type == stageType_t::ST_LIGHTMAP )
 		{
 			break;
 		}
 	}
 
-	if ( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
+	if ( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass != fogPass_t::FP_NONE )
 	{
 		Render_fog();
 	}
@@ -2886,9 +2886,9 @@ void Tess_StageIteratorDepthFill()
 
 		switch ( pStage->type )
 		{
-			case ST_COLORMAP:
+			case stageType_t::ST_COLORMAP:
 				{
-					if ( tess.surfaceShader->sort <= SS_OPAQUE )
+					if ( tess.surfaceShader->sort <= Util::ordinal(shaderSort_t::SS_OPAQUE) )
 					{
 						Render_depthFill( stage );
 					}
@@ -2896,17 +2896,17 @@ void Tess_StageIteratorDepthFill()
 					break;
 				}
 
-			case ST_LIGHTMAP:
+			case stageType_t::ST_LIGHTMAP:
 				{
 					Render_depthFill( stage );
 					break;
 				}
 
-			case ST_DIFFUSEMAP:
-			case ST_COLLAPSE_lighting_DBSG:
-			case ST_COLLAPSE_lighting_DBG:
-			case ST_COLLAPSE_lighting_DB:
-			case ST_COLLAPSE_lighting_DBS:
+			case stageType_t::ST_DIFFUSEMAP:
+			case stageType_t::ST_COLLAPSE_lighting_DBSG:
+			case stageType_t::ST_COLLAPSE_lighting_DBG:
+			case stageType_t::ST_COLLAPSE_lighting_DB:
+			case stageType_t::ST_COLLAPSE_lighting_DBS:
 				{
 					Render_depthFill( stage );
 					break;
@@ -2974,9 +2974,9 @@ void Tess_StageIteratorShadowFill()
 
 		switch ( pStage->type )
 		{
-			case ST_COLORMAP:
+			case stageType_t::ST_COLORMAP:
 				{
-					if ( tess.surfaceShader->sort <= SS_OPAQUE )
+					if ( tess.surfaceShader->sort <= Util::ordinal(shaderSort_t::SS_OPAQUE) )
 					{
 						Render_shadowFill( stage );
 					}
@@ -2984,12 +2984,12 @@ void Tess_StageIteratorShadowFill()
 					break;
 				}
 
-			case ST_LIGHTMAP:
-			case ST_DIFFUSEMAP:
-			case ST_COLLAPSE_lighting_DBSG:
-			case ST_COLLAPSE_lighting_DBG:
-			case ST_COLLAPSE_lighting_DB:
-			case ST_COLLAPSE_lighting_DBS:
+			case stageType_t::ST_LIGHTMAP:
+			case stageType_t::ST_DIFFUSEMAP:
+			case stageType_t::ST_COLLAPSE_lighting_DBSG:
+			case stageType_t::ST_COLLAPSE_lighting_DBG:
+			case stageType_t::ST_COLLAPSE_lighting_DB:
+			case stageType_t::ST_COLLAPSE_lighting_DBS:
 				{
 					Render_shadowFill( stage );
 					break;
@@ -3037,7 +3037,7 @@ void Tess_StageIteratorLighting()
 	}
 	else
 	{
-		if ( tess.surfaceShader->sort > SS_OPAQUE )
+		if ( tess.surfaceShader->sort > Util::ordinal(shaderSort_t::SS_OPAQUE) )
 		{
 			GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 		}
@@ -3088,7 +3088,7 @@ void Tess_StageIteratorLighting()
 				break;
 			}
 
-			if ( attenuationXYStage->type != ST_ATTENUATIONMAP_XY )
+			if ( attenuationXYStage->type != stageType_t::ST_ATTENUATIONMAP_XY )
 			{
 				continue;
 			}
@@ -3103,20 +3103,20 @@ void Tess_StageIteratorLighting()
 
 			switch ( diffuseStage->type )
 			{
-				case ST_DIFFUSEMAP:
-				case ST_COLLAPSE_lighting_DB:
-				case ST_COLLAPSE_lighting_DBS:
-					if ( light->l.rlType == RL_OMNI )
+				case stageType_t::ST_DIFFUSEMAP:
+				case stageType_t::ST_COLLAPSE_lighting_DB:
+				case stageType_t::ST_COLLAPSE_lighting_DBS:
+					if ( light->l.rlType == refLightType_t::RL_OMNI )
 					{
 						Render_forwardLighting_DBS_omni( diffuseStage, attenuationXYStage, attenuationZStage, light );
 					}
-					else if ( light->l.rlType == RL_PROJ )
+					else if ( light->l.rlType == refLightType_t::RL_PROJ )
 					{
 						{
 							Render_forwardLighting_DBS_proj( diffuseStage, attenuationXYStage, attenuationZStage, light );
 						}
 					}
-					else if ( light->l.rlType == RL_DIRECTIONAL )
+					else if ( light->l.rlType == refLightType_t::RL_DIRECTIONAL )
 					{
 						{
 							Render_forwardLighting_DBS_directional( diffuseStage, light );

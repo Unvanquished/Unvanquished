@@ -48,24 +48,24 @@ static bool IQM_CheckRange( iqmHeader_t *header, int offset,
 	// return true if the range specified by offset, count and size
 	// doesn't fit into the file
 	if( count <= 0 ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has a negative count in the %s section (%d).\n",
+		Log::Warn("R_LoadIQM: %s has a negative count in the %s section (%d).",
 			  mod_name, section, count );
 		return true;
 	}
 	if( offset < 0 ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has a negative offset to the %s section (%d).\n",
+		Log::Warn("R_LoadIQM: %s has a negative offset to the %s section (%d).",
 			  mod_name, section, offset );
 		return true;
 	}
 	if( offset > (int) header->filesize ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has an offset behind the end of file to the %s section (%d).\n",
+		Log::Warn("R_LoadIQM: %s has an offset behind the end of file to the %s section (%d).",
 			  mod_name, section, offset );
 		return true;
 	}
 
 	section_end = offset + count * size;
 	if( section_end > (int) header->filesize || section_end < 0 ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has the section %s exceeding the end of file (%d).\n",
+		Log::Warn("R_LoadIQM: %s has the section %s exceeding the end of file (%d).",
 			  mod_name, section, section_end );
 		return true;
 	}
@@ -85,28 +85,28 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 	iqmAnim_t		*anim;
 
 	if( filesize < sizeof(iqmHeader_t) ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQModel: file size of %s is too small.\n",
+		Log::Warn("R_LoadIQModel: file size of %s is too small.",
 			  mod_name );
 		return false;
 	}
 
 	header = (iqmHeader_t *)buffer;
 	if( Q_strncmp( header->magic, IQM_MAGIC, sizeof(header->magic) ) ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQModel: file %s doesn't contain an IQM header.\n",
+		Log::Warn("R_LoadIQModel: file %s doesn't contain an IQM header.",
 			  mod_name );
 		return false;
 	}
 
 	LL( header->version );
 	if( header->version != IQM_VERSION ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s is a unsupported IQM version (%d), only version %d is supported.\n",
+		Log::Warn("R_LoadIQM: %s is a unsupported IQM version (%d), only version %d is supported.",
 			  mod_name, header->version, IQM_VERSION);
 		return false;
 	}
 
 	LL( header->filesize );
 	if( header->filesize > filesize || header->filesize > 1<<24 ) {
-		ri.Printf(PRINT_WARNING, "R_LoadIQM: %s has an invalid file size %d.\n",
+		Log::Warn("R_LoadIQM: %s has an invalid file size %d.",
 			  mod_name, header->filesize );
 		return false;
 	}
@@ -149,7 +149,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		int	j, n, *intPtr;
 
 		if( vertexarray->size <= 0 || vertexarray->size > 4 ) {
-			ri.Printf(PRINT_WARNING, "R_LoadIQM: %s contains an invalid vertexarray size.\n",
+			Log::Warn("R_LoadIQM: %s contains an invalid vertexarray size.",
 				  mod_name );
 			return false;
 		}
@@ -181,7 +181,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 			break;
 		default:
 			// not supported
-			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+			Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 				  mod_name );
 			return false;
 			break;
@@ -192,7 +192,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_NORMAL:
 			if( vertexarray->format != IQM_FLOAT ||
 			    vertexarray->size != 3 ) {
-				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -200,7 +200,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_TANGENT:
 			if( vertexarray->format != IQM_FLOAT ||
 			    vertexarray->size != 4 ) {
-				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -208,7 +208,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_TEXCOORD:
 			if( vertexarray->format != IQM_FLOAT ||
 			    vertexarray->size != 2 ) {
-				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -217,7 +217,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_BLENDWEIGHTS:
 			if( vertexarray->format != IQM_UBYTE ||
 			    vertexarray->size != 4 ) {
-				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -225,7 +225,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		case IQM_COLOR:
 			if( vertexarray->format != IQM_UBYTE ||
 			    vertexarray->size != 4 ) {
-				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s uses an unsupported vertex format.\n",
+				Log::Warn("R_LoadIQM: file %s uses an unsupported vertex format.",
 					  mod_name );
 				return false;
 			}
@@ -275,7 +275,7 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		    mesh->first_triangle + mesh->num_triangles > header->num_triangles ||
 		    mesh->name >= header->num_text ||
 		    mesh->material >= header->num_text ) {
-			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid mesh.\n",
+			Log::Warn("R_LoadIQM: file %s contains an invalid mesh.",
 				  mod_name );
 			return false;
 		}
@@ -308,14 +308,14 @@ static bool LoadIQMFile( void *buffer, unsigned filesize, const char *mod_name,
 		if( joint->parent < -1 ||
 		    joint->parent >= (int)header->num_joints ||
 		    joint->name >= header->num_text ) {
-			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid joint.\n",
+			Log::Warn("R_LoadIQM: file %s contains an invalid joint.",
 				  mod_name );
 			return false;
 		}
 		if( joint->scale[0] < 0.0f ||
 			(int)( joint->scale[0] - joint->scale[1] ) ||
 			(int)( joint->scale[1] - joint->scale[2] ) ) {
-			ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid scale.\n%f %f %f",
+			Log::Warn("R_LoadIQM: file %s contains an invalid scale: %f %f %f",
 				  mod_name, joint->scale[0], joint->scale[1], joint->scale[2] );
 			return false;
 		}
@@ -489,8 +489,8 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	size += header->num_joints * sizeof(int);		// parents
 	size += len_names;					// joint and anim names
 
-	IQModel = (IQModel_t *)ri.Hunk_Alloc( size, h_low );
-	mod->type = MOD_IQM;
+	IQModel = (IQModel_t *)ri.Hunk_Alloc( size, ha_pref::h_low );
+	mod->type = modtype_t::MOD_IQM;
 	mod->iqm = IQModel;
 	ptr = IQModel + 1;
 
@@ -604,7 +604,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	joint = ( iqmJoint_t* )IQMPtr( header, header->ofs_joints );
 	for(unsigned i = 0; i < header->num_joints; i++, joint++, trans++ ) {
 		if( joint->parent >= (int) i ) {
-			ri.Printf(PRINT_WARNING, "R_LoadIQModel: file %s contains an invalid parent joint number.\n",
+			Log::Warn("R_LoadIQModel: file %s contains an invalid parent joint number.",
 				  mod_name );
 			return false;
 		}
@@ -665,8 +665,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 			if( scale[0] < 0.0f ||
 			    (int)( scale[0] - scale[1] ) ||
 			    (int)( scale[1] - scale[2] ) ) {
-				ri.Printf(PRINT_WARNING, "R_LoadIQM: file %s contains an invalid scale.",
-				mod_name );
+				Log::Warn("R_LoadIQM: file %s contains an invalid scale.", mod_name );
 				return false;
 			    }
 
@@ -809,7 +808,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 
 
 		vbo = R_CreateStaticVBO( "IQM surface VBO", vboData,
-					 VBO_LAYOUT_SKELETAL );
+					 vboLayout_t::VBO_LAYOUT_SKELETAL );
 
 		if( qtangentbuf ) {
 			ri.Hunk_FreeTempMemory( qtangentbuf );
@@ -833,7 +832,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 	mesh = ( iqmMesh_t* )IQMPtr( header, header->ofs_meshes );
 	surface = IQModel->surfaces;
 	for(unsigned i = 0; i < header->num_meshes; i++, mesh++, surface++ ) {
-		surface->surfaceType = SF_IQM;
+		surface->surfaceType = surfaceType_t::SF_IQM;
 
 		if( mesh->name ) {
 			surface->name = str;
@@ -846,7 +845,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 		}
 
 		surface->shader = R_FindShader( ( char* )IQMPtr(header, header->ofs_text + mesh->material),
-						SHADER_3D_DYNAMIC, RSF_DEFAULT );
+						shaderType_t::SHADER_3D_DYNAMIC, RSF_DEFAULT );
 		if( surface->shader->defaultShader )
 			surface->shader = tr.defaultShader;
 		surface->data = IQModel;
@@ -895,7 +894,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 R_CullIQM
 =============
 */
-static int R_CullIQM( trRefEntity_t *ent ) {
+static cullResult_t R_CullIQM( trRefEntity_t *ent ) {
 	vec3_t     localBounds[ 2 ];
 	float      scale = ent->e.skeleton.scale;
 	IQModel_t *model = tr.currentModel->iqm;
@@ -922,16 +921,16 @@ static int R_CullIQM( trRefEntity_t *ent ) {
 
 	switch ( R_CullLocalBox( localBounds ) )
 	{
-	case CULL_IN:
+	case cullResult_t::CULL_IN:
 		tr.pc.c_box_cull_md5_in++;
-		return CULL_IN;
-	case CULL_CLIP:
+		return cullResult_t::CULL_IN;
+	case cullResult_t::CULL_CLIP:
 		tr.pc.c_box_cull_md5_clip++;
-		return CULL_CLIP;
-	case CULL_OUT:
+		return cullResult_t::CULL_CLIP;
+	case cullResult_t::CULL_OUT:
 	default:
 		tr.pc.c_box_cull_md5_out++;
-		return CULL_OUT;
+		return cullResult_t::CULL_OUT;
 	}
 }
 
@@ -953,7 +952,7 @@ int R_ComputeIQMFogNum( trRefEntity_t *ent ) {
 		return 0;
 	}
 
-	if ( ent->e.skeleton.type == SK_INVALID )
+	if ( ent->e.skeleton.type == refSkeletonType_t::SK_INVALID )
 	{
 		// no properly set skeleton so use the bounding box by the model instead by the animations
 		IQModel_t *model = tr.currentModel->iqm;
@@ -1010,7 +1009,7 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	srfIQModel_t		*surface;
 	int                     i, j;
 	bool                personalModel;
-	int                     cull;
+	cullResult_t cull;
 	int                     fogNum;
 	shader_t                *shader;
 	skin_t                  *skin;
@@ -1026,14 +1025,14 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	// is outside the view frustum.
 	//
 	cull = R_CullIQM ( ent );
-	if ( cull == CULL_OUT ) {
+	if ( cull == cullResult_t::CULL_OUT ) {
 		return;
 	}
 
 	//
 	// set up lighting now that we know we aren't culled
 	//
-	if ( !personalModel || r_shadows->integer > SHADOWING_BLOB ) {
+	if ( !personalModel || r_shadows->integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) ) {
 		R_SetupEntityLighting( &tr.refdef, ent, nullptr );
 	}
 

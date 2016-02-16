@@ -40,68 +40,19 @@
  */
 #define S_SKIPNOTIFY "[skipnotify]"
 
-/**
- * used for consistent representation within print or log statements, that don't use any severity enum yet
- */
-#define S_WARNING "^3Warning: ^*"
-#define S_ERROR   "^1ERROR: ^*"
-#define S_DEBUG   "Debug: "
-
-typedef struct
-{
-	const char* file;
-	int line;
-	const char* function;
-} log_location_info_t;
-
-//func should be defined in global.h or somewhere else in a compiler independend manner
-#define LOCATION_INFO { __FILE__, __LINE__, __func__ }
-
-typedef enum
-{
-	LOG_OFF = -3,
-	LOG_ERROR = -2,
-	LOG_WARN = -1,
-	LOG_NOTICE = 0, /*< information regarded worth notifying about; the default */
-	LOG_INFO = 1, /*< general helpful (even outside of debugging) but not necessary information */
-	LOG_DEBUG = 2,
-	LOG_TRACE = 3, /*< this is for finest grained debug-tracing, that should not be executed in NDEBUG */
-	LOG_ALL = 4
-} log_level_t;
-
-typedef struct
-{
-	const char* source;
-	log_level_t level;
-	const char* message;
-} log_event_t;
-
-/**
- * print levels as currently used by the renderer
- */
-typedef enum
-{
-	PRINT_ALL,
-	PRINT_DEVELOPER, // only print when "developer 1"
-	PRINT_WARNING,
-	PRINT_ERROR
-} printParm_t;
-
 #ifdef ERR_FATAL
 #undef ERR_FATAL // this is possibly defined in malloc.h
 #endif
 
 // parameters to the main Error routine
-typedef enum
+enum class errorParm_t
 {
 	ERR_FATAL, // exit the entire game with a popup window
 	ERR_DROP, // print to console and disconnect from game
 	ERR_SERVERDISCONNECT, // don't kill server
-} errorParm_t;
+};
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL NORETURN Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2);
-void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
+void QDECL NORETURN Com_Error( errorParm_t level, const char *error, ... ) PRINTF_LIKE(2);
 
 #endif /* LOGGING_H_ */

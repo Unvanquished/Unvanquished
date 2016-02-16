@@ -24,24 +24,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-typedef struct
+struct DDCOLORKEY_t
 {
 	unsigned int dwColorSpaceLowValue; // low boundary of color space that is to
 	// be treated as Color Key, inclusive
 
 	unsigned int dwColorSpaceHighValue; // high boundary of color space that is
 	// to be treated as Color Key, inclusive
-} DDCOLORKEY_t;
+};
 
-typedef struct
+struct DDSCAPS2_t
 {
 	unsigned int dwCaps; // capabilities of surface wanted
 	unsigned int dwCaps2;
 	unsigned int dwCaps3;
 	unsigned int dwCaps4;
-} DDSCAPS2_t;
+};
 
-typedef struct
+struct DDS_PIXELFORMAT_t
 {
 	unsigned int dwSize; // size of structure
 	unsigned int dwFlags; // pixel format flags
@@ -52,9 +52,9 @@ typedef struct
 	unsigned int dwGBitMask; // mask for green bits
 	unsigned int dwBBitMask; // mask for blue bits
 	unsigned int dwABitMask; // mask for alpha channel
-} DDS_PIXELFORMAT_t;
+};
 
-typedef struct
+struct DDSHEADER_t
 {
 	unsigned int dwSize; // size of the DDSURFACEDESC structure
 	unsigned int dwFlags; // determines what fields are valid
@@ -73,7 +73,7 @@ typedef struct
 
 	DDSCAPS2_t   ddsCaps; // direct draw surface capabilities
 	unsigned int dwReserved2;
-} DDSHEADER_t;
+};
 
 //
 // DDSURFACEDESC2 flags that mark the validity of the struct data
@@ -163,7 +163,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 	if ( strncmp( ( const char * ) buff, "DDS ", 4 ) != 0 )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadDDSImage: invalid dds header \"%s\"\n", name );
+		Log::Warn("R_LoadDDSImage: invalid dds header \"%s\"", name );
 		return;
 	}
 
@@ -186,7 +186,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 	if ( ddsd->dwSize != sizeof( DDSHEADER_t ) || ddsd->ddpfPixelFormat.dwSize != sizeof( DDS_PIXELFORMAT_t ) )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadDDSImage: invalid dds header \"%s\"\n", name );
+		Log::Warn("R_LoadDDSImage: invalid dds header \"%s\"", name );
 		return;
 	}
 
@@ -194,7 +194,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 	if ( *numMips > MAX_TEXTURE_MIPS )
 	{
-		ri.Printf( PRINT_WARNING, "R_LoadDDSImage: dds image has too many mip levels \"%s\"\n", name );
+		Log::Warn("R_LoadDDSImage: dds image has too many mip levels \"%s\"", name );
 		return;
 	}
 
@@ -207,7 +207,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 		if ( ddsd->dwWidth != ddsd->dwHeight )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: invalid dds image \"%s\"\n", name );
+			Log::Warn("R_LoadDDSImage: invalid dds image \"%s\"", name );
 			return;
 		}
 
@@ -218,7 +218,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 		if ( *width & ( *width - 1 ) )
 		{
 			//cubes must be a power of two
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: cube images must be power of two \"%s\"\n", name );
+			Log::Warn("R_LoadDDSImage: cube images must be power of two \"%s\"", name );
 			return;
 		}
 	}
@@ -232,13 +232,13 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 		if ( *numLayers > MAX_TEXTURE_LAYERS )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: dds image has too many layers \"%s\"\n", name );
+			Log::Warn("R_LoadDDSImage: dds image has too many layers \"%s\"", name );
 			return;
 		}
 
 		if ( *width & ( *width - 1 ) || *height & ( *height - 1 ) || *numLayers & ( *numLayers - 1 ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: volume images must be power of two \"%s\"\n", name );
+			Log::Warn("R_LoadDDSImage: volume images must be power of two \"%s\"", name );
 			return;
 		}
 	}
@@ -254,7 +254,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 		//except for compressed images!
 		if ( compressed && ( *width & ( *width - 1 ) || *height & ( *height - 1 ) ) )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: compressed texture images must be power of two \"%s\"\n", name );
+			Log::Warn("R_LoadDDSImage: compressed texture images must be power of two \"%s\"", name );
 			return;
 		}
 	}
@@ -265,7 +265,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 
 		if ( *numLayers != 0 )
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: compressed volume textures are not supported \"%s\"\n", name );
+			Log::Warn("R_LoadDDSImage: compressed volume textures are not supported \"%s\"", name );
 			return;
 		}
 
@@ -295,7 +295,7 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 			break;
 
 		default:
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: unsupported FOURCC 0x%08x, \"%s\"\n",
+			Log::Warn("R_LoadDDSImage: unsupported FOURCC 0x%08x, \"%s\"",
 				   ddsd->ddpfPixelFormat.dwFourCC, name );
 			return;
 		}
@@ -324,13 +324,13 @@ void R_LoadDDSImageData( void *pImageData, const char *name, byte **data,
 					break;
 
 				default:
-					ri.Printf( PRINT_WARNING, "R_LoadDDSImage: unsupported RGB bit depth \"%s\"\n", name );
+					Log::Warn("R_LoadDDSImage: unsupported RGB bit depth \"%s\"", name );
 					return;
 			}
 		}
 		else
 		{
-			ri.Printf( PRINT_WARNING, "R_LoadDDSImage: unsupported DDS image type \"%s\"\n", name );
+			Log::Warn("R_LoadDDSImage: unsupported DDS image type \"%s\"", name );
 			return;
 		}
 	}

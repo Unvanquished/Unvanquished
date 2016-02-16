@@ -53,7 +53,7 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team
 
 		for ( i = 0; i < botNames[team].count; ++i )
 		{
-			ADMBP( va( "  %s^7 %s\n", botNames[team].name[i].inUse ? marker : " ", botNames[team].name[i].name ) );
+			ADMBP( va( "  %s^7 %s", botNames[team].name[i].inUse ? marker : " ", botNames[team].name[i].name ) );
 		}
 
 		ADMBP_end();
@@ -62,8 +62,8 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team
 
 void G_BotListNames( gentity_t *ent )
 {
-	G_BotListTeamNames( ent, QQ( N_( "^3Alien bot names:\n" ) ), TEAM_ALIENS, "^1*" );
-	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:\n" ) ), TEAM_HUMANS, "^5*" );
+	G_BotListTeamNames( ent, QQ( N_( "^3Alien bot names:" ) ), TEAM_ALIENS, "^1*" );
+	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:" ) ), TEAM_HUMANS, "^5*" );
 }
 
 bool G_BotClearNames()
@@ -185,12 +185,12 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 
 	if ( !botMind->behaviorTree )
 	{
-		G_Printf( "Problem when loading behavior tree %s, trying default\n", behavior );
+		Log::Warn( "Problem when loading behavior tree %s, trying default", behavior );
 		botMind->behaviorTree = ReadBehaviorTree( "default", &treeList );
 
 		if ( !botMind->behaviorTree )
 		{
-			G_Printf( "Problem when loading default behavior tree\n" );
+			Log::Warn( "Problem when loading default behavior tree" );
 			return false;
 		}
 	}
@@ -220,7 +220,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 
 	if ( !navMeshLoaded )
 	{
-		trap_Print( "No Navigation Mesh file is available for this map\n" );
+		Log::Warn( "No Navigation Mesh file is available for this map" );
 		return false;
 	}
 
@@ -229,7 +229,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 
 	if ( clientNum < 0 )
 	{
-		trap_Print( "no more slots for bot\n" );
+		Log::Warn( "no more slots for bot" );
 		return false;
 	}
 	bot = &g_entities[ clientNum ];
@@ -267,7 +267,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	if ( ( s = ClientBotConnect( clientNum, true, team ) ) )
 	{
 		// won't let us join
-		trap_Print( s );
+		Log::Warn( s );
 		okay = false;
 	}
 
@@ -295,7 +295,7 @@ void G_BotDel( int clientNum )
 
 	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
 	{
-		trap_Print( va( "'^7%s^7' is not a bot\n", bot->client->pers.netname ) );
+		Log::Warn( "'^7%s^7' is not a bot", bot->client->pers.netname );
 		return;
 	}
 
@@ -307,7 +307,7 @@ void G_BotDel( int clientNum )
 		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, false );
 	}
 
-	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected\n" ) ),
+	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected" ) ),
 					Quote( bot->client->pers.netname ) ) );
 	trap_DropClient( clientNum, "disconnected" );
 }
@@ -355,14 +355,14 @@ void G_BotThink( gentity_t *self )
 	usercmdClearButtons( botCmdBuffer->buttons );
 
 	// for nudges, e.g. spawn blocking
-	nudge[0] = botCmdBuffer->doubleTap ? botCmdBuffer->forwardmove : 0;
-	nudge[1] = botCmdBuffer->doubleTap ? botCmdBuffer->rightmove : 0;
-	nudge[2] = botCmdBuffer->doubleTap ? botCmdBuffer->upmove : 0;
+	nudge[0] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->forwardmove : 0;
+	nudge[1] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->rightmove : 0;
+	nudge[2] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->upmove : 0;
 
 	botCmdBuffer->forwardmove = 0;
 	botCmdBuffer->rightmove = 0;
 	botCmdBuffer->upmove = 0;
-	botCmdBuffer->doubleTap = 0;
+	botCmdBuffer->doubleTap = dtType_t::DT_NONE;
 
 	//acknowledge recieved server commands
 	//MUST be done
@@ -390,7 +390,7 @@ void G_BotThink( gentity_t *self )
 
 	if ( !self->botMind->behaviorTree )
 	{
-		G_Printf( "ERROR: NULL behavior tree\n" );
+		Log::Warn( "NULL behavior tree" );
 		return;
 	}
 
@@ -401,7 +401,7 @@ void G_BotThink( gentity_t *self )
 		trap_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
 		//BotClampPos( self );
 	}
-	
+
 	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
 
 	// if we were nudged...

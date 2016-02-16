@@ -36,8 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 template<typename Element> class DisjointSets {
 	public:
-		typedef std::unordered_set<Element>                                    set_type;
-		typedef typename std::unordered_map<Element, set_type>::const_iterator iter_type;
+		using set_type = std::unordered_set<Element>;
+		using iter_type = typename std::unordered_map<Element, set_type>::const_iterator;
 
 		DisjointSets()
 		    : totalSize(0)

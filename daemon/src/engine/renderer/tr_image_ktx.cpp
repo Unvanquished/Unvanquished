@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-typedef struct {
+struct KTX_header_t {
 	byte     identifier[12];
 	uint32_t endianness;
 	uint32_t glType;
@@ -37,7 +37,7 @@ typedef struct {
 	uint32_t numberOfFaces;
 	uint32_t numberOfMipmapLevels;
 	uint32_t bytesOfKeyValueData;
-} KTX_header_t;
+};
 
 static const byte KTX_identifier[12] = {
 	0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A
@@ -659,7 +659,7 @@ void SaveImageKTX( const char *path, image_t *img )
 		components               = 0;
 		break;
 	default:
-		ri.Printf(PRINT_WARNING, "Unknown texture format %x\n",
+		Log::Warn("Unknown texture format %x",
 			  hdr.glInternalFormat );
 		return;
 	}

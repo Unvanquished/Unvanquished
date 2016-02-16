@@ -42,7 +42,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( S_WARNING "%s, line %d: %s\n", filename, line, string );
+	Log::Warn( "%s, line %d: %s", filename, line, string );
 }
 
 /*
@@ -65,7 +65,7 @@ void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( S_ERROR "%s, line %d: %s\n", filename, line, string );
+	Log::Warn( "%s, line %d: %s", filename, line, string );
 }
 
 /*
@@ -250,7 +250,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 			token.floatvalue = -token.floatvalue;
 		}
 
-		if ( token.type == TT_NUMBER )
+		if ( token.type == tokenType_t::TT_NUMBER )
 		{
 			if ( !expectingNumber )
 			{
@@ -367,7 +367,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 					break;
 
 				default:
-					Com_Error( ERR_FATAL, "Unknown operator '%c' in postfix string", op );
+					Com_Error( errorParm_t::ERR_FATAL, "Unknown operator '%c' in postfix string", op );
 			}
 
 			PUSH_VAL( stack, result );
@@ -420,7 +420,7 @@ bool PC_Float_Parse( int handle, float *f )
 		negative = true;
 	}
 
-	if ( token.type != TT_NUMBER )
+	if ( token.type != tokenType_t::TT_NUMBER )
 	{
 		PC_SourceError( handle, "expected float but found %s", token.string );
 		return false;
@@ -545,7 +545,7 @@ bool PC_Int_Parse( int handle, int *i )
 		negative = true;
 	}
 
-	if ( token.type != TT_NUMBER )
+	if ( token.type != tokenType_t::TT_NUMBER )
 	{
 		PC_SourceError( handle, "expected integer but found %s", token.string );
 		return false;

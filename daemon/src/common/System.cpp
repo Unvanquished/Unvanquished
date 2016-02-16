@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <nacl/nacl_exception.h>
 #include <nacl/nacl_minidump.h>
 #include <nacl/nacl_random.h>
-#include "engine/client/cg_api.h"
+#include "shared/CommonProxies.h"
 #else
 #include <dlfcn.h>
 #endif
@@ -97,7 +97,7 @@ void SleepFor(SteadyClock::duration time)
 	pNtSetTimerResolution(maxRes, TRUE, &curRes);
 
 	// Convert to NT units of 100ns
-	typedef std::chrono::duration<int64_t, std::ratio<1, 10000000>> NTDuration;
+	using NTDuration = std::chrono::duration<int64_t, std::ratio<1, 10000000>>;
 	auto ntTime = std::chrono::duration_cast<NTDuration>(time);
 
 	// Store the delay as a negative number to indicate a relative sleep
@@ -237,7 +237,7 @@ void SetupCrashHandler()
 #elif defined(__native_client__)
 static void CrashHandler(const void* data, size_t n)
 {
-    trap_CrashDump(static_cast<const uint8_t*>(data), n);
+    VM::CrashDump(static_cast<const uint8_t*>(data), n);
     Sys::Error("Crashed with NaCl exception");
 }
 
@@ -371,4 +371,23 @@ void operator delete(void* p) NOEXCEPT
 	if (!Sys::processTerminating) {
 		free(p);
 	}
+}
+
+/**
+ * Both client and server can use this, and it will
+ * do the appropriate things.
+ */
+void QDECL PRINTF_LIKE(2) Com_Error(errorParm_t code, const char *fmt, ...)
+{
+	char buf[4096];
+	va_list argptr;
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(buf, sizeof(buf), fmt, argptr);
+	va_end(argptr);
+
+	if (code == errorParm_t::ERR_FATAL)
+		Sys::Error(buf);
+	else
+		Sys::Drop(buf);
 }

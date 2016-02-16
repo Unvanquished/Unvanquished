@@ -45,7 +45,7 @@ static void CG_ResetEntity( centity_t *cent )
 	VectorCopy( cent->currentState.origin, cent->lerpOrigin );
 	VectorCopy( cent->currentState.angles, cent->lerpAngles );
 
-	if ( cent->currentState.eType == ET_PLAYER )
+	if ( cent->currentState.eType == entityType_t::ET_PLAYER )
 	{
 		CG_ResetPlayerEntity( cent );
 	}
@@ -146,12 +146,12 @@ static void CG_TransitionSnapshot()
 
 	if ( !cg.snap )
 	{
-		CG_Error( "CG_TransitionSnapshot: NULL cg.snap" );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_TransitionSnapshot: NULL cg.snap" );
 	}
 
 	if ( !cg.nextSnap )
 	{
-		CG_Error( "CG_TransitionSnapshot: NULL cg.nextSnap" );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_TransitionSnapshot: NULL cg.nextSnap" );
 	}
 
 	// execute any server string commands before transitioning entities
@@ -304,7 +304,7 @@ static snapshot_t *CG_ReadNextSnapshot()
 
 	if ( cg.latestSnapshotNum > cgs.processedSnapshotNum + 1000 )
 	{
-		CG_Printf( "WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n",
+		Log::Warn( "CG_ReadNextSnapshot: way out of range, %i > %i",
 		           cg.latestSnapshotNum, cgs.processedSnapshotNum );
 	}
 
@@ -379,7 +379,7 @@ void CG_ProcessSnapshots()
 		if ( n < cg.latestSnapshotNum )
 		{
 			// this should never happen
-			CG_Error( "CG_ProcessSnapshots: n (%i) < cg.latestSnapshotNum (%i)", n, cg.latestSnapshotNum );
+			Com_Error(errorParm_t::ERR_DROP,  "CG_ProcessSnapshots: n (%i) < cg.latestSnapshotNum (%i)", n, cg.latestSnapshotNum );
 		}
 
 		cg.latestSnapshotNum = n;
@@ -428,7 +428,7 @@ void CG_ProcessSnapshots()
 			// if time went backwards, we have a level restart
 			if ( cg.nextSnap->serverTime < cg.snap->serverTime )
 			{
-				CG_Error( "CG_ProcessSnapshots: Server time went backwards" );
+				Com_Error(errorParm_t::ERR_DROP,  "CG_ProcessSnapshots: Server time went backwards" );
 			}
 		}
 
@@ -446,7 +446,7 @@ void CG_ProcessSnapshots()
 	// assert our valid conditions upon exiting
 	if ( cg.snap == nullptr )
 	{
-		CG_Error( "CG_ProcessSnapshots: cg.snap == NULL" );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_ProcessSnapshots: cg.snap == NULL" );
 	}
 
 	if ( cg.time < cg.snap->serverTime )
@@ -457,6 +457,6 @@ void CG_ProcessSnapshots()
 
 	if ( cg.nextSnap != nullptr && cg.nextSnap->serverTime <= cg.time )
 	{
-		CG_Error( "CG_ProcessSnapshots: cg.nextSnap->serverTime <= cg.time" );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_ProcessSnapshots: cg.nextSnap->serverTime <= cg.time" );
 	}
 }

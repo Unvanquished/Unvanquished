@@ -59,7 +59,7 @@ Debugging command to print the current position
 */
 static void CG_Viewpos_f()
 {
-	CG_Printf( "(%i %i %i) : %i\n", ( int ) cg.refdef.vieworg[ 0 ],
+	Log::Notice( "(%i %i %i) : %i", ( int ) cg.refdef.vieworg[ 0 ],
 	           ( int ) cg.refdef.vieworg[ 1 ], ( int ) cg.refdef.vieworg[ 2 ],
 	           ( int ) cg.refdefViewAngles[ YAW ] );
 }
@@ -102,13 +102,13 @@ void CG_ClientList_f()
 		switch ( ci->team )
 		{
 			case TEAM_ALIENS:
-				Com_Printf( "%2d %sA   ^*%s\n", i,
+				Log::Notice( "%2d %sA   ^*%s\n", i,
 				            Color::CString( Color::Red ),
 				            ci->name );
 				break;
 
 			case TEAM_HUMANS:
-				Com_Printf( "%2d %sH   ^*%s\n", i,
+				Log::Notice( "%2d %sH   ^*%s\n", i,
 				            Color::CString( Color::Cyan ),
 				            ci->name );
 				break;
@@ -116,14 +116,14 @@ void CG_ClientList_f()
 			default:
 			case TEAM_NONE:
 			case NUM_TEAMS:
-				Com_Printf( "%2d S   %s\n", i, ci->name );
+				Log::Notice( "%2d S   %s\n", i, ci->name );
 				break;
 		}
 
 		count++;
 	}
 
-	Com_Printf(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
+	Log::Notice(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
 }
 
 static void CG_ReloadHud_f()
@@ -571,7 +571,7 @@ void CG_InitConsoleCommands()
 		//Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp(commands[i-1].cmd, commands[i].cmd) > 0 )
 		{
-			CG_Printf( "CGame command list is in the wrong order for %s and %s\n", commands[i - 1].cmd, commands[i].cmd );
+			Log::Warn( "CGame command list is in the wrong order for %s and %s", commands[i - 1].cmd, commands[i].cmd );
 		}
 		trap_AddCommand( commands[ i ].cmd );
 	}

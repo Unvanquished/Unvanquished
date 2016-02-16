@@ -127,14 +127,14 @@ void SV_AddServerCommand( client_t *client, const char *cmd )
 	// doesn't cause a recursive drop client
 	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1 )
 	{
-		Com_DPrintf("===== pending server commands =====\n");
+		Log::Debug("===== pending server commands =====");
 
 		for ( i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++ )
 		{
-			Com_DPrintf( "cmd %5d: %s\n", i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
+			Log::Debug( "cmd %5d: %s", i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
 		}
 
-		Com_DPrintf( "cmd %5d: %s\n", i, cmd );
+		Log::Debug( "cmd %5d: %s", i, cmd );
 		SV_DropClient( client, "Server command overflow" );
 		return;
 	}
@@ -190,14 +190,14 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		// hack to echo broadcast prints to console
 		else if ( !strncmp( ( char * ) message, "print ", 6 ) )
 		{
-			Com_Printf( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
+			Log::Notice( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
 		}
 	}
 
 	// send the data to all relevent clients
 	for ( j = 0, client = svs.clients; j < sv_maxclients->integer; j++, client++ )
 	{
-		if ( client->state < CS_PRIMED )
+		if ( client->state < clientState_t::CS_PRIMED )
 		{
 			continue;
 		}
@@ -240,21 +240,21 @@ static void SV_ResolveMasterServers()
 		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
 		{
 			challenges[ i ].type =
-			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = netadrtype_t::NA_BAD;
 			continue;
 		}
 
 		// see if we haven't already resolved the name
 		// resolving usually causes hitches on win95, so only
 		// do it when needed
-		if ( sv_master[ i ]->modified || ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD ) )
+		if ( sv_master[ i ]->modified || ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD ) )
 		{
 			sv_master[ i ]->modified = false;
 
 			if ( netenabled & NET_ENABLEV4 )
 			{
-				Com_Printf( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, NA_IP );
+				Log::Notice( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
+				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, netadrtype_t::NA_IP );
 
 				if ( res == 2 )
 				{
@@ -264,18 +264,18 @@ static void SV_ResolveMasterServers()
 
 				if ( res )
 				{
-					Com_Printf( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
+					Log::Notice( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
 				}
 				else
 				{
-					Com_Printf( "%s has no IPv4 address.\n", sv_master[ i ]->string );
+					Log::Notice( "%s has no IPv4 address.\n", sv_master[ i ]->string );
 				}
 			}
 
 			if ( netenabled & NET_ENABLEV6 )
 			{
-				Com_Printf( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, NA_IP6 );
+				Log::Notice( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
+				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, netadrtype_t::NA_IP6 );
 
 				if ( res == 2 )
 				{
@@ -285,19 +285,19 @@ static void SV_ResolveMasterServers()
 
 				if ( res )
 				{
-					Com_Printf( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
+					Log::Notice( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
 				}
 				else
 				{
-					Com_Printf( "%s has no IPv6 address.\n", sv_master[ i ]->string );
+					Log::Notice( "%s has no IPv6 address.\n", sv_master[ i ]->string );
 				}
 			}
 
-			if ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD )
+			if ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD )
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Com_Printf( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
+				Log::Notice( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
 				Cvar_Set( sv_master[ i ]->name, "" );
 				sv_master[ i ]->modified = false;
 				continue;
@@ -319,7 +319,7 @@ void SV_NET_Config()
 
 	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
 	{
-		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = NA_BAD;
+		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = netadrtype_t::NA_BAD;
 	}
 }
 
@@ -334,7 +334,7 @@ changes from empty to non-empty, and full to non-full,
 but not on every player enter or exit.
 ================
 */
-#define HEARTBEAT_MSEC (300 * 1000)
+static const int HEARTBEAT_MSEC = (300 * 1000);
 #define HEARTBEAT_GAME "Unvanquished"
 #define HEARTBEAT_DEAD "Unvanquished-dead"
 
@@ -363,24 +363,24 @@ void SV_MasterHeartbeat( const char *hbname )
 	// send to group masters
 	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
 	{
-		if ( masterServerAddr[ i ].ipv4.type == NA_BAD && masterServerAddr[ i ].ipv6.type == NA_BAD )
+		if ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD )
 		{
 			continue;
 		}
 
-		Com_Printf( "Sending heartbeat to %s\n", sv_master[ i ]->string );
+		Log::Notice( "Sending heartbeat to %s", sv_master[ i ]->string );
 
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
 
-		if ( masterServerAddr[ i ].ipv4.type != NA_BAD )
+		if ( masterServerAddr[ i ].ipv4.type != netadrtype_t::NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
+			NET_OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
 		}
 
-		if ( masterServerAddr[ i ].ipv6.type != NA_BAD )
+		if ( masterServerAddr[ i ].ipv6.type != netadrtype_t::NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
+			NET_OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
 		}
 	}
 }
@@ -420,12 +420,12 @@ void SV_MasterGameStat( const char *data )
 		return; // only dedicated servers send stats
 	}
 
-	Com_Printf( "Resolving %s\n", MASTER_SERVER_NAME );
+	Log::Notice( "Resolving %s", MASTER_SERVER_NAME );
 
-	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &adr, NA_UNSPEC ) )
+	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &adr, netadrtype_t::NA_UNSPEC ) )
 	{
 		case 0:
-			Com_Printf( "Couldn't resolve master address: %s\n", MASTER_SERVER_NAME );
+			Log::Warn( "Couldn't resolve master address: %s", MASTER_SERVER_NAME );
 			return;
 
 		case 2:
@@ -435,11 +435,11 @@ void SV_MasterGameStat( const char *data )
 			break;
 	}
 
-	Com_Printf( "%s resolved to %s\n", MASTER_SERVER_NAME,
+	Log::Notice( "%s resolved to %s", MASTER_SERVER_NAME,
 	            NET_AdrToStringwPort( adr ) );
 
-	Com_Printf( "Sending gamestat to %s\n", MASTER_SERVER_NAME );
-	NET_OutOfBandPrint( NS_SERVER, adr, "gamestat %s", data );
+	Log::Notice( "Sending gamestat to %s", MASTER_SERVER_NAME );
+	NET_OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
 }
 
 /*
@@ -499,14 +499,14 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	{
 		client_t* cl = &svs.clients[ i ];
 
-		if ( cl->state >= CS_CONNECTED )
+		if ( cl->state >= clientState_t::CS_CONNECTED )
 		{
 			playerState_t* ps = SV_GameClientNum( i );
 			status +=  Str::Format( "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
 		}
 	}
 
-	Net::OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s",
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "statusResponse\n%s\n%s",
 		InfoMapToString( info_map ), status );
 }
 
@@ -528,7 +528,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 	for ( int i = sv_privateClients->integer; i < sv_maxclients->integer; i++ )
 	{
-		if ( svs.clients[ i ].state >= CS_CONNECTED )
+		if ( svs.clients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
 			if ( SV_IsBot(&svs.clients[ i ]) )
 			{
@@ -561,7 +561,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 			}
 
 			// It was - if the saved challenge is for the other protocol, send it and record the current one
-			if ( challenges[ i ].type == NA_IP || challenges[ i ].type == NA_IP6 )
+			if ( challenges[ i ].type == netadrtype_t::NA_IP || challenges[ i ].type == netadrtype_t::NA_IP6 )
 			{
 				if ( challenges[ i ].type != from.type )
 				{
@@ -604,7 +604,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 	info_map["gamename"] = GAMENAME_STRING;  // Arnout: to be able to filter out Quake servers
 
-	Net::OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", InfoMapToString( info_map ) );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "infoResponse\n%s", InfoMapToString( info_map ) );
 }
 
 /*
@@ -613,7 +613,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
  */
 void SVC_Ping( netadr_t from, const Cmd::Args& )
 {
-	Net::OutOfBandPrint( NS_SERVER, from, "ack\n" );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "ack\n" );
 }
 
 /*
@@ -647,11 +647,11 @@ bool SV_CheckDRDoS( netadr_t from )
 
 	exactFrom = from;
 
-	if ( from.type == NA_IP )
+	if ( from.type == netadrtype_t::NA_IP )
 	{
 		from.ip[ 3 ] = 0; // xx.xx.xx.0
 	}
-	else if ( from.type == NA_IP6 )
+	else if ( from.type == netadrtype_t::NA_IP6 )
 	{
 		memset( from.ip6 + 7, 0, 9 ); // mask to /56
 	}
@@ -702,7 +702,7 @@ bool SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastGlobalLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Com_Printf( "Detected flood of getinfo/getstatus connectionless packets\n" );
+			Log::Notice( "Detected flood of getinfo/getstatus connectionless packets" );
 			lastGlobalLogTime = svs.time;
 		}
 
@@ -713,7 +713,7 @@ bool SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastSpecificLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Com_Printf( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n",
+			Log::Notice( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet",
 			            exactFrom.ip[ 0 ], exactFrom.ip[ 1 ], exactFrom.ip[ 2 ], exactFrom.ip[ 3 ] );
 			lastSpecificLogTime = svs.time;
 		}
@@ -753,13 +753,13 @@ public:
 	}
 
 	void Flush() {
-		Net::OutOfBandPrint(NS_SERVER, from, "%s\n%s", prefix, buffer);
+		Net::OutOfBandPrint(netsrc_t::NS_SERVER, from, "%s\n%s", prefix, buffer);
 		buffer.clear();
 	}
 
 	static void PrintError(netadr_t to, const std::string& message)
 	{
-		Net::OutOfBandPrint(NS_SERVER, to, "error\n%s", message);
+		Net::OutOfBandPrint(netsrc_t::NS_SERVER, to, "error\n%s", message);
 	}
 
 private:
@@ -783,6 +783,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 {
 	int throttle_delta = RemoteCommandThrottle();
 
+
 	if ( throttle_delta < 180 )
 	{
 		return;
@@ -800,7 +801,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 			return;
 		}
 
-		Com_Printf( "Bad rcon from %s:\n%s\n%s\n",
+		Log::Notice( "Bad rcon from %s:\n%s\n%s\n",
 			NET_AdrToString( from ),
 			invalid_reason.c_str(),
 			args.ConcatArgs(2).c_str() );
@@ -809,7 +810,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 	else
 	{
-		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), message.command().c_str() );
+		Log::Notice( "Rcon from %s:\n%s\n", NET_AdrToString( from ), message.command().c_str() );
 
 		// start redirecting all print outputs to the packet
 		auto env = RconEnvironment(from);
@@ -830,7 +831,7 @@ static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 		{"challenge",  std::to_string(Rcon::cvar_server_secure.Get() >= 2)},
 		{"timeout",    std::to_string(duration_seconds)},
 	});
-	Net::OutOfBandPrint( NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string );
 }
 
 
@@ -861,7 +862,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	Com_DPrintf( "SV packet %s : %s\n", NET_AdrToString( from ), args.Argv(0).c_str() );
+	Log::Debug( "SV packet %s : %s", NET_AdrToString( from ), args.Argv(0).c_str() );
 
 	if ( args.Argv(0) == "getstatus" )
 	{
@@ -907,7 +908,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 	else
 	{
-		Com_DPrintf( "bad connectionless packet from %s:\n%s\n", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
+		Log::Debug( "bad connectionless packet from %s: %s", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
 	}
 }
 
@@ -940,7 +941,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 	// find which client the message is from
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
-		if ( cl->state == CS_FREE )
+		if ( cl->state == clientState_t::CS_FREE )
 		{
 			continue;
 		}
@@ -962,7 +963,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 		// port assignments
 		if ( cl->netchan.remoteAddress.port != from.port )
 		{
-			Com_Printf( "SV_PacketEvent: fixing up a translated port\n" );
+			Log::Notice( "SV_PacketEvent: fixing up a translated port" );
 			cl->netchan.remoteAddress.port = from.port;
 		}
 
@@ -972,7 +973,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 			// zombie clients still need to do the Netchan_Process
 			// to make sure they don't need to retransmit the final
 			// reliable message, but they don't do any other processing
-			if ( cl->state != CS_ZOMBIE )
+			if ( cl->state != clientState_t::CS_ZOMBIE )
 			{
 				cl->lastPacketTime = svs.time; // don't timeout
 				SV_ExecuteClientMessage( cl, msg );
@@ -984,7 +985,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 
 	// if we received a sequenced packet from an address we don't recognize,
 	// send an out of band disconnect packet to it
-	NET_OutOfBandPrint( NS_SERVER, from, "disconnect" );
+	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "disconnect" );
 }
 
 /*
@@ -1006,7 +1007,7 @@ void SV_CalcPings()
 	{
 		cl = &svs.clients[ i ];
 
-		if ( cl->state != CS_ACTIVE )
+		if ( cl->state != clientState_t::CS_ACTIVE )
 		{
 			cl->ping = 999;
 			continue;
@@ -1090,23 +1091,23 @@ void SV_CheckTimeouts()
 			cl->lastPacketTime = svs.time;
 		}
 
-		if ( cl->state == CS_ZOMBIE && cl->lastPacketTime < zombiepoint )
+		if ( cl->state == clientState_t::CS_ZOMBIE && cl->lastPacketTime < zombiepoint )
 		{
 			// using the client id cause the cl->name is empty at this point
-			Com_DPrintf( "Going from CS_ZOMBIE to CS_FREE for client %d\n", i );
-			cl->state = CS_FREE; // can now be reused
+			Log::Debug( "Going from CS_ZOMBIE to CS_FREE for client %d", i );
+			cl->state = clientState_t::CS_FREE; // can now be reused
 
 			continue;
 		}
 
-		if ( cl->state >= CS_CONNECTED && cl->lastPacketTime < droppoint )
+		if ( cl->state >= clientState_t::CS_CONNECTED && cl->lastPacketTime < droppoint )
 		{
 			// wait several frames so a debugger session doesn't
 			// cause a timeout
 			if ( ++cl->timeoutCount > 5 )
 			{
 				SV_DropClient( cl, "timed out" );
-				cl->state = CS_FREE; // don't bother with zombie state
+				cl->state = clientState_t::CS_FREE; // don't bother with zombie state
 			}
 		}
 		else
@@ -1137,7 +1138,7 @@ bool SV_CheckPaused()
 
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
-		if ( cl->state >= CS_CONNECTED && cl->netchan.remoteAddress.type != NA_BOT )
+		if ( cl->state >= clientState_t::CS_CONNECTED && cl->netchan.remoteAddress.type != netadrtype_t::NA_BOT )
 		{
 			count++;
 		}
@@ -1214,7 +1215,7 @@ void SV_Frame( int msec )
 	// the menu kills the server with this cvar
 	if ( sv_killserver->integer )
 	{
-		SV_Shutdown( "Server was killed.\n" );
+		SV_Shutdown( "Server was killed." );
 		Cvar_Set( "sv_killserver", "0" );
 		return;
 	}
@@ -1340,7 +1341,7 @@ void SV_Frame( int msec )
 	svs.currentFrameIndex++;
 
 	//if( svs.currentFrameIndex % 50 == 0 )
-	//  Com_Printf( "currentFrameIndex: %i\n", svs.currentFrameIndex );
+	//  Log::Notice( "currentFrameIndex: %i\n", svs.currentFrameIndex );
 
 	if ( svs.currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES )
 	{
@@ -1372,7 +1373,7 @@ void SV_Frame( int msec )
 			svs.serverLoad = ( averageFrameTime / ( float ) frameMsec ) * 100;
 		}
 
-		//Com_Printf( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
+		//Log::Notice( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
 
 		svs.totalFrameTime = 0;
 		svs.currentFrameIndex = 0;
@@ -1407,7 +1408,7 @@ void SV_PrintTranslatedText( const char *text, bool broadcast, bool plural )
 {
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
-	Com_Printf( "%s%s", broadcast ? "Broadcast: " : "", TranslateText_Internal( plural, 1 ) );
+	Log::Notice( "%s%s", broadcast ? "Broadcast: " : "", TranslateText_Internal( plural, 1 ) );
 	Cmd_RestoreCmdContext();
 }
 

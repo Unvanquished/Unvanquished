@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "gl_shader.h"
 
-#define SKY_SUBDIVISIONS      8
-#define HALF_SKY_SUBDIVISIONS ( SKY_SUBDIVISIONS / 2 )
+static const int SKY_SUBDIVISIONS      = 8;
+static const int HALF_SKY_SUBDIVISIONS = ( SKY_SUBDIVISIONS / 2 );
 
 static float s_cloudTexCoords[ 6 ][ SKY_SUBDIVISIONS + 1 ][ SKY_SUBDIVISIONS + 1 ][ 2 ];
 static float s_cloudTexP[ 6 ][ SKY_SUBDIVISIONS + 1 ][ SKY_SUBDIVISIONS + 1 ];
@@ -188,8 +188,8 @@ static void AddSkyPolygon( int nump, vec3_t vecs )
 	}
 }
 
-#define ON_EPSILON     0.1f // point on plane side epsilon
-#define MAX_CLIP_VERTS 64
+static const float ON_EPSILON     = 0.1f; // point on plane side epsilon
+static const int MAX_CLIP_VERTS = 64;
 
 /*
 ================
@@ -203,14 +203,14 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 	bool front, back;
 	float    d, e;
 	float    dists[ MAX_CLIP_VERTS ];
-	int      sides[ MAX_CLIP_VERTS ];
+	planeSide_t sides[ MAX_CLIP_VERTS ];
 	vec3_t   newv[ 2 ][ MAX_CLIP_VERTS ];
 	int      newc[ 2 ];
 	int      i, j;
 
 	if ( nump > MAX_CLIP_VERTS - 2 )
 	{
-		ri.Error( ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS" );
+		ri.Error(errorParm_t::ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS" );
 	}
 
 	if ( stage == 6 )
@@ -230,16 +230,16 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 		if ( d > ON_EPSILON )
 		{
 			front = true;
-			sides[ i ] = SIDE_FRONT;
+			sides[ i ] = planeSide_t::SIDE_FRONT;
 		}
 		else if ( d < -ON_EPSILON )
 		{
 			back = true;
-			sides[ i ] = SIDE_BACK;
+			sides[ i ] = planeSide_t::SIDE_BACK;
 		}
 		else
 		{
-			sides[ i ] = SIDE_ON;
+			sides[ i ] = planeSide_t::SIDE_ON;
 		}
 
 		dists[ i ] = d;
@@ -262,17 +262,19 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 	{
 		switch ( sides[ i ] )
 		{
-			case SIDE_FRONT:
+			case planeSide_t::SIDE_CROSS:
+				break;
+			case planeSide_t::SIDE_FRONT:
 				VectorCopy( v, newv[ 0 ][ newc[ 0 ] ] );
 				newc[ 0 ]++;
 				break;
 
-			case SIDE_BACK:
+			case planeSide_t::SIDE_BACK:
 				VectorCopy( v, newv[ 1 ][ newc[ 1 ] ] );
 				newc[ 1 ]++;
 				break;
 
-			case SIDE_ON:
+			case planeSide_t::SIDE_ON:
 				VectorCopy( v, newv[ 0 ][ newc[ 0 ] ] );
 				newc[ 0 ]++;
 				VectorCopy( v, newv[ 1 ][ newc[ 1 ] ] );
@@ -280,7 +282,7 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 				break;
 		}
 
-		if ( sides[ i ] == SIDE_ON || sides[ i + 1 ] == SIDE_ON || sides[ i + 1 ] == sides[ i ] )
+		if ( sides[ i ] == planeSide_t::SIDE_ON || sides[ i + 1 ] == planeSide_t::SIDE_ON || sides[ i + 1 ] == sides[ i ] )
 		{
 			continue;
 		}
@@ -451,7 +453,7 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], bool ad
 
 			if ( tess.numVertexes >= SHADER_MAX_VERTEXES )
 			{
-				ri.Error( ERR_DROP, "SHADER_MAX_VERTEXES hit in FillCloudySkySide()" );
+				ri.Error(errorParm_t::ERR_DROP, "SHADER_MAX_VERTEXES hit in FillCloudySkySide()" );
 			}
 		}
 	}
@@ -671,7 +673,7 @@ static void BuildCloudData()
 {
 	int      i;
 
-	assert( tess.surfaceShader->isSky );
+	ASSERT(tess.surfaceShader->isSky);
 
 	sky_min = 1.0 / 256.0f; // FIXME: not correct?
 	sky_max = 255.0 / 256.0f;
@@ -786,10 +788,10 @@ void Tess_StageIteratorSky()
 	if ( tess.stageIteratorFunc2 == nullptr )
 	{
 		//tess.stageIteratorFunc2 = Tess_StageIteratorGeneric;
-		ri.Error( ERR_FATAL, "tess.stageIteratorFunc == NULL" );
+		ri.Error( errorParm_t::ERR_FATAL, "tess.stageIteratorFunc == NULL" );
 	}
 
-	GL_Cull(CT_TWO_SIDED);
+	GL_Cull(cullType_t::CT_TWO_SIDED);
 
 	if ( tess.stageIteratorFunc2 == &Tess_StageIteratorDepthFill )
 	{

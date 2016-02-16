@@ -49,7 +49,7 @@ worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 {
 	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
 	{
-		Com_Error( ERR_DROP, "G_CM_SvEntityForGentity: bad gEnt" );
+		Com_Error(errorParm_t::ERR_DROP, "G_CM_SvEntityForGentity: bad gEnt" );
 	}
 
 	return &wentities[ gEnt->s.number ];
@@ -77,12 +77,12 @@ void G_CM_SetBrushModel( gentity_t *ent, const char *name )
 
 	if ( !name )
 	{
-		Com_Error( ERR_DROP, "G_CM_SetBrushModel: NULL for #%i", ent->s.number );
+		Com_Error(errorParm_t::ERR_DROP, "G_CM_SetBrushModel: NULL for #%i", ent->s.number );
 	}
 
 	if ( name[ 0 ] != '*' )
 	{
-		Com_Error( ERR_DROP, "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
+		Com_Error(errorParm_t::ERR_DROP, "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
 	}
 
 	ent->s.modelindex = atoi( name + 1 );
@@ -276,7 +276,7 @@ void G_CM_SectorList_f()
 			c++;
 		}
 
-		Com_Printf( "sector %i: %i entities\n", i, c );
+		Log::Notice( "sector %i: %i entities\n", i, c );
 	}
 }
 
@@ -388,7 +388,7 @@ void G_CM_UnlinkEntity( gentity_t *gEnt )
 		}
 	}
 
-	Com_Printf( "WARNING: G_CM_UnlinkEntity: not found in worldSector\n" );
+	Log::Warn( "G_CM_UnlinkEntity: not found in worldSector\n" );
 }
 
 /*
@@ -653,7 +653,7 @@ void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 
 		if ( ap->count == ap->maxcount )
 		{
-			Com_Printf( "G_CM_AreaEntities: MAXCOUNT\n" );
+			Log::Notice( "G_CM_AreaEntities: MAXCOUNT\n" );
 			return;
 		}
 

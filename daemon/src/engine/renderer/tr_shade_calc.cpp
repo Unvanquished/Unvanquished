@@ -29,22 +29,22 @@ static float   *TableForFunc( genFunc_t func )
 {
 	switch ( func )
 	{
-		case GF_SIN:
+		case genFunc_t::GF_SIN:
 			return tr.sinTable;
 
-		case GF_TRIANGLE:
+		case genFunc_t::GF_TRIANGLE:
 			return tr.triangleTable;
 
-		case GF_SQUARE:
+		case genFunc_t::GF_SQUARE:
 			return tr.squareTable;
 
-		case GF_SAWTOOTH:
+		case genFunc_t::GF_SAWTOOTH:
 			return tr.sawToothTable;
 
-		case GF_INVERSE_SAWTOOTH:
+		case genFunc_t::GF_INVERSE_SAWTOOTH:
 			return tr.inverseSawToothTable;
 
-		case GF_NONE:
+		case genFunc_t::GF_NONE:
 		default:
 			break;
 	}
@@ -90,15 +90,15 @@ static float GetOpValue( const expOperation_t *op )
 
 	switch ( op->type )
 	{
-		case OP_NUM:
+		case opcode_t::OP_NUM:
 			value = op->value;
 			break;
 
-		case OP_TIME:
+		case opcode_t::OP_TIME:
 			value = backEnd.refdef.floatTime;
 			break;
 
-		case OP_PARM0:
+		case opcode_t::OP_PARM0:
 			if ( backEnd.currentLight )
 			{
 				value = backEnd.currentLight->l.color[ 0 ];
@@ -115,7 +115,7 @@ static float GetOpValue( const expOperation_t *op )
 
 			break;
 
-		case OP_PARM1:
+		case opcode_t::OP_PARM1:
 			if ( backEnd.currentLight )
 			{
 				value = backEnd.currentLight->l.color[ 1 ];
@@ -132,7 +132,7 @@ static float GetOpValue( const expOperation_t *op )
 
 			break;
 
-		case OP_PARM2:
+		case opcode_t::OP_PARM2:
 			if ( backEnd.currentLight )
 			{
 				value = backEnd.currentLight->l.color[ 2 ];
@@ -149,7 +149,7 @@ static float GetOpValue( const expOperation_t *op )
 
 			break;
 
-		case OP_PARM3:
+		case opcode_t::OP_PARM3:
 			if ( backEnd.currentLight )
 			{
 				value = 1.0;
@@ -166,7 +166,7 @@ static float GetOpValue( const expOperation_t *op )
 
 			break;
 
-		case OP_PARM4:
+		case opcode_t::OP_PARM4:
 			if ( backEnd.currentEntity )
 			{
 				value = -backEnd.currentEntity->e.shaderTime;
@@ -178,37 +178,37 @@ static float GetOpValue( const expOperation_t *op )
 
 			break;
 
-		case OP_PARM5:
-		case OP_PARM6:
-		case OP_PARM7:
-		case OP_PARM8:
-		case OP_PARM9:
-		case OP_PARM10:
-		case OP_PARM11:
-		case OP_GLOBAL0:
-		case OP_GLOBAL1:
-		case OP_GLOBAL2:
-		case OP_GLOBAL3:
-		case OP_GLOBAL4:
-		case OP_GLOBAL5:
-		case OP_GLOBAL6:
-		case OP_GLOBAL7:
+		case opcode_t::OP_PARM5:
+		case opcode_t::OP_PARM6:
+		case opcode_t::OP_PARM7:
+		case opcode_t::OP_PARM8:
+		case opcode_t::OP_PARM9:
+		case opcode_t::OP_PARM10:
+		case opcode_t::OP_PARM11:
+		case opcode_t::OP_GLOBAL0:
+		case opcode_t::OP_GLOBAL1:
+		case opcode_t::OP_GLOBAL2:
+		case opcode_t::OP_GLOBAL3:
+		case opcode_t::OP_GLOBAL4:
+		case opcode_t::OP_GLOBAL5:
+		case opcode_t::OP_GLOBAL6:
+		case opcode_t::OP_GLOBAL7:
 			value = 1.0;
 			break;
 
-		case OP_FRAGMENTSHADERS:
+		case opcode_t::OP_FRAGMENTSHADERS:
 			value = 1.0;
 			break;
 
-		case OP_FRAMEBUFFEROBJECTS:
+		case opcode_t::OP_FRAMEBUFFEROBJECTS:
 			value = glConfig2.framebufferObjectAvailable;
 			break;
 
-		case OP_SOUND:
+		case opcode_t::OP_SOUND:
 			value = 0.5;
 			break;
 
-		case OP_DISTANCE:
+		case opcode_t::OP_DISTANCE:
 			value = 0.0; // FIXME ?
 			break;
 
@@ -251,14 +251,14 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 
 		switch ( op.type )
 		{
-			case OP_BAD:
+			case opcode_t::OP_BAD:
 				return defaultValue;
 
-			case OP_NEG:
+			case opcode_t::OP_NEG:
 				{
 					if ( numOps < 1 )
 					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for unary - operator\n", tess.surfaceShader->name );
+						Log::Warn("shader %s has numOps < 1 for unary - operator", tess.surfaceShader->name );
 						return defaultValue;
 					}
 
@@ -268,42 +268,42 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					value = -value1;
 
 					// push result
-					op.type = OP_NUM;
+					op.type = opcode_t::OP_NUM;
 					op.value = value;
 					ops[ numOps++ ] = op;
 					break;
 				}
 
-			case OP_NUM:
-			case OP_TIME:
-			case OP_PARM0:
-			case OP_PARM1:
-			case OP_PARM2:
-			case OP_PARM3:
-			case OP_PARM4:
-			case OP_PARM5:
-			case OP_PARM6:
-			case OP_PARM7:
-			case OP_PARM8:
-			case OP_PARM9:
-			case OP_PARM10:
-			case OP_PARM11:
-			case OP_GLOBAL0:
-			case OP_GLOBAL1:
-			case OP_GLOBAL2:
-			case OP_GLOBAL3:
-			case OP_GLOBAL4:
-			case OP_GLOBAL5:
-			case OP_GLOBAL6:
-			case OP_GLOBAL7:
-			case OP_FRAGMENTSHADERS:
-			case OP_FRAMEBUFFEROBJECTS:
-			case OP_SOUND:
-			case OP_DISTANCE:
+			case opcode_t::OP_NUM:
+			case opcode_t::OP_TIME:
+			case opcode_t::OP_PARM0:
+			case opcode_t::OP_PARM1:
+			case opcode_t::OP_PARM2:
+			case opcode_t::OP_PARM3:
+			case opcode_t::OP_PARM4:
+			case opcode_t::OP_PARM5:
+			case opcode_t::OP_PARM6:
+			case opcode_t::OP_PARM7:
+			case opcode_t::OP_PARM8:
+			case opcode_t::OP_PARM9:
+			case opcode_t::OP_PARM10:
+			case opcode_t::OP_PARM11:
+			case opcode_t::OP_GLOBAL0:
+			case opcode_t::OP_GLOBAL1:
+			case opcode_t::OP_GLOBAL2:
+			case opcode_t::OP_GLOBAL3:
+			case opcode_t::OP_GLOBAL4:
+			case opcode_t::OP_GLOBAL5:
+			case opcode_t::OP_GLOBAL6:
+			case opcode_t::OP_GLOBAL7:
+			case opcode_t::OP_FRAGMENTSHADERS:
+			case opcode_t::OP_FRAMEBUFFEROBJECTS:
+			case opcode_t::OP_SOUND:
+			case opcode_t::OP_DISTANCE:
 				ops[ numOps++ ] = op;
 				break;
 
-			case OP_TABLE:
+			case opcode_t::OP_TABLE:
 				{
 					shaderTable_t *table;
 					int           numValues;
@@ -314,7 +314,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 
 					if ( numOps < 1 )
 					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for table operator\n", tess.surfaceShader->name );
+						Log::Warn("shader %s has numOps < 1 for table operator", tess.surfaceShader->name );
 						return defaultValue;
 					}
 
@@ -355,10 +355,10 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 						value = table->values[ oldIndex ] + ( ( table->values[ newIndex ] - table->values[ oldIndex ] ) * lerp );
 					}
 
-					//ri.Printf(PRINT_ALL, "%s: %i %i %f\n", table->name, oldIndex, newIndex, value);
+					//Log::Notice("%s: %i %i %f", table->name, oldIndex, newIndex, value);
 
 					// push result
-					op.type = OP_NUM;
+					op.type = opcode_t::OP_NUM;
 					op.value = value;
 					ops[ numOps++ ] = op;
 					break;
@@ -368,7 +368,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 				{
 					if ( numOps < 2 )
 					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 2 for binary operator %s\n", tess.surfaceShader->name,
+						Log::Warn("shader %s has numOps < 2 for binary operator %s", tess.surfaceShader->name,
 						           GetOpName( op.type ) );
 						return defaultValue;
 					}
@@ -381,39 +381,39 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 
 					switch ( op.type )
 					{
-						case OP_LAND:
+						case opcode_t::OP_LAND:
 							value = value1 && value2;
 							break;
 
-						case OP_LOR:
+						case opcode_t::OP_LOR:
 							value = value1 || value2;
 							break;
 
-						case OP_GE:
+						case opcode_t::OP_GE:
 							value = value1 >= value2;
 							break;
 
-						case OP_LE:
+						case opcode_t::OP_LE:
 							value = value1 <= value2;
 							break;
 
-						case OP_LEQ:
+						case opcode_t::OP_LEQ:
 							value = value1 == value2;
 							break;
 
-						case OP_LNE:
+						case opcode_t::OP_LNE:
 							value = value1 != value2;
 							break;
 
-						case OP_ADD:
+						case opcode_t::OP_ADD:
 							value = value1 + value2;
 							break;
 
-						case OP_SUB:
+						case opcode_t::OP_SUB:
 							value = value1 - value2;
 							break;
 
-						case OP_DIV:
+						case opcode_t::OP_DIV:
 							if ( value2 == 0 )
 							{
 								// don't divide by zero
@@ -426,19 +426,19 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 
 							break;
 
-						case OP_MOD:
+						case opcode_t::OP_MOD:
 							value = ( float )( ( int ) value1 % ( int ) value2 );
 							break;
 
-						case OP_MUL:
+						case opcode_t::OP_MUL:
 							value = value1 * value2;
 							break;
 
-						case OP_LT:
+						case opcode_t::OP_LT:
 							value = value1 < value2;
 							break;
 
-						case OP_GT:
+						case opcode_t::OP_GT:
 							value = value1 > value2;
 							break;
 
@@ -448,7 +448,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					}
 
 					// push result
-					op.type = OP_NUM;
+					op.type = opcode_t::OP_NUM;
 					op.value = value;
 					ops[ numOps++ ] = op;
 					break;
@@ -528,12 +528,12 @@ static void AutospriteDeform( int firstVertex, int numVertexes, int numIndexes )
 
 	if ( numVertexes & 3 )
 	{
-		ri.Printf( PRINT_WARNING, "Autosprite shader %s had odd vertex count\n", tess.surfaceShader->name );
+		Log::Warn("Autosprite shader %s had odd vertex count", tess.surfaceShader->name );
 	}
 
 	if ( numIndexes != ( numVertexes >> 2 ) * 6 )
 	{
-		ri.Printf( PRINT_WARNING, "Autosprite shader %s had odd index count\n", tess.surfaceShader->name );
+		Log::Warn("Autosprite shader %s had odd index count", tess.surfaceShader->name );
 	}
 
 	for ( i = 0; i < numVertexes; i += 4 )
@@ -581,12 +581,12 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 
 	if ( numVertexes & 3 )
 	{
-		ri.Printf( PRINT_WARNING, "Autosprite2 shader %s had odd vertex count\n", tess.surfaceShader->name );
+		Log::Warn("Autosprite2 shader %s had odd vertex count", tess.surfaceShader->name );
 	}
 
 	if ( numIndexes != ( numVertexes >> 2 ) * 6 )
 	{
-		ri.Printf( PRINT_WARNING, "Autosprite2 shader %s had odd index count\n", tess.surfaceShader->name );
+		Log::Warn("Autosprite2 shader %s had odd index count", tess.surfaceShader->name );
 	}
 
 	// this is a lot of work for two triangles...
@@ -724,11 +724,11 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 	{
 		switch ( bundle->texMods[ j ].type )
 		{
-			case TMOD_NONE:
+			case texMod_t::TMOD_NONE:
 				j = TR_MAX_TEXMODS; // break out of for loop
 				break;
 
-			case TMOD_TURBULENT:
+			case texMod_t::TMOD_TURBULENT:
 				{
 					waveForm_t *wf;
 
@@ -742,7 +742,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_ENTITY_TRANSLATE:
+			case texMod_t::TMOD_ENTITY_TRANSLATE:
 				{
 					x = backEnd.currentEntity->e.shaderTexCoord[ 0 ] * backEnd.refdef.floatTime;
 					y = backEnd.currentEntity->e.shaderTexCoord[ 1 ] * backEnd.refdef.floatTime;
@@ -756,7 +756,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_SCROLL:
+			case texMod_t::TMOD_SCROLL:
 				{
 					x = bundle->texMods[ j ].scroll[ 0 ] * backEnd.refdef.floatTime;
 					y = bundle->texMods[ j ].scroll[ 1 ] * backEnd.refdef.floatTime;
@@ -770,7 +770,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_SCALE:
+			case texMod_t::TMOD_SCALE:
 				{
 					x = bundle->texMods[ j ].scale[ 0 ];
 					y = bundle->texMods[ j ].scale[ 1 ];
@@ -779,7 +779,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_STRETCH:
+			case texMod_t::TMOD_STRETCH:
 				{
 					float p;
 
@@ -791,7 +791,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_TRANSFORM:
+			case texMod_t::TMOD_TRANSFORM:
 				{
 					const texModInfo_t *tmi = &bundle->texMods[ j ];
 
@@ -799,7 +799,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_ROTATE:
+			case texMod_t::TMOD_ROTATE:
 				{
 					x = -bundle->texMods[ j ].rotateSpeed * backEnd.refdef.floatTime;
 
@@ -809,7 +809,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_SCROLL2:
+			case texMod_t::TMOD_SCROLL2:
 				{
 					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
 					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
@@ -823,7 +823,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_SCALE2:
+			case texMod_t::TMOD_SCALE2:
 				{
 					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
 					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
@@ -832,7 +832,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_CENTERSCALE:
+			case texMod_t::TMOD_CENTERSCALE:
 				{
 					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
 					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
@@ -843,7 +843,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_SHEAR:
+			case texMod_t::TMOD_SHEAR:
 				{
 					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
 					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
@@ -854,7 +854,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					break;
 				}
 
-			case TMOD_ROTATE2:
+			case texMod_t::TMOD_ROTATE2:
 				{
 					x = RB_EvalExpression( &bundle->texMods[ j ].rExp, 0 );
 

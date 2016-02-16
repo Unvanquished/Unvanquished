@@ -17,6 +17,7 @@ set(COMMONLIST
     ${COMMON_DIR}/Compiler.h
     ${COMMON_DIR}/Cvar.cpp
     ${COMMON_DIR}/Cvar.h
+    ${COMMON_DIR}/Debugger.cpp
     ${COMMON_DIR}/DisjointSets.h
     ${COMMON_DIR}/Endian.h
     ${COMMON_DIR}/FileSystem.cpp
@@ -169,8 +170,10 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/Crypto.h
     ${ENGINE_DIR}/framework/Rcon.cpp
     ${ENGINE_DIR}/framework/Rcon.h
-    ${ENGINE_DIR}/sys/con_log.cpp
     ${ENGINE_DIR}/qcommon/md5.cpp
+    ${ENGINE_DIR}/sys/con_common.h
+    ${ENGINE_DIR}/sys/con_common.cpp
+    ${ENGINE_DIR}/sys/con_log.cpp
 )
 
 if (WIN32)
@@ -204,7 +207,6 @@ set(QCOMMONLIST
     ${ENGINE_DIR}/sys/con_log.cpp
     ${ENGINE_DIR}/sys/con_common.h
     ${ENGINE_DIR}/sys/con_common.cpp
-    ${ENGINE_DIR}/sys/sdl_compat.cpp
 )
 
 if (NOT APPLE)

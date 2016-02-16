@@ -328,3 +328,8 @@ if (APPLE)
     set(CMAKE_INSTALL_RPATH "@executable_path/;${DEPS_DIR};${DEPS_DIR}/lib")
     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 endif()
+
+# Configuration specific definitions
+if (CMAKE_BUILD_TYPE STREQUAL Debug OR CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
+    add_definitions(-DDEBUG_BUILD)
+endif()

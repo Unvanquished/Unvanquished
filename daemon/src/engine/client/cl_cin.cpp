@@ -43,10 +43,10 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 
-#define DEFAULT_CIN_WIDTH  512
-#define DEFAULT_CIN_HEIGHT 512
+static const int DEFAULT_CIN_WIDTH  = 512;
+static const int DEFAULT_CIN_HEIGHT = 512;
 
-#define MAX_VIDEO_HANDLES  16
+static const int MAX_VIDEO_HANDLES  = 16;
 
 static long ROQ_YY_tab[ 256 ];
 static long ROQ_UB_tab[ 256 ];
@@ -54,12 +54,12 @@ static long ROQ_UG_tab[ 256 ];
 static long ROQ_VG_tab[ 256 ];
 static long ROQ_VR_tab[ 256 ];
 
-typedef enum
+enum class filetype_t
 {
   FT_OGM // ogm (ogg wrapper, vorbis audio, xvid/theora video) for WoP
-} filetype_t;
+};
 
-typedef struct
+struct cin_cache
 {
 	char         fileName[ MAX_OSPATH ];
 	int          CIN_WIDTH, CIN_HEIGHT;
@@ -73,12 +73,12 @@ typedef struct
 	byte         *buf;
 	long         drawX, drawY;
 	filetype_t   fileType;
-} cin_cache;
+};
 
-typedef struct
+struct cinematics_t
 {
 	int   currentHandle;
-} cinematics_t;
+};
 
 static cinematics_t cin;
 static cin_cache    cinTable[ MAX_VIDEO_HANDLES ];
@@ -92,28 +92,28 @@ CIN_StopCinematic
 */
 e_status CIN_StopCinematic( int handle )
 {
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[ handle ].status == FMV_EOF ) { return FMV_EOF; }
+	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[ handle ].status == e_status::FMV_EOF ) { return e_status::FMV_EOF; }
 
 	currentHandle = handle;
 
-	Com_DPrintf( "trFMV::stop(), closing %s\n", cinTable[ currentHandle ].fileName );
+	Log::Debug( "trFMV::stop(), closing %s", cinTable[ currentHandle ].fileName );
 
 	if ( !cinTable[ currentHandle ].buf )
 	{
-		return FMV_EOF;
+		return e_status::FMV_EOF;
 	}
 
 	if ( cinTable[ currentHandle ].alterGameState )
 	{
-		if ( cls.state != CA_CINEMATIC )
+		if ( cls.state != connstate_t::CA_CINEMATIC )
 		{
 			return cinTable[ currentHandle ].status;
 		}
 	}
 
-	cinTable[ currentHandle ].status = FMV_EOF;
+	cinTable[ currentHandle ].status = e_status::FMV_EOF;
 
-	return FMV_EOF;
+	return e_status::FMV_EOF;
 }
 
 void CIN_CloseAllVideos()
@@ -141,7 +141,7 @@ static int CIN_HandleForVideo()
 		}
 	}
 
-	Com_Error( ERR_DROP, "CIN_HandleForVideo: none free" );
+	Com_Error( errorParm_t::ERR_DROP, "CIN_HandleForVideo: none free" );
 }
 
 extern int CL_ScaledMilliseconds();
@@ -245,13 +245,13 @@ Fetch and decompress the pending frame
 */
 e_status CIN_RunCinematic( int handle )
 {
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[ handle ].status == FMV_EOF ) { return FMV_EOF; }
+	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[ handle ].status == e_status::FMV_EOF ) { return e_status::FMV_EOF; }
 
 	if ( cin.currentHandle != handle )
 	{
 		currentHandle = handle;
 		cin.currentHandle = currentHandle;
-		cinTable[ currentHandle ].status = FMV_EOF;
+		cinTable[ currentHandle ].status = e_status::FMV_EOF;
 	}
 
 	if ( cinTable[ handle ].playonwalls < -1 )
@@ -263,22 +263,22 @@ e_status CIN_RunCinematic( int handle )
 
 	if ( cinTable[ currentHandle ].alterGameState )
 	{
-		if ( cls.state != CA_CINEMATIC )
+		if ( cls.state != connstate_t::CA_CINEMATIC )
 		{
 			return cinTable[ currentHandle ].status;
 		}
 	}
 
-	if ( cinTable[ currentHandle ].status == FMV_IDLE )
+	if ( cinTable[ currentHandle ].status == e_status::FMV_IDLE )
 	{
 		return cinTable[ currentHandle ].status;
 	}
 
-	if ( cinTable[ currentHandle ].fileType == FT_OGM )
+	if ( cinTable[ currentHandle ].fileType == filetype_t::FT_OGM )
 	{
 		if ( Cin_OGM_Run( cinTable[ currentHandle ].startTime == 0 ? 0 : CL_ScaledMilliseconds() - cinTable[ currentHandle ].startTime ) )
 		{
-			cinTable[ currentHandle ].status = FMV_EOF;
+			cinTable[ currentHandle ].status = e_status::FMV_EOF;
 		}
 		else
 		{
@@ -305,7 +305,7 @@ e_status CIN_RunCinematic( int handle )
 				cinTable[ currentHandle ].drawY = cinTable[ currentHandle ].CIN_HEIGHT;
 			}
 
-			cinTable[ currentHandle ].status = FMV_PLAY;
+			cinTable[ currentHandle ].status = e_status::FMV_PLAY;
 			cinTable[ currentHandle ].dirty = true;
 		}
 
@@ -314,11 +314,11 @@ e_status CIN_RunCinematic( int handle )
 			cinTable[ currentHandle ].startTime = CL_ScaledMilliseconds();
 		}
 
-		if ( cinTable[ currentHandle ].status == FMV_EOF )
+		if ( cinTable[ currentHandle ].status == e_status::FMV_EOF )
 		{
 			if ( cinTable[ currentHandle ].holdAtEnd )
 			{
-				cinTable[ currentHandle ].status = FMV_IDLE;
+				cinTable[ currentHandle ].status = e_status::FMV_IDLE;
 			}
 			else if ( cinTable[ currentHandle ].looping )
 			{
@@ -326,7 +326,7 @@ e_status CIN_RunCinematic( int handle )
 				Cin_OGM_Init( cinTable[ currentHandle ].fileName );
 				cinTable[ currentHandle ].buf = nullptr;
 				cinTable[ currentHandle ].startTime = 0;
-				cinTable[ currentHandle ].status = FMV_PLAY;
+				cinTable[ currentHandle ].status = e_status::FMV_PLAY;
 			}
 			else
 			{
@@ -371,7 +371,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 		}
 	}
 
-	Com_DPrintf( "SCR_PlayCinematic( %s )\n", arg );
+	Log::Debug( "SCR_PlayCinematic( %s )", arg );
 
 	Com_Memset( &cin, 0, sizeof( cinematics_t ) );
 	currentHandle = CIN_HandleForVideo();
@@ -390,13 +390,13 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	{
 		if ( Cin_OGM_Init( name ) )
 		{
-			Com_Printf( "failed to start OGM playback (%s)\n", arg );
+			Log::Notice( "failed to start OGM playback (%s)\n", arg );
 			cinTable[ currentHandle ].fileName[ 0 ] = 0;
 			Cin_OGM_Shutdown();
 			return -1;
 		}
 
-		cinTable[ currentHandle ].fileType = FT_OGM;
+		cinTable[ currentHandle ].fileType = filetype_t::FT_OGM;
 
         cinTable[ currentHandle ].xpos = x;
         cinTable[ currentHandle ].ypos = y;
@@ -428,10 +428,10 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 		if ( cinTable[ currentHandle ].alterGameState )
 		{
-			cls.state = CA_CINEMATIC;
+			cls.state = connstate_t::CA_CINEMATIC;
 		}
 
-		cinTable[ currentHandle ].status = FMV_PLAY;
+		cinTable[ currentHandle ].status = e_status::FMV_PLAY;
 
 		return currentHandle;
 	}
@@ -449,7 +449,7 @@ void CIN_DrawCinematic( int handle )
 	float x, y, w, h;
 	byte  *buf;
 
-	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[ handle ].status == FMV_EOF ) { return; }
+	if ( handle < 0 || handle >= MAX_VIDEO_HANDLES || cinTable[ handle ].status == e_status::FMV_EOF ) { return; }
 
 	if ( !cinTable[ handle ].buf )
 	{
@@ -551,14 +551,14 @@ void CL_PlayCinematic_f()
 	int  bits = CIN_system;
 
 	// don't allow this while on server
-	if ( cls.state > CA_DISCONNECTED && cls.state <= CA_ACTIVE )
+	if ( cls.state > connstate_t::CA_DISCONNECTED && cls.state <= connstate_t::CA_ACTIVE )
 	{
 		return;
 	}
 
-	Com_DPrintf( "CL_PlayCinematic_f\n" );
+	Log::Debug( "CL_PlayCinematic_f" );
 
-	if ( cls.state == CA_CINEMATIC )
+	if ( cls.state == connstate_t::CA_CINEMATIC )
 	{
 		SCR_StopCinematic();
 	}
@@ -587,7 +587,7 @@ void CL_PlayCinematic_f()
 		{
 			SCR_RunCinematic();
 		}
-		while ( cinTable[ currentHandle ].buf == nullptr && cinTable[ currentHandle ].status == FMV_PLAY ); // wait for first frame (load codebook and sound)
+		while ( cinTable[ currentHandle ].buf == nullptr && cinTable[ currentHandle ].status == e_status::FMV_PLAY ); // wait for first frame (load codebook and sound)
 	}
 }
 

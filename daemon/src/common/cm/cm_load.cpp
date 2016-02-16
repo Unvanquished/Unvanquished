@@ -38,19 +38,17 @@ Maryland 20850 USA.
 
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
-#define BOX_LEAF_BRUSHES 1 // ydnar
-#define BOX_BRUSHES      1
-#define BOX_SIDES        6
-#define BOX_LEAFS        2
-#define BOX_PLANES       12
+static const int BOX_LEAF_BRUSHES = 1; // ydnar
+static const int BOX_BRUSHES      = 1;
+static const int BOX_SIDES        = 6;
+static const int BOX_LEAFS        = 2;
+static const int BOX_PLANES       = 12;
 
 #define LL( x ) x = LittleLong( x )
 
 clipMap_t cm;
 int       c_pointcontents;
 int       c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces;
-
-byte      *cmod_base;
 
 cmodel_t  box_model;
 cplane_t  *box_planes;
@@ -94,7 +92,7 @@ void CM_FreeAll()
 CMod_LoadShaders
 =================
 */
-void CMod_LoadShaders( lump_t *l )
+void CMod_LoadShaders(const byte *const cmod_base, lump_t *l)
 {
 	dshader_t *in, *out;
 	int       i, count;
@@ -135,7 +133,7 @@ void CMod_LoadShaders( lump_t *l )
 CMod_LoadSubmodels
 =================
 */
-void CMod_LoadSubmodels( lump_t *l )
+void CMod_LoadSubmodels(const byte *const cmod_base, lump_t *l)
 {
 	dmodel_t *in;
 	cmodel_t *out;
@@ -202,7 +200,7 @@ CMod_LoadNodes
 
 =================
 */
-void CMod_LoadNodes( lump_t *l )
+void CMod_LoadNodes(const byte *const cmod_base, lump_t *l)
 {
 	dnode_t *in;
 	int     child;
@@ -264,7 +262,7 @@ CMod_LoadBrushes
 
 =================
 */
-void CMod_LoadBrushes( lump_t *l )
+void CMod_LoadBrushes(const byte *const cmod_base, lump_t *l)
 {
 	dbrush_t *in;
 	cbrush_t *out;
@@ -308,7 +306,7 @@ void CMod_LoadBrushes( lump_t *l )
 CMod_LoadLeafs
 =================
 */
-void CMod_LoadLeafs( lump_t *l )
+void CMod_LoadLeafs(const byte *const cmod_base, lump_t *l)
 {
 	int     i;
 	cLeaf_t *out;
@@ -363,7 +361,7 @@ void CMod_LoadLeafs( lump_t *l )
 CMod_LoadPlanes
 =================
 */
-void CMod_LoadPlanes( lump_t *l )
+void CMod_LoadPlanes(const byte *const cmod_base, lump_t *l)
 {
 	int      i, j;
 	cplane_t *out;
@@ -407,7 +405,7 @@ void CMod_LoadPlanes( lump_t *l )
 CMod_LoadLeafBrushes
 =================
 */
-void CMod_LoadLeafBrushes( lump_t *l )
+void CMod_LoadLeafBrushes(const byte *const cmod_base, lump_t *l)
 {
 	int i;
 	int *out;
@@ -440,7 +438,7 @@ void CMod_LoadLeafBrushes( lump_t *l )
 CMod_LoadLeafSurfaces
 =================
 */
-void CMod_LoadLeafSurfaces( lump_t *l )
+void CMod_LoadLeafSurfaces(const byte *const cmod_base, lump_t *l)
 {
 	int i;
 	int *out;
@@ -472,7 +470,7 @@ void CMod_LoadLeafSurfaces( lump_t *l )
 CMod_LoadBrushSides
 =================
 */
-void CMod_LoadBrushSides( lump_t *l )
+void CMod_LoadBrushSides(const byte *const cmod_base, lump_t *l)
 {
 	int          i;
 	cbrushside_t *out;
@@ -510,7 +508,7 @@ void CMod_LoadBrushSides( lump_t *l )
 	}
 }
 
-#define CM_EDGE_VERTEX_EPSILON 0.1f
+static const float CM_EDGE_VERTEX_EPSILON = 0.1f;
 
 /*
 =================
@@ -661,7 +659,7 @@ static void CMod_CreateBrushSideWindings()
 		totalEdges += brush->numEdges;
 	}
 
-	cmLog.Debug( "Allocated %d bytes for %d collision map edges...\n", totalEdgesAlloc, totalEdges );
+	cmLog.Debug( "Allocated %d bytes for %d collision map edges...", totalEdgesAlloc, totalEdges );
 }
 
 /*
@@ -669,7 +667,7 @@ static void CMod_CreateBrushSideWindings()
 CMod_LoadEntityString
 =================
 */
-void CMod_LoadEntityString( lump_t *l )
+void CMod_LoadEntityString(const byte *const cmod_base, lump_t *l)
 {
 	const char *p, *token;
 	char keyname[ MAX_TOKEN_CHARS ];
@@ -737,13 +735,10 @@ void CMod_LoadEntityString( lump_t *l )
 CMod_LoadVisibility
 =================
 */
-#define VIS_HEADER 8
-void CMod_LoadVisibility( lump_t *l )
+static const int VIS_HEADER = 8;
+void CMod_LoadVisibility(const byte *const cmod_base, lump_t *l)
 {
-	int  len;
-	byte *buf;
-
-	len = l->filelen;
+	int len = l->filelen;
 
 	if ( !len )
 	{
@@ -753,7 +748,7 @@ void CMod_LoadVisibility( lump_t *l )
 		return;
 	}
 
-	buf = cmod_base + l->fileofs;
+	const byte *buf = cmod_base + l->fileofs;
 
 	cm.vised = true;
 	cm.visibility = ( byte * ) CM_Alloc( len - VIS_HEADER );
@@ -769,9 +764,9 @@ void CMod_LoadVisibility( lump_t *l )
 CMod_LoadSurfaces
 =================
 */
-#define MAX_PATCH_SIZE  64
-#define MAX_PATCH_VERTS ( MAX_PATCH_SIZE * MAX_PATCH_SIZE )
-void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
+static const int MAX_PATCH_SIZE  = 64;
+static const int MAX_PATCH_VERTS = ( MAX_PATCH_SIZE * MAX_PATCH_SIZE );
+void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts, lump_t *indexesLump)
 {
 	drawVert_t    *dv, *dv_p;
 	dsurface_t    *in;
@@ -814,13 +809,13 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 	// scan through all the surfaces
 	for ( i = 0; i < count; i++, in++ )
 	{
-		if ( LittleLong( in->surfaceType ) == MST_PATCH )
+		if ( LittleLong( in->surfaceType ) == mapSurfaceType_t::MST_PATCH )
 		{
 			int j = 0;
 
 			// FIXME: check for non-colliding patches
 			cm.surfaces[ i ] = surface = ( cSurface_t * ) CM_Alloc( sizeof( *surface ) );
-			surface->type = MST_PATCH;
+			surface->type = mapSurfaceType_t::MST_PATCH;
 
 			// load the full drawverts onto the stack
 			width = LittleLong( in->patchWidth );
@@ -848,12 +843,12 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 			// create the internal facet structure
 			surface->sc = CM_GeneratePatchCollide( width, height, vertexes );
 		}
-		else if ( LittleLong( in->surfaceType ) == MST_TRIANGLE_SOUP && ( cm.perPolyCollision || cm_forceTriangles.Get() ) )
+		else if ( LittleLong( in->surfaceType ) == mapSurfaceType_t::MST_TRIANGLE_SOUP && ( cm.perPolyCollision || cm_forceTriangles.Get() ) )
 		{
 			// FIXME: check for non-colliding triangle soups
 
 			cm.surfaces[ i ] = surface = ( cSurface_t * ) CM_Alloc( sizeof( *surface ) );
-			surface->type = MST_TRIANGLE_SOUP;
+			surface->type = mapSurfaceType_t::MST_TRIANGLE_SOUP;
 
 			// load the full drawverts onto the stack
 			numVertexes = LittleLong( in->numVerts );
@@ -914,7 +909,7 @@ void CM_LoadMap(Str::StringRef name)
 {
 	dheader_t       header;
 
-	cmLog.Debug( "CM_LoadMap(%s)\n", name);
+	cmLog.Debug( "CM_LoadMap(%s)", name);
 
 	std::string mapFile = "maps/" + name + ".bsp";
 	std::string mapData;
@@ -951,21 +946,22 @@ void CM_LoadMap(Str::StringRef name)
 		           name.c_str(), header.version, BSP_VERSION, BSP_VERSION_Q3 );
 	}
 
-	cmod_base = ( byte * ) mapData.data();
+	const byte *const cmod_base = reinterpret_cast<const byte*>(mapData.data());
 
 	// load into heap
-	CMod_LoadShaders( &header.lumps[ LUMP_SHADERS ] );
-	CMod_LoadLeafs( &header.lumps[ LUMP_LEAFS ] );
-	CMod_LoadLeafBrushes( &header.lumps[ LUMP_LEAFBRUSHES ] );
-	CMod_LoadLeafSurfaces( &header.lumps[ LUMP_LEAFSURFACES ] );
-	CMod_LoadPlanes( &header.lumps[ LUMP_PLANES ] );
-	CMod_LoadBrushSides( &header.lumps[ LUMP_BRUSHSIDES ] );
-	CMod_LoadBrushes( &header.lumps[ LUMP_BRUSHES ] );
-	CMod_LoadSubmodels( &header.lumps[ LUMP_MODELS ] );
-	CMod_LoadNodes( &header.lumps[ LUMP_NODES ] );
-	CMod_LoadEntityString( &header.lumps[ LUMP_ENTITIES ] );
-	CMod_LoadVisibility( &header.lumps[ LUMP_VISIBILITY ] );
-	CMod_LoadSurfaces( &header.lumps[ LUMP_SURFACES ], &header.lumps[ LUMP_DRAWVERTS ], &header.lumps[ LUMP_DRAWINDEXES ] );
+	CMod_LoadShaders(cmod_base, &header.lumps[LUMP_SHADERS]);
+	CMod_LoadLeafs(cmod_base, &header.lumps[LUMP_LEAFS]);
+	CMod_LoadLeafBrushes(cmod_base, &header.lumps[LUMP_LEAFBRUSHES]);
+	CMod_LoadLeafSurfaces(cmod_base, &header.lumps[LUMP_LEAFSURFACES]);
+	CMod_LoadPlanes(cmod_base, &header.lumps[LUMP_PLANES]);
+	CMod_LoadBrushSides(cmod_base, &header.lumps[LUMP_BRUSHSIDES]);
+	CMod_LoadBrushes(cmod_base, &header.lumps[LUMP_BRUSHES]);
+	CMod_LoadSubmodels(cmod_base, &header.lumps[LUMP_MODELS]);
+	CMod_LoadNodes(cmod_base, &header.lumps[LUMP_NODES]);
+	CMod_LoadEntityString(cmod_base, &header.lumps[LUMP_ENTITIES]);
+	CMod_LoadVisibility(cmod_base, &header.lumps[LUMP_VISIBILITY]);
+	CMod_LoadSurfaces(cmod_base,
+					  &header.lumps[LUMP_SURFACES], &header.lumps[LUMP_DRAWVERTS], &header.lumps[LUMP_DRAWINDEXES]);
 
 	CMod_CreateBrushSideWindings();
 

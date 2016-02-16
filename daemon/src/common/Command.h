@@ -102,8 +102,8 @@ namespace Cmd {
     };
 
     // A completion result is a list of (result, short description)
-    typedef std::pair<std::string, std::string> CompletionItem;
-    typedef std::vector<CompletionItem> CompletionResult;
+    using CompletionItem = std::pair<std::string, std::string>;
+    using CompletionResult = std::vector<CompletionItem>;
 
     CompletionResult FilterCompletion(Str::StringRef prefix, std::initializer_list<CompletionItem> list);
     void AddToCompletion(CompletionResult& res, Str::StringRef prefix, std::initializer_list<CompletionItem> list);
@@ -176,8 +176,8 @@ namespace Cmd {
 
     class LambdaCmd : public StaticCmd {
         public:
-            typedef std::function<void(const Args&)> RunFn;
-            typedef std::function<CompletionResult(int, const Args&, Str::StringRef)> CompleteFn;
+            using RunFn = std::function<void(const Args&)>;
+            using CompleteFn = std::function<CompletionResult(int, const Args&, Str::StringRef)>;
             LambdaCmd(std::string name, std::string description, RunFn run, CompleteFn complete = NoopComplete);
             LambdaCmd(std::string name, int flags, std::string description, RunFn run, CompleteFn complete = NoopComplete);
 

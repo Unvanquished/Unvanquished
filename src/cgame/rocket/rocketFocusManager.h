@@ -66,7 +66,7 @@ public:
 			trap_Key_ClearStates();
 			CG_SetKeyCatcher( KEYCATCH_UI );
 		}
-		else if ( !anyVisible && rocketInfo.keyCatcher && rocketInfo.cstate.connState >= CA_PRIMED )
+		else if ( !anyVisible && rocketInfo.keyCatcher && rocketInfo.cstate.connState >= connstate_t::CA_PRIMED )
 		{
 			CG_SetKeyCatcher( 0 );
 		}

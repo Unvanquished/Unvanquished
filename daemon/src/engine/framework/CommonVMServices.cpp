@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "common/IPC/CommonSyscalls.h"
 #include "CommonVMServices.h"
 #include "framework/CommandSystem.h"
+#include "framework/CrashDump.h"
 #include "framework/CvarSystem.h"
 #include "framework/LogSystem.h"
 #include "framework/VirtualMachine.h"
@@ -46,6 +47,13 @@ namespace VM {
                 IPC::HandleMsg<CreateSharedMemoryMsg>(channel, std::move(reader), [this](size_t size, IPC::SharedMemory& shm) {
                     shm = IPC::SharedMemory::Create(size);
                 });
+                break;
+
+            case CRASH_DUMP:
+                IPC::HandleMsg<CrashDumpMsg>(channel, std::move(reader), [this](std::vector<uint8_t> dump) {
+                    Sys::NaclCrashDump(dump, vmName);
+                });
+                break;
         }
     }
 
@@ -226,7 +234,7 @@ namespace VM {
         switch (minor) {
             case QVM_COMMON_PRINT:
                 IPC::HandleMsg<PrintMsg>(channel, std::move(reader), [this](const std::string& text) {
-                    Com_Printf("%s", text.c_str());
+                    Log::Notice("%s", text.c_str());
                 });
                 break;
 
@@ -266,7 +274,7 @@ namespace VM {
 
             case QVM_COMMON_FS_SEEK:
                 IPC::HandleMsg<VM::FSSeekMsg>(channel, std::move(reader), [this] (int f, long offset, int origin, int& res) {
-                    res = FS_Seek(f, offset, origin);
+                    res = FS_Seek(f, offset, Util::enum_cast<fsOrigin_t>(origin));
                 });
                 break;
 
@@ -364,7 +372,7 @@ namespace VM {
                 break;
 
             default:
-                Com_Error(ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
+                Com_Error(errorParm_t::ERR_DROP, "Bad log syscall number '%d' for VM '%s'", minor, vmName.c_str());
         }
     }
 

@@ -86,38 +86,38 @@ Maryland 20850 USA.
 #define MAX_ALTSHADERS   64 // alternative shaders ('when <condition> <shader>') – selection controlled from cgame
 
 #define GL_INDEX_TYPE GL_UNSIGNED_INT
-typedef unsigned int   glIndex_t;
+using glIndex_t = unsigned int;
 
-typedef enum RegisterShaderFlags {
+enum RegisterShaderFlags_t {
 	RSF_DEFAULT           = 0x00,
 	RSF_NOMIP             = 0x01,
 	RSF_LIGHT_ATTENUATION = 0x02,
 	RSF_NOLIGHTSCALE      = 0x04,
 	RSF_SPRITE            = 0x08
-} RegisterShaderFlags_t;
+};
 
-typedef struct
+struct polyVert_t
 {
 	vec3_t xyz;
 	float  st[ 2 ];
 	byte   modulate[ 4 ];
-} polyVert_t;
+};
 
-typedef struct poly_s
+struct poly_t
 {
 	qhandle_t  hShader;
 	int        numVerts;
 	polyVert_t *verts;
-} poly_t;
+};
 
-typedef enum
+enum class refEntityType_t
 {
   RT_MODEL,
   RT_SPRITE,
   RT_PORTALSURFACE, // doesn't draw anything, just info for portals
 
   RT_MAX_REF_ENTITY_TYPE
-} refEntityType_t;
+};
 
 // XreaL BEGIN
 
@@ -128,23 +128,23 @@ typedef enum
 // in backEndData_t so only use it for debugging and development
 // enabling this will show the bone names with r_showSkeleton 1
 
-typedef struct
+struct refBone_t
 {
 #if defined( REFBONE_NAMES )
 	char   name[ 64 ];
 #endif
 	short  parentIndex; // parent index (-1 if root)
 	transform_t t;
-} refBone_t;
+};
 
-typedef enum
+enum class refSkeletonType_t
 {
   SK_INVALID,
   SK_RELATIVE,
   SK_ABSOLUTE
-} refSkeletonType_t;
+};
 
-typedef ALIGNED(16, struct
+ALIGNED(16, struct refSkeleton_t
 {
 	refSkeletonType_t type; // skeleton has been reset
 
@@ -154,11 +154,11 @@ typedef ALIGNED(16, struct
 	vec_t             scale;
 
 	refBone_t         bones[ MAX_BONES ];
-} ) refSkeleton_t;
+});
 
 // XreaL END
 
-typedef struct
+struct refEntity_t
 {
 	refEntityType_t reType;
 	int             renderfx;
@@ -209,22 +209,22 @@ typedef struct
 	// by memcpying up to skeleton and then serializing skeleton
 	refSkeleton_t skeleton;
 
-} refEntity_t;
+};
 
 // ================================================================================================
 
 // XreaL BEGIN
 
-typedef enum
+enum class refLightType_t
 {
   RL_OMNI, // point light
   RL_PROJ, // spot light
   RL_DIRECTIONAL, // sun light
 
   RL_MAX_REF_LIGHT_TYPE
-} refLightType_t;
+};
 
-typedef struct
+struct refLight_t
 {
 	refLightType_t rlType;
 //  int             lightfx;
@@ -253,7 +253,7 @@ typedef struct
 
 	bool inverseShadows; // don't cast light and draw shadows by darken the scene
 	// this is useful for drawing player shadows with shadow mapping
-} refLight_t;
+};
 
 // XreaL END
 
@@ -262,7 +262,7 @@ typedef struct
 #define MAX_RENDER_STRINGS       8
 #define MAX_RENDER_STRING_LENGTH 32
 
-typedef struct
+struct refdef_t
 {
 	int    x, y, width, height;
 	float  fov_x, fov_y;
@@ -277,12 +277,12 @@ typedef struct
 	byte areamask[ MAX_MAP_AREA_BYTES ];
 
 	vec4_t  gradingWeights;
-} refdef_t;
+};
 
 // XreaL BEGIN
 
 // cg_shadows modes
-typedef enum
+enum class shadowingMode_t
 {
   SHADOWING_NONE,
   SHADOWING_BLOB,
@@ -291,25 +291,18 @@ typedef enum
   SHADOWING_VSM16,
   SHADOWING_VSM32,
   SHADOWING_EVSM32,
-} shadowingMode_t;
+};
 // XreaL END
 
-/*
-** glconfig_t
-**
-** Contains variables specific to the OpenGL configuration
-** being run right now.  These are constant once the OpenGL
-** subsystem is initialized.
-*/
-typedef enum
+enum class textureCompression_t
 {
   TC_NONE,
   TC_S3TC,
   TC_EXT_COMP_S3TC
-} textureCompression_t;
+};
 
 // Keep the list in sdl_glimp.c:reportDriverType in sync with this
-typedef enum
+enum class glDriverType_t
 {
   GLDRV_UNKNOWN = -1,
   GLDRV_ICD, // driver is integrated with window system
@@ -323,10 +316,10 @@ typedef enum
   GLDRV_OPENGL3, // new driver system
   GLDRV_MESA, // crap
 // XreaL END
-} glDriverType_t;
+};
 
 // Keep the list in sdl_glimp.c:reportHardwareType in sync with this
-typedef enum
+enum class glHardwareType_t
 {
   GLHW_UNKNOWN = -1,
   GLHW_GENERIC, // where everthing works the way it should
@@ -336,9 +329,14 @@ typedef enum
   GLHW_ATI_DX10, // ATI Radeon HD series DX10 hardware
   GLHW_NV_DX10 // Geforce 8/9 class DX10 hardware
 // XreaL END
-} glHardwareType_t;
+};
 
-typedef struct
+/**
+ * Contains variables specific to the OpenGL configuration
+ * being run right now.  These are constant once the OpenGL
+ * subsystem is initialized.
+ */
+struct glconfig_t
 {
 	char                 renderer_string[ MAX_STRING_CHARS ];
 	char                 vendor_string[ MAX_STRING_CHARS ];
@@ -369,10 +367,10 @@ typedef struct
 	// a Win32 ICD that used CDS will have this set to TRUE
 	bool isFullscreen;
 	bool smpActive; // dual processor
-} glconfig_t;
+};
 
 // XreaL BEGIN
-typedef struct
+struct glconfig2_t
 {
 	bool ARBTextureCompressionAvailable;
 
@@ -411,7 +409,7 @@ typedef struct
 	bool bufferStorageAvailable;
 	bool mapBufferRangeAvailable;
 	bool syncAvailable;
-} glconfig2_t;
+};
 // XreaL END
 
 // =========================================
@@ -419,7 +417,7 @@ typedef struct
 #define MAX_PB_VERTS    1025
 #define MAX_PB_INDICIES ( MAX_PB_VERTS * 6 )
 
-typedef struct polyBuffer_s
+struct polyBuffer_t
 {
 	vec4_t    xyz[ MAX_PB_VERTS ];
 	vec2_t    st[ MAX_PB_VERTS ];
@@ -430,7 +428,7 @@ typedef struct polyBuffer_s
 	int       numIndicies;
 
 	qhandle_t shader;
-} polyBuffer_t;
+};
 
 // =========================================
 

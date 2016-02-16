@@ -51,7 +51,7 @@ static void NORETURN BG_VoiceParseError( fileHandle_t handle, const char *err )
 
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 	trap_Parse_FreeSource( handle );
-	Com_Error( ERR_FATAL, "%s on line %d of %s", err, line, filename );
+	Com_Error( errorParm_t::ERR_FATAL, "%s on line %d of %s", err, line, filename );
 }
 
 /*
@@ -78,9 +78,9 @@ static voice_t *BG_VoiceList()
 
 	// special case for default.voice.  this file is REQUIRED and will
 	// always be loaded first in the event of overflow of voice definitions
-	if ( !trap_FS_FOpenFile( "voice/default.voice", nullptr, FS_READ ) )
+	if ( !trap_FS_FOpenFile( "voice/default.voice", nullptr, fsMode_t::FS_READ ) )
 	{
-		Com_Printf( "voice/default.voice missing, voice system disabled.\n" );
+		Log::Notice( "voice/default.voice missing, voice system disabled.\n" );
 		return nullptr;
 	}
 
@@ -106,25 +106,25 @@ static voice_t *BG_VoiceList()
 
 		if ( fileLen >= MAX_VOICE_NAME_LEN + 6 )
 		{
-			Com_Printf( S_WARNING "MAX_VOICE_NAME_LEN is %d. "
-			            "skipping \"%s\", filename too long\n", MAX_VOICE_NAME_LEN, filePtr );
+			Log::Warn( "MAX_VOICE_NAME_LEN is %d. "
+			            "skipping \"%s\", filename too long", MAX_VOICE_NAME_LEN, filePtr );
 			continue;
 		}
 
 		// trap_FS_GetFileList() buffer has overflowed
-		if ( !trap_FS_FOpenFile( va( "voice/%s", filePtr ), nullptr, FS_READ ) )
+		if ( !trap_FS_FOpenFile( va( "voice/%s", filePtr ), nullptr, fsMode_t::FS_READ ) )
 		{
-			Com_Printf( S_WARNING "BG_VoiceList(): detected "
+			Log::Warn( "BG_VoiceList(): detected "
 			            "an invalid .voice file \"%s\" in directory listing.  You have "
 			            "probably named one or more .voice files with outrageously long "
-			            "names.\n", filePtr );
+			            "names.", filePtr );
 			break;
 		}
 
 		if ( count >= MAX_VOICES )
 		{
-			Com_Printf( S_WARNING ".voice file overflow.  "
-			            "%d of %d .voice files loaded.  MAX_VOICES is %d\n",
+			Log::Warn( ".voice file overflow.  "
+			            "%d of %d .voice files loaded.  MAX_VOICES is %d",
 			            count, numFiles, MAX_VOICES );
 			break;
 		}
@@ -317,7 +317,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 		{
 			foundToken = trap_Parse_ReadToken( handle, &token );
 
-			if ( token.type == TT_NUMBER )
+			if ( token.type == tokenType_t::TT_NUMBER )
 			{
 				voiceTrack->enthusiasm = token.intvalue;
 			}
@@ -385,14 +385,14 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 			voiceTracks = voiceTracks->next;
 		}
 
-		if ( !trap_FS_FOpenFile( token.string, nullptr, FS_READ ) )
+		if ( !trap_FS_FOpenFile( token.string, nullptr, fsMode_t::FS_READ ) )
 		{
 			int  line;
 			char filename[ MAX_QPATH ];
 
 			trap_Parse_SourceFileAndLine( handle, filename, &line );
-			Com_Printf( S_WARNING "BG_VoiceParseCommand(): "
-			            "track \"%s\" referenced on line %d of %s does not exist\n",
+			Log::Warn( "BG_VoiceParseCommand(): "
+			            "track \"%s\" referenced on line %d of %s does not exist",
 			            token.string, line, filename );
 		}
 		else
@@ -451,7 +451,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 				char filename[ MAX_QPATH ];
 
 				trap_Parse_SourceFileAndLine( handle, filename, &line );
-				Com_Error( ERR_FATAL, "BG_VoiceParse(): "
+				Com_Error( errorParm_t::ERR_FATAL, "BG_VoiceParse(): "
 				           "parse error on line %d of %s", line, filename );
 			}
 		}
@@ -462,7 +462,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 			char filename[ MAX_QPATH ];
 
 			trap_Parse_SourceFileAndLine( handle, filename, &line );
-			Com_Error( ERR_FATAL, "BG_VoiceParse(): "
+			Com_Error( errorParm_t::ERR_FATAL, "BG_VoiceParse(): "
 			           "command \"%s\" exceeds MAX_VOICE_CMD_LEN (%d) on line %d of %s",
 			           token.string, MAX_VOICE_CMD_LEN, line, filename );
 		}
@@ -527,7 +527,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 
 	if ( voice == nullptr )
 	{
-		Com_Printf( "voice list is empty\n" );
+		Log::Notice( "voice list is empty\n" );
 		return;
 	}
 
@@ -535,7 +535,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 	{
 		if ( debugLevel > 0 )
 		{
-			Com_Printf( "voice %s\n", Quote( voice->name ) );
+			Log::Notice( "voice %s\n", Quote( voice->name ) );
 		}
 
 		voiceCmd = voice->cmds;
@@ -546,7 +546,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 		{
 			if ( debugLevel > 0 )
 			{
-				Com_Printf( "  %s\n", voiceCmd->cmd );
+				Log::Notice( "  %s\n", voiceCmd->cmd );
 			}
 
 			voiceTrack = voiceCmd->tracks;
@@ -556,23 +556,23 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 			{
 				if ( debugLevel > 1 )
 				{
-					Com_Printf( "    text -> %s\n", voiceTrack->text );
+					Log::Notice( "    text -> %s\n", voiceTrack->text );
 				}
 
 				if ( debugLevel > 2 )
 				{
-					Com_Printf( "    team -> %d\n", voiceTrack->team );
-					Com_Printf( "    class -> %d\n", voiceTrack->pClass );
-					Com_Printf( "    weapon -> %d\n", voiceTrack->weapon );
-					Com_Printf( "    enthusiasm -> %d\n", voiceTrack->enthusiasm );
+					Log::Notice( "    team -> %d\n", voiceTrack->team );
+					Log::Notice( "    class -> %d\n", voiceTrack->pClass );
+					Log::Notice( "    weapon -> %d\n", voiceTrack->weapon );
+					Log::Notice( "    enthusiasm -> %d\n", voiceTrack->enthusiasm );
 #ifdef BUILD_CGAME
-					Com_Printf( "    duration -> %d\n", voiceTrack->duration );
+					Log::Notice( "    duration -> %d\n", voiceTrack->duration );
 #endif
 				}
 
 				if ( debugLevel > 1 )
 				{
-					Com_Printf( "\n" );
+					Log::Notice( "\n" );
 				}
 
 				trackCount++;
@@ -584,7 +584,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 
 		if ( debugLevel )
 		{
-			Com_Printf( "voice \"%s\": %d commands, %d tracks\n",
+			Log::Notice( "voice \"%s\": %d commands, %d tracks\n",
 			            voice->name, cmdCount, trackCount );
 		}
 

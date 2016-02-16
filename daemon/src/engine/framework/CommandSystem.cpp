@@ -109,7 +109,7 @@ namespace Cmd {
         const CmdBase* cmd;
     };
 
-    typedef std::unordered_map<std::string, commandRecord_t, Str::IHash, Str::IEqual> CommandMap;
+    using CommandMap = std::unordered_map<std::string, commandRecord_t, Str::IHash, Str::IEqual>;
 
     // The order in which static global variables are initialized is undefined and commands
     // can be registered before main. The first time this function is called the command map

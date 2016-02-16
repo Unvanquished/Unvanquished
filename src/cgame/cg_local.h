@@ -1463,7 +1463,7 @@ typedef struct
 	int keyCatcher;
 	char downloadName[ MAX_STRING_CHARS ];
 	cgClientState_t cstate;
-	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
+	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;
 } rocketInfo_t;
@@ -1965,9 +1965,6 @@ const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 const char *CG_Args();
 
-void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-void QDECL NORETURN CG_Error( const char *msg, ... ) PRINTF_LIKE(1);
-
 void       CG_StartMusic();
 
 void       CG_NotifyHooks();
@@ -1978,6 +1975,7 @@ void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, bool down );
 void       CG_MouseEvent( int dx, int dy );
 void       CG_MousePosEvent( int x, int y );
+void       CG_FocusEvent( bool focus );
 bool   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString();
 
@@ -2432,6 +2430,5 @@ void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
 void Rocket_RocketDebug_f();
-void Rocket_HideMouse();
 #endif
 

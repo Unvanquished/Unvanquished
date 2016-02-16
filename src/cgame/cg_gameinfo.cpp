@@ -58,13 +58,13 @@ int CG_ParseInfos( const char *buf, int max, char *infos[] )
 
 		if ( strcmp( token, "{" ) )
 		{
-			Com_Printf( "Missing { in info file\n" );
+			Log::Notice( "Missing { in info file\n" );
 			break;
 		}
 
 		if ( count == max )
 		{
-			Com_Printf( "Max infos exceeded\n" );
+			Log::Notice( "Max infos exceeded\n" );
 			break;
 		}
 
@@ -76,7 +76,7 @@ int CG_ParseInfos( const char *buf, int max, char *infos[] )
 
 			if ( !token[ 0 ] )
 			{
-				Com_Printf( "Unexpected end of info file\n" );
+				Log::Notice( "Unexpected end of info file\n" );
 				break;
 			}
 
@@ -121,18 +121,18 @@ static void CG_LoadArenasFromFile( char *filename )
 	fileHandle_t f;
 	char         buf[ MAX_ARENAS_TEXT ];
 
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
 
 	if ( !f )
 	{
-		trap_Print( va( "%sfile not found: %s\n", Color::CString( Color::Red ), filename ) );
+		Log::Warn( "%sfile not found: %s", Color::CString( Color::Red ), filename );
 		return;
 	}
 
 	if ( len >= MAX_ARENAS_TEXT )
 	{
-		trap_Print( va( "%sfile too large: %s is %i, max allowed is %i\n",
-			Color::CString( Color::Red ), filename, len, MAX_ARENAS_TEXT ) );
+		Log::Warn( "%sfile too large: %s is %i, max allowed is %i",
+			Color::CString( Color::Red ), filename, len, MAX_ARENAS_TEXT );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -186,7 +186,7 @@ void CG_LoadArenas()
 		CG_LoadArenasFromFile( filename );
 	}
 
-	trap_Print( va( "[skipnotify]%i arenas parsed\n", cg_numArenas ) );
+	Log::Warn( S_SKIPNOTIFY "%i arenas parsed\n", cg_numArenas );
 
 	for ( n = 0; n < cg_numArenas; n++ )
 	{

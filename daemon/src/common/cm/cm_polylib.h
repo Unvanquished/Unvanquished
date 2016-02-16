@@ -34,11 +34,11 @@ Maryland 20850 USA.
 
 // this is only used for visualization tools in cm_ debug functions
 
-typedef struct
+struct winding_t
 {
 	int    numpoints;
 	vec3_t p[ 4 ]; // variable sized
-} winding_t;
+};
 
 #define MAX_POINTS_ON_WINDING 64
 

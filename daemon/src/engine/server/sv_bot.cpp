@@ -45,7 +45,7 @@ int SV_BotAllocateClient()
 {
 	int i;
 	for (i = std::max(1, sv_privateClients->integer); i < sv_maxclients->integer; i++) {
-		if (svs.clients[i].state == CS_FREE) {
+		if (svs.clients[i].state == clientState_t::CS_FREE) {
 			break;
 		}
 	}
@@ -57,9 +57,9 @@ int SV_BotAllocateClient()
 	client_t* cl = svs.clients + i;
 	cl->gentity = SV_GentityNum(i);
 	cl->gentity->s.number = i;
-	cl->state = CS_ACTIVE;
+	cl->state = clientState_t::CS_ACTIVE;
 	cl->lastPacketTime = svs.time;
-	cl->netchan.remoteAddress.type = NA_BOT;
+	cl->netchan.remoteAddress.type = netadrtype_t::NA_BOT;
 	cl->rate = 16384;
 
 	return i;
@@ -76,11 +76,11 @@ void SV_BotFreeClient( int clientNum )
 
 	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_BotFreeClient: bad clientNum: %i", clientNum );
+		Com_Error( errorParm_t::ERR_DROP, "SV_BotFreeClient: bad clientNum: %i", clientNum );
 	}
 
 	cl = &svs.clients[ clientNum ];
-	cl->state = CS_FREE;
+	cl->state = clientState_t::CS_FREE;
 	cl->name[ 0 ] = 0;
 }
 
@@ -91,7 +91,7 @@ SV_IsBot
 */
 bool SV_IsBot( const client_t* client )
 {
-	return client->netchan.remoteAddress.type == NA_BOT && client->state == CS_ACTIVE;
+	return client->netchan.remoteAddress.type == netadrtype_t::NA_BOT && client->state == clientState_t::CS_ACTIVE;
 }
 
 //

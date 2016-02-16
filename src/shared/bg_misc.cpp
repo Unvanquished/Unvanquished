@@ -139,7 +139,7 @@ void BG_InitBuildableAttributes()
 		ba->name = bh->name;
 		ba->entityName = bh->classname;
 
-		ba->traj = TR_GRAVITY;
+		ba->traj = trType_t::TR_GRAVITY;
 		ba->bounce = 0.0;
 		ba->minNormal = 0.0;
 
@@ -1136,23 +1136,23 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 
 	switch ( tr->trType )
 	{
-		case TR_STATIONARY:
-		case TR_INTERPOLATE:
+		case trType_t::TR_STATIONARY:
+		case trType_t::TR_INTERPOLATE:
 			VectorCopy( tr->trBase, result );
 			break;
 
-		case TR_LINEAR:
+		case trType_t::TR_LINEAR:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			break;
 
-		case TR_SINE:
+		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
 			phase = sin( deltaTime * M_PI * 2 );
 			VectorMA( tr->trBase, phase, tr->trDelta, result );
 			break;
 
-		case TR_LINEAR_STOP:
+		case trType_t::TR_LINEAR_STOP:
 			if ( atTime > tr->trTime + tr->trDuration )
 			{
 				atTime = tr->trTime + tr->trDuration;
@@ -1168,20 +1168,20 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			break;
 
-		case TR_GRAVITY:
+		case trType_t::TR_GRAVITY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			result[ 2 ] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 
-		case TR_BUOYANCY:
+		case trType_t::TR_BUOYANCY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			result[ 2 ] += 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 
 		default:
-			Com_Error( ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
+			Com_Error(errorParm_t::ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
 	}
 }
 
@@ -1199,23 +1199,23 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 	switch ( tr->trType )
 	{
-		case TR_STATIONARY:
-		case TR_INTERPOLATE:
+		case trType_t::TR_STATIONARY:
+		case trType_t::TR_INTERPOLATE:
 			VectorClear( result );
 			break;
 
-		case TR_LINEAR:
+		case trType_t::TR_LINEAR:
 			VectorCopy( tr->trDelta, result );
 			break;
 
-		case TR_SINE:
+		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
 			phase = cos( deltaTime * M_PI * 2 );  // derivative of sin = cos
 			phase *= 2 * M_PI * 1000 / tr->trDuration;
 			VectorScale( tr->trDelta, phase, result );
 			break;
 
-		case TR_LINEAR_STOP:
+		case trType_t::TR_LINEAR_STOP:
 			if ( atTime > tr->trTime + tr->trDuration || atTime < tr->trTime )
 			{
 				VectorClear( result );
@@ -1225,20 +1225,20 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 			VectorCopy( tr->trDelta, result );
 			break;
 
-		case TR_GRAVITY:
+		case trType_t::TR_GRAVITY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 			VectorCopy( tr->trDelta, result );
 			result[ 2 ] -= DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
 
-		case TR_BUOYANCY:
+		case trType_t::TR_BUOYANCY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 			VectorCopy( tr->trDelta, result );
 			result[ 2 ] += DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
 
 		default:
-			Com_Error( ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
+			Com_Error(errorParm_t::ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
 	}
 }
 
@@ -1396,11 +1396,11 @@ void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerSta
 		if ( atof( buf ) != 0 )
 		{
 #ifdef BUILD_SGAME
-			Com_Printf( " game event svt %5d -> %5d: num = %20s parm %d\n",
+			Log::Notice( " game event svt %5d -> %5d: num = %20s parm %d\n",
 			ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence,
 			BG_EventName( newEvent ), eventParm );
 #else
-			Com_Printf( "Cgame event svt %5d -> %5d: num = %20s parm %d\n",
+			Log::Notice( "Cgame event svt %5d -> %5d: num = %20s parm %d\n",
 			ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence,
 			BG_EventName( newEvent ), eventParm );
 #endif
@@ -1426,20 +1426,20 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap
 
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR || ps->pm_type == PM_FREEZE )
 	{
-		s->eType = ET_INVISIBLE;
+		s->eType = entityType_t::ET_INVISIBLE;
 	}
 	else if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 	{
-		s->eType = ET_INVISIBLE;
+		s->eType = entityType_t::ET_INVISIBLE;
 	}
 	else
 	{
-		s->eType = ET_PLAYER;
+		s->eType = entityType_t::ET_PLAYER;
 	}
 
 	s->number = ps->clientNum;
 
-	s->pos.trType = TR_INTERPOLATE;
+	s->pos.trType = trType_t::TR_INTERPOLATE;
 	VectorCopy( ps->origin, s->pos.trBase );
 
 	if ( snap )
@@ -1450,7 +1450,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap
 	//set the trDelta for flag direction
 	VectorCopy( ps->velocity, s->pos.trDelta );
 
-	s->apos.trType = TR_INTERPOLATE;
+	s->apos.trType = trType_t::TR_INTERPOLATE;
 	VectorCopy( ps->viewangles, s->apos.trBase );
 
 	if ( snap )
@@ -1571,20 +1571,20 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR || ps->pm_type == PM_FREEZE )
 	{
-		s->eType = ET_INVISIBLE;
+		s->eType = entityType_t::ET_INVISIBLE;
 	}
 	else if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 	{
-		s->eType = ET_INVISIBLE;
+		s->eType = entityType_t::ET_INVISIBLE;
 	}
 	else
 	{
-		s->eType = ET_PLAYER;
+		s->eType = entityType_t::ET_PLAYER;
 	}
 
 	s->number = ps->clientNum;
 
-	s->pos.trType = TR_LINEAR_STOP;
+	s->pos.trType = trType_t::TR_LINEAR_STOP;
 	VectorCopy( ps->origin, s->pos.trBase );
 
 	if ( snap )
@@ -1599,7 +1599,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	// set maximum extra polation time
 	s->pos.trDuration = 50; // 1000 / sv_fps (default = 20)
 
-	s->apos.trType = TR_INTERPOLATE;
+	s->apos.trType = trType_t::TR_INTERPOLATE;
 	VectorCopy( ps->viewangles, s->apos.trBase );
 
 	if ( snap )
@@ -1772,8 +1772,8 @@ int BG_SlotsForInventory( int stats[] )
 			// this check should never be true
 			if ( slots & slot )
 			{
-				Com_Printf( S_WARNING "held item %d conflicts with "
-				            "inventory slot %d\n", i, slot );
+				Log::Warn( "held item %d conflicts with "
+				            "inventory slot %d", i, slot );
 			}
 
 			slots |= slot;
@@ -2173,8 +2173,8 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
 		count = MAX_NUM_PACKED_ENTITY_NUMS;
-		Com_Printf( S_WARNING "A maximum of %d entity numbers can be "
-		            "packed, but BG_PackEntityNumbers was passed %d entities\n",
+		Log::Warn( "A maximum of %d entity numbers can be "
+		            "packed, but BG_PackEntityNumbers was passed %d entities",
 		            MAX_NUM_PACKED_ENTITY_NUMS, count );
 	}
 
@@ -2195,7 +2195,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 
 		if ( entityNum & ~GENTITYNUM_MASK )
 		{
-			Com_Error( ERR_FATAL, "BG_PackEntityNumbers passed an entity number (%d) which "
+			Com_Error( errorParm_t::ERR_FATAL, "BG_PackEntityNumbers passed an entity number (%d) which "
 			           "exceeds %d bits", entityNum, GENTITYNUM_BITS );
 		}
 
@@ -2242,7 +2242,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 				break;
 
 			default:
-				Com_Error( ERR_FATAL, "Entity index %d not handled", i );
+				Com_Error( errorParm_t::ERR_FATAL, "Entity index %d not handled", i );
 		}
 	}
 }
@@ -2310,7 +2310,7 @@ int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int cou
 				break;
 
 			default:
-				Com_Error( ERR_FATAL, "Entity index %d not handled", i );
+				Com_Error( errorParm_t::ERR_FATAL, "Entity index %d not handled", i );
 		}
 
 		*entityNum &= GENTITYNUM_MASK;
@@ -2375,7 +2375,7 @@ void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weapon
 		if ( weaponsSize && weapons[ i ] == WP_NONE &&
 		     upgradesSize && upgrades[ j ] == UP_NONE )
 		{
-			Com_Printf( S_WARNING "unknown equipment %s\n", q );
+			Log::Warn( "unknown equipment %s", q );
 		}
 		else if ( weaponsSize && weapons[ i ] != WP_NONE )
 		{
@@ -2454,7 +2454,7 @@ void BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize
 
 		if ( classes[ i ] == PCL_NONE )
 		{
-			Com_Printf( S_WARNING "unknown class %s\n", q );
+			Log::Warn( "unknown class %s", q );
 		}
 		else
 		{
@@ -2516,7 +2516,7 @@ void BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int 
 
 		if ( buildables[ i ] == BA_NONE )
 		{
-			Com_Printf( S_WARNING "unknown buildable %s\n", q );
+			Log::Warn( "unknown buildable %s", q );
 		}
 		else
 		{
@@ -2723,21 +2723,21 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 		if ( fileLen < 9 || filePtr[ fileLen - 8 ] != '_' ||
 		     filePtr[ fileLen - 7 ] < '1' || filePtr[ fileLen - 7 ] > '9' )
 		{
-			Com_Printf( "^3skipping invalidly named emoticon \"%s\"\n",
+			Log::Notice( "^3skipping invalidly named emoticon \"%s\"\n",
 			            filePtr );
 			continue;
 		}
 
 		if ( fileLen - 8 >= MAX_EMOTICON_NAME_LEN )
 		{
-			Com_Printf( "^3emoticon file name \"%s\" too long (≥ %d)\n",
+			Log::Notice( "^3emoticon file name \"%s\" too long (≥ %d)\n",
 			            filePtr, MAX_EMOTICON_NAME_LEN + 8 );
 			continue;
 		}
 
-		if ( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), nullptr, FS_READ ) )
+		if ( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), nullptr, fsMode_t::FS_READ ) )
 		{
-			Com_Printf( "^3could not open \"emoticons/%s\"\n", filePtr );
+			Log::Notice( "^3could not open \"emoticons/%s\"\n", filePtr );
 			continue;
 		}
 
@@ -2748,7 +2748,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 		count++;
 	}
 
-	// Com_Printf( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
+	// Log::Notice( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
 	//             count, numFiles, MAX_EMOTICONS );
 
 	return count;

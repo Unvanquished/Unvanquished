@@ -192,7 +192,7 @@ static void CM_TestBoxInBrush( traceWork_t *tw, cbrush_t *brush )
 		return;
 	}
 
-	if ( tw->type == TT_CAPSULE )
+	if ( tw->type == traceType_t::TT_CAPSULE )
 	{
 		// the first six planes are the axial planes, so we only
 		// need to test the remainder
@@ -280,7 +280,7 @@ static bool CM_PositionTestInSurfaceCollide( traceWork_t *tw, const cSurfaceColl
 		VectorCopy( planes->plane, plane );
 		plane[ 3 ] = planes->plane[ 3 ];
 
-		if ( tw->type == TT_CAPSULE )
+		if ( tw->type == traceType_t::TT_CAPSULE )
 		{
 			// adjust the plane distance appropriately for radius
 			plane[ 3 ] += tw->sphere.radius;
@@ -324,7 +324,7 @@ static bool CM_PositionTestInSurfaceCollide( traceWork_t *tw, const cSurfaceColl
 				plane[ 3 ] = planes->plane[ 3 ];
 			}
 
-			if ( tw->type == TT_CAPSULE )
+			if ( tw->type == traceType_t::TT_CAPSULE )
 			{
 				// adjust the plane distance appropriately for radius
 				plane[ 3 ] += tw->sphere.radius;
@@ -439,7 +439,7 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf )
 
 		if ( !cm_noCurves.Get() )
 		{
-			if ( surface->type == MST_PATCH && surface->sc && CM_PositionTestInSurfaceCollide( tw, surface->sc ) )
+			if ( surface->type == mapSurfaceType_t::MST_PATCH && surface->sc && CM_PositionTestInSurfaceCollide( tw, surface->sc ) )
 			{
 				tw->trace.startsolid = tw->trace.allsolid = true;
 				tw->trace.fraction = 0;
@@ -450,7 +450,7 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf )
 
 		if ( cm.perPolyCollision || cm_forceTriangles.Get() )
 		{
-			if ( surface->type == MST_TRIANGLE_SOUP && surface->sc && CM_PositionTestInSurfaceCollide( tw, surface->sc ) )
+			if ( surface->type == mapSurfaceType_t::MST_TRIANGLE_SOUP && surface->sc && CM_PositionTestInSurfaceCollide( tw, surface->sc ) )
 			{
 				tw->trace.startsolid = tw->trace.allsolid = true;
 				tw->trace.fraction = 0;
@@ -576,7 +576,7 @@ void CM_TestBoundingBoxInCapsule( traceWork_t *tw, clipHandle_t model )
 	}
 
 	// replace the bounding box with the capsule
-	tw->type = TT_CAPSULE;
+	tw->type = traceType_t::TT_CAPSULE;
 	tw->sphere.radius = ( size[ 1 ][ 0 ] > size[ 1 ][ 2 ] ) ? size[ 1 ][ 2 ] : size[ 1 ][ 0 ];
 	tw->sphere.halfheight = size[ 1 ][ 2 ];
 	VectorSet( tw->sphere.offset, 0, 0, size[ 1 ][ 2 ] - tw->sphere.radius );
@@ -593,7 +593,7 @@ void CM_TestBoundingBoxInCapsule( traceWork_t *tw, clipHandle_t model )
 CM_PositionTest
 ==================
 */
-#define MAX_POSITION_LEAFS 1024
+static const int MAX_POSITION_LEAFS = 1024;
 void CM_PositionTest( traceWork_t *tw )
 {
 	int        leafs[ MAX_POSITION_LEAFS ];
@@ -862,7 +862,7 @@ void CM_TraceThroughSurfaceCollide( traceWork_t *tw, const cSurfaceCollide_t *sc
 		VectorCopy( planes->plane, plane );
 		plane[ 3 ] = planes->plane[ 3 ];
 
-		if ( tw->type == TT_CAPSULE )
+		if ( tw->type == traceType_t::TT_CAPSULE )
 		{
 			// adjust the plane distance appropriately for radius
 			plane[ 3 ] += tw->sphere.radius;
@@ -914,7 +914,7 @@ void CM_TraceThroughSurfaceCollide( traceWork_t *tw, const cSurfaceCollide_t *sc
 				plane[ 3 ] = planes->plane[ 3 ];
 			}
 
-			if ( tw->type == TT_CAPSULE )
+			if ( tw->type == traceType_t::TT_CAPSULE )
 			{
 				// adjust the plane distance appropriately for radius
 				plane[ 3 ] += tw->sphere.radius;
@@ -996,13 +996,13 @@ void CM_TraceThroughSurface( traceWork_t *tw, cSurface_t *surface )
 
 	oldFrac = tw->trace.fraction;
 
-	if ( !cm_noCurves.Get() && surface->type == MST_PATCH && surface->sc )
+	if ( !cm_noCurves.Get() && surface->type == mapSurfaceType_t::MST_PATCH && surface->sc )
 	{
 		CM_TraceThroughSurfaceCollide( tw, surface->sc );
 		c_patch_traces++;
 	}
 
-	if ( ( cm.perPolyCollision || cm_forceTriangles.Get() ) && surface->type == MST_TRIANGLE_SOUP && surface->sc )
+	if ( ( cm.perPolyCollision || cm_forceTriangles.Get() ) && surface->type == mapSurfaceType_t::MST_TRIANGLE_SOUP && surface->sc )
 	{
 		CM_TraceThroughSurfaceCollide( tw, surface->sc );
 		c_trisoup_traces++;
@@ -1050,7 +1050,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 
 	leadside = nullptr;
 
-	if ( tw->type == TT_BISPHERE )
+	if ( tw->type == traceType_t::TT_BISPHERE )
 	{
 		//
 		// compare the trace against all planes of the brush
@@ -1125,7 +1125,7 @@ void CM_TraceThroughBrush( traceWork_t *tw, cbrush_t *brush )
 			}
 		}
 	}
-	else if ( tw->type == TT_CAPSULE )
+	else if ( tw->type == traceType_t::TT_CAPSULE )
 	{
 		//
 		// compare the trace against all planes of the brush
@@ -1349,7 +1349,7 @@ static void CM_ProximityToBrush( traceWork_t *tw, cbrush_t *brush )
 	Com_Memset( &tw2, 0, sizeof( tw2 ) );
 
 	tw2.trace.fraction = 1.0f;
-	tw2.type = TT_CAPSULE;
+	tw2.type = traceType_t::TT_CAPSULE;
 	tw2.sphere.radius = 0.0f;
 	VectorClear( tw2.sphere.offset );
 	VectorCopy( tw->start, tw2.start );
@@ -1372,15 +1372,15 @@ static void CM_ProximityToBrush( traceWork_t *tw, cbrush_t *brush )
 			}
 		}
 
-		if ( tw->type == TT_BISPHERE )
+		if ( tw->type == traceType_t::TT_BISPHERE )
 		{
 			radius = tw->biSphere.startRadius + ( sAtMin * ( tw->biSphere.endRadius - tw->biSphere.startRadius ) );
 		}
-		else if ( tw->type == TT_CAPSULE )
+		else if ( tw->type == traceType_t::TT_CAPSULE )
 		{
 			radius = tw->sphere.radius;
 		}
-		else if ( tw->type == TT_AABB )
+		else if ( tw->type == traceType_t::TT_AABB )
 		{
 			//FIXME
 		}
@@ -1411,7 +1411,7 @@ static void CM_ProximityToSurface( traceWork_t *tw, cSurface_t *surface )
 	Com_Memset( &tw2, 0, sizeof( tw2 ) );
 
 	tw2.trace.fraction = 1.0f;
-	tw2.type = TT_CAPSULE;
+	tw2.type = traceType_t::TT_CAPSULE;
 	tw2.sphere.radius = 0.0f;
 	VectorClear( tw2.sphere.offset );
 	VectorCopy( tw->start, tw2.start );
@@ -1583,7 +1583,7 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf )
 	}
 }
 
-#define RADIUS_EPSILON 1.0f
+static const float RADIUS_EPSILON = 1.0f;
 
 /*
 ================
@@ -1903,7 +1903,7 @@ void CM_TraceBoundingBoxThroughCapsule( traceWork_t *tw, clipHandle_t model )
 	}
 
 	// replace the bounding box with the capsule
-	tw->type = TT_CAPSULE;
+	tw->type = traceType_t::TT_CAPSULE;
 	tw->sphere.radius = ( size[ 1 ][ 0 ] > size[ 1 ][ 2 ] ) ? size[ 1 ][ 2 ] : size[ 1 ][ 0 ];
 	tw->sphere.halfheight = size[ 1 ][ 2 ];
 	VectorSet( tw->sphere.offset, 0, 0, size[ 1 ][ 2 ] - tw->sphere.radius );
@@ -2167,7 +2167,7 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 	//
 	// calculate bounds
 	//
-	if ( tw.type == TT_CAPSULE )
+	if ( tw.type == traceType_t::TT_CAPSULE )
 	{
 		for ( i = 0; i < 3; i++ )
 		{
@@ -2224,7 +2224,7 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 #endif
 				if ( model == CAPSULE_MODEL_HANDLE )
 				{
-					if ( tw.type == TT_CAPSULE )
+					if ( tw.type == traceType_t::TT_CAPSULE )
 					{
 						CM_TestCapsuleInCapsule( &tw, model );
 					}
@@ -2283,7 +2283,7 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 #endif
 				if ( model == CAPSULE_MODEL_HANDLE )
 				{
-					if ( tw.type == TT_CAPSULE )
+					if ( tw.type == traceType_t::TT_CAPSULE )
 					{
 						CM_TraceCapsuleThroughCapsule( &tw, model );
 					}
@@ -2312,15 +2312,6 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 	{
 		VectorLerp( start, end, tw.trace.fraction, tw.trace.endpos );
 	}
-
-	// If allsolid is set (was entirely inside something solid), the plane is not valid.
-	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
-	// Otherwise, the normal on the plane should have unit length
-
-	// Tr3B: these asserts don't make sense as it is the task of the gamecode to check if the trace was successful or not
-//	assert(!tw.trace.allsolid);
-//	assert(tw.trace.fraction != 1.0);
-//	assert(VectorLength(tw.trace.plane.normal) > 0.9999);
 
 	*results = tw.trace;
 }
@@ -2469,7 +2460,7 @@ void CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, f
 	Com_Memset( &tw, 0, sizeof( tw ) );
 	tw.trace.fraction = 1.0f; // assume it goes the entire distance until shown otherwise
 	VectorCopy( vec3_origin, tw.modelOrigin );
-	tw.type = TT_BISPHERE;
+	tw.type = traceType_t::TT_BISPHERE;
 	tw.testLateralCollision = true;
 	tw.trace.lateralFraction = 1.0f;
 
@@ -2536,15 +2527,6 @@ void CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, f
 			tw.trace.endpos[ i ] = start[ i ] + tw.trace.fraction * ( end[ i ] - start[ i ] );
 		}
 	}
-
-	// If allsolid is set (was entirely inside something solid), the plane is not valid.
-	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
-	// Otherwise, the normal on the plane should have unit length
-
-	// Tr3B: these asserts don't make sense as it is the task of the gamecode to check if the trace was successful or not
-	//  assert(!tw.trace.allsolid);
-	//  assert(tw.trace.fraction != 1.0);
-	//  assert(VectorLength(tw.trace.plane.normal) > 0.9999);
 
 	*results = tw.trace;
 }

@@ -571,7 +571,7 @@ namespace Cmd {
     ===============================================================================
     */
 
-    enum delayType_t {
+    enum class delayType_t {
         MSEC,
         FRAME
     };
@@ -594,7 +594,7 @@ namespace Cmd {
         for (auto it = delays.begin(); it != delays.end();) {
             const delayRecord_t& delay = *it;
 
-            if ((delay.type == MSEC and delay.targetTime <= time) or (delay.type == FRAME and delay.targetFrame < delayFrame)) {
+            if ((delay.type == delayType_t::MSEC and delay.targetTime <= time) or (delay.type == delayType_t::FRAME and delay.targetFrame < delayFrame)) {
                 Cmd::BufferCommandText(delay.command, true);
                 it = delays.erase(it);
             } else {
@@ -647,10 +647,10 @@ namespace Cmd {
 
                 if (frames) {
                     int targetFrame = target + delayFrame;
-                    delays.emplace_back(delayRecord_t{name, command, {}, targetFrame, FRAME});
+                    delays.emplace_back(delayRecord_t{name, command, {}, targetFrame, delayType_t::FRAME});
                 } else {
                     auto targetTime = Sys::SteadyClock::now() + std::chrono::milliseconds(target);
-                    delays.emplace_back(delayRecord_t{name, command, targetTime, 0, MSEC});
+                    delays.emplace_back(delayRecord_t{name, command, targetTime, 0, delayType_t::MSEC});
                 }
 
             }

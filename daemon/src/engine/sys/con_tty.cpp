@@ -83,7 +83,7 @@ static void CON_AnsiColorPrint( const char *msg )
 	std::string buffer;
 	for ( const auto& token : Color::Parser( msg, Color::Color() ) )
 	{
-		if ( token.Type() == Color::Token::COLOR )
+		if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			if ( !buffer.empty() )
 			{
@@ -105,11 +105,11 @@ static void CON_AnsiColorPrint( const char *msg )
 				fputs( ansi.c_str(), stderr );
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			buffer += Color::Constants::ESCAPE;
 		}
-		else if ( token.Type() == Color::Token::CHARACTER )
+		else if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			if ( *token.Begin() == '\n' )
 			{
@@ -199,7 +199,7 @@ static void CON_Show()
 {
 	if ( ttycon_on )
 	{
-		assert( ttycon_hide > 0 );
+		ASSERT_GT(ttycon_hide, 0);
 		ttycon_hide--;
 
 		if ( ttycon_hide == 0 )
@@ -273,7 +273,7 @@ void CON_Init_TTY()
 	                   !( term && ( !strcmp( term, "raw" ) || !strcmp( term, "dumb" ) ) );
 	if ( !stdinIsATTY )
 	{
-        Log::Notice( "tty console mode disabled\n" );
+        Log::Notice( "tty console mode disabled" );
 		ttycon_on = false;
 		stdin_active = true;
 		return;

@@ -88,7 +88,7 @@ int Com_AddToGrowList( growList_t *list, void *data )
 
 	list->maxElements *= 2;
 
-//  Com_DPrintf("Resizing growlist to %i maxElements\n", list->maxElements);
+//  Log::Debug("Resizing growlist to %i maxElements", list->maxElements);
 
 	list->elements = ( void ** ) Com_Allocate( list->maxElements * sizeof( void * ) );
 
@@ -389,27 +389,27 @@ const char *Com_EntityTypeName(entityType_t entityType)
 {
 	switch (entityType)
 	{
-	case ET_GENERAL:          return "GENERAL";
-	case ET_PLAYER:           return "PLAYER";
-	case ET_ITEM:             return "ITEM";
-	case ET_BUILDABLE:        return "BUILDABLE";
-	case ET_LOCATION:         return "LOCATION";
-	case ET_MISSILE:          return "MISSILE";
-	case ET_MOVER:            return "MOVER";
-	case ET_PORTAL:           return "PORTAL";
-	case ET_SPEAKER:          return "SPEAKER";
-	case ET_PUSHER:           return "PUSHER";
-	case ET_TELEPORTER:       return "TELEPORTER";
-	case ET_INVISIBLE:        return "INVISIBLE";
-	case ET_FIRE:             return "FIRE";
-	case ET_CORPSE:           return "CORPSE";
-	case ET_PARTICLE_SYSTEM:  return "PARTICLE_SYSTEM";
-	case ET_ANIMMAPOBJ:       return "ANIMMAPOBJ";
-	case ET_MODELDOOR:        return "MODELDOOR";
-	case ET_LIGHTFLARE:       return "LIGHTFLARE";
-	case ET_LEV2_ZAP_CHAIN:   return "LEV2_ZAP_CHAIN";
+	case entityType_t::ET_GENERAL:          return "GENERAL";
+	case entityType_t::ET_PLAYER:           return "PLAYER";
+	case entityType_t::ET_ITEM:             return "ITEM";
+	case entityType_t::ET_BUILDABLE:        return "BUILDABLE";
+	case entityType_t::ET_LOCATION:         return "LOCATION";
+	case entityType_t::ET_MISSILE:          return "MISSILE";
+	case entityType_t::ET_MOVER:            return "MOVER";
+	case entityType_t::ET_PORTAL:           return "PORTAL";
+	case entityType_t::ET_SPEAKER:          return "SPEAKER";
+	case entityType_t::ET_PUSHER:           return "PUSHER";
+	case entityType_t::ET_TELEPORTER:       return "TELEPORTER";
+	case entityType_t::ET_INVISIBLE:        return "INVISIBLE";
+	case entityType_t::ET_FIRE:             return "FIRE";
+	case entityType_t::ET_CORPSE:           return "CORPSE";
+	case entityType_t::ET_PARTICLE_SYSTEM:  return "PARTICLE_SYSTEM";
+	case entityType_t::ET_ANIMMAPOBJ:       return "ANIMMAPOBJ";
+	case entityType_t::ET_MODELDOOR:        return "MODELDOOR";
+	case entityType_t::ET_LIGHTFLARE:       return "LIGHTFLARE";
+	case entityType_t::ET_LEV2_ZAP_CHAIN:   return "LEV2_ZAP_CHAIN";
 	default:
-		if(entityType >= ET_EVENTS)
+		if(entityType >= entityType_t::ET_EVENTS)
 			return "EVENT";
 		return nullptr;
 	}
@@ -464,7 +464,7 @@ void PRINTF_LIKE(1) COM_ParseError( const char *format, ... )
 	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end( argptr );
 
-    Log::Notice( S_ERROR "%s, line %d: %s\n", com_parsename, com_lines, string );
+    Log::Warn( "%s, line %d: %s", com_parsename, com_lines, string );
 }
 
 void PRINTF_LIKE(1) COM_ParseWarning( const char *format, ... )
@@ -476,7 +476,7 @@ void PRINTF_LIKE(1) COM_ParseWarning( const char *format, ... )
 	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end( argptr );
 
-    Log::Notice( S_WARNING "%s, line %d: %s\n", com_parsename, com_lines, string );
+    Log::Warn( "%s, line %d: %s", com_parsename, com_lines, string );
 }
 
 /*
@@ -749,7 +749,7 @@ char *COM_ParseExt( const char **data_p, bool allowLineBreaks )
 
 	if ( len == MAX_TOKEN_CHARS )
 	{
-//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+//		Log::Notice ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
 		len = 0;
 	}
 
@@ -1831,7 +1831,7 @@ previous strings
 char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 {
 	va_list     argptr;
-#define MAX_VA_STRING 32000
+	const int MAX_VA_STRING = 32000;
 	static char temp_buffer[ MAX_VA_STRING + 1 ];
 	static char string[ MAX_VA_STRING ]; // in case va is called by nested functions
 	static int  index = 0;

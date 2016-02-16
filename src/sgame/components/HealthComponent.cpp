@@ -23,7 +23,7 @@ void HealthComponent::HandlePrepareNetCode() {
 		}
 		client->ps.stats[STAT_HEALTH] = transmittedHealth;
 		client->ps.stats[STAT_MAX_HEALTH] = (int)std::ceil(maxHealth);
-	} else if (entity.oldEnt->s.eType == ET_BUILDABLE) {
+	} else if (entity.oldEnt->s.eType == entityType_t::ET_BUILDABLE) {
 		entity.oldEnt->s.generic1 = std::max(transmittedHealth, 0);
 	}
 }
@@ -62,7 +62,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 
 	// Don't handle ET_MOVER w/o die or pain function.
 	// TODO: Handle mover special casing in a dedicated component.
-	if (entity.oldEnt->s.eType == ET_MOVER && !(entity.oldEnt->die || entity.oldEnt->pain)) {
+	if (entity.oldEnt->s.eType == entityType_t::ET_MOVER && !(entity.oldEnt->die || entity.oldEnt->pain)) {
 		// Special case for ET_MOVER with act function in initial position.
 		if ((entity.oldEnt->moverState == MOVER_POS1 || entity.oldEnt->moverState == ROTATOR_POS1)
 		    && entity.oldEnt->act) {
@@ -108,7 +108,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 
 		// Check for protection from friendly buildable damage. Never protect from building actions.
 		// TODO: Use DAMAGE_NO_PROTECTION flag instead of listing means of death here.
-		if (entity.oldEnt->s.eType == ET_BUILDABLE && source->client &&
+		if (entity.oldEnt->s.eType == entityType_t::ET_BUILDABLE && source->client &&
 		    meansOfDeath != MOD_DECONSTRUCT && meansOfDeath != MOD_SUICIDE &&
 		    meansOfDeath != MOD_REPLACE     && meansOfDeath != MOD_NOCREEP) {
 			if (G_OnSameTeam(entity.oldEnt, source) && !g_friendlyBuildableFire.integer) {
@@ -231,7 +231,7 @@ void HealthComponent::SetHealth(float health) {
 }
 
 void HealthComponent::SetMaxHealth(float maxHealth, bool scaleHealth) {
-	assert(maxHealth > 0.0f);
+	ASSERT_GT(maxHealth, 0.0f);
 
 	healthLogger.Debug("Changing maximum health: %3.1f → %3.1f.", this->maxHealth, maxHealth);
 

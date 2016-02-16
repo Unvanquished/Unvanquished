@@ -70,7 +70,7 @@ namespace Cmd {
         std::string description;
     };
 
-    typedef std::unordered_map<std::string, CommandRecord, Str::IHash, Str::IEqual> CommandMap;
+    using CommandMap = std::unordered_map<std::string, CommandRecord, Str::IHash, Str::IEqual>;
 
     CommandMap& GetCommandMap() {
         static CommandMap map;
@@ -280,7 +280,7 @@ namespace Cvar{
         std::string defaultValue;
     };
 
-    typedef std::unordered_map<std::string, CvarRecord> CvarMap;
+    using CvarMap = std::unordered_map<std::string, CvarRecord>;
 
     CvarMap& GetCvarMap() {
         static CvarMap map;
@@ -479,6 +479,10 @@ int trap_Milliseconds()
 
 namespace VM {
 
+    void CrashDump(const uint8_t* data, size_t size) {
+        SendMsg<CrashDumpMsg>(std::vector<uint8_t>{data, data + size});
+    }
+
     void InitializeProxies(int milliseconds) {
         baseTime = Sys::SteadyClock::now() - std::chrono::milliseconds(milliseconds);
         Cmd::InitializeProxy();
@@ -503,16 +507,6 @@ namespace VM {
 
 // Definition of some additional trap_* that are common to all VMs
 
-void trap_Print(const char *string)
-{
-	VM::SendMsg<VM::PrintMsg>(string);
-}
-
-void NORETURN trap_Error(const char *string)
-{
-	Sys::Drop(string);
-}
-
 void trap_SendConsoleCommand(const char *text)
 {
 	VM::SendMsg<VM::SendConsoleCommandMsg>(text);
@@ -521,7 +515,7 @@ void trap_SendConsoleCommand(const char *text)
 int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode)
 {
 	int ret, handle;
-	VM::SendMsg<VM::FSFOpenFileMsg>(qpath, f != nullptr, mode, ret, handle);
+	VM::SendMsg<VM::FSFOpenFileMsg>(qpath, f != nullptr, Util::ordinal(mode), ret, handle);
 	if (f)
 		*f = handle;
 	return ret;
@@ -547,7 +541,7 @@ int trap_FS_Write(const void *buffer, int len, fileHandle_t f)
 int trap_FS_Seek( fileHandle_t f, int offset, fsOrigin_t origin )
 {
     int res;
-	VM::SendMsg<VM::FSSeekMsg>(f, offset, origin, res);
+	VM::SendMsg<VM::FSSeekMsg>(f, offset, Util::ordinal(origin), res);
     return res;
 }
 

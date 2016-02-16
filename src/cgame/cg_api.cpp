@@ -133,14 +133,21 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 				});
 				break;
 
+			case CG_FOCUS_EVENT:
+				IPC::HandleMsg<CGameFocusEventMsg>(VM::rootChannel, std::move(reader), [] (bool focus) {
+					CG_FocusEvent(focus);
+					cmdBuffer.TryFlush();
+				});
+				break;
+
             default:
-                CG_Error("VMMain(): unknown cgame command %i", minor);
+                Com_Error(errorParm_t::ERR_DROP, "VMMain(): unknown cgame command %i", minor);
 
         }
     } else if (major < VM::LAST_COMMON_SYSCALL) {
         VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootChannel);
     } else {
-        CG_Error("unhandled VM major syscall number %i", major);
+        Com_Error(errorParm_t::ERR_DROP, "unhandled VM major syscall number %i", major);
     }
 }
 
@@ -271,14 +278,9 @@ bool trap_GetNews( bool force )
 	return res;
 }
 
-void trap_CrashDump(const uint8_t* data, size_t size)
-{
-	VM::SendMsg<CrashDumpMsg>(std::vector<uint8_t>{data, data + size});
-}
-
 // All Sounds
 
-void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
+void trap_S_StartSound( vec3_t origin, int entityNum, soundChannel_t, sfxHandle_t sfx )
 {
     Vec3 myorigin = Vec3(0.0f, 0.0f, 0.0f);
 	if (origin) {
@@ -287,7 +289,7 @@ void trap_S_StartSound( vec3_t origin, int entityNum, int, sfxHandle_t sfx )
 	cmdBuffer.SendMsg<Audio::StartSoundMsg>(!!origin, myorigin, entityNum, sfx);
 }
 
-void trap_S_StartLocalSound( sfxHandle_t sfx, int )
+void trap_S_StartLocalSound( sfxHandle_t sfx, soundChannel_t )
 {
 	cmdBuffer.SendMsg<Audio::StartLocalSoundMsg>(sfx);
 }

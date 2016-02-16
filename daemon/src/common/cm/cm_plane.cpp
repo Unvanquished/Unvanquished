@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cm_local.h"
 
-#define PLANE_HASHES 8192
+static const int PLANE_HASHES = 8192;
 static cPlane_t *planeHashTable[ PLANE_HASHES ];
 
 int      numPlanes;
@@ -102,8 +102,8 @@ bool CM_PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec
 	return true;
 }
 
-#define NORMAL_EPSILON    0.0001
-#define DIST_EPSILON      0.02
+static const double NORMAL_EPSILON    = 0.0001;
+static const double DIST_EPSILON      = 0.02;
 
 /*
 ==================
@@ -319,14 +319,14 @@ int CM_FindPlane( const float *p1, const float *p2, const float *p3 )
 CM_PointOnPlaneSide
 ==================
 */
-int CM_PointOnPlaneSide( float *p, int planeNum )
+planeSide_t CM_PointOnPlaneSide( float *p, int planeNum )
 {
 	float *plane;
 	float d;
 
 	if ( planeNum == -1 )
 	{
-		return SIDE_ON;
+		return planeSide_t::SIDE_ON;
 	}
 
 	plane = planes[ planeNum ].plane;
@@ -335,15 +335,15 @@ int CM_PointOnPlaneSide( float *p, int planeNum )
 
 	if ( d > PLANE_TRI_EPSILON )
 	{
-		return SIDE_FRONT;
+		return planeSide_t::SIDE_FRONT;
 	}
 
 	if ( d < -PLANE_TRI_EPSILON )
 	{
-		return SIDE_BACK;
+		return planeSide_t::SIDE_BACK;
 	}
 
-	return SIDE_ON;
+	return planeSide_t::SIDE_ON;
 }
 
 /*
@@ -621,7 +621,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 
 					if ( !w2 )
 					{
-						cmLog.Debug( "WARNING: CM_AddFacetBevels... invalid bevel\n" );
+						cmLog.Debug( "WARNING: CM_AddFacetBevels... invalid bevel" );
 						continue;
 					}
 					else

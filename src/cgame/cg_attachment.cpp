@@ -104,7 +104,7 @@ bool CG_AttachmentPoint( attachment_t *a, vec3_t v )
 			break;
 
 		default:
-			CG_Printf( S_ERROR "Invalid attachmentType_t in attachment\n" );
+			Log::Warn( "Invalid attachmentType_t in attachment" );
 			break;
 	}
 
@@ -179,7 +179,7 @@ bool CG_AttachmentDir( attachment_t *a, vec3_t v )
 			break;
 
 		default:
-			CG_Printf( S_ERROR "Invalid attachmentType_t in attachment\n" );
+			Log::Warn( "Invalid attachmentType_t in attachment" );
 			break;
 	}
 
@@ -231,7 +231,7 @@ bool CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 			return false;
 
 		default:
-			CG_Printf( S_ERROR "Invalid attachmentType_t in attachment\n" );
+			Log::Warn( "Invalid attachmentType_t in attachment" );
 			break;
 	}
 

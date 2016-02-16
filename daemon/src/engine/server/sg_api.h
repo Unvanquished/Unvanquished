@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "engine/qcommon/q_shared.h"
 #include "engine/botlib/bot_api.h"
 
-#define GAME_API_VERSION          2
+#define GAME_API_VERSION          3
 
 #define SVF_NOCLIENT              0x00000001
 #define SVF_CLIENTMASK            0x00000002
@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MAX_ENT_CLUSTERS  16
 
-typedef struct
+struct entityShared_t
 {
 	bool linked; // false if not in any good cluster
 	int      linkcount;
@@ -94,12 +94,12 @@ typedef struct
 	int lastCluster; // if all the clusters don't fit in clusternums
 	int originCluster; // Gordon: calced upon linking, for origin only bmodel vis checks
 	int areanum, areanum2;
-} entityShared_t;
+};
 
 // the server looks at a sharedEntity_t structure, which must be at the start of a gentity_t structure
-typedef struct
+struct sharedEntity_t
 {
 	entityState_t  s; // communicated by the server to clients
 	entityShared_t r; // shared by both the server and game module
-} sharedEntity_t;
+};
 

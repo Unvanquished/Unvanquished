@@ -49,6 +49,10 @@ void CL_MousePosEvent( int, int )
 {
 }
 
+void CL_FocusEvent( bool )
+{
+}
+
 void Key_WriteBindings( fileHandle_t )
 {
 }
@@ -79,7 +83,7 @@ void CL_KeyEvent( int, bool, unsigned )
 
 void CL_ForwardCommandToServer( const char *cmd )
 {
-	Com_Printf( "Unknown command \"%s\"\n", cmd );
+	Log::Notice( "Unknown command \"%s\"\n", cmd );
 }
 
 void CL_ConsolePrint( std::string )

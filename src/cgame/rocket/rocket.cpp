@@ -75,7 +75,7 @@ public:
 	Rocket::Core::FileHandle Open( const Rocket::Core::String &filePath )
 	{
 		fileHandle_t fileHandle;
-		trap_FS_FOpenFile( filePath.CString(), &fileHandle, FS_READ );
+		trap_FS_FOpenFile( filePath.CString(), &fileHandle, fsMode_t::FS_READ );
 		return ( Rocket::Core::FileHandle )fileHandle;
 	}
 
@@ -132,19 +132,14 @@ public:
 		switch ( type )
 		{
 			case Rocket::Core::Log::LT_ALWAYS :
-				Com_Printf( "ALWAYS: %s\n", message.CString() );
-				break;
 			case Rocket::Core::Log::LT_ERROR :
-				Com_Printf( "ERROR: %s\n", message.CString() );
-				break;
 			case Rocket::Core::Log::LT_WARNING :
-				Com_Printf( "WARNING: %s\n", message.CString() );
-				break;
-			case Rocket::Core::Log::LT_INFO :
-				Com_Printf( "INFO: %s\n", message.CString() );
+				Log::Warn( message.CString() );
 				break;
 			default:
-				Com_Printf( "%s\n", message.CString() );
+			case Rocket::Core::Log::LT_INFO :
+				Log::Notice( message.CString() );
+				break;
 		}
 		return true;
 	}
@@ -252,7 +247,7 @@ public:
 	{
 
 		texture_handle = trap_R_GenerateTexture( (const byte* )source, source_dimensions.x, source_dimensions.y );
-// 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
+// 		Log::Debug( "RE_GenerateTexture [ %lu ( %d x %d )]", textureHandle, sourceDimensions.x, sourceDimensions.y );
 
 		return ( texture_handle > 0 );
 	}
@@ -335,7 +330,7 @@ void Rocket_Init()
 
 	if ( !Rocket::Core::Initialise() )
 	{
-		Com_Printf( "Could not init libRocket\n" );
+		Log::Notice( "Could not init libRocket\n" );
 		return;
 	}
 
@@ -395,8 +390,13 @@ void Rocket_Shutdown()
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
 
-	// Shut down Lua before we clean up contexts
-	Rocket::Core::Lua::Interpreter::Shutdown();
+	// If the game crashes, Lua won't have been initialized it and will crash
+	// if we try to shut it down.
+	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
+	{
+		// Shut down Lua before we clean up contexts
+		Rocket::Core::Lua::Interpreter::Shutdown();
+	}
 
 	if ( menuContext )
 	{
@@ -497,7 +497,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 	for ( const auto& token : Color::Parser( in, Color::Color() ) )
 	{
-		if ( token.Type() == Color::Token::CHARACTER )
+		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			char c = *token.Begin();
 			if ( c == '<' )
@@ -543,7 +543,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( token.Begin(), token.Size() );
 			}
 		}
-		else if ( token.Type() == Color::Token::COLOR )
+		else if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			if ( span && spanHasContent )
 			{
@@ -568,7 +568,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				spanHasContent = false;
 			}
 		}
-		else if ( token.Type() == Color::Token::ESCAPE )
+		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
 			if ( span && !spanHasContent )
 			{
@@ -641,35 +641,85 @@ void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).CString(), length );
 }
 
+class EngineCursor
+{
+public:
+    void Show(bool show)
+    {
+        if ( show != show_cursor )
+        {
+            show_cursor = show;
+            if ( focus )
+            {
+                Update();
+            }
+        }
+    }
+
+    void SetFocus(bool focus)
+    {
+        this->focus = focus;
+        Update();
+    }
+
+private:
+    void Update()
+    {
+        if ( menuContext )
+        {
+            menuContext->ShowMouseCursor( show_cursor && focus );
+        }
+
+        MouseMode mode;
+
+        if ( !focus )
+        {
+            mode = MouseMode::SystemCursor;
+        }
+        else if ( show_cursor )
+        {
+            mode = MouseMode::CustomCursor;
+        }
+        else
+        {
+            mode = MouseMode::Deltas;
+        }
+
+        trap_SetMouseMode( mode );
+
+    }
+
+    bool show_cursor = true;
+    bool focus = false;
+};
+
+static EngineCursor engineCursor;
+
+
 void Rocket_SetActiveContext( int catcher )
 {
 	switch ( catcher )
 	{
 		case KEYCATCH_UI:
-			menuContext->ShowMouseCursor( true );
-			trap_SetMouseMode( MouseMode::Absolute );
+			engineCursor.Show( true );
 			break;
 
 		default:
 			if ( !( catcher & KEYCATCH_CONSOLE ) )
 			{
-				menuContext->ShowMouseCursor( false );
-			trap_SetMouseMode( MouseMode::Deltas );
+				engineCursor.Show( false );
 			}
 
 			break;
 	}
 }
 
+void CG_FocusEvent( bool has_focus )
+{
+    engineCursor.SetFocus( has_focus );
+}
+
 void Rocket_LoadFont( const char *font )
 {
 	Rocket::Core::FontDatabase::LoadFontFace( font );
-}
-
-void Rocket_HideMouse()
-{
-	if ( menuContext )
-	{
-		menuContext->ShowMouseCursor( false );
-	}
 }

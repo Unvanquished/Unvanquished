@@ -32,11 +32,11 @@ image_t              *r_imageHashTable[ IMAGE_FILE_HASH_SIZE ];
 #define Tex_ByteToFloat(v) ( ( (int)(v) - 128 ) / 127.0f )
 #define Tex_FloatToByte(v) ( 128 + (int) ( (v) * 127.0f + 0.5 ) )
 
-typedef struct
+struct textureMode_t
 {
 	const char *name;
 	int  minimize, maximize;
-} textureMode_t;
+};
 
 static const textureMode_t modes[] =
 {
@@ -59,7 +59,7 @@ long GenerateImageHashValue( const char *fname )
 	long hash;
 	char letter;
 
-//  ri.Printf(PRINT_ALL, "tr_image::GenerateImageHashValue: '%s'\n", fname);
+//  Log::Notice("tr_image::GenerateImageHashValue: '%s'", fname);
 
 	hash = 0;
 	i = 0;
@@ -101,7 +101,7 @@ void GL_TextureMode( const char *string )
 
 	if ( i == 6 )
 	{
-		ri.Printf( PRINT_ALL, "bad filter name\n" );
+		Log::Warn("bad filter name" );
 		return;
 	}
 
@@ -126,7 +126,7 @@ void GL_TextureMode( const char *string )
 	{
 		image = (image_t*) Com_GrowListElement( &tr.images, i );
 
-		if ( image->filterType == FT_DEFAULT )
+		if ( image->filterType == filterType_t::FT_DEFAULT )
 		{
 			GL_Bind( image );
 
@@ -161,7 +161,7 @@ void R_ImageList_f()
 	};
 	const char *filter = ri.Cmd_Argc() > 1 ? ri.Cmd_Argv(1) : nullptr;
 
-	ri.Printf( PRINT_ALL, "\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------\n" );
+	Log::Notice("\n      -w-- -h-- -mm- -type-   -if-- wrap --name-------" );
 
 	texels = 0;
 	dataSize = 0;
@@ -178,7 +178,7 @@ void R_ImageList_f()
 		}
 
 		Com_sprintf( buffer, sizeof( buffer ), "%4i: %4i %4i  %s   ",
-		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == FT_DEFAULT ] );
+		           i, image->uploadWidth, image->uploadHeight, yesno[ image->filterType == filterType_t::FT_DEFAULT ] );
 		out += buffer;
 		switch ( image->type )
 		{
@@ -355,80 +355,80 @@ void R_ImageList_f()
 
 		switch ( image->wrapType.s )
 		{
-			case WT_REPEAT:
+			case wrapTypeEnum_t::WT_REPEAT:
 				Com_sprintf( buffer, sizeof( buffer ),  "s.rept  " );
 				out += buffer;
 				break;
 
-			case WT_CLAMP:
+			case wrapTypeEnum_t::WT_CLAMP:
 				Com_sprintf( buffer, sizeof( buffer ),  "s.clmp  " );
 				out += buffer;
 				break;
 
-			case WT_EDGE_CLAMP:
+			case wrapTypeEnum_t::WT_EDGE_CLAMP:
 				Com_sprintf( buffer, sizeof( buffer ),  "s.eclmp " );
 				out += buffer;
 				break;
 
-			case WT_ZERO_CLAMP:
+			case wrapTypeEnum_t::WT_ZERO_CLAMP:
 				Com_sprintf( buffer, sizeof( buffer ),  "s.zclmp " );
 				out += buffer;
 				break;
 
-			case WT_ALPHA_ZERO_CLAMP:
+			case wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP:
 				Com_sprintf( buffer, sizeof( buffer ),  "s.azclmp" );
 				out += buffer;
 				break;
 
 			default:
-				Com_sprintf( buffer, sizeof( buffer ),  "s.%4i  ", image->wrapType.s );
+				Com_sprintf( buffer, sizeof( buffer ),  "s.%4i  ", Util::ordinal(image->wrapType.s) );
 				out += buffer;
 				break;
 		}
 
 		switch ( image->wrapType.t )
 		{
-			case WT_REPEAT:
+			case wrapTypeEnum_t::WT_REPEAT:
 				Com_sprintf( buffer, sizeof( buffer ),  "t.rept  " );
 				out += buffer;
 				break;
 
-			case WT_CLAMP:
+			case wrapTypeEnum_t::WT_CLAMP:
 				Com_sprintf( buffer, sizeof( buffer ),  "t.clmp  " );
 				out += buffer;
 				break;
 
-			case WT_EDGE_CLAMP:
+			case wrapTypeEnum_t::WT_EDGE_CLAMP:
 				Com_sprintf( buffer, sizeof( buffer ),  "t.eclmp " );
 				out += buffer;
 				break;
 
-			case WT_ZERO_CLAMP:
+			case wrapTypeEnum_t::WT_ZERO_CLAMP:
 				Com_sprintf( buffer, sizeof( buffer ),  "t.zclmp " );
 				out += buffer;
 				break;
 
-			case WT_ALPHA_ZERO_CLAMP:
+			case wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP:
 				Com_sprintf( buffer, sizeof( buffer ),  "t.azclmp" );
 				out += buffer;
 				break;
 
 			default:
-				Com_sprintf( buffer, sizeof( buffer ),  "t.%4i  ", image->wrapType.t );
+				Com_sprintf( buffer, sizeof( buffer ),  "t.%4i  ", Util::ordinal(image->wrapType.t));
 				out += buffer;
 				break;
 		}
 
 		dataSize += imageDataSize;
 
-		ri.Printf( PRINT_ALL, "%s %s\n", out.c_str(), image->name );
+		Log::Notice("%s %s", out.c_str(), image->name );
 	}
 
-	ri.Printf( PRINT_ALL, " ---------\n" );
-	ri.Printf( PRINT_ALL, " %i total texels (not including mipmaps)\n", texels );
-	ri.Printf( PRINT_ALL, " %d.%02d MB total image memory\n", dataSize / ( 1024 * 1024 ),
+	Log::Notice(" ---------" );
+	Log::Notice(" %i total texels (not including mipmaps)", texels );
+	Log::Notice(" %d.%02d MB total image memory", dataSize / ( 1024 * 1024 ),
 	           ( dataSize % ( 1024 * 1024 ) ) * 100 / ( 1024 * 1024 ) );
-	ri.Printf( PRINT_ALL, " %i total images\n\n", tr.images.currentElements );
+	Log::Notice(" %i total images\n", tr.images.currentElements );
 }
 
 //=======================================================================
@@ -1160,7 +1160,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	else if ( image->bits & ( IF_RGBA16F | IF_RGBA32F | IF_RGBA16 | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_ONECOMP16F | IF_ONECOMP32F ) )
 	{
 		if( !glConfig2.textureFloatAvailable ) {
-			ri.Printf( PRINT_WARNING, "WARNING: floating point image '%s' cannot be loaded\n", image->name );
+			Log::Warn("floating point image '%s' cannot be loaded", image->name );
 			internalFormat = GL_RGBA8;
 		}
 		else if ( image->bits & IF_RGBA16F )
@@ -1200,7 +1200,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	{
 		if( !GLEW_EXT_texture_compression_dxt1 &&
 		    !GLEW_EXT_texture_compression_s3tc ) {
-			ri.Printf( PRINT_WARNING, "WARNING: compressed image '%s' cannot be loaded\n", image->name );
+			Log::Warn("compressed image '%s' cannot be loaded", image->name );
 			internalFormat = GL_RGBA8;
 		}
 		else if( image->bits & IF_BC1 ) {
@@ -1297,7 +1297,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 		// select proper internal format
 		if ( samples == 3 )
 		{
-			if ( glConfig.textureCompression == TC_S3TC && !( image->bits & IF_NOCOMPRESSION ) )
+			if ( glConfig.textureCompression == textureCompression_t::TC_S3TC && !(image->bits & IF_NOCOMPRESSION ) )
 			{
 				internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 			}
@@ -1314,7 +1314,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			}
 			else
 			{
-				if ( glConfig.textureCompression == TC_S3TC && !( image->bits & IF_NOCOMPRESSION ) )
+				if ( glConfig.textureCompression == textureCompression_t::TC_S3TC && !( image->bits & IF_NOCOMPRESSION ) )
 				{
 					if ( image->bits & IF_DISPLACEMAP )
 					{
@@ -1428,9 +1428,9 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				break;
 			}
 
-			if ( image->filterType == FT_DEFAULT )
+			if ( image->filterType == filterType_t::FT_DEFAULT )
 			{
-				if ( glConfig.driverType == GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
+				if ( glConfig.driverType == glDriverType_t::GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
 				{
 					if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
 						glGenerateMipmap( image->type );
@@ -1444,9 +1444,9 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				}
 			}
 
-			if ( glConfig.driverType != GLDRV_OPENGL3 && !glConfig2.framebufferObjectAvailable && !glConfig2.generateMipmapAvailable )
+			if ( glConfig.driverType != glDriverType_t::GLDRV_OPENGL3 && !glConfig2.framebufferObjectAvailable && !glConfig2.generateMipmapAvailable )
 			{
-				if ( image->filterType == FT_DEFAULT && !( image->bits & ( IF_DEPTH16 | IF_DEPTH24 | IF_DEPTH32 | IF_PACKED_DEPTH24_STENCIL8 ) ) )
+				if ( image->filterType == filterType_t::FT_DEFAULT && !( image->bits & ( IF_DEPTH16 | IF_DEPTH24 | IF_DEPTH32 | IF_PACKED_DEPTH24_STENCIL8 ) ) )
 				{
 					int mipLevel;
 					int mipWidth, mipHeight;
@@ -1555,7 +1555,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	// set filter type
 	switch ( image->filterType )
 	{
-		case FT_DEFAULT:
+		case filterType_t::FT_DEFAULT:
 
 			// set texture anisotropy
 			if ( glConfig2.textureAnisotropyAvailable )
@@ -1567,18 +1567,18 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			glTexParameterf( image->type, GL_TEXTURE_MAG_FILTER, gl_filter_max );
 			break;
 
-		case FT_LINEAR:
+		case filterType_t::FT_LINEAR:
 			glTexParameterf( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 			glTexParameterf( image->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 			break;
 
-		case FT_NEAREST:
+		case filterType_t::FT_NEAREST:
 			glTexParameterf( image->type, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameterf( image->type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			break;
 
 		default:
-			ri.Printf( PRINT_WARNING, "WARNING: unknown filter type for image '%s'\n", image->name );
+			Log::Warn("unknown filter type for image '%s'", image->name );
 			glTexParameterf( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 			glTexParameterf( image->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 			break;
@@ -1591,107 +1591,107 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
         {
                 switch ( image->wrapType.s )
                 {
-                        case WT_REPEAT:
+                        case wrapTypeEnum_t::WT_REPEAT:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
                                 break;
 
-                        case WT_CLAMP:
-                        case WT_EDGE_CLAMP:
+                        case wrapTypeEnum_t::WT_CLAMP:
+                        case wrapTypeEnum_t::WT_EDGE_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
                                 break;
-                        case WT_ONE_CLAMP:
+                        case wrapTypeEnum_t::WT_ONE_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
                                 break;
-                        case WT_ZERO_CLAMP:
+                        case wrapTypeEnum_t::WT_ZERO_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
                                 break;
 
-                        case WT_ALPHA_ZERO_CLAMP:
+                        case wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
                                 break;
 
                         default:
-                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s'\n", image->name );
+								Log::Warn("unknown wrap type for image '%s'", image->name );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
                                 break;
                 }
         } else {
         	// warn about mismatched clamp types if both require a border colour to be set
-                if ( ( image->wrapType.s == WT_ZERO_CLAMP || image->wrapType.s == WT_ONE_CLAMP || image->wrapType.s == WT_ALPHA_ZERO_CLAMP ) &&
-	             ( image->wrapType.t == WT_ZERO_CLAMP || image->wrapType.t == WT_ONE_CLAMP || image->wrapType.t == WT_ALPHA_ZERO_CLAMP ) )
+                if ( ( image->wrapType.s == wrapTypeEnum_t::WT_ZERO_CLAMP || image->wrapType.s == wrapTypeEnum_t::WT_ONE_CLAMP || image->wrapType.s == wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP ) &&
+	             ( image->wrapType.t == wrapTypeEnum_t::WT_ZERO_CLAMP || image->wrapType.t == wrapTypeEnum_t::WT_ONE_CLAMP || image->wrapType.t == wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP ) )
         	{
-	                ri.Printf( PRINT_WARNING, "WARNING: mismatched wrap types for image '%s'\n", image->name );
+					Log::Warn("mismatched wrap types for image '%s'", image->name );
                 }
 
                 switch ( image->wrapType.s )
                 {
-                        case WT_REPEAT:
+                        case wrapTypeEnum_t::WT_REPEAT:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
                                 break;
 
-                        case WT_CLAMP:
-                        case WT_EDGE_CLAMP:
+                        case wrapTypeEnum_t::WT_CLAMP:
+                        case wrapTypeEnum_t::WT_EDGE_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
                                 break;
 
-                        case WT_ONE_CLAMP:
+                        case wrapTypeEnum_t::WT_ONE_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
                                 break;
 
-                        case WT_ZERO_CLAMP:
+                        case wrapTypeEnum_t::WT_ZERO_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
                                 break;
 
-                        case WT_ALPHA_ZERO_CLAMP:
+                        case wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
                                 break;
 
                         default:
-                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis S\n", image->name );
+								Log::Warn("unknown wrap type for image '%s' axis S", image->name );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_S, GL_REPEAT );
                                 break;
                 }
 
                 switch ( image->wrapType.t )
                 {
-                        case WT_REPEAT:
+                        case wrapTypeEnum_t::WT_REPEAT:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
                                 break;
 
-                        case WT_CLAMP:
-                        case WT_EDGE_CLAMP:
+                        case wrapTypeEnum_t::WT_CLAMP:
+                        case wrapTypeEnum_t::WT_EDGE_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
                                 break;
 
-                        case WT_ONE_CLAMP:
+                        case wrapTypeEnum_t::WT_ONE_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, oneClampBorder );
                                 break;
 
-                        case WT_ZERO_CLAMP:
+                        case wrapTypeEnum_t::WT_ZERO_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, zeroClampBorder );
                                 break;
 
-                        case WT_ALPHA_ZERO_CLAMP:
+                        case wrapTypeEnum_t::WT_ALPHA_ZERO_CLAMP:
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
                                 glTexParameterfv( image->type, GL_TEXTURE_BORDER_COLOR, alphaZeroClampBorder );
                                 break;
 
                         default:
-                                ri.Printf( PRINT_WARNING, "WARNING: unknown wrap type for image '%s' axis T\n", image->name );
+								Log::Warn("unknown wrap type for image '%s' axis T", image->name );
                                 glTexParameterf( image->type, GL_TEXTURE_WRAP_T, GL_REPEAT );
                                 break;
                 }
@@ -1720,11 +1720,11 @@ image_t        *R_AllocImage( const char *name, bool linkIntoHashTable )
 
 	if ( strlen( name ) >= 1024 )
 	{
-		ri.Error( ERR_DROP, "R_AllocImage: \"%s\" image name is too long", name );
+		ri.Error(errorParm_t::ERR_DROP, "R_AllocImage: \"%s\" image name is too long", name );
 		return nullptr;
 	}
 
-	image = (image_t*) ri.Hunk_Alloc( sizeof( image_t ), h_low );
+	image = (image_t*) ri.Hunk_Alloc( sizeof( image_t ), ha_pref::h_low );
 	Com_Memset( image, 0, sizeof( image_t ) );
 
 	glGenTextures( 1, &image->texnum );
@@ -1819,8 +1819,8 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 	image->width = width;
 	image->height = height;
 	image->bits = IF_NOPICMIP;
-	image->filterType = FT_LINEAR;
-	image->wrapType = WT_CLAMP;
+	image->filterType = filterType_t::FT_LINEAR;
+	image->wrapType = wrapTypeEnum_t::WT_CLAMP;
 
 	GL_Bind( image );
 
@@ -1928,11 +1928,11 @@ image_t        *R_Create3DImage( const char *name,
 	return image;
 }
 
-typedef struct
+struct imageExtToLoaderMap_t
 {
 	const char *ext;
 	void ( *ImageLoader )( const char *, unsigned char **, int *, int *, int *, int *, int *, byte );
-} imageExtToLoaderMap_t;
+};
 
 // Note that the ordering indicates the order of preference used
 // when there are multiple images of different formats available
@@ -1972,7 +1972,7 @@ static void R_LoadImage( const char **buffer, byte **pic, int *width, int *heigh
 
 	if ( !token[ 0 ] )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: NULL parameter for R_LoadImage\n" );
+		Log::Warn("NULL parameter for R_LoadImage" );
 		return;
 	}
 
@@ -2091,12 +2091,12 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 
 				if ( diff & IF_NOPICMIP )
 				{
-					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image '%s' with mixed allowPicmip parm for shader\n", imageName );
+					Log::Warn("reused image '%s' with mixed allowPicmip parm for shader", imageName );
 				}
 
 				if ( image->wrapType != wrapType )
 				{
-					ri.Printf( PRINT_ALL, "WARNING: reused image '%s' with mixed glWrapType parm for shader\n", imageName);
+					Log::Warn("reused image '%s' with mixed glWrapType parm for shader", imageName);
 				}
 			}
 
@@ -2329,7 +2329,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+				Log::Warn("DXTn compression found in multi-file cube map; ignoring '%s'", imageName );
 		        goto skipCubeImage;
 		}
 
@@ -2360,7 +2360,7 @@ tryDoom3Suffices:
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+				Log::Warn("DXTn compression found in multi-file cube map; ignoring '%s'", imageName );
 		        goto skipCubeImage;
 		}
 
@@ -2404,7 +2404,7 @@ tryQuakeSuffices:
 
 		if ( IsImageCompressed( bits ) )
 		{
-	                ri.Printf( PRINT_WARNING, "WARNING: DXTn compression found in multi-file cube map; ignoring '%s'\n", imageName );
+				Log::Warn("DXTn compression found in multi-file cube map; ignoring '%s'", imageName );
 		        goto skipCubeImage;
 		}
 
@@ -2507,8 +2507,8 @@ float R_FogFactor( float s, float t )
 R_CreateFogImage
 ================
 */
-#define FOG_S 256
-#define FOG_T 32
+static const int FOG_S = 256;
+static const int FOG_T = 32;
 static void R_CreateFogImage()
 {
 	int   x, y;
@@ -2535,7 +2535,7 @@ static void R_CreateFogImage()
 	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
 	// what we want.
 	tr.fogImage = R_CreateImage( "_fog", ( const byte ** ) &data,
-				     FOG_S, FOG_T, 1, IF_NOPICMIP, FT_LINEAR, WT_CLAMP );
+				     FOG_S, FOG_T, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_CLAMP );
 	ri.Hunk_FreeTempMemory( data );
 
 	borderColor[ 0 ] = 1.0;
@@ -2551,7 +2551,7 @@ static void R_CreateFogImage()
 R_CreateDefaultImage
 ==================
 */
-#define DEFAULT_SIZE 128
+static const int DEFAULT_SIZE = 128;
 static void R_CreateDefaultImage()
 {
 	int  x;
@@ -2574,7 +2574,7 @@ static void R_CreateDefaultImage()
 	}
 
 	tr.defaultImage = R_CreateImage( "_default", ( const byte ** ) &dataPtr,
-					 DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, FT_DEFAULT, WT_REPEAT );
+					 DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, filterType_t::FT_DEFAULT, wrapTypeEnum_t::WT_REPEAT );
 }
 
 static void R_CreateRandomNormalsImage()
@@ -2609,7 +2609,7 @@ static void R_CreateRandomNormalsImage()
 	}
 
 	tr.randomNormalsImage = R_CreateImage( "_randomNormals", ( const byte ** ) &dataPtr,
-					       DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, FT_DEFAULT, WT_REPEAT );
+					       DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP, filterType_t::FT_DEFAULT, wrapTypeEnum_t::WT_REPEAT );
 }
 
 static void R_CreateNoFalloffImage()
@@ -2620,10 +2620,10 @@ static void R_CreateNoFalloffImage()
 	// we use a solid white image instead of disabling texturing
 	Com_Memset( data, 255, sizeof( data ) );
 	tr.noFalloffImage = R_CreateImage( "_noFalloff", ( const byte ** ) &dataPtr,
-					   8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
+					   8, 8, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
 }
 
-#define ATTENUATION_XY_SIZE 128
+static const int ATTENUATION_XY_SIZE = 128;
 static void R_CreateAttenuationXYImage()
 {
 	int  x, y;
@@ -2660,8 +2660,7 @@ static void R_CreateAttenuationXYImage()
 
 	tr.attenuationXYImage =
 	  R_CreateImage( "_attenuationXY", ( const byte ** ) &dataPtr,
-			 ATTENUATION_XY_SIZE, ATTENUATION_XY_SIZE, 1, IF_NOPICMIP, FT_LINEAR,
-	                 WT_CLAMP );
+			 ATTENUATION_XY_SIZE, ATTENUATION_XY_SIZE, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_CLAMP);
 }
 
 static void R_CreateContrastRenderFBOImage()
@@ -2679,7 +2678,7 @@ static void R_CreateContrastRenderFBOImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight ) * 0.25f;
 	}
 
-	tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
+	tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_CLAMP );
 }
 
 static void R_CreateBloomRenderFBOImage()
@@ -2700,7 +2699,7 @@ static void R_CreateBloomRenderFBOImage()
 
 	for ( i = 0; i < 2; i++ )
 	{
-		tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
+		tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_CLAMP );
 	}
 }
 
@@ -2719,7 +2718,7 @@ static void R_CreateCurrentRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	tr.currentRenderImage = R_CreateImage( "_currentRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.currentRenderImage = R_CreateImage( "_currentRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 }
 
 static void R_CreateDepthRenderImage()
@@ -2738,7 +2737,7 @@ static void R_CreateDepthRenderImage()
 	}
 
 	{
-		tr.depthRenderImage = R_CreateImage( "_depthRender", nullptr, width, height, 1, IF_NOPICMIP | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
+		tr.depthRenderImage = R_CreateImage( "_depthRender", nullptr, width, height, 1, IF_NOPICMIP | IF_DEPTH24, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 	}
 }
 
@@ -2757,7 +2756,7 @@ static void R_CreatePortalRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	tr.portalRenderImage = R_CreateImage( "_portalRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.portalRenderImage = R_CreateImage( "_portalRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 }
 
 static void R_CreateOcclusionRenderFBOImage()
@@ -2776,7 +2775,7 @@ static void R_CreateOcclusionRenderFBOImage()
 	}
 
 	{
-		tr.occlusionRenderFBOImage = R_CreateImage( "_occlusionFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+		tr.occlusionRenderFBOImage = R_CreateImage( "_occlusionFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 	}
 }
 
@@ -2796,8 +2795,8 @@ static void R_CreateDepthToColorFBOImages()
 	}
 
 	{
-		tr.depthToColorBackFacesFBOImage = R_CreateImage( "_depthToColorBackFacesFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
-		tr.depthToColorFrontFacesFBOImage = R_CreateImage( "_depthToColorFrontFacesFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+		tr.depthToColorBackFacesFBOImage = R_CreateImage( "_depthToColorBackFacesFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+		tr.depthToColorFrontFacesFBOImage = R_CreateImage( "_depthToColorFrontFacesFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 	}
 }
 
@@ -2817,11 +2816,11 @@ static void R_CreateDownScaleFBOImages()
 		height = NearestPowerOfTwo( glConfig.vidHeight * 0.25f );
 	}
 
-	tr.downScaleFBOImage_quarter = R_CreateImage( "_downScaleFBOImage_quarter", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.downScaleFBOImage_quarter = R_CreateImage( "_downScaleFBOImage_quarter", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 
 	width = height = 64;
 
-	tr.downScaleFBOImage_64x64 = R_CreateImage( "_downScaleFBOImage_64x64", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.downScaleFBOImage_64x64 = R_CreateImage( "_downScaleFBOImage_64x64", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 }
 
 // *INDENT-OFF*
@@ -2829,24 +2828,24 @@ static void R_CreateShadowMapFBOImage()
 {
 	int  i;
 	int  width, height;
-	int numShadowMaps = ( r_softShadowsPP->integer && r_shadows->integer >= SHADOWING_VSM16 ) ? MAX_SHADOWMAPS * 2 : MAX_SHADOWMAPS;
+	int numShadowMaps = ( r_softShadowsPP->integer && r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_VSM16)) ? MAX_SHADOWMAPS * 2 : MAX_SHADOWMAPS;
 	int format;
 	filterType_t filter;
 
-	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < SHADOWING_ESM16 )
+	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < Util::ordinal(shadowingMode_t::SHADOWING_ESM16))
 	{
 		return;
 	}
 
-	if ( r_shadows->integer == SHADOWING_ESM32 )
+	if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM32))
 	{
 		format = IF_NOPICMIP | IF_ONECOMP32F;
 	}
-	else if ( r_shadows->integer == SHADOWING_VSM32 )
+	else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_VSM32))
 	{
 		format = IF_NOPICMIP | IF_TWOCOMP32F;
 	}
-	else if ( r_shadows->integer == SHADOWING_EVSM32 )
+	else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_EVSM32))
 	{
 		if ( r_evsmPostProcess->integer )
 		{
@@ -2857,11 +2856,11 @@ static void R_CreateShadowMapFBOImage()
 			format = IF_NOPICMIP | IF_RGBA32F;
 		}
 	}
-	else if ( r_shadows->integer == SHADOWING_ESM16 )
+	else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM16))
 	{
 		format = IF_NOPICMIP | IF_ONECOMP16F;
 	}
-	else if ( r_shadows->integer == SHADOWING_VSM16 )
+	else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_VSM16))
 	{
 		format = IF_NOPICMIP | IF_TWOCOMP16F;
 	}
@@ -2871,19 +2870,19 @@ static void R_CreateShadowMapFBOImage()
 	}
 	if( r_shadowMapLinearFilter->integer )
 	{
-		filter = FT_LINEAR;
+		filter = filterType_t::FT_LINEAR;
 	}
 	else
 	{
-		filter = FT_NEAREST;
+		filter = filterType_t::FT_NEAREST;
 	}
 
 	for ( i = 0; i < numShadowMaps; i++ )
 	{
 		width = height = shadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), nullptr, width, height, 1, format, filter, WT_ONE_CLAMP );
-		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), nullptr, width, height, 1, format, filter, WT_ONE_CLAMP );
+		tr.shadowMapFBOImage[ i ] = R_CreateImage( va( "_shadowMapFBO%d", i ), nullptr, width, height, 1, format, filter, wrapTypeEnum_t::WT_ONE_CLAMP );
+		tr.shadowClipMapFBOImage[ i ] = R_CreateImage( va( "_shadowClipMapFBO%d", i ), nullptr, width, height, 1, format, filter, wrapTypeEnum_t::WT_ONE_CLAMP );
 	}
 
 	// sun shadow maps
@@ -2891,8 +2890,8 @@ static void R_CreateShadowMapFBOImage()
 	{
 		width = height = sunShadowMapResolutions[ i % MAX_SHADOWMAPS ];
 
-		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), nullptr, width, height, 1, format, filter, WT_ONE_CLAMP );
-		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), nullptr, width, height, 1, format, filter, WT_ONE_CLAMP );
+		tr.sunShadowMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowMapFBO%d", i ), nullptr, width, height, 1, format, filter, wrapTypeEnum_t::WT_ONE_CLAMP );
+		tr.sunShadowClipMapFBOImage[ i ] = R_CreateImage( va( "_sunShadowClipMapFBO%d", i ), nullptr, width, height, 1, format, filter, wrapTypeEnum_t::WT_ONE_CLAMP );
 	}
 }
 
@@ -2906,20 +2905,20 @@ static void R_CreateShadowCubeFBOImage()
 	int format;
 	filterType_t filter;
 
-	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < SHADOWING_ESM16 )
+	if ( !glConfig2.textureFloatAvailable || r_shadows->integer < Util::ordinal(shadowingMode_t::SHADOWING_ESM16))
 	{
 		return;
 	}
 
-	if ( r_shadows->integer == SHADOWING_ESM32 )
+	if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM32))
 	{
 		format = IF_NOPICMIP | IF_ONECOMP32F;
 	}
-	else if ( r_shadows->integer == SHADOWING_VSM32 )
+	else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_VSM32))
 	{
 		format = IF_NOPICMIP | IF_TWOCOMP32F;
 	}
-	else if ( r_shadows->integer == SHADOWING_EVSM32 )
+	else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_EVSM32))
 	{
 		if ( r_evsmPostProcess->integer )
 		{
@@ -2930,11 +2929,11 @@ static void R_CreateShadowCubeFBOImage()
 			format = IF_NOPICMIP | IF_RGBA32F;
 		}
 	}
-	else if ( r_shadows->integer == SHADOWING_ESM16 )
+	else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM16))
 	{
 		format = IF_NOPICMIP | IF_ONECOMP16F;
 	}
-	else if ( r_shadows->integer == SHADOWING_VSM16 )
+	else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_VSM16))
 	{
 		format = IF_NOPICMIP | IF_TWOCOMP16F;
 	}
@@ -2944,19 +2943,19 @@ static void R_CreateShadowCubeFBOImage()
 	}
 	if( r_shadowMapLinearFilter->integer )
 	{
-		filter = FT_LINEAR;
+		filter = filterType_t::FT_LINEAR;
 	}
 	else
 	{
-		filter = FT_NEAREST;
+		filter = filterType_t::FT_NEAREST;
 	}
 
 	for ( j = 0; j < 5; j++ )
 	{
 		width = height = shadowMapResolutions[ j ];
 
-		tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), nullptr, width, height, format, filter, WT_EDGE_CLAMP );
-		tr.shadowClipCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowClipCubeFBO%d", j ), nullptr, width, height, format, filter, WT_EDGE_CLAMP );
+		tr.shadowCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowCubeFBO%d", j ), nullptr, width, height, format, filter, wrapTypeEnum_t::WT_EDGE_CLAMP );
+		tr.shadowClipCubeFBOImage[ j ] = R_CreateCubeImage( va( "_shadowClipCubeFBO%d", j ), nullptr, width, height, format, filter, wrapTypeEnum_t::WT_EDGE_CLAMP );
 	}
 }
 
@@ -2978,8 +2977,8 @@ static void R_CreateBlackCubeImage()
 		Com_Memset( data[ i ], 0, width * height * 4 );
 	}
 
-	tr.blackCubeImage = R_CreateCubeImage( "_blackCube", ( const byte ** ) data, width, height, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
-	tr.autoCubeImage = R_CreateCubeImage( "_autoCube", ( const byte ** ) data, width, height, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
+	tr.blackCubeImage = R_CreateCubeImage( "_blackCube", ( const byte ** ) data, width, height, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
+	tr.autoCubeImage = R_CreateCubeImage( "_autoCube", ( const byte ** ) data, width, height, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
 
 	for ( i = 5; i >= 0; i-- )
 	{
@@ -3005,7 +3004,7 @@ static void R_CreateWhiteCubeImage()
 		Com_Memset( data[ i ], 0xFF, width * height * 4 );
 	}
 
-	tr.whiteCubeImage = R_CreateCubeImage( "_whiteCube", ( const byte ** ) data, width, height, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
+	tr.whiteCubeImage = R_CreateCubeImage( "_whiteCube", ( const byte ** ) data, width, height, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
 
 	for ( i = 5; i >= 0; i-- )
 	{
@@ -3043,8 +3042,8 @@ static void R_CreateColorGradeImage()
 					      REF_COLORGRADEMAP_SIZE,
 					      REF_COLORGRADE_SLOTS * REF_COLORGRADEMAP_SIZE,
 					      IF_NOPICMIP | IF_NOCOMPRESSION | IF_NOLIGHTSCALE,
-					      FT_LINEAR,
-					      WT_EDGE_CLAMP );
+					      filterType_t::FT_LINEAR,
+						  wrapTypeEnum_t::WT_EDGE_CLAMP );
 
 	ri.Hunk_FreeTempMemory( data );
 }
@@ -3068,12 +3067,12 @@ void R_CreateBuiltinImages()
 	// we use a solid white image instead of disabling texturing
 	Com_Memset( data, 255, sizeof( data ) );
 	tr.whiteImage = R_CreateImage( "_white", ( const byte ** ) &dataPtr,
-				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+				       8, 8, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_REPEAT );
 
 	// we use a solid black image instead of disabling texturing
 	Com_Memset( data, 0, sizeof( data ) );
 	tr.blackImage = R_CreateImage( "_black", ( const byte ** ) &dataPtr,
-				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+				       8, 8, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_REPEAT );
 
 	// red
 	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
@@ -3083,7 +3082,7 @@ void R_CreateBuiltinImages()
 	}
 
 	tr.redImage = R_CreateImage( "_red", ( const byte ** ) &dataPtr,
-				     8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+				     8, 8, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_REPEAT );
 
 	// green
 	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
@@ -3093,7 +3092,7 @@ void R_CreateBuiltinImages()
 	}
 
 	tr.greenImage = R_CreateImage( "_green", ( const byte ** ) &dataPtr,
-				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+				       8, 8, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_REPEAT );
 
 	// blue
 	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
@@ -3103,7 +3102,7 @@ void R_CreateBuiltinImages()
 	}
 
 	tr.blueImage = R_CreateImage( "_blue", ( const byte ** ) &dataPtr,
-				      8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
+				      8, 8, 1, IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_REPEAT );
 
 	// generate a default normalmap with a zero heightmap
 	for ( x = DEFAULT_SIZE * DEFAULT_SIZE, out = &data[0][0][0]; x; --x, out += 4 )
@@ -3114,13 +3113,13 @@ void R_CreateBuiltinImages()
 	}
 
 	tr.flatImage = R_CreateImage( "_flat", ( const byte ** ) &dataPtr,
-				      8, 8, 1, IF_NOPICMIP | IF_NORMALMAP, FT_LINEAR, WT_REPEAT );
+				      8, 8, 1, IF_NOPICMIP | IF_NORMALMAP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_REPEAT );
 
 	for ( x = 0; x < 32; x++ )
 	{
 		// scratchimage is usually used for cinematic drawing
 		tr.scratchImage[ x ] = R_CreateImage( "_scratch", ( const byte ** ) &dataPtr,
-						      DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NONE, FT_LINEAR, WT_CLAMP );
+						      DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NONE, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_CLAMP );
 	}
 
 	out = &data[ 0 ][ 0 ][ 0 ];
@@ -3146,8 +3145,8 @@ void R_CreateBuiltinImages()
 
 	tr.quadraticImage =
 		R_CreateImage( "_quadratic", ( const byte ** ) &dataPtr,
-			       DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR,
-			       WT_CLAMP );
+			       DEFAULT_SIZE, DEFAULT_SIZE, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_LINEAR,
+					   wrapTypeEnum_t::WT_CLAMP );
 
 	R_CreateRandomNormalsImage();
 	R_CreateFogImage();
@@ -3177,7 +3176,7 @@ void R_InitImages()
 {
 	const char *charsetImage = "gfx/2d/consolechars";
 
-	ri.Printf( PRINT_DEVELOPER, "------- R_InitImages -------\n" );
+	Log::Debug("------- R_InitImages -------" );
 
 	Com_Memset( r_imageHashTable, 0, sizeof( r_imageHashTable ) );
 	Com_InitGrowList( &tr.images, 4096 );
@@ -3193,11 +3192,11 @@ void R_InitImages()
 	// create default texture and white texture
 	R_CreateBuiltinImages();
 
-	tr.charsetImage = R_FindImageFile( charsetImage, IF_NOCOMPRESSION | IF_NOPICMIP, FT_DEFAULT, WT_CLAMP );
+	tr.charsetImage = R_FindImageFile( charsetImage, IF_NOCOMPRESSION | IF_NOPICMIP, filterType_t::FT_DEFAULT, wrapTypeEnum_t::WT_CLAMP );
 
 	if ( !tr.charsetImage )
 	{
-		ri.Error( ERR_FATAL, "R_InitImages: could not load '%s'", charsetImage );
+		ri.Error( errorParm_t::ERR_FATAL, "R_InitImages: could not load '%s'", charsetImage );
 	}
 }
 
@@ -3211,7 +3210,7 @@ void R_ShutdownImages()
 	int     i;
 	image_t *image;
 
-	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownImages -------\n" );
+	Log::Debug("------- R_ShutdownImages -------" );
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{
@@ -3237,7 +3236,7 @@ void RE_GetTextureSize( int textureID, int *width, int *height )
 
 	shader = R_GetShaderByHandle( textureID );
 
-	assert( shader );
+	ASSERT(shader != nullptr);
 	if ( !shader )
 	{
 		return;
@@ -3246,7 +3245,7 @@ void RE_GetTextureSize( int textureID, int *width, int *height )
 	baseImage = shader->stages[ 0 ]->bundle->image[ 0 ];
 	if ( !baseImage )
 	{
-		Com_DPrintf( "%sRE_GetTextureSize: shader %s is missing base image\n",
+		Log::Debug( "%sRE_GetTextureSize: shader %s is missing base image",
 			Color::CString( Color::Yellow ),
 			shader->name );
 		return;
@@ -3268,5 +3267,5 @@ qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
 {
 	const char *name = va( "rocket%d", numTextures++ );
 	R_SyncRenderThread();
-	return RE_RegisterShaderFromImage( name, R_CreateImage( name, &pic, width, height, 1, IF_NOCOMPRESSION | IF_NOPICMIP, FT_LINEAR, WT_CLAMP ) );
+	return RE_RegisterShaderFromImage( name, R_CreateImage( name, &pic, width, height, 1, IF_NOCOMPRESSION | IF_NOPICMIP, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_CLAMP ) );
 }

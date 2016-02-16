@@ -98,7 +98,7 @@ namespace Cvar {
      */
     template<typename T> class Cvar : public CvarProxy{
         public:
-            typedef T value_type;
+            using value_type = T;
 
             // See the comment near the extension classes about that double constructor.
             Cvar(std::string name, std::string description, int flags, value_type defaultValue);
@@ -150,7 +150,7 @@ namespace Cvar {
      */
     template<typename Base> class Callback : public Base {
         public:
-            typedef typename Base::value_type value_type;
+            using value_type = typename Base::value_type;
 
             template <typename ... Args>
             Callback(std::string name, std::string description, int flags, value_type defaultValue, std::function<void(value_type)> callback, Args&& ... args);
@@ -170,7 +170,7 @@ namespace Cvar {
 
     template<typename Base> class Modified : public Base {
         public:
-            typedef typename Base::value_type value_type;
+            using value_type = typename Base::value_type;
 
             template<typename ... Args>
             Modified(std::string name, std::string description, int flags, value_type defaultValue, Args ... args);
@@ -192,7 +192,7 @@ namespace Cvar {
 
     template<typename Base> class Range : public Base {
         public:
-            typedef typename Base::value_type value_type;
+            using value_type = typename Base::value_type;
 
             template<typename ... Args>
             Range(std::string name, std::string description, int flags, value_type defaultValue, value_type min, value_type max, Args ... args);

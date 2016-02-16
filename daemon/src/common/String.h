@@ -33,6 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <algorithm>
 
+namespace Str {
+    void AssertOnTinyFormatError(std::string reason);
+}
+
+#define TINYFORMAT_ERROR(reason) Str::AssertOnTinyFormatError(#reason);
 #include "tinyformat/tinyformat.h"
 
 namespace Str {
@@ -185,7 +190,7 @@ namespace Str {
         const T* ptr;
         size_t len;
     };
-    typedef BasicStringRef<char> StringRef;
+    using StringRef = BasicStringRef<char>;
 
     bool ParseInt(int& value, Str::StringRef text);
 

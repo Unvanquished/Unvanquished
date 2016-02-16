@@ -161,7 +161,7 @@ public:
 	{
 		if ( _compileMacros.size() >= MAX_SHADER_MACROS )
 		{
-			ri.Error( ERR_DROP, "Can't register more than %u compile macros for a single shader", MAX_SHADER_MACROS );
+			ri.Error( errorParm_t::ERR_DROP, "Can't register more than %u compile macros for a single shader", MAX_SHADER_MACROS );
 		}
 
 		_compileMacros.push_back( compileMacro );
@@ -246,7 +246,7 @@ public:
 	void load( T *& shader )
 	{
 		if( _deformShaders.size() == 0 ) {
-			(void)getDeformShaderIndex( NULL, 0 );
+			Q_UNUSED(getDeformShaderIndex( NULL, 0 ));
 		}
 
 		shader = new T( this );
@@ -336,7 +336,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -376,7 +376,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -401,7 +401,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -442,7 +442,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -482,7 +482,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -522,7 +522,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -547,7 +547,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -589,7 +589,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
@@ -614,7 +614,7 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
-		assert( p == glState.currentProgram );
+		ASSERT_EQ(p, glState.currentProgram);
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -723,7 +723,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_VERTEX_SKINNING;
+		return EGLCompileMacro::USE_VERTEX_SKINNING;
 	}
 
 	bool HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
@@ -773,7 +773,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_VERTEX_ANIMATION;
+		return EGLCompileMacro::USE_VERTEX_ANIMATION;
 	}
 
 	bool     HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
@@ -818,7 +818,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_VERTEX_SPRITE;
+		return EGLCompileMacro::USE_VERTEX_SPRITE;
 	}
 
 	bool     HasConflictingMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
@@ -865,7 +865,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_TCGEN_ENVIRONMENT;
+		return EGLCompileMacro::USE_TCGEN_ENVIRONMENT;
 	}
 
 	uint32_t        GetRequiredVertexAttributes() const
@@ -912,7 +912,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_TCGEN_LIGHTMAP;
+		return EGLCompileMacro::USE_TCGEN_LIGHTMAP;
 	}
 
 	void EnableTCGenLightmap()
@@ -954,7 +954,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_NORMAL_MAPPING;
+		return EGLCompileMacro::USE_NORMAL_MAPPING;
 	}
 
 	uint32_t        GetRequiredVertexAttributes() const
@@ -1001,7 +1001,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_PARALLAX_MAPPING;
+		return EGLCompileMacro::USE_PARALLAX_MAPPING;
 	}
 
 	bool MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
@@ -1045,7 +1045,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_REFLECTIVE_SPECULAR;
+		return EGLCompileMacro::USE_REFLECTIVE_SPECULAR;
 	}
 
 	bool MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
@@ -1089,7 +1089,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return LIGHT_DIRECTIONAL;
+		return EGLCompileMacro::LIGHT_DIRECTIONAL;
 	}
 
 	void EnableMacro_LIGHT_DIRECTIONAL()
@@ -1131,7 +1131,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_SHADOWING;
+		return EGLCompileMacro::USE_SHADOWING;
 	}
 
 	void EnableShadowing()
@@ -1173,7 +1173,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_GLOW_MAPPING;
+		return EGLCompileMacro::USE_GLOW_MAPPING;
 	}
 
 	void EnableMacro_USE_GLOW_MAPPING()
@@ -1215,7 +1215,7 @@ public:
 
 	EGLCompileMacro GetType() const
 	{
-		return USE_DEPTH_FADE;
+		return EGLCompileMacro::USE_DEPTH_FADE;
 	}
 
 	void EnableMacro_USE_DEPTH_FADE()
@@ -1908,17 +1908,17 @@ public:
 
 		if ( r_logFile->integer )
 		{
-			GLimp_LogComment( va( "--- u_ColorModulate::SetUniform_ColorModulate( program = %s, colorGen = %i, alphaGen = %i ) ---\n", _shader->GetName().c_str(), colorGen, alphaGen ) );
+			GLimp_LogComment( va( "--- u_ColorModulate::SetUniform_ColorModulate( program = %s, colorGen = %s, alphaGen = %s ) ---\n", _shader->GetName().c_str(), Util::enum_str(colorGen), Util::enum_str(alphaGen)) );
 		}
 
 		switch ( colorGen )
 		{
-			case CGEN_VERTEX:
+			case colorGen_t::CGEN_VERTEX:
 				_shader->AddVertexAttribBit( ATTR_COLOR );
 				VectorSet( v, 1, 1, 1 );
 				break;
 
-			case CGEN_ONE_MINUS_VERTEX:
+			case colorGen_t::CGEN_ONE_MINUS_VERTEX:
 				_shader->AddVertexAttribBit( ATTR_COLOR );
 				VectorSet( v, -1, -1, -1 );
 				break;
@@ -1931,12 +1931,12 @@ public:
 
 		switch ( alphaGen )
 		{
-			case AGEN_VERTEX:
+			case alphaGen_t::AGEN_VERTEX:
 				_shader->AddVertexAttribBit( ATTR_COLOR );
 				v[ 3 ] = 1.0f;
 				break;
 
-			case AGEN_ONE_MINUS_VERTEX:
+			case alphaGen_t::AGEN_ONE_MINUS_VERTEX:
 				_shader->AddVertexAttribBit( ATTR_COLOR );
 				v[ 3 ] = -1.0f;
 				break;

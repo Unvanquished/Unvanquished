@@ -81,7 +81,7 @@ void SP_sfx_speaker( gentity_t *self )
 
 	if ( !G_SpawnString( "noise", "NOSOUND", &tmpString ) )
 	{
-		G_Error( "speaker %s without a noise key", etos( self ) );
+		Com_Error(errorParm_t::ERR_DROP,  "speaker %s without a noise key", etos( self ) );
 	}
 
 	// force all client-relative sounds to be "activator" speakers that
@@ -93,7 +93,7 @@ void SP_sfx_speaker( gentity_t *self )
 	self->soundIndex = G_SoundIndex( tmpString );
 
 	// a repeating speaker can be done completely client side
-	self->s.eType = ET_SPEAKER;
+	self->s.eType = entityType_t::ET_SPEAKER;
 	self->s.eventParm = self->soundIndex;
 	self->s.frame = self->config.wait.time * 10;
 	self->s.clientNum = self->config.wait.variance * 10;

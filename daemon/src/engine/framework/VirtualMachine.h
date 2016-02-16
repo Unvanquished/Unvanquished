@@ -91,7 +91,8 @@ enum vmType_t {
 struct VMParams {
 	VMParams(std::string name)
 		: logSyscalls("vm." + name + ".logSyscalls", "dump all the syscalls in the " + name + ".syscallLog file", Cvar::NONE, false),
-		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE, TYPE_NACL, 0, TYPE_END - 1),
+		  vmType("vm." + name + ".type", "how the vm should be loaded for " + name, Cvar::NONE,
+				 Util::ordinal(vmType_t::TYPE_NACL), 0, Util::ordinal(vmType_t::TYPE_END) - 1),
 		  debug("vm." + name + ".debug", "run a gdbserver on localhost:4014 to debug the VM", Cvar::NONE, false),
 		  debugLoader("vm." + name + ".debugLoader", "make nacl_loader dump information to " + name + "-nacl_loader.log", Cvar::NONE, 0, 0, 5) {
 	}

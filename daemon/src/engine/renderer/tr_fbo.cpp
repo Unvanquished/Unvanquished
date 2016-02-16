@@ -47,31 +47,28 @@ bool R_CheckFBO( const FBO_t *fbo )
 	// an error occurred
 	switch ( code )
 	{
-		case GL_FRAMEBUFFER_COMPLETE:
-			break;
-
 		case GL_FRAMEBUFFER_UNSUPPORTED:
-			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) Unsupported framebuffer format\n", fbo->name );
+			Log::Warn("R_CheckFBO: (%s) Unsupported framebuffer format", fbo->name );
 			break;
 
 		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) Framebuffer incomplete attachment\n", fbo->name );
+			Log::Warn("R_CheckFBO: (%s) Framebuffer incomplete attachment", fbo->name );
 			break;
 
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) Framebuffer incomplete, missing attachment\n", fbo->name );
+			Log::Warn("R_CheckFBO: (%s) Framebuffer incomplete, missing attachment", fbo->name );
 			break;
 
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) Framebuffer incomplete, missing draw buffer\n", fbo->name );
+			Log::Warn("R_CheckFBO: (%s) Framebuffer incomplete, missing draw buffer", fbo->name );
 			break;
 
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) Framebuffer incomplete, missing read buffer\n", fbo->name );
+			Log::Warn("R_CheckFBO: (%s) Framebuffer incomplete, missing read buffer", fbo->name );
 			break;
 
 		default:
-			ri.Printf( PRINT_WARNING, "R_CheckFBO: (%s) unknown error 0x%X\n", fbo->name, code );
+			Log::Warn("R_CheckFBO: (%s) unknown error 0x%X", fbo->name, code );
 			break;
 	}
 
@@ -91,25 +88,25 @@ FBO_t          *R_CreateFBO( const char *name, int width, int height )
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateFBO: \"%s\" is too long", name );
+		ri.Error(errorParm_t::ERR_DROP, "R_CreateFBO: \"%s\" is too long", name );
 	}
 
 	if ( width <= 0 || width > glConfig2.maxRenderbufferSize )
 	{
-		ri.Error( ERR_DROP, "R_CreateFBO: bad width %i", width );
+		ri.Error(errorParm_t::ERR_DROP, "R_CreateFBO: bad width %i", width );
 	}
 
 	if ( height <= 0 || height > glConfig2.maxRenderbufferSize )
 	{
-		ri.Error( ERR_DROP, "R_CreateFBO: bad height %i", height );
+		ri.Error(errorParm_t::ERR_DROP, "R_CreateFBO: bad height %i", height );
 	}
 
 	if ( tr.numFBOs == MAX_FBOS )
 	{
-		ri.Error( ERR_DROP, "R_CreateFBO: MAX_FBOS hit" );
+		ri.Error(errorParm_t::ERR_DROP, "R_CreateFBO: MAX_FBOS hit" );
 	}
 
-	fbo = tr.fbos[ tr.numFBOs ] = (FBO_t*) ri.Hunk_Alloc( sizeof( *fbo ), h_low );
+	fbo = tr.fbos[ tr.numFBOs ] = (FBO_t*) ri.Hunk_Alloc( sizeof( *fbo ), ha_pref::h_low );
 	Q_strncpyz( fbo->name, name, sizeof( fbo->name ) );
 	fbo->index = tr.numFBOs++;
 	fbo->width = width;
@@ -133,7 +130,7 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
-		ri.Printf( PRINT_WARNING, "R_CreateFBOColorBuffer: invalid attachment index %i\n", index );
+		Log::Warn("R_CreateFBOColorBuffer: invalid attachment index %i", index );
 		return;
 	}
 
@@ -170,7 +167,7 @@ void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 	if ( format != GL_DEPTH_COMPONENT &&
 	     format != GL_DEPTH_COMPONENT16 && format != GL_DEPTH_COMPONENT24 && format != GL_DEPTH_COMPONENT32_ARB )
 	{
-		ri.Printf( PRINT_WARNING, "R_CreateFBODepthBuffer: format %i is not depth-renderable\n", format );
+		Log::Warn("R_CreateFBODepthBuffer: format %i is not depth-renderable", format );
 		return;
 	}
 
@@ -207,7 +204,7 @@ void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 	     format != GL_STENCIL_INDEX1_EXT &&
 	     format != GL_STENCIL_INDEX4_EXT && format != GL_STENCIL_INDEX8_EXT && format != GL_STENCIL_INDEX16_EXT )
 	{
-		ri.Printf( PRINT_WARNING, "R_CreateFBOStencilBuffer: format %i is not stencil-renderable\n", format );
+		Log::Warn("R_CreateFBOStencilBuffer: format %i is not stencil-renderable", format );
 		return;
 	}
 
@@ -243,7 +240,7 @@ void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 
 	if ( format != GL_DEPTH_STENCIL_EXT && format != GL_DEPTH24_STENCIL8_EXT )
 	{
-		ri.Printf( PRINT_WARNING, "R_CreateFBOPackedDepthStencilBuffer: format %i is not depth-stencil-renderable\n", format );
+		Log::Warn("R_CreateFBOPackedDepthStencilBuffer: format %i is not depth-stencil-renderable", format );
 		return;
 	}
 
@@ -280,7 +277,7 @@ void R_AttachFBOTexture1D( int texId, int index )
 {
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
-		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture1D: invalid attachment index %i\n", index );
+		Log::Warn("R_AttachFBOTexture1D: invalid attachment index %i", index );
 		return;
 	}
 
@@ -296,13 +293,13 @@ void R_AttachFBOTexture2D( int target, int texId, int index )
 {
 	if ( target != GL_TEXTURE_2D && ( target < GL_TEXTURE_CUBE_MAP_POSITIVE_X || target > GL_TEXTURE_CUBE_MAP_NEGATIVE_Z ) )
 	{
-		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture2D: invalid target %i\n", target );
+		Log::Warn("R_AttachFBOTexture2D: invalid target %i", target );
 		return;
 	}
 
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
-		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture2D: invalid attachment index %i\n", index );
+		Log::Warn("R_AttachFBOTexture2D: invalid attachment index %i", index );
 		return;
 	}
 
@@ -318,7 +315,7 @@ void R_AttachFBOTexture3D( int texId, int index, int zOffset )
 {
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
-		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture3D: invalid attachment index %i\n", index );
+		Log::Warn("R_AttachFBOTexture3D: invalid attachment index %i", index );
 		return;
 	}
 
@@ -403,7 +400,7 @@ void R_InitFBOs()
 	int i;
 	int width, height;
 
-	ri.Printf( PRINT_DEVELOPER, "------- R_InitFBOs -------\n" );
+	Log::Debug("------- R_InitFBOs -------" );
 
 	if ( !glConfig2.framebufferObjectAvailable )
 	{
@@ -431,11 +428,11 @@ void R_InitFBOs()
 	tr.occlusionRenderFBO = R_CreateFBO( "_occlusionRender", width, height );
 	R_BindFBO( tr.occlusionRenderFBO );
 
-	if ( glConfig.hardwareType == GLHW_ATI_DX10 )
+	if ( glConfig.hardwareType == glHardwareType_t::GLHW_ATI_DX10 )
 	{
 		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT16 );
 	}
-	else if ( glConfig.hardwareType == GLHW_NV_DX10 )
+	else if ( glConfig.hardwareType == glHardwareType_t::GLHW_NV_DX10 )
 	{
 		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
 	}
@@ -452,7 +449,7 @@ void R_InitFBOs()
 
 	R_CheckFBO( tr.occlusionRenderFBO );
 
-	if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable )
+	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && glConfig2.textureFloatAvailable )
 	{
 		// shadowMap FBOs for shadow mapping offscreen rendering
 		for ( i = 0; i < MAX_SHADOWMAPS; i++ )
@@ -483,7 +480,7 @@ void R_InitFBOs()
 
 			R_CreateFBODepthBuffer( tr.sunShadowMapFBO[ i ], GL_DEPTH_COMPONENT24 );
 
-			if ( r_shadows->integer == SHADOWING_EVSM32 && r_evsmPostProcess->integer )
+			if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_EVSM32) && r_evsmPostProcess->integer )
 			{
 				R_AttachFBOTextureDepth( tr.sunShadowMapFBOImage[ i ]->texnum );
 
@@ -589,7 +586,7 @@ void R_ShutdownFBOs()
 	int   i, j;
 	FBO_t *fbo;
 
-	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownFBOs -------\n" );
+	Log::Debug("------- R_ShutdownFBOs -------" );
 
 	if ( !glConfig2.framebufferObjectAvailable )
 	{
@@ -639,19 +636,19 @@ void R_FBOList_f()
 
 	if ( !glConfig2.framebufferObjectAvailable )
 	{
-		ri.Printf( PRINT_ALL, "GL_ARB_framebuffer_object is not available.\n" );
+		Log::Notice("GL_ARB_framebuffer_object is not available." );
 		return;
 	}
 
-	ri.Printf( PRINT_ALL, "             size       name\n" );
-	ri.Printf( PRINT_ALL, "----------------------------------------------------------\n" );
+	Log::Notice("             size       name" );
+	Log::Notice("----------------------------------------------------------" );
 
 	for ( i = 0; i < tr.numFBOs; i++ )
 	{
 		fbo = tr.fbos[ i ];
 
-		ri.Printf( PRINT_ALL, "  %4i: %4i %4i %s\n", i, fbo->width, fbo->height, fbo->name );
+		Log::Notice("  %4i: %4i %4i %s", i, fbo->width, fbo->height, fbo->name );
 	}
 
-	ri.Printf( PRINT_ALL, " %i FBOs\n", tr.numFBOs );
+	Log::Notice(" %i FBOs", tr.numFBOs );
 }

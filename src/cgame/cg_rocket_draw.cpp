@@ -43,12 +43,12 @@ Maryland 20850 USA.
 
 static void CG_GetRocketElementColor( Color::Color& color )
 {
-	Rocket_GetProperty( "color", &color, sizeof(Color::Color), ROCKET_COLOR );
+	Rocket_GetProperty( "color", &color, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementBGColor( Color::Color& bgColor )
 {
-	Rocket_GetProperty( "background-color", &bgColor, sizeof(Color::Color), ROCKET_COLOR );
+	Rocket_GetProperty( "background-color", &bgColor, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementRect( rectDef_t *rect )
@@ -952,13 +952,13 @@ public:
 
 			if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 			{
-				CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
+				Com_Error(errorParm_t::ERR_DROP,  "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
 			}
 
 			if ( !cg_weapons[ weapon ].registered )
 			{
-				Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
-				"is not registered\n", weapon, BG_Weapon( weapon )->name );
+				Log::Warn( "CG_DrawWeaponIcon: weapon %d (%s) "
+				"is not registered", weapon, BG_Weapon( weapon )->name );
 				SetProperty( "display", "none" );
 				return;
 			}
@@ -1039,7 +1039,7 @@ public:
 
 		es = &cg_entities[ trace.entityNum ].currentState;
 
-		if ( es->eType == ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
+		if ( es->eType == entityType_t::ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
 			cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
 		{
 			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
@@ -1523,7 +1523,7 @@ static void CG_ScanForCrosshairEntity()
 		// we have a non-client entity
 
 		// set friend/foe if it's a living buildable
-		if ( targetState->eType == ET_BUILDABLE && targetState->generic1 > 0 )
+		if ( targetState->eType == entityType_t::ET_BUILDABLE && targetState->generic1 > 0 )
 		{
 			targetTeam = BG_Buildable( targetState->modelindex )->team;
 
@@ -1539,7 +1539,7 @@ static void CG_ScanForCrosshairEntity()
 		}
 
 		// set more stuff if requested
-		if ( cg_drawEntityInfo.integer && targetState->eType )
+		if ( cg_drawEntityInfo.integer && targetState->eType != entityType_t::ET_GENERAL )
 		{
 			cg.crosshairClientNum = trace.entityNum;
 			cg.crosshairClientTime = cg.time;
@@ -1759,7 +1759,7 @@ public:
 
 	void DoOnUpdate()
 	{
-		if ( rocketInfo.cstate.connState < CA_LOADING )
+		if ( rocketInfo.cstate.connState < connstate_t::CA_LOADING )
 		{
 			Clear();
 			return;
@@ -2664,7 +2664,7 @@ static void CG_DrawPlayerAmmoStack()
 		localColor = foreColor;
 	}
 
-	Rocket_GetProperty( "text-align", buf, sizeof( buf ), ROCKET_STRING );
+	Rocket_GetProperty( "text-align", buf, sizeof( buf ), rocketVarType_t::ROCKET_STRING );
 
 	if ( *buf && !Q_stricmp( buf, "right" ) )
 	{
@@ -2787,7 +2787,7 @@ void CG_Rocket_DrawConnectText()
 		Q_strncpyz( rml, va( "Connecting to %s <br/>", rocketInfo.cstate.servername ), sizeof( rml ) );
 	}
 
-	if ( rocketInfo.cstate.connState < CA_CONNECTED && *rocketInfo.cstate.messageString )
+	if ( rocketInfo.cstate.connState < connstate_t::CA_CONNECTED && *rocketInfo.cstate.messageString )
 	{
 		Q_strcat( rml, sizeof( rml ), "<br />" );
 		Q_strcat( rml, sizeof( rml ), rocketInfo.cstate.messageString );
@@ -2795,22 +2795,22 @@ void CG_Rocket_DrawConnectText()
 
 	switch ( rocketInfo.cstate.connState )
 	{
-		case CA_CONNECTING:
+		case connstate_t::CA_CONNECTING:
 			s = va( _( "Awaiting connection…%i" ), rocketInfo.cstate.connectPacketCount );
 			break;
 
-		case CA_CHALLENGING:
+		case connstate_t::CA_CHALLENGING:
 			s = va( _( "Awaiting challenge…%i" ), rocketInfo.cstate.connectPacketCount );
 			break;
 
-		case CA_CONNECTED:
+		case connstate_t::CA_CONNECTED:
 			s = _( "Awaiting gamestate…" );
 		break;
 
-		case CA_LOADING:
+		case connstate_t::CA_LOADING:
 			return;
 
-		case CA_PRIMED:
+		case connstate_t::CA_PRIMED:
 			return;
 
 		default:
@@ -2938,9 +2938,9 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	CG_GetRocketElementRect( &rect );
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
-	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
-	Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof(Color::Color), ROCKET_COLOR );
-	Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof(Color::Color), ROCKET_COLOR );
+	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
+	Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
+	Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 
 
 	ps = &cg.predictedPlayerState;
@@ -3123,9 +3123,9 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
 
 	CG_GetRocketElementRect( &rect );
-	Rocket_GetProperty( "cell-color", &backColour, sizeof(Color::Color), ROCKET_COLOR );
+	Rocket_GetProperty( "cell-color", &backColour, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 	CG_GetRocketElementColor( foreColour );
-	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), ROCKET_FLOAT );
+	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
 
 	team = ( team_t ) cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
@@ -3262,7 +3262,7 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	if ( cgs.voteModified[ team ] )
 	{
 		cgs.voteModified[ team ] = false;
-		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+		trap_S_StartLocalSound( cgs.media.talkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 	}
 
 	sec = ( VOTE_TIME - ( cg.time - cgs.voteTime[ team ] ) ) / 1000;
@@ -3595,7 +3595,7 @@ void CG_Rocket_RegisterElements()
 		//Check that the commands are in increasing order so that it can be used by bsearch
 		if ( i != 0 && Q_stricmp( elementRenderCmdList[ i - 1 ].name, elementRenderCmdList[ i ].name ) > 0 )
 		{
-			CG_Printf( "CGame elementRenderCmdList is in the wrong order for %s and %s\n", elementRenderCmdList[i - 1].name, elementRenderCmdList[ i ].name );
+			Log::Warn( "CGame elementRenderCmdList is in the wrong order for %s and %s", elementRenderCmdList[i - 1].name, elementRenderCmdList[ i ].name );
 		}
 
 		Rocket_RegisterElement( elementRenderCmdList[ i ].name );

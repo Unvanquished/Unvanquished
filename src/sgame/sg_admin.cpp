@@ -38,7 +38,7 @@ static void G_admin_notIntermission( gentity_t *ent )
 	char command[ MAX_ADMIN_CMD_LEN ];
 	*command = 0;
 	trap_Argv( 0, command, sizeof( command ) );
-	ADMP( va( "%s %s", QQ( N_("^3$1$: ^7this command is not valid during intermission\n") ), command ) );
+	ADMP( va( "%s %s", QQ( N_("^3$1$: ^7this command is not valid during intermission") ), command ) );
 }
 
 #define RETURN_IF_INTERMISSION \
@@ -455,7 +455,7 @@ void G_admin_cmdlist( gentity_t *ent )
 
 		if ( len + outlen >= sizeof( out ) - 1 )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "cmds%s\n", out ) );
+			trap_SendServerCommand( ent - g_entities, va( "cmds%s", out ) );
 			outlen = 0;
 		}
 
@@ -463,7 +463,7 @@ void G_admin_cmdlist( gentity_t *ent )
 		outlen += len;
 	}
 
-	trap_SendServerCommand( ent - g_entities, va( "cmds%s\n", out ) );
+	trap_SendServerCommand( ent - g_entities, va( "cmds%s", out ) );
 }
 
 // match a certain flag within these flags
@@ -587,7 +587,7 @@ bool G_admin_permission( gentity_t *ent, const char *flag )
 
 	if ( ent->client->pers.admin && ent->client->pers.pubkey_authenticated != 1 )
 	{
-		CP( "cp_tr " QQ(N_("^1You are not pubkey authenticated")) "\n" );
+		CP( "cp_tr " QQ(N_("^1You are not pubkey authenticated")) "" );
 		return false;
 	}
 
@@ -767,14 +767,14 @@ static void admin_writeconfig_string( char *s, fileHandle_t f )
 		trap_FS_Write( s, strlen( s ), f );
 	}
 
-	trap_FS_Write( "\n", 1, f );
+	trap_FS_Write( "", 1, f );
 }
 
 static void admin_writeconfig_int( int v, fileHandle_t f )
 {
 	char buf[ 32 ];
 
-	Com_sprintf( buf, sizeof( buf ), "%d\n", v );
+	Com_sprintf( buf, sizeof( buf ), "%d", v );
 	trap_FS_Write( buf, strlen( buf ), f );
 }
 
@@ -789,30 +789,30 @@ void G_admin_writeconfig()
 
 	if ( !g_admin.string[ 0 ] )
 	{
-		G_Printf( S_WARNING "g_admin is not set. "
-		          " configuration will not be saved to a file.\n" );
+		Log::Warn("g_admin is not set. "
+		          " configuration will not be saved to a file." );
 		return;
 	}
 
 	t = Com_GMTime( nullptr );
 
-	if ( trap_FS_FOpenFile( g_admin.string, &f, FS_WRITE_VIA_TEMPORARY ) < 0 )
+	if ( trap_FS_FOpenFile( g_admin.string, &f, fsMode_t::FS_WRITE_VIA_TEMPORARY ) < 0 )
 	{
-		G_Printf( "admin_writeconfig: could not open g_admin file \"%s\"\n",
+		Log::Warn( "admin_writeconfig: could not open g_admin file \"%s\"",
 		          g_admin.string );
 		return;
 	}
 
 	for ( l = g_admin_levels; l; l = l->next )
 	{
-		trap_FS_Write( "[level]\n", 8, f );
+		trap_FS_Write( "[level]", 8, f );
 		trap_FS_Write( "level   = ", 10, f );
 		admin_writeconfig_int( l->level, f );
 		trap_FS_Write( "name    = ", 10, f );
 		admin_writeconfig_string( l->name, f );
 		trap_FS_Write( "flags   = ", 10, f );
 		admin_writeconfig_string( l->flags, f );
-		trap_FS_Write( "\n", 1, f );
+		trap_FS_Write( "", 1, f );
 	}
 
 	for ( a = g_admin_admins; a; a = a->next )
@@ -823,7 +823,7 @@ void G_admin_writeconfig()
 			continue;
 		}
 
-		trap_FS_Write( "[admin]\n", 8, f );
+		trap_FS_Write( "[admin]", 8, f );
 		trap_FS_Write( "name    = ", 10, f );
 		admin_writeconfig_string( a->name, f );
 		trap_FS_Write( "guid    = ", 10, f );
@@ -842,7 +842,7 @@ void G_admin_writeconfig()
 		admin_writeconfig_int( a->counter, f );
 		trap_FS_Write( "lastseen = ", 11, f );
 		admin_writeconfig_int( a->lastSeen.tm_year * 10000 + a->lastSeen.tm_mon * 100 + a->lastSeen.tm_mday, f );
-		trap_FS_Write( "\n", 1, f );
+		trap_FS_Write( "", 1, f );
 	}
 
 	for ( b = g_admin_bans; b; b = b->next )
@@ -855,11 +855,11 @@ void G_admin_writeconfig()
 
 		if ( G_ADMIN_BAN_IS_WARNING( b ) )
 		{
-			trap_FS_Write( "[warning]\n", 10, f );
+			trap_FS_Write( "[warning]", 10, f );
 		}
 		else
 		{
-			trap_FS_Write( "[ban]\n", 6, f );
+			trap_FS_Write( "[ban]", 6, f );
 		}
 
 		trap_FS_Write( "name    = ", 10, f );
@@ -876,12 +876,12 @@ void G_admin_writeconfig()
 		admin_writeconfig_int( b->expires, f );
 		trap_FS_Write( "banner  = ", 10, f );
 		admin_writeconfig_string( b->banner, f );
-		trap_FS_Write( "\n", 1, f );
+		trap_FS_Write( "", 1, f );
 	}
 
 	for ( c = g_admin_commands; c; c = c->next )
 	{
-		trap_FS_Write( "[command]\n", 10, f );
+		trap_FS_Write( "[command]", 10, f );
 		trap_FS_Write( "command = ", 10, f );
 		admin_writeconfig_string( c->command, f );
 		trap_FS_Write( "exec    = ", 10, f );
@@ -890,7 +890,7 @@ void G_admin_writeconfig()
 		admin_writeconfig_string( c->desc, f );
 		trap_FS_Write( "flag    = ", 10, f );
 		admin_writeconfig_string( c->flag, f );
-		trap_FS_Write( "\n", 1, f );
+		trap_FS_Write( "", 1, f );
 	}
 
 	trap_FS_FCloseFile( f );
@@ -1027,7 +1027,7 @@ void G_admin_authlog( gentity_t *ent )
 	             ent->client->pers.admin->flags,
 	             ( level ) ? level->flags : "" );
 
-	G_LogPrintf( "AdminAuth: %i \"%s^*\" \"%s^*\" [%d] (%s): %s\n",
+	G_LogPrintf( "AdminAuth: %i \"%s^*\" \"%s^*\" [%d] (%s): %s",
 	             ( int )( ent - g_entities ), ent->client->pers.netname,
 	             ent->client->pers.admin->name, ent->client->pers.admin->level,
 	             ent->client->pers.guid, aflags );
@@ -1068,7 +1068,7 @@ static void admin_log_end( const bool ok )
 {
 	if ( adminLog[ 0 ] )
 	{
-		G_LogPrintf( "AdminExec: %s: %s\n", ok ? "ok" : "fail", adminLog );
+		G_LogPrintf( "AdminExec: %s: %s", ok ? "ok" : "fail", adminLog );
 	}
 
 	admin_log_abort();
@@ -1137,7 +1137,7 @@ static int admin_search( gentity_t *ent,
 			{
 				out( l, str );
 
-				ADMBP( va( "^7%-3d %s\n", i + offset, str ) );
+				ADMBP( va( "^7%-3d %s", i + offset, str ) );
 
 				count++;
 				end = i;
@@ -1168,7 +1168,7 @@ static int admin_search( gentity_t *ent,
 		}
 	}
 
-	ADMBP( "\n" );
+	ADMBP( "" );
 	ADMBP_end();
 	return next + offset;
 }
@@ -1272,7 +1272,7 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 
 			if ( !vic || !vic->client || vic->client->pers.connected == CON_DISCONNECTED )
 			{
-				ADMP( va( "%s %s %d", QQ( N_("^3$1$: ^7no player connected in slot $2$\n") ), command, id ) );
+				ADMP( va( "%s %s %d", QQ( N_("^3$1$: ^7no player connected in slot $2$") ), command, id ) );
 				return -1;
 			}
 
@@ -1307,7 +1307,7 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 		{
 			for ( i = 0, a = g_admin_admins; a; i++, a = a->next ) {; }
 
-			ADMP( va( "%s %s %s %d %d %d", QQ( N_("^3$1$: ^7$2$ not in range 0–$3$ or $4$–$5$\n") ),
+			ADMP( va( "%s %s %s %d %d %d", QQ( N_("^3$1$: ^7$2$ not in range 0–$3$ or $4$–$5$") ),
 			          Quote(command), Quote(name),
 			          level.maxclients - 1,
 			          MAX_CLIENTS, MAX_CLIENTS + i - 1 ) );
@@ -1360,14 +1360,14 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 		if ( matches == 0 )
 		{
 			ADMP( va( "%s %s", QQ( N_("^3$1$:^7 no match, use listplayers or listadmins to "
-			          "find an appropriate number to use instead of name.\n") ),
+			          "find an appropriate number to use instead of name.") ),
 			          command ) );
 			return -1;
 		}
 
 		if ( matches > 1 )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$:^7 more than one match, use the admin number instead:\n") ),
+			ADMP( va( "%s %s", QQ( N_("^3$1$:^7 more than one match, use the admin number instead:") ),
 			          command ) );
 			admin_listadmins( ent, 0, cleanName );
 			return -1;
@@ -1527,10 +1527,10 @@ bool G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		// and don't fill the console
 		else if ( ban->warnCount < 10 )
 		{
-			trap_Print( va( "%s%s\n", warningMessage,
+			Log::Warn( "%s%s", warningMessage,
 			                ban->warnCount + 1 == 10 ?
 			                "^7 — future messages for this ban will be suppressed" :
-			                "" ) );
+			                "" );
 		}
 
 		return true;
@@ -1608,7 +1608,7 @@ bool G_admin_cmd_check( gentity_t *ent )
 		}
 		else
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied\n") ), c->command ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied") ), c->command ) );
 		}
 
 		admin_log_end( success );
@@ -1641,7 +1641,7 @@ bool G_admin_cmd_check( gentity_t *ent )
 		}
 		else
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied\n") ),admincmd->keyword ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied") ),admincmd->keyword ) );
 			admin_log( ConcatArgsPrintable( 1 ) );
 		}
 
@@ -1806,15 +1806,15 @@ bool G_admin_readconfig( gentity_t *ent )
 	if ( !g_admin.string[ 0 ] )
 	{
 		ADMP( QQ( N_("^3readconfig: g_admin is not set, not loading configuration "
-		      "from a file\n" ) ) );
+		      "from a file" ) ) );
 		return false;
 	}
 
-	len = trap_FS_FOpenFile( g_admin.string, &f, FS_READ );
+	len = trap_FS_FOpenFile( g_admin.string, &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
-		G_Printf( "^3readconfig: ^7could not open admin config file %s\n",
+		Log::Warn( "^3readconfig: ^7could not open admin config file %s",
 		          g_admin.string );
 		admin_default_levels();
 		return false;
@@ -2048,7 +2048,7 @@ bool G_admin_readconfig( gentity_t *ent )
 	}
 
 	BG_Free( cnf2 );
-	ADMP( va( "%s %d %d %d %d", QQ( N_("^3readconfig: ^7loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands\n") ),
+	ADMP( va( "%s %d %d %d %d", QQ( N_("^3readconfig: ^7loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands") ),
 	          lc, ac, bc, cc ) );
 
 	if ( lc == 0 )
@@ -2108,12 +2108,12 @@ bool G_admin_time( gentity_t *ent )
 			remainingMinutes = (timelimit - level.matchTime)/1000 / 60;
 			remainingSeconds = (timelimit - level.matchTime)/1000 % 60 + 1;
 
-			ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC; game time is ^d$4$:$5$^7, reaching time limit in ^d$6$:$7$^7\n") ),
+			ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC; game time is ^d$4$:$5$^7, reaching time limit in ^d$6$:$7$^7") ),
 			  qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
 		}
 		else // requesting time in intermission after the timelimit hit, or timelimit wasn't set
 		{
-			ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC; game time is ^d$4$:$5$^7\n") ),
+			ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time: ^7time is ^d$1$:$2$:$3$^7 UTC; game time is ^d$4$:$5$^7") ),
 					  qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds) );
 		}
 		return true;
@@ -2123,7 +2123,7 @@ bool G_admin_time( gentity_t *ent )
 
 		if ( !G_admin_permission( ent, "gametimelimit" ) )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied\n") ), "time" ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied") ), "time" ) );
 			return false;
 		}
 
@@ -2137,7 +2137,7 @@ bool G_admin_time( gentity_t *ent )
 			timelimit = std::min( 6 * 60, std::max( 0, timelimit ) );
 			if ( timelimit != level.timelimit )
 			{
-				AP( va( "print_tr %s %d %d %s", QQ( N_("^3time: ^7time limit set to $1$m from $2$m by $3$\n") ),
+				AP( va( "print_tr %s %d %d %s", QQ( N_("^3time: ^7time limit set to $1$m from $2$m by $3$") ),
 				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
 				level.timelimit = timelimit;
 				// reset 'time remaining' warnings
@@ -2149,14 +2149,14 @@ bool G_admin_time( gentity_t *ent )
 			}
 			else
 			{
-				ADMP( QQ( N_("^3time: ^7time limit is unchanged\n") ) );
+				ADMP( QQ( N_("^3time: ^7time limit is unchanged") ) );
 			}
 			return true;
 		}
 		// fallthrough
 
 	default:
-		ADMP( QQ( N_("^3time: ^7usage: time [minutes]\n") ) );
+		ADMP( QQ( N_("^3time: ^7usage: time [minutes]") ) );
 		return false;
 	}
 }
@@ -2181,7 +2181,7 @@ bool G_admin_setlevel( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( QQ( N_("^3setlevel: ^7usage: setlevel [name|slot#] [level]\n") ) );
+		ADMP( QQ( N_("^3setlevel: ^7usage: setlevel [name|slot#] [level]") ) );
 		return false;
 	}
 
@@ -2190,7 +2190,7 @@ bool G_admin_setlevel( gentity_t *ent )
 
 	if ( !( l = G_admin_level( atoi( lstr ) ) ) )
 	{
-		ADMP( QQ( N_("^3setlevel: ^7level is not defined\n") ) );
+		ADMP( QQ( N_("^3setlevel: ^7level is not defined") ) );
 		return false;
 	}
 
@@ -2198,7 +2198,7 @@ bool G_admin_setlevel( gentity_t *ent )
 	     ( ent->client->pers.admin ? ent->client->pers.admin->level : 0 ) )
 	{
 		ADMP( QQ( N_("^3setlevel: ^7you may not use setlevel to set a level higher "
-		      "than your current level\n") ) );
+		      "than your current level") ) );
 		return false;
 	}
 
@@ -2209,14 +2209,14 @@ bool G_admin_setlevel( gentity_t *ent )
 
 	if ( l->level && vic && G_IsUnnamed( vic->client->pers.netname ) )
 	{
-		ADMP( QQ( N_("^3setlevel: ^7your intended victim has the default name\n") ) );
+		ADMP( QQ( N_("^3setlevel: ^7your intended victim has the default name") ) );
 		return false;
 	}
 
 	if ( ent && !admin_higher_admin( ent->client->pers.admin, a ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), "setlevel" ) );
+		          " level than you") ), "setlevel" ) );
 		return false;
 	}
 
@@ -2261,7 +2261,7 @@ bool G_admin_setlevel( gentity_t *ent )
 	               a->name ) );
 
 	AP( va(
-	      "print_tr %s %s %d %s", QQ( N_("^3setlevel: ^7$1$^7 was given level $2$ admin rights by $3$\n") ),
+	      "print_tr %s %s %d %s", QQ( N_("^3setlevel: ^7$1$^7 was given level $2$ admin rights by $3$") ),
 	      Quote( a->name ), a->level, G_quoted_admin_name( ent ) ) );
 
 	G_admin_writeconfig();
@@ -2509,7 +2509,7 @@ bool G_admin_kick( gentity_t *ent )
 
 	if ( trap_Argc() < minargc )
 	{
-		ADMP( QQ( N_("^3kick: ^7usage: kick [name] [reason]\n") ) );
+		ADMP( QQ( N_("^3kick: ^7usage: kick [name] [reason]") ) );
 		return false;
 	}
 
@@ -2527,13 +2527,13 @@ bool G_admin_kick( gentity_t *ent )
 	if ( !admin_higher( ent, vic ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), "kick" ) );
+		          " level than you") ), "kick" ) );
 		return false;
 	}
 
 	if ( vic->client->pers.localClient )
 	{
-		ADMP( QQ( N_("^3kick: ^7disconnecting the host would end the game\n" ) ) );
+		ADMP( QQ( N_("^3kick: ^7disconnecting the host would end the game" ) ) );
 		return false;
 	}
 
@@ -2569,7 +2569,7 @@ bool G_admin_ban( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3ban: ^7usage: ban [name|slot|address(/mask)] [duration] [reason]\n") ) );
+		ADMP( QQ( N_("^3ban: ^7usage: ban [name|slot|address(/mask)] [duration] [reason]") ) );
 		return false;
 	}
 
@@ -2590,7 +2590,7 @@ bool G_admin_ban( gentity_t *ent )
 
 	if ( !*reason && !G_admin_permission( ent, ADMF_UNACCOUNTABLE ) )
 	{
-		ADMP( QQ( N_("^3ban: ^7you must specify a reason\n" ) ) );
+		ADMP( QQ( N_("^3ban: ^7you must specify a reason" ) ) );
 		return false;
 	}
 
@@ -2600,7 +2600,7 @@ bool G_admin_ban( gentity_t *ent )
 
 		if ( seconds == 0 || seconds > std::max( 1, maximum ) )
 		{
-			ADMP( QQ( N_("^3ban: ^7you may not issue permanent bans\n") ) );
+			ADMP( QQ( N_("^3ban: ^7you may not issue permanent bans") ) );
 			seconds = maximum;
 		}
 	}
@@ -2612,7 +2612,7 @@ bool G_admin_ban( gentity_t *ent )
 
 		if ( ip.mask < min || ip.mask > max )
 		{
-			ADMP( va( "%s %d %d %d", QQ( N_("^3ban: ^7invalid netmask ($1$ is not one of $2$–$3$)\n") ),
+			ADMP( va( "%s %d %d %d", QQ( N_("^3ban: ^7invalid netmask ($1$ is not one of $2$–$3$)") ),
 			          ip.mask, min, max ) );
 			return false;
 		}
@@ -2643,26 +2643,26 @@ bool G_admin_ban( gentity_t *ent )
 
 		if ( !match )
 		{
-			ADMP( QQ( N_("^3ban: ^7no player found by that IP address\n" ) ) );
+			ADMP( QQ( N_("^3ban: ^7no player found by that IP address" ) ) );
 			return false;
 		}
 	}
 	else if ( !( match = G_NamelogFromString( ent, search ) ) || match->banned )
 	{
-		ADMP( QQ( N_("^3ban: ^7no match\n") ) );
+		ADMP( QQ( N_("^3ban: ^7no match") ) );
 		return false;
 	}
 
 	if ( ent && !admin_higher_guid( ent->client->pers.guid, match->guid ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), "ban" ) );
+		          " level than you") ), "ban" ) );
 		return false;
 	}
 
 	if ( match->slot > -1 && level.clients[ match->slot ].pers.localClient )
 	{
-		ADMP( QQ( N_("^3ban: ^7disconnecting the host would end the game\n") ) );
+		ADMP( QQ( N_("^3ban: ^7disconnecting the host would end the game") ) );
 		return false;
 	}
 
@@ -2670,7 +2670,7 @@ bool G_admin_ban( gentity_t *ent )
 	                  duration, sizeof( duration ) );
 
 	AP( va( "print_tr %s %s %s %s %s %s", QQ( N_("^3ban:^7 $1$^7 has been banned by $2$^7; "
-	        "duration: $3$$4t$, reason: $5t$\n") ),
+	        "duration: $3$$4t$, reason: $5t$") ),
 	        Quote( match->name[ match->nameOffset ] ),
 	        G_quoted_admin_name( ent ),
 	        Quote( time ), duration,
@@ -2710,7 +2710,7 @@ bool G_admin_ban( gentity_t *ent )
 
 	if ( !g_admin.string[ 0 ] )
 	{
-		ADMP( QQ( N_("^3ban: ^7WARNING g_admin not set, not saving ban to a file\n" ) ) );
+		ADMP( QQ( N_("^3ban: ^7WARNING g_admin not set, not saving ban to a file" ) ) );
 	}
 	else
 	{
@@ -2731,7 +2731,7 @@ bool G_admin_unban( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3unban: ^7usage: unban [ban#]\n") ) );
+		ADMP( QQ( N_("^3unban: ^7usage: unban [ban#]") ) );
 		return false;
 	}
 
@@ -2745,7 +2745,7 @@ bool G_admin_unban( gentity_t *ent )
 
 	if ( !ban )
 	{
-		ADMP( QQ( N_("^3unban: ^7invalid ban#\n" ) ) );
+		ADMP( QQ( N_("^3unban: ^7invalid ban#" ) ) );
 		return false;
 	}
 
@@ -2755,14 +2755,14 @@ bool G_admin_unban( gentity_t *ent )
 		if ( ban->expires == 0 ||
 		     ( maximum = G_admin_parse_time( g_adminMaxBan.string ), ban->expires - time > std::max( 1, maximum ) ) )
 		{
-			ADMP( QQ( N_("^3unban: ^7you cannot remove permanent bans\n") ) );
+			ADMP( QQ( N_("^3unban: ^7you cannot remove permanent bans") ) );
 			return false;
 		}
 	}
 
 	if ( expireOnly && G_ADMIN_BAN_EXPIRED( ban, time ) )
 	{
-		ADMP( va( "%s %d", QQ( N_("^3unban: ^7ban #$1$ has already expired\n") ), bnum ) );
+		ADMP( va( "%s %d", QQ( N_("^3unban: ^7ban #$1$ has already expired") ), bnum ) );
 		return false;
 	}
 
@@ -2774,14 +2774,14 @@ bool G_admin_unban( gentity_t *ent )
 
 	if ( expireOnly )
 	{
-		AP( va( "print_tr %s %d %s %s", QQ( N_("^3unban: ^7ban #$1$ for $2$^7 has been expired by $3$\n") ),
+		AP( va( "print_tr %s %d %s %s", QQ( N_("^3unban: ^7ban #$1$ for $2$^7 has been expired by $3$") ),
 		        bnum, Quote( ban->name ), G_quoted_admin_name( ent ) ) );
 
 		ban->expires = time;
 	}
 	else
 	{
-		AP( va( "print_tr %s %d %s %s", QQ( N_("^3unban: ^7ban #$1$ for $2$^7 has been removed by $3$\n") ),
+		AP( va( "print_tr %s %d %s %s", QQ( N_("^3unban: ^7ban #$1$ for $2$^7 has been removed by $3$") ),
 		        bnum, Quote( ban->name ), G_quoted_admin_name( ent ) ) );
 
 		if ( p == ban )
@@ -2824,7 +2824,7 @@ bool G_admin_adjustban( gentity_t *ent )
 	if ( trap_Argc() < 3 )
 	{
 		ADMP( QQ( N_("^3adjustban: ^7usage: adjustban [ban#] [/mask] [duration] [reason]"
-		      "\n") ) );
+		      "") ) );
 		return false;
 	}
 
@@ -2835,7 +2835,7 @@ bool G_admin_adjustban( gentity_t *ent )
 
 	if ( !ban )
 	{
-		ADMP( QQ( N_("^3adjustban: ^7invalid ban#\n") ) );
+		ADMP( QQ( N_("^3adjustban: ^7invalid ban#") ) );
 		return false;
 	}
 
@@ -2845,7 +2845,7 @@ bool G_admin_adjustban( gentity_t *ent )
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
 	     ( ban->expires == 0 || ban->expires - time > maximum ) )
 	{
-		ADMP( QQ( N_("^3adjustban: ^7you cannot modify permanent bans\n") ) );
+		ADMP( QQ( N_("^3adjustban: ^7you cannot modify permanent bans") ) );
 		return false;
 	}
 
@@ -2859,7 +2859,7 @@ bool G_admin_adjustban( gentity_t *ent )
 
 		if ( mask < min || mask > max )
 		{
-			ADMP( va( "%s %d %d %d", QQ( N_("^3adjustban: ^7invalid netmask ($1$ is not one of $2$–$3$)\n") ),
+			ADMP( va( "%s %d %d %d", QQ( N_("^3adjustban: ^7invalid netmask ($1$ is not one of $2$–$3$)") ),
 			          mask, min, max ) );
 			return false;
 		}
@@ -2884,7 +2884,7 @@ bool G_admin_adjustban( gentity_t *ent )
 		{
 			if ( ban->expires == 0 && mode )
 			{
-				ADMP( QQ( N_("^3adjustban: ^7new duration must be explicit\n" ) ) );
+				ADMP( QQ( N_("^3adjustban: ^7new duration must be explicit" ) ) );
 				return false;
 			}
 
@@ -2903,7 +2903,7 @@ bool G_admin_adjustban( gentity_t *ent )
 
 			if ( expires <= time )
 			{
-				ADMP( QQ( N_("^3adjustban: ^7ban duration must be positive\n" ) ) );
+				ADMP( QQ( N_("^3adjustban: ^7ban duration must be positive" ) ) );
 				return false;
 			}
 		}
@@ -2915,7 +2915,7 @@ bool G_admin_adjustban( gentity_t *ent )
 		if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
 		     ( length == 0 || length > maximum ) )
 		{
-			ADMP( QQ( N_("^3adjustban: ^7you may not issue permanent bans\n") ) );
+			ADMP( QQ( N_("^3adjustban: ^7you may not issue permanent bans") ) );
 			expires = time + maximum;
 		}
 
@@ -2956,7 +2956,7 @@ bool G_admin_adjustban( gentity_t *ent )
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
 	AP( va( "print_tr %s %d %s %s %s %s %s %s %s %s %s", QQ( N_("^3adjustban: ^7ban #$1$ for $2$^7 has been updated by $3$^7 "
-	        "$4t$$5$$6$$7t$$8$$9t$$10$\n") ),
+	        "$4t$$5$$6$$7t$$8$$9t$$10$") ),
 	        bnum,
 	        Quote( ban->name ),
 	        G_quoted_admin_name( ent ),
@@ -2996,7 +2996,7 @@ bool G_admin_putteam( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( QQ( N_("^3putteam: ^7usage: putteam [name] [h|a|s]\n") ) );
+		ADMP( QQ( N_("^3putteam: ^7usage: putteam [name] [h|a|s]") ) );
 		return false;
 	}
 
@@ -3011,7 +3011,7 @@ bool G_admin_putteam( gentity_t *ent )
 	if ( !admin_higher( ent, vic ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), "putteam" ) );
+		          " level than you") ), "putteam" ) );
 		return false;
 	}
 
@@ -3019,7 +3019,7 @@ bool G_admin_putteam( gentity_t *ent )
 
 	if ( teamnum == NUM_TEAMS )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3putteam: ^7unknown team $1$\n") ), team ) );
+		ADMP( va( "%s %s", QQ( N_("^3putteam: ^7unknown team $1$") ), team ) );
 		return false;
 	}
 
@@ -3032,7 +3032,7 @@ bool G_admin_putteam( gentity_t *ent )
 	               vic->client->pers.netname ) );
 	G_ChangeTeam( vic, teamnum );
 
-	AP( va( "print_tr %s %s %s %s", QQ( N_("^3putteam: ^7$1$^7 put $2$^7 on to the $3$ team\n") ),
+	AP( va( "print_tr %s %s %s %s", QQ( N_("^3putteam: ^7$1$^7 put $2$^7 on to the $3$ team") ),
 	        G_quoted_admin_name( ent ),
 	        Quote( vic->client->pers.netname ), BG_TeamName( teamnum ) ) );
 	return true;
@@ -3052,7 +3052,7 @@ bool G_admin_speclock( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( QQ( N_("^3speclock: ^7usage: speclock [name] [duration]\n") ) );
+		ADMP( QQ( N_("^3speclock: ^7usage: speclock [name] [duration]") ) );
 		return false;
 	}
 
@@ -3070,7 +3070,7 @@ bool G_admin_speclock( gentity_t *ent )
 	if ( !admin_higher( ent, vic ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), "speclock" ) );
+		          " level than you") ), "speclock" ) );
 		return false;
 	}
 
@@ -3114,13 +3114,13 @@ bool G_admin_speclock( gentity_t *ent )
 	if ( vic->client->pers.team != TEAM_NONE )
 	{
 		G_ChangeTeam( vic, TEAM_NONE );
-		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock: ^7$1$^7 put $2$^7 on to the spectators team and blocked team-change for $3$$4t$\n") ),
+		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock: ^7$1$^7 put $2$^7 on to the spectators team and blocked team-change for $3$$4t$") ),
 		        G_quoted_admin_name( ent ),
 		        Quote( vic->client->pers.netname ), Quote( time ), duration ) );
 	}
 	else
 	{
-		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock: ^7$1$^7 blocked team-change for $2$^7 for $3$$4t$\n") ),
+		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock: ^7$1$^7 blocked team-change for $2$^7 for $3$$4t$") ),
 		        G_quoted_admin_name( ent ),
 		        Quote( vic->client->pers.netname ), Quote( time ), duration ) );
 	}
@@ -3139,7 +3139,7 @@ bool G_admin_specunlock( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3specunlock: ^7usage: specunlock [name]\n") ) );
+		ADMP( QQ( N_("^3specunlock: ^7usage: specunlock [name]") ) );
 		return false;
 	}
 
@@ -3156,7 +3156,7 @@ bool G_admin_specunlock( gentity_t *ent )
 	if ( !admin_higher( ent, vic ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), "specunlock" ) );
+		          " level than you") ), "specunlock" ) );
 		return false;
 	}
 
@@ -3167,7 +3167,7 @@ bool G_admin_specunlock( gentity_t *ent )
 		spec->expires = 0;
 		admin_log( va( "%d (%s) \"%s^*\" SPECTATE -", pid, vic->client->pers.guid,
 			               vic->client->pers.netname ) );
-			AP( va( "print_tr %s %s %s", QQ( N_("^3specunlock: ^7$1$^7 unblocked team-change for $2$\n") ),
+			AP( va( "print_tr %s %s %s", QQ( N_("^3specunlock: ^7$1$^7 unblocked team-change for $2$") ),
 			        G_quoted_admin_name( ent ),
 			        Quote( vic->client->pers.netname ) ) );
 	}
@@ -3182,7 +3182,7 @@ bool G_admin_changemap( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3changemap: ^7usage: changemap [map] (layout)\n") ) );
+		ADMP( QQ( N_("^3changemap: ^7usage: changemap [map] (layout)") ) );
 		return false;
 	}
 
@@ -3190,7 +3190,7 @@ bool G_admin_changemap( gentity_t *ent )
 
 	if ( !G_MapExists( map ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3changemap: ^7invalid map name '$1$'\n") ), map ) );
+		ADMP( va( "%s %s", QQ( N_("^3changemap: ^7invalid map name '$1$'") ), map ) );
 		return false;
 	}
 
@@ -3200,13 +3200,13 @@ bool G_admin_changemap( gentity_t *ent )
 
 		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) ||
 		     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
-		                        nullptr, FS_READ ) > 0 )
+		                        nullptr, fsMode_t::FS_READ ) > 0 )
 		{
 			// nothing to do
 		}
 		else
 		{
-			ADMP( va( "%s %s", QQ( N_("^3changemap: ^7invalid layout name '$1$'\n") ), layout ) );
+			ADMP( va( "%s %s", QQ( N_("^3changemap: ^7invalid layout name '$1$'") ), layout ) );
 			return false;
 		}
 	}
@@ -3218,7 +3218,7 @@ bool G_admin_changemap( gentity_t *ent )
 
 	level.restarted = true;
 	G_MapLog_Result( 'M' );
-	AP( va( "print_tr %s %s %s %s %s %s", QQ( N_("^3changemap: ^7map '$1$' started by $2$^7 $3t$$4$$5$\n") ),
+	AP( va( "print_tr %s %s %s %s %s %s", QQ( N_("^3changemap: ^7map '$1$' started by $2$^7 $3t$$4$$5$") ),
 		Quote( map ),
 	        G_quoted_admin_name( ent ),
 	        ( layout[ 0 ] ) ? QQ( "(forcing layout '") : "" ,
@@ -3236,7 +3236,7 @@ bool G_admin_warn( gentity_t *ent )
 
 	if( trap_Argc() < 3 )
 	{
-		ADMP( QQ( N_("^3warn: ^7usage: warn [name|slot#] [reason]\n") ) );
+		ADMP( QQ( N_("^3warn: ^7usage: warn [name|slot#] [reason]") ) );
 		return false;
 	}
 
@@ -3247,14 +3247,14 @@ bool G_admin_warn( gentity_t *ent )
 		count = G_MatchOnePlayer( pids, found, err, sizeof( err ) );
 		ADMP( va( "%s %s %s %s %s", QQ( "^3$1$: ^7$2t$\n $3$$4$" ), "warn", ( count > 0 ) ?  Quote( Substring( err, 0, count ) ) : Quote( err ),
 		                                      ( count > 0 ) ? Quote( Substring( err, count + 1, strlen( err ) ) ) : "",
-				                              ( count > 0 ) ? "\n" : "" ) );
+				                              ( count > 0 ) ? "" : "" ) );
 		return false;
 	}
 
 	if( !admin_higher( ent, &g_entities[ pids[ 0 ] ] ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), "warn" ) );
+		          " level than you") ), "warn" ) );
 		return false;
 	}
 
@@ -3272,7 +3272,7 @@ bool G_admin_warn( gentity_t *ent )
 
 	CPx( pids[ 0 ], va( "cp_tr " QQ(N_("^1You have been warned by an administrator:\n^3$1$")) " %s",
 	                    Quote( reason ) ) );
-	AP( va( "print_tr %s %s %s %s", QQ( N_("^3warn: ^7$1$^7 has been warned: '$2$' by $3$\n") ),
+	AP( va( "print_tr %s %s %s %s", QQ( N_("^3warn: ^7$1$^7 has been warned: '$2$' by $3$") ),
 	        Quote( vic->client->pers.netname ),
 	        Quote( reason ),
 	        G_quoted_admin_name( ent ) ) );
@@ -3290,7 +3290,7 @@ bool G_admin_mute( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( va( "%s %s %s", QQ( N_("^3$1$: ^7usage: $2$ [name|slot#]\n") ),command, command ) );
+		ADMP( va( "%s %s %s", QQ( N_("^3$1$: ^7usage: $2$ [name|slot#]") ),command, command ) );
 		return false;
 	}
 
@@ -3298,7 +3298,7 @@ bool G_admin_mute( gentity_t *ent )
 
 	if ( !( vic = G_NamelogFromString( ent, name ) ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7no match\n") ), command ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7no match") ), command ) );
 		return false;
 	}
 
@@ -3306,7 +3306,7 @@ bool G_admin_mute( gentity_t *ent )
 	                                 G_admin_admin( vic->guid ) ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), command ) );
+		          " level than you") ), command ) );
 		return false;
 	}
 
@@ -3314,7 +3314,7 @@ bool G_admin_mute( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "mute" ) )
 		{
-			ADMP( QQ( N_("^3mute: ^7player is already muted\n") ) );
+			ADMP( QQ( N_("^3mute: ^7player is already muted") ) );
 			return false;
 		}
 
@@ -3325,7 +3325,7 @@ bool G_admin_mute( gentity_t *ent )
 			CPx( vic->slot, "cp_tr " QQ(N_("^1You have been unmuted")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3unmute: ^7$1$^7 has been unmuted by $2$\n") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3unmute: ^7$1$^7 has been unmuted by $2$") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -3333,7 +3333,7 @@ bool G_admin_mute( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "unmute" ) )
 		{
-			ADMP( QQ( N_("^3unmute: ^7player is not currently muted\n") ) );
+			ADMP( QQ( N_("^3unmute: ^7player is not currently muted") ) );
 			return false;
 		}
 
@@ -3344,7 +3344,7 @@ bool G_admin_mute( gentity_t *ent )
 			CPx( vic->slot, "cp_tr " QQ(N_("^1You've been muted")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3mute: ^7$1$^7 has been muted by $2$\n") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3mute: ^7$1$^7 has been muted by $2$") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -3366,7 +3366,7 @@ bool G_admin_denybuild( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( va( "%s %s %s", QQ( N_("^3$1$: ^7usage: $2$ [name|slot#]\n") ), command, command ) );
+		ADMP( va( "%s %s %s", QQ( N_("^3$1$: ^7usage: $2$ [name|slot#]") ), command, command ) );
 		return false;
 	}
 
@@ -3374,7 +3374,7 @@ bool G_admin_denybuild( gentity_t *ent )
 
 	if ( !( vic = G_NamelogFromString( ent, name ) ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7no match\n") ), command ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7no match") ), command ) );
 		return false;
 	}
 
@@ -3382,7 +3382,7 @@ bool G_admin_denybuild( gentity_t *ent )
 	                                 G_admin_admin( vic->guid ) ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), command ) );
+		          " level than you") ), command ) );
 		return false;
 	}
 
@@ -3390,7 +3390,7 @@ bool G_admin_denybuild( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "denybuild" ) )
 		{
-			ADMP( QQ( N_("^3denybuild: ^7player already has no building rights\n" ) ) );
+			ADMP( QQ( N_("^3denybuild: ^7player already has no building rights" ) ) );
 			return false;
 		}
 
@@ -3401,7 +3401,7 @@ bool G_admin_denybuild( gentity_t *ent )
 			CPx( vic->slot, "cp_tr " QQ(N_("^1You've regained your building rights")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3allowbuild: ^7building rights for ^7$1$^7 restored by $2$\n") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3allowbuild: ^7building rights for ^7$1$^7 restored by $2$") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -3409,7 +3409,7 @@ bool G_admin_denybuild( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "allowbuild" ) )
 		{
-			ADMP( QQ( N_("^3allowbuild: ^7player already has building rights\n" ) ) );
+			ADMP( QQ( N_("^3allowbuild: ^7player already has building rights" ) ) );
 			return false;
 		}
 
@@ -3421,7 +3421,7 @@ bool G_admin_denybuild( gentity_t *ent )
 			CPx( vic->slot, "cp_tr " QQ(N_("^1You've lost your building rights")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3denybuild: ^7building rights for ^7$1$^7 revoked by $2$\n") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3denybuild: ^7building rights for ^7$1$^7 revoked by $2$") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -3490,7 +3490,7 @@ bool G_admin_listinactive( gentity_t *ent )
 	i = trap_Argc();
 	if ( i > 3 )
 	{
-		ADMP( QQ( N_("^3listinactive: ^7usage: listinactive [^5months^7] (^5start admin#^7)\n") ) );
+		ADMP( QQ( N_("^3listinactive: ^7usage: listinactive [^5months^7] (^5start admin#^7)") ) );
 		return false;
 	}
 
@@ -3551,7 +3551,7 @@ bool G_admin_listlayouts( gentity_t *ent )
 	}
 
 	count = G_LayoutList( map, list, sizeof( list ) );
-	ADMP( va( "%s %d %s", QQ( N_("^3listlayouts:^7 $1$ layouts found for '$2$':\n") ), count, map ) );
+	ADMP( va( "%s %d %s", QQ( N_("^3listlayouts:^7 $1$ layouts found for '$2$':") ), count, map ) );
 	ADMBP_begin();
 	s = &list[ 0 ];
 
@@ -3559,7 +3559,7 @@ bool G_admin_listlayouts( gentity_t *ent )
 	{
 		if ( *s == ' ' )
 		{
-			ADMBP( va( " %s\n", layout ) );
+			ADMBP( va( " %s", layout ) );
 			layout[ 0 ] = '\0';
 			i = 0;
 		}
@@ -3574,7 +3574,7 @@ bool G_admin_listlayouts( gentity_t *ent )
 
 	if ( layout[ 0 ] )
 	{
-		ADMBP( va( " %s\n", layout ) );
+		ADMBP( va( " %s", layout ) );
 	}
 
 	ADMBP_end();
@@ -3633,7 +3633,7 @@ bool G_admin_listgeoip( gentity_t *ent )
 			continue;
 		}
 
-		ADMBP( va( "%2i %*s %s^7\n", clients[ i ], countryLength, p->pers.country[0] ? p->pers.country : "?", p->pers.netname ) );
+		ADMBP( va( "%2i %*s %s^7", clients[ i ], countryLength, p->pers.country[0] ? p->pers.country : "?", p->pers.netname ) );
 	}
 
 	ADMBP_end();
@@ -3658,7 +3658,7 @@ bool G_admin_listplayers( gentity_t *ent )
 	bool        canset = G_admin_permission( ent, "setlevel" );
 	bool	canseeWarn = G_admin_permission( ent, "warn" ) || G_admin_permission( ent, "ban" );
 
-	ADMP( va( "%s %d", QQ( N_("^3listplayers: ^7$1$ players connected:\n") ),
+	ADMP( va( "%s %d", QQ( N_("^3listplayers: ^7$1$ players connected:") ),
 	           level.numConnectedClients ) );
 	ADMBP_begin();
 
@@ -3737,7 +3737,7 @@ bool G_admin_listplayers( gentity_t *ent )
 
 		int colorlen = Color::StrlenNocolor( lname );
 
-		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s\n",
+		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s",
 		           i,
 		           Color::CString( color ),
 		           t,
@@ -3815,8 +3815,8 @@ static int ban_out( void *ban, char *str )
 		d_color = Color::Cyan;
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, "%s\n"
-	             "         %s\\__ %s%s%-*s %s%-15s ^7%-8s %s\n"
+	Com_sprintf( str, MAX_STRING_CHARS, "%s"
+	             "         %s\\__ %s%s%-*s %s%-15s ^7%-8s %s"
 	             "          %s\\__ %s: ^7%s",
 	             b->name,
 	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ),
@@ -3944,12 +3944,12 @@ bool G_admin_adminhelp( gentity_t *ent )
 
 		if ( count % perline )
 		{
-			ADMBP( "\n" );
+			ADMBP( "" );
 		}
 
 		ADMBP_end();
-		ADMP( va( "%s %d", QQ( N_("^3adminhelp: ^7$1$ available commands\n"
-		"run adminhelp [^3command^7] for adminhelp with a specific command.\n") ),count ) );
+		ADMP( va( "%s %d", QQ( N_("^3adminhelp: ^7$1$ available commands"
+		"run adminhelp [^3command^7] for adminhelp with a specific command.") ),count ) );
 
 		return true;
 	}
@@ -3966,15 +3966,15 @@ bool G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, c->flag ) )
 			{
-				ADMP( va( "%s %s", QQ( N_("^3adminhelp: ^7help for '$1$':\n") ), c->command ) );
+				ADMP( va( "%s %s", QQ( N_("^3adminhelp: ^7help for '$1$':") ), c->command ) );
 
 				if ( c->desc[ 0 ] )
 				{
-					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$\n") ), Quote( c->desc ) ) );
+					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$") ), Quote( c->desc ) ) );
 				}
 
-				ADMP( va( "%s %s", QQ( N_(" ^3Syntax: ^7$1$\n") ), c->command ) );
-				ADMP( va( "%s %s", QQ( N_(" ^3Flag: ^7'$1$'\n") ), c->flag ) );
+				ADMP( va( "%s %s", QQ( N_(" ^3Syntax: ^7$1$") ), c->command ) );
+				ADMP( va( "%s %s", QQ( N_(" ^3Flag: ^7'$1$'") ), c->flag ) );
 
 				return true;
 			}
@@ -3986,18 +3986,18 @@ bool G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, admincmd->flag ) )
 			{
-				ADMP( va( "%s %s", QQ( N_("^3adminhelp: ^7help for '$1$':\n") ), admincmd->keyword ) );
+				ADMP( va( "%s %s", QQ( N_("^3adminhelp: ^7help for '$1$':") ), admincmd->keyword ) );
 
 				if ( admincmd->function )
 				{
-					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$\n") ), admincmd->function ) );
+					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$") ), admincmd->function ) );
 				}
 
-				ADMP( va( "%s %s %s", QQ( N_(" ^3Syntax: ^7$1$ $2t$\n") ), admincmd->keyword, admincmd->syntax ? Quote( admincmd->syntax ) : "" ) );
+				ADMP( va( "%s %s %s", QQ( N_(" ^3Syntax: ^7$1$ $2t$") ), admincmd->keyword, admincmd->syntax ? Quote( admincmd->syntax ) : "" ) );
 
 				if ( admincmd->flag )
 				{
-					ADMP( va( "%s %s", QQ( N_(" ^3Flag: ^7'$1$'\n") ), admincmd->flag ) );
+					ADMP( va( "%s %s", QQ( N_(" ^3Flag: ^7'$1$'") ), admincmd->flag ) );
 				}
 
 				return true;
@@ -4006,8 +4006,8 @@ bool G_admin_adminhelp( gentity_t *ent )
 			denied = true;
 		}
 
-		ADMP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not have permission to use '$1$'\n") )
-		                          : QQ( N_("^3adminhelp: ^7no help found for '$1$'\n") ), param ) );
+		ADMP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not have permission to use '$1$'") )
+		                          : QQ( N_("^3adminhelp: ^7no help found for '$1$'") ), param ) );
 		return false;
 	}
 }
@@ -4018,13 +4018,13 @@ bool G_admin_admintest( gentity_t *ent )
 
 	if ( !ent )
 	{
-		ADMP( QQ( N_("^3admintest: ^7you are on the console.\n") ) );
+		ADMP( QQ( N_("^3admintest: ^7you are on the console.") ) );
 		return true;
 	}
 
 	l = G_admin_level( ent->client->pers.admin ? ent->client->pers.admin->level : 0 );
 
-	AP( va( "print_tr %s %s %d %s %s %s", QQ( N_("^3admintest: ^7$1$^7 is a level $2$ admin $3$$4$^7$5$\n") ),
+	AP( va( "print_tr %s %s %d %s %s %s", QQ( N_("^3admintest: ^7$1$^7 is a level $2$ admin $3$$4$^7$5$") ),
 	        Quote( ent->client->pers.netname ),
 	        l ? l->level : 0,
 	        l ? "(" : "",
@@ -4040,7 +4040,7 @@ bool G_admin_allready( gentity_t *ent )
 
 	if ( !level.intermissiontime )
 	{
-		ADMP( QQ( N_("^3allready: ^7this command is only valid during intermission\n") ));
+		ADMP( QQ( N_("^3allready: ^7this command is only valid during intermission") ));
 		return false;
 	}
 
@@ -4061,7 +4061,7 @@ bool G_admin_allready( gentity_t *ent )
 		cl->readyToExit = true;
 	}
 
-	AP( va( "print_tr %s %s", QQ( N_("^3allready:^7 $1$^7 says everyone is READY now\n") ),
+	AP( va( "print_tr %s %s", QQ( N_("^3allready:^7 $1$^7 says everyone is READY now") ),
 	        G_quoted_admin_name( ent ) ) );
 	return true;
 }
@@ -4086,17 +4086,17 @@ bool G_admin_endvote( gentity_t *ent )
 
 	if ( team == NUM_TEAMS )
 	{
-		ADMP( va( "%s %s %s", QQ( N_( "^3$1$: ^7invalid team '$2$'\n" ) ), command, teamName ) );
+		ADMP( va( "%s %s %s", QQ( N_( "^3$1$: ^7invalid team '$2$'" ) ), command, teamName ) );
 		return false;
 	}
 
-	msg = va( "print_tr %s %s %s", cancel ? QQ( N_("^3$1$: ^7$2$^7 decided that everyone voted No\n") ) :
-		QQ( N_("^3$1$: ^7$2$^7 decided that everyone voted Yes\n") ),
+	msg = va( "print_tr %s %s %s", cancel ? QQ( N_("^3$1$: ^7$2$^7 decided that everyone voted No") ) :
+		QQ( N_("^3$1$: ^7$2$^7 decided that everyone voted Yes") ),
 			  command, G_quoted_admin_name( ent ) );
 
 	if ( !level.team[ team ].voteTime )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7no vote in progress\n") ), command ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7no vote in progress") ), command ) );
 		return false;
 	}
 
@@ -4147,7 +4147,7 @@ bool G_admin_spec999( gentity_t *ent )
 		if ( vic->client->ps.ping == 999 )
 		{
 			G_ChangeTeam( vic, TEAM_NONE );
-			AP( va( "print_tr %s %s %s", QQ( N_("^3spec999: ^7$1$^7 moved $2$^7 to spectators\n") ),
+			AP( va( "print_tr %s %s %s", QQ( N_("^3spec999: ^7$1$^7 moved $2$^7 to spectators") ),
 			        G_quoted_admin_name( ent ),
 			        Quote( vic->client->pers.netname ) ) );
 		}
@@ -4167,7 +4167,7 @@ bool G_admin_rename( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( QQ( N_("^3rename: ^7usage: rename [name] [newname]\n") ) );
+		ADMP( QQ( N_("^3rename: ^7usage: rename [name] [newname]") ) );
 		return false;
 	}
 
@@ -4176,7 +4176,7 @@ bool G_admin_rename( gentity_t *ent )
 
 	if ( ( pid = G_ClientNumberFromString( name, err, sizeof( err ) ) ) == -1 )
 	{
-		ADMP( va( "%s %s %s %s", QQ( "^3$1$: $2t$ $3$\n" ), "rename", Quote( err ), Quote( name ) ) );
+		ADMP( va( "%s %s %s %s", QQ( "^3$1$: $2t$ $3$" ), "rename", Quote( err ), Quote( name ) ) );
 		return false;
 	}
 
@@ -4185,7 +4185,7 @@ bool G_admin_rename( gentity_t *ent )
 	if ( !admin_higher( ent, victim ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7sorry, but your intended victim has a higher admin"
-		          " level than you\n") ), "rename" ) );
+		          " level than you") ), "rename" ) );
 		return false;
 	}
 
@@ -4197,7 +4197,7 @@ bool G_admin_rename( gentity_t *ent )
 
 	if ( victim->client->pers.connected != CON_CONNECTED )
 	{
-		ADMP( QQ( N_("^3rename: ^7sorry, but your intended victim is still connecting\n") ) );
+		ADMP( QQ( N_("^3rename: ^7sorry, but your intended victim is still connecting") ) );
 		return false;
 	}
 
@@ -4205,7 +4205,7 @@ bool G_admin_rename( gentity_t *ent )
 	               victim->client->pers.guid, victim->client->pers.netname ) );
 	admin_log( newname );
 	trap_GetUserinfo( pid, userinfo, sizeof( userinfo ) );
-	AP( va( "print_tr %s %s %s %s", QQ( N_("^3rename: ^7$1$^7 has been renamed to $2$^7 by $3$\n") ),
+	AP( va( "print_tr %s %s %s %s", QQ( N_("^3rename: ^7$1$^7 has been renamed to $2$^7 by $3$") ),
 	        Quote( victim->client->pers.netname ),
 	        Quote( newname ),
 	        G_quoted_admin_name( ent ) ) );
@@ -4256,9 +4256,9 @@ bool G_admin_restart( gentity_t *ent )
 	// check that the layout's available
 	builtin = !*layout || !Q_stricmp( layout, S_BUILTIN_LAYOUT );
 
-	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), nullptr, FS_READ ) )
+	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), nullptr, fsMode_t::FS_READ ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3restart: ^7layout '$1$' does not exist\n") ), layout ) );
+		ADMP( va( "%s %s", QQ( N_("^3restart: ^7layout '$1$' does not exist") ), layout ) );
 		return false;
 	}
 
@@ -4317,7 +4317,7 @@ bool G_admin_restart( gentity_t *ent )
 	}
 	else if ( *teampref )
 	{
-		ADMP( va( "%s %s", QQ( N_( "^3restart: ^7unrecognised option '$1$'\n") ), Quote( teampref ) ) );
+		ADMP( va( "%s %s", QQ( N_( "^3restart: ^7unrecognised option '$1$'") ), Quote( teampref ) ) );
 		return false;
 	}
 	else
@@ -4335,7 +4335,7 @@ bool G_admin_restart( gentity_t *ent )
 	trap_SendConsoleCommand( "map_restart" );
 	G_MapLog_Result( 'R' );
 
-	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart: ^7map restarted by $1$ $2$$3t$$4$$5$$6t$$7$\n") ),
+	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart: ^7map restarted by $1$ $2$$3t$$4$$5$$6t$$7$") ),
 	        G_quoted_admin_name( ent ),
 	        ( layout[ 0 ] ) ? QQ( N_( "^7(forcing layout '" ) ) : "",
 			( layout[ 0 ] ) ? Quote( layout ) : "",
@@ -4350,7 +4350,7 @@ bool G_admin_nextmap( gentity_t *ent )
 {
 	RETURN_IF_INTERMISSION;
 
-	AP( va( "print_tr %s %s", QQ( N_("^3nextmap: ^7$1$^7 decided to load the next map\n") ),
+	AP( va( "print_tr %s %s", QQ( N_("^3nextmap: ^7$1$^7 decided to load the next map") ),
 	        G_quoted_admin_name( ent ) ) );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
@@ -4590,7 +4590,7 @@ bool G_admin_lock( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7usage: $1$ [a|h]\n") ), command ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7usage: $1$ [a|h]") ), command ) );
 		return false;
 	}
 
@@ -4611,27 +4611,27 @@ bool G_admin_lock( gentity_t *ent )
 	}
 	else
 	{
-		ADMP( va( "%s %s %s", QQ( N_("^3$1$: ^7invalid team: '$2$'\n") ), command, teamName ) );
+		ADMP( va( "%s %s %s", QQ( N_("^3$1$: ^7invalid team: '$2$'") ), command, teamName ) );
 		return false;
 	}
 
 	if ( fail )
 	{
-		ADMP( va( "%s %s %s", lock ? QQ( N_("^3$1$: ^7the $2$ team is already locked\n") ) :
-			QQ( N_("^3$1$: ^7the $2$ team is not currently locked\n") ), command, BG_TeamName( team ) ) );
+		ADMP( va( "%s %s %s", lock ? QQ( N_("^3$1$: ^7the $2$ team is already locked") ) :
+			QQ( N_("^3$1$: ^7the $2$ team is not currently locked") ), command, BG_TeamName( team ) ) );
 		return false;
 	}
 
 	admin_log( BG_TeamName( team ) );
 	if ( lock )
 	{
-		AP( va( "print_tr %s %s %s %s", QQ( N_("^3$1$: ^7the $2$ team has been locked by $3$\n") ),
+		AP( va( "print_tr %s %s %s %s", QQ( N_("^3$1$: ^7the $2$ team has been locked by $3$") ),
 		        command, BG_TeamName( team ),
 		        G_quoted_admin_name( ent ) ) );
 	}
 	else
 	{
-		AP( va( "print_tr %s %s %s %s", QQ( N_("^3$1$: ^7the $2$ team has been unlocked by $3$\n") ),
+		AP( va( "print_tr %s %s %s %s", QQ( N_("^3$1$: ^7the $2$ team has been unlocked by $3$") ),
 		        command, BG_TeamName( team ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -4732,18 +4732,18 @@ bool G_admin_flaglist( gentity_t *ent )
 	bool shown[ adminNumCmds ] = { false };
 	int      count = 0;
 
-	ADMP( QQ( N_("^3Ability flags:\n") ) );
+	ADMP( QQ( N_("^3Ability flags:") ) );
 	ADMBP_begin();
 
 	for( unsigned i = 0; i < adminNumFlags; i++ )
 	{
-		ADMBP( va( "  ^5%-20s ^7%s\n",
+		ADMBP( va( "  ^5%-20s ^7%s",
 		           g_admin_flags[ i ].flag,
 		           g_admin_flags[ i ].description ) );
 	}
 
 	ADMBP_end();
-	ADMP( QQ( N_("^3Command flags:\n") ) );
+	ADMP( QQ( N_("^3Command flags:") ) );
 	ADMBP_begin();
 
 	for ( unsigned i = 0; i < adminNumCmds; i++ )
@@ -4777,12 +4777,12 @@ bool G_admin_flaglist( gentity_t *ent )
 			}
 		}
 
-		ADMBP( "\n" );
+		ADMBP( "" );
 		count++;
 	}
 
 	ADMBP_end();
-	ADMP( va( "%s %d %d", QQ( N_("^3flaglist: ^7listed $1$ ability and $2$ command flags\n") ), (int) adminNumFlags, count ) );
+	ADMP( va( "%s %d %d", QQ( N_("^3flaglist: ^7listed $1$ ability and $2$ command flags") ), (int) adminNumFlags, count ) );
 
 	return true;
 }
@@ -4810,7 +4810,7 @@ bool G_admin_flag( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7usage: $1$ [^3name|slot#|admin#|*level#^7] (^5+^7|^5-^7)[^3flag^7]\n") ), command ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7usage: $1$ [^3name|slot#|admin#|*level#^7] (^5+^7|^5-^7)[^3flag^7]") ), command ) );
 		return false;
 	}
 
@@ -4820,7 +4820,7 @@ bool G_admin_flag( gentity_t *ent )
 	{
 		if ( ent )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: only console can change admin level flags\n") ), command ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$: only console can change admin level flags") ), command ) );
 			return false;
 		}
 
@@ -4829,7 +4829,7 @@ bool G_admin_flag( gentity_t *ent )
 
 		if ( !level )
 		{
-			ADMP( va( "%s %s %d", QQ( N_("^3$1$: admin level $2$ does not exist\n") ), command, id ) );
+			ADMP( va( "%s %s %d", QQ( N_("^3$1$: admin level $2$ does not exist") ), command, id ) );
 			return false;
 		}
 
@@ -4844,13 +4844,13 @@ bool G_admin_flag( gentity_t *ent )
 
 		if ( !admin || admin->level == 0 )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$:^7 your intended victim is not an admin\n") ), command ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$:^7 your intended victim is not an admin") ), command ) );
 			return false;
 		}
 
 		if ( ent && !admin_higher_admin( ent->client->pers.admin, admin ) )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$:^7 your intended victim has a higher admin level than you\n") ), command ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$:^7 your intended victim has a higher admin level than you") ), command ) );
 			return false;
 		}
 
@@ -4862,13 +4862,13 @@ bool G_admin_flag( gentity_t *ent )
 		if ( !level )
 		{
 			level = G_admin_level( admin->level );
-			ADMP( va( "%s %s %s %s", QQ( N_("^3$1$:^7 flags for $2$^7 are '^3$3$^7'\n") ),
+			ADMP( va( "%s %s %s %s", QQ( N_("^3$1$:^7 flags for $2$^7 are '^3$3$^7'") ),
 			          command, Quote( admin->name ), Quote( admin->flags ) ) );
 		}
 
 		if ( level )
 		{
-			ADMP( va( "%s %s %d %s", QQ( N_("^3$1$:^7 admin level $2$ flags are '$3$'\n") ),
+			ADMP( va( "%s %s %d %s", QQ( N_("^3$1$:^7 admin level $2$ flags are '$3$'") ),
 			          command, level->level, Quote( level->flags ) ) );
 		}
 
@@ -4900,7 +4900,7 @@ bool G_admin_flag( gentity_t *ent )
 
 	if ( !i || flag[ i ] )
 	{
-		ADMP( va( "%s %s %s", QQ( N_("^3$1$:^7 bad flag name '$2$^7'\n") ), command, Quote( flag ) ) );
+		ADMP( va( "%s %s %s", QQ( N_("^3$1$:^7 bad flag name '$2$^7'") ), command, Quote( flag ) ) );
 		return false;
 	}
 
@@ -4912,13 +4912,13 @@ bool G_admin_flag( gentity_t *ent )
 
 	if ( ent && ent->client->pers.admin == admin )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^7 you may not change your own flags (use rcon)\n") ), command ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^7 you may not change your own flags (use rcon)") ), command ) );
 		return false;
 	}
 
 	if ( !G_admin_permission( ent, flag ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^7 you may only change flags that you also have\n") ), command ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^7 you may only change flags that you also have") ), command ) );
 		return false;
 	}
 
@@ -4938,8 +4938,8 @@ bool G_admin_flag( gentity_t *ent )
 	if ( result )
 	{
 		const char *msg = add
-		                ? QQ( N_("^3$1$: ^7an error occurred when setting flag '^3$2$^7' for $3$^7, $4t$\n") )
-		                : QQ( N_("^3$1$: ^7an error occurred when clearing flag '^3$2$^7' for $3$^7, $4t$\n") );
+		                ? QQ( N_("^3$1$: ^7an error occurred when setting flag '^3$2$^7' for $3$^7, $4t$") )
+		                : QQ( N_("^3$1$: ^7an error occurred when clearing flag '^3$2$^7' for $3$^7, $4t$") );
 		ADMP( va( "%s %s %s %s %s", msg, command, Quote( flag ), Quote( adminname ), Quote( result ) ) );
 		return false;
 	}
@@ -4947,9 +4947,9 @@ bool G_admin_flag( gentity_t *ent )
 	if ( !G_admin_permission( ent, ADMF_ADMINCHAT ) )
 	{
 		const char *msg[] = {
-			QQ( N_("^3$1$: ^7flag '$2$' allowed for $3$\n") ),
-			QQ( N_("^3$1$: ^7flag '$2$' cleared for $3$\n") ),
-			QQ( N_("^3$1$: ^7flag '$2$' denied for $3$\n") )
+			QQ( N_("^3$1$: ^7flag '$2$' allowed for $3$") ),
+			QQ( N_("^3$1$: ^7flag '$2$' cleared for $3$") ),
+			QQ( N_("^3$1$: ^7flag '$2$' denied for $3$") )
 		};
 		ADMP( va( "%s %s %s %s", msg[ action ], command, Quote( flag ), Quote( adminname ) ) );
 	}
@@ -4987,7 +4987,7 @@ bool G_admin_builder( gentity_t *ent )
 
 	if ( !ent )
 	{
-		ADMP( QQ( N_("^3builder: ^7console can't aim.\n") ) );
+		ADMP( QQ( N_("^3builder: ^7console can't aim.") ) );
 		return false;
 	}
 
@@ -5010,7 +5010,7 @@ bool G_admin_builder( gentity_t *ent )
 	trap_Trace( &tr, start, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
 
-	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == ET_BUILDABLE ) )
+	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == entityType_t::ET_BUILDABLE ) )
 	{
 		const char *builder, *buildingName;
 
@@ -5018,7 +5018,7 @@ bool G_admin_builder( gentity_t *ent )
 		     ent->client->pers.team != TEAM_NONE &&
 		     ent->client->pers.team != traceEnt->buildableTeam )
 		{
-			ADMP( QQ( N_("^3builder: ^7structure not owned by your team\n" ) ) );
+			ADMP( QQ( N_("^3builder: ^7structure not owned by your team" ) ) );
 			return false;
 		}
 
@@ -5051,23 +5051,23 @@ bool G_admin_builder( gentity_t *ent )
 
 		if ( buildlog && traceEnt->builtBy && i < level.numBuildLogs )
 		{
-			ADMP( va( "%s %s %s %d", QQ( N_("^3builder: ^7$1$ built by $2$^7, buildlog #$3$\n") ),
+			ADMP( va( "%s %s %s %d", QQ( N_("^3builder: ^7$1$ built by $2$^7, buildlog #$3$") ),
 				  Quote( buildingName ), Quote( builder ), MAX_CLIENTS + level.buildId - i - 1 ) );
 		}
 		else if ( traceEnt->builtBy )
 		{
-			ADMP( va( "%s %s %s", QQ( N_("^3builder: ^7$1$ built by $2$^7\n") ),
+			ADMP( va( "%s %s %s", QQ( N_("^3builder: ^7$1$ built by $2$^7") ),
 				  Quote( buildingName ), Quote( builder ) ) );
 		}
 		else
 		{
-			ADMP( va( "%s %s", QQ( N_("^3builder: ^7$1$ appears to be a layout item\n") ),
+			ADMP( va( "%s %s", QQ( N_("^3builder: ^7$1$ appears to be a layout item") ),
 				  Quote( buildingName ) ) );
 		}
 	}
 	else
 	{
-		ADMP( QQ( N_("^3builder: ^7no structure found under crosshair\n") ) );
+		ADMP( QQ( N_("^3builder: ^7no structure found under crosshair") ) );
 	}
 
 	return true;
@@ -5077,7 +5077,7 @@ bool G_admin_pause( gentity_t *ent )
 {
 	if ( !level.pausedTime )
 	{
-		AP( va( "print_tr %s %s", QQ( N_("^3pause: ^7$1$^7 paused the game.\n") ),
+		AP( va( "print_tr %s %s", QQ( N_("^3pause: ^7$1$^7 paused the game.") ),
 		        G_quoted_admin_name( ent ) ) );
 		level.pausedTime = 1;
 		trap_SendServerCommand( -1, "cp \"The game has been paused. Please wait.\"" );
@@ -5087,11 +5087,11 @@ bool G_admin_pause( gentity_t *ent )
 		// Prevent accidental pause->unpause race conditions by two admins
 		if ( level.pausedTime < 1000 )
 		{
-			ADMP( QQ( N_("^3pause: ^7Unpausing so soon assumed accidental and ignored.\n") ) );
+			ADMP( QQ( N_("^3pause: ^7Unpausing so soon assumed accidental and ignored.") ) );
 			return false;
 		}
 
-		AP( va( "print_tr %s %s %d", QQ( N_("^3pause: ^7$1$^7 unpaused the game (paused for $2$ sec)\n") ),
+		AP( va( "print_tr %s %s %d", QQ( N_("^3pause: ^7$1$^7 unpaused the game (paused for $2$ sec)") ),
 		        G_quoted_admin_name( ent ),
 		        ( int )( ( float ) level.pausedTime / 1000.0f ) ) );
 		trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );
@@ -5132,13 +5132,13 @@ bool G_admin_buildlog( gentity_t *ent )
 
 	if ( !admin && team == TEAM_NONE )
 	{
-		ADMP( QQ( N_("^3buildlog: ^7spectators have no buildings\n") ) );
+		ADMP( QQ( N_("^3buildlog: ^7spectators have no buildings") ) );
 		return false;
 	}
 
 	if ( !level.buildId )
 	{
-		ADMP( QQ( N_("^3buildlog: ^7log is empty\n") ) );
+		ADMP( QQ( N_("^3buildlog: ^7log is empty") ) );
 		return true;
 	}
 
@@ -5166,7 +5166,7 @@ bool G_admin_buildlog( gentity_t *ent )
 			else if ( id < 0 || id >= MAX_CLIENTS ||
 			          level.clients[ id ].pers.connected != CON_CONNECTED )
 			{
-				ADMP( QQ( N_("^3buildlog: ^7invalid client id\n") ) );
+				ADMP( QQ( N_("^3buildlog: ^7invalid client id") ) );
 				return false;
 			}
 		}
@@ -5191,7 +5191,7 @@ bool G_admin_buildlog( gentity_t *ent )
 
 	if ( start < level.buildId - level.numBuildLogs || start >= level.buildId )
 	{
-		ADMP( QQ( N_("^3buildlog: ^7invalid build ID\n") ) );
+		ADMP( QQ( N_("^3buildlog: ^7invalid build ID") ) );
 		return false;
 	}
 
@@ -5200,14 +5200,14 @@ bool G_admin_buildlog( gentity_t *ent )
 		if ( team == TEAM_NONE )
 		{
 			trap_SendServerCommand( -1,
-			                        va( "print_tr %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent building activity\n") ),
+			                        va( "print_tr %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent building activity") ),
 			                            Quote( ent->client->pers.netname ) ) );
 		}
 		else
 		{
 			// FIXME? Send only to team-mates
 			trap_SendServerCommand( -1,
-			                        va( "print_tr %s %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent $2$ building activity\n") ),
+			                        va( "print_tr %s %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent $2$ building activity") ),
 			                            Quote( ent->client->pers.netname ), Quote( BG_TeamName( team ) ) ) );
 		}
 	}
@@ -5255,7 +5255,7 @@ bool G_admin_buildlog( gentity_t *ent )
 		printed++;
 		time = ( log->time - level.startTime ) / 1000;
 		Com_sprintf( stamp, sizeof( stamp ), "%3d:%02d", time / 60, time % 60 );
-		ADMBP( va( "^2%c^7%-3d %s ^7%s^7%s%s%s %s%s%s\n",
+		ADMBP( va( "^2%c^7%-3d %s ^7%s^7%s%s%s %s%s%s",
 		           log->actor && log->fate != BF_REPLACE && log->fate != BF_UNPOWER ?
 		           '*' : ' ',
 		           i + MAX_CLIENTS,
@@ -5274,7 +5274,7 @@ bool G_admin_buildlog( gentity_t *ent )
 
 	ADMBP_end();
 
-	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$–$3$ of $4$–$5$.  $6$\n") ),
+	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$–$3$ of $4$–$5$.  $6$") ),
 	           printed, start + MAX_CLIENTS, i + MAX_CLIENTS - 1,
 	           level.buildId + MAX_CLIENTS - level.numBuildLogs,
 	           level.buildId + MAX_CLIENTS - 1,
@@ -5295,7 +5295,7 @@ bool G_admin_revert( gentity_t *ent )
 
 	if ( trap_Argc() != 2 )
 	{
-		ADMP( QQ( N_("^3revert: ^7usage: revert [id]\n") ) );
+		ADMP( QQ( N_("^3revert: ^7usage: revert [id]") ) );
 		return false;
 	}
 
@@ -5304,7 +5304,7 @@ bool G_admin_revert( gentity_t *ent )
 
 	if ( id < level.buildId - level.numBuildLogs || id >= level.buildId )
 	{
-		ADMP( QQ( N_("^3revert: ^7invalid id\n") ) );
+		ADMP( QQ( N_("^3revert: ^7invalid id") ) );
 		return false;
 	}
 
@@ -5314,7 +5314,7 @@ bool G_admin_revert( gentity_t *ent )
 	{
 		// fixme: then why list them with an id # in build log ? - rez
 		ADMP( QQ( N_("^3revert: ^7you can only revert direct player actions, "
-		      "indicated by ^2* ^7in buildlog\n") ) );
+		      "indicated by ^2* ^7in buildlog") ) );
 		return false;
 	}
 
@@ -5322,8 +5322,8 @@ bool G_admin_revert( gentity_t *ent )
 	                  sizeof( time ), duration, sizeof( duration ) );
 	admin_log( arg );
 	AP( va( "print_tr %s %s %d %s %s", ( level.buildId - id ) > 1 ?
-		QQ( N_("^3revert: ^7$1$^7 reverted $2$ changes over the past $3$ $4t$\n") ) :
-		QQ( N_("^3revert: ^7$1$^7 reverted $2$ change over the past $3$ $4t$\n") ),
+		QQ( N_("^3revert: ^7$1$^7 reverted $2$ changes over the past $3$ $4t$") ) :
+		QQ( N_("^3revert: ^7$1$^7 reverted $2$ change over the past $3$ $4t$") ),
 		G_quoted_admin_name( ent ),
 	    level.buildId - id,
 	    time, duration ) );
@@ -5340,7 +5340,7 @@ bool G_admin_l0( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3l0: ^7usage: l0 [name|slot#|admin#]\n") ) );
+		ADMP( QQ( N_("^3l0: ^7usage: l0 [name|slot#|admin#]") ) );
 		return false;
 	}
 
@@ -5354,13 +5354,13 @@ bool G_admin_l0( gentity_t *ent )
 
 	if ( !a || a->level != 1 )
 	{
-		ADMP( QQ( N_("^3l0: ^7your intended victim is not level 1\n") ) );
+		ADMP( QQ( N_("^3l0: ^7your intended victim is not level 1") ) );
 		return false;
 	}
 
 	trap_SendConsoleCommand( va( "setlevel %d 0;", id ) );
 
-	AP( va( "print_tr %s %s %s", QQ( N_("^3l0: ^7name protection for $1$^7 removed by $2$\n") ),
+	AP( va( "print_tr %s %s %s", QQ( N_("^3l0: ^7name protection for $1$^7 removed by $2$") ),
 	        G_quoted_user_name( vic, a->name ),
 	        G_quoted_admin_name( ent ) ) );
 	return true;
@@ -5375,7 +5375,7 @@ bool G_admin_l1( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3l1: ^7usage: l1 [name|slot#|admin#]\n") ) );
+		ADMP( QQ( N_("^3l1: ^7usage: l1 [name|slot#|admin#]") ) );
 		return false;
 	}
 
@@ -5390,19 +5390,19 @@ bool G_admin_l1( gentity_t *ent )
 
 	if ( a && a->level != 0 )
 	{
-		ADMP( QQ( N_("^3l1: ^7your intended victim is not level 0\n") ) );
+		ADMP( QQ( N_("^3l1: ^7your intended victim is not level 0") ) );
 		return false;
 	}
 
 	if ( vic && G_IsUnnamed( vic->client->pers.netname ) )
 	{
-		ADMP( QQ( N_("^3l1: ^7your intended victim has the default name\n") ) );
+		ADMP( QQ( N_("^3l1: ^7your intended victim has the default name") ) );
 		return false;
 	}
 
 	trap_SendConsoleCommand( va( "setlevel %d 1;", id ) );
 
-	AP( va( "print_tr %s %s %s", QQ( N_("^3l1: ^7name protection for $1$^7 enabled by $2$\n") ),
+	AP( va( "print_tr %s %s %s", QQ( N_("^3l1: ^7name protection for $1$^7 enabled by $2$") ),
 	        G_quoted_user_name( vic, a->name ),
 	        G_quoted_admin_name( ent ) ) );
 	return true;
@@ -5424,7 +5424,7 @@ bool G_admin_register( gentity_t *ent )
 
 	if ( G_IsUnnamed( ent->client->pers.netname ) )
 	{
-		ADMP( QQ( N_("^3register: ^7you must first change your name\n" ) ) );
+		ADMP( QQ( N_("^3register: ^7you must first change your name" ) ) );
 		return false;
 	}
 
@@ -5432,7 +5432,7 @@ bool G_admin_register( gentity_t *ent )
 	                         ( int )( ent - g_entities ),
 	                         level ) );
 
-	AP( va( "print_tr %s %s", QQ( N_("^3register: ^7$1$^7 is now a protected name\n") ),
+	AP( va( "print_tr %s %s", QQ( N_("^3register: ^7$1$^7 is now a protected name") ),
 	        Quote( ent->client->pers.netname ) ) );
 
 	return true;
@@ -5447,14 +5447,14 @@ bool G_admin_unregister( gentity_t *ent )
 
 	if ( !ent->client->pers.admin || ent->client->pers.admin->level == 0 )
 	{
-		ADMP( QQ( N_("^3unregister: ^7you do not have a protected name\n" ) ) );
+		ADMP( QQ( N_("^3unregister: ^7you do not have a protected name" ) ) );
 		return false;
 	}
 
 	trap_SendConsoleCommand( va( "setlevel %d 0;",
 	                         ( int )( ent - g_entities ) ) );
 
-	AP( va( "print_tr %s %s", QQ( N_("^3unregister: ^7$1$^7 is now an unprotected name\n") ),
+	AP( va( "print_tr %s %s", QQ( N_("^3unregister: ^7$1$^7 is now an unprotected name") ),
 	        Quote( ent->client->pers.admin->name ) ) );
 
 	return true;
@@ -5592,10 +5592,10 @@ bool G_admin_bot( gentity_t *ent )
 	int i;
 	int clientNum;
 
-	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)\n"
-	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
-	                                        "            bot names [^5aliens|humans^7] [^5names…^7]\n"
-	                                        "            bot names [^5clear|list^7]\n" ) );
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)"
+	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]"
+	                                        "            bot names [^5aliens|humans^7] [^5names…^7]"
+	                                        "            bot names [^5clear|list^7]" ) );
 
 	if ( trap_Argc() < min_args )
 	{
@@ -5612,7 +5612,7 @@ bool G_admin_bot( gentity_t *ent )
 		min_args++; //now we also need a team name
 		if ( !Q_stricmp( name, "all" ) )
 		{
-			ADMP( QQ( N_( "bots can't have that name\n" ) ) );
+			ADMP( QQ( N_( "bots can't have that name" ) ) );
 			return false;
 		}
 		if ( trap_Argc() < min_args )
@@ -5656,7 +5656,7 @@ bool G_admin_bot( gentity_t *ent )
 		{
 			if ( !G_BotAdd( name, TEAM_HUMANS, skill_int, behavior ) )
 			{
-				ADMP( QQ( "Can't add a bot\n" ) );
+				ADMP( QQ( "Can't add a bot" ) );
 				return false;
 			}
 		}
@@ -5664,13 +5664,13 @@ bool G_admin_bot( gentity_t *ent )
 		{
 			if ( !G_BotAdd( name, TEAM_ALIENS, skill_int, behavior ) )
 			{
-				ADMP( QQ( N_( "Can't add a bot\n" ) ) );
+				ADMP( QQ( N_( "Can't add a bot" ) ) );
 				return false;
 			}
 		}
 		else
 		{
-			ADMP( QQ( N_( "Invalid team name\n" ) ) );
+			ADMP( QQ( N_( "Invalid team name" ) ) );
 			ADMP( bot_usage );
 			return false;
 		}
@@ -5722,7 +5722,7 @@ bool G_admin_bot( gentity_t *ent )
 		}
 		else
 		{
-			ADMP( QQ( N_( "%s is not a bot\n" ) ) );
+			ADMP( QQ( N_( "%s is not a bot" ) ) );
 		}
 	}
 	else if ( !Q_stricmp( arg1, "unspec" ) )
@@ -5750,13 +5750,13 @@ bool G_admin_bot( gentity_t *ent )
 
 		if ( !( g_entities[clientNum].r.svFlags & SVF_BOT ) )
 		{
-			ADMP( QQ( N_( "%s is not a bot\n" ) ) );
+			ADMP( QQ( N_( "%s is not a bot" ) ) );
 			return false;
 		}
 
 		if ( g_entities[clientNum].client->pers.team != TEAM_NONE )
 		{
-			ADMP( QQ( N_( "%s is not on spectators\n" ) ) );
+			ADMP( QQ( N_( "%s is not on spectators" ) ) );
 			return false;
 		}
 
@@ -5767,18 +5767,18 @@ bool G_admin_bot( gentity_t *ent )
 		if ( !Q_stricmp( name, "humans" ) || !Q_stricmp( name, "h" ) )
 		{
 			i = G_BotAddNames( TEAM_HUMANS, 3, trap_Argc() );
-			ADMP( va( "%s %d", Quote( P_( "added $1$ human bot name\n", "added $1$ human bot names\n", i ) ), i ) );
+			ADMP( va( "%s %d", Quote( P_( "added $1$ human bot name", "added $1$ human bot names", i ) ), i ) );
 		}
 		else if ( !Q_stricmp( name, "aliens" ) || !Q_stricmp( name, "a" ) )
 		{
 			i = G_BotAddNames( TEAM_ALIENS, 3, trap_Argc() );
-			ADMP( va( "%s %d", Quote( P_( "added $1$ alien bot name\n", "added $1$ alien bot names\n", i ) ), i ) );
+			ADMP( va( "%s %d", Quote( P_( "added $1$ alien bot name", "added $1$ alien bot names", i ) ), i ) );
 		}
 		else if ( !Q_stricmp( name, "clear" ) || !Q_stricmp( name, "c" ) )
 		{
 			if ( !G_BotClearNames() )
 			{
-				ADMP( QQ( N_( "some automatic bot names are in use – not clearing lists\n" ) ) );
+				ADMP( QQ( N_( "some automatic bot names are in use – not clearing lists" ) ) );
 				return false;
 			}
 		}
@@ -5794,7 +5794,7 @@ bool G_admin_bot( gentity_t *ent )
 	else
 	{
 usage:
-		ADMP( QQ( N_( "Invalid command\n" ) ) );
+		ADMP( QQ( N_( "Invalid command" ) ) );
 		ADMP( bot_usage );
 		return false;
 	}

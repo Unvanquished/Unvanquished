@@ -132,7 +132,7 @@ static void SV_MapRestart_f()
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Log::Notice( "Server is not running.\n" );
 		return;
 	}
 
@@ -142,7 +142,7 @@ static void SV_MapRestart_f()
 	{
 		char mapname[ MAX_QPATH ];
 
-		Com_Printf( "sv_maxclients variable change — restarting.\n" );
+		Log::Notice( "sv_maxclients variable change — restarting.\n" );
 		// restart the map the slow way
 		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
@@ -162,7 +162,7 @@ static void SV_MapRestart_f()
 	// reset all the VM data in place without changing memory allocation
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
-	sv.state = SS_LOADING;
+	sv.state = serverState_t::SS_LOADING;
 	sv.restarting = true;
 
 	SV_RestartGameProgs();
@@ -179,7 +179,7 @@ static void SV_MapRestart_f()
 	// Gordon: meh, this won't work here as the client doesn't know it has happened
 //  SV_CreateBaseline ();
 
-	sv.state = SS_GAME;
+	sv.state = serverState_t::SS_GAME;
 	sv.restarting = false;
 
 	// connect and begin all the clients
@@ -188,7 +188,7 @@ static void SV_MapRestart_f()
 		client = &svs.clients[ i ];
 
 		// send the new gamestate to all connected clients
-		if ( client->state < CS_CONNECTED )
+		if ( client->state < clientState_t::CS_CONNECTED )
 		{
 			continue;
 		}
@@ -209,13 +209,13 @@ static void SV_MapRestart_f()
 
 			if ( !isBot )
 			{
-				Com_Printf( "SV_MapRestart_f: dropped client %i: denied!\n", i );
+				Log::Notice( "SV_MapRestart_f: dropped client %i: denied!\n", i );
 			}
 
 			continue;
 		}
 
-		client->state = CS_ACTIVE;
+		client->state = clientState_t::CS_ACTIVE;
 
 		SV_ClientEnterWorld( client, &client->lastUsercmd );
 	}
@@ -236,7 +236,7 @@ static void SV_Status_f()
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Log::Notice( "Server is not running.\n" );
 		return;
 	}
 
@@ -251,18 +251,18 @@ static void SV_Status_f()
 	for ( int i = 0; i < sv_maxclients->integer; i++ )
 	{
 		const client_t& cl = svs.clients[i];
-		if ( !cl.state )
+		if ( !bool(cl.state) )
 		{
 			continue;
 		}
 
 		std::string connection;
 
-		if ( cl.state == CS_CONNECTED )
+		if ( cl.state == clientState_t::CS_CONNECTED )
 		{
 			connection = "CONNECTED";
 		}
-		else if ( cl.state == CS_ZOMBIE )
+		else if ( cl.state == clientState_t::CS_ZOMBIE )
 		{
 			connection = "ZOMBIE";
 		}
@@ -289,7 +289,7 @@ static void SV_Status_f()
 		));
 	}
 
-	Com_Printf(
+	Log::Notice(
 		"(begin server status)\n"
 		"hostname: %s\n"
 		"version:  %s\n"
@@ -307,11 +307,11 @@ static void SV_Status_f()
 
 	for ( const auto& player : players )
 	{
-		Com_Printf( "%s", player.c_str() );
+		Log::Notice( "%s", player.c_str() );
 	}
 
 
-	Com_Printf( "(end server status)" );
+	Log::Notice( "(end server status)" );
 }
 
 /*
@@ -338,11 +338,11 @@ static void SV_Serverinfo_f()
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Log::Notice( "Server is not running.\n" );
 		return;
 	}
 
-	Com_Printf( "Server info settings:\n" );
+	Log::Notice( "Server info settings:\n" );
 	Info_Print( Cvar_InfoString( CVAR_SERVERINFO, false ) );
 }
 
@@ -358,11 +358,11 @@ static void SV_Systeminfo_f()
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Log::Notice( "Server is not running.\n" );
 		return;
 	}
 
-	Com_Printf( "System info settings:\n" );
+	Log::Notice( "System info settings:\n" );
 	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, false ) );
 }
 

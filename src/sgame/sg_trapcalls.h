@@ -25,8 +25,6 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SG_TRAPCALLS_H_
 #define SG_TRAPCALLS_H_
 
-void             trap_Print( const char *string );
-void NORETURN    trap_Error( const char *string );
 int              trap_Milliseconds();
 void             trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
 void             trap_Cvar_Set( const char *var_name, const char *value );
@@ -92,7 +90,6 @@ void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
 bool         trap_FindPak( const char *name );
-void         trap_CrashDump(const uint8_t* data, size_t size);
 
 bool         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void             trap_BotShutdownNav();

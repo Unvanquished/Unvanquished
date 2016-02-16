@@ -52,7 +52,7 @@ static void CG_ParseScores()
 
 	if ( cg_debugRandom.integer )
 	{
-		CG_Printf( "cg.numScores: %d\n", cg.numScores );
+		Log::Debug( "cg.numScores: %d", cg.numScores );
 	}
 
 	for ( i = 0; i < cg.numScores; i++ )
@@ -98,7 +98,7 @@ static void CG_ParseTeamInfo()
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
-			CG_Printf( "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n", client );
+			Log::Warn( S_SKIPNOTIFY "CG_ParseTeamInfo: bad client number: %d", client );
 			return;
 		}
 
@@ -253,7 +253,7 @@ static void CG_ConfigStringModified()
 	// look up the individual string that was modified
 	str = CG_ConfigString( num );
 
-	//CG_Printf("configstring modification %i: %s\n", num, str);
+	//Log::Debug("configstring modification %i: %s", num, str);
 
 	// do something with it if necessary
 	if ( num == CS_MUSIC )
@@ -375,7 +375,7 @@ static void CG_MapRestart()
 {
 	if ( cg_showmiss.integer )
 	{
-		CG_Printf( "CG_MapRestart\n" );
+		Log::Debug( "CG_MapRestart" );
 	}
 
 	CG_InitMarkPolys();
@@ -733,7 +733,7 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		default:
-			Com_Printf(_( "cgame: debug: no such menu %d\n"), menu );
+			Log::Notice(_( "cgame: debug: no such menu %d"), menu );
 	}
 
 	if ( menu > 0 )
@@ -746,12 +746,12 @@ void CG_Menu( int menuType, int arg )
 
 		if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
 		{
-			CG_Printf( "%s\n", shortMsg );
+			Log::Notice( "%s", shortMsg );
 		}
 	}
 	else if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
 	{
-		CG_Printf( "%s\n", shortMsg );
+		Log::Notice( "%s", shortMsg );
 	}
 }
 
@@ -859,18 +859,18 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			}
 
 		case SAY_ALL_ADMIN:
-			CG_Printf(  "%s%s%s^7: %s%s\n",
+			Log::Notice(  "%s%s%s^7: %s%s",
 			           ignore, prefix, name, color, text );
 			break;
 
 		case SAY_TEAM:
-			CG_Printf( "%s%s(%s^7)%s: %s%s\n",
+			Log::Notice( "%s%s(%s^7)%s: %s%s",
 			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_ADMINS:
 		case SAY_ADMINS_PUBLIC:
-			CG_Printf( "%s%s%s%s^7: %s%s\n",
+			Log::Notice( "%s%s%s%s^7: %s%s",
 			           ignore, prefix,
 			           ( mode == SAY_ADMINS ) ? "[ADMIN]" : "[PLAYER]",
 			           name, color, text );
@@ -878,13 +878,13 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 		case SAY_AREA:
 		case SAY_AREA_TEAM:
-			CG_Printf( "%s%s<%s^7>%s: %s%s\n",
+			Log::Notice( "%s%s<%s^7>%s: %s%s",
 			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_PRIVMSG:
 		case SAY_TPRIVMSG:
-			CG_Printf( "%s%s[%s^7 → %s^7]: %s%s\n",
+			Log::Notice( "%s%s[%s^7 → %s^7]: %s%s",
 			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
 			           color, text );
 
@@ -898,23 +898,23 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 					clientNum = cg.clientNum;
 				}
 
-				CG_Printf(_( ">> to reply, say: /m %d [your message] <<\n"), clientNum );
+				Log::Notice(_( ">> to reply, say: /m %d [your message] <<"), clientNum );
 			}
 
 			break;
 
 		case SAY_ALL_ME:
-			CG_Printf(  "%s* %s%s^7 %s%s\n",
+			Log::Notice(  "%s* %s%s^7 %s%s",
 			           ignore, prefix, name, color, text );
 			break;
 
 		case SAY_TEAM_ME:
-			CG_Printf( "%s* %s(%s^7)%s %s%s\n",
+			Log::Notice( "%s* %s(%s^7)%s %s%s",
 			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_RAW:
-			CG_Printf( "%s\n", text );
+			Log::Notice( "%s", text );
 			break;
 
 		case SAY_DEFAULT:
@@ -929,17 +929,17 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		case SAY_TPRIVMSG:
 			if ( cgs.clientinfo[ clientNum ].team == TEAM_ALIENS )
 			{
-				trap_S_StartLocalSound( cgs.media.alienTalkSound, CHAN_LOCAL_SOUND );
+				trap_S_StartLocalSound( cgs.media.alienTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 				break;
 			}
 			else if ( cgs.clientinfo[ clientNum ].team == TEAM_HUMANS )
 			{
-				trap_S_StartLocalSound( cgs.media.humanTalkSound, CHAN_LOCAL_SOUND );
+				trap_S_StartLocalSound( cgs.media.humanTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 				break;
 			}
 
 		default:
-			trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+			trap_S_StartLocalSound( cgs.media.talkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 	}
 }
 
@@ -962,7 +962,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !v )
 	{
-		CG_Printf( "[skipnotify]WARNING: could not find voice \"%s\"\n", voice );
+		Log::Warn( S_SKIPNOTIFY "could not find voice \"%s\"", voice );
 		return nullptr;
 	}
 
@@ -970,8 +970,8 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !c )
 	{
-		CG_Printf( "[skipnotify]WARNING: could not find command %d "
-		           "in voice \"%s\"\n", cmd, voice );
+		Log::Warn( S_SKIPNOTIFY "could not find command %d "
+		           "in voice \"%s\"", cmd, voice );
 		return nullptr;
 	}
 
@@ -979,8 +979,8 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !t )
 	{
-		CG_Printf( "[skipnotify]WARNING: could not find track %d for command %d in "
-		           "voice \"%s\"\n", track, cmd, voice );
+		Log::Warn( S_SKIPNOTIFY "could not find track %d for command %d in "
+		           "voice \"%s\"", track, cmd, voice );
 		return nullptr;
 	}
 
@@ -1106,15 +1106,15 @@ static void CG_ParseVoice()
 	switch ( vChan )
 	{
 		case VOICE_CHAN_ALL:
-			trap_S_StartLocalSound( track->track, CHAN_VOICE );
+			trap_S_StartLocalSound( track->track, soundChannel_t::CHAN_VOICE );
 			break;
 
 		case VOICE_CHAN_TEAM:
-			trap_S_StartLocalSound( track->track, CHAN_VOICE );
+			trap_S_StartLocalSound( track->track, soundChannel_t::CHAN_VOICE );
 			break;
 
 		case VOICE_CHAN_LOCAL:
-			trap_S_StartSound( nullptr, clientNum, CHAN_VOICE, track->track );
+			trap_S_StartSound( nullptr, clientNum, soundChannel_t::CHAN_VOICE, track->track );
 			break;
 
 		default:
@@ -1181,7 +1181,7 @@ CG_Print_f
 */
 static void CG_Print_f()
 {
-	CG_Printf( "%s", CG_Argv( 1 ) );
+	Log::Notice( "%s", CG_Argv( 1 ) );
 }
 
 /*
@@ -1191,12 +1191,12 @@ CG_PrintTR_f
 */
 static void CG_PrintTR_f()
 {
-	Com_Printf( "%s", TranslateText_Internal( false, 1 ) );
+	Log::Notice( "%s", TranslateText_Internal( false, 1 ) );
 }
 
 static void CG_PrintTR_plural_f()
 {
-	Com_Printf("%s", TranslateText_Internal( true, 1 ) );
+	Log::Notice("%s", TranslateText_Internal( true, 1 ) );
 }
 
 /*
@@ -1387,7 +1387,7 @@ static void CG_ServerCommand()
 		return;
 	}
 
-	CG_Printf(_( "Unknown client game command: %s\n"), cmd );
+	Log::Warn(_( "Unknown client game command: %s"), cmd );
 }
 
 /*

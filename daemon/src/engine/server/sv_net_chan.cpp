@@ -133,7 +133,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg )
 	{
 		netchan_buffer_t *netbuf;
 
-		//Com_DPrintf("SV_Netchan_Transmit: there are unsent fragments remaining\n");
+		//Log::Debug("SV_Netchan_Transmit: there are unsent fragments remaining");
 		netbuf = ( netchan_buffer_t * ) Z_Malloc( sizeof( netchan_buffer_t ) );
 
 		MSG_Copy( &netbuf->msg, netbuf->msgBuffer, sizeof( netbuf->msgBuffer ), msg );

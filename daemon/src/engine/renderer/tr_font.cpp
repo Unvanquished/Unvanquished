@@ -95,10 +95,10 @@ Maryland 20850 USA.
 
 FT_Library ftLibrary = nullptr;
 
-#define FONT_SIZE 512
+static const int FONT_SIZE = 512;
 
-#define MAX_FONTS 16
-#define MAX_FILES ( MAX_FONTS )
+static const int MAX_FONTS = 16;
+static const int MAX_FILES = ( MAX_FONTS );
 static fontInfo_t registeredFont[ MAX_FONTS ];
 static unsigned int fontUsage[ MAX_FONTS ];
 static unsigned int fontUsageVM[ MAX_FONTS ];
@@ -162,7 +162,7 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 	}
 	else
 	{
-		ri.Printf( PRINT_WARNING, "Non-outline fonts are not supported\n" );
+		Log::Warn("Non-outline fonts are not supported" );
 	}
 
 	return nullptr;
@@ -319,11 +319,11 @@ int readInt()
 	return i;
 }
 
-typedef union
+union poor
 {
 	byte  fred[ 4 ];
 	float ffred;
-} poor;
+};
 
 float readFloat()
 {
@@ -483,7 +483,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	if ( out == nullptr )
 	{
-		ri.Printf( PRINT_WARNING, "RE_RenderChunk: ri.Malloc failure during output image creation.\n" );
+		Log::Warn("RE_RenderChunk: ri.Malloc failure during output image creation." );
 		return;
 	}
 
@@ -684,7 +684,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 	if ( fontNo < 0 )
 	{
-		ri.Printf( PRINT_WARNING, "RE_RegisterFont: Too many fonts registered already.\n" );
+		Log::Warn("RE_RegisterFont: Too many fonts registered already." );
 		return -1;
 	}
 
@@ -744,7 +744,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 	if ( ftLibrary == nullptr )
 	{
-		ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType not initialized.\n" );
+		Log::Warn("RE_RegisterFont: FreeType not initialized." );
 		return -1;
 	}
 
@@ -757,7 +757,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 	if ( len <= 0 )
 	{
-		ri.Printf( PRINT_WARNING, "RE_RegisterFont: Unable to read font file %s\n", fileName );
+		Log::Warn("RE_RegisterFont: Unable to read font file %s", fileName );
 		RE_FreeFontFile( faceData );
 		return -1;
 	}
@@ -765,14 +765,14 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 	// allocate on the stack first in case we fail
 	if ( FT_New_Memory_Face( ftLibrary, (FT_Byte*) faceData, len, 0, &face ) )
 	{
-		ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, unable to allocate new face.\n" );
+		Log::Warn("RE_RegisterFont: FreeType2, unable to allocate new face." );
 		RE_FreeFontFile( faceData );
 		return -1;
 	}
 
 	if ( FT_Set_Char_Size( face, pointSize << 6, pointSize << 6, 72, 72 ) )
 	{
-		ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, Unable to set face char size.\n" );
+		Log::Warn("RE_RegisterFont: FreeType2, Unable to set face char size." );
 		FT_Done_Face( face );
 		RE_FreeFontFile( faceData );
 		return -1;
@@ -789,7 +789,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 		if ( len <= 0 )
 		{
-			ri.Printf( PRINT_WARNING, "RE_RegisterFont: Unable to read font file %s\n", fileName );
+			Log::Warn("RE_RegisterFont: Unable to read font file %s", fileName );
 			RE_FreeFontFile( fallbackData );
 			FT_Done_Face( face );
 			RE_FreeFontFile( faceData );
@@ -799,7 +799,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		// allocate on the stack first in case we fail
 		if ( FT_New_Memory_Face( ftLibrary, (FT_Byte*) fallbackData, len, 0, &fallback ) )
 		{
-			ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, unable to allocate new face.\n" );
+			Log::Warn("RE_RegisterFont: FreeType2, unable to allocate new face." );
 			RE_FreeFontFile( fallbackData );
 			FT_Done_Face( face );
 			RE_FreeFontFile( faceData );
@@ -808,7 +808,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 		if ( FT_Set_Char_Size( fallback, pointSize << 6, pointSize << 6, 72, 72 ) )
 		{
-			ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, Unable to set face char size.\n" );
+			Log::Warn("RE_RegisterFont: FreeType2, Unable to set face char size.\n" );
 			FT_Done_Face( fallback );
 			RE_FreeFontFile( fallbackData );
 			FT_Done_Face( face );
@@ -860,7 +860,7 @@ void R_InitFreeType()
 {
 	if ( FT_Init_FreeType( &ftLibrary ) )
 	{
-		ri.Printf( PRINT_WARNING, "R_InitFreeType: Unable to initialize FreeType.\n" );
+		Log::Warn("R_InitFreeType: Unable to initialize FreeType." );
 	}
 }
 

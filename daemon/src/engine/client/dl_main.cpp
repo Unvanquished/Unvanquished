@@ -83,7 +83,7 @@ void DL_InitDownload()
 
 	dl_multi = curl_multi_init();
 
-	Com_DPrintf( "Client download subsystem initialized\n" );
+	Log::Debug( "Client download subsystem initialized" );
 	dl_initialized = 1;
 }
 
@@ -133,7 +133,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName )
 
 	if ( !localName || !remoteName )
 	{
-		Com_DPrintf( "Empty download URL or empty local file name\n" );
+		Log::Debug( "Empty download URL or empty local file name" );
 		return 0;
 	}
 
@@ -141,7 +141,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName )
 
 	if ( !dl_file )
 	{
-		Com_Printf( "ERROR: DL_BeginDownload unable to open '%s' for writing\n", localName );
+		Log::Warn( "DL_BeginDownload unable to open '%s' for writing\n", localName );
 		return 0;
 	}
 
@@ -177,13 +177,13 @@ dlStatus_t DL_DownloadLoop()
 
 	if ( !dl_request )
 	{
-		Com_DPrintf( "DL_DownloadLoop: unexpected call with dl_request == NULL\n" );
-		return DL_DONE;
+		Log::Debug( "DL_DownloadLoop: unexpected call with dl_request == NULL" );
+		return dlStatus_t::DL_DONE;
 	}
 
 	if ( ( status = curl_multi_perform( dl_multi, &dls ) ) == CURLM_CALL_MULTI_PERFORM && dls )
 	{
-		return DL_CONTINUE;
+		return dlStatus_t::DL_CONTINUE;
 	}
 
 	while ( ( msg = curl_multi_info_read( dl_multi, &dls ) ) && msg->easy_handle != dl_request )
@@ -193,7 +193,7 @@ dlStatus_t DL_DownloadLoop()
 
 	if ( !msg || msg->msg != CURLMSG_DONE )
 	{
-		return DL_CONTINUE;
+		return dlStatus_t::DL_CONTINUE;
 	}
 
 	if ( msg->data.result != CURLE_OK )
@@ -221,9 +221,9 @@ dlStatus_t DL_DownloadLoop()
 
 	if ( err )
 	{
-		Com_DPrintf( "DL_DownloadLoop: request terminated with failure status '%s'\n", err );
-		return DL_FAILED;
+		Log::Debug( "DL_DownloadLoop: request terminated with failure status '%s'", err );
+		return dlStatus_t::DL_FAILED;
 	}
 
-	return DL_DONE;
+	return dlStatus_t::DL_DONE;
 }

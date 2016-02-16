@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "common/IPC/CommonSyscalls.h"
 
 // game-module-to-engine calls
-typedef enum gameImport_s
+enum gameImport_t
 {
 
   G_LOCATE_GAME_DATA1,
@@ -48,7 +48,6 @@ typedef enum gameImport_s
   G_GEN_FINGERPRINT,
   G_GET_PLAYER_PUBKEY,
   G_GET_TIME_STRING,
-  G_CRASH_DUMP,
 
   BOT_ALLOCATE_CLIENT,
   BOT_FREE_CLIENT,
@@ -66,154 +65,115 @@ typedef enum gameImport_s
   BOT_ADD_OBSTACLE,
   BOT_REMOVE_OBSTACLE,
   BOT_UPDATE_OBSTACLES
-} gameImport_t;
+};
 
-// LocateGameData
-typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA1>, IPC::SharedMemory, int, int, int> LocateGameDataMsg1;
-typedef IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA2>, int, int, int> LocateGameDataMsg2;
+using LocateGameDataMsg1 = IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA1>, IPC::SharedMemory, int, int, int>;
+using LocateGameDataMsg2 = IPC::Message<IPC::Id<VM::QVM, G_LOCATE_GAME_DATA2>, int, int, int>;
 
-//AdjustAreaPortalStateMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_ADJUST_AREA_PORTAL_STATE>, int, bool> AdjustAreaPortalStateMsg;
+using AdjustAreaPortalStateMsg = IPC::Message<IPC::Id<VM::QVM, G_ADJUST_AREA_PORTAL_STATE>, int, bool>;
 
-// DropClientMsg
-typedef IPC::SyncMessage<
+using DropClientMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, G_DROP_CLIENT>, int, std::string>
-> DropClientMsg;
-// SendServerCommandMsg
-typedef IPC::SyncMessage<
+>;
+using SendServerCommandMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_SEND_SERVER_COMMAND>, int, std::string>
-> SendServerCommandMsg;
-// SetConfigStringMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SET_CONFIGSTRING>, int, std::string> SetConfigStringMsg;
-// GetConfigStringMsg
-typedef IPC::SyncMessage<
+>;
+using SetConfigStringMsg = IPC::Message<IPC::Id<VM::QVM, G_SET_CONFIGSTRING>, int, std::string>;
+using GetConfigStringMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_CONFIGSTRING>, int, int>,
     IPC::Reply<std::string>
-> GetConfigStringMsg;
-// SetConfigStringRestrictionsMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SET_CONFIGSTRING_RESTRICTIONS>> SetConfigStringRestrictionsMsg;
-// SetUserinfoMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SET_USERINFO>, int, std::string> SetUserinfoMsg;
-// GetUserinfoMsg
-typedef IPC::SyncMessage<
+>;
+using SetConfigStringRestrictionsMsg = IPC::Message<IPC::Id<VM::QVM, G_SET_CONFIGSTRING_RESTRICTIONS>>;
+using SetUserinfoMsg = IPC::Message<IPC::Id<VM::QVM, G_SET_USERINFO>, int, std::string>;
+using GetUserinfoMsg =  IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_USERINFO>, int, int>,
     IPC::Reply<std::string>
-> GetUserinfoMsg;
-// GetServerinfoMsg
-typedef IPC::SyncMessage<
+>;
+using GetServerinfoMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_SERVERINFO>, int>,
     IPC::Reply<std::string>
-> GetServerinfoMsg;
-// GetUsercmdMsg
-typedef IPC::SyncMessage<
+>;
+using GetUsercmdMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_USERCMD>, int>,
     IPC::Reply<usercmd_t>
-> GetUsercmdMsg;
-//GetEntityTokenMsg
-typedef IPC::SyncMessage<
+>;
+using GetEntityTokenMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_ENTITY_TOKEN>>,
     IPC::Reply<bool, std::string>
-> GetEntityTokenMsg;
-// SendGameStatMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_GAME_STAT>, std::string> SendGameStatMsg;
-// SendMessageMsg
-typedef IPC::Message<IPC::Id<VM::QVM, G_SEND_MESSAGE>, int, int, std::vector<char>> SendMessageMsg;
-// MessageStatusMsg
-typedef IPC::SyncMessage<
+>;
+using SendGameStatMsg = IPC::Message<IPC::Id<VM::QVM, G_SEND_GAME_STAT>, std::string>;
+using SendMessageMsg = IPC::Message<IPC::Id<VM::QVM, G_SEND_MESSAGE>, int, int, std::vector<char>>;
+using MessageStatusMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_MESSAGE_STATUS>, int>,
     IPC::Reply<int>
-> MessageStatusMsg;
-// RSAGenMsgMsg
-typedef IPC::SyncMessage<
+>;
+using RSAGenMsgMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_RSA_GENMSG>, std::string>,
     IPC::Reply<int, std::string, std::string>
-> RSAGenMsgMsg;
-// GenFingerPrintMsg
-typedef IPC::SyncMessage<
+>;
+using GenFingerprintMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GEN_FINGERPRINT>, int, std::vector<char>, int>,
     IPC::Reply<std::string>
-> GenFingerprintMsg;
-// GetPlayerPubkeyMsg
-typedef IPC::SyncMessage<
+>;
+using GetPlayerPubkeyMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_PLAYER_PUBKEY>, int, int>,
     IPC::Reply<std::string>
-> GetPlayerPubkeyMsg;
-// GetTimeStringMsg
-typedef IPC::SyncMessage<
+>;
+using GetTimeStringMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_GET_TIME_STRING>, int, std::string, qtime_t>,
     IPC::Reply<std::string>
-> GetTimeStringMsg;
-// CrashDumpMsg
-typedef IPC::SyncMessage <
-    IPC::Message<IPC::Id<VM::QVM, G_CRASH_DUMP>, std::vector<uint8_t> >
-> CrashDumpMsg;
+>;
 
-// BotAllocateClientMsg
-typedef IPC::SyncMessage<
+using BotAllocateClientMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_ALLOCATE_CLIENT>>,
 	IPC::Reply<int>
-> BotAllocateClientMsg;
-// BotFreeClientMsg
-typedef IPC::Message<IPC::Id<VM::QVM, BOT_FREE_CLIENT>, int> BotFreeClientMsg;
-// BotGetConsoleMessageMsg
-typedef IPC::SyncMessage<
+>;
+using BotFreeClientMsg = IPC::Message<IPC::Id<VM::QVM, BOT_FREE_CLIENT>, int>;
+using BotGetConsoleMessageMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_GET_CONSOLE_MESSAGE>, int, int>,
 	IPC::Reply<int, std::string>
-> BotGetConsoleMessageMsg;
-// BotNavSetupMsg
-typedef IPC::SyncMessage<
+>;
+using BotNavSetupMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_NAV_SETUP>, botClass_t>,
 	IPC::Reply<int, int>
-> BotNavSetupMsg;
-// BotNavSetupMsg
-typedef IPC::Message<IPC::Id<VM::QVM, BOT_NAV_SHUTDOWN>> BotNavShutdownMsg;
-// BotSetNavmeshMsg
-typedef IPC::Message<IPC::Id<VM::QVM, BOT_SET_NAVMESH>, int, int> BotSetNavmeshMsg;
-// BotFindRouteMsg
-typedef IPC::SyncMessage<
+>;
+using BotNavShutdownMsg = IPC::Message<IPC::Id<VM::QVM, BOT_NAV_SHUTDOWN>>;
+using BotSetNavmeshMsg = IPC::Message<IPC::Id<VM::QVM, BOT_SET_NAVMESH>, int, int>;
+using BotFindRouteMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_FIND_ROUTE>, int, botRouteTarget_t, bool>,
 	IPC::Reply<int>
-> BotFindRouteMsg;
-// BotUpdatePathMsg
-typedef IPC::SyncMessage<
+>;
+using BotUpdatePathMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_UPDATE_PATH>, int, botRouteTarget_t>,
 	IPC::Reply<botNavCmd_t>
-> BotUpdatePathMsg;
-// BotNavRaycastMsg
-typedef IPC::SyncMessage<
+>;
+using BotNavRaycastMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_NAV_RAYCAST>, int, std::array<float, 3>, std::array<float, 3>>,
 	IPC::Reply<int, botTrace_t>
-> BotNavRaycastMsg;
-// BotNavRandomPointMsg
-typedef IPC::SyncMessage<
+>;
+using BotNavRandomPointMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_NAV_RANDOMPOINT>, int>,
 	IPC::Reply<std::array<float, 3>>
-> BotNavRandomPointMsg;
-// BotNavRandomPointRadiusMsg
-typedef IPC::SyncMessage<
+>;
+using BotNavRandomPointRadiusMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_NAV_RANDOMPOINTRADIUS>, int, std::array<float, 3>, float>,
 	IPC::Reply<int, std::array<float, 3>>
-> BotNavRandomPointRadiusMsg;
-// BotEnableAreaMsg
-typedef IPC::Message<IPC::Id<VM::QVM, BOT_ENABLE_AREA>, std::array<float, 3>, std::array<float, 3>, std::array<float, 3>> BotEnableAreaMsg;
-// BotDisableAreaMsg
-typedef IPC::Message<IPC::Id<VM::QVM, BOT_DISABLE_AREA>, std::array<float, 3>, std::array<float, 3>, std::array<float, 3>> BotDisableAreaMsg;
-// BotAddObstacleMsg
-typedef IPC::SyncMessage<
+>;
+using BotEnableAreaMsg = IPC::Message<IPC::Id<VM::QVM, BOT_ENABLE_AREA>, std::array<float, 3>, std::array<float, 3>, std::array<float, 3>>;
+using BotDisableAreaMsg = IPC::Message<IPC::Id<VM::QVM, BOT_DISABLE_AREA>, std::array<float, 3>, std::array<float, 3>, std::array<float, 3>>;
+using BotAddObstacleMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, BOT_ADD_OBSTACLE>, std::array<float, 3>, std::array<float, 3>>,
 	IPC::Reply<int>
-> BotAddObstacleMsg;
-// BotRemoveObstacleMsg
-typedef IPC::Message<IPC::Id<VM::QVM, BOT_REMOVE_OBSTACLE>, int> BotRemoveObstacleMsg;
-// BotUpdateObstaclesMsg
-typedef IPC::Message<IPC::Id<VM::QVM, BOT_UPDATE_OBSTACLES>> BotUpdateObstaclesMsg;
+>;
+using BotRemoveObstacleMsg = IPC::Message<IPC::Id<VM::QVM, BOT_REMOVE_OBSTACLE>, int>;
+using BotUpdateObstaclesMsg = IPC::Message<IPC::Id<VM::QVM, BOT_UPDATE_OBSTACLES>>;
 
 
 
 
 
 // engine-to-game-module calls
-typedef enum
+enum gameExport_t
 {
   GAME_STATIC_INIT,
 
@@ -250,46 +210,36 @@ typedef enum
   //              bool ducking, bool allowWorldHit );
 
   GAME_MESSAGERECEIVED, // void ()( int clientNum, const char *buffer, int bufferSize, int commandTime );
-} gameExport_t;
+};
 
-// GameStaticInitMsg
-typedef IPC::SyncMessage<
+using GameStaticInitMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_STATIC_INIT>, int>
-> GameStaticInitMsg;
-// GameInitMsg
-typedef IPC::SyncMessage<
+>;
+using GameInitMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_INIT>, int, int, bool, bool>
-> GameInitMsg;
-// GameShutdownMsg
-typedef IPC::SyncMessage<
+>;
+using GameShutdownMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_SHUTDOWN>, bool>
-> GameShutdownMsg;
-// GameClientConnectMsg
-typedef IPC::SyncMessage<
+>;
+using GameClientConnectMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_CLIENT_CONNECT>, int, bool, int>,
 	IPC::Reply<bool, std::string>
-> GameClientConnectMsg;
-// GameClientBeginMsg
-typedef IPC::SyncMessage<
+>;
+using GameClientBeginMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_CLIENT_BEGIN>, int>
-> GameClientBeginMsg;
-// GameClientUserinfoChangedMsg
-typedef IPC::SyncMessage<
+>;
+using GameClientUserinfoChangedMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_CLIENT_USERINFO_CHANGED>, int>
-> GameClientUserinfoChangedMsg;
-// GameClientDisconnectMsg
-typedef IPC::SyncMessage<
+>;
+using GameClientDisconnectMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_CLIENT_DISCONNECT>, int>
-> GameClientDisconnectMsg;
-// GameClientCommandMsg
-typedef IPC::SyncMessage<
+>;
+using GameClientCommandMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_CLIENT_COMMAND>, int, std::string>
-> GameClientCommandMsg;
-// GameClientThinkMsg
-typedef IPC::SyncMessage<
+>;
+using GameClientThinkMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_CLIENT_THINK>, int>
-> GameClientThinkMsg;
-// GameRunFrameMsg
-typedef IPC::SyncMessage<
+>;
+using GameRunFrameMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, GAME_RUN_FRAME>, int>
-> GameRunFrameMsg;
+>;

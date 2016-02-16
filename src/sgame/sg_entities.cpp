@@ -123,10 +123,10 @@ gentity_t *G_NewEntity()
 	{
 		for ( i = 0; i < MAX_GENTITIES; i++ )
 		{
-			G_Printf( "%4i: %s\n", i, g_entities[ i ].classname );
+			Log::Warn( "%4i: %s", i, g_entities[ i ].classname );
 		}
 
-		G_Error( "G_Spawn: no free entities" );
+		Com_Error(errorParm_t::ERR_DROP,  "G_Spawn: no free entities" );
 	}
 
 	// open up a new slot
@@ -158,7 +158,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	if ( g_debugEntities.integer > 2 )
 	{
-		G_Printf(S_DEBUG "Freeing Entity %s\n", etos(entity));
+		Log::Debug("Freeing Entity %s", etos(entity));
 	}
 
 	if ( entity->obstacleHandle )
@@ -171,7 +171,7 @@ void G_FreeEntity( gentity_t *entity )
 		entity->eclass->instanceCounter--;
 	}
 
-	if ( entity->s.eType == ET_BEACON && entity->s.modelindex == BCT_TAG )
+	if ( entity->s.eType == entityType_t::ET_BEACON && entity->s.modelindex == BCT_TAG )
 	{
 		// It's possible that this happened before, but we need to be sure.
 		BaseClustering::Remove(entity);
@@ -205,7 +205,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 	vec3_t    snapped;
 
 	newEntity = G_NewEntity();
-	newEntity->s.eType = (entityType_t) ( ET_EVENTS + event );
+	newEntity->s.eType = Util::enum_cast<entityType_t>( Util::ordinal(entityType_t::ET_EVENTS) + event );
 
 	newEntity->classname = "tempEntity";
 	newEntity->eventTime = level.time;
@@ -266,7 +266,7 @@ void G_PrintEntityNameList(gentity_t *entity)
 
 	if(!entity)
 	{
-		G_Printf("<NULL>");
+		Log::Notice("<NULL>");
 		return;
 	}
 	if(!entity->names[0])
@@ -281,7 +281,7 @@ void G_PrintEntityNameList(gentity_t *entity)
 		Q_strcat(string, sizeof(string), ", ");
 		Q_strcat(string, sizeof(string), entity->names[i]);
 	}
-	G_Printf("{ %s }\n", string);
+	Log::Notice("{ %s }", string);
 }
 
 /*
@@ -466,7 +466,7 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	{
 
 		if ( g_debugEntities.integer > -1 )
-			G_Printf( S_WARNING "Could not find any entity matching \"^5%s%s%s^7\"\n",
+			Log::Warn( "Could not find any entity matching \"^5%s%s%s^7\"",
 					classname ? classname : "",
 					classname && match ? "^7 and ^5" :  "",
 					match ? match : ""
@@ -673,7 +673,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	{
 		if ( g_debugEntities.integer > -1 )
 		{
-			G_Printf( S_WARNING "none of the following targets could be resolved for Entity %s:", etos(self));
+			Log::Warn( "none of the following targets could be resolved for Entity %s:", etos(self));
 			G_PrintEntityNameList( self );
 		}
 		return nullptr;
@@ -750,7 +750,7 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 
 		if ( !self->inuse )
 		{
-			G_Printf( S_WARNING "entity was removed while using targets\n" );
+			Log::Warn( "entity was removed while using targets" );
 			return;
 		}
 	}
@@ -769,13 +769,10 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
  */
 void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 {
-	/**
-	 * assertions against programmatic errors
-	 */
-	assert( entity->act != nullptr );
-	assert( call != nullptr );
+	ASSERT(entity->act != nullptr);
+	ASSERT(call != nullptr);
 
-	//assert( entity->callIn->activator != nullptr );
+	//ASSERT(entity->callIn->activator != nullptr);
 
 	if( entity->active )
 	{
@@ -799,7 +796,7 @@ void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 {
 	variatingTime_t delay = {0, 0};
 
-	assert( call != nullptr );
+	ASSERT(call != nullptr);
 	entity->callIn = *call;
 
 	G_ResetTimeField(&delay, entity->config.delay, entity->eclass->config.delay, delay );
@@ -818,7 +815,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
 	if ( g_debugEntities.integer > 1 )
 	{
-		G_Printf(S_DEBUG "[%s] %s calling %s %s:%s\n",
+		Log::Debug("[%s] %s calling %s %s:%s",
 				etos( call->activator ),
 				etos( call->caller ),
 				call->definition ? call->definition->event : "onUnknown",
@@ -838,7 +835,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 		case ECA_CUSTOM:
 			if ( g_debugEntities.integer > -1 )
 			{
-				G_Printf(S_WARNING "Unknown action \"%s\" for %s\n",
+				Log::Warn("Unknown action \"%s\" for %s",
 						call->definition->action, etos(targetedEntity));
 			}
 			break;
@@ -874,13 +871,13 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			if (!targetedEntity->use)
 			{
 				if(g_debugEntities.integer >= 0)
-					G_Printf(S_WARNING "calling :use on %s, which has no use function!\n", etos(targetedEntity));
+					Log::Warn("calling :use on %s, which has no use function!", etos(targetedEntity));
 				break;
 			}
 			if(!call->activator || !call->activator->client)
 			{
 				if(g_debugEntities.integer >= 0)
-					G_Printf(S_WARNING "calling %s:use, without a client as activator.\n", etos(targetedEntity));
+					Log::Warn("calling %s:use, without a client as activator.", etos(targetedEntity));
 				break;
 			}
 			targetedEntity->use(targetedEntity, call->caller, call->activator);
@@ -996,7 +993,7 @@ Sets the pos trajectory for a fixed position
 void G_SetOrigin( gentity_t *self, const vec3_t origin )
 {
 	VectorCopy( origin, self->s.pos.trBase );
-	self->s.pos.trType = TR_STATIONARY;
+	self->s.pos.trType = trType_t::TR_STATIONARY;
 	self->s.pos.trTime = 0;
 	self->s.pos.trDuration = 0;
 	VectorClear( self->s.pos.trDelta );

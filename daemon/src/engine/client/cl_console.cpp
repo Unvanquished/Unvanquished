@@ -42,8 +42,8 @@ Maryland 20850 USA.
 #include "framework/CommandSystem.h"
 
 static const Color::Color console_color = Color::White;
-#define DEFAULT_CONSOLE_WIDTH 78
-#define MAX_CONSOLE_WIDTH   1024
+static const int DEFAULT_CONSOLE_WIDTH = 78;
+static const int MAX_CONSOLE_WIDTH   = 1024;
 
 int g_console_field_width = DEFAULT_CONSOLE_WIDTH;
 
@@ -85,10 +85,10 @@ cvar_t    *con_colorGreen;
  */
 cvar_t    *con_debug;
 
-#define ANIMATION_TYPE_NONE   0
-#define ANIMATION_TYPE_SCROLL_DOWN 1
-#define ANIMATION_TYPE_FADE   2
-#define ANIMATION_TYPE_BOTH   3
+static const int ANIMATION_TYPE_NONE   = 0;
+static const int ANIMATION_TYPE_SCROLL_DOWN = 1;
+static const int ANIMATION_TYPE_FADE   = 2;
+static const int ANIMATION_TYPE_BOTH   = 3;
 
 /*
 ================
@@ -166,11 +166,11 @@ void Con_Dump_f()
 
 	if ( !f )
 	{
-		Com_Log(LOG_ERROR, "couldn't open." );
+		Log::Warn("couldn't open." );
 		return;
 	}
 
-	Com_Printf( "Dumped console text to %s.\n", name.c_str() );
+	Log::Notice( "Dumped console text to %s.\n", name.c_str() );
 
 	// write the remaining lines
 	for ( const std::string& line : consoleState.lines )
@@ -276,7 +276,7 @@ void Con_Grep_f()
 		{
 			unsigned sub_size = std::min<unsigned>( it->size() - i, MAXPRINTMSG - 1 );
 			std::string substring = it->substr(i, sub_size);
-			Com_Printf( "%s", substring.c_str() );
+			Log::Notice( "%s", substring.c_str() );
 		}
 
 		++it;
@@ -345,7 +345,7 @@ bool Con_CheckResize()
 				int len = 0;
 				for ( const auto& token : Color::Parser( line.c_str() ) )
 				{
-					if ( token.Type() == Color::Token::CHARACTER || token.Type() == Color::Token::ESCAPE )
+					if ( token.Type() == Color::Token::TokenType::CHARACTER || token.Type() == Color::Token::TokenType::ESCAPE )
 					{
 						len++;
 					}
@@ -498,7 +498,7 @@ bool CL_InternalConsolePrint( const char *text )
 
 	for ( const auto& token : Color::Parser( text ) )
 	{
-		if ( token.Type() == Color::Token::COLOR )
+		if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			consoleState.lines.back().append( token.Begin(), token.Size() );
 			continue;
@@ -509,11 +509,11 @@ bool CL_InternalConsolePrint( const char *text )
 			// count word length
 			for ( const auto& wordtoken : Color::Parser( token.Begin() ) )
 			{
-				if ( wordtoken.Type() == Color::Token::ESCAPE )
+				if ( wordtoken.Type() == Color::Token::TokenType::ESCAPE )
 				{
 					wordLen++;
 				}
-				else if ( wordtoken.Type() == Color::Token::CHARACTER )
+				else if ( wordtoken.Type() == Color::Token::TokenType::CHARACTER )
 				{
 					if ( Str::cisspace( *wordtoken.Begin() ) )
 					{
@@ -886,19 +886,19 @@ void Con_DrawConsoleContent()
 
         for ( const auto& token : Color::Parser( consoleState.lines[row].c_str(), console_color_alpha ) )
 		{
-			if ( token.Type() == Color::Token::COLOR )
+			if ( token.Type() == Color::Token::TokenType::COLOR )
 			{
 				Color::Color color = token.Color();
 				color.SetAlpha( console_color_alpha.Alpha() );
 				re.SetColor( color );
 			}
-			else if ( token.Type() == Color::Token::CHARACTER )
+			else if ( token.Type() == Color::Token::TokenType::CHARACTER )
 			{
 				int ch = Q_UTF8_CodePoint( token.Begin() );
 				SCR_DrawConsoleFontUnichar( currentWidthLocation, floor( lineDrawPosition + 0.5 ), ch );
 				currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 			}
-			else if ( token.Type() == Color::Token::ESCAPE )
+			else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 			{
 				int ch = Color::Constants::ESCAPE;
 				SCR_DrawConsoleFontUnichar( currentWidthLocation, floor( lineDrawPosition + 0.5 ), ch );
@@ -1104,7 +1104,7 @@ void Con_DrawConsole()
 {
 	// render console only if flag is set or is within an animation but also in special disconnected states
 	if ( !consoleState.isOpened && consoleState.currentAnimationFraction <= 0
-		&& !( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) ) )
+		&& !( cls.state == connstate_t::CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) ) )
 		return;
 
 
