@@ -42,6 +42,10 @@ Maryland 20850 USA.
 
 #define DEFAULT_BINDING 0
 
+static const Rocket::Core::String KEY_SET_EVENT = "key_set_event";
+static const Rocket::Core::String KEY_TEAM = "team";
+static const Rocket::Core::String KEY_KEY = "key";
+
 class RocketKeyBinder : public Rocket::Core::Element, public Rocket::Core::EventListener
 {
 public:
@@ -73,6 +77,7 @@ public:
 			context = GetContext();
 			context->AddEventListener( "mousemove", this );
 			context->AddEventListener( "keydown", this );
+			context->AddEventListener( KEY_SET_EVENT, this );
 		}
 	}
 
@@ -83,6 +88,7 @@ public:
 		{
 			context->RemoveEventListener( "mousemove", this );
 			context->RemoveEventListener( "keydown", this );
+			context->RemoveEventListener( KEY_SET_EVENT, this );
 			context = nullptr;
 		}
 	}
@@ -99,7 +105,11 @@ public:
 	void ProcessEvent( Rocket::Core::Event &event )
 	{
 		Element::ProcessEvent( event );
-		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
+		if ( event == KEY_SET_EVENT )
+		{
+			dirty_key = true;
+		}
+		else if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
 			waitingForKeypress = true;
 			SetInnerRML( "Enter desired key..." );
@@ -166,6 +176,10 @@ protected:
 		key = newKey;
 		dirty_key = true;
 		waitingForKeypress = false;
+		Rocket::Core::Dictionary dict;
+		dict.Set( KEY_TEAM, team );
+		dict.Set( KEY_KEY, key );
+		DispatchEvent( KEY_SET_EVENT, dict );
 	}
 
 	int GetTeam( Rocket::Core::String team )
