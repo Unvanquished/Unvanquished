@@ -226,93 +226,112 @@ static void SV_MapRestart_f()
 	sv.time += FRAMETIME;
 }
 
-/*
-================
-SV_Status_f
-================
-*/
-static void SV_Status_f()
+class StatusCmd: public Cmd::StaticCmd
 {
-	// make sure server is running
-	if ( !com_sv_running->integer )
-	{
-		Log::Notice( "Server is not running.\n" );
-		return;
-	}
+public:
+	StatusCmd():
+		StaticCmd("status", Cmd::SYSTEM, "Shows a table with server and player information")
+	{}
 
-	float cpu = ( svs.stats.latched_active + svs.stats.latched_idle );
-
-	if ( cpu )
+	void Run(const Cmd::Args&) const OVERRIDE
 	{
-		cpu = 100 * svs.stats.latched_active / cpu;
-	}
-
-	std::vector<std::string> players;
-	for ( int i = 0; i < sv_maxclients->integer; i++ )
-	{
-		const client_t& cl = svs.clients[i];
-		if ( !bool(cl.state) )
+		// make sure server is running
+		if ( !com_sv_running->integer )
 		{
-			continue;
+			Log::Notice( "Server is not running.\n" );
+			return;
 		}
 
-		std::string connection;
+		float cpu = ( svs.stats.latched_active + svs.stats.latched_idle );
 
-		if ( cl.state == clientState_t::CS_CONNECTED )
+		if ( cpu )
 		{
-			connection = "CONNECTED";
+			cpu = 100 * svs.stats.latched_active / cpu;
 		}
-		else if ( cl.state == clientState_t::CS_ZOMBIE )
+
+		std::vector<std::string> players;
+		for ( int i = 0; i < sv_maxclients->integer; i++ )
 		{
-			connection = "ZOMBIE";
-		}
-		else
-		{
-			connection = std::to_string(cl.ping);
-			if ( connection.size() > 10 )
+			const client_t& cl = svs.clients[i];
+			if ( cl.state == clientState_t::CS_FREE )
 			{
-				connection = "ERROR";
+				continue;
 			}
+
+			std::string connection;
+
+			if ( cl.state == clientState_t::CS_CONNECTED )
+			{
+				connection = "CONNECTED";
+			}
+			else if ( cl.state == clientState_t::CS_ZOMBIE )
+			{
+				connection = "ZOMBIE";
+			}
+			else
+			{
+				connection = std::to_string(cl.ping);
+				if ( connection.size() > 10 )
+				{
+					connection = "ERROR";
+				}
+			}
+			playerState_t* ps = SV_GameClientNum( i );
+
+			const char *address = NET_AdrToString( cl.netchan.remoteAddress );
+
+			players.push_back(Str::Format(
+				"%3i %5i %10s %-22s %-6i %s",
+				i,
+				ps->persistant[ PERS_SCORE ],
+				connection,
+				address,
+				cl.netchan.qport,
+				cl.name
+			));
 		}
-		playerState_t* ps = SV_GameClientNum( i );
 
-		const char *address = NET_AdrToString( cl.netchan.remoteAddress );
+		std::string time_string;
+		auto seconds = svs.time / 1000 % 60;
+		auto minutes = svs.time / 1000 / 60 % 60;
+		if ( auto hours = svs.time / 1000 / 60 / 60 / 60 )
+		{
+			time_string = Str::Format("%02d:", hours);
+		}
+		time_string += Str::Format("%02d:%02d", minutes, seconds);
 
-		players.push_back(Str::Format(
-			"%3i %5i %10s %-22s %-6i %s",
-			i,
-			ps->persistant[ PERS_SCORE ],
-			connection,
-			address,
-			cl.netchan.qport,
-			cl.name
-		));
+		Log::Notice(
+			"(begin server status)\n"
+			"hostname: %s\n"
+			"version:  %s\n"
+			"protocol: %d\n"
+			"cpu:      %.0f%%\n"
+			"time:     %s\n"
+			"map:      %s\n"
+			"players:  %d / %d\n"
+			"num score connection address                port   name\n"
+			"--- ----- ---------- ---------------------- ------ ----\n",
+			sv_hostname->string,
+			Q3_VERSION " on " Q3_ENGINE,
+			PROTOCOL_VERSION,
+			cpu,
+			time_string,
+			sv_mapname->string,
+			players.size(),
+			sv_maxclients->integer
+		);
+
+		for ( const auto& player : players )
+		{
+			Log::Notice( "%s", player.c_str() );
+		}
+
+
+		Log::Notice( "(end server status)" );
 	}
+};
+static StatusCmd StatusCmdRegistration;
 
-	Log::Notice(
-		"(begin server status)\n"
-		"hostname: %s\n"
-		"version:  %s\n"
-		"cpu:      %i%%\n"
-		"map:      %s\n"
-		"players:  %d / %d\n"
-		"num score connection address                port   name\n"
-		"--- ----- ---------- ---------------------- ------ ----\n",
-		sv_hostname->string,
-		Q3_VERSION " on " Q3_ENGINE,
-		( int ) cpu,
-		sv_mapname->string,
-		(int)players.size(), sv_maxclients->integer
-	);
-
-	for ( const auto& player : players )
-	{
-		Log::Notice( "%s", player.c_str() );
-	}
-
-
-	Log::Notice( "(end server status)" );
-}
 
 /*
 ==================
@@ -366,6 +385,45 @@ static void SV_Systeminfo_f()
 	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO, false ) );
 }
 
+class ListMapsCmd: public Cmd::StaticCmd
+{
+public:
+	ListMapsCmd():
+		StaticCmd("listmaps", Cmd::SYSTEM, "Lists all available maps")
+	{}
+
+	void Run(const Cmd::Args&) const OVERRIDE
+	{
+		std::vector<std::string> maps;
+
+		FS::RefreshPaks();
+		std::error_code ignore;
+		for ( const auto& pak : FS::GetAvailablePaks() )
+		{
+			FS::PakPath::LoadPakPrefix(pak, "maps", ignore);
+		}
+
+		for ( const auto& pak : FS::PakPath::ListFiles("maps", ignore) )
+		{
+			if ( Str::IsSuffix(".bsp", pak) )
+			{
+				maps.push_back( pak.substr(0, pak.size() - 4) );
+			}
+		}
+
+		std::sort( maps.begin(), maps.end() );
+		maps.erase( std::unique( maps.begin(), maps.end() ), maps.end() );
+
+		Log::Notice("Listing %d maps:", maps.size());
+
+		for ( const auto& map: maps )
+		{
+			Log::Notice("%s", map.c_str());
+		}
+	}
+};
+static ListMapsCmd ListMapsCmdRegistration;
+
 /*
 ==================
 SV_AddOperatorCommands
@@ -380,7 +438,6 @@ void SV_AddOperatorCommands()
 		Cmd_AddCommand( "heartbeat",   SV_Heartbeat_f );
 		Cmd_AddCommand( "map_restart", SV_MapRestart_f );
 		Cmd_AddCommand( "serverinfo",  SV_Serverinfo_f );
-		Cmd_AddCommand( "status",      SV_Status_f );
 		Cmd_AddCommand( "systeminfo",  SV_Systeminfo_f );
 	}
 }
