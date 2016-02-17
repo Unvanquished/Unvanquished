@@ -1909,13 +1909,18 @@ InfoMap InfoStringToMap( const std::string& string )
 		std::getline( input, key, INFO_SEPARATOR );
 		std::string value;
 		std::getline( input, value, INFO_SEPARATOR );
-		if ( !key.empty() )
+		if ( !key.empty() && InfoValidItem(key) && InfoValidItem(value) )
 		{
 			map[key] = value;
 		}
 	}
 
 	return map;
+}
+
+bool InfoValidItem( const std::string& string )
+{
+	return string.find(INFO_SEPARATOR) == std::string::npos;
 }
 
 /*

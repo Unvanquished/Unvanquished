@@ -1545,6 +1545,11 @@ enum class tokenType_t {
 	 */
 	InfoMap InfoStringToMap( const std::string& string );
 
+	/*
+	 * Whether string is a valid info key or value
+	 */
+	bool InfoValidItem(const std::string& string);
+
 	// DEPRECATED: Use InfoMap
 	const char *Info_ValueForKey( const char *s, const char *key );
 	// DEPRECATED: Use InfoMap

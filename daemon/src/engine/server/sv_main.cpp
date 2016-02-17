@@ -530,7 +530,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	InfoMap info_map;
 	Cvar::PopulateInfoMap(CVAR_SERVERINFO, info_map);
 
-	if ( args.Argc() > 1 && Challenge::ValidString(args.Argv(1)) )
+	if ( args.Argc() > 1 && InfoValidItem(args.Argv(1)) )
 	{
 		// echo back the parameter to status. so master servers can use it as a challenge
 		// to prevent timed spoofed reply packets that add ghost servers
@@ -591,7 +591,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 	InfoMap info_map;
 
-	if ( args.Argc() > 1 && Challenge::ValidString(args.Argv(1)) )
+	if ( args.Argc() > 1 && InfoValidItem(args.Argv(1)) )
 	{
 		std::string  challenge = args.Argv(1);
 		// echo back the parameter to status. so master servers can use it as a challenge
