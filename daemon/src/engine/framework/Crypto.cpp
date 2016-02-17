@@ -28,8 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "common/System.h"
-#include "common/String.h"
+#include "common/Common.h"
 #include "Crypto.h"
 #include <nettle/aes.h>
 #include <nettle/base64.h>
