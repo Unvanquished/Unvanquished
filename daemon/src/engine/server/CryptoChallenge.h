@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class Challenge
 {
 public:
-    using Clock = std::chrono::steady_clock;
+    using Clock = Sys::SteadyClock;
     using TimePoint = Clock::time_point;
     using Duration = Clock::duration;
 
