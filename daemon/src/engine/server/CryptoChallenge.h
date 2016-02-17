@@ -116,6 +116,12 @@ public:
         return Clock::now() - created;
     }
 
+    /*
+     * Checks whether a string is a proper challenge representation
+     * (ie: something that String() might have returned
+     */
+    static bool ValidString(const std::string& challenge);
+
 private:
     /*
      * Generates a random challenge
@@ -123,7 +129,7 @@ private:
     std::string GenerateString();
 
     TimePoint    created;
-	Duration     timeout;
+    Duration     timeout;
     Crypto::Data challenge;
     netadr_t     source;
 

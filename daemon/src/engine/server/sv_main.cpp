@@ -133,8 +133,6 @@ bool SV_Private(ServerPrivate level)
 	return isPrivate.Get() >= level;
 }
 
-static CONSTEXPR int MAX_CHALLENGE_LEN = 128;
-
 /*
 =============================================================================
 
@@ -260,6 +258,8 @@ static struct {
 	netadr_t ipv4, ipv6;
 } masterServerAddr[ MAX_MASTER_SERVERS ];
 
+
+static CONSTEXPR int MAX_CHALLENGE_LEN = 128;
 static struct {
 	netadrtype_t type;
 	char         text[ MAX_CHALLENGE_LEN + 1 ];
@@ -487,29 +487,6 @@ CONNECTIONLESS COMMANDS
 ==============================================================================
 */
 
-//bani - bugtraq 12534
-//returns true if valid challenge
-//returns false if m4d h4x0rz
-bool SV_VerifyChallenge( const std::string& challenge )
-{
-	if ( challenge.empty() || challenge.size() > MAX_CHALLENGE_LEN )
-	{
-		return false;
-	}
-
-	for ( char c : challenge )
-	{
-		if ( c == '\\' || c == '/' || c == '%' || c == ';' ||
-			 c == '"' || c < 32 || c > 126 // non-ascii
-		   )
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
 /*
 ================
 SVC_Status
@@ -529,7 +506,7 @@ void SVC_Status( netadr_t from, const Cmd::Args& args )
 	InfoMap info_map;
 	Cvar::PopulateInfoMap(CVAR_SERVERINFO, info_map);
 
-	if ( args.Argc() > 1 && SV_VerifyChallenge(args.Argv(1)) )
+	if ( args.Argc() > 1 && Challenge::ValidString(args.Argv(1)) )
 	{
 		// echo back the parameter to status. so master servers can use it as a challenge
 		// to prevent timed spoofed reply packets that add ghost servers
@@ -590,7 +567,7 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 	InfoMap info_map;
 
-	if ( args.Argc() > 1 && SV_VerifyChallenge(args.Argv(1)) )
+	if ( args.Argc() > 1 && Challenge::ValidString(args.Argv(1)) )
 	{
 		std::string  challenge = args.Argv(1);
 		// echo back the parameter to status. so master servers can use it as a challenge

@@ -27,7 +27,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
-#include "qcommon/qcommon.h"
+#include "common/Common.h"
 #include "CryptoChallenge.h"
 
 static Cvar::Range<Cvar::Cvar<int>> cvar_server_challenge_timeout(
@@ -83,6 +83,16 @@ std::string Challenge::GenerateString()
 		stream << int( ch );
 	}
 	return stream.str();
+}
+
+bool Challenge::ValidString(const std::string& challenge)
+{
+	if ( challenge.empty() || challenge.size() % 2 )
+	{
+		return false;
+	}
+
+	return std::all_of(challenge.begin(), challenge.end(), Str::cisxdigit);
 }
 
 
