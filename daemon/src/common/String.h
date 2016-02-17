@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_STRING_H_
 
 #include <algorithm>
+#include "Compiler.h"
 
 namespace Str {
     void AssertOnTinyFormatError(std::string reason);
