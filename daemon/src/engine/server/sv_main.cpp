@@ -412,12 +412,12 @@ void SV_MasterHeartbeat( const char *hbname )
 
 		if ( masterServerAddr[ i ].ipv4.type != netadrtype_t::NA_BAD )
 		{
-			NET_OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
+			Net::OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
 		}
 
 		if ( masterServerAddr[ i ].ipv6.type != netadrtype_t::NA_BAD )
 		{
-			NET_OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
+			Net::OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
 		}
 	}
 }
@@ -476,7 +476,7 @@ void SV_MasterGameStat( const char *data )
 	            NET_AdrToStringwPort( adr ) );
 
 	Log::Notice( "Sending gamestat to %s", MASTER_SERVER_NAME );
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
 }
 
 /*
@@ -1031,7 +1031,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 
 	// if we received a sequenced packet from an address we don't recognize,
 	// send an out of band disconnect packet to it
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "disconnect" );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "disconnect" );
 }
 
 /*

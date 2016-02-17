@@ -1233,7 +1233,7 @@ void CL_RequestMotd()
 	Info_SetValueForKey( info, "challenge", cls.updateChallenge, false );
 	Info_SetValueForKey( info, "version", com_version->string, false );
 
-	NET_OutOfBandPrint( netsrc_t::NS_CLIENT, cls.updateServer, "getmotd%s", info );
+	Net::OutOfBandPrint( netsrc_t::NS_CLIENT, cls.updateServer, "getmotd%s", info );
 }
 
 /*
@@ -2757,7 +2757,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	// echo request from server
 	if ( args.Argv(0) == "echo" && args.Argc() >= 2)
 	{
-		NET_OutOfBandPrint( netsrc_t::NS_CLIENT, from, "%s", args.Argv(1).c_str() );
+		Net::OutOfBandPrint( netsrc_t::NS_CLIENT, from, "%s", args.Argv(1) );
 		return;
 	}
 
@@ -3924,7 +3924,7 @@ int CL_ServerStatus( const char *serverAddress, char *serverStatusString, int ma
 			serverStatus->retrieved = false;
 			serverStatus->time = 0;
 			serverStatus->startTime = Sys_Milliseconds();
-			NET_OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getstatus" );
+			Net::OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getstatus" );
 			return false;
 		}
 	}
@@ -3937,7 +3937,7 @@ int CL_ServerStatus( const char *serverAddress, char *serverStatusString, int ma
 		serverStatus->retrieved = false;
 		serverStatus->startTime = Sys_Milliseconds();
 		serverStatus->time = 0;
-		NET_OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getstatus" );
+		Net::OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getstatus" );
 		return false;
 	}
 
@@ -4188,7 +4188,7 @@ void CL_GlobalServers_f()
 		Q_strcat( command, sizeof( command ), Cmd_Argv( i ) );
 	}
 
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, to, "%s", command );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, to, "%s", command );
 	CL_RequestMotd();
 }
 
@@ -4397,7 +4397,7 @@ void CL_Ping_f()
 
 	CL_SetServerInfoByAddress( pingptr->adr, nullptr, 0 );
 
-	NET_OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getinfo xxx" );
+	Net::OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getinfo xxx" );
 }
 
 /*
@@ -4486,7 +4486,7 @@ bool CL_UpdateVisiblePings_f( int source )
 								memcpy( &cl_pinglist[ j ].adr, &server[ i ].adr, sizeof( netadr_t ) );
 								cl_pinglist[ j ].start = Sys_Milliseconds();
 								cl_pinglist[ j ].time = 0;
-								NET_OutOfBandPrint( netsrc_t::NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
+								Net::OutOfBandPrint( netsrc_t::NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
 								slots++;
 								break;
 							}
@@ -4599,7 +4599,7 @@ void CL_ServerStatus_f()
 		}
 	}
 
-	NET_OutOfBandPrint( netsrc_t::NS_CLIENT, *toptr, "getstatus" );
+	Net::OutOfBandPrint( netsrc_t::NS_CLIENT, *toptr, "getstatus" );
 
 	serverStatus = CL_GetServerStatus( *toptr );
 	serverStatus->address = *toptr;

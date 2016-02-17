@@ -606,65 +606,6 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 	}
 }
 
-static INLINE void NET_SetOOBHeader( char *s )
-{
-	byte i;
-
-	for ( i = 0; i < 4; ++i )
-	{
-		s[ i ] = -1;
-	}
-}
-
-/*
-===============
-NET_OutOfBandPrint
-
-Sends a text message in an out-of-band datagram
-================
-*/
-void QDECL PRINTF_LIKE(3) NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const char *format, ... )
-{
-	va_list argptr;
-	char    string[ MAX_MSGLEN ];
-
-	NET_SetOOBHeader( string );
-
-	va_start( argptr, format );
-	Q_vsnprintf( string + 4, sizeof( string ) - 4, format, argptr );
-	va_end( argptr );
-
-	// send the datagram
-	NET_SendPacket( sock, strlen( string ), string, adr );
-}
-
-/*
-===============
-NET_OutOfBandData
-
-Sends a data message in an out-of-band datagram (only used for "connect")
-================
-*/
-void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len )
-{
-	byte  string[ MAX_MSGLEN * 2 ];
-	int   i;
-	msg_t mbuf;
-
-	NET_SetOOBHeader( ( char * ) string );
-
-	for ( i = 0; i < len; i++ )
-	{
-		string[ i + 4 ] = format[ i ];
-	}
-
-	mbuf.data = string;
-	mbuf.cursize = len + 4;
-	Huff_Compress( &mbuf, 12 );
-	// send the datagram
-	NET_SendPacket( sock, mbuf.cursize, mbuf.data, adr );
-}
-
 /*
 =============
 NET_StringToAdr

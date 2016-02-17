@@ -48,7 +48,7 @@ void SV_GetChallenge( netadr_t from )
 	}
 
 	auto challenge = ChallengeManager::Get().GenerateChallenge( from );
-	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "challengeResponse %s\n", challenge.c_str() );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "challengeResponse %s\n", challenge );
 }
 
 /*
@@ -75,7 +75,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 
 	if ( version != PROTOCOL_VERSION )
 	{
-		NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).", PROTOCOL_VERSION, version );
+		Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).", PROTOCOL_VERSION, version );
 		Log::Debug( "    rejected connect from version %i", version );
 		return;
 	}
@@ -173,7 +173,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			}
 			else
 			{
-				NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n%s", sv_fullmsg->string );
+				Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n%s", sv_fullmsg->string );
 				Log::Debug( "Rejected a connection." );
 				return;
 			}
@@ -220,7 +220,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	char reason[ MAX_STRING_CHARS ];
 	if ( gvm.GameClientConnect( reason, sizeof( reason ), clientNum, true, false ) )
 	{
-		NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]%s", reason );
+		Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]%s", reason );
 		Log::Debug( "Game rejected a connection: %s.", reason );
 		return;
 	}
@@ -228,7 +228,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	SV_UserinfoChanged( new_client );
 
 	// send the connect packet to the client
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "connectResponse" );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "connectResponse" );
 
 	Log::Debug( "Going from CS_FREE to CS_CONNECTED for %s", new_client->name );
 
