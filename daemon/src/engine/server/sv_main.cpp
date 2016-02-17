@@ -84,16 +84,54 @@ cvar_t *sv_packetdelay;
 // fretn
 cvar_t *sv_fullmsg;
 
-Cvar::Cvar<bool> isLanOnly(
-	"server.lanOnly", "should the server stay only on LAN (vs. advertise itself on the internet)",
+
+namespace Cvar {
+template<>
+std::string GetCvarTypeName<ServerPrivate>()
+{
+	return "server private";
+}
+
+} // namespace Cvar
+
+bool ParseCvarValue(Str::StringRef value, ServerPrivate& result)
+{
+	int intermediate = 0;
+	if ( Str::ParseInt(intermediate, value) &&
+		intermediate >= int(ServerPrivate::Public) &&
+		intermediate <= int(ServerPrivate::LanOnly) )
+	{
+		result = ServerPrivate(intermediate);
+		return true;
+	}
+	return false;
+}
+
+std::string SerializeCvarValue(ServerPrivate value)
+{
+	return std::to_string(int(value));
+}
+
+Cvar::Cvar<ServerPrivate> isPrivate(
+	"server.private",
+	"Controls how much the server advertises: "
+	"0 - Advertise everything, "
+	"1 - Don't advertise but reply to status queries, "
+	"2 - Don't reply to status queries but accept connections, "
+	"3 - Only accept LAN connections.",
 #if BUILD_CLIENT || BUILD_TTY_CLIENT
-	Cvar::ROM, true
+	Cvar::ROM, ServerPrivate::LanOnly
 #elif BUILD_SERVER
-	Cvar::NONE, false
+	Cvar::NONE, ServerPrivate::Public
 #else
 	#error
 #endif
 );
+
+bool SV_Private(ServerPrivate level)
+{
+	return isPrivate.Get() >= level;
+}
 
 static CONSTEXPR int MAX_CHALLENGE_LEN = 128;
 
@@ -343,7 +381,8 @@ void SV_MasterHeartbeat( const char *hbname )
 
 	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
-	if ( isLanOnly.Get() || !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
+	if ( SV_Private(ServerPrivate::NoAdvertise)
+		|| !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
 	{
 		return; // only dedicated servers send heartbeats
 	}
@@ -413,7 +452,7 @@ void SV_MasterGameStat( const char *data )
 {
 	netadr_t adr;
 
-	if ( !isLanOnly.Get() )
+	if ( SV_Private(ServerPrivate::NoAdvertise) )
 	{
 		return; // only dedicated servers send stats
 	}
@@ -482,6 +521,11 @@ the simple info query.
 */
 void SVC_Status( netadr_t from, const Cmd::Args& args )
 {
+	if ( SV_Private(ServerPrivate::NoStatus) )
+	{
+		return;
+	}
+
 	InfoMap info_map;
 	Cvar::PopulateInfoMap(CVAR_SERVERINFO, info_map);
 
@@ -518,6 +562,11 @@ if a user is interested in a server to do a full status
 */
 void SVC_Info( netadr_t from, const Cmd::Args& args )
 {
+	if ( SV_Private(ServerPrivate::NoStatus) )
+	{
+		return;
+	}
+
 	SV_ResolveMasterServers();
 
 	// don't count privateclients
@@ -601,6 +650,11 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
  */
 void SVC_Ping( netadr_t from, const Cmd::Args& )
 {
+	if ( SV_Private(ServerPrivate::NoStatus) )
+	{
+		return;
+	}
+
 	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "ack\n" );
 }
 
@@ -794,7 +848,10 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 			invalid_reason.c_str(),
 			args.ConcatArgs(2).c_str() );
 
-		RconEnvironment::PrintError( from, invalid_reason );
+		if ( !SV_Private(ServerPrivate::NoStatus) )
+		{
+			RconEnvironment::PrintError( from, invalid_reason );
+		}
 	}
 	else
 	{
@@ -811,6 +868,11 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 
 static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 {
+	if ( SV_Private(ServerPrivate::NoStatus) )
+	{
+		return;
+	}
+
 	int duration_seconds = std::chrono::duration_cast<std::chrono::seconds>(Challenge::Timeout()).count();
 	std::string rcon_info_string = InfoMapToString({
 		{"secure",     std::to_string(Rcon::cvar_server_secure.Get())},

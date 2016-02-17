@@ -344,8 +344,6 @@ extern cvar_t *sv_packetdelay;
 //fretn
 extern cvar_t *sv_fullmsg;
 
-extern Cvar::Cvar<bool> isLanOnly;
-
 //===========================================================
 
 //
@@ -461,5 +459,28 @@ void     SV_Netchan_FreeQueue( client_t *client );
 
 
 void SV_GeoIP_Init();
+
+
+enum class ServerPrivate
+{
+	Public,      // Actively advertise, don't refuse anything
+	NoAdvertise, // Do not advertise but reply to all out of band messages
+	NoStatus,    // Do not advertise nor reply to status out of band messages but allow all connections
+	LanOnly,     // Block everything except for LAN connections
+};
+
+/*
+ * Returns whether the server has a private level equal to or greater than
+ * the one provided
+ */
+bool SV_Private(ServerPrivate level);
+
+namespace Cvar {
+template<> std::string GetCvarTypeName<ServerPrivate>();
+} // namespace Cvar
+
+bool ParseCvarValue(Str::StringRef value, ServerPrivate& result);
+
+std::string SerializeCvarValue(ServerPrivate value);
 
 #endif /* SERVER_H_ */
