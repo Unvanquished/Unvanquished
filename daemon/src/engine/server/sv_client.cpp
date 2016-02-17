@@ -200,7 +200,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 			Log::Notice( "Client %i connecting from somewhere unknown\n", clientNum );
 		}
 #else
-		Com_Printf( "Client %i connecting\n", clientNum );
+		Log::Notice( "Client %i connecting\n", clientNum );
 #endif
 
 	new_client->gentity = SV_GentityNum( clientNum );
