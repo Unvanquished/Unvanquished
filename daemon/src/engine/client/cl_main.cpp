@@ -200,7 +200,7 @@ static void CL_UpdateMumble()
 		return;
 	}
 
-	// !!! FIXME: not sure if this is even close to correct.
+	// ! FIXME: not sure if this is even close to correct.
 	AngleVectors( cl.snap.ps.viewangles, forward, nullptr, up );
 
 	pos[ 0 ] = cl.snap.ps.origin[ 0 ] * scale;

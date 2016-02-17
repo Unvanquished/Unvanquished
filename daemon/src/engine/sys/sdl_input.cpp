@@ -653,7 +653,7 @@ static int hat_keys[ 16 ] =
 
 struct
 {
-	bool     buttons[ 16 ]; // !!! FIXME: these might be too many.
+	bool     buttons[ 16 ]; // ! FIXME: these might be too many.
 	unsigned int oldaxes;
 	int          oldaaxes[ 16 ];
 	unsigned int oldhats;
@@ -811,7 +811,7 @@ static void IN_JoyMove()
 
 		if ( balldx || balldy )
 		{
-			// !!! FIXME: is this good for stick balls, or just mice?
+			// ! FIXME: is this good for stick balls, or just mice?
 			// Scale like the mouse input...
 			if ( abs( balldx ) > 1 )
 			{

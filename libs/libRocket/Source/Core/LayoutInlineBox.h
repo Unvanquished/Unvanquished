@@ -122,7 +122,7 @@ public:
 	/// Returns the inline box's dimension box.
 	/// @return The inline box's dimension box.
 	const Box& GetBox() const;
-	/// Returns the height of the inline box. This is separate from the the box, as different types of inline
+	/// Returns the height of the inline box. This is separate from the box, as different types of inline
 	/// elements generate different line heights. The possible types are:
 	///  * replaced elements (or inline-block elements), which use their entire box (including margins) as their
 	///    height

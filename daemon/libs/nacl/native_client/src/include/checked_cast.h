@@ -331,7 +331,7 @@ namespace nacl {
 //    input:    the value to convert.
 //
 // usage:
-//    // naive truncation handler for sample purposes ONLY!!
+//    // naive truncation handler for sample purposes ONLY!
 //    template <typename T, typename S>
 //    void naive_trunc(T& o, const S& i) {
 //      // this only gets called if checked_cast can't do a safe automatic

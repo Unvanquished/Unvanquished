@@ -47,7 +47,7 @@ Maryland 20850 USA.
 #define SHADER_MAX_TRIANGLES ( SHADER_MAX_INDEXES / 3 )
 
 //
-// RB: DON'T USE MAX_QPATH HERE SO WE CAN INCREASE IT !!
+// RB: DON'T USE MAX_QPATH HERE SO WE CAN INCREASE IT !
 //
 
 /*
@@ -74,7 +74,7 @@ struct vmHeader_t
 	int litLength; // ( dataLength - litLength ) should be byteswapped on load
 	int bssLength; // zero filled memory appended to datalength
 
-	//!!! below here is VM_MAGIC_VER2 !!!
+	//! below here is VM_MAGIC_VER2 !
 	int jtrgLength; // number of jump table targets
 };
 

@@ -107,7 +107,7 @@ Core::Element* XMLNodeHandlerTabSet::ElementStart(Core::XMLParser* parser, const
 	}
 	else if (name == "tabs" || name == "panels")
 	{	
-		// Use the element handler to add the tabs and panels elements to the the tabset (this allows users to
+		// Use the element handler to add the tabs and panels elements to the tabset (this allows users to
 		// style them nicely), but don't return the new element, as we still want the tabset to be the top of the
 		// parser's node stack.
 

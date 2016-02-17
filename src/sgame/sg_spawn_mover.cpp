@@ -2324,7 +2324,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 		{
 			//whatever is blocking the train isn't a client
 
-			//KILL!!1!!!
+			//KILL!1!
 			G_Kill(other, self, MOD_CRUSH);
 
 			//buildables need to be handled differently since even when

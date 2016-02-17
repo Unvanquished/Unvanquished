@@ -567,7 +567,7 @@ char *CON_Input()
 			char buf[20];
 
 			if ( chr >= 0x100 )
-				continue; // !!!
+				continue; // !
 
 			if ( chr >= 0xC2 && chr <= 0xF4 )
 			{
