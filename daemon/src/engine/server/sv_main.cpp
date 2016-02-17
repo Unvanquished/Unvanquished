@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "server.h"
+#include "common/Assert.h"
 #include "CryptoChallenge.h"
 #include "framework/Rcon.h"
 
@@ -254,88 +255,116 @@ MASTER SERVER FUNCTIONS
 
 ==============================================================================
 */
-static struct {
-	netadr_t ipv4, ipv6;
-} masterServerAddr[ MAX_MASTER_SERVERS ];
+struct MasterServer
+{
+	int index;
+	netadr_t ipv4;
+	netadr_t ipv6;
+	std::string challenge;
+	netadrtype_t challenge_address_type;
 
+	MasterServer()
+	{
+		static int cvar_index = 0;
+		ASSERT_LT(cvar_index, MAX_MASTER_SERVERS);
+		index = cvar_index++;
+		Clear();
+	}
 
-static CONSTEXPR int MAX_CHALLENGE_LEN = 128;
-static struct {
-	netadrtype_t type;
-	char         text[ MAX_CHALLENGE_LEN + 1 ];
-} challenges[ MAX_MASTER_SERVERS ];
+	void Clear()
+	{
+		challenge_address_type = netadrtype_t::NA_BAD;
+		ipv4.type = netadrtype_t::NA_BAD;
+		ipv6.type = netadrtype_t::NA_BAD;
+		challenge.clear();
+	}
+
+	bool Empty() const
+	{
+		return ipv4.type == netadrtype_t::NA_BAD && ipv6.type == netadrtype_t::NA_BAD;
+	}
+
+	cvar_t* Cvar() const
+	{
+		return sv_master[index];
+	}
+
+	bool CvarIsSet() const
+	{
+		return sv_master[index]->string && sv_master[index]->string[0];
+	}
+};
+
+static std::array<MasterServer, MAX_MASTER_SERVERS> masterServers;
 
 static void SV_ResolveMasterServers()
 {
-	int i, netenabled, res;
+	int netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
-	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
-
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	for ( MasterServer& master : masterServers )
 	{
-		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
+		if ( !master.CvarIsSet() )
 		{
-			challenges[ i ].type =
-			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = netadrtype_t::NA_BAD;
+			master.Clear();
 			continue;
 		}
 
 		// see if we haven't already resolved the name
 		// resolving usually causes hitches on win95, so only
 		// do it when needed
-		if ( sv_master[ i ]->modified || ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD ) )
+		if ( master.Cvar()->modified || master.Empty() )
 		{
-			sv_master[ i ]->modified = false;
+			master.Cvar()->modified = false;
 
 			if ( netenabled & NET_ENABLEV4 )
 			{
-				Log::Notice( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, netadrtype_t::NA_IP );
+				Log::Notice( "Resolving %s (IPv4)\n", master.Cvar()->string );
+				int res = NET_StringToAdr( master.Cvar()->string, &master.ipv4, netadrtype_t::NA_IP );
 
 				if ( res == 2 )
 				{
 					// if no port was specified, use the default master port
-					masterServerAddr[ i ].ipv4.port = BigShort( PORT_MASTER );
+					master.ipv4.port = BigShort( PORT_MASTER );
 				}
 
 				if ( res )
 				{
-					Log::Notice( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
+					Log::Notice( "%s resolved to %s\n", master.Cvar()->string, NET_AdrToStringwPort( master.ipv4 ) );
 				}
 				else
 				{
-					Log::Notice( "%s has no IPv4 address.\n", sv_master[ i ]->string );
+					Log::Notice( "%s has no IPv4 address.\n", master.Cvar()->string );
 				}
 			}
 
 			if ( netenabled & NET_ENABLEV6 )
 			{
-				Log::Notice( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, netadrtype_t::NA_IP6 );
+				Log::Notice( "Resolving %s (IPv6)\n", master.Cvar()->string );
+				int res = NET_StringToAdr( master.Cvar()->string, &master.ipv6, netadrtype_t::NA_IP6 );
 
 				if ( res == 2 )
 				{
 					// if no port was specified, use the default master port
-					masterServerAddr[ i ].ipv6.port = BigShort( PORT_MASTER );
+					master.ipv6.port = BigShort( PORT_MASTER );
 				}
 
 				if ( res )
 				{
-					Log::Notice( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
+					Log::Notice( "%s resolved to %s\n", master.Cvar()->string, NET_AdrToStringwPort( master.ipv6 ) );
 				}
 				else
 				{
-					Log::Notice( "%s has no IPv6 address.\n", sv_master[ i ]->string );
+					Log::Notice( "%s has no IPv6 address.\n", master.Cvar()->string );
 				}
 			}
 
-			if ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD )
+			if ( master.Empty() )
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Log::Notice( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
-				Cvar_Set( sv_master[ i ]->name, "" );
-				sv_master[ i ]->modified = false;
+				Log::Notice( "Couldn't resolve address: %s\n", master.Cvar()->string );
+				Cvar_Set( master.Cvar()->name, "" );
+				master.Cvar()->modified = false;
 				continue;
 			}
 		}
@@ -351,11 +380,9 @@ Network connections being reconfigured. May need to redo some lookups.
 */
 void SV_NET_Config()
 {
-	int i;
-
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	for ( MasterServer& master : masterServers )
 	{
-		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = netadrtype_t::NA_BAD;
+		master.Clear();
 	}
 }
 
@@ -376,10 +403,7 @@ static const int HEARTBEAT_MSEC = (300 * 1000);
 
 void SV_MasterHeartbeat( const char *hbname )
 {
-	int             i;
-	int             netenabled;
-
-	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
+	int netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
 	if ( SV_Private(ServerPrivate::NoAdvertise)
 		|| !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
@@ -398,26 +422,26 @@ void SV_MasterHeartbeat( const char *hbname )
 	SV_ResolveMasterServers();
 
 	// send to group masters
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	for ( MasterServer& master : masterServers )
 	{
-		if ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD )
+		if ( master.Empty() )
 		{
 			continue;
 		}
 
-		Log::Notice( "Sending heartbeat to %s", sv_master[ i ]->string );
+		Log::Notice( "Sending heartbeat to %s", master.Cvar()->string );
 
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
 
-		if ( masterServerAddr[ i ].ipv4.type != netadrtype_t::NA_BAD )
+		if ( master.ipv4.type != netadrtype_t::NA_BAD )
 		{
-			Net::OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
+			Net::OutOfBandPrint( netsrc_t::NS_SERVER, master.ipv4, "heartbeat %s\n", hbname );
 		}
 
-		if ( masterServerAddr[ i ].ipv6.type != netadrtype_t::NA_BAD )
+		if ( master.ipv6.type != netadrtype_t::NA_BAD )
 		{
-			Net::OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
+			Net::OutOfBandPrint( netsrc_t::NS_SERVER, master.ipv6, "heartbeat %s\n", hbname );
 		}
 	}
 }
@@ -576,29 +600,30 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 
 		// If the master server listens on IPv4 and IPv6, we want to send the
 		// most recent challenge received from it over the OTHER protocol
-		for ( int i = 0; i < MAX_MASTER_SERVERS; i++ )
+		for ( MasterServer& master : masterServers )
 		{
 			// First, see if the challenge was sent by this master server
-			if ( !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv4 ) && !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv6 ) )
+			if ( !NET_CompareBaseAdr( from, master.ipv4 ) && !NET_CompareBaseAdr( from, master.ipv6 ) )
 			{
 				continue;
 			}
 
 			// It was - if the saved challenge is for the other protocol, send it and record the current one
-			if ( challenges[ i ].type == netadrtype_t::NA_IP || challenges[ i ].type == netadrtype_t::NA_IP6 )
+			if ( master.challenge_address_type == netadrtype_t::NA_IP ||
+				 master.challenge_address_type == netadrtype_t::NA_IP6 )
 			{
-				if ( challenges[ i ].type != from.type )
+				if ( master.challenge_address_type != from.type )
 				{
-					info_map["challenge2"] = challenges[ i ].text;
-					challenges[ i ].type = from.type;
-					strcpy( challenges[ i ].text, challenge.c_str() );
+					info_map["challenge2"] = master.challenge;
+					master.challenge_address_type = from.type;
+					master.challenge = challenge;
 					break;
 				}
 			}
 
 			// Otherwise record the current one regardless and check the next server
-			challenges[ i ].type = from.type;
-			strcpy( challenges[ i ].text, challenge.c_str());
+			master.challenge_address_type = from.type;
+			master.challenge = challenge;
 		}
 	}
 

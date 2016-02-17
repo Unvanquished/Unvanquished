@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "common/Common.h"
+#include "qcommon/qcommon.h"
 #include "CryptoChallenge.h"
 
 static Cvar::Range<Cvar::Cvar<int>> cvar_server_challenge_timeout(
