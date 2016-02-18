@@ -469,50 +469,6 @@ DEFORMATIONS
 
 /*
 =====================
-ReorderQuadVerts
-
-Reorder the quad vertices so that they are sorted by their texcoords
-=====================
-*/
-static void ReorderQuadVerts( shaderVertex_t *vert, glIndex_t *index,
-			      glIndex_t minIndex )
-{
-	int newIndex[4];
-	shaderVertex_t vertexCopy[4];
-	vec2_t midTexCoord;
-	int i;
-
-	Com_Memcpy( vertexCopy, vert, 4 * sizeof(shaderVertex_t) );
-
-	midTexCoord[ 0 ] = midTexCoord[ 1 ] = 0.0f;
-	for( i = 0; i < 4; i++ ) {
-		midTexCoord[ 0 ] += halfToFloat( vert[ i ].texCoords[ 0 ] );
-		midTexCoord[ 1 ] += halfToFloat( vert[ i ].texCoords[ 1 ] );
-	}
-	midTexCoord[ 0 ] *= 0.25f;
-	midTexCoord[ 1 ] *= 0.25f;
-
-	for( i = 0; i < 4; i++ ) {
-		newIndex[ i ] = 0;
-		if( halfToFloat( vert[ i ].texCoords[ 0 ] ) > midTexCoord[ 0 ] )
-			newIndex[ i ] |= 3;
-		if( halfToFloat( vert[ i ].texCoords[ 1 ] ) > midTexCoord[ 1 ] )
-			newIndex[ i ] ^= 1;
-
-		newIndex[ i ] = (newIndex[ i ] - minIndex) & 3;
-	}
-
-	for( i = 0; i < 4; i++ ) {
-		Com_Memcpy( &vert[ newIndex[ i ] ], &vertexCopy[ i ],
-			    sizeof(shaderVertex_t) );
-	}
-	for( i = 0; i < 6; i++ ) {
-		index[ i ] = minIndex + newIndex[ index[ i ] - minIndex ];
-	}
-}
-
-/*
-=====================
 AutospriteDeform
 
 Assuming all the triangles for this shader are independent
@@ -574,10 +530,11 @@ static const int edgeVerts[ 6 ][ 2 ] =
 	{ 2, 3 }
 };
 
-static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex, int numIndexes )
+static void Autosprite2Deform( int firstVertex, int numVertexes, int numIndexes )
 {
+	shaderVertex_t *v = &tess.verts[ firstVertex ];
 	int    i, j, k;
-	int    indexes;
+	vec3_t oldPos[4];
 
 	if ( numVertexes & 3 )
 	{
@@ -592,7 +549,7 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 	// this is a lot of work for two triangles...
 	// we could precalculate a lot of it is an issue, but it would mess up
 	// the shader abstraction
-	for ( i = 0, indexes = 0; i < numVertexes; i += 4, indexes += 6 )
+	for ( i = 0; i < numVertexes; i += 4, v += 4 )
 	{
 		float  lengths[ 2 ];
 		int    nums[ 2 ];
@@ -601,10 +558,12 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 		vec3_t major, minor;
 		shaderVertex_t *v1, *v2;
 
-		ReorderQuadVerts( tess.verts + firstVertex + i,
-				  tess.indexes + firstIndex + indexes,
-				  firstVertex );
-		R_QtangentsToNormal( tess.verts[ firstVertex + i ].qtangents, normal );
+		VectorCopy( v[0].xyz, oldPos[0] );
+		VectorCopy( v[1].xyz, oldPos[1] );
+		VectorCopy( v[2].xyz, oldPos[2] );
+		VectorCopy( v[3].xyz, oldPos[3] );
+
+		R_QtangentsToNormal( v->qtangents, normal );
 
 		// find the midpoint
 
@@ -617,8 +576,8 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 			float  l;
 			vec3_t temp;
 
-			v1 = tess.verts + firstVertex + i + edgeVerts[ j ][ 0 ];
-			v2 = tess.verts + firstVertex + i + edgeVerts[ j ][ 1 ];
+			v1 = v + edgeVerts[ j ][ 0 ];
+			v2 = v + edgeVerts[ j ][ 1 ];
 
 			VectorSubtract( v1->xyz, v2->xyz, temp );
 
@@ -640,8 +599,8 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 
 		for ( j = 0; j < 2; j++ )
 		{
-			v1 = tess.verts + firstVertex + i + edgeVerts[ nums[ j ] ][ 0 ];
-			v2 = tess.verts + firstVertex + i + edgeVerts[ nums[ j ] ][ 1 ];
+			v1 = v + edgeVerts[ nums[ j ] ][ 0 ];
+			v2 = v + edgeVerts[ nums[ j ] ][ 1 ];
 
 			mid[ j ][ 0 ] = 0.5f * ( v1->xyz[ 0 ] + v2->xyz[ 0 ] );
 			mid[ j ][ 1 ] = 0.5f * ( v1->xyz[ 1 ] + v2->xyz[ 1 ] );
@@ -657,7 +616,7 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 		{
 			vec4_t orientation;
 
-			v1 = &tess.verts[ firstVertex + i + j ];
+			v1 = v + j;
 			lengths[ 0 ] = Distance( mid[ 0 ], v1->xyz );
 			lengths[ 1 ] = Distance( mid[ 1 ], v1->xyz );
 
@@ -668,7 +627,7 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int firstIndex,
 				k = 1;
 
 			VectorSubtract( v1->xyz, mid[ k ], minor );
-			if ( DotProduct( cross, minor ) * (k ? -1.0f : 1.0f) < 0.0f ) {
+			if ( DotProduct( cross, minor ) * ( halfToFloat( v1->texCoords[ 1 ] ) - 0.5f ) < 0.0f ) {
 				VectorNegate( major, orientation );
 			} else {
 				VectorCopy( major, orientation );
@@ -689,12 +648,14 @@ Tess_AutospriteDeform
 void Tess_AutospriteDeform( int mode, int firstVertex, int numVertexes,
 			    int firstIndex, int numIndexes )
 {
+	(void)firstIndex;
+
 	switch( mode ) {
 	case 1:
 		AutospriteDeform( firstVertex, numVertexes, numIndexes );
 		break;
 	case 2:
-		Autosprite2Deform( firstVertex, numVertexes, firstIndex, numIndexes );
+		Autosprite2Deform( firstVertex, numVertexes, numIndexes );
 		break;
 	}
 	GL_CheckErrors();
