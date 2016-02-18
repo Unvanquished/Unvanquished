@@ -808,9 +808,9 @@ public:
 
 private:
 	netadr_t from;
-	std::size_t bufferSize;
 	std::string buffer;
 	std::string prefix = "print";
+	std::size_t bufferSize;
 };
 
 static int RemoteCommandThrottle()
