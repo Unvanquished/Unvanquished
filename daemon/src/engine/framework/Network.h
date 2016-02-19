@@ -39,7 +39,7 @@ inline const std::string& OOBHeader()
 }
 
 template<class... Args>
-void OutOfBandPrint( netsrc_t net_socket, netadr_t adr, Str::StringRef format, Args&&... args )
+void OutOfBandPrint( netsrc_t net_socket, const netadr_t& adr, Str::StringRef format, Args&&... args )
 {
 	std::string message = OOBHeader() + Str::Format( format, std::forward<Args>(args)... );
 	NET_SendPacket( net_socket, message.size(), message.c_str(), adr );
@@ -48,7 +48,18 @@ void OutOfBandPrint( netsrc_t net_socket, netadr_t adr, Str::StringRef format, A
 /*
  * Sends huffman-compressed data
  */
-void OutOfBandData( netsrc_t sock, netadr_t adr, byte* format, std::size_t len );
+void OutOfBandData( netsrc_t sock, const netadr_t& adr, byte* format, std::size_t len );
+
+/*
+ * Converts an address to its string representation
+ */
+std::string AddressToString( const netadr_t& address, bool with_port = false );
+
+/*
+ * Returns port, port4 or port6 depending on the address type
+ */
+unsigned short ExtractPort(const netadr_t& address);
+
 
 } // namespace Net
 

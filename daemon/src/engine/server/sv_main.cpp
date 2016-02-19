@@ -329,7 +329,7 @@ static void SV_ResolveMasterServers()
 
 				if ( res )
 				{
-					Log::Notice( "%s resolved to %s\n", master.Cvar()->string, NET_AdrToStringwPort( master.ipv4 ) );
+					Log::Notice( "%s resolved to %s\n", master.Cvar()->string, Net::AddressToString(master.ipv4, true) );
 				}
 				else
 				{
@@ -350,7 +350,7 @@ static void SV_ResolveMasterServers()
 
 				if ( res )
 				{
-					Log::Notice( "%s resolved to %s\n", master.Cvar()->string, NET_AdrToStringwPort( master.ipv6 ) );
+					Log::Notice( "%s resolved to %s\n", master.Cvar()->string, Net::AddressToString(master.ipv6, true) );
 				}
 				else
 				{
@@ -497,7 +497,7 @@ void SV_MasterGameStat( const char *data )
 	}
 
 	Log::Notice( "%s resolved to %s", MASTER_SERVER_NAME,
-	            NET_AdrToStringwPort( adr ) );
+	            Net::AddressToString(adr, true) );
 
 	Log::Notice( "Sending gamestat to %s", MASTER_SERVER_NAME );
 	Net::OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
@@ -846,7 +846,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 		}
 
 		Log::Notice( "Bad rcon from %s:\n%s\n%s\n",
-			NET_AdrToString( from ),
+			Net::AddressToString( from ),
 			invalid_reason.c_str(),
 			args.ConcatArgs(2).c_str() );
 
@@ -857,7 +857,7 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 	else
 	{
-		Log::Notice( "Rcon from %s:\n%s\n", NET_AdrToString( from ), message.command().c_str() );
+		Log::Notice( "Rcon from %s:\n%s\n", Net::AddressToString( from ), message.command().c_str() );
 
 		// start redirecting all print outputs to the packet
 		auto env = RconEnvironment(from);
@@ -914,7 +914,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	Log::Debug( "SV packet %s : %s", NET_AdrToString( from ), args.Argv(0).c_str() );
+	Log::Debug( "SV packet %s : %s", Net::AddressToString( from ), args.Argv(0) );
 
 	if ( args.Argv(0) == "getstatus" )
 	{
@@ -956,7 +956,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	}
 	else
 	{
-		Log::Debug( "bad connectionless packet from %s: %s", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
+		Log::Debug( "bad connectionless packet from %s: %s", Net::AddressToString( from ), args.ConcatArgs(0) );
 	}
 }
 

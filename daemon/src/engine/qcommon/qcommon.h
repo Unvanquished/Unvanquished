@@ -204,7 +204,9 @@ void       NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t
 bool   NET_CompareAdr( netadr_t a, netadr_t b );
 bool   NET_CompareBaseAdr( netadr_t a, netadr_t b );
 bool   NET_IsLocalAddress( netadr_t adr );
+// DEPRECATED: Use Net::AddressToString
 const char *NET_AdrToString( netadr_t a );
+// DEPRECATED: Use Net::AddressToString
 const char *NET_AdrToStringwPort( netadr_t a );
 int        NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );
 bool   NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_message );

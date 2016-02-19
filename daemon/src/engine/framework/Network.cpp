@@ -31,9 +31,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "engine/qcommon/qcommon.h"
 #include "Network.h"
 
+#ifdef _WIN32
+#       include <winsock2.h>
+#else
+#       include <sys/socket.h>
+#       include <netinet/in.h>
+#endif
+
+// Helper functions defined in net_ip.cpp
+void Sys_SockaddrToString( char *dest, int destlen, struct sockaddr *input );
+void NetadrToSockadr( const netadr_t *a, struct sockaddr *s );
+
 namespace Net {
 
-void OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, std::size_t len )
+void OutOfBandData( netsrc_t sock, const netadr_t& adr, byte *format, std::size_t len )
 {
 	if ( len == 0 )
 	{
@@ -53,5 +64,55 @@ void OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, std::size_t len )
 	NET_SendPacket( sock, mbuf.cursize, mbuf.data, adr );
 }
 
+std::string AddressToString( const netadr_t& address, bool with_port )
+{
+
+    if ( address.type == netadrtype_t::NA_LOOPBACK )
+    {
+        return "loopback";
+    }
+    else if ( address.type == netadrtype_t::NA_BOT )
+    {
+        return "bot";
+    }
+    else if ( address.type == netadrtype_t::NA_IP ||
+              address.type == netadrtype_t::NA_IP6 ||
+              address.type == netadrtype_t::NA_IP_DUAL )
+    {
+        char s[ NET_ADDR_STR_MAX_LEN ];
+        sockaddr_storage sadr = {0};
+        NetadrToSockadr( &address, reinterpret_cast<sockaddr*>(&sadr) );
+        Sys_SockaddrToString( s, sizeof(s), reinterpret_cast<sockaddr*>(&sadr) );
+
+        std::string result = s;
+        if ( with_port )
+        {
+            if ( NET_IS_IPv6( address.type ) )
+            {
+                result = '[' + result + ']';
+            }
+                result += ':' + std::to_string(ntohs(ExtractPort(address)));
+        }
+        return result;
+    }
+
+    return "";
+}
+
+unsigned short ExtractPort(const netadr_t& address)
+{
+    if ( address.type == netadrtype_t::NA_IP_DUAL )
+    {
+        if ( NET_IS_IPv4( address.type ) )
+        {
+            return address.port4;
+        }
+        else if ( NET_IS_IPv6( address.type ) )
+        {
+            return address.port6;
+        }
+    }
+    return address.port;
+}
 
 } // namespace Net
