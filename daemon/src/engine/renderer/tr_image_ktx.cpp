@@ -149,11 +149,11 @@ void LoadKTX( const char *name, byte **data, int *width, int *height,
 		imageSize = Swap32( imageSize );
 	imageSize = PAD( imageSize, 4 );
 	ptr += 4;
-	Com_Memcpy( data[ 0 ], ptr, imageSize );
+	memcpy( data[ 0 ], ptr, imageSize );
 	ptr += imageSize;
 	for(unsigned j = 1; j < hdr->numberOfFaces; j++ ) {
 		data[ j ] = data[ j - 1 ] + imageSize;
-		Com_Memcpy( data[ j ], ptr, imageSize );
+		memcpy( data[ j ], ptr, imageSize );
 		ptr += imageSize;
 	}
 	for(unsigned i = 1; i <= hdr->numberOfMipmapLevels; i++ ) {
@@ -166,7 +166,7 @@ void LoadKTX( const char *name, byte **data, int *width, int *height,
 		for(unsigned j = 0; j < hdr->numberOfFaces; j++ ) {
 			int idx = i * hdr->numberOfFaces + j;
 			data[ idx ] = data[ idx - 1 ] + imageSize;
-			Com_Memcpy( data[ idx ], ptr, imageSize );
+			memcpy( data[ idx ], ptr, imageSize );
 			ptr += imageSize;
 		}
 	}
@@ -182,7 +182,7 @@ void SaveImageKTX( const char *path, image_t *img )
 	GLenum       target;
 	byte        *data, *ptr;
 
-	Com_Memcpy( &hdr.identifier, KTX_identifier, sizeof( KTX_identifier ) );
+	memcpy( &hdr.identifier, KTX_identifier, sizeof( KTX_identifier ) );
 	hdr.endianness = KTX_endianness;
 
 	GL_Bind( img );
@@ -731,7 +731,7 @@ void SaveImageKTX( const char *path, image_t *img )
 	data = (byte *)ri.Hunk_AllocateTempMemory( size + sizeof( hdr ) );
 
 	ptr = data;
-	Com_Memcpy( ptr, &hdr, sizeof( hdr ) );
+	memcpy( ptr, &hdr, sizeof( hdr ) );
 	ptr += sizeof( hdr );
 	
 	mipWidth = std::max(hdr.pixelWidth, 1u);

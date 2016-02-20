@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #if defined(_WIN32)
 
-    #include "Windows.h"
+    #include "windows.h"
 
     namespace Sys {
         bool IsDebuggerAttached() {
@@ -69,10 +69,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     waitpid(parentPid, nullptr, 0);
                     ptrace(PTRACE_CONT, nullptr, nullptr);
                     ptrace(PTRACE_DETACH, parentPid, nullptr, nullptr);
-                    exit(0);
+                    _exit(0);
                 } else {
                     // Call failed, we are being traced, return true.
-                    exit(1);
+                    _exit(1);
                 }
 
             } else {

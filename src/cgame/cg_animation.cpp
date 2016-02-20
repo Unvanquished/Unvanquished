@@ -55,13 +55,8 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 			lf->oldFrameTime = lf->frameTime;
 
 			animation_t *anim = lf->animation;
-			if (!anim->handle) {
-				// shouldn't happen? maybe, but it often does
-				return;
-			}
 			int numFrames = anim->numFrames;
 			float frameLength = anim->frameLerp / scale;
-			ASSERT(frameLength > 0);
 
 			int relativeFrame = ceil((cg.time - lf->animationTime) / frameLength);
 			if (relativeFrame >= numFrames)

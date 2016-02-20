@@ -56,7 +56,7 @@ void MSG_Init( msg_t *buf, byte *data, int length )
 		MSG_initHuffman();
 	}
 
-	Com_Memset( buf, 0, sizeof( *buf ) );
+	memset( buf, 0, sizeof( *buf ) );
 	buf->data = data;
 	buf->maxsize = length;
 }
@@ -68,7 +68,7 @@ void MSG_InitOOB( msg_t *buf, byte *data, int length )
 		MSG_initHuffman();
 	}
 
-	Com_Memset( buf, 0, sizeof( *buf ) );
+	memset( buf, 0, sizeof( *buf ) );
 	buf->data = data;
 	buf->maxsize = length;
 	buf->oob = true;
@@ -121,9 +121,9 @@ void MSG_Copy( msg_t *buf, byte *data, int length, msg_t *src )
 		Com_Error( ERR_DROP, "MSG_Copy: can't copy %d into a smaller %d msg_t buffer", src->cursize, length );
 	}
 
-	Com_Memcpy( buf, src, sizeof( msg_t ) );
+	memcpy( buf, src, sizeof( msg_t ) );
 	buf->data = data;
-	Com_Memcpy( buf->data, src->data, src->cursize );
+	memcpy( buf->data, src->data, src->cursize );
 }
 
 /*

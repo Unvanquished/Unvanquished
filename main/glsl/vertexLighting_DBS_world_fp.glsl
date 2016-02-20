@@ -30,7 +30,6 @@ uniform sampler2D	u_GlowMap;
 uniform float		u_AlphaThreshold;
 uniform float		u_DepthScale;
 uniform	float		u_LightWrapAround;
-uniform vec2		u_SpecularExponent;
 
 uniform sampler3D       u_LightGrid1;
 uniform sampler3D       u_LightGrid2;
@@ -72,16 +71,15 @@ void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 
 void	main()
 {
-
-vec2 texDiffuse = var_TexDiffuseGlow.st;
-vec2 texGlow = var_TexDiffuseGlow.pq;
+	vec2 texDiffuse = var_TexDiffuseGlow.st;
+	vec2 texGlow = var_TexDiffuseGlow.pq;
 
 #if defined(USE_NORMAL_MAPPING)
+	vec3 V = normalize(var_ViewDir);
+
 	vec3 L, ambCol, dirCol;
 	ReadLightGrid( (var_Position - u_LightGridOrigin) * u_LightGridScale,
 		       L, ambCol, dirCol);
-
-	vec3 V = normalize(var_ViewDir);
 
 	vec2 texNormal = var_TexNormalSpecular.st;
 	vec2 texSpecular = var_TexNormalSpecular.pq;
@@ -122,6 +120,8 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 		return;
 	}
 
+	vec4 specular = texture2D(u_SpecularMap, texSpecular);
+
 	// compute normal in tangent space from normalmap
 	vec3 N = texture2D(u_NormalMap, texNormal.st).xyw;
 	N.x *= N.z;
@@ -134,38 +134,15 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 	
 	N = normalize(N);
 
- 	// compute half angle in tangent space
-	vec3 H = normalize(L + V);
-
-	// compute the light term
-#if defined(r_WrapAroundLighting)
-	float NL = clamp(dot(N, L) + u_LightWrapAround, 0.0, 1.0) / clamp(1.0 + u_LightWrapAround, 0.0, 1.0);
-#else
-	float NL = clamp(dot(N, L), 0.0, 1.0);
-#endif
-	vec3 light = ambCol + dirCol * NL;
-	light *= r_AmbientScale;
-
-	// compute the specular term
-	vec4 spec = texture2D(u_SpecularMap, texSpecular).rgba;
-	vec3 specular = spec.rgb * dirCol * pow(clamp(dot(N, H), 0.0, 1.0), u_SpecularExponent.x * spec.a + u_SpecularExponent.y) * r_SpecularScale;
-
 	// compute final color
-	vec4 color = vec4(diffuse.rgb, 1.0);
-	color.rgb *= light;
-	color.rgb += specular;
+	vec4 color = vec4( ambCol, diffuse.a );
+	computeLight( L, N, V, dirCol, diffuse, specular, color );
 
 	#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
 	#endif
-#if defined(r_DeferredShading)
-	gl_FragData[0] = color; 								// var_Color;
-	gl_FragData[1] = vec4(diffuse.rgb, color.a);
-	gl_FragData[2] = vec4(N, color.a);
-	gl_FragData[3] = vec4(specular, color.a);
-#else
+
 	gl_FragColor = color;
-#endif
 #else // USE_NORMAL_MAPPING
 
 	vec3 N = normalize(var_Normal);
@@ -179,23 +156,15 @@ vec2 texGlow = var_TexDiffuseGlow.pq;
 		return;
 	}
 
-	vec4 color = diffuse;
+	vec4 specular = vec4(0.0);
+
+	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
+	computeLight( N, N, N, vec3(1.0), diffuse, specular, color );
+
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
 #endif
 
-#if 0 //defined(r_ShowTerrainBlends)
-	color = vec4(vec3(var_LightColor.a), 1.0);
-#endif
-
-#if defined(r_DeferredShading)
-	gl_FragData[0] = color;
-	gl_FragData[1] = vec4(diffuse.rgb, color.a);
-	gl_FragData[2] = vec4(N, color.a);
-	gl_FragData[3] = vec4(0.0, 0.0, 0.0, color.a);
-#else
 	gl_FragColor = color;
-#endif
-
 #endif
 }

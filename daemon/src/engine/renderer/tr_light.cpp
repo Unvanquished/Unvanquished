@@ -397,12 +397,12 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
 			{
-				light->localBounds[ 0 ][ 0 ] = -light->l.radius[ 0 ];
-				light->localBounds[ 0 ][ 1 ] = -light->l.radius[ 1 ];
-				light->localBounds[ 0 ][ 2 ] = -light->l.radius[ 2 ];
-				light->localBounds[ 1 ][ 0 ] = light->l.radius[ 0 ];
-				light->localBounds[ 1 ][ 1 ] = light->l.radius[ 1 ];
-				light->localBounds[ 1 ][ 2 ] = light->l.radius[ 2 ];
+				light->localBounds[ 0 ][ 0 ] = -light->l.radius;
+				light->localBounds[ 0 ][ 1 ] = -light->l.radius;
+				light->localBounds[ 0 ][ 2 ] = -light->l.radius;
+				light->localBounds[ 1 ][ 0 ] = light->l.radius;
+				light->localBounds[ 1 ][ 1 ] = light->l.radius;
+				light->localBounds[ 1 ][ 2 ] = light->l.radius;
 				break;
 			}
 
@@ -624,7 +624,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 
 				for ( i = 0; i < 3; i++ )
 				{
-					VectorMA( light->l.origin, light->l.radius[ i ], axis[ i ], planeOrigin );
+					VectorMA( light->l.origin, light->l.radius, axis[ i ], planeOrigin );
 					VectorNegate( axis[ i ], planeNormal );
 					VectorNormalize( planeNormal );
 
@@ -634,7 +634,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 
 				for ( i = 0; i < 3; i++ )
 				{
-					VectorMA( light->l.origin, -light->l.radius[ i ], axis[ i ], planeOrigin );
+					VectorMA( light->l.origin, -light->l.radius, axis[ i ], planeOrigin );
 					VectorCopy( axis[ i ], planeNormal );
 					VectorNormalize( planeNormal );
 
@@ -747,7 +747,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
 			{
-				MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius[ 0 ], 1.0 / light->l.radius[ 1 ], 1.0 / light->l.radius[ 2 ] );
+				MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius, 1.0 / light->l.radius, 1.0 / light->l.radius );
 				break;
 			}
 

@@ -402,13 +402,9 @@ void R_InitFBOs()
 {
 	int i;
 	int width, height;
+	int xTiles, yTiles;
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitFBOs -------\n" );
-
-	if ( !glConfig2.framebufferObjectAvailable )
-	{
-		return;
-	}
 
 	tr.numFBOs = 0;
 
@@ -427,6 +423,35 @@ void R_InitFBOs()
 		width = NearestPowerOfTwo( glConfig.vidWidth );
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
+	xTiles = (width + 15) >> 4;
+	yTiles = (height + 15) >> 4;
+
+	tr.mainFBO[0] = R_CreateFBO( "_main[0]", width, height );
+	R_BindFBO( tr.mainFBO[0] );
+	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.currentRenderImage[0]->texnum, 0 );
+	R_AttachFBOTextureDepth( tr.currentDepthImage->texnum );
+	R_CheckFBO( tr.mainFBO[0] );
+
+	tr.mainFBO[1] = R_CreateFBO( "_main[1]", width, height );
+	R_BindFBO( tr.mainFBO[1] );
+	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.currentRenderImage[1]->texnum, 0 );
+	R_AttachFBOTextureDepth( tr.currentDepthImage->texnum );
+	R_CheckFBO( tr.mainFBO[1] );
+
+	tr.depthtile1FBO = R_CreateFBO( "_depthtile1", tr.depthtile1RenderImage->width, tr.depthtile1RenderImage->height );
+	R_BindFBO( tr.depthtile1FBO );
+	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.depthtile1RenderImage->texnum, 0 );
+	R_CheckFBO( tr.depthtile1FBO );
+
+	tr.depthtile2FBO = R_CreateFBO( "_depthtile2", tr.depthtile1RenderImage->width, tr.depthtile1RenderImage->height );
+	R_BindFBO( tr.depthtile2FBO );
+	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.depthtile2RenderImage->texnum, 0 );
+	R_CheckFBO( tr.depthtile2FBO );
+
+	tr.lighttileFBO = R_CreateFBO( "_lighttile", xTiles, yTiles );
+	R_BindFBO( tr.lighttileFBO );
+	R_AttachFBOTexture3D( tr.lighttileRenderImage->texnum, 0, 0 );
+	R_CheckFBO( tr.lighttileFBO );
 
 	tr.occlusionRenderFBO = R_CreateFBO( "_occlusionRender", width, height );
 	R_BindFBO( tr.occlusionRenderFBO );
@@ -591,11 +616,6 @@ void R_ShutdownFBOs()
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownFBOs -------\n" );
 
-	if ( !glConfig2.framebufferObjectAvailable )
-	{
-		return;
-	}
-
 	R_BindNullFBO();
 
 	for ( i = 0; i < tr.numFBOs; i++ )
@@ -636,12 +656,6 @@ void R_FBOList_f()
 {
 	int   i;
 	FBO_t *fbo;
-
-	if ( !glConfig2.framebufferObjectAvailable )
-	{
-		ri.Printf( PRINT_ALL, "GL_ARB_framebuffer_object is not available.\n" );
-		return;
-	}
 
 	ri.Printf( PRINT_ALL, "             size       name\n" );
 	ri.Printf( PRINT_ALL, "----------------------------------------------------------\n" );

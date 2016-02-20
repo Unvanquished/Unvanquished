@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		*width = w;
 		*height = h;
 
-		*halfImage = ( unsigned short * ) Com_Allocate( w * h * 3 * 6 );
+		*halfImage = ( unsigned short * ) malloc( w * h * 3 * 6 );
 
 		halfbuf = *halfImage;
 		floatbuf = hdrImage;
@@ -56,5 +56,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			}
 		}
 
-		Com_Dealloc( hdrImage );
+		free( hdrImage );
 	}

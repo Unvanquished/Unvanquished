@@ -2275,7 +2275,7 @@ void CheckIntermissionExit()
 	// see which players are ready
 	ready = 0;
 	notReady = 0;
-	Com_Memset( &readyMasks, 0, sizeof( readyMasks ) );
+	memset( &readyMasks, 0, sizeof( readyMasks ) );
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{

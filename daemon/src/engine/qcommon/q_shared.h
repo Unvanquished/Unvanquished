@@ -49,7 +49,7 @@ Maryland 20850 USA.
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.47"
+#define PRODUCT_VERSION         "0.48"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -251,13 +251,9 @@ typedef int clipHandle_t;
 
 	void *Hunk_Alloc( int size, ha_pref preference );
 
-#define Com_Memset   memset
-#define Com_Memcpy   memcpy
 
-#define Com_Allocate malloc
-#define Com_Dealloc  free
 
-void *Com_Allocate_Aligned( size_t alignment, size_t size );
+void *malloc_Aligned( size_t alignment, size_t size );
 void  Com_Free_Aligned( void *ptr );
 
 #define CIN_system   1

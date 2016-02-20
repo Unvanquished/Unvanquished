@@ -201,7 +201,7 @@ static float GetOpValue( const expOperation_t *op )
 			break;
 
 		case OP_FRAMEBUFFEROBJECTS:
-			value = glConfig2.framebufferObjectAvailable;
+			value = 1.0f;
 			break;
 
 		case OP_SOUND:
@@ -482,7 +482,7 @@ static void ReorderQuadVerts( shaderVertex_t *vert, glIndex_t *index,
 	vec2_t midTexCoord;
 	int i;
 
-	Com_Memcpy( vertexCopy, vert, 4 * sizeof(shaderVertex_t) );
+	memcpy( vertexCopy, vert, 4 * sizeof(shaderVertex_t) );
 
 	midTexCoord[ 0 ] = midTexCoord[ 1 ] = 0.0f;
 	for( i = 0; i < 4; i++ ) {
@@ -503,7 +503,7 @@ static void ReorderQuadVerts( shaderVertex_t *vert, glIndex_t *index,
 	}
 
 	for( i = 0; i < 4; i++ ) {
-		Com_Memcpy( &vert[ newIndex[ i ] ], &vertexCopy[ i ],
+		memcpy( &vert[ newIndex[ i ] ], &vertexCopy[ i ],
 			    sizeof(shaderVertex_t) );
 	}
 	for( i = 0; i < 6; i++ ) {

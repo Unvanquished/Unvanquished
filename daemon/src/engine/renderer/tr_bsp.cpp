@@ -345,7 +345,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height )
 		ri.Error( ERR_DROP, "LoadRGBE: %s has an invalid image size", name );
 	}
 
-	*pic = (float*) Com_Allocate( w * h * 3 * sizeof( float ) );
+	*pic = (float*) malloc( w * h * 3 * sizeof( float ) );
 	floatbuf = *pic;
 
 	for ( i = 0; i < ( w * h ); i++ )
@@ -416,7 +416,7 @@ static void LoadRGBEToBytes( const char *name, byte **ldrImage, int *width, int 
 		*pixbuf++ = ( byte ) 255;
 	}
 
-	Com_Dealloc( hdrImage );
+	free( hdrImage );
 }
 
 void LoadRGBEToHalfs( const char *name, unsigned short **halfImage, int *width, int *height );
@@ -579,7 +579,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 		fatbuffer = (byte*) ri.Hunk_AllocateTempMemory( sizeof( byte ) * tr.fatLightmapSize * tr.fatLightmapSize * 4 );
 
-		Com_Memset( fatbuffer, 128, tr.fatLightmapSize * tr.fatLightmapSize * 4 );
+		memset( fatbuffer, 128, tr.fatLightmapSize * tr.fatLightmapSize * 4 );
 
 		for ( int i = 0; i < numLightmaps; i++ )
 		{
@@ -665,7 +665,7 @@ static void R_LoadVisibility( lump_t *l )
 
 	len = ( s_worldData.numClusters + 63 ) & ~63;
 	s_worldData.novis = (byte*) ri.Hunk_Alloc( len, h_low );
-	Com_Memset( s_worldData.novis, 0xff, len );
+	memset( s_worldData.novis, 0xff, len );
 
 	len = l->filelen;
 
@@ -690,7 +690,7 @@ static void R_LoadVisibility( lump_t *l )
 		byte *dest;
 
 		dest = (byte*) ri.Hunk_Alloc( len - 8, h_low );
-		Com_Memcpy( dest, buf + 8, len - 8 );
+		memcpy( dest, buf + 8, len - 8 );
 		s_worldData.vis = dest;
 	}
 
@@ -2643,21 +2643,21 @@ void R_MovePatchSurfacesToHunk()
 		//
 		size = sizeof( *grid );
 		hunkgrid = (srfGridMesh_t*) ri.Hunk_Alloc( size, h_low );
-		Com_Memcpy( hunkgrid, grid, size );
+		memcpy( hunkgrid, grid, size );
 
 		hunkgrid->widthLodError = (float*) ri.Hunk_Alloc( grid->width * 4, h_low );
-		Com_Memcpy( hunkgrid->widthLodError, grid->widthLodError, grid->width * 4 );
+		memcpy( hunkgrid->widthLodError, grid->widthLodError, grid->width * 4 );
 
 		hunkgrid->heightLodError = (float*) ri.Hunk_Alloc( grid->height * 4, h_low );
-		Com_Memcpy( hunkgrid->heightLodError, grid->heightLodError, grid->height * 4 );
+		memcpy( hunkgrid->heightLodError, grid->heightLodError, grid->height * 4 );
 
 		hunkgrid->numTriangles = grid->numTriangles;
 		hunkgrid->triangles = (srfTriangle_t*) ri.Hunk_Alloc( grid->numTriangles * sizeof( srfTriangle_t ), h_low );
-		Com_Memcpy( hunkgrid->triangles, grid->triangles, grid->numTriangles * sizeof( srfTriangle_t ) );
+		memcpy( hunkgrid->triangles, grid->triangles, grid->numTriangles * sizeof( srfTriangle_t ) );
 
 		hunkgrid->numVerts = grid->numVerts;
 		hunkgrid->verts = (srfVert_t*) ri.Hunk_Alloc( grid->numVerts * sizeof( srfVert_t ), h_low );
-		Com_Memcpy( hunkgrid->verts, grid->verts, grid->numVerts * sizeof( srfVert_t ) );
+		memcpy( hunkgrid->verts, grid->verts, grid->numVerts * sizeof( srfVert_t ) );
 
 		R_FreeSurfaceGridMesh( grid );
 
@@ -3602,7 +3602,7 @@ static void R_LoadShaders( lump_t *l )
 	s_worldData.shaders = out;
 	s_worldData.numShaders = count;
 
-	Com_Memcpy( out, in, count * sizeof( *out ) );
+	memcpy( out, in, count * sizeof( *out ) );
 
 	for ( i = 0; i < count; i++ )
 	{
@@ -4333,9 +4333,7 @@ void R_LoadEntities( lump_t *l )
 
 		light->l.scale = r_lightScale->value;
 
-		light->l.radius[ 0 ] = 300;
-		light->l.radius[ 1 ] = 300;
-		light->l.radius[ 2 ] = 300;
+		light->l.radius = 300.0f;
 
 		VectorClear( light->l.projTarget );
 		VectorClear( light->l.projRight );
@@ -4433,7 +4431,10 @@ void R_LoadEntities( lump_t *l )
 			// check for radius
 			else if ( !Q_stricmp( keyname, "light_radius" ) )
 			{
-				sscanf( value, "%f %f %f", &light->l.radius[ 0 ], &light->l.radius[ 1 ], &light->l.radius[ 2 ] );
+				vec_t rad_y, rad_z;
+				sscanf( value, "%f %f %f", &light->l.radius, &rad_y, &rad_z );
+				if( rad_y != light->l.radius || rad_z != light->l.radius )
+					ri.Printf( PRINT_WARNING, "WARNING: non-spherical light\n" );
 				s = &value[ 0 ];
 			}
 			// check for light_target
@@ -4474,12 +4475,7 @@ void R_LoadEntities( lump_t *l )
 			// check for radius
 			else if ( !Q_stricmp( keyname, "light" ) || !Q_stricmp( keyname, "_light" ) )
 			{
-				vec_t value2;
-
-				value2 = atof( value );
-				light->l.radius[ 0 ] = value2;
-				light->l.radius[ 1 ] = value2;
-				light->l.radius[ 2 ] = value2;
+				light->l.radius = atof( value );
 			}
 			// check for scale
 			else if ( !Q_stricmp( keyname, "light_scale" ) )
@@ -6115,9 +6111,9 @@ unsigned int VertexCoordGenerateHash( const vec3_t xyz )
 
 vertexHash_t **NewVertexHashTable()
 {
-	vertexHash_t **hashTable = (vertexHash_t**) Com_Allocate( HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
+	vertexHash_t **hashTable = (vertexHash_t**) malloc( HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
 
-	Com_Memset( hashTable, 0, HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
+	memset( hashTable, 0, HASHTABLE_SIZE * sizeof( vertexHash_t * ) );
 
 	return hashTable;
 }
@@ -6143,12 +6139,12 @@ void FreeVertexHashTable( vertexHash_t **hashTable )
 			{
 				nextVertexHash = vertexHash->next;
 
-				Com_Dealloc( vertexHash );
+				free( vertexHash );
 			}
 		}
 	}
 
-	Com_Dealloc( hashTable );
+	free( hashTable );
 }
 
 vertexHash_t *FindVertexInHashTable( vertexHash_t **hashTable, const vec3_t xyz, float distance )
@@ -6206,7 +6202,7 @@ vertexHash_t *AddVertexToHashTable( vertexHash_t **hashTable, vec3_t xyz, void *
 		return nullptr;
 	}
 
-	vertexHash = (vertexHash_t*) Com_Allocate( sizeof( vertexHash_t ) );
+	vertexHash = (vertexHash_t*) malloc( sizeof( vertexHash_t ) );
 
 	if ( !vertexHash )
 	{
@@ -6696,7 +6692,7 @@ void RE_LoadWorldMap( const char *name )
 	tr.worldDeluxeMapping = false;
 	tr.worldHDR_RGBE = false;
 
-	Com_Memset( &s_worldData, 0, sizeof( s_worldData ) );
+	memset( &s_worldData, 0, sizeof( s_worldData ) );
 	Q_strncpyz( s_worldData.name, name, sizeof( s_worldData.name ) );
 
 	Q_strncpyz( s_worldData.baseName, COM_SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );

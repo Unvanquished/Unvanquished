@@ -599,7 +599,7 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 		}
 	}
 
-	Com_Memcpy( in, temp, outWidth * outHeight * 4 );
+	memcpy( in, temp, outWidth * outHeight * 4 );
 	ri.Hunk_FreeTempMemory( temp );
 }
 
@@ -990,7 +990,7 @@ R_ConvertBC5Image(const byte **in, byte **out, int numMips, int numLayers,
 
 			for( k = 0; k < mipSize; k++ ) {
 				// red channel is unchanged
-				Com_Memcpy( to, from, 8 );
+				memcpy( to, from, 8 );
 
 				// green channel is converted to DXT1
 				R_UnpackDXT5A( from + 8, data );
@@ -1196,6 +1196,14 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			  GL_R32F : GL_ALPHA32F_ARB;
 		}
 	}
+	else if ( image->bits & ( IF_RGBA32UI ) )
+	{
+		if( !glConfig2.textureIntegerAvailable ) {
+			ri.Printf( PRINT_WARNING, "WARNING: integer image '%s' cannot be loaded\n", image->name );
+		}
+		internalFormat = GL_RGBA32UI;
+		format = GL_RGBA_INTEGER;
+	}
 	else if ( IsImageCompressed( image->bits ) )
 	{
 		if( !GLEW_EXT_texture_compression_dxt1 &&
@@ -1371,7 +1379,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 				// copy or resample data as appropriate for first MIP level
 				if ( ( scaledWidth == image->width ) && ( scaledHeight == image->height ) )
 				{
-					Com_Memcpy( scaledBuffer, data, scaledWidth * scaledHeight * 4 );
+					memcpy( scaledBuffer, data, scaledWidth * scaledHeight * 4 );
 				}
 				else
 				{
@@ -1405,10 +1413,12 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			switch ( image->type )
 			{
 			case GL_TEXTURE_3D:
-				glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
-						 scaledWidth, scaledHeight, 1,
-						 format, GL_UNSIGNED_BYTE,
-						 scaledBuffer );
+				if( scaledBuffer ) {
+					glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
+							 scaledWidth, scaledHeight, 1,
+							 format, GL_UNSIGNED_BYTE,
+							 scaledBuffer );
+				}
 				break;
 			case GL_TEXTURE_CUBE_MAP:
 				glTexImage2D( target + i, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE,
@@ -1430,75 +1440,9 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 			if ( image->filterType == FT_DEFAULT )
 			{
-				if ( glConfig.driverType == GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
-				{
-					if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
-						glGenerateMipmap( image->type );
-						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
-					}
-				}
-				else if ( glConfig2.generateMipmapAvailable )
-				{
-					glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
+				if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
+					glGenerateMipmap( image->type );
 					glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
-				}
-			}
-
-			if ( glConfig.driverType != GLDRV_OPENGL3 && !glConfig2.framebufferObjectAvailable && !glConfig2.generateMipmapAvailable )
-			{
-				if ( image->filterType == FT_DEFAULT && !( image->bits & ( IF_DEPTH16 | IF_DEPTH24 | IF_DEPTH32 | IF_PACKED_DEPTH24_STENCIL8 ) ) )
-				{
-					int mipLevel;
-					int mipWidth, mipHeight;
-
-					mipLevel = 0;
-					mipWidth = scaledWidth;
-					mipHeight = scaledHeight;
-
-					while ( mipWidth > 1 || mipHeight > 1 )
-					{
-						if ( image->bits & IF_NORMALMAP )
-						{
-							R_MipNormalMap( scaledBuffer, mipWidth, mipHeight );
-						}
-						else
-						{
-							R_MipMap( scaledBuffer, mipWidth, mipHeight );
-						}
-
-						mipWidth >>= 1;
-						mipHeight >>= 1;
-
-						if ( mipWidth < 1 )
-						{
-							mipWidth = 1;
-						}
-
-						if ( mipHeight < 1 )
-						{
-							mipHeight = 1;
-						}
-
-						mipLevel++;
-
-						if ( r_colorMipLevels->integer && !( image->bits & IF_NORMALMAP ) )
-						{
-							R_BlendOverTexture( scaledBuffer, mipWidth * mipHeight, mipBlendColors[ mipLevel ] );
-						}
-
-						switch ( image->type )
-						{
-						case GL_TEXTURE_CUBE_MAP:
-							glTexImage2D( target + i, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
-							              scaledBuffer );
-							break;
-
-						default:
-							glTexImage2D( target, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
-							              scaledBuffer );
-							break;
-						}
-					}
 				}
 			}
 		}
@@ -1725,7 +1669,7 @@ image_t        *R_AllocImage( const char *name, bool linkIntoHashTable )
 	}
 
 	image = (image_t*) ri.Hunk_Alloc( sizeof( image_t ), h_low );
-	Com_Memset( image, 0, sizeof( image_t ) );
+	memset( image, 0, sizeof( image_t ) );
 
 	glGenTextures( 1, &image->texnum );
 
@@ -1908,9 +1852,13 @@ image_t        *R_Create3DImage( const char *name,
 	image->width = width;
 	image->height = height;
 
-	pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
-	for( i = 0; i < depth; i++ ) {
-		pics[i] = pic + i * width * height * sizeof(u8vec4_t);
+	if( pic ) {
+		pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
+		for( i = 0; i < depth; i++ ) {
+			pics[i] = pic + i * width * height * sizeof(u8vec4_t);
+		}
+	} else {
+		pics = nullptr;
 	}
 
 	image->bits = bits;
@@ -1919,7 +1867,9 @@ image_t        *R_Create3DImage( const char *name,
 
 	R_UploadImage( pics, depth, 1, image );
 
-	ri.Hunk_FreeTempMemory( pics );
+	if( pics ) {
+		ri.Hunk_FreeTempMemory( pics );
+	}
 
 	if( r_exportTextures->integer ) {
 		R_ExportTexture( image );
@@ -2559,7 +2509,7 @@ static void R_CreateDefaultImage()
 	byte *dataPtr = &data[0][0][0];
 
 	// the default image will be a box, to allow you to see the mapping coordinates
-	Com_Memset( data, 32, sizeof( data ) );
+	memset( data, 32, sizeof( data ) );
 
 	for ( x = 0; x < DEFAULT_SIZE; x++ )
 	{
@@ -2585,7 +2535,7 @@ static void R_CreateRandomNormalsImage()
 	byte *dataPtr = &data[0][0][0];
 
 	// the default image will be a box, to allow you to see the mapping coordinates
-	Com_Memset( data, 32, sizeof( data ) );
+	memset( data, 32, sizeof( data ) );
 
 	for ( y = 0; y < DEFAULT_SIZE; y++ )
 	{
@@ -2618,7 +2568,7 @@ static void R_CreateNoFalloffImage()
 	byte *dataPtr = &data[0][0][0];
 
 	// we use a solid white image instead of disabling texturing
-	Com_Memset( data, 255, sizeof( data ) );
+	memset( data, 255, sizeof( data ) );
 	tr.noFalloffImage = R_CreateImage( "_noFalloff", ( const byte ** ) &dataPtr,
 					   8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
 }
@@ -2719,12 +2669,14 @@ static void R_CreateCurrentRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	tr.currentRenderImage = R_CreateImage( "_currentRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.currentRenderImage[0] = R_CreateImage( "_currentRender[0]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.currentRenderImage[1] = R_CreateImage( "_currentRender[1]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, FT_NEAREST, WT_CLAMP );
+	tr.currentDepthImage = R_CreateImage( "_currentDepth", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
 }
 
 static void R_CreateDepthRenderImage()
 {
-	int  width, height;
+	int  width, height, w, h;
 
 	if ( glConfig2.textureNPOTAvailable )
 	{
@@ -2737,8 +2689,18 @@ static void R_CreateDepthRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	{
-		tr.depthRenderImage = R_CreateImage( "_depthRender", nullptr, width, height, 1, IF_NOPICMIP | IF_DEPTH24, FT_NEAREST, WT_CLAMP );
+	w = (width + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	h = (height + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	tr.depthtile1RenderImage = R_CreateImage( "_depthtile1Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, FT_NEAREST, WT_CLAMP );
+
+	w = (width + TILE_SIZE - 1) >> TILE_SHIFT;
+	h = (height + TILE_SIZE - 1) >> TILE_SHIFT;
+	tr.depthtile2RenderImage = R_CreateImage( "_depthtile2Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, FT_NEAREST, WT_CLAMP );
+
+	if ( glConfig2.textureIntegerAvailable ) {
+		tr.lighttileRenderImage = R_Create3DImage( "_lighttileRender", nullptr, w, h, 4, IF_NOPICMIP | IF_RGBA32UI, FT_NEAREST, WT_CLAMP );
+	} else {
+		tr.lighttileRenderImage = R_Create3DImage( "_lighttileRender", nullptr, w, h, 4, IF_NOPICMIP, FT_NEAREST, WT_CLAMP );
 	}
 }
 
@@ -2975,7 +2937,7 @@ static void R_CreateBlackCubeImage()
 	for ( i = 0; i < 6; i++ )
 	{
 		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
-		Com_Memset( data[ i ], 0, width * height * 4 );
+		memset( data[ i ], 0, width * height * 4 );
 	}
 
 	tr.blackCubeImage = R_CreateCubeImage( "_blackCube", ( const byte ** ) data, width, height, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
@@ -3002,7 +2964,7 @@ static void R_CreateWhiteCubeImage()
 	for ( i = 0; i < 6; i++ )
 	{
 		data[ i ] = (byte*) ri.Hunk_AllocateTempMemory( width * height * 4 );
-		Com_Memset( data[ i ], 0xFF, width * height * 4 );
+		memset( data[ i ], 0xFF, width * height * 4 );
 	}
 
 	tr.whiteCubeImage = R_CreateCubeImage( "_whiteCube", ( const byte ** ) data, width, height, IF_NOPICMIP, FT_LINEAR, WT_EDGE_CLAMP );
@@ -3066,12 +3028,12 @@ void R_CreateBuiltinImages()
 	R_CreateDefaultImage();
 
 	// we use a solid white image instead of disabling texturing
-	Com_Memset( data, 255, sizeof( data ) );
+	memset( data, 255, sizeof( data ) );
 	tr.whiteImage = R_CreateImage( "_white", ( const byte ** ) &dataPtr,
 				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
 	// we use a solid black image instead of disabling texturing
-	Com_Memset( data, 0, sizeof( data ) );
+	memset( data, 0, sizeof( data ) );
 	tr.blackImage = R_CreateImage( "_black", ( const byte ** ) &dataPtr,
 				       8, 8, 1, IF_NOPICMIP, FT_LINEAR, WT_REPEAT );
 
@@ -3179,7 +3141,7 @@ void R_InitImages()
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_InitImages -------\n" );
 
-	Com_Memset( r_imageHashTable, 0, sizeof( r_imageHashTable ) );
+	memset( r_imageHashTable, 0, sizeof( r_imageHashTable ) );
 	Com_InitGrowList( &tr.images, 4096 );
 	Com_InitGrowList( &tr.lightmaps, 128 );
 	Com_InitGrowList( &tr.deluxemaps, 128 );
@@ -3220,7 +3182,7 @@ void R_ShutdownImages()
 		glDeleteTextures( 1, &image->texnum );
 	}
 
-	Com_Memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
+	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 
 	Com_DestroyGrowList( &tr.images );
 	Com_DestroyGrowList( &tr.lightmaps );

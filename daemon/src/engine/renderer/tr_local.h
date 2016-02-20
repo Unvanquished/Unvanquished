@@ -182,6 +182,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 #define MAX_INTERACTIONS   MAX_DRAWSURFS * 8
 #define INTERACTION_MASK   ( MAX_INTERACTIONS - 1 )
 
+// 16x16 pixels per tile
+#define TILE_SHIFT 4
+#define TILE_SIZE  (1 << TILE_SHIFT)
+#define TILE_SHIFT_STEP1 2
+#define TILE_SIZE_STEP1  (1 << TILE_SHIFT_STEP1)
+
+// max. 16 dynamic lights per plane
+#define LIGHT_PLANES ( MAX_REF_LIGHTS / 16 )
+
 	typedef enum
 	{
 	  RSPEEDS_GENERAL = 1,
@@ -305,7 +314,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	{
 		link_t *l;
 
-		l = ( link_t * ) Com_Allocate( sizeof( *l ) );
+		l = ( link_t * ) malloc( sizeof( *l ) );
 		InitLink( l, data );
 
 		InsertLink( l, sentinel );
@@ -325,7 +334,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		RemoveLink( top );
 		data = top->data;
-		Com_Dealloc( top );
+		free( top );
 
 		return data;
 	}
@@ -351,7 +360,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	{
 		link_t *l;
 
-		l = ( link_t * ) Com_Allocate( sizeof( *l ) );
+		l = ( link_t * ) malloc( sizeof( *l ) );
 		InitLink( l, data );
 
 		InsertLink( l, sentinel );
@@ -368,7 +377,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		RemoveLink( tail );
 		data = tail->data;
-		Com_Dealloc( tail );
+		free( tail );
 
 		l->numElements--;
 
@@ -451,6 +460,16 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int                       visCounts[ MAX_VISCOUNTS ]; // node needs to be traversed if current
 	} trRefLight_t;
 
+	// a structure matching the GLSL struct shaderLight in std140 layout
+	struct shaderLight_t {
+		vec3_t  center;
+		float   radius;
+		vec3_t  color;
+		float   type;
+		vec3_t  direction;
+		float   angle;
+	};
+
 // a trRefEntity_t has all the information passed in by
 // the client game, as well as some locally derived info
 	typedef struct
@@ -517,7 +536,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  IF_BC1 = BIT( 20 ),
 	  IF_BC3 = BIT( 21 ),
 	  IF_BC4 = BIT( 22 ),
-	  IF_BC5 = BIT( 23 )
+	  IF_BC5 = BIT( 23 ),
+	  IF_RGBA32UI = BIT( 24 )
 	};
 
 	typedef enum
@@ -676,7 +696,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		VBO_LAYOUT_VERTEX_ANIMATION,
 		VBO_LAYOUT_SKELETAL,
 		VBO_LAYOUT_STATIC,
-		VBO_LAYOUT_POSITION
+		VBO_LAYOUT_POSITION,
+		VBO_LAYOUT_XYST
 	} vboLayout_t;
 
 	typedef struct
@@ -684,7 +705,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		vec3_t *xyz;
 		i16vec4_t *qtangent;
 		u8vec4_t *color;
-		union { i16vec2_t *st; i16vec4_t *stpq; };
+		union { i16vec2_t *st; i16vec4_t *stpq; vec2_t *stf; };
 		int    (*boneIndexes)[ 4 ];
 		vec4_t *boneWeights;
 		vec4_t *spriteOrientation;
@@ -728,6 +749,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  SS_BAD,
 	  SS_PORTAL, // mirrors, portals, viewscreens
 
+	  SS_DEPTH, // depth pre-pass
+
 	  SS_ENVIRONMENT_FOG, // sky
 
 	  SS_OPAQUE, // opaque
@@ -758,7 +781,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  SS_ALMOST_NEAREST, // gun smoke puffs
 
 	  SS_NEAREST, // blood blobs
-	  SS_POST_PROCESS
+	  SS_POST_PROCESS,
+
+	  SS_NUM_SORTS
 	} shaderSort_t;
 
 	typedef struct shaderTable_s
@@ -1227,6 +1252,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 			int  index;
 		} altShader[ MAX_ALTSHADERS ]; // state-based remapping; note that index 0 is unused
 
+		struct shader_s *depthShader;
 		struct shader_s *next;
 	} shader_t;
 
@@ -1317,6 +1343,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		GLuint    VS, FS;
 		uint32_t  attribs; // vertex array attributes
 		GLint    *uniformLocations;
+		GLuint   *uniformBlockIndexes;
 		byte     *uniformFirewall;
 	} shaderProgram_t;
 
@@ -1343,6 +1370,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		trRefEntity_t           *entities;
 
 		int                     numLights;
+		int                     numShaderLights;
 		trRefLight_t            *lights;
 
 		int                     numPolys;
@@ -1481,6 +1509,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		int                  numDrawSurfs;
 		struct drawSurf_s    *drawSurfs;
+		int                  firstDrawSurf[ SS_NUM_SORTS + 1 ];
 
 		int                  numInteractions;
 		struct interaction_s *interactions;
@@ -2429,6 +2458,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int    scissorX, scissorY, scissorWidth, scissorHeight;
 		int    viewportX, viewportY, viewportWidth, viewportHeight;
 		float  polygonOffsetFactor, polygonOffsetUnits;
+		vec2_t tileStep;
 
 		int    currenttextures[ 32 ];
 		int    currenttmu;
@@ -2504,7 +2534,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		backEndCounters_t pc;
 		visTestQueries_t  visTestQueries[ MAX_VISTESTS ];
 		bool          isHyperspace;
-		bool          depthRenderImageValid;
 		trRefEntity_t     *currentEntity;
 		trRefLight_t      *currentLight; // only used when lighting interactions
 		bool          skyRenderedThisView; // flag for drawing sun
@@ -2513,6 +2542,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		Color::Color32Bit color2D;
 		bool          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
+		int               currentMainFBO;
 	} backEndState_t;
 
 	typedef struct visTest_s
@@ -2607,8 +2637,11 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		image_t    *contrastRenderFBOImage;
 		image_t    *bloomRenderFBOImage[ 2 ];
-		image_t    *currentRenderImage;
-		image_t    *depthRenderImage;
+		image_t    *currentRenderImage[ 2 ];
+		image_t    *currentDepthImage;
+		image_t    *depthtile1RenderImage;
+		image_t    *depthtile2RenderImage;
+		image_t    *lighttileRenderImage;
 		image_t    *portalRenderImage;
 
 		image_t    *occlusionRenderFBOImage;
@@ -2629,6 +2662,10 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		GLuint   colorGradePBO;
 
 		// framebuffer objects
+		FBO_t *mainFBO[ 2 ];
+		FBO_t *depthtile1FBO;
+		FBO_t *depthtile2FBO;
+		FBO_t *lighttileFBO;
 		FBO_t *portalRenderFBO; // holds a copy of the last currentRender that was rendered into a FBO
 		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;
@@ -2641,6 +2678,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		// vertex buffer objects
 		VBO_t *unitCubeVBO;
 		IBO_t *unitCubeIBO;
+		VBO_t *lighttileVBO;
 
 		// internal shaders
 		shader_t *defaultShader;
@@ -2707,6 +2745,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		FBO_t           *fbos[ MAX_FBOS ];
 
 		GLuint          vao;
+		GLuint          dlightUBO;
 
 		growList_t      vbos;
 		growList_t      ibos;
@@ -2842,9 +2881,9 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_ext_vertex_array_object;
 	extern cvar_t *r_ext_half_float_pixel;
 	extern cvar_t *r_ext_texture_float;
+	extern cvar_t *r_ext_texture_integer;
 	extern cvar_t *r_ext_texture_rg;
 	extern cvar_t *r_ext_texture_filter_anisotropic;
-	extern cvar_t *r_arb_framebuffer_object;
 	extern cvar_t *r_ext_packed_depth_stencil;
 	extern cvar_t *r_ext_generate_mipmap;
 	extern cvar_t *r_arb_buffer_storage;
@@ -3370,6 +3409,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void Tess_End();
 	void Tess_EndBegin();
 	void Tess_DrawElements();
+	void Tess_DrawArrays( GLenum elementType );
 	void Tess_CheckOverflow( int verts, int indexes );
 
 	void Tess_ComputeColor( shaderStage_t *pStage );
@@ -3780,6 +3820,12 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	{
 		int         commandId;
 		trRefdef_t  refdef;
+	} setupLightsCommand_t;
+
+	typedef struct
+	{
+		int         commandId;
+		trRefdef_t  refdef;
 		viewParms_t viewParms;
 	} drawViewCommand_t;
 
@@ -3834,6 +3880,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
+	  RC_SETUP_LIGHTS,
 	  RC_DRAW_VIEW,
 	  RC_DRAW_BUFFER,
 	  RC_RUN_VISTESTS,
@@ -3888,6 +3935,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	void                                R_SyncRenderThread();
 
+	void                                R_AddSetupLightsCmd();
 	void                                R_AddDrawViewCmd();
 
 	void                                RE_SetColor( const Color::Color& rgba );

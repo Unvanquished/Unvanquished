@@ -44,20 +44,16 @@ GROWLISTS
 ============================================================================
 */
 
-// Com_Allocate / free all in one place for debugging
-//extern          "C" void *Com_Allocate(int bytes);
-//extern          "C" void Com_Dealloc(void *ptr);
-
 void Com_InitGrowList( growList_t *list, int maxElements )
 {
 	list->maxElements = maxElements;
 	list->currentElements = 0;
-	list->elements = ( void ** ) Com_Allocate( list->maxElements * sizeof( void * ) );
+	list->elements = ( void ** ) malloc( list->maxElements * sizeof( void * ) );
 }
 
 void Com_DestroyGrowList( growList_t *list )
 {
-	Com_Dealloc( list->elements );
+	free( list->elements );
 	memset( list, 0, sizeof( *list ) );
 }
 
@@ -90,16 +86,16 @@ int Com_AddToGrowList( growList_t *list, void *data )
 
 //  Com_DPrintf("Resizing growlist to %i maxElements\n", list->maxElements);
 
-	list->elements = ( void ** ) Com_Allocate( list->maxElements * sizeof( void * ) );
+	list->elements = ( void ** ) malloc( list->maxElements * sizeof( void * ) );
 
 	if ( !list->elements )
 	{
         Sys::Drop( "Growlist alloc failed" );
 	}
 
-	Com_Memcpy( list->elements, old, list->currentElements * sizeof( void * ) );
+	memcpy( list->elements, old, list->currentElements * sizeof( void * ) );
 
-	Com_Dealloc( old );
+	free( old );
 
 	return Com_AddToGrowList( list, data );
 }
@@ -1012,7 +1008,7 @@ char           *COM_ParseExt2( const char **data_p, bool allowLineBreaks )
 		if ( j == l )
 		{
 			// a valid multi-character punctuation
-			Com_Memcpy( com_token, *punc, l );
+			memcpy( com_token, *punc, l );
 			com_token[ l ] = 0;
 			data += l;
 			*data_p = ( char * ) data;
@@ -1270,7 +1266,7 @@ const char *Com_ClearForeignCharacters( const char *str )
 
 	free( clean );
 	size = strlen( str );
-	clean = (char*)Com_Allocate ( size + 1 ); // guaranteed sufficient
+	clean = (char*)malloc ( size + 1 ); // guaranteed sufficient
 
 	i = -1;
 	j = 0;

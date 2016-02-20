@@ -2543,6 +2543,12 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 		shader.alphaTest = true;
 	}
 
+	// check that depthFade and depthWrite are mutually exclusive
+	if ( depthMaskBits && stage->hasDepthFade ) {
+		ri.Printf( PRINT_WARNING, "WARNING: depth fade conflicts with depth mask in shader '%s'\n", shader.name );
+		stage->hasDepthFade = false;
+	}
+
 	// compute state bits
 	stage->stateBits = colorMaskBits | depthMaskBits | blendSrcBits | blendDstBits | atestBits | depthFuncBits | polyModeBits;
 
@@ -3820,9 +3826,9 @@ static void CollapseStages()
 		return;
 	}
 
-	Com_Memcpy( &tmpShader, &shader, sizeof( shader ) );
+	memcpy( &tmpShader, &shader, sizeof( shader ) );
 
-	Com_Memset( &tmpStages[ 0 ], 0, sizeof( stages ) );
+	memset( &tmpStages[ 0 ], 0, sizeof( stages ) );
 
 	for ( j = 0; j < MAX_SHADER_STAGES; j++ )
 	{
@@ -3832,13 +3838,13 @@ static void CollapseStages()
 		hasReflectionStage = false;
 		hasGlowStage = false;
 
-		Com_Memset( &tmpDiffuseStage, 0, sizeof( shaderStage_t ) );
-		Com_Memset( &tmpNormalStage, 0, sizeof( shaderStage_t ) );
-		Com_Memset( &tmpSpecularStage, 0, sizeof( shaderStage_t ) );
-		Com_Memset( &tmpGlowStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpDiffuseStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpNormalStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpSpecularStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpGlowStage, 0, sizeof( shaderStage_t ) );
 
-		Com_Memset( &tmpColorStage, 0, sizeof( shaderStage_t ) );
-		Com_Memset( &tmpLightmapStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpColorStage, 0, sizeof( shaderStage_t ) );
+		memset( &tmpLightmapStage, 0, sizeof( shaderStage_t ) );
 
 		if ( !stages[ j ].active )
 		{
@@ -4005,12 +4011,12 @@ static void CollapseStages()
 	}
 
 	// clear unused stages
-	Com_Memset( &tmpStages[ numStages ], 0, sizeof( stages[ 0 ] ) * ( MAX_SHADER_STAGES - numStages ) );
+	memset( &tmpStages[ numStages ], 0, sizeof( stages[ 0 ] ) * ( MAX_SHADER_STAGES - numStages ) );
 	tmpShader.numStages = numStages;
 
 	// copy result
-	Com_Memcpy( &stages[ 0 ], &tmpStages[ 0 ], sizeof( stages ) );
-	Com_Memcpy( &shader, &tmpShader, sizeof( shader ) );
+	memcpy( &stages[ 0 ], &tmpStages[ 0 ], sizeof( stages ) );
+	memcpy( &shader, &tmpShader, sizeof( shader ) );
 }
 
 // *INDENT-ON*
@@ -4188,7 +4194,7 @@ static shader_t *GeneratePermanentShader()
 		{
 			size = newShader->stages[ i ]->bundle[ b ].numTexMods * sizeof( texModInfo_t );
 			newShader->stages[ i ]->bundle[ b ].texMods = (texModInfo_t*) ri.Hunk_Alloc( size, h_low );
-			Com_Memcpy( newShader->stages[ i ]->bundle[ b ].texMods, stages[ i ].bundle[ b ].texMods, size );
+			memcpy( newShader->stages[ i ]->bundle[ b ].texMods, stages[ i ].bundle[ b ].texMods, size );
 		}
 	}
 
@@ -4480,6 +4486,55 @@ static shader_t *FinishShader()
 
 	ret = GeneratePermanentShader();
 
+	// generate depth-only shader if necessary
+	if( !shader.isSky &&
+	    shader.numStages > 0 &&
+	    (stages[0].stateBits & GLS_DEPTHMASK_TRUE) &&
+	    !(stages[0].stateBits & GLS_DEPTHFUNC_EQUAL) &&
+	    !(shader.type == SHADER_2D) &&
+	    !shader.polygonOffset ) {
+		// keep only the first stage
+		stages[1].active = false;
+		shader.numStages = 1;
+		strcat(shader.name, "$depth");
+
+		if( stages[0].stateBits & GLS_ATEST_BITS ) {
+			// alpha test requires a custom depth shader
+			shader.sort = SS_DEPTH;
+			stages[0].stateBits &= ~GLS_SRCBLEND_BITS & ~GLS_DSTBLEND_BITS;
+			stages[0].stateBits |= GLS_COLORMASK_BITS;
+			stages[0].type = ST_COLORMAP;
+
+			ret->depthShader = GeneratePermanentShader();
+		} else if ( shader.cullType == 0 &&
+			    shader.numDeforms == 0 &&
+			    tr.defaultShader ) {
+			// can use the default depth shader
+			ret->depthShader = tr.defaultShader->depthShader;
+		} else {
+			// requires a custom depth shader, but can skip
+			// the texturing
+			shader.sort = SS_DEPTH;
+			stages[0].stateBits &= ~GLS_SRCBLEND_BITS & ~GLS_DSTBLEND_BITS;
+			stages[0].stateBits |= GLS_COLORMASK_BITS;
+			stages[0].type = ST_COLORMAP;
+
+			stages[0].bundle[0].image[0] = tr.whiteImage;
+			stages[0].bundle[0].numTexMods = 0;
+			stages[0].tcGen_Environment = false;
+			stages[0].tcGen_Lightmap = false;
+			stages[0].rgbGen = CGEN_IDENTITY;
+			stages[0].alphaGen = AGEN_IDENTITY;
+
+			ret->depthShader = GeneratePermanentShader();
+		}
+		// disable depth writes in the main pass
+		ret->stages[0]->stateBits &= ~GLS_DEPTHMASK_TRUE;
+	} else {
+		ret->depthShader = NULL;
+	}
+
+	// load all altShaders recursively
 	for ( i = 1; i < MAX_ALTSHADERS; ++i )
 	{
 		if ( ret->altShader[ i ].name )
@@ -4773,8 +4828,8 @@ shader_t       *R_FindShader( const char *name, shaderType_t type,
 	}
 
 	// clear the global shader
-	Com_Memset( &shader, 0, sizeof( shader ) );
-	Com_Memset( &stages, 0, sizeof( stages ) );
+	memset( &shader, 0, sizeof( shader ) );
+	memset( &stages, 0, sizeof( stages ) );
 	Q_strncpyz( shader.name, strippedName, sizeof( shader.name ) );
 	shader.type = type;
 
@@ -4959,8 +5014,8 @@ qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image )
 	}
 
 	// clear the global shader
-	Com_Memset( &shader, 0, sizeof( shader ) );
-	Com_Memset( &stages, 0, sizeof( stages ) );
+	memset( &shader, 0, sizeof( shader ) );
+	memset( &stages, 0, sizeof( stages ) );
 	Q_strncpyz( shader.name, name, sizeof( shader.name ) );
 	shader.type = SHADER_2D;
 	shader.cullType = CT_TWO_SIDED;
@@ -5131,6 +5186,10 @@ void R_ShaderList_f()
 		else if ( shader->sort == SS_PORTAL )
 		{
 			str += "SS_PORTAL           ";
+		}
+		else if ( shader->sort == SS_DEPTH )
+		{
+			str += "SS_DEPTH            ";
 		}
 		else if ( shader->sort == SS_ENVIRONMENT_FOG )
 		{
@@ -5391,7 +5450,7 @@ static void ScanAndLoadShaderFiles()
 	// free up memory
 	ri.FS_FreeFileList( shaderFiles );
 
-	Com_Memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
+	memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
 	size = 0;
 
 	p = s_shaderText;
@@ -5433,7 +5492,7 @@ static void ScanAndLoadShaderFiles()
 		hashMem += shaderTextHashTableSizes[ i ] + 1;
 	}
 
-	Com_Memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
+	memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
 
 	p = s_shaderText;
 
@@ -5457,7 +5516,7 @@ static void ScanAndLoadShaderFiles()
 			shaderTable_t *tb;
 			bool      alreadyCreated;
 
-			Com_Memset( &table, 0, sizeof( table ) );
+			memset( &table, 0, sizeof( table ) );
 
 			token = COM_ParseExt2( &p, true );
 
@@ -5545,8 +5604,8 @@ static void CreateInternalShaders()
 	tr.numShaders = 0;
 
 	// init the default shader
-	Com_Memset( &shader, 0, sizeof( shader ) );
-	Com_Memset( &stages, 0, sizeof( stages ) );
+	memset( &shader, 0, sizeof( shader ) );
+	memset( &stages, 0, sizeof( stages ) );
 
 	Q_strncpyz( shader.name, "<default>", sizeof( shader.name ) );
 
@@ -5577,8 +5636,8 @@ R_InitShaders
 */
 void R_InitShaders()
 {
-	Com_Memset( shaderTableHashTable, 0, sizeof( shaderTableHashTable ) );
-	Com_Memset( shaderHashTable, 0, sizeof( shaderHashTable ) );
+	memset( shaderTableHashTable, 0, sizeof( shaderTableHashTable ) );
+	memset( shaderHashTable, 0, sizeof( shaderHashTable ) );
 
 	CreateInternalShaders();
 
