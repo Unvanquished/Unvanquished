@@ -56,6 +56,34 @@ void computeLight( vec3 lightDir, vec3 normal, vec3 eyeDir, vec3 lightColor,
 		   vec4 diffuseColor, vec4 specularColor,
 		   inout vec4 accumulator ) {
   vec3 H = normalize( lightDir + eyeDir );
+  float NdotH = clamp( dot( normal, H ), 0.0, 1.0 );
+
+#if defined( USE_PHYSICAL_SHADING )
+  float metalness = specularColor.x;
+  float roughness = specularColor.y;
+
+  float NdotV = clamp( dot( normal, eyeDir ), 0.0, 1.0);
+  float VdotH = clamp( dot( eyeDir, H ), 0.0, 1.0);
+  float NdotL = clamp( dot( normal, lightDir ), 0.0, 1.0 );
+
+  float alpha = roughness * roughness;
+  float k = 0.125 * (roughness + 1.0) * (roughness + 1.0);
+
+  float D = alpha / ((NdotH * NdotH) * (alpha * alpha - 1.0) + 1.0);
+  D *= D;
+
+  float FexpNH = pow(1.0 - NdotH, 5.0);
+  float FexpNV = pow(1.0 - NdotV, 5.0);
+  vec3 F = mix(vec3(0.04), diffuseColor.xyz, metalness);
+  F = F + (1.0 - F) * FexpNH;
+
+  float G = NdotL / (NdotL * (1.0 - k) + k);
+  G *= NdotV / (NdotV * (1.0 - k) + k);
+
+  accumulator.xyz += lightColor.xyz * (1.0 - metalness) * NdotL * diffuseColor.xyz;
+  accumulator.xyz += lightColor.xyz * vec3((D * F * G) / (4.0 * NdotV));
+  accumulator.a = mix(diffuseColor.a, 1.0, FexpNV);
+#else
   float NdotL = dot( normal, lightDir );
 #if defined(r_HalfLambertLighting)
   // http://developer.valvesoftware.com/wiki/Half_Lambert
@@ -66,10 +94,10 @@ void computeLight( vec3 lightDir, vec3 normal, vec3 eyeDir, vec3 lightColor,
 #else
   NdotL = clamp( NdotL, 0.0, 1.0 );
 #endif
-  float NdotH = clamp( dot( normal, H ), 0.0, 1.0 );
 
   accumulator.xyz += diffuseColor.xyz * lightColor.xyz * NdotL;
   accumulator.xyz += specularColor.xyz * lightColor.xyz * pow( NdotH, u_SpecularExponent.x * specularColor.w + u_SpecularExponent.y) * r_SpecularScale;
+#endif
 }
 
 #if defined( USE_SHADER_LIGHTS )
