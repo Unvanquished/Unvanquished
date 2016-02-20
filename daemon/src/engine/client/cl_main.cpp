@@ -986,7 +986,7 @@ void CL_MapLoading()
 	cls.keyCatchers = 0;
 
 	// if we are already connected to the local host, stay connected
-	if ( cls.state >= connstate_t::CA_CONNECTED && !Q_stricmp( cls.servername, "localhost" ) )
+	if ( cls.state >= connstate_t::CA_CONNECTED && !Q_stricmp( cls.servername, "loopback" ) )
 	{
 		cls.state = connstate_t::CA_CONNECTED; // so the connect screen is drawn
 		memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
@@ -1000,7 +1000,7 @@ void CL_MapLoading()
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "sv_nextmap", "" );
 		CL_Disconnect( false );
-		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
+		Q_strncpyz( cls.servername, "loopback", sizeof( cls.servername ) );
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = connstate_t::CA_CHALLENGING; // so the connect screen is drawn
 		cls.keyCatchers = 0;
@@ -1373,7 +1373,7 @@ void CL_Connect_f()
 	// clear any previous "server full" type messages
 	clc.serverMessage[ 0 ] = 0;
 
-	if ( com_sv_running->integer && !strcmp( server, "localhost" ) )
+	if ( com_sv_running->integer && !strcmp( server, "loopback" ) )
 	{
 		// if running a local server, kill it
 		SV_Shutdown( "Server quit\n" );

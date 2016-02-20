@@ -104,7 +104,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 
 	if ( NET_IsLocalAddress( from ) )
 	{
-		userinfo["ip"] = "localhost";
+		userinfo["ip"] = "loopback";
 	}
 	else
 	{
@@ -1096,8 +1096,8 @@ void SV_UserinfoChanged( client_t *cl )
 	}
 	else
 	{
-		// force the "ip" info key to "localhost" for local clients
-		Info_SetValueForKey( cl->userinfo, "ip", "localhost", false );
+		// force the "ip" info key to "loopback" for local clients
+		Info_SetValueForKey( cl->userinfo, "ip", "loopback", false );
 #ifdef HAVE_GEOIP
 		Info_SetValueForKey( cl->userinfo, "geoip", nullptr, false );
 #endif

@@ -389,7 +389,7 @@ class ListMapsCmd: public Cmd::StaticCmd
 {
 public:
 	ListMapsCmd():
-		StaticCmd("listmaps", Cmd::SYSTEM, "Lists all available maps")
+		StaticCmd("listmaps", Cmd::SYSTEM, "Lists all maps available to the server")
 	{}
 
 	void Run(const Cmd::Args&) const OVERRIDE
@@ -422,7 +422,10 @@ public:
 		}
 	}
 };
+
+#if BUILD_SERVER
 static ListMapsCmd ListMapsCmdRegistration;
+#endif
 
 /*
 ==================

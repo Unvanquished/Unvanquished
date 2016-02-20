@@ -610,7 +610,7 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 =============
 NET_StringToAdr
 
-Traps "localhost" for loopback, passes everything else to system
+Traps "loopback" for loopback, passes everything else to system
 return 0 on address not found, 1 on address found with port, 2 on address found without port.
 =============
 */
@@ -618,6 +618,14 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 {
 	char base[ MAX_STRING_CHARS ], *search;
 	char *port = nullptr;
+
+	if ( !strcmp( s, "loopback" ) )
+	{
+		Com_Memset( a, 0, sizeof( *a ) );
+		a->type = netadrtype_t::NA_LOOPBACK;
+		// as NA_LOOPBACK doesn't require ports report port was given.
+		return 1;
+	}
 
 	Q_strncpyz( base, s, sizeof( base ) );
 
