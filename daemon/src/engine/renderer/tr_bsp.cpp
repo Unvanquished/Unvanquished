@@ -3921,7 +3921,7 @@ void R_LoadLightGrid( lump_t *l )
 		w->lightGridGLScale[ 1 ] = w->lightGridInverseSize[ 1 ];
 		w->lightGridGLScale[ 2 ] = w->lightGridInverseSize[ 2 ];
 
-		gridPoint1 = (bspGridPoint1_t *) ri.Hunk_Alloc( sizeof( *gridPoint1 ) + sizeof( *gridPoint2 ), h_low );
+		gridPoint1 = (bspGridPoint1_t *) ri.Hunk_Alloc( sizeof( *gridPoint1 ) + sizeof( *gridPoint2 ), ha_pref::h_low );
 		gridPoint2 = (bspGridPoint2_t *) (gridPoint1 + w->numLightGridPoints);
 
 		// default some white light from above
@@ -3940,11 +3940,11 @@ void R_LoadLightGrid( lump_t *l )
 		tr.lightGrid1Image = R_Create3DImage("<lightGrid1>", (const byte *)w->lightGridData1,
 						     w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
 						     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
-						     FT_LINEAR, WT_EDGE_CLAMP );
+						     filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
 		tr.lightGrid2Image = R_Create3DImage("<lightGrid2>", (const byte *)w->lightGridData2,
 						     w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
 						     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
-						     FT_LINEAR, WT_EDGE_CLAMP );
+						     filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
 
 		return;
 	}
