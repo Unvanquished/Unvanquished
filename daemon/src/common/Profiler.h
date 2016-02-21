@@ -8,9 +8,10 @@ namespace Profiler{
         class Point{
 
         public:
+            Type type;
             std::string label;
             std::chrono::microseconds::rep time;
-            Type type;
+
 
             Point(Type,std::string);
         };
