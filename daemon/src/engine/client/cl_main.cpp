@@ -2054,7 +2054,6 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend()
 {
-    PROFILE()
 	int  port;
 	char info[ MAX_INFO_STRING ];
 	char data[ MAX_INFO_STRING ];
@@ -2817,7 +2816,6 @@ CL_CheckTimeout
 */
 void CL_CheckTimeout()
 {
-    PROFILE()
 	//
 	// check timeout
 	//
@@ -2848,7 +2846,6 @@ CL_CheckUserinfo
 */
 void CL_CheckUserinfo()
 {
-    PROFILE()
 	// don't add reliable commands when not yet connected
 	if ( cls.state < CA_CHALLENGING )
 	{

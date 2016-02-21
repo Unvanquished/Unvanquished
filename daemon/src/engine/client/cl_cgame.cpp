@@ -45,7 +45,6 @@ Maryland 20850 USA.
 #include "framework/CvarSystem.h"
 
 #include "framework/CrashDump.h"
-#include "../common/Profiler.h"
 
 
 #define __(x) Trans_GettextGame(x)
@@ -737,7 +736,6 @@ CL_CGameRendering
 */
 void CL_CGameRendering()
 {
-    PROFILE()
 	cgvm.CGameDrawActiveFrame(cl.serverTime, clc.demoplaying);
 }
 
@@ -891,7 +889,6 @@ CL_SetCGameTime
 */
 void CL_SetCGameTime()
 {
-    PROFILE()
 	// getting a valid frame message ends the connection process
 	if ( cls.state != CA_ACTIVE )
 	{
@@ -1145,7 +1142,6 @@ void CGameVM::CGameRocketInit()
 
 void CGameVM::CGameRocketFrame()
 {
-    PROFILE()
 	cgClientState_t state;
 	state.connectPacketCount = clc.connectPacketCount;
 	state.connState = cls.state;

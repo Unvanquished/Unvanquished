@@ -36,7 +36,6 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include "framework/CommandSystem.h"
-#include "../common/Profiler.h"
 
 unsigned frame_msec;
 int      old_com_frameTime;
@@ -1040,7 +1039,6 @@ Called every frame to builds and sends a command packet to the server.
 */
 void CL_SendCmd()
 {
-    PROFILE()
 	// don't send any message if not connected
 	if ( cls.state < CA_CONNECTED )
 	{

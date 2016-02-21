@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_sky.c
 #include "tr_local.h"
 #include "gl_shader.h"
-#include "common/Profiler.h"
 
 #define SKY_SUBDIVISIONS      8
 #define HALF_SKY_SUBDIVISIONS ( SKY_SUBDIVISIONS / 2 )
@@ -59,7 +58,6 @@ AddSkyPolygon
 */
 static void AddSkyPolygon( int nump, vec3_t vecs )
 {
-    PROFILE()
 	int        i, j;
 	vec3_t     v, av;
 	float      s, t, dv;
@@ -200,7 +198,6 @@ ClipSkyPolygon
 */
 static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 {
-    PROFILE()
 	const float *norm;
 	float    *v;
 	bool front, back;
@@ -313,7 +310,6 @@ ClearSkyBox
 */
 static void ClearSkyBox()
 {
-    PROFILE()
 	int i;
 
 	for ( i = 0; i < 6; i++ )
@@ -330,7 +326,6 @@ Tess_ClipSkyPolygons
 */
 void Tess_ClipSkyPolygons()
 {
-    PROFILE()
 	vec3_t p[ 5 ]; // need one extra point for clipping
 	unsigned int i, j;
 
@@ -362,7 +357,6 @@ CLOUD VERTEX GENERATION
 */
 static void MakeSkyVec( float s, float t, int axis, vec2_t outSt, vec4_t outXYZ )
 {
-    PROFILE()
 	// 1 = s, 2 = t, 3 = 2048
 	static const int st_to_vec[ 6 ][ 3 ] =
 	{
@@ -437,7 +431,6 @@ static vec2_t s_skyTexCoords[ SKY_SUBDIVISIONS + 1 ][ SKY_SUBDIVISIONS + 1 ];
 
 static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], bool addIndexes )
 {
-    PROFILE()
 	int s, t;
 	int vertexStart = tess.numVertexes;
 	int tHeight, sWidth;
@@ -492,7 +485,6 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], bool ad
 
 static void DrawSkyBox()
 {
-    PROFILE()
 	int i;
 
 	sky_min = 0;
@@ -588,7 +580,6 @@ static void DrawSkyBox()
 
 static void FillCloudBox( int stage )
 {
-    PROFILE()
 	int i;
 
 	for ( i = 0; i < 6; i++ )
@@ -678,7 +669,6 @@ static void FillCloudBox( int stage )
 
 static void BuildCloudData()
 {
-    PROFILE()
 	int      i;
 
 	ASSERT(tess.surfaceShader->isSky);
@@ -714,7 +704,6 @@ static void BuildCloudData()
 */
 void R_InitSkyTexCoords( float heightCloud )
 {
-    PROFILE()
 	int    i, s, t;
 	float  radiusWorld = 4096;
 	float  p;
@@ -778,7 +767,6 @@ Other things could be stuck in here, like birds in the sky, etc
 */
 void Tess_StageIteratorSky()
 {
-    PROFILE()
 	// log this call
 	if ( r_logFile->integer )
 	{

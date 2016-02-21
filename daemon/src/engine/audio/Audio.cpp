@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <common/FileSystem.h>
 #include "AudioPrivate.h"
 #include "AudioData.h"
-#include "../common/Profiler.h"
 
 namespace Audio {
 
@@ -184,7 +183,6 @@ namespace Audio {
     }
 
     void Update() {
-        PROFILE()
         if (not initialized) {
             return;
         }
