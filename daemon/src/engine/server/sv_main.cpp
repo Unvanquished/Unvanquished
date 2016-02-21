@@ -787,8 +787,10 @@ public:
 		: from(from), bufferSize(MAX_MSGLEN - prefix.size() - 1)
 	{}
 
-	virtual void Print(Str::StringRef text) OVERRIDE {
-		if (text.size() + buffer.size() > bufferSize - 1) {
+	virtual void Print(Str::StringRef text) OVERRIDE
+	{
+		if (text.size() + buffer.size() > bufferSize - 1)
+		{
 			Flush();
 		}
 
@@ -796,9 +798,13 @@ public:
 		buffer += '\n';
 	}
 
-	void Flush() {
-		Net::OutOfBandPrint(netsrc_t::NS_SERVER, from, "%s\n%s", prefix, buffer);
-		buffer.clear();
+	void Flush()
+	{
+		if ( !buffer.empty() )
+		{
+			Net::OutOfBandPrint(netsrc_t::NS_SERVER, from, "%s\n%s", prefix, buffer);
+			buffer.clear();
+		}
 	}
 
 	static void PrintError(netadr_t to, const std::string& message)

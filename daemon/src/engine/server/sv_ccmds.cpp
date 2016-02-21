@@ -249,7 +249,44 @@ public:
 			cpu = 100 * svs.stats.latched_active / cpu;
 		}
 
-		std::vector<std::string> players;
+		auto players = std::count_if(
+			svs.clients,
+			svs.clients+sv_maxclients->integer,
+			[](const client_t& cl) {
+				return cl.state != clientState_t::CS_FREE;
+			}
+		);
+
+		std::string time_string;
+		auto seconds = svs.time / 1000 % 60;
+		auto minutes = svs.time / 1000 / 60 % 60;
+		if ( auto hours = svs.time / 1000 / 60 / 60 / 60 )
+		{
+			time_string = Str::Format("%02d:", hours);
+		}
+		time_string += Str::Format("%02d:%02d", minutes, seconds);
+
+		Print(
+			"(begin server status)\n"
+			"hostname: %s\n"
+			"version:  %s\n"
+			"protocol: %d\n"
+			"cpu:      %.0f%%\n"
+			"time:     %s\n"
+			"map:      %s\n"
+			"players:  %d / %d\n"
+			"num score connection address                port   name\n"
+			"--- ----- ---------- ---------------------- ------ ----",
+			sv_hostname->string,
+			Q3_VERSION " on " Q3_ENGINE,
+			PROTOCOL_VERSION,
+			cpu,
+			time_string,
+			sv_mapname->string,
+			players,
+			sv_maxclients->integer
+		);
+
 		for ( int i = 0; i < sv_maxclients->integer; i++ )
 		{
 			const client_t& cl = svs.clients[i];
@@ -280,7 +317,7 @@ public:
 
 			const char *address = NET_AdrToString( cl.netchan.remoteAddress );
 
-			players.push_back(Str::Format(
+			Print(
 				"%3i %5i %10s %-22s %-6i %s",
 				i,
 				ps->persistant[ PERS_SCORE ],
@@ -288,46 +325,10 @@ public:
 				address,
 				cl.netchan.qport,
 				cl.name
-			));
+			);
 		}
 
-		std::string time_string;
-		auto seconds = svs.time / 1000 % 60;
-		auto minutes = svs.time / 1000 / 60 % 60;
-		if ( auto hours = svs.time / 1000 / 60 / 60 / 60 )
-		{
-			time_string = Str::Format("%02d:", hours);
-		}
-		time_string += Str::Format("%02d:%02d", minutes, seconds);
-
-		Log::Notice(
-			"(begin server status)\n"
-			"hostname: %s\n"
-			"version:  %s\n"
-			"protocol: %d\n"
-			"cpu:      %.0f%%\n"
-			"time:     %s\n"
-			"map:      %s\n"
-			"players:  %d / %d\n"
-			"num score connection address                port   name\n"
-			"--- ----- ---------- ---------------------- ------ ----\n",
-			sv_hostname->string,
-			Q3_VERSION " on " Q3_ENGINE,
-			PROTOCOL_VERSION,
-			cpu,
-			time_string,
-			sv_mapname->string,
-			players.size(),
-			sv_maxclients->integer
-		);
-
-		for ( const auto& player : players )
-		{
-			Log::Notice( "%s", player.c_str() );
-		}
-
-
-		Log::Notice( "(end server status)" );
+		Print( "(end server status)" );
 	}
 };
 static StatusCmd StatusCmdRegistration;
@@ -414,11 +415,11 @@ public:
 		std::sort( maps.begin(), maps.end() );
 		maps.erase( std::unique( maps.begin(), maps.end() ), maps.end() );
 
-		Log::Notice("Listing %d maps:", maps.size());
+		Print("Listing %d maps:", maps.size());
 
 		for ( const auto& map: maps )
 		{
-			Log::Notice("%s", map.c_str());
+			Print("%s", map.c_str());
 		}
 	}
 };
