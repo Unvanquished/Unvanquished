@@ -475,6 +475,39 @@ Assuming all the triangles for this shader are independent
 quads, rebuild them as forward facing sprites
 =====================
 */
+static void ComputeCorner( int firstVertex, int numVertexes )
+{
+	int i, j;
+	shaderVertex_t *v;
+	vec4_t tc, midtc;
+
+	for ( i = 0; i < numVertexes; i += 4 ) {
+		// find the midpoint
+		v = &tess.verts[ firstVertex + i ];
+
+		Vector4Set( midtc, 0.0f, 0.0f, 0.0f, 0.0f );
+		for( j = 0; j < 4; j++ ) {
+			halfToFloat( v[ j ].texCoords, tc );
+			VectorAdd( tc, midtc, midtc );
+			midtc[ 3 ] += tc[ 3 ];
+		}
+
+		midtc[ 0 ] = 0.25f * midtc[ 0 ];
+		midtc[ 1 ] = 0.25f * midtc[ 1 ];
+
+		for ( j = 0; j < 4; j++ ) {
+			halfToFloat( v[ j ].texCoords, tc );
+			if( tc[ 0 ] < midtc[ 0 ] ) {
+				tc[ 2 ] = -tc[ 2 ];
+			}
+			if( tc[ 1 ] < midtc[ 1 ] ) {
+				tc[ 3 ] = -tc[ 3 ];
+			}
+			floatToHalf( tc, v[ j ].texCoords );
+		}
+	}
+}
+
 static void AutospriteDeform( int firstVertex, int numVertexes, int numIndexes )
 {
 	int    i, j;
@@ -491,6 +524,8 @@ static void AutospriteDeform( int firstVertex, int numVertexes, int numIndexes )
 	{
 		Log::Warn("Autosprite shader %s had odd index count", tess.surfaceShader->name );
 	}
+
+	ComputeCorner( firstVertex, numVertexes );
 
 	for ( i = 0; i < numVertexes; i += 4 )
 	{
@@ -545,6 +580,8 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int numIndexes 
 	{
 		Log::Warn("Autosprite2 shader %s had odd index count", tess.surfaceShader->name );
 	}
+
+	ComputeCorner( firstVertex, numVertexes );
 
 	// this is a lot of work for two triangles...
 	// we could precalculate a lot of it is an issue, but it would mess up
@@ -627,7 +664,7 @@ static void Autosprite2Deform( int firstVertex, int numVertexes, int numIndexes 
 				k = 1;
 
 			VectorSubtract( v1->xyz, mid[ k ], minor );
-			if ( DotProduct( cross, minor ) * ( halfToFloat( v1->texCoords[ 1 ] ) - 0.5f ) < 0.0f ) {
+			if ( DotProduct( cross, minor ) * ( v1->texCoords[ 3 ] < 0 ) ) {
 				VectorNegate( major, orientation );
 			} else {
 				VectorCopy( major, orientation );
