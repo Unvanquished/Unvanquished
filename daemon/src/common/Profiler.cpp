@@ -45,7 +45,7 @@ namespace Profiler{
          * function end, and if there's a new frame), and a timestamp.
          */
     std::vector <Profiler::Point>                   samples;
-    Sys::SteadyClock::time_point  startTime;
+    Sys::SteadyClock::time_point                    startTime;
     bool                                            enabled    = false; ///TODO those bools are silly
     bool                                            nextFrame  = false;
     bool                                            shouldStop = false;
@@ -76,7 +76,7 @@ namespace Profiler{
 
 
     /// Point saves the time it's constructed
-    Point::Point(Type type,std::string label=""): type(type), label(label){
+    Point::Point(Type type, const char *label=""): type(type), label(label){
         auto timeElapsed = Sys::SteadyClock::now() - startTime;
         time = std::chrono::duration_cast < std::chrono::microseconds > (timeElapsed).count();
     }
@@ -84,7 +84,7 @@ namespace Profiler{
 
     /// At the Beginning and End of every function
 
-    Profile::Profile( std::string label ): label( label ){
+    Profile::Profile( const char * label ): label( label ){
         if(!enabled)
             return;
         samples.push_back( Point( START, label ) );
@@ -102,8 +102,6 @@ namespace Profiler{
 
         auto file = FS::HomePath::OpenWrite("profile.log"); ///TODO add timestamp to file
 
-        // commented lines are a [failed] attempt to support the chrome json format
-        //file.Write("[",1);
 
         std::string line;
         std::string type;
@@ -124,10 +122,9 @@ namespace Profiler{
 
             line=type + ";" + i.label + ";" + std::to_string(i.time) + "$\n";
 
-            // line="{\"name\": \""+i.label+"\", \"cat\": \"PERF\", \"ph\": \""+type+"\", \"pid\": 1, \"tid\": 1, \"ts\": "+std::to_string(i.time)+"},\n";
             file.Write(line.c_str(), line.length());
         }
-        //file.Write("]",1);
+
         file.Close();
         samples.clear();
     }

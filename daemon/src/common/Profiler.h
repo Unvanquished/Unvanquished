@@ -13,7 +13,7 @@ namespace Profiler{
             std::chrono::microseconds::rep time;
 
 
-            Point(Type,std::string);
+            Point(Type,const char *);
         };
 
         void Update();
@@ -22,8 +22,8 @@ namespace Profiler{
         class Profile
         {
         public:
-            std::string label;
-            Profile(std::string);
+            const char * label;
+            Profile(const char *);
 
             ~Profile();
         };
