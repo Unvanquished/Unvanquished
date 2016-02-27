@@ -5648,7 +5648,7 @@ bool G_admin_bot( gentity_t *ent )
 		//choose team
 		if ( !Q_stricmp( team, "humans" ) || !Q_stricmp( team, "h" ) )
 		{
-			if ( !G_BotAdd( name, TEAM_HUMANS, skill_int, behavior ) )
+			if ( G_BotAdd( name, TEAM_HUMANS, skill_int, behavior ) < 0 )
 			{
 				ADMP( QQ( "Can't add a bot" ) );
 				return false;
@@ -5656,7 +5656,7 @@ bool G_admin_bot( gentity_t *ent )
 		}
 		else if ( !Q_stricmp( team, "aliens" ) || !Q_stricmp( team, "a" ) )
 		{
-			if ( !G_BotAdd( name, TEAM_ALIENS, skill_int, behavior ) )
+			if ( G_BotAdd( name, TEAM_ALIENS, skill_int, behavior ) < 0 )
 			{
 				ADMP( QQ( N_( "Can't add a bot" ) ) );
 				return false;

@@ -208,8 +208,13 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 
 	return true;
 }
+/*=============================
+G_BotAdd
 
-bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
+Adds a bot based in the inputs. Returns the bots clientNum on success.
+Returns -1 on failure.
+ */
+int G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 {
 	int clientNum;
 	char userinfo[MAX_INFO_STRING];
@@ -221,7 +226,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	if ( !navMeshLoaded )
 	{
 		Log::Warn( "No Navigation Mesh file is available for this map" );
-		return false;
+		return -1;
 	}
 
 	// find what clientNum to use for bot
@@ -230,7 +235,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	if ( clientNum < 0 )
 	{
 		Log::Warn( "no more slots for bot" );
-		return false;
+		return clientNum;
 	}
 	bot = &g_entities[ clientNum ];
 	bot->r.svFlags |= SVF_BOT;
@@ -274,7 +279,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	if ( !okay )
 	{
 		G_BotDel( clientNum );
-		return false;
+		return -1;
 	}
 
 	if ( autoname )
@@ -284,7 +289,7 @@ bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 
 	ClientBegin( clientNum );
 	bot->pain = BotPain; // ClientBegin resets the pain function
-	return true;
+	return clientNum;
 }
 
 void G_BotDel( int clientNum )

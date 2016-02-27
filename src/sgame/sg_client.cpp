@@ -1284,6 +1284,11 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	char            userinfo[ MAX_INFO_STRING ];
 	gentity_t       *ent;
 
+	if ( !firstTime )
+	{
+		return "Bots do not persist across connections.";
+	}
+
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
 

@@ -24,7 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef SG_DEFINITIONS_H_
 #define SG_DEFINITIONS_H_
-
+#include "sg_local.h"
 // ------------------
 // shared definitions
 // ------------------

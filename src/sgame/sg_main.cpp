@@ -1464,17 +1464,7 @@ void CalculateRanks()
 
 		if ( level.clients[ clientNum ].pers.connected != CON_DISCONNECTED )
 		{
-			bool bot = false;
-			int      entNum;
-
-			for ( entNum = 0; entNum < level.num_entities; ++entNum)
-			{
-				if ( level.gentities[ clientNum ].client == &level.clients[ clientNum ] )
-				{
-					bot = ( level.gentities[ clientNum ].r.svFlags & SVF_BOT );
-					break;
-				}
-			}
+			bool bot = g_entities[ clientNum ].r.svFlags & SVF_BOT;
 
 			level.sortedClients[ level.numConnectedClients ] = clientNum;
 
@@ -2746,6 +2736,56 @@ void G_EvaluateAcceleration( gentity_t *ent, int msec )
 	VectorCopy( ent->acceleration, ent->oldAccel );
 }
 
+
+Cvar::Cvar<int> alienMinPlayersCvar("sgame.minPlayers.aliens",
+									"Minimum number of alien players. If there are no humans, this quota will be filled with bots.",
+									0, 0);
+Cvar::Cvar<int> humanMinPlayersCvar("sgame.minPlayers.humans",
+									"Minimum number of humans players. If there are no humans, this quota will be filled with bots.",
+									0, 0);
+static std::vector<int> alienBotsTracker;
+static std::vector<int> humanBotsTracker;
+
+/*
+================
+G_CheckMinPlayers
+
+Checks to see whether there are enough players on each team.
+If the number of players are below the threshold, bots are
+added to compensate.
+================
+*/
+static void AddOrRemoveBots( int minPlayers, team_t team, std::vector<int>* tracker )
+{
+	if ( minPlayers <= 0 ) return;
+	if ( minPlayers > level.team[ team ].numClients )
+	{
+		for (int i = minPlayers - level.team[ team ].numClients; i; --i)
+		{
+			int clientNum = G_BotAdd( "*", team, 7, "default" );
+			if ( clientNum >= 0 )
+			{
+				tracker->push_back( clientNum );
+			}
+		}
+	}
+	else if ( level.team[ team ].numClients > minPlayers && !tracker->empty() )
+	{
+		while ( level.team[ team ].numClients > minPlayers )
+		{
+			G_BotDel(tracker->back());
+			tracker->pop_back();
+		}
+	}
+}
+
+static void G_CheckMinPlayers()
+{
+	AddOrRemoveBots( alienMinPlayersCvar.Get(), TEAM_ALIENS, &alienBotsTracker );
+	AddOrRemoveBots( humanMinPlayersCvar.Get(), TEAM_HUMANS, &humanBotsTracker );
+}
+
+
 /*
 ================
 G_RunFrame
@@ -2955,6 +2995,12 @@ void G_RunFrame( int levelTime )
 	}
 
 	trap_BotUpdateObstacles();
+	// Only start calling this once players have connected. Players do not connect
+	// for ~6-7 frames.
+	if ( level.framenum > 10 )
+	{
+		G_CheckMinPlayers();
+	}
 	level.frameMsec = trap_Milliseconds();
 }
 
