@@ -839,11 +839,11 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 		return;
 	}
 
-	Rcon::Message message = Rcon::Message::decode(from, args);
+	Rcon::Message message = Rcon::Message::Decode(from, args);
 
 	std::string invalid_reason;
 
-	if ( !message.acceptable(&invalid_reason) )
+	if ( !message.Acceptable(&invalid_reason) )
 	{
 		// If the rconpassword is bad and one just happned recently, don't spam the log file, just die.
 		if ( throttle_delta < 600 )
@@ -863,11 +863,11 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 	else
 	{
-		Log::Notice( "Rcon from %s:\n%s\n", Net::AddressToString( from ), message.command().c_str() );
+		Log::Notice( "Rcon from %s:\n%s\n", Net::AddressToString( from ), message.Command().c_str() );
 
 		// start redirecting all print outputs to the packet
 		auto env = RconEnvironment(from);
-		Cmd::ExecuteCommand(message.command(), true, &env);
+		Cmd::ExecuteCommand(message.Command(), true, &env);
 		Cmd::ExecuteCommandBuffer();
 		env.Flush();
 	}

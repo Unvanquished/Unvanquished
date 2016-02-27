@@ -48,7 +48,7 @@ Cvar::Range<Cvar::Cvar<int>> cvar_server_secure(
     "How secure the Rcon protocol should be: "
         "0: Allow unencrypted rcon, "
         "1: Require encryption, "
-        "2: Require encryption and challege check",
+        "2: Require encryption and challenge check",
     Cvar::NONE,
     0,
     0,
@@ -64,51 +64,51 @@ Cvar::Cvar<std::string> cvar_client_destination(
 
 Message::Message( const netadr_t& remote, std::string command,
 				  Secure secure, std::string password, std::string challenge )
-	: secure_(secure),
-	  challenge_(std::move(challenge)),
-	  command_(std::move(command)),
-	  password_(std::move(password)),
-	  remote_(remote)
+	: secure(secure),
+	  challenge(std::move(challenge)),
+	  command(std::move(command)),
+	  password(std::move(password)),
+	  remote(remote)
 {}
 
 Message::Message( std::string error_message )
-	: error_(std::move(error_message))
+	: error(std::move(error_message))
 {}
 
-const std::string& Message::command() const
+const std::string& Message::Command() const
 {
-	return command_;
+	return command;
 }
 
-void Message::send() const
+void Message::Send() const
 {
-	if ( secure_ == Secure::Unencrypted )
+	if ( secure == Secure::Unencrypted )
 	{
-		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, remote_, "rcon %s %s", password_, command_);
+		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, remote, "rcon %s %s", password, command);
 		return;
 	}
 
 	std::string method = "PLAIN";
-	Crypto::Data key = Crypto::Hash::Sha256(Crypto::String(password_));
-	std::string plaintext = command_;
+	Crypto::Data key = Crypto::Hash::Sha256(Crypto::String(password));
+	std::string plaintext = command;
 
-	if ( secure_ == Secure::EncryptedChallenge )
+	if ( secure == Secure::EncryptedChallenge )
 	{
 		method = "CHALLENGE";
-		plaintext = challenge_ + ' ' + plaintext;
+		plaintext = challenge + ' ' + plaintext;
 	}
 
 	Crypto::Data cypher;
 	if ( Crypto::Aes256Encrypt(Crypto::String(plaintext), key, cypher) )
 	{
-		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, remote_, "srcon %s %s",
+		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, remote, "srcon %s %s",
 			method,
 			Crypto::String(Crypto::Encoding::Base64Encode(cypher))
 		);
 	}
 }
 
-bool Message::valid(std::string *invalid_reason) const
+bool Message::Valid(std::string *invalid_reason) const
 {
 	auto invalid = [invalid_reason](const char* reason)
 	{
@@ -117,27 +117,27 @@ bool Message::valid(std::string *invalid_reason) const
 		return false;
 	};
 
-	if ( !error_.empty() )
+	if ( !error.empty() )
 	{
-		return invalid(error_.c_str());
+		return invalid(error.c_str());
 	}
 
-	if ( secure_ < Secure::Unencrypted || secure_ > Secure::EncryptedChallenge )
+	if ( secure < Secure::Unencrypted || secure > Secure::EncryptedChallenge )
 	{
 		return invalid("Unknown secure protocol");
 	}
 
-	if ( password_.empty() )
+	if ( password.empty() )
 	{
 		return invalid("Missing password");
 	}
 
-	if ( command_.empty() )
+	if ( command.empty() )
 	{
 		return invalid("Missing command");
 	}
 
-	if ( secure_ == Secure::EncryptedChallenge && challenge_.empty() )
+	if ( secure == Secure::EncryptedChallenge && challenge.empty() )
 	{
 		return invalid("Missing challenge");
 	}
@@ -146,7 +146,7 @@ bool Message::valid(std::string *invalid_reason) const
 }
 
 
-bool Message::acceptable(std::string *invalid_reason) const
+bool Message::Acceptable(std::string *invalid_reason) const
 {
 	auto invalid = [invalid_reason](const char* reason)
 	{
@@ -155,12 +155,12 @@ bool Message::acceptable(std::string *invalid_reason) const
 		return false;
 	};
 
-	if ( !valid(invalid_reason) )
+	if ( !Valid(invalid_reason) )
 	{
 		return false;
 	}
 
-	if ( secure_ < Secure(cvar_server_secure.Get()) )
+	if ( secure < Secure(cvar_server_secure.Get()) )
 	{
 		return invalid("Weak security");
 	}
@@ -170,14 +170,14 @@ bool Message::acceptable(std::string *invalid_reason) const
 		return invalid("No rcon.server.password set on the server.");
 	}
 
-	if ( password_ != cvar_server_password.Get() )
+	if ( password != cvar_server_password.Get() )
 	{
 		return invalid("Bad password");
 	}
 
-	if ( secure_ == Secure::EncryptedChallenge )
+	if ( secure == Secure::EncryptedChallenge )
 	{
-		if ( !ChallengeManager::Get().MatchString(remote_, challenge_) )
+		if ( !ChallengeManager::Get().MatchString(remote, challenge) )
 		{
 			return invalid("Mismatched challenge");
 		}
@@ -186,7 +186,7 @@ bool Message::acceptable(std::string *invalid_reason) const
 	return true;
 }
 
-Message Message::decode(const netadr_t& remote, const Cmd::Args& args)
+Message Message::Decode(const netadr_t& remote, const Cmd::Args& args)
 {
 	if ( args.size() < 3 || (args[0] != "rcon" && args[0] != "srcon") )
 	{

@@ -104,16 +104,14 @@ namespace Encoding {
  */
 Data HexEncode( const Data& input )
 {
-    std::ostringstream stream;
-    stream.setf(std::ios::hex, std::ios::basefield);
-    stream.fill('0');
-    for ( auto ch : input )
+    Data output;
+    output.reserve(input.size()*2);
+    for ( auto byte : input )
     {
-        stream.width(2);
-        stream << int( ch );
+        output.push_back((byte & 0xF0) >> 4);
+        output.push_back(byte & 0xF);
     }
-    auto string = stream.str();
-    return Data(string.begin(), string.end());
+    return output;
 }
 
 /*
@@ -268,7 +266,7 @@ bool Aes256Decrypt( Data cypher_text, const Data& key, Data& output )
 {
     if ( key.size() != AES256_KEY_SIZE || cypher_text.size() % AES_BLOCK_SIZE )
     {
-        return true;
+        return false;
     }
 
     aes256_ctx ctx;

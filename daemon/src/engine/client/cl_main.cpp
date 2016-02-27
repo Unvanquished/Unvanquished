@@ -1431,9 +1431,9 @@ void CL_Connect_f()
 static void CL_RconSend(const Rcon::Message &message)
 {
 	std::string invalid_reason;
-	if ( message.valid(&invalid_reason) )
+	if ( message.Valid(&invalid_reason) )
 	{
-		message.send();
+		message.Send();
 	}
 	else
 	{
@@ -1441,7 +1441,7 @@ static void CL_RconSend(const Rcon::Message &message)
 	}
 }
 
-struct RconChallengeQueue
+class RconChallengeQueue
 {
 public:
 	struct Request
@@ -2155,7 +2155,8 @@ void CL_CheckForResend()
 
 			Com_sprintf( data, sizeof(data), "connect %s", Cmd_QuoteString( info ) );
 
-			Net::OutOfBandData( netsrc_t::NS_CLIENT, clc.serverAddress, (byte*)data, strlen( data ) );
+			Net::OutOfBandData( netsrc_t::NS_CLIENT, clc.serverAddress,
+				reinterpret_cast<byte*>( data ), strlen( data ) );
 			// the most current userinfo has been sent, so watch for any
 			// newer changes to userinfo variables
 			cvar_modifiedFlags &= ~CVAR_USERINFO;
@@ -2684,7 +2685,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 			{
 				return;
 			}
-			// start sending challenge repsonse instead of challenge request packets
+			// start sending challenge response instead of challenge request packets
 			clc.challenge = args.Argv(1);
 			cls.state = connstate_t::CA_CHALLENGING;
 			clc.connectPacketCount = 0;
@@ -2789,7 +2790,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	Log::Debug( "Unknown connectionless packet command.\n" );
+	Log::Debug( "Unknown connectionless packet command." );
 }
 
 /*

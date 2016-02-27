@@ -48,7 +48,7 @@ void OutOfBandPrint( netsrc_t net_socket, const netadr_t& adr, Str::StringRef fo
 /*
  * Sends huffman-compressed data
  */
-void OutOfBandData( netsrc_t sock, const netadr_t& adr, byte* format, std::size_t len );
+void OutOfBandData( netsrc_t sock, const netadr_t& adr, byte* data, std::size_t len );
 
 /*
  * Converts an address to its string representation
@@ -58,7 +58,7 @@ std::string AddressToString( const netadr_t& address, bool with_port = false );
 /*
  * Returns port, port4 or port6 depending on the address type
  */
-unsigned short ExtractPort(const netadr_t& address);
+unsigned short GetPort(const netadr_t& address);
 
 
 } // namespace Net

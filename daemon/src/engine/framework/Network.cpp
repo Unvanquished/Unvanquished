@@ -44,7 +44,7 @@ void NetadrToSockadr( const netadr_t *a, struct sockaddr *s );
 
 namespace Net {
 
-void OutOfBandData( netsrc_t sock, const netadr_t& adr, byte *format, std::size_t len )
+void OutOfBandData( netsrc_t sock, const netadr_t& adr, byte *data, std::size_t len )
 {
 	if ( len == 0 )
 	{
@@ -54,7 +54,7 @@ void OutOfBandData( netsrc_t sock, const netadr_t& adr, byte *format, std::size_
 	std::basic_string<byte> message;
 	message.reserve(OOBHeader().size() + len);
 	message.append(OOBHeader().begin(), OOBHeader().end());
-	message.append(format, len);
+	message.append(data, len);
 
 	msg_t mbuf;
 	mbuf.data = &message[0];
@@ -91,7 +91,7 @@ std::string AddressToString( const netadr_t& address, bool with_port )
             {
                 result = '[' + result + ']';
             }
-                result += ':' + std::to_string(ntohs(ExtractPort(address)));
+                result += ':' + std::to_string(ntohs(GetPort(address)));
         }
         return result;
     }
@@ -99,7 +99,7 @@ std::string AddressToString( const netadr_t& address, bool with_port )
     return "";
 }
 
-unsigned short ExtractPort(const netadr_t& address)
+unsigned short GetPort(const netadr_t& address)
 {
     if ( address.type == netadrtype_t::NA_IP_DUAL )
     {

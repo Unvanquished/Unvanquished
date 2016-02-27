@@ -59,36 +59,36 @@ public:
 	/*
 	 * Checks whether the message is valid (fits its own constraints)
 	 */
-	bool valid(std::string *invalid_reason = nullptr) const;
+	bool Valid(std::string *invalid_reason = nullptr) const;
 
 	/*
 	 * Checks whether the message is acceptable by the server,
 	 * it must be valid and match the rcon settings and challenges.
 	 */
-	bool acceptable(std::string *invalid_reason = nullptr) const;
+	bool Acceptable(std::string *invalid_reason = nullptr) const;
 
 	/*
 	 * Sends the message to the remote server
 	 */
-	void send() const;
+	void Send() const;
 
 	/*
 	 * Command to be executed
 	 */
-	const std::string& command() const;
+	const std::string& Command() const;
 
 	/*
 	 * Decodes the arguments of an out of band message received by the server
 	 */
-	static Message decode(const netadr_t& remote, const Cmd::Args& args);
+	static Message Decode(const netadr_t& remote, const Cmd::Args& args);
 
 private:
-	Secure      secure_;
-	std::string challenge_;
-	std::string command_;
-	std::string password_;
-	netadr_t 	remote_;
-	std::string error_;
+	Secure      secure;
+	std::string challenge;
+	std::string command;
+	std::string password;
+	netadr_t    remote;
+	std::string error;
 };
 
 extern Cvar::Cvar<std::string> cvar_server_password;

@@ -246,13 +246,7 @@ namespace Str {
      * Converts a hexadecimal character to the value of the digit it represents.
      * Pre: cisxdigit(ch)
      */
-    inline CONSTEXPR_FUNCTION int GetHex(char ch)
-    {
-        return ch > '9' ?
-            ( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
-            : ch - '0'
-        ;
-    }
+    int GetHex(char ch);
 
     std::string ToUpper(Str::StringRef text);
     std::string ToLower(Str::StringRef text);

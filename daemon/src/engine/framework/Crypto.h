@@ -91,7 +91,7 @@ namespace Crypto {
 	void AddPadding( Data& target, std::size_t block_size = 8 );
 
 	/*
-	 * Encrypts using the AES256 algorthim
+	 * Encrypts using the AES256 algorithm
 	 * PRE: Key is 256-bit (32 octects) long
 	 * POST: output contains the encrypted data
 	 * Notes: plain_text will be padded using the PKCS#7 algorthm,
@@ -101,7 +101,7 @@ namespace Crypto {
 	bool Aes256Encrypt( Data plain_text, const Data& key, Data& output );
 
 	/*
-	 * Encrypts using the AES256 algorthim
+	 * Encrypts using the AES256 algorithm
 	 * PRE: Key is 256-bit (32 octects) long,
 	 *      cypher_text.size() is an integer multiple of the AES block size
 	 * POST: output contains the decrypted data

@@ -73,17 +73,9 @@ std::size_t Challenge::Bytes()
 
 std::string Challenge::GenerateString()
 {
-	std::vector<uint8_t> data( Bytes() );
+	Crypto::Data data( Bytes() );
 	Sys::GenRandomBytes(data.data(), data.size());
-	std::ostringstream stream;
-	stream.setf(std::ios::hex, std::ios::basefield);
-	stream.fill('0');
-	for ( auto ch : data )
-	{
-		stream.width(2);
-		stream << int( ch );
-	}
-	return stream.str();
+	return Crypto::String(Crypto::Encoding::HexEncode(data));
 }
 
 bool Challenge::ValidString(const std::string& challenge)
