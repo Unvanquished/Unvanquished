@@ -336,7 +336,7 @@ bool Con_CheckResize()
 				// Quick case for empty lines
 				if ( line.empty() )
 				{
-					old_lines.emplace_back();
+					consoleState.lines.emplace_back();
 					continue;
 				}
 

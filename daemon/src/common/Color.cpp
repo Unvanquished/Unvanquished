@@ -34,19 +34,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Color {
 
-Color Black    = { 0.00, 0.00, 0.00, 1.00 };
-Color Red      = { 1.00, 0.00, 0.00, 1.00 };
-Color Green    = { 0.00, 1.00, 0.00, 1.00 };
-Color Blue     = { 0.00, 0.00, 1.00, 1.00 };
-Color Yellow   = { 1.00, 1.00, 0.00, 1.00 };
-Color Orange   = { 1.00, 0.50, 0.00, 1.00 };
-Color Magenta  = { 1.00, 0.00, 1.00, 1.00 };
-Color Cyan     = { 0.00, 1.00, 1.00, 1.00 };
-Color White    = { 1.00, 1.00, 1.00, 1.00 };
-Color LtGrey   = { 0.75, 0.75, 0.75, 1.00 };
-Color MdGrey   = { 0.50, 0.50, 0.50, 1.00 };
-Color LtOrange = { 0.50, 0.25, 0.00, 1.00 };
-
 static Color g_color_table[ 32 ] =
 {
 	{ 0.20f, 0.20f, 0.20f, 1.00f }, // 0 - black    0

@@ -3900,9 +3900,52 @@ void R_LoadLightGrid( lump_t *l )
 
 	if ( l->filelen != w->numLightGridPoints * sizeof( dgridPoint_t ) )
 	{
-		Log::Warn("light grid mismatch" );
-		w->lightGridData1 = nullptr;
-		w->lightGridData2 = nullptr;
+		Log::Warn("light grid mismatch, default light grid used\n" );
+
+		// generate default 1x1x1 light grid
+		w->lightGridSize[ 0 ] = 100000.0f;
+		w->lightGridSize[ 1 ] = 100000.0f;
+		w->lightGridSize[ 2 ] = 100000.0f;
+		w->lightGridInverseSize[ 0 ] = 1.0f / w->lightGridSize[ 0 ];
+		w->lightGridInverseSize[ 1 ] = 1.0f / w->lightGridSize[ 1 ];
+		w->lightGridInverseSize[ 2 ] = 1.0f / w->lightGridSize[ 2 ];
+
+		VectorSet( w->lightGridOrigin, 0.0f, 0.0f, 0.0f );
+
+		VectorMA( w->lightGridOrigin, -0.5f, w->lightGridSize,
+			  w->lightGridGLOrigin );
+
+		VectorSet( w->lightGridBounds, 1, 1, 1 );
+
+		w->lightGridGLScale[ 0 ] = w->lightGridInverseSize[ 0 ];
+		w->lightGridGLScale[ 1 ] = w->lightGridInverseSize[ 1 ];
+		w->lightGridGLScale[ 2 ] = w->lightGridInverseSize[ 2 ];
+
+		gridPoint1 = (bspGridPoint1_t *) ri.Hunk_Alloc( sizeof( *gridPoint1 ) + sizeof( *gridPoint2 ), ha_pref::h_low );
+		gridPoint2 = (bspGridPoint2_t *) (gridPoint1 + w->numLightGridPoints);
+
+		// default some white light from above
+		gridPoint1->ambient[ 0 ] = 32;
+		gridPoint1->ambient[ 1 ] = 32;
+		gridPoint1->ambient[ 2 ] = 32;
+		gridPoint2->directed[ 0 ] = 96;
+		gridPoint2->directed[ 1 ] = 96;
+		gridPoint2->directed[ 2 ] = 96;
+		gridPoint1->lightVecX = 128;
+		gridPoint2->lightVecY = 128;
+
+		w->lightGridData1 = gridPoint1;
+		w->lightGridData2 = gridPoint2;
+
+		tr.lightGrid1Image = R_Create3DImage("<lightGrid1>", (const byte *)w->lightGridData1,
+						     w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
+						     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
+						     filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
+		tr.lightGrid2Image = R_Create3DImage("<lightGrid2>", (const byte *)w->lightGridData2,
+						     w->lightGridBounds[ 0 ], w->lightGridBounds[ 1 ],
+						     w->lightGridBounds[ 2 ], IF_NOPICMIP | IF_NOLIGHTSCALE | IF_NOCOMPRESSION,
+						     filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_EDGE_CLAMP );
+
 		return;
 	}
 

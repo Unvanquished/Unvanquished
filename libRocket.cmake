@@ -1,0 +1,549 @@
+# Create libRocket.
+
+set(LIBROCKET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/libRocket)
+
+set(Core_HDR_FILES
+    ${LIBROCKET_DIR}/Source/Core/Clock.h
+    ${LIBROCKET_DIR}/Source/Core/ContextInstancerDefault.h
+    ${LIBROCKET_DIR}/Source/Core/DebugFont.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorNone.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorNoneInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledBox.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledBoxInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiled.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledHorizontal.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledHorizontalInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledImage.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledImageInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledVertical.h
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledVerticalInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/DocumentHeader.h
+    ${LIBROCKET_DIR}/Source/Core/ElementBackground.h
+    ${LIBROCKET_DIR}/Source/Core/ElementBorder.h
+    ${LIBROCKET_DIR}/Source/Core/ElementDecoration.h
+    ${LIBROCKET_DIR}/Source/Core/ElementDefinition.h
+    ${LIBROCKET_DIR}/Source/Core/ElementHandle.h
+    ${LIBROCKET_DIR}/Source/Core/ElementImage.h
+    ${LIBROCKET_DIR}/Source/Core/ElementStyleCache.h
+    ${LIBROCKET_DIR}/Source/Core/ElementStyle.h
+    ${LIBROCKET_DIR}/Source/Core/ElementTextDefault.h
+    ${LIBROCKET_DIR}/Source/Core/EventDispatcher.h
+    ${LIBROCKET_DIR}/Source/Core/EventInstancerDefault.h
+    ${LIBROCKET_DIR}/Source/Core/EventIterators.h
+    ${LIBROCKET_DIR}/Source/Core/FileInterfaceDefault.h
+    ${LIBROCKET_DIR}/Source/Core/FontEffectNone.h
+    ${LIBROCKET_DIR}/Source/Core/FontEffectNoneInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/FontEffectOutline.h
+    ${LIBROCKET_DIR}/Source/Core/FontEffectOutlineInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/FontEffectShadow.h
+    ${LIBROCKET_DIR}/Source/Core/FontEffectShadowInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/FontFace.h
+    ${LIBROCKET_DIR}/Source/Core/FontFaceLayer.h
+    ${LIBROCKET_DIR}/Source/Core/FontFamily.h
+    ${LIBROCKET_DIR}/Source/Core/GeometryDatabase.h
+    ${LIBROCKET_DIR}/Source/Core/LayoutBlockBox.h
+    ${LIBROCKET_DIR}/Source/Core/LayoutBlockBoxSpace.h
+    ${LIBROCKET_DIR}/Source/Core/LayoutEngine.h
+    ${LIBROCKET_DIR}/Source/Core/LayoutInlineBox.h
+    ${LIBROCKET_DIR}/Source/Core/LayoutInlineBoxText.h
+    ${LIBROCKET_DIR}/Source/Core/LayoutLineBox.h
+    ${LIBROCKET_DIR}/Source/Core/PluginRegistry.h
+    ${LIBROCKET_DIR}/Source/Core/Pool.h
+    ${LIBROCKET_DIR}/Source/Core/precompiled.h
+    ${LIBROCKET_DIR}/Source/Core/PropertyParserColour.h
+    ${LIBROCKET_DIR}/Source/Core/PropertyParserKeyword.h
+    ${LIBROCKET_DIR}/Source/Core/PropertyParserNumber.h
+    ${LIBROCKET_DIR}/Source/Core/PropertyParserString.h
+    ${LIBROCKET_DIR}/Source/Core/PropertyShorthandDefinition.h
+    ${LIBROCKET_DIR}/Source/Core/StreamFile.h
+    ${LIBROCKET_DIR}/Source/Core/StringCache.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetFactory.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNode.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorEmpty.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorFirstChild.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorFirstOfType.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelector.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorLastChild.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorLastOfType.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthChild.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthLastChild.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthLastOfType.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthOfType.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorOnlyChild.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorOnlyOfType.h
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetParser.h
+    ${LIBROCKET_DIR}/Source/Core/TemplateCache.h
+    ${LIBROCKET_DIR}/Source/Core/Template.h
+    ${LIBROCKET_DIR}/Source/Core/TextureDatabase.h
+    ${LIBROCKET_DIR}/Source/Core/TextureLayout.h
+    ${LIBROCKET_DIR}/Source/Core/TextureLayoutRectangle.h
+    ${LIBROCKET_DIR}/Source/Core/TextureLayoutRow.h
+    ${LIBROCKET_DIR}/Source/Core/TextureLayoutTexture.h
+    ${LIBROCKET_DIR}/Source/Core/TextureResource.h
+    ${LIBROCKET_DIR}/Source/Core/WidgetSlider.h
+    ${LIBROCKET_DIR}/Source/Core/WidgetSliderScroll.h
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandlerBody.h
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandlerDefault.h
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandlerHead.h
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandlerTemplate.h
+    ${LIBROCKET_DIR}/Source/Core/XMLParseTools.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core.h
+)
+
+set(Core_PUB_HDR_FILES
+    ${LIBROCKET_DIR}/Include/Rocket/Core/BaseXMLParser.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Box.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Colour.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Colour.inl
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Context.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ContextInstancer.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ConvolutionFilter.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Core.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Debug.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Decorator.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/DecoratorInstancer.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Dictionary.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Dictionary.inl
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ElementDocument.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Element.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Element.inl
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ElementInstancerGeneric.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ElementInstancerGeneric.inl
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ElementInstancer.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ElementReference.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ElementScroll.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ElementText.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ElementUtilities.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Event.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/EventInstancer.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/EventListener.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/EventListenerInstancer.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Factory.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/FileInterface.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/FontDatabase.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/FontEffect.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/FontEffectInstancer.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/FontFaceHandle.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/FontGlyph.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Font.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Geometry.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/GeometryUtilities.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Header.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Input.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Log.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Math.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/MathTypes.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Platform.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Plugin.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/PropertyDefinition.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/PropertyDictionary.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Property.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/PropertyParser.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/PropertySpecification.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ReferenceCountable.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/RenderInterface.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/ScriptInterface.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Stream.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/StreamMemory.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/StringBase.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/StringBase.inl
+    ${LIBROCKET_DIR}/Include/Rocket/Core/String.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/StringUtilities.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/StyleSheet.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/StyleSheetKeywords.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/StyleSheetSpecification.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/SystemInterface.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Texture.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/TypeConverter.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/TypeConverter.inl
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Types.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/UnicodeRange.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/URL.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Variant.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Variant.inl
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Vector2.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Vector2.inl
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Vertex.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/WString.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/XMLNodeHandler.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/XMLParser.h
+)
+
+set(Core_SRC_FILES
+    ${LIBROCKET_DIR}/Source/Core/BaseXMLParser.cpp
+    ${LIBROCKET_DIR}/Source/Core/Box.cpp
+    ${LIBROCKET_DIR}/Source/Core/Clock.cpp
+    ${LIBROCKET_DIR}/Source/Core/Context.cpp
+    ${LIBROCKET_DIR}/Source/Core/ContextInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/ContextInstancerDefault.cpp
+    ${LIBROCKET_DIR}/Source/Core/ConvolutionFilter.cpp
+    ${LIBROCKET_DIR}/Source/Core/Core.cpp
+    ${LIBROCKET_DIR}/Source/Core/Decorator.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorNone.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorNoneInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledBox.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledBoxInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiled.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledHorizontal.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledHorizontalInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledImage.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledImageInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledVertical.cpp
+    ${LIBROCKET_DIR}/Source/Core/DecoratorTiledVerticalInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/Dictionary.cpp
+    ${LIBROCKET_DIR}/Source/Core/DocumentHeader.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementBackground.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementBorder.cpp
+    ${LIBROCKET_DIR}/Source/Core/Element.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementDecoration.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementDefinition.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementDocument.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementHandle.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementImage.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementReference.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementScroll.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementStyleCache.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementStyle.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementText.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementTextDefault.cpp
+    ${LIBROCKET_DIR}/Source/Core/ElementUtilities.cpp
+    ${LIBROCKET_DIR}/Source/Core/Event.cpp
+    ${LIBROCKET_DIR}/Source/Core/EventDispatcher.cpp
+    ${LIBROCKET_DIR}/Source/Core/EventInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/EventInstancerDefault.cpp
+    ${LIBROCKET_DIR}/Source/Core/EventListenerInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/Factory.cpp
+    ${LIBROCKET_DIR}/Source/Core/FileInterface.cpp
+    ${LIBROCKET_DIR}/Source/Core/FileInterfaceDefault.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontDatabase.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontEffect.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontEffectInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontEffectNone.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontEffectNoneInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontEffectOutline.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontEffectOutlineInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontEffectShadow.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontEffectShadowInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontFace.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontFaceHandle.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontFaceLayer.cpp
+    ${LIBROCKET_DIR}/Source/Core/FontFamily.cpp
+    ${LIBROCKET_DIR}/Source/Core/Geometry.cpp
+    ${LIBROCKET_DIR}/Source/Core/GeometryDatabase.cpp
+    ${LIBROCKET_DIR}/Source/Core/GeometryUtilities.cpp
+    ${LIBROCKET_DIR}/Source/Core/LayoutBlockBox.cpp
+    ${LIBROCKET_DIR}/Source/Core/LayoutBlockBoxSpace.cpp
+    ${LIBROCKET_DIR}/Source/Core/LayoutEngine.cpp
+    ${LIBROCKET_DIR}/Source/Core/LayoutInlineBox.cpp
+    ${LIBROCKET_DIR}/Source/Core/LayoutInlineBoxText.cpp
+    ${LIBROCKET_DIR}/Source/Core/LayoutLineBox.cpp
+    ${LIBROCKET_DIR}/Source/Core/Log.cpp
+    ${LIBROCKET_DIR}/Source/Core/Math.cpp
+    ${LIBROCKET_DIR}/Source/Core/Plugin.cpp
+    ${LIBROCKET_DIR}/Source/Core/PluginRegistry.cpp
+    ${LIBROCKET_DIR}/Source/Core/precompiled.cpp
+    ${LIBROCKET_DIR}/Source/Core/Property.cpp
+    ${LIBROCKET_DIR}/Source/Core/PropertyDefinition.cpp
+    ${LIBROCKET_DIR}/Source/Core/PropertyDictionary.cpp
+    ${LIBROCKET_DIR}/Source/Core/PropertyParserColour.cpp
+    ${LIBROCKET_DIR}/Source/Core/PropertyParserKeyword.cpp
+    ${LIBROCKET_DIR}/Source/Core/PropertyParserNumber.cpp
+    ${LIBROCKET_DIR}/Source/Core/PropertyParserString.cpp
+    ${LIBROCKET_DIR}/Source/Core/PropertySpecification.cpp
+    ${LIBROCKET_DIR}/Source/Core/ReferenceCountable.cpp
+    ${LIBROCKET_DIR}/Source/Core/RenderInterface.cpp
+    ${LIBROCKET_DIR}/Source/Core/Stream.cpp
+    ${LIBROCKET_DIR}/Source/Core/StreamFile.cpp
+    ${LIBROCKET_DIR}/Source/Core/StreamMemory.cpp
+    ${LIBROCKET_DIR}/Source/Core/StringCache.cpp
+    ${LIBROCKET_DIR}/Source/Core/String.cpp
+    ${LIBROCKET_DIR}/Source/Core/StringUtilities.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheet.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetFactory.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNode.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelector.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorEmpty.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorFirstChild.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorFirstOfType.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorLastChild.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorLastOfType.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthChild.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthLastChild.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthLastOfType.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorNthOfType.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorOnlyChild.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetNodeSelectorOnlyOfType.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetParser.cpp
+    ${LIBROCKET_DIR}/Source/Core/StyleSheetSpecification.cpp
+    ${LIBROCKET_DIR}/Source/Core/SystemInterface.cpp
+    ${LIBROCKET_DIR}/Source/Core/TemplateCache.cpp
+    ${LIBROCKET_DIR}/Source/Core/Template.cpp
+    ${LIBROCKET_DIR}/Source/Core/Texture.cpp
+    ${LIBROCKET_DIR}/Source/Core/TextureDatabase.cpp
+    ${LIBROCKET_DIR}/Source/Core/TextureLayout.cpp
+    ${LIBROCKET_DIR}/Source/Core/TextureLayoutRectangle.cpp
+    ${LIBROCKET_DIR}/Source/Core/TextureLayoutRow.cpp
+    ${LIBROCKET_DIR}/Source/Core/TextureLayoutTexture.cpp
+    ${LIBROCKET_DIR}/Source/Core/TextureResource.cpp
+    ${LIBROCKET_DIR}/Source/Core/UnicodeRange.cpp
+    ${LIBROCKET_DIR}/Source/Core/URL.cpp
+    ${LIBROCKET_DIR}/Source/Core/Variant.cpp
+    ${LIBROCKET_DIR}/Source/Core/WidgetSlider.cpp
+    ${LIBROCKET_DIR}/Source/Core/WidgetSliderScroll.cpp
+    ${LIBROCKET_DIR}/Source/Core/WString.cpp
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandlerBody.cpp
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandler.cpp
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandlerDefault.cpp
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandlerHead.cpp
+    ${LIBROCKET_DIR}/Source/Core/XMLNodeHandlerTemplate.cpp
+    ${LIBROCKET_DIR}/Source/Core/XMLParser.cpp
+    ${LIBROCKET_DIR}/Source/Core/XMLParseTools.cpp
+)
+
+set(Controls_HDR_FILES
+    ${LIBROCKET_DIR}/Source/Controls/ElementTextSelection.h
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeButton.h
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeCheckbox.h
+    ${LIBROCKET_DIR}/Source/Controls/InputType.h
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeRadio.h
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeRange.h
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeSubmit.h
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeText.h
+    ${LIBROCKET_DIR}/Source/Controls/WidgetDropDown.h
+    ${LIBROCKET_DIR}/Source/Controls/WidgetSlider.h
+    ${LIBROCKET_DIR}/Source/Controls/WidgetSliderInput.h
+    ${LIBROCKET_DIR}/Source/Controls/WidgetTextInput.h
+    ${LIBROCKET_DIR}/Source/Controls/WidgetTextInputMultiLine.h
+    ${LIBROCKET_DIR}/Source/Controls/WidgetTextInputSingleLine.h
+    ${LIBROCKET_DIR}/Source/Controls/WidgetTextInputSingleLinePassword.h
+    ${LIBROCKET_DIR}/Source/Controls/XMLNodeHandlerDataGrid.h
+    ${LIBROCKET_DIR}/Source/Controls/XMLNodeHandlerTabSet.h
+    ${LIBROCKET_DIR}/Source/Controls/XMLNodeHandlerTextArea.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls.h
+)
+
+set(Controls_PUB_HDR_FILES
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/Clipboard.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/Controls.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/DataFormatter.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/DataQuery.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/DataSource.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/DataSourceListener.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementDataGridCell.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementDataGridExpandButton.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementDataGrid.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementDataGridRow.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementFormControlDataSelect.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementFormControl.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementFormControlInput.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementFormControlSelect.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementFormControlTextArea.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementForm.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/ElementTabSet.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/Header.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/SelectOption.h
+)
+
+set(Controls_SRC_FILES
+    ${LIBROCKET_DIR}/Source/Controls/Clipboard.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Controls.cpp
+    ${LIBROCKET_DIR}/Source/Controls/DataFormatter.cpp
+    ${LIBROCKET_DIR}/Source/Controls/DataQuery.cpp
+    ${LIBROCKET_DIR}/Source/Controls/DataSource.cpp
+    ${LIBROCKET_DIR}/Source/Controls/DataSourceListener.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementDataGridCell.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementDataGrid.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementDataGridExpandButton.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementDataGridRow.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementFormControl.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementFormControlDataSelect.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementFormControlInput.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementFormControlSelect.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementFormControlTextArea.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementForm.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementTabSet.cpp
+    ${LIBROCKET_DIR}/Source/Controls/ElementTextSelection.cpp
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeButton.cpp
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeCheckbox.cpp
+    ${LIBROCKET_DIR}/Source/Controls/InputType.cpp
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeRadio.cpp
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeRange.cpp
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeSubmit.cpp
+    ${LIBROCKET_DIR}/Source/Controls/InputTypeText.cpp
+    ${LIBROCKET_DIR}/Source/Controls/SelectOption.cpp
+    ${LIBROCKET_DIR}/Source/Controls/WidgetDropDown.cpp
+    ${LIBROCKET_DIR}/Source/Controls/WidgetSlider.cpp
+    ${LIBROCKET_DIR}/Source/Controls/WidgetSliderInput.cpp
+    ${LIBROCKET_DIR}/Source/Controls/WidgetTextInput.cpp
+    ${LIBROCKET_DIR}/Source/Controls/WidgetTextInputMultiLine.cpp
+    ${LIBROCKET_DIR}/Source/Controls/WidgetTextInputSingleLine.cpp
+    ${LIBROCKET_DIR}/Source/Controls/WidgetTextInputSingleLinePassword.cpp
+    ${LIBROCKET_DIR}/Source/Controls/XMLNodeHandlerDataGrid.cpp
+    ${LIBROCKET_DIR}/Source/Controls/XMLNodeHandlerTabSet.cpp
+    ${LIBROCKET_DIR}/Source/Controls/XMLNodeHandlerTextArea.cpp
+)
+
+set(Debugger_HDR_FILES
+    ${LIBROCKET_DIR}/Source/Debugger/BeaconSource.h
+    ${LIBROCKET_DIR}/Source/Debugger/CommonSource.h
+    ${LIBROCKET_DIR}/Source/Debugger/ElementContextHook.h
+    ${LIBROCKET_DIR}/Source/Debugger/ElementInfo.h
+    ${LIBROCKET_DIR}/Source/Debugger/ElementLog.h
+    ${LIBROCKET_DIR}/Source/Debugger/FontSource.h
+    ${LIBROCKET_DIR}/Source/Debugger/Geometry.h
+    ${LIBROCKET_DIR}/Source/Debugger/InfoSource.h
+    ${LIBROCKET_DIR}/Source/Debugger/LogSource.h
+    ${LIBROCKET_DIR}/Source/Debugger/MenuSource.h
+    ${LIBROCKET_DIR}/Source/Debugger/Plugin.h
+    ${LIBROCKET_DIR}/Source/Debugger/SystemInterface.h
+    ${LIBROCKET_DIR}/Include/Rocket/Debugger.h
+)
+
+set(Debugger_PUB_HDR_FILES
+    ${LIBROCKET_DIR}/Include/Rocket/Debugger/Debugger.h
+    ${LIBROCKET_DIR}/Include/Rocket/Debugger/Header.h
+)
+
+set(Debugger_SRC_FILES
+    ${LIBROCKET_DIR}/Source/Debugger/Debugger.cpp
+    ${LIBROCKET_DIR}/Source/Debugger/ElementContextHook.cpp
+    ${LIBROCKET_DIR}/Source/Debugger/ElementInfo.cpp
+    ${LIBROCKET_DIR}/Source/Debugger/ElementLog.cpp
+    ${LIBROCKET_DIR}/Source/Debugger/Geometry.cpp
+    ${LIBROCKET_DIR}/Source/Debugger/Plugin.cpp
+    ${LIBROCKET_DIR}/Source/Debugger/SystemInterface.cpp
+)
+
+set(LuaCore_HDR_FILES
+    ${LIBROCKET_DIR}/Source/Core/Lua/Colourb.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Colourf.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/ContextDocumentsProxy.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Context.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Document.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementAttributesProxy.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementChildNodesProxy.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Element.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementStyleProxy.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementText.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Event.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/EventParametersProxy.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/GlobalLuaFunctions.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Log.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaDocumentElementInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaDocument.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaElement.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaElementInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaEventListener.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaEventListenerInstancer.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/precompiled.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/RocketContextsProxy.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Rocket.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Vector2f.h
+    ${LIBROCKET_DIR}/Source/Core/Lua/Vector2i.h
+)
+
+set(LuaCore_PUB_HDR_FILES
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Lua/Header.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Lua/Interpreter.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Lua/LuaType.h
+    ${LIBROCKET_DIR}/Include/Rocket/Core/Lua/Utilities.h
+)
+
+set(LuaCore_SRC_FILES
+    ${LIBROCKET_DIR}/Source/Core/Lua/Colourb.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Colourf.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Context.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/ContextDocumentsProxy.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Document.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementAttributesProxy.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementChildNodesProxy.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Element.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementStyleProxy.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/ElementText.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Event.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/EventParametersProxy.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/GlobalLuaFunctions.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Interpreter.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Log.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaDocument.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaDocumentElementInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaElementInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaEventListener.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/LuaEventListenerInstancer.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/precompiled.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/RocketContextsProxy.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Rocket.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Utilities.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Vector2f.cpp
+    ${LIBROCKET_DIR}/Source/Core/Lua/Vector2i.cpp
+)
+
+set(LuaControls_HDR_FILES
+    ${LIBROCKET_DIR}/Source/Controls/Lua/As.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/DataFormatter.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/DataSource.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementDataGrid.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementDataGridRow.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControlDataSelect.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControl.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControlInput.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControlSelect.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControlTextArea.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementForm.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementTabSet.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/LuaDataFormatter.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/LuaDataSource.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/precompiled.h
+    ${LIBROCKET_DIR}/Source/Controls/Lua/SelectOptionsProxy.h
+)
+
+set(LuaControls_PUB_HDR_FILES
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/Lua/Controls.h
+    ${LIBROCKET_DIR}/Include/Rocket/Controls/Lua/Header.h
+)
+
+set(LuaControls_SRC_FILES
+    ${LIBROCKET_DIR}/Source/Controls/Lua/Controls.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/DataFormatter.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/DataSource.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementDataGrid.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementDataGridRow.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControl.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControlDataSelect.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControlInput.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControlSelect.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementFormControlTextArea.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementForm.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/ElementTabSet.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/LuaDataFormatter.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/LuaDataSource.cpp
+    ${LIBROCKET_DIR}/Source/Controls/Lua/SelectOptionsProxy.cpp
+)
+
+if (NOT FREETYPE_INCLUDE_DIRS)
+    find_package(Freetype REQUIRED)
+endif()
+include_directories(${FREETYPE_INCLUDE_DIRS})
+
+set(ROCKET_INCLUDE_DIRS ${LIBROCKET_DIR}/Include)
+include_directories(${ROCKET_INCLUDE_DIRS})
+add_library(ROCKET_LIB STATIC
+    ${Core_HDR_FILES}        ${Core_PUB_HDR_FILES}        ${Core_SRC_FILES}
+    ${Controls_HDR_FILES}    ${Controls_PUB_HDR_FILES}    ${Controls_SRC_FILES}
+    ${Debugger_HDR_FILES}    ${Debugger_PUB_HDR_FILES}    ${Debugger_SRC_FILES}
+    ${LuaCore_HDR_FILES}     ${LuaCore_PUB_HDR_FILES}     ${LuaCore_SRC_FILES}
+    ${LuaControls_HDR_FILES} ${LuaControls_PUB_HDR_FILES} ${LuaControls_SRC_FILES}
+)
+
+set_property(TARGET ROCKET_LIB PROPERTY
+COMPILE_DEFINITIONS ROCKET_STATIC_LIB LUA_COMPAT_APIINTCASTS
+)
+set_target_properties(ROCKET_LIB PROPERTIES
+    POSITION_INDEPENDENT_CODE 1
+)

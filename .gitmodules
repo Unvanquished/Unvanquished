@@ -4,3 +4,6 @@
 [submodule "daemon/libs/breakpad"]
 	path = daemon/libs/breakpad
 	url = https://github.com/Unvanquished/breakpad.git
+[submodule "libs/libRocket"]
+	path = libs/libRocket
+	url = https://github.com/Unvanquished/libRocket.git
