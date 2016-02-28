@@ -88,8 +88,26 @@ bool Challenge::ValidString(const std::string& challenge)
 	return std::all_of(challenge.begin(), challenge.end(), Str::cisxdigit);
 }
 
+static std::deque<Challenge> challenges;
 
-std::size_t ChallengeManager::MaxChallenges() const
+/*
+ * Removes outdated challenges
+ * PRE: The caller has acquired a lock on mutex
+ */
+static void Cleanup()
+{
+	auto now = Challenge::Clock::now();
+	challenges.erase(
+		std::remove_if( challenges.begin(), challenges.end(),
+			[&now]( const Challenge& challenge ) {
+				return !challenge.ValidAt( now );
+			}
+		),
+		challenges.end()
+	);
+}
+
+std::size_t ChallengeManager::MaxChallenges()
 {
 	return cvar_server_challenge_count.Get();
 }
@@ -103,8 +121,6 @@ std::string ChallengeManager::GenerateChallenge( const netadr_t& source )
 
 void ChallengeManager::Push( const Challenge& challenge )
 {
-	auto lock = Lock();
-
 	Cleanup();
 
 	if ( challenges.size() >= MaxChallenges() )
@@ -117,8 +133,6 @@ void ChallengeManager::Push( const Challenge& challenge )
 
 bool ChallengeManager::Match( const Challenge& challenge, Challenge::Duration* ping )
 {
-	auto lock = Lock();
-
 	Cleanup();
 
 	auto it = std::find_if( challenges.begin(), challenges.end(),
@@ -141,21 +155,7 @@ bool ChallengeManager::Match( const Challenge& challenge, Challenge::Duration* p
 
 void ChallengeManager::Clear()
 {
-	auto lock = Lock();
 	challenges.clear();
-}
-
-void ChallengeManager::Cleanup()
-{
-	auto now = Challenge::Clock::now();
-	challenges.erase(
-		std::remove_if( challenges.begin(), challenges.end(),
-			[&now]( const Challenge& challenge ) {
-				return !challenge.ValidAt( now );
-			}
-		),
-		challenges.end()
-	);
 }
 
 bool ChallengeManager::MatchString( const netadr_t& source,

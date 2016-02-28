@@ -47,7 +47,7 @@ void SV_GetChallenge( netadr_t from )
 		return;
 	}
 
-	auto challenge = ChallengeManager::Get().GenerateChallenge( from );
+	auto challenge = ChallengeManager::GenerateChallenge( from );
 	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "challengeResponse %s\n", challenge );
 }
 
@@ -110,7 +110,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	{
 		// see if the challenge is valid (local clients don't need to challenge)
 		Challenge::Duration ping_duration;
-		if ( !ChallengeManager::Get().MatchString( from, challenge, &ping_duration ) )
+		if ( !ChallengeManager::MatchString( from, challenge, &ping_duration ) )
 		{
 			Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address." );
 			return;

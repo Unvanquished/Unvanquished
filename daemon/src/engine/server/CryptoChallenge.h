@@ -135,16 +135,10 @@ private:
 
 };
 
-class ChallengeManager
+namespace ChallengeManager
 {
-public:
-    static ChallengeManager& Get()
-    {
-        static ChallengeManager singleton;
-        return singleton;
-    }
 
-    std::size_t MaxChallenges() const;
+    std::size_t MaxChallenges();
 
     /*
      * Generates a challenge for the given address and returns the challenge string
@@ -180,24 +174,6 @@ public:
                       const std::string& challenge,
                       Challenge::Duration* ping = nullptr);
 
-private:
-    ChallengeManager() = default;
-    ChallengeManager( const ChallengeManager& ) = delete;
-    ChallengeManager& operator=( const ChallengeManager& ) = delete;
-
-    std::unique_lock<std::mutex> Lock()
-    {
-        return std::unique_lock<std::mutex>{mutex};
-    }
-
-    /*
-     * Removes outdated challenges
-     * PRE: The caller has acquired a lock on mutex
-     */
-    void Cleanup();
-
-    std::mutex mutex;
-    std::deque<Challenge> challenges;
-};
+} // namespace ChallengeManager
 
 #endif // CRYPTOCHALLENGE_H

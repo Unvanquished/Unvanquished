@@ -177,7 +177,7 @@ bool Message::Acceptable(std::string *invalid_reason) const
 
 	if ( secure == Secure::EncryptedChallenge )
 	{
-		if ( !ChallengeManager::Get().MatchString(remote, challenge) )
+		if ( !ChallengeManager::MatchString(remote, challenge) )
 		{
 			return invalid("Mismatched challenge");
 		}

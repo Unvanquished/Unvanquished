@@ -793,7 +793,7 @@ void SV_Shutdown( const char *finalmsg )
 
 	memset( &svs, 0, sizeof( svs ) );
 	svs.serverLoad = -1;
-	ChallengeManager::Get().Clear();
+	ChallengeManager::Clear();
 
 	Cvar_Set( "sv_running", "0" );
 #ifndef BUILD_SERVER
