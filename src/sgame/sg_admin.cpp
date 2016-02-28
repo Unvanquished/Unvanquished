@@ -5586,9 +5586,9 @@ bool G_admin_bot( gentity_t *ent )
 	int i;
 	int clientNum;
 
-	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)"
-	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]"
-	                                        "            bot names [^5aliens|humans^7] [^5names…^7]"
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)\n"
+	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
+	                                        "            bot names [^5aliens|humans^7] [^5names…^7]\n"
 	                                        "            bot names [^5clear|list^7]" ) );
 
 	if ( trap_Argc() < min_args )
