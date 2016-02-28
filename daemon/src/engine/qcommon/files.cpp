@@ -615,15 +615,9 @@ void FS_LoadBasePak()
 
 void FS_LoadAllMapMetadata()
 {
-	std::unordered_set<std::string> maps;
-	for (const auto& x: FS::GetAvailablePaks()) {
-		if (Str::IsPrefix("map-", x.name) && maps.find(x.name) == maps.end())
-			maps.insert(x.name);
-	}
-
-	for (const auto& x: maps) {
+	for (const auto& pak: FS::GetAvailableMapPaks()) {
 		try {
-			FS::PakPath::LoadPakPrefix(*FS::FindPak(x), va("meta/%s/", x.substr(4).c_str()));
+			FS::PakPath::LoadPakPrefix(pak, va("meta/%s/", pak.name.substr(4).c_str()));
 		} catch (std::system_error&) {} // ignore and move on
 	}
 }

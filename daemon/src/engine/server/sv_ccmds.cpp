@@ -58,11 +58,8 @@ class MapCmd: public Cmd::StaticCmd {
 
             const std::string& mapName = args.Argv(1);
 
-            //Detect any newly added paks
-            FS::RefreshPaks();
-
             //Make sure the map exists to avoid typos that would kill the game
-            if (!FS::FindPak("map-" + mapName)) {
+            if (!FS::GetAvailableMaps().count(mapName)) {
                 Print("Can't find map %s", mapName);
                 return;
             }
@@ -80,9 +77,9 @@ class MapCmd: public Cmd::StaticCmd {
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
             if (argNum == 1) {
                 Cmd::CompletionResult out;
-                for (auto& x: FS::GetAvailablePaks()) {
-                    if (Str::IsPrefix("map-" + prefix, x.name))
-                        out.push_back({x.name.substr(4), ""});
+                for (auto& map: FS::GetAvailableMaps()) {
+                    if (Str::IsPrefix(prefix, map))
+                        out.push_back({map, ""});
                 }
                 return out;
             } else if (argNum > 1) {
@@ -395,25 +392,7 @@ public:
 
 	void Run(const Cmd::Args&) const OVERRIDE
 	{
-		std::vector<std::string> maps;
-
-		FS::RefreshPaks();
-		std::error_code ignore;
-		for ( const auto& pak : FS::GetAvailablePaks() )
-		{
-			FS::PakPath::LoadPakPrefix(pak, "maps", ignore);
-		}
-
-		for ( const auto& pak : FS::PakPath::ListFiles("maps", ignore) )
-		{
-			if ( Str::IsSuffix(".bsp", pak) )
-			{
-				maps.push_back( pak.substr(0, pak.size() - 4) );
-			}
-		}
-
-		std::sort( maps.begin(), maps.end() );
-		maps.erase( std::unique( maps.begin(), maps.end() ), maps.end() );
+		auto maps = FS::GetAvailableMaps();
 
 		Print("Listing %d maps:", maps.size());
 

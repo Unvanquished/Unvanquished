@@ -2386,6 +2386,46 @@ const std::vector<PakInfo>& GetAvailablePaks()
 	return availablePaks;
 }
 
+
+std::vector<PakInfo> GetAvailableMapPaks()
+{
+	std::vector<PakInfo> infos;
+	for ( const auto& pak : FS::GetAvailablePaks() )
+	{
+		if ( Str::IsPrefix("map-", pak.name) )
+		{
+			infos.push_back(pak);
+		}
+	}
+	return infos;
+}
+
+std::set<std::string> GetAvailableMaps()
+{
+	std::set<std::string> maps;
+
+	#ifndef BUILD_VM
+		RefreshPaks();
+	#endif
+	std::error_code ignore;
+	for ( const auto& pak : GetAvailableMapPaks() )
+	{
+		FS::PakPath::LoadPakPrefix(pak, "maps", ignore);
+	}
+
+	static const std::string map_suffix = ".bsp";
+
+	for ( const auto& file : FS::PakPath::ListFiles("maps", ignore) )
+	{
+		if ( Str::IsSuffix(map_suffix, file) )
+		{
+			maps.insert( file.substr(0, file.size() - map_suffix.size()) );
+		}
+	}
+
+	return maps;
+}
+
 const std::string& GetHomePath()
 {
 	return homePath;
