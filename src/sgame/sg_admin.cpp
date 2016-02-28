@@ -3924,13 +3924,13 @@ bool G_admin_adminhelp( gentity_t *ent )
 
 		perline = 78 / ( width + 1 ); // allow for curses console border and at least one space between each word
 
-		ADMBP_begin();
+		std::string out;
 
 		for ( unsigned i = 0; i < adminNumCmds; i++ )
 		{
 			if ( perms[ i ] )
 			{
-				ADMBP( va( "^3%-*s%c", width, g_admin_cmds[ i ].keyword, ( ++count % perline == 0 ) ? '\n' : ' ' ) );
+				out += va( "^3%-*s%c", width, g_admin_cmds[ i ].keyword, ( ++count % perline == 0 ) ? '\n' : ' ' );
 			}
 		}
 
@@ -3938,16 +3938,13 @@ bool G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, c->flag ) )
 			{
-				ADMBP( va( "^1%-*s%c", width, c->command, ( ++count % perline == 0 ) ? '\n' : ' ' ) );
+				out += va( "^1%-*s%c", width, c->command, ( ++count % perline == 0 ) ? '\n' : ' ' );
 			}
 		}
 
-		if ( count % perline )
-		{
-			ADMBP( "" );
-		}
+		out += "\n";
 
-		ADMBP_end();
+		ADMP( Cmd::Escape( out ) );
 		ADMP( va( "%s %d", QQ( N_("^3adminhelp: ^7$1$ available commands"
 		"run adminhelp [^3command^7] for adminhelp with a specific command.") ),count ) );
 
@@ -4753,31 +4750,34 @@ bool G_admin_flaglist( gentity_t *ent )
 			continue;
 		}
 
-		ADMBP( va( "  ^5%-20s^7", g_admin_cmds[ i ].flag ) );
+		std::string line;
+
+		line += va( "  ^5%-20s^7", g_admin_cmds[ i ].flag );
 
 		for ( unsigned j = i; j < adminNumCmds; j++ )
 		{
 			if ( g_admin_cmds[ j ].keyword && g_admin_cmds[ j ].flag &&
 			     !strcmp ( g_admin_cmds[ j ].flag, g_admin_cmds[ i ].flag ) )
 			{
-				ADMBP( va( " %s", g_admin_cmds[ j ].keyword ) );
+				line += " ";
+				line += g_admin_cmds[ j ].keyword;
 				shown[ j ] = true;
 			}
 		}
 
-		ADMBP( "^2" );
+		line += "^2";
 
 		for ( unsigned j = i; j < adminNumCmds; j++ )
 		{
 			if ( !g_admin_cmds[ j ].keyword && g_admin_cmds[ j ].flag &&
 			     !strcmp ( g_admin_cmds[ j ].flag, g_admin_cmds[ i ].flag ) )
 			{
-				ADMBP( va( " %s", g_admin_cmds[ j ].function ) );
+				line += va( " %s", g_admin_cmds[ j ].function );
 				shown[ j ] = true;
 			}
 		}
 
-		ADMBP( "" );
+		ADMBP( line );
 		count++;
 	}
 
@@ -5517,6 +5517,12 @@ void G_admin_buffer_print( gentity_t *ent, Str::StringRef m )
 {
 	if ( !m.empty() )
 	{
+		// Ensure we don't overflow client buffers.
+		if ( g_bfb.size() + m.size() >= 1022 )
+		{
+			G_admin_buffer_end( ent );
+			g_bfb.clear();
+		}
 		g_bfb += m;
 		g_bfb += '\n';
 	}
