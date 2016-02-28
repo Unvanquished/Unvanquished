@@ -312,8 +312,6 @@ void G_BotDel( int clientNum )
 		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, false );
 	}
 
-	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected" ) ),
-					Quote( bot->client->pers.netname ) ) );
 	trap_DropClient( clientNum, "disconnected" );
 }
 
