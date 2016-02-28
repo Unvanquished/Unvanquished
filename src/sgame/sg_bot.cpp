@@ -241,7 +241,7 @@ int G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	bot->r.svFlags |= SVF_BOT;
 	bot->inuse = true;
 
-	if ( !Q_stricmp( name, "*" ) )
+	if ( !name || !Q_stricmp( name, "*" ) )
 	{
 		name = G_BotSelectName( team );
 		autoname = name != nullptr;

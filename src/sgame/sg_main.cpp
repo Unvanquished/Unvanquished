@@ -2762,7 +2762,7 @@ static void AddOrRemoveBots( int minPlayers, team_t team, std::vector<int>* trac
 	{
 		for (int i = minPlayers - level.team[ team ].numClients; i; --i)
 		{
-			int clientNum = G_BotAdd( "*", team, 7, "default" );
+			int clientNum = G_BotAdd( nullptr, team, 7, "default" );
 			if ( clientNum >= 0 )
 			{
 				tracker->push_back( clientNum );
