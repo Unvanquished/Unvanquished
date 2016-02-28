@@ -234,9 +234,9 @@ bool        G_admin_register( gentity_t *ent );  // AA-QVM 1.2
 bool        G_admin_unregister( gentity_t *ent );  // AA-QVM 1.2
 bool        G_admin_bot( gentity_t *ent );
 
-void            G_admin_print( gentity_t *ent, const char *m );
-void            G_admin_print_plural( gentity_t *ent, const char *m, int number );
-void            G_admin_buffer_print( gentity_t *ent, const char *m );
+void            G_admin_print( gentity_t *ent, Str::StringRef m );
+void            G_admin_print_plural( gentity_t *ent, Str::StringRef m, int number );
+void            G_admin_buffer_print( gentity_t *ent, Str::StringRef m );
 void            G_admin_buffer_begin();
 void            G_admin_buffer_end( gentity_t *ent );
 

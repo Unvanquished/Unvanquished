@@ -51,7 +51,7 @@ static void G_admin_notIntermission( gentity_t *ent )
 	} while ( 0 )
 
 // big ugly global buffer for use with buffered printing of long outputs
-static char       g_bfb[ 32000 ];
+static std::string       g_bfb;
 
 static bool G_admin_maprestarted( gentity_t * );
 
@@ -5470,27 +5470,27 @@ bool G_admin_unregister( gentity_t *ent )
  The supplied string is assumed to be quoted as needed.
 ================
 */
-void G_admin_print( gentity_t *ent, const char *m )
+void G_admin_print( gentity_t *ent, Str::StringRef m )
 {
 	if ( ent )
 	{
-		trap_SendServerCommand( ent->s.number, va( "print_tr %s", m ) );
+		trap_SendServerCommand( ent->s.number, va( "print_tr %s", m.c_str() ) );
 	}
 	else
 	{
-		trap_SendServerCommand( -2, va( "print_tr %s", m ) );
+		trap_SendServerCommand( -2, va( "print_tr %s", m.c_str() ) );
 	}
 }
 
-void G_admin_print_plural( gentity_t *ent, const char *m, int number )
+void G_admin_print_plural( gentity_t *ent, Str::StringRef m, int number )
 {
 	if ( ent )
 	{
-		trap_SendServerCommand( ent->s.number, va( "print_tr_p %d %s", number, m ) );
+		trap_SendServerCommand( ent->s.number, va( "print_tr_p %d %s", number, m.c_str() ) );
 	}
 	else
 	{
-		trap_SendServerCommand( -2, va( "print_tr_p %d %s", number, m ) );
+		trap_SendServerCommand( -2, va( "print_tr_p %d %s", number, m.c_str() ) );
 	}
 }
 
@@ -5505,26 +5505,20 @@ void G_admin_print_plural( gentity_t *ent, const char *m, int number )
 */
 void G_admin_buffer_begin()
 {
-	g_bfb[ 0 ] = '\0';
+	g_bfb.clear();
 }
 
 void G_admin_buffer_end( gentity_t *ent )
 {
-	G_admin_buffer_print( ent, nullptr );
+	G_admin_print( ent, Cmd::Escape( g_bfb ) );
 }
 
-void G_admin_buffer_print( gentity_t *ent, const char *m )
+void G_admin_buffer_print( gentity_t *ent, Str::StringRef m )
 {
-	// 1022 - strlen("print 64 \"\"") - 1
-	if ( !m ||  strlen( m ) + strlen( g_bfb ) >= 1009 )
+	if ( !m.empty() )
 	{
-		trap_SendServerCommand( ent ? ent->s.number : -2, va( "print %s", Quote( g_bfb ) ) );
-		g_bfb[ 0 ] = '\0';
-	}
-
-	if ( m )
-	{
-		Q_strcat( g_bfb, sizeof( g_bfb ), m );
+		g_bfb += m;
+		g_bfb += '\n';
 	}
 }
 
