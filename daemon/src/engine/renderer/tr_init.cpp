@@ -1192,8 +1192,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		r_noLightVisCull = ri.Cvar_Get( "r_noLightVisCull", "0", CVAR_CHEAT );
 		r_noInteractionSort = ri.Cvar_Get( "r_noInteractionSort", "0", CVAR_CHEAT );
-		r_dynamicLight = ri.Cvar_Get( "r_dynamicLight", "1", CVAR_ARCHIVE );
-		r_staticLight = ri.Cvar_Get( "r_staticLight", "1", CVAR_CHEAT );
+		r_dynamicLight = ri.Cvar_Get( "r_dynamicLight", "2", CVAR_ARCHIVE );
+		r_staticLight = ri.Cvar_Get( "r_staticLight", "2", CVAR_ARCHIVE );
 		r_drawworld = ri.Cvar_Get( "r_drawworld", "1", CVAR_CHEAT );
 		r_portalOnly = ri.Cvar_Get( "r_portalOnly", "0", CVAR_CHEAT );
 		r_portalSky = ri.Cvar_Get( "cg_skybox", "1", 0 );
