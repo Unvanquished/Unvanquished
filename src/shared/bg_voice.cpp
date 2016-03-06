@@ -269,7 +269,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				}
 				else if ( modelno < 0 )
 				{
-				        break; // possibly the next keyword
+					break; // possibly the next keyword
 				}
 
 				found = true;
@@ -300,16 +300,17 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 			}
 
 			foundText = true;
+			auto tokenLen = strlen( token.string );
 
-			if ( strlen( token.string ) >= MAX_SAY_TEXT )
+			if ( tokenLen >= MAX_SAY_TEXT )
 			{
 				BG_VoiceParseError( handle, va( "BG_VoiceParseTrack(): "
 				                                "\"text\" value " "\"%s\" exceeds MAX_SAY_TEXT length",
 				                                token.string ) );
 			}
 
-			voiceTrack->text = ( char * ) BG_Alloc( strlen( token.string ) + 1 );
-			Q_strncpyz( voiceTrack->text, token.string, strlen( token.string ) + 1 );
+			voiceTrack->text = ( char * ) BG_Alloc( tokenLen + 1 );
+			Q_strncpyz( voiceTrack->text, token.string, tokenLen + 1 );
 			foundToken = trap_Parse_ReadToken( handle, &token );
 			continue;
 		}

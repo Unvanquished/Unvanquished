@@ -627,16 +627,14 @@ so message texts can be multi-line
 char *G_NewString( const char *string )
 {
 	char *newb, *new_p;
-	int  i, l;
+	size_t l = strlen( string ) + 1;
 
-	l = strlen( string ) + 1;
-
-	newb =(char*) BG_Alloc( l );
+	newb = (char*) BG_Alloc( l );
 
 	new_p = newb;
 
 	// turn \n into a real linefeed
-	for ( i = 0; i < l; i++ )
+	for ( size_t i = 0; i < l; i++ )
 	{
 		if ( string[ i ] == '\\' && i < l - 1 )
 		{
@@ -668,17 +666,16 @@ G_NewTarget
 gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const char *string )
 {
 	char *stringPointer;
-	int  i, stringLength;
 	gentityCallDefinition_t newCallDefinition = { nullptr, ON_DEFAULT, nullptr, nullptr, ECA_NOP };
 
-	stringLength = strlen( string ) + 1;
-	if(stringLength == 1)
+	size_t stringLength = strlen( string ) + 1;
+	if ( stringLength == 1 )
 		return newCallDefinition;
 
 	stringPointer = (char*) BG_Alloc( stringLength );
 	newCallDefinition.name = stringPointer;
 
-	for ( i = 0; i < stringLength; i++ )
+	for ( size_t i = 0; i < stringLength; i++ )
 	{
 		if ( string[ i ] == ':' && !newCallDefinition.action )
 		{
