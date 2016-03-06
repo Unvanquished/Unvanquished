@@ -4720,7 +4720,7 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 		return; // no view changes at all
 	}
 
-	if ( ps->pm_type != PM_SPECTATOR && ps->stats[ STAT_HEALTH ] <= 0 )
+	if ( ps->persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT && ps->stats[ STAT_HEALTH ] <= 0 )
 	{
 		return; // no view changes at all
 	}
