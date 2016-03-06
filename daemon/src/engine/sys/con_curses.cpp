@@ -631,7 +631,6 @@ char *CON_Input()
 				}
 			}
 
-			std::u32string u32text;
 			switch ( mode )
 			{
 			case MODE_UNKNOWN:
