@@ -663,7 +663,7 @@ to ease the jerk.
 */
 void CG_PredictPlayerState()
 {
-	int           cmdNum, current, i;
+	int           cmdNum, current;
 	playerState_t oldPlayerState;
 	usercmd_t     oldestCmd;
 	usercmd_t     latestCmd;
@@ -799,12 +799,11 @@ void CG_PredictPlayerState()
 		else
 		{
 			// we have a new snapshot
-			int      i;
 			int      errorcode;
 			bool error = true;
 
 			// loop through the saved states queue
-			for ( i = cg.stateHead; i != cg.stateTail;
+			for ( int i = cg.stateHead; i != cg.stateTail;
 			      i = ( i + 1 ) % NUM_SAVED_STATES )
 			{
 				// if we find a predicted state whose commandTime matches the snapshot
@@ -959,7 +958,7 @@ void CG_PredictPlayerState()
 
 		// don't predict gauntlet firing, which is only supposed to happen
 		// when it actually inflicts damage
-		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+		for ( int i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 		{
 			cg_pmove.autoWeaponHit[ i ] = false;
 		}
