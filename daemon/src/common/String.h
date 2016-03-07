@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_STRING_H_
 
 #include <algorithm>
+#include <limits>
 #include "Compiler.h"
 
 namespace Str {
@@ -45,7 +46,7 @@ namespace Str {
 
     template<typename T> class BasicStringRef {
     public:
-        static const size_t npos = -1;
+        static CONSTEXPR size_t npos = std::numeric_limits<size_t>::max();
 
         BasicStringRef(const std::basic_string<T>& other)
             : ptr(other.c_str()), len(other.size()) {}

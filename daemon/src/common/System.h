@@ -42,7 +42,7 @@ public:
 	using rep = duration::rep;
 	using period = duration::period;
 	using time_point = std::chrono::time_point<SteadyClock>;
-	static const bool is_steady = true;
+	static CONSTEXPR bool is_steady = true;
 
 	static time_point now() NOEXCEPT;
 };
