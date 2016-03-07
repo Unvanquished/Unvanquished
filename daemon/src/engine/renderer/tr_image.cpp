@@ -1122,7 +1122,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 				if( image->bits & IF_NORMALMAP ) {
 					c = scaledWidth * scaledHeight;
-					for ( i = 0; i < c; i++ )
+					for ( int i = 0; i < c; i++ )
 					{
 						vec3_t n;
 
