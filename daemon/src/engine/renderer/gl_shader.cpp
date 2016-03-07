@@ -853,8 +853,8 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 	{
 		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
 
-		vertexHeader += "#version 130\n";
-		fragmentHeader += "#version 130\n";
+		vertexHeader += Str::Format("#version %d\n", glConfig2.shadingLanguageVersion);
+		fragmentHeader += Str::Format("#version %d\n", glConfig2.shadingLanguageVersion);
 
 		vertexHeader += "#define attribute in\n";
 		vertexHeader += "#define varying out\n";
@@ -863,11 +863,18 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 
 		vertexHeader += "#define textureCube texture\n";
 		vertexHeader += "#define texture2D texture\n";
+		vertexHeader += "#define texture3D texture\n";
 		vertexHeader += "#define texture2DProj textureProj\n";
 
 		fragmentHeader += "#define textureCube texture\n";
 		fragmentHeader += "#define texture2D texture\n";
+		fragmentHeader += "#define texture3D texture\n";
 		fragmentHeader += "#define texture2DProj textureProj\n";
+
+        if (glConfig2.shadingLanguageVersion >= 310) {
+            fragmentHeader += "out vec4 FragColor;\n";
+            fragmentHeader += "#define gl_FragColor FragColor\n";
+        }
 	}
 	else
 	{
@@ -1034,7 +1041,7 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 
 void GLShaderManager::ValidateProgram( GLuint program ) const
 {
-	GLint validated;
+/*	GLint validated;
 
 	glValidateProgram( program );
 
@@ -1044,7 +1051,7 @@ void GLShaderManager::ValidateProgram( GLuint program ) const
 	{
 		PrintInfoLog( program );
 		ThrowShaderError( "Shaders failed to validate!" );
-	}
+	}*/
 }
 
 void GLShaderManager::BindAttribLocations( GLuint program ) const

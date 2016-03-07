@@ -723,6 +723,7 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 			if ( !r_glAllowSoftware->integer )
 			{
@@ -789,6 +790,7 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 
 	SDL_FreeSurface( icon );
 
+    glewExperimental = GL_TRUE;
 	glewResult = glewInit();
 
 	if ( glewResult != GLEW_OK )
