@@ -1814,60 +1814,11 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			}
 
 		}
-		// blendfunc <srcFactor> <dstFactor>
-		// or blendfunc <add|filter|blend>
-		else if ( !Q_stricmp( token, "blendfunc" ) )
-		{
-			token = COM_ParseExt2( text, false );
-
-			if ( token[ 0 ] == 0 )
-			{
-				Log::Warn("missing parm for blendFunc in shader '%s'", shader.name );
-				continue;
-			}
-
-			// check for "simple" blends first
-			if ( !Q_stricmp( token, "add" ) )
-			{
-				blendSrcBits = GLS_SRCBLEND_ONE;
-				blendDstBits = GLS_DSTBLEND_ONE;
-			}
-			else if ( !Q_stricmp( token, "filter" ) )
-			{
-				blendSrcBits = GLS_SRCBLEND_DST_COLOR;
-				blendDstBits = GLS_DSTBLEND_ZERO;
-			}
-			else if ( !Q_stricmp( token, "blend" ) )
-			{
-				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
-				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			}
-			else
-			{
-				// complex double blends
-				blendSrcBits = NameToSrcBlendMode( token );
-
-				token = COM_ParseExt2( text, false );
-
-				if ( token[ 0 ] == 0 )
-				{
-					Log::Warn("missing parm for blendFunc in shader '%s'", shader.name );
-					continue;
-				}
-
-				blendDstBits = NameToDstBlendMode( token );
-			}
-
-			// clear depth mask for blended surfaces
-			if ( !depthMaskExplicit )
-			{
-				depthMaskBits = 0;
-			}
-		}
-		// blend <srcFactor> , <dstFactor>
-		// or blend <add | filter | blend>
-		// or blend <diffusemap | bumpmap | specularmap>
-		else if ( !Q_stricmp( token, "blend" ) )
+		//    blend[func] <srcFactor> [,] <dstFactor>
+		// or blend[func] <add | filter | blend>
+		// or blend[func] <diffusemap | bumpmap | specularmap>
+		else if ( !Q_stricmp( token, "blendfunc" ) ||
+			  !Q_stricmp( token, "blend" ) )
 		{
 			token = COM_ParseExt2( text, false );
 
@@ -1931,14 +1882,9 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 
 				token = COM_ParseExt2( text, false );
 
-				if ( token[ 0 ] != ',' )
-				{
-					Log::Warn("expecting ',', found '%s' instead for blend in shader '%s'", token,
-					           shader.name );
-					continue;
+				if ( !Q_stricmp(token, "," ) ) {
+					token = COM_ParseExt2( text, false );
 				}
-
-				token = COM_ParseExt2( text, false );
 
 				if ( token[ 0 ] == 0 )
 				{
@@ -1950,7 +1896,12 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			}
 
 			// clear depth mask for blended surfaces
-			if ( !depthMaskExplicit && stage->type == stageType_t::ST_COLORMAP )
+			if ( !depthMaskExplicit &&
+			     (stage->type == stageType_t::ST_COLORMAP ||
+			      stage->type == stageType_t::ST_DIFFUSEMAP) &&
+			     blendSrcBits != 0 && blendDstBits != 0
+			     && !(blendSrcBits == GLS_SRCBLEND_ONE &&
+				  blendDstBits == GLS_DSTBLEND_ZERO) )
 			{
 				depthMaskBits = 0;
 			}
