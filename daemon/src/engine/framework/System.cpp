@@ -511,8 +511,8 @@ static void Init(int argc, char** argv)
 #ifdef _WIN32
 	// If we were launched from a console, make our output visible on it
 	if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-		freopen("CONOUT$", "w", stdout);
-		freopen("CONOUT$", "w", stderr);
+		Q_UNUSED(freopen("CONOUT$", "w", stdout));
+		Q_UNUSED(freopen("CONOUT$", "w", stderr));
 	}
 #endif
 
