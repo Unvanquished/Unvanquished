@@ -373,6 +373,7 @@ struct glconfig_t
 struct glconfig2_t
 {
 	bool ARBTextureCompressionAvailable;
+	bool glCoreProfile;
 
 	int      maxCubeMapTextureSize;
 

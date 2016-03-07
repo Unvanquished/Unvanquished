@@ -255,18 +255,21 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 	// create buffer for uniform firewall
 	shaderProgram->uniformFirewall = ( byte * ) ri.Z_Malloc( uniformSize );
 
-	// create buffer for storing uniform block indexes
-	shaderProgram->uniformBlockIndexes = ( GLuint * ) ri.Z_Malloc( sizeof( GLuint ) * numUniformBlocks );
-
 	// update uniforms
 	for (GLUniform *uniform : shader->_uniforms)
 	{
 		uniform->UpdateShaderProgramUniformLocation( shaderProgram );
 	}
-	// update uniform blocks
-	for (GLUniformBlock *uniformBlock : shader->_uniformBlocks)
-	{
-		uniformBlock->UpdateShaderProgramUniformBlockIndex( shaderProgram );
+
+	if( GLEW_ARB_uniform_buffer_object || glConfig2.glCoreProfile ) {
+		// create buffer for storing uniform block indexes
+		shaderProgram->uniformBlockIndexes = ( GLuint * ) ri.Z_Malloc( sizeof( GLuint ) * numUniformBlocks );
+
+		// update uniform blocks
+		for (GLUniformBlock *uniformBlock : shader->_uniformBlocks)
+		{
+			uniformBlock->UpdateShaderProgramUniformBlockIndex( shaderProgram );
+		}
 	}
 }
 
@@ -381,7 +384,12 @@ std::string GLShaderManager::BuildDeformShaderText( const std::string& steps ) c
 {
 	std::string shaderText;
 
-	shaderText = Str::Format( "#version %d\n", glConfig2.shadingLanguageVersion );
+	const char *profile = "";
+
+	if( glConfig2.shadingLanguageVersion >= 150 ) {
+		profile = glConfig2.glCoreProfile ? "core" : "compatibility";
+	}
+	shaderText = Str::Format( "#version %d %s\n", glConfig2.shadingLanguageVersion, profile );
 	shaderText += steps + "\n";
 
 	// We added a lot of stuff but if we do something bad
@@ -851,10 +859,15 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 
 	if ( glConfig2.shadingLanguageVersion != 120 )
 	{
-		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
+		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.50 ones
 
-		vertexHeader += "#version 130\n";
-		fragmentHeader += "#version 130\n";
+		if( glConfig2.glCoreProfile ) {
+			vertexHeader += "#version 150 core\n";
+			fragmentHeader += "#version 150 core\n";
+		} else {
+			vertexHeader += "#version 150 compatibility\n";
+			fragmentHeader += "#version 150 compatibility\n";
+		}
 
 		vertexHeader += "#define attribute in\n";
 		vertexHeader += "#define varying out\n";
@@ -864,10 +877,15 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 		vertexHeader += "#define textureCube texture\n";
 		vertexHeader += "#define texture2D texture\n";
 		vertexHeader += "#define texture2DProj textureProj\n";
+		vertexHeader += "#define texture3D texture\n";
 
 		fragmentHeader += "#define textureCube texture\n";
 		fragmentHeader += "#define texture2D texture\n";
 		fragmentHeader += "#define texture2DProj textureProj\n";
+		fragmentHeader += "#define texture3D texture\n";
+
+		fragmentHeader += "out vec4 output;\n";
+		fragmentHeader += "#define gl_FragColor output\n";
 	}
 	else
 	{

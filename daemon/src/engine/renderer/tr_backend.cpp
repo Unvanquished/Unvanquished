@@ -2827,11 +2827,13 @@ void RB_RenderPostDepth()
 		tess.numVertexes = tr.depthtile2RenderImage->width * tr.depthtile2RenderImage->height;
 
 		GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD );
-		glEnable( GL_POINT_SPRITE );
+		if( !glConfig2.glCoreProfile )
+			glEnable( GL_POINT_SPRITE );
 		glEnable( GL_PROGRAM_POINT_SIZE );
 		Tess_DrawArrays( GL_POINTS );
 		glDisable( GL_PROGRAM_POINT_SIZE );
-		glDisable( GL_POINT_SPRITE );
+		if( !glConfig2.glCoreProfile )
+			glDisable( GL_POINT_SPRITE );
 	}
 
 	// back to main image
@@ -5415,7 +5417,7 @@ static const void *RB_SetupLights( const void *data )
 
 	cmd = ( const setupLightsCommand_t * ) data;
 
-	if( GLEW_ARB_uniform_buffer_object &&
+	if( ( GLEW_ARB_uniform_buffer_object || glConfig2.glCoreProfile ) &&
 	    (numLights = cmd->refdef.numLights) > 0 ) {
 		shaderLight_t *buffer;
 

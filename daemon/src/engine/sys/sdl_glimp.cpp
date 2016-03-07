@@ -619,91 +619,22 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 		stencilBits = r_stencilbits->integer;
 		samples = r_ext_multisample->integer;
 
-		for ( i = 0; i < 16; i++ )
+		for ( i = 0; i < 4; i++ )
 		{
-			int testColorBits, testDepthBits, testStencilBits;
+			int testColorBits, testCore;
 
-			// 0 - default
-			// 1 - minus colorbits
-			// 2 - minus depthbits
-			// 3 - minus stencil
-			if ( ( i % 4 ) == 0 && i )
-			{
-				// one pass, reduce
-				switch ( i / 4 )
-				{
-					case 2:
-						if ( colorBits == 24 )
-						{
-							colorBits = 16;
-						}
+			// 0 - 24 bit color, core
+			// 1 - 24 bit color, compat
+			// 2 - 16 bit color, core
+			// 3 - 16 bit color, compat
+			testColorBits = (i >= 2) ? 16 : 24;
+			testCore = ((i & 1) == 0);
 
-						break;
+			if( testCore && !r_glCoreProfile->integer )
+				continue;
 
-					case 1:
-						if ( depthBits == 24 )
-						{
-							depthBits = 16;
-						}
-						else if ( depthBits == 16 )
-						{
-							depthBits = 8;
-						}
-
-					case 3:
-						if ( stencilBits == 24 )
-						{
-							stencilBits = 16;
-						}
-						else if ( stencilBits == 16 )
-						{
-							stencilBits = 8;
-						}
-				}
-			}
-
-			testColorBits = colorBits;
-			testDepthBits = depthBits;
-			testStencilBits = stencilBits;
-
-			if ( ( i % 4 ) == 3 )
-			{
-				// reduce colorbits
-				if ( testColorBits == 24 )
-				{
-					testColorBits = 16;
-				}
-			}
-
-			if ( ( i % 4 ) == 2 )
-			{
-				// reduce depthbits
-				if ( testDepthBits == 24 )
-				{
-					testDepthBits = 16;
-				}
-				else if ( testDepthBits == 16 )
-				{
-					testDepthBits = 8;
-				}
-			}
-
-			if ( ( i % 4 ) == 1 )
-			{
-				// reduce stencilbits
-				if ( testStencilBits == 24 )
-				{
-					testStencilBits = 16;
-				}
-				else if ( testStencilBits == 16 )
-				{
-					testStencilBits = 8;
-				}
-				else
-				{
-					testStencilBits = 0;
-				}
-			}
+			if( testColorBits > colorBits )
+				continue;
 
 			if ( testColorBits == 24 )
 			{
@@ -717,11 +648,6 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, perChannelColorBits );
 			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, perChannelColorBits );
 			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, perChannelColorBits );
-			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, alphaBits );
-			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, testDepthBits );
-			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, testStencilBits );
-			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );
-			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 			if ( !r_glAllowSoftware->integer )
@@ -729,15 +655,20 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 				SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
 			}
 
-			if ( r_glCoreProfile->integer || r_glDebugProfile->integer )
+			if ( testCore || r_glDebugProfile->integer )
 			{
 				int major = r_glMajorVersion->integer;
 				int minor = r_glMinorVersion->integer;
 
+				if( testCore && (major < 3 || (major == 3 && minor < 2)) ) {
+					major = 3;
+					minor = 2;
+				}
+
 				SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
 				SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
 
-				if ( r_glCoreProfile->integer )
+				if ( testCore )
 				{
 					SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 				}
@@ -771,8 +702,9 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 			SDL_GL_SetSwapInterval( r_swapInterval->integer );
 
 			glConfig.colorBits = testColorBits;
-			glConfig.depthBits = testDepthBits;
-			glConfig.stencilBits = testStencilBits;
+			glConfig.depthBits = depthBits;
+			glConfig.stencilBits = stencilBits;
+			glConfig2.glCoreProfile = testCore;
 
 			Log::Notice("Using %d Color bits, %d depth, %d stencil display.",
 				glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );
