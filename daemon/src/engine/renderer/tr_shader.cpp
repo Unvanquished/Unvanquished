@@ -1950,9 +1950,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			}
 
 			// clear depth mask for blended surfaces
-			if ( !depthMaskExplicit &&
-			     (stage->type == stageType_t::ST_COLORMAP ||
-			      stage->type == stageType_t::ST_DIFFUSEMAP) )
+			if ( !depthMaskExplicit && stage->type == stageType_t::ST_COLORMAP )
 			{
 				depthMaskBits = 0;
 			}
