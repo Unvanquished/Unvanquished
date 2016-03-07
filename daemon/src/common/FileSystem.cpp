@@ -1048,7 +1048,7 @@ static void InternalLoadPak(const PakInfo& pak, Util::optional<uint32_t> expecte
 {
 	Util::optional<uint32_t> realChecksum;
 	bool hasDeps = false;
-	offset_t depsOffset;
+	offset_t depsOffset = 0;
 	ZipArchive zipFile;
 
 	// Check if this pak has already been loaded to avoid recursive dependencies

@@ -1718,7 +1718,7 @@ NET_OpenIP
 static void NET_OpenIP()
 {
 	int i;
-	int err;
+	int err = 0;
 	int port = PORT_ANY;
 	int port6 = PORT_ANY;
 

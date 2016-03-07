@@ -517,7 +517,7 @@ namespace Cmd {
             }
 
             void Run(const Cmd::Args& args) const OVERRIDE {
-                int oldValue, start, end;
+                int oldValue = 0, start = 0, end = 0;
                 if (args.Argc() < 4 || args.Argc() > 5 ||
                     !Str::ParseInt(oldValue, Cvar::GetValue(args.Argv(1))) ||
                     !Str::ParseInt(start, args.Argv(2)) ||
