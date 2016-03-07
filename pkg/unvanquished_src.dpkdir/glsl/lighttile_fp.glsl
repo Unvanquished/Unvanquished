@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 /* lighttile_fp.glsl */
+#if __VERSION__ < 150
 #extension GL_ARB_uniform_buffer_object : require
+#endif
 #if __VERSION__ < 130
 #extension GL_EXT_texture_integer : enable
 #extension GL_EXT_gpu_shader4 : enable

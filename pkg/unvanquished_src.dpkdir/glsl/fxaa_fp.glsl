@@ -29,9 +29,15 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 uniform sampler2D	u_ColorMap;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
-	gl_FragColor = FxaaPixelShader(
+	outputColor = FxaaPixelShader(
 		gl_FragCoord.xy * r_FBufScale, //pos
 		vec4(0.0), //not used
 		u_ColorMap, //tex

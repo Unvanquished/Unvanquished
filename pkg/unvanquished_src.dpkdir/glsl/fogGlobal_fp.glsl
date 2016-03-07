@@ -31,6 +31,12 @@ uniform vec4		u_Color;
 uniform mat4		u_ViewMatrix;
 uniform mat4		u_UnprojectMatrix;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 	// calculate the screen texcoord in the 0.0 to 1.0 range
@@ -49,5 +55,5 @@ void	main()
 	// st.s = vertexDistanceToCamera;
 	st.t = 1.0;
 
-	gl_FragColor = u_Color * texture2D(u_ColorMap, st);
+	outputColor = u_Color * texture2D(u_ColorMap, st);
 }

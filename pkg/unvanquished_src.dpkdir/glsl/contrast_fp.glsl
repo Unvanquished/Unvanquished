@@ -26,6 +26,12 @@ uniform sampler2D	u_ColorMap;
 
 const vec4			LUMINANCE_VECTOR = vec4(0.2125, 0.7154, 0.0721, 0.0);
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 // contrast adjustment function
 vec4 f(vec4 color) {
 	float L = dot(LUMINANCE_VECTOR, color);
@@ -55,5 +61,5 @@ void	main()
 	color += f(texture2D(u_ColorMap, st + vec2(1.0, 1.0) * scale));
 	color *= 0.25;
 
-	gl_FragColor = color;
+	outputColor = color;
 }

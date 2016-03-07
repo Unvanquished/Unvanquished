@@ -46,6 +46,12 @@ uniform mat4		u_UnprojectMatrix;
 varying vec2		var_TexDiffuse;
 varying vec3		var_TexAttenXYZ;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 	// calculate the screen texcoord in the 0.0 to 1.0 range
@@ -144,5 +150,5 @@ void	main()
 	color.rgb *= u_LightColor;
 	//color.rgb *= u_LightScale;
 
-	gl_FragColor = color;
+	outputColor = color;
 }

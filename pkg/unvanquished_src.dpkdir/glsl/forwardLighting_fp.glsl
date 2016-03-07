@@ -95,6 +95,11 @@ varying vec4		var_Binormal;
 varying vec4		var_Normal;
 //varying vec4		var_Color;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
 
 
 /*
@@ -660,10 +665,10 @@ float ShadowTest( float vertexDistance, vec4 shadowMoments, vec4 shadowClipMomen
 
 	#if defined(r_DebugShadowMaps)
 	#extension GL_EXT_gpu_shader4 : enable
-		gl_FragColor.r = (r_DebugShadowMaps & 1) != 0 ? shadowDistance : 0.0;
-		gl_FragColor.g = (r_DebugShadowMaps & 2) != 0 ? -(shadowDistance - vertexDistance) : 0.0;
-		gl_FragColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
-		gl_FragColor.a = 1.0;
+		outputColor.r = (r_DebugShadowMaps & 1) != 0 ? shadowDistance : 0.0;
+		outputColor.g = (r_DebugShadowMaps & 2) != 0 ? -(shadowDistance - vertexDistance) : 0.0;
+		outputColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
+		outputColor.a = 1.0;
 	#endif
 		
 #elif defined( VSM )
@@ -691,10 +696,10 @@ float ShadowTest( float vertexDistance, vec4 shadowMoments, vec4 shadowClipMomen
 	
 	#if defined(r_DebugShadowMaps)
 	#extension GL_EXT_gpu_shader4 : enable
-		gl_FragColor.r = (r_DebugShadowMaps & 1) != 0 ? posContrib : 0.0;
-		gl_FragColor.g = (r_DebugShadowMaps & 2) != 0 ? negContrib : 0.0;
-		gl_FragColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
-		gl_FragColor.a = 1.0;
+		outputColor.r = (r_DebugShadowMaps & 1) != 0 ? posContrib : 0.0;
+		outputColor.g = (r_DebugShadowMaps & 2) != 0 ? negContrib : 0.0;
+		outputColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
+		outputColor.a = 1.0;
 	#endif
 
 	if( u_LightScale < 0.0 ) {
@@ -765,7 +770,7 @@ void	main()
 	// create random noise vector
 	vec3 rand = RandomVec3(gl_FragCoord.st * r_FBufScale);
 
-	gl_FragColor = vec4(rand * 0.5 + 0.5, 1.0);
+	outputColor = vec4(rand * 0.5 + 0.5, 1.0);
 	return;
 #endif
 
@@ -787,7 +792,7 @@ void	main()
 	#endif
 
 #if 0
-	gl_FragColor = vec4(u_ShadowTexelSize * u_ShadowBlur * u_LightRadius, 0.0, 0.0, 1.0);
+	outputColor = vec4(u_ShadowTexelSize * u_ShadowBlur * u_LightRadius, 0.0, 0.0, 1.0);
 	return;
 #endif
 
@@ -799,80 +804,80 @@ void	main()
 #if defined(r_ParallelShadowSplits_1)
 	if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.x)
 	{
-		gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 0.0, 1.0);
 		return;
 	}
 	else
 	{
-		gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 1.0, 1.0);
 		return;
 	}
 #elif defined(r_ParallelShadowSplits_2)
 	if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.x)
 	{
-		gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 0.0, 1.0);
 		return;
 	}
 	else if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.y)
 	{
-		gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+		outputColor = vec4(0.0, 1.0, 0.0, 1.0);
 		return;
 	}
 	else
 	{
-		gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 1.0, 1.0);
 		return;
 	}
 #elif defined(r_ParallelShadowSplits_3)
 	if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.x)
 	{
-		gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 0.0, 1.0);
 		return;
 	}
 	else if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.y)
 	{
-		gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+		outputColor = vec4(0.0, 1.0, 0.0, 1.0);
 		return;
 	}
 	else if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.z)
 	{
-		gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+		outputColor = vec4(0.0, 0.0, 1.0, 1.0);
 		return;
 	}
 	else
 	{
-		gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 1.0, 1.0);
 		return;
 	}
 #elif defined(r_ParallelShadowSplits_4)
 	if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.x)
 	{
-		gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 0.0, 1.0);
 		return;
 	}
 	else if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.y)
 	{
-		gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+		outputColor = vec4(0.0, 1.0, 0.0, 1.0);
 		return;
 	}
 	else if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.z)
 	{
-		gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+		outputColor = vec4(0.0, 0.0, 1.0, 1.0);
 		return;
 	}
 	else if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.w)
 	{
-		gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+		outputColor = vec4(1.0, 1.0, 0.0, 1.0);
 		return;
 	}
 	else
 	{
-		gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 1.0, 1.0);
 		return;
 	}
 #else
 	{
-		gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+		outputColor = vec4(1.0, 0.0, 1.0, 1.0);
 		return;
 	}
 #endif
@@ -914,7 +919,7 @@ void	main()
 	float vertexDistance = ILen / u_LightRadius - SHADOW_BIAS;
 
 #if 0
-	gl_FragColor = vec4(u_ShadowTexelSize * u_ShadowBlur * ILen, 0.0, 0.0, 1.0);
+	outputColor = vec4(u_ShadowTexelSize * u_ShadowBlur * ILen, 0.0, 0.0, 1.0);
 	return;
 #endif
 
@@ -1068,25 +1073,25 @@ void	main()
 		color.rgb = vec3( clamp(dot(color.rgb, vec3( 0.3333 ) ), 0.3, 0.7 ) );
 	}
 
-	gl_FragColor = color;
+	outputColor = color;
 
 #if 0
 #if defined(USE_PARALLAX_MAPPING)
-	gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
+	outputColor = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
 #elif defined(USE_NORMAL_MAPPING)
-	gl_FragColor = vec4(vec3(0.0, 0.0, 1.0), diffuse.a);
+	outputColor = vec4(vec3(0.0, 0.0, 1.0), diffuse.a);
 #else
-	gl_FragColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
+	outputColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
 #endif
 #endif
 
 #if 0
 #if defined(USE_VERTEX_SKINNING)
-	gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
+	outputColor = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
 #elif defined(USE_VERTEX_ANIMATION)
-	gl_FragColor = vec4(vec3(0.0, 0.0, 1.0), diffuse.a);
+	outputColor = vec4(vec3(0.0, 0.0, 1.0), diffuse.a);
 #else
-	gl_FragColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
+	outputColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
 #endif
 #endif
 }

@@ -33,6 +33,12 @@ varying vec4		var_Tangent;
 varying vec4		var_Binormal;
 varying vec4		var_Normal;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 	// compute incident ray in world space
@@ -63,6 +69,6 @@ void	main()
 	// compute reflection ray
 	vec3 R = reflect(I, N);
 
-	gl_FragColor = textureCube(u_ColorMap, R).rgba;
-	// gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	outputColor = textureCube(u_ColorMap, R).rgba;
+	// outputColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
