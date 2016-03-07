@@ -47,6 +47,12 @@ varying vec3            var_Position;
 varying vec3		var_Normal;
 #endif
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 #if defined(USE_NORMAL_MAPPING)
 void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 		   out vec3 ambCol, out vec3 lgtCol ) {
@@ -142,7 +148,7 @@ void	main()
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
 	#endif
 
-	gl_FragColor = color;
+	outputColor = color;
 #else // USE_NORMAL_MAPPING
 
 	vec3 N = normalize(var_Normal);
@@ -165,6 +171,6 @@ void	main()
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
 #endif
 
-	gl_FragColor = color;
+	outputColor = color;
 #endif
 }

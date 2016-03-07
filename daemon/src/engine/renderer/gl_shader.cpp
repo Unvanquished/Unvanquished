@@ -380,16 +380,11 @@ static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 	return steps;
 }
 
-std::string GLShaderManager::BuildDeformShaderText( const std::string& steps ) const
+std::string GLShaderManager::BuildDeformShaderText( const std::string& steps )
 {
 	std::string shaderText;
 
-	const char *profile = "";
-
-	if( glConfig2.shadingLanguageVersion >= 150 ) {
-		profile = glConfig2.glCoreProfile ? "core" : "compatibility";
-	}
-	shaderText = Str::Format( "#version %d %s\n", glConfig2.shadingLanguageVersion, profile );
+	shaderText = GetVersionDeclaration();
 	shaderText += steps + "\n";
 
 	// We added a lot of stuff but if we do something bad
@@ -653,7 +648,6 @@ bool GLShaderManager::buildPermutation( GLShader *shader, int macroIndex, int de
 		shader->SetShaderProgramUniforms( shaderProgram );
 		GL_BindProgram( nullptr );
 
-		ValidateProgram( shaderProgram->program );
 		GL_CheckErrors();
 
 		endTime = ri.Milliseconds();
@@ -850,7 +844,7 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 }
 
 void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *program,
-					 const std::string &compileMacros ) const
+					 const std::string &compileMacros )
 {
 	// header of the glsl shader
 	std::string vertexHeader;
@@ -861,13 +855,8 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 	{
 		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.50 ones
 
-		if( glConfig2.glCoreProfile ) {
-			vertexHeader += "#version 150 core\n";
-			fragmentHeader += "#version 150 core\n";
-		} else {
-			vertexHeader += "#version 150 compatibility\n";
-			fragmentHeader += "#version 150 compatibility\n";
-		}
+		vertexHeader = GetVersionDeclaration();
+		fragmentHeader = GetVersionDeclaration();
 
 		vertexHeader += "#define attribute in\n";
 		vertexHeader += "#define varying out\n";
@@ -883,9 +872,6 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 		fragmentHeader += "#define texture2D texture\n";
 		fragmentHeader += "#define texture2DProj textureProj\n";
 		fragmentHeader += "#define texture3D texture\n";
-
-		fragmentHeader += "out vec4 output;\n";
-		fragmentHeader += "#define gl_FragColor output\n";
 	}
 	else
 	{
@@ -932,7 +918,7 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 }
 
 void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
-						      Str::StringRef compileMacros, int deformIndex ) const
+						      Str::StringRef compileMacros, int deformIndex )
 {
 	GLShaderManager::CompileGPUShaders( shader, program, compileMacros );
 
@@ -1047,21 +1033,6 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 	{
 		PrintInfoLog( program );
 		ThrowShaderError( "Shaders failed to link!" );
-	}
-}
-
-void GLShaderManager::ValidateProgram( GLuint program ) const
-{
-	GLint validated;
-
-	glValidateProgram( program );
-
-	glGetProgramiv( program, GL_VALIDATE_STATUS, &validated );
-
-	if ( !validated )
-	{
-		PrintInfoLog( program );
-		ThrowShaderError( "Shaders failed to validate!" );
 	}
 }
 

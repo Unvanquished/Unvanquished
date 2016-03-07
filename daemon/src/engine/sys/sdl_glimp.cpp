@@ -630,7 +630,10 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 			testColorBits = (i >= 2) ? 16 : 24;
 			testCore = ((i & 1) == 0);
 
-			if( testCore && !r_glCoreProfile->integer )
+			if( testCore && r_glCoreProfile->integer == 0 )
+				continue;
+
+			if( !testCore && r_glCoreProfile->integer == 1 )
 				continue;
 
 			if( testColorBits > colorBits )
@@ -721,6 +724,7 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 
 	SDL_FreeSurface( icon );
 
+	glewExperimental = GL_TRUE;
 	glewResult = glewInit();
 
 	if ( glewResult != GLEW_OK )

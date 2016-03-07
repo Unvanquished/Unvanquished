@@ -26,6 +26,12 @@ uniform sampler2D u_DepthMap;
 
 const vec2 pixelScale = r_FBufScale * r_NPOTScale;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
   vec2 st = gl_FragCoord.st * 16.0 * pixelScale;
@@ -49,5 +55,5 @@ void	main()
     accum.zw *= 1.0 / count;
   }
 
-  gl_FragColor = accum;
+  outputColor = accum;
 }

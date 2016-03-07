@@ -28,6 +28,12 @@ uniform float		u_PortalRange;
 varying vec3		var_Position;
 varying vec4		var_Color;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 	// calculate the screen texcoord in the 0.0 to 1.0 range
@@ -44,5 +50,5 @@ void	main()
 	len /= u_PortalRange;
 	color.rgb *= 1.0 - clamp(len, 0.0, 1.0);
 
-	gl_FragColor = color;
+	outputColor = color;
 }

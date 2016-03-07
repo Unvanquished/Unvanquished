@@ -29,6 +29,12 @@ uniform float     u_InverseGamma;
 
 varying vec2		var_Tex;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 	// calculate the screen texcoord in the 0.0 to 1.0 range
@@ -51,5 +57,5 @@ void	main()
 
 	color.xyz = pow(color.xyz, vec3(u_InverseGamma));
 
-	gl_FragColor = color;
+	outputColor = color;
 }

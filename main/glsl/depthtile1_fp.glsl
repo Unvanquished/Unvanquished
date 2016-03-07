@@ -31,6 +31,12 @@ uniform vec3 u_zFar;
 
 const vec2 pixelScale = r_FBufScale * r_NPOTScale;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 vec4 depthToZ(in vec4 depth) {
   return unprojectionParams.x / ( unprojectionParams.y * depth - unprojectionParams.z );
 }
@@ -108,9 +114,9 @@ void	main()
     float variance = dot( depth[0], depth[0] ) + dot( depth[1], depth[1] ) +
       dot( depth[2], depth[2] ) + dot( depth[3], depth[3] );
     variance *= samples;
-    gl_FragColor = vec4( maxDepth, minDepth, avgDepth, sqrt( variance ) );
+    outputColor = vec4( maxDepth, minDepth, avgDepth, sqrt( variance ) );
   } else {
     // found just sky pixels
-    gl_FragColor = vec4( 99999.0, 99999.0, 99999.0, 0.0 );
+    outputColor = vec4( 99999.0, 99999.0, 99999.0, 0.0 );
   }
 }

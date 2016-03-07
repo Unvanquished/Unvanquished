@@ -35,6 +35,12 @@ uniform sampler2D	u_ShadowMap;
 
 varying vec2		var_TexCoord;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 #if defined(ESM)
@@ -43,7 +49,7 @@ void	main()
 
 	float shadowDistance = shadowMoments;
 
-	gl_FragColor = vec4(shadowDistance, 0.0, 0.0, 1.0);
+	outputColor = vec4(shadowDistance, 0.0, 0.0, 1.0);
 
 #elif defined(VSM)
 	vec2 shadowMoments = texture2D(u_ShadowMap, var_TexCoord).SWIZ2;
@@ -51,7 +57,7 @@ void	main()
 	float shadowDistance = shadowMoments.r;
 	float shadowDistanceSquared = shadowMoments.g;
 
-	gl_FragColor = vec4(shadowDistance, 0.0, 0.0, 1.0);
+	outputColor = vec4(shadowDistance, 0.0, 0.0, 1.0);
 
 #elif defined(EVSM)
 
@@ -63,7 +69,7 @@ void	main()
 	float shadowDistance = log(shadowMoments.b);
 #endif
 
-	gl_FragColor = vec4(shadowDistance, 0.0, 0.0, 1.0);
+	outputColor = vec4(shadowDistance, 0.0, 0.0, 1.0);
 #else
 	discard;
 #endif

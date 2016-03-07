@@ -29,6 +29,12 @@ uniform float		u_AlphaThreshold;
 varying vec2		var_TexNormal;
 varying float		var_Deform;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 	vec4 color0, color1;
@@ -49,5 +55,5 @@ void	main()
 
 	color0 = texture2D(u_CurrentMap, st);
 
-	gl_FragColor = color0;
+	outputColor = color0;
 }
