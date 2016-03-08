@@ -2796,7 +2796,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 //
 	extern cvar_t *r_glMajorVersion; // override GL version autodetect (for testing)
 	extern cvar_t *r_glMinorVersion;
-	extern cvar_t *r_glCoreProfile;
+	extern cvar_t *r_glProfile;
 	extern cvar_t *r_glDebugProfile;
 	extern cvar_t *r_glDebugMode;
 	extern cvar_t *r_glAllowSoftware;
