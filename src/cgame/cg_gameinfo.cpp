@@ -41,11 +41,11 @@ CG_ParseInfos
 int CG_ParseInfos( const char *buf, int max, char *infos[] )
 {
 	char *token;
-	int  count;
+	int  count = 0;
 	char key[ MAX_TOKEN_CHARS ];
 	char info[ MAX_INFO_STRING ];
 
-	count = 0;
+	auto infoPostfixLen = strlen( "\\num\\" ) + strlen( va( "%d", MAX_ARENAS ) );
 
 	while ( 1 )
 	{
@@ -98,7 +98,7 @@ int CG_ParseInfos( const char *buf, int max, char *infos[] )
 		}
 
 		//NOTE: extra space for arena number
-		infos[ count ] = (char*) BG_Alloc( strlen( info ) + strlen( "\\num\\" ) + strlen( va( "%d", MAX_ARENAS ) ) + 1 );
+		infos[ count ] = (char*) BG_Alloc( strlen( info ) + infoPostfixLen + 1 );
 
 		if ( infos[ count ] )
 		{

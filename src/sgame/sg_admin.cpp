@@ -1797,7 +1797,7 @@ bool G_admin_readconfig( gentity_t *ent )
 	int               len;
 	char              *cnf1, *cnf2;
 	char              *t;
-	bool          level_open, admin_open, ban_open, command_open;
+	bool              level_open, admin_open, ban_open, command_open;
 	int               i;
 	char              ip[ 44 ];
 

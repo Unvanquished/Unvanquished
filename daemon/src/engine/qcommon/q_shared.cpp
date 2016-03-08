@@ -180,7 +180,9 @@ Com_CharIsOneOfCharset
 */
 static bool Com_CharIsOneOfCharset( char c, const char *set )
 {
-	for (unsigned i = 0; i < strlen( set ); i++ )
+	std::size_t len = strlen( set );
+
+	for ( std::size_t i = 0; i < len; i++ )
 	{
 		if ( set[ i ] == c )
 		{
@@ -1226,8 +1228,9 @@ int Com_HexStrToInt( const char *str )
 	if ( str[ 0 ] == '0' && str[ 1 ] == 'x' )
 	{
 		int n = 0;
+		std::size_t len = strlen( str );
 
-		for (unsigned i = 2; i < strlen( str ); i++ )
+		for ( std::size_t i = 2; i < len; i++ )
 		{
 			char digit;
 
