@@ -2538,6 +2538,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		bool          vertexes2D; // shader needs to be finished
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 		int               currentMainFBO;
+		GLuint            currentVAO;
 	};
 
 	struct visTest_t

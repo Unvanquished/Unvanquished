@@ -312,6 +312,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				return false;
 			}
 
+			if( glConfig2.glCoreProfile ) {
+				glGenVertexArrays( 1, &backEnd.currentVAO );
+				glBindVertexArray( backEnd.currentVAO );
+			}
+
 			glState.tileStep[ 0 ] = TILE_SIZE * ( 1.0f / glConfig.vidWidth );
 			glState.tileStep[ 1 ] = TILE_SIZE * ( 1.0f / glConfig.vidHeight );
 
@@ -1536,6 +1541,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
+			if( glConfig2.glCoreProfile ) {
+				glBindVertexArray( 0 );
+				glDeleteVertexArrays( 1, &backEnd.currentVAO );
+			}
+
 			GLimp_Shutdown();
 			ri.Tag_Free();
 		}
