@@ -36,7 +36,7 @@ namespace Log {
     :filterLevel("logs.logLevel." + name, "Log::Level - logs from '" + name + "' below the level specified are filtered", 0, defaultLevel), prefix(prefix) {
     }
 
-    std::string Logger::Prefix(std::string message) {
+    std::string Logger::Prefix(std::string message) const {
         if (prefix.empty()) {
             return message;
         } else {
