@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 uniform sampler2D u_DepthMap;
 
-const vec2 pixelScale = r_FBufScale * r_NPOTScale;
+const vec2 pixelScale = r_FBufScale;
 
 #if __VERSION__ > 120
 out vec4 outputColor;

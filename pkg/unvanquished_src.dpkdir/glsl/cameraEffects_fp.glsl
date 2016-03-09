@@ -38,10 +38,7 @@ out vec4 outputColor;
 void	main()
 {
 	// calculate the screen texcoord in the 0.0 to 1.0 range
-	vec2 stClamped = gl_FragCoord.st * r_FBufScale;
-
-	// scale by the screen non-power-of-two-adjust
-	vec2 st = stClamped * r_NPOTScale;
+	vec2 st = gl_FragCoord.st * r_FBufScale;
 
 	vec4 original = clamp(texture2D(u_CurrentMap, st), 0.0, 1.0);
 

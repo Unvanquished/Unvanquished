@@ -42,7 +42,7 @@ vec4 f(vec4 color) {
 
 void	main()
 {
-	vec2 scale = r_FBufScale * r_NPOTScale;
+	vec2 scale = r_FBufScale;
 	vec2 st = gl_FragCoord.st;
 
 	// calculate the screen texcoord in the 0.0 to 1.0 range
@@ -50,9 +50,6 @@ void	main()
 
 	// multiply with 4 because the FBO is only 1/4th of the screen resolution
 	st *= vec2(4.0, 4.0);
-
-	// scale by the screen non-power-of-two-adjust
-	st *= r_NPOTScale;
 
 	// perform a box filter for the downsample
 	vec4 color = f(texture2D(u_ColorMap, st + vec2(-1.0, -1.0) * scale));

@@ -50,9 +50,6 @@ void	main()
 	st += N.xy * var_Deform;
 	st = clamp(st, 0.0, 1.0);
 
-	// scale by the screen non-power-of-two-adjust
-	st *= r_NPOTScale;
-
 	color0 = texture2D(u_CurrentMap, st);
 
 	outputColor = color0;
