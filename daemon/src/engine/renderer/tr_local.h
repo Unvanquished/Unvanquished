@@ -3312,7 +3312,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		i16vec4_t texCoords;
 	};
 
-#ifdef GLEW_ARB_sync
+#ifdef GL_ARB_sync
 	struct glRingbuffer_t {
 		// the BO is logically split into DYN_BUFFER_SEGMENTS
 		// segments, the active segment is the one the CPU may write
@@ -3375,7 +3375,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		shaderVertex_t *vertsBuffer;
 		glIndex_t      *indexesBuffer;
 
-#ifdef GLEW_ARB_sync
+#ifdef GL_ARB_sync
 		glRingbuffer_t  vertexRB;
 		glRingbuffer_t  indexRB;
 #endif

@@ -438,7 +438,7 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 
 }
 
-#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
+#if defined( GL_ARB_buffer_storage ) && defined( GL_ARB_sync )
 /*
 ============
 R_InitRingbuffer
@@ -541,7 +541,7 @@ VBO_t *R_CreateDynamicVBO( const char *name, int numVertexes, uint32_t stateBits
 
 	R_BindVBO( vbo );
 
-#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
+#if defined( GL_ARB_buffer_storage ) && defined( GL_ARB_sync )
 	if( glConfig2.bufferStorageAvailable &&
 	    glConfig2.syncAvailable ) {
 		R_InitRingbuffer( GL_ARRAY_BUFFER, sizeof( shaderVertex_t ),
@@ -594,7 +594,7 @@ VBO_t *R_CreateStaticVBO( const char *name, vboData_t data, vboLayout_t layout )
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
 
-#ifdef GLEW_ARB_buffer_storage
+#ifdef GL_ARB_buffer_storage
 	if( glConfig2.bufferStorageAvailable ) {
 		outData = (byte *)ri.Hunk_AllocateTempMemory( vbo->vertexesSize );
 		R_CopyVertexData( vbo, outData, data );
@@ -657,7 +657,7 @@ VBO_t *R_CreateStaticVBO2( const char *name, int numVertexes, shaderVertex_t *ve
 	glGenBuffers( 1, &vbo->vertexesVBO );
 	R_BindVBO( vbo );
 
-#ifdef GLEW_ARB_buffer_storage
+#ifdef GL_ARB_buffer_storage
 	if( glConfig2.bufferStorageAvailable ) {
 		glBufferStorage( GL_ARRAY_BUFFER, vbo->vertexesSize,
 				 verts, 0 );
@@ -703,7 +703,7 @@ IBO_t *R_CreateDynamicIBO( const char *name, int numIndexes )
 	glGenBuffers( 1, &ibo->indexesVBO );
 
 	R_BindIBO( ibo );
-#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
+#if defined( GL_ARB_buffer_storage ) && defined( GL_ARB_sync )
 	if( glConfig2.bufferStorageAvailable &&
 	    glConfig2.syncAvailable ) {
 		R_InitRingbuffer( GL_ELEMENT_ARRAY_BUFFER, sizeof( glIndex_t ),
@@ -754,7 +754,7 @@ IBO_t *R_CreateStaticIBO( const char *name, glIndex_t *indexes, int numIndexes )
 
 	R_BindIBO( ibo );
 
-#ifdef GLEW_ARB_buffer_storage
+#ifdef GL_ARB_buffer_storage
 	if( glConfig2.bufferStorageAvailable ) {
 		glBufferStorage( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize, indexes, 0 );
 	} else
@@ -796,7 +796,7 @@ IBO_t *R_CreateStaticIBO2( const char *name, int numTriangles, glIndex_t *indexe
 	glGenBuffers( 1, &ibo->indexesVBO );
 	R_BindIBO( ibo );
 
-#ifdef GLEW_ARB_buffer_storage
+#ifdef GL_ARB_buffer_storage
 	if( glConfig2.bufferStorageAvailable ) {
 		glBufferStorage( GL_ELEMENT_ARRAY_BUFFER, ibo->indexesSize,
 				 indexes, 0 );
@@ -1049,7 +1049,7 @@ void R_ShutdownVBOs()
 	if( !glConfig2.mapBufferRangeAvailable ) {
 		// nothing
 	}
-#if defined( GLEW_ARB_buffer_storage ) && defined( GLEW_ARB_sync )
+#if defined( GL_ARB_buffer_storage ) && defined( GL_ARB_sync )
 	else if( glConfig2.bufferStorageAvailable &&
 		 glConfig2.syncAvailable ) {
 		R_BindVBO( tess.vbo );
@@ -1129,7 +1129,7 @@ void Tess_MapVBOs( bool forceCPU ) {
 	if( tess.verts == nullptr ) {
 		R_BindVBO( tess.vbo );
 
-#if defined( GLEW_ARB_buffer_storage ) && defined( GL_ARB_sync )
+#if defined( GL_ARB_buffer_storage ) && defined( GL_ARB_sync )
 		if( glConfig2.bufferStorageAvailable &&
 		    glConfig2.syncAvailable ) {
 			GLsizei segmentEnd = (tess.vertexRB.activeSegment + 1) * tess.vertexRB.segmentElements;
@@ -1156,7 +1156,7 @@ void Tess_MapVBOs( bool forceCPU ) {
 	if( tess.indexes == nullptr ) {
 		R_BindIBO( tess.ibo );
 
-#if defined( GLEW_ARB_buffer_storage ) && defined( GL_ARB_sync )
+#if defined( GL_ARB_buffer_storage ) && defined( GL_ARB_sync )
 		if( glConfig2.bufferStorageAvailable &&
 		    glConfig2.syncAvailable ) {
 			GLsizei segmentEnd = (tess.indexRB.activeSegment + 1) * tess.indexRB.segmentElements;

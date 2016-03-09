@@ -1105,7 +1105,7 @@ static void GLimp_InitExtensions()
 		glConfig2.drawBuffersAvailable = true;
 	}
 
-#ifdef GLEW_ARB_get_program_binary
+#ifdef GL_ARB_get_program_binary
 	if( GLEW_ARB_get_program_binary )
 	{
 		int formats = 0;
@@ -1130,7 +1130,7 @@ static void GLimp_InitExtensions()
 		glConfig2.getProgramBinaryAvailable = false;
 	}
 
-#ifdef GLEW_ARB_buffer_storage
+#ifdef GL_ARB_buffer_storage
 	if ( GLEW_ARB_buffer_storage )
 	{
 		if ( r_arb_buffer_storage->integer )

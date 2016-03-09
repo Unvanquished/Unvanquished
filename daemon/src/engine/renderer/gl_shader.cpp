@@ -705,7 +705,7 @@ void GLShaderManager::InitShader( GLShader *shader )
 
 bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 {
-#ifdef GLEW_ARB_get_program_binary
+#ifdef GL_ARB_get_program_binary
 	GLint          success;
 	const byte    *binaryptr;
 	GLShaderHeader shaderHeader;
@@ -779,7 +779,7 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 }
 void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 {
-#ifdef GLEW_ARB_get_program_binary
+#ifdef GL_ARB_get_program_binary
 	GLint                 binaryLength;
 	GLuint                binarySize = 0;
 	byte                  *binary;
@@ -1008,7 +1008,7 @@ void GLShaderManager::LinkProgram( GLuint program ) const
 {
 	GLint linked;
 
-#ifdef GLEW_ARB_get_program_binary
+#ifdef GL_ARB_get_program_binary
 	// Apparently, this is necessary to get the binary program via glGetProgramBinary
 	if( glConfig2.getProgramBinaryAvailable )
 	{
