@@ -1699,6 +1699,10 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int lightmapNum, i
 	drawSurf->setSort( shader->sortedIndex, lightmapNum, entityNum, fogNum, index );
 
 	tr.refdef.numDrawSurfs++;
+
+	if ( shader->depthShader != nullptr ) {
+		R_AddDrawSurf( surface, shader->depthShader, 0, 0 );
+	}
 }
 
 /*
@@ -1708,9 +1712,9 @@ R_SortDrawSurfs
 */
 static void R_SortDrawSurfs()
 {
-	drawSurf_t *drawSurf;
-	shader_t   *shader;
-	int        i;
+	drawSurf_t   *drawSurf;
+	shader_t     *shader;
+	int          i, sort;
 
 	// it is possible for some views to not have any surfaces
 	if ( tr.viewParms.numDrawSurfs < 1 )
@@ -1747,22 +1751,34 @@ static void R_SortDrawSurfs()
 	               return a.sort < b.sort;
 	           } );
 
-	// check for any pass through drawing, which
-	// may cause another view to be rendered first
-	for ( i = 0, drawSurf = tr.viewParms.drawSurfs; i < tr.viewParms.numDrawSurfs; i++, drawSurf++ )
+	// compute the offsets of the first surface of each SS_* type
+	sort = Util::ordinal( shaderSort_t::SS_BAD ) - 1;
+	for ( i = 0; i < tr.viewParms.numDrawSurfs; i++ )
 	{
+		drawSurf = &tr.viewParms.drawSurfs[ i ];
 		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
-
-		if ( shader->sort > Util::ordinal(shaderSort_t::SS_PORTAL) )
-		{
-			break;
-		}
 
 		// no shader should ever have this sort type
 		if ( shader->sort == Util::ordinal(shaderSort_t::SS_BAD) )
 		{
 			ri.Error(errorParm_t::ERR_DROP, "Shader '%s'with sort == SS_BAD", shader->name );
 		}
+
+		while ( sort < Util::ordinal( shaderSort_t::SS_NUM_SORTS ) - 1 && shader->sort > sort ) {
+			tr.viewParms.firstDrawSurf[ ++sort ] = i;
+		}
+	}
+	while ( sort < Util::ordinal( shaderSort_t::SS_NUM_SORTS ) ) {
+		tr.viewParms.firstDrawSurf[ ++sort ] = tr.viewParms.numDrawSurfs;
+	}
+
+	// check for any pass through drawing, which
+	// may cause another view to be rendered first
+	for ( i = tr.viewParms.firstDrawSurf[ Util::ordinal(shaderSort_t::SS_PORTAL) ];
+	      i < tr.viewParms.firstDrawSurf[ Util::ordinal(shaderSort_t::SS_PORTAL) + 1 ]; i++ )
+	{
+		drawSurf = &tr.viewParms.drawSurfs[ i ];
+		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
 
 		// if the mirror was completely clipped away, we may need to check another surface
 		if ( R_MirrorViewBySurface( drawSurf ) )
@@ -2026,7 +2042,7 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	VectorScale( up, 2.0f * radius, light->l.projUp );
 	VectorCopy( vec3_origin, light->l.projStart );
 	VectorCopy( vec3_origin, light->l.projEnd );
-	VectorScale( forward, light->l.radius[0], light->l.projTarget );
+	VectorScale( forward, light->l.radius, light->l.projTarget );
 }
 
 /*
@@ -2041,22 +2057,31 @@ void R_AddLightInteractions()
 	bspNode_t    *leaf;
 	link_t       *l;
 
+	tr.refdef.numShaderLights = 0;
 	for ( i = 0; i < tr.refdef.numLights; i++ )
 	{
 		light = tr.currentLight = &tr.refdef.lights[ i ];
 
-		if ( light->isStatic )
-		{
-			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
+		if ( light->isStatic ) {
+			if ( r_staticLight->integer != 1 || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
+				if( r_staticLight->integer == 2 ) {
+					tr.refdef.numShaderLights++;
+				}
 				light->cull = cullResult_t::CULL_OUT;
 				continue;
 			}
-		}
-		else
-		{
-			if ( !r_dynamicLight->integer )
+		} else if ( light->l.inverseShadows ) {
+			if( !r_dynamicLight->integer ) {
+				light->cull = CULL_OUT;
+				continue;
+			}
+		} else {
+			if ( r_dynamicLight->integer != 1 )
 			{
+				if( r_dynamicLight->integer == 2 ) {
+					tr.refdef.numShaderLights++;
+				}
 				light->cull = cullResult_t::CULL_OUT;
 				continue;
 			}
@@ -2236,14 +2261,14 @@ void R_AddLightBoundsToVisBounds()
 
 		if ( light->isStatic )
 		{
-			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
+			if ( r_staticLight->integer != 1 || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
 				continue;
 			}
 		}
 		else
 		{
-			if ( !r_dynamicLight->integer )
+			if ( r_dynamicLight->integer != 1 )
 			{
 				continue;
 			}
@@ -2479,9 +2504,9 @@ void R_RenderView( viewParms_t *parms )
 	tr.viewParms.interactions = tr.refdef.interactions + firstInteraction;
 	tr.viewParms.numInteractions = tr.refdef.numInteractions - firstInteraction;
 
-	R_SortDrawSurfs();
+	R_AddSetupLightsCmd();
 
-	R_AddRunVisTestsCmd();
+	R_SortDrawSurfs();
 
 	// draw main system development information (surface outlines, etc)
 	R_DebugGraphics();

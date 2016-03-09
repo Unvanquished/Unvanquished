@@ -888,7 +888,7 @@ void CG_Rocket_BuildDemoList( const char* )
 	char  demolist[ 4096 ];
 	char demoExt[ 32 ];
 	char  *demoname;
-	int   i, len;
+	int   i;
 
 	Com_sprintf( demoExt, sizeof( demoExt ), "dm_%d", ( int ) trap_Cvar_VariableIntegerValue( "protocol" ) );
 
@@ -904,14 +904,15 @@ void CG_Rocket_BuildDemoList( const char* )
 		}
 
 		demoname = demolist;
+		auto demoExtLen = strlen( demoExt );
 
 		for ( i = 0; i < rocketInfo.data.demoCount; i++ )
 		{
-			len = strlen( demoname );
+			auto len = strlen( demoname );
 
-			if ( !Q_stricmp( demoname +  len - strlen( demoExt ), demoExt ) )
+			if ( !Q_stricmp( demoname + len - demoExtLen, demoExt ) )
 			{
-				demoname[ len - strlen( demoExt ) ] = '\0';
+				demoname[ len - demoExtLen ] = '\0';
 			}
 
 			rocketInfo.data.demoList[ i ] = BG_strdup( demoname );

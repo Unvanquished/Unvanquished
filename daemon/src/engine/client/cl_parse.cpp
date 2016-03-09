@@ -472,8 +472,7 @@ void CL_ParseGamestate( msg_t *msg )
 				Com_Error( errorParm_t::ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 			}
 
-            const char* str = MSG_ReadBigString( msg );
-            std::string s = str;
+			const char* str = MSG_ReadBigString( msg );
 			cl.gameState[i] = str;
 		}
 		else if ( cmd == svc_baseline )

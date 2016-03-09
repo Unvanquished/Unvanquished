@@ -4167,6 +4167,7 @@ void CL_LocalServers_f()
 	// by the server.  We don't care about that here, but master servers
 	// can use that to prevent spoofed server responses from invalid IP addresses
 	message = "\377\377\377\377getinfo xxx";
+	int messageLen = strlen(message);
 
 	// send each message twice in case one is dropped
 	for ( i = 0; i < 2; i++ )
@@ -4179,10 +4180,10 @@ void CL_LocalServers_f()
 			to.port = BigShort( ( short )( PORT_SERVER + j ) );
 
 			to.type = netadrtype_t::NA_BROADCAST;
-			NET_SendPacket( netsrc_t::NS_CLIENT, strlen( message ), message, to );
+			NET_SendPacket( netsrc_t::NS_CLIENT, messageLen, message, to );
 
 			to.type = netadrtype_t::NA_MULTICAST6;
-			NET_SendPacket( netsrc_t::NS_CLIENT, strlen( message ), message, to );
+			NET_SendPacket( netsrc_t::NS_CLIENT, messageLen, message, to );
 		}
 	}
 }

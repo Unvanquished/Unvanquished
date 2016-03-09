@@ -796,10 +796,7 @@ static void RB_SetGL2D()
 	GLimp_LogComment( "--- RB_SetGL2D ---\n" );
 
 	// disable offscreen rendering
-	if ( glConfig2.framebufferObjectAvailable )
-	{
-		R_BindNullFBO();
-	}
+	R_BindNullFBO();
 
 	backEnd.projection2D = true;
 
@@ -831,7 +828,8 @@ enum renderDrawSurfaces_e
   DRAWSURFACES_ALL           = DRAWSURFACES_WORLD | DRAWSURFACES_ALL_ENTITIES
 };
 
-static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFilter )
+static void RB_RenderDrawSurfaces( shaderSort_t fromSort, shaderSort_t toSort,
+				   renderDrawSurfaces_e drawSurfFilter )
 {
 	trRefEntity_t *entity, *oldEntity;
 	shader_t      *shader, *oldShader;
@@ -840,6 +838,7 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	bool      depthRange, oldDepthRange;
 	int           i;
 	drawSurf_t    *drawSurf;
+	int           lastSurf;
 
 	GLimp_LogComment( "--- RB_RenderDrawSurfaces ---\n" );
 
@@ -852,8 +851,11 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 	depthRange = false;
 	backEnd.currentLight = nullptr;
 
-	for ( i = 0, drawSurf = backEnd.viewParms.drawSurfs; i < backEnd.viewParms.numDrawSurfs; i++, drawSurf++ )
+	lastSurf = backEnd.viewParms.firstDrawSurf[ Util::ordinal(toSort) + 1 ];
+	for ( i = backEnd.viewParms.firstDrawSurf[ Util::ordinal(fromSort) ]; i < lastSurf; i++ )
 	{
+		drawSurf = &backEnd.viewParms.drawSurfs[ i ];
+
 		// update locals
 		entity = drawSurf->entity;
 		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
@@ -869,23 +871,6 @@ static void RB_RenderDrawSurfaces( bool opaque, renderDrawSurfaces_e drawSurfFil
 		} else {
 			if( !( drawSurfFilter & DRAWSURFACES_NEAR_ENTITIES ) )
 				continue;
-		}
-
-		if ( opaque )
-		{
-			// skip all translucent surfaces that don't matter for this pass
-			if ( shader->sort > Util::ordinal(shaderSort_t::SS_OPAQUE) )
-			{
-				break;
-			}
-		}
-		else
-		{
-			// skip all opaque surfaces that don't matter for this pass
-			if ( shader->sort <= Util::ordinal(shaderSort_t::SS_OPAQUE) )
-			{
-				continue;
-			}
 		}
 
 		if ( entity == oldEntity && shader == oldShader && lightmapNum == oldLightmapNum && fogNum == oldFogNum )
@@ -1405,7 +1390,6 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, shadowMapResolutions[ light->shadowLOD ], shadowMapResolutions[ light->shadowLOD ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = false;
 
 				switch ( cubeSide )
 				{
@@ -1526,7 +1510,6 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, shadowMapResolutions[ light->shadowLOD ], shadowMapResolutions[ light->shadowLOD ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = false;
 
 				GL_LoadProjectionMatrix( light->projectionMatrix );
 				break;
@@ -1579,7 +1562,6 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index,
 				GL_Scissor( 0, 0, sunShadowMapResolutions[ splitFrustumIndex ], sunShadowMapResolutions[ splitFrustumIndex ] );
 
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				backEnd.depthRenderImageValid = false;
 
 				VectorCopy( tr.sunDirection, lightDirection );
 
@@ -1797,7 +1779,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 		GLimp_LogComment( va( "----- First Light Interaction: %i -----\n", (int)( light->firstInteraction - backEnd.viewParms.interactions ) ) );
 	}
 
-	R_BindNullFBO();
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 	// set the window clipping
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
@@ -1817,8 +1799,8 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 		case refLightType_t::RL_OMNI:
 			{
 				MatrixAffineInverse( light->transformMatrix, light->viewMatrix );
-				MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius[ 0 ], 1.0 / light->l.radius[ 1 ],
-							        1.0 / light->l.radius[ 2 ] );
+				MatrixSetupScale( light->projectionMatrix, 1.0 / light->l.radius, 1.0 / light->l.radius,
+							        1.0 / light->l.radius );
 				break;
 			}
 
@@ -2080,7 +2062,7 @@ static void RB_RenderInteractionsShadowMapped()
 	                               0.5,     0.5, 0.5, 1.0
 	                      };
 
-	if ( !glConfig2.framebufferObjectAvailable || !glConfig2.textureFloatAvailable )
+	if ( !glConfig2.textureFloatAvailable )
 	{
 		RB_RenderInteractions();
 		return;
@@ -2644,6 +2626,222 @@ static void RB_RenderInteractionsShadowMapped()
 	}
 }
 
+/*
+=============
+RB_RunVisTests
+=============
+*/
+void RB_RunVisTests( )
+{
+	int i;
+
+	// finish any 2D drawing if needed
+	if ( tess.numIndexes )
+	{
+		Tess_End();
+	}
+
+	for ( i = 0; i < backEnd.refdef.numVisTests; i++ )
+	{
+		vec3_t           diff;
+		vec3_t           center, left, up;
+		visTestResult_t  *test = &backEnd.refdef.visTests[ i ];
+		visTestQueries_t *testState = &backEnd.visTestQueries[ test->visTestHandle - 1 ];
+
+		if ( testState->running && !test->discardExisting )
+		{
+			GLint  available;
+			GLuint result, resultRef;
+
+			glGetQueryObjectiv( testState->hQuery,
+					    GL_QUERY_RESULT_AVAILABLE,
+					    &available );
+			if( !available )
+			{
+				continue;
+			}
+
+			glGetQueryObjectiv( testState->hQueryRef,
+					    GL_QUERY_RESULT_AVAILABLE,
+					    &available );
+			if ( !available )
+			{
+				continue;
+			}
+
+			glGetQueryObjectuiv( testState->hQueryRef, GL_QUERY_RESULT,
+					     &resultRef );
+			glGetQueryObjectuiv( testState->hQuery, GL_QUERY_RESULT,
+					     &result );
+
+			if ( resultRef > 0 )
+			{
+				test->lastResult = (float)result / (float)resultRef;
+			}
+			else
+			{
+				test->lastResult = 0.0f;
+			}
+
+			testState->running = false;
+		}
+
+		Tess_MapVBOs( false );
+		VectorSubtract( backEnd.orientation.viewOrigin,
+				test->position, diff );
+		VectorNormalize( diff );
+		VectorMA( test->position, test->depthAdjust, diff, center );
+
+		VectorScale( backEnd.viewParms.orientation.axis[ 1 ],
+			     test->area, left );
+		VectorScale( backEnd.viewParms.orientation.axis[ 2 ],
+			     test->area, up );
+
+		tess.verts[ 0 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
+		tess.verts[ 0 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
+		tess.verts[ 0 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
+		tess.verts[ 1 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
+		tess.verts[ 1 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
+		tess.verts[ 1 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
+		tess.verts[ 2 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
+		tess.verts[ 2 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
+		tess.verts[ 2 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
+		tess.verts[ 3 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
+		tess.verts[ 3 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
+		tess.verts[ 3 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
+		tess.numVertexes = 4;
+
+		tess.indexes[ 0 ] = 0;
+		tess.indexes[ 1 ] = 1;
+		tess.indexes[ 2 ] = 2;
+		tess.indexes[ 3 ] = 0;
+		tess.indexes[ 4 ] = 2;
+		tess.indexes[ 5 ] = 3;
+		tess.numIndexes = 6;
+
+		Tess_UpdateVBOs( );
+		GL_VertexAttribsState( ATTR_POSITION );
+
+		gl_genericShader->DisableVertexSkinning();
+		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableTCGenEnvironment();
+		gl_genericShader->DisableTCGenLightmap();
+
+		gl_genericShader->BindProgram( 0 );
+
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		gl_genericShader->SetUniform_Color( Color::White );
+
+		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CONST, alphaGen_t::AGEN_CONST );
+
+		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
+		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+
+		// bind u_ColorMap
+		GL_BindToTMU( 0, tr.whiteImage );
+		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
+
+		GL_State( GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
+		glBeginQuery( GL_SAMPLES_PASSED, testState->hQueryRef );
+		Tess_DrawElements();
+		glEndQuery( GL_SAMPLES_PASSED );
+
+		GL_State( GLS_COLORMASK_BITS );
+		glBeginQuery( GL_SAMPLES_PASSED, testState->hQuery );
+		Tess_DrawElements();
+		glEndQuery( GL_SAMPLES_PASSED );
+
+		tess.numIndexes = 0;
+		tess.numVertexes = 0;
+		tess.multiDrawPrimitives = 0;
+		testState->running = true;
+	}
+}
+
+void RB_RenderPostDepth()
+{
+	static vec4_t quadVerts[4] = {
+		{ -1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f,  1.0f, 0.0f, 1.0f },
+		{ -1.0f,  1.0f, 0.0f, 1.0f }
+	};
+	vec3_t zParams;
+	int w, h;
+
+	GLimp_LogComment( "--- RB_RenderPostDepth ---\n" );
+
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
+	{
+		return;
+	}
+
+	// 1st step
+	GL_State( GLS_DEPTHTEST_DISABLE );
+	GL_Cull( CT_TWO_SIDED );
+
+	R_BindFBO( tr.depthtile1FBO );
+	w = (glConfig.vidWidth + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	h = (glConfig.vidHeight + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	GL_Viewport( 0, 0, w, h );
+	gl_depthtile1Shader->BindProgram( 0 );
+
+	zParams[ 0 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_x * 0.5f) ) / glConfig.vidWidth;
+	zParams[ 1 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_y * 0.5f) ) / glConfig.vidHeight;
+	zParams[ 2 ] = backEnd.viewParms.zFar;
+
+	gl_depthtile1Shader->SetUniform_zFar( zParams );
+	GL_BindToTMU( 0, tr.currentDepthImage );
+
+	Tess_InstantQuad( quadVerts );
+
+	// 2nd step
+	R_BindFBO( tr.depthtile2FBO );
+
+	w = (glConfig.vidWidth + TILE_SIZE - 1) >> TILE_SHIFT;
+	h = (glConfig.vidHeight + TILE_SIZE - 1) >> TILE_SHIFT;
+	GL_Viewport( 0, 0, w, h );
+	gl_depthtile2Shader->BindProgram( 0 );
+
+	GL_BindToTMU( 0, tr.depthtile1RenderImage );
+
+	Tess_InstantQuad( quadVerts );
+
+	// render lights
+	R_BindFBO( tr.lighttileFBO );
+	gl_lighttileShader->BindProgram( 0 );
+	gl_lighttileShader->SetUniform_ModelMatrix( backEnd.viewParms.world.modelViewMatrix );
+	gl_lighttileShader->SetUniform_numLights( backEnd.refdef.numLights );
+	gl_lighttileShader->SetUniformBlock_Lights( tr.dlightUBO );
+
+	GL_BindToTMU( 0, tr.depthtile2RenderImage );
+
+	R_BindVBO( tr.lighttileVBO );
+
+	for( int layer = 0; layer < MAX_REF_LIGHTS / 256; layer++ ) {
+		R_AttachFBOTexture3D( tr.lighttileRenderImage->texnum, 0, layer );
+		gl_lighttileShader->SetUniform_lightLayer( layer );
+
+		GL_Viewport( 0, 0, tr.lighttileRenderImage->width, tr.lighttileRenderImage->height );
+		tess.numIndexes = 0;
+		tess.numVertexes = tr.depthtile2RenderImage->width * tr.depthtile2RenderImage->height;
+
+		GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD );
+		glEnable( GL_POINT_SPRITE );
+		glEnable( GL_PROGRAM_POINT_SIZE );
+		Tess_DrawArrays( GL_POINTS );
+		glDisable( GL_PROGRAM_POINT_SIZE );
+		glDisable( GL_POINT_SPRITE );
+	}
+
+	// back to main image
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
+	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
+		     backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+
+	GL_CheckErrors();
+}
+
 void RB_RenderGlobalFog()
 {
 	vec3_t   local;
@@ -2712,14 +2910,7 @@ void RB_RenderGlobalFog()
 	GL_BindToTMU( 0, tr.fogImage );
 
 	// bind u_DepthMap
-	GL_SelectTexture( 1 );
-
-	// depth texture is not bound to a FBO
-	if( !backEnd.depthRenderImageValid ) {
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.depthRenderImage->uploadWidth, tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = true;
-	}
+	GL_BindToTMU( 1, tr.currentDepthImage );
 
 	// set 2D virtual screen size
 	GL_PushMatrix();
@@ -2748,7 +2939,7 @@ void RB_RenderBloom()
 
 	GLimp_LogComment( "--- RB_RenderBloom ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOBLOOM ) ) || !r_bloom->integer || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
+	if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOBLOOM ) ) || !r_bloom->integer || backEnd.viewParms.isPortal )
 	{
 		return;
 	}
@@ -2779,10 +2970,7 @@ void RB_RenderBloom()
 
 		gl_contrastShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-		GL_SelectTexture( 0 );
-		GL_Bind( tr.currentRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth,
-							 tr.currentRenderImage->uploadHeight );
+		GL_BindToTMU( 0, tr.currentRenderImage[ backEnd.currentMainFBO ] );
 
 		GL_PopMatrix(); // special 1/4th of the screen contrastRenderFBO ortho
 
@@ -2842,7 +3030,7 @@ void RB_RenderBloom()
 			}
 		}
 
-		R_BindNullFBO();
+		R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 		gl_screenShader->BindProgram( 0 );
 		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -2870,7 +3058,7 @@ void RB_RenderMotionBlur()
 
 	GLimp_LogComment( "--- RB_RenderMotionBlur ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal )
 	{
 		return;
 	}
@@ -2878,25 +3066,15 @@ void RB_RenderMotionBlur()
 	GL_State( GLS_DEPTHTEST_DISABLE );
 	GL_Cull( cullType_t::CT_TWO_SIDED );
 
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.currentRenderImage );
-	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-			     tr.currentRenderImage->uploadWidth,
-			     tr.currentRenderImage->uploadHeight );
-
-	if( !backEnd.depthRenderImageValid ) {
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-				     tr.depthRenderImage->uploadWidth,
-				     tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = true;
-	}
+	// Swap main FBOs
+	GL_BindToTMU( 0, tr.currentRenderImage[ backEnd.currentMainFBO ] );
+	backEnd.currentMainFBO = 1 - backEnd.currentMainFBO;
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 	gl_motionblurShader->BindProgram( 0 );
 	gl_motionblurShader->SetUniform_blurVec(tr.refdef.blurVec);
 
-	GL_BindToTMU( 0, tr.currentRenderImage );
-	GL_BindToTMU( 1, tr.depthRenderImage );
+	GL_BindToTMU( 1, tr.currentDepthImage );
 
 	// draw quad
 	Tess_InstantQuad( quadVerts );
@@ -2920,21 +3098,13 @@ void RB_RenderSSAO()
 		return;
 	}
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal )
 	{
 		return;
 	}
 
 	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO );
 	GL_Cull( cullType_t::CT_TWO_SIDED );
-
-	if( !backEnd.depthRenderImageValid ) {
-		GL_Bind( tr.depthRenderImage );
-		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-				     tr.depthRenderImage->uploadWidth,
-				     tr.depthRenderImage->uploadHeight );
-		backEnd.depthRenderImageValid = true;
-	}
 
 	if ( r_ssao->integer < 0 ) {
 		// clear the screen to show only SSAO
@@ -2950,7 +3120,7 @@ void RB_RenderSSAO()
 
 	gl_ssaoShader->SetUniform_zFar( zParams );
 
-	GL_BindToTMU( 0, tr.depthRenderImage );
+	GL_BindToTMU( 0, tr.currentDepthImage );
 
 	// draw quad
 	Tess_InstantQuad( quadVerts );
@@ -2983,20 +3153,13 @@ void RB_FXAA()
 	GL_State( GLS_DEPTHTEST_DISABLE );
 	GL_Cull( cullType_t::CT_TWO_SIDED );
 
-	// copy the framebuffer in a texture
-	// TODO: it is pretty inefficient
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.currentRenderImage );
-	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.currentRenderImage->uploadWidth,
-						 tr.currentRenderImage->uploadHeight );
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Swap main FBOs
+	GL_BindToTMU( 0, tr.currentRenderImage[ backEnd.currentMainFBO ] );
+	backEnd.currentMainFBO = 1 - backEnd.currentMainFBO;
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 	// set the shader parameters
 	gl_fxaaShader->BindProgram( 0 );
-
-	R_BindNullFBO();
 
 	Tess_InstantQuad( quadVerts );
 
@@ -3035,12 +3198,10 @@ void RB_CameraPostFX()
 
 	gl_cameraEffectsShader->SetUniform_InverseGamma( 1.0 / r_gamma->value );
 
-	// bind u_CurrentMap
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.occlusionRenderFBOImage );
-
-	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.occlusionRenderFBOImage->uploadWidth, tr.occlusionRenderFBOImage->uploadHeight );
-
+	// This shader is run last, so let it render to screen instead of
+	// tr.mainFBO
+	R_BindNullFBO();
+	GL_BindToTMU( 0, tr.currentRenderImage[ backEnd.currentMainFBO ] );
 	GL_BindToTMU( 3, tr.colorGradeImage );
 
 	// draw viewport
@@ -4421,10 +4582,7 @@ static void RB_RenderView()
 	}
 
 	// disable offscreen rendering
-	if ( glConfig2.framebufferObjectAvailable )
-	{
-		R_BindNullFBO();
-	}
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
 	// we will need to change the projection matrix before drawing
 	// 2D images again
@@ -4439,8 +4597,11 @@ static void RB_RenderView()
 	// clear relevant buffers
 	clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
+	if ( r_clear->integer && !backEnd.viewParms.isPortal ) {
+		clearBits |= GL_COLOR_BUFFER_BIT;
+	}
+
 	glClear( clearBits );
-	backEnd.depthRenderImageValid = false;
 
 	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
 	{
@@ -4463,22 +4624,26 @@ static void RB_RenderView()
 		startTime = ri.Milliseconds();
 	}
 
+	RB_RenderDrawSurfaces( shaderSort_t::SS_DEPTH, shaderSort_t::SS_DEPTH, DRAWSURFACES_ALL );
+	RB_RunVisTests();
+	RB_RenderPostDepth();
+
 	if( tr.refdef.blurVec[0] != 0.0f ||
 			tr.refdef.blurVec[1] != 0.0f ||
 			tr.refdef.blurVec[2] != 0.0f )
 	{
 		// draw everything that is not the gun
-		RB_RenderDrawSurfaces( true, DRAWSURFACES_ALL_FAR );
+		RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_FOG, shaderSort_t::SS_OPAQUE, DRAWSURFACES_ALL_FAR );
 
 		RB_RenderMotionBlur();
 
 		// draw the gun and other "near" stuff
-		RB_RenderDrawSurfaces( true, DRAWSURFACES_NEAR_ENTITIES );
+		RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_FOG, shaderSort_t::SS_OPAQUE, DRAWSURFACES_NEAR_ENTITIES );
 	}
 	else
 	{
 		// draw everything that is opaque
-		RB_RenderDrawSurfaces( true, DRAWSURFACES_ALL );
+		RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_FOG, shaderSort_t::SS_OPAQUE, DRAWSURFACES_ALL );
 	}
 
 	if ( r_ssao->integer && GLEW_ARB_texture_gather ) {
@@ -4507,7 +4672,7 @@ static void RB_RenderView()
 	RB_RenderGlobalFog();
 
 	// draw everything that is translucent
-	RB_RenderDrawSurfaces( false, DRAWSURFACES_ALL );
+	RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_NOFOG, shaderSort_t::SS_POST_PROCESS, DRAWSURFACES_ALL );
 
 	GL_CheckErrors();
 	// render bloom post process effect
@@ -5238,6 +5403,62 @@ const void     *RB_StretchPicGradient( const void *data )
 
 /*
 =============
+RB_SetupLights
+=============
+*/
+static const void *RB_SetupLights( const void *data )
+{
+	const setupLightsCommand_t *cmd;
+	int numLights;
+
+	GLimp_LogComment( "--- RB_SetupLights ---\n" );
+
+	cmd = ( const setupLightsCommand_t * ) data;
+
+	if( GLEW_ARB_uniform_buffer_object &&
+	    (numLights = cmd->refdef.numLights) > 0 ) {
+		shaderLight_t *buffer;
+
+		glBindBuffer( GL_UNIFORM_BUFFER, tr.dlightUBO );
+		buffer = (shaderLight_t *)glMapBufferRange( GL_UNIFORM_BUFFER,
+							    0, numLights * sizeof( shaderLight_t ),
+							    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT );
+
+		for( int i = 0, j = 0; i < numLights; i++, j++ ) {
+			trRefLight_t *light = &cmd->refdef.lights[j];
+
+			while( light->l.inverseShadows ) {
+				light = &cmd->refdef.lights[++j];
+			}
+
+			VectorCopy( light->l.origin, buffer[i].center );
+			buffer[i].radius = light->l.radius;
+			VectorScale( light->l.color, light->l.scale, buffer[i].color );
+			buffer[i].type = Util::ordinal( light->l.rlType );
+			switch( light->l.rlType ) {
+			case refLightType_t::RL_PROJ:
+				VectorCopy( light->l.projTarget,
+					    buffer[i].direction );
+				buffer[i].angle = cosf( atan2f( VectorLength( light->l.projUp), VectorLength( light->l.projTarget ) ) );
+				break;
+			case refLightType_t::RL_DIRECTIONAL:
+				VectorCopy( light->l.projTarget,
+					    buffer[i].direction );
+				break;
+			default:
+				break;
+			}
+		}
+
+		glUnmapBuffer( GL_UNIFORM_BUFFER );
+		glBindBuffer( GL_UNIFORM_BUFFER, 0 );
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
 RB_DrawView
 =============
 */
@@ -5265,147 +5486,6 @@ const void     *RB_DrawView( const void *data )
 
 /*
 =============
-RB_RunVisTests
-
-=============
-*/
-const void *RB_RunVisTests( const void *data )
-{
-	const runVisTestsCommand_t *cmd;
-	int i;
-
-	// finish any 2D drawing if needed
-	if ( tess.numIndexes )
-	{
-		Tess_End();
-	}
-
-	cmd = ( const runVisTestsCommand_t * ) data;
-
-	backEnd.refdef = cmd->refdef;
-	backEnd.viewParms = cmd->viewParms;
-
-	for ( i = 0; i < backEnd.refdef.numVisTests; i++ )
-	{
-		vec3_t           diff;
-		vec3_t           center, left, up;
-		visTestResult_t  *test = &backEnd.refdef.visTests[ i ];
-		visTestQueries_t *testState = &backEnd.visTestQueries[ test->visTestHandle - 1 ];
-
-		if ( testState->running && !test->discardExisting )
-		{
-			GLint  available;
-			GLuint result, resultRef;
-
-			glGetQueryObjectiv( testState->hQuery,
-					    GL_QUERY_RESULT_AVAILABLE,
-					    &available );
-			if( !available )
-			{
-				continue;
-			}
-
-			glGetQueryObjectiv( testState->hQueryRef,
-					    GL_QUERY_RESULT_AVAILABLE,
-					    &available );
-			if ( !available )
-			{
-				continue;
-			}
-
-			glGetQueryObjectuiv( testState->hQueryRef, GL_QUERY_RESULT,
-					     &resultRef );
-			glGetQueryObjectuiv( testState->hQuery, GL_QUERY_RESULT,
-					     &result );
-
-			if ( resultRef > 0 )
-			{
-				test->lastResult = (float)result / (float)resultRef;
-			}
-			else
-			{
-				test->lastResult = 0.0f;
-			}
-
-			testState->running = false;
-		}
-
-		Tess_MapVBOs( false );
-		VectorSubtract( backEnd.orientation.viewOrigin,
-				test->position, diff );
-		VectorNormalize( diff );
-		VectorMA( test->position, test->depthAdjust, diff, center );
-
-		VectorScale( backEnd.viewParms.orientation.axis[ 1 ],
-			     test->area, left );
-		VectorScale( backEnd.viewParms.orientation.axis[ 2 ],
-			     test->area, up );
-
-		tess.verts[ 0 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] + up[ 0 ];
-		tess.verts[ 0 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] + up[ 1 ];
-		tess.verts[ 0 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] + up[ 2 ];
-		tess.verts[ 1 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] + up[ 0 ];
-		tess.verts[ 1 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] + up[ 1 ];
-		tess.verts[ 1 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] + up[ 2 ];
-		tess.verts[ 2 ].xyz[ 0 ] = center[ 0 ] - left[ 0 ] - up[ 0 ];
-		tess.verts[ 2 ].xyz[ 1 ] = center[ 1 ] - left[ 1 ] - up[ 1 ];
-		tess.verts[ 2 ].xyz[ 2 ] = center[ 2 ] - left[ 2 ] - up[ 2 ];
-		tess.verts[ 3 ].xyz[ 0 ] = center[ 0 ] + left[ 0 ] - up[ 0 ];
-		tess.verts[ 3 ].xyz[ 1 ] = center[ 1 ] + left[ 1 ] - up[ 1 ];
-		tess.verts[ 3 ].xyz[ 2 ] = center[ 2 ] + left[ 2 ] - up[ 2 ];
-		tess.numVertexes = 4;
-
-		tess.indexes[ 0 ] = 0;
-		tess.indexes[ 1 ] = 1;
-		tess.indexes[ 2 ] = 2;
-		tess.indexes[ 3 ] = 0;
-		tess.indexes[ 4 ] = 2;
-		tess.indexes[ 5 ] = 3;
-		tess.numIndexes = 6;
-
-		Tess_UpdateVBOs( );
-		GL_VertexAttribsState( ATTR_POSITION );
-
-		gl_genericShader->DisableVertexSkinning();
-		gl_genericShader->DisableVertexAnimation();
-		gl_genericShader->DisableTCGenEnvironment();
-		gl_genericShader->DisableTCGenLightmap();
-
-		gl_genericShader->BindProgram( 0 );
-
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
-		gl_genericShader->SetUniform_Color( Color::White );
-
-		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CONST, alphaGen_t::AGEN_CONST );
-
-		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
-		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-		// bind u_ColorMap
-		GL_BindToTMU( 0, tr.whiteImage );
-		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
-
-		GL_State( GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
-		glBeginQuery( GL_SAMPLES_PASSED, testState->hQueryRef );
-		Tess_DrawElements();
-		glEndQuery( GL_SAMPLES_PASSED );
-
-		GL_State( GLS_COLORMASK_BITS );
-		glBeginQuery( GL_SAMPLES_PASSED, testState->hQuery );
-		Tess_DrawElements();
-		glEndQuery( GL_SAMPLES_PASSED );
-
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
-		tess.multiDrawPrimitives = 0;
-		testState->running = true;
-	}
-
-	return ( const void * )( cmd + 1 );
-}
-
-/*
-=============
 RB_DrawBuffer
 =============
 */
@@ -5418,15 +5498,6 @@ const void     *RB_DrawBuffer( const void *data )
 	cmd = ( const drawBufferCommand_t * ) data;
 
 	GL_DrawBuffer( cmd->buffer );
-
-	// clear screen for debugging
-	if ( r_clear->integer )
-	{
-//      GL_ClearColor(1, 0, 0.5, 1);
-		GL_ClearColor( 0, 0, 0, 1 );
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		backEnd.depthRenderImageValid = false;
-	}
 
 	glState.finishCalled = false;
 	return ( const void * )( cmd + 1 );
@@ -5662,12 +5733,12 @@ void RB_ExecuteRenderCommands( const void *data )
 				data = RB_StretchPicGradient( data );
 				break;
 
-			case Util::ordinal(renderCommand_t::RC_DRAW_VIEW):
-				data = RB_DrawView( data );
+			case Util::ordinal(renderCommand_t::RC_SETUP_LIGHTS):
+				data = RB_SetupLights( data );
 				break;
 
-			case Util::ordinal(renderCommand_t::RC_RUN_VISTESTS):
-				data = RB_RunVisTests( data );
+			case Util::ordinal(renderCommand_t::RC_DRAW_VIEW):
+				data = RB_DrawView( data );
 				break;
 
 			case Util::ordinal(renderCommand_t::RC_DRAW_BUFFER):

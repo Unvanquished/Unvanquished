@@ -253,6 +253,28 @@ static void R_SetAttributeLayoutsPosition( VBO_t *vbo )
 	vbo->vertexesSize = sizeof( vec3_t ) * vbo->vertexesNum;
 }
 
+static void R_SetAttributeLayoutsXYST( VBO_t *vbo )
+{
+	vbo->attribs[ ATTR_INDEX_POSITION ].numComponents = 2;
+	vbo->attribs[ ATTR_INDEX_POSITION ].componentType = GL_FLOAT;
+	vbo->attribs[ ATTR_INDEX_POSITION ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_POSITION ].ofs           = 0;
+	vbo->attribs[ ATTR_INDEX_POSITION ].realStride    = sizeof( vec4_t );
+	vbo->attribs[ ATTR_INDEX_POSITION ].stride        = sizeof( vec4_t );
+	vbo->attribs[ ATTR_INDEX_POSITION ].frameOffset   = 0;
+
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].numComponents = 2;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].componentType = GL_FLOAT;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].normalize     = GL_FALSE;
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].ofs           = sizeof( vec2_t );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].realStride    = sizeof( vec4_t );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].stride        = sizeof( vec4_t );
+	vbo->attribs[ ATTR_INDEX_TEXCOORD ].frameOffset   = 0;
+
+	// total size
+	vbo->vertexesSize = sizeof( vec4_t ) * vbo->vertexesNum;
+}
+
 static void R_SetVBOAttributeLayouts( VBO_t *vbo )
 {
 	if ( vbo->layout == vboLayout_t::VBO_LAYOUT_VERTEX_ANIMATION )
@@ -270,6 +292,10 @@ static void R_SetVBOAttributeLayouts( VBO_t *vbo )
 	else if ( vbo->layout == vboLayout_t::VBO_LAYOUT_POSITION )
 	{
 		R_SetAttributeLayoutsPosition( vbo );
+	}
+	else if ( vbo->layout == vboLayout_t::VBO_LAYOUT_XYST )
+	{
+		R_SetAttributeLayoutsXYST( vbo );
 	}
 	else
 	{
@@ -383,6 +409,17 @@ static void R_CopyVertexData( VBO_t *vbo, byte *outData, vboData_t inData )
 			if ( ( vbo->attribBits & ATTR_POSITION ) )
 			{
 				VectorCopy( inData.xyz[ v ], ptr[ v ] );
+			}
+		} else if ( vbo->layout == vboLayout_t::VBO_LAYOUT_XYST ) {
+			vec2_t *ptr = ( vec2_t * )outData;
+			if ( ( vbo->attribBits & ATTR_POSITION ) )
+			{
+				Vector2Copy( inData.xyz[ v ], ptr[ 2 * v ] );
+			}
+
+			if ( ( vbo->attribBits & ATTR_TEXCOORD ) )
+			{
+				Vector2Copy( inData.stf[ v ], ptr[ 2 * v + 1 ] );
 			}
 		} else if ( vbo->layout == vboLayout_t::VBO_LAYOUT_VERTEX_ANIMATION ) {
 			struct fmtVertexAnim2 *ptr = ( struct fmtVertexAnim2 * )( outData + ( vbo->framesNum * vbo->vertexesNum ) * sizeVertexAnim1 );
@@ -908,6 +945,40 @@ static void R_InitUnitCubeVBO()
 	tess.indexes = nullptr;
 }
 
+static void R_InitTileVBO()
+{
+	int       x, y, w, h;
+	vboData_t data;
+
+	R_SyncRenderThread();
+
+	w = tr.depthtile2RenderImage->width;
+	h = tr.depthtile2RenderImage->height;
+
+	memset( &data, 0, sizeof( data ) );
+	data.numVerts = w * h;
+
+	data.xyz = ( vec3_t * ) ri.Hunk_AllocateTempMemory( data.numVerts * sizeof( *data.xyz ) );
+	data.stf = ( vec2_t * ) ri.Hunk_AllocateTempMemory( data.numVerts * sizeof( *data.stf ) );
+
+	for (y = 0; y < h; y++ ) {
+		for (x = 0; x < w; x++ ) {
+			VectorSet( data.xyz[ y * w + x ],
+				   (2 * x - w + 1) * (1.0f / w),
+				   (2 * y - h + 1) * (1.0f / h),
+				   0.0f );
+			Vector2Set( data.stf[ y * w + x ],
+				    2 * x * glState.tileStep[ 0 ] + glState.tileStep[ 0 ] - 1.0f,
+				    2 * y * glState.tileStep[ 1 ] + glState.tileStep[ 1 ] - 1.0f );
+		}
+	}
+
+	tr.lighttileVBO = R_CreateStaticVBO( "lighttile_VBO", data, vboLayout_t::VBO_LAYOUT_XYST );
+
+	ri.Hunk_FreeTempMemory( data.stf );
+	ri.Hunk_FreeTempMemory( data.xyz );
+}
+
 const int vertexCapacity = DYN_BUFFER_SIZE / sizeof( shaderVertex_t );
 const int indexCapacity = DYN_BUFFER_SIZE / sizeof( glIndex_t );
 
@@ -942,6 +1013,7 @@ void R_InitVBOs()
 
 
 	R_InitUnitCubeVBO();
+	R_InitTileVBO();
 
 	// allocate a PBO for color grade map transfers
 	glGenBuffers( 1, &tr.colorGradePBO );
@@ -950,6 +1022,13 @@ void R_InitVBOs()
 		      REF_COLORGRADEMAP_STORE_SIZE * sizeof(u8vec4_t),
 		      nullptr, GL_STREAM_COPY );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
+
+	if( GLEW_ARB_uniform_buffer_object ) {
+		glGenBuffers( 1, &tr.dlightUBO );
+		glBindBuffer( GL_UNIFORM_BUFFER, tr.dlightUBO );
+		glBufferData( GL_UNIFORM_BUFFER, MAX_REF_LIGHTS * sizeof( shaderLight_t ), nullptr, GL_DYNAMIC_DRAW );
+		glBindBuffer( GL_UNIFORM_BUFFER, 0 );
+	}
 
 	GL_CheckErrors();
 }
@@ -1021,6 +1100,11 @@ void R_ShutdownVBOs()
 
 	Com_Free_Aligned( tess.vertsBuffer );
 	Com_Free_Aligned( tess.indexesBuffer );
+
+	if( GLEW_ARB_uniform_buffer_object ) {
+		glDeleteBuffers( 1, &tr.dlightUBO );
+		tr.dlightUBO = 0;
+	}
 
 	tess.verts = tess.vertsBuffer = nullptr;
 	tess.indexes = tess.indexesBuffer = nullptr;

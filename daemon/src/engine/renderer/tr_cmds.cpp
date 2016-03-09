@@ -250,6 +250,27 @@ void           *R_GetCommandBuffer( unsigned bytes )
 
 /*
 =============
+R_AddSetupLightsCmd
+=============
+*/
+void R_AddSetupLightsCmd()
+{
+	setupLightsCommand_t *cmd;
+
+	cmd = (setupLightsCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = renderCommand_t::RC_SETUP_LIGHTS;
+
+	cmd->refdef = tr.refdef;
+}
+
+/*
+=============
 R_AddDrawViewCmd
 =============
 */
@@ -265,29 +286,6 @@ void R_AddDrawViewCmd()
 	}
 
 	cmd->commandId = renderCommand_t::RC_DRAW_VIEW;
-
-	cmd->refdef = tr.refdef;
-	cmd->viewParms = tr.viewParms;
-}
-
-/*
-=============
-R_AddRunVisTestsCmd
-
-=============
-*/
-void R_AddRunVisTestsCmd()
-{
-	runVisTestsCommand_t *cmd;
-
-	cmd = ( runVisTestsCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
-
-	if ( !cmd )
-	{
-		return;
-	}
-
-	cmd->commandId = renderCommand_t::RC_RUN_VISTESTS;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;

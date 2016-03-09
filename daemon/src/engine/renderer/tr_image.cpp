@@ -1196,6 +1196,14 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			  GL_R32F : GL_ALPHA32F_ARB;
 		}
 	}
+	else if ( image->bits & ( IF_RGBA32UI ) )
+	{
+		if( !glConfig2.textureIntegerAvailable ) {
+			Log::Warn( "integer image '%s' cannot be loaded\n", image->name );
+		}
+		internalFormat = GL_RGBA32UI;
+		format = GL_RGBA_INTEGER;
+	}
 	else if ( IsImageCompressed( image->bits ) )
 	{
 		if( !GLEW_EXT_texture_compression_dxt1 &&
@@ -1405,10 +1413,12 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			switch ( image->type )
 			{
 			case GL_TEXTURE_3D:
-				glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
-						 scaledWidth, scaledHeight, 1,
-						 format, GL_UNSIGNED_BYTE,
-						 scaledBuffer );
+				if( scaledBuffer ) {
+					glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
+							 scaledWidth, scaledHeight, 1,
+							 format, GL_UNSIGNED_BYTE,
+							 scaledBuffer );
+				}
 				break;
 			case GL_TEXTURE_CUBE_MAP:
 				glTexImage2D( target + i, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE,
@@ -1430,75 +1440,9 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 			if ( image->filterType == filterType_t::FT_DEFAULT )
 			{
-				if ( glConfig.driverType == glDriverType_t::GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
-				{
-					if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
-						glGenerateMipmap( image->type );
-						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
-					}
-				}
-				else if ( glConfig2.generateMipmapAvailable )
-				{
-					glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
+				if( image->type != GL_TEXTURE_CUBE_MAP || i == 5 ) {
+					glGenerateMipmap( image->type );
 					glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
-				}
-			}
-
-			if ( glConfig.driverType != glDriverType_t::GLDRV_OPENGL3 && !glConfig2.framebufferObjectAvailable && !glConfig2.generateMipmapAvailable )
-			{
-				if ( image->filterType == filterType_t::FT_DEFAULT && !( image->bits & ( IF_DEPTH16 | IF_DEPTH24 | IF_DEPTH32 | IF_PACKED_DEPTH24_STENCIL8 ) ) )
-				{
-					int mipLevel;
-					int mipWidth, mipHeight;
-
-					mipLevel = 0;
-					mipWidth = scaledWidth;
-					mipHeight = scaledHeight;
-
-					while ( mipWidth > 1 || mipHeight > 1 )
-					{
-						if ( image->bits & IF_NORMALMAP )
-						{
-							R_MipNormalMap( scaledBuffer, mipWidth, mipHeight );
-						}
-						else
-						{
-							R_MipMap( scaledBuffer, mipWidth, mipHeight );
-						}
-
-						mipWidth >>= 1;
-						mipHeight >>= 1;
-
-						if ( mipWidth < 1 )
-						{
-							mipWidth = 1;
-						}
-
-						if ( mipHeight < 1 )
-						{
-							mipHeight = 1;
-						}
-
-						mipLevel++;
-
-						if ( r_colorMipLevels->integer && !( image->bits & IF_NORMALMAP ) )
-						{
-							R_BlendOverTexture( scaledBuffer, mipWidth * mipHeight, mipBlendColors[ mipLevel ] );
-						}
-
-						switch ( image->type )
-						{
-						case GL_TEXTURE_CUBE_MAP:
-							glTexImage2D( target + i, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
-							              scaledBuffer );
-							break;
-
-						default:
-							glTexImage2D( target, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
-							              scaledBuffer );
-							break;
-						}
-					}
 				}
 			}
 		}
@@ -1908,9 +1852,13 @@ image_t        *R_Create3DImage( const char *name,
 	image->width = width;
 	image->height = height;
 
-	pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
-	for( i = 0; i < depth; i++ ) {
-		pics[i] = pic + i * width * height * sizeof(u8vec4_t);
+	if( pic ) {
+		pics = (const byte**) ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
+		for( i = 0; i < depth; i++ ) {
+			pics[i] = pic + i * width * height * sizeof(u8vec4_t);
+		}
+	} else {
+		pics = nullptr;
 	}
 
 	image->bits = bits;
@@ -1919,7 +1867,9 @@ image_t        *R_Create3DImage( const char *name,
 
 	R_UploadImage( pics, depth, 1, image );
 
-	ri.Hunk_FreeTempMemory( pics );
+	if( pics ) {
+		ri.Hunk_FreeTempMemory( pics );
+	}
 
 	if( r_exportTextures->integer ) {
 		R_ExportTexture( image );
@@ -2718,12 +2668,14 @@ static void R_CreateCurrentRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	tr.currentRenderImage = R_CreateImage( "_currentRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	tr.currentRenderImage[0] = R_CreateImage( "_currentRender[0]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	tr.currentRenderImage[1] = R_CreateImage( "_currentRender[1]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	tr.currentDepthImage = R_CreateImage( "_currentDepth", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION | IF_DEPTH24, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 }
 
 static void R_CreateDepthRenderImage()
 {
-	int  width, height;
+	int  width, height, w, h;
 
 	if ( glConfig2.textureNPOTAvailable )
 	{
@@ -2736,8 +2688,18 @@ static void R_CreateDepthRenderImage()
 		height = NearestPowerOfTwo( glConfig.vidHeight );
 	}
 
-	{
-		tr.depthRenderImage = R_CreateImage( "_depthRender", nullptr, width, height, 1, IF_NOPICMIP | IF_DEPTH24, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	w = (width + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	h = (height + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
+	tr.depthtile1RenderImage = R_CreateImage( "_depthtile1Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+
+	w = (width + TILE_SIZE - 1) >> TILE_SHIFT;
+	h = (height + TILE_SIZE - 1) >> TILE_SHIFT;
+	tr.depthtile2RenderImage = R_CreateImage( "_depthtile2Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+
+	if ( glConfig2.textureIntegerAvailable ) {
+		tr.lighttileRenderImage = R_Create3DImage( "_lighttileRender", nullptr, w, h, 4, IF_NOPICMIP | IF_RGBA32UI, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	} else {
+		tr.lighttileRenderImage = R_Create3DImage( "_lighttileRender", nullptr, w, h, 4, IF_NOPICMIP, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 	}
 }
 

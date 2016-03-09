@@ -239,7 +239,7 @@ struct refLight_t
 	float     scale; // r_lightScale if not set
 
 	// omni-directional light specific
-	vec3_t radius;
+	float     radius;
 
 	// projective light specific
 	vec3_t   projTarget;
@@ -393,13 +393,13 @@ struct glconfig2_t
 	bool drawBuffersAvailable;
 	bool textureHalfFloatAvailable;
 	bool textureFloatAvailable;
+	bool textureIntegerAvailable;
 	bool textureRGAvailable;
 	int      maxDrawBuffers;
 
 	float    maxTextureAnisotropy;
 	bool textureAnisotropyAvailable;
 
-	bool framebufferObjectAvailable;
 	int      maxRenderbufferSize;
 	int      maxColorAttachments;
 	bool framebufferPackedDepthStencilAvailable;

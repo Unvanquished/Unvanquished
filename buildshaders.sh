@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd $(dirname "$0")
+
 exec > daemon/src/engine/renderer/shaders.cpp
 
 cd main

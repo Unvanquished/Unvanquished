@@ -99,13 +99,12 @@ AudioData LoadWavCodec(std::string filename)
 		return AudioData();
 	}
 
-    //TODO  find the position of "data"
-    std::size_t dataOffset{audioFile.find("data", 36)};
+	//TODO: find the position of "data"
+	std::size_t dataOffset{audioFile.find("data", 36)};
 	if (dataOffset == std::string::npos) {
 		audioLogs.Warn("Could not find the data chunk in %s", filename);
 		return AudioData();
 	}
-	std::string chunk2ID = audioFile.substr(dataOffset, 4);
 
 	int size = PackChars(audioFile, dataOffset + 4, 4);
 

@@ -417,7 +417,7 @@ void Tess_AddSprite( const vec3_t center, const Color::Color32Bit color, float r
 		vec4_t orientation;
 
 		Vector4Set( texCoord, 0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ),
-			    0.5f * (i & 2), 0.5f * ( (i + 1) & 2 ) );
+			    (i & 2) - 1.0f, ( (i + 1) & 2 ) - 1.0f );
 
 		VectorCopy( center, tess.verts[ ndx + i ].xyz );
 		tess.verts[ ndx + i ].color = color;

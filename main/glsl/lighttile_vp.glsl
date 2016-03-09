@@ -1,42 +1,37 @@
 /*
 ===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000-2009 Darklegion Development
+Copyright (C) 2006-2011 Robert Beckebans <trebor_7@users.sourceforge.net>
 
-This file is part of Daemon.
+This file is part of XreaL source code.
 
-Daemon is free software; you can redistribute it
+XreaL source code is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
-Daemon is distributed in the hope that it will be
+XreaL source code is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
+along with XreaL source code; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "engine/qcommon/q_shared.h"
-#include "bg_public.h"
+/* lighttile_vp.glsl */
 
-void *BG_Alloc( size_t size )
-{
-	void *ptr = malloc( size );
+attribute vec2 attr_Position;
+attribute vec2 attr_TexCoord0;
 
-	if ( ptr )
-	{
-		memset( ptr, 0, size );
-	}
+varying vec2 vPosition;
+varying vec2 vTexCoord;
 
-	return ptr;
-}
+void main() {
+  gl_Position = vec4(attr_Position, 0.0, 1.0);
+  gl_PointSize = 1.0;
 
-void BG_Free( void *ptr )
-{
-	free( ptr );
+  vPosition = attr_Position;
+  vTexCoord = attr_TexCoord0;
 }

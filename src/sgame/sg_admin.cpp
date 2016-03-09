@@ -51,7 +51,7 @@ static void G_admin_notIntermission( gentity_t *ent )
 	} while ( 0 )
 
 // big ugly global buffer for use with buffered printing of long outputs
-static char       g_bfb[ 32000 ];
+static std::string       g_bfb;
 
 static bool G_admin_maprestarted( gentity_t * );
 
@@ -1797,7 +1797,7 @@ bool G_admin_readconfig( gentity_t *ent )
 	int               len;
 	char              *cnf1, *cnf2;
 	char              *t;
-	bool          level_open, admin_open, ban_open, command_open;
+	bool              level_open, admin_open, ban_open, command_open;
 	int               i;
 	char              ip[ 44 ];
 
@@ -3924,13 +3924,13 @@ bool G_admin_adminhelp( gentity_t *ent )
 
 		perline = 78 / ( width + 1 ); // allow for curses console border and at least one space between each word
 
-		ADMBP_begin();
+		std::string out;
 
 		for ( unsigned i = 0; i < adminNumCmds; i++ )
 		{
 			if ( perms[ i ] )
 			{
-				ADMBP( va( "^3%-*s%c", width, g_admin_cmds[ i ].keyword, ( ++count % perline == 0 ) ? '\n' : ' ' ) );
+				out += va( "^3%-*s%c", width, g_admin_cmds[ i ].keyword, ( ++count % perline == 0 ) ? '\n' : ' ' );
 			}
 		}
 
@@ -3938,16 +3938,13 @@ bool G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, c->flag ) )
 			{
-				ADMBP( va( "^1%-*s%c", width, c->command, ( ++count % perline == 0 ) ? '\n' : ' ' ) );
+				out += va( "^1%-*s%c", width, c->command, ( ++count % perline == 0 ) ? '\n' : ' ' );
 			}
 		}
 
-		if ( count % perline )
-		{
-			ADMBP( "" );
-		}
+		out += "\n";
 
-		ADMBP_end();
+		ADMP( Cmd::Escape( out ) );
 		ADMP( va( "%s %d", QQ( N_("^3adminhelp: ^7$1$ available commands"
 		"run adminhelp [^3command^7] for adminhelp with a specific command.") ),count ) );
 
@@ -4753,31 +4750,34 @@ bool G_admin_flaglist( gentity_t *ent )
 			continue;
 		}
 
-		ADMBP( va( "  ^5%-20s^7", g_admin_cmds[ i ].flag ) );
+		std::string line;
+
+		line += va( "  ^5%-20s^7", g_admin_cmds[ i ].flag );
 
 		for ( unsigned j = i; j < adminNumCmds; j++ )
 		{
 			if ( g_admin_cmds[ j ].keyword && g_admin_cmds[ j ].flag &&
 			     !strcmp ( g_admin_cmds[ j ].flag, g_admin_cmds[ i ].flag ) )
 			{
-				ADMBP( va( " %s", g_admin_cmds[ j ].keyword ) );
+				line += " ";
+				line += g_admin_cmds[ j ].keyword;
 				shown[ j ] = true;
 			}
 		}
 
-		ADMBP( "^2" );
+		line += "^2";
 
 		for ( unsigned j = i; j < adminNumCmds; j++ )
 		{
 			if ( !g_admin_cmds[ j ].keyword && g_admin_cmds[ j ].flag &&
 			     !strcmp ( g_admin_cmds[ j ].flag, g_admin_cmds[ i ].flag ) )
 			{
-				ADMBP( va( " %s", g_admin_cmds[ j ].function ) );
+				line += va( " %s", g_admin_cmds[ j ].function );
 				shown[ j ] = true;
 			}
 		}
 
-		ADMBP( "" );
+		ADMBP( line );
 		count++;
 	}
 
@@ -5470,27 +5470,27 @@ bool G_admin_unregister( gentity_t *ent )
  The supplied string is assumed to be quoted as needed.
 ================
 */
-void G_admin_print( gentity_t *ent, const char *m )
+void G_admin_print( gentity_t *ent, Str::StringRef m )
 {
 	if ( ent )
 	{
-		trap_SendServerCommand( ent->s.number, va( "print_tr %s", m ) );
+		trap_SendServerCommand( ent->s.number, va( "print_tr %s", m.c_str() ) );
 	}
 	else
 	{
-		trap_SendServerCommand( -2, va( "print_tr %s", m ) );
+		trap_SendServerCommand( -2, va( "print_tr %s", m.c_str() ) );
 	}
 }
 
-void G_admin_print_plural( gentity_t *ent, const char *m, int number )
+void G_admin_print_plural( gentity_t *ent, Str::StringRef m, int number )
 {
 	if ( ent )
 	{
-		trap_SendServerCommand( ent->s.number, va( "print_tr_p %d %s", number, m ) );
+		trap_SendServerCommand( ent->s.number, va( "print_tr_p %d %s", number, m.c_str() ) );
 	}
 	else
 	{
-		trap_SendServerCommand( -2, va( "print_tr_p %d %s", number, m ) );
+		trap_SendServerCommand( -2, va( "print_tr_p %d %s", number, m.c_str() ) );
 	}
 }
 
@@ -5505,26 +5505,26 @@ void G_admin_print_plural( gentity_t *ent, const char *m, int number )
 */
 void G_admin_buffer_begin()
 {
-	g_bfb[ 0 ] = '\0';
+	g_bfb.clear();
 }
 
 void G_admin_buffer_end( gentity_t *ent )
 {
-	G_admin_buffer_print( ent, nullptr );
+	G_admin_print( ent, Cmd::Escape( g_bfb ) );
 }
 
-void G_admin_buffer_print( gentity_t *ent, const char *m )
+void G_admin_buffer_print( gentity_t *ent, Str::StringRef m )
 {
-	// 1022 - strlen("print 64 \"\"") - 1
-	if ( !m ||  strlen( m ) + strlen( g_bfb ) >= 1009 )
+	if ( !m.empty() )
 	{
-		trap_SendServerCommand( ent ? ent->s.number : -2, va( "print %s", Quote( g_bfb ) ) );
-		g_bfb[ 0 ] = '\0';
-	}
-
-	if ( m )
-	{
-		Q_strcat( g_bfb, sizeof( g_bfb ), m );
+		// Ensure we don't overflow client buffers.
+		if ( g_bfb.size() + m.size() >= 1022 )
+		{
+			G_admin_buffer_end( ent );
+			g_bfb.clear();
+		}
+		g_bfb += m;
+		g_bfb += '\n';
 	}
 }
 
@@ -5592,9 +5592,9 @@ bool G_admin_bot( gentity_t *ent )
 	int i;
 	int clientNum;
 
-	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)"
-	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]"
-	                                        "            bot names [^5aliens|humans^7] [^5names…^7]"
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)\n"
+	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
+	                                        "            bot names [^5aliens|humans^7] [^5names…^7]\n"
 	                                        "            bot names [^5clear|list^7]" ) );
 
 	if ( trap_Argc() < min_args )

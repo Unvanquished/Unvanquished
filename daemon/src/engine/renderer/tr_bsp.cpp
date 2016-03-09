@@ -4376,9 +4376,7 @@ void R_LoadEntities( lump_t *l )
 
 		light->l.scale = r_lightScale->value;
 
-		light->l.radius[ 0 ] = 300;
-		light->l.radius[ 1 ] = 300;
-		light->l.radius[ 2 ] = 300;
+		light->l.radius = 300.0f;
 
 		VectorClear( light->l.projTarget );
 		VectorClear( light->l.projRight );
@@ -4476,7 +4474,10 @@ void R_LoadEntities( lump_t *l )
 			// check for radius
 			else if ( !Q_stricmp( keyname, "light_radius" ) )
 			{
-				sscanf( value, "%f %f %f", &light->l.radius[ 0 ], &light->l.radius[ 1 ], &light->l.radius[ 2 ] );
+				vec_t rad_y, rad_z;
+				sscanf( value, "%f %f %f", &light->l.radius, &rad_y, &rad_z );
+				if( rad_y != light->l.radius || rad_z != light->l.radius )
+					Log::Warn( "non-spherical light\n" );
 				s = &value[ 0 ];
 			}
 			// check for light_target
@@ -4517,12 +4518,7 @@ void R_LoadEntities( lump_t *l )
 			// check for radius
 			else if ( !Q_stricmp( keyname, "light" ) || !Q_stricmp( keyname, "_light" ) )
 			{
-				vec_t value2;
-
-				value2 = atof( value );
-				light->l.radius[ 0 ] = value2;
-				light->l.radius[ 1 ] = value2;
-				light->l.radius[ 2 ] = value2;
+				light->l.radius = atof( value );
 			}
 			// check for scale
 			else if ( !Q_stricmp( keyname, "light_scale" ) )

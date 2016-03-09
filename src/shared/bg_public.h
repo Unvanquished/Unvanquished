@@ -1487,7 +1487,7 @@ void     UI_UpdateUnlockables();
 #define MASK_SHOT        ( CONTENTS_SOLID | CONTENTS_BODY )
 #define MASK_ENTITY      ( CONTENTS_MOVER )
 
-void     *BG_Alloc( int size );
+void     *BG_Alloc( size_t size );
 void     BG_InitMemory();
 void     BG_Free( void *ptr );
 void     BG_DefragmentMemory();

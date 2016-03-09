@@ -59,6 +59,7 @@ struct GLShaderHeader
 };
 
 class GLUniform;
+class GLUniformBlock;
 class GLCompileMacro;
 class GLShaderManager;
 
@@ -85,6 +86,7 @@ protected:
 
 
 	std::vector< GLUniform * >      _uniforms;
+	std::vector< GLUniformBlock * > _uniformBlocks;
 	std::vector< GLCompileMacro * > _compileMacros;
 
 	
@@ -147,6 +149,11 @@ protected:
 			{
 				ri.Free( p->uniformLocations );
 			}
+
+			if ( p->uniformBlockIndexes )
+			{
+				ri.Free( p->uniformBlockIndexes );
+			}
 		}
 	}
 
@@ -155,6 +162,11 @@ public:
 	void RegisterUniform( GLUniform *uniform )
 	{
 		_uniforms.push_back( uniform );
+	}
+
+	void RegisterUniformBlock( GLUniformBlock *uniformBlock )
+	{
+		_uniformBlocks.push_back( uniformBlock );
 	}
 
 	void RegisterCompileMacro( GLCompileMacro *compileMacro )
@@ -321,6 +333,46 @@ public:
 	virtual size_t GetSize()
 	{
 		return 0;
+	}
+};
+
+class GLUniform1i : protected GLUniform
+{
+protected:
+	GLUniform1i( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( int value )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+
+		ASSERT_EQ(p, glState.currentProgram);
+
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform1i( %s, shader: %s, value: %d ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), value ) );
+		}
+#endif
+#if defined( USE_UNIFORM_FIREWALL )
+		int *firewall = ( int * ) &p->uniformFirewall[ _firewallIndex ];
+
+		if ( *firewall == value )
+		{
+			return;
+		}
+
+		*firewall = value;
+#endif
+		glUniform1i( p->uniformLocations[ _locationIndex ], value );
+	}
+public:
+	size_t GetSize()
+	{
+		return sizeof( int );
 	}
 };
 
@@ -626,6 +678,49 @@ protected:
 	}
 };
 
+class GLUniformBlock
+{
+protected:
+	GLShader   *_shader;
+	std::string _name;
+	size_t      _locationIndex;
+
+	GLUniformBlock( GLShader *shader, const char *name ) :
+		_shader( shader ),
+		_name( name ),
+		_locationIndex( 0 )
+	{
+		_shader->RegisterUniformBlock( this );
+	}
+
+public:
+	void SetLocationIndex( size_t index )
+	{
+		_locationIndex = index;
+	}
+
+	const char *GetName()
+	{
+		return _name.c_str();
+	}
+
+	void UpdateShaderProgramUniformBlockIndex( shaderProgram_t *shaderProgram )
+	{
+		shaderProgram->uniformBlockIndexes[ _locationIndex ] = glGetUniformBlockIndex( shaderProgram->program, GetName() );
+	}
+
+	void SetBuffer( GLuint buffer ) {
+		shaderProgram_t *p = _shader->GetProgram();
+		GLuint blockIndex = p->uniformBlockIndexes[ _locationIndex ];
+
+		ASSERT_EQ(p, glState.currentProgram);
+
+		if( blockIndex != GL_INVALID_INDEX ) {
+			glBindBufferBase( GL_UNIFORM_BUFFER, blockIndex, buffer );
+		}
+	}
+};
+
 class GLCompileMacro
 {
 private:
@@ -656,7 +751,9 @@ protected:
 	  USE_SHADOWING,
 	  LIGHT_DIRECTIONAL,
 	  USE_GLOW_MAPPING,
-	  USE_DEPTH_FADE
+	  USE_DEPTH_FADE,
+	  USE_SHADER_LIGHTS,
+	  USE_PHYSICAL_SHADING
 	};
 
 public:
@@ -1229,6 +1326,92 @@ public:
 	}
 
 	void SetDepthFade( bool enable )
+	{
+		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
+class GLCompileMacro_USE_SHADER_LIGHTS :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_SHADER_LIGHTS( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_SHADER_LIGHTS";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_SHADER_LIGHTS;
+	}
+
+	void EnableMacro_USE_SHADER_LIGHTS()
+	{
+		EnableMacro();
+	}
+
+	void DisableMacro_USE_SHADER_LIGHTS()
+	{
+		DisableMacro();
+	}
+
+	void SetShaderLights( bool enable )
+	{
+		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
+class GLCompileMacro_USE_PHYSICAL_SHADING :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_PHYSICAL_SHADING( GLShader *shader ) :
+		GLCompileMacro( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_PHYSICAL_SHADING";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_PHYSICAL_SHADING;
+	}
+
+	bool MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
+
+	void EnableMacro_USE_PHYSICAL_SHADING()
+	{
+		EnableMacro();
+	}
+
+	void DisableMacro_USE_PHYSICAL_SHADING()
+	{
+		DisableMacro();
+	}
+
+	void SetPhysicalShading( bool enable )
 	{
 		if ( enable )
 		{
@@ -2120,6 +2303,51 @@ public:
 	}
 };
 
+class u_numLights :
+	GLUniform1i
+{
+public:
+	u_numLights( GLShader *shader ) :
+		GLUniform1i( shader, "u_numLights" )
+	{
+	}
+
+	void SetUniform_numLights( int value )
+	{
+		this->SetValue( value );
+	}
+};
+
+class u_lightLayer :
+	GLUniform1i
+{
+public:
+	u_lightLayer( GLShader *shader ) :
+		GLUniform1i( shader, "u_lightLayer" )
+	{
+	}
+
+	void SetUniform_lightLayer( int value )
+	{
+		this->SetValue( value );
+	}
+};
+
+class u_Lights :
+	GLUniformBlock
+{
+ public:
+	u_Lights( GLShader *shader ) :
+		GLUniformBlock( shader, "u_Lights" )
+	{
+	}
+
+	void SetUniformBlock_Lights( GLuint buffer )
+	{
+		this->SetBuffer( buffer );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorTextureMatrix,
@@ -2134,13 +2362,16 @@ class GLShader_generic :
 	public u_Bones,
 	public u_VertexInterpolation,
 	public u_DepthScale,
+	public u_numLights,
+	public u_Lights,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_VERTEX_SPRITE,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
 	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
-	public GLCompileMacro_USE_DEPTH_FADE
+	public GLCompileMacro_USE_DEPTH_FADE,
+	public GLCompileMacro_USE_SHADER_LIGHTS
 {
 public:
 	GLShader_generic( GLShaderManager *manager );
@@ -2162,10 +2393,14 @@ class GLShader_lightMapping :
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_DepthScale,
+	public u_numLights,
+	public u_Lights,
 	public GLDeformStage,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
-	public GLCompileMacro_USE_GLOW_MAPPING
+	public GLCompileMacro_USE_GLOW_MAPPING,
+	public GLCompileMacro_USE_SHADER_LIGHTS,
+	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
 	GLShader_lightMapping( GLShaderManager *manager );
@@ -2192,13 +2427,17 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_EnvironmentInterpolation,
 	public u_LightGridOrigin,
 	public u_LightGridScale,
+	public u_numLights,
+	public u_Lights,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
-	public GLCompileMacro_USE_GLOW_MAPPING
+	public GLCompileMacro_USE_GLOW_MAPPING,
+	public GLCompileMacro_USE_SHADER_LIGHTS,
+	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
 	GLShader_vertexLighting_DBS_entity( GLShaderManager *manager );
@@ -2225,10 +2464,14 @@ class GLShader_vertexLighting_DBS_world :
 	public u_LightWrapAround,
 	public u_LightGridOrigin,
 	public u_LightGridScale,
+	public u_numLights,
+	public u_Lights,
 	public GLDeformStage,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
-	public GLCompileMacro_USE_GLOW_MAPPING
+	public GLCompileMacro_USE_GLOW_MAPPING,
+	public GLCompileMacro_USE_SHADER_LIGHTS,
+	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
 	GLShader_vertexLighting_DBS_world( GLShaderManager *manager );
@@ -2629,6 +2872,35 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
+class GLShader_depthtile1 :
+	public GLShader,
+	public u_zFar
+{
+public:
+	GLShader_depthtile1( GLShaderManager *manager );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
+
+class GLShader_depthtile2 :
+	public GLShader
+{
+public:
+	GLShader_depthtile2( GLShaderManager *manager );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
+
+class GLShader_lighttile :
+	public GLShader,
+	public u_ModelMatrix,
+	public u_numLights,
+	public u_lightLayer,
+	public u_Lights
+{
+public:
+	GLShader_lighttile( GLShaderManager *manager );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
+
 class GLShader_fxaa :
 	public GLShader
 {
@@ -2668,6 +2940,9 @@ extern GLShader_liquid                          *gl_liquidShader;
 extern GLShader_volumetricFog                   *gl_volumetricFogShader;
 extern GLShader_motionblur                      *gl_motionblurShader;
 extern GLShader_ssao                            *gl_ssaoShader;
+extern GLShader_depthtile1                      *gl_depthtile1Shader;
+extern GLShader_depthtile2                      *gl_depthtile2Shader;
+extern GLShader_lighttile                       *gl_lighttileShader;
 extern GLShader_fxaa                            *gl_fxaaShader;
 extern GLShaderManager                           gl_shaderManager;
 

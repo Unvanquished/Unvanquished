@@ -44,7 +44,7 @@ void VertexFetch(out vec4 position,
 	vec3 normal = normalize( u_ViewOrigin - attr_Position ), up, left;
 	float s, c; // sin & cos of rotation factor
 
-	corner = attr_TexCoord0.xy * 2.0 - 1.0;
+	corner = sign( attr_TexCoord0.zw );
 
 	if( radius <= 0.0 ) {
 		// autosprite2 mode, attr_Orientation.xyz contains the up-vector
@@ -74,8 +74,8 @@ void VertexFetch(out vec4 position,
 	normalBasis.tangent = normalize( up );
 	normalBasis.binormal = normalize( left );
 #endif
-	texCoord = attr_TexCoord0.xy;
-	lmCoord  = attr_TexCoord0.zw;
+	texCoord = 0.5 * corner + 0.5; //attr_TexCoord0.xy;
+	lmCoord  = abs( attr_TexCoord0.zw );
 	color    = attr_Color;
 
 	u_DepthScale = 2.0 * radius;

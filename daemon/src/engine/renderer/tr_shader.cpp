@@ -1814,60 +1814,11 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			}
 
 		}
-		// blendfunc <srcFactor> <dstFactor>
-		// or blendfunc <add|filter|blend>
-		else if ( !Q_stricmp( token, "blendfunc" ) )
-		{
-			token = COM_ParseExt2( text, false );
-
-			if ( token[ 0 ] == 0 )
-			{
-				Log::Warn("missing parm for blendFunc in shader '%s'", shader.name );
-				continue;
-			}
-
-			// check for "simple" blends first
-			if ( !Q_stricmp( token, "add" ) )
-			{
-				blendSrcBits = GLS_SRCBLEND_ONE;
-				blendDstBits = GLS_DSTBLEND_ONE;
-			}
-			else if ( !Q_stricmp( token, "filter" ) )
-			{
-				blendSrcBits = GLS_SRCBLEND_DST_COLOR;
-				blendDstBits = GLS_DSTBLEND_ZERO;
-			}
-			else if ( !Q_stricmp( token, "blend" ) )
-			{
-				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
-				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			}
-			else
-			{
-				// complex double blends
-				blendSrcBits = NameToSrcBlendMode( token );
-
-				token = COM_ParseExt2( text, false );
-
-				if ( token[ 0 ] == 0 )
-				{
-					Log::Warn("missing parm for blendFunc in shader '%s'", shader.name );
-					continue;
-				}
-
-				blendDstBits = NameToDstBlendMode( token );
-			}
-
-			// clear depth mask for blended surfaces
-			if ( !depthMaskExplicit )
-			{
-				depthMaskBits = 0;
-			}
-		}
-		// blend <srcFactor> , <dstFactor>
-		// or blend <add | filter | blend>
-		// or blend <diffusemap | bumpmap | specularmap>
-		else if ( !Q_stricmp( token, "blend" ) )
+		//    blend[func] <srcFactor> [,] <dstFactor>
+		// or blend[func] <add | filter | blend>
+		// or blend[func] <diffusemap | bumpmap | specularmap>
+		else if ( !Q_stricmp( token, "blendfunc" ) ||
+			  !Q_stricmp( token, "blend" ) )
 		{
 			token = COM_ParseExt2( text, false );
 
@@ -1916,6 +1867,10 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			{
 				stage->type = stageType_t::ST_SPECULARMAP;
 			}
+			else if ( !Q_stricmp( token, "materialMap" ) )
+			{
+				stage->type = stageType_t::ST_MATERIALMAP;
+			}
 			else if ( !Q_stricmp( token, "glowMap" ) )
 			{
 				stage->type = stageType_t::ST_GLOWMAP;
@@ -1927,14 +1882,9 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 
 				token = COM_ParseExt2( text, false );
 
-				if ( token[ 0 ] != ',' )
-				{
-					Log::Warn("expecting ',', found '%s' instead for blend in shader '%s'", token,
-					           shader.name );
-					continue;
+				if ( !Q_stricmp(token, "," ) ) {
+					token = COM_ParseExt2( text, false );
 				}
-
-				token = COM_ParseExt2( text, false );
 
 				if ( token[ 0 ] == 0 )
 				{
@@ -1946,7 +1896,12 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			}
 
 			// clear depth mask for blended surfaces
-			if ( !depthMaskExplicit && stage->type == stageType_t::ST_COLORMAP )
+			if ( !depthMaskExplicit &&
+			     (stage->type == stageType_t::ST_COLORMAP ||
+			      stage->type == stageType_t::ST_DIFFUSEMAP) &&
+			     blendSrcBits != 0 && blendDstBits != 0
+			     && !(blendSrcBits == GLS_SRCBLEND_ONE &&
+				  blendDstBits == GLS_DSTBLEND_ZERO) )
 			{
 				depthMaskBits = 0;
 			}
@@ -1977,6 +1932,10 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			else if ( !Q_stricmp( token, "specularMap" ) )
 			{
 				stage->type = stageType_t::ST_SPECULARMAP;
+			}
+			else if ( !Q_stricmp( token, "materialMap" ) )
+			{
+				stage->type = stageType_t::ST_MATERIALMAP;
 			}
 			else if ( !Q_stricmp( token, "glowMap" ) )
 			{
@@ -2494,6 +2453,12 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 	if ( atestBits & GLS_ATEST_BITS )
 	{
 		shader.alphaTest = true;
+	}
+
+	// check that depthFade and depthWrite are mutually exclusive
+	if ( depthMaskBits && stage->hasDepthFade ) {
+		Log::Warn( "depth fade conflicts with depth mask in shader '%s'\n", shader.name );
+		stage->hasDepthFade = false;
 	}
 
 	// compute state bits
@@ -3083,6 +3048,26 @@ static void ParseSpecularMap( shaderStage_t *stage, const char **text )
 	}
 }
 
+static void ParseMaterialMap( shaderStage_t *stage, const char **text )
+{
+	char buffer[ 1024 ] = "";
+
+	stage->active = true;
+	stage->type = stageType_t::ST_MATERIALMAP;
+	stage->rgbGen = colorGen_t::CGEN_IDENTITY;
+	stage->stateBits = GLS_DEFAULT;
+
+	if ( !r_compressSpecularMaps->integer )
+	{
+		stage->uncompressed = true;
+	}
+
+	if ( ParseMap( text, buffer, sizeof( buffer ) ) )
+	{
+		LoadMap( stage, buffer );
+	}
+}
+
 static void ParseGlowMap( shaderStage_t *stage, const char **text )
 {
 	char buffer[ 1024 ] = "";
@@ -3621,6 +3606,13 @@ static bool ParseShader( const char *_text )
 			s++;
 			continue;
 		}
+		// materialMap <image>
+		else if ( !Q_stricmp( token, "materialMap" ) )
+		{
+			ParseMaterialMap( &stages[ s ], text );
+			s++;
+			continue;
+		}
 		// glowMap <image>
 		else if ( !Q_stricmp( token, "glowMap" ) )
 		{
@@ -3751,12 +3743,14 @@ static void CollapseStages()
 	bool      hasDiffuseStage;
 	bool      hasNormalStage;
 	bool      hasSpecularStage;
+	bool      hasMaterialStage;
 	bool      hasReflectionStage;
 	bool      hasGlowStage;
 
 	shaderStage_t tmpDiffuseStage;
 	shaderStage_t tmpNormalStage;
 	shaderStage_t tmpSpecularStage;
+	shaderStage_t tmpMaterialStage;
 	shaderStage_t tmpReflectionStage;
 	shaderStage_t tmpGlowStage;
 
@@ -3782,6 +3776,7 @@ static void CollapseStages()
 		hasDiffuseStage = false;
 		hasNormalStage = false;
 		hasSpecularStage = false;
+		hasMaterialStage = false;
 		hasReflectionStage = false;
 		hasGlowStage = false;
 
@@ -3842,6 +3837,11 @@ static void CollapseStages()
 				hasSpecularStage = true;
 				tmpSpecularStage = stages[ j + i ];
 			}
+			else if ( stages[ j + i ].type == stageType_t::ST_MATERIALMAP && !hasMaterialStage )
+			{
+				hasMaterialStage = true;
+				tmpMaterialStage = stages[ j + i ];
+			}
 			else if ( stages[ j + i ].type == stageType_t::ST_REFLECTIONMAP && !hasReflectionStage )
 			{
 				hasReflectionStage = true;
@@ -3855,6 +3855,10 @@ static void CollapseStages()
 		}
 
 		// NOTE: Tr3B - merge as many stages as possible
+		if( hasSpecularStage && hasMaterialStage ) {
+			Log::Warn( "specularMap disabled in favor of materialMap in shader '%s'\n", shader.name );
+			hasSpecularStage = false;
+		}
 
 		// try to merge diffuse/normal/specular/glow
 		if ( hasDiffuseStage         &&
@@ -3895,6 +3899,46 @@ static void CollapseStages()
 			tmpStages[ numStages ].bundle[ TB_SPECULARMAP ] = tmpSpecularStage.bundle[ 0 ];
 			tmpStages[ numStages ].specularExponentMin = tmpSpecularStage.specularExponentMin;
 			tmpStages[ numStages ].specularExponentMax = tmpSpecularStage.specularExponentMax;
+
+			numStages++;
+			j += 2;
+			continue;
+		}
+		// try to merge diffuse/normal/material/glow
+		else if ( hasDiffuseStage         &&
+			  hasNormalStage          &&
+			  hasMaterialStage        &&
+			  hasGlowStage
+		   )
+		{
+			tmpShader.collapseType = collapseType_t::COLLAPSE_lighting_DBMG;
+
+			tmpStages[ numStages ] = tmpDiffuseStage;
+			tmpStages[ numStages ].type = stageType_t::ST_COLLAPSE_lighting_DBMG;
+
+			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+
+			tmpStages[ numStages ].bundle[ TB_MATERIALMAP ] = tmpMaterialStage.bundle[ 0 ];
+
+			tmpStages[ numStages ].bundle[ TB_GLOWMAP ] = tmpGlowStage.bundle[ 0 ];
+			numStages++;
+			j += 3;
+			continue;
+		}
+		// try to merge diffuse/normal/material
+		else if ( hasDiffuseStage         &&
+		          hasNormalStage          &&
+		          hasMaterialStage
+		   )
+		{
+			tmpShader.collapseType = collapseType_t::COLLAPSE_lighting_DBM;
+
+			tmpStages[ numStages ] = tmpDiffuseStage;
+			tmpStages[ numStages ].type = stageType_t::ST_COLLAPSE_lighting_DBM;
+
+			tmpStages[ numStages ].bundle[ TB_NORMALMAP ] = tmpNormalStage.bundle[ 0 ];
+
+			tmpStages[ numStages ].bundle[ TB_MATERIALMAP ] = tmpMaterialStage.bundle[ 0 ];
 
 			numStages++;
 			j += 2;
@@ -4433,6 +4477,55 @@ static shader_t *FinishShader()
 
 	ret = GeneratePermanentShader();
 
+	// generate depth-only shader if necessary
+	if( !shader.isSky &&
+	    shader.numStages > 0 &&
+	    (stages[0].stateBits & GLS_DEPTHMASK_TRUE) &&
+	    !(stages[0].stateBits & GLS_DEPTHFUNC_EQUAL) &&
+	    !(shader.type == shaderType_t::SHADER_2D) &&
+	    !shader.polygonOffset ) {
+		// keep only the first stage
+		stages[1].active = false;
+		shader.numStages = 1;
+		strcat(shader.name, "$depth");
+
+		if( stages[0].stateBits & GLS_ATEST_BITS ) {
+			// alpha test requires a custom depth shader
+			shader.sort = Util::ordinal( shaderSort_t::SS_DEPTH );
+			stages[0].stateBits &= ~GLS_SRCBLEND_BITS & ~GLS_DSTBLEND_BITS;
+			stages[0].stateBits |= GLS_COLORMASK_BITS;
+			stages[0].type = stageType_t::ST_COLORMAP;
+
+			ret->depthShader = GeneratePermanentShader();
+		} else if ( shader.cullType == 0 &&
+			    shader.numDeforms == 0 &&
+			    tr.defaultShader ) {
+			// can use the default depth shader
+			ret->depthShader = tr.defaultShader->depthShader;
+		} else {
+			// requires a custom depth shader, but can skip
+			// the texturing
+			shader.sort = Util::ordinal( shaderSort_t::SS_DEPTH );
+			stages[0].stateBits &= ~GLS_SRCBLEND_BITS & ~GLS_DSTBLEND_BITS;
+			stages[0].stateBits |= GLS_COLORMASK_BITS;
+			stages[0].type = stageType_t::ST_COLORMAP;
+
+			stages[0].bundle[0].image[0] = tr.whiteImage;
+			stages[0].bundle[0].numTexMods = 0;
+			stages[0].tcGen_Environment = false;
+			stages[0].tcGen_Lightmap = false;
+			stages[0].rgbGen = colorGen_t::CGEN_IDENTITY;
+			stages[0].alphaGen = alphaGen_t::AGEN_IDENTITY;
+
+			ret->depthShader = GeneratePermanentShader();
+		}
+		// disable depth writes in the main pass
+		ret->stages[0]->stateBits &= ~GLS_DEPTHMASK_TRUE;
+	} else {
+		ret->depthShader = NULL;
+	}
+
+	// load all altShaders recursively
 	for ( i = 1; i < MAX_ALTSHADERS; ++i )
 	{
 		if ( ret->altShader[ i ].name )
@@ -5067,6 +5160,10 @@ void R_ShaderList_f()
 		{
 			str += "lighting_DBS   ";
 		}
+		else if ( shader->collapseType == collapseType_t::COLLAPSE_lighting_DBM )
+		{
+			str += "lighting_DBM   ";
+		}
 		else if ( shader->collapseType == collapseType_t::COLLAPSE_reflection_CB )
 		{
 			str += "reflection_CB  ";
@@ -5083,6 +5180,10 @@ void R_ShaderList_f()
 		else if ( shader->sort == Util::ordinal(shaderSort_t::SS_PORTAL) )
 		{
 			str += "SS_PORTAL           ";
+		}
+		else if ( shader->sort == Util::ordinal(shaderSort_t::SS_DEPTH) )
+		{
+			str += "SS_DEPTH            ";
 		}
 		else if ( shader->sort == Util::ordinal(shaderSort_t::SS_ENVIRONMENT_FOG) )
 		{
