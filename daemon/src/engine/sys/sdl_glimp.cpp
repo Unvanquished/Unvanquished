@@ -978,9 +978,34 @@ static bool LoadExtWithCvar( bool hasExt, const char* name, bool cvarValue )
 	return false;
 }
 
+/*
+	load extensions that were made a required part of OpenGL core profile by version 3.2
+*/
+static bool LoadCoreExtWithCvar(bool hasExt, const char* name, bool cvarValue)
+{
+	if (hasExt || glConfig2.glCoreProfile)
+	{
+		if (cvarValue)
+		{
+			Log::Notice("...using GL_%s", name);
+			return true;
+		}
+		else
+		{
+			Log::Notice("...ignoring GL_%s", name);
+		}
+	}
+	else
+	{
+		Log::Notice("...GL_%s not found", name);
+	}
+	return false;
+}
 #define REQUIRE_EXTENSION(ext) RequireExt(GLEW_##ext, #ext)
 
 #define LOAD_EXTENSION_WITH_CVAR(ext, cvar) LoadExtWithCvar(GLEW_##ext, #ext, cvar->value)
+
+#define LOAD_CORE_EXTENSION_WITH_CVAR(ext, cvar) LoadCoreExtWithCvar(GLEW_##ext, #ext, cvar->value)
 
 static void GLimp_InitExtensions()
 {
@@ -993,8 +1018,9 @@ static void GLimp_InitExtensions()
 	}
 
 	// Shaders
-	REQUIRE_EXTENSION( ARB_fragment_shader );
-	REQUIRE_EXTENSION( ARB_vertex_shader );
+	// made required in OpenGL 2.0, depreciated extension may not be available
+	//REQUIRE_EXTENSION( ARB_fragment_shader );
+	//REQUIRE_EXTENSION( ARB_vertex_shader );
 
 	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &glConfig2.maxVertexUniforms );
 	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS_ARB, &glConfig2.maxVertexAttribs );
@@ -1004,7 +1030,8 @@ static void GLimp_InitExtensions()
 	glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? true : false );
 
 	// GLSL
-	REQUIRE_EXTENSION( ARB_shading_language_100 );
+	// made required in OpenGL 2.0, depreciated extension may not be available
+	//REQUIRE_EXTENSION( ARB_shading_language_100 );
 
 	Q_strncpyz( glConfig2.shadingLanguageVersionString, ( char * ) glGetString( GL_SHADING_LANGUAGE_VERSION_ARB ),
 				sizeof( glConfig2.shadingLanguageVersionString ) );
@@ -1018,20 +1045,33 @@ static void GLimp_InitExtensions()
 	Log::Notice("...found shading language version %i", glConfig2.shadingLanguageVersion );
 
 	// Texture formats and compression
-	REQUIRE_EXTENSION( ARB_depth_texture );
+	// made required in OpenGL 1.4, depreciated extension may not be available
+	//REQUIRE_EXTENSION( ARB_depth_texture );
 
-	REQUIRE_EXTENSION( ARB_texture_cube_map );
+	// made required in OpenGL 1.3, depreciated extension may not be available
+	//REQUIRE_EXTENSION( ARB_texture_cube_map );
 	glGetIntegerv( GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB, &glConfig2.maxCubeMapTextureSize );
 
-	glConfig2.textureHalfFloatAvailable =  LOAD_EXTENSION_WITH_CVAR(ARB_half_float_pixel, r_ext_half_float_pixel);
-	glConfig2.textureFloatAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_float, r_ext_texture_float);
-	glConfig2.textureIntegerAvailable = LOAD_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer);
-	glConfig2.textureRGAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
+	// made required in OpenGL 3.0
+	glConfig2.textureHalfFloatAvailable =  LOAD_CORE_EXTENSION_WITH_CVAR(ARB_half_float_pixel, r_ext_half_float_pixel);
+
+	// made required in OpenGL 3.0
+	glConfig2.textureFloatAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_float, r_ext_texture_float);
+
+	// made required in OpenGL 3.0
+	glConfig2.textureIntegerAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer);
+
+	// made required in OpenGL 3.0
+	glConfig2.textureRGAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
 
 	// TODO figure out what was the problem with MESA
-	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != glDriverType_t::GLDRV_MESA && LOAD_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
+	// made required in OpenGL 3.0
+	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != glDriverType_t::GLDRV_MESA && LOAD_CORE_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
 
-	glConfig2.ARBTextureCompressionAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_compression, r_ext_compressed_textures);
+	// made required in OpenGL 1.3
+	// ARB_texture_compression
+	glConfig2.ARBTextureCompressionAvailable = r_ext_compressed_textures->integer != 0;
+
 	glConfig.textureCompression = textureCompression_t::TC_NONE;
 	if( LOAD_EXTENSION_WITH_CVAR(EXT_texture_compression_s3tc, r_ext_compressed_textures) )
 	{
@@ -1040,7 +1080,9 @@ static void GLimp_InitExtensions()
 	//REQUIRE_EXTENSION(EXT_texture3D);
 
 	// Texture - others
-	glConfig2.textureNPOTAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_non_power_of_two, r_ext_texture_non_power_of_two);
+	// made required in OpenGL 2.0, depreciated extension may not be available
+	// ARB_texture_non_power_of_two
+	glConfig2.textureNPOTAvailable = r_ext_texture_non_power_of_two->integer != 0;
 	glConfig2.generateMipmapAvailable = LOAD_EXTENSION_WITH_CVAR(SGIS_generate_mipmap, r_ext_generate_mipmap);
 
 	glConfig2.textureAnisotropyAvailable = false;
@@ -1051,9 +1093,16 @@ static void GLimp_InitExtensions()
 	}
 
 	// VAO and VBO
+	// made required in OpenGL 3.0
 	//REQUIRE_EXTENSION( ARB_vertex_array_object );
-	REQUIRE_EXTENSION( ARB_vertex_buffer_object );
+
+	// made required in OpenGL 1.5
+	//REQUIRE_EXTENSION( ARB_vertex_buffer_object );
+
+	// made required in OpenGL 3.0
 	REQUIRE_EXTENSION( ARB_half_float_vertex );
+
+	// made required in OpenGL 3.0
 	REQUIRE_EXTENSION( ARB_framebuffer_object );
 
 	// FBO
@@ -1061,18 +1110,21 @@ static void GLimp_InitExtensions()
 	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &glConfig2.maxColorAttachments );
 
 	// Other
-	REQUIRE_EXTENSION( ARB_shader_objects );
+	// made required in OpenGL 2.0
+	//REQUIRE_EXTENSION( ARB_shader_objects );
 
+	// made required in OpenGL 1.5
 	glConfig2.occlusionQueryAvailable = false;
 	glConfig2.occlusionQueryBits = 0;
-	if ( LOAD_EXTENSION_WITH_CVAR(ARB_occlusion_query, r_ext_occlusion_query) )
+	if ( r_ext_occlusion_query->integer != 0 )
 	{
 		glConfig2.occlusionQueryAvailable = true;
 		glGetQueryivARB( GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &glConfig2.occlusionQueryBits );
 	}
 
+	// made required in OpenGL 2.0
 	glConfig2.drawBuffersAvailable = false;
-	if ( LOAD_EXTENSION_WITH_CVAR(ARB_draw_buffers, r_ext_draw_buffers) )
+	if ( r_ext_draw_buffers->integer != 0 )
 	{
 		glGetIntegerv( GL_MAX_DRAW_BUFFERS_ARB, &glConfig2.maxDrawBuffers );
 		glConfig2.drawBuffersAvailable = true;
@@ -1134,8 +1186,11 @@ static void GLimp_InitExtensions()
 		glConfig2.bufferStorageAvailable = false;
 	}
 
-	glConfig2.mapBufferRangeAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );
-	glConfig2.syncAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_sync, r_arb_sync );
+	// made required in OpenGL 3.0
+	glConfig2.mapBufferRangeAvailable = LOAD_CORE_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );
+
+	// made required in OpenGL 3.2
+	glConfig2.syncAvailable = LOAD_CORE_EXTENSION_WITH_CVAR( ARB_sync, r_arb_sync );
 
 	GL_CheckErrors();
 }
