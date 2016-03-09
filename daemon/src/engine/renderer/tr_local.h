@@ -2740,7 +2740,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int             numFBOs;
 		FBO_t           *fbos[ MAX_FBOS ];
 
-		GLuint          vao;
 		GLuint          dlightUBO;
 
 		growList_t      vbos;
@@ -2870,9 +2869,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_fullscreen;
 	extern cvar_t *r_gamma;
 
-	extern cvar_t *r_ext_compressed_textures; // these control use of specific extensions
-	extern cvar_t *r_ext_occlusion_query;
-	extern cvar_t *r_ext_texture_non_power_of_two;
+	extern cvar_t *r_ext_occlusion_query; // these control use of specific extensions
 	extern cvar_t *r_ext_draw_buffers;
 	extern cvar_t *r_ext_vertex_array_object;
 	extern cvar_t *r_ext_half_float_pixel;
@@ -2881,7 +2878,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_ext_texture_rg;
 	extern cvar_t *r_ext_texture_filter_anisotropic;
 	extern cvar_t *r_ext_packed_depth_stencil;
-	extern cvar_t *r_ext_generate_mipmap;
 	extern cvar_t *r_arb_buffer_storage;
 	extern cvar_t *r_arb_map_buffer_range;
 	extern cvar_t *r_arb_sync;
@@ -2889,7 +2885,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_nobind; // turns off binding to appropriate textures
 	extern cvar_t *r_collapseStages;
 	extern cvar_t *r_singleShader; // make most world faces use default shader
-	extern cvar_t *r_roundImagesDown;
 	extern cvar_t *r_colorMipLevels; // development aid to see texture mip usage
 	extern cvar_t *r_picmip; // controls picmip values
 	extern cvar_t *r_finish;

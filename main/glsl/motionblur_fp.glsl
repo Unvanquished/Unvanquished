@@ -41,9 +41,6 @@ void	main()
 	// calculate the screen texcoord in the 0.0 to 1.0 range
 	st *= r_FBufScale;
 
-	// scale by the screen non-power-of-two-adjust
-	st *= r_NPOTScale;
-
 	float depth = texture2D( u_DepthMap, st ).r;
 
 	if( depth >= 1.0 ) {

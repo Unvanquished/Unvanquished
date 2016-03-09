@@ -1017,11 +1017,7 @@ static void GLimp_InitExtensions()
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB );
 	}
 
-	// Shaders
-	// made required in OpenGL 2.0, depreciated extension may not be available
-	//REQUIRE_EXTENSION( ARB_fragment_shader );
-	//REQUIRE_EXTENSION( ARB_vertex_shader );
-
+	// Shader limits
 	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &glConfig2.maxVertexUniforms );
 	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS_ARB, &glConfig2.maxVertexAttribs );
 
@@ -1030,8 +1026,6 @@ static void GLimp_InitExtensions()
 	glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? true : false );
 
 	// GLSL
-	// made required in OpenGL 2.0, depreciated extension may not be available
-	//REQUIRE_EXTENSION( ARB_shading_language_100 );
 
 	Q_strncpyz( glConfig2.shadingLanguageVersionString, ( char * ) glGetString( GL_SHADING_LANGUAGE_VERSION_ARB ),
 				sizeof( glConfig2.shadingLanguageVersionString ) );
@@ -1045,11 +1039,6 @@ static void GLimp_InitExtensions()
 	Log::Notice("...found shading language version %i", glConfig2.shadingLanguageVersion );
 
 	// Texture formats and compression
-	// made required in OpenGL 1.4, depreciated extension may not be available
-	//REQUIRE_EXTENSION( ARB_depth_texture );
-
-	// made required in OpenGL 1.3, depreciated extension may not be available
-	//REQUIRE_EXTENSION( ARB_texture_cube_map );
 	glGetIntegerv( GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB, &glConfig2.maxCubeMapTextureSize );
 
 	// made required in OpenGL 3.0
@@ -1069,26 +1058,16 @@ static void GLimp_InitExtensions()
 	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != glDriverType_t::GLDRV_MESA && LOAD_CORE_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
 
 	// made required in OpenGL 1.3
-	// ARB_texture_compression
-	glConfig2.ARBTextureCompressionAvailable = r_ext_compressed_textures->integer != 0;
-
 	glConfig.textureCompression = textureCompression_t::TC_NONE;
-	if( LOAD_EXTENSION_WITH_CVAR(EXT_texture_compression_s3tc, r_ext_compressed_textures) )
+	if( GLEW_EXT_texture_compression_s3tc )
 	{
 		glConfig.textureCompression = textureCompression_t::TC_S3TC;
 	}
 
 	// made required in OpenGL 3.0
-	glConfig2.textureCompressionRGTCAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_compression_rgtc, r_ext_compressed_textures);
-
-	//REQUIRE_EXTENSION(EXT_texture3D);
+	glConfig2.textureCompressionRGTCAvailable = glConfig2.glCoreProfile || GLEW_ARB_texture_compression_rgtc;
 
 	// Texture - others
-	// made required in OpenGL 2.0, depreciated extension may not be available
-	// ARB_texture_non_power_of_two
-	glConfig2.textureNPOTAvailable = r_ext_texture_non_power_of_two->integer != 0;
-	glConfig2.generateMipmapAvailable = LOAD_EXTENSION_WITH_CVAR(SGIS_generate_mipmap, r_ext_generate_mipmap);
-
 	glConfig2.textureAnisotropyAvailable = false;
 	if ( LOAD_EXTENSION_WITH_CVAR(EXT_texture_filter_anisotropic, r_ext_texture_filter_anisotropic) )
 	{
@@ -1097,25 +1076,17 @@ static void GLimp_InitExtensions()
 	}
 
 	// VAO and VBO
-	// made required in OpenGL 3.0
-	//REQUIRE_EXTENSION( ARB_vertex_array_object );
+	if( !glConfig2.glCoreProfile ) {
+		// made required in OpenGL 3.0
+		REQUIRE_EXTENSION( ARB_half_float_vertex );
 
-	// made required in OpenGL 1.5
-	//REQUIRE_EXTENSION( ARB_vertex_buffer_object );
-
-	// made required in OpenGL 3.0
-	REQUIRE_EXTENSION( ARB_half_float_vertex );
-
-	// made required in OpenGL 3.0
-	REQUIRE_EXTENSION( ARB_framebuffer_object );
+		// made required in OpenGL 3.0
+		REQUIRE_EXTENSION( ARB_framebuffer_object );
+	}
 
 	// FBO
 	glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE, &glConfig2.maxRenderbufferSize );
 	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &glConfig2.maxColorAttachments );
-
-	// Other
-	// made required in OpenGL 2.0
-	//REQUIRE_EXTENSION( ARB_shader_objects );
 
 	// made required in OpenGL 1.5
 	glConfig2.occlusionQueryAvailable = false;
@@ -1132,16 +1103,6 @@ static void GLimp_InitExtensions()
 	{
 		glGetIntegerv( GL_MAX_DRAW_BUFFERS, &glConfig2.maxDrawBuffers );
 		glConfig2.drawBuffersAvailable = true;
-	}
-
-	// gDEBugger debug
-	if ( GLEW_GREMEDY_string_marker )
-	{
-		Log::Notice("...using GL_GREMEDY_string_marker" );
-	}
-	else
-	{
-		Log::Notice("...GL_GREMEDY_string_marker not found" );
 	}
 
 #ifdef GLEW_ARB_get_program_binary
@@ -1529,11 +1490,15 @@ void GLimp_LogComment( const char *comment )
 {
 	static char buf[ 4096 ];
 
-	if ( r_logFile->integer && GLEW_GREMEDY_string_marker )
+	if ( r_logFile->integer && GLEW_ARB_debug_output )
 	{
 		// copy string and ensure it has a trailing '\0'
 		Q_strncpyz( buf, comment, sizeof( buf ) );
 
-		glStringMarkerGREMEDY( strlen( buf ), buf );
+		glDebugMessageInsertARB( GL_DEBUG_SOURCE_APPLICATION_ARB,
+					 GL_DEBUG_TYPE_OTHER_ARB,
+					 0,
+					 GL_DEBUG_SEVERITY_MEDIUM_ARB,
+					 strlen( buf ), buf );
 	}
 }

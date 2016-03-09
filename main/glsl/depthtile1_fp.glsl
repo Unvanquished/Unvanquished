@@ -29,7 +29,7 @@ varying vec3 unprojectionParams;
 
 uniform vec3 u_zFar;
 
-const vec2 pixelScale = r_FBufScale * r_NPOTScale;
+const vec2 pixelScale = r_FBufScale;
 
 #if __VERSION__ > 120
 out vec4 outputColor;

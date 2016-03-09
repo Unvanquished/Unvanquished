@@ -472,16 +472,6 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 
 	AddDefine( env, "r_FBufScale", fbufWidthScale, fbufHeightScale );
 
-	float npotWidthScale = 1;
-	float npotHeightScale = 1;
-
-	if ( !glConfig2.textureNPOTAvailable )
-	{
-		npotWidthScale = ( float ) glConfig.vidWidth / ( float ) NearestPowerOfTwo( glConfig.vidWidth );
-		npotHeightScale = ( float ) glConfig.vidHeight / ( float ) NearestPowerOfTwo( glConfig.vidHeight );
-	}
-
-	AddDefine( env, "r_NPOTScale", npotWidthScale, npotHeightScale );
 	AddDefine( env, "r_tileStep", glState.tileStep[ 0 ], glState.tileStep[ 1 ] );
 
 	if ( glConfig.driverType == glDriverType_t::GLDRV_MESA )
