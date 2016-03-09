@@ -36,31 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace Rcon {
 
-Cvar::Cvar<std::string> cvar_server_password(
-    "rcon.server.password",
-    "Password used to protect the remote console",
-    Cvar::NONE,
-    ""
-);
-
-Cvar::Range<Cvar::Cvar<int>> cvar_server_secure(
-    "rcon.server.secure",
-    "How secure the Rcon protocol should be: "
-        "0: Allow unencrypted rcon, "
-        "1: Require encryption, "
-        "2: Require encryption and challenge check",
-    Cvar::NONE,
-    0,
-    0,
-    2
-);
-
-Cvar::Cvar<std::string> cvar_client_destination(
-    "rcon.client.destination",
-    "Destination address for rcon commands, if empty the current server.",
-    Cvar::NONE,
-    ""
-);
 
 Message::Message( const netadr_t& remote, std::string command,
 				  Secure secure, std::string password, std::string challenge )
@@ -75,38 +50,6 @@ Message::Message( std::string error_message )
 	: error(std::move(error_message))
 {}
 
-const std::string& Message::Command() const
-{
-	return command;
-}
-
-void Message::Send() const
-{
-	if ( secure == Secure::Unencrypted )
-	{
-		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, remote, "rcon %s %s", password, command);
-		return;
-	}
-
-	std::string method = "PLAIN";
-	Crypto::Data key = Crypto::Hash::Sha256(Crypto::String(password));
-	std::string plaintext = command;
-
-	if ( secure == Secure::EncryptedChallenge )
-	{
-		method = "CHALLENGE";
-		plaintext = challenge + ' ' + plaintext;
-	}
-
-	Crypto::Data cypher;
-	if ( Crypto::Aes256Encrypt(Crypto::String(plaintext), key, cypher) )
-	{
-		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, remote, "srcon %s %s",
-			method,
-			Crypto::String(Crypto::Encoding::Base64Encode(cypher))
-		);
-	}
-}
 
 bool Message::Valid(std::string *invalid_reason) const
 {
@@ -143,110 +86,6 @@ bool Message::Valid(std::string *invalid_reason) const
 	}
 
 	return true;
-}
-
-
-bool Message::Acceptable(std::string *invalid_reason) const
-{
-	auto invalid = [invalid_reason](const char* reason)
-	{
-		if ( invalid_reason )
-			*invalid_reason = reason;
-		return false;
-	};
-
-	if ( !Valid(invalid_reason) )
-	{
-		return false;
-	}
-
-	if ( secure < Secure(cvar_server_secure.Get()) )
-	{
-		return invalid("Weak security");
-	}
-
-	if ( cvar_server_password.Get().empty() )
-	{
-		return invalid("No rcon.server.password set on the server.");
-	}
-
-	if ( password != cvar_server_password.Get() )
-	{
-		return invalid("Bad password");
-	}
-
-	if ( secure == Secure::EncryptedChallenge )
-	{
-		if ( !ChallengeManager::MatchString(remote, challenge) )
-		{
-			return invalid("Mismatched challenge");
-		}
-	}
-
-	return true;
-}
-
-Message Message::Decode(const netadr_t& remote, const Cmd::Args& args)
-{
-	if ( args.size() < 3 || (args[0] != "rcon" && args[0] != "srcon") )
-	{
-		return Message("Invalid command");
-	}
-
-	if ( cvar_server_password.Get().empty() )
-	{
-		return Message("rcon.server.password not set");
-	}
-
-	if ( args[0] == "rcon" )
-	{
-		return Message(remote, args.EscapedArgs(2), Secure::Unencrypted, args[1]);
-	}
-
-	auto authentication = args[1];
-	Crypto::Data cyphertext = Crypto::String(args[2]);
-
-	Crypto::Data data;
-	if ( !Crypto::Encoding::Base64Decode( cyphertext, data ) )
-	{
-		return Message("Invalid Base64 string");
-	}
-
-	Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( Rcon::cvar_server_password.Get() ) );
-
-	if ( !Crypto::Aes256Decrypt( data, key, data ) )
-	{
-		return Message("Error during decryption");
-	}
-
-	std::string command = Crypto::String( data );
-
-	if ( authentication == "CHALLENGE" )
-	{
-		std::istringstream stream( command );
-		std::string challenge_hex;
-		stream >> challenge_hex;
-
-		while ( Str::cisspace( stream.peek() ) )
-		{
-			stream.ignore();
-		}
-
-		std::getline( stream, command );
-
-		return Message(remote, command, Secure::EncryptedChallenge,
-			Rcon::cvar_server_password.Get(), challenge_hex);
-	}
-	else if ( authentication == "PLAIN" )
-	{
-		return Message(remote, command, Secure::EncryptedPlain,
-			Rcon::cvar_server_password.Get());
-	}
-	else
-	{
-		return Message(remote, command, Secure::Invalid,
-			Rcon::cvar_server_password.Get());
-	}
 }
 
 } // namespace Rcon

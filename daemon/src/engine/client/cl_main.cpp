@@ -47,6 +47,7 @@ cvar_t *cl_wavefilerecord;
 #include "mumblelink/libmumblelink.h"
 #include "qcommon/crypto.h"
 #include "framework/Rcon.h"
+#include "framework/Crypto.h"
 #include "framework/Network.h"
 
 #ifndef _WIN32
@@ -1428,12 +1429,70 @@ void CL_Connect_f()
 	Cvar_Set( "cl_currentServerIP", serverString );
 }
 
+
+static Cvar::Cvar<std::string> cvar_rcon_client_destination(
+    "rcon.client.destination",
+    "Destination address for rcon commands, if empty the current server.",
+    Cvar::NONE,
+    ""
+);
+
+static Cvar::Cvar<std::string> cvar_rcon_client_password(
+    "rcon.client.password",
+    "Password used to protect the remote console",
+    Cvar::NONE,
+    ""
+);
+
+static Cvar::Range<Cvar::Cvar<int>> cvar_rcon_client_secure(
+    "rcon.client.secure",
+    "How secure the Rcon protocol should be: "
+        "0: Allow unencrypted rcon, "
+        "1: Require encryption, "
+        "2: Require encryption and challenge check",
+    Cvar::NONE,
+    0,
+    0,
+    2
+);
+
+/*
+ * Sends the message to the remote server
+ */
+static void CL_RconDeliver(const Rcon::Message &message)
+{
+    if ( message.secure == Rcon::Secure::Unencrypted )
+    {
+        Net::OutOfBandPrint(netsrc_t::NS_CLIENT, message.remote, "rcon %s %s", message.password, message.command);
+        return;
+    }
+
+    std::string method = "PLAIN";
+    Crypto::Data key = Crypto::Hash::Sha256(Crypto::String(message.password));
+    std::string plaintext = message.command;
+
+    if ( message.secure == Rcon::Secure::EncryptedChallenge )
+    {
+        method = "CHALLENGE";
+        plaintext = message.challenge + ' ' + plaintext;
+    }
+
+    Crypto::Data cypher;
+    if ( Crypto::Aes256Encrypt(Crypto::String(plaintext), key, cypher) )
+    {
+        Net::OutOfBandPrint(netsrc_t::NS_CLIENT, message.remote, "srcon %s %s",
+            method,
+            Crypto::String(Crypto::Encoding::Base64Encode(cypher))
+        );
+    }
+}
+
 static void CL_RconSend(const Rcon::Message &message)
 {
 	std::string invalid_reason;
 	if ( message.Valid(&invalid_reason) )
 	{
-		message.Send();
+		CL_RconDeliver(message);
 	}
 	else
 	{
@@ -1476,7 +1535,7 @@ public:
 				server,
 				it->command,
 				Rcon::Secure::EncryptedChallenge,
-				Rcon::cvar_server_password.Get(),
+				cvar_rcon_client_password.Get(),
 				challenge
 			));
 		}
@@ -1500,10 +1559,10 @@ CL_Rcon_f
 */
 void CL_Rcon_f()
 {
-	if ( Rcon::cvar_server_password.Get().empty() )
+	if ( cvar_rcon_client_password.Get().empty() )
 	{
-		Log::Notice("You must set '%s' before issuing an rcon command.\n",
-				   "rcon.server.password");
+		Log::Notice("You must set '%s' before issuing an rcon command.",
+			cvar_rcon_client_password.Name());
 		return;
 	}
 
@@ -1514,16 +1573,16 @@ void CL_Rcon_f()
 	}
 	else
 	{
-		if ( Rcon::cvar_client_destination.Get().empty() )
+		if ( cvar_rcon_client_destination.Get().empty() )
 		{
-			Log::Notice( "Connect to a server or set the '%s' cvar to issue rcon commands\n",
-				"rcon.client.destination"
+			Log::Notice( "Connect to a server or set the '%s' cvar to issue rcon commands",
+				cvar_rcon_client_destination.Name()
 			);
 
 			return;
 		}
 
-		NET_StringToAdr( Rcon::cvar_client_destination.Get().c_str(), &to, netadrtype_t::NA_UNSPEC );
+		NET_StringToAdr( cvar_rcon_client_destination.Get().c_str(), &to, netadrtype_t::NA_UNSPEC );
 
 		if ( to.port == 0 )
 		{
@@ -1531,7 +1590,7 @@ void CL_Rcon_f()
 		}
 	}
 
-	if ( Rcon::Secure(Rcon::cvar_server_secure.Get()) == Rcon::Secure::EncryptedChallenge )
+	if ( Rcon::Secure(cvar_rcon_client_secure.Get()) == Rcon::Secure::EncryptedChallenge )
 	{
 		CL_RconChallengeQueue.Push({to, Cmd::GetCurrentArgs().EscapedArgs(1)});
 		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, to, "getchallenge");
@@ -1541,8 +1600,8 @@ void CL_Rcon_f()
 		CL_RconSend(Rcon::Message(
 			to,
 			Cmd::GetCurrentArgs().EscapedArgs(1),
-			Rcon::Secure(Rcon::cvar_server_secure.Get()),
-			Rcon::cvar_server_password.Get()
+			Rcon::Secure(cvar_rcon_client_secure.Get()),
+			cvar_rcon_client_password.Get()
 		));
 	}
 }

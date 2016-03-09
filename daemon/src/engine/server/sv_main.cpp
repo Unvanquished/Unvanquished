@@ -819,31 +819,159 @@ private:
 	std::size_t bufferSize;
 };
 
+static Cvar::Cvar<std::string> cvar_rcon_server_password(
+    "rcon.server.password",
+    "Password used to protect the remote console",
+    Cvar::NONE,
+    ""
+);
+
+static Cvar::Range<Cvar::Cvar<int>> cvar_rcon_server_secure(
+    "rcon.server.secure",
+    "How secure the Rcon protocol should be: "
+        "0: Allow unencrypted rcon, "
+        "1: Require encryption, "
+        "2: Require encryption and challenge check",
+    Cvar::NONE,
+    0,
+    0,
+    2
+);
+
+/*
+ * Checks whether the message is acceptable by the server,
+ * it must be valid and match the rcon settings and challenges.
+ */
+static bool RconAcceptable(const Rcon::Message& msg, std::string *invalid_reason = nullptr)
+{
+    auto invalid = [invalid_reason](const char* reason)
+    {
+        if ( invalid_reason )
+            *invalid_reason = reason;
+        return false;
+    };
+
+    if ( !msg.Valid(invalid_reason) )
+    {
+        return false;
+    }
+
+    if ( msg.secure < Rcon::Secure(cvar_rcon_server_secure.Get()) )
+    {
+        return invalid("Weak security");
+    }
+
+    if ( cvar_rcon_server_password.Get().empty() )
+    {
+        return invalid("No rcon.server.password set on the server.");
+    }
+
+    if ( msg.password != cvar_rcon_server_password.Get() )
+    {
+        return invalid("Bad password");
+    }
+
+    if ( msg.secure == Rcon::Secure::EncryptedChallenge )
+    {
+        if ( !ChallengeManager::MatchString(msg.remote, msg.challenge) )
+        {
+            return invalid("Mismatched challenge");
+        }
+    }
+
+    return true;
+}
+
+/*
+ * Decodes the arguments of an out of band message received by the server
+ */
+static Rcon::Message RconDecode(const netadr_t& remote, const Cmd::Args& args)
+{
+    if ( args.size() < 3 || (args[0] != "rcon" && args[0] != "srcon") )
+    {
+        return Rcon::Message("Invalid command");
+    }
+
+    if ( cvar_rcon_server_password.Get().empty() )
+    {
+        return Rcon::Message("rcon.server.password not set");
+    }
+
+    if ( args[0] == "rcon" )
+    {
+        return Rcon::Message(remote, args.EscapedArgs(2), Rcon::Secure::Unencrypted, args[1]);
+    }
+
+    auto authentication = args[1];
+    Crypto::Data cyphertext = Crypto::String(args[2]);
+
+    Crypto::Data data;
+    if ( !Crypto::Encoding::Base64Decode( cyphertext, data ) )
+    {
+        return Rcon::Message("Invalid Base64 string");
+    }
+
+    Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( cvar_rcon_server_password.Get() ) );
+
+    if ( !Crypto::Aes256Decrypt( data, key, data ) )
+    {
+        return Rcon::Message("Error during decryption");
+    }
+
+    std::string command = Crypto::String( data );
+
+    if ( authentication == "CHALLENGE" )
+    {
+        std::istringstream stream( command );
+        std::string challenge_hex;
+        stream >> challenge_hex;
+
+        while ( Str::cisspace( stream.peek() ) )
+        {
+            stream.ignore();
+        }
+
+        std::getline( stream, command );
+
+        return Rcon::Message(remote, command, Rcon::Secure::EncryptedChallenge,
+            cvar_rcon_server_password.Get(), challenge_hex);
+    }
+    else if ( authentication == "PLAIN" )
+    {
+        return Rcon::Message(remote, command, Rcon::Secure::EncryptedPlain,
+            cvar_rcon_server_password.Get());
+    }
+    else
+    {
+        return Rcon::Message(remote, command, Rcon::Secure::Invalid,
+            cvar_rcon_server_password.Get());
+    }
+}
+
 static int RemoteCommandThrottle()
 {
-	static int lasttime = 0;
-	int time = Com_Milliseconds();
-	int delta = time - lasttime;
-	lasttime = time;
+    static int lasttime = 0;
+    int time = Com_Milliseconds();
+    int delta = time - lasttime;
+    lasttime = time;
 
-	return delta;
+    return delta;
 }
 
 void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 {
 	int throttle_delta = RemoteCommandThrottle();
 
-
 	if ( throttle_delta < 180 )
 	{
 		return;
 	}
 
-	Rcon::Message message = Rcon::Message::Decode(from, args);
+	Rcon::Message message = RconDecode(from, args);
 
 	std::string invalid_reason;
 
-	if ( !message.Acceptable(&invalid_reason) )
+	if ( !RconAcceptable(message, &invalid_reason) )
 	{
 		// If the rconpassword is bad and one just happned recently, don't spam the log file, just die.
 		if ( throttle_delta < 600 )
@@ -863,11 +991,11 @@ void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 	}
 	else
 	{
-		Log::Notice( "Rcon from %s:\n%s\n", Net::AddressToString( from ), message.Command().c_str() );
+		Log::Notice( "Rcon from %s:\n%s\n", Net::AddressToString( from ), message.command.c_str() );
 
 		// start redirecting all print outputs to the packet
 		auto env = RconEnvironment(from);
-		Cmd::ExecuteCommand(message.Command(), true, &env);
+		Cmd::ExecuteCommand(message.command, true, &env);
 		Cmd::ExecuteCommandBuffer();
 		env.Flush();
 	}
@@ -883,10 +1011,10 @@ static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
 
 	int duration_seconds = std::chrono::duration_cast<std::chrono::seconds>(Challenge::Timeout()).count();
 	std::string rcon_info_string = InfoMapToString({
-		{"secure",     std::to_string(Rcon::cvar_server_secure.Get())},
+		{"secure",     std::to_string(cvar_rcon_server_secure.Get())},
 		{"encryption", "AES256"},
 		{"key",        "SHA256"},
-		{"challenge",  std::to_string(Rcon::cvar_server_secure.Get() >= 2)},
+		{"challenge",  std::to_string(cvar_rcon_server_secure.Get() >= 2)},
 		{"timeout",    std::to_string(duration_seconds)},
 	});
 	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string );

@@ -80,7 +80,6 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 		return;
 	}
 
-	auto challenge = userinfo["challenge"];
 	int qport = atoi( userinfo["qport"].c_str() );
 
 	auto clients_begin = svs.clients;
@@ -110,7 +109,7 @@ void SV_DirectConnect( netadr_t from, const Cmd::Args& args )
 	{
 		// see if the challenge is valid (local clients don't need to challenge)
 		Challenge::Duration ping_duration;
-		if ( !ChallengeManager::MatchString( from, challenge, &ping_duration ) )
+		if ( !ChallengeManager::MatchString( from, userinfo["challenge"], &ping_duration ) )
 		{
 			Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address." );
 			return;

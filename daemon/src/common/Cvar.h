@@ -73,6 +73,10 @@ namespace Cvar {
             // the user.
             virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue) = 0;
 
+            const std::string& Name() const {
+                return name;
+            }
+
         protected:
             std::string name;
 

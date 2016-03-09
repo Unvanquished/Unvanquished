@@ -61,28 +61,6 @@ public:
 	 */
 	bool Valid(std::string *invalid_reason = nullptr) const;
 
-	/*
-	 * Checks whether the message is acceptable by the server,
-	 * it must be valid and match the rcon settings and challenges.
-	 */
-	bool Acceptable(std::string *invalid_reason = nullptr) const;
-
-	/*
-	 * Sends the message to the remote server
-	 */
-	void Send() const;
-
-	/*
-	 * Command to be executed
-	 */
-	const std::string& Command() const;
-
-	/*
-	 * Decodes the arguments of an out of band message received by the server
-	 */
-	static Message Decode(const netadr_t& remote, const Cmd::Args& args);
-
-private:
 	Secure      secure;
 	std::string challenge;
 	std::string command;
@@ -90,10 +68,6 @@ private:
 	netadr_t    remote;
 	std::string error;
 };
-
-extern Cvar::Cvar<std::string> cvar_server_password;
-extern Cvar::Range<Cvar::Cvar<int>> cvar_server_secure;
-extern Cvar::Cvar<std::string> cvar_client_destination;
 
 } // namespace Rcon
 #endif // COMMON_RCON_H_
