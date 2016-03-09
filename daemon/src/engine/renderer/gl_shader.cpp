@@ -261,7 +261,7 @@ void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, sha
 		uniform->UpdateShaderProgramUniformLocation( shaderProgram );
 	}
 
-	if( GLEW_ARB_uniform_buffer_object || glConfig2.glCoreProfile ) {
+	if( glConfig2.uniformBufferObjectAvailable ) {
 		// create buffer for storing uniform block indexes
 		shaderProgram->uniformBlockIndexes = ( GLuint * ) ri.Z_Malloc( sizeof( GLuint ) * numUniformBlocks );
 

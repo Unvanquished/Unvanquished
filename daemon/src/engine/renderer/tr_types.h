@@ -373,6 +373,8 @@ struct glconfig_t
 struct glconfig2_t
 {
 	bool ARBTextureCompressionAvailable;
+	bool textureCompressionRGTCAvailable;
+
 	bool glCoreProfile;
 
 	int      maxCubeMapTextureSize;
@@ -408,6 +410,7 @@ struct glconfig2_t
 	bool generateMipmapAvailable;
 	bool getProgramBinaryAvailable;
 	bool bufferStorageAvailable;
+	bool uniformBufferObjectAvailable;
 	bool mapBufferRangeAvailable;
 	bool syncAvailable;
 };

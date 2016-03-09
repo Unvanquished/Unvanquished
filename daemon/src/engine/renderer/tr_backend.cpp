@@ -5417,7 +5417,7 @@ static const void *RB_SetupLights( const void *data )
 
 	cmd = ( const setupLightsCommand_t * ) data;
 
-	if( ( GLEW_ARB_uniform_buffer_object || glConfig2.glCoreProfile ) &&
+	if( ( glConfig2.uniformBufferObjectAvailable ) &&
 	    (numLights = cmd->refdef.numLights) > 0 ) {
 		shaderLight_t *buffer;
 

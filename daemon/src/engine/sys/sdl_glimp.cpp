@@ -1077,6 +1077,10 @@ static void GLimp_InitExtensions()
 	{
 		glConfig.textureCompression = textureCompression_t::TC_S3TC;
 	}
+
+	// made required in OpenGL 3.0
+	glConfig2.textureCompressionRGTCAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_compression_rgtc, r_ext_compressed_textures);
+
 	//REQUIRE_EXTENSION(EXT_texture3D);
 
 	// Texture - others
@@ -1185,6 +1189,9 @@ static void GLimp_InitExtensions()
 		Log::Notice("...GL_ARB_buffer_storage not found" );
 		glConfig2.bufferStorageAvailable = false;
 	}
+
+	// made required since OpenGL 3.1
+	glConfig2.uniformBufferObjectAvailable = GLEW_ARB_uniform_buffer_object || glConfig2.glCoreProfile;
 
 	// made required in OpenGL 3.0
 	glConfig2.mapBufferRangeAvailable = LOAD_CORE_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );

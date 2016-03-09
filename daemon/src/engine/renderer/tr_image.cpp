@@ -1222,7 +1222,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			blockSize = 16;
 		}
 		else if ( image->bits & IF_BC4 ) {
-			if( !GLEW_ARB_texture_compression_rgtc ) {
+			if( !glConfig2.textureCompressionRGTCAvailable ) {
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 				blockSize = 8;
@@ -1238,7 +1238,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			}
 		}
 		else if ( image->bits & IF_BC5 ) {
-			if( !GLEW_ARB_texture_compression_rgtc ) {
+			if( !glConfig2.textureCompressionRGTCAvailable ) {
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 				blockSize = 16;
