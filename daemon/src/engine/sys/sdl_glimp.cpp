@@ -1119,14 +1119,14 @@ static void GLimp_InitExtensions()
 	if ( r_ext_occlusion_query->integer != 0 )
 	{
 		glConfig2.occlusionQueryAvailable = true;
-		glGetQueryivARB( GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &glConfig2.occlusionQueryBits );
+		glGetQueryiv( GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &glConfig2.occlusionQueryBits );
 	}
 
 	// made required in OpenGL 2.0
 	glConfig2.drawBuffersAvailable = false;
 	if ( r_ext_draw_buffers->integer != 0 )
 	{
-		glGetIntegerv( GL_MAX_DRAW_BUFFERS_ARB, &glConfig2.maxDrawBuffers );
+		glGetIntegerv( GL_MAX_DRAW_BUFFERS, &glConfig2.maxDrawBuffers );
 		glConfig2.drawBuffersAvailable = true;
 	}
 
