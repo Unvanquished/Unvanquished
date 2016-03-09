@@ -2824,7 +2824,7 @@ void RB_RenderPostDepth()
 
 		GL_Viewport( 0, 0, tr.lighttileRenderImage->width, tr.lighttileRenderImage->height );
 		tess.numIndexes = 0;
-		tess.numVertexes = tr.depthtile2RenderImage->width * tr.depthtile2RenderImage->height;
+		tess.numVertexes = tr.lighttileVBO->vertexesNum;
 
 		GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD );
 		glEnable( GL_POINT_SPRITE );
