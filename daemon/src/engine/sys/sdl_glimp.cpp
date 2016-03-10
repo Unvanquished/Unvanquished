@@ -1152,7 +1152,7 @@ static void GLimp_InitExtensions()
 	}
 
 	// made required since OpenGL 3.1
-	glConfig2.uniformBufferObjectAvailable = GLEW_ARB_uniform_buffer_object || glConfig2.glCoreProfile;
+	glConfig2.uniformBufferObjectAvailable = LOAD_CORE_EXTENSION_WITH_CVAR( ARB_uniform_buffer_object, r_arb_uniform_buffer_object );
 
 	// made required in OpenGL 3.0
 	glConfig2.mapBufferRangeAvailable = LOAD_CORE_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );

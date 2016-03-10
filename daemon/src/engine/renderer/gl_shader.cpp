@@ -457,6 +457,12 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	if ( glConfig2.textureRGAvailable )
 		AddDefine( env, "TEXTURE_RG", 1 );
 
+	if ( glConfig2.uniformBufferObjectAvailable )
+		AddDefine( env, "UNIFORM_BUFFER_OBJECT", 1 );
+
+	if ( glConfig2.textureIntegerAvailable )
+		AddDefine( env, "TEXTURE_INTEGER", 1 );
+
 	AddDefine( env, "r_AmbientScale", r_ambientScale->value );
 	AddDefine( env, "r_SpecularScale", r_specularScale->value );
 	AddDefine( env, "r_NormalScale", r_normalScale->value );
@@ -1302,6 +1308,9 @@ void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram 
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ColorMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 1 );
+	if( !glConfig2.uniformBufferObjectAvailable ) {
+		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_Lights" ), 9 );
+	}
 }
 
 GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
@@ -1352,6 +1361,9 @@ void GLShader_lightMapping::SetShaderProgramUniforms( shaderProgram_t *shaderPro
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DeluxeMap" ), 4 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_GlowMap" ), 5 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightTiles" ), 8 );
+	if( !glConfig2.uniformBufferObjectAvailable ) {
+		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_Lights" ), 9 );
+	}
 }
 
 GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShaderManager *manager ) :
@@ -1410,6 +1422,9 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightTiles" ), 8 );
+	if( !glConfig2.uniformBufferObjectAvailable ) {
+		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_Lights" ), 9 );
+	}
 }
 
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderManager *manager ) :
@@ -1465,6 +1480,9 @@ void GLShader_vertexLighting_DBS_world::SetShaderProgramUniforms( shaderProgram_
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid1" ), 6 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightGrid2" ), 7 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_LightTiles" ), 8 );
+	if( !glConfig2.uniformBufferObjectAvailable ) {
+		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_Lights" ), 9 );
+	}
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderManager *manager ):
@@ -2034,6 +2052,7 @@ GLShader_lighttile::GLShader_lighttile( GLShaderManager *manager ) :
 void GLShader_lighttile::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 0 );
+	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_Lights" ), 1 );
 }
 
 GLShader_fxaa::GLShader_fxaa( GLShaderManager *manager ) :

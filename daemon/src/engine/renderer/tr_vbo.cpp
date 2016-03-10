@@ -1028,6 +1028,11 @@ void R_InitVBOs()
 		glBindBuffer( GL_UNIFORM_BUFFER, tr.dlightUBO );
 		glBufferData( GL_UNIFORM_BUFFER, MAX_REF_LIGHTS * sizeof( shaderLight_t ), nullptr, GL_DYNAMIC_DRAW );
 		glBindBuffer( GL_UNIFORM_BUFFER, 0 );
+	} else {
+		glGenBuffers( 1, &tr.dlightUBO );
+		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.dlightUBO );
+		glBufferData( GL_PIXEL_UNPACK_BUFFER, MAX_REF_LIGHTS * sizeof( shaderLight_t ), nullptr, GL_DYNAMIC_DRAW );
+		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 	}
 
 	GL_CheckErrors();

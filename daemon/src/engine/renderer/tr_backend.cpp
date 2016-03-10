@@ -2812,7 +2812,11 @@ void RB_RenderPostDepth()
 	gl_lighttileShader->BindProgram( 0 );
 	gl_lighttileShader->SetUniform_ModelMatrix( backEnd.viewParms.world.modelViewMatrix );
 	gl_lighttileShader->SetUniform_numLights( backEnd.refdef.numLights );
-	gl_lighttileShader->SetUniformBlock_Lights( tr.dlightUBO );
+	if( glConfig2.uniformBufferObjectAvailable ) {
+		gl_lighttileShader->SetUniformBlock_Lights( tr.dlightUBO );
+	} else {
+		GL_BindToTMU( 1, tr.dlightImage );
+	}
 
 	GL_BindToTMU( 0, tr.depthtile2RenderImage );
 
@@ -5412,17 +5416,17 @@ static const void *RB_SetupLights( const void *data )
 {
 	const setupLightsCommand_t *cmd;
 	int numLights;
+	GLenum bufferTarget = glConfig2.uniformBufferObjectAvailable ? GL_UNIFORM_BUFFER : GL_PIXEL_UNPACK_BUFFER;
 
 	GLimp_LogComment( "--- RB_SetupLights ---\n" );
 
 	cmd = ( const setupLightsCommand_t * ) data;
 
-	if( ( glConfig2.uniformBufferObjectAvailable ) &&
-	    (numLights = cmd->refdef.numLights) > 0 ) {
+	if( (numLights = cmd->refdef.numLights) > 0 ) {
 		shaderLight_t *buffer;
 
-		glBindBuffer( GL_UNIFORM_BUFFER, tr.dlightUBO );
-		buffer = (shaderLight_t *)glMapBufferRange( GL_UNIFORM_BUFFER,
+		glBindBuffer( bufferTarget, tr.dlightUBO );
+		buffer = (shaderLight_t *)glMapBufferRange( bufferTarget,
 							    0, numLights * sizeof( shaderLight_t ),
 							    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT );
 
@@ -5452,8 +5456,12 @@ static const void *RB_SetupLights( const void *data )
 			}
 		}
 
-		glUnmapBuffer( GL_UNIFORM_BUFFER );
-		glBindBuffer( GL_UNIFORM_BUFFER, 0 );
+		glUnmapBuffer( bufferTarget );
+		if( !glConfig2.uniformBufferObjectAvailable ) {
+			GL_BindToTMU( 0, tr.dlightImage );
+			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, tr.dlightImage->width, tr.dlightImage->height, GL_RGBA, GL_FLOAT, NULL );
+		}
+		glBindBuffer( bufferTarget, 0 );
 	}
 
 	return ( const void * )( cmd + 1 );

@@ -2643,6 +2643,11 @@ static void R_CreateDepthRenderImage()
 	} else {
 		tr.lighttileRenderImage = R_Create3DImage( "_lighttileRender", nullptr, w, h, 4, IF_NOPICMIP, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 	}
+
+	if( !glConfig2.uniformBufferObjectAvailable ) {
+		w = 64; h = 3 * MAX_REF_LIGHTS / w;
+		tr.dlightImage = R_CreateImage("_dlightImage", nullptr, w, h, 4, IF_NOPICMIP | IF_RGBA32F, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	}
 }
 
 static void R_CreatePortalRenderImage()
