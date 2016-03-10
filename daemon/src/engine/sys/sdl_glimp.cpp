@@ -488,6 +488,8 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	int         x, y;
 	GLenum      glewResult;
+	int         GLmajor, GLminor;
+	int         GLEWmajor, GLEWminor, GLEWmicro;
 
 	Log::Notice("Initializing OpenGL display" );
 
@@ -562,6 +564,12 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	Cvar_Set( "r_customwidth", va("%d", glConfig.vidWidth ) );
 	Cvar_Set( "r_customheight", va("%d", glConfig.vidHeight ) );
 
+	sscanf( ( const char * ) glewGetString( GLEW_VERSION ), "%d.%d.%d",
+		&GLEWmajor, &GLEWminor, &GLEWmicro );
+	if( GLEWmajor < 2 ) {
+		Log::Warn( "GLEW version < 2.0.0 doesn't support GL core profiles" );
+	}
+
 	do
 	{
 		if ( glContext != nullptr )
@@ -631,6 +639,9 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 			testCore = ((i & 1) == 0);
 
 			if( testCore && !Q_stricmp(r_glProfile->string, "compat") )
+				continue;
+
+			if( testCore && GLEWmajor < 2 )
 				continue;
 
 			if( !testCore && !Q_stricmp(r_glProfile->string, "core") )
@@ -735,8 +746,9 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	{
 		Log::Notice("Using GLEW %s", glewGetString( GLEW_VERSION ) );
 	}
+	if( glConfig2.glCoreProfile ) {
+	}
 
-	int GLmajor, GLminor;
 	sscanf( ( const char * ) glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
 	if ( GLmajor < 2 || ( GLmajor == 2 && GLminor < 1 ) )
 	{
