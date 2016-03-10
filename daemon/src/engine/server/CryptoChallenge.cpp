@@ -75,7 +75,7 @@ std::string Challenge::GenerateString()
 {
 	Crypto::Data data( Bytes() );
 	Sys::GenRandomBytes(data.data(), data.size());
-	return Crypto::String(Crypto::Encoding::HexEncode(data));
+	return Crypto::ToString(Crypto::Encoding::HexEncode(data));
 }
 
 bool Challenge::ValidString(const std::string& challenge)
@@ -162,7 +162,7 @@ bool ChallengeManager::MatchString( const netadr_t& source,
 									const std::string& challenge,
 									Challenge::Duration* ping )
 {
-	auto challenge_data = Crypto::String(challenge);
+	auto challenge_data = Crypto::FromString(challenge);
 	if ( Crypto::Encoding::HexDecode(challenge_data, challenge_data) )
 	{
 		return Match({source, challenge_data}, ping);

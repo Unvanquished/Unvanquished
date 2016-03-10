@@ -97,7 +97,7 @@ public:
      */
     std::string String() const
     {
-        return Crypto::String( Crypto::Encoding::HexEncode( challenge ) );
+        return Crypto::ToString( Crypto::Encoding::HexEncode( challenge ) );
     }
 
     /*

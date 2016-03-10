@@ -1468,7 +1468,7 @@ static void CL_RconDeliver(const Rcon::Message &message)
     }
 
     std::string method = "PLAIN";
-    Crypto::Data key = Crypto::Hash::Sha256(Crypto::String(message.password));
+    Crypto::Data key = Crypto::Hash::Sha256(Crypto::FromString(message.password));
     std::string plaintext = message.command;
 
     if ( message.secure == Rcon::Secure::EncryptedChallenge )
@@ -1478,11 +1478,11 @@ static void CL_RconDeliver(const Rcon::Message &message)
     }
 
     Crypto::Data cypher;
-    if ( Crypto::Aes256Encrypt(Crypto::String(plaintext), key, cypher) )
+    if ( Crypto::Aes256Encrypt(Crypto::FromString(plaintext), key, cypher) )
     {
         Net::OutOfBandPrint(netsrc_t::NS_CLIENT, message.remote, "srcon %s %s",
             method,
-            Crypto::String(Crypto::Encoding::Base64Encode(cypher))
+            Crypto::ToString(Crypto::Encoding::Base64Encode(cypher))
         );
     }
 }

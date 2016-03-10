@@ -37,12 +37,12 @@ namespace Crypto {
 
 	Data RandomData( std::size_t bytes );
 
-	inline Data String(const std::string& string)
+	inline Data FromString(const std::string& string)
 	{
 		return Data(string.begin(), string.end());
 	}
 
-	inline std::string String(const Data string)
+	inline std::string ToString(const Data string)
 	{
 		return std::string(string.begin(), string.end());
 	}

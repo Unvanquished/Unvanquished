@@ -903,7 +903,7 @@ static Rcon::Message RconDecode(const netadr_t& remote, const Cmd::Args& args)
     }
 
     auto authentication = args[1];
-    Crypto::Data cyphertext = Crypto::String(args[2]);
+    Crypto::Data cyphertext = Crypto::FromString(args[2]);
 
     Crypto::Data data;
     if ( !Crypto::Encoding::Base64Decode( cyphertext, data ) )
@@ -911,14 +911,14 @@ static Rcon::Message RconDecode(const netadr_t& remote, const Cmd::Args& args)
         return Rcon::Message("Invalid Base64 string");
     }
 
-    Crypto::Data key = Crypto::Hash::Sha256( Crypto::String( cvar_rcon_server_password.Get() ) );
+    Crypto::Data key = Crypto::Hash::Sha256( Crypto::FromString( cvar_rcon_server_password.Get() ) );
 
     if ( !Crypto::Aes256Decrypt( data, key, data ) )
     {
         return Rcon::Message("Error during decryption");
     }
 
-    std::string command = Crypto::String( data );
+    std::string command = Crypto::ToString( data );
 
     if ( authentication == "CHALLENGE" )
     {
