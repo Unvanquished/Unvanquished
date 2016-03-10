@@ -746,8 +746,6 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	{
 		Log::Notice("Using GLEW %s", glewGetString( GLEW_VERSION ) );
 	}
-	if( glConfig2.glCoreProfile ) {
-	}
 
 	sscanf( ( const char * ) glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
 	if ( GLmajor < 2 || ( GLmajor == 2 && GLminor < 1 ) )
