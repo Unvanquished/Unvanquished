@@ -2832,8 +2832,6 @@ char *Substring( const char *in, int start, int count )
 	static char buffer[ MAX_STRING_CHARS ];
 	char        *buf = buffer;
 
-	memset( &buffer, 0, sizeof( buffer ) );
-
 	Q_strncpyz( buffer, in+start, count );
 
 	return buf;
@@ -2851,7 +2849,7 @@ char *BG_strdup( const char *string )
 	char *copy;
 
 	length = strlen(string) + 1;
-	copy = (char *)BG_Alloc(length);
+	copy = (char *)malloc(length);
 
 	if ( copy == nullptr )
 	{

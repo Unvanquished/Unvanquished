@@ -399,7 +399,6 @@ void R_InitFBOs()
 {
 	int i;
 	int width, height;
-	int xTiles, yTiles;
 
 	Log::Debug("------- R_InitFBOs -------" );
 
@@ -412,8 +411,6 @@ void R_InitFBOs()
 
 	width = glConfig.vidWidth;
 	height = glConfig.vidHeight;
-	xTiles = (width + 15) >> 4;
-	yTiles = (height + 15) >> 4;
 
 	tr.mainFBO[0] = R_CreateFBO( "_main[0]", width, height );
 	R_BindFBO( tr.mainFBO[0] );
@@ -432,12 +429,12 @@ void R_InitFBOs()
 	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.depthtile1RenderImage->texnum, 0 );
 	R_CheckFBO( tr.depthtile1FBO );
 
-	tr.depthtile2FBO = R_CreateFBO( "_depthtile2", tr.depthtile1RenderImage->width, tr.depthtile1RenderImage->height );
+	tr.depthtile2FBO = R_CreateFBO( "_depthtile2", tr.depthtile2RenderImage->width, tr.depthtile2RenderImage->height );
 	R_BindFBO( tr.depthtile2FBO );
 	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.depthtile2RenderImage->texnum, 0 );
 	R_CheckFBO( tr.depthtile2FBO );
 
-	tr.lighttileFBO = R_CreateFBO( "_lighttile", xTiles, yTiles );
+	tr.lighttileFBO = R_CreateFBO( "_lighttile", tr.lighttileRenderImage->width, tr.lighttileRenderImage->height );
 	R_BindFBO( tr.lighttileFBO );
 	R_AttachFBOTexture3D( tr.lighttileRenderImage->texnum, 0, 0 );
 	R_CheckFBO( tr.lighttileFBO );

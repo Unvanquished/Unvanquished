@@ -957,7 +957,6 @@ void GLShaderManager::PrintShaderSource( Str::StringRef programName, GLuint obje
 {
 	char        *msg;
 	int         maxLength = 0;
-	std::string msgText;
 
 	glGetShaderiv( object, GL_SHADER_SOURCE_LENGTH, &maxLength );
 

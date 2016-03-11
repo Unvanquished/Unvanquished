@@ -34,7 +34,7 @@ out vec4 outputColor;
 
 void	main()
 {
-  vec2 st = gl_FragCoord.st * 16.0 * pixelScale;
+  vec2 st = gl_FragCoord.st * 4.0 * pixelScale;
   float x, y;
   vec4 accum = vec4( 0.0, 99999.0, 0.0, 0.0 );
   float count = 0.0;
