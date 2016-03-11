@@ -32,18 +32,18 @@ uniform float		u_Time;
 
 uniform vec4		u_ColorModulate;
 uniform vec4		u_Color;
-uniform vec3		u_ViewOrigin;
 
+varying vec3		var_Position;
 varying vec4		var_TexDiffuseGlow;
 varying vec4		var_Color;
 
 #if defined(USE_NORMAL_MAPPING)
 varying vec4		var_TexNormalSpecular;
-varying vec3		var_ViewDir;
-varying vec3            var_Position;
-#else
-varying vec3		var_Normal;
+varying vec3		var_Tangent;
+varying vec3		var_Binormal;
 #endif
+
+varying vec3		var_Normal;
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,
@@ -71,6 +71,9 @@ void	main()
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
+	// assign vertex Position for light grid sampling
+	var_Position = position.xyz;
+
 	// transform diffusemap texcoords
 	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
@@ -83,20 +86,12 @@ void	main()
 
 	// transform specularmap texture coords
 	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
-
-	// construct object-space-to-tangent-space 3x3 matrix
-	mat3 objectToTangentMatrix = mat3( LB.tangent.x, LB.binormal.x, LB.normal.x,
-					   LB.tangent.y, LB.binormal.y, LB.normal.y,
-					   LB.tangent.z, LB.binormal.z, LB.normal.z );
-
-	// assign vertex Position for light grid sampling
-	var_Position = position.xyz;
 	
-	// assign vertex to view origin vector in tangent space
-	var_ViewDir = objectToTangentMatrix * normalize( u_ViewOrigin - position.xyz );
-#else
-	var_Normal = LB.normal;
+	var_Tangent = LB.tangent;
+	var_Binormal = LB.binormal;
 #endif
+
+	var_Normal = LB.normal;
 
 #if defined(USE_GLOW_MAPPING)
 	var_TexDiffuseGlow.pq = ( u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0) ).st;
