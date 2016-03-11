@@ -136,9 +136,6 @@ void	main()
 
 	N = normalize(tangentToWorldMatrix * N);
 
-	// compute half angle in world space
-	vec3 H = normalize(L + V);
-
 	// compute the specular term
 #if defined(USE_REFLECTIVE_SPECULAR)
 
