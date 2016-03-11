@@ -36,16 +36,19 @@ uniform sampler3D       u_LightGrid2;
 uniform vec3            u_LightGridOrigin;
 uniform vec3            u_LightGridScale;
 
+uniform vec3		u_ViewOrigin;
+
+varying vec3		var_Position;
 varying vec4		var_TexDiffuseGlow;
 varying vec4		var_Color;
 
 #if defined(USE_NORMAL_MAPPING)
 varying vec4		var_TexNormalSpecular;
-varying vec3		var_ViewDir; // direction from surface to viewer
-varying vec3            var_Position;
-#else
-varying vec3		var_Normal;
+varying vec3		var_Tangent;
+varying vec3		var_Binormal;
 #endif
+
+varying vec3		var_Normal;
 
 #if defined(USE_NORMAL_MAPPING)
 void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
@@ -73,9 +76,10 @@ void	main()
 {
 	vec2 texDiffuse = var_TexDiffuseGlow.st;
 	vec2 texGlow = var_TexDiffuseGlow.pq;
+	vec3 V = normalize(u_ViewOrigin - var_Position);
 
 #if defined(USE_NORMAL_MAPPING)
-	vec3 V = normalize(var_ViewDir);
+	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyx);
 
 	vec3 L, ambCol, dirCol;
 	ReadLightGrid( (var_Position - u_LightGridOrigin) * u_LightGridScale,
@@ -87,8 +91,11 @@ void	main()
 #if defined(USE_PARALLAX_MAPPING)
 
 	// ray intersect in view direction
-	vec3 Vts = V;
-	
+
+	// compute view direction in tangent space
+	vec3 Vts = V * tangentToWorldMatrix;
+	Vts = normalize(Vts);
+
 	// size and start position of search in texture space
 	vec2 S = Vts.xy * -u_DepthScale / Vts.z;
 
@@ -131,12 +138,16 @@ void	main()
 	#if defined(r_NormalScale)
 	N.z *= r_NormalScale;
 	#endif
-	
-	N = normalize(N);
+
+	N = normalize(tangentToWorldMatrix * N);
 
 	// compute final color
 	vec4 color = vec4( ambCol * diffuse.xyz, diffuse.a );
 	computeLight( L, N, V, dirCol, diffuse, specular, color );
+
+#if defined(USE_SHADER_LIGHTS)
+	computeDLights( var_Position, N, V, diffuse, specular, color );
+#endif
 
 	#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
@@ -160,6 +171,10 @@ void	main()
 
 	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
 	computeLight( N, N, N, vec3(1.0), diffuse, specular, color );
+
+#if defined(USE_SHADER_LIGHTS)
+	computeDLights( var_Position, N, V, diffuse, specular, color );
+#endif
 
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
