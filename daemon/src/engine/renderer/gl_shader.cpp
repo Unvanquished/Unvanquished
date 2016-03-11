@@ -2052,7 +2052,10 @@ GLShader_lighttile::GLShader_lighttile( GLShaderManager *manager ) :
 void GLShader_lighttile::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 0 );
-	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_Lights" ), 1 );
+
+	if( !glConfig2.uniformBufferObjectAvailable ) {
+		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_Lights" ), 1 );
+	}
 }
 
 GLShader_fxaa::GLShader_fxaa( GLShaderManager *manager ) :
