@@ -52,7 +52,7 @@ varying vec3		var_Normal;
 #if __VERSION__ > 120
 out vec4 outputColor;
 #else
-#define outputColor gl_FragColor;
+#define outputColor gl_FragColor
 #endif
 
 #if defined(USE_PARALLAX_MAPPING)

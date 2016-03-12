@@ -29,7 +29,7 @@ const vec4			LUMINANCE_VECTOR = vec4(0.2125, 0.7154, 0.0721, 0.0);
 #if __VERSION__ > 120
 out vec4 outputColor;
 #else
-#define outputColor gl_FragColor;
+#define outputColor gl_FragColor
 #endif
 
 // contrast adjustment function

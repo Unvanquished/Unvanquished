@@ -32,7 +32,7 @@ varying vec2		var_Tex;
 #if __VERSION__ > 120
 out vec4 outputColor;
 #else
-#define outputColor gl_FragColor;
+#define outputColor gl_FragColor
 #endif
 
 void	main()

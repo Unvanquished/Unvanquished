@@ -29,7 +29,7 @@ varying vec4		var_Color;
 #if __VERSION__ > 120
 out vec4 outputColor;
 #else
-#define outputColor gl_FragColor;
+#define outputColor gl_FragColor
 #endif
 
 void	main()
