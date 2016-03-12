@@ -1110,7 +1110,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_compressSpecularMaps = ri.Cvar_Get( "r_compressSpecularMaps", "1", CVAR_LATCH );
 		r_compressNormalMaps = ri.Cvar_Get( "r_compressNormalMaps", "0", CVAR_LATCH );
 		r_exportTextures = ri.Cvar_Get( "r_exportTextures", "0", 0 );
-		r_heatHaze = ri.Cvar_Get( "r_heatHaze", "0", CVAR_ARCHIVE );
+		r_heatHaze = ri.Cvar_Get( "r_heatHaze", "1", 0 );
 		r_noMarksOnTrisurfs = ri.Cvar_Get( "r_noMarksOnTrisurfs", "1", CVAR_CHEAT );
 		r_recompileShaders = ri.Cvar_Get( "r_recompileShaders", "0", 0 );
 		r_lazyShaders = ri.Cvar_Get( "r_lazyShaders", "0", 0 );
