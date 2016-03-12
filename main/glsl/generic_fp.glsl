@@ -33,6 +33,12 @@ varying vec2            var_FadeDepth;
 uniform sampler2D       u_DepthMap;
 #endif
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 	vec4 color = texture2D(u_ColorMap, var_Tex);
@@ -44,11 +50,11 @@ void	main()
 	}
 
 #if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
-	float depth = texture2D(u_DepthMap, gl_FragCoord.xy * r_FBufScale * r_NPOTScale).x;
+	float depth = texture2D(u_DepthMap, gl_FragCoord.xy * r_FBufScale).x;
 	float fadeDepth = 0.5 * var_FadeDepth.x / var_FadeDepth.y + 0.5;
 	color.a *= smoothstep(gl_FragCoord.z, fadeDepth, depth);
 #endif
 
 	color *= var_Color;
-	gl_FragColor = color;
+	outputColor = color;
 }

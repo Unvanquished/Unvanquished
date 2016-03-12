@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	cvar_t      *r_glMajorVersion;
 	cvar_t      *r_glMinorVersion;
-	cvar_t      *r_glCoreProfile;
+	cvar_t      *r_glProfile;
 	cvar_t      *r_glDebugProfile;
 	cvar_t      *r_glDebugMode;
 	cvar_t      *r_glAllowSoftware;
@@ -91,9 +91,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_recompileShaders;
 	cvar_t      *r_lazyShaders;
 
-	cvar_t      *r_ext_compressed_textures;
 	cvar_t      *r_ext_occlusion_query;
-	cvar_t      *r_ext_texture_non_power_of_two;
 	cvar_t      *r_ext_draw_buffers;
 	cvar_t      *r_ext_vertex_array_object;
 	cvar_t      *r_ext_half_float_pixel;
@@ -102,10 +100,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_ext_texture_rg;
 	cvar_t      *r_ext_texture_filter_anisotropic;
 	cvar_t      *r_ext_packed_depth_stencil;
-	cvar_t      *r_ext_generate_mipmap;
 	cvar_t      *r_arb_buffer_storage;
 	cvar_t      *r_arb_map_buffer_range;
 	cvar_t      *r_arb_sync;
+	cvar_t      *r_arb_uniform_buffer_object;
 
 	cvar_t      *r_ignoreGLErrors;
 	cvar_t      *r_logFile;
@@ -157,7 +155,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_collapseStages;
 	cvar_t      *r_nobind;
 	cvar_t      *r_singleShader;
-	cvar_t      *r_roundImagesDown;
 	cvar_t      *r_colorMipLevels;
 	cvar_t      *r_picmip;
 	cvar_t      *r_finish;
@@ -310,6 +307,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			if ( !GLimp_Init() )
 			{
 				return false;
+			}
+
+			if( glConfig2.glCoreProfile ) {
+				glGenVertexArrays( 1, &backEnd.currentVAO );
+				glBindVertexArray( backEnd.currentVAO );
 			}
 
 			glState.tileStep[ 0 ] = TILE_SIZE * ( 1.0f / glConfig.vidWidth );
@@ -1063,15 +1065,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		// OpenGL context selection
 		r_glMajorVersion = ri.Cvar_Get( "r_glMajorVersion", "", CVAR_LATCH );
 		r_glMinorVersion = ri.Cvar_Get( "r_glMinorVersion", "", CVAR_LATCH );
-		r_glCoreProfile = ri.Cvar_Get( "r_glCoreProfile", "", CVAR_LATCH );
+		r_glProfile = ri.Cvar_Get( "r_glProfile", "", CVAR_LATCH );
 		r_glDebugProfile = ri.Cvar_Get( "r_glDebugProfile", "", CVAR_LATCH );
 		r_glDebugMode = ri.Cvar_Get( "r_glDebugMode", "0", CVAR_CHEAT );
 		r_glAllowSoftware = ri.Cvar_Get( "r_glAllowSoftware", "0", CVAR_LATCH );
 
 		// latched and archived variables
-		r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "0",  CVAR_LATCH | CVAR_ARCHIVE );
 		r_ext_occlusion_query = ri.Cvar_Get( "r_ext_occlusion_query", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_texture_non_power_of_two = ri.Cvar_Get( "r_ext_texture_non_power_of_two", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_draw_buffers = ri.Cvar_Get( "r_ext_draw_buffers", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_vertex_array_object = ri.Cvar_Get( "r_ext_vertex_array_object", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_half_float_pixel = ri.Cvar_Get( "r_ext_half_float_pixel", "1", CVAR_CHEAT | CVAR_LATCH );
@@ -1080,15 +1080,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4",  CVAR_LATCH | CVAR_ARCHIVE );
 		r_ext_packed_depth_stencil = ri.Cvar_Get( "r_ext_packed_depth_stencil", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_generate_mipmap = ri.Cvar_Get( "r_ext_generate_mipmap", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_buffer_storage = ri.Cvar_Get( "r_arb_buffer_storage", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_map_buffer_range = ri.Cvar_Get( "r_arb_map_buffer_range", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_sync = ri.Cvar_Get( "r_arb_sync", "1", CVAR_CHEAT | CVAR_LATCH );
+		r_arb_uniform_buffer_object = ri.Cvar_Get( "r_arb_uniform_buffer_object", "1", CVAR_CHEAT | CVAR_LATCH );
 
 		r_collapseStages = ri.Cvar_Get( "r_collapseStages", "1", CVAR_LATCH | CVAR_CHEAT );
 		r_picmip = ri.Cvar_Get( "r_picmip", "0",  CVAR_LATCH | CVAR_ARCHIVE );
 		AssertCvarRange( r_picmip, 0, 3, true );
-		r_roundImagesDown = ri.Cvar_Get( "r_roundImagesDown", "1",  CVAR_LATCH );
 		r_colorMipLevels = ri.Cvar_Get( "r_colorMipLevels", "0", CVAR_LATCH );
 		r_colorbits = ri.Cvar_Get( "r_colorbits", "0",  CVAR_LATCH );
 		r_alphabits = ri.Cvar_Get( "r_alphabits", "0",  CVAR_LATCH );
@@ -1442,13 +1441,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		R_InitFBOs();
 
-		if ( glConfig.driverType == glDriverType_t::GLDRV_OPENGL3 )
-		{
-			tr.vao = 0;
-			glGenVertexArrays( 1, &tr.vao );
-			glBindVertexArray( tr.vao );
-		}
-
 		R_InitVBOs();
 
 		R_InitShaders();
@@ -1517,12 +1509,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			R_ShutdownFBOs();
 			R_ShutdownVisTests();
 
-			if ( glConfig.driverType == glDriverType_t::GLDRV_OPENGL3 )
-			{
-				glDeleteVertexArrays( 1, &tr.vao );
-				tr.vao = 0;
-			}
-
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
@@ -1536,6 +1522,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
 			GLSL_ShutdownGPUShaders();
 #endif
+			if( glConfig2.glCoreProfile ) {
+				glBindVertexArray( 0 );
+				glDeleteVertexArrays( 1, &backEnd.currentVAO );
+			}
+
 			GLimp_Shutdown();
 			ri.Tag_Free();
 		}

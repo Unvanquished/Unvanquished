@@ -372,7 +372,9 @@ struct glconfig_t
 // XreaL BEGIN
 struct glconfig2_t
 {
-	bool ARBTextureCompressionAvailable;
+	bool textureCompressionRGTCAvailable;
+
+	bool glCoreProfile;
 
 	int      maxCubeMapTextureSize;
 
@@ -388,8 +390,6 @@ struct glconfig2_t
 	bool vboVertexSkinningAvailable;
 	int      maxVertexSkinningBones;
 
-	bool textureNPOTAvailable;
-
 	bool drawBuffersAvailable;
 	bool textureHalfFloatAvailable;
 	bool textureFloatAvailable;
@@ -404,9 +404,9 @@ struct glconfig2_t
 	int      maxColorAttachments;
 	bool framebufferPackedDepthStencilAvailable;
 
-	bool generateMipmapAvailable;
 	bool getProgramBinaryAvailable;
 	bool bufferStorageAvailable;
+	bool uniformBufferObjectAvailable;
 	bool mapBufferRangeAvailable;
 	bool syncAvailable;
 };

@@ -1043,34 +1043,8 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 
 	GL_Bind( image );
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		scaledWidth = image->width;
-		scaledHeight = image->height;
-	}
-	else
-	{
-		// convert to exact power of 2 sizes
-		for ( scaledWidth = 1; scaledWidth < image->width; scaledWidth <<= 1 )
-		{
-			;
-		}
-
-		for ( scaledHeight = 1; scaledHeight < image->height; scaledHeight <<= 1 )
-		{
-			;
-		}
-	}
-
-	if ( r_roundImagesDown->integer && scaledWidth > image->width )
-	{
-		scaledWidth >>= 1;
-	}
-
-	if ( r_roundImagesDown->integer && scaledHeight > image->height )
-	{
-		scaledHeight >>= 1;
-	}
+	scaledWidth = image->width;
+	scaledHeight = image->height;
 
 	// perform optional picmip operation
 	if ( !( image->bits & IF_NOPICMIP ) )
@@ -1222,7 +1196,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			blockSize = 16;
 		}
 		else if ( image->bits & IF_BC4 ) {
-			if( !GLEW_ARB_texture_compression_rgtc ) {
+			if( !glConfig2.textureCompressionRGTCAvailable ) {
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 				blockSize = 8;
@@ -1238,7 +1212,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			}
 		}
 		else if ( image->bits & IF_BC5 ) {
-			if( !GLEW_ARB_texture_compression_rgtc ) {
+			if( !glConfig2.textureCompressionRGTCAvailable ) {
 				format = GL_NONE;
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 				blockSize = 16;
@@ -2617,16 +2591,8 @@ static void R_CreateContrastRenderFBOImage()
 {
 	int  width, height;
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth * 0.25f;
-		height = glConfig.vidHeight * 0.25f;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth ) * 0.25f;
-		height = NearestPowerOfTwo( glConfig.vidHeight ) * 0.25f;
-	}
+	width = glConfig.vidWidth * 0.25f;
+	height = glConfig.vidHeight * 0.25f;
 
 	tr.contrastRenderFBOImage = R_CreateImage( "_contrastRenderFBO", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_LINEAR, wrapTypeEnum_t::WT_CLAMP );
 }
@@ -2636,16 +2602,8 @@ static void R_CreateBloomRenderFBOImage()
 	int  i;
 	int  width, height;
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth * 0.25f;
-		height = glConfig.vidHeight * 0.25f;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth ) * 0.25f;
-		height = NearestPowerOfTwo( glConfig.vidHeight ) * 0.25f;
-	}
+	width = glConfig.vidWidth * 0.25f;
+	height = glConfig.vidHeight * 0.25f;
 
 	for ( i = 0; i < 2; i++ )
 	{
@@ -2657,16 +2615,8 @@ static void R_CreateCurrentRenderImage()
 {
 	int  width, height;
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth;
-		height = glConfig.vidHeight;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth );
-		height = NearestPowerOfTwo( glConfig.vidHeight );
-	}
+	width = glConfig.vidWidth;
+	height = glConfig.vidHeight;
 
 	tr.currentRenderImage[0] = R_CreateImage( "_currentRender[0]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 	tr.currentRenderImage[1] = R_CreateImage( "_currentRender[1]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
@@ -2677,16 +2627,8 @@ static void R_CreateDepthRenderImage()
 {
 	int  width, height, w, h;
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth;
-		height = glConfig.vidHeight;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth );
-		height = NearestPowerOfTwo( glConfig.vidHeight );
-	}
+	width = glConfig.vidWidth;
+	height = glConfig.vidHeight;
 
 	w = (width + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
 	h = (height + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
@@ -2701,22 +2643,19 @@ static void R_CreateDepthRenderImage()
 	} else {
 		tr.lighttileRenderImage = R_Create3DImage( "_lighttileRender", nullptr, w, h, 4, IF_NOPICMIP, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 	}
+
+	if( !glConfig2.uniformBufferObjectAvailable ) {
+		w = 64; h = 3 * MAX_REF_LIGHTS / w;
+		tr.dlightImage = R_CreateImage("_dlightImage", nullptr, w, h, 4, IF_NOPICMIP | IF_RGBA32F, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	}
 }
 
 static void R_CreatePortalRenderImage()
 {
 	int  width, height;
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth;
-		height = glConfig.vidHeight;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth );
-		height = NearestPowerOfTwo( glConfig.vidHeight );
-	}
+	width = glConfig.vidWidth;
+	height = glConfig.vidHeight;
 
 	tr.portalRenderImage = R_CreateImage( "_portalRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 }
@@ -2725,16 +2664,8 @@ static void R_CreateOcclusionRenderFBOImage()
 {
 	int  width, height;
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth;
-		height = glConfig.vidHeight;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth );
-		height = NearestPowerOfTwo( glConfig.vidHeight );
-	}
+	width = glConfig.vidWidth;
+	height = glConfig.vidHeight;
 
 	{
 		tr.occlusionRenderFBOImage = R_CreateImage( "_occlusionFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
@@ -2745,16 +2676,8 @@ static void R_CreateDepthToColorFBOImages()
 {
 	int  width, height;
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth;
-		height = glConfig.vidHeight;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth );
-		height = NearestPowerOfTwo( glConfig.vidHeight );
-	}
+	width = glConfig.vidWidth;
+	height = glConfig.vidHeight;
 
 	{
 		tr.depthToColorBackFacesFBOImage = R_CreateImage( "_depthToColorBackFacesFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
@@ -2767,16 +2690,8 @@ static void R_CreateDownScaleFBOImages()
 {
 	int  width, height;
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth * 0.25f;
-		height = glConfig.vidHeight * 0.25f;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth * 0.25f );
-		height = NearestPowerOfTwo( glConfig.vidHeight * 0.25f );
-	}
+	width = glConfig.vidWidth * 0.25f;
+	height = glConfig.vidHeight * 0.25f;
 
 	tr.downScaleFBOImage_quarter = R_CreateImage( "_downScaleFBOImage_quarter", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 

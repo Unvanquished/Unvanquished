@@ -26,6 +26,12 @@ uniform sampler2D	u_ColorMap;
 uniform float		u_DeformMagnitude;
 uniform vec2		u_TexScale;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 void	main()
 {
 	vec2 st = gl_FragCoord.st * u_TexScale;
@@ -53,5 +59,5 @@ void	main()
 		sumColors += texture2D(u_ColorMap, st + vec2(t, 0) * u_TexScale * u_DeformMagnitude) * weight;
 	}
 
-	gl_FragColor = sumColors * (1.0 / gaussSum);
+	outputColor = sumColors * (1.0 / gaussSum);
 }

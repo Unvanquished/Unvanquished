@@ -30,6 +30,11 @@ uniform float		u_FogDensity;
 uniform vec3		u_FogColor;
 uniform mat4		u_UnprojectMatrix;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
 
 float DecodeDepth(vec4 color)
 {
@@ -47,9 +52,6 @@ void	main()
 {
 	// calculate the screen texcoord in the 0.0 to 1.0 range
 	vec2 st = gl_FragCoord.st * r_FBufScale;
-
-	// scale by the screen non-power-of-two-adjust
-	st *= r_NPOTScale;
 
 	// calculate fog volume depth
 	float fogDepth;
@@ -117,5 +119,5 @@ void	main()
 	float fogFactor = exp2(-abs(fogExponent));
 
 	// lerp between FBO color and fog color with GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA. GLS_DSTBLEND_SRC_ALPHA
-	gl_FragColor = vec4(u_FogColor, fogFactor);
+	outputColor = vec4(u_FogColor, fogFactor);
 }

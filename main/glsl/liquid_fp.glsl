@@ -49,6 +49,12 @@ varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 varying vec3		var_Normal;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor;
+#endif
+
 #if defined(USE_PARALLAX_MAPPING)
 float RayIntersectDisplaceMap(vec2 dp, vec2 ds)
 {
@@ -142,7 +148,7 @@ void	main()
 	}
 
 	// calculate the screen texcoord in the 0.0 to 1.0 range
-	vec2 texScreen = gl_FragCoord.st * r_FBufScale * r_NPOTScale;
+	vec2 texScreen = gl_FragCoord.st * r_FBufScale;
 	vec2 texNormal = var_TexNormal.st;
 
 #if defined(USE_PARALLAX_MAPPING)
@@ -225,5 +231,5 @@ void	main()
 	vec3 specular = reflectColor * lgtCol * pow(clamp(dot(N2, H), 0.0, 1.0), u_SpecularExponent.x + u_SpecularExponent.y) * r_SpecularScale;
 	color.rgb += specular;
 
-	gl_FragColor = color;
+	outputColor = color;
 }
