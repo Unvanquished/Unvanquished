@@ -94,9 +94,9 @@ float RayIntersectDisplaceMap(vec2 dp, vec2 ds)
 		vec4 t = texture2D(u_NormalMap, dp + ds * depth);
 
 		if(depth >= t.w)
-		#ifdef RM_DOUBLEDEPTH
+#ifdef RM_DOUBLEDEPTH
 			if(depth <= t.z)
-		#endif
+#endif
 			{
 				bestDepth = depth;
 				depth -= 2.0 * size;

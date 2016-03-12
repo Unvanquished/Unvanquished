@@ -95,18 +95,18 @@ void	main()
 
 		float shadow = 1.0;
 
-		#if defined(VSM)
-		#if defined(USE_SHADOWING)
+#if defined(VSM)
+#if defined(USE_SHADOWING)
 		{
 			// compute incident ray
 			vec3 I2 = T - u_LightOrigin;
 
 			vec2 shadowMoments = textureCube(u_ShadowMap, I2).SWIZ2;
 
-			#if defined(VSM_CLAMP)
+#if defined(VSM_CLAMP)
 			// convert to [-1, 1] vector space
 			shadowMoments = 0.5 * (shadowMoments + 1.0);
-			#endif
+#endif
 
 			float shadowDistance = shadowMoments.r;
 			float shadowDistanceSquared = shadowMoments.g;
@@ -136,8 +136,8 @@ void	main()
 			continue;
 		}
 		else
-		#endif
-		#endif
+#endif
+#endif
 		{
 			color.rgb += attenuationXY * attenuationZ;
 		}

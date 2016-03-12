@@ -141,9 +141,9 @@ void	main()
 	N.xy = 2.0 * N.xy - 1.0;
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
 	
-	#if defined(r_NormalScale)
+#if defined(r_NormalScale)
 	N.z *= r_NormalScale;
-	#endif
+#endif
 
 	N = normalize(tangentToWorldMatrix * N);
 
@@ -155,9 +155,9 @@ void	main()
 	computeDLights( var_Position, N, V, diffuse, specular, color );
 #endif
 
-	#if defined(USE_GLOW_MAPPING)
+#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
-	#endif
+#endif
 
 	outputColor = color;
 #else // USE_NORMAL_MAPPING

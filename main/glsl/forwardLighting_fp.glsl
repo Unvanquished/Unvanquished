@@ -187,9 +187,9 @@ float ChebyshevUpperBound(vec2 shadowMoments, float vertexDistance, float minVar
 	float d = vertexDistance - shadowDistance;
 	float pMax = variance / (variance + (d * d));
 
-	#if defined(r_LightBleedReduction)
-		pMax = linstep(r_LightBleedReduction, 1.0, pMax);
-	#endif
+#if defined(r_LightBleedReduction)
+	pMax = linstep(r_LightBleedReduction, 1.0, pMax);
+#endif
 
 	// one-tailed Chebyshev with k > 0
 	return (vertexDistance <= shadowDistance ? 1.0 : pMax);
@@ -663,19 +663,19 @@ float ShadowTest( float vertexDistance, vec4 shadowMoments, vec4 shadowClipMomen
 	// shadow = clamp(exp(r_OverDarkeningFactor * shadowDistance) * exp(-r_OverDarkeningFactor * vertexDistance), 0.0, 1.0);
 	// shadow = smoothstep(0.0, 1.0, shadow);
 
-	#if defined(r_DebugShadowMaps)
-	#extension GL_EXT_gpu_shader4 : enable
-		outputColor.r = (r_DebugShadowMaps & 1) != 0 ? shadowDistance : 0.0;
-		outputColor.g = (r_DebugShadowMaps & 2) != 0 ? -(shadowDistance - vertexDistance) : 0.0;
-		outputColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
-		outputColor.a = 1.0;
-	#endif
+#if defined(r_DebugShadowMaps)
+#extension GL_EXT_gpu_shader4 : enable
+	outputColor.r = (r_DebugShadowMaps & 1) != 0 ? shadowDistance : 0.0;
+	outputColor.g = (r_DebugShadowMaps & 2) != 0 ? -(shadowDistance - vertexDistance) : 0.0;
+	outputColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
+	outputColor.a = 1.0;
+#endif
 		
 #elif defined( VSM )
-	#if defined(VSM_CLAMP)
-		// convert to [-1, 1] vector space
-		shadowMoments = 2.0 * (shadowMoments - 0.5);
-	#endif
+#if defined(VSM_CLAMP)
+	// convert to [-1, 1] vector space
+	shadowMoments = 2.0 * (shadowMoments - 0.5);
+#endif
 
 	shadow = ChebyshevUpperBound(shadowMoments.xy, vertexDistance, VSM_EPSILON);
 	if( u_LightScale < 0.0 ) {
@@ -694,13 +694,13 @@ float ShadowTest( float vertexDistance, vec4 shadowMoments, vec4 shadowClipMomen
 
 	shadow = min(posContrib, negContrib);
 	
-	#if defined(r_DebugShadowMaps)
-	#extension GL_EXT_gpu_shader4 : enable
-		outputColor.r = (r_DebugShadowMaps & 1) != 0 ? posContrib : 0.0;
-		outputColor.g = (r_DebugShadowMaps & 2) != 0 ? negContrib : 0.0;
-		outputColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
-		outputColor.a = 1.0;
-	#endif
+#if defined(r_DebugShadowMaps)
+#extension GL_EXT_gpu_shader4 : enable
+	outputColor.r = (r_DebugShadowMaps & 1) != 0 ? posContrib : 0.0;
+	outputColor.g = (r_DebugShadowMaps & 2) != 0 ? negContrib : 0.0;
+	outputColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
+	outputColor.a = 1.0;
+#endif
 
 	if( u_LightScale < 0.0 ) {
 		shadow = 1.0 - shadow;
@@ -787,9 +787,9 @@ void	main()
 
 	float vertexDistance = shadowVert.z - SHADOW_BIAS;
 	// FIXME
-	#if 0 // defined(r_PCFSamples)
+#if 0 // defined(r_PCFSamples)
 	shadowMoments = PCF(var_Position.xyz, u_ShadowTexelSize * u_ShadowBlur, r_PCFSamples);
-	#endif
+#endif
 
 #if 0
 	outputColor = vec4(u_ShadowTexelSize * u_ShadowBlur * u_LightRadius, 0.0, 0.0, 1.0);
@@ -896,21 +896,21 @@ void	main()
 		return;
 	}
 
-	#if defined(r_PCFSamples)
-		#if 0//defined( PCSS )
+#if defined(r_PCFSamples)
+#if 0//defined( PCSS )
 		vec4 shadowMoments = PCSS(vertexDistance, r_PCFSamples);
-		#else
+#else
 		vec4 shadowClipMoments;
 		vec4 shadowMoments = PCF(shadowVert, u_ShadowTexelSize * u_ShadowBlur, r_PCFSamples, shadowClipMoments);
-		#endif
-	#else
+#endif
+#else
 
 	// no filter
 	vec4 shadowMoments, shadowClipMoments;
 
 	FetchShadowMoments(shadowVert.xy / shadowVert.w, shadowMoments, shadowClipMoments);
 
-	#endif
+#endif
 
 #else
 	// compute incident ray
@@ -923,24 +923,24 @@ void	main()
 	return;
 #endif
 
-	#if defined(r_PCFSamples)
-		#if 0//defined(PCSS)
-		vec4 shadowMoments = PCSS(vec4(I, 0.0), r_PCFSamples);
-		#else
-		vec4 shadowClipMoments;
-		vec4 shadowMoments = PCF(vec4(I, 0.0), u_ShadowTexelSize * u_ShadowBlur * ILen, r_PCFSamples, shadowClipMoments);
-		#endif
-	#else
+#if defined(r_PCFSamples)
+#if 0//defined(PCSS)
+	vec4 shadowMoments = PCSS(vec4(I, 0.0), r_PCFSamples);
+#else
+	vec4 shadowClipMoments;
+	vec4 shadowMoments = PCF(vec4(I, 0.0), u_ShadowTexelSize * u_ShadowBlur * ILen, r_PCFSamples, shadowClipMoments);
+#endif
+#else
 	// no extra filtering, single tap
 	vec4 shadowMoments, shadowClipMoments;
 	FetchShadowMoments(I, shadowMoments, shadowClipMoments);
-	#endif
+#endif
 #endif
 	shadow = ShadowTest(vertexDistance, shadowMoments, shadowClipMoments);
 	
-	#if defined(r_DebugShadowMaps)
-		return;
-	#endif
+#if defined(r_DebugShadowMaps)
+	return;
+#endif
 	
 	if(shadow <= 0.0)
 	{
@@ -999,10 +999,10 @@ void	main()
 	N.xy = 2.0 * N.xy - 1.0;
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
 	
-	#if defined(r_NormalScale)
+#if defined(r_NormalScale)
 	N.z *= r_NormalScale;
 	normalize(N);
-	#endif
+#endif
 
 	// transform normal into world space
 	N = normalize(tangentToWorldMatrix * N);
