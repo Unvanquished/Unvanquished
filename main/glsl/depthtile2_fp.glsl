@@ -35,7 +35,7 @@ void	main()
 
   for( x = -1.5; x < 2.0; x += 1.0 ) {
     for( y = -1.5; y < 2.0; y += 1.0 ) {
-      vec4 data = texture2D( u_DepthMap, st + vec2(x, y) * pixelScale );
+      vec4 data = texture2D( u_DepthMap, st + vec2(x, y) * 4.0 * pixelScale );
       if( data.y < 99999.0 ) {
 	accum.x = max( accum.x, data.x );
 	accum.y = min( accum.y, data.y );
