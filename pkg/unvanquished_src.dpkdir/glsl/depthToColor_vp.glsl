@@ -31,7 +31,7 @@ uniform mat4		u_ModelViewProjectionMatrix;
 
 void	main()
 {
-	#if defined(USE_VERTEX_SKINNING)
+#if defined(USE_VERTEX_SKINNING)
 	{
 		vec4 position;
 		vec3 normal;
@@ -41,10 +41,10 @@ void	main()
 		// transform vertex position into homogenous clip-space
 		gl_Position = u_ModelViewProjectionMatrix * position;
 	}
-	#else
+#else
 	{
 		// transform vertex position into homogenous clip-space
 		gl_Position = u_ModelViewProjectionMatrix * vec4(attr_Position, 1.0);
 	}
-	#endif
+#endif
 }
