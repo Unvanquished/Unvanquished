@@ -24,6 +24,8 @@ ImpactBlaster
       rotation 0 ~360 ~360
       bounce 0.8
 
+      dynamicLight    0 100 0 { 0.25 0.25 0.8 }
+
       lifeTime 600
     }
 
