@@ -27,6 +27,8 @@ ejector
       rotation 0.0 0.0 -
       lifeTime 1000.0
 
+      dynamicLight    0 300 0 { 0.75 1.0 0.75 }
+
       childTrailSystem		lucymuzzletrail
     }
     count infinite
@@ -175,6 +177,8 @@ LucyMissileSecondary
       bounce 0
       rotation 0 0 50
       lifeTime 400
+
+      dynamicLight    0 150 0 { 0.75 1.0 0.75 }
 
       childTrailSystem		lucymuzzletrail3
     }
