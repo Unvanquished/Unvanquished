@@ -34,7 +34,7 @@ const vec2 pixelScale = r_FBufScale;
 #if __VERSION__ > 120
 out vec4 outputColor;
 #else
-#define outputColor gl_FragColor;
+#define outputColor gl_FragColor
 #endif
 
 vec4 depthToZ(in vec4 depth) {

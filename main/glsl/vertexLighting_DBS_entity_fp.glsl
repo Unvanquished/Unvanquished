@@ -56,7 +56,7 @@ varying vec3		var_Normal;
 #if __VERSION__ > 120
 out vec4 outputColor;
 #else
-#define outputColor gl_FragColor;
+#define outputColor gl_FragColor
 #endif
 
 void ReadLightGrid(in vec3 pos, out vec3 lgtDir,

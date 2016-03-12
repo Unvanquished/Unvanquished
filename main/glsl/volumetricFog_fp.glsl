@@ -33,7 +33,7 @@ uniform mat4		u_UnprojectMatrix;
 #if __VERSION__ > 120
 out vec4 outputColor;
 #else
-#define outputColor gl_FragColor;
+#define outputColor gl_FragColor
 #endif
 
 float DecodeDepth(vec4 color)
