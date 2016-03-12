@@ -25,3 +25,10 @@ lucybullet
 		rgbGen vertex
 	}
 }
+
+models/weapons/lcannon/pulse
+{
+	diffuseMap models/weapons/lcannon/pulse_d
+	normalMap models/weapons/lcannon/pulse_n
+	specularMap models/weapons/lcannon/pulse_s
+}

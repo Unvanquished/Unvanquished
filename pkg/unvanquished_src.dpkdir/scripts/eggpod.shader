@@ -1,38 +1,7 @@
-models/buildables/eggpod/pod_body
+models/buildables/eggpod/egg
 {
-	cull disable
-	{
-		map models/buildables/eggpod/pod_body
-		rgbGen lightingDiffuse
-	}
+	diffuseMap models/buildables/eggpod/egg_d
+	normalMap models/buildables/eggpod/egg_n
+	specularMap models/buildables/eggpod/egg_s
+	glowMap models/buildables/eggpod/egg_g
 }
-
-models/buildables/eggpod/pod_strands
-{
-	cull disable
-	{
-		map models/buildables/eggpod/pod_strands
-		rgbGen lightingDiffuse
-		alphaFunc GE128
-	}
-}
-
-models/buildables/eggpod/pod_tendrils
-{
-	cull disable
-	{
-		map models/buildables/eggpod/pod_tendrils
-		rgbGen lightingDiffuse
-	}
-}
-
-models/buildables/eggpod/pod_tip
-{
-	cull disable
-	{
-		map models/buildables/eggpod/pod_tip
-		rgbGen lightingDiffuse
-		alphaFunc GE128
-	}
-}
-
