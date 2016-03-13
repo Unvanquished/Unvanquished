@@ -1500,19 +1500,17 @@ static void CL_RconSend(const Rcon::Message &message)
 	}
 }
 
-class RconChallengeQueue
+/*
+ * Queue for commands that need a challenge from the server
+ */
+class RconMessageQueue
 {
 public:
-	struct Request
-	{
-		netadr_t    server;
-		std::string command;
-	};
 
-	void Push(const Request& request)
+	void Push(const Rcon::Message& message)
 	{
 		auto lock = std::unique_lock<std::mutex>(mutex);
-		requests.push_back(request);
+		requests.push_back(message);
 	}
 
 	bool Empty() const
@@ -1521,59 +1519,62 @@ public:
 		return requests.empty();
 	}
 
-	void Pop(const netadr_t &server, const std::string& challenge)
+	/*
+	 * Pops a queued command and executes it whenever there's a matching challenge.
+	 * Returns whether the command has been successful
+	 */
+	bool Pop(const netadr_t &server, const Str::StringRef& challenge)
 	{
 		auto lock = std::unique_lock<std::mutex>(mutex);
+
+		if ( requests.empty() )
+		{
+			return false;
+		}
+
 		auto it = std::find_if(requests.begin(), requests.end(),
-			[server](const Request& req) {
-				return NET_CompareAdr(req.server, server);
+			[server](const Rcon::Message& message) {
+				return NET_CompareAdr(message.remote, server);
 			});
 
 		if ( it != requests.end() )
 		{
-			CL_RconSend(Rcon::Message(
-				server,
-				it->command,
-				Rcon::Secure::EncryptedChallenge,
-				cvar_rcon_client_password.Get(),
-				challenge
-			));
+			it->challenge = challenge;
+			CL_RconSend(*it);
+			requests.erase(it);
+			return true;
 		}
+
+		return false;
 	}
 
 
 private:
-	std::vector<Request> requests;
+	std::vector<Rcon::Message> requests;
 	mutable std::mutex mutex;
 };
 
-static RconChallengeQueue CL_RconChallengeQueue;
-
 /*
-=====================
-CL_Rcon_f
-
   Send the rest of the command line over as
   an unconnected command.
-=====================
 */
-void CL_Rcon_f()
+class RconCmd: public Cmd::StaticCmd
 {
-	if ( cvar_rcon_client_password.Get().empty() )
-	{
-		Log::Notice("You must set '%s' before issuing an rcon command.",
-			cvar_rcon_client_password.Name());
-		return;
-	}
+public:
+	RconCmd():
+		StaticCmd("rcon", Cmd::SYSTEM, "Sends a remote console command")
+	{}
 
-	netadr_t to;
-	if ( cls.state >= connstate_t::CA_CONNECTED )
+	void Run(const Cmd::Args& args) const OVERRIDE
 	{
-		to = clc.netchan.remoteAddress;
-	}
-	else
-	{
-		if ( cvar_rcon_client_destination.Get().empty() )
+		if ( cvar_rcon_client_password.Get().empty() )
+		{
+			Log::Notice("You must set '%s' before issuing an rcon command.",
+				cvar_rcon_client_password.Name());
+			return;
+		}
+
+		if ( cls.state < connstate_t::CA_CONNECTED && cvar_rcon_client_destination.Get().empty() )
 		{
 			Log::Notice( "Connect to a server or set the '%s' cvar to issue rcon commands",
 				cvar_rcon_client_destination.Name()
@@ -1582,29 +1583,61 @@ void CL_Rcon_f()
 			return;
 		}
 
+		Rcon::Message message(
+			DestinationAddress(),
+			args.EscapedArgs(1),
+			Rcon::Secure(cvar_rcon_client_secure.Get()),
+			cvar_rcon_client_password.Get()
+		);
+
+		if ( message.secure == Rcon::Secure::EncryptedChallenge )
+		{
+			queue.Push(message);
+			Net::OutOfBandPrint(netsrc_t::NS_CLIENT, message.remote, "getchallenge");
+		}
+		else
+		{
+			CL_RconSend(message);
+		}
+	}
+
+	/*
+	 * If there's a command planned for execution on the given server, it will
+	 * use the challenge to do so.
+	 * Returns true if a command has been executed
+	 */
+	bool HandleChallenge(const netadr_t &server, const Str::StringRef& challenge)
+	{
+		return queue.Pop(server, challenge);
+	}
+
+private:
+	netadr_t DestinationAddress() const
+	{
+		if ( cls.state >= connstate_t::CA_CONNECTED )
+		{
+			return clc.netchan.remoteAddress;
+		}
+
+		netadr_t to;
+
 		NET_StringToAdr( cvar_rcon_client_destination.Get().c_str(), &to, netadrtype_t::NA_UNSPEC );
 
 		if ( to.port == 0 )
 		{
 			to.port = BigShort( PORT_SERVER );
 		}
+
+		return to;
 	}
 
-	if ( Rcon::Secure(cvar_rcon_client_secure.Get()) == Rcon::Secure::EncryptedChallenge )
-	{
-		CL_RconChallengeQueue.Push({to, Cmd::GetCurrentArgs().EscapedArgs(1)});
-		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, to, "getchallenge");
-	}
-	else
-	{
-		CL_RconSend(Rcon::Message(
-			to,
-			Cmd::GetCurrentArgs().EscapedArgs(1),
-			Rcon::Secure(cvar_rcon_client_secure.Get()),
-			cvar_rcon_client_password.Get()
-		));
-	}
-}
+
+	static RconMessageQueue queue;
+};
+
+RconMessageQueue RconCmd::queue;
+static RconCmd RconCmdRegistration;
+
 
 static void CL_GetRSAKeysFileName( char *buffer, size_t size )
 {
@@ -2734,11 +2767,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 
 	if ( args.Argv(0) == "challengeResponse" )
 	{
-		if ( !CL_RconChallengeQueue.Empty() )
-		{
-			CL_RconChallengeQueue.Pop(from, args.Argv(1));
-		}
-		else if ( cls.state == connstate_t::CA_CONNECTING )
+		if ( cls.state == connstate_t::CA_CONNECTING )
 		{
 			if ( args.Argc() < 2 )
 			{
@@ -2755,7 +2784,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 			clc.serverAddress = from;
 			Log::Debug( "challenge: %s", clc.challenge.c_str() );
 		}
-		else
+		else if ( !RconCmdRegistration.HandleChallenge(from, args.Argv(1)) )
 		{
 			Log::Notice( "Unwanted challenge response received.  Ignored.\n" );
 		}
@@ -2846,6 +2875,13 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	if ( args.Argv(0) == "getserversExtResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, true );
+		return;
+	}
+
+	// list of servers sent back by a master server (extended)
+	if ( args.Argv(0) == "error" )
+	{
+		Log::Warn( "%s", MSG_ReadStringLine(msg) );
 		return;
 	}
 
@@ -3584,7 +3620,6 @@ void CL_Init()
 	Cmd_AddCommand( "localservers", CL_LocalServers_f );
 	Cmd_AddCommand( "globalservers", CL_GlobalServers_f );
 
-	Cmd_AddCommand( "rcon", CL_Rcon_f );
 	Cmd_AddCommand( "ping", CL_Ping_f );
 	Cmd_AddCommand( "serverstatus", CL_ServerStatus_f );
 	Cmd_AddCommand( "showip", CL_ShowIP_f );
