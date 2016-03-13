@@ -5439,7 +5439,7 @@ static const void *RB_SetupLights( const void *data )
 
 			VectorCopy( light->l.origin, buffer[i].center );
 			buffer[i].radius = light->l.radius;
-			VectorScale( light->l.color, light->l.scale, buffer[i].color );
+			VectorScale( light->l.color, 4.0f * light->l.scale, buffer[i].color );
 			buffer[i].type = Util::ordinal( light->l.rlType );
 			switch( light->l.rlType ) {
 			case refLightType_t::RL_PROJ:

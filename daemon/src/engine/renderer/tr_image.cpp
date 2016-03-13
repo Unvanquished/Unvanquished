@@ -2565,7 +2565,7 @@ static void R_CreateAttenuationXYImage()
 
 			d = ( ATTENUATION_XY_SIZE / 2 - 0.5f - x ) * ( ATTENUATION_XY_SIZE / 2 - 0.5f - x ) +
 			    ( ATTENUATION_XY_SIZE / 2 - 0.5f - y ) * ( ATTENUATION_XY_SIZE / 2 - 0.5f - y );
-			b = 4000 / d;
+			b = 1000 / d;
 
 			if ( b > 255 )
 			{
