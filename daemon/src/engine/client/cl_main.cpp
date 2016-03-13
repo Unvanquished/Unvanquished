@@ -1554,6 +1554,25 @@ private:
 	mutable std::mutex mutex;
 };
 
+static netadr_t CL_RconDestinationAddress()
+{
+	if ( cls.state >= connstate_t::CA_CONNECTED )
+	{
+		return clc.netchan.remoteAddress;
+	}
+
+	netadr_t to;
+
+	NET_StringToAdr( cvar_rcon_client_destination.Get().c_str(), &to, netadrtype_t::NA_UNSPEC );
+
+	if ( to.port == 0 )
+	{
+		to.port = BigShort( PORT_SERVER );
+	}
+
+	return to;
+}
+
 /*
   Send the rest of the command line over as
   an unconnected command.
@@ -1584,7 +1603,7 @@ public:
 		}
 
 		Rcon::Message message(
-			DestinationAddress(),
+			CL_RconDestinationAddress(),
 			args.EscapedArgs(1),
 			Rcon::Secure(cvar_rcon_client_secure.Get()),
 			cvar_rcon_client_password.Get()
@@ -1612,32 +1631,48 @@ public:
 	}
 
 private:
-	netadr_t DestinationAddress() const
-	{
-		if ( cls.state >= connstate_t::CA_CONNECTED )
-		{
-			return clc.netchan.remoteAddress;
-		}
-
-		netadr_t to;
-
-		NET_StringToAdr( cvar_rcon_client_destination.Get().c_str(), &to, netadrtype_t::NA_UNSPEC );
-
-		if ( to.port == 0 )
-		{
-			to.port = BigShort( PORT_SERVER );
-		}
-
-		return to;
-	}
-
-
 	static RconMessageQueue queue;
 };
 
 RconMessageQueue RconCmd::queue;
 static RconCmd RconCmdRegistration;
 
+
+/*
+  Populates rcon.client cvars from the server
+*/
+class RconDiscoverCmd: public Cmd::StaticCmd
+{
+public:
+	RconDiscoverCmd():
+		StaticCmd("rconDiscover", Cmd::SYSTEM, "Sends a request to the server to populate rcon.client cvars")
+	{}
+
+	void Run(const Cmd::Args&) const OVERRIDE
+	{
+		if ( cls.state < connstate_t::CA_CONNECTED && cvar_rcon_client_destination.Get().empty() )
+		{
+			Log::Notice( "Connect to a server or set the '%s' cvar to discover rcon settings",
+				cvar_rcon_client_destination.Name()
+			);
+			return;
+		}
+
+		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, CL_RconDestinationAddress(), "rconinfo");
+	}
+};
+
+static RconDiscoverCmd RconDiscoverCmdRegistration;
+
+static void CL_ServerRconInfoPacket( netadr_t, msg_t *msg )
+{
+	InfoMap info = InfoStringToMap( MSG_ReadString( msg ) );
+	int value;
+	if ( Str::ParseInt( value, info["secure"] ) )
+	{
+		cvar_rcon_client_secure.Set( value );
+	}
+}
 
 static void CL_GetRSAKeysFileName( char *buffer, size_t size )
 {
@@ -2878,10 +2913,17 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	// list of servers sent back by a master server (extended)
+	// prints a n error message returned by the server
 	if ( args.Argv(0) == "error" )
 	{
 		Log::Warn( "%s", MSG_ReadStringLine(msg) );
+		return;
+	}
+
+	// prints a n error message returned by the server
+	if ( args.Argv(0) == "rconInfoResponse" )
+	{
+		CL_ServerRconInfoPacket( from, msg );
 		return;
 	}
 
