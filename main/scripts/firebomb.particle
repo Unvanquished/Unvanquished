@@ -49,6 +49,8 @@ models/weapons/firebomb/impactPS
       rotation 0 ~360 -
       bounce 0
 
+      dynamicLight    0 1000 0 { 1.0 1.0 0.8 }
+
       lifeTime 500
     }
 
