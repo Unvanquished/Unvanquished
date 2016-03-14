@@ -10,6 +10,8 @@ PulseRifleTrail
     fadeOutTime		2.5
     textureType		stretch 1.0 0.1
 
+    dynamicLight        50 { 0.5 0.5 0.5 }
+
     jitter 1 10
   }
 }
