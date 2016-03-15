@@ -630,6 +630,8 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 		for ( i = 0; i < 4; i++ )
 		{
 			int testColorBits, testCore;
+			int major = r_glMajorVersion->integer;
+			int minor = r_glMinorVersion->integer;
 
 			// 0 - 24 bit color, core
 			// 1 - 24 bit color, compat
@@ -669,32 +671,31 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 				SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
 			}
 
-			if ( testCore || r_glDebugProfile->integer )
+			if( testCore && (major < 3 || (major == 3 && minor < 2)) ) {
+				major = 3;
+				minor = 2;
+			}
+
+			if( major < 2 || (major == 2 && minor < 1)) {
+				major = 2;
+				minor = 1;
+			}
+
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
+
+			if ( testCore )
 			{
-				int major = r_glMajorVersion->integer;
-				int minor = r_glMinorVersion->integer;
+				SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+			}
+			else
+			{
+				SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+			}
 
-				if( testCore && (major < 3 || (major == 3 && minor < 2)) ) {
-					major = 3;
-					minor = 2;
-				}
-
-				SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
-				SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
-
-				if ( testCore )
-				{
-					SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-				}
-				else
-				{
-					SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
-				}
-
-				if ( r_glDebugProfile->integer )
-				{
-					SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
-				}
+			if ( r_glDebugProfile->integer )
+			{
+				SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
 			}
 			window = SDL_CreateWindow( CLIENT_WINDOW_TITLE, x, y, glConfig.vidWidth, glConfig.vidHeight, flags );
 
