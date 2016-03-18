@@ -145,9 +145,7 @@ void	main()
 	computeLight( N, N, I, lightColor, diffuse, specular, color );
 #endif
 
-#if defined( USE_SHADER_LIGHTS )
 	computeDLights( var_Position, N, I, diffuse, specular, color );
-#endif
 
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, var_TexDiffuseGlow.pq).rgb;

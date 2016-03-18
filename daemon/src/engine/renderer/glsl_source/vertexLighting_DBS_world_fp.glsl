@@ -151,9 +151,7 @@ void	main()
 	vec4 color = vec4( ambCol * diffuse.xyz, diffuse.a );
 	computeLight( L, N, V, dirCol, diffuse, specular, color );
 
-#if defined(USE_SHADER_LIGHTS)
 	computeDLights( var_Position, N, V, diffuse, specular, color );
-#endif
 
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
@@ -178,9 +176,7 @@ void	main()
 	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
 	computeLight( N, N, N, vec3(1.0), diffuse, specular, color );
 
-#if defined(USE_SHADER_LIGHTS)
 	computeDLights( var_Position, N, V, diffuse, specular, color );
-#endif
 
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;

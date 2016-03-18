@@ -186,9 +186,7 @@ void	main()
 	vec4 color = vec4(ambCol * r_AmbientScale * diffuse.xyz, diffuse.a);
 	computeLight( L, N, V, lgtCol, diffuse, specBase, color );
 
-#ifdef USE_SHADER_LIGHTS
 	computeDLights( var_Position, N, V, diffuse, specBase, color );
-#endif
 
 #if defined(r_RimLighting)
 	color.rgb += 0.7 * emission;

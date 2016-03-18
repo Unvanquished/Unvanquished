@@ -21,8 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // reliefMapping_vp.glsl - Relief mapping helper functions
 
-#if defined( USE_SHADER_LIGHTS )
-
 struct light {
   vec4  center_radius;
   vec4  color_type;
@@ -45,7 +43,6 @@ uniform sampler2D u_Lights;
 #endif
 
 uniform int u_numLights;
-#endif
 
 uniform vec2 u_SpecularExponent;
 
@@ -98,9 +95,7 @@ void computeLight( vec3 lightDir, vec3 normal, vec3 eyeDir, vec3 lightColor,
 #endif
 }
 
-#if defined( USE_SHADER_LIGHTS )
-
-#if defined( TEXTURE_INTEGER ) && defined( HAVE_EXT_gpu_shader4 )
+#if defined( TEXTURE_INTEGER )
 const int lightsPerLayer = 16;
 uniform usampler3D u_LightTiles;
 #define idxs_t uvec4
@@ -201,7 +196,6 @@ void computeDLights( vec3 P, vec3 N, vec3 I, vec4 diffuse, vec4 specular,
   }
 #endif
 }
-#endif
 
 #if defined(USE_PARALLAX_MAPPING)
 float RayIntersectDisplaceMap(vec2 dp, vec2 ds, sampler2D normalMap)
