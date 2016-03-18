@@ -153,9 +153,7 @@ void	main()
 
 	computeDLights( var_Position, N, V, diffuse, specular, color );
 
-#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
-#endif
 
 	outputColor = color;
 #else // USE_NORMAL_MAPPING
@@ -178,9 +176,7 @@ void	main()
 
 	computeDLights( var_Position, N, V, diffuse, specular, color );
 
-#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
-#endif
 
 	outputColor = color;
 #endif

@@ -39,9 +39,7 @@ varying vec4		var_TexNormalSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 #endif
-#if defined(USE_GLOW_MAPPING)
 varying vec2		var_TexGlow;
-#endif
 
 varying vec3		var_Normal;
 
@@ -89,7 +87,5 @@ void	main()
 	// transform specularmap texture coords
 	var_TexNormalSpecular.zw = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
-#if defined(USE_GLOW_MAPPING)
 	var_TexGlow = (u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
-#endif
 }

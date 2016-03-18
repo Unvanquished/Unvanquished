@@ -93,7 +93,5 @@ void	main()
 
 	var_Normal = LB.normal;
 
-#if defined(USE_GLOW_MAPPING)
 	var_TexDiffuseGlow.pq = ( u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0) ).st;
-#endif
 }

@@ -82,9 +82,7 @@ void	main()
 	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 #endif
 
-#if defined(USE_GLOW_MAPPING)
 	var_TexDiffuseGlow.pq = (u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
-#endif
 
 	var_Position = position.xyz;
 

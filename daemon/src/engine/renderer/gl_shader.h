@@ -788,7 +788,6 @@ protected:
 	  USE_REFLECTIVE_SPECULAR,
 	  USE_SHADOWING,
 	  LIGHT_DIRECTIONAL,
-	  USE_GLOW_MAPPING,
 	  USE_DEPTH_FADE,
 	  USE_PHYSICAL_SHADING,
 	  USE_ALPHA_TESTING
@@ -1282,48 +1281,6 @@ public:
 	}
 
 	void SetShadowing( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
-class GLCompileMacro_USE_GLOW_MAPPING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_GLOW_MAPPING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_GLOW_MAPPING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return EGLCompileMacro::USE_GLOW_MAPPING;
-	}
-
-	void EnableMacro_USE_GLOW_MAPPING()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_USE_GLOW_MAPPING()
-	{
-		DisableMacro();
-	}
-
-	void SetGlowMapping( bool enable )
 	{
 		if ( enable )
 		{
@@ -2437,7 +2394,6 @@ class GLShader_lightMapping :
 	public GLDeformStage,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
-	public GLCompileMacro_USE_GLOW_MAPPING,
 	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
@@ -2473,7 +2429,6 @@ class GLShader_vertexLighting_DBS_entity :
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
-	public GLCompileMacro_USE_GLOW_MAPPING,
 	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
@@ -2506,7 +2461,6 @@ class GLShader_vertexLighting_DBS_world :
 	public GLDeformStage,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
-	public GLCompileMacro_USE_GLOW_MAPPING,
 	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:

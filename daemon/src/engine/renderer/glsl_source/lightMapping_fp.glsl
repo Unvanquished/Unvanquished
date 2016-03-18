@@ -147,9 +147,8 @@ void	main()
 
 	computeDLights( var_Position, N, I, diffuse, specular, color );
 
-#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, var_TexDiffuseGlow.pq).rgb;
-#endif
+
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 

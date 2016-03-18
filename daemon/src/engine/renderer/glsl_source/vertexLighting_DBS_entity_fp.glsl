@@ -48,9 +48,7 @@ varying vec4		var_TexNormalSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 #endif
-#if defined(USE_GLOW_MAPPING)
 varying vec2		var_TexGlow;
-#endif
 varying vec3		var_Normal;
 
 #if __VERSION__ > 120
@@ -192,9 +190,8 @@ void	main()
 	color.rgb += 0.7 * emission;
 #endif
 
-#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, var_TexGlow).rgb;
-#endif
+
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 
