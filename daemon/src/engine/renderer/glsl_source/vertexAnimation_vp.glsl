@@ -61,10 +61,9 @@ void VertexFetch(out vec4 position,
 	position.w = 1;
 	
 	LB.normal = normalize(mix(fromLB.normal, toLB.normal, u_VertexInterpolation));
-#if defined(USE_NORMAL_MAPPING)
 	LB.tangent = normalize(mix(fromLB.tangent, toLB.tangent, u_VertexInterpolation));
 	LB.binormal = normalize(mix(fromLB.binormal, toLB.binormal, u_VertexInterpolation));
-#endif
+
 	color    = attr_Color;
 	texCoord = attr_TexCoord0;
 	lmCoord  = attr_TexCoord0;

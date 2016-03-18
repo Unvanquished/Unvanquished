@@ -43,11 +43,9 @@ uniform vec3            u_LightGridScale;
 varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
 varying vec4		var_Color;
-#if defined(USE_NORMAL_MAPPING)
 varying vec4		var_TexNormalSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
-#endif
 varying vec2		var_TexGlow;
 varying vec3		var_Normal;
 
@@ -92,7 +90,6 @@ void	main()
 
 	vec2 texDiffuse = var_TexDiffuse.st;
 
-#if defined(USE_NORMAL_MAPPING)
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 
 	vec2 texNormal = var_TexNormalSpecular.xy;
@@ -155,15 +152,6 @@ void	main()
 	vec4 specBase = texture2D(u_SpecularMap, texSpecular).rgba;
 
 #endif // USE_REFLECTIVE_SPECULAR
-
-
-#else // USE_NORMAL_MAPPING
-
-	vec3 N = normalize(var_Normal);
-
-	vec4 specBase = vec4(0.0);
-
-#endif // USE_NORMAL_MAPPING
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse) * var_Color;

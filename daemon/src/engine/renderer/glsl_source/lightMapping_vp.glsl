@@ -74,23 +74,19 @@ void	main()
 	var_TexDiffuseGlow.st = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 	var_TexLight = lmCoord;
 
-#if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// transform specularmap texcoords
 	var_TexNormalSpecular.pq = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
-#endif
 
 	var_TexDiffuseGlow.pq = (u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	var_Position = position.xyz;
 
 	var_Normal = LB.normal;
-#if defined(USE_NORMAL_MAPPING)
 	var_Tangent = LB.tangent;
 	var_Binormal = LB.binormal;
-#endif
 
 	var_Color = color;
 }

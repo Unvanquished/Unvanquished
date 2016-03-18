@@ -3913,8 +3913,6 @@ static void RB_RenderDebugUtils()
 		gl_reflectionShader->SetVertexSkinning( false );
 		gl_reflectionShader->SetVertexAnimation( false );
 
-		gl_reflectionShader->SetNormalMapping( false );
-
 		gl_reflectionShader->BindProgram( 0 );
 
 		// end choose right shader program ------------------------------

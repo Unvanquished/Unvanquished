@@ -53,8 +53,6 @@ void	main()
 	// compute view direction in world space
 	vec3 I = normalize(u_ViewOrigin - var_Position);
 
-#if defined(USE_NORMAL_MAPPING)
-
 	vec2 texDiffuse = var_TexDiffuseGlow.st;
 	vec2 texNormal = var_TexNormalSpecular.st;
 	vec2 texSpecular = var_TexNormalSpecular.pq;
@@ -122,28 +120,6 @@ void	main()
 	// compute final color
 	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
 	computeLight( L, N, I, lightColor, diffuse, specular, color );
-
-#else // USE_NORMAL_MAPPING
-
-	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseGlow.st);
-
-	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
-	{
-		discard;
-		return;
-	}
-
-	vec3 N = normalize(var_Normal);
-
-	vec4 specular = vec4(0.0);
-
-	// compute light color from object space lightmap
-	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
-
-	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
-	computeLight( N, N, I, lightColor, diffuse, specular, color );
-#endif
 
 	computeDLights( var_Position, N, I, diffuse, specular, color );
 

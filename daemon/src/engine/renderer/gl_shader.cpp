@@ -1127,50 +1127,6 @@ bool GLCompileMacro_USE_TCGEN_LIGHTMAP::HasConflictingMacros(size_t permutation,
 	return false;
 }
 
-bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
-{
-	bool foundUSE_NORMAL_MAPPING = false;
-
-	for (const GLCompileMacro* macro : macros)
-	{
-		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
-		{
-			foundUSE_NORMAL_MAPPING = true;
-			break;
-		}
-	}
-
-	if ( !foundUSE_NORMAL_MAPPING )
-	{
-		//Log::Notice("missing macro! canceling '%s' <= '%s'", GetName(), "USE_NORMAL_MAPPING");
-		return true;
-	}
-
-	return false;
-}
-
-bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
-{
-	bool foundUSE_NORMAL_MAPPING = false;
-
-	for (const GLCompileMacro* macro : macros)
-	{
-		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
-		{
-			foundUSE_NORMAL_MAPPING = true;
-			break;
-		}
-	}
-
-	if ( !foundUSE_NORMAL_MAPPING )
-	{
-		//Log::Notice("missing macro! canceling '%s' <= '%s'", GetName(), "USE_NORMAL_MAPPING");
-		return true;
-	}
-
-	return false;
-}
-
 bool GLCompileMacro_USE_DEPTH_FADE::HasConflictingMacros(size_t permutation, const std::vector<GLCompileMacro*> &macros) const
 {
 	for (const GLCompileMacro* macro : macros)
@@ -1180,28 +1136,6 @@ bool GLCompileMacro_USE_DEPTH_FADE::HasConflictingMacros(size_t permutation, con
 			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
 			return true;
 		}
-	}
-
-	return false;
-}
-
-bool GLCompileMacro_USE_PHYSICAL_SHADING::MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const
-{
-	bool foundUSE_NORMAL_MAPPING = false;
-
-	for (const GLCompileMacro* macro : macros)
-	{
-		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
-		{
-			foundUSE_NORMAL_MAPPING = true;
-			break;
-		}
-	}
-
-	if ( !foundUSE_NORMAL_MAPPING )
-	{
-		//ri.Printf(PRINT_ALL, "missing macro! canceling '%s' <= '%s'\n", GetName(), "USE_NORMAL_MAPPING");
-		return true;
 	}
 
 	return false;
@@ -1371,7 +1305,6 @@ GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :
 	u_numLights( this ),
 	u_Lights( this ),
 	GLDeformStage( this ),
-	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_PHYSICAL_SHADING( this )
 {
@@ -1427,7 +1360,6 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity( GLShader
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this ),
 	GLCompileMacro_USE_PHYSICAL_SHADING( this )
@@ -1487,7 +1419,6 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world( GLShaderMa
 	u_numLights( this ),
 	u_Lights( this ),
 	GLDeformStage( this ),
-	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_PHYSICAL_SHADING( this )
 {
@@ -1546,7 +1477,6 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ( GLShaderMana
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_SHADOWING( this )
 {
@@ -1605,7 +1535,6 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ( GLShaderMana
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_SHADOWING( this )
 {
@@ -1667,7 +1596,6 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_NORMAL_MAPPING( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_SHADOWING( this )
 {
@@ -1746,8 +1674,7 @@ GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
 	u_VertexInterpolation( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
-	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
-	GLCompileMacro_USE_NORMAL_MAPPING( this )
+	GLCompileMacro_USE_VERTEX_ANIMATION( this )
 {
 }
 

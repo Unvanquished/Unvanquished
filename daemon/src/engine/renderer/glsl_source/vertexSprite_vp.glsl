@@ -70,10 +70,9 @@ void VertexFetch(out vec4 position,
 		position = vec4( attr_Position + left + up, 1.0 );
 	}
 	normalBasis.normal = normal;
-#if defined(USE_NORMAL_MAPPING)
 	normalBasis.tangent = normalize( up );
 	normalBasis.binormal = normalize( left );
-#endif
+
 	texCoord = 0.5 * corner + 0.5; //attr_TexCoord0.xy;
 	lmCoord  = abs( attr_TexCoord0.zw );
 	color    = attr_Color;

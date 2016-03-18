@@ -37,11 +37,9 @@ varying vec3		var_Position;
 varying vec4		var_TexDiffuseGlow;
 varying vec4		var_Color;
 
-#if defined(USE_NORMAL_MAPPING)
 varying vec4		var_TexNormalSpecular;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
-#endif
 
 varying vec3		var_Normal;
 
@@ -80,7 +78,6 @@ void	main()
 	// assign color
 	var_Color = color;
 	
-#if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexNormalSpecular.st = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
@@ -89,7 +86,6 @@ void	main()
 	
 	var_Tangent = LB.tangent;
 	var_Binormal = LB.binormal;
-#endif
 
 	var_Normal = LB.normal;
 
