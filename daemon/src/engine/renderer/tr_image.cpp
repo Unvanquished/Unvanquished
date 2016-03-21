@@ -2632,7 +2632,7 @@ static void R_CreateDepthRenderImage()
 
 	w = (width + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
 	h = (height + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
-	tr.depthtile1RenderImage = R_CreateImage( "_depthtile1Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	tr.depthtile1RenderImage = R_CreateImage( "_depthtile1Render", nullptr, w, h, 1, IF_NOPICMIP | IF_RGBA32F, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_ONE_CLAMP );
 
 	w = (width + TILE_SIZE - 1) >> TILE_SHIFT;
 	h = (height + TILE_SIZE - 1) >> TILE_SHIFT;

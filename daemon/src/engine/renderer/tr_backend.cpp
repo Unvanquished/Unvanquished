@@ -2784,6 +2784,7 @@ void RB_RenderPostDepth()
 	w = (glConfig.vidWidth + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
 	h = (glConfig.vidHeight + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
 	GL_Viewport( 0, 0, w, h );
+	GL_Scissor( 0, 0, w, h );
 	gl_depthtile1Shader->BindProgram( 0 );
 
 	zParams[ 0 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_x * 0.5f) ) / glConfig.vidWidth;
@@ -2801,6 +2802,7 @@ void RB_RenderPostDepth()
 	w = (glConfig.vidWidth + TILE_SIZE - 1) >> TILE_SHIFT;
 	h = (glConfig.vidHeight + TILE_SIZE - 1) >> TILE_SHIFT;
 	GL_Viewport( 0, 0, w, h );
+	GL_Scissor( 0, 0, w, h );
 	gl_depthtile2Shader->BindProgram( 0 );
 
 	GL_BindToTMU( 0, tr.depthtile1RenderImage );
@@ -2844,6 +2846,8 @@ void RB_RenderPostDepth()
 	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 		     backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
+		    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
 	GL_CheckErrors();
 }
