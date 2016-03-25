@@ -53,6 +53,12 @@ varying vec2		var_TexGlow;
 #endif
 varying vec3		var_Normal;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
+
 void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 		   out vec3 ambCol, out vec3 lgtCol ) {
 	vec4 texel1 = texture3D(u_LightGrid1, pos);
@@ -130,14 +136,11 @@ void	main()
 	N.xy = 2.0 * N.xy - 1.0;
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
 
-	#if defined(r_NormalScale)
+#if defined(r_NormalScale)
 	N.z *= r_NormalScale;
-	#endif
+#endif
 
 	N = normalize(tangentToWorldMatrix * N);
-
-	// compute half angle in world space
-	vec3 H = normalize(L + V);
 
 	// compute the specular term
 #if defined(USE_REFLECTIVE_SPECULAR)
@@ -197,10 +200,10 @@ void	main()
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 
-	gl_FragColor = color;
+	outputColor = color;
 
 // Debugging
 #if defined(r_showEntityNormals)
-	gl_FragColor = vec4(N, 1.0);
+	outputColor = vec4(N, 1.0);
 #endif
 }

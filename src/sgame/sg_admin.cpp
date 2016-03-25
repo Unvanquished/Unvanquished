@@ -767,14 +767,14 @@ static void admin_writeconfig_string( char *s, fileHandle_t f )
 		trap_FS_Write( s, strlen( s ), f );
 	}
 
-	trap_FS_Write( "", 1, f );
+	trap_FS_Write( "\n", 1, f );
 }
 
 static void admin_writeconfig_int( int v, fileHandle_t f )
 {
 	char buf[ 32 ];
 
-	Com_sprintf( buf, sizeof( buf ), "%d", v );
+	Com_sprintf( buf, sizeof( buf ), "%d\n", v );
 	trap_FS_Write( buf, strlen( buf ), f );
 }
 
@@ -805,14 +805,14 @@ void G_admin_writeconfig()
 
 	for ( l = g_admin_levels; l; l = l->next )
 	{
-		trap_FS_Write( "[level]", 8, f );
+		trap_FS_Write( "[level]\n", 8, f );
 		trap_FS_Write( "level   = ", 10, f );
 		admin_writeconfig_int( l->level, f );
 		trap_FS_Write( "name    = ", 10, f );
 		admin_writeconfig_string( l->name, f );
 		trap_FS_Write( "flags   = ", 10, f );
 		admin_writeconfig_string( l->flags, f );
-		trap_FS_Write( "", 1, f );
+		trap_FS_Write( "\n", 1, f );
 	}
 
 	for ( a = g_admin_admins; a; a = a->next )
@@ -823,7 +823,7 @@ void G_admin_writeconfig()
 			continue;
 		}
 
-		trap_FS_Write( "[admin]", 8, f );
+		trap_FS_Write( "[admin]\n", 8, f );
 		trap_FS_Write( "name    = ", 10, f );
 		admin_writeconfig_string( a->name, f );
 		trap_FS_Write( "guid    = ", 10, f );
@@ -842,7 +842,7 @@ void G_admin_writeconfig()
 		admin_writeconfig_int( a->counter, f );
 		trap_FS_Write( "lastseen = ", 11, f );
 		admin_writeconfig_int( a->lastSeen.tm_year * 10000 + a->lastSeen.tm_mon * 100 + a->lastSeen.tm_mday, f );
-		trap_FS_Write( "", 1, f );
+		trap_FS_Write( "\n", 1, f );
 	}
 
 	for ( b = g_admin_bans; b; b = b->next )
@@ -855,11 +855,11 @@ void G_admin_writeconfig()
 
 		if ( G_ADMIN_BAN_IS_WARNING( b ) )
 		{
-			trap_FS_Write( "[warning]", 10, f );
+			trap_FS_Write( "[warning]\n", 10, f );
 		}
 		else
 		{
-			trap_FS_Write( "[ban]", 6, f );
+			trap_FS_Write( "[ban]\n", 6, f );
 		}
 
 		trap_FS_Write( "name    = ", 10, f );
@@ -876,12 +876,12 @@ void G_admin_writeconfig()
 		admin_writeconfig_int( b->expires, f );
 		trap_FS_Write( "banner  = ", 10, f );
 		admin_writeconfig_string( b->banner, f );
-		trap_FS_Write( "", 1, f );
+		trap_FS_Write( "\n", 1, f );
 	}
 
 	for ( c = g_admin_commands; c; c = c->next )
 	{
-		trap_FS_Write( "[command]", 10, f );
+		trap_FS_Write( "[command]\n", 10, f );
 		trap_FS_Write( "command = ", 10, f );
 		admin_writeconfig_string( c->command, f );
 		trap_FS_Write( "exec    = ", 10, f );
@@ -890,7 +890,7 @@ void G_admin_writeconfig()
 		admin_writeconfig_string( c->desc, f );
 		trap_FS_Write( "flag    = ", 10, f );
 		admin_writeconfig_string( c->flag, f );
-		trap_FS_Write( "", 1, f );
+		trap_FS_Write( "\n", 1, f );
 	}
 
 	trap_FS_FCloseFile( f );

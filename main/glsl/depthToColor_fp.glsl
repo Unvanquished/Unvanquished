@@ -22,6 +22,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* depthToColor_fp.glsl */
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
 
 void	main()
 {
@@ -29,7 +34,7 @@ void	main()
 	float depth = gl_FragCoord.z;
 
 //#if 0 //defined(GLHW_ATI_DX10) || defined(GLHW_NV_DX10)
-//	gl_FragColor = vec4(0.0, 0.0, 0.0, depth);
+//	outputColor = vec4(0.0, 0.0, 0.0, depth);
 //#else
 	// 32 bit precision
 	const vec4 bitSh = vec4(256 * 256 * 256,	256 * 256,				256,         1);
@@ -39,7 +44,7 @@ void	main()
 	comp = depth * bitSh;
 	comp = fract(comp);
 	comp -= comp.xxyz * bitMsk;
-	gl_FragColor = comp;
+	outputColor = comp;
 /*
 	// 24 bit precision
 	const vec3 bitSh = vec3(256 * 256,			256,		1);
@@ -49,7 +54,7 @@ void	main()
 	comp = depth * bitSh;
 	comp = fract(comp);
 	comp -= comp.xxy * bitMsk;
-	gl_FragColor = vec4(comp, 0.0);
+	outputColor = vec4(comp, 0.0);
 */
 //#endif
 }

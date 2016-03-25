@@ -32,6 +32,12 @@ uniform float		u_FresnelBias;
 varying vec3		var_Position;
 varying vec3		var_Normal;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
+
 void	main()
 {
 	// compute incident ray
@@ -59,5 +65,5 @@ void	main()
 	color.b = (1.0 - fresnel) * refractColor.b + reflectColor.b * fresnel;
 	color.a = 1.0;
 
-	gl_FragColor = color;
+	outputColor = color;
 }

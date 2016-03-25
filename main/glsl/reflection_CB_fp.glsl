@@ -33,6 +33,12 @@ varying vec4		var_Tangent;
 varying vec4		var_Binormal;
 varying vec4		var_Normal;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
+
 void	main()
 {
 	// compute incident ray in world space
@@ -45,10 +51,10 @@ void	main()
 	N.x *= N.z;
 	N.xy = 2.0 * N.xy - 1.0;
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
-	#if defined(r_NormalScale)
+#if defined(r_NormalScale)
 	N.z *= r_NormalScale;
 	normalize(N);
-	#endif
+#endif
 
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 
@@ -63,6 +69,6 @@ void	main()
 	// compute reflection ray
 	vec3 R = reflect(I, N);
 
-	gl_FragColor = textureCube(u_ColorMap, R).rgba;
-	// gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	outputColor = textureCube(u_ColorMap, R).rgba;
+	// outputColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

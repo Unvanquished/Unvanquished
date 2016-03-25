@@ -399,7 +399,6 @@ void R_InitFBOs()
 {
 	int i;
 	int width, height;
-	int xTiles, yTiles;
 
 	Log::Debug("------- R_InitFBOs -------" );
 
@@ -410,18 +409,8 @@ void R_InitFBOs()
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	if ( glConfig2.textureNPOTAvailable )
-	{
-		width = glConfig.vidWidth;
-		height = glConfig.vidHeight;
-	}
-	else
-	{
-		width = NearestPowerOfTwo( glConfig.vidWidth );
-		height = NearestPowerOfTwo( glConfig.vidHeight );
-	}
-	xTiles = (width + 15) >> 4;
-	yTiles = (height + 15) >> 4;
+	width = glConfig.vidWidth;
+	height = glConfig.vidHeight;
 
 	tr.mainFBO[0] = R_CreateFBO( "_main[0]", width, height );
 	R_BindFBO( tr.mainFBO[0] );
@@ -440,12 +429,12 @@ void R_InitFBOs()
 	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.depthtile1RenderImage->texnum, 0 );
 	R_CheckFBO( tr.depthtile1FBO );
 
-	tr.depthtile2FBO = R_CreateFBO( "_depthtile2", tr.depthtile1RenderImage->width, tr.depthtile1RenderImage->height );
+	tr.depthtile2FBO = R_CreateFBO( "_depthtile2", tr.depthtile2RenderImage->width, tr.depthtile2RenderImage->height );
 	R_BindFBO( tr.depthtile2FBO );
 	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.depthtile2RenderImage->texnum, 0 );
 	R_CheckFBO( tr.depthtile2FBO );
 
-	tr.lighttileFBO = R_CreateFBO( "_lighttile", xTiles, yTiles );
+	tr.lighttileFBO = R_CreateFBO( "_lighttile", tr.lighttileRenderImage->width, tr.lighttileRenderImage->height );
 	R_BindFBO( tr.lighttileFBO );
 	R_AttachFBOTexture3D( tr.lighttileRenderImage->texnum, 0, 0 );
 	R_CheckFBO( tr.lighttileFBO );
@@ -523,16 +512,8 @@ void R_InitFBOs()
 	}
 
 	{
-		if ( glConfig2.textureNPOTAvailable )
-		{
-			width = glConfig.vidWidth;
-			height = glConfig.vidHeight;
-		}
-		else
-		{
-			width = NearestPowerOfTwo( glConfig.vidWidth );
-			height = NearestPowerOfTwo( glConfig.vidHeight );
-		}
+		width = glConfig.vidWidth;
+		height = glConfig.vidHeight;
 
 		// portalRender FBO for portals, mirrors, water, cameras et cetera
 		tr.portalRenderFBO = R_CreateFBO( "_portalRender", width, height );
@@ -544,16 +525,8 @@ void R_InitFBOs()
 	}
 
 	{
-		if ( glConfig2.textureNPOTAvailable )
-		{
-			width = glConfig.vidWidth * 0.25f;
-			height = glConfig.vidHeight * 0.25f;
-		}
-		else
-		{
-			width = NearestPowerOfTwo( glConfig.vidWidth * 0.25f );
-			height = NearestPowerOfTwo( glConfig.vidHeight * 0.25f );
-		}
+		width = glConfig.vidWidth * 0.25f;
+		height = glConfig.vidHeight * 0.25f;
 
 		tr.downScaleFBO_quarter = R_CreateFBO( "_downScale_quarter", width, height );
 		R_BindFBO( tr.downScaleFBO_quarter );
@@ -567,16 +540,8 @@ void R_InitFBOs()
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_64x64->texnum, 0 );
 		R_CheckFBO( tr.downScaleFBO_64x64 );
 
-		if ( glConfig2.textureNPOTAvailable )
-		{
-			width = glConfig.vidWidth * 0.25f;
-			height = glConfig.vidHeight * 0.25f;
-		}
-		else
-		{
-			width = NearestPowerOfTwo( glConfig.vidWidth * 0.25f );
-			height = NearestPowerOfTwo( glConfig.vidHeight * 0.25f );
-		}
+		width = glConfig.vidWidth * 0.25f;
+		height = glConfig.vidHeight * 0.25f;
 
 		tr.contrastRenderFBO = R_CreateFBO( "_contrastRender", width, height );
 		R_BindFBO( tr.contrastRenderFBO );

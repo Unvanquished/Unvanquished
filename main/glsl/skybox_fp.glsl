@@ -27,6 +27,12 @@ uniform vec3		u_ViewOrigin;
 
 varying vec3		var_Position;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
+
 void	main()
 {
 	// compute incident ray
@@ -40,6 +46,6 @@ void	main()
 	gl_FragData[2] = vec4(0.0);
 	gl_FragData[3] = vec4(0.0);
 #else
-	gl_FragColor = color;
+	outputColor = color;
 #endif
 }

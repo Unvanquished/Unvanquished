@@ -42,6 +42,11 @@ varying vec3		var_Normal;
 
 varying vec4		var_Color;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
 
 void	main()
 {
@@ -150,11 +155,11 @@ void	main()
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 
-	gl_FragColor = color;
+	outputColor = color;
 
 #if defined(r_showLightMaps)
-	gl_FragColor = texture2D(u_LightMap, var_TexLight);
+	outputColor = texture2D(u_LightMap, var_TexLight);
 #elif defined(r_showDeluxeMaps)
-	gl_FragColor = texture2D(u_DeluxeMap, var_TexLight);
+	outputColor = texture2D(u_DeluxeMap, var_TexLight);
 #endif
 }

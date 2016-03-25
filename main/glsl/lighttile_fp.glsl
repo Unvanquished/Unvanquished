@@ -21,15 +21,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 /* lighttile_fp.glsl */
-#extension GL_ARB_uniform_buffer_object : require
-#if __VERSION__ < 130
+#if __VERSION__ < 150 && defined( UNIFORM_BUFFER_OBJECT )
+#extension GL_ARB_uniform_buffer_object : enable
+#endif
+
+#if __VERSION__ < 130 && defined( TEXTURE_INTEGER )
 #extension GL_EXT_texture_integer : enable
 #extension GL_EXT_gpu_shader4 : enable
-#if defined( GL_EXT_texture_integer ) && defined( GL_EXT_gpu_shader4 )
-#define HAVE_INTTEX 1
-#endif
-#else
-#define HAVE_INTTEX 1
 #endif
 
 varying vec2 vPosition;
@@ -41,9 +39,21 @@ struct light {
   vec4  direction_angle;
 };
 
+#ifdef UNIFORM_BUFFER_OBJECT
 layout(std140) uniform u_Lights {
   light lights[ MAX_REF_LIGHTS ];
 };
+#define GetLight(idx, component) lights[idx].component
+#else
+uniform sampler2D u_Lights;
+#define center_radius_offset   0
+#define color_type_offset      1
+#define direction_angle_offset 2
+#define idxToTC( idx, w, h ) vec2( floor( ( idx * ( 1.0 / w ) + 0.5 ) * ( 1.0 / h ) ), \
+				   fract( ( idx + 0.5 ) * (1.0 / w ) ) )
+#define GetLight(idx, component) texture2D( u_Lights, idxToTC(3 * idx + component##_offset, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) )
+#endif
+
 uniform int  u_numLights;
 uniform mat4 u_ModelMatrix;
 uniform sampler2D u_DepthMap;
@@ -51,7 +61,7 @@ uniform int  u_lightLayer;
 
 const int numLayers = MAX_REF_LIGHTS / 256;
 
-#if defined( HAVE_INTTEX )
+#ifdef TEXTURE_INTEGER
 #define idxs_t uvec4
 #define idx_initializer uvec4(3)
 #if __VERSION__ < 130
@@ -102,8 +112,9 @@ void main() {
   idxs_t idxs = idx_initializer;
 
   for( int i = u_lightLayer; i < u_numLights; i += numLayers ) {
-    vec3 center = ( u_ModelMatrix * vec4( lights[ i ].center_radius.xyz, 1.0 ) ).xyz;
-    float radius = 2.0 * lights[ i ].center_radius.w;
+    vec4 center_radius = GetLight( i, center_radius );
+    vec3 center = ( u_ModelMatrix * vec4( center_radius.xyz, 1.0 ) ).xyz;
+    float radius = 2.0 * center_radius.w;
 
     // todo: better checks for spotlights
     lightOutsidePlane( plane1, center, radius );

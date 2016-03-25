@@ -635,7 +635,11 @@ static void Render_generic( int stage )
 
 	if( backEnd.refdef.numShaderLights > 0 ) {
 		gl_genericShader->SetUniform_numLights( backEnd.refdef.numLights );
-		gl_genericShader->SetUniformBlock_Lights( tr.dlightUBO );
+		if( glConfig2.uniformBufferObjectAvailable ) {
+			gl_genericShader->SetUniformBlock_Lights( tr.dlightUBO );
+		} else {
+			GL_BindToTMU( 9, tr.dlightImage );
+		}
 	}
 
 	// u_AlphaTest
@@ -773,7 +777,11 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	if( backEnd.refdef.numShaderLights > 0 ) {
 		gl_vertexLightingShader_DBS_entity->SetUniform_numLights( backEnd.refdef.numLights );
-		gl_vertexLightingShader_DBS_entity->SetUniformBlock_Lights( tr.dlightUBO );
+		if( glConfig2.uniformBufferObjectAvailable ) {
+			gl_vertexLightingShader_DBS_entity->SetUniformBlock_Lights( tr.dlightUBO );
+		} else {
+			GL_BindToTMU( 9, tr.dlightImage );
+		}
 	}
 
 	// u_AlphaTest
@@ -985,7 +993,11 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 	if( backEnd.refdef.numShaderLights > 0 ) {
 		gl_vertexLightingShader_DBS_world->SetUniform_numLights( backEnd.refdef.numLights );
-		gl_vertexLightingShader_DBS_world->SetUniformBlock_Lights( tr.dlightUBO );
+		if( glConfig2.uniformBufferObjectAvailable ) {
+			gl_vertexLightingShader_DBS_world->SetUniformBlock_Lights( tr.dlightUBO );
+		} else {
+			GL_BindToTMU( 9, tr.dlightImage );
+		}
 	}
 
 	GL_CheckErrors();
@@ -1181,7 +1193,11 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	if( backEnd.refdef.numShaderLights > 0 ) {
 		gl_lightMappingShader->SetUniform_numLights( backEnd.refdef.numLights );
-		gl_lightMappingShader->SetUniformBlock_Lights( tr.dlightUBO );
+		if( glConfig2.uniformBufferObjectAvailable ) {
+			gl_lightMappingShader->SetUniformBlock_Lights( tr.dlightUBO );
+		} else {
+			GL_BindToTMU( 9, tr.dlightImage );
+		}
 	}
 
 	// u_DeformGen

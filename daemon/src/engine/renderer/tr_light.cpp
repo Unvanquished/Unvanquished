@@ -695,6 +695,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
+		Tess_MapVBOs(true);
 		R_TessLight( light );
 
 		memset( &data, 0, sizeof( data ) );
@@ -718,6 +719,8 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		tess.multiDrawPrimitives = 0;
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
+		tess.verts = nullptr;
+		tess.indexes = nullptr;
 	}
 }
 

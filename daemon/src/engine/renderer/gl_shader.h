@@ -243,6 +243,7 @@ public:
 
 class GLShaderManager
 {
+	std::string _versionDeclaration;
 	std::queue< GLShader* > _shaderBuildQueue;
 	std::vector< GLShader* > _shaders;
 	std::unordered_map< std::string, int > _deformShaderLookup;
@@ -253,6 +254,19 @@ public:
 	{
 	}
 	~GLShaderManager();
+
+	std::string GetVersionDeclaration() {
+		if( _versionDeclaration.size() == 0 ) {
+			const char *profile = "";
+
+			if( glConfig2.shadingLanguageVersion >= 150 ) {
+				profile = glConfig2.glCoreProfile ? "core" : "compatibility";
+			}
+			_versionDeclaration = Str::Format( "#version %d %s\n", glConfig2.shadingLanguageVersion, profile );
+		}
+
+		return _versionDeclaration;
+	}
 
 	template< class T >
 	void load( T *& shader )
@@ -278,17 +292,16 @@ private:
 	GLuint CompileShader( Str::StringRef programName, Str::StringRef shaderText,
 			      int shaderTextSize, GLenum shaderType ) const;
 	void CompileGPUShaders( GLShader *shader, shaderProgram_t *program,
-				const std::string &compileMacros ) const;
+				const std::string &compileMacros );
 	void CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
-	                                     Str::StringRef compileMacros, int deformIndex ) const;
-	std::string BuildDeformShaderText( const std::string& steps ) const;
+	                                     Str::StringRef compileMacros, int deformIndex );
+	std::string BuildDeformShaderText( const std::string& steps );
 	std::string BuildGPUShaderText( Str::StringRef mainShader, Str::StringRef libShaders, GLenum shaderType ) const;
 	void LinkProgram( GLuint program ) const;
 	void BindAttribLocations( GLuint program ) const;
 	void PrintShaderSource( Str::StringRef programName, GLuint object ) const;
 	void PrintInfoLog( GLuint object ) const;
 	void InitShader( GLShader *shader );
-	void ValidateProgram( GLuint program ) const;
 	void UpdateShaderProgramUniformLocations( GLShader *shader, shaderProgram_t *shaderProgram ) const;
 };
 

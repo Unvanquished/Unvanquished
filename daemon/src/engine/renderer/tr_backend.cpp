@@ -2784,6 +2784,7 @@ void RB_RenderPostDepth()
 	w = (glConfig.vidWidth + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
 	h = (glConfig.vidHeight + TILE_SIZE_STEP1 - 1) >> TILE_SHIFT_STEP1;
 	GL_Viewport( 0, 0, w, h );
+	GL_Scissor( 0, 0, w, h );
 	gl_depthtile1Shader->BindProgram( 0 );
 
 	zParams[ 0 ] = 2.0f * tanf( DEG2RAD( backEnd.refdef.fov_x * 0.5f) ) / glConfig.vidWidth;
@@ -2801,6 +2802,7 @@ void RB_RenderPostDepth()
 	w = (glConfig.vidWidth + TILE_SIZE - 1) >> TILE_SHIFT;
 	h = (glConfig.vidHeight + TILE_SIZE - 1) >> TILE_SHIFT;
 	GL_Viewport( 0, 0, w, h );
+	GL_Scissor( 0, 0, w, h );
 	gl_depthtile2Shader->BindProgram( 0 );
 
 	GL_BindToTMU( 0, tr.depthtile1RenderImage );
@@ -2812,7 +2814,11 @@ void RB_RenderPostDepth()
 	gl_lighttileShader->BindProgram( 0 );
 	gl_lighttileShader->SetUniform_ModelMatrix( backEnd.viewParms.world.modelViewMatrix );
 	gl_lighttileShader->SetUniform_numLights( backEnd.refdef.numLights );
-	gl_lighttileShader->SetUniformBlock_Lights( tr.dlightUBO );
+	if( glConfig2.uniformBufferObjectAvailable ) {
+		gl_lighttileShader->SetUniformBlock_Lights( tr.dlightUBO );
+	} else {
+		GL_BindToTMU( 1, tr.dlightImage );
+	}
 
 	GL_BindToTMU( 0, tr.depthtile2RenderImage );
 
@@ -2824,20 +2830,24 @@ void RB_RenderPostDepth()
 
 		GL_Viewport( 0, 0, tr.lighttileRenderImage->width, tr.lighttileRenderImage->height );
 		tess.numIndexes = 0;
-		tess.numVertexes = tr.depthtile2RenderImage->width * tr.depthtile2RenderImage->height;
+		tess.numVertexes = tr.lighttileVBO->vertexesNum;
 
 		GL_VertexAttribsState( ATTR_POSITION | ATTR_TEXCOORD );
-		glEnable( GL_POINT_SPRITE );
+		if( !glConfig2.glCoreProfile )
+			glEnable( GL_POINT_SPRITE );
 		glEnable( GL_PROGRAM_POINT_SIZE );
 		Tess_DrawArrays( GL_POINTS );
 		glDisable( GL_PROGRAM_POINT_SIZE );
-		glDisable( GL_POINT_SPRITE );
+		if( !glConfig2.glCoreProfile )
+			glDisable( GL_POINT_SPRITE );
 	}
 
 	// back to main image
 	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 		     backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
+		    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
 	GL_CheckErrors();
 }
@@ -5410,17 +5420,17 @@ static const void *RB_SetupLights( const void *data )
 {
 	const setupLightsCommand_t *cmd;
 	int numLights;
+	GLenum bufferTarget = glConfig2.uniformBufferObjectAvailable ? GL_UNIFORM_BUFFER : GL_PIXEL_UNPACK_BUFFER;
 
 	GLimp_LogComment( "--- RB_SetupLights ---\n" );
 
 	cmd = ( const setupLightsCommand_t * ) data;
 
-	if( GLEW_ARB_uniform_buffer_object &&
-	    (numLights = cmd->refdef.numLights) > 0 ) {
+	if( (numLights = cmd->refdef.numLights) > 0 ) {
 		shaderLight_t *buffer;
 
-		glBindBuffer( GL_UNIFORM_BUFFER, tr.dlightUBO );
-		buffer = (shaderLight_t *)glMapBufferRange( GL_UNIFORM_BUFFER,
+		glBindBuffer( bufferTarget, tr.dlightUBO );
+		buffer = (shaderLight_t *)glMapBufferRange( bufferTarget,
 							    0, numLights * sizeof( shaderLight_t ),
 							    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT );
 
@@ -5433,7 +5443,7 @@ static const void *RB_SetupLights( const void *data )
 
 			VectorCopy( light->l.origin, buffer[i].center );
 			buffer[i].radius = light->l.radius;
-			VectorScale( light->l.color, light->l.scale, buffer[i].color );
+			VectorScale( light->l.color, 4.0f * light->l.scale, buffer[i].color );
 			buffer[i].type = Util::ordinal( light->l.rlType );
 			switch( light->l.rlType ) {
 			case refLightType_t::RL_PROJ:
@@ -5450,8 +5460,12 @@ static const void *RB_SetupLights( const void *data )
 			}
 		}
 
-		glUnmapBuffer( GL_UNIFORM_BUFFER );
-		glBindBuffer( GL_UNIFORM_BUFFER, 0 );
+		glUnmapBuffer( bufferTarget );
+		if( !glConfig2.uniformBufferObjectAvailable ) {
+			GL_BindToTMU( 0, tr.dlightImage );
+			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, tr.dlightImage->width, tr.dlightImage->height, GL_RGBA, GL_FLOAT, NULL );
+		}
+		glBindBuffer( bufferTarget, 0 );
 	}
 
 	return ( const void * )( cmd + 1 );

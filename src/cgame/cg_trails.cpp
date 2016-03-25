@@ -277,6 +277,15 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			numVerts++;
 		}
 
+		if( btb->dynamicLight ) {
+			trap_R_AddLightToScene( i->position,
+						btb->dLightRadius,
+						3,
+						( float ) btb->dLightColor[ 0 ] / ( float ) 0xFF,
+						( float ) btb->dLightColor[ 1 ] / ( float ) 0xFF,
+						( float ) btb->dLightColor[ 2 ] / ( float ) 0xFF, 0, 0 );
+		}
+
 		i = i->next;
 	}
 	while ( i );
@@ -1020,6 +1029,34 @@ static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 			btb->jitterAttachments = true;
 
 			continue;
+		}
+		else if ( !Q_stricmp( token, "dynamicLight" ) )
+		{
+			btb->dynamicLight = true;
+
+			token = COM_Parse( text_p );
+
+			if ( !*token )
+			{
+				break;
+			}
+
+			btb->dLightRadius = atof( token );
+
+			token = COM_Parse( text_p );
+
+			if ( !*token )
+			{
+				break;
+			}
+
+			if ( !Q_stricmp( token, "{" ) )
+			{
+				if ( !CG_ParseColor( btb->dLightColor, text_p ) )
+				{
+					break;
+				}
+			}
 		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{

@@ -22,15 +22,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // reliefMapping_vp.glsl - Relief mapping helper functions
 
 #if defined( USE_SHADER_LIGHTS )
-#extension GL_ARB_uniform_buffer_object : require
-#if __VERSION__ < 130
+#if __VERSION__ < 150 && defined( UNIFORM_BUFFER_OBJECT )
+#extension GL_ARB_uniform_buffer_object : enable
+#endif
+
+#if __VERSION__ < 130 && defined( TEXTURE_INTEGER )
 #extension GL_EXT_texture_integer : enable
 #extension GL_EXT_gpu_shader4 : enable
-#if defined( GL_EXT_texture_integer ) && defined( GL_EXT_gpu_shader4 )
-#define HAVE_INTTEX 1
-#endif
-#else
-#define HAVE_INTTEX 1
 #endif
 
 struct light {
@@ -39,9 +37,20 @@ struct light {
   vec4  direction_angle;
 };
 
+#ifdef UNIFORM_BUFFER_OBJECT
 layout(std140) uniform u_Lights {
   light lights[ MAX_REF_LIGHTS ];
 };
+#define GetLight(idx, component) lights[idx].component
+#else
+uniform sampler2D u_Lights;
+#define center_radius_offset   0
+#define color_type_offset      1
+#define direction_angle_offset 2
+#define idxToTC( idx, w, h ) vec2( floor( ( idx * ( 1.0 / w ) ) + 0.5 ) * ( 1.0 / h ), \
+				   fract( ( idx + 0.5 ) * (1.0 / w ) ) )
+#define GetLight(idx, component) texture2D( u_Lights, idxToTC(3 * idx + component##_offset, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) )
+#endif
 
 uniform int u_numLights;
 #endif
@@ -99,7 +108,7 @@ void computeLight( vec3 lightDir, vec3 normal, vec3 eyeDir, vec3 lightColor,
 
 #if defined( USE_SHADER_LIGHTS )
 
-#if defined( HAVE_INTTEX )
+#ifdef TEXTURE_INTEGER
 const int lightsPerLayer = 16;
 uniform usampler3D u_LightTiles;
 #define idxs_t uvec4
@@ -130,11 +139,34 @@ const int numLayers = MAX_REF_LIGHTS / 256;
 
 void computeDLight( int idx, vec3 P, vec3 N, vec3 I, vec4 diffuse,
 		    vec4 specular, inout vec4 color ) {
-  vec3 L = lights[idx].center_radius.xyz - P;
-  float attenuation = 1.0 / (1.0 + 8.0 * length(L) / lights[idx].center_radius.w);
-  computeLight( normalize( L ), N, I,
-		attenuation * attenuation * lights[idx].color_type.xyz,
-		diffuse, specular, color );
+  vec4 center_radius = GetLight( idx, center_radius );
+  vec4 color_type = GetLight( idx, color_type );
+
+  if( color_type.w == 0.0 ) {
+    // spot light
+    vec3 L = center_radius.xyz - P;
+    float attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
+    computeLight( normalize( L ), N, I,
+		  attenuation * attenuation * color_type.xyz,
+		  diffuse, specular, color );
+  } else if( color_type.w == 1.0 ) {
+    // spot light
+    vec4 direction_angle = GetLight( idx, direction_angle );
+    vec3 L = center_radius.xyz - P;
+    float attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
+    L = normalize( L );
+
+    if( dot( L, direction_angle.xyz ) > direction_angle.w ) {
+      computeLight( L, N, I,
+		    attenuation * attenuation * color_type.xyz,
+		    diffuse, specular, color );
+    }
+  } else if( color_type.w == 2.0 ) {
+    // sun (directional) light
+    vec3 L = GetLight( idx, direction_angle ).xyz;
+    computeLight( L, N, I, color_type.xyz,
+		  diffuse, specular, color );
+  }
 }
 
 void computeDLights( vec3 P, vec3 N, vec3 I, vec4 diffuse, vec4 specular,
@@ -194,9 +226,9 @@ float RayIntersectDisplaceMap(vec2 dp, vec2 ds, sampler2D normalMap)
 		vec4 t = texture2D(normalMap, dp + ds * depth);
 
 		if(depth >= t.w)
-		#ifdef RM_DOUBLEDEPTH
+#ifdef RM_DOUBLEDEPTH
 			if(depth <= t.z)
-		#endif
+#endif
 			{
 				bestDepth = depth;
 				depth -= 2.0 * size;

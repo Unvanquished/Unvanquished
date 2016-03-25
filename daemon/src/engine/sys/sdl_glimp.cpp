@@ -488,6 +488,8 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	Uint32      flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	int         x, y;
 	GLenum      glewResult;
+	int         GLmajor, GLminor;
+	int         GLEWmajor, GLEWminor, GLEWmicro;
 
 	Log::Notice("Initializing OpenGL display" );
 
@@ -562,6 +564,12 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 	Cvar_Set( "r_customwidth", va("%d", glConfig.vidWidth ) );
 	Cvar_Set( "r_customheight", va("%d", glConfig.vidHeight ) );
 
+	sscanf( ( const char * ) glewGetString( GLEW_VERSION ), "%d.%d.%d",
+		&GLEWmajor, &GLEWminor, &GLEWmicro );
+	if( GLEWmajor < 2 ) {
+		Log::Warn( "GLEW version < 2.0.0 doesn't support GL core profiles" );
+	}
+
 	do
 	{
 		if ( glContext != nullptr )
@@ -619,91 +627,30 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 		stencilBits = r_stencilbits->integer;
 		samples = r_ext_multisample->integer;
 
-		for ( i = 0; i < 16; i++ )
+		for ( i = 0; i < 4; i++ )
 		{
-			int testColorBits, testDepthBits, testStencilBits;
+			int testColorBits, testCore;
+			int major = r_glMajorVersion->integer;
+			int minor = r_glMinorVersion->integer;
 
-			// 0 - default
-			// 1 - minus colorbits
-			// 2 - minus depthbits
-			// 3 - minus stencil
-			if ( ( i % 4 ) == 0 && i )
-			{
-				// one pass, reduce
-				switch ( i / 4 )
-				{
-					case 2:
-						if ( colorBits == 24 )
-						{
-							colorBits = 16;
-						}
+			// 0 - 24 bit color, core
+			// 1 - 24 bit color, compat
+			// 2 - 16 bit color, core
+			// 3 - 16 bit color, compat
+			testColorBits = (i >= 2) ? 16 : 24;
+			testCore = ((i & 1) == 0);
 
-						break;
+			if( testCore && !Q_stricmp(r_glProfile->string, "compat") )
+				continue;
 
-					case 1:
-						if ( depthBits == 24 )
-						{
-							depthBits = 16;
-						}
-						else if ( depthBits == 16 )
-						{
-							depthBits = 8;
-						}
+			if( testCore && GLEWmajor < 2 )
+				continue;
 
-					case 3:
-						if ( stencilBits == 24 )
-						{
-							stencilBits = 16;
-						}
-						else if ( stencilBits == 16 )
-						{
-							stencilBits = 8;
-						}
-				}
-			}
+			if( !testCore && !Q_stricmp(r_glProfile->string, "core") )
+				continue;
 
-			testColorBits = colorBits;
-			testDepthBits = depthBits;
-			testStencilBits = stencilBits;
-
-			if ( ( i % 4 ) == 3 )
-			{
-				// reduce colorbits
-				if ( testColorBits == 24 )
-				{
-					testColorBits = 16;
-				}
-			}
-
-			if ( ( i % 4 ) == 2 )
-			{
-				// reduce depthbits
-				if ( testDepthBits == 24 )
-				{
-					testDepthBits = 16;
-				}
-				else if ( testDepthBits == 16 )
-				{
-					testDepthBits = 8;
-				}
-			}
-
-			if ( ( i % 4 ) == 1 )
-			{
-				// reduce stencilbits
-				if ( testStencilBits == 24 )
-				{
-					testStencilBits = 16;
-				}
-				else if ( testStencilBits == 16 )
-				{
-					testStencilBits = 8;
-				}
-				else
-				{
-					testStencilBits = 0;
-				}
-			}
+			if( testColorBits > colorBits )
+				continue;
 
 			if ( testColorBits == 24 )
 			{
@@ -717,11 +664,6 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, perChannelColorBits );
 			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, perChannelColorBits );
 			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, perChannelColorBits );
-			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, alphaBits );
-			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, testDepthBits );
-			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, testStencilBits );
-			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );
-			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 			if ( !r_glAllowSoftware->integer )
@@ -729,27 +671,31 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 				SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
 			}
 
-			if ( r_glCoreProfile->integer || r_glDebugProfile->integer )
+			if( testCore && (major < 3 || (major == 3 && minor < 2)) ) {
+				major = 3;
+				minor = 2;
+			}
+
+			if( major < 2 || (major == 2 && minor < 1)) {
+				major = 2;
+				minor = 1;
+			}
+
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
+
+			if ( testCore )
 			{
-				int major = r_glMajorVersion->integer;
-				int minor = r_glMinorVersion->integer;
+				SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+			}
+			else
+			{
+				SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+			}
 
-				SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
-				SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
-
-				if ( r_glCoreProfile->integer )
-				{
-					SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-				}
-				else
-				{
-					SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
-				}
-
-				if ( r_glDebugProfile->integer )
-				{
-					SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
-				}
+			if ( r_glDebugProfile->integer )
+			{
+				SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
 			}
 			window = SDL_CreateWindow( CLIENT_WINDOW_TITLE, x, y, glConfig.vidWidth, glConfig.vidHeight, flags );
 
@@ -771,8 +717,9 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 			SDL_GL_SetSwapInterval( r_swapInterval->integer );
 
 			glConfig.colorBits = testColorBits;
-			glConfig.depthBits = testDepthBits;
-			glConfig.stencilBits = testStencilBits;
+			glConfig.depthBits = depthBits;
+			glConfig.stencilBits = stencilBits;
+			glConfig2.glCoreProfile = testCore;
 
 			Log::Notice("Using %d Color bits, %d depth, %d stencil display.",
 				glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits );
@@ -801,7 +748,6 @@ static rserr_t GLimp_SetMode( int mode, bool fullscreen, bool noborder )
 		Log::Notice("Using GLEW %s", glewGetString( GLEW_VERSION ) );
 	}
 
-	int GLmajor, GLminor;
 	sscanf( ( const char * ) glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
 	if ( GLmajor < 2 || ( GLmajor == 2 && GLminor < 1 ) )
 	{
@@ -1043,9 +989,34 @@ static bool LoadExtWithCvar( bool hasExt, const char* name, bool cvarValue )
 	return false;
 }
 
+/*
+	load extensions that were made a required part of OpenGL core profile by version 3.2
+*/
+static bool LoadCoreExtWithCvar(bool hasExt, const char* name, bool cvarValue)
+{
+	if (hasExt || glConfig2.glCoreProfile)
+	{
+		if (cvarValue)
+		{
+			Log::Notice("...using GL_%s", name);
+			return true;
+		}
+		else
+		{
+			Log::Notice("...ignoring GL_%s", name);
+		}
+	}
+	else
+	{
+		Log::Notice("...GL_%s not found", name);
+	}
+	return false;
+}
 #define REQUIRE_EXTENSION(ext) RequireExt(GLEW_##ext, #ext)
 
 #define LOAD_EXTENSION_WITH_CVAR(ext, cvar) LoadExtWithCvar(GLEW_##ext, #ext, cvar->value)
+
+#define LOAD_CORE_EXTENSION_WITH_CVAR(ext, cvar) LoadCoreExtWithCvar(GLEW_##ext, #ext, cvar->value)
 
 static void GLimp_InitExtensions()
 {
@@ -1057,10 +1028,7 @@ static void GLimp_InitExtensions()
 		glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB );
 	}
 
-	// Shaders
-	REQUIRE_EXTENSION( ARB_fragment_shader );
-	REQUIRE_EXTENSION( ARB_vertex_shader );
-
+	// Shader limits
 	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &glConfig2.maxVertexUniforms );
 	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS_ARB, &glConfig2.maxVertexAttribs );
 
@@ -1069,7 +1037,6 @@ static void GLimp_InitExtensions()
 	glConfig2.vboVertexSkinningAvailable = r_vboVertexSkinning->integer && ( ( glConfig2.maxVertexSkinningBones >= 12 ) ? true : false );
 
 	// GLSL
-	REQUIRE_EXTENSION( ARB_shading_language_100 );
 
 	Q_strncpyz( glConfig2.shadingLanguageVersionString, ( char * ) glGetString( GL_SHADING_LANGUAGE_VERSION_ARB ),
 				sizeof( glConfig2.shadingLanguageVersionString ) );
@@ -1083,31 +1050,35 @@ static void GLimp_InitExtensions()
 	Log::Notice("...found shading language version %i", glConfig2.shadingLanguageVersion );
 
 	// Texture formats and compression
-	REQUIRE_EXTENSION( ARB_depth_texture );
-
-	REQUIRE_EXTENSION( ARB_texture_cube_map );
 	glGetIntegerv( GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB, &glConfig2.maxCubeMapTextureSize );
 
-	glConfig2.textureHalfFloatAvailable =  LOAD_EXTENSION_WITH_CVAR(ARB_half_float_pixel, r_ext_half_float_pixel);
-	glConfig2.textureFloatAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_float, r_ext_texture_float);
-	glConfig2.textureIntegerAvailable = LOAD_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer);
-	glConfig2.textureRGAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
+	// made required in OpenGL 3.0
+	glConfig2.textureHalfFloatAvailable =  LOAD_CORE_EXTENSION_WITH_CVAR(ARB_half_float_pixel, r_ext_half_float_pixel);
+
+	// made required in OpenGL 3.0
+	glConfig2.textureFloatAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_float, r_ext_texture_float);
+
+	// made required in OpenGL 3.0
+	glConfig2.textureIntegerAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer);
+
+	// made required in OpenGL 3.0
+	glConfig2.textureRGAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
 
 	// TODO figure out what was the problem with MESA
-	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != glDriverType_t::GLDRV_MESA && LOAD_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
+	// made required in OpenGL 3.0
+	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != glDriverType_t::GLDRV_MESA && LOAD_CORE_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
 
-	glConfig2.ARBTextureCompressionAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_compression, r_ext_compressed_textures);
+	// made required in OpenGL 1.3
 	glConfig.textureCompression = textureCompression_t::TC_NONE;
-	if( LOAD_EXTENSION_WITH_CVAR(EXT_texture_compression_s3tc, r_ext_compressed_textures) )
+	if( GLEW_EXT_texture_compression_s3tc )
 	{
 		glConfig.textureCompression = textureCompression_t::TC_S3TC;
 	}
-	//REQUIRE_EXTENSION(EXT_texture3D);
+
+	// made required in OpenGL 3.0
+	glConfig2.textureCompressionRGTCAvailable = glConfig2.glCoreProfile || GLEW_ARB_texture_compression_rgtc;
 
 	// Texture - others
-	glConfig2.textureNPOTAvailable = LOAD_EXTENSION_WITH_CVAR(ARB_texture_non_power_of_two, r_ext_texture_non_power_of_two);
-	glConfig2.generateMipmapAvailable = LOAD_EXTENSION_WITH_CVAR(SGIS_generate_mipmap, r_ext_generate_mipmap);
-
 	glConfig2.textureAnisotropyAvailable = false;
 	if ( LOAD_EXTENSION_WITH_CVAR(EXT_texture_filter_anisotropic, r_ext_texture_filter_anisotropic) )
 	{
@@ -1116,44 +1087,36 @@ static void GLimp_InitExtensions()
 	}
 
 	// VAO and VBO
-	//REQUIRE_EXTENSION( ARB_vertex_array_object );
-	REQUIRE_EXTENSION( ARB_vertex_buffer_object );
-	REQUIRE_EXTENSION( ARB_half_float_vertex );
-	REQUIRE_EXTENSION( ARB_framebuffer_object );
+	if( !glConfig2.glCoreProfile ) {
+		// made required in OpenGL 3.0
+		REQUIRE_EXTENSION( ARB_half_float_vertex );
+
+		// made required in OpenGL 3.0
+		REQUIRE_EXTENSION( ARB_framebuffer_object );
+	}
 
 	// FBO
 	glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE, &glConfig2.maxRenderbufferSize );
 	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &glConfig2.maxColorAttachments );
 
-	// Other
-	REQUIRE_EXTENSION( ARB_shader_objects );
-
+	// made required in OpenGL 1.5
 	glConfig2.occlusionQueryAvailable = false;
 	glConfig2.occlusionQueryBits = 0;
-	if ( LOAD_EXTENSION_WITH_CVAR(ARB_occlusion_query, r_ext_occlusion_query) )
+	if ( r_ext_occlusion_query->integer != 0 )
 	{
 		glConfig2.occlusionQueryAvailable = true;
-		glGetQueryivARB( GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &glConfig2.occlusionQueryBits );
+		glGetQueryiv( GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &glConfig2.occlusionQueryBits );
 	}
 
+	// made required in OpenGL 2.0
 	glConfig2.drawBuffersAvailable = false;
-	if ( LOAD_EXTENSION_WITH_CVAR(ARB_draw_buffers, r_ext_draw_buffers) )
+	if ( r_ext_draw_buffers->integer != 0 )
 	{
-		glGetIntegerv( GL_MAX_DRAW_BUFFERS_ARB, &glConfig2.maxDrawBuffers );
+		glGetIntegerv( GL_MAX_DRAW_BUFFERS, &glConfig2.maxDrawBuffers );
 		glConfig2.drawBuffersAvailable = true;
 	}
 
-	// gDEBugger debug
-	if ( GLEW_GREMEDY_string_marker )
-	{
-		Log::Notice("...using GL_GREMEDY_string_marker" );
-	}
-	else
-	{
-		Log::Notice("...GL_GREMEDY_string_marker not found" );
-	}
-
-#ifdef GLEW_ARB_get_program_binary
+#ifdef GL_ARB_get_program_binary
 	if( GLEW_ARB_get_program_binary )
 	{
 		int formats = 0;
@@ -1178,7 +1141,7 @@ static void GLimp_InitExtensions()
 		glConfig2.getProgramBinaryAvailable = false;
 	}
 
-#ifdef GLEW_ARB_buffer_storage
+#ifdef GL_ARB_buffer_storage
 	if ( GLEW_ARB_buffer_storage )
 	{
 		if ( r_arb_buffer_storage->integer )
@@ -1199,8 +1162,14 @@ static void GLimp_InitExtensions()
 		glConfig2.bufferStorageAvailable = false;
 	}
 
-	glConfig2.mapBufferRangeAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );
-	glConfig2.syncAvailable = LOAD_EXTENSION_WITH_CVAR( ARB_sync, r_arb_sync );
+	// made required since OpenGL 3.1
+	glConfig2.uniformBufferObjectAvailable = LOAD_CORE_EXTENSION_WITH_CVAR( ARB_uniform_buffer_object, r_arb_uniform_buffer_object );
+
+	// made required in OpenGL 3.0
+	glConfig2.mapBufferRangeAvailable = LOAD_CORE_EXTENSION_WITH_CVAR( ARB_map_buffer_range, r_arb_map_buffer_range );
+
+	// made required in OpenGL 3.2
+	glConfig2.syncAvailable = LOAD_CORE_EXTENSION_WITH_CVAR( ARB_sync, r_arb_sync );
 
 	GL_CheckErrors();
 }
@@ -1532,11 +1501,15 @@ void GLimp_LogComment( const char *comment )
 {
 	static char buf[ 4096 ];
 
-	if ( r_logFile->integer && GLEW_GREMEDY_string_marker )
+	if ( r_logFile->integer && GLEW_ARB_debug_output )
 	{
 		// copy string and ensure it has a trailing '\0'
 		Q_strncpyz( buf, comment, sizeof( buf ) );
 
-		glStringMarkerGREMEDY( strlen( buf ), buf );
+		glDebugMessageInsertARB( GL_DEBUG_SOURCE_APPLICATION_ARB,
+					 GL_DEBUG_TYPE_OTHER_ARB,
+					 0,
+					 GL_DEBUG_SEVERITY_MEDIUM_ARB,
+					 strlen( buf ), buf );
 	}
 }

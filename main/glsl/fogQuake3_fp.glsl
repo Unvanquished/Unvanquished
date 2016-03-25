@@ -28,14 +28,20 @@ varying vec3		var_Position;
 varying vec2		var_Tex;
 varying vec4		var_Color;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
+
 void	main()
 {
 	vec4 color = texture2D(u_ColorMap, var_Tex);
 
 	color *= var_Color;
-	gl_FragColor = color;
+	outputColor = color;
 
 #if 0
-	gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), color.a);
+	outputColor = vec4(vec3(1.0, 0.0, 0.0), color.a);
 #endif
 }

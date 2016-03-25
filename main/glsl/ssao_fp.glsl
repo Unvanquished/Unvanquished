@@ -29,8 +29,14 @@ varying vec3 unprojectionParams;
 
 uniform vec3 u_zFar;
 
-const vec2 pixelScale = r_FBufScale * r_NPOTScale;
+const vec2 pixelScale = r_FBufScale;
 const float haloCutoff = 15.0;
+
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
 
 float depthToZ(float depth) {
 	return unprojectionParams.x / ( unprojectionParams.y * depth - unprojectionParams.z );
@@ -116,5 +122,5 @@ void	main()
 	if ( summedTotal > 0.0 ) {
 		summedOcclusion /= summedTotal;
 	}
-	gl_FragColor = vec4( clamp(1.0 - summedOcclusion, 0.0, 1.0) );
+	outputColor = vec4( clamp(1.0 - summedOcclusion, 0.0, 1.0) );
 }

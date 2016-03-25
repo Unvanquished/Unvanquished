@@ -46,13 +46,16 @@ uniform mat4		u_UnprojectMatrix;
 varying vec2		var_TexDiffuse;
 varying vec3		var_TexAttenXYZ;
 
+#if __VERSION__ > 120
+out vec4 outputColor;
+#else
+#define outputColor gl_FragColor
+#endif
+
 void	main()
 {
 	// calculate the screen texcoord in the 0.0 to 1.0 range
 	vec2 st = gl_FragCoord.st * r_FBufScale;
-
-	// scale by the screen non-power-of-two-adjust
-	st *= r_NPOTScale;
 
 	// reconstruct vertex position in world space
 	float depth = texture2D(u_DepthMap, st).r;
@@ -92,18 +95,18 @@ void	main()
 
 		float shadow = 1.0;
 
-		#if defined(VSM)
-		#if defined(USE_SHADOWING)
+#if defined(VSM)
+#if defined(USE_SHADOWING)
 		{
 			// compute incident ray
 			vec3 I2 = T - u_LightOrigin;
 
 			vec2 shadowMoments = textureCube(u_ShadowMap, I2).SWIZ2;
 
-			#if defined(VSM_CLAMP)
+#if defined(VSM_CLAMP)
 			// convert to [-1, 1] vector space
 			shadowMoments = 0.5 * (shadowMoments + 1.0);
-			#endif
+#endif
 
 			float shadowDistance = shadowMoments.r;
 			float shadowDistanceSquared = shadowMoments.g;
@@ -133,8 +136,8 @@ void	main()
 			continue;
 		}
 		else
-		#endif
-		#endif
+#endif
+#endif
 		{
 			color.rgb += attenuationXY * attenuationZ;
 		}
@@ -144,5 +147,5 @@ void	main()
 	color.rgb *= u_LightColor;
 	//color.rgb *= u_LightScale;
 
-	gl_FragColor = color;
+	outputColor = color;
 }
