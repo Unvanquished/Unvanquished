@@ -200,13 +200,13 @@ void       NET_Restart_f();
 void       NET_Config( bool enableNetworking );
 
 void       NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
-void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) PRINTF_LIKE(3);
-void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
 bool   NET_CompareAdr( netadr_t a, netadr_t b );
 bool   NET_CompareBaseAdr( netadr_t a, netadr_t b );
 bool   NET_IsLocalAddress( netadr_t adr );
+// DEPRECATED: Use Net::AddressToString
 const char *NET_AdrToString( netadr_t a );
+// DEPRECATED: Use Net::AddressToString
 const char *NET_AdrToStringwPort( netadr_t a );
 int        NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );
 bool   NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_message );
@@ -616,6 +616,7 @@ MISC
 // centralized and cleaned, that's the max string you can send to a Log::Notice / Com_DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
 
+// DEPRECATED: Use InfoMap
 void       Info_Print( const char *s );
 
 // *INDENT-OFF*

@@ -327,7 +327,7 @@ const char *NET_ErrorString()
 #endif
 }
 
-static void NetadrToSockadr( netadr_t *a, struct sockaddr *s )
+void NetadrToSockadr( const netadr_t *a, struct sockaddr *s )
 {
 	memset( s, 0, sizeof( struct sockaddr ) );
 	if ( a->type == netadrtype_t::NA_BROADCAST )
@@ -483,7 +483,7 @@ static bool Sys_StringToSockaddr( const char *s, struct sockaddr *sadr, unsigned
 Sys_SockaddrToString
 =============
 */
-static void Sys_SockaddrToString( char *dest, int destlen, struct sockaddr *input )
+void Sys_SockaddrToString( char *dest, int destlen, struct sockaddr *input )
 {
 	socklen_t inputlen;
 

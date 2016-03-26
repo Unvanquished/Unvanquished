@@ -106,4 +106,23 @@ namespace Cvar {
     std::string GetCvarTypeName<std::string>() {
         return "text";
     }
+
+
+	std::string SerializeCvarValue(std::size_t value) {
+		return std::to_string(value);
+	}
+
+	template<>
+	std::string GetCvarTypeName<std::size_t>() {
+		return "uint";
+	}
+
+	bool ParseCvarValue(Str::StringRef value, std::size_t& result) {
+		if ( value.empty() || !Str::cisdigit(value[0]) )
+		{
+			return false;
+		}
+		result = std::stoul(value);
+		return true;
+	}
 }

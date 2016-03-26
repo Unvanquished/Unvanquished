@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_STRING_H_
 
 #include <algorithm>
+#include "Compiler.h"
 
 namespace Str {
     void AssertOnTinyFormatError(std::string reason);
@@ -240,6 +241,12 @@ namespace Str {
         else
             return c;
     }
+
+    /*
+     * Converts a hexadecimal character to the value of the digit it represents.
+     * Pre: cisxdigit(ch)
+     */
+    int GetHex(char ch);
 
     std::string ToUpper(Str::StringRef text);
     std::string ToLower(Str::StringRef text);

@@ -934,7 +934,7 @@ void CL_SetCGameTime()
 	if ( cl.snap.serverTime < cl.oldFrameServerTime )
 	{
 		// Ridah, if this is a localhost, then we are probably loading a savegame
-		if ( !Q_stricmp( cls.servername, "localhost" ) )
+		if ( !Q_stricmp( cls.servername, "loopback" ) )
 		{
 			// do nothing?
 			CL_FirstSnapshot();

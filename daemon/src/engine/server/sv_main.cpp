@@ -33,8 +33,13 @@ Maryland 20850 USA.
 */
 
 #include "server.h"
+#include "common/Assert.h"
+#include "CryptoChallenge.h"
+#include "framework/Rcon.h"
 
 #include "framework/CommandSystem.h"
+#include "framework/CvarSystem.h"
+#include "framework/Network.h"
 
 serverStatic_t svs; // persistent server info
 server_t       sv; // local server
@@ -43,7 +48,6 @@ GameVM         gvm; // game virtual machine
 cvar_t         *sv_fps; // time rate for running non-clients
 cvar_t         *sv_timeout; // seconds without any message
 cvar_t         *sv_zombietime; // seconds to sink messages after disconnect
-cvar_t         *sv_rconPassword; // password for remote server commands
 cvar_t         *sv_privatePassword; // password for the privateClient slots
 cvar_t         *sv_allowDownload;
 cvar_t         *sv_maxclients;
@@ -58,8 +62,6 @@ cvar_t         *sv_killserver; // menu system can set to 1 to shut server down
 cvar_t         *sv_mapname;
 cvar_t         *sv_serverid;
 cvar_t         *sv_maxRate;
-cvar_t         *sv_minPing;
-cvar_t         *sv_maxPing;
 
 cvar_t         *sv_pure;
 cvar_t         *sv_floodProtect;
@@ -83,20 +85,54 @@ cvar_t *sv_packetdelay;
 // fretn
 cvar_t *sv_fullmsg;
 
-Cvar::Cvar<bool> isLanOnly(
-	"server.lanOnly", "should the server stay only on LAN (vs. advertise itself on the internet)",
+
+namespace Cvar {
+template<>
+std::string GetCvarTypeName<ServerPrivate>()
+{
+	return "server private";
+}
+
+} // namespace Cvar
+
+bool ParseCvarValue(Str::StringRef value, ServerPrivate& result)
+{
+	int intermediate = 0;
+	if ( Str::ParseInt(intermediate, value) &&
+		intermediate >= int(ServerPrivate::Public) &&
+		intermediate <= int(ServerPrivate::LanOnly) )
+	{
+		result = ServerPrivate(intermediate);
+		return true;
+	}
+	return false;
+}
+
+std::string SerializeCvarValue(ServerPrivate value)
+{
+	return std::to_string(int(value));
+}
+
+Cvar::Cvar<ServerPrivate> isPrivate(
+	"server.private",
+	"Controls how much the server advertises: "
+	"0 - Advertise everything, "
+	"1 - Don't advertise but reply to status queries, "
+	"2 - Don't reply to status queries but accept connections, "
+	"3 - Only accept LAN connections.",
 #if BUILD_CLIENT || BUILD_TTY_CLIENT
-	Cvar::ROM, true
+	Cvar::ROM, ServerPrivate::LanOnly
 #elif BUILD_SERVER
-	Cvar::NONE, false
+	Cvar::NONE, ServerPrivate::Public
 #else
 	#error
 #endif
 );
 
-#define LL( x ) x = LittleLong( x )
-
-static const int MAX_CHALLENGE_LEN = 128;
+bool SV_Private(ServerPrivate level)
+{
+	return isPrivate.Get() >= level;
+}
 
 /*
 =============================================================================
@@ -219,86 +255,116 @@ MASTER SERVER FUNCTIONS
 
 ==============================================================================
 */
-static struct {
-	netadr_t ipv4, ipv6;
-} masterServerAddr[ MAX_MASTER_SERVERS ];
+struct MasterServer
+{
+	int index;
+	netadr_t ipv4;
+	netadr_t ipv6;
+	std::string challenge;
+	netadrtype_t challenge_address_type;
 
-static struct {
-	netadrtype_t type;
-	char         text[ MAX_CHALLENGE_LEN + 1 ];
-} challenges[ MAX_MASTER_SERVERS ];
+	MasterServer()
+	{
+		static int cvar_index = 0;
+		ASSERT_LT(cvar_index, MAX_MASTER_SERVERS);
+		index = cvar_index++;
+		Clear();
+	}
+
+	void Clear()
+	{
+		challenge_address_type = netadrtype_t::NA_BAD;
+		ipv4.type = netadrtype_t::NA_BAD;
+		ipv6.type = netadrtype_t::NA_BAD;
+		challenge.clear();
+	}
+
+	bool Empty() const
+	{
+		return ipv4.type == netadrtype_t::NA_BAD && ipv6.type == netadrtype_t::NA_BAD;
+	}
+
+	cvar_t* Cvar() const
+	{
+		return sv_master[index];
+	}
+
+	bool CvarIsSet() const
+	{
+		return sv_master[index]->string && sv_master[index]->string[0];
+	}
+};
+
+static std::array<MasterServer, MAX_MASTER_SERVERS> masterServers;
 
 static void SV_ResolveMasterServers()
 {
-	int i, netenabled, res;
+	int netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
-	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
-
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	for ( MasterServer& master : masterServers )
 	{
-		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
+		if ( !master.CvarIsSet() )
 		{
-			challenges[ i ].type =
-			masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = netadrtype_t::NA_BAD;
+			master.Clear();
 			continue;
 		}
 
 		// see if we haven't already resolved the name
 		// resolving usually causes hitches on win95, so only
 		// do it when needed
-		if ( sv_master[ i ]->modified || ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD ) )
+		if ( master.Cvar()->modified || master.Empty() )
 		{
-			sv_master[ i ]->modified = false;
+			master.Cvar()->modified = false;
 
 			if ( netenabled & NET_ENABLEV4 )
 			{
-				Log::Notice( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv4, netadrtype_t::NA_IP );
+				Log::Notice( "Resolving %s (IPv4)\n", master.Cvar()->string );
+				int res = NET_StringToAdr( master.Cvar()->string, &master.ipv4, netadrtype_t::NA_IP );
 
 				if ( res == 2 )
 				{
 					// if no port was specified, use the default master port
-					masterServerAddr[ i ].ipv4.port = BigShort( PORT_MASTER );
+					master.ipv4.port = BigShort( PORT_MASTER );
 				}
 
 				if ( res )
 				{
-					Log::Notice( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv4 ) );
+					Log::Notice( "%s resolved to %s\n", master.Cvar()->string, Net::AddressToString(master.ipv4, true) );
 				}
 				else
 				{
-					Log::Notice( "%s has no IPv4 address.\n", sv_master[ i ]->string );
+					Log::Notice( "%s has no IPv4 address.\n", master.Cvar()->string );
 				}
 			}
 
 			if ( netenabled & NET_ENABLEV6 )
 			{
-				Log::Notice( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
-				res = NET_StringToAdr( sv_master[ i ]->string, &masterServerAddr[ i ].ipv6, netadrtype_t::NA_IP6 );
+				Log::Notice( "Resolving %s (IPv6)\n", master.Cvar()->string );
+				int res = NET_StringToAdr( master.Cvar()->string, &master.ipv6, netadrtype_t::NA_IP6 );
 
 				if ( res == 2 )
 				{
 					// if no port was specified, use the default master port
-					masterServerAddr[ i ].ipv6.port = BigShort( PORT_MASTER );
+					master.ipv6.port = BigShort( PORT_MASTER );
 				}
 
 				if ( res )
 				{
-					Log::Notice( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( masterServerAddr[ i ].ipv6 ) );
+					Log::Notice( "%s resolved to %s\n", master.Cvar()->string, Net::AddressToString(master.ipv6, true) );
 				}
 				else
 				{
-					Log::Notice( "%s has no IPv6 address.\n", sv_master[ i ]->string );
+					Log::Notice( "%s has no IPv6 address.\n", master.Cvar()->string );
 				}
 			}
 
-			if ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD )
+			if ( master.Empty() )
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Log::Notice( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
-				Cvar_Set( sv_master[ i ]->name, "" );
-				sv_master[ i ]->modified = false;
+				Log::Notice( "Couldn't resolve address: %s\n", master.Cvar()->string );
+				Cvar_Set( master.Cvar()->name, "" );
+				master.Cvar()->modified = false;
 				continue;
 			}
 		}
@@ -314,11 +380,9 @@ Network connections being reconfigured. May need to redo some lookups.
 */
 void SV_NET_Config()
 {
-	int i;
-
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	for ( MasterServer& master : masterServers )
 	{
-		challenges[ i ].type = masterServerAddr[ i ].ipv4.type = masterServerAddr[ i ].ipv6.type = netadrtype_t::NA_BAD;
+		master.Clear();
 	}
 }
 
@@ -339,12 +403,10 @@ static const int HEARTBEAT_MSEC = (300 * 1000);
 
 void SV_MasterHeartbeat( const char *hbname )
 {
-	int             i;
-	int             netenabled;
+	int netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
-	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
-
-	if ( isLanOnly.Get() || !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
+	if ( SV_Private(ServerPrivate::NoAdvertise)
+		|| !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
 	{
 		return; // only dedicated servers send heartbeats
 	}
@@ -360,26 +422,26 @@ void SV_MasterHeartbeat( const char *hbname )
 	SV_ResolveMasterServers();
 
 	// send to group masters
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	for ( MasterServer& master : masterServers )
 	{
-		if ( masterServerAddr[ i ].ipv4.type == netadrtype_t::NA_BAD && masterServerAddr[ i ].ipv6.type == netadrtype_t::NA_BAD )
+		if ( master.Empty() )
 		{
 			continue;
 		}
 
-		Log::Notice( "Sending heartbeat to %s", sv_master[ i ]->string );
+		Log::Notice( "Sending heartbeat to %s", master.Cvar()->string );
 
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
 
-		if ( masterServerAddr[ i ].ipv4.type != netadrtype_t::NA_BAD )
+		if ( master.ipv4.type != netadrtype_t::NA_BAD )
 		{
-			NET_OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv4, "heartbeat %s\n", hbname );
+			Net::OutOfBandPrint( netsrc_t::NS_SERVER, master.ipv4, "heartbeat %s\n", hbname );
 		}
 
-		if ( masterServerAddr[ i ].ipv6.type != netadrtype_t::NA_BAD )
+		if ( master.ipv6.type != netadrtype_t::NA_BAD )
 		{
-			NET_OutOfBandPrint( netsrc_t::NS_SERVER, masterServerAddr[ i ].ipv6, "heartbeat %s\n", hbname );
+			Net::OutOfBandPrint( netsrc_t::NS_SERVER, master.ipv6, "heartbeat %s\n", hbname );
 		}
 	}
 }
@@ -414,7 +476,7 @@ void SV_MasterGameStat( const char *data )
 {
 	netadr_t adr;
 
-	if ( !isLanOnly.Get() )
+	if ( SV_Private(ServerPrivate::NoAdvertise) )
 	{
 		return; // only dedicated servers send stats
 	}
@@ -435,10 +497,10 @@ void SV_MasterGameStat( const char *data )
 	}
 
 	Log::Notice( "%s resolved to %s", MASTER_SERVER_NAME,
-	            NET_AdrToStringwPort( adr ) );
+	            Net::AddressToString(adr, true) );
 
 	Log::Notice( "Sending gamestat to %s", MASTER_SERVER_NAME );
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, adr, "gamestat %s", data );
 }
 
 /*
@@ -448,38 +510,6 @@ CONNECTIONLESS COMMANDS
 
 ==============================================================================
 */
-
-//bani - bugtraq 12534
-//returns true if valid challenge
-//returns false if m4d h4x0rz
-bool SV_VerifyChallenge( const char *challenge )
-{
-	int i, j;
-
-	if ( !challenge )
-	{
-		return false;
-	}
-
-	j = strlen( challenge );
-
-	if ( j > 64 )
-	{
-		return false;
-	}
-
-	for ( i = 0; i < j; i++ )
-	{
-		if ( challenge[ i ] == '\\' || challenge[ i ] == '/' || challenge[ i ] == '%' || challenge[ i ] == ';' || challenge[ i ] == '"' || challenge[ i ] < 32 || // non-ascii
-		     challenge[ i ] > 126 // non-ascii
-		   )
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
 
 /*
 ================
@@ -492,54 +522,35 @@ the simple info query.
 */
 void SVC_Status( netadr_t from, const Cmd::Args& args )
 {
-	char          player[ 1024 ];
-	char          status[ MAX_MSGLEN ];
-	int           i;
-	client_t      *cl;
-	playerState_t *ps;
-	int           statusLength;
-	int           playerLength;
-	char          infostring[ MAX_INFO_STRING ];
-
-	//bani - bugtraq 12534
-	if ( args.Argc() > 1 && !SV_VerifyChallenge( args.Argv(1).c_str() ) )
+	if ( SV_Private(ServerPrivate::NoStatus) )
 	{
 		return;
 	}
 
-	Q_strncpyz( infostring, Cvar_InfoString( CVAR_SERVERINFO, false ), MAX_INFO_STRING );
+	InfoMap info_map;
+	Cvar::PopulateInfoMap(CVAR_SERVERINFO, info_map);
 
-	if ( args.Argc() > 1 )
+	if ( args.Argc() > 1 && InfoValidItem(args.Argv(1)) )
 	{
 		// echo back the parameter to status. so master servers can use it as a challenge
 		// to prevent timed spoofed reply packets that add ghost servers
-		Info_SetValueForKey( infostring, "challenge", args.Argv(1).c_str(), false );
+		info_map["challenge"] = args.Argv(1);
 	}
 
-	status[ 0 ] = 0;
-	statusLength = 0;
-
-	for ( i = 0; i < sv_maxclients->integer; i++ )
+	std::string status;
+	for ( int i = 0; i < sv_maxclients->integer; i++ )
 	{
-		cl = &svs.clients[ i ];
+		client_t* cl = &svs.clients[ i ];
 
 		if ( cl->state >= clientState_t::CS_CONNECTED )
 		{
-			ps = SV_GameClientNum( i );
-			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
-			playerLength = strlen( player );
-
-			if ( statusLength + playerLength >= (int) sizeof( status ) )
-			{
-				break; // can't hold any more
-			}
-
-			strcpy( status + statusLength, player );
-			statusLength += playerLength;
+			playerState_t* ps = SV_GameClientNum( i );
+			status +=  Str::Format( "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
 		}
 	}
 
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "statusResponse\n%s\n%s",
+		InfoMapToString( info_map ), status );
 }
 
 /*
@@ -552,28 +563,7 @@ if a user is interested in a server to do a full status
 */
 void SVC_Info( netadr_t from, const Cmd::Args& args )
 {
-	int  i, count, botCount;
-	char infostring[ MAX_INFO_STRING ];
-
-	if ( args.Argc() < 2 )
-	{
-		return;
-	}
-
-	const char *challenge = args.Argv(1).c_str();
-
-	/*
-	 * Check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led
-	 * to the Infostring bug discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
-	*/
-	// A maximum challenge length of 128 should be more than plenty.
-	if ( strlen( challenge ) > MAX_CHALLENGE_LEN  )
-	{
-		return;
-	}
-
-	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( challenge ) )
+	if ( SV_Private(ServerPrivate::NoStatus) )
 	{
 		return;
 	}
@@ -581,9 +571,10 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 	SV_ResolveMasterServers();
 
 	// don't count privateclients
-	botCount = count = 0;
+	int botCount = 0;
+	int count = 0;
 
-	for ( i = sv_privateClients->integer; i < sv_maxclients->integer; i++ )
+	for ( int i = sv_privateClients->integer; i < sv_maxclients->integer; i++ )
 	{
 		if ( svs.clients[ i ].state >= clientState_t::CS_CONNECTED )
 		{
@@ -598,66 +589,75 @@ void SVC_Info( netadr_t from, const Cmd::Args& args )
 		}
 	}
 
-	infostring[ 0 ] = 0;
+	InfoMap info_map;
 
-	// echo back the parameter to status. so servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", challenge, false );
-
-	// If the master server listens on IPv4 and IPv6, we want to send the
-	// most recent challenge received from it over the OTHER protocol
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
+	if ( args.Argc() > 1 && InfoValidItem(args.Argv(1)) )
 	{
-		// First, see if the challenge was sent by this master server
-		if ( !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv4 ) && !NET_CompareBaseAdr( from, masterServerAddr[ i ].ipv6 ) )
-		{
-			continue;
-		}
+		std::string  challenge = args.Argv(1);
+		// echo back the parameter to status. so master servers can use it as a challenge
+		// to prevent timed spoofed reply packets that add ghost servers
+		info_map["challenge"] = challenge;
 
-		// It was - if the saved challenge is for the other protocol, send it and record the current one
-		if ( challenges[ i ].type == netadrtype_t::NA_IP || challenges[ i ].type == netadrtype_t::NA_IP6 )
+		// If the master server listens on IPv4 and IPv6, we want to send the
+		// most recent challenge received from it over the OTHER protocol
+		for ( MasterServer& master : masterServers )
 		{
-			if ( challenges[ i ].type != from.type )
+			// First, see if the challenge was sent by this master server
+			if ( !NET_CompareBaseAdr( from, master.ipv4 ) && !NET_CompareBaseAdr( from, master.ipv6 ) )
 			{
-				Info_SetValueForKey( infostring, "challenge2", challenges[ i ].text, false );
-				challenges[ i ].type = from.type;
-				strcpy( challenges[ i ].text, challenge );
-				break;
+				continue;
 			}
-		}
 
-		// Otherwise record the current one regardless and check the next server
-		challenges[ i ].type = from.type;
-		strcpy( challenges[ i ].text, challenge );
+			// It was - if the saved challenge is for the other protocol, send it and record the current one
+			if ( master.challenge_address_type == netadrtype_t::NA_IP ||
+				 master.challenge_address_type == netadrtype_t::NA_IP6 )
+			{
+				if ( master.challenge_address_type != from.type )
+				{
+					info_map["challenge2"] = master.challenge;
+					master.challenge_address_type = from.type;
+					master.challenge = challenge;
+					break;
+				}
+			}
+
+			// Otherwise record the current one regardless and check the next server
+			master.challenge_address_type = from.type;
+			master.challenge = challenge;
+		}
 	}
 
-	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), false );
-	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, false );
-	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ), false );
-	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, false );
-	Info_SetValueForKey( infostring, "clients", va( "%i", count ), false );
-	Info_SetValueForKey( infostring, "bots", va( "%i", botCount ), false );
-	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ), false );
-	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), false );
+	info_map["protocol"] = std::to_string( PROTOCOL_VERSION );
+	info_map["hostname"] = sv_hostname->string;
+	info_map["serverload"] = std::to_string( svs.serverLoad );
+	info_map["mapname"] = sv_mapname->string;
+	info_map["clients"] = std::to_string( count );
+	info_map["bots"] = std::to_string( botCount );
+	info_map["sv_maxclients"] = std::to_string( sv_maxclients->integer - sv_privateClients->integer );
+	info_map["pure"] = std::to_string( sv_pure->integer );
 
 	if ( sv_statsURL->string[0] )
 	{
-		Info_SetValueForKey( infostring, "stats", sv_statsURL->string, false );
+		info_map["stats"] = sv_statsURL->string;
 	}
 
-	if ( sv_minPing->integer )
+	info_map["gamename"] = GAMENAME_STRING;  // Arnout: to be able to filter out Quake servers
+
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "infoResponse\n%s", InfoMapToString( info_map ) );
+}
+
+/*
+ * Sends back a simple reply
+ * Used to check if the server is online without sending any other info
+ */
+void SVC_Ping( netadr_t from, const Cmd::Args& )
+{
+	if ( SV_Private(ServerPrivate::NoStatus) )
 	{
-		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ), false );
+		return;
 	}
 
-	if ( sv_maxPing->integer )
-	{
-		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ), false );
-	}
-
-	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING, false );  // Arnout: to be able to filter out Quake servers
-
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "infoResponse\n%s", infostring );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "ack\n" );
 }
 
 /*
@@ -782,86 +782,244 @@ Redirect all printfs
 */
 
 class RconEnvironment: public Cmd::DefaultEnvironment {
-    public:
-        RconEnvironment(netadr_t from, size_t bufferSize): from(from), bufferSize(bufferSize) {};
+public:
+	RconEnvironment(netadr_t from)
+		: from(from), bufferSize(MAX_MSGLEN - prefix.size() - 1)
+	{}
 
-        virtual void Print(Str::StringRef text) OVERRIDE {
-            if (text.size() + buffer.size() > bufferSize - 1) {
-                Flush();
-            }
+	virtual void Print(Str::StringRef text) OVERRIDE
+	{
+		if (text.size() + buffer.size() > bufferSize - 1)
+		{
+			Flush();
+		}
 
-            buffer += text;
-        }
+		buffer += text;
+		buffer += '\n';
+	}
 
-        void Flush() {
-            NET_OutOfBandPrint(netsrc_t::NS_SERVER, from, "print\n%s", buffer.c_str());
-            buffer = "";
-        }
+	void Flush()
+	{
+		if ( !buffer.empty() )
+		{
+			Net::OutOfBandPrint(netsrc_t::NS_SERVER, from, "%s\n%s", prefix, buffer);
+			buffer.clear();
+		}
+	}
 
-    private:
-        netadr_t from;
-        size_t bufferSize;
-        std::string buffer;
+	static void PrintError(netadr_t to, const std::string& message)
+	{
+		Net::OutOfBandPrint(netsrc_t::NS_SERVER, to, "error\n%s", message);
+	}
+
+private:
+	netadr_t from;
+	std::string buffer;
+	std::string prefix = "print";
+	std::size_t bufferSize;
 };
+
+static Cvar::Cvar<std::string> cvar_rcon_server_password(
+    "rcon.server.password",
+    "Password used to protect the remote console",
+    Cvar::NONE,
+    ""
+);
+
+static Cvar::Range<Cvar::Cvar<int>> cvar_rcon_server_secure(
+    "rcon.server.secure",
+    "How secure the Rcon protocol should be: "
+        "0: Allow unencrypted rcon, "
+        "1: Require encryption, "
+        "2: Require encryption and challenge check",
+    Cvar::NONE,
+    0,
+    0,
+    2
+);
+
+/*
+ * Checks whether the message is acceptable by the server,
+ * it must be valid and match the rcon settings and challenges.
+ */
+static bool RconAcceptable(const Rcon::Message& msg, std::string *invalid_reason = nullptr)
+{
+    auto invalid = [invalid_reason](const char* reason)
+    {
+        if ( invalid_reason )
+            *invalid_reason = reason;
+        return false;
+    };
+
+    if ( !msg.Valid(invalid_reason) )
+    {
+        return false;
+    }
+
+    if ( msg.secure < Rcon::Secure(cvar_rcon_server_secure.Get()) )
+    {
+        return invalid("Weak security");
+    }
+
+    if ( cvar_rcon_server_password.Get().empty() )
+    {
+        return invalid("No rcon.server.password set on the server.");
+    }
+
+    if ( msg.password != cvar_rcon_server_password.Get() )
+    {
+        return invalid("Bad password");
+    }
+
+    if ( msg.secure == Rcon::Secure::EncryptedChallenge )
+    {
+        if ( !ChallengeManager::MatchString(msg.remote, msg.challenge) )
+        {
+            return invalid("Mismatched challenge");
+        }
+    }
+
+    return true;
+}
+
+/*
+ * Decodes the arguments of an out of band message received by the server
+ */
+static Rcon::Message RconDecode(const netadr_t& remote, const Cmd::Args& args)
+{
+    if ( args.size() < 3 || (args[0] != "rcon" && args[0] != "srcon") )
+    {
+        return Rcon::Message("Invalid command");
+    }
+
+    if ( cvar_rcon_server_password.Get().empty() )
+    {
+        return Rcon::Message("rcon.server.password not set");
+    }
+
+    if ( args[0] == "rcon" )
+    {
+        return Rcon::Message(remote, args.EscapedArgs(2), Rcon::Secure::Unencrypted, args[1]);
+    }
+
+    auto authentication = args[1];
+    Crypto::Data cyphertext = Crypto::FromString(args[2]);
+
+    Crypto::Data data;
+    if ( !Crypto::Encoding::Base64Decode( cyphertext, data ) )
+    {
+        return Rcon::Message("Invalid Base64 string");
+    }
+
+    Crypto::Data key = Crypto::Hash::Sha256( Crypto::FromString( cvar_rcon_server_password.Get() ) );
+
+    if ( !Crypto::Aes256Decrypt( data, key, data ) )
+    {
+        return Rcon::Message("Error during decryption");
+    }
+
+    std::string command = Crypto::ToString( data );
+
+    if ( authentication == "CHALLENGE" )
+    {
+        std::istringstream stream( command );
+        std::string challenge_hex;
+        stream >> challenge_hex;
+
+        while ( Str::cisspace( stream.peek() ) )
+        {
+            stream.ignore();
+        }
+
+        std::getline( stream, command );
+
+        return Rcon::Message(remote, command, Rcon::Secure::EncryptedChallenge,
+            cvar_rcon_server_password.Get(), challenge_hex);
+    }
+    else if ( authentication == "PLAIN" )
+    {
+        return Rcon::Message(remote, command, Rcon::Secure::EncryptedPlain,
+            cvar_rcon_server_password.Get());
+    }
+    else
+    {
+        return Rcon::Message(remote, command, Rcon::Secure::Invalid,
+            cvar_rcon_server_password.Get());
+    }
+}
+
+static int RemoteCommandThrottle()
+{
+    static int lasttime = 0;
+    int time = Com_Milliseconds();
+    int delta = time - lasttime;
+    lasttime = time;
+
+    return delta;
+}
 
 void SVC_RemoteCommand( netadr_t from, const Cmd::Args& args )
 {
-	bool     valid;
-	unsigned int time;
+	int throttle_delta = RemoteCommandThrottle();
 
-	// show_bug.cgi?id=376
-	// if we send an OOB print message this size, 1.31 clients die in a Log::Notice buffer overflow
-	// the buffer overflow will be fixed in > 1.31 clients
-	// but we want a server side fix
-	// we must NEVER send an OOB message that will be > 1.31 MAXPRINTMSG (4096)
-	const int SV_OUTPUTBUF_LENGTH = ( 256 - 16 );
-	static unsigned int lasttime = 0;
-	// TTimo - show_bug.cgi?id=534
-	time = Com_Milliseconds();
-
-	if ( time < ( lasttime + 500 ) || args.Argc() < 3 )
+	if ( throttle_delta < 180 )
 	{
 		return;
 	}
 
-	lasttime = time;
+	Rcon::Message message = RconDecode(from, args);
 
-	if ( !strlen( sv_rconPassword->string ) || args.Argv(1) != sv_rconPassword->string )
+	std::string invalid_reason;
+
+	if ( !RconAcceptable(message, &invalid_reason) )
 	{
-		valid = false;
-		Log::Notice( "Bad rcon from %s:\n%s", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
+		// If the rconpassword is bad and one just happned recently, don't spam the log file, just die.
+		if ( throttle_delta < 600 )
+		{
+			return;
+		}
+
+		Log::Notice( "Bad rcon from %s:\n%s\n%s\n",
+			Net::AddressToString( from ),
+			invalid_reason.c_str(),
+			args.ConcatArgs(2).c_str() );
+
+		if ( !SV_Private(ServerPrivate::NoStatus) )
+		{
+			RconEnvironment::PrintError( from, invalid_reason );
+		}
 	}
 	else
 	{
-		valid = true;
-		Log::Notice( "Rcon from %s:\n%s", NET_AdrToString( from ), args.ConcatArgs(2).c_str() );
-	}
+		Log::Notice( "Rcon from %s:\n%s\n", Net::AddressToString( from ), message.command.c_str() );
 
-	// start redirecting all print outputs to the packet
-	// FIXME TTimo our rcon redirection could be improved
-	//   big rcon commands such as status lead to sending
-	//   out of band packets on every single call to Log::Notice
-	//   which leads to client overflows
-	//   see show_bug.cgi?id=51
-	//     (also a Q3 issue)
-	auto env = RconEnvironment(from, SV_OUTPUTBUF_LENGTH);
-
-	if ( !strlen( sv_rconPassword->string ) )
-	{
-		env.Print( "No rconpassword set on the server." );
-	}
-	else if ( !valid )
-	{
-		env.Print( "Bad rconpassword." );
-	}
-	else
-	{
-		Cmd::ExecuteCommand(args.EscapedArgs(2), true, &env);
+		// start redirecting all print outputs to the packet
+		auto env = RconEnvironment(from);
+		Cmd::ExecuteCommand(message.command, true, &env);
 		Cmd::ExecuteCommandBuffer();
+		env.Flush();
 	}
 
-	env.Flush();
 }
+
+static void SVC_RconInfo( netadr_t from, const Cmd::Args& )
+{
+	if ( SV_Private(ServerPrivate::NoStatus) )
+	{
+		return;
+	}
+
+	int duration_seconds = std::chrono::duration_cast<std::chrono::seconds>(Challenge::Timeout()).count();
+	std::string rcon_info_string = InfoMapToString({
+		{"secure",     std::to_string(cvar_rcon_server_secure.Get())},
+		{"encryption", "AES256"},
+		{"key",        "SHA256"},
+		{"challenge",  std::to_string(cvar_rcon_server_secure.Get() >= 2)},
+		{"timeout",    std::to_string(duration_seconds)},
+	});
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "rconInfoResponse\n%s\n", rcon_info_string );
+}
+
 
 /*
 =================
@@ -890,7 +1048,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	Log::Debug( "SV packet %s : %s", NET_AdrToString( from ), args.Argv(0).c_str() );
+	Log::Debug( "SV packet %s : %s", Net::AddressToString( from ), args.Argv(0) );
 
 	if ( args.Argv(0) == "getstatus" )
 	{
@@ -912,9 +1070,13 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		SV_DirectConnect( from, args );
 	}
-	else if ( args.Argv(0) == "rcon" )
+	else if ( args.Argv(0) == "rcon" || args.Argv(0) == "srcon" )
 	{
 		SVC_RemoteCommand( from, args );
+	}
+	else if ( args.Argv(0) == "rconinfo" )
+	{
+		SVC_RconInfo( from, args );
 	}
 	else if ( args.Argv(0) == "disconnect" )
 	{
@@ -922,9 +1084,13 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		// server disconnect messages when their new server sees our final
 		// sequenced messages to the old client
 	}
+	else if ( args.Argv(0) == "ping" )
+	{
+		SVC_Ping( from, args );
+	}
 	else
 	{
-		Log::Debug( "bad connectionless packet from %s: %s", NET_AdrToString( from ), args.ConcatArgs(0).c_str() );
+		Log::Debug( "bad connectionless packet from %s: %s", Net::AddressToString( from ), args.ConcatArgs(0) );
 	}
 }
 
@@ -1001,7 +1167,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 
 	// if we received a sequenced packet from an address we don't recognize,
 	// send an out of band disconnect packet to it
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, from, "disconnect" );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "disconnect" );
 }
 
 /*

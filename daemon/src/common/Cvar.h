@@ -73,6 +73,10 @@ namespace Cvar {
             // the user.
             virtual OnValueChangedResult OnValueChanged(Str::StringRef newValue) = 0;
 
+            const std::string& Name() const {
+                return name;
+            }
+
         protected:
             std::string name;
 
@@ -227,6 +231,11 @@ namespace Cvar {
     std::string SerializeCvarValue(std::string value);
     template<>
     std::string GetCvarTypeName<std::string>();
+    std::string SerializeCvarValue(std::size_t value);
+    template<>
+    std::string GetCvarTypeName<std::size_t>();
+    bool ParseCvarValue(Str::StringRef value, std::size_t& result);
+
 
     // Engine calls available everywhere
 

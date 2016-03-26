@@ -1871,6 +1871,61 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 =====================================================================
 */
 
+std::string InfoMapToString( const InfoMap& map )
+{
+	std::string info_string;
+
+	for ( const auto& pair : map )
+	{
+		if ( pair.first.find( INFO_SEPARATOR ) != std::string::npos ||
+			pair.second.find( INFO_SEPARATOR ) != std::string::npos )
+		{
+			Log::Notice( "Can't use keys or values with a \\\n" );
+			continue;
+		}
+
+		if ( pair.second.empty() )
+		{
+			continue;
+		}
+
+		info_string += INFO_SEPARATOR + pair.first + INFO_SEPARATOR + pair.second;
+	}
+
+	return info_string;
+}
+
+
+InfoMap InfoStringToMap( const std::string& string )
+{
+	if ( string.empty() )
+	{
+		return InfoMap{};
+	}
+
+	InfoMap map;
+	std::istringstream input( string );
+	input.ignore( 1, INFO_SEPARATOR );
+	while ( input.good() )
+	{
+		std::string key;
+		std::getline( input, key, INFO_SEPARATOR );
+		std::string value;
+		std::getline( input, value, INFO_SEPARATOR );
+		if ( !key.empty() && InfoValidItem(key) && InfoValidItem(value) )
+		{
+			map[key] = value;
+		}
+	}
+
+	return map;
+}
+
+bool InfoValidItem( const std::string& string )
+{
+	return string.find(INFO_SEPARATOR) == std::string::npos;
+}
+
 /*
 ===============
 Info_ValueForKey

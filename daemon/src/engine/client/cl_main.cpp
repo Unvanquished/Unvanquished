@@ -46,6 +46,9 @@ cvar_t *cl_wavefilerecord;
 
 #include "mumblelink/libmumblelink.h"
 #include "qcommon/crypto.h"
+#include "framework/Rcon.h"
+#include "framework/Crypto.h"
+#include "framework/Network.h"
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -61,9 +64,6 @@ cvar_t *cl_nodelta;
 
 cvar_t *cl_noprint;
 cvar_t *cl_motd;
-
-cvar_t *rcon_client_password;
-cvar_t *rconAddress;
 
 cvar_t *cl_timeout;
 cvar_t *cl_maxpackets;
@@ -987,7 +987,7 @@ void CL_MapLoading()
 	cls.keyCatchers = 0;
 
 	// if we are already connected to the local host, stay connected
-	if ( cls.state >= connstate_t::CA_CONNECTED && !Q_stricmp( cls.servername, "localhost" ) )
+	if ( cls.state >= connstate_t::CA_CONNECTED && !Q_stricmp( cls.servername, "loopback" ) )
 	{
 		cls.state = connstate_t::CA_CONNECTED; // so the connect screen is drawn
 		memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
@@ -1001,7 +1001,7 @@ void CL_MapLoading()
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "sv_nextmap", "" );
 		CL_Disconnect( false );
-		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
+		Q_strncpyz( cls.servername, "loopback", sizeof( cls.servername ) );
 		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = connstate_t::CA_CHALLENGING; // so the connect screen is drawn
 		cls.keyCatchers = 0;
@@ -1234,7 +1234,7 @@ void CL_RequestMotd()
 	Info_SetValueForKey( info, "challenge", cls.updateChallenge, false );
 	Info_SetValueForKey( info, "version", com_version->string, false );
 
-	NET_OutOfBandPrint( netsrc_t::NS_CLIENT, cls.updateServer, "getmotd%s", info );
+	Net::OutOfBandPrint( netsrc_t::NS_CLIENT, cls.updateServer, "getmotd%s", info );
 }
 
 /*
@@ -1374,7 +1374,7 @@ void CL_Connect_f()
 	// clear any previous "server full" type messages
 	clc.serverMessage[ 0 ] = 0;
 
-	if ( com_sv_running->integer && !strcmp( server, "localhost" ) )
+	if ( com_sv_running->integer && !strcmp( server, "loopback" ) )
 	{
 		// if running a local server, kill it
 		SV_Shutdown( "Server quit\n" );
@@ -1429,66 +1429,249 @@ void CL_Connect_f()
 	Cvar_Set( "cl_currentServerIP", serverString );
 }
 
-static const int MAX_RCON_MESSAGE = 1024;
+
+static Cvar::Cvar<std::string> cvar_rcon_client_destination(
+    "rcon.client.destination",
+    "Destination address for rcon commands, if empty the current server.",
+    Cvar::NONE,
+    ""
+);
+
+static Cvar::Cvar<std::string> cvar_rcon_client_password(
+    "rcon.client.password",
+    "Password used to protect the remote console",
+    Cvar::NONE,
+    ""
+);
+
+static Cvar::Range<Cvar::Cvar<int>> cvar_rcon_client_secure(
+    "rcon.client.secure",
+    "How secure the Rcon protocol should be: "
+        "0: Allow unencrypted rcon, "
+        "1: Require encryption, "
+        "2: Require encryption and challenge check",
+    Cvar::NONE,
+    0,
+    0,
+    2
+);
 
 /*
-=====================
-CL_Rcon_f
-
-  Send the rest of the command line over as
-  an unconnected command.
-=====================
-*/
-void CL_Rcon_f()
+ * Sends the message to the remote server
+ */
+static void CL_RconDeliver(const Rcon::Message &message)
 {
-	char     message[ MAX_RCON_MESSAGE ];
-	netadr_t to;
+    if ( message.secure == Rcon::Secure::Unencrypted )
+    {
+        Net::OutOfBandPrint(netsrc_t::NS_CLIENT, message.remote, "rcon %s %s", message.password, message.command);
+        return;
+    }
 
-	if ( !rcon_client_password->string )
+    std::string method = "PLAIN";
+    Crypto::Data key = Crypto::Hash::Sha256(Crypto::FromString(message.password));
+    std::string plaintext = message.command;
+
+    if ( message.secure == Rcon::Secure::EncryptedChallenge )
+    {
+        method = "CHALLENGE";
+        plaintext = message.challenge + ' ' + plaintext;
+    }
+
+    Crypto::Data cypher;
+    if ( Crypto::Aes256Encrypt(Crypto::FromString(plaintext), key, cypher) )
+    {
+        Net::OutOfBandPrint(netsrc_t::NS_CLIENT, message.remote, "srcon %s %s",
+            method,
+            Crypto::ToString(Crypto::Encoding::Base64Encode(cypher))
+        );
+    }
+}
+
+static void CL_RconSend(const Rcon::Message &message)
+{
+	std::string invalid_reason;
+	if ( message.Valid(&invalid_reason) )
 	{
-		Log::Notice( "%s", "You must set 'rconPassword' before\n"
-		            "issuing an rcon command.\n" );
-		return;
-	}
-
-	message[ 0 ] = -1;
-	message[ 1 ] = -1;
-	message[ 2 ] = -1;
-	message[ 3 ] = -1;
-	message[ 4 ] = 0;
-
-	Q_strcat( message, MAX_RCON_MESSAGE, "rcon " );
-
-	Q_strcat( message, MAX_RCON_MESSAGE, rcon_client_password->string );
-	Q_strcat( message, MAX_RCON_MESSAGE, " " );
-
-	// ATVI Wolfenstein Misc #284
-	Q_strcat( message, MAX_RCON_MESSAGE, Cmd::GetCurrentArgs().EscapedArgs(1).c_str() );
-
-	if ( cls.state >= connstate_t::CA_CONNECTED )
-	{
-		to = clc.netchan.remoteAddress;
+		CL_RconDeliver(message);
 	}
 	else
 	{
-		if ( !strlen( rconAddress->string ) )
+		Log::Notice("Invalid rcon message: %s\n", invalid_reason.c_str());
+	}
+}
+
+/*
+ * Queue for commands that need a challenge from the server
+ */
+class RconMessageQueue
+{
+public:
+
+	void Push(const Rcon::Message& message)
+	{
+		auto lock = std::unique_lock<std::mutex>(mutex);
+		requests.push_back(message);
+	}
+
+	bool Empty() const
+	{
+		auto lock = std::unique_lock<std::mutex>(mutex);
+		return requests.empty();
+	}
+
+	/*
+	 * Pops a queued command and executes it whenever there's a matching challenge.
+	 * Returns whether the command has been successful
+	 */
+	bool Pop(const netadr_t &server, const Str::StringRef& challenge)
+	{
+		auto lock = std::unique_lock<std::mutex>(mutex);
+
+		if ( requests.empty() )
 		{
-			Log::Notice( "%s", "Connect to a server "
-			            "or set the 'rconAddress' cvar "
-			            "to issue rcon commands\n");
+			return false;
+		}
+
+		auto it = std::find_if(requests.begin(), requests.end(),
+			[server](const Rcon::Message& message) {
+				return NET_CompareAdr(message.remote, server);
+			});
+
+		if ( it != requests.end() )
+		{
+			it->challenge = challenge;
+			CL_RconSend(*it);
+			requests.erase(it);
+			return true;
+		}
+
+		return false;
+	}
+
+
+private:
+	std::vector<Rcon::Message> requests;
+	mutable std::mutex mutex;
+};
+
+static netadr_t CL_RconDestinationAddress()
+{
+	if ( cls.state >= connstate_t::CA_CONNECTED )
+	{
+		return clc.netchan.remoteAddress;
+	}
+
+	netadr_t to;
+
+	NET_StringToAdr( cvar_rcon_client_destination.Get().c_str(), &to, netadrtype_t::NA_UNSPEC );
+
+	if ( to.port == 0 )
+	{
+		to.port = BigShort( PORT_SERVER );
+	}
+
+	return to;
+}
+
+/*
+  Send the rest of the command line over as
+  an unconnected command.
+*/
+class RconCmd: public Cmd::StaticCmd
+{
+public:
+	RconCmd():
+		StaticCmd("rcon", Cmd::SYSTEM, "Sends a remote console command")
+	{}
+
+	void Run(const Cmd::Args& args) const OVERRIDE
+	{
+		if ( cvar_rcon_client_password.Get().empty() )
+		{
+			Log::Notice("You must set '%s' before issuing an rcon command.",
+				cvar_rcon_client_password.Name());
+			return;
+		}
+
+		if ( cls.state < connstate_t::CA_CONNECTED && cvar_rcon_client_destination.Get().empty() )
+		{
+			Log::Notice( "Connect to a server or set the '%s' cvar to issue rcon commands",
+				cvar_rcon_client_destination.Name()
+			);
 
 			return;
 		}
 
-		NET_StringToAdr( rconAddress->string, &to, netadrtype_t::NA_UNSPEC );
+		Rcon::Message message(
+			CL_RconDestinationAddress(),
+			args.EscapedArgs(1),
+			Rcon::Secure(cvar_rcon_client_secure.Get()),
+			cvar_rcon_client_password.Get()
+		);
 
-		if ( to.port == 0 )
+		if ( message.secure == Rcon::Secure::EncryptedChallenge )
 		{
-			to.port = BigShort( PORT_SERVER );
+			queue.Push(message);
+			Net::OutOfBandPrint(netsrc_t::NS_CLIENT, message.remote, "getchallenge");
+		}
+		else
+		{
+			CL_RconSend(message);
 		}
 	}
 
-	NET_SendPacket( netsrc_t::NS_CLIENT, strlen( message ) + 1, message, to );
+	/*
+	 * If there's a command planned for execution on the given server, it will
+	 * use the challenge to do so.
+	 * Returns true if a command has been executed
+	 */
+	bool HandleChallenge(const netadr_t &server, const Str::StringRef& challenge)
+	{
+		return queue.Pop(server, challenge);
+	}
+
+private:
+	static RconMessageQueue queue;
+};
+
+RconMessageQueue RconCmd::queue;
+static RconCmd RconCmdRegistration;
+
+
+/*
+  Populates rcon.client cvars from the server
+*/
+class RconDiscoverCmd: public Cmd::StaticCmd
+{
+public:
+	RconDiscoverCmd():
+		StaticCmd("rconDiscover", Cmd::SYSTEM, "Sends a request to the server to populate rcon.client cvars")
+	{}
+
+	void Run(const Cmd::Args&) const OVERRIDE
+	{
+		if ( cls.state < connstate_t::CA_CONNECTED && cvar_rcon_client_destination.Get().empty() )
+		{
+			Log::Notice( "Connect to a server or set the '%s' cvar to discover rcon settings",
+				cvar_rcon_client_destination.Name()
+			);
+			return;
+		}
+
+		Net::OutOfBandPrint(netsrc_t::NS_CLIENT, CL_RconDestinationAddress(), "rconinfo");
+	}
+};
+
+static RconDiscoverCmd RconDiscoverCmdRegistration;
+
+static void CL_ServerRconInfoPacket( netadr_t, msg_t *msg )
+{
+	InfoMap info = InfoStringToMap( MSG_ReadString( msg ) );
+	int value;
+	if ( Str::ParseInt( value, info["secure"] ) )
+	{
+		cvar_rcon_client_secure.Set( value );
+	}
 }
 
 static void CL_GetRSAKeysFileName( char *buffer, size_t size )
@@ -2056,8 +2239,6 @@ void CL_CheckForResend()
 	int  port;
 	char info[ MAX_INFO_STRING ];
 	char data[ MAX_INFO_STRING ];
-	char pkt[ 1024 + 1 ]; // EVEN BALANCE - T.RAY
-	int  pktlen; // EVEN BALANCE - T.RAY
 
 	// don't send anything if playing back a demo
 	if ( clc.demoplaying )
@@ -2082,10 +2263,7 @@ void CL_CheckForResend()
 	switch ( cls.state )
 	{
 		case connstate_t::CA_CONNECTING:
-			// EVEN BALANCE - T.RAY
-			strcpy( pkt, "getchallenge" );
-			pktlen = strlen( pkt );
-			NET_OutOfBandPrint( netsrc_t::NS_CLIENT, clc.serverAddress, "%s", pkt );
+			Net::OutOfBandPrint( netsrc_t::NS_CLIENT, clc.serverAddress, "getchallenge" );
 			break;
 
 		case connstate_t::CA_CHALLENGING:
@@ -2099,16 +2277,13 @@ void CL_CheckForResend()
 			Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO, false ), sizeof( info ) );
 			Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ), false );
 			Info_SetValueForKey( info, "qport", va( "%i", port ), false );
-			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), false );
+			Info_SetValueForKey( info, "challenge", clc.challenge.c_str(), false );
 			Info_SetValueForKey( info, "pubkey", key, false );
 
 			Com_sprintf( data, sizeof(data), "connect %s", Cmd_QuoteString( info ) );
 
-			// EVEN BALANCE - T.RAY
-			pktlen = strlen( data );
-			memcpy( pkt, &data[ 0 ], pktlen );
-
-			NET_OutOfBandData( netsrc_t::NS_CLIENT, clc.serverAddress, ( byte * ) pkt, pktlen );
+			Net::OutOfBandData( netsrc_t::NS_CLIENT, clc.serverAddress,
+				reinterpret_cast<byte*>( data ), strlen( data ) );
 			// the most current userinfo has been sent, so watch for any
 			// newer changes to userinfo variables
 			cvar_modifiedFlags &= ~CVAR_USERINFO;
@@ -2624,20 +2799,17 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	Log::Debug( "CL packet %s: %s", NET_AdrToStringwPort( from ), args.Argv(0).c_str() );
 
 	// challenge from the server we are connecting to
+
 	if ( args.Argv(0) == "challengeResponse" )
 	{
-		if ( cls.state != connstate_t::CA_CONNECTING )
-		{
-			Log::Notice( "Unwanted challenge response received.  Ignored.\n" );
-		}
-		else
+		if ( cls.state == connstate_t::CA_CONNECTING )
 		{
 			if ( args.Argc() < 2 )
 			{
 				return;
 			}
-			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = atoi(args.Argv(1).c_str());
+			// start sending challenge response instead of challenge request packets
+			clc.challenge = args.Argv(1);
 			cls.state = connstate_t::CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -2645,7 +2817,11 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 			// take this address as the new server address.  This allows
 			// a server proxy to hand off connections to multiple servers
 			clc.serverAddress = from;
-			Log::Debug( "challenge: %d", clc.challenge );
+			Log::Debug( "challenge: %s", clc.challenge.c_str() );
+		}
+		else if ( !RconCmdRegistration.HandleChallenge(from, args.Argv(1)) )
+		{
+			Log::Notice( "Unwanted challenge response received.  Ignored.\n" );
 		}
 
 		return;
@@ -2705,7 +2881,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	// echo request from server
 	if ( args.Argv(0) == "echo" && args.Argc() >= 2)
 	{
-		NET_OutOfBandPrint( netsrc_t::NS_CLIENT, from, "%s", args.Argv(1).c_str() );
+		Net::OutOfBandPrint( netsrc_t::NS_CLIENT, from, "%s", args.Argv(1) );
 		return;
 	}
 
@@ -2734,6 +2910,20 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	if ( args.Argv(0) == "getserversExtResponse" )
 	{
 		CL_ServersResponsePacket( &from, msg, true );
+		return;
+	}
+
+	// prints a n error message returned by the server
+	if ( args.Argv(0) == "error" )
+	{
+		Log::Warn( "%s", MSG_ReadStringLine(msg) );
+		return;
+	}
+
+	// prints a n error message returned by the server
+	if ( args.Argv(0) == "rconInfoResponse" )
+	{
+		CL_ServerRconInfoPacket( from, msg );
 		return;
 	}
 
@@ -3347,7 +3537,6 @@ void CL_Init()
 	cl_showSend = Cvar_Get( "cl_showSend", "0", CVAR_TEMP );
 	cl_showTimeDelta = Cvar_Get( "cl_showTimeDelta", "0", CVAR_TEMP );
 	cl_freezeDemo = Cvar_Get( "cl_freezeDemo", "0", CVAR_TEMP );
-	rcon_client_password = Cvar_Get( "rconPassword", "", CVAR_TEMP );
 	cl_activeAction = Cvar_Get( "activeAction", "", CVAR_TEMP );
 	cl_autorecord = Cvar_Get( "cl_autorecord", "0", CVAR_TEMP );
 
@@ -3358,8 +3547,6 @@ void CL_Init()
 	// XreaL BEGIN
 	cl_aviMotionJpeg = Cvar_Get( "cl_aviMotionJpeg", "1", 0 );
 	// XreaL END
-
-	rconAddress = Cvar_Get( "rconAddress", "", 0 );
 
 	cl_yawspeed = Cvar_Get( "cl_yawspeed", "140", 0 );
 	cl_pitchspeed = Cvar_Get( "cl_pitchspeed", "140", 0 );
@@ -3475,7 +3662,6 @@ void CL_Init()
 	Cmd_AddCommand( "localservers", CL_LocalServers_f );
 	Cmd_AddCommand( "globalservers", CL_GlobalServers_f );
 
-	Cmd_AddCommand( "rcon", CL_Rcon_f );
 	Cmd_AddCommand( "ping", CL_Ping_f );
 	Cmd_AddCommand( "serverstatus", CL_ServerStatus_f );
 	Cmd_AddCommand( "showip", CL_ShowIP_f );
@@ -3875,7 +4061,7 @@ int CL_ServerStatus( const char *serverAddress, char *serverStatusString, int ma
 			serverStatus->retrieved = false;
 			serverStatus->time = 0;
 			serverStatus->startTime = Sys_Milliseconds();
-			NET_OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getstatus" );
+			Net::OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getstatus" );
 			return false;
 		}
 	}
@@ -3888,7 +4074,7 @@ int CL_ServerStatus( const char *serverAddress, char *serverStatusString, int ma
 		serverStatus->retrieved = false;
 		serverStatus->startTime = Sys_Milliseconds();
 		serverStatus->time = 0;
-		NET_OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getstatus" );
+		Net::OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getstatus" );
 		return false;
 	}
 
@@ -4140,7 +4326,7 @@ void CL_GlobalServers_f()
 		Q_strcat( command, sizeof( command ), Cmd_Argv( i ) );
 	}
 
-	NET_OutOfBandPrint( netsrc_t::NS_SERVER, to, "%s", command );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, to, "%s", command );
 	CL_RequestMotd();
 }
 
@@ -4349,7 +4535,7 @@ void CL_Ping_f()
 
 	CL_SetServerInfoByAddress( pingptr->adr, nullptr, 0 );
 
-	NET_OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getinfo xxx" );
+	Net::OutOfBandPrint( netsrc_t::NS_CLIENT, to, "getinfo xxx" );
 }
 
 /*
@@ -4438,7 +4624,7 @@ bool CL_UpdateVisiblePings_f( int source )
 								memcpy( &cl_pinglist[ j ].adr, &server[ i ].adr, sizeof( netadr_t ) );
 								cl_pinglist[ j ].start = Sys_Milliseconds();
 								cl_pinglist[ j ].time = 0;
-								NET_OutOfBandPrint( netsrc_t::NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
+								Net::OutOfBandPrint( netsrc_t::NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
 								slots++;
 								break;
 							}
@@ -4551,7 +4737,7 @@ void CL_ServerStatus_f()
 		}
 	}
 
-	NET_OutOfBandPrint( netsrc_t::NS_CLIENT, *toptr, "getstatus" );
+	Net::OutOfBandPrint( netsrc_t::NS_CLIENT, *toptr, "getstatus" );
 
 	serverStatus = CL_GetServerStatus( *toptr );
 	serverStatus->address = *toptr;

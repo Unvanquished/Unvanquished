@@ -1525,12 +1525,44 @@ enum class tokenType_t {
 //
 // key / value info strings
 //
+	/*
+	 * Separator used by info strings
+	 */
+	static CONSTEXPR char INFO_SEPARATOR = '\\';
+
+	/*
+	 * Associative container with string values and keys
+	 */
+	using InfoMap = std::map<std::string, std::string>;
+	/*
+	 * Formats an InfoMap to an info string, it will discard elements with
+	 * an invalid key or value
+	 */
+	std::string InfoMapToString( const InfoMap& map );
+	/*
+	 * Formats an InfoMap to an info string, it will discard elements with
+	 * an invalid key or value
+	 */
+	InfoMap InfoStringToMap( const std::string& string );
+
+	/*
+	 * Whether string is a valid info key or value
+	 */
+	bool InfoValidItem(const std::string& string);
+
+	// DEPRECATED: Use InfoMap
 	const char *Info_ValueForKey( const char *s, const char *key );
+	// DEPRECATED: Use InfoMap
 	void       Info_RemoveKey( char *s, const char *key , bool big );
+	// DEPRECATED: Use InfoMap
 	void       Info_RemoveKey_big( char *s, const char *key );
+	// DEPRECATED: Use InfoMap
 	void       Info_SetValueForKey( char *s, const char *key, const char *value , bool big );
+	// DEPRECATED: Use InfoMap
 	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value, bool big );
+	// DEPRECATED: Use InfoMap
 	bool   Info_Validate( const char *s );
+	// DEPRECATED: Use InfoMap
 	void       Info_NextPair( const char **s, char *key, char *value );
 
 //=============================================

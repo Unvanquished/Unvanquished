@@ -479,6 +479,17 @@ namespace Cvar {
         return info;
     }
 
+    void PopulateInfoMap(int flag, InfoMap& map) {
+
+        for (auto& entry : GetCvarMap()) {
+            cvarRecord_t* cvar = entry.second;
+
+            if (cvar->flags & flag) {
+                map[entry.first] = cvar->value;
+            }
+        }
+    }
+
     void SetValueCProxy(const std::string& cvarName, const std::string& value) {
         InternalSetValue(cvarName, value, 0, true, false);
     }

@@ -136,6 +136,8 @@ set(SERVERLIST
     ${ENGINE_DIR}/server/sv_net_chan.cpp
     ${ENGINE_DIR}/server/sv_sgame.cpp
     ${ENGINE_DIR}/server/sv_snapshot.cpp
+    ${ENGINE_DIR}/server/CryptoChallenge.cpp
+    ${ENGINE_DIR}/server/CryptoChallenge.h
 )
 
 set(ENGINELIST
@@ -164,6 +166,12 @@ set(ENGINELIST
     ${ENGINE_DIR}/framework/System.h
     ${ENGINE_DIR}/framework/VirtualMachine.cpp
     ${ENGINE_DIR}/framework/VirtualMachine.h
+    ${ENGINE_DIR}/framework/Crypto.cpp
+    ${ENGINE_DIR}/framework/Crypto.h
+    ${ENGINE_DIR}/framework/Rcon.cpp
+    ${ENGINE_DIR}/framework/Rcon.h
+    ${ENGINE_DIR}/framework/Network.h
+    ${ENGINE_DIR}/framework/Network.cpp
     ${ENGINE_DIR}/qcommon/md5.cpp
     ${ENGINE_DIR}/sys/con_common.h
     ${ENGINE_DIR}/sys/con_common.cpp

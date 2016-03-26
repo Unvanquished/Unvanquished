@@ -159,7 +159,6 @@ struct client_t
 	bool       binaryMessageOverflowed;
 
 	int            gamestateMessageNum; // netchan->outgoingSequence of gamestate
-	int            challenge;
 
 	usercmd_t      lastUsercmd;
 	int            lastMessageNum; // for delta compression
@@ -229,22 +228,6 @@ struct svstats_t
 	int    latched_packets;
 };
 
-// MAX_CHALLENGES is made large to prevent a denial
-// of service attack that could cycle all of them
-// out before legitimate users connected
-#define MAX_CHALLENGES    1024
-
-struct challenge_t
-{
-	netadr_t adr;
-	int      challenge;
-	int      time; // time the last packet was sent to the autherize server
-	int      pingTime; // time the challenge response was sent to client
-	int      firstTime; // time the adr was first used, for authorize timeout checks
-	int      firstPing; // Used for min and max ping checks
-	bool connected;
-};
-
 struct receipt_t
 {
 	netadr_t adr;
@@ -272,7 +255,6 @@ struct serverStatic_t
 	int           nextSnapshotEntities; // next snapshotEntities to use
 	entityState_t *snapshotEntities; // [numSnapshotEntities]
 	int           nextHeartbeatTime;
-	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IP addresses from connecting
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
 
 	int       sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
@@ -322,7 +304,6 @@ extern GameVM         gvm; // game virtual machine
 extern cvar_t         *sv_fps;
 extern cvar_t         *sv_timeout;
 extern cvar_t         *sv_zombietime;
-extern cvar_t         *sv_rconPassword;
 extern cvar_t         *sv_privatePassword;
 extern cvar_t         *sv_allowDownload;
 extern cvar_t         *sv_maxclients;
@@ -338,8 +319,6 @@ extern cvar_t         *sv_mapname;
 extern cvar_t         *sv_mapChecksum;
 extern cvar_t         *sv_serverid;
 extern cvar_t         *sv_maxRate;
-extern cvar_t         *sv_minPing;
-extern cvar_t         *sv_maxPing;
 
 extern cvar_t *sv_pure;
 extern cvar_t *sv_floodProtect;
@@ -365,8 +344,6 @@ extern cvar_t *sv_packetdelay;
 //fretn
 extern cvar_t *sv_fullmsg;
 
-extern Cvar::Cvar<bool> isLanOnly;
-
 //===========================================================
 
 //
@@ -384,9 +361,6 @@ void       SV_NET_Config();
 void       SV_MasterHeartbeat( const char *hbname );
 void       SV_MasterShutdown();
 void       SV_MasterGameStat( const char *data );
-
-//bani - bugtraq 12534
-bool   SV_VerifyChallenge( const char *challenge );
 
 //
 // sv_init.c
@@ -485,5 +459,28 @@ void     SV_Netchan_FreeQueue( client_t *client );
 
 
 void SV_GeoIP_Init();
+
+
+enum class ServerPrivate
+{
+	Public,      // Actively advertise, don't refuse anything
+	NoAdvertise, // Do not advertise but reply to all out of band messages
+	NoStatus,    // Do not advertise nor reply to status out of band messages but allow all connections
+	LanOnly,     // Block everything except for LAN connections
+};
+
+/*
+ * Returns whether the server has a private level equal to or greater than
+ * the one provided
+ */
+bool SV_Private(ServerPrivate level);
+
+namespace Cvar {
+template<> std::string GetCvarTypeName<ServerPrivate>();
+} // namespace Cvar
+
+bool ParseCvarValue(Str::StringRef value, ServerPrivate& result);
+
+std::string SerializeCvarValue(ServerPrivate value);
 
 #endif /* SERVER_H_ */

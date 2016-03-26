@@ -92,6 +92,13 @@ namespace Str {
         return true;
     }
 
+    int GetHex(char ch) {
+        return ch > '9' ?
+            ( ch >= 'a' ? ch - 'a' + 10 : ch - 'A' + 10 )
+            : ch - '0'
+        ;
+    }
+
     std::string ToUpper(Str::StringRef text) {
         std::string res;
         res.reserve(text.size());
