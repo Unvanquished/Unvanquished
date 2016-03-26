@@ -48,7 +48,7 @@ void SV_GetChallenge( netadr_t from )
 	}
 
 	auto challenge = ChallengeManager::GenerateChallenge( from );
-	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "challengeResponse %s\n", challenge );
+	Net::OutOfBandPrint( netsrc_t::NS_SERVER, from, "challengeResponse %s", challenge );
 }
 
 /*
