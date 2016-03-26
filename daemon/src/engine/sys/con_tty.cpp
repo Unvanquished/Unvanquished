@@ -66,7 +66,7 @@ static struct termios TTY_tc;
 static Console::Field TTY_field(INT_MAX);
 
 void WriteToStdout(const char* text) {
-	if (write( STDOUT_FILENO, text, strlen(text)) < 0) {
+	if (write( STDOUT_FILENO, text, strlen(text)) < 0 || fsync(STDOUT_FILENO) < 0) {
         Log::Warn("Error writing to the terminal: %s", strerror(errno));
     }
 }
