@@ -89,10 +89,10 @@ void	main()
     depth[2] = depthToZ(depth[2]);
     depth[3] = depthToZ(depth[3]);
 
-    float minDepth = 99999.0 - max16( mask[0] * (99999.0 - depth[0]),
-				      mask[1] * (99999.0 - depth[1]),
-				      mask[2] * (99999.0 - depth[2]),
-				      mask[3] * (99999.0 - depth[3]) );
+    float minDepth = - max16( mask[0] * (-depth[0]),
+			      mask[1] * (-depth[1]),
+			      mask[2] * (-depth[2]),
+			      mask[3] * (-depth[3]) );
 
     depth[0] *= mask[0];
     depth[1] *= mask[1];
