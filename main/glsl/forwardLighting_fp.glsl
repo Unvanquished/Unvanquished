@@ -80,6 +80,7 @@ uniform float       u_ShadowBlur;
 uniform mat4		u_ViewMatrix;
 
 uniform float		u_DepthScale;
+uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
 varying vec4		var_TexDiffuse;

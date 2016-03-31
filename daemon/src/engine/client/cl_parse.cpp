@@ -187,7 +187,7 @@ void CL_ParseSnapshot( msg_t *msg )
 
 	// read in the new snapshot to a temporary buffer
 	// we will only copy to cl.snap if it is valid
-	memset( &newSnap, 0, sizeof( newSnap ) );
+	Com_Memset( &newSnap, 0, sizeof( newSnap ) );
 
 	// we will have read any new server commands in this
 	// message before we got to svc_snapshot

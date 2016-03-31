@@ -186,7 +186,7 @@ public:
 		this->verts = createVertexArray( verticies, numVerticies );
 
 		this->indices = new int[ sizeof( int ) * _numIndicies ];
-		memcpy( indices, _indices, _numIndicies * sizeof( int ) );
+		Com_Memcpy( indices, _indices, _numIndicies * sizeof( int ) );
 
 		this->shader = shader;
 	}

@@ -312,7 +312,7 @@ void RE_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t *points, vec4_t p
 
 	/* create a new projector */
 	dp = &tr.refdef.decalProjectors[ r_numDecalProjectors & DECAL_PROJECTOR_MASK ];
-	memcpy( dp, &temp, sizeof( *dp ) );
+	Com_Memcpy( dp, &temp, sizeof( *dp ) );
 
 	/* we have a winner */
 	r_numDecalProjectors++;
@@ -454,7 +454,7 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 	if ( counts[ SIDE_FRONT ] == 0 )
 	{
 		*numOutPoints = numInPoints;
-		memcpy( outPoints, inPoints, numInPoints * sizeof( vec3_t ) );
+		Com_Memcpy( outPoints, inPoints, numInPoints * sizeof( vec3_t ) );
 		return;
 	}
 
@@ -862,7 +862,7 @@ void R_AddDecalSurface( decal_t *decal )
 	/* set it up */
 	srf->surfaceType = SF_DECAL;
 	srf->numVerts = decal->numVerts;
-	memcpy( srf->verts, decal->verts, srf->numVerts * sizeof( *srf->verts ) );
+	Com_Memcpy( srf->verts, decal->verts, srf->numVerts * sizeof( *srf->verts ) );
 
 	/* fade colors */
 	if ( decal->fadeStartTime < tr.refdef.time && decal->fadeStartTime < decal->fadeEndTime )

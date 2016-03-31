@@ -98,9 +98,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_ext_vertex_array_object;
 	cvar_t      *r_ext_half_float_pixel;
 	cvar_t      *r_ext_texture_float;
-	cvar_t      *r_ext_texture_integer;
 	cvar_t      *r_ext_texture_rg;
 	cvar_t      *r_ext_texture_filter_anisotropic;
+	cvar_t      *r_arb_framebuffer_object;
 	cvar_t      *r_ext_packed_depth_stencil;
 	cvar_t      *r_ext_generate_mipmap;
 	cvar_t      *r_arb_buffer_storage;
@@ -311,9 +311,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			{
 				return false;
 			}
-
-			glState.tileStep[ 0 ] = TILE_SIZE * ( 1.0f / glConfig.vidWidth );
-			glState.tileStep[ 1 ] = TILE_SIZE * ( 1.0f / glConfig.vidHeight );
 
 			GL_CheckErrors();
 
@@ -583,7 +580,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		// with 18 bytes for the TGA file header
 		buffer = RB_ReadPixels( x, y, width, height, 18 );
-		memset( buffer, 0, 18 );
+		Com_Memset( buffer, 0, 18 );
 
 		buffer[ 2 ] = 2; // uncompressed type
 		buffer[ 12 ] = width & 255;
@@ -889,9 +886,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		   bound.
 		 */
 
-		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-		glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-		glState.currentFBO = nullptr;
+		if ( glConfig2.framebufferObjectAvailable )
+		{
+			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+			glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+			glState.currentFBO = nullptr;
+		}
 
 		GL_PolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		GL_DepthMask( GL_TRUE );
@@ -957,8 +957,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 			ri.Printf( PRINT_DEVELOPER, "GL_TEXTURE_MAX_ANISOTROPY_EXT: %f\n", glConfig2.maxTextureAnisotropy );
 		}
 
-		ri.Printf( PRINT_DEVELOPER, "GL_MAX_RENDERBUFFER_SIZE: %d\n", glConfig2.maxRenderbufferSize );
-		ri.Printf( PRINT_DEVELOPER, "GL_MAX_COLOR_ATTACHMENTS: %d\n", glConfig2.maxColorAttachments );
+		if ( glConfig2.framebufferObjectAvailable )
+		{
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_RENDERBUFFER_SIZE: %d\n", glConfig2.maxRenderbufferSize );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_COLOR_ATTACHMENTS: %d\n", glConfig2.maxColorAttachments );
+		}
 
 		ri.Printf( PRINT_DEVELOPER, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits,
 		           glConfig.depthBits, glConfig.stencilBits );
@@ -1076,9 +1079,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_ext_vertex_array_object = ri.Cvar_Get( "r_ext_vertex_array_object", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_half_float_pixel = ri.Cvar_Get( "r_ext_half_float_pixel", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_float = ri.Cvar_Get( "r_ext_texture_float", "1", CVAR_CHEAT | CVAR_LATCH );
-		r_ext_texture_integer = ri.Cvar_Get( "r_ext_texture_integer", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4",  CVAR_LATCH | CVAR_ARCHIVE );
+		r_arb_framebuffer_object = ri.Cvar_Get( "r_arb_framebuffer_object", "1",  CVAR_LATCH );
 		r_ext_packed_depth_stencil = ri.Cvar_Get( "r_ext_packed_depth_stencil", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_generate_mipmap = ri.Cvar_Get( "r_ext_generate_mipmap", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_buffer_storage = ri.Cvar_Get( "r_arb_buffer_storage", "1", CVAR_CHEAT | CVAR_LATCH );
@@ -1368,9 +1371,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		ri.Printf( PRINT_DEVELOPER, "----- R_Init -----\n" );
 
 		// clear all our internal state
-		memset( &tr, 0, sizeof( tr ) );
-		memset( &backEnd, 0, sizeof( backEnd ) );
-		memset( &tess, 0, sizeof( tess ) );
+		Com_Memset( &tr, 0, sizeof( tr ) );
+		Com_Memset( &backEnd, 0, sizeof( backEnd ) );
+		Com_Memset( &tess, 0, sizeof( tess ) );
 
 		if ( ( intptr_t ) tess.verts & 15 )
 		{
@@ -1572,7 +1575,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		ri.Printf( PRINT_DEVELOPER, "GetRefAPI()\n" );
 
-		memset( &re, 0, sizeof( re ) );
+		Com_Memset( &re, 0, sizeof( re ) );
 
 		if ( apiVersion != REF_API_VERSION )
 		{

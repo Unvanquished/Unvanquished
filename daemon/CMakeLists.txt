@@ -70,7 +70,6 @@ if(NOT DAEMON_EXTERNAL_APP)
         set(BUILD_GAME_NACL_NEXE 0)
     endif()
     option(BUILD_TTY_CLIENT "Build Daemon headless client" 1)
-    option(BUILD_DUMMPY_APP "Build the dummy app for daemon" 0)
 
     set(NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries")
 
@@ -668,7 +667,7 @@ if (NOT NACL)
     set_property(TARGET engine-lib APPEND PROPERTY COMPILE_OPTIONS ${WARNINGS})
     ADD_PRECOMPILED_HEADER(engine-lib)
 
-    if(BUILD_DUMMPY_APP)
+    if(NOT DAEMON_EXTERNAL_APP)
         AddApplication(
             Target dummyapp
             ExecutableName dummyapp

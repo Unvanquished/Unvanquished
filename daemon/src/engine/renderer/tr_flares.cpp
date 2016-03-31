@@ -89,7 +89,7 @@ void R_ClearFlares()
 {
 	int i;
 
-	memset( r_flareStructs, 0, sizeof( r_flareStructs ) );
+	Com_Memset( r_flareStructs, 0, sizeof( r_flareStructs ) );
 	r_activeFlares = nullptr;
 	r_inactiveFlares = nullptr;
 

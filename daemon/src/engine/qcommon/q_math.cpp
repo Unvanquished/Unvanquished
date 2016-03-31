@@ -3221,7 +3221,7 @@ void TransInit( transform_t *t )
 // copy a transform
 void TransCopy( const transform_t *in, transform_t *out )
 {
-	memcpy( out, in, sizeof( transform_t ) );
+	Com_Memcpy( out, in, sizeof( transform_t ) );
 }
 
 // apply a transform to a point

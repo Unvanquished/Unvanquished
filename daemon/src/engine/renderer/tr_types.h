@@ -239,7 +239,7 @@ typedef struct
 	float     scale; // r_lightScale if not set
 
 	// omni-directional light specific
-	float     radius;
+	vec3_t radius;
 
 	// projective light specific
 	vec3_t   projTarget;
@@ -395,13 +395,13 @@ typedef struct
 	bool drawBuffersAvailable;
 	bool textureHalfFloatAvailable;
 	bool textureFloatAvailable;
-	bool textureIntegerAvailable;
 	bool textureRGAvailable;
 	int      maxDrawBuffers;
 
 	float    maxTextureAnisotropy;
 	bool textureAnisotropyAvailable;
 
+	bool framebufferObjectAvailable;
 	int      maxRenderbufferSize;
 	int      maxColorAttachments;
 	bool framebufferPackedDepthStencilAvailable;

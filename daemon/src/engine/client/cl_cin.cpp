@@ -373,7 +373,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	Com_DPrintf( "SCR_PlayCinematic( %s )\n", arg );
 
-	memset( &cin, 0, sizeof( cinematics_t ) );
+	Com_Memset( &cin, 0, sizeof( cinematics_t ) );
 	currentHandle = CIN_HandleForVideo();
 
 	cin.currentHandle = currentHandle;

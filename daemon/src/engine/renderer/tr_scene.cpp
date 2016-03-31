@@ -218,7 +218,7 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 		poly->numVerts = numVerts;
 		poly->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
 
-		memcpy( poly->verts, &verts[ numVerts * j ], numVerts * sizeof( *verts ) );
+		Com_Memcpy( poly->verts, &verts[ numVerts * j ], numVerts * sizeof( *verts ) );
 
 		// done.
 		r_numPolys++;
@@ -365,7 +365,7 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 		ri.Error( ERR_DROP, "RE_AddRefEntityToScene: bad reType %i", ent->reType );
 	}
 
-	memcpy( &backEndData[ tr.smpFrame ]->entities[ r_numEntities ].e, ent, sizeof( refEntity_t ) );
+	Com_Memcpy( &backEndData[ tr.smpFrame ]->entities[ r_numEntities ].e, ent, sizeof( refEntity_t ) );
 	backEndData[ tr.smpFrame ]->entities[ r_numEntities ].lightingCalculated = false;
 
 	r_numEntities++;
@@ -390,7 +390,7 @@ void RE_AddRefLightToScene( const refLight_t *l )
 		return;
 	}
 
-	if ( l->radius <= 0 && !VectorLength( l->projTarget ) )
+	if ( l->radius[ 0 ] <= 0 && !VectorLength( l->radius ) && !VectorLength( l->projTarget ) )
 	{
 		return;
 	}
@@ -401,7 +401,7 @@ void RE_AddRefLightToScene( const refLight_t *l )
 	}
 
 	light = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
-	memcpy( &light->l, l, sizeof( light->l ) );
+	Com_Memcpy( &light->l, l, sizeof( light->l ) );
 
 	light->isStatic = false;
 	light->additive = true;
@@ -457,7 +457,7 @@ static void R_AddWorldLightsToScene()
 			continue;
 		}
 
-		memcpy( &backEndData[ tr.smpFrame ]->lights[ r_numLights ], light, sizeof( trRefLight_t ) );
+		Com_Memcpy( &backEndData[ tr.smpFrame ]->lights[ r_numLights ], light, sizeof( trRefLight_t ) );
 		r_numLights++;
 	}
 }
@@ -507,7 +507,9 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	// HACK: this will tell the renderer backend to use tr.defaultLightShader
 	light->l.attenuationShader = 0;
 
-	light->l.radius = radius;
+	light->l.radius[ 0 ] = radius;
+	light->l.radius[ 1 ] = radius;
+	light->l.radius[ 2 ] = radius;
 
 	light->l.color[ 0 ] = r;
 	light->l.color[ 1 ] = g;
@@ -665,7 +667,7 @@ void RE_RenderScene( const refdef_t *fd )
 	// The refdef takes 0-at-the-top y coordinates, so
 	// convert to GL's 0-at-the-bottom space
 	//
-	memset( &parms, 0, sizeof( parms ) );
+	Com_Memset( &parms, 0, sizeof( parms ) );
 
 	if ( tr.refdef.pixelTarget == nullptr )
 	{

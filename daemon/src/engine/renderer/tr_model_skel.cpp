@@ -34,7 +34,7 @@ bool AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri
 	hasWeights = false;
 
 	numNewReferences = 0;
-	memset( newReferences, -1, sizeof( newReferences ) );
+	Com_Memset( newReferences, -1, sizeof( newReferences ) );
 
 	for (unsigned i = 0; i < 3; i++ )
 	{
@@ -138,8 +138,8 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	indexes = ( glIndex_t * ) ri.Hunk_AllocateTempMemory( indexesNum * sizeof( glIndex_t ) );
 
 	vboSurf->numBoneRemap = 0;
-	memset( vboSurf->boneRemap, 0, sizeof( vboSurf->boneRemap ) );
-	memset( vboSurf->boneRemapInverse, 0, sizeof( vboSurf->boneRemapInverse ) );
+	Com_Memset( vboSurf->boneRemap, 0, sizeof( vboSurf->boneRemap ) );
+	Com_Memset( vboSurf->boneRemapInverse, 0, sizeof( vboSurf->boneRemapInverse ) );
 
 	for ( j = 0; j < MAX_BONES; j++ )
 	{

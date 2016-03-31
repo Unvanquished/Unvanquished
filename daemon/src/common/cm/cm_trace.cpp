@@ -1346,7 +1346,7 @@ static void CM_ProximityToBrush( traceWork_t *tw, cbrush_t *brush )
 	traceWork_t  tw2;
 
 	// cheapish purely linear trace to test for intersection
-	memset( &tw2, 0, sizeof( tw2 ) );
+	Com_Memset( &tw2, 0, sizeof( tw2 ) );
 
 	tw2.trace.fraction = 1.0f;
 	tw2.type = TT_CAPSULE;
@@ -1408,7 +1408,7 @@ static void CM_ProximityToSurface( traceWork_t *tw, cSurface_t *surface )
 	traceWork_t tw2;
 
 	// cheapish purely linear trace to test for intersection
-	memset( &tw2, 0, sizeof( tw2 ) );
+	Com_Memset( &tw2, 0, sizeof( tw2 ) );
 
 	tw2.trace.fraction = 1.0f;
 	tw2.type = TT_CAPSULE;
@@ -2078,7 +2078,7 @@ static void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, ve
 	c_traces++; // for statistics, may be zeroed
 
 	// fill in a default trace
-	memset( &tw, 0, sizeof( tw ) );
+	Com_Memset( &tw, 0, sizeof( tw ) );
 	tw.trace.fraction = 1; // assume it goes the entire distance until shown otherwise
 	VectorCopy( origin, tw.modelOrigin );
 	tw.type = type;
@@ -2457,7 +2457,7 @@ void CM_BiSphereTrace( trace_t *results, const vec3_t start, const vec3_t end, f
 	c_traces++; // for statistics, may be zeroed
 
 	// fill in a default trace
-	memset( &tw, 0, sizeof( tw ) );
+	Com_Memset( &tw, 0, sizeof( tw ) );
 	tw.trace.fraction = 1.0f; // assume it goes the entire distance until shown otherwise
 	VectorCopy( vec3_origin, tw.modelOrigin );
 	tw.type = TT_BISPHERE;

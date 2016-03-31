@@ -4001,7 +4001,7 @@ void CG_InitClasses()
 {
 	int i;
 
-	memset( cg_classes, 0, sizeof( cg_classes ) );
+	Com_Memset( cg_classes, 0, sizeof( cg_classes ) );
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{

@@ -98,7 +98,7 @@ called to open a channel to a remote system
 */
 void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport )
 {
-	memset( chan, 0, sizeof( *chan ) );
+	Com_Memset( chan, 0, sizeof( *chan ) );
 
 	chan->sock = sock;
 	chan->remoteAddress = adr;
@@ -193,7 +193,7 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data )
 	{
 		chan->unsentFragments = true;
 		chan->unsentLength = length;
-		memcpy( chan->unsentBuffer, data, length );
+		Com_Memcpy( chan->unsentBuffer, data, length );
 
 		// only send the first fragment now
 		Netchan_TransmitNextFragment( chan );
@@ -378,7 +378,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 			return false;
 		}
 
-		memcpy( chan->fragmentBuffer + chan->fragmentLength,
+		Com_Memcpy( chan->fragmentBuffer + chan->fragmentLength,
 		            msg->data + msg->readcount, fragmentLength );
 
 		chan->fragmentLength += fragmentLength;
@@ -402,7 +402,7 @@ bool Netchan_Process( netchan_t *chan, msg_t *msg )
 		// make sure the sequence number is still there
 		* ( int * ) msg->data = LittleLong( sequence );
 
-		memcpy( msg->data + 4, chan->fragmentBuffer, chan->fragmentLength );
+		Com_Memcpy( msg->data + 4, chan->fragmentBuffer, chan->fragmentLength );
 		msg->cursize = chan->fragmentLength + 4;
 		chan->fragmentLength = 0;
 		msg->readcount = 4; // past the sequence number
@@ -471,9 +471,9 @@ bool        NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, msg_t *net_mes
 	i = loop->get & ( MAX_LOOPBACK - 1 );
 	loop->get++;
 
-	memcpy( net_message->data, loop->msgs[ i ].data, loop->msgs[ i ].datalen );
+	Com_Memcpy( net_message->data, loop->msgs[ i ].data, loop->msgs[ i ].datalen );
 	net_message->cursize = loop->msgs[ i ].datalen;
-	memset( net_from, 0, sizeof( *net_from ) );
+	Com_Memset( net_from, 0, sizeof( *net_from ) );
 	net_from->type = NA_LOOPBACK;
 	return true;
 }
@@ -488,7 +488,7 @@ void NET_SendLoopPacket( netsrc_t sock, int length, const void *data )
 	i = loop->send & ( MAX_LOOPBACK - 1 );
 	loop->send++;
 
-	memcpy( loop->msgs[ i ].data, data, length );
+	Com_Memcpy( loop->msgs[ i ].data, data, length );
 	loop->msgs[ i ].datalen = length;
 }
 
@@ -518,7 +518,7 @@ static void NET_QueuePacket( int length, const void *data, netadr_t to,
 
 	newp = (packetQueue_t*) S_Malloc( sizeof( packetQueue_t ) );
 	newp->data = (byte*) S_Malloc( length );
-	memcpy( newp->data, data, length );
+	Com_Memcpy( newp->data, data, length );
 	newp->length = length;
 	newp->to = to;
 	newp->release = Sys_Milliseconds() + ( int )( ( float ) offset / com_timescale->value );
@@ -680,7 +680,7 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 
 	if ( !strcmp( s, "localhost" ) )
 	{
-		memset( a, 0, sizeof( *a ) );
+		Com_Memset( a, 0, sizeof( *a ) );
 		a->type = NA_LOOPBACK;
 // as NA_LOOPBACK doesn't require ports report port was given.
 		return 1;

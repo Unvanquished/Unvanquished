@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 /* lightMapping_fp.glsl */
+
 uniform sampler2D	u_DiffuseMap;
 uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
@@ -30,6 +31,7 @@ uniform sampler2D	u_DeluxeMap;
 uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
+uniform vec2		u_SpecularExponent;
 
 varying vec3		var_Position;
 varying vec4		var_TexDiffuseGlow;
@@ -45,9 +47,6 @@ varying vec4		var_Color;
 
 void	main()
 {
-	// compute view direction in world space
-	vec3 I = normalize(u_ViewOrigin - var_Position);
-
 #if defined(USE_NORMAL_MAPPING)
 
 	vec2 texDiffuse = var_TexDiffuseGlow.st;
@@ -55,6 +54,9 @@ void	main()
 	vec2 texSpecular = var_TexNormalSpecular.pq;
 
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
+
+	// compute view direction in world space
+	vec3 I = normalize(u_ViewOrigin - var_Position);
 
 #if defined(USE_PARALLAX_MAPPING)
 	// ray intersect in view direction
@@ -94,8 +96,6 @@ void	main()
 		return;
 	}
 
-	// compute the specular term
-	vec4 specular = texture2D(u_SpecularMap, texSpecular);
 
 	// compute normal in world space from normalmap
 	vec3 N = texture2D(u_NormalMap, texNormal.st).xyw;
@@ -108,15 +108,35 @@ void	main()
 	vec3 L = (2.0 * (texture2D(u_DeluxeMap, var_TexLight).xyz - 0.5));
 	L = normalize(L);
 
+	// compute half angle in world space
+	vec3 H = normalize(L + I);
+
 	// compute light color from world space lightmap
 	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
 
-	// divide by cosine term to restore original light color
-	lightColor /= clamp(dot(normalize(var_Normal), L), 0.004, 1.0);
+	// compute the specular term
+	vec4 specular = texture2D(u_SpecularMap, texSpecular).rgba;
+
+	float NdotL = clamp(dot(N, L), 0.0, 1.0);
+
+	float NdotLnobump = clamp(dot(normalize(var_Normal.xyz), L), 0.004, 1.0);
+	//vec3 lightColorNoNdotL = clamp(lightColor.rgb / NdotLnobump, 0.0, 1.0);
+
+	//float NdotLnobump = dot(normalize(var_Normal.xyz), L);
+	vec3 lightColorNoNdotL = lightColor.rgb / NdotLnobump;
 
 	// compute final color
-	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
-	computeLight( L, N, I, lightColor, diffuse, specular, color );
+	vec4 color = diffuse;
+	// color = vec4(vec3(1.0, 1.0, 1.0), diffuse.a);
+	//color.rgb = vec3(NdotLnobump, NdotLnobump, NdotLnobump);
+	//color.rgb *= lightColor.rgb;
+	//color.rgb = lightColorNoNdotL.rgb * NdotL;
+	color.rgb *= clamp(lightColorNoNdotL.rgb * NdotL, lightColor.rgb * 0.3, lightColor.rgb);
+	//color.rgb *= diffuse.rgb;
+	//color.rgb = L * 0.5 + 0.5;
+	color.rgb += specular.rgb * lightColorNoNdotL * pow(clamp(dot(N, H), 0.0, 1.0), u_SpecularExponent.x * specular.a + u_SpecularExponent.y) * r_SpecularScale;
+	color.a *= var_Color.a;	// for terrain blending
+
 
 #else // USE_NORMAL_MAPPING
 
@@ -131,30 +151,45 @@ void	main()
 
 	vec3 N = normalize(var_Normal);
 
-	vec4 specular = vec4(0.0);
+	vec3 specular = vec3(0.0, 0.0, 0.0);
 
 	// compute light color from object space lightmap
 	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
 
-	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
-	computeLight( N, N, I, lightColor, diffuse, specular, color );
+	vec4 color = diffuse;
+	color.rgb *= lightColor;
+	color.a *= var_Color.a;	// for terrain blending
 #endif
-
-#if defined( USE_SHADER_LIGHTS )
-	computeDLights( var_Position, N, I, diffuse, specular, color );
-#endif
-
 #if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, var_TexDiffuseGlow.pq).rgb;
 #endif
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 
+#if defined(r_DeferredShading)
+	gl_FragData[0] = color; 							// var_Color;
+	gl_FragData[1] = vec4(diffuse.rgb, var_Color.a);	// vec4(var_Color.rgb, 1.0 - var_Color.a);
+	gl_FragData[2] = vec4(N, var_Color.a);
+	gl_FragData[3] = vec4(specular, var_Color.a);
+#else
 	gl_FragColor = color;
+#endif
 
 #if defined(r_showLightMaps)
 	gl_FragColor = texture2D(u_LightMap, var_TexLight);
 #elif defined(r_showDeluxeMaps)
 	gl_FragColor = texture2D(u_DeluxeMap, var_TexLight);
 #endif
+
+
+#if 0
+#if defined(USE_PARALLAX_MAPPING)
+	gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
+#elif defined(USE_NORMAL_MAPPING)
+	gl_FragColor = vec4(vec3(0.0, 0.0, 1.0), diffuse.a);
+#else
+	gl_FragColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
+#endif
+#endif
+
 }

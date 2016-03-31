@@ -382,7 +382,7 @@ void SV_ChangeMaxClients()
 		}
 		else
 		{
-			memset( &oldClients[ i ], 0, sizeof( client_t ) );
+			Com_Memset( &oldClients[ i ], 0, sizeof( client_t ) );
 		}
 	}
 
@@ -399,7 +399,7 @@ void SV_ChangeMaxClients()
 		Com_Error( ERR_FATAL, "SV_Startup: unable to allocate svs.clients" );
 	}
 
-	memset( svs.clients, 0, sv_maxclients->integer * sizeof( client_t ) );
+	Com_Memset( svs.clients, 0, sv_maxclients->integer * sizeof( client_t ) );
 
 	// copy the clients over
 	for ( i = 0; i < count; i++ )
@@ -433,7 +433,7 @@ void SV_ClearServer()
 		}
 	}
 
-	memset( &sv, 0, sizeof( sv ) );
+	Com_Memset( &sv, 0, sizeof( sv ) );
 }
 
 /*

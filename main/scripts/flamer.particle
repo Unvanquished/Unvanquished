@@ -215,8 +215,6 @@ MuzzleFlashFlamer
       rotation 0 320~80 320~80
       bounce 0.01
 
-      dynamicLight    0 300 0 { 0.25 0.25 0.0 }
-
       lifeTime 750                // keep synchronized with FLAMER_LIFETIME
     }
 

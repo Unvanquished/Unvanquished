@@ -714,7 +714,7 @@ void R_RotateEntityForLight( const trRefEntity_t *ent, const trRefLight_t *light
 
 	if ( ent->e.reType != RT_MODEL )
 	{
-		memset( orientation , 0, sizeof( * orientation ) );
+		Com_Memset( orientation , 0, sizeof( * orientation ) );
 
 		orientation ->axis[ 0 ][ 0 ] = 1;
 		orientation ->axis[ 1 ][ 1 ] = 1;
@@ -804,7 +804,7 @@ void R_RotateForViewer()
 {
 	matrix_t transformMatrix;
 
-	memset( &tr.orientation, 0, sizeof( tr.orientation ) );
+	Com_Memset( &tr.orientation, 0, sizeof( tr.orientation ) );
 	tr.orientation.axis[ 0 ][ 0 ] = 1;
 	tr.orientation.axis[ 1 ][ 1 ] = 1;
 	tr.orientation.axis[ 2 ][ 2 ] = 1;
@@ -1205,7 +1205,7 @@ void R_PlaneForSurface( surfaceType_t *surfType, cplane_t *plane )
 
 	if ( !surfType )
 	{
-		memset( plane, 0, sizeof( *plane ) );
+		Com_Memset( plane, 0, sizeof( *plane ) );
 		plane->normal[ 0 ] = 1;
 		return;
 	}
@@ -1234,7 +1234,7 @@ void R_PlaneForSurface( surfaceType_t *surfType, cplane_t *plane )
 			return;
 
 		default:
-			memset( plane, 0, sizeof( *plane ) );
+			Com_Memset( plane, 0, sizeof( *plane ) );
 			plane->normal[ 0 ] = 1;
 			return;
 	}
@@ -1699,10 +1699,6 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int lightmapNum, i
 	drawSurf->setSort( shader->sortedIndex, lightmapNum, entityNum, fogNum, index );
 
 	tr.refdef.numDrawSurfs++;
-
-	if ( shader->depthShader != nullptr ) {
-		R_AddDrawSurf( surface, shader->depthShader, 0, 0 );
-	}
 }
 
 /*
@@ -1712,9 +1708,9 @@ R_SortDrawSurfs
 */
 static void R_SortDrawSurfs()
 {
-	drawSurf_t   *drawSurf;
-	shader_t     *shader;
-	int          i, sort;
+	drawSurf_t *drawSurf;
+	shader_t   *shader;
+	int        i;
 
 	// it is possible for some views to not have any surfaces
 	if ( tr.viewParms.numDrawSurfs < 1 )
@@ -1751,34 +1747,22 @@ static void R_SortDrawSurfs()
 	               return a.sort < b.sort;
 	           } );
 
-	// compute the offsets of the first surface of each SS_* type
-	sort = SS_BAD - 1;
-	for ( i = 0; i < tr.viewParms.numDrawSurfs; i++ )
+	// check for any pass through drawing, which
+	// may cause another view to be rendered first
+	for ( i = 0, drawSurf = tr.viewParms.drawSurfs; i < tr.viewParms.numDrawSurfs; i++, drawSurf++ )
 	{
-		drawSurf = &tr.viewParms.drawSurfs[ i ];
 		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
+
+		if ( shader->sort > SS_PORTAL )
+		{
+			break;
+		}
 
 		// no shader should ever have this sort type
 		if ( shader->sort == SS_BAD )
 		{
 			ri.Error( ERR_DROP, "Shader '%s'with sort == SS_BAD", shader->name );
 		}
-
-		while ( sort < SS_NUM_SORTS - 1 && shader->sort > sort ) {
-			tr.viewParms.firstDrawSurf[ ++sort ] = i;
-		}
-	}
-	while ( sort < SS_NUM_SORTS ) {
-		tr.viewParms.firstDrawSurf[ ++sort ] = tr.viewParms.numDrawSurfs;
-	}
-
-	// check for any pass through drawing, which
-	// may cause another view to be rendered first
-	for ( i = tr.viewParms.firstDrawSurf[ SS_PORTAL ];
-	      i < tr.viewParms.firstDrawSurf[ SS_PORTAL + 1 ]; i++ )
-	{
-		drawSurf = &tr.viewParms.drawSurfs[ i ];
-		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
 
 		// if the mirror was completely clipped away, we may need to check another surface
 		if ( R_MirrorViewBySurface( drawSurf ) )
@@ -2043,7 +2027,7 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	VectorScale( up, 2.0f * radius, light->l.projUp );
 	VectorCopy( vec3_origin, light->l.projStart );
 	VectorCopy( vec3_origin, light->l.projEnd );
-	VectorScale( forward, light->l.radius, light->l.projTarget );
+	VectorScale( forward, light->l.radius[0], light->l.projTarget );
 }
 
 /*
@@ -2058,29 +2042,22 @@ void R_AddLightInteractions()
 	bspNode_t    *leaf;
 	link_t       *l;
 
-	tr.refdef.numShaderLights = 0;
 	for ( i = 0; i < tr.refdef.numLights; i++ )
 	{
 		light = tr.currentLight = &tr.refdef.lights[ i ];
 
 		if ( light->isStatic )
 		{
-			if ( r_staticLight->integer != 1 || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
+			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
-				if( r_staticLight->integer == 2 ) {
-					tr.refdef.numShaderLights++;
-				}
 				light->cull = CULL_OUT;
 				continue;
 			}
 		}
 		else
 		{
-			if ( r_dynamicLight->integer != 1 )
+			if ( !r_dynamicLight->integer )
 			{
-				if( r_dynamicLight->integer == 2 ) {
-					tr.refdef.numShaderLights++;
-				}
 				light->cull = CULL_OUT;
 				continue;
 			}
@@ -2260,14 +2237,14 @@ void R_AddLightBoundsToVisBounds()
 
 		if ( light->isStatic )
 		{
-			if ( r_staticLight->integer != 1 || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
+			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
 				continue;
 			}
 		}
 		else
 		{
-			if ( r_dynamicLight->integer != 1 )
+			if ( !r_dynamicLight->integer )
 			{
 				continue;
 			}
@@ -2502,8 +2479,6 @@ void R_RenderView( viewParms_t *parms )
 
 	tr.viewParms.interactions = tr.refdef.interactions + firstInteraction;
 	tr.viewParms.numInteractions = tr.refdef.numInteractions - firstInteraction;
-
-	R_AddSetupLightsCmd();
 
 	R_SortDrawSurfs();
 

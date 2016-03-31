@@ -268,7 +268,7 @@ void CG_Rocket_BuildServerList( const char *args )
 			char info[ MAX_STRING_CHARS ];
 			int ping, bots, clients, maxClients;
 
-			memset( &data, 0, sizeof( data ) );
+			Com_Memset( &data, 0, sizeof( data ) );
 
 			if ( !trap_LAN_ServerIsVisible( netSrc, i ) )
 			{

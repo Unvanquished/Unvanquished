@@ -1115,7 +1115,7 @@ void CL_Disconnect( bool showMainMenu )
 	CL_ClearState();
 
 	// wipe the client connection
-	memset( &clc, 0, sizeof( clc ) );
+	Com_Memset( &clc, 0, sizeof( clc ) );
 
 	if ( !cls.bWWWDlDisconnected )
 	{
@@ -4082,11 +4082,11 @@ void CL_LocalServers_f()
 	for ( i = 0; i < MAX_OTHER_SERVERS; i++ )
 	{
 		bool b = cls.localServers[ i ].visible;
-		memset( &cls.localServers[ i ], 0, sizeof( cls.localServers[ i ] ) );
+		Com_Memset( &cls.localServers[ i ], 0, sizeof( cls.localServers[ i ] ) );
 		cls.localServers[ i ].visible = b;
 	}
 
-	memset( &to, 0, sizeof( to ) );
+	Com_Memset( &to, 0, sizeof( to ) );
 
 	// The 'xxx' in the message is a challenge that will be echoed back
 	// by the server.  We don't care about that here, but master servers
@@ -4367,7 +4367,7 @@ void CL_Ping_f()
 		server = Cmd_Argv( 2 );
 	}
 
-	memset( &to, 0, sizeof( netadr_t ) );
+	Com_Memset( &to, 0, sizeof( netadr_t ) );
 
 	if ( !NET_StringToAdr( server, &to, family ) )
 	{
@@ -4552,7 +4552,7 @@ void CL_ServerStatus_f()
 
 	if ( !toptr )
 	{
-		memset( &to, 0, sizeof( netadr_t ) );
+		Com_Memset( &to, 0, sizeof( netadr_t ) );
 
 		if ( argc == 2 )
 		{

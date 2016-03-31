@@ -35,8 +35,8 @@ void R_PerformanceCounters()
 	if ( !r_speeds->integer )
 	{
 		// clear the counters even if we aren't printing
-		memset( &tr.pc, 0, sizeof( tr.pc ) );
-		memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
+		Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
+		Com_Memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
 		return;
 	}
 
@@ -117,8 +117,8 @@ void R_PerformanceCounters()
 		           tr.pc.c_decalSurfacesCreated );
 	}
 
-	memset( &tr.pc, 0, sizeof( tr.pc ) );
-	memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
+	Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
+	Com_Memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
 }
 
 /*
@@ -246,27 +246,6 @@ void           *R_GetCommandBuffer( unsigned bytes )
 	cmdList->used += bytes;
 
 	return cmdList->cmds + cmdList->used - bytes;
-}
-
-/*
-=============
-R_AddSetupLightsCmd
-=============
-*/
-void R_AddSetupLightsCmd()
-{
-	setupLightsCommand_t *cmd;
-
-	cmd = (setupLightsCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
-
-	if ( !cmd )
-	{
-		return;
-	}
-
-	cmd->commandId = RC_SETUP_LIGHTS;
-
-	cmd->refdef = tr.refdef;
 }
 
 /*
@@ -483,7 +462,7 @@ void RE_SetClipRegion( const float *region )
 {
 	if ( region == nullptr )
 	{
-		memset( tr.clipRegion, 0, sizeof( vec4_t ) );
+		Com_Memset( tr.clipRegion, 0, sizeof( vec4_t ) );
 	}
 	else
 	{
