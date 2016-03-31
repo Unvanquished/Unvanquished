@@ -710,16 +710,6 @@ static void Render_generic( int stage )
 	GL_CheckErrors();
 }
 
-static bool hasMaterialMapping( shader_t *shader ) {
-  switch( shader->collapseType ) {
-  case COLLAPSE_lighting_DBM:
-  case COLLAPSE_lighting_DBMG:
-    return true;
-  default:
-    return false;
-  }
-}
-
 static void Render_vertexLighting_DBS_entity( int stage )
 {
 	vec3_t        viewOrigin;
@@ -734,7 +724,6 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != nullptr );
 	bool glowMapping = ( pStage->bundle[ TB_GLOWMAP ].image[ 0 ] != nullptr );
-	bool materialMapping = hasMaterialMapping( tess.surfaceShader );
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -754,7 +743,6 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	gl_vertexLightingShader_DBS_entity->SetReflectiveSpecular( normalMapping && tr.cubeHashTable != nullptr );
 
-	gl_vertexLightingShader_DBS_entity->SetPhysicalShading( materialMapping );
 	gl_vertexLightingShader_DBS_entity->SetGlowMapping( glowMapping );
 
 	gl_vertexLightingShader_DBS_entity->BindProgram( pStage->deformIndex );
@@ -2763,8 +2751,6 @@ void Tess_StageIteratorGeneric()
 			case ST_COLLAPSE_lighting_DBG:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
-			case ST_COLLAPSE_lighting_DBM:
-			case ST_COLLAPSE_lighting_DBMG:
 				{
 					{
 						if ( r_precomputedLighting->integer || r_vertexLighting->integer )
