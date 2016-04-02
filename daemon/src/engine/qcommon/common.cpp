@@ -45,6 +45,7 @@ Maryland 20850 USA.
 #include "framework/CvarSystem.h"
 #include "framework/ConsoleHistory.h"
 #include "framework/LogSystem.h"
+#include "../common/Profiler.h"
 #include "framework/System.h"
 #include <common/FileSystem.h>
 
@@ -1506,6 +1507,8 @@ void Com_Frame()
 	timeBeforeClient = 0;
 	timeAfter = 0;
 
+    Profiler::Update();
+
 	// Check to make sure we don't have any http data waiting
 	// comment this out until I get things going better under win32
 	// old net chan encryption key
@@ -1696,6 +1699,10 @@ void Com_Frame()
 	//key = lastTime * 0x87243987;
 
 	com_frameNumber++;
+
+
+
+
 }
 
 /*

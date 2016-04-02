@@ -50,6 +50,8 @@ cvar_t *cl_wavefilerecord;
 #include "framework/Crypto.h"
 #include "framework/Network.h"
 
+#include "../common/Profiler.h"
+
 #ifndef _WIN32
 #include <sys/stat.h>
 #endif
@@ -3185,6 +3187,8 @@ CL_Frame
 */
 void CL_Frame( int msec )
 {
+    PROFILE()
+
 	if ( !com_cl_running->integer )
 	{
 		return;
