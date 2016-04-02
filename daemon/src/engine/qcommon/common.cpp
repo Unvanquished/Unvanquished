@@ -1699,10 +1699,6 @@ void Com_Frame()
 	//key = lastTime * 0x87243987;
 
 	com_frameNumber++;
-
-
-
-
 }
 
 /*
