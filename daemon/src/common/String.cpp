@@ -99,6 +99,10 @@ namespace Str {
         ;
     }
 
+    char HexDigit( uint8_t digit ) {
+        return digit > 9 ? digit - 10 + 'a' : digit + '0';
+    }
+
     std::string ToUpper(Str::StringRef text) {
         std::string res;
         res.reserve(text.size());

@@ -3123,7 +3123,7 @@ void RE_GetTextureSize( int textureID, int *width, int *height )
 	if ( !baseImage )
 	{
 		Log::Debug( "%sRE_GetTextureSize: shader %s is missing base image",
-			Color::CString( Color::Yellow ),
+			Color::ToString( Color::Yellow ),
 			shader->name );
 		return;
 	}

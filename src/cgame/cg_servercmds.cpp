@@ -786,7 +786,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		if ( cg_chatTeamPrefix.integer )
 		{
 			Com_sprintf( prefix, sizeof( prefix ), "[%s%c^*] ",
-			             Color::CString( tcolor ),
+			             Color::ToString( tcolor ).c_str(),
 			             Str::ctoupper( * ( BG_TeamName( ci->team ) ) ) );
 		}
 
@@ -847,7 +847,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		Q_strcat( prefix, sizeof( prefix ), "* " );
 	}
 
-	const char* color = Color::CString( UI_GetChatColour( mode, team ) );
+	auto color = Color::ToString( UI_GetChatColour( mode, team ) );
 
 	switch ( mode )
 	{
@@ -891,7 +891,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			if ( !ignore[ 0 ] )
 			{
 				CG_CenterPrint( va( _("%sPrivate message from: ^7%s"),
-				                    color, name ), 200, GIANTCHAR_WIDTH * 4 );
+				                    color.c_str(), name ), 200, GIANTCHAR_WIDTH * 4 );
 
 				if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
 				{

@@ -3739,7 +3739,7 @@ bool G_admin_listplayers( gentity_t *ent )
 
 		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%s^7 %s^7 %s%s%s %s",
 		           i,
-		           Color::CString( color ),
+		           Color::ToString( color ).c_str(),
 		           t,
 		           l ? l->level : 0,
 		           hint ? '*' : ' ',
@@ -3819,16 +3819,16 @@ static int ban_out( void *ban, char *str )
 	             "         %s\\__ %s%s%-*s %s%-15s ^7%-8s %s"
 	             "          %s\\__ %s: ^7%s",
 	             b->name,
-	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ),
-	             Color::CString( d_color ),
+	             Color::ToString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ).c_str(),
+	             Color::ToString( d_color ).c_str(),
 	             time,
 	             MAX_DURATION_LENGTH - 1,
 	             duration,
-	             Color::CString( ( strchr( b->ip.str, '/' ) ) ? Color::Red : Color::White ),
+	             Color::ToString( ( strchr( b->ip.str, '/' ) ) ? Color::Red : Color::White ).c_str(),
 	             b->ip.str,
 	             date,
 	             b->banner,
-	             Color::CString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ),
+	             Color::ToString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ).c_str(),
 	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING" : "BAN",
 	             b->reason );
 
@@ -4408,7 +4408,7 @@ static int namelog_out( void *namelog, char *str )
 	if ( n->slot > -1 )
 	{
 		scolor = Color::Yellow;
-		l = Q_snprintf( p, l2, "%s%-2d", Color::CString( scolor ), n->slot );
+		l = Q_snprintf( p, l2, "%s%-2d", Color::ToString( scolor ).c_str(), n->slot );
 		p += l;
 		l2 -= l;
 	}
@@ -4430,7 +4430,7 @@ static int namelog_out( void *namelog, char *str )
 
 	for ( i = 0; i < MAX_NAMELOG_NAMES && n->name[ i ][ 0 ]; i++ )
 	{
-		l = Q_snprintf( p, l2, " '^7%s%s'%s", n->name[ i ], Color::CString( scolor ),
+		l = Q_snprintf( p, l2, " '^7%s%s'%s", n->name[ i ], Color::ToString( scolor ).c_str(),
 		                i == n->nameOffset ? "*" : "" );
 		p += l;
 		l2 -= l;
