@@ -9,7 +9,7 @@ namespace Profiler{
 
         public:
             Type type;
-            std::string label;
+            const char* label;
             std::chrono::microseconds::rep time;
 
 
