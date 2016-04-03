@@ -84,13 +84,13 @@ namespace Profiler{
 
     /// At the Beginning and End of every function
 
-    Profile::Profile( const char * label ): label( label ){
+    ProfilerGuard::ProfilerGuard( const char * label ): label( label ){
         if(!enabled)
             return;
         samples.push_back( Point( START, label ) );
     }
 
-    Profile::~Profile(){
+    ProfilerGuard::~ProfilerGuard(){
         if(!enabled)
             return;
         samples.push_back( Point( END, label ) );

@@ -19,17 +19,17 @@ namespace Profiler{
         void Update();
         void Stop();
 
-        class Profile
+        class ProfilerGuard
         {
         public:
             const char * label;
-            Profile(const char *);
+            ProfilerGuard(const char *);
 
-            ~Profile();
+            ~ProfilerGuard();
         };
 
 }
 
-#define PROFILE() Profiler::Profile Profile_Function(__PRETTY_FUNCTION__);
+#define PROFILE() Profiler::ProfilerGuard ___Profile_Function(__PRETTY_FUNCTION__);
 
 #endif //COMMON_PROFILER_H_
