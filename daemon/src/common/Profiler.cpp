@@ -132,7 +132,7 @@ namespace Profiler{
 
     class ProfilerStartCmd: public Cmd::StaticCmd {
     public:
-        ProfilerStartCmd(): Cmd::StaticCmd("profiler.start", Cmd::RENDERER, "starts performance profiling") {
+        ProfilerStartCmd(): Cmd::StaticCmd("profiler.start", Cmd::BASE, "starts performance profiling") {
         }
 
         void Run(const Cmd::Args& args) const OVERRIDE {
@@ -153,7 +153,7 @@ namespace Profiler{
 
     class ProfilerStopCmd: public Cmd::StaticCmd {
     public:
-        ProfilerStopCmd(): Cmd::StaticCmd("profiler.stop", Cmd::RENDERER, "stop performance profiling") {
+        ProfilerStopCmd(): Cmd::StaticCmd("profiler.stop", Cmd::BASE, "stop performance profiling") {
         }
 
         void Run(const Cmd::Args& args) const OVERRIDE {
@@ -168,7 +168,7 @@ namespace Profiler{
 
     class ProfilerFrameCmd: public Cmd::StaticCmd {
     public:
-        ProfilerFrameCmd(): Cmd::StaticCmd("profiler.frame", Cmd::RENDERER, "profile the next rendered frame") {
+        ProfilerFrameCmd(): Cmd::StaticCmd("profiler.frame", Cmd::BASE, "profile the next rendered frame") {
         }
 
         void Run(const Cmd::Args& args) const OVERRIDE {
