@@ -22,14 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // reliefMapping_vp.glsl - Relief mapping helper functions
 
 #if defined( USE_SHADER_LIGHTS )
-#if __VERSION__ < 150 && defined( UNIFORM_BUFFER_OBJECT )
-#extension GL_ARB_uniform_buffer_object : enable
-#endif
-
-#if __VERSION__ < 130 && defined( TEXTURE_INTEGER )
-#extension GL_EXT_texture_integer : enable
-#extension GL_EXT_gpu_shader4 : enable
-#endif
 
 struct light {
   vec4  center_radius;
@@ -37,7 +29,7 @@ struct light {
   vec4  direction_angle;
 };
 
-#ifdef UNIFORM_BUFFER_OBJECT
+#ifdef HAVE_ARB_uniform_buffer_object
 layout(std140) uniform u_Lights {
   light lights[ MAX_REF_LIGHTS ];
 };
@@ -108,7 +100,7 @@ void computeLight( vec3 lightDir, vec3 normal, vec3 eyeDir, vec3 lightColor,
 
 #if defined( USE_SHADER_LIGHTS )
 
-#ifdef TEXTURE_INTEGER
+#ifdef HAVE_EXT_texture_integer
 const int lightsPerLayer = 16;
 uniform usampler3D u_LightTiles;
 #define idxs_t uvec4

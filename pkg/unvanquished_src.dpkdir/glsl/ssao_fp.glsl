@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* ssao_fp.glsl */
 
-#extension GL_ARB_texture_gather : require
-
 uniform sampler2D u_DepthMap;
 varying vec3 unprojectionParams;
 

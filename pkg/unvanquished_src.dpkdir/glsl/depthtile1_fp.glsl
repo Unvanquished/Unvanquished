@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* depthtile1_fp.glsl */
 
-#extension GL_ARB_texture_gather : enable
-
 uniform sampler2D u_DepthMap;
 varying vec3 unprojectionParams;
 
@@ -54,7 +52,7 @@ void	main()
   vec2 st = gl_FragCoord.st * 4.0 * pixelScale;
   vec4 depth[4], mask[4];
 
-#ifdef GL_ARB_texture_gather
+#ifdef HAVE_ARB_texture_gather
   depth[0] = textureGather( u_DepthMap, st + vec2(-1.0, -1.0) * pixelScale );
   depth[1] = textureGather( u_DepthMap, st + vec2(-1.0,  1.0) * pixelScale );
   depth[2] = textureGather( u_DepthMap, st + vec2( 1.0,  1.0) * pixelScale );

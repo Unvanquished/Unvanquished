@@ -663,8 +663,7 @@ float ShadowTest( float vertexDistance, vec4 shadowMoments, vec4 shadowClipMomen
 	// shadow = clamp(exp(r_OverDarkeningFactor * shadowDistance) * exp(-r_OverDarkeningFactor * vertexDistance), 0.0, 1.0);
 	// shadow = smoothstep(0.0, 1.0, shadow);
 
-#if defined(r_DebugShadowMaps)
-#extension GL_EXT_gpu_shader4 : enable
+#if defined(r_DebugShadowMaps) && defined( HAVE_EXT_gpu_shader4 )
 	outputColor.r = (r_DebugShadowMaps & 1) != 0 ? shadowDistance : 0.0;
 	outputColor.g = (r_DebugShadowMaps & 2) != 0 ? -(shadowDistance - vertexDistance) : 0.0;
 	outputColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
@@ -694,8 +693,7 @@ float ShadowTest( float vertexDistance, vec4 shadowMoments, vec4 shadowClipMomen
 
 	shadow = min(posContrib, negContrib);
 	
-#if defined(r_DebugShadowMaps)
-#extension GL_EXT_gpu_shader4 : enable
+#if defined(r_DebugShadowMaps) && defined( HAVE_EXT_gpu_shader4 )
 	outputColor.r = (r_DebugShadowMaps & 1) != 0 ? posContrib : 0.0;
 	outputColor.g = (r_DebugShadowMaps & 2) != 0 ? negContrib : 0.0;
 	outputColor.b = (r_DebugShadowMaps & 4) != 0 ? shadow : 0.0;
