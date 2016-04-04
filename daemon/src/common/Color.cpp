@@ -228,7 +228,7 @@ TokenIterator::value_type TokenIterator::NextToken(const char* input)
         {
             return value_type( input, input+2, detail::Indexed( input[1] - '0' ) );
         }
-        else if ( std::tolower( input[1] ) == 'x' && Str::cisxdigit( input[2] ) &&
+        else if ( Str::ctolower( input[1] ) == 'x' && Str::cisxdigit( input[2] ) &&
                   Str::cisxdigit( input[3] ) && Str::cisxdigit( input[4] ) )
         {
             return value_type( input, input+5, Color(
