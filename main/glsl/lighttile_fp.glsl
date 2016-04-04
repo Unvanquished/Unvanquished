@@ -21,14 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 /* lighttile_fp.glsl */
-#if __VERSION__ < 150 && defined( UNIFORM_BUFFER_OBJECT )
-#extension GL_ARB_uniform_buffer_object : enable
-#endif
-
-#if __VERSION__ < 130 && defined( TEXTURE_INTEGER )
-#extension GL_EXT_texture_integer : enable
-#extension GL_EXT_gpu_shader4 : enable
-#endif
 
 varying vec2 vPosition;
 varying vec2 vTexCoord;
@@ -39,7 +31,7 @@ struct light {
   vec4  direction_angle;
 };
 
-#ifdef UNIFORM_BUFFER_OBJECT
+#ifdef HAVE_ARB_uniform_buffer_object
 layout(std140) uniform u_Lights {
   light lights[ MAX_REF_LIGHTS ];
 };
@@ -61,7 +53,7 @@ uniform int  u_lightLayer;
 
 const int numLayers = MAX_REF_LIGHTS / 256;
 
-#ifdef TEXTURE_INTEGER
+#if defined( HAVE_EXT_texture_integer ) && defined( HAVE_EXT_gpu_shader4 )
 #define idxs_t uvec4
 #define idx_initializer uvec4(3)
 #if __VERSION__ < 130

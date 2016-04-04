@@ -249,6 +249,23 @@ class GLShaderManager
 	std::unordered_map< std::string, int > _deformShaderLookup;
 	std::vector< GLint > _deformShaders;
 	int       _totalBuildTime;
+
+	void addExtension( int enabled, int minGlslVersion, int supported,
+			   const char *name ) {
+		if( !enabled ) {
+			// extension disabled by user
+		} else if( glConfig2.shadingLanguageVersion >= minGlslVersion ) {
+			// the extension is available in the core language
+			_versionDeclaration += Str::Format( "#define HAVE_%s 1\n", name );
+		} else if( supported ) {
+			// extension has to be explicitly enabled
+			_versionDeclaration += Str::Format( "#extension GL_%s : require\n", name );
+			_versionDeclaration += Str::Format( "#define HAVE_%s 1\n", name );
+		} else {
+			// extension is not supported
+		}
+	}
+
 public:
 	GLShaderManager() : _totalBuildTime( 0 )
 	{
@@ -263,6 +280,16 @@ public:
 				profile = glConfig2.glCoreProfile ? "core" : "compatibility";
 			}
 			_versionDeclaration = Str::Format( "#version %d %s\n", glConfig2.shadingLanguageVersion, profile );
+
+			// add supported GLSL extensions
+			addExtension( r_arb_texture_gather->integer, 400,
+				      GLEW_ARB_texture_gather, "ARB_texture_gather" );
+			addExtension( r_ext_texture_integer->integer, 130,
+				      GLEW_EXT_texture_integer, "EXT_texture_integer" );
+			addExtension( r_ext_gpu_shader4->integer, 130,
+				      GLEW_EXT_gpu_shader4, "EXT_gpu_shader4" );
+			addExtension( r_arb_uniform_buffer_object->integer, 140,
+				      GLEW_ARB_uniform_buffer_object, "ARB_uniform_buffer_object" );
 		}
 
 		return _versionDeclaration;
