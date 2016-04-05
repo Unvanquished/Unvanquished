@@ -893,17 +893,11 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/%s.iqm",
 			     modelName, modelName );
-		if ( CG_FileExists( filename ) )
-		{
-			ci->bodyModel = trap_R_RegisterModel( filename );
-		}
+		ci->bodyModel = trap_R_RegisterModel( filename );
 
 		if ( ! ci->bodyModel ) {
 			Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
-			if ( CG_FileExists(filename) )
-			{
-				ci->bodyModel = trap_R_RegisterModel( filename );
-			}
+			ci->bodyModel = trap_R_RegisterModel( filename );
 		}
 		else
 		{

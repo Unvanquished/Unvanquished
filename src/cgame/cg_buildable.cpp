@@ -630,7 +630,6 @@ void CG_InitBuildables()
 		//Prefer md5 models over md3
 
 		if ( cg_highPolyBuildableModels.integer &&
-		     CG_FileExists( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) &&
 		     ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm",
 		                                                   buildableName, buildableName ) ) ) )
 		{

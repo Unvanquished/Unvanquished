@@ -726,9 +726,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 
 			COM_StripExtension( token, token2 );
 
-			if ( cg_highPolyWeaponModels.integer &&
-			     CG_FileExists( va( "%s_view.iqm", token2 ) ) &&
-			     ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.iqm", token2 ) ) ) )
+			if ( cg_highPolyWeaponModels.integer && ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.iqm", token2 ) ) ) )
 			{
 				wi->md5 = true;
 
@@ -818,9 +816,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 													va( "%s_view.iqm:fire7", token2 ), false, false, false );
 				}
 			}
-			else if ( cg_highPolyWeaponModels.integer &&
-			          CG_FileExists( va( "%s_view.md5mesh", token2 ) ) &&
-			          ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.md5mesh", token2 ) ) ) )
+			else if ( cg_highPolyWeaponModels.integer && ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.md5mesh", token2 ) ) ) )
 			{
 				wi->md5 = true;
 
@@ -922,24 +918,15 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 
 			COM_StripExtension( token, path );
 			strcat( path, "_flash.md3" );
-			if ( CG_FileExists( path ) )
-			{
-				wi->flashModel = trap_R_RegisterModel( path );
-			}
+			wi->flashModel = trap_R_RegisterModel( path );
 
 			COM_StripExtension( token, path );
 			strcat( path, "_barrel.md3" );
-			if ( CG_FileExists( path ) )
-			{
-				wi->barrelModel = trap_R_RegisterModel( path );
-			}
+			wi->barrelModel = trap_R_RegisterModel( path );
 
 			COM_StripExtension( token, path );
 			strcat( path, "_hand.md3" );
-			if ( CG_FileExists( path ) )
-			{
-				wi->handsModel = trap_R_RegisterModel( path );
-			}
+			wi->handsModel = trap_R_RegisterModel( path );
 
 			continue;
 		}
@@ -964,17 +951,11 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 
 			COM_StripExtension( token, path );
 			strcat( path, "_flash.md3" );
-			if ( CG_FileExists( path ) )
-			{
-				wi->flashModel3rdPerson = trap_R_RegisterModel( path );
-			}
+			wi->flashModel3rdPerson = trap_R_RegisterModel( path );
 
 			COM_StripExtension( token, path );
 			strcat( path, "_barrel.md3" );
-			if ( CG_FileExists( path ) )
-			{
-			    wi->barrelModel3rdPerson = trap_R_RegisterModel( path );
-			}
+			wi->barrelModel3rdPerson = trap_R_RegisterModel( path );
 
 			continue;
 		}
