@@ -416,6 +416,11 @@ void trap_R_LoadWorldMap( const char *mapname )
 qhandle_t trap_R_RegisterModel( const char *name )
 {
 	int handle;
+
+	if ( !CG_FileExists( name ) ) {
+	    return 0;
+	}
+
 	VM::SendMsg<Render::RegisterModelMsg>(name, handle);
 	return handle;
 }
