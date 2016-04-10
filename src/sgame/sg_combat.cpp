@@ -369,7 +369,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( assistant != ENTITYNUM_NONE )
 	{
-		G_LogPrintf( "Die: %d %d %s %d %d: %s^* killed %s^*; %s^* assisted\n",
+		G_LogPrintf( "Die: %d %d %s %d %d: %s^* killed %s^*; %s^* assisted",
 		             killer,
 		             ( int )( self - g_entities ),
 		             obit,
@@ -381,7 +381,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 	else
 	{
-		G_LogPrintf( "Die: %d %d %s: %s^* killed %s\n",
+		G_LogPrintf( "Die: %d %d %s: %s^* killed %s",
 		             killer,
 		             ( int )( self - g_entities ),
 		             obit,
@@ -1060,7 +1060,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 		return;
 	}
 
-	G_LogPrintf( "^3Deconstruct: %d %d %s %s: %s %s by %s\n",
+	G_LogPrintf( "^3Deconstruct: %d %d %s %s: %s %s by %s",
 	             ( int )( actor - g_entities ),
 	             ( int )( self - g_entities ),
 	             BG_Buildable( self->s.modelindex )->name,

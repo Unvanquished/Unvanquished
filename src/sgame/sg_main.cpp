@@ -1837,7 +1837,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 	Color::StripColors( string, decolored, sizeof( decolored ) );
 	trap_FS_Write( decolored, strlen( decolored ), level.logFile );
-    trap_FS_Write( "", 1, level.logFile );
+    trap_FS_Write( "\n", 1, level.logFile );
 }
 
 /*
