@@ -985,18 +985,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		{
 			int contextFlags, profile;
 
-			Log::Notice("%sUsing OpenGL 3.x context", Color::CString( Color::Green ) );
+			Log::Notice("%sUsing OpenGL 3.x context", Color::ToString( Color::Green ) );
 
 			// check if we have a core-profile
 			glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profile );
 
 			if ( profile == GL_CONTEXT_CORE_PROFILE_BIT )
 			{
-				Log::Debug("%sHaving a core profile", Color::CString( Color::Green ) );
+				Log::Debug("%sHaving a core profile", Color::ToString( Color::Green ) );
 			}
 			else
 			{
-				Log::Debug("%sHaving a compatibility profile", Color::CString( Color::Red ) );
+				Log::Debug("%sHaving a compatibility profile", Color::ToString( Color::Red ) );
 			}
 
 			// check if context is forward compatible
@@ -1004,11 +1004,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 			if ( contextFlags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT )
 			{
-				Log::Debug("%sContext is forward compatible", Color::CString( Color::Green ) );
+				Log::Debug("%sContext is forward compatible", Color::ToString( Color::Green ) );
 			}
 			else
 			{
-				Log::Debug("%sContext is NOT forward compatible", Color::CString( Color::Red  ));
+				Log::Debug("%sContext is NOT forward compatible", Color::ToString( Color::Red  ));
 			}
 		}
 

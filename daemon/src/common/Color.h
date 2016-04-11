@@ -331,7 +331,7 @@ CONSTEXPR_FUNCTION BasicColor<ComponentType, Traits> Blend(
 
 namespace detail {
 
-const char* CString( const Color32Bit& color );
+std::string ToString( const Color32Bit& color );
 
 } // namespace detail
 
@@ -339,9 +339,9 @@ const char* CString( const Color32Bit& color );
  * Returns a C string for the given color, suitable for printf-like functions
  */
 template<class Component, class Traits = ColorComponentTraits<Component>>
-const char* CString( const BasicColor<Component, Traits>& color )
+std::string ToString( const BasicColor<Component, Traits>& color )
 {
-	return detail::CString( color );
+	return detail::ToString( color );
 }
 
 namespace Constants {

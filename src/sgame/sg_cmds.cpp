@@ -4496,7 +4496,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	}
 
 	// report the results
-	const char* color = Color::CString( teamonly ? Color::Cyan : Color::Yellow );
+	auto color = Color::ToString( teamonly ? Color::Cyan : Color::Yellow );
 
 	if ( !count )
 	{
@@ -4505,20 +4505,20 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	}
 	else
 	{
-		ADMP( va( "%s %s %s", QQ( N_("$1$Private message: ^7$2$") ), color, Quote( msg ) ) );
+		ADMP( va( "%s %s %s", QQ( N_("$1$Private message: ^7$2$") ), color.c_str(), Quote( msg ) ) );
 		// remove trailing ", "
 		recipients[ strlen( recipients ) - 2 ] = '\0';
 		// FIXME PLURAL
 		ADMP( va( "%s %s %i %s",
 		          Quote( P_( "$1$sent to $2$ player: ^7$3$",
 		                     "$1$sent to $2$ players: ^7$3$", count ) ),
-		          color, count, Quote( recipients ) ) );
+		          color.c_str(), count, Quote( recipients ) ) );
 
 		G_LogPrintf( "%s: %d \"%s^7\" \"%s\": %s%s",
 		             ( teamonly ) ? "TPrivMsg" : "PrivMsg",
 		             ( ent ) ? ( int )( ent - g_entities ) : -1,
 		             ( ent ) ? ent->client->pers.netname : "console",
-		             name, color, msg );
+		             name, color.c_str(), msg );
 	}
 }
 

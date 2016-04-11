@@ -248,6 +248,12 @@ namespace Str {
      */
     int GetHex(char ch);
 
+
+    /*
+     * Converts a value from 0 to 15 into a hexadecimal digit
+     */
+    char HexDigit( uint8_t digit );
+
     std::string ToUpper(Str::StringRef text);
     std::string ToLower(Str::StringRef text);
 

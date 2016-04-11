@@ -1996,7 +1996,7 @@ void Key_SetTeam( int newTeam )
 	if ( bindTeam != newTeam )
 	{
 		Log::Debug( "%sSetting binding team index to %d",
-			Color::CString( Color::Green ),
+			Color::ToString( Color::Green ),
 			newTeam );
 	}
 

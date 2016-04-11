@@ -103,13 +103,13 @@ void CG_ClientList_f()
 		{
 			case TEAM_ALIENS:
 				Log::Notice( "%2d %sA   ^*%s\n", i,
-				            Color::CString( Color::Red ),
+				            Color::ToString( Color::Red ),
 				            ci->name );
 				break;
 
 			case TEAM_HUMANS:
 				Log::Notice( "%2d %sH   ^*%s\n", i,
-				            Color::CString( Color::Cyan ),
+				            Color::ToString( Color::Cyan ),
 				            ci->name );
 				break;
 

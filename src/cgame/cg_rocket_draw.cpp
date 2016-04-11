@@ -2162,7 +2162,7 @@ public:
 					color = Color::Green;
 				}
 
-				SetInnerRML( va("EFFICIENCY: %s%s%s", CG_Rocket_QuakeToRML( va( "%s%+d%%", Color::CString(color), delta ) ), msg ? "<br/>" : "", msg ? msg : "" ) );
+				SetInnerRML( va("EFFICIENCY: %s%s%s", CG_Rocket_QuakeToRML( va( "%s%+d%%", Color::ToString(color).c_str(), delta ) ), msg ? "<br/>" : "", msg ? msg : "" ) );
 				lastDelta = delta;
 			}
 		}

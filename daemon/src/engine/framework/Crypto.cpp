@@ -100,14 +100,6 @@ Data RandomData( std::size_t bytes )
 namespace Encoding {
 
 /*
- * Converts a value from 0 to 15 into a hexadecimal digit
- */
-static char HexDigit( uint8_t digit )
-{
-    return digit > 9 ? digit - 10 + 'a' : digit + '0';
-}
-
-/*
  * Translates binary data into a hexadecimal string
  */
 Data HexEncode( const Data& input )
@@ -116,8 +108,8 @@ Data HexEncode( const Data& input )
     output.reserve(input.size()*2);
     for ( auto byte : input )
     {
-        output.push_back(HexDigit((byte & 0xF0) >> 4));
-        output.push_back(HexDigit(byte & 0xF));
+        output.push_back(Str::HexDigit((byte & 0xF0) >> 4));
+        output.push_back(Str::HexDigit(byte & 0xF));
     }
     return output;
 }

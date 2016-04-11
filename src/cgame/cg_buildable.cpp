@@ -2711,9 +2711,8 @@ void CG_Buildable( centity_t *cent )
 					{
 						case BA_H_ROCKETPOD:
 						{
-							const static char left[]  = "left", right[] = "right";
 							int num = ( cent->muzzleFlashTime / ROCKETPOD_ATTACK_PERIOD ) % 6;
-							const char *side = ( num % 2 == 0 ) ? left : right;
+							const char *side = ( num % 2 == 0 ) ? "left" : "right";
 							num = ( num % 3 ) + 1;
 							CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel,
 							                     va( "Bone_fire_%s_%d", side, num ) );

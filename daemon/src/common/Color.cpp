@@ -173,35 +173,29 @@ CONSTEXPR_FUNCTION bool Has8Bits( uint8_t v )
  * Uses multiple character arrays to allow multiple calls
  * within the same sequence point
  */
-const char* CString ( const Color32Bit& color )
+std::string ToString ( const Color32Bit& color )
 {
-	static const int length = 9;
-	static const int nstrings = 4;
-	static char text[nstrings][length];
-	static int i = nstrings-1;
+    std::string text = "^";
 
-	i = ( i + 1 ) % nstrings;
-
-	Color32Bit intcolor ( color );
-
-	if ( Has8Bits( intcolor.Red() ) || Has8Bits( intcolor.Green() ) || Has8Bits( intcolor.Blue() ) )
+	if ( Has8Bits( color.Red() ) || Has8Bits( color.Green() ) || Has8Bits( color.Blue() ) )
 	{
-		sprintf(text[i], "^#%02x%02x%02x",
-			(int)intcolor.Red(),
-			(int)intcolor.Green(),
-			(int)intcolor.Blue()
-		);
+		text += '#';
+		text += Str::HexDigit(color.Red() & 0xf);
+		text += Str::HexDigit((color.Red() >> 4) & 0xf);
+		text += Str::HexDigit(color.Green() & 0xf);
+		text += Str::HexDigit((color.Green() >> 4) & 0xf);
+		text += Str::HexDigit(color.Blue() & 0xf);
+		text += Str::HexDigit((color.Blue() >> 4) & 0xf);
 	}
 	else
 	{
-		sprintf(text[i], "^x%x%x%x",
-			(int) ( intcolor.Red() & 0xf ) ,
-			(int) ( intcolor.Green() & 0xf ),
-			(int) ( intcolor.Blue() & 0xf )
-		);
+		text += 'x';
+		text += Str::HexDigit(color.Red() & 0xf);
+		text += Str::HexDigit(color.Green() & 0xf);
+		text += Str::HexDigit(color.Blue() & 0xf);
 	}
 
-	return text[i];
+	return text;
 
 }
 
