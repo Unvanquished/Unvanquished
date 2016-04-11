@@ -1114,7 +1114,8 @@ void CL_Disconnect( bool showMainMenu )
 	CL_ClearState();
 
 	// wipe the client connection
-	Com_Memset( &clc, 0, sizeof( clc ) );
+	clc.~clientConnection_t();
+	new(&clc) clientConnection_t{}; // Using {} instead of () to work around MSVC bug
 
 	if ( !cls.bWWWDlDisconnected )
 	{
