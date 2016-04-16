@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "common/IPC/CommonSyscalls.h"
+#include "engine/botlib/bot_types.h"
 
 // game-module-to-engine calls
 enum gameImport_t

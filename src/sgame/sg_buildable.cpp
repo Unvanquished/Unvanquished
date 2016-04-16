@@ -545,15 +545,6 @@ static bool IsCreepHere( vec3_t origin )
 
 /*
 ================
-nullDieFunction
-
-hack to prevent compilers complaining about function pointer -> nullptr conversion
-================
-*/
-static void NullDieFunction( gentity_t*, gentity_t*, gentity_t*, int ) {}
-
-/*
-================
 CompareEntityDistance
 
 Sorts entities by distance, lowest first.

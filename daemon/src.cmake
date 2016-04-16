@@ -8,6 +8,16 @@ set(SHAREDLIST
     PARENT_SCOPE
 )
 
+set(SHAREDLIST_cgame
+    ${MOUNT_DIR}/shared/client/cg_api.cpp ${MOUNT_DIR}/shared/client/cg_api.h
+    PARENT_SCOPE
+)
+
+set(SHAREDLIST_sgame
+    ${MOUNT_DIR}/shared/server/sg_api.cpp ${MOUNT_DIR}/shared/server/sg_api.h
+    PARENT_SCOPE
+)
+
 set(COMMONLIST
     ${COMMON_DIR}/Color.h
     ${COMMON_DIR}/Color.cpp
