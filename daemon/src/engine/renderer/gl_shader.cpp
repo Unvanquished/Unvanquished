@@ -663,7 +663,7 @@ void GLShaderManager::buildAll()
 	while ( !_shaderBuildQueue.empty() )
 	{
 		GLShader& shader = *_shaderBuildQueue.front();
-		size_t numPermutations = 1 << shader.GetNumOfCompiledMacros();
+		size_t numPermutations = static_cast<size_t>(1) << shader.GetNumOfCompiledMacros();
 		size_t i;
 
 		for( i = 0; i < numPermutations; i++ )
@@ -684,7 +684,7 @@ void GLShaderManager::buildAll()
 
 void GLShaderManager::InitShader( GLShader *shader )
 {
-	shader->_shaderPrograms = std::vector<shaderProgram_t>( 1 << shader->_compileMacros.size() );
+	shader->_shaderPrograms = std::vector<shaderProgram_t>( static_cast<size_t>(1) << shader->_compileMacros.size() );
 
 	shader->_uniformStorageSize = 0;
 	for ( std::size_t i = 0; i < shader->_uniforms.size(); i++ )
