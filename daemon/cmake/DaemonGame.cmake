@@ -38,7 +38,7 @@ function(GAMEMODULE)
     cmake_parse_arguments(GAMEMODULE "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     if (NOT NACL)
         if (BUILD_GAME_NATIVE_DLL)
-            add_library(${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST})
+            add_library(${GAMEMODULE_NAME}-native-dll MODULE ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST_${GAMEMODULE_NAME}} ${SHAREDLIST} ${COMMONLIST})
             target_link_libraries(${GAMEMODULE_NAME}-native-dll ${GAMEMODULE_LIBS} ${LIBS_BASE})
             set_target_properties(${GAMEMODULE_NAME}-native-dll PROPERTIES
                 PREFIX ""
@@ -50,7 +50,7 @@ function(GAMEMODULE)
         endif()
 
         if (BUILD_GAME_NATIVE_EXE)
-            add_executable(${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST})
+            add_executable(${GAMEMODULE_NAME}-native-exe ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST_${GAMEMODULE_NAME}} ${SHAREDLIST} ${COMMONLIST})
             target_link_libraries(${GAMEMODULE_NAME}-native-exe ${GAMEMODULE_LIBS} ${LIBS_BASE})
             set_target_properties(${GAMEMODULE_NAME}-native-exe PROPERTIES
                 COMPILE_DEFINITIONS "VM_NAME=${GAMEMODULE_NAME};${GAMEMODULE_DEFINITIONS};BUILD_VM"
@@ -104,7 +104,7 @@ function(GAMEMODULE)
             set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/..)
         endif()
 
-        add_executable(${GAMEMODULE_NAME}-nacl ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST} ${COMMONLIST})
+        add_executable(${GAMEMODULE_NAME}-nacl ${PCH_FILE} ${GAMEMODULE_FILES} ${SHAREDLIST_${GAMEMODULE_NAME}} ${SHAREDLIST} ${COMMONLIST})
         target_link_libraries(${GAMEMODULE_NAME}-nacl ${GAMEMODULE_LIBS} ${LIBS_BASE})
         set_target_properties(${GAMEMODULE_NAME}-nacl PROPERTIES
             OUTPUT_NAME ${GAMEMODULE_NAME}.pexe

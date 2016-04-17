@@ -133,7 +133,7 @@ gentity_t *G_NewEntity()
 	level.num_entities++;
 
 	// let the server system know that there are more entities
-	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
+	trap_LocateGameData( level.num_entities, sizeof( gentity_t ),
 	                     &level.clients[ 0 ].ps, sizeof( level.clients[ 0 ] ) );
 
 	G_InitGentity( newEntity );
