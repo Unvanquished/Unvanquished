@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#ifndef SGAPI_H
+#define SGAPI_H
+
 #include "engine/qcommon/q_shared.h"
 #include "engine/botlib/bot_api.h"
 
@@ -103,3 +106,4 @@ struct sharedEntity_t
 	entityShared_t r; // shared by both the server and game module
 };
 
+#endif
