@@ -114,10 +114,14 @@ build_zlib() {
 		make -f win32/Makefile.gcc PREFIX="${CROSS}"
 		make -f win32/Makefile.gcc install BINARY_PATH="${PREFIX}/bin" LIBRARY_PATH="${PREFIX}/lib" INCLUDE_PATH="${PREFIX}/include" SHARED_MODE=1
 		;;
-	*)
+	linux*)
 		./configure --prefix="${PREFIX}" --static --const
 		make
 		make install
+		;;
+	*)
+		echo "Unsupported platform for zlib"
+		exit 1
 		;;
 	esac
 }
@@ -212,7 +216,7 @@ build_sdl2() {
 		download "SDL2-${SDL2_VERSION}.dmg" "http://libsdl.org/release/SDL2-${SDL2_VERSION}.dmg" sdl2
 		cp -R "SDL2.framework" "${PREFIX}"
 		;;
-	*)
+	linux*)
 		download "SDL2-${SDL2_VERSION}.tar.gz" "https://www.libsdl.org/release/SDL2-${SDL2_VERSION}.tar.gz" sdl2
 		cd "SDL2-${SDL2_VERSION}"
 		./configure --host="${HOST}" --prefix="${PREFIX}" ${MSVC_SHARED[@]}
@@ -236,9 +240,13 @@ build_glew() {
 		make install SYSTEM=darwin GLEW_DEST="${PREFIX}" CC="clang" LD="clang" CFLAGS.EXTRA="${CFLAGS:-} -dynamic -fno-common" LDFLAGS.EXTRA="${LDFLAGS:-}"
 		install_name_tool -id "@rpath/libGLEW.${GLEW_VERSION}.dylib" "${PREFIX}/lib/libGLEW.${GLEW_VERSION}.dylib"
 		;;
-	*)
+	linux*)
 		make GLEW_DEST="${PREFIX}"
 		make install GLEW_DEST="${PREFIX}"
+		;;
+	*)
+		echo "Unsupported platform for GLEW"
+		exit 1
 		;;
 	esac
 }
@@ -315,7 +323,7 @@ build_openal() {
 		make install
 		install_name_tool -id "@rpath/libopenal.${OPENAL_VERSION}.dylib" "${PREFIX}/lib/libopenal.${OPENAL_VERSION}.dylib"
 		;;
-	*)
+	linux*)
 		download "openal-soft-${OPENAL_VERSION}.tar.bz2" "http://kcat.strangesoft.net/openal-releases/openal-soft-${OPENAL_VERSION}.tar.bz2" openal
 		cd "openal-soft-${OPENAL_VERSION}"
 		cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DALSOFT_EXAMPLES=OFF -DLIBTYPE=STATIC .
@@ -323,6 +331,10 @@ build_openal() {
 		make install
 		echo -ne "create libopenal-combined.a\naddlib libopenal.a\naddlib libcommon.a\nsave\nend\n" | ar -M
 		cp "libopenal-combined.a" "${PREFIX}/lib/libopenal.a"
+		;;
+	*)
+		echo "Unsupported platform for OpenAL"
+		exit 1
 		;;
 	esac
 }
