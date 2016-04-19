@@ -97,6 +97,7 @@ extern  vmCvar_t g_initialBuildPoints;
 extern  vmCvar_t g_mineRateHalfLife;
 extern  vmCvar_t g_minimumMineRate;
 extern  vmCvar_t g_buildPointLossFraction;
+extern  vmCvar_t g_rgsMaxResources;
 
 extern  vmCvar_t g_debugMomentum;
 extern  vmCvar_t g_momentumHalfLife;

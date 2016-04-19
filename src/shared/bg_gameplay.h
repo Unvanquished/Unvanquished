@@ -378,6 +378,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MINE_RATE_HALF_LIFE        "20"    // in min
 #define DEFAULT_MINIMUM_MINE_RATE          "50"
 #define DEFAULT_BP_LOSS_FRAC               "0.5"
+#define DEFAULT_RGS_MAX_RESOURCES          "40"    // Maximum resources an rgs can store.
 
 // momentum
 #define MOMENTUM_MAX                     300.0f

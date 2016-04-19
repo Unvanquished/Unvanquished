@@ -100,6 +100,19 @@ void G_MineBuildPoints() {
 	// Calculate current efficiency to build point gain modifier.
 	float mineMod = (level.mineRate / 60.0f) * (MINING_PERIOD / 1000.0f);
 
+	// Sum up maximum BP a team can have.
+	float maxResources[ NUM_TEAMS ] = {
+		g_initialBuildPoints.value,
+		g_initialBuildPoints.value,
+		g_initialBuildPoints.value,
+	};
+	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
+		float contribution = miningComponent.Efficiency() * g_rgsMaxResources.value;
+
+		// HACK: This only works with miners that are buildables.
+		maxResources[miner.oldEnt->buildableTeam] += contribution;
+	});
+
 	// Sum up efficiencies of miners and save amount of build points acquired by each miner.
 	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
 		float efficiency = miningComponent.Efficiency();
@@ -136,6 +149,10 @@ void G_MineBuildPoints() {
 	// Add build points.
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
 		float earnedBP = level.team[team].mineEfficiency * mineMod;
+
+		if (earnedBP + level.team[team].buildPoints > maxResources[team]) {
+			earnedBP = maxResources[team] - level.team[team].buildPoints;
+		}
 
 		G_ModifyBuildPoints(team, earnedBP);
 		G_ModifyTotalBuildPointsAcquired(team, earnedBP);
