@@ -280,6 +280,9 @@ void G_RewardAttackers( gentity_t *self )
 			// Add score
 			G_AddMomentumToScore( player, reward );
 
+			// Add credits
+			G_AddCreditToClient( player->client, static_cast<short>(reward * BUILDABLE_VALUE_TO_CREDIT_RATIO), true );
+
 			// Add momentum
 			G_AddMomentumForDestroyingStep( self, player, reward );
 		}
