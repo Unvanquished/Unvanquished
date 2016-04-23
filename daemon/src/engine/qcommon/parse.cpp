@@ -30,8 +30,6 @@ static const int SCFL_NOWARNINGS          = 0x0002;
 static const int SCFL_NOSTRINGWHITESPACES = 0x0004;
 static const int SCFL_NOSTRINGESCAPECHARS = 0x0008;
 static const int SCFL_PRIMITIVE           = 0x0010;
-static const int SCFL_NOBINARYNUMBERS     = 0x0020;
-static const int SCFL_NONUMBERVALUES      = 0x0040;
 
 //string sub type
 //---------------

@@ -59,8 +59,6 @@ Maryland 20850 USA.
 #include <SDL_mutex.h>
 #endif
 
-static const int MAX_NUM_ARGVS = 50;
-
 #define MIN_COMHUNKMEGS 256
 #define DEF_COMHUNKMEGS 512
 

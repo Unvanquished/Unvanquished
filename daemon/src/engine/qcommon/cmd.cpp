@@ -40,8 +40,6 @@ Maryland 20850 USA.
 
 #include "framework/CommandSystem.h"
 
-static const int MAX_CMD_BUFFER = 131072;
-
 struct cmdContext_t
 {
 	int  argc;
