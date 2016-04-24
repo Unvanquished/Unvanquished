@@ -324,8 +324,10 @@ typedef enum
   PERS_NEWWEAPON,      // weapon to switch to
   PERS_BP,
   PERS_MARKEDBP,
-  PERS_MINERATE        // level wide base mine rate. TODO: calculate clientside
-  // netcode has space for 2 more. TODO: extend
+  PERS_MINERATE,       // level wide base mine rate. TODO: calculate clientside
+  PERS_BPINUSE,        // BP in use. TODO: calculate clientside
+  PERS_MAXBP,          // Maximum BP allowed.
+  // netcode has space for 0 more. TODO: extend
 } persEnum_t;
 
 #define PS_WALLCLIMBINGFOLLOW 0x00000001

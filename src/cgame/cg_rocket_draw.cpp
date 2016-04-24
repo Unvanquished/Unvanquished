@@ -2291,6 +2291,41 @@ private:
 	float offset;
 };
 
+class BpLimitHudElement : public TextHudElement
+{
+public:
+	BpLimitHudElement( const Rocket::Core::String& tag ) :
+		TextHudElement( tag, ELEMENT_BOTH ),
+		bpInUse( 0 ),
+		maxBp( 0 ) {}
+
+	virtual void DoOnRender()
+	{
+		playerState_t *ps = &cg.snap->ps;
+		bool dirty = false;
+		if (bpInUse != ps->persistant[ PERS_BPINUSE ])
+		{
+			bpInUse = ps->persistant[ PERS_BPINUSE ];
+			dirty = true;
+		}
+
+		if (maxBp != ps->persistant[ PERS_MAXBP ])
+		{
+			maxBp = ps->persistant[ PERS_MAXBP ];
+			dirty = true;
+		}
+
+		if (dirty)
+		{
+			SetText(va("%d / %d", bpInUse, maxBp));
+		}
+	}
+
+private:
+	int bpInUse;
+	int maxBp;
+};
+
 void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
@@ -3629,4 +3664,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
 	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
 	REGISTER_ELEMENT( "barbs", BarbsHudElement )
+	REGISTER_ELEMENT( "bp_limit", BpLimitHudElement )
 }
