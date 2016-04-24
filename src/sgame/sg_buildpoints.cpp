@@ -83,6 +83,29 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
 	return delta;
 }
 
+void G_CalculateBpLimits() {
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+		level.team[team].maximumBpAllowed = g_initialBuildPoints.integer;
+		// TODO: Maybe keep track of this in BuildableComponent instead?
+		level.team[team].bpInUse = 0;
+	}
+
+	ForEntities<BuildableComponent>([&] (Entity& entity, BuildableComponent& component) {
+		int buildable = entity.oldEnt->s.modelindex;
+		level.team[entity.oldEnt->buildableTeam].bpInUse += BG_Buildable(buildable)->buildPoints;
+	});
+
+	// Sum up maximum BP a team can have.
+	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
+		float contribution = miningComponent.Efficiency() * g_rgsMaxResources.value;
+
+		// HACK: This only works with miners that are buildables.
+		level.team[miner.oldEnt->buildableTeam].maximumBpAllowed += contribution;
+	});
+
+	// TODO: Power down buildables (and rename function).
+}
+
 /**
  * @brief Calculate the level mine rate and the teams' mining efficiencies, add build points.
  */
@@ -100,27 +123,18 @@ void G_MineBuildPoints() {
 	// Calculate current efficiency to build point gain modifier.
 	float mineMod = (level.mineRate / 60.0f) * (MINING_PERIOD / 1000.0f);
 
-	// Sum up maximum BP a team can have.
-	float maxResources[ NUM_TEAMS ] = {
-		g_initialBuildPoints.value,
-		g_initialBuildPoints.value,
-		g_initialBuildPoints.value,
-	};
-	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
-		float contribution = miningComponent.Efficiency() * g_rgsMaxResources.value;
-
-		// HACK: This only works with miners that are buildables.
-		maxResources[miner.oldEnt->buildableTeam] += contribution;
-	});
-
 	// Sum up efficiencies of miners and save amount of build points acquired by each miner.
 	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
 		float efficiency = miningComponent.Efficiency();
+		team_t team = miner.oldEnt->buildableTeam;
+
+		// Don't mine if we we're at the limit.
+		if (level.team[team].bpInUse >= level.team[team].maximumBpAllowed) return;
 
 		miningComponent.GetResourceStorageComponent().AcquireBuildPoints(efficiency * mineMod);
 
 		// HACK: This only works with miners that are buildables.
-		level.team[miner.oldEnt->buildableTeam].mineEfficiency += efficiency;
+		level.team[team].mineEfficiency += efficiency;
 	});
 
 	// Main structure provides the rest of the minimum mining efficiency.
@@ -135,7 +149,10 @@ void G_MineBuildPoints() {
 			default: continue;
 		}
 
-		if (mainStructure && (deltaEff = minEff - level.team[TEAM_HUMANS].mineEfficiency) > 0) {
+		// Don't mine if we we're at the limit.
+		if (level.team[team].bpInUse >= level.team[team].maximumBpAllowed) continue;
+
+		if (mainStructure && (deltaEff = minEff - level.team[team].mineEfficiency) > 0) {
 			level.team[team].mineEfficiency       += deltaEff;
 			level.team[team].mainStructAcquiredBP += deltaEff * mineMod;
 
@@ -149,10 +166,6 @@ void G_MineBuildPoints() {
 	// Add build points.
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
 		float earnedBP = level.team[team].mineEfficiency * mineMod;
-
-		if (earnedBP + level.team[team].buildPoints > maxResources[team]) {
-			earnedBP = maxResources[team] - level.team[team].buildPoints;
-		}
 
 		G_ModifyBuildPoints(team, earnedBP);
 		G_ModifyTotalBuildPointsAcquired(team, earnedBP);
@@ -222,30 +235,25 @@ int G_GetMarkedBuildPointsInt( team_t team )
 }
 
 /**
- * @brief Tests wether a team can afford an amont of build points.
+ * @brief Tests wether a team can afford an amount of build points.
  * @param amount Amount of build points, the sign is discarded.
  */
 bool G_CanAffordBuildPoints( team_t team, float amount )
 {
-	float *bp;
+	float* bp = &level.team[ team ].buildPoints;
+	int* maxBp = &level.team[ team ].maximumBpAllowed;
+	int* bpInUse = &level.team[ team ].bpInUse;
 
-	if ( G_IsPlayableTeam( team ) )
-	{
-		bp = &level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return false;
-	}
+	// Specs can't build
+	if ( !G_IsPlayableTeam( team ) ) return false;
+	// Don't have enough BP
+	if ( fabs( amount ) > *bp ) return false;
+	// Over structure limit.
+	// TODO: Disambiguate between over struct limit and lack of BP.
+	if (amount + *bpInUse > *maxBp) return false;
 
-	if ( fabs( amount ) > *bp )
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	// Have enough BP stored and not over structure limit.
+	return true;
 }
 
 /**

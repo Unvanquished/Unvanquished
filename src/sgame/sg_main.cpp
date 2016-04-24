@@ -2931,6 +2931,7 @@ void G_RunFrame( int levelTime )
 
 	G_CountSpawns();
 	G_SetHumanBuildablePowerState();
+	G_CalculateBpLimits();
 	G_MineBuildPoints();
 	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();
