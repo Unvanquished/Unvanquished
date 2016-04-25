@@ -4,8 +4,8 @@ set -e
 
 cd "$(dirname "$0")"
 
-PACKAGE_NAME="$(sed -e '/^#define PRODUCT_NAME_LOWER/! d; s/[^\"]*\"//; s/\".*$//; s/[^0-9a-z.]/-/g' daemon/src/engine/qcommon/q_shared.h)"
-PACKAGE_VERSION="$(sed -e '/^#define PRODUCT_VERSION/! d; s/[^\"]*\"//; s/\".*$//; s/[^0-9a-z.]/-/g' daemon/src/engine/qcommon/q_shared.h)"
+PACKAGE_NAME="$(sed -e '/^#define PRODUCT_NAME_LOWER/! d; s/[^\"]*\"//; s/\".*$//; s/[^0-9a-z.]/-/g' daemon/src/common/Defs.h)"
+PACKAGE_VERSION="$(sed -e '/^#define PRODUCT_VERSION/! d; s/[^\"]*\"//; s/\".*$//; s/[^0-9a-z.]/-/g' daemon/src/common/Defs.h)"
 PACKAGE="$PACKAGE_NAME-$PACKAGE_VERSION"
 
 STRIP_SOURCES=
