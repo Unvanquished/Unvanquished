@@ -83,6 +83,11 @@
 			display: block;
 		}
 
+		lagometer {
+			width: 4.5em;
+			height: 7em;
+		}
+
 		crosshair,
 		crosshair_indicator
 		{
@@ -175,13 +180,9 @@
 			<if cvar="cg_drawFPS" condition="==" value="1">
 				<stat><fps /> fps</stat>
 			</if>
-			<!--
-			<if cvar="???" condition="==" value="1">
-				<stat><ping /> msecs</stat>
-			</if>
-			-->
+			<stat><ping /> ms</stat>
 			<if cvar="cg_lagometer" condition="==" value="1">
-			<stat> <lagometer />  msec</stat>
+			<stat> <lagometer /> </stat>
 			</if>
 
 		</statsbox>
