@@ -1279,11 +1279,11 @@ static void CG_Rocket_DrawDisconnect()
 #define MAX_LAGOMETER_PING  900
 #define MAX_LAGOMETER_RANGE 300
 
-class LagometerElement : public TextHudElement
+class LagometerElement : public HudElement
 {
 public:
 	LagometerElement( const Rocket::Core::String& tag ) :
-			TextHudElement( tag, ELEMENT_GAME, true ),
+			HudElement( tag, ELEMENT_GAME, true ),
 			shouldDrawLagometer( true ),
 			adjustedColor( Color::White )
 	{
@@ -1433,24 +1433,39 @@ public:
 		CG_Rocket_DrawDisconnect();
 	}
 
+private:
+	bool shouldDrawLagometer;
+	Color::Color adjustedColor;
+
+};
+
+class PingElement : public TextHudElement
+{
+public:
+	PingElement( const Rocket::Core::String& tag ) :
+				 TextHudElement( tag, ELEMENT_GAME, true ),
+				 shouldDrawPing( true )
+	{
+	}
+
 	void DoOnUpdate()
 	{
 		const char* ping;
 
 		if ( ( cg.snap && cg.snap->ps.pm_type == PM_INTERMISSION )
-			|| !cg_lagometer.integer
 			|| cg.demoPlayback )
 		{
-			if ( shouldDrawLagometer )
+			if ( shouldDrawPing )
 			{
 				SetText( "" );
-				shouldDrawLagometer = false;
+				ping_ = "";
+				shouldDrawPing = false;
 			}
 			return;
 		}
-		else if ( !shouldDrawLagometer )
+		else if ( !shouldDrawPing )
 		{
-			shouldDrawLagometer = true;
+			shouldDrawPing = true;
 		}
 
 		if ( cg_nopredict.integer || cg.pmoveParams.synchronous )
@@ -1469,12 +1484,9 @@ public:
 			ping_ = ping;
 		}
 	}
-
 private:
-	bool shouldDrawLagometer;
-	Color::Color adjustedColor;
+	bool shouldDrawPing;
 	Rocket::Core::String ping_;
-
 };
 
 /*
@@ -3616,6 +3628,7 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "location", LocationElement )
 	REGISTER_ELEMENT( "timer", TimerElement )
 	REGISTER_ELEMENT( "lagometer", LagometerElement )
+	REGISTER_ELEMENT( "ping", PingElement )
 	REGISTER_ELEMENT( "crosshair_name", CrosshairNamesElement )
 	REGISTER_ELEMENT( "momentum", MomentumElement )
 	REGISTER_ELEMENT( "levelshot", LevelshotElement )
