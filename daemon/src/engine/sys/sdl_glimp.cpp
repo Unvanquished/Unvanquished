@@ -1064,10 +1064,6 @@ static void GLimp_InitExtensions()
 	// made required in OpenGL 3.0
 	glConfig2.textureRGAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
 
-	// TODO figure out what was the problem with MESA
-	// made required in OpenGL 3.0
-	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != glDriverType_t::GLDRV_MESA && LOAD_CORE_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
-
 	// made required in OpenGL 1.3
 	glConfig.textureCompression = textureCompression_t::TC_NONE;
 	if( GLEW_EXT_texture_compression_s3tc )
@@ -1087,7 +1083,8 @@ static void GLimp_InitExtensions()
 	}
 
 	// VAO and VBO
-	if( !glConfig2.glCoreProfile ) {
+	if( !glConfig2.glCoreProfile )
+	{
 		// made required in OpenGL 3.0
 		REQUIRE_EXTENSION( ARB_half_float_vertex );
 

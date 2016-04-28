@@ -238,7 +238,7 @@ void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 {
 	bool absent;
 
-	if ( format != GL_DEPTH_STENCIL_EXT && format != GL_DEPTH24_STENCIL8_EXT )
+	if ( format != GL_DEPTH_STENCIL && format != GL_DEPTH24_STENCIL8 )
 	{
 		Log::Warn("R_CreateFBOPackedDepthStencilBuffer: format %i is not depth-stencil-renderable", format );
 		return;
@@ -400,7 +400,7 @@ void R_InitFBOs()
 	int i;
 	int width, height;
 
-	Log::Debug("------- R_InitFBOs -------" );
+	Log::Debug("------- R_InitFBOs -------");
 
 	tr.numFBOs = 0;
 
@@ -450,7 +450,7 @@ void R_InitFBOs()
 	{
 		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
 	}
-	else if ( glConfig2.framebufferPackedDepthStencilAvailable )
+	else if ( glConfig.driverType != glDriverType_t::GLDRV_MESA ) 	// TODO figure out what was the problem with MESA
 	{
 		R_CreateFBOPackedDepthStencilBuffer( tr.occlusionRenderFBO, GL_DEPTH24_STENCIL8_EXT );
 	}

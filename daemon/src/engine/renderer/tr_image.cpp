@@ -887,8 +887,8 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	}
 	else if ( image->bits & ( IF_PACKED_DEPTH24_STENCIL8 ) )
 	{
-		format = GL_DEPTH_STENCIL_EXT;
-		internalFormat = GL_DEPTH24_STENCIL8_EXT;
+		format = GL_DEPTH_STENCIL;
+		internalFormat = GL_DEPTH24_STENCIL8;
 	}
 	else if ( image->bits & ( IF_RGBA16F | IF_RGBA32F | IF_RGBA16 | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_ONECOMP16F | IF_ONECOMP32F ) )
 	{
@@ -1161,7 +1161,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			default:
 				if ( image->bits & IF_PACKED_DEPTH24_STENCIL8 )
 				{
-					glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_INT_24_8_EXT, nullptr );
+					glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_INT_24_8, nullptr );
 				}
 				else
 				{
