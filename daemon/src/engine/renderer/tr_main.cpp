@@ -1522,7 +1522,7 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
 		vec3_t normal;
 		float  dot;
 		float  len;
-		vec3_t qnormal, qtangent, qbinormal;
+		vec3_t qnormal;
 
 		VectorSubtract( tess.verts[ tess.indexes[ i ] ].xyz, tr.orientation.viewOrigin, normal );
 
@@ -1533,8 +1533,7 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
 			shortest = len;
 		}
 
-		R_QtangentsToTBN( tess.verts[ tess.indexes[ i ] ].qtangents,
-				  qtangent, qbinormal, qnormal );
+		R_QtangentsToNormal( tess.verts[ tess.indexes[ i ] ].qtangents, qnormal );
 
 		if ( ( dot = DotProduct( normal, qnormal ) ) >= 0 )
 		{
