@@ -2640,7 +2640,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		image_t    *lighttileRenderImage;
 		image_t    *portalRenderImage;
 
-		image_t    *occlusionRenderFBOImage;
 		image_t    *depthToColorBackFacesFBOImage;
 		image_t    *depthToColorFrontFacesFBOImage;
 		image_t    *downScaleFBOImage_quarter;
@@ -2663,7 +2662,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		FBO_t *depthtile2FBO;
 		FBO_t *lighttileFBO;
 		FBO_t *portalRenderFBO; // holds a copy of the last currentRender that was rendered into a FBO
-		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;
 		FBO_t *downScaleFBO_64x64;
 		FBO_t *contrastRenderFBO;

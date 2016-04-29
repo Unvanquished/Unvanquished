@@ -439,30 +439,6 @@ void R_InitFBOs()
 	R_AttachFBOTexture3D( tr.lighttileRenderImage->texnum, 0, 0 );
 	R_CheckFBO( tr.lighttileFBO );
 
-	tr.occlusionRenderFBO = R_CreateFBO( "_occlusionRender", width, height );
-	R_BindFBO( tr.occlusionRenderFBO );
-
-	if ( glConfig.hardwareType == glHardwareType_t::GLHW_ATI_DX10 )
-	{
-		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT16 );
-	}
-	else if ( glConfig.hardwareType == glHardwareType_t::GLHW_NV_DX10 )
-	{
-		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
-	}
-	else if ( glConfig.driverType != glDriverType_t::GLDRV_MESA ) 	// TODO figure out what was the problem with MESA
-	{
-		R_CreateFBOPackedDepthStencilBuffer( tr.occlusionRenderFBO, GL_DEPTH24_STENCIL8_EXT );
-	}
-	else
-	{
-		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
-	}
-
-	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.occlusionRenderFBOImage->texnum, 0 );
-
-	R_CheckFBO( tr.occlusionRenderFBO );
-
 	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && glConfig2.textureFloatAvailable )
 	{
 		// shadowMap FBOs for shadow mapping offscreen rendering

@@ -2419,18 +2419,6 @@ static void R_CreatePortalRenderImage()
 	tr.portalRenderImage = R_CreateImage( "_portalRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 }
 
-static void R_CreateOcclusionRenderFBOImage()
-{
-	int  width, height;
-
-	width = glConfig.vidWidth;
-	height = glConfig.vidHeight;
-
-	{
-		tr.occlusionRenderFBOImage = R_CreateImage( "_occlusionFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
-	}
-}
-
 static void R_CreateDepthToColorFBOImages()
 {
 	int  width, height;
@@ -2793,7 +2781,6 @@ void R_CreateBuiltinImages()
 	R_CreateCurrentRenderImage();
 	R_CreateDepthRenderImage();
 	R_CreatePortalRenderImage();
-	R_CreateOcclusionRenderFBOImage();
 	R_CreateDepthToColorFBOImages();
 	R_CreateDownScaleFBOImages();
 	R_CreateShadowMapFBOImage();
