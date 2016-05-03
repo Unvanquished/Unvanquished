@@ -1005,6 +1005,7 @@ public:
 		return EGLCompileMacro::USE_TCGEN_ENVIRONMENT;
 	}
 
+	bool     HasConflictingMacros(size_t permutation, const std::vector< GLCompileMacro * > &macros) const;
 	uint32_t        GetRequiredVertexAttributes() const
 	{
 		return ATTR_QTANGENT;
@@ -1047,6 +1048,7 @@ public:
 		return "USE_TCGEN_LIGHTMAP";
 	}
 
+	bool     HasConflictingMacros(size_t permutation, const std::vector< GLCompileMacro * > &macros) const;
 	EGLCompileMacro GetType() const
 	{
 		return EGLCompileMacro::USE_TCGEN_LIGHTMAP;
@@ -1350,17 +1352,18 @@ public:
 		return "USE_DEPTH_FADE";
 	}
 
+	bool HasConflictingMacros(size_t permutation, const std::vector<GLCompileMacro*> &macros) const;
 	EGLCompileMacro GetType() const
 	{
 		return EGLCompileMacro::USE_DEPTH_FADE;
 	}
 
-	void EnableMacro_USE_DEPTH_FADE()
+	void EnableDepthFade()
 	{
 		EnableMacro();
 	}
 
-	void DisableMacro_USE_DEPTH_FADE()
+	void DisableDepthFade()
 	{
 		DisableMacro();
 	}
@@ -2402,16 +2405,13 @@ class GLShader_generic :
 	public u_Bones,
 	public u_VertexInterpolation,
 	public u_DepthScale,
-	public u_numLights,
-	public u_Lights,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_VERTEX_SPRITE,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
 	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
-	public GLCompileMacro_USE_DEPTH_FADE,
-	public GLCompileMacro_USE_SHADER_LIGHTS
+	public GLCompileMacro_USE_DEPTH_FADE
 {
 public:
 	GLShader_generic( GLShaderManager *manager );

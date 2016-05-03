@@ -1044,7 +1044,7 @@ bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( size_t permutatio
 	for (const GLCompileMacro* macro : macros)
 	{
 		//if(GLCompileMacro_USE_VERTEX_ANIMATION* m = dynamic_cast<GLCompileMacro_USE_VERTEX_ANIMATION*>(macro))
-		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_ANIMATION )
+		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_ANIMATION || macro->GetType() == USE_VERTEX_SPRITE) )
 		{
 			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
 			return true;
@@ -1063,7 +1063,7 @@ bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( size_t permutati
 {
 	for (const GLCompileMacro* macro : macros)
 	{
-		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_SKINNING )
+		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_SPRITE) )
 		{
 			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
 			return true;
@@ -1084,7 +1084,35 @@ bool GLCompileMacro_USE_VERTEX_SPRITE::HasConflictingMacros( size_t permutation,
 {
 	for (const GLCompileMacro* macro : macros)
 	{
-		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_ANIMATION))
+		if ( ( permutation & macro->GetBit() ) != 0 && (macro->GetType() == USE_VERTEX_SKINNING || macro->GetType() == USE_VERTEX_ANIMATION || macro->GetType() == USE_DEPTH_FADE))
+		{
+			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool GLCompileMacro_USE_TCGEN_ENVIRONMENT::HasConflictingMacros( size_t permutation, const std::vector<GLCompileMacro*> &macros) const
+{
+	for (const GLCompileMacro* macro : macros)
+	{
+		if ((permutation & macro->GetBit()) != 0 && (macro->GetType() == USE_TCGEN_LIGHTMAP))
+		{
+			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool GLCompileMacro_USE_TCGEN_LIGHTMAP::HasConflictingMacros(size_t permutation, const std::vector<GLCompileMacro*> &macros) const
+{
+	for (const GLCompileMacro* macro : macros)
+	{
+		if ((permutation & macro->GetBit()) != 0 && (macro->GetType() == USE_TCGEN_ENVIRONMENT))
 		{
 			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
 			return true;
@@ -1133,6 +1161,20 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( size_t permut
 	{
 		//Log::Notice("missing macro! canceling '%s' <= '%s'", GetName(), "USE_NORMAL_MAPPING");
 		return true;
+	}
+
+	return false;
+}
+
+bool GLCompileMacro_USE_DEPTH_FADE::HasConflictingMacros(size_t permutation, const std::vector<GLCompileMacro*> &macros) const
+{
+	for (const GLCompileMacro* macro : macros)
+	{
+		if ((permutation & macro->GetBit()) != 0 && (macro->GetType() == USE_VERTEX_SPRITE))
+		{
+			//Log::Notice("conflicting macro! canceling '%s' vs. '%s'", GetName(), macro->GetName());
+			return true;
+		}
 	}
 
 	return false;
@@ -1285,16 +1327,13 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	u_Bones( this ),
 	u_VertexInterpolation( this ),
 	u_DepthScale( this ),
-	u_numLights( this ),
-	u_Lights( this ),
 	GLDeformStage( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this ),
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_VERTEX_SPRITE( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
 	GLCompileMacro_USE_TCGEN_LIGHTMAP( this ),
-	GLCompileMacro_USE_DEPTH_FADE( this ),
-	GLCompileMacro_USE_SHADER_LIGHTS( this )
+	GLCompileMacro_USE_DEPTH_FADE( this )
 {
 }
 
@@ -1307,9 +1346,6 @@ void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram 
 {
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_ColorMap" ), 0 );
 	glUniform1i( glGetUniformLocation( shaderProgram->program, "u_DepthMap" ), 1 );
-	if( !glConfig2.uniformBufferObjectAvailable ) {
-		glUniform1i( glGetUniformLocation( shaderProgram->program, "u_Lights" ), 9 );
-	}
 }
 
 GLShader_lightMapping::GLShader_lightMapping( GLShaderManager *manager ) :

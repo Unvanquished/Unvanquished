@@ -1860,6 +1860,9 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							gl_genericShader->DisableVertexSkinning();
 							gl_genericShader->DisableVertexAnimation();
 							gl_genericShader->DisableTCGenEnvironment();
+							gl_genericShader->DisableVertexSprite();
+							gl_genericShader->DisableTCGenLightmap();
+							gl_genericShader->DisableDepthFade();
 
 							gl_genericShader->BindProgram( 0 );
 
@@ -2724,9 +2727,10 @@ void RB_RunVisTests( )
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
 		gl_genericShader->DisableTCGenLightmap();
-
+		gl_genericShader->DisableDepthFade();
 		gl_genericShader->BindProgram( 0 );
 
 		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
@@ -5548,8 +5552,10 @@ void RB_ShowImages()
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
+	gl_genericShader->DisableVertexSprite();
 	gl_genericShader->DisableTCGenEnvironment();
-
+	gl_genericShader->DisableTCGenLightmap();
+	gl_genericShader->DisableDepthFade();
 	gl_genericShader->BindProgram( 0 );
 
 	GL_Cull( cullType_t::CT_TWO_SIDED );

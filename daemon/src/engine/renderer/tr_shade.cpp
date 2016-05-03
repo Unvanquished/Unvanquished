@@ -421,20 +421,14 @@ static void DrawTris()
 
 	GLimp_LogComment( "--- DrawTris ---\n" );
 
+	tess.vboVertexSprite = tess.surfaceShader->autoSpriteMode != 0;
+
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( tess.vboVertexAnimation );
-
-	if( tess.surfaceShader->autoSpriteMode ) {
-		gl_genericShader->EnableVertexSprite();
-		tess.vboVertexSprite = true;
-	} else {
-		gl_genericShader->DisableVertexSprite();
-		tess.vboVertexSprite = false;
-	}
-
+	gl_genericShader->SetVertexSprite( tess.vboVertexSprite );
 	gl_genericShader->DisableTCGenEnvironment();
 	gl_genericShader->DisableTCGenLightmap();
-	gl_genericShader->DisableMacro_USE_DEPTH_FADE();
+	gl_genericShader->DisableDepthFade();
 
 	if( tess.surfaceShader->stages[0] ) {
 		deform = tess.surfaceShader->stages[0]->deformIndex;
@@ -585,12 +579,16 @@ static void Render_generic( int stage )
 	colorGen_t    rgbGen;
 	alphaGen_t    alphaGen;
 	bool      needDepthMap = false;
-
+	bool      hasDepthFade = false;
 	GLimp_LogComment( "--- Render_generic ---\n" );
 
 	pStage = tess.surfaceStages[ stage ];
-
+	
 	GL_State( pStage->stateBits );
+
+	hasDepthFade = pStage->hasDepthFade && !tess.surfaceShader->autoSpriteMode;
+	needDepthMap = pStage->hasDepthFade || tess.surfaceShader->autoSpriteMode;
+	tess.vboVertexSprite = tess.surfaceShader->autoSpriteMode != 0;
 
 	// choose right shader program ----------------------------------
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -598,29 +596,8 @@ static void Render_generic( int stage )
 
 	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
 	gl_genericShader->SetTCGenLightmap( pStage->tcGen_Lightmap );
-
-	if( pStage->hasDepthFade ) {
-		gl_genericShader->EnableMacro_USE_DEPTH_FADE();
-		needDepthMap = true;
-	} else {
-		gl_genericShader->DisableMacro_USE_DEPTH_FADE();
-	}
-
-	if( backEnd.refdef.numShaderLights > 0 ) {
-		gl_genericShader->EnableMacro_USE_SHADER_LIGHTS();
-		GL_BindToTMU( 8, tr.lighttileRenderImage );
-	} else {
-		gl_genericShader->DisableMacro_USE_SHADER_LIGHTS();
-	}
-
-	if( tess.surfaceShader->autoSpriteMode ) {
-		gl_genericShader->EnableVertexSprite();
-		needDepthMap = true;
-		tess.vboVertexSprite = true;
-	} else {
-		gl_genericShader->DisableVertexSprite();
-		tess.vboVertexSprite = false;
-	}
+	gl_genericShader->SetDepthFade( hasDepthFade );
+	gl_genericShader->SetVertexSprite( tess.vboVertexSprite );
 
 	gl_genericShader->BindProgram( pStage->deformIndex );
 	// end choose right shader program ------------------------------
@@ -631,15 +608,6 @@ static void Render_generic( int stage )
 		// calculate the environment texcoords in object space
 		gl_genericShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
 		gl_genericShader->SetUniform_ViewUp( backEnd.orientation.axis[ 2 ] );
-	}
-
-	if( backEnd.refdef.numShaderLights > 0 ) {
-		gl_genericShader->SetUniform_numLights( backEnd.refdef.numLights );
-		if( glConfig2.uniformBufferObjectAvailable ) {
-			gl_genericShader->SetUniformBlock_Lights( tr.dlightUBO );
-		} else {
-			GL_BindToTMU( 9, tr.dlightImage );
-		}
 	}
 
 	// u_AlphaTest
@@ -700,10 +668,13 @@ static void Render_generic( int stage )
 	BindAnimatedImage( &pStage->bundle[ TB_COLORMAP ] );
 	gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
-	if( pStage->hasDepthFade ) {
+	if ( hasDepthFade )
+	{
 		gl_genericShader->SetUniform_DepthScale( pStage->depthFadeValue );
 	}
-	if( needDepthMap ) {
+
+	if ( needDepthMap )
+	{
 		GL_BindToTMU( 1, tr.currentDepthImage );
 	}
 
