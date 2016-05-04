@@ -1695,6 +1695,11 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int lightmapNum, i
 		entityNum = tr.currentEntity - tr.refdef.entities;
 	}
 
+	if (shader->sort > Util::ordinal(shaderSort_t::SS_OPAQUE))
+	{
+		index = MAX_DRAWSURFS - index; // reverse the sorting (front:back -> back:front)
+	}
+
 	drawSurf->setSort( shader->sortedIndex, lightmapNum, entityNum, fogNum, index );
 
 	tr.refdef.numDrawSurfs++;
