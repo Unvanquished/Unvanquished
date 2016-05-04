@@ -15,7 +15,7 @@ for f in glsl/*.glsl
 do
     n=$(basename $f .glsl)
     echo 'const char '$n'[] = {'
-    ( cat $f; perl -e 'printf "%c", 0;' ) | xxd -i
+    ( cat $f; printf '\000' ) | xxd -i
     echo '};'
 done
 
