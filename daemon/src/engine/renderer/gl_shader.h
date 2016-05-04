@@ -793,7 +793,8 @@ protected:
 	  USE_GLOW_MAPPING,
 	  USE_DEPTH_FADE,
 	  USE_SHADER_LIGHTS,
-	  USE_PHYSICAL_SHADING
+	  USE_PHYSICAL_SHADING,
+	  USE_ALPHA_TESTING
 	};
 
 public:
@@ -1457,6 +1458,48 @@ public:
 	void SetPhysicalShading( bool enable )
 	{
 		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
+class GLCompileMacro_USE_ALPHA_TESTING :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_ALPHA_TESTING(GLShader *shader) :
+		GLCompileMacro(shader)
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_ALPHA_TESTING";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_ALPHA_TESTING;
+	}
+
+	void EnableAlphaTesting()
+	{
+		EnableMacro();
+	}
+
+	void DisableAlphaTesting()
+	{
+		DisableMacro();
+	}
+
+	void SetAlphaTesting(bool enable)
+	{
+		if (enable)
 		{
 			EnableMacro();
 		}
@@ -2411,7 +2454,8 @@ class GLShader_generic :
 	public GLCompileMacro_USE_VERTEX_SPRITE,
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
 	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
-	public GLCompileMacro_USE_DEPTH_FADE
+	public GLCompileMacro_USE_DEPTH_FADE,
+	public GLCompileMacro_USE_ALPHA_TESTING
 {
 public:
 	GLShader_generic( GLShaderManager *manager );

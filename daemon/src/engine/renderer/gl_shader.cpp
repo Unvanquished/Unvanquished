@@ -1333,7 +1333,8 @@ GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	GLCompileMacro_USE_VERTEX_SPRITE( this ),
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
 	GLCompileMacro_USE_TCGEN_LIGHTMAP( this ),
-	GLCompileMacro_USE_DEPTH_FADE( this )
+	GLCompileMacro_USE_DEPTH_FADE( this ),
+	GLCompileMacro_USE_ALPHA_TESTING( this )
 {
 }
 

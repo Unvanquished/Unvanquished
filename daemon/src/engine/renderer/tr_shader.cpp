@@ -2198,10 +2198,12 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 			{
 				//Log::Warn("texGen environment keyword not supported in shader '%s'", shader.name);
 				stage->tcGen_Environment = true;
+				stage->tcGen_Lightmap = false;
 			}
 			else if ( !Q_stricmp( token, "lightmap" ) )
 			{
 				stage->tcGen_Lightmap = true;
+				stage->tcGen_Environment = false;
 			}
 			else if ( !Q_stricmp( token, "texture" ) || !Q_stricmp( token, "base" ) )
 			{

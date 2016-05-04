@@ -429,6 +429,7 @@ static void DrawTris()
 	gl_genericShader->DisableTCGenEnvironment();
 	gl_genericShader->DisableTCGenLightmap();
 	gl_genericShader->DisableDepthFade();
+	gl_genericShader->DisableAlphaTesting();
 
 	if( tess.surfaceShader->stages[0] ) {
 		deform = tess.surfaceShader->stages[0]->deformIndex;
@@ -438,7 +439,7 @@ static void DrawTris()
 
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
-	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+	//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 
 	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
@@ -589,6 +590,7 @@ static void Render_generic( int stage )
 	hasDepthFade = pStage->hasDepthFade && !tess.surfaceShader->autoSpriteMode;
 	needDepthMap = pStage->hasDepthFade || tess.surfaceShader->autoSpriteMode;
 	tess.vboVertexSprite = tess.surfaceShader->autoSpriteMode != 0;
+	uint32_t alphaTestBits = pStage->stateBits & GLS_ATEST_BITS;
 
 	// choose right shader program ----------------------------------
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -598,7 +600,7 @@ static void Render_generic( int stage )
 	gl_genericShader->SetTCGenLightmap( pStage->tcGen_Lightmap );
 	gl_genericShader->SetDepthFade( hasDepthFade );
 	gl_genericShader->SetVertexSprite( tess.vboVertexSprite );
-
+	gl_genericShader->SetAlphaTesting(alphaTestBits != 0);
 	gl_genericShader->BindProgram( pStage->deformIndex );
 	// end choose right shader program ------------------------------
 
@@ -611,7 +613,10 @@ static void Render_generic( int stage )
 	}
 
 	// u_AlphaTest
-	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
+	if (alphaTestBits != 0)
+	{
+		gl_genericShader->SetUniform_AlphaTest(pStage->stateBits);
+	}
 
 	// u_ColorGen
 	switch ( pStage->rgbGen )
@@ -1257,36 +1262,44 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	GL_CheckErrors();
 }
 
-static void Render_depthFill( int stage )
+static void Render_depthFill(int stage)
 {
 	shaderStage_t *pStage;
 
-	GLimp_LogComment( "--- Render_depthFill ---\n" );
+	GLimp_LogComment("--- Render_depthFill ---\n");
 
-	pStage = tess.surfaceStages[ stage ];
+	pStage = tess.surfaceStages[stage];
 
 	uint32_t stateBits = pStage->stateBits;
-	stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS );
+	stateBits &= ~(GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS);
 	stateBits |= GLS_DEPTHMASK_TRUE | GLS_COLORMASK_BITS;
 
-	GL_State( stateBits );
+	GL_State(stateBits);
 
-	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
+	uint32_t alphaBits = stateBits & GLS_ATEST_BITS;
 
-	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
+	gl_genericShader->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
+	gl_genericShader->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
 
-	gl_genericShader->BindProgram( pStage->deformIndex );
+	gl_genericShader->SetTCGenEnvironment(pStage->tcGen_Environment);
+	gl_genericShader->SetTCGenLightmap(pStage->tcGen_Lightmap);
+	gl_genericShader->SetAlphaTesting(alphaBits != 0);
+	gl_genericShader->DisableDepthFade();
+	gl_genericShader->DisableVertexSprite();
+	gl_genericShader->BindProgram(pStage->deformIndex);
 
 	// set uniforms
-	if ( pStage->tcGen_Environment )
+	if (pStage->tcGen_Environment)
 	{
 		// calculate the environment texcoords in object space
-		gl_genericShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
+		gl_genericShader->SetUniform_ViewOrigin(backEnd.orientation.viewOrigin);
 	}
 
 	// u_AlphaTest
-	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
+	if (alphaBits != 0)
+	{
+		gl_genericShader->SetUniform_AlphaTest(pStage->stateBits);
+	}
 
 	// u_ColorModulate
 	gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CONST, alphaGen_t::AGEN_CONST );
@@ -1309,7 +1322,7 @@ static void Render_depthFill( int stage )
 	gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime - backEnd.currentEntity->e.shaderTime );
 
 	// bind u_ColorMap
-	if ( tess.surfaceShader->alphaTest )
+	if ( alphaBits != 0 )
 	{
 		GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );

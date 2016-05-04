@@ -43,11 +43,13 @@ void	main()
 {
 	vec4 color = texture2D(u_ColorMap, var_Tex);
 
+#if defined(USE_ALPHA_TESTING)
 	if( abs(color.a + u_AlphaThreshold) <= 1.0 )
 	{
 		discard;
 		return;
 	}
+#endif
 
 #if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
 	float depth = texture2D(u_DepthMap, gl_FragCoord.xy * r_FBufScale).x;
