@@ -2814,11 +2814,18 @@ void RB_RenderPostDepth()
 
 	Tess_InstantQuad( quadVerts );
 
+	vec3_t projToViewParams;
+	projToViewParams[0] = tanf(DEG2RAD(backEnd.refdef.fov_x * 0.5f)) * backEnd.viewParms.zFar;
+	projToViewParams[1] = tanf(DEG2RAD(backEnd.refdef.fov_y * 0.5f)) * backEnd.viewParms.zFar;
+	projToViewParams[2] = backEnd.viewParms.zFar;
+
 	// render lights
 	R_BindFBO( tr.lighttileFBO );
 	gl_lighttileShader->BindProgram( 0 );
 	gl_lighttileShader->SetUniform_ModelMatrix( backEnd.viewParms.world.modelViewMatrix );
 	gl_lighttileShader->SetUniform_numLights( backEnd.refdef.numLights );
+	gl_lighttileShader->SetUniform_zFar( projToViewParams );
+
 	if( glConfig2.uniformBufferObjectAvailable ) {
 		gl_lighttileShader->SetUniformBlock_Lights( tr.dlightUBO );
 	} else {

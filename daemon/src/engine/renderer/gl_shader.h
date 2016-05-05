@@ -2978,7 +2978,8 @@ class GLShader_lighttile :
 	public u_ModelMatrix,
 	public u_numLights,
 	public u_lightLayer,
-	public u_Lights
+	public u_Lights,
+	public u_zFar
 {
 public:
 	GLShader_lighttile( GLShaderManager *manager );

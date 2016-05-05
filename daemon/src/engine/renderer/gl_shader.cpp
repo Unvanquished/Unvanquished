@@ -2086,7 +2086,8 @@ GLShader_lighttile::GLShader_lighttile( GLShaderManager *manager ) :
 	u_ModelMatrix( this ),
 	u_numLights( this ),
 	u_lightLayer( this ),
-	u_Lights( this )
+	u_Lights( this ),
+	u_zFar( this )
 {
 }
 
