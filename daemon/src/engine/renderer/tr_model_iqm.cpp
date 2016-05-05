@@ -894,7 +894,7 @@ bool R_LoadIQModel( model_t *mod, void *buffer, int filesize,
 R_CullIQM
 =============
 */
-static cullResult_t R_CullIQM( trRefEntity_t *ent ) {
+static void R_CullIQM( trRefEntity_t *ent ) {
 	vec3_t     localBounds[ 2 ];
 	float      scale = ent->e.skeleton.scale;
 	IQModel_t *model = tr.currentModel->iqm;
@@ -916,85 +916,26 @@ static cullResult_t R_CullIQM( trRefEntity_t *ent ) {
 	BoundsAdd( localBounds[ 0 ], localBounds[ 1 ],
 		   ent->e.skeleton.bounds[ 0 ], ent->e.skeleton.bounds[ 1 ] );
 
-	VectorScale( localBounds[0], scale, localBounds[ 0 ] );
-	VectorScale( localBounds[1], scale, localBounds[ 1 ] );
+	VectorScale( localBounds[0], scale, ent->localBounds[ 0 ] );
+	VectorScale( localBounds[1], scale, ent->localBounds[ 1 ] );
 
-	switch ( R_CullLocalBox( localBounds ) )
+	
+	switch ( R_CullLocalBox( ent->localBounds ) )
 	{
 	case cullResult_t::CULL_IN:
 		tr.pc.c_box_cull_md5_in++;
-		return cullResult_t::CULL_IN;
+		ent->cull = cullResult_t::CULL_IN;
+		return;
 	case cullResult_t::CULL_CLIP:
 		tr.pc.c_box_cull_md5_clip++;
-		return cullResult_t::CULL_CLIP;
+		ent->cull = cullResult_t::CULL_CLIP;
+		return;
 	case cullResult_t::CULL_OUT:
 	default:
 		tr.pc.c_box_cull_md5_out++;
-		return cullResult_t::CULL_OUT;
+		ent->cull = cullResult_t::CULL_OUT;
+		return;
 	}
-}
-
-/*
-=================
-R_ComputeIQMFogNum
-
-=================
-*/
-int R_ComputeIQMFogNum( trRefEntity_t *ent ) {
-	int        i, j;
-	fog_t      *fog;
-	vec3_t     localBounds[ 2 ];
-	vec3_t     diag, center;
-	vec3_t     localOrigin;
-	vec_t      radius;
-
-	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL ) {
-		return 0;
-	}
-
-	if ( ent->e.skeleton.type == refSkeletonType_t::SK_INVALID )
-	{
-		// no properly set skeleton so use the bounding box by the model instead by the animations
-		IQModel_t *model = tr.currentModel->iqm;
-		IQAnim_t  *anim = model->anims;
-		float     *bounds;
-
-		if ( !( anim && anim->bounds )  ) {
-			bounds = model->bounds[0];
-		} else {
-			bounds = anim->bounds;
-		}
-		VectorScale( bounds, ent->e.skeleton.scale, localBounds[ 0 ] );
-		VectorScale( bounds + 3, ent->e.skeleton.scale, localBounds[ 1 ] );
-	}
-	else
-	{
-		// copy a bounding box in the current coordinate system provided by skeleton
-		VectorCopy( ent->e.skeleton.bounds[ 0 ], localBounds[ 0 ] );
-		VectorCopy( ent->e.skeleton.bounds[ 1 ], localBounds[ 1 ] );
-	}
-
-	VectorSubtract( localBounds[ 1 ], localBounds[ 0 ], diag );
-	VectorMA( localBounds[ 0 ], 0.5f, diag, center );
-	VectorAdd( ent->e.origin, center, localOrigin );
-	radius = 0.5f * VectorLength( diag );
-
-	for ( i = 1 ; i < tr.world->numFogs ; i++ ) {
-		fog = &tr.world->fogs[i];
-		for ( j = 0 ; j < 3 ; j++ ) {
-			if ( localOrigin[j] - radius >= fog->bounds[1][j] ) {
-				break;
-			}
-			if ( localOrigin[j] + radius <= fog->bounds[0][j] ) {
-				break;
-			}
-		}
-		if ( j == 3 ) {
-			return i;
-		}
-	}
-
-	return 0;
 }
 
 /*
@@ -1009,7 +950,6 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	srfIQModel_t		*surface;
 	int                     i, j;
 	bool                personalModel;
-	cullResult_t cull;
 	int                     fogNum;
 	shader_t                *shader;
 	skin_t                  *skin;
@@ -1024,10 +964,14 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	// cull the entire model if merged bounding box of both frames
 	// is outside the view frustum.
 	//
-	cull = R_CullIQM ( ent );
-	if ( cull == cullResult_t::CULL_OUT ) {
+	R_CullIQM( ent );
+
+	if ( ent->cull == cullResult_t::CULL_OUT )
+	{
 		return;
 	}
+
+	R_SetupEntityWorldBounds( ent );
 
 	//
 	// set up lighting now that we know we aren't culled
@@ -1039,7 +983,7 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	//
 	// see if we are in a fog volume
 	//
-	fogNum = R_ComputeIQMFogNum( ent );
+	fogNum = R_FogWorldBox( ent->worldBounds );
 
 	for ( i = 0 ; i < IQModel->num_surfaces ; i++ ) {
 		if(ent->e.customShader)
