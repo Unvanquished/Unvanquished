@@ -585,6 +585,11 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 		AddDefine( env, "r_RimExponent", r_rimExponent->value );
 	}
 
+	if ( r_showLightTiles->integer )
+	{
+		AddDefine( env, "r_showLightTiles", 1 );
+	}
+
 	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
 	// so we have to reset the line counting
 	env += "#line 0\n";
