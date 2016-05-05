@@ -166,16 +166,40 @@ void computeDLights( vec3 P, vec3 N, vec3 I, vec4 diffuse, vec4 specular,
   vec2 tile = floor( gl_FragCoord.xy * (1.0 / float( TILE_SIZE ) ) ) + 0.5;
   vec3 tileScale = vec3( r_tileStep, 1.0/numLayers );
 
+#if defined(r_showLightTiles)
+  float numLights = 0.0;
+#endif
+
   for( int layer = 0; layer < numLayers; layer++ ) {
     idxs_t idxs = fetchIdxs( tileScale * vec3( tile, float( layer ) + 0.5 ) );
     for( int i = 0; i < lightsPerLayer; i++ ) {
       int idx = numLayers * nextIdx( idxs ) + layer;
 
       if( idx > u_numLights )
-	return;
+      {
+#if defined(r_showLightTiles)
+        if (numLights > 0.0)
+        {
+          color = vec4(numLights/(lightsPerLayer*numLayers), numLights/(lightsPerLayer*numLayers), numLights/(lightsPerLayer*numLayers), 1.0);
+        }
+#endif
+        return;
+      }
+
       computeDLight( idx, P, N, I, diffuse, specular, color );
+
+#if defined(r_showLightTiles)
+      numLights++;
+#endif
     }
   }
+  
+#if defined(r_showLightTiles)
+  if (numLights > 0.0)
+  {
+    color = vec4(numLights/(lightsPerLayer*numLayers), numLights/(lightsPerLayer*numLayers), numLights/(lightsPerLayer*numLayers), 1.0);
+  }
+#endif
 }
 #endif
 
