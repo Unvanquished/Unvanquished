@@ -284,8 +284,6 @@ public:
 			// add supported GLSL extensions
 			addExtension( r_arb_texture_gather->integer, 400,
 				      GLEW_ARB_texture_gather, "ARB_texture_gather" );
-			addExtension( r_ext_texture_integer->integer, 130,
-				      GLEW_EXT_texture_integer, "EXT_texture_integer" );
 			addExtension( r_ext_gpu_shader4->integer, 130,
 				      GLEW_EXT_gpu_shader4, "EXT_gpu_shader4" );
 			addExtension( r_arb_uniform_buffer_object->integer, 140,

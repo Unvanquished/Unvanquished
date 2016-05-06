@@ -1059,7 +1059,9 @@ static void GLimp_InitExtensions()
 	glConfig2.textureFloatAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_float, r_ext_texture_float);
 
 	// made required in OpenGL 3.0
-	glConfig2.textureIntegerAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer);
+	// GL_EXT_texture_integer can be used in shaders only if GL_EXT_gpu_shader4 is also available
+	glConfig2.textureIntegerAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer)
+	  && LOAD_CORE_EXTENSION_WITH_CVAR(EXT_gpu_shader4, r_ext_gpu_shader4);
 
 	// made required in OpenGL 3.0
 	glConfig2.textureRGAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
