@@ -76,7 +76,7 @@ void pushIdxs(in int idx, inout vec4 idxs ) {
   idxs = idxs * 4.0 + bits;
   idxs -= 256.0 * floor( idxs * (1.0/256.0) ); // discard upper bits
 }
-#define exportIdxs(x) gl_fragColor = ( x ) * (1.0/255.0)
+#define exportIdxs(x) gl_FragColor = ( x ) * (1.0/255.0)
 #endif
 
 void lightOutsidePlane( in vec4 plane, inout vec3 center, inout float radius ) {
