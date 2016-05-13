@@ -1,5 +1,7 @@
 #ifndef COMMON_PROFILER_H_
 #define COMMON_PROFILER_H_
+#include <chrono>
+#include <thread>
 
 namespace Profiler{
 
@@ -11,13 +13,21 @@ namespace Profiler{
             Type type;
             const char* label;
             std::chrono::microseconds::rep time;
+            std::thread::id tid;
 
 
             Point(Type,const char *);
+
+            bool operator< (const Point& p2){
+                return time < p2.time;
+            }
+
         };
 
-        void Update();
+        void Frame();
         void Stop();
+        void Start();
+        void Sync();
 
         class ProfilerGuard
         {

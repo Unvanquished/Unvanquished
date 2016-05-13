@@ -29,6 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "Profiler.h"
+
+#include "Profiler.h"
 #include "../engine/framework/LogSystem.h"
 
 #include "../engine/framework/CommandSystem.h"
@@ -45,14 +47,18 @@ namespace Profiler{
          * function end, and if there's a new frame), and a timestamp.
          */
     std::vector <Profiler::Point>                   samples;
-    Sys::SteadyClock::time_point                    startTime;
+    thread_local std::vector <Profiler::Point>      localSamples;
+    std::mutex mtx;
+
+    std::chrono::steady_clock::time_point                    startTime;
     bool                                            enabled    = false; ///TODO those bools are silly
     bool                                            nextFrame  = false;
     bool                                            shouldStop = false;
 
 
+
     /// Called at the end of every frame
-    void Update(){
+    void Frame(){
 
         if(nextFrame){
             enabled=true;
@@ -71,6 +77,8 @@ namespace Profiler{
 
         if(!enabled)
             return;
+
+        std::lock_guard<std::mutex> lck (mtx);
         samples.push_back(Point(FRAME,""));
     }
 
@@ -79,6 +87,7 @@ namespace Profiler{
     Point::Point(Type type, const char *label=""): type(type), label(label){
         auto timeElapsed = Sys::SteadyClock::now() - startTime;
         time = std::chrono::duration_cast < std::chrono::microseconds > (timeElapsed).count();
+        tid = std::this_thread::get_id();
     }
 
 
@@ -87,13 +96,13 @@ namespace Profiler{
     ProfilerGuard::ProfilerGuard( const char * label ): label( label ){
         if(!enabled)
             return;
-        samples.push_back( Point( START, label ) );
+        localSamples.push_back( Point( START, label ) );
     }
 
     ProfilerGuard::~ProfilerGuard(){
         if(!enabled)
             return;
-        samples.push_back( Point( END, label ) );
+        localSamples.push_back( Point( END, label ) );
     }
 
 
@@ -102,7 +111,7 @@ namespace Profiler{
 
         auto file = FS::HomePath::OpenWrite("profile.log"); ///TODO add timestamp to file
 
-
+        std::sort(samples.begin(), samples.end());
         std::string line;
         std::string type;
 
@@ -120,13 +129,23 @@ namespace Profiler{
                 break;
             }
 
-            line=type + ";" + i.label + ";" + std::to_string(i.time) + "$\n";
-
-            file.Write(line.c_str(), line.length());
+            std::stringstream ss;
+            ss << std::to_string(i.time) << ";" << type << ";" << i.label << ";" << i.tid << "$\n";
+           // std::cout << ss.str();
+            file.Write(ss.str().c_str(), ss.str().length());
         }
 
         file.Close();
         samples.clear();
+    }
+
+    void Sync(){ //TODO: optimize?
+        std::lock_guard<std::mutex> lck (mtx);
+
+        samples.insert(samples.end(), localSamples.begin(), localSamples.end());
+        localSamples.clear();
+
+
     }
 
 
