@@ -50,7 +50,7 @@ namespace Profiler{
     thread_local std::vector <Profiler::Point>      localSamples;
     std::mutex mtx;
 
-    std::chrono::steady_clock::time_point                    startTime;
+    Sys::SteadyClock::time_point                    startTime;
     bool                                            enabled    = false; ///TODO those bools are silly
     bool                                            nextFrame  = false;
     bool                                            shouldStop = false;
@@ -144,8 +144,6 @@ namespace Profiler{
 
         samples.insert(samples.end(), localSamples.begin(), localSamples.end());
         localSamples.clear();
-
-
     }
 
 
