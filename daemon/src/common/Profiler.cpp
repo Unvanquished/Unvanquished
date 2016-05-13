@@ -111,11 +111,17 @@ namespace Profiler{
 
         auto file = FS::HomePath::OpenWrite("profile.log"); ///TODO add timestamp to file
 
-        std::sort(samples.begin(), samples.end());
+        std::vector <Profiler::Point> sortedSamples;
+        mtx.lock();
+        sortedSamples=std::move(samples);
+        mtx.unlock();
+
+        std::sort(sortedSamples.begin(), sortedSamples.end());
+
         std::string line;
         std::string type;
 
-        for (auto& i : samples) {
+        for (auto& i : sortedSamples) {
 
             switch(i.type){
             case START:
@@ -136,7 +142,7 @@ namespace Profiler{
         }
 
         file.Close();
-        samples.clear();
+        sortedSamples.clear();
     }
 
     void Sync(){ //TODO: optimize?
