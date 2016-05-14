@@ -1640,10 +1640,10 @@ if the frustum planes are transformed using the inverse view matrix
 static void R_SetupPortalFrustum( const viewParms_t& oldParms, const orientation_t& camera, viewParms_t& newParms )
 {
 	// points of the bounding screen rectangle for the portal surface
-	vec3_t sbottomleft = { newParms.scissorX, newParms.scissorY, -1 };
-	vec3_t stopright = { newParms.scissorX + newParms.scissorWidth, newParms.scissorY + newParms.scissorHeight, -1 };
-	vec3_t sbottomright = { stopright[0], sbottomleft[1], -1 };
-	vec3_t stopleft = { sbottomleft[0], stopright[1], -1 };
+	vec3_t sbottomleft = { float(newParms.scissorX), float(newParms.scissorY), -1.0f };
+	vec3_t stopright = { float(newParms.scissorX + newParms.scissorWidth), float(newParms.scissorY + newParms.scissorHeight), -1.0f };
+	vec3_t sbottomright = { stopright[0], sbottomleft[1], -1.0f };
+	vec3_t stopleft = { sbottomleft[0], stopright[1], -1.0f };
 
 
 	vec3_t bottomleft, bottomright, topright, topleft;
@@ -2590,7 +2590,6 @@ void R_RenderView( viewParms_t *parms )
 {
 	int      firstDrawSurf;
 	int      firstInteraction;
-	matrix_t mvp;
 
 	if ( parms->viewportWidth <= 0 || parms->viewportHeight <= 0 )
 	{
