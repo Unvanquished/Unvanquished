@@ -1336,7 +1336,7 @@ static void RB_RenderInteractions()
 	{
 		glFinish();
 		endTime = ri.Milliseconds();
-		backEnd.pc.c_forwardLightingTime = endTime - startTime;
+		backEnd.pc.c_forwardLightingTime += endTime - startTime;
 	}
 }
 
@@ -2627,7 +2627,7 @@ static void RB_RenderInteractionsShadowMapped()
 	{
 		glFinish();
 		endTime = ri.Milliseconds();
-		backEnd.pc.c_forwardLightingTime = endTime - startTime;
+		backEnd.pc.c_forwardLightingTime += endTime - startTime;
 	}
 }
 
@@ -4707,7 +4707,7 @@ static void RB_RenderView()
 	{
 		glFinish();
 		endTime = ri.Milliseconds();
-		backEnd.pc.c_forwardAmbientTime = endTime - startTime;
+		backEnd.pc.c_forwardAmbientTime += endTime - startTime;
 	}
 
 	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) )

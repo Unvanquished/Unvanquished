@@ -1471,6 +1471,140 @@ static bool IsMirror( const drawSurf_t *drawSurf )
 }
 
 /*
+** SurfBoxIsOffscreen
+**
+** Determines if a surface's AABB is completely offscreen
+** also computes a conservative screen rectangle bounds for the surface
+*/
+static bool SurfBoxIsOffscreen(const drawSurf_t *drawSurf, screenRect_t& surfRect)
+{
+
+	vec3_t bounds[2];
+	shader_t     *shader;
+	screenRect_t        parentRect;
+
+	parentRect.coords[0] = tr.viewParms.scissorX;
+	parentRect.coords[1] = tr.viewParms.scissorY;
+	parentRect.coords[2] = tr.viewParms.scissorX + tr.viewParms.scissorWidth - 1;
+	parentRect.coords[3] = tr.viewParms.scissorY + tr.viewParms.scissorHeight - 1;
+	surfRect = parentRect;
+
+	// only these surfaces supported for now
+	if (*drawSurf->surface != surfaceType_t::SF_FACE &&
+		*drawSurf->surface != surfaceType_t::SF_TRIANGLES &&
+		*drawSurf->surface != surfaceType_t::SF_GRID &&
+		*drawSurf->surface != surfaceType_t::SF_VBO_MESH)
+	{
+		return false;
+	}
+
+	tr.currentEntity = drawSurf->entity;
+	shader = tr.sortedShaders[drawSurf->shaderNum()];
+	shader = (shader->remappedShader) ? shader->remappedShader : shader;
+
+	// deforms need tess subsystem for support
+	if (shader->numDeforms > 0)
+	{
+		return false;
+	}
+
+	// rotate if necessary
+	if (tr.currentEntity != &tr.worldEntity)
+	{
+		R_RotateEntityForViewParms(tr.currentEntity, &tr.viewParms, &tr.orientation);
+	}
+	else
+	{
+		tr.orientation = tr.viewParms.world;
+	}
+
+	srfGeneric_t* srf = reinterpret_cast<srfGeneric_t*>(drawSurf->surface);
+
+	vec3_t v;
+	vec4_t eye, clip;
+	screenRect_t newRect;
+	float        shortest = 100000000;
+	Vector4Set(newRect.coords, 999999, 999999, -999999, -999999);
+	unsigned int pointOr = 0;
+	unsigned int pointAnd = (unsigned int)~0;
+	for (int i = 0; i < 8; i++)
+	{
+		vec3_t transPoint;
+		vec4_t normalized;
+		vec4_t window;
+		unsigned int pointFlags = 0;
+
+		v[0] = srf->bounds[i & 1][0];
+		v[1] = srf->bounds[(i >> 1) & 1][1];
+		v[2] = srf->bounds[(i >> 2) & 1][2];
+
+		R_LocalPointToWorld(v, transPoint);
+		R_TransformModelToClip(transPoint, tr.orientation.modelViewMatrix, tr.viewParms.projectionMatrix, eye, clip);
+
+		float distSq = DotProduct(eye, eye);
+
+		if (distSq < shortest)
+		{
+			shortest = distSq;
+		}
+
+		R_TransformClipToWindow(clip, &tr.viewParms, normalized, window);
+
+		newRect.coords[0] = std::min(newRect.coords[0], (int)window[0]);
+		newRect.coords[1] = std::min(newRect.coords[1], (int)window[1]);
+		newRect.coords[2] = std::max(newRect.coords[2], (int)window[0]);
+		newRect.coords[3] = std::max(newRect.coords[3], (int)window[1]);
+
+		for (int j = 0; j < 3; j++)
+		{
+			if (clip[j] >= clip[3])
+			{
+				pointFlags |= (1 << (j * 2));
+			}
+			else if (clip[j] <= -clip[3])
+			{
+				pointFlags |= (1 << (j * 2 + 1));
+			}
+		}
+
+		pointAnd &= pointFlags;
+		pointOr |= pointFlags;
+	}
+
+	// if the surface intersects the near plane, then expand the scissor rect to cover the screen because of back projection
+	// OPTIMIZE: can be avoided by clipping box edges with the near plane
+	if (pointOr & 0x20)
+	{
+		newRect = parentRect;
+	}
+
+	surfRect.coords[0] = std::max(newRect.coords[0], surfRect.coords[0]);
+	surfRect.coords[1] = std::max(newRect.coords[1], surfRect.coords[1]);
+	surfRect.coords[2] = std::min(newRect.coords[2], surfRect.coords[2]);
+	surfRect.coords[3] = std::min(newRect.coords[3], surfRect.coords[3]);
+
+	// trivially reject
+	if (pointAnd)
+	{
+		return true;
+	}
+
+	// mirrors can early out at this point, since we don't do a fade over distance
+	// with them (although we could)
+	if (IsMirror(drawSurf))
+	{
+		return false;
+	}
+
+	if (shortest > (shader->portalRange * shader->portalRange))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+/*
 ** SurfIsOffscreen
 **
 ** Determines if a surface is completely offscreen.
@@ -1495,7 +1629,7 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf, screenRect_t& surfRect 
 	if ( glConfig.smpActive )
 	{
 		// FIXME!  we can't do Tess_Begin/Tess_End stuff with smp!
-		return false;
+		return SurfBoxIsOffscreen(drawSurf, surfRect);
 	}
 
 	tr.currentEntity = drawSurf->entity;
@@ -1517,10 +1651,8 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf, screenRect_t& surfRect 
 	// Tr3B: former assertion
 	if ( tess.numVertexes >= 128 )
 	{
-		return false;
+		return SurfBoxIsOffscreen(drawSurf, surfRect);
 	}
-
-	int scissor[4] = { 999999, 999999,-999999,-999999 };
 
 	screenRect_t newRect;
 	Vector4Set(newRect.coords, 999999, 999999, -999999, -999999);
@@ -1641,7 +1773,7 @@ static void R_SetupPortalFrustum( const viewParms_t& oldParms, const orientation
 {
 	// points of the bounding screen rectangle for the portal surface
 	vec3_t sbottomleft = { float(newParms.scissorX), float(newParms.scissorY), -1.0f };
-	vec3_t stopright = { float(newParms.scissorX + newParms.scissorWidth), float(newParms.scissorY + newParms.scissorHeight), -1.0f };
+	vec3_t stopright = { float(newParms.scissorX + newParms.scissorWidth - 1), float(newParms.scissorY + newParms.scissorHeight - 1), -1.0f };
 	vec3_t sbottomright = { stopright[0], sbottomleft[1], -1.0f };
 	vec3_t stopleft = { sbottomleft[0], stopright[1], -1.0f };
 
