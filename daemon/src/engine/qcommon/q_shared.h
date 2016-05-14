@@ -666,7 +666,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void     MatrixTransformPoint2( const matrix_t m, vec3_t inout );
 	void     MatrixTransform4( const matrix_t m, const vec4_t in, vec4_t out );
 	void     MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out );
-	void     MatrixTransformPlane2( const matrix_t m, vec3_t inout );
+	void     MatrixTransformPlane2( const matrix_t m, vec4_t inout );
 	void     MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 	void     MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 	void     MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );

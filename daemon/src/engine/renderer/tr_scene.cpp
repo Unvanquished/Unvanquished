@@ -684,6 +684,11 @@ void RE_RenderScene( const refdef_t *fd )
 	parms.viewportWidth = tr.refdef.width;
 	parms.viewportHeight = tr.refdef.height;
 
+	parms.scissorX = parms.viewportX;
+	parms.scissorY = parms.viewportY;
+	parms.scissorWidth = parms.viewportWidth;
+	parms.scissorHeight = parms.viewportHeight;
+
 	Vector4Set( parms.viewportVerts[ 0 ], parms.viewportX, parms.viewportY, 0, 1 );
 	Vector4Set( parms.viewportVerts[ 1 ], parms.viewportX + parms.viewportWidth, parms.viewportY, 0, 1 );
 	Vector4Set( parms.viewportVerts[ 2 ], parms.viewportX + parms.viewportWidth, parms.viewportY + parms.viewportHeight, 0, 1 );
@@ -703,6 +708,8 @@ void RE_RenderScene( const refdef_t *fd )
 	Vector4Copy( fd->gradingWeights, parms.gradingWeights );
 
 	R_RenderView( &parms );
+
+	R_RenderPostProcess();
 
 	// the next scene rendered in this frame will tack on after this one
 	r_firstSceneDrawSurf = tr.refdef.numDrawSurfs;

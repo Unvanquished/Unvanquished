@@ -236,7 +236,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	struct screenRect_t
 	{
 		int                 coords[ 4 ];
-		screenRect_t *next;
 	};
 
 	enum frustumBits_t
@@ -1493,7 +1492,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int            frameCount; // copied from tr.frameCount
 		int            viewCount; // copied from tr.viewCount
 
-		cplane_t       portalPlane; // clip anything behind this if mirroring
+		frustum_t      portalFrustum; // view space frustum bounding the portal surface, clip anything behind near plane for proper rendering. FAR plane is unused
+		int            scissorX, scissorY, scissorWidth, scissorHeight;
 		int            viewportX, viewportY, viewportWidth, viewportHeight;
 		vec4_t         viewportVerts[ 4 ]; // for immediate 2D quad rendering
 		vec4_t         gradingWeights;
@@ -3036,6 +3036,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void           R_SwapBuffers( int );
 
 	void           R_RenderView( viewParms_t *parms );
+	void           R_RenderPostProcess();
 
 	void           R_AddMDVSurfaces( trRefEntity_t *e );
 	void           R_AddMDVInteractions( trRefEntity_t *e, trRefLight_t *light, interactionType_t iaType );
@@ -3745,7 +3746,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		RC_SWAP_BUFFERS,
 		RC_SCREENSHOT,
 		RC_VIDEOFRAME,
-		RC_FINISH //bani
+		RC_FINISH, //bani
+		RC_POST_PROCESS
 	};
 
 	struct setColorCommand_t
@@ -3882,6 +3884,13 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		renderCommand_t commandId;
 	};
 
+	struct renderPostProcessCommand_t
+	{
+		renderCommand_t commandId;
+		trRefdef_t      refdef;
+		viewParms_t     viewParms;
+	};
+
 // ydnar: max decal projectors per frame, each can generate lots of polys
 #define MAX_DECAL_PROJECTORS 32 // uses bitmasks, don't increase
 #define DECAL_PROJECTOR_MASK ( MAX_DECAL_PROJECTORS - 1 )
@@ -3929,6 +3938,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	void                                R_AddSetupLightsCmd();
 	void                                R_AddDrawViewCmd();
+	void                                R_AddPostProcessCmd();
 
 	void                                RE_SetColor( const Color::Color& rgba );
 	void                                RE_SetClipRegion( const float *region );

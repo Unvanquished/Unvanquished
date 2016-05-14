@@ -293,6 +293,28 @@ void R_AddDrawViewCmd()
 
 /*
 =============
+R_AddPostProcessCmd
+=============
+*/
+void R_AddPostProcessCmd()
+{
+	renderPostProcessCommand_t *cmd;
+
+	cmd = (renderPostProcessCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+
+	if (!cmd)
+	{
+		return;
+	}
+
+	cmd->commandId = renderCommand_t::RC_POST_PROCESS;
+
+	cmd->refdef = tr.refdef;
+	cmd->viewParms = tr.viewParms;
+}
+
+/*
+=============
 RE_SetColor
 
 Passing nullptr will set the color to white

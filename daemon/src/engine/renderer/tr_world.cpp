@@ -781,7 +781,7 @@ static void R_MarkLeaves()
 		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
 			tr.visClusters[ i ] = -1;
 		}
-		tr.visIndex = 1;
+		tr.visIndex = 0;
 	} else {
 		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
 			if ( tr.visClusters[ i ] == cluster ) {

@@ -757,12 +757,13 @@ static void SetViewportAndScissor()
 	vec4_t	q, c;
 
 	Com_Memcpy( mat, backEnd.viewParms.projectionMatrix, sizeof(mat) );
-	if( backEnd.viewParms.isPortal ) {
-		c[0] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[1] );
-		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );
-		c[2] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[0] );
-		c[3] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.origin ) - backEnd.viewParms.portalPlane.dist;
+	if( backEnd.viewParms.isPortal )
+	{
+		VectorCopy(backEnd.viewParms.portalFrustum[FRUSTUM_NEAR].normal, c);
+		c[3] = backEnd.viewParms.portalFrustum[FRUSTUM_NEAR].dist;
 
+		// Lengyel, Eric. "Modifying the Projection Matrix to Perform Oblique Near-plane Clipping".
+		// Terathon Software 3D Graphics Library, 2004. http://www.terathon.com/code/oblique.html
 		q[0] = (c[0] < 0.0f ? -1.0f : 1.0f) / mat[0];
 		q[1] = (c[1] < 0.0f ? -1.0f : 1.0f) / mat[5];
 		q[2] = -1.0f;
@@ -774,14 +775,15 @@ static void SetViewportAndScissor()
 		mat[10] = c[2] * scale + 1.0f;
 		mat[14] = c[3] * scale;
 	}
+
 	GL_LoadProjectionMatrix( mat );
 
 	// set the window clipping
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 	             backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-	            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+	            backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight);
 }
 
 /*
@@ -1325,8 +1327,8 @@ static void RB_RenderInteractions()
 	}
 
 	// reset scissor
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-	            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+	            backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight );
 
 	GL_CheckErrors();
 
@@ -2613,8 +2615,8 @@ static void RB_RenderInteractionsShadowMapped()
 	}
 
 	// reset scissor clamping
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-	            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+	            backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight );
 
 	// reset clear color
 	GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -2858,8 +2860,8 @@ void RB_RenderPostDepth()
 	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 		     backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-		    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+		    backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight );
 
 	GL_CheckErrors();
 }
@@ -4387,8 +4389,8 @@ static void RB_RenderDebugUtils()
 				GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 				             backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-				GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-				            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+				GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+				            backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight );
 
 				GL_PopMatrix();
 			}
@@ -4726,6 +4728,7 @@ static void RB_RenderView()
 	RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_NOFOG, shaderSort_t::SS_POST_PROCESS, DRAWSURFACES_ALL );
 
 	GL_CheckErrors();
+
 	// render bloom post process effect
 	RB_RenderBloom();
 
@@ -4734,40 +4737,53 @@ static void RB_RenderView()
 
 	if ( backEnd.viewParms.isPortal )
 	{
+#if !defined( GLSL_COMPILE_STARTUP_ONLY )
 		{
 			// capture current color buffer
 			GL_SelectTexture( 0 );
 			GL_Bind( tr.portalRenderImage );
 			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.portalRenderImage->uploadWidth, tr.portalRenderImage->uploadHeight );
 		}
+#endif
 		backEnd.pc.c_portals++;
 	}
 
+	backEnd.pc.c_views++;
+}
+
+/*
+==================
+RB_RenderPostProcess
+
+Present FBO to screen, and render any effects that must go after the main view and its sub views have been rendered
+This is done so various debugging facilities will work properly
+==================
+*/
+static void RB_RenderPostProcess()
+{
 	RB_FXAA();
 
 	// render chromatric aberration
 	RB_CameraPostFX();
 
 	// copy to given byte buffer that is NOT a FBO
-	if ( tr.refdef.pixelTarget != nullptr )
+	if (tr.refdef.pixelTarget != nullptr)
 	{
 		int i;
 
 		// need to convert Y axis
 		// Bugfix: drivers absolutely hate running in high res and using glReadPixels near the top or bottom edge.
 		// Sooo... let's do it in the middle.
-		glReadPixels( glConfig.vidWidth / 2, glConfig.vidHeight / 2, tr.refdef.pixelTargetWidth, tr.refdef.pixelTargetHeight, GL_RGBA,
-		              GL_UNSIGNED_BYTE, tr.refdef.pixelTarget );
+		glReadPixels(glConfig.vidWidth / 2, glConfig.vidHeight / 2, tr.refdef.pixelTargetWidth, tr.refdef.pixelTargetHeight, GL_RGBA,
+			GL_UNSIGNED_BYTE, tr.refdef.pixelTarget);
 
-		for ( i = 0; i < tr.refdef.pixelTargetWidth * tr.refdef.pixelTargetHeight; i++ )
+		for (i = 0; i < tr.refdef.pixelTargetWidth * tr.refdef.pixelTargetHeight; i++)
 		{
-			tr.refdef.pixelTarget[( i * 4 ) + 3 ] = 255;  //set the alpha pure white
+			tr.refdef.pixelTarget[(i * 4) + 3] = 255;  //set the alpha pure white
 		}
 	}
 
 	GL_CheckErrors();
-
-	backEnd.pc.c_views++;
 }
 
 /*
@@ -5544,6 +5560,32 @@ const void     *RB_DrawView( const void *data )
 
 /*
 =============
+RB_DrawPostProcess
+=============
+*/
+const void    *RB_DrawPostProcess(const void *data)
+{
+	const renderPostProcessCommand_t *cmd;
+
+	GLimp_LogComment("--- RB_PostProcss ---\n");
+
+	// finish any 3D drawing if needed
+	if (tess.numIndexes)
+	{
+		Tess_End();
+	}
+
+	cmd = (const renderPostProcessCommand_t *)data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+
+	RB_RenderPostProcess();
+
+	return (const void *)(cmd + 1);
+}
+/*
+=============
 RB_DrawBuffer
 =============
 */
@@ -5825,7 +5867,9 @@ void RB_ExecuteRenderCommands( const void *data )
 			case Util::ordinal(renderCommand_t::RC_SCISSORSET):
 				data = RB_ScissorSet( data );
 				break;
-
+			case Util::ordinal(renderCommand_t::RC_POST_PROCESS):
+				data = RB_DrawPostProcess(data);
+				break;
 			case Util::ordinal(renderCommand_t::RC_END_OF_LIST):
 			default:
 				// stop rendering on this thread

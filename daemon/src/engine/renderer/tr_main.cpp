@@ -29,10 +29,10 @@ trGlobals_t tr;
 // to OpenGL's coordinate system (looking down -Z)
 const matrix_t quakeToOpenGLMatrix =
 {
-	0,  0, -1, 0,
-	-1, 0, 0,  0,
-	0,  1, 0,  0,
-	0,  0, 0,  1
+    0,  0, -1,  0,
+   -1,  0,  0,  0,
+    0,  1,  0,  0,
+    0,  0,  0,  1
 };
 
 int            shadowMapResolutions[ 5 ] = { 2048, 1024, 512, 256, 128 };
@@ -905,7 +905,13 @@ static void R_SetupProjection( bool infiniteFarClip )
 	// dynamically compute far clip plane distance
 	SetFarClip();
 
-	zNear = tr.viewParms.zNear = r_znear->value;
+	// portal views are constrained to their surface plane
+	if (!tr.viewParms.isPortal)
+	{
+		tr.viewParms.zNear = r_znear->value;
+	}
+
+	zNear = tr.viewParms.zNear;
 
 	if ( r_zfar->value )
 	{
@@ -965,40 +971,65 @@ static void R_SetupFrustum()
 	float  ang;
 	vec3_t planeOrigin;
 
-	ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
-	xs = sin( ang );
-	xc = cos( ang );
-
-	VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 0 ].normal );
-	VectorMA( tr.viewParms.frustums[ 0 ][ 0 ].normal, xc, tr.viewParms.orientation.axis[ 1 ], tr.viewParms.frustums[ 0 ][ 0 ].normal );
-
-	VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 1 ].normal );
-	VectorMA( tr.viewParms.frustums[ 0 ][ 1 ].normal, -xc, tr.viewParms.orientation.axis[ 1 ], tr.viewParms.frustums[ 0 ][ 1 ].normal );
-
-	ang = tr.viewParms.fovY / 180 * M_PI * 0.5f;
-	xs = sin( ang );
-	xc = cos( ang );
-
-	VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 2 ].normal );
-	VectorMA( tr.viewParms.frustums[ 0 ][ 2 ].normal, xc, tr.viewParms.orientation.axis[ 2 ], tr.viewParms.frustums[ 0 ][ 2 ].normal );
-
-	VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 3 ].normal );
-	VectorMA( tr.viewParms.frustums[ 0 ][ 3 ].normal, -xc, tr.viewParms.orientation.axis[ 2 ], tr.viewParms.frustums[ 0 ][ 3 ].normal );
-
-	for ( i = 0; i < 4; i++ )
+	if (tr.viewParms.isPortal)
 	{
-		tr.viewParms.frustums[ 0 ][ i ].type = PLANE_NON_AXIAL;
-		tr.viewParms.frustums[ 0 ][ i ].dist = DotProduct( tr.viewParms.orientation.origin, tr.viewParms.frustums[ 0 ][ i ].normal );
-		SetPlaneSignbits( &tr.viewParms.frustums[ 0 ][ i ] );
+		// this is a portal, so constrain the culling frustum to the portal surface
+		matrix_t invTransform;
+		MatrixAffineInverse(tr.viewParms.world.viewMatrix, invTransform);
+
+		//transform planes back to world space for culling
+		for (int i = 0; i <= FRUSTUM_NEAR; i++)
+		{
+			vec4_t plane;
+			VectorCopy(tr.viewParms.portalFrustum[i].normal, plane);
+			plane[3] = tr.viewParms.portalFrustum[i].dist;
+
+			MatrixTransformPlane2(invTransform, plane);
+
+			VectorCopy(plane, tr.viewParms.frustums[0][i].normal);
+			tr.viewParms.frustums[0][i].dist = plane[3];
+
+			SetPlaneSignbits(&tr.viewParms.frustums[0][i]);
+			tr.viewParms.frustums[0][i].type = PLANE_NON_AXIAL;
+		}
 	}
+	else
+	{
+		ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
+		xs = sin( ang );
+		xc = cos( ang );
 
-	// Tr3B: set extra near plane which is required by the dynamic occlusion culling
-	tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].type = PLANE_NON_AXIAL;
-	VectorCopy( tr.viewParms.orientation.axis[ 0 ], tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].normal );
+		VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 0 ].normal );
+		VectorMA( tr.viewParms.frustums[ 0 ][ 0 ].normal, xc, tr.viewParms.orientation.axis[ 1 ], tr.viewParms.frustums[ 0 ][ 0 ].normal );
 
-	VectorMA( tr.viewParms.orientation.origin, r_znear->value, tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].normal, planeOrigin );
-	tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].dist = DotProduct( planeOrigin, tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].normal );
-	SetPlaneSignbits( &tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ] );
+		VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 1 ].normal );
+		VectorMA( tr.viewParms.frustums[ 0 ][ 1 ].normal, -xc, tr.viewParms.orientation.axis[ 1 ], tr.viewParms.frustums[ 0 ][ 1 ].normal );
+
+		ang = tr.viewParms.fovY / 180 * M_PI * 0.5f;
+		xs = sin( ang );
+		xc = cos( ang );
+
+		VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 2 ].normal );
+		VectorMA( tr.viewParms.frustums[ 0 ][ 2 ].normal, xc, tr.viewParms.orientation.axis[ 2 ], tr.viewParms.frustums[ 0 ][ 2 ].normal );
+
+		VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 3 ].normal );
+		VectorMA( tr.viewParms.frustums[ 0 ][ 3 ].normal, -xc, tr.viewParms.orientation.axis[ 2 ], tr.viewParms.frustums[ 0 ][ 3 ].normal );
+
+		for ( i = 0; i < 4; i++ )
+		{
+			tr.viewParms.frustums[ 0 ][ i ].type = PLANE_NON_AXIAL;
+			tr.viewParms.frustums[ 0 ][ i ].dist = DotProduct( tr.viewParms.orientation.origin, tr.viewParms.frustums[ 0 ][ i ].normal );
+			SetPlaneSignbits( &tr.viewParms.frustums[ 0 ][ i ] );
+		}
+
+		// Tr3B: set extra near plane which is required by the dynamic occlusion culling
+		tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].type = PLANE_NON_AXIAL;
+		VectorCopy( tr.viewParms.orientation.axis[ 0 ], tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].normal );
+
+		VectorMA( tr.viewParms.orientation.origin, r_znear->value, tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].normal, planeOrigin );
+		tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].dist = DotProduct( planeOrigin, tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ].normal );
+		SetPlaneSignbits( &tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ] );
+	}
 }
 
 /*
@@ -1443,8 +1474,9 @@ static bool IsMirror( const drawSurf_t *drawSurf )
 ** SurfIsOffscreen
 **
 ** Determines if a surface is completely offscreen.
+** also computes a conservative screen rectangle bounds for the surface
 */
-static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
+static bool SurfIsOffscreen( const drawSurf_t *drawSurf, screenRect_t& surfRect )
 {
 	float        shortest = 100000000;
 	shader_t     *shader;
@@ -1452,6 +1484,13 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
 	vec4_t       clip, eye;
 	unsigned int pointOr = 0;
 	unsigned int pointAnd = ( unsigned int ) ~0;
+
+	screenRect_t        parentRect;
+	parentRect.coords[0] = tr.viewParms.scissorX;
+	parentRect.coords[1] = tr.viewParms.scissorY;
+	parentRect.coords[2] = tr.viewParms.scissorX + tr.viewParms.scissorWidth - 1;
+	parentRect.coords[3] = tr.viewParms.scissorY + tr.viewParms.scissorHeight - 1;
+	surfRect = parentRect;
 
 	if ( glConfig.smpActive )
 	{
@@ -1481,12 +1520,26 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
 		return false;
 	}
 
+	int scissor[4] = { 999999, 999999,-999999,-999999 };
+
+	screenRect_t newRect;
+	Vector4Set(newRect.coords, 999999, 999999, -999999, -999999);
+
 	for (unsigned i = 0; i < tess.numVertexes; i++ )
 	{
 		int          j;
 		unsigned int pointFlags = 0;
+		vec4_t normalized;
+		vec4_t window;
 
 		R_TransformModelToClip( tess.verts[ i ].xyz, tr.orientation.modelViewMatrix, tr.viewParms.projectionMatrix, eye, clip );
+
+		R_TransformClipToWindow(clip, &tr.viewParms, normalized, window);
+
+		newRect.coords[0] = std::min(newRect.coords[0], (int)window[0]);
+		newRect.coords[1] = std::min(newRect.coords[1], (int)window[1]);
+		newRect.coords[2] = std::max(newRect.coords[2], (int)window[0]);
+		newRect.coords[3] = std::max(newRect.coords[3], (int)window[1]);
 
 		for ( j = 0; j < 3; j++ )
 		{
@@ -1503,6 +1556,18 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
 		pointAnd &= pointFlags;
 		pointOr |= pointFlags;
 	}
+
+	// if the surface intersects the near plane, then expand the scissor rect to cover the screen because of back projection
+	// OPTIMIZE: can be avoided by clipping triangle edges with the near plane
+	if (pointOr & 0x20)
+	{
+		newRect = parentRect;
+	}
+
+	surfRect.coords[0] = std::max(newRect.coords[0], surfRect.coords[0]);
+	surfRect.coords[1] = std::max(newRect.coords[1], surfRect.coords[1]);
+	surfRect.coords[2] = std::min(newRect.coords[2], surfRect.coords[2]);
+	surfRect.coords[3] = std::min(newRect.coords[3], surfRect.coords[3]);
 
 	// trivially reject
 	if ( pointAnd )
@@ -1563,31 +1628,121 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf )
 
 /*
 ========================
+R_SetupPortalFrustum
+
+Creates an oblique view space frustum that closely bounds the part
+of the portal render view that is on screen
+
+This frustum can be used for culling surfaces when rendering the portal view
+if the frustum planes are transformed using the inverse view matrix
+========================
+*/
+static void R_SetupPortalFrustum( const viewParms_t& oldParms, const orientation_t& camera, viewParms_t& newParms )
+{
+	// points of the bounding screen rectangle for the portal surface
+	vec3_t sbottomleft = { newParms.scissorX, newParms.scissorY, -1 };
+	vec3_t stopright = { newParms.scissorX + newParms.scissorWidth, newParms.scissorY + newParms.scissorHeight, -1 };
+	vec3_t sbottomright = { stopright[0], sbottomleft[1], -1 };
+	vec3_t stopleft = { sbottomleft[0], stopright[1], -1 };
+
+
+	vec3_t bottomleft, bottomright, topright, topleft;
+	matrix_t invProjViewPortMatrix;
+
+	ASSERT(newParms.isPortal);
+
+	// need to unproject the bounding rectangle to view space
+	MatrixCopy(oldParms.projectionMatrix, invProjViewPortMatrix);
+	MatrixInverse(invProjViewPortMatrix);
+	MatrixMultiplyTranslation(invProjViewPortMatrix, -1.0, -1.0, -1.0);
+	MatrixMultiplyScale(invProjViewPortMatrix, 2.0f / glConfig.vidWidth, 2.0f / glConfig.vidHeight, 2.0);
+
+	frustum_t& frustum = newParms.portalFrustum;
+	MatrixTransformPoint(invProjViewPortMatrix, sbottomleft, bottomleft);
+	MatrixTransformPoint(invProjViewPortMatrix, sbottomright, bottomright);
+	MatrixTransformPoint(invProjViewPortMatrix, stopright, topright);
+	MatrixTransformPoint(invProjViewPortMatrix, stopleft, topleft);
+
+	// create frustum planes for the sides of the view space region
+	CrossProduct(bottomright, bottomleft, frustum[FRUSTUM_BOTTOM].normal);
+	CrossProduct(topright, bottomright, frustum[FRUSTUM_RIGHT].normal);
+	CrossProduct(topleft, topright, frustum[FRUSTUM_TOP].normal);
+	CrossProduct(bottomleft, topleft, frustum[FRUSTUM_LEFT].normal);
+
+	for (int i = 0; i < 4; i++)
+	{
+		VectorNormalize(frustum[i].normal);
+		SetPlaneSignbits(&frustum[i]);
+		frustum[i].dist = 0; // all side planes intersect the view origin
+		frustum[i].type = PLANE_NON_AXIAL;
+	}
+
+	vec4_t worldNearPlane;
+
+	// find near plane for portal surface
+	// note that unlike a normal frustum near plane, this plane may be oblique!
+	VectorNegate(camera.axis[0], worldNearPlane);
+	worldNearPlane[3] = DotProduct(camera.origin, worldNearPlane);
+
+	// transform to view space
+	frustum[FRUSTUM_NEAR].normal[0] = -DotProduct(worldNearPlane, newParms.orientation.axis[1]);
+	frustum[FRUSTUM_NEAR].normal[1] = DotProduct(worldNearPlane, newParms.orientation.axis[2]);
+	frustum[FRUSTUM_NEAR].normal[2] = -DotProduct(worldNearPlane, newParms.orientation.axis[0]);
+	frustum[FRUSTUM_NEAR].dist = DotProduct(worldNearPlane, newParms.orientation.origin) - worldNearPlane[3];
+
+	// calculate new znear for parallel split frustums in this view
+	vec4_t frustumPlanes[FRUSTUM_PLANES];
+
+	for (int i = 0; i < FRUSTUM_PLANES; i++)
+	{
+		VectorCopy(frustum[i].normal, frustumPlanes[i]);
+		frustumPlanes[i][3] = frustum[i].dist;
+	}
+
+	vec3_t nearCorners[4];
+	R_CalcFrustumNearCorners(frustumPlanes, nearCorners);
+
+	float zNear = DotProduct(nearCorners[0], nearCorners[0]);
+	for (int i = 1; i < 4; i++)
+	{
+		zNear = std::min(DotProduct(nearCorners[i], nearCorners[i]), zNear);
+	}
+
+	zNear = sqrtf(zNear);
+	zNear = std::max(zNear, r_znear->value);
+
+	newParms.zNear = zNear;
+}
+
+/*
+========================
 R_MirrorViewBySurface
 
 Returns true if another view has been rendered
 ========================
 */
-static bool R_MirrorViewBySurface( drawSurf_t *drawSurf )
+static bool R_MirrorViewBySurface(drawSurf_t *drawSurf)
 {
 	viewParms_t   newParms;
 	viewParms_t   oldParms;
 	orientation_t surface, camera;
+	screenRect_t  surfRect;
 
 	// don't recursively mirror
-	if ( tr.viewParms.isPortal )
+	// FIXME: could be more precise by keeping track of R_RenderView stack
+	if (tr.viewParms.isPortal)
 	{
-		Log::Warn("recursive mirror/portal found" );
+		Log::Warn("recursive mirror/portal found");
 		return false;
 	}
 
-	if ( r_noportals->integer )
+	if (r_noportals->integer)
 	{
 		return false;
 	}
 
 	// trivially reject portal/mirror
-	if ( SurfIsOffscreen( drawSurf ) )
+	if (SurfIsOffscreen(drawSurf, surfRect))
 	{
 		return false;
 	}
@@ -1598,21 +1753,25 @@ static bool R_MirrorViewBySurface( drawSurf_t *drawSurf )
 	newParms = tr.viewParms;
 	newParms.isPortal = true;
 
-	if ( !R_GetPortalOrientations( drawSurf, &surface, &camera, newParms.pvsOrigin, &newParms.isMirror ) )
+	if (!R_GetPortalOrientations(drawSurf, &surface, &camera, newParms.pvsOrigin, &newParms.isMirror))
 	{
 		return false; // bad portal, no portalentity
 	}
 
-	R_MirrorPoint( oldParms.orientation.origin, &surface, &camera, newParms.orientation.origin );
+	// convert screen rectangle to scissor test
+	// OPTIMIZE: could do better with stencil test in renderer backend
+	newParms.scissorX = surfRect.coords[0];
+	newParms.scissorY = surfRect.coords[1];
+	newParms.scissorWidth = surfRect.coords[2] - surfRect.coords[0] + 1;
+	newParms.scissorHeight = surfRect.coords[3] - surfRect.coords[1] + 1;
 
-	VectorSubtract( vec3_origin, camera.axis[ 0 ], newParms.portalPlane.normal );
-	newParms.portalPlane.dist = DotProduct( camera.origin, newParms.portalPlane.normal );
+	R_MirrorPoint(oldParms.orientation.origin, &surface, &camera, newParms.orientation.origin);
+	R_MirrorVector(oldParms.orientation.axis[0], &surface, &camera, newParms.orientation.axis[0]);
+	R_MirrorVector(oldParms.orientation.axis[1], &surface, &camera, newParms.orientation.axis[1]);
+	R_MirrorVector(oldParms.orientation.axis[2], &surface, &camera, newParms.orientation.axis[2]);
 
-	R_MirrorVector( oldParms.orientation.axis[ 0 ], &surface, &camera, newParms.orientation.axis[ 0 ] );
-	R_MirrorVector( oldParms.orientation.axis[ 1 ], &surface, &camera, newParms.orientation.axis[ 1 ] );
-	R_MirrorVector( oldParms.orientation.axis[ 2 ], &surface, &camera, newParms.orientation.axis[ 2 ] );
-
-	// OPTIMIZE: restrict the viewport on the mirrored view
+	// restrict view frustum to screen rect of surface
+	R_SetupPortalFrustum(oldParms, camera, newParms);
 
 	// render the mirror view
 	R_RenderView( &newParms );
@@ -2488,8 +2647,6 @@ void R_RenderView( viewParms_t *parms )
 
 	// set camera frustum planes in world space again, but this time including the far plane
 	tr.orientation = tr.viewParms.world;
-	MatrixMultiply( tr.viewParms.projectionMatrix, tr.orientation.modelViewMatrix, mvp );
-	R_SetupFrustum2( tr.viewParms.frustums[ 0 ], mvp );
 
 	// for parallel split shadow mapping
 	R_SetupSplitFrustums();
@@ -2514,4 +2671,16 @@ void R_RenderView( viewParms_t *parms )
 
 	// draw main system development information (surface outlines, etc)
 	R_DebugGraphics();
+}
+
+/*
+================
+R_RenderPostProcess
+
+Render Post Process effects that must only happen once all views for a scene are rendered
+================
+*/
+void R_RenderPostProcess()
+{
+	R_AddPostProcessCmd();
 }
