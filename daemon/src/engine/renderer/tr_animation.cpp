@@ -653,7 +653,8 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 	model = tr.currentModel->md5;
 
 	// don't add third_person objects if not in a portal
-	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
+	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+	  tr.viewParms.portalLevel == 0;
 
 	// cull the entire model if merged bounding box of both frames
 	// is outside the view frustum
@@ -828,7 +829,8 @@ void R_AddIQMInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 #endif
 
 	// don't add third_person objects if not in a portal
-	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
+	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+	  tr.viewParms.portalLevel == 0;
 
 	model = tr.currentModel->iqm;
 
@@ -951,7 +953,8 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 #endif
 
 	// don't add third_person objects if not in a portal
-	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
+	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+	  tr.viewParms.portalLevel == 0;
 
 	model = tr.currentModel->md5;
 

@@ -179,6 +179,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_noportals;
 	cvar_t      *r_portalOnly;
 	cvar_t      *r_portalSky;
+	cvar_t      *r_max_portal_levels;
 
 	cvar_t      *r_subdivisions;
 	cvar_t      *r_stitchCurves;
@@ -837,7 +838,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		if ( glConfig.stencilBits >= 4 )
 		{
-			GL_ClearStencil( 128 );
+			GL_ClearStencil( 0 );
 		}
 
 		GL_FrontFace( GL_CCW );
@@ -1199,6 +1200,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_drawworld = ri.Cvar_Get( "r_drawworld", "1", CVAR_CHEAT );
 		r_portalOnly = ri.Cvar_Get( "r_portalOnly", "0", CVAR_CHEAT );
 		r_portalSky = ri.Cvar_Get( "cg_skybox", "1", 0 );
+		r_max_portal_levels = ri.Cvar_Get( "r_max_portal_levels", "5", 0 );
 
 		r_flareSize = ri.Cvar_Get( "r_flareSize", "40", CVAR_CHEAT );
 		r_flareFade = ri.Cvar_Get( "r_flareFade", "7", CVAR_CHEAT );

@@ -275,7 +275,8 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	int          fogNum;
 
 	// don't add third_person objects if not in a portal
-	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
+	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+	  tr.viewParms.portalLevel == 0;
 
 	if ( ent->e.renderfx & RF_WRAP_FRAMES )
 	{
@@ -412,7 +413,8 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 #endif
 
 	// don't add third_person objects if not in a portal
-	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
+	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+	  tr.viewParms.portalLevel == 0;
 
 	// compute LOD
 	lod = R_ComputeLOD( ent );

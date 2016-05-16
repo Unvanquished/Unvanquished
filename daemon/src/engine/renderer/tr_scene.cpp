@@ -694,7 +694,7 @@ void RE_RenderScene( const refdef_t *fd )
 	Vector4Set( parms.viewportVerts[ 2 ], parms.viewportX + parms.viewportWidth, parms.viewportY + parms.viewportHeight, 0, 1 );
 	Vector4Set( parms.viewportVerts[ 3 ], parms.viewportX, parms.viewportY + parms.viewportHeight, 0, 1 );
 
-	parms.isPortal = false;
+	parms.portalLevel = 0;
 
 	parms.fovX = tr.refdef.fov_x;
 	parms.fovY = tr.refdef.fov_y;
@@ -706,6 +706,9 @@ void RE_RenderScene( const refdef_t *fd )
 
 	VectorCopy( fd->vieworg, parms.pvsOrigin );
 	Vector4Copy( fd->gradingWeights, parms.gradingWeights );
+
+	R_AddClearBufferCmd();
+	R_AddSetupLightsCmd();
 
 	R_RenderView( &parms );
 

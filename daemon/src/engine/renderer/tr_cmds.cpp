@@ -274,7 +274,7 @@ void R_AddSetupLightsCmd()
 R_AddDrawViewCmd
 =============
 */
-void R_AddDrawViewCmd()
+void R_AddDrawViewCmd( bool depthPass )
 {
 	drawViewCommand_t *cmd;
 
@@ -289,6 +289,75 @@ void R_AddDrawViewCmd()
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
+	cmd->depthPass = depthPass;
+}
+
+/*
+=============
+R_AddClearBufferCmd
+=============
+*/
+void R_AddClearBufferCmd( )
+{
+	clearBufferCommand_t *cmd;
+
+	cmd = (clearBufferCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = renderCommand_t::RC_CLEAR_BUFFER;
+
+	cmd->refdef = tr.refdef;
+	cmd->viewParms = tr.viewParms;
+}
+
+/*
+=============
+R_AddPreparePortalCmd
+=============
+*/
+void R_AddPreparePortalCmd( drawSurf_t *surf )
+{
+	preparePortalCommand_t *cmd;
+
+	cmd = (preparePortalCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = renderCommand_t::RC_PREPARE_PORTAL;
+
+	cmd->refdef = tr.refdef;
+	cmd->viewParms = tr.viewParms;
+	cmd->surface = surf;
+}
+
+/*
+=============
+R_AddPreparePortalCmd
+=============
+*/
+void R_AddFinalisePortalCmd( drawSurf_t *surf )
+{
+	finalisePortalCommand_t *cmd;
+
+	cmd = (finalisePortalCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = renderCommand_t::RC_FINALISE_PORTAL;
+
+	cmd->refdef = tr.refdef;
+	cmd->viewParms = tr.viewParms;
+	cmd->surface = surf;
 }
 
 /*

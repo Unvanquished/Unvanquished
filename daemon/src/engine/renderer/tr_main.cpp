@@ -906,7 +906,7 @@ static void R_SetupProjection( bool infiniteFarClip )
 	SetFarClip();
 
 	// portal views are constrained to their surface plane
-	if (!tr.viewParms.isPortal)
+	if ( tr.viewParms.portalLevel == 0 )
 	{
 		tr.viewParms.zNear = r_znear->value;
 	}
@@ -971,7 +971,7 @@ static void R_SetupFrustum()
 	float  ang;
 	vec3_t planeOrigin;
 
-	if (tr.viewParms.isPortal)
+	if ( tr.viewParms.portalLevel > 0 )
 	{
 		// this is a portal, so constrain the culling frustum to the portal surface
 		matrix_t invTransform;
@@ -1479,7 +1479,6 @@ static bool IsMirror( const drawSurf_t *drawSurf )
 static bool SurfBoxIsOffscreen(const drawSurf_t *drawSurf, screenRect_t& surfRect)
 {
 
-	vec3_t bounds[2];
 	shader_t     *shader;
 	screenRect_t        parentRect;
 
@@ -1781,7 +1780,7 @@ static void R_SetupPortalFrustum( const viewParms_t& oldParms, const orientation
 	vec3_t bottomleft, bottomright, topright, topleft;
 	matrix_t invProjViewPortMatrix;
 
-	ASSERT(newParms.isPortal);
+	ASSERT(newParms.portalLevel > 0);
 
 	// need to unproject the bounding rectangle to view space
 	MatrixCopy(oldParms.projectionMatrix, invProjViewPortMatrix);
@@ -1860,9 +1859,9 @@ static bool R_MirrorViewBySurface(drawSurf_t *drawSurf)
 	orientation_t surface, camera;
 	screenRect_t  surfRect;
 
-	// don't recursively mirror
-	// FIXME: could be more precise by keeping track of R_RenderView stack
-	if (tr.viewParms.isPortal)
+	// don't recursively mirror too much
+	if ( tr.viewParms.portalLevel >= r_max_portal_levels->integer &&
+	     tr.viewParms.portalLevel > 0 )
 	{
 		Log::Warn("recursive mirror/portal found");
 		return false;
@@ -1882,8 +1881,12 @@ static bool R_MirrorViewBySurface(drawSurf_t *drawSurf)
 	// save old viewParms so we can return to it after the mirror view
 	oldParms = tr.viewParms;
 
+	// draw stencil mask
+	R_AddPreparePortalCmd( drawSurf );
+
+	tr.viewParms.portalLevel++;
+
 	newParms = tr.viewParms;
-	newParms.isPortal = true;
 
 	if (!R_GetPortalOrientations(drawSurf, &surface, &camera, newParms.pvsOrigin, &newParms.isMirror))
 	{
@@ -1909,6 +1912,8 @@ static bool R_MirrorViewBySurface(drawSurf_t *drawSurf)
 	R_RenderView( &newParms );
 
 	tr.viewParms = oldParms;
+
+	R_AddFinalisePortalCmd( drawSurf );
 
 	return true;
 }
@@ -2015,7 +2020,7 @@ static void R_SortDrawSurfs()
 	if ( tr.viewParms.numDrawSurfs < 1 )
 	{
 		// we still need to add it for hyperspace cases
-		R_AddDrawViewCmd();
+		R_AddDrawViewCmd( false );
 		return;
 	}
 
@@ -2067,6 +2072,9 @@ static void R_SortDrawSurfs()
 		tr.viewParms.firstDrawSurf[ ++sort ] = tr.viewParms.numDrawSurfs;
 	}
 
+	// tell renderer backend to render the depth for this view
+	R_AddDrawViewCmd( true );
+
 	// check for any pass through drawing, which
 	// may cause another view to be rendered first
 	for ( i = tr.viewParms.firstDrawSurf[ Util::ordinal(shaderSort_t::SS_PORTAL) ];
@@ -2089,7 +2097,7 @@ static void R_SortDrawSurfs()
 	}
 
 	// tell renderer backend to render this view
-	R_AddDrawViewCmd();
+	R_AddDrawViewCmd( false );
 }
 
 /*
@@ -2117,7 +2125,8 @@ void R_AddEntitySurfaces()
 		// we don't want the hacked weapon position showing in
 		// mirrors, because the true body position will already be drawn
 		//
-		if ( ( ent->e.renderfx & RF_FIRST_PERSON ) && ( tr.viewParms.isPortal || tr.viewParms.isMirror ) )
+		if ( ( ent->e.renderfx & RF_FIRST_PERSON ) &&
+		     ( tr.viewParms.portalLevel > 0 || tr.viewParms.isMirror ) )
 		{
 			continue;
 		}
@@ -2133,7 +2142,8 @@ void R_AddEntitySurfaces()
 				// self blood sprites, talk balloons, etc should not be drawn in the primary
 				// view.  We can't just do this check for all entities, because md3
 				// entities may still want to cast shadows from them
-				if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal )
+				if ( ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+				     tr.viewParms.portalLevel == 0 )
 				{
 					continue;
 				}
@@ -2173,7 +2183,8 @@ void R_AddEntitySurfaces()
 							break;
 
 						case modtype_t::MOD_BAD: // null model axis
-							if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal )
+							if ( ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+							     tr.viewParms.portalLevel == 0 )
 							{
 								break;
 							}
@@ -2243,7 +2254,8 @@ void R_AddEntityInteractions( trRefLight_t *light )
 		// we don't want the hacked weapon position showing in
 		// mirrors, because the true body position will already be drawn
 		//
-		if ( ( ent->e.renderfx & RF_FIRST_PERSON ) && ( tr.viewParms.isPortal || tr.viewParms.isMirror ) )
+		if ( ( ent->e.renderfx & RF_FIRST_PERSON ) &&
+		     ( tr.viewParms.portalLevel > 0 || tr.viewParms.isMirror ) )
 		{
 			continue;
 		}
@@ -2795,8 +2807,6 @@ void R_RenderView( viewParms_t *parms )
 
 	tr.viewParms.interactions = tr.refdef.interactions + firstInteraction;
 	tr.viewParms.numInteractions = tr.refdef.numInteractions - firstInteraction;
-
-	R_AddSetupLightsCmd();
 
 	R_SortDrawSurfs();
 

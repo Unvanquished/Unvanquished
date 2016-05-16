@@ -420,6 +420,7 @@ in Q3.
 void GL_State( uint32_t stateBits )
 {
 	uint32_t diff = stateBits ^ glState.glStateBits;
+	diff &= ~glState.glStateBitsMask;
 
 	if ( !diff )
 	{
@@ -591,20 +592,7 @@ void GL_State( uint32_t stateBits )
 		}
 	}
 
-	// stenciltest
-	if ( diff & GLS_STENCILTEST_ENABLE )
-	{
-		if ( stateBits & GLS_STENCILTEST_ENABLE )
-		{
-			glEnable( GL_STENCIL_TEST );
-		}
-		else
-		{
-			glDisable( GL_STENCIL_TEST );
-		}
-	}
-
-	glState.glStateBits = stateBits;
+	glState.glStateBits ^= diff;
 }
 
 void GL_VertexAttribsState( uint32_t stateBits )
@@ -757,7 +745,7 @@ static void SetViewportAndScissor()
 	vec4_t	q, c;
 
 	Com_Memcpy( mat, backEnd.viewParms.projectionMatrix, sizeof(mat) );
-	if( backEnd.viewParms.isPortal )
+	if( backEnd.viewParms.portalLevel > 0 )
 	{
 		VectorCopy(backEnd.viewParms.portalFrustum[FRUSTUM_NEAR].normal, c);
 		c[3] = backEnd.viewParms.portalFrustum[FRUSTUM_NEAR].dist;
@@ -2963,7 +2951,9 @@ void RB_RenderBloom()
 
 	GLimp_LogComment( "--- RB_RenderBloom ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOBLOOM ) ) || !r_bloom->integer || backEnd.viewParms.isPortal )
+	if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOBLOOM ) ) ||
+	     !r_bloom->integer ||
+	     backEnd.viewParms.portalLevel > 0 )
 	{
 		return;
 	}
@@ -3082,7 +3072,8 @@ void RB_RenderMotionBlur()
 
 	GLimp_LogComment( "--- RB_RenderMotionBlur ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
+	     backEnd.viewParms.portalLevel > 0 )
 	{
 		return;
 	}
@@ -3122,7 +3113,8 @@ void RB_RenderSSAO()
 		return;
 	}
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
+	     backEnd.viewParms.portalLevel > 0 )
 	{
 		return;
 	}
@@ -3164,7 +3156,7 @@ void RB_FXAA()
 	GLimp_LogComment( "--- RB_FXAA ---\n" );
 
 	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
-	     backEnd.viewParms.isPortal )
+	     backEnd.viewParms.portalLevel )
 	{
 		return;
 	}
@@ -3197,7 +3189,7 @@ void RB_CameraPostFX()
 	GLimp_LogComment( "--- RB_CameraPostFX ---\n" );
 
 	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
-	     backEnd.viewParms.isPortal )
+	     backEnd.viewParms.portalLevel > 0 )
 	{
 		return;
 	}
@@ -3561,7 +3553,8 @@ static void RB_RenderDebugUtils()
 
 		for ( i = 0; i < backEnd.refdef.numEntities; i++, ent++ )
 		{
-			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !backEnd.viewParms.isPortal )
+			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+			     backEnd.viewParms.portalLevel == 0 )
 			{
 				continue;
 			}
@@ -3636,7 +3629,8 @@ static void RB_RenderDebugUtils()
 
 		for ( i = 0; i < backEnd.refdef.numEntities; i++, ent++ )
 		{
-			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !backEnd.viewParms.isPortal )
+			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+			     backEnd.viewParms.portalLevel == 0 )
 			{
 				continue;
 			}
@@ -4605,9 +4599,8 @@ void DebugDrawEnd() {
 RB_RenderView
 ==================
 */
-static void RB_RenderView()
+static void RB_RenderView( bool depthPass )
 {
-	int clearBits = 0;
 	int startTime = 0, endTime = 0;
 
 	if ( r_logFile->integer )
@@ -4622,18 +4615,6 @@ static void RB_RenderView()
 
 	backEnd.pc.c_surfaces += backEnd.viewParms.numDrawSurfs;
 
-	// sync with gl if needed
-	if ( r_finish->integer == 1 && !glState.finishCalled )
-	{
-		glFinish();
-		glState.finishCalled = true;
-	}
-
-	if ( r_finish->integer == 0 )
-	{
-		glState.finishCalled = true;
-	}
-
 	// disable offscreen rendering
 	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
@@ -4646,15 +4627,6 @@ static void RB_RenderView()
 
 	// ensures that depth writes are enabled for the depth clear
 	GL_State( GLS_DEFAULT );
-
-	// clear relevant buffers
-	clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
-
-	if ( r_clear->integer && !backEnd.viewParms.isPortal ) {
-		clearBits |= GL_COLOR_BUFFER_BIT;
-	}
-
-	glClear( clearBits );
 
 	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
 	{
@@ -4677,9 +4649,12 @@ static void RB_RenderView()
 		startTime = ri.Milliseconds();
 	}
 
-	RB_RenderDrawSurfaces( shaderSort_t::SS_DEPTH, shaderSort_t::SS_DEPTH, DRAWSURFACES_ALL );
-	RB_RunVisTests();
-	RB_RenderPostDepth();
+	if( depthPass ) {
+		RB_RenderDrawSurfaces( shaderSort_t::SS_DEPTH, shaderSort_t::SS_DEPTH, DRAWSURFACES_ALL );
+		RB_RunVisTests();
+		RB_RenderPostDepth();
+		return;
+	}
 
 	if( tr.refdef.blurVec[0] != 0.0f ||
 			tr.refdef.blurVec[1] != 0.0f ||
@@ -4735,7 +4710,7 @@ static void RB_RenderView()
 	// render debug information
 	RB_RenderDebugUtils();
 
-	if ( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.portalLevel > 0 )
 	{
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 		{
@@ -5533,6 +5508,209 @@ static const void *RB_SetupLights( const void *data )
 
 /*
 =============
+RB_ClearBuffer
+=============
+*/
+const void     *RB_ClearBuffer( const void *data )
+{
+	const clearBufferCommand_t *cmd;
+	int clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+
+	GLimp_LogComment( "--- RB_ClearBuffer ---\n" );
+
+	// finish any 2D drawing if needed
+	if ( tess.numIndexes )
+	{
+		Tess_End();
+	}
+
+	cmd = ( const clearBufferCommand_t * ) data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+
+	if ( r_logFile->integer )
+	{
+		GLimp_LogComment( "--- RB_ClearBuffer ---\n" );
+	}
+
+	GL_CheckErrors();
+
+	// sync with gl if needed
+	if ( r_finish->integer == 1 && !glState.finishCalled )
+	{
+		glFinish();
+		glState.finishCalled = true;
+	}
+
+	if ( r_finish->integer == 0 )
+	{
+		glState.finishCalled = true;
+	}
+
+	// disable offscreen rendering
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
+
+	// we will need to change the projection matrix before drawing
+	// 2D images again
+	backEnd.projection2D = false;
+
+	// set the modelview matrix for the viewer
+	SetViewportAndScissor();
+
+	// ensures that depth writes are enabled for the depth clear
+	GL_State( GLS_DEFAULT );
+
+	// clear relevant buffers
+	if ( r_clear->integer ) {
+		clearBits |= GL_COLOR_BUFFER_BIT;
+	}
+
+	glClear( clearBits );
+
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
+RB_PreparePortal
+=============
+*/
+const void     *RB_PreparePortal( const void *data )
+{
+	const preparePortalCommand_t *cmd;
+
+	GLimp_LogComment( "--- RB_PreparePortal ---\n" );
+
+	cmd = ( const preparePortalCommand_t * ) data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+	drawSurf_t *surface = cmd->surface;
+	shader_t *shader = tr.sortedShaders[ surface->shaderNum() ];
+
+	// set the modelview matrix for the viewer
+	SetViewportAndScissor();
+
+	if ( surface->entity != &tr.worldEntity )
+	{
+		backEnd.currentEntity = surface->entity;
+
+		// set up the transformation matrix
+		R_RotateEntityForViewParms( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
+	}
+	else
+	{
+		backEnd.currentEntity = &tr.worldEntity;
+		backEnd.orientation = backEnd.viewParms.world;
+	}
+
+	GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+
+	if ( backEnd.viewParms.portalLevel == 0 ) {
+		glEnable( GL_STENCIL_TEST );
+		glStencilMask( 0xff );
+	}
+
+	glStencilFunc( GL_EQUAL, backEnd.viewParms.portalLevel, 0xff );
+	glStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
+
+	GL_State( GLS_COLORMASK_BITS );
+	glState.glStateBitsMask = GLS_COLORMASK_BITS;
+
+	Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader,
+		    nullptr, false, false, -1, -1 );
+	rb_surfaceTable[Util::ordinal(*(surface->surface))](surface->surface );
+	Tess_End();
+
+	glState.glStateBitsMask = 0;
+
+	// set depth to max on portal area
+	glDepthRange( 1.0f, 1.0f );
+
+	glStencilFunc( GL_EQUAL, backEnd.viewParms.portalLevel + 1, 0xff );
+	glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
+
+	GL_State( GLS_DEPTHMASK_TRUE | GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
+	glState.glStateBitsMask = GLS_DEPTHMASK_TRUE | GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS;
+
+	Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader,
+		    nullptr, false, false, -1, -1 );
+	rb_surfaceTable[Util::ordinal(*(surface->surface))](surface->surface );
+	Tess_End();
+
+	glState.glStateBitsMask = 0;
+
+	glDepthRange( 0.0f, 1.0f );
+
+	// keep stencil test enabled !
+
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
+RB_FinalisePortal
+=============
+*/
+const void     *RB_FinalisePortal( const void *data )
+{
+	const finalisePortalCommand_t *cmd;
+
+	GLimp_LogComment( "--- RB_FinalisePortal ---\n" );
+
+	cmd = ( const finalisePortalCommand_t * ) data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+	drawSurf_t *surface = cmd->surface;
+	shader_t *shader = tr.sortedShaders[ surface->shaderNum() ];
+
+	// set the modelview matrix for the viewer
+	SetViewportAndScissor();
+
+	if ( surface->entity != &tr.worldEntity )
+	{
+		backEnd.currentEntity = surface->entity;
+
+		// set up the transformation matrix
+		R_RotateEntityForViewParms( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
+	}
+	else
+	{
+		backEnd.currentEntity = &tr.worldEntity;
+		backEnd.orientation = backEnd.viewParms.world;
+	}
+
+	GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+
+	// set depth to max on portal area
+	glDepthRange( 1.0f, 1.0f );
+
+	glStencilFunc( GL_EQUAL, backEnd.viewParms.portalLevel + 1, 0xff );
+	glStencilOp( GL_KEEP, GL_KEEP, GL_DECR );
+
+	GL_State( GLS_DEPTHMASK_TRUE | GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
+	glState.glStateBitsMask = GLS_DEPTHMASK_TRUE | GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS;
+
+	Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader,
+		    nullptr, false, false, -1, -1 );
+	rb_surfaceTable[Util::ordinal(*(surface->surface))](surface->surface );
+	Tess_End();
+
+	glState.glStateBitsMask = 0;
+
+	glDepthRange( 0.0f, 1.0f );
+
+	if( backEnd.viewParms.portalLevel == 0 ) {
+		glDisable( GL_STENCIL_TEST );
+	}
+	
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
 RB_DrawView
 =============
 */
@@ -5553,7 +5731,7 @@ const void     *RB_DrawView( const void *data )
 	backEnd.refdef = cmd->refdef;
 	backEnd.viewParms = cmd->viewParms;
 
-	RB_RenderView();
+	RB_RenderView( cmd->depthPass );
 
 	return ( const void * )( cmd + 1 );
 }
@@ -5869,6 +6047,15 @@ void RB_ExecuteRenderCommands( const void *data )
 				break;
 			case Util::ordinal(renderCommand_t::RC_POST_PROCESS):
 				data = RB_DrawPostProcess(data);
+				break;
+			case Util::ordinal(renderCommand_t::RC_CLEAR_BUFFER):
+				data = RB_ClearBuffer(data);
+				break;
+			case Util::ordinal(renderCommand_t::RC_PREPARE_PORTAL):
+				data = RB_PreparePortal(data);
+				break;
+			case Util::ordinal(renderCommand_t::RC_FINALISE_PORTAL):
+				data = RB_FinalisePortal(data);
 				break;
 			case Util::ordinal(renderCommand_t::RC_END_OF_LIST):
 			default:

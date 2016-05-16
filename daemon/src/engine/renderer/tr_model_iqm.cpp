@@ -958,7 +958,8 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	surface = IQModel->surfaces;
 
 	// don't add third_person objects if not in a portal
-	personalModel = (ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal;
+	personalModel = (ent->e.renderfx & RF_THIRD_PERSON) &&
+	  tr.viewParms.portalLevel == 0;
 
 	//
 	// cull the entire model if merged bounding box of both frames

@@ -415,13 +415,13 @@ void R_InitFBOs()
 	tr.mainFBO[0] = R_CreateFBO( "_main[0]", width, height );
 	R_BindFBO( tr.mainFBO[0] );
 	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.currentRenderImage[0]->texnum, 0 );
-	R_AttachFBOTextureDepth( tr.currentDepthImage->texnum );
+	R_AttachFBOTexturePackedDepthStencil( tr.currentDepthImage->texnum );
 	R_CheckFBO( tr.mainFBO[0] );
 
 	tr.mainFBO[1] = R_CreateFBO( "_main[1]", width, height );
 	R_BindFBO( tr.mainFBO[1] );
 	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.currentRenderImage[1]->texnum, 0 );
-	R_AttachFBOTextureDepth( tr.currentDepthImage->texnum );
+	R_AttachFBOTexturePackedDepthStencil( tr.currentDepthImage->texnum );
 	R_CheckFBO( tr.mainFBO[1] );
 
 	tr.depthtile1FBO = R_CreateFBO( "_depthtile1", tr.depthtile1RenderImage->width, tr.depthtile1RenderImage->height );
