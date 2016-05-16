@@ -38,6 +38,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FileSystem.h"
 #include <fstream>
 
+namespace {
+    std::vector <Profiler::Point>                   samples;
+    thread_local std::vector <Profiler::Point>      localSamples;
+    std::mutex                                      mtx;
+
+    Sys::SteadyClock::time_point                    startTime;
+    bool                                            enabled    = false;
+    bool                                            nextFrame  = false;
+    bool                                            shouldStop = false;
+
+}
+
 
 namespace Profiler{
 
@@ -46,15 +58,6 @@ namespace Profiler{
          * contains the name of the function, the type of sample (function start,
          * function end, and if there's a new frame), and a timestamp.
          */
-    std::vector <Profiler::Point>                   samples;
-    thread_local std::vector <Profiler::Point>      localSamples;
-    std::mutex mtx;
-
-    Sys::SteadyClock::time_point                    startTime;
-    bool                                            enabled    = false; ///TODO those bools are silly
-    bool                                            nextFrame  = false;
-    bool                                            shouldStop = false;
-
 
 
     /// Called at the end of every frame
