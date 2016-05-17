@@ -100,7 +100,7 @@ void computeLight( vec3 lightDir, vec3 normal, vec3 eyeDir, vec3 lightColor,
 
 #if defined( USE_SHADER_LIGHTS )
 
-#ifdef HAVE_EXT_texture_integer
+#if defined( TEXTURE_INTEGER ) && defined( HAVE_EXT_gpu_shader4 )
 const int lightsPerLayer = 16;
 uniform usampler3D u_LightTiles;
 #define idxs_t uvec4
