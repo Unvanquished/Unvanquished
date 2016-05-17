@@ -54,7 +54,7 @@ uniform vec3 u_zFar;
 
 const int numLayers = MAX_REF_LIGHTS / 256;
 
-#if defined( HAVE_EXT_texture_integer ) && defined( HAVE_EXT_gpu_shader4 )
+#if defined( TEXTURE_INTEGER ) && defined( HAVE_EXT_gpu_shader4 )
 #define idxs_t uvec4
 #define idx_initializer uvec4(3)
 #if __VERSION__ < 130
