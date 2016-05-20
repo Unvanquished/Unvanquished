@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <SDL.h>
 
-#ifdef SMP
+#ifdef USE_SMP
 #include <SDL_thread.h>
 #endif
 
@@ -36,7 +36,7 @@ SDL_Window         *window = nullptr;
 static SDL_GLContext glContext = nullptr;
 static int colorBits = 0;
 
-#ifdef SMP
+#ifdef USE_SMP
 static void GLimp_SetCurrentContext( bool enable )
 {
 	if ( enable )
@@ -333,7 +333,7 @@ void GLimp_Shutdown()
 
 	ri.IN_Shutdown();
 
-#if defined( SMP )
+#if defined( USE_SMP )
 
 	if ( renderThread != nullptr )
 	{

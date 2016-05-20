@@ -57,7 +57,7 @@ Maryland 20850 USA.
 #include <arpa/inet.h>
 #endif
 
-#ifdef SMP
+#ifdef USE_SMP
 #include <SDL_mutex.h>
 #endif
 
