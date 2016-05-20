@@ -74,29 +74,38 @@ void R_CalcTangents( vec3_t tangent, vec3_t binormal,
 {
 	vec3_t dpx, dpy;
 	vec2_t dtx, dty;
-	float scale;
 
-	VectorSubtract( v1, v0, dpx );
-	VectorSubtract( v2, v0, dpy );
-	Vector2Subtract( t1, t0, dtx );
-	Vector2Subtract( t2, t0, dty );
+	VectorSubtract(v1, v0, dpx);
+	VectorSubtract(v2, v0, dpy);
+	Vector2Subtract(t1, t0, dtx);
+	Vector2Subtract(t2, t0, dty);
 
-	scale = dty[ 1 ] * dtx[ 0 ] - dtx[ 1 ] * dty[ 0 ];
+	float area = dtx[0] * dty[1] - dtx[1] * dty[0];
+	float sign = area < 0 ? -1.0f : 1.0f;
 
-	VectorScale( dpx, scale * dty[ 1 ], tangent );
-	VectorMA( tangent, -scale * dtx[ 1 ], dpy, tangent );
-	VectorScale( dpx, -scale * dty[ 0 ], binormal );
-	VectorMA( binormal, scale * dtx[ 0 ], dpy, binormal );
+	tangent[0] = dpx[0] * dty[1] - dtx[1] * dpy[0];
+	tangent[1] = dpx[1] * dty[1] - dtx[1] * dpy[1];
+	tangent[2] = dpx[2] * dty[1] - dtx[1] * dpy[2];
 
-	VectorNormalize( tangent );
-	VectorNormalize( binormal );
+	float len = sqrtf(DotProduct(tangent, tangent));
+	float ilen = sign * (1.0f / len);
+
+	VectorScale(tangent, ilen, tangent);
+
+	binormal[0] = dtx[0] * dpy[0] - dpx[0] * dty[0];
+	binormal[1] = dtx[0] * dpy[1] - dpx[1] * dty[0];
+	binormal[2] = dtx[0] * dpy[2] - dpx[2] * dty[0];
+
+	len = sqrtf(DotProduct(binormal, binormal));
+	ilen = sign * (1.0f / len);
+
+	VectorScale(binormal, ilen, binormal);
 }
 
 void R_CalcTangents( vec3_t tangent, vec3_t binormal,
 		     const vec3_t v0, const vec3_t v1, const vec3_t v2,
 		     const i16vec2_t t0, const i16vec2_t t1, const i16vec2_t t2 )
 {
-	vec3_t cp, u, v;
 	vec2_t t0f, t1f, t2f;
 
 	t0f[ 0 ] = halfToFloat( t0[ 0 ] );
@@ -105,41 +114,37 @@ void R_CalcTangents( vec3_t tangent, vec3_t binormal,
 	t1f[ 1 ] = halfToFloat( t1[ 1 ] );
 	t2f[ 0 ] = halfToFloat( t2[ 0 ] );
 	t2f[ 1 ] = halfToFloat( t2[ 1 ] );
-	VectorSet( u, v1[ 0 ] - v0[ 0 ], t1f[ 0 ] - t0f[ 0 ], t1f[ 1 ] - t0f[ 1 ] );
-	VectorSet( v, v2[ 0 ] - v0[ 0 ], t2f[ 0 ] - t0f[ 0 ], t2f[ 1 ] - t0f[ 1 ] );
 
-	CrossProduct( u, v, cp );
+	vec3_t dpx, dpy;
+	vec2_t dtx, dty;
 
-	if ( fabs( cp[ 0 ] ) > 10e-6 )
-	{
-		tangent[ 0 ] = -cp[ 1 ] / cp[ 0 ];
-		binormal[ 0 ] = -cp[ 2 ] / cp[ 0 ];
-	}
+	VectorSubtract(v1, v0, dpx);
+	VectorSubtract(v2, v0, dpy);
+	Vector2Subtract(t1f, t0f, dtx);
+	Vector2Subtract(t2f, t0f, dty);
 
-	u[ 0 ] = v1[ 1 ] - v0[ 1 ];
-	v[ 0 ] = v2[ 1 ] - v0[ 1 ];
+	float area = dtx[0] * dty[1] - dtx[1] * dty[0];
+	float sign = area < 0 ? -1.0f : 1.0f;
 
-	CrossProduct( u, v, cp );
+	tangent[0] = dpx[0] * dty[1] - dtx[1] * dpy[0];
+	tangent[1] = dpx[1] * dty[1] - dtx[1] * dpy[1];
+	tangent[2] = dpx[2] * dty[1] - dtx[1] * dpy[2];
 
-	if ( fabs( cp[ 0 ] ) > 10e-6 )
-	{
-		tangent[ 1 ] = -cp[ 1 ] / cp[ 0 ];
-		binormal[ 1 ] = -cp[ 2 ] / cp[ 0 ];
-	}
+	float dot = DotProduct(tangent, tangent);
+	float ilen = Q_rsqrt(dot);
+	ilen *= sign;
 
-	u[ 0 ] = v1[ 2 ] - v0[ 2 ];
-	v[ 0 ] = v2[ 2 ] - v0[ 2 ];
+	VectorScale(tangent, ilen, tangent);
 
-	CrossProduct( u, v, cp );
+	binormal[0] = dtx[0] * dpy[0] - dpx[0] * dty[0];
+	binormal[1] = dtx[0] * dpy[1] - dpx[1] * dty[0];
+	binormal[2] = dtx[0] * dpy[2] - dpx[2] * dty[0];
 
-	if ( fabs( cp[ 0 ] ) > 10e-6 )
-	{
-		tangent[ 2 ] = -cp[ 1 ] / cp[ 0 ];
-		binormal[ 2 ] = -cp[ 2 ] / cp[ 0 ];
-	}
+	dot = DotProduct(binormal, binormal);
+	ilen = Q_rsqrt(dot);
+	ilen *= sign;
 
-	VectorNormalizeFast( tangent );
-	VectorNormalizeFast( binormal );
+	VectorScale(binormal, ilen, binormal);
 }
 
 
@@ -2374,7 +2379,9 @@ void R_AddLightInteractions()
 			{
 				if( r_staticLight->integer == 2 ) {
 					tr.refdef.numShaderLights++;
+					tr.pc.c_slights++;
 				}
+
 				light->cull = cullResult_t::CULL_OUT;
 				continue;
 			}
@@ -2388,9 +2395,11 @@ void R_AddLightInteractions()
 			{
 				if( r_dynamicLight->integer == 2 ) {
 					tr.refdef.numShaderLights++;
+					tr.pc.c_dlights++;
 				}
 				light->cull = cullResult_t::CULL_OUT;
 				continue;
+
 			}
 		}
 
