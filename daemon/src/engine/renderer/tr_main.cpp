@@ -299,16 +299,27 @@ void R_TBNtoQtangents( const vec3_t tangent, const vec3_t binormal,
 		q[ 3 ] = -q[ 3 ];
 	}
 
-	floatToSnorm16( q, qtangent );
+	i16vec4_t resqtangent;
+	floatToSnorm16( q, resqtangent );
 
-	if( qtangent[ 3 ] == 0 ) {
-		qtangent[ 3 ] = 1;
+	if( resqtangent[ 3 ] == 0 )
+	{
+		resqtangent[ 3 ] = 1;
 	} 
-	if( flipped ) {
-		qtangent[ 0 ] = -qtangent[ 0 ];
-		qtangent[ 1 ] = -qtangent[ 1 ];
-		qtangent[ 2 ] = -qtangent[ 2 ];
-		qtangent[ 3 ] = -qtangent[ 3 ];
+
+	if( flipped )
+	{
+		qtangent[ 0 ] = -resqtangent[ 0 ];
+		qtangent[ 1 ] = -resqtangent[ 1 ];
+		qtangent[ 2 ] = -resqtangent[ 2 ];
+		qtangent[ 3 ] = -resqtangent[ 3 ];
+	}
+	else
+	{
+		qtangent[ 0 ] = resqtangent[ 0 ];
+		qtangent[ 1 ] = resqtangent[ 1 ];
+		qtangent[ 2 ] = resqtangent[ 2 ];
+		qtangent[ 3 ] = resqtangent[ 3 ];
 	}
 
 	if (0) {
