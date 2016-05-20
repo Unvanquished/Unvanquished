@@ -359,6 +359,8 @@ bool R_LoadMD3( model_t *mod, int lod, void *buffer, const char *modName )
 				}
 			}
 			vboSurf->ibo = R_CreateStaticIBO2( va( "staticMD3Mesh_IBO %s", surf->name ), surf->numTriangles, indexes );
+
+			ri.Hunk_FreeTempMemory(indexes);
 		}
 
 		// move VBO surfaces list to hunk
