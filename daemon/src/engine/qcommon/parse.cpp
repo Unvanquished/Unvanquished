@@ -2165,7 +2165,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 	int        negativevalue = 0;
 	int        questmarkintvalue = 0;
 	double     questmarkfloatvalue = 0;
-	int        gotquestmarkvalue = false;
+	int        gotquestmarkvalue;
 //  int lastoperatortype = 0;
 	//
 	operator_t operator_heap[ MAX_OPERATORS ];

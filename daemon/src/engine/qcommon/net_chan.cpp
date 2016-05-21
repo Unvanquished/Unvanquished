@@ -80,8 +80,11 @@ Netchan_Init
 
 ===============
 */
-void Netchan_Init( int port )
+void Netchan_Init()
 {
+	// Pick a qport value that is nice and random.
+	int port;
+	Sys::GenRandomBytes(&port, sizeof(port));
 	port &= 0xffff;
 	showpackets = Cvar_Get( "showpackets", "0", CVAR_TEMP );
 	showdrop = Cvar_Get( "showdrop", "0", CVAR_TEMP );
@@ -538,29 +541,6 @@ static void NET_QueuePacket( int length, const void *data, netadr_t to,
 		}
 
 		next = next->next;
-	}
-}
-
-void NET_FlushPacketQueue()
-{
-	packetQueue_t *last;
-	int           now;
-
-	while ( packetQueue )
-	{
-		now = Sys_Milliseconds();
-
-		if ( packetQueue->release >= now )
-		{
-			break;
-		}
-
-		Sys_SendPacket( packetQueue->length, packetQueue->data,
-		                packetQueue->to );
-		last = packetQueue;
-		packetQueue = packetQueue->next;
-		Z_Free( last->data );
-		Z_Free( last );
 	}
 }
 

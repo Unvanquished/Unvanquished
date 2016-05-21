@@ -379,9 +379,6 @@ Called on a map change, not on a map_restart
 */
 void SV_InitGameProgs()
 {
-	sv.num_tagheaders = 0;
-	sv.num_tags = 0;
-
 	// load the game module
 	gvm.Start();
 

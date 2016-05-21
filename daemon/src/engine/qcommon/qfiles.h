@@ -81,31 +81,6 @@ struct vmHeader_t
 /*
 ========================================================================
 
-PCX files are used for 8 bit images
-
-========================================================================
-*/
-
-struct pcx_t
-{
-	char           manufacturer;
-	char           version;
-	char           encoding;
-	char           bits_per_pixel;
-	unsigned short xmin, ymin, xmax, ymax;
-	unsigned short hres, vres;
-	unsigned char  palette[ 48 ];
-	char           reserved;
-	char           color_planes;
-	unsigned short bytes_per_line;
-	unsigned short palette_type;
-	char           filler[ 58 ];
-	unsigned char  data; // unbounded
-};
-
-/*
-========================================================================
-
 TGA files are used for 24/32 bit images
 
 ========================================================================
@@ -133,12 +108,7 @@ struct TargaHeader
 
 // limits
 #define MD3_MAX_LODS      4
-#define MD3_MAX_TRIANGLES 8192 // per surface
-#define MD3_MAX_VERTS     4096 // per surface
-#define MD3_MAX_SHADERS   256 // per surface
-#define MD3_MAX_FRAMES    1024 // per model
 #define MD3_MAX_SURFACES  32 // per model
-#define MD3_MAX_TAGS      16 // per frame
 
 // vertex scales
 #define MD3_XYZ_SCALE     ( 1.0 / 64 )
@@ -234,180 +204,6 @@ struct md3Header_t
 	int  ofsEnd; // end of file
 };
 
-/*
-========================================================================
-
-.tag tag file format
-
-========================================================================
-*/
-
-#define TAG_IDENT   ( ( '1' << 24 ) + ( 'G' << 16 ) + ( 'A' << 8 ) + 'T' )
-#define TAG_VERSION 1
-
-struct tagHeader_t
-{
-	int ident;
-	int version;
-
-	int numTags;
-
-	int ofsEnd;
-};
-
-struct tagHeaderExt_t
-{
-	char filename[ 64 ];
-	int  start;
-	int  count;
-};
-
-/*
-==============================================================================
-
-MDS file format (Wolfenstein Skeletal Format)
-
-==============================================================================
-*/
-
-#define MDS_IDENT             ( ( 'W' << 24 ) + ( 'S' << 16 ) + ( 'D' << 8 ) + 'M' )
-#define MDS_VERSION           4
-#define MDS_MAX_VERTS         6000
-#define MDS_MAX_TRIANGLES     8192
-#define MDS_MAX_BONES         128
-#define MDS_MAX_SURFACES      32
-#define MDS_MAX_TAGS          128
-
-#define MDS_TRANSLATION_SCALE ( 1.0 / 64 )
-
-struct mdsWeight_t
-{
-	int    boneIndex; // these are indexes into the boneReferences,
-	float  boneWeight; // not the global per-frame bone list
-	vec3_t offset;
-};
-
-struct mdsVertex_t
-{
-	vec3_t      normal;
-	vec2_t      texCoords;
-	int         numWeights;
-	int         fixedParent; // stay equi-distant from this parent
-	float       fixedDist;
-	mdsWeight_t weights[ 1 ]; // variable sized
-};
-
-struct mdsTriangle_t
-{
-	int indexes[ 3 ];
-};
-
-struct mdsSurface_t
-{
-	int  ident;
-
-	char name[ 64 ]; // polyset name
-	char shader[ 64 ];
-	int  shaderIndex; // for in-game use
-
-	int  minLod;
-
-	int  ofsHeader; // this will be a negative number
-
-	int  numVerts;
-	int  ofsVerts;
-
-	int  numTriangles;
-	int  ofsTriangles;
-
-	int  ofsCollapseMap; // numVerts * int
-
-	// Bone references are a set of ints representing all the bones
-	// present in any vertex weights for this surface.  This is
-	// needed because a model may have surfaces that need to be
-	// drawn at different sort times, and we don't want to have
-	// to re-interpolate all the bones for each surface.
-	int numBoneReferences;
-	int ofsBoneReferences;
-
-	int ofsEnd; // next surface follows
-};
-
-struct mdsBoneFrameCompressed_t
-{
-	//float     angles[3];
-	//float     ofsAngles[2];
-	short angles[ 4 ]; // to be converted to axis at run-time (this is also better for lerping)
-	short ofsAngles[ 2 ]; // PITCH/YAW, head in this direction from parent to go to the offset position
-};
-
-// NOTE: this only used at run-time
-struct mdsBoneFrame_t
-{
-	float  matrix[ 3 ][ 3 ]; // 3x3 rotation
-	vec3_t translation; // translation vector
-};
-
-struct mdsFrame_t
-{
-	vec3_t                   bounds[ 2 ]; // bounds of all surfaces of all LODs for this frame
-	vec3_t                   localOrigin; // midpoint of bounds, used for sphere cull
-	float                    radius; // dist from localOrigin to corner
-	vec3_t                   parentOffset; // one bone is an ascendant of all other bones, it starts the hierachy at this position
-	mdsBoneFrameCompressed_t bones[ 1 ]; // [numBones]
-};
-
-struct mdsLOD_t
-{
-	int numSurfaces;
-	int ofsSurfaces; // first surface, others follow
-	int ofsEnd; // next lod follows
-};
-
-struct mdsTag_t
-{
-	char  name[ 64 ]; // name of tag
-	float torsoWeight;
-	int   boneIndex; // our index in the bones
-};
-
-#define BONEFLAG_TAG 1 // this bone is actually a tag
-
-struct mdsBoneInfo_t
-{
-	char  name[ 64 ]; // name of bone
-	int   parent; // not sure if this is required, no harm throwing it in
-	float torsoWeight; // scale torso rotation about torsoParent by this
-	float parentDist;
-	int   flags;
-};
-
-struct mdsHeader_t
-{
-	int   ident;
-	int   version;
-
-	char  name[ 64 ]; // model name
-
-	float lodScale;
-	float lodBias;
-
-	// frames and bones are shared by all levels of detail
-	int numFrames;
-	int numBones;
-	int ofsFrames; // md4Frame_t[numFrames]
-	int ofsBones; // mdsBoneInfo_t[numBones]
-	int torsoParent; // index of bone that is the parent of the torso
-
-	int numSurfaces;
-	int ofsSurfaces;
-
-	// tag data
-	int numTags;
-	int ofsTags; // mdsTag_t[numTags]
-
-	int ofsEnd; // end of file
-};
 
 /*
 ==============================================================================
@@ -417,50 +213,17 @@ struct mdsHeader_t
 ==============================================================================
 */
 
-#define BSP_IDENT      (( 'P' << 24 ) + ( 'S' << 16 ) + ( 'B' << 8 ) + 'I' ) // little-endian "IBSP"
 #define BSP_VERSION_Q3 46
 #define BSP_VERSION    47
 
-// there shouldn't be any problem with increasing these values at the
-// expense of more memory allocation in the utilities
-//#define   MAX_MAP_MODELS      0x400
-#define MAX_MAP_MODELS       0x800
-#define MAX_MAP_BRUSHES      16384
-#define MAX_MAP_ENTITIES     4096
-#define MAX_MAP_ENTSTRING    0x40000
-#define MAX_MAP_SHADERS      0x400
-
-#define MAX_MAP_AREAS        0x100 // MAX_MAP_AREA_BYTES in q_shared must match!
 #define MAX_MAP_FOGS         0x100
-#define MAX_MAP_PLANES       0x40000
-#define MAX_MAP_NODES        0x20000
-#define MAX_MAP_BRUSHSIDES   0x100000
-#define MAX_MAP_LEAFS        0x20000
-#define MAX_MAP_LEAFFACES    0x20000
-#define MAX_MAP_LEAFBRUSHES  0x40000
-#define MAX_MAP_PORTALS      0x20000
-#define MAX_MAP_LIGHTING     0x800000
-#define MAX_MAP_LIGHTGRID    0x800000
-#define MAX_MAP_VISIBILITY   0x200000
-
-#define MAX_MAP_DRAW_SURFS   0x20000
-#define MAX_MAP_DRAW_VERTS   0x80000
-#define MAX_MAP_DRAW_INDEXES 0x80000
-
-// key / value pair sizes in the entities lump
-#define MAX_KEY              32
-#define MAX_VALUE            1024
 
 // the editor uses these predefined yaw angles to orient entities up or down
 #define ANGLE_UP             -1
 #define ANGLE_DOWN           -2
 
-#define LIGHTMAP_WIDTH       128
-#define LIGHTMAP_HEIGHT      128
-
 #define MAX_WORLD_COORD      ( 128 * 1024 )
 #define MIN_WORLD_COORD      ( -128 * 1024 )
-#define WORLD_SIZE           ( MAX_WORLD_COORD - MIN_WORLD_COORD )
 
 //=============================================================================
 
@@ -580,8 +343,7 @@ struct drawVert_t
 
 enum class mapSurfaceType_t : int
 {
-  MST_BAD,
-  MST_PLANAR,
+  MST_PLANAR = 1,
   MST_PATCH,
   MST_TRIANGLE_SOUP,
   MST_FLARE,
@@ -610,13 +372,5 @@ struct dsurface_t
 	int    patchWidth; // ydnar: num foliage instances
 	int    patchHeight; // ydnar: num foliage mesh verts
 };
-
-//----(SA) added so I didn't change the dsurface_t struct (and thereby the bsp format) for something that doesn't need to be stored in the bsp
-struct drsurfaceInternal_t
-{
-	char *lighttarg;
-};
-
-//----(SA) end
 
 #endif

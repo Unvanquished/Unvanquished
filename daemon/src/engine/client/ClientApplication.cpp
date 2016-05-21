@@ -69,7 +69,7 @@ class ClientApplication : public Application {
         }
 
         void Initialize(Str::StringRef uri) override {
-            Com_Init((char*) "");
+            Com_Init();
 
             if (!uri.empty()) {
                 Cmd::BufferCommandTextAfter(std::string("connect ") + Cmd::Escape(uri));

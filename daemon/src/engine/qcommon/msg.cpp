@@ -93,13 +93,6 @@ void MSG_Uncompressed( msg_t *buf )
 	buf->oob = true;
 }
 
-void MSG_BeginReading( msg_t *msg )
-{
-	msg->readcount = 0;
-	msg->bit = 0;
-	msg->oob = false;
-}
-
 void MSG_BeginReadingOOB( msg_t *msg )
 {
 	msg->readcount = 0;
@@ -369,18 +362,6 @@ void MSG_WriteLong( msg_t *sb, int c )
 	MSG_WriteBits( sb, c, 32 );
 }
 
-void MSG_WriteFloat( msg_t *sb, float f )
-{
-	union
-	{
-		float f;
-		int   l;
-	} dat;
-
-	dat.f = f;
-	MSG_WriteBits( sb, dat.l, 32 );
-}
-
 void MSG_WriteString( msg_t *sb, const char *s )
 {
 	if ( !s )
@@ -433,36 +414,11 @@ void MSG_WriteBigString( msg_t *sb, const char *s )
 	}
 }
 
-void MSG_WriteAngle( msg_t *sb, float f )
-{
-	MSG_WriteByte( sb, ( int )( f * 256 / 360 ) & 255 );
-}
-
-void MSG_WriteAngle16( msg_t *sb, float f )
-{
-	MSG_WriteShort( sb, ANGLE2SHORT( f ) );
-}
-
 //============================================================
 
 //
 // reading functions
 //
-
-// returns -1 if no more characters are available
-int MSG_ReadChar( msg_t *msg )
-{
-	int c;
-
-	c = ( signed char ) MSG_ReadBits( msg, 8 );
-
-	if ( msg->readcount > msg->cursize )
-	{
-		c = -1;
-	}
-
-	return c;
-}
 
 int MSG_ReadByte( msg_t *msg )
 {
@@ -504,25 +460,6 @@ int MSG_ReadLong( msg_t *msg )
 	}
 
 	return c;
-}
-
-float MSG_ReadFloat( msg_t *msg )
-{
-	union
-	{
-		byte  b[ 4 ];
-		float f;
-		int   l;
-	} dat;
-
-	dat.l = MSG_ReadBits( msg, 32 );
-
-	if ( msg->readcount > msg->cursize )
-	{
-		dat.f = -1;
-	}
-
-	return dat.f;
 }
 
 char           *MSG_ReadString( msg_t *msg )
@@ -606,11 +543,6 @@ char           *MSG_ReadStringLine( msg_t *msg )
 	return string;
 }
 
-float MSG_ReadAngle16( msg_t *msg )
-{
-	return SHORT2ANGLE( MSG_ReadShort( msg ) );
-}
-
 void MSG_ReadData( msg_t *msg, void *data, int len )
 {
 	int i;
@@ -619,30 +551,6 @@ void MSG_ReadData( msg_t *msg, void *data, int len )
 	{
 		( ( byte * ) data ) [ i ] = MSG_ReadByte( msg );
 	}
-}
-
-// a string hasher which gives the same hash value even if the
-// string is later modified via the legacy MSG read/write code
-int MSG_HashKey( const char *string, int maxlen )
-{
-	int hash, i;
-
-	hash = 0;
-
-	for ( i = 0; i < maxlen && string[ i ] != '\0'; i++ )
-	{
-		if ( string[ i ] & 0x80 )
-		{
-			hash += '.' * ( 119 + i );
-		}
-		else
-		{
-			hash += string[ i ] * ( 119 + i );
-		}
-	}
-
-	hash = ( hash ^ ( hash >> 10 ) ^ ( hash >> 20 ) );
-	return hash;
 }
 
 /*
@@ -679,31 +587,6 @@ int MSG_ReadDelta( msg_t *msg, int oldV, int bits )
 	return oldV;
 }
 
-void MSG_WriteDeltaFloat( msg_t *msg, float oldV, float newV )
-{
-	if ( oldV == newV )
-	{
-		MSG_WriteBits( msg, 0, 1 );
-		return;
-	}
-
-	MSG_WriteBits( msg, 1, 1 );
-	MSG_WriteBits( msg, * ( int * ) &newV, 32 );
-}
-
-float MSG_ReadDeltaFloat( msg_t *msg, float oldV )
-{
-	if ( MSG_ReadBits( msg, 1 ) )
-	{
-		float newV;
-
-		* ( int * ) &newV = MSG_ReadBits( msg, 32 );
-		return newV;
-	}
-
-	return oldV;
-}
-
 /*
 =============================================================================
 
@@ -723,53 +606,6 @@ static const unsigned int kbitmask[ 32 ] =
 	0x01FFFFFF, 0x03FFFFFF, 0x07FFFFFF, 0x0FFFFFFF,
 	0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF, 0xFFFFFFFF,
 };
-
-void MSG_WriteDeltaKey( msg_t *msg, int key, int oldV, int newV, int bits )
-{
-	if ( oldV == newV )
-	{
-		MSG_WriteBits( msg, 0, 1 );
-		return;
-	}
-
-	MSG_WriteBits( msg, 1, 1 );
-	MSG_WriteBits( msg, newV ^ key, bits );
-}
-
-int MSG_ReadDeltaKey( msg_t *msg, int key, int oldV, int bits )
-{
-	if ( MSG_ReadBits( msg, 1 ) )
-	{
-		return MSG_ReadBits( msg, bits ) ^ ( key & kbitmask[ bits - 1 ] );
-	}
-
-	return oldV;
-}
-
-void MSG_WriteDeltaKeyFloat( msg_t *msg, int key, float oldV, float newV )
-{
-	if ( oldV == newV )
-	{
-		MSG_WriteBits( msg, 0, 1 );
-		return;
-	}
-
-	MSG_WriteBits( msg, 1, 1 );
-	MSG_WriteBits( msg, ( * ( int * ) &newV ) ^ key, 32 );
-}
-
-float MSG_ReadDeltaKeyFloat( msg_t *msg, int key, float oldV )
-{
-	if ( MSG_ReadBits( msg, 1 ) )
-	{
-		float newV;
-
-		* ( int * ) &newV = MSG_ReadBits( msg, 32 ) ^ key;
-		return newV;
-	}
-
-	return oldV;
-}
 
 /*
 ============================================================================

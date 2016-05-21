@@ -1310,6 +1310,7 @@ const char *Com_ClearForeignCharacters( const char *str )
 			case 3: clean[ j++ ] = str[ i++ ];
 			case 2: clean[ j++ ] = str[ i++ ];
 			case 1: clean[ j++ ] = str[ i ];
+				default:break;
 			}
 		}
 		// else invalid
@@ -2373,7 +2374,7 @@ void Q_ParseNewlines( char *dest, const char *src, int destsize )
 		*dest++ = ( ( *src == '\\' && * ( ++src ) == 'n' ) ? '\n' : *src );
 	}
 
-	*dest++ = '\0';
+	*dest = '\0';
 }
 
 //====================================================================

@@ -37,10 +37,7 @@ Maryland 20850 USA.
 #include "qcommon/q_shared.h"
 #include "qcommon.h"
 
-#include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
-
-cvar_t        *cvar_vars;
 
 /*
 ============
@@ -128,7 +125,7 @@ Cvar_SetValue
 ============
 */
 void Cvar_SetValue(const char* name, float value) {
-	if (value == (int) value) {
+	if (value == int(value)) {
         Cvar_Set(name, va("%i", (int) value));
 	} else {
         Cvar_Set(name, va("%f", value));

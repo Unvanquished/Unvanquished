@@ -84,26 +84,23 @@ void  MSG_WriteChar( msg_t *sb, int c );
 void  MSG_WriteByte( msg_t *sb, int c );
 void  MSG_WriteShort( msg_t *sb, int c );
 void  MSG_WriteLong( msg_t *sb, int c );
-void  MSG_WriteFloat( msg_t *sb, float f );
+
 void  MSG_WriteString( msg_t *sb, const char *s );
 void  MSG_WriteBigString( msg_t *sb, const char *s );
-void  MSG_WriteAngle16( msg_t *sb, float f );
 
-void  MSG_BeginReading( msg_t *sb );
 void  MSG_BeginReadingOOB( msg_t *sb );
 void  MSG_BeginReadingUncompressed( msg_t *msg );
 
 int   MSG_ReadBits( msg_t *msg, int bits );
 
-int   MSG_ReadChar( msg_t *sb );
 int   MSG_ReadByte( msg_t *sb );
 int   MSG_ReadShort( msg_t *sb );
 int   MSG_ReadLong( msg_t *sb );
-float MSG_ReadFloat( msg_t *sb );
+
 char  *MSG_ReadString( msg_t *sb );
 char  *MSG_ReadBigString( msg_t *sb );
 char  *MSG_ReadStringLine( msg_t *sb );
-float MSG_ReadAngle16( msg_t *sb );
+
 void  MSG_ReadData( msg_t *sb, void *buffer, int size );
 
 void  MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to );
@@ -257,7 +254,7 @@ struct netchan_t
     byte     unsentBuffer[ MAX_MSGLEN ];
 };
 
-void     Netchan_Init( int qport );
+void Netchan_Init();
 void     Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );
 
 void     Netchan_Transmit( netchan_t *chan, int length, const byte *data );
@@ -452,17 +449,18 @@ It is generally safe to always set uniqueFILE to true, because the majority of
 file IO goes through FS_ReadFile, which Does The Right Thing already.
 */
 
-int FS_Delete( const char *filename );  // only works inside the 'save' directory (for deleting savegames/images)
+// only works inside the 'save' directory (for deleting savegames/images)
+int FS_Delete( const char *filename );
 
 int FS_Write( const void *buffer, int len, fileHandle_t f );
 
+// properly handles partial reads and reads from other dlls
 int FS_Read( void *buffer, int len, fileHandle_t f );
 
-// properly handles partial reads and reads from other dlls
-
-int FS_FCloseFile( fileHandle_t f ); // !0 on error (but errno isn't valid)
 
 // note: you can't just fclose from another DLL, due to MS libc issues
+int FS_FCloseFile( fileHandle_t f ); // !0 on error (but errno isn't valid)
+
 
 int  FS_ReadFile( const char *qpath, void **buffer );
 
@@ -473,35 +471,30 @@ int  FS_ReadFile( const char *qpath, void **buffer );
 // the buffer should be considered read-only, because it may be cached
 // for other uses.
 
-void FS_ForceFlush( fileHandle_t f );
-
-// forces flush on files we're writing to.
-
-void FS_FreeFile( void *buffer );
 
 // frees the memory returned by FS_ReadFile
+void FS_FreeFile( void *buffer );
 
-void FS_WriteFile( const char *qpath, const void *buffer, int size );
 
 // writes a complete file, creating any subdirectories needed
+void FS_WriteFile( const char *qpath, const void *buffer, int size );
 
-int FS_filelength( fileHandle_t f );
 
 // doesn't work for files that are opened from a pack file
+int FS_filelength( fileHandle_t f );
 
-int FS_FTell( fileHandle_t f );
 
 // where are we?
+int FS_FTell( fileHandle_t f );
 
-void       FS_Flush( fileHandle_t f );
-
-void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) PRINTF_LIKE(2);
 
 // like fprintf
+void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) PRINTF_LIKE(2);
 
-int FS_Game_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
 
 // opens a file for reading, writing, or appending depending on the value of mode
+int FS_Game_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
+
 
 int FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin );
 
@@ -574,13 +567,6 @@ Edit fields and command line history/completion
 */
 
 #define MAX_EDIT_LINE 256
-struct field_t
-{
-    int  cursor;
-    int  scroll;
-    int  widthInChars;
-    char buffer[ MAX_EDIT_LINE ];
-};
 
 // Field_Complete{Key,Team}name
 #define FIELD_TEAM            1
@@ -589,10 +575,6 @@ struct field_t
 
 void Field_CompleteKeyname( int flags );
 void Field_CompleteTeamname( int flags );
-
-// code point count <-> UTF-8 byte count
-int Field_CursorToOffset( field_t *edit );
-int Field_ScrollToOffset( field_t *edit );
 
 /*
 ==============================================================
@@ -616,22 +598,14 @@ void       Info_Print( const char *s );
 // *INDENT-ON*
 int        Com_Milliseconds();
 unsigned   Com_BlockChecksum( const void *buffer, int length );
-char       *Com_MD5File( const char *filename, int length );
-void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
-int        Com_FilterPath( const char *filter, char *name, int casesensitive );
 
-void       Com_StartupVariable( const char *match );
+void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
+
 void       Com_SetRecommended();
 bool       Com_AreCheatsAllowed();
 bool       Com_IsClient();
 bool       Com_IsDedicatedServer();
 bool       Com_ServerRunning();
-
-// checks for and removes command line "+set var arg" constructs
-// if match is nullptr, all set commands will be executed, otherwise
-// only a set with the exact name.  Only used during startup.
-
-extern cvar_t       *com_crashed;
 
 extern cvar_t       *com_developer;
 extern cvar_t       *com_speeds;
@@ -660,8 +634,6 @@ extern int          time_frontend;
 extern int          time_backend; // renderer backend time
 
 extern int          com_frameTime;
-extern int          com_frameMsec;
-extern int          com_hunkusedvalue;
 
 enum class memtag_t
 {
@@ -719,18 +691,12 @@ static inline void Z_Free(void* ptr)
 void     Hunk_Clear();
 void     Hunk_ClearToMark();
 void     Hunk_SetMark();
-bool Hunk_CheckMark();
 
-//void *Hunk_Alloc( int size );
-// void *Hunk_Alloc( int size, ha_pref preference );
-void   Hunk_ClearTempMemory();
 void   *Hunk_AllocateTempMemory( int size );
 void   Hunk_FreeTempMemory( void *buf );
-void   Hunk_SmallLog();
-void   Hunk_Log();
 
 // commandLine should not include the executable name (argv[0])
-void   Com_Init( char *commandLine );
+void Com_Init();
 void   Com_Frame();
 void   Com_Shutdown();
 
@@ -803,10 +769,6 @@ void Key_KeynameCompletion( void ( *callback )( const char *s ) );
 // for keyname autocompletion
 
 void Key_WriteBindings( fileHandle_t f );
-
-// for writing the config files
-
-void S_ClearSoundBuffer();
 
 // AVI files have the start of pixel lines 4 byte-aligned
 #define AVI_LINE_PADDING 4
@@ -914,7 +876,6 @@ struct huff_t
 
     node_t *tree;
     node_t *lhead;
-    node_t *ltail;
     node_t *loc[ HMAX + 1 ];
     node_t **freelist;
 
@@ -938,13 +899,6 @@ void             Huff_offsetReceive( node_t *node, int *ch, byte *fin, int *offs
 void             Huff_offsetTransmit( huff_t *huff, int ch, byte *fout, int *offset );
 void             Huff_putBit( int bit, byte *fout, int *offset );
 int              Huff_getBit( byte *fout, int *offset );
-
-extern huffman_t clientHuffTables;
-
-#define SV_ENCODE_START 4
-#define SV_DECODE_START 12
-#define CL_ENCODE_START 12
-#define CL_DECODE_START 4
 
 int  Parse_AddGlobalDefine( const char *string );
 int  Parse_LoadSourceHandle( const char *filename );

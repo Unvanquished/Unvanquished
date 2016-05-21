@@ -61,15 +61,7 @@ struct cvar_t
 
     int index; //for vmCvar_t
 
-	/**
-	 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
-	 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
-	 */
-	bool transient;
-
 	cvar_t *next;
-
-	cvar_t *hashNext;
 };
 
 /**
@@ -79,12 +71,6 @@ struct cvar_t
  * the value will not override a previously set value.
  */
 cvar_t *Cvar_Get(const char *var_name, const char *value, int flags);
-
-/**
- * basically a slightly modified Cvar_Get for the interpreted modules
- */
-void Cvar_Register(vmCvar_t *vmCvar, const char *varName,
-		const char *defaultValue, int flags);
 
 /**
  * will create the variable with no flags if it doesn't exist

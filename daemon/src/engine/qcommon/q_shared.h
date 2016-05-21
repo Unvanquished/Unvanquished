@@ -58,18 +58,11 @@ Maryland 20850 USA.
 #endif
 
 #define Q3_ENGINE               ENGINE_NAME " " ENGINE_VERSION
-#define Q3_ENGINE_DATE          __DATE__
 
 #define CLIENT_WINDOW_TITLE     PRODUCT_NAME
-#define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
 
 
 #define Q_UNUSED(x) (void)(x)
-
-template<class T>
-void ignore_result(T) {}
-
-#define EXTERN_C extern "C"
 
 // C standard library headers
 #include <errno.h>
@@ -173,7 +166,6 @@ using fileHandle_t = int;
 using clipHandle_t = int;
 
 #define PAD(x,y)                ((( x ) + ( y ) - 1 ) & ~(( y ) - 1 ))
-#define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
 #define PADP(base, alignment)   ((void *) PAD((intptr_t) ( base ), ( alignment )))
 
 #define STRING(s)  #s
@@ -198,8 +190,6 @@ using clipHandle_t = int;
 #define MAX_ADDR_CHARS    sizeof("[1111:2222:3333:4444:5555:6666:7777:8888]:99999")
 
 #define MAX_INFO_STRING   1024
-#define MAX_INFO_KEY      1024
-#define MAX_INFO_VALUE    1024
 
 #define BIG_INFO_STRING   8192 // used for system info key only
 #define BIG_INFO_KEY      8192
@@ -207,7 +197,6 @@ using clipHandle_t = int;
 
 #define MAX_QPATH         64 // max length of a quake game pathname
 #define MAX_OSPATH        256 // max length of a filesystem pathname
-#define MAX_CMD           1024 // max length of a command line
 
 // rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
 // with very long names
@@ -232,8 +221,7 @@ using clipHandle_t = int;
 	enum class ha_pref
 	{
 	  h_high,
-	  h_low,
-	  h_dontcare
+	  h_low
 	};
 
 	void *Hunk_Alloc( int size, ha_pref preference );
@@ -354,12 +342,6 @@ void  Com_Free_Aligned( void *ptr );
 #define SCREEN_WIDTH     640
 #define SCREEN_HEIGHT    480
 
-#define TINYCHAR_WIDTH   ( SMALLCHAR_WIDTH )
-#define TINYCHAR_HEIGHT  ( SMALLCHAR_HEIGHT )
-
-#define MINICHAR_WIDTH   8
-#define MINICHAR_HEIGHT  12
-
 #define SMALLCHAR_WIDTH  8
 #define SMALLCHAR_HEIGHT 16
 
@@ -378,14 +360,12 @@ void  Com_Free_Aligned( void *ptr );
 #define RAD2DEG( a )                  ( ( ( a ) * 180.0f ) / M_PI )
 
 #define Q_clamp( a, b, c )            Math::Clamp( (a), (b), (c) )
-#define Q_lerp( from, to, frac )      ( ( from ) + ( frac ) * ( ( to ) - ( from ) ) )
 
 struct cplane_t;
 
 extern vec3_t   vec3_origin;
 extern vec3_t   axisDefault[ 3 ];
 extern matrix_t matrixIdentity;
-extern quat_t   quatIdentity;
 
 #define nanmask ( 255 << 23 )
 

@@ -55,8 +55,6 @@ DictionaryManager trans_managergame;
 
 cvar_t            *language;
 cvar_t            *trans_debug;
-cvar_t            *trans_encodings;
-cvar_t            *trans_languages;
 
 #ifndef BUILD_SERVER
 extern cvar_t *cl_consoleKeys; // should really #include client.h
@@ -252,8 +250,6 @@ void Trans_Init()
 
 	language = Cvar_Get( "language", "", CVAR_ARCHIVE );
 	trans_debug = Cvar_Get( "trans_debug", "0", 0 );
-	trans_languages = Cvar_Get( "trans_languages", "", CVAR_ROM );
-	trans_encodings = Cvar_Get( "trans_encodings", "", CVAR_ROM );
 
 	// set tinygettext log callbacks
 	tinygettext::Log::set_log_error_callback( &Trans_Error );

@@ -34,18 +34,13 @@ Maryland 20850 USA.
 
 // common.c -- misc functions used in client and server
 
-#include "revision.h"
 #include "qcommon/q_shared.h"
-#include "q_unicode.h"
 #include "qcommon.h"
-
-#include "common/Defs.h"
 
 #include "framework/Application.h"
 #include "framework/BaseCommands.h"
 #include "framework/CommandSystem.h"
 #include "framework/CvarSystem.h"
-#include "framework/ConsoleHistory.h"
 #include "framework/LogSystem.h"
 #include "framework/System.h"
 #include <common/FileSystem.h>
@@ -53,22 +48,13 @@ Maryland 20850 USA.
 // htons
 #ifdef _WIN32
 #include <winsock.h>
-#else
-#include <arpa/inet.h>
 #endif
 
-#ifdef USE_SMP
-#include <SDL_mutex.h>
-#endif
 
 #define MIN_COMHUNKMEGS 256
 #define DEF_COMHUNKMEGS 512
 
 static fileHandle_t logfile;
-
-cvar_t              *com_crashed = nullptr; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
-
-cvar_t *com_pid; // bani - process id
 
 cvar_t *com_speeds;
 cvar_t *com_developer;
@@ -77,22 +63,18 @@ cvar_t *com_dropsim; // 0.0 to 1.0, simulated packet drops
 cvar_t *com_timedemo;
 cvar_t *com_sv_running;
 cvar_t *com_cl_running;
-cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print, 3 = append + flush
 cvar_t *com_version;
 
 cvar_t *com_unfocused;
 cvar_t *com_minimized;
 
 
-cvar_t *com_introPlayed;
-cvar_t *com_logosPlaying;
 cvar_t *cl_paused;
 cvar_t *sv_paused;
 
 #if defined( _WIN32 ) && !defined( NDEBUG )
 cvar_t *com_noErrorInterrupt;
 #endif
-cvar_t *com_recommendedSet;
 
 cvar_t *com_hunkused; // Ridah
 
@@ -102,9 +84,7 @@ int      time_frontend; // renderer frontend time
 int      time_backend; // renderer backend time
 
 int      com_frameTime;
-int      com_frameMsec;
 int      com_frameNumber;
-int      com_hunkusedvalue;
 
 bool com_fullyInitialized;
 
@@ -120,101 +100,6 @@ void CL_ShutdownCGame();
 
 // *INDENT-ON*
 
-/*
-============================================================================
-
-COMMAND LINE FUNCTIONS
-
-+ characters separate the commandLine string into multiple console
-command lines.
-
-All of these are valid:
-
-quake3 +set test blah +map test
-quake3 set test blah+map test
-quake3 set test blah + map test
-
-============================================================================
-*/
-
-static const int MAX_CONSOLE_LINES = 32;
-int  com_numConsoleLines;
-char *com_consoleLines[ MAX_CONSOLE_LINES ];
-
-/*
-==================
-Com_ParseCommandLine
-
-Break it up into multiple console lines
-==================
-*/
-void Com_ParseCommandLine( char *commandLine )
-{
-	com_consoleLines[ 0 ] = commandLine;
-	com_numConsoleLines = 1;
-
-	while ( *commandLine )
-	{
-		// look for a + separating character
-		// if commandLine came from a file, we might have real line separators
-		if ( *commandLine == '+' || *commandLine == '\n' || *commandLine == '\r' )
-		{
-			if ( com_numConsoleLines == MAX_CONSOLE_LINES )
-			{
-				return;
-			}
-
-			com_consoleLines[ com_numConsoleLines ] = commandLine + 1;
-			com_numConsoleLines++;
-			*commandLine = 0;
-		}
-
-		commandLine++;
-	}
-}
-
-/*
-===============
-Com_StartupVariable
-
-Searches for command-line arguments that are set commands.
-If match is not nullptr, only that cvar will be looked for.
-That is necessary because the fs_* cvars need to be set
-before the filesystem is started, but all other sets should
-be after execing the config and default.
-===============
-*/
-void Com_StartupVariable( const char *match )
-{
-	int    i;
-	const char   *s;
-	cvar_t *cv;
-
-	for ( i = 0; i < com_numConsoleLines; i++ )
-	{
-		if (com_consoleLines[i] == 0) {
-			continue;
-		}
-
-		Cmd::Args line(com_consoleLines[i]);
-
-		if ( line.size() < 3 || strcmp( line[0].c_str(), "set" ))
-		{
-			continue;
-		}
-
-		s = line[1].c_str();
-
-		if ( !match || !strcmp( s, match ) )
-		{
-			Cvar_Set( s, line[2].c_str() );
-			cv = Cvar_Get( s, "", CVAR_USER_CREATED );
-			if (cv->flags & CVAR_ROM) {
-				com_consoleLines[i] = 0;
-			}
-		}
-	}
-}
 
 //============================================================================
 
@@ -223,7 +108,6 @@ void Info_Print( const char *s )
 	char key[ 8192 ];
 	char value[ 8192 ];
 	char *o;
-	int  l;
 
 	if ( *s == '\\' )
 	{
@@ -239,7 +123,7 @@ void Info_Print( const char *s )
 			*o++ = *s++;
 		}
 
-		l = o - key;
+		auto l = o - key;
 
 		if ( l < 20 )
 		{
@@ -310,7 +194,7 @@ bool Com_IsDedicatedServer()
 
 bool Com_ServerRunning()
 {
-	return com_sv_running->integer;
+	return !!com_sv_running->integer;
 }
 
 /*
@@ -374,14 +258,12 @@ struct hunkblock_t
 	const char         *file;
 	int                line;
 };
-// for alignment purposes
-#define SIZEOF_HUNKBLOCK_T ( ( sizeof( hunkblock_t ) + 31 ) & ~31 )
 
 static hunkUsed_t  hunk_low, hunk_high;
 static hunkUsed_t  *hunk_permanent, *hunk_temp;
 
 static byte        *s_hunkData = nullptr;
-static int         s_hunkTotal;
+static size_t s_hunkTotal;
 
 /*
 =================
@@ -484,7 +366,7 @@ void Com_InitHunkMemory()
 	}
 	else
 	{
-		s_hunkTotal = cv->integer * 1024 * 1024;
+		s_hunkTotal = size_t(cv->integer * 1024 * 1024);
 	}
 
 	// cacheline aligned
@@ -558,7 +440,6 @@ void Hunk_Clear()
 	hunk_temp = &hunk_high;
 
 	Cvar_Set( "com_hunkused", va( "%i", hunk_low.permanent + hunk_high.permanent ) );
-	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
 	Log::Debug( "Hunk_Clear: reset the hunk ok" );
 }
@@ -629,8 +510,6 @@ void           *Hunk_Alloc( int size, ha_pref)
 	{
 		Cvar_Set( "com_hunkused", va( "%i", hunk_low.permanent + hunk_high.permanent ) );
 	}
-
-	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
 	return buf;
 }
@@ -714,7 +593,7 @@ void Hunk_FreeTempMemory( void *buf )
 
 	hdr = ( ( hunkHeader_t * ) buf ) - 1;
 
-	if ( hdr->magic != (int) HUNK_MAGIC )
+	if (hdr->magic != HUNK_MAGIC)
 	{
 		Com_Error( errorParm_t::ERR_FATAL, "Hunk_FreeTempMemory: bad magic" );
 	}
@@ -837,9 +716,7 @@ sysEvent_t Com_GetEvent()
 	if ( s )
 	{
 		char *b;
-		int  len;
-
-		len = strlen( s ) + 1;
+		size_t len = strlen( s ) + 1;
 		b = ( char * ) Z_Malloc( len );
 		strcpy( b, s );
 		Com_QueueEvent( 0, sysEventType_t::SE_CONSOLE, 0, 0, len, b );
@@ -961,10 +838,6 @@ int Com_EventLoop()
 
 		switch ( ev.evType )
 		{
-			default:
-				// bk001129 - was ev.evTime
-				Com_Error( errorParm_t::ERR_FATAL, "Com_EventLoop: bad event type %s", Util::enum_str(ev.evType) );
-
 			case sysEventType_t::SE_NONE:
 				break;
 
@@ -1127,7 +1000,6 @@ error recovery
 */
 static void Com_Freeze_f()
 {
-	float s;
 	int   start, now;
 
 	if ( Cmd_Argc() != 2 )
@@ -1136,7 +1008,7 @@ static void Com_Freeze_f()
 		return;
 	}
 
-	s = atof( Cmd_Argv( 1 ) );
+	auto s = atof( Cmd_Argv( 1 ) );
 
 	start = Com_Milliseconds();
 
@@ -1198,26 +1070,10 @@ void Com_In_Restart_f()
 Com_Init
 =================
 */
-void Com_Init( char *commandLine )
+void Com_Init()
 {
-	char              *s;
-	int               qport;
-
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management
-	Com_ParseCommandLine( commandLine );
-
-	// override anything from the config files with command line args
-	Com_StartupVariable( nullptr );
-
-	// get the developer cvar set as early as possible
-	Com_StartupVariable( "developer" );
-
-	// bani: init this early
-	Com_StartupVariable( "com_ignorecrash" );
-
-	// ydnar: init crashed variable as early as possible
-	com_crashed = Cvar_Get( "com_crashed", "0", CVAR_TEMP );
 
 	Trans_Init();
 
@@ -1234,8 +1090,6 @@ void Com_Init( char *commandLine )
 	//
 	com_developer = Cvar_Get( "developer", "0", CVAR_TEMP );
 
-	com_logfile = Cvar_Get( "logfile", "0", CVAR_TEMP );
-
 	com_timescale = Cvar_Get( "timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO );
 	com_dropsim = Cvar_Get( "com_dropsim", "0", CVAR_CHEAT );
 	com_speeds = Cvar_Get( "com_speeds", "0", 0 );
@@ -1246,10 +1100,6 @@ void Com_Init( char *commandLine )
 	com_sv_running = Cvar_Get( "sv_running", "0", CVAR_ROM );
 	com_cl_running = Cvar_Get( "cl_running", "0", CVAR_ROM );
 
-	com_introPlayed = Cvar_Get( "com_introplayed", "0", 0 );
-	com_logosPlaying = Cvar_Get( "com_logosPlaying", "0", CVAR_ROM );
-	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", 0 );
-
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
 
@@ -1258,7 +1108,6 @@ void Com_Init( char *commandLine )
 #endif
 
 	com_hunkused = Cvar_Get( "com_hunkused", "0", 0 );
-	com_hunkusedvalue = 0;
 
 	if ( com_developer && com_developer->integer )
 	{
@@ -1272,17 +1121,11 @@ void Com_Init( char *commandLine )
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
 #endif
 
-	s = va( "%s %s %s %s", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__ );
-	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
+	com_version = Cvar_Get("version", va("%s %s %s %s", Q3_VERSION, PLATFORM_STRING, ARCH_STRING, __DATE__ ), CVAR_ROM | CVAR_SERVERINFO );
 
 	Cmd_AddCommand( "in_restart", Com_In_Restart_f );
 
-	// Pick a qport value that is nice and random.
-	// As machines get faster, Com_Milliseconds() can't be used
-	// anymore, as it results in a smaller and smaller range of
-	// qport values.
-	Sys::GenRandomBytes( &qport, sizeof( int ) );
-	Netchan_Init( qport & 0xffff );
+	Netchan_Init();
 
 	SV_Init();
 
@@ -1582,7 +1425,6 @@ void Com_Frame()
 	lastTime = com_frameTime;
 
 	// mess with msec if needed
-	com_frameMsec = msec;
 	msec = Com_ModifyMsec( msec );
 
 	//

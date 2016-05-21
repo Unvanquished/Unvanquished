@@ -36,7 +36,6 @@ Maryland 20850 USA.
 
 #include "qcommon/q_shared.h"
 #include "qcommon.h"
-#include "client/keys.h"
 
 #include "framework/CommandSystem.h"
 
@@ -44,7 +43,6 @@ struct cmdContext_t
 {
 	int  argc;
 	char *argv[ MAX_STRING_TOKENS ]; // points into cmd.tokenized
-	char tokenized[ BIG_INFO_STRING + MAX_STRING_TOKENS ]; // will have 0 bytes inserted
 	char cmd[ BIG_INFO_STRING ]; // the original command we received (no token processing)
 };
 
@@ -265,7 +263,7 @@ static void Tokenise( const char *text, char *textOut, bool tokens, bool ignoreQ
 			}
 		}
 
-		*textOut++ = tokens ? '\0' : ' ';
+		*textOut++ = char(tokens ? '\0' : ' ');
 
 		if ( !*text )
 		{
@@ -317,7 +315,7 @@ static const char *EscapeString( const char *in, bool quote )
 {
 	char        *escapeBuffer = GetEscapeBuffer();
 	char        *out = escapeBuffer;
-	const char  *end = escapeBuffer + ESCAPEBUFFER_SIZE - 1 - !!quote;
+	const char  *end = escapeBuffer + ESCAPEBUFFER_SIZE - 1 - quote;
 	bool    quoted = false;
 	bool    forcequote = false;
 
@@ -353,6 +351,8 @@ static const char *EscapeString( const char *in, bool quote )
 			doquote:
 			quoted = true;
 			*out++ = '\\'; // could set out == end - is fine
+			break;
+		default:
 			break;
 		}
 

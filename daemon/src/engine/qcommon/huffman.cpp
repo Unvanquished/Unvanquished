@@ -490,7 +490,7 @@ void Huff_Decompress( msg_t *mbuf, int offset )
 
 	Com_Memset( &huff, 0, sizeof( huff_t ) );
 	// Initialize the tree & list with the NYT node
-	huff.tree = huff.lhead = huff.ltail = huff.loc[ NYT ] = & ( huff.nodeList[ huff.blocNode++ ] );
+	huff.tree = huff.lhead = huff.loc[ NYT ] = & ( huff.nodeList[ huff.blocNode++ ] );
 	huff.tree->symbol = NYT;
 	huff.tree->weight = 0;
 	huff.lhead->next = huff.lhead->prev = nullptr;
@@ -588,7 +588,7 @@ void Huff_Init( huffman_t *huff )
 	Com_Memset( &huff->decompressor, 0, sizeof( huff_t ) );
 
 	// Initialize the tree & list with the NYT node
-	huff->decompressor.tree = huff->decompressor.lhead = huff->decompressor.ltail = huff->decompressor.loc[ NYT ] =
+	huff->decompressor.tree = huff->decompressor.lhead = huff->decompressor.loc[ NYT ] =
 	                            & ( huff->decompressor.nodeList[ huff->decompressor.blocNode++ ] );
 	huff->decompressor.tree->symbol = NYT;
 	huff->decompressor.tree->weight = 0;

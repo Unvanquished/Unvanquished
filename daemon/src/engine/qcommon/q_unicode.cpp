@@ -58,25 +58,6 @@ int Q_UTF8_WidthCP( int ch )
 	return 0;
 }
 
-int Q_UTF8_Strlen( const char *str )
-{
-  int l = 0;
-
-  while( *str )
-  {
-    l++;
-
-    str += Q_UTF8_Width( str );
-  }
-
-  return l;
-}
-
-bool Q_UTF8_ContByte( char c )
-{
-  return (unsigned char )0x80 <= (unsigned char)c && (unsigned char)c <= (unsigned char )0xBF;
-}
-
 static bool getbit(const unsigned char *p, int pos)
 {
   p   += pos / 8;
@@ -280,7 +261,7 @@ static int uc_search_range( const void *chp, const void *memb )
 
 Q_UC_IS( Alpha, uc_prop_alphabetic  )
 Q_UC_IS( Upper, uc_prop_uppercase   )
-Q_UC_IS( Lower, uc_prop_lowercase   )
+
 Q_UC_IS( Ideo,  uc_prop_ideographic )
 Q_UC_IS( Digit, uc_prop_digit       )
 
@@ -309,5 +290,4 @@ static int uc_search_cp( const void *chp, const void *memb )
     return converted ? converted->c2 : ch; \
   }
 
-Q_UC_TO( Upper, uc_case_upper )
 Q_UC_TO( Lower, uc_case_lower )

@@ -56,7 +56,7 @@ class ServerApplication : public Application {
         }
 
         void Initialize(Str::StringRef) override {
-            Com_Init((char*) "");
+            Com_Init();
         }
 
         void Frame() override {

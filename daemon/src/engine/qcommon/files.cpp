@@ -23,9 +23,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <common/FileSystem.h>
-#include "q_shared.h"
 #include "qcommon.h"
-#include "common/Defs.h"
 
 // Compatibility wrapper for the filesystem
 const char TEMP_SUFFIX[] = ".tmp";
@@ -275,9 +273,6 @@ int FS_Seek(fileHandle_t handle, long offset, fsOrigin_t origin)
 		case fsOrigin_t::FS_SEEK_END:
 			handleTable[handle].filePos = handleTable[handle].fileData.size() + offset;
 			break;
-
-		default:
-			Com_Error(errorParm_t::ERR_DROP, "Bad origin in FS_Seek");
 		}
 		return 0;
 	} else {
@@ -294,30 +289,12 @@ int FS_Seek(fileHandle_t handle, long offset, fsOrigin_t origin)
 			case fsOrigin_t::FS_SEEK_END:
 				handleTable[handle].file.SeekEnd(offset);
 				break;
-
-			default:
-				Com_Error(errorParm_t::ERR_DROP, "Bad origin in FS_Seek");
 			}
 			return 0;
 		} catch (std::system_error& err) {
 			Log::Notice("FS_Seek failed: %s\n", err.what());
 			return -1;
 		}
-	}
-}
-
-void FS_ForceFlush(fileHandle_t handle)
-{
-	FS_CheckHandle(handle, true);
-	handleTable[handle].forceFlush = true;
-}
-void FS_Flush(fileHandle_t handle)
-{
-	FS_CheckHandle(handle, true);
-	try {
-		handleTable[handle].file.Flush();
-	} catch (std::system_error& err) {
-		Log::Notice("FS_Flush failed: %s\n", err.what());
 	}
 }
 
