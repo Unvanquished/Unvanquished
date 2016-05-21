@@ -220,20 +220,19 @@ void SV_GetUsercmd( int clientNum, usercmd_t *cmd )
 SV_SendBinaryMessage
 ====================
 */
-static void SV_SendBinaryMessage( int cno, const char *buf, int buflen )
+static void SV_SendBinaryMessage( int cno, const uint8_t *buf, size_t buflen )
 {
-	if ( cno < 0 || cno >= sv_maxclients->integer )
-	{
-		Com_Error( errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno );
+	if (cno < 0 || cno >= sv_maxclients->integer) {
+		Com_Error(errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno);
 	}
 
-	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
-	{
-		Com_Error( errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen );
+	if (buflen > MAX_BINARY_MESSAGE) {
+		Com_Error(errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad length %zi", buflen);
 	}
 
-	svs.clients[ cno ].binaryMessageLength = buflen;
-	memcpy( svs.clients[ cno ].binaryMessage, buf, buflen );
+	auto &cl = svs.clients[cno];
+	cl.binaryMessageLength = buflen;
+	memcpy(cl.binaryMessage, buf, buflen);
 }
 
 /*
@@ -241,23 +240,18 @@ static void SV_SendBinaryMessage( int cno, const char *buf, int buflen )
 SV_BinaryMessageStatus
 ====================
 */
-static messageStatus_t SV_BinaryMessageStatus( int cno )
+static messageStatus_t SV_BinaryMessageStatus(int cno)
 {
-	if ( cno < 0 || cno >= sv_maxclients->integer )
-	{
+	if (cno < 0 || cno >= sv_maxclients->integer) {
 		return messageStatus_t::MESSAGE_EMPTY;
 	}
-
-	if ( svs.clients[ cno ].binaryMessageLength == 0 )
-	{
+	const auto &cl = svs.clients[cno];
+	if (cl.binaryMessageLength == 0) {
 		return messageStatus_t::MESSAGE_EMPTY;
 	}
-
-	if ( svs.clients[ cno ].binaryMessageOverflowed )
-	{
+	if (cl.binaryMessageOverflowed) {
 		return messageStatus_t::MESSAGE_WAITING_OVERFLOW;
 	}
-
 	return messageStatus_t::MESSAGE_WAITING;
 }
 
@@ -266,7 +260,7 @@ static messageStatus_t SV_BinaryMessageStatus( int cno )
 SV_GameBinaryMessageReceived
 ====================
 */
-void SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime )
+void SV_GameBinaryMessageReceived(int cno, const byte *buf, size_t buflen, int commandTime)
 {
 	gvm.GameMessageRecieved( cno, buf, buflen, commandTime );
 }
@@ -478,9 +472,11 @@ void GameVM::BotAIStartFrame(int)
 	Com_Error(errorParm_t::ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
-void GameVM::GameMessageRecieved(int, const char*, int, int)
+void GameVM::GameMessageRecieved(int clientNum, const byte *buf, size_t size, int commandTime)
 {
-	//Com_Error(ERR_DROP, "GameVM::GameMessageRecieved not implemented");
+	auto shm = IPC::SharedMemory::Create(size);
+	memcpy(shm.GetBase(), buf, size);
+	gvm.SendMsg<GameRecvMessageMsg>(clientNum, shm, size, commandTime);
 }
 
 void GameVM::Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel)
@@ -598,7 +594,7 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_SEND_MESSAGE:
-		IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](int clientNum, int len, std::vector<char> message) {
+		IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](int clientNum, size_t len, std::vector<uint8_t> message) {
 			SV_SendBinaryMessage(clientNum, message.data(), len);
 		});
 		break;

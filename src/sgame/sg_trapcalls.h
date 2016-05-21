@@ -77,7 +77,7 @@ int              trap_Parse_FreeSource( int handle );
 bool             trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int              trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 int              trap_BotGetServerCommand( int clientNum, char *message, int size );
-void             trap_SendMessage( int clientNum, char *buf, int buflen );
+void             trap_SendMessage( int clientNum, uint8_t *buf, size_t buflen );
 messageStatus_t  trap_MessageStatus( int clientNum );
 
 int              trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted );

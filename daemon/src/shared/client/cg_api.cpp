@@ -104,6 +104,20 @@ bool trap_GetEntityToken( char *buffer, int bufferSize )
 	return res;
 }
 
+void trap_SendMessage(uint8_t *buf, size_t buflen)
+{
+	std::vector<uint8_t> buffer(buflen, 0);
+	memcpy(buffer.data(), buf, buflen);
+	VM::SendMsg<SendMessageMsg>(buflen, buffer);
+}
+
+messageStatus_t trap_MessageStatus()
+{
+	int res;
+	VM::SendMsg<MessageStatusMsg>(res);
+	return static_cast<messageStatus_t>(res);
+}
+
 void trap_RegisterButtonCommands( const char *cmds )
 {
 	VM::SendMsg<RegisterButtonCommandsMsg>(cmds);

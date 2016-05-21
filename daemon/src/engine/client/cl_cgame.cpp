@@ -1034,7 +1034,41 @@ void CL_SetCGameTime()
 	}
 }
 
-void CL_CGameBinaryMessageReceived(byte *buf, size_t size, int serverTime)
+
+/*
+====================
+CL_SendBinaryMessage
+====================
+*/
+static void CL_SendBinaryMessage(const uint8_t *buf, size_t buflen)
+{
+	if (buflen > MAX_BINARY_MESSAGE) {
+		Com_Error(errorParm_t::ERR_DROP, "CL_SendBinaryMessage: bad length %zi", buflen);
+		clc.binaryMessageLength = 0;
+		return;
+	}
+
+	clc.binaryMessageLength = buflen;
+	memcpy(clc.binaryMessage, buf, buflen);
+}
+
+/*
+====================
+CL_BinaryMessageStatus
+====================
+*/
+static messageStatus_t CL_BinaryMessageStatus(void)
+{
+	if (clc.binaryMessageLength == 0) {
+		return messageStatus_t::MESSAGE_EMPTY;
+	}
+	if (clc.binaryMessageOverflowed) {
+		return messageStatus_t::MESSAGE_WAITING_OVERFLOW;
+	}
+	return messageStatus_t::MESSAGE_WAITING;
+}
+
+void CL_CGameBinaryMessageReceived(const byte *buf, size_t size, int serverTime)
 {
 	auto shm = IPC::SharedMemory::Create(size);
 	memcpy(shm.GetBase(), buf, size);
@@ -1595,6 +1629,18 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		case CG_LAN_RESETSERVERSTATUS:
 			IPC::HandleMsg<LAN::ResetServerStatusMsg>(channel, std::move(reader), [this] {
 				CL_ServerStatus(nullptr, nullptr, 0);
+			});
+			break;
+
+		case CG_SEND_MESSAGE:
+			IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](size_t len, std::vector<uint8_t> message) {
+				CL_SendBinaryMessage(message.data(), len);
+			});
+			break;
+
+		case CG_MESSAGE_STATUS:
+			IPC::HandleMsg<MessageStatusMsg>(channel, std::move(reader), [this](int& status) {
+				status = Util::ordinal(CL_BinaryMessageStatus());
 			});
 			break;
 

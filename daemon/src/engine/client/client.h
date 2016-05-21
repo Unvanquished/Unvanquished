@@ -190,8 +190,8 @@ struct clientConnection_t
 	char reliableCommands[ MAX_RELIABLE_COMMANDS ][ MAX_TOKEN_CHARS ];
 
 	// unreliable binary data to send to server
-	int      binaryMessageLength;
-	char     binaryMessage[ MAX_BINARY_MESSAGE ];
+	size_t binaryMessageLength;
+	uint8_t binaryMessage[MAX_BINARY_MESSAGE];
 	bool binaryMessageOverflowed;
 
 	// server message (unreliable) and command (reliable) sequence
@@ -776,7 +776,7 @@ void     CL_CGameRendering();
 void     CL_SetCGameTime();
 void     CL_FirstSnapshot();
 void     CL_ShaderStateChanged();
-void CL_CGameBinaryMessageReceived(byte *buf, size_t size, int serverTime);
+void CL_CGameBinaryMessageReceived(const byte *buf, size_t size, int serverTime);
 void     CL_OnTeamChanged( int newTeam );
 
 //

@@ -258,7 +258,10 @@ enum cgameImport_t
   CG_ROCKET_REGISTERPROPERTY,
   CG_ROCKET_SHOWSCOREBOARD,
   CG_ROCKET_SETDATASELECTINDEX,
-  CG_ROCKET_LOADFONT
+  CG_ROCKET_LOADFONT,
+
+  CG_SEND_MESSAGE,
+  CG_MESSAGE_STATUS,
 };
 
 // All Miscs
@@ -330,6 +333,12 @@ using PrepareKeyUpMsg = IPC::SyncMessage<
 using GetNewsMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_GETNEWS>, bool>,
 	IPC::Reply<bool>
+>;
+
+using SendMessageMsg = IPC::Message<IPC::Id<VM::QVM, CG_SEND_MESSAGE>, size_t, std::vector<uint8_t>>;
+using MessageStatusMsg = IPC::SyncMessage<
+		IPC::Message<IPC::Id<VM::QVM, CG_MESSAGE_STATUS>>,
+		IPC::Reply<int>
 >;
 
 // All Sounds

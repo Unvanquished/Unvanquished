@@ -1195,13 +1195,11 @@ SV_ClientCommand
 */
 static bool SV_ClientCommand( client_t *cl, msg_t *msg, bool premaprestart )
 {
-	int        seq;
-	const char *s;
 	bool   clientOk = true;
 	bool   floodprotect = true;
 
-	seq = MSG_ReadLong( msg );
-	s = MSG_ReadString( msg );
+	auto seq = MSG_ReadLong( msg );
+	auto s = MSG_ReadString( msg );
 
 	// see if we have already executed it
 	if ( cl->lastClientCommand >= seq )
@@ -1374,20 +1372,15 @@ static void SV_UserMove( client_t *cl, msg_t *msg, bool delta )
 SV_ParseBinaryMessage
 =====================
 */
-static void SV_ParseBinaryMessage( client_t *cl, msg_t *msg )
+static void SV_ParseBinaryMessage(client_t *cl, msg_t *msg)
 {
-	int size;
-
-	MSG_BeginReadingUncompressed( msg );
-
-	size = msg->cursize - msg->readcount;
-
-	if ( size <= 0 || size > MAX_BINARY_MESSAGE )
-	{
+	MSG_BeginReadingUncompressed(msg);
+	int ssize = msg->cursize - msg->readcount;
+	if (ssize <= 0 || ssize > MAX_BINARY_MESSAGE) {
 		return;
 	}
-
-	SV_GameBinaryMessageReceived( cl - svs.clients, ( char * ) &msg->data[ msg->readcount ], size, cl->lastUsercmd.serverTime );
+	const auto client = int(cl - svs.clients);
+	SV_GameBinaryMessageReceived(client, &msg->data[msg->readcount], size_t(ssize), cl->lastUsercmd.serverTime);
 }
 
 /*
@@ -1502,14 +1495,9 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	}
 
 	// read optional clientCommand strings
-	do
+	for (;;)
 	{
 		c = MSG_ReadByte( msg );
-
-		if ( c == clc_EOF )
-		{
-			break;
-		}
 
 		if ( c != clc_clientCommand )
 		{
@@ -1526,25 +1514,22 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 			return; // disconnect command
 		}
 	}
-	while ( 1 );
 
 	// read the usercmd_t
-	if ( c == clc_move )
-	{
-		SV_UserMove( cl, msg, true );
+	if (c == clc_move) {
+		SV_UserMove(cl, msg, true);
+	} else if (c == clc_moveNoDelta) {
+		SV_UserMove(cl, msg, false);
+	} else if (c != clc_EOF) {
+		Log::Warn("bad command byte for client %i\n", (int) (cl - svs.clients));
 	}
-	else if ( c == clc_moveNoDelta )
-	{
-		SV_UserMove( cl, msg, false );
-	}
-	else if ( c != clc_EOF )
-	{
-		Log::Warn( "bad command byte for client %i\n", ( int )( cl - svs.clients ) );
+	if (c != clc_EOF && MSG_ReadByte(msg) != clc_EOF) {
+		Log::Warn("missing clc_EOF byte for client %i\n", (int) (cl - svs.clients));
 	}
 
 	SV_ParseBinaryMessage( cl, msg );
-
-//  if ( msg->readcount != msg->cursize ) {
-//      Log::Notice( "WARNING: Junk at end of packet for client %i\n", cl - svs.clients );
-//  }
+//  TODO: track bytes read
+//	if (msg->readcount != msg->cursize) {
+//		Log::Warn("Junk at end of packet for client %i (%i bytes), read %i of %i bytes", cl - svs.clients, msg->cursize - msg->readcount, msg->readcount, msg->cursize);
+//	}
 }
