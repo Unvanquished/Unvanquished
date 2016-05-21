@@ -35,4 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern IPC::SharedMemory shmRegion;
 
+void trap_SendMessage(int clientNum, char *buf, int buflen);
+
 #endif

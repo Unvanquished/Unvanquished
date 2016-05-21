@@ -1034,6 +1034,13 @@ void CL_SetCGameTime()
 	}
 }
 
+void CL_CGameBinaryMessageReceived(byte *buf, size_t size, int serverTime)
+{
+	auto shm = IPC::SharedMemory::Create(size);
+	memcpy(shm.GetBase(), buf, size);
+	cgvm.SendMsg<CGameRecvMessageMsg>(shm, size, serverTime);
+}
+
 /**
  * is notified by teamchanges.
  * while most notifications will come from the cgame, due to game semantics,

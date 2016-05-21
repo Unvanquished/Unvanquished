@@ -643,7 +643,6 @@ enum cgameExport_t
 {
   CG_STATIC_INIT,
 
-  CG_INIT,
 //  void CG_Init( int serverMessageNum, int serverCommandSequence )
   // called when the level loads or when the renderer is restarted
   // all media should be registered at this time
@@ -651,41 +650,44 @@ enum cgameExport_t
   // will call CG_DrawInformation during the loading process
   // reliableCommandSequence will be 0 on fresh loads, but higher for
   // demos or vid_restarts
+  CG_INIT,
 
-  CG_SHUTDOWN,
 //  void (*CG_Shutdown)();
   // oportunity to flush and close any open files
+  CG_SHUTDOWN,
 
-  CG_DRAW_ACTIVE_FRAME,
 //  void (*CG_DrawActiveFrame)( int serverTime, bool demoPlayback );
   // Generates and draws a game scene and status information at the given time.
   // If demoPlayback is set, local movement prediction will not be enabled
+  CG_DRAW_ACTIVE_FRAME,
 
-  CG_CROSSHAIR_PLAYER,
 //  int (*CG_CrosshairPlayer)();
+  CG_CROSSHAIR_PLAYER,
 
-  CG_KEY_EVENT,
 //  void    (*CG_KeyEvent)( int key, bool down );
+  CG_KEY_EVENT,
 
-  CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
+  CG_MOUSE_EVENT,
 
-  CG_MOUSE_POS_EVENT,
 //  void    (*CG_MousePosEvent)( int x, int y );
+  CG_MOUSE_POS_EVENT,
 
-  CG_TEXT_INPUT_EVENT,
 // pass in text input events from the engine
+  CG_TEXT_INPUT_EVENT,
 
-  CG_ROCKET_VM_INIT,
 // Inits libRocket in the game.
+  CG_ROCKET_VM_INIT,
 
-  CG_ROCKET_FRAME,
 // Rocket runs through a frame, including event processing, and rendering
+  CG_ROCKET_FRAME,
 
   CG_CONSOLE_LINE,
 
-  CG_FOCUS_EVENT
 // void (*CG_FocusEvent)( bool focus);
+  CG_FOCUS_EVENT,
+
+  CG_RECV_MESSAGE,
 };
 
 using CGameStaticInitMsg = IPC::SyncMessage<
@@ -718,6 +720,9 @@ using CGameTextInptEvent = IPC::SyncMessage<
 >;
 using CGameFocusEventMsg = IPC::SyncMessage<
 	IPC::Message<IPC::Id<VM::QVM, CG_FOCUS_EVENT>, bool>
+>;
+using CGameRecvMessageMsg = IPC::SyncMessage<
+	IPC::Message<IPC::Id<VM::QVM, CG_RECV_MESSAGE>, IPC::SharedMemory, size_t, int>
 >;
 
 //TODO Check all rocket calls
