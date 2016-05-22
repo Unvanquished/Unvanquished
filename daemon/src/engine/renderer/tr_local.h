@@ -236,7 +236,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	struct screenRect_t
 	{
 		int                 coords[ 4 ];
-		screenRect_t *next;
 	};
 
 	enum frustumBits_t
@@ -1334,8 +1333,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	                       | GLS_BLUEMASK_FALSE
 	                       | GLS_ALPHAMASK_FALSE,
 
-	  GLS_STENCILTEST_ENABLE = ( 1 << 30 ),
-
 	  GLS_DEFAULT = GLS_DEPTHMASK_TRUE
 	};
 
@@ -1486,14 +1483,15 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		vec3_t         pvsOrigin; // may be different than or.origin for portals
 
-		bool       isPortal; // true if this view is through a portal
-		bool       isMirror; // the portal is a mirror, invert the face culling
+		int            portalLevel; // number of portals this view is through
+		bool           isMirror; // the portal is a mirror, invert the face culling
 
 		int            frameSceneNum; // copied from tr.frameSceneNum
 		int            frameCount; // copied from tr.frameCount
 		int            viewCount; // copied from tr.viewCount
 
-		cplane_t       portalPlane; // clip anything behind this if mirroring
+		frustum_t      portalFrustum; // view space frustum bounding the portal surface, clip anything behind near plane for proper rendering. FAR plane is unused
+		int            scissorX, scissorY, scissorWidth, scissorHeight;
 		int            viewportX, viewportY, viewportWidth, viewportHeight;
 		vec4_t         viewportVerts[ 4 ]; // for immediate 2D quad rendering
 		vec4_t         gradingWeights;
@@ -2466,6 +2464,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		bool        finishCalled;
 		cullType_t      faceCulling; // FIXME redundant cullFace
 		uint32_t        glStateBits;
+		uint32_t        glStateBitsMask; // GLS_ bits set to 1 will not be changed in GL_State
 		uint32_t        vertexAttribsState;
 		uint32_t        vertexAttribPointersSet;
 		float           vertexAttribsInterpolation; // 0 = no interpolation, 1 = final position
@@ -2640,7 +2639,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		image_t    *lighttileRenderImage;
 		image_t    *portalRenderImage;
 
-		image_t    *occlusionRenderFBOImage;
 		image_t    *depthToColorBackFacesFBOImage;
 		image_t    *depthToColorFrontFacesFBOImage;
 		image_t    *downScaleFBOImage_quarter;
@@ -2663,7 +2661,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		FBO_t *depthtile2FBO;
 		FBO_t *lighttileFBO;
 		FBO_t *portalRenderFBO; // holds a copy of the last currentRender that was rendered into a FBO
-		FBO_t *occlusionRenderFBO; // used for overlapping visibility determination
 		FBO_t *downScaleFBO_quarter;
 		FBO_t *downScaleFBO_64x64;
 		FBO_t *contrastRenderFBO;
@@ -2878,7 +2875,6 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_ext_texture_integer;
 	extern cvar_t *r_ext_texture_rg;
 	extern cvar_t *r_ext_texture_filter_anisotropic;
-	extern cvar_t *r_ext_packed_depth_stencil;
 	extern cvar_t *r_ext_gpu_shader4;
 	extern cvar_t *r_arb_buffer_storage;
 	extern cvar_t *r_arb_map_buffer_range;
@@ -2955,6 +2951,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_noportals;
 	extern cvar_t *r_portalOnly;
 	extern cvar_t *r_portalSky;
+	extern cvar_t *r_max_portal_levels;
 
 	extern cvar_t *r_subdivisions;
 	extern cvar_t *r_stitchCurves;
@@ -2989,6 +2986,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_showLightScissors;
 	extern cvar_t *r_showLightBatches;
 	extern cvar_t *r_showLightGrid;
+	extern cvar_t *r_showLightTiles;
 	extern cvar_t *r_showBatches;
 	extern cvar_t *r_showLightMaps; // render lightmaps only
 	extern cvar_t *r_showDeluxeMaps;
@@ -3038,6 +3036,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void           R_SwapBuffers( int );
 
 	void           R_RenderView( viewParms_t *parms );
+	void           R_RenderPostProcess();
 
 	void           R_AddMDVSurfaces( trRefEntity_t *e );
 	void           R_AddMDVInteractions( trRefEntity_t *e, trRefLight_t *light, interactionType_t iaType );
@@ -3747,7 +3746,11 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		RC_SWAP_BUFFERS,
 		RC_SCREENSHOT,
 		RC_VIDEOFRAME,
-		RC_FINISH //bani
+		RC_FINISH, //bani
+		RC_POST_PROCESS,
+		RC_CLEAR_BUFFER,
+		RC_PREPARE_PORTAL,
+		RC_FINALISE_PORTAL,
 	};
 
 	struct setColorCommand_t
@@ -3836,6 +3839,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		renderCommand_t commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
+		bool        depthPass;
 	};
 
 	struct setupLightsCommand_t
@@ -3884,6 +3888,36 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		renderCommand_t commandId;
 	};
 
+	struct renderPostProcessCommand_t
+	{
+		renderCommand_t commandId;
+		trRefdef_t      refdef;
+		viewParms_t     viewParms;
+	};
+
+	struct clearBufferCommand_t
+	{
+		renderCommand_t commandId;
+		trRefdef_t      refdef;
+		viewParms_t     viewParms;
+	};
+
+	struct preparePortalCommand_t
+	{
+		renderCommand_t commandId;
+		trRefdef_t      refdef;
+		viewParms_t     viewParms;
+		drawSurf_t     *surface;
+	};
+
+	struct finalisePortalCommand_t
+	{
+		renderCommand_t commandId;
+		trRefdef_t      refdef;
+		viewParms_t     viewParms;
+		drawSurf_t     *surface;
+	};
+
 // ydnar: max decal projectors per frame, each can generate lots of polys
 #define MAX_DECAL_PROJECTORS 32 // uses bitmasks, don't increase
 #define DECAL_PROJECTOR_MASK ( MAX_DECAL_PROJECTORS - 1 )
@@ -3930,7 +3964,11 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	void                                R_SyncRenderThread();
 
 	void                                R_AddSetupLightsCmd();
-	void                                R_AddDrawViewCmd();
+	void                                R_AddDrawViewCmd( bool depthPass );
+	void                                R_AddClearBufferCmd();
+	void                                R_AddPreparePortalCmd( drawSurf_t *surf );
+	void                                R_AddFinalisePortalCmd( drawSurf_t *surf );
+	void                                R_AddPostProcessCmd();
 
 	void                                RE_SetColor( const Color::Color& rgba );
 	void                                RE_SetClipRegion( const float *region );

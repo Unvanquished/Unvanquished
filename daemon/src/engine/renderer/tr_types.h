@@ -402,7 +402,6 @@ struct glconfig2_t
 
 	int      maxRenderbufferSize;
 	int      maxColorAttachments;
-	bool framebufferPackedDepthStencilAvailable;
 
 	bool getProgramBinaryAvailable;
 	bool bufferStorageAvailable;

@@ -510,11 +510,15 @@ static void R_RecursiveWorldNode( bspNode_t *node, int planeBits, int decalBits 
 			break;
 		}
 
+		float d = DotProduct(tr.viewParms.orientation.viewOrigin, node->plane->normal) - node->plane->dist;
+
+		uint32_t side = d <= 0;
+
 		// recurse down the children, front side first
-		R_RecursiveWorldNode( node->children[ 0 ], planeBits, decalBits );
+		R_RecursiveWorldNode( node->children[ side ], planeBits, decalBits );
 
 		// tail recurse
-		node = node->children[ 1 ];
+		node = node->children[ side ^ 1 ];
 	}
 	while ( 1 );
 
@@ -777,7 +781,7 @@ static void R_MarkLeaves()
 		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
 			tr.visClusters[ i ] = -1;
 		}
-		tr.visIndex = 1;
+		tr.visIndex = 0;
 	} else {
 		for ( i = 0; i < MAX_VISCOUNTS; i++ ) {
 			if ( tr.visClusters[ i ] == cluster ) {

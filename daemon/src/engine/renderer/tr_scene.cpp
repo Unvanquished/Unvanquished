@@ -617,7 +617,7 @@ void RE_RenderScene( const refdef_t *fd )
 	R_AddWorldLightsToScene();
 
 	// derived info
-	tr.refdef.floatTime = tr.refdef.time * 0.001f;
+	tr.refdef.floatTime = float(double(tr.refdef.time) * 0.001);
 
 	tr.refdef.numDrawSurfs = r_firstSceneDrawSurf;
 	tr.refdef.drawSurfs = backEndData[ tr.smpFrame ]->drawSurfs;
@@ -684,12 +684,17 @@ void RE_RenderScene( const refdef_t *fd )
 	parms.viewportWidth = tr.refdef.width;
 	parms.viewportHeight = tr.refdef.height;
 
+	parms.scissorX = parms.viewportX;
+	parms.scissorY = parms.viewportY;
+	parms.scissorWidth = parms.viewportWidth;
+	parms.scissorHeight = parms.viewportHeight;
+
 	Vector4Set( parms.viewportVerts[ 0 ], parms.viewportX, parms.viewportY, 0, 1 );
 	Vector4Set( parms.viewportVerts[ 1 ], parms.viewportX + parms.viewportWidth, parms.viewportY, 0, 1 );
 	Vector4Set( parms.viewportVerts[ 2 ], parms.viewportX + parms.viewportWidth, parms.viewportY + parms.viewportHeight, 0, 1 );
 	Vector4Set( parms.viewportVerts[ 3 ], parms.viewportX, parms.viewportY + parms.viewportHeight, 0, 1 );
 
-	parms.isPortal = false;
+	parms.portalLevel = 0;
 
 	parms.fovX = tr.refdef.fov_x;
 	parms.fovY = tr.refdef.fov_y;
@@ -702,7 +707,12 @@ void RE_RenderScene( const refdef_t *fd )
 	VectorCopy( fd->vieworg, parms.pvsOrigin );
 	Vector4Copy( fd->gradingWeights, parms.gradingWeights );
 
+	R_AddClearBufferCmd();
+	R_AddSetupLightsCmd();
+
 	R_RenderView( &parms );
+
+	R_RenderPostProcess();
 
 	// the next scene rendered in this frame will tack on after this one
 	r_firstSceneDrawSurf = tr.refdef.numDrawSurfs;

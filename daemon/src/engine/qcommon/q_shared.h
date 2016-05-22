@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #ifndef Q_SHARED_H_
 #define Q_SHARED_H_
 
+#include "common/Defs.h"
+
 // math.h/cmath uses _USE_MATH_DEFINES to decide if to define M_PI etc or not.
 // So define _USE_MATH_DEFINES early before including math.h/cmath
 // and before including any other header in case they bring in math.h/cmath indirectly.
@@ -45,11 +47,6 @@ Maryland 20850 USA.
 
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
-
-#define PRODUCT_NAME            "Unvanquished"
-#define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
-#define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.50"
 
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          PRODUCT_VERSION
@@ -65,17 +62,7 @@ Maryland 20850 USA.
 
 #define CLIENT_WINDOW_TITLE     PRODUCT_NAME
 #define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
-#define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPER
 
-
-#define AUTOEXEC_NAME           "autoexec.cfg"
-
-#define CONFIG_NAME             "autogen.cfg"
-#define KEYBINDINGS_NAME        "keybindings.cfg"
-#define TEAMCONFIG_NAME         "teamconfig.cfg"
-#define SERVERCONFIG_NAME       "autogen_server.cfg"
-
-#define UNNAMED_PLAYER "UnnamedPlayer"
 
 #define Q_UNUSED(x) (void)(x)
 
@@ -679,7 +666,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void     MatrixTransformPoint2( const matrix_t m, vec3_t inout );
 	void     MatrixTransform4( const matrix_t m, const vec4_t in, vec4_t out );
 	void     MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out );
-	void     MatrixTransformPlane2( const matrix_t m, vec3_t inout );
+	void     MatrixTransformPlane2( const matrix_t m, vec4_t inout );
 	void     MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 	void     MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 	void     MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );

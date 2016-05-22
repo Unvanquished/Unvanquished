@@ -887,8 +887,8 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 	}
 	else if ( image->bits & ( IF_PACKED_DEPTH24_STENCIL8 ) )
 	{
-		format = GL_DEPTH_STENCIL_EXT;
-		internalFormat = GL_DEPTH24_STENCIL8_EXT;
+		format = GL_DEPTH_STENCIL;
+		internalFormat = GL_DEPTH24_STENCIL8;
 	}
 	else if ( image->bits & ( IF_RGBA16F | IF_RGBA32F | IF_RGBA16 | IF_TWOCOMP16F | IF_TWOCOMP32F | IF_ONECOMP16F | IF_ONECOMP32F ) )
 	{
@@ -1161,7 +1161,7 @@ void R_UploadImage( const byte **dataArray, int numLayers, int numMips,
 			default:
 				if ( image->bits & IF_PACKED_DEPTH24_STENCIL8 )
 				{
-					glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_INT_24_8_EXT, nullptr );
+					glTexImage2D( target, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_INT_24_8, nullptr );
 				}
 				else
 				{
@@ -2379,7 +2379,7 @@ static void R_CreateCurrentRenderImage()
 
 	tr.currentRenderImage[0] = R_CreateImage( "_currentRender[0]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 	tr.currentRenderImage[1] = R_CreateImage( "_currentRender[1]", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
-	tr.currentDepthImage = R_CreateImage( "_currentDepth", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION | IF_DEPTH24, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
+	tr.currentDepthImage = R_CreateImage( "_currentDepth", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION | IF_PACKED_DEPTH24_STENCIL8, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
 }
 
 static void R_CreateDepthRenderImage()
@@ -2417,18 +2417,6 @@ static void R_CreatePortalRenderImage()
 	height = glConfig.vidHeight;
 
 	tr.portalRenderImage = R_CreateImage( "_portalRender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
-}
-
-static void R_CreateOcclusionRenderFBOImage()
-{
-	int  width, height;
-
-	width = glConfig.vidWidth;
-	height = glConfig.vidHeight;
-
-	{
-		tr.occlusionRenderFBOImage = R_CreateImage( "_occlusionFBORender", nullptr, width, height, 1, IF_NOPICMIP | IF_NOCOMPRESSION, filterType_t::FT_NEAREST, wrapTypeEnum_t::WT_CLAMP );
-	}
 }
 
 static void R_CreateDepthToColorFBOImages()
@@ -2793,7 +2781,6 @@ void R_CreateBuiltinImages()
 	R_CreateCurrentRenderImage();
 	R_CreateDepthRenderImage();
 	R_CreatePortalRenderImage();
-	R_CreateOcclusionRenderFBOImage();
 	R_CreateDepthToColorFBOImages();
 	R_CreateDownScaleFBOImages();
 	R_CreateShadowMapFBOImage();

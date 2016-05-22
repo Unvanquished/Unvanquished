@@ -50,10 +50,11 @@ uniform int  u_numLights;
 uniform mat4 u_ModelMatrix;
 uniform sampler2D u_DepthMap;
 uniform int  u_lightLayer;
+uniform vec3 u_zFar;
 
 const int numLayers = MAX_REF_LIGHTS / 256;
 
-#if defined( HAVE_EXT_texture_integer ) && defined( HAVE_EXT_gpu_shader4 )
+#if defined( TEXTURE_INTEGER ) && defined( HAVE_EXT_gpu_shader4 )
 #define idxs_t uvec4
 #define idx_initializer uvec4(3)
 #if __VERSION__ < 130
@@ -75,7 +76,7 @@ void pushIdxs(in int idx, inout vec4 idxs ) {
   idxs = idxs * 4.0 + bits;
   idxs -= 256.0 * floor( idxs * (1.0/256.0) ); // discard upper bits
 }
-#define exportIdxs(x) gl_fragColor = ( x ) * (1.0/255.0)
+#define exportIdxs(x) gl_FragColor = ( x ) * (1.0/255.0)
 #endif
 
 void lightOutsidePlane( in vec4 plane, inout vec3 center, inout float radius ) {
@@ -92,12 +93,31 @@ void lightOutsidePlane( in vec4 plane, inout vec3 center, inout float radius ) {
   }
 }
 
+vec3 ProjToView(vec2 inp)
+{
+	vec3 p = u_zFar * vec3(inp, -1);
+	
+	return p;
+}
+
 void main() {
   vec2 minmax = texture2D( u_DepthMap, 0.5 * vPosition + 0.5 ).xy;
-  vec4 plane1 = normalize( vec4( -1.0, 0.0, vTexCoord.x - r_tileStep.x, 0.0 ) );
-  vec4 plane2 = normalize( vec4( 1.0, 0.0, -vTexCoord.x - r_tileStep.x, 0.0 ) );
-  vec4 plane3 = normalize( vec4( 0.0, -1.0, vTexCoord.y - r_tileStep.y, 0.0 ) );
-  vec4 plane4 = normalize( vec4( 0.0, 1.0, -vTexCoord.y - r_tileStep.y, 0.0 ) );
+
+  float minx = vPosition.x - r_tileStep.x;
+  float maxx = vPosition.x + r_tileStep.x;
+  float miny = vPosition.y - r_tileStep.y;
+  float maxy = vPosition.y + r_tileStep.y;
+
+  vec3 bottomleft = ProjToView(vec2(minx, miny));
+  vec3 bottomright = ProjToView(vec2(maxx, miny));
+  vec3 topright = ProjToView(vec2(maxx, maxy));
+  vec3 topleft = ProjToView(vec2(minx, maxy));
+
+  vec4 plane1 = vec4(normalize(cross(bottomleft, bottomright)), 0);
+  vec4 plane2 = vec4(normalize(cross(bottomright, topright)), 0);
+  vec4 plane3 = vec4(normalize(cross(topright, topleft)), 0);
+  vec4 plane4 = vec4(normalize(cross(topleft, bottomleft)), 0);
+
   vec4 plane5 = vec4( 0.0, 0.0,  1.0,  minmax.y );
   vec4 plane6 = vec4( 0.0, 0.0, -1.0, -minmax.x );
 

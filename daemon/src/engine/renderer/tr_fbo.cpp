@@ -238,7 +238,7 @@ void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 {
 	bool absent;
 
-	if ( format != GL_DEPTH_STENCIL_EXT && format != GL_DEPTH24_STENCIL8_EXT )
+	if ( format != GL_DEPTH_STENCIL && format != GL_DEPTH24_STENCIL8 )
 	{
 		Log::Warn("R_CreateFBOPackedDepthStencilBuffer: format %i is not depth-stencil-renderable", format );
 		return;
@@ -400,7 +400,7 @@ void R_InitFBOs()
 	int i;
 	int width, height;
 
-	Log::Debug("------- R_InitFBOs -------" );
+	Log::Debug("------- R_InitFBOs -------");
 
 	tr.numFBOs = 0;
 
@@ -415,13 +415,13 @@ void R_InitFBOs()
 	tr.mainFBO[0] = R_CreateFBO( "_main[0]", width, height );
 	R_BindFBO( tr.mainFBO[0] );
 	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.currentRenderImage[0]->texnum, 0 );
-	R_AttachFBOTextureDepth( tr.currentDepthImage->texnum );
+	R_AttachFBOTexturePackedDepthStencil( tr.currentDepthImage->texnum );
 	R_CheckFBO( tr.mainFBO[0] );
 
 	tr.mainFBO[1] = R_CreateFBO( "_main[1]", width, height );
 	R_BindFBO( tr.mainFBO[1] );
 	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.currentRenderImage[1]->texnum, 0 );
-	R_AttachFBOTextureDepth( tr.currentDepthImage->texnum );
+	R_AttachFBOTexturePackedDepthStencil( tr.currentDepthImage->texnum );
 	R_CheckFBO( tr.mainFBO[1] );
 
 	tr.depthtile1FBO = R_CreateFBO( "_depthtile1", tr.depthtile1RenderImage->width, tr.depthtile1RenderImage->height );
@@ -438,30 +438,6 @@ void R_InitFBOs()
 	R_BindFBO( tr.lighttileFBO );
 	R_AttachFBOTexture3D( tr.lighttileRenderImage->texnum, 0, 0 );
 	R_CheckFBO( tr.lighttileFBO );
-
-	tr.occlusionRenderFBO = R_CreateFBO( "_occlusionRender", width, height );
-	R_BindFBO( tr.occlusionRenderFBO );
-
-	if ( glConfig.hardwareType == glHardwareType_t::GLHW_ATI_DX10 )
-	{
-		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT16 );
-	}
-	else if ( glConfig.hardwareType == glHardwareType_t::GLHW_NV_DX10 )
-	{
-		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
-	}
-	else if ( glConfig2.framebufferPackedDepthStencilAvailable )
-	{
-		R_CreateFBOPackedDepthStencilBuffer( tr.occlusionRenderFBO, GL_DEPTH24_STENCIL8_EXT );
-	}
-	else
-	{
-		R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
-	}
-
-	R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.occlusionRenderFBOImage->texnum, 0 );
-
-	R_CheckFBO( tr.occlusionRenderFBO );
 
 	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && glConfig2.textureFloatAvailable )
 	{

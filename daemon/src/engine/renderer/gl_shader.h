@@ -284,8 +284,6 @@ public:
 			// add supported GLSL extensions
 			addExtension( r_arb_texture_gather->integer, 400,
 				      GLEW_ARB_texture_gather, "ARB_texture_gather" );
-			addExtension( r_ext_texture_integer->integer, 130,
-				      GLEW_EXT_texture_integer, "EXT_texture_integer" );
 			addExtension( r_ext_gpu_shader4->integer, 130,
 				      GLEW_EXT_gpu_shader4, "EXT_gpu_shader4" );
 			addExtension( r_arb_uniform_buffer_object->integer, 140,
@@ -793,7 +791,8 @@ protected:
 	  USE_GLOW_MAPPING,
 	  USE_DEPTH_FADE,
 	  USE_SHADER_LIGHTS,
-	  USE_PHYSICAL_SHADING
+	  USE_PHYSICAL_SHADING,
+	  USE_ALPHA_TESTING
 	};
 
 public:
@@ -1005,6 +1004,7 @@ public:
 		return EGLCompileMacro::USE_TCGEN_ENVIRONMENT;
 	}
 
+	bool     HasConflictingMacros(size_t permutation, const std::vector< GLCompileMacro * > &macros) const;
 	uint32_t        GetRequiredVertexAttributes() const
 	{
 		return ATTR_QTANGENT;
@@ -1047,6 +1047,7 @@ public:
 		return "USE_TCGEN_LIGHTMAP";
 	}
 
+	bool     HasConflictingMacros(size_t permutation, const std::vector< GLCompileMacro * > &macros) const;
 	EGLCompileMacro GetType() const
 	{
 		return EGLCompileMacro::USE_TCGEN_LIGHTMAP;
@@ -1350,17 +1351,18 @@ public:
 		return "USE_DEPTH_FADE";
 	}
 
+	bool HasConflictingMacros(size_t permutation, const std::vector<GLCompileMacro*> &macros) const;
 	EGLCompileMacro GetType() const
 	{
 		return EGLCompileMacro::USE_DEPTH_FADE;
 	}
 
-	void EnableMacro_USE_DEPTH_FADE()
+	void EnableDepthFade()
 	{
 		EnableMacro();
 	}
 
-	void DisableMacro_USE_DEPTH_FADE()
+	void DisableDepthFade()
 	{
 		DisableMacro();
 	}
@@ -1454,6 +1456,48 @@ public:
 	void SetPhysicalShading( bool enable )
 	{
 		if ( enable )
+		{
+			EnableMacro();
+		}
+		else
+		{
+			DisableMacro();
+		}
+	}
+};
+
+class GLCompileMacro_USE_ALPHA_TESTING :
+	GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_ALPHA_TESTING(GLShader *shader) :
+		GLCompileMacro(shader)
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "USE_ALPHA_TESTING";
+	}
+
+	EGLCompileMacro GetType() const
+	{
+		return USE_ALPHA_TESTING;
+	}
+
+	void EnableAlphaTesting()
+	{
+		EnableMacro();
+	}
+
+	void DisableAlphaTesting()
+	{
+		DisableMacro();
+	}
+
+	void SetAlphaTesting(bool enable)
+	{
+		if (enable)
 		{
 			EnableMacro();
 		}
@@ -2402,8 +2446,6 @@ class GLShader_generic :
 	public u_Bones,
 	public u_VertexInterpolation,
 	public u_DepthScale,
-	public u_numLights,
-	public u_Lights,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
@@ -2411,7 +2453,7 @@ class GLShader_generic :
 	public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
 	public GLCompileMacro_USE_TCGEN_LIGHTMAP,
 	public GLCompileMacro_USE_DEPTH_FADE,
-	public GLCompileMacro_USE_SHADER_LIGHTS
+	public GLCompileMacro_USE_ALPHA_TESTING
 {
 public:
 	GLShader_generic( GLShaderManager *manager );
@@ -2934,7 +2976,8 @@ class GLShader_lighttile :
 	public u_ModelMatrix,
 	public u_numLights,
 	public u_lightLayer,
-	public u_Lights
+	public u_Lights,
+	public u_zFar
 {
 public:
 	GLShader_lighttile( GLShaderManager *manager );

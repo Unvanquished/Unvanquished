@@ -25,12 +25,10 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #include <common/FileSystem.h>
 #include "q_shared.h"
 #include "qcommon.h"
+#include "common/Defs.h"
 
 // Compatibility wrapper for the filesystem
 const char TEMP_SUFFIX[] = ".tmp";
-
-// Default base package
-const char DEFAULT_BASE_PAK[] = "unvanquished";
 
 // Cvars to select the base and extra packages to use
 static Cvar::Cvar<std::string> fs_basepak("fs_basepak", "base pak to load", 0, DEFAULT_BASE_PAK);

@@ -421,20 +421,15 @@ static void DrawTris()
 
 	GLimp_LogComment( "--- DrawTris ---\n" );
 
+	tess.vboVertexSprite = tess.surfaceShader->autoSpriteMode != 0;
+
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( tess.vboVertexAnimation );
-
-	if( tess.surfaceShader->autoSpriteMode ) {
-		gl_genericShader->EnableVertexSprite();
-		tess.vboVertexSprite = true;
-	} else {
-		gl_genericShader->DisableVertexSprite();
-		tess.vboVertexSprite = false;
-	}
-
+	gl_genericShader->SetVertexSprite( tess.vboVertexSprite );
 	gl_genericShader->DisableTCGenEnvironment();
 	gl_genericShader->DisableTCGenLightmap();
-	gl_genericShader->DisableMacro_USE_DEPTH_FADE();
+	gl_genericShader->DisableDepthFade();
+	gl_genericShader->DisableAlphaTesting();
 
 	if( tess.surfaceShader->stages[0] ) {
 		deform = tess.surfaceShader->stages[0]->deformIndex;
@@ -444,7 +439,7 @@ static void DrawTris()
 
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
-	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+	//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 
 	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
@@ -585,12 +580,17 @@ static void Render_generic( int stage )
 	colorGen_t    rgbGen;
 	alphaGen_t    alphaGen;
 	bool      needDepthMap = false;
-
+	bool      hasDepthFade = false;
 	GLimp_LogComment( "--- Render_generic ---\n" );
 
 	pStage = tess.surfaceStages[ stage ];
-
+	
 	GL_State( pStage->stateBits );
+
+	hasDepthFade = pStage->hasDepthFade && !tess.surfaceShader->autoSpriteMode;
+	needDepthMap = pStage->hasDepthFade || tess.surfaceShader->autoSpriteMode;
+	tess.vboVertexSprite = tess.surfaceShader->autoSpriteMode != 0;
+	uint32_t alphaTestBits = pStage->stateBits & GLS_ATEST_BITS;
 
 	// choose right shader program ----------------------------------
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -598,30 +598,9 @@ static void Render_generic( int stage )
 
 	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
 	gl_genericShader->SetTCGenLightmap( pStage->tcGen_Lightmap );
-
-	if( pStage->hasDepthFade ) {
-		gl_genericShader->EnableMacro_USE_DEPTH_FADE();
-		needDepthMap = true;
-	} else {
-		gl_genericShader->DisableMacro_USE_DEPTH_FADE();
-	}
-
-	if( backEnd.refdef.numShaderLights > 0 ) {
-		gl_genericShader->EnableMacro_USE_SHADER_LIGHTS();
-		GL_BindToTMU( 8, tr.lighttileRenderImage );
-	} else {
-		gl_genericShader->DisableMacro_USE_SHADER_LIGHTS();
-	}
-
-	if( tess.surfaceShader->autoSpriteMode ) {
-		gl_genericShader->EnableVertexSprite();
-		needDepthMap = true;
-		tess.vboVertexSprite = true;
-	} else {
-		gl_genericShader->DisableVertexSprite();
-		tess.vboVertexSprite = false;
-	}
-
+	gl_genericShader->SetDepthFade( hasDepthFade );
+	gl_genericShader->SetVertexSprite( tess.vboVertexSprite );
+	gl_genericShader->SetAlphaTesting(alphaTestBits != 0);
 	gl_genericShader->BindProgram( pStage->deformIndex );
 	// end choose right shader program ------------------------------
 
@@ -633,17 +612,11 @@ static void Render_generic( int stage )
 		gl_genericShader->SetUniform_ViewUp( backEnd.orientation.axis[ 2 ] );
 	}
 
-	if( backEnd.refdef.numShaderLights > 0 ) {
-		gl_genericShader->SetUniform_numLights( backEnd.refdef.numLights );
-		if( glConfig2.uniformBufferObjectAvailable ) {
-			gl_genericShader->SetUniformBlock_Lights( tr.dlightUBO );
-		} else {
-			GL_BindToTMU( 9, tr.dlightImage );
-		}
-	}
-
 	// u_AlphaTest
-	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
+	if (alphaTestBits != 0)
+	{
+		gl_genericShader->SetUniform_AlphaTest(pStage->stateBits);
+	}
 
 	// u_ColorGen
 	switch ( pStage->rgbGen )
@@ -700,10 +673,13 @@ static void Render_generic( int stage )
 	BindAnimatedImage( &pStage->bundle[ TB_COLORMAP ] );
 	gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
-	if( pStage->hasDepthFade ) {
+	if ( hasDepthFade )
+	{
 		gl_genericShader->SetUniform_DepthScale( pStage->depthFadeValue );
 	}
-	if( needDepthMap ) {
+
+	if ( needDepthMap )
+	{
 		GL_BindToTMU( 1, tr.currentDepthImage );
 	}
 
@@ -1286,36 +1262,44 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	GL_CheckErrors();
 }
 
-static void Render_depthFill( int stage )
+static void Render_depthFill(int stage)
 {
 	shaderStage_t *pStage;
 
-	GLimp_LogComment( "--- Render_depthFill ---\n" );
+	GLimp_LogComment("--- Render_depthFill ---\n");
 
-	pStage = tess.surfaceStages[ stage ];
+	pStage = tess.surfaceStages[stage];
 
 	uint32_t stateBits = pStage->stateBits;
-	stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS );
+	stateBits &= ~(GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS);
 	stateBits |= GLS_DEPTHMASK_TRUE | GLS_COLORMASK_BITS;
 
-	GL_State( stateBits );
+	GL_State(stateBits);
 
-	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
-	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
+	uint32_t alphaBits = stateBits & GLS_ATEST_BITS;
 
-	gl_genericShader->SetTCGenEnvironment( pStage->tcGen_Environment );
+	gl_genericShader->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
+	gl_genericShader->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
 
-	gl_genericShader->BindProgram( pStage->deformIndex );
+	gl_genericShader->SetTCGenEnvironment(pStage->tcGen_Environment);
+	gl_genericShader->SetTCGenLightmap(pStage->tcGen_Lightmap);
+	gl_genericShader->SetAlphaTesting(alphaBits != 0);
+	gl_genericShader->DisableDepthFade();
+	gl_genericShader->DisableVertexSprite();
+	gl_genericShader->BindProgram(pStage->deformIndex);
 
 	// set uniforms
-	if ( pStage->tcGen_Environment )
+	if (pStage->tcGen_Environment)
 	{
 		// calculate the environment texcoords in object space
-		gl_genericShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
+		gl_genericShader->SetUniform_ViewOrigin(backEnd.orientation.viewOrigin);
 	}
 
 	// u_AlphaTest
-	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
+	if (alphaBits != 0)
+	{
+		gl_genericShader->SetUniform_AlphaTest(pStage->stateBits);
+	}
 
 	// u_ColorModulate
 	gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CONST, alphaGen_t::AGEN_CONST );
@@ -1338,7 +1322,7 @@ static void Render_depthFill( int stage )
 	gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime - backEnd.currentEntity->e.shaderTime );
 
 	// bind u_ColorMap
-	if ( tess.surfaceShader->alphaTest )
+	if ( alphaBits != 0 )
 	{
 		GL_BindToTMU( 0, pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );

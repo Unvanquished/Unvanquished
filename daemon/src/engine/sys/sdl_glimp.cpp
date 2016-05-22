@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <SDL.h>
 
-#ifdef SMP
+#ifdef USE_SMP
 #include <SDL_thread.h>
 #endif
 
@@ -36,7 +36,7 @@ SDL_Window         *window = nullptr;
 static SDL_GLContext glContext = nullptr;
 static int colorBits = 0;
 
-#ifdef SMP
+#ifdef USE_SMP
 static void GLimp_SetCurrentContext( bool enable )
 {
 	if ( enable )
@@ -333,7 +333,7 @@ void GLimp_Shutdown()
 
 	ri.IN_Shutdown();
 
-#if defined( SMP )
+#if defined( USE_SMP )
 
 	if ( renderThread != nullptr )
 	{
@@ -1059,14 +1059,12 @@ static void GLimp_InitExtensions()
 	glConfig2.textureFloatAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_float, r_ext_texture_float);
 
 	// made required in OpenGL 3.0
-	glConfig2.textureIntegerAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer);
+	// GL_EXT_texture_integer can be used in shaders only if GL_EXT_gpu_shader4 is also available
+	glConfig2.textureIntegerAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(EXT_texture_integer, r_ext_texture_integer)
+	  && LOAD_CORE_EXTENSION_WITH_CVAR(EXT_gpu_shader4, r_ext_gpu_shader4);
 
 	// made required in OpenGL 3.0
 	glConfig2.textureRGAvailable = LOAD_CORE_EXTENSION_WITH_CVAR(ARB_texture_rg, r_ext_texture_rg);
-
-	// TODO figure out what was the problem with MESA
-	// made required in OpenGL 3.0
-	glConfig2.framebufferPackedDepthStencilAvailable = glConfig.driverType != glDriverType_t::GLDRV_MESA && LOAD_CORE_EXTENSION_WITH_CVAR(EXT_packed_depth_stencil, r_ext_packed_depth_stencil);
 
 	// made required in OpenGL 1.3
 	glConfig.textureCompression = textureCompression_t::TC_NONE;
@@ -1087,7 +1085,8 @@ static void GLimp_InitExtensions()
 	}
 
 	// VAO and VBO
-	if( !glConfig2.glCoreProfile ) {
+	if( !glConfig2.glCoreProfile )
+	{
 		// made required in OpenGL 3.0
 		REQUIRE_EXTENSION( ARB_half_float_vertex );
 
