@@ -2380,7 +2380,7 @@ void CG_Buildable( centity_t *cent )
 	VectorCopy( ent.origin, ent.lightingOrigin );
 
 	ent.hModel = cg_buildables[ es->modelindex ].models[ 0 ];
-	ent.shaderTime = cent->currentState.time / 1000.0f;
+	ent.shaderTime = float(double(cent->currentState.time) * 0.001);
 
 	if ( !( es->eFlags & EF_B_SPAWNED ) )
 	{

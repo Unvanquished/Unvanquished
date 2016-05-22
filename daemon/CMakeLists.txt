@@ -93,6 +93,7 @@ option(USE_DEBUG_OPTIMIZE "Try to optimize the debug build" 1)
 option(USE_PRECOMPILED_HEADER "Improve build times by using a precompiled header" 1)
 option(USE_ADDRESS_SANITIZER "Try to use the address sanitizer" 0)
 option(BE_VERBOSE "Tell the compiler to report all warnings" 0)
+option( USE_STATIC_LIBS "Tries to use static libs where possible. Only works for Linux" 0 )
 if (BE_VERBOSE)
     set(WARNMODE "no-error=")
 else()
@@ -438,6 +439,21 @@ add_library(srclibs-minizip EXCLUDE_FROM_ALL ${MINIZIPLIST})
 set_target_properties(srclibs-minizip PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
 set(LIBS_BASE ${LIBS_BASE} srclibs-minizip)
 
+# Look for OpenGL here before we potentially switch to looking for static libs.
+if (BUILD_CLIENT)
+    find_package(OpenGL REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIR})
+    set(LIBS_CLIENT ${LIBS_CLIENT} ${OPENGL_LIBRARIES})
+endif()
+
+# Prefer static libs
+if ( USE_STATIC_LIBS )
+    if ( LINUX )
+        set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+    endif()
+endif()
+
+
 # zlib
 if (NOT NACL)
     find_package(ZLIB REQUIRED)
@@ -627,10 +643,6 @@ if (BUILD_CLIENT)
     find_package(GLEW REQUIRED)
     include_directories(${GLEW_INCLUDE_DIR})
     set(LIBS_CLIENT ${LIBS_CLIENT} ${GLEW_LIBRARIES})
-
-    find_package(OpenGL REQUIRED)
-    include_directories(${OPENGL_INCLUDE_DIR})
-    set(LIBS_CLIENT ${LIBS_CLIENT} ${OPENGL_LIBRARIES})
 
     find_package(OpenAL REQUIRED)
     include_directories(${OPENAL_INCLUDE_DIR})

@@ -61,7 +61,6 @@ to the new value before sending out any replies.
 static const int MAX_PACKETLEN = 1400; // max size of a network packet
 
 static const int FRAGMENT_SIZE = ( MAX_PACKETLEN - 100 );
-static const int PACKET_HEADER = 10; // two ints and a short
 
 static const int FRAGMENT_BIT  = ( 1 << 31 );
 

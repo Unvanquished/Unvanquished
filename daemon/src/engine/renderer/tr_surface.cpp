@@ -257,10 +257,14 @@ void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const Color::C
 
 	// constant normal all the way around
 	VectorSubtract( vec3_origin, backEnd.viewParms.orientation.axis[ 0 ], normal );
-	R_TBNtoQtangents( left, up, normal, tess.verts[ ndx ].qtangents );
-	Vector4Copy( tess.verts[ ndx ].qtangents, tess.verts[ ndx + 1 ].qtangents );
-	Vector4Copy( tess.verts[ ndx ].qtangents, tess.verts[ ndx + 2 ].qtangents );
-	Vector4Copy( tess.verts[ ndx ].qtangents, tess.verts[ ndx + 3 ].qtangents );
+
+	i16vec4_t qtangents;
+	R_TBNtoQtangents( left, up, normal, qtangents );
+
+	Vector4Copy( qtangents, tess.verts[ ndx     ].qtangents );
+	Vector4Copy( qtangents, tess.verts[ ndx + 1 ].qtangents );
+	Vector4Copy( qtangents, tess.verts[ ndx + 2 ].qtangents );
+	Vector4Copy( qtangents, tess.verts[ ndx + 3 ].qtangents );
 
 	// standard square texture coordinates
 	tess.verts[ ndx ].texCoords[ 0 ] = floatToHalf( s1 );
@@ -345,10 +349,14 @@ void Tess_AddQuadStampExt2( vec4_t quadVerts[ 4 ], const Color::Color& color, fl
 	//	VectorNegate( backEnd.viewParms.orientation.axis[ 0 ], normal );
 	//}
 
-	R_TBNtoQtangents( tangent, binormal, normal, tess.verts[ ndx ].qtangents );
-	Vector4Copy( tess.verts[ ndx ].qtangents, tess.verts[ ndx + 1 ].qtangents );
-	Vector4Copy( tess.verts[ ndx ].qtangents, tess.verts[ ndx + 2 ].qtangents );
-	Vector4Copy( tess.verts[ ndx ].qtangents, tess.verts[ ndx + 3 ].qtangents );
+	i16vec4_t qtangents;
+
+	R_TBNtoQtangents( tangent, binormal, normal, qtangents );
+
+	Vector4Copy( qtangents, tess.verts[ ndx     ].qtangents );
+	Vector4Copy( qtangents, tess.verts[ ndx + 1 ].qtangents );
+	Vector4Copy( qtangents, tess.verts[ ndx + 2 ].qtangents );
+	Vector4Copy( qtangents, tess.verts[ ndx + 3 ].qtangents );
 
 	// standard square texture coordinates
 	tess.verts[ ndx ].texCoords[ 0 ] = floatToHalf( s1 );
@@ -679,53 +687,44 @@ Tess_SurfacePolychain
 */
 static void Tess_SurfacePolychain( srfPoly_t *p )
 {
-	int i, j;
-	int numVertexes;
-	int numIndexes;
+	int i;
 
 	GLimp_LogComment( "--- Tess_SurfacePolychain ---\n" );
 
-	Tess_CheckOverflow( p->numVerts, 3 * ( p->numVerts - 2 ) );
+	int numVertexes = p->numVerts;
+	int numIndexes = 3 * (p->numVerts - 2);
 
-	// fan triangles into the tess array
-	numVertexes = 0;
+	Tess_CheckOverflow( numVertexes, numIndexes );
 
-	for ( i = 0; i < p->numVerts; i++ )
+	if (!tess.surfaceShader->interactLight || tess.skipTangentSpaces)
 	{
-		VectorCopy( p->verts[ i ].xyz, tess.verts[ tess.numVertexes + i ].xyz );
+		// fan triangles into the tess array
 
-		tess.verts[ tess.numVertexes + i ].texCoords[ 0 ] = floatToHalf( p->verts[ i ].st[ 0 ] );
-		tess.verts[ tess.numVertexes + i ].texCoords[ 1 ] = floatToHalf( p->verts[ i ].st[ 1 ] );
+		for (i = 0; i < p->numVerts; i++)
+		{
+			VectorCopy(p->verts[i].xyz, tess.verts[tess.numVertexes + i].xyz);
 
-		tess.verts[ tess.numVertexes + i ].color = Color::Adapt( p->verts[ i ].modulate );
+			tess.verts[tess.numVertexes + i].color = Color::Adapt(p->verts[i].modulate);
+			tess.verts[tess.numVertexes + i].texCoords[0] = floatToHalf(p->verts[i].st[0]);
+			tess.verts[tess.numVertexes + i].texCoords[1] = floatToHalf(p->verts[i].st[1]);
+		}
 
-		numVertexes++;
+		// generate fan indexes into the tess array
+
+		for (i = 0; i < p->numVerts - 2; i++)
+		{
+			tess.indexes[tess.numIndexes + i * 3 + 0] = tess.numVertexes;
+			tess.indexes[tess.numIndexes + i * 3 + 1] = tess.numVertexes + i + 1;
+			tess.indexes[tess.numIndexes + i * 3 + 2] = tess.numVertexes + i + 2;
+		}
+
+		tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	}
-
-	// generate fan indexes into the tess array
-	numIndexes = 0;
-
-	for ( i = 0; i < p->numVerts - 2; i++ )
+	else
 	{
-		tess.indexes[ tess.numIndexes + i * 3 + 0 ] = tess.numVertexes;
-		tess.indexes[ tess.numIndexes + i * 3 + 1 ] = tess.numVertexes + i + 1;
-		tess.indexes[ tess.numIndexes + i * 3 + 2 ] = tess.numVertexes + i + 2;
-		numIndexes += 3;
-	}
-
-	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
-
-	// calc tangent spaces
-	if ( tess.surfaceShader->interactLight && !tess.skipTangentSpaces )
-	{
-		int         i;
-		float       *v;
-		const float *v0, *v1, *v2;
-		const int16_t *t0, *t1, *t2;
 		vec3_t      tangent, *tangents;
 		vec3_t      binormal, *binormals;
 		vec3_t      normal, *normals;
-		glIndex_t   *indices;
 
 		tangents = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
 		binormals = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
@@ -738,42 +737,54 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 			VectorClear( normals[ i ] );
 		}
 
-		for ( i = 0, indices = tess.indexes + tess.numIndexes; i < numIndexes; i += 3, indices += 3 )
+		// generate fan indexes into the tess array and generate tangent vectors for the triangles
+		for (i = 0; i < p->numVerts - 2; i++ )
 		{
-			v0 = tess.verts[ indices[ 0 ] ].xyz;
-			v1 = tess.verts[ indices[ 1 ] ].xyz;
-			v2 = tess.verts[ indices[ 2 ] ].xyz;
+			polyVert_t* v0 = &p->verts[0];
+			polyVert_t* v1 = &p->verts[i + 1];
+			polyVert_t* v2 = &p->verts[i + 2];
 
-			t0 = tess.verts[ indices[ 0 ] ].texCoords;
-			t1 = tess.verts[ indices[ 1 ] ].texCoords;
-			t2 = tess.verts[ indices[ 2 ] ].texCoords;
+			R_CalcFaceNormal( normal, v0->xyz, v1->xyz, v2->xyz );
+			R_CalcTangents( tangent, binormal, v0->xyz, v1->xyz, v2->xyz, v0->st, v1->st, v2->st );
 
-			R_CalcFaceNormal( normal, v0, v1, v2 );
-			R_CalcTangents( tangent, binormal, v0, v1, v2, t0, t1, t2 );
+			VectorAdd(tangents[0], tangent, tangents[0]);
+			VectorAdd(normals[0], normal, normals[0]);
+			VectorAdd(binormals[0], binormal, binormals[0]);
 
-			for ( j = 0; j < 3; j++ )
-			{
-				v = tangents[ indices[ j ] - tess.numVertexes ];
-				VectorAdd( v, tangent, v );
-				v = binormals[ indices[ j ] - tess.numVertexes ];
-				VectorAdd( v, binormal, v );
-				v = normals[ indices[ j ] - tess.numVertexes ];
-				VectorAdd( v, normal, v );
-			}
+			VectorAdd(tangents[i + 1], tangent, tangents[i + 1]);
+			VectorAdd(binormals[i + 1], binormal, binormals[i + 1]);
+			VectorAdd(normals[i + 1], normal, normals[i + 1]);
+
+			VectorAdd(tangents[i + 2], tangent, tangents[i + 2]);
+			VectorAdd(binormals[i + 2], binormal, binormals[i + 2]);
+			VectorAdd(normals[i + 2], normal, normals[i + 2]);
+
+			tess.indexes[tess.numIndexes + i * 3 + 0] = tess.numVertexes;
+			tess.indexes[tess.numIndexes + i * 3 + 1] = tess.numVertexes + i + 1;
+			tess.indexes[tess.numIndexes + i * 3 + 2] = tess.numVertexes + i + 2;
 		}
 
+		// generate qtangents
 		for ( i = 0; i < numVertexes; i++ )
 		{
-			VectorNormalizeFast( normals[ i ] );
-			R_TBNtoQtangents( tangents[ i ], binormals[ i ],
-					  normals[ i ], tess.verts[ tess.numVertexes + i ].qtangents );
+			i16vec4_t qtangents;
+
+			VectorNormalizeFast(normals[i]);
+			R_TBNtoQtangents(tangents[i], binormals[i],
+				normals[i], qtangents);
+
+			VectorCopy(p->verts[i].xyz, tess.verts[tess.numVertexes + i].xyz);
+			tess.verts[tess.numVertexes + i].color = Color::Adapt(p->verts[i].modulate);
+			Vector4Copy(qtangents, tess.verts[tess.numVertexes + i].qtangents);
+			tess.verts[tess.numVertexes + i].texCoords[0] = floatToHalf(p->verts[i].st[0]);
+			tess.verts[tess.numVertexes + i].texCoords[1] = floatToHalf(p->verts[i].st[1]);
 		}
 
 		ri.Hunk_FreeTempMemory( normals );
 		ri.Hunk_FreeTempMemory( binormals );
 		ri.Hunk_FreeTempMemory( tangents );
 
-		tess.attribsSet |= ATTR_QTANGENT;
+		tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR | ATTR_QTANGENT;
 	}
 
 	tess.numIndexes += numIndexes;
@@ -953,46 +964,49 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 
 	numVertexes = srf->numVerts;
 
-	for ( j = 0; j < numVertexes; j++, newVert++, oldVert++, st++ )
+	if (tess.skipTangentSpaces)
 	{
-		vec3_t tmpVert;
-
-		if ( backlerp == 0 )
+		for (j = 0; j < numVertexes; j++, newVert++, oldVert++, st++)
 		{
-			// just copy
-			VectorCopy( newVert->xyz, tmpVert );
-		}
-		else
-		{
-			// interpolate the xyz
-			VectorScale( oldVert->xyz, oldXyzScale, tmpVert );
-			VectorMA( tmpVert, newXyzScale, newVert->xyz, tmpVert );
+			vec3_t tmpVert;
+
+			if (backlerp == 0)
+			{
+				// just copy
+				VectorCopy(newVert->xyz, tmpVert);
+			}
+			else
+			{
+				// interpolate the xyz
+				VectorScale(oldVert->xyz, oldXyzScale, tmpVert);
+				VectorMA(tmpVert, newXyzScale, newVert->xyz, tmpVert);
+			}
+
+			tess.verts[tess.numVertexes + j].xyz[0] = tmpVert[0];
+			tess.verts[tess.numVertexes + j].xyz[1] = tmpVert[1];
+			tess.verts[tess.numVertexes + j].xyz[2] = tmpVert[2];
+
+			tess.verts[tess.numVertexes + j].texCoords[0] = floatToHalf(st->st[0]);
+			tess.verts[tess.numVertexes + j].texCoords[1] = floatToHalf(st->st[1]);
 		}
 
-		tess.verts[ tess.numVertexes + j ].xyz[ 0 ] = tmpVert[ 0 ];
-		tess.verts[ tess.numVertexes + j ].xyz[ 1 ] = tmpVert[ 1 ];
-		tess.verts[ tess.numVertexes + j ].xyz[ 2 ] = tmpVert[ 2 ];
-
-		tess.verts[ tess.numVertexes + j ].texCoords[ 0 ] = floatToHalf( st->st[ 0 ] );
-		tess.verts[ tess.numVertexes + j ].texCoords[ 1 ] = floatToHalf( st->st[ 1 ] );
+		tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD;
 	}
-
-	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD;
-
-	// calc tangent spaces
-	if ( !tess.skipTangentSpaces )
+	else
 	{
+		// calc tangent spaces
 		int         i;
 		float       *v;
 		const float *v0, *v1, *v2;
-		const int16_t *t0, *t1, *t2;
+		const float *t0, *t1, *t2;
+		vec3_t* xyz;
 		vec3_t      tangent, *tangents;
 		vec3_t      binormal, *binormals;
 		vec3_t      *normals;
-		glIndex_t   *indices;
 
-		tess.attribsSet |= ATTR_QTANGENT;
+		tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_QTANGENT;
 
+		xyz = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof(vec3_t) );
 		tangents = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
 		binormals = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
 		normals = (vec3_t *)ri.Hunk_AllocateTempMemory( numVertexes * sizeof( vec3_t ) );
@@ -1014,39 +1028,61 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 				VectorMA( normals[ i ], newXyzScale, newNormal->normal, normals[ i ] );
 				VectorNormalizeFast( normals[ i ] );
 			}
+
+			if ( backlerp == 0 )
+			{
+				// just copy
+				VectorCopy(newVert->xyz, xyz[i]);
+			}
+			else
+			{
+				// interpolate the xyz
+				VectorScale(oldVert->xyz, oldXyzScale, xyz[i]);
+				VectorMA(xyz[i], newXyzScale, newVert->xyz, xyz[i]);
+			}
 		}
 
-		for ( i = 0, indices = tess.indexes + tess.numIndexes; i < numIndexes; i += 3, indices += 3 )
+		for (i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++)
 		{
-			v0 = tess.verts[ indices[ 0 ] ].xyz;
-			v1 = tess.verts[ indices[ 1 ] ].xyz;
-			v2 = tess.verts[ indices[ 2 ] ].xyz;
+			int* indices = tri->indexes;
+			v0 = xyz[ indices[0] ];
+			v1 = xyz[ indices[1] ];
+			v2 = xyz[ indices[2] ];
 
-			t0 = tess.verts[ indices[ 0 ] ].texCoords;
-			t1 = tess.verts[ indices[ 1 ] ].texCoords;
-			t2 = tess.verts[ indices[ 2 ] ].texCoords;
+			t0 = st[ indices[ 0 ] ].st;
+			t1 = st[ indices[ 1 ] ].st;
+			t2 = st[ indices[ 2 ] ].st;
 
 			R_CalcTangents( tangent, binormal, v0, v1, v2, t0, t1, t2 );
 
 			for ( j = 0; j < 3; j++ )
 			{
-				v = tangents[ indices[ j ] - tess.numVertexes ];
+				v = tangents[ indices[ j ]  ];
 				VectorAdd( v, tangent, v );
 
-				v = binormals[ indices[ j ] - tess.numVertexes ];
+				v = binormals[ indices[ j ] ];
 				VectorAdd( v, binormal, v );
 			}
 		}
 
 		for ( i = 0; i < numVertexes; i++ )
 		{
+
+			i16vec4_t qtangents;
+
 			R_TBNtoQtangents( tangents[ i ], binormals[ i ],
-					  normals[ i ], tess.verts[ numVertexes + i ].qtangents );
+					  normals[ i ], qtangents );
+
+			VectorCopy(xyz[i], tess.verts[tess.numVertexes + i].xyz);
+			Vector4Copy(qtangents, tess.verts[tess.numVertexes + i].qtangents);
+			tess.verts[tess.numVertexes + j].texCoords[0] = floatToHalf(st[i].st[0]);
+			tess.verts[tess.numVertexes + j].texCoords[1] = floatToHalf(st[i].st[1]);
 		}
 
 		ri.Hunk_FreeTempMemory( normals );
 		ri.Hunk_FreeTempMemory( binormals );
 		ri.Hunk_FreeTempMemory( tangents );
+		ri.Hunk_FreeTempMemory( xyz );
 	}
 
 	tess.numIndexes += numIndexes;
@@ -1113,18 +1149,19 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			vec3_t tmp;
+			vec3_t tmp; vec3_t pos;
 
-			VectorClear( tess.verts[ tess.numVertexes + j ].xyz );
+			VectorClear( pos );
 			for (unsigned k = 0; k < v->numWeights; k++ ) {
 				TransformPoint( &bones[ v->boneIndexes[ k ] ],
 						v->position, tmp );
-				VectorMA( tess.verts[ tess.numVertexes + j ].xyz,
+				VectorMA( pos,
 					  v->boneWeights[ k ], tmp,
-					  tess.verts[ tess.numVertexes + j ].xyz );
+					  pos );
 
 			}
 
+			VectorCopy(pos, tess.verts[tess.numVertexes + j].xyz);
 			tess.verts[ tess.numVertexes + j ].texCoords[ 0 ] = floatToHalf( v->texCoords[ 0 ] );
 			tess.verts[ tess.numVertexes + j ].texCoords[ 1 ] = floatToHalf( v->texCoords[ 1 ] );
 		}
@@ -1158,9 +1195,9 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			vec3_t tangent, binormal, normal, tmp;
+			vec3_t tangent, binormal, normal, tmp, pos;
 
-			VectorClear( tess.verts[ tess.numVertexes + j ].xyz );
+			VectorClear( pos );
 			VectorClear( normal );
 			VectorClear( binormal );
 			VectorClear( tangent );
@@ -1168,9 +1205,9 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			for(unsigned k = 0; k < v->numWeights; k++ ) {
 				TransformPoint( &bones[ v->boneIndexes[ k ] ],
 						v->position, tmp );
-				VectorMA( tess.verts[ tess.numVertexes + j ].xyz,
+				VectorMA( pos,
 					  v->boneWeights[ k ], tmp,
-					  tess.verts[ tess.numVertexes + j ].xyz );
+					  pos );
 
 				TransformNormalVector( &bones[ v->boneIndexes[ k ] ],
 						       v->normal, tmp );
@@ -1188,6 +1225,7 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			VectorNormalize( tangent );
 			VectorNormalize( binormal );
 
+			VectorCopy(pos, tess.verts[tess.numVertexes + j].xyz);
 			R_TBNtoQtangents( tangent, binormal, normal, tess.verts[ tess.numVertexes + j ].qtangents );
 
 			tess.verts[ tess.numVertexes + j ].texCoords[ 0 ] = floatToHalf( v->texCoords[ 0 ] );
@@ -1271,6 +1309,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 			int    idxOut = tess.numVertexes + i;
 			const float weightFactor = 1.0f / 255.0f;
 			vec3_t tangent, binormal, normal, tmp;
+			vec3_t pos;
 
 			if( model->blendWeights[ 4 * idxIn + 0 ] == 0 &&
 			    model->blendWeights[ 4 * idxIn + 1 ] == 0 &&
@@ -1278,7 +1317,7 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 			    model->blendWeights[ 4 * idxIn + 3 ] == 0 )
 				model->blendWeights[ 4 * idxIn + 0 ] = 255;
 
-			VectorClear( tess.verts[ idxOut ].xyz );
+			VectorClear( pos );
 			VectorClear( normal );
 			VectorClear( tangent );
 			VectorClear( binormal );
@@ -1288,8 +1327,8 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 
 				TransformPoint( &bones[ bone ],
 						&model->positions[ 3 * idxIn ], tmp );
-				VectorMA( tess.verts[ idxOut ].xyz, weight, tmp,
-					  tess.verts[ idxOut ].xyz );
+				VectorMA( pos, weight, tmp,
+					  pos );
 
 				TransformNormalVector( &bones[ bone ],
 						       &model->normals[ 3 * idxIn ], tmp );
@@ -1304,6 +1343,8 @@ void Tess_SurfaceIQM( srfIQModel_t *surf ) {
 			VectorNormalize( normal );
 			VectorNormalize( tangent );
 			VectorNormalize( binormal );
+
+			VectorCopy(pos, tess.verts[idxOut].xyz);
 
 			R_TBNtoQtangents( tangent, binormal, normal, tess.verts[ idxOut ].qtangents );
 

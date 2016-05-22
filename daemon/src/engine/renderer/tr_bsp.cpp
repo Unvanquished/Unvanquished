@@ -2764,7 +2764,7 @@ static int LeafSurfaceCompare( const void *a, const void *b )
 		return 1;
 	}
 
-	// sort by leaf marksurfaces index
+	// sort by leaf marksurfaces index to increase the likelihood of multidraw merging in the backend
 	if ( aa->lightCount < bb->lightCount )
 	{
 		return -1;
