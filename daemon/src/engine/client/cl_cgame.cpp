@@ -1065,9 +1065,9 @@ static messageStatus_t CL_BinaryMessageStatus(void)
 	return messageStatus_t::MESSAGE_WAITING;
 }
 
-void CL_CGameBinaryMessageReceived(const byte *buf, size_t size, int serverTime)
+void CL_CGameBinaryMessageReceived(const uint8_t *buf, size_t size, int serverTime)
 {
-	auto shm = IPC::SharedMemory::Create(size);
+	static auto shm = IPC::SharedMemory::Create(MAX_BINARY_MESSAGE);
 	memcpy(shm.GetBase(), buf, size);
 	cgvm.SendMsg<CGameRecvMessageMsg>(shm, size, serverTime);
 }

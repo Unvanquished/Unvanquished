@@ -284,7 +284,7 @@ public:
 	void GameRunFrame(int levelTime);
 	bool GameSnapshotCallback(int entityNum, int clientNum);
 	void BotAIStartFrame(int levelTime);
-	void GameMessageRecieved(int clientNum, const byte *buf, size_t size, int commandTime);
+	void GameMessageRecieved(int clientNum, const uint8_t *buf, size_t size, int commandTime);
 
 private:
 	virtual void Syscall(uint32_t id, Util::Reader reader, IPC::Channel& channel) OVERRIDE FINAL;

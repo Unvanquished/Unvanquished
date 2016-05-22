@@ -1380,7 +1380,7 @@ static void SV_ParseBinaryMessage(client_t *cl, msg_t *msg)
 		return;
 	}
 	const auto client = int(cl - svs.clients);
-	SV_GameBinaryMessageReceived(client, &msg->data[msg->readcount], size_t(ssize), cl->lastUsercmd.serverTime);
+	SV_GameBinaryMessageReceived(client, msg->data + msg->readcount, size_t(ssize), cl->lastUsercmd.serverTime);
 }
 
 /*

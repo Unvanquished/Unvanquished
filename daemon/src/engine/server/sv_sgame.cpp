@@ -471,9 +471,9 @@ void GameVM::BotAIStartFrame(int)
 	Com_Error(errorParm_t::ERR_DROP, "GameVM::BotAIStartFrame not implemented");
 }
 
-void GameVM::GameMessageRecieved(int clientNum, const byte *buf, size_t size, int commandTime)
+void GameVM::GameMessageRecieved(int clientNum, const uint8_t *buf, size_t size, int commandTime)
 {
-	auto shm = IPC::SharedMemory::Create(size);
+	static auto shm = IPC::SharedMemory::Create(MAX_BINARY_MESSAGE);
 	memcpy(shm.GetBase(), buf, size);
 	gvm.SendMsg<GameRecvMessageMsg>(clientNum, shm, size, commandTime);
 }

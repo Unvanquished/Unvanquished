@@ -776,7 +776,7 @@ void     CL_CGameRendering();
 void     CL_SetCGameTime();
 void     CL_FirstSnapshot();
 void     CL_ShaderStateChanged();
-void CL_CGameBinaryMessageReceived(const byte *buf, size_t size, int serverTime);
+void CL_CGameBinaryMessageReceived(const uint8_t *buf, size_t size, int serverTime);
 void     CL_OnTeamChanged( int newTeam );
 
 //

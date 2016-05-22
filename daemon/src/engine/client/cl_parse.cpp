@@ -738,7 +738,7 @@ void CL_ParseBinaryMessage(msg_t *msg)
 	if (ssize <= 0 || ssize > MAX_BINARY_MESSAGE) {
 		return;
 	}
-	CL_CGameBinaryMessageReceived(&msg->data[msg->readcount], size_t(ssize), cl.snap.serverTime);
+	CL_CGameBinaryMessageReceived(msg->data + msg->readcount, size_t(ssize), cl.snap.serverTime);
 }
 
 /*
