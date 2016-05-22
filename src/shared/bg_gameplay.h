@@ -370,6 +370,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define PLAYER_BASE_VALUE                  200   // base credit value of a player
 #define PLAYER_PRICE_TO_VALUE              0.5f  // fraction of upgrade price added to player value
 #define DEFAULT_FREEKILL_PERIOD            "120" // in s
+#define BUILDABLE_VALUE_TO_CREDIT_RATIO    10    // Amount a buildable's value is multipied by to get its credits awarded.
 
 // resources
 #define RGS_RANGE                          1000.0f // must be > 0
