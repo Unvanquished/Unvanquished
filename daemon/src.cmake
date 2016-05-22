@@ -28,6 +28,7 @@ set(COMMONLIST
     ${COMMON_DIR}/Cvar.cpp
     ${COMMON_DIR}/Cvar.h
     ${COMMON_DIR}/Debugger.cpp
+    ${COMMON_DIR}/Defs.h
     ${COMMON_DIR}/DisjointSets.h
     ${COMMON_DIR}/Endian.h
     ${COMMON_DIR}/FileSystem.cpp

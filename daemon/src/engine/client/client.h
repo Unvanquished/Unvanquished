@@ -48,9 +48,6 @@ Maryland 20850 USA.
 #include "framework/CommandBufferHost.h"
 #include "common/IPC/CommandBuffer.h"
 
-// file containing our RSA public and private keys
-#define RSAKEY_FILE        "pubkey"
-
 #define RETRANSMIT_TIMEOUT 3000 // time between connection packet retransmits
 
 // snapshots are a view of the server at a given time

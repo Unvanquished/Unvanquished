@@ -59,7 +59,7 @@ struct flare_t
 
 	int            addedFrame;
 
-	bool       inPortal; // true if in a portal view of the scene
+	int            portalLevel; // > 0 if in a portal view of the scene
 	int            frameSceneNum;
 	void           *surface;
 	int            fogNum;
@@ -144,8 +144,9 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 	//oldest = r_flareStructs;
 	for ( f = r_activeFlares; f; f = f->next )
 	{
-		if ( f->surface == surface && f->frameSceneNum == backEnd.viewParms.frameSceneNum &&
-		     f->inPortal == backEnd.viewParms.isPortal )
+		if ( f->surface == surface &&
+		     f->frameSceneNum == backEnd.viewParms.frameSceneNum &&
+		     f->portalLevel == backEnd.viewParms.portalLevel )
 		{
 			break;
 		}
@@ -167,7 +168,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 
 		f->surface = surface;
 		f->frameSceneNum = backEnd.viewParms.frameSceneNum;
-		f->inPortal = backEnd.viewParms.isPortal;
+		f->portalLevel = backEnd.viewParms.portalLevel;
 		f->addedFrame = -1;
 	}
 

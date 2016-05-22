@@ -306,7 +306,7 @@ namespace Cvar {
             cvar->flags &= ~CVAR_USER_CREATED;
             cvar->flags |= flags;
             cvar->proxy = proxy;
-            if (flags & (CHEAT | ROM)) {
+            if ((flags & ROM) || (!cheatsAllowed && (flags & CHEAT))) {
                 cvar->value = defaultValue;
             }
 

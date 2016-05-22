@@ -47,6 +47,14 @@ float max16(in vec4 data0, in vec4 data1, in vec4 data2, in vec4 data3) {
   return max(max2.x, max2.y);
 }
 
+float min16(in vec4 data0, in vec4 data1, in vec4 data2, in vec4 data3)
+{
+  vec4 min01 = min(data0, data1);
+  vec4 min23 = min(data2, data3);
+  vec4 min4 = min(min01, min23);
+  vec2 min2 = min(min4.xy, min4.zw);
+  return min(min2.x, min2.y);
+}
 void	main()
 {
   vec2 st = gl_FragCoord.st * 4.0 * pixelScale;
@@ -75,6 +83,8 @@ void	main()
 		  texture2D( u_DepthMap, st + vec2(-0.5,  1.5) * pixelScale ).x,
 		  texture2D( u_DepthMap, st + vec2(-0.5,  0.5) * pixelScale ).x);
 #endif
+
+ // mask out sky pixels (z buffer depth == 1.0) to help with depth discontinuities
   mask[0] = 1.0 - step(1.0, depth[0]);
   mask[1] = 1.0 - step(1.0, depth[1]);
   mask[2] = 1.0 - step(1.0, depth[2]);
@@ -89,10 +99,8 @@ void	main()
     depth[2] = depthToZ(depth[2]);
     depth[3] = depthToZ(depth[3]);
 
-    float minDepth = - max16( mask[0] * (-depth[0]),
-			      mask[1] * (-depth[1]),
-			      mask[2] * (-depth[2]),
-			      mask[3] * (-depth[3]) );
+    // don't need to mask out sky depth for min operation (because sky has a larger depth than everything else)
+    float minDepth = min16( depth[0], depth[1], depth[2], depth[3] );
 
     depth[0] *= mask[0];
     depth[1] *= mask[1];

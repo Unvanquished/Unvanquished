@@ -99,7 +99,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_ext_texture_integer;
 	cvar_t      *r_ext_texture_rg;
 	cvar_t      *r_ext_texture_filter_anisotropic;
-	cvar_t      *r_ext_packed_depth_stencil;
 	cvar_t      *r_ext_gpu_shader4;
 	cvar_t      *r_arb_buffer_storage;
 	cvar_t      *r_arb_map_buffer_range;
@@ -180,6 +179,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_noportals;
 	cvar_t      *r_portalOnly;
 	cvar_t      *r_portalSky;
+	cvar_t      *r_max_portal_levels;
 
 	cvar_t      *r_subdivisions;
 	cvar_t      *r_stitchCurves;
@@ -221,6 +221,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_showLightScissors;
 	cvar_t      *r_showLightBatches;
 	cvar_t      *r_showLightGrid;
+	cvar_t      *r_showLightTiles;
 	cvar_t      *r_showBatches;
 	cvar_t      *r_showLightMaps;
 	cvar_t      *r_showDeluxeMaps;
@@ -837,7 +838,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		if ( glConfig.stencilBits >= 4 )
 		{
-			GL_ClearStencil( 128 );
+			GL_ClearStencil( 0 );
 		}
 
 		GL_FrontFace( GL_CCW );
@@ -1081,7 +1082,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_ext_texture_integer = ri.Cvar_Get( "r_ext_texture_integer", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_rg = ri.Cvar_Get( "r_ext_texture_rg", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_texture_filter_anisotropic = ri.Cvar_Get( "r_ext_texture_filter_anisotropic", "4",  CVAR_LATCH | CVAR_ARCHIVE );
-		r_ext_packed_depth_stencil = ri.Cvar_Get( "r_ext_packed_depth_stencil", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_ext_gpu_shader4 = ri.Cvar_Get( "r_ext_gpu_shader4", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_buffer_storage = ri.Cvar_Get( "r_arb_buffer_storage", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_map_buffer_range = ri.Cvar_Get( "r_arb_map_buffer_range", "1", CVAR_CHEAT | CVAR_LATCH );
@@ -1200,6 +1200,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_drawworld = ri.Cvar_Get( "r_drawworld", "1", CVAR_CHEAT );
 		r_portalOnly = ri.Cvar_Get( "r_portalOnly", "0", CVAR_CHEAT );
 		r_portalSky = ri.Cvar_Get( "cg_skybox", "1", 0 );
+		r_max_portal_levels = ri.Cvar_Get( "r_max_portal_levels", "5", 0 );
 
 		r_flareSize = ri.Cvar_Get( "r_flareSize", "40", CVAR_CHEAT );
 		r_flareFade = ri.Cvar_Get( "r_flareFade", "7", CVAR_CHEAT );
@@ -1328,6 +1329,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_showLightScissors = ri.Cvar_Get( "r_showLightScissors", "0", CVAR_CHEAT );
 		r_showLightBatches = ri.Cvar_Get( "r_showLightBatches", "0", CVAR_CHEAT );
 		r_showLightGrid = ri.Cvar_Get( "r_showLightGrid", "0", CVAR_CHEAT );
+		r_showLightTiles = ri.Cvar_Get("r_showLightTiles", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_showBatches = ri.Cvar_Get( "r_showBatches", "0", CVAR_CHEAT );
 		r_showLightMaps = ri.Cvar_Get( "r_showLightMaps", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_showDeluxeMaps = ri.Cvar_Get( "r_showDeluxeMaps", "0", CVAR_CHEAT | CVAR_SHADER );

@@ -43,7 +43,6 @@ Maryland 20850 USA.
 
 static const Color::Color console_color = Color::White;
 static const int DEFAULT_CONSOLE_WIDTH = 78;
-static const int MAX_CONSOLE_WIDTH   = 1024;
 
 int g_console_field_width = DEFAULT_CONSOLE_WIDTH;
 
@@ -88,7 +87,6 @@ cvar_t    *con_debug;
 static const int ANIMATION_TYPE_NONE   = 0;
 static const int ANIMATION_TYPE_SCROLL_DOWN = 1;
 static const int ANIMATION_TYPE_FADE   = 2;
-static const int ANIMATION_TYPE_BOTH   = 3;
 
 /*
 ================

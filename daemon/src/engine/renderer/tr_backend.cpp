@@ -420,6 +420,7 @@ in Q3.
 void GL_State( uint32_t stateBits )
 {
 	uint32_t diff = stateBits ^ glState.glStateBits;
+	diff &= ~glState.glStateBitsMask;
 
 	if ( !diff )
 	{
@@ -591,20 +592,7 @@ void GL_State( uint32_t stateBits )
 		}
 	}
 
-	// stenciltest
-	if ( diff & GLS_STENCILTEST_ENABLE )
-	{
-		if ( stateBits & GLS_STENCILTEST_ENABLE )
-		{
-			glEnable( GL_STENCIL_TEST );
-		}
-		else
-		{
-			glDisable( GL_STENCIL_TEST );
-		}
-	}
-
-	glState.glStateBits = stateBits;
+	glState.glStateBits ^= diff;
 }
 
 void GL_VertexAttribsState( uint32_t stateBits )
@@ -757,12 +745,13 @@ static void SetViewportAndScissor()
 	vec4_t	q, c;
 
 	Com_Memcpy( mat, backEnd.viewParms.projectionMatrix, sizeof(mat) );
-	if( backEnd.viewParms.isPortal ) {
-		c[0] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[1] );
-		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );
-		c[2] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[0] );
-		c[3] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.origin ) - backEnd.viewParms.portalPlane.dist;
+	if( backEnd.viewParms.portalLevel > 0 )
+	{
+		VectorCopy(backEnd.viewParms.portalFrustum[FRUSTUM_NEAR].normal, c);
+		c[3] = backEnd.viewParms.portalFrustum[FRUSTUM_NEAR].dist;
 
+		// Lengyel, Eric. "Modifying the Projection Matrix to Perform Oblique Near-plane Clipping".
+		// Terathon Software 3D Graphics Library, 2004. http://www.terathon.com/code/oblique.html
 		q[0] = (c[0] < 0.0f ? -1.0f : 1.0f) / mat[0];
 		q[1] = (c[1] < 0.0f ? -1.0f : 1.0f) / mat[5];
 		q[2] = -1.0f;
@@ -774,14 +763,15 @@ static void SetViewportAndScissor()
 		mat[10] = c[2] * scale + 1.0f;
 		mat[14] = c[3] * scale;
 	}
+
 	GL_LoadProjectionMatrix( mat );
 
 	// set the window clipping
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 	             backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-	            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+	            backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight);
 }
 
 /*
@@ -814,7 +804,7 @@ static void RB_SetGL2D()
 
 	// set time for 2D shaders
 	backEnd.refdef.time = ri.Milliseconds();
-	backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
+	backEnd.refdef.floatTime =float(double(backEnd.refdef.time) * 0.001);
 }
 
 // used as bitfield
@@ -1325,8 +1315,8 @@ static void RB_RenderInteractions()
 	}
 
 	// reset scissor
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-	            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+	            backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight );
 
 	GL_CheckErrors();
 
@@ -1334,7 +1324,7 @@ static void RB_RenderInteractions()
 	{
 		glFinish();
 		endTime = ri.Milliseconds();
-		backEnd.pc.c_forwardLightingTime = endTime - startTime;
+		backEnd.pc.c_forwardLightingTime += endTime - startTime;
 	}
 }
 
@@ -1860,11 +1850,14 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 							gl_genericShader->DisableVertexSkinning();
 							gl_genericShader->DisableVertexAnimation();
 							gl_genericShader->DisableTCGenEnvironment();
-
+							gl_genericShader->DisableVertexSprite();
+							gl_genericShader->DisableTCGenLightmap();
+							gl_genericShader->DisableDepthFade();
+							gl_genericShader->DisableAlphaTesting();
 							gl_genericShader->BindProgram( 0 );
 
 							// set uniforms
-							gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+							//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 							gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 							gl_genericShader->SetUniform_Color( Color::Black );
 
@@ -2610,8 +2603,8 @@ static void RB_RenderInteractionsShadowMapped()
 	}
 
 	// reset scissor clamping
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-	            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+	            backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight );
 
 	// reset clear color
 	GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -2622,7 +2615,7 @@ static void RB_RenderInteractionsShadowMapped()
 	{
 		glFinish();
 		endTime = ri.Milliseconds();
-		backEnd.pc.c_forwardLightingTime = endTime - startTime;
+		backEnd.pc.c_forwardLightingTime += endTime - startTime;
 	}
 }
 
@@ -2724,12 +2717,14 @@ void RB_RunVisTests( )
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
 		gl_genericShader->DisableTCGenLightmap();
-
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_Color( Color::White );
 
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CONST, alphaGen_t::AGEN_CONST );
@@ -2809,11 +2804,18 @@ void RB_RenderPostDepth()
 
 	Tess_InstantQuad( quadVerts );
 
+	vec3_t projToViewParams;
+	projToViewParams[0] = tanf(DEG2RAD(backEnd.refdef.fov_x * 0.5f)) * backEnd.viewParms.zFar;
+	projToViewParams[1] = tanf(DEG2RAD(backEnd.refdef.fov_y * 0.5f)) * backEnd.viewParms.zFar;
+	projToViewParams[2] = backEnd.viewParms.zFar;
+
 	// render lights
 	R_BindFBO( tr.lighttileFBO );
 	gl_lighttileShader->BindProgram( 0 );
 	gl_lighttileShader->SetUniform_ModelMatrix( backEnd.viewParms.world.modelViewMatrix );
 	gl_lighttileShader->SetUniform_numLights( backEnd.refdef.numLights );
+	gl_lighttileShader->SetUniform_zFar( projToViewParams );
+
 	if( glConfig2.uniformBufferObjectAvailable ) {
 		gl_lighttileShader->SetUniformBlock_Lights( tr.dlightUBO );
 	} else {
@@ -2846,8 +2848,8 @@ void RB_RenderPostDepth()
 	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 		     backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
-	GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-		    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+		    backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight );
 
 	GL_CheckErrors();
 }
@@ -2949,7 +2951,9 @@ void RB_RenderBloom()
 
 	GLimp_LogComment( "--- RB_RenderBloom ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOBLOOM ) ) || !r_bloom->integer || backEnd.viewParms.isPortal )
+	if ( ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOBLOOM ) ) ||
+	     !r_bloom->integer ||
+	     backEnd.viewParms.portalLevel > 0 )
 	{
 		return;
 	}
@@ -3068,7 +3072,8 @@ void RB_RenderMotionBlur()
 
 	GLimp_LogComment( "--- RB_RenderMotionBlur ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
+	     backEnd.viewParms.portalLevel > 0 )
 	{
 		return;
 	}
@@ -3108,7 +3113,8 @@ void RB_RenderSSAO()
 		return;
 	}
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
+	     backEnd.viewParms.portalLevel > 0 )
 	{
 		return;
 	}
@@ -3150,7 +3156,7 @@ void RB_FXAA()
 	GLimp_LogComment( "--- RB_FXAA ---\n" );
 
 	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
-	     backEnd.viewParms.isPortal )
+	     backEnd.viewParms.portalLevel )
 	{
 		return;
 	}
@@ -3183,7 +3189,7 @@ void RB_CameraPostFX()
 	GLimp_LogComment( "--- RB_CameraPostFX ---\n" );
 
 	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
-	     backEnd.viewParms.isPortal )
+	     backEnd.viewParms.portalLevel > 0 )
 	{
 		return;
 	}
@@ -3238,15 +3244,18 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
-
+		gl_genericShader->DisableTCGenLightmap();
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( cullType_t::CT_TWO_SIDED );
 
 		// set uniforms
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CUSTOM_RGB, alphaGen_t::AGEN_CUSTOM );
 
 		gl_genericShader->SetRequiredVertexPointers();
@@ -3396,15 +3405,18 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
-
+		gl_genericShader->DisableTCGenLightmap();
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( cullType_t::CT_TWO_SIDED );
 
 		// set uniforms
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( Color::Black );
 
@@ -3518,15 +3530,18 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
-
+		gl_genericShader->DisableTCGenLightmap();
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( cullType_t::CT_TWO_SIDED );
 
 		// set uniforms
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( Color::Black );
 
@@ -3538,7 +3553,8 @@ static void RB_RenderDebugUtils()
 
 		for ( i = 0; i < backEnd.refdef.numEntities; i++, ent++ )
 		{
-			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !backEnd.viewParms.isPortal )
+			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+			     backEnd.viewParms.portalLevel == 0 )
 			{
 				continue;
 			}
@@ -3591,14 +3607,17 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
-
+		gl_genericShader->DisableTCGenLightmap();
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
 		GL_Cull( cullType_t::CT_TWO_SIDED );
 
 		// set uniforms
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( Color::Black );
 
@@ -3610,7 +3629,8 @@ static void RB_RenderDebugUtils()
 
 		for ( i = 0; i < backEnd.refdef.numEntities; i++, ent++ )
 		{
-			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !backEnd.viewParms.isPortal )
+			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) &&
+			     backEnd.viewParms.portalLevel == 0 )
 			{
 				continue;
 			}
@@ -3813,15 +3833,18 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
-
+		gl_genericShader->DisableTCGenLightmap();
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( cullType_t::CT_TWO_SIDED );
 
 		// set uniforms
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CUSTOM_RGB, alphaGen_t::AGEN_CUSTOM );
 
 		// bind u_ColorMap
@@ -3928,11 +3951,14 @@ static void RB_RenderDebugUtils()
 
 			gl_genericShader->DisableVertexSkinning();
 			gl_genericShader->DisableVertexAnimation();
+			gl_genericShader->DisableVertexSprite();
 			gl_genericShader->DisableTCGenEnvironment();
-
+			gl_genericShader->DisableTCGenLightmap();
+			gl_genericShader->DisableDepthFade();
+			gl_genericShader->DisableAlphaTesting();
 			gl_genericShader->BindProgram( 0 );
 
-			gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+			//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 			gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 			gl_genericShader->SetUniform_Color( Color::Black );
 
@@ -4001,11 +4027,14 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
-
+		gl_genericShader->DisableTCGenLightmap();
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( Color::Black );
 
@@ -4095,12 +4124,15 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
-
+		gl_genericShader->DisableTCGenLightmap();
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
 		// set uniforms
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_CUSTOM_RGB, alphaGen_t::AGEN_CUSTOM );
 
 		// bind u_ColorMap
@@ -4351,8 +4383,8 @@ static void RB_RenderDebugUtils()
 				GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
 				             backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-				GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-				            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+				GL_Scissor( backEnd.viewParms.scissorX, backEnd.viewParms.scissorY,
+				            backEnd.viewParms.scissorWidth, backEnd.viewParms.scissorHeight );
 
 				GL_PopMatrix();
 			}
@@ -4380,15 +4412,18 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
+		gl_genericShader->DisableVertexSprite();
 		gl_genericShader->DisableTCGenEnvironment();
-
+		gl_genericShader->DisableTCGenLightmap();
+		gl_genericShader->DisableDepthFade();
+		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->BindProgram( 0 );
 
 		GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 		GL_Cull( cullType_t::CT_TWO_SIDED );
 
 		// set uniforms
-		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+		//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( Color::Black );
 
@@ -4472,8 +4507,11 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
+	gl_genericShader->DisableVertexSprite();
 	gl_genericShader->DisableTCGenEnvironment();
 	gl_genericShader->DisableTCGenLightmap();
+	gl_genericShader->DisableDepthFade();
+	gl_genericShader->DisableAlphaTesting();
 	gl_genericShader->BindProgram( 0 );
 
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
@@ -4482,13 +4520,12 @@ void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 	GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD );
 
 	// set uniforms
-	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+	//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 	gl_genericShader->SetUniform_Color( colorClear );
 
 	// bind u_ColorMap
-	GL_SelectTexture( 0 );
-	GL_Bind( tr.whiteImage );
+	GL_BindToTMU( 0, tr.whiteImage );
 	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 	// render in world space
@@ -4562,9 +4599,8 @@ void DebugDrawEnd() {
 RB_RenderView
 ==================
 */
-static void RB_RenderView()
+static void RB_RenderView( bool depthPass )
 {
-	int clearBits = 0;
 	int startTime = 0, endTime = 0;
 
 	if ( r_logFile->integer )
@@ -4579,18 +4615,6 @@ static void RB_RenderView()
 
 	backEnd.pc.c_surfaces += backEnd.viewParms.numDrawSurfs;
 
-	// sync with gl if needed
-	if ( r_finish->integer == 1 && !glState.finishCalled )
-	{
-		glFinish();
-		glState.finishCalled = true;
-	}
-
-	if ( r_finish->integer == 0 )
-	{
-		glState.finishCalled = true;
-	}
-
 	// disable offscreen rendering
 	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
 
@@ -4603,15 +4627,6 @@ static void RB_RenderView()
 
 	// ensures that depth writes are enabled for the depth clear
 	GL_State( GLS_DEFAULT );
-
-	// clear relevant buffers
-	clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
-
-	if ( r_clear->integer && !backEnd.viewParms.isPortal ) {
-		clearBits |= GL_COLOR_BUFFER_BIT;
-	}
-
-	glClear( clearBits );
 
 	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
 	{
@@ -4634,9 +4649,12 @@ static void RB_RenderView()
 		startTime = ri.Milliseconds();
 	}
 
-	RB_RenderDrawSurfaces( shaderSort_t::SS_DEPTH, shaderSort_t::SS_DEPTH, DRAWSURFACES_ALL );
-	RB_RunVisTests();
-	RB_RenderPostDepth();
+	if( depthPass ) {
+		RB_RenderDrawSurfaces( shaderSort_t::SS_DEPTH, shaderSort_t::SS_DEPTH, DRAWSURFACES_ALL );
+		RB_RunVisTests();
+		RB_RenderPostDepth();
+		return;
+	}
 
 	if( tr.refdef.blurVec[0] != 0.0f ||
 			tr.refdef.blurVec[1] != 0.0f ||
@@ -4664,7 +4682,7 @@ static void RB_RenderView()
 	{
 		glFinish();
 		endTime = ri.Milliseconds();
-		backEnd.pc.c_forwardAmbientTime = endTime - startTime;
+		backEnd.pc.c_forwardAmbientTime += endTime - startTime;
 	}
 
 	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) )
@@ -4685,48 +4703,62 @@ static void RB_RenderView()
 	RB_RenderDrawSurfaces( shaderSort_t::SS_ENVIRONMENT_NOFOG, shaderSort_t::SS_POST_PROCESS, DRAWSURFACES_ALL );
 
 	GL_CheckErrors();
+
 	// render bloom post process effect
 	RB_RenderBloom();
 
 	// render debug information
 	RB_RenderDebugUtils();
 
-	if ( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.portalLevel > 0 )
 	{
+#if !defined( GLSL_COMPILE_STARTUP_ONLY )
 		{
 			// capture current color buffer
 			GL_SelectTexture( 0 );
 			GL_Bind( tr.portalRenderImage );
 			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, tr.portalRenderImage->uploadWidth, tr.portalRenderImage->uploadHeight );
 		}
+#endif
 		backEnd.pc.c_portals++;
 	}
 
+	backEnd.pc.c_views++;
+}
+
+/*
+==================
+RB_RenderPostProcess
+
+Present FBO to screen, and render any effects that must go after the main view and its sub views have been rendered
+This is done so various debugging facilities will work properly
+==================
+*/
+static void RB_RenderPostProcess()
+{
 	RB_FXAA();
 
 	// render chromatric aberration
 	RB_CameraPostFX();
 
 	// copy to given byte buffer that is NOT a FBO
-	if ( tr.refdef.pixelTarget != nullptr )
+	if (tr.refdef.pixelTarget != nullptr)
 	{
 		int i;
 
 		// need to convert Y axis
 		// Bugfix: drivers absolutely hate running in high res and using glReadPixels near the top or bottom edge.
 		// Sooo... let's do it in the middle.
-		glReadPixels( glConfig.vidWidth / 2, glConfig.vidHeight / 2, tr.refdef.pixelTargetWidth, tr.refdef.pixelTargetHeight, GL_RGBA,
-		              GL_UNSIGNED_BYTE, tr.refdef.pixelTarget );
+		glReadPixels(glConfig.vidWidth / 2, glConfig.vidHeight / 2, tr.refdef.pixelTargetWidth, tr.refdef.pixelTargetHeight, GL_RGBA,
+			GL_UNSIGNED_BYTE, tr.refdef.pixelTarget);
 
-		for ( i = 0; i < tr.refdef.pixelTargetWidth * tr.refdef.pixelTargetHeight; i++ )
+		for (i = 0; i < tr.refdef.pixelTargetWidth * tr.refdef.pixelTargetHeight; i++)
 		{
-			tr.refdef.pixelTarget[( i * 4 ) + 3 ] = 255;  //set the alpha pure white
+			tr.refdef.pixelTarget[(i * 4) + 3] = 255;  //set the alpha pure white
 		}
 	}
 
 	GL_CheckErrors();
-
-	backEnd.pc.c_views++;
 }
 
 /*
@@ -4790,12 +4822,15 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
+	gl_genericShader->DisableVertexSprite();
 	gl_genericShader->DisableTCGenEnvironment();
-
+	gl_genericShader->DisableTCGenLightmap();
+	gl_genericShader->DisableDepthFade();
+	gl_genericShader->DisableAlphaTesting();
 	gl_genericShader->BindProgram( 0 );
 
 	// set uniforms
-	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+	//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 	gl_genericShader->SetUniform_Color( Color::Black );
 
@@ -5473,6 +5508,209 @@ static const void *RB_SetupLights( const void *data )
 
 /*
 =============
+RB_ClearBuffer
+=============
+*/
+const void     *RB_ClearBuffer( const void *data )
+{
+	const clearBufferCommand_t *cmd;
+	int clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+
+	GLimp_LogComment( "--- RB_ClearBuffer ---\n" );
+
+	// finish any 2D drawing if needed
+	if ( tess.numIndexes )
+	{
+		Tess_End();
+	}
+
+	cmd = ( const clearBufferCommand_t * ) data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+
+	if ( r_logFile->integer )
+	{
+		GLimp_LogComment( "--- RB_ClearBuffer ---\n" );
+	}
+
+	GL_CheckErrors();
+
+	// sync with gl if needed
+	if ( r_finish->integer == 1 && !glState.finishCalled )
+	{
+		glFinish();
+		glState.finishCalled = true;
+	}
+
+	if ( r_finish->integer == 0 )
+	{
+		glState.finishCalled = true;
+	}
+
+	// disable offscreen rendering
+	R_BindFBO( tr.mainFBO[ backEnd.currentMainFBO ] );
+
+	// we will need to change the projection matrix before drawing
+	// 2D images again
+	backEnd.projection2D = false;
+
+	// set the modelview matrix for the viewer
+	SetViewportAndScissor();
+
+	// ensures that depth writes are enabled for the depth clear
+	GL_State( GLS_DEFAULT );
+
+	// clear relevant buffers
+	if ( r_clear->integer ) {
+		clearBits |= GL_COLOR_BUFFER_BIT;
+	}
+
+	glClear( clearBits );
+
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
+RB_PreparePortal
+=============
+*/
+const void     *RB_PreparePortal( const void *data )
+{
+	const preparePortalCommand_t *cmd;
+
+	GLimp_LogComment( "--- RB_PreparePortal ---\n" );
+
+	cmd = ( const preparePortalCommand_t * ) data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+	drawSurf_t *surface = cmd->surface;
+	shader_t *shader = tr.sortedShaders[ surface->shaderNum() ];
+
+	// set the modelview matrix for the viewer
+	SetViewportAndScissor();
+
+	if ( surface->entity != &tr.worldEntity )
+	{
+		backEnd.currentEntity = surface->entity;
+
+		// set up the transformation matrix
+		R_RotateEntityForViewParms( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
+	}
+	else
+	{
+		backEnd.currentEntity = &tr.worldEntity;
+		backEnd.orientation = backEnd.viewParms.world;
+	}
+
+	GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+
+	if ( backEnd.viewParms.portalLevel == 0 ) {
+		glEnable( GL_STENCIL_TEST );
+		glStencilMask( 0xff );
+	}
+
+	glStencilFunc( GL_EQUAL, backEnd.viewParms.portalLevel, 0xff );
+	glStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
+
+	GL_State( GLS_COLORMASK_BITS );
+	glState.glStateBitsMask = GLS_COLORMASK_BITS;
+
+	Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader,
+		    nullptr, false, false, -1, -1 );
+	rb_surfaceTable[Util::ordinal(*(surface->surface))](surface->surface );
+	Tess_End();
+
+	glState.glStateBitsMask = 0;
+
+	// set depth to max on portal area
+	glDepthRange( 1.0f, 1.0f );
+
+	glStencilFunc( GL_EQUAL, backEnd.viewParms.portalLevel + 1, 0xff );
+	glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
+
+	GL_State( GLS_DEPTHMASK_TRUE | GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
+	glState.glStateBitsMask = GLS_DEPTHMASK_TRUE | GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS;
+
+	Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader,
+		    nullptr, false, false, -1, -1 );
+	rb_surfaceTable[Util::ordinal(*(surface->surface))](surface->surface );
+	Tess_End();
+
+	glState.glStateBitsMask = 0;
+
+	glDepthRange( 0.0f, 1.0f );
+
+	// keep stencil test enabled !
+
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
+RB_FinalisePortal
+=============
+*/
+const void     *RB_FinalisePortal( const void *data )
+{
+	const finalisePortalCommand_t *cmd;
+
+	GLimp_LogComment( "--- RB_FinalisePortal ---\n" );
+
+	cmd = ( const finalisePortalCommand_t * ) data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+	drawSurf_t *surface = cmd->surface;
+	shader_t *shader = tr.sortedShaders[ surface->shaderNum() ];
+
+	// set the modelview matrix for the viewer
+	SetViewportAndScissor();
+
+	if ( surface->entity != &tr.worldEntity )
+	{
+		backEnd.currentEntity = surface->entity;
+
+		// set up the transformation matrix
+		R_RotateEntityForViewParms( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
+	}
+	else
+	{
+		backEnd.currentEntity = &tr.worldEntity;
+		backEnd.orientation = backEnd.viewParms.world;
+	}
+
+	GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+
+	// set depth to max on portal area
+	glDepthRange( 1.0f, 1.0f );
+
+	glStencilFunc( GL_EQUAL, backEnd.viewParms.portalLevel + 1, 0xff );
+	glStencilOp( GL_KEEP, GL_KEEP, GL_DECR );
+
+	GL_State( GLS_DEPTHMASK_TRUE | GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS );
+	glState.glStateBitsMask = GLS_DEPTHMASK_TRUE | GLS_DEPTHTEST_DISABLE | GLS_COLORMASK_BITS;
+
+	Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader,
+		    nullptr, false, false, -1, -1 );
+	rb_surfaceTable[Util::ordinal(*(surface->surface))](surface->surface );
+	Tess_End();
+
+	glState.glStateBitsMask = 0;
+
+	glDepthRange( 0.0f, 1.0f );
+
+	if( backEnd.viewParms.portalLevel == 0 ) {
+		glDisable( GL_STENCIL_TEST );
+	}
+	
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
 RB_DrawView
 =============
 */
@@ -5493,11 +5731,37 @@ const void     *RB_DrawView( const void *data )
 	backEnd.refdef = cmd->refdef;
 	backEnd.viewParms = cmd->viewParms;
 
-	RB_RenderView();
+	RB_RenderView( cmd->depthPass );
 
 	return ( const void * )( cmd + 1 );
 }
 
+/*
+=============
+RB_DrawPostProcess
+=============
+*/
+const void    *RB_DrawPostProcess(const void *data)
+{
+	const renderPostProcessCommand_t *cmd;
+
+	GLimp_LogComment("--- RB_PostProcss ---\n");
+
+	// finish any 3D drawing if needed
+	if (tess.numIndexes)
+	{
+		Tess_End();
+	}
+
+	cmd = (const renderPostProcessCommand_t *)data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+
+	RB_RenderPostProcess();
+
+	return (const void *)(cmd + 1);
+}
 /*
 =============
 RB_DrawBuffer
@@ -5548,14 +5812,17 @@ void RB_ShowImages()
 
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
+	gl_genericShader->DisableVertexSprite();
 	gl_genericShader->DisableTCGenEnvironment();
-
+	gl_genericShader->DisableTCGenLightmap();
+	gl_genericShader->DisableDepthFade();
+	gl_genericShader->DisableAlphaTesting();
 	gl_genericShader->BindProgram( 0 );
 
 	GL_Cull( cullType_t::CT_TWO_SIDED );
 
 	// set uniforms
-	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
+	//gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetUniform_ColorModulate( colorGen_t::CGEN_VERTEX, alphaGen_t::AGEN_VERTEX );
 	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
@@ -5778,7 +6045,18 @@ void RB_ExecuteRenderCommands( const void *data )
 			case Util::ordinal(renderCommand_t::RC_SCISSORSET):
 				data = RB_ScissorSet( data );
 				break;
-
+			case Util::ordinal(renderCommand_t::RC_POST_PROCESS):
+				data = RB_DrawPostProcess(data);
+				break;
+			case Util::ordinal(renderCommand_t::RC_CLEAR_BUFFER):
+				data = RB_ClearBuffer(data);
+				break;
+			case Util::ordinal(renderCommand_t::RC_PREPARE_PORTAL):
+				data = RB_PreparePortal(data);
+				break;
+			case Util::ordinal(renderCommand_t::RC_FINALISE_PORTAL):
+				data = RB_FinalisePortal(data);
+				break;
 			case Util::ordinal(renderCommand_t::RC_END_OF_LIST):
 			default:
 				// stop rendering on this thread

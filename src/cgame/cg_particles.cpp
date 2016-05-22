@@ -2547,7 +2547,7 @@ static void CG_RenderParticle( particle_t *p )
 	                           p->lifeTime,
 	                           p->radius.delay ) );
 
-	re.shaderTime = p->birthTime / 1000.0f;
+	re.shaderTime = float(double(p->birthTime) * 0.001);
 
 	if ( bp->numFrames ) //shader based
 	{

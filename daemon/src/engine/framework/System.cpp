@@ -568,7 +568,7 @@ static void Init(int argc, char** argv)
 	}
 
 	// Enable S3TC on Mesa even if libtxc-dxtn is not available
-	putenv((char *) "force_s3tc_enable=true");
+	setenv("force_s3tc_enable", "true", true);
 #endif
 
 	// Initialize the console
