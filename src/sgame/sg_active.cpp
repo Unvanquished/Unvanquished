@@ -2222,6 +2222,8 @@ void ClientThink_real( gentity_t *self )
 
 	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( (team_t) client->pers.team );
 	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( (team_t) client->pers.team );
+	client->ps.persistant[ PERS_BPINUSE ] = level.team[client->pers.team].bpInUse;
+	client->ps.persistant[ PERS_MAXBP ] = level.team[client->pers.team].maximumBpAllowed;
 
 	if ( client->ps.persistant[ PERS_BP ] < 0 )
 	{

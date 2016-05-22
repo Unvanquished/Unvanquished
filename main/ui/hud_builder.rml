@@ -62,6 +62,7 @@ progressbar
 	</div>
 	<div id="rate">
 		Resources: <mine_rate/>
+		In Use: <bp_limit/>
 	</div>
 </body>
 </rml>

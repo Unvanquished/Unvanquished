@@ -41,7 +41,7 @@ const char        *G_admin_name( gentity_t *ent );
 const char        *G_quoted_admin_name( gentity_t *ent );
 
 // Beacon.cpp
-namespace Beacon 
+namespace Beacon
 {
 	void Frame();
 	void Move( gentity_t *ent, const vec3_t origin );
@@ -121,6 +121,7 @@ bool ASpiker_Fire( gentity_t *self );
 void HTurret_PreBlast( gentity_t *self );
 
 // sg_buildpoints
+void              G_CalculateBpLimits();
 float             G_RGSPredictEfficiency( vec3_t origin );
 float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
 void              G_MineBuildPoints();

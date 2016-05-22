@@ -111,6 +111,7 @@ vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 vmCvar_t           g_minimumMineRate;
 vmCvar_t           g_buildPointLossFraction;
+vmCvar_t           g_rgsMaxResources;
 
 vmCvar_t           g_debugMomentum;
 vmCvar_t           g_momentumHalfLife;
@@ -364,6 +365,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        0,                                               0, false    , nullptr       },
 	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          0,                                               0, false    , nullptr       },
 	{ &g_buildPointLossFraction,      "g_buildPointLossFraction",      DEFAULT_BP_LOSS_FRAC,               0,                                               0, false    , nullptr       },
+	{ &g_rgsMaxResources,             "g_rgsMaxResources",             DEFAULT_RGS_MAX_RESOURCES,          0,                                               0, false    , nullptr       },
 
 	// gameplay: momentum
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, false    , nullptr       },
@@ -2929,6 +2931,7 @@ void G_RunFrame( int levelTime )
 
 	G_CountSpawns();
 	G_SetHumanBuildablePowerState();
+	G_CalculateBpLimits();
 	G_MineBuildPoints();
 	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();

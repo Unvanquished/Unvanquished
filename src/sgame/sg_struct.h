@@ -101,7 +101,7 @@ struct gentity_s
 
 	// New style entity
 	Entity* entity;
-	
+
 	struct gclient_s *client; // nullptr if not a client
 
 	bool     inuse;
@@ -778,6 +778,8 @@ struct level_locals_s
 		float            acquiredBuildPoints;
 		float            mainStructAcquiredBP;
 		float            mineEfficiency;
+		int              maximumBpAllowed;
+		int              bpInUse;
 		int              kills;
 		spawnQueue_t     spawnQueue;
 		bool         locked;
