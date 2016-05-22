@@ -338,7 +338,7 @@ using GetNewsMsg = IPC::SyncMessage<
 using SendMessageMsg = IPC::Message<IPC::Id<VM::QVM, CG_SEND_MESSAGE>, size_t, std::vector<uint8_t>>;
 using MessageStatusMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_MESSAGE_STATUS>>,
-		IPC::Reply<int>
+		IPC::Reply<messageStatus_t>
 >;
 
 // All Sounds

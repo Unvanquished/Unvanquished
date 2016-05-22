@@ -106,7 +106,7 @@ using SendGameStatMsg = IPC::Message<IPC::Id<VM::QVM, G_SEND_GAME_STAT>, std::st
 using SendMessageMsg = IPC::Message<IPC::Id<VM::QVM, G_SEND_MESSAGE>, int, size_t, std::vector<uint8_t>>;
 using MessageStatusMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_MESSAGE_STATUS>, int>,
-    IPC::Reply<int>
+    IPC::Reply<messageStatus_t>
 >;
 using RSAGenMsgMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_RSA_GENMSG>, std::string>,

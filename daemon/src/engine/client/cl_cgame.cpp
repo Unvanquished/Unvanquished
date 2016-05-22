@@ -1639,8 +1639,8 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_MESSAGE_STATUS:
-			IPC::HandleMsg<MessageStatusMsg>(channel, std::move(reader), [this](int& status) {
-				status = Util::ordinal(CL_BinaryMessageStatus());
+			IPC::HandleMsg<MessageStatusMsg>(channel, std::move(reader), [this](messageStatus_t& status) {
+				status = CL_BinaryMessageStatus();
 			});
 			break;
 

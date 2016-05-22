@@ -113,9 +113,9 @@ void trap_SendMessage(uint8_t *buf, size_t buflen)
 
 messageStatus_t trap_MessageStatus()
 {
-	int res;
+	messageStatus_t res;
 	VM::SendMsg<MessageStatusMsg>(res);
-	return static_cast<messageStatus_t>(res);
+	return res;
 }
 
 void trap_RegisterButtonCommands( const char *cmds )

@@ -126,9 +126,9 @@ void trap_SendMessage(int clientNum, uint8_t *buf, size_t buflen)
 
 messageStatus_t trap_MessageStatus(int clientNum)
 {
-    int res;
+    messageStatus_t res;
     VM::SendMsg<MessageStatusMsg>(clientNum, res);
-    return static_cast<messageStatus_t>(res);
+    return res;
 }
 
 int trap_RSA_GenerateMessage(const char *public_key, char *cleartext, char *encrypted)

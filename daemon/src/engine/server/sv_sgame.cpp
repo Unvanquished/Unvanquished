@@ -600,8 +600,8 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_MESSAGE_STATUS:
-		IPC::HandleMsg<MessageStatusMsg>(channel, std::move(reader), [this](int index, int& status) {
-			status = Util::ordinal(SV_BinaryMessageStatus(index));
+		IPC::HandleMsg<MessageStatusMsg>(channel, std::move(reader), [this](int index, messageStatus_t& status) {
+			status = SV_BinaryMessageStatus(index);
 		});
 		break;
 
