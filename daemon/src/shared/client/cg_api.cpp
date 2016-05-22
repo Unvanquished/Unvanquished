@@ -104,11 +104,9 @@ bool trap_GetEntityToken( char *buffer, int bufferSize )
 	return res;
 }
 
-void trap_SendMessage(uint8_t *buf, size_t buflen)
+void trap_SendMessage(const std::vector<uint8_t>& message)
 {
-	std::vector<uint8_t> buffer(buflen, 0);
-	memcpy(buffer.data(), buf, buflen);
-	VM::SendMsg<SendMessageMsg>(buflen, buffer);
+	VM::SendMsg<SendMessageMsg>(message);
 }
 
 messageStatus_t trap_MessageStatus()

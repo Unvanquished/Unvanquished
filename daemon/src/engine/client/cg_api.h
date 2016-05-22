@@ -221,7 +221,7 @@ void            trap_SetMouseMode( MouseMode mode );
 void            trap_S_StopBackgroundTrack();
 void            trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 bool        trap_GetEntityToken( char *buffer, int bufferSize );
-void 			trap_SendMessage(uint8_t *buf, size_t buflen);
+void 			trap_SendMessage(const std::vector<uint8_t>& message);
 messageStatus_t trap_MessageStatus();
 void            trap_UI_Popup( int arg0 );
 void            trap_UI_ClosePopup( const char *arg0 );

@@ -103,7 +103,7 @@ using GetEntityTokenMsg = IPC::SyncMessage<
     IPC::Reply<bool, std::string>
 >;
 using SendGameStatMsg = IPC::Message<IPC::Id<VM::QVM, G_SEND_GAME_STAT>, std::string>;
-using SendMessageMsg = IPC::Message<IPC::Id<VM::QVM, G_SEND_MESSAGE>, int, size_t, std::vector<uint8_t>>;
+using SendMessageMsg = IPC::Message<IPC::Id<VM::QVM, G_SEND_MESSAGE>, int, std::vector<uint8_t>>;
 using MessageStatusMsg = IPC::SyncMessage<
     IPC::Message<IPC::Id<VM::QVM, G_MESSAGE_STATUS>, int>,
     IPC::Reply<messageStatus_t>

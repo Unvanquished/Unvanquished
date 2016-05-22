@@ -117,11 +117,9 @@ void trap_SendGameStat(const char *data)
     VM::SendMsg<SendGameStatMsg>(data);
 }
 
-void trap_SendMessage(int clientNum, uint8_t *buf, size_t buflen)
+void trap_SendMessage(int clientNum, const std::vector<uint8_t>& message)
 {
-    std::vector<uint8_t> buffer(buflen, 0);
-    memcpy(buffer.data(), buf, buflen);
-    VM::SendMsg<SendMessageMsg>(clientNum, buflen, buffer);
+    VM::SendMsg<SendMessageMsg>(clientNum, message);
 }
 
 messageStatus_t trap_MessageStatus(int clientNum)

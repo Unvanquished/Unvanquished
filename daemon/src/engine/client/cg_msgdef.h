@@ -335,7 +335,7 @@ using GetNewsMsg = IPC::SyncMessage<
 	IPC::Reply<bool>
 >;
 
-using SendMessageMsg = IPC::Message<IPC::Id<VM::QVM, CG_SEND_MESSAGE>, size_t, std::vector<uint8_t>>;
+using SendMessageMsg = IPC::Message<IPC::Id<VM::QVM, CG_SEND_MESSAGE>, std::vector<uint8_t>>;
 using MessageStatusMsg = IPC::SyncMessage<
 		IPC::Message<IPC::Id<VM::QVM, CG_MESSAGE_STATUS>>,
 		IPC::Reply<messageStatus_t>

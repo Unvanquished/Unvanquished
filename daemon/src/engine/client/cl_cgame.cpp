@@ -1040,16 +1040,13 @@ void CL_SetCGameTime()
 CL_SendBinaryMessage
 ====================
 */
-static void CL_SendBinaryMessage(const uint8_t *buf, size_t buflen)
+static void CL_SendBinaryMessage(std::vector<uint8_t> message)
 {
-	if (buflen > MAX_BINARY_MESSAGE) {
-		Com_Error(errorParm_t::ERR_DROP, "CL_SendBinaryMessage: bad length %zi", buflen);
-		clc.binaryMessageLength = 0;
-		return;
+	if (message.size() > MAX_BINARY_MESSAGE) {
+		Com_Error(errorParm_t::ERR_DROP, "CL_SendBinaryMessage: bad length %zi", message.size());
 	}
 
-	clc.binaryMessageLength = buflen;
-	memcpy(clc.binaryMessage, buf, buflen);
+	memcpy(clc.binaryMessage, message.data(), clc.binaryMessageLength = message.size());
 }
 
 /*
@@ -1633,8 +1630,8 @@ void CGameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 			break;
 
 		case CG_SEND_MESSAGE:
-			IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](size_t len, std::vector<uint8_t> message) {
-				CL_SendBinaryMessage(message.data(), len);
+			IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](std::vector<uint8_t> message) {
+				CL_SendBinaryMessage(std::move(message));
 			});
 			break;
 

@@ -220,19 +220,18 @@ void SV_GetUsercmd( int clientNum, usercmd_t *cmd )
 SV_SendBinaryMessage
 ====================
 */
-static void SV_SendBinaryMessage( int cno, const uint8_t *buf, size_t buflen )
+static void SV_SendBinaryMessage(int cno, std::vector<uint8_t> message)
 {
 	if (cno < 0 || cno >= sv_maxclients->integer) {
 		Com_Error(errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno);
 	}
 
-	if (buflen > MAX_BINARY_MESSAGE) {
-		Com_Error(errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad length %zi", buflen);
+	if (message.size() > MAX_BINARY_MESSAGE) {
+		Com_Error(errorParm_t::ERR_DROP, "SV_SendBinaryMessage: bad length %zi", message.size());
 	}
 
 	auto &cl = svs.clients[cno];
-	cl.binaryMessageLength = buflen;
-	memcpy(cl.binaryMessage, buf, buflen);
+	memcpy(cl.binaryMessage, message.data(), cl.binaryMessageLength = message.size());
 }
 
 /*
@@ -594,8 +593,8 @@ void GameVM::QVMSyscall(int index, Util::Reader& reader, IPC::Channel& channel)
 		break;
 
 	case G_SEND_MESSAGE:
-		IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](int clientNum, size_t len, std::vector<uint8_t> message) {
-			SV_SendBinaryMessage(clientNum, message.data(), len);
+		IPC::HandleMsg<SendMessageMsg>(channel, std::move(reader), [this](int clientNum, std::vector<uint8_t> message) {
+			SV_SendBinaryMessage(clientNum, std::move(message));
 		});
 		break;
 
