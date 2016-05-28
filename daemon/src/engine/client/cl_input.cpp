@@ -904,7 +904,7 @@ void CL_WritePacket()
 {
 	msg_t     buf;
 	byte      data[ MAX_MSGLEN ];
-	int       i, j;
+	int       j;
 	usercmd_t *cmd, *oldcmd;
 	usercmd_t nullcmd;
 	int       packetNum;
@@ -938,7 +938,7 @@ void CL_WritePacket()
 	// write any unacknowledged clientCommands
 	// NOTE TTimo: if you verbose this, you will see that there are quite a few duplicates
 	// typically several unacknowledged cp or userinfo commands stacked up
-	for ( i = clc.reliableAcknowledge + 1; i <= clc.reliableSequence; i++ )
+	for ( int i = clc.reliableAcknowledge + 1; i <= clc.reliableSequence; i++ )
 	{
 		MSG_WriteByte( &buf, clc_clientCommand );
 		MSG_WriteLong( &buf, i );
@@ -987,7 +987,7 @@ void CL_WritePacket()
 		MSG_WriteByte( &buf, count );
 
 		// write all the commands, including the predicted command
-		for ( i = 0; i < count; i++ )
+		for ( int i = 0; i < count; i++ )
 		{
 			j = ( cl.cmdNumber - count + i + 1 ) & CMD_MASK;
 			cmd = &cl.cmds[ j ];

@@ -117,18 +117,16 @@ void trap_SendGameStat(const char *data)
     VM::SendMsg<SendGameStatMsg>(data);
 }
 
-void trap_SendMessage(int clientNum, char *buf, int buflen)
+void trap_SendMessage(int clientNum, const std::vector<uint8_t>& message)
 {
-    std::vector<char> buffer(buflen, 0);
-    memcpy(buffer.data(), buf, buflen);
-    VM::SendMsg<SendMessageMsg>(clientNum, buflen, buffer);
+    VM::SendMsg<SendMessageMsg>(clientNum, message);
 }
 
 messageStatus_t trap_MessageStatus(int clientNum)
 {
-    int res;
+    messageStatus_t res;
     VM::SendMsg<MessageStatusMsg>(clientNum, res);
-    return static_cast<messageStatus_t>(res);
+    return res;
 }
 
 int trap_RSA_GenerateMessage(const char *public_key, char *cleartext, char *encrypted)

@@ -217,9 +217,9 @@ using clipHandle_t = int;
 
 #define MAX_BINARY_MESSAGE 32768 // max length of binary message
 
-	enum class messageStatus_t
+	enum class messageStatus_t : uint8_t
 	{
-	  MESSAGE_EMPTY = 0,
+	  MESSAGE_EMPTY,
 	  MESSAGE_WAITING, // rate/packet limited
 	  MESSAGE_WAITING_OVERFLOW, // packet too large with message
 	};
