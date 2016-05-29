@@ -341,7 +341,7 @@ namespace Cvar {
         if (rec.success) {
             callback(this->Get());
         }
-        return std::move(rec);
+        return rec;
     }
 
     // Modified<Base>
@@ -366,7 +366,7 @@ namespace Cvar {
         if (rec.success) {
             modified = true;
         }
-        return std::move(rec);
+        return rec;
     }
 
     template<typename Base>
