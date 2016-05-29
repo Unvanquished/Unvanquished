@@ -447,7 +447,7 @@ clients along with it.
 This is NOT called for map_restart
 ================
 */
-void SV_SpawnServer( const char *server )
+void SV_SpawnServer(const std::string pakname, const std::string server)
 {
 	int        i;
 	bool   isBot;
@@ -513,13 +513,14 @@ void SV_SpawnServer( const char *server )
 
 	FS::PakPath::ClearPaks();
 	FS_LoadBasePak();
-	if (!FS_LoadPak(va("map-%s", server)))
+	if (!FS_LoadPak(pakname.c_str()))
 		Com_Error(errorParm_t::ERR_DROP, "Could not load map pak\n");
 
 	CM_LoadMap(server);
 
 	// set serverinfo visible name
-	Cvar_Set( "mapname", server );
+	Cvar_Set( "mapname", server.c_str() );
+	Cvar_Set( "pakname", pakname.c_str() );
 
 	// serverid should be different each time
 	sv.serverId = com_frameTime;
@@ -642,6 +643,7 @@ void SV_Init()
 
 	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO  );
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
+	Cvar_Get( "pakname", "", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "layout", "", CVAR_SERVERINFO | CVAR_ROM );
 	Cvar_Get( "g_layouts", "", 0 ); // FIXME
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );

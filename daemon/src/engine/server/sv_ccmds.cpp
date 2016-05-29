@@ -59,7 +59,9 @@ class MapCmd: public Cmd::StaticCmd {
             const std::string& mapName = args.Argv(1);
 
             //Make sure the map exists to avoid typos that would kill the game
-            if (!FS::GetAvailableMaps().count(mapName)) {
+            FS::GetAvailableMaps();
+            const auto loadedPakInfo = FS::PakPath::LocateFile(Str::Format("maps/%s.bsp", mapName));
+            if (!loadedPakInfo) {
                 Print("Can't find map %s", mapName);
                 return;
             }
@@ -71,7 +73,7 @@ class MapCmd: public Cmd::StaticCmd {
             }
 
             Cvar::SetValueForce("sv_cheats", cheat ? "1" : "0");
-            SV_SpawnServer(mapName.c_str());
+            SV_SpawnServer(loadedPakInfo->name, mapName);
         }
 
         Cmd::CompletionResult Complete(int argNum, const Cmd::Args& args, Str::StringRef prefix) const OVERRIDE {
@@ -138,12 +140,14 @@ static void SV_MapRestart_f()
 	if ( sv_maxclients->modified )
 	{
 		char mapname[ MAX_QPATH ];
+		char pakname[ MAX_QPATH ];
 
 		Log::Notice( "sv_maxclients variable change — restarting.\n" );
 		// restart the map the slow way
 		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
+		Q_strncpyz( pakname, Cvar_VariableString( "pakname" ), sizeof( pakname ) );
 
-		SV_SpawnServer( mapname );
+		SV_SpawnServer(pakname, mapname);
 		return;
 	}
 

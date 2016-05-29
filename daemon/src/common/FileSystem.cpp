@@ -2155,7 +2155,12 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	Util::optional<uint32_t> checksum;
 	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == pakType_t::PAK_DIR && checksum)) {
 		fsLogs.Warn("Invalid pak name: %s", fullPath);
-		return;
+		if (!DAEMON_FS_LEGACY_PAKS) {
+			return;
+		} else {
+			name = filename.substr(0, filename.size() - suffixLen);
+			version = "1";
+		}
 	}
 
 	availablePaks.push_back({std::move(name), std::move(version), checksum, type, std::move(fullPath)});
@@ -2346,7 +2351,7 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 
 	// Get the name of the package
 	const char* underscore1 = std::find(nameStart, end, '_');
-	if (underscore1 == end)
+	if (underscore1 == end || (DAEMON_FS_LEGACY_PAKS && underscore1 == begin))
 		return false;
 	name.assign(begin, underscore1);
 
@@ -2392,7 +2397,7 @@ std::vector<PakInfo> GetAvailableMapPaks()
 	std::vector<PakInfo> infos;
 	for ( const auto& pak : FS::GetAvailablePaks() )
 	{
-		if ( Str::IsPrefix("map-", pak.name) )
+		if (DAEMON_FS_LEGACY_PAKS || Str::IsPrefix("map-", pak.name))
 		{
 			infos.push_back(pak);
 		}

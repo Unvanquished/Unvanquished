@@ -42,6 +42,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Default base package */
 #define DEFAULT_BASE_PAK    PRODUCT_NAME_LOWER
 
+#define DAEMON_FS_LEGACY_PAKS false
+
 /** URI scheme and server browser filter */
 #define GAMENAME_STRING     "unv"
 #define GAMENAME_FOR_MASTER PRODUCT_NAME_UPPER
