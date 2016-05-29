@@ -1075,8 +1075,8 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 
 			VectorCopy(xyz[i], tess.verts[tess.numVertexes + i].xyz);
 			Vector4Copy(qtangents, tess.verts[tess.numVertexes + i].qtangents);
-			tess.verts[tess.numVertexes + j].texCoords[0] = floatToHalf(st[i].st[0]);
-			tess.verts[tess.numVertexes + j].texCoords[1] = floatToHalf(st[i].st[1]);
+			tess.verts[tess.numVertexes + i].texCoords[0] = floatToHalf(st[i].st[0]);
+			tess.verts[tess.numVertexes + i].texCoords[1] = floatToHalf(st[i].st[1]);
 		}
 
 		ri.Hunk_FreeTempMemory( normals );
