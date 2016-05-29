@@ -70,8 +70,8 @@ function(GAMEMODULE)
             include(ExternalProject)
             set(vm nacl-vms)
             ExternalProject_Add(${vm}
-                SOURCE_DIR ${CMAKE_SOURCE_DIR}
-                BINARY_DIR ${CMAKE_BINARY_DIR}/${vm}
+                SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+                BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${vm}
                 CMAKE_GENERATOR ${VM_GENERATOR}
                 CMAKE_ARGS
                     -DFORK=2
