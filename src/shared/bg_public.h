@@ -1600,5 +1600,17 @@ char *BG_strdup( const char *string );
 
 const char *Trans_GenderContext( gender_t gender );
 
+namespace CombatFeedback
+{
+  static const int HIT_INDIRECT = 1 << 0;
+  static const int HIT_BUILDING = 1 << 1;
+  static const int HIT_FRIENDLY = 1 << 2;
+  static const int HIT_LETHAL   = 1 << 3;
+
+  static const int INDICATOR_LIFETIME = 1000;
+}
+
+#include "Clustering.h"
+
 //==================================================================
 #endif /* BG_PUBLIC_H_ */

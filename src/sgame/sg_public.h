@@ -355,6 +355,12 @@ void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t w
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
 bool              G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir );
 
+// CombatFeedback.cpp
+namespace CombatFeedback
+{
+  void HitNotify(gentity_t *attacker, gentity_t *victim, Util::optional<Vec3> point, float damage, meansOfDeath_t mod, bool lethal);
+}
+
 // Components
 void G_IgnitableThink();
 

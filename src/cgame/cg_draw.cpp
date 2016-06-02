@@ -341,6 +341,8 @@ static void CG_Draw2D()
 	for( i = 0; i < cg.beaconCount; i++ )
 		CG_DrawBeacon( cg.beacons[ i ] );
 
+	CombatFeedback::DrawDamageIndicators();
+
 	if ( cg.zoomed )
 	{
 		Color::Color black = { 0.f, 0.f, 0.f, 0.5f };

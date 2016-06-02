@@ -1643,6 +1643,8 @@ typedef struct
 	qhandle_t   beaconTagScore;
 
 	sfxHandle_t timerBeaconExpiredSound;
+
+	qhandle_t   damageIndicatorFont;
 } cgMedia_t;
 
 typedef struct
@@ -2434,5 +2436,17 @@ void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
 void Rocket_RocketDebug_f();
-#endif
 
+//
+// CombatFeedback.cpp
+//
+
+namespace CombatFeedback
+{
+  void Event(entityState_t *es);
+  void DrawDamageIndicators(void);
+}
+
+
+
+#endif

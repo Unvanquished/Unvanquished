@@ -1310,6 +1310,8 @@ static void CG_RegisterGraphics()
 	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
 	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
 
+	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/2d/damage-indicator-font", RSF_DEFAULT );
+
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 
