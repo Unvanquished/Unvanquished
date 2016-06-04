@@ -25,6 +25,8 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace CombatFeedback {
 
+Log::Logger logger("sgame.cf");
+
 /**
  * @brief Notify a client of a hit
  */
@@ -41,12 +43,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 		return;
 
 	case MOD_LCANNON_SPLASH:
-	case MOD_FLAMER_SPLASH:
 	case MOD_GRENADE:
-		flags |= HIT_INDIRECT;
-		break;
-
-	case MOD_BURN:
 		flags |= HIT_INDIRECT;
 		break;
 
@@ -82,7 +79,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 
 	// warning: otherEntityNum2 is only 10 bits wide
 	event->s.otherEntityNum2 = flags;
-	event->s.time = (int)roundf(damage);
+	event->s.angles2[0] = damage;
 	event->s.otherEntityNum = victim - g_entities;
 
 	G_SetOrigin(event, point.Data());

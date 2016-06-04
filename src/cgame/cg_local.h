@@ -1645,6 +1645,7 @@ typedef struct
 	sfxHandle_t timerBeaconExpiredSound;
 
 	qhandle_t   damageIndicatorFont;
+  sfxHandle_t killSound;
 } cgMedia_t;
 
 typedef struct

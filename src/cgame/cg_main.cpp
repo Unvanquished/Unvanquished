@@ -1073,6 +1073,7 @@ static void CG_RegisterSounds()
 	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon.wav", false );
 
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", false );
+	cgs.media.killSound = trap_S_RegisterSound( "sound/feedback/bell.ogg", false );
 }
 
 //===================================================================================

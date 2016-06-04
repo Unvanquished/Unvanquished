@@ -29,14 +29,22 @@ static Log::Logger logger("cgame.cf");
 
 const float DAMAGE_INDICATOR_ASPECT_RATIO = 982.0f / 2048.0f;
 const float DAMAGE_INDICATOR_BASE_SCALE = 0.7f;
-const float DAMAGE_INDICATOR_DISTANCE_EXPONENT = -0.5f;
+const float DAMAGE_INDICATOR_DISTANCE_EXPONENT = -0.5f;     
 
-Cvar::Cvar<bool> damageIndicators_enable("cgame.damageIndicators.enable",
-                                         "enable/disable damage indicators",
-                                         Cvar::NONE, true);
-Cvar::Cvar<float> damageIndicators_scale("cgame.damageIndicators.scale",
-                                         "scale of damage indicators",
-                                         Cvar::NONE, 1.0f);
+Cvar::Cvar<bool> damageIndicators_enable(
+	"cgame.damageIndicators.enable",
+	"enable/disable damage indicators",
+	Cvar::NONE, true);
+
+Cvar::Cvar<float> damageIndicators_scale(
+	"cgame.damageIndicators.scale",
+	"scale of damage indicators",
+	Cvar::NONE, 1.0f);
+
+Cvar::Cvar<bool> killSounds_enable(
+	"cgame.killSounds.enable",
+	"enable/disable kill sounds",
+	Cvar::NONE, true);
 
 typedef enum {
 	DIL_ENEMY,
@@ -59,7 +67,8 @@ float damageIndicatorColors[DAMAGE_INDICATOR_LAYERS][3] = {
 };
 
 struct DamageIndicator {
-	int ctime, value, target;
+	int ctime, victim;
+	float value;
 	Vec3 origin, velocity;
 	damageIndicatorLayer_t layer;
 	bool lethal;
@@ -67,16 +76,12 @@ struct DamageIndicator {
 	// the following fields are computed every frame and can be ignored
 	// in all init/clustering code
 	Vec2 pos2d;
-	float dist;
-	float scale;
+	float dist, scale;
 	Vec3 color;
 	float alpha;
 };
 
-// someone tell me why this typedef is necessary
-typedef Clustering::EuclideanClustering<DamageIndicator*, 3> wat;
-
-class Clustering : public wat {
+class Clustering : public ::Clustering::EuclideanClustering<DamageIndicator*, 3> {
 	typedef Clustering::EuclideanClustering<DamageIndicator*, 3> super;
 
 public:
@@ -98,17 +103,15 @@ static std::list<DamageIndicator> damageIndicatorQueue;
 /**
  * @brief Create a new damage indicator and add it to the queue.
  */
-static void EnqueueDamageIndicator(Vec3 point, int flags, int value, int target)
+static void EnqueueDamageIndicator(Vec3 point, int flags, float value,
+                                   int victim)
 {
 	DamageIndicator di;
-
-	if (!damageIndicators_enable.Get())
-		return;
 
 	di.ctime = cg.time;
 	di.origin = point;
 	di.value = value;
-	di.target = target;
+	di.victim = victim;
 
 	if (flags & HIT_BUILDING) {
 		bool alien;
@@ -149,7 +152,7 @@ static void EnqueueDamageIndicator(Vec3 point, int flags, int value, int target)
 
 static bool DamageIndicatorsSameKind(DamageIndicator *A, DamageIndicator *B)
 {
-	return (A->layer == B->layer) && (A->target == B->target);
+	return (A->layer == B->layer) && (A->victim == B->victim);
 }
 
 /**
@@ -235,8 +238,21 @@ static void DequeueDamageIndicators(void)
  */
 void Event(entityState_t *es)
 {
-	EnqueueDamageIndicator(Vec3::Load(es->origin), es->otherEntityNum2,
-	                       es->time, es->otherEntityNum);
+	Vec3 origin;
+	int flags, victim;
+	float value;
+
+	origin = Vec3::Load(es->origin);
+	flags = es->otherEntityNum2;
+	value = es->angles2[0];
+	victim = es->otherEntityNum;
+
+	if (damageIndicators_enable.Get())
+		EnqueueDamageIndicator(origin, flags, value, victim);
+
+	if ((flags & HIT_LETHAL) && killSounds_enable.Get())
+		trap_S_StartLocalSound(cgs.media.killSound,
+		                       soundChannel_t::CHAN_LOCAL_SOUND);
 
 	cg.hitTime = cg.time;
 }
@@ -280,7 +296,6 @@ static bool EvaluateDamageIndicator(DamageIndicator *di, bool *draw)
 /**
  * @brief Draw a damage indicator.
  */
-// TODO: replace with librocket
 static void DrawDamageIndicator(DamageIndicator *di)
 {
 	float width, height, total_width, x, y;
@@ -290,7 +305,7 @@ static void DrawDamageIndicator(DamageIndicator *di)
 	height *= di->scale * DAMAGE_INDICATOR_BASE_SCALE;
 	width = height * DAMAGE_INDICATOR_ASPECT_RATIO;
 
-	text = std::to_string(di->value);
+	text = std::to_string((int)ceilf(di->value));
 	if (di->lethal)
 		text = "!" + text;
 	total_width = width * text.length();
