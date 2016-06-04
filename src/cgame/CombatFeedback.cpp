@@ -48,22 +48,18 @@ Cvar::Cvar<bool> killSounds_enable(
 
 typedef enum {
 	DIL_ENEMY,
-	DIL_ENEMY_INDIRECT,
 	DIL_TEAMMATE,
-	DIL_TEAMMATE_INDIRECT,
 	DIL_ALIEN_BUILDING,
-	DIL_ALIEN_BUILDING_INDIRECT,
 	DIL_HUMAN_BUILDING,
-	DIL_HUMAN_BUILDING_INDIRECT,
 
 	DAMAGE_INDICATOR_LAYERS
 } damageIndicatorLayer_t;
 
 float damageIndicatorColors[DAMAGE_INDICATOR_LAYERS][3] = {
-	{1, 1, 1}, {1, 1, 0},  // enemy
-	{1, 0, 0}, {1, 0.5, 0}, // friendly
-	{0, 1, 0}, {0.54, 1, 0.68}, // alien building
-	{0, 0, 1}, {0, 0.82, 1}, // human building
+	{1, 1, 1},  // enemy
+	{1, 0.5, 0}, // friendly
+	{0.54, 1, 0.68}, // alien building
+	{0, 0.82, 1} // human building
 };
 
 struct DamageIndicator {
@@ -119,31 +115,19 @@ static void EnqueueDamageIndicator(Vec3 point, int flags, float value,
 		alien = (cg.predictedPlayerState.persistant[PERS_TEAM]
 		         == TEAM_ALIENS) ^ !(flags & HIT_FRIENDLY);
 
-		if (alien)  {
-			if (flags & HIT_INDIRECT)
-				di.layer = DIL_ALIEN_BUILDING_INDIRECT;
-			else
-				di.layer = DIL_ALIEN_BUILDING;
-		} else {
-			if (flags & HIT_INDIRECT)
-				di.layer = DIL_HUMAN_BUILDING;
-			else
-				di.layer = DIL_HUMAN_BUILDING_INDIRECT;
-		}
+		if (alien)
+			di.layer = DIL_ALIEN_BUILDING;
+		else
+			di.layer = DIL_HUMAN_BUILDING;
 	} else {
-		if (flags & HIT_FRIENDLY) {
-			if (flags & HIT_INDIRECT)
-				di.layer = DIL_TEAMMATE_INDIRECT;
-			else
-				di.layer = DIL_TEAMMATE;
-		} else {
-			if (flags & HIT_INDIRECT)
-				di.layer = DIL_ENEMY_INDIRECT;
-			else
-				di.layer = DIL_ENEMY;
-		}
+		if (flags & HIT_FRIENDLY)
+			di.layer = DIL_TEAMMATE;
+		else
+			di.layer = DIL_ENEMY;
 	}
 
+	// there will always be only one HIT_LETHAL damage indicator
+	// and it'll be always the last one, so it doesn't need its own layer
 	di.lethal = (flags & HIT_LETHAL) == HIT_LETHAL;
 
 	// FIXME: avoid copying DamageIndicators
@@ -196,6 +180,8 @@ static void DequeueDamageIndicators2(void)
 		total.ctime = cg.time;
 		total.origin = center;
 		total.layer = mean->layer;
+		total.victim = mean->victim;
+		// velocity is set in AddDamageIndicator
 
 		total.value = 0;
 		total.lethal = false;
@@ -250,7 +236,8 @@ void Event(entityState_t *es)
 	if (damageIndicators_enable.Get())
 		EnqueueDamageIndicator(origin, flags, value, victim);
 
-	if ((flags & HIT_LETHAL) && killSounds_enable.Get())
+	if ((flags & HIT_LETHAL) && !(flags & HIT_BUILDING)
+	    && killSounds_enable.Get())
 		trap_S_StartLocalSound(cgs.media.killSound,
 		                       soundChannel_t::CHAN_LOCAL_SOUND);
 

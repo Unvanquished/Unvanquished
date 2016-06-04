@@ -34,6 +34,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
                Util::optional<Vec3> point_opt, float damage,
                meansOfDeath_t mod, bool lethal)
 {
+	bool indirect = false;
 	int flags = 0;
 	Vec3 point;
 	gentity_t *event;
@@ -42,16 +43,18 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	case MOD_DECONSTRUCT:
 		return;
 
+	case MOD_FLAMER_SPLASH:
 	case MOD_LCANNON_SPLASH:
 	case MOD_GRENADE:
-		flags |= HIT_INDIRECT;
+		// 'point' is incorrect for splash damage
+		indirect = true;
 		break;
 
 	default:
 		break;
 	}
 
-	if (!point_opt || (flags & HIT_INDIRECT))
+	if (!point_opt || indirect)
 		point = Vec3::Load(victim->r.currentOrigin) +
 		        (Vec3::Load(victim->r.mins) +
 		         Vec3::Load(victim->r.maxs)) * 0.5f;
