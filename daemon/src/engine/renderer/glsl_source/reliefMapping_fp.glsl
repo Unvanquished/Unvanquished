@@ -128,32 +128,32 @@ void computeDLight( int idx, vec3 P, vec3 N, vec3 I, vec4 diffuse,
 		    vec4 specular, inout vec4 color ) {
   vec4 center_radius = GetLight( idx, center_radius );
   vec4 color_type = GetLight( idx, color_type );
+  vec3 L;
+  float attenuation;
 
   if( color_type.w == 0.0 ) {
-    // spot light
-    vec3 L = center_radius.xyz - P;
-    float attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
-    computeLight( normalize( L ), N, I,
-		  attenuation * attenuation * color_type.xyz,
-		  diffuse, specular, color );
+    // point light
+    L = center_radius.xyz - P;
+    attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
+    L = normalize(L);
   } else if( color_type.w == 1.0 ) {
     // spot light
     vec4 direction_angle = GetLight( idx, direction_angle );
-    vec3 L = center_radius.xyz - P;
-    float attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
+    L = center_radius.xyz - P;
+    attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
     L = normalize( L );
 
-    if( dot( L, direction_angle.xyz ) > direction_angle.w ) {
-      computeLight( L, N, I,
-		    attenuation * attenuation * color_type.xyz,
-		    diffuse, specular, color );
+    if( dot( L, direction_angle.xyz ) <= direction_angle.w ) {
+      attenuation = 0.0;
     }
   } else if( color_type.w == 2.0 ) {
     // sun (directional) light
-    vec3 L = GetLight( idx, direction_angle ).xyz;
-    computeLight( L, N, I, color_type.xyz,
-		  diffuse, specular, color );
+    L = GetLight( idx, direction_angle ).xyz;
+    attenuation = 1.0;
   }
+  computeLight( L, N, I,
+		attenuation * attenuation * color_type.xyz,
+		diffuse, specular, color );
 }
 
 void computeDLights( vec3 P, vec3 N, vec3 I, vec4 diffuse, vec4 specular,
