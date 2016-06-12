@@ -81,25 +81,23 @@ void R_CalcTangents( vec3_t tangent, vec3_t binormal,
 	Vector2Subtract(t2, t0, dty);
 
 	float area = dtx[0] * dty[1] - dtx[1] * dty[0];
-	float sign = area < 0 ? -1.0f : 1.0f;
+	if( area < 0.0f ) {
+		dtx[0] = -dtx[0];
+		dtx[1] = -dtx[1];
+		dty[0] = -dty[0];
+		dty[1] = -dty[1];
+	}
 
 	tangent[0] = dpx[0] * dty[1] - dtx[1] * dpy[0];
 	tangent[1] = dpx[1] * dty[1] - dtx[1] * dpy[1];
 	tangent[2] = dpx[2] * dty[1] - dtx[1] * dpy[2];
 
-	float len = sqrtf(DotProduct(tangent, tangent));
-	float ilen = sign * (1.0f / len);
-
-	VectorScale(tangent, ilen, tangent);
-
 	binormal[0] = dtx[0] * dpy[0] - dpx[0] * dty[0];
 	binormal[1] = dtx[0] * dpy[1] - dpx[1] * dty[0];
 	binormal[2] = dtx[0] * dpy[2] - dpx[2] * dty[0];
 
-	len = sqrtf(DotProduct(binormal, binormal));
-	ilen = sign * (1.0f / len);
-
-	VectorScale(binormal, ilen, binormal);
+	VectorNormalize( tangent );
+	VectorNormalize( binormal );
 }
 
 void R_CalcTangents( vec3_t tangent, vec3_t binormal,
@@ -124,27 +122,23 @@ void R_CalcTangents( vec3_t tangent, vec3_t binormal,
 	Vector2Subtract(t2f, t0f, dty);
 
 	float area = dtx[0] * dty[1] - dtx[1] * dty[0];
-	float sign = area < 0 ? -1.0f : 1.0f;
+	if( area < 0.0f ) {
+		dtx[0] = -dtx[0];
+		dtx[1] = -dtx[1];
+		dty[0] = -dty[0];
+		dty[1] = -dty[1];
+	}
 
 	tangent[0] = dpx[0] * dty[1] - dtx[1] * dpy[0];
 	tangent[1] = dpx[1] * dty[1] - dtx[1] * dpy[1];
 	tangent[2] = dpx[2] * dty[1] - dtx[1] * dpy[2];
 
-	float dot = DotProduct(tangent, tangent);
-	float ilen = Q_rsqrt(dot);
-	ilen *= sign;
-
-	VectorScale(tangent, ilen, tangent);
-
 	binormal[0] = dtx[0] * dpy[0] - dpx[0] * dty[0];
 	binormal[1] = dtx[0] * dpy[1] - dpx[1] * dty[0];
 	binormal[2] = dtx[0] * dpy[2] - dpx[2] * dty[0];
 
-	dot = DotProduct(binormal, binormal);
-	ilen = Q_rsqrt(dot);
-	ilen *= sign;
-
-	VectorScale(binormal, ilen, binormal);
+	VectorNormalize( tangent );
+	VectorNormalize( binormal );
 }
 
 
