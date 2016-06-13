@@ -2733,7 +2733,7 @@ void R_CreateBuiltinImages()
 	{
 		out[ 0 ] = out[ 1 ] = 128;
 		out[ 2 ] = 255;
-		out[ 3 ] = 0;
+		out[ 3 ] = 255;
 	}
 
 	tr.flatImage = R_CreateImage( "_flat", ( const byte ** ) &dataPtr,

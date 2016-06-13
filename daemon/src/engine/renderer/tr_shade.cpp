@@ -403,7 +403,7 @@ static void BindDeluxeMap( int tmu )
 
 	if ( !tr.deluxemaps.currentElements || !deluxemap )
 	{
-		GL_BindToTMU( tmu, tr.flatImage );
+		GL_BindToTMU( tmu, tr.blackImage );
 		return;
 	}
 

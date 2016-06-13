@@ -103,20 +103,26 @@ void	main()
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
 	N = normalize(tangentToWorldMatrix * N);
 
-	// compute light direction in world space
-	vec3 L = (2.0 * (texture2D(u_DeluxeMap, var_TexLight).xyz - 0.5));
-	L = normalize(L);
-
 	// compute light color from world space lightmap
-	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
+	vec3 lightColor = texture2D(u_LightMap, var_TexLight).xyz;
 
-	// divide by cosine term to restore original light color
-	lightColor /= clamp(dot(normalize(var_Normal), L), 0.004, 1.0);
-
-	// compute final color
 	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
-	computeLight( L, N, I, lightColor, diffuse, specular, color );
 
+	// compute light direction in world space
+	vec4 deluxe = texture2D(u_DeluxeMap, var_TexLight);
+	if( deluxe.w < 0.5 ) {
+		// normal/deluxe mapping is disabled
+		color.xyz += lightColor.xyz * diffuse.xyz;
+	} else {
+		vec3 L = 2.0 * deluxe.xyz - 1.0;
+		L = normalize(L);
+
+		// divide by cosine term to restore original light color
+		lightColor /= clamp(dot(normalize(var_Normal), L), 0.004, 1.0);
+
+		// compute final color
+		computeLight( L, N, I, lightColor, diffuse, specular, color );
+	}
 	computeDLights( var_Position, N, I, diffuse, specular, color );
 
 	color.rgb += texture2D(u_GlowMap, var_TexDiffuseGlow.pq).rgb;
