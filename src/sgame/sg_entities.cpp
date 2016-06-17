@@ -774,19 +774,12 @@ void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 
 	//ASSERT(entity->callIn->activator != nullptr);
 
-	if( entity->active )
-	{
-		//TODO
-	}
-
 	entity->nextAct = 0;
-	entity->active = true;
 	/*
 	 * for now we use the callIn activator if its set or fallback to the old solution, but we should
 	 * //TODO remove the old solution of activator setting from this
 	 */
 	entity->act(entity, call->caller, call->caller->activator ? call->caller->activator : entity->activator );
-	entity->active = false;
 }
 
 /**

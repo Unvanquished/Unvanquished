@@ -10,7 +10,7 @@ void HumanBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansO
 	switch (GetBuildableComponent().GetState()) {
 		// Regular death, fully constructed.
 		case BuildableComponent::CONSTRUCTED:
-			// Play a warning sound before ractor and repeater explosion. Don't randomize blast
+			// Play a warning sound before reactor and repeater explosion. Don't randomize blast
 			// delay for them so the sound stays synced.
 			// TODO: Move to Repeater/ReactorComponent if possible.
 			switch (entity.oldEnt->s.modelindex) {
@@ -41,34 +41,6 @@ void HumanBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansO
 
 		default:
 			humanBuildableLogger.Warn("Handling human buildable death event when not alive.");
-	}
-
-	// Warn if this building was powered and there's a watcher nearby.
-	gentity_t *rc = G_ActiveReactor();
-	if (entity.oldEnt != rc && entity.oldEnt->powered && G_IsWarnableMOD(meansOfDeath)) {
-		bool inBase = G_InsideBase(entity.oldEnt, true);
-		gentity_t *watcher  = nullptr, *location = nullptr;
-
-		// Note that being inside the main base doesn't mean there always is an active reactor.
-		if (inBase) watcher = G_ActiveReactor();
-
-		// Note that a repeater will find itself as nearest power source.
-		if (!watcher) watcher = G_NearestPowerSourceInRange(entity.oldEnt);
-
-		// Get a location entity close to watcher.
-		if (watcher) {
-			location = Team_GetLocation(watcher);
-
-			// Fall back to fake location entity if necessary.
-			if (!location) location = level.fakeLocation;
-		}
-
-		// Warn if there was no warning for this location recently.
-		if (location && level.time > location->warnTimer) {
-			location->warnTimer = level.time + ATTACKWARN_NEARBY_PERIOD;
-			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? 0 : watcher->s.number, TEAM_HUMANS);
-			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, entity.oldEnt->buildableTeam);
-		}
 	}
 }
 

@@ -289,12 +289,10 @@ typedef enum
   IBE_NOOVERMIND,       // no overmind present
   IBE_ONEOVERMIND,      // may not build two overminds
   IBE_NOALIENBP,        // not enough build points (aliens)
-  IBE_NOCREEP,          // no creep in this area
 
   IBE_NOREACTOR,        // not enough power in this area and no reactor present
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_NOPOWERHERE,      // not enough power in this area even though a reactor is present
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
@@ -317,14 +315,14 @@ typedef enum
   PERS_SPECSTATE,
   PERS_SPAWN_COUNT,    // incremented every respawn
   PERS_TEAM,           // persistant team selection
-  PERS_RGS_EFFICIENCY, // summed efficiency of all friendly RGS
   PERS_STATE,
   PERS_CREDIT,         // human credit
   PERS_UNLOCKABLES,    // status of unlockable items of a team
   PERS_NEWWEAPON,      // weapon to switch to
-  PERS_BP,
-  PERS_MARKEDBP,
-  PERS_MINERATE        // level wide base mine rate. TODO: calculate clientside
+  PERS_SPENTBUDGET,
+  PERS_MARKEDBUDGET,
+  PERS_TOTALBUDGET,
+  PERS_QUEUEDBUDGET
   // netcode has space for 2 more. TODO: extend
 } persEnum_t;
 
@@ -352,7 +350,7 @@ typedef enum
 #define EF_B_LOCKON         0x0080
 
 // for players
-#define EF_POWER_AVAILABLE  0x0010
+#define EF_UNUSED_1         0x0010 // UNUSED
 #define EF_WARN_CHARGE      0x0020 // Lucifer Cannon is about to overcharge
 #define EF_WALLCLIMB        0x0040 // wall walking
 #define EF_WALLCLIMBCEILING 0x0080 // wall walking ceiling hack
@@ -361,7 +359,7 @@ typedef enum
 #define EF_FIRING2          0x0400 // alt fire
 #define EF_FIRING3          0x0800 // third fire
 #define EF_MOVER_STOP       0x1000 // will push otherwise
-#define EF_UNUSED_1         0x2000 // UNUSED
+#define EF_UNUSED_2         0x2000 // UNUSED
 #define EF_CONNECTION       0x4000 // draw a connection trouble sprite
 #define EF_BLOBLOCKED       0x8000 // caught by a trapper
 
@@ -695,7 +693,6 @@ typedef enum
   //alien build
   MN_A_ONEOVERMIND,
   MN_A_NOBP,
-  MN_A_NOCREEP,
   MN_A_NOOVMND,
 
   //human stuff
@@ -714,7 +711,6 @@ typedef enum
   MN_H_UNKNOWNSPAWNITEM,
 
   //human buildables
-  MN_H_NOPOWERHERE,
   MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,
@@ -1033,8 +1029,7 @@ typedef enum
   MOD_SPIKER,
   MOD_OVERMIND,
   MOD_DECONSTRUCT,
-  MOD_REPLACE,
-  MOD_NOCREEP
+  MOD_REPLACE
 } meansOfDeath_t;
 
 //---------------------------------------------------------
@@ -1193,7 +1188,6 @@ typedef struct
 	float       bounce;
 
 	int         buildPoints;
-	int         powerConsumption;
 	int         unlockThreshold;
 
 	int         health;

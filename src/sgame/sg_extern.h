@@ -92,11 +92,10 @@ extern  vmCvar_t g_botKickVotesAllowedThisMap;
 extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
 
-extern  vmCvar_t g_initialMineRate;
-extern  vmCvar_t g_initialBuildPoints;
-extern  vmCvar_t g_mineRateHalfLife;
-extern  vmCvar_t g_minimumMineRate;
-extern  vmCvar_t g_buildPointLossFraction;
+extern  vmCvar_t g_buildPointInitialBudget;
+extern  vmCvar_t g_buildPointBudgetPerMiner;
+extern  vmCvar_t g_buildPointRecoveryInititalRate;
+extern  vmCvar_t g_buildPointRecoveryRateHalfLife;
 
 extern  vmCvar_t g_debugMomentum;
 extern  vmCvar_t g_momentumHalfLife;
@@ -110,13 +109,6 @@ extern  vmCvar_t g_momentumDestroyMod;
 
 extern  vmCvar_t g_humanAllowBuilding;
 extern  vmCvar_t g_alienAllowBuilding;
-
-extern  vmCvar_t g_powerCompetitionRange;
-extern  vmCvar_t g_powerBaseSupply;
-extern  vmCvar_t g_powerReactorSupply;
-extern  vmCvar_t g_powerReactorRange;
-extern  vmCvar_t g_powerRepeaterSupply;
-extern  vmCvar_t g_powerRepeaterRange;
 
 extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 

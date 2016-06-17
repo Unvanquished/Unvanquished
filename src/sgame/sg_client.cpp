@@ -377,9 +377,9 @@ After sitting around for five seconds, fall into the ground and dissapear
 static void BodySink( gentity_t *ent )
 {
 	//run on first BodySink call
-	if ( !ent->active )
+	if ( !ent->bodyStartedSinking )
 	{
-		ent->active = true;
+		ent->bodyStartedSinking = true;
 
 		//sinking bodies can't be infested
 		ent->killedBy = ent->s.misc = MAX_CLIENTS;

@@ -12,13 +12,7 @@ AcidTubeComponent::AcidTubeComponent(Entity& entity, AlienBuildableComponent& r_
 }
 
 void AcidTubeComponent::ConsiderAttack(int timeDelta) {
-	if (!GetAlienBuildableComponent().GetBuildableComponent().GetHealthComponent().Alive()) return;
-
-	// TODO: Port gentity_t.spawned.
-	if (!entity.oldEnt->spawned) return;
-
-	// TODO: Port gentity_t.powered.
-	if (!entity.oldEnt->powered) return;
+	if (!GetAlienBuildableComponent().GetBuildableComponent().Active()) return;
 
 	bool attacking = Utility::AntiHumanRadiusDamage(entity, ATTACK_DAMAGE * timeDelta * 0.001f,
 	                                                 ATTACK_RANGE, MOD_ATUBE);

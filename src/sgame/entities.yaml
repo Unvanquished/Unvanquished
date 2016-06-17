@@ -45,6 +45,8 @@ messages:
         - name: meansOfDeath
           type: meansOfDeath_t
 
+    FinishConstruction:
+
     ApplyDamageModifier:
         - name: damage
           type: float&
@@ -159,11 +161,12 @@ components:
         requires:
             - Buildable
 
-    # TODO: See if needed.
     MainBuildable:
+        messages:
+            - Die
+            - FinishConstruction
         requires:
             - Buildable
-            - ResourceStorage
 
     Turret:
         messages:
@@ -174,13 +177,7 @@ components:
             - PrepareNetCode
             - Die
         requires:
-            - ResourceStorage
             - Thinking
-
-    ResourceStorage:
-        messages:
-            - PrepareNetCode
-            - Die
 
     ##############################
     # Entity-specific components #
@@ -230,6 +227,7 @@ components:
     Overmind:
         messages:
             - Die
+            - FinishConstruction
         requires:
             - AlienBuildable
             - MainBuildable
@@ -429,8 +427,7 @@ entities:
 
     Drill:
         components:
-            HumanBuildable:
-            Mining:
+            Drill:
 
     Medipad:
         components:

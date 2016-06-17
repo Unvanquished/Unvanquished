@@ -138,10 +138,15 @@ void CG_ParseServerinfo()
 
 	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+
+	// TODO: Remove those two.
 	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
 	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
+
 	cgs.momentumHalfLife = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
 	cgs.unlockableMinTime  = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
+	cgs.buildPointRecoveryInitialRate = atof( Info_ValueForKey( info, "g_BPRecoveryInitialRate" ) );
+	cgs.buildPointRecoveryRateHalfLife = atof( Info_ValueForKey( info, "g_BPRecoveryRateHalfLife" ) );
 
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 
@@ -574,15 +579,8 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_H_NOTPOWERED:
-			longMsg = _("This buildable is not powered. Build a Reactor and/or Repeater "
-			          "in order to power it.");
+			longMsg = _("This buildable is not powered.");
 			shortMsg = _("This buildable is not powered");
-			break;
-
-		case MN_H_NOPOWERHERE:
-			longMsg = _("There is not enough power in this area. Keep a distance to other "
-			            "buildables or build a repeater to increase the local capacity.");
-			shortMsg = _("There is not enough power here");
 			break;
 
 		case MN_H_NOREACTOR:
@@ -648,12 +646,6 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 			//===============================
-
-		case MN_A_NOCREEP:
-			longMsg = _("There is no creep here. You must build near existing Eggs or "
-			          "the Overmind. Alien structures will not support themselves.");
-			shortMsg = _("There is no creep here");
-			break;
 
 		case MN_A_NOOVMND:
 			longMsg = _("There is no Overmind. An Overmind must be built to control "

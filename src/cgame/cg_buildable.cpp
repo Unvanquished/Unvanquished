@@ -1688,11 +1688,10 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthFrac, powerUsageFrac = 0, totalPowerFrac = 0, mineEfficiencyFrac = 0,
-	              storedBPFrac = 0;
-	int           health, powerUsage = 0, totalPower = 0;
+	float         healthFrac, mineEfficiencyFrac = 0;
+	int           health;
 	float         x, y;
-	bool      powered, marked, showMineEfficiency, showStoredBP, showPower;
+	bool          powered, marked, showMineEfficiency;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1700,7 +1699,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	int           entNum;
 	vec3_t        trOrigin;
 	vec3_t        right;
-	bool      visible = false;
+	bool          visible = false;
 	vec3_t        mins, maxs;
 	vec3_t        cullMins, cullMaxs;
 	entityState_t *hit;
@@ -1848,9 +1847,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 	// find out what data we want to display
 	showMineEfficiency = ( attr->number == BA_A_LEECH || attr->number == BA_H_DRILL );
-	showStoredBP = showMineEfficiency ||
-	               ( attr->number == BA_A_OVERMIND || attr->number == BA_H_REACTOR );
-	showPower = ( attr->team == TEAM_HUMANS && attr->powerConsumption > 0 );
 
 	// calculate mine efficiency bar size
 	if ( showMineEfficiency )
@@ -1864,21 +1860,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		else if ( mineEfficiencyFrac > 1.0f )
 		{
 			mineEfficiencyFrac = 1.0f;
-		}
-	}
-
-	// calculate stored build points bar size
-	if ( showStoredBP )
-	{
-		storedBPFrac = (float)es->weapon / 255.0f;
-
-		if ( storedBPFrac < 0.0f )
-		{
-			storedBPFrac = 0.0f;
-		}
-		else if ( storedBPFrac > 1.0f )
-		{
-			storedBPFrac = 1.0f;
 		}
 	}
 
@@ -1899,16 +1880,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		{
 			healthFrac = 1.0f;
 		}
-	}
-
-	// calculate power consumption bar size
-	if ( showPower )
-	{
-		totalPower     = Q_clamp( es->clientNum, 0, POWER_DISPLAY_MAX );
-		powerUsage     = BG_Buildable( es->modelindex )->powerConsumption;
-
-		totalPowerFrac = (float)totalPower / (float)POWER_DISPLAY_MAX;
-		powerUsageFrac = (float)powerUsage / (float)POWER_DISPLAY_MAX;
 	}
 
 	// draw elements
@@ -1952,7 +1923,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			frameColor.SetAlpha( color.Alpha() );
 			trap_R_SetColor( frameColor );
 
-			if ( showMineEfficiency || showStoredBP )
+			if ( showMineEfficiency )
 			{
 				CG_SetClipRegion( picX, picY - 0.5f * picH, picW, 0.5f * picH );
 				CG_DrawPic( picX, picY - 0.5f * picH, picW, picH, bs->frameShader );
@@ -1960,13 +1931,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			}
 
 			CG_DrawPic( picX, picY, picW, picH, bs->frameShader );
-
-			if ( showPower )
-			{
-				CG_SetClipRegion( picX, picY + picH, picW, 0.5f * picH );
-				CG_DrawPic( picX, picY + 0.5f * picH, picW, picH, bs->frameShader );
-				CG_ClearClipRegion();
-			}
 
 			trap_R_ClearColor();
 		}
@@ -1979,7 +1943,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			barX = picX + pad;
 			barY = picY - ( 0.5f * picH ) + pad;
-			barW = ( 0.5f * picW * mineEfficiencyFrac ) - ( 1.5f * pad );
+			barW = ( picW - ( 2.0f * pad ) ) * mineEfficiencyFrac;
 			barH = ( 0.5f * picH ) - pad;
 
 			Color::Color barColor = DepletionColorFade( mineEfficiencyFrac, bs );
@@ -1993,46 +1957,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
 			//               va("Mines %.1f BP/min", mineEfficiencyFrac * levelRate), 0,
 			//               ITEM_TEXTSTYLE_PLAIN );
-		}
-
-		// draw stored BP
-		if ( showStoredBP )
-		{
-			float  barX, barY, barW, barH;
-			//float buildPoints = (float)cg.predictedPlayerState.persistant[ PERS_BP ];
-
-			barX = picX + ( showMineEfficiency ? ( ( 0.5f * picW ) + ( 0.5f * pad ) ) : pad );
-			barY = picY - ( 0.5f * picH ) + pad;
-			barW = ( ( showMineEfficiency ? 0.5f : 1.0f ) * picW * storedBPFrac ) -
-			       ( ( showMineEfficiency ? 1.5f : 2.0f ) * pad );
-			barH = ( 0.5f * picH ) - pad;
-
-			Color::Color barColor = HealthColorFade( 1.0f - storedBPFrac, bs );
-			barColor.SetAlpha( color.Alpha() );
-
-			trap_R_SetColor( barColor );
-			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-			trap_R_ClearColor();
-
-			// TODO: Draw text using libRocket
-			//UI_Text_Paint( barX + pad, barY + barH - pad, 0.3f * scale, colorBlack,
-			//               va("Stores %.0f BP", storedBPFrac * buildPoints ), 0,
-			//               ITEM_TEXTSTYLE_PLAIN );
-		}
-
-		// draw separator
-		if ( showMineEfficiency && showStoredBP )
-		{
-			float  sepX, sepY, sepW, sepH;
-
-			sepX = picX + ( 0.5f * picW ) - ( 0.5f * pad );
-			sepY = picY - ( 0.5f * picH ) + pad;
-			sepW = pad;
-			sepH = ( 0.5f * picH ) - pad;
-
-			trap_R_SetColor( Color::Black );
-			CG_DrawPic( sepX, sepY, sepW, sepH, cgs.media.whiteShader );
-			trap_R_ClearColor();
 		}
 
 		// draw health bar
@@ -2050,39 +1974,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			trap_R_SetColor( barColor );
 			CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-
-			trap_R_ClearColor();
-		}
-
-		// draw power consumption bar
-		if ( showPower )
-		{
-			float  barX, barY, barW, barH, markX, markH, markW;
-
-			// draw bar
-			barX = picX + ( bs->healthPadding * scale );
-			barY = picY + picH;
-			barH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
-			barW = ( picW * totalPowerFrac ) - ( bs->healthPadding * 2.0f * scale );
-
-			if ( barW > 0.0f )
-			{
-				Color::Color barColor;
-				if ( powered ) { barColor = DepletionColorFade( totalPowerFrac, bs ); }
-				else           { barColor = bs->healthSevereColor; }
-				barColor.SetAlpha( color.Alpha() );
-
-				trap_R_SetColor( barColor );
-				CG_DrawPic( barX, barY, barW, barH, cgs.media.whiteShader );
-			}
-
-			// draw mark
-			markX = barX + ( picW * powerUsageFrac ) - ( bs->healthPadding * 2.5f * scale );
-			markH = 0.5f * barH;
-			markW = ( bs->healthPadding * scale );
-
-			trap_R_SetColor( Color::Black );
-			CG_DrawPic( markX, barY, markW, markH, cgs.media.whiteShader );
 
 			trap_R_ClearColor();
 		}

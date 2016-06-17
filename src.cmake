@@ -172,7 +172,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/ReactorComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/RepeaterComponent.cpp
-    ${GAMELOGIC_DIR}/sgame/components/ResourceStorageComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/RocketpodComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/SpikerComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/TelenodeComponent.cpp

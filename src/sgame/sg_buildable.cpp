@@ -77,7 +77,6 @@ bool G_IsWarnableMOD( int mod )
 		case MOD_TRIGGER_HURT:
 		case MOD_DECONSTRUCT:
 		case MOD_REPLACE:
-		case MOD_NOCREEP:
 			return false;
 
 		default:
@@ -455,129 +454,6 @@ bool G_InsideBase( gentity_t *self, bool ownBase )
 	}
 
 	return trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
-}
-
-/*
-================
-G_FindCreep
-
-attempt to find creep for self, return true if successful
-================
-*/
-bool G_FindCreep( gentity_t *self )
-{
-	int       i;
-	gentity_t *ent;
-	gentity_t *closestSpawn = nullptr;
-	int       distance = 0;
-	int       minDistance = 10000;
-	vec3_t    temp_v;
-
-	//don't check for creep if flying through the air
-	if ( !self->client && self->s.groundEntityNum == ENTITYNUM_NONE )
-	{
-		return true;
-	}
-
-	//if self does not have a parentNode or its parentNode is invalid find a new one
-	if ( self->client || !self->powerSource || !self->powerSource->inuse || G_Dead( self->powerSource ) )
-	{
-		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-		{
-			if ( ent->s.eType != entityType_t::ET_BUILDABLE )
-			{
-				continue;
-			}
-
-			if ( ( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_A_OVERMIND ) &&
-			     G_Alive( ent ) )
-			{
-				VectorSubtract( self->s.origin, ent->s.origin, temp_v );
-				distance = VectorLength( temp_v );
-
-				if ( distance < minDistance )
-				{
-					closestSpawn = ent;
-					minDistance = distance;
-				}
-			}
-		}
-
-		if ( minDistance <= CREEP_BASESIZE )
-		{
-			if ( !self->client )
-			{
-				self->powerSource = closestSpawn;
-			}
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	if ( self->client )
-	{
-		return false;
-	}
-
-	// if we haven't returned by now then we must already have a valid parent
-	return true;
-}
-
-/**
- * @brief Simple wrapper to G_FindCreep to check if a location has creep.
- */
-static bool IsCreepHere( vec3_t origin )
-{
-	gentity_t dummy;
-
-	memset( &dummy, 0, sizeof( gentity_t ) );
-
-	dummy.powerSource = nullptr;
-	dummy.s.modelindex = BA_NONE;
-	VectorCopy( origin, dummy.s.origin );
-
-	return G_FindCreep( &dummy );
-}
-
-/*
-================
-CompareEntityDistance
-
-Sorts entities by distance, lowest first.
-Input are two indices for g_entities.
-================
-*/
-static vec3_t compareEntityDistanceOrigin;
-static int    CompareEntityDistance( const void *a, const void *b )
-{
-	gentity_t *aEnt, *bEnt;
-	vec3_t    origin;
-	vec_t     aDistance, bDistance;
-
-	aEnt = &g_entities[ *( int* )a ];
-	bEnt = &g_entities[ *( int* )b ];
-
-	VectorCopy( compareEntityDistanceOrigin, origin );
-
-	aDistance = Distance( origin, aEnt->s.origin );
-	bDistance = Distance( origin, bEnt->s.origin );
-
-	if ( aDistance < bDistance )
-	{
-		return -1;
-	}
-	else if ( aDistance > bDistance )
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
 }
 
 //==================================================================================
@@ -1219,7 +1095,7 @@ void AHive_Fire( gentity_t *self )
 	}
 
 	// set self active, this will be reset after the missile dies or a timeout
-	self->active = true;
+	self->hiveInsectsActive = true;
 	self->timestamp = level.time + HIVE_REPEAT;
 
 	// set aim angles
@@ -1239,7 +1115,7 @@ void AHive_Think( gentity_t *self )
 	// last missile hasn't returned in time, forget about it
 	if ( self->timestamp < level.time )
 	{
-		self->active = false;
+		self->hiveInsectsActive = false;
 	}
 
 	if ( !self->spawned || !self->powered || G_Dead( self ) )
@@ -1247,7 +1123,7 @@ void AHive_Think( gentity_t *self )
 		return;
 	}
 
-	if ( self->active )
+	if ( self->hiveInsectsActive )
 	{
 		return;
 	}
@@ -1552,385 +1428,29 @@ static void PlayPowerStateAnims( gentity_t *self )
 	}
 }
 
-/*
-================
-PowerRelevantRange
-
-Determines relvant range for power related entities.
-================
-*/
-static int PowerRelevantRange()
+// TODO: Set power state based on budget deficit.
+void G_UpdateBuildablePowerStates()
 {
-	static int relevantRange = 1;
-	static int lastCalculation = 0;
-
-	// only calculate once per server frame
-	if ( lastCalculation == level.time )
-	{
-		return relevantRange;
-	}
-
-	lastCalculation = level.time;
-
-	relevantRange = 1;
-	relevantRange = std::max( relevantRange, g_powerReactorRange.integer );
-	relevantRange = std::max( relevantRange, g_powerRepeaterRange.integer );
-	relevantRange = std::max( relevantRange, g_powerCompetitionRange.integer );
-
-	return relevantRange;
-}
-
-/*
-================
-NearestPowerSourceInRange
-
-Check if origin is affected by reactor or repeater power.
-If it is, return whichever is nearest (preferring reactor).
-================
-*/
-gentity_t *G_NearestPowerSourceInRange( gentity_t *self )
-{
-	gentity_t *neighbor = G_ActiveReactor();
-	gentity_t *best = nullptr;
-	float bestDistance = HUGE_QFLT;
-
-	if ( neighbor && Distance( self->s.origin, neighbor->s.origin ) <= g_powerReactorRange.integer )
-	{
-		return neighbor;
-	}
-
-	neighbor = nullptr;
-
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) ) )
-	{
-		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		if ( neighbor->s.modelindex == BA_H_REPEATER )
-		{
-			float distance = Distance( self->s.origin, neighbor->s.origin );
-			if ( distance < bestDistance )
-			{
-				bestDistance = distance;
-				best = neighbor;
-			}
-		}
-	}
-
-	return ( bestDistance <= g_powerRepeaterRange.integer ) ? best : nullptr;
-}
-
-/*
-=================
-IncomingInterference
-
-Calculates the amount of power a buildable recieves from or loses to a neighbor at given distance.
-=================
-*/
-static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
-                                   float distance, bool prediction )
-{
-	float range, power;
-
-	// buildables that need no power don't receive interference
-	if ( !BG_Buildable( buildable )->powerConsumption )
-	{
-		return 0.0f;
-	}
-
-	if ( !neighbor )
-	{
-		return 0.0f;
-	}
-
-	// interference from human buildables
-	if ( neighbor->s.eType == entityType_t::ET_BUILDABLE && neighbor->buildableTeam == TEAM_HUMANS )
-	{
-		// Only take unpowered and constructing buildables in consideration when predicting
-		if ( !prediction && ( !neighbor->spawned || !neighbor->powered ) )
-		{
-			return 0.0f;
-		}
-
-		switch ( neighbor->s.modelindex )
-		{
-			case BA_H_REPEATER:
-				if ( G_Alive( neighbor ) )
-				{
-					power = g_powerRepeaterSupply.integer;
-					range = g_powerRepeaterRange.integer;
-					break;
-				}
-				else
-				{
-					return 0.0f;
-				}
-
-			case BA_H_REACTOR:
-				if ( G_Alive( neighbor ) )
-				{
-					power = g_powerReactorSupply.integer;
-					range = g_powerReactorRange.integer;
-					break;
-				}
-				else
-				{
-					return 0.0f;
-				}
-
-			default:
-				power = -BG_Buildable( neighbor->s.modelindex )->powerConsumption;
-				range = g_powerCompetitionRange.integer;
-		}
-	}
-	else
-	{
-		return 0.0f;
-	}
-
-	// sanity check range
-	if ( range <= 0.0f )
-	{
-		return 0.0f;
-	}
-
-	return power * std::max( 0.0f, 1.0f - ( distance / range ) );
-}
-
-/*
-=================
-OutgoingInterference
-
-Calculates the amount of power a buildable gives to or takes from a neighbor at given distance.
-=================
-*/
-static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, float distance )
-{
-	float range, power;
-
-	if ( !neighbor )
-	{
-		return 0.0f;
-	}
-
-	// can only influence human buildables
-	if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
-	{
-		return 0.0f;
-	}
-
-	// cannot influence buildables that need no power
-	if ( !BG_Buildable(neighbor->s.modelindex )->powerConsumption )
-	{
-		return 0.0f;
-	}
-
-	switch ( buildable )
-	{
-		case BA_H_REPEATER:
-			power = g_powerReactorSupply.integer;
-			range = g_powerReactorRange.integer;
-			break;
-
-		case BA_H_REACTOR:
-			power = g_powerReactorSupply.integer;
-			range = g_powerReactorRange.integer;
-			break;
-
-		default:
-			power = -BG_Buildable( buildable )->powerConsumption;
-			range = g_powerCompetitionRange.integer;
-	}
-
-	// sanity check range
-	if ( range <= 0.0f )
-	{
-		return 0.0f;
-	}
-
-	return power * std::max( 0.0f, 1.0f - ( distance / range ) );
-}
-
-/*
-=================
-CalculateSparePower
-
-Calculates the current and expected amount of spare power of a buildable.
-=================
-*/
-static void CalculateSparePower( gentity_t *self )
-{
-	gentity_t *neighbor;
-	float     distance;
-	int       powerConsumption, currentBaseSupply, expectedBaseSupply;
-
-	if ( self->s.eType != entityType_t::ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
-	{
-		return;
-	}
-
-	powerConsumption = BG_Buildable( self->s.modelindex )->powerConsumption;
-
-	if ( !powerConsumption )
-	{
-		return;
-	}
-
-	// reactor enables base supply everywhere on the map
-	if ( G_ActiveReactor() != nullptr )
-	{
-		currentBaseSupply = expectedBaseSupply = g_powerBaseSupply.integer;
-	}
-	else if ( G_AliveReactor() != nullptr )
-	{
-		currentBaseSupply = 0;
-		expectedBaseSupply = g_powerBaseSupply.integer;
-	}
-	else
-	{
-		currentBaseSupply = expectedBaseSupply = 0;
-	}
-
-	self->expectedSparePower = expectedBaseSupply - powerConsumption;
-
-	if ( self->spawned )
-	{
-		self->currentSparePower = currentBaseSupply - powerConsumption;
-	}
-	else
-	{
-		self->currentSparePower = 0;
-	}
-
-	neighbor = nullptr;
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, PowerRelevantRange() ) ) )
-	{
-		if ( self == neighbor )
-		{
-			continue;
-		}
-
-		distance = Distance( self->s.origin, neighbor->s.origin );
-
-		self->expectedSparePower += IncomingInterference( (buildable_t) self->s.modelindex, neighbor, distance, true );
-
-		if ( self->spawned )
-		{
-			self->currentSparePower += IncomingInterference( (buildable_t) self->s.modelindex, neighbor, distance, false );
-		}
-	}
-
-	// HACK: Store total power (used + spare) in entityState_t.clientNum for display
-	if ( self->spawned )
-	{
-		int totalPower = (int)self->currentSparePower + BG_Buildable( self->s.modelindex )->powerConsumption;
-
-		self->s.clientNum = Q_clamp( totalPower, 0, POWER_DISPLAY_MAX );
-	}
-	else
-	{
-		self->s.clientNum = 0;
-	}
-}
-
-
-/*
-=================
-G_SetHumanBuildablePowerState
-
-Powers human buildables up and down based on available power and reactor status.
-Updates expected spare power for all human buildables.
-
-TODO: Assemble a list of relevant entities first.
-=================
-*/
-void G_SetHumanBuildablePowerState()
-{
-	bool  done;
-	float     lowestSparePower;
-	gentity_t *ent = nullptr, *lowestSparePowerEnt;
-
 	static int nextCalculation = 0;
 
-	if ( level.time < nextCalculation )
-	{
+	if (level.time < nextCalculation) {
 		return;
 	}
 
-	// first pass: predict spare power for all buildables,
-	//             power up buildables that have enough power
-	while ( ( ent = G_IterateEntities( ent, nullptr, false, 0, nullptr ) ) )
-	{
-		// discard irrelevant entities
-		if ( ent->s.eType != entityType_t::ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
-		{
-			continue;
+	ForEntities<BuildableComponent, HealthComponent>([&](Entity& entity, BuildableComponent& buildableComponent, HealthComponent& healthComponent) {
+		switch (G_Team(entity.oldEnt)) {
+			case TEAM_ALIENS:
+				buildableComponent.SetPowerState(G_ActiveOvermind() && healthComponent.Alive());
+				break;
+
+			case TEAM_HUMANS:
+				buildableComponent.SetPowerState(G_ActiveReactor() && healthComponent.Alive());
+				break;
+
+			default:
+				break;
 		}
-
-		CalculateSparePower( ent );
-
-		if ( ent->currentSparePower >= 0.0f )
-		{
-			ent->powered = true;
-		}
-	}
-
-	// power down buildables that lack power, highest deficit first
-	do
-	{
-		lowestSparePowerEnt = nullptr;
-		lowestSparePower = MAX_QINT;
-
-		// find buildable with highest power deficit
-		while ( ( ent = G_IterateEntities( ent, nullptr, false, 0, nullptr ) ) )
-		{
-			// discard irrelevant entities
-			if ( ent->s.eType != entityType_t::ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
-			{
-				continue;
-			}
-
-			// ignore buildables that haven't yet spawned or are already powered down
-			if ( !ent->spawned || !ent->powered )
-			{
-				continue;
-			}
-
-			// ignore buildables that need no power
-			if ( !BG_Buildable( ent->s.modelindex )->powerConsumption )
-			{
-				continue;
-			}
-
-			CalculateSparePower( ent );
-
-			// never shut down the telenode, even if it was set to consume power and operates below
-			// its threshold
-			if ( ent->s.modelindex == BA_H_SPAWN )
-			{
-				continue;
-			}
-
-			if ( ent->currentSparePower < lowestSparePower )
-			{
-				lowestSparePower = ent->currentSparePower;
-				lowestSparePowerEnt = ent;
-			}
-		}
-
-		if ( lowestSparePower < 0.0f )
-		{
-			lowestSparePowerEnt->powered = false;
-			done = false;
-		}
-		else
-		{
-			done = true;
-		}
-	}
-	while ( !done );
+	});
 
 	nextCalculation = level.time + 500;
 }
@@ -2082,7 +1602,7 @@ void HMedistat_Think( gentity_t *self )
 	// clear target on power loss
 	if ( !self->powered )
 	{
-		self->active = false;
+		self->medistationIsHealing = false;
 		self->target = nullptr;
 
 		self->nextthink = level.time + POWER_REFRESH_TIME;
@@ -2175,9 +1695,9 @@ void HMedistat_Think( gentity_t *self )
 		client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
 
 		// start healing animation
-		if ( !self->active )
+		if ( !self->medistationIsHealing )
 		{
-			self->active = true;
+			self->medistationIsHealing = true;
 
 			G_SetBuildableAnim( self, BANIM_ATTACK1, false );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE2 );
@@ -2207,9 +1727,9 @@ void HMedistat_Think( gentity_t *self )
 		}
 	}
 	// we lost our target
-	else if ( self->active )
+	else if ( self->medistationIsHealing )
 	{
-		self->active = false;
+		self->medistationIsHealing = false;
 
 		// stop healing animation
 		G_SetBuildableAnim( self, BANIM_ATTACK2, true );
@@ -3327,18 +2847,17 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 
 	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
 
-	// save remaining health fraction
-	self->deconHealthFrac = self->entity->Get<HealthComponent>()->HealthFraction();
-
-	// return BP
-	int refund = attr->buildPoints * self->deconHealthFrac;
-	G_ModifyBuildPoints( self->buildableTeam, refund );
+	// return some build points immediately
+	int immediateRefund = G_BuildableDeconValue( self );
+	int queuedRefund    = attr->buildPoints - immediateRefund;
+	G_FreeBudget( self->buildableTeam, immediateRefund, queuedRefund );
 
 	// remove momentum
 	G_RemoveMomentumForDecon( self, deconner );
 
 	// reward attackers if the structure was hurt before deconstruction
-	if ( self->deconHealthFrac < 1.0f ) G_RewardAttackers( self );
+	float healthFraction = self->entity->Get<HealthComponent>()->HealthFraction();
+	if ( healthFraction < 1.0f ) G_RewardAttackers( self );
 
 	// deconstruct
 	G_Kill(self, deconner, deconType);
@@ -3468,86 +2987,9 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 		return IBE_LASTSPAWN;
 	}
 
-	// TODO: don't replace an egg that is the single creep provider for a buildable
-
 	return IBE_NONE;
 }
 
-/*
-=================
-G_PredictBuildablePower
-
-Predicts whether a buildable can be built without causing interference.
-Takes buildables prepared for deconstruction into account.
-=================
-*/
-static bool PredictBuildablePower( buildable_t buildable, vec3_t origin )
-{
-	gentity_t       *neighbor, *buddy;
-	float           distance, ownPrediction, neighborPrediction;
-	int             powerConsumption, baseSupply;
-
-	powerConsumption = BG_Buildable( buildable )->powerConsumption;
-
-	if ( !powerConsumption )
-	{
-		return true;
-	}
-
-	// reactor enables base supply everywhere on the map
-	if ( G_AliveReactor() )
-	{
-		baseSupply = g_powerBaseSupply.integer;
-	}
-	else
-	{
-		baseSupply = 0;
-	}
-
-	ownPrediction = baseSupply - powerConsumption;
-
-	neighbor = nullptr;
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
-	{
-		// only predict interference with friendly buildables
-		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
-		{
-			continue;
-		}
-
-		// discard neighbors that are set for deconstruction
-		if ( IsSetForDeconstruction( neighbor ) )
-		{
-			continue;
-		}
-
-		distance = Distance( origin, neighbor->s.origin );
-
-		ownPrediction += IncomingInterference( buildable, neighbor, distance, true );
-		neighborPrediction = neighbor->expectedSparePower + OutgoingInterference( buildable, neighbor, distance );
-
-		// check power of neighbor, with regards to pending deconstruction
-		if ( neighborPrediction < 0.0f && distance < g_powerCompetitionRange.integer )
-		{
-			buddy = nullptr;
-			while ( ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, PowerRelevantRange() ) ) )
-			{
-				if ( IsSetForDeconstruction( buddy ) )
-				{
-					distance = Distance( neighbor->s.origin, buddy->s.origin );
-					neighborPrediction -= IncomingInterference( (buildable_t) neighbor->s.modelindex, buddy, distance, true );
-				}
-			}
-
-			if ( neighborPrediction < 0.0f )
-			{
-				return false;
-			}
-		}
-	}
-
-	return ( ownPrediction >= 0.0f );
-}
 
 /*
 ===============
@@ -3562,14 +3004,10 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 {
 	int              entNum, listLen;
 	gentity_t        *ent, *list[ MAX_GENTITIES ];
-	const buildableAttributes_t *attr, *entAttr;
-
-	// power consumption related
-	int       numNeighbors, neighborNum, neighbors[ MAX_GENTITIES ];
-	gentity_t *neighbor;
+	const buildableAttributes_t *attr;
 
 	// resource related
-	float     cost;
+	int cost;
 
 	level.numBuildablesForRemoval = 0;
 
@@ -3649,109 +3087,26 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	});
 	if (collisionError != IBE_NONE) return collisionError;
 
-	// ---------------
-	// check for power
-	// ---------------
-
-	if ( attr->team == TEAM_HUMANS )
-	{
-		numNeighbors = 0;
-		neighbor = nullptr;
-
-		// assemble a list of closeby human buildable IDs
-		while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, PowerRelevantRange() ) ) )
-		{
-			if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
-			{
-				continue;
-			}
-
-			neighbors[ numNeighbors++ ] = neighbor - g_entities;
-		}
-
-		// sort by distance
-		if ( numNeighbors > 0 )
-		{
-			VectorCopy( origin, compareEntityDistanceOrigin );
-			qsort( neighbors, numNeighbors, sizeof( int ), CompareEntityDistance );
-		}
-
-		neighborNum = 0;
-
-		// check for power
-		while ( !PredictBuildablePower( buildable, origin ) )
-		{
-			if ( neighborNum == numNeighbors )
-			{
-				// can't build due to unsolvable lack of power
-				return IBE_NOPOWERHERE;
-			}
-
-			// find an interfering buildable to remove
-			for ( ; neighborNum < numNeighbors; neighborNum++ )
-			{
-				neighbor = &g_entities[ neighbors[ neighborNum ] ];
-
-				// when predicting, only take human buildables into account
-				if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
-				{
-					continue;
-				}
-
-				// check if marked for deconstruction
-				if ( !neighbor->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
-				{
-					continue;
-				}
-
-				// discard non-interfering buildable types
-				switch ( neighbor->s.modelindex )
-				{
-					case BA_H_REPEATER:
-					case BA_H_REACTOR:
-						continue;
-				}
-
-				// check if already set for deconstruction
-				if ( IsSetForDeconstruction( neighbor ) )
-				{
-					continue;
-				}
-
-				// apply general replacement rules
-				if ( BuildableReplacementChecks( (buildable_t) neighbor->s.modelindex, buildable ) != IBE_NONE )
-				{
-					continue;
-				}
-
-				// set for deconstruction
-				level.markedBuildables[ level.numBuildablesForRemoval++ ] = neighbor;
-
-				// recheck
-				neighborNum++;
-				break;
-			}
-		}
-	}
-
 	// -------------------
 	// check for resources
 	// -------------------
 
 	cost = attr->buildPoints;
 
-	// if we already have set buildables for construction, decrease cost
+	// Buildables with no cost can be built even if the free budget is negative.
+	if (cost <= 0)
+	{
+		return IBE_NONE;
+	}
+
+	// if we already have set buildables for removal, decrease cost
 	for ( entNum = 0; entNum < level.numBuildablesForRemoval; entNum++ )
 	{
-		ent = level.markedBuildables[ entNum ];
-		entAttr = BG_Buildable( ent->s.modelindex );
-
-		cost -= entAttr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
+		cost -= G_BuildableDeconValue( level.markedBuildables[ entNum ] );
 	}
-	cost = std::max( 0.0f, cost );
 
 	// check if we can already afford the new buildable
-	if ( G_CanAffordBuildPoints( attr->team, cost ) )
+	if ( G_GetFreeBudget( attr->team ) >= cost )
 	{
 		return IBE_NONE;
 	}
@@ -3798,21 +3153,20 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	for ( entNum = 0; entNum < listLen; entNum++ )
 	{
 		ent = list[ entNum ];
-		entAttr = BG_Buildable( ent->s.modelindex );
 
 		level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
 
-		cost -= entAttr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
-		cost = std::max( 0.0f, cost );
+		cost -= G_BuildableDeconValue( ent );
 
 		// check if we have enough resources now
-		if ( G_CanAffordBuildPoints( attr->team, cost ) )
+		if ( G_GetFreeBudget( attr->team ) >= cost )
 		{
 			return IBE_NONE;
 		}
 	}
 
 	// we don't have enough resources
+	// TODO: Remove alien/human distinction.
 	if ( attr->team == TEAM_ALIENS )
 	{
 		return IBE_NOALIENBP;
@@ -3892,7 +3246,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	vec3_t           entity_origin;
 	vec3_t           mins, maxs;
 	trace_t          tr1, tr2, tr3;
-	itemBuildError_t reason = IBE_NONE, tempReason;
+	itemBuildError_t reason = IBE_NONE;
 	gentity_t        *tempent;
 	float            minNormal;
 	bool         invert;
@@ -3928,18 +3282,9 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	contents = trap_PointContents( entity_origin, -1 );
 
 	// Prepare replacment of other buildables
-	if ( ( tempReason = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
+	if ( ( reason = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
 	{
-		reason = tempReason;
-
-		if ( reason == IBE_NOPOWERHERE && !G_AliveReactor() )
-		{
-			reason = IBE_NOREACTOR;
-		}
-		else if ( reason == IBE_NOCREEP && !G_ActiveOvermind() )
-		{
-			reason = IBE_NOOVERMIND;
-		}
+		// Use the provided reason.
 	}
 	else if ( ent->client->pers.team == TEAM_ALIENS )
 	{
@@ -3949,15 +3294,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 			if ( !G_ActiveOvermind() )
 			{
 				reason = IBE_NOOVERMIND;
-			}
-		}
-
-		// Check for creep
-		if ( BG_Buildable( buildable )->creepTest )
-		{
-			if ( !IsCreepHere( entity_origin ) )
-			{
-				reason = IBE_NOCREEP;
 			}
 		}
 
@@ -4155,7 +3491,7 @@ G_Build
 Spawns a buildable
 ================
 */
-static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t origin,
+static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, const vec3_t origin,
                          const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
@@ -4278,7 +3614,6 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable, const vec3_t
 
 		case BA_H_REACTOR:
 			built->think = HReactor_Think;
-			built->powered = built->active = true;
 			break;
 
 		case BA_H_REPEATER:
@@ -4405,8 +3740,8 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
-			G_ModifyBuildPoints( BG_Buildable( buildable )->team, -BG_Buildable( buildable )->buildPoints );
+			SpawnBuildable( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
+			G_SpendBudget( BG_Buildable( buildable )->team, BG_Buildable( buildable )->buildPoints );
 			return true;
 
 		case IBE_NOALIENBP:
@@ -4415,10 +3750,6 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_NOOVERMIND:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_A_NOOVMND );
-			return false;
-
-		case IBE_NOCREEP:
-			G_TriggerMenu( ent->client->ps.clientNum, MN_A_NOCREEP );
 			return false;
 
 		case IBE_ONEOVERMIND:
@@ -4439,10 +3770,6 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_ONEREACTOR:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ONEREACTOR );
-			return false;
-
-		case IBE_NOPOWERHERE:
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOPOWERHERE );
 			return false;
 
 		case IBE_NOREACTOR:
@@ -4500,7 +3827,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
-	built = Build( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles, ENTITYNUM_NONE );
+	built = SpawnBuildable( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles, ENTITYNUM_NONE );
 
 	// This particular function is used by buildables that skip construction.
 	built->entity->Get<BuildableComponent>()->SetState(BuildableComponent::CONSTRUCTED);
@@ -5026,7 +4353,7 @@ void G_BuildLogRevert( int id )
 						}
 
 						// Revert resources
-						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
+						G_FreeBudget( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints, 0 );
 						momentumChange[ log->buildableTeam ] -= log->momentumEarned;
 
 						// Free buildable
@@ -5041,7 +4368,7 @@ void G_BuildLogRevert( int id )
 		case BF_DECONSTRUCT:
 		case BF_REPLACE:
 				// Revert resources
-				G_ModifyBuildPoints( log->buildableTeam, -BG_Buildable( log->modelindex )->buildPoints );
+				G_SpendBudget( log->buildableTeam, BG_Buildable( log->modelindex )->buildPoints );
 				momentumChange[ log->buildableTeam ] += log->momentumEarned;
 
 				// Fall through to default

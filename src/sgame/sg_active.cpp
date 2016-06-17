@@ -1879,20 +1879,6 @@ void ClientThink_real( gentity_t *self )
 		client->ps.stats[ STAT_STATE ] &= ~SS_SLOWLOCKED;
 	}
 
-	// Is power/creep available for the client's team?
-	if ( client->pers.team == TEAM_HUMANS && G_ActiveReactor() )
-	{
-		client->ps.eFlags |= EF_POWER_AVAILABLE;
-	}
-	else if ( client->pers.team == TEAM_ALIENS && G_ActiveOvermind() )
-	{
-		client->ps.eFlags |= EF_POWER_AVAILABLE;
-	}
-	else
-	{
-		client->ps.eFlags &= ~EF_POWER_AVAILABLE;
-	}
-
 	// Update boosted state flags
 	client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTEDWARNING;
 
@@ -2220,13 +2206,10 @@ void ClientThink_real( gentity_t *self )
 		}
 	}
 
-	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( (team_t) client->pers.team );
-	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( (team_t) client->pers.team );
-
-	if ( client->ps.persistant[ PERS_BP ] < 0 )
-	{
-		client->ps.persistant[ PERS_BP ] = 0;
-	}
+	client->ps.persistant[ PERS_SPENTBUDGET ]  = level.team[client->pers.team].spentBudget;
+	client->ps.persistant[ PERS_MARKEDBUDGET ] = G_GetMarkedBudget( (team_t)client->pers.team );
+	client->ps.persistant[ PERS_TOTALBUDGET ]  = level.team[client->pers.team].totalBudget;
+	client->ps.persistant[ PERS_QUEUEDBUDGET ] = level.team[client->pers.team].queuedBudget;
 
 	// perform once-a-second actions
 	ClientTimerActions( self, msec );

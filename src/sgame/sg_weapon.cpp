@@ -728,7 +728,7 @@ static void HiveMissileThink( gentity_t *self )
 
 		self->think = G_ExplodeMissile;
 		self->nextthink = level.time + 50;
-		self->parent->active = false; //allow the parent to start again
+		self->parent->hiveInsectsActive = false; //allow the parent to start again
 		return;
 	}
 

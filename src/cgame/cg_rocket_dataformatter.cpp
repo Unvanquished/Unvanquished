@@ -337,10 +337,12 @@ static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
 	const char *Class = "";
 	const char *Icon = "";
 	const char *action = "";
-	int value, valueMarked;
 
-	value = cg.snap->ps.persistant[ PERS_BP ];
-	valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+	int spentBudget     = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
+	int markedBudget    = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
+	int totalBudet      = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+	int queuedBudget    = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
+	int availableBudget = std::max( 0, totalBudet - ((spentBudget - markedBudget) + queuedBudget));
 
 	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
 	{
@@ -348,7 +350,7 @@ static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
+	else if ( BG_Buildable( buildable )->buildPoints > availableBudget )
 	{
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
@@ -357,22 +359,26 @@ static void CG_Rocket_DFCMAlienBuildables( int handle, const char *data )
 	else
 	{
 		Class = "available";
-		action = va( "onClick='Cmd.exec(\"build %s\") Events.pushevent(\"hide %s\", event)'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id );
+		action = va( "onClick='Cmd.exec(\"build %s\") Events.pushevent(\"hide %s\", event)'",
+		             BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id );
 	}
 
 	Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='Events.pushevent(\"setDS alienBuildList default %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), false );
 }
 
+// TODO: Merge with CG_Rocket_DFCMAlienBuildables which is nearly the same function.
 static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
 {
 	buildable_t buildable = ( buildable_t ) atoi( Info_ValueForKey( data, "1" ) );
 	const char *Class = "";
 	const char *Icon = "";
 	const char *action = "";
-	int value, valueMarked;
 
-	value = cg.snap->ps.persistant[ PERS_BP ];
-	valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+	int spentBudget     = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
+	int markedBudget    = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
+	int totalBudet      = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+	int queuedBudget    = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
+	int availableBudget = std::max( 0, totalBudet - ((spentBudget - markedBudget) + queuedBudget));
 
 	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
 	{
@@ -380,7 +386,7 @@ static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if ( BG_Buildable( buildable )->buildPoints > value + valueMarked )
+	else if ( BG_Buildable( buildable )->buildPoints > availableBudget )
 	{
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
@@ -389,7 +395,8 @@ static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
 	else
 	{
 		Class = "available";
-		action = va( "onClick='Cmd.exec(\"build %s\") Events.pushevent(\"hide %s\", event)'", BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id );
+		action = va( "onClick='Cmd.exec(\"build %s\") Events.pushevent(\"hide %s\", event)'",
+		             BG_Buildable( buildable )->name, rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id );
 	}
 
 	Rocket_DataFormatterFormattedData( handle, va( "<button class='%s' onMouseover='Events.pushevent(\"setDS humanBuildList default %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_buildables[ buildable ].buildableIcon ) ), false );

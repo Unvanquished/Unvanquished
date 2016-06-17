@@ -22,6 +22,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sg_local.h"
+#include "CBSE.h"
 
 // -----------
 // definitions
@@ -433,7 +434,7 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 	{
 		return 0.0f;
 	}
-	team           = BG_Buildable( buildable->s.modelindex )->team;
+	team = BG_Buildable( buildable->s.modelindex )->team;
 
 	if ( buildable->momentumEarned )
 	{
@@ -445,7 +446,8 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 		value = G_PredictMomentumForBuilding( buildable );
 	}
 
-	value *= buildable->deconHealthFrac;
+	// Remove only partial momentum as the lost health fraction awards momentum to the enemy.
+	value *= buildable->entity->Get<HealthComponent>()->HealthFraction();
 
 	return AddMomentum( CONF_DECONSTRUCTING, team, -value, deconner, false );
 }

@@ -64,12 +64,25 @@ class BuildableComponent: public BuildableComponentBase {
 		void ToggleDeconstructionMark() { marked = !marked; if (marked) markTime = level.time; }
 
 		/**
+		 * @brief Change the buildable's power state.
+		 */
+		void SetPowerState(bool powered) { entity.oldEnt->powered = powered; }
+
+		/**
+		 * @return Whether the buildable is or will be powered.
+		 * @todo Make entity.oldEnt->powered a component member.
+		 */
+		bool Powered() { return entity.oldEnt->powered; }
+
+		/**
 		 * @return Whether the buildable has completed construction and is alive and powered.
 		 */
-		bool Active();
+		bool Active() { return state == CONSTRUCTED && Powered(); }
 
 	private:
 		lifecycle_t state;
+
+		bool constructionHasFinished;
 
 		bool marked;
 		int  markTime;

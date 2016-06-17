@@ -10,3 +10,7 @@ void OvermindComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath
 		G_BroadcastEvent(EV_OVERMIND_DYING, 0, TEAM_ALIENS);
 	}
 }
+
+void OvermindComponent::HandleFinishConstruction() {
+	G_TeamCommand(TEAM_ALIENS, "cp \"The Overmind has awakened!\"");
+}

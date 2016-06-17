@@ -21,14 +21,6 @@ void AlienBuildableComponent::HandleDamage(float amount, gentity_t* source, Util
 }
 
 void AlienBuildableComponent::Think(int timeDelta) {
-	// TODO: Port gentity_t.powered.
-	entity.oldEnt->powered = (G_ActiveOvermind() != nullptr);
-
-	// Suicide if creep is gone.
-	if (BG_Buildable(entity.oldEnt->s.modelindex)->creepTest && !G_FindCreep(entity.oldEnt)) {
-		G_Kill(entity.oldEnt, entity.oldEnt->powerSource ? &g_entities[entity.oldEnt->powerSource->killedBy] : nullptr, MOD_NOCREEP);
-	}
-
 	// TODO: Find an elegant way to access per-buildable configuration.
 	float creepSize = (float)BG_Buildable((buildable_t)entity.oldEnt->s.modelindex)->creepSize;
 
@@ -46,17 +38,6 @@ void AlienBuildableComponent::Think(int timeDelta) {
 }
 
 void AlienBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
-	entity.oldEnt->powered = false;
-
-	// Warn if in main base and there's an overmind.
-	gentity_t *om;
-	if ((om = G_ActiveOvermind()) && om != entity.oldEnt && level.time > om->warnTimer
-			&& G_InsideBase(entity.oldEnt, true) && G_IsWarnableMOD(meansOfDeath)) {
-		om->warnTimer = level.time + ATTACKWARN_NEARBY_PERIOD;
-		G_BroadcastEvent(EV_WARN_ATTACK, 0, TEAM_ALIENS);
-		Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, entity.oldEnt->buildableTeam);
-	}
-
 	// Set blast timer.
 	int blastDelay = 0;
 	if (entity.oldEnt->spawned && GetBuildableComponent().GetHealthComponent().Health() /

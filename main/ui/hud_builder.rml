@@ -61,7 +61,7 @@ progressbar
 		<progressbar src="btimer"/>
 	</div>
 	<div id="rate">
-		Resources: <mine_rate/>
+		<mine_rate/>
 	</div>
 </body>
 </rml>

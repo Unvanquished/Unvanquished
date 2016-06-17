@@ -1,8 +1,7 @@
 #include "MiningComponent.h"
 
-MiningComponent::MiningComponent(Entity& entity, ResourceStorageComponent& r_ResourceStorageComponent,
-                                 ThinkingComponent& r_ThinkingComponent)
-	: MiningComponentBase(entity, r_ResourceStorageComponent, r_ThinkingComponent)
+MiningComponent::MiningComponent(Entity& entity, ThinkingComponent& r_ThinkingComponent)
+	: MiningComponentBase(entity, r_ThinkingComponent)
     , efficiency(0.0f)
 	, lastThinkActive(false) {
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 1000);
@@ -11,6 +10,8 @@ MiningComponent::MiningComponent(Entity& entity, ResourceStorageComponent& r_Res
 void MiningComponent::HandlePrepareNetCode() {
 	// Mining efficiency.
 	entity.oldEnt->s.weaponAnim = (int)std::round(Efficiency() * 255.0f);
+
+	// TODO: Transmit budget grant.
 }
 
 void MiningComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
@@ -18,6 +19,9 @@ void MiningComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) 
 
 	// Inform neighbours so they can increase their rate immediately.
 	InformNeighbors();
+
+	// Update both team's budgets.
+	G_UpdateBuildPointBudgets();
 }
 
 bool MiningComponent::Active() {
@@ -80,6 +84,9 @@ void MiningComponent::Think(int timeDelta) {
 		// structures so they can adjust their rate immediately.
 		CalculateEfficiency();
 		InformNeighbors();
+
+		// Update both team's budgets.
+		G_UpdateBuildPointBudgets();
 	}
 
 	lastThinkActive = active;

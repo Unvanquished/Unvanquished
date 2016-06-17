@@ -211,8 +211,12 @@ public:
 	AmmoHudElement( const Rocket::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_BOTH ),
 			showTotalAmmo( false ),
-			value( 0 ),
-			valueMarked( 0 ) {}
+			builder( false ),
+			ammo( 0 ),
+			spentBudget( 0 ),
+			markedBudget( 0 ),
+			totalBudget( 0 ),
+			queuedBudget( 0 ) {}
 
 	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
 	{
@@ -226,8 +230,8 @@ public:
 
 	void DoOnRender()
 	{
-		bool bp = false;
 		weapon_t weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+
 		switch ( weapon )
 		{
 			case WP_NONE:
@@ -237,66 +241,79 @@ public:
 			case WP_ABUILD:
 			case WP_ABUILD2:
 			case WP_HBUILD:
-				if ( cg.snap->ps.persistant[ PERS_BP ] == value &&
-					cg.snap->ps.persistant[ PERS_MARKEDBP ] == valueMarked )
+				if ( builder &&
+				     spentBudget  == cg.snap->ps.persistant[ PERS_SPENTBUDGET ] &&
+				     markedBudget == cg.snap->ps.persistant[ PERS_MARKEDBUDGET ] &&
+				     totalBudget  == cg.snap->ps.persistant[ PERS_TOTALBUDGET ] &&
+				     queuedBudget == cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ] )
 				{
 					return;
 				}
-				value = cg.snap->ps.persistant[ PERS_BP ];
-				valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
-				bp = true;
+
+				spentBudget  = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
+				markedBudget = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
+				totalBudget  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+				queuedBudget = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
+				builder      = true;
+
 				break;
 
 			default:
 				if ( showTotalAmmo )
 				{
 					int maxAmmo = BG_Weapon( weapon )->maxAmmo;
-					if ( value == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
+					if ( !builder &&
+					     ammo == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
 					{
 						return;
 					}
-					value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
+
+					ammo = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
 				}
 				else
 				{
-					if ( value == cg.snap->ps.ammo )
+					if ( !builder &&
+					     ammo == cg.snap->ps.ammo )
 					{
 						return;
 					}
-					value = cg.snap->ps.ammo;
+
+					ammo = cg.snap->ps.ammo;
 				}
+
+				builder = false;
 
 				break;
 		}
 
-		if ( value > 999 )
+		if ( builder )
 		{
-			value = 999;
-		}
+			int freeBudget = totalBudget - (spentBudget + queuedBudget);
+			int available  = freeBudget + markedBudget;
 
-		if ( valueMarked > 999 )
-		{
-			valueMarked = 999;
-		}
-
-		if ( !bp )
-		{
-			SetText( va( "%d", value ) );
-		}
-		else if ( valueMarked > 0 )
-		{
-			SetText( va( "%d+%d", value, valueMarked ) );
+			if ( markedBudget != 0 )
+			{
+				SetText( va( "%d+%d = %d", freeBudget, markedBudget, available ) );
+			}
+			else
+			{
+				SetText( va( "%d", freeBudget ) );
+			}
 		}
 		else
 		{
-			SetText( va( "%d", value ) );
+			SetText( va( "%d", ammo ) );
 		}
 	}
 
 private:
-    bool showTotalAmmo;
-	int value;
-	int valueMarked;
+	bool showTotalAmmo;
+	bool builder;
+	int  ammo;
+	int  spentBudget;
+	int  markedBudget;
+	int  totalBudget;
+	int  queuedBudget;
 };
 
 
@@ -3062,32 +3079,23 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	}
 
 	trap_R_ClearColor();
-
 }
 
 void CG_Rocket_DrawMineRate()
 {
-	float levelRate, rate;
-	int efficiency;
+	int totalBudget  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+	int queuedBudget = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
 
-	// check if builder
-	switch ( BG_GetPlayerWeapon( &cg.snap->ps ) )
-	{
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_HBUILD:
-			break;
-
-		default:
-			Rocket_SetInnerRML( "", 0 );
-			return;
+	if (queuedBudget != 0) {
+		float matchTime = (float)(cg.time - cgs.levelStartTime);
+		float rate = cgs.buildPointRecoveryInitialRate /
+		             std::pow(2.0f, matchTime / (60000.0f * cgs.buildPointRecoveryRateHalfLife));
+		Rocket_SetInnerRML( va( "Recovering %d / %d BP @ %.1f BP/min.",
+		                        queuedBudget, totalBudget, rate), 0 );
+	} else {
+		Rocket_SetInnerRML( va( "The full budget of %d BP is available.",
+		                        totalBudget), 0 );
 	}
-
-	levelRate  = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
-	efficiency = cg.predictedPlayerState.persistant[ PERS_RGS_EFFICIENCY ];
-	rate       = ( ( efficiency / 100.0f ) * levelRate );
-
-	Rocket_SetInnerRML( va( _( "%.1f BP/min (%d%% × %.1f)" ), rate, efficiency, levelRate ), 0 );
 }
 
 static INLINE qhandle_t CG_GetUnlockableIcon( int num )

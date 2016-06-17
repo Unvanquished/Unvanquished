@@ -114,6 +114,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	}
 }
 
+// TODO: Add a TeamComponent.
 team_t G_Team( gentity_t *ent )
 {
 	if ( ent->client )
@@ -323,14 +324,10 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	TeamplayInfoMessage( ent );
 }
 
-/*
-===========
-Team_GetLocation
-
-Report a location for the player. Uses placed nearby target_location entities
-============
-*/
-gentity_t *Team_GetLocation( gentity_t *ent )
+/**
+ * @todo Move out of sg_team.c as it is not team-specific.
+ */
+gentity_t *GetCloseLocationEntity( gentity_t *ent )
 {
 	gentity_t *eloc, *best;
 	float     bestlen, len;
@@ -525,7 +522,7 @@ void CheckTeamStatus()
 			if ( ent->inuse && ( ent->client->pers.team == TEAM_HUMANS ||
 			                     ent->client->pers.team == TEAM_ALIENS ) )
 			{
-				loc = Team_GetLocation( ent );
+				loc = GetCloseLocationEntity( ent );
 
 				if ( loc )
 				{

@@ -106,11 +106,10 @@ vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
-vmCvar_t           g_initialBuildPoints;
-vmCvar_t           g_initialMineRate;
-vmCvar_t           g_mineRateHalfLife;
-vmCvar_t           g_minimumMineRate;
-vmCvar_t           g_buildPointLossFraction;
+vmCvar_t           g_buildPointInitialBudget;
+vmCvar_t           g_buildPointBudgetPerMiner;
+vmCvar_t           g_buildPointRecoveryInititalRate;
+vmCvar_t           g_buildPointRecoveryRateHalfLife;
 
 vmCvar_t           g_debugMomentum;
 vmCvar_t           g_momentumHalfLife;
@@ -124,13 +123,6 @@ vmCvar_t           g_momentumDestroyMod;
 
 vmCvar_t           g_humanAllowBuilding;
 vmCvar_t           g_alienAllowBuilding;
-
-vmCvar_t           g_powerCompetitionRange;
-vmCvar_t           g_powerBaseSupply;
-vmCvar_t           g_powerReactorSupply;
-vmCvar_t           g_powerReactorRange;
-vmCvar_t           g_powerRepeaterSupply;
-vmCvar_t           g_powerRepeaterRange;
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
@@ -359,11 +351,10 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                0,                                               0, true     , nullptr       },
 
 	// gameplay: mining
-	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       0,                                               0, false    , nullptr       },
-	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          0,                                               0, false    , nullptr       },
-	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        0,                                               0, false    , nullptr       },
-	{ &g_minimumMineRate,             "g_minimumMineRate",             DEFAULT_MINIMUM_MINE_RATE,          0,                                               0, false    , nullptr       },
-	{ &g_buildPointLossFraction,      "g_buildPointLossFraction",      DEFAULT_BP_LOSS_FRAC,               0,                                               0, false    , nullptr       },
+	{ &g_buildPointInitialBudget,        "g_BPInitialBudget",          DEFAULT_BP_INITIAL_BUDGET,          0,                                               0, false    , nullptr       },
+	{ &g_buildPointBudgetPerMiner,       "g_BPBudgetPerMiner",         DEFAULT_BP_BUDGET_PER_MINER,        CVAR_SERVERINFO,                                 0, false    , nullptr       },
+	{ &g_buildPointRecoveryInititalRate, "g_BPRecoveryInitialRate",    DEFAULT_BP_RECOVERY_INITIAL_RATE,   CVAR_SERVERINFO,                                 0, false    , nullptr       },
+	{ &g_buildPointRecoveryRateHalfLife, "g_BPRecoveryRateHalfLife",   DEFAULT_BP_RECOVERY_RATE_HALF_LIFE, CVAR_SERVERINFO,                                 0, false    , nullptr       },
 
 	// gameplay: momentum
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, false    , nullptr       },
@@ -374,14 +365,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_momentumBuildMod,            "g_momentumBuildMod",            DEFAULT_MOMENTUM_BUILD_MOD,         0,                                               0, false    , nullptr       },
 	{ &g_momentumDeconMod,            "g_momentumDeconMod",            DEFAULT_MOMENTUM_DECON_MOD,         0,                                               0, false    , nullptr       },
 	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       0,                                               0, false    , nullptr       },
-
-	// gameplay: buildable power
-	{ &g_powerCompetitionRange,       "g_powerCompetitionRange",       "320",                              0,                                               0, false    , nullptr       },
-	{ &g_powerBaseSupply,             "g_powerBaseSupply",             "20",                               0,                                               0, false    , nullptr       },
-	{ &g_powerReactorSupply,          "g_powerReactorSupply",          "30",                               0,                                               0, false    , nullptr       },
-	{ &g_powerReactorRange,           "g_powerReactorRange",           "1000",                             CVAR_SERVERINFO,                                 0, false    , nullptr       },
-	{ &g_powerRepeaterSupply,         "g_powerRepeaterSupply",         "20",                               0,                                               0, false    , nullptr       },
-	{ &g_powerRepeaterRange,          "g_powerRepeaterRange",          "500",                              CVAR_SERVERINFO,                                 0, false    , nullptr       },
 
 	// gameplay: limits
 	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, false    , nullptr       },
@@ -872,11 +855,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	level.voices = BG_VoiceInit();
 	BG_PrintVoices( level.voices, g_debugVoices.integer );
 
-	// Give both teams some build points to start out with.
+	// Spend build points for layout buildables.
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		float startBP = (float)std::max(0, g_initialBuildPoints.integer - level.team[team].layoutBuildPoints);
-
-		G_ModifyBuildPoints(team, startBP);
+		G_SpendBudget(team, level.team[team].layoutBuildPoints);
 	}
 
 	Log::Notice( "-----------------------------------" );
@@ -1926,11 +1907,10 @@ static void G_LogGameplayStats( int state )
 			             "#\n"
 			             "# g_momentumHalfLife:        %4i\n"
 			             "# g_initialBuildPoints:      %4i\n"
-			             "# g_initialMineRate:         %4i\n"
-			             "# g_mineRateHalfLife:        %4i\n"
+			             "# g_budgetPerMiner:          %4i\n"
 			             "#\n"
 			             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16\n"
-			             "#  T #A #H AMom HMom  LMR  AME  HME  ABP  HBP ABRV HBRV ACre HCre AVal HVal\n"
+			             "#  T #A #H AMom HMom ---- ATBP HTBP AUBP HUBP ABRV HBRV ACre HCre AVal HVal\n"
 			             "# -------------------------------------------------------------------------\n",
 			             Q3_VERSION,
 			             mapname,
@@ -1938,21 +1918,20 @@ static void G_LogGameplayStats( int state )
 			             t.tm_hour, t.tm_min, t.tm_sec,
 			             LOG_GAMEPLAY_STATS_VERSION,
 			             g_momentumHalfLife.integer,
-			             g_initialBuildPoints.integer,
-			             g_initialMineRate.integer,
-			             g_mineRateHalfLife.integer );
+			             g_buildPointInitialBudget.integer,
+			             g_buildPointBudgetPerMiner.integer );
 
 			break;
 		}
 		case LOG_GAMEPLAY_STATS_BODY:
 		{
 			int    time;
-			float  LMR;
+			int    XXX;
 			int    team;
 			int    num[ NUM_TEAMS ];
 			int    Mom[ NUM_TEAMS ];
-			int    ME [ NUM_TEAMS ];
-			int    BP [ NUM_TEAMS ];
+			int    TBP[ NUM_TEAMS ];
+			int    UBP[ NUM_TEAMS ];
 			int    BRV[ NUM_TEAMS ];
 			int    Cre[ NUM_TEAMS ];
 			int    Val[ NUM_TEAMS ];
@@ -1963,23 +1942,23 @@ static void G_LogGameplayStats( int state )
 			}
 
 			time = level.matchTime / 1000;
-			LMR  = level.mineRate; // float
+			XXX  = 0;
 
 			for( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 			{
 				num[ team ] = level.team[ team ].numClients;
 				Mom[ team ] = ( int )level.team[ team ].momentum;
-				ME [ team ] = ( int )level.team[ team ].mineEfficiency;
-				BP [ team ] = G_GetBuildPointsInt( (team_t)team );
+				TBP[ team ] = ( int )level.team[ team ].totalBudget;
+				UBP[ team ] = ( int )G_GetFreeBudget( ( team_t )team );
 			}
 
-			G_GetBuildableResourceValue( BRV );
+			G_GetTotalBuildableValues( BRV );
 			GetAverageCredits( Cre, Val );
 
 			Com_sprintf( logline, sizeof( logline ),
-			             "%4i %2i %2i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i\n",
+			             "%4i %2i %2i %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i\n",
 			             time, num[ TEAM_ALIENS ], num[ TEAM_HUMANS ], Mom[ TEAM_ALIENS ], Mom[ TEAM_HUMANS ],
-			             LMR, ME[ TEAM_ALIENS ], ME[ TEAM_HUMANS ], BP[ TEAM_ALIENS ], BP[ TEAM_HUMANS ],
+			             XXX, TBP[ TEAM_ALIENS ], TBP[ TEAM_HUMANS ], UBP[ TEAM_ALIENS ], UBP[ TEAM_HUMANS ],
 			             BRV[ TEAM_ALIENS ], BRV[ TEAM_HUMANS ], Cre[ TEAM_ALIENS ], Cre[ TEAM_HUMANS ],
 			             Val[ TEAM_ALIENS ], Val[ TEAM_HUMANS ] );
 			break;
@@ -2928,8 +2907,13 @@ void G_RunFrame( int levelTime )
 	G_UnlaggedStore();
 
 	G_CountSpawns();
-	G_SetHumanBuildablePowerState();
-	G_MineBuildPoints();
+
+	// Check if a build point can be removed from the queue.
+	G_RecoverBuildPoints();
+
+	// Power down buildables if there is a budget deficit.
+	G_UpdateBuildablePowerStates();
+
 	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();
 	G_SpawnClients( TEAM_ALIENS );

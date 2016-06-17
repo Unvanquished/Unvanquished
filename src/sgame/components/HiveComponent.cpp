@@ -7,8 +7,9 @@ HiveComponent::HiveComponent(Entity& entity, AlienBuildableComponent& r_AlienBui
 void HiveComponent::HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location,
                                  Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	// If inactive, fire on attacker even if it's out of sense range.
-	if (entity.oldEnt->spawned && entity.oldEnt->powered && !entity.oldEnt->active &&
-	        GetAlienBuildableComponent().GetBuildableComponent().GetHealthComponent().Alive()) {
+	// HACK: entity.oldEnt->active is a multi-purpose field. TODO: Use specific variable.
+	if (GetAlienBuildableComponent().GetBuildableComponent().Active()
+	    && !entity.oldEnt->hiveInsectsActive) {
 		if (AHive_TargetValid(entity.oldEnt, source, true)) {
 			entity.oldEnt->target = source;
 			source->numTrackedBy++;
