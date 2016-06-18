@@ -26,43 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ================
-G_WarnPrimaryUnderAttack
-
-Warns when the team's primary building is under attack.
-Called from overmind and reactor thinkers.
-================
-*/
-
-static void G_WarnPrimaryUnderAttack( gentity_t *self )
-{
-	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
-	float healthFrac;
-	int event = 0;
-
-	healthFrac = self->entity->Get<HealthComponent>()->HealthFraction();
-
-	if ( healthFrac < 0.25f && self->lastHealthFrac >= 0.25f )
-	{
-		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_2 : EV_REACTOR_ATTACK_2;
-	}
-	else if ( healthFrac < 0.75f && self->lastHealthFrac >= 0.75f )
-	{
-		event = attr->team == TEAM_ALIENS ? EV_OVERMIND_ATTACK_1 : EV_REACTOR_ATTACK_1;
-	}
-
-	if ( event && ( event != self->attackLastEvent || level.time > self->attackTimer ) )
-	{
-		self->attackTimer = level.time + ATTACKWARN_PRIMARY_PERIOD; // don't spam
-		self->attackLastEvent = event;
-		G_BroadcastEvent( event, 0, attr->team );
-		Beacon::NewArea( BCT_DEFEND, self->s.origin, self->buildableTeam );
-	}
-
-	self->lastHealthFrac = healthFrac;
-}
-
-/*
-================
 IsWarnableMOD
 
 True if the means of death allows an under-attack warning.
@@ -73,7 +36,6 @@ bool G_IsWarnableMOD( int mod )
 {
 	switch ( mod )
 	{
-		//case MOD_UNKNOWN:
 		case MOD_TRIGGER_HURT:
 		case MOD_DECONSTRUCT:
 		case MOD_REPLACE:
@@ -627,8 +589,6 @@ void AOvermind_Think( gentity_t *self )
 				level.overmindMuted = true;
 			}
 		}
-
-		G_WarnPrimaryUnderAttack( self );
 	}
 	else
 	{
@@ -1479,8 +1439,6 @@ void HReactor_Think( gentity_t *self )
 		G_SelectiveRadiusDamage( self->s.pos.trBase, self, REACTOR_ATTACK_DAMAGE,
 		                         REACTOR_ATTACK_RANGE, self, MOD_REACTOR, TEAM_HUMANS );
 	}
-
-	G_WarnPrimaryUnderAttack( self );
 }
 
 void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )

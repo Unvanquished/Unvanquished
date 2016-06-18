@@ -248,7 +248,6 @@ struct gentity_s
 	char         *shaderKey;
 	char         *shaderReplacement;
 
-	float        lastHealthFrac;
 	int          health;
 
 	float        speed;
@@ -337,7 +336,6 @@ struct gentity_s
 	float       barbRegeneration; // goon barb regeneration is complete if this value is >= 1
 
 	bool        deconMarkHack; // TODO: Remove.
-	int         attackTimer, attackLastEvent; // self being attacked
 	int         warnTimer; // nearby building(s) being attacked
 	int         overmindDyingTimer;
 	int         overmindSpawnsTimer;

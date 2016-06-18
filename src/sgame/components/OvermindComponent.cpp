@@ -6,11 +6,10 @@ OvermindComponent::OvermindComponent(Entity& entity, AlienBuildableComponent& r_
 {}
 
 void OvermindComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
-	if (G_IsWarnableMOD(meansOfDeath)) {
-		G_BroadcastEvent(EV_OVERMIND_DYING, 0, TEAM_ALIENS);
-	}
+	// TODO: Reuse or remove message handler.
 }
 
 void OvermindComponent::HandleFinishConstruction() {
+	// TODO: Move to MainBuildableComponent.
 	G_TeamCommand(TEAM_ALIENS, "cp \"The Overmind has awakened!\"");
 }

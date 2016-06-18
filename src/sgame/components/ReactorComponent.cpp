@@ -6,7 +6,5 @@ ReactorComponent::ReactorComponent(Entity& entity, HumanBuildableComponent& r_Hu
 {}
 
 void ReactorComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
-	if (G_IsWarnableMOD(meansOfDeath)) {
-		G_BroadcastEvent(EV_REACTOR_DYING, 0, TEAM_HUMANS);
-	}
+	// TODO: Reuse or remove message handler.
 }

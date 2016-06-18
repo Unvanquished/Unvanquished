@@ -163,6 +163,7 @@ components:
 
     MainBuildable:
         messages:
+            - Damage
             - Die
             - FinishConstruction
         requires:
@@ -378,6 +379,8 @@ entities:
     ######################
     # Buildable Entities #
     ######################
+
+    # Buildables have their individual component that pulls in other components.
 
     #------------------+
     # Alien Buildables |
