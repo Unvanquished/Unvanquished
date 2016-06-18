@@ -71,31 +71,35 @@ bool G_BotClearNames()
 	int i;
 
 	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
+	{
 		if ( botNames[TEAM_ALIENS].name[i].inUse )
 		{
 			return false;
 		}
+	}
 
-		for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
-			if ( botNames[TEAM_HUMANS].name[i].inUse )
-			{
-				return false;
-			}
+	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+	{
+		if ( botNames[TEAM_HUMANS].name[i].inUse )
+		{
+			return false;
+		}
+	}
 
-			for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
-			{
-				BG_Free( botNames[TEAM_ALIENS].name[i].name );
-			}
+	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
+	{
+		BG_Free( botNames[TEAM_ALIENS].name[i].name );
+	}
 
-			for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
-			{
-				BG_Free( botNames[TEAM_HUMANS].name[i].name );
-			}
+	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+	{
+		BG_Free( botNames[TEAM_HUMANS].name[i].name );
+	}
 
-			botNames[TEAM_ALIENS].count = 0;
-			botNames[TEAM_HUMANS].count = 0;
+	botNames[TEAM_ALIENS].count = 0;
+	botNames[TEAM_HUMANS].count = 0;
 
-			return true;
+	return true;
 }
 
 int G_BotAddNames( team_t team, int arg, int last )
@@ -112,14 +116,18 @@ int G_BotAddNames( team_t team, int arg, int last )
 
 		// name already in the list? (quick check, including colours & invalid)
 		for ( t = 1; t < NUM_TEAMS; ++t )
+		{
 			for ( j = 0; j < botNames[t].count; ++j )
+			{
 				if ( !Q_stricmp( botNames[t].name[j].name, name ) )
 				{
 					goto next;
 				}
+			}
+		}
 
-				botNames[team].name[i].name = ( char * )BG_Alloc( strlen( name ) + 1 );
-			strcpy( botNames[team].name[i].name, name );
+		botNames[team].name[i].name = ( char * )BG_Alloc( strlen( name ) + 1 );
+		strcpy( botNames[team].name[i].name, name );
 
 		botNames[team].count = ++i;
 		++added;
