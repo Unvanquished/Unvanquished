@@ -3311,6 +3311,15 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	}
 	else if ( ent->client->pers.team == TEAM_HUMANS )
 	{
+		// Check for Reactor
+		if ( buildable != BA_H_REACTOR )
+		{
+			if ( !G_ActiveReactor() )
+			{
+				reason = IBE_NOREACTOR;
+			}
+		}
+
 		// Check permissions
 		if ( (tr1.surfaceFlags & (SURF_NOHUMANBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOHUMANBUILD | CONTENTS_NOBUILD)) )
 		{

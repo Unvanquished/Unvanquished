@@ -584,9 +584,9 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_H_NOREACTOR:
-			longMsg = _("There is no reactor and the local power supply is insufficient. "
-			            "Build the reactor or a repeater to increase the local capacity.");
-			shortMsg = _("There is no reactor and the local power supply is insufficient");
+			longMsg = _("There is no reactor. A reactor must be built before any other "
+			            "structure can be placed.");
+			shortMsg = _("There is no reactor");
 			break;
 
 		case MN_H_ONEREACTOR:
@@ -648,8 +648,8 @@ void CG_Menu( int menuType, int arg )
 			//===============================
 
 		case MN_A_NOOVMND:
-			longMsg = _("There is no Overmind. An Overmind must be built to control "
-			          "the structure you tried to place.");
+			longMsg = _("There is no Overmind. An Overmind must be built before any other "
+			            "structure can be placed.");
 			shortMsg = _("There is no Overmind");
 			break;
 
