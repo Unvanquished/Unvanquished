@@ -365,95 +365,77 @@ gentity_t *G_ActiveOvermind()
 	return om;
 }
 
-static gentity_t* GetMainBuilding( gentity_t *self, bool ownBase )
-{
-	team_t    team;
-	gentity_t *mainBuilding = nullptr;
-
-	if ( self->client )
-	{
-		team = (team_t) self->client->pers.team;
+gentity_t *G_MainBuildable(team_t team) {
+	switch (team) {
+		case TEAM_ALIENS: return G_Overmind();
+		case TEAM_HUMANS: return G_Reactor();
+		default:          return nullptr;
 	}
-	else if ( self->s.eType == entityType_t::ET_BUILDABLE )
-	{
-		team = BG_Buildable( self->s.modelindex )->team;
-	}
-	else
-	{
-		return nullptr;
-	}
-
-	if ( ownBase )
-	{
-		if ( team == TEAM_ALIENS )
-		{
-			mainBuilding = G_Overmind();
-		}
-		else if ( team == TEAM_HUMANS )
-		{
-			mainBuilding = G_Reactor();
-		}
-	}
-	else
-	{
-		if ( team == TEAM_ALIENS )
-		{
-			mainBuilding = G_Reactor();
-		}
-		else if ( team == TEAM_HUMANS )
-		{
-			mainBuilding = G_Overmind();
-		}
-	}
-
-	return mainBuilding;
 }
 
-/*
-================
-G_DistanceToBase
-
-Calculates the distance of an entity to its own or the enemy base.
-Returns a huge value if the base is not found.
-================
-*/
-float G_DistanceToBase( gentity_t *self, bool ownBase )
-{
-	gentity_t *mainBuilding = GetMainBuilding( self, ownBase );
-
-	if ( mainBuilding )
-	{
-		return Distance( self->s.origin, mainBuilding->s.origin );
+gentity_t *G_AliveMainBuildable(team_t team) {
+	switch (team) {
+		case TEAM_ALIENS: return G_AliveOvermind();
+		case TEAM_HUMANS: return G_AliveReactor();
+		default:          return nullptr;
 	}
-	else
-	{
+}
+
+gentity_t *G_ActiveMainBuildable(team_t team) {
+	switch (team) {
+		case TEAM_ALIENS: return G_ActiveOvermind();
+		case TEAM_HUMANS: return G_ActiveReactor();
+		default:          return nullptr;
+	}
+}
+
+/**
+ * @return The distance of an entity to its own base or a huge value if the base is not found.
+ */
+float G_DistanceToBase(gentity_t *self)
+{
+	gentity_t *mainBuilding = G_MainBuildable(G_Team(self));
+
+	if (mainBuilding) {
+		return Distance( self->s.origin, mainBuilding->s.origin );
+	} else {
 		return 1E+37;
 	}
 }
 
-/*
-================
-G_InsideBase
-================
-*/
 #define INSIDE_BASE_MAX_DISTANCE 1000.0f
 
 // TODO: Use base clustering.
-bool G_InsideBase( gentity_t *self, bool ownBase )
+bool G_InsideBase(gentity_t *self)
 {
-	gentity_t *mainBuilding = GetMainBuilding( self, ownBase );
+	gentity_t *mainBuilding = G_MainBuildable(G_Team(self));
 
-	if ( !mainBuilding )
-	{
-		return false;
-	}
+	if (!mainBuilding) return false;
 
-	if ( Distance( self->s.origin, mainBuilding->s.origin ) >= INSIDE_BASE_MAX_DISTANCE )
-	{
-		return false;
-	}
+	if (G_Distance(self, mainBuilding) >= INSIDE_BASE_MAX_DISTANCE) return false;
 
 	return trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
+}
+
+/*
+================
+IdlePowerState
+
+Set buildable idle animation to match power state
+================
+*/
+static void PlayPowerStateAnims( gentity_t *self )
+{
+	if ( self->powered && self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
+	{
+		G_SetBuildableAnim( self, BANIM_POWERUP, false );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
+	}
+	else if ( !self->powered && self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
+	{
+		G_SetBuildableAnim( self, BANIM_POWERDOWN, false );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
+	}
 }
 
 //==================================================================================
@@ -1405,54 +1387,6 @@ void ATrapper_Think( gentity_t *self )
 	{
 		ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT );
 	}
-}
-
-/*
-================
-IdlePowerState
-
-Set buildable idle animation to match power state
-================
-*/
-static void PlayPowerStateAnims( gentity_t *self )
-{
-	if ( self->powered && self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
-	{
-		G_SetBuildableAnim( self, BANIM_POWERUP, false );
-		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
-	}
-	else if ( !self->powered && self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
-	{
-		G_SetBuildableAnim( self, BANIM_POWERDOWN, false );
-		G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
-	}
-}
-
-// TODO: Set power state based on budget deficit.
-void G_UpdateBuildablePowerStates()
-{
-	static int nextCalculation = 0;
-
-	if (level.time < nextCalculation) {
-		return;
-	}
-
-	ForEntities<BuildableComponent, HealthComponent>([&](Entity& entity, BuildableComponent& buildableComponent, HealthComponent& healthComponent) {
-		switch (G_Team(entity.oldEnt)) {
-			case TEAM_ALIENS:
-				buildableComponent.SetPowerState(G_ActiveOvermind() && healthComponent.Alive());
-				break;
-
-			case TEAM_HUMANS:
-				buildableComponent.SetPowerState(G_ActiveReactor() && healthComponent.Alive());
-				break;
-
-			default:
-				break;
-		}
-	});
-
-	nextCalculation = level.time + 500;
 }
 
 void HSpawn_Think( gentity_t *self )
@@ -2547,6 +2481,93 @@ void HDrill_Think( gentity_t *self )
 	self->nextthink = level.time + 1000;
 
 	PlayPowerStateAnims( self );
+}
+
+/**
+ * @brief Orders buildables that were pre-selected for power down to make good a budget deficit.
+ * @todo Add const to parameters once there is a const variant of Entity::Get.
+ */
+static bool CompareBuildablesForPowerSaving(Entity* a, Entity* b)
+{
+	if (!a) return false;
+	if (!b) return true;
+
+	const BuildableComponent* aC = a->Get<BuildableComponent>();
+	const BuildableComponent* bC = b->Get<BuildableComponent>();
+
+	// Prefer the marked buildable.
+	if ( aC->MarkedForDeconstruction() && !bC->MarkedForDeconstruction()) return true;
+	if (!aC->MarkedForDeconstruction() &&  bC->MarkedForDeconstruction()) return false;
+
+	// If both are marked, prefer the one marked last.
+	if (aC->MarkedForDeconstruction() && bC->MarkedForDeconstruction()) {
+		return (aC->GetMarkTime() > bC->GetMarkTime());
+	}
+
+	// Prefer the buildable further away from the base.
+	// Note that this function is supposed to be used only when there is a base, since otherwise
+	// every structure that can shut down did so already.
+	return (G_DistanceToBase(a->oldEnt) > G_DistanceToBase(b->oldEnt));
+}
+
+/**
+ * @brief Set the power state of both team's buildables based on budget deficits.
+ */
+void G_UpdateBuildablePowerStates()
+{
+	std::list<Entity*> buildables;
+
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+		buildables.clear();
+
+		gentity_t* activeMainBuildable = G_ActiveMainBuildable(team);
+
+		ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
+			if (G_Team(entity.oldEnt) != team) return;
+
+			// Never shut down the main buildable or miners.
+			if (entity.Get<MainBuildableComponent>()) return;
+			if (entity.Get<MiningComponent>()) return;
+
+			// Never shut down spawns.
+			// TODO: Refer to a SpawnerComponent here.
+			if (entity.Get<TelenodeComponent>() || entity.Get<EggComponent>()) return;
+
+			// Power all other buildables depending on main buildable state for now.
+			if (activeMainBuildable) {
+				buildableComponent.SetPowerState(true);
+			} else {
+				buildableComponent.SetPowerState(false);
+				return;
+			}
+
+			// In order to make good a deficit, don't shut down buildables that have no cost.
+			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) return;
+
+			buildables.push_back(&entity);
+		});
+
+		// If there is no active main buildable, all buildables that can shut down already did so.
+		if (!activeMainBuildable) break;
+
+		int deficit = level.team[team].spentBudget - level.team[team].totalBudget;
+
+		// Do not power down more buildables if there is no deficit.
+		if (deficit <= 0) continue;
+
+		buildables.sort(CompareBuildablesForPowerSaving);
+
+		for(Entity* entity : buildables) {
+			entity->Get<BuildableComponent>()->SetPowerState(false);
+
+			// Dying buildables have already substracted their share from the spent budget pool.
+			if (entity->Get<HealthComponent>()->Alive()) {
+				deficit -= BG_Buildable(entity->oldEnt->s.modelindex)->buildPoints;
+			}
+
+			if (deficit <= 0) break;
+		}
+	}
 }
 
 /*

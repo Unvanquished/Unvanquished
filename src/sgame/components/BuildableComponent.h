@@ -52,12 +52,12 @@ class BuildableComponent: public BuildableComponentBase {
 		/**
 		 * @return Whether the buildable is currently marked for deconstruction.
 		 */
-		bool MarkedForDeconstruction() { return marked; }
+		bool MarkedForDeconstruction() const { return marked; }
 
 		/**
 		 * @return Time when the buildable was marked for deconstruction or 0 if it isn't currently marked.
 		 */
-		int  GetMarkTime() { return marked ? markTime : 0; }
+		int  GetMarkTime() const { return marked ? markTime : 0; }
 
 		void SetDeconstructionMark() { marked = true; markTime = level.time; }
 		void ClearDeconstructionMark() { marked = false; }
@@ -72,12 +72,12 @@ class BuildableComponent: public BuildableComponentBase {
 		 * @return Whether the buildable is or will be powered.
 		 * @todo Make entity.oldEnt->powered a component member.
 		 */
-		bool Powered() { return entity.oldEnt->powered; }
+		bool Powered() const { return entity.oldEnt->powered; }
 
 		/**
 		 * @return Whether the buildable has completed construction and is alive and powered.
 		 */
-		bool Active() { return state == CONSTRUCTED && Powered(); }
+		bool Active() const { return state == CONSTRUCTED && Powered(); }
 
 	private:
 		lifecycle_t state;

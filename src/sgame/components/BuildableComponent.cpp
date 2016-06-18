@@ -6,6 +6,9 @@ BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_Health
 	, constructionHasFinished(false)
 	, marked(false) {
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 100);
+
+	// TODO: Make power state a member variable.
+	SetPowerState(true);
 }
 
 void BuildableComponent::HandlePrepareNetCode() {
@@ -70,7 +73,7 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 
 		// Warn if there was no warning for this location recently.
 		if (level.time > location->warnTimer) {
-			bool inBase = G_InsideBase(entity.oldEnt, true);
+			bool inBase = G_InsideBase(entity.oldEnt);
 
 			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? 0 : location->s.number, team);
 			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, team);

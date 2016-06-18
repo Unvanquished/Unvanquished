@@ -264,6 +264,7 @@ components:
     MGTurret:
         requires:
             - HumanBuildable
+            - Turret
 
     Reactor:
         messages:
@@ -279,6 +280,7 @@ components:
     Rocketpod:
         requires:
             - HumanBuildable
+            - Turret
 
     Telenode:
         requires:
@@ -423,7 +425,7 @@ entities:
 
     Armoury:
         components:
-            HumanBuildable:
+            Armoury:
 
     Drill:
         components:
@@ -435,8 +437,7 @@ entities:
 
     MGTurret:
         components:
-            HumanBuildable:
-            Turret:
+            MGTurret:
 
     Reactor:
         components:
@@ -444,16 +445,15 @@ entities:
 
     Repeater:
         components:
-            HumanBuildable:
+            Repeater:
 
     Rocketpod:
         components:
-            HumanBuildable:
-            Turret:
+            Rocketpod:
 
     Telenode:
         components:
-            HumanBuildable:
+           Telenode:
 
     #####################
     # Unsorted Entities #
