@@ -2516,11 +2516,11 @@ static bool CompareBuildablesForPowerSaving(Entity* a, Entity* b)
 void G_UpdateBuildablePowerStates()
 {
 	std::list<Entity*> buildables;
+	gentity_t* activeMainBuildable;
 
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
 		buildables.clear();
-
-		gentity_t* activeMainBuildable = G_ActiveMainBuildable(team);
+		activeMainBuildable = G_ActiveMainBuildable(team);
 
 		ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
 			if (G_Team(entity.oldEnt) != team) return;
@@ -2548,7 +2548,7 @@ void G_UpdateBuildablePowerStates()
 		});
 
 		// If there is no active main buildable, all buildables that can shut down already did so.
-		if (!activeMainBuildable) break;
+		if (!activeMainBuildable) continue;
 
 		int deficit = level.team[team].spentBudget - level.team[team].totalBudget;
 
