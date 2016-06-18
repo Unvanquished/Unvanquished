@@ -91,21 +91,6 @@ void G_UpdateBuildPointBudgets() {
 	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
 		level.team[G_Team(miner.oldEnt)].totalBudget += miningComponent.Budget();
 	});
-
-	// If there is no active main structure, the budget is zero.
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		gentity_t *mainStructure;
-
-		switch (team) {
-			case TEAM_ALIENS: mainStructure = G_ActiveOvermind(); break;
-			case TEAM_HUMANS: mainStructure = G_ActiveReactor();  break;
-			default:          mainStructure = nullptr;            break;
-		}
-
-		if (!mainStructure) {
-			level.team[team].totalBudget = 0;
-		}
-	}
 }
 
 void G_RecoverBuildPoints() {
