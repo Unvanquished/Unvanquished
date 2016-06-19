@@ -24,18 +24,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "CBSE.h"
 
-/*
-================
-IsWarnableMOD
-
-True if the means of death allows an under-attack warning.
-================
-*/
-
-bool G_IsWarnableMOD( int mod )
-{
-	switch ( mod )
-	{
+/**
+ * @return Whether the means of death allow for an under-attack warning.
+ */
+bool G_IsWarnableMOD(meansOfDeath_t mod) {
+	switch (mod) {
 		case MOD_TRIGGER_HURT:
 		case MOD_DECONSTRUCT:
 		case MOD_REPLACE:
@@ -46,51 +39,10 @@ bool G_IsWarnableMOD( int mod )
 	}
 }
 
-/*
-================
-G_SetBuildableAnim
-
-Triggers an animation client side
-================
-*/
-void G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, bool force )
-{
-	int localAnim = anim | ( ent->s.legsAnim & ANIM_TOGGLEBIT );
-
-	if ( force )
-	{
-		localAnim |= ANIM_FORCEBIT;
-	}
-
-	// don't flip the togglebit more than once per frame
-	if ( ent->animTime != level.time )
-	{
-		ent->animTime = level.time;
-		localAnim ^= ANIM_TOGGLEBIT;
-	}
-
-	ent->s.legsAnim = localAnim;
-}
-
-/*
-================
-G_SetIdleBuildableAnim
-
-Set the animation to use whilst no other animations are running
-================
-*/
-void G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim )
-{
-	ent->s.torsoAnim = anim;
-}
-
-/*
-===============
-G_CheckSpawnPoint
-
-Check if a spawn at a specified point is valid
-===============
-*/
+/**
+ * @brief Checks whether a client can spawn at the given spawner.
+ * @return nullptr if spawn is valid, blocking entity otherwise.
+ */
 gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
                               const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin )
 {
@@ -187,13 +139,9 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 	return nullptr;
 }
 
-/*
-===============
-G_PuntBlocker
-
-Move spawn blockers
-===============
-*/
+/**
+ * @brief Moves clients that block a spawner.
+ */
 static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 {
 	vec3_t nudge;
@@ -236,95 +184,90 @@ static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 	{
 		VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
 		trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
-        }
+	}
 }
 
-/*
-================
-G_Reactor
-G_Overmind
+static gentity_t *FindBuildable(buildable_t buildable) {
+	gentity_t* found = nullptr;
 
-Since there's only one of these and we quite often want to find them, cache the
-results, but check them for validity each time
+	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
+		if (entity.oldEnt->s.modelindex == buildable) {
+			found = entity.oldEnt;
+		}
+	});
 
-The code here will break if more than one reactor or overmind is allowed, even
-if one of them is dead/unspawned
-================
-*/
-static gentity_t *FindBuildable( buildable_t buildable );
+	return found;
+}
 
-gentity_t *G_Reactor()
-{
-	static gentity_t *rc;
+static gentity_t *LookupMainBuildableChache(buildable_t buildable, bool constructed, bool alive) {
+	static gentity_t *reactor  = nullptr;
+	static gentity_t *overmind = nullptr;
 
-	// If cache becomes invalid renew it
-	if ( !rc || rc->s.eType != entityType_t::ET_BUILDABLE || rc->s.modelindex != BA_H_REACTOR )
-	{
-		rc = FindBuildable( BA_H_REACTOR );
+	gentity_t* cache;
+
+	switch (buildable) {
+		case BA_A_OVERMIND:
+			cache = overmind;
+			break;
+
+		case BA_H_REACTOR:
+			cache = reactor;
+			break;
+
+		default:
+			return nullptr;
 	}
 
-	return rc;
-}
+	if (!cache || cache->s.eType != entityType_t::ET_BUILDABLE || cache->s.modelindex != buildable) {
+		cache = FindBuildable( buildable );
+	}
 
-gentity_t *G_AliveReactor()
-{
-	gentity_t *rc = G_Reactor();
-
-	if ( !rc || G_Dead( rc ) )
-	{
+	if (!cache) {
 		return nullptr;
 	}
 
-	return rc;
-}
-
-gentity_t *G_ActiveReactor()
-{
-	gentity_t *rc = G_AliveReactor();
-
-	if ( !rc || !rc->spawned )
-	{
+	if (constructed && cache->entity->Get<BuildableComponent>()->GetState() ==
+	    BuildableComponent::CONSTRUCTING) {
 		return nullptr;
 	}
 
-	return rc;
-}
-
-gentity_t *G_Overmind()
-{
-	static gentity_t *om;
-
-	// If cache becomes invalid renew it
-	if ( !om || om->s.eType != entityType_t::ET_BUILDABLE || om->s.modelindex != BA_A_OVERMIND )
-	{
-		om = FindBuildable( BA_A_OVERMIND );
-	}
-
-	return om;
-}
-
-gentity_t *G_AliveOvermind()
-{
-	gentity_t *om = G_Overmind();
-
-	if ( !om || G_Dead( om ) )
-	{
+	if (alive && !cache->entity->Get<HealthComponent>()->Alive()) {
 		return nullptr;
 	}
 
-	return om;
+	return cache;
 }
 
-gentity_t *G_ActiveOvermind()
-{
-	gentity_t *om = G_AliveOvermind();
+gentity_t *LookupOvermindCache(bool constructed, bool alive) {
+	return LookupMainBuildableChache(BA_A_OVERMIND, constructed, alive);
+}
 
-	if ( !om || !om->spawned )
-	{
-		return nullptr;
-	}
+gentity_t *LookupReactorCache(bool constructed, bool alive) {
+	return LookupMainBuildableChache(BA_H_REACTOR, constructed, alive);
+}
 
-	return om;
+gentity_t *G_Overmind() {
+	return LookupOvermindCache(false, false);
+}
+
+gentity_t *G_AliveOvermind() {
+	return LookupOvermindCache(false, true);
+}
+
+gentity_t *G_ActiveOvermind() {
+	return LookupOvermindCache(true, true);
+}
+
+gentity_t *G_Reactor() {
+	return LookupReactorCache(false, false);
+}
+
+gentity_t *G_AliveReactor() {
+	return LookupReactorCache(false, true);
+}
+
+gentity_t *G_ActiveReactor() {
+	return LookupReactorCache(true, true);
 }
 
 gentity_t *G_MainBuildable(team_t team) {
@@ -354,12 +297,11 @@ gentity_t *G_ActiveMainBuildable(team_t team) {
 /**
  * @return The distance of an entity to its own base or a huge value if the base is not found.
  */
-float G_DistanceToBase(gentity_t *self)
-{
+float G_DistanceToBase(gentity_t *self) {
 	gentity_t *mainBuilding = G_MainBuildable(G_Team(self));
 
 	if (mainBuilding) {
-		return Distance( self->s.origin, mainBuilding->s.origin );
+		return G_Distance(self, mainBuilding);
 	} else {
 		return 1E+37;
 	}
@@ -367,40 +309,58 @@ float G_DistanceToBase(gentity_t *self)
 
 #define INSIDE_BASE_MAX_DISTANCE 1000.0f
 
-// TODO: Use base clustering.
-bool G_InsideBase(gentity_t *self)
-{
+/**
+ * @return Whether an entity is inside its own main base.
+ * @todo Use base clustering.
+ */
+bool G_InsideBase(gentity_t *self) {
 	gentity_t *mainBuilding = G_MainBuildable(G_Team(self));
 
-	if (!mainBuilding) return false;
+	if (G_DistanceToBase(self) >= INSIDE_BASE_MAX_DISTANCE) {
+		return false;
+	}
 
-	if (G_Distance(self, mainBuilding) >= INSIDE_BASE_MAX_DISTANCE) return false;
-
-	return trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
+	return trap_InPVSIgnorePortals(self->s.origin, mainBuilding->s.origin);
 }
 
-/*
-================
-IdlePowerState
+/**
+ * @brief Triggers client side buildable animation.
+ */
+void G_SetBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation, bool force) {
+	int newAnimation = (int)animation;
 
-Set buildable idle animation to match power state
-================
-*/
-static void PlayPowerStateAnims( gentity_t *self )
-{
-	if ( self->powered && self->s.torsoAnim == BANIM_IDLE_UNPOWERED )
-	{
-		G_SetBuildableAnim( self, BANIM_POWERUP, false );
+	newAnimation |= (ent->s.legsAnim & ANIM_TOGGLEBIT);
+
+	if (force) newAnimation |= ANIM_FORCEBIT;
+
+	// Don't flip the toggle bit more than once per frame.
+	if (ent->animTime != level.time) {
+		ent->animTime = level.time;
+		newAnimation ^= ANIM_TOGGLEBIT;
+	}
+
+	ent->s.legsAnim = newAnimation;
+}
+
+/**
+ * @brief Sets the client side buildable idle animation.
+ */
+void G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation) {
+	ent->s.torsoAnim = animation;
+}
+
+/**
+ * @brief Sets buildable (idle) animation based on buildable power state changes.
+ */
+static void PlayPowerStateAnims(gentity_t *self) {
+	if (self->powered && self->s.torsoAnim == BANIM_IDLE_UNPOWERED) {
+		G_SetBuildableAnim(self, BANIM_POWERUP, false);
 		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
-	}
-	else if ( !self->powered && self->s.torsoAnim != BANIM_IDLE_UNPOWERED )
-	{
-		G_SetBuildableAnim( self, BANIM_POWERDOWN, false );
-		G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
+	} else if (!self->powered && self->s.torsoAnim != BANIM_IDLE_UNPOWERED) {
+		G_SetBuildableAnim(self, BANIM_POWERDOWN, false);
+		G_SetIdleBuildableAnim(self, BANIM_IDLE_UNPOWERED);
 	}
 }
-
-//==================================================================================
 
 /*
 ================
@@ -2631,35 +2591,6 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 	}
 
 	return false;
-}
-
-/*
-================
-G_FindBuildable
-
-Finds a buildable of the specified type
-================
-*/
-static gentity_t *FindBuildable( buildable_t buildable )
-{
-	int       i;
-	gentity_t *ent;
-
-	for ( i = MAX_CLIENTS, ent = g_entities + i;
-	      i < level.num_entities; i++, ent++ )
-	{
-		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		if ( ent->s.modelindex == buildable && !( ent->s.eFlags & EF_DEAD ) )
-		{
-			return ent;
-		}
-	}
-
-	return nullptr;
 }
 
 /*

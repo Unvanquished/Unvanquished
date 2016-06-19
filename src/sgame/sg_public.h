@@ -78,14 +78,14 @@ namespace Utility
 }
 
 // sg_buildable.c
-bool              G_IsWarnableMOD( int mod );
+bool              G_IsWarnableMOD(meansOfDeath_t mod);
 gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
-gentity_t         *G_Reactor();
-gentity_t         *G_AliveReactor();
-gentity_t         *G_ActiveReactor();
 gentity_t         *G_Overmind();
 gentity_t         *G_AliveOvermind();
 gentity_t         *G_ActiveOvermind();
+gentity_t         *G_Reactor();
+gentity_t         *G_AliveReactor();
+gentity_t         *G_ActiveReactor();
 gentity_t         *G_MainBuildable(team_t team);
 gentity_t         *G_AliveMainBuildable(team_t team);
 gentity_t         *G_ActiveMainBuildable(team_t team);
@@ -96,8 +96,8 @@ bool              G_BuildableInRange( vec3_t origin, float radius, buildable_t b
 void              G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal, int *groundEntNum );
 bool              G_BuildIfValid( gentity_t *ent, buildable_t buildable );
-void              G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, bool force );
-void              G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );
+void              G_SetBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation, bool force);
+void              G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation);
 void              G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
 void              G_LayoutSave( const char *name );
 int               G_LayoutList( const char *map, char *list, int len );
@@ -130,7 +130,7 @@ void              G_RecoverBuildPoints();
 int               G_GetSpentBudget(team_t team);
 int               G_GetFreeBudget(team_t team);
 int               G_GetMarkedBudget(team_t team);
-int               G_GetAvailableBudget(team_t team);
+int               G_GetSpendableBudget(team_t team);
 void              G_FreeBudget(team_t team, int immediateAmount , int queuedAmount);
 void              G_SpendBudget(team_t team, int amount );
 int               G_BuildableDeconValue(gentity_t *ent);

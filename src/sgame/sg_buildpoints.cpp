@@ -152,7 +152,7 @@ int G_GetMarkedBudget(team_t team)
  * @brief Get the potentially negative number of build points a team can spend, including those from
  *        marked buildables.
  */
-int G_GetAvailableBudget(team_t team)
+int G_GetSpendableBudget(team_t team)
 {
 	return G_GetFreeBudget(team) + G_GetMarkedBudget(team);
 }
