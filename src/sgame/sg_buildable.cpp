@@ -32,6 +32,7 @@ bool G_IsWarnableMOD(meansOfDeath_t mod) {
 		case MOD_TRIGGER_HURT:
 		case MOD_DECONSTRUCT:
 		case MOD_REPLACE:
+		case MOD_SUICIDE:
 			return false;
 
 		default:
