@@ -26,42 +26,40 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 
 #define MINING_PERIOD 1000
 
-/**
- * @brief Predict the efficiecy loss of a mining structre if another one is constructed closeby.
- * @return Efficiency loss as negative value.
- */
-static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {
-	float distance            = Distance(miner.oldEnt->s.origin, newMinerOrigin);
-	float currentEfficiency   = miner.Get<MiningComponent>()->Efficiency();
-	float predictedEfficiency = currentEfficiency * MiningComponent::InterferenceMod(distance);
-	float efficiencyLoss      = predictedEfficiency - currentEfficiency;
-
-	return efficiencyLoss;
-}
+static Log::Logger buildpointLogger("sgame.buildpoints");
 
 /**
  * @brief Predict the efficiency of a mining structure constructed at the given point.
- * @return Predicted efficiency in percent points.
+ * @note Creates a pseudo leech entity on the stack and calculate its rate.
+ * @return Predicted efficiency of the new miner only.
  */
-float G_RGSPredictEfficiency(vec3_t origin) {
-	// HACK: Create a pseudo leech entity on the stack and calculate its rate.
-
-	gentity_t leechOldEntity;
-	VectorCopy(origin, leechOldEntity.s.origin);
+float G_RGSPredictOwnEfficiency(vec3_t origin) {
+	gentity_t leechOldEnt;
+	VectorCopy(origin, leechOldEnt.s.origin);
 
 	LeechEntity::Params params;
-	params.oldEnt = &leechOldEntity;
+	params.oldEnt           = &leechOldEnt;
 	params.Health_maxHealth = 1.0f;
-
+	params.Mining_blueprint = true;
 	LeechEntity leechEntity(params);
 
-	MiningComponent *miningComponent = leechEntity.Get<MiningComponent>();
-	BuildableComponent *buildableComponent = leechEntity.Get<BuildableComponent>();
+	return leechEntity.Get<MiningComponent>()->Efficiency(true);
+}
 
-	buildableComponent->SetState(BuildableComponent::CONSTRUCTED);
-	buildableComponent->SetPowerState(true);
-	miningComponent->CalculateEfficiency();
-	return miningComponent->Efficiency();
+/**
+ * @brief Predict the efficiecy loss of an existing miner if another one is constructed closeby.
+ * @return Efficiency loss as negative value.
+ */
+static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {
+	float distance               = Distance(miner.oldEnt->s.origin, newMinerOrigin);
+	float oldPredictedEfficiency = miner.Get<MiningComponent>()->Efficiency(true);
+	float newPredictedEfficiency = oldPredictedEfficiency * MiningComponent::InterferenceMod(distance);
+	float efficiencyLoss         = newPredictedEfficiency - oldPredictedEfficiency;
+
+	buildpointLogger.Debug("Predicted efficiency loss of existing miner: %f - %f = %f.",
+	                       oldPredictedEfficiency, newPredictedEfficiency, efficiencyLoss);
+
+	return efficiencyLoss;
 }
 
 /**
@@ -70,13 +68,18 @@ float G_RGSPredictEfficiency(vec3_t origin) {
  * @todo Consider RGS set for deconstruction.
  */
 float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
-	float delta = G_RGSPredictEfficiency(origin);
+	float delta = G_RGSPredictOwnEfficiency(origin);
+
+	buildpointLogger.Debug("Predicted efficiency of new miner itself: %f.", delta);
 
 	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
 		if (G_Team(miner.oldEnt) != team) return;
 
 		delta += RGSPredictEfficiencyLoss(miner, origin);
 	});
+
+	buildpointLogger.Debug("Predicted efficiency delta: %f. Build point delta: %f.", delta,
+	                       delta * g_buildPointBudgetPerMiner.value);
 
 	return delta;
 }
@@ -85,11 +88,13 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
  * @brief Calculate the build point budgets for both teams.
  */
 void G_UpdateBuildPointBudgets() {
-	level.team[TEAM_HUMANS].totalBudget = g_buildPointInitialBudget.integer;
-	level.team[TEAM_ALIENS].totalBudget = g_buildPointInitialBudget.integer;
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+		level.team[team].totalBudget = g_buildPointInitialBudget.value;
+	}
 
-	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
-		level.team[G_Team(miner.oldEnt)].totalBudget += miningComponent.Budget();
+	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
+		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
+		                                                 g_buildPointBudgetPerMiner.value;
 	});
 }
 
@@ -128,7 +133,7 @@ void G_RecoverBuildPoints() {
  */
 int G_GetFreeBudget(team_t team)
 {
-	return level.team[team].totalBudget - (level.team[team].spentBudget + level.team[team].queuedBudget);
+	return (int)level.team[team].totalBudget - (level.team[team].spentBudget + level.team[team].queuedBudget);
 }
 
 /**

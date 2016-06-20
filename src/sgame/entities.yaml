@@ -174,8 +174,11 @@ components:
             - Die
 
     Mining:
+        parameters:
+            blueprint: bool
         messages:
             - PrepareNetCode
+            - FinishConstruction
             - Die
         requires:
             - Thinking

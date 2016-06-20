@@ -865,8 +865,6 @@ Actions that happen once a second
 */
 void ClientTimerActions( gentity_t *ent, int msec )
 {
-	playerState_t *ps;
-	gclient_t     *client;
 	int           i;
 	buildable_t   buildable;
 
@@ -875,11 +873,12 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		return;
 	}
 
-	client = ent->client;
-	ps     = &client->ps;
+	gclient_t *client = ent->client;
+	playerState_t *ps = &client->ps;
+	team_t team       = (team_t)ps->persistant[PERS_TEAM];
 
-	client->time100 += msec;
-	client->time1000 += msec;
+	client->time100   += msec;
+	client->time1000  += msec;
 	client->time10000 += msec;
 
 	if( ent->r.svFlags & SVF_BOT )
@@ -936,8 +935,18 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
-						client->ps.stats[ STAT_PREDICTION ] =
-							( int )( G_RGSPredictEfficiencyDelta( dummy, ( team_t )ps->persistant[ PERS_TEAM ] ) * 100.0f );
+						float deltaEff = G_RGSPredictEfficiencyDelta(dummy, team);
+						int   deltaBP  = (int)(level.team[team].totalBudget + deltaEff *
+						                       g_buildPointBudgetPerMiner.value) -
+						                 (int)(level.team[team].totalBudget);
+
+						signed char deltaEffNetwork = (signed char)((float)0x7f * deltaEff);
+						signed char deltaBPNetwork  = (signed char)deltaBP;
+
+						unsigned int deltasNetwork = (unsigned char)deltaEffNetwork |
+						                             (unsigned char)deltaBPNetwork << 8;
+
+						client->ps.stats[STAT_PREDICTION] = (int)deltasNetwork;
 					}
 
 					// Let the client know which buildables will be removed by building
@@ -2200,7 +2209,7 @@ void ClientThink_real( gentity_t *self )
 
 	client->ps.persistant[ PERS_SPENTBUDGET ]  = level.team[client->pers.team].spentBudget;
 	client->ps.persistant[ PERS_MARKEDBUDGET ] = G_GetMarkedBudget( (team_t)client->pers.team );
-	client->ps.persistant[ PERS_TOTALBUDGET ]  = level.team[client->pers.team].totalBudget;
+	client->ps.persistant[ PERS_TOTALBUDGET ]  = (int)level.team[client->pers.team].totalBudget;
 	client->ps.persistant[ PERS_QUEUEDBUDGET ] = level.team[client->pers.team].queuedBudget;
 
 	// perform once-a-second actions

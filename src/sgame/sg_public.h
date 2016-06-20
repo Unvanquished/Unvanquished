@@ -123,8 +123,8 @@ bool ASpiker_Fire( gentity_t *self );
 void HTurret_PreBlast( gentity_t *self );
 
 // sg_buildpoints
-float             G_RGSPredictEfficiency( vec3_t origin );
-float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
+float             G_RGSPredictOwnEfficiency(vec3_t origin);
+float             G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team);
 void              G_UpdateBuildPointBudgets();
 void              G_RecoverBuildPoints();
 int               G_GetSpentBudget(team_t team);
@@ -132,7 +132,7 @@ int               G_GetFreeBudget(team_t team);
 int               G_GetMarkedBudget(team_t team);
 int               G_GetSpendableBudget(team_t team);
 void              G_FreeBudget(team_t team, int immediateAmount , int queuedAmount);
-void              G_SpendBudget(team_t team, int amount );
+void              G_SpendBudget(team_t team, int amount);
 int               G_BuildableDeconValue(gentity_t *ent);
 void              G_GetTotalBuildableValues(int *buildableValuesByTeam);
 

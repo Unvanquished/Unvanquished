@@ -371,7 +371,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 // resources
 #define RGS_RANGE                          1000.0f // must be > 0
-#define DEFAULT_BP_INITIAL_BUDGET          "75"    // in BP
+#define DEFAULT_BP_INITIAL_BUDGET          "80"    // in BP
 #define DEFAULT_BP_BUDGET_PER_MINER        "50"    // in BP
 #define DEFAULT_BP_RECOVERY_INITIAL_RATE   "16"    // in BP/min
 #define DEFAULT_BP_RECOVERY_RATE_HALF_LIFE "10"    // in min
@@ -388,6 +388,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
 #define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
 #define MAIN_STRUCTURE_MOMENTUM_VALUE    20    // momentum reward for destroying OM/RC
+#define MINER_MOMENTUM_VALUE             10    // momentum reward for destroying Drill/Leech
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 #define BUILDABLE_START_HEALTH_FRAC        0.25f

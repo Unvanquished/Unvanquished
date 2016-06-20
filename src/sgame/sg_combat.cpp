@@ -211,9 +211,19 @@ void G_RewardAttackers( gentity_t *self )
 	{
 		ownTeam   = (team_t) self->buildableTeam;
 		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
-		value     = BG_IsMainStructure( &self->s )
-		            ? MAIN_STRUCTURE_MOMENTUM_VALUE
-		            : BG_Buildable( self->s.modelindex )->buildPoints;
+
+		if ( self->entity->Get<MainBuildableComponent>() )
+		{
+			value = MAIN_STRUCTURE_MOMENTUM_VALUE;
+		}
+		else if ( self->entity->Get<MiningComponent>() )
+		{
+			value = MINER_MOMENTUM_VALUE;
+		}
+		else
+		{
+			value = BG_Buildable( self->s.modelindex )->buildPoints;
+		}
 
 		// Give partial credits for buildables in construction
 		if ( !self->spawned )

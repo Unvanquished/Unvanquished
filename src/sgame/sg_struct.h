@@ -751,7 +751,7 @@ struct level_locals_s
 		float            averageNumBots;
 		int              numSamples;
 		int              numAliveClients;
-		int              totalBudget;
+		float            totalBudget; // Read access always rounds towards zero.
 		int              spentBudget;
 		int              queuedBudget;
 		int              kills;

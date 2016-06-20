@@ -2283,7 +2283,7 @@ void G_UpdateBuildablePowerStates()
 		// If there is no active main buildable, all buildables that can shut down already did so.
 		if (!activeMainBuildable) continue;
 
-		int deficit = level.team[team].spentBudget - level.team[team].totalBudget;
+		int deficit = level.team[team].spentBudget - (int)level.team[team].totalBudget;
 
 		// Do not power down more buildables if there is no deficit.
 		if (deficit <= 0) continue;
@@ -3117,11 +3117,17 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	params.oldEnt = ent;\
 	params.Health_maxHealth = BG_Buildable(buildable)->health;
 
+#define BUILDABLE_ENTITY_START(entityType)\
+	entityType::Params params;\
+	BUILDABLE_ENTITY_SET_PARAMS(params);
+
+#define BUILDABLE_ENTITY_END(entityType)\
+	ent->entity = new entityType(params);
+
 /** Creates basic buildable entity of specific type. */
 #define BUILDABLE_ENTITY_CREATE(entityType)\
-	entityType::Params params;\
-	BUILDABLE_ENTITY_SET_PARAMS(params);\
-	ent->entity = new entityType(params);\
+	BUILDABLE_ENTITY_START(entityType);\
+	BUILDABLE_ENTITY_END(entityType);
 
 /**
  * @brief Handles creation of buildable entities.
@@ -3149,7 +3155,9 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 		}
 
 		case BA_A_LEECH: {
-			BUILDABLE_ENTITY_CREATE(LeechEntity);
+			BUILDABLE_ENTITY_START(LeechEntity);
+			params.Mining_blueprint = false;
+			BUILDABLE_ENTITY_END(LeechEntity);
 			break;
 		}
 
@@ -3179,7 +3187,9 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 		}
 
 		case BA_H_DRILL: {
-			BUILDABLE_ENTITY_CREATE(DrillEntity);
+			BUILDABLE_ENTITY_START(LeechEntity);
+			params.Mining_blueprint = false;
+			BUILDABLE_ENTITY_END(LeechEntity);
 			break;
 		}
 
@@ -3245,12 +3255,10 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 
 	built = G_NewEntity();
 
-	BuildableSpawnCBSE(built, buildable);
+	// ----------------------------
+	// Set legacy fields below here
+	// ----------------------------
 
-	// Free existing buildables
-	G_FreeMarkedBuildables( builder, readable, sizeof( readable ), buildnums, sizeof( buildnums ) );
-
-	// Spawn the buildable
 	built->s.eType = entityType_t::ET_BUILDABLE;
 	built->killedBy = ENTITYNUM_NONE;
 	built->classname = attr->entityName;
@@ -3258,17 +3266,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	built->s.modelindex2 = attr->team;
 	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
-
-	if (builder->client) {
-		// Build instantly in cheat mode.
-		if (g_instantBuilding.integer) {
-			// HACK: This causes animation issues and can result in built->creationTime < 0.
-			built->creationTime -= attr->buildTime;
-		} else {
-			HealthComponent *healthComponent = built->entity->Get<HealthComponent>();
-			healthComponent->SetHealth(healthComponent->MaxHealth() * BUILDABLE_START_HEALTH_FRAC);
-		}
-	}
 
 	built->splashDamage = attr->splashDamage;
 	built->splashRadius = attr->splashRadius;
@@ -3280,7 +3277,46 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 
 	built->s.time = built->creationTime;
 
-	//things that vary for each buildable that aren't in the dbase
+	built->r.contents = CONTENTS_BODY;
+	built->clipmask   = MASK_PLAYERSOLID;
+	built->target     = nullptr;
+	built->s.weapon   = attr->weapon;
+
+	if ( builder->client )
+	{
+		built->builtBy = builder->client->pers.namelog;
+	}
+	else if ( builder->builtBy )
+	{
+		built->builtBy = builder->builtBy;
+	}
+	else
+	{
+		built->builtBy = nullptr;
+	}
+
+	G_SetOrigin( built, origin );
+
+	// set turret angles
+	VectorCopy( builder->s.angles2, built->s.angles2 );
+
+	VectorCopy( angles, built->s.angles );
+	built->s.angles[ PITCH ] = 0.0f;
+	built->s.angles2[ YAW ] = angles[ YAW ];
+	built->s.angles2[ PITCH ] = 0.0f; // Neutral pitch since this is how the ghost buildable looks.
+	built->physicsBounce = attr->bounce;
+
+	built->s.groundEntityNum = groundEntNum;
+	if ( groundEntNum == ENTITYNUM_NONE )
+	{
+		built->s.pos.trType = attr->traj;
+		built->s.pos.trTime = level.time;
+		// gently nudge the buildable onto the surface :)
+		VectorScale( normal, -50.0f, built->s.pos.trDelta );
+	}
+
+	VectorCopy( normal, built->s.origin2 );
+
 	switch ( buildable )
 	{
 		case BA_A_SPAWN:
@@ -3358,6 +3394,32 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 			break;
 	}
 
+	// ---------------------------------
+	// Create the component based entity
+	// ---------------------------------
+
+	// Do this as late as possible so the component constructors can access legacy fields set above.
+	BuildableSpawnCBSE(built, buildable);
+
+	// -------------------------------------------------
+	// Function calls that may use components below here
+	// -------------------------------------------------
+
+	// Start construction.
+	if (builder->client) {
+		if (g_instantBuilding.integer) {
+			// Build instantly in cheat mode.
+			// HACK: This causes animation issues and can result in built->creationTime < 0.
+			built->creationTime -= attr->buildTime;
+		} else {
+			HealthComponent *healthComponent = built->entity->Get<HealthComponent>();
+			healthComponent->SetHealth(healthComponent->MaxHealth() * BUILDABLE_START_HEALTH_FRAC);
+		}
+	}
+
+	// Free existing buildables
+	G_FreeMarkedBuildables( builder, readable, sizeof( readable ), buildnums, sizeof( buildnums ) );
+
 	// Add bot obstacles
 	if ( built->r.maxs[2] - built->r.mins[2] > 47.0f ) // HACK: Fixed jump height
 	{
@@ -3369,51 +3431,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		VectorAdd( maxs, origin, maxs );
 		trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
 	}
-
-	built->r.contents = CONTENTS_BODY;
-	built->clipmask   = MASK_PLAYERSOLID;
-	built->target     = nullptr;
-	built->s.weapon   = attr->weapon;
-
-	if ( builder->client )
-	{
-		built->builtBy = builder->client->pers.namelog;
-	}
-	else if ( builder->builtBy )
-	{
-		built->builtBy = builder->builtBy;
-	}
-	else
-	{
-		built->builtBy = nullptr;
-	}
-
-	G_SetOrigin( built, origin );
-
-	// set turret angles
-	VectorCopy( builder->s.angles2, built->s.angles2 );
-
-	VectorCopy( angles, built->s.angles );
-	built->s.angles[ PITCH ] = 0.0f;
-	built->s.angles2[ YAW ] = angles[ YAW ];
-	built->s.angles2[ PITCH ] = 0.0f; // Neutral pitch since this is how the ghost buildable looks.
-	built->physicsBounce = attr->bounce;
-
-	built->s.groundEntityNum = groundEntNum;
-	if ( groundEntNum == ENTITYNUM_NONE )
-	{
-		built->s.pos.trType = attr->traj;
-		built->s.pos.trTime = level.time;
-		// gently nudge the buildable onto the surface :)
-		VectorScale( normal, -50.0f, built->s.pos.trDelta );
-	}
-
-	/*built->powered = true;
-
-	built->s.eFlags |= EF_B_POWERED;
-	built->s.eFlags &= ~EF_B_SPAWNED;*/
-
-	VectorCopy( normal, built->s.origin2 );
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
 

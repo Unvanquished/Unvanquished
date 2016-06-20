@@ -2142,8 +2142,10 @@ public:
 												   Rocket::Core::Property::KEYWORD));
 				SetInnerRML( "" );
 				shouldBeVisible = false;
+
 				// Pick impossible value
-				lastDelta = -999;
+				lastDeltaEfficiencyPct = -999;
+				lastDeltaBudget        = -999;
 			}
 		}
 		else
@@ -2161,45 +2163,62 @@ public:
 	{
 		if ( shouldBeVisible )
 		{
-			playerState_t  *ps = &cg.snap->ps;
-			buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+			playerState_t *ps = &cg.snap->ps;
+			buildable_t buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 			const char *msg = nullptr;
 			Color::Color color;
-			int  delta = ps->stats[ STAT_PREDICTION ];
+			float deltaEfficiency    = (float)(signed char)(ps->stats[STAT_PREDICTION] & 0xff) / (float)0x7f;
+			int   deltaBudget        = (int)(signed char)(ps->stats[STAT_PREDICTION] >> 8);
+			int   deltaEfficiencyPct = (int)(deltaEfficiency * 100.0f);
 
-			if ( lastDelta != delta )
+			if ( deltaEfficiencyPct != lastDeltaEfficiencyPct ||
+			     deltaBudget        != lastDeltaBudget )
 			{
-				if ( delta < 0 )
-				{
+				if        ( deltaBudget < 0 ) {
 					color = Color::Red;
-					// Error sign
-					msg = va( "<span class='material-icon error'>&#xE000;</span> You are losing efficiency. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
-				}
-				else if ( delta < 10 )
-				{
+					msg = va( "<span class='material-icon error'>&#xE000;</span> You are losing build points!"
+					          " Build the %s%s further apart for greater efficiency.",
+					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 10 ) {
 					color = Color::Orange;
-					// Warning sign
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Minimal efficency gain. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
-				}
-				else if ( delta < 50 )
-				{
+					msg = va( "<span class='material-icon warning'>&#xE002;</span> Minimal build point gain."
+					          " Build the %s%s further apart for greater efficiency.",
+					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 2 ) {
 					color = Color::Yellow;
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Average efficency gain. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
-				}
-				else
-				{
+					msg = va( "<span class='material-icon warning'>&#xE002;</span> Subpar build point gain."
+					          " Build the %s%s further apart for greater efficiency.",
+					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+				} else {
 					color = Color::Green;
 				}
 
-				SetInnerRML( va("EFFICIENCY: %s%s%s", CG_Rocket_QuakeToRML( va( "%s%+d%%", Color::ToString(color).c_str(), delta ) ), msg ? "<br/>" : "", msg ? msg : "" ) );
-				lastDelta = delta;
+				char deltaEfficiencyPctStr[64];
+				char deltaBudgetStr[64];
+
+				Q_strncpyz(deltaEfficiencyPctStr, CG_Rocket_QuakeToRML(va(
+					"%s%+d%%", Color::ToString(color).c_str(), deltaEfficiencyPct
+				)), 64);
+
+				Q_strncpyz(deltaBudgetStr, CG_Rocket_QuakeToRML(va(
+					"%s%+d", Color::ToString(color).c_str(), deltaBudget
+				)), 64);
+
+				SetInnerRML(va(
+					"%s EFFICIENCY<br/>%s BUILD POINTS%s%s",
+					deltaEfficiencyPctStr, deltaBudgetStr, msg ? "<br/>" : "", msg ? msg : ""
+				));
+
+				lastDeltaEfficiencyPct = deltaEfficiencyPct;
+				lastDeltaBudget        = deltaBudget;
 			}
 		}
 	}
 private:
 	bool shouldBeVisible;
-	int display;
-	int lastDelta;
+	int  display;
+	int  lastDeltaEfficiencyPct;
+	int  lastDeltaBudget;
 	std::unordered_map<int, std::string> pluralSuffix;
 };
 

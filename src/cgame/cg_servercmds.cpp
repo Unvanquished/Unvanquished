@@ -143,9 +143,11 @@ void CG_ParseServerinfo()
 	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
 	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
 
-	cgs.momentumHalfLife = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
-	cgs.unlockableMinTime  = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
-	cgs.buildPointRecoveryInitialRate = atof( Info_ValueForKey( info, "g_BPRecoveryInitialRate" ) );
+	cgs.momentumHalfLife  = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
+	cgs.unlockableMinTime = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
+
+	cgs.buildPointBudgetPerMiner       = atof( Info_ValueForKey( info, "g_BPBudgetPerMiner" ) );
+	cgs.buildPointRecoveryInitialRate  = atof( Info_ValueForKey( info, "g_BPRecoveryInitialRate" ) );
 	cgs.buildPointRecoveryRateHalfLife = atof( Info_ValueForKey( info, "g_BPRecoveryRateHalfLife" ) );
 
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
