@@ -3006,10 +3006,11 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	contents = trap_PointContents( entity_origin, -1 );
 
-	// Prepare replacment of other buildables
-	if ( ( reason = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
+	// Prepare replacment of other buildables.
+	itemBuildError_t replacementError;
+	if ( ( replacementError = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
 	{
-		// Use the provided reason.
+		reason = replacementError;
 	}
 	else if ( ent->client->pers.team == TEAM_ALIENS )
 	{
