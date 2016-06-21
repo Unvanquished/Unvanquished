@@ -234,8 +234,7 @@ class Entity:
             for param in component.param_list:
                 if not param.name in self.params[component.name]:
                     # Use the parameters own default value, if it has one, as fallback
-                    if param.default != None:
-                        self.params[component.name][param.name] = param.default
+                    self.params[component.name][param.name] = param.default
 
                     # Look for a value given by another component that depends on the current one
                     dependency_sets_parameter = False
@@ -253,13 +252,12 @@ class Entity:
                             self.params[component.name][param.name] = required_value
                             dependency_sets_parameter = True
 
-                    # Let the user define the parameter if no value was found
-                    if param.default is None and dependency_sets_parameter is False:
-                        self.user_params[component.name][param.name] = param
-                        self.has_user_params = True
+                # If we still have not found a value, let the user decide
+                if not param.name in self.params[component.name]:
+                    self.params[component.name][param.name] = None
 
-                # Allow entity definition to force the parameter to be user-set
-                elif self.params[component.name][param.name] == 'None':
+                # Let the user decide on the value
+                if self.params[component.name][param.name] == None:
                     self.params[component.name].pop(param.name)
                     self.user_params[component.name][param.name] = param
                     self.has_user_params = True
@@ -300,6 +298,8 @@ def convert_params(params):
             #     !!python/object/apply:builtins.ord ['x']
             # where x is the char to be converted.
             value = '"' + value + '"'
+        elif value is None:
+            pass
         else:
             value = str(value)
         params[param] = value
