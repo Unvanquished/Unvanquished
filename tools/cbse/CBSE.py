@@ -238,8 +238,8 @@ class Entity:
 
                     # Look for a value given by another component that depends on the current one
                     dependency_sets_parameter = False
-                    for depender in self.components:
-                        required_parameters = depender.get_required_parameters()
+                    for dependent in self.components:
+                        required_parameters = dependent.get_required_parameters()
                         if component.name not in required_parameters:
                             continue
                         if required_parameters[component.name] is None:
