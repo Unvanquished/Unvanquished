@@ -66,6 +66,26 @@ components:
                 entityForcesUserSet: 1
             AnotherDependency:
 
+    TypeTest1:
+        parameters:
+            aConstant: int
+            aString:   const char*
+            anInt:     int
+            aBool:     bool
+        defaults:
+            aConstant: INT_MAX
+            aString:   "I am a string"
+            anInt:     23
+            aBool:     true
+
+    TypeTest2:
+        requires:
+            TypeTest1:
+                aConstant: INT_MAX
+                aString:   "I am a string"
+                anInt:     23
+                aBool:     true
+
 entities:
     MessageTest:
         components:
@@ -82,5 +102,21 @@ entities:
                 entityOverwrites: 2
                 entityOverwritesTwice: 2
                 entityForcesUserSet: null
+
+    TypeTest1:
+        components:
+            TypeTest1:
+
+    TypeTest2:
+        components:
+            TypeTest2:
+
+    TypeTest3:
+        components:
+            TypeTest1:
+                aConstant: INT_MAX
+                aString:   "I am a string"
+                anInt:     23
+                aBool:     true
 
 # vi:ts=4:et:ai
