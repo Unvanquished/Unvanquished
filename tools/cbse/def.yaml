@@ -3,7 +3,7 @@ general:
         - name: number
           type: int
     mandatory_components:
-        - Comp2
+        - Mandatory
 
 messages:
     Heal:
@@ -21,36 +21,50 @@ messages:
 
 components:
     Health:
+        messages:
+            - Heal
+            - Damage
         parameters:
             maxHealth: int
             startHealth: int
             stuffWithDefault: int
             undefinedStuff: int
-        messages:
-            - Heal
-            - Damage
         defaults:
             stuffWithDefault: 42
-    MonsterDie:
+
+    Loot:
         messages:
             - Die
-    Comp1:
+
+    Mandatory:
+
+    Dependency:
+        parameters:
+            defaultSet: int            # should be 0
+            dependerSet: int           # should be 1
+            dependerOverwrites: int    # should be 1
+            entitySet: int             # should be 2
+            entityOverwrites: int      # should be 2
+            entityOverwritesTwice: int # should be 2
+            userSet: int               # should be set by user
+            entityForcesUserSet: int   # should be set by user
+        defaults:
+            defaultSet: 0
+            dependerOverwrites: 0
+            entityOverwrites: 0
+            entityOverwritesTwice: 0
+            entityForcesUserSet: 0
+
+    AnotherDependency:
+
+    Depender:
         requires:
-            - Comp2
-        #inherits:
-        #    - Comp3
-        messages:
-            - Foo1
-            - Foo2
-    #Comp4:
-        #inherits:
-        #    - Comp3
-    Comp2:
-        messages:
-            - Foo3
-    Comp3:
-        messages:
-            - Foo2
+            Dependency:
+                dependerSet: 1
+                dependerOverwrites: 1
+                entityOverwritesTwice: 1
+                entityForcesUserSet: 1
+            AnotherDependency:
 
 entities:
     MyMonster:
@@ -58,4 +72,15 @@ entities:
             Health:
                 maxHealth: 100
                 startHealth: 75
-            MonsterDie:
+            Loot:
+
+    DependencyTest:
+        components:
+            Depender:
+            Dependency:
+                entitySet: 2
+                entityOverwrites: 2
+                entityOverwritesTwice: 2
+                entityForcesUserSet: null
+
+# vi:ts=4:et:ai
