@@ -37,6 +37,13 @@ import argparse, sys
 import os.path
 import re
 
+# A data container created from the YAML 'plain' tag
+class Plain:
+    def __init__(self, data):
+        self.data = data
+
+    def value(self):
+        return self.data
 
 class CommonAttribute:
     def __init__(self, name, typ):
@@ -288,16 +295,15 @@ class Entity:
 
 def convert_params(params):
     # Convert defaults to strings that C++ understands.
+    # TODO: Add support for char and others
+    # WORKAROUND: Can specify char x via !!python/object/apply:builtins.ord ['x']
     for param, value in params.items():
         if type(value) == bool:
             value = str(value).lower()
         elif type(value) == str:
-            # Python doesn't distinguish char and string, so we default to
-            # string. If someone wants to use a char parameter, they will still
-            # be able to write the value as a raw number or convert a char via
-            #     !!python/object/apply:builtins.ord ['x']
-            # where x is the char to be converted.
             value = '"' + value + '"'
+        elif type(value) == Plain:
+            value = value.value()
         elif value is None:
             pass
         else:
@@ -513,9 +519,14 @@ class OrderedLoader(yaml.Loader):
         loader.flatten_mapping(node)
         return OrderedDict(loader.construct_pairs(node))
 
+    @staticmethod
+    def MakePlain(loader, node):
+        return Plain(node.value)
+
     def __init__(self, stream):
         yaml.Loader.__init__(self, stream)
         self.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, self.OrderedMapping)
+        self.add_constructor(u'tag:yaml.org,2002:plain', self.MakePlain)
 
 
 if __name__ == '__main__':
