@@ -117,18 +117,19 @@ class Component:
         self.param_list = sorted(self.param_list, key = lambda param: param.name)
         self.messages = messages
         self.priority = None
-        self.requires = requires
+        self.requiredComponents = requires.keys() # Only names for now.
+        self.requiredParameters = requires
         self.inherits = inherits
 
     def gather_messages(self, messages):
         self.messages = [messages[m] for m in self.messages]
 
     def gather_component_dependencies(self, components):
-        self.requires = [components[c] for c in self.requires]
-        self.inherits = [components[c] for c in self.inherits]
+        self.requiredComponents = [components[c] for c in self.requiredComponents]
+        self.inherits           = [components[c] for c in self.inherits]
 
     def for_each_component_dependencies(self, fun):
-        for require in self.requires:
+        for require in self.requiredComponents:
             fun(require)
         for inherit in self.inherits:
             fun(inherit)
@@ -166,25 +167,28 @@ class Component:
         return [p.name for p in self.param_list]
 
     def get_required_components(self):
-        return self.requires
+        return self.requiredComponents
+
+    def get_required_parameters(self):
+        return self.requiredParameters
 
     def get_own_required_components(self):
         #TODO
-        return self.requires
+        return self.requiredComponents
 
     def get_required_component_declarations(self):
-        return [c.get_type_name() + '& r_' + c.get_type_name() for c in self.requires]
+        return [c.get_type_name() + '& r_' + c.get_type_name() for c in self.requiredComponents]
 
     def get_own_required_component_declarations(self):
         #TODO
-        return [c.get_type_name() + '& r_' + c.get_type_name() for c in self.requires]
+        return [c.get_type_name() + '& r_' + c.get_type_name() for c in self.requiredComponents]
 
     def get_required_component_names(self):
-        return ['r_' + c.get_type_name() for c in self.requires]
+        return ['r_' + c.get_type_name() for c in self.requiredComponents]
 
     def get_own_required_component_names(self):
         #TODO
-        return ['r_' + c.get_type_name() for c in self.requires]
+        return ['r_' + c.get_type_name() for c in self.requiredComponents]
 
     def __repr__(self):
         return "Component({}, ...)".format(self.name)
@@ -229,12 +233,34 @@ class Entity:
         for component in self.components:
             for param in component.param_list:
                 if not param.name in self.params[component.name]:
+                    # Use the parameters own default value, if it has one, as fallback
                     if param.default != None:
                         self.params[component.name][param.name] = param.default
-                    else:
+
+                    # Look for a value given by another component that depends on the current one
+                    dependency_sets_parameter = False
+                    for depender in self.components:
+                        required_parameters = depender.get_required_parameters()
+                        if component.name not in required_parameters:
+                            continue
+                        if required_parameters[component.name] is None:
+                            continue
+                        for required_param, required_value in required_parameters[component.name].items():
+                            if param.name != required_param:
+                                continue
+                            if dependency_sets_parameter:
+                                raise Exception("Multiple components set a default value for the same parameter of a required component.")
+                            self.params[component.name][param.name] = required_value
+                            dependency_sets_parameter = True
+
+                    # Let the user define the parameter if no value was found
+                    if param.default is None and dependency_sets_parameter is False:
                         self.user_params[component.name][param.name] = param
                         self.has_user_params = True
-                elif self.params[component.name][param.name] == 'USER':
+
+                # Allow entity definition to force the parameter to be user-set
+                elif self.params[component.name][param.name] == 'None':
+                    self.params[component.name].pop(param.name)
                     self.user_params[component.name][param.name] = param
                     self.has_user_params = True
 
@@ -326,7 +352,7 @@ def load_components(definitions):
             kwargs['defaults'] = OrderedDict()
 
         if not 'requires' in kwargs:
-            kwargs['requires'] = []
+            kwargs['requires'] = OrderedDict()
 
         if not 'inherits' in kwargs:
             kwargs['inherits'] = OrderedDict()
