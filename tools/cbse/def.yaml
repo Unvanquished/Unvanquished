@@ -37,19 +37,19 @@ components:
     Dependency:
         parameters:
             # Keep in alphabetic order
-            defaultSet: int            # should be 0
-            dependerForcesUserSet: int # should be set by user
-            dependerOverwrites: int    # should be 1
-            dependerSet: int           # should be 1
-            entityForcesUserSet: int   # should be set by user
-            entityOverwrites: int      # should be 2
-            entityOverwritesTwice: int # should be 2
-            entitySet: int             # should be 2
-            userSet: int               # should be set by user
+            defaultSet: int             # should be 0
+            dependentForcesUserSet: int # should be set by user
+            dependentOverwrites: int    # should be 1
+            dependentSet: int           # should be 1
+            entityForcesUserSet: int    # should be set by user
+            entityOverwrites: int       # should be 2
+            entityOverwritesTwice: int  # should be 2
+            entitySet: int              # should be 2
+            userSet: int                # should be set by user
         defaults:
             defaultSet: 0
-            dependerForcesUserSet: 0
-            dependerOverwrites: 0
+            dependentForcesUserSet: 0
+            dependentOverwrites: 0
             entityOverwrites: 0
             entityOverwritesTwice: 0
             entityForcesUserSet: 0
@@ -59,9 +59,9 @@ components:
     Depender:
         requires:
             Dependency:
-                dependerSet: 1
-                dependerForcesUserSet: null
-                dependerOverwrites: 1
+                dependentSet: 1
+                dependentForcesUserSet: null
+                dependentOverwrites: 1
                 entityOverwritesTwice: 1
                 entityForcesUserSet: 1
             AnotherDependency:
