@@ -360,6 +360,11 @@ def load_components(definitions):
             raise Exception("inherits not handled for now")
 
         convert_params(kwargs['defaults'])
+
+        for component in kwargs['requires'].keys():
+            if kwargs['requires'][component] is not None:
+                convert_params(kwargs['requires'][component])
+
         components[name] = Component(name, **kwargs)
     return components
 
