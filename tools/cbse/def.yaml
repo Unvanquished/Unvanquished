@@ -20,6 +20,8 @@ messages:
     Foo3:
 
 components:
+    Mandatory:
+
     Health:
         messages:
             - Heal
@@ -27,29 +29,26 @@ components:
         parameters:
             maxHealth: int
             startHealth: int
-            stuffWithDefault: int
-            undefinedStuff: int
-        defaults:
-            stuffWithDefault: 42
 
     Loot:
         messages:
             - Die
 
-    Mandatory:
-
     Dependency:
         parameters:
+            # Keep in alphabetic order
             defaultSet: int            # should be 0
-            dependerSet: int           # should be 1
+            dependerForcesUserSet: int # should be set by user
             dependerOverwrites: int    # should be 1
-            entitySet: int             # should be 2
+            dependerSet: int           # should be 1
+            entityForcesUserSet: int   # should be set by user
             entityOverwrites: int      # should be 2
             entityOverwritesTwice: int # should be 2
+            entitySet: int             # should be 2
             userSet: int               # should be set by user
-            entityForcesUserSet: int   # should be set by user
         defaults:
             defaultSet: 0
+            dependerForcesUserSet: 0
             dependerOverwrites: 0
             entityOverwrites: 0
             entityOverwritesTwice: 0
@@ -61,13 +60,14 @@ components:
         requires:
             Dependency:
                 dependerSet: 1
+                dependerForcesUserSet: null
                 dependerOverwrites: 1
                 entityOverwritesTwice: 1
                 entityForcesUserSet: 1
             AnotherDependency:
 
 entities:
-    MyMonster:
+    MessageTest:
         components:
             Health:
                 maxHealth: 100
