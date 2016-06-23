@@ -302,7 +302,7 @@ def convert_params(params):
             value = str(value).lower()
         elif type(value) == str:
             value = '"' + value + '"'
-        elif type(value) == Plain:
+        elif isinstance(value, Plain):
             value = value.value()
         elif value is None:
             pass
