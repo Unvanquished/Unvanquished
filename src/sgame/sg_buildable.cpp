@@ -1037,46 +1037,6 @@ void HRepeater_Think( gentity_t *self )
 	PlayPowerStateAnims( self );
 }
 
-void HReactor_Think( gentity_t *self )
-{
-	gentity_t *ent, *trail;
-	bool  fire = false;
-
-	self->nextthink = level.time + REACTOR_ATTACK_REPEAT;
-
-	if ( !self->spawned || G_Dead( self ) )
-	{
-		return;
-	}
-
-	// create a tesla trail for every target
-	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.pos.trBase, REACTOR_ATTACK_RANGE ) ); )
-	{
-		if ( !ent->client ||
-			 ent->client->pers.team != TEAM_ALIENS ||
-			 ent->flags & FL_NOTARGET )
-		{
-			continue;
-		}
-
-		trail = G_NewTempEntity( ent->s.pos.trBase, EV_TESLATRAIL );
-		trail->s.generic1 = self->s.number; // source
-		trail->s.clientNum = ent->s.number; // destination
-		VectorCopy( self->s.pos.trBase, trail->s.origin2 );
-
-		fire = true;
-	}
-
-	// actual damage is done by radius
-	if ( fire )
-	{
-		self->timestamp = level.time;
-
-		G_SelectiveRadiusDamage( self->s.pos.trBase, self, REACTOR_ATTACK_DAMAGE,
-		                         REACTOR_ATTACK_RANGE, self, MOD_REACTOR, TEAM_HUMANS );
-	}
-}
-
 void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if ( !self->spawned )
@@ -3243,7 +3203,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 			break;
 
 		case BA_H_REACTOR:
-			built->think = HReactor_Think;
 			break;
 
 		case BA_H_REPEATER:

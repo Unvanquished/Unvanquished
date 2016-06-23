@@ -1086,6 +1086,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			CG_AlienBuildableExplosion( position, dir );
 			break;
 
+		// TODO: Allow multiple tesla trails for any one source.
+		//       This is necessary as the reactor attacks all adjacent targets.
 		case EV_TESLATRAIL:
 			{
 				centity_t *source = &cg_entities[ es->generic1 ];

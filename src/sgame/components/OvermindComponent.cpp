@@ -6,7 +6,7 @@ const float OvermindComponent::ATTACK_DAMAGE = 10.0f;
 OvermindComponent::OvermindComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent,
                                      MainBuildableComponent& r_MainBuildableComponent)
 	: OvermindComponentBase(entity, r_AlienBuildableComponent, r_MainBuildableComponent)
-	, muted(true) {
+{
 	GetMainBuildableComponent().GetBuildableComponent().REGISTER_THINKER(
 		Think, ThinkingComponent::SCHEDULER_AVERAGE, 1000
 	);
@@ -16,18 +16,14 @@ void OvermindComponent::HandlePrepareNetCode() {
 	entity.oldEnt->s.otherEntityNum = storedTarget ? storedTarget->s.number : ENTITYNUM_NONE;
 }
 
-void OvermindComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
-	muted = true;
-}
-
 void OvermindComponent::HandleFinishConstruction() {
 	// TODO: Make an event and move to MainBuildableComponent.
 	G_TeamCommand(TEAM_ALIENS, "cp \"The Overmind has awakened!\"");
-
-	muted = false;
 }
 
 void OvermindComponent::Think(int timeDelta) {
+	if (!GetAlienBuildableComponent().GetBuildableComponent().Active()) return;
+
 	// Find and a target to look at.
 	Entity* target = FindTarget();
 

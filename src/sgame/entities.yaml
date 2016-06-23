@@ -253,7 +253,6 @@ components:
         messages:
             - PrepareNetCode
             - FinishConstruction
-            - Die
         requires:
             AlienBuildable:
             MainBuildable:
@@ -293,8 +292,6 @@ components:
             Turret:
 
     Reactor:
-        messages:
-            - Die
         requires:
             HumanBuildable:
             MainBuildable:
