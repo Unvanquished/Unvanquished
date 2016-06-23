@@ -72,7 +72,31 @@ namespace Beacon
 // Utility.cpp
 namespace Utility
 {
+	/**
+	 * @brief Whether two entities both are assigned to a team and it is the same one.
+	 */
+	bool OnSameTeam(Entity& firstEntity, Entity& secondEntity);
+
+	/**
+	 * @brief Whether two entities both are assigned to a team and the teams differ.
+	 */
+	bool OnOpposingTeams(Entity& firstEntity, Entity& secondEntity);
+
+	/**
+	 * @brief Whether the entity can die (has health) but is alive.
+	 */
+	bool Alive(Entity& entity);
+
+	/**
+	 * @brief Whether the entity can be alive (has health) but is dead now.
+	 */
+	bool Dead(Entity& entity);
+
+	/**
+	 * @brief Deals the exact amount of damage necessary to kill the entity.
+	 */
 	void Kill(Entity& entity, Entity *source, meansOfDeath_t meansOfDeath);
+
 	bool AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 }

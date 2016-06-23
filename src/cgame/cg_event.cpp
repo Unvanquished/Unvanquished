@@ -1268,11 +1268,21 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.turretSpinupSound );
 			break;
 
-		case EV_OVERMIND_SPAWNS:
-			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		case EV_NO_SPAWNS:
+			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
 			{
-				trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, soundChannel_t::CHAN_ANNOUNCER );
-				CG_CenterPrint( "The Overmind needs spawns!", 200, GIANTCHAR_WIDTH * 4 );
+				case TEAM_ALIENS:
+					trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( "The Overmind needs spawns!", 200, GIANTCHAR_WIDTH * 4 );
+					break;
+
+				case TEAM_HUMANS:
+					// TODO: Add a sound.
+					CG_CenterPrint( "There are no telenodes left!", 200, GIANTCHAR_WIDTH * 4 );
+					break;
+
+				default:
+					break;
 			}
 
 			break;

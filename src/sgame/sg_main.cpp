@@ -430,7 +430,6 @@ static cvarTable_t gameCvarTable[] =
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
 void               CheckExitRules();
-void               G_CountSpawns();
 static void        G_LogGameplayStats( int state );
 
 // state field of G_LogGameplayStats
@@ -861,9 +860,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 
 	Log::Notice( "-----------------------------------" );
-
-	// So the server counts the spawns without a client attached
-	G_CountSpawns();
 
 	G_UpdateTeamConfigStrings();
 
@@ -1320,42 +1316,6 @@ void G_SpawnClients( team_t team )
 			ent->client->sess.spectatorState = SPECTATOR_NOT;
 			ClientUserinfoChanged( clientNum, false );
 			ClientSpawn( ent, spawn, spawn_origin, spawn_angles );
-		}
-	}
-}
-
-/*
-============
-G_CountSpawns
-
-Counts the number of spawns for each team
-============
-*/
-void G_CountSpawns()
-{
-	int       i;
-	gentity_t *ent;
-
-	//I guess this could be changed into one function call per team
-	level.team[ TEAM_ALIENS ].numSpawns = 0;
-	level.team[ TEAM_HUMANS ].numSpawns = 0;
-
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( !ent->inuse || ent->s.eType != entityType_t::ET_BUILDABLE || G_Dead( ent ) )
-		{
-			continue;
-			// is it really useful? Seriously?
-		}
-
-		//TODO create a function to check if a building is a spawn
-		if( ent->s.modelindex == BA_A_SPAWN )
-		{
-			level.team[ TEAM_ALIENS ].numSpawns++;
-		}
-		else if ( ent->s.modelindex == BA_H_SPAWN )
-		{
-			level.team[ TEAM_HUMANS ].numSpawns++;
 		}
 	}
 }
@@ -2905,8 +2865,6 @@ void G_RunFrame( int levelTime )
 
 	// save position information for all active clients
 	G_UnlaggedStore();
-
-	G_CountSpawns();
 
 	// Check if a build point can be removed from the queue.
 	G_RecoverBuildPoints();

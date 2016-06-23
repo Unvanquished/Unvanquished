@@ -1,7 +1,8 @@
 #include "BuildableComponent.h"
 
-BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_HealthComponent, ThinkingComponent& r_ThinkingComponent)
-	: BuildableComponentBase(entity, r_HealthComponent, r_ThinkingComponent)
+BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_HealthComponent,
+	ThinkingComponent& r_ThinkingComponent, TeamComponent& r_TeamComponent)
+	: BuildableComponentBase(entity, r_HealthComponent, r_ThinkingComponent, r_TeamComponent)
 	, state(CONSTRUCTING)
 	, constructionHasFinished(false)
 	, marked(false) {
@@ -48,8 +49,7 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 	// Note that this->state is adjusted in (Alien|Human)BuildableComponent::HandleDie so they have
 	// access to its current value.
 
-	// TODO: Use a team component.
-	team_t team = entity.oldEnt->buildableTeam;
+	TeamComponent::team_t team = GetTeamComponent().Team();
 
 	// TODO: Move animation code to BuildableComponent.
 	G_SetBuildableAnim(entity.oldEnt, Powered() ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true);
@@ -62,9 +62,10 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 	// TODO: Handle in TaggableComponent.
 	Beacon::DetachTags(entity.oldEnt);
 
-	// Report an attack to the defending team if the buildable was powered.
-	if (Powered() && entity.Get<MainBuildableComponent>() == nullptr
-	    && G_IsWarnableMOD(meansOfDeath)) {
+	// Report an attack to the defending team if the buildable was powered and there is a main
+	// buildable that can report it. Note that the main buildables itself issues its own warnings.
+	if (Powered() && entity.Get<MainBuildableComponent>() == nullptr &&
+	    G_IsWarnableMOD(meansOfDeath) && G_ActiveMainBuildable(team)) {
 		// Get a nearby location entity.
 		gentity_t *location = GetCloseLocationEntity(entity.oldEnt);
 

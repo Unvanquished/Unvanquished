@@ -722,10 +722,6 @@ struct level_locals_s
 	int              buildId;
 	int              numBuildLogs;
 
-	bool         overmindMuted;
-
-	int              humanBaseAttackTimer;
-
 	struct
 	{
 		// voting state

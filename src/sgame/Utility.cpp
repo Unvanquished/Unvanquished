@@ -31,6 +31,30 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CBSE.h"
 
+bool Utility::OnSameTeam(Entity &firstEntity, Entity &secndEntity) {
+	TeamComponent* firstTeamComponent = firstEntity.Get<TeamComponent>();
+	TeamComponent* secndTeamComponent = secndEntity.Get<TeamComponent>();
+	if (!firstTeamComponent || !secndTeamComponent) return false;
+	return *firstTeamComponent == *secndTeamComponent;
+}
+
+bool Utility::OnOpposingTeams(Entity &firstEntity, Entity &secndEntity) {
+	TeamComponent* firstTeamComponent = firstEntity.Get<TeamComponent>();
+	TeamComponent* secndTeamComponent = secndEntity.Get<TeamComponent>();
+	if (!firstTeamComponent || !secndTeamComponent) return false;
+	return *firstTeamComponent != *secndTeamComponent;
+}
+
+bool Utility::Alive(Entity &entity) {
+	HealthComponent* healthComponent = entity.Get<HealthComponent>();
+	return (healthComponent && healthComponent->Alive());
+}
+
+bool Utility::Dead(Entity &entity) {
+	HealthComponent* healthComponent = entity.Get<HealthComponent>();
+	return (healthComponent && !healthComponent->Alive());
+}
+
 void Utility::Kill(Entity& entity, Entity* source, meansOfDeath_t meansOfDeath) {
 	HealthComponent *healthComponent = entity.Get<HealthComponent>();
 	if (healthComponent) {

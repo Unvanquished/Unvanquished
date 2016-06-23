@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
 // player teams
-typedef enum
+typedef enum team_e
 {
   TEAM_ALL = -1,
   TEAM_NONE,
@@ -621,9 +621,7 @@ typedef enum
   EV_STOPLOOPINGSOUND,
   EV_TAUNT,
 
-  // TODO: Give this to both teams.
-  EV_OVERMIND_SPAWNS, // overmind needs spawns
-
+  EV_NO_SPAWNS,
   EV_MAIN_UNDER_ATTACK,
   EV_MAIN_DYING,
 

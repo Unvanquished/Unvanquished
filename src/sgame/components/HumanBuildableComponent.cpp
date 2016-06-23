@@ -2,8 +2,9 @@
 
 static Log::Logger humanBuildableLogger("sgame.humanbuildings");
 
-HumanBuildableComponent::HumanBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent)
-	: HumanBuildableComponentBase(entity, r_BuildableComponent)
+HumanBuildableComponent::HumanBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent,
+	TeamComponent& r_TeamComponent)
+	: HumanBuildableComponentBase(entity, r_BuildableComponent, r_TeamComponent)
 {}
 
 void HumanBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {

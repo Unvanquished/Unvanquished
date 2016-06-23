@@ -4,7 +4,6 @@ general:
           type: struct gentity_s*
 
 messages:
-    # Make all components export their networked state.
     PrepareNetCode:
 
     FreeAt:
@@ -73,7 +72,11 @@ components:
         requires:
             # Thinking components can't free themselves instantly inside their
             # thinkers, so allow them to free themselves afterwards.
-            - DeferredFreeing
+            DeferredFreeing:
+
+    Team:
+        parameters:
+            team: team_t
 
     Ignitable:
         parameters:
@@ -85,7 +88,7 @@ components:
             - Ignite
             - Extinguish
         requires:
-            - Thinking
+            Thinking:
 
     Health:
         parameters:
@@ -102,6 +105,8 @@ components:
     Client:
         parameters:
             clientData: gclient_t*
+        requires:
+            Team:
 
     # TODO: Get rid of dependency on gentity_t.client. Depend on
     #       PhysicsComponent instead.
@@ -119,21 +124,25 @@ components:
         messages:
             - PrepareNetCode
         requires:
-            - Client
+            Client:
 
     AlienClass:
         requires:
-            - Client
-            - Armor
-            - Knockback
-            - Health
+            Client:
+            Team:
+                team: !!plain TEAM_ALIENS
+            Armor:
+            Knockback:
+            Health:
 
     HumanClass:
         requires:
-            - Client
-            - Armor
-            - Knockback
-            - Health
+            Client:
+            Team:
+                team: !!plain TEAM_HUMANS
+            Armor:
+            Knockback:
+            Health:
 
     #--------------------+
     # Buildable Specific |
@@ -144,30 +153,41 @@ components:
             - PrepareNetCode
             - Die
         requires:
-            - Health
-            - Thinking
+            Health:
+            Thinking:
+            Team:
 
     AlienBuildable:
         messages:
             - Damage
             - Die
         requires:
-            - Buildable
-            - Ignitable
+            Buildable:
+            Team:
+                team: !!plain TEAM_ALIENS
+            Ignitable:
 
     HumanBuildable:
         messages:
             - Die
         requires:
-            - Buildable
+            Buildable:
+            Team:
+                team: !!plain TEAM_HUMANS
 
     MainBuildable:
         messages:
             - Damage
-            - Die
             - FinishConstruction
+            - Die
         requires:
-            - Buildable
+            Buildable:
+
+    Spawner:
+        messages:
+            - Die
+        requires:
+            Team:
 
     Turret:
         messages:
@@ -181,7 +201,7 @@ components:
             - FinishConstruction
             - Die
         requires:
-            - Thinking
+            Thinking:
 
     ##############################
     # Entity-specific components #
@@ -198,7 +218,7 @@ components:
 
     AcidTube:
         requires:
-            - AlienBuildable
+            AlienBuildable:
 
     Barricade:
         messages:
@@ -207,44 +227,46 @@ components:
         requires:
             # TODO: Check if this dependency lets us override animations
             #       reliably in the Damage/Die handlers.
-            - AlienBuildable
+            AlienBuildable:
 
     Booster:
         requires:
-            - AlienBuildable
+            AlienBuildable:
 
     Egg:
         requires:
-            - AlienBuildable
+            AlienBuildable:
+            Spawner:
 
     Hive:
         messages:
             - Damage
         requires:
-            - AlienBuildable
+            AlienBuildable:
 
     Leech:
         requires:
-            - AlienBuildable
-            - Mining
+            AlienBuildable:
+            Mining:
 
     Overmind:
         messages:
-            - Die
+            - PrepareNetCode
             - FinishConstruction
+            - Die
         requires:
-            - AlienBuildable
-            - MainBuildable
+            AlienBuildable:
+            MainBuildable:
 
     Spiker:
         messages:
             - Damage
         requires:
-            - AlienBuildable
+            AlienBuildable:
 
     Trapper:
         requires:
-            - AlienBuildable
+            AlienBuildable:
 
     #------------------+
     # Human Buildables |
@@ -252,43 +274,44 @@ components:
 
     Armoury:
         requires:
-            - HumanBuildable
+            HumanBuildable:
 
     Drill:
         requires:
-            - HumanBuildable
-            - Mining
+            HumanBuildable:
+            Mining:
 
     Medipad:
         messages:
             - Die
         requires:
-            - HumanBuildable
+            HumanBuildable:
 
     MGTurret:
         requires:
-            - HumanBuildable
-            - Turret
+            HumanBuildable:
+            Turret:
 
     Reactor:
         messages:
             - Die
         requires:
-            - HumanBuildable
-            - MainBuildable
+            HumanBuildable:
+            MainBuildable:
 
     Repeater:
         requires:
-            - HumanBuildable
+            HumanBuildable:
 
     Rocketpod:
         requires:
-            - HumanBuildable
-            - Turret
+            HumanBuildable:
+            Turret:
 
     Telenode:
         requires:
-            - HumanBuildable
+            HumanBuildable:
+            Spawner:
 
 
 entities:
@@ -301,12 +324,11 @@ entities:
         components:
 
     # A generic client entity, not spawned yet.
-    # TODO: Evaluate if HealthComponent is needed.
     Client:
         components:
             Client:
-            Health:
-                maxHealth: 1
+            Team:
+                team: !!plain TEAM_NONE
 
     ##################
     # Player Classes #

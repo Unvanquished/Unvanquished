@@ -7,8 +7,8 @@ const int AlienBuildableComponent::MIN_BLAST_DELAY = 2000;
 const int AlienBuildableComponent::MAX_BLAST_DELAY = 5000; // Should match death animation length.
 
 AlienBuildableComponent::AlienBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent,
-                                                 IgnitableComponent& r_IgnitableComponent)
-	: AlienBuildableComponentBase(entity, r_BuildableComponent, r_IgnitableComponent) {
+	TeamComponent& r_TeamComponent, IgnitableComponent& r_IgnitableComponent)
+	: AlienBuildableComponentBase(entity, r_BuildableComponent, r_TeamComponent, r_IgnitableComponent) {
 	GetBuildableComponent().REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 500);
 }
 
