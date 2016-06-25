@@ -40,106 +40,6 @@ bool G_IsWarnableMOD(meansOfDeath_t mod) {
 	}
 }
 
-/**
- * @brief Checks whether a client can spawn at the given spawner.
- * @return nullptr if spawn is valid, blocking entity otherwise.
- */
-gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
-                              const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin )
-{
-	float   minDistance, maxDistance, frac, displacement;
-	vec3_t  mins, maxs;
-	vec3_t  cmins, cmaxs;
-	vec3_t  localOrigin;
-	trace_t tr;
-
-	BG_BuildableBoundingBox( spawn, mins, maxs );
-
-	if ( spawn == BA_A_SPAWN )
-	{
-		// HACK: Assume advanced granger is biggest class that can spawn
-		BG_ClassBoundingBox( PCL_ALIEN_BUILDER0_UPG, cmins, cmaxs, nullptr, nullptr, nullptr );
-
-		// Calculate the necessary displacement for a given normal so that the bounding boxes
-		// of buildable and client don't intersect.
-
-		// Method 1
-		// This describes the worst case for any angle.
-		/*
-		displacement = std::max( VectorLength( mins ), VectorLength( maxs ) ) +
-		               std::max( VectorLength( cmins ), VectorLength( cmaxs ) ) + 1.0f;
-		*/
-
-		// Method 2
-		// For normals with equal X and Y component these results are optimal. Otherwise they are
-		// still better than naive worst-case calculations.
-		// HACK: This only works for normals w/ angle < 45° towards either {0,0,1} or {0,0,-1}
-		if ( normal[ 2 ] < 0.0f )
-		{
-			// best case: client spawning right below egg
-			minDistance = -mins[ 2 ] + cmaxs[ 2 ];
-
-			// worst case: bounding boxes meet at their corners
-			maxDistance = VectorLength( mins ) + VectorLength( cmaxs );
-
-			// the fraction of the angle seperating best (0°) and worst case (45°)
-			frac = acos( -normal[ 2 ] ) / M_PI_4;
-		}
-		else
-		{
-			// best case: client spawning right above egg
-			minDistance = maxs[ 2 ] - cmins[ 2 ];
-
-			// worst case: bounding boxes meet at their corners
-			maxDistance = VectorLength( maxs ) + VectorLength( cmins );
-
-			// the fraction of the angle seperating best (0°) and worst case (45°)
-			frac = acos( normal[ 2 ] ) / M_PI_4;
-		}
-
-		// the linear interpolation of min & max distance should be an upper boundary for the
-		// optimal (closest possible) distance.
-		displacement = ( 1.0f - frac ) * minDistance + frac * maxDistance + 1.0f;
-
-		VectorMA( origin, displacement, normal, localOrigin );
-	}
-	else if ( spawn == BA_H_SPAWN )
-	{
-		// HACK: Assume naked human is biggest class that can spawn
-		BG_ClassBoundingBox( PCL_HUMAN_NAKED, cmins, cmaxs, nullptr, nullptr, nullptr );
-
-		// Since humans always spawn right above the telenode center, this is the optimal
-		// (closest possible) client origin.
-		VectorCopy( origin, localOrigin );
-		localOrigin[ 2 ] += maxs[ 2 ] - cmins[ 2 ] + 1.0f;
-	}
-	else
-	{
-		return nullptr;
-	}
-
-	trap_Trace( &tr, origin, nullptr, nullptr, localOrigin, spawnNum, MASK_SHOT, 0 );
-
-	if ( tr.entityNum != ENTITYNUM_NONE )
-	{
-		return &g_entities[ tr.entityNum ];
-	}
-
-	trap_Trace( &tr, localOrigin, cmins, cmaxs, localOrigin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
-
-	if ( tr.entityNum != ENTITYNUM_NONE )
-	{
-		return &g_entities[ tr.entityNum ];
-	}
-
-	if ( spawnOrigin != nullptr )
-	{
-		VectorCopy( localOrigin, spawnOrigin );
-	}
-
-	return nullptr;
-}
-
 static gentity_t *FindBuildable(buildable_t buildable) {
 	gentity_t* found = nullptr;
 
@@ -1882,13 +1782,6 @@ void HRocketpod_Think( gentity_t *self )
 	}
 }
 
-void HDrill_Think( gentity_t *self )
-{
-	self->nextthink = level.time + 1000;
-
-	PlayPowerStateAnims( self );
-}
-
 /**
  * @brief Orders buildables that were pre-selected for power down to make good a budget deficit.
  * @todo Add const to parameters once there is a const variant of Entity::Get.
@@ -2759,17 +2652,34 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	// Relink buildables
 	SetBuildableLinkState( true );
 
-	//check there is enough room to spawn from (presuming this is a spawn)
+	// Check there is enough room to spawn from, if trying to build a spawner.
 	if ( reason == IBE_NONE )
 	{
-		SetBuildableMarkedLinkState( false );
+		Vec3    originV = Vec3::Load(origin);
+		Vec3    normalV = Vec3::Load(normal);
+		Entity* blocker;
+		Vec3    spawnPoint;
 
-		if ( G_CheckSpawnPoint( ENTITYNUM_NONE, origin, normal, buildable, nullptr ) != nullptr )
-		{
-			reason = IBE_NORMAL;
+		switch (buildable) {
+			case BA_A_SPAWN:
+				SetBuildableMarkedLinkState(false);
+				if (!EggComponent::CheckSpawnPoint(0, originV, normalV, blocker, spawnPoint)) {
+					reason = IBE_NORMAL;
+				}
+				SetBuildableMarkedLinkState(true);
+				break;
+
+			case BA_H_SPAWN:
+				SetBuildableMarkedLinkState(false);
+				if (!TelenodeComponent::CheckSpawnPoint(0, originV, normalV, blocker, spawnPoint)) {
+					reason = IBE_NORMAL;
+				}
+				SetBuildableMarkedLinkState(true);
+				break;
+
+			default:
+				break;
 		}
-
-		SetBuildableMarkedLinkState( true );
 	}
 
 	//this item does not fit here
@@ -3049,7 +2959,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 			break;
 
 		case BA_H_DRILL:
-			built->think = HDrill_Think;
 			break;
 
 		case BA_H_REACTOR:

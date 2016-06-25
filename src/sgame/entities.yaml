@@ -58,6 +58,12 @@ messages:
         - name: meansOfDeath
           type: meansOfDeath_t
 
+    CheckSpawnPoint:
+        - name: blocker
+          type: Entity*&
+        - name: spawnPoint
+          type: Vec3&
+
 components:
     #####################
     # Common Components #
@@ -235,6 +241,8 @@ components:
             AlienBuildable:
 
     Egg:
+        messages:
+            - CheckSpawnPoint
         requires:
             AlienBuildable:
             Spawner:
@@ -307,6 +315,8 @@ components:
             Turret:
 
     Telenode:
+        messages:
+            - CheckSpawnPoint
         requires:
             HumanBuildable:
             Spawner:

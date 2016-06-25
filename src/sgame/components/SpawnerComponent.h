@@ -38,6 +38,26 @@ class SpawnerComponent: public SpawnerComponentBase {
 
 		bool IsBlocked() { return GetBlocker() != nullptr; }
 
+		/**
+		 * @brief A helper used by the components of specific spawners whether their spawn point is
+		 *        or would be blocked.
+		 *
+		 */
+
+		/**
+		 * @brief A helper used by the components of specific spawners.
+		 * @param spawnerNumber Entity number of an existing spawner.
+		 * @param spawnerOrigin The origin of the spawner.
+		 * @param spawnPoint The spawn point of the client.
+		 * @param clientMins The minimum bounding box point of the client.
+		 * @param clientMaxs The maximum bounding box point of the client.
+		 * @return An entity that blocks the spawn or nullptr.
+		 */
+		static Entity* CheckSpawnPointHelper(
+			int spawnerNumber, const Vec3 spawnerOrigin, const Vec3 spawnPoint,
+			const Vec3 clientMins, const Vec3 clientMaxs
+		);
+
 	private:
 
 		void OnLoss();

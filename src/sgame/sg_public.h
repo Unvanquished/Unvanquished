@@ -103,7 +103,6 @@ namespace Utility
 
 // sg_buildable.c
 bool              G_IsWarnableMOD(meansOfDeath_t mod);
-gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
 gentity_t         *G_Overmind();
 gentity_t         *G_AliveOvermind();
 gentity_t         *G_ActiveOvermind();

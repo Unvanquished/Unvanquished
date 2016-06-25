@@ -230,8 +230,12 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 			continue;
 		}
 
-		if ( G_CheckSpawnPoint( search->s.number, search->s.origin,
-		                        search->s.origin2, buildable, nullptr ) != nullptr )
+		Entity* blocker = nullptr;
+		Vec3    spawnPoint;
+
+		search->entity->CheckSpawnPoint(blocker, spawnPoint);
+
+		if (blocker)
 		{
 			continue;
 		}
@@ -273,20 +277,17 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 		spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN );
 	}
 
-	//no available spots
 	if ( !spot )
 	{
 		return nullptr;
 	}
 
-	if ( team == TEAM_ALIENS )
-	{
-		G_CheckSpawnPoint( spot->s.number, spot->s.origin, spot->s.origin2, BA_A_SPAWN, origin );
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		G_CheckSpawnPoint( spot->s.number, spot->s.origin, spot->s.origin2, BA_H_SPAWN, origin );
-	}
+	// Get spawn point for selected spawner.
+	Entity* blocker = nullptr;
+	Vec3    spawnPoint;
+
+	spot->entity->CheckSpawnPoint(blocker, spawnPoint);
+	spawnPoint.Store(origin);
 
 	VectorCopy( spot->s.angles, angles );
 	angles[ ROLL ] = 0;

@@ -98,29 +98,13 @@ void SpawnerComponent::Think(int timeDelta) {
 	}
 }
 
-// TODO: Inline and refactor spawn checking.
-//       Possibly add a message to retrieve the blocker from different spawners.
 Entity* SpawnerComponent::GetBlocker() {
-	buildable_t buildable;
+	Entity* blocker = nullptr;
+	Vec3    spawnPoint;
 
-	if (entity.Get<EggComponent>()) {
-		buildable = BA_A_SPAWN;
-	} else if (entity.Get<TelenodeComponent>()) {
-		buildable = BA_H_SPAWN;
-	} else {
-		buildable = BA_NONE;
-	}
+	entity.CheckSpawnPoint(blocker, spawnPoint);
 
-	gentity_t* blockerOldEnt = G_CheckSpawnPoint(
-		entity.oldEnt->s.number, entity.oldEnt->s.origin, entity.oldEnt->s.origin2, buildable,
-		nullptr
-	);
-
-	if (blockerOldEnt) {
-		return blockerOldEnt->entity;
-	} else {
-		return nullptr;
-	}
+	return blocker;
 }
 
 void SpawnerComponent::WarnBlocker(Entity& blocker, bool lastWarning) {
@@ -144,4 +128,32 @@ void SpawnerComponent::WarnBlocker(Entity& blocker, bool lastWarning) {
 	message = "cp \"" + message + "\"";
 
 	trap_SendServerCommand(blocker.oldEnt - g_entities, message.c_str());
+}
+
+Entity* SpawnerComponent::CheckSpawnPointHelper(
+	int spawnerNumber, const Vec3 spawnerOrigin, const Vec3 spawnPoint, const Vec3 clientMins,
+	const Vec3 clientMaxs
+){
+	trace_t tr;
+
+	// Check for a clear line towards the spawn location.
+	trap_Trace(
+		&tr, spawnerOrigin.Data(), nullptr, nullptr, spawnPoint.Data(), spawnerNumber, MASK_SHOT, 0
+	);
+
+	if (tr.entityNum != ENTITYNUM_NONE) {
+		return g_entities[tr.entityNum].entity;
+	} else {
+		// Check whether a spawned client has space.
+		trap_Trace(
+			&tr, spawnPoint.Data(), clientMins.Data(), clientMaxs.Data(), spawnPoint.Data(), 0,
+			MASK_PLAYERSOLID, 0
+		);
+
+		if (tr.entityNum != ENTITYNUM_NONE) {
+			return g_entities[tr.entityNum].entity;
+		}
+
+		return nullptr;
+	}
 }
