@@ -140,54 +140,6 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 	return nullptr;
 }
 
-/**
- * @brief Moves clients that block a spawner.
- */
-static void PuntBlocker( gentity_t *self, gentity_t *blocker )
-{
-	vec3_t nudge;
-	if( self )
-	{
-		if( !self->spawnBlockTime )
-		{
-			// begin timer
-			self->spawnBlockTime = level.time;
-			return;
-		}
-		else if( level.time - self->spawnBlockTime > 10000 )
-		{
-			// still blocked, get rid of them
-			G_Kill(blocker, MOD_TRIGGER_HURT);
-			self->spawnBlockTime = 0;
-			return;
-		}
-		else if( level.time - self->spawnBlockTime < 5000 )
-		{
-			// within grace period
-			return;
-		}
-	}
-
-	nudge[ 0 ] = crandom() * 100.0f;
-	nudge[ 1 ] = crandom() * 100.0f;
-	nudge[ 2 ] = 75.0f;
-
-	if ( blocker->r.svFlags & SVF_BOT )
-	{
-	        // nudge the bot (okay, we lose the fractional part)
-		blocker->client->pers.cmd.forwardmove = nudge[0];
-		blocker->client->pers.cmd.rightmove = nudge[1];
-		blocker->client->pers.cmd.upmove = nudge[2];
-		// bots don't double-tap, so use as a nudge flag
-		blocker->client->pers.cmd.doubleTap = Util::enum_cast<dtType_t>(1);
-	}
-	else
-	{
-		VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
-		trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
-	}
-}
-
 static gentity_t *FindBuildable(buildable_t buildable) {
 	gentity_t* found = nullptr;
 
@@ -360,61 +312,6 @@ static void PlayPowerStateAnims(gentity_t *self) {
 	} else if (!self->powered && self->s.torsoAnim != BANIM_IDLE_UNPOWERED) {
 		G_SetBuildableAnim(self, BANIM_POWERDOWN, false);
 		G_SetIdleBuildableAnim(self, BANIM_IDLE_UNPOWERED);
-	}
-}
-
-/*
-================
-ASpawn_Think
-
-think function for Alien Spawn
-================
-*/
-void ASpawn_Think( gentity_t *self )
-{
-	gentity_t *ent;
-
-	self->nextthink = level.time + 100;
-
-	if ( !self->spawned )
-	{
-		return;
-	}
-
-	if ( self->s.groundEntityNum != ENTITYNUM_NONE )
-	{
-		if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
-										self->s.origin2, BA_A_SPAWN, nullptr ) ) != nullptr )
-		{
-			// If the thing blocking the spawn is a buildable, kill it.
-			// If it's part of the map, kill self.
-			if ( ent->s.eType == entityType_t::ET_BUILDABLE )
-			{
-				G_Kill(ent, (ent->builtBy && ent->builtBy->slot >= 0) ?
-				       &g_entities[ent->builtBy->slot] : nullptr, MOD_SUICIDE);
-
-				G_SetBuildableAnim( self, BANIM_SPAWN1, true );
-			}
-			else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == entityType_t::ET_MOVER )
-			{
-				G_Kill(ent, MOD_SUICIDE);
-				return;
-			}
-			else if( g_antiSpawnBlock.integer &&
-					 ent->client && ent->client->pers.team == TEAM_ALIENS )
-			{
-				PuntBlocker( self, ent );
-			}
-
-			if ( ent->s.eType == entityType_t::ET_CORPSE )
-			{
-				G_FreeEntity( ent );
-			}
-		}
-		else
-		{
-			self->spawnBlockTime = 0;
-		}
 	}
 }
 
@@ -982,51 +879,6 @@ void ATrapper_Think( gentity_t *self )
 	if ( self->customNumber < level.time )
 	{
 		ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT );
-	}
-}
-
-void HSpawn_Think( gentity_t *self )
-{
-	gentity_t *ent;
-
-	self->nextthink = level.time + 100;
-
-	if ( self->spawned )
-	{
-		//only suicide if at rest
-		if ( self->s.groundEntityNum != ENTITYNUM_NONE )
-		{
-			if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
-			                                self->s.origin2, BA_H_SPAWN, nullptr ) ) != nullptr )
-			{
-				// If the thing blocking the spawn is a buildable, kill it.
-				// If it's part of the map, kill self.
-				if ( ent->s.eType == entityType_t::ET_BUILDABLE )
-				{
-					G_Kill(ent, MOD_SUICIDE);
-					G_SetBuildableAnim( self, BANIM_SPAWN1, true );
-				}
-				else if ( ent->s.number == ENTITYNUM_WORLD || ent->s.eType == entityType_t::ET_MOVER )
-				{
-					G_Kill(self, MOD_SUICIDE);
-					return;
-				}
-				else if( g_antiSpawnBlock.integer &&
-				         ent->client && ent->client->pers.team == TEAM_HUMANS )
-				{
-					PuntBlocker( self, ent );
-				}
-
-				if ( ent->s.eType == entityType_t::ET_CORPSE )
-				{
-					G_FreeEntity( ent );  //quietly remove
-				}
-			}
-			else
-			{
-				self->spawnBlockTime = 0;
-			}
-		}
 	}
 }
 
@@ -3142,7 +2994,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	switch ( buildable )
 	{
 		case BA_A_SPAWN:
-			built->think = ASpawn_Think;
 			break;
 
 		case BA_A_BARRICADE:
@@ -3178,7 +3029,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 			break;
 
 		case BA_H_SPAWN:
-			built->think = HSpawn_Think;
 			break;
 
 		case BA_H_MGTURRET:

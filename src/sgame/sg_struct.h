@@ -342,7 +342,6 @@ struct gentity_s
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on
 	// every single frame.. so only do it periodically
 	int         clientSpawnTime; // the time until this spawn can spawn a client
-	int         spawnBlockTime; // timer for anti spawn-block
 
 	struct {
 	 	float  value;

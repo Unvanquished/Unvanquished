@@ -188,6 +188,7 @@ components:
             - Die
         requires:
             Team:
+            Thinking:
 
     Turret:
         messages:
