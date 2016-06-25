@@ -6,6 +6,7 @@ const float OvermindComponent::ATTACK_DAMAGE = 10.0f;
 OvermindComponent::OvermindComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent,
                                      MainBuildableComponent& r_MainBuildableComponent)
 	: OvermindComponentBase(entity, r_AlienBuildableComponent, r_MainBuildableComponent)
+	, storedTarget(nullptr)
 {
 	GetMainBuildableComponent().GetBuildableComponent().REGISTER_THINKER(
 		Think, ThinkingComponent::SCHEDULER_AVERAGE, 1000
