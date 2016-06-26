@@ -53,7 +53,7 @@ Entity* OvermindComponent::FindTarget() {
 		if (candidate.Get<SpectatorComponent>()) return;
 
 		// Do not target dead entities.
-		if (Utility::Dead(entity)) return;
+		if (Utility::Dead(candidate)) return;
 
 		// Respect the no-target flag.
 		if ((candidate.oldEnt->flags & FL_NOTARGET)) return;
@@ -62,7 +62,7 @@ Entity* OvermindComponent::FindTarget() {
 		if (!G_LineOfSight(entity.oldEnt, candidate.oldEnt, MASK_SOLID, false)) return;
 
 		// Check if better target.
-		if (!target || CompareTargets(&candidate, target)) {
+		if (!target || CompareTargets(candidate, *target)) {
 			target = &candidate;
 		}
 	});
@@ -70,18 +70,16 @@ Entity* OvermindComponent::FindTarget() {
 	return target;
 }
 
-bool OvermindComponent::CompareTargets(Entity* a, Entity* b) const {
-	ASSERT((a && b));
-
-	team_t aTeam = G_Team(a->oldEnt);
-	team_t bTeam = G_Team(b->oldEnt);
+bool OvermindComponent::CompareTargets(Entity& a, Entity& b) const {
+	team_t aTeam = G_Team(a.oldEnt);
+	team_t bTeam = G_Team(b.oldEnt);
 
 	// Prefer humans.
 	if (aTeam == TEAM_HUMANS && bTeam != TEAM_HUMANS) return true;
 	if (aTeam != TEAM_HUMANS && bTeam == TEAM_HUMANS) return false;
 
-	float aDistance = G_Distance(entity.oldEnt, a->oldEnt);
-	float bDistance = G_Distance(entity.oldEnt, b->oldEnt);
+	float aDistance = G_Distance(entity.oldEnt, a.oldEnt);
+	float bDistance = G_Distance(entity.oldEnt, b.oldEnt);
 
 	// Rules for humans.
 	if (aTeam == TEAM_HUMANS && bTeam == TEAM_HUMANS) {
@@ -89,8 +87,8 @@ bool OvermindComponent::CompareTargets(Entity* a, Entity* b) const {
 		if (aDistance < ATTACK_RANGE && bDistance > ATTACK_RANGE) return true;
 		if (aDistance > ATTACK_RANGE && bDistance < ATTACK_RANGE) return false;
 
-		HealthComponent* aHealthComponent = a->Get<HealthComponent>();
-		HealthComponent* bHealthComponent = b->Get<HealthComponent>();
+		HealthComponent* aHealthComponent = a.Get<HealthComponent>();
+		HealthComponent* bHealthComponent = b.Get<HealthComponent>();
 
 		// The overmind senses weakness!
 		if (aHealthComponent && bHealthComponent) {

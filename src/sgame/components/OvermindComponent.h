@@ -44,8 +44,8 @@ class OvermindComponent: public OvermindComponentBase {
 
 		void Think(int timeDelta);
 
-		Entity *FindTarget();
-		bool CompareTargets(Entity *a, Entity *b) const;
+		Entity* FindTarget();
+		bool CompareTargets(Entity& a, Entity& b) const;
 };
 
 #endif // OVERMIND_COMPONENT_H_
