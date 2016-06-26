@@ -34,6 +34,18 @@ class HiveComponent: public HiveComponentBase {
 
 	private:
 
+		void Think(int timeDelta);
+
+		Entity* FindTarget();
+
+		bool TargetValid(Entity& candidate, bool checkDistance) const;
+
+		bool CompareTargets(Entity& a, Entity& b) const;
+
+		void Fire(Entity& target);
+
+		bool insectsReady;
+		int  insectsActiveSince;
 };
 
 #endif // HIVE_COMPONENT_H_

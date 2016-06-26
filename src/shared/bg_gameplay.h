@@ -140,7 +140,6 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define HIVE_SENSE_RANGE        500.0f
 #define HIVE_LIFETIME           3000
-#define HIVE_REPEAT             3000
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
 
