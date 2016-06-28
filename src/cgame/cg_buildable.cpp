@@ -2460,7 +2460,6 @@ void CG_Buildable( centity_t *cent )
 			quat_t   rotation;
 			matrix_t mat;
 			vec3_t   nBounds[ 2 ];
-			vec3_t   p1, p2;
 			float    yaw, pitch, roll;
 
 			yaw   = es->angles2[ YAW ] - es->angles[ YAW ];

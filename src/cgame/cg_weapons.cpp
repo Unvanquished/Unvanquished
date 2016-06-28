@@ -1659,7 +1659,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 				quat_t rotation;
 				matrix_t mat;
 				vec3_t   nBounds[ 2 ];
-				vec3_t   p1, p2;
 
 				if ( boneIndex < 0 )
 				{

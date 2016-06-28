@@ -453,9 +453,6 @@ Tr3B - needs finished transformMatrix
 */
 void R_SetupLightWorldBounds( trRefLight_t *light )
 {
-	int    j;
-	vec3_t v, transformed;
-
 	MatrixTransformBounds(light->transformMatrix, light->localBounds[0], light->localBounds[1], light->worldBounds[0], light->worldBounds[1]);
 }
 
