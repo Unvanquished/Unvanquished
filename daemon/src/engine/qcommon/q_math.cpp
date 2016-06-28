@@ -2408,12 +2408,75 @@ void MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out )
 
 	out[ 3 ] = DotProduct( out, planePos );
 }
+
 void MatrixTransformPlane2( const matrix_t m, vec4_t inout )
 {
 	vec4_t tmp;
 
 	MatrixTransformPlane( m, inout, tmp );
 	Vector4Copy( tmp, inout );
+}
+
+/*
+* =================
+* MatrixTransformBounds
+*
+* Achieves the same result as:
+*
+*   BoundsClear(omins, omaxs);
+*	for each corner c in bounds{imins, imaxs}
+*   {
+*	    vec3_t p;
+*		MatrixTransformPoint(m, c, p);
+*       AddPointToBounds(p, omins, omaxs);
+*   }
+*
+* With fewer operations
+*
+* Pseudocode:
+*	omins = min(mins.x*m.c1, maxs.x*m.c1) + min(mins.y*m.c2, maxs.y*m.c2) + min(mins.z*m.c3, maxs.z*m.c3) + c4
+*	omaxs = max(mins.x*m.c1, maxs.x*m.c1) + max(mins.y*m.c2, maxs.y*m.c2) + max(mins.z*m.c3, maxs.z*m.c3) + c4
+* =================
+*/
+void MatrixTransformBounds(const matrix_t m, const vec3_t mins, const vec3_t maxs, vec3_t omins, vec3_t omaxs)
+{
+	vec3_t minx, maxx;
+	vec3_t miny, maxy;
+	vec3_t minz, maxz;
+
+	const float* c1 = m;
+	const float* c2 = m + 4;
+	const float* c3 = m + 8;
+	const float* c4 = m + 12;
+
+	VectorScale(c1, mins[0], minx);
+	VectorScale(c1, maxs[0], maxx);
+
+	VectorScale(c2, mins[1], miny);
+	VectorScale(c2, maxs[1], maxy);
+
+	VectorScale(c3, mins[2], minz);
+	VectorScale(c3, maxs[2], maxz);
+
+	vec3_t tmins, tmaxs;
+	vec3_t tmp;
+
+	VectorMin(minx, maxx, tmins);
+	VectorMax(minx, maxx, tmaxs);
+	VectorAdd(tmins, c4, tmins);
+	VectorAdd(tmaxs, c4, tmaxs);
+
+	VectorMin(miny, maxy, tmp);
+	VectorAdd(tmp, tmins, tmins);
+
+	VectorMax(miny, maxy, tmp);
+	VectorAdd(tmp, tmaxs, tmaxs);
+
+	VectorMin(minz, maxz, tmp);
+	VectorAdd(tmp, tmins, omins);
+
+	VectorMax(minz, maxz, tmp);
+	VectorAdd(tmp, tmaxs, omaxs);
 }
 
 /*

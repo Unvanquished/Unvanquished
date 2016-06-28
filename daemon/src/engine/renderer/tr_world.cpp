@@ -333,20 +333,7 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 		ent->localBounds[ 1 ][ i ] = bspModel->bounds[ 1 ][ i ];
 	}
 
-	// setup world bounds for intersection tests
-	ClearBounds( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
-
-	for ( i = 0; i < 8; i++ )
-	{
-		v[ 0 ] = ent->localBounds[ i & 1 ][ 0 ];
-		v[ 1 ] = ent->localBounds[( i >> 1 ) & 1 ][ 1 ];
-		v[ 2 ] = ent->localBounds[( i >> 2 ) & 1 ][ 2 ];
-
-		// transform local bounds vertices into world space
-		R_LocalPointToWorld( v, transformed );
-
-		AddPointToBounds( transformed, ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
-	}
+	R_SetupEntityWorldBounds(ent);
 
 	VectorAdd( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ], boundsCenter );
 	VectorScale( boundsCenter, 0.5f, boundsCenter );

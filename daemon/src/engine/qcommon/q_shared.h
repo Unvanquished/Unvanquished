@@ -532,6 +532,20 @@ void         ByteToDir( int b, vec3_t dir );
 		return 1;
 	}
 
+	inline void VectorMin(const vec3_t a, const vec3_t b, vec3_t out)
+	{
+		out[0] = a[0] < b[0] ? a[0] : b[0];
+		out[1] = a[1] < b[1] ? a[1] : b[1];
+		out[2] = a[2] < b[2] ? a[2] : b[2];
+	}
+
+	inline void VectorMax(const vec3_t a, const vec3_t b, vec3_t out)
+	{
+		out[0] = a[0] > b[0] ? a[0] : b[0];
+		out[1] = a[1] > b[1] ? a[1] : b[1];
+		out[2] = a[2] > b[2] ? a[2] : b[2];
+	}
+
 	vec_t VectorLength( const vec3_t v );
 	vec_t VectorLengthSquared( const vec3_t v );
 	vec_t Distance( const vec3_t p1, const vec3_t p2 );
@@ -667,6 +681,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void     MatrixTransform4( const matrix_t m, const vec4_t in, vec4_t out );
 	void     MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out );
 	void     MatrixTransformPlane2( const matrix_t m, vec4_t inout );
+	void     MatrixTransformBounds( const matrix_t m, const vec3_t mins, const vec3_t maxs, vec3_t omins, vec3_t omaxs );
 	void     MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 	void     MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 	void     MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );

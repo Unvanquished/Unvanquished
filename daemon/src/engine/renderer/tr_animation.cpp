@@ -616,7 +616,9 @@ static void R_CullMD5( trRefEntity_t *ent )
 		}
 	}
 
-	switch ( R_CullLocalBox( ent->localBounds ) )
+	R_SetupEntityWorldBounds(ent);
+
+	switch ( R_CullBox( ent->worldBounds ) )
 	{
 		case cullResult_t::CULL_IN:
 			tr.pc.c_box_cull_md5_in++;
@@ -664,9 +666,6 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 	{
 		return;
 	}
-
-	// set up world bounds for light intersection tests
-	R_SetupEntityWorldBounds( ent );
 
 	// set up lighting now that we know we aren't culled
 	if ( !personalModel || r_shadows->integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB))

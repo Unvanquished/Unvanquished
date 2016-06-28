@@ -456,19 +456,7 @@ void R_SetupLightWorldBounds( trRefLight_t *light )
 	int    j;
 	vec3_t v, transformed;
 
-	ClearBounds( light->worldBounds[ 0 ], light->worldBounds[ 1 ] );
-
-	for ( j = 0; j < 8; j++ )
-	{
-		v[ 0 ] = light->localBounds[ j & 1 ][ 0 ];
-		v[ 1 ] = light->localBounds[( j >> 1 ) & 1 ][ 1 ];
-		v[ 2 ] = light->localBounds[( j >> 2 ) & 1 ][ 2 ];
-
-		// transform local bounds vertices into world space
-		MatrixTransformPoint( light->transformMatrix, v, transformed );
-
-		AddPointToBounds( transformed, light->worldBounds[ 0 ], light->worldBounds[ 1 ] );
-	}
+	MatrixTransformBounds(light->transformMatrix, light->localBounds[0], light->localBounds[1], light->worldBounds[0], light->worldBounds[1]);
 }
 
 /*

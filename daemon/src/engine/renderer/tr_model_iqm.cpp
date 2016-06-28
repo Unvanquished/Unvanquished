@@ -920,7 +920,9 @@ static void R_CullIQM( trRefEntity_t *ent ) {
 	VectorScale( localBounds[1], scale, ent->localBounds[ 1 ] );
 
 	
-	switch ( R_CullLocalBox( ent->localBounds ) )
+	R_SetupEntityWorldBounds(ent);
+
+	switch ( R_CullBox( ent->worldBounds ) )
 	{
 	case cullResult_t::CULL_IN:
 		tr.pc.c_box_cull_md5_in++;
@@ -971,8 +973,6 @@ void R_AddIQMSurfaces( trRefEntity_t *ent ) {
 	{
 		return;
 	}
-
-	R_SetupEntityWorldBounds( ent );
 
 	//
 	// set up lighting now that we know we aren't culled

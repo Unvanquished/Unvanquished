@@ -392,24 +392,10 @@ Returns CULL_IN, CULL_CLIP, or CULL_OUT
 */
 cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 {
-	int      j;
-	vec3_t   transformed;
-	vec3_t   v;
 	vec3_t   worldBounds[ 2 ];
 
 	// transform into world space
-	ClearBounds( worldBounds[ 0 ], worldBounds[ 1 ] );
-
-	for ( j = 0; j < 8; j++ )
-	{
-		v[ 0 ] = localBounds[ j & 1 ][ 0 ];
-		v[ 1 ] = localBounds[( j >> 1 ) & 1 ][ 1 ];
-		v[ 2 ] = localBounds[( j >> 2 ) & 1 ][ 2 ];
-
-		R_LocalPointToWorld( v, transformed );
-
-		AddPointToBounds( transformed, worldBounds[ 0 ], worldBounds[ 1 ] );
-	}
+	MatrixTransformBounds(tr.orientation.transformMatrix, localBounds[0], localBounds[1], worldBounds[0], worldBounds[1]);
 
 	return R_CullBox( worldBounds );
 }
@@ -638,22 +624,7 @@ Tr3B - needs R_RotateEntityForViewParms
 */
 void R_SetupEntityWorldBounds( trRefEntity_t *ent )
 {
-	int    j;
-	vec3_t v;
-
-	ClearBounds( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
-
-	for ( j = 0; j < 8; j++ )
-	{
-		v[ 0 ] = ent->localBounds[ j & 1 ][ 0 ];
-		v[ 1 ] = ent->localBounds[( j >> 1 ) & 1 ][ 1 ];
-		v[ 2 ] = ent->localBounds[( j >> 2 ) & 1 ][ 2 ];
-
-		// transform local bounds vertices into world space
-		R_LocalPointToWorld( v, ent->worldCorners[ j ] );
-
-		AddPointToBounds( ent->worldCorners[ j ], ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
-	}
+	MatrixTransformBounds(tr.orientation.transformMatrix, ent->localBounds[0], ent->localBounds[1], ent->worldBounds[0], ent->worldBounds[1]);
 }
 
 /*
@@ -2345,8 +2316,7 @@ void R_TransformShadowLight( trRefLight_t *light ) {
 	for( i = light->restrictInteractionFirst; i <= light->restrictInteractionLast; i++ ) {
 		trRefEntity_t *ent = &tr.refdef.entities[ i ];
 
-		AddPointToBounds( ent->worldBounds[0], mins, maxs );
-		AddPointToBounds( ent->worldBounds[1], mins, maxs );
+		BoundsAdd(ent->worldBounds[0], ent->worldBounds[1], mins, maxs);
 	}
 
 	// if light origin is outside BBox of shadow receivers, build

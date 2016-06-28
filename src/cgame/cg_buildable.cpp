@@ -2490,12 +2490,7 @@ void CG_Buildable( centity_t *cent )
 			// TODO: Evaluate
 			MatrixFromAngles( mat, pitch, yaw, 0 );
 
-			MatrixTransformNormal( mat, ent.skeleton.bounds[ 0 ], p1 );
-			MatrixTransformNormal( mat, ent.skeleton.bounds[ 1 ], p2 );
-
-			ClearBounds( nBounds[ 0 ], nBounds[ 1 ] );
-			AddPointToBounds( p1, nBounds[ 0 ], nBounds[ 1 ] );
-			AddPointToBounds( p2, nBounds[ 0 ], nBounds[ 1 ] );
+			MatrixTransformBounds(mat, ent.skeleton.bounds[0], ent.skeleton.bounds[1], nBounds[0], nBounds[1]);
 
 			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 		}
