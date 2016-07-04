@@ -3093,9 +3093,9 @@ void QuatToAngles( const quat_t q, vec3_t angles )
 	q2[ 2 ] = q[ 2 ] * q[ 2 ];
 	q2[ 3 ] = q[ 3 ] * q[ 3 ];
 
-	angles[ PITCH ] = RAD2DEG( asin( -2 * ( q[ 2 ] * q[ 0 ] - q[ 3 ] * q[ 1 ] ) ) );
-	angles[ YAW ] = RAD2DEG( atan2( 2 * ( q[ 2 ] * q[ 3 ] + q[ 0 ] * q[ 1 ] ), ( q2[ 2 ] - q2[ 3 ] - q2[ 0 ] + q2[ 1 ] ) ) );
-	angles[ ROLL ] = RAD2DEG( atan2( 2 * ( q[ 3 ] * q[ 0 ] + q[ 2 ] * q[ 1 ] ), ( -q2[ 2 ] - q2[ 3 ] + q2[ 0 ] + q2[ 1 ] ) ) );
+	angles[ PITCH ] = RAD2DEG( asin( -2.0f * ( q[ 2 ] * q[ 0 ] - q[ 3 ] * q[ 1 ] ) ) );
+	angles[ YAW ] = RAD2DEG( atan2( 2.0f * ( q[ 2 ] * q[ 3 ] + q[ 0 ] * q[ 1 ] ), ( q2[ 0 ] - q2[ 1 ] - q2[ 2 ] + q2[ 3 ] ) ) );
+	angles[ ROLL ] = RAD2DEG( atan2( 2.0f * ( q[ 3 ] * q[ 0 ] + q[ 2 ] * q[ 1 ] ), ( -q2[ 0 ] + q2[ 1 ] - q2[ 2 ] + q2[ 3 ] ) ) );
 }
 
 void QuatMultiply0( quat_t qa, const quat_t qb )
