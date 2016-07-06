@@ -460,7 +460,7 @@ static void CG_Missile( centity_t *cent )
 			// FRU because that's what MakeNormalVectors produces (?)
 			MatrixFromVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 			QuatFromMatrix( axisQuat, axisMat );
-			QuatMultiply0( axisQuat, rotQuat );
+			QuatMultiply2( axisQuat, rotQuat );
 			MatrixFromQuat( axisMat, axisQuat );
 			MatrixToVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 		}

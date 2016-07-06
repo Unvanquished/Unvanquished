@@ -3098,50 +3098,29 @@ void QuatToAngles( const quat_t q, vec3_t angles )
 	angles[ ROLL ] = RAD2DEG( atan2( 2.0f * ( q[ 3 ] * q[ 0 ] + q[ 2 ] * q[ 1 ] ), ( -q2[ 0 ] + q2[ 1 ] - q2[ 2 ] + q2[ 3 ] ) ) );
 }
 
-void QuatMultiply0( quat_t qa, const quat_t qb )
+void QuatMultiply( const quat_t qa, const quat_t qb, quat_t qc )
+{
+	/*
+	*	   from matrix and quaternion faq
+	*	   x = w1x2 + x1w2 + y1z2 - z1y2
+	*	   y = w1y2 + y1w2 + z1x2 - x1z2
+	*	   z = w1z2 + z1w2 + x1y2 - y1x2
+	*
+	*	   w = w1w2 - x1x2 - y1y2 - z1z2
+	*/
+
+	qc[0] = qa[3] * qb[0] + qa[0] * qb[3] + qa[1] * qb[2] - qa[2] * qb[1];
+	qc[1] = qa[3] * qb[1] + qa[1] * qb[3] + qa[2] * qb[0] - qa[0] * qb[2];
+	qc[2] = qa[3] * qb[2] + qa[2] * qb[3] + qa[0] * qb[1] - qa[1] * qb[0];
+	qc[3] = qa[3] * qb[3] - qa[0] * qb[0] - qa[1] * qb[1] - qa[2] * qb[2];
+}
+
+void QuatMultiply2( quat_t qa, const quat_t qb)
 {
 	quat_t tmp;
 
-	QuatCopy( qa, tmp );
-	QuatMultiply1( tmp, qb, qa );
-}
-
-void QuatMultiply1( const quat_t qa, const quat_t qb, quat_t qc )
-{
-	/*
-	 *	   from matrix and quaternion faq
-	 *	   x = w1x2 + x1w2 + y1z2 - z1y2
-	 *	   y = w1y2 + y1w2 + z1x2 - x1z2
-	 *	   z = w1z2 + z1w2 + x1y2 - y1x2
-	 *
-	 *	   w = w1w2 - x1x2 - y1y2 - z1z2
-	 */
-
-	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] + qa[ 0 ] * qb[ 3 ] + qa[ 1 ] * qb[ 2 ] - qa[ 2 ] * qb[ 1 ];
-	qc[ 1 ] = qa[ 3 ] * qb[ 1 ] + qa[ 1 ] * qb[ 3 ] + qa[ 2 ] * qb[ 0 ] - qa[ 0 ] * qb[ 2 ];
-	qc[ 2 ] = qa[ 3 ] * qb[ 2 ] + qa[ 2 ] * qb[ 3 ] + qa[ 0 ] * qb[ 1 ] - qa[ 1 ] * qb[ 0 ];
-	qc[ 3 ] = qa[ 3 ] * qb[ 3 ] - qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] - qa[ 2 ] * qb[ 2 ];
-}
-void QuatMultiply2( const quat_t qa, const quat_t qb, quat_t qc )
-{
-	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] + qa[ 0 ] * qb[ 3 ] + qa[ 1 ] * qb[ 2 ] + qa[ 2 ] * qb[ 1 ];
-	qc[ 1 ] = qa[ 3 ] * qb[ 1 ] - qa[ 1 ] * qb[ 3 ] - qa[ 2 ] * qb[ 0 ] + qa[ 0 ] * qb[ 2 ];
-	qc[ 2 ] = qa[ 3 ] * qb[ 2 ] - qa[ 2 ] * qb[ 3 ] - qa[ 0 ] * qb[ 1 ] + qa[ 1 ] * qb[ 0 ];
-	qc[ 3 ] = qa[ 3 ] * qb[ 3 ] - qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] + qa[ 2 ] * qb[ 2 ];
-}
-void QuatMultiply3( const quat_t qa, const quat_t qb, quat_t qc )
-{
-	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] + qa[ 0 ] * qb[ 3 ] + qa[ 1 ] * qb[ 2 ] + qa[ 2 ] * qb[ 1 ];
-	qc[ 1 ] = -qa[ 3 ] * qb[ 1 ] + qa[ 1 ] * qb[ 3 ] - qa[ 2 ] * qb[ 0 ] + qa[ 0 ] * qb[ 2 ];
-	qc[ 2 ] = -qa[ 3 ] * qb[ 2 ] + qa[ 2 ] * qb[ 3 ] - qa[ 0 ] * qb[ 1 ] + qa[ 1 ] * qb[ 0 ];
-	qc[ 3 ] = -qa[ 3 ] * qb[ 3 ] + qa[ 0 ] * qb[ 0 ] - qa[ 1 ] * qb[ 1 ] + qa[ 2 ] * qb[ 2 ];
-}
-void QuatMultiply4( const quat_t qa, const quat_t qb, quat_t qc )
-{
-	qc[ 0 ] = qa[ 3 ] * qb[ 0 ] - qa[ 0 ] * qb[ 3 ] - qa[ 1 ] * qb[ 2 ] - qa[ 2 ] * qb[ 1 ];
-	qc[ 1 ] = -qa[ 3 ] * qb[ 1 ] - qa[ 1 ] * qb[ 3 ] + qa[ 2 ] * qb[ 0 ] - qa[ 0 ] * qb[ 2 ];
-	qc[ 2 ] = -qa[ 3 ] * qb[ 2 ] - qa[ 2 ] * qb[ 3 ] + qa[ 0 ] * qb[ 1 ] - qa[ 1 ] * qb[ 0 ];
-	qc[ 3 ] = -qa[ 3 ] * qb[ 3 ] - qa[ 0 ] * qb[ 0 ] + qa[ 1 ] * qb[ 1 ] - qa[ 2 ] * qb[ 2 ];
+	QuatCopy(qa, tmp);
+	QuatMultiply(tmp, qb, qa);
 }
 
 void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
@@ -3351,7 +3330,7 @@ void TransInitScale( float factor, transform_t *t )
 // add a rotation to the start of an existing transform
 void TransInsRotationQuat( const quat_t quat, transform_t *t )
 {
-	QuatMultiply0( t->rot, quat );
+	QuatMultiply2( t->rot, quat );
 }
 void TransInsRotation( const vec3_t axis, float angle, transform_t *t )
 {
@@ -3371,7 +3350,7 @@ void TransAddRotationQuat( const quat_t quat, transform_t *t )
 
 	QuatTransformVector( quat, t->trans, t->trans );
 	QuatCopy( quat, tmp );
-	QuatMultiply0( tmp, t->rot );
+	QuatMultiply2( tmp, t->rot );
 	QuatCopy( tmp, t->rot );
 }
 void TransAddRotation( const vec3_t axis, float angle, transform_t *t )
