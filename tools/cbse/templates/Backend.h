@@ -237,9 +237,16 @@ class AllComponents {
 				/**
 				 * @return A reference to the {{required.get_type_name()}} of the owning entity.
 				 */
-				{{required.get_type_name()}}& Get{{required.get_type_name()}}() {
-					return r_{{required.get_type_name()}};
-				}
+				{{required.get_type_name()}}& Get{{required.get_type_name()}}();
+				const {{required.get_type_name()}}& Get{{required.get_type_name()}}() const;
+
+			{% endfor %}
+			{% for (dependency, firstLevel) in component.get_own_further_dependencies().items() %}
+				/**
+				 * @return A reference to the {{dependency.get_type_name()}} of the owning entity.
+				 */
+				{{dependency.get_type_name()}}& Get{{dependency.get_type_name()}}();
+				const {{dependency.get_type_name()}}& Get{{dependency.get_type_name()}}() const;
 
 			{% endfor %}
 			/** A reference to the entity that owns the component instance. Allows sending back messages. */
