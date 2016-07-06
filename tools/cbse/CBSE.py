@@ -124,9 +124,16 @@ class Component:
         self.param_list = sorted(self.param_list, key = lambda param: param.name)
         self.messages = messages
         self.priority = None
+
+        # First level of required components
         self.requiredComponents = requires.keys() # Only names for now.
         self.requiredParameters = requires
         self.inherits = inherits
+
+        # List of required components of level n >= 2, contains pairs in
+        # the form dependency => firstLevel so that firstLevel is on a path
+        # from this to dependency
+        self.furtherDependencies = OrderedDict()
 
     def gather_messages(self, messages):
         self.messages = [messages[m] for m in self.messages]
@@ -134,6 +141,19 @@ class Component:
     def gather_component_dependencies(self, components):
         self.requiredComponents = [components[c] for c in self.requiredComponents]
         self.inherits           = [components[c] for c in self.inherits]
+
+    def gather_full_dependencies(self):
+        registered = set(self.requiredComponents)
+
+        for firstLevel in self.requiredComponents:
+            for dependency in firstLevel.get_full_dependencies():
+                if dependency in registered:
+                    continue
+                registered.add(dependency)
+                self.furtherDependencies[dependency] = firstLevel
+
+    def get_full_dependencies(self):
+        return self.requiredComponents + list(self.furtherDependencies.keys())
 
     def for_each_component_dependencies(self, fun):
         for require in self.requiredComponents:
@@ -196,6 +216,10 @@ class Component:
     def get_own_required_component_names(self):
         #TODO
         return ['r_' + c.get_type_name() for c in self.requiredComponents]
+
+    def get_own_further_dependencies(self):
+        return self.furtherDependencies
+
 
     def __repr__(self):
         return "Component({}, ...)".format(self.name)
@@ -440,6 +464,9 @@ def parse_definitions(definitions):
     sorted_components = topo_sort_components(component_list)
     for (i, component) in enumerate(sorted_components):
         component.priority = i
+
+    for component in sorted_components:
+        component.gather_full_dependencies();
 
     for component in sorted_components:
         component.gather_messages(messages)

@@ -92,8 +92,38 @@ bool Entity::SendMessage(int msg, const void* data) {
 	}
 {% endfor %}
 
+// ///////////////////////// //
+// Component implementations //
+// ///////////////////////// //
 {% for component in components %}
+    {% for required in component.get_own_required_components() %}
+        /**
+         * @return A reference to the {{required.get_type_name()}} of the owning entity.
+         */
+        {{required.get_type_name()}}& {{component.get_base_type_name()}}::Get{{required.get_type_name()}}() {
+            return r_{{required.get_type_name()}};
+        }
+        const {{required.get_type_name()}}& {{component.get_base_type_name()}}::Get{{required.get_type_name()}}() const {
+            return r_{{required.get_type_name()}};
+        }
+
+    {% endfor %}
+
+    {% for (dependency, firstLevel) in component.get_own_further_dependencies().items() %}
+        /**
+         * @return A reference to the {{dependency.get_type_name()}} of the owning entity.
+         */
+        {{dependency.get_type_name()}}& {{component.get_base_type_name()}}::Get{{dependency.get_type_name()}}() {
+            return r_{{firstLevel.get_type_name()}}.Get{{dependency.get_type_name()}}();
+        }
+        const {{dependency.get_type_name()}}& {{component.get_base_type_name()}}::Get{{dependency.get_type_name()}}() const {
+            return r_{{firstLevel.get_type_name()}}.Get{{dependency.get_type_name()}}();
+        }
+
+    {% endfor %}
+
 	std::set<{{component.get_type_name()}}*> {{component.get_base_type_name()}}::allSet;
+
 {% endfor %}
 
 // ////////////////////// //

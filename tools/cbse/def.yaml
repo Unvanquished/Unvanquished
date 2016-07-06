@@ -66,6 +66,10 @@ components:
                 entityForcesUserSet: 1
             AnotherDependency:
 
+    DependerOnDepender:
+        requires:
+            Depender:
+
     TypeTest1:
         parameters:
             aConstant: int
