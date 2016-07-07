@@ -3091,13 +3091,20 @@ void QuatToAxis( const quat_t q, vec3_t axis[ 3 ] )
 void QuatToAngles( const quat_t q, vec3_t angles )
 {
 	quat_t q2;
+	q2[0] = q[0] * q[0];
+	q2[1] = q[1] * q[1];
+	q2[2] = q[2] * q[2];
+	q2[3] = q[3] * q[3];
 
 	// Technical Concepts Orientation, Rotation, Velocity and Acceleration, and the SRM
 	// http://www.sedris.org/wg8home/Documents/WG80485.pdf
 
 	// test for gimbal lock
-	float test = q[3] * q[1] - q[2] * q[0];
-	if ( test > 0.499 )
+	// 0.499 and -0.499 correspond to about 87.44 degrees, this can be set closer to 90 if necessary, but some inaccuracy is required 
+	float unit = q2[0] + q2[1] + q2[2] + q2[3];
+	float test = (q[3] * q[1] - q[2] * q[0])/unit; // divide gives result equivalent to normalized quaternion without a sqrt
+
+	if ( test > 0.4995 )
 	{ 
 		angles[YAW] = RAD2DEG(-2 * atan2(q[0], q[3]));
 		angles[PITCH] = 90;
@@ -3105,7 +3112,7 @@ void QuatToAngles( const quat_t q, vec3_t angles )
 		return;
 	}
 
-	if ( test < -0.499 )
+	if ( test < -0.4995 )
 	{
 		angles[YAW] = RAD2DEG(2 * atan2(q[0], q[3]));
 		angles[PITCH] = -90;
@@ -3113,14 +3120,15 @@ void QuatToAngles( const quat_t q, vec3_t angles )
 		return;
 	}
 
-	q2[ 0 ] = q[ 0 ] * q[ 0 ];
-	q2[ 1 ] = q[ 1 ] * q[ 1 ];
-	q2[ 2 ] = q[ 2 ] * q[ 2 ];
-	q2[ 3 ] = q[ 3 ] * q[ 3 ];
+	// original for normalized quaternions:
+	// angles[PITCH] = RAD2DEG(asin( 2.0f * (q[3] * q[1] - q[2] * q[0])));
+	// angles[YAW]   = RAD2DEG(atan2(2.0f * (q[3] * q[2] + q[0] * q[1]), 1.0f - 2.0f * (q2[1] + q2[2])));
+	// angles[ROLL]  = RAD2DEG(atan2(2.0f * (q[3] * q[0] + q[1] * q[2]), 1.0f - 2.0f * (q2[0] + q2[1])));
 
+	// optimized to work with both normalized and unnormalized quaternions:
 	angles[PITCH] = RAD2DEG(asin(2.0f * test));
-	angles[YAW]   = RAD2DEG(atan2((q[3] * q[2] + q[0] * q[1]), 0.5 - (q2[1] + q2[2])));
-	angles[ROLL]  = RAD2DEG(atan2((q[3] * q[0] + q[1] * q[2]), 0.5 - (q2[0] + q2[1])));
+	angles[YAW]   = RAD2DEG(atan2(2.0f * (q[3] * q[2] + q[0] * q[1]), q2[0] - q2[1] - q2[2] + q2[3]));
+	angles[ROLL]  = RAD2DEG(atan2(2.0f * (q[3] * q[0] + q[1] * q[2]), -q2[0] - q2[1] + q2[2] + q2[3]));
 }
 
 void QuatMultiply( const quat_t qa, const quat_t qb, quat_t qc )
