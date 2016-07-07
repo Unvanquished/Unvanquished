@@ -1989,6 +1989,7 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 #endif
 }
 
+//  Tait-Bryan angles z-y-x
 void MatrixFromAngles( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll )
 {
 	static float sr, sp, sy, cr, cp, cy;
@@ -2921,6 +2922,7 @@ vec_t QuatNormalize( quat_t q )
 	return length;
 }
 
+//  Tait-Bryan angles z-y-x
 void QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll )
 {
 #if 1
@@ -2932,19 +2934,19 @@ void QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll )
 	static float sr, sp, sy, cr, cp, cy;
 
 	// static to help MS compiler fp bugs
-	sp = sin( DEG2RAD( pitch ) );
-	cp = cos( DEG2RAD( pitch ) );
+	sp = sin(DEG2RAD(pitch) * 0.5);
+	cp = cos(DEG2RAD(pitch) * 0.5);
 
-	sy = sin( DEG2RAD( yaw ) );
-	cy = cos( DEG2RAD( yaw ) );
+	sy = sin(DEG2RAD(yaw) * 0.5);
+	cy = cos(DEG2RAD(yaw) * 0.5);
 
-	sr = sin( DEG2RAD( roll ) );
-	cr = cos( DEG2RAD( roll ) );
+	sr = sin(DEG2RAD(roll) * 0.5);
+	cr = cos(DEG2RAD(roll) * 0.5);
 
-	q[ 0 ] = sr * cp * cy - cr * sp * sy; // x
-	q[ 1 ] = cr * sp * cy + sr * cp * sy; // y
-	q[ 2 ] = cr * cp * sy - sr * sp * cy; // z
-	q[ 3 ] = cr * cp * cy + sr * sp * sy; // w
+	q[0] = sr * cp * cy - cr * sp * sy; // x
+	q[1] = cr * sp * cy + sr * cp * sy; // y
+	q[2] = cr * cp * sy - sr * sp * cy; // z
+	q[3] = cr * cp * cy + sr * sp * sy; // w
 #endif
 }
 
@@ -3084,18 +3086,41 @@ void QuatToAxis( const quat_t q, vec3_t axis[ 3 ] )
 	MatrixFromQuat( tmp, q );
 	MatrixToVectorsFLU( tmp, axis[ 0 ], axis[ 1 ], axis[ 2 ] );
 }
+
+//  Tait-Bryan angles z-y-x
 void QuatToAngles( const quat_t q, vec3_t angles )
 {
 	quat_t q2;
+
+	// Technical Concepts Orientation, Rotation, Velocity and Acceleration, and the SRM
+	// http://www.sedris.org/wg8home/Documents/WG80485.pdf
+
+	// test for gimbal lock
+	float test = q[3] * q[1] - q[2] * q[0];
+	if ( test > 0.499 )
+	{ 
+		angles[YAW] = RAD2DEG(-2 * atan2(q[0], q[3]));
+		angles[PITCH] = 90;
+		angles[ROLL] = 0;
+		return;
+	}
+
+	if ( test < -0.499 )
+	{
+		angles[YAW] = RAD2DEG(2 * atan2(q[0], q[3]));
+		angles[PITCH] = -90;
+		angles[ROLL] = 0;
+		return;
+	}
 
 	q2[ 0 ] = q[ 0 ] * q[ 0 ];
 	q2[ 1 ] = q[ 1 ] * q[ 1 ];
 	q2[ 2 ] = q[ 2 ] * q[ 2 ];
 	q2[ 3 ] = q[ 3 ] * q[ 3 ];
 
-	angles[ PITCH ] = RAD2DEG( asin( -2.0f * ( q[ 2 ] * q[ 0 ] - q[ 3 ] * q[ 1 ] ) ) );
-	angles[ YAW ] = RAD2DEG( atan2( 2.0f * ( q[ 2 ] * q[ 3 ] + q[ 0 ] * q[ 1 ] ), ( q2[ 0 ] - q2[ 1 ] - q2[ 2 ] + q2[ 3 ] ) ) );
-	angles[ ROLL ] = RAD2DEG( atan2( 2.0f * ( q[ 3 ] * q[ 0 ] + q[ 2 ] * q[ 1 ] ), ( -q2[ 0 ] + q2[ 1 ] - q2[ 2 ] + q2[ 3 ] ) ) );
+	angles[PITCH] = RAD2DEG(asin(2.0f * test));
+	angles[YAW]   = RAD2DEG(atan2((q[3] * q[2] + q[0] * q[1]), 0.5 - (q2[1] + q2[2])));
+	angles[ROLL]  = RAD2DEG(atan2((q[3] * q[0] + q[1] * q[2]), 0.5 - (q2[0] + q2[1])));
 }
 
 void QuatMultiply( const quat_t qa, const quat_t qb, quat_t qc )
