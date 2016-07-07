@@ -1669,7 +1669,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 				}
 
 				QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
-				QuatMultiply0( gun.skeleton.bones[ boneIndex ].t.rot, rotation );
+				QuatMultiply2( gun.skeleton.bones[ boneIndex ].t.rot, rotation );
 
 				// Update bounds to reflect rotation
 				MatrixFromAngles( mat, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );

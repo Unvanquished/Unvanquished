@@ -1220,7 +1220,7 @@ void CG_GhostBuildable( int buildableInfo )
 
 		MatrixFromVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 		QuatFromMatrix( axisQuat, axisMat );
-		QuatMultiply0( axisQuat, rotQuat );
+		QuatMultiply2( axisQuat, rotQuat );
 		MatrixFromQuat( axisMat, axisQuat );
 		MatrixToVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 	}
@@ -2413,7 +2413,7 @@ void CG_Buildable( centity_t *cent )
 
 		MatrixFromVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 		QuatFromMatrix( axisQuat, axisMat );
-		QuatMultiply0( axisQuat, rotQuat );
+		QuatMultiply2( axisQuat, rotQuat );
 		MatrixFromQuat( axisMat, axisQuat );
 		MatrixToVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 	}
@@ -2469,11 +2469,11 @@ void CG_Buildable( centity_t *cent )
 
 			// The roll of Bone_platform is the turrets' yaw.
 			QuatFromAngles( rotation, 0, 0, yaw );
-			QuatMultiply0( ent.skeleton.bones[ 1 ].t.rot, rotation );
+			QuatMultiply2( ent.skeleton.bones[ 1 ].t.rot, rotation );
 
 			// The roll of Bone_gatlin is the turrets' pitch.
 			QuatFromAngles( rotation, 0, 0, pitch );
-			QuatMultiply0( ent.skeleton.bones[ 2 ].t.rot, rotation );
+			QuatMultiply2( ent.skeleton.bones[ 2 ].t.rot, rotation );
 
 			// The roll of Bone_barrel is the mgturret's barrel roll.
 			if ( es->modelindex == BA_H_MGTURRET )
@@ -2482,7 +2482,7 @@ void CG_Buildable( centity_t *cent )
 				        120.0f * ( cg.time - cent->muzzleFlashTime ), 0.0f, 120.0f );
 
 				QuatFromAngles( rotation, 0, 0, roll );
-				QuatMultiply0( ent.skeleton.bones[ 3 ].t.rot, rotation );
+				QuatMultiply2( ent.skeleton.bones[ 3 ].t.rot, rotation );
 			}
 
 			// transform bounds so they more accurately reflect the turrets' new transformation
@@ -2555,7 +2555,7 @@ void CG_Buildable( centity_t *cent )
 			// Note that rotation's pitch is the eye's roll and vice versa.
 			// Also the yaw needs to be inverted.
 			QuatFromAngles( rotation, 0, -cent->overmindEyeAngle[ YAW ], cent->overmindEyeAngle[ PITCH ] );
-			QuatMultiply0( ent.skeleton.bones[ 38 ].t.rot, rotation );
+			QuatMultiply2( ent.skeleton.bones[ 38 ].t.rot, rotation );
 		}
 
 		CG_TransformSkeleton( &ent.skeleton, realScale );

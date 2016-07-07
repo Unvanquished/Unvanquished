@@ -800,21 +800,14 @@ void         ByteToDir( int b, vec3_t dir );
 	void QuatToAngles( const quat_t q, vec3_t angles );
 
 // Quaternion multiplication, analogous to the matrix multiplication routines.
+//
+// https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+// Two rotation quaternions can be combined into one equivalent quaternion by the relation:
+// q' = q2q1
+// in which q' corresponds to the rotation q1 followed by the rotation q2.
 
-// qa = rotate by qa, then qb
-	void QuatMultiply0( quat_t qa, const quat_t qb );
-
-// qc = rotate by qa, then qb
-	void QuatMultiply1( const quat_t qa, const quat_t qb, quat_t qc );
-
-// qc = rotate by qa, then by inverse of qb
-	void QuatMultiply2( const quat_t qa, const quat_t qb, quat_t qc );
-
-// qc = rotate by inverse of qa, then by qb
-	void QuatMultiply3( const quat_t qa, const quat_t qb, quat_t qc );
-
-// qc = rotate by inverse of qa, then by inverse of qb
-	void QuatMultiply4( const quat_t qa, const quat_t qb, quat_t qc );
+	void QuatMultiply( const quat_t qa, const quat_t qb, quat_t qc );
+	void QuatMultiply2( quat_t qa, const quat_t qb);
 
 	void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out );
 	void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out );
