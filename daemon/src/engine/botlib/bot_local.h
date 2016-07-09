@@ -38,12 +38,12 @@ Maryland 20850 USA.
 #include "qcommon/q_shared.h"
 #include "qcommon/qcommon.h"
 
-#include "detour/DetourNavMeshBuilder.h"
-#include "detour/DetourNavMeshQuery.h"
-#include "detour/DetourPathCorridor.h"
-#include "detour/DetourCommon.h"
-#include "detour/DetourTileCache.h"
-#include "detour/DetourTileCacheBuilder.h"
+#include "DetourNavMeshBuilder.h"
+#include "DetourNavMeshQuery.h"
+#include "DetourPathCorridor.h"
+#include "DetourCommon.h"
+#include "DetourTileCache.h"
+#include "DetourTileCacheBuilder.h"
 
 #include "bot_types.h"
 #include "bot_api.h"

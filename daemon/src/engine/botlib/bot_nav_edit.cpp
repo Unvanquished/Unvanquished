@@ -32,10 +32,10 @@ Maryland 20850 USA.
 ===========================================================================
 */
 #include "client/client.h"
-#include "detour/DetourDebugDraw.h"
+#include "DetourDebugDraw.h"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Woverloaded-virtual"
-#include "detour/DebugDraw.h"
+#include "DebugDraw.h"
 #pragma GCC diagnostic pop
 #include "bot_navdraw.h"
 #include "nav.h"

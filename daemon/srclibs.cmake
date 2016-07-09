@@ -4,20 +4,20 @@ set(CRUNCHLIST
 )
 
 set(DETOURLIST
-    ${LIB_DIR}/detour/DebugDraw.cpp
-    ${LIB_DIR}/detour/DetourAlloc.cpp
-    ${LIB_DIR}/detour/DetourAssert.h
-    ${LIB_DIR}/detour/DetourCommon.cpp
-    ${LIB_DIR}/detour/DetourDebugDraw.cpp
-    ${LIB_DIR}/detour/DetourNavMesh.cpp
-    ${LIB_DIR}/detour/DetourNavMeshBuilder.cpp
-    ${LIB_DIR}/detour/DetourNavMeshQuery.cpp
-    ${LIB_DIR}/detour/DetourMath.h
-    ${LIB_DIR}/detour/DetourNode.cpp
-    ${LIB_DIR}/detour/DetourPathCorridor.cpp
-    ${LIB_DIR}/detour/DetourStatus.h
-    ${LIB_DIR}/detour/DetourTileCache.cpp
-    ${LIB_DIR}/detour/DetourTileCacheBuilder.cpp
+    ${LIB_DIR}/recastnavigation/DebugUtils/Source/DebugDraw.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourAlloc.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Include/DetourAssert.h
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourCommon.cpp
+    ${LIB_DIR}/recastnavigation/DebugUtils/Source/DetourDebugDraw.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourNavMesh.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourNavMeshBuilder.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourNavMeshQuery.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Include/DetourMath.h
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourNode.cpp
+    ${LIB_DIR}/recastnavigation/DetourCrowd/Source/DetourPathCorridor.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Include/DetourStatus.h
+    ${LIB_DIR}/recastnavigation/DetourTileCache/Source/DetourTileCache.cpp
+    ${LIB_DIR}/recastnavigation/DetourTileCache/Source/DetourTileCacheBuilder.cpp
 )
 
 set(FASTLZLIST

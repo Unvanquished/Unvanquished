@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "detour/DetourDebugDraw.h"
-#include "detour/DebugDraw.h"
+#include "DetourDebugDraw.h"
+#include "DebugDraw.h"
 #include "bot_debug.h"
 #include "bot_local.h"
 

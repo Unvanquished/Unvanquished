@@ -508,6 +508,10 @@ if (BUILD_CLIENT OR BUILD_TTY_CLIENT OR BUILD_SERVER)
     # Detour
     add_library(srclibs-detour EXCLUDE_FROM_ALL ${DETOURLIST})
     set_target_properties(srclibs-detour PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    include_directories(${LIB_DIR}/recastnavigation/Detour/Include
+                        ${LIB_DIR}/recastnavigation/DetourTileCache/Include
+                        ${LIB_DIR}/recastnavigation/DebugUtils/Include
+                        ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
     set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-detour)
 
     # GeoIP
