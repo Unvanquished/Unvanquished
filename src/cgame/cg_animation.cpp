@@ -27,11 +27,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===============
 CG_RunLerpFrame
 
+Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
 void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 {
+	int         f, numFrames;
+	animation_t *anim;
+
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 )
 	{
@@ -41,75 +45,210 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 
 	// if we have passed the current frame, move it to
 	// oldFrame and calculate a new frame
-	if (cg.time > lf->frameTime)
+	if ( cg.time >= lf->frameTime )
 	{
-		if (cg.time < lf->animationTime)
+		lf->oldFrame = lf->frame;
+		lf->oldFrameTime = cg.time;
+
+		// get the next frame based on the animation
+		anim = lf->animation;
+
+		if ( !anim->frameLerp )
 		{
-			// initial lerp
-			lf->frameTime = lf->oldFrameTime = lf->animationTime;
-			lf->oldFrame = lf->frame;
+			return; // shouldn't happen
+		}
+
+		if ( cg.time < lf->animationTime )
+		{
+			lf->frameTime = lf->animationTime; // initial lerp
 		}
 		else
 		{
-			lf->oldFrame = lf->frame;
-			lf->oldFrameTime = lf->frameTime;
+			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
+		}
 
-			animation_t *anim = lf->animation;
-			int numFrames = anim->numFrames;
-			float frameLength = anim->frameLerp / scale;
+		f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
+		f *= scale;
+		numFrames = anim->numFrames;
 
-			int relativeFrame = ceil((cg.time - lf->animationTime) / frameLength);
-			if (relativeFrame >= numFrames)
+		if ( anim->flipflop )
+		{
+			numFrames *= 2;
+		}
+
+		if ( f >= numFrames )
+		{
+			f -= numFrames;
+
+			if ( anim->loopFrames )
 			{
-				bool looping = !!anim->loopFrames;
-				if (looping)
-				{
-					ASSERT(anim->loopFrames == numFrames);
-					lf->animationTime += relativeFrame / numFrames * (numFrames * frameLength);
-					relativeFrame %= numFrames;
-					lf->frameTime = lf->animationTime + relativeFrame * frameLength;
-				}
-				else
-				{
-					relativeFrame = numFrames - 1;
-					// the animation is stuck at the end, so it
-					// can immediately transition to another sequence
-					lf->frameTime = cg.time;
-				}
+				f %= anim->loopFrames;
+				f += anim->numFrames - anim->loopFrames;
 			}
 			else
 			{
-				lf->frameTime = lf->animationTime + relativeFrame * frameLength;
+				f = numFrames - 1;
+				// the animation is stuck at the end, so it
+				// can immediately transition to another sequence
+				lf->frameTime = cg.time;
 			}
-			if (anim->reversed)
+		}
+
+		if ( anim->reversed )
+		{
+			lf->frame = anim->firstFrame + anim->numFrames - 1 - f;
+		}
+		else if ( anim->flipflop && f >= anim->numFrames )
+		{
+			lf->frame = anim->firstFrame + anim->numFrames - 1 - ( f % anim->numFrames );
+		}
+		else
+		{
+			lf->frame = anim->firstFrame + f;
+		}
+
+		if ( cg.time > lf->frameTime )
+		{
+			lf->frameTime = cg.time;
+
+			if ( cg_debugAnim.integer )
 			{
-				lf->frame = anim->firstFrame + numFrames - 1 - relativeFrame;
-			}
-			else
-			{
-				lf->frame = anim->firstFrame + relativeFrame;
+// 				CG_Printf( "Clamp lf->frameTime\n" );
 			}
 		}
 	}
 
-	if (lf->frameTime > lf->oldFrameTime)
+	if ( lf->frameTime > cg.time + 200 )
 	{
-		lf->backlerp = 1.0 - (float)(cg.time - lf->oldFrameTime) / (lf->frameTime - lf->oldFrameTime);
+		lf->frameTime = cg.time;
+	}
+
+	if ( lf->oldFrameTime > cg.time )
+	{
+		lf->oldFrameTime = cg.time;
+	}
+
+	// calculate current lerp value
+	if ( lf->frameTime == lf->oldFrameTime )
+	{
+		lf->backlerp = 0;
 	}
 	else
 	{
-		lf->backlerp = 0;
+		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
 	}
 }
 
 void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, bool animChanged )
 {
-    if (animChanged)
-    {
-        lf->frame = lf->oldFrame = 0;
-        lf->frameTime = lf->oldFrameTime = cg.time;
-    }
-    CG_RunLerpFrame(lf, scale);
+	int         f, numFrames;
+	animation_t *anim;
+
+	// debugging tool to get no animations
+	if ( cg_animSpeed.integer == 0 )
+	{
+		lf->oldFrame = lf->frame = lf->backlerp = 0;
+		return;
+	}
+
+	// if we have passed the current frame, move it to
+	// oldFrame and calculate a new frame
+	if ( cg.time >= lf->frameTime || animChanged )
+	{
+		if ( animChanged )
+		{
+			lf->oldFrame = 0;
+			lf->oldFrameTime = cg.time;
+		}
+		else
+		{
+			lf->oldFrame = lf->frame;
+			lf->oldFrameTime = lf->frameTime;
+		}
+
+		// get the next frame based on the animation
+		anim = lf->animation;
+
+		if ( !anim->frameLerp )
+		{
+			return; // shouldn't happen
+		}
+
+		if ( cg.time < lf->animationTime )
+		{
+			lf->frameTime = lf->animationTime; // initial lerp
+		}
+		else
+		{
+			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
+		}
+
+		f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
+		f *= scale; // adjust for haste, etc
+
+		numFrames = anim->numFrames;
+
+		if ( anim->flipflop )
+		{
+			numFrames *= 2;
+		}
+
+		if ( f >= numFrames )
+		{
+			f -= numFrames;
+
+			if ( anim->loopFrames )
+			{
+				f %= anim->loopFrames;
+				f += anim->numFrames - anim->loopFrames;
+			}
+			else
+			{
+				f = numFrames - 1;
+				// the animation is stuck at the end, so it
+				// can immediately transition to another sequence
+				lf->frameTime = cg.time;
+			}
+		}
+
+		if ( anim->reversed )
+		{
+			lf->frame = anim->firstFrame + anim->numFrames - 1 - f;
+		}
+		else if ( anim->flipflop && f >= anim->numFrames )
+		{
+			lf->frame = anim->firstFrame + anim->numFrames - 1 - ( f % anim->numFrames );
+		}
+		else
+		{
+			lf->frame = anim->firstFrame + f;
+		}
+
+		if ( cg.time > lf->frameTime )
+		{
+			lf->frameTime = cg.time;
+		}
+	}
+
+	if ( lf->frameTime > cg.time + 200 )
+	{
+		lf->frameTime = cg.time;
+	}
+
+	if ( lf->oldFrameTime > cg.time )
+	{
+		lf->oldFrameTime = cg.time;
+	}
+
+	// calculate current lerp value
+	if ( lf->frameTime == lf->oldFrameTime )
+	{
+		lf->backlerp = 0;
+	}
+	else
+	{
+		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+	}
 }
 
 /*
