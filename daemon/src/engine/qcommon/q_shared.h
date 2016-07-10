@@ -532,6 +532,20 @@ void         ByteToDir( int b, vec3_t dir );
 		return 1;
 	}
 
+	inline void VectorMin(const vec3_t a, const vec3_t b, vec3_t out)
+	{
+		out[0] = a[0] < b[0] ? a[0] : b[0];
+		out[1] = a[1] < b[1] ? a[1] : b[1];
+		out[2] = a[2] < b[2] ? a[2] : b[2];
+	}
+
+	inline void VectorMax(const vec3_t a, const vec3_t b, vec3_t out)
+	{
+		out[0] = a[0] > b[0] ? a[0] : b[0];
+		out[1] = a[1] > b[1] ? a[1] : b[1];
+		out[2] = a[2] > b[2] ? a[2] : b[2];
+	}
+
 	vec_t VectorLength( const vec3_t v );
 	vec_t VectorLengthSquared( const vec3_t v );
 	vec_t Distance( const vec3_t p1, const vec3_t p2 );
@@ -667,6 +681,7 @@ void         ByteToDir( int b, vec3_t dir );
 	void     MatrixTransform4( const matrix_t m, const vec4_t in, vec4_t out );
 	void     MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out );
 	void     MatrixTransformPlane2( const matrix_t m, vec4_t inout );
+	void     MatrixTransformBounds( const matrix_t m, const vec3_t mins, const vec3_t maxs, vec3_t omins, vec3_t omaxs );
 	void     MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 	void     MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 	void     MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
@@ -785,21 +800,14 @@ void         ByteToDir( int b, vec3_t dir );
 	void QuatToAngles( const quat_t q, vec3_t angles );
 
 // Quaternion multiplication, analogous to the matrix multiplication routines.
+//
+// https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+// Two rotation quaternions can be combined into one equivalent quaternion by the relation:
+// q' = q2q1
+// in which q' corresponds to the rotation q1 followed by the rotation q2.
 
-// qa = rotate by qa, then qb
-	void QuatMultiply0( quat_t qa, const quat_t qb );
-
-// qc = rotate by qa, then qb
-	void QuatMultiply1( const quat_t qa, const quat_t qb, quat_t qc );
-
-// qc = rotate by qa, then by inverse of qb
-	void QuatMultiply2( const quat_t qa, const quat_t qb, quat_t qc );
-
-// qc = rotate by inverse of qa, then by qb
-	void QuatMultiply3( const quat_t qa, const quat_t qb, quat_t qc );
-
-// qc = rotate by inverse of qa, then by inverse of qb
-	void QuatMultiply4( const quat_t qa, const quat_t qb, quat_t qc );
+	void QuatMultiply( const quat_t qa, const quat_t qb, quat_t qc );
+	void QuatMultiply2( quat_t qa, const quat_t qb);
 
 	void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out );
 	void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out );

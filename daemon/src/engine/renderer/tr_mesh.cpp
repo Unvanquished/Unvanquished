@@ -32,8 +32,6 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 {
 	mdvFrame_t *oldFrame, *newFrame;
 	int        i;
-	vec3_t     v;
-	vec3_t     transformed;
 
 	// compute frame pointers
 	newFrame = model->frames + ent->e.frame;
@@ -49,19 +47,7 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 	}
 
 	// setup world bounds for intersection tests
-	ClearBounds( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
-
-	for ( i = 0; i < 8; i++ )
-	{
-		v[ 0 ] = ent->localBounds[ i & 1 ][ 0 ];
-		v[ 1 ] = ent->localBounds[( i >> 1 ) & 1 ][ 1 ];
-		v[ 2 ] = ent->localBounds[( i >> 2 ) & 1 ][ 2 ];
-
-		// transform local bounds vertices into world space
-		R_LocalPointToWorld( v, transformed );
-
-		AddPointToBounds( transformed, ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
-	}
+	R_SetupEntityWorldBounds(ent);
 
 	// cull bounding sphere ONLY if this is not an upscaled entity
 	if ( !ent->e.nonNormalizedAxes )
@@ -121,7 +107,7 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 		}
 	}
 
-	switch ( R_CullLocalBox( ent->localBounds ) )
+	switch ( R_CullBox( ent->worldBounds ) )
 	{
 		case cullResult_t::CULL_IN:
 			tr.pc.c_box_cull_mdv_in++;

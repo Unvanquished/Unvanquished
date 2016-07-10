@@ -137,13 +137,7 @@ namespace Audio {
                 return &source;
             }
 
-            if (best < 0 && source.priority <= priority) {
-                best = i;
-                bestPriority = source.priority;
-                continue;
-            }
-
-            if (source.priority < bestPriority) {
+            if (source.priority < bestPriority || (best < 0 && source.priority <= priority)) {
                 best = i;
                 bestPriority = source.priority;
                 continue;

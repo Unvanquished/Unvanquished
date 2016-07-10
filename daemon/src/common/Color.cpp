@@ -180,12 +180,12 @@ std::string ToString ( const Color32Bit& color )
 	if ( Has8Bits( color.Red() ) || Has8Bits( color.Green() ) || Has8Bits( color.Blue() ) )
 	{
 		text += '#';
-		text += Str::HexDigit(color.Red() & 0xf);
 		text += Str::HexDigit((color.Red() >> 4) & 0xf);
-		text += Str::HexDigit(color.Green() & 0xf);
+		text += Str::HexDigit(color.Red() & 0xf);
 		text += Str::HexDigit((color.Green() >> 4) & 0xf);
-		text += Str::HexDigit(color.Blue() & 0xf);
+		text += Str::HexDigit(color.Green() & 0xf);
 		text += Str::HexDigit((color.Blue() >> 4) & 0xf);
+		text += Str::HexDigit(color.Blue() & 0xf);
 	}
 	else
 	{

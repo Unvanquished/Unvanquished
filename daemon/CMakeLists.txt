@@ -322,8 +322,10 @@ function(ADD_PRECOMPILED_HEADER Target)
             set_property(TARGET ${Target} APPEND PROPERTY COMPILE_OPTIONS "-include;${OBJ_DIR}/${Target}.h;-Winvalid-pch")
         endif()
     elseif (MSVC)
+        # /Fp sets the PCH path used by either of the /Yc and /Yu options.
+        # /Yc overrides /Yu.
         set_source_files_properties(${PCH_FILE} PROPERTIES COMPILE_FLAGS "/Yc${Header}")
-        set_property(TARGET ${Target} APPEND PROPERTY COMPILE_FLAGS "/Yu${Header} /Fp${OBJ_DIR}/${Target}.pch /FI${Header}")
+        target_compile_options(${Target} PRIVATE "/Yu${Header}" "/Fp${OBJ_DIR}/${Target}_$<CONFIG>.pch" "/FI${Header}")
     endif()
 endfunction()
 

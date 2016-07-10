@@ -485,8 +485,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		cullResult_t cull;
 		vec3_t       localBounds[ 2 ];
-		vec3_t       worldBounds[ 2 ]; // only set when not completely culled. use them for light interactions
-		vec3_t       worldCorners[ 8 ];
+		vec3_t       worldBounds[ 2 ];
 	};
 
 	struct orientationr_t

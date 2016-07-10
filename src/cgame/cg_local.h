@@ -108,6 +108,8 @@ typedef struct
 	int           frame;
 	int           frameTime; // time when ->frame will be exactly on
 
+	bool          animationEnded;
+
 	float         backlerp;
 
 	float         yawAngle;

@@ -38,6 +38,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 		lf->oldFrame = lf->frame = lf->backlerp = 0;
 		return;
 	}
+	lf->animationEnded = false;
 
 	// if we have passed the current frame, move it to
 	// oldFrame and calculate a new frame
@@ -75,6 +76,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 					// the animation is stuck at the end, so it
 					// can immediately transition to another sequence
 					lf->frameTime = cg.time;
+					lf->animationEnded = true;
 				}
 			}
 			else
