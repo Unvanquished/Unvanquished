@@ -977,8 +977,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 
 	CG_RunLerpFrame( lf, 1.0f );
 
-	// animation ended
-	if ( lf->frameTime == cg.time )
+	if ( lf->animationEnded )
 	{
 		cent->buildableAnim = (buildableAnimNumber_t) cent->currentState.torsoAnim;
 		cent->buildableIdleAnim = true;
