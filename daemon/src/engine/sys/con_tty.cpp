@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include <termios.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#include <sys/select.h>
 
 #include "framework/ConsoleField.h"
 
@@ -66,9 +67,27 @@ static struct termios TTY_tc;
 static Console::Field TTY_field(INT_MAX);
 
 void WriteToStdout(const char* text) {
-	if (write( STDOUT_FILENO, text, strlen(text)) < 0) {
-        Log::Warn("Error writing to the terminal: %s", strerror(errno));
-    }
+
+	int ret;
+
+	ret = write( STDOUT_FILENO, text, strlen(text) );
+
+	if ( ret < 0 && errno == EAGAIN )
+	{
+		fd_set set;
+		FD_ZERO( &set );
+		FD_SET( STDOUT_FILENO, &set );
+		select( STDOUT_FILENO + 1, NULL, &set, NULL, NULL);
+
+		ret = write( STDOUT_FILENO, text, strlen(text) );
+	}
+
+	if (ret < 0) {
+		// Do not log to stdout
+		Log::Dispatch( Str::Format("Error writing to the terminal: %d", errno),
+                        ((1<<Log::MAX_TARGET_ID)-1) & ~(1<<Log::TTY_CONSOLE)
+                    );
+	}
 }
 
 /*
