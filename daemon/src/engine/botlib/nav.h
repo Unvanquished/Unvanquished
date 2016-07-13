@@ -221,21 +221,21 @@ struct MeshProcess : public dtTileCacheMeshProcess
 struct LinearAllocator : public dtTileCacheAlloc
 {
 	unsigned char* buffer;
-	int capacity;
-	int top;
-	int high;
+	size_t capacity;
+	size_t top;
+	size_t high;
 
-	LinearAllocator( const int cap ) : buffer(0), capacity(0), top(0), high(0)
+	LinearAllocator( const size_t cap ) : buffer(0), capacity(0), top(0), high(0)
 	{
 		resize(cap);
 	}
 
-	~LinearAllocator()
+	~LinearAllocator() OVERRIDE
 	{
 		free( buffer );
 	}
 
-	void resize( const int cap )
+	void resize( const size_t cap )
 	{
 		if ( buffer )
 		{
@@ -246,13 +246,13 @@ struct LinearAllocator : public dtTileCacheAlloc
 		capacity = cap;
 	}
 
-	virtual void reset()
+	void reset() OVERRIDE
 	{
 		high = dtMax( high, top );
 		top = 0;
 	}
 
-	virtual void* alloc( const int size )
+	void* alloc( const size_t size ) OVERRIDE
 	{
 		if ( !buffer )
 		{
@@ -269,8 +269,8 @@ struct LinearAllocator : public dtTileCacheAlloc
 		return mem;
 	}
 
-	virtual void free( void* /*ptr*/ ) { }
-	int getHighSize() { return high; }
+	void free( void* /*ptr*/ ) OVERRIDE { }
+	size_t getHighSize() { return high; }
 };
 #endif
 

@@ -426,7 +426,7 @@ void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHa
 		// offset mins down by agent height so obstacles placed on ledges are handled correctly
 		tempBox.mins[ 1 ] -= params->walkableHeight;
 
-		nav->cache->addObstacle( tempBox.mins, tempBox.maxs, &ref );
+		nav->cache->addBoxObstacle( tempBox.mins, tempBox.maxs, &ref );
 		*obstacleHandle = ref;
 	}
 }
