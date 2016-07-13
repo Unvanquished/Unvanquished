@@ -27,6 +27,13 @@
 cmake_minimum_required(VERSION 2.8)
 project(Unvanquished C CXX)
 
+# When we build in the source dir, the daemon executable cannot be create
+# as there is already a daemon directory, so we disallow building in the
+# source dir.
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+    message(FATAL_ERROR "Building in the source directory is not supported, try building in a 'build' directory. You may have to delete the CMakeCache.txt file and CMakeFiles directory that are next to the CMakeLists.txt.")
+endif()
+
 set(Daemon_OUT ${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(daemon daemon_build)
 include(DaemonGame)
