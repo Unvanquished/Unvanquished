@@ -202,14 +202,6 @@ void G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation) {
 	ent->s.torsoAnim = animation;
 }
 
-/*
-================
-ABarricade_Shrink
-
-Set shrink state for a barricade. When unshrinking, checks to make sure there
-is enough room.
-================
-*/
 void ABarricade_Shrink( gentity_t *self, bool shrink )
 {
 	if ( !self->spawned || G_Dead( self ) )
@@ -288,13 +280,6 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	}
 }
 
-/*
-================
-ABarricade_Think
-
-Think function for Alien Barricade
-================
-*/
 void ABarricade_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
@@ -302,15 +287,6 @@ void ABarricade_Think( gentity_t *self )
 	// Shrink if unpowered
 	ABarricade_Shrink( self, !self->powered );
 }
-
-/*
-================
-ABarricade_Touch
-
-Barricades shrink when they are come into contact with an Alien that can
-pass through
-================
-*/
 
 void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t* )
 {
@@ -396,13 +372,6 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 #define MISSILE_PRESTEP_TIME 50 // from g_missile.h
 #define TRAPPER_ACCURACY 10 // lower is better
 
-/*
-================
-ATrapper_FireOnEnemy
-
-Used by ATrapper_Think to fire at enemy
-================
-*/
 void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 {
 	gentity_t *target = self->target;
@@ -455,13 +424,6 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	self->customNumber = level.time + firespeed;
 }
 
-/*
-================
-ATrapper_CheckTarget
-
-Used by ATrapper_Think to check enemies for validity
-================
-*/
 bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 {
 	vec3_t  distance;
@@ -538,13 +500,6 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 	return true;
 }
 
-/*
-================
-ATrapper_FindEnemy
-
-Used by ATrapper_Think to locate enemy gentities
-================
-*/
 void ATrapper_FindEnemy( gentity_t *ent, int range )
 {
 	gentity_t *target;
@@ -573,13 +528,6 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 	ent->target = nullptr;
 }
 
-/*
-================
-ATrapper_Think
-
-think function for Alien Defense
-================
-*/
 void ATrapper_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 100;
@@ -881,13 +829,9 @@ void G_UpdateBuildablePowerStates()
 	}
 }
 
-/*
-============
-G_BuildableTouchTriggers
-
-Find all trigger entities that a buildable touches.
-============
-*/
+/**
+ * @brief Find all trigger entities that a buildable touches.
+ */
 void G_BuildableTouchTriggers( gentity_t *ent )
 {
 	int              i, num;
@@ -956,15 +900,9 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 	}
 }
 
-
-
-/*
-===============
-G_BuildableRange
-
-Check whether a point is within some range of a type of buildable
-===============
-*/
+/**
+ * @return Whether origin is within a distance of radius of a buildable of the given type.
+ */
 bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 {
 	gentity_t *neighbor = nullptr;
@@ -986,13 +924,9 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 	return false;
 }
 
-/*
-===============
-G_BuildablesIntersect
-
-Test if two buildables intersect each other
-===============
-*/
+/**
+ * @return Whether two buildables built at the given locations would intersect.
+ */
 static bool BuildablesIntersect( buildable_t a, vec3_t originA,
                                      buildable_t b, vec3_t originB )
 {
@@ -1010,13 +944,6 @@ static bool BuildablesIntersect( buildable_t a, vec3_t originA,
 	return BoundsIntersect( minsA, maxsA, minsB, maxsB );
 }
 
-/*
-===============
-G_CompareBuildablesForRemoval
-
-qsort comparison function for a buildable removal list
-===============
-*/
 static buildable_t cmpBuildable;
 static vec3_t      cmpOrigin;
 static int CompareBuildablesForRemoval( const void *a, const void *b )
@@ -1169,13 +1096,9 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	G_FreeEntity( self );
 }
 
-/*
-===============
-G_FreeMarkedBuildables
-
-Returns the number of buildables removed.
-===============
-*/
+/**
+ * @return The number of buildables removed.
+ */
 int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
                              char *nums, int nsize )
 {
@@ -1293,16 +1216,11 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 	return IBE_NONE;
 }
 
-
-/*
-===============
-G_PrepareBuildableReplacement
-
-Attempts to build a set of buildables that have to be deconstructed for a new buildable.
-Takes both power consumption and build points into account.
-Sets level.markedBuildables and level.numBuildablesForRemoval.
-===============
-*/
+/**
+ * @brief Attempts to build a set of buildables that have to be deconstructed for a new buildable.
+ *
+ * Sets level.markedBuildables and level.numBuildablesForRemoval.
+ */
 static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin )
 {
 	int              entNum, listLen;
@@ -1485,13 +1403,6 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 }
 
-/*
-================
-G_SetBuildableLinkState
-
-Links or unlinks all the buildable entities
-================
-*/
 static void SetBuildableLinkState( bool link )
 {
 	int       i;
@@ -1535,13 +1446,6 @@ static void SetBuildableMarkedLinkState( bool link )
 	}
 }
 
-/*
-================
-G_CanBuild
-
-Checks to see if a buildable can be built
-================
-*/
 itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distance*/, //TODO
                              vec3_t origin, vec3_t normal, int *groundEntNum )
 {
@@ -1824,13 +1728,6 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 	}
 }
 
-/*
-================
-G_Build
-
-Spawns a buildable
-================
-*/
 static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, const vec3_t origin,
                          const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
@@ -2138,14 +2035,6 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	return false;
 }
 
-/*
-================
-G_FinishSpawningBuildable
-
-Traces down to find where an item should rest, instead of letting them
-free fall from their spawn points
-================
-*/
 static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 {
 	trace_t     tr;
@@ -2205,29 +2094,12 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	return built;
 }
 
-/*
-============
-G_SpawnBuildableThink
-
-Complete spawning a buildable using its placeholder
-============
-*/
 static void SpawnBuildableThink( gentity_t *ent )
 {
 	FinishSpawningBuildable( ent, false );
 	G_FreeEntity( ent );
 }
 
-/*
-============
-G_SpawnBuildable
-
-Sets the clipping size and plants the object on the floor.
-
-Items can't be immediately dropped to floor, because they might
-be on an entity that hasn't spawned yet.
-============
-*/
 void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 {
 	ent->s.modelindex = buildable;
@@ -2347,13 +2219,6 @@ int G_LayoutList( const char *map, char *list, int len )
 	return count + 1;
 }
 
-/*
-============
-G_LayoutSelect
-
-set level.layout based on g_layouts or g_layoutAuto
-============
-*/
 void G_LayoutSelect()
 {
 	char fileName[ MAX_OSPATH ];
@@ -2449,14 +2314,6 @@ static void LayoutBuildItem( buildable_t buildable, vec3_t origin,
 	G_SpawnBuildable( builder, buildable );
 }
 
-/*
-============
-G_LayoutLoad
-
-load the layout .dat file indicated by level.layout and spawn buildables
-as if a builder was creating them
-============
-*/
 void G_LayoutLoad()
 {
 	fileHandle_t f;
