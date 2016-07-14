@@ -541,7 +541,7 @@ MACHINEGUN
 ======================================================================
 */
 
-static void FireBullet( gentity_t *self, float spread, int damage, int mod )
+static void FireBullet( gentity_t *self, float spread, float damage, int mod )
 {
 	// TODO: Merge this with other *Fire functions
 
@@ -823,9 +823,12 @@ static void RocketThink( gentity_t *self )
 	                         Math::Clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
 
 	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
-	if ( !G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, newDir ) &&
-	     G_RocketpodSafeShot( ENTITYNUM_NONE, self->r.currentOrigin, currentDir ) )
-	{
+	if (    !RocketpodComponent::SafeShot(
+			ENTITYNUM_NONE, Vec3::Load( self->r.currentOrigin ), Vec3::Load( newDir )
+		) && RocketpodComponent::SafeShot(
+			ENTITYNUM_NONE, Vec3::Load( self->r.currentOrigin ), Vec3::Load( currentDir )
+		)
+	) {
 		return;
 	}
 
@@ -840,25 +843,6 @@ static void FireRocket( gentity_t *self )
 {
 	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target, RocketThink,
 	                level.time + ROCKET_TURN_PERIOD )->timestamp = level.time + ROCKET_LIFETIME;
-}
-
-bool G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir )
-{
-	trace_t tr;
-	vec3_t mins, maxs, end;
-	float  size;
-	const missileAttributes_t *attr = BG_Missile( MIS_ROCKET );
-
-	size = attr->size;
-
-	VectorSet( mins, -size, -size, -size);
-	VectorSet( maxs, size, size, size );
-	VectorMA( origin, 8192, dir, end );
-
-	trap_Trace( &tr, origin, mins, maxs, end, passEntityNum, MASK_SHOT, 0 );
-
-	return !G_RadiusDamage( tr.endpos, nullptr, attr->splashDamage, attr->splashRadius, nullptr,
-	                        0, MOD_ROCKETPOD, TEAM_HUMANS );
 }
 
 /*
@@ -1809,7 +1793,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MACHINEGUN:
-					FireBullet( self, RIFLE_SPREAD, RIFLE_DMG, MOD_MACHINEGUN );
+					FireBullet( self, RIFLE_SPREAD, (float)RIFLE_DMG, MOD_MACHINEGUN );
 					break;
 
 				case WP_SHOTGUN:
@@ -1817,7 +1801,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_CHAINGUN:
-					FireBullet( self, CHAINGUN_SPREAD, CHAINGUN_DMG, MOD_CHAINGUN );
+					FireBullet( self, CHAINGUN_SPREAD, (float)CHAINGUN_DMG, MOD_CHAINGUN );
 					break;
 
 				case WP_FLAMER:

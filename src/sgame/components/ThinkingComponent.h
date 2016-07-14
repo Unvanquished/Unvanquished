@@ -58,7 +58,10 @@ class ThinkingComponent: public ThinkingComponentBase {
 		bool unregisterActiveThinker;
 
 		float averageFrameTime; /**< Smoothed out average frame time for predictions. */
+
 		constexpr static float averageChangeRate = 0.1f;
+
+		int lastThinkRound; /**< Used to make sure that we think at most once per frame. */
 };
 
 #endif // THINKING_COMPONENT_H_

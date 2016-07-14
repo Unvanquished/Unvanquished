@@ -46,6 +46,10 @@ messages:
 
     FinishConstruction:
 
+    PowerUp:
+
+    PowerDown:
+
     ApplyDamageModifier:
         - name: damage
           type: float&
@@ -198,7 +202,7 @@ components:
 
     Turret:
         messages:
-            - Die
+            - PrepareNetCode
 
     Mining:
         parameters:
@@ -296,6 +300,11 @@ components:
             HumanBuildable:
 
     MGTurret:
+        messages:
+            - PrepareNetCode
+            - PowerUp
+            - PowerDown
+            - Die
         requires:
             HumanBuildable:
             Turret:
@@ -310,6 +319,11 @@ components:
             HumanBuildable:
 
     Rocketpod:
+        messages:
+            - PrepareNetCode
+            - PowerUp
+            - PowerDown
+            - Die
         requires:
             HumanBuildable:
             Turret:

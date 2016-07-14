@@ -99,6 +99,8 @@ namespace Utility
 
 	bool AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
+
+	std::string Print(Vec3 v);
 }
 
 // sg_buildable.c
@@ -381,7 +383,6 @@ void              G_UpdateZaps( int msec );
 void              G_ClearPlayerZapEffects( gentity_t *player );
 void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
-bool              G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir );
 
 // Components
 void G_IgnitableThink();

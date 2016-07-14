@@ -102,3 +102,8 @@ bool Utility::KnockbackRadiusDamage(Entity& entity, float amount, float range, m
 
 	return hit;
 }
+
+// TODO: Consider adding this to the vector library.
+std::string Utility::Print(Vec3 v) {
+	return std::string(va("(%.2f, %.2f, %.2f)", v[0], v[1], v[2]));
+}

@@ -1345,6 +1345,10 @@ void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
 bool     BG_IsMainStructure( buildable_t buildable );
 bool     BG_IsMainStructure( entityState_t *es );
 void     BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t maxs );
+void     SetFlag(int &flags, int flag, bool value);
+void     AddFlag(int &flags, int flag);
+void     RemoveFlag(int &flags, int flag);
+void     ToggleFlag(int &flags, int flag);
 
 bool BG_WeaponIsFull(int weapon, int ammo, int clips );
 bool BG_InventoryContainsWeapon( int weapon, const int stats[] );

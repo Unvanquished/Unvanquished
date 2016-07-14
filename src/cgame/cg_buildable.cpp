@@ -2352,7 +2352,7 @@ void CG_Buildable( centity_t *cent )
 			vec3_t   nBounds[ 2 ];
 			float    yaw, pitch, roll;
 
-			yaw   = es->angles2[ YAW ] - es->angles[ YAW ];
+			yaw   = es->angles2[ YAW ];
 			pitch = es->angles2[ PITCH ];
 
 			// TODO: Access bones by name instead of by number.

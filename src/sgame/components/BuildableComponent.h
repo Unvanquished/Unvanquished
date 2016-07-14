@@ -67,7 +67,7 @@ class BuildableComponent: public BuildableComponentBase {
 		/**
 		 * @brief Change the buildable's power state.
 		 */
-		void SetPowerState(bool powered) { entity.oldEnt->powered = powered; }
+		void SetPowerState(bool powered);
 
 		/**
 		 * @return Whether the buildable is or will be powered.
@@ -80,6 +80,9 @@ class BuildableComponent: public BuildableComponentBase {
 		 */
 		bool Active() const { return state == CONSTRUCTED && Powered(); }
 
+		void SetAimAngles(const Vec3 aimAngles) { this->aimAngles = aimAngles; }
+		Vec3 AimAngles() const { return this->aimAngles; }
+
 	private:
 		lifecycle_t state;
 
@@ -88,8 +91,9 @@ class BuildableComponent: public BuildableComponentBase {
 		bool marked;
 		int  markTime;
 
+		Vec3 aimAngles; /**< Aim angles relative to world. */
+
 		// TODO: Move gentity_t.deconstruct and gentity_t.powered here.
-		//bool marked; /**< Marked for deconstruction. */
 		//bool powered;
 };
 

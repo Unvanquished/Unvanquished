@@ -3,11 +3,21 @@
 static Log::Logger thinkLogger("sgame.thinking");
 
 ThinkingComponent::ThinkingComponent(Entity& entity, DeferredFreeingComponent& r_DeferredFreeingComponent)
-	: ThinkingComponentBase(entity, r_DeferredFreeingComponent), iteratingThinkers(false), averageFrameTime(0)
+	: ThinkingComponentBase(entity, r_DeferredFreeingComponent)
+	, iteratingThinkers(false)
+	, averageFrameTime(0)
+	, lastThinkRound(-1)
 {}
 
 void ThinkingComponent::Think() {
 	int time = level.time;
+
+	if (lastThinkRound == time) {
+		return;
+	}
+
+	lastThinkRound = time;
+
 	int frameTime = level.time - level.previousTime;
 
 	if (!averageFrameTime) {
@@ -19,6 +29,7 @@ void ThinkingComponent::Think() {
 	iteratingThinkers = true;
 	for (thinkRecord_t &record : thinkers) {
 		int timeDelta = time - record.timestamp;
+
 		int thisFrameExecutionLateness = timeDelta - record.period;
 		int nextFrameExecutionLateness = timeDelta + averageFrameTime - record.period;
 

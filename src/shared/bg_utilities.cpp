@@ -144,3 +144,23 @@ void BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t ma
 	point[ 1 ] = point[ 1 ] + ( maxs[ 1 ] + mins[ 1 ] ) * 0.5f;
 	point[ 2 ] = point[ 2 ] + ( maxs[ 2 ] + mins[ 2 ] ) * 0.5f;
 }
+
+void SetFlag(int &flags, int flag, bool value) {
+	if (value) {
+		flags |= flag;
+	} else {
+		flags &= ~flag;
+	}
+}
+
+void AddFlag(int &flags, int flag) {
+	SetFlag(flags, flag, true);
+}
+
+void RemoveFlag(int &flags, int flag) {
+	SetFlag(flags, flag, true);
+}
+
+void ToggleFlag(int &flags, int flag) {
+	flags ^= flag;
+}

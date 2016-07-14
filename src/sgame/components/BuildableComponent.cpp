@@ -9,7 +9,7 @@ BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_Health
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 
 	// TODO: Make power state a member variable.
-	SetPowerState(true);
+	entity.oldEnt->powered = true;
 }
 
 void BuildableComponent::HandlePrepareNetCode() {
@@ -148,4 +148,24 @@ void BuildableComponent::Think(int timeDelta) {
 	// Check if touching any triggers.
 	// TODO: Move helper here.
 	G_BuildableTouchTriggers(entity.oldEnt);
+}
+
+void BuildableComponent::SetPowerState(bool powered) {
+	// TODO: Make power state a member variable.
+
+	bool wasPowered = entity.oldEnt->powered;
+
+	entity.oldEnt->powered = powered;
+
+	if        ( powered && !wasPowered) {
+		G_SetBuildableAnim(entity.oldEnt, BANIM_POWERUP, false);
+		G_SetIdleBuildableAnim(entity.oldEnt, BANIM_IDLE1);
+
+		entity.PowerUp();
+	} else if (!powered &&  wasPowered) {
+		G_SetBuildableAnim(entity.oldEnt, BANIM_POWERDOWN, false);
+		G_SetIdleBuildableAnim(entity.oldEnt, BANIM_IDLE_UNPOWERED);
+
+		entity.PowerDown();
+	}
 }

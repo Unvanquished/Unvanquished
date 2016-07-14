@@ -359,7 +359,7 @@ struct gentity_s
 	int         turretLastValidTargetTime;
 	int         turretLastTargetSearch;
 	int         turretLastHeadMove;
-	int         turretCurrentDamage;
+	float       turretCurrentDamage;
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
 	bool    turretDisabled;
