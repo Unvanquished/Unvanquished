@@ -35,7 +35,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 endif()
 
 set(Daemon_OUT ${CMAKE_CURRENT_BINARY_DIR})
-add_subdirectory(daemon daemon_build)
+add_subdirectory(daemon-engine daemon_build)
 include(DaemonGame)
 
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
