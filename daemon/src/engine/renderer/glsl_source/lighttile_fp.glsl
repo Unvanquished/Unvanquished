@@ -41,8 +41,8 @@ uniform sampler2D u_Lights;
 #define center_radius_offset   0
 #define color_type_offset      1
 #define direction_angle_offset 2
-#define idxToTC( idx, w, h ) vec2( floor( ( idx * ( 1.0 / w ) + 0.5 ) * ( 1.0 / h ) ), \
-				   fract( ( idx + 0.5 ) * (1.0 / w ) ) )
+#define idxToTC( idx, w, h ) vec2( ( idx + 0.5 ) * ( 1.0 / (w * h) ), \
+				   ( idx + 0.5 ) * ( 1.0 / w ) )
 #define GetLight(idx, component) texture2D( u_Lights, idxToTC(3 * idx + component##_offset, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) )
 #endif
 
