@@ -1,12 +1,9 @@
 [submodule "src/utils/cbse"]
 	path = src/utils/cbse
 	url = https://github.com/DaemonDevelopers/CBSE-Toolchain.git 
-[submodule "daemon/libs/breakpad"]
-	path = daemon/libs/breakpad
-	url = https://github.com/Unvanquished/breakpad.git
 [submodule "libs/libRocket"]
 	path = libs/libRocket
 	url = https://github.com/Unvanquished/libRocket.git
-[submodule "daemon/libs/recastnavigation"]
-	path = daemon/libs/recastnavigation
-	url = https://github.com/Unvanquished/recastnavigation.git
+[submodule "daemon-engine"]
+	path = daemon-engine
+	url = https://github.com/Elzair/daemon-engine.git
