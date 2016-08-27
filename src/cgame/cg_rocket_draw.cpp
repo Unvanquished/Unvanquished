@@ -2323,98 +2323,113 @@ private:
 	int health;
 };
 
-void CG_Rocket_DrawPlayerHealthCross()
+class PlayerHealthCrossElement : public HudElement
 {
-	qhandle_t shader;
-	Color::Color ref_color;
-	float     ref_alpha;
-	rectDef_t rect;
-	Color::Color color;
+public:
+	PlayerHealthCrossElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_BOTH, true ) {}
 
-	// grab info from libRocket
-	CG_GetRocketElementColor( ref_color );
-	CG_GetRocketElementRect( &rect );
-
-	// Pick the current icon
-	shader = cgs.media.healthCross;
-
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
+	void OnPropertyChange(const Rocket::Core::PropertyNameList& changed_properties )
 	{
-		shader = cgs.media.healthCross3X;
-	}
-
-	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
-	{
-		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		HudElement::OnPropertyChange( changed_properties );
+		if ( changed_properties.find( "color" ) != changed_properties.end() )
 		{
-			shader = cgs.media.healthCross2X;
-		}
-
-		else
-		{
-			shader = cgs.media.healthCrossMedkit;
+			GetColor( "color", refColor );
 		}
 	}
 
-	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_POISONED )
+	void DoOnRender()
 	{
-		shader = cgs.media.healthCrossPoisoned;
-	}
+		qhandle_t shader;
+		float     ref_alpha;
+		rectDef_t rect;
+		Color::Color color;
 
-	// Pick the alpha value
-	color = ref_color;
+		GetElementRect( rect );
 
-	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
-			cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
-	{
-		color = Color::Red;
-	}
+		// Pick the current icon
+		shader = cgs.media.healthCross;
 
-	ref_alpha = ref_color.Alpha();
-
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
-	{
-		ref_alpha = 1.0f;
-	}
-
-	// Don't fade from nothing
-	if ( !cg.lastHealthCross )
-	{
-		cg.lastHealthCross = shader;
-	}
-
-	// Fade the icon during transition
-	if ( cg.lastHealthCross != shader )
-	{
-		cg.healthCrossFade += cg.frametime / 500.0f;
-
-		if ( cg.healthCrossFade > 1.0f )
+		if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
 		{
-			cg.healthCrossFade = 0.0f;
+			shader = cgs.media.healthCross3X;
+		}
+
+		else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+		{
+			if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+			{
+				shader = cgs.media.healthCross2X;
+			}
+
+			else
+			{
+				shader = cgs.media.healthCrossMedkit;
+			}
+		}
+
+		else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_POISONED )
+		{
+			shader = cgs.media.healthCrossPoisoned;
+		}
+
+		// Pick the alpha value
+		color = refColor;
+
+		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+				cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
+		{
+			color = Color::Red;
+		}
+
+		ref_alpha = refColor.Alpha();
+
+		if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
+		{
+			ref_alpha = 1.0f;
+		}
+
+		// Don't fade from nothing
+		if ( !cg.lastHealthCross )
+		{
 			cg.lastHealthCross = shader;
 		}
 
-		else
+		// Fade the icon during transition
+		if ( cg.lastHealthCross != shader )
 		{
-			// Fading between two icons
-			color.SetAlpha( ref_alpha * cg.healthCrossFade );
-			trap_R_SetColor( color );
-			CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
-			color.SetAlpha( ref_alpha * ( 1.0f - cg.healthCrossFade ) );
-			trap_R_SetColor( color );
-			CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.lastHealthCross );
-			trap_R_ClearColor();
-			return;
+			cg.healthCrossFade += cg.frametime / 500.0f;
+
+			if ( cg.healthCrossFade > 1.0f )
+			{
+				cg.healthCrossFade = 0.0f;
+				cg.lastHealthCross = shader;
+			}
+			else
+			{
+				// Fading between two icons
+				color.SetAlpha( ref_alpha * cg.healthCrossFade );
+				trap_R_SetColor( color );
+				CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
+				color.SetAlpha( ref_alpha * ( 1.0f - cg.healthCrossFade ) );
+				trap_R_SetColor( color );
+				CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cg.lastHealthCross );
+				trap_R_ClearColor();
+				return;
+			}
 		}
+
+		// Not fading, draw a single icon
+		color.SetAlpha( ref_alpha );
+		trap_R_SetColor( color );
+		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
+		trap_R_ClearColor();
 	}
 
-	// Not fading, draw a single icon
-	color.SetAlpha( ref_alpha );
-	trap_R_SetColor( color );
-	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, shader );
-	trap_R_ClearColor();
+private:
+	Color::Color refColor;
+};
 
-}
 
 /*
 ============
@@ -3568,7 +3583,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "downloadTime", &CG_Rocket_DrawDownloadTime, ELEMENT_ALL },
 	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, ELEMENT_ALL },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
-	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
 	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
 	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
@@ -3652,4 +3666,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
 	REGISTER_ELEMENT( "barbs", BarbsHudElement )
 	REGISTER_ELEMENT( "health", PlayerHealthElement )
+	REGISTER_ELEMENT( "health_cross", PlayerHealthCrossElement )
 }
