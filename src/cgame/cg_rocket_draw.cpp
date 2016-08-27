@@ -2303,15 +2303,25 @@ private:
 	float offset;
 };
 
-void CG_Rocket_DrawPlayerHealth()
+class PlayerHealthElement : public TextHudElement
 {
-	static int lastHealth = 0;
+public:
+	PlayerHealthElement(const Rocket::Core::String& tag) :
+			TextHudElement( tag, ELEMENT_BOTH ),
+			health( -1 ) {}
 
-	if ( lastHealth != cg.snap->ps.stats[ STAT_HEALTH ] )
+	void DoOnRender()
 	{
-		Rocket_SetInnerRML( va( "%d", cg.snap->ps.stats[ STAT_HEALTH ] ), 0 );
+		if ( health != cg.snap->ps.stats[ STAT_HEALTH ] )
+		{
+			health = cg.snap->ps.stats[ STAT_HEALTH ];
+			SetText( Rocket::Core::String( 64, "%d", health ) );
+		}
 	}
-}
+
+private:
+	int health;
+};
 
 void CG_Rocket_DrawPlayerHealthCross()
 {
@@ -3558,7 +3568,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "downloadTime", &CG_Rocket_DrawDownloadTime, ELEMENT_ALL },
 	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, ELEMENT_ALL },
 	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
-	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
 	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
 	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
@@ -3642,4 +3651,5 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
 	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
 	REGISTER_ELEMENT( "barbs", BarbsHudElement )
+	REGISTER_ELEMENT( "health", PlayerHealthElement )
 }
