@@ -581,6 +581,7 @@ static void Init(int argc, char** argv)
 	// lowest priority, while the homepath is added last and has the highest.
 	cmdlineArgs.paths.insert(cmdlineArgs.paths.begin(), FS::Path::Build(FS::DefaultBasePath(), "pkg"));
 	cmdlineArgs.paths.push_back(FS::Path::Build(cmdlineArgs.homePath, "pkg"));
+	EarlyCvar("fs_legacypaks", cmdlineArgs);
 	FS::Initialize(cmdlineArgs.homePath, cmdlineArgs.libPath, cmdlineArgs.paths);
 
 	// Look for an existing instance of the engine running on the same homepath.
