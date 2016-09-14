@@ -714,6 +714,7 @@ if (BUILD_CLIENT)
 
     add_executable(include-bin ${LIB_DIR}/include-bin/main.cpp)
 
+    add_custom_target(glsldir ALL COMMAND ${CMAKE_COMMAND} -E make_directory ${ENGINE_DIR}/renderer/glsl)
     foreach(res ${GLSLSOURCELIST})
         set(in ${res})
         set(working_dir ${ENGINE_DIR}/renderer/glsl_source)
@@ -723,7 +724,7 @@ if (BUILD_CLIENT)
         add_custom_command(OUTPUT "${outpath}"
             WORKING_DIRECTORY "${working_dir}"
             COMMAND include-bin "${filename}" "${outpath}"
-            DEPENDS "${res}"
+            DEPENDS "${res}" glsldir
         )
     endforeach()
 endif()
