@@ -720,11 +720,10 @@ if (BUILD_CLIENT)
         get_filename_component(filename ${in} NAME)
 		get_filename_component(filename_no_ext ${in} NAME_WE)
         set(outpath ${ENGINE_DIR}/renderer/glsl/${filename_no_ext}.h)
-        add_custom_command(OUTPUT ${outpath}
-            WORKING_DIRECTORY ${working_dir}
-            COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/include-bin ${filename} ${outpath}
-            DEPENDS include-bin
-            DEPENDS ${res}
+        add_custom_command(OUTPUT "${outpath}"
+            WORKING_DIRECTORY "${working_dir}"
+            COMMAND include-bin "${filename}" "${outpath}"
+            DEPENDS "${res}"
         )
     endforeach()
 endif()
