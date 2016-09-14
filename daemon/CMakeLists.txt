@@ -712,19 +712,26 @@ if (BUILD_CLIENT)
         Libs ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE}
     )
 
+    # generate glsl include files
+    set(GLSL_INCLUDE_DIR ${ENGINE_DIR}/renderer/glsl)
+    set(GLSL_SOURCE_DIR ${ENGINE_DIR}/renderer/glsl_source)
+
     add_executable(include-bin ${LIB_DIR}/include-bin/main.cpp)
 
-    add_custom_target(glsldir ALL COMMAND ${CMAKE_COMMAND} -E make_directory ${ENGINE_DIR}/renderer/glsl)
+    # create the glsl include directory if it doesn't exist
+    add_custom_command(OUTPUT ${GLSL_INCLUDE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${GLSL_INCLUDE_DIR}
+    )
+
     foreach(res ${GLSLSOURCELIST})
         set(in ${res})
-        set(working_dir ${ENGINE_DIR}/renderer/glsl_source)
         get_filename_component(filename ${in} NAME)
-		get_filename_component(filename_no_ext ${in} NAME_WE)
-        set(outpath ${ENGINE_DIR}/renderer/glsl/${filename_no_ext}.h)
+        get_filename_component(filename_no_ext ${in} NAME_WE)
+        set(outpath ${GLSL_INCLUDE_DIR}/${filename_no_ext}.h)
         add_custom_command(OUTPUT "${outpath}"
-            WORKING_DIRECTORY "${working_dir}"
+            WORKING_DIRECTORY "${GLSL_SOURCE_DIR}"
             COMMAND include-bin "${filename}" "${outpath}"
-            DEPENDS "${res}" glsldir
+            DEPENDS "${res}" "${GLSL_INCLUDE_DIR}"
         )
     endforeach()
 endif()
