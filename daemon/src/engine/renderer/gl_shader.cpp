@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // and try to memcpy over that or binary write an std::string to a file.
 static_assert(std::is_pod<GLShaderHeader>::value, "Value must be a pod while code in this cpp file reads and writes this object to file as binary.");
 
-extern std::unordered_map<std::string, const char *> shadermap;
+extern std::unordered_map<std::string, std::string> shadermap;
 // shaderKind's value will be determined later based on command line setting or absence of.
 ShaderKind shaderKind = ShaderKind::Unknown;
 
@@ -78,7 +78,7 @@ namespace // Implementation details
 	{
 		auto it = shadermap.find(filename);
 		if (it != shadermap.end())
-			return it->second;
+			return it->second.c_str();
 		return nullptr;
 	}
 

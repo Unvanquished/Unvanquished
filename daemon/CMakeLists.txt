@@ -711,6 +711,22 @@ if (BUILD_CLIENT)
         Files WIN32 ${WIN_RC} ${QCOMMONLIST} ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST}
         Libs ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE}
     )
+
+    add_executable(include-bin ${LIB_DIR}/include-bin/main.cpp)
+
+    foreach(res ${GLSLSOURCELIST})
+        set(in ${res})
+        set(working_dir ${ENGINE_DIR}/renderer/glsl_source)
+        get_filename_component(filename ${in} NAME)
+		get_filename_component(filename_no_ext ${in} NAME_WE)
+        set(outpath ${ENGINE_DIR}/renderer/glsl/${filename_no_ext}.h)
+        add_custom_command(OUTPUT ${outpath}
+            WORKING_DIRECTORY ${working_dir}
+            COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/include-bin ${filename} ${outpath}
+            DEPENDS include-bin
+            DEPENDS ${res}
+        )
+    endforeach()
 endif()
 
 if (BUILD_SERVER)
