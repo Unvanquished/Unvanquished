@@ -472,7 +472,7 @@ set(LIBS_BASE ${LIBS_BASE} PARENT_SCOPE)
 
 # Curses, pdcurses on Windows and ncursesw on Unix
 # Not supported on mac because the included version is too old
-if (NOT NACL)
+if (USE_CURSES AND NOT NACL)
     if (WIN32)
         set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} gdi32 comdlg32)
 

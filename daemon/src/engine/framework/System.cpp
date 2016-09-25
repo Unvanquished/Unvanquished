@@ -448,7 +448,9 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			       "  -libpath <path>          set the path containing additional executables and libraries\n"
 			       "  -pakpath <path>          add another path from which pk3 files are loaded\n"
 			       "  -resetconfig             reset all cvars and keybindings to their default value\n"
+#ifdef USE_CURSES
 			       "  -curses                  activate the curses interface\n"
+#endif
 			       "  -set <variable> <value>  set the value of a cvar\n"
 			       "  +<command> <args>        execute an ingame command after startup\n"
 			);
@@ -486,9 +488,13 @@ static void ParseCmdline(int argc, char** argv, cmdlineArgs_t& cmdlineArgs)
 			i++;
 		} else if (!strcmp(argv[i], "-resetconfig")) {
 			cmdlineArgs.reset_config = true;
-		} else if (!strcmp(argv[i], "-curses")) {
+		}
+#ifdef USE_CURSES
+		else if (!strcmp(argv[i], "-curses")) {
 			cmdlineArgs.use_curses = true;
-		} else {
+		}
+#endif
+		else {
 			Log::Warn("Ignoring unrecognized parameter \"%s\"", argv[i]);
 			continue;
 		}
