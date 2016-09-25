@@ -301,7 +301,7 @@ set(QCOMMONLIST
     ${ENGINE_DIR}/sys/con_common.cpp
 )
 
-if (NOT APPLE AND USE_CURSES)
+if (NOT APPLE AND (USE_CURSES OR WIN32))
     set(ENGINELIST ${ENGINELIST}
         ${ENGINE_DIR}/sys/con_curses.cpp
     )
