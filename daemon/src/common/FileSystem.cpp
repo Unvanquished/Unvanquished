@@ -2161,10 +2161,11 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	std::string name, version;
 	Util::optional<uint32_t> checksum;
 	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == pakType_t::PAK_DIR && checksum)) {
-		fsLogs.Warn("Invalid pak name: %s", fullPath);
 		if (!UseLegacyPaks()) {
+			fsLogs.Warn("Invalid pak name: %s", fullPath);
 			return;
 		} else {
+			fsLogs.Notice("Loading legacy pak: %s", fullPath);
 			name = filename.substr(0, filename.size() - suffixLen);
 			version = "1";
 		}
