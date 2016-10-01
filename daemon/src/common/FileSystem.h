@@ -39,6 +39,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace FS {
 
+bool UseLegacyPaks();
+
 // File offset type. Using 64bit to allow large files.
 using offset_t = int64_t;
 
