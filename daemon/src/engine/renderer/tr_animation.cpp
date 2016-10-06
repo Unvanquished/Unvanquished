@@ -519,7 +519,7 @@ qhandle_t RE_RegisterAnimation( const char *name )
 	R_SyncRenderThread();
 
 	// load and parse the .md5anim file
-	ri.FS_ReadFile( name, ( void ** ) &buffer );
+	int bufferLen = ri.FS_ReadFile( name, ( void ** ) &buffer );
 
 	if ( !buffer )
 	{
