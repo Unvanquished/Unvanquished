@@ -46,7 +46,8 @@ enum class ShaderKind
 	External
 };
 
-struct GLShaderHeader
+// Header for saved shader binaries
+struct GLBinaryHeader
 {
 	unsigned int version;
 	unsigned int checkSum; // checksum of shader source this was built from

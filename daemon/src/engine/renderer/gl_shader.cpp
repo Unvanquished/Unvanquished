@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <common/FileSystem.h>
 #include "gl_shader.h"
 
-// We currently write GLShaderHeader to a file and memcpy all over it.
+// We currently write GLBinaryHeader to a file and memcpy all over it.
 // Make sure it's a pod, so we don't put a std::string in it or something
 // and try to memcpy over that or binary write an std::string to a file.
-static_assert(std::is_pod<GLShaderHeader>::value, "Value must be a pod while code in this cpp file reads and writes this object to file as binary.");
+static_assert(std::is_pod<GLBinaryHeader>::value, "Value must be a pod while code in this cpp file reads and writes this object to file as binary.");
 
 extern std::unordered_map<std::string, std::string> shadermap;
 // shaderKind's value will be determined later based on command line setting or absence of.
@@ -719,7 +719,7 @@ bool GLShaderManager::LoadShaderBinary( GLShader *shader, size_t programNum )
 #ifdef GL_ARB_get_program_binary
 	GLint          success;
 	const byte    *binaryptr;
-	GLShaderHeader shaderHeader;
+	GLBinaryHeader shaderHeader;
 
 	if (!GetShaderPath().empty())
 		return false;
@@ -795,7 +795,7 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 	GLuint                binarySize = 0;
 	byte                  *binary;
 	byte                  *binaryptr;
-	GLShaderHeader        shaderHeader{}; // Zero init.
+	GLBinaryHeader        shaderHeader{}; // Zero init.
 	shaderProgram_t       *shaderProgram;
 
 	if (!GetShaderPath().empty())
