@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* cameraEffects_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec2 		attr_TexCoord0;
+IN vec3 		attr_Position;
+IN vec2 		attr_TexCoord0;
 
 uniform mat4		u_ModelViewProjectionMatrix;
 uniform mat4		u_ColorTextureMatrix;
 
-varying vec2		var_Tex;
+OUT(smooth) vec2	var_Tex;
 
 void	main()
 {

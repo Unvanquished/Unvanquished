@@ -40,6 +40,8 @@ static void GLSL_InitGPUShadersOrError()
 	GL_CheckErrors();
 
 	// single texture rendering
+	gl_shaderManager.GenerateBuiltinHeaders();
+
 	gl_shaderManager.load( gl_genericShader );
 
 	// simple vertex color shading for entities

@@ -22,28 +22,50 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* lighttile_fp.glsl */
 
-varying vec2 vPosition;
-varying vec2 vTexCoord;
+IN(smooth) vec2 vPosition;
+IN(smooth) vec2 vTexCoord;
 
 struct light {
-  vec4  center_radius;
-  vec4  color_type;
-  vec4  direction_angle;
+  vec3  center;
+  float radius;
+  vec3  color;
+  float type;
+  vec3  direction;
+  float angle;
 };
 
 #ifdef HAVE_ARB_uniform_buffer_object
 layout(std140) uniform u_Lights {
-  light lights[ MAX_REF_LIGHTS ];
+  vec4 lightvec[ MAX_REF_LIGHTS * 3 ];
 };
-#define GetLight(idx, component) lights[idx].component
+light GetLight(in int idx) {
+  light result; vec4 component;
+  idx *= 3;
+  component = lightvec[idx++];
+  result.center = component.xyz; result.radius = component.w;
+  component = lightvec[idx++];
+  result.color = component.xyz; result.type = component.w;
+  component = lightvec[idx++];
+  result.direction = component.xyz; result.angle = component.w;
+  return result;
+}
 #else
 uniform sampler2D u_Lights;
-#define center_radius_offset   0
-#define color_type_offset      1
-#define direction_angle_offset 2
-#define idxToTC( idx, w, h ) vec2( ( idx + 0.5 ) * ( 1.0 / (w * h) ), \
-				   ( idx + 0.5 ) * ( 1.0 / w ) )
-#define GetLight(idx, component) texture2D( u_Lights, idxToTC(3 * idx + component##_offset, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) )
+vec2 idxToTC( in int idx, int w, int h ) {
+  return idxToTC( idx, w, h ) vec2( ( float(idx) + 0.5 ) * ( 1.0 / (w * h) ),
+				    ( float(idx) + 0.5 ) * ( 1.0 / w ) );
+}
+light GetLight(in int idx) {
+  light result; vec4 component;
+  idx *= 3;
+  component = texture2D( u_Lights, idxToTC(idx++, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) );
+  result.center = component.xyz; result.radius = component.w;
+  component = texture2D( u_Lights, idxToTC(idx++, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) );
+  result.color = component.xyz; result.type = component.w;
+  component = texture2D( u_Lights, idxToTC(idx++, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) );
+  result.direction = component.xyz; result.angle = component.w;
+  return result;
+}
 #endif
 
 uniform int  u_numLights;
@@ -54,20 +76,17 @@ uniform vec3 u_zFar;
 
 const int numLayers = MAX_REF_LIGHTS / 256;
 
-#if defined( TEXTURE_INTEGER ) && defined( HAVE_EXT_gpu_shader4 )
+#if defined( TEXTURE_INTEGER )
 #define idxs_t uvec4
 #define idx_initializer uvec4(3)
-#if __VERSION__ < 130
-varying out uvec4 fragData;
-#else
-out uvec4 fragData;
-#endif
+DECLARE_OUTPUT(uvec4)
 void pushIdxs(in int idx, inout uvec4 idxs ) {
   uvec4 bits = uvec4( idx >> 8, idx >> 6, idx >> 4, idx >> 2 ) & uvec4( 0x03 );
   idxs = idxs << 2 | bits;
 }
-#define exportIdxs(x) fragData = ( x )
+#define exportIdxs(x) outputColor = ( x )
 #else
+DECLARE_OUTPUT(vec4)
 #define idxs_t vec4
 #define idx_initializer vec4(3.0)
 void pushIdxs(in int idx, inout vec4 idxs ) {
@@ -76,7 +95,7 @@ void pushIdxs(in int idx, inout vec4 idxs ) {
   idxs = idxs * 4.0 + bits;
   idxs -= 256.0 * floor( idxs * (1.0/256.0) ); // discard upper bits
 }
-#define exportIdxs(x) gl_FragColor = ( x ) * (1.0/255.0)
+#define exportIdxs(x) outputColor = ( x ) * (1.0/255.0)
 #endif
 
 void lightOutsidePlane( in vec4 plane, inout vec3 center, inout float radius ) {
@@ -124,9 +143,9 @@ void main() {
   idxs_t idxs = idx_initializer;
 
   for( int i = u_lightLayer; i < u_numLights; i += numLayers ) {
-    vec4 center_radius = GetLight( i, center_radius );
-    vec3 center = ( u_ModelMatrix * vec4( center_radius.xyz, 1.0 ) ).xyz;
-    float radius = 2.0 * center_radius.w;
+    light l = GetLight( i );
+    vec3 center = ( u_ModelMatrix * vec4( l.center, 1.0 ) ).xyz;
+    float radius = 2.0 * l.radius;
 
     // todo: better checks for spotlights
     lightOutsidePlane( plane1, center, radius );

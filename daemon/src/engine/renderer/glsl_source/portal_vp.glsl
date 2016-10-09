@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* portal_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec4		attr_Color;
+IN vec3 		attr_Position;
+IN vec4			attr_Color;
 
 uniform mat4		u_ModelViewMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
-varying vec3		var_Position;
-varying vec4		var_Color;
+OUT(smooth) vec3	var_Position;
+OUT(smooth) vec4	var_Color;
 
 void	main()
 {

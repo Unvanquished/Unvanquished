@@ -34,15 +34,14 @@ uniform float		u_Time;
 uniform vec4		u_ColorModulate;
 uniform vec4		u_Color;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuseGlow;
-varying vec4		var_TexNormalSpecular;
-varying vec2		var_TexLight;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-varying vec3		var_Normal;
-varying vec4		var_Color;
-
+OUT(smooth) vec3	var_Position;
+OUT(smooth) vec4	var_TexDiffuseGlow;
+OUT(smooth) vec4	var_TexNormalSpecular;
+OUT(smooth) vec2	var_TexLight;
+OUT(smooth) vec3	var_Tangent;
+OUT(smooth) vec3	var_Binormal;
+OUT(smooth) vec3	var_Normal;
+OUT(smooth) vec4	var_Color;
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,

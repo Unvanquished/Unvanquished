@@ -27,17 +27,13 @@ uniform sampler2D	u_NormalMap;
 uniform vec3		u_ViewOrigin;
 uniform mat4		u_ModelMatrix;
 
-varying vec3		var_Position;
-varying vec2		var_TexNormal;
-varying vec4		var_Tangent;
-varying vec4		var_Binormal;
-varying vec4		var_Normal;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec2		var_TexNormal;
+IN(smooth) vec4		var_Tangent;
+IN(smooth) vec4		var_Binormal;
+IN(smooth) vec4		var_Normal;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {

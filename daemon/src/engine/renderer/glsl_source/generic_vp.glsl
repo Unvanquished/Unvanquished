@@ -37,15 +37,15 @@ uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
 #if defined(USE_VERTEX_SPRITE)
-varying vec2            var_FadeDepth;
+OUT(smooth) vec2	var_FadeDepth;
 uniform mat4		u_ProjectionMatrixTranspose;
 #elif defined(USE_DEPTH_FADE)
 uniform float           u_DepthScale;
-varying vec2            var_FadeDepth;
+OUT(smooth) vec2	var_FadeDepth;
 #endif
 
-varying vec2		var_Tex;
-varying vec4		var_Color;
+OUT(smooth) vec2	var_Tex;
+OUT(smooth) vec4	var_Color;
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,

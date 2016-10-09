@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #if defined(USE_VERTEX_SKINNING)
 
-attribute vec3 attr_Position;
-attribute vec2 attr_TexCoord0;
-attribute vec4 attr_Color;
-attribute vec4 attr_QTangent;
-attribute vec4 attr_BoneFactors;
+IN vec3 attr_Position;
+IN vec2 attr_TexCoord0;
+IN vec4 attr_Color;
+IN vec4 attr_QTangent;
+IN vec4 attr_BoneFactors;
 
 // even elements are rotation quat, odd elements are translation + scale (in .w)
 uniform vec4 u_Bones[ 2 * MAX_GLSL_BONES ];

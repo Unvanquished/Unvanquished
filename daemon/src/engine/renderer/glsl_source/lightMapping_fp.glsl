@@ -31,22 +31,18 @@ uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuseGlow;
-varying vec4		var_TexNormalSpecular;
-varying vec2		var_TexLight;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec4		var_TexDiffuseGlow;
+IN(smooth) vec4		var_TexNormalSpecular;
+IN(smooth) vec2		var_TexLight;
 
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-varying vec3		var_Normal;
+IN(smooth) vec3		var_Tangent;
+IN(smooth) vec3		var_Binormal;
+IN(smooth) vec3		var_Normal;
 
-varying vec4		var_Color;
+IN(smooth) vec4		var_Color;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {

@@ -23,12 +23,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #if defined(USE_VERTEX_ANIMATION)
 
-attribute vec3 attr_Position;
-attribute vec4 attr_Color;
-attribute vec4 attr_QTangent;
-attribute vec2 attr_TexCoord0;
-attribute vec3 attr_Position2;
-attribute vec4 attr_QTangent2;
+IN vec3 attr_Position;
+IN vec4 attr_Color;
+IN vec4 attr_QTangent;
+IN vec2 attr_TexCoord0;
+IN vec3 attr_Position2;
+IN vec4 attr_QTangent2;
 
 uniform float u_VertexInterpolation;
 

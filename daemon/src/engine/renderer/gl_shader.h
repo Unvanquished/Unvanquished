@@ -64,6 +64,31 @@ class GLUniformBlock;
 class GLCompileMacro;
 class GLShaderManager;
 
+// represents a piece of GLSL code that can be copied verbatim into
+// GLShaders, like a .h file in C++
+class GLHeader
+{
+private:
+
+	std::string                    _name;
+	std::string                    _text;
+	GLShaderManager               *_shaderManager;
+
+public:
+	GLHeader() : _name(""), _text(""), _shaderManager(nullptr)
+	{}
+
+	GLHeader( const std::string &name, const std::string &text, GLShaderManager *manager ) :
+		_name( name ),
+		_text(text),
+		_shaderManager( manager )
+	{}
+
+	const std::string &getName() const { return _name; }
+	const std::string &getText() const { return _text; }
+	const GLShaderManager *getManager() const { return _shaderManager; }
+};
+
 class GLShader
 {
 	friend class GLShaderManager;
@@ -244,55 +269,24 @@ public:
 
 class GLShaderManager
 {
-	std::string _versionDeclaration;
 	std::queue< GLShader* > _shaderBuildQueue;
 	std::vector< GLShader* > _shaders;
 	std::unordered_map< std::string, int > _deformShaderLookup;
 	std::vector< GLint > _deformShaders;
 	int       _totalBuildTime;
 
-	void addExtension( int enabled, int minGlslVersion, int supported,
-			   const char *name ) {
-		if( !enabled ) {
-			// extension disabled by user
-		} else if( glConfig2.shadingLanguageVersion >= minGlslVersion ) {
-			// the extension is available in the core language
-			_versionDeclaration += Str::Format( "#define HAVE_%s 1\n", name );
-		} else if( supported ) {
-			// extension has to be explicitly enabled
-			_versionDeclaration += Str::Format( "#extension GL_%s : require\n", name );
-			_versionDeclaration += Str::Format( "#define HAVE_%s 1\n", name );
-		} else {
-			// extension is not supported
-		}
-	}
-
 public:
+	GLHeader GLVersionDeclaration;
+	GLHeader GLVertexHeader;
+	GLHeader GLFragmentHeader;
+	GLHeader GLEngineConstants;
+
 	GLShaderManager() : _totalBuildTime( 0 )
 	{
 	}
 	~GLShaderManager();
 
-	std::string GetVersionDeclaration() {
-		if( _versionDeclaration.size() == 0 ) {
-			const char *profile = "";
-
-			if( glConfig2.shadingLanguageVersion >= 150 ) {
-				profile = glConfig2.glCoreProfile ? "core" : "compatibility";
-			}
-			_versionDeclaration = Str::Format( "#version %d %s\n", glConfig2.shadingLanguageVersion, profile );
-
-			// add supported GLSL extensions
-			addExtension( r_arb_texture_gather->integer, 400,
-				      GLEW_ARB_texture_gather, "ARB_texture_gather" );
-			addExtension( r_ext_gpu_shader4->integer, 130,
-				      GLEW_EXT_gpu_shader4, "EXT_gpu_shader4" );
-			addExtension( r_arb_uniform_buffer_object->integer, 140,
-				      GLEW_ARB_uniform_buffer_object, "ARB_uniform_buffer_object" );
-		}
-
-		return _versionDeclaration;
-	}
+	void GenerateBuiltinHeaders();
 
 	template< class T >
 	void load( T *& shader )
@@ -316,7 +310,8 @@ private:
 	bool LoadShaderBinary( GLShader *shader, size_t permutation );
 	void SaveShaderBinary( GLShader *shader, size_t permutation );
 	GLuint CompileShader( Str::StringRef programName, Str::StringRef shaderText,
-			      int shaderTextSize, GLenum shaderType ) const;
+			      std::initializer_list<const GLHeader *> headers,
+			      GLenum shaderType ) const;
 	void CompileGPUShaders( GLShader *shader, shaderProgram_t *program,
 				const std::string &compileMacros );
 	void CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,

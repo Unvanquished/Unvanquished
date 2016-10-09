@@ -81,22 +81,17 @@ uniform mat4		u_ViewMatrix;
 
 uniform float		u_DepthScale;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuse;
-varying vec4		var_TexNormal;
-varying vec2		var_TexSpecular;
-varying vec4		var_TexAttenuation;
-varying vec4		var_Tangent;
-varying vec4		var_Binormal;
-varying vec4		var_Normal;
-//varying vec4		var_Color;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec4		var_TexDiffuse;
+IN(smooth) vec4		var_TexNormal;
+IN(smooth) vec2		var_TexSpecular;
+IN(smooth) vec4		var_TexAttenuation;
+IN(smooth) vec4		var_Tangent;
+IN(smooth) vec4		var_Binormal;
+IN(smooth) vec4		var_Normal;
+//IN(smooth) vec4	var_Color;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
-
+DECLARE_OUTPUT(vec4)
 
 /*
 ================

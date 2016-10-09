@@ -31,15 +31,15 @@ uniform mat4		u_ModelViewProjectionMatrix;
 
 uniform float		u_Time;
 
-varying vec3		var_Position;
-varying vec2		var_TexDiffuse;
-varying vec4		var_Color;
-varying vec4		var_TexNormalSpecular;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-varying vec2		var_TexGlow;
+OUT(smooth) vec3	var_Position;
+OUT(smooth) vec2	var_TexDiffuse;
+OUT(smooth) vec4	var_Color;
+OUT(smooth) vec4	var_TexNormalSpecular;
+OUT(smooth) vec3	var_Tangent;
+OUT(smooth) vec3	var_Binormal;
+OUT(smooth) vec2	var_TexGlow;
 
-varying vec3		var_Normal;
+OUT(smooth) vec3	var_Normal;
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,

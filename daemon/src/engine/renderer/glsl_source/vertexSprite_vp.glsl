@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #if defined(USE_VERTEX_SPRITE)
 
-attribute vec3 attr_Position;
-attribute vec4 attr_Color;
-attribute vec4 attr_TexCoord0;
-attribute vec4 attr_Orientation;
+IN vec3 attr_Position;
+IN vec4 attr_Color;
+IN vec4 attr_TexCoord0;
+IN vec4 attr_Orientation;
 
 uniform vec3 u_ViewOrigin;
 uniform vec3 u_ViewUp;

@@ -380,12 +380,227 @@ static std::string BuildDeformSteps( deformStage_t *deforms, int numDeforms )
 	return steps;
 }
 
+
+static void addExtension( std::string &str, int enabled, int minGlslVersion,
+			  int supported, const char *name ) {
+	if( !enabled ) {
+		// extension disabled by user
+	} else if( glConfig2.shadingLanguageVersion >= minGlslVersion ) {
+		// the extension is available in the core language
+		str += Str::Format( "#define HAVE_%s 1\n", name );
+	} else if( supported ) {
+		// extension has to be explicitly enabled
+		str += Str::Format( "#extension GL_%s : require\n", name );
+		str += Str::Format( "#define HAVE_%s 1\n", name );
+	} else {
+		// extension is not supported
+	}
+}
+
+static void AddConst( std::string& str, const std::string& name, int value )
+{
+	str += Str::Format("const int %s = %d;\n", name, value);
+}
+
+static void AddConst( std::string& str, const std::string& name, float value )
+{
+	str += Str::Format("const float %s = %f;\n", name, value);
+}
+
+static void AddConst( std::string& str, const std::string& name, float v1, float v2 )
+{
+	str += Str::Format("const vec2 %s = vec2(%f, %f);\n", name, v1, v2);
+}
+
+static std::string GenVersionDeclaration() {
+	// Basic version declaration
+	std::string str = Str::Format( "#version %d %s\n",
+				       glConfig2.shadingLanguageVersion,
+				       glConfig2.shadingLanguageVersion >= 150 ? (glConfig2.glCoreProfile ? "core" : "compatibility") : "");
+
+	// add supported GLSL extensions
+	addExtension( str, r_arb_texture_gather->integer, 400,
+		      GLEW_ARB_texture_gather, "ARB_texture_gather" );
+	addExtension( str, r_ext_gpu_shader4->integer, 130,
+		      GLEW_EXT_gpu_shader4, "EXT_gpu_shader4" );
+	addExtension( str, r_arb_uniform_buffer_object->integer, 140,
+		      GLEW_ARB_uniform_buffer_object, "ARB_uniform_buffer_object" );
+
+	return str;
+}
+
+static std::string GenVertexHeader() {
+	std::string str;
+
+	// Vertex shader compatibility defines
+	if( glConfig2.shadingLanguageVersion > 120 ) {
+		str =   "#define IN in\n"
+			"#define OUT(mode) mode out\n"
+			"#define textureCube texture\n"
+			"#define texture2D texture\n"
+			"#define texture2DProj textureProj\n"
+			"#define texture3D texture\n";
+	} else {
+		str =   "#define IN attribute\n"
+			"#define OUT(mode) varying\n"
+		// add implementation of GLSL 1.30 smoothstep() function
+			"float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
+	}
+
+	return str;
+}
+
+static std::string GenFragmentHeader() {
+	std::string str;
+
+	// Fragment shader compatibility defines
+	if( glConfig2.shadingLanguageVersion > 120 ) {
+		str =   "#define IN(mode) mode in\n"
+			"#define DECLARE_OUTPUT(type) out type outputColor;\n"
+			"#define textureCube texture\n"
+			"#define texture2D texture\n"
+			"#define texture2DProj textureProj\n"
+			"#define texture3D texture\n";
+	} else if( glConfig2.gpuShader4Available) {
+		str =   "#define IN(mode) varying\n"
+			"#define DECLARE_OUTPUT(type) varying out type outputColor;\n"
+			// add implementation of GLSL 1.30 smoothstep() function
+			"float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
+	} else {
+		str =   "#define IN(mode) varying\n"
+			"#define outputColor gl_FragColor\n"
+			"#define DECLARE_OUTPUT(type) /* empty*/\n"
+			// add implementation of GLSL 1.30 smoothstep() function
+			"float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
+	}
+
+	return str;
+}
+
+static std::string GenEngineConstants() {
+	// Engine constants
+	std::string str;
+
+	AddConst( str, "r_AmbientScale", r_ambientScale->value );
+	AddConst( str, "r_SpecularScale", r_specularScale->value );
+	AddConst( str, "r_NormalScale", r_normalScale->value );
+	AddConst( str, "r_zNear", r_znear->value );
+
+	AddConst( str, "M_PI", static_cast<float>( M_PI ) );
+	AddConst( str, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
+	AddConst( str, "MAX_REF_LIGHTS", MAX_REF_LIGHTS );
+	AddConst( str, "TILE_SIZE", TILE_SIZE );
+
+	AddConst( str, "r_FBufScale", 1.0f / glConfig.vidWidth, 1.0f / glConfig.vidHeight );
+	AddConst( str, "r_tileStep", glState.tileStep[ 0 ], glState.tileStep[ 1 ] );
+
+	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && glConfig2.textureFloatAvailable )
+	{
+		if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM16) || r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM32) )
+		{
+			AddDefine( str, "ESM", 1 );
+		}
+		else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_EVSM32) )
+		{
+			AddDefine( str, "EVSM", 1 );
+			// The exponents for the EVSM techniques should be less than ln(FLT_MAX/FILTER_SIZE)/2 {ln(FLT_MAX/1)/2 ~44.3}
+			//         42.9 is the maximum possible value for FILTER_SIZE=15
+			//         42.0 is the truncated value that we pass into the sample
+			AddConst( str, "r_EVSMExponents", 42.0f, 42.0f );
+			if ( r_evsmPostProcess->integer )
+				AddDefine( str,"r_EVSMPostProcess", 1 );
+		}
+		else
+		{
+			AddDefine( str, "VSM", 1 );
+
+			if ( glConfig.hardwareType == glHardwareType_t::GLHW_ATI )
+				AddDefine( str, "VSM_CLAMP", 1 );
+		}
+
+		if ( ( glConfig.hardwareType == glHardwareType_t::GLHW_NV_DX10 || glConfig.hardwareType == glHardwareType_t::GLHW_ATI_DX10 ) && r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_VSM32) )
+			AddConst( str, "VSM_EPSILON", 0.000001f );
+		else
+			AddConst( str, "VSM_EPSILON", 0.0001f );
+
+		if ( r_lightBleedReduction->value )
+			AddConst( str, "r_LightBleedReduction", r_lightBleedReduction->value );
+
+		if ( r_overDarkeningFactor->value )
+			AddConst( str, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
+
+		if ( r_shadowMapDepthScale->value )
+			AddConst( str, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
+
+		if ( r_debugShadowMaps->integer )
+			AddDefine( str, "r_DebugShadowMaps", r_debugShadowMaps->integer );
+
+		if ( r_softShadows->integer == 6 )
+			AddDefine( str, "PCSS", 1 );
+		else if ( r_softShadows->integer )
+			AddConst( str, "r_PCFSamples", r_softShadows->value + 1.0f );
+
+		if ( r_parallelShadowSplits->integer )
+			AddDefine( str, Str::Format( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
+
+		if ( r_showParallelShadowSplits->integer )
+			AddDefine( str, "r_ShowParallelShadowSplits", 1 );
+	}
+
+	if ( r_precomputedLighting->integer )
+		AddDefine( str, "r_precomputedLighting", 1 );
+
+	if ( r_showLightMaps->integer )
+		AddDefine( str, "r_showLightMaps", r_showLightMaps->integer );
+
+	if ( r_showDeluxeMaps->integer )
+		AddDefine( str, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
+
+	if ( r_showEntityNormals->integer )
+		AddDefine( str, "r_showEntityNormals", r_showEntityNormals->integer );
+
+	if ( glConfig2.vboVertexSkinningAvailable )
+	{
+		AddDefine( str, "r_VertexSkinning", 1 );
+		AddConst( str, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
+	}
+	else
+	{
+		AddConst( str, "MAX_GLSL_BONES", 4 );
+	}
+
+	if ( r_wrapAroundLighting->value )
+		AddConst( str, "r_WrapAroundLighting", r_wrapAroundLighting->value );
+
+	if ( r_halfLambertLighting->integer )
+		AddDefine( str, "r_HalfLambertLighting", 1 );
+
+	if ( r_rimLighting->integer )
+	{
+		AddDefine( str, "r_RimLighting", 1 );
+		AddConst( str, "r_RimExponent", r_rimExponent->value );
+	}
+
+	if ( r_showLightTiles->integer )
+	{
+		AddDefine( str, "r_showLightTiles", 1 );
+	}
+
+	return str;
+}
+
+void GLShaderManager::GenerateBuiltinHeaders() {
+	GLVersionDeclaration = GLHeader("GLVersionDeclaration", GenVersionDeclaration(), this);
+	GLVertexHeader = GLHeader("GLVertexHeader", GenVertexHeader(), this);
+	GLFragmentHeader = GLHeader("GLFragmentHeader", GenFragmentHeader(), this);
+	GLEngineConstants = GLHeader("GLEngineConstants", GenEngineConstants(), this);
+}
+
 std::string GLShaderManager::BuildDeformShaderText( const std::string& steps )
 {
 	std::string shaderText;
 
-	shaderText = GetVersionDeclaration();
-	shaderText += steps + "\n";
+	shaderText = steps + "\n";
 
 	// We added a lot of stuff but if we do something bad
 	// in the GLSL shaders then we want the proper line
@@ -406,7 +621,8 @@ int GLShaderManager::getDeformShaderIndex( deformStage_t *deforms, int numDeform
 		std::string shaderText = GLShaderManager::BuildDeformShaderText( steps );
 		_deformShaders.push_back(CompileShader( "deformVertexes",
 							shaderText,
-							shaderText.length(),
+							{ &GLVersionDeclaration,
+							  &GLVertexHeader },
 							GL_VERTEX_SHADER ) );
 		index = _deformShaders.size();
 		_deformShaderLookup[ steps ] = index--;
@@ -463,23 +679,6 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	if ( glConfig2.textureIntegerAvailable )
 		AddDefine( env, "TEXTURE_INTEGER", 1 );
 
-	AddDefine( env, "r_AmbientScale", r_ambientScale->value );
-	AddDefine( env, "r_SpecularScale", r_specularScale->value );
-	AddDefine( env, "r_NormalScale", r_normalScale->value );
-	AddDefine( env, "r_zNear", r_znear->value );
-
-	AddDefine( env, "M_PI", static_cast<float>( M_PI ) );
-	AddDefine( env, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
-	AddDefine( env, "MAX_REF_LIGHTS", MAX_REF_LIGHTS );
-	AddDefine( env, "TILE_SIZE", TILE_SIZE );
-
-	float fbufWidthScale = 1.0f / glConfig.vidWidth;
-	float fbufHeightScale = 1.0f / glConfig.vidHeight;
-
-	AddDefine( env, "r_FBufScale", fbufWidthScale, fbufHeightScale );
-
-	AddDefine( env, "r_tileStep", glState.tileStep[ 0 ], glState.tileStep[ 1 ] );
-
 	if ( glConfig.driverType == glDriverType_t::GLDRV_MESA )
 		AddDefine( env, "GLDRV_MESA", 1 );
 
@@ -494,100 +693,8 @@ std::string     GLShaderManager::BuildGPUShaderText( Str::StringRef mainShaderNa
 	case glHardwareType_t::GLHW_NV_DX10:
 		AddDefine(env, "GLHW_NV_DX10", 1);
 		break;
-    default:
-        break;
-	}
-
-	if ( r_shadows->integer >= Util::ordinal(shadowingMode_t::SHADOWING_ESM16) && glConfig2.textureFloatAvailable )
-	{
-		if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM16) || r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_ESM32) )
-		{
-			AddDefine( env, "ESM", 1 );
-		}
-		else if ( r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_EVSM32) )
-		{
-			AddDefine( env, "EVSM", 1 );
-			// The exponents for the EVSM techniques should be less than ln(FLT_MAX/FILTER_SIZE)/2 {ln(FLT_MAX/1)/2 ~44.3}
-			//         42.9 is the maximum possible value for FILTER_SIZE=15
-			//         42.0 is the truncated value that we pass into the sample
-			AddDefine( env, "r_EVSMExponents", 42.0f, 42.0f );
-			if ( r_evsmPostProcess->integer )
-				AddDefine( env,"r_EVSMPostProcess", 1 );
-		}
-		else
-		{
-			AddDefine( env, "VSM", 1 );
-
-			if ( glConfig.hardwareType == glHardwareType_t::GLHW_ATI )
-				AddDefine( env, "VSM_CLAMP", 1 );
-		}
-
-		if ( ( glConfig.hardwareType == glHardwareType_t::GLHW_NV_DX10 || glConfig.hardwareType == glHardwareType_t::GLHW_ATI_DX10 ) && r_shadows->integer == Util::ordinal(shadowingMode_t::SHADOWING_VSM32) )
-			AddDefine( env, "VSM_EPSILON", 0.000001f );
-		else
-			AddDefine( env, "VSM_EPSILON", 0.0001f );
-
-		if ( r_lightBleedReduction->value )
-			AddDefine( env, "r_LightBleedReduction", r_lightBleedReduction->value );
-
-		if ( r_overDarkeningFactor->value )
-			AddDefine( env, "r_OverDarkeningFactor", r_overDarkeningFactor->value );
-
-		if ( r_shadowMapDepthScale->value )
-			AddDefine( env, "r_ShadowMapDepthScale", r_shadowMapDepthScale->value );
-
-		if ( r_debugShadowMaps->integer )
-			AddDefine( env, "r_DebugShadowMaps", r_debugShadowMaps->integer );
-
-		if ( r_softShadows->integer == 6 )
-			AddDefine( env, "PCSS", 1 );
-		else if ( r_softShadows->integer )
-			AddDefine( env, "r_PCFSamples", r_softShadows->value + 1.0f );
-
-		if ( r_parallelShadowSplits->integer )
-			AddDefine( env, Str::Format( "r_ParallelShadowSplits_%d", r_parallelShadowSplits->integer ) );
-
-		if ( r_showParallelShadowSplits->integer )
-			AddDefine( env, "r_ShowParallelShadowSplits", 1 );
-	}
-
-	if ( r_precomputedLighting->integer )
-		AddDefine( env, "r_precomputedLighting", 1 );
-
-	if ( r_showLightMaps->integer )
-		AddDefine( env, "r_showLightMaps", r_showLightMaps->integer );
-
-	if ( r_showDeluxeMaps->integer )
-		AddDefine( env, "r_showDeluxeMaps", r_showDeluxeMaps->integer );
-
-	if ( r_showEntityNormals->integer )
-		AddDefine( env, "r_showEntityNormals", r_showEntityNormals->integer );
-
-	if ( glConfig2.vboVertexSkinningAvailable )
-	{
-		AddDefine( env, "r_VertexSkinning", 1 );
-		AddDefine( env, "MAX_GLSL_BONES", glConfig2.maxVertexSkinningBones );
-	}
-	else
-	{
-		AddDefine( env, "MAX_GLSL_BONES", 4 );
-	}
-
-	if ( r_wrapAroundLighting->value )
-		AddDefine( env, "r_WrapAroundLighting", r_wrapAroundLighting->value );
-
-	if ( r_halfLambertLighting->integer )
-		AddDefine( env, "r_HalfLambertLighting", 1 );
-
-	if ( r_rimLighting->integer )
-	{
-		AddDefine( env, "r_RimLighting", 1 );
-		AddDefine( env, "r_RimExponent", r_rimExponent->value );
-	}
-
-	if ( r_showLightTiles->integer )
-	{
-		AddDefine( env, "r_showLightTiles", 1 );
+	default:
+		break;
 	}
 
 	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
@@ -847,42 +954,6 @@ void GLShaderManager::SaveShaderBinary( GLShader *shader, size_t programNum )
 void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *program,
 					 const std::string &compileMacros )
 {
-	// header of the glsl shader
-	std::string vertexHeader;
-	std::string fragmentHeader;
-	std::string miscText;
-
-	if ( glConfig2.shadingLanguageVersion != 120 )
-	{
-		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.50 ones
-
-		vertexHeader = GetVersionDeclaration();
-		fragmentHeader = GetVersionDeclaration();
-
-		vertexHeader += "#define attribute in\n";
-		vertexHeader += "#define varying out\n";
-
-		fragmentHeader += "#define varying in\n";
-
-		vertexHeader += "#define textureCube texture\n";
-		vertexHeader += "#define texture2D texture\n";
-		vertexHeader += "#define texture2DProj textureProj\n";
-		vertexHeader += "#define texture3D texture\n";
-
-		fragmentHeader += "#define textureCube texture\n";
-		fragmentHeader += "#define texture2D texture\n";
-		fragmentHeader += "#define texture2DProj textureProj\n";
-		fragmentHeader += "#define texture3D texture\n";
-	}
-	else
-	{
-		vertexHeader += "#version 120\n";
-		fragmentHeader += "#version 120\n";
-
-		// add implementation of GLSL 1.30 smoothstep() function
-		miscText += "float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
-	}
-
 	// permutation macros
 	std::string macrosString;
 
@@ -906,15 +977,19 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 	}
 
 	// add them
-	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + miscText +  shader->_vertexShaderText;
-	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + miscText + shader->_fragmentShaderText;
+	std::string vertexShaderTextWithMacros = macrosString + shader->_vertexShaderText;
+	std::string fragmentShaderTextWithMacros = macrosString + shader->_fragmentShaderText;
 	program->VS = CompileShader( shader->GetName(),
 				     vertexShaderTextWithMacros,
-				     vertexShaderTextWithMacros.length(),
+				     { &GLVersionDeclaration,
+				       &GLVertexHeader,
+				       &GLEngineConstants },
 				     GL_VERTEX_SHADER );
 	program->FS = CompileShader( shader->GetName(),
 				     fragmentShaderTextWithMacros,
-				     fragmentShaderTextWithMacros.length(),
+				     { &GLVersionDeclaration,
+				       &GLFragmentHeader,
+				       &GLEngineConstants },
 				     GL_FRAGMENT_SHADER );
 }
 
@@ -931,13 +1006,31 @@ void GLShaderManager::CompileAndLinkGPUShaderProgram( GLShader *shader, shaderPr
 	LinkProgram( program->program );
 }
 
-GLuint GLShaderManager::CompileShader( Str::StringRef programName, Str::StringRef shaderText, int shaderTextSize, GLenum shaderType ) const
+GLuint GLShaderManager::CompileShader( Str::StringRef programName,
+				       Str::StringRef shaderText,
+				       std::initializer_list<const GLHeader *> headers,
+				       GLenum shaderType ) const
 {
 	GLuint shader = glCreateShader( shaderType );
+	const GLchar *texts[headers.size() + 1];
+	GLint lengths[headers.size() + 1];
+	int i;
+
+	i = 0;
+	for(const GLHeader *hdr : headers) {
+	  texts[i++] = hdr->getText().data();
+	}
+	texts[i++] = shaderText.data();
+
+	i = 0;
+	for(const GLHeader *hdr : headers) {
+	  lengths[i++] = (GLint)hdr->getText().size();
+	}
+	lengths[i++] = (GLint)shaderText.size();
 
 	GL_CheckErrors();
 
-	glShaderSource( shader, 1, ( const GLchar ** ) &shaderText, &shaderTextSize );
+	glShaderSource( shader, i, texts, lengths );
 
 	// compile shader
 	glCompileShader( shader );

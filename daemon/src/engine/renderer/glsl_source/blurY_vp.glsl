@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* blurY_vp.glsl */
 
-attribute vec3 		attr_Position;
+IN vec3 		attr_Position;
 
 uniform mat4		u_ModelViewProjectionMatrix;
 

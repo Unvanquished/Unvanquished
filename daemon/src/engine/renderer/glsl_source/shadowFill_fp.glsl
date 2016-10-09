@@ -25,17 +25,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_ColorMap;
 uniform float		u_AlphaThreshold;
 uniform vec3		u_LightOrigin;
-uniform float       u_LightRadius;
+uniform float		u_LightRadius;
 
-varying vec3		var_Position;
-varying vec2		var_Tex;
-varying vec4		var_Color;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec2		var_Tex;
+IN(smooth) vec4		var_Color;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 #ifdef TEXTURE_RG
 #  define SWIZ1 r

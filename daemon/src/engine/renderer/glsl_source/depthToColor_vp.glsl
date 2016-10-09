@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* depthToColor_vp.glsl */
 
-attribute vec3 		attr_Position;
+IN vec3 		attr_Position;
 #if defined(USE_VERTEX_SKINNING)
-attribute vec3      attr_Normal;
+IN vec3			attr_Normal;
 #endif
 
 uniform mat4		u_ModelViewProjectionMatrix;

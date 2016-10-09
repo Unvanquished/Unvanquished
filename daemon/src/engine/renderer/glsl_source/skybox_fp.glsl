@@ -25,13 +25,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform samplerCube	u_ColorMap;
 uniform vec3		u_ViewOrigin;
 
-varying vec3		var_Position;
+IN(smooth) vec3		var_Position;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {
@@ -40,12 +36,5 @@ void	main()
 
 	vec4 color = textureCube(u_ColorMap, I).rgba;
 
-#if defined(r_DeferredShading)
-	gl_FragData[0] = color;
-	gl_FragData[1] = vec4(0.0);
-	gl_FragData[2] = vec4(0.0);
-	gl_FragData[3] = vec4(0.0);
-#else
 	outputColor = color;
-#endif
 }
