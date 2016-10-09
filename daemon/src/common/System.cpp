@@ -35,6 +35,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#ifdef __linux__
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,17,0)
+#include <sys/syscall.h>
+#include <linux/random.h>
+#define HAS_GETRANDOM_SYSCALL 1
+#endif
+#endif
 #ifdef __native_client__
 #include <nacl/nacl_exception.h>
 #include <nacl/nacl_minidump.h>
@@ -346,12 +354,22 @@ void GenRandomBytes(void* dest, size_t size)
 	if (nacl_secure_random(dest, size, &bytes_written) != 0 || bytes_written != size)
 		Sys::Error("nacl_secure_random failed");
 #else
+#ifdef __linux__
+#ifdef HAS_GETRANDOM_SYSCALL
+	if (syscall(SYS_getrandom, dest, size, GRND_NONBLOCK) == -1)
+		Sys::Error("Failed getrandom syscall: %s", strerror(errno));
+#else
 	int fd = open("/dev/urandom", O_RDONLY);
 	if (fd == -1)
 		Sys::Error("Failed to open /dev/urandom: %s", strerror(errno));
 	if (read(fd, dest, size) != (ssize_t) size)
 		Sys::Error("Failed to read from /dev/urandom: %s", strerror(errno));
 	close(fd);
+#endif
+#else
+	arc4random_buf(dest, size);
+#endif
+
 #endif
 }
 
