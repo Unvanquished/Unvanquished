@@ -3786,32 +3786,18 @@ List all maps on the server
 =================
 */
 
-static int SortMaps( const void *a, const void *b )
-{
-	return strcmp( * ( const char ** ) a, * ( const char ** ) b );
-}
-
 #define MAX_MAPLIST_MAPS 256
 #define MAX_MAPLIST_ROWS 9
 void Cmd_ListMaps_f( gentity_t *ent )
 {
 	char search[ 16 ] = { "" };
-	const char *fileSort[ MAX_MAPLIST_MAPS ] = { 0 };
-	char *p;
-	int  shown = 0;
-	int  count = 0;
 	int  page = 0;
-	int  pages;
-	int  row, rows;
-	int  start, i, j;
-	char mapName[ MAX_QPATH ];
-
-	trap_Cvar_VariableStringBuffer( "mapname", mapName, sizeof( mapName ) );
 
 	if ( trap_Argc() > 1 )
 	{
 		trap_Argv( 1, search, sizeof( search ) );
 
+		char *p;
 		for ( p = search; ( *p ) && Str::cisdigit( *p ); p++ ) {; }
 
 		if ( !( *p ) )
@@ -3836,62 +3822,80 @@ void Cmd_ListMaps_f( gentity_t *ent )
 		}
 	}
 
-	auto paks = FS::GetAvailablePaks();
+	const char *mapNames[ MAX_MAPLIST_MAPS ] = { 0 };
+	int         mapNamesCount = 0;
+	const auto paks = FS::GetAvailablePaks();
 
 	for ( size_t i = 0; i < paks.size(); ++i )
 	{
+		const char *pakName = paks[ i ].name.c_str();
+
 		// Filter out duplicates
-		if ( i && !strcmp( paks[ i ].name.c_str(), paks[ i - 1 ].name.c_str() ) )
+		if ( i && !strcmp( pakName, paks[ i - 1 ].name.c_str() ) )
 		{
 			continue;
 		}
 
-		if ( Q_strncmp( "map-", paks[ i ].name.c_str(), 4 ) || ( search[ 0 ] && !strstr( paks[ i ].name.c_str(), search ) ) )
+		if ( Q_strncmp( "map-", pakName, 4 ) ||
+			 ( search[ 0 ] && !strstr( pakName + 4, search ) ) )
 		{
 			continue;
 		}
 
-		fileSort[ count ] = paks[ i ].name.c_str() + 4;
-		count++;
+		mapNames[ mapNamesCount++ ] = pakName + 4;
 	}
 
-	qsort( fileSort, count, sizeof( fileSort[ 0 ] ), SortMaps );
+	std::sort( mapNames,
+			   mapNames + mapNamesCount,
+			   [] ( const char *mapNameFirst, const char *mapNameSecond )
+			   {
+			   		return strcmp( mapNameFirst, mapNameSecond ) < 0;
+			   }
+	);
 
-	rows = ( count + 2 ) / 3;
-	pages = std::max( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
+	int rows = ( mapNamesCount + 2 ) / 3;
+	int pages = std::max( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
 
 	if ( page >= pages )
 	{
 		page = pages - 1;
 	}
 
-	start = page * MAX_MAPLIST_ROWS * 3;
+	int start = page * MAX_MAPLIST_ROWS * 3;
 
-	if ( count < start + ( 3 * MAX_MAPLIST_ROWS ) )
+	if ( mapNamesCount < start + ( 3 * MAX_MAPLIST_ROWS ) )
 	{
-		rows = ( count - start + 2 ) / 3;
+		rows = ( mapNamesCount - start + 2 ) / 3;
 	}
 	else
 	{
 		rows = MAX_MAPLIST_ROWS;
 	}
 
+	char mapName[ MAX_QPATH ];
+
+	trap_Cvar_VariableStringBuffer( "mapname", mapName, sizeof( mapName ) );
+
 	ADMBP_begin();
 
-	for ( row = 0; row < rows; row++ )
+	int shownMapNamesCount = 0;
+
+	for ( int row = 0; row < rows; row++ )
 	{
-		for ( i = start + row, j = 0; i < count && j < 3; i += rows, j++ )
+		for ( int i = start + row, j = 0; i < mapNamesCount && j < 3; i += rows, j++ )
 		{
-			if ( !strcmp( fileSort[ i ], mapName ) )
+			const char *printedMapName = mapNames[ i ];
+
+			if ( !strcmp( printedMapName, mapName ) )
 			{
-				ADMBP( va( "^3 %-20s", fileSort[ i ] ) );
+				ADMBP( va( "^3 %-20s", printedMapName ) );
 			}
 			else
 			{
-				ADMBP( va( "^7 %-20s", fileSort[ i ] ) );
+				ADMBP( va( "^7 %-20s", printedMapName ) );
 			}
 
-			shown++;
+			shownMapNamesCount++;
 		}
 
 		ADMBP( "" );
@@ -3901,17 +3905,34 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 	if ( search[ 0 ] )
 	{
-		ADMP_P( va( "%s %d %s", Quote( P_("^3listmaps: ^7found $1$ map matching '$2$^7'", "^3listmaps: ^7found $1$ maps matching '$2$^7'", count) ), count, Quote( search ) ), count );
+		ADMP_P( va( "%s %d %s",
+					Quote( P_("^3listmaps: ^7found $1$ map matching '$2$^7'",
+							  "^3listmaps: ^7found $1$ maps matching '$2$^7'",
+							  mapNamesCount)
+					),
+					mapNamesCount,
+					Quote( search )
+			      ),
+				mapNamesCount );
 	}
 	else
 	{
-		ADMP_P( va( "%s %d %d", Quote( P_("^3listmaps: ^7listing $1$ of $2$ map", "^3listmaps: ^7listing $1$ of $2$ maps", count) ), shown, count ), count );
+		ADMP_P( va( "%s %d %d",
+					Quote( P_("^3listmaps: ^7listing $1$ of $2$ map",
+							  "^3listmaps: ^7listing $1$ of $2$ maps",
+							  mapNamesCount)
+					),
+					shownMapNamesCount,
+					mapNamesCount
+				  ),
+				mapNamesCount );
 	}
 
 	if ( pages > 1 && page + 1 < pages )
 	{
-		ADMP( va( "%s %d %d %s %s %d", QQ( N_("^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
-		           page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
+		ADMP( va( "%s %d %d %s %s %d",
+				  QQ( N_("^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
+		          page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
 	}
 	else if ( pages > 1 )
 	{
