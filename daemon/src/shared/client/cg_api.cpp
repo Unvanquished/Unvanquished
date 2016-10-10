@@ -595,7 +595,7 @@ void trap_Key_SetCatcher( int catcher )
 std::vector<std::vector<int>> trap_Key_GetKeynumForBinds(int team, std::vector<std::string> binds) {
     std::vector<std::vector<int>> result;
 	VM::SendMsg<Key::GetKeynumForBindsMsg>(team, binds, result);
-    return std::move(result);
+    return result;
 }
 
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
