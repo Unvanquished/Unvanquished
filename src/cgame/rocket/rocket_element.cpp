@@ -226,10 +226,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 			{
 				char *string = ( char * ) out;
 
-				if ( property )
-				{
-					Q_strncpyz( string, property->Get<Rocket::Core::String>().CString(), len );
-				}
+				Q_strncpyz( string, property->Get<Rocket::Core::String>().CString(), len );
 
 				return;
 			}

@@ -270,7 +270,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 			event->s.eventParm = 0;
 			event->s.otherEntityNum = 0;
 			event->s.otherEntityNum2 = ( int )( fabs( amount ) * 10.0f + 0.5f );
-			event->s.groundEntityNum = amount < 0.0f ? true : false;
+			event->s.groundEntityNum = amount < 0.0f;
 		}
 
 		// notify legacy stage sensors
