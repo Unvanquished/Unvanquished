@@ -3888,11 +3888,11 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 			if ( !strcmp( printedMapName, mapName ) )
 			{
-				ADMBP( va( "^3 %-20s", printedMapName ) );
+				ADMBP_raw( va( "^3 %-20s", printedMapName ) );
 			}
 			else
 			{
-				ADMBP( va( "^7 %-20s", printedMapName ) );
+				ADMBP_raw( va( "^7 %-20s", printedMapName ) );
 			}
 
 			shownMapNamesCount++;

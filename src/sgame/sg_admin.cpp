@@ -52,6 +52,7 @@ static void G_admin_notIntermission( gentity_t *ent )
 
 // big ugly global buffer for use with buffered printing of long outputs
 static std::string       g_bfb;
+#define MAX_MESSAGE_SIZE static_cast<size_t>(1022)
 
 static bool G_admin_maprestarted( gentity_t * );
 
@@ -5507,6 +5508,7 @@ void G_admin_print_plural( gentity_t *ent, Str::StringRef m, int number )
 void G_admin_buffer_begin()
 {
 	g_bfb.clear();
+	g_bfb.reserve(MAX_MESSAGE_SIZE);
 }
 
 void G_admin_buffer_end( gentity_t *ent )
@@ -5514,19 +5516,30 @@ void G_admin_buffer_end( gentity_t *ent )
 	G_admin_print( ent, Cmd::Escape( g_bfb ) );
 }
 
-void G_admin_buffer_print( gentity_t *ent, Str::StringRef m )
+static inline void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m, bool appendNewLine )
 {
-	if ( !m.empty() )
+	// Ensure we don't overflow client buffers.
+	if ( g_bfb.size() + m.size() >= MAX_MESSAGE_SIZE )
 	{
-		// Ensure we don't overflow client buffers.
-		if ( g_bfb.size() + m.size() >= 1022 )
-		{
-			G_admin_buffer_end( ent );
-			g_bfb.clear();
-		}
-		g_bfb += m;
+		G_admin_buffer_end( ent );
+		G_admin_buffer_begin();
+	}
+	g_bfb += m;
+
+	if ( appendNewLine )
+	{
 		g_bfb += '\n';
 	}
+}
+
+void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m )
+{
+	G_admin_buffer_print_raw( ent, m, false );
+}
+
+void G_admin_buffer_print( gentity_t *ent, Str::StringRef m )
+{
+	G_admin_buffer_print_raw( ent, m, true );
 }
 
 void G_admin_cleanup()
