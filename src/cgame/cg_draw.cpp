@@ -126,7 +126,7 @@ void CG_MousePosEvent( int x, int y )
 	}
 	else if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) &&
-	     cg.showScores == false )
+	     !cg.showScores )
 	{
 		CG_SetKeyCatcher( 0 );
 	}
@@ -140,7 +140,7 @@ void CG_KeyEvent( int key, bool down )
 	}
 	else if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
-	       cg.showScores == false ) )
+	       !cg.showScores ) )
 	{
 		CG_SetKeyCatcher( 0 );
 	}

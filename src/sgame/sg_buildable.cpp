@@ -1131,7 +1131,7 @@ static bool AHive_isBetterTarget(const gentity_t *const self, const gentity_t *c
 	}
 
 	// Tie breaker is random decision, so clients on lower slots don't get shot at more often.
-	return rand()%2 ? true : false;
+	return rand()%2;
 }
 
 bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDistance )
