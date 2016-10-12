@@ -2424,7 +2424,7 @@ static bool ParseStage( shaderStage_t *stage, const char **text )
 		{
 			Log::Warn("unknown shader stage parameter '%s' in shader '%s'", token, shader.name );
 			SkipRestOfLine( text );
-			return false;
+			continue;
 		}
 	}
 
