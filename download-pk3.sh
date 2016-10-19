@@ -163,7 +163,7 @@ verify_md5sums()
         echo "$filename"
       else
         if [ "`$MD5SUM $filename | cut -d" " -f1`" != "$sum" ]; then
-          echo "$filename"
+          echo -e "\x1b[1;31mMismatched:\x1b[m $filename"
         fi
       fi
     done < "$CACHE/md5sums"
