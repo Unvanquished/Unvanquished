@@ -27,6 +27,14 @@ MIRROR_URL="http://%s.$MIRROR_DOMAIN/project/unvanquished/Assets/"
 MD5SUMS_CDN='md5sums'
 MD5SUMS="$MD5SUMS_CDN"
 
+# Select checksum command
+if md5sum --version &>/dev/null
+then
+    MD5SUM=md5sum
+else
+    MD5SUM="md5 -q"
+fi
+
 # Default destination directory
 case "$(uname -s)" in
   Darwin)
@@ -154,7 +162,7 @@ verify_md5sums()
       if [ ! -f $filename ]; then
         echo "$filename"
       else
-        if [ "`md5sum $filename | cut -d" " -f1`" != "$sum" ]; then
+        if [ "`$MD5SUM $filename | cut -d" " -f1`" != "$sum" ]; then
           echo "$filename"
         fi
       fi
