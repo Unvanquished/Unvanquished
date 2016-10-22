@@ -86,10 +86,6 @@ In the case of false, err will be populated with an error message.
 */
 int G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 {
-	gclient_t *cl;
-	int       p, count;
-	char      line[ MAX_NAME_LENGTH + 10 ] = { "" };
-
 	err[ 0 ] = '\0';
 
 	if ( found <= 0 )
@@ -102,17 +98,20 @@ int G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 	{
 		Q_strcat( err, len, N_("more than one player name matches. "
 		          "be more specific or use the slot #: ") );
-		count = strlen( err );
-		for ( p = 0; p < found; p++ )
+
+		const int count = strlen( err );
+		char      line[ MAX_NAME_LENGTH + 10 ] = { "" };
+
+		for ( int p = 0; p < found; p++ )
 		{
-			cl = &level.clients[ plist[p] ];
+			const gclient_t *cl = &level.clients[ plist[p] ];
 
 			if ( cl->pers.connected == CON_CONNECTED )
 			{
 				Com_sprintf( line, sizeof( line ), "%2i — %s^7",
 				             plist[p], cl->pers.netname );
 
-				if ( strlen( err ) + strlen( line ) > (unsigned) len )
+				if ( strlen( err ) + strlen( line ) > (size_t) len )
 				{
 					break;
 				}

@@ -187,37 +187,34 @@ static void CG_TransitionSnapshot()
 	cg.nextSnap = nullptr;
 
 	// check for playerstate transition events
-	if ( oldFrame )
+	playerState_t *ops, *ps;
+
+	ops = &oldFrame->ps;
+	ps = &cg.snap->ps;
+
+	// teleporting checks are irrespective of prediction
+	if ( ( ps->eFlags ^ ops->eFlags ) & EF_TELEPORT_BIT )
 	{
-		playerState_t *ops, *ps;
+		cg.thisFrameTeleport = true; // will be cleared by prediction code
+	}
 
-		ops = &oldFrame->ps;
-		ps = &cg.snap->ps;
+	// if we are not doing client side movement prediction for any
+	// reason, then the client events and view changes will be issued now
+	if ( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW ) ||
+		 cg_nopredict.integer || cg.pmoveParams.synchronous )
+	{
+		CG_TransitionPlayerState( ps, ops );
+	}
 
-		// teleporting checks are irrespective of prediction
-		if ( ( ps->eFlags ^ ops->eFlags ) & EF_TELEPORT_BIT )
-		{
-			cg.thisFrameTeleport = true; // will be cleared by prediction code
-		}
+	// Callbacks for changes in playerState like weapon/class/team
+	if ( oldWeapon != ps->weapon )
+	{
+		CG_OnPlayerWeaponChange();
+	}
 
-		// if we are not doing client side movement prediction for any
-		// reason, then the client events and view changes will be issued now
-		if ( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW ) ||
-		     cg_nopredict.integer || cg.pmoveParams.synchronous )
-		{
-			CG_TransitionPlayerState( ps, ops );
-		}
-
-		// Callbacks for changes in playerState like weapon/class/team
-		if ( oldWeapon != ps->weapon )
-		{
-			CG_OnPlayerWeaponChange();
-		}
-
-		if ( ops->stats[ STAT_ITEMS ] != ps->stats[ STAT_ITEMS ] )
-		{
-			CG_OnPlayerUpgradeChange();
-		}
+	if ( ops->stats[ STAT_ITEMS ] != ps->stats[ STAT_ITEMS ] )
+	{
+		CG_OnPlayerUpgradeChange();
 	}
 }
 

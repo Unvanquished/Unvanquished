@@ -539,17 +539,14 @@ BG_InitClassModelConfigs
 */
 void BG_InitClassModelConfigs()
 {
-	int           i;
-	classModelConfig_t *cc;
-
-	for ( i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
+	for ( int i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
 	{
-		cc = BG_ClassModelConfig( i );
+		classModelConfig_t *cc = BG_ClassModelConfig( i );
 
 		BG_ParseClassModelFile( va( "configs/classes/%s.model.cfg",
 		                       BG_Class( i )->name ), cc );
 
-		cc->segmented = cc->modelName[0] ? BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) ) : false;
+		cc->segmented = cc->modelName[0] && BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) );
 	}
 }
 
