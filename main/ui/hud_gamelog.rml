@@ -1,0 +1,32 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+
+	<style>
+		body {
+			bottom: 35%;
+			text-align: right;
+			width: 40%;
+			right: 0.5em;
+		}
+
+	</style>
+	</head>
+	<body id="hud_gamelog">
+		<gamelog>
+			<div id="obituary-template">
+				<div>
+					<span class="obituary-killer"></span>
+					<span class="obituary-means"></span>
+					<span class="obituary-victim"></span>
+				</div><br></br>
+			</div>
+			<div id="beacon-template">
+				<div>
+					<span class="beacon-icon"></span>
+					<span class="beacon-text"></span>
+				</div>
+			</div>
+		</gamelog>
+	</body>
+</rml>

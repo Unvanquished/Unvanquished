@@ -68,7 +68,9 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocketFocusManager.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketFormControlInput.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketFormControlSelect.h
-    ${GAMELOGIC_DIR}/cgame/rocket/rocketIncludeElement.h
+    ${GAMELOGIC_DIR}/cgame/rocket/rocketIncludeElement.h 
+    ${GAMELOGIC_DIR}/cgame/rocket/rocketGameLogElement.h 
+    ${GAMELOGIC_DIR}/cgame/rocket/rocket_gamelog.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocketKeyBinder.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketProgressBar.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketSelectableDataGrid.h

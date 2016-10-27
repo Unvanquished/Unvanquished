@@ -61,7 +61,8 @@ Maryland 20850 USA.
 #include "rocketConditionalElement.h"
 #include "rocketColorInput.h"
 #include "rocketIncludeElement.h"
-#include "rocketCvarInlineElement.h"
+#include "rocketCvarInlineElement.h" 
+#include "rocketGameLogElement.h"
 #include <Rocket/Debugger.h>
 #include "lua/Cvar.h"
 #include "lua/Cmd.h"
@@ -380,6 +381,7 @@ void Rocket_Init()
 	Rocket::Core::Factory::RegisterElementInstancer( "colorinput", new Rocket::Core::ElementInstancerGeneric< RocketColorInput >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "include", new Rocket::Core::ElementInstancerGeneric< RocketIncludeElement > () )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "inlinecvar", new Rocket::Core::ElementInstancerGeneric< RocketCvarInlineElement > () )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "gamelog", new Rocket::Core::ElementInstancerGeneric< RocketGameLogElement > () )->RemoveReference();
 
 	whiteShader = trap_R_RegisterShader( "white", RSF_DEFAULT );
 }

@@ -422,6 +422,8 @@ static void DrawBeacon( cbeacon_t *b )
 		{
 			if( ba->inSound && ( b->type != BCT_TAG || ( b->flags & EF_BC_ENEMY ) ) )
 				trap_S_StartLocalSound( ba->inSound, soundChannel_t::CHAN_LOCAL_SOUND );
+	
+			Rocket_GameLog_Beacon( b );
 		}
 	}
 

@@ -2419,6 +2419,9 @@ void Rocket_SetClass( const char *in, bool activate );
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
 void Rocket_SetActiveContext( int catcher );
 void Rocket_AddConsoleText(Str::StringRef text);
+void Rocket_GameLog_Obituary(clientInfo_t *target, clientInfo_t *attacker,
+                             clientInfo_t *assistant, int mod);
+void Rocket_GameLog_Beacon(cbeacon_t *beacon);
 void Rocket_InitializeHuds( int size );
 void Rocket_LoadUnit( const char *path );
 void Rocket_AddUnitToHud( int weapon, const char *id );
