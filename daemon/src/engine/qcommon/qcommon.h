@@ -308,7 +308,6 @@ enum svc_ops_e
   svc_serverCommand, // [string] to be executed by client game module
   svc_download, // [short] size [size bytes]
   svc_snapshot,
-  svc_voip, // not wrapped in USE_VOIP, so this value is reserved.
   svc_EOF,
 };
 
