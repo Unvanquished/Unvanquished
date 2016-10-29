@@ -321,7 +321,6 @@ enum clc_ops_e
   clc_move, // [usercmd_t]
   clc_moveNoDelta, // [usercmd_t]
   clc_clientCommand, // [string] message
-  clc_voip, // not wrapped in USE_VOIP, so this value is reserved.
   clc_EOF,
 };
 
