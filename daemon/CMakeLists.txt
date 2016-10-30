@@ -74,10 +74,13 @@ if(NOT DAEMON_EXTERNAL_APP)
 
     set(NACL_RUNTIME_PATH "" CACHE STRING "Directory containing the NaCl binaries")
 
-    if (NOT APPLE AND NOT WIN32)
-	option(USE_CURSES "Compile with curses support" 1)
+    # Not supported on mac because the included version is too old
+    if(APPLE)
+        set(USE_CURSES OFF)
+    elseif(WIN32)
+        set(USE_CURSES ON)
     else()
-	option(USE_CURSES "Compile with curses support" 0)
+	option(USE_CURSES "Compile with curses support" 1)
     endif()
     cmake_dependent_option(USE_SMP "Compile with support for running the renderer in a separate thread" 1 BUILD_CLIENT 0)
     cmake_dependent_option(USE_GEOIP "Use libgeoip" 1 "BUILD_SERVER OR BUILD_CLIENT OR BUILD_TTY_CLIENT" 0)
@@ -471,8 +474,7 @@ include_directories(${ZLIB_INCLUDE_DIRS})
 set(LIBS_BASE ${LIBS_BASE} PARENT_SCOPE)
 
 # Curses, pdcurses on Windows and ncursesw on Unix
-# Not supported on mac because the included version is too old
-if (NOT NACL)
+if (USE_CURSES AND NOT NACL)
     if (WIN32)
         set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} gdi32 comdlg32)
 
@@ -481,7 +483,7 @@ if (NOT NACL)
         set_target_properties(srclibs-pdcurses PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
         set(LIBS_ENGINE_BASE ${LIBS_ENGINE_BASE} srclibs-pdcurses)
         include_directories(${LIB_DIR}/pdcurses)
-    elseif (NOT APPLE)
+    else ()
         add_definitions(-DUSE_CURSES)
         set(CURSES_NEED_NCURSES 1) # Tells FindCurses that ncurses is required
         find_package(CursesW REQUIRED)
@@ -508,6 +510,10 @@ if (BUILD_CLIENT OR BUILD_TTY_CLIENT OR BUILD_SERVER)
     # Detour
     add_library(srclibs-detour EXCLUDE_FROM_ALL ${DETOURLIST})
     set_target_properties(srclibs-detour PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    include_directories(${LIB_DIR}/recastnavigation/Detour/Include
+                        ${LIB_DIR}/recastnavigation/DetourTileCache/Include
+                        ${LIB_DIR}/recastnavigation/DebugUtils/Include
+                        ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
     set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-detour)
 
     # GeoIP
@@ -707,6 +713,29 @@ if (BUILD_CLIENT)
         Files WIN32 ${WIN_RC} ${QCOMMONLIST} ${SERVERLIST} ${CLIENTBASELIST} ${CLIENTLIST}
         Libs ${LIBS_CLIENT} ${LIBS_CLIENTBASE} ${LIBS_ENGINE}
     )
+
+    # generate glsl include files
+    set(GLSL_INCLUDE_DIR ${ENGINE_DIR}/renderer/glsl)
+    set(GLSL_SOURCE_DIR ${ENGINE_DIR}/renderer/glsl_source)
+
+    add_executable(include-bin ${LIB_DIR}/include-bin/main.cpp)
+
+    # create the glsl include directory if it doesn't exist
+    add_custom_command(OUTPUT ${GLSL_INCLUDE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${GLSL_INCLUDE_DIR}
+    )
+
+    foreach(res ${GLSLSOURCELIST})
+        set(in ${res})
+        get_filename_component(filename ${in} NAME)
+        get_filename_component(filename_no_ext ${in} NAME_WE)
+        set(outpath ${GLSL_INCLUDE_DIR}/${filename_no_ext}.h)
+        add_custom_command(OUTPUT "${outpath}"
+            WORKING_DIRECTORY "${GLSL_SOURCE_DIR}"
+            COMMAND include-bin "${filename}" "${outpath}"
+            DEPENDS "${res}" "${GLSL_INCLUDE_DIR}"
+        )
+    endforeach()
 endif()
 
 if (BUILD_SERVER)

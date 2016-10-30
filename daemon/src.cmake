@@ -127,6 +127,85 @@ set(RENDERERLIST
     ${ENGINE_DIR}/sys/sdl_icon.h
 )
 
+set(GLSLSOURCELIST
+    ${ENGINE_DIR}/renderer/glsl_source/skybox_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/ssao_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/ssao_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/vertexAnimation_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/vertexLighting_DBS_entity_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/vertexLighting_DBS_entity_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/vertexLighting_DBS_world_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/vertexLighting_DBS_world_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/vertexSimple_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/vertexSkinning_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/vertexSprite_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/volumetricFog_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/volumetricFog_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/blurX_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/blurX_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/blurY_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/blurY_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/cameraEffects_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/cameraEffects_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/contrast_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/contrast_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/debugShadowMap_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/debugShadowMap_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/deformVertexes_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/depthtile1_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/depthtile1_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/depthtile2_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/depthtile2_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/depthToColor_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/depthToColor_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/dispersion_C_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/dispersion_C_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/fogGlobal_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/fogGlobal_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/fogQuake3_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/fogQuake3_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/forwardLighting_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/forwardLighting_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/fxaa_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/fxaa_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/fxaa3_11_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/generic_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/generic_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/heatHaze_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/heatHaze_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/lightMapping_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/lightMapping_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/lighttile_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/lighttile_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/lightVolume_omni_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/lightVolume_omni_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/liquid_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/liquid_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/motionblur_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/motionblur_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/portal_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/portal_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/reflection_CB_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/reflection_CB_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/refraction_C_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/refraction_C_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/reliefMapping_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/screen_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/screen_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/shadowFill_fp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/shadowFill_vp.glsl
+    ${ENGINE_DIR}/renderer/glsl_source/skybox_fp.glsl
+)
+
+set(GLSLINCLUDELIST "")
+foreach(res ${GLSLSOURCELIST})
+    set(in ${res})
+    set(working_dir ${ENGINE_DIR}/renderer/glsl)
+    get_filename_component(filename_no_ext ${in} NAME_WE)
+    set(outpath ${working_dir}/${filename_no_ext}.h)
+    list(APPEND GLSLINCLUDELIST ${outpath})
+endforeach()
+
 set(SERVERLIST
     ${ENGINE_DIR}/botlib/bot_api.h
     ${ENGINE_DIR}/botlib/bot_convert.cpp
@@ -222,7 +301,7 @@ set(QCOMMONLIST
     ${ENGINE_DIR}/sys/con_common.cpp
 )
 
-if (NOT APPLE)
+if (USE_CURSES)
     set(ENGINELIST ${ENGINELIST}
         ${ENGINE_DIR}/sys/con_curses.cpp
     )
@@ -271,6 +350,7 @@ set(CLIENTLIST
     ${ENGINE_DIR}/audio/WavCodec.cpp
     ${ENGINE_DIR}/sys/sdl_input.cpp
     ${RENDERERLIST}
+    ${GLSLINCLUDELIST}
 )
 
 set(TTYCLIENTLIST

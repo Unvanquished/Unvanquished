@@ -379,7 +379,7 @@ void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 void SV_CreateBaseline();
 
 void SV_ChangeMaxClients();
-void SV_SpawnServer( const char *server );
+void SV_SpawnServer(const std::string pakname, const std::string server);
 
 //
 // sv_client.c

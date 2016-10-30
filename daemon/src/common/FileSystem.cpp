@@ -122,6 +122,13 @@ template<> struct SerializeTraits<FS::LoadedPakInfo> {
 
 namespace FS {
 
+static Cvar::Cvar<bool> fs_legacypaks("fs_legacypaks", "Don't use versioned pk3 files", Cvar::NONE, false);
+
+bool UseLegacyPaks()
+{
+	return *fs_legacypaks;
+}
+
 // Pak zip and directory extensions
 #define PAK_ZIP_EXT ".pk3"
 #define PAK_DIR_EXT ".pk3dir/"
@@ -2154,8 +2161,14 @@ static void AddPak(pakType_t type, Str::StringRef filename, Str::StringRef baseP
 	std::string name, version;
 	Util::optional<uint32_t> checksum;
 	if (!ParsePakName(filename.begin(), filename.end() - suffixLen, name, version, checksum) || (type == pakType_t::PAK_DIR && checksum)) {
-		fsLogs.Warn("Invalid pak name: %s", fullPath);
-		return;
+		if (!UseLegacyPaks()) {
+			fsLogs.Warn("Invalid pak name: %s", fullPath);
+			return;
+		} else {
+			fsLogs.Notice("Loading legacy pak: %s", fullPath);
+			name = filename.substr(0, filename.size() - suffixLen);
+			version = "1";
+		}
 	}
 
 	availablePaks.push_back({std::move(name), std::move(version), checksum, type, std::move(fullPath)});
@@ -2346,7 +2359,7 @@ bool ParsePakName(const char* begin, const char* end, std::string& name, std::st
 
 	// Get the name of the package
 	const char* underscore1 = std::find(nameStart, end, '_');
-	if (underscore1 == end)
+	if (underscore1 == end || (UseLegacyPaks() && underscore1 == begin))
 		return false;
 	name.assign(begin, underscore1);
 
@@ -2392,7 +2405,7 @@ std::vector<PakInfo> GetAvailableMapPaks()
 	std::vector<PakInfo> infos;
 	for ( const auto& pak : FS::GetAvailablePaks() )
 	{
-		if ( Str::IsPrefix("map-", pak.name) )
+		if (UseLegacyPaks() || Str::IsPrefix("map-", pak.name))
 		{
 			infos.push_back(pak);
 		}

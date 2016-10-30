@@ -1376,6 +1376,16 @@ static void Parse_FreeToken( token_t *token )
 	numtokens--;
 }
 
+static void Parse_FreeTokens(token_t *firsttoken)
+{
+	token_t *t, *nexttoken;
+	for ( t = firsttoken; t; t = nexttoken )
+	{
+		nexttoken = t->next;
+		Parse_FreeToken( t );
+	}
+}
+
 /*
 ===============
 Parse_ReadSourceToken
@@ -2719,7 +2729,7 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
                            double *floatvalue, int integer )
 {
 	token_t  token, *firsttoken, *lasttoken;
-	token_t  *t, *nexttoken;
+	token_t  *t;
 	define_t *define;
 	int      defined = false;
 
@@ -2771,11 +2781,16 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 
 				if ( !define )
 				{
+					Parse_FreeTokens( firsttoken );
 					Parse_SourceError( source, "can't evaluate %s, not defined", token.string );
 					return false;
 				}
 
-				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) ) { return false; }
+				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) )
+				{
+					Parse_FreeTokens( firsttoken );
+					return false;
+				}
 			}
 		}
 		//if the token is a number or a punctuation
@@ -2791,6 +2806,7 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 		}
 		else //can't evaluate the token
 		{
+			Parse_FreeTokens( firsttoken );
 			Parse_SourceError( source, "can't evaluate %s", token.string );
 			return false;
 		}
@@ -2798,14 +2814,14 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 	while ( Parse_ReadLine( source, &token ) );
 
 	//
-	if ( !Parse_EvaluateTokens( source, firsttoken, intvalue, floatvalue, integer ) ) { return false; }
+	if ( !Parse_EvaluateTokens( source, firsttoken, intvalue, floatvalue, integer ) )
+	{ 
+		Parse_FreeTokens( firsttoken );
+		return false;
+	}
 
 	//
-	for ( t = firsttoken; t; t = nexttoken )
-	{
-		nexttoken = t->next;
-		Parse_FreeToken( t );
-	}
+	Parse_FreeTokens( firsttoken );
 
 	//
 	return true;
@@ -2821,7 +2837,7 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 {
 	int      indent, defined = false;
 	token_t  token, *firsttoken, *lasttoken;
-	token_t  *t, *nexttoken;
+	token_t  *t;
 	define_t *define;
 
 	if ( intvalue ) { *intvalue = 0; }
@@ -2879,22 +2895,14 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 
 				if ( !define )
 				{
-					for ( t = firsttoken; t; t = nexttoken )
-					{
-						nexttoken = t->next;
-						Parse_FreeToken( t );
-					}
+					Parse_FreeTokens( firsttoken );
 					Parse_SourceError( source, "can't evaluate %s, not defined", token.string );
 					return false;
 				}
 
 				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) ) 
 				{
-					for ( t = firsttoken; t; t = nexttoken )
-					{
-						nexttoken = t->next;
-						Parse_FreeToken( t );
-					}
+					Parse_FreeTokens( firsttoken );
 					return false;
 				}
 			}
@@ -2917,6 +2925,7 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 		}
 		else //can't evaluate the token
 		{
+			Parse_FreeTokens( firsttoken );
 			Parse_SourceError( source, "can't evaluate %s", token.string );
 			return false;
 		}
@@ -2924,14 +2933,14 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 	while ( Parse_ReadSourceToken( source, &token ) );
 
 	//
-	if ( !Parse_EvaluateTokens( source, firsttoken, intvalue, floatvalue, integer ) ) { return false; }
+	if ( !Parse_EvaluateTokens( source, firsttoken, intvalue, floatvalue, integer ) )
+	{ 
+		Parse_FreeTokens( firsttoken );
+		return false; 
+	}
 
 	//
-	for ( t = firsttoken; t; t = nexttoken )
-	{
-		nexttoken = t->next;
-		Parse_FreeToken( t );
-	}
+	Parse_FreeTokens( firsttoken );
 
 	//
 	return true;

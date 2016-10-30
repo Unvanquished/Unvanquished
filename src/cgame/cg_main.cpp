@@ -118,9 +118,6 @@ vmCvar_t        cg_debugParticles;
 vmCvar_t        cg_debugTrails;
 vmCvar_t        cg_debugPVS;
 vmCvar_t        cg_disableWarningDialogs;
-vmCvar_t        cg_disableUpgradeDialogs;
-vmCvar_t        cg_disableBuildDialogs;
-vmCvar_t        cg_disableCommandDialogs;
 vmCvar_t        cg_disableScannerPlane;
 vmCvar_t        cg_tutorial;
 
@@ -284,9 +281,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_debugTrails,                 "cg_debugTrails",                 "0",            CVAR_CHEAT                   },
 	{ &cg_debugPVS,                    "cg_debugPVS",                    "0",            CVAR_CHEAT                   },
 	{ &cg_disableWarningDialogs,       "cg_disableWarningDialogs",       "0",            0                            },
-	{ &cg_disableUpgradeDialogs,       "cg_disableUpgradeDialogs",       "0",            0                            },
-	{ &cg_disableBuildDialogs,         "cg_disableBuildDialogs",         "0",            0                            },
-	{ &cg_disableCommandDialogs,       "cg_disableCommandDialogs",       "0",            0                            },
 	{ &cg_disableScannerPlane,         "cg_disableScannerPlane",         "0",            0                            },
 	{ &cg_tutorial,                    "cg_tutorial",                    "1",            0                            },
 

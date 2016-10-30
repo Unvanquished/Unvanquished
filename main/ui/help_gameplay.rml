@@ -21,7 +21,7 @@
 		<h1>Gameplay Guide</h1>
 		<tabset>
 			<tab>
-				<img class="emoticon" src="/emoticons/official_1x1" />
+				<img class="emoticon" src="/emoticons/official" />
 				Welcome
 			</tab>
 			<panel>
@@ -36,7 +36,7 @@
 				<br />
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/drill_1x1" />
+				<img class="emoticon" src="/emoticons/drill" />
 				Resources
 			</tab>
 			<panel>
@@ -49,15 +49,15 @@
     acquired by building a mining structure.
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/leech_1x1" />
+				<img class="emoticon" src="/emoticons/leech" />
 				Resource generation
 			</tab>
 			<panel>
 				Build points are acquired via two structures – the human
-				<img class="emoticon" src="/emoticons/drill_1x1" />
+				<img class="emoticon" src="/emoticons/drill" />
 				drill and
      the alien
-				<img class="emoticon" src="/emoticons/leech_1x1" />
+				<img class="emoticon" src="/emoticons/leech" />
 				leech. These buildings need to be spread out for
     efficiency.
 				<br />
@@ -72,7 +72,7 @@
 				<br />
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/bsuit_1x1" />
+				<img class="emoticon" src="/emoticons/bsuit" />
 				Stages &amp; Momentum
 			</tab>
 			<panel>
@@ -86,12 +86,12 @@
 				<br />
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/ckit_2x1" />
+				<img class="emoticon" src="/emoticons/ckit" />
 				Human building 1
 			</tab>
 			<panel>
 				The
-				<img class="emoticon" src="/emoticons/reactor_1x1" />
+				<img class="emoticon" src="/emoticons/reactor" />
 				reactor now supplies power to every point on the map, but
     there is a limited amount of energy per region. Human buildables will
     compete for power and shut down if they don't get enough.
@@ -104,7 +104,7 @@
 				<br />
 				If you want to place a greater number of buildables in an area, you can
     build a
-				<img class="emoticon" src="/emoticons/repeater_1x1" />
+				<img class="emoticon" src="/emoticons/repeater" />
 				repeater to increase the available power.
     Be warned that repeaters will deal significant damage to close structures
     when they explode.
@@ -115,22 +115,22 @@
 				<br />
 				<br />
 				The
-				<img class="emoticon" src="/emoticons/drill_1x1" />
+				<img class="emoticon" src="/emoticons/drill" />
 				drill is the only buildable that requires a close repeater or
     reactor to work, since resources are transmitted via the power grid.
 
 
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/flamer_2x1" />
+				<img class="emoticon" src="/emoticons/flamer" />
 				Wildfire
 			</tab>
 			<panel>
 				Alien buildables can catch fire when they are hit with the
-				<img class="emoticon" src="/emoticons/flamer_2x1" />
+				<img class="emoticon" src="/emoticons/flamer" />
 				flame
     thrower or the
-				<img class="emoticon" src="/emoticons/grenade_1x1" />
+				<img class="emoticon" src="/emoticons/grenade" />
 				firebomb.
 				<br />
 				<br />
@@ -143,23 +143,23 @@
 				<br />
 				<br />
 				The
-				<img class="emoticon" src="/emoticons/advgranger_1x1" />
+				<img class="emoticon" src="/emoticons/advgranger" />
 				advanced granger's spit attack can be used to put out
     fires.
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/lcannon_2x1" />
+				<img class="emoticon" src="/emoticons/lcannon" />
 				Under attack
 			</tab>
 			<panel>
 				Destroying buildings will trigger ‘under attack’ warnings for the owning
     team if the buildings are in range of (for humans) the
-				<img class="emoticon" src="/emoticons/reactor_1x1" />
+				<img class="emoticon" src="/emoticons/reactor" />
 				reactor
     or a
-				<img class="emoticon" src="/emoticons/repeater_1x1" />
+				<img class="emoticon" src="/emoticons/repeater" />
 				repeater or (for aliens) the
-				<img class="emoticon" src="/emoticons/overmind_1x1" />
+				<img class="emoticon" src="/emoticons/overmind" />
 				Overmind.
     The name of the location of the repeater will be given if available.
 				<br />
@@ -168,7 +168,7 @@
     75% health, at 25% health and when destroyed.
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/dev_1x1" />
+				<img class="emoticon" src="/emoticons/dev" />
 				Miscellaneous
 			</tab>
 			<panel>
