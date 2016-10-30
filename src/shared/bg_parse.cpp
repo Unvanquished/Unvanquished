@@ -130,15 +130,6 @@ int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
 int   MEDKIT_STARTUP_SPEED;
 
-// Human buildables
-
-float REACTOR_BASESIZE;
-float REACTOR_ATTACK_RANGE;
-int   REACTOR_ATTACK_REPEAT;
-int   REACTOR_ATTACK_DAMAGE;
-
-float REPEATER_BASESIZE;
-
 // Human Weapons
 
 int   BLASTER_SPREAD;
@@ -197,10 +188,6 @@ int   LCANNON_CHARGE_AMMO;
 // MUST BE ALPHABETICALLY SORTED!
 static configVar_t bg_configVars[] =
 {
-	{"b_reactor_zapAttackDamage", INTEGER, false, &REACTOR_ATTACK_DAMAGE},
-	{"b_reactor_zapAttackRange", FLOAT, false, &REACTOR_ATTACK_RANGE},
-	{"b_reactor_zapAttackRepeat", INTEGER, false, &REACTOR_ATTACK_REPEAT},
-
 	{"u_medkit_poisonImmunityTime", INTEGER, false, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, false, &MEDKIT_STARTUP_SPEED},
 	{"u_medkit_startupTime", INTEGER, false, &MEDKIT_STARTUP_TIME},
