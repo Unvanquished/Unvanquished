@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "CBSE.h"
 #include "backend/CBSEBackend.h"
+#include "lua/Interpreter.h"
+#include <shared/lua/Timer.h>
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -896,6 +898,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 
 	G_notify_sensor_start();
+
+	Unv::SGame::Lua::Initialize();
 }
 
 /*
@@ -983,6 +987,8 @@ void G_ShutdownGame( int restart )
 
 	G_ShutdownMapRotations();
 	BG_UnloadAllConfigs();
+
+	Unv::SGame::Lua::Shutdown();
 
 	level.restarted = false;
 	level.surrenderTeam = TEAM_NONE;
@@ -2926,6 +2932,8 @@ void G_RunFrame( int levelTime )
 
 	// save position information for all active clients
 	G_UnlaggedStore();
+
+	Unv::Shared::Lua::Timer::Update( levelTime );
 
 	G_CountSpawns();
 	G_SetHumanBuildablePowerState();

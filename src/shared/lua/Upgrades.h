@@ -2,7 +2,7 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 2012 Unvanquished Developers
+Copyright (C) 2012 Unv Developers
 
 This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
@@ -31,51 +31,36 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#include "Cmd.h"
-#include "../../cg_local.h"
-
-namespace Rocket {
-namespace Core {
+#ifndef LUAUPGRADES_H_
+#define LUAUPGRADES_H_
+#include "../bg_lua.h"
+#include "../bg_public.h"
+#include "LuaLib.h"
+namespace Unv {
+namespace Shared {
 namespace Lua {
 
-template<> void ExtraInit<Lua::Cmd>(lua_State* L, int metatable_index)
+struct UpgradeProxy
 {
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
+	UpgradeProxy( int upgrade );
 
-	lua_pushcfunction(L, Cmdexec);
-	lua_setfield(L, method_index, "exec");
-
-
-	return;
-}
-
-int Cmdexec(lua_State* L)
-{
-	const char *cmd = luaL_checkstring(L, 1);
-	trap_SendConsoleCommand(cmd);
-	return 0;
-}
-
-
-RegType<Cmd> CmdMethods[] =
-{
-	{ NULL, NULL },
+	const upgradeAttributes_t* attributes;
 };
 
-luaL_Reg CmdGetters[] =
+struct Upgrades
 {
-	{ NULL, NULL },
+	static int index( lua_State* L );
+	static int pairs( lua_State* L );
+
+	static std::vector<UpgradeProxy> upgrades;
 };
 
-luaL_Reg CmdSetters[] =
-{
-	{ NULL, NULL },
-};
+template<>
+void ExtraInit<Upgrades>( lua_State* L, int metatable_index );
+template<>
+void ExtraInit<UpgradeProxy>( lua_State* L, int metatable_index );
 
-LUACORETYPEDEFINE(Cmd,false)
-
-}
-}
-}
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv
+#endif // LUAUPGRADES_H_
