@@ -75,8 +75,8 @@ int rocket_pairs(lua_State* L)
 	}
 	else
 		lua_pushvalue(L,lua_upvalueindex(1)); // generator
-		lua_pushvalue(L,1); // state
-		lua_pushnil(L); // initial value
+	lua_pushvalue(L,1); // state
+	lua_pushnil(L); // initial value
 		return 3;
 }
 
@@ -118,8 +118,8 @@ int rocket_ipairs(lua_State* L)
 	}
 	else
 		lua_pushvalue(L,lua_upvalueindex(1)); // generator
-		lua_pushvalue(L,1); // state
-		lua_pushnil(L); // initial value
+	lua_pushvalue(L,1); // state
+	lua_pushnil(L); // initial value
 		return 3;
 }
 
