@@ -140,7 +140,6 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define HIVE_SENSE_RANGE        500.0f
 #define HIVE_LIFETIME           3000
-#define HIVE_REPEAT             3000
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
 
@@ -257,22 +256,12 @@ extern int   MEDKIT_STARTUP_SPEED;
 extern float REACTOR_BASESIZE;
 extern float REPEATER_BASESIZE;
 
-#define TURRET_THINK_PERIOD   25  // doesn't affect damage or turn speed directly, just their precision
-#define TURRET_SEARCH_PERIOD  500 // in ms, how often to look for a new target
-#define TURRET_PITCH_CAP      30  // in degrees
-#define TURRET_PITCH_SPEED    160 // in degrees per second
-#define TURRET_YAW_SPEED      120 // in degrees per second
-#define TURRET_GIVEUP_TARGET  1000 // in ms, time until turret stops tracking a target after losing los
-
 #define MGTURRET_ATTACK_PERIOD  125
 #define MGTURRET_RANGE          350
 #define MGTURRET_SPREAD         200
-#define MGTURRET_ZONES          3   // range is divided into this amount of zones (disks) with equal width
-#define MGTURRET_ZONE_DAMAGE    { 4, 3, 2 } // damage for each of the TURRET_ZONES zones
 
 #define ROCKETPOD_RANGE         2000
 #define ROCKETPOD_ATTACK_PERIOD 1000
-#define ROCKETPOD_LOCKON_TIME   500
 
 #define ROCKET_TURN_PERIOD      50
 #define ROCKET_TURN_ANGLE       8.0f
@@ -281,8 +270,6 @@ extern float REPEATER_BASESIZE;
 extern float REACTOR_ATTACK_RANGE;
 extern int   REACTOR_ATTACK_REPEAT;
 extern int   REACTOR_ATTACK_DAMAGE;
-
-#define POWER_DISPLAY_MAX     40 // power display on human buildables is capped above this
 
 /*
  * HUMAN misc
@@ -373,11 +360,10 @@ extern int   REACTOR_ATTACK_DAMAGE;
 
 // resources
 #define RGS_RANGE                          1000.0f // must be > 0
-#define DEFAULT_INITIAL_BUILD_POINTS       "120"   // in BP
-#define DEFAULT_INITIAL_MINE_RATE          "8"     // in (BP/min)/RGS
-#define DEFAULT_MINE_RATE_HALF_LIFE        "20"    // in min
-#define DEFAULT_MINIMUM_MINE_RATE          "50"
-#define DEFAULT_BP_LOSS_FRAC               "0.5"
+#define DEFAULT_BP_INITIAL_BUDGET          "80"    // in BP
+#define DEFAULT_BP_BUDGET_PER_MINER        "50"    // in BP
+#define DEFAULT_BP_RECOVERY_INITIAL_RATE   "16"    // in BP/min
+#define DEFAULT_BP_RECOVERY_RATE_HALF_LIFE "10"    // in min
 
 // momentum
 #define MOMENTUM_MAX                     300.0f
@@ -391,6 +377,7 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
 #define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
 #define MAIN_STRUCTURE_MOMENTUM_VALUE    20    // momentum reward for destroying OM/RC
+#define MINER_MOMENTUM_VALUE             10    // momentum reward for destroying Drill/Leech
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 #define BUILDABLE_START_HEALTH_FRAC        0.25f

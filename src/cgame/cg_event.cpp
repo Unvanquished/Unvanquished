@@ -1086,6 +1086,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			CG_AlienBuildableExplosion( position, dir );
 			break;
 
+		// TODO: Allow multiple tesla trails for any one source.
+		//       This is necessary as the reactor attacks all adjacent targets.
 		case EV_TESLATRAIL:
 			{
 				centity_t *source = &cg_entities[ es->generic1 ];
@@ -1181,38 +1183,50 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.buildableRepairedSound );
 			break;
 
-		case EV_OVERMIND_ATTACK_1:
-		case EV_OVERMIND_ATTACK_2:
-			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		case EV_MAIN_UNDER_ATTACK:
+			// Sanity check the warn level: Must be between 1 and 3.
+			if (es->eventParm < 1 || es->eventParm > 3)
 			{
-				trap_S_StartLocalSound( cgs.media.alienOvermindAttack, soundChannel_t::CHAN_ANNOUNCER );
-				CG_CenterPrint( va( "^%c%s", "31"[ event - EV_OVERMIND_ATTACK_1 ], _( "The Overmind is under attack!" ) ), 200, GIANTCHAR_WIDTH * 4 );
+				break;
+			}
+
+			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			{
+				case TEAM_ALIENS:
+					trap_S_StartLocalSound( cgs.media.alienOvermindAttack, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( va( "^%c%s", "381"[ es->eventParm - 1 ], _( "The Overmind is under attack!" ) ),
+									200, GIANTCHAR_WIDTH * 4 );
+					break;
+
+				case TEAM_HUMANS:
+					// TODO: Add a "reactor is under attack" sound.
+					//trap_S_StartLocalSound( cgs.media.humanReactorAttack, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( va( "^%c%s", "381"[ es->eventParm - 1 ], _( "The reactor is under attack!" ) ),
+									200, GIANTCHAR_WIDTH * 4 );
+					break;
+
+				default:
+					break;
 			}
 
 			break;
 
-		case EV_OVERMIND_DYING:
-			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		case EV_MAIN_DYING:
+			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
 			{
-				trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
-				CG_CenterPrint( _( "^1The Overmind is dying!" ), 200, GIANTCHAR_WIDTH * 4 );
-			}
+				case TEAM_ALIENS:
+					trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( _( "^1The Overmind is dying!" ), 200, GIANTCHAR_WIDTH * 4 );
+					break;
 
-			break;
+				case TEAM_HUMANS:
+					// TODO: Add a "reactor is going down" sound.
+					//trap_S_StartLocalSound( cgs.media.humanReactorDying, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( _( "^1The reactor is going down!" ), 200, GIANTCHAR_WIDTH * 4 );
+					break;
 
-		case EV_REACTOR_ATTACK_1:
-		case EV_REACTOR_ATTACK_2:
-			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
-			{
-				CG_CenterPrint( va( "^%c%s", "31"[ event - EV_REACTOR_ATTACK_1 ], _( "The reactor is under attack!" ) ), 200, GIANTCHAR_WIDTH * 4 );
-			}
-
-			break;
-
-		case EV_REACTOR_DYING:
-			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS )
-			{
-				CG_CenterPrint( _( "^1The reactor is about to explode!" ), 200, GIANTCHAR_WIDTH * 4 );
+				default:
+					break;
 			}
 
 			break;
@@ -1256,11 +1270,21 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.turretSpinupSound );
 			break;
 
-		case EV_OVERMIND_SPAWNS:
-			if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		case EV_NO_SPAWNS:
+			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
 			{
-				trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, soundChannel_t::CHAN_ANNOUNCER );
-				CG_CenterPrint( "The Overmind needs spawns!", 200, GIANTCHAR_WIDTH * 4 );
+				case TEAM_ALIENS:
+					trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( "The Overmind needs spawns!", 200, GIANTCHAR_WIDTH * 4 );
+					break;
+
+				case TEAM_HUMANS:
+					// TODO: Add a sound.
+					CG_CenterPrint( "There are no telenodes left!", 200, GIANTCHAR_WIDTH * 4 );
+					break;
+
+				default:
+					break;
 			}
 
 			break;

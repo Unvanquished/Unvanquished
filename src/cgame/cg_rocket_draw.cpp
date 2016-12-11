@@ -211,8 +211,12 @@ public:
 	AmmoHudElement( const Rocket::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_BOTH ),
 			showTotalAmmo( false ),
-			value( 0 ),
-			valueMarked( 0 ) {}
+			builder( false ),
+			ammo( 0 ),
+			spentBudget( 0 ),
+			markedBudget( 0 ),
+			totalBudget( 0 ),
+			queuedBudget( 0 ) {}
 
 	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
 	{
@@ -226,8 +230,8 @@ public:
 
 	void DoOnRender()
 	{
-		bool bp = false;
 		weapon_t weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+
 		switch ( weapon )
 		{
 			case WP_NONE:
@@ -237,66 +241,79 @@ public:
 			case WP_ABUILD:
 			case WP_ABUILD2:
 			case WP_HBUILD:
-				if ( cg.snap->ps.persistant[ PERS_BP ] == value &&
-					cg.snap->ps.persistant[ PERS_MARKEDBP ] == valueMarked )
+				if ( builder &&
+				     spentBudget  == cg.snap->ps.persistant[ PERS_SPENTBUDGET ] &&
+				     markedBudget == cg.snap->ps.persistant[ PERS_MARKEDBUDGET ] &&
+				     totalBudget  == cg.snap->ps.persistant[ PERS_TOTALBUDGET ] &&
+				     queuedBudget == cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ] )
 				{
 					return;
 				}
-				value = cg.snap->ps.persistant[ PERS_BP ];
-				valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
-				bp = true;
+
+				spentBudget  = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
+				markedBudget = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
+				totalBudget  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+				queuedBudget = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
+				builder      = true;
+
 				break;
 
 			default:
 				if ( showTotalAmmo )
 				{
 					int maxAmmo = BG_Weapon( weapon )->maxAmmo;
-					if ( value == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
+					if ( !builder &&
+					     ammo == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
 					{
 						return;
 					}
-					value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
+
+					ammo = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
 				}
 				else
 				{
-					if ( value == cg.snap->ps.ammo )
+					if ( !builder &&
+					     ammo == cg.snap->ps.ammo )
 					{
 						return;
 					}
-					value = cg.snap->ps.ammo;
+
+					ammo = cg.snap->ps.ammo;
 				}
+
+				builder = false;
 
 				break;
 		}
 
-		if ( value > 999 )
+		if ( builder )
 		{
-			value = 999;
-		}
+			int freeBudget = totalBudget - (spentBudget + queuedBudget);
+			int available  = freeBudget + markedBudget;
 
-		if ( valueMarked > 999 )
-		{
-			valueMarked = 999;
-		}
-
-		if ( !bp )
-		{
-			SetText( va( "%d", value ) );
-		}
-		else if ( valueMarked > 0 )
-		{
-			SetText( va( "%d+%d", value, valueMarked ) );
+			if ( markedBudget != 0 )
+			{
+				SetText( va( "%d+%d = %d", freeBudget, markedBudget, available ) );
+			}
+			else
+			{
+				SetText( va( "%d", freeBudget ) );
+			}
 		}
 		else
 		{
-			SetText( va( "%d", value ) );
+			SetText( va( "%d", ammo ) );
 		}
 	}
 
 private:
-    bool showTotalAmmo;
-	int value;
-	int valueMarked;
+	bool showTotalAmmo;
+	bool builder;
+	int  ammo;
+	int  spentBudget;
+	int  markedBudget;
+	int  totalBudget;
+	int  queuedBudget;
 };
 
 
@@ -2125,8 +2142,10 @@ public:
 												   Rocket::Core::Property::KEYWORD));
 				SetInnerRML( "" );
 				shouldBeVisible = false;
+
 				// Pick impossible value
-				lastDelta = -999;
+				lastDeltaEfficiencyPct = -999;
+				lastDeltaBudget        = -999;
 			}
 		}
 		else
@@ -2144,45 +2163,68 @@ public:
 	{
 		if ( shouldBeVisible )
 		{
-			playerState_t  *ps = &cg.snap->ps;
-			buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
+			playerState_t *ps = &cg.snap->ps;
+			buildable_t buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 			const char *msg = nullptr;
 			Color::Color color;
-			int  delta = ps->stats[ STAT_PREDICTION ];
 
-			if ( lastDelta != delta )
+			// The efficiency and budget deltas are signed values that are encode as the least and
+			// most significant byte of the de-facto short ps->stats[STAT_PREDICTION], respectively.
+			// The efficiency delta is a value between -1 and 1, the budget delta is an integer
+			// between -128 and 127.
+			float deltaEfficiency    = (float)(signed char)(ps->stats[STAT_PREDICTION] & 0xff) / (float)0x7f;
+			int   deltaBudget        = (int)(signed char)(ps->stats[STAT_PREDICTION] >> 8);
+
+			int   deltaEfficiencyPct = (int)(deltaEfficiency * 100.0f);
+
+			if ( deltaEfficiencyPct != lastDeltaEfficiencyPct ||
+			     deltaBudget        != lastDeltaBudget )
 			{
-				if ( delta < 0 )
-				{
+				if        ( deltaBudget < 0 ) {
 					color = Color::Red;
-					// Error sign
-					msg = va( "<span class='material-icon error'>&#xE000;</span> You are losing efficiency. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
-				}
-				else if ( delta < 10 )
-				{
+					msg = va( "<span class='material-icon error'>&#xE000;</span> You are losing build points!"
+					          " Build the %s%s further apart for greater efficiency.",
+					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 10 ) {
 					color = Color::Orange;
-					// Warning sign
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Minimal efficency gain. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
-				}
-				else if ( delta < 50 )
-				{
+					msg = va( "<span class='material-icon warning'>&#xE002;</span> Minimal build point gain."
+					          " Build the %s%s further apart for greater efficiency.",
+					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 2 ) {
 					color = Color::Yellow;
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Average efficency gain. Build the %s%s further apart for more efficiency.", BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
-				}
-				else
-				{
+					msg = va( "<span class='material-icon warning'>&#xE002;</span> Subpar build point gain."
+					          " Build the %s%s further apart for greater efficiency.",
+					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+				} else {
 					color = Color::Green;
 				}
 
-				SetInnerRML( va("EFFICIENCY: %s%s%s", CG_Rocket_QuakeToRML( va( "%s%+d%%", Color::ToString(color).c_str(), delta ) ), msg ? "<br/>" : "", msg ? msg : "" ) );
-				lastDelta = delta;
+				char deltaEfficiencyPctStr[64];
+				char deltaBudgetStr[64];
+
+				Q_strncpyz(deltaEfficiencyPctStr, CG_Rocket_QuakeToRML(va(
+					"%s%+d%%", Color::ToString(color).c_str(), deltaEfficiencyPct
+				)), 64);
+
+				Q_strncpyz(deltaBudgetStr, CG_Rocket_QuakeToRML(va(
+					"%s%+d", Color::ToString(color).c_str(), deltaBudget
+				)), 64);
+
+				SetInnerRML(va(
+					"%s EFFICIENCY<br/>%s BUILD POINTS%s%s",
+					deltaEfficiencyPctStr, deltaBudgetStr, msg ? "<br/>" : "", msg ? msg : ""
+				));
+
+				lastDeltaEfficiencyPct = deltaEfficiencyPct;
+				lastDeltaBudget        = deltaBudget;
 			}
 		}
 	}
 private:
 	bool shouldBeVisible;
-	int display;
-	int lastDelta;
+	int  display;
+	int  lastDeltaEfficiencyPct;
+	int  lastDeltaBudget;
 	std::unordered_map<int, std::string> pluralSuffix;
 };
 
@@ -3062,32 +3104,23 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	}
 
 	trap_R_ClearColor();
-
 }
 
 void CG_Rocket_DrawMineRate()
 {
-	float levelRate, rate;
-	int efficiency;
+	int totalBudget  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+	int queuedBudget = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
 
-	// check if builder
-	switch ( BG_GetPlayerWeapon( &cg.snap->ps ) )
-	{
-		case WP_ABUILD:
-		case WP_ABUILD2:
-		case WP_HBUILD:
-			break;
-
-		default:
-			Rocket_SetInnerRML( "", 0 );
-			return;
+	if (queuedBudget != 0) {
+		float matchTime = (float)(cg.time - cgs.levelStartTime);
+		float rate = cgs.buildPointRecoveryInitialRate /
+		             std::pow(2.0f, matchTime / (60000.0f * cgs.buildPointRecoveryRateHalfLife));
+		Rocket_SetInnerRML( va( "Recovering %d / %d BP @ %.1f BP/min.",
+		                        queuedBudget, totalBudget, rate), 0 );
+	} else {
+		Rocket_SetInnerRML( va( "The full budget of %d BP is available.",
+		                        totalBudget), 0 );
 	}
-
-	levelRate  = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
-	efficiency = cg.predictedPlayerState.persistant[ PERS_RGS_EFFICIENCY ];
-	rate       = ( ( efficiency / 100.0f ) * levelRate );
-
-	Rocket_SetInnerRML( va( _( "%.1f BP/min (%d%% × %.1f)" ), rate, efficiency, levelRate ), 0 );
 }
 
 static INLINE qhandle_t CG_GetUnlockableIcon( int num )

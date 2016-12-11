@@ -723,7 +723,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 	return true;
 }
 
-// TODO: Move to MedikitComponent.
+// TODO: Move to MedkitComponent.
 static void G_ReplenishHumanHealth( gentity_t *self )
 {
 	gclient_t *client;
@@ -735,54 +735,79 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	client = self->client;
-
 	if ( !client || client->pers.team != TEAM_HUMANS )
 	{
 		return;
 	}
 
-	// check if medikit is active
-	if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_4X ) )
+	HealthComponent *healthComponent = self->entity->Get<HealthComponent>();
+
+	// handle medkit activation
+	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
+	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
 	{
-		return;
-	}
-
-	// stop if client is fully healed
-	if ( self->entity->Get<HealthComponent>()->FullHealth() )
-	{
-		client->medKitHealthToRestore = 0;
-		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_4X;
-
-		return;
-	}
-
-	// stop if client is dead or medikit is depleted
-	if ( client->medKitHealthToRestore <= 0 || client->ps.pm_type == PM_DEAD )
-	{
-		client->medKitHealthToRestore = 0;
-		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_4X;
-
-		return;
-	}
-
-	remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
-
-	// increase heal rate during startup
-	if ( remainingStartupTime > 0 )
-	{
-		if ( level.time < client->medKitIncrementTime )
+		// if currently using a medkit or have no need for a medkit now
+		if ( (client->ps.stats[ STAT_STATE ] & SS_HEALING_4X) ||
+		     ( healthComponent->FullHealth() &&
+		       !( client->ps.stats[ STAT_STATE ] & SS_POISONED ) ) )
 		{
+			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
+		}
+		else if ( G_Alive( self ) ) // activate medkit
+		{
+			// remove medkit from inventory
+			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
+			BG_RemoveUpgradeFromInventory( UP_MEDKIT, client->ps.stats );
+
+			// remove alien poison
+			client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
+			client->poisonImmunityTime = level.time + MEDKIT_POISON_IMMUNITY_TIME;
+
+			// initiate healing
+			client->ps.stats[ STAT_STATE ] |= SS_HEALING_4X;
+			client->lastMedKitTime = level.time;
+			client->medKitHealthToRestore = healthComponent->MaxHealth() - healthComponent->Health();
+			client->medKitIncrementTime = level.time + ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
+
+			G_AddEvent( self, EV_MEDKIT_USED, 0 );
+		}
+	}
+
+	// if medkit is active
+	if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+	{
+
+		// stop healing if
+		if ( healthComponent->FullHealth() ||     // client is fully healed or
+		     client->ps.pm_type == PM_DEAD ||     // client is dead or
+		     client->medKitHealthToRestore <= 0 ) // medkit is depleted
+		{
+			client->medKitHealthToRestore = 0;
+			client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_4X;
+
 			return;
 		}
-		else
+
+		if ( level.time >= client->medKitIncrementTime )
 		{
-			client->medKitIncrementTime = level.time + ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
+			// heal
+			self->entity->Heal(1.0f, nullptr);
+			client->medKitHealthToRestore --;
+
+			// set timer for next healing action
+			remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
+			if ( remainingStartupTime > 0 )
+			{
+				// heal slowly during startup
+				client->medKitIncrementTime += std::max( 100, remainingStartupTime / MEDKIT_STARTUP_SPEED );
+			}
+			else
+			{
+				// heal 1 hp every 100 ms later on
+				client->medKitIncrementTime += 100;
+			}
 		}
 	}
-
-	// heal
-	self->entity->Heal(1.0f, nullptr);
-	client->medKitHealthToRestore --;
 }
 
 static void BeaconAutoTag( gentity_t *self, int timePassed )
@@ -840,8 +865,6 @@ Actions that happen once a second
 */
 void ClientTimerActions( gentity_t *ent, int msec )
 {
-	playerState_t *ps;
-	gclient_t     *client;
 	int           i;
 	buildable_t   buildable;
 
@@ -850,11 +873,12 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		return;
 	}
 
-	client = ent->client;
-	ps     = &client->ps;
+	gclient_t *client = ent->client;
+	playerState_t *ps = &client->ps;
+	team_t team       = (team_t)ps->persistant[PERS_TEAM];
 
-	client->time100 += msec;
-	client->time1000 += msec;
+	client->time100   += msec;
+	client->time1000  += msec;
 	client->time10000 += msec;
 
 	if( ent->r.svFlags & SVF_BOT )
@@ -911,8 +935,22 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
-						client->ps.stats[ STAT_PREDICTION ] =
-							( int )( G_RGSPredictEfficiencyDelta( dummy, ( team_t )ps->persistant[ PERS_TEAM ] ) * 100.0f );
+						float deltaEff = G_RGSPredictEfficiencyDelta(dummy, team);
+						int   deltaBP  = (int)(level.team[team].totalBudget + deltaEff *
+						                       g_buildPointBudgetPerMiner.value) -
+						                 (int)(level.team[team].totalBudget);
+
+						signed char deltaEffNetwork = (signed char)((float)0x7f * deltaEff);
+						signed char deltaBPNetwork  = (signed char)deltaBP;
+
+						unsigned int deltasNetwork = (unsigned char)deltaEffNetwork |
+						                             (unsigned char)deltaBPNetwork << 8;
+
+						// The efficiency and budget deltas are signed values that are encode as the
+						// least and most significant byte of the de-facto short
+						// ps->stats[STAT_PREDICTION], respectively. The efficiency delta is a value
+						// between -1 and 1, the budget delta is an integer between -128 and 127.
+						client->ps.stats[STAT_PREDICTION] = (int)deltasNetwork;
 					}
 
 					// Let the client know which buildables will be removed by building
@@ -943,9 +981,6 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		}
 
 		BeaconAutoTag( ent, 100 );
-
-		// replenish human health
-		G_ReplenishHumanHealth( ent );
 
 		// refill weapon ammo
 		if ( ent->client->lastAmmoRefillTime + HUMAN_AMMO_REFILL_PERIOD < level.time &&
@@ -1879,20 +1914,6 @@ void ClientThink_real( gentity_t *self )
 		client->ps.stats[ STAT_STATE ] &= ~SS_SLOWLOCKED;
 	}
 
-	// Is power/creep available for the client's team?
-	if ( client->pers.team == TEAM_HUMANS && G_ActiveReactor() )
-	{
-		client->ps.eFlags |= EF_POWER_AVAILABLE;
-	}
-	else if ( client->pers.team == TEAM_ALIENS && G_ActiveOvermind() )
-	{
-		client->ps.eFlags |= EF_POWER_AVAILABLE;
-	}
-	else
-	{
-		client->ps.eFlags &= ~EF_POWER_AVAILABLE;
-	}
-
 	// Update boosted state flags
 	client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTEDWARNING;
 
@@ -1921,37 +1942,7 @@ void ClientThink_real( gentity_t *self )
 	// copy global gravity to playerstate
 	client->ps.gravity = g_gravity.value;
 
-	HealthComponent *healthComponent = self->entity->Get<HealthComponent>();
-
-	// handle medkit (TODO: move into helper function)
-	if ( BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) &&
-	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
-	{
-		//if currently using a medkit or have no need for a medkit now
-		if ( (client->ps.stats[ STAT_STATE ] & SS_HEALING_4X) ||
-		     ( healthComponent->FullHealth() &&
-		       !( client->ps.stats[ STAT_STATE ] & SS_POISONED ) ) )
-		{
-			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
-		}
-		else if ( G_Alive( self ) )
-		{
-			//remove anti toxin
-			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
-			BG_RemoveUpgradeFromInventory( UP_MEDKIT, client->ps.stats );
-
-			client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
-			client->poisonImmunityTime = level.time + MEDKIT_POISON_IMMUNITY_TIME;
-
-			client->ps.stats[ STAT_STATE ] |= SS_HEALING_4X;
-			client->lastMedKitTime = level.time;
-			client->medKitHealthToRestore = healthComponent->MaxHealth() - healthComponent->Health();
-			client->medKitIncrementTime = level.time +
-			                              ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
-
-			G_AddEvent( self, EV_MEDKIT_USED, 0 );
-		}
-	}
+	G_ReplenishHumanHealth( self );
 
 	// Replenish alien health
 	G_ReplenishAlienHealth( self );
@@ -2220,13 +2211,10 @@ void ClientThink_real( gentity_t *self )
 		}
 	}
 
-	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( (team_t) client->pers.team );
-	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( (team_t) client->pers.team );
-
-	if ( client->ps.persistant[ PERS_BP ] < 0 )
-	{
-		client->ps.persistant[ PERS_BP ] = 0;
-	}
+	client->ps.persistant[ PERS_SPENTBUDGET ]  = level.team[client->pers.team].spentBudget;
+	client->ps.persistant[ PERS_MARKEDBUDGET ] = G_GetMarkedBudget( (team_t)client->pers.team );
+	client->ps.persistant[ PERS_TOTALBUDGET ]  = (int)level.team[client->pers.team].totalBudget;
+	client->ps.persistant[ PERS_QUEUEDBUDGET ] = level.team[client->pers.team].queuedBudget;
 
 	// perform once-a-second actions
 	ClientTimerActions( self, msec );

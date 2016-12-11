@@ -560,21 +560,6 @@ void Cmd_Give_f( gentity_t *ent )
 		G_AddCreditToClient( ent->client, ( short ) amount, true );
 	}
 
-	// give bp
-	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
-	{
-		if ( give_all || trap_Argc() < 3 )
-		{
-			amount = 100.0f;
-		}
-		else
-		{
-			amount = atof( name + strlen("bp") );
-		}
-
-		G_ModifyBuildPoints( (team_t)ent->client->pers.team, amount );
-	}
-
 	// give momentum
 	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
 	{

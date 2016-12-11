@@ -1689,10 +1689,17 @@ typedef struct
 	int      timelimit;
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
+
+	// TODO: Remove those two.
 	int      powerReactorRange;
 	int      powerRepeaterRange;
+
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
 	float    unlockableMinTime;  // used for momentum bar (un)lock markers
+
+	float    buildPointBudgetPerMiner;
+	float    buildPointRecoveryInitialRate;
+	float    buildPointRecoveryRateHalfLife;
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];

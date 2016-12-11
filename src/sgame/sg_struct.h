@@ -101,7 +101,7 @@ struct gentity_s
 
 	// New style entity
 	Entity* entity;
-	
+
 	struct gclient_s *client; // nullptr if not a client
 
 	bool     inuse;
@@ -127,13 +127,13 @@ struct gentity_s
 
 	char         *names[ MAX_ENTITY_ALIASES + 1 ];
 
-	/**
-	 * is the entity considered active?
-	 * as in 'currently doing something'
-	 * e.g. used for buildables (e.g. medi-stations or hives can be in an active state or being inactive)
-	 * or during executing act() in general
-	 */
-	bool     active;
+	// These formerly all used a field named "active" and are now split such that it gets easier
+	// to convert them to CBSE component members.
+	bool hiveInsectsActive;
+	bool medistationIsHealing;
+	bool bodyStartedSinking;
+	bool shaderActive;
+
 	/**
 	 * delay being really active until this time, e.g for act() delaying or for spinup for norfenturrets
 	 * this will most probably be set by think() before act()ing, probably by using the config.delay time
@@ -172,19 +172,6 @@ struct gentity_s
 	 * other entities might also consider the powergrid for behavior changes
 	 */
 	bool     powered;
-	gentity_t    *powerSource;
-
-	/**
-	 * Human buildables compete for power.
-	 * currentSparePower takes temporary influences into account and sets a buildables power state.
-	 * expectedSparePower is a prediction of the static part and is used for limiting new buildables.
-	 *
-	 * currentSparePower  >= 0: Buildable has enough power
-	 * currentSparePower  <  0: Buildable lacks power, will shut down
-	 * expectedSparePower >  0: New buildables can be built in range
-	 */
-	float        currentSparePower;
-	float        expectedSparePower;
 
 	/**
 	 * The amount of momentum this building generated on construction
@@ -261,9 +248,7 @@ struct gentity_s
 	char         *shaderKey;
 	char         *shaderReplacement;
 
-	float        lastHealthFrac;
 	int          health;
-	float        deconHealthFrac;
 
 	float        speed;
 
@@ -351,14 +336,12 @@ struct gentity_s
 	float       barbRegeneration; // goon barb regeneration is complete if this value is >= 1
 
 	bool        deconMarkHack; // TODO: Remove.
-	int         attackTimer, attackLastEvent; // self being attacked
 	int         warnTimer; // nearby building(s) being attacked
 	int         overmindDyingTimer;
 	int         overmindSpawnsTimer;
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on
 	// every single frame.. so only do it periodically
 	int         clientSpawnTime; // the time until this spawn can spawn a client
-	int         spawnBlockTime; // timer for anti spawn-block
 
 	struct {
 	 	float  value;
@@ -376,7 +359,7 @@ struct gentity_s
 	int         turretLastValidTargetTime;
 	int         turretLastTargetSearch;
 	int         turretLastHeadMove;
-	int         turretCurrentDamage;
+	float       turretCurrentDamage;
 	vec3_t      turretDirToTarget;
 	vec3_t      turretBaseDir;
 	bool    turretDisabled;
@@ -384,11 +367,6 @@ struct gentity_s
 	bool    turretSafeMode;
 	int         turretPrepareTime; // when the turret can start locking on and/or firing
 	int         turretLockonTime;  // when the turret can start firing
-
-	// spiker
-	int         spikerRestUntil;
-	float       spikerLastScoring;
-	bool    spikerLastSensing;
 
 	vec4_t      animation; // animated map objects
 
@@ -712,8 +690,6 @@ struct level_locals_s
 	gentity_t        *locationHead; // head of the location list
 	gentity_t        *fakeLocation; // fake location for anything which might need one
 
-	float            mineRate;
-
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
 	int              numBuildablesForRemoval;
 
@@ -745,10 +721,6 @@ struct level_locals_s
 	int              buildId;
 	int              numBuildLogs;
 
-	bool         overmindMuted;
-
-	int              humanBaseAttackTimer;
-
 	struct
 	{
 		// voting state
@@ -774,13 +746,12 @@ struct level_locals_s
 		float            averageNumBots;
 		int              numSamples;
 		int              numAliveClients;
-		float            buildPoints;
-		float            acquiredBuildPoints;
-		float            mainStructAcquiredBP;
-		float            mineEfficiency;
+		float            totalBudget; // Read access always rounds towards zero.
+		int              spentBudget;
+		int              queuedBudget;
 		int              kills;
 		spawnQueue_t     spawnQueue;
-		bool         locked;
+		bool             locked;
 		float            momentum;
 		int              layoutBuildPoints;
 	} team[ NUM_TEAMS ];

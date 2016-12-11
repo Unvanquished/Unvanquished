@@ -346,7 +346,7 @@ void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 	G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
 	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 
-	self->active = true;
+	self->shaderActive = true;
 }
 
 void gfx_shader_mod_reset( gentity_t *self )
@@ -356,7 +356,7 @@ void gfx_shader_mod_reset( gentity_t *self )
 		return;
 	}
 
-	if( !self->active ) // initial reset doesnt need a remap
+	if( !self->shaderActive ) // initial reset doesnt need a remap
 	{
 		return;
 	}
@@ -364,7 +364,7 @@ void gfx_shader_mod_reset( gentity_t *self )
 	G_SetShaderRemap( self->shaderKey, self->shaderKey, level.time * 0.001 );
 	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 
-	self->active = false;
+	self->shaderActive = false;
 }
 
 void SP_gfx_shader_mod( gentity_t *self )

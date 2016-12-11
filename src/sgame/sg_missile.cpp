@@ -274,7 +274,7 @@ static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 		}
 		else
 		{
-			ent->parent->active = false;
+			ent->parent->hiveInsectsActive = false;
 		}
 
 		return MIB_FREE;

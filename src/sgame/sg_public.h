@@ -72,30 +72,57 @@ namespace Beacon
 // Utility.cpp
 namespace Utility
 {
+	/**
+	 * @brief Whether two entities both are assigned to a team and it is the same one.
+	 */
+	bool OnSameTeam(Entity& firstEntity, Entity& secondEntity);
+
+	/**
+	 * @brief Whether two entities both are assigned to a team and the teams differ.
+	 */
+	bool OnOpposingTeams(Entity& firstEntity, Entity& secondEntity);
+
+	/**
+	 * @brief Whether the entity can die (has health) but is alive.
+	 */
+	bool Alive(Entity& entity);
+
+	/**
+	 * @brief Whether the entity can be alive (has health) but is dead now.
+	 */
+	bool Dead(Entity& entity);
+
+	/**
+	 * @brief Deals the exact amount of damage necessary to kill the entity.
+	 */
 	void Kill(Entity& entity, Entity *source, meansOfDeath_t meansOfDeath);
+
 	bool AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
+
+	std::string Print(Vec3 v);
 }
 
 // sg_buildable.c
-bool              G_IsWarnableMOD( int mod );
-gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin, const vec3_t normal, buildable_t spawn, vec3_t spawnOrigin );
-gentity_t         *G_Reactor();
-gentity_t         *G_AliveReactor();
-gentity_t         *G_ActiveReactor();
+bool              G_IsWarnableMOD(meansOfDeath_t mod);
 gentity_t         *G_Overmind();
 gentity_t         *G_AliveOvermind();
 gentity_t         *G_ActiveOvermind();
-float             G_DistanceToBase( gentity_t *self, bool ownBase );
-bool          G_InsideBase( gentity_t *self, bool ownBase );
-bool          G_FindCreep( gentity_t *self );
+gentity_t         *G_Reactor();
+gentity_t         *G_AliveReactor();
+gentity_t         *G_ActiveReactor();
+gentity_t         *G_MainBuildable(team_t team);
+gentity_t         *G_AliveMainBuildable(team_t team);
+gentity_t         *G_ActiveMainBuildable(team_t team);
+float             G_DistanceToBase(gentity_t *self);
+bool              G_InsideBase(gentity_t *self);
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
-bool          G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
+bool              G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
 void              G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal, int *groundEntNum );
-bool          G_BuildIfValid( gentity_t *ent, buildable_t buildable );
-void              G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, bool force );
-void              G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );
+bool              G_BuildIfValid( gentity_t *ent, buildable_t buildable );
+void              G_SetBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation, bool force);
+void              G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation);
 void              G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
 void              G_LayoutSave( const char *name );
 int               G_LayoutList( const char *map, char *list, int len );
@@ -106,7 +133,7 @@ buildLog_t        *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void              G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void              G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void              G_BuildLogRevert( int id );
-void              G_SetHumanBuildablePowerState();
+void              G_UpdateBuildablePowerStates();
 gentity_t         *G_NearestPowerSourceInRange( gentity_t *self );
 void              G_BuildableTouchTriggers( gentity_t *ent );
 
@@ -121,15 +148,18 @@ bool ASpiker_Fire( gentity_t *self );
 void HTurret_PreBlast( gentity_t *self );
 
 // sg_buildpoints
-float             G_RGSPredictEfficiency( vec3_t origin );
-float             G_RGSPredictEfficiencyDelta( vec3_t origin, team_t team );
-void              G_MineBuildPoints();
-int               G_GetBuildPointsInt( team_t team );
-int               G_GetMarkedBuildPointsInt( team_t team );
-bool              G_CanAffordBuildPoints( team_t team, float amount );
-void              G_GetBuildableResourceValue( int *teamValue );
-void              G_ModifyBuildPoints( team_t team, float amount );
-void              G_ModifyTotalBuildPointsAcquired( team_t team, float amount );
+float             G_RGSPredictOwnEfficiency(vec3_t origin);
+float             G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team);
+void              G_UpdateBuildPointBudgets();
+void              G_RecoverBuildPoints();
+int               G_GetSpentBudget(team_t team);
+int               G_GetFreeBudget(team_t team);
+int               G_GetMarkedBudget(team_t team);
+int               G_GetSpendableBudget(team_t team);
+void              G_FreeBudget(team_t team, int immediateAmount , int queuedAmount);
+void              G_SpendBudget(team_t team, int amount);
+int               G_BuildableDeconValue(gentity_t *ent);
+void              G_GetTotalBuildableValues(int *buildableValuesByTeam);
 
 // sg_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );
@@ -286,7 +316,7 @@ team_t            G_Team( gentity_t *ent );
 bool          G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
 void              G_LeaveTeam( gentity_t *self );
 void              G_ChangeTeam( gentity_t *ent, team_t newTeam );
-gentity_t         *Team_GetLocation( gentity_t *ent );
+gentity_t         *GetCloseLocationEntity( gentity_t *ent );
 void              TeamplayInfoMessage( gentity_t *ent );
 void              CheckTeamStatus();
 void              G_UpdateTeamConfigStrings();
@@ -353,7 +383,6 @@ void              G_UpdateZaps( int msec );
 void              G_ClearPlayerZapEffects( gentity_t *player );
 void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
-bool              G_RocketpodSafeShot( int passEntityNum, vec3_t origin, vec3_t dir );
 
 // Components
 void G_IgnitableThink();

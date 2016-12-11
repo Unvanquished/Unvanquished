@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
 // player teams
-typedef enum
+typedef enum team_e
 {
   TEAM_ALL = -1,
   TEAM_NONE,
@@ -289,12 +289,10 @@ typedef enum
   IBE_NOOVERMIND,       // no overmind present
   IBE_ONEOVERMIND,      // may not build two overminds
   IBE_NOALIENBP,        // not enough build points (aliens)
-  IBE_NOCREEP,          // no creep in this area
 
   IBE_NOREACTOR,        // not enough power in this area and no reactor present
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
-  IBE_NOPOWERHERE,      // not enough power in this area even though a reactor is present
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
@@ -317,14 +315,14 @@ typedef enum
   PERS_SPECSTATE,
   PERS_SPAWN_COUNT,    // incremented every respawn
   PERS_TEAM,           // persistant team selection
-  PERS_RGS_EFFICIENCY, // summed efficiency of all friendly RGS
   PERS_STATE,
   PERS_CREDIT,         // human credit
   PERS_UNLOCKABLES,    // status of unlockable items of a team
   PERS_NEWWEAPON,      // weapon to switch to
-  PERS_BP,
-  PERS_MARKEDBP,
-  PERS_MINERATE        // level wide base mine rate. TODO: calculate clientside
+  PERS_SPENTBUDGET,
+  PERS_MARKEDBUDGET,
+  PERS_TOTALBUDGET,
+  PERS_QUEUEDBUDGET
   // netcode has space for 2 more. TODO: extend
 } persEnum_t;
 
@@ -352,7 +350,7 @@ typedef enum
 #define EF_B_LOCKON         0x0080
 
 // for players
-#define EF_POWER_AVAILABLE  0x0010
+#define EF_UNUSED_1         0x0010 // UNUSED
 #define EF_WARN_CHARGE      0x0020 // Lucifer Cannon is about to overcharge
 #define EF_WALLCLIMB        0x0040 // wall walking
 #define EF_WALLCLIMBCEILING 0x0080 // wall walking ceiling hack
@@ -361,7 +359,7 @@ typedef enum
 #define EF_FIRING2          0x0400 // alt fire
 #define EF_FIRING3          0x0800 // third fire
 #define EF_MOVER_STOP       0x1000 // will push otherwise
-#define EF_UNUSED_1         0x2000 // UNUSED
+#define EF_UNUSED_2         0x2000 // UNUSED
 #define EF_CONNECTION       0x4000 // draw a connection trouble sprite
 #define EF_BLOBLOCKED       0x8000 // caught by a trapper
 
@@ -623,14 +621,9 @@ typedef enum
   EV_STOPLOOPINGSOUND,
   EV_TAUNT,
 
-  EV_OVERMIND_ATTACK_1, // overmind under attack
-  EV_OVERMIND_ATTACK_2, // overmind under attack
-  EV_OVERMIND_DYING, // overmind close to death
-  EV_OVERMIND_SPAWNS, // overmind needs spawns
-
-  EV_REACTOR_ATTACK_1, // reactor under attack
-  EV_REACTOR_ATTACK_2, // reactor under attack
-  EV_REACTOR_DYING, // reactor destroyed
+  EV_NO_SPAWNS,
+  EV_MAIN_UNDER_ATTACK,
+  EV_MAIN_DYING,
 
   EV_WARN_ATTACK, // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
 
@@ -695,7 +688,6 @@ typedef enum
   //alien build
   MN_A_ONEOVERMIND,
   MN_A_NOBP,
-  MN_A_NOCREEP,
   MN_A_NOOVMND,
 
   //human stuff
@@ -714,7 +706,6 @@ typedef enum
   MN_H_UNKNOWNSPAWNITEM,
 
   //human buildables
-  MN_H_NOPOWERHERE,
   MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,
@@ -1033,8 +1024,7 @@ typedef enum
   MOD_SPIKER,
   MOD_OVERMIND,
   MOD_DECONSTRUCT,
-  MOD_REPLACE,
-  MOD_NOCREEP
+  MOD_REPLACE
 } meansOfDeath_t;
 
 //---------------------------------------------------------
@@ -1193,7 +1183,6 @@ typedef struct
 	float       bounce;
 
 	int         buildPoints;
-	int         powerConsumption;
 	int         unlockThreshold;
 
 	int         health;
@@ -1356,6 +1345,10 @@ void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
 bool     BG_IsMainStructure( buildable_t buildable );
 bool     BG_IsMainStructure( entityState_t *es );
 void     BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t maxs );
+void     ModifyFlag(int &flags, int flag, bool value);
+void     AddFlag(int &flags, int flag);
+void     RemoveFlag(int &flags, int flag);
+void     ToggleFlag(int &flags, int flag);
 
 bool BG_WeaponIsFull(int weapon, int ammo, int clips );
 bool BG_InventoryContainsWeapon( int weapon, const int stats[] );

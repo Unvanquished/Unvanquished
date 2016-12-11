@@ -110,7 +110,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		// TODO: Use DAMAGE_NO_PROTECTION flag instead of listing means of death here.
 		if (entity.oldEnt->s.eType == entityType_t::ET_BUILDABLE && source->client &&
 		    meansOfDeath != MOD_DECONSTRUCT && meansOfDeath != MOD_SUICIDE &&
-		    meansOfDeath != MOD_REPLACE     && meansOfDeath != MOD_NOCREEP) {
+		    meansOfDeath != MOD_REPLACE) {
 			if (G_OnSameTeam(entity.oldEnt, source) && !g_friendlyBuildableFire.integer) {
 				return;
 			}

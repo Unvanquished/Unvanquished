@@ -1,10 +1,15 @@
 #include "BuildableComponent.h"
 
-BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_HealthComponent, ThinkingComponent& r_ThinkingComponent)
-	: BuildableComponentBase(entity, r_HealthComponent, r_ThinkingComponent)
+BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_HealthComponent,
+	ThinkingComponent& r_ThinkingComponent, TeamComponent& r_TeamComponent)
+	: BuildableComponentBase(entity, r_HealthComponent, r_ThinkingComponent, r_TeamComponent)
 	, state(CONSTRUCTING)
+	, constructionHasFinished(false)
 	, marked(false) {
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 100);
+
+	// TODO: Make power state a member variable.
+	entity.oldEnt->powered = true;
 }
 
 void BuildableComponent::HandlePrepareNetCode() {
@@ -26,7 +31,7 @@ void BuildableComponent::HandlePrepareNetCode() {
 		entity.oldEnt->s.eFlags &= ~EF_B_MARKED;
 	}
 
-	if (entity.oldEnt->powered) {
+	if (Powered()) {
 		entity.oldEnt->s.eFlags |= EF_B_POWERED;
 	} else {
 		entity.oldEnt->s.eFlags &= ~EF_B_POWERED;
@@ -44,8 +49,10 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 	// Note that this->state is adjusted in (Alien|Human)BuildableComponent::HandleDie so they have
 	// access to its current value.
 
+	TeamComponent::team_t team = GetTeamComponent().Team();
+
 	// TODO: Move animation code to BuildableComponent.
-	G_SetBuildableAnim(entity.oldEnt, entity.oldEnt->powered ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true);
+	G_SetBuildableAnim(entity.oldEnt, Powered() ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true);
 	G_SetIdleBuildableAnim(entity.oldEnt, BANIM_DESTROYED);
 
 	entity.oldEnt->killedBy = killer->s.number;
@@ -54,6 +61,31 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 
 	// TODO: Handle in TaggableComponent.
 	Beacon::DetachTags(entity.oldEnt);
+
+	// Report an attack to the defending team if the buildable was powered and there is a main
+	// buildable that can report it. Note that the main buildables itself issues its own warnings.
+	if (Powered() && entity.Get<MainBuildableComponent>() == nullptr &&
+	    G_IsWarnableMOD(meansOfDeath) && G_ActiveMainBuildable(team)) {
+		// Get a nearby location entity.
+		gentity_t *location = GetCloseLocationEntity(entity.oldEnt);
+
+		// Fall back to fake location entity if necessary.
+		if (!location) location = level.fakeLocation;
+
+		// Warn if there was no warning for this location recently.
+		if (level.time > location->warnTimer) {
+			bool inBase = G_InsideBase(entity.oldEnt);
+
+			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? 0 : location->s.number, team);
+			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, team);
+			location->warnTimer = level.time + ATTACKWARN_NEARBY_PERIOD;
+		}
+	}
+
+	// If not deconstructed, add all build points to queue.
+	if (meansOfDeath != MOD_DECONSTRUCT && meansOfDeath != MOD_REPLACE) {
+		G_FreeBudget(team, 0, BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints);
+	}
 }
 
 void BuildableComponent::Think(int timeDelta) {
@@ -66,12 +98,6 @@ void BuildableComponent::Think(int timeDelta) {
 				if (entity.oldEnt->creationTime + constructionTime < level.time) {
 					// Finish construction.
 					state = CONSTRUCTED;
-
-					// Notify alien team of new overmind.
-					// TODO: Send FinishConstruction message instead and do this in OvermindComponent.
-					if (entity.oldEnt->s.modelindex == BA_A_OVERMIND) {
-						G_TeamCommand(TEAM_ALIENS, "cp \"The Overmind has awakened!\"");
-					}
 
 					// Award momentum.
 					G_AddMomentumForBuilding(entity.oldEnt);
@@ -87,7 +113,7 @@ void BuildableComponent::Think(int timeDelta) {
 				entity.oldEnt->spawned = true;
 				entity.oldEnt->enabled = true;
 
-				if (entity.oldEnt->powered) {
+				if (Powered()) {
 					// Regenerate health.
 					int   regenWait;
 					float regenRate = (float)BG_Buildable(entity.oldEnt->s.modelindex)->regenRate;
@@ -101,6 +127,12 @@ void BuildableComponent::Think(int timeDelta) {
 					if (regenRate && (entity.oldEnt->lastDamageTime + regenWait) < level.time) {
 						entity.Heal(timeDelta * 0.001f * regenRate, nullptr);
 					}
+				}
+
+				// Notify other components when construction finishes.
+				if (!constructionHasFinished) {
+					entity.FinishConstruction();
+					constructionHasFinished = true;
 				}
 			} break;
 
@@ -118,6 +150,22 @@ void BuildableComponent::Think(int timeDelta) {
 	G_BuildableTouchTriggers(entity.oldEnt);
 }
 
-bool BuildableComponent::Active() {
-	return (state == CONSTRUCTED && entity.oldEnt->powered);
+void BuildableComponent::SetPowerState(bool powered) {
+	// TODO: Make power state a member variable.
+
+	bool wasPowered = entity.oldEnt->powered;
+
+	entity.oldEnt->powered = powered;
+
+	if        ( powered && !wasPowered) {
+		G_SetBuildableAnim(entity.oldEnt, BANIM_POWERUP, false);
+		G_SetIdleBuildableAnim(entity.oldEnt, BANIM_IDLE1);
+
+		entity.PowerUp();
+	} else if (!powered &&  wasPowered) {
+		G_SetBuildableAnim(entity.oldEnt, BANIM_POWERDOWN, false);
+		G_SetIdleBuildableAnim(entity.oldEnt, BANIM_IDLE_UNPOWERED);
+
+		entity.PowerDown();
+	}
 }

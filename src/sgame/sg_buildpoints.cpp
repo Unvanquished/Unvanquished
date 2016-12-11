@@ -26,42 +26,40 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 
 #define MINING_PERIOD 1000
 
-/**
- * @brief Predict the efficiecy loss of a mining structre if another one is constructed closeby.
- * @return Efficiency loss as negative value.
- */
-static float RGSPredictInterferenceLoss(Entity& miner, vec3_t newMinerOrigin) {
-	float distance      = Distance(miner.oldEnt->s.origin, newMinerOrigin);
-	float currentRate   = miner.Get<MiningComponent>()->MineRate();
-	float predictedRate = currentRate * MiningComponent::InterferenceMod(distance);
-	float rateLoss      = predictedRate - currentRate;
-
-	return rateLoss / level.mineRate;
-}
+static Log::Logger buildpointLogger("sgame.buildpoints");
 
 /**
  * @brief Predict the efficiency of a mining structure constructed at the given point.
- * @return Predicted efficiency in percent points.
+ * @note Creates a pseudo leech entity on the stack and calculate its rate.
+ * @return Predicted efficiency of the new miner only.
  */
-float G_RGSPredictEfficiency( vec3_t origin ) {
-	// HACK: Create a pseudo leech entity on the stack and calculate its rate.
-
-	gentity_t leechOldEntity;
-	VectorCopy(origin, leechOldEntity.s.origin);
-	leechOldEntity.powered = true;
+float G_RGSPredictOwnEfficiency(vec3_t origin) {
+	gentity_t leechOldEnt;
+	VectorCopy(origin, leechOldEnt.s.origin);
 
 	LeechEntity::Params params;
-	params.oldEnt = &leechOldEntity;
+	params.oldEnt           = &leechOldEnt;
 	params.Health_maxHealth = 1.0f;
-
+	params.Mining_blueprint = true;
 	LeechEntity leechEntity(params);
 
-	MiningComponent *miningComponent = leechEntity.Get<MiningComponent>();
-	BuildableComponent *buildableComponent = leechEntity.Get<BuildableComponent>();
+	return leechEntity.Get<MiningComponent>()->Efficiency(true);
+}
 
-	buildableComponent->SetState(BuildableComponent::CONSTRUCTED);
-	miningComponent->CalculateEfficiency();
-	return miningComponent->Efficiency();
+/**
+ * @brief Predict the efficiecy loss of an existing miner if another one is constructed closeby.
+ * @return Efficiency loss as negative value.
+ */
+static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {
+	float distance               = Distance(miner.oldEnt->s.origin, newMinerOrigin);
+	float oldPredictedEfficiency = miner.Get<MiningComponent>()->Efficiency(true);
+	float newPredictedEfficiency = oldPredictedEfficiency * MiningComponent::InterferenceMod(distance);
+	float efficiencyLoss         = newPredictedEfficiency - oldPredictedEfficiency;
+
+	buildpointLogger.Debug("Predicted efficiency loss of existing miner: %f - %f = %f.",
+	                       oldPredictedEfficiency, newPredictedEfficiency, efficiencyLoss);
+
+	return efficiencyLoss;
 }
 
 /**
@@ -70,230 +68,146 @@ float G_RGSPredictEfficiency( vec3_t origin ) {
  * @todo Consider RGS set for deconstruction.
  */
 float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
-	float delta = G_RGSPredictEfficiency(origin);
+	float delta = G_RGSPredictOwnEfficiency(origin);
+
+	buildpointLogger.Debug("Predicted efficiency of new miner itself: %f.", delta);
 
 	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
-		// HACK: This just works for miners that are buildables.
-		// TODO: Retrieve entity team properly.
-		if (miner.oldEnt->buildableTeam != team) return;
+		if (G_Team(miner.oldEnt) != team) return;
 
-		delta += RGSPredictInterferenceLoss(miner, origin);
+		delta += RGSPredictEfficiencyLoss(miner, origin);
 	});
+
+	buildpointLogger.Debug("Predicted efficiency delta: %f. Build point delta: %f.", delta,
+	                       delta * g_buildPointBudgetPerMiner.value);
 
 	return delta;
 }
 
 /**
- * @brief Calculate the level mine rate and the teams' mining efficiencies, add build points.
+ * @brief Calculate the build point budgets for both teams.
  */
-void G_MineBuildPoints() {
-	static int nextCalculation = 0;
-	if (level.time < nextCalculation) return;
+void G_UpdateBuildPointBudgets() {
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+		level.team[team].totalBudget = g_buildPointInitialBudget.value;
+	}
 
-	level.team[TEAM_HUMANS].mineEfficiency = 0.0f;
-	level.team[TEAM_ALIENS].mineEfficiency = 0.0f;
-
-	// Calculate current level wide mine rate.
-	level.mineRate = g_initialMineRate.value *
-	                 std::pow(2.0f, -level.matchTime / (60000.0f * g_mineRateHalfLife.value));
-
-	// Calculate current efficiency to build point gain modifier.
-	float mineMod = (level.mineRate / 60.0f) * (MINING_PERIOD / 1000.0f);
-
-	// Sum up efficiencies of miners and save amount of build points acquired by each miner.
-	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
-		float efficiency = miningComponent.Efficiency();
-
-		miningComponent.GetResourceStorageComponent().AcquireBuildPoints(efficiency * mineMod);
-
-		// HACK: This only works with miners that are buildables.
-		level.team[miner.oldEnt->buildableTeam].mineEfficiency += efficiency;
+	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
+		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
+		                                                 g_buildPointBudgetPerMiner.value;
 	});
+}
 
-	// Main structure provides the rest of the minimum mining efficiency.
-	float minEff = (g_minimumMineRate.value / 100.0f);
+void G_RecoverBuildPoints() {
+	static int nextBuildPoint[NUM_TEAMS] = {0};
+
+	float rate = g_buildPointRecoveryInititalRate.value /
+	             std::pow(2.0f, (float)level.matchTime /
+	                            (60000.0f * g_buildPointRecoveryRateHalfLife.value));
+	int interval = (int)(60000.0f / rate);
+	int nextBuildPointTime = level.time + interval;
+
+	// The interval grows exponentially, so check for an overflow.
+	if (nextBuildPointTime < level.time) return;
+
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		gentity_t *mainStructure;
-		float     deltaEff;
-
-		switch (team) {
-			case TEAM_ALIENS: mainStructure = G_ActiveOvermind(); break;
-			case TEAM_HUMANS: mainStructure = G_ActiveReactor();  break;
-			default: continue;
+		if (!level.team[team].queuedBudget) {
+			nextBuildPoint[team] = -1;
+			continue;
 		}
 
-		if (mainStructure && (deltaEff = minEff - level.team[TEAM_HUMANS].mineEfficiency) > 0) {
-			level.team[team].mineEfficiency       += deltaEff;
-			level.team[team].mainStructAcquiredBP += deltaEff * mineMod;
+		if (nextBuildPoint[team] == -1) {
+			nextBuildPoint[team] = nextBuildPointTime;
+			continue;
+		}
 
-			// Copy acquired build points to the current main structure's ResourceStorageComponent.
-			mainStructure->entity->Get<ResourceStorageComponent>()->SetAcquiredBuildPoints(
-				level.team[team].mainStructAcquiredBP
-			);
+		if (nextBuildPoint[team] <= level.time) {
+			nextBuildPoint[team] = nextBuildPointTime;
+			level.team[team].queuedBudget--;
 		}
 	}
-
-	// Add build points.
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		float earnedBP = level.team[team].mineEfficiency * mineMod;
-
-		G_ModifyBuildPoints(team, earnedBP);
-		G_ModifyTotalBuildPointsAcquired(team, earnedBP);
-	}
-
-	// Send mine efficiencies to clients.
-	for (int playerNum = 0; playerNum < level.maxclients; playerNum++) {
-		gentity_t *player = &g_entities[playerNum];
-		gclient_t *client = player->client;
-
-		if (!client) continue;
-
-		client->ps.persistant[PERS_MINERATE] = (short)(level.mineRate * 10.0f);
-
-		team_t team = (team_t)client->pers.team;
-
-		if (G_IsPlayableTeam(team)) {
-			client->ps.persistant[PERS_RGS_EFFICIENCY] =
-				(short)(level.team[team].mineEfficiency * 100.0f);
-		} else {
-			// TODO: Check if this is related to efficiency display flickering for spectators.
-			client->ps.persistant[PERS_RGS_EFFICIENCY] = 0;
-		}
-	}
-
-	nextCalculation = level.time + MINING_PERIOD;
 }
 
 /**
- * @brief Get the number of build points for a team.
+ * @brief Get the potentially negative number of free build points for a team.
  */
-int G_GetBuildPointsInt( team_t team )
+int G_GetFreeBudget(team_t team)
 {
-	if ( G_IsPlayableTeam( team ) )
-	{
-		return ( int )level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return 0;
-	}
+	return (int)level.team[team].totalBudget - (level.team[team].spentBudget + level.team[team].queuedBudget);
 }
 
 /**
  * @brief Get the number of marked build points for a team.
  */
-int G_GetMarkedBuildPointsInt( team_t team )
+int G_GetMarkedBudget(team_t team)
 {
-	gentity_t *ent;
-	int       i;
-	int       sum = 0;
-	const buildableAttributes_t *attr;
+	int sum = 0;
 
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( !ent->inuse || ent->s.eType != entityType_t::ET_BUILDABLE || G_Dead( ent ) ||
-		     ent->buildableTeam != team || !ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
-		{
-			continue;
+	ForEntities<BuildableComponent>(
+	[&](Entity& entity, BuildableComponent& buildableComponent) {
+		if (G_Team(entity.oldEnt) == team && buildableComponent.MarkedForDeconstruction()) {
+			sum += G_BuildableDeconValue(entity.oldEnt);
 		}
-
-		attr = BG_Buildable( ent->s.modelindex );
-		sum += attr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
-	}
+	});
 
 	return sum;
 }
 
 /**
- * @brief Tests wether a team can afford an amont of build points.
- * @param amount Amount of build points, the sign is discarded.
+ * @brief Get the potentially negative number of build points a team can spend, including those from
+ *        marked buildables.
  */
-bool G_CanAffordBuildPoints( team_t team, float amount )
+int G_GetSpendableBudget(team_t team)
 {
-	float *bp;
-
-	if ( G_IsPlayableTeam( team ) )
-	{
-		bp = &level.team[ team ].buildPoints;
-	}
-	else
-	{
-		return false;
-	}
-
-	if ( fabs( amount ) > *bp )
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	return G_GetFreeBudget(team) + G_GetMarkedBudget(team);
 }
 
-/**
- * @brief Calculates the value of buildables (in build points) for both teams.
- */
-void G_GetBuildableResourceValue( int *teamValue )
+void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
 {
-	int       entityNum;
-	gentity_t *ent;
-	team_t    team;
-	const buildableAttributes_t *attr;
-
-	for ( team = TEAM_NONE; ( team = G_IterateTeams( team ) ); )
+	if ( G_IsPlayableTeam( team ) )
 	{
-		teamValue[ team ] = 0;
-	}
+		level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
+		level.team[ team ].queuedBudget += queuedAmount;
 
-	for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
-	{
-		ent = &g_entities[ entityNum ];
+		// Note that there can be more build points in queue than total - spent.
 
-		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
-		{
-			continue;
+		if ( level.team[ team ].spentBudget < 0 ) {
+			level.team[ team ].spentBudget = 0;
+			Log::Warn("A team spent a negative buildable budget total.");
 		}
-
-		team = ent->buildableTeam ;
-		attr = BG_Buildable( ent->s.modelindex );
-
-		teamValue[ team ] += attr->buildPoints * ent->entity->Get<HealthComponent>()->HealthFraction();
 	}
 }
 
-static void ModifyBuildPoints( team_t team, float amount, bool acquired )
+void G_SpendBudget( team_t team, int amount )
 {
-	float *availBP, *acquiredBP;
-
 	if ( G_IsPlayableTeam( team ) )
 	{
-		availBP    = &level.team[ team ].buildPoints;
-		acquiredBP = &level.team[ team ].acquiredBuildPoints;
+		level.team[ team ].spentBudget += amount;
 	}
-	else
-	{
-		return;
+}
+
+int G_BuildableDeconValue(gentity_t *ent)
+{
+	HealthComponent* healthComponent = ent->entity->Get<HealthComponent>();
+
+	if (!healthComponent->Alive()) {
+		return 0;
 	}
 
-	*availBP    = acquired ? *availBP : std::max( *availBP + amount, 0.0f );
-	*acquiredBP = acquired ? std::max( *acquiredBP + amount, 0.0f ) : *acquiredBP;
+	return (int)roundf((float)BG_Buildable(ent->s.modelindex)->buildPoints
+	                   * healthComponent->HealthFraction());
 }
 
 /**
- * @brief Adds or removes build points from a team.
+ * @brief Calculates the current value of buildables (in build points) for both teams.
  */
-void G_ModifyBuildPoints( team_t team, float amount )
+void G_GetTotalBuildableValues(int *buildableValuesByTeam)
 {
-	ModifyBuildPoints( team, amount, false );
-}
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+		buildableValuesByTeam[team] = 0;
+	}
 
-/**
- * @brief Adds or removes build points to the virtual pool of acquired build points.
- * @note The sum of all resource storage's acquired build points plus the pool of build points
- *       acquired by the main structure should equal this pool.
- */
-void G_ModifyTotalBuildPointsAcquired( team_t team, float amount )
-{
-	ModifyBuildPoints( team, amount, true );
+	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
+		buildableValuesByTeam[G_Team(entity.oldEnt)] += G_BuildableDeconValue(entity.oldEnt);
+	});
 }

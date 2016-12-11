@@ -85,8 +85,7 @@ static const char *const modNames[] =
 	"MOD_SPIKER",
 	"MOD_OVERMIND",
 	"MOD_DECONSTRUCT",
-	"MOD_REPLACE",
-	"MOD_NOCREEP"
+	"MOD_REPLACE"
 };
 
 /**
@@ -212,9 +211,19 @@ void G_RewardAttackers( gentity_t *self )
 	{
 		ownTeam   = (team_t) self->buildableTeam;
 		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
-		value     = BG_IsMainStructure( &self->s )
-		            ? MAIN_STRUCTURE_MOMENTUM_VALUE
-		            : BG_Buildable( self->s.modelindex )->buildPoints;
+
+		if ( self->entity->Get<MainBuildableComponent>() )
+		{
+			value = MAIN_STRUCTURE_MOMENTUM_VALUE;
+		}
+		else if ( self->entity->Get<MiningComponent>() )
+		{
+			value = MINER_MOMENTUM_VALUE;
+		}
+		else
+		{
+			value = BG_Buildable( self->s.modelindex )->buildPoints;
+		}
 
 		// Give partial credits for buildables in construction
 		if ( !self->spawned )
@@ -1027,10 +1036,6 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 			fate = BF_REPLACE;
 			break;
 
-		case MOD_NOCREEP:
-			fate = ( actor->client ) ? BF_UNPOWER : BF_AUTO;
-			break;
-
 		default:
 			if ( actor->client )
 			{
@@ -1068,14 +1073,6 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	             BG_Buildable( self->s.modelindex )->humanName,
 	             mod == MOD_DECONSTRUCT ? "deconstructed" : "destroyed",
 	             actor->client ? actor->client->pers.netname : "<world>" );
-
-	// No-power deaths for humans come after some minutes and it's confusing
-	//  when the messages appear attributed to the deconner. Just don't print them.
-	if ( mod == MOD_NOCREEP && actor->client &&
-	     actor->client->pers.team == TEAM_HUMANS )
-	{
-		return;
-	}
 
 	if ( actor->client && actor->client->pers.team ==
 	     BG_Buildable( self->s.modelindex )->team )
