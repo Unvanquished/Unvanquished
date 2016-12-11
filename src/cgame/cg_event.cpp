@@ -1184,52 +1184,52 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_MAIN_UNDER_ATTACK:
-				// Sanity check the warn level: Must be between 1 and 3.
-				if (es->eventParm < 1 || es->eventParm > 3)
-				{
-					break;
-				}
-
-				switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
-				{
-					case TEAM_ALIENS:
-						trap_S_StartLocalSound( cgs.media.alienOvermindAttack, soundChannel_t::CHAN_ANNOUNCER );
-						CG_CenterPrint( va( "^%c%s", "381"[ es->eventParm - 1 ], _( "The Overmind is under attack!" ) ),
-						                200, GIANTCHAR_WIDTH * 4 );
-						break;
-
-					case TEAM_HUMANS:
-						// TODO: Add a "reactor is under attack" sound.
-						//trap_S_StartLocalSound( cgs.media.humanReactorAttack, soundChannel_t::CHAN_ANNOUNCER );
-						CG_CenterPrint( va( "^%c%s", "381"[ es->eventParm - 1 ], _( "The reactor is under attack!" ) ),
-						                200, GIANTCHAR_WIDTH * 4 );
-						break;
-
-					default:
-						break;
-				}
-
+			// Sanity check the warn level: Must be between 1 and 3.
+			if (es->eventParm < 1 || es->eventParm > 3)
+			{
 				break;
+			}
+
+			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			{
+				case TEAM_ALIENS:
+					trap_S_StartLocalSound( cgs.media.alienOvermindAttack, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( va( "^%c%s", "381"[ es->eventParm - 1 ], _( "The Overmind is under attack!" ) ),
+									200, GIANTCHAR_WIDTH * 4 );
+					break;
+
+				case TEAM_HUMANS:
+					// TODO: Add a "reactor is under attack" sound.
+					//trap_S_StartLocalSound( cgs.media.humanReactorAttack, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( va( "^%c%s", "381"[ es->eventParm - 1 ], _( "The reactor is under attack!" ) ),
+									200, GIANTCHAR_WIDTH * 4 );
+					break;
+
+				default:
+					break;
+			}
+
+			break;
 
 		case EV_MAIN_DYING:
-				switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
-				{
-					case TEAM_ALIENS:
-						trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
-						CG_CenterPrint( _( "^1The Overmind is dying!" ), 200, GIANTCHAR_WIDTH * 4 );
-						break;
+			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			{
+				case TEAM_ALIENS:
+					trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( _( "^1The Overmind is dying!" ), 200, GIANTCHAR_WIDTH * 4 );
+					break;
 
-					case TEAM_HUMANS:
-						// TODO: Add a "reactor is going down" sound.
-						//trap_S_StartLocalSound( cgs.media.humanReactorDying, soundChannel_t::CHAN_ANNOUNCER );
-						CG_CenterPrint( _( "^1The reactor is going down!" ), 200, GIANTCHAR_WIDTH * 4 );
-						break;
+				case TEAM_HUMANS:
+					// TODO: Add a "reactor is going down" sound.
+					//trap_S_StartLocalSound( cgs.media.humanReactorDying, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( _( "^1The reactor is going down!" ), 200, GIANTCHAR_WIDTH * 4 );
+					break;
 
-					default:
-						break;
-				}
+				default:
+					break;
+			}
 
-				break;
+			break;
 
 		case EV_WARN_ATTACK:
 			// if eventParm is non-zero, this is for humans and there's a nearby reactor or repeater, otherwise it's for aliens

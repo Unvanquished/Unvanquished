@@ -21,8 +21,8 @@ RocketpodComponent::RocketpodComponent(Entity& entity, HumanBuildableComponent& 
 }
 
 void RocketpodComponent::HandlePrepareNetCode() {
-	SetFlag(entity.oldEnt->s.eFlags, EF_FIRING,   firing);
-	SetFlag(entity.oldEnt->s.eFlags, EF_B_LOCKON, lockingOn);
+	ModifyFlag(entity.oldEnt->s.eFlags, EF_FIRING,   firing);
+	ModifyFlag(entity.oldEnt->s.eFlags, EF_B_LOCKON, lockingOn);
 }
 
 void RocketpodComponent::HandlePowerUp() {

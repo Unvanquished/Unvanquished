@@ -18,7 +18,7 @@ MGTurretComponent::MGTurretComponent(Entity& entity, HumanBuildableComponent& r_
 }
 
 void MGTurretComponent::HandlePrepareNetCode() {
-	SetFlag(entity.oldEnt->s.eFlags, EF_FIRING, firing);
+	ModifyFlag(entity.oldEnt->s.eFlags, EF_FIRING, firing);
 }
 
 void MGTurretComponent::HandlePowerUp() {
