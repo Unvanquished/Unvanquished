@@ -3879,14 +3879,7 @@ static void PM_TorsoAnimation()
 	{
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
-			if ( pm->ps->weapon == WP_BLASTER )
-			{
-				PM_ContinueTorsoAnim( TORSO_STAND_BLASTER );
-			}
-			else
-			{
-				PM_ContinueTorsoAnim( TORSO_STAND );
-			}
+			PM_ContinueTorsoAnim( TORSO_STAND );
 		}
 
 		PM_ContinueWeaponAnim( WANIM_IDLE );
@@ -4182,14 +4175,7 @@ static void PM_Weapon()
 
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
-			if ( pm->ps->weapon == WP_BLASTER )
-			{
-				PM_ContinueTorsoAnim( TORSO_STAND_BLASTER );
-			}
-			else
-			{
-				PM_ContinueTorsoAnim( TORSO_STAND );
-			}
+			PM_ContinueTorsoAnim( TORSO_STAND );
 		}
 
 		PM_ContinueWeaponAnim( WANIM_IDLE );
