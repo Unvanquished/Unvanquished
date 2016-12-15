@@ -913,11 +913,6 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 				ci->animations[ TORSO_STAND ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND_BLASTER, "stand_blaster", true, false, false ) )
-			{
-				ci->animations[ TORSO_STAND_BLASTER ] = ci->animations[ LEGS_IDLE ];
-			}
-
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", false, false, false ) )
 			{
 				ci->animations[ LEGS_IDLECR ] = ci->animations[ LEGS_IDLE ];

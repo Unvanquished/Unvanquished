@@ -744,7 +744,8 @@ typedef enum
   TORSO_RAISE,
 
   TORSO_STAND,
-  TORSO_STAND_BLASTER,
+  // TODO: Remove this when we're ready to break compat.
+  DEPRECATED_TORSO_STAND_BLASTER,
 
   LEGS_WALKCR,
   LEGS_WALK,
