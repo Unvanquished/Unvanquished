@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cg_players.c -- handle the media and animation for player entities
 
 #include "cg_local.h"
+#include "cg_animdelta.h"
 
 // debugging
 int   debug_anim_current;
@@ -34,15 +35,6 @@ static refSkeleton_t legsSkeleton;
 static refSkeleton_t torsoSkeleton;
 static refSkeleton_t oldSkeleton;
 static refSkeleton_t jetpackSkeleton;
-
-typedef struct {
-	vec3_t delta;
-	quat_t rot;
-}
-
-delta_t;
-
-delta_t deltas[ WP_NUM_WEAPONS ][ MAX_BONES ];
 
 static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
 {
@@ -163,8 +155,25 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		{
 			break;
 		}
-
-		if(!Q_stricmp(token, "footsteps"))
+		if ( !Q_stricmp( token, "modifiers" ) )
+		{
+			char* token = COM_Parse2( &text_p );
+			if ( !token || *token != '{' )
+			{
+				Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in %s's character.cfg", token, ci->modelName );
+				continue;
+			}
+			while ( 1 )
+			{
+				token = COM_Parse( &text_p );
+				if ( !token || *token == '}' ) break;
+				if ( !Q_stricmp( token, "HandDelta" ) )
+				{
+					ci->modifiers.emplace_back(new AnimDelta());
+				}
+			}
+			continue;
+		} else if (!Q_stricmp(token, "footsteps"))
 		{
 			token = COM_Parse(&text_p);
 			if(!token)
@@ -279,32 +288,6 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			ci->rightShoulderBone = trap_R_BoneIndex( ci->bodyModel, token );
 			continue;
 		}
-		else if ( !Q_stricmp( token, "handBones" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			if ( token[0] != '{' )
-			{
-				Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in character.cfg", token );
-			}
-
-			i = 0;
-
-			while( 1 )
-			{
-				token = COM_Parse2( &text_p );
-
-				if ( !token || token[ 0 ] == '}' )
-				{
-					ci->numHandBones = i;
-					break;
-				}
-
-				ci->handBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
-			}
-
-			continue;
-		}
 		else if ( !Q_stricmp( token, "legBones" ) )
 		{
 			token = COM_Parse2( &text_p );
@@ -331,6 +314,15 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			continue;
 		}
+		else
+		{
+			bool parsed = false;
+			for ( size_t i = 0; i < ci->modifiers.size(); ++i )
+			{
+				if ( ( parsed = ci->modifiers[i]->ParseConfiguration( ci, token, &text_p ) ) ) break;
+			}
+			if ( parsed ) continue;
+		}
 
 		Log::Notice( "unknown token '%s' is %s\n", token, filename );
 	}
@@ -339,7 +331,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 }
 
 static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName, int anim, const char *animName,
-                                            bool loop, bool reversed, bool clearOrigin, bool iqm )
+                                            bool loop, bool reversed, bool clearOrigin )
 {
 	char filename[ MAX_QPATH ], newModelName[ MAX_QPATH ];
 	int  frameRate;
@@ -356,7 +348,7 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 		Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
 	}
 
-	if ( iqm )
+	if ( ci->iqm )
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/%s.iqm:%s",
 		     newModelName, newModelName, animName );
@@ -401,56 +393,6 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 
 	ci->animations[ anim ].reversed = reversed;
 	ci->animations[ anim ].clearOrigin = clearOrigin;
-
-	return true;
-}
-
-static bool CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon, clientInfo_t *ci, bool iqm )
-{
-	int handle, i;
-	char newModelName[ MAX_QPATH ];
-	static refSkeleton_t base, delta;
-
-	// special handling for human_(naked|light|medium)
-	if ( !Q_stricmp( modelName, "human_naked"   ) ||
-		!Q_stricmp( modelName, "human_light"   ) ||
-		!Q_stricmp( modelName, "human_medium" ) )
-	{
-		Q_strncpyz( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
-	}
-	else
-	{
-		Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
-	}
-
-	if ( iqm )
-	{
-		handle = trap_R_RegisterAnimation( va( "models/players/%s/%s.iqm:%s_delta", newModelName, newModelName, BG_Weapon( weapon )->name ) );
-
-	}
-	else
-	{
-		handle = trap_R_RegisterAnimation( va( "models/players/%s/%s_delta.md5anim", newModelName, BG_Weapon( weapon )->name ) );
-	}
-
-	if ( !handle )
-	{
-		return false;
-	}
-
-	ci->weaponAdjusted |= 1 << weapon;
-
-	trap_R_BuildSkeleton( &delta, handle, 1, 1, 0, false );
-	trap_R_BuildSkeleton( &base, ci->animations[ TORSO_STAND ].handle, 1, 1, 0, false );
-
-	for ( i = 0; i < ci->numHandBones; i++ )
-	{
-		VectorSubtract( delta.bones[ ci->handBones[ i ] ].t.trans, base.bones[ ci->handBones[ i ] ].t.trans, deltas[ weapon ][ ci->handBones[ i ] ].delta );
-
-		QuatInverse( base.bones[ ci->handBones[ i ] ].t.rot );
-
-		QuatMultiply( base.bones[ ci->handBones[ i ] ].t.rot, delta.bones[ ci->handBones[ i ] ].t.rot, deltas[ weapon ][ ci->handBones[ i ] ].rot );
-	}
 
 	return true;
 }
@@ -887,7 +829,6 @@ CG_RegisterClientModelname
 static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName, const char *skinName )
 {
 	char filename[ MAX_QPATH ];
-	bool iqm = false;
 
 	if ( cg_highPolyPlayerModels.integer )
 	{
@@ -907,7 +848,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		}
 		else
 		{
-			iqm = true;
+			ci->iqm = true;
 		}
 
 		if ( ci->bodyModel )
@@ -932,12 +873,10 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			return false;
 		}
 
-		ci->weaponAdjusted = 0;
-
 		// If model is not an alien, load human animations
 		if ( ci->gender != GENDER_NEUTER )
 		{
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLE, "idle", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLE, "idle", true, false, false ) )
 			{
 				Log::Notice( "Failed to load idle animation file %s\n", filename );
 				return false;
@@ -958,128 +897,128 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 			// FIXME add death animations
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, BOTH_DEATH1, "die", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, BOTH_DEATH1, "die", false, false, false ) )
 			{
 				ci->animations[ BOTH_DEATH1 ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if( !CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH2, "death2", false, false, false, iqm ) )
+			if( !CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH2, "death2", false, false, false ) )
 			{
 				ci->animations[ BOTH_DEATH2 ] = ci->animations[ BOTH_DEATH1 ];
 			}
 
-			if( !CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH3, "death3", false, false, false, iqm ) )
+			if( !CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH3, "death3", false, false, false ) )
 			{
 				ci->animations[ BOTH_DEATH3 ] = ci->animations[ BOTH_DEATH1 ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_GESTURE, "gesture", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_GESTURE, "gesture", false, false, false ) )
 			{
 				ci->animations[ TORSO_GESTURE ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_RALLY, "rally", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_RALLY, "rally", false, false, false ) )
 			{
 				ci->animations[ TORSO_RALLY ] = ci->animations[ LEGS_IDLE ];
 			}
 
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK, "attack", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK, "attack", false, false, false ) )
 			{
 				ci->animations[ TORSO_ATTACK ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK_BLASTER, "blaster_attack", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK_BLASTER, "blaster_attack", false, false, false ) )
 			{
 				ci->animations[ TORSO_ATTACK_BLASTER ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK_PSAW, "psaw_attack", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK_PSAW, "psaw_attack", false, false, false ) )
 			{
 				ci->animations[ TORSO_ATTACK_BLASTER ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND, "stand", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND, "stand", true, false, false ) )
 			{
 				ci->animations[ TORSO_STAND ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND_BLASTER, "stand_blaster", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND_BLASTER, "stand_blaster", true, false, false ) )
 			{
 				ci->animations[ TORSO_STAND_BLASTER ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", false, false, false ) )
 			{
 				ci->animations[ LEGS_IDLECR ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_WALKCR, "crouch_forward", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_WALKCR, "crouch_forward", true, false, false ) )
 			{
 				ci->animations[ LEGS_WALKCR ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACKCR, "crouch_back", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACKCR, "crouch_back", true, false, false ) )
 			{
 				ci->animations[ LEGS_BACKCR ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_WALK, "walk", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_WALK, "walk", true, false, false ) )
 			{
 				ci->animations[ LEGS_WALK ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACKWALK, "walk_back", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACKWALK, "walk_back", true, false, false ) )
 			{
 				ci->animations[ LEGS_BACKWALK ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_RUN, "run", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_RUN, "run", true, false, false ) )
 			{
 				ci->animations[ LEGS_RUN ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACK, "run_back", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACK, "run_back", true, false, false ) )
 			{
 				ci->animations[ LEGS_BACK ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_SWIM, "swim", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_SWIM, "swim", true, false, false ) )
 			{
 				ci->animations[ LEGS_SWIM ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_JUMP, "jump", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_JUMP, "jump", false, false, false ) )
 			{
 				ci->animations[ LEGS_JUMP ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_LAND, "land", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_LAND, "land", false, false, false ) )
 			{
 				ci->animations[ LEGS_LAND ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_JUMPB, "jump_back", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_JUMPB, "jump_back", false, false, false ) )
 			{
 				ci->animations[ LEGS_JUMPB ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_LANDB, "land_back", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_LANDB, "land_back", false, false, false ) )
 			{
 				ci->animations[ LEGS_LANDB ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_TURN, "step", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_TURN, "step", true, false, false ) )
 			{
 				ci->animations[ LEGS_TURN ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_DROP, "drop", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_DROP, "drop", false, false, false ) )
 			{
 				ci->animations[ TORSO_DROP ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_RAISE, "raise", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_RAISE, "raise", false, false, false ) )
 			{
 				ci->animations[ TORSO_RAISE ] = ci->animations[ LEGS_IDLE ];
 			}
@@ -1090,24 +1029,16 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 				if ( i == TORSO_GESTURE ) { continue; }
 				if ( i == TORSO_GESTURE_CKIT ) { j = WP_HBUILD; }
 
-				if ( !CG_RegisterPlayerAnimation( ci, modelName, i, va( "%s_taunt", BG_Weapon( j )->name ), false, false, false, iqm ) )
+				if ( !CG_RegisterPlayerAnimation( ci, modelName, i, va( "%s_taunt", BG_Weapon( j )->name ), false, false, false ) )
 				{
 					ci->animations[ i ] = ci->animations[ TORSO_GESTURE ];
 				}
 			}
-
-			// TODO: Don't assume WP_BLASTER is first human weapon
-			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
-			{
-				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable ) { continue; }
-				CG_DeriveAnimationDelta( modelName, (weapon_t)i, ci, iqm );
-			}
-
 		}
 		else
 		{
 			// Load Alien animations
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_STAND, "stand", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_STAND, "stand", true, false, false ) )
 			{
 				Log::Notice( "Failed to load standing animation file %s\n", filename );
 				return false;
@@ -1128,121 +1059,121 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 			// FIXME add death animations
 
-			CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH1, "die", false, false, false, iqm );
+			CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH1, "die", false, false, false );
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH2, "die2", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH2, "die2", false, false, false ) )
 			{
 				ci->animations[ NSPA_DEATH2 ] = ci->animations[ NSPA_DEATH1 ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH3, "die3", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH3, "die3", false, false, false ) )
 			{
 				ci->animations[ NSPA_DEATH3 ] = ci->animations[ NSPA_DEATH1 ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_GESTURE, "gesture", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_GESTURE, "gesture", false, false, false ) )
 			{
 				ci->animations[ NSPA_GESTURE ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_ATTACK1, "attack", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_ATTACK1, "attack", false, false, false ) )
 			{
 				ci->animations[ NSPA_ATTACK1 ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_ATTACK2, "attack2", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_ATTACK2, "attack2", false, false, false ) )
 			{
 				ci->animations[ NSPA_ATTACK2 ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_ATTACK3, "attack3", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_ATTACK3, "attack3", false, false, false ) )
 			{
 				ci->animations[ NSPA_ATTACK3 ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUN, "run", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUN, "run", true, false, false ) )
 			{
 				ci->animations[ NSPA_RUN ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNBACK, "run_backwards", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNBACK, "run_backwards", true, false, false ) )
 			{
 				ci->animations[ NSPA_RUNBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNLEFT, "run_left", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNLEFT, "run_left", true, false, false ) )
 			{
 				ci->animations[ NSPA_RUNLEFT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNRIGHT, "run_right", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNRIGHT, "run_right", true, false, false ) )
 			{
 				ci->animations[ NSPA_RUNRIGHT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALK, "walk", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALK, "walk", true, false, false ) )
 			{
 				ci->animations[ NSPA_WALK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKBACK, "walk", true, true, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKBACK, "walk", true, true, false ) )
 			{
 				ci->animations[ NSPA_WALKBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKLEFT, "walk_left", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKLEFT, "walk_left", true, false, false ) )
 			{
 				ci->animations[ NSPA_WALKLEFT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKRIGHT, "walk_right", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKRIGHT, "walk_right", true, false, false ) )
 			{
 				ci->animations[ NSPA_WALKRIGHT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_SWIM, "swim", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_SWIM, "swim", true, false, false ) )
 			{
 				ci->animations[ NSPA_SWIM ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_JUMP, "jump", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_JUMP, "jump", false, false, false ) )
 			{
 				ci->animations[ NSPA_JUMP ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_JUMPBACK, "jump_back", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_JUMPBACK, "jump_back", false, false, false ) )
 			{
 				ci->animations[ NSPA_JUMPBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_LAND, "land", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_LAND, "land", false, false, false ) )
 			{
 				ci->animations[ NSPA_LAND ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_LANDBACK, "land_back", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_LANDBACK, "land_back", false, false, false ) )
 			{
 				ci->animations[ NSPA_LANDBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_TURN, "turn", true, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_TURN, "turn", true, false, false ) )
 			{
 				ci->animations[ NSPA_TURN ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_PAIN1, "pain1", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_PAIN1, "pain1", false, false, false ) )
 			{
 				ci->animations[ NSPA_PAIN1 ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_PAIN2, "pain2", false, false, false, iqm ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_PAIN2, "pain2", false, false, false ) )
 			{
 				ci->animations[ NSPA_PAIN2 ] = ci->animations[ NSPA_STAND ];
 			}
 
 			if ( !Q_stricmp( modelName, "level4" ) )
 			{
-				if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_CHARGE, "charge", true, false, false, iqm ) )
+				if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_CHARGE, "charge", true, false, false ) )
 				{
 					ci->animations[ NSPA_CHARGE ] = ci->animations[ NSPA_STAND ];
 				}
@@ -1254,6 +1185,14 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		{
 			Log::Notice( "Failed to load skin file: %s : %s\n", modelName, skinName );
 			return false;
+		}
+
+		for ( size_t i = 0; i < ci->modifiers.size(); ++i )
+		{
+			if ( !ci->modifiers[i]->LoadData( ci ) )
+			{
+				Log::Warn( "^3WARNING: Error loading data for modifier for %s", ci->modelName );
+			}
 		}
 
 		return true;
@@ -1428,9 +1367,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->gender = from->gender;
 
 	to->numLegBones = from->numLegBones;
-	to->numHandBones = from->numHandBones;
 	to->torsoControlBone = from->torsoControlBone;
-	to->weaponAdjusted = from->weaponAdjusted;
 	to->rightShoulderBone = from->rightShoulderBone;
 	to->leftShoulderBone = from->leftShoulderBone;
 
@@ -1447,13 +1384,14 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->bodyModel = from->bodyModel;
 	to->bodySkin = from->bodySkin;
 	to->md5 = from->md5;
+	to->iqm = from->iqm;
+	to->modifiers = from->modifiers;
 
 	memcpy( to->animations, from->animations, sizeof( to->animations ) );
 	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
 	memcpy( to->customFootsteps, from->customFootsteps, sizeof( to->customFootsteps ) );
 	memcpy( to->customMetalFootsteps, from->customMetalFootsteps, sizeof( to->customMetalFootsteps ) );
 	memcpy( to->legBones, from->legBones, sizeof( to->legBones ) );
-	memcpy( to->handBones, from->handBones, sizeof( to->legBones ) );
 }
 
 /*
@@ -3383,15 +3321,9 @@ void CG_Player( centity_t *cent )
 				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
 			}
 
-			if ( ci->weaponAdjusted & ( 1 << es->weapon ) && ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) >= TORSO_ATTACK  )
+			for (size_t i = 0; i < ci->modifiers.size(); ++i )
 			{
-				int j;
-
-				for ( j = 0; j < ci->numHandBones; j++ )
-				{
-					VectorAdd( deltas[ es->weapon ][ ci->handBones[ j ] ].delta, body.skeleton.bones[ ci->handBones[ j ] ].t.trans, body.skeleton.bones[ ci->handBones[ j ] ].t.trans );
-					QuatMultiply2( body.skeleton.bones[ ci->handBones[ j ] ].t.rot, deltas[ es->weapon ][ ci->handBones[ j ] ].rot );
-				}
+				ci->modifiers[i]->Apply( es, &body.skeleton );
 			}
 
 			// HACK: Stop taunt from clipping through the body.

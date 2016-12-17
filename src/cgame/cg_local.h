@@ -23,12 +23,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef CG_LOCAL_H
 #define CG_LOCAL_H
 
+#include <memory>
+#include <vector>
+
 #include "engine/qcommon/q_shared.h"
 #include "engine/renderer/tr_types.h"
 #include "engine/client/cg_api.h"
 #include "shared/bg_public.h"
 #include "engine/client/keycodes.h"
 #include "cg_ui.h"
+#include "cg_skeleton_modifier.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is no persistent data between levels on the client side.
@@ -849,7 +853,7 @@ typedef struct
 // this is regenerated each time a client's configstring changes,
 // usually as a result of a userinfo (name, model, etc) change
 #define MAX_CUSTOM_SOUNDS 32
-typedef struct
+struct clientInfo_t
 {
 	bool infoValid;
 
@@ -869,7 +873,7 @@ typedef struct
 	char        modelName[ MAX_QPATH ];
 	char        skinName[ MAX_QPATH ];
 
-	bool    newAnims; // true if using the new mission pack animations
+	bool    iqm; // true if model is an iqm model
 	bool    fixedlegs; // true if legs yaw is always the same as torso yaw
 	bool    fixedtorso; // true if torso never changes yaw
 	bool    nonsegmented; // true if model is Q2 style nonsegmented
@@ -909,16 +913,14 @@ typedef struct
 	int         legBones[ MAX_BONES ];
 	int         numLegBones;
 
-	int         weaponAdjusted; // bitmask of all weapons that have hand deltas
-	int         handBones[ MAX_BONES ];
-	int         numHandBones;
-
 	sfxHandle_t customFootsteps[ 4 ];
 	sfxHandle_t customMetalFootsteps[ 4 ];
 
 	char        voice[ MAX_VOICE_NAME_LEN ];
 	int         voiceTime;
-} clientInfo_t;
+	std::vector<std::shared_ptr<SkeletonModifier>> modifiers;
+
+};
 
 typedef struct weaponInfoMode_s
 {

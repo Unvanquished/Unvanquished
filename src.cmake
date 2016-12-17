@@ -47,6 +47,7 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/cg_utils.cpp
     ${GAMELOGIC_DIR}/cgame/cg_view.cpp
     ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
+    ${GAMELOGIC_DIR}/cgame/cg_animdelta.cpp
     ${GAMELOGIC_DIR}/cgame/Filter.h
 
     ${GAMELOGIC_DIR}/cgame/rocket/rocket.cpp
