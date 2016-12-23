@@ -66,7 +66,9 @@ static bool     forceRedraw = false;
 static int      stderr_fd;
 #endif
 
-static const int LOG_LINES = ( LINES - 3 );
+static int NumLogLines() {
+	return LINES - 3;
+}
 
 static const int CURSES_DEFAULT_COLOR = 32;
 
@@ -230,12 +232,12 @@ static void CON_Redraw()
 	{
 		lastline++;
 	}
-	scrollline = lastline - LOG_LINES;
+	scrollline = lastline - NumLogLines();
 	if ( scrollline < 0 )
 	{
 		scrollline = 0;
 	}
-	pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
+	pnoutrefresh( logwin, scrollline, 0, 1, 0, NumLogLines(), COLS );
 
 	// Create the input field
 	inputwin = newwin( 1, COLS - Color::StrlenNocolor( PROMPT ) - 8, LINES - 1, Color::StrlenNocolor( PROMPT ) + 8 );
@@ -505,18 +507,18 @@ char *CON_Input()
 				continue;
 
 			case KEY_NPAGE:
-				if ( lastline > scrollline + LOG_LINES )
+				if ( lastline > scrollline + NumLogLines() )
 				{
 					scrollline += LOG_SCROLL;
 
-					if ( scrollline + LOG_LINES > lastline )
+					if ( scrollline + NumLogLines() > lastline )
 					{
-						scrollline = lastline - LOG_LINES;
+						scrollline = lastline - NumLogLines();
 					}
 
-					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
+					pnoutrefresh( logwin, scrollline, 0, 1, 0, NumLogLines(), COLS );
 				}
-				if (scrollline >= lastline - LOG_LINES) {
+				if (scrollline >= lastline - NumLogLines()) {
 					CON_SetColor( stdscr, Color::Green );
 					for (int i = COLS - 7; i < COLS - 1; i++)
 						mvaddch(LINES - 2, i, ACS_HLINE);
@@ -534,9 +536,9 @@ char *CON_Input()
 						scrollline = 0;
 					}
 
-					pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
+					pnoutrefresh( logwin, scrollline, 0, 1, 0, NumLogLines(), COLS );
 				}
-				if (scrollline < lastline - LOG_LINES) {
+				if (scrollline < lastline - NumLogLines()) {
 					CON_SetColor( stdscr, Color::Red );
 					mvaddstr(LINES - 2, COLS - 7, "(more)");
 				}
@@ -668,7 +670,7 @@ CON_Print
 void CON_Print( const char *msg )
 {
 	int      col;
-	bool scroll = ( lastline > scrollline && lastline <= scrollline + LOG_LINES );
+	bool scroll = ( lastline > scrollline && lastline <= scrollline + NumLogLines() );
 
 	if ( !curses_on )
 	{
@@ -687,14 +689,14 @@ void CON_Print( const char *msg )
 
 	if ( scroll )
 	{
-		scrollline = lastline - LOG_LINES;
+		scrollline = lastline - NumLogLines();
 
 		if ( scrollline < 0 )
 		{
 			scrollline = 0;
 		}
 
-		pnoutrefresh( logwin, scrollline, 0, 1, 0, LOG_LINES, COLS );
+		pnoutrefresh( logwin, scrollline, 0, 1, 0, NumLogLines(), COLS );
 	}
 
 	// Add the message to the log buffer
