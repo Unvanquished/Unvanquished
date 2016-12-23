@@ -1691,9 +1691,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 		oldSkeleton = *skel;
 
-		//Log::Notice(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
-
-		if ( lf->old_animation->handle && oldSkeleton.numBones == skel->numBones )
+		if ( lf->old_animation->handle )
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
