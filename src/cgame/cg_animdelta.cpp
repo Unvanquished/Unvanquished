@@ -49,7 +49,7 @@ bool AnimDelta::ParseConfiguration(clientInfo_t* ci, const char* token2, const c
 	if ( !token || token[0] != '{' )
 	{
 		Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in %s's character.cfg", token, ci->modelName );
-		return false;
+		return true;
 	}
 	while ( 1 )
 	{

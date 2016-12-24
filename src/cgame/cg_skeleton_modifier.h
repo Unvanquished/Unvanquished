@@ -29,7 +29,8 @@ class SkeletonModifier
 {
 public:
 	virtual ~SkeletonModifier() {}
-	virtual bool ParseConfiguration( clientInfo_t*, const char*, const char**) { return false; }
+	// ParseConfiguration: Return true if firstToken is consumed
+	virtual bool ParseConfiguration( clientInfo_t*, const char* firstToken, const char**) { return false; }
 	virtual bool LoadData( clientInfo_t* ) { return true; }
 	virtual void Apply(const entityState_t*, refSkeleton_t*) {}
 };

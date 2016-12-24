@@ -170,6 +170,9 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				if ( !Q_stricmp( token, "HandDelta" ) )
 				{
 					ci->modifiers.emplace_back(new AnimDelta());
+				} else
+				{
+					Log::Notice("Unknown modifier '%s' in %s's character.cfg", token, ci->modelName);
 				}
 			}
 			continue;
