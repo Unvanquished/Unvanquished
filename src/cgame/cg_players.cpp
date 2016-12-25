@@ -3322,9 +3322,12 @@ void CG_Player( centity_t *cent )
 				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
 			}
 
-			for (size_t i = 0; i < ci->modifiers.size(); ++i )
+			// apply skeleton modifiers
+			SkeletonModifierContext ctx;
+			ctx.es = es;
+			for ( auto& mod : ci->modifiers )
 			{
-				ci->modifiers[i]->Apply( es, &body.skeleton );
+				mod->Apply( ctx, &body.skeleton );
 			}
 
 			// HACK: Stop taunt from clipping through the body.

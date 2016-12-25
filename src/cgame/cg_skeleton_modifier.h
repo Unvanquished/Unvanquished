@@ -25,6 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Forward declare due to circular dependency.
 struct clientInfo_t;
 
+struct SkeletonModifierContext
+{
+	const entityState_t* es;
+};
+
 class SkeletonModifier
 {
 public:
@@ -32,6 +37,6 @@ public:
 	// ParseConfiguration: Return true if firstToken is consumed
 	virtual bool ParseConfiguration( clientInfo_t*, const char* firstToken, const char**) { return false; }
 	virtual bool LoadData( clientInfo_t* ) { return true; }
-	virtual void Apply(const entityState_t*, refSkeleton_t*) {}
+	virtual void Apply(const SkeletonModifierContext&, refSkeleton_t*) {}
 };
 #endif  // CG_SKELETON_MODIFIER_H

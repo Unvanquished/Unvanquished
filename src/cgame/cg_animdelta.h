@@ -33,7 +33,7 @@ class AnimDelta : public SkeletonModifier
 public:
 	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
 	virtual bool LoadData( clientInfo_t* ci ) override;
-	virtual void Apply( const entityState_t* es, refSkeleton_t* skeleton ) override;
+	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
 
 private:
 	typedef struct {
