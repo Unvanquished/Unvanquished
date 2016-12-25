@@ -28,6 +28,8 @@ struct clientInfo_t;
 struct SkeletonModifierContext
 {
 	const entityState_t* es;
+	vec_t torsoYawAngle;
+	vec_t pitchAngle;
 };
 
 class SkeletonModifier

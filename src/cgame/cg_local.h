@@ -906,10 +906,6 @@ struct clientInfo_t
 
 	vec_t       modelScale;
 
-	int         torsoControlBone;
-	int         leftShoulderBone;
-	int         rightShoulderBone;
-
 	int         legBones[ MAX_BONES ];
 	int         numLegBones;
 

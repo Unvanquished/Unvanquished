@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 #include "cg_animdelta.h"
+#include "cg_segmented_skeleton.h"
 
 // debugging
 int   debug_anim_current;
@@ -143,8 +144,6 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->fixedtorso = false;
 	ci->numLegBones = 0;
 	ci->modelScale = 1.0f;
-	ci->leftShoulderBone = 0;
-	ci->rightShoulderBone = 0;
 
 	// read optional parameters
 	while ( 1 )
@@ -170,6 +169,9 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				if ( !Q_stricmp( token, "HandDelta" ) )
 				{
 					ci->modifiers.emplace_back(new AnimDelta());
+				} else if ( !Q_stricmp( token, "HumanRotations" ) )
+				{
+					ci->modifiers.emplace_back(new HumanSkeletonRotations());
 				} else
 				{
 					Log::Notice("Unknown modifier '%s' in %s's character.cfg", token, ci->modelName);
@@ -268,27 +270,6 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				ci->modelScale = atof( token );
 			}
 
-			continue;
-		}
-		else if ( !Q_stricmp( token, "torsoControlBone" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "leftShoulder" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			ci->leftShoulderBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "rightShoulder" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			ci->rightShoulderBone = trap_R_BoneIndex( ci->bodyModel, token );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "legBones" ) )
@@ -1370,9 +1351,6 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->gender = from->gender;
 
 	to->numLegBones = from->numLegBones;
-	to->torsoControlBone = from->torsoControlBone;
-	to->rightShoulderBone = from->rightShoulderBone;
-	to->leftShoulderBone = from->leftShoulderBone;
 
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
@@ -3184,7 +3162,6 @@ void CG_Player( centity_t *cent )
 	if ( ci->md5 )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-		int    boneIndex;
 		vec3_t playerOrigin, mins, maxs;
 		quat_t rotation;
 
@@ -3325,46 +3302,13 @@ void CG_Player( centity_t *cent )
 			// apply skeleton modifiers
 			SkeletonModifierContext ctx;
 			ctx.es = es;
+			ctx.torsoYawAngle = torsoAngles[YAW];
+			ctx.pitchAngle = cent->lerpAngles[PITCH];
 			for ( auto& mod : ci->modifiers )
 			{
 				mod->Apply( ctx, &body.skeleton );
 			}
 
-			// HACK: Stop taunt from clipping through the body.
-			if ( ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) >= TORSO_GESTURE_BLASTER && ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) <= TORSO_GESTURE_CKIT  )
-			{
-				quat_t rot;
-				QuatFromAngles( rot, 15, 0, 0 );
-				QuatMultiply2( body.skeleton.bones[ 33 ].t.rot, rot );
-			}
-
-			// rotate torso
-			boneIndex = ci->torsoControlBone;
-
-			if ( boneIndex >= 0 && boneIndex < torsoSkeleton.numBones )
-			{
-				// HACK: convert angles to bone system
-				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
-				QuatMultiply2( body.skeleton.bones[ boneIndex ].t.rot, rotation );
-			}
-
-			// HACK: limit angle (avoids worst of the gun clipping through the body)
-			// Needs some proper animation fixes...
-			if ( cent->lerpAngles[ 0 ] > 60 )
-			{
-				cent->lerpAngles[ 0 ] = 60;
-			}
-			else if ( cent->lerpAngles[ 0 ] < -60 )
-			{
-				cent->lerpAngles[ 0 ] = -60;
-			}
-
-			QuatFromAngles( rotation, -cent->lerpAngles[ 0 ], 0, 0 );
-			QuatMultiply2( body.skeleton.bones[ ci->rightShoulderBone ].t.rot, rotation );
-
-			// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
-			QuatFromAngles( rotation, cent->lerpAngles[ 0 ], cent->lerpAngles[ 0 ] < 0 ? -cent->lerpAngles[ 0 ] / 9 : -cent->lerpAngles[ 0 ] / ( 8 - ( 5 * ( cent->lerpAngles[ 0 ] / 90 ) ) )  , 0 );
-			QuatMultiply2( body.skeleton.bones[ ci->leftShoulderBone ].t.rot, rotation );
 		}
 		else
 		{
