@@ -30,6 +30,7 @@ struct SkeletonModifierContext
 	const entityState_t* es;
 	vec_t torsoYawAngle;
 	vec_t pitchAngle;
+	const refSkeleton_t* legsSkeleton;
 };
 
 class SkeletonModifier

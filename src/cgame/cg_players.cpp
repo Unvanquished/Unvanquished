@@ -142,7 +142,6 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = false;
 	ci->fixedtorso = false;
-	ci->numLegBones = 0;
 	ci->modelScale = 1.0f;
 
 	// read optional parameters
@@ -172,6 +171,9 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				} else if ( !Q_stricmp( token, "HumanRotations" ) )
 				{
 					ci->modifiers.emplace_back(new HumanSkeletonRotations());
+				} else if ( !Q_stricmp( token, "Segmented" ) )
+				{
+					ci->modifiers.emplace_back(new SegmentedSkeletonCombiner());
 				} else
 				{
 					Log::Notice("Unknown modifier '%s' in %s's character.cfg", token, ci->modelName);
@@ -272,32 +274,6 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			continue;
 		}
-		else if ( !Q_stricmp( token, "legBones" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			if ( token[0] != '{' )
-			{
-				Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n", token );
-			}
-
-			i = 0;
-
-			while( 1 )
-			{
-				token = COM_Parse2( &text_p );
-
-				if ( !token || token[ 0 ] == '}' )
-				{
-					ci->numLegBones = i;
-					break;
-				}
-
-				ci->legBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
-			}
-
-			continue;
-		}
 		else
 		{
 			bool parsed = false;
@@ -308,7 +284,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			if ( parsed ) continue;
 		}
 
-		Log::Notice( "unknown token '%s' is %s\n", token, filename );
+		Log::Notice( "unknown token '%s' in %s\n", token, filename );
 	}
 
 	return true;
@@ -1350,8 +1326,6 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 
-	to->numLegBones = from->numLegBones;
-
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
 	to->torsoModel = from->torsoModel;
@@ -1372,7 +1346,6 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
 	memcpy( to->customFootsteps, from->customFootsteps, sizeof( to->customFootsteps ) );
 	memcpy( to->customMetalFootsteps, from->customMetalFootsteps, sizeof( to->customMetalFootsteps ) );
-	memcpy( to->legBones, from->legBones, sizeof( to->legBones ) );
 }
 
 /*
@@ -1602,17 +1575,6 @@ PLAYER ANIMATION
 
 =============================================================================
 */
-
-static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones )
-{
-	int i;
-
-	for ( i = 0; i < numBones; i++ )
-	{
-		dest->bones[ legBones[ i ] ] = legs->bones[ legBones[ i ] ];
-	}
-}
-
 
 
 /*
@@ -3163,7 +3125,6 @@ void CG_Player( centity_t *cent )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
 		vec3_t playerOrigin, mins, maxs;
-		quat_t rotation;
 
 		if ( ci->gender != GENDER_NEUTER )
 		{
@@ -3293,17 +3254,12 @@ void CG_Player( centity_t *cent )
 				Log::Warn( S_SKIPNOTIFY "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 			}
 
-			// combine legs and torso skeletons
-			if ( ci->numLegBones )
-			{
-				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
-			}
-
 			// apply skeleton modifiers
 			SkeletonModifierContext ctx;
 			ctx.es = es;
 			ctx.torsoYawAngle = torsoAngles[YAW];
 			ctx.pitchAngle = cent->lerpAngles[PITCH];
+			ctx.legsSkeleton = &legsSkeleton;
 			for ( auto& mod : ci->modifiers )
 			{
 				mod->Apply( ctx, &body.skeleton );

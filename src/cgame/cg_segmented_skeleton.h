@@ -38,4 +38,15 @@ private:
 	int rightShoulderBone = -1;
 };
 
+
+class SegmentedSkeletonCombiner : public SkeletonModifier
+{
+public:
+	virtual bool ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p) override;
+	virtual void Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton) override;
+
+private:
+	std::vector<int> legBoneIndices;
+};
+
 #endif  // CG_SEGMENTED_SKELETON_H

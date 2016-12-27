@@ -53,7 +53,6 @@ bool HumanSkeletonRotations::ParseConfiguration(clientInfo_t* ci, const char* to
 	return false;
 }
 
-
 void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
 {
 	// HACK: Stop taunt from clipping through the body.
@@ -84,4 +83,39 @@ void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkelet
 	// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
 	QuatFromAngles( rotation, pitch, pitch < 0 ? -pitch / 9 : -pitch / ( 8 - ( 5 * ( pitch / 90 ) ) ), 0 );
 	QuatMultiply2( skeleton->bones[ leftShoulderBone ].t.rot, rotation );
+}
+
+
+bool SegmentedSkeletonCombiner::ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p)
+{
+	if (Q_stricmp(token, "legBones"))
+	{
+		return false;
+	}
+	token = COM_Parse2(data_p);
+	if (!token || token[0] != '{')
+	{
+		Log::Notice("^1ERROR^7: Expected '{' but found '%s' in character.cfg\n", token);
+		return false;
+	}
+
+	while (1)
+	{
+		token = COM_Parse2(data_p);
+		if (!token || token[0] == '}') {
+			return true;
+		}
+
+		int bone = BoneLookup(ci, token);
+		if (bone >= 0) {
+			legBoneIndices.push_back(bone);
+		}
+	}
+}
+
+void SegmentedSkeletonCombiner::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
+{
+	for (int i : legBoneIndices) {
+		skeleton->bones[i] = ctx.legsSkeleton->bones[i];
+	}
 }
