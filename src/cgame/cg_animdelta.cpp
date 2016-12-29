@@ -49,7 +49,7 @@ bool AnimDelta::ParseConfiguration(clientInfo_t* ci, const char* token2, const c
 	if ( !token || token[0] != '{' )
 	{
 		Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in %s's character.cfg", token, ci->modelName );
-		return false;
+		return true;
 	}
 	while ( 1 )
 	{
@@ -102,10 +102,10 @@ bool AnimDelta::LoadData(clientInfo_t* ci)
 	return true;
 }
 
-void AnimDelta::Apply(const entityState_t* es, refSkeleton_t* skeleton)
+void AnimDelta::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
 {
-	if ( ( es->torsoAnim & ~ANIM_TOGGLEBIT ) < TORSO_ATTACK ) return;
-	auto it = deltas_.find( es->weapon );
+	if ( ( ctx.es->torsoAnim & ~ANIM_TOGGLEBIT ) < TORSO_ATTACK ) return;
+	auto it = deltas_.find( ctx.es->weapon );
 	if ( it == deltas_.end() ) return;
 	for ( size_t i = 0; i < it->second.size(); ++i )
 	{

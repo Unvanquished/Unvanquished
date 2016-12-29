@@ -20,28 +20,33 @@ along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-#ifndef CG_ANIMDELTA_H
-#define CG_ANIMDELTA_H
-#include <vector>
-#include <unordered_map>
+#ifndef CG_SEGMENTED_SKELETON_H
+#define CG_SEGMENTED_SKELETON_H
 
 #include "cg_local.h"
 #include "cg_skeleton_modifier.h"
 
-class AnimDelta : public SkeletonModifier
+class HumanSkeletonRotations : public SkeletonModifier
 {
 public:
 	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
-	virtual bool LoadData( clientInfo_t* ci ) override;
 	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
 
 private:
-	typedef struct {
-		vec3_t delta;
-		quat_t rot;
-	} delta_t;
-
-	std::unordered_map<int, std::vector<delta_t>> deltas_;
-	std::vector<int> boneIndicies_;
+	int torsoControlBone = -1;
+	int leftShoulderBone = -1;
+	int rightShoulderBone = -1;
 };
-#endif  // CG_ANIMDELTA_H
+
+
+class SegmentedSkeletonCombiner : public SkeletonModifier
+{
+public:
+	virtual bool ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p) override;
+	virtual void Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton) override;
+
+private:
+	std::vector<int> legBoneIndices;
+};
+
+#endif  // CG_SEGMENTED_SKELETON_H

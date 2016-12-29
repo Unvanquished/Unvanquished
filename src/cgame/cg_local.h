@@ -906,13 +906,6 @@ struct clientInfo_t
 
 	vec_t       modelScale;
 
-	int         torsoControlBone;
-	int         leftShoulderBone;
-	int         rightShoulderBone;
-
-	int         legBones[ MAX_BONES ];
-	int         numLegBones;
-
 	sfxHandle_t customFootsteps[ 4 ];
 	sfxHandle_t customMetalFootsteps[ 4 ];
 

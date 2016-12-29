@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 #include "cg_animdelta.h"
+#include "cg_segmented_skeleton.h"
 
 // debugging
 int   debug_anim_current;
@@ -141,10 +142,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = false;
 	ci->fixedtorso = false;
-	ci->numLegBones = 0;
 	ci->modelScale = 1.0f;
-	ci->leftShoulderBone = 0;
-	ci->rightShoulderBone = 0;
 
 	// read optional parameters
 	while ( 1 )
@@ -170,6 +168,15 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				if ( !Q_stricmp( token, "HandDelta" ) )
 				{
 					ci->modifiers.emplace_back(new AnimDelta());
+				} else if ( !Q_stricmp( token, "HumanRotations" ) )
+				{
+					ci->modifiers.emplace_back(new HumanSkeletonRotations());
+				} else if ( !Q_stricmp( token, "Segmented" ) )
+				{
+					ci->modifiers.emplace_back(new SegmentedSkeletonCombiner());
+				} else
+				{
+					Log::Notice("Unknown modifier '%s' in %s's character.cfg", token, ci->modelName);
 				}
 			}
 			continue;
@@ -267,53 +274,6 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			continue;
 		}
-		else if ( !Q_stricmp( token, "torsoControlBone" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "leftShoulder" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			ci->leftShoulderBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "rightShoulder" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			ci->rightShoulderBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "legBones" ) )
-		{
-			token = COM_Parse2( &text_p );
-
-			if ( token[0] != '{' )
-			{
-				Log::Notice( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n", token );
-			}
-
-			i = 0;
-
-			while( 1 )
-			{
-				token = COM_Parse2( &text_p );
-
-				if ( !token || token[ 0 ] == '}' )
-				{
-					ci->numLegBones = i;
-					break;
-				}
-
-				ci->legBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
-			}
-
-			continue;
-		}
 		else
 		{
 			bool parsed = false;
@@ -324,7 +284,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			if ( parsed ) continue;
 		}
 
-		Log::Notice( "unknown token '%s' is %s\n", token, filename );
+		Log::Notice( "unknown token '%s' in %s\n", token, filename );
 	}
 
 	return true;
@@ -1366,11 +1326,6 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 
-	to->numLegBones = from->numLegBones;
-	to->torsoControlBone = from->torsoControlBone;
-	to->rightShoulderBone = from->rightShoulderBone;
-	to->leftShoulderBone = from->leftShoulderBone;
-
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
 	to->torsoModel = from->torsoModel;
@@ -1391,7 +1346,6 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
 	memcpy( to->customFootsteps, from->customFootsteps, sizeof( to->customFootsteps ) );
 	memcpy( to->customMetalFootsteps, from->customMetalFootsteps, sizeof( to->customMetalFootsteps ) );
-	memcpy( to->legBones, from->legBones, sizeof( to->legBones ) );
 }
 
 /*
@@ -1622,17 +1576,6 @@ PLAYER ANIMATION
 =============================================================================
 */
 
-static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones )
-{
-	int i;
-
-	for ( i = 0; i < numBones; i++ )
-	{
-		dest->bones[ legBones[ i ] ] = legs->bones[ legBones[ i ] ];
-	}
-}
-
-
 
 /*
 ===============
@@ -1691,9 +1634,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 		oldSkeleton = *skel;
 
-		//Log::Notice(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
-
-		if ( lf->old_animation->handle && oldSkeleton.numBones == skel->numBones )
+		if ( lf->old_animation->handle )
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
@@ -3183,9 +3124,7 @@ void CG_Player( centity_t *cent )
 	if ( ci->md5 )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-		int    boneIndex;
 		vec3_t playerOrigin, mins, maxs;
-		quat_t rotation;
 
 		if ( ci->gender != GENDER_NEUTER )
 		{
@@ -3315,52 +3254,17 @@ void CG_Player( centity_t *cent )
 				Log::Warn( S_SKIPNOTIFY "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 			}
 
-			// combine legs and torso skeletons
-			if ( ci->numLegBones )
+			// apply skeleton modifiers
+			SkeletonModifierContext ctx;
+			ctx.es = es;
+			ctx.torsoYawAngle = torsoAngles[YAW];
+			ctx.pitchAngle = cent->lerpAngles[PITCH];
+			ctx.legsSkeleton = &legsSkeleton;
+			for ( auto& mod : ci->modifiers )
 			{
-				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
+				mod->Apply( ctx, &body.skeleton );
 			}
 
-			for (size_t i = 0; i < ci->modifiers.size(); ++i )
-			{
-				ci->modifiers[i]->Apply( es, &body.skeleton );
-			}
-
-			// HACK: Stop taunt from clipping through the body.
-			if ( ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) >= TORSO_GESTURE_BLASTER && ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) <= TORSO_GESTURE_CKIT  )
-			{
-				quat_t rot;
-				QuatFromAngles( rot, 15, 0, 0 );
-				QuatMultiply2( body.skeleton.bones[ 33 ].t.rot, rot );
-			}
-
-			// rotate torso
-			boneIndex = ci->torsoControlBone;
-
-			if ( boneIndex >= 0 && boneIndex < torsoSkeleton.numBones )
-			{
-				// HACK: convert angles to bone system
-				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
-				QuatMultiply2( body.skeleton.bones[ boneIndex ].t.rot, rotation );
-			}
-
-			// HACK: limit angle (avoids worst of the gun clipping through the body)
-			// Needs some proper animation fixes...
-			if ( cent->lerpAngles[ 0 ] > 60 )
-			{
-				cent->lerpAngles[ 0 ] = 60;
-			}
-			else if ( cent->lerpAngles[ 0 ] < -60 )
-			{
-				cent->lerpAngles[ 0 ] = -60;
-			}
-
-			QuatFromAngles( rotation, -cent->lerpAngles[ 0 ], 0, 0 );
-			QuatMultiply2( body.skeleton.bones[ ci->rightShoulderBone ].t.rot, rotation );
-
-			// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
-			QuatFromAngles( rotation, cent->lerpAngles[ 0 ], cent->lerpAngles[ 0 ] < 0 ? -cent->lerpAngles[ 0 ] / 9 : -cent->lerpAngles[ 0 ] / ( 8 - ( 5 * ( cent->lerpAngles[ 0 ] / 90 ) ) )  , 0 );
-			QuatMultiply2( body.skeleton.bones[ ci->leftShoulderBone ].t.rot, rotation );
 		}
 		else
 		{
