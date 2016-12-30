@@ -3730,72 +3730,33 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int  used;
 	};
 
-	enum class renderCommand_t : int
-	{
-		RC_END_OF_LIST,
-		RC_SET_COLORGRADING,
-		RC_SET_COLOR,
-		RC_STRETCH_PIC,
-		RC_2DPOLYS,
-		RC_2DPOLYSINDEXED,
-		RC_SCISSORSET,
-		RC_ROTATED_PIC,
-		RC_STRETCH_PIC_GRADIENT, // (SA) added
-		RC_SETUP_LIGHTS,
-		RC_DRAW_VIEW,
-		RC_DRAW_BUFFER,
-		RC_SWAP_BUFFERS,
-		RC_SCREENSHOT,
-		RC_VIDEOFRAME,
-		RC_FINISH, //bani
-		RC_POST_PROCESS,
-		RC_CLEAR_BUFFER,
-		RC_PREPARE_PORTAL,
-		RC_FINALISE_PORTAL,
+	struct RenderCommand {
+		// returns address of next command or nullptr
+		virtual const RenderCommand *ExecuteSelf() const = 0;
 	};
 
-	struct setColorCommand_t
-	{
-		renderCommand_t commandId;
+	struct SetColorCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
+
 		Color::Color color;
 	};
+	struct SetColorGradingCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct setColorGradingCommand_t
-	{
-		renderCommand_t commandId;
 		image_t *image;
 		int     slot;
 	};
+	struct DrawBufferCommand : public RenderCommand	{
+		const RenderCommand *ExecuteSelf() const;
 
-	struct drawBufferCommand_t
-	{
-		renderCommand_t commandId;
 		int buffer;
 	};
-
-	struct subImageCommand_t
-	{
-		int     commandId;
-		image_t *image;
-		int     width;
-		int     height;
-		void    *data;
+	struct SwapBuffersCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 	};
+	struct StretchPicCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct swapBuffersCommand_t
-	{
-		renderCommand_t commandId;
-	};
-
-	struct endFrameCommand_t
-	{
-		int commandId;
-		int buffer;
-	};
-
-	struct stretchPicCommand_t
-	{
-		renderCommand_t commandId;
 		shader_t *shader;
 		float    x, y;
 		float    w, h;
@@ -3806,18 +3767,16 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		int      gradientType; //----(SA)  added
 		float    angle; // NERVE - SMF
 	};
+	struct Poly2dCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct poly2dCommand_t
-	{
-		renderCommand_t commandId;
 		polyVert_t *verts;
 		int        numverts;
 		shader_t   *shader;
 	};
+	struct Poly2dIndexedCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct poly2dIndexedCommand_t
-	{
-		renderCommand_t commandId;
 		polyVert_t *verts;
 		int        numverts;
 		int        *indexes;
@@ -3825,47 +3784,35 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		shader_t   *shader;
 		int         translation[2];
 	};
+	struct ScissorSetCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct scissorSetCommand_t
-	{
-		renderCommand_t commandId;
 		int       x;
 		int       y;
 		int       w;
 		int       h;
 	};
+	struct DrawViewCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct drawViewCommand_t
-	{
-		renderCommand_t commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
 		bool        depthPass;
 	};
+	struct SetupLightsCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct setupLightsCommand_t
-	{
-		renderCommand_t commandId;
 		trRefdef_t  refdef;
 	};
-
-	struct runVisTestsCommand_t
-	{
-		renderCommand_t commandId;
-		trRefdef_t  refdef;
-		viewParms_t viewParms;
-	};
-
 	enum class ssFormat_t
 	{
 	  SSF_TGA,
 	  SSF_JPEG,
 	  SSF_PNG
 	};
+	struct ScreenshotCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct screenshotCommand_t
-	{
-		renderCommand_t commandId;
 		int        x;
 		int        y;
 		int        width;
@@ -3873,50 +3820,46 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 		char       *fileName;
 		ssFormat_t format;
 	};
+	struct VideoFrameCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct videoFrameCommand_t
-	{
-		renderCommand_t commandId;
 		int      width;
 		int      height;
 		byte     *captureBuffer;
 		byte     *encodeBuffer;
 		bool motionJpeg;
 	};
-
-	struct renderFinishCommand_t
-	{
-		renderCommand_t commandId;
+	struct RenderFinishCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 	};
+	struct RenderPostProcessCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct renderPostProcessCommand_t
-	{
-		renderCommand_t commandId;
 		trRefdef_t      refdef;
 		viewParms_t     viewParms;
 	};
+	struct ClearBufferCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct clearBufferCommand_t
-	{
-		renderCommand_t commandId;
 		trRefdef_t      refdef;
 		viewParms_t     viewParms;
 	};
+	struct PreparePortalCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct preparePortalCommand_t
-	{
-		renderCommand_t commandId;
 		trRefdef_t      refdef;
 		viewParms_t     viewParms;
 		drawSurf_t     *surface;
 	};
+	struct FinalisePortalCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 
-	struct finalisePortalCommand_t
-	{
-		renderCommand_t commandId;
 		trRefdef_t      refdef;
 		viewParms_t     viewParms;
 		drawSurf_t     *surface;
+	};
+	struct EndOfListCommand : public RenderCommand {
+		const RenderCommand *ExecuteSelf() const;
 	};
 
 // ydnar: max decal projectors per frame, each can generate lots of polys
@@ -3959,7 +3902,8 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 	extern volatile bool            renderThreadActive;
 
-	void                                *R_GetCommandBuffer( unsigned bytes );
+	void *                              R_GetCommandBuffer( size_t bytes );
+	template <class T> T *              R_GetRenderCommand() { return new (R_GetCommandBuffer(sizeof(T))) T; }
 	void                                RB_ExecuteRenderCommands( const void *data );
 
 	void                                R_SyncRenderThread();

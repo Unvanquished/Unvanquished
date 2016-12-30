@@ -136,7 +136,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters )
 	cmdList = &backEndData[ tr.smpFrame ]->commands;
 	ASSERT(cmdList != nullptr);
 	// add an end-of-list command
-	*reinterpret_cast<renderCommand_t*>(&cmdList->cmds[cmdList->used]) = renderCommand_t::RC_END_OF_LIST;
+	new (&cmdList->cmds[cmdList->used]) EndOfListCommand();
 
 	// clear it out, in case this is a sync and not a buffer flip
 	cmdList->used = 0;
@@ -224,19 +224,20 @@ make sure there is enough command space, waiting on the
 render thread if needed.
 ============
 */
-void           *R_GetCommandBuffer( unsigned bytes )
+void           *R_GetCommandBuffer( size_t bytes )
 {
 	renderCommandList_t *cmdList;
+	const size_t reserved = sizeof( SwapBuffersCommand ) + sizeof( EndOfListCommand );
 
 	cmdList = &backEndData[ tr.smpFrame ]->commands;
 
 	// always leave room for the swap buffers and end of list commands
 	// RB: added swapBuffers_t from ET
-	if ( cmdList->used + bytes + ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) > MAX_RENDER_COMMANDS )
+	if ( cmdList->used + bytes + reserved > MAX_RENDER_COMMANDS )
 	{
-		if ( bytes > MAX_RENDER_COMMANDS - ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) )
+		if ( bytes > MAX_RENDER_COMMANDS - reserved )
 		{
-			ri.Error( errorParm_t::ERR_FATAL, "R_GetCommandBuffer: bad size %i", bytes );
+			ri.Error( errorParm_t::ERR_FATAL, "R_GetCommandBuffer: bad size %lu", (unsigned long)bytes );
 		}
 
 		// if we run out of room, just start dropping commands
@@ -255,16 +256,14 @@ R_AddSetupLightsCmd
 */
 void R_AddSetupLightsCmd()
 {
-	setupLightsCommand_t *cmd;
+	SetupLightsCommand *cmd;
 
-	cmd = (setupLightsCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<SetupLightsCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_SETUP_LIGHTS;
 
 	cmd->refdef = tr.refdef;
 }
@@ -276,16 +275,14 @@ R_AddDrawViewCmd
 */
 void R_AddDrawViewCmd( bool depthPass )
 {
-	drawViewCommand_t *cmd;
+	DrawViewCommand *cmd;
 
-	cmd = (drawViewCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<DrawViewCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_DRAW_VIEW;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -299,16 +296,14 @@ R_AddClearBufferCmd
 */
 void R_AddClearBufferCmd( )
 {
-	clearBufferCommand_t *cmd;
+	ClearBufferCommand *cmd;
 
-	cmd = (clearBufferCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<ClearBufferCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_CLEAR_BUFFER;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -321,16 +316,14 @@ R_AddPreparePortalCmd
 */
 void R_AddPreparePortalCmd( drawSurf_t *surf )
 {
-	preparePortalCommand_t *cmd;
+	PreparePortalCommand *cmd;
 
-	cmd = (preparePortalCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<PreparePortalCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_PREPARE_PORTAL;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -344,16 +337,14 @@ R_AddPreparePortalCmd
 */
 void R_AddFinalisePortalCmd( drawSurf_t *surf )
 {
-	finalisePortalCommand_t *cmd;
+	FinalisePortalCommand *cmd;
 
-	cmd = (finalisePortalCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<FinalisePortalCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_FINALISE_PORTAL;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -367,16 +358,14 @@ R_AddPostProcessCmd
 */
 void R_AddPostProcessCmd()
 {
-	renderPostProcessCommand_t *cmd;
+	RenderPostProcessCommand *cmd;
 
-	cmd = (renderPostProcessCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	cmd = R_GetRenderCommand<RenderPostProcessCommand>();
 
 	if (!cmd)
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_POST_PROCESS;
 
 	cmd->refdef = tr.refdef;
 	cmd->viewParms = tr.viewParms;
@@ -391,21 +380,19 @@ Passing nullptr will set the color to white
 */
 void RE_SetColor( const Color::Color& rgba )
 {
-	setColorCommand_t *cmd;
+	SetColorCommand *cmd;
 
 	if ( !tr.registered )
 	{
 		return;
 	}
 
-	cmd = (setColorCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<SetColorCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_SET_COLOR;
 
 	cmd->color = rgba;
 }
@@ -417,7 +404,7 @@ RE_SetColorGrading
 */
 void RE_SetColorGrading( int slot, qhandle_t hShader )
 {
-	setColorGradingCommand_t *cmd;
+	SetColorGradingCommand *cmd;
 	shader_t *shader = R_GetShaderByHandle( hShader );
 	image_t *image;
 
@@ -453,7 +440,7 @@ void RE_SetColorGrading( int slot, qhandle_t hShader )
 		return;
 	}
 
-	cmd = ( setColorGradingCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<SetColorGradingCommand>();
 
 	if ( !cmd )
 	{
@@ -462,7 +449,6 @@ void RE_SetColorGrading( int slot, qhandle_t hShader )
 
 	cmd->slot = slot;
 	cmd->image = image;
-	cmd->commandId = renderCommand_t::RC_SET_COLORGRADING;
 }
 
 /*
@@ -567,7 +553,7 @@ RE_StretchPic
 void RE_StretchPic ( float x, float y, float w, float h,
 					  float s1, float t1, float s2, float t2, qhandle_t hShader )
 {
-	stretchPicCommand_t	*cmd;
+	StretchPicCommand	*cmd;
 
 	if (!tr.registered)
 	{
@@ -578,13 +564,12 @@ void RE_StretchPic ( float x, float y, float w, float h,
 		return;
 	}
 
-	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<StretchPicCommand>();
 	if ( !cmd )
 	{
 		return;
 	}
 
-	cmd->commandId = renderCommand_t::RC_STRETCH_PIC;
 	cmd->shader = R_GetShaderByHandle( hShader );
 	cmd->x = x;
 	cmd->y = y;
@@ -606,21 +591,20 @@ extern int r_numPolyIndexes;
 
 void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 {
-	poly2dCommand_t *cmd;
+	Poly2dCommand *cmd;
 
 	if ( r_numPolyVerts + numverts > r_maxPolyVerts->integer )
 	{
 		return;
 	}
 
-	cmd = (poly2dCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<Poly2dCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
 
-	cmd->commandId = renderCommand_t::RC_2DPOLYS;
 	cmd->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
 	cmd->numverts = numverts;
 	memcpy( cmd->verts, verts, sizeof( polyVert_t ) * numverts );
@@ -631,7 +615,7 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 
 void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader )
 {
-	poly2dIndexedCommand_t *cmd;
+	Poly2dIndexedCommand *cmd;
 
 	if ( r_numPolyVerts + numverts > r_maxPolyVerts->integer )
 	{
@@ -643,14 +627,13 @@ void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int num
 		return;
 	}
 
-	cmd = (poly2dIndexedCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<Poly2dIndexedCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
 
-	cmd->commandId = renderCommand_t::RC_2DPOLYSINDEXED;
 	cmd->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
 	cmd->numverts = numverts;
 	memcpy( cmd->verts, verts, sizeof( polyVert_t ) * numverts );
@@ -686,16 +669,15 @@ RE_ScissorSet
 */
 void RE_ScissorSet( int x, int y, int w, int h )
 {
-	scissorSetCommand_t *cmd;
+	ScissorSetCommand *cmd;
 
-	cmd = (scissorSetCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<ScissorSetCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
 
-	cmd->commandId = renderCommand_t::RC_SCISSORSET;
 	cmd->x = x;
 	cmd->y = y;
 	cmd->w = w;
@@ -709,16 +691,15 @@ RE_RotatedPic
 */
 void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle )
 {
-	stretchPicCommand_t *cmd;
+	StretchPicCommand *cmd;
 
-	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<StretchPicCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
 
-	cmd->commandId = renderCommand_t::RC_ROTATED_PIC;
 	cmd->shader = R_GetShaderByHandle( hShader );
 	cmd->x = x;
 	cmd->y = y;
@@ -744,16 +725,15 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
                             qhandle_t hShader, const Color::Color& gradientColor,
                             int gradientType )
 {
-	stretchPicCommand_t *cmd;
+	StretchPicCommand *cmd;
 
-	cmd = (stretchPicCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<StretchPicCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
 
-	cmd->commandId = renderCommand_t::RC_STRETCH_PIC_GRADIENT;
 	cmd->shader = R_GetShaderByHandle( hShader );
 	cmd->x = x;
 	cmd->y = y;
@@ -777,7 +757,7 @@ RE_BeginFrame
 */
 void RE_BeginFrame()
 {
-	drawBufferCommand_t *cmd;
+	DrawBufferCommand *cmd;
 
 	if ( !tr.registered )
 	{
@@ -886,14 +866,12 @@ void RE_BeginFrame()
 	}
 
 	// draw buffer stuff
-	cmd = (drawBufferCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<DrawBufferCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_DRAW_BUFFER;
 
 	if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
 	{
@@ -914,7 +892,7 @@ Returns the number of msec spent in the back end
 */
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 {
-	swapBuffersCommand_t *cmd;
+	SwapBuffersCommand *cmd;
 
 	if ( !tr.registered )
 	{
@@ -923,14 +901,12 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 
 	GLimp_HandleCvars();
 
-	cmd = (swapBuffersCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<SwapBuffersCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_SWAP_BUFFERS;
 
 	R_IssueRenderCommands( true );
 
@@ -963,21 +939,19 @@ RE_TakeVideoFrame
 */
 void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encodeBuffer, bool motionJpeg )
 {
-	videoFrameCommand_t *cmd;
+	VideoFrameCommand *cmd;
 
 	if ( !tr.registered )
 	{
 		return;
 	}
 
-	cmd = (videoFrameCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<VideoFrameCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_VIDEOFRAME;
 
 	cmd->width = width;
 	cmd->height = height;
@@ -995,16 +969,14 @@ RE_Finish
 */
 void RE_Finish()
 {
-	renderFinishCommand_t *cmd;
+	RenderFinishCommand *cmd;
 
 	Log::Notice("RE_Finish\n" );
 
-	cmd = (renderFinishCommand_t*) R_GetCommandBuffer( sizeof( *cmd ) );
+	cmd = R_GetRenderCommand<RenderFinishCommand>();
 
 	if ( !cmd )
 	{
 		return;
 	}
-
-	cmd->commandId = renderCommand_t::RC_FINISH;
 }

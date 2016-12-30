@@ -4959,17 +4959,13 @@ void RE_UploadCinematic( int cols, int rows, const byte *data, int client, bool 
 RB_SetColor
 =============
 */
-const void     *RB_SetColor( const void *data )
+const RenderCommand *SetColorCommand::ExecuteSelf() const
 {
-	const setColorCommand_t *cmd;
+	GLimp_LogComment( "--- SetColorCommand::ExecuteSelf ---\n" );
 
-	GLimp_LogComment( "--- RB_SetColor ---\n" );
+	backEnd.color2D = color;
 
-	cmd = ( const setColorCommand_t * ) data;
-
-	backEnd.color2D = cmd->color;
-
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -4977,36 +4973,32 @@ const void     *RB_SetColor( const void *data )
 RB_SetColorGrading
 =============
 */
-const void *RB_SetColorGrading( const void *data )
+const RenderCommand *SetColorGradingCommand::ExecuteSelf( ) const
 {
-	const setColorGradingCommand_t *cmd;
+	GLimp_LogComment( "--- SetColorGradingCommand::ExecuteSelf ---\n" );
 
-	GLimp_LogComment( "--- RB_SetColorGrading ---\n" );
-
-	cmd = ( const setColorGradingCommand_t * ) data;
-
-	if( cmd->slot < 0 || cmd->slot >= REF_COLORGRADE_SLOTS ) {
-		return ( const void * ) ( cmd + 1 );
+	if( slot < 0 || slot >= REF_COLORGRADE_SLOTS ) {
+		return this + 1;
 	}
 
-	if( glState.colorgradeSlots[ cmd->slot ] == cmd->image ) {
-		return ( const void * ) ( cmd + 1 );
+	if( glState.colorgradeSlots[ slot ] == image ) {
+		return this + 1;
 	}
 
-	GL_Bind( cmd->image );
+	GL_Bind( image );
 
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
 
-	glGetTexImage( cmd->image->type, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr );
+	glGetTexImage( image->type, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr );
 	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
 
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.colorGradePBO );
 
 	GL_Bind( tr.colorGradeImage );
 
-	if ( cmd->image->width == REF_COLORGRADEMAP_SIZE )
+	if ( image->width == REF_COLORGRADEMAP_SIZE )
 	{
-		glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, cmd->slot * REF_COLORGRADEMAP_SIZE,
+		glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, slot * REF_COLORGRADEMAP_SIZE,
 		                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE,
 		                 GL_RGBA, GL_UNSIGNED_BYTE, nullptr );
 	}
@@ -5018,7 +5010,7 @@ const void *RB_SetColorGrading( const void *data )
 
 		for ( i = 0; i < 16; i++ )
 		{
-			glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i + cmd->slot * REF_COLORGRADEMAP_SIZE,
+			glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i + slot * REF_COLORGRADEMAP_SIZE,
 			                 REF_COLORGRADEMAP_SIZE, REF_COLORGRADEMAP_SIZE, 1,
 			                 GL_RGBA, GL_UNSIGNED_BYTE, ( ( u8vec4_t * ) nullptr ) + REF_COLORGRADEMAP_SIZE );
 		}
@@ -5028,9 +5020,9 @@ const void *RB_SetColorGrading( const void *data )
 
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 
-	glState.colorgradeSlots[ cmd->slot ] = cmd->image;
+	glState.colorgradeSlots[ slot ] = image;
 
-	return ( const void * ) ( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5038,22 +5030,16 @@ const void *RB_SetColorGrading( const void *data )
 RB_StretchPic
 =============
 */
-const void     *RB_StretchPic( const void *data )
+const RenderCommand *StretchPicCommand::ExecuteSelf( ) const
 {
-	const stretchPicCommand_t *cmd;
-	shader_t                  *shader;
 	int                       numVerts, numIndexes;
 
-	GLimp_LogComment( "--- RB_StretchPic ---\n" );
-
-	cmd = ( const stretchPicCommand_t * ) data;
+	GLimp_LogComment( "--- StretchPicCommand::ExecuteSelf ---\n" );
 
 	if ( !backEnd.projection2D )
 	{
 		RB_SetGL2D();
 	}
-
-	shader = cmd->shader;
 
 	if ( shader != tess.surfaceShader )
 	{
@@ -5084,75 +5070,64 @@ const void     *RB_StretchPic( const void *data )
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	tess.verts[ numVerts ].xyz[ 0 ] = cmd->x;
-	tess.verts[ numVerts ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts ].xyz[ 0 ] = x;
+	tess.verts[ numVerts ].xyz[ 1 ] = y;
 	tess.verts[ numVerts ].xyz[ 2 ] = 0.0f;
 	tess.verts[ numVerts + 0 ].color = backEnd.color2D;
 
-	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
-	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
+	tess.verts[ numVerts ].texCoords[ 0 ] = floatToHalf( s1 );
+	tess.verts[ numVerts ].texCoords[ 1 ] = floatToHalf( t1 );
 
-	tess.verts[ numVerts + 1 ].xyz[ 0 ] = cmd->x + cmd->w;
-	tess.verts[ numVerts + 1 ].xyz[ 1 ] = cmd->y;
+	tess.verts[ numVerts + 1 ].xyz[ 0 ] = x + w;
+	tess.verts[ numVerts + 1 ].xyz[ 1 ] = y;
 	tess.verts[ numVerts + 1 ].xyz[ 2 ] = 0.0f;
 	tess.verts[ numVerts + 1 ].color = backEnd.color2D;
 
-	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
-	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( cmd->t1 );
+	tess.verts[ numVerts + 1 ].texCoords[ 0 ] = floatToHalf( s2 );
+	tess.verts[ numVerts + 1 ].texCoords[ 1 ] = floatToHalf( t1 );
 
-	tess.verts[ numVerts + 2 ].xyz[ 0 ] = cmd->x + cmd->w;
-	tess.verts[ numVerts + 2 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 2 ].xyz[ 0 ] = x + w;
+	tess.verts[ numVerts + 2 ].xyz[ 1 ] = y + h;
 	tess.verts[ numVerts + 2 ].xyz[ 2 ] = 0.0f;
 	tess.verts[ numVerts + 2 ].color = backEnd.color2D;
 
-	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( cmd->s2 );
-	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 0 ] = floatToHalf( s2 );
+	tess.verts[ numVerts + 2 ].texCoords[ 1 ] = floatToHalf( t2 );
 
-	tess.verts[ numVerts + 3 ].xyz[ 0 ] = cmd->x;
-	tess.verts[ numVerts + 3 ].xyz[ 1 ] = cmd->y + cmd->h;
+	tess.verts[ numVerts + 3 ].xyz[ 0 ] = x;
+	tess.verts[ numVerts + 3 ].xyz[ 1 ] = y + h;
 	tess.verts[ numVerts + 3 ].xyz[ 2 ] = 0.0f;
 	tess.verts[ numVerts + 3 ].color = backEnd.color2D;
 
-	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( cmd->s1 );
-	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( cmd->t2 );
+	tess.verts[ numVerts + 3 ].texCoords[ 0 ] = floatToHalf( s1 );
+	tess.verts[ numVerts + 3 ].texCoords[ 1 ] = floatToHalf( t2 );
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD;
 
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
-const void     *RB_ScissorSet( const void *data )
-{
-	const scissorSetCommand_t *cmd;
-
-	cmd = ( const scissorSetCommand_t * ) data;
-
-	tr.scissor.x = cmd->x;
-	tr.scissor.y = cmd->y;
-	tr.scissor.w = cmd->w;
-	tr.scissor.h = cmd->h;
+const RenderCommand *ScissorSetCommand::ExecuteSelf( ) const {
+	tr.scissor.x = x;
+	tr.scissor.y = y;
+	tr.scissor.w = w;
+	tr.scissor.h = h;
 
 	Tess_End();
-	GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
+	GL_Scissor( x, y, w, h );
 	tess.surfaceShader = nullptr;
 
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
-const void     *RB_Draw2dPolys( const void *data )
+const RenderCommand *Poly2dCommand::ExecuteSelf( ) const
 {
-	const poly2dCommand_t *cmd;
-	shader_t              *shader;
 	int                   i;
-
-	cmd = ( const poly2dCommand_t * ) data;
 
 	if ( !backEnd.projection2D )
 	{
 		RB_SetGL2D();
 	}
-
-	shader = cmd->shader;
 
 	if ( shader != tess.surfaceShader )
 	{
@@ -5165,9 +5140,9 @@ const void     *RB_Draw2dPolys( const void *data )
 		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
-	Tess_CheckOverflow( cmd->numverts, ( cmd->numverts - 2 ) * 3 );
+	Tess_CheckOverflow( numverts, ( numverts - 2 ) * 3 );
 
-	for ( i = 0; i < cmd->numverts - 2; i++ )
+	for ( i = 0; i < numverts - 2; i++ )
 	{
 		tess.indexes[ tess.numIndexes + 0 ] = tess.numVertexes;
 		tess.indexes[ tess.numIndexes + 1 ] = tess.numVertexes + i + 1;
@@ -5175,38 +5150,33 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.numIndexes += 3;
 	}
 
-	for ( i = 0; i < cmd->numverts; i++ )
+	for ( i = 0; i < numverts; i++ )
 	{
-		tess.verts[ tess.numVertexes ].xyz[ 0 ] = cmd->verts[ i ].xyz[ 0 ];
-		tess.verts[ tess.numVertexes ].xyz[ 1 ] = cmd->verts[ i ].xyz[ 1 ];
+		tess.verts[ tess.numVertexes ].xyz[ 0 ] = verts[ i ].xyz[ 0 ];
+		tess.verts[ tess.numVertexes ].xyz[ 1 ] = verts[ i ].xyz[ 1 ];
 		tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
 
-		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
-		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( verts[ i ].st[ 0 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( verts[ i ].st[ 1 ] );
 
-		tess.verts[ tess.numVertexes ].color = Color::Adapt( cmd->verts[ i ].modulate );
+		tess.verts[ tess.numVertexes ].color = Color::Adapt( verts[ i ].modulate );
 		tess.numVertexes++;
 	}
 
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
-const void     *RB_Draw2dPolysIndexed( const void *data )
+const RenderCommand *Poly2dIndexedCommand::ExecuteSelf( ) const
 {
-	const poly2dIndexedCommand_t *cmd;
 	cullType_t            oldCullType;
-	shader_t              *shader;
 	int                   i;
-
-	cmd = ( const poly2dIndexedCommand_t * ) data;
 
 	if ( !backEnd.projection2D )
 	{
 		RB_SetGL2D();
 	}
 
-	shader = cmd->shader;
 	// HACK: Our shader system likes to cull things that we'd like shown
 	oldCullType = shader->cullType;
 	shader->cullType = CT_TWO_SIDED;
@@ -5226,28 +5196,28 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		Tess_Begin( Tess_StageIteratorGeneric, nullptr, shader, nullptr, false, false, -1, 0 );
 	}
 
-	Tess_CheckOverflow( cmd->numverts, cmd->numIndexes );
+	Tess_CheckOverflow( numverts, numIndexes );
 
-	for ( i = 0; i < cmd->numIndexes; i++ )
+	for ( i = 0; i < numIndexes; i++ )
 	{
-		tess.indexes[ tess.numIndexes + i ] = tess.numVertexes + cmd->indexes[ i ];
+		tess.indexes[ tess.numIndexes + i ] = tess.numVertexes + indexes[ i ];
 	}
-	tess.numIndexes += cmd->numIndexes;
+	tess.numIndexes += numIndexes;
 	if ( tr.scissor.status )
 	{
 		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
 	}
 
-	for ( i = 0; i < cmd->numverts; i++ )
+	for ( i = 0; i < numverts; i++ )
 	{
-		tess.verts[ tess.numVertexes ].xyz[ 0 ] = cmd->verts[ i ].xyz[ 0 ] + cmd->translation[ 0 ];
-		tess.verts[ tess.numVertexes ].xyz[ 1 ] = cmd->verts[ i ].xyz[ 1 ] + cmd->translation[ 1 ];
+		tess.verts[ tess.numVertexes ].xyz[ 0 ] = verts[ i ].xyz[ 0 ] + translation[ 0 ];
+		tess.verts[ tess.numVertexes ].xyz[ 1 ] = verts[ i ].xyz[ 1 ] + translation[ 1 ];
 		tess.verts[ tess.numVertexes ].xyz[ 2 ] = 0.0f;
 
-		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( cmd->verts[ i ].st[ 0 ] );
-		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( cmd->verts[ i ].st[ 1 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 0 ] = floatToHalf( verts[ i ].st[ 0 ] );
+		tess.verts[ tess.numVertexes ].texCoords[ 1 ] = floatToHalf( verts[ i ].st[ 1 ] );
 
-		tess.verts[ tess.numVertexes ].color = Color::Adapt( cmd->verts[ i ].modulate );
+		tess.verts[ tess.numVertexes ].color = Color::Adapt( verts[ i ].modulate );
 		tess.numVertexes++;
 	}
 
@@ -5255,11 +5225,12 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 
 	shader->cullType = oldCullType;
 
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 // NERVE - SMF
 
+#if 0 // unused ?
 /*
 =============
 RB_RotatedPic
@@ -5443,23 +5414,21 @@ const void     *RB_StretchPicGradient( const void *data )
 	tess.attribsSet |= ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR;
 	return ( const void * )( cmd + 1 );
 }
+#endif
 
 /*
 =============
 RB_SetupLights
 =============
 */
-static const void *RB_SetupLights( const void *data )
+const RenderCommand *SetupLightsCommand::ExecuteSelf( ) const
 {
-	const setupLightsCommand_t *cmd;
 	int numLights;
 	GLenum bufferTarget = glConfig2.uniformBufferObjectAvailable ? GL_UNIFORM_BUFFER : GL_PIXEL_UNPACK_BUFFER;
 
-	GLimp_LogComment( "--- RB_SetupLights ---\n" );
+	GLimp_LogComment( "--- SetupLightsCommand::ExecuteSelf ---\n" );
 
-	cmd = ( const setupLightsCommand_t * ) data;
-
-	if( (numLights = cmd->refdef.numLights) > 0 ) {
+	if( (numLights = refdef.numLights) > 0 ) {
 		shaderLight_t *buffer;
 
 		glBindBuffer( bufferTarget, tr.dlightUBO );
@@ -5468,10 +5437,10 @@ static const void *RB_SetupLights( const void *data )
 							    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT );
 
 		for( int i = 0, j = 0; i < numLights; i++, j++ ) {
-			trRefLight_t *light = &cmd->refdef.lights[j];
+			trRefLight_t *light = &refdef.lights[j];
 
 			while( light->l.inverseShadows ) {
-				light = &cmd->refdef.lights[++j];
+				light = &refdef.lights[++j];
 			}
 
 			VectorCopy( light->l.origin, buffer[i].center );
@@ -5501,7 +5470,7 @@ static const void *RB_SetupLights( const void *data )
 		glBindBuffer( bufferTarget, 0 );
 	}
 
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5509,12 +5478,11 @@ static const void *RB_SetupLights( const void *data )
 RB_ClearBuffer
 =============
 */
-const void     *RB_ClearBuffer( const void *data )
+const RenderCommand *ClearBufferCommand::ExecuteSelf( ) const
 {
-	const clearBufferCommand_t *cmd;
 	int clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
-	GLimp_LogComment( "--- RB_ClearBuffer ---\n" );
+	GLimp_LogComment( "--- ClearBufferCommand::ExecuteSelf ---\n" );
 
 	// finish any 2D drawing if needed
 	if ( tess.numIndexes )
@@ -5522,15 +5490,8 @@ const void     *RB_ClearBuffer( const void *data )
 		Tess_End();
 	}
 
-	cmd = ( const clearBufferCommand_t * ) data;
-
-	backEnd.refdef = cmd->refdef;
-	backEnd.viewParms = cmd->viewParms;
-
-	if ( r_logFile->integer )
-	{
-		GLimp_LogComment( "--- RB_ClearBuffer ---\n" );
-	}
+	backEnd.refdef = refdef;
+	backEnd.viewParms = viewParms;
 
 	GL_CheckErrors();
 
@@ -5566,7 +5527,7 @@ const void     *RB_ClearBuffer( const void *data )
 
 	glClear( clearBits );
 
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5574,18 +5535,13 @@ const void     *RB_ClearBuffer( const void *data )
 RB_PreparePortal
 =============
 */
-const void     *RB_PreparePortal( const void *data )
+const RenderCommand *PreparePortalCommand::ExecuteSelf( ) const
 {
-	const preparePortalCommand_t *cmd;
+	GLimp_LogComment( "--- PreparePortalCommand::ExecuteSelf ---\n" );
 
-	GLimp_LogComment( "--- RB_PreparePortal ---\n" );
-
-	cmd = ( const preparePortalCommand_t * ) data;
-
-	backEnd.refdef = cmd->refdef;
-	backEnd.viewParms = cmd->viewParms;
-	drawSurf_t *surface = cmd->surface;
-	shader_t *shader = tr.sortedShaders[ surface->shaderNum() ];
+	backEnd.refdef = refdef;
+	backEnd.viewParms = viewParms;
+	shader_t *shader = surface->shader;
 
 	// set the modelview matrix for the viewer
 	SetViewportAndScissor();
@@ -5643,7 +5599,7 @@ const void     *RB_PreparePortal( const void *data )
 
 	// keep stencil test enabled !
 
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5651,18 +5607,13 @@ const void     *RB_PreparePortal( const void *data )
 RB_FinalisePortal
 =============
 */
-const void     *RB_FinalisePortal( const void *data )
+const RenderCommand *FinalisePortalCommand::ExecuteSelf( ) const
 {
-	const finalisePortalCommand_t *cmd;
+	GLimp_LogComment( "--- FinalisePortalCommand::ExecuteSelf ---\n" );
 
-	GLimp_LogComment( "--- RB_FinalisePortal ---\n" );
-
-	cmd = ( const finalisePortalCommand_t * ) data;
-
-	backEnd.refdef = cmd->refdef;
-	backEnd.viewParms = cmd->viewParms;
-	drawSurf_t *surface = cmd->surface;
-	shader_t *shader = tr.sortedShaders[ surface->shaderNum() ];
+	backEnd.refdef = refdef;
+	backEnd.viewParms = viewParms;
+	shader_t *shader = surface->shader;
 
 	// set the modelview matrix for the viewer
 	SetViewportAndScissor();
@@ -5704,7 +5655,7 @@ const void     *RB_FinalisePortal( const void *data )
 		glDisable( GL_STENCIL_TEST );
 	}
 	
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5712,11 +5663,9 @@ const void     *RB_FinalisePortal( const void *data )
 RB_DrawView
 =============
 */
-const void     *RB_DrawView( const void *data )
+const RenderCommand *DrawViewCommand::ExecuteSelf( ) const
 {
-	const drawViewCommand_t *cmd;
-
-	GLimp_LogComment( "--- RB_DrawView ---\n" );
+	GLimp_LogComment( "--- DrawViewCommand::ExecuteSelf ---\n" );
 
 	// finish any 2D drawing if needed
 	if ( tess.numIndexes )
@@ -5724,14 +5673,12 @@ const void     *RB_DrawView( const void *data )
 		Tess_End();
 	}
 
-	cmd = ( const drawViewCommand_t * ) data;
+	backEnd.refdef = refdef;
+	backEnd.viewParms = viewParms;
 
-	backEnd.refdef = cmd->refdef;
-	backEnd.viewParms = cmd->viewParms;
+	RB_RenderView( depthPass );
 
-	RB_RenderView( cmd->depthPass );
-
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5739,11 +5686,9 @@ const void     *RB_DrawView( const void *data )
 RB_DrawPostProcess
 =============
 */
-const void    *RB_DrawPostProcess(const void *data)
+const RenderCommand *RenderPostProcessCommand::ExecuteSelf( ) const
 {
-	const renderPostProcessCommand_t *cmd;
-
-	GLimp_LogComment("--- RB_PostProcss ---\n");
+	GLimp_LogComment("--- RenderPostProcessCommand::ExecuteSelf ---\n");
 
 	// finish any 3D drawing if needed
 	if (tess.numIndexes)
@@ -5751,32 +5696,27 @@ const void    *RB_DrawPostProcess(const void *data)
 		Tess_End();
 	}
 
-	cmd = (const renderPostProcessCommand_t *)data;
-
-	backEnd.refdef = cmd->refdef;
-	backEnd.viewParms = cmd->viewParms;
+	backEnd.refdef = refdef;
+	backEnd.viewParms = viewParms;
 
 	RB_RenderPostProcess();
 
-	return (const void *)(cmd + 1);
+	return this + 1;
 }
+
 /*
 =============
 RB_DrawBuffer
 =============
 */
-const void     *RB_DrawBuffer( const void *data )
+const RenderCommand *DrawBufferCommand::ExecuteSelf( ) const
 {
-	const drawBufferCommand_t *cmd;
+	GLimp_LogComment( "--- DrawBufferCommand::ExecuteSelf ---\n" );
 
-	GLimp_LogComment( "--- RB_DrawBuffer ---\n" );
-
-	cmd = ( const drawBufferCommand_t * ) data;
-
-	GL_DrawBuffer( cmd->buffer );
+	GL_DrawBuffer( buffer );
 
 	glState.finishCalled = false;
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5876,10 +5816,8 @@ void RB_ShowImages()
 RB_SwapBuffers
 =============
 */
-const void     *RB_SwapBuffers( const void *data )
+const RenderCommand *SwapBuffersCommand::ExecuteSelf( ) const
 {
-	const swapBuffersCommand_t *cmd;
-
 	// finish any 2D drawing if needed
 	if ( tess.numIndexes )
 	{
@@ -5891,8 +5829,6 @@ const void     *RB_SwapBuffers( const void *data )
 	{
 		RB_ShowImages();
 	}
-
-	cmd = ( const swapBuffersCommand_t * ) data;
 
 	// we measure overdraw by reading back the stencil buffer and
 	// counting up the number of increments that have happened
@@ -5920,7 +5856,7 @@ const void     *RB_SwapBuffers( const void *data )
 
 	backEnd.projection2D = false;
 
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5928,15 +5864,11 @@ const void     *RB_SwapBuffers( const void *data )
 RB_Finish
 =============
 */
-const void     *RB_Finish( const void *data )
+const RenderCommand *RenderFinishCommand::ExecuteSelf( ) const
 {
-	const renderFinishCommand_t *cmd;
-
-	cmd = ( const renderFinishCommand_t * ) data;
-
 	glFinish();
 
-	return ( const void * )( cmd + 1 );
+	return this + 1;
 }
 
 /*
@@ -5955,6 +5887,11 @@ void R_ShutdownBackend()
 	glState.vertexAttribsState = 0;
 }
 
+const RenderCommand *EndOfListCommand::ExecuteSelf( ) const
+{
+	return nullptr;
+}
+
 /*
 ====================
 RB_ExecuteRenderCommands
@@ -5965,6 +5902,7 @@ smp extensions, or asynchronously by another thread.
 */
 void RB_ExecuteRenderCommands( const void *data )
 {
+	const RenderCommand *cmd = (const RenderCommand *)data;
 	int t1, t2;
 
 	GLimp_LogComment( "--- RB_ExecuteRenderCommands ---\n" );
@@ -5980,89 +5918,14 @@ void RB_ExecuteRenderCommands( const void *data )
 		backEnd.smpFrame = 1;
 	}
 
-	while ( 1 )
+	while ( cmd != nullptr )
 	{
-		switch ( * ( const int * ) data )
-		{
-			case Util::ordinal(renderCommand_t::RC_SET_COLORGRADING):
-				data = RB_SetColorGrading( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_SET_COLOR):
-				data = RB_SetColor( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_STRETCH_PIC):
-				data = RB_StretchPic( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_2DPOLYS):
-				data = RB_Draw2dPolys( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_2DPOLYSINDEXED):
-				data = RB_Draw2dPolysIndexed( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_ROTATED_PIC):
-				data = RB_RotatedPic( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_STRETCH_PIC_GRADIENT):
-				data = RB_StretchPicGradient( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_SETUP_LIGHTS):
-				data = RB_SetupLights( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_DRAW_VIEW):
-				data = RB_DrawView( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_DRAW_BUFFER):
-				data = RB_DrawBuffer( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_SWAP_BUFFERS):
-				data = RB_SwapBuffers( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_SCREENSHOT):
-				data = RB_TakeScreenshotCmd( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_VIDEOFRAME):
-				data = RB_TakeVideoFrameCmd( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_FINISH):
-				data = RB_Finish( data );
-				break;
-
-			case Util::ordinal(renderCommand_t::RC_SCISSORSET):
-				data = RB_ScissorSet( data );
-				break;
-			case Util::ordinal(renderCommand_t::RC_POST_PROCESS):
-				data = RB_DrawPostProcess(data);
-				break;
-			case Util::ordinal(renderCommand_t::RC_CLEAR_BUFFER):
-				data = RB_ClearBuffer(data);
-				break;
-			case Util::ordinal(renderCommand_t::RC_PREPARE_PORTAL):
-				data = RB_PreparePortal(data);
-				break;
-			case Util::ordinal(renderCommand_t::RC_FINALISE_PORTAL):
-				data = RB_FinalisePortal(data);
-				break;
-			case Util::ordinal(renderCommand_t::RC_END_OF_LIST):
-			default:
-				// stop rendering on this thread
-				t2 = ri.Milliseconds();
-				backEnd.pc.msec = t2 - t1;
-				return;
-		}
+		cmd = cmd->ExecuteSelf();
 	}
+	// stop rendering on this thread
+	t2 = ri.Milliseconds();
+	backEnd.pc.msec = t2 - t1;
+	return;
 }
 
 /*
