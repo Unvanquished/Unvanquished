@@ -431,6 +431,17 @@ static std::string GenVersionDeclaration() {
 	return str;
 }
 
+static std::string GenCompatHeader() {
+	std::string str;
+
+	// definition of functions missing in early GLSL
+	if( glConfig2.shadingLanguageVersion <= 120 ) {
+		str += "float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
+	}
+
+	return str;
+}
+
 static std::string GenVertexHeader() {
 	std::string str;
 
@@ -444,9 +455,7 @@ static std::string GenVertexHeader() {
 			"#define texture3D texture\n";
 	} else {
 		str =   "#define IN attribute\n"
-			"#define OUT(mode) varying\n"
-		// add implementation of GLSL 1.30 smoothstep() function
-			"float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
+			"#define OUT(mode) varying\n";
 	}
 
 	return str;
@@ -465,15 +474,11 @@ static std::string GenFragmentHeader() {
 			"#define texture3D texture\n";
 	} else if( glConfig2.gpuShader4Available) {
 		str =   "#define IN(mode) varying\n"
-			"#define DECLARE_OUTPUT(type) varying out type outputColor;\n"
-			// add implementation of GLSL 1.30 smoothstep() function
-			"float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
+			"#define DECLARE_OUTPUT(type) varying out type outputColor;\n";
 	} else {
 		str =   "#define IN(mode) varying\n"
 			"#define outputColor gl_FragColor\n"
-			"#define DECLARE_OUTPUT(type) /* empty*/\n"
-			// add implementation of GLSL 1.30 smoothstep() function
-			"float smoothstep(float edge0, float edge1, float x) { float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }\n";
+			"#define DECLARE_OUTPUT(type) /* empty*/\n";
 	}
 
 	return str;
@@ -593,6 +598,7 @@ static std::string GenEngineConstants() {
 
 void GLShaderManager::GenerateBuiltinHeaders() {
 	GLVersionDeclaration = GLHeader("GLVersionDeclaration", GenVersionDeclaration(), this);
+	GLCompatHeader = GLHeader("GLCompatHeader", GenCompatHeader(), this);
 	GLVertexHeader = GLHeader("GLVertexHeader", GenVertexHeader(), this);
 	GLFragmentHeader = GLHeader("GLFragmentHeader", GenFragmentHeader(), this);
 	GLEngineConstants = GLHeader("GLEngineConstants", GenEngineConstants(), this);
@@ -985,12 +991,14 @@ void GLShaderManager::CompileGPUShaders( GLShader *shader, shaderProgram_t *prog
 				     vertexShaderTextWithMacros,
 				     { &GLVersionDeclaration,
 				       &GLVertexHeader,
+				       &GLCompatHeader,
 				       &GLEngineConstants },
 				     GL_VERTEX_SHADER );
 	program->FS = CompileShader( shader->GetName(),
 				     fragmentShaderTextWithMacros,
 				     { &GLVersionDeclaration,
 				       &GLFragmentHeader,
+				       &GLCompatHeader,
 				       &GLEngineConstants },
 				     GL_FRAGMENT_SHADER );
 }

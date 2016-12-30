@@ -277,6 +277,7 @@ class GLShaderManager
 
 public:
 	GLHeader GLVersionDeclaration;
+	GLHeader GLCompatHeader;
 	GLHeader GLVertexHeader;
 	GLHeader GLFragmentHeader;
 	GLHeader GLEngineConstants;
