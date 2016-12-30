@@ -2882,6 +2882,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	extern cvar_t *r_arb_sync;
 	extern cvar_t *r_arb_uniform_buffer_object;
 	extern cvar_t *r_arb_texture_gather;
+	extern cvar_t *r_arb_gpu_shader5;
 
 	extern cvar_t *r_nobind; // turns off binding to appropriate textures
 	extern cvar_t *r_collapseStages;

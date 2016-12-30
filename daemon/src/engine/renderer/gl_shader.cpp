@@ -423,6 +423,8 @@ static std::string GenVersionDeclaration() {
 		      GLEW_ARB_texture_gather, "ARB_texture_gather" );
 	addExtension( str, r_ext_gpu_shader4->integer, 130,
 		      GLEW_EXT_gpu_shader4, "EXT_gpu_shader4" );
+	addExtension( str, r_arb_gpu_shader5->integer, 400,
+		      GLEW_ARB_gpu_shader5, "ARB_gpu_shader5" );
 	addExtension( str, r_arb_uniform_buffer_object->integer, 140,
 		      GLEW_ARB_uniform_buffer_object, "ARB_uniform_buffer_object" );
 
