@@ -848,7 +848,7 @@ static void RB_RenderDrawSurfaces( shaderSort_t fromSort, shaderSort_t toSort,
 
 		// update locals
 		entity = drawSurf->entity;
-		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
+		shader = drawSurf->shader;
 		lightmapNum = drawSurf->lightmapNum();
 		fogNum = drawSurf->fogNum();
 
@@ -1218,7 +1218,7 @@ static void RB_RenderInteractions()
 		{
 			backEnd.currentEntity = entity = ia->entity;
 			surface = ia->surface;
-			shader = tr.sortedShaders[ ia->shaderNum ];
+			shader = ia->shader;
 
 			if ( !shader || !shader->interactLight )
 			{
@@ -2127,7 +2127,7 @@ static void RB_RenderInteractionsShadowMapped()
 				iaLast = ia;
 				backEnd.currentEntity = entity = ia->entity;
 				surface = ia->surface;
-				shader = tr.sortedShaders[ ia->shaderNum ];
+				shader = ia->shader;
 				alphaTest = shader->alphaTest;
 
 				if ( entity->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) )
@@ -2310,7 +2310,7 @@ static void RB_RenderInteractionsShadowMapped()
 					iaLast = ia;
 					backEnd.currentEntity = entity = ia->entity;
 					surface = ia->surface;
-					shader = tr.sortedShaders[ ia->shaderNum ];
+					shader = ia->shader;
 					alphaTest = shader->alphaTest;
 
 					if ( entity->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) )
@@ -2489,7 +2489,7 @@ static void RB_RenderInteractionsShadowMapped()
 			iaLast = ia;
 			backEnd.currentEntity = entity = ia->entity;
 			surface = ia->surface;
-			shader = tr.sortedShaders[ ia->shaderNum ];
+			shader = ia->shader;
 			alphaTest = shader->alphaTest;
 
 			if ( !shader->interactLight )

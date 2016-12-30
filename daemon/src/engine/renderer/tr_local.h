@@ -1607,6 +1607,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 	{
 		trRefEntity_t *entity;
 		surfaceType_t *surface; // any of surface*_t
+		shader_t      *shader;
 		uint64_t      sort;
 
 		inline int index() const {
@@ -1684,6 +1685,7 @@ static inline void halfToFloat( const f16vec4_t in, vec4_t out )
 
 		trRefEntity_t        *entity;
 		surfaceType_t        *surface; // any of surface*_t
+		shader_t             *shader;
 		int                  shaderNum;
 
 		byte                 cubeSideBits;

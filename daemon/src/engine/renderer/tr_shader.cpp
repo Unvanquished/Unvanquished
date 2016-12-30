@@ -4015,88 +4015,6 @@ static void CollapseStages()
 // *INDENT-ON*
 
 /*
-=============
-
-FixRenderCommandList
-https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=493
-Arnout: this is a nasty issue. Shaders can be registered after drawsurfaces are generated
-but before the frame is rendered. This will, for the duration of one frame, cause drawsurfaces
-to be rendered with bad shaders. To fix this, need to go through all render commands and fix
-sortedIndex.
-==============
-*/
-static void FixRenderCommandList( int newShader )
-{
-	renderCommandList_t *cmdList = &backEndData[ tr.smpFrame ]->commands;
-
-	if ( cmdList )
-	{
-		const void *curCmd = cmdList->cmds;
-
-		while ( 1 )
-		{
-			switch ( * ( const int * ) curCmd )
-			{
-				case Util::ordinal(renderCommand_t::RC_SET_COLOR):
-					{
-						const setColorCommand_t *sc_cmd = ( const setColorCommand_t * ) curCmd;
-
-						curCmd = ( const void * )( sc_cmd + 1 );
-						break;
-					}
-
-				case Util::ordinal(renderCommand_t::RC_STRETCH_PIC):
-					{
-						const stretchPicCommand_t *sp_cmd = ( const stretchPicCommand_t * ) curCmd;
-
-						curCmd = ( const void * )( sp_cmd + 1 );
-						break;
-					}
-
-				case Util::ordinal(renderCommand_t::RC_DRAW_VIEW):
-					{
-						int                     i;
-						drawSurf_t              *drawSurf;
-
-						const drawViewCommand_t *dv_cmd = ( const drawViewCommand_t * ) curCmd;
-
-						for ( i = 0, drawSurf = dv_cmd->viewParms.drawSurfs; i < dv_cmd->viewParms.numDrawSurfs; i++, drawSurf++ )
-						{
-							if ( drawSurf->shaderNum() >= newShader )
-							{
-								drawSurf->setSort( drawSurf->shaderNum() + 1, drawSurf->lightmapNum(), drawSurf->entityNum(), drawSurf->fogNum(), drawSurf->index() );
-							}
-						}
-
-						curCmd = ( const void * )( dv_cmd + 1 );
-						break;
-					}
-
-				case Util::ordinal(renderCommand_t::RC_DRAW_BUFFER):
-					{
-						const drawBufferCommand_t *db_cmd = ( const drawBufferCommand_t * ) curCmd;
-
-						curCmd = ( const void * )( db_cmd + 1 );
-						break;
-					}
-
-				case Util::ordinal(renderCommand_t::RC_SWAP_BUFFERS):
-					{
-						const swapBuffersCommand_t *sb_cmd = ( const swapBuffersCommand_t * ) curCmd;
-
-						curCmd = ( const void * )( sb_cmd + 1 );
-						break;
-					}
-
-				case Util::ordinal(renderCommand_t::RC_END_OF_LIST):
-				default:
-					return;
-			}
-		}
-	}
-}
-
-/*
 ==============
 SortNewShader
 
@@ -4126,10 +4044,6 @@ static void SortNewShader()
 		tr.sortedShaders[ i + 1 ] = tr.sortedShaders[ i ];
 		tr.sortedShaders[ i + 1 ]->sortedIndex++;
 	}
-
-	// Arnout: fix rendercommandlist
-	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=493
-	FixRenderCommandList( i + 1 );
 
 	newShader->sortedIndex = i + 1;
 	tr.sortedShaders[ i + 1 ] = newShader;

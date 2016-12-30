@@ -1479,7 +1479,7 @@ static bool SurfBoxIsOffscreen(const drawSurf_t *drawSurf, screenRect_t& surfRec
 	}
 
 	tr.currentEntity = drawSurf->entity;
-	shader = tr.sortedShaders[drawSurf->shaderNum()];
+	shader = drawSurf->shader;
 	shader = (shader->remappedShader) ? shader->remappedShader : shader;
 
 	// deforms need tess subsystem for support
@@ -1613,7 +1613,7 @@ static bool SurfIsOffscreen( const drawSurf_t *drawSurf, screenRect_t& surfRect 
 	}
 
 	tr.currentEntity = drawSurf->entity;
-	shader = tr.sortedShaders[ drawSurf->shaderNum() ];
+	shader = drawSurf->shader;
 
 	// rotate if necessary
 	if ( tr.currentEntity != &tr.worldEntity )
@@ -1960,6 +1960,7 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int lightmapNum, i
 
 	drawSurf->entity = tr.currentEntity;
 	drawSurf->surface = surface;
+	drawSurf->shader = shader;
 
 	int entityNum;
 
@@ -2037,7 +2038,7 @@ static void R_SortDrawSurfs()
 	for ( i = 0; i < tr.viewParms.numDrawSurfs; i++ )
 	{
 		drawSurf = &tr.viewParms.drawSurfs[ i ];
-		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
+		shader = drawSurf->shader;
 
 		// no shader should ever have this sort type
 		if ( shader->sort == Util::ordinal(shaderSort_t::SS_BAD) )
@@ -2062,7 +2063,7 @@ static void R_SortDrawSurfs()
 	      i < tr.viewParms.firstDrawSurf[ Util::ordinal(shaderSort_t::SS_PORTAL) + 1 ]; i++ )
 	{
 		drawSurf = &tr.viewParms.drawSurfs[ i ];
-		shader = tr.sortedShaders[ drawSurf->shaderNum() ];
+		shader = drawSurf->shader;
 
 		// if the mirror was completely clipped away, we may need to check another surface
 		if ( R_MirrorViewBySurface( drawSurf ) )

@@ -918,6 +918,7 @@ bool R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, shader_
 	ia->light = light;
 	ia->entity = tr.currentEntity;
 	ia->surface = surface;
+	ia->shader = surfaceShader;
 	ia->shaderNum = surfaceShader->sortedIndex;
 
 	ia->cubeSideBits = cubeSideBits;
