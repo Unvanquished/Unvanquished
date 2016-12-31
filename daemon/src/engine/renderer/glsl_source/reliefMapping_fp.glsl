@@ -34,12 +34,14 @@ layout(std140) uniform u_Lights {
 #define GetLight(idx, component) lights[idx].component
 #else
 uniform sampler2D u_Lights;
-#define center_radius_offset   0
-#define color_type_offset      1
-#define direction_angle_offset 2
 #define idxToTC( idx, w, h ) vec2( floor( ( idx * ( 1.0 / w ) ) + 0.5 ) * ( 1.0 / h ), \
 				   fract( ( idx + 0.5 ) * (1.0 / w ) ) )
-#define GetLight(idx, component) texture2D( u_Lights, idxToTC(3 * idx + component##_offset, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) )
+const struct GetLightOffsets {
+  int center_radius;
+  int color_type;
+  int direction_angle;
+} getLightOffsets = GetLightOffsets(0, 1, 2);
+#define GetLight(idx, component) texture2D( u_Lights, idxToTC(3 * idx + getLightOffsets.component, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) )
 #endif
 
 uniform int u_numLights;
