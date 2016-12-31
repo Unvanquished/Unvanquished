@@ -102,7 +102,12 @@ void	main()
 
 	for(int i = 0; i < offsets.length(); i++) {
 		vec2 of;
-		if ( (int(gl_FragCoord.x - gl_FragCoord.y) & 1) != 0 )
+#if __VERSION__ > 120
+		int checker = int(gl_FragCoord.x - gl_FragCoord.y) & 1;
+#else
+		int checker = int(mod(gl_FragCoord.x - gl_FragCoord.y, 2.0));
+#endif
+    		if ( checker != 0 )
 			of = offsets[i].xy;
 		else
 			of = offsets[i].zw;
