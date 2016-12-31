@@ -47,7 +47,7 @@ lights/stormy1
 lights/ambientLight
 {
 	ambientLight
-	lightFalloffImage	lights/mkintsquarelight1a
+	lightFalloffImage	lights/squarelight1a
 	{
 		forceHighQuality
 		map lights/squarelight1
@@ -59,7 +59,7 @@ lights/ambientLight
 lights/ambientLight2
 {
 	ambientLight
-	lightFalloffImage	lights/mkintsquarelight1a
+	lightFalloffImage	lights/squarelight1a
 	{
 		forceHighQuality
 		map lights/squarelight
@@ -270,7 +270,7 @@ lights/defaultDynamicLight
 {
 	{
 		stage attenuationMapZ
-		map lights/mkintsquarelight1a
+		map lights/squarelight1a
 		edgeClamp
 	}
 	{
@@ -286,7 +286,7 @@ lights/defaultPointLight
 {
 	// this will also be the falloff for any
 	// point light shaders that don't specify one
-	lightFalloffImage	lights/mkintsquarelight1a
+	lightFalloffImage	lights/squarelight1a
 	{
 		stage attenuationMapXY
 		forceHighQuality
@@ -302,7 +302,7 @@ lights/defaultProjectedLight
 //	lightFalloffImage	_noFalloff
 
 //	lightFalloffImage	lights/skyline1
-	lightFalloffImage	lights/mkintsquarelight1b
+	lightFalloffImage	lights/squarelight1b
 //	lightFalloffImage	makeintensity(lights/flashoff)
 
 	{
@@ -317,7 +317,7 @@ lights/defaultProjectedLight
 
 lights/roqVideoLight
 {
-	lightFalloffImage	lights/mkintsquarelight1b
+	lightFalloffImage	lights/squarelight1b
 //	lightFalloffImage	lights/skyline1
 //	lightFalloffImage	_noFalloff
 	{
@@ -351,7 +351,7 @@ lights/flashLight
 {
 //	lightFalloffImage	_noFalloff
 //	lightFalloffImage	lights/skyline1
-	lightFalloffImage	lights/mkintsquarelight1b
+	lightFalloffImage	lights/squarelight1b
 
 	{
 		stage attenuationMapXY
@@ -364,7 +364,7 @@ lights/flashLight
 
 lights/flashLight1
 {
-	lightFalloffImage	lights/mkintsquarelight1b
+	lightFalloffImage	lights/squarelight1b
 
 	{
 		stage attenuationMapXY
@@ -377,7 +377,7 @@ lights/flashLight1
 
 lights/roundFire
 {
-	lightFalloffImage	lights/mkintsquarelight1a
+	lightFalloffImage	lights/squarelight1a
 	{
 		stage attenuationMapXY
 		forceHighQuality
@@ -393,7 +393,7 @@ lights/roundFire
 lights/volumetricLight
 {
 	volumetricLight
-	lightFalloffImage	lights/mkintsquarelight1a
+	lightFalloffImage	lights/squarelight1a
 
 	{
 		stage attenuationMapXY
@@ -406,7 +406,7 @@ lights/volumetricLight
 
 lights/shadowProjectedLight
 {
-	lightFalloffImage	lights/mkintsquarelight1b
+	lightFalloffImage	lights/squarelight1b
 
 	{
 		stage attenuationMapXY
