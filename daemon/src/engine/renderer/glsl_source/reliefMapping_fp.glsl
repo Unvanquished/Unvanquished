@@ -102,7 +102,7 @@ const int lightsPerLayer = 16;
 uniform usampler3D u_LightTiles;
 #define idxs_t uvec4
 idxs_t fetchIdxs( in vec3 coords ) {
-  return texture( u_LightTiles, coords );
+  return texture3D( u_LightTiles, coords );
 }
 int nextIdx( inout idxs_t idxs ) {
   uvec4 tmp = ( idxs & uvec4( 3 ) ) * uvec4( 0x40, 0x10, 0x04, 0x01 );
