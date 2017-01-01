@@ -52,8 +52,8 @@ light GetLight(in int idx) {
 #else
 uniform sampler2D u_Lights;
 vec2 idxToTC( in int idx, int w, int h ) {
-  return idxToTC( idx, w, h ) vec2( ( float(idx) + 0.5 ) * ( 1.0 / (w * h) ),
-				    ( float(idx) + 0.5 ) * ( 1.0 / w ) );
+  return vec2( ( float(idx) + 0.5 ) * ( 1.0 / (w * h) ),
+               ( float(idx) + 0.5 ) * ( 1.0 / w ) );
 }
 light GetLight(in int idx) {
   light result; vec4 component;
