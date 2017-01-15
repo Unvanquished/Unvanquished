@@ -1609,15 +1609,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 			return;
 		}
 
-		if ( lf->old_animationNumber <= 0 )
-		{
-			// skip initial / invalid blending
-			lf->blendlerp = 0.0f;
-			return;
-		}
-
 		// TODO: blend through two blendings!
-
 		if ( ( lf->blendlerp <= 0.0f ) )
 		{
 			lf->blendlerp = 1.0f;
@@ -1627,9 +1619,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 			lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
 		}
 
-		oldSkeleton = *skel;
-
-		if ( lf->old_animation->handle )
+		if ( lf->old_animation->handle && oldSkeleton.numBones == skel->numBones )
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
@@ -1674,8 +1664,6 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		animChanged = true;
 	}
 
-	CG_RunLerpFrame( lf, speedScale );
-
 	if ( ci->md5 )
 	{
 		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
@@ -1685,6 +1673,10 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 		if( ci->team != TEAM_NONE )
 			CG_BuildAnimSkeleton( lf, skel, &oldSkeleton );
+	}
+	else
+	{
+		CG_RunLerpFrame( lf, speedScale );
 	}
 }
 
@@ -1831,20 +1823,14 @@ CG_PlayerMD5Animation
 
 static void CG_PlayerMD5Animation( centity_t *cent )
 {
-	clientInfo_t *ci;
-	int          clientNum;
-	float        speedScale;
-
-	clientNum = cent->currentState.clientNum;
+	int          clientNum = cent->currentState.clientNum;;
+	clientInfo_t *ci = &cgs.clientinfo[ clientNum ];;
+	float        speedScale = 1.0f;
 
 	if ( cg_noPlayerAnims.integer )
 	{
 		return;
 	}
-
-	speedScale = 1;
-
-	ci = &cgs.clientinfo[ clientNum ];
 
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE )
@@ -3110,7 +3096,7 @@ void CG_Player( centity_t *cent )
 		VectorCopy( cent->lerpAngles, angles );
 	}
 
-	//normalise the pitch
+	// normalise the pitch
 	if ( angles[ PITCH ] < -180.0f )
 	{
 		angles[ PITCH ] += 360.0f;
