@@ -1260,7 +1260,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 
 	lf->animationNumber = newAnimation;
 	toggle = newAnimation & ANIM_TOGGLEBIT;
-	newAnimation &= ~ANIM_TOGGLEBIT;
+	newAnimation = CG_AnimNumber( newAnimation );
 
 	if ( newAnimation < 0 || newAnimation >= MAX_WEAPON_ANIMATIONS )
 	{
@@ -1984,8 +1984,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 	{
 		// get clientinfo for animation map
 		ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, !wi->md5 ? cent->pe.torso.animationNumber & ~ANIM_TOGGLEBIT : -1 );
-		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, !wi->md5 ? cent->pe.torso.animationNumber & ~ANIM_TOGGLEBIT : -1 );
+		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
+		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
 		hand.backlerp = cent->pe.torso.backlerp;
 	}
 

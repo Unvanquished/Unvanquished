@@ -25,6 +25,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ===============
+CG_AnimNumber
+
+Gives the raw animation number removing the togglebit and forcebit if they are present.
+===============
+*/
+int CG_AnimNumber( int anim )
+{
+	return anim & ~( ANIM_TOGGLEBIT | ANIM_FORCEBIT );
+}
+
+/*
+===============
 CG_RunLerpFrame
 
 cg.time should be between oldFrameTime and frameTime after exit

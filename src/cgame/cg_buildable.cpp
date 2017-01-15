@@ -939,7 +939,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 {
 	buildable_t           buildable = (buildable_t) cent->currentState.modelindex;
 	lerpFrame_t           *lf = &cent->lerpFrame;
-	buildableAnimNumber_t newAnimation = (buildableAnimNumber_t) ( cent->buildableAnim & ~( ANIM_TOGGLEBIT | ANIM_FORCEBIT ) );
+	buildableAnimNumber_t newAnimation = static_cast<buildableAnimNumber_t>( CG_AnimNumber( cent->buildableAnim  ) );
 
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
@@ -1737,7 +1737,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		return;
 
 	// hack for shrunken barricades
-	anim = es->torsoAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
+	anim = CG_AnimNumber( es->torsoAnim );
 
 	if ( es->modelindex == BA_A_BARRICADE &&
 	     ( anim == BANIM_DESTROYED || !( es->eFlags & EF_B_SPAWNED ) ) )

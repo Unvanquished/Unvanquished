@@ -56,7 +56,7 @@ bool HumanSkeletonRotations::ParseConfiguration(clientInfo_t* ci, const char* to
 void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
 {
 	// HACK: Stop taunt from clipping through the body.
-	int anim = ctx.es->torsoAnim & ~ANIM_TOGGLEBIT;
+	int anim = CG_AnimNumber( ctx.es->torsoAnim );
 	if ( anim >= TORSO_GESTURE_BLASTER && anim <= TORSO_GESTURE_CKIT )
 	{
 		quat_t rot;

@@ -101,7 +101,7 @@ CLIENT INFO
 ======================
 CG_ParseCharacterFile
 
-Read a configuration file containing body.md5mesh custom
+Read a configuration file containing legs.md5mesh custom
 models/players/visor/character.cfg, etc
 ======================
 */
@@ -800,7 +800,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		}
 
 		if ( ! ci->bodyModel ) {
-			Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
+			Com_sprintf( filename, sizeof( filename ), "models/players/%s/legs.md5mesh", modelName );
 			if ( CG_FileExists(filename) )
 			{
 				ci->bodyModel = trap_R_RegisterModel( filename );
@@ -1586,8 +1586,8 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 	lf->old_animation = lf->animation;
 
 	lf->animationNumber = newAnimation;
-	newAnimation &= ~ANIM_TOGGLEBIT;
-	int oldAnimation = lf->old_animationNumber & ~ANIM_TOGGLEBIT;
+	newAnimation = CG_AnimNumber( newAnimation );
+	int oldAnimation = CG_AnimNumber( lf->old_animationNumber );
 
 	if ( newAnimation < 0 || newAnimation >= MAX_PLAYER_TOTALANIMATIONS )
 	{
@@ -1747,13 +1747,12 @@ static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationN
 
 /*
 ===============
-CG_PlayerAnimation
+CG_SegmentAnimation
 ===============
 */
-static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float *legsBackLerp,
-                                int *torsoOld, int *torso, float *torsoBackLerp )
+static void CG_SegmentAnimation( centity_t *cent, lerpFrame_t *lf, int anim, int *oldFrame, int *frame, float *backlerp )
 {
-	clientInfo_t *ci;
+		clientInfo_t *ci;
 	int          clientNum;
 	float        speedScale = 1.0f;
 
@@ -1761,98 +1760,16 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 
 	if ( cg_noPlayerAnims.integer )
 	{
-		*legsOld = *legs = *torsoOld = *torso = 0;
+		*oldFrame = *frame = 0;
 		return;
 	}
 
 	ci = &cgs.clientinfo[ clientNum ];
+	CG_RunPlayerLerpFrame( ci, lf, anim, nullptr, speedScale );
 
-	// do the shuffle turn frames locally
-	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE )
-	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, nullptr, speedScale );
-	}
-	else
-	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, nullptr, speedScale );
-	}
-
-	*legsOld = cent->pe.legs.oldFrame;
-	*legs = cent->pe.legs.frame;
-	*legsBackLerp = cent->pe.legs.backlerp;
-
-	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, nullptr, speedScale );
-
-	*torsoOld = cent->pe.torso.oldFrame;
-	*torso = cent->pe.torso.frame;
-	*torsoBackLerp = cent->pe.torso.backlerp;
-}
-
-/*
-===============
-CG_PlayerNonSegAnimation
-===============
-*/
-static void CG_PlayerNonSegAnimation( centity_t *cent, int *nonSegOld,
-                                      int *nonSeg, float *nonSegBackLerp )
-{
-	clientInfo_t *ci;
-	int          clientNum;
-	float        speedScale = 1.0f;
-
-	clientNum = cent->currentState.clientNum;
-
-	if ( cg_noPlayerAnims.integer )
-	{
-		*nonSegOld = *nonSeg = 0;
-		return;
-	}
-
-	ci = &cgs.clientinfo[ clientNum ];
-
-	// do the shuffle turn frames locally
-	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
-	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, nullptr, speedScale );
-	}
-	else
-	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, nullptr, speedScale );
-	}
-
-	*nonSegOld = cent->pe.nonseg.oldFrame;
-	*nonSeg = cent->pe.nonseg.frame;
-	*nonSegBackLerp = cent->pe.nonseg.backlerp;
-}
-
-/*
-===============
-CG_PlayerMD5Animation
-===============
-*/
-
-static void CG_PlayerMD5Animation( centity_t *cent )
-{
-	int          clientNum = cent->currentState.clientNum;;
-	clientInfo_t *ci = &cgs.clientinfo[ clientNum ];;
-	float        speedScale = 1.0f;
-
-	if ( cg_noPlayerAnims.integer )
-	{
-		return;
-	}
-
-	// do the shuffle turn frames locally
-	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE )
-	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, &legsSkeleton, speedScale );
-	}
-	else
-	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, &legsSkeleton, speedScale );
-	}
-
-	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, &torsoSkeleton, speedScale );
+	*oldFrame = lf->oldFrame;
+	*frame = lf->frame;
+	*backlerp = lf->backlerp;
 }
 
 /*
@@ -1860,7 +1777,6 @@ static void CG_PlayerMD5Animation( centity_t *cent )
 CG_PlayerMD5AlienAnimation
 ===============
 */
-
 static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 {
 	clientInfo_t  *ci;
@@ -1880,14 +1796,14 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	ci = &cgs.clientinfo[ clientNum ];
 
 	// If we are attacking/taunting, and in motion, allow blending the two skeletons
-	if ( ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) >= NSPA_ATTACK1 &&
-	       ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_ATTACK3 ) ||
-	     ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_GESTURE )
+	if ( ( CG_AnimNumber( cent->currentState.legsAnim ) >= NSPA_ATTACK1 &&
+				CG_AnimNumber( cent->currentState.legsAnim ) <= NSPA_ATTACK3 ) ||
+				CG_AnimNumber( cent->currentState.legsAnim ) == NSPA_GESTURE )
 	{
 		blend.type = refSkeletonType_t::SK_RELATIVE; // Tell game to blend
 
-		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN &&
-			( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) != NSPA_GESTURE )
+		if( CG_AnimNumber( cent->pe.nonseg.animationNumber ) <= NSPA_TURN &&
+			CG_AnimNumber( cent->pe.nonseg.animationNumber ) != NSPA_GESTURE )
 		{
 			cent->pe.legs = cent->pe.nonseg;
 		}
@@ -1898,7 +1814,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	}
 
 	// do the shuffle turn frames locally
-	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
+	if ( cent->pe.nonseg.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == NSPA_STAND )
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, &legsSkeleton, speedScale );
 	}
@@ -2068,8 +1984,8 @@ static void CG_PlayerAngles( centity_t *cent, const vec3_t srcAngles,
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE ||
-	     ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
+	if ( CG_AnimNumber( cent->currentState.legsAnim ) != LEGS_IDLE ||
+	     CG_AnimNumber( cent->currentState.torsoAnim ) != TORSO_STAND )
 	{
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = true; // always center
@@ -2340,7 +2256,7 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != NSPA_STAND )
+	if ( CG_AnimNumber( cent->currentState.legsAnim ) != NSPA_STAND )
 	{
 		// if not standing still, always point all in the same direction
 		cent->pe.nonseg.yawing = true; // always center
@@ -3005,9 +2921,9 @@ void CG_Player( centity_t *cent )
 {
 	clientInfo_t *ci;
 
-	// NOTE: legs is used for nonsegmented models
+	// NOTE: legs is used for nonsegmented and skeletal models
 	//       this helps reduce code to be changed
-	refEntity_t legs, torso, body, head;
+	refEntity_t legs, torso, head;
 
 	int           clientNum;
 	int           renderfx;
@@ -3078,21 +2994,14 @@ void CG_Player( centity_t *cent )
 		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
 
-	if ( ci->skeletal )
-	{
-		memset( &body,    0, sizeof( body ) );
-	}
-	else
-	{
-		memset( &legs,    0, sizeof( legs ) );
-		memset( &torso,   0, sizeof( torso ) );
-		memset( &head,    0, sizeof( head ) );
-	}
+	memset( &legs,    0, sizeof( legs ) );
+	memset( &torso,   0, sizeof( torso ) );
+	memset( &head,    0, sizeof( head ) );
 
 	VectorCopy( cent->lerpAngles, angles );
 	AnglesToAxis( cent->lerpAngles, tempAxis );
 
-	//rotate lerpAngles to floor
+	// rotate lerpAngles to floor
 	if ( es->eFlags & EF_WALLCLIMB &&
 	     BG_RotateAxis( es->angles2, tempAxis, tempAxis2, true, es->eFlags & EF_WALLCLIMBCEILING ) )
 	{
@@ -3114,36 +3023,43 @@ void CG_Player( centity_t *cent )
 		vec3_t legsAngles, torsoAngles, headAngles;
 		vec3_t playerOrigin, mins, maxs;
 
+		// TODO: Don't use GENDER to differentiate between aliens and humans
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			CG_PlayerAngles( cent, angles, legsAngles, torsoAngles, headAngles );
-			AnglesToAxis( legsAngles, body.axis );
+			AnglesToAxis( legsAngles, legs.axis );
 		}
 		else
 		{
-			CG_PlayerNonSegAxis( cent, angles, body.axis );
+			CG_PlayerNonSegAxis( cent, angles, legs.axis );
 		}
 
-		AxisCopy( body.axis, tempAxis );
+		AxisCopy( legs.axis, tempAxis );
 
 		// rotate the legs axis to back to the wall
-		if ( es->eFlags & EF_WALLCLIMB && BG_RotateAxis( es->angles2, body.axis, tempAxis, false, es->eFlags & EF_WALLCLIMBCEILING ) )
+		if ( es->eFlags & EF_WALLCLIMB && BG_RotateAxis( es->angles2, legs.axis, tempAxis, false, es->eFlags & EF_WALLCLIMBCEILING ) )
 		{
-			AxisCopy( tempAxis, body.axis );
+			AxisCopy( tempAxis, legs.axis );
 		}
 
 		// smooth out WW transitions so the model doesn't hop around
-		CG_PlayerWWSmoothing( cent, body.axis, body.axis );
+		CG_PlayerWWSmoothing( cent, legs.axis, legs.axis );
 
 		AxisCopy( tempAxis, cent->pe.lastAxis );
 
 		// get the animation state (after rotation, to allow feet shuffle)
 		if ( ci->gender != GENDER_NEUTER )
 		{
-			CG_PlayerMD5Animation( cent );
+					bool yawing = cent->pe.legs.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == LEGS_IDLE;
+		CG_SegmentAnimation( cent, &cent->pe.legs, yawing ? LEGS_TURN : cent->currentState.legsAnim,
+												 &legs.oldframe, &legs.frame, &legs.backlerp );
+		CG_SegmentAnimation( cent, &cent->pe.torso, cent->currentState.torsoAnim,
+												 &torso.oldframe, &torso.frame, &torso.backlerp );
+
 		}
 		else
 		{
+			// Special code for blending alien skeletons.
 			CG_PlayerMD5AlienAnimation( cent );
 		}
 
@@ -3163,16 +3079,16 @@ void CG_Player( centity_t *cent )
 		renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
 
 		// add the body
-		body.hModel = ci->bodyModel;
-		body.customSkin = ci->bodySkin;
+		legs.hModel = ci->bodyModel;
+		legs.customSkin = ci->bodySkin;
 
-		if ( !body.hModel )
+		if ( !legs.hModel )
 		{
 			Log::Warn( "No body model for player %i", clientNum );
 			return;
 		}
 
-		body.renderfx = renderfx;
+		legs.renderfx = renderfx;
 
 		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
 
@@ -3196,42 +3112,42 @@ void CG_Player( centity_t *cent )
 			VectorMA( cent->lerpOrigin, 1.0f, surfNormal, start );
 			CG_CapTrace( &tr, start, nullptr, nullptr, end, es->number, MASK_PLAYERSOLID, 0 );
 
-			// if the trace misses completely then just use body.origin
+			// if the trace misses completely then just use legs.origin
 			// apparently capsule traces are "smaller" than box traces
 			if ( tr.fraction != 1.0f )
 			{
 				VectorCopy( tr.endpos, playerOrigin );
 
 				// MD5 player models have their model origin at (0 0 0)
-				VectorMA( playerOrigin, 0, surfNormal, body.origin );
+				VectorMA( playerOrigin, 0, surfNormal, legs.origin );
 			}
 			else
 			{
 				VectorCopy( cent->lerpOrigin, playerOrigin );
 
 				// MD5 player models have their model origin at (0 0 0)
-				VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, body.origin );
+				VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, legs.origin );
 			}
 
-			VectorCopy( body.origin, body.lightingOrigin );
-			VectorCopy( body.origin, body.oldorigin );  // don't positionally lerp at all
+			VectorCopy( legs.origin, legs.lightingOrigin );
+			VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 		}
 		else
 		{
 			VectorCopy( cent->lerpOrigin, playerOrigin );
-			VectorCopy( playerOrigin, body.origin );
-			body.origin[ 0 ] -= ci->headOffset[ 0 ];
-			body.origin[ 1 ] -= ci->headOffset[ 1 ];
-			body.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
+			VectorCopy( playerOrigin, legs.origin );
+			legs.origin[ 0 ] -= ci->headOffset[ 0 ];
+			legs.origin[ 1 ] -= ci->headOffset[ 1 ];
+			legs.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
 		}
 
-		VectorCopy( body.origin, body.lightingOrigin );
-		VectorCopy( body.origin, body.oldorigin );  // don't positionally lerp at all
+		VectorCopy( legs.origin, legs.lightingOrigin );
+		VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			// copy legs skeleton to have a base
-			body.skeleton = torsoSkeleton;
+			legs.skeleton = torsoSkeleton;
 			if ( torsoSkeleton.numBones != legsSkeleton.numBones )
 			{
 
@@ -3250,29 +3166,29 @@ void CG_Player( centity_t *cent )
 			ctx.legsSkeleton = &legsSkeleton;
 			for ( auto& mod : ci->modifiers )
 			{
-				mod->Apply( ctx, &body.skeleton );
+				mod->Apply( ctx, &legs.skeleton );
 			}
 
 		}
 		else
 		{
-			body.skeleton = legsSkeleton;
+			legs.skeleton = legsSkeleton;
 		}
 
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
-		CG_TransformSkeleton( &body.skeleton, ci->modelScale );
+		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
 
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
 		{
-			CG_AddPlayerWeapon( &body, nullptr, cent );
+			CG_AddPlayerWeapon( &legs, nullptr, cent );
 		}
 
-		CG_PlayerUpgrades( cent, &body );
+		CG_PlayerUpgrades( cent, &legs );
 
-		// add body to renderer
-		body.altShaderIndex = altShaderIndex;
-		trap_R_AddRefEntityToScene( &body );
+		// add skeletal model to renderer
+		legs.altShaderIndex = altShaderIndex;
+		trap_R_AddRefEntityToScene( &legs );
 
 		goto finish_up;
 
@@ -3305,12 +3221,17 @@ void CG_Player( centity_t *cent )
 	// get the animation state (after rotation, to allow feet shuffle)
 	if ( !ci->nonsegmented )
 	{
-		CG_PlayerAnimation( cent, &legs.oldframe, &legs.frame, &legs.backlerp,
-		                    &torso.oldframe, &torso.frame, &torso.backlerp );
+		bool yawing = cent->pe.legs.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == LEGS_IDLE;
+		CG_SegmentAnimation( cent, &cent->pe.legs, yawing ? LEGS_TURN : cent->currentState.legsAnim,
+												 &legs.oldframe, &legs.frame, &legs.backlerp );
+		CG_SegmentAnimation( cent, &cent->pe.torso, cent->currentState.torsoAnim,
+												 &torso.oldframe, &torso.frame, &torso.backlerp );
 	}
 	else
 	{
-		CG_PlayerNonSegAnimation( cent, &legs.oldframe, &legs.frame, &legs.backlerp );
+		bool yawing = cent->pe.legs.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == NSPA_STAND;
+		CG_SegmentAnimation( cent, &cent->pe.legs, yawing ? NSPA_TURN : cent->currentState.legsAnim,
+												 &legs.oldframe, &legs.frame, &legs.backlerp );
 	}
 
 	// add the talk baloon or disconnect icon
