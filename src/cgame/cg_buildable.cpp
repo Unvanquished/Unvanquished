@@ -871,8 +871,6 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	{
 		if ( bSkeleton.type != refSkeletonType_t::SK_INVALID )
 		{
-			oldbSkeleton = bSkeleton;
-
 			if ( lf->old_animation != nullptr && lf->old_animation->handle )
 			{
 				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
