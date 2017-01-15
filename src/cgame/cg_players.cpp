@@ -716,7 +716,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 {
 	char filename[ MAX_QPATH ];
 
-	if ( ci->md5 )
+	if ( ci->skeletal )
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/body_%s.skin", modelName, skinName );
 		ci->bodySkin = trap_R_RegisterSkin( filename );
@@ -813,15 +813,15 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 		if ( ci->bodyModel )
 		{
-			ci->md5 = true;
+			ci->skeletal = true;
 		}
 		else
 		{
-			ci->md5 = false;
+			ci->skeletal = false;
 		}
 	}
 
-	if ( ci->md5 )
+	if ( ci->skeletal )
 	{
 		int i, j;
 		// load the animations
@@ -1333,7 +1333,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->modelIcon = from->modelIcon;
 	to->bodyModel = from->bodyModel;
 	to->bodySkin = from->bodySkin;
-	to->md5 = from->md5;
+	to->skeletal = from->skeletal;
 	to->iqm = from->iqm;
 	to->modifiers = from->modifiers;
 
@@ -1598,7 +1598,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 	lf->animation = anim;
 
-	if ( ci->md5 )
+	if ( ci->skeletal )
 	{
 		debug_anim_current = lf->animationNumber;
 		debug_anim_old = lf->old_animationNumber;
@@ -1674,7 +1674,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		animChanged = true;
 	}
 
-	if ( ci->md5 )
+	if ( ci->skeletal )
 	{
 		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
 
@@ -3078,7 +3078,7 @@ void CG_Player( centity_t *cent )
 		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
 
-	if ( ci->md5 )
+	if ( ci->skeletal )
 	{
 		memset( &body,    0, sizeof( body ) );
 	}
@@ -3109,7 +3109,7 @@ void CG_Player( centity_t *cent )
 		angles[ PITCH ] += 360.0f;
 	}
 
-	if ( ci->md5 )
+	if ( ci->skeletal )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
 		vec3_t playerOrigin, mins, maxs;
@@ -3540,7 +3540,7 @@ void CG_Corpse( centity_t *cent )
 	BG_ClassBoundingBox( es->clientNum, liveZ, nullptr, nullptr, deadZ, deadMax );
 	origin[ 2 ] -= ( liveZ[ 2 ] - deadZ[ 2 ] );
 
-	if( ci->md5 )
+	if( ci->skeletal )
 	{
 		origin[ 0 ] -= ci->headOffset[ 0 ];
 		origin[ 1 ] -= ci->headOffset[ 1 ];
@@ -3563,7 +3563,7 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.oldframe = legs.frame = torso.oldframe = torso.frame = 0;
 	}
-	else if ( ci->md5 )
+	else if ( ci->skeletal )
 	{
 		if ( ci->gender == GENDER_NEUTER )
 		{
@@ -3614,7 +3614,7 @@ void CG_Corpse( centity_t *cent )
 	//
 	// add the legs
 	//
-	if ( ci->md5 )
+	if ( ci->skeletal )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
@@ -3642,7 +3642,7 @@ void CG_Corpse( centity_t *cent )
 	//rescale the model
 	scale = BG_ClassModelConfig( es->clientNum )->modelScale;
 
-	if ( scale != 1.0f && !ci->md5 )
+	if ( scale != 1.0f && !ci->skeletal )
 	{
 		VectorScale( legs.axis[ 0 ], scale, legs.axis[ 0 ] );
 		VectorScale( legs.axis[ 1 ], scale, legs.axis[ 1 ] );
@@ -3655,7 +3655,7 @@ void CG_Corpse( centity_t *cent )
 	trap_R_AddRefEntityToScene( &legs );
 
 	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
-	if ( !legs.hModel || ci->md5 )
+	if ( !legs.hModel || ci->skeletal )
 	{
 		CG_PlayerShadowEnd( );
 		return;
