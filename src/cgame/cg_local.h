@@ -2101,6 +2101,7 @@ bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmT
 //
 // cg_animation.c
 //
+int CG_AnimNumber( int anim );
 void CG_RunLerpFrame( lerpFrame_t *lf, float scale );
 void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, bool animChanged );
 void CG_BlendLerpFrame( lerpFrame_t *lf );
