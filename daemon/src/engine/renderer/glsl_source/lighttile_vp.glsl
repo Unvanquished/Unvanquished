@@ -22,11 +22,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* lighttile_vp.glsl */
 
-attribute vec2 attr_Position;
-attribute vec2 attr_TexCoord0;
+IN vec2 attr_Position;
+IN vec2 attr_TexCoord0;
 
-varying vec2 vPosition;
-varying vec2 vTexCoord;
+OUT(smooth) vec2 vPosition;
+OUT(smooth) vec2 vTexCoord;
 
 void main() {
   gl_Position = vec4(attr_Position, 0.0, 1.0);

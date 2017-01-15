@@ -25,19 +25,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_ColorMap;
 uniform float		u_AlphaThreshold;
 
-varying vec2		var_Tex;
-varying vec4		var_Color;
+IN(smooth) vec2		var_Tex;
+IN(smooth) vec4		var_Color;
 
 #if defined(USE_DEPTH_FADE) || defined(USE_VERTEX_SPRITE)
-varying vec2            var_FadeDepth;
+IN(smooth) vec2         var_FadeDepth;
 uniform sampler2D       u_DepthMap;
 #endif
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {

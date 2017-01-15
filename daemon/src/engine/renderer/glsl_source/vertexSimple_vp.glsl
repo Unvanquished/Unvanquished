@@ -23,9 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 struct localBasis {
 	vec3 normal;
-#if defined(USE_NORMAL_MAPPING)
 	vec3 tangent, binormal;
-#endif
 };
 
 vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
@@ -35,19 +33,17 @@ vec3 QuatTransVec(in vec4 quat, in vec3 vec) {
 
 void QTangentToLocalBasis( in vec4 qtangent, out localBasis LB ) {
 	LB.normal = QuatTransVec( qtangent, vec3( 0.0, 0.0, 1.0 ) );
-#if defined(USE_NORMAL_MAPPING)
 	LB.tangent = QuatTransVec( qtangent, vec3( 1.0, 0.0, 0.0 ) );
 	LB.tangent *= sign( qtangent.w );
 	LB.binormal = QuatTransVec( qtangent, vec3( 0.0, 1.0, 0.0 ) );
-#endif
 }
 
 #if !defined(USE_VERTEX_ANIMATION) && !defined(USE_VERTEX_SKINNING) && !defined(USE_VERTEX_SPRITE)
 
-attribute vec3 attr_Position;
-attribute vec4 attr_Color;
-attribute vec4 attr_QTangent;
-attribute vec4 attr_TexCoord0;
+IN vec3 attr_Position;
+IN vec4 attr_Color;
+IN vec4 attr_QTangent;
+IN vec4 attr_TexCoord0;
 
 void VertexFetch(out vec4 position,
 		 out localBasis normalBasis,

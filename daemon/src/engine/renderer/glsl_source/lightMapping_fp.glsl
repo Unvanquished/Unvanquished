@@ -31,29 +31,23 @@ uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuseGlow;
-varying vec4		var_TexNormalSpecular;
-varying vec2		var_TexLight;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec4		var_TexDiffuseGlow;
+IN(smooth) vec4		var_TexNormalSpecular;
+IN(smooth) vec2		var_TexLight;
 
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-varying vec3		var_Normal;
+IN(smooth) vec3		var_Tangent;
+IN(smooth) vec3		var_Binormal;
+IN(smooth) vec3		var_Normal;
 
-varying vec4		var_Color;
+IN(smooth) vec4		var_Color;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {
 	// compute view direction in world space
 	vec3 I = normalize(u_ViewOrigin - var_Position);
-
-#if defined(USE_NORMAL_MAPPING)
 
 	vec2 texDiffuse = var_TexDiffuseGlow.st;
 	vec2 texNormal = var_TexNormalSpecular.st;
@@ -109,49 +103,30 @@ void	main()
 	N.z = sqrt(1.0 - dot(N.xy, N.xy));
 	N = normalize(tangentToWorldMatrix * N);
 
-	// compute light direction in world space
-	vec3 L = (2.0 * (texture2D(u_DeluxeMap, var_TexLight).xyz - 0.5));
-	L = normalize(L);
-
 	// compute light color from world space lightmap
-	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
+	vec3 lightColor = texture2D(u_LightMap, var_TexLight).xyz;
 
-	// divide by cosine term to restore original light color
-	lightColor /= clamp(dot(normalize(var_Normal), L), 0.004, 1.0);
-
-	// compute final color
 	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
-	computeLight( L, N, I, lightColor, diffuse, specular, color );
 
-#else // USE_NORMAL_MAPPING
+	// compute light direction in world space
+	vec4 deluxe = texture2D(u_DeluxeMap, var_TexLight);
+	if( deluxe.w < 0.5 ) {
+		// normal/deluxe mapping is disabled
+		color.xyz += lightColor.xyz * diffuse.xyz;
+	} else {
+		vec3 L = 2.0 * deluxe.xyz - 1.0;
+		L = normalize(L);
 
-	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseGlow.st);
+		// divide by cosine term to restore original light color
+		lightColor /= clamp(dot(normalize(var_Normal), L), 0.004, 1.0);
 
-	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
-	{
-		discard;
-		return;
+		// compute final color
+		computeLight( L, N, I, lightColor, diffuse, specular, color );
 	}
-
-	vec3 N = normalize(var_Normal);
-
-	vec4 specular = vec4(0.0);
-
-	// compute light color from object space lightmap
-	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
-
-	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
-	computeLight( N, N, I, lightColor, diffuse, specular, color );
-#endif
-
-#if defined( USE_SHADER_LIGHTS )
 	computeDLights( var_Position, N, I, diffuse, specular, color );
-#endif
 
-#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, var_TexDiffuseGlow.pq).rgb;
-#endif
+
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 

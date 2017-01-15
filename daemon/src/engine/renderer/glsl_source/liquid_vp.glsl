@@ -22,21 +22,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* liquid_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec2 		attr_TexCoord0;
-attribute vec3		attr_Tangent;
-attribute vec3		attr_Binormal;
-attribute vec3		attr_Normal;
+IN vec3 		attr_Position;
+IN vec2 		attr_TexCoord0;
+IN vec3			attr_Tangent;
+IN vec3			attr_Binormal;
+IN vec3			attr_Normal;
 
 uniform mat4		u_NormalTextureMatrix;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
-varying vec3		var_Position;
-varying vec2		var_TexNormal;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-varying vec3		var_Normal;
+OUT(smooth) vec3	var_Position;
+OUT(smooth) vec2	var_TexNormal;
+OUT(smooth) vec3	var_Tangent;
+OUT(smooth) vec3	var_Binormal;
+OUT(smooth) vec3	var_Normal;
 
 void	main()
 {

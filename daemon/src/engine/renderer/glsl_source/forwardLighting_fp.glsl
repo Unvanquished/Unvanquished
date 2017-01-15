@@ -81,26 +81,17 @@ uniform mat4		u_ViewMatrix;
 
 uniform float		u_DepthScale;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuse;
-varying vec4		var_TexNormal;
-#if defined(USE_NORMAL_MAPPING)
-varying vec2		var_TexSpecular;
-#endif
-varying vec4		var_TexAttenuation;
-#if defined(USE_NORMAL_MAPPING)
-varying vec4		var_Tangent;
-varying vec4		var_Binormal;
-#endif
-varying vec4		var_Normal;
-//varying vec4		var_Color;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec4		var_TexDiffuse;
+IN(smooth) vec4		var_TexNormal;
+IN(smooth) vec2		var_TexSpecular;
+IN(smooth) vec4		var_TexAttenuation;
+IN(smooth) vec4		var_Tangent;
+IN(smooth) vec4		var_Binormal;
+IN(smooth) vec4		var_Normal;
+//IN(smooth) vec4	var_Color;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
-
+DECLARE_OUTPUT(vec4)
 
 /*
 ================
@@ -957,8 +948,6 @@ void	main()
 
 	vec2 texDiffuse = var_TexDiffuse.st;
 
-#if defined(USE_NORMAL_MAPPING)
-
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 
 	vec2 texNormal = var_TexNormal.st;
@@ -1005,13 +994,6 @@ void	main()
 	// transform normal into world space
 	N = normalize(tangentToWorldMatrix * N);
 
-
-#else // USE_NORMAL_MAPPING
-
-	vec3 N = normalize(var_Normal.xyz);
-
-#endif // USE_NORMAL_MAPPING
-
 	// compute the light term
 #if defined(r_WrapAroundLighting)
 	float NL = clamp(dot(N, L) + u_LightWrapAround, 0.0, 1.0) / clamp(1.0 + u_LightWrapAround, 0.0, 1.0);
@@ -1028,13 +1010,9 @@ void	main()
 	}
 	diffuse.rgb *= u_LightColor * NL;
 
-#if defined(USE_NORMAL_MAPPING)
 	// compute the specular term
 	vec4 spec = texture2D(u_SpecularMap, texSpecular).rgba;
 	vec3 specular = spec.rgb * u_LightColor * pow(clamp(dot(N, H), 0.0, 1.0), u_SpecularExponent.x * spec.a + u_SpecularExponent.y) * r_SpecularScale;
-#endif
-
-
 
 	// compute light attenuation
 #if defined(LIGHT_PROJ)
@@ -1053,9 +1031,7 @@ void	main()
 	// compute final color
 	vec4 color = diffuse;
 
-#if defined(USE_NORMAL_MAPPING)
 	color.rgb += specular;
-#endif
 
 #if !defined(LIGHT_DIRECTIONAL)
 	color.rgb *= attenuationXY;
@@ -1076,10 +1052,8 @@ void	main()
 #if 0
 #if defined(USE_PARALLAX_MAPPING)
 	outputColor = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
-#elif defined(USE_NORMAL_MAPPING)
-	outputColor = vec4(vec3(0.0, 0.0, 1.0), diffuse.a);
 #else
-	outputColor = vec4(vec3(0.0, 1.0, 0.0), diffuse.a);
+	outputColor = vec4(vec3(0.0, 0.0, 1.0), diffuse.a);
 #endif
 #endif
 

@@ -27,25 +27,19 @@ uniform sampler2D	u_NormalMap;
 uniform vec3		u_ViewOrigin;
 uniform mat4		u_ModelMatrix;
 
-varying vec3		var_Position;
-varying vec2		var_TexNormal;
-varying vec4		var_Tangent;
-varying vec4		var_Binormal;
-varying vec4		var_Normal;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec2		var_TexNormal;
+IN(smooth) vec4		var_Tangent;
+IN(smooth) vec4		var_Binormal;
+IN(smooth) vec4		var_Normal;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {
 	// compute incident ray in world space
 	vec3 I = normalize(var_Position - u_ViewOrigin);
 
-
-#if defined(USE_NORMAL_MAPPING)
 	// compute normal in tangent space from normalmap
 	vec3 N = texture2D(u_NormalMap, var_TexNormal.st).xyw;
 	N.x *= N.z;
@@ -60,11 +54,6 @@ void	main()
 
 	// transform normal into world space
 	N = normalize(tangentToWorldMatrix * N);
-
-#else
-
-	vec3 N = normalize(var_Normal.xyz);
-#endif
 
 	// compute reflection ray
 	vec3 R = reflect(I, N);

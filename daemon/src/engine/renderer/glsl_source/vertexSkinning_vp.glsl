@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #if defined(USE_VERTEX_SKINNING)
 
-attribute vec3 attr_Position;
-attribute vec2 attr_TexCoord0;
-attribute vec4 attr_Color;
-attribute vec4 attr_QTangent;
-attribute vec4 attr_BoneFactors;
+IN vec3 attr_Position;
+IN vec2 attr_TexCoord0;
+IN vec4 attr_Color;
+IN vec4 attr_QTangent;
+IN vec4 attr_BoneFactors;
 
 // even elements are rotation quat, odd elements are translation + scale (in .w)
 uniform vec4 u_Bones[ 2 * MAX_GLSL_BONES ];
@@ -52,47 +52,38 @@ void VertexFetch(out vec4 position,
 
 	position.xyz = weights.x * (QuatTransVec( quat, attr_Position ) * trans.w + trans.xyz);
 	LB.normal = weights.x * (QuatTransVec( quat, inLB.normal ));
-#if defined(USE_NORMAL_MAPPING)
 	LB.tangent = weights.x * (QuatTransVec( quat, inLB.tangent ));
 	LB.binormal = weights.x * (QuatTransVec( quat, inLB.binormal ));
-#endif
 	
 	quat = u_Bones[ idx.y ];
 	trans = u_Bones[ idx.y + 1 ];
 
 	position.xyz += weights.y * (QuatTransVec( quat, attr_Position ) * trans.w + trans.xyz);
 	LB.normal += weights.y * (QuatTransVec( quat, inLB.normal ));
-#if defined(USE_NORMAL_MAPPING)
 	LB.tangent += weights.y * (QuatTransVec( quat, inLB.tangent ));
 	LB.binormal += weights.y * (QuatTransVec( quat, inLB.binormal ));
-#endif
 
 	quat = u_Bones[ idx.z ];
 	trans = u_Bones[ idx.z + 1 ];
 
 	position.xyz += weights.z * (QuatTransVec( quat, attr_Position ) * trans.w + trans.xyz);
 	LB.normal += weights.z * (QuatTransVec( quat, inLB.normal ));
-#if defined(USE_NORMAL_MAPPING)
 	LB.tangent += weights.z * (QuatTransVec( quat, inLB.tangent ));
 	LB.binormal += weights.z * (QuatTransVec( quat, inLB.binormal ));
-#endif
 
 	quat = u_Bones[ idx.w ];
 	trans = u_Bones[ idx.w + 1 ];
 
 	position.xyz += weights.w * (QuatTransVec( quat, attr_Position ) * trans.w + trans.xyz);
 	LB.normal += weights.w * (QuatTransVec( quat, inLB.normal ));
-#if defined(USE_NORMAL_MAPPING)
 	LB.tangent += weights.w * (QuatTransVec( quat, inLB.tangent ));
 	LB.binormal += weights.w * (QuatTransVec( quat, inLB.binormal ));
-#endif
 
 	position.w = 1.0;
 	LB.normal   = normalize(LB.normal);
-#if defined(USE_NORMAL_MAPPING)
 	LB.tangent  = normalize(LB.tangent);
 	LB.binormal = normalize(LB.binormal);
-#endif
+
 	color    = attr_Color;
 	texCoord = attr_TexCoord0;
 	lmCoord  = attr_TexCoord0;

@@ -22,20 +22,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* refraction_C_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec3		attr_Normal;
+IN vec3 		attr_Position;
+IN vec3			attr_Normal;
 #if defined(r_VertexSkinning)
-attribute vec4		attr_BoneIndexes;
-attribute vec4		attr_BoneWeights;
-uniform int			u_VertexSkinning;
+IN vec4			attr_BoneIndexes;
+IN vec4			attr_BoneWeights;
+uniform int		u_VertexSkinning;
 uniform mat4		u_BoneMatrix[MAX_GLSL_BONES];
 #endif
 
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
-varying vec3		var_Position;
-varying vec3		var_Normal;
+OUT(smooth) vec3	var_Position;
+OUT(smooth) vec3	var_Normal;
 
 void	main()
 {

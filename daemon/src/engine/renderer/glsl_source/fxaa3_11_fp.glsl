@@ -26,9 +26,6 @@ kangz: This code has been set in the public domain by TIMOTHY LOTTES
 #define FXAA_PC 1
 #if __VERSION__ == 120
 #define FXAA_GLSL_120 1
-#ifdef GL_EXT_gpu_shader4
-#extension GL_EXT_gpu_shader4 : enable
-#endif     
 #else
 #define FXAA_GLSL_130 1
 #endif
@@ -306,17 +303,14 @@ A. Or use FXAA_GREEN_AS_LUMA.
 // 1 = GL API supports fast pixel offsets
 // 0 = do not use fast pixel offsets
 //
-#ifdef GL_EXT_gpu_shader4
+#ifdef HAVE_EXT_gpu_shader4
 #define FXAA_FAST_PIXEL_OFFSET 1
-#extension GL_EXT_gpu_shader4 : enable
 #endif
-#ifdef GL_NV_gpu_shader5
+#ifdef HAVE_NV_gpu_shader5
 #define FXAA_FAST_PIXEL_OFFSET 1
-#extension GL_NV_gpu_shader5 : enable
 #endif
-#ifdef GL_ARB_gpu_shader5
+#ifdef HAVE_ARB_gpu_shader5
 #define FXAA_FAST_PIXEL_OFFSET 1
-#extension GL_ARB_gpu_shader5 : enable
 #endif
 #ifndef FXAA_FAST_PIXEL_OFFSET
 #define FXAA_FAST_PIXEL_OFFSET 0
@@ -331,13 +325,11 @@ A. Or use FXAA_GREEN_AS_LUMA.
 #if (FXAA_HLSL_5 == 1)
 #define FXAA_GATHER4_ALPHA 1
 #endif
-#ifdef GL_ARB_gpu_shader5
+#ifdef HAVE_ARB_gpu_shader5
 #define FXAA_GATHER4_ALPHA 1
-#extension GL_ARB_gpu_shader5 : enable
 #endif
 #ifdef GL_NV_gpu_shader5
 #define FXAA_GATHER4_ALPHA 1
-#extension GL_NV_gpu_shader5 : enable
 #endif
 #ifndef FXAA_GATHER4_ALPHA
 #define FXAA_GATHER4_ALPHA 0
@@ -669,7 +661,7 @@ NOTE the other tuning knobs are now in the shader function inputs!
 // And at least,
 //  #extension GL_EXT_gpu_shader4 : enable
 //  (or set FXAA_FAST_PIXEL_OFFSET 1 to work like DX9)
-#ifdef GL_EXT_gpu_shader4
+#ifdef HAVE_EXT_gpu_shader4
 #define FxaaTexTop(t, p) texture2DLod(t, p, 0.0)
 #if (FXAA_FAST_PIXEL_OFFSET == 1)
 #define FxaaTexOff(t, p, o, r) texture2DLodOffset(t, p, 0.0, o)

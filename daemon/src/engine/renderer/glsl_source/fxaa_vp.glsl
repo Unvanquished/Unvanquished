@@ -24,7 +24,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 /* fxaa_vp.glsl */
 
-attribute vec3 		attr_Position;
+IN vec3 		attr_Position;
 
 void	main()
 {

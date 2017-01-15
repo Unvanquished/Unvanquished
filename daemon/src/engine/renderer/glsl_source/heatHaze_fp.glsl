@@ -26,14 +26,10 @@ uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_CurrentMap;
 uniform float		u_AlphaThreshold;
 
-varying vec2		var_TexNormal;
-varying float		var_Deform;
+IN(smooth) vec2		var_TexNormal;
+IN(smooth) float	var_Deform;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {

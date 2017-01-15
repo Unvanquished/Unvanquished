@@ -27,13 +27,9 @@ uniform sampler3D u_ColorMap;
 uniform vec4      u_ColorModulate;
 uniform float     u_InverseGamma;
 
-varying vec2		var_Tex;
+IN(smooth) vec2		var_Tex;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {

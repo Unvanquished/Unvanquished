@@ -31,8 +31,8 @@ uniform mat4		u_ModelViewProjectionMatrix;
 
 uniform float		u_DeformMagnitude;
 
-varying vec2		var_TexNormal;
-varying float		var_Deform;
+OUT(smooth) vec2	var_TexNormal;
+OUT(smooth) float	var_Deform;
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,

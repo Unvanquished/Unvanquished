@@ -21,8 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // reliefMapping_vp.glsl - Relief mapping helper functions
 
-#if defined( USE_SHADER_LIGHTS )
-
 struct light {
   vec4  center_radius;
   vec4  color_type;
@@ -36,16 +34,17 @@ layout(std140) uniform u_Lights {
 #define GetLight(idx, component) lights[idx].component
 #else
 uniform sampler2D u_Lights;
-#define center_radius_offset   0
-#define color_type_offset      1
-#define direction_angle_offset 2
 #define idxToTC( idx, w, h ) vec2( floor( ( idx * ( 1.0 / w ) ) + 0.5 ) * ( 1.0 / h ), \
 				   fract( ( idx + 0.5 ) * (1.0 / w ) ) )
-#define GetLight(idx, component) texture2D( u_Lights, idxToTC(3 * idx + component##_offset, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) )
+const struct GetLightOffsets {
+  int center_radius;
+  int color_type;
+  int direction_angle;
+} getLightOffsets = GetLightOffsets(0, 1, 2);
+#define GetLight(idx, component) texture2D( u_Lights, idxToTC(3 * idx + getLightOffsets.component, 64.0, float( 3 * MAX_REF_LIGHTS / 64 ) ) )
 #endif
 
 uniform int u_numLights;
-#endif
 
 uniform vec2 u_SpecularExponent;
 
@@ -98,14 +97,12 @@ void computeLight( vec3 lightDir, vec3 normal, vec3 eyeDir, vec3 lightColor,
 #endif
 }
 
-#if defined( USE_SHADER_LIGHTS )
-
-#if defined( TEXTURE_INTEGER ) && defined( HAVE_EXT_gpu_shader4 )
+#if defined( TEXTURE_INTEGER )
 const int lightsPerLayer = 16;
 uniform usampler3D u_LightTiles;
 #define idxs_t uvec4
 idxs_t fetchIdxs( in vec3 coords ) {
-  return texture( u_LightTiles, coords );
+  return texture3D( u_LightTiles, coords );
 }
 int nextIdx( inout idxs_t idxs ) {
   uvec4 tmp = ( idxs & uvec4( 3 ) ) * uvec4( 0x40, 0x10, 0x04, 0x01 );
@@ -133,32 +130,32 @@ void computeDLight( int idx, vec3 P, vec3 N, vec3 I, vec4 diffuse,
 		    vec4 specular, inout vec4 color ) {
   vec4 center_radius = GetLight( idx, center_radius );
   vec4 color_type = GetLight( idx, color_type );
+  vec3 L;
+  float attenuation;
 
   if( color_type.w == 0.0 ) {
-    // spot light
-    vec3 L = center_radius.xyz - P;
-    float attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
-    computeLight( normalize( L ), N, I,
-		  attenuation * attenuation * color_type.xyz,
-		  diffuse, specular, color );
+    // point light
+    L = center_radius.xyz - P;
+    attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
+    L = normalize(L);
   } else if( color_type.w == 1.0 ) {
     // spot light
     vec4 direction_angle = GetLight( idx, direction_angle );
-    vec3 L = center_radius.xyz - P;
-    float attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
+    L = center_radius.xyz - P;
+    attenuation = 1.0 / (1.0 + 8.0 * length(L) / center_radius.w);
     L = normalize( L );
 
-    if( dot( L, direction_angle.xyz ) > direction_angle.w ) {
-      computeLight( L, N, I,
-		    attenuation * attenuation * color_type.xyz,
-		    diffuse, specular, color );
+    if( dot( L, direction_angle.xyz ) <= direction_angle.w ) {
+      attenuation = 0.0;
     }
   } else if( color_type.w == 2.0 ) {
     // sun (directional) light
-    vec3 L = GetLight( idx, direction_angle ).xyz;
-    computeLight( L, N, I, color_type.xyz,
-		  diffuse, specular, color );
+    L = GetLight( idx, direction_angle ).xyz;
+    attenuation = 1.0;
   }
+  computeLight( L, N, I,
+		attenuation * attenuation * color_type.xyz,
+		diffuse, specular, color );
 }
 
 void computeDLights( vec3 P, vec3 N, vec3 I, vec4 diffuse, vec4 specular,
@@ -201,7 +198,6 @@ void computeDLights( vec3 P, vec3 N, vec3 I, vec4 diffuse, vec4 specular,
   }
 #endif
 }
-#endif
 
 #if defined(USE_PARALLAX_MAPPING)
 float RayIntersectDisplaceMap(vec2 dp, vec2 ds, sampler2D normalMap)

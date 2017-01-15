@@ -29,14 +29,10 @@ uniform float		u_FresnelPower;
 uniform float		u_FresnelScale;
 uniform float		u_FresnelBias;
 
-varying vec3		var_Position;
-varying vec3		var_Normal;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec3		var_Normal;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {

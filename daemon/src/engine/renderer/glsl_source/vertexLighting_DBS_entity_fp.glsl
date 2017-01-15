@@ -40,24 +40,16 @@ uniform sampler3D       u_LightGrid2;
 uniform vec3            u_LightGridOrigin;
 uniform vec3            u_LightGridScale;
 
-varying vec3		var_Position;
-varying vec2		var_TexDiffuse;
-varying vec4		var_Color;
-#if defined(USE_NORMAL_MAPPING)
-varying vec4		var_TexNormalSpecular;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-#endif
-#if defined(USE_GLOW_MAPPING)
-varying vec2		var_TexGlow;
-#endif
-varying vec3		var_Normal;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec2		var_TexDiffuse;
+IN(smooth) vec4		var_Color;
+IN(smooth) vec4		var_TexNormalSpecular;
+IN(smooth) vec3		var_Tangent;
+IN(smooth) vec3		var_Binormal;
+IN(smooth) vec2		var_TexGlow;
+IN(smooth) vec3		var_Normal;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 		   out vec3 ambCol, out vec3 lgtCol ) {
@@ -94,7 +86,6 @@ void	main()
 
 	vec2 texDiffuse = var_TexDiffuse.st;
 
-#if defined(USE_NORMAL_MAPPING)
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 
 	vec2 texNormal = var_TexNormalSpecular.xy;
@@ -158,15 +149,6 @@ void	main()
 
 #endif // USE_REFLECTIVE_SPECULAR
 
-
-#else // USE_NORMAL_MAPPING
-
-	vec3 N = normalize(var_Normal);
-
-	vec4 specBase = vec4(0.0);
-
-#endif // USE_NORMAL_MAPPING
-
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse) * var_Color;
 
@@ -186,17 +168,14 @@ void	main()
 	vec4 color = vec4(ambCol * r_AmbientScale * diffuse.xyz, diffuse.a);
 	computeLight( L, N, V, lgtCol, diffuse, specBase, color );
 
-#ifdef USE_SHADER_LIGHTS
 	computeDLights( var_Position, N, V, diffuse, specBase, color );
-#endif
 
 #if defined(r_RimLighting)
 	color.rgb += 0.7 * emission;
 #endif
 
-#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, var_TexGlow).rgb;
-#endif
+
 	// convert normal to [0,1] color space
 	N = N * 0.5 + 0.5;
 

@@ -38,25 +38,18 @@ uniform vec3            u_LightGridScale;
 
 uniform vec3		u_ViewOrigin;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuseGlow;
-varying vec4		var_Color;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec4		var_TexDiffuseGlow;
+IN(smooth) vec4		var_Color;
 
-#if defined(USE_NORMAL_MAPPING)
-varying vec4		var_TexNormalSpecular;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-#endif
+IN(smooth) vec4		var_TexNormalSpecular;
+IN(smooth) vec3		var_Tangent;
+IN(smooth) vec3		var_Binormal;
 
-varying vec3		var_Normal;
+IN(smooth) vec3		var_Normal;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
-#if defined(USE_NORMAL_MAPPING)
 void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 		   out vec3 ambCol, out vec3 lgtCol ) {
 	vec4 texel1 = texture3D(u_LightGrid1, pos);
@@ -76,7 +69,6 @@ void ReadLightGrid(in vec3 pos, out vec3 lgtDir,
 
 	lgtDir = normalize( lgtDir );
 }
-#endif
 
 void	main()
 {
@@ -84,7 +76,6 @@ void	main()
 	vec2 texGlow = var_TexDiffuseGlow.pq;
 	vec3 V = normalize(u_ViewOrigin - var_Position);
 
-#if defined(USE_NORMAL_MAPPING)
 	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyx);
 
 	vec3 L, ambCol, dirCol;
@@ -151,41 +142,9 @@ void	main()
 	vec4 color = vec4( ambCol * diffuse.xyz, diffuse.a );
 	computeLight( L, N, V, dirCol, diffuse, specular, color );
 
-#if defined(USE_SHADER_LIGHTS)
 	computeDLights( var_Position, N, V, diffuse, specular, color );
-#endif
 
-#if defined(USE_GLOW_MAPPING)
 	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
-#endif
 
 	outputColor = color;
-#else // USE_NORMAL_MAPPING
-
-	vec3 N = normalize(var_Normal);
-
-	// compute the diffuse term
-	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse) * var_Color;
-
-	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
-	{
-		discard;
-		return;
-	}
-
-	vec4 specular = vec4(0.0);
-
-	vec4 color = vec4( 0.0, 0.0, 0.0, diffuse.a );
-	computeLight( N, N, N, vec3(1.0), diffuse, specular, color );
-
-#if defined(USE_SHADER_LIGHTS)
-	computeDLights( var_Position, N, V, diffuse, specular, color );
-#endif
-
-#if defined(USE_GLOW_MAPPING)
-	color.rgb += texture2D(u_GlowMap, texGlow).rgb;
-#endif
-
-	outputColor = color;
-#endif
 }

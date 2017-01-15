@@ -35,21 +35,17 @@ uniform mat4		u_ModelViewProjectionMatrix;
 
 uniform float		u_Time;
 
-varying vec3		var_Position;
-varying vec4		var_TexDiffuse;
-varying vec4		var_TexNormal;
-#if defined(USE_NORMAL_MAPPING)
-varying vec2		var_TexSpecular;
-#endif
+OUT(smooth) vec3	var_Position;
+OUT(smooth) vec4	var_TexDiffuse;
+OUT(smooth) vec4	var_TexNormal;
+OUT(smooth) vec2	var_TexSpecular;
 
-varying vec4		var_TexAttenuation;
+OUT(smooth) vec4	var_TexAttenuation;
 
-#if defined(USE_NORMAL_MAPPING)
-varying vec4		var_Tangent;
-varying vec4		var_Binormal;
-#endif
-varying vec4		var_Normal;
-//varying vec4		var_Color;	// Tr3B - maximum vars reached
+OUT(smooth) vec4	var_Tangent;
+OUT(smooth) vec4	var_Binormal;
+OUT(smooth) vec4	var_Normal;
+//OUT(smooth) vec4	var_Color;	// Tr3B - maximum vars reached
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,
@@ -81,11 +77,8 @@ void	main()
 	// transform position into world space
 	var_Position = (u_ModelMatrix * position).xyz;
 
-#if defined(USE_NORMAL_MAPPING)
-	var_Tangent.xyz = (u_ModelMatrix * vec4(LB.tangent, 0.0)).xyz;
-	var_Binormal.xyz = (u_ModelMatrix * vec4(LB.binormal, 0.0)).xyz;
-#endif
-
+	var_Tangent.xyz = mat3(u_ModelMatrix) * LB.tangent;
+	var_Binormal.xyz = mat3(u_ModelMatrix) * LB.binormal;
 	var_Normal.xyz = mat3(u_ModelMatrix) * LB.normal;
 
 	// calc light xy,z attenuation in light space
@@ -94,13 +87,11 @@ void	main()
 	// transform diffusemap texcoords
 	var_TexDiffuse.xy = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
-#if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexNormal.xy = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
 	var_TexSpecular = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
-#endif
 
 	var_TexDiffuse.p = color.r;
 	var_TexNormal.pq = color.gb;

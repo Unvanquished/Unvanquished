@@ -28,11 +28,11 @@ uniform mat4		u_ModelViewProjectionMatrix;
 
 uniform float		u_Time;
 
-varying vec3		var_Position;
-varying vec2		var_TexNormal;
-varying vec4		var_Tangent;
-varying vec4		var_Binormal;
-varying vec4		var_Normal;
+OUT(smooth) vec3	var_Position;
+OUT(smooth) vec2	var_TexNormal;
+OUT(smooth) vec4	var_Tangent;
+OUT(smooth) vec4	var_Binormal;
+OUT(smooth) vec4	var_Normal;
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,
@@ -61,16 +61,11 @@ void	main()
 	// transform position into world space
 	var_Position = (u_ModelMatrix * position).xyz;
 
-#if defined(USE_NORMAL_MAPPING)
 	var_Tangent.xyz = (u_ModelMatrix * vec4(LB.tangent, 0.0)).xyz;
 	var_Binormal.xyz = (u_ModelMatrix * vec4(LB.binormal, 0.0)).xyz;
-#endif
-
 	var_Normal.xyz = (u_ModelMatrix * vec4(LB.normal, 0.0)).xyz;
 
-#if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexNormal = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
-#endif
 }
 

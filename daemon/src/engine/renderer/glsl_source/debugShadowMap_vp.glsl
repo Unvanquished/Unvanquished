@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* debugShadowMap_vp.glsl */
 
-attribute vec3 		attr_Position;
-attribute vec2 		attr_TexCoord0;
+IN vec3 		attr_Position;
+IN vec2 		attr_TexCoord0;
 
 uniform mat4		u_ModelViewProjectionMatrix;
 
-varying vec2		var_TexCoord;
+OUT(smooth) vec2	var_TexCoord;
 
 void	main()
 {

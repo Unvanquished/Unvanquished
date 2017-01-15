@@ -23,18 +23,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /* ssao_fp.glsl */
 
 uniform sampler2D u_DepthMap;
-varying vec3 unprojectionParams;
+IN(flat) vec3 unprojectionParams;
+
+DECLARE_OUTPUT(vec4)
 
 uniform vec3 u_zFar;
 
 const vec2 pixelScale = r_FBufScale;
 const float haloCutoff = 15.0;
-
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
 
 float depthToZ(float depth) {
 	return unprojectionParams.x / ( unprojectionParams.y * depth - unprojectionParams.z );
@@ -106,7 +102,12 @@ void	main()
 
 	for(int i = 0; i < offsets.length(); i++) {
 		vec2 of;
-		if ( (int(gl_FragCoord.x - gl_FragCoord.y) & 1) != 0 )
+#if __VERSION__ > 120
+		int checker = int(gl_FragCoord.x - gl_FragCoord.y) & 1;
+#else
+		int checker = int(mod(gl_FragCoord.x - gl_FragCoord.y, 2.0));
+#endif
+    		if ( checker != 0 )
 			of = offsets[i].xy;
 		else
 			of = offsets[i].zw;

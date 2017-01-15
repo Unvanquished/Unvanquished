@@ -46,7 +46,8 @@ enum class ShaderKind
 	External
 };
 
-struct GLShaderHeader
+// Header for saved shader binaries
+struct GLBinaryHeader
 {
 	unsigned int version;
 	unsigned int checkSum; // checksum of shader source this was built from
@@ -62,6 +63,31 @@ class GLUniform;
 class GLUniformBlock;
 class GLCompileMacro;
 class GLShaderManager;
+
+// represents a piece of GLSL code that can be copied verbatim into
+// GLShaders, like a .h file in C++
+class GLHeader
+{
+private:
+
+	std::string                    _name;
+	std::string                    _text;
+	GLShaderManager               *_shaderManager;
+
+public:
+	GLHeader() : _name(""), _text(""), _shaderManager(nullptr)
+	{}
+
+	GLHeader( const std::string &name, const std::string &text, GLShaderManager *manager ) :
+		_name( name ),
+		_text(text),
+		_shaderManager( manager )
+	{}
+
+	const std::string &getName() const { return _name; }
+	const std::string &getText() const { return _text; }
+	const GLShaderManager *getManager() const { return _shaderManager; }
+};
 
 class GLShader
 {
@@ -243,55 +269,25 @@ public:
 
 class GLShaderManager
 {
-	std::string _versionDeclaration;
 	std::queue< GLShader* > _shaderBuildQueue;
 	std::vector< GLShader* > _shaders;
 	std::unordered_map< std::string, int > _deformShaderLookup;
 	std::vector< GLint > _deformShaders;
 	int       _totalBuildTime;
 
-	void addExtension( int enabled, int minGlslVersion, int supported,
-			   const char *name ) {
-		if( !enabled ) {
-			// extension disabled by user
-		} else if( glConfig2.shadingLanguageVersion >= minGlslVersion ) {
-			// the extension is available in the core language
-			_versionDeclaration += Str::Format( "#define HAVE_%s 1\n", name );
-		} else if( supported ) {
-			// extension has to be explicitly enabled
-			_versionDeclaration += Str::Format( "#extension GL_%s : require\n", name );
-			_versionDeclaration += Str::Format( "#define HAVE_%s 1\n", name );
-		} else {
-			// extension is not supported
-		}
-	}
-
 public:
+	GLHeader GLVersionDeclaration;
+	GLHeader GLCompatHeader;
+	GLHeader GLVertexHeader;
+	GLHeader GLFragmentHeader;
+	GLHeader GLEngineConstants;
+
 	GLShaderManager() : _totalBuildTime( 0 )
 	{
 	}
 	~GLShaderManager();
 
-	std::string GetVersionDeclaration() {
-		if( _versionDeclaration.size() == 0 ) {
-			const char *profile = "";
-
-			if( glConfig2.shadingLanguageVersion >= 150 ) {
-				profile = glConfig2.glCoreProfile ? "core" : "compatibility";
-			}
-			_versionDeclaration = Str::Format( "#version %d %s\n", glConfig2.shadingLanguageVersion, profile );
-
-			// add supported GLSL extensions
-			addExtension( r_arb_texture_gather->integer, 400,
-				      GLEW_ARB_texture_gather, "ARB_texture_gather" );
-			addExtension( r_ext_gpu_shader4->integer, 130,
-				      GLEW_EXT_gpu_shader4, "EXT_gpu_shader4" );
-			addExtension( r_arb_uniform_buffer_object->integer, 140,
-				      GLEW_ARB_uniform_buffer_object, "ARB_uniform_buffer_object" );
-		}
-
-		return _versionDeclaration;
-	}
+	void GenerateBuiltinHeaders();
 
 	template< class T >
 	void load( T *& shader )
@@ -315,7 +311,8 @@ private:
 	bool LoadShaderBinary( GLShader *shader, size_t permutation );
 	void SaveShaderBinary( GLShader *shader, size_t permutation );
 	GLuint CompileShader( Str::StringRef programName, Str::StringRef shaderText,
-			      int shaderTextSize, GLenum shaderType ) const;
+			      std::initializer_list<const GLHeader *> headers,
+			      GLenum shaderType ) const;
 	void CompileGPUShaders( GLShader *shader, shaderProgram_t *program,
 				const std::string &compileMacros );
 	void CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
@@ -783,14 +780,11 @@ protected:
 	  USE_VERTEX_SPRITE,
 	  USE_TCGEN_ENVIRONMENT,
 	  USE_TCGEN_LIGHTMAP,
-	  USE_NORMAL_MAPPING,
 	  USE_PARALLAX_MAPPING,
 	  USE_REFLECTIVE_SPECULAR,
 	  USE_SHADOWING,
 	  LIGHT_DIRECTIONAL,
-	  USE_GLOW_MAPPING,
 	  USE_DEPTH_FADE,
-	  USE_SHADER_LIGHTS,
 	  USE_PHYSICAL_SHADING,
 	  USE_ALPHA_TESTING
 	};
@@ -1076,53 +1070,6 @@ public:
 	}
 };
 
-class GLCompileMacro_USE_NORMAL_MAPPING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_NORMAL_MAPPING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_NORMAL_MAPPING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return EGLCompileMacro::USE_NORMAL_MAPPING;
-	}
-
-	uint32_t        GetRequiredVertexAttributes() const
-	{
-		return ATTR_QTANGENT;
-	}
-
-	void EnableNormalMapping()
-	{
-		EnableMacro();
-	}
-
-	void DisableNormalMapping()
-	{
-		DisableMacro();
-	}
-
-	void SetNormalMapping( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
 class GLCompileMacro_USE_PARALLAX_MAPPING :
 	GLCompileMacro
 {
@@ -1141,8 +1088,6 @@ public:
 	{
 		return EGLCompileMacro::USE_PARALLAX_MAPPING;
 	}
-
-	bool MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
 
 	void EnableParallaxMapping()
 	{
@@ -1185,8 +1130,6 @@ public:
 	{
 		return EGLCompileMacro::USE_REFLECTIVE_SPECULAR;
 	}
-
-	bool MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
 
 	void EnableReflectiveSpecular()
 	{
@@ -1295,48 +1238,6 @@ public:
 	}
 };
 
-class GLCompileMacro_USE_GLOW_MAPPING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_GLOW_MAPPING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_GLOW_MAPPING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return EGLCompileMacro::USE_GLOW_MAPPING;
-	}
-
-	void EnableMacro_USE_GLOW_MAPPING()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_USE_GLOW_MAPPING()
-	{
-		DisableMacro();
-	}
-
-	void SetGlowMapping( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
 class GLCompileMacro_USE_DEPTH_FADE :
 	GLCompileMacro
 {
@@ -1380,48 +1281,6 @@ public:
 	}
 };
 
-class GLCompileMacro_USE_SHADER_LIGHTS :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_SHADER_LIGHTS( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_SHADER_LIGHTS";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_SHADER_LIGHTS;
-	}
-
-	void EnableMacro_USE_SHADER_LIGHTS()
-	{
-		EnableMacro();
-	}
-
-	void DisableMacro_USE_SHADER_LIGHTS()
-	{
-		DisableMacro();
-	}
-
-	void SetShaderLights( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
 class GLCompileMacro_USE_PHYSICAL_SHADING :
 	GLCompileMacro
 {
@@ -1440,8 +1299,6 @@ public:
 	{
 		return USE_PHYSICAL_SHADING;
 	}
-
-	bool MissesRequiredMacros( size_t permutation, const std::vector< GLCompileMacro * > &macros ) const;
 
 	void EnableMacro_USE_PHYSICAL_SHADING()
 	{
@@ -2478,10 +2335,7 @@ class GLShader_lightMapping :
 	public u_numLights,
 	public u_Lights,
 	public GLDeformStage,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
-	public GLCompileMacro_USE_GLOW_MAPPING,
-	public GLCompileMacro_USE_SHADER_LIGHTS,
 	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
@@ -2514,11 +2368,8 @@ class GLShader_vertexLighting_DBS_entity :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_REFLECTIVE_SPECULAR,
-	public GLCompileMacro_USE_GLOW_MAPPING,
-	public GLCompileMacro_USE_SHADER_LIGHTS,
 	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
@@ -2549,10 +2400,7 @@ class GLShader_vertexLighting_DBS_world :
 	public u_numLights,
 	public u_Lights,
 	public GLDeformStage,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
-	public GLCompileMacro_USE_GLOW_MAPPING,
-	public GLCompileMacro_USE_SHADER_LIGHTS,
 	public GLCompileMacro_USE_PHYSICAL_SHADING
 {
 public:
@@ -2589,7 +2437,6 @@ class GLShader_forwardLighting_omniXYZ :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
 {
@@ -2628,7 +2475,6 @@ class GLShader_forwardLighting_projXYZ :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
 {
@@ -2669,7 +2515,6 @@ class GLShader_forwardLighting_directionalSun :
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
 {
@@ -2714,8 +2559,7 @@ class GLShader_reflection :
 	public u_VertexInterpolation,
 	public GLDeformStage,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
-	public GLCompileMacro_USE_VERTEX_ANIMATION,
-	public GLCompileMacro_USE_NORMAL_MAPPING //,
+	public GLCompileMacro_USE_VERTEX_ANIMATION
 {
 public:
 	GLShader_reflection( GLShaderManager *manager );

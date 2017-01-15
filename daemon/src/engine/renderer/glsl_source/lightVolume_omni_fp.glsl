@@ -43,14 +43,10 @@ uniform float       u_LightScale;
 uniform mat4		u_LightAttenuationMatrix;
 uniform mat4		u_UnprojectMatrix;
 
-varying vec2		var_TexDiffuse;
-varying vec3		var_TexAttenXYZ;
+IN(smooth) vec2		var_TexDiffuse;
+IN(smooth) vec3		var_TexAttenXYZ;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 void	main()
 {

@@ -23,17 +23,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /* depthtile1_fp.glsl */
 
 uniform sampler2D u_DepthMap;
-varying vec3 unprojectionParams;
+IN(flat) vec3 unprojectionParams;
 
 uniform vec3 u_zFar;
 
 const vec2 pixelScale = r_FBufScale;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 vec4 depthToZ(in vec4 depth) {
   return unprojectionParams.x / ( unprojectionParams.y * depth - unprojectionParams.z );

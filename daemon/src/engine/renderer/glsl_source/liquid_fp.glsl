@@ -43,17 +43,13 @@ uniform sampler3D       u_LightGrid2;
 uniform vec3            u_LightGridOrigin;
 uniform vec3            u_LightGridScale;
 
-varying vec3		var_Position;
-varying vec2		var_TexNormal;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-varying vec3		var_Normal;
+IN(smooth) vec3		var_Position;
+IN(smooth) vec2		var_TexNormal;
+IN(smooth) vec3		var_Tangent;
+IN(smooth) vec3		var_Binormal;
+IN(smooth) vec3		var_Normal;
 
-#if __VERSION__ > 120
-out vec4 outputColor;
-#else
-#define outputColor gl_FragColor
-#endif
+DECLARE_OUTPUT(vec4)
 
 #if defined(USE_PARALLAX_MAPPING)
 float RayIntersectDisplaceMap(vec2 dp, vec2 ds)

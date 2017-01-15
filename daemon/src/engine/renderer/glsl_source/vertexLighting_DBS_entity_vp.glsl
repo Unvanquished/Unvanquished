@@ -31,19 +31,15 @@ uniform mat4		u_ModelViewProjectionMatrix;
 
 uniform float		u_Time;
 
-varying vec3		var_Position;
-varying vec2		var_TexDiffuse;
-varying vec4		var_Color;
-#if defined(USE_NORMAL_MAPPING)
-varying vec4		var_TexNormalSpecular;
-varying vec3		var_Tangent;
-varying vec3		var_Binormal;
-#endif
-#if defined(USE_GLOW_MAPPING)
-varying vec2		var_TexGlow;
-#endif
+OUT(smooth) vec3	var_Position;
+OUT(smooth) vec2	var_TexDiffuse;
+OUT(smooth) vec4	var_Color;
+OUT(smooth) vec4	var_TexNormalSpecular;
+OUT(smooth) vec3	var_Tangent;
+OUT(smooth) vec3	var_Binormal;
+OUT(smooth) vec2	var_TexGlow;
 
-varying vec3		var_Normal;
+OUT(smooth) vec3	var_Normal;
 
 void DeformVertex( inout vec4 pos,
 		   inout vec3 normal,
@@ -72,24 +68,19 @@ void	main()
 	// transform position into world space
 	var_Position = (u_ModelMatrix * position).xyz;
 
-#if defined(USE_NORMAL_MAPPING)
 	var_Tangent.xyz = (u_ModelMatrix * vec4(LB.tangent, 0.0)).xyz;
 	var_Binormal.xyz = (u_ModelMatrix * vec4(LB.binormal, 0.0)).xyz;
-#endif
-
 	var_Normal.xyz = (u_ModelMatrix * vec4(LB.normal, 0.0)).xyz;
+
 	// transform diffusemap texcoords
 	var_TexDiffuse = (u_DiffuseTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 	var_Color = color;
 
-#if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexNormalSpecular.xy = (u_NormalTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
 
 	// transform specularmap texture coords
 	var_TexNormalSpecular.zw = (u_SpecularTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
-#endif
-#if defined(USE_GLOW_MAPPING)
+
 	var_TexGlow = (u_GlowTextureMatrix * vec4(texCoord, 0.0, 1.0)).st;
-#endif
 }

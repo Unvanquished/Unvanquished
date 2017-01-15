@@ -105,6 +105,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	cvar_t      *r_arb_sync;
 	cvar_t      *r_arb_uniform_buffer_object;
 	cvar_t      *r_arb_texture_gather;
+	cvar_t      *r_arb_gpu_shader5;
 
 	cvar_t      *r_ignoreGLErrors;
 	cvar_t      *r_logFile;
@@ -645,28 +646,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	RB_TakeScreenshotCmd
 	==================
 	*/
-	const void     *RB_TakeScreenshotCmd( const void *data )
+	const RenderCommand *ScreenshotCommand::ExecuteSelf( ) const
 	{
-		const screenshotCommand_t *cmd;
-
-		cmd = ( const screenshotCommand_t * ) data;
-
-		switch ( cmd->format )
+		switch ( format )
 		{
 			case ssFormat_t::SSF_TGA:
-				RB_TakeScreenshot( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName );
+				RB_TakeScreenshot( x, y, width, height, fileName );
 				break;
 
 			case ssFormat_t::SSF_JPEG:
-				RB_TakeScreenshotJPEG( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName );
+				RB_TakeScreenshotJPEG( x, y, width, height, fileName );
 				break;
 
 			case ssFormat_t::SSF_PNG:
-				RB_TakeScreenshotPNG( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName );
+				RB_TakeScreenshotPNG( x, y, width, height, fileName );
 				break;
 		}
 
-		return ( const void * )( cmd + 1 );
+		return this + 1;
 	}
 
 	/*
@@ -677,10 +674,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	void R_TakeScreenshot( const char *name, ssFormat_t format )
 	{
 		static char         fileName[ MAX_OSPATH ]; // bad things may happen if two screenshots per frame are taken.
-		screenshotCommand_t *cmd;
+		ScreenshotCommand  *cmd;
 		int                 lastNumber;
 
-		cmd = ( screenshotCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
+		cmd = R_GetRenderCommand<ScreenshotCommand>();
 
 		if ( !cmd )
 		{
@@ -720,7 +717,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 		Log::Notice("Wrote %s", fileName );
 
-		cmd->commandId = renderCommand_t::RC_SCREENSHOT;
 		cmd->x = 0;
 		cmd->y = 0;
 		cmd->width = glConfig.vidWidth;
@@ -759,9 +755,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	RB_TakeVideoFrameCmd
 	==================
 	*/
-	const void     *RB_TakeVideoFrameCmd( const void *data )
+	const RenderCommand *VideoFrameCommand::ExecuteSelf( ) const
 	{
-		const videoFrameCommand_t *cmd;
 		GLint                     packAlign;
 		int                       lineLen, captureLineLen;
 		byte                      *pixels;
@@ -769,8 +764,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		int                       outputSize;
 		int                       j;
 		int                       aviLineLen;
-
-		cmd = ( const videoFrameCommand_t * ) data;
 
 		// RB: it is possible to we still have a videoFrameCommand_t but we already stopped
 		// video recording
@@ -780,47 +773,47 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 			glGetIntegerv( GL_PACK_ALIGNMENT, &packAlign );
 
-			lineLen = cmd->width * 3;
+			lineLen = width * 3;
 			captureLineLen = PAD( lineLen, packAlign );
 
-			pixels = ( byte * ) PADP( cmd->captureBuffer, packAlign );
-			glReadPixels( 0, 0, cmd->width, cmd->height, GL_RGB, GL_UNSIGNED_BYTE, pixels );
+			pixels = ( byte * ) PADP( captureBuffer, packAlign );
+			glReadPixels( 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels );
 
-			if ( cmd->motionJpeg )
+			if ( motionJpeg )
 			{
 				// Drop alignment and line padding bytes
-				for ( i = 0; i < cmd->height; ++i )
+				for ( i = 0; i < height; ++i )
 				{
-					memmove( cmd->captureBuffer + i * lineLen, pixels + i * captureLineLen, lineLen );
+					memmove( captureBuffer + i * lineLen, pixels + i * captureLineLen, lineLen );
 				}
 
-				outputSize = SaveJPGToBuffer( cmd->encodeBuffer, 3 * cmd->width * cmd->height, 90, cmd->width, cmd->height, cmd->captureBuffer );
-				ri.CL_WriteAVIVideoFrame( cmd->encodeBuffer, outputSize );
+				outputSize = SaveJPGToBuffer( encodeBuffer, 3 * width * height, 90, width, height, captureBuffer );
+				ri.CL_WriteAVIVideoFrame( encodeBuffer, outputSize );
 			}
 			else
 			{
 				aviLineLen = PAD( lineLen, AVI_LINE_PADDING );
 
-				for ( i = 0; i < cmd->height; ++i )
+				for ( i = 0; i < height; ++i )
 				{
 					for ( j = 0; j < lineLen; j += 3 )
 					{
-						cmd->encodeBuffer[ i * aviLineLen + j + 0 ] = pixels[ i * captureLineLen + j + 2 ];
-						cmd->encodeBuffer[ i * aviLineLen + j + 1 ] = pixels[ i * captureLineLen + j + 1 ];
-						cmd->encodeBuffer[ i * aviLineLen + j + 2 ] = pixels[ i * captureLineLen + j + 0 ];
+						encodeBuffer[ i * aviLineLen + j + 0 ] = pixels[ i * captureLineLen + j + 2 ];
+						encodeBuffer[ i * aviLineLen + j + 1 ] = pixels[ i * captureLineLen + j + 1 ];
+						encodeBuffer[ i * aviLineLen + j + 2 ] = pixels[ i * captureLineLen + j + 0 ];
 					}
 
 					while ( j < aviLineLen )
 					{
-						cmd->encodeBuffer[ i * aviLineLen + j++ ] = 0;
+						encodeBuffer[ i * aviLineLen + j++ ] = 0;
 					}
 				}
 
-				ri.CL_WriteAVIVideoFrame( cmd->encodeBuffer, aviLineLen * cmd->height );
+				ri.CL_WriteAVIVideoFrame( encodeBuffer, aviLineLen * height );
 			}
 		}
 
-		return ( const void * )( cmd + 1 );
+		return this + 1;
 	}
 
 //============================================================================
@@ -1088,6 +1081,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		r_arb_sync = ri.Cvar_Get( "r_arb_sync", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_uniform_buffer_object = ri.Cvar_Get( "r_arb_uniform_buffer_object", "1", CVAR_CHEAT | CVAR_LATCH );
 		r_arb_texture_gather = ri.Cvar_Get( "r_arb_texture_gather", "1", CVAR_CHEAT | CVAR_LATCH );
+		r_arb_gpu_shader5 = ri.Cvar_Get( "r_arb_gpu_shader5", "1", CVAR_CHEAT | CVAR_LATCH );
 
 		r_collapseStages = ri.Cvar_Get( "r_collapseStages", "1", CVAR_LATCH | CVAR_CHEAT );
 		r_picmip = ri.Cvar_Get( "r_picmip", "0",  CVAR_LATCH | CVAR_ARCHIVE );
