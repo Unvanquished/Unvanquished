@@ -101,7 +101,7 @@ CLIENT INFO
 ======================
 CG_ParseCharacterFile
 
-Read a configuration file containing legs.md5mesh custom
+Read a configuration file containing body.md5mesh custom
 models/players/visor/character.cfg, etc
 ======================
 */
@@ -800,7 +800,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		}
 
 		if ( ! ci->bodyModel ) {
-			Com_sprintf( filename, sizeof( filename ), "models/players/%s/legs.md5mesh", modelName );
+			Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
 			if ( CG_FileExists(filename) )
 			{
 				ci->bodyModel = trap_R_RegisterModel( filename );
@@ -1750,9 +1750,9 @@ static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationN
 CG_SegmentAnimation
 ===============
 */
-static void CG_SegmentAnimation( centity_t *cent, lerpFrame_t *lf, int anim, int *oldFrame, int *frame, float *backlerp )
+static void CG_SegmentAnimation( centity_t *cent, lerpFrame_t *lf, refSkeleton_t *skel, int anim, int *oldFrame, int *frame, float *backlerp )
 {
-		clientInfo_t *ci;
+	clientInfo_t *ci;
 	int          clientNum;
 	float        speedScale = 1.0f;
 
@@ -1765,7 +1765,7 @@ static void CG_SegmentAnimation( centity_t *cent, lerpFrame_t *lf, int anim, int
 	}
 
 	ci = &cgs.clientinfo[ clientNum ];
-	CG_RunPlayerLerpFrame( ci, lf, anim, nullptr, speedScale );
+	CG_RunPlayerLerpFrame( ci, lf, anim, skel, speedScale );
 
 	*oldFrame = lf->oldFrame;
 	*frame = lf->frame;
@@ -3051,9 +3051,9 @@ void CG_Player( centity_t *cent )
 		if ( ci->gender != GENDER_NEUTER )
 		{
 					bool yawing = cent->pe.legs.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == LEGS_IDLE;
-		CG_SegmentAnimation( cent, &cent->pe.legs, yawing ? LEGS_TURN : cent->currentState.legsAnim,
+		CG_SegmentAnimation( cent, &cent->pe.legs, &legsSkeleton, yawing ? LEGS_TURN : cent->currentState.legsAnim,
 												 &legs.oldframe, &legs.frame, &legs.backlerp );
-		CG_SegmentAnimation( cent, &cent->pe.torso, cent->currentState.torsoAnim,
+		CG_SegmentAnimation( cent, &cent->pe.torso, &torsoSkeleton, cent->currentState.torsoAnim,
 												 &torso.oldframe, &torso.frame, &torso.backlerp );
 
 		}
@@ -3222,15 +3222,15 @@ void CG_Player( centity_t *cent )
 	if ( !ci->nonsegmented )
 	{
 		bool yawing = cent->pe.legs.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == LEGS_IDLE;
-		CG_SegmentAnimation( cent, &cent->pe.legs, yawing ? LEGS_TURN : cent->currentState.legsAnim,
+		CG_SegmentAnimation( cent, &cent->pe.legs, nullptr, yawing ? LEGS_TURN : cent->currentState.legsAnim,
 												 &legs.oldframe, &legs.frame, &legs.backlerp );
-		CG_SegmentAnimation( cent, &cent->pe.torso, cent->currentState.torsoAnim,
+		CG_SegmentAnimation( cent, &cent->pe.torso, nullptr, cent->currentState.torsoAnim,
 												 &torso.oldframe, &torso.frame, &torso.backlerp );
 	}
 	else
 	{
 		bool yawing = cent->pe.legs.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == NSPA_STAND;
-		CG_SegmentAnimation( cent, &cent->pe.legs, yawing ? NSPA_TURN : cent->currentState.legsAnim,
+		CG_SegmentAnimation( cent, &cent->pe.legs, nullptr, yawing ? NSPA_TURN : cent->currentState.legsAnim,
 												 &legs.oldframe, &legs.frame, &legs.backlerp );
 	}
 
