@@ -1651,8 +1651,8 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 	// HACK: If the previous animation was crouch and we are crouching, the frame number will be 0,
 	//       but we want the model to still be crouching so we should actually be at the last frame.
-	if ( oldAnimation == LEGS_IDLECR && ( newAnimation == LEGS_BACKCR ||
-			newAnimation == LEGS_WALKCR ) )
+	if ( newAnimation == LEGS_IDLECR && ( oldAnimation == LEGS_BACKCR ||
+			oldAnimation == LEGS_WALKCR ) )
 	{
 		lf->frame = lf->oldFrame = lf->animation->numFrames - 1;
 		lf->animationTime = lf->frameTime + anim->initialLerp;
