@@ -87,7 +87,7 @@ typedef struct
 	botNavCmd_t nav;
 } botMemory_t;
 
-bool G_BotAdd( char *name, team_t team, int skill, const char* behavior );
+bool G_BotAdd( const char *name, team_t team, int skill, const char* behavior );
 bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
 void     G_BotDel( int clientNum );
 void     G_BotDelAllBots();

@@ -217,7 +217,7 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 	return true;
 }
 
-bool G_BotAdd( char *name, team_t team, int skill, const char *behavior )
+bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior )
 {
 	int clientNum;
 	char userinfo[MAX_INFO_STRING];
