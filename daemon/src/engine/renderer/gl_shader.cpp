@@ -1022,8 +1022,8 @@ GLuint GLShaderManager::CompileShader( Str::StringRef programName,
 				       GLenum shaderType ) const
 {
 	GLuint shader = glCreateShader( shaderType );
-	const GLchar *texts[headers.size() + 1];
-	GLint lengths[headers.size() + 1];
+	std::vector<const GLchar*> texts(headers.size() + 1);
+	std::vector<GLint> lengths(headers.size() + 1);
 	int i;
 
 	i = 0;
@@ -1040,7 +1040,7 @@ GLuint GLShaderManager::CompileShader( Str::StringRef programName,
 
 	GL_CheckErrors();
 
-	glShaderSource( shader, i, texts, lengths );
+	glShaderSource( shader, i, texts.data(), lengths.data() );
 
 	// compile shader
 	glCompileShader( shader );
