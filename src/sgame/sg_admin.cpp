@@ -5593,7 +5593,7 @@ bool G_admin_bot( gentity_t *ent )
 	int clientNum;
 
 	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)\n"
-	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
+	                                        "            bot del [^5name|all^7]\n"
 	                                        "            bot names [^5aliens|humans^7] [^5names…^7]\n"
 	                                        "            bot names [^5clear|list^7]" ) );
 
@@ -5693,74 +5693,6 @@ bool G_admin_bot( gentity_t *ent )
 		{
 			G_BotDel( clientNum ); //delete the bot
 		}
-	}
-	else if ( !Q_stricmp( arg1, "spec" ) )
-	{
-		RETURN_IF_INTERMISSION;
-
-		clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
-		if ( !Q_stricmp( name, "all" ) )
-		{
-			for ( i = 0; i < MAX_CLIENTS; i++ )
-			{
-				if ( g_entities[i].r.svFlags & SVF_BOT )
-				{
-					G_ChangeTeam( &g_entities[i], TEAM_NONE );
-				}
-			}
-			return true;
-		}
-
-		if ( clientNum == -1 )
-		{
-			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
-			return false;
-		}
-		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
-		{
-			G_ChangeTeam( &g_entities[clientNum], TEAM_NONE );
-		}
-		else
-		{
-			ADMP( QQ( N_( "%s is not a bot" ) ) );
-		}
-	}
-	else if ( !Q_stricmp( arg1, "unspec" ) )
-	{
-		RETURN_IF_INTERMISSION;
-
-		clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
-		if ( !Q_stricmp( name, "all" ) )
-		{
-			for ( i = 0; i < MAX_CLIENTS; i++ )
-			{
-				if ( g_entities[i].r.svFlags & SVF_BOT && g_entities[i].client->pers.team == TEAM_NONE )
-				{
-					G_ChangeTeam( &g_entities[i], g_entities[i].botMind->botTeam );
-				}
-			}
-			return true;
-		}
-
-		if ( clientNum == -1 )
-		{
-			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
-			return false;
-		}
-
-		if ( !( g_entities[clientNum].r.svFlags & SVF_BOT ) )
-		{
-			ADMP( QQ( N_( "%s is not a bot" ) ) );
-			return false;
-		}
-
-		if ( g_entities[clientNum].client->pers.team != TEAM_NONE )
-		{
-			ADMP( QQ( N_( "%s is not on spectators" ) ) );
-			return false;
-		}
-
-		G_ChangeTeam( &g_entities[clientNum], g_entities[clientNum].botMind->botTeam );
 	}
 	else if ( !Q_stricmp( arg1, "names" ) )
 	{

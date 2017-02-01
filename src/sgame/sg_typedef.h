@@ -99,7 +99,6 @@ typedef enum {
 	VOTE_NEXT_MAP,
 	VOTE_POLL,
 	VOTE_BOT_KICK,
-	VOTE_BOT_SPECTATE
 } voteType_t;
 
 #endif // SG_TYPEDEF_H_
