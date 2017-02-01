@@ -513,22 +513,18 @@ void G_BotInit()
 	}
 }
 
-void G_BotCleanup( int restart )
+void G_BotCleanup()
 {
-	if ( !restart )
+	for ( int i = 0; i < MAX_CLIENTS; ++i )
 	{
-		int i;
-
-		for ( i = 0; i < MAX_CLIENTS; ++i )
+		if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
 		{
-			if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
-			{
-				G_BotDel( i );
-			}
+			G_BotDel( i );
 		}
-
-		G_BotClearNames();
 	}
+
+	G_BotClearNames();
+
 	FreeTreeList( &treeList );
 	G_BotNavCleanup();
 }

@@ -100,5 +100,5 @@ int      G_BotAddNames(team_t team, int arg, int last);
 void     G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void     G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void     G_BotInit();
-void     G_BotCleanup(int restart);
+void     G_BotCleanup();
 #endif
