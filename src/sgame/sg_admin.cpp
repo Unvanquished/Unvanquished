@@ -5582,6 +5582,7 @@ void G_admin_cleanup()
 static void BotUsage( gentity_t *ent )
 {
 	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add (<name> | *) (aliens | humans) [<skill level> [<behavior>]]\n"
+	                                        "            bot fill <count> [<team> [<skill level>]]\n"
 	                                        "            bot del (<name> | all)\n"
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)" ) );
@@ -5601,6 +5602,8 @@ static int BotSkillFromString( gentity_t* ent, const char* s )
 
 static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 {
+	RETURN_IF_INTERMISSION;
+
 	if ( args.Argc() < 4 || args.Argc() > 6 )
 	{
 		BotUsage( ent );
@@ -5629,10 +5632,10 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 	}
 	else
 	{
-		skill = 5;
+		skill = BOT_DEFAULT_SKILL;
 	}
 
-	const char* behavior = args.Argc() >= 6 ? args[5].data() : "default";
+	const char* behavior = args.Argc() >= 6 ? args[5].data() : BOT_DEFAULT_BEHAVIOR;
 
 	bool result = G_BotAdd( name, team, skill, behavior );
 	if ( !result )
@@ -5640,6 +5643,41 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 		ADMP( QQ( N_( "Can't add a bot" ) ) );
 	}
 	return result;
+}
+
+static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
+{
+	if (args.Argc() < 3 || args.Argc() > 5)
+	{
+		BotUsage( ent );
+		return false;
+	}
+	int count = atoi( args[2].data() );
+	std::vector<team_t> teams;
+	if ( args.Argc() >= 4 )
+	{
+		team_t team = BG_PlayableTeamFromString(args[3].data());
+		if (team == team_t::TEAM_NONE)
+		{
+			BotUsage( ent );
+			return false;
+		}
+		teams = { team };
+	}
+	else
+	{
+		teams = { team_t::TEAM_ALIENS, team_t::TEAM_HUMANS };
+	}
+	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : BOT_DEFAULT_SKILL;
+	
+	for (team_t team : teams)
+	{
+		level.team[team].botFillTeamSize = count;
+		level.team[team].botFillSkillLevel = skill;
+	}
+
+	G_BotFill(true);
+	return true;
 }
 
 bool G_admin_bot( gentity_t *ent )
@@ -5654,8 +5692,11 @@ bool G_admin_bot( gentity_t *ent )
 
 	if ( !Q_stricmp( arg1, "add" ) )
 	{
-		RETURN_IF_INTERMISSION;
 		return BotAddCmd( ent, args );
+	}
+	else if ( !Q_stricmp( arg1, "fill" ) )
+	{
+		return BotFillCmd( ent, args );
 	}
 	else if ( !Q_stricmp( arg1, "del" ) && args.Argc() == 3 )
 	{

@@ -1341,18 +1341,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	// count current clients and rank for scoreboard
 	CalculateRanks();
 
-	// if this is after !restart keepteams or !restart switchteams, apply said selection
-	if ( client->sess.restartTeam != TEAM_NONE )
-	{
-//		G_ChangeTeam( ent, client->sess.restartTeam );
-//		client->sess.restartTeam = TEAM_NONE;
-	}
-	else if ( team != TEAM_NONE )
-	{
-//		G_ChangeTeam( ent, team );
-		client->sess.restartTeam = team;
-	}
-
 	return nullptr;
 }
 

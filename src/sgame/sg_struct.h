@@ -490,6 +490,8 @@ struct clientPersistant_s
 
 	// warnings in the ban log
 	bool            hasWarnings;
+
+	bool isFillerBot;
 };
 
 struct unlagged_s
@@ -754,6 +756,8 @@ struct level_locals_s
 		bool             locked;
 		float            momentum;
 		int              layoutBuildPoints;
+		int              botFillTeamSize;
+		int              botFillSkillLevel;
 	} team[ NUM_TEAMS ];
 
 	struct {

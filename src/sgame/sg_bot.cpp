@@ -217,7 +217,7 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 	return true;
 }
 
-bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior )
+bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler )
 {
 	int clientNum;
 	char userinfo[MAX_INFO_STRING];
@@ -244,7 +244,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior )
 	bot->r.svFlags |= SVF_BOT;
 	bot->inuse = true;
 
-	if ( !Q_stricmp( name, "*" ) )
+	if ( !Q_stricmp( name, BOT_NAME_FROM_LIST ) )
 	{
 		name = G_BotSelectName( team );
 		autoname = name != nullptr;
@@ -292,6 +292,8 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior )
 
 	ClientBegin( clientNum );
 	bot->pain = BotPain; // ClientBegin resets the pain function
+	level.clients[clientNum].pers.isFillerBot = filler;
+	G_ChangeTeam( bot, team );
 	return true;
 }
 
@@ -340,6 +342,11 @@ void G_BotDelAllBots()
 	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
 	{
 		botNames[TEAM_HUMANS].name[i].inUse = false;
+	}
+
+	for (team_t team : {TEAM_ALIENS, TEAM_HUMANS})
+	{
+		level.team[team].botFillTeamSize = 0;
 	}
 }
 
@@ -492,11 +499,6 @@ void G_BotSpectatorThink( gentity_t *self )
 
 		G_PushSpawnQueue( &level.team[ teamnum ].spawnQueue, clientNum );
 	}
-	else
-	{
-		G_ChangeTeam( self, self->client->sess.restartTeam );
-		self->client->sess.restartTeam = TEAM_NONE;
-	}
 }
 
 void G_BotIntermissionThink( gclient_t *client )
@@ -527,4 +529,38 @@ void G_BotCleanup()
 
 	FreeTreeList( &treeList );
 	G_BotNavCleanup();
+}
+
+// add or remove bots to match team size targets set by 'bot fill' command
+void G_BotFill(bool immediately)
+{
+	static int nextCheck = 0;
+	if (!immediately && level.time < nextCheck) {
+		return;  // don't check every frame to prevent warning spam
+	}
+	nextCheck = level.time + 2000;
+
+	for (team_t team : {TEAM_ALIENS, TEAM_HUMANS}) {
+		auto& t = level.team[team];
+		int teamSize = t.numClients;
+		if (teamSize > t.botFillTeamSize && t.numBots > 0) {
+			for (int client = 0; client < MAX_CLIENTS; client++) {
+				if (level.clients[client].pers.connected == CON_CONNECTED
+						&& level.clients[client].pers.team == team
+						&& level.clients[client].pers.isFillerBot) {
+					G_BotDel(client);
+					if (--teamSize <= t.botFillTeamSize) {
+						break;
+					}
+				}
+			}
+		} else if (teamSize < t.botFillTeamSize) {
+			int additionalBots = t.botFillTeamSize - teamSize;
+			while (additionalBots--) {
+				if (!G_BotAdd(BOT_NAME_FROM_LIST, team, t.botFillSkillLevel, BOT_DEFAULT_BEHAVIOR, true)) {
+					break;
+				}
+			}
+		}
+	}
 }
