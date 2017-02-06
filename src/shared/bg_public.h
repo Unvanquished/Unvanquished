@@ -1581,6 +1581,8 @@ int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 const char *BG_TeamName( int team );
 const char *BG_TeamNamePlural( int team );
 
+team_t BG_PlayableTeamFromString( const char* s );
+
 typedef struct
 {
 	const char *name;

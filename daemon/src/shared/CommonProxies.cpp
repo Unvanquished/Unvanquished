@@ -240,6 +240,14 @@ void trap_Argv(int n, char *buffer, int bufferLength) {
     }
 }
 
+const Cmd::Args& trap_Args() {
+	static const Cmd::Args empty;
+	if (argStack.empty()) {
+		return empty;
+	}
+	return *argStack.back();
+}
+
 void trap_EscapedArgs( char *buffer, int bufferLength ) {
 	const Cmd::Args* args = argStack.back();
 	std::string res = args->EscapedArgs(0);

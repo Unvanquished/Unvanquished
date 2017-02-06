@@ -2798,6 +2798,21 @@ const char *BG_TeamNamePlural( int team )
 	return "<team>";
 }
 
+// Matches a playable team i.e. humans or aliens
+// Return of TEAM_NONE means no match rather than spectator
+team_t BG_PlayableTeamFromString( const char* s )
+{
+	if ( !Q_stricmp( s, "a" ) || !Q_stricmp( s, "aliens" ) )
+	{
+		return team_t::TEAM_ALIENS;
+	}
+	if ( !Q_stricmp( s, "h" ) || !Q_stricmp( s, "humans" ) )
+	{
+		return team_t::TEAM_HUMANS;
+	}
+	return team_t::TEAM_NONE;
+}
+
 int cmdcmp( const void *a, const void *b )
 {
 	return b ? Q_stricmp( ( const char * ) a, ( ( dummyCmd_t * ) b )->name ) : 1;

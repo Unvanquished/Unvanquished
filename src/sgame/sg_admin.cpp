@@ -5579,203 +5579,169 @@ void G_admin_cleanup()
 	g_admin_commands = nullptr;
 }
 
-bool G_admin_bot( gentity_t *ent )
+static void BotUsage( gentity_t *ent )
 {
-	int min_args = 3;
-	char arg1[MAX_TOKEN_CHARS];
-	char name[MAX_TOKEN_CHARS];
-	char team[MAX_TOKEN_CHARS];
-	char skill[MAX_TOKEN_CHARS];
-	char err[MAX_STRING_CHARS];
-	char behavior[MAX_QPATH];
-	int skill_int;
-	int i;
-	int clientNum;
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add (<name> | *) (aliens | humans) [<skill level> [<behavior>]]\n"
+	                                        "            bot fill <count> [<team> [<skill level>]]\n"
+	                                        "            bot del (<name> | all)\n"
+	                                        "            bot names (aliens | humans) <names>…\n"
+	                                        "            bot names (clear | list)" ) );
+	ADMP( bot_usage );
+}
 
-	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)\n"
-	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
-	                                        "            bot names [^5aliens|humans^7] [^5names…^7]\n"
-	                                        "            bot names [^5clear|list^7]" ) );
 
-	if ( trap_Argc() < min_args )
+static int BotSkillFromString( gentity_t* ent, const char* s )
+{
+	int skill0 = atoi( s );
+	int skill = Math::Clamp( atoi( s ), 1, 10 );
+	if (skill0 != skill) {
+		ADMP( QQ( N_( "Bot skill level should be from 1 to 10" ) ) );
+	}
+	return skill;
+}
+
+static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
+{
+	RETURN_IF_INTERMISSION;
+
+	if ( args.Argc() < 4 || args.Argc() > 6 )
 	{
-		ADMP( bot_usage );
+		BotUsage( ent );
 		return false;
 	}
-	trap_Argv( 1, arg1, sizeof( arg1 ) );
-	trap_Argv( 2, name, sizeof( name ) );
+
+	const char* name = args[2].data();
+	if ( !Q_stricmp( name, "all" ) )
+	{
+		ADMP( QQ( N_( "bots can't have that name" ) ) );
+		return false;
+	}
+
+	team_t team = BG_PlayableTeamFromString( args[3].data() );
+	if ( team == team_t::TEAM_NONE )
+	{
+		ADMP( QQ( N_( "Invalid team name" ) ) );
+		BotUsage( ent );
+		return false;
+	}
+
+	int skill;
+	if ( args.Argc() >= 5 )
+	{
+		skill = BotSkillFromString( ent, args[4].data() );
+	}
+	else
+	{
+		skill = BOT_DEFAULT_SKILL;
+	}
+
+	const char* behavior = args.Argc() >= 6 ? args[5].data() : BOT_DEFAULT_BEHAVIOR;
+
+	bool result = G_BotAdd( name, team, skill, behavior );
+	if ( !result )
+	{
+		ADMP( QQ( N_( "Can't add a bot" ) ) );
+	}
+	return result;
+}
+
+static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
+{
+	if (args.Argc() < 3 || args.Argc() > 5)
+	{
+		BotUsage( ent );
+		return false;
+	}
+	int count = atoi( args[2].data() );
+	std::vector<team_t> teams;
+	if ( args.Argc() >= 4 )
+	{
+		team_t team = BG_PlayableTeamFromString(args[3].data());
+		if (team == team_t::TEAM_NONE)
+		{
+			BotUsage( ent );
+			return false;
+		}
+		teams = { team };
+	}
+	else
+	{
+		teams = { team_t::TEAM_ALIENS, team_t::TEAM_HUMANS };
+	}
+	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : BOT_DEFAULT_SKILL;
+	
+	for (team_t team : teams)
+	{
+		level.team[team].botFillTeamSize = count;
+		level.team[team].botFillSkillLevel = skill;
+	}
+
+	G_BotFill(true);
+	return true;
+}
+
+bool G_admin_bot( gentity_t *ent )
+{
+	auto args = trap_Args();
+	if ( args.Argc() < 2)
+	{
+		BotUsage( ent );
+		return false;
+	}
+	const char* arg1 = args[1].data();
 
 	if ( !Q_stricmp( arg1, "add" ) )
 	{
-		RETURN_IF_INTERMISSION;
-
-		min_args++; //now we also need a team name
-		if ( !Q_stricmp( name, "all" ) )
-		{
-			ADMP( QQ( N_( "bots can't have that name" ) ) );
-			return false;
-		}
-		if ( trap_Argc() < min_args )
-		{
-			ADMP( bot_usage );
-			return false;
-		}
-		trap_Argv( 3, team, sizeof( team ) );
-
-		//skill level checks
-		min_args++;
-		if ( trap_Argc() < min_args )
-		{
-			skill_int = 5; //no skill arg
-		}
-		else
-		{
-			trap_Argv( 4, skill, sizeof( skill ) );
-			skill_int = atoi( skill );
-			if ( skill_int < 1 )
-			{
-				skill_int = 1; //skill arg too small, reset to 1
-			}
-			else if ( skill_int > 10 )
-			{
-				skill_int = 10; //skill arg too bit, reset to 10
-			}
-		}
-
-		min_args++;
-		if ( trap_Argc() < min_args )
-		{
-			Q_strncpyz( behavior, "default", sizeof( behavior ) );
-		}
-		else
-		{
-			trap_Argv( 5, behavior, sizeof( behavior ) );
-		}
-		//choose team
-		if ( !Q_stricmp( team, "humans" ) || !Q_stricmp( team, "h" ) )
-		{
-			if ( !G_BotAdd( name, TEAM_HUMANS, skill_int, behavior ) )
-			{
-				ADMP( QQ( "Can't add a bot" ) );
-				return false;
-			}
-		}
-		else if ( !Q_stricmp( team, "aliens" ) || !Q_stricmp( team, "a" ) )
-		{
-			if ( !G_BotAdd( name, TEAM_ALIENS, skill_int, behavior ) )
-			{
-				ADMP( QQ( N_( "Can't add a bot" ) ) );
-				return false;
-			}
-		}
-		else
-		{
-			ADMP( QQ( N_( "Invalid team name" ) ) );
-			ADMP( bot_usage );
-			return false;
-		}
+		return BotAddCmd( ent, args );
 	}
-	else if ( !Q_stricmp( arg1, "del" ) )
+	else if ( !Q_stricmp( arg1, "fill" ) )
+	{
+		return BotFillCmd( ent, args );
+	}
+	else if ( !Q_stricmp( arg1, "del" ) && args.Argc() == 3 )
 	{
 		RETURN_IF_INTERMISSION;
 
-		clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+		char err[MAX_STRING_CHARS];
+		const char *name = args[2].data();
+
 		if ( !Q_stricmp( name, "all" ) )
 		{
 			G_BotDelAllBots();
 		}
-		else if ( clientNum == -1 ) //something went wrong when finding the client Number
-		{
-			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
-			return false;
-		}
 		else
 		{
+			int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+			if ( clientNum == -1 ) //something went wrong when finding the client Number
+			{
+				ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
+				return false;
+			}
 			G_BotDel( clientNum ); //delete the bot
 		}
 	}
-	else if ( !Q_stricmp( arg1, "spec" ) )
+	else if ( !Q_stricmp( arg1, "names" ) && args.Argc() >= 3 )
 	{
-		RETURN_IF_INTERMISSION;
+		const char *name = args[2].data();
+		team_t team = BG_PlayableTeamFromString( name );
 
-		clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
-		if ( !Q_stricmp( name, "all" ) )
+		if ( team == team_t::TEAM_HUMANS )
 		{
-			for ( i = 0; i < MAX_CLIENTS; i++ )
-			{
-				if ( g_entities[i].r.svFlags & SVF_BOT )
-				{
-					G_ChangeTeam( &g_entities[i], TEAM_NONE );
-				}
-			}
-			return true;
-		}
-
-		if ( clientNum == -1 )
-		{
-			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
-			return false;
-		}
-		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
-		{
-			G_ChangeTeam( &g_entities[clientNum], TEAM_NONE );
-		}
-		else
-		{
-			ADMP( QQ( N_( "%s is not a bot" ) ) );
-		}
-	}
-	else if ( !Q_stricmp( arg1, "unspec" ) )
-	{
-		RETURN_IF_INTERMISSION;
-
-		clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
-		if ( !Q_stricmp( name, "all" ) )
-		{
-			for ( i = 0; i < MAX_CLIENTS; i++ )
-			{
-				if ( g_entities[i].r.svFlags & SVF_BOT && g_entities[i].client->pers.team == TEAM_NONE )
-				{
-					G_ChangeTeam( &g_entities[i], g_entities[i].botMind->botTeam );
-				}
-			}
-			return true;
-		}
-
-		if ( clientNum == -1 )
-		{
-			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
-			return false;
-		}
-
-		if ( !( g_entities[clientNum].r.svFlags & SVF_BOT ) )
-		{
-			ADMP( QQ( N_( "%s is not a bot" ) ) );
-			return false;
-		}
-
-		if ( g_entities[clientNum].client->pers.team != TEAM_NONE )
-		{
-			ADMP( QQ( N_( "%s is not on spectators" ) ) );
-			return false;
-		}
-
-		G_ChangeTeam( &g_entities[clientNum], g_entities[clientNum].botMind->botTeam );
-	}
-	else if ( !Q_stricmp( arg1, "names" ) )
-	{
-		if ( !Q_stricmp( name, "humans" ) || !Q_stricmp( name, "h" ) )
-		{
-			i = G_BotAddNames( TEAM_HUMANS, 3, trap_Argc() );
+			int i = G_BotAddNames( team_t::TEAM_HUMANS, 3, trap_Argc() );
 			ADMP( va( "%s %d", Quote( P_( "added $1$ human bot name", "added $1$ human bot names", i ) ), i ) );
 		}
-		else if ( !Q_stricmp( name, "aliens" ) || !Q_stricmp( name, "a" ) )
+		else if ( team == team_t::TEAM_ALIENS )
 		{
-			i = G_BotAddNames( TEAM_ALIENS, 3, trap_Argc() );
+			int i = G_BotAddNames( team_t::TEAM_ALIENS, 3, trap_Argc() );
 			ADMP( va( "%s %d", Quote( P_( "added $1$ alien bot name", "added $1$ alien bot names", i ) ), i ) );
 		}
 		else if ( !Q_stricmp( name, "clear" ) || !Q_stricmp( name, "c" ) )
 		{
+			if ( args.Argc() > 3 )
+			{
+				BotUsage( ent );
+				return false;
+			}
 			if ( !G_BotClearNames() )
 			{
 				ADMP( QQ( N_( "some automatic bot names are in use – not clearing lists" ) ) );
@@ -5784,18 +5750,22 @@ bool G_admin_bot( gentity_t *ent )
 		}
 		else if ( !Q_stricmp( name, "list" ) || !Q_stricmp( name, "l" ) )
 		{
+			if ( args.Argc() > 3 )
+			{
+				BotUsage( ent );
+				return false;
+			}
 			G_BotListNames( ent );
 		}
 		else
 		{
-			goto usage;
+			BotUsage( ent );
+			return false;
 		}
 	}
 	else
 	{
-usage:
-		ADMP( QQ( N_( "Invalid command" ) ) );
-		ADMP( bot_usage );
+		BotUsage( ent );
 		return false;
 	}
 	return true;

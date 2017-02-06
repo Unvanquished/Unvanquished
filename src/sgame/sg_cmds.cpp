@@ -1417,7 +1417,6 @@ static const struct {
 	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ "poll",         false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
 	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
-	{ "spectatebots", false, V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
 	{ }
 	// note: map votes use the reason, if given, as the layout name
 };
@@ -1738,7 +1737,6 @@ vote_is_disabled:
 		break;
 
 	case VOTE_BOT_KICK:
-	case VOTE_BOT_SPECTATE:
 		for ( i = 0; i < MAX_CLIENTS; ++i )
 		{
 			if ( g_entities[i].r.svFlags & SVF_BOT &&
@@ -1755,16 +1753,9 @@ vote_is_disabled:
 			return;
 		}
 
-		if ( voteId == VOTE_BOT_KICK )
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot del all" );
-			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Remove all bots") );
-		}
-		else
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot spec all" );
-			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Move all bots to spectators") );
-		}
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot del all" );
+		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Remove all bots") );
+
 		break;
 
 	case VOTE_MUTE:
