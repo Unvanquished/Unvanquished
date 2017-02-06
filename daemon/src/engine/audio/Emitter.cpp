@@ -41,7 +41,7 @@ namespace Audio {
     static entityData_t entities[MAX_GENTITIES];
     static int listenerEntity = -1;
 
-    // Keep Entitymitters in an array because there is at most one per entity.
+    // Keep entity Emitters in an array because there is at most one per entity.
     static std::shared_ptr<Emitter> entityEmitters[MAX_GENTITIES];
 
     // Position Emitters can be reused so we keep the list of all of them

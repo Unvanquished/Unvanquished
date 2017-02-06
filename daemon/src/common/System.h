@@ -42,7 +42,7 @@ public:
 	using rep = duration::rep;
 	using period = duration::period;
 	using time_point = std::chrono::time_point<SteadyClock>;
-	static const bool is_steady = true;
+	static CONSTEXPR bool is_steady = true;
 
 	static time_point now() NOEXCEPT;
 };
@@ -78,7 +78,7 @@ public:
 NORETURN void Drop(Str::StringRef errorMessage);
 
 // Variadic wrappers for Error and Drop
-template<typename ... Args> void Error(Str::StringRef format, Args&& ... args)
+template<typename ... Args> NORETURN void Error(Str::StringRef format, Args&& ... args)
 {
 	Error(Str::Format(format, std::forward<Args>(args)...));
 }

@@ -91,6 +91,8 @@ void SV_UpdateConfigStrings()
 		// spawning a new server
 		if ( sv.state == serverState_t::SS_GAME || sv.restarting )
 		{
+			len = strlen( sv.configstrings[ index ] );
+
 			// send the data to all relevent clients
 			for ( i = 0, client = svs.clients; i < sv_maxclients->integer; i++, client++ )
 			{
@@ -104,8 +106,6 @@ void SV_UpdateConfigStrings()
 				{
 					continue;
 				}
-
-				len = strlen( sv.configstrings[ index ] );
 
 				if ( len >= maxChunkSize )
 				{

@@ -1161,139 +1161,136 @@ static void IN_Xbox360ControllerMove()
 	// update hat state
 	if ( hat != stick_state.oldhats )
 	{
-		if ( hat != stick_state.oldhats )
+		int       key;
+
+		const int allHatDirections = ( SDL_HAT_UP |
+		                               SDL_HAT_RIGHT |
+		                               SDL_HAT_DOWN |
+		                               SDL_HAT_LEFT );
+
+		if ( in_xbox360ControllerDebug->integer )
 		{
-			int       key;
-
-			const int allHatDirections = ( SDL_HAT_UP |
-			                               SDL_HAT_RIGHT |
-			                               SDL_HAT_DOWN |
-			                               SDL_HAT_LEFT );
-
-			if ( in_xbox360ControllerDebug->integer )
-			{
-				switch ( hat & allHatDirections )
-				{
-					case SDL_HAT_UP:
-						key = K_XBOX360_DPAD_UP;
-						break;
-
-					case SDL_HAT_RIGHT:
-						key = K_XBOX360_DPAD_RIGHT;
-						break;
-
-					case SDL_HAT_DOWN:
-						key = K_XBOX360_DPAD_DOWN;
-						break;
-
-					case SDL_HAT_LEFT:
-						key = K_XBOX360_DPAD_LEFT;
-						break;
-
-					case SDL_HAT_RIGHTUP:
-						key = K_XBOX360_DPAD_RIGHTUP;
-						break;
-
-					case SDL_HAT_RIGHTDOWN:
-						key = K_XBOX360_DPAD_RIGHTDOWN;
-						break;
-
-					case SDL_HAT_LEFTUP:
-						key = K_XBOX360_DPAD_LEFTUP;
-						break;
-
-					case SDL_HAT_LEFTDOWN:
-						key = K_XBOX360_DPAD_LEFTDOWN;
-						break;
-
-					default:
-						key = 0;
-						break;
-				}
-
-				if ( hat != SDL_HAT_CENTERED )
-				{
-					Log::Notice( "xbox hat bits = %i to key = Q:0x%02x(%s)\n", hat, key, Key_KeynumToString( key ) );
-				}
-			}
-
-			// release event
-			switch ( stick_state.oldhats & allHatDirections )
-			{
-				case SDL_HAT_UP:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_UP, false, 0, nullptr );
-					break;
-
-				case SDL_HAT_RIGHT:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHT, false, 0, nullptr );
-					break;
-
-				case SDL_HAT_DOWN:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_DOWN, false, 0, nullptr );
-					break;
-
-				case SDL_HAT_LEFT:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFT, false, 0, nullptr );
-					break;
-
-				case SDL_HAT_RIGHTUP:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTUP, false, 0, nullptr );
-					break;
-
-				case SDL_HAT_RIGHTDOWN:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTDOWN, false, 0, nullptr );
-					break;
-
-				case SDL_HAT_LEFTUP:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTUP, false, 0, nullptr );
-					break;
-
-				case SDL_HAT_LEFTDOWN:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTDOWN, false, 0, nullptr );
-					break;
-
-				default:
-					break;
-			}
-
-			// press event
 			switch ( hat & allHatDirections )
 			{
 				case SDL_HAT_UP:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_UP, true, 0, nullptr );
+					key = K_XBOX360_DPAD_UP;
 					break;
 
 				case SDL_HAT_RIGHT:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHT, true, 0, nullptr );
+					key = K_XBOX360_DPAD_RIGHT;
 					break;
 
 				case SDL_HAT_DOWN:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_DOWN, true, 0, nullptr );
+					key = K_XBOX360_DPAD_DOWN;
 					break;
 
 				case SDL_HAT_LEFT:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFT, true, 0, nullptr );
+					key = K_XBOX360_DPAD_LEFT;
 					break;
 
 				case SDL_HAT_RIGHTUP:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTUP, true, 0, nullptr );
+					key = K_XBOX360_DPAD_RIGHTUP;
 					break;
 
 				case SDL_HAT_RIGHTDOWN:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTDOWN, true, 0, nullptr );
+					key = K_XBOX360_DPAD_RIGHTDOWN;
 					break;
 
 				case SDL_HAT_LEFTUP:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTUP, true, 0, nullptr );
+					key = K_XBOX360_DPAD_LEFTUP;
 					break;
 
 				case SDL_HAT_LEFTDOWN:
-					Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTDOWN, true, 0, nullptr );
+					key = K_XBOX360_DPAD_LEFTDOWN;
 					break;
 
 				default:
+					key = 0;
 					break;
 			}
+
+			if ( hat != SDL_HAT_CENTERED )
+			{
+				Log::Notice( "xbox hat bits = %i to key = Q:0x%02x(%s)\n", hat, key, Key_KeynumToString( key ) );
+			}
+		}
+
+		// release event
+		switch ( stick_state.oldhats & allHatDirections )
+		{
+			case SDL_HAT_UP:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_UP, false, 0, nullptr );
+				break;
+
+			case SDL_HAT_RIGHT:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHT, false, 0, nullptr );
+				break;
+
+			case SDL_HAT_DOWN:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_DOWN, false, 0, nullptr );
+				break;
+
+			case SDL_HAT_LEFT:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFT, false, 0, nullptr );
+				break;
+
+			case SDL_HAT_RIGHTUP:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTUP, false, 0, nullptr );
+				break;
+
+			case SDL_HAT_RIGHTDOWN:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTDOWN, false, 0, nullptr );
+				break;
+
+			case SDL_HAT_LEFTUP:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTUP, false, 0, nullptr );
+				break;
+
+			case SDL_HAT_LEFTDOWN:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTDOWN, false, 0, nullptr );
+				break;
+
+			default:
+				break;
+		}
+
+		// press event
+		switch ( hat & allHatDirections )
+		{
+			case SDL_HAT_UP:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_UP, true, 0, nullptr );
+				break;
+
+			case SDL_HAT_RIGHT:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHT, true, 0, nullptr );
+				break;
+
+			case SDL_HAT_DOWN:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_DOWN, true, 0, nullptr );
+				break;
+
+			case SDL_HAT_LEFT:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFT, true, 0, nullptr );
+				break;
+
+			case SDL_HAT_RIGHTUP:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTUP, true, 0, nullptr );
+				break;
+
+			case SDL_HAT_RIGHTDOWN:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_RIGHTDOWN, true, 0, nullptr );
+				break;
+
+			case SDL_HAT_LEFTUP:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTUP, true, 0, nullptr );
+				break;
+
+			case SDL_HAT_LEFTDOWN:
+				Com_QueueEvent( 0, sysEventType_t::SE_KEY, K_XBOX360_DPAD_LEFTDOWN, true, 0, nullptr );
+				break;
+
+			default:
+				break;
 		}
 	}
 

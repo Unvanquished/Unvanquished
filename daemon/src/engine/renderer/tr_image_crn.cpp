@@ -23,10 +23,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "tr_local.h"
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-pedantic"
+#endif
 #include "crunch/crn_decomp.h"
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
 void LoadCRN( const char *name, byte **data, int *width, int *height,
 	      int *numLayers, int *numMips, int *bits, byte )

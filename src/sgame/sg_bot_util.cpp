@@ -2025,17 +2025,9 @@ void BotSellAll( gentity_t *self )
 void BotSetSkillLevel( gentity_t *self, int skill )
 {
 	self->botMind->botSkill.level = skill;
-	//different aim for different teams
-	if ( self->botMind->botTeam == TEAM_HUMANS )
-	{
-		self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-		self->botMind->botSkill.aimShake = 10 - skill;
-	}
-	else
-	{
-		self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-		self->botMind->botSkill.aimShake = 10 - skill;
-	}
+	// TODO: different aim for different teams
+	self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
+	self->botMind->botSkill.aimShake = 10 - skill;
 }
 
 void BotResetEnemyQueue( enemyQueue_t *queue )

@@ -185,15 +185,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NOEXCEPT_IF(x) noexcept(x)
 #define NOEXCEPT_EXPR(x) false
 #define HAS_EXPLICIT_DEFAULT
+#define CONSTEXPR constexpr
 #else
 #define NOEXCEPT
 #define NOEXCEPT_IF(x)
 #define NOEXCEPT_EXPR(x) false
-#endif
 // Work around lack of C99 support
 #define __func__ __FUNCTION__
 // Work around lack of constexpr
 #define CONSTEXPR const
+#endif
+
 #define ATTRIBUTE_NO_SANITIZE_ADDRESS
 
 // Other compilers, unsupported

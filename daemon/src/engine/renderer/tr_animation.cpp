@@ -647,7 +647,6 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 {
 	md5Model_t   *model;
 	md5Surface_t *surface;
-	shader_t     *shader;
 	int          i;
 	bool     personalModel;
 	int          fogNum;
@@ -679,6 +678,8 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 	if ( !r_vboModels->integer || !model->numVBOSurfaces ||
 	     ( !glConfig2.vboVertexSkinningAvailable && ent->e.skeleton.type == refSkeletonType_t::SK_ABSOLUTE ) )
 	{
+		shader_t *shader;
+
 		// finally add surfaces
 		for ( i = 0, surface = model->surfaces; i < model->numSurfaces; i++, surface++ )
 		{
@@ -915,7 +916,6 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	int               i;
 	md5Model_t        *model;
 	md5Surface_t      *surface;
-	shader_t          *shader = 0;
 	bool          personalModel;
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
 
@@ -979,6 +979,8 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionT
 	if ( !r_vboModels->integer || !model->numVBOSurfaces ||
 	     ( !glConfig2.vboVertexSkinningAvailable && ent->e.skeleton.type == refSkeletonType_t::SK_ABSOLUTE ) )
 	{
+		shader_t *shader = 0;
+
 		// generate interactions with all surfaces
 		for ( i = 0, surface = model->surfaces; i < model->numSurfaces; i++, surface++ )
 		{

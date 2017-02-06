@@ -771,7 +771,7 @@ void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts
 	drawVert_t    *dv, *dv_p;
 	dsurface_t    *in;
 	int           count;
-	int           i, j;
+	int           i;
 	cSurface_t    *surface;
 	int           numVertexes;
 	static vec3_t vertexes[ SHADER_MAX_VERTEXES ];
@@ -811,8 +811,6 @@ void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts
 	{
 		if ( LittleLong( in->surfaceType ) == mapSurfaceType_t::MST_PATCH )
 		{
-			int j = 0;
-
 			// FIXME: check for non-colliding patches
 			cm.surfaces[ i ] = surface = ( cSurface_t * ) CM_Alloc( sizeof( *surface ) );
 			surface->type = mapSurfaceType_t::MST_PATCH;
@@ -829,7 +827,7 @@ void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts
 
 			dv_p = dv + LittleLong( in->firstVert );
 
-			for ( j = 0; j < numVertexes; j++, dv_p++ )
+			for ( int j = 0; j < numVertexes; j++, dv_p++ )
 			{
 				vertexes[ j ][ 0 ] = LittleFloat( dv_p->xyz[ 0 ] );
 				vertexes[ j ][ 1 ] = LittleFloat( dv_p->xyz[ 1 ] );
@@ -860,7 +858,7 @@ void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts
 
 			dv_p = dv + LittleLong( in->firstVert );
 
-			for ( j = 0; j < numVertexes; j++, dv_p++ )
+			for ( int j = 0; j < numVertexes; j++, dv_p++ )
 			{
 				vertexes[ j ][ 0 ] = LittleFloat( dv_p->xyz[ 0 ] );
 				vertexes[ j ][ 1 ] = LittleFloat( dv_p->xyz[ 1 ] );
@@ -876,7 +874,7 @@ void CMod_LoadSurfaces(const byte *const cmod_base, lump_t *surfs, lump_t *verts
 
 			index_p = index + LittleLong( in->firstIndex );
 
-			for ( j = 0; j < numIndexes; j++, index_p++ )
+			for ( int j = 0; j < numIndexes; j++, index_p++ )
 			{
 				indexes[ j ] = LittleLong( *index_p );
 

@@ -236,7 +236,7 @@ namespace Resource {
         Prune();
 
         // And then load the new ones, so as to reduce peak memory usage.
-        for (auto it = resources.begin(); it != resources.end(); it ++) {
+        for (auto it = resources.begin(); it != resources.end(); ++it) {
             if (not it->second->loaded) {
                 if (not it->second->TryLoad()) {
                     it->second->Cleanup();
@@ -286,7 +286,7 @@ namespace Resource {
                 it->second->Cleanup();
                 it = resources.erase(it);
             } else {
-                it ++;
+                ++it;
             }
         }
     }

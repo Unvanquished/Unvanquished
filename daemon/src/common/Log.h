@@ -102,7 +102,7 @@ namespace Log {
             void DoDebugCode(F&& code);
 
         private:
-            std::string Prefix(std::string message);
+            std::string Prefix(std::string message) const;
 
             // the cvar logs.logLevel.<name>
             Cvar::Cvar<Level> filterLevel;

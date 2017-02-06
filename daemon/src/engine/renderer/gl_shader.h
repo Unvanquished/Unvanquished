@@ -93,7 +93,8 @@ class GLShader
 {
 	friend class GLShaderManager;
 private:
-	GLShader &operator             = ( const GLShader & );
+	GLShader( const GLShader & ) = delete;
+	GLShader &operator             = ( const GLShader & ) = delete;
 
 	std::string                    _name;
 	std::string                    _mainShaderName;
