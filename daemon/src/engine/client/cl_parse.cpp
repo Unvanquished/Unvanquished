@@ -46,7 +46,6 @@ static const char *const svc_strings[ 256 ] =
 	"svc_serverCommand",
 	"svc_download",
 	"svc_snapshot",
-	"svc_voip",
 	"svc_EOF"
 };
 
