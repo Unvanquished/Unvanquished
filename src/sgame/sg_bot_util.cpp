@@ -1205,7 +1205,8 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 
 int BotGetAimPredictionTime( gentity_t *self )
 {
-	return ( 10 - self->botMind->botSkill.level ) * 100 * std::max( ( ( float ) rand() ) / RAND_MAX, 0.5f );
+	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( ( ( float ) rand() ) / RAND_MAX, 0.5f );
+	return std::max( 1, int(time) );
 }
 
 void BotPredictPosition( gentity_t *self, gentity_t *predict, vec3_t pos, int time )
