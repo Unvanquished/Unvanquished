@@ -1,0 +1,37 @@
+// Subroutine to try to prevent bots from getting stuck
+
+condition(stuckTime > 10000)
+{
+	selector
+	{
+		condition(stuckTime > 20000)
+		{
+			action suicide
+		}
+		
+		decorator timer(3000)
+		{
+			decorator return(STATUS_FAILURE)
+			{
+				action jump
+			}
+		}
+		condition(stuckTime > 17500)
+		{
+			action moveInDir(MOVE_FORWARD)
+		}
+		condition(stuckTime > 15000)
+		{
+			action moveInDir(MOVE_RIGHT)
+		}
+		condition(stuckTime > 12500)
+		{
+			action moveInDir(MOVE_BACKWARD)
+		}
+		sequence
+		{
+			action moveInDir(MOVE_LEFT)
+			action moveTo(E_SELF) // cancel old target which may be causing the bot to walk into a wall, etc.
+		}
+	}
+}
