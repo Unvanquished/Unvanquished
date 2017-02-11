@@ -1,5 +1,7 @@
 selector
 {
+	behavior unstick
+	
 	condition alertedToEnemy
 	{
 		action fight
