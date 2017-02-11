@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //g_bot.c
 bool PlayersBehindBotInSpawnQueue( gentity_t *self );
 void     BotSetSkillLevel( gentity_t *self, int skill );
+void BotCalculateStuckTime( gentity_t *self );
 
 // entity queries
 int        FindBots( int *botEntityNumbers, int maxBots, team_t team );
@@ -160,4 +161,8 @@ bool BotPathIsWalkable( gentity_t *self, botTarget_t target );
 
 //how far away we can be before we try to go around an alien when fighting an alien
 #define MIN_HUMAN_DANCE_DIST 100.0f
+
+//consider bot to be stuck if it does not move farther than this in some period of time
+constexpr float BOT_STUCK_RADIUS = 150;
+
 #endif

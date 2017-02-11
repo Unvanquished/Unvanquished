@@ -386,6 +386,7 @@ void G_BotThink( gentity_t *self )
 	BotSearchForEnemy( self );
 	BotFindClosestBuildings( self );
 	BotFindDamagedFriendlyStructure( self );
+	BotCalculateStuckTime( self );
 
 	//use medkit when hp is low
 	if ( self->entity->Get<HealthComponent>()->Health() < BOT_USEMEDKIT_HP &&
