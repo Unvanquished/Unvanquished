@@ -33,19 +33,6 @@ function(maybe_add_dep target dep)
 endfunction()
 
 function(CBSE target definition output)
-    # Check if we need to initialize submodule
-    file(GLOB RESULT ${CMAKE_SOURCE_DIR}/src/utils/cbse)
-    list(LENGTH ${RESULT} RES_LEN)
-    if(RES_LEN EQUAL 0)
-        if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
-            find_package(Git REQUIRED)
-            if (GIT_FOUND)
-                execute_process(
-                    COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-            endif()
-        endif()
-    endif()
     # Check if python has all the dependencies
     # TODO: Execute pip directly here and install them
     execute_process(
