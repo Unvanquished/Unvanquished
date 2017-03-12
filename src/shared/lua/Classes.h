@@ -2,7 +2,7 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 2012 Unvanquished Developers
+Copyright (C) 2012 Unv Developers
 
 This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
@@ -31,29 +31,36 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef LUACMD_H
-#define LUACMD_H
-#include "../rocket.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Core/Lua/lua.hpp>
-#include <Rocket/Core/Lua/LuaType.h>
-
-namespace Rocket {
-namespace Core {
+#ifndef LUACLASSES_H_
+#define LUACLASSES_H_
+#include "../bg_lua.h"
+#include "../bg_public.h"
+#include "LuaLib.h"
+namespace Unv {
+namespace Shared {
 namespace Lua {
-// Dummy class for Cmds
-class Cmd
-{
 
+struct ClassProxy
+{
+	ClassProxy( int clazz );
+
+	const classAttributes_t* attributes;
 };
 
-template<> void ExtraInit<Cmd>(lua_State* L, int metatable_index);
-int Cmdexec(lua_State* L);
+struct Classes
+{
+	static int index( lua_State* L );
+	static int pairs( lua_State* L );
 
-extern RegType<Cmd> CmdMethods[];
-extern luaL_Reg CmdGetters[];
-extern luaL_Reg CmdSetters[];
-}
-}
-}
-#endif
+	static std::vector<ClassProxy> classes;
+};
+
+template<>
+void ExtraInit<Classes>( lua_State* L, int metatable_index );
+template<>
+void ExtraInit<ClassProxy>( lua_State* L, int metatable_index );
+
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv
+#endif // LUACLASSES_H_

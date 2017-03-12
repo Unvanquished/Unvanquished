@@ -31,31 +31,66 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef LUACVAR_H
-#define LUACVAR_H
-#include "../rocket.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Core/Lua/lua.hpp>
-#include <Rocket/Core/Lua/LuaType.h>
+
+#include "Player.h"
+#include "../../cg_local.h"
+
+static Rocket::Core::Lua::Player player;
+void CG_InitializeLuaPlayer(lua_State* L)
+{
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Player>::Register( L );
+	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Player>::push( L, &player, false );
+	lua_setglobal( L, "player" );
+}
 
 namespace Rocket {
 namespace Core {
 namespace Lua {
-// Dummy class for cvars
-class Cvar
+#define GETTER(name) { #name, Get##name }
+
+#define GET_FUNC( name, var, type ) \
+static int Get##name( lua_State* L ) \
+{ \
+	playerState_t* ps = &cg.snap->ps; \
+	if ( ps ) \
+	{ \
+		lua_push##type( L, var ); \
+		return 1; \
+	} \
+	return 0; \
+}
+
+GET_FUNC( team, BG_TeamName( ps->persistant[ PERS_TEAM ] ), string )
+GET_FUNC( class, BG_Class( ps->stats[ STAT_CLASS ] )->name, string )
+GET_FUNC( weapon, BG_Weapon( ps->stats[ STAT_WEAPON ] )->name, string )
+GET_FUNC( hp, ps->stats[ STAT_HEALTH ], integer )
+GET_FUNC( ammo, ps->ammo, integer )
+GET_FUNC( clips, ps->clips, integer )
+GET_FUNC( credits, ps->persistant[ PERS_CREDIT], integer )
+GET_FUNC( score, ps->persistant[ PERS_SCORE], integer )
+
+template<> void ExtraInit<Player>(lua_State* L, int metatable_index) {}
+RegType<Player> PlayerMethods[] =
 {
-
+	{ nullptr, nullptr },
 };
-
-template<> void ExtraInit<Cvar>(lua_State* L, int metatable_index);
-int Cvarget(lua_State* L);
-int Cvarset(lua_State* L);
-int Cvararchive(lua_State* L);
-
-extern RegType<Cvar> CvarMethods[];
-extern luaL_Reg CvarGetters[];
-extern luaL_Reg CvarSetters[];
-}
-}
-}
-#endif
+luaL_Reg PlayerGetters[] =
+{
+	GETTER(team),
+	GETTER(class),
+	GETTER(weapon),
+	GETTER(hp),
+	GETTER(ammo),
+	GETTER(clips),
+	GETTER(credits),
+	GETTER(score),
+	{ nullptr, nullptr }
+};
+luaL_Reg PlayerSetters[] =
+{
+	{ nullptr, nullptr },
+};
+LUACORETYPEDEFINE(Player, false)
+} // namespace Lua
+} // namespace Core
+} // namespace Rocket

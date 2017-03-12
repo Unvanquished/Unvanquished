@@ -32,40 +32,84 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUATIMER_H
-#define LUATIMER_H
-#include "../rocket.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Core/Lua/lua.hpp>
-#include <Rocket/Core/Lua/LuaType.h>
+#include "Timer.h"
+#include "LuaLib.h"
 
-namespace Rocket {
-namespace Core {
+namespace Unv {
+namespace Shared {
 namespace Lua {
-class Timer
+
+Timer timer;
+
+void Timer::Add( int delayMs, int callbackRef, lua_State* L )
 {
-public:
-	void Add(int delayMs, int callbackRef, lua_State* L);
-	void RunUpdate( int time );
-	static void Update(int time);
+	events.push_back({delayMs, callbackRef, L});
+}
 
-private:
-	struct TimerEvent
+void Timer::RunUpdate(int time)
+{
+	int dtMs = time - lastTime;
+	lastTime = time;
+
+	auto it = events.begin();
+	while (it != events.end())
 	{
-		int delayMs;
-		int callbackRef;
-		lua_State* L;
-	};
-	int lastTime;
-	std::list<TimerEvent> events;
-};
-template<> void ExtraInit<Timer>(lua_State* L, int metatable_index);
-int Timeradd(lua_State* L);
+		it->delayMs -= dtMs;
+		if (it->delayMs <= 0)
+		{
+			lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
+			luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
+			if (lua_pcall(it->L, 0, 0, 0) != 0)
+				::Log::Warn( "Could not run lua timer callback: %s",
+							lua_tostring(it->L, -1));
+			it = events.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
 
-extern RegType<Timer> TimerMethods[];
-extern luaL_Reg TimerGetters[];
-extern luaL_Reg TimerSetters[];
+void Timer::Update( int time )
+{
+	timer.RunUpdate(time);
 }
+
+int Timeradd( lua_State* L )
+{
+	int delayMs = luaL_checkinteger(L, 1);
+	int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+	timer.Add(delayMs, ref, L);
+	return 0;
 }
+
+template<>
+void ExtraInit<Lua::Timer>(lua_State* L, int metatable_index)
+{
+	//due to they way that LuaType::Register is made, we know that the method table is at the index
+	//directly below the metatable
+	int method_index = metatable_index - 1;
+
+	lua_pushcfunction(L, Timeradd);
+	lua_setfield(L, method_index, "add");
 }
-#endif
+
+RegType<Timer> TimerMethods[] =
+{
+	{ nullptr, nullptr },
+};
+
+luaL_Reg TimerGetters[] =
+{
+	{ nullptr, nullptr },
+};
+
+luaL_Reg TimerSetters[] =
+{
+	{ nullptr, nullptr },
+};
+LUACORETYPEDEFINE(Timer, false)
+} // namespace Lua
+} // namespace Shared
+} // namespace Unv

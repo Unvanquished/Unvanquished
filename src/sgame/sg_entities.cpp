@@ -313,7 +313,7 @@ gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, bool ski
 	{
 		entity = g_entities;
 		//start after the reserved player slots, if we are not searching for a player
-		if ( classname && !strcmp(classname, S_PLAYER_CLASSNAME) )
+		if ( !classname || Q_stricmp(classname, S_PLAYER_CLASSNAME) )
 			entity += MAX_CLIENTS;
 	}
 	else

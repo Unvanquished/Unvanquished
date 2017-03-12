@@ -31,85 +31,14 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-
-#include "Timer.h"
-#include "../../cg_local.h"
-
-namespace Rocket {
-namespace Core {
-namespace Lua {
-
-Timer timer;
-
-template<> void ExtraInit<Lua::Timer>(lua_State* L, int metatable_index)
+#ifndef BG_LUA_H_
+#define BG_LUA_H_
+extern "C"
 {
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
-
-	lua_pushcfunction(L, Timeradd);
-	lua_setfield(L, method_index, "add");
+	#include "lua.h"
+	#include "lauxlib.h"
+	#include "lualib.h"
 }
 
-void Timer::Add( int delayMs, int callbackRef, lua_State* L )
-{
-	events.push_back({delayMs, callbackRef, L});
-}
-
-void Timer::RunUpdate(int time)
-{
-	int dtMs = time - lastTime;
-	lastTime = time;
-
-	auto it = events.begin();
-	while (it != events.end())
-	{
-		it->delayMs -= dtMs;
-		if (it->delayMs <= 0)
-		{
-			lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-			luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-			if (lua_pcall(it->L, 0, 0, 0) != 0)
-				::Log::Warn( "Could not run lua timer callback: %s",
-							lua_tostring(it->L, -1));
-			it = events.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
-}
-
-void Timer::Update( int time )
-{
-	timer.RunUpdate(time);
-}
-
-int Timeradd( lua_State* L )
-{
-	int delayMs = luaL_checkinteger(L, 1);
-	int ref = luaL_ref(L, LUA_REGISTRYINDEX);
-	timer.Add(delayMs, ref, L);
-	return 0;
-}
-
-
-RegType<Timer> TimerMethods[] =
-{
-	{ nullptr, nullptr },
-};
-
-luaL_Reg TimerGetters[] =
-{
-	{ nullptr, nullptr },
-};
-
-luaL_Reg TimerSetters[] =
-{
-	{ nullptr, nullptr },
-};
-LUACORETYPEDEFINE(Timer,false)
-}
-}
-}
+void BG_InitializeLuaConstants(lua_State* L);
+#endif
