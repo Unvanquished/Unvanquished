@@ -1,5 +1,7 @@
 selector
 {
+	behavior unstick
+	
 	sequence
 	{
 		condition alertedToEnemy

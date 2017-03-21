@@ -859,8 +859,6 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 /*
 ==================
 ClientTimerActions
-
-Actions that happen once a second
 ==================
 */
 void ClientTimerActions( gentity_t *ent, int msec )

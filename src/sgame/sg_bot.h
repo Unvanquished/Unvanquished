@@ -85,6 +85,10 @@ typedef struct
 	vec3_t      futureAim;
 	usercmd_t   cmdBuffer;
 	botNavCmd_t nav;
+
+	int lastThink;
+	int stuckTime;
+	vec3_t stuckPosition;
 } botMemory_t;
 
 constexpr int BOT_DEFAULT_SKILL = 5;

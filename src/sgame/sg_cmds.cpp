@@ -575,6 +575,12 @@ void Cmd_Give_f( gentity_t *ent )
 		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
 	}
 
+	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
+	{
+		float bp = trap_Argc() < 3 ? 300.0f : atof( name + strlen("bp") );
+		level.team[ent->client->pers.team].totalBudget += bp;
+	}
+
 	if ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		return;
