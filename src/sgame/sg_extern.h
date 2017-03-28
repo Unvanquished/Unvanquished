@@ -56,6 +56,7 @@ extern  vmCvar_t g_minNameChangePeriod;
 extern  vmCvar_t g_maxNameChanges;
 
 extern  vmCvar_t g_showHelpOnConnection;
+extern  vmCvar_t g_neverEnd;
 extern  vmCvar_t g_timelimit;
 extern  vmCvar_t g_friendlyFire;
 extern  vmCvar_t g_friendlyBuildableFire;

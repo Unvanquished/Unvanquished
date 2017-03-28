@@ -190,6 +190,8 @@ vmCvar_t           g_instantBuilding;
 
 vmCvar_t           g_emptyTeamsSkipMapTime;
 
+vmCvar_t           g_neverEnd;
+
 // <bot stuff>
 
 // bot buy cvars
@@ -340,6 +342,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_debugFire,                   "g_debugFire",                   "0",                                0,                                               0, false    , nullptr       },
 
 	// gameplay: basic
+	{ &g_neverEnd,                    "g_neverEnd",                    "0",                                CVAR_SERVERINFO,                                 0, true     , nullptr       },
 	{ &g_timelimit,                   "timelimit",                     "45",                               CVAR_SERVERINFO,                                 0, true     , nullptr       },
 	{ &g_friendlyFire,                "g_friendlyFire",                "1",                                CVAR_SERVERINFO,                                 0, true     , nullptr       },
 	{ &g_friendlyBuildableFire,       "g_friendlyBuildableFire",       "1",                                CVAR_SERVERINFO,                                 0, true     , nullptr       },
@@ -2273,6 +2276,10 @@ can see the last frag.
 */
 void CheckExitRules()
 {
+	if ( g_cheats.integer && g_neverEnd.integer ) {
+		return;
+	}
+
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if ( level.intermissiontime )
