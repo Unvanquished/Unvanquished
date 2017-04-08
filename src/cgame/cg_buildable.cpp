@@ -708,16 +708,9 @@ void CG_InitBuildables()
 
 			if ( cg_buildables[ buildable ].sounds[ j ].enabled )
 			{
-				if ( trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ ) > 0 )
+				if ( ( cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, false ) ) < 0 )
 				{
-					//file exists so close it
-					trap_FS_FCloseFile( f );
-
-					cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, false );
-				}
-				else
-				{
-					//file doesn't exist - use default
+					// file doesn't exist - use default
 					if ( BG_Buildable( buildable )->team == TEAM_ALIENS )
 					{
 						cg_buildables[ buildable ].sounds[ j ].sound = defaultAlienSounds[ j ];
