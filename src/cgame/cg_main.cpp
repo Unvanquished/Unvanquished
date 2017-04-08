@@ -977,43 +977,43 @@ static void CG_RegisterSounds()
 	char       name[ MAX_QPATH ];
 	const char *soundName;
 
-	cgs.media.weHaveEvolved = trap_S_RegisterSound( "sound/announcements/overmindevolved.wav", true );
-	cgs.media.reinforcement = trap_S_RegisterSound( "sound/announcements/reinforcement.wav", true );
+	cgs.media.weHaveEvolved = trap_S_RegisterSound( "sound/announcements/overmindevolved", true );
+	cgs.media.reinforcement = trap_S_RegisterSound( "sound/announcements/reinforcement", true );
 
-	cgs.media.alienOvermindAttack = trap_S_RegisterSound( "sound/announcements/overmindattack.wav", true );
-	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying.wav", true );
-	cgs.media.alienOvermindSpawns = trap_S_RegisterSound( "sound/announcements/overmindspawns.wav", true );
+	cgs.media.alienOvermindAttack = trap_S_RegisterSound( "sound/announcements/overmindattack", true );
+	cgs.media.alienOvermindDying = trap_S_RegisterSound( "sound/announcements/overminddying", true );
+	cgs.media.alienOvermindSpawns = trap_S_RegisterSound( "sound/announcements/overmindspawns", true );
 
-	cgs.media.alienL4ChargePrepare = trap_S_RegisterSound( "sound/player/level4/charge_prepare.wav", true );
-	cgs.media.alienL4ChargeStart = trap_S_RegisterSound( "sound/player/level4/charge_start.wav", true );
+	cgs.media.alienL4ChargePrepare = trap_S_RegisterSound( "sound/player/level4/charge_prepare", true );
+	cgs.media.alienL4ChargeStart = trap_S_RegisterSound( "sound/player/level4/charge_start", true );
 
-	cgs.media.selectSound = trap_S_RegisterSound( "sound/weapons/change.wav", false );
-	cgs.media.turretSpinupSound = trap_S_RegisterSound( "sound/buildables/mgturret/spinup.wav", false );
-	cgs.media.weaponEmptyClick = trap_S_RegisterSound( "sound/weapons/click.wav", false );
+	cgs.media.selectSound = trap_S_RegisterSound( "sound/weapons/change", false );
+	cgs.media.turretSpinupSound = trap_S_RegisterSound( "sound/buildables/mgturret/spinup", false );
+	cgs.media.weaponEmptyClick = trap_S_RegisterSound( "sound/weapons/click", false );
 
-	cgs.media.talkSound = trap_S_RegisterSound( "sound/misc/talk.wav", false );
-	cgs.media.alienTalkSound = trap_S_RegisterSound( "sound/misc/alien_talk.wav", false );
-	cgs.media.humanTalkSound = trap_S_RegisterSound( "sound/misc/human_talk.wav", false );
-	cgs.media.landSound = trap_S_RegisterSound( "sound/player/land1.wav", false );
+	cgs.media.talkSound = trap_S_RegisterSound( "sound/misc/talk", false );
+	cgs.media.alienTalkSound = trap_S_RegisterSound( "sound/misc/alien_talk", false );
+	cgs.media.humanTalkSound = trap_S_RegisterSound( "sound/misc/human_talk", false );
+	cgs.media.landSound = trap_S_RegisterSound( "sound/player/land1", false );
 
-	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in.wav", false );
-	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out.wav", false );
-	cgs.media.watrUnSound = trap_S_RegisterSound( "sound/player/watr_un.wav", false );
+	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in", false );
+	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out", false );
+	cgs.media.watrUnSound = trap_S_RegisterSound( "sound/player/watr_un", false );
 
-	cgs.media.disconnectSound = trap_S_RegisterSound( "sound/misc/disconnect.wav", false );
+	cgs.media.disconnectSound = trap_S_RegisterSound( "sound/misc/disconnect", false );
 
 	for ( i = 0; i < 4; i++ )
 	{
-		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/step%i.wav", i + 1 );
+		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/step%i", i + 1 );
 		cgs.media.footsteps[ FOOTSTEP_GENERAL ][ i ] = trap_S_RegisterSound( name, false );
 
-		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/flesh%i.wav", i + 1 );
+		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/flesh%i", i + 1 );
 		cgs.media.footsteps[ FOOTSTEP_FLESH ][ i ] = trap_S_RegisterSound( name, false );
 
-		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/splash%i.wav", i + 1 );
+		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/splash%i", i + 1 );
 		cgs.media.footsteps[ FOOTSTEP_SPLASH ][ i ] = trap_S_RegisterSound( name, false );
 
-		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/clank%i.wav", i + 1 );
+		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/clank%i", i + 1 );
 		cgs.media.footsteps[ FOOTSTEP_METAL ][ i ] = trap_S_RegisterSound( name, false );
 	}
 
@@ -1034,37 +1034,37 @@ static void CG_RegisterSounds()
 		cgs.gameSounds[ i ] = trap_S_RegisterSound( soundName, false );
 	}
 
-	cgs.media.jetpackThrustLoopSound = trap_S_RegisterSound( "sound/upgrades/jetpack/hi.wav", false );
+	cgs.media.jetpackThrustLoopSound = trap_S_RegisterSound( "sound/upgrades/jetpack/hi", false );
 
-	cgs.media.medkitUseSound = trap_S_RegisterSound( "sound/upgrades/medkit/medkit.wav", false );
+	cgs.media.medkitUseSound = trap_S_RegisterSound( "sound/upgrades/medkit/medkit", false );
 
-	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve.wav", false );
+	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve", false );
 
-	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion.wav", false );
-	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild.wav", false );
+	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion", false );
+	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild", false );
 
-	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying.wav", false );
-	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion.wav", false );
-	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild.wav", false );
+	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying", false );
+	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion", false );
+	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild", false );
 
 	for ( i = 0; i < 4; i++ )
 	{
 		cgs.media.humanBuildableDamage[ i ] = trap_S_RegisterSound(
-		                                        va( "sound/buildables/human/damage%d.wav", i ), false );
+		                                        va( "sound/buildables/human/damage%d", i ), false );
 	}
 
-	cgs.media.hardBounceSound1 = trap_S_RegisterSound( "sound/misc/hard_bounce1.wav", false );
-	cgs.media.hardBounceSound2 = trap_S_RegisterSound( "sound/misc/hard_bounce2.wav", false );
+	cgs.media.hardBounceSound1 = trap_S_RegisterSound( "sound/misc/hard_bounce1", false );
+	cgs.media.hardBounceSound2 = trap_S_RegisterSound( "sound/misc/hard_bounce2", false );
 
-	cgs.media.repeaterUseSound = trap_S_RegisterSound( "sound/buildables/repeater/use.wav", false );
+	cgs.media.repeaterUseSound = trap_S_RegisterSound( "sound/buildables/repeater/use", false );
 
-	cgs.media.buildableRepairSound = trap_S_RegisterSound( "sound/buildables/human/repair.wav", false );
-	cgs.media.buildableRepairedSound = trap_S_RegisterSound( "sound/buildables/human/repaired.wav", false );
+	cgs.media.buildableRepairSound = trap_S_RegisterSound( "sound/buildables/human/repair", false );
+	cgs.media.buildableRepairedSound = trap_S_RegisterSound( "sound/buildables/human/repaired", false );
 
-	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning.wav", false );
-	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2.wav", false );
+	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning", false );
+	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2", false );
 
-	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon.wav", false );
+	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon", false );
 
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired.ogg", false );
 }

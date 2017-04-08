@@ -25,22 +25,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 {
-	"idle1.wav",
-	"idle2.wav",
-	"powerdown.wav",
-	"idle_unpowered.wav",
-	"construct1.wav",
-	"construct2.wav",
-	"attack1.wav",
-	"attack2.wav",
-	"spawn1.wav",
-	"spawn2.wav",
-	"pain1.wav",
-	"pain2.wav",
-	"destroy1.wav",
-	"destroy2.wav",
-	"destroyed.wav",
-	"destroyed2.wav"
+	"idle1",
+	"idle2",
+	"powerdown",
+	"idle_unpowered",
+	"construct1",
+	"construct2",
+	"attack1",
+	"attack2",
+	"spawn1",
+	"spawn2",
+	"pain1",
+	"pain2",
+	"destroy1",
+	"destroy2",
+	"destroyed",
+	"destroyed2"
 };
 
 // Shorthand definitions for the buildable animation names below.
