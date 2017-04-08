@@ -1,9 +1,7 @@
-res-emoticons
-res-beacons
 res-players
 res-weapons
 res-buildables
-res-voices
-res-sounds
+res-ambient
+res-feedback
 res-soundtrack
-res-legacysounds
+res-legacy
