@@ -1,7 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Name=Unvanquished
+Name[gl]=Invicto
 Comment=First-person shooter game - aliens vs humans
+Comment[gl]=Xogo de tiros entre extraterrestres e humanos.
 Icon=unvanquished
 Terminal=false
 Type=Application
