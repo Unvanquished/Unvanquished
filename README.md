@@ -1,4 +1,4 @@
-#Unvanquished
+# Unvanquished
 
 [![GitHub tag](https://img.shields.io/github/tag/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/tags)
 [![GitHub release](https://img.shields.io/github/release/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
@@ -14,7 +14,7 @@ This repository contains the gamelogic of the game Unvanquished.
 You need to download the game's assets in addition to that to make it run.
 See below for build and launch instructions.
 
-##Dependencies
+## Dependencies
 
 `zlib`,
 `libgmp`,
@@ -33,19 +33,19 @@ See below for build and launch instructions.
 `libopus`,
 `libopusfile`
 
-###Buildtime
+### Buildtime
 
 `cmake`,
 `python` ≥ 2,
 `python-yaml`,
 `python-jinja`
 
-###Optional
+### Optional
 
 `ncurses`,
 `libGeoIP`
 
-###MSYS2
+### MSYS2
 
 `base-devel`
 
@@ -53,29 +53,29 @@ See below for build and launch instructions.
 *or*
 32-bit: `mingw-w64-i686-{toolchain,cmake,aria2}`
 
-##Build Instructions
+## Build Instructions
 
 Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores to speed up compilation.
 
-###Visual Studio
+### Visual Studio
 
  1. Run CMake.
  2. Choose your compiler.
  3. Open `Unvanquished.sln` and compile.
 
-###Linux, Mac OS X
+### Linux, Mac OS X
 
     mkdir build && cd build
     cmake ..
     make
 
-###MSYS2
+### MSYS2
 
     mkdir build && cd build
     cmake -G "MSYS Makefiles" ..
     make
 
-###Linux cross-compile to Windows
+### Linux cross-compile to Windows
 
     mkdir build && cd build
     cmake -DCMAKE_TOOLCHAIN_FILE=../daemon/cmake/cross-toolchain-mingw32.cmake .. # ¹
@@ -83,7 +83,7 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
 
 ¹ *Use `cross-toolchain-mingw64.cmake` for a Win64 build.*
 
-###Mac OS X universal app
+### Mac OS X universal app
 
     mkdir build32 && cd build32
     cmake -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
@@ -95,18 +95,18 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
     cd ..
     ./make-macosx-app.sh build32 build64
 
-##Launch Instructions
+## Launch Instructions
 
-###Linux, Mac OS X, MSYS2
+### Linux, Mac OS X, MSYS2
 
-####If Unvanquished's assets are installed on your system
+#### If Unvanquished's assets are installed on your system
 
     cd build
     ./daemon -pakpath PATH # ¹
 
 ¹ *`PATH` is the path to the `pkg` directory that contains the game's assets.*
 
-####If you don't have the assets
+#### If you don't have the assets
 
     cd build
     mkdir pkg
@@ -120,7 +120,7 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
 ¹ *Fast, requires `aria2c`.*
 ² *Unreliable speed, requires `curl`.*
 
-####If you're a developer
+#### If you're a developer
 
 As a developer, you will want to load your own assets in addition to those shipped with the game. To do that:
 
@@ -138,13 +138,13 @@ You can now put loose assets into `assets_source.pk3dir` or you can put addition
 ¹ *Runs the game and loads the `assets` package and its dependencies. `PATH` is the path to Unvanquished's base packages and maps. Omit `-pakpath PATH` if `pkg` contains these assets.*
 ² *In addition, load a shared-object gamelogic you compiled and allow it to be debugged. Launch the map Platform 23 with cheats enabled after startup.*
 
-###Windows
+### Windows
 
-####If Unvanquished's assets are installed on your system
+#### If Unvanquished's assets are installed on your system
 
 Run `daemon.exe -pakpath PATH`, where `PATH` is the path to the `pkg` directory that contains the game's assets.
 
-####If you don't have the assets
+#### If you don't have the assets
 
   1. Copy the `pkg` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](https://github.com/Unvanquished/Unvanquished/releases)) into your build directory.
   2. Run `daemon.exe`.
