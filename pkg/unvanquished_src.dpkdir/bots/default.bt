@@ -1,5 +1,14 @@
 selector
 {
+	decorator return( STATUS_FAILURE )
+	{
+		sequence
+		{
+			condition haveWeapon( WP_HBUILD ) && distanceTo( E_GOAL ) <= 100
+			action resetStuckTime
+		}
+	}
+	
 	behavior unstick
 	
 	sequence
