@@ -34,36 +34,22 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "Building in the source directory is not supported, try building in a 'build' directory. You may have to delete the CMakeCache.txt file and CMakeFiles directory that are next to the CMakeLists.txt.")
 endif()
 
-set(SUBMODULE_LIST
-  "libs/libRocket"
-  "src/utils/cbse")
-
-set(DAEMON_DIR_STRING "Path to the Daemon Engine source.")
-if(NOT DAEMON_DIR)
-  set(DAEMON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/daemon" CACHE STRING "${DAEMON_DIR_STRING}")
-  LIST(APPEND SUBMODULE_LIST "daemon")
-else()
-  set(DAEMON_DIR "${DAEMON_DIR}" CACHE STRING "${DAEMON_DIR_STRING}")
-endif()
-
-foreach(SUBMODULE_PATH ${SUBMODULE_LIST})
-  # Check if we need to initialize submodule
-  file(GLOB DENG_RESULT "${CMAKE_CURRENT_SOURCE_DIR}/${SUBMODULE_PATH}")
-  list(LENGTH ${DENG_RESULT} DENG_RES_LEN)
-  if(DENG_RES_LEN EQUAL 0)
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
-      find_package(Git REQUIRED)
-      if(GIT_FOUND)
-        execute_process(
-         COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive -- "${SUBMODULE_PATH}"
-         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-      endif()
+# Check if we need to initialize submodules
+file(GLOB DENG_RESULT ${CMAKE_CURRENT_SOURCE_DIR}/daemon)
+list(LENGTH ${DENG_RESULT} DENG_RES_LEN)
+if(DENG_RES_LEN EQUAL 0)
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+    find_package(Git REQUIRED)
+    if(GIT_FOUND)
+      execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
   endif()
-endforeach()
+endif()
 
 set(Daemon_OUT ${CMAKE_CURRENT_BINARY_DIR})
-add_subdirectory("${DAEMON_DIR}" daemon_build)
+add_subdirectory(daemon daemon_build)
 include(DaemonGame)
 
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)

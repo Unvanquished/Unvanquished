@@ -42,12 +42,12 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 
 	if ( !( charWidth = cw ) )
 	{
-		charWidth = CHAR_WIDTH;
+		charWidth = CGAME_CHAR_WIDTH;
 	}
 
 	if ( !( charHeight = ch ) )
 	{
-		charHeight = CHAR_HEIGHT;
+		charHeight = CGAME_CHAR_HEIGHT;
 	}
 
 	if ( width < 1 )
