@@ -34,20 +34,6 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "Building in the source directory is not supported, try building in a 'build' directory. You may have to delete the CMakeCache.txt file and CMakeFiles directory that are next to the CMakeLists.txt.")
 endif()
 
-# Check if we need to initialize submodules
-file(GLOB DENG_RESULT ${CMAKE_CURRENT_SOURCE_DIR}/daemon)
-list(LENGTH ${DENG_RESULT} DENG_RES_LEN)
-if(DENG_RES_LEN EQUAL 0)
-  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
-    find_package(Git REQUIRED)
-    if(GIT_FOUND)
-      execute_process(
-        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    endif()
-  endif()
-endif()
-
 set(Daemon_OUT ${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(daemon daemon_build)
 include(DaemonGame)
