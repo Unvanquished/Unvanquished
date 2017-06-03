@@ -190,6 +190,8 @@ vmCvar_t           g_instantBuilding;
 
 vmCvar_t           g_emptyTeamsSkipMapTime;
 
+Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful to load a map without spawn for testing purpose", Cvar::NONE, false);
+
 // <bot stuff>
 
 // bot buy cvars
@@ -2273,6 +2275,10 @@ can see the last frag.
 */
 void CheckExitRules()
 {
+	if ( g_cheats.integer && g_neverEnd.Get() ) {
+		return;
+	}
+
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if ( level.intermissiontime )
