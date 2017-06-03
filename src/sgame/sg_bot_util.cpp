@@ -2149,6 +2149,12 @@ void BotSearchForEnemy( gentity_t *self )
 	}
 }
 
+void BotResetStuckTime( gentity_t *self )
+{
+	self->botMind->stuckTime = level.time;
+	VectorCopy( self->client->ps.origin, self->botMind->stuckPosition );
+}
+
 void BotCalculateStuckTime( gentity_t *self )
 {
 	// last think time condition to avoid stuck condition after respawn or /pause
@@ -2156,8 +2162,7 @@ void BotCalculateStuckTime( gentity_t *self )
 	if ( !dataValid
 			|| DistanceSquared( self->botMind->stuckPosition, self->client->ps.origin ) >= Square( BOT_STUCK_RADIUS ) )
 	{
-		self->botMind->stuckTime = level.time;
-		VectorCopy( self->client->ps.origin, self->botMind->stuckPosition );
+		BotResetStuckTime( self );
 	}
 	self->botMind->lastThink = level.time;
 }

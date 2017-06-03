@@ -26,10 +26,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "engine/botlib/bot_types.h"
 #include "sg_bot.h"
 
-//g_bot.c
+
 bool PlayersBehindBotInSpawnQueue( gentity_t *self );
 void     BotSetSkillLevel( gentity_t *self, int skill );
+
+// unsticking
 void BotCalculateStuckTime( gentity_t *self );
+void BotResetStuckTime( gentity_t *self );
 
 // entity queries
 int        FindBots( int *botEntityNumbers, int maxBots, team_t team );

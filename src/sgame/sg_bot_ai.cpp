@@ -994,6 +994,12 @@ AINodeStatus_t BotActionJump( gentity_t *self, AIGenericNode_t* )
 	return BotJump( self ) ? AINodeStatus_t::STATUS_SUCCESS : AINodeStatus_t::STATUS_FAILURE;
 }
 
+AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t* )
+{
+	BotResetStuckTime( self );
+	return AINodeStatus_t::STATUS_SUCCESS;
+}
+
 /*
 	alien specific actions
 */

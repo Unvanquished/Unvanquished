@@ -929,6 +929,7 @@ static const struct AIActionMap_s
 	{ "moveTo",            BotActionMoveTo,            1, 2 },
 	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
 	{ "repair",            BotActionRepair,            0, 0 },
+	{ "resetStuckTime",    BotActionResetStuckTime,    0, 0 },
 	{ "roam",              BotActionRoam,              0, 0 },
 	{ "roamInRadius",      BotActionRoamInRadius,      2, 2 },
 	{ "rush",              BotActionRush,              0, 0 },
