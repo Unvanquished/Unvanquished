@@ -1597,8 +1597,6 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	// Initialize item locking state
 	BG_InitUnlockackables();
 
-	CG_RegisterCvars();
-
 	CG_InitConsoleCommands();
 	trap_S_BeginRegistration();
 

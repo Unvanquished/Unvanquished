@@ -1969,6 +1969,7 @@ extern vmCvar_t            rocket_menuFile;
 //
 // cg_main.c
 //
+void       CG_RegisterCvars();
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 const char *CG_Args();
