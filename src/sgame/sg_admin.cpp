@@ -1184,7 +1184,7 @@ static bool admin_match( void *admin, const void *match )
 	}
 
 	G_SanitiseString( ( ( g_admin_admin_t * ) admin )->name, n1, sizeof( n1 ) );
-	return !!strstr( n1, n2 );
+	return strstr( n1, n2 ) != nullptr;
 }
 
 static int admin_out( void *admin, char *str )
