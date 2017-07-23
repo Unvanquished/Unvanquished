@@ -38,12 +38,17 @@ Maryland 20850 USA.
 #undef DotProduct
 #endif
 
+#include "common/Compiler.h"
 #include "common/Color.h"
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-pedantic"
+#endif
 #include <Rocket/Core/Core.h>
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
 extern Rocket::Core::Context *menuContext;
 extern Rocket::Core::Context *hudContext;
