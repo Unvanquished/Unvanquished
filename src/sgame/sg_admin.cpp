@@ -1184,7 +1184,7 @@ static bool admin_match( void *admin, const void *match )
 	}
 
 	G_SanitiseString( ( ( g_admin_admin_t * ) admin )->name, n1, sizeof( n1 ) );
-	return strstr( n1, n2 ) ? true : false;
+	return strstr( n1, n2 ) != nullptr;
 }
 
 static int admin_out( void *admin, char *str )
@@ -3245,9 +3245,10 @@ bool G_admin_warn( gentity_t *ent )
 	if( ( found = G_ClientNumbersFromString( name, pids, MAX_CLIENTS ) ) != 1 )
 	{
 		count = G_MatchOnePlayer( pids, found, err, sizeof( err ) );
-		ADMP( va( "%s %s %s %s %s", QQ( "^3$1$: ^7$2t$\n $3$$4$" ), "warn", ( count > 0 ) ?  Quote( Substring( err, 0, count ) ) : Quote( err ),
-		                                      ( count > 0 ) ? Quote( Substring( err, count + 1, strlen( err ) ) ) : "",
-				                              ( count > 0 ) ? "" : "" ) );
+		ADMP( va( "%s %s %s",
+				  QQ( "^3$1$: ^7$2t$" ),
+				  "warn",
+				  ( count > 0 ) ? Quote( Substring( err, 0, count ) ) : Quote( err ) ) );
 		return false;
 	}
 
@@ -3476,7 +3477,7 @@ static bool admin_match_inactive( void *admin, const void *match )
 	unsigned int    date = a->lastSeen.tm_year * 10000 + a->lastSeen.tm_mon * 100 + a->lastSeen.tm_mday;
 	unsigned int	since = *(unsigned int *) match;
 
-	return ( date < since ) ? true : false;
+	return date < since;
 }
 
 bool G_admin_listinactive( gentity_t *ent )

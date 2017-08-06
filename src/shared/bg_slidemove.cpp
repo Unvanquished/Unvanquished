@@ -355,7 +355,7 @@ bool PM_StepSlideMove( bool gravity, bool predictive )
 
 		//we can step down
 		if ( trace.fraction > 0.01f && trace.fraction < 1.0f &&
-		     !trace.allsolid && pml.groundPlane != false )
+		     !trace.allsolid && pml.groundPlane )
 		{
 			if ( pm->debugLevel > 1 )
 			{
