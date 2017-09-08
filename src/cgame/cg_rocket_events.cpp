@@ -229,7 +229,7 @@ static void CG_Rocket_EventExecForm()
 		}
 	}
 
-	if ( *cmd )
+	if ( cmd[0] != '\0' )
 	{
 		trap_SendConsoleCommand( cmd );
 	}

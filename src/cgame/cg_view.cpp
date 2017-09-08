@@ -300,7 +300,7 @@ void CG_OffsetThirdPersonView()
 		{
 			vec3_t lookDirection;
 
-			if ( cg.wasDeadLastFrame == false || !cg_staticDeathCam.integer )
+			if ( !cg.wasDeadLastFrame || !cg_staticDeathCam.integer )
 			{
 				VectorCopy( cg_entities[ killerEntNum ].lerpOrigin, killerPos );
 				cg.wasDeadLastFrame = true;

@@ -904,8 +904,7 @@ bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFi
 
 	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
 	{
-		if( typeOfDeprecation < ENT_V_TMPORARY
-		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
+		if ( typeOfDeprecation < ENT_V_TMPORARY || g_debugEntities.integer >= 1 )
 		{
 			Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->s.number, actualFieldname, expectedFieldname );
 		}
