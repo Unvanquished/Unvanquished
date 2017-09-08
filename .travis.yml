@@ -26,13 +26,11 @@ matrix:
 install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm -rf /opt/python; fi  # Delete conflicting python
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq install software-properties-common; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository ppa:george-edison55/cmake-3.x -y; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq update; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq install
-    cmake ninja-build
-    liblua5.2-dev
-    libgeoip-dev
-    libncursesw5-dev
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -y install
+    ninja-build libegl1-mesa-dev
+    liblua5.2-dev libgles2-mesa-dev
+    libgeoip-dev libncursesw5-dev
     libsdl2-dev libglew-dev libfreetype6-dev
     libwebp-dev libjpeg8-dev libpng-dev
     libcurl4-gnutls-dev zlib1g-dev
