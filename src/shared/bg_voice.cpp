@@ -395,8 +395,8 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 
 			trap_Parse_SourceFileAndLine( handle, filename, &line );
 			Log::Warn( "BG_VoiceParseCommand(): "
-						"track \"%s\" referenced on line %d of %s does not exist",
-						token.string, line, filename );
+					"track \"%s\" referenced on line %d of %s does not exist",
+					token.string, line, filename );
 		}
 		voiceTracks->duration = 0; // FIXME: Was always zero...
 #endif
