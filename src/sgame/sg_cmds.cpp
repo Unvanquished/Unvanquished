@@ -3788,6 +3788,8 @@ List all maps on the server
 
 #define MAX_MAPLIST_MAPS 256
 #define MAX_MAPLIST_ROWS 9
+#define MAX_MAPLIST_COLS 3
+
 void Cmd_ListMaps_f( gentity_t *ent )
 {
 	char search[ 16 ] = { "" };
@@ -3853,7 +3855,42 @@ void Cmd_ListMaps_f( gentity_t *ent )
 			   }
 	);
 
-	int rows = ( mapNamesCount + 2 ) / 3;
+	/* About the MAX_MAPLIST_COLS - 1 trick:
+	 *
+	 * This is to fill an extra row when the number of map is not a
+	 * multiple of MAX_MAPLIST_COLS, 1 being the obvious minimal number
+	 * of map to make the filling effective and add an extra row.
+	 *
+	 * Because:
+	 *     1 extra map name + MAX_MAPLIST_COLS - 1 = MAX_MAPLIST_COLS
+	 * The condition:
+	 *     N extra map name + MAX_MAPLIST_COLS - 1 > MAX_MAPLIST_COLS
+	 * is true when a an extra row is needed.
+	 *
+	 * The integer result of the division by MAX_MAPLIST_COLS does
+	 * that > condition implicitely since:
+	 *     N extra maps + MAX_MAPLIST_COLS - 1 / MAX_MAPLIST_COLS
+	 * returns 0 if it divides a multiple of MAX_MAPLIST_COLS
+	 * or truncates to 1 if not, so:
+	 *
+	 * With I a multiple of MAX_MAPLIST_COLS
+	 * And N a number of extra maps not being a multiple of MAX_MAPLIST_COLS
+	 * The way:
+	 *    mapNamesCount = I × MAX_MAPLISt_COLS + N
+	 *
+	 * We can compute:
+	 *    rows = (I + N + MAX_MAPLIST_COLS - 1)                     / MAX_MAPLIST_COLS
+	 *    rows = (I / MAX_MAPLIST_COLS) + (N + MAX_MAPLIST_COLS - 1 / MAX_MAPLIST_COLS)
+	 *    rows =  I                     + 1
+	 *
+	 * This adds an extra row every time a row is not enough to contains
+	 * remaining map names.
+	 *
+	 * The rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS trick does the same
+	 * to add an extra page everytime a column is not enough to contains the
+	 * remaining map names */
+
+	int rows = ( mapNamesCount + MAX_MAPLIST_COLS - 1 ) / MAX_MAPLIST_COLS;
 	int pages = std::max( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
 
 	if ( page >= pages )
@@ -3861,11 +3898,11 @@ void Cmd_ListMaps_f( gentity_t *ent )
 		page = pages - 1;
 	}
 
-	int start = page * MAX_MAPLIST_ROWS * 3;
+	int start = page * MAX_MAPLIST_ROWS * MAX_MAPLIST_COLS;
 
-	if ( mapNamesCount < start + ( 3 * MAX_MAPLIST_ROWS ) )
+	if ( mapNamesCount < start + ( MAX_MAPLIST_ROWS * MAX_MAPLIST_COLS) )
 	{
-		rows = ( mapNamesCount - start + 2 ) / 3;
+		rows = ( mapNamesCount - start + MAX_MAPLIST_COLS - 1 ) / MAX_MAPLIST_COLS;
 	}
 	else
 	{
@@ -3882,7 +3919,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 	for ( int row = 0; row < rows; row++ )
 	{
-		for ( int i = start + row, j = 0; i < mapNamesCount && j < 3; i += rows, j++ )
+		for ( int i = start + row, j = 0; i < mapNamesCount && j < MAX_MAPLIST_COLS; i += rows, j++ )
 		{
 			const char *printedMapName = mapNames[ i ];
 
