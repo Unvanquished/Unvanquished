@@ -179,7 +179,7 @@ humanBuildableDestroyedPS
       radius          0 1.0 -
       bounce          0.2
       bounceMark      1~1 16 gfx/marks/burn_mrk
-      bounceSound     ~1 sound/buildables/human/fragmentbounce.wav
+      bounceSound     ~1 sound/buildables/human/fragmentbounce
 
       lifeTime        7000~1000
     }
@@ -317,7 +317,7 @@ alienBuildableDestroyedPS
       radius          0 1.0 -
       bounce          0.2
       bounceMark      1~1 16 creep
-      bounceSound     ~1 sound/misc/organic_bounce.wav
+      bounceSound     ~1 sound/misc/organic_bounce
 
       lifeTime 5000~1000
     }
