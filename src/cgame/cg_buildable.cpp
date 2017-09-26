@@ -433,6 +433,11 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 		}
 
 		animations[ i ].loopFrames = atoi( token );
+		if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
+		{
+			Log::Warn("CG_ParseBuildableAnimationFile: loopFrames != numFrames");
+			animations[ i ].loopFrames = animations[ i ].numFrames;
+		}
 
 		token = COM_Parse( &text_p );
 

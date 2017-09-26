@@ -977,6 +977,11 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 			}
 
 			bp->modelAnimation.loopFrames = atoi( token );
+			if ( bp->modelAnimation.loopFrames && bp->modelAnimation.loopFrames != bp->modelAnimation.numFrames )
+			{
+				Log::Warn("CG_ParseParticle: loopFrames != numFrames");
+				bp->modelAnimation.loopFrames = bp->modelAnimation.numFrames;
+			}
 
 			token = COM_Parse( text_p );
 
