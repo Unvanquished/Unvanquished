@@ -683,7 +683,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	level.time = levelTime;
 	level.inClient = inClient;
 	level.startTime = levelTime;
-	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
+	level.snd_fry = G_SoundIndex( "sound/misc/fry" );  // FIXME standing in lava / slime
 
 	// TODO: Move this in a seperate function
 	if ( g_logFile.string[ 0 ] )
