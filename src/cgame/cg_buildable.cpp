@@ -708,7 +708,7 @@ void CG_InitBuildables()
 
 			if ( cg_buildables[ buildable ].sounds[ j ].enabled )
 			{
-				cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, false )
+				cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, false );
 				if ( cg_buildables[ buildable ].sounds[ j ].sound < 0 )
 				{
 					// file doesn't exist - use default

@@ -1015,7 +1015,7 @@ Every map should have exactly one.
 
 === KEYS ===
 ; message: Text to print during connection process. Used for the name of level.
-; music: path/name of looping  file used for level's music (eg. music/sonic5).
+; music: path/name of looping sound file used for level's music (eg. music/sonic5).
 ; gravity: level gravity [g_gravity (800)]
 
 ; humanBuildPoints: maximum amount of power the humans can use. [g_humanBuildPoints]
