@@ -277,6 +277,11 @@ static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi 
 
 		token = COM_Parse2( &text_p );
 		animations[ i ].loopFrames = atoi( token );
+		if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
+		{
+			Log::Warn("CG_ParseWeaponAnimationFile: loopFrames != numFrames");
+			animations[ i ].loopFrames = animations[ i ].numFrames;
+		}
 
 		token = COM_Parse2( &text_p );
 		fps = atof( token );

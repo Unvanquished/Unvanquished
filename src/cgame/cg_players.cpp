@@ -581,6 +581,11 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			}
 
 			animations[ i ].loopFrames = atoi( token );
+			if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
+			{
+				Log::Warn("CG_ParseAnimationFile: loopFrames != numFrames");
+				animations[ i ].loopFrames = animations[ i ].numFrames;
+			}
 
 			token = COM_Parse2( &text_p );
 
@@ -674,6 +679,11 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			}
 
 			animations[ i ].loopFrames = atoi( token );
+			if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
+			{
+				Log::Warn("CG_ParseAnimationFile: loopFrames != numFrames");
+				animations[ i ].loopFrames = animations[ i ].numFrames;
+			}
 
 			token = COM_Parse2( &text_p );
 

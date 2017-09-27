@@ -65,7 +65,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 				bool looping = !!anim->loopFrames;
 				if (looping)
 				{
-					ASSERT(anim->loopFrames == numFrames);
+					ASSERT_EQ(anim->loopFrames, numFrames);
 					lf->animationTime += relativeFrame / numFrames * (numFrames * frameLength);
 					relativeFrame %= numFrames;
 					lf->frameTime = lf->animationTime + relativeFrame * frameLength;
