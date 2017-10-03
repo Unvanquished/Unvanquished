@@ -1316,6 +1316,7 @@ void CG_Rocket_CleanUpArmouryBuyList( const char *table )
 		case 'U':
 		case 'u':
 			tblIndex = ROCKETDS_UPGRADES;
+			break;
 
 		default:
 			tblIndex = ROCKETDS_BOTH;
