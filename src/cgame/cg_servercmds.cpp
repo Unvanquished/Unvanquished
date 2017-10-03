@@ -851,6 +851,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			{
 				ignore = S_SKIPNOTIFY;
 			}
+			DAEMON_FALLTHROUGH;
 
 		case SAY_ALL_ADMIN:
 			Log::Notice(  "%s%s%s^7: %s%s",
@@ -931,6 +932,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 				trap_S_StartLocalSound( cgs.media.humanTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 				break;
 			}
+			DAEMON_FALLTHROUGH;
 
 		default:
 			trap_S_StartLocalSound( cgs.media.talkSound, soundChannel_t::CHAN_LOCAL_SOUND );
