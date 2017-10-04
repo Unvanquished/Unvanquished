@@ -2617,9 +2617,9 @@ void G_RunThink( gentity_t *ent )
 	}
 
 	// Do CBSE style thinking.
-	ForEntities<ThinkingComponent>([] (Entity &entity, ThinkingComponent &thinkingComponent) {
-		thinkingComponent.Think();
-	});
+	if (auto* thinkingComponent = ent->entity->Get<ThinkingComponent>()) {
+		thinkingComponent->Think();
+	}
 
 	// Do legacy thinking.
 	// TODO: Replace this kind of thinking entirely with CBSE.
@@ -2858,6 +2858,20 @@ void G_RunFrame( int levelTime )
 				}
 		}
 	}
+
+	// ThinkingComponent should have been called already but who knows maybe we forgot some.
+	ForEntities<ThinkingComponent>([](Entity& entity, ThinkingComponent& thinkingComponent) {
+		// A newly created entity can randomly run things, or not, in the G_RunFrames loop over
+		// entities depending on whether it was added in a hole in g_entities or at the end, so
+		// ignore the entity if it was created this frame.
+		if (entity.oldEnt->creationTime != level.time && thinkingComponent.GetLastThinkTime() != level.time) {
+			static Util::MinimumDelay delay(60000);
+			if (delay.Check(level.time)) {
+				Log::Warn("ThinkingComponent was not called");
+			}
+			thinkingComponent.Think();
+		}
+	});
 
 	// perform final fixups on the players
 	ent = &g_entities[ 0 ];
