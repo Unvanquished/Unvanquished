@@ -1067,6 +1067,7 @@ static void CG_RegisterSounds()
 	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon", false );
 
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired", false );
+	cgs.media.killSound = trap_S_RegisterSound( "sound/feedback/bell", false );
 }
 
 //===================================================================================
@@ -1303,6 +1304,8 @@ static void CG_RegisterGraphics()
 	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacons/arrow", RSF_DEFAULT );
 	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
 	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
+
+	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/2d/damage-indicator-font", RSF_DEFAULT );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
