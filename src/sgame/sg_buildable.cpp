@@ -2568,6 +2568,7 @@ void G_BuildLogRevert( int id )
 				momentumChange[ log->buildableTeam ] += log->momentumEarned;
 
 				// Fall through to default
+				DAEMON_FALLTHROUGH;
 
 		default:
 			// Spawn buildable

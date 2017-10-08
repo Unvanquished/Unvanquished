@@ -4381,6 +4381,7 @@ static void PM_Weapon()
 					PM_ForceLegsAnim( NSPA_ATTACK2 );
 					PM_StartWeaponAnim( WANIM_ATTACK7 );
 				}
+				DAEMON_FALLTHROUGH;
 
 			case WP_ALEVEL2:
 				if ( attack1 )

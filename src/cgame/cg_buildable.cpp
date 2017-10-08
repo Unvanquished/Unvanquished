@@ -606,7 +606,6 @@ void CG_InitBuildables()
 	buildable_t  buildable;
 	int          j;
 	buildableAnimNumber_t anim;
-	fileHandle_t f;
 
 	memset( cg_buildables, 0, sizeof( cg_buildables ) );
 

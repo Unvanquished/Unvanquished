@@ -51,6 +51,7 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
     ${GAMELOGIC_DIR}/cgame/cg_animdelta.cpp
     ${GAMELOGIC_DIR}/cgame/Filter.h
+    ${GAMELOGIC_DIR}/cgame/CombatFeedback.cpp
 
     ${GAMELOGIC_DIR}/cgame/rocket/rocket.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket.h
@@ -99,7 +100,7 @@ set(CGAMELIST
 
 set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/Beacon.cpp
-    ${GAMELOGIC_DIR}/sgame/Clustering.cpp
+    ${GAMELOGIC_DIR}/sgame/BaseClustering.cpp
     ${GAMELOGIC_DIR}/sgame/sg_active.cpp
     ${GAMELOGIC_DIR}/sgame/sg_admin.cpp
     ${GAMELOGIC_DIR}/sgame/sg_api.cpp
@@ -148,6 +149,7 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
     ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
     ${GAMELOGIC_DIR}/sgame/Utility.cpp
+    ${GAMELOGIC_DIR}/sgame/CombatFeedback.cpp
 
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.cpp

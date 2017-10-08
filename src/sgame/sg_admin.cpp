@@ -2431,19 +2431,19 @@ int G_admin_parse_time( const char *time )
 		{
 			case 'w':
 				num *= 7;
-				/* no break */
+				DAEMON_FALLTHROUGH;
 
 			case 'd':
 				num *= 24;
-				/* no break */
+				DAEMON_FALLTHROUGH;
 
 			case 'h':
 				num *= 60;
-				/* no break */
+				DAEMON_FALLTHROUGH;
 
 			case 'm':
 				num *= 60;
-				/* no break */
+				DAEMON_FALLTHROUGH;
 
 			case 's':
 				break;
@@ -5683,7 +5683,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		teams = { team_t::TEAM_ALIENS, team_t::TEAM_HUMANS };
 	}
 	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : BOT_DEFAULT_SKILL;
-	
+
 	for (team_t team : teams)
 	{
 		level.team[team].botFillTeamSize = count;

@@ -1359,12 +1359,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 			break;
 
-		case EV_HIT:
-			cg.hitTime = cg.time;
-			break;
-
 		case EV_MOMENTUM:
 			CG_Momentum( es );
+			break;
+
+		case EV_HIT:
+			CombatFeedback::Event(es);
 			break;
 
 		default:

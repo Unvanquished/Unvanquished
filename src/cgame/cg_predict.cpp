@@ -307,7 +307,7 @@ void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
                        int skipmask )
 {
 	trace_t t;
-	vec3_t  mins, maxs;
+	vec3_t  mins = { 0 }, maxs = { 0 };
 
 	mins[ 0 ] = startRadius;
 	maxs[ 0 ] = endRadius;
