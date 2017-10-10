@@ -1687,9 +1687,9 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 		}
 
 		case BA_H_DRILL: {
-			BUILDABLE_ENTITY_START(LeechEntity);
+			BUILDABLE_ENTITY_START(DrillEntity);
 			params.Mining_blueprint = false;
-			BUILDABLE_ENTITY_END(LeechEntity);
+			BUILDABLE_ENTITY_END(DrillEntity);
 			break;
 		}
 
