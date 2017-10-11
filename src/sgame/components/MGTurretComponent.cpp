@@ -22,28 +22,11 @@ void MGTurretComponent::HandlePrepareNetCode() {
 }
 
 void MGTurretComponent::HandlePowerUp() {
-	// MGTurrets don't use regular animations for power state changes, instead the respective
-	// animations are done within the code.
-
-	// HACK: Do not play the animation that was set just before within BuildableComponent.
-	// TODO: Consider adding an 'abort animation' helper.
-	entity.oldEnt->s.legsAnim ^= ANIM_TOGGLEBIT;
-
 	// Raise head.
 	GetTurretComponent().ResetPitch();
 }
 
 void MGTurretComponent::HandlePowerDown() {
-	// MGTurrets don't use regular animations for power state changes, instead the respective
-	// animations are done within the code.
-
-	// Reset the idle animation which was modified just before within BuildableComponent.
-	G_SetIdleBuildableAnim(entity.oldEnt, BANIM_IDLE1);
-
-	// HACK: Do not play the animation that was set just before within BuildableComponent.
-	// TODO: Consider adding an 'abort animation' helper.
-	entity.oldEnt->s.legsAnim ^= ANIM_TOGGLEBIT;
-
 	// Forget about a target so a new one is acquired after power-up.
 	GetTurretComponent().RemoveTarget();
 
