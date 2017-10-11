@@ -152,12 +152,13 @@ void BuildableComponent::Think(int timeDelta) {
 
 void BuildableComponent::SetPowerState(bool powered) {
 	// TODO: Make power state a member variable.
+	if (entity.oldEnt->powered == powered) return;
 
 	bool wasPowered = entity.oldEnt->powered;
 
 	entity.oldEnt->powered = powered;
 
-	if        ( powered && !wasPowered) {
+	if (powered && !wasPowered) {
 		G_SetBuildableAnim(entity.oldEnt, BANIM_POWERUP, false);
 		G_SetIdleBuildableAnim(entity.oldEnt, BANIM_IDLE1);
 
