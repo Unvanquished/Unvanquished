@@ -875,6 +875,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 
 	G_notify_sensor_start();
+
+	// Initialize build point counts for the intial layout.
+	G_UpdateBuildPointBudgets();
 }
 
 /*
