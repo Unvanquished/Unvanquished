@@ -1,24 +1,26 @@
 /*
- = *==========================================================================
- Copyright (C) 1999-2005 Id Software, Inc.
+===========================================================================
 
- This file is part of Daemon.
+Copyright (C) 1999-2005 Id Software, Inc.
 
- Daemon is free software; you can redistribute it
- and/or modify it under the terms of the GNU General Public License as
- published by the Free Software Foundation; either version 2 of the License,
- or (at your option) any later version.
+This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
- Daemon is distributed in the hope that it will be
- useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+Unvanquished is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
- You should have received a copy of the GNU General Public License
- along with Daemon; if not, write to the Free Software
- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- ===========================================================================
- */
+Unvanquished is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Unvanquished; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+===========================================================================
+*/
 
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
@@ -28,10 +30,10 @@ static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
 
 /*
- = *======================
- Bot management functions
- =======================
- */
+=======================
+Bot management functions
+=======================
+*/
 static struct
 {
 	int count;
@@ -351,10 +353,10 @@ void G_BotDelAllBots()
 }
 
 /*
- = *======================
- Bot Thinks
- =======================
- */
+=======================
+Bot Thinks
+=======================
+*/
 
 void G_BotThink( gentity_t *self )
 {

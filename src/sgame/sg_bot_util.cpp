@@ -1,33 +1,37 @@
 /*
- = *==========================================================================
- Copyright (C) 1999-2005 Id Software, Inc.
+===========================================================================
 
- This file is part of Daemon.
+Copyright (C) 1999-2005 Id Software, Inc.
 
- Daemon is free software; you can redistribute it
- and/or modify it under the terms of the GNU General Public License as
- published by the Free Software Foundation; either version 2 of the License,
- or (at your option) any later version.
+This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
- Daemon is distributed in the hope that it will be
- useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+Unvanquished is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
 
- You should have received a copy of the GNU General Public License
- along with Daemon; if not, write to the Free Software
- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- ===========================================================================
- */
+Unvanquished is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Unvanquished; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+===========================================================================
+*/
+
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
 #include "CBSE.h"
 
 /*
- = *======================
- Scoring functions for logic
- =======================
- */
+=======================
+Scoring functions for logic
+=======================
+*/
+
 float BotGetBaseRushScore( gentity_t *ent )
 {
 
@@ -422,11 +426,13 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 		}
 	}
 }
+
 /*
- = *======================
- Entity Querys
- =======================
- */
+=======================
+Entity Querys
+=======================
+*/
+
 gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 {
 	float minDistance = -1;
@@ -761,11 +767,12 @@ botTarget_t BotGetRoamTarget( gentity_t *self )
 	BotSetTarget( &target, nullptr, targetPos );
 	return target;
 }
+
 /*
- = *=======================
- BotTarget Helpers
- ========================
- */
+========================
+BotTarget Helpers
+========================
+*/
 
 void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos )
 {
@@ -1176,11 +1183,13 @@ bool BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 	}
 	return false;
 }
+
 /*
- = *=======================
- Bot Aiming
- ========================
- */
+========================
+Bot Aiming
+========================
+*/
+
 void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation )
 {
 	//get the position of the target
@@ -1333,10 +1342,10 @@ float BotAimAngle( gentity_t *self, vec3_t pos )
 }
 
 /*
- = *=======================
- Bot Team Querys
- ========================
- */
+========================
+Bot Team Querys
+========================
+*/
 
 int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 {
@@ -1443,10 +1452,11 @@ bool BotTeamateHasWeapon( gentity_t *self, int weapon )
 }
 
 /*
- = *=======================
- Misc Bot Stuff
- ========================
- */
+========================
+Misc Bot Stuff
+========================
+*/
+
 void BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer )
 {
 	if ( mode == WPM_PRIMARY )
