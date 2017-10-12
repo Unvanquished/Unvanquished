@@ -2,7 +2,7 @@
 ===========================================================================
 
 Unvanquished GPL Source Code
-Copyright 2014 Unvanquished Development
+Copyright (C) 2014 Unvanquished Development
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
