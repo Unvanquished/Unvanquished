@@ -1,6 +1,7 @@
 /*
 ===========================================================================
 
+Unvanquished GPL Source Code
 Copyright 2013 Unvanquished Developers
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).

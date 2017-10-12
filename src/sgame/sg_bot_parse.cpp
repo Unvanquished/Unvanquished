@@ -1,6 +1,7 @@
 /*
 ===========================================================================
 
+Unvanquished GPL Source Code
 Copyright (C) 1999-2005 Id Software, Inc.
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).

@@ -1,6 +1,7 @@
 /*
 ===========================================================================
 
+Unvanquished GPL Source Code
 Copyright (C) 1999-2005 Id Software, Inc.
 Copyright (C) 2000-2009 Darklegion Development
 
