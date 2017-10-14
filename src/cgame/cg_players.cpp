@@ -3157,6 +3157,7 @@ void CG_Player( centity_t *cent )
 			legs.origin[ 0 ] -= ci->headOffset[ 0 ];
 			legs.origin[ 1 ] -= ci->headOffset[ 1 ];
 			legs.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
+			VectorMA( legs.origin, BG_ClassModelConfig( class_ )->zOffset, surfNormal, legs.origin );
 		}
 
 		VectorCopy( legs.origin, legs.lightingOrigin );
