@@ -168,13 +168,20 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				if ( !Q_stricmp( token, "HandDelta" ) )
 				{
 					ci->modifiers.emplace_back(new AnimDelta());
-				} else if ( !Q_stricmp( token, "HumanRotations" ) )
+				}
+				else if ( !Q_stricmp( token, "HumanRotations" ) )
 				{
 					ci->modifiers.emplace_back(new HumanSkeletonRotations());
-				} else if ( !Q_stricmp( token, "Segmented" ) )
+				}
+				else if ( !Q_stricmp( token, "BattlesuitRotations" ) )
+				{
+					ci->modifiers.emplace_back(new BsuitSkeletonRotations());
+				}
+				else if ( !Q_stricmp( token, "Segmented" ) )
 				{
 					ci->modifiers.emplace_back(new SegmentedSkeletonCombiner());
-				} else
+				}
+				else
 				{
 					Log::Notice("Unknown modifier '%s' in %s's character.cfg", token, ci->modelName);
 				}

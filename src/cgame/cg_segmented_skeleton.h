@@ -38,6 +38,18 @@ private:
 	int rightShoulderBone = -1;
 };
 
+class BsuitSkeletonRotations : public SkeletonModifier
+{
+public:
+	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
+	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
+
+private:
+	int torsoControlBone = -1;
+	int leftShoulderBone = -1;
+	int rightShoulderBone = -1;
+};
+
 
 class SegmentedSkeletonCombiner : public SkeletonModifier
 {
