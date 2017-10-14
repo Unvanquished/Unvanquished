@@ -2934,6 +2934,7 @@ int CG_AmbientLight( vec3_t point )
 CG_Player
 ===============
 */
+// TODO: Break this function up and reduce code copy-paste between md3 and skeletal code paths.
 void CG_Player( centity_t *cent )
 {
 	clientInfo_t *ci;
