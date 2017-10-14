@@ -855,7 +855,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		{
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLE, "idle", true, false, false ) )
 			{
-				Log::Notice( "Failed to load idle animation file %s\n", filename );
+				Log::Notice( "Failed to load idle animation." );
 				return false;
 			}
 
@@ -1012,7 +1012,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			// Load Alien animations
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_STAND, "stand", true, false, false ) )
 			{
-				Log::Notice( "Failed to load standing animation file %s\n", filename );
+				Log::Notice( "Failed to load stand animation." );
 				return false;
 			}
 
