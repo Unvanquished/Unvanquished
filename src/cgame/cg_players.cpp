@@ -1263,32 +1263,28 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 			break;
 		}
 
+		ci->sounds[ i ] = trap_S_RegisterSound( va( "sound/player/%s/%s", dir, s + 1 ), false );
 		// fanny about a bit with sounds that are missing
-		if ( !CG_FileExists( va( "sound/player/%s/%s", dir, s + 1 ) ) )
+		if ( ci->sounds[ i ] == -1 )
 		{
 			//file doesn't exist
-
-			if ( i == 11 || i == 8 ) //fall or falling
+			if ( i == 11 || i == 8 ) // fall or falling
 			{
 				ci->sounds[ i ] = trap_S_RegisterSound( "sound/null", false );
 			}
 			else
 			{
-				if ( i == 9 ) //gasp
+				if ( i == 9 ) // gasp
 				{
-					s = cg_customSoundNames[ 7 ]; //pain100_1
+					s = cg_customSoundNames[ 7 ]; // pain100_1
 				}
 				else if ( i == 10 ) //drown
 				{
-					s = cg_customSoundNames[ 0 ]; //death1
+					s = cg_customSoundNames[ 0 ]; // death1
 				}
 
 				ci->sounds[ i ] = trap_S_RegisterSound( va( "sound/player/%s/%s", dir, s + 1 ), false );
 			}
-		}
-		else
-		{
-			ci->sounds[ i ] = trap_S_RegisterSound( va( "sound/player/%s/%s", dir, s + 1 ), false );
 		}
 	}
 
