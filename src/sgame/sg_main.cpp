@@ -2812,9 +2812,7 @@ void G_RunFrame( int levelTime )
 		// calculate the acceleration of this entity
 		if ( ent->evaluateAcceleration ) G_EvaluateAcceleration( ent, msec );
 
-		if ( !ent->r.linked && ent->neverFree ) continue;
-
-		// think/run entitiy by type
+		// think/run entity by type
 		switch ( ent->s.eType )
 		{
 			case entityType_t::ET_MISSILE:

@@ -105,7 +105,6 @@ struct gentity_s
 	struct gclient_s *client; // nullptr if not a client
 
 	bool     inuse;
-	bool     neverFree; // if true, FreeEntity will only unlink
 	int          freetime; // level.time when the object was freed
 	int          eventTime; // events will be cleared EVENT_VALID_MSEC after set
 	bool     freeAfterEvent;
