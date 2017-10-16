@@ -400,6 +400,8 @@ static void CG_MapRestart()
 	// we really should clear more parts of cg here and stop sounds
 
 	trap_Cvar_Set( "cg_thirdPerson", "0" );
+
+	CG_OnMapRestart();
 }
 
 /*
