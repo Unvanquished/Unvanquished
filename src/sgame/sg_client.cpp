@@ -707,7 +707,7 @@ static const char *G_UnnamedClientName( gclient_t *client )
 
 	client->pers.namelog->unnamedNumber = number;
 	Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-	             g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER,
+	             g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER"#",
 	             number );
 
 	return name;
