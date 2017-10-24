@@ -4,125 +4,144 @@
 		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
 		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
 		<style>
-			body
-			{
-				padding-top:10%;
-				width:100%;
-				height:100%;
-				background:#00000066;
-				text-align:center;
-			}
-
-.circlemenu icon{
-  display:inline-block;
-  position:absolute;
-  bottom:20px;
-  right:-20px;
-  font-size:1.5em;
-}
-.circlemenu button {
-	icon-color-multiplier: #83fff5;
-}
-.circlemenu button.locked{
-	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(0,100,100);
-}
-.circlemenu button.locked:hover{
-	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(0,120,120);
-}
-.circlemenu button.locked:hover img,
-.circlemenu button.locked:hover icon,
-.circlemenu button.expensive:hover img,
-.circlemenu button.expensive:hover icon{
-	opacity:1;
-}
-.circlemenu button.locked img{
-	opacity:.6;
-}
-.circlemenu button.locked icon{
-	color:#ffffff;
-	opacity:.6;
-}
-
-.circlemenu button.expensive{
-	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(0,150,150);
-}
-.circlemenu button.expensive:hover{
-	icon-image: /ui/assets/circlemenu/circle.png;
-	icon-color-multiplier: rgb(0,170,170);
-
-}
-
-.circlemenu button.expensive img{
-	opacity:.6;
-}
-.circlemenu button.expensive:hover img{
-	opacity:1;
-}
-.circlemenu button.expensive icon{
-	color:#0A00C5;
-
-	opacity:.7;
-}
-
-.circlemenu button{
-	position:relative;
-}
-
-.circlemenu button.active{
-	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(0,200,200);
-}
-.circlemenu button.active:hover{
-	icon-image: /ui/assets/circlemenu/circle-hover.png;
-	icon-color-multiplier: rgb(0,220,220);
-}
-.circlemenu button.active icon{
-	color:#9AFFBD;
-}
-.circlemenu button.active .sell{
-	display:none;
-}
-
-div.infobox {
-	position: absolute;
-	top: 40%;
-	right: 10%;
-	float: right;
-	width: 45%;
-	height: 50%;
-}
-
-
+		body {
+			padding-top: 10%;
+			width: 100%;
+			height: 100%;
+			background: #00000066;
+			text-align: center;
+		}
+		.circlemenu icon {
+			display: inline-block;
+			position: absolute;
+			bottom: 20px;
+			right: -20px;
+			font-size: 1.5em;
+		}
+		.circlemenu button {
+			icon-color-multiplier: #83fff5;
+		}
+		.circlemenu button.locked {
+			icon-image: /ui/assets/circlemenu/circle.png;
+			icon-color-multiplier: rgb(0, 100, 100);
+		}
+		.circlemenu button.locked:hover {
+			icon-image: /ui/assets/circlemenu/circle.png;
+			icon-color-multiplier: rgb(0, 120, 120);
+		}
+		.circlemenu button.locked:hover img,
+		.circlemenu button.locked:hover icon,
+		.circlemenu button.expensive:hover img,
+		.circlemenu button.expensive:hover icon {
+			opacity: 1;
+		}
+		.circlemenu button.locked img {
+			opacity: .6;
+		}
+		.circlemenu button.locked icon {
+			color: #ffffff;
+			opacity: .6;
+		}
+		.circlemenu button.expensive {
+			icon-image: /ui/assets/circlemenu/circle.png;
+			icon-color-multiplier: rgb(0, 150, 150);
+		}
+		.circlemenu button.expensive:hover {
+			icon-image: /ui/assets/circlemenu/circle.png;
+			icon-color-multiplier: rgb(0, 170, 170);
+		}
+		.circlemenu button.expensive img {
+			opacity: .6;
+		}
+		.circlemenu button.expensive:hover img {
+			opacity: 1;
+		}
+		.circlemenu button.expensive icon {
+			color: #0A00C5;
+			opacity: .7;
+		}
+		.circlemenu button {
+			position: relative;
+		}
+		.circlemenu button.active {
+			icon-image: /ui/assets/circlemenu/circle-hover.png;
+			icon-color-multiplier: rgb(0, 200, 200);
+		}
+		.circlemenu button.active:hover {
+			icon-image: /ui/assets/circlemenu/circle-hover.png;
+			icon-color-multiplier: rgb(0, 220, 220);
+		}
+		.circlemenu button.active icon {
+			color: #9AFFBD;
+		}
+		.circlemenu button.active .sell {
+			display: none;
+		}
+		div.infobox {
+			position: absolute;
+			top: 40%;
+			right: 10%;
+			float: right;
+			width: 45%;
+			height: 50%;
+		}
 		</style>
 	</head>
+
 	<body id="human_buy" class="circlemenu human" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades", event)'>
-	<div id="foo">
-	<tabset class="circlemenu">
-		<tab>Weapons</tab>
-		<panel>
-		<circlemenu id="weapons" source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" onCancel="Events.pushevent('hide human_buy', event)"/>
-			<div class="infobox">
-			<h2><datasource_single source="armouryBuyList.weapons" fields="name" targetid="weapons" /></h2>
-			<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" /></div></p>
-			<p><div class="attr">Range:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRange" targetid="weapons" /></div></p>
-			<p><div class="attr">Damage:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
-			<p><div class="attr">Fire Rate:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRateOfFire" targetid="weapons" /></div></p>
-			<p class="text"><datasource_single source="armouryBuyList.weapons" fields="description" targetid="weapons" /></p>
-			</div>
-		</panel>
-		<tab>Upgrades</tab>
-		<panel>
-		<circlemenu id="upgrades" source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" onCancel="Events.pushevent('hide human_buy', event)"/>
-			<div class="infobox">
-			<h2><datasource_single source="armouryBuyList.upgrades" fields="name" targetid="upgrades" /></h2>
-			<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.upgrades" fields="price" targetid="upgrades" /></div></p>
-			<p class="text"><datasource_single source="armouryBuyList.upgrades" fields="description" targetid="upgrades" /></p>
-			</div>
-		</panel>
-	</tabset>
-	</div>
+		<div id="foo">
+			<tabset class="circlemenu">
+				<tab>Weapons</tab>
+				<panel>
+					<circlemenu id="weapons" source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" onCancel="Events.pushevent('hide human_buy', event)" />
+					<div class="infobox">
+						<h2><datasource_single source="armouryBuyList.weapons" fields="name" targetid="weapons" /></h2>
+						<p>
+							<div class="attr">Price:</div>
+							<div class="bar">
+								<datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" />
+							</div>
+						</p>
+						<p>
+							<div class="attr">Range:</div>
+							<div class="bar">
+								<datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRange" targetid="weapons" />
+							</div>
+						</p>
+						<p>
+							<div class="attr">Damage:</div>
+							<div class="bar">
+								<datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" />
+							</div>
+						</p>
+						<p>
+							<div class="attr">Fire Rate:</div>
+							<div class="bar">
+								<datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRateOfFire" targetid="weapons" />
+							</div>
+						</p>
+						<p class="text">
+							<datasource_single source="armouryBuyList.weapons" fields="description" targetid="weapons" />
+						</p>
+					</div>
+				</panel>
+				<tab>Upgrades</tab>
+				<panel>
+					<circlemenu id="upgrades" source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" onCancel="Events.pushevent('hide human_buy', event)" />
+					<div class="infobox">
+						<h2><datasource_single source="armouryBuyList.upgrades" fields="name" targetid="upgrades" /></h2>
+						<p>
+							<div class="attr">Price:</div>
+							<div class="bar">
+								<datasource_single source="armouryBuyList.upgrades" fields="price" targetid="upgrades" />
+							</div>
+						</p>
+						<p class="text">
+							<datasource_single source="armouryBuyList.upgrades" fields="description" targetid="upgrades" />
+						</p>
+					</div>
+				</panel>
+			</tabset>
+		</div>
 	</body>
 </rml>
