@@ -85,12 +85,65 @@
 			width: 45%;
 			height: 50%;
 		}
+		div#foo {
+			display: none;
+		}
+		div.top {
+			width: 100%;
+			height: 100%;
+		}
+		.top button {
+			font-size: 1em;
+			display: inline-block;
+			width: 40em;
+			height: 40em;
+			vertical-align: middle;
+			icon-color-multiplier: #83fff5;
+			icon-decorator: image;
+			icon-image: /ui/assets/circlemenu/circle.png;
+		}
+		.top button:hover, .top button:active {
+			icon-image: /ui/assets/circlemenu/circle-hover.png;
+		}
+		#weapon_button {
+			margin-left: 20em;
+			float: left;
+		}
+		#upgrade_button {
+			margin-right: 20em;
+			float: right;
+		}
 		</style>
+		<script>
+			function show(tab, document)
+				local top = document:GetElementById("top")
+				local foo = document:GetElementById("foo")
+				if tab > 0 then
+					top.style["display"] = "none"
+					foo.style["display"] = "block"
+					local element = Element.As.ElementTabSet(document:GetElementById("tabset"))
+					element.active_tab = tab - 1
+				else
+					top.style["display"] = "block"
+					foo.style["display"] = "none"
+				end
+			end
+
+			function goback(event, document)
+				if event.parameters["button"] == 1 then
+					show(0, document)
+				end
+			end
+		</script>
 	</head>
 
-	<body id="human_buy" class="circlemenu human" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades", event)'>
+	<body id="human_buy" class="human" onMouseDown="goback(event, document)" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades", event) show(0, document)'>
+		<div id="top" class="top">
+			<button id="weapon_button" onClick="show(1, document)">Weapons</button>
+			<button id="upgrade_button" onClick="show(2, document)">Upgrades</button>
+		</div>
 		<div id="foo">
-			<tabset class="circlemenu">
+			<tabset id="tabset" class="circlemenu">
 				<tab>Weapons</tab>
 				<panel>
 					<circlemenu id="weapons" source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" onCancel="Events.pushevent('hide human_buy', event)" />
