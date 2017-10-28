@@ -829,7 +829,8 @@ struct zap_t
 	int       numTargets;
 	float     distances[ LEVEL2_AREAZAP_MAX_TARGETS ];
 
-	int       timeToLive;
+	int       timeAlive;
+	int       timeWrongTarget;
 
 	gentity_t *effectChannel;
 };
