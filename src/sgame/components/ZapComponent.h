@@ -37,7 +37,6 @@ class ZapComponent: public ZapComponentBase {
 
 	private:
 		void UpdateZap(int timeDelta);
-		void UpdateZapTarget(int timeDelta);
 
 		zap_t zap;
 };
