@@ -317,6 +317,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/TrapperComponent.h
     ${GAMELOGIC_DIR}/sgame/components/TurretComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/TurretComponent.h
+    ${GAMELOGIC_DIR}/sgame/components/ZapComponent.h
+    ${GAMELOGIC_DIR}/sgame/components/ZapComponent.cpp
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h

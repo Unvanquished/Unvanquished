@@ -68,6 +68,14 @@ messages:
         - name: spawnPoint
           type: glm::vec3&
 
+    ZapTarget:
+        - name: target
+          type: Entity&
+
+    ClearZap:
+        - name: player
+          type: Entity&
+
 components:
     #####################
     # Common Components #
@@ -153,6 +161,16 @@ components:
             Armor:
             Knockback:
             Health:
+
+
+    Zap:
+        messages:
+            - ZapTarget
+            - ClearZap
+            - Die
+        requires:
+            Thinking:
+
 
     #--------------------+
     # Buildable Specific |
@@ -378,6 +396,7 @@ entities:
     AdvMarauder:
         components:
             AlienClass:
+            Zap:
 
     Dragoon:
         components:
