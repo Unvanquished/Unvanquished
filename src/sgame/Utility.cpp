@@ -107,3 +107,13 @@ bool Utility::KnockbackRadiusDamage(Entity& entity, float amount, float range, m
 std::string Utility::Print(Vec3 v) {
 	return std::string(va("(%.2f, %.2f, %.2f)", v[0], v[1], v[2]));
 }
+
+void Utility::GetFRUMVectors(gentity_t* ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzle) {
+	if (ent->client) {
+		AngleVectors(ent->client->ps.viewangles, forward, right, up);
+		G_CalcMuzzlePoint(ent, forward, right, up, muzzle);
+	} else {
+		AngleVectors(ent->buildableAim, forward, right, up);
+		VectorCopy(ent->s.pos.trBase, muzzle);
+	}
+}

@@ -2885,7 +2885,6 @@ void G_RunFrame( int levelTime )
 	G_CalculateAvgPlayers();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
-	G_UpdateZaps( msec );
 	Beacon::Frame( );
 
 	G_PrepareEntityNetCode();

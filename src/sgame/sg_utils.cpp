@@ -995,3 +995,54 @@ void G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
 		if (ent) Utility::Kill(*ent->entity, source->entity, meansOfDeath);
 	}
 }
+
+/*
+================
+Trace a bounding box against entities, but not the world
+Also check there is a line of sight between the start and end point
+================
+*/
+void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
+                         const float width, const float height, vec3_t muzzle, vec3_t forward, gentity_t **target )
+{
+	vec3_t mins, maxs, end;
+	float  halfDiagonal;
+
+	*target = nullptr;
+
+	if ( !ent->client )
+	{
+		return;
+	}
+
+	// Calculate box to use for trace
+	VectorSet( maxs, width, width, height );
+	VectorNegate( maxs, mins );
+	halfDiagonal = VectorLength( maxs );
+
+	G_UnlaggedOn( ent, muzzle, range + halfDiagonal );
+
+	// Trace box against entities
+	VectorMA( muzzle, range, forward, end );
+	trap_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
+
+	if ( tr->entityNum != ENTITYNUM_NONE )
+	{
+		*target = &g_entities[ tr->entityNum ];
+	}
+
+	// Line trace against the world, so we never hit through obstacles.
+	// The range is reduced according to the former trace so we don't hit something behind the
+	// current target.
+	VectorMA( muzzle, Distance( muzzle, tr->endpos ) + halfDiagonal, forward, end );
+	trap_Trace( tr, muzzle, nullptr, nullptr, end, ent->s.number, CONTENTS_SOLID, 0 );
+
+	// In case we hit a different target, which can happen if two potential targets are close,
+	// switch to it, so we will end up with the target we were looking at.
+	if ( tr->entityNum != ENTITYNUM_NONE )
+	{
+		*target = &g_entities[ tr->entityNum ];
+	}
+
+	G_UnlaggedOff();
+}

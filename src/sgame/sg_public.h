@@ -41,7 +41,7 @@ const char        *G_admin_name( gentity_t *ent );
 const char        *G_quoted_admin_name( gentity_t *ent );
 
 // Beacon.cpp
-namespace Beacon 
+namespace Beacon
 {
 	void Frame();
 	void Move( gentity_t *ent, const vec3_t origin );
@@ -101,6 +101,8 @@ namespace Utility
 	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 
 	std::string Print(Vec3 v);
+
+	void GetFRUMVectors(gentity_t* ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzle);
 }
 
 // sg_buildable.c
@@ -363,6 +365,9 @@ bool              G_Alive(gentity_t *ent);
 bool              G_Dead(gentity_t *ent);
 void              G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath);
 void              G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath);
+void              G_WideTrace(trace_t *tr, gentity_t *ent, const float range,
+                               const float width, const float height, vec3_t muzzle, vec3_t forward,
+                               gentity_t **target);
 
 // sg_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
