@@ -53,6 +53,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define MAX_DAMAGE_REGIONS     16
 #define MAX_DAMAGE_REGION_TEXT 8192
 
+#define MAX_NAME_CHARACTERS 32
+
 #define FOFS(x) ((size_t)&(((gentity_t *)0 )->x ))
 
 #endif // SG_DEFINITIONS_H_

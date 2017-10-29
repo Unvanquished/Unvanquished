@@ -39,19 +39,19 @@ static refSkeleton_t jetpackSkeleton;
 
 static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
 {
-	"*death1.wav",
-	"*death2.wav",
-	"*death3.wav",
-	"*jump1.wav",
-	"*pain25_1.wav",
-	"*pain50_1.wav",
-	"*pain75_1.wav",
-	"*pain100_1.wav",
-	"*falling1.wav",
-	"*gasp.wav",
-	"*drown.wav",
-	"*fall1.wav",
-	"*taunt.wav"
+	"*death1",
+	"*death2",
+	"*death3",
+	"*jump1",
+	"*pain25_1",
+	"*pain50_1",
+	"*pain75_1",
+	"*pain100_1",
+	"*falling1",
+	"*gasp",
+	"*drown",
+	"*fall1",
+	"*taunt"
 };
 
 /*
@@ -581,6 +581,11 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			}
 
 			animations[ i ].loopFrames = atoi( token );
+			if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
+			{
+				Log::Warn("CG_ParseAnimationFile: loopFrames != numFrames");
+				animations[ i ].loopFrames = animations[ i ].numFrames;
+			}
 
 			token = COM_Parse2( &text_p );
 
@@ -674,6 +679,11 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			}
 
 			animations[ i ].loopFrames = atoi( token );
+			if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
+			{
+				Log::Warn("CG_ParseAnimationFile: loopFrames != numFrames");
+				animations[ i ].loopFrames = animations[ i ].numFrames;
+			}
 
 			token = COM_Parse2( &text_p );
 
@@ -1258,7 +1268,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 
 			if ( i == 11 || i == 8 ) //fall or falling
 			{
-				ci->sounds[ i ] = trap_S_RegisterSound( "sound/null.wav", false );
+				ci->sounds[ i ] = trap_S_RegisterSound( "sound/null", false );
 			}
 			else
 			{
@@ -1284,18 +1294,18 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 	{
 		for ( i = 0; i < 4; i++ )
 		{
-			ci->customFootsteps[ i ] = trap_S_RegisterSound( va( "sound/player/%s/step%d.wav", dir, i + 1 ), false );
+			ci->customFootsteps[ i ] = trap_S_RegisterSound( va( "sound/player/%s/step%d", dir, i + 1 ), false );
 
 			if ( !ci->customFootsteps[ i ] )
 			{
-				ci->customFootsteps[ i ] = trap_S_RegisterSound( va( "sound/player/footsteps/step%d.wav", i + 1 ), false );
+				ci->customFootsteps[ i ] = trap_S_RegisterSound( va( "sound/player/footsteps/step%d", i + 1 ), false );
 			}
 
-			ci->customMetalFootsteps[ i ] = trap_S_RegisterSound( va( "sound/player/%s/clank%d.wav", dir, i + 1 ), false );
+			ci->customMetalFootsteps[ i ] = trap_S_RegisterSound( va( "sound/player/%s/clank%d", dir, i + 1 ), false );
 
 			if ( !ci->customMetalFootsteps[ i ] )
 			{
-				ci->customMetalFootsteps[ i ] = trap_S_RegisterSound( va( "sound/player/footsteps/clank%d.wav", i + 1 ), false );
+				ci->customMetalFootsteps[ i ] = trap_S_RegisterSound( va( "sound/player/footsteps/clank%d", i + 1 ), false );
 			}
 		}
 	}

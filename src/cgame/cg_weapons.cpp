@@ -277,6 +277,11 @@ static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi 
 
 		token = COM_Parse2( &text_p );
 		animations[ i ].loopFrames = atoi( token );
+		if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
+		{
+			Log::Warn("CG_ParseWeaponAnimationFile: loopFrames != numFrames");
+			animations[ i ].loopFrames = animations[ i ].numFrames;
+		}
 
 		token = COM_Parse2( &text_p );
 		fps = atof( token );
@@ -752,10 +757,10 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				switch( weapon )
 				{
 					case WP_MACHINEGUN:
+						DAEMON_FALLTHROUGH;
 					case WP_SHOTGUN:
 					case WP_MASS_DRIVER:
 					case WP_PULSE_RIFLE:
-
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
 													va( "%s_view.iqm:raise", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
@@ -769,6 +774,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 					case WP_LUCIFER_CANNON:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
 													va( "%s_view.iqm:fire2", token2 ), false, false, false );
+						DAEMON_FALLTHROUGH;
 					case WP_BLASTER:
 					case WP_PAIN_SAW:
 					case WP_LAS_GUN:
@@ -785,6 +791,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 						break;
 
 					case WP_ALEVEL1:
+						DAEMON_FALLTHROUGH;
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
@@ -844,6 +851,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				switch( weapon )
 				{
 					case WP_MACHINEGUN:
+						DAEMON_FALLTHROUGH;
 					case WP_SHOTGUN:
 					case WP_MASS_DRIVER:
 					case WP_PULSE_RIFLE:
@@ -861,6 +869,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 					case WP_LUCIFER_CANNON:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
 									    va( "%s_view_fire2.md5anim", token2 ), false, false, false );
+						DAEMON_FALLTHROUGH;
 					case WP_BLASTER:
 					case WP_PAIN_SAW:
 					case WP_LAS_GUN:
@@ -877,6 +886,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 						break;
 
 					case WP_ALEVEL1:
+						DAEMON_FALLTHROUGH;
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
@@ -1277,7 +1287,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 		Log::Debug( "Anim: %i", newAnimation );
 	}
 
-	if ( /*&cg_weapons[ weapon ].md5 &&*/ !toggle && lf && lf->old_animation && lf->old_animation->handle )
+	if ( /*&cg_weapons[ weapon ].md5 &&*/ !toggle && lf->old_animation && lf->old_animation->handle )
 	{
 		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
 		{

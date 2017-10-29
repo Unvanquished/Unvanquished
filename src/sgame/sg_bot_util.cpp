@@ -1205,7 +1205,8 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 
 int BotGetAimPredictionTime( gentity_t *self )
 {
-	return ( 10 - self->botMind->botSkill.level ) * 100 * std::max( ( ( float ) rand() ) / RAND_MAX, 0.5f );
+	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( ( ( float ) rand() ) / RAND_MAX, 0.5f );
+	return std::max( 1, int(time) );
 }
 
 void BotPredictPosition( gentity_t *self, gentity_t *predict, vec3_t pos, int time )
@@ -2025,17 +2026,9 @@ void BotSellAll( gentity_t *self )
 void BotSetSkillLevel( gentity_t *self, int skill )
 {
 	self->botMind->botSkill.level = skill;
-	//different aim for different teams
-	if ( self->botMind->botTeam == TEAM_HUMANS )
-	{
-		self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-		self->botMind->botSkill.aimShake = 10 - skill;
-	}
-	else
-	{
-		self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-		self->botMind->botSkill.aimShake = 10 - skill;
-	}
+	// TODO: different aim for different teams
+	self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
+	self->botMind->botSkill.aimShake = 10 - skill;
 }
 
 void BotResetEnemyQueue( enemyQueue_t *queue )
@@ -2146,4 +2139,22 @@ void BotSearchForEnemy( gentity_t *self )
 	{
 		self->botMind->bestEnemy.distance = INT_MAX;
 	}
+}
+
+void BotResetStuckTime( gentity_t *self )
+{
+	self->botMind->stuckTime = level.time;
+	VectorCopy( self->client->ps.origin, self->botMind->stuckPosition );
+}
+
+void BotCalculateStuckTime( gentity_t *self )
+{
+	// last think time condition to avoid stuck condition after respawn or /pause
+	bool dataValid = level.time - self->botMind->lastThink < 1000;
+	if ( !dataValid
+			|| DistanceSquared( self->botMind->stuckPosition, self->client->ps.origin ) >= Square( BOT_STUCK_RADIUS ) )
+	{
+		BotResetStuckTime( self );
+	}
+	self->botMind->lastThink = level.time;
 }

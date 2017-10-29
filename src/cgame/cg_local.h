@@ -58,8 +58,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define STAT_MINUS                     10 // num frame for '-' stats digit
 
-#define CHAR_WIDTH                     32
-#define CHAR_HEIGHT                    48
+#define CGAME_CHAR_WIDTH               32
+#define CGAME_CHAR_HEIGHT              48
 
 #define MAX_LOADING_LABEL_LENGTH       32
 
@@ -1969,6 +1969,7 @@ extern vmCvar_t            rocket_menuFile;
 //
 // cg_main.c
 //
+void       CG_RegisterCvars();
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 const char *CG_Args();

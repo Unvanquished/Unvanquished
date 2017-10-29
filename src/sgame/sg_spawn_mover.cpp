@@ -1509,19 +1509,19 @@ void SP_func_door( gentity_t *self )
 
 	if( !self->sound1to2 )
 	{
-		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt" );
 	}
 	if( !self->sound2to1 )
 	{
-		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt" );
 	}
 	if( !self->soundPos1 )
 	{
-		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end" );
 	}
 	if( !self->soundPos2 )
 	{
-		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end" );
 	}
 
 	self->blocked = func_door_block;
@@ -1598,19 +1598,19 @@ void SP_func_door_rotating( gentity_t *self )
 {
 	if( !self->sound1to2 )
 	{
-		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt" );
 	}
 	if( !self->sound2to1 )
 	{
-		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt" );
 	}
 	if( !self->soundPos1 )
 	{
-		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end" );
 	}
 	if( !self->soundPos2 )
 	{
-		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end" );
 	}
 
 	self->blocked = func_door_block;
@@ -1730,19 +1730,19 @@ void SP_func_door_model( gentity_t *self )
 
 	if( !self->sound1to2 )
 	{
-		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt" );
 	}
 	if( !self->sound2to1 )
 	{
-		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt" );
 	}
 	if( !self->soundPos1 )
 	{
-		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end" );
 	}
 	if( !self->soundPos2 )
 	{
-		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end" );
 	}
 
 	self->reset = func_door_model_reset;
@@ -1945,19 +1945,19 @@ void SP_func_plat( gentity_t *self )
 
 	if( !self->sound1to2 )
 	{
-		self->sound1to2 = G_SoundIndex( "sound/movers/plats/pt1_strt.wav" );
+		self->sound1to2 = G_SoundIndex( "sound/movers/plats/pt1_strt" );
 	}
 	if( !self->sound2to1 )
 	{
-		self->sound2to1 = G_SoundIndex( "sound/movers/plats/pt1_strt.wav" );
+		self->sound2to1 = G_SoundIndex( "sound/movers/plats/pt1_strt" );
 	}
 	if( !self->soundPos1 )
 	{
-		self->soundPos1 = G_SoundIndex( "sound/movers/plats/pt1_end.wav" );
+		self->soundPos1 = G_SoundIndex( "sound/movers/plats/pt1_end" );
 	}
 	if( !self->soundPos2 )
 	{
-		self->soundPos2 = G_SoundIndex( "sound/movers/plats/pt1_end.wav" );
+		self->soundPos2 = G_SoundIndex( "sound/movers/plats/pt1_end" );
 	}
 
 	VectorClear( self->s.angles );
@@ -2047,7 +2047,7 @@ void SP_func_button( gentity_t *self )
 
 	if( !self->sound1to2 )
 	{
-		self->sound1to2 = G_SoundIndex( "sound/movers/switches/button1.wav" );
+		self->sound1to2 = G_SoundIndex( "sound/movers/switches/button1" );
 	}
 
 	self->reset = func_button_reset;

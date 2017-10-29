@@ -774,11 +774,12 @@ static bool CompareBuildablesForPowerSaving(Entity* a, Entity* b)
  */
 void G_UpdateBuildablePowerStates()
 {
-	std::list<Entity*> buildables;
 	gentity_t* activeMainBuildable;
 
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		buildables.clear();
+		std::vector<Entity*> poweredBuildables;
+		std::vector<Entity*> unpoweredBuildables;
+		int unpoweredBuildableTotal = 0;
 		activeMainBuildable = G_ActiveMainBuildable(team);
 
 		ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
@@ -792,39 +793,57 @@ void G_UpdateBuildablePowerStates()
 			// TODO: Refer to a SpawnerComponent here.
 			if (entity.Get<TelenodeComponent>() || entity.Get<EggComponent>()) return;
 
-			// Power all other buildables depending on main buildable state for now.
-			if (activeMainBuildable) {
-				buildableComponent.SetPowerState(true);
-			} else {
+			// Power off all buildables if there is no main buildable.
+			if (!activeMainBuildable) {
 				buildableComponent.SetPowerState(false);
 				return;
 			}
 
 			// In order to make good a deficit, don't shut down buildables that have no cost.
 			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) return;
-
-			buildables.push_back(&entity);
+			if (!entity.oldEnt->powered) {
+				unpoweredBuildables.push_back(&entity);
+				unpoweredBuildableTotal += BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints;
+			} else {
+				poweredBuildables.push_back(&entity);
+			}
 		});
 
 		// If there is no active main buildable, all buildables that can shut down already did so.
 		if (!activeMainBuildable) continue;
 
-		int deficit = level.team[team].spentBudget - (int)level.team[team].totalBudget;
+		// Positive deficit means that we are over, and negative means we have a surplus.
+		int deficit = level.team[team].spentBudget - (int)level.team[team].totalBudget - unpoweredBuildableTotal;
 
-		// Do not power down more buildables if there is no deficit.
-		if (deficit <= 0) continue;
+		// Exactly at our limit. Nothing else to do.
+		if (deficit == 0) continue;
 
-		buildables.sort(CompareBuildablesForPowerSaving);
+		// We have surplus bp, but nothing else to power on, so we're done here.
+		if (deficit < 0 && unpoweredBuildables.empty()) continue;
 
-		for(Entity* entity : buildables) {
-			entity->Get<BuildableComponent>()->SetPowerState(false);
+		// Uh oh...start powering stuff down.
+		if (deficit > 0) {
+			std::sort(poweredBuildables.begin(), poweredBuildables.end(), CompareBuildablesForPowerSaving);
+			for(Entity* entity : poweredBuildables) {
+				entity->Get<BuildableComponent>()->SetPowerState(false);
 
-			// Dying buildables have already substracted their share from the spent budget pool.
-			if (entity->Get<HealthComponent>()->Alive()) {
-				deficit -= BG_Buildable(entity->oldEnt->s.modelindex)->buildPoints;
+				// Dying buildables have already substracted their share from the spent budget pool.
+				if (entity->Get<HealthComponent>()->Alive()) {
+					deficit -= BG_Buildable(entity->oldEnt->s.modelindex)->buildPoints;
+				}
+
+				if (deficit <= 0) break;
 			}
-
-			if (deficit <= 0) break;
+		} else if (deficit < 0) {
+			// Make our deficit positive for ease of calculation.
+			int surplus = -deficit;
+			std::sort(unpoweredBuildables.begin(), unpoweredBuildables.end(), CompareBuildablesForPowerSaving);
+			for (auto it = unpoweredBuildables.rbegin(); it != unpoweredBuildables.rend(); ++it) {
+				int buildableCost = BG_Buildable((*it)->oldEnt->s.modelindex)->buildPoints;
+				if (surplus < buildableCost) continue;
+				(*it)->Get<BuildableComponent>()->SetPowerState(true);
+				surplus -= buildableCost;
+			}
 		}
 	}
 }
@@ -1687,9 +1706,9 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 		}
 
 		case BA_H_DRILL: {
-			BUILDABLE_ENTITY_START(LeechEntity);
+			BUILDABLE_ENTITY_START(DrillEntity);
 			params.Mining_blueprint = false;
-			BUILDABLE_ENTITY_END(LeechEntity);
+			BUILDABLE_ENTITY_END(DrillEntity);
 			break;
 		}
 
@@ -2568,6 +2587,7 @@ void G_BuildLogRevert( int id )
 				momentumChange[ log->buildableTeam ] += log->momentumEarned;
 
 				// Fall through to default
+				DAEMON_FALLTHROUGH;
 
 		default:
 			// Spawn buildable

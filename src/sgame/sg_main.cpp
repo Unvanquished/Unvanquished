@@ -192,6 +192,8 @@ vmCvar_t           g_instantBuilding;
 
 vmCvar_t           g_emptyTeamsSkipMapTime;
 
+Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful to load a map without spawn for testing purpose", Cvar::NONE, false);
+
 // <bot stuff>
 
 // bot buy cvars
@@ -683,7 +685,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	level.time = levelTime;
 	level.inClient = inClient;
 	level.startTime = levelTime;
-	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
+	level.snd_fry = G_SoundIndex( "sound/misc/fry" );  // FIXME standing in lava / slime
 
 	// TODO: Move this in a seperate function
 	if ( g_logFile.string[ 0 ] )
@@ -877,6 +879,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	G_notify_sensor_start();
 
 	Unv::SGame::Lua::Initialize();
+
+	// Initialize build point counts for the intial layout.
+	G_UpdateBuildPointBudgets();
 }
 
 /*
@@ -2279,6 +2284,10 @@ can see the last frag.
 */
 void CheckExitRules()
 {
+	if ( g_cheats.integer && g_neverEnd.Get() ) {
+		return;
+	}
+
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if ( level.intermissiontime )

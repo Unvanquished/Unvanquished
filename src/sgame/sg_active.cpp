@@ -141,15 +141,15 @@ void P_WorldEffects( gentity_t *ent )
 				// play a gurp sound instead of a general pain sound
 				if ( ent->entity->Get<HealthComponent>()->Health() <= (float)ent->damage )
 				{
-					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
+					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "*drown" ) );
 				}
 				else if ( rand() < RAND_MAX / 2 + 1 )
 				{
-					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "sound/player/gurp1.wav" ) );
+					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "sound/player/gurp1" ) );
 				}
 				else
 				{
-					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "sound/player/gurp2.wav" ) );
+					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "sound/player/gurp2" ) );
 				}
 
 				// don't play a general pain sound
@@ -859,8 +859,6 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 /*
 ==================
 ClientTimerActions
-
-Actions that happen once a second
 ==================
 */
 void ClientTimerActions( gentity_t *ent, int msec )

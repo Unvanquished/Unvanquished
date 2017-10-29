@@ -25,22 +25,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 {
-	"idle1.wav",
-	"idle2.wav",
-	"powerdown.wav",
-	"idle_unpowered.wav",
-	"construct1.wav",
-	"construct2.wav",
-	"attack1.wav",
-	"attack2.wav",
-	"spawn1.wav",
-	"spawn2.wav",
-	"pain1.wav",
-	"pain2.wav",
-	"destroy1.wav",
-	"destroy2.wav",
-	"destroyed.wav",
-	"destroyed2.wav"
+	"idle1",
+	"idle2",
+	"powerdown",
+	"idle_unpowered",
+	"construct1",
+	"construct2",
+	"attack1",
+	"attack2",
+	"spawn1",
+	"spawn2",
+	"pain1",
+	"pain2",
+	"destroy1",
+	"destroy2",
+	"destroyed",
+	"destroyed2"
 };
 
 // Shorthand definitions for the buildable animation names below.
@@ -122,23 +122,23 @@ static const char* shorthandToName[ NUM_SHORTHANDS ] = {
 static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABLES ][ MAX_BUILDABLE_ANIMATIONS ] = {
 // NONE IDLE1  IDLE2  PWRDWN IDLEpd CNSTR  PWRUP  ATTCK1 ATTCK2 SPAWN1 SPAWN2 PAIN1  PAIN2  DESTR  DSTRpd DESTRD DSTRDpd  // BA_*
 {{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0}}, // NONE
-{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{XX,0},{XX,0},{S1,0},{XX,0},{P1,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // A_SPAWN
-{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{P2,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // A_OVERMIND
+{{XX,0},{I1,1},{XX,0},{DD,0},{DD,1},{C1,0},{C1,0},{XX,0},{XX,0},{S1,0},{XX,0},{P1,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // A_SPAWN
+{{XX,0},{I1,1},{XX,0},{DD,0},{DD,1},{C1,0},{C1,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{P2,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // A_OVERMIND
 {{XX,0},{I1,1},{XX,0},{BS,0},{IS,1},{C1,0},{BU,0},{XX,0},{XX,0},{XX,0},{XX,0},{P1,0},{PS,0},{DE,0},{dS,0},{DD,0},{DS,0}}, // A_BARRICADE
-{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_ACIDTUBE
-{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_TRAPPER
-{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_BOOSTER
-{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_HIVE
-{{XX,0},{I1,1},{XX,0},{XX,0},{IU,1},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // A_LEECH
-{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_SPIKER
-{{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{S1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0},{XX,0}}, // H_SPAWN
-{{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0},{XX,0}}, // H_MGTURRET
-{{XX,0},{I1,0},{XX,0},{OP,2},{CD,0},{OP,0},{OP,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{OP,2},{CD,0},{CD,0},{XX,0}}, // H_ROCKETPOD
-{{XX,0},{I1,0},{XX,0},{I1,0},{I1,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0},{XX,0}}, // H_ARMOURY
-{{XX,0},{I1,1},{I2,1},{PD,0},{I1,0},{C1,0},{I1,0},{A1,0},{C2,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{DU,0},{DD,0},{XX,0}}, // H_MEDISTAT
-{{XX,0},{I1,0},{XX,0},{I1,0},{I1,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0},{XX,0}}, // H_DRILL
-{{XX,0},{I1,1},{XX,0},{XX,0},{XX,0},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // H_REACTOR
-{{XX,0},{I1,1},{XX,0},{I1,0},{I1,0},{C1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // H_REPEATER
+{{XX,0},{I1,1},{XX,0},{DD,0},{DD,1},{C1,0},{C1,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_ACIDTUBE
+{{XX,0},{I1,1},{XX,0},{DD,0},{DD,1},{C1,0},{C1,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_TRAPPER
+{{XX,0},{I1,1},{XX,0},{DD,0},{DD,1},{C1,0},{C1,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_BOOSTER
+{{XX,0},{I1,1},{XX,0},{DD,0},{DD,1},{C1,0},{C1,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_HIVE
+{{XX,0},{I1,1},{XX,0},{DD,0},{IU,1},{C1,0},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // A_LEECH
+{{XX,0},{I1,1},{XX,0},{DD,0},{DD,1},{C1,0},{C1,0},{A1,0},{XX,0},{XX,0},{XX,0},{P1,0},{XX,0},{DE,0},{DE,0},{DD,0},{XX,0}}, // A_SPIKER
+{{XX,0},{I1,0},{XX,0},{XX,0},{I1,1},{I1,0},{XX,0},{XX,0},{XX,0},{S1,0},{XX,0},{XX,0},{XX,0},{I1,0},{XX,0},{I1,0},{XX,0}}, // H_SPAWN
+{{XX,0},{I1,0},{XX,0},{I1,0},{I1,1},{I1,0},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0},{XX,0}}, // H_MGTURRET
+{{XX,0},{I1,0},{XX,0},{OP,2},{CD,1},{OP,0},{OP,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{OP,2},{CD,0},{CD,0},{XX,0}}, // H_ROCKETPOD
+{{XX,0},{I1,0},{XX,0},{I1,0},{I1,1},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0},{XX,0}}, // H_ARMOURY
+{{XX,0},{I1,1},{I2,1},{PD,0},{I1,1},{C1,0},{I1,0},{A1,0},{C2,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{DU,0},{DD,0},{XX,0}}, // H_MEDISTAT
+{{XX,0},{I1,0},{XX,0},{I1,0},{I1,1},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0},{XX,0}}, // H_DRILL
+{{XX,0},{I1,1},{XX,0},{XX,0},{I1,1},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // H_REACTOR
+{{XX,0},{I1,1},{XX,0},{I1,0},{I1,1},{C1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // H_REPEATER
 };
 
 static const char *GetAnimationName( buildable_t buildable, buildableAnimNumber_t animNumber )
@@ -433,6 +433,11 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 		}
 
 		animations[ i ].loopFrames = atoi( token );
+		if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
+		{
+			Log::Warn("CG_ParseBuildableAnimationFile: loopFrames != numFrames");
+			animations[ i ].loopFrames = animations[ i ].numFrames;
+		}
 
 		token = COM_Parse( &text_p );
 
@@ -601,7 +606,6 @@ void CG_InitBuildables()
 	buildable_t  buildable;
 	int          j;
 	buildableAnimNumber_t anim;
-	fileHandle_t f;
 
 	memset( cg_buildables, 0, sizeof( cg_buildables ) );
 
@@ -708,16 +712,10 @@ void CG_InitBuildables()
 
 			if ( cg_buildables[ buildable ].sounds[ j ].enabled )
 			{
-				if ( trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ ) > 0 )
+				cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, false );
+				if ( cg_buildables[ buildable ].sounds[ j ].sound < 0 )
 				{
-					//file exists so close it
-					trap_FS_FCloseFile( f );
-
-					cg_buildables[ buildable ].sounds[ j ].sound = trap_S_RegisterSound( filename, false );
-				}
-				else
-				{
-					//file doesn't exist - use default
+					// file doesn't exist - use default
 					if ( BG_Buildable( buildable )->team == TEAM_ALIENS )
 					{
 						cg_buildables[ buildable ].sounds[ j ].sound = defaultAlienSounds[ j ];
@@ -1001,7 +999,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 		cent->buildableIdleAnim = true;
 	}
 
-	//display the first frame of the construction anim if not yet spawned
+	// display the first frame of the construction anim if not yet spawned
 	if ( !( es->eFlags & EF_B_SPAWNED ) )
 	{
 		animation_t *anim = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT ];
@@ -1009,7 +1007,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 		// Change the animation in the lerpFrame so that md5s will use it too.
 		cent->lerpFrame.animation = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT ];
 
-		//so that when animation starts for real it has sensible numbers
+		// so that when animation starts for real it has sensible numbers
 		cent->lerpFrame.oldFrameTime =
 		  cent->lerpFrame.frameTime =
 		    cent->lerpFrame.animationTime =
@@ -1019,7 +1017,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 		*now = cent->lerpFrame.frame = anim->firstFrame;
 		*backLerp = cent->lerpFrame.backlerp = 0.0f;
 
-		//ensure that an animation is triggered once the buildable has spawned
+		// ensure that an animation is triggered once the buildable has spawned
 		cent->oldBuildableAnim = BANIM_NONE;
 	}
 	else
@@ -1029,7 +1027,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 			if ( cg_debugAnim.integer )
 			{
 				Log::Debug( "%d->%d l:%d t:%d %s(%d)",
-				           cent->oldBuildableAnim, cent->buildableAnim,
+				           cent->oldBuildableAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT ), cent->buildableAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT ),
 				           es->legsAnim, es->torsoAnim,
 				           BG_Buildable( es->modelindex )->humanName, es->number );
 			}

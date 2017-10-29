@@ -344,7 +344,7 @@ bool sensor_buildable_match( gentity_t *self, gentity_t *activator )
 void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t* )
 {
 	//sanity check
-	if ( !activator || !(activator->s.eType == entityType_t::ET_BUILDABLE) )
+	if ( !activator || activator->s.eType != entityType_t::ET_BUILDABLE )
 	{
 		return;
 	}

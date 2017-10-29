@@ -707,7 +707,7 @@ static const char *G_UnnamedClientName( gclient_t *client )
 
 	client->pers.namelog->unnamedNumber = number;
 	Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-	             g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER,
+	             g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER"#",
 	             number );
 
 	return name;
@@ -927,6 +927,13 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		{
 			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ) );
 			revertName = true;
+		}
+		else if ( Q_UTF8_Strlen( newname ) > MAX_NAME_CHARACTERS )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print_tr %s %d", QQ( N_("Name is too long! Must be less than $1$ characters.") ), MAX_NAME_CHARACTERS ) );
+			revertName = true;
+
 		}
 
 		if ( revertName )

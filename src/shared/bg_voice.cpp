@@ -386,23 +386,20 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 			voiceTracks = voiceTracks->next;
 		}
 
-		if ( !trap_FS_FOpenFile( token.string, nullptr, fsMode_t::FS_READ ) )
+#ifdef BUILD_CGAME
+		voiceTracks->track = trap_S_RegisterSound( token.string, false );
+		if ( voiceTracks->track < 0 )
 		{
 			int  line;
 			char filename[ MAX_QPATH ];
 
 			trap_Parse_SourceFileAndLine( handle, filename, &line );
 			Log::Warn( "BG_VoiceParseCommand(): "
-			            "track \"%s\" referenced on line %d of %s does not exist",
-			            token.string, line, filename );
+					"track \"%s\" referenced on line %d of %s does not exist",
+					token.string, line, filename );
 		}
-		else
-		{
-#ifdef BUILD_CGAME
-			voiceTracks->track = trap_S_RegisterSound( token.string, false );
-			voiceTracks->duration = 0; // FIXME: Was always zero...
+		voiceTracks->duration = 0; // FIXME: Was always zero...
 #endif
-		}
 
 		voiceTracks->team = -1;
 		voiceTracks->pClass = -1;

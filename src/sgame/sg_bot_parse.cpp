@@ -311,6 +311,11 @@ static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
 	return AIBoxFloat( healthFraction );
 }
 
+static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.time - self->botMind->stuckTime );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -344,6 +349,7 @@ static const struct AIConditionMap_s
 	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
 	{ "random",            VALUE_FLOAT, randomChance,      0 },
 	{ "skill",             VALUE_INT,   botSkill,          0 },
+	{ "stuckTime",         VALUE_INT,   stuckTime,         0 },
 	{ "team",              VALUE_INT,   botTeam,           0 },
 	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
 	{ "weapon",            VALUE_INT,   currentWeapon,     0 }
@@ -918,15 +924,18 @@ static const struct AIActionMap_s
 	{ "fireWeapon",        BotActionFireWeapon,        0, 0 },
 	{ "flee",              BotActionFlee,              0, 0 },
 	{ "heal",              BotActionHeal,              0, 0 },
+	{ "jump",              BotActionJump,              0, 0 },
 	{ "moveInDir",         BotActionMoveInDir,         1, 2 },
 	{ "moveTo",            BotActionMoveTo,            1, 2 },
 	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
 	{ "repair",            BotActionRepair,            0, 0 },
+	{ "resetStuckTime",    BotActionResetStuckTime,    0, 0 },
 	{ "roam",              BotActionRoam,              0, 0 },
 	{ "roamInRadius",      BotActionRoamInRadius,      2, 2 },
 	{ "rush",              BotActionRush,              0, 0 },
 	{ "say",               BotActionSay,               2, 2 },
-	{ "strafeDodge",       BotActionStrafeDodge,       0, 0 }
+	{ "strafeDodge",       BotActionStrafeDodge,       0, 0 },
+	{ "suicide",           BotActionSuicide,           0, 0 },
 };
 
 /*

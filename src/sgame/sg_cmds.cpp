@@ -86,10 +86,6 @@ In the case of false, err will be populated with an error message.
 */
 int G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 {
-	gclient_t *cl;
-	int       p, count;
-	char      line[ MAX_NAME_LENGTH + 10 ] = { "" };
-
 	err[ 0 ] = '\0';
 
 	if ( found <= 0 )
@@ -102,17 +98,20 @@ int G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 	{
 		Q_strcat( err, len, N_("more than one player name matches. "
 		          "be more specific or use the slot #: ") );
-		count = strlen( err );
-		for ( p = 0; p < found; p++ )
+
+		const int count = strlen( err );
+		char      line[ MAX_NAME_LENGTH + 10 ] = { "" };
+
+		for ( int p = 0; p < found; p++ )
 		{
-			cl = &level.clients[ plist[p] ];
+			const gclient_t *cl = &level.clients[ plist[p] ];
 
 			if ( cl->pers.connected == CON_CONNECTED )
 			{
 				Com_sprintf( line, sizeof( line ), "%2i — %s^7",
 				             plist[p], cl->pers.netname );
 
-				if ( strlen( err ) + strlen( line ) > (unsigned) len )
+				if ( strlen( err ) + strlen( line ) > (size_t) len )
 				{
 					break;
 				}
@@ -573,6 +572,12 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 
 		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
+	}
+
+	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
+	{
+		float bp = trap_Argc() < 3 ? 300.0f : atof( name + strlen("bp") );
+		level.team[ent->client->pers.team].totalBudget += bp;
 	}
 
 	if ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
@@ -3781,32 +3786,20 @@ List all maps on the server
 =================
 */
 
-static int SortMaps( const void *a, const void *b )
-{
-	return strcmp( * ( const char ** ) a, * ( const char ** ) b );
-}
-
 #define MAX_MAPLIST_MAPS 256
 #define MAX_MAPLIST_ROWS 9
+#define MAX_MAPLIST_COLS 3
+
 void Cmd_ListMaps_f( gentity_t *ent )
 {
 	char search[ 16 ] = { "" };
-	const char *fileSort[ MAX_MAPLIST_MAPS ] = { 0 };
-	char *p;
-	int  shown = 0;
-	int  count = 0;
 	int  page = 0;
-	int  pages;
-	int  row, rows;
-	int  start, i, j;
-	char mapName[ MAX_QPATH ];
-
-	trap_Cvar_VariableStringBuffer( "mapname", mapName, sizeof( mapName ) );
 
 	if ( trap_Argc() > 1 )
 	{
 		trap_Argv( 1, search, sizeof( search ) );
 
+		char *p;
 		for ( p = search; ( *p ) && Str::cisdigit( *p ); p++ ) {; }
 
 		if ( !( *p ) )
@@ -3831,62 +3824,115 @@ void Cmd_ListMaps_f( gentity_t *ent )
 		}
 	}
 
-	auto paks = FS::GetAvailablePaks();
+	const char *mapNames[ MAX_MAPLIST_MAPS ] = { 0 };
+	int         mapNamesCount = 0;
+	const auto paks = FS::GetAvailablePaks();
 
 	for ( size_t i = 0; i < paks.size(); ++i )
 	{
+		const char *pakName = paks[ i ].name.c_str();
+
 		// Filter out duplicates
-		if ( i && !strcmp( paks[ i ].name.c_str(), paks[ i - 1 ].name.c_str() ) )
+		if ( i && !strcmp( pakName, paks[ i - 1 ].name.c_str() ) )
 		{
 			continue;
 		}
 
-		if ( Q_strncmp( "map-", paks[ i ].name.c_str(), 4 ) || ( search[ 0 ] && !strstr( paks[ i ].name.c_str(), search ) ) )
+		if ( Q_strncmp( "map-", pakName, 4 ) ||
+			 ( search[ 0 ] && !strstr( pakName + 4, search ) ) )
 		{
 			continue;
 		}
 
-		fileSort[ count ] = paks[ i ].name.c_str() + 4;
-		count++;
+		mapNames[ mapNamesCount++ ] = pakName + 4;
 	}
 
-	qsort( fileSort, count, sizeof( fileSort[ 0 ] ), SortMaps );
+	std::sort( mapNames,
+			   mapNames + mapNamesCount,
+			   [] ( const char *mapNameFirst, const char *mapNameSecond )
+			   {
+			   		return strcmp( mapNameFirst, mapNameSecond ) < 0;
+			   }
+	);
 
-	rows = ( count + 2 ) / 3;
-	pages = std::max( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
+	/* About the MAX_MAPLIST_COLS - 1 trick:
+	 *
+	 * This is to fill an extra row when the number of map is not a
+	 * multiple of MAX_MAPLIST_COLS, 1 being the obvious minimal number
+	 * of map to make the filling effective and add an extra row.
+	 *
+	 * Because:
+	 *     1 extra map name + MAX_MAPLIST_COLS - 1 = MAX_MAPLIST_COLS
+	 * The condition:
+	 *     N extra map name + MAX_MAPLIST_COLS - 1 > MAX_MAPLIST_COLS
+	 * is true when a an extra row is needed.
+	 *
+	 * The integer result of the division by MAX_MAPLIST_COLS does
+	 * that > condition implicitely since:
+	 *     N extra maps + MAX_MAPLIST_COLS - 1 / MAX_MAPLIST_COLS
+	 * returns 0 if it divides a multiple of MAX_MAPLIST_COLS
+	 * or truncates to 1 if not, so:
+	 *
+	 * With I a multiple of MAX_MAPLIST_COLS
+	 * And N a number of extra maps not being a multiple of MAX_MAPLIST_COLS
+	 * The way:
+	 *    mapNamesCount = I × MAX_MAPLISt_COLS + N
+	 *
+	 * We can compute:
+	 *    rows = (I + N + MAX_MAPLIST_COLS - 1)                     / MAX_MAPLIST_COLS
+	 *    rows = (I / MAX_MAPLIST_COLS) + (N + MAX_MAPLIST_COLS - 1 / MAX_MAPLIST_COLS)
+	 *    rows =  I                     + 1
+	 *
+	 * This adds an extra row every time a row is not enough to contains
+	 * remaining map names.
+	 *
+	 * The rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS trick does the same
+	 * to add an extra page everytime a column is not enough to contains the
+	 * remaining map names */
+
+	int rows = ( mapNamesCount + MAX_MAPLIST_COLS - 1 ) / MAX_MAPLIST_COLS;
+	int pages = std::max( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
 
 	if ( page >= pages )
 	{
 		page = pages - 1;
 	}
 
-	start = page * MAX_MAPLIST_ROWS * 3;
+	int start = page * MAX_MAPLIST_ROWS * MAX_MAPLIST_COLS;
 
-	if ( count < start + ( 3 * MAX_MAPLIST_ROWS ) )
+	if ( mapNamesCount < start + ( MAX_MAPLIST_ROWS * MAX_MAPLIST_COLS) )
 	{
-		rows = ( count - start + 2 ) / 3;
+		rows = ( mapNamesCount - start + MAX_MAPLIST_COLS - 1 ) / MAX_MAPLIST_COLS;
 	}
 	else
 	{
 		rows = MAX_MAPLIST_ROWS;
 	}
 
+	char mapName[ MAX_QPATH ];
+
+	trap_Cvar_VariableStringBuffer( "mapname", mapName, sizeof( mapName ) );
+
 	ADMBP_begin();
 
-	for ( row = 0; row < rows; row++ )
+	int shownMapNamesCount = 0;
+
+	for ( int row = 0; row < rows; row++ )
 	{
-		for ( i = start + row, j = 0; i < count && j < 3; i += rows, j++ )
+		for ( int i = start + row, j = 0; i < mapNamesCount && j < MAX_MAPLIST_COLS; i += rows, j++ )
 		{
-			if ( !strcmp( fileSort[ i ], mapName ) )
+			const char *printedMapName = mapNames[ i ];
+
+			if ( !strcmp( printedMapName, mapName ) )
 			{
-				ADMBP( va( "^3 %-20s", fileSort[ i ] ) );
+				ADMBP_raw( va( "^3 %-20s", printedMapName ) );
 			}
 			else
 			{
-				ADMBP( va( "^7 %-20s", fileSort[ i ] ) );
+				ADMBP_raw( va( "^7 %-20s", printedMapName ) );
 			}
 
-			shown++;
+			shownMapNamesCount++;
 		}
 
 		ADMBP( "" );
@@ -3896,17 +3942,34 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 	if ( search[ 0 ] )
 	{
-		ADMP_P( va( "%s %d %s", Quote( P_("^3listmaps: ^7found $1$ map matching '$2$^7'", "^3listmaps: ^7found $1$ maps matching '$2$^7'", count) ), count, Quote( search ) ), count );
+		ADMP_P( va( "%s %d %s",
+					Quote( P_("^3listmaps: ^7found $1$ map matching '$2$^7'",
+							  "^3listmaps: ^7found $1$ maps matching '$2$^7'",
+							  mapNamesCount)
+					),
+					mapNamesCount,
+					Quote( search )
+			      ),
+				mapNamesCount );
 	}
 	else
 	{
-		ADMP_P( va( "%s %d %d", Quote( P_("^3listmaps: ^7listing $1$ of $2$ map", "^3listmaps: ^7listing $1$ of $2$ maps", count) ), shown, count ), count );
+		ADMP_P( va( "%s %d %d",
+					Quote( P_("^3listmaps: ^7listing $1$ of $2$ map",
+							  "^3listmaps: ^7listing $1$ of $2$ maps",
+							  mapNamesCount)
+					),
+					shownMapNamesCount,
+					mapNamesCount
+				  ),
+				mapNamesCount );
 	}
 
 	if ( pages > 1 && page + 1 < pages )
 	{
-		ADMP( va( "%s %d %d %s %s %d", QQ( N_("^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
-		           page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
+		ADMP( va( "%s %d %d %s %s %d",
+				  QQ( N_("^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
+		          page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
 	}
 	else if ( pages > 1 )
 	{

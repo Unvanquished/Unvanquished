@@ -235,7 +235,7 @@ void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t* )
 void SP_env_afx_hurt( gentity_t *self )
 {
 
-	self->soundIndex = G_SoundIndex( "sound/misc/electro.wav" );
+	self->soundIndex = G_SoundIndex( "sound/misc/electro" );
 	self->touch = env_afx_hurt_touch;
 
 	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 5);

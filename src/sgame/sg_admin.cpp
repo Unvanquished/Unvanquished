@@ -52,6 +52,7 @@ static void G_admin_notIntermission( gentity_t *ent )
 
 // big ugly global buffer for use with buffered printing of long outputs
 static std::string       g_bfb;
+#define MAX_MESSAGE_SIZE static_cast<size_t>(1022)
 
 static bool G_admin_maprestarted( gentity_t * );
 
@@ -1184,7 +1185,7 @@ static bool admin_match( void *admin, const void *match )
 	}
 
 	G_SanitiseString( ( ( g_admin_admin_t * ) admin )->name, n1, sizeof( n1 ) );
-	return strstr( n1, n2 ) ? true : false;
+	return strstr( n1, n2 ) != nullptr;
 }
 
 static int admin_out( void *admin, char *str )
@@ -2430,19 +2431,19 @@ int G_admin_parse_time( const char *time )
 		{
 			case 'w':
 				num *= 7;
-				/* no break */
+				DAEMON_FALLTHROUGH;
 
 			case 'd':
 				num *= 24;
-				/* no break */
+				DAEMON_FALLTHROUGH;
 
 			case 'h':
 				num *= 60;
-				/* no break */
+				DAEMON_FALLTHROUGH;
 
 			case 'm':
 				num *= 60;
-				/* no break */
+				DAEMON_FALLTHROUGH;
 
 			case 's':
 				break;
@@ -3245,9 +3246,10 @@ bool G_admin_warn( gentity_t *ent )
 	if( ( found = G_ClientNumbersFromString( name, pids, MAX_CLIENTS ) ) != 1 )
 	{
 		count = G_MatchOnePlayer( pids, found, err, sizeof( err ) );
-		ADMP( va( "%s %s %s %s %s", QQ( "^3$1$: ^7$2t$\n $3$$4$" ), "warn", ( count > 0 ) ?  Quote( Substring( err, 0, count ) ) : Quote( err ),
-		                                      ( count > 0 ) ? Quote( Substring( err, count + 1, strlen( err ) ) ) : "",
-				                              ( count > 0 ) ? "" : "" ) );
+		ADMP( va( "%s %s %s",
+				  QQ( "^3$1$: ^7$2t$" ),
+				  "warn",
+				  ( count > 0 ) ? Quote( Substring( err, 0, count ) ) : Quote( err ) ) );
 		return false;
 	}
 
@@ -3476,7 +3478,7 @@ static bool admin_match_inactive( void *admin, const void *match )
 	unsigned int    date = a->lastSeen.tm_year * 10000 + a->lastSeen.tm_mon * 100 + a->lastSeen.tm_mday;
 	unsigned int	since = *(unsigned int *) match;
 
-	return ( date < since ) ? true : false;
+	return date < since;
 }
 
 bool G_admin_listinactive( gentity_t *ent )
@@ -5506,6 +5508,7 @@ void G_admin_print_plural( gentity_t *ent, Str::StringRef m, int number )
 void G_admin_buffer_begin()
 {
 	g_bfb.clear();
+	g_bfb.reserve(MAX_MESSAGE_SIZE);
 }
 
 void G_admin_buffer_end( gentity_t *ent )
@@ -5513,19 +5516,30 @@ void G_admin_buffer_end( gentity_t *ent )
 	G_admin_print( ent, Cmd::Escape( g_bfb ) );
 }
 
-void G_admin_buffer_print( gentity_t *ent, Str::StringRef m )
+static inline void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m, bool appendNewLine )
 {
-	if ( !m.empty() )
+	// Ensure we don't overflow client buffers.
+	if ( g_bfb.size() + m.size() >= MAX_MESSAGE_SIZE )
 	{
-		// Ensure we don't overflow client buffers.
-		if ( g_bfb.size() + m.size() >= 1022 )
-		{
-			G_admin_buffer_end( ent );
-			g_bfb.clear();
-		}
-		g_bfb += m;
+		G_admin_buffer_end( ent );
+		G_admin_buffer_begin();
+	}
+	g_bfb += m;
+
+	if ( appendNewLine )
+	{
 		g_bfb += '\n';
 	}
+}
+
+void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m )
+{
+	G_admin_buffer_print_raw( ent, m, false );
+}
+
+void G_admin_buffer_print( gentity_t *ent, Str::StringRef m )
+{
+	G_admin_buffer_print_raw( ent, m, true );
 }
 
 void G_admin_cleanup()
@@ -5669,7 +5683,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		teams = { team_t::TEAM_ALIENS, team_t::TEAM_HUMANS };
 	}
 	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : BOT_DEFAULT_SKILL;
-	
+
 	for (team_t team : teams)
 	{
 		level.team[team].botFillTeamSize = count;

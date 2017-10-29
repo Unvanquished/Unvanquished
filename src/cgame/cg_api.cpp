@@ -41,7 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int VM::VM_API_VERSION = CGAME_API_VERSION;
 
 void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState );
-void CG_RegisterCvars();
 void CG_Shutdown();
 
 void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {

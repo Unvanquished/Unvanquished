@@ -2768,7 +2768,7 @@ static void PM_GroundClimbTrace()
 				break;
 
 			case GCT_ATP_STEPMOVE:
-				if ( pml.groundPlane != false && PM_PredictStepMove() )
+				if ( pml.groundPlane && PM_PredictStepMove() )
 				{
 					// step down
 					VectorMA( pm->ps->origin, -STEPSIZE, surfNormal, point );
@@ -2784,7 +2784,7 @@ static void PM_GroundClimbTrace()
 
 			case GCT_ATP_UNDERNEATH:
 				// trace "underneath" BBOX so we can traverse angles > 180deg
-				if ( pml.groundPlane != false )
+				if ( pml.groundPlane )
 				{
 					VectorMA( pm->ps->origin, -16.0f, surfNormal, point );
 					VectorMA( point, -16.0f, moveDir, point );
@@ -4481,6 +4481,7 @@ static void PM_Weapon()
 					PM_ForceLegsAnim( NSPA_ATTACK2 );
 					PM_StartWeaponAnim( WANIM_ATTACK7 );
 				}
+				DAEMON_FALLTHROUGH;
 
 			case WP_ALEVEL2:
 				if ( attack1 )
