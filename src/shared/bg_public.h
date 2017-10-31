@@ -744,8 +744,6 @@ typedef enum
   TORSO_RAISE,
 
   TORSO_STAND,
-  // TODO: Remove this when we're ready to break compat.
-  DEPRECATED_TORSO_STAND_BLASTER,
 
   LEGS_WALKCR,
   LEGS_WALK,
@@ -959,7 +957,6 @@ typedef enum
   SAY_ADMINS,
   SAY_ADMINS_PUBLIC,
   SAY_RAW,
-  SAY_DEFAULT_DEPRECATED, // old - do not use
   SAY_ALL_ADMIN,
   SAY_ALL_ME,
   SAY_TEAM_ME,
