@@ -1666,106 +1666,6 @@ static bool PM_CheckWaterJump()
 	return true;
 }
 
-/*
- ==================
- PM_CheckDodge
-
- Checks the dodge key and starts a human dodge
- ==================
- */
-static bool PM_CheckDodge( void )
-{
-	vec3_t right, velocity = { 0.0f, 0.0f, 0.0f };
-	float jump, sideModifier;
-	int cost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
-
-	if ( pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS )
-	{
-		return false;
-	}
-
-	// Landed a dodge
-	if ( ( pm->ps->pm_flags & PMF_CHARGE ) &&
-	        pm->ps->groundEntityNum != ENTITYNUM_NONE )
-	{
-		pm->ps->pm_flags = ( pm->ps->pm_flags & ~PMF_CHARGE );
-		return false;
-	}
-
-	// Reasons why we can't start a dodge or sprint
-	if ( pm->ps->pm_type != PM_NORMAL || pm->ps->stats[ STAT_STAMINA ] < cost ||
-	        ( pm->ps->pm_flags & PMF_DUCKED ) || pm->ps->pm_time > 0 )
-	{
-		return false;
-	}
-
-	// Reasons why we can't start a dodge only
-	if ( pm->ps->pm_flags & ( PMF_CHARGE ) ||
-	        pm->ps->groundEntityNum == ENTITYNUM_NONE ||
-	        ( pm->cmd.doubleTap != dtType_t::DT_MOVELEFT &&
-	          pm->cmd.doubleTap != dtType_t::DT_MOVERIGHT ) )
-	{
-		return false;
-	}
-
-	// don't allow jump until all buttons are up (?)
-	if ( pm->ps->pm_flags & PMF_RESPAWNED )
-	{
-		return false;
-	}
-
-	// can't jump whilst grabbed
-	if ( pm->ps->pm_type == PM_GRABBED )
-	{
-		return false;
-	}
-
-	// must wait for jump to be released
-	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
-	{
-		return false;
-	}
-
-	VectorCopy( pml.right, right );
-
-	// Dodge magnitude is based on the jump magnitude scaled by the modifiers
-	jump = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
-
-	// Weaken dodge if slowed
-	if ( ( pm->ps->stats[ STAT_STATE ] & SS_SLOWLOCKED )  ||
-	        ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED ) )
-	{
-		sideModifier = HUMAN_DODGE_SLOW_MULTIPLIER;
-	}
-	else
-	{
-		sideModifier = HUMAN_DODGE_SIDE_MULTIPLIER;
-	}
-
-	// The dodge sets minimum velocity
-	if ( pm->cmd.doubleTap == dtType_t::DT_MOVELEFT )
-	{
-		VectorNegate( right, right );
-	}
-
-	VectorMA( velocity, jump * sideModifier, right, velocity );
-	velocity[ 2 ] = jump * HUMAN_DODGE_VERTICAL_MULTIPLIER;
-	VectorAdd( velocity, pm->ps->velocity, pm->ps->velocity );
-	pm->ps->stats[ STAT_STAMINA ] -= cost;
-
-	// Jumped away
-	pml.groundPlane = false;
-	pml.walking = false;
-	pm->ps->pm_flags |= PMF_JUMP_HELD;
-	pm->ps->pm_flags |= PMF_JUMPED;
-	pm->ps->pm_time = HUMAN_DODGE_COOLDOWN;
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	PM_AddEvent( EV_JUMP );
-	PM_PlayJumpingAnimation();
-
-	return true;
-}
-
 //============================================================================
 
 /*
@@ -5053,7 +4953,6 @@ void PmoveSingle( pmove_t *pmove )
 	}
 
 	PM_DropTimers();
-	PM_CheckDodge();
 
 	if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
 	{

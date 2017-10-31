@@ -1243,10 +1243,17 @@ bool G_CheckVenomAttack( gentity_t *self )
 		return false;
 	}
 
-	// only allow bites to work against buildables in construction
+	// only allow bites to work against buildables in construction and turrets and rocket pods.
 	if ( traceEnt->s.eType == entityType_t::ET_BUILDABLE && traceEnt->spawned )
 	{
-		return false;
+		switch ( traceEnt->s.modelindex )
+		{
+			case BA_H_MGTURRET:
+			case BA_H_ROCKETPOD:
+				break;
+			default:
+				return false;
+		}
 	}
 
 	traceEnt->entity->Damage((float)LEVEL0_BITE_DMG, self, Vec3::Load(tr.endpos),

@@ -384,6 +384,12 @@ void              G_ClearPlayerZapEffects( gentity_t *player );
 void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
 
+// CombatFeedback.cpp
+namespace CombatFeedback
+{
+  void HitNotify(gentity_t *attacker, gentity_t *victim, Util::optional<Vec3> point, float damage, meansOfDeath_t mod, bool lethal);
+}
+
 // Components
 void G_IgnitableThink();
 

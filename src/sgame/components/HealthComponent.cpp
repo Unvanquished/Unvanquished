@@ -194,9 +194,6 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 			entity.oldEnt->credits[source->client->ps.clientNum].value += loss;
 			entity.oldEnt->credits[source->client->ps.clientNum].time = level.time;
 			entity.oldEnt->credits[source->client->ps.clientNum].team = (team_t)source->client->pers.team;
-
-			// Notify the attacker of a hit.
-			SpawnHitNotification(source);
 		}
 	}
 
@@ -218,6 +215,11 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		if(!client) G_EventFireEntity(entity.oldEnt, source, ON_DIE);
 	} else if (entity.oldEnt->pain) {
 		entity.oldEnt->pain(entity.oldEnt, source, (int)std::ceil(take));
+	}
+
+	if (entity.oldEnt != source && source->client) {
+		bool lethal = (health <= 0);
+		CombatFeedback::HitNotify(source, entity.oldEnt, location, take, meansOfDeath, lethal);
 	}
 }
 
@@ -274,14 +276,4 @@ void HealthComponent::ScaleDamageAccounts(float healthRestored) {
 	for (Entity* other : relevantClients) {
 		entity.oldEnt->credits[other->oldEnt->s.number].value *= scale;
 	}
-}
-
-// TODO: Replace this with a call to a proper event factory.
-void HealthComponent::SpawnHitNotification(gentity_t *attacker)
-{
-	if (!attacker->client) return;
-
-	gentity_t *event = G_NewTempEntity(attacker->s.origin, EV_HIT);
-	event->r.svFlags = SVF_SINGLECLIENT;
-	event->r.singleClient = attacker->client->ps.clientNum;
 }
