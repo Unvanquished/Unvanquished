@@ -1008,7 +1008,11 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 		else
 		{
 			// Load Alien animations
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_STAND, "stand", true, false, false ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, 
+NSPA_STAND, "stand", true, false, false ) &&
+			     !CG_RegisterPlayerAnimation( ci, modelName, 
+NSPA_STAND, "idle", true, false, false )
+			)
 			{
 				Log::Notice( "Failed to load standing animation file %s\n", filename );
 				return false;
@@ -3246,6 +3250,20 @@ void CG_Player( centity_t *cent )
 			body.origin[ 1 ] -= ci->headOffset[ 1 ];
 			body.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
 		}
+
+		scale = BG_ClassModelConfig( class_ )->modelScale;
+
+		if ( scale != 1.0f )
+		{
+			VectorScale( body.axis[ 0 ], scale, body.axis[ 0 ] );
+			VectorScale( body.axis[ 1 ], scale, body.axis[ 1 ] );
+			VectorScale( body.axis[ 2 ], scale, body.axis[ 2 ] );
+
+			body.nonNormalizedAxes = true;
+		}
+
+		//offset on the Z axis if required
+		VectorMA( body.origin, BG_ClassModelConfig( class_ )->zOffset, surfNormal, body.origin );
 
 		VectorCopy( body.origin, body.lightingOrigin );
 		VectorCopy( body.origin, body.oldorigin );  // don't positionally lerp at all
