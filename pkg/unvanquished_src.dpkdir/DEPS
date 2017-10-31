@@ -2,6 +2,6 @@ res-players
 res-weapons
 res-buildables
 res-ambient
-res-feedback
+res-voices
 res-soundtrack
 res-legacy
