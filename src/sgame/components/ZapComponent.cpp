@@ -84,7 +84,7 @@ void UpdateZapEffect( vec3_t muzzle, zap_t *zap )
 }  // namespace
 
 ZapComponent::ZapComponent(Entity& entity, ClientComponent& r_ClientComponent, ThinkingComponent& r_ThinkingComponent)
-	: ZapComponentBase(entity, r_ClientComponent, r_ThinkingComponent) {
+	: ZapComponentBase(entity, r_ClientComponent, r_ThinkingComponent), zap{0} {
 	REGISTER_THINKER(UpdateZap, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 	zap.creator = entity.oldEnt;
 }
