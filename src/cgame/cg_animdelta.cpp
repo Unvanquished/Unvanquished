@@ -104,7 +104,7 @@ bool AnimDelta::LoadData(clientInfo_t* ci)
 
 void AnimDelta::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
 {
-	if ( ( ctx.es->torsoAnim & ~ANIM_TOGGLEBIT ) < TORSO_ATTACK ) return;
+	if ( ( CG_AnimNumber( ctx.es->torsoAnim ) ) < TORSO_ATTACK ) return;
 	auto it = deltas_.find( ctx.es->weapon );
 	if ( it == deltas_.end() ) return;
 	for ( size_t i = 0; i < it->second.size(); ++i )

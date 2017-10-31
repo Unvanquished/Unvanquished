@@ -56,7 +56,7 @@ bool HumanSkeletonRotations::ParseConfiguration(clientInfo_t* ci, const char* to
 void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
 {
 	// HACK: Stop taunt from clipping through the body.
-	int anim = ctx.es->torsoAnim & ~ANIM_TOGGLEBIT;
+	int anim = CG_AnimNumber( ctx.es->torsoAnim );
 	if ( anim >= TORSO_GESTURE_BLASTER && anim <= TORSO_GESTURE_CKIT )
 	{
 		quat_t rot;
@@ -85,6 +85,45 @@ void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkelet
 	QuatMultiply2( skeleton->bones[ leftShoulderBone ].t.rot, rotation );
 }
 
+bool BsuitSkeletonRotations::ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p)
+{
+	if (!Q_stricmp(token, "torsoControlBone")) {
+		torsoControlBone = BoneLookup(ci, COM_Parse2(data_p));
+		return true;
+	}
+	if (!Q_stricmp(token, "leftShoulder")) {
+		leftShoulderBone = BoneLookup(ci, COM_Parse2(data_p));
+		return true;
+	}
+	if (!Q_stricmp(token, "rightShoulder")) {
+		rightShoulderBone = BoneLookup(ci, COM_Parse2(data_p));
+		return true;
+	}
+	return false;
+}
+
+void BsuitSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
+{
+	// rotate torso
+	if ( torsoControlBone >= 0 && torsoControlBone < skeleton->numBones )
+	{
+		// HACK: convert angles to bone system
+		quat_t rotation;
+		QuatFromAngles( rotation, ctx.torsoYawAngle, 0, 0 );
+		QuatMultiply2( skeleton->bones[ torsoControlBone ].t.rot, rotation );
+	}
+
+	// HACK: limit angle (avoids worst of the gun clipping through the body)
+	// Needs some proper animation fixes...
+	auto pitch = Math::Clamp<vec_t>(ctx.pitchAngle, -40, 20);
+	quat_t rotation;
+	QuatFromAngles( rotation, -pitch, 0, 0 );
+	QuatMultiply2( skeleton->bones[ rightShoulderBone ].t.rot, rotation );
+
+	// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
+	QuatFromAngles( rotation, pitch, 0, 0);
+	QuatMultiply2( skeleton->bones[ leftShoulderBone ].t.rot, rotation );
+}
 
 bool SegmentedSkeletonCombiner::ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p)
 {

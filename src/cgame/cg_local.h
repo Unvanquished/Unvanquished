@@ -877,7 +877,7 @@ struct clientInfo_t
 	bool    fixedlegs; // true if legs yaw is always the same as torso yaw
 	bool    fixedtorso; // true if torso never changes yaw
 	bool    nonsegmented; // true if model is Q2 style nonsegmented
-	bool    md5; // true if model is in the md5 model format
+	bool    skeletal; // true if model is a skeletal model
 
 	vec3_t      headOffset; // move head in icon views
 	footstep_t  footsteps;
@@ -2101,6 +2101,7 @@ bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmT
 //
 // cg_animation.c
 //
+int CG_AnimNumber( int anim );
 void CG_RunLerpFrame( lerpFrame_t *lf, float scale );
 void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, bool animChanged );
 void CG_BlendLerpFrame( lerpFrame_t *lf );
