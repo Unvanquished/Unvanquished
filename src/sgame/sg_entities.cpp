@@ -151,11 +151,6 @@ void G_FreeEntity( gentity_t *entity )
 {
 	trap_UnlinkEntity( entity );  // unlink from world
 
-	if ( entity->neverFree )
-	{
-		return;
-	}
-
 	if ( g_debugEntities.integer > 2 )
 	{
 		Log::Debug("Freeing Entity %s", etos(entity));

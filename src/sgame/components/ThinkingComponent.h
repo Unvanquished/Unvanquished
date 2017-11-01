@@ -37,6 +37,7 @@ class ThinkingComponent: public ThinkingComponentBase {
 
 		void Think();
 
+		int GetLastThinkTime() const;
 		void RegisterThinker(thinker_t thinker, thinkScheduler_t scheduler, int period);
 		void UnregisterActiveThinker();
 
