@@ -173,12 +173,6 @@ You can now put loose assets into `assets_src.dpkdir` or you can put additional 
 ./daemon -pakpath <PATH> -set fs_extrapaks assets \
 			-set vm.sgame.type 3 -set vm.cgame.type 3 \
 			+devmap plat23
-
-# Same but load an NaCl gamelogic you compiled and allow it to be debugged:
-./daemon -pakpath <PATH> -set fs_extrapaks assets \
-			-set vm.sgame.type 1 -set vm.cgame.type 1 \
-			-set vm.sgame.debug 1 -set vm.cgame.debug 1 \
-			+devmap plat23
 ```
 
 ### Windows
