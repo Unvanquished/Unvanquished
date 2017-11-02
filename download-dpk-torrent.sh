@@ -59,7 +59,7 @@ aria2c \
 echo
 
 # get the contained asset path
-path=$(aria2c -S "$torrent_file"|grep '/pkg/unvanquished_.*\.pk3'|head -1|awk -F'/' '{print $2}')
+path=$(aria2c -S "$torrent_file"|grep '/pkg/unvanquished_.*\.dpk'|head -1|awk -F'/' '{print $2}')
 
 # delete old torrent directories
 for dir in $(ls -c1|tr -d '/'); do
@@ -76,8 +76,8 @@ rm -f "$path/pkg"
 ln -s "$target_dir" "$path/pkg"
 
 # build a comma seperated list of assets and their ids
-asset_lst=$(aria2c -S "$torrent_file"|grep '.*/pkg/.*\.pk3'|awk -F'|' '{print $2}'|grep -o '[^/]*$')
-asset_ids=$(aria2c -S "$torrent_file"|grep '.*/pkg/.*\.pk3'|awk -F'|' '{print $1}'|tr '\n' ','|grep -o '[0-9].*[0-9]')
+asset_lst=$(aria2c -S "$torrent_file"|grep '.*/pkg/.*\.dpk'|awk -F'|' '{print $2}'|grep -o '[^/]*$')
+asset_ids=$(aria2c -S "$torrent_file"|grep '.*/pkg/.*\.dpk'|awk -F'|' '{print $1}'|tr '\n' ','|grep -o '[0-9].*[0-9]')
 
 # download assets
 echo "Downloading assets..."

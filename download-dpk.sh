@@ -41,7 +41,7 @@ case "$(uname -s)" in
     DEFAULT_DEST_DIR=~/Library/Application\ Support/Unvanquished/pkg
     ;;
   *)
-    DEFAULT_DEST_DIR=~/.unvanquished/pkg
+    DEFAULT_DEST_DIR=~/.local/share/unvanquished/pkg
     ;;
 esac
 
@@ -56,7 +56,7 @@ while test -z "$DONE"; do
       echo "Usage: $0 [option] DESTINATION_DIR [CACHE_DIR]]"
       echo "Default destination directory is $DEFAULT_DEST_DIR"
       echo "Options:"
-      echo "  -v, --verify     Verify downloaded .pk3s"
+      echo "  -v, --verify     Verify downloaded .dpks"
       echo "  --source MIRROR  Download from MIRROR"
       echo
       echo "Mirror URL examples (not real URLs!):"
