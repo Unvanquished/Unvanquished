@@ -36,7 +36,8 @@ endif()
 
 set(SUBMODULE_LIST
   "libs/libRocket"
-  "src/utils/cbse")
+  "src/utils/cbse"
+  "pkg/unvanquished_src.dpkdir")
 
 set(DAEMON_DIR_STRING "Path to the Daemon Engine source.")
 if(NOT DAEMON_DIR)

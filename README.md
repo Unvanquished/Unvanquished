@@ -11,6 +11,7 @@
 | [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
 
 This repository contains the gamelogic of the game Unvanquished.
+
 You need to download the game's assets in addition to that to make it run.
 See below for build and launch instructions.
 
@@ -117,26 +118,39 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
 
     ./daemon
 
-¹ *Fast, requires `aria2c`.*
+¹ *Fast, requires `aria2c`.*  
 ² *Unreliable speed, requires `curl`.*
 
-#### If you're a developer
+#### Loading base asset package from sources
+
+As a developer, you will want to load assets from repository. To do that:
+
+    cd build
+	./daemon -pakpath ../pkg -set vm.sgame.type 3 -set vm.cgame.type 3
+
+Note that only the basic `unvanquished_src.dpkdir` asset package is provided that way, and running Unvanquished only with that package will bring you some warnings about other missing packages and you will miss soundtrack and stuff like that. Note that you need to load your own game code (using _vm type_ switches) at this point.
+
+This should be enough to start the game and reach the main menu and from there, join a server. If the server supports autodownload, Unvanquished will fetch all the missing package from it.
+
+If you are looking for the sources of the whole assets, have a look at the [UnvanquishedAssets](https://github.com/UnvanquishedAssets/UnvanquishedAssets) repository. Beware, unlike the `unvanquished_src.dpkdir` package, most of them can't be loaded correctly by the engine without being built first.
+
+#### Loading your own assets
 
 As a developer, you will want to load your own assets in addition to those shipped with the game. To do that:
 
     cd build
     mkdir -p pkg; cd pkg
-    ln -s ../../main git_source.pk3dir
-    mkdir assets_source.pk3dir
-    echo git > assets_source.pk3dir/DEPS
+    mkdir assets_src.dpkdir
 
-You can now put loose assets into `assets_source.pk3dir` or you can put additional pk3dir directories or pk3 containers inside `pkg` and add their names (the format is `NAME_VERSION.pk3(dir)`) as lines to the `DEPS` file. In order to launch Unvanquished, use one of the following commands:
+You can now put loose assets into `assets_src.dpkdir` or you can put additional dpkdir directories or dpk containers inside `pkg` and add their names (the format is `<NAME>_<VERSION>.dpk[dir]`) as lines to the `DEPS` file (the format is `<NAME> <VERSION>`. Version is required in package filename but optional in `DEPS` file. In order to launch Unvanquished, use one of the following commands:
 
-  - `./daemon -pakpath PATH -set fs_extrapaks assets # ¹`
-  - `./daemon -pakpath PATH -set fs_extrapaks assets -set vm.sgame.type 3 -set vm.cgame.type 3 -set vm.sgame.debug 1 -set vm.cgame.debug 1 +devmap plat23 # ²`
+  - `./daemon -set fs_extrapaks assets # ¹`
+  - `./daemon -pakpath PATH -set fs_extrapaks assets # ²`
+  - `./daemon -pakpath PATH -set fs_extrapaks assets -set vm.sgame.type 3 -set vm.cgame.type 3 -set vm.sgame.debug 1 -set vm.cgame.debug 1 +devmap plat23 # ³`
 
-¹ *Runs the game and loads the `assets` package and its dependencies. `PATH` is the path to Unvanquished's base packages and maps. Omit `-pakpath PATH` if `pkg` contains these assets.*
-² *In addition, load a shared-object gamelogic you compiled and allow it to be debugged. Launch the map Platform 23 with cheats enabled after startup.*
+¹ *Runs the game and loads the `assets` package and its dependencies from `pkg/` directory.*  
+² *Runs the game and loads the `assets` package and its dependencies from `PATH` when `PATH` is not one of the default Unvanquished paths*  
+³ *In addition, load a shared-object gamelogic you compiled and allow it to be debugged. Launch the map Platform 23 with cheats enabled after startup.*
 
 ### Windows
 
