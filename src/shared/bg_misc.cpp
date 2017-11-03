@@ -546,7 +546,8 @@ void BG_InitClassModelConfigs()
 		BG_ParseClassModelFile( va( "configs/classes/%s.model.cfg",
 		                       BG_Class( i )->name ), cc );
 
-		cc->segmented = cc->modelName[0] && BG_NonSegModel( va( "models/players/%s/animation.cfg", cc->modelName ) );
+		// HACK: For now, all alien models are nonseg while humans are segmented. Remove this.
+		cc->segmented = cc->modelName[0] && BG_Class( i )->team == TEAM_ALIENS;
 	}
 }
 
