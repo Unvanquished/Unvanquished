@@ -1458,7 +1458,6 @@ static void CG_RegisterClients()
 	}
 
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.iqm" );
-	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
 	cgs.media.radarModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" ); // HACK: Use old battpack
 
 	CG_RegisterWeaponAnimation(
