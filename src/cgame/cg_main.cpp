@@ -173,7 +173,6 @@ vmCvar_t        cg_chatTeamPrefix;
 vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_animBlend;
 
-vmCvar_t        cg_highPolyWeaponModels;
 vmCvar_t        cg_motionblur;
 vmCvar_t        cg_motionblurMinSpeed;
 vmCvar_t        cg_spawnEffects;
@@ -337,7 +336,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_animBlend,                   "cg_animblend",                   "5.0",          0                            },
 
 	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            0                            },
-	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_LATCH                   },
 	{ &cg_motionblur,                  "cg_motionblur",                  "0.05",         0                            },
 	{ &cg_motionblurMinSpeed,          "cg_motionblurMinSpeed",          "600",          0                            },
 	{ &cg_spawnEffects,                "cg_spawnEffects",                "1",            0                            },

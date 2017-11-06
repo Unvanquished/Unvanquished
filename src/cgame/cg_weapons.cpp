@@ -731,8 +731,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 
 			COM_StripExtension( token, token2 );
 
-			if ( cg_highPolyWeaponModels.integer &&
-			     CG_FileExists( va( "%s_view.iqm", token2 ) ) &&
+			if ( CG_FileExists( va( "%s_view.iqm", token2 ) ) &&
 			     ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.iqm", token2 ) ) ) )
 			{
 				wi->md5 = true;
@@ -825,8 +824,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 													va( "%s_view.iqm:fire7", token2 ), false, false, false );
 				}
 			}
-			else if ( cg_highPolyWeaponModels.integer &&
-			          CG_FileExists( va( "%s_view.md5mesh", token2 ) ) &&
+			else if ( CG_FileExists( va( "%s_view.md5mesh", token2 ) ) &&
 			          ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.md5mesh", token2 ) ) ) )
 			{
 				wi->md5 = true;
@@ -1086,14 +1084,6 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 		}
 		else if ( !Q_stricmp( token, "rotation" ) )
 		{
-			if ( !cg_highPolyWeaponModels.integer )
-			{
-				for ( i = 0; i < 3; i++ )
-				{
-					token = COM_ParseExt2( &text_p, false );
-				}
-				continue;
-			}
 
 			for ( i = 0; i < 3; i++ )
 			{
@@ -1111,14 +1101,6 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 		}
 		else if ( !Q_stricmp( token, "posOffs" ) )
 		{
-			if ( !cg_highPolyWeaponModels.integer )
-			{
-				for ( i = 0; i < 3; i++ )
-				{
-					token = COM_ParseExt2( &text_p, false );
-				}
-				continue;
-			}
 			for ( i = 0; i < 3; i++ )
 			{
 				token = COM_ParseExt2( &text_p, false );
@@ -1135,24 +1117,12 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 		}
 		else if ( !Q_stricmp( token, "rotationBone" ) )
 		{
-			if ( !cg_highPolyWeaponModels.integer )
-			{
-				token = COM_Parse2( &text_p );
-				continue;
-			}
-
 			token = COM_Parse2( &text_p );
 			Q_strncpyz( wi->rotationBone, token, sizeof( wi->rotationBone ) );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "modelScale" ) )
 		{
-			if ( !cg_highPolyWeaponModels.integer )
-			{
-				token = COM_ParseExt2( &text_p, false );
-				continue;
-			}
-
 			token = COM_ParseExt2( &text_p, false );
 
 			if ( token )
