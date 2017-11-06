@@ -807,35 +807,31 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 {
 	char filename[ MAX_QPATH ];
 
-	if ( cg_highPolyPlayerModels.integer )
+	Com_sprintf( filename, sizeof( filename ), "models/players/%s/%s.iqm", modelName, modelName );
+	if ( CG_FileExists( filename ) )
 	{
-		Com_sprintf( filename, sizeof( filename ), "models/players/%s/%s.iqm",
-			     modelName, modelName );
-		if ( CG_FileExists( filename ) )
+		ci->bodyModel = trap_R_RegisterModel( filename );
+	}
+
+	if ( ! ci->bodyModel ) {
+		Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
+		if ( CG_FileExists(filename) )
 		{
 			ci->bodyModel = trap_R_RegisterModel( filename );
 		}
+	}
+	else
+	{
+		ci->iqm = true;
+	}
 
-		if ( ! ci->bodyModel ) {
-			Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
-			if ( CG_FileExists(filename) )
-			{
-				ci->bodyModel = trap_R_RegisterModel( filename );
-			}
-		}
-		else
-		{
-			ci->iqm = true;
-		}
-
-		if ( ci->bodyModel )
-		{
-			ci->skeletal = true;
-		}
-		else
-		{
-			ci->skeletal = false;
-		}
+	if ( ci->bodyModel )
+	{
+		ci->skeletal = true;
+	}
+	else
+	{
+		ci->skeletal = false;
 	}
 
 	if ( ci->skeletal )

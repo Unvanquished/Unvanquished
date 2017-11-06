@@ -1337,42 +1337,18 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, int anim )
 {
 	if ( anim == -1 ) { return 0; }
 
-	if ( !cg_highPolyPlayerModels.integer )
+	// MD5 animations all start at 0, so there is no way to differentiate them with first frame alone
+
+	// change weapon
+	if ( anim == TORSO_DROP && frame < 9 )
 	{
-		// change weapon
-		if ( frame >= ci->animations[ TORSO_DROP ].firstFrame &&
-		     frame < ci->animations[ TORSO_DROP ].firstFrame + 9 )
-		{
-			return frame - ci->animations[ TORSO_DROP ].firstFrame + 6;
-		}
-
-		// stand attack
-		if ( frame >= ci->animations[ TORSO_ATTACK ].firstFrame &&
-		     frame < ci->animations[ TORSO_ATTACK ].firstFrame + 6 )
-		{
-			return 1 + frame - ci->animations[ TORSO_ATTACK ].firstFrame;
-		}
-
-		// stand attack 2
-		if ( frame >= ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame &&
-		     frame < ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame + 6 )
-		{
-			return 1 + frame - ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame;
-		}
+		return frame - 6;
 	}
-	else // MD5 animations all start at 0, so there is no way to differentiate them with first frame alone
-	{
-		// change weapon
-		if ( anim == TORSO_DROP && frame < 9 )
-		{
-			return frame - 6;
-		}
 
-		// stand attack
-		else if ( ( anim == TORSO_ATTACK || anim == TORSO_ATTACK_BLASTER ) && frame < 6 )
-		{
-			return 1 + frame;
-		}
+	// stand attack
+	else if ( ( anim == TORSO_ATTACK || anim == TORSO_ATTACK_BLASTER ) && frame < 6 )
+	{
+		return 1 + frame;
 	}
 
 	return 0;

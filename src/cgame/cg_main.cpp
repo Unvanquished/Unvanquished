@@ -173,7 +173,6 @@ vmCvar_t        cg_chatTeamPrefix;
 vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_animBlend;
 
-vmCvar_t        cg_highPolyPlayerModels;
 vmCvar_t        cg_highPolyBuildableModels;
 vmCvar_t        cg_highPolyWeaponModels;
 vmCvar_t        cg_motionblur;
@@ -339,7 +338,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_animBlend,                   "cg_animblend",                   "5.0",          0                            },
 
 	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            0                            },
-	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_LATCH                   },
 	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_LATCH                   },
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_LATCH                   },
 	{ &cg_motionblur,                  "cg_motionblur",                  "0.05",         0                            },
@@ -1443,19 +1441,10 @@ static void CG_RegisterClients()
 		trap_UpdateScreen();
 	}
 
-	if ( !cg_highPolyPlayerModels.integer )
-	{
-		cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/head_light.skin" );
-		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/lower_light.skin" );
-		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/upper_light.skin" );
-	}
-	else
-	{
-		// Borrow these variables for MD5 models so we don't have to create new ones.
-		cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmet.skin" );
-		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/body_larmour.skin" );
-		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
-	}
+	// Borrow these variables for MD5 models so we don't have to create new ones.
+	cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmet.skin" );
+	cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/body_larmour.skin" );
+	cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
 
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.iqm" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
