@@ -2425,8 +2425,8 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
 	static refEntity_t jetpack; // static for proper alignment in QVMs
-	static refEntity_t flash; // static for proper alignment in QVMs
 
+	// TODO: Remove this QVM relic.
 	// jetpack and battpack are never both in use together
 #	define radar jetpack
 
@@ -2482,25 +2482,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			// play thrust sound
 			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
 			                        vec3_origin, cgs.media.jetpackThrustLoopSound );
-
-			// Add flash tag (?)
-			{
-				memset( &flash, 0, sizeof( flash ) );
-				VectorCopy( torso->lightingOrigin, flash.lightingOrigin );
-				flash.renderfx = torso->renderfx;
-
-				flash.hModel = cgs.media.jetpackFlashModel;
-
-				if ( !flash.hModel )
-				{
-					return;
-				}
-
-				AxisCopy( axisDefault, flash.axis );
-
-				CG_PositionRotatedEntityOnTag( &flash, &jetpack, jetpack.hModel, "tag_flash" );
-				trap_R_AddRefEntityToScene( &flash );
-			}
 
 			// attach ps
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )

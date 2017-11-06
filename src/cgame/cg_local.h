@@ -1584,7 +1584,6 @@ typedef struct
 	qhandle_t   larmourTorsoSkin;
 
 	qhandle_t   jetpackModel;
-	qhandle_t   jetpackFlashModel;
 	qhandle_t   radarModel;
 
 	sfxHandle_t repeaterUseSound;
