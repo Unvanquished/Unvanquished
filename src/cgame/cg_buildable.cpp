@@ -633,16 +633,14 @@ void CG_InitBuildables()
 		//Load models
 		//Prefer md5 models over md3
 
-		if ( cg_highPolyBuildableModels.integer &&
-		     CG_FileExists( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) &&
+		if ( CG_FileExists( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) &&
 		     ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm",
 		                                                   buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = true;
 			iqm     = true;
 		}
-		else if ( cg_highPolyBuildableModels.integer &&
-		          ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh",
+		else if ( ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh",
 		                                                        buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = true;
@@ -1185,8 +1183,7 @@ void CG_GhostBuildable( int buildableInfo )
 	                                  mins, maxs, ent.axis, ent.origin );
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? bmc->zOffset : bmc->oldOffset,
-	          tr.plane.normal, ent.origin );
+	VectorMA( ent.origin, bmc->zOffset, tr.plane.normal, ent.origin );
 
 	VectorCopy( ent.origin, ent.lightingOrigin );
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
@@ -1196,7 +1193,7 @@ void CG_GhostBuildable( int buildableInfo )
 	ent.customShader = ( SB_BUILDABLE_TO_IBE( buildableInfo ) == IBE_NONE )
 	                     ? cgs.media.greenBuildShader : cgs.media.redBuildShader;
 
-	scale = cg_highPolyBuildableModels.integer ? bmc->modelScale : bmc->oldScale;
+	scale = bmc->modelScale;
 	if ( !scale ) scale = 1.0f;
 
 	if ( cg_buildables[ buildable ].md5 )
@@ -2259,8 +2256,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? bmc->zOffset : bmc->oldOffset,
-	          surfNormal, ent.origin );
+	VectorMA( ent.origin, bmc->zOffset, surfNormal, ent.origin );
 
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
 	VectorCopy( ent.origin, ent.lightingOrigin );
@@ -2305,7 +2301,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	// Apply scale from config.
-	scale = cg_highPolyBuildableModels.integer ? bmc->modelScale : bmc->oldScale;
+	scale = bmc->modelScale;
 
 	if ( scale != 1.0f )
 	{
