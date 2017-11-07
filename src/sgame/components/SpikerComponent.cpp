@@ -2,12 +2,14 @@
 
 static Log::Logger logger("sgame.spiker");
 
+constexpr float SAFETY_TRACE_FUDGE_FACTOR = 3.0f;
+
 SpikerComponent::SpikerComponent(
 	Entity &entity, AlienBuildableComponent &r_AlienBuildableComponent)
 	: SpikerComponentBase(entity, r_AlienBuildableComponent)
 	, activeThinker(AT_NONE)
 	, restUntil(0)
-	, lastScoring(-1)
+	, lastExpectedDamage(0.0f)
 	, lastSensing(false) {
 	RegisterSlowThinker();
 }
@@ -19,61 +21,37 @@ void SpikerComponent::HandleDamage(float amount, gentity_t *source, Util::option
 	}
 
 	// Shoot if there is a viable target.
-	if (lastScoring > 0.0f) {
+	if (lastExpectedDamage > 0.0f) {
+		logger.Verbose("Spiker #%i was hurt while an enemy is close enough to also get hurt, so "
+			"go eye for an eye.", entity.oldEnt->s.number);
+
 		Fire();
 	}
 }
 
 void SpikerComponent::Think(int timeDelta) {
-	if (!GetAlienBuildableComponent().GetBuildableComponent().Active()) {
-		return;
-	}
-
-	// Stop here if recovering from shot.
-	if (level.time < restUntil) {
-		lastScoring = 0.0f;
+	// Don't act if recovering from shot or disabled.
+	if (!GetAlienBuildableComponent().GetBuildableComponent().Active() || level.time < restUntil) {
+		lastExpectedDamage = 0.0f;
 		lastSensing = false;
 
 		return;
 	}
 
-	float enemyDamage    = 0.0f,
-	      friendlyDamage = 0.0f;
-	bool  sensing        = false;
+	float expectedDamage = 0.0f;
+	bool  sensing = false;
 
-	// Calculate a "scoring" of the situation to decide on the best moment to shoot.
+	// Calculate expected damage to decide on the best moment to shoot.
 	ForEntities<HealthComponent>([&](Entity& other, HealthComponent& healthComponent) {
 		// TODO: Check if "entity == other" does the job.
 		if (entity.oldEnt == other.oldEnt)                                return;
 		if (G_Team(other.oldEnt) == TEAM_NONE)                            return;
+		if (G_OnSameTeam(entity.oldEnt, other.oldEnt))                    return;
 		if ((other.oldEnt->flags & FL_NOTARGET))                          return;
+		if (!healthComponent.Alive())                                     return;
 		if (G_Distance(entity.oldEnt, other.oldEnt) > SPIKER_SPIKE_RANGE) return;
+		if (other.Get<BuildableComponent>())                              return;
 		if (!G_LineOfSight(entity.oldEnt, other.oldEnt))                  return;
-
-		bool  onSameTeam;
-		float health, durability;
-
-		if ((onSameTeam = G_OnSameTeam(entity.oldEnt, other.oldEnt))) {
-			// Consider the current health of friendly entities.
-			health = healthComponent.Health();
-		} else if (other.Get<BuildableComponent>()) {
-			// Enemy buildables don't count in the scoring.
-			return;
-		} else {
-			// Assume no knowledge of the current health of enemies.
-			health = healthComponent.MaxHealth();
-		}
-
-		ArmorComponent *armorComponent = other.Get<ArmorComponent>();
-
-		if (armorComponent) {
-			durability = health / armorComponent->GetNonLocationalDamageMod();
-		} else {
-			durability = health;
-		}
-
-		// Ignore targets that are dead or not visible.
-		if (durability <= 0.0f || !G_LineOfSight(entity.oldEnt, other.oldEnt)) return;
 
 		// TODO: Use new vector facility.
 		vec3_t vecToTarget;
@@ -87,42 +65,73 @@ void SpikerComponent::Think(int timeDelta) {
 		float distance = VectorLength(vecToTarget);
 		float effectArea = 2.0f * M_PI * distance * distance; // Half sphere.
 		float targetArea = 0.5f * diameter * diameter;  // Approx. proj. of target on effect area.
-		float expectedDamage = (targetArea / effectArea) * (float)SPIKER_MISSILES *
-		                       (float)BG_Missile(MIS_SPIKER)->damage;
-		float relativeDamage = expectedDamage / durability;
+		float damage = (targetArea / effectArea) * (float)SPIKER_MISSILES *
+			(float)BG_Missile(MIS_SPIKER)->damage;
 
-		if (onSameTeam) {
-			friendlyDamage += relativeDamage;
-		} else {
-			if (distance < SPIKER_SENSE_RANGE) {
-				sensing = true;
-				if (sensing && !lastSensing) {
-					RegisterFastThinker();
-				}
+		expectedDamage += damage;
+
+		if (distance < SPIKER_SENSE_RANGE) {
+			sensing = true;
+
+			if (!lastSensing) {
+				logger.Verbose("Spiker #%i now senses an enemy and will check more frequently for "
+					"the best moment to shoot.", entity.oldEnt->s.number);
+
+				RegisterFastThinker();
 			}
-			enemyDamage += relativeDamage;
 		}
 	});
 
-	// Friendly entities that can receive damage substract from the scoring, enemies add to it.
-	float scoring = enemyDamage - friendlyDamage;
+	// Shoot if a viable target leaves sense range even if no damage is expected anymore. This
+	// guarantees that the spiker always shoots eventually when an enemy gets close enough to it.
+	bool senseLost = lastSensing && !sensing;
 
-	// Shoot if a viable target leaves sense range even if the new scoring is bad.
-	// Guarantees that the spiker always shoots eventually when an enemy gets close enough to it.
-	bool senseLost = lastScoring > 0.0f && lastSensing && !sensing;
+	if (sensing || senseLost) {
+		bool lessDamage = (expectedDamage <= lastExpectedDamage);
 
-	if (scoring > 0.0f || senseLost) {
-		logger.Verbose("Spiker #%i scoring %.3f - %.3f = %.3f%s%s",
-		               entity.oldEnt->s.number, enemyDamage, friendlyDamage, scoring,
-		               sensing ? " (sensing)" : "", senseLost ? " (lost target)" : "");
+		if (sensing) {
+			logger.Verbose("%i: Spiker #%i senses an enemy and expects to do %.1f damage.%s",
+				level.time, entity.oldEnt->s.number, expectedDamage, lessDamage
+				? " This has not increased, so it's time to shoot." : "");
+		}
 
-		if ((scoring <= lastScoring && sensing) || senseLost) {
+		if (senseLost) {
+			logger.Verbose("Spiker #%i lost track of all enemies after expecting to do %.1f damage."
+				" This makes the spiker angry, so it will shoot anyway.",
+				entity.oldEnt->s.number, lastExpectedDamage);
+		}
+
+		if ((sensing && lessDamage) || senseLost) {
 			Fire();
 		}
 	}
 
-	lastScoring = scoring;
+	lastExpectedDamage = expectedDamage;
 	lastSensing = sensing;
+}
+
+// TODO: Use a proper trajectory trace, once available, to ensure friendly buildables are never hit.
+bool SpikerComponent::SafeToShoot(Vec3 direction) {
+	const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
+	trace_t trace;
+	vec3_t mins, maxs;
+	Vec3 end = Vec3::Load(entity.oldEnt->s.origin) + (SPIKER_SPIKE_RANGE * direction);
+
+	// Test once with normal and once with inflated missile bounding box.
+	for (int i = 0; i <= 1; i++) {
+		float traceSize = (float)ma->size * ((1.0f-(float)i) + (float)i*SAFETY_TRACE_FUDGE_FACTOR);
+		mins[0] = mins[1] = mins[2] = -traceSize;
+		maxs[0] = maxs[1] = maxs[2] =  traceSize;
+		trap_Trace(&trace, entity.oldEnt->s.origin, mins, maxs, end.Data(), entity.oldEnt->s.number,
+			ma->clipmask, 0);
+		gentity_t* hit = &g_entities[trace.entityNum];
+
+		if (hit && G_OnSameTeam(entity.oldEnt, hit)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 bool SpikerComponent::Fire() {
@@ -170,11 +179,18 @@ bool SpikerComponent::Fire() {
 			RotatePointAroundVector(dir, zenith, rowBase, RAD2DEG(azimuth));
 			RotatePointAroundVector(dir, rotAxis, dir, RAD2DEG(altitudeVariance));
 
-			logger.Debug("Spiker #%d fires: Row %d/%d: Spike %2d/%2d: "
-			             "( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )",
-			             self->s.number, row + 1, SPIKER_MISSILEROWS, spike + 1, spikes,
-			             RAD2DEG(altitude + altitudeVariance), RAD2DEG(azimuth),
-			             dir[0], dir[1], dir[2]);
+			// Trace in the shooting direction and do not shoot spikes that are likely to harm
+			// friendly entities.
+			bool fire = SafeToShoot(Vec3::Load(dir));
+
+			logger.Debug("Spiker #%d %s: Row %d/%d: Spike %2d/%2d: "
+				"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )", self->s.number,
+				fire ? "fires" : "skips", row + 1, SPIKER_MISSILEROWS, spike + 1, spikes,
+				RAD2DEG(altitude + altitudeVariance), RAD2DEG(azimuth), dir[0], dir[1], dir[2]);
+
+			if (!fire) {
+				continue;
+			}
 
 			G_SpawnMissile(
 				MIS_SPIKER, self, self->s.origin, dir, nullptr, G_FreeEntity,
@@ -182,10 +198,6 @@ bool SpikerComponent::Fire() {
 								   (float)BG_Missile(MIS_SPIKER)->speed));
 		}
 	}
-
-	// Do radius damage in addition to spike missiles.
-	//G_SelectiveRadiusDamage(self->s.origin, source, SPIKER_RADIUS_DAMAGE, SPIKER_RANGE, self,
-	//                        MOD_SPIKER, TEAM_ALIENS);
 
 	restUntil = level.time + SPIKER_COOLDOWN;
 	RegisterSlowThinker();

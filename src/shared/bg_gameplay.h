@@ -129,8 +129,8 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define ACIDTUBE_RANGE          300.0f
 
-#define SPIKER_SPIKE_RANGE      400.0f // reach of spikes, also used for scoring
-#define SPIKER_SENSE_RANGE      200.0f // an enemy needs to be this close to consider an attack
+#define SPIKER_SENSE_RANGE      250.0f // an enemy needs to be this close to consider an attack
+#define SPIKER_SPIKE_RANGE      500.0f // this is just an estimate used for predicting damage
 #define SPIKER_MISSILEROWS      4
 #define SPIKER_MISSILES         26   // actual value +/- SPIKER_MISSILEROWS
 #define SPIKER_ROWOFFSET        0.5f // 0.0: Spikes are shot upwards, 1.0: Spikes are shot sideways

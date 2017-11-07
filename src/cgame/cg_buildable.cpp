@@ -768,7 +768,7 @@ bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmT
 			break;
 
 		case BA_A_SPIKER:
-			*range = SPIKER_SPIKE_RANGE;
+			*range = SPIKER_SENSE_RANGE;
 			shc = SHC_PINK;
 			break;
 

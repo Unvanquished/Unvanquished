@@ -41,6 +41,15 @@ class SpikerComponent: public SpikerComponentBase {
 		} activeThinker_t;
 
 		void Think(int timeDelta);
+
+		/**
+		 * @return Whether it's somewhat safe to shoot in the given diection.
+		 * @note Does not consider the missile's trajectory, and thus even stationary friendly
+		 *       targets can still be hit. Reduces that risk by also tracing with a slightly larger
+		 *       bounding box than that of the missile.
+		 */
+		bool SafeToShoot(Vec3 direction);
+
 		bool Fire();
 		void RegisterFastThinker();
 		void RegisterSlowThinker();
@@ -48,7 +57,7 @@ class SpikerComponent: public SpikerComponentBase {
 		activeThinker_t activeThinker;
 
 		int   restUntil;
-		float lastScoring;
+		float lastExpectedDamage;
 		bool  lastSensing;
 };
 
