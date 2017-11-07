@@ -2,7 +2,11 @@
 
 static Log::Logger logger("sgame.spiker");
 
+/** Used to improve friendly fire prevention. */
 constexpr float SAFETY_TRACE_FUDGE_FACTOR = 3.0f;
+
+/** Shoot prematurely whenever this much damage is expected. */
+constexpr float DAMAGE_THRESHOLD = 100.0f;
 
 SpikerComponent::SpikerComponent(
 	Entity &entity, AlienBuildableComponent &r_AlienBuildableComponent)
@@ -89,11 +93,13 @@ void SpikerComponent::Think(int timeDelta) {
 
 	if (sensing || senseLost) {
 		bool lessDamage = (expectedDamage <= lastExpectedDamage);
+		bool enoughDamage = (expectedDamage >= DAMAGE_THRESHOLD);
 
 		if (sensing) {
 			logger.Verbose("%i: Spiker #%i senses an enemy and expects to do %.1f damage.%s",
-				level.time, entity.oldEnt->s.number, expectedDamage, lessDamage
-				? " This has not increased, so it's time to shoot." : "");
+				level.time, entity.oldEnt->s.number, expectedDamage, (lessDamage && !enoughDamage)
+				? " This has not increased, so it's time to shoot." : "", enoughDamage ?
+				" This is already enough, shoot now." : "");
 		}
 
 		if (senseLost) {
@@ -102,10 +108,14 @@ void SpikerComponent::Think(int timeDelta) {
 				entity.oldEnt->s.number, lastExpectedDamage);
 		}
 
-		// Shoot when the expected damage has decreased, so that it has experienced a local maximum
-		// since its last evaluation. Shoot also whenever all viable targets leave the sense range.
-		// The latter guarantees that the spiker always shoots eventually after sensing.
-		if ((sensing && lessDamage) || senseLost) {
+		// Shoot when
+		// - a threshold was reached by the expected damage, implying a very close enemy,
+		// - the expected damage has decreased, witnessing a recent local maximum, or
+		// - whenever all viable targets have left the sense range.
+		// The first trigger plays around the delay in sensing a local maximum and in having the
+		// spikes travel towards their destination.
+		// The last trigger guarantees that the spiker always shoots eventually after sensing.
+		if (enoughDamage || (sensing && lessDamage) || senseLost) {
 			Fire();
 		}
 	}
