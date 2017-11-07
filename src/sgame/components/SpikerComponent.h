@@ -56,9 +56,14 @@ class SpikerComponent: public SpikerComponentBase {
 
 		activeThinker_t activeThinker;
 
-		int   restUntil;
+		/** Used for recovering after a shot. */
+		int restUntil;
+
+		/** The damage the spiker expected to do the last time it checked. */
 		float lastExpectedDamage;
-		bool  lastSensing;
+
+		/** Whether the spiker was actively sensing for an opportunity to shoot. */
+		bool lastSensing;
 };
 
 #endif // SPIKER_COMPONENT_H_

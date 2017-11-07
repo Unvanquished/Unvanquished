@@ -2,11 +2,21 @@
 
 static Log::Logger logger("sgame.spiker");
 
-/** Used to improve friendly fire prevention. */
-constexpr float SAFETY_TRACE_FUDGE_FACTOR = 3.0f;
-
+/** Delay between shots. */
+constexpr int   COOLDOWN = 5000;
 /** Shoot prematurely whenever this much damage is expected. */
-constexpr float DAMAGE_THRESHOLD = 100.0f;
+constexpr float DAMAGE_THRESHOLD = 60.0f;
+/** Total number of missiles to shoot. Some might be skipped if they endanger allies.
+ *  Actual values is +/- SPIKER_MISSILEROWS. */
+constexpr float MISSILES = 26;
+/** Number of rows from which to launch spikes. */
+constexpr int   MISSILEROWS = 4;
+/** 0.0: Spikes are shot upwards, 1.0: Spikes are shot sideways. */
+constexpr float ROWOFFSET = 0.5f;
+/** An estimate on how far away spikes are still relevant, used to upper bound computations. */
+constexpr float SPIKE_RANGE = 500.0f;
+/** Bounding box scaling factor Used to improve friendly fire prevention. */
+constexpr float SAFETY_TRACE_INFLATION = 3.0f;
 
 SpikerComponent::SpikerComponent(
 	Entity &entity, AlienBuildableComponent &r_AlienBuildableComponent)
@@ -53,25 +63,30 @@ void SpikerComponent::Think(int timeDelta) {
 		if (G_OnSameTeam(entity.oldEnt, other.oldEnt))                    return;
 		if ((other.oldEnt->flags & FL_NOTARGET))                          return;
 		if (!healthComponent.Alive())                                     return;
-		if (G_Distance(entity.oldEnt, other.oldEnt) > SPIKER_SPIKE_RANGE) return;
+		if (G_Distance(entity.oldEnt, other.oldEnt) > SPIKE_RANGE)        return;
 		if (other.Get<BuildableComponent>())                              return;
 		if (!G_LineOfSight(entity.oldEnt, other.oldEnt))                  return;
 
-		// TODO: Use new vector facility.
-		vec3_t vecToTarget;
-		VectorSubtract(other.oldEnt->s.origin, entity.oldEnt->s.origin, vecToTarget);
+		Vec3 dorsal    = Vec3::Load(entity.oldEnt->s.origin2);
+		Vec3 toTarget  = Vec3::Load(other.oldEnt->s.origin) - Vec3::Load(entity.oldEnt->s.origin);
+		Vec3 otherMins = Vec3::Load(other.oldEnt->r.mins);
+		Vec3 otherMaxs = Vec3::Load(other.oldEnt->r.maxs);
 
 		// Only entities in the spiker's upper hemisphere can be hit.
-		if (DotProduct(entity.oldEnt->s.origin2, vecToTarget) < 0) return;
+		if (Math::Dot(toTarget, dorsal) < 0.0f) return;
 
 		// Approximate average damage the entity would receive from spikes.
-		float diameter = VectorLength(other.oldEnt->r.mins) + VectorLength(other.oldEnt->r.maxs);
-		float distance = VectorLength(vecToTarget);
-		float effectArea = 2.0f * M_PI * distance * distance; // Half sphere.
-		float targetArea = 0.5f * diameter * diameter;  // Approx. proj. of target on effect area.
-		float damage = (targetArea / effectArea) * (float)SPIKER_MISSILES *
-			(float)BG_Missile(MIS_SPIKER)->damage;
+		const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
+		float spikeDamage  = ma->damage;
+		float distance     = Math::Length(toTarget);
+		float bboxDiameter = Math::Length(otherMins) + Math::Length(otherMaxs);
+		float bboxEdge     = 0.57735026918962584f * bboxDiameter; // diameter = sqrt(3) * edge
+		float hitEdge      = bboxEdge + (0.57735026918962584f * ma->size); // Add half missile edge.
+		float hitArea      = hitEdge * hitEdge; // Approximate area resulting in a hit.
+		float effectArea   = 2.0f * M_PI * distance * distance; // Area of a half sphere.
+		float damage       = (hitArea / effectArea) * (float)MISSILES * spikeDamage;
 
+		// Sum up expected damage for all targets, regardless of whether they are in sense range.
 		expectedDamage += damage;
 
 		// Start sensing (frequent search for best moment to shoot) as soon as an enemy that can be
@@ -96,8 +111,8 @@ void SpikerComponent::Think(int timeDelta) {
 		bool enoughDamage = (expectedDamage >= DAMAGE_THRESHOLD);
 
 		if (sensing) {
-			logger.Verbose("%i: Spiker #%i senses an enemy and expects to do %.1f damage.%s",
-				level.time, entity.oldEnt->s.number, expectedDamage, (lessDamage && !enoughDamage)
+			logger.Verbose("Spiker #%i senses an enemy and expects to do %.1f damage.%s%s",
+				entity.oldEnt->s.number, expectedDamage, (lessDamage && !enoughDamage)
 				? " This has not increased, so it's time to shoot." : "", enoughDamage ?
 				" This is already enough, shoot now." : "");
 		}
@@ -130,10 +145,10 @@ bool SpikerComponent::SafeToShoot(Vec3 direction) {
 	float missileSize = (float)ma->size;
 	trace_t trace;
 	vec3_t mins, maxs;
-	Vec3 end = Vec3::Load(entity.oldEnt->s.origin) + (SPIKER_SPIKE_RANGE * direction);
+	Vec3 end = Vec3::Load(entity.oldEnt->s.origin) + (SPIKE_RANGE * direction);
 
 	// Test once with normal and once with inflated missile bounding box.
-	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_FUDGE_FACTOR}) {
+	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
 		mins[0] = mins[1] = mins[2] = -traceSize;
 		maxs[0] = maxs[1] = maxs[2] =  traceSize;
 		trap_Trace(&trace, entity.oldEnt->s.origin, mins, maxs, end.Data(), entity.oldEnt->s.number,
@@ -153,6 +168,10 @@ bool SpikerComponent::Fire() {
 	// Check if still resting.
 	if (restUntil > level.time) {
 		logger.Verbose("Spiker #%i wanted to fire but wasn't ready.", entity.oldEnt->s.number);
+
+		return false;
+	} else {
+		logger.Verbose("Spiker #%i is firing!", entity.oldEnt->s.number);
 	}
 
 	// Play shooting animation.
@@ -164,31 +183,32 @@ bool SpikerComponent::Fire() {
 	// Calculate total perimeter of all spike rows to allow for a more even spike distribution.
 	float totalPerimeter = 0.0f;
 
-	for (int row = 0; row < SPIKER_MISSILEROWS; row++) {
-		float altitude = (((float)row + SPIKER_ROWOFFSET) * M_PI_2) / (float)SPIKER_MISSILEROWS;
+	for (int row = 0; row < MISSILEROWS; row++) {
+		float altitude = (((float)row + ROWOFFSET) * M_PI_2) / (float)MISSILEROWS;
 		float perimeter = 2.0f * M_PI * cos(altitude);
 
 		totalPerimeter += perimeter;
 	}
 
 	// Distribute and launch missiles.
+	// TODO: Use new vector library.
 	vec3_t dir, rowBase, zenith, rotAxis;
 
 	VectorCopy(self->s.origin2, zenith);
 	PerpendicularVector(rotAxis, zenith);
 
-	for (int row = 0; row < SPIKER_MISSILEROWS; row++) {
-		float altitude = (((float)row + SPIKER_ROWOFFSET) * M_PI_2) / (float)SPIKER_MISSILEROWS;
+	for (int row = 0; row < MISSILEROWS; row++) {
+		float altitude = (((float)row + ROWOFFSET) * M_PI_2) / (float)MISSILEROWS;
 		float perimeter = 2.0f * M_PI * cos(altitude);
 
 		RotatePointAroundVector(rowBase, rotAxis, zenith, RAD2DEG(M_PI_2 - altitude));
 
 		// Attempt to distribute spikes with equal distance on all rows.
-		int spikes = (int)round(((float)SPIKER_MISSILES * perimeter) / totalPerimeter);
+		int spikes = (int)round(((float)MISSILES * perimeter) / totalPerimeter);
 
 		for (int spike = 0; spike < spikes; spike++) {
 			float azimuth = 2.0f * M_PI * (((float)spike + 0.5f * crandom()) / (float)spikes);
-			float altitudeVariance = 0.5f * crandom() * M_PI_2 / (float)SPIKER_MISSILEROWS;
+			float altitudeVariance = 0.5f * crandom() * M_PI_2 / (float)MISSILEROWS;
 
 			RotatePointAroundVector(dir, zenith, rowBase, RAD2DEG(azimuth));
 			RotatePointAroundVector(dir, rotAxis, dir, RAD2DEG(altitudeVariance));
@@ -199,7 +219,7 @@ bool SpikerComponent::Fire() {
 
 			logger.Debug("Spiker #%d %s: Row %d/%d: Spike %2d/%2d: "
 				"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )", self->s.number,
-				fire ? "fires" : "skips", row + 1, SPIKER_MISSILEROWS, spike + 1, spikes,
+				fire ? "fires" : "skips", row + 1, MISSILEROWS, spike + 1, spikes,
 				RAD2DEG(altitude + altitudeVariance), RAD2DEG(azimuth), dir[0], dir[1], dir[2]);
 
 			if (!fire) {
@@ -208,12 +228,11 @@ bool SpikerComponent::Fire() {
 
 			G_SpawnMissile(
 				MIS_SPIKER, self, self->s.origin, dir, nullptr, G_FreeEntity,
-				level.time + (int)(1000.0f * SPIKER_SPIKE_RANGE /
-								   (float)BG_Missile(MIS_SPIKER)->speed));
+				level.time + (int)(1000.0f * SPIKE_RANGE / (float)BG_Missile(MIS_SPIKER)->speed));
 		}
 	}
 
-	restUntil = level.time + SPIKER_COOLDOWN;
+	restUntil = level.time + COOLDOWN;
 	RegisterSlowThinker();
 
 	return true;
