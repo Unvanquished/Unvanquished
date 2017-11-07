@@ -70,7 +70,10 @@ void SpikerComponent::Think(int timeDelta) {
 
 		expectedDamage += damage;
 
-		if (distance < SPIKER_SENSE_RANGE) {
+		// Start sensing (frequent search for best moment to shoot) as soon as an enemy that can be
+		// damaged is close enough. Note that the Spiker will shoot eventually after it started
+		// sensing, and then returns to a less alert state.
+		if (distance < SPIKER_SENSE_RANGE && !sensing) {
 			sensing = true;
 
 			if (!lastSensing) {
@@ -82,8 +85,6 @@ void SpikerComponent::Think(int timeDelta) {
 		}
 	});
 
-	// Shoot if a viable target leaves sense range even if no damage is expected anymore. This
-	// guarantees that the spiker always shoots eventually when an enemy gets close enough to it.
 	bool senseLost = lastSensing && !sensing;
 
 	if (sensing || senseLost) {
@@ -101,6 +102,9 @@ void SpikerComponent::Think(int timeDelta) {
 				entity.oldEnt->s.number, lastExpectedDamage);
 		}
 
+		// Shoot when the expected damage has decreased, so that it has experienced a local maximum
+		// since its last evaluation. Shoot also whenever all viable targets leave the sense range.
+		// The latter guarantees that the spiker always shoots eventually after sensing.
 		if ((sensing && lessDamage) || senseLost) {
 			Fire();
 		}
@@ -113,13 +117,13 @@ void SpikerComponent::Think(int timeDelta) {
 // TODO: Use a proper trajectory trace, once available, to ensure friendly buildables are never hit.
 bool SpikerComponent::SafeToShoot(Vec3 direction) {
 	const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
+	float missileSize = (float)ma->size;
 	trace_t trace;
 	vec3_t mins, maxs;
 	Vec3 end = Vec3::Load(entity.oldEnt->s.origin) + (SPIKER_SPIKE_RANGE * direction);
 
 	// Test once with normal and once with inflated missile bounding box.
-	for (int i = 0; i <= 1; i++) {
-		float traceSize = (float)ma->size * ((1.0f-(float)i) + (float)i*SAFETY_TRACE_FUDGE_FACTOR);
+	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_FUDGE_FACTOR}) {
 		mins[0] = mins[1] = mins[2] = -traceSize;
 		maxs[0] = maxs[1] = maxs[2] =  traceSize;
 		trap_Trace(&trace, entity.oldEnt->s.origin, mins, maxs, end.Data(), entity.oldEnt->s.number,
@@ -138,7 +142,7 @@ bool SpikerComponent::Fire() {
 	gentity_t *self = entity.oldEnt;
 	// Check if still resting.
 	if (restUntil > level.time) {
-		return false;
+		logger.Verbose("Spiker #%i wanted to fire but wasn't ready.", entity.oldEnt->s.number);
 	}
 
 	// Play shooting animation.
