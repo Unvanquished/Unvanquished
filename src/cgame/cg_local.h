@@ -1061,12 +1061,6 @@ typedef struct
 	vec3_t vangles;
 } entityPos_t;
 
-typedef struct
-{
-	int time;
-	int length;
-} consoleLine_t;
-
 #define MAX_CONSOLE_TEXT  8192
 #define MAX_CONSOLE_LINES 32
 
@@ -1280,10 +1274,6 @@ typedef struct
 
 	int                     lastBuildAttempt;
 	int                     lastEvolveAttempt;
-
-	char                    consoleText[ MAX_CONSOLE_TEXT ];
-	consoleLine_t           consoleLines[ MAX_CONSOLE_LINES ];
-	int                     numConsoleLines;
 
 	float                   painBlendValue;
 	float                   painBlendTarget;
@@ -1989,8 +1979,6 @@ bool   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString();
 
 bool   CG_FileExists( const char *filename );
-void       CG_RemoveNotifyLine();
-void       CG_AddNotifyText();
 void       CG_UpdateBuildableRangeMarkerMask();
 void       CG_RegisterGrading( int slot, const char *str );
 

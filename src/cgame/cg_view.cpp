@@ -1935,12 +1935,6 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	cg.refdef.time = cg.time;
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
 
-	//remove expired console lines
-	if ( cg.consoleLines[ 0 ].time + cg_consoleLatency.integer < cg.time && cg_consoleLatency.integer > 0 )
-	{
-		CG_RemoveNotifyLine();
-	}
-
 	// update audio positions
 	if (cg_thirdPerson.value) {
 		trap_S_Respatialize( -1, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );

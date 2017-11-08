@@ -95,7 +95,6 @@ vmCvar_t        cg_drawTeamOverlay;
 vmCvar_t        cg_teamOverlaySortMode;
 vmCvar_t        cg_teamOverlayMaxPlayers;
 vmCvar_t        cg_teamOverlayUserinfo;
-vmCvar_t        cg_noPrintDuplicate;
 vmCvar_t        cg_noVoiceChats;
 vmCvar_t        cg_noVoiceText;
 vmCvar_t        cg_hudFiles;
@@ -259,7 +258,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_teamOverlayMaxPlayers,       "cg_teamOverlayMaxPlayers",       "8",            0                            },
 	{ &cg_teamOverlayUserinfo,         "teamoverlay",                    "1",            CVAR_USERINFO                },
 	{ &cg_teamChatsOnly,               "cg_teamChatsOnly",               "0",            0                            },
-	{ &cg_noPrintDuplicate,            "cg_noPrintDuplicate",            "0",            0                            },
 	{ &cg_noVoiceChats,                "cg_noVoiceChats",                "0",            0                            },
 	{ &cg_noVoiceText,                 "cg_noVoiceText",                 "0",            0                            },
 	{ &cg_drawSurfNormal,              "cg_drawSurfNormal",              "0",            CVAR_CHEAT                   },
@@ -678,85 +676,6 @@ int CG_CrosshairPlayer()
 	}
 
 	return cg.crosshairClientNum;
-}
-
-/*
-=================
-CG_RemoveNotifyLine
-=================
-*/
-void CG_RemoveNotifyLine()
-{
-	int i, offset, totalLength;
-
-	if ( cg.numConsoleLines == 0 )
-	{
-		return;
-	}
-
-	offset = cg.consoleLines[ 0 ].length;
-	totalLength = strlen( cg.consoleText ) - offset;
-
-	//slide up consoleText
-	for ( i = 0; i <= totalLength; i++ )
-	{
-		cg.consoleText[ i ] = cg.consoleText[ i + offset ];
-	}
-
-	//pop up the first consoleLine
-	cg.numConsoleLines--;
-	for ( i = 0; i < cg.numConsoleLines; i++ )
-	{
-		cg.consoleLines[ i ] = cg.consoleLines[ i + 1 ];
-	}
-}
-
-/*
-=================
-CG_AddNotifyText
-TODO TODO this can be removed, as well as all its dependencies
-=================
-*/
-void CG_AddNotifyText()
-{
-	char buffer[ BIG_INFO_STRING ];
-	int  bufferLen, textLen;
-
-	if ( cg.loading )
-	{
-		return;
-	}
-
-	trap_LiteralArgs( buffer, BIG_INFO_STRING );
-
-	if ( !buffer[ 0 ] )
-	{
-		cg.consoleText[ 0 ] = '\0';
-		cg.numConsoleLines = 0;
-		return;
-	}
-
-	bufferLen = strlen( buffer );
-	textLen = strlen( cg.consoleText );
-
-	// Ignore console messages that were just printed
-	if ( cg_noPrintDuplicate.integer && textLen >= bufferLen &&
-	     !strcmp( cg.consoleText + textLen - bufferLen, buffer ) )
-	{
-		return;
-	}
-
-	if ( cg.numConsoleLines == MAX_CONSOLE_LINES )
-	{
-		CG_RemoveNotifyLine();
-		textLen = strlen( cg.consoleText );
-	}
-
-	Q_strncpyz( cg.consoleText + textLen, buffer, MAX_CONSOLE_TEXT - textLen );
-	cg.consoleLines[ cg.numConsoleLines ].time = cg.time;
-	cg.consoleLines[ cg.numConsoleLines ].length =
-		std::min( bufferLen, MAX_CONSOLE_TEXT - textLen - 1 );
-	cg.numConsoleLines++;
 }
 
 /*
