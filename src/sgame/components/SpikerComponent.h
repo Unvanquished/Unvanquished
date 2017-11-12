@@ -40,6 +40,12 @@ class SpikerComponent: public SpikerComponentBase {
 			AT_FAST
 		} activeThinker_t;
 
+		/**
+		 * Instead of using exactly the upper hemisphere of the spiker as radius of damage, this
+		 * function computes a threshold used to compensate for the effect of gravity on spikes.
+		 */
+		void SetGravityCompensation();
+
 		void Think(int timeDelta);
 
 		/**
@@ -64,6 +70,12 @@ class SpikerComponent: public SpikerComponentBase {
 
 		/** Whether the spiker was actively sensing for an opportunity to shoot. */
 		bool lastSensing;
+
+		/**
+		 * The scalar product between the direction towards the target and the spiker's top needs
+		 * to be larger than this value in order to consider the target inside the radius of damage.
+		 */
+		float gravityCompensation;
 };
 
 #endif // SPIKER_COMPONENT_H_

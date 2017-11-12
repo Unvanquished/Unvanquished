@@ -17,6 +17,8 @@ constexpr float ROWOFFSET = 0.5f;
 constexpr float SPIKE_RANGE = 500.0f;
 /** Bounding box scaling factor Used to improve friendly fire prevention. */
 constexpr float SAFETY_TRACE_INFLATION = 3.0f;
+/** Maximum angle added to or substracted rom the 180° radius of damage, in positive degrees. */
+constexpr float GRAVITY_COMPENSATION_ANGLE = 25.0f;
 
 SpikerComponent::SpikerComponent(
 	Entity &entity, AlienBuildableComponent &r_AlienBuildableComponent)
@@ -24,7 +26,9 @@ SpikerComponent::SpikerComponent(
 	, activeThinker(AT_NONE)
 	, restUntil(0)
 	, lastExpectedDamage(0.0f)
-	, lastSensing(false) {
+	, lastSensing(false)
+	, gravityCompensation(0) {
+	SetGravityCompensation();
 	RegisterSlowThinker();
 }
 
@@ -41,6 +45,14 @@ void SpikerComponent::HandleDamage(float amount, gentity_t *source, Util::option
 
 		Fire();
 	}
+}
+
+void SpikerComponent::SetGravityCompensation() {
+	Vec3 dorsal = Math::Normalize(Vec3::Load(entity.oldEnt->s.origin2));
+	Vec3 upwards = Vec3({0.0f, 0.0f, 1.0f});
+	float uprightness = Math::Dot(dorsal, upwards);
+	// A negative value means the Spiker's radius of damage increases.
+	gravityCompensation = -uprightness * std::sin(DEG2RAD(0.5f * GRAVITY_COMPENSATION_ANGLE));
 }
 
 void SpikerComponent::Think(int timeDelta) {
@@ -72,8 +84,10 @@ void SpikerComponent::Think(int timeDelta) {
 		Vec3 otherMins = Vec3::Load(other.oldEnt->r.mins);
 		Vec3 otherMaxs = Vec3::Load(other.oldEnt->r.maxs);
 
-		// Only entities in the spiker's upper hemisphere can be hit.
-		if (Math::Dot(toTarget, dorsal) < 0.0f) return;
+		// With a straight shot, only entities in the spiker's upper hemisphere can be hit.
+		// Since the spikes obey gravity, increase or decrease this radius of damage by up to
+		// GRAVITY_COMPENSATION_ANGLE degrees depending on the spiker's orientation.
+		if (Math::Dot(Math::Normalize(toTarget), dorsal) < gravityCompensation) return;
 
 		// Approximate average damage the entity would receive from spikes.
 		const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
