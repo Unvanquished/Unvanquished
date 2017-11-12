@@ -190,6 +190,7 @@ bool SpikerComponent::Fire() {
 
 	// Play shooting animation.
 	G_SetBuildableAnim(self, BANIM_ATTACK1, false);
+	GetBuildableComponent().ProtectAnimation(5000);
 
 	// TODO: Add a particle effect.
 	//G_AddEvent(self, EV_ALIEN_SPIKER, DirToByte(self->s.origin2));

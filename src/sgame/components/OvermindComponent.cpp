@@ -42,6 +42,7 @@ void OvermindComponent::Think(int timeDelta) {
 		target->Damage(damage, entity.oldEnt, {}, {}, DAMAGE_NO_PROTECTION, MOD_OVERMIND);
 
 		G_SetBuildableAnim(entity.oldEnt, BANIM_ATTACK1, false);
+		GetBuildableComponent().ProtectAnimation(1000);
 	}
 }
 

@@ -83,6 +83,18 @@ class BuildableComponent: public BuildableComponentBase {
 		void SetAimAngles(const Vec3 aimAngles) { this->aimAngles = aimAngles; }
 		Vec3 AimAngles() const { return this->aimAngles; }
 
+		/**
+		 * Protect current animation from being disrupted by selected, less important animations.
+		 * A value of 0 protects for the rest of the frame only.
+		 */
+		void ProtectAnimation(int time) { protectAnimationUntil = level.time + time; }
+		void UnprotectAnimation() { protectAnimationUntil = -1; }
+
+		/**
+		 * While the current animation is protected, less important animations should not be played.
+		 */
+		bool AnimationProtected() const { return (protectAnimationUntil > level.time); }
+
 	private:
 		lifecycle_t state;
 
@@ -92,6 +104,8 @@ class BuildableComponent: public BuildableComponentBase {
 		int  markTime;
 
 		Vec3 aimAngles; /**< Aim angles relative to world. */
+
+		int protectAnimationUntil;
 
 		// TODO: Move gentity_t.deconstruct and gentity_t.powered here.
 		//bool powered;

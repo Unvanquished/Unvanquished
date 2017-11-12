@@ -17,7 +17,9 @@ void AlienBuildableComponent::HandleDamage(float amount, gentity_t* source, Util
 	if (GetBuildableComponent().GetState() != BuildableComponent::CONSTRUCTED) return;
 
 	// TODO: Move animation code to BuildableComponent.
-	G_SetBuildableAnim(entity.oldEnt, BANIM_PAIN1, false);
+	if (!GetBuildableComponent().AnimationProtected()) {
+		G_SetBuildableAnim(entity.oldEnt, BANIM_PAIN1, false);
+	}
 }
 
 void AlienBuildableComponent::Think(int timeDelta) {
