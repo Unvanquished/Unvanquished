@@ -87,7 +87,7 @@ class BuildableComponent: public BuildableComponentBase {
 		 * Protect current animation from being disrupted by selected, less important animations.
 		 * A value of 0 protects for the rest of the frame only.
 		 */
-		void ProtectAnimation(int time) { protectAnimationUntil = level.time + time; }
+		void ProtectAnimation(int duration) { protectAnimationUntil = level.time + duration; }
 		void UnprotectAnimation() { protectAnimationUntil = -1; }
 
 		/**
