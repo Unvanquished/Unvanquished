@@ -32,6 +32,8 @@ See below for build and launch instructions.
 `libtheora`,
 `libopus`,
 `libopusfile`
+`libtolua`
+
 
 ### Buildtime
 
@@ -56,6 +58,7 @@ See below for build and launch instructions.
 ## Build Instructions
 
 Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores to speed up compilation.
+Or on linux you can do `make -j$(getconf _NPROCESSORS_ONLN)`
 
 ### Visual Studio
 
