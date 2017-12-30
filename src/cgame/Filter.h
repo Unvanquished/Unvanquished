@@ -1,9 +1,10 @@
 /*
 ===========================================================================
 
-Copyright 2015 Unvanquished Developers
+Unvanquished GPL Source Code
+Copyright (C) 2015 Unvanquished Developers
 
-This file is part of Daemon.
+This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
 Unvanquished is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
