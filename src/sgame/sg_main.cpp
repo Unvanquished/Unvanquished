@@ -1,23 +1,26 @@
 /*
 ===========================================================================
+
+Unvanquished GPL Source Code
 Copyright (C) 1999-2005 Id Software, Inc.
 Copyright (C) 2000-2009 Darklegion Development
 
-This file is part of Daemon.
+This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
-Daemon is free software; you can redistribute it
+Unvanquished is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
-Daemon is distributed in the hope that it will be
+Unvanquished is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
+along with Unvanquished; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 ===========================================================================
 */
 
@@ -2617,9 +2620,9 @@ void G_RunThink( gentity_t *ent )
 	}
 
 	// Do CBSE style thinking.
-	ForEntities<ThinkingComponent>([] (Entity &entity, ThinkingComponent &thinkingComponent) {
-		thinkingComponent.Think();
-	});
+	if (auto* thinkingComponent = ent->entity->Get<ThinkingComponent>()) {
+		thinkingComponent->Think();
+	}
 
 	// Do legacy thinking.
 	// TODO: Replace this kind of thinking entirely with CBSE.
@@ -2812,9 +2815,7 @@ void G_RunFrame( int levelTime )
 		// calculate the acceleration of this entity
 		if ( ent->evaluateAcceleration ) G_EvaluateAcceleration( ent, msec );
 
-		if ( !ent->r.linked && ent->neverFree ) continue;
-
-		// think/run entitiy by type
+		// think/run entity by type
 		switch ( ent->s.eType )
 		{
 			case entityType_t::ET_MISSILE:
@@ -2860,6 +2861,20 @@ void G_RunFrame( int levelTime )
 				}
 		}
 	}
+
+	// ThinkingComponent should have been called already but who knows maybe we forgot some.
+	ForEntities<ThinkingComponent>([](Entity& entity, ThinkingComponent& thinkingComponent) {
+		// A newly created entity can randomly run things, or not, in the G_RunFrames loop over
+		// entities depending on whether it was added in a hole in g_entities or at the end, so
+		// ignore the entity if it was created this frame.
+		if (entity.oldEnt->creationTime != level.time && thinkingComponent.GetLastThinkTime() != level.time) {
+			static Util::MinimumDelay delay(60000);
+			if (delay.Check(level.time)) {
+				Log::Warn("ThinkingComponent was not called");
+			}
+			thinkingComponent.Think();
+		}
+	});
 
 	// perform final fixups on the players
 	ent = &g_entities[ 0 ];

@@ -1,25 +1,29 @@
 /*
 ===========================================================================
+
+Unvanquished GPL Source Code
 Copyright (C) 1999-2005 Id Software, Inc.
 Copyright (C) 2000-2009 Darklegion Development
 
-This file is part of Daemon.
+This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
-Daemon is free software; you can redistribute it
+Unvanquished is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
-Daemon is distributed in the hope that it will be
+Unvanquished is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
+along with Unvanquished; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 ===========================================================================
 */
+
 #ifndef CG_LOCAL_H
 #define CG_LOCAL_H
 
@@ -1061,12 +1065,6 @@ typedef struct
 	vec3_t vangles;
 } entityPos_t;
 
-typedef struct
-{
-	int time;
-	int length;
-} consoleLine_t;
-
 #define MAX_CONSOLE_TEXT  8192
 #define MAX_CONSOLE_LINES 32
 
@@ -1280,10 +1278,6 @@ typedef struct
 
 	int                     lastBuildAttempt;
 	int                     lastEvolveAttempt;
-
-	char                    consoleText[ MAX_CONSOLE_TEXT ];
-	consoleLine_t           consoleLines[ MAX_CONSOLE_LINES ];
-	int                     numConsoleLines;
 
 	float                   painBlendValue;
 	float                   painBlendTarget;
@@ -1991,8 +1985,6 @@ bool   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString();
 
 bool   CG_FileExists( const char *filename );
-void       CG_RemoveNotifyLine();
-void       CG_AddNotifyText();
 void       CG_UpdateBuildableRangeMarkerMask();
 void       CG_RegisterGrading( int slot, const char *str );
 

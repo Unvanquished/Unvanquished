@@ -1,4 +1,7 @@
 #include "SpawnerComponent.h"
+#include "common/Util.h"
+
+static Log::Logger logger("sgame.spawn");
 
 constexpr int   BLOCKER_GRACE_PERIOD = 4000;
 constexpr int   BLOCKER_WARN_PERIOD  = 2000;
@@ -46,6 +49,14 @@ void SpawnerComponent::Think(int timeDelta) {
 	Entity* blocker = GetBlocker();
 
 	if (blocker) {
+		if (!blocker->oldEnt) {
+			static Util::MinimumDelay delay(30000);
+			if (delay.Check(level.time)) {
+				logger.Warn("Spawn blocking entity has oldEnt == nullptr");
+			}
+			return;
+		}
+
 		// Suicide if blocked by the map.
 		if (blocker->oldEnt->s.number == ENTITYNUM_WORLD
 		    || blocker->oldEnt->s.eType == entityType_t::ET_MOVER) {

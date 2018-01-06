@@ -1,22 +1,25 @@
 /*
 ===========================================================================
+
+Unvanquished GPL Source Code
 Copyright (C) 1999-2005 Id Software, Inc.
 
-This file is part of Daemon.
+This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
-Daemon is free software; you can redistribute it
+Unvanquished is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
-Daemon is distributed in the hope that it will be
+Unvanquished is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
+along with Unvanquished; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 ===========================================================================
 */
 
@@ -747,6 +750,7 @@ condition [expression]
 [expression] can be any valid set of boolean operations and values
 ======================
 */
+
 AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
@@ -951,6 +955,7 @@ action name( p1, p2, ... )
 Where name defines the action to execute, and the parameters are surrounded by parenthesis
 ======================
 */
+
 AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
@@ -1068,6 +1073,7 @@ Parses and creates an AINodeList_t from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
 ======================
 */
+
 AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 {
 	AINodeList_t *list;
@@ -1219,6 +1225,7 @@ ReadBehaviorTree
 Load a behavior tree of the given name from a file
 ======================
 */
+
 AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 {
 	int i;

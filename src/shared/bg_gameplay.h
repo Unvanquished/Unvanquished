@@ -1,23 +1,23 @@
 /*
 ===========================================================================
 
-Daemon GPL Source Code
+Unvanquished GPL Source Code
 Copyright (C) 2012-2013 Unvanquished Developers
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
-Daemon Source Code is free software: you can redistribute it and/or modify
+Unvanquished Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Daemon Source Code is distributed in the hope that it will be useful,
+Unvanquished Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
 ===========================================================================
 */
@@ -129,12 +129,7 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define ACIDTUBE_RANGE          300.0f
 
-#define SPIKER_SPIKE_RANGE      400.0f // reach of spikes, also used for scoring
-#define SPIKER_SENSE_RANGE      200.0f // an enemy needs to be this close to consider an attack
-#define SPIKER_MISSILEROWS      4
-#define SPIKER_MISSILES         26   // actual value +/- SPIKER_MISSILEROWS
-#define SPIKER_ROWOFFSET        0.5f // 0.0: Spikes are shot upwards, 1.0: Spikes are shot sideways
-#define SPIKER_COOLDOWN         5000
+#define SPIKER_SENSE_RANGE      250.0f // an enemy needs to be this close to consider an attack
 
 #define TRAPPER_RANGE           400
 

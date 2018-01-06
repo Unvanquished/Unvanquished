@@ -13,6 +13,10 @@ void ThinkingComponent::Think() {
 	int time = level.time;
 
 	if (lastThinkRound == time) {
+		static Util::MinimumDelay delay(60000);
+		if (delay.Check(time)) {
+			thinkLogger.Warn("Think component called multiple times per frame");
+		}
 		return;
 	}
 
@@ -73,6 +77,10 @@ void ThinkingComponent::Think() {
 	// Add thinkers that were registered during iteration.
 	thinkers.insert(thinkers.end(), newThinkers.begin(), newThinkers.end());
 	newThinkers.clear();
+}
+
+int ThinkingComponent::GetLastThinkTime() const {
+	return lastThinkRound;
 }
 
 void ThinkingComponent::RegisterThinker(thinker_t thinker, thinkScheduler_t scheduler, int period) {
