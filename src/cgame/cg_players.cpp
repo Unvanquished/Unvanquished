@@ -213,6 +213,10 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			{
 				ci->footsteps = FOOTSTEP_SPLASH;
 			}
+			else if ( !Q_stricmp( token, "custom" ) )
+			{
+				ci->footsteps = FOOTSTEP_CUSTOM;
+			}
 			else if( !Q_stricmp(token, "none") )
 			{
 				ci->footsteps = FOOTSTEP_NONE;
