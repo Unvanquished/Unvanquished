@@ -388,7 +388,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 			case WP_MASS_DRIVER:
 			case WP_LUCIFER_CANNON:
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          _( "Find an Armoury, Reactor, or Repeater for more ammo\n" ) );
+				          _( "Find an Armoury or Reactor for more ammo\n" ) );
 				break;
 
 			default:

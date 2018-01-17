@@ -141,7 +141,6 @@ static const struct { shorthand_t shorthand; int flags; } anims[ BA_NUM_BUILDABL
 {{XX,0},{I1,1},{I2,1},{PD,0},{I1,1},{C1,0},{I1,0},{A1,0},{C2,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{DU,0},{DD,0},{XX,0}}, // H_MEDISTAT
 {{XX,0},{I1,0},{XX,0},{I1,0},{I1,1},{I1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{I1,0},{I1,0},{I1,0},{XX,0}}, // H_DRILL
 {{XX,0},{I1,1},{XX,0},{XX,0},{I1,1},{C1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // H_REACTOR
-{{XX,0},{I1,1},{XX,0},{I1,0},{I1,1},{C1,0},{I1,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{XX,0},{DE,0},{XX,0},{DD,0},{XX,0}}, // H_REPEATER
 };
 
 static const char *GetAnimationName( buildable_t buildable, buildableAnimNumber_t animNumber )
@@ -206,7 +205,6 @@ void CG_HumanBuildableDying( buildable_t buildable, vec3_t origin )
 {
 	switch ( buildable )
 	{
-		case BA_H_REPEATER:
 		case BA_H_REACTOR:
 			trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.humanBuildableDying );
 		default:
@@ -226,7 +224,7 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 	particleSystem_t *explosion = nullptr;
 	particleSystem_t *nova = nullptr;
 
-	if ( buildable == BA_H_REPEATER || buildable == BA_H_REACTOR )
+	if ( buildable == BA_H_REACTOR )
 	{
 		nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
 	}
@@ -811,11 +809,6 @@ bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmT
 		case BA_H_REACTOR:
 			*range = cgs.powerReactorRange;
 			shc = SHC_DARK_BLUE;
-			break;
-
-		case BA_H_REPEATER:
-			*range = cgs.powerRepeaterRange;
-			shc = SHC_LIGHT_BLUE;
 			break;
 
 		default:

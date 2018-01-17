@@ -1039,7 +1039,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_CLIPS_REFILL:
 		case EV_FUEL_REFILL:
 			// TODO: Add different sounds for EV_AMMO_REFILL, EV_CLIPS_REFILL, EV_FUEL_REFILL
-			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.repeaterUseSound );
+			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.itemFillSound );
 			break;
 
 		case EV_GRENADE_BOUNCE:
@@ -1235,14 +1235,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_WARN_ATTACK:
-			// if eventParm is non-zero, this is for humans and there's a nearby reactor or repeater, otherwise it's for aliens
+			// if eventParm is non-zero, this is for humans and there's a nearby reactor, otherwise it's for aliens
 			if ( es->eventParm >= MAX_CLIENTS && es->eventParm < MAX_GENTITIES )
 			{
 				const char *location;
-				bool    base = cg_entities[ es->eventParm ].currentState.modelindex == BA_H_REACTOR;
 				centity_t  *locent = CG_GetLocation( cg_entities[ es->eventParm ].currentState.origin );
 
-				CG_CenterPrint( base ? _( "Our base is under attack!" ) : _( "A forward base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( _( "Our base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
 
 				if ( locent )
 				{
@@ -1255,11 +1254,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				if ( location && *location )
 				{
-					Log::Notice( _( "%s Under attack – %s" ), base ? "[reactor]" : "[repeater]", location );
+					Log::Notice( _( "[reactor] Under attack – %s" ), location );
 				}
 				else
 				{
-					Log::Notice( _( "%s Under attack" ), base ? "[reactor]" : "[repeater]" );
+					Log::Notice( _( "[reactor] Under attack" ) );
 				}
 			}
 			else // this is for aliens, and the overmind is in range

@@ -505,7 +505,6 @@ typedef enum
   BA_H_DRILL,
 
   BA_H_REACTOR,
-  BA_H_REPEATER,
 
   BA_NUM_BUILDABLES
 } buildable_t;

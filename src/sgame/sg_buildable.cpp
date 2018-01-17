@@ -987,7 +987,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 		BA_H_MEDISTAT,
 		BA_H_ARMOURY,
 		BA_H_SPAWN,
-		BA_H_REPEATER,
 		BA_H_REACTOR
 	};
 
@@ -1730,11 +1729,6 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 			break;
 		}
 
-		case BA_H_REPEATER: {
-			BUILDABLE_ENTITY_CREATE(RepeaterEntity);
-			break;
-		}
-
 		case BA_H_ROCKETPOD: {
 			BUILDABLE_ENTITY_CREATE(RocketpodEntity);
 			break;
@@ -1892,10 +1886,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 			break;
 
 		case BA_H_REACTOR:
-			break;
-
-		case BA_H_REPEATER:
-			//built->customNumber = -1;
 			break;
 
 		default:

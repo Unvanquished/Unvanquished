@@ -176,7 +176,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/MiningComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/ReactorComponent.cpp
-    ${GAMELOGIC_DIR}/sgame/components/RepeaterComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/RocketpodComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/SpawnerComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/SpectatorComponent.cpp
