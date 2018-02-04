@@ -1,13 +1,3 @@
-gfx/misc/detail
-{
-	nopicmip
-	{
-		map gfx/misc/detail
-		blendFunc GL_DST_COLOR GL_SRC_COLOR
-		rgbgen identity
-	}
-}
-
 console
 {
 	nopicmip
