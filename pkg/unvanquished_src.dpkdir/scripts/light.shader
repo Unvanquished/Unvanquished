@@ -1,5 +1,3 @@
-
-
 table neontable2 { snap { 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1 } }
 
 lights/redglow
@@ -30,12 +28,11 @@ lights/roundfire2
 
 lights/stormy1
 {
-
 	{
 		forceHighQuality
 		map	lights/stormy2
 		colored
-	    rotate	time * .1
+		rotate	time * .1
 		zeroClamp
 		rgb		stormtable[ time * .3 ]
 	}
@@ -259,7 +256,6 @@ lights/squarelight
 	}
 }
 
-
 table spark_neontable1 { { 1.3, 0, 0, 0, 0, 1.3, 0, 0, 0, 0, 1.3, 0, 0, 1.1, .075, 1.15, 1.22, 1.3, 1.3, 1.45, 1.52, .6, .67, .75, .82, .9, .95, 1, 0, 0, 0, .3, 0, 0, 0, 0, 0, 0, 0, .3, 0, 0, 0, 0, 0, 0, 0, 0, 1, .6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .3, 0, 0, 0, 0 } }
 
 //
@@ -311,24 +307,6 @@ lights/defaultProjectedLight
 		map lights/squarelight1
 		colored
 		zeroClamp
-	}
-}
-
-
-lights/roqVideoLight
-{
-	lightFalloffImage	lights/mkintsquarelight1b
-//	lightFalloffImage	lights/skyline1
-//	lightFalloffImage	_noFalloff
-	{
-		stage attenuationMapXY
-		colored
-		videoMap video/intro.RoQ
-
-		//scale 1, 0.9
-		//scroll time * 0.1, 0
-		//scroll 0, time * 0.1
-		rotate 180
 	}
 }
 
