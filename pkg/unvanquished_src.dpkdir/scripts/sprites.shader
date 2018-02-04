@@ -1,29 +1,3 @@
-gfx/sprites/acid_3
-{
-	cull none
-	entityMergable
-	{
-		map gfx/sprites/acid_3
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen    vertex
-		alphaGen  vertex
-		depthFade 100.0
-	}
-}
-
-gfx/sprites/boosterspore
-{
-	cull none
-	entityMergable
-	{
-		map gfx/sprites/boosterspore
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen    vertex
-		alphaGen  vertex
-		depthFade 100.0
-	}
-}
-
 gfx/sprites/bubble
 {
 	sort  underwater
@@ -56,18 +30,6 @@ gfx/sprites/green_acid
 	}
 }
 
-gfx/sprites/poisoncloud
-{
-	cull none
-	entityMergable
-	{
-		map gfx/sprites/poisoncloud
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen    vertex
-		alphaGen  vertex
-	}
-}
-
 gfx/sprites/smoke
 {
 	cull none
@@ -89,5 +51,4 @@ gfx/sprites/spark
 		rgbGen    vertex
 		alphaGen  vertex
 	}
-}
-
+}:q
