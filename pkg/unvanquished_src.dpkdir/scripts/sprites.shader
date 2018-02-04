@@ -18,37 +18,3 @@ gfx/sprites/chatballoon
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 	}
 }
-
-gfx/sprites/green_acid
-{
-	nopicmip
-	{
-		clampmap gfx/sprites/green_acid
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen    vertex
-		alphaGen  vertex
-	}
-}
-
-gfx/sprites/smoke
-{
-	cull none
-	entityMergable
-	{
-		map gfx/sprites/smoke
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen    vertex
-		alphaGen  vertex
-	}
-}
-
-gfx/sprites/spark
-{
-	cull none
-	{
-		map gfx/sprites/spark
-		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-		rgbGen    vertex
-		alphaGen  vertex
-	}
-}:q
