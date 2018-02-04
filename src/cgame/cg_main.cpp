@@ -1093,7 +1093,7 @@ static void CG_RegisterGraphics()
 	cgs.media.connectionShader = trap_R_RegisterShader("gfx/2d/net",
 							   (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.creepShader = trap_R_RegisterShader("creep", (RegisterShaderFlags_t) RSF_DEFAULT);
+	cgs.media.creepShader = trap_R_RegisterShader("gfx/buildables/creep/creep", (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/2d/blip",
 							    (RegisterShaderFlags_t) RSF_DEFAULT);
@@ -1107,18 +1107,18 @@ static void CG_RegisterGraphics()
 	cgs.media.teamOverlayShader = trap_R_RegisterShader("gfx/2d/teamoverlay",
 							    (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.tracerShader = trap_R_RegisterShader("gfx/misc/tracer",
+	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer",
 						       (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.backTileShader = trap_R_RegisterShader("console",
 							 (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	// building shaders
-	cgs.media.greenBuildShader = trap_R_RegisterShader("gfx/misc/greenbuild",
+	cgs.media.greenBuildShader = trap_R_RegisterShader("gfx/buildables/common/greenbuild",
 							   (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.redBuildShader = trap_R_RegisterShader("gfx/misc/redbuild",
+	cgs.media.redBuildShader = trap_R_RegisterShader("gfx/buildables/common/redbuild",
 							 (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.humanSpawningShader = trap_R_RegisterShader("models/buildables/humanSpawning",
+	cgs.media.humanSpawningShader = trap_R_RegisterShader("gfx/buildables/human_base/spawning",
 							      (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	for ( i = 0; i < 8; i++ )
@@ -1156,16 +1156,16 @@ static void CG_RegisterGraphics()
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "disconnectPS" );
 
-	cgs.media.scopeShader = trap_R_RegisterShader( "scope", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.scopeShader = trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 
 	CG_UpdateMediaFraction( 0.7f );
 
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 	memset( cg_upgrades, 0, sizeof( cg_upgrades ) );
 
-	cgs.media.shadowMarkShader = trap_R_RegisterShader("gfx/marks/shadow",
+	cgs.media.shadowMarkShader = trap_R_RegisterShader("gfx/players/common/shadow",
 							   (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.wakeMarkShader = trap_R_RegisterShader("gfx/marks/wake",
+	cgs.media.wakeMarkShader = trap_R_RegisterShader("gfx/players/common/wake",
 							 (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.alienEvolvePS = CG_RegisterParticleSystem( "alienEvolvePS" );
