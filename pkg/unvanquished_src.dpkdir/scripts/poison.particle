@@ -4,7 +4,7 @@ firstPersonPoisonCloudPS
   {
     particle
     {
-      shader sync gfx/sprites/poisoncloud
+      shader sync gfx/sprites/poison_cloud
 
       displacement 0 0 0 ~32.0
 
@@ -39,7 +39,7 @@ poisonCloudedPS
   {
     particle
     {
-      shader sync gfx/sprites/poisoncloud
+      shader sync gfx/sprites/poison_cloud
 
       displacement 0 0 0 ~6.0
 
