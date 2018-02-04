@@ -61,7 +61,6 @@ poisonCloudedPS
   }
 }
 
-
 alienEvolvePS
 {
   ejector
@@ -222,7 +221,6 @@ alienBuildableBleedPS
   }
 }
 
-
 humanBleedPS
 {
   ejector
@@ -347,8 +345,6 @@ humanBuildableBleedPS
     delay   0
     period  0 - 0
   }
-
-
 }
 
 disconnectPS
