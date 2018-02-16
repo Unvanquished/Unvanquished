@@ -1,4 +1,4 @@
-disconnectPS
+particles/disconnect
 {
   ejector
   {
