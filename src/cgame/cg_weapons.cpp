@@ -1218,7 +1218,7 @@ void CG_InitWeapons()
 		CG_RegisterWeapon( i );
 	}
 
-	cgs.media.level2ZapTS = CG_RegisterTrailSystem( "models/weapons/lev2zap/lightning" );
+	cgs.media.level2ZapTS = CG_RegisterTrailSystem( "trails/weapons/level2upg/lightning" );
 }
 
 /*

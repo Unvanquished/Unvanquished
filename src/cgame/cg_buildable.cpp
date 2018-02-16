@@ -739,7 +739,7 @@ void CG_InitBuildables()
 		trap_UpdateScreen();
 	}
 
-	cgs.media.teslaZapTS = CG_RegisterTrailSystem( "teslaZapTS" );
+	cgs.media.teslaZapTS = CG_RegisterTrailSystem( "trails/weapons/tesla/lightning" );
 }
 
 /*

@@ -1154,7 +1154,7 @@ static void CG_RegisterGraphics()
 	cgs.media.balloonShader = trap_R_RegisterShader("gfx/sprites/chatballoon",
 							(RegisterShaderFlags_t) RSF_SPRITE);
 
-	cgs.media.disconnectPS = CG_RegisterParticleSystem( "disconnectPS" );
+	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/disconnect" );
 
 	cgs.media.scopeShader = trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 
@@ -1168,26 +1168,26 @@ static void CG_RegisterGraphics()
 	cgs.media.wakeMarkShader = trap_R_RegisterShader("gfx/players/common/wake",
 							 (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.alienEvolvePS = CG_RegisterParticleSystem( "alienEvolvePS" );
-	cgs.media.alienAcidTubePS = CG_RegisterParticleSystem( "alienAcidTubePS" );
-	cgs.media.alienBoosterPS = CG_RegisterParticleSystem( "alienBoosterPS" );
+	cgs.media.alienEvolvePS = CG_RegisterParticleSystem( "particles/players/alien_base/evolve" );
+	cgs.media.alienAcidTubePS = CG_RegisterParticleSystem( "particles/buildables/acide_tube/spore" );
+	cgs.media.alienBoosterPS = CG_RegisterParticleSystem( "particles/buildables/booster/spore" );
 
-	cgs.media.jetPackThrustPS = CG_RegisterParticleSystem( "jetPackAscendPS" );
+	cgs.media.jetPackThrustPS = CG_RegisterParticleSystem( "particles/players/human_base/jetpack_ascend" );
 
-	cgs.media.humanBuildableDamagedPS = CG_RegisterParticleSystem( "humanBuildableDamagedPS" );
-	cgs.media.alienBuildableDamagedPS = CG_RegisterParticleSystem( "alienBuildableDamagedPS" );
-	cgs.media.humanBuildableDestroyedPS = CG_RegisterParticleSystem( "humanBuildableDestroyedPS" );
-	cgs.media.humanBuildableNovaPS = CG_RegisterParticleSystem( "humanBuildableNovaPS" );
-	cgs.media.alienBuildableDestroyedPS = CG_RegisterParticleSystem( "alienBuildableDestroyedPS" );
+	cgs.media.humanBuildableDamagedPS = CG_RegisterParticleSystem( "particles/buildables/human_base/damaged" );
+	cgs.media.alienBuildableDamagedPS = CG_RegisterParticleSystem( "particles/buildables/alien_base/damaged" );
+	cgs.media.humanBuildableDestroyedPS = CG_RegisterParticleSystem( "particles/buildables/human_base/destroyed" );
+	cgs.media.humanBuildableNovaPS = CG_RegisterParticleSystem( "particles/buildables/human_base/nova" );
+	cgs.media.alienBuildableDestroyedPS = CG_RegisterParticleSystem( "particles/buildables/alien_base/destroyed" );
 
-	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "humanBuildableBleedPS" );
-	cgs.media.alienBuildableBleedPS = CG_RegisterParticleSystem( "alienBuildableBleedPS" );
-	cgs.media.alienBuildableBurnPS  = CG_RegisterParticleSystem( "alienBuildableBurnPS" );
+	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "particles/buildables/human_base/bleed" );
+	cgs.media.alienBuildableBleedPS = CG_RegisterParticleSystem( "particles/buildables/alien_base/bleed" );
+	cgs.media.alienBuildableBurnPS  = CG_RegisterParticleSystem( "particles/buildables/alien_base/burn" );
 
-	cgs.media.floorFirePS = CG_RegisterParticleSystem( "floorFirePS" );
+	cgs.media.floorFirePS = CG_RegisterParticleSystem( "particles/weapons/flamer/floorfire" );
 
-	cgs.media.alienBleedPS = CG_RegisterParticleSystem( "alienBleedPS" );
-	cgs.media.humanBleedPS = CG_RegisterParticleSystem( "humanBleedPS" );
+	cgs.media.alienBleedPS = CG_RegisterParticleSystem( "particles/players/alien_base/bleed" );
+	cgs.media.humanBleedPS = CG_RegisterParticleSystem( "particles/players/human_base/bleed" );
 
 	cgs.media.sphereModel = trap_R_RegisterModel( "models/generic/sphere.md3" );
 	cgs.media.sphericalCone64Model = trap_R_RegisterModel( "models/generic/sphericalCone64.md3" );
