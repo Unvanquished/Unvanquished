@@ -3,111 +3,111 @@
 //   ----------
 //   shared crosshair for all classes
 
-gfx/2d/crosshair-alien_s
+gfx/2d/crosshairs/alien
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-alien
+		map gfx/2d/crosshairs/alien_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-blaster_s
+gfx/2d/crosshairs/blaster
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-blaster
+		map gfx/2d/crosshairs/blaster_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-chaingun_s
+gfx/2d/crosshairs/chaingun
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-chaingun
+		map gfx/2d/crosshairs/chaingun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-flamer_s
+gfx/2d/crosshairs/flamer
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-flamer
+		map gfx/2d/crosshairs/flamer_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-lcannon_s
+gfx/2d/crosshairs/lcannon
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-lcannon
+		map gfx/2d/crosshairs/lcannon_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-lgun_s
+gfx/2d/crosshairs/lgun
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-lgun
+		map gfx/2d/crosshairs/lgun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-mdriver_s
+gfx/2d/crosshairs/mdriver
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-mdriver
+		map gfx/2d/crosshairs/mdriver_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-prifle_s
+gfx/2d/crosshairs/prifle
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-prifle
+		map gfx/2d/crosshairs/prifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-psaw_s
+gfx/2d/crosshairs/psaw
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-psaw
+		map gfx/2d/crosshairs/psaw_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-rifle_s
+gfx/2d/crosshairs/rifle
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-rifle
+		map gfx/2d/crosshairs/rifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshair-shotgun_s
+gfx/2d/crosshairs/shotgun
 {
 	nopicmip
 	{
-		map gfx/2d/crosshair-shotgun
+		map gfx/2d/crosshairs/shotgun_d
 		blendfunc blend
 		rgbGen vertex
 	}
