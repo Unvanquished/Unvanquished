@@ -1,109 +1,109 @@
-gfx/2d/numbers/eight_32b
+ui/assets/numbers/eight_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/eight_32b
+		map ui/assets/numbers/eight_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/five_32b
+ui/assets/numbers/five_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/five_32b
+		map ui/assets/numbers/five_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/four_32b
+ui/assets/numbers/four_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/four_32b
+		map ui/assets/numbers/four_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/minus_32b
+ui/assets/numbers/minus_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/minus_32b
+		map ui/assets/numbers/minus_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/nine_32b
+ui/assets/numbers/nine_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/nine_32b
+		map ui/assets/numbers/nine_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/one_32b
+ui/assets/numbers/one_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/one_32b
+		map ui/assets/numbers/one_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/seven_32b
+ui/assets/numbers/seven_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/seven_32b
+		map ui/assets/numbers/seven_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/six_32b
+ui/assets/numbers/six_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/six_32b
+		map ui/assets/numbers/six_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/three_32b
+ui/assets/numbers/three_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/three_32b
+		map ui/assets/numbers/three_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
-gfx/2d/numbers/two_32b
+ui/assets/numbers/two_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/two_32b
+		map ui/assets/numbers/two_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
 }
 
 //  ===============================================================
-gfx/2d/numbers/zero_32b
+ui/assets/numbers/zero_32b
 {
 	nopicmip
 	{
-		map gfx/2d/numbers/zero_32b
+		map ui/assets/numbers/zero_32b
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 		rgbgen vertex
 	}
