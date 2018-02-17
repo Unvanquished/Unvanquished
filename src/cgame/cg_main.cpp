@@ -1493,8 +1493,6 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	// load a few needed things before we do any screen updates
 	trap_R_SetAltShaderTokens( "unpowered,destroyed,idle,idle2" );
 	cgs.media.whiteShader = trap_R_RegisterShader("white", (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.charsetShader = trap_R_RegisterShader("gfx/2d/bigchars",
-							(RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.outlineShader = trap_R_RegisterShader("outline",
 							(RegisterShaderFlags_t) RSF_DEFAULT);
 

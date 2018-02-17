@@ -1482,7 +1482,6 @@ typedef struct
 
 typedef struct
 {
-	qhandle_t charsetShader;
 	qhandle_t whiteShader;
 	qhandle_t outlineShader;
 
