@@ -1,10 +1,10 @@
-particles/disconnect
+particles/feedback/disconnect
 {
   ejector
   {
     particle
     {
-      shader sync gfx/sprites/bubble
+      shader sync gfx/feedback/bubble
       displacement          0 0 0 ~60
 
       velocityType          static
