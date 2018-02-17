@@ -907,16 +907,16 @@ static void CG_RegisterSounds()
 	cgs.media.turretSpinupSound = trap_S_RegisterSound( "sound/buildables/mgturret/spinup", false );
 	cgs.media.weaponEmptyClick = trap_S_RegisterSound( "sound/weapons/click", false );
 
-	cgs.media.talkSound = trap_S_RegisterSound( "sound/misc/talk", false );
-	cgs.media.alienTalkSound = trap_S_RegisterSound( "sound/misc/alien_talk", false );
-	cgs.media.humanTalkSound = trap_S_RegisterSound( "sound/misc/human_talk", false );
+	cgs.media.talkSound = trap_S_RegisterSound( "sound/feedback/talk", false );
+	cgs.media.alienTalkSound = trap_S_RegisterSound( "sound/feedback/alien_talk", false );
+	cgs.media.humanTalkSound = trap_S_RegisterSound( "sound/feedback/human_talk", false );
 	cgs.media.landSound = trap_S_RegisterSound( "sound/player/land1", false );
 
 	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in", false );
 	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out", false );
 	cgs.media.watrUnSound = trap_S_RegisterSound( "sound/player/watr_un", false );
 
-	cgs.media.disconnectSound = trap_S_RegisterSound( "sound/misc/disconnect", false );
+	cgs.media.disconnectSound = trap_S_RegisterSound( "sound/feedback/disconnect", false );
 
 	for ( i = 0; i < 4; i++ )
 	{
@@ -982,8 +982,8 @@ static void CG_RegisterSounds()
 
 	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon", false );
 
-	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacon-timer-expired", false );
-	cgs.media.killSound = trap_S_RegisterSound( "sound/feedback/bell", false );
+	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacons/timer-expired", false );
+	cgs.media.killSound = trap_S_RegisterSound( "sound/feedback/damage/bell", false );
 }
 
 //===================================================================================
@@ -1087,24 +1087,21 @@ static void CG_RegisterGraphics()
 								     (RegisterShaderFlags_t) RSF_DEFAULT);
 	}
 
-	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/damage/fullscreen_painblend",
+	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/feedback/painblend",
 							  (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.connectionShader = trap_R_RegisterShader("gfx/2d/net",
+	cgs.media.connectionShader = trap_R_RegisterShader("gfx/feedback/net",
 							   (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.creepShader = trap_R_RegisterShader("gfx/buildables/creep/creep", (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/2d/blip",
+	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/feedback/scanner/blip",
 							    (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/2d/blip_bldg",
+	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/feedback/scanner/blip_bldg",
 								(RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/2d/stalk",
-							    (RegisterShaderFlags_t) RSF_DEFAULT);
-
-	cgs.media.teamOverlayShader = trap_R_RegisterShader("gfx/2d/teamoverlay",
+	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/feedback/scanner/stalk",
 							    (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer",
@@ -1151,10 +1148,10 @@ static void CG_RegisterGraphics()
 	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only",
 								 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
-	cgs.media.balloonShader = trap_R_RegisterShader("gfx/sprites/chatballoon",
+	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon",
 							(RegisterShaderFlags_t) RSF_SPRITE);
 
-	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/disconnect" );
+	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/feedback/disconnect" );
 
 	cgs.media.scopeShader = trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 
@@ -1217,11 +1214,11 @@ static void CG_RegisterGraphics()
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
 
-	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/2d/beacons/arrow", RSF_DEFAULT );
-	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/2d/beacons/no-target", RSF_DEFAULT );
-	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/2d/beacons/tagscore", RSF_DEFAULT );
+	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/feedback/beacons/arrow", RSF_DEFAULT );
+	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/feedback/beacons/no-target", RSF_DEFAULT );
+	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/feedback/beacons/tagscore", RSF_DEFAULT );
 
-	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/2d/damage-indicator-font", RSF_DEFAULT );
+	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/feedback/damage/font", RSF_DEFAULT );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();

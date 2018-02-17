@@ -1503,8 +1503,6 @@ typedef struct
 	qhandle_t scannerBlipBldgShader;
 	qhandle_t scannerLineShader;
 
-	qhandle_t teamOverlayShader;
-
 	qhandle_t numberShaders[ 11 ];
 
 	qhandle_t shadowMarkShader;
