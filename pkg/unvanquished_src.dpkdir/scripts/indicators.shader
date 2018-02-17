@@ -2,211 +2,211 @@
 //   INDICATORS
 //   ----------
 
-gfx/2d/indicators/alienBuilder
+gfx/indicators/alienBuilder
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/alienBuilder_d
+		map gfx/indicators/alienBuilder_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/alienBuilderUpg
+gfx/indicators/alienBuilderUpg
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/alienBuilderUpg_d
+		map gfx/indicators/alienBuilderUpg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/blaster
+gfx/indicators/blaster
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/blaster_d
+		map gfx/indicators/blaster_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/chaingun
+gfx/indicators/chaingun
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/chaingun_d
+		map gfx/indicators/chaingun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/flamer
+gfx/indicators/flamer
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/flamer_d
+		map gfx/indicators/flamer_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/lcannon
+gfx/indicators/lcannon
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/lcannon_d
+		map gfx/indicators/lcannon_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level0
+gfx/indicators/level0
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level0_d
+		map gfx/indicators/level0_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level0upg
+gfx/indicators/level0upg
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level0upg_d
+		map gfx/indicators/level0upg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level1
+gfx/indicators/level1
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level1_d
+		map gfx/indicators/level1_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level1upg
+gfx/indicators/level1upg
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level1upg_d
+		map gfx/indicators/level1upg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level2
+gfx/indicators/level2
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level2_d
+		map gfx/indicators/level2_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level2upg
+gfx/indicators/level2upg
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level2upg_d
+		map gfx/indicators/level2upg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level3
+gfx/indicators/level3
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level3_d
+		map gfx/indicators/level3_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level3upg
+gfx/indicators/level3upg
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level3upg_d
+		map gfx/indicators/level3upg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/level4
+gfx/indicators/level4
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/level4_d
+		map gfx/indicators/level4_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/lgun
+gfx/indicators/lgun
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/lgun_d
+		map gfx/indicators/lgun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/mdriver
+gfx/indicators/mdriver
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/mdriver_d
+		map gfx/indicators/mdriver_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/prifle
+gfx/indicators/prifle
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/prifle_d
+		map gfx/indicators/prifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/psaw
+gfx/indicators/psaw
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/psaw_d
+		map gfx/indicators/psaw_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/rifle
+gfx/indicators/rifle
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/rifle_d
+		map gfx/indicators/rifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/indicators/shotgun
+gfx/indicators/shotgun
 {
 	nopicmip
 	{
-		map gfx/2d/indicators/shotgun_d
+		map gfx/indicators/shotgun_d
 		blendfunc blend
 		rgbGen vertex
 	}

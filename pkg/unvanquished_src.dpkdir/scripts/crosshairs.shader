@@ -3,111 +3,111 @@
 //   ----------
 //   shared crosshair for all classes
 
-gfx/2d/crosshairs/alien
+gfx/crosshairs/alien
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/alien_d
+		map gfx/crosshairs/alien_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/blaster
+gfx/crosshairs/blaster
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/blaster_d
+		map gfx/crosshairs/blaster_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/chaingun
+gfx/crosshairs/chaingun
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/chaingun_d
+		map gfx/crosshairs/chaingun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/flamer
+gfx/crosshairs/flamer
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/flamer_d
+		map gfx/crosshairs/flamer_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/lcannon
+gfx/crosshairs/lcannon
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/lcannon_d
+		map gfx/crosshairs/lcannon_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/lgun
+gfx/crosshairs/lgun
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/lgun_d
+		map gfx/crosshairs/lgun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/mdriver
+gfx/crosshairs/mdriver
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/mdriver_d
+		map gfx/crosshairs/mdriver_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/prifle
+gfx/crosshairs/prifle
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/prifle_d
+		map gfx/crosshairs/prifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/psaw
+gfx/crosshairs/psaw
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/psaw_d
+		map gfx/crosshairs/psaw_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/rifle
+gfx/crosshairs/rifle
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/rifle_d
+		map gfx/crosshairs/rifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/2d/crosshairs/shotgun
+gfx/crosshairs/shotgun
 {
 	nopicmip
 	{
-		map gfx/2d/crosshairs/shotgun_d
+		map gfx/crosshairs/shotgun_d
 		blendfunc blend
 		rgbGen vertex
 	}
