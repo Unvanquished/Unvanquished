@@ -969,8 +969,8 @@ static void CG_RegisterSounds()
 		                                        va( "sound/buildables/human/damage%d", i ), false );
 	}
 
-	cgs.media.hardBounceSound1 = trap_S_RegisterSound( "sound/misc/hard_bounce1", false );
-	cgs.media.hardBounceSound2 = trap_S_RegisterSound( "sound/misc/hard_bounce2", false );
+	cgs.media.grenadeBounceSound0 = trap_S_RegisterSound( "models/weapons/grenade/bounce0", false );
+	cgs.media.grenadeBounceSound1 = trap_S_RegisterSound( "models/weapons/grenade/bounce1", false );
 
 	cgs.media.repeaterUseSound = trap_S_RegisterSound( "sound/buildables/repeater/use", false );
 

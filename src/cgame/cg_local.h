@@ -1535,8 +1535,8 @@ typedef struct
 	sfxHandle_t fallSound;
 	sfxHandle_t turretSpinupSound;
 
-	sfxHandle_t hardBounceSound1;
-	sfxHandle_t hardBounceSound2;
+	sfxHandle_t grenadeBounceSound0;
+	sfxHandle_t grenadeBounceSound1;
 
 	sfxHandle_t watrInSound;
 	sfxHandle_t watrOutSound;
