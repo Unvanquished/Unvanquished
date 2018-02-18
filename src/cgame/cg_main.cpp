@@ -1107,7 +1107,7 @@ static void CG_RegisterGraphics()
 	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer",
 						       (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.backTileShader = trap_R_RegisterShader("console",
+	cgs.media.backTileShader = trap_R_RegisterShader("gfx/colors/backtile",
 							 (RegisterShaderFlags_t) RSF_DEFAULT);
 
 	// building shaders
@@ -1190,7 +1190,7 @@ static void CG_RegisterGraphics()
 	cgs.media.sphericalCone64Model = trap_R_RegisterModel( "models/generic/sphericalCone64.md3" );
 	cgs.media.sphericalCone240Model = trap_R_RegisterModel( "models/generic/sphericalCone240.md3" );
 
-	cgs.media.plainColorShader = trap_R_RegisterShader("gfx/plainColor",
+	cgs.media.plainColorShader = trap_R_RegisterShader("gfx/colors/plain",
 							   (RegisterShaderFlags_t) RSF_DEFAULT);
 	cgs.media.binaryAlpha1Shader = trap_R_RegisterShader("gfx/binary/alpha1",
 							     (RegisterShaderFlags_t) RSF_DEFAULT);
@@ -1492,8 +1492,8 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 
 	// load a few needed things before we do any screen updates
 	trap_R_SetAltShaderTokens( "unpowered,destroyed,idle,idle2" );
-	cgs.media.whiteShader = trap_R_RegisterShader("white", (RegisterShaderFlags_t) RSF_DEFAULT);
-	cgs.media.outlineShader = trap_R_RegisterShader("outline",
+	cgs.media.whiteShader = trap_R_RegisterShader("gfx/colors/white", (RegisterShaderFlags_t) RSF_DEFAULT);
+	cgs.media.outlineShader = trap_R_RegisterShader("gfx/outline",
 							(RegisterShaderFlags_t) RSF_DEFAULT);
 
 	BG_InitAllowedGameElements();
