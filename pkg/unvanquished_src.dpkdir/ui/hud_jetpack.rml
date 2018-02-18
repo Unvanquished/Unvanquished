@@ -20,7 +20,7 @@ progressbar
 	margin-left: 5%;
 	width: 80%;
 	height: 15%;
-	image: /white;
+	image: /gfx/colors/white;
 	orientation: left;
 	z-index: -1;
 	color: #FF00FF84;

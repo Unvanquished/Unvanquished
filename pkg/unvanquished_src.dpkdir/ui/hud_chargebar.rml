@@ -20,7 +20,7 @@ progressbar
 {
 	width: 100%;
 	height: 100%;
-	image: /white;
+	image: /gfx/colors/white;
 	orientation: left;
 	color: #aaffffff;
 }
