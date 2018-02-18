@@ -56,7 +56,7 @@
 			progressbar
 			{
 
-				image: /white;
+				image: /gfx/colors/white;
 				orientation: right;
 				z-index: -1;
 			}
