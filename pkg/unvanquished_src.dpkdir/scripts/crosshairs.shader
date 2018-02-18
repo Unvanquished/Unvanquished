@@ -3,111 +3,111 @@
 //   ----------
 //   shared crosshair for all classes
 
-gfx/crosshairs/alien
+gfx/feedback/crosshairs/alien
 {
 	nopicmip
 	{
-		map gfx/crosshairs/alien_d
+		map gfx/feedback/crosshairs/alien_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/blaster
+gfx/feedback/crosshairs/blaster
 {
 	nopicmip
 	{
-		map gfx/crosshairs/blaster_d
+		map gfx/feedback/crosshairs/blaster_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/chaingun
+gfx/feedback/crosshairs/chaingun
 {
 	nopicmip
 	{
-		map gfx/crosshairs/chaingun_d
+		map gfx/feedback/crosshairs/chaingun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/flamer
+gfx/feedback/crosshairs/flamer
 {
 	nopicmip
 	{
-		map gfx/crosshairs/flamer_d
+		map gfx/feedback/crosshairs/flamer_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/lcannon
+gfx/feedback/crosshairs/lcannon
 {
 	nopicmip
 	{
-		map gfx/crosshairs/lcannon_d
+		map gfx/feedback/crosshairs/lcannon_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/lgun
+gfx/feedback/crosshairs/lgun
 {
 	nopicmip
 	{
-		map gfx/crosshairs/lgun_d
+		map gfx/feedback/crosshairs/lgun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/mdriver
+gfx/feedback/crosshairs/mdriver
 {
 	nopicmip
 	{
-		map gfx/crosshairs/mdriver_d
+		map gfx/feedback/crosshairs/mdriver_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/prifle
+gfx/feedback/crosshairs/prifle
 {
 	nopicmip
 	{
-		map gfx/crosshairs/prifle_d
+		map gfx/feedback/crosshairs/prifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/psaw
+gfx/feedback/crosshairs/psaw
 {
 	nopicmip
 	{
-		map gfx/crosshairs/psaw_d
+		map gfx/feedback/crosshairs/psaw_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/rifle
+gfx/feedback/crosshairs/rifle
 {
 	nopicmip
 	{
-		map gfx/crosshairs/rifle_d
+		map gfx/feedback/crosshairs/rifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/crosshairs/shotgun
+gfx/feedback/crosshairs/shotgun
 {
 	nopicmip
 	{
-		map gfx/crosshairs/shotgun_d
+		map gfx/feedback/crosshairs/shotgun_d
 		blendfunc blend
 		rgbGen vertex
 	}

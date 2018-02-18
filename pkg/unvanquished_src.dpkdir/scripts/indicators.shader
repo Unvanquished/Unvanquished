@@ -2,211 +2,211 @@
 //   INDICATORS
 //   ----------
 
-gfx/indicators/alienBuilder
+gfx/feedback/indicators/alienBuilder
 {
 	nopicmip
 	{
-		map gfx/indicators/alienBuilder_d
+		map gfx/feedback/indicators/alienBuilder_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/alienBuilderUpg
+gfx/feedback/indicators/alienBuilderUpg
 {
 	nopicmip
 	{
-		map gfx/indicators/alienBuilderUpg_d
+		map gfx/feedback/indicators/alienBuilderUpg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/blaster
+gfx/feedback/indicators/blaster
 {
 	nopicmip
 	{
-		map gfx/indicators/blaster_d
+		map gfx/feedback/indicators/blaster_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/chaingun
+gfx/feedback/indicators/chaingun
 {
 	nopicmip
 	{
-		map gfx/indicators/chaingun_d
+		map gfx/feedback/indicators/chaingun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/flamer
+gfx/feedback/indicators/flamer
 {
 	nopicmip
 	{
-		map gfx/indicators/flamer_d
+		map gfx/feedback/indicators/flamer_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/lcannon
+gfx/feedback/indicators/lcannon
 {
 	nopicmip
 	{
-		map gfx/indicators/lcannon_d
+		map gfx/feedback/indicators/lcannon_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level0
+gfx/feedback/indicators/level0
 {
 	nopicmip
 	{
-		map gfx/indicators/level0_d
+		map gfx/feedback/indicators/level0_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level0upg
+gfx/feedback/indicators/level0upg
 {
 	nopicmip
 	{
-		map gfx/indicators/level0upg_d
+		map gfx/feedback/indicators/level0upg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level1
+gfx/feedback/indicators/level1
 {
 	nopicmip
 	{
-		map gfx/indicators/level1_d
+		map gfx/feedback/indicators/level1_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level1upg
+gfx/feedback/indicators/level1upg
 {
 	nopicmip
 	{
-		map gfx/indicators/level1upg_d
+		map gfx/feedback/indicators/level1upg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level2
+gfx/feedback/indicators/level2
 {
 	nopicmip
 	{
-		map gfx/indicators/level2_d
+		map gfx/feedback/indicators/level2_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level2upg
+gfx/feedback/indicators/level2upg
 {
 	nopicmip
 	{
-		map gfx/indicators/level2upg_d
+		map gfx/feedback/indicators/level2upg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level3
+gfx/feedback/indicators/level3
 {
 	nopicmip
 	{
-		map gfx/indicators/level3_d
+		map gfx/feedback/indicators/level3_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level3upg
+gfx/feedback/indicators/level3upg
 {
 	nopicmip
 	{
-		map gfx/indicators/level3upg_d
+		map gfx/feedback/indicators/level3upg_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/level4
+gfx/feedback/indicators/level4
 {
 	nopicmip
 	{
-		map gfx/indicators/level4_d
+		map gfx/feedback/indicators/level4_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/lgun
+gfx/feedback/indicators/lgun
 {
 	nopicmip
 	{
-		map gfx/indicators/lgun_d
+		map gfx/feedback/indicators/lgun_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/mdriver
+gfx/feedback/indicators/mdriver
 {
 	nopicmip
 	{
-		map gfx/indicators/mdriver_d
+		map gfx/feedback/indicators/mdriver_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/prifle
+gfx/feedback/indicators/prifle
 {
 	nopicmip
 	{
-		map gfx/indicators/prifle_d
+		map gfx/feedback/indicators/prifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/psaw
+gfx/feedback/indicators/psaw
 {
 	nopicmip
 	{
-		map gfx/indicators/psaw_d
+		map gfx/feedback/indicators/psaw_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/rifle
+gfx/feedback/indicators/rifle
 {
 	nopicmip
 	{
-		map gfx/indicators/rifle_d
+		map gfx/feedback/indicators/rifle_d
 		blendfunc blend
 		rgbGen vertex
 	}
 }
 
-gfx/indicators/shotgun
+gfx/feedback/indicators/shotgun
 {
 	nopicmip
 	{
-		map gfx/indicators/shotgun_d
+		map gfx/feedback/indicators/shotgun_d
 		blendfunc blend
 		rgbGen vertex
 	}
