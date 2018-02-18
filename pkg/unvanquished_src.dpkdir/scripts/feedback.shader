@@ -29,3 +29,33 @@ gfx/feedback/net
 		map gfx/feedback/net
 	}
 }
+
+// font for given damage on impact
+gfx/feedback/damage/font
+{
+	nopicmip
+	{
+		map gfx/feedback/damage/font
+		blendfunc blend
+		rgbGen vertex
+	}
+}
+
+// fullscreen vignetting effect when player is suffering
+gfx/feedback/painblend
+{
+	{
+		map gfx/feedback/painblend
+		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbGen vertex
+		alphaGen vertex
+		tcMod rotate 90
+	}
+	{
+		map gfx/feedback/painblend
+		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbGen vertex
+		alphaGen vertex
+		tcMod rotate -90
+	}
+}
