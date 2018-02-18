@@ -20,3 +20,12 @@ gfx/feedback/chatballoon
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 	}
 }
+
+// blinked on top of lagometer when connection is interrupted
+gfx/feedback/net
+{
+	nopicmip
+	{
+		map gfx/feedback/net
+	}
+}
