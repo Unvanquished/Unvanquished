@@ -1098,7 +1098,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				if ( !CG_IsTrailSystemValid( &source->muzzleTS ) )
 				{
-					source->muzzleTS = CG_SpawnNewTrailSystem( cgs.media.teslaZapTS );
+					source->muzzleTS = CG_SpawnNewTrailSystem( cgs.media.reactorZapTS );
 
 					if ( CG_IsTrailSystemValid( &source->muzzleTS ) )
 					{

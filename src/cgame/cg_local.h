@@ -1602,7 +1602,7 @@ typedef struct
 
 	qhandle_t   floorFirePS;
 
-	qhandle_t   teslaZapTS;
+	qhandle_t   reactorZapTS;
 
 	sfxHandle_t lCannonWarningSound;
 	sfxHandle_t lCannonWarningSound2;
