@@ -24,6 +24,6 @@ gfx/colors/backtile
 	nopicmip
 	nomipmaps
 	{
-		map gfx/colors/black
+		map $blackimage
 	}
 }

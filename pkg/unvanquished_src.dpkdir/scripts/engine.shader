@@ -14,7 +14,7 @@ console
 	nopicmip
 	nomipmaps
 	{
-		map gfx/colors/black
+		map $blackimage
 	}
 }
 
