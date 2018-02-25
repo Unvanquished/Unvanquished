@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // cg_tutorial.c -- the tutorial system
 
+#include "cg_key_name.h"
 #include "cg_local.h"
 
 typedef struct
@@ -67,18 +68,18 @@ static void CG_GetBindings( team_t team )
     std::vector<std::string> binds;
 
     for (unsigned i = 0; i < numBindings; i++) {
-		bindings[i].keys[0] = bindings[i].keys[1] = K_NONE;
+        bindings[i].keys[0] = bindings[i].keys[1] = K_NONE;
         binds.push_back(bindings[i].command);
     }
 
-    std::vector<std::vector<int>> keyNums = trap_Key_GetKeynumForBinds(team, binds);
+    std::vector<std::vector<Keyboard::Key>> keyNums = trap_Key_GetKeysForBinds(team, binds);
 
     for (unsigned i = 0; i < numBindings; i++) {
         if (keyNums[i].size() > 0) {
-            bindings[i].keys[0] = keyNums[i][0];
+            bindings[i].keys[0] = keyNums[i][0].AsLegacyInt();
         }
         if (keyNums[i].size() > 1) {
-            bindings[i].keys[1] = keyNums[i][1];
+            bindings[i].keys[1] = keyNums[i][1].AsLegacyInt();
         }
     }
 }
@@ -93,7 +94,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 	unsigned    i;
 	static char buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int  which = 1;
-	char        keyName[ 2 ][ 32 ];
+	std::string keyName[ 2 ];
 
 	which ^= 1;
 
@@ -105,19 +106,17 @@ static const char *CG_KeyNameForCommand( const char *command )
 		{
 			if ( bindings[ i ].keys[ 0 ] != K_NONE )
 			{
-				trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
-				                            keyName[ 0 ], sizeof( keyName[ 0 ] ) );
+				keyName[ 0 ] = Str::ToUpper( CG_KeyDisplayName( Keyboard::Key::FromLegacyInt( bindings[ i ].keys[ 0 ] ) ) );
 
 				if ( bindings[ i ].keys[ 1 ] != K_NONE )
 				{
-					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 1 ],
-					                            keyName[ 1 ], sizeof( keyName[ 1 ] ) );
+					keyName[ 1 ] = Str::ToUpper( CG_KeyDisplayName( Keyboard::Key::FromLegacyInt( bindings[ i ].keys[ 1 ] ) ) );
 					Q_snprintf( buffer[ which ], sizeof( buffer[ 0 ] ), _("%s or %s"),
-					            Q_strupr( keyName[ 0 ] ), Q_strupr( keyName[ 1 ] ) );
+					            keyName[ 0 ].c_str(), keyName[ 1 ].c_str() );
 				}
 				else
 				{
-					Q_strncpyz( buffer[ which ], Q_strupr( keyName[ 0 ] ), sizeof( buffer[ 0 ] ) );
+					Q_strncpyz( buffer[ which ], keyName[ 0 ].c_str(), sizeof( buffer[ 0 ] ) );
 				}
 			}
 			else

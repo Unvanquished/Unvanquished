@@ -135,11 +135,14 @@ void CG_MousePosEvent( int x, int y )
 	}
 }
 
-void CG_KeyEvent( int key, bool down )
+void CG_KeyEvent( Keyboard::Key key, bool down )
 {
 	if ( rocketInfo.keyCatcher & KEYCATCH_UI )
 	{
-		Rocket_ProcessKeyInput( key, down);
+		int keynum = key.AsLegacyInt();
+		if ( keynum > 0 ) {
+			Rocket_ProcessKeyInput( keynum, down );
+		}
 	}
 	else if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&

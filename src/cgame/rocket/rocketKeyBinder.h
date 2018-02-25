@@ -166,11 +166,11 @@ protected:
 			return;
 		}
 
-		trap_Key_SetBinding( newKey, team, cmd.CString() );
+		trap_Key_SetBinding( Keyboard::Key::FromLegacyInt( newKey ), team, cmd.CString() );
 
 		if ( key > 0 )
 		{
-			trap_Key_SetBinding( key, team, "" );
+			trap_Key_SetBinding( Keyboard::Key::FromLegacyInt( key ), team, "" );
 		}
 
 		key = newKey;
