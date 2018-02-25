@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <memory>
 #include <vector>
 
+#include "common/KeyIdentification.h"
 #include "engine/qcommon/q_shared.h"
 #include "engine/renderer/tr_types.h"
 #include "engine/client/cg_api.h"
@@ -1977,7 +1978,7 @@ void       CG_UpdateCvars();
 
 int        CG_CrosshairPlayer();
 void       CG_LoadMenus( const char *menuFile );
-void       CG_KeyEvent( int key, bool down );
+void       CG_KeyEvent( Keyboard::Key key, bool down );
 void       CG_MouseEvent( int dx, int dy );
 void       CG_MousePosEvent( int x, int y );
 void       CG_FocusEvent( bool focus );
@@ -2425,7 +2426,7 @@ void Rocket_ClearHud( unsigned weapon );
 void Rocket_InitKeys();
 keyNum_t Rocket_ToQuake( int key );
 void Rocket_ProcessKeyInput( int key, bool down );
-void Rocket_ProcessTextInput( int key );
+void Rocket_ProcessTextInput( int c );
 void Rocket_MouseMove( int x, int y );
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs );
 void Rocket_ShowScoreboard( const char *name, bool show );

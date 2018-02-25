@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "rocket.h"
+#include "../cg_key_name.h"
 #include "../cg_local.h"
 #include "engine/qcommon/q_unicode.h"
 
@@ -111,7 +112,7 @@ void Rocket_InitKeys()
 	keyMap[ K_HELP ] = KI_HELP;
 	keyMap[ K_PRINT ] = KI_PRINT;
 // 	keyMap[ K_SYSREQ ] = KI_SYSREQ;
-	keyMap[ K_SCROLLOCK ] = KI_SCROLL;
+	keyMap[ K_SCROLLLOCK ] = KI_SCROLL;
 // 	keyMap[ K_BREAK ] = KI_BREAK;
 	keyMap[ K_MENU ] = KI_APPS;
 // 	keyMap[ K_EURO ] = KI_EURO;
@@ -188,10 +189,11 @@ keyNum_t Rocket_ToQuake( int key )
 
 KeyModifier Rocket_GetKeyModifiers()
 {
+	using Keyboard::Key;
 	int mod = 0;
-	static const std::vector<int> keys = { K_CTRL, K_SHIFT, K_ALT, K_SUPER, K_CAPSLOCK, K_KP_NUMLOCK };
+	static const std::vector<Key> keys = { Key(K_CTRL), Key(K_SHIFT), Key(K_ALT), Key(K_SUPER), Key(K_CAPSLOCK), Key(K_KP_NUMLOCK) };
 	static const int quakeToRocketKeyModifier[] = { KM_CTRL, KM_SHIFT, KM_ALT, KM_META, KM_CAPSLOCK, KM_NUMLOCK };
-	std::vector<int> list = trap_Key_KeysDown( keys );
+	std::vector<bool> list = trap_Key_KeysDown( keys );
 
 	for (unsigned i = 0; i < keys.size(); ++i)
 	{
@@ -318,7 +320,7 @@ int utf8_to_ucs2( const unsigned char *input )
 }
 
 
-void Rocket_ProcessTextInput( int key )
+void Rocket_ProcessTextInput( int c )
 {
 	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
@@ -328,7 +330,7 @@ void Rocket_ProcessTextInput( int key )
 	//
 	// ignore any non printable chars
 	//
-	const char *s =  Q_UTF8_Unstore( key );
+	const char *s = Q_UTF8_Encode ( c );
 	if ( ( unsigned char )*s < 32 || ( unsigned char )*s == 0x7f )
 	{
 		return;
@@ -354,27 +356,21 @@ CG_KeyBinding
 */
 Rocket::Core::String CG_KeyBinding( const char* bind, int team )
 {
-	static char keyBuf[ 32 ];
-	Rocket::Core::String key;
-	keyBuf[ 0 ] = '\0';
-	std::vector<std::vector<int>> keyNums = trap_Key_GetKeynumForBinds( team, {bind} );
+	std::vector<Keyboard::Key> keyNums = trap_Key_GetKeysForBinds( team, {bind} )[0];
 
-	if ( keyNums[0].size() == 0 )
+	if ( keyNums.size() == 0 )
 	{
 		return "Unbound";
 	}
 
-	trap_Key_KeynumToStringBuf( keyNums[0][0], keyBuf, sizeof( keyBuf ) );
-	key = keyBuf;
+	Rocket::Core::String keyNames = CG_KeyDisplayName( keyNums[0] ).c_str();
 
-	if ( keyNums[0].size() > 1 )
+	if ( keyNums.size() > 1 )
 	{
-		keyBuf[ 0 ] = '\0';
-		trap_Key_KeynumToStringBuf( keyNums[0][1], keyBuf, sizeof( keyBuf ) );
-		key += " or ";
-		key += keyBuf;
+		keyNames += " or ";
+		keyNames += CG_KeyDisplayName( keyNums[1] ).c_str();
 	}
 
-	return key;
+	return keyNames;
 }
 
