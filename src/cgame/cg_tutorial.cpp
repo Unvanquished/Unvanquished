@@ -28,32 +28,33 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_key_name.h"
 #include "cg_local.h"
 
-typedef struct
-{
+namespace {
+struct bind_t {
 	const char *command;
 	const char *humanName;
-	int keys[ 2 ];
-} bind_t;
+	std::vector<Keyboard::Key> keys;
+};
+} // namespace
 
 static bind_t bindings[] =
 {
-	{ "+useitem",       N_( "Activate Upgrade" ),                      { -1, -1 } },
-	{ "+speed",         N_( "Run/Walk" ),                              { -1, -1 } },
-	{ "+sprint",        N_( "Sprint" ),                                { -1, -1 } },
-	{ "+moveup",        N_( "Jump" ),                                  { -1, -1 } },
-	{ "+movedown",      N_( "Crouch" ),                                { -1, -1 } },
-	{ "+attack",        N_( "Primary Attack" ),                        { -1, -1 } },
-	{ "+attack2",       N_( "Secondary Attack" ),                      { -1, -1 } },
-	{ "reload",         N_( "Reload" ),                                { -1, -1 } },
-	{ "buy ammo",       N_( "Buy Ammo" ),                              { -1, -1 } },
-	{ "itemact medkit", N_( "Use Medkit" ),                            { -1, -1 } },
-	{ "+activate",      N_( "Use Structure/Evolve" ),                  { -1, -1 } },
+	{ "+useitem",       N_( "Activate Upgrade" ),                      {} },
+	{ "+speed",         N_( "Run/Walk" ),                              {} },
+	{ "+sprint",        N_( "Sprint" ),                                {} },
+	{ "+moveup",        N_( "Jump" ),                                  {} },
+	{ "+movedown",      N_( "Crouch" ),                                {} },
+	{ "+attack",        N_( "Primary Attack" ),                        {} },
+	{ "+attack2",       N_( "Secondary Attack" ),                      {} },
+	{ "reload",         N_( "Reload" ),                                {} },
+	{ "buy ammo",       N_( "Buy Ammo" ),                              {} },
+	{ "itemact medkit", N_( "Use Medkit" ),                            {} },
+	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
 	{ "modcase alt \"/deconstruct marked\" /deconstruct",
-                            N_( "Deconstruct Structure" ),                 { -1, -1 } },
-	{ "weapprev",       N_( "Previous Upgrade" ),                      { -1, -1 } },
-	{ "weapnext",       N_( "Next Upgrade" ),                          { -1, -1 } },
-	{ "toggleconsole",  N_( "Toggle Console" ),                        { -1, -1 } },
-	{ "itemact grenade", N_( "Throw a grenade" ),                      { -1, -1 } }
+	                    N_( "Deconstruct Structure" ),                 {} },
+	{ "weapprev",       N_( "Previous Upgrade" ),                      {} },
+	{ "weapnext",       N_( "Next Upgrade" ),                          {} },
+	{ "toggleconsole",  N_( "Toggle Console" ),                        {} },
+	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
 };
 
 static const size_t numBindings = ARRAY_LEN( bindings );
@@ -68,19 +69,13 @@ static void CG_GetBindings( team_t team )
     std::vector<std::string> binds;
 
     for (unsigned i = 0; i < numBindings; i++) {
-        bindings[i].keys[0] = bindings[i].keys[1] = K_NONE;
         binds.push_back(bindings[i].command);
     }
 
-    std::vector<std::vector<Keyboard::Key>> keyNums = trap_Key_GetKeysForBinds(team, binds);
+    std::vector<std::vector<Keyboard::Key>> keys = trap_Key_GetKeysForBinds(team, binds);
 
     for (unsigned i = 0; i < numBindings; i++) {
-        if (keyNums[i].size() > 0) {
-            bindings[i].keys[0] = keyNums[i][0].AsLegacyInt();
-        }
-        if (keyNums[i].size() > 1) {
-            bindings[i].keys[1] = keyNums[i][1].AsLegacyInt();
-        }
+        bindings[i].keys = keys[i];
     }
 }
 
@@ -104,20 +99,16 @@ static const char *CG_KeyNameForCommand( const char *command )
 	{
 		if ( !Q_stricmp( command, bindings[ i ].command ) )
 		{
-			if ( bindings[ i ].keys[ 0 ] != K_NONE )
+			if ( !bindings[ i ].keys.empty() )
 			{
-				keyName[ 0 ] = Str::ToUpper( CG_KeyDisplayName( Keyboard::Key::FromLegacyInt( bindings[ i ].keys[ 0 ] ) ) );
+				std::string keyNames = CG_KeyDisplayName( bindings[ i ].keys[ 0 ] );
 
-				if ( bindings[ i ].keys[ 1 ] != K_NONE )
+				for ( size_t j = 1; j < bindings[ i ].keys.size(); j++ )
 				{
-					keyName[ 1 ] = Str::ToUpper( CG_KeyDisplayName( Keyboard::Key::FromLegacyInt( bindings[ i ].keys[ 1 ] ) ) );
-					Q_snprintf( buffer[ which ], sizeof( buffer[ 0 ] ), _("%s or %s"),
-					            keyName[ 0 ].c_str(), keyName[ 1 ].c_str() );
+					keyNames += _(" or ");
+					keyNames += CG_KeyDisplayName( bindings[ i ].keys[ j ] );
 				}
-				else
-				{
-					Q_strncpyz( buffer[ which ], keyName[ 0 ].c_str(), sizeof( buffer[ 0 ] ) );
-				}
+				Q_strncpyz( buffer[ which ], keyNames.c_str(), sizeof( buffer[ which ] ) );
 			}
 			else
 			{
