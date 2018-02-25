@@ -139,10 +139,7 @@ void CG_KeyEvent( Keyboard::Key key, bool down )
 {
 	if ( rocketInfo.keyCatcher & KEYCATCH_UI )
 	{
-		int keynum = key.AsLegacyInt();
-		if ( keynum > 0 ) {
-			Rocket_ProcessKeyInput( keynum, down );
-		}
+		Rocket_ProcessKeyInput( key, down );
 	}
 	else if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
 	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
