@@ -279,40 +279,6 @@ void Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 	}
 }
 
-int utf8_to_ucs2( const unsigned char *input )
-{
-	if ( input[0] == 0 )
-		return -1;
-
-	if ( input[0] < 0x80 )
-	{
-		return input[0];
-	}
-
-	if ( ( input[0] & 0xE0 ) == 0xE0 )
-	{
-		if ( input[1] == 0 || input[2] == 0 )
-			return -1;
-
-		return
-		    ( input[0] & 0x0F ) << 12 |
-		    ( input[1] & 0x3F ) << 6  |
-		    ( input[2] & 0x3F );
-	}
-
-	if ( ( input[0] & 0xC0 ) == 0xC0 )
-	{
-		if ( input[1] == 0 )
-			return -1;
-
-		return
-		    ( input[0] & 0x1F ) << 6  |
-		    ( input[1] & 0x3F );
-	}
-
-	return -1;
-}
-
 
 void Rocket_ProcessTextInput( int c )
 {
@@ -322,15 +288,14 @@ void Rocket_ProcessTextInput( int c )
 	}
 
 	//
-	// ignore any non printable chars
+	// ignore any non printable chars, or ones not representable in UCS-2
 	//
-	const char *s = Q_UTF8_Encode ( c );
-	if ( ( unsigned char )*s < 32 || ( unsigned char )*s == 0x7f )
+	if ( c < 32 || c == 0x7f || c > 0xFFFF )
 	{
 		return;
 	}
 
-	menuContext->ProcessTextInput( utf8_to_ucs2( ( unsigned char* )s ) );
+	menuContext->ProcessTextInput( c );
 }
 
 void Rocket_MouseMove( int x, int y )
