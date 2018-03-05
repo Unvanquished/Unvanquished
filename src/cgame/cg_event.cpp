@@ -1045,11 +1045,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_GRENADE_BOUNCE:
 			if ( rand() & 1 )
 			{
-				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.hardBounceSound1 );
+				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.grenadeBounceSound0 );
 			}
 			else
 			{
-				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.hardBounceSound2 );
+				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.grenadeBounceSound1 );
 			}
 			break;
 
@@ -1098,7 +1098,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				if ( !CG_IsTrailSystemValid( &source->muzzleTS ) )
 				{
-					source->muzzleTS = CG_SpawnNewTrailSystem( cgs.media.teslaZapTS );
+					source->muzzleTS = CG_SpawnNewTrailSystem( cgs.media.reactorZapTS );
 
 					if ( CG_IsTrailSystemValid( &source->muzzleTS ) )
 					{

@@ -1482,7 +1482,6 @@ typedef struct
 
 typedef struct
 {
-	qhandle_t charsetShader;
 	qhandle_t whiteShader;
 	qhandle_t outlineShader;
 
@@ -1502,8 +1501,6 @@ typedef struct
 	qhandle_t scannerBlipShader;
 	qhandle_t scannerBlipBldgShader;
 	qhandle_t scannerLineShader;
-
-	qhandle_t teamOverlayShader;
 
 	qhandle_t numberShaders[ 11 ];
 
@@ -1538,8 +1535,8 @@ typedef struct
 	sfxHandle_t fallSound;
 	sfxHandle_t turretSpinupSound;
 
-	sfxHandle_t hardBounceSound1;
-	sfxHandle_t hardBounceSound2;
+	sfxHandle_t grenadeBounceSound0;
+	sfxHandle_t grenadeBounceSound1;
 
 	sfxHandle_t watrInSound;
 	sfxHandle_t watrOutSound;
@@ -1605,7 +1602,7 @@ typedef struct
 
 	qhandle_t   floorFirePS;
 
-	qhandle_t   teslaZapTS;
+	qhandle_t   reactorZapTS;
 
 	sfxHandle_t lCannonWarningSound;
 	sfxHandle_t lCannonWarningSound2;

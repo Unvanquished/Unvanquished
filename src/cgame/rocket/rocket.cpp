@@ -381,7 +381,7 @@ void Rocket_Init()
 	Rocket::Core::Factory::RegisterElementInstancer( "include", new Rocket::Core::ElementInstancerGeneric< RocketIncludeElement > () )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "inlinecvar", new Rocket::Core::ElementInstancerGeneric< RocketCvarInlineElement > () )->RemoveReference();
 
-	whiteShader = trap_R_RegisterShader( "white", RSF_DEFAULT );
+	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_DEFAULT );
 }
 
 void Rocket_Shutdown()

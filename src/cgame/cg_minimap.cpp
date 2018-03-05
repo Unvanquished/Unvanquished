@@ -649,8 +649,8 @@ void CG_InitMinimap()
         Log::Warn("the minimap did not define any zone." );
     }
 
-    m->gfx.playerArrow = trap_R_RegisterShader( "gfx/2d/player-arrow", RSF_DEFAULT );
-    m->gfx.teamArrow = trap_R_RegisterShader( "gfx/2d/team-arrow", RSF_DEFAULT );
+    m->gfx.playerArrow = trap_R_RegisterShader( "gfx/feedback/minimap/player-arrow", RSF_DEFAULT );
+    m->gfx.teamArrow = trap_R_RegisterShader( "gfx/feedback/minimap/team-arrow", RSF_DEFAULT );
 
     CG_UpdateMinimapActive( m );
 }
