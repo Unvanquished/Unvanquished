@@ -95,7 +95,7 @@ public:
 
 	void OnUpdate()
 	{
-		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 )
+		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.Empty() )
 		{
 			nextKeyUpdateTime = rocketInfo.realtime + KEY_BINDING_REFRESH_INTERVAL_MS;
 			SetInnerRML( CG_KeyBinding( cmd.CString(), team ) );
@@ -183,7 +183,7 @@ protected:
 	int GetTeam( Rocket::Core::String team )
 	{
 		static const struct {
-			char team;
+			int team;
 			Rocket::Core::String label;
 		} labels[] = {
 			{ 3, "spectators" },
@@ -191,13 +191,12 @@ protected:
 			{ 1, "aliens" },
 			{ 2, "humans" }
 		};
-		static const int NUM_LABELS = 4;
 
-		for ( int i = 0; i < NUM_LABELS; ++i )
+		for ( const auto& teamLabel : labels )
 		{
-			if ( team == labels[i].label )
+			if ( team == teamLabel.label )
 			{
-				return labels[ i ].team;
+				return teamLabel.team;
 			}
 		}
 
