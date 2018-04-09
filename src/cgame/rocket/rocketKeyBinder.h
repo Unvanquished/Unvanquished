@@ -43,10 +43,13 @@ Maryland 20850 USA.
 static const Rocket::Core::String BINDABLE_KEY_EVENT = "bindableKey";
 static const Rocket::Core::String BINDABLE_KEY_KEY = "bkey";
 
+// The displayed bindings are refreshed periodically since they can also change due to a layout change or /bind command.
+constexpr int KEY_BINDING_REFRESH_INTERVAL_MS = 500;
+
 class RocketKeyBinder : public Rocket::Core::Element, public Rocket::Core::EventListener
 {
 public:
-	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_key( false ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
+	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
 	{
 	}
 
@@ -56,13 +59,13 @@ public:
 		if ( changed_attributes.find( "cmd" ) != changed_attributes.end() )
 		{
 			cmd = GetAttribute( "cmd" )->Get<Rocket::Core::String>();
-			dirty_key = true;
+			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 
 		if ( changed_attributes.find( "team" ) != changed_attributes.end() )
 		{
 			team = GetTeam( GetAttribute( "team" )->Get<Rocket::Core::String>().CString() );
-			dirty_key = true;
+			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 	}
 
@@ -92,9 +95,9 @@ public:
 
 	void OnUpdate()
 	{
-		if ( dirty_key && team >= 0 )
+		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 )
 		{
-			dirty_key = false;
+			nextKeyUpdateTime = rocketInfo.realtime + KEY_BINDING_REFRESH_INTERVAL_MS;
 			SetInnerRML( CG_KeyBinding( cmd.CString(), team ) );
 		}
 	}
@@ -155,7 +158,7 @@ public:
 protected:
 	void CancelSelection() {
 		waitingForKeypress = false;
-		dirty_key = true;
+		nextKeyUpdateTime = rocketInfo.realtime;
 	}
 
 	void BindKey( Keyboard::Key newKey )
@@ -173,7 +176,7 @@ protected:
 		}
 		trap_Key_SetBinding( newKey , team, cmd.CString() );
 
-		dirty_key = true;
+		nextKeyUpdateTime = rocketInfo.realtime;
 		waitingForKeypress = false;
 	}
 
@@ -203,7 +206,7 @@ protected:
 	}
 
 private:
-	bool dirty_key;
+	int nextKeyUpdateTime;
 	bool waitingForKeypress;
 	int team;
 
