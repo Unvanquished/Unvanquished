@@ -36,6 +36,9 @@ struct bind_t {
 };
 } // namespace
 
+// toggleconsole's name is inaccurate: you can only *open* the console with it!
+static const char* const OPEN_CONSOLE_CMD = "toggleconsole";
+
 static bind_t bindings[] =
 {
 	{ "+useitem",       N_( "Activate Upgrade" ),                      {} },
@@ -53,7 +56,7 @@ static bind_t bindings[] =
 	                    N_( "Deconstruct Structure" ),                 {} },
 	{ "weapprev",       N_( "Previous Upgrade" ),                      {} },
 	{ "weapnext",       N_( "Next Upgrade" ),                          {} },
-	{ "toggleconsole",  N_( "Toggle Console" ),                        {} },
+	{ OPEN_CONSOLE_CMD, N_( "Toggle Console" ),                        {} },
 	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
 };
 
@@ -86,36 +89,37 @@ CG_KeyNameForCommand
 */
 static const char *CG_KeyNameForCommand( const char *command )
 {
-	unsigned    i;
 	static char buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int  which = 1;
-	std::string keyName[ 2 ];
 
 	which ^= 1;
 
-	buffer[ which ][ 0 ] = '\0';
-
-	for ( i = 0; i < numBindings; i++ )
+	for ( const auto& binding : bindings )
 	{
-		if ( !Q_stricmp( command, bindings[ i ].command ) )
+		if ( !Q_stricmp( command, binding.command ) )
 		{
-			if ( !bindings[ i ].keys.empty() )
+			std::string keyNames;
+			if ( binding.command == OPEN_CONSOLE_CMD )
 			{
-				std::string keyNames = CG_KeyDisplayName( bindings[ i ].keys[ 0 ] );
+				// Hard-coded console toggle key binding
+				keyNames = "Shift-Escape";
+				// cl_consoleKeys is yet another source of keys for toggling the console,
+				// but it is omitted out of laziness.
+			}
 
-				for ( size_t j = 1; j < bindings[ i ].keys.size(); j++ )
+			for ( Keyboard::Key key : binding.keys )
+			{
+				if ( !keyNames.empty() )
 				{
 					keyNames += _(" or ");
-					keyNames += CG_KeyDisplayName( bindings[ i ].keys[ j ] );
 				}
-				Q_strncpyz( buffer[ which ], keyNames.c_str(), sizeof( buffer[ which ] ) );
+				keyNames += CG_KeyDisplayName( key );
 			}
-			else
+			if ( keyNames.empty() )
 			{
-				Com_sprintf( buffer[ which ], MAX_STRING_CHARS, _( "\"%s\" (unbound)" ),
-				             _( bindings[ i ].humanName ) );
+				keyNames = Str::Format( _( "\"%s\" (unbound)" ), _( binding.humanName ) );
 			}
-
+			Q_strncpyz( buffer[ which ], keyNames.c_str(), sizeof( buffer[ which ] ) );
 			return buffer[ which ];
 		}
 	}
@@ -651,7 +655,7 @@ const char *CG_TutorialText()
 	if ( !cg.demoPlayback )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console\n" ), CG_KeyNameForCommand( "toggleconsole" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, _( "Press ESC for the menu" ) );
+		Q_strcat( text, MAX_TUTORIAL_TEXT, _( "Press ESCAPE for the menu" ) );
 	}
 
 	return text;
