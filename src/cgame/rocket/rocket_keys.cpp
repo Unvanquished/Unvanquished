@@ -33,6 +33,8 @@ Maryland 20850 USA.
 */
 
 #include "rocket.h"
+#include "rocketKeyBinder.h"
+#include "../cg_key_name.h"
 #include "../cg_local.h"
 #include "engine/qcommon/q_unicode.h"
 
@@ -111,7 +113,7 @@ void Rocket_InitKeys()
 	keyMap[ K_HELP ] = KI_HELP;
 	keyMap[ K_PRINT ] = KI_PRINT;
 // 	keyMap[ K_SYSREQ ] = KI_SYSREQ;
-	keyMap[ K_SCROLLOCK ] = KI_SCROLL;
+	keyMap[ K_SCROLLLOCK ] = KI_SCROLL;
 // 	keyMap[ K_BREAK ] = KI_BREAK;
 	keyMap[ K_MENU ] = KI_APPS;
 // 	keyMap[ K_EURO ] = KI_EURO;
@@ -162,36 +164,16 @@ KeyIdentifier Rocket_FromQuake( int key )
 		return static_cast< KeyIdentifier >( it->second );
 	}
 
-	Log::Warn( "Rocket_FromQuake: Could not find keynum %d", key );
 	return KI_UNKNOWN;
-}
-
-keyNum_t Rocket_ToQuake( int key )
-{
-	if ( !init )
-	{
-		Log::Warn( "Tried to convert keyMap before key array initialized." );
-		return K_NONE;
-	}
-
-	for ( auto it = keyMap.begin(); it != keyMap.end(); ++it )
-	{
-		if ( it->second == key )
-		{
-			return static_cast< keyNum_t>( it->first );
-		}
-	}
-
-	Log::Warn( "Rocket_ToQuake: Could not find keynum %d", key );
-	return K_NONE;
 }
 
 KeyModifier Rocket_GetKeyModifiers()
 {
+	using Keyboard::Key;
 	int mod = 0;
-	static const std::vector<int> keys = { K_CTRL, K_SHIFT, K_ALT, K_SUPER, K_CAPSLOCK, K_KP_NUMLOCK };
+	static const std::vector<Key> keys = { Key(K_CTRL), Key(K_SHIFT), Key(K_ALT), Key(K_SUPER), Key(K_CAPSLOCK), Key(K_KP_NUMLOCK) };
 	static const int quakeToRocketKeyModifier[] = { KM_CTRL, KM_SHIFT, KM_ALT, KM_META, KM_CAPSLOCK, KM_NUMLOCK };
-	std::vector<int> list = trap_Key_KeysDown( keys );
+	std::vector<bool> list = trap_Key_KeysDown( keys );
 
 	for (unsigned i = 0; i < keys.size(); ++i)
 	{
@@ -247,21 +229,22 @@ void Rocket_ProcessMouseClick( int button, bool down )
 }
 
 #define MOUSEWHEEL_DELTA 5
-void Rocket_ProcessKeyInput( int key, bool down )
+void Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 {
 	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;
 	}
 
+	keyNum_t keynum = key.AsKeynum();
 	// Our input system sends mouse events as key presses.
-	if ( ( key >= K_MOUSE1 && key <= K_MOUSE5 ) || ( key >= K_AUX1 && key <= K_AUX16 ) )
+	if ( ( keynum >= K_MOUSE1 && keynum <= K_MOUSE5 ) || ( keynum >= K_AUX1 && keynum <= K_AUX16 ) )
 	{
-		Rocket_ProcessMouseClick( key, down );
+		Rocket_ProcessMouseClick( keynum, down );
 		return;
 	}
 
-	if ( ( key == K_MWHEELDOWN || key == K_MWHEELUP ) )
+	if ( ( keynum == K_MWHEELDOWN || keynum == K_MWHEELUP ) )
 	{
 		// Our input system sends an up event right after a down event
 		// We only want to catch one of these.
@@ -270,55 +253,34 @@ void Rocket_ProcessKeyInput( int key, bool down )
 			return;
 		}
 
-		menuContext->ProcessMouseWheel( key == K_MWHEELDOWN ? MOUSEWHEEL_DELTA : -MOUSEWHEEL_DELTA, Rocket_GetKeyModifiers() );
+		menuContext->ProcessMouseWheel( keynum == K_MWHEELDOWN ? MOUSEWHEEL_DELTA : -MOUSEWHEEL_DELTA, Rocket_GetKeyModifiers() );
 		return;
 	}
+	KeyIdentifier rocketKey = Rocket_FromQuake( key.AsLegacyInt() );
 	if ( down )
 	{
-		menuContext->ProcessKeyDown( Rocket_FromQuake( key ), Rocket_GetKeyModifiers() );
+		if (rocketKey != KI_UNKNOWN) {
+			menuContext->ProcessKeyDown( rocketKey, Rocket_GetKeyModifiers() );
+		}
+		Rocket::Core::Element* focus = menuContext->GetFocusElement();
+		if ( focus != nullptr ) {
+			Rocket::Core::Dictionary dict;
+			dict.Set( BINDABLE_KEY_KEY, key.PackIntoInt() );
+			// Send after the rocket key event so that if Escape is pressed,
+			// it will cancel the binding and not bind Escape.
+			focus->DispatchEvent( BINDABLE_KEY_EVENT, dict );
+		}
 	}
 	else
 	{
-		menuContext->ProcessKeyUp( Rocket_FromQuake( key ), Rocket_GetKeyModifiers() );
+		if (rocketKey != KI_UNKNOWN) {
+			menuContext->ProcessKeyUp( rocketKey, Rocket_GetKeyModifiers() );
+		}
 	}
 }
 
-int utf8_to_ucs2( const unsigned char *input )
-{
-	if ( input[0] == 0 )
-		return -1;
 
-	if ( input[0] < 0x80 )
-	{
-		return input[0];
-	}
-
-	if ( ( input[0] & 0xE0 ) == 0xE0 )
-	{
-		if ( input[1] == 0 || input[2] == 0 )
-			return -1;
-
-		return
-		    ( input[0] & 0x0F ) << 12 |
-		    ( input[1] & 0x3F ) << 6  |
-		    ( input[2] & 0x3F );
-	}
-
-	if ( ( input[0] & 0xC0 ) == 0xC0 )
-	{
-		if ( input[1] == 0 )
-			return -1;
-
-		return
-		    ( input[0] & 0x1F ) << 6  |
-		    ( input[1] & 0x3F );
-	}
-
-	return -1;
-}
-
-
-void Rocket_ProcessTextInput( int key )
+void Rocket_ProcessTextInput( int c )
 {
 	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
@@ -326,15 +288,14 @@ void Rocket_ProcessTextInput( int key )
 	}
 
 	//
-	// ignore any non printable chars
+	// ignore any non printable chars, or ones not representable in UCS-2
 	//
-	const char *s =  Q_UTF8_Unstore( key );
-	if ( ( unsigned char )*s < 32 || ( unsigned char )*s == 0x7f )
+	if ( c < 32 || c == 0x7f || c > 0xFFFF )
 	{
 		return;
 	}
 
-	menuContext->ProcessTextInput( utf8_to_ucs2( ( unsigned char* )s ) );
+	menuContext->ProcessTextInput( c );
 }
 
 void Rocket_MouseMove( int x, int y )
@@ -354,27 +315,20 @@ CG_KeyBinding
 */
 Rocket::Core::String CG_KeyBinding( const char* bind, int team )
 {
-	static char keyBuf[ 32 ];
-	Rocket::Core::String key;
-	keyBuf[ 0 ] = '\0';
-	std::vector<std::vector<int>> keyNums = trap_Key_GetKeynumForBinds( team, {bind} );
+	std::vector<Keyboard::Key> keys = trap_Key_GetKeysForBinds( team, {bind} )[0];
 
-	if ( keyNums[0].size() == 0 )
+	if ( keys.empty() )
 	{
 		return "Unbound";
 	}
 
-	trap_Key_KeynumToStringBuf( keyNums[0][0], keyBuf, sizeof( keyBuf ) );
-	key = keyBuf;
+	Rocket::Core::String keyNames = CG_KeyDisplayName( keys[0] ).c_str();
 
-	if ( keyNums[0].size() > 1 )
+	for ( size_t i = 1; i < keys.size(); i++ )
 	{
-		keyBuf[ 0 ] = '\0';
-		trap_Key_KeynumToStringBuf( keyNums[0][1], keyBuf, sizeof( keyBuf ) );
-		key += " or ";
-		key += keyBuf;
+		keyNames += " or ";
+		keyNames += CG_KeyDisplayName( keys[i] ).c_str();
 	}
 
-	return key;
+	return keyNames;
 }
-

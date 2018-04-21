@@ -101,7 +101,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
             case CG_KEY_EVENT:
-                IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (int key, bool down) {
+                IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (Keyboard::Key key, bool down) {
                     CG_KeyEvent(key, down);
                     cmdBuffer.TryFlush();
                 });
@@ -121,8 +121,8 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 				});
 				break;
 
-			case CG_TEXT_INPUT_EVENT:
-				IPC::HandleMsg<CGameTextInptEvent>(VM::rootChannel, std::move(reader), [] (int c) {
+			case CG_CHARACTER_INPUT_EVENT:
+				IPC::HandleMsg<CGameCharacterInputMsg>(VM::rootChannel, std::move(reader), [] (int c) {
 					Rocket_ProcessTextInput(c);
 					cmdBuffer.TryFlush();
 				});
