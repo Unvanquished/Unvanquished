@@ -1678,7 +1678,7 @@ typedef struct
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 
-	// TODO: Remove those two.
+	// TODO: Remove this one.
 	int      powerReactorRange;
 
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
