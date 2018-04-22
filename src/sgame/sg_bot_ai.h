@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define __BOT_AI_HEADER
 
 // integer constants given to the behavior tree to use as parameters
-// values E_A_SPAWN to E_H_REPEATER are meant to have the same
+// values E_A_SPAWN to E_H_REACTOR are meant to have the same
 // integer values as the corresponding enum in buildable_t
 // TODO: get rid of dependence on buildable_t
 typedef enum
@@ -49,7 +49,6 @@ typedef enum
 	E_H_MEDISTAT,
 	E_H_DRILL,
 	E_H_REACTOR,
-	E_H_REPEATER,
 	E_NUM_BUILDABLES,
 	E_GOAL = E_NUM_BUILDABLES,
 	E_ENEMY,
@@ -57,7 +56,7 @@ typedef enum
 	E_SELF
 } AIEntity_t;
 
-// all behavior tree nodes must return one of 
+// all behavior tree nodes must return one of
 // these status when finished
 typedef enum
 {
@@ -167,7 +166,7 @@ typedef struct
 	AIOpType_t  opType;
 } AIOp_t;
 
-typedef struct 
+typedef struct
 {
 	AIExpType_t expType;
 	AIOpType_t  opType;

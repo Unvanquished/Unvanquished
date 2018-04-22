@@ -1578,7 +1578,7 @@ typedef struct
 	qhandle_t   jetpackModel;
 	qhandle_t   radarModel;
 
-	sfxHandle_t repeaterUseSound;
+	sfxHandle_t itemFillSound;
 
 	sfxHandle_t buildableRepairSound;
 	sfxHandle_t buildableRepairedSound;
@@ -1679,9 +1679,8 @@ typedef struct
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 
-	// TODO: Remove those two.
+	// TODO: Remove this one.
 	int      powerReactorRange;
-	int      powerRepeaterRange;
 
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
 	float    unlockableMinTime;  // used for momentum bar (un)lock markers

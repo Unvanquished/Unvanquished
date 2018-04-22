@@ -36,13 +36,13 @@ static bool expectToken( const char *s, pc_token_list **list, bool next )
 		Log::Warn( "Expected token %s but found end of file", s );
 		return false;
 	}
-	
+
 	if ( Q_stricmp( current->token.string, s ) != 0 )
 	{
 		Log::Warn( "Expected token %s but found %s on line %d", s, current->token.string, current->token.line );
 		return false;
 	}
-	
+
 	if ( next )
 	{
 		*list = current->next;
@@ -163,7 +163,7 @@ static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
 	botEntityAndDistance_t ent = AIEntityToGentity( self, e );
-	
+
 	return AIBoxFloat( ent.distance );
 }
 
@@ -1292,7 +1292,6 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( E_H_MEDISTAT );
 	D( E_H_DRILL );
 	D( E_H_REACTOR );
-	D( E_H_REPEATER );
 	D( E_GOAL );
 	D( E_ENEMY );
 	D( E_DAMAGEDBUILDING );
@@ -1313,7 +1312,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_HUMAN_LIGHT );
 	D( PCL_HUMAN_MEDIUM );
 	D( PCL_HUMAN_BSUIT );
-	
+
 	D( MOVE_FORWARD );
 	D( MOVE_BACKWARD );
 	D( MOVE_RIGHT );
@@ -1330,7 +1329,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( SAY_TEAM );
 	D( SAY_AREA );
 	D( SAY_AREA_TEAM );
-	
+
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
 	handle = trap_Parse_LoadSource( treefilename );
@@ -1379,7 +1378,7 @@ pc_token_list *CreateTokenList( int handle )
 	while ( trap_Parse_ReadToken( handle, &token ) )
 	{
 		pc_token_list *list = ( pc_token_list * ) BG_Alloc( sizeof( pc_token_list ) );
-		
+
 		if ( current )
 		{
 			list->prev = current;
@@ -1390,7 +1389,7 @@ pc_token_list *CreateTokenList( int handle )
 			list->prev = list;
 			root = list;
 		}
-		
+
 		current = list;
 		current->next = nullptr;
 
@@ -1515,7 +1514,7 @@ void FreeExpression( AIExpType_t *exp )
 	else if ( *exp == EX_VALUE )
 	{
 		AIValue_t *v = ( AIValue_t * ) exp;
-		
+
 		FreeValue( v );
 	}
 	else if ( *exp == EX_OP )

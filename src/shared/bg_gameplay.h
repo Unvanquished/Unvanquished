@@ -249,7 +249,6 @@ extern int   MEDKIT_STARTUP_SPEED;
  */
 
 extern float REACTOR_BASESIZE;
-extern float REPEATER_BASESIZE;
 
 #define MGTURRET_ATTACK_PERIOD  125
 #define MGTURRET_RANGE          350

@@ -314,10 +314,6 @@ components:
             HumanBuildable:
             MainBuildable:
 
-    Repeater:
-        requires:
-            HumanBuildable:
-
     Rocketpod:
         messages:
             - PrepareNetCode
@@ -492,10 +488,6 @@ entities:
     Reactor:
         components:
             Reactor:
-
-    Repeater:
-        components:
-            Repeater:
 
     Rocketpod:
         components:

@@ -142,9 +142,8 @@ void CG_ParseServerinfo()
 	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 
-	// TODO: Remove those two.
+	// TODO: Remove this one.
 	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
-	cgs.powerRepeaterRange = atoi( Info_ValueForKey( info, "g_powerRepeaterRange" ) );
 
 	cgs.momentumHalfLife  = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
 	cgs.unlockableMinTime = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
@@ -627,9 +626,9 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_H_NOENERGYAMMOHERE:
-			longMsg = _("You must be near a Reactor or a powered Armoury or Repeater "
+			longMsg = _("You must be near a Reactor or a powered Armoury "
 			          "in order to purchase energy ammunition.");
-			shortMsg = _("You must be near a Reactor or a powered Armoury or Repeater");
+			shortMsg = _("You must be near a Reactor or a powered Armoury");
 			break;
 
 		case MN_H_NOROOMARMOURCHANGE:

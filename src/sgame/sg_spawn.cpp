@@ -1019,7 +1019,6 @@ Every map should have exactly one.
 ; gravity: level gravity [g_gravity (800)]
 
 ; humanBuildPoints: maximum amount of power the humans can use. [g_humanBuildPoints]
-; humanRepeaterBuildPoints: maximum amount of power the humans can use around each repeater. [g_humanRepeaterBuildPoints]
 ; alienBuildPoints: maximum amount of sentience available to the overmind. [g_alienBuildPoints]
 
 ; disabledEquipment: A comma delimited list of human weapons or upgrades to disable for this map. [g_disabledEquipment ()]
@@ -1068,7 +1067,6 @@ void SP_worldspawn()
 	G_SpawnStringIntoCVarIfSet( "gravity", "g_gravity" );
 
 	G_SpawnStringIntoCVarIfSet( "humanBuildPoints", "g_humanBuildPoints" );
-	G_SpawnStringIntoCVarIfSet( "humanRepeaterBuildPoints", "g_humanRepeaterBuildPoints" );
 	G_SpawnStringIntoCVarIfSet( "alienBuildPoints", "g_alienBuildPoints" );
 
 	G_SpawnStringIntoCVar( "disabledEquipment", "g_disabledEquipment" );

@@ -246,7 +246,6 @@ bool G_FindAmmo( gentity_t *self )
 				break;
 
 			case BA_H_REACTOR:
-			case BA_H_REPEATER:
 				if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
 				{
 					foundSource = true;

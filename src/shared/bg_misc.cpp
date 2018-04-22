@@ -64,7 +64,6 @@ static const buildableName_t bg_buildableNameList[] =
 	{ BA_H_MEDISTAT,  "medistat",  "team_human_medistat"  },
  	{ BA_H_DRILL,     "drill",     "team_human_drill"     },
 	{ BA_H_REACTOR,   "reactor",   "team_human_reactor"   },
-	{ BA_H_REPEATER,  "repeater",  "team_human_repeater"  }
 };
 
 static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableNameList );

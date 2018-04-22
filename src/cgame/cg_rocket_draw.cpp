@@ -1060,7 +1060,7 @@ public:
 			cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
 		{
 			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
-			if ( ( es->modelindex == BA_H_REACTOR || es->modelindex == BA_H_REPEATER ) &&
+			if ( es->modelindex == BA_H_REACTOR &&
 				( !BG_Weapon( cg.snap->ps.weapon )->usesEnergy ||
 				BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
 			{

@@ -11,11 +11,10 @@ void HumanBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansO
 	switch (GetBuildableComponent().GetState()) {
 		// Regular death, fully constructed.
 		case BuildableComponent::CONSTRUCTED:
-			// Play a warning sound before reactor and repeater explosion. Don't randomize blast
+			// Play a warning sound before reactor explosion. Don't randomize blast
 			// delay for them so the sound stays synced.
-			// TODO: Move to Repeater/ReactorComponent if possible.
+			// TODO: Move to ReactorComponent if possible.
 			switch (entity.oldEnt->s.modelindex) {
-				case BA_H_REPEATER:
 				case BA_H_REACTOR:
 					G_AddEvent(entity.oldEnt, EV_HUMAN_BUILDABLE_DYING, 0);
 
