@@ -272,7 +272,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_unlagged,                    "cg_unlagged",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
 	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            0                            },
-	{ &cg_bounceParticles,             "cg_bounceParticles",             "0",            0                            },
+	{ &cg_bounceParticles,             "cg_bounceParticles",             "1",            0                            },
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         0                            },
 	{ &cg_lightFlare,                  "cg_lightFlare",                  "3",            0                            },
 	{ &cg_debugParticles,              "cg_debugParticles",              "0",            CVAR_CHEAT                   },
