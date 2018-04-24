@@ -168,13 +168,22 @@ protected:
 		{
 			return;
 		}
+		// For a team-specific bind, this returns keys that have the command set for the specific
+		// team as well as for the default team (when there is no team-specific bind overriding it.
 		auto previouslyBoundKeys = trap_Key_GetKeysForBinds(team, { cmd.CString() })[0];
 		for (Keyboard::Key key : previouslyBoundKeys)
 		{
-			// TODO(slipher): Make this work when the existing bind is for the "default" team?
 			trap_Key_SetBinding( key, team, "" );
 		}
-		trap_Key_SetBinding( newKey , team, cmd.CString() );
+		if (team != 0) {
+			// If the bind was set for the default team, then the previous attempt will have failed to remove it.
+			previouslyBoundKeys = trap_Key_GetKeysForBinds(team, { cmd.CString() })[0];
+			for (Keyboard::Key key : previouslyBoundKeys)
+			{
+				trap_Key_SetBinding( key, 0, "" );
+			}
+		}
+		trap_Key_SetBinding( newKey, team, cmd.CString() );
 
 		nextKeyUpdateTime = rocketInfo.realtime;
 		waitingForKeypress = false;
