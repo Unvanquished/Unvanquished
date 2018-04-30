@@ -147,7 +147,7 @@ public:
 
 static polyVert_t *createVertexArray( Rocket::Core::Vertex *vertices, int count )
 {
-	polyVert_t *verts = new polyVert_t[ sizeof( polyVert_t ) * count ];
+	polyVert_t *verts = new polyVert_t[ count ];
 
 	for ( int i = 0; i < count; i++ )
 	{
@@ -180,7 +180,7 @@ public:
 	{
 		this->verts = createVertexArray( verticies, numVerticies );
 
-		this->indices = new int[ sizeof( int ) * _numIndicies ];
+		this->indices = new int[ _numIndicies ];
 		Com_Memcpy( indices, _indices, _numIndicies * sizeof( int ) );
 
 		this->shader = shader;
