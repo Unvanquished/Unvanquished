@@ -37,7 +37,7 @@ install:
     libopenal-dev libogg-dev libvorbis-dev libtheora-dev libxvidcore-dev libopusfile-dev libspeexdsp-dev
     nettle-dev libgmp-dev python-yaml python-jinja2; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ninja nettle; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ninja; fi
   - sudo pip install -r src/utils/cbse/requirements.txt
 
 script:
