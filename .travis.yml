@@ -9,6 +9,9 @@ os:
 language:
   - cpp
 
+python:
+  - "2.7"
+
 env:
   - MODE=0
   - MODE=1
@@ -38,7 +41,7 @@ install:
     nettle-dev libgmp-dev python-yaml python-jinja2; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ninja; fi
-  - sudo pip install -r src/utils/cbse/requirements.txt
+  - pip2 install --user -r src/utils/cbse/requirements.txt
 
 script:
   - mkdir -p build
