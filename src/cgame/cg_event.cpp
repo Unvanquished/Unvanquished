@@ -460,8 +460,8 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_LEVEL3_CLAW:
-				message = G_( "%s%s ^7was chomped by %s%s^7's %s" );
-				messageAssisted = G_( "%s%s ^7was chomped by %s%s^7's %s^7; %s%s^7 assisted" );
+				message = G_( "%s%s ^7was eviscerated by %s%s^7's %s" );
+				messageAssisted = G_( "%s%s ^7was eviscerated by %s%s^7's %s^7; %s%s^7 assisted" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
