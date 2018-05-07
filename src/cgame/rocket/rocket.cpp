@@ -386,17 +386,12 @@ void Rocket_Init()
 
 void Rocket_Shutdown()
 {
+	// TODO: Consider that it may be more efficient to do nothing at all here, in
+	//       view of the fact that the process is about to be terminated.
+
 	extern std::vector<RocketDataFormatter*> dataFormatterList;
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
-
-	// If the game crashes, Lua won't have been initialized it and will crash
-	// if we try to shut it down.
-	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
-	{
-		// Shut down Lua before we clean up contexts
-		Rocket::Core::Lua::Interpreter::Shutdown();
-	}
 
 	if ( menuContext )
 	{
@@ -408,6 +403,13 @@ void Rocket_Shutdown()
 	{
 		hudContext->RemoveReference();
 		hudContext = nullptr;
+	}
+
+	// If Lua has not been initialized, it will crash if we try to shut it down (?)
+	// Must be after the context destructors, which for reasons unknown call into Lua.
+	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
+	{
+		Rocket::Core::Lua::Interpreter::Shutdown();
 	}
 
 	Rocket::Core::Shutdown();
