@@ -386,9 +386,6 @@ void Rocket_Init()
 
 void Rocket_Shutdown()
 {
-	// TODO: Consider that it may be more efficient to do nothing at all here, in
-	//       view of the fact that the process is about to be terminated.
-
 	extern std::vector<RocketDataFormatter*> dataFormatterList;
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
@@ -405,12 +402,19 @@ void Rocket_Shutdown()
 		hudContext = nullptr;
 	}
 
-	// If Lua has not been initialized, it will crash if we try to shut it down (?)
-	// Must be after the context destructors, which for reasons unknown call into Lua.
+	// There is a circular dependency here:
+	// Destroying the contexts calls into Lua, while shutting down Lua
+	// accesses a pointer to a context stored in a "Geometry" element.
+	// If the contexts are not derefed, librocket will blow up with an assertion in a global destructor
+	// (although global destructors only run if the VM is a DLL).
+	// Not shutting down Lua, on the other hand, seems to be relatively harmless.
+	// So we destroy the contexts and don't shut down Lua.
+#if 0
 	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
 	{
 		Rocket::Core::Lua::Interpreter::Shutdown();
 	}
+#endif
 
 	Rocket::Core::Shutdown();
 
