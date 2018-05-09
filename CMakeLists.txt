@@ -50,7 +50,7 @@ endif()
 foreach(SUBMODULE_PATH ${SUBMODULE_LIST})
   # Check if we need to initialize submodule
   file(GLOB DENG_RESULT "${CMAKE_CURRENT_SOURCE_DIR}/${SUBMODULE_PATH}")
-  list(LENGTH ${DENG_RESULT} DENG_RES_LEN)
+  list(LENGTH DENG_RESULT DENG_RES_LEN)
   if(DENG_RES_LEN EQUAL 0)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
       find_package(Git REQUIRED)
