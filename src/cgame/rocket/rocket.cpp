@@ -386,6 +386,10 @@ void Rocket_Init()
 
 void Rocket_Shutdown()
 {
+	// Only try to destroy the librocket stuff if the cgame is a DLL.
+	// The destructors crash a lot and we don't want that to be a problem for people just playing the game.
+	// If the cgame is a process, freeing the memory is just pedantic since it is about to terminate.
+#ifdef BUILD_VM_IN_PROCESS
 	extern std::vector<RocketDataFormatter*> dataFormatterList;
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
@@ -405,8 +409,8 @@ void Rocket_Shutdown()
 	// There is a circular dependency here:
 	// Destroying the contexts calls into Lua, while shutting down Lua
 	// accesses a pointer to a context stored in a "Geometry" element.
-	// If the contexts are not derefed, librocket will blow up with an assertion in a global destructor
-	// (although global destructors only run if the VM is a DLL).
+	// If the contexts' refcount is not 0, librocket will blow up with an assertion in a global destructor
+	// (N.B. global destructors only run if the VM is a DLL).
 	// Not shutting down Lua, on the other hand, seems to be relatively harmless.
 	// So we destroy the contexts and don't shut down Lua.
 #if 0
@@ -416,16 +420,14 @@ void Rocket_Shutdown()
 	}
 #endif
 
-	Rocket::Core::Shutdown();
-
-	// Prevent memory leaks
-
 	for ( size_t i = 0; i < dataFormatterList.size(); ++i )
 	{
+		// This also does crazy things in the destructor
 		delete dataFormatterList[i];
 	}
-
 	dataFormatterList.clear();
+
+	Rocket::Core::Shutdown();
 
 	for ( std::map<std::string, RocketDataGrid*>::iterator it = dataSourceMap.begin(); it != dataSourceMap.end(); ++it )
 	{
@@ -439,6 +441,7 @@ void Rocket_Shutdown()
 		delete eventQueue.front();
 		eventQueue.pop();
 	}
+#endif // BUILD_VM_IN_PROCESS
 
 	trap_RemoveCommand( "rocket" );
 	trap_RemoveCommand( "rocketDebug" );
