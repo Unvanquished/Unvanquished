@@ -1440,12 +1440,11 @@ CG_PrecacheClientInfo
 void CG_PrecacheClientInfo( class_t class_, const char *model, const char *skin )
 {
 	clientInfo_t *ci;
-	clientInfo_t newInfo;
 
 	ci = &cgs.corpseinfo[ class_ ];
 
 	// the old value
-	memset( &newInfo, 0, sizeof( newInfo ) );
+	clientInfo_t newInfo{};
 
 	// model
 	Q_strncpyz( newInfo.modelName, model, sizeof( newInfo.modelName ) );
@@ -1514,7 +1513,6 @@ CG_NewClientInfo
 void CG_NewClientInfo( int clientNum )
 {
 	clientInfo_t *ci;
-	clientInfo_t newInfo;
 	const char   *configstring;
 	const char   *v;
 	char         *slash;
@@ -1525,12 +1523,12 @@ void CG_NewClientInfo( int clientNum )
 
 	if ( !configstring[ 0 ] )
 	{
-		memset( ci, 0, sizeof( *ci ) );
+		*ci = {};
 		return; // player just left
 	}
 
 	// the old value
-	memset( &newInfo, 0, sizeof( newInfo ) );
+	clientInfo_t newInfo{};
 
 	// grab our own ignoreList
 	if ( clientNum == cg.predictedPlayerState.clientNum )
