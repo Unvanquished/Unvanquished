@@ -68,7 +68,6 @@ int              trap_BotAllocateClient();
 void             trap_BotFreeClient( int clientNum );
 void             trap_GetUsercmd( int clientNum, usercmd_t *cmd );
 bool         trap_GetEntityToken( char *buffer, int bufferSize );
-void             trap_SendGameStat( const char *data );
 void             trap_AddCommand( const char *cmdName );
 void             trap_RemoveCommand( const char *cmdName );
 int              trap_GetSoundLength( sfxHandle_t sfxHandle );
