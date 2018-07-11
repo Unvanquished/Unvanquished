@@ -74,7 +74,7 @@ static void CG_Rocket_InitServers()
 
 	if ( !Q_stricmp( src, "internet" ) )
 	{
-		trap_SendConsoleCommand( "globalservers 0 86 full empty\n" );
+		trap_SendConsoleCommand( "globalservers * 86 full empty\n" );
 	}
 
 	else if ( !Q_stricmp( src, "local" ) )
