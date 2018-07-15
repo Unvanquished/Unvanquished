@@ -262,7 +262,7 @@ static gclient_t *ClientForString( char *s )
 
 	if ( idnum == -1 )
 	{
-		Log::Notice( "%s", err );
+		Log::Notice( err );
 		return nullptr;
 	}
 

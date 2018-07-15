@@ -1776,7 +1776,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	if ( !level.inClient )
 	{
 		G_UnEscapeString( string, decolored, sizeof( decolored ) );
-		Log::Notice( "%s", decolored + 7 );
+		Log::Notice( decolored + 7 );
 	}
 
 	if ( !level.logFile )
