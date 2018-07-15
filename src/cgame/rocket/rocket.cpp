@@ -389,10 +389,18 @@ void Rocket_Shutdown()
 	// Only try to destroy the librocket stuff if the cgame is a DLL.
 	// The destructors crash a lot and we don't want that to be a problem for people just playing the game.
 	// If the cgame is a process, freeing the memory is just pedantic since it is about to terminate.
+	// But if it is a DLL, shutdown is necessary because the memory is otherwise leaked and also
+	// libRocket has assertions in the global destructors that fire if things are not shut down
+	// (global destructors only run if the cgame is a DLL).
 #ifdef BUILD_VM_IN_PROCESS
 	extern std::vector<RocketDataFormatter*> dataFormatterList;
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
+
+	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
+	{
+		Rocket::Core::Lua::Interpreter::Shutdown();
+	}
 
 	if ( menuContext )
 	{
@@ -405,20 +413,6 @@ void Rocket_Shutdown()
 		hudContext->RemoveReference();
 		hudContext = nullptr;
 	}
-
-	// There is a circular dependency here:
-	// Destroying the contexts calls into Lua, while shutting down Lua
-	// accesses a pointer to a context stored in a "Geometry" element.
-	// If the contexts' refcount is not 0, librocket will blow up with an assertion in a global destructor
-	// (N.B. global destructors only run if the VM is a DLL).
-	// Not shutting down Lua, on the other hand, seems to be relatively harmless.
-	// So we destroy the contexts and don't shut down Lua.
-#if 0
-	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
-	{
-		Rocket::Core::Lua::Interpreter::Shutdown();
-	}
-#endif
 
 	for ( size_t i = 0; i < dataFormatterList.size(); ++i )
 	{
