@@ -744,12 +744,12 @@ void CG_Menu( int menuType, int arg )
 
 		if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
 		{
-			Log::Notice( "%s", shortMsg );
+			Log::Notice( shortMsg );
 		}
 	}
 	else if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
 	{
-		Log::Notice( "%s", shortMsg );
+		Log::Notice( shortMsg );
 	}
 }
 
@@ -913,7 +913,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			break;
 
 		case SAY_RAW:
-			Log::Notice( "%s", text );
+			Log::Notice( text );
 			break;
 
 		case SAY_DEFAULT:
@@ -1181,7 +1181,7 @@ CG_Print_f
 */
 static void CG_Print_f()
 {
-	Log::Notice( "%s", CG_Argv( 1 ) );
+	Log::Notice( CG_Argv( 1 ) );
 }
 
 /*
@@ -1191,12 +1191,12 @@ CG_PrintTR_f
 */
 static void CG_PrintTR_f()
 {
-	Log::Notice( "%s", TranslateText_Internal( false, 1 ) );
+	Log::Notice( TranslateText_Internal( false, 1 ) );
 }
 
 static void CG_PrintTR_plural_f()
 {
-	Log::Notice("%s", TranslateText_Internal( true, 1 ) );
+	Log::Notice( TranslateText_Internal( true, 1 ) );
 }
 
 /*
