@@ -44,7 +44,7 @@ Maryland 20850 USA.
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-pedantic"
+#pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 #include <Rocket/Core/Core.h>
 #ifdef __GNUC__
