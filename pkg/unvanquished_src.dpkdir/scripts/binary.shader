@@ -4,7 +4,7 @@ gfx/binary/000_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15,7 +15,7 @@ gfx/binary/000_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -36,7 +36,7 @@ gfx/binary/000_F1
 	sort 15.5001
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -46,7 +46,7 @@ gfx/binary/000_F2
 	sort 15.5002
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -63,11 +63,11 @@ gfx/binary/000_F3
 
 gfx/binary/001_B1
 {
-	sort 15.5010
+	sort 15.501
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -78,7 +78,7 @@ gfx/binary/001_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -99,7 +99,7 @@ gfx/binary/001_F1
 	sort 15.5007
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -109,7 +109,7 @@ gfx/binary/001_F2
 	sort 15.5008
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -130,7 +130,7 @@ gfx/binary/002_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -141,7 +141,7 @@ gfx/binary/002_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -162,7 +162,7 @@ gfx/binary/002_F1
 	sort 15.5013
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -172,7 +172,7 @@ gfx/binary/002_F2
 	sort 15.5014
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -193,7 +193,7 @@ gfx/binary/003_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -204,7 +204,7 @@ gfx/binary/003_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -225,17 +225,17 @@ gfx/binary/003_F1
 	sort 15.5019
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/003_F2
 {
-	sort 15.5020
+	sort 15.502
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -256,7 +256,7 @@ gfx/binary/004_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -267,14 +267,14 @@ gfx/binary/004_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/004_B3
 {
-	sort 15.5030
+	sort 15.503
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -288,7 +288,7 @@ gfx/binary/004_F1
 	sort 15.5025
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -298,7 +298,7 @@ gfx/binary/004_F2
 	sort 15.5026
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -319,7 +319,7 @@ gfx/binary/005_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -330,7 +330,7 @@ gfx/binary/005_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -351,7 +351,7 @@ gfx/binary/005_F1
 	sort 15.5031
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -361,7 +361,7 @@ gfx/binary/005_F2
 	sort 15.5032
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -378,11 +378,11 @@ gfx/binary/005_F3
 
 gfx/binary/006_B1
 {
-	sort 15.5040
+	sort 15.504
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -393,7 +393,7 @@ gfx/binary/006_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -414,7 +414,7 @@ gfx/binary/006_F1
 	sort 15.5037
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -424,7 +424,7 @@ gfx/binary/006_F2
 	sort 15.5038
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -445,7 +445,7 @@ gfx/binary/007_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -456,7 +456,7 @@ gfx/binary/007_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -477,7 +477,7 @@ gfx/binary/007_F1
 	sort 15.5043
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -487,7 +487,7 @@ gfx/binary/007_F2
 	sort 15.5044
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -508,7 +508,7 @@ gfx/binary/008_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -519,7 +519,7 @@ gfx/binary/008_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -540,17 +540,17 @@ gfx/binary/008_F1
 	sort 15.5049
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/008_F2
 {
-	sort 15.5050
+	sort 15.505
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -571,7 +571,7 @@ gfx/binary/009_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -582,14 +582,14 @@ gfx/binary/009_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/009_B3
 {
-	sort 15.5060
+	sort 15.506
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -603,7 +603,7 @@ gfx/binary/009_F1
 	sort 15.5055
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -613,7 +613,7 @@ gfx/binary/009_F2
 	sort 15.5056
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -634,7 +634,7 @@ gfx/binary/010_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -645,7 +645,7 @@ gfx/binary/010_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -666,7 +666,7 @@ gfx/binary/010_F1
 	sort 15.5061
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -676,7 +676,7 @@ gfx/binary/010_F2
 	sort 15.5062
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -693,11 +693,11 @@ gfx/binary/010_F3
 
 gfx/binary/011_B1
 {
-	sort 15.5070
+	sort 15.507
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -708,7 +708,7 @@ gfx/binary/011_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -729,7 +729,7 @@ gfx/binary/011_F1
 	sort 15.5067
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -739,7 +739,7 @@ gfx/binary/011_F2
 	sort 15.5068
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -760,7 +760,7 @@ gfx/binary/012_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -771,7 +771,7 @@ gfx/binary/012_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -792,7 +792,7 @@ gfx/binary/012_F1
 	sort 15.5073
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -802,7 +802,7 @@ gfx/binary/012_F2
 	sort 15.5074
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -823,7 +823,7 @@ gfx/binary/013_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -834,7 +834,7 @@ gfx/binary/013_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -855,17 +855,17 @@ gfx/binary/013_F1
 	sort 15.5079
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/013_F2
 {
-	sort 15.5080
+	sort 15.508
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -886,7 +886,7 @@ gfx/binary/014_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -897,14 +897,14 @@ gfx/binary/014_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/014_B3
 {
-	sort 15.5090
+	sort 15.509
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -918,7 +918,7 @@ gfx/binary/014_F1
 	sort 15.5085
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -928,7 +928,7 @@ gfx/binary/014_F2
 	sort 15.5086
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -949,7 +949,7 @@ gfx/binary/015_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -960,7 +960,7 @@ gfx/binary/015_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -981,7 +981,7 @@ gfx/binary/015_F1
 	sort 15.5091
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -991,7 +991,7 @@ gfx/binary/015_F2
 	sort 15.5092
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1008,11 +1008,11 @@ gfx/binary/015_F3
 
 gfx/binary/016_B1
 {
-	sort 15.5100
+	sort 15.51
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1023,7 +1023,7 @@ gfx/binary/016_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1044,7 +1044,7 @@ gfx/binary/016_F1
 	sort 15.5097
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1054,7 +1054,7 @@ gfx/binary/016_F2
 	sort 15.5098
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1075,7 +1075,7 @@ gfx/binary/017_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1086,7 +1086,7 @@ gfx/binary/017_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1107,7 +1107,7 @@ gfx/binary/017_F1
 	sort 15.5103
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1117,7 +1117,7 @@ gfx/binary/017_F2
 	sort 15.5104
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1138,7 +1138,7 @@ gfx/binary/018_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1149,7 +1149,7 @@ gfx/binary/018_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1170,17 +1170,17 @@ gfx/binary/018_F1
 	sort 15.5109
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/018_F2
 {
-	sort 15.5110
+	sort 15.511
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1201,7 +1201,7 @@ gfx/binary/019_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1212,14 +1212,14 @@ gfx/binary/019_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/019_B3
 {
-	sort 15.5120
+	sort 15.512
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1233,7 +1233,7 @@ gfx/binary/019_F1
 	sort 15.5115
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1243,7 +1243,7 @@ gfx/binary/019_F2
 	sort 15.5116
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1264,7 +1264,7 @@ gfx/binary/020_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1275,7 +1275,7 @@ gfx/binary/020_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1296,7 +1296,7 @@ gfx/binary/020_F1
 	sort 15.5121
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1306,7 +1306,7 @@ gfx/binary/020_F2
 	sort 15.5122
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1323,11 +1323,11 @@ gfx/binary/020_F3
 
 gfx/binary/021_B1
 {
-	sort 15.5130
+	sort 15.513
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1338,7 +1338,7 @@ gfx/binary/021_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1359,7 +1359,7 @@ gfx/binary/021_F1
 	sort 15.5127
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1369,7 +1369,7 @@ gfx/binary/021_F2
 	sort 15.5128
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1390,7 +1390,7 @@ gfx/binary/022_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1401,7 +1401,7 @@ gfx/binary/022_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1422,7 +1422,7 @@ gfx/binary/022_F1
 	sort 15.5133
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1432,7 +1432,7 @@ gfx/binary/022_F2
 	sort 15.5134
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1453,7 +1453,7 @@ gfx/binary/023_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1464,7 +1464,7 @@ gfx/binary/023_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1485,17 +1485,17 @@ gfx/binary/023_F1
 	sort 15.5139
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/023_F2
 {
-	sort 15.5140
+	sort 15.514
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1516,7 +1516,7 @@ gfx/binary/024_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1527,14 +1527,14 @@ gfx/binary/024_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/024_B3
 {
-	sort 15.5150
+	sort 15.515
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1548,7 +1548,7 @@ gfx/binary/024_F1
 	sort 15.5145
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1558,7 +1558,7 @@ gfx/binary/024_F2
 	sort 15.5146
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1579,7 +1579,7 @@ gfx/binary/025_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1590,7 +1590,7 @@ gfx/binary/025_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1611,7 +1611,7 @@ gfx/binary/025_F1
 	sort 15.5151
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1621,7 +1621,7 @@ gfx/binary/025_F2
 	sort 15.5152
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1638,11 +1638,11 @@ gfx/binary/025_F3
 
 gfx/binary/026_B1
 {
-	sort 15.5160
+	sort 15.516
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1653,7 +1653,7 @@ gfx/binary/026_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1674,7 +1674,7 @@ gfx/binary/026_F1
 	sort 15.5157
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1684,7 +1684,7 @@ gfx/binary/026_F2
 	sort 15.5158
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1705,7 +1705,7 @@ gfx/binary/027_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1716,7 +1716,7 @@ gfx/binary/027_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1737,7 +1737,7 @@ gfx/binary/027_F1
 	sort 15.5163
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1747,7 +1747,7 @@ gfx/binary/027_F2
 	sort 15.5164
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1768,7 +1768,7 @@ gfx/binary/028_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1779,7 +1779,7 @@ gfx/binary/028_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1800,17 +1800,17 @@ gfx/binary/028_F1
 	sort 15.5169
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/028_F2
 {
-	sort 15.5170
+	sort 15.517
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1831,7 +1831,7 @@ gfx/binary/029_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1842,14 +1842,14 @@ gfx/binary/029_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/029_B3
 {
-	sort 15.5180
+	sort 15.518
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -1863,7 +1863,7 @@ gfx/binary/029_F1
 	sort 15.5175
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1873,7 +1873,7 @@ gfx/binary/029_F2
 	sort 15.5176
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1894,7 +1894,7 @@ gfx/binary/030_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1905,7 +1905,7 @@ gfx/binary/030_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1926,7 +1926,7 @@ gfx/binary/030_F1
 	sort 15.5181
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1936,7 +1936,7 @@ gfx/binary/030_F2
 	sort 15.5182
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1953,11 +1953,11 @@ gfx/binary/030_F3
 
 gfx/binary/031_B1
 {
-	sort 15.5190
+	sort 15.519
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1968,7 +1968,7 @@ gfx/binary/031_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -1989,7 +1989,7 @@ gfx/binary/031_F1
 	sort 15.5187
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -1999,7 +1999,7 @@ gfx/binary/031_F2
 	sort 15.5188
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2020,7 +2020,7 @@ gfx/binary/032_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2031,7 +2031,7 @@ gfx/binary/032_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2052,7 +2052,7 @@ gfx/binary/032_F1
 	sort 15.5193
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2062,7 +2062,7 @@ gfx/binary/032_F2
 	sort 15.5194
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2083,7 +2083,7 @@ gfx/binary/033_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2094,7 +2094,7 @@ gfx/binary/033_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2115,17 +2115,17 @@ gfx/binary/033_F1
 	sort 15.5199
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/033_F2
 {
-	sort 15.5200
+	sort 15.52
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2146,7 +2146,7 @@ gfx/binary/034_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2157,14 +2157,14 @@ gfx/binary/034_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/034_B3
 {
-	sort 15.5210
+	sort 15.521
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2178,7 +2178,7 @@ gfx/binary/034_F1
 	sort 15.5205
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2188,7 +2188,7 @@ gfx/binary/034_F2
 	sort 15.5206
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2209,7 +2209,7 @@ gfx/binary/035_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2220,7 +2220,7 @@ gfx/binary/035_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2241,7 +2241,7 @@ gfx/binary/035_F1
 	sort 15.5211
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2251,7 +2251,7 @@ gfx/binary/035_F2
 	sort 15.5212
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2268,11 +2268,11 @@ gfx/binary/035_F3
 
 gfx/binary/036_B1
 {
-	sort 15.5220
+	sort 15.522
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2283,7 +2283,7 @@ gfx/binary/036_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2304,7 +2304,7 @@ gfx/binary/036_F1
 	sort 15.5217
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2314,7 +2314,7 @@ gfx/binary/036_F2
 	sort 15.5218
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2335,7 +2335,7 @@ gfx/binary/037_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2346,7 +2346,7 @@ gfx/binary/037_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2367,7 +2367,7 @@ gfx/binary/037_F1
 	sort 15.5223
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2377,7 +2377,7 @@ gfx/binary/037_F2
 	sort 15.5224
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2398,7 +2398,7 @@ gfx/binary/038_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2409,7 +2409,7 @@ gfx/binary/038_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2430,17 +2430,17 @@ gfx/binary/038_F1
 	sort 15.5229
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/038_F2
 {
-	sort 15.5230
+	sort 15.523
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2461,7 +2461,7 @@ gfx/binary/039_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2472,14 +2472,14 @@ gfx/binary/039_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/039_B3
 {
-	sort 15.5240
+	sort 15.524
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2493,7 +2493,7 @@ gfx/binary/039_F1
 	sort 15.5235
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2503,7 +2503,7 @@ gfx/binary/039_F2
 	sort 15.5236
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2524,7 +2524,7 @@ gfx/binary/040_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2535,7 +2535,7 @@ gfx/binary/040_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2556,7 +2556,7 @@ gfx/binary/040_F1
 	sort 15.5241
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2566,7 +2566,7 @@ gfx/binary/040_F2
 	sort 15.5242
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2583,11 +2583,11 @@ gfx/binary/040_F3
 
 gfx/binary/041_B1
 {
-	sort 15.5250
+	sort 15.525
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2598,7 +2598,7 @@ gfx/binary/041_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2619,7 +2619,7 @@ gfx/binary/041_F1
 	sort 15.5247
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2629,7 +2629,7 @@ gfx/binary/041_F2
 	sort 15.5248
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2650,7 +2650,7 @@ gfx/binary/042_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2661,7 +2661,7 @@ gfx/binary/042_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2682,7 +2682,7 @@ gfx/binary/042_F1
 	sort 15.5253
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2692,7 +2692,7 @@ gfx/binary/042_F2
 	sort 15.5254
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2713,7 +2713,7 @@ gfx/binary/043_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2724,7 +2724,7 @@ gfx/binary/043_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2745,17 +2745,17 @@ gfx/binary/043_F1
 	sort 15.5259
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/043_F2
 {
-	sort 15.5260
+	sort 15.526
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2776,7 +2776,7 @@ gfx/binary/044_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2787,14 +2787,14 @@ gfx/binary/044_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/044_B3
 {
-	sort 15.5270
+	sort 15.527
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -2808,7 +2808,7 @@ gfx/binary/044_F1
 	sort 15.5265
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2818,7 +2818,7 @@ gfx/binary/044_F2
 	sort 15.5266
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2839,7 +2839,7 @@ gfx/binary/045_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2850,7 +2850,7 @@ gfx/binary/045_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2871,7 +2871,7 @@ gfx/binary/045_F1
 	sort 15.5271
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2881,7 +2881,7 @@ gfx/binary/045_F2
 	sort 15.5272
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2898,11 +2898,11 @@ gfx/binary/045_F3
 
 gfx/binary/046_B1
 {
-	sort 15.5280
+	sort 15.528
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2913,7 +2913,7 @@ gfx/binary/046_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2934,7 +2934,7 @@ gfx/binary/046_F1
 	sort 15.5277
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2944,7 +2944,7 @@ gfx/binary/046_F2
 	sort 15.5278
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2965,7 +2965,7 @@ gfx/binary/047_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -2976,7 +2976,7 @@ gfx/binary/047_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -2997,7 +2997,7 @@ gfx/binary/047_F1
 	sort 15.5283
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3007,7 +3007,7 @@ gfx/binary/047_F2
 	sort 15.5284
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3028,7 +3028,7 @@ gfx/binary/048_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3039,7 +3039,7 @@ gfx/binary/048_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3060,17 +3060,17 @@ gfx/binary/048_F1
 	sort 15.5289
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/048_F2
 {
-	sort 15.5290
+	sort 15.529
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3091,7 +3091,7 @@ gfx/binary/049_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3102,14 +3102,14 @@ gfx/binary/049_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/049_B3
 {
-	sort 15.5300
+	sort 15.53
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3123,7 +3123,7 @@ gfx/binary/049_F1
 	sort 15.5295
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3133,7 +3133,7 @@ gfx/binary/049_F2
 	sort 15.5296
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3154,7 +3154,7 @@ gfx/binary/050_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3165,7 +3165,7 @@ gfx/binary/050_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3186,7 +3186,7 @@ gfx/binary/050_F1
 	sort 15.5301
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3196,7 +3196,7 @@ gfx/binary/050_F2
 	sort 15.5302
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3213,11 +3213,11 @@ gfx/binary/050_F3
 
 gfx/binary/051_B1
 {
-	sort 15.5310
+	sort 15.531
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3228,7 +3228,7 @@ gfx/binary/051_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3249,7 +3249,7 @@ gfx/binary/051_F1
 	sort 15.5307
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3259,7 +3259,7 @@ gfx/binary/051_F2
 	sort 15.5308
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3280,7 +3280,7 @@ gfx/binary/052_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3291,7 +3291,7 @@ gfx/binary/052_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3312,7 +3312,7 @@ gfx/binary/052_F1
 	sort 15.5313
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3322,7 +3322,7 @@ gfx/binary/052_F2
 	sort 15.5314
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3343,7 +3343,7 @@ gfx/binary/053_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3354,7 +3354,7 @@ gfx/binary/053_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3375,17 +3375,17 @@ gfx/binary/053_F1
 	sort 15.5319
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/053_F2
 {
-	sort 15.5320
+	sort 15.532
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3406,7 +3406,7 @@ gfx/binary/054_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3417,14 +3417,14 @@ gfx/binary/054_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/054_B3
 {
-	sort 15.5330
+	sort 15.533
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3438,7 +3438,7 @@ gfx/binary/054_F1
 	sort 15.5325
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3448,7 +3448,7 @@ gfx/binary/054_F2
 	sort 15.5326
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3469,7 +3469,7 @@ gfx/binary/055_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3480,7 +3480,7 @@ gfx/binary/055_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3501,7 +3501,7 @@ gfx/binary/055_F1
 	sort 15.5331
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3511,7 +3511,7 @@ gfx/binary/055_F2
 	sort 15.5332
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3528,11 +3528,11 @@ gfx/binary/055_F3
 
 gfx/binary/056_B1
 {
-	sort 15.5340
+	sort 15.534
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3543,7 +3543,7 @@ gfx/binary/056_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3564,7 +3564,7 @@ gfx/binary/056_F1
 	sort 15.5337
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3574,7 +3574,7 @@ gfx/binary/056_F2
 	sort 15.5338
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3595,7 +3595,7 @@ gfx/binary/057_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3606,7 +3606,7 @@ gfx/binary/057_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3627,7 +3627,7 @@ gfx/binary/057_F1
 	sort 15.5343
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3637,7 +3637,7 @@ gfx/binary/057_F2
 	sort 15.5344
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3658,7 +3658,7 @@ gfx/binary/058_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3669,7 +3669,7 @@ gfx/binary/058_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3690,17 +3690,17 @@ gfx/binary/058_F1
 	sort 15.5349
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/058_F2
 {
-	sort 15.5350
+	sort 15.535
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3721,7 +3721,7 @@ gfx/binary/059_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3732,14 +3732,14 @@ gfx/binary/059_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/059_B3
 {
-	sort 15.5360
+	sort 15.536
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -3753,7 +3753,7 @@ gfx/binary/059_F1
 	sort 15.5355
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3763,7 +3763,7 @@ gfx/binary/059_F2
 	sort 15.5356
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3784,7 +3784,7 @@ gfx/binary/060_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3795,7 +3795,7 @@ gfx/binary/060_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3816,7 +3816,7 @@ gfx/binary/060_F1
 	sort 15.5361
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3826,7 +3826,7 @@ gfx/binary/060_F2
 	sort 15.5362
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3843,11 +3843,11 @@ gfx/binary/060_F3
 
 gfx/binary/061_B1
 {
-	sort 15.5370
+	sort 15.537
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3858,7 +3858,7 @@ gfx/binary/061_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3879,7 +3879,7 @@ gfx/binary/061_F1
 	sort 15.5367
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3889,7 +3889,7 @@ gfx/binary/061_F2
 	sort 15.5368
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3910,7 +3910,7 @@ gfx/binary/062_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3921,7 +3921,7 @@ gfx/binary/062_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3942,7 +3942,7 @@ gfx/binary/062_F1
 	sort 15.5373
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3952,7 +3952,7 @@ gfx/binary/062_F2
 	sort 15.5374
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -3973,7 +3973,7 @@ gfx/binary/063_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -3984,7 +3984,7 @@ gfx/binary/063_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4005,17 +4005,17 @@ gfx/binary/063_F1
 	sort 15.5379
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/063_F2
 {
-	sort 15.5380
+	sort 15.538
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4036,7 +4036,7 @@ gfx/binary/064_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4047,14 +4047,14 @@ gfx/binary/064_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/064_B3
 {
-	sort 15.5390
+	sort 15.539
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4068,7 +4068,7 @@ gfx/binary/064_F1
 	sort 15.5385
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4078,7 +4078,7 @@ gfx/binary/064_F2
 	sort 15.5386
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4099,7 +4099,7 @@ gfx/binary/065_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4110,7 +4110,7 @@ gfx/binary/065_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4131,7 +4131,7 @@ gfx/binary/065_F1
 	sort 15.5391
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4141,7 +4141,7 @@ gfx/binary/065_F2
 	sort 15.5392
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4158,11 +4158,11 @@ gfx/binary/065_F3
 
 gfx/binary/066_B1
 {
-	sort 15.5400
+	sort 15.54
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4173,7 +4173,7 @@ gfx/binary/066_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4194,7 +4194,7 @@ gfx/binary/066_F1
 	sort 15.5397
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4204,7 +4204,7 @@ gfx/binary/066_F2
 	sort 15.5398
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4225,7 +4225,7 @@ gfx/binary/067_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4236,7 +4236,7 @@ gfx/binary/067_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4257,7 +4257,7 @@ gfx/binary/067_F1
 	sort 15.5403
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4267,7 +4267,7 @@ gfx/binary/067_F2
 	sort 15.5404
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4288,7 +4288,7 @@ gfx/binary/068_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4299,7 +4299,7 @@ gfx/binary/068_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4320,17 +4320,17 @@ gfx/binary/068_F1
 	sort 15.5409
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/068_F2
 {
-	sort 15.5410
+	sort 15.541
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4351,7 +4351,7 @@ gfx/binary/069_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4362,14 +4362,14 @@ gfx/binary/069_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/069_B3
 {
-	sort 15.5420
+	sort 15.542
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4383,7 +4383,7 @@ gfx/binary/069_F1
 	sort 15.5415
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4393,7 +4393,7 @@ gfx/binary/069_F2
 	sort 15.5416
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4414,7 +4414,7 @@ gfx/binary/070_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4425,7 +4425,7 @@ gfx/binary/070_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4446,7 +4446,7 @@ gfx/binary/070_F1
 	sort 15.5421
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4456,7 +4456,7 @@ gfx/binary/070_F2
 	sort 15.5422
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4473,11 +4473,11 @@ gfx/binary/070_F3
 
 gfx/binary/071_B1
 {
-	sort 15.5430
+	sort 15.543
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4488,7 +4488,7 @@ gfx/binary/071_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4509,7 +4509,7 @@ gfx/binary/071_F1
 	sort 15.5427
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4519,7 +4519,7 @@ gfx/binary/071_F2
 	sort 15.5428
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4540,7 +4540,7 @@ gfx/binary/072_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4551,7 +4551,7 @@ gfx/binary/072_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4572,7 +4572,7 @@ gfx/binary/072_F1
 	sort 15.5433
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4582,7 +4582,7 @@ gfx/binary/072_F2
 	sort 15.5434
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4603,7 +4603,7 @@ gfx/binary/073_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4614,7 +4614,7 @@ gfx/binary/073_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4635,17 +4635,17 @@ gfx/binary/073_F1
 	sort 15.5439
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/073_F2
 {
-	sort 15.5440
+	sort 15.544
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4666,7 +4666,7 @@ gfx/binary/074_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4677,14 +4677,14 @@ gfx/binary/074_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/074_B3
 {
-	sort 15.5450
+	sort 15.545
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -4698,7 +4698,7 @@ gfx/binary/074_F1
 	sort 15.5445
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4708,7 +4708,7 @@ gfx/binary/074_F2
 	sort 15.5446
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4729,7 +4729,7 @@ gfx/binary/075_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4740,7 +4740,7 @@ gfx/binary/075_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4761,7 +4761,7 @@ gfx/binary/075_F1
 	sort 15.5451
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4771,7 +4771,7 @@ gfx/binary/075_F2
 	sort 15.5452
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4788,11 +4788,11 @@ gfx/binary/075_F3
 
 gfx/binary/076_B1
 {
-	sort 15.5460
+	sort 15.546
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4803,7 +4803,7 @@ gfx/binary/076_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4824,7 +4824,7 @@ gfx/binary/076_F1
 	sort 15.5457
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4834,7 +4834,7 @@ gfx/binary/076_F2
 	sort 15.5458
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4855,7 +4855,7 @@ gfx/binary/077_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4866,7 +4866,7 @@ gfx/binary/077_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4887,7 +4887,7 @@ gfx/binary/077_F1
 	sort 15.5463
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4897,7 +4897,7 @@ gfx/binary/077_F2
 	sort 15.5464
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4918,7 +4918,7 @@ gfx/binary/078_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4929,7 +4929,7 @@ gfx/binary/078_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4950,17 +4950,17 @@ gfx/binary/078_F1
 	sort 15.5469
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/078_F2
 {
-	sort 15.5470
+	sort 15.547
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -4981,7 +4981,7 @@ gfx/binary/079_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -4992,14 +4992,14 @@ gfx/binary/079_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/079_B3
 {
-	sort 15.5480
+	sort 15.548
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5013,7 +5013,7 @@ gfx/binary/079_F1
 	sort 15.5475
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5023,7 +5023,7 @@ gfx/binary/079_F2
 	sort 15.5476
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5044,7 +5044,7 @@ gfx/binary/080_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5055,7 +5055,7 @@ gfx/binary/080_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5076,7 +5076,7 @@ gfx/binary/080_F1
 	sort 15.5481
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5086,7 +5086,7 @@ gfx/binary/080_F2
 	sort 15.5482
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5103,11 +5103,11 @@ gfx/binary/080_F3
 
 gfx/binary/081_B1
 {
-	sort 15.5490
+	sort 15.549
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5118,7 +5118,7 @@ gfx/binary/081_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5139,7 +5139,7 @@ gfx/binary/081_F1
 	sort 15.5487
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5149,7 +5149,7 @@ gfx/binary/081_F2
 	sort 15.5488
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5170,7 +5170,7 @@ gfx/binary/082_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5181,7 +5181,7 @@ gfx/binary/082_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5202,7 +5202,7 @@ gfx/binary/082_F1
 	sort 15.5493
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5212,7 +5212,7 @@ gfx/binary/082_F2
 	sort 15.5494
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5233,7 +5233,7 @@ gfx/binary/083_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5244,7 +5244,7 @@ gfx/binary/083_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5265,17 +5265,17 @@ gfx/binary/083_F1
 	sort 15.5499
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/083_F2
 {
-	sort 15.5500
+	sort 15.55
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5296,7 +5296,7 @@ gfx/binary/084_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5307,14 +5307,14 @@ gfx/binary/084_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/084_B3
 {
-	sort 15.5510
+	sort 15.551
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5328,7 +5328,7 @@ gfx/binary/084_F1
 	sort 15.5505
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5338,7 +5338,7 @@ gfx/binary/084_F2
 	sort 15.5506
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5359,7 +5359,7 @@ gfx/binary/085_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5370,7 +5370,7 @@ gfx/binary/085_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5391,7 +5391,7 @@ gfx/binary/085_F1
 	sort 15.5511
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5401,7 +5401,7 @@ gfx/binary/085_F2
 	sort 15.5512
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5418,11 +5418,11 @@ gfx/binary/085_F3
 
 gfx/binary/086_B1
 {
-	sort 15.5520
+	sort 15.552
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5433,7 +5433,7 @@ gfx/binary/086_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5454,7 +5454,7 @@ gfx/binary/086_F1
 	sort 15.5517
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5464,7 +5464,7 @@ gfx/binary/086_F2
 	sort 15.5518
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5485,7 +5485,7 @@ gfx/binary/087_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5496,7 +5496,7 @@ gfx/binary/087_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5517,7 +5517,7 @@ gfx/binary/087_F1
 	sort 15.5523
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5527,7 +5527,7 @@ gfx/binary/087_F2
 	sort 15.5524
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5548,7 +5548,7 @@ gfx/binary/088_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5559,7 +5559,7 @@ gfx/binary/088_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5580,17 +5580,17 @@ gfx/binary/088_F1
 	sort 15.5529
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/088_F2
 {
-	sort 15.5530
+	sort 15.553
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5611,7 +5611,7 @@ gfx/binary/089_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5622,14 +5622,14 @@ gfx/binary/089_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/089_B3
 {
-	sort 15.5540
+	sort 15.554
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5643,7 +5643,7 @@ gfx/binary/089_F1
 	sort 15.5535
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5653,7 +5653,7 @@ gfx/binary/089_F2
 	sort 15.5536
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5674,7 +5674,7 @@ gfx/binary/090_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5685,7 +5685,7 @@ gfx/binary/090_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5706,7 +5706,7 @@ gfx/binary/090_F1
 	sort 15.5541
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5716,7 +5716,7 @@ gfx/binary/090_F2
 	sort 15.5542
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5733,11 +5733,11 @@ gfx/binary/090_F3
 
 gfx/binary/091_B1
 {
-	sort 15.5550
+	sort 15.555
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5748,7 +5748,7 @@ gfx/binary/091_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5769,7 +5769,7 @@ gfx/binary/091_F1
 	sort 15.5547
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5779,7 +5779,7 @@ gfx/binary/091_F2
 	sort 15.5548
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5800,7 +5800,7 @@ gfx/binary/092_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5811,7 +5811,7 @@ gfx/binary/092_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5832,7 +5832,7 @@ gfx/binary/092_F1
 	sort 15.5553
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5842,7 +5842,7 @@ gfx/binary/092_F2
 	sort 15.5554
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5863,7 +5863,7 @@ gfx/binary/093_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5874,7 +5874,7 @@ gfx/binary/093_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5895,17 +5895,17 @@ gfx/binary/093_F1
 	sort 15.5559
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/093_F2
 {
-	sort 15.5560
+	sort 15.556
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5926,7 +5926,7 @@ gfx/binary/094_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5937,14 +5937,14 @@ gfx/binary/094_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/094_B3
 {
-	sort 15.5570
+	sort 15.557
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -5958,7 +5958,7 @@ gfx/binary/094_F1
 	sort 15.5565
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -5968,7 +5968,7 @@ gfx/binary/094_F2
 	sort 15.5566
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -5989,7 +5989,7 @@ gfx/binary/095_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6000,7 +6000,7 @@ gfx/binary/095_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6021,7 +6021,7 @@ gfx/binary/095_F1
 	sort 15.5571
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6031,7 +6031,7 @@ gfx/binary/095_F2
 	sort 15.5572
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6048,11 +6048,11 @@ gfx/binary/095_F3
 
 gfx/binary/096_B1
 {
-	sort 15.5580
+	sort 15.558
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6063,7 +6063,7 @@ gfx/binary/096_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6084,7 +6084,7 @@ gfx/binary/096_F1
 	sort 15.5577
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6094,7 +6094,7 @@ gfx/binary/096_F2
 	sort 15.5578
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6115,7 +6115,7 @@ gfx/binary/097_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6126,7 +6126,7 @@ gfx/binary/097_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6147,7 +6147,7 @@ gfx/binary/097_F1
 	sort 15.5583
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6157,7 +6157,7 @@ gfx/binary/097_F2
 	sort 15.5584
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6178,7 +6178,7 @@ gfx/binary/098_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6189,7 +6189,7 @@ gfx/binary/098_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6210,17 +6210,17 @@ gfx/binary/098_F1
 	sort 15.5589
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/098_F2
 {
-	sort 15.5590
+	sort 15.559
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6241,7 +6241,7 @@ gfx/binary/099_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6252,14 +6252,14 @@ gfx/binary/099_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/099_B3
 {
-	sort 15.5600
+	sort 15.56
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6273,7 +6273,7 @@ gfx/binary/099_F1
 	sort 15.5595
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6283,7 +6283,7 @@ gfx/binary/099_F2
 	sort 15.5596
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6304,7 +6304,7 @@ gfx/binary/100_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6315,7 +6315,7 @@ gfx/binary/100_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6336,7 +6336,7 @@ gfx/binary/100_F1
 	sort 15.5601
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6346,7 +6346,7 @@ gfx/binary/100_F2
 	sort 15.5602
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6363,11 +6363,11 @@ gfx/binary/100_F3
 
 gfx/binary/101_B1
 {
-	sort 15.5610
+	sort 15.561
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6378,7 +6378,7 @@ gfx/binary/101_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6399,7 +6399,7 @@ gfx/binary/101_F1
 	sort 15.5607
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6409,7 +6409,7 @@ gfx/binary/101_F2
 	sort 15.5608
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6430,7 +6430,7 @@ gfx/binary/102_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6441,7 +6441,7 @@ gfx/binary/102_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6462,7 +6462,7 @@ gfx/binary/102_F1
 	sort 15.5613
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6472,7 +6472,7 @@ gfx/binary/102_F2
 	sort 15.5614
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6493,7 +6493,7 @@ gfx/binary/103_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6504,7 +6504,7 @@ gfx/binary/103_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6525,17 +6525,17 @@ gfx/binary/103_F1
 	sort 15.5619
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/103_F2
 {
-	sort 15.5620
+	sort 15.562
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6556,7 +6556,7 @@ gfx/binary/104_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6567,14 +6567,14 @@ gfx/binary/104_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/104_B3
 {
-	sort 15.5630
+	sort 15.563
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6588,7 +6588,7 @@ gfx/binary/104_F1
 	sort 15.5625
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6598,7 +6598,7 @@ gfx/binary/104_F2
 	sort 15.5626
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6619,7 +6619,7 @@ gfx/binary/105_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6630,7 +6630,7 @@ gfx/binary/105_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6651,7 +6651,7 @@ gfx/binary/105_F1
 	sort 15.5631
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6661,7 +6661,7 @@ gfx/binary/105_F2
 	sort 15.5632
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6678,11 +6678,11 @@ gfx/binary/105_F3
 
 gfx/binary/106_B1
 {
-	sort 15.5640
+	sort 15.564
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6693,7 +6693,7 @@ gfx/binary/106_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6714,7 +6714,7 @@ gfx/binary/106_F1
 	sort 15.5637
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6724,7 +6724,7 @@ gfx/binary/106_F2
 	sort 15.5638
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6745,7 +6745,7 @@ gfx/binary/107_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6756,7 +6756,7 @@ gfx/binary/107_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6777,7 +6777,7 @@ gfx/binary/107_F1
 	sort 15.5643
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6787,7 +6787,7 @@ gfx/binary/107_F2
 	sort 15.5644
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6808,7 +6808,7 @@ gfx/binary/108_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6819,7 +6819,7 @@ gfx/binary/108_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6840,17 +6840,17 @@ gfx/binary/108_F1
 	sort 15.5649
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/108_F2
 {
-	sort 15.5650
+	sort 15.565
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6871,7 +6871,7 @@ gfx/binary/109_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6882,14 +6882,14 @@ gfx/binary/109_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/109_B3
 {
-	sort 15.5660
+	sort 15.566
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -6903,7 +6903,7 @@ gfx/binary/109_F1
 	sort 15.5655
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6913,7 +6913,7 @@ gfx/binary/109_F2
 	sort 15.5656
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6934,7 +6934,7 @@ gfx/binary/110_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6945,7 +6945,7 @@ gfx/binary/110_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6966,7 +6966,7 @@ gfx/binary/110_F1
 	sort 15.5661
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -6976,7 +6976,7 @@ gfx/binary/110_F2
 	sort 15.5662
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -6993,11 +6993,11 @@ gfx/binary/110_F3
 
 gfx/binary/111_B1
 {
-	sort 15.5670
+	sort 15.567
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7008,7 +7008,7 @@ gfx/binary/111_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7029,7 +7029,7 @@ gfx/binary/111_F1
 	sort 15.5667
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7039,7 +7039,7 @@ gfx/binary/111_F2
 	sort 15.5668
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7060,7 +7060,7 @@ gfx/binary/112_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7071,7 +7071,7 @@ gfx/binary/112_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7092,7 +7092,7 @@ gfx/binary/112_F1
 	sort 15.5673
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7102,7 +7102,7 @@ gfx/binary/112_F2
 	sort 15.5674
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7123,7 +7123,7 @@ gfx/binary/113_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7134,7 +7134,7 @@ gfx/binary/113_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7155,17 +7155,17 @@ gfx/binary/113_F1
 	sort 15.5679
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/113_F2
 {
-	sort 15.5680
+	sort 15.568
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7186,7 +7186,7 @@ gfx/binary/114_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7197,14 +7197,14 @@ gfx/binary/114_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/114_B3
 {
-	sort 15.5690
+	sort 15.569
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7218,7 +7218,7 @@ gfx/binary/114_F1
 	sort 15.5685
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7228,7 +7228,7 @@ gfx/binary/114_F2
 	sort 15.5686
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7249,7 +7249,7 @@ gfx/binary/115_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7260,7 +7260,7 @@ gfx/binary/115_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7281,7 +7281,7 @@ gfx/binary/115_F1
 	sort 15.5691
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7291,7 +7291,7 @@ gfx/binary/115_F2
 	sort 15.5692
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7308,11 +7308,11 @@ gfx/binary/115_F3
 
 gfx/binary/116_B1
 {
-	sort 15.5700
+	sort 15.57
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7323,7 +7323,7 @@ gfx/binary/116_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7344,7 +7344,7 @@ gfx/binary/116_F1
 	sort 15.5697
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7354,7 +7354,7 @@ gfx/binary/116_F2
 	sort 15.5698
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7375,7 +7375,7 @@ gfx/binary/117_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7386,7 +7386,7 @@ gfx/binary/117_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7407,7 +7407,7 @@ gfx/binary/117_F1
 	sort 15.5703
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7417,7 +7417,7 @@ gfx/binary/117_F2
 	sort 15.5704
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7438,7 +7438,7 @@ gfx/binary/118_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7449,7 +7449,7 @@ gfx/binary/118_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7470,17 +7470,17 @@ gfx/binary/118_F1
 	sort 15.5709
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/118_F2
 {
-	sort 15.5710
+	sort 15.571
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7501,7 +7501,7 @@ gfx/binary/119_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7512,14 +7512,14 @@ gfx/binary/119_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/119_B3
 {
-	sort 15.5720
+	sort 15.572
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7533,7 +7533,7 @@ gfx/binary/119_F1
 	sort 15.5715
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7543,7 +7543,7 @@ gfx/binary/119_F2
 	sort 15.5716
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7564,7 +7564,7 @@ gfx/binary/120_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7575,7 +7575,7 @@ gfx/binary/120_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7596,7 +7596,7 @@ gfx/binary/120_F1
 	sort 15.5721
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7606,7 +7606,7 @@ gfx/binary/120_F2
 	sort 15.5722
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7623,11 +7623,11 @@ gfx/binary/120_F3
 
 gfx/binary/121_B1
 {
-	sort 15.5730
+	sort 15.573
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7638,7 +7638,7 @@ gfx/binary/121_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7659,7 +7659,7 @@ gfx/binary/121_F1
 	sort 15.5727
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7669,7 +7669,7 @@ gfx/binary/121_F2
 	sort 15.5728
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7690,7 +7690,7 @@ gfx/binary/122_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7701,7 +7701,7 @@ gfx/binary/122_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7722,7 +7722,7 @@ gfx/binary/122_F1
 	sort 15.5733
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7732,7 +7732,7 @@ gfx/binary/122_F2
 	sort 15.5734
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7753,7 +7753,7 @@ gfx/binary/123_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7764,7 +7764,7 @@ gfx/binary/123_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7785,17 +7785,17 @@ gfx/binary/123_F1
 	sort 15.5739
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/123_F2
 {
-	sort 15.5740
+	sort 15.574
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7816,7 +7816,7 @@ gfx/binary/124_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7827,14 +7827,14 @@ gfx/binary/124_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/124_B3
 {
-	sort 15.5750
+	sort 15.575
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -7848,7 +7848,7 @@ gfx/binary/124_F1
 	sort 15.5745
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7858,7 +7858,7 @@ gfx/binary/124_F2
 	sort 15.5746
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7879,7 +7879,7 @@ gfx/binary/125_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7890,7 +7890,7 @@ gfx/binary/125_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7911,7 +7911,7 @@ gfx/binary/125_F1
 	sort 15.5751
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7921,7 +7921,7 @@ gfx/binary/125_F2
 	sort 15.5752
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7938,11 +7938,11 @@ gfx/binary/125_F3
 
 gfx/binary/126_B1
 {
-	sort 15.5760
+	sort 15.576
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7953,7 +7953,7 @@ gfx/binary/126_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -7974,7 +7974,7 @@ gfx/binary/126_F1
 	sort 15.5757
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -7984,7 +7984,7 @@ gfx/binary/126_F2
 	sort 15.5758
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8005,7 +8005,7 @@ gfx/binary/127_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8016,7 +8016,7 @@ gfx/binary/127_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8037,7 +8037,7 @@ gfx/binary/127_F1
 	sort 15.5763
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8047,7 +8047,7 @@ gfx/binary/127_F2
 	sort 15.5764
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8068,7 +8068,7 @@ gfx/binary/128_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8079,7 +8079,7 @@ gfx/binary/128_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8100,17 +8100,17 @@ gfx/binary/128_F1
 	sort 15.5769
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/128_F2
 {
-	sort 15.5770
+	sort 15.577
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8131,7 +8131,7 @@ gfx/binary/129_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8142,14 +8142,14 @@ gfx/binary/129_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/129_B3
 {
-	sort 15.5780
+	sort 15.578
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8163,7 +8163,7 @@ gfx/binary/129_F1
 	sort 15.5775
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8173,7 +8173,7 @@ gfx/binary/129_F2
 	sort 15.5776
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8194,7 +8194,7 @@ gfx/binary/130_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8205,7 +8205,7 @@ gfx/binary/130_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8226,7 +8226,7 @@ gfx/binary/130_F1
 	sort 15.5781
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8236,7 +8236,7 @@ gfx/binary/130_F2
 	sort 15.5782
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8253,11 +8253,11 @@ gfx/binary/130_F3
 
 gfx/binary/131_B1
 {
-	sort 15.5790
+	sort 15.579
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8268,7 +8268,7 @@ gfx/binary/131_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8289,7 +8289,7 @@ gfx/binary/131_F1
 	sort 15.5787
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8299,7 +8299,7 @@ gfx/binary/131_F2
 	sort 15.5788
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8320,7 +8320,7 @@ gfx/binary/132_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8331,7 +8331,7 @@ gfx/binary/132_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8352,7 +8352,7 @@ gfx/binary/132_F1
 	sort 15.5793
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8362,7 +8362,7 @@ gfx/binary/132_F2
 	sort 15.5794
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8383,7 +8383,7 @@ gfx/binary/133_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8394,7 +8394,7 @@ gfx/binary/133_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8415,17 +8415,17 @@ gfx/binary/133_F1
 	sort 15.5799
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/133_F2
 {
-	sort 15.5800
+	sort 15.58
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8446,7 +8446,7 @@ gfx/binary/134_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8457,14 +8457,14 @@ gfx/binary/134_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/134_B3
 {
-	sort 15.5810
+	sort 15.581
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8478,7 +8478,7 @@ gfx/binary/134_F1
 	sort 15.5805
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8488,7 +8488,7 @@ gfx/binary/134_F2
 	sort 15.5806
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8509,7 +8509,7 @@ gfx/binary/135_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8520,7 +8520,7 @@ gfx/binary/135_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8541,7 +8541,7 @@ gfx/binary/135_F1
 	sort 15.5811
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8551,7 +8551,7 @@ gfx/binary/135_F2
 	sort 15.5812
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8568,11 +8568,11 @@ gfx/binary/135_F3
 
 gfx/binary/136_B1
 {
-	sort 15.5820
+	sort 15.582
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8583,7 +8583,7 @@ gfx/binary/136_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8604,7 +8604,7 @@ gfx/binary/136_F1
 	sort 15.5817
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8614,7 +8614,7 @@ gfx/binary/136_F2
 	sort 15.5818
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8635,7 +8635,7 @@ gfx/binary/137_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8646,7 +8646,7 @@ gfx/binary/137_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8667,7 +8667,7 @@ gfx/binary/137_F1
 	sort 15.5823
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8677,7 +8677,7 @@ gfx/binary/137_F2
 	sort 15.5824
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8698,7 +8698,7 @@ gfx/binary/138_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8709,7 +8709,7 @@ gfx/binary/138_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8730,17 +8730,17 @@ gfx/binary/138_F1
 	sort 15.5829
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/138_F2
 {
-	sort 15.5830
+	sort 15.583
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8761,7 +8761,7 @@ gfx/binary/139_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8772,14 +8772,14 @@ gfx/binary/139_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/139_B3
 {
-	sort 15.5840
+	sort 15.584
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -8793,7 +8793,7 @@ gfx/binary/139_F1
 	sort 15.5835
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8803,7 +8803,7 @@ gfx/binary/139_F2
 	sort 15.5836
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8824,7 +8824,7 @@ gfx/binary/140_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8835,7 +8835,7 @@ gfx/binary/140_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8856,7 +8856,7 @@ gfx/binary/140_F1
 	sort 15.5841
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8866,7 +8866,7 @@ gfx/binary/140_F2
 	sort 15.5842
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8883,11 +8883,11 @@ gfx/binary/140_F3
 
 gfx/binary/141_B1
 {
-	sort 15.5850
+	sort 15.585
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8898,7 +8898,7 @@ gfx/binary/141_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8919,7 +8919,7 @@ gfx/binary/141_F1
 	sort 15.5847
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8929,7 +8929,7 @@ gfx/binary/141_F2
 	sort 15.5848
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8950,7 +8950,7 @@ gfx/binary/142_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8961,7 +8961,7 @@ gfx/binary/142_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -8982,7 +8982,7 @@ gfx/binary/142_F1
 	sort 15.5853
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -8992,7 +8992,7 @@ gfx/binary/142_F2
 	sort 15.5854
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9013,7 +9013,7 @@ gfx/binary/143_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9024,7 +9024,7 @@ gfx/binary/143_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9045,17 +9045,17 @@ gfx/binary/143_F1
 	sort 15.5859
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/143_F2
 {
-	sort 15.5860
+	sort 15.586
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9076,7 +9076,7 @@ gfx/binary/144_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9087,14 +9087,14 @@ gfx/binary/144_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/144_B3
 {
-	sort 15.5870
+	sort 15.587
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9108,7 +9108,7 @@ gfx/binary/144_F1
 	sort 15.5865
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9118,7 +9118,7 @@ gfx/binary/144_F2
 	sort 15.5866
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9139,7 +9139,7 @@ gfx/binary/145_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9150,7 +9150,7 @@ gfx/binary/145_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9171,7 +9171,7 @@ gfx/binary/145_F1
 	sort 15.5871
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9181,7 +9181,7 @@ gfx/binary/145_F2
 	sort 15.5872
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9198,11 +9198,11 @@ gfx/binary/145_F3
 
 gfx/binary/146_B1
 {
-	sort 15.5880
+	sort 15.588
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9213,7 +9213,7 @@ gfx/binary/146_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9234,7 +9234,7 @@ gfx/binary/146_F1
 	sort 15.5877
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9244,7 +9244,7 @@ gfx/binary/146_F2
 	sort 15.5878
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9265,7 +9265,7 @@ gfx/binary/147_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9276,7 +9276,7 @@ gfx/binary/147_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9297,7 +9297,7 @@ gfx/binary/147_F1
 	sort 15.5883
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9307,7 +9307,7 @@ gfx/binary/147_F2
 	sort 15.5884
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9328,7 +9328,7 @@ gfx/binary/148_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9339,7 +9339,7 @@ gfx/binary/148_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9360,17 +9360,17 @@ gfx/binary/148_F1
 	sort 15.5889
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/148_F2
 {
-	sort 15.5890
+	sort 15.589
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9391,7 +9391,7 @@ gfx/binary/149_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9402,14 +9402,14 @@ gfx/binary/149_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/149_B3
 {
-	sort 15.5900
+	sort 15.59
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9423,7 +9423,7 @@ gfx/binary/149_F1
 	sort 15.5895
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9433,7 +9433,7 @@ gfx/binary/149_F2
 	sort 15.5896
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9454,7 +9454,7 @@ gfx/binary/150_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9465,7 +9465,7 @@ gfx/binary/150_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9486,7 +9486,7 @@ gfx/binary/150_F1
 	sort 15.5901
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9496,7 +9496,7 @@ gfx/binary/150_F2
 	sort 15.5902
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9513,11 +9513,11 @@ gfx/binary/150_F3
 
 gfx/binary/151_B1
 {
-	sort 15.5910
+	sort 15.591
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9528,7 +9528,7 @@ gfx/binary/151_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9549,7 +9549,7 @@ gfx/binary/151_F1
 	sort 15.5907
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9559,7 +9559,7 @@ gfx/binary/151_F2
 	sort 15.5908
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9580,7 +9580,7 @@ gfx/binary/152_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9591,7 +9591,7 @@ gfx/binary/152_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9612,7 +9612,7 @@ gfx/binary/152_F1
 	sort 15.5913
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9622,7 +9622,7 @@ gfx/binary/152_F2
 	sort 15.5914
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9643,7 +9643,7 @@ gfx/binary/153_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9654,7 +9654,7 @@ gfx/binary/153_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9675,17 +9675,17 @@ gfx/binary/153_F1
 	sort 15.5919
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/153_F2
 {
-	sort 15.5920
+	sort 15.592
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9706,7 +9706,7 @@ gfx/binary/154_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9717,14 +9717,14 @@ gfx/binary/154_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/154_B3
 {
-	sort 15.5930
+	sort 15.593
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -9738,7 +9738,7 @@ gfx/binary/154_F1
 	sort 15.5925
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9748,7 +9748,7 @@ gfx/binary/154_F2
 	sort 15.5926
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9769,7 +9769,7 @@ gfx/binary/155_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9780,7 +9780,7 @@ gfx/binary/155_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9801,7 +9801,7 @@ gfx/binary/155_F1
 	sort 15.5931
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9811,7 +9811,7 @@ gfx/binary/155_F2
 	sort 15.5932
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9828,11 +9828,11 @@ gfx/binary/155_F3
 
 gfx/binary/156_B1
 {
-	sort 15.5940
+	sort 15.594
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9843,7 +9843,7 @@ gfx/binary/156_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9864,7 +9864,7 @@ gfx/binary/156_F1
 	sort 15.5937
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9874,7 +9874,7 @@ gfx/binary/156_F2
 	sort 15.5938
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9895,7 +9895,7 @@ gfx/binary/157_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9906,7 +9906,7 @@ gfx/binary/157_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9927,7 +9927,7 @@ gfx/binary/157_F1
 	sort 15.5943
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9937,7 +9937,7 @@ gfx/binary/157_F2
 	sort 15.5944
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9958,7 +9958,7 @@ gfx/binary/158_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -9969,7 +9969,7 @@ gfx/binary/158_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -9990,17 +9990,17 @@ gfx/binary/158_F1
 	sort 15.5949
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/158_F2
 {
-	sort 15.5950
+	sort 15.595
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10021,7 +10021,7 @@ gfx/binary/159_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10032,14 +10032,14 @@ gfx/binary/159_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/159_B3
 {
-	sort 15.5960
+	sort 15.596
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10053,7 +10053,7 @@ gfx/binary/159_F1
 	sort 15.5955
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10063,7 +10063,7 @@ gfx/binary/159_F2
 	sort 15.5956
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10084,7 +10084,7 @@ gfx/binary/160_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10095,7 +10095,7 @@ gfx/binary/160_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10116,7 +10116,7 @@ gfx/binary/160_F1
 	sort 15.5961
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10126,7 +10126,7 @@ gfx/binary/160_F2
 	sort 15.5962
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10143,11 +10143,11 @@ gfx/binary/160_F3
 
 gfx/binary/161_B1
 {
-	sort 15.5970
+	sort 15.597
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10158,7 +10158,7 @@ gfx/binary/161_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10179,7 +10179,7 @@ gfx/binary/161_F1
 	sort 15.5967
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10189,7 +10189,7 @@ gfx/binary/161_F2
 	sort 15.5968
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10210,7 +10210,7 @@ gfx/binary/162_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10221,7 +10221,7 @@ gfx/binary/162_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10242,7 +10242,7 @@ gfx/binary/162_F1
 	sort 15.5973
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10252,7 +10252,7 @@ gfx/binary/162_F2
 	sort 15.5974
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10273,7 +10273,7 @@ gfx/binary/163_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10284,7 +10284,7 @@ gfx/binary/163_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10305,17 +10305,17 @@ gfx/binary/163_F1
 	sort 15.5979
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/163_F2
 {
-	sort 15.5980
+	sort 15.598
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10336,7 +10336,7 @@ gfx/binary/164_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10347,14 +10347,14 @@ gfx/binary/164_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/164_B3
 {
-	sort 15.5990
+	sort 15.599
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10368,7 +10368,7 @@ gfx/binary/164_F1
 	sort 15.5985
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10378,7 +10378,7 @@ gfx/binary/164_F2
 	sort 15.5986
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10399,7 +10399,7 @@ gfx/binary/165_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10410,7 +10410,7 @@ gfx/binary/165_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10431,7 +10431,7 @@ gfx/binary/165_F1
 	sort 15.5991
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10441,7 +10441,7 @@ gfx/binary/165_F2
 	sort 15.5992
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10458,11 +10458,11 @@ gfx/binary/165_F3
 
 gfx/binary/166_B1
 {
-	sort 15.6000
+	sort 15.6
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10473,7 +10473,7 @@ gfx/binary/166_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10494,7 +10494,7 @@ gfx/binary/166_F1
 	sort 15.5997
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10504,7 +10504,7 @@ gfx/binary/166_F2
 	sort 15.5998
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10525,7 +10525,7 @@ gfx/binary/167_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10536,7 +10536,7 @@ gfx/binary/167_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10557,7 +10557,7 @@ gfx/binary/167_F1
 	sort 15.6003
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10567,7 +10567,7 @@ gfx/binary/167_F2
 	sort 15.6004
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10588,7 +10588,7 @@ gfx/binary/168_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10599,7 +10599,7 @@ gfx/binary/168_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10620,17 +10620,17 @@ gfx/binary/168_F1
 	sort 15.6009
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/168_F2
 {
-	sort 15.6010
+	sort 15.601
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10651,7 +10651,7 @@ gfx/binary/169_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10662,14 +10662,14 @@ gfx/binary/169_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/169_B3
 {
-	sort 15.6020
+	sort 15.602
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10683,7 +10683,7 @@ gfx/binary/169_F1
 	sort 15.6015
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10693,7 +10693,7 @@ gfx/binary/169_F2
 	sort 15.6016
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10714,7 +10714,7 @@ gfx/binary/170_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10725,7 +10725,7 @@ gfx/binary/170_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10746,7 +10746,7 @@ gfx/binary/170_F1
 	sort 15.6021
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10756,7 +10756,7 @@ gfx/binary/170_F2
 	sort 15.6022
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10773,11 +10773,11 @@ gfx/binary/170_F3
 
 gfx/binary/171_B1
 {
-	sort 15.6030
+	sort 15.603
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10788,7 +10788,7 @@ gfx/binary/171_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10809,7 +10809,7 @@ gfx/binary/171_F1
 	sort 15.6027
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10819,7 +10819,7 @@ gfx/binary/171_F2
 	sort 15.6028
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10840,7 +10840,7 @@ gfx/binary/172_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10851,7 +10851,7 @@ gfx/binary/172_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10872,7 +10872,7 @@ gfx/binary/172_F1
 	sort 15.6033
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10882,7 +10882,7 @@ gfx/binary/172_F2
 	sort 15.6034
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10903,7 +10903,7 @@ gfx/binary/173_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10914,7 +10914,7 @@ gfx/binary/173_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10935,17 +10935,17 @@ gfx/binary/173_F1
 	sort 15.6039
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/173_F2
 {
-	sort 15.6040
+	sort 15.604
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -10966,7 +10966,7 @@ gfx/binary/174_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -10977,14 +10977,14 @@ gfx/binary/174_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/174_B3
 {
-	sort 15.6050
+	sort 15.605
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -10998,7 +10998,7 @@ gfx/binary/174_F1
 	sort 15.6045
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11008,7 +11008,7 @@ gfx/binary/174_F2
 	sort 15.6046
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11029,7 +11029,7 @@ gfx/binary/175_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11040,7 +11040,7 @@ gfx/binary/175_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11061,7 +11061,7 @@ gfx/binary/175_F1
 	sort 15.6051
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11071,7 +11071,7 @@ gfx/binary/175_F2
 	sort 15.6052
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11088,11 +11088,11 @@ gfx/binary/175_F3
 
 gfx/binary/176_B1
 {
-	sort 15.6060
+	sort 15.606
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11103,7 +11103,7 @@ gfx/binary/176_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11124,7 +11124,7 @@ gfx/binary/176_F1
 	sort 15.6057
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11134,7 +11134,7 @@ gfx/binary/176_F2
 	sort 15.6058
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11155,7 +11155,7 @@ gfx/binary/177_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11166,7 +11166,7 @@ gfx/binary/177_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11187,7 +11187,7 @@ gfx/binary/177_F1
 	sort 15.6063
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11197,7 +11197,7 @@ gfx/binary/177_F2
 	sort 15.6064
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11218,7 +11218,7 @@ gfx/binary/178_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11229,7 +11229,7 @@ gfx/binary/178_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11250,17 +11250,17 @@ gfx/binary/178_F1
 	sort 15.6069
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/178_F2
 {
-	sort 15.6070
+	sort 15.607
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11281,7 +11281,7 @@ gfx/binary/179_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11292,14 +11292,14 @@ gfx/binary/179_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/179_B3
 {
-	sort 15.6080
+	sort 15.608
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11313,7 +11313,7 @@ gfx/binary/179_F1
 	sort 15.6075
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11323,7 +11323,7 @@ gfx/binary/179_F2
 	sort 15.6076
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11344,7 +11344,7 @@ gfx/binary/180_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11355,7 +11355,7 @@ gfx/binary/180_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11376,7 +11376,7 @@ gfx/binary/180_F1
 	sort 15.6081
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11386,7 +11386,7 @@ gfx/binary/180_F2
 	sort 15.6082
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11403,11 +11403,11 @@ gfx/binary/180_F3
 
 gfx/binary/181_B1
 {
-	sort 15.6090
+	sort 15.609
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11418,7 +11418,7 @@ gfx/binary/181_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11439,7 +11439,7 @@ gfx/binary/181_F1
 	sort 15.6087
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11449,7 +11449,7 @@ gfx/binary/181_F2
 	sort 15.6088
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11470,7 +11470,7 @@ gfx/binary/182_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11481,7 +11481,7 @@ gfx/binary/182_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11502,7 +11502,7 @@ gfx/binary/182_F1
 	sort 15.6093
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11512,7 +11512,7 @@ gfx/binary/182_F2
 	sort 15.6094
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11533,7 +11533,7 @@ gfx/binary/183_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11544,7 +11544,7 @@ gfx/binary/183_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11565,17 +11565,17 @@ gfx/binary/183_F1
 	sort 15.6099
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/183_F2
 {
-	sort 15.6100
+	sort 15.61
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11596,7 +11596,7 @@ gfx/binary/184_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11607,14 +11607,14 @@ gfx/binary/184_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/184_B3
 {
-	sort 15.6110
+	sort 15.611
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11628,7 +11628,7 @@ gfx/binary/184_F1
 	sort 15.6105
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11638,7 +11638,7 @@ gfx/binary/184_F2
 	sort 15.6106
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11659,7 +11659,7 @@ gfx/binary/185_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11670,7 +11670,7 @@ gfx/binary/185_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11691,7 +11691,7 @@ gfx/binary/185_F1
 	sort 15.6111
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11701,7 +11701,7 @@ gfx/binary/185_F2
 	sort 15.6112
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11718,11 +11718,11 @@ gfx/binary/185_F3
 
 gfx/binary/186_B1
 {
-	sort 15.6120
+	sort 15.612
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11733,7 +11733,7 @@ gfx/binary/186_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11754,7 +11754,7 @@ gfx/binary/186_F1
 	sort 15.6117
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11764,7 +11764,7 @@ gfx/binary/186_F2
 	sort 15.6118
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11785,7 +11785,7 @@ gfx/binary/187_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11796,7 +11796,7 @@ gfx/binary/187_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11817,7 +11817,7 @@ gfx/binary/187_F1
 	sort 15.6123
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11827,7 +11827,7 @@ gfx/binary/187_F2
 	sort 15.6124
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11848,7 +11848,7 @@ gfx/binary/188_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11859,7 +11859,7 @@ gfx/binary/188_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11880,17 +11880,17 @@ gfx/binary/188_F1
 	sort 15.6129
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/188_F2
 {
-	sort 15.6130
+	sort 15.613
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11911,7 +11911,7 @@ gfx/binary/189_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11922,14 +11922,14 @@ gfx/binary/189_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/189_B3
 {
-	sort 15.6140
+	sort 15.614
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -11943,7 +11943,7 @@ gfx/binary/189_F1
 	sort 15.6135
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11953,7 +11953,7 @@ gfx/binary/189_F2
 	sort 15.6136
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -11974,7 +11974,7 @@ gfx/binary/190_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -11985,7 +11985,7 @@ gfx/binary/190_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12006,7 +12006,7 @@ gfx/binary/190_F1
 	sort 15.6141
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12016,7 +12016,7 @@ gfx/binary/190_F2
 	sort 15.6142
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12033,11 +12033,11 @@ gfx/binary/190_F3
 
 gfx/binary/191_B1
 {
-	sort 15.6150
+	sort 15.615
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12048,7 +12048,7 @@ gfx/binary/191_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12069,7 +12069,7 @@ gfx/binary/191_F1
 	sort 15.6147
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12079,7 +12079,7 @@ gfx/binary/191_F2
 	sort 15.6148
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12100,7 +12100,7 @@ gfx/binary/192_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12111,7 +12111,7 @@ gfx/binary/192_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12132,7 +12132,7 @@ gfx/binary/192_F1
 	sort 15.6153
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12142,7 +12142,7 @@ gfx/binary/192_F2
 	sort 15.6154
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12163,7 +12163,7 @@ gfx/binary/193_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12174,7 +12174,7 @@ gfx/binary/193_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12195,17 +12195,17 @@ gfx/binary/193_F1
 	sort 15.6159
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/193_F2
 {
-	sort 15.6160
+	sort 15.616
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12226,7 +12226,7 @@ gfx/binary/194_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12237,14 +12237,14 @@ gfx/binary/194_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/194_B3
 {
-	sort 15.6170
+	sort 15.617
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12258,7 +12258,7 @@ gfx/binary/194_F1
 	sort 15.6165
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12268,7 +12268,7 @@ gfx/binary/194_F2
 	sort 15.6166
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12289,7 +12289,7 @@ gfx/binary/195_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12300,7 +12300,7 @@ gfx/binary/195_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12321,7 +12321,7 @@ gfx/binary/195_F1
 	sort 15.6171
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12331,7 +12331,7 @@ gfx/binary/195_F2
 	sort 15.6172
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12348,11 +12348,11 @@ gfx/binary/195_F3
 
 gfx/binary/196_B1
 {
-	sort 15.6180
+	sort 15.618
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12363,7 +12363,7 @@ gfx/binary/196_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12384,7 +12384,7 @@ gfx/binary/196_F1
 	sort 15.6177
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12394,7 +12394,7 @@ gfx/binary/196_F2
 	sort 15.6178
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12415,7 +12415,7 @@ gfx/binary/197_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12426,7 +12426,7 @@ gfx/binary/197_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12447,7 +12447,7 @@ gfx/binary/197_F1
 	sort 15.6183
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12457,7 +12457,7 @@ gfx/binary/197_F2
 	sort 15.6184
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12478,7 +12478,7 @@ gfx/binary/198_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12489,7 +12489,7 @@ gfx/binary/198_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12510,17 +12510,17 @@ gfx/binary/198_F1
 	sort 15.6189
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/198_F2
 {
-	sort 15.6190
+	sort 15.619
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12541,7 +12541,7 @@ gfx/binary/199_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12552,14 +12552,14 @@ gfx/binary/199_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/199_B3
 {
-	sort 15.6200
+	sort 15.62
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12573,7 +12573,7 @@ gfx/binary/199_F1
 	sort 15.6195
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12583,7 +12583,7 @@ gfx/binary/199_F2
 	sort 15.6196
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12604,7 +12604,7 @@ gfx/binary/200_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12615,7 +12615,7 @@ gfx/binary/200_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12636,7 +12636,7 @@ gfx/binary/200_F1
 	sort 15.6201
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12646,7 +12646,7 @@ gfx/binary/200_F2
 	sort 15.6202
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12663,11 +12663,11 @@ gfx/binary/200_F3
 
 gfx/binary/201_B1
 {
-	sort 15.6210
+	sort 15.621
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12678,7 +12678,7 @@ gfx/binary/201_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12699,7 +12699,7 @@ gfx/binary/201_F1
 	sort 15.6207
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12709,7 +12709,7 @@ gfx/binary/201_F2
 	sort 15.6208
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12730,7 +12730,7 @@ gfx/binary/202_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12741,7 +12741,7 @@ gfx/binary/202_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12762,7 +12762,7 @@ gfx/binary/202_F1
 	sort 15.6213
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12772,7 +12772,7 @@ gfx/binary/202_F2
 	sort 15.6214
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12793,7 +12793,7 @@ gfx/binary/203_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12804,7 +12804,7 @@ gfx/binary/203_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12825,17 +12825,17 @@ gfx/binary/203_F1
 	sort 15.6219
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/203_F2
 {
-	sort 15.6220
+	sort 15.622
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12856,7 +12856,7 @@ gfx/binary/204_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12867,14 +12867,14 @@ gfx/binary/204_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/204_B3
 {
-	sort 15.6230
+	sort 15.623
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -12888,7 +12888,7 @@ gfx/binary/204_F1
 	sort 15.6225
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12898,7 +12898,7 @@ gfx/binary/204_F2
 	sort 15.6226
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12919,7 +12919,7 @@ gfx/binary/205_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12930,7 +12930,7 @@ gfx/binary/205_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12951,7 +12951,7 @@ gfx/binary/205_F1
 	sort 15.6231
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12961,7 +12961,7 @@ gfx/binary/205_F2
 	sort 15.6232
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -12978,11 +12978,11 @@ gfx/binary/205_F3
 
 gfx/binary/206_B1
 {
-	sort 15.6240
+	sort 15.624
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -12993,7 +12993,7 @@ gfx/binary/206_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13014,7 +13014,7 @@ gfx/binary/206_F1
 	sort 15.6237
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13024,7 +13024,7 @@ gfx/binary/206_F2
 	sort 15.6238
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13045,7 +13045,7 @@ gfx/binary/207_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13056,7 +13056,7 @@ gfx/binary/207_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13077,7 +13077,7 @@ gfx/binary/207_F1
 	sort 15.6243
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13087,7 +13087,7 @@ gfx/binary/207_F2
 	sort 15.6244
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13108,7 +13108,7 @@ gfx/binary/208_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13119,7 +13119,7 @@ gfx/binary/208_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13140,17 +13140,17 @@ gfx/binary/208_F1
 	sort 15.6249
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/208_F2
 {
-	sort 15.6250
+	sort 15.625
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13171,7 +13171,7 @@ gfx/binary/209_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13182,14 +13182,14 @@ gfx/binary/209_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/209_B3
 {
-	sort 15.6260
+	sort 15.626
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13203,7 +13203,7 @@ gfx/binary/209_F1
 	sort 15.6255
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13213,7 +13213,7 @@ gfx/binary/209_F2
 	sort 15.6256
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13234,7 +13234,7 @@ gfx/binary/210_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13245,7 +13245,7 @@ gfx/binary/210_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13266,7 +13266,7 @@ gfx/binary/210_F1
 	sort 15.6261
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13276,7 +13276,7 @@ gfx/binary/210_F2
 	sort 15.6262
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13293,11 +13293,11 @@ gfx/binary/210_F3
 
 gfx/binary/211_B1
 {
-	sort 15.6270
+	sort 15.627
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13308,7 +13308,7 @@ gfx/binary/211_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13329,7 +13329,7 @@ gfx/binary/211_F1
 	sort 15.6267
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13339,7 +13339,7 @@ gfx/binary/211_F2
 	sort 15.6268
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13360,7 +13360,7 @@ gfx/binary/212_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13371,7 +13371,7 @@ gfx/binary/212_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13392,7 +13392,7 @@ gfx/binary/212_F1
 	sort 15.6273
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13402,7 +13402,7 @@ gfx/binary/212_F2
 	sort 15.6274
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13423,7 +13423,7 @@ gfx/binary/213_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13434,7 +13434,7 @@ gfx/binary/213_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13455,17 +13455,17 @@ gfx/binary/213_F1
 	sort 15.6279
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/213_F2
 {
-	sort 15.6280
+	sort 15.628
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13486,7 +13486,7 @@ gfx/binary/214_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13497,14 +13497,14 @@ gfx/binary/214_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/214_B3
 {
-	sort 15.6290
+	sort 15.629
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13518,7 +13518,7 @@ gfx/binary/214_F1
 	sort 15.6285
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13528,7 +13528,7 @@ gfx/binary/214_F2
 	sort 15.6286
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13549,7 +13549,7 @@ gfx/binary/215_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13560,7 +13560,7 @@ gfx/binary/215_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13581,7 +13581,7 @@ gfx/binary/215_F1
 	sort 15.6291
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13591,7 +13591,7 @@ gfx/binary/215_F2
 	sort 15.6292
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13608,11 +13608,11 @@ gfx/binary/215_F3
 
 gfx/binary/216_B1
 {
-	sort 15.6300
+	sort 15.63
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13623,7 +13623,7 @@ gfx/binary/216_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13644,7 +13644,7 @@ gfx/binary/216_F1
 	sort 15.6297
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13654,7 +13654,7 @@ gfx/binary/216_F2
 	sort 15.6298
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13675,7 +13675,7 @@ gfx/binary/217_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13686,7 +13686,7 @@ gfx/binary/217_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13707,7 +13707,7 @@ gfx/binary/217_F1
 	sort 15.6303
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13717,7 +13717,7 @@ gfx/binary/217_F2
 	sort 15.6304
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13738,7 +13738,7 @@ gfx/binary/218_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13749,7 +13749,7 @@ gfx/binary/218_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13770,17 +13770,17 @@ gfx/binary/218_F1
 	sort 15.6309
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/218_F2
 {
-	sort 15.6310
+	sort 15.631
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13801,7 +13801,7 @@ gfx/binary/219_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13812,14 +13812,14 @@ gfx/binary/219_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/219_B3
 {
-	sort 15.6320
+	sort 15.632
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -13833,7 +13833,7 @@ gfx/binary/219_F1
 	sort 15.6315
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13843,7 +13843,7 @@ gfx/binary/219_F2
 	sort 15.6316
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13864,7 +13864,7 @@ gfx/binary/220_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13875,7 +13875,7 @@ gfx/binary/220_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13896,7 +13896,7 @@ gfx/binary/220_F1
 	sort 15.6321
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13906,7 +13906,7 @@ gfx/binary/220_F2
 	sort 15.6322
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13923,11 +13923,11 @@ gfx/binary/220_F3
 
 gfx/binary/221_B1
 {
-	sort 15.6330
+	sort 15.633
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13938,7 +13938,7 @@ gfx/binary/221_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13959,7 +13959,7 @@ gfx/binary/221_F1
 	sort 15.6327
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -13969,7 +13969,7 @@ gfx/binary/221_F2
 	sort 15.6328
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -13990,7 +13990,7 @@ gfx/binary/222_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14001,7 +14001,7 @@ gfx/binary/222_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14022,7 +14022,7 @@ gfx/binary/222_F1
 	sort 15.6333
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14032,7 +14032,7 @@ gfx/binary/222_F2
 	sort 15.6334
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14053,7 +14053,7 @@ gfx/binary/223_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14064,7 +14064,7 @@ gfx/binary/223_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14085,17 +14085,17 @@ gfx/binary/223_F1
 	sort 15.6339
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/223_F2
 {
-	sort 15.6340
+	sort 15.634
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14116,7 +14116,7 @@ gfx/binary/224_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14127,14 +14127,14 @@ gfx/binary/224_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/224_B3
 {
-	sort 15.6350
+	sort 15.635
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14148,7 +14148,7 @@ gfx/binary/224_F1
 	sort 15.6345
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14158,7 +14158,7 @@ gfx/binary/224_F2
 	sort 15.6346
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14179,7 +14179,7 @@ gfx/binary/225_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14190,7 +14190,7 @@ gfx/binary/225_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14211,7 +14211,7 @@ gfx/binary/225_F1
 	sort 15.6351
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14221,7 +14221,7 @@ gfx/binary/225_F2
 	sort 15.6352
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14238,11 +14238,11 @@ gfx/binary/225_F3
 
 gfx/binary/226_B1
 {
-	sort 15.6360
+	sort 15.636
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14253,7 +14253,7 @@ gfx/binary/226_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14274,7 +14274,7 @@ gfx/binary/226_F1
 	sort 15.6357
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14284,7 +14284,7 @@ gfx/binary/226_F2
 	sort 15.6358
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14305,7 +14305,7 @@ gfx/binary/227_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14316,7 +14316,7 @@ gfx/binary/227_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14337,7 +14337,7 @@ gfx/binary/227_F1
 	sort 15.6363
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14347,7 +14347,7 @@ gfx/binary/227_F2
 	sort 15.6364
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14368,7 +14368,7 @@ gfx/binary/228_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14379,7 +14379,7 @@ gfx/binary/228_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14400,17 +14400,17 @@ gfx/binary/228_F1
 	sort 15.6369
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/228_F2
 {
-	sort 15.6370
+	sort 15.637
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14431,7 +14431,7 @@ gfx/binary/229_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14442,14 +14442,14 @@ gfx/binary/229_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/229_B3
 {
-	sort 15.6380
+	sort 15.638
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14463,7 +14463,7 @@ gfx/binary/229_F1
 	sort 15.6375
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14473,7 +14473,7 @@ gfx/binary/229_F2
 	sort 15.6376
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14494,7 +14494,7 @@ gfx/binary/230_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14505,7 +14505,7 @@ gfx/binary/230_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14526,7 +14526,7 @@ gfx/binary/230_F1
 	sort 15.6381
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14536,7 +14536,7 @@ gfx/binary/230_F2
 	sort 15.6382
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14553,11 +14553,11 @@ gfx/binary/230_F3
 
 gfx/binary/231_B1
 {
-	sort 15.6390
+	sort 15.639
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14568,7 +14568,7 @@ gfx/binary/231_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14589,7 +14589,7 @@ gfx/binary/231_F1
 	sort 15.6387
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14599,7 +14599,7 @@ gfx/binary/231_F2
 	sort 15.6388
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14620,7 +14620,7 @@ gfx/binary/232_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14631,7 +14631,7 @@ gfx/binary/232_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14652,7 +14652,7 @@ gfx/binary/232_F1
 	sort 15.6393
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14662,7 +14662,7 @@ gfx/binary/232_F2
 	sort 15.6394
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14683,7 +14683,7 @@ gfx/binary/233_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14694,7 +14694,7 @@ gfx/binary/233_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14715,17 +14715,17 @@ gfx/binary/233_F1
 	sort 15.6399
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/233_F2
 {
-	sort 15.6400
+	sort 15.64
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14746,7 +14746,7 @@ gfx/binary/234_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14757,14 +14757,14 @@ gfx/binary/234_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/234_B3
 {
-	sort 15.6410
+	sort 15.641
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -14778,7 +14778,7 @@ gfx/binary/234_F1
 	sort 15.6405
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14788,7 +14788,7 @@ gfx/binary/234_F2
 	sort 15.6406
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14809,7 +14809,7 @@ gfx/binary/235_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14820,7 +14820,7 @@ gfx/binary/235_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14841,7 +14841,7 @@ gfx/binary/235_F1
 	sort 15.6411
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14851,7 +14851,7 @@ gfx/binary/235_F2
 	sort 15.6412
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14868,11 +14868,11 @@ gfx/binary/235_F3
 
 gfx/binary/236_B1
 {
-	sort 15.6420
+	sort 15.642
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14883,7 +14883,7 @@ gfx/binary/236_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14904,7 +14904,7 @@ gfx/binary/236_F1
 	sort 15.6417
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14914,7 +14914,7 @@ gfx/binary/236_F2
 	sort 15.6418
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14935,7 +14935,7 @@ gfx/binary/237_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14946,7 +14946,7 @@ gfx/binary/237_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14967,7 +14967,7 @@ gfx/binary/237_F1
 	sort 15.6423
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -14977,7 +14977,7 @@ gfx/binary/237_F2
 	sort 15.6424
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -14998,7 +14998,7 @@ gfx/binary/238_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15009,7 +15009,7 @@ gfx/binary/238_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15030,17 +15030,17 @@ gfx/binary/238_F1
 	sort 15.6429
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/238_F2
 {
-	sort 15.6430
+	sort 15.643
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15061,7 +15061,7 @@ gfx/binary/239_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15072,14 +15072,14 @@ gfx/binary/239_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/239_B3
 {
-	sort 15.6440
+	sort 15.644
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15093,7 +15093,7 @@ gfx/binary/239_F1
 	sort 15.6435
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15103,7 +15103,7 @@ gfx/binary/239_F2
 	sort 15.6436
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15124,7 +15124,7 @@ gfx/binary/240_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15135,7 +15135,7 @@ gfx/binary/240_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15156,7 +15156,7 @@ gfx/binary/240_F1
 	sort 15.6441
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15166,7 +15166,7 @@ gfx/binary/240_F2
 	sort 15.6442
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15183,11 +15183,11 @@ gfx/binary/240_F3
 
 gfx/binary/241_B1
 {
-	sort 15.6450
+	sort 15.645
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15198,7 +15198,7 @@ gfx/binary/241_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15219,7 +15219,7 @@ gfx/binary/241_F1
 	sort 15.6447
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15229,7 +15229,7 @@ gfx/binary/241_F2
 	sort 15.6448
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15250,7 +15250,7 @@ gfx/binary/242_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15261,7 +15261,7 @@ gfx/binary/242_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15282,7 +15282,7 @@ gfx/binary/242_F1
 	sort 15.6453
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15292,7 +15292,7 @@ gfx/binary/242_F2
 	sort 15.6454
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15313,7 +15313,7 @@ gfx/binary/243_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15324,7 +15324,7 @@ gfx/binary/243_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15345,17 +15345,17 @@ gfx/binary/243_F1
 	sort 15.6459
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/243_F2
 {
-	sort 15.6460
+	sort 15.646
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15376,7 +15376,7 @@ gfx/binary/244_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15387,14 +15387,14 @@ gfx/binary/244_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/244_B3
 {
-	sort 15.6470
+	sort 15.647
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15408,7 +15408,7 @@ gfx/binary/244_F1
 	sort 15.6465
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15418,7 +15418,7 @@ gfx/binary/244_F2
 	sort 15.6466
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15439,7 +15439,7 @@ gfx/binary/245_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15450,7 +15450,7 @@ gfx/binary/245_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15471,7 +15471,7 @@ gfx/binary/245_F1
 	sort 15.6471
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15481,7 +15481,7 @@ gfx/binary/245_F2
 	sort 15.6472
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15498,11 +15498,11 @@ gfx/binary/245_F3
 
 gfx/binary/246_B1
 {
-	sort 15.6480
+	sort 15.648
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15513,7 +15513,7 @@ gfx/binary/246_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15534,7 +15534,7 @@ gfx/binary/246_F1
 	sort 15.6477
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15544,7 +15544,7 @@ gfx/binary/246_F2
 	sort 15.6478
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15565,7 +15565,7 @@ gfx/binary/247_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15576,7 +15576,7 @@ gfx/binary/247_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15597,7 +15597,7 @@ gfx/binary/247_F1
 	sort 15.6483
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15607,7 +15607,7 @@ gfx/binary/247_F2
 	sort 15.6484
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15628,7 +15628,7 @@ gfx/binary/248_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15639,7 +15639,7 @@ gfx/binary/248_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15660,17 +15660,17 @@ gfx/binary/248_F1
 	sort 15.6489
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/248_F2
 {
-	sort 15.6490
+	sort 15.649
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15691,7 +15691,7 @@ gfx/binary/249_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15702,14 +15702,14 @@ gfx/binary/249_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/249_B3
 {
-	sort 15.6500
+	sort 15.65
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -15723,7 +15723,7 @@ gfx/binary/249_F1
 	sort 15.6495
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15733,7 +15733,7 @@ gfx/binary/249_F2
 	sort 15.6496
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15754,7 +15754,7 @@ gfx/binary/250_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15765,7 +15765,7 @@ gfx/binary/250_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15786,7 +15786,7 @@ gfx/binary/250_F1
 	sort 15.6501
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15796,7 +15796,7 @@ gfx/binary/250_F2
 	sort 15.6502
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15813,11 +15813,11 @@ gfx/binary/250_F3
 
 gfx/binary/251_B1
 {
-	sort 15.6510
+	sort 15.651
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15828,7 +15828,7 @@ gfx/binary/251_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15849,7 +15849,7 @@ gfx/binary/251_F1
 	sort 15.6507
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15859,7 +15859,7 @@ gfx/binary/251_F2
 	sort 15.6508
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15880,7 +15880,7 @@ gfx/binary/252_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15891,7 +15891,7 @@ gfx/binary/252_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15912,7 +15912,7 @@ gfx/binary/252_F1
 	sort 15.6513
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15922,7 +15922,7 @@ gfx/binary/252_F2
 	sort 15.6514
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15943,7 +15943,7 @@ gfx/binary/253_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -15954,7 +15954,7 @@ gfx/binary/253_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -15975,17 +15975,17 @@ gfx/binary/253_F1
 	sort 15.6519
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
 
 gfx/binary/253_F2
 {
-	sort 15.6520
+	sort 15.652
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -16006,7 +16006,7 @@ gfx/binary/254_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -16017,14 +16017,14 @@ gfx/binary/254_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
 
 gfx/binary/254_B3
 {
-	sort 15.6530
+	sort 15.653
 	{
 		map $whiteimage
 		rgbGen exactVertex
@@ -16038,7 +16038,7 @@ gfx/binary/254_F1
 	sort 15.6525
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -16048,7 +16048,7 @@ gfx/binary/254_F2
 	sort 15.6526
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -16069,7 +16069,7 @@ gfx/binary/255_B1
 	cull back
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -16080,7 +16080,7 @@ gfx/binary/255_B2
 	cull back
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -16101,7 +16101,7 @@ gfx/binary/255_F1
 	sort 15.6531
 	{
 		map $whiteimage
-		alphaGen const 0.0
+		alphaGen const 0
 		blendFunc GL_DST_COLOR GL_ZERO
 	}
 }
@@ -16111,7 +16111,7 @@ gfx/binary/255_F2
 	sort 15.6532
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
@@ -16131,7 +16131,7 @@ gfx/binary/alpha1
 	sort 15.5
 	{
 		map $whiteimage
-		rgbGen const ( 0.0 0.0 0.0 )
+		rgbGen const ( 0 0 0 )
 		blendFunc GL_ONE GL_ONE
 	}
 }
