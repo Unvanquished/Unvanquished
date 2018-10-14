@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 # Retrieve Unvanquished resources from Sourceforge
 # Arguments:
 # 1. Destination directory
@@ -13,10 +13,10 @@
 set -e
 
 # Work around a reported locale problem
-export LANG=C
+export LANG=C.UTF-8
 
 # Version of Unvanquished for which this script is built
-VERSION=0.50
+VERSION=0.51
 
 # Download from here
 CDN_URL="http://cdn.unvanquished.net/$VERSION/pkg/"
@@ -38,20 +38,19 @@ fi
 # Default destination directory
 case "$(uname -s)" in
   Darwin)
-    DEFAULT_DEST_DIR=~/Library/Application\ Support/Unvanquished/pkg
+    DEFAULT_DEST_DIR="${HOME}/Library/Application Support/Unvanquished/pkg"
     ;;
   *)
-    DEFAULT_DEST_DIR=~/.local/share/unvanquished/pkg
+    DEFAULT_DEST_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished/pkg"
     ;;
 esac
 
 # Option flags
 RUN_DOWNLOAD=1
 
-DONE=
-while test -z "$DONE"; do
+while ! test -z "$1"; do
   case "$1" in
-    --help|-h|-\?)
+    --help|-h|'-?')
       echo "$0: download Unvanquished game files"
       echo "Usage: $0 [option] DESTINATION_DIR [CACHE_DIR]]"
       echo "Default destination directory is $DEFAULT_DEST_DIR"
@@ -85,7 +84,8 @@ while test -z "$DONE"; do
       ;;
 
     *)
-      DONE=1
+      echo "ERROR: unknown option: $1" >&2
+      exit 1
       ;;
   esac
 done
