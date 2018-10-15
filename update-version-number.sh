@@ -24,11 +24,11 @@ TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
 sed "s|\(#define \+PRODUCT_VERSION *\"\)[^\"]*\"|\1${VERSION}\"|" "${SOURCE_PATH}/daemon/src/common/Defs.h" > "${TMP_FILE}"
 mv "${TMP_FILE}" "${SOURCE_PATH}/daemon/src/common/Defs.h"
 
-# Update download-pk3.sh
+# Update download-dpk.sh
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
-sed "s|VERSION=.*|VERSION=${VERSION_SHORT}|" "${SOURCE_PATH}/download-pk3.sh" > "${TMP_FILE}"
-mv "${TMP_FILE}" "${SOURCE_PATH}/download-pk3.sh"
-chmod +x "${SOURCE_PATH}/download-pk3.sh"
+sed "s|VERSION=.*|VERSION=${VERSION_SHORT}|" "${SOURCE_PATH}/download-dpk.sh" > "${TMP_FILE}"
+mv "${TMP_FILE}" "${SOURCE_PATH}/download-dpk.sh"
+chmod +x "${SOURCE_PATH}/download-dpk.sh"
 
 # Update Info.plist
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
@@ -37,10 +37,10 @@ mv "${TMP_FILE}" "${SOURCE_PATH}/macosx/Info.plist"
 
 # Update menu_main.rml
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
-sed "/blocklink.*Alpha/s/Alpha \([0-9\\.]\+\)/Alpha ${VERSION_SHORT}/" "${SOURCE_PATH}/main/ui/menu_main.rml" > ${TMP_FILE}
-mv "${TMP_FILE}" "${SOURCE_PATH}/main/ui/menu_main.rml"
+sed "/blocklink.*Alpha/s/Alpha \([0-9\\.]\+\)/Alpha ${VERSION_SHORT}/" "${SOURCE_PATH}/pkg/unvanquished_src.dpkdir/ui/menu_main.rml" > ${TMP_FILE}
+mv "${TMP_FILE}" "${SOURCE_PATH}/pkg/unvanquished_src.dpkdir/ui/menu_main.rml"
 
 # Update m# Update menu_main.rml
 TMP_FILE="`mktemp /tmp/config.XXXXXXXXXX`"
-sed "/blocklink.*Alpha/s/Alpha \([0-9\\.]\+\)/Alpha ${VERSION_SHORT}/" "${SOURCE_PATH}/main/ui/menu_ingame.rml" > ${TMP_FILE}
-mv "${TMP_FILE}" "${SOURCE_PATH}/main/ui/menu_ingame.rml"
+sed "/blocklink.*Alpha/s/Alpha \([0-9\\.]\+\)/Alpha ${VERSION_SHORT}/" "${SOURCE_PATH}/pkg/unvanquished_src.dpkdir/ui/menu_ingame.rml" > ${TMP_FILE}
+mv "${TMP_FILE}" "${SOURCE_PATH}/pkg/unvanquished_src.dpkdir/ui/menu_ingame.rml"
