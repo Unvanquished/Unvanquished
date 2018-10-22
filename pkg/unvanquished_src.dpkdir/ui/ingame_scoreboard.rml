@@ -99,7 +99,7 @@
 			/* Name cell */
 			text-align: left;
 			max-width: 56%;
-			white-space: normal;
+			white-space: pre;
 		}
                 datagridcell:nth-child(n+3), datagridcolumn:nth-child(n+3) {
                         text-align: right;
