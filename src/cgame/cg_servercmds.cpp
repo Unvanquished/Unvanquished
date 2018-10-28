@@ -858,18 +858,18 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			DAEMON_FALLTHROUGH;
 
 		case SAY_ALL_ADMIN:
-			Log::Notice(  "%s%s%s^7: %s%s",
+			Log::Notice(  "%s%s%s^*: %s%s",
 			           ignore, prefix, name, color, text );
 			break;
 
 		case SAY_TEAM:
-			Log::Notice( "%s%s(%s^7)%s: %s%s",
+			Log::Notice( "%s%s(%s^*)%s: %s%s",
 			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_ADMINS:
 		case SAY_ADMINS_PUBLIC:
-			Log::Notice( "%s%s%s%s^7: %s%s",
+			Log::Notice( "%s%s%s%s^*: %s%s",
 			           ignore, prefix,
 			           ( mode == SAY_ADMINS ) ? "[ADMIN]" : "[PLAYER]",
 			           name, color, text );
@@ -877,13 +877,13 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 		case SAY_AREA:
 		case SAY_AREA_TEAM:
-			Log::Notice( "%s%s<%s^7>%s: %s%s",
+			Log::Notice( "%s%s<%s^*>%s: %s%s",
 			           ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_PRIVMSG:
 		case SAY_TPRIVMSG:
-			Log::Notice( "%s%s[%s^7 → %s^7]: %s%s",
+			Log::Notice( "%s%s[%s^* → %s^*]: %s%s",
 			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
 			           color, text );
 
@@ -903,12 +903,12 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			break;
 
 		case SAY_ALL_ME:
-			Log::Notice(  "%s* %s%s^7 %s%s",
+			Log::Notice(  "%s* %s%s^* %s%s",
 			           ignore, prefix, name, color, text );
 			break;
 
 		case SAY_TEAM_ME:
-			Log::Notice( "%s* %s(%s^7)%s %s%s",
+			Log::Notice( "%s* %s(%s^*)%s %s%s",
 			           ignore, prefix, name, location, color, text );
 			break;
 

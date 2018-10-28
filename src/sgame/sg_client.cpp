@@ -963,7 +963,7 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 
 			if ( *oldname )
 			{
-				G_LogPrintf( "ClientRename: %i [%s] (%s) \"%s^7\" -> \"%s^7\" \"%s^7\"",
+				G_LogPrintf( "ClientRename: %i [%s] (%s) \"%s^*\" -> \"%s^*\" \"%s^*\"",
 				             clientNum, client->pers.ip.str, client->pers.guid,
 				             oldname, client->pers.netname,
 				             client->pers.netname );
@@ -1242,7 +1242,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 		return userInfoError;
 	}
 
-	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%s^7\"",
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^*\" \"%s^*\"",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
 	             client->pers.netname );
@@ -1257,12 +1257,12 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	{
 		if ( g_geoip.integer && country && *country )
 		{
-			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^7 connected from $2$") ),
+			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^* connected from $2$") ),
 			                                Quote( client->pers.netname ), Quote( country ) ) );
 		}
 		else
 		{
-			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected") ),
+			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected") ),
 			                                Quote( client->pers.netname ) ) );
 		}
 	}
@@ -1336,7 +1336,7 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
 	}
 
-	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%s^7\" [BOT]",
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^*\" \"%s^*\" [BOT]",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
 	             client->pers.netname );
@@ -1344,7 +1344,7 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected") ),
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected") ),
 		                                Quote( client->pers.netname ) ) );
 	}
 
@@ -1431,7 +1431,7 @@ void ClientBegin( int clientNum )
 	// locate ent at a spawn point
 	ClientSpawn( ent, nullptr, nullptr, nullptr );
 
-	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 entered the game") ), Quote( client->pers.netname ) ) );
+	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* entered the game") ), Quote( client->pers.netname ) ) );
 
 	trap_Cvar_VariableStringBuffer( "g_mapStartupMessage", startMsg, sizeof( startMsg ) );
 
@@ -1977,7 +1977,7 @@ void ClientDisconnect( int clientNum )
 		tent->s.clientNum = ent->s.clientNum;
 	}
 
-	G_LogPrintf( "ClientDisconnect: %i [%s] (%s) \"%s^7\"", clientNum,
+	G_LogPrintf( "ClientDisconnect: %i [%s] (%s) \"%s^*\"", clientNum,
 	             ent->client->pers.ip.str, ent->client->pers.guid, ent->client->pers.netname );
 
 	ent->client->pers.connected = CON_DISCONNECTED;

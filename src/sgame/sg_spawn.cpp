@@ -605,7 +605,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
 		{
-			Log::Warn("a ^5" S_WORLDSPAWN "^7 class was misplaced into position ^5#%i^* of the spawn string – Ignoring", spawnedEntity->s.number );
+			Log::Warn("a ^5" S_WORLDSPAWN "^* class was misplaced into position ^5#%i^* of the spawn string – Ignoring", spawnedEntity->s.number );
 		}
 		else
 		{

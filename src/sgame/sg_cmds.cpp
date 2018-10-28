@@ -111,7 +111,7 @@ int G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 
 			if ( cl->pers.connected == CON_CONNECTED )
 			{
-				Com_sprintf( line, sizeof( line ), "%2i — %s^7",
+				Com_sprintf( line, sizeof( line ), "%2i — %s^*",
 				             plist[p], cl->pers.netname );
 
 				if ( strlen( err ) + strlen( line ) > (size_t) len )
@@ -228,7 +228,7 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 		{
 			if ( p )
 			{
-				l = Q_snprintf( p, l2, "%-2d — %s^7", i, cl->pers.netname );
+				l = Q_snprintf( p, l2, "%-2d — %s^*", i, cl->pers.netname );
 				p += l;
 				l2 -= l;
 			}
@@ -1001,13 +1001,13 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 	switch ( mode )
 	{
 		case SAY_ALL:
-			G_LogPrintf( "Say: %d \"%s^7\": ^2%s",
+			G_LogPrintf( "Say: %d \"%s^*\": ^2%s",
 			             ( ent ) ? ( int )( ent - g_entities ) : -1,
 			             ( ent ) ? ent->client->pers.netname : "console", chatText );
 			break;
 
 		case SAY_ALL_ADMIN:
-			G_LogPrintf( "Say: %d \"%s^7\": ^6%s",
+			G_LogPrintf( "Say: %d \"%s^*\": ^6%s",
 			             ( ent ) ? ( int )( ent - g_entities ) : -1,
 			             ( ent ) ? ent->client->pers.netname : "console", chatText );
 			break;
@@ -1020,7 +1020,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 				Com_Error( errorParm_t::ERR_FATAL, "SAY_TEAM by non-client entity" );
 			}
 
-			G_LogPrintf( "SayTeam: %d \"%s^7\": ^5%s",
+			G_LogPrintf( "SayTeam: %d \"%s^*\": ^5%s",
 			             ( int )( ent - g_entities ), ent->client->pers.netname, chatText );
 			break;
 
@@ -1070,7 +1070,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 		range[ i ] = g_sayAreaRange.value;
 	}
 
-	G_LogPrintf( "SayArea: %d \"%s^7\": ^4%s",
+	G_LogPrintf( "SayArea: %d \"%s^*\": ^4%s",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, msg );
 
 	VectorAdd( ent->s.origin, range, maxs );
@@ -1115,7 +1115,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 		range[ i ] = g_sayAreaRange.value;
 	}
 
-	G_LogPrintf( "SayAreaTeam: %d \"%s^7\": ^4%s",
+	G_LogPrintf( "SayAreaTeam: %d \"%s^*\": ^4%s",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, msg );
 
 	VectorAdd( ent->s.origin, range, maxs );
@@ -1170,7 +1170,7 @@ static void Cmd_Say_f( gentity_t *ent )
 	{
 		if ( !G_admin_permission( ent, ADMF_ADMINCHAT ) )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied") ), "asay" ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$: ^*permission denied") ), "asay" ) );
 			return;
 		}
 
@@ -1730,7 +1730,7 @@ vote_is_disabled:
 	{
 	case VOTE_KICK:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "ban %s 1s%s %s ^7called vote kick (%s^7)", level.clients[ clientNum ].pers.ip.str,
+		             "ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
 		             Quote( g_adminTempBan.string ), Quote( ent->client->pers.netname ), Quote( reason ) );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ), N_("Kick player '%s'"), name );
@@ -1959,13 +1959,13 @@ vote_is_disabled:
 		          sizeof( level.team[ team ].voteDisplayString ), va( " for '%s'", reason ) );
 	}
 
-	G_LogPrintf( "%s: %d \"%s^7\": %s",
+	G_LogPrintf( "%s: %d \"%s^*\": %s",
 	             team == TEAM_NONE ? "CallVote" : "CallTeamVote",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, level.team[ team ].voteString );
 
 	if ( team == TEAM_NONE )
 	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^7 called a vote: $2$") ),
+		trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^* called a vote: $2$") ),
 		                                Quote( ent->client->pers.netname ), Quote( level.team[ team ].voteDisplayString ) ) );
 	}
 	else
@@ -1980,7 +1980,7 @@ vote_is_disabled:
 				     ( level.clients[ i ].pers.team == TEAM_NONE &&
 				       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 				{
-					trap_SendServerCommand( i, va( "print_tr %s %s %s", QQ( N_("$1$^7 called a team vote: $2t$") ),
+					trap_SendServerCommand( i, va( "print_tr %s %s %s", QQ( N_("$1$^* called a team vote: $2t$") ),
 					                               Quote( ent->client->pers.netname ), Quote( level.team[ team ].voteDisplayString ) ) );
 				}
 				else if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
@@ -3751,13 +3751,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, false );
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("ignore: added $1$^7 to your ignore list"),
+				                        "%s\" %s", N_("ignore: added $1$^* to your ignore list"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("ignore: $1$^7 is already on your ignore list"),
+				                        "%s\" %s", N_("ignore: $1$^* is already on your ignore list"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 		}
@@ -3768,13 +3768,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, false );
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("unignore: removed $1$^7 from your ignore list"),
+				                        "%s\" %s", N_("unignore: removed $1$^* from your ignore list"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("unignore: $1$^7 is not on your ignore list"),
+				                        "%s\" %s", N_("unignore: $1$^* is not on your ignore list"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
 			}
 		}
@@ -3946,8 +3946,8 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	if ( search[ 0 ] )
 	{
 		ADMP_P( va( "%s %d %s",
-					Quote( P_("^3listmaps: ^7found $1$ map matching '$2$^7'",
-							  "^3listmaps: ^7found $1$ maps matching '$2$^7'",
+					Quote( P_("^3listmaps:^* found $1$ map matching '$2$^*'",
+							  "^3listmaps:^* found $1$ maps matching '$2$^*'",
 							  mapNamesCount)
 					),
 					mapNamesCount,
@@ -3958,8 +3958,8 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	else
 	{
 		ADMP_P( va( "%s %d %d",
-					Quote( P_("^3listmaps: ^7listing $1$ of $2$ map",
-							  "^3listmaps: ^7listing $1$ of $2$ maps",
+					Quote( P_("^3listmaps:^* listing $1$ of $2$ map",
+							  "^3listmaps:^* listing $1$ of $2$ maps",
 							  mapNamesCount)
 					),
 					shownMapNamesCount,
@@ -3971,12 +3971,12 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	if ( pages > 1 && page + 1 < pages )
 	{
 		ADMP( va( "%s %d %d %s %s %d",
-				  QQ( N_("^3listmaps: ^7page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
+				  QQ( N_("^3listmaps:^* page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
 		          page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
 	}
 	else if ( pages > 1 )
 	{
-		ADMP( va( "%s %d %d", QQ( N_("^3listmaps: ^7page $1$ of $2$") ),  page + 1, pages ) );
+		ADMP( va( "%s %d %d", QQ( N_("^3listmaps:^* page $1$ of $2$") ),  page + 1, pages ) );
 	}
 }
 
@@ -3990,9 +3990,9 @@ typedef struct {
 static const mapLogResult_t maplog_table[] = {
 	{ 't', "^7tie"                                  },
 	{ 'a', "^1Alien win"                            },
-	{ 'A', "^1Alien win ^7/ Humans admitted defeat" },
+	{ 'A', "^1Alien win^* / Humans admitted defeat" },
 	{ 'h', "^5Human win"                            },
-	{ 'H', "^5Human win ^7/ Aliens admitted defeat" },
+	{ 'H', "^5Human win^* / Aliens admitted defeat" },
 	{ 'd', "^2draw vote"                            },
 	{ 'm', "^2map vote"                             },
 	{ 'r', "^2restart vote"                         },
@@ -4090,7 +4090,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
 	ptr = maplog;
 
-	ADMP( "\"" N_("^3maplog: ^7recent map results, newest first") "\"" );
+	ADMP( "\"" N_("^3maplog:^* recent map results, newest first") "\"" );
 	ADMBP_begin();
 
 	while( *ptr )
@@ -4136,7 +4136,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 			result = "^7current map";
 		}
 
-		ADMBP( va( "  ^%s%-20s %6s %s^7",
+		ADMBP( va( "  ^%s%-20s %6s %s^*",
 		           ptr == maplog ? "2" : "7",
 		           ptr, clock, result ) );
 		ptr = end;
@@ -4532,7 +4532,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		              teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg ) )
 		{
 			count++;
-			Q_strcat( recipients, sizeof( recipients ), va( "%s^7, ",
+			Q_strcat( recipients, sizeof( recipients ), va( "%s^*, ",
 			          level.clients[ pids[ i ] ].pers.netname ) );
 		}
 	}
@@ -4542,7 +4542,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 
 	if ( !count )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3No player matching ^7 '$1$^7' ^3to send message to.") ),
+		ADMP( va( "%s %s", QQ( N_("^3No player matching ^7 '$1$^*' ^3to send message to.") ),
 		          Quote( name ) ) );
 	}
 	else
@@ -4556,7 +4556,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		                     "$1$sent to $2$ players: ^7$3$", count ) ),
 		          color.c_str(), count, Quote( recipients ) ) );
 
-		G_LogPrintf( "%s: %d \"%s^7\" \"%s\": %s%s",
+		G_LogPrintf( "%s: %d \"%s^*\" \"%s\": %s%s",
 		             ( teamonly ) ? "TPrivMsg" : "PrivMsg",
 		             ( ent ) ? ( int )( ent - g_entities ) : -1,
 		             ( ent ) ? ent->client->pers.netname : "console",

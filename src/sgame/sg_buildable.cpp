@@ -1942,12 +1942,12 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	        // readable and the model name shouldn't need quoting
 		G_TeamCommand( (team_t) builder->client->pers.team,
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
-						QQ( N_("$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n") ) :
-						QQ( N_("$1$ ^2built^7 by $2$$3$\n") ),
+						QQ( N_("$1$ ^2built^* by $2$^*, ^3replacing^* $3$\n") ) :
+						QQ( N_("$1$ ^2built^* by $2$$3$\n") ),
 		                   Quote( BG_Buildable( built->s.modelindex )->humanName ),
 		                   Quote( builder->client->pers.netname ),
 		                   Quote( readable ) ) );
-		G_LogPrintf( "Construct: %d %d %s%s: %s^7 is building "
+		G_LogPrintf( "Construct: %d %d %s%s: %s^* is building "
 		             "%s%s%s\n",
 		             ( int )( builder - g_entities ),
 		             ( int )( built - g_entities ),
