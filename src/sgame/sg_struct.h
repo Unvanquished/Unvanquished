@@ -183,8 +183,7 @@ struct gentity_s
 	int          targetCount;
 	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
 	gentity_t    *target;  /*< the currently selected target to aim at/for, is the reverse to "tracker" */
-	gentity_t    *tracker; /*< entity that currently targets, aims for or tracks this entity, is the reverse to "target" */
-	int          numTrackedBy;
+
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
 	gentity_t    *prevPathSegment;
@@ -273,19 +272,6 @@ struct gentity_s
 
 	vec3_t       movedir;
 
-
-	/*
-	 * handle the notification about an event or undertaken action, so each entity can decide to undertake special actions as result
-	 */
-	void ( *notifyHandler )( gentity_t *self, gentityCall_t *call );
-
-	/**
-	 * the entry function for calls to the entity;
-	 * especially previous chain members will indirectly call this when firing against the given entity
-	 * @returns true if the call was handled by the given function and doesn't need default handling anymore or false otherwise
-	 */
-	bool ( *handleCall )( gentity_t *self, gentityCall_t *call );
-
 	int       nextthink;
 	void ( *think )( gentity_t *self );
 
@@ -331,13 +317,10 @@ struct gentity_s
 	int         boosterTime; // last time alien used a booster for healing
 	int         healthSourceTime; // last time an alien had contact to a health source
 	int         animTime; // last animation change
-	int         time1000; // timer evaluated every second
 	float       barbRegeneration; // goon barb regeneration is complete if this value is >= 1
 
 	bool        deconMarkHack; // TODO: Remove.
 	int         warnTimer; // nearby building(s) being attacked
-	int         overmindDyingTimer;
-	int         overmindSpawnsTimer;
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on
 	// every single frame.. so only do it periodically
 	int         clientSpawnTime; // the time until this spawn can spawn a client
@@ -353,19 +336,7 @@ struct gentity_s
 	vec3_t      buildableAim; // aim vector for buildables
 
 	// turret
-	int         turretNextShot;
-	int         turretLastLOSToTarget;
-	int         turretLastValidTargetTime;
-	int         turretLastTargetSearch;
-	int         turretLastHeadMove;
 	float       turretCurrentDamage;
-	vec3_t      turretDirToTarget;
-	vec3_t      turretBaseDir;
-	bool    turretDisabled;
-	int         turretSafeModeCheckTime;
-	bool    turretSafeMode;
-	int         turretPrepareTime; // when the turret can start locking on and/or firing
-	int         turretLockonTime;  // when the turret can start firing
 
 	vec4_t      animation; // animated map objects
 
@@ -630,7 +601,6 @@ struct level_locals_s
 
 	struct gentity_s *gentities;
 
-	int              gentitySize;
 	int              num_entities; // MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
 
 	int              warmupTime; // restart match at this time
