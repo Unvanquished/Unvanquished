@@ -247,7 +247,7 @@ const char *etos( const gentity_t *entity )
 	index = ( index + 1 ) & 3;
 
 	Com_sprintf( resultString, MAX_ETOS_LENGTH,
-			"%s%s^7(^5%s^7|^5#%i^7)",
+			"%s%s^7(^5%s^*|^5#%i^*)",
 			entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->s.number
 			);
 
@@ -461,7 +461,7 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	{
 
 		if ( g_debugEntities.integer > -1 )
-			Log::Warn( "Could not find any entity matching \"^5%s%s%s^7\"",
+			Log::Warn( "Could not find any entity matching \"^5%s%s%s^*\"",
 					classname ? classname : "",
 					classname && match ? "^7 and ^5" :  "",
 					match ? match : ""

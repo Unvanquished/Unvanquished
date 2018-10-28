@@ -56,7 +56,7 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team
 
 		for ( i = 0; i < botNames[team].count; ++i )
 		{
-			ADMBP( va( "  %s^7 %s", botNames[team].name[i].inUse ? marker : " ", botNames[team].name[i].name ) );
+			ADMBP( va( "  %s^* %s", botNames[team].name[i].inUse ? marker : " ", botNames[team].name[i].name ) );
 		}
 
 		ADMBP_end();
@@ -308,7 +308,7 @@ void G_BotDel( int clientNum )
 
 	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
 	{
-		Log::Warn( "'^7%s^7' is not a bot", bot->client->pers.netname );
+		Log::Warn( "'^7%s^*' is not a bot", bot->client->pers.netname );
 		return;
 	}
 
@@ -320,7 +320,7 @@ void G_BotDel( int clientNum )
 		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, false );
 	}
 
-	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected" ) ),
+	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^* disconnected" ) ),
 					Quote( bot->client->pers.netname ) ) );
 	trap_DropClient( clientNum, "disconnected" );
 }
