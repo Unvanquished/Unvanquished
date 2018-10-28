@@ -580,11 +580,6 @@ void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 	G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
 }
 
-void HArmoury_Think( gentity_t *self )
-{
-	self->nextthink = level.time + 1000;
-}
-
 void HMedistat_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
@@ -1874,7 +1869,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 			break;
 
 		case BA_H_ARMOURY:
-			built->think = HArmoury_Think;
 			built->use = HArmoury_Use;
 			break;
 
