@@ -142,14 +142,23 @@ class Entity {
 		 * @tparam T Type of component to ask for.
 		 * @return Pointer to component of type T or nullptr.
 		 */
-		template<typename T> T* Get() {
+		template<typename T> const T* Get() const {
 			int index = detail::ComponentPriority<T>::value;
 			int offset = componentOffsets[index];
 			if (offset) {
-				return (T*) (((char*) this) + offset);
+				return (const T*) (((char*) this) + offset);
 			} else {
 				return nullptr;
 			}
+		}
+
+		/**
+		 * @brief Returns a component of this entity, if available.
+		 * @tparam T Type of component to ask for.
+		 * @return Pointer to component of type T or nullptr.
+		 */
+		template<typename T> T* Get() {
+			return const_cast<T*>(static_cast<const Entity*>(this)->Get<T>());
 		}
 
 	private:
@@ -275,11 +284,11 @@ class AllComponents {
 // Definitions of ForEntities //
 // ////////////////////////// //
 
-template <typename Component> bool HasComponents(Entity& ent) {
+template <typename Component> bool HasComponents(const Entity& ent) {
     return ent.Get<Component>() != nullptr;
 }
 
-template <typename Component1, typename Component2, typename ... Components> bool HasComponents(Entity& ent) {
+template <typename Component1, typename Component2, typename ... Components> bool HasComponents(const Entity& ent) {
     return HasComponents<Component1>(ent) && HasComponents<Component2, Components...>(ent);
 }
 
