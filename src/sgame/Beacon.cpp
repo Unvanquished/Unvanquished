@@ -26,7 +26,6 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 // handle the server-side beacon-related stuff
 
 #include "sg_local.h"
-#include "CBSE.h"
 
 // entityState_t   | cbeacon_t    | description
 // ----------------+--------------+-------------
