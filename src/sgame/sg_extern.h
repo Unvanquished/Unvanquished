@@ -30,12 +30,9 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 // -----
 
 extern  level_locals_t level;
-#ifdef QVM_ABI
-extern  gentity_t      g_entities[ MAX_GENTITIES ];
-#else
+
 extern gentity_t *g_entities;
 extern gclient_t *g_clients;
-#endif
 
 // ---------
 // temporary, compatibility layer between legacy code and CBSE logic

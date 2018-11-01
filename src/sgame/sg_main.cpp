@@ -48,13 +48,8 @@ typedef struct
 	char      *explicit_;
 } cvarTable_t;
 
-#ifdef QVM_ABI
-gentity_t          g_entities[ MAX_GENTITIES ];
-gclient_t          g_clients[ MAX_GENTITIES ];
-#else
 gentity_t          *g_entities;
 gclient_t          *g_clients;
-#endif
 
 vmCvar_t           g_showHelpOnConnection;
 
