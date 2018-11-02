@@ -23,7 +23,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sg_local.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 // -----------
 // definitions
@@ -448,7 +448,7 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 	}
 
 	// Remove only partial momentum as the lost health fraction awards momentum to the enemy.
-	value *= buildable->entity->Get<HealthComponent>()->HealthFraction();
+	value *= Entities::HealthFraction(buildable);
 
 	return AddMomentum( CONF_DECONSTRUCTING, team, -value, deconner, false );
 }

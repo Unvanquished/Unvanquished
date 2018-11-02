@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 /*
 =======================
@@ -109,7 +109,7 @@ float BotGetHealScore( gentity_t *self )
 		distToHealer = self->botMind->closestBuildings[ BA_H_MEDISTAT ].distance;
 	}
 
-	percentHealth = self->entity->Get<HealthComponent>()->HealthFraction();
+	percentHealth = Entities::HealthFraction(self);
 
 	distToHealer = std::max( std::min( MAX_HEAL_DIST, distToHealer ), MAX_HEAL_DIST * ( 3.0f / 4.0f ) );
 
@@ -548,7 +548,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( target->entity->Get<HealthComponent>()->FullHealth() )
+		if ( Entities::HasFullHealth(target) )
 		{
 			continue;
 		}
@@ -1753,7 +1753,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			//...check we can evolve to that class
 			if ( numLevels >= 0 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
 			{
-				ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
+				ent->client->pers.evolveHealthFraction = Entities::HealthFraction(ent);
 
 				if ( ent->client->pers.evolveHealthFraction < 0.0f )
 				{

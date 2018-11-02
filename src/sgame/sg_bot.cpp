@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
@@ -392,7 +392,7 @@ void G_BotThink( gentity_t *self )
 	BotCalculateStuckTime( self );
 
 	//use medkit when hp is low
-	if ( self->entity->Get<HealthComponent>()->Health() < BOT_USEMEDKIT_HP &&
+	if ( Entities::HealthOf(self) < BOT_USEMEDKIT_HP &&
 	     BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats ) )
 	{
 		BG_ActivateUpgrade( UP_MEDKIT, self->client->ps.stats );

@@ -79,6 +79,40 @@ void Entities::Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDea
 	}
 }
 
+bool Entities::HasHealth(gentity_t *ent) {
+	return (ent && HasComponents<HealthComponent>(*ent->entity));
+}
+
+float Entities::HealthOf(Entity& entity) {
+	HealthComponent *healthComponent = entity.Get<HealthComponent>();
+	ASSERT_NQ(healthComponent, nullptr);
+	return healthComponent->Health();
+}
+
+float Entities::HealthOf(gentity_t* ent) {
+	return Entities::HealthOf(*ent->entity);
+}
+
+bool Entities::HasFullHealth(Entity& entity) {
+	HealthComponent *healthComponent = entity.Get<HealthComponent>();
+	ASSERT_NQ(healthComponent, nullptr);
+	return healthComponent->Health();
+}
+
+bool Entities::HasFullHealth(gentity_t* ent) {
+	return Entities::HasFullHealth(*ent->entity);
+}
+
+float Entities::HealthFraction(Entity& entity) {
+	HealthComponent *healthComponent = entity.Get<HealthComponent>();
+	ASSERT_NQ(healthComponent, nullptr);
+	return healthComponent->HealthFraction();
+}
+
+float Entities::HealthFraction(gentity_t* ent) {
+	return Entities::HealthFraction(*ent->entity);
+}
+
 bool Entities::AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
 	bool hit = false;
 
@@ -118,5 +152,3 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 
 	return hit;
 }
-
-

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 /*
 ================
@@ -459,13 +459,13 @@ void TeamplayInfoMessage( gentity_t *ent )
 			{
 				upgrade = UP_NONE;
 			}
-			health = static_cast<int>( std::ceil( player->entity->Get<HealthComponent>()->Health() ) );
+			health = static_cast<int>( std::ceil( Entities::HealthOf(player) ) );
 		}
 		else if ( cl->pers.team == TEAM_ALIENS )
 		{
 			curWeaponClass = cl->ps.stats[ STAT_CLASS ];
 			upgrade = UP_NONE;
-			health = static_cast<int>( std::ceil( player->entity->Get<HealthComponent>()->Health() ) );
+			health = static_cast<int>( std::ceil( Entities::HealthOf(player) ) );
 		}
 
 		if( team == TEAM_ALIENS ) // aliens don't have upgrades

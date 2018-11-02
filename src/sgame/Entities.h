@@ -68,6 +68,23 @@ namespace Entities {
 	bool IsDead(Entity& entity);
 	bool IsDead(gentity_t *ent);
 
+	bool HasHealth(gentity_t *ent);
+
+	/**
+	 * @brief Returns the health of the entity or 0 if it has none.
+	 */
+	float HealthOf(Entity& entity);
+	float HealthOf(gentity_t *ent);
+
+	/**
+	 * @brief Returns wether the entity is at full health.
+	 */
+	bool HasFullHealth(Entity& entity);
+	bool HasFullHealth(gentity_t *ent);
+
+	float HealthFraction(Entity& entity);
+	float HealthFraction(gentity_t *ent);
+
 	/**
 	 * @brief Deals the exact amount of damage necessary to kill the entity.
 	 */
