@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // sg_utils.c -- misc utility functions for game module
 
 #include "sg_local.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 typedef struct
 {
@@ -814,71 +814,6 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 			}
 		}
 	}
-}
-
-/*
-===============
-G_SpawnFire
-===============
-*/
-gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
-{
-	gentity_t *fire;
-	vec3_t    snapHelper, floorNormal;
-
-	VectorSet( floorNormal, 0.0f, 0.0f, 1.0f );
-
-	// don't spawn fire on walls and ceiling since we can't display it properly yet
-	// TODO: Add fire effects for floor and ceiling
-	if ( DotProduct( normal, floorNormal ) < 0.71f ) // 0.71 ~= cos(45°)
-	{
-		return nullptr;
-	}
-
-	// don't spawn a fire inside another fire
-	fire = nullptr;
-	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
-	{
-		if ( fire->s.eType == entityType_t::ET_FIRE )
-		{
-			return nullptr;
-		}
-	}
-
-	fire = G_NewEntity();
-
-	// create a fire entity
-	fire->classname = "fire";
-	fire->s.eType   = entityType_t::ET_FIRE;
-	fire->clipmask  = 0;
-
-	fire->entity = new FireEntity(FireEntity::Params{fire});
-	fire->entity->Ignite(fireStarter);
-
-	// attacker
-	fire->r.ownerNum = fireStarter->s.number;
-
-	// normal
-	VectorNormalize( normal ); // make sure normal is a direction
-	VectorCopy( normal, fire->s.origin2 );
-
-	// origin
-	VectorCopy( origin, fire->s.origin );
-	VectorAdd( origin, normal, snapHelper );
-	G_SnapVectorTowards( fire->s.origin, snapHelper ); // save net bandwidth
-	VectorCopy( fire->s.origin, fire->r.currentOrigin );
-
-	// send to client
-	trap_LinkEntity( fire );
-
-	if ( g_debugFire.integer )
-	{
-		char descr[ 64 ];
-		BG_BuildEntityDescription( descr, sizeof( descr ), &fire->s );
-		Log::Notice("%s spawned.", descr);
-	}
-
-	return fire;
 }
 
 bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase )

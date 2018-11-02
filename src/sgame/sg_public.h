@@ -252,6 +252,7 @@ bool          G_MapExists( const char *name );
 void              G_ExplodeMissile( gentity_t *ent );
 void              G_RunMissile( gentity_t *ent );
 gentity_t         *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, vec3_t dir, gentity_t *target, void ( *think )( gentity_t *self ), int nextthink );
+gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
 
 // sg_namelog.c
 void              G_namelog_connect( gclient_t *client );
@@ -315,7 +316,6 @@ void              G_CloseMenus( int clientNum );
 void              G_ClientnumToMask( int clientNum, int *loMask, int *hiMask );
 void              G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 void              G_FireThink( gentity_t *self );
-gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfFire( const gentity_t *from, const gentity_t *to );
