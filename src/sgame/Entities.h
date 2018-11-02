@@ -75,8 +75,4 @@ namespace Entities {
 	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 }
 
-namespace Utility {
-	std::string Print(Vec3 v);
-}
-
 #endif /* SGAME_ENTITIES_H_ */
