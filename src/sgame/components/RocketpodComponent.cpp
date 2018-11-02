@@ -239,8 +239,8 @@ bool RocketpodComponent::EnemyClose() {
 		if (enemyClose) return;
 
 		if (other.Get<SpectatorComponent>()) return;
-		if (Utility::Dead(other)) return;
-		if (!Utility::OnOpposingTeams(entity, other)) return;
+		if (Entities::IsDead(other)) return;
+		if (!Entities::OnOpposingTeams(entity, other)) return;
 
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 

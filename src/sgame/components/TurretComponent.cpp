@@ -203,9 +203,9 @@ bool TurretComponent::TargetCanBeHit() {
 bool TurretComponent::TargetValid(Entity& target, bool newTarget) {
 	if (!target.Get<ClientComponent>() ||
 	    target.Get<SpectatorComponent>() ||
-	    Utility::Dead(target) ||
+	    Entities::IsDead(target) ||
 	    (target.oldEnt->flags & FL_NOTARGET) ||
-	    !Utility::OnOpposingTeams(entity, target) ||
+	    !Entities::OnOpposingTeams(entity, target) ||
 	    G_Distance(entity.oldEnt, target.oldEnt) > range ||
 	    !trap_InPVS(entity.oldEnt->s.origin, target.oldEnt->s.origin)) {
 

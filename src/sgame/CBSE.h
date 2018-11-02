@@ -12,6 +12,7 @@
 // ----------------
 
 #include "sg_local.h"
+#include "Entities.h"
 
 /** A helper to register component thinkers. */
 #define REGISTER_THINKER(METHOD, SCHEDULER, PERIOD) \

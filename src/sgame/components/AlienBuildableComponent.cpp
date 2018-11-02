@@ -60,7 +60,7 @@ void AlienBuildableComponent::Blast(int timeDelta) {
 	meansOfDeath_t splashMOD    = (meansOfDeath_t)entity.oldEnt->splashMethodOfDeath;
 
 	// Damage close humans.
-	Utility::AntiHumanRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
+	Entities::AntiHumanRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
 
 	// Reward attackers.
 	G_RewardAttackers(entity.oldEnt);
