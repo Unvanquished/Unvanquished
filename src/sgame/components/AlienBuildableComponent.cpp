@@ -1,4 +1,5 @@
 #include "AlienBuildableComponent.h"
+#include "../Entities.h"
 #include <random>
 
 static Log::Logger alienBuildableLogger("sgame.alienbuildings");

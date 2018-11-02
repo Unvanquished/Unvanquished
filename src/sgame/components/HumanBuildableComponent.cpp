@@ -1,4 +1,5 @@
 #include "HumanBuildableComponent.h"
+#include "../Entities.h"
 
 static Log::Logger humanBuildableLogger("sgame.humanbuildings");
 

@@ -1,4 +1,5 @@
 #include "OvermindComponent.h"
+#include "../Entities.h"
 
 const float OvermindComponent::ATTACK_RANGE  = 300.0f;
 const float OvermindComponent::ATTACK_DAMAGE = 10.0f;

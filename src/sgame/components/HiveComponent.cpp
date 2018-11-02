@@ -1,4 +1,5 @@
 #include "HiveComponent.h"
+#include "../Entities.h"
 
 constexpr float SENSE_RANGE   = HIVE_SENSE_RANGE; // Also needed by cgame.
 constexpr int   ATTACK_PERIOD = 3000;

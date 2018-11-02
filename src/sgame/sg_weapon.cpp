@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // perform the server side effects of a weapon firing
 
 #include "sg_local.h"
+#include "Entities.h"
 #include "CBSE.h"
 
 static vec3_t forward, right, up;

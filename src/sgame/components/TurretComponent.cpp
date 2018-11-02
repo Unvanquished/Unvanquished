@@ -1,4 +1,5 @@
 #include "TurretComponent.h"
+#include "../Entities.h"
 
 static Log::Logger turretLogger("sgame.turrets");
 

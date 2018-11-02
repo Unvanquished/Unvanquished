@@ -1,4 +1,5 @@
 #include "RocketpodComponent.h"
+#include "../Entities.h"
 
 constexpr float ATTACK_RANGE         = (float)ROCKETPOD_RANGE; // cgame needs to know this.
 constexpr int   ATTACK_PERIOD        = ROCKETPOD_ATTACK_PERIOD; // cgame needs to know this.

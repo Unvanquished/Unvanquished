@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "Entities.h"
 #include "CBSE.h"
 
 #define DEFAULT_FUNC_TRAIN_SPEED 100

@@ -1,4 +1,5 @@
 #include "SpawnerComponent.h"
+#include "../Entities.h"
 #include "common/Util.h"
 
 static Log::Logger logger("sgame.spawn");
