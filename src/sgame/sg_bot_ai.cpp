@@ -921,7 +921,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	if ( self->botMind->goal.ent )
 	{
 		// Don't move to dead targets.
-		if ( G_Dead( self->botMind->goal.ent ) )
+		if ( Entities::IsDead( self->botMind->goal.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -963,7 +963,7 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// Can only rush living targets.
-	if ( !G_Alive( self->botMind->goal.ent ) )
+	if ( !Entities::IsAlive( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}
@@ -989,7 +989,7 @@ AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionSuicide( gentity_t *self, AIGenericNode_t* )
 {
-	G_Kill( self, MOD_SUICIDE );
+	Entities::Kill( self, MOD_SUICIDE );
 	return AINodeStatus_t::STATUS_SUCCESS;
 }
 
@@ -1125,7 +1125,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// Can't heal at dead targets.
-	if ( G_Dead( self->botMind->goal.ent ) )
+	if ( Entities::IsDead( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1178,7 +1178,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// Can't heal at dead targets.
-	if ( G_Dead( self->botMind->goal.ent ) )
+	if ( Entities::IsDead( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1222,7 +1222,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// Can only repair alive targets.
-	if ( !G_Alive( self->botMind->goal.ent ) )
+	if ( !Entities::IsAlive( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1350,7 +1350,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// Can't buy at dead targets.
-	if ( G_Dead( self->botMind->goal.ent ) )
+	if ( Entities::IsDead( self->botMind->goal.ent ) )
 	{
 		return STATUS_FAILURE;
 	}

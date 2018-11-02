@@ -1625,7 +1625,7 @@ void BeginIntermission()
 		}
 
 		// respawn if dead
-		if ( G_Dead( client ) )
+		if ( Entities::IsDead( client ) )
 		{
 			respawn( client );
 		}

@@ -349,7 +349,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	// Deal impact damage.
 	if ( !( impactFlags & MIF_NO_DAMAGE ) )
 	{
-		if ( ent->damage && G_Alive( hitEnt ) )
+		if ( ent->damage && Entities::IsAlive( hitEnt ) )
 		{
 			vec3_t dir;
 

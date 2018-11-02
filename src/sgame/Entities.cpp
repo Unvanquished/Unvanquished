@@ -44,9 +44,19 @@ bool Entities::IsAlive(Entity &entity) {
 	return (healthComponent && healthComponent->Alive());
 }
 
+bool Entities::IsAlive(gentity_t *ent) {
+	if (!ent) return false;
+	return Entities::IsAlive(*ent->entity);
+}
+
 bool Entities::IsDead(Entity &entity) {
 	HealthComponent* healthComponent = entity.Get<HealthComponent>();
 	return (healthComponent && !healthComponent->Alive());
+}
+
+bool Entities::IsDead(gentity_t *ent) {
+	if (!ent) return false;
+	return Entities::IsDead(*ent->entity);
 }
 
 void Entities::Kill(Entity& entity, Entity* source, meansOfDeath_t meansOfDeath) {
@@ -54,6 +64,18 @@ void Entities::Kill(Entity& entity, Entity* source, meansOfDeath_t meansOfDeath)
 	if (healthComponent) {
 		entity.Damage(healthComponent->Health(), source ? source->oldEnt : nullptr, {}, {},
 		              (DAMAGE_PURE | DAMAGE_NO_PROTECTION), meansOfDeath);
+	}
+}
+
+void Entities::Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
+	if (ent) Entities::Kill(*ent->entity, nullptr, meansOfDeath);
+}
+
+void Entities::Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
+	if (!source) {
+		Entities::Kill(ent, meansOfDeath);
+	} else {
+		if (ent) Entities::Kill(*ent->entity, source->entity, meansOfDeath);
 	}
 }
 
@@ -96,3 +118,5 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 
 	return hit;
 }
+
+

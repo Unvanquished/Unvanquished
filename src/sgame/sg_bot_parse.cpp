@@ -112,7 +112,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 	{
 		dead = true;
 	}
-	else if ( !G_Alive( self->botMind->goal.ent ) )
+	else if ( !Entities::IsAlive( self->botMind->goal.ent ) )
 	{
 		dead = true;
 	}

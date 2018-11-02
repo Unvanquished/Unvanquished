@@ -218,7 +218,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 			continue;
 		}
 
-		if ( G_Dead( search ) )
+		if ( Entities::IsDead( search ) )
 		{
 			continue;
 		}

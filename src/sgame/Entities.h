@@ -60,16 +60,21 @@ namespace Entities {
 	 * @brief Whether the entity can die (has health) but is alive.
 	 */
 	bool IsAlive(Entity& entity);
+	bool IsAlive(gentity_t *ent);
 
 	/**
 	 * @brief Whether the entity can be alive (has health) but is dead now.
 	 */
 	bool IsDead(Entity& entity);
+	bool IsDead(gentity_t *ent);
 
 	/**
 	 * @brief Deals the exact amount of damage necessary to kill the entity.
 	 */
 	void Kill(Entity& entity, Entity *source, meansOfDeath_t meansOfDeath);
+
+	void Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath);
+	void Kill(gentity_t *ent, meansOfDeath_t meansOfDeath);
 
 	bool AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);

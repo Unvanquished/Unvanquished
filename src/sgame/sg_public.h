@@ -325,10 +325,6 @@ bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 team_t            G_Enemy( team_t team );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
-bool              G_Alive(gentity_t *ent);
-bool              G_Dead(gentity_t *ent);
-void              G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath);
-void              G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath);
 
 // sg_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );

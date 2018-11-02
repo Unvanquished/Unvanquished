@@ -306,7 +306,7 @@ void G_KillBox( gentity_t *ent )
 			continue;
 		}
 
-		G_Kill(hit, ent, MOD_TELEFRAG);
+		Entities::Kill(hit, ent, MOD_TELEFRAG);
 	}
 }
 
@@ -336,7 +336,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
                 e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
 	if( tr.entityNum != ENTITYNUM_NONE ) {
-	  G_Kill(e, activator, MOD_CRUSH);
+	  Entities::Kill(e, activator, MOD_CRUSH);
 	}
   }
 }
@@ -965,36 +965,4 @@ team_t G_Enemy( team_t team )
 // TODO: Add LocationComponent
 float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
 	return Distance(ent1->s.origin, ent2->s.origin);
-}
-
-/**
- * @return Whether entity has a health component and is alive.
- * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
- */
-bool G_Alive(gentity_t *ent) {
-	if (!ent) return false;
-	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
-	return (healthComponent && healthComponent->Alive());
-}
-
-/**
- * @return Whether entity has a health component and is dead.
- * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
- */
-bool G_Dead(gentity_t *ent) {
-	if (!ent) return false;
-	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
-	return (healthComponent && !healthComponent->Alive());
-}
-
-void G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
-	if (ent) Entities::Kill(*ent->entity, nullptr, meansOfDeath);
-}
-
-void G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
-	if (!source) {
-		G_Kill(ent, meansOfDeath);
-	} else {
-		if (ent) Entities::Kill(*ent->entity, source->entity, meansOfDeath);
-	}
 }

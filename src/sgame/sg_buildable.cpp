@@ -207,7 +207,7 @@ void G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation) {
 
 void ABarricade_Shrink( gentity_t *self, bool shrink )
 {
-	if ( !self->spawned || G_Dead( self ) )
+	if ( !self->spawned || Entities::IsDead( self ) )
 	{
 		shrink = true;
 	}
@@ -221,7 +221,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		self->shrunkTime = level.time;
 		anim = self->s.torsoAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
-		if ( self->spawned && G_Alive( self ) && anim != BANIM_IDLE_UNPOWERED )
+		if ( self->spawned && Entities::IsAlive( self ) && anim != BANIM_IDLE_UNPOWERED )
 		{
 			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
 			G_SetBuildableAnim( self, BANIM_POWERDOWN, true );
@@ -244,7 +244,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		self->shrunkTime = level.time;
 
 		// shrink animation
-		if ( self->spawned && G_Alive( self ) )
+		if ( self->spawned && Entities::IsAlive( self ) )
 		{
 			G_SetBuildableAnim( self, BANIM_POWERDOWN, true );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE_UNPOWERED );
@@ -269,7 +269,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		// unshrink animation
 		anim = self->s.legsAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
-		if ( self->spawned && G_Alive( self ) && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
+		if ( self->spawned && Entities::IsAlive( self ) && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
 		{
 			G_SetBuildableAnim( self, BANIM_POWERUP, true );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
@@ -347,7 +347,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	gclient_t *client = other->client;
 
-	if ( !self->spawned || !self->powered || G_Dead( self ) )
+	if ( !self->spawned || !self->powered || Entities::IsDead( self ) )
 	{
 		return;
 	}
@@ -467,7 +467,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return false;
 	}
 
-	if ( G_Dead( target ) ) // is the target still alive?
+	if ( Entities::IsDead( target ) ) // is the target still alive?
 	{
 		return false;
 	}
@@ -535,7 +535,7 @@ void ATrapper_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 100;
 
-	if ( !self->spawned || !self->powered || G_Dead( self ) )
+	if ( !self->spawned || !self->powered || Entities::IsDead( self ) )
 	{
 		return;
 	}
@@ -860,7 +860,7 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 	static    vec3_t range = { 10, 10, 10 };
 
 	// dead buildables don't activate triggers
-	if ( G_Dead( ent ) )
+	if ( Entities::IsDead( ent ) )
 	{
 		return;
 	}
@@ -926,7 +926,7 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
-		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !neighbor->spawned || G_Dead( neighbor ) ||
+		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !neighbor->spawned || Entities::IsDead( neighbor ) ||
 		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
 		{
 			continue;
@@ -1106,7 +1106,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	if ( healthFraction < 1.0f ) G_RewardAttackers( self );
 
 	// deconstruct
-	G_Kill(self, deconner, deconType);
+	Entities::Kill(self, deconner, deconType);
 
 	// TODO: Check if freeing needs to be deferred.
 	G_FreeEntity( self );
@@ -2417,7 +2417,7 @@ void G_BaseSelfDestruct( team_t team )
 			continue;
 		}
 
-		G_Kill(ent, MOD_SUICIDE);
+		Entities::Kill(ent, MOD_SUICIDE);
 	}
 }
 
@@ -2540,7 +2540,7 @@ void G_BuildLogRevert( int id )
 			{
 				ent = &g_entities[ team ];
 
-				if ( ( ( ent->s.eType == entityType_t::ET_BUILDABLE && G_Alive( ent ) ) ||
+				if ( ( ( ent->s.eType == entityType_t::ET_BUILDABLE && Entities::IsAlive( ent ) ) ||
 					   ( ent->s.eType == entityType_t::ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
 					 ent->s.modelindex == log->modelindex )
 				{

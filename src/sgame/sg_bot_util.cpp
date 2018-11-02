@@ -451,7 +451,7 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 		}
 		if ( target->s.eType == entityType_t::ET_BUILDABLE && target->s.modelindex == buildingType &&
 		     ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) &&
-		     G_Alive( target ) )
+		     Entities::IsAlive( target ) )
 		{
 			newDistance = DistanceSquared( self->s.origin, target->s.origin );
 			if ( range && newDistance > rangeSquared )
@@ -496,7 +496,7 @@ void BotFindClosestBuildings( gentity_t *self )
 		}
 
 		//ignore dead targets
-		if ( G_Dead( testEnt ) )
+		if ( Entities::IsDead( testEnt ) )
 		{
 			continue;
 		}
@@ -553,7 +553,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( G_Dead( target ) )
+		if ( Entities::IsDead( target ) )
 		{
 			continue;
 		}
@@ -656,7 +656,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 		}
 
 		// Only consider living targets.
-		if ( !G_Alive( target ) )
+		if ( !Entities::IsAlive( target ) )
 		{
 			continue;
 		}
@@ -1710,7 +1710,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 	int num;
 	gentity_t *other;
 
-	if ( G_Dead( ent ) )
+	if ( Entities::IsDead( ent ) )
 	{
 		return false;
 	}
@@ -2088,7 +2088,7 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 	}
 
 	// Only living targets are valid.
-	if ( !G_Alive( enemy ) )
+	if ( !Entities::IsAlive( enemy ) )
 	{
 		return false;
 	}
