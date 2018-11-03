@@ -50,10 +50,7 @@ void SpawnerComponent::Think(int timeDelta) {
 
 	if (blocker) {
 		if (!blocker->oldEnt) {
-			static Util::MinimumDelay delay(30000);
-			if (delay.Check(level.time)) {
-				logger.Warn("Spawn blocking entity has oldEnt == nullptr");
-			}
+			logger.Warn("Spawn blocking entity has oldEnt == nullptr");
 			return;
 		}
 
