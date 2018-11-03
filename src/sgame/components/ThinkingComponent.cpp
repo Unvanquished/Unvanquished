@@ -13,10 +13,7 @@ void ThinkingComponent::Think() {
 	int time = level.time;
 
 	if (lastThinkRound == time) {
-		static Util::MinimumDelay delay(60000);
-		if (delay.Check(time)) {
-			thinkLogger.Warn("Think component called multiple times per frame");
-		}
+		thinkLogger.Warn("Think component called multiple times per frame");
 		return;
 	}
 

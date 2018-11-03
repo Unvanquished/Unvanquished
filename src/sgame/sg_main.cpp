@@ -2758,10 +2758,7 @@ void G_RunFrame( int levelTime )
 		// entities depending on whether it was added in a hole in g_entities or at the end, so
 		// ignore the entity if it was created this frame.
 		if (entity.oldEnt->creationTime != level.time && thinkingComponent.GetLastThinkTime() != level.time) {
-			static Util::MinimumDelay delay(60000);
-			if (delay.Check(level.time)) {
-				Log::Warn("ThinkingComponent was not called");
-			}
+			Log::Warn("ThinkingComponent was not called");
 			thinkingComponent.Think();
 		}
 	});
