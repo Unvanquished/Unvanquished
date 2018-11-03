@@ -127,7 +127,7 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 
 	if (Math::DistanceSq(oldRelativeAimAngles, relativeAimAngles) > 0.0f) {
 		turretLogger.Debug(
-			"Aiming. Elapsed: %d ms. Delta: %.2f. Max: %.2f. Old: %s. New: %s. Reached: %b.",
+			"Aiming. Elapsed: %d ms. Delta: %.2f. Max: %.2f. Old: %s. New: %s. Reached: %s.",
 			timeDelta, deltaAngles, maxAngleChange, oldRelativeAimAngles, relativeAimAngles, targetReached
 		);
 	}
