@@ -30,7 +30,7 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
  * This aims to reduce (re)compilation times by avoiding CBSE.h includes in
  * code that isn't instantiating entities, to aid migration and generally simplify code.
  *
- * It also contains CSBE or entity related helper functions:
+ * It also contains CBSE or entity related helper functions:
  *   - Convenience functions and helpers that have not found a better place yet.
  *   - Compatibility functions to help migration.
  *
@@ -68,20 +68,29 @@ namespace Entities {
 	bool IsDead(Entity& entity);
 	bool IsDead(gentity_t *ent);
 
-	bool HasHealth(gentity_t *ent);
+	bool HasHealthComponent(gentity_t *ent);
 
 	/**
-	 * @brief Returns the health of the entity or 0 if it has none.
+	 * @brief Returns the health of an entity.
+	 * @warning passing an entity without HealthComponent likely crashes,
+	 * 			use Entities::HasHealthComponent beforehand where necessary
 	 */
 	float HealthOf(Entity& entity);
 	float HealthOf(gentity_t *ent);
 
 	/**
-	 * @brief Returns wether the entity is at full health.
+	 * @brief Returns whether the entity is at full health.
+	 * @warning passing an entity without HealthComponent likely crashes,
+	 * 			use Entities::HasHealthComponent beforehand where necessary
 	 */
 	bool HasFullHealth(Entity& entity);
 	bool HasFullHealth(gentity_t *ent);
 
+	/**
+	 * @brief Returns the fraction of health of the entity.
+	 * @warning passing an entity without HealthComponent likely crashes,
+	 * 			use Entities::HasHealthComponent beforehand where necessary
+	 */
 	float HealthFraction(Entity& entity);
 	float HealthFraction(gentity_t *ent);
 

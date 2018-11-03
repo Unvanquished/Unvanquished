@@ -79,7 +79,7 @@ void Entities::Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDea
 	}
 }
 
-bool Entities::HasHealth(gentity_t *ent) {
+bool Entities::HasHealthComponent(gentity_t *ent) {
 	return (ent && HasComponents<HealthComponent>(*ent->entity));
 }
 

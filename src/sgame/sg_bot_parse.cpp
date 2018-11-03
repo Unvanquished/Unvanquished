@@ -304,7 +304,7 @@ static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
 	botEntityAndDistance_t et = AIEntityToGentity( self, e );
 	float healthFraction;
 
-	if (Entities::HasHealth(et.ent)) {
+	if (Entities::HasHealthComponent(et.ent)) {
 		healthFraction = Entities::HealthFraction(et.ent);
 	} else {
 		healthFraction = 0.0f;
