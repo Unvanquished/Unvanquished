@@ -758,6 +758,9 @@ void CG_Menu( int menuType, int arg )
 CG_Say
 =================
 */
+// Disable log spam suppression since chat should be rate-limited server-side
+static Log::Logger chatLog = Log::Logger("chat", "", Log::Level::NOTICE).WithoutSuppression();
+
 static void CG_Say( const char *name, int clientNum, saymode_t mode, const char *text )
 {
 	char prefix[ 21 ] = "";
@@ -858,34 +861,31 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			DAEMON_FALLTHROUGH;
 
 		case SAY_ALL_ADMIN:
-			Log::Notice(  "%s%s%s^*: %s%s",
-			           ignore, prefix, name, color, text );
+			chatLog.Notice( "%s%s%s^*: %s%s", ignore, prefix, name, color, text );
 			break;
 
 		case SAY_TEAM:
-			Log::Notice( "%s%s(%s^*)%s: %s%s",
-			           ignore, prefix, name, location, color, text );
+			chatLog.Notice( "%s%s(%s^*)%s: %s%s", ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_ADMINS:
 		case SAY_ADMINS_PUBLIC:
-			Log::Notice( "%s%s%s%s^*: %s%s",
-			           ignore, prefix,
-			           ( mode == SAY_ADMINS ) ? "[ADMIN]" : "[PLAYER]",
-			           name, color, text );
+			chatLog.Notice( "%s%s%s%s^*: %s%s",
+			                ignore, prefix,
+			                ( mode == SAY_ADMINS ) ? "[ADMIN]" : "[PLAYER]",
+			                name, color, text );
 			break;
 
 		case SAY_AREA:
 		case SAY_AREA_TEAM:
-			Log::Notice( "%s%s<%s^*>%s: %s%s",
-			           ignore, prefix, name, location, color, text );
+			chatLog.Notice( "%s%s<%s^*>%s: %s%s", ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_PRIVMSG:
 		case SAY_TPRIVMSG:
-			Log::Notice( "%s%s[%s^* → %s^*]: %s%s",
-			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
-			           color, text );
+			chatLog.Notice( "%s%s[%s^* → %s^*]: %s%s",
+			                ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
+			                color, text );
 
 			if ( !ignore[ 0 ] )
 			{
@@ -897,23 +897,21 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 					clientNum = cg.clientNum;
 				}
 
-				Log::Notice(_( ">> to reply, say: /m %d [your message] <<"), clientNum );
+				chatLog.Notice(_( ">> to reply, say: /m %d [your message] <<"), clientNum );
 			}
 
 			break;
 
 		case SAY_ALL_ME:
-			Log::Notice(  "%s* %s%s^* %s%s",
-			           ignore, prefix, name, color, text );
+			chatLog.Notice( "%s* %s%s^* %s%s", ignore, prefix, name, color, text );
 			break;
 
 		case SAY_TEAM_ME:
-			Log::Notice( "%s* %s(%s^*)%s %s%s",
-			           ignore, prefix, name, location, color, text );
+			chatLog.Notice( "%s* %s(%s^*)%s %s%s", ignore, prefix, name, location, color, text );
 			break;
 
 		case SAY_RAW:
-			Log::Notice( text );
+			chatLog.Notice( text );
 			break;
 
 		case SAY_DEFAULT:
