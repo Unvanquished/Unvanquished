@@ -1,4 +1,5 @@
 #include "HumanBuildableComponent.h"
+#include "../Entities.h"
 
 static Log::Logger humanBuildableLogger("sgame.humanbuildings");
 
@@ -52,7 +53,7 @@ void HumanBuildableComponent::Blast(int timeDelta) {
 	humanBuildableLogger.Notice("Human buildable is exploding.");
 
 	// Damage close entity.
-	Utility::KnockbackRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
+	Entities::KnockbackRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
 
 	// Reward attackers.
 	G_RewardAttackers(entity.oldEnt);

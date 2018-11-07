@@ -69,40 +69,6 @@ namespace Beacon
 	void DeleteTags( gentity_t *ent );
 }
 
-// Utility.cpp
-namespace Utility
-{
-	/**
-	 * @brief Whether two entities both are assigned to a team and it is the same one.
-	 */
-	bool OnSameTeam(Entity& firstEntity, Entity& secondEntity);
-
-	/**
-	 * @brief Whether two entities both are assigned to a team and the teams differ.
-	 */
-	bool OnOpposingTeams(Entity& firstEntity, Entity& secondEntity);
-
-	/**
-	 * @brief Whether the entity can die (has health) but is alive.
-	 */
-	bool Alive(Entity& entity);
-
-	/**
-	 * @brief Whether the entity can be alive (has health) but is dead now.
-	 */
-	bool Dead(Entity& entity);
-
-	/**
-	 * @brief Deals the exact amount of damage necessary to kill the entity.
-	 */
-	void Kill(Entity& entity, Entity *source, meansOfDeath_t meansOfDeath);
-
-	bool AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
-	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
-
-	std::string Print(Vec3 v);
-}
-
 // sg_buildable.c
 bool              G_IsWarnableMOD(meansOfDeath_t mod);
 gentity_t         *G_Overmind();
@@ -286,6 +252,7 @@ bool          G_MapExists( const char *name );
 void              G_ExplodeMissile( gentity_t *ent );
 void              G_RunMissile( gentity_t *ent );
 gentity_t         *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, vec3_t dir, gentity_t *target, void ( *think )( gentity_t *self ), int nextthink );
+gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
 
 // sg_namelog.c
 void              G_namelog_connect( gclient_t *client );
@@ -349,7 +316,6 @@ void              G_CloseMenus( int clientNum );
 void              G_ClientnumToMask( int clientNum, int *loMask, int *hiMask );
 void              G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 void              G_FireThink( gentity_t *self );
-gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfFire( const gentity_t *from, const gentity_t *to );
@@ -359,10 +325,6 @@ bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 team_t            G_Enemy( team_t team );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
-bool              G_Alive(gentity_t *ent);
-bool              G_Dead(gentity_t *ent);
-void              G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath);
-void              G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath);
 
 // sg_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );

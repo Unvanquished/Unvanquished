@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "Entities.h"
 #include "CBSE.h"
 
 // damage region data
@@ -1009,7 +1010,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 				hitSomething = ent->entity->Damage(points, attacker, Vec3::Load(origin), Vec3::Load(dir),
 				                                   (DAMAGE_NO_LOCDAMAGE | dflags), (meansOfDeath_t)mod);
 			}
-			else if ( G_Team( ent ) == testHit && G_Alive( ent ) )
+			else if ( G_Team( ent ) == testHit && Entities::IsAlive( ent ) )
 			{
 				return true;
 			}

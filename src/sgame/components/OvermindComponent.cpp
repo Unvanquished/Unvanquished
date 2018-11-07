@@ -1,4 +1,5 @@
 #include "OvermindComponent.h"
+#include "../Entities.h"
 
 const float OvermindComponent::ATTACK_RANGE  = 300.0f;
 const float OvermindComponent::ATTACK_DAMAGE = 10.0f;
@@ -33,7 +34,7 @@ void OvermindComponent::Think(int timeDelta) {
 
 	// If target is an enemy in reach, attack it.
 	// TODO: Add LocationComponent and Utility::Distance.
-	if (target && Utility::OnOpposingTeams(entity, *target) &&
+	if (target && Entities::OnOpposingTeams(entity, *target) &&
 	    G_Distance(entity.oldEnt, target->oldEnt) < ATTACK_RANGE) {
 
 		float damage = ATTACK_DAMAGE * ((float)timeDelta / 1000.0f);
@@ -54,7 +55,7 @@ Entity* OvermindComponent::FindTarget() {
 		if (candidate.Get<SpectatorComponent>()) return;
 
 		// Do not target dead entities.
-		if (Utility::Dead(candidate)) return;
+		if (Entities::IsDead(candidate)) return;
 
 		// Respect the no-target flag.
 		if ((candidate.oldEnt->flags & FL_NOTARGET)) return;

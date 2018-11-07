@@ -1,4 +1,5 @@
 #include "SpawnerComponent.h"
+#include "../Entities.h"
 #include "common/Util.h"
 
 static Log::Logger logger("sgame.spawn");
@@ -57,7 +58,7 @@ void SpawnerComponent::Think(int timeDelta) {
 		// Suicide if blocked by the map.
 		if (blocker->oldEnt->s.number == ENTITYNUM_WORLD
 		    || blocker->oldEnt->s.eType == entityType_t::ET_MOVER) {
-			Utility::Kill(entity, nullptr, MOD_SUICIDE);
+			Entities::Kill(entity, nullptr, MOD_SUICIDE);
 		}
 
 		// Free a blocking corpse.
@@ -65,15 +66,15 @@ void SpawnerComponent::Think(int timeDelta) {
 			G_FreeEntity(blocker->oldEnt);
 		}
 
-		else if (Utility::OnSameTeam(entity, *blocker)) {
+		else if (Entities::OnSameTeam(entity, *blocker)) {
 			// Suicide if blocked by own main buildable.
 			if (blocker->Get<MainBuildableComponent>()) {
-				Utility::Kill(entity, nullptr, MOD_SUICIDE);
+				Entities::Kill(entity, nullptr, MOD_SUICIDE);
 			}
 
 			// Kill a friendly blocking buildable.
 			else if (blocker->Get<BuildableComponent>()) {
-				Utility::Kill(*blocker, nullptr, MOD_SUICIDE);
+				Entities::Kill(*blocker, nullptr, MOD_SUICIDE);
 
 				// Play an animation so it's clear what destroyed the buildable.
 				G_SetBuildableAnim(entity.oldEnt, BANIM_SPAWN1, true);

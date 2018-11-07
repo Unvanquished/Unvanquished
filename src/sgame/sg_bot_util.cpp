@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 /*
 =======================
@@ -109,7 +109,7 @@ float BotGetHealScore( gentity_t *self )
 		distToHealer = self->botMind->closestBuildings[ BA_H_MEDISTAT ].distance;
 	}
 
-	percentHealth = self->entity->Get<HealthComponent>()->HealthFraction();
+	percentHealth = Entities::HealthFraction(self);
 
 	distToHealer = std::max( std::min( MAX_HEAL_DIST, distToHealer ), MAX_HEAL_DIST * ( 3.0f / 4.0f ) );
 
@@ -451,7 +451,7 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 		}
 		if ( target->s.eType == entityType_t::ET_BUILDABLE && target->s.modelindex == buildingType &&
 		     ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) &&
-		     G_Alive( target ) )
+		     Entities::IsAlive( target ) )
 		{
 			newDistance = DistanceSquared( self->s.origin, target->s.origin );
 			if ( range && newDistance > rangeSquared )
@@ -496,7 +496,7 @@ void BotFindClosestBuildings( gentity_t *self )
 		}
 
 		//ignore dead targets
-		if ( G_Dead( testEnt ) )
+		if ( Entities::IsDead( testEnt ) )
 		{
 			continue;
 		}
@@ -548,12 +548,12 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( target->entity->Get<HealthComponent>()->FullHealth() )
+		if ( Entities::HasFullHealth(target) )
 		{
 			continue;
 		}
 
-		if ( G_Dead( target ) )
+		if ( Entities::IsDead( target ) )
 		{
 			continue;
 		}
@@ -656,7 +656,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 		}
 
 		// Only consider living targets.
-		if ( !G_Alive( target ) )
+		if ( !Entities::IsAlive( target ) )
 		{
 			continue;
 		}
@@ -1710,7 +1710,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 	int num;
 	gentity_t *other;
 
-	if ( G_Dead( ent ) )
+	if ( Entities::IsDead( ent ) )
 	{
 		return false;
 	}
@@ -1753,7 +1753,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			//...check we can evolve to that class
 			if ( numLevels >= 0 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
 			{
-				ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
+				ent->client->pers.evolveHealthFraction = Entities::HealthFraction(ent);
 
 				if ( ent->client->pers.evolveHealthFraction < 0.0f )
 				{
@@ -2088,7 +2088,7 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 	}
 
 	// Only living targets are valid.
-	if ( !G_Alive( enemy ) )
+	if ( !Entities::IsAlive( enemy ) )
 	{
 		return false;
 	}

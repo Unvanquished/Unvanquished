@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "Entities.h"
 #include "CBSE.h"
 #include "backend/CBSEBackend.h"
 
@@ -48,13 +49,8 @@ typedef struct
 	char      *explicit_;
 } cvarTable_t;
 
-#ifdef QVM_ABI
-gentity_t          g_entities[ MAX_GENTITIES ];
-gclient_t          g_clients[ MAX_GENTITIES ];
-#else
 gentity_t          *g_entities;
 gclient_t          *g_clients;
-#endif
 
 vmCvar_t           g_showHelpOnConnection;
 
@@ -1630,7 +1626,7 @@ void BeginIntermission()
 		}
 
 		// respawn if dead
-		if ( G_Dead( client ) )
+		if ( Entities::IsDead( client ) )
 		{
 			respawn( client );
 		}

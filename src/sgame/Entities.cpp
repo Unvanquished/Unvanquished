@@ -22,41 +22,44 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-/*
- * This file contains:
- *   - Helper functions for working with CBSE entities.
- *
- * It aims to relace sg_utils.cpp, which contains C89 helpers for legacy entities.
- * TODO: Port all helpers that use gentity_t here and make them use Entity instead.
- */
-
+#include "Entities.h"
 #include "CBSE.h"
 
-bool Utility::OnSameTeam(Entity &firstEntity, Entity &secndEntity) {
+bool Entities::OnSameTeam(Entity &firstEntity, Entity &secndEntity) {
 	TeamComponent* firstTeamComponent = firstEntity.Get<TeamComponent>();
 	TeamComponent* secndTeamComponent = secndEntity.Get<TeamComponent>();
 	if (!firstTeamComponent || !secndTeamComponent) return false;
 	return *firstTeamComponent == *secndTeamComponent;
 }
 
-bool Utility::OnOpposingTeams(Entity &firstEntity, Entity &secndEntity) {
+bool Entities::OnOpposingTeams(Entity &firstEntity, Entity &secndEntity) {
 	TeamComponent* firstTeamComponent = firstEntity.Get<TeamComponent>();
 	TeamComponent* secndTeamComponent = secndEntity.Get<TeamComponent>();
 	if (!firstTeamComponent || !secndTeamComponent) return false;
 	return *firstTeamComponent != *secndTeamComponent;
 }
 
-bool Utility::Alive(Entity &entity) {
+bool Entities::IsAlive(Entity &entity) {
 	HealthComponent* healthComponent = entity.Get<HealthComponent>();
 	return (healthComponent && healthComponent->Alive());
 }
 
-bool Utility::Dead(Entity &entity) {
+bool Entities::IsAlive(gentity_t *ent) {
+	if (!ent) return false;
+	return Entities::IsAlive(*ent->entity);
+}
+
+bool Entities::IsDead(Entity &entity) {
 	HealthComponent* healthComponent = entity.Get<HealthComponent>();
 	return (healthComponent && !healthComponent->Alive());
 }
 
-void Utility::Kill(Entity& entity, Entity* source, meansOfDeath_t meansOfDeath) {
+bool Entities::IsDead(gentity_t *ent) {
+	if (!ent) return false;
+	return Entities::IsDead(*ent->entity);
+}
+
+void Entities::Kill(Entity& entity, Entity* source, meansOfDeath_t meansOfDeath) {
 	HealthComponent *healthComponent = entity.Get<HealthComponent>();
 	if (healthComponent) {
 		entity.Damage(healthComponent->Health(), source ? source->oldEnt : nullptr, {}, {},
@@ -64,7 +67,53 @@ void Utility::Kill(Entity& entity, Entity* source, meansOfDeath_t meansOfDeath) 
 	}
 }
 
-bool Utility::AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
+void Entities::Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
+	if (ent) Entities::Kill(*ent->entity, nullptr, meansOfDeath);
+}
+
+void Entities::Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
+	if (!source) {
+		Entities::Kill(ent, meansOfDeath);
+	} else {
+		if (ent) Entities::Kill(*ent->entity, source->entity, meansOfDeath);
+	}
+}
+
+bool Entities::HasHealthComponent(gentity_t *ent) {
+	return (ent && HasComponents<HealthComponent>(*ent->entity));
+}
+
+float Entities::HealthOf(Entity& entity) {
+	HealthComponent *healthComponent = entity.Get<HealthComponent>();
+	ASSERT_NQ(healthComponent, nullptr);
+	return healthComponent->Health();
+}
+
+float Entities::HealthOf(gentity_t* ent) {
+	return Entities::HealthOf(*ent->entity);
+}
+
+bool Entities::HasFullHealth(Entity& entity) {
+	HealthComponent *healthComponent = entity.Get<HealthComponent>();
+	ASSERT_NQ(healthComponent, nullptr);
+	return healthComponent->Health();
+}
+
+bool Entities::HasFullHealth(gentity_t* ent) {
+	return Entities::HasFullHealth(*ent->entity);
+}
+
+float Entities::HealthFraction(Entity& entity) {
+	HealthComponent *healthComponent = entity.Get<HealthComponent>();
+	ASSERT_NQ(healthComponent, nullptr);
+	return healthComponent->HealthFraction();
+}
+
+float Entities::HealthFraction(gentity_t* ent) {
+	return Entities::HealthFraction(*ent->entity);
+}
+
+bool Entities::AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
 	bool hit = false;
 
 	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent& humanClassComponent) {
@@ -83,7 +132,7 @@ bool Utility::AntiHumanRadiusDamage(Entity& entity, float amount, float range, m
 	return hit;
 }
 
-bool Utility::KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
+bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
 	bool hit = false;
 
 	// FIXME: Only considering entities with HealthComponent.
@@ -102,9 +151,4 @@ bool Utility::KnockbackRadiusDamage(Entity& entity, float amount, float range, m
 	});
 
 	return hit;
-}
-
-// TODO: Consider adding this to the vector library.
-std::string Utility::Print(Vec3 v) {
-	return std::string(va("(%.2f, %.2f, %.2f)", v[0], v[1], v[2]));
 }

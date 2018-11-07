@@ -1,4 +1,5 @@
 #include "HiveComponent.h"
+#include "../Entities.h"
 
 constexpr float SENSE_RANGE   = HIVE_SENSE_RANGE; // Also needed by cgame.
 constexpr int   ATTACK_PERIOD = 3000;
@@ -69,7 +70,7 @@ bool HiveComponent::TargetValid(Entity& candidate, bool checkDistance) const {
 	if (!candidate.Get<HumanClassComponent>()) return false;
 
 	// Do not target the dead.
-	if (Utility::Dead(candidate)) return false;
+	if (Entities::IsDead(candidate)) return false;
 
 	// Respect the no-target flag.
 	if ((candidate.oldEnt->flags & FL_NOTARGET)) return false;

@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "Entities.h"
 #include "CBSE.h"
 
 bool ClientInactivityTimer( gentity_t *ent, bool active );
@@ -131,7 +132,7 @@ void P_WorldEffects( gentity_t *ent )
 			// drown!
 			ent->client->airOutTime += 1000;
 
-			if ( G_Alive( ent ) )
+			if ( Entities::IsAlive( ent ) )
 			{
 				// take more damage the longer underwater
 				ent->damage += 2;
@@ -175,7 +176,7 @@ void P_WorldEffects( gentity_t *ent )
 	if ( waterlevel &&
 	     ( ent->watertype & ( CONTENTS_LAVA | CONTENTS_SLIME ) ) )
 	{
-		if ( G_Alive( ent ) && ent->pain_debounce_time <= level.time )
+		if ( Entities::IsAlive( ent ) && ent->pain_debounce_time <= level.time )
 		{
 			if ( ent->watertype & CONTENTS_LAVA )
 			{
@@ -440,7 +441,7 @@ void  G_TouchTriggers( gentity_t *ent )
 	}
 
 	// dead clients don't activate triggers!
-	if ( G_Dead( ent ) )
+	if ( Entities::IsDead( ent ) )
 	{
 		return;
 	}
@@ -756,7 +757,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 		{
 			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
 		}
-		else if ( G_Alive( self ) ) // activate medkit
+		else if ( Entities::IsAlive( self ) ) // activate medkit
 		{
 			// remove medkit from inventory
 			BG_DeactivateUpgrade( UP_MEDKIT, client->ps.stats );
@@ -1627,7 +1628,7 @@ static int FindAlienHealthSource( gentity_t *self )
 	for ( ent = nullptr; ( ent = G_IterateEntities( ent, nullptr, true, 0, nullptr ) ); )
 	{
 		if ( !G_OnSameTeam( self, ent ) ) continue;
-		if ( G_Dead( ent ) )              continue;
+		if ( Entities::IsDead( ent ) )              continue;
 
 		distance = Distance( ent->s.origin, self->s.origin );
 
@@ -1694,7 +1695,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client = self->client;
 
 	// Check if client is an alien and has the healing ability
-	if ( !client || client->pers.team != TEAM_ALIENS || G_Dead( self )
+	if ( !client || client->pers.team != TEAM_ALIENS || Entities::IsDead( self )
 	     || level.surrenderTeam == client->pers.team )
 	{
 		return;
@@ -1890,7 +1891,7 @@ void ClientThink_real( gentity_t *self )
 	{
 		client->ps.pm_type = PM_NOCLIP;
 	}
-	else if ( G_Dead( self ) )
+	else if ( Entities::IsDead( self ) )
 	{
 		client->ps.pm_type = PM_DEAD;
 	}
@@ -2142,7 +2143,7 @@ void ClientThink_real( gentity_t *self )
 	client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
 
 	// Don't think anymore if dead
-	if ( G_Dead( self ) )
+	if ( Entities::IsDead( self ) )
 	{
 		return;
 	}
@@ -2154,7 +2155,7 @@ void ClientThink_real( gentity_t *self )
 
 	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) &&
 	     !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
-	     G_Alive( self ) )
+	     Entities::IsAlive( self ) )
 	{
 		trace_t   trace;
 		vec3_t    view, point;
@@ -2222,7 +2223,7 @@ void ClientThink_real( gentity_t *self )
 
 	if ( self->suicideTime > 0 && self->suicideTime < level.time )
 	{
-		G_Kill(self, nullptr, MOD_SUICIDE);
+		Entities::Kill(self, nullptr, MOD_SUICIDE);
 		self->suicideTime = 0;
 	}
 }
@@ -2303,7 +2304,7 @@ void ClientEndFrame( gentity_t *ent )
 	}
 
 	// respawn if dead
-	if ( G_Dead( ent ) && level.time >= ent->client->respawnTime )
+	if ( Entities::IsDead( ent ) && level.time >= ent->client->respawnTime )
 	{
 		respawn( ent );
 	}

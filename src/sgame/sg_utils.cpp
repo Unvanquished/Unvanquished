@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // sg_utils.c -- misc utility functions for game module
 
 #include "sg_local.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 typedef struct
 {
@@ -306,7 +306,7 @@ void G_KillBox( gentity_t *ent )
 			continue;
 		}
 
-		G_Kill(hit, ent, MOD_TELEFRAG);
+		Entities::Kill(hit, ent, MOD_TELEFRAG);
 	}
 }
 
@@ -336,7 +336,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
                 e->r.currentOrigin, e->s.number, e->clipmask, 0 );
 
 	if( tr.entityNum != ENTITYNUM_NONE ) {
-	  G_Kill(e, activator, MOD_CRUSH);
+	  Entities::Kill(e, activator, MOD_CRUSH);
 	}
   }
 }
@@ -816,71 +816,6 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 	}
 }
 
-/*
-===============
-G_SpawnFire
-===============
-*/
-gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
-{
-	gentity_t *fire;
-	vec3_t    snapHelper, floorNormal;
-
-	VectorSet( floorNormal, 0.0f, 0.0f, 1.0f );
-
-	// don't spawn fire on walls and ceiling since we can't display it properly yet
-	// TODO: Add fire effects for floor and ceiling
-	if ( DotProduct( normal, floorNormal ) < 0.71f ) // 0.71 ~= cos(45°)
-	{
-		return nullptr;
-	}
-
-	// don't spawn a fire inside another fire
-	fire = nullptr;
-	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
-	{
-		if ( fire->s.eType == entityType_t::ET_FIRE )
-		{
-			return nullptr;
-		}
-	}
-
-	fire = G_NewEntity();
-
-	// create a fire entity
-	fire->classname = "fire";
-	fire->s.eType   = entityType_t::ET_FIRE;
-	fire->clipmask  = 0;
-
-	fire->entity = new FireEntity(FireEntity::Params{fire});
-	fire->entity->Ignite(fireStarter);
-
-	// attacker
-	fire->r.ownerNum = fireStarter->s.number;
-
-	// normal
-	VectorNormalize( normal ); // make sure normal is a direction
-	VectorCopy( normal, fire->s.origin2 );
-
-	// origin
-	VectorCopy( origin, fire->s.origin );
-	VectorAdd( origin, normal, snapHelper );
-	G_SnapVectorTowards( fire->s.origin, snapHelper ); // save net bandwidth
-	VectorCopy( fire->s.origin, fire->r.currentOrigin );
-
-	// send to client
-	trap_LinkEntity( fire );
-
-	if ( g_debugFire.integer )
-	{
-		char descr[ 64 ];
-		BG_BuildEntityDescription( descr, sizeof( descr ), &fire->s );
-		Log::Notice("%s spawned.", descr);
-	}
-
-	return fire;
-}
-
 bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase )
 {
 	trace_t trace;
@@ -965,36 +900,4 @@ team_t G_Enemy( team_t team )
 // TODO: Add LocationComponent
 float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
 	return Distance(ent1->s.origin, ent2->s.origin);
-}
-
-/**
- * @return Whether entity has a health component and is alive.
- * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
- */
-bool G_Alive(gentity_t *ent) {
-	if (!ent) return false;
-	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
-	return (healthComponent && healthComponent->Alive());
-}
-
-/**
- * @return Whether entity has a health component and is dead.
- * @note !G_Dead != G_Alive as entities that don't have health are neither dead nor alive.
- */
-bool G_Dead(gentity_t *ent) {
-	if (!ent) return false;
-	HealthComponent *healthComponent = ent->entity->Get<HealthComponent>();
-	return (healthComponent && !healthComponent->Alive());
-}
-
-void G_Kill(gentity_t *ent, meansOfDeath_t meansOfDeath) {
-	if (ent) Utility::Kill(*ent->entity, nullptr, meansOfDeath);
-}
-
-void G_Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDeath) {
-	if (!source) {
-		G_Kill(ent, meansOfDeath);
-	} else {
-		if (ent) Utility::Kill(*ent->entity, source->entity, meansOfDeath);
-	}
 }

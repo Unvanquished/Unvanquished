@@ -1,4 +1,5 @@
 #include "TurretComponent.h"
+#include "../Entities.h"
 
 static Log::Logger turretLogger("sgame.turrets");
 
@@ -126,9 +127,8 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 
 	if (Math::DistanceSq(oldRelativeAimAngles, relativeAimAngles) > 0.0f) {
 		turretLogger.Debug(
-			"Aiming. Elapsed: %d ms. Delta: %.2f. Max: %.2f. Old: %s. New: %s. Reached: %b.",
-			timeDelta, Utility::Print(deltaAngles), Utility::Print(maxAngleChange),
-			Utility::Print(oldRelativeAimAngles), Utility::Print(relativeAimAngles), targetReached
+			"Aiming. Elapsed: %d ms. Delta: %.2f. Max: %.2f. Old: %s. New: %s. Reached: %s.",
+			timeDelta, deltaAngles, maxAngleChange, oldRelativeAimAngles, relativeAimAngles, targetReached
 		);
 	}
 
@@ -150,18 +150,14 @@ void TurretComponent::TrackEntityTarget() {
 	directionToTarget = Math::Normalize(targetOrigin - muzzle);
 
 	if (Math::DistanceSq(directionToTarget, oldDirectionToTarget) > 0.0f) {
-		turretLogger.Debug("Following an entity target. New direction: %s.",
-			Utility::Print(directionToTarget)
-		);
+		turretLogger.Debug("Following an entity target. New direction: %s.", directionToTarget);
 	}
 }
 
 void TurretComponent::ResetDirection() {
 	directionToTarget = baseDirection;
 
-	turretLogger.Verbose("Target direction reset. New direction: %s.",
-		Utility::Print(directionToTarget)
-	);
+	turretLogger.Verbose("Target direction reset. New direction: %s.", directionToTarget);
 }
 
 void TurretComponent::ResetPitch() {
@@ -170,9 +166,7 @@ void TurretComponent::ResetPitch() {
 
 	directionToTarget = RelativeAnglesToDirection(targetRelativeAngles);
 
-	turretLogger.Debug("Target pitch reset. New direction: %s.",
-		Utility::Print(directionToTarget)
-	);
+	turretLogger.Debug("Target pitch reset. New direction: %s.", directionToTarget);
 }
 
 void TurretComponent::LowerPitch() {
@@ -181,9 +175,7 @@ void TurretComponent::LowerPitch() {
 
 	directionToTarget = RelativeAnglesToDirection(targetRelativeAngles);
 
-	turretLogger.Debug("Target pitch lowered. New direction: %s.",
-		Utility::Print(directionToTarget)
-	);
+	turretLogger.Debug("Target pitch lowered. New direction: %s.", directionToTarget);
 }
 
 bool TurretComponent::TargetCanBeHit() {
@@ -203,9 +195,9 @@ bool TurretComponent::TargetCanBeHit() {
 bool TurretComponent::TargetValid(Entity& target, bool newTarget) {
 	if (!target.Get<ClientComponent>() ||
 	    target.Get<SpectatorComponent>() ||
-	    Utility::Dead(target) ||
+	    Entities::IsDead(target) ||
 	    (target.oldEnt->flags & FL_NOTARGET) ||
-	    !Utility::OnOpposingTeams(entity, target) ||
+	    !Entities::OnOpposingTeams(entity, target) ||
 	    G_Distance(entity.oldEnt, target.oldEnt) > range ||
 	    !trap_InPVS(entity.oldEnt->s.origin, target.oldEnt->s.origin)) {
 
@@ -255,7 +247,7 @@ void TurretComponent::SetBaseDirection() {
 		baseDirection =  torsoDirection;
 	}
 
-	turretLogger.Verbose("Base direction set to %s.", Utility::Print(baseDirection));
+	turretLogger.Verbose("Base direction set to %s.", baseDirection);
 }
 
 Vec3 TurretComponent::TorsoAngles() const {

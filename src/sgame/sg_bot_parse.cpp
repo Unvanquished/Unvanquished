@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 static bool expectToken( const char *s, pc_token_list **list, bool next )
 {
@@ -112,7 +112,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 	{
 		dead = true;
 	}
-	else if ( !G_Alive( self->botMind->goal.ent ) )
+	else if ( !Entities::IsAlive( self->botMind->goal.ent ) )
 	{
 		dead = true;
 	}
@@ -303,10 +303,9 @@ static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
 	botEntityAndDistance_t et = AIEntityToGentity( self, e );
 	float healthFraction;
-	HealthComponent *healthComponent;
 
-	if (et.ent && (healthComponent = et.ent->entity->Get<HealthComponent>())) {
-		healthFraction = healthComponent->HealthFraction();
+	if (Entities::HasHealthComponent(et.ent)) {
+		healthFraction = Entities::HealthFraction(et.ent);
 	} else {
 		healthFraction = 0.0f;
 	}

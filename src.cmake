@@ -103,6 +103,8 @@ set(CGAMELIST
 set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/Beacon.cpp
     ${GAMELOGIC_DIR}/sgame/BaseClustering.cpp
+    ${GAMELOGIC_DIR}/sgame/Entities.cpp
+    ${GAMELOGIC_DIR}/sgame/Entities.h
     ${GAMELOGIC_DIR}/sgame/sg_active.cpp
     ${GAMELOGIC_DIR}/sgame/sg_admin.cpp
     ${GAMELOGIC_DIR}/sgame/sg_api.cpp
@@ -150,7 +152,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_typedef.h
     ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
     ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
-    ${GAMELOGIC_DIR}/sgame/Utility.cpp
     ${GAMELOGIC_DIR}/sgame/CombatFeedback.cpp
 
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp

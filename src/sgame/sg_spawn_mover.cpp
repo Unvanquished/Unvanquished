@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "Entities.h"
 #include "CBSE.h"
 
 #define DEFAULT_FUNC_TRAIN_SPEED 100
@@ -370,7 +371,7 @@ bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obst
 		// bobbing entities are instant-kill and never get blocked
 		if ( pusher->s.pos.trType == trType_t::TR_SINE || pusher->s.apos.trType == trType_t::TR_SINE )
 		{
-			G_Kill(check, pusher, MOD_CRUSH);
+			Entities::Kill(check, pusher, MOD_CRUSH);
 			continue;
 		}
 
@@ -1859,7 +1860,7 @@ void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t* )
 		return;
 	}
 
-	if ( !other->client || G_Dead( other ) )
+	if ( !other->client || Entities::IsDead( other ) )
 	{
 		return;
 	}
@@ -2325,7 +2326,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			//whatever is blocking the train isn't a client
 
 			//KILL!!1!!!
-			G_Kill(other, self, MOD_CRUSH);
+			Entities::Kill(other, self, MOD_CRUSH);
 
 			//buildables need to be handled differently since even when
 			//dealt fatal amounts of damage they won't instantly become non-solid
@@ -2353,7 +2354,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 			return;
 		}
 
-		G_Kill(other, self, MOD_CRUSH);
+		Entities::Kill(other, self, MOD_CRUSH);
 	}
 }
 

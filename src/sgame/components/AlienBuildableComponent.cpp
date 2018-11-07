@@ -1,4 +1,5 @@
 #include "AlienBuildableComponent.h"
+#include "../Entities.h"
 #include <random>
 
 static Log::Logger alienBuildableLogger("sgame.alienbuildings");
@@ -60,7 +61,7 @@ void AlienBuildableComponent::Blast(int timeDelta) {
 	meansOfDeath_t splashMOD    = (meansOfDeath_t)entity.oldEnt->splashMethodOfDeath;
 
 	// Damage close humans.
-	Utility::AntiHumanRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
+	Entities::AntiHumanRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
 
 	// Reward attackers.
 	G_RewardAttackers(entity.oldEnt);

@@ -585,8 +585,7 @@ gentity_t *G_ResolveEntityKeyword( gentity_t *self, char *keyword )
 		resolution = self->parent;
 	else if (!Q_stricmp(keyword, "$target"))
 		resolution = self->target;
-	else if (!Q_stricmp(keyword, "$tracker"))
-		resolution = self->tracker;
+	//TODO $tracker for entities, that currently target, track or aim for this entity, is the reverse to "target"
 
 	if(!resolution || !resolution->inuse)
 		return nullptr;
@@ -813,7 +812,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 
 	targetedEntity->callIn = *call;
 
-	if((!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call)) && call->definition)
+	if(call->definition)
 	{
 		switch (call->definition->actionType)
 		{
@@ -887,8 +886,6 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 		}
 	}
-	if(targetedEntity->notifyHandler)
-		targetedEntity->notifyHandler( targetedEntity, call );
 
 	targetedEntity->callIn = NULL_CALL; /**< not called anymore */
 }

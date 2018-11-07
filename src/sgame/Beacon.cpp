@@ -26,7 +26,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 // handle the server-side beacon-related stuff
 
 #include "sg_local.h"
-#include "CBSE.h"
+#include "Entities.h"
 
 // entityState_t   | cbeacon_t    | description
 // ----------------+--------------+-------------
@@ -561,7 +561,7 @@ namespace Beacon //this should eventually become a class
 		switch( ent->s.eType )
 		{
 			case entityType_t::ET_BUILDABLE:
-				if( G_Dead( ent ) )
+				if( Entities::IsDead( ent ) )
 					return false;
 				if( ent->buildableTeam == team )
 					return false;
@@ -695,14 +695,14 @@ namespace Beacon //this should eventually become a class
 			case entityType_t::ET_BUILDABLE:
 				targetTeam = ent->buildableTeam;
 				data       = ent->s.modelindex;
-				dead       = G_Dead( ent );
+				dead       = Entities::IsDead( ent );
 				player     = false;
 				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
 				break;
 
 			case entityType_t::ET_PLAYER:
 				targetTeam = (team_t)ent->client->pers.team;
-				dead       = G_Dead( ent );
+				dead       = Entities::IsDead( ent );
 				player     = true;
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, nullptr, nullptr, nullptr );
 

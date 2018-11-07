@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
 #include <common/FileSystem.h>
+#include "Entities.h"
 #include "CBSE.h"
 
 #define CMD_CHEAT        0x0001
@@ -583,7 +584,7 @@ void Cmd_Give_f( gentity_t *ent )
 		level.team[ent->client->pers.team].totalBudget += bp;
 	}
 
-	if ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
+	if ( Entities::IsDead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		return;
 	}
@@ -729,7 +730,7 @@ void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
-		G_Kill(ent, MOD_SUICIDE);
+		Entities::Kill(ent, MOD_SUICIDE);
 	}
 	else
 	{
@@ -781,7 +782,7 @@ void Cmd_Team_f( gentity_t *ent )
 	     g_combatCooldown.integer &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
-	     G_Alive( ent ) &&
+	     Entities::IsAlive( ent ) &&
 	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
 	{
 		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
@@ -2307,7 +2308,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 		return false;
 	}
 
-	if ( G_Dead( ent ) )
+	if ( Entities::IsDead( ent ) )
 	{
 		return true; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
@@ -2510,7 +2511,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	}
 
 	// always let the builder prevent the explosion of a buildable
-	if ( G_Dead( buildable ) )
+	if ( Entities::IsDead( buildable ) )
 	{
 		G_RewardAttackers( buildable );
 		G_FreeEntity( buildable );
@@ -4464,7 +4465,7 @@ void ClientCommand( int clientNum )
 	}
 
 	if ( (command->cmdFlags & CMD_ALIVE) &&
-	     ( G_Dead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT ) )
+	     ( Entities::IsDead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIVE );
 		return;

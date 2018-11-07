@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // perform the server side effects of a weapon firing
 
 #include "sg_local.h"
+#include "Entities.h"
 #include "CBSE.h"
 
 static vec3_t forward, right, up;
@@ -234,7 +235,7 @@ bool G_FindAmmo( gentity_t *self )
 	{
 		// only friendly, living and powered buildables provide ammo
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
-		     !neighbor->spawned || !neighbor->powered || G_Dead( neighbor ) )
+		     !neighbor->spawned || !neighbor->powered || Entities::IsDead( neighbor ) )
 		{
 			continue;
 		}
@@ -281,7 +282,7 @@ bool G_FindFuel( gentity_t *self )
 	{
 		// only friendly, living and powered buildables provide fuel
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
-		     !neighbor->spawned || !neighbor->powered || G_Dead( neighbor ) )
+		     !neighbor->spawned || !neighbor->powered || Entities::IsDead( neighbor ) )
 		{
 			continue;
 		}
@@ -508,7 +509,7 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 
 	G_WideTrace( &tr, self, range, width, height, &traceEnt );
 
-	if ( !G_Alive( traceEnt ) )
+	if ( !Entities::IsAlive( traceEnt ) )
 	{
 		return nullptr;
 	}
@@ -744,7 +745,7 @@ static void HiveMissileThink( gentity_t *self )
 		if ( !ent->inuse ) continue;
 		if ( ent->flags & FL_NOTARGET ) continue;
 
-		if ( ent->client && G_Alive( ent ) && ent->client->pers.team == TEAM_HUMANS &&
+		if ( ent->client && Entities::IsAlive( ent ) && ent->client->pers.team == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
@@ -1009,7 +1010,7 @@ static void FirePainsaw( gentity_t *self )
 
 	G_WideTrace( &tr, self, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT, &target );
 
-	if ( !G_Alive( target ) )
+	if ( !Entities::IsAlive( target ) )
 	{
 		return;
 	}
@@ -1240,7 +1241,7 @@ bool G_CheckVenomAttack( gentity_t *self )
 
 	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
-	if ( !G_Alive( traceEnt ) || G_OnSameTeam( self, traceEnt ) )
+	if ( !Entities::IsAlive( traceEnt ) || G_OnSameTeam( self, traceEnt ) )
 	{
 		return false;
 	}
@@ -1313,7 +1314,7 @@ static void FindZapChainTargets( zap_t *zap )
 		         enemy->client->pers.team == TEAM_HUMANS ) ||
 		       ( enemy->s.eType == entityType_t::ET_BUILDABLE &&
 		         BG_Buildable( enemy->s.modelindex )->team == TEAM_HUMANS ) ) &&
-		     G_Alive( enemy ) &&
+		     Entities::IsAlive( enemy ) &&
 		     distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
 		{
 			// world-LOS check: trace against the world, ignoring other BODY entities
@@ -1535,7 +1536,7 @@ bool G_CheckPounceAttack( gentity_t *self )
 	G_WideTrace( &tr, self, pounceRange, LEVEL3_POUNCE_WIDTH,
 	             LEVEL3_POUNCE_WIDTH, &traceEnt );
 
-	if ( !G_Alive( traceEnt ) )
+	if ( !Entities::IsAlive( traceEnt ) )
 	{
 		return false;
 	}
@@ -1579,7 +1580,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 		return;
 	}
 
-	if ( !G_Alive( victim ) )
+	if ( !Entities::IsAlive( victim ) )
 	{
 		return;
 	}

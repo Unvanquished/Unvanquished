@@ -1,4 +1,5 @@
 #include "RocketpodComponent.h"
+#include "../Entities.h"
 
 constexpr float ATTACK_RANGE         = (float)ROCKETPOD_RANGE; // cgame needs to know this.
 constexpr int   ATTACK_PERIOD        = ROCKETPOD_ATTACK_PERIOD; // cgame needs to know this.
@@ -239,8 +240,8 @@ bool RocketpodComponent::EnemyClose() {
 		if (enemyClose) return;
 
 		if (other.Get<SpectatorComponent>()) return;
-		if (Utility::Dead(other)) return;
-		if (!Utility::OnOpposingTeams(entity, other)) return;
+		if (Entities::IsDead(other)) return;
+		if (!Entities::OnOpposingTeams(entity, other)) return;
 
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 
