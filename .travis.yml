@@ -1,57 +1,80 @@
 sudo: required
-services:
-  - docker
 
-os:
-  - linux
-  - osx
+language: cpp
+cache: ccache
 
-language:
-  - cpp
-
-python:
-  - "2.7"
-
-env:
-  - MODE=1
-  - MODE=2
-
-compiler:
-  - clang
-  - gcc
+addons:
+  apt:
+    update: true
+  homebrew:
+    packages:
+    - ninja
+    - ccache
 
 matrix:
-  exclude:
-    - env: MODE=2  # Don't build NaCl gamelogic with gcc
+  fast_finish: true
+  include:
+    - name: "Linux game-native-dll using gcc"
+      os: linux
       compiler: gcc
+      env: MODE=1
+    - name: "Linux game-native-dll using clang"
+      os: linux
+      compiler: clang
+      env: MODE=1
+    - name: "Linux nacl-nexe (pnacl-clang)"
+      os: linux
+      compiler: clang
+      env: MODE=2
+    - name: "osx game-native-dll (clang)"
+      os: osx
+      compiler: clang
+      env: MODE=1
+  allow_failures:
+    - name: "osx nacl-nexe (pnacl-clang)"
+      os: osx
+      compiler: clang
+      env: MODE=2
+    # osx links gcc to clang; so skip
 
 install:
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm -rf /opt/python; fi  # Delete conflicting python
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq install software-properties-common; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq update; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -y install
-    ninja-build libegl1-mesa-dev
-    liblua5.2-dev libgles2-mesa-dev
-    libgeoip-dev libncursesw5-dev
-    libsdl2-dev libglew-dev libfreetype6-dev
-    libwebp-dev libjpeg8-dev libpng-dev
-    libcurl4-gnutls-dev zlib1g-dev
-    libopenal-dev libogg-dev libvorbis-dev libtheora-dev libxvidcore-dev libopusfile-dev libspeexdsp-dev
-    nettle-dev libgmp-dev python-yaml python-jinja2; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ninja; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      sudo apt-get -y -q --no-install-recommends install
+        zlib1g-dev libncursesw5-dev
+        nettle-dev libfreetype6-dev
+        liblua5.2-dev;
+    fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      sudo apt-get -y -q --no-install-recommends install ninja-build python-yaml python-jinja2;
+    fi
+  - |
+    # workarounds to make ccache work
+    if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" == "clang++" ]; then
+      sudo ln -s $(which ccache) /usr/lib/ccache/clang
+      sudo ln -s $(which ccache) /usr/lib/ccache/clang++
+    elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      export PATH="/usr/local/opt/ccache/libexec:$PATH"
+    fi
   - pip2 install --user -r src/utils/cbse/requirements.txt
 
+before_script:
+  - ccache --zero-stats
+  - mkdir -p build && cd build
+  # In older versions of gcc the missing field initializer warning fires even when the initialization list is empty, which is stupid.
+  # This issue is fixed in version 5 of gcc, so if we get a newer version on Travis the warning can be re-enabled.
+  - if [ "$CC" == "gcc" ]; then export CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers"; fi
+  - export CXXFLAGS="$CXXFLAGS -D__extern_always_inline=inline"
+
 script:
-  - mkdir -p build
-  - cd build
-  - cmake --version
-  - CXXFLAGS="-D__extern_always_inline=inline" cmake -DUSE_PRECOMPILED_HEADER=0
+  - cmake -DUSE_PRECOMPILED_HEADER=0
     -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0
-    -DBUILD_GAME_NATIVE_DLL=$(($MODE == 1)) -DBUILD_GAME_NATIVE_EXE=$(($MODE == 1))
-    -DBUILD_GAME_NACL=$(($MODE == 2))
-    -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "Ninja" -DBUILD_GAME_NACL_NEXE=0 -DCMAKE_BUILD_TYPE=Debug ..
+    -DBUILD_GAME_NATIVE_DLL=$(($MODE == 1)) -DBUILD_GAME_NATIVE_EXE=0
+    -DBUILD_GAME_NACL=$(($MODE == 2)) -DBUILD_GAME_NACL_NEXE=0
+    -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG_OPTIMIZE=0 ..
   - cmake --build . -- -j8
+
+before_cache:
+  - ccache --show-stats
 
 notifications:
   irc:
@@ -62,5 +85,7 @@ notifications:
 
 branches:
   except:
+    - /^archive\/.*$/
+    - /^attic\/.*$/
     - /^cbse\/.*$/
     - debian
