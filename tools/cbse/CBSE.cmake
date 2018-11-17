@@ -49,10 +49,14 @@ function(CBSE target definition output)
         OUTPUT ${GENERATED_CBSE}
         COMMENT "Generating CBSE entities for ${definition}"
         DEPENDS ${definition}
+                ${CMAKE_SOURCE_DIR}/src/utils/cbse/CBSE.py
                 ${CMAKE_SOURCE_DIR}/src/utils/cbse/templates/Backend.cpp
                 ${CMAKE_SOURCE_DIR}/src/utils/cbse/templates/Backend.h
                 ${CMAKE_SOURCE_DIR}/src/utils/cbse/templates/Component.cpp
                 ${CMAKE_SOURCE_DIR}/src/utils/cbse/templates/Component.h
+                ${CMAKE_SOURCE_DIR}/src/utils/cbse/templates/Components.h
+                ${CMAKE_SOURCE_DIR}/src/utils/cbse/templates/Entities.h
+                ${CMAKE_SOURCE_DIR}/src/utils/cbse/templates/Helper.h
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src/utils/cbse
         COMMAND
                 ${PYTHON_EXECUTABLE}
