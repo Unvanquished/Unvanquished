@@ -36,8 +36,6 @@ Maryland 20850 USA.
 #include "sg_entities.h"
 #include "CBSE.h"
 
-static EmptyEntity emptyEntity(EmptyEntity::Params{nullptr});
-
 /*
 =================================================================================
 
@@ -51,7 +49,7 @@ basic gentity lifecycle handling
  */
 void G_InitGentityMinimal( gentity_t *entity )
 {
-	entity->entity = &emptyEntity;
+	entity->entity = level.emptyEntity;
 }
 
 void G_InitGentity( gentity_t *entity )
@@ -172,13 +170,13 @@ void G_FreeEntity( gentity_t *entity )
 		BaseClustering::Remove(entity);
 	}
 
-	if (entity->entity != &emptyEntity)
+	if (entity->entity != level.emptyEntity)
 	{
 		delete entity->entity;
 	}
 
 	memset( entity, 0, sizeof( *entity ) );
-	entity->entity = &emptyEntity;
+	entity->entity = level.emptyEntity;
 	entity->classname = "freent";
 	entity->freetime = level.time;
 	entity->inuse = false;

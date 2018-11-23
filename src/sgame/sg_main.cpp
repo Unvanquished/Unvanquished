@@ -777,6 +777,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	memset( g_entities, 0, MAX_GENTITIES * sizeof( g_entities[ 0 ] ) );
 	level.gentities = g_entities;
 
+	// entity used as drop-in for unmigrated entities
+	level.emptyEntity = new EmptyEntity({ nullptr });
+
 	// initilize special entities so they don't need to be special cased in the CBSE code later on
 	G_InitGentityMinimal( g_entities + ENTITYNUM_NONE );
 	G_InitGentityMinimal( g_entities + ENTITYNUM_WORLD );
@@ -968,6 +971,8 @@ void G_ShutdownGame( int /* restart */ )
 	level.restarted = false;
 	level.surrenderTeam = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "" );
+
+	delete level.emptyEntity;
 }
 
 //===================================================================
