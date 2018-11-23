@@ -972,6 +972,17 @@ void G_ShutdownGame( int /* restart */ )
 	level.surrenderTeam = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "" );
 
+	/*
+	 * delete cbse entities attached to gentities
+	 * note, that this does not deal with several gentities having the same Entity attached
+	 * (except for the EmptyEntity) as we'd otherwise be trying to delete dangling pointers
+	 */
+	for (int i = 0; i < level.num_entities; i++) {
+		Entity* entity = level.gentities[i].entity;
+		if (entity != level.emptyEntity)
+			delete entity;
+	}
+
 	delete level.emptyEntity;
 }
 
