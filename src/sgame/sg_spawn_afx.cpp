@@ -44,7 +44,7 @@ void InitEnvAFXEntity( gentity_t *self, bool link )
 	}
 
 	trap_SetBrushModel( self, self->model );
-	self->r.contents = CONTENTS_SENSOR; // replaces the -1 from trap_SetBrushModel
+	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 
 	if( link )
