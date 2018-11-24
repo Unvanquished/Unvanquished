@@ -43,5 +43,6 @@ build_script:
   - cmd: mkdir build
   - cmd: cd build
   - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
-  - cmd: cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "NMake Makefiles" -DBUILD_GAME_NACL=0 -DCMAKE_BUILD_TYPE=Debug ..
+  - cmd: cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "NMake Makefiles"
+         -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 -DBUILD_GAME_NACL=0 -DCMAKE_BUILD_TYPE=Debug ..
   - cmd: cmake --build .
