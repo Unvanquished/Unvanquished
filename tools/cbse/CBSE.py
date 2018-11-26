@@ -70,9 +70,6 @@ class Message:
     def get_num_args(self):
         return len(self.args)
 
-    def get_enum_name(self):
-        return 'MSG_' + self.name.upper()
-
     def get_handler_name(self):
             return 'Handle' + self.name
 

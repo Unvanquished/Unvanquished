@@ -69,9 +69,9 @@
 // /////////// //
 
 //* An enum of message IDs used to index the vtable.
-enum {
+enum class EntityMessage {
 	{% for message in messages %}
-		{{message.get_enum_name()}},
+		{{message.get_name()}},
 	{% endfor %}
 };
 
@@ -172,7 +172,7 @@ class Entity {
 		 * @brief Generic message dispatcher.
 		 * @note Should not be called directly, use message helpers instead.
 		 */
-		bool SendMessage(int msg, const void* data);
+		bool SendMessage(EntityMessage msg, const void* data);
 
     public:
 		// ///////////////////// //
