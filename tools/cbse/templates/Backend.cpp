@@ -146,7 +146,7 @@ bool Entity::SendMessage(EntityMessage msg, const void* data) {
 		// {{entity.get_type_name()}}'s {{message.get_name()}} message dispatcher.
 		void {{entity.get_message_handler_name(message)}}(Entity* _entity, const void*{% if message.get_num_args() > 0 %} _data{% endif %}) {
 			//* Cast the entity to the correct type (receive an Entity*)
-			{{entity.get_type_name()}}* entity = ({{entity.get_type_name()}}*) _entity;
+			auto* entity = static_cast<{{entity.get_type_name()}}*>(_entity);
 			{% if message.get_num_args() == 0 %}
 				{% for component in entity.get_components() %}
 					{% if message in component.get_messages_to_handle() %}
@@ -156,7 +156,7 @@ bool Entity::SendMessage(EntityMessage msg, const void* data) {
 				{% endfor %}
 			{% else %}
 				//* Cast the message content to the right type (received a const void*)
-				const {{message.get_tuple_type()}}* data = (const {{message.get_tuple_type()}}*) _data;
+				const auto* data = static_cast<const {{message.get_tuple_type()}}*>(_data);
 				{% for component in entity.get_components() %}
 					{% if message in component.get_messages_to_handle() %}
 						entity->{{component.get_variable_name()}}.{{message.get_handler_name()}}({{message.get_unpacked_tuple_args('*data')}});
