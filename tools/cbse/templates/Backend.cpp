@@ -64,8 +64,8 @@ Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffset
 {}
 
 // Base entity's message dispatcher.
-bool Entity::SendMessage(int msg, const void* data) {
-	MessageHandler handler = messageHandlers[msg];
+bool Entity::SendMessage(EntityMessage msg, const void* data) {
+	MessageHandler handler = messageHandlers[static_cast<int>(msg)];
 	if (handler) {
 		handler(this, data);
 		return true;
@@ -80,10 +80,10 @@ bool Entity::SendMessage(int msg, const void* data) {
 
 	bool Entity::{{message.name}}({{message.get_function_args()}}) {
 		{% if message.get_num_args() == 0 %}
-			return SendMessage({{message.get_enum_name()}}, nullptr);
+			return SendMessage(EntityMessage::{{message.get_name()}}, nullptr);
 		{% else %}
 			{{message.get_tuple_type()}} data({{message.get_args_names()}});
-			return SendMessage({{message.get_enum_name()}}, &data);
+			return SendMessage(EntityMessage::{{message.get_name()}}, &data);
 		{% endif %}
 	}
 {% endfor %}
