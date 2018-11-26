@@ -63,10 +63,6 @@ Entity::Entity(const MessageHandler *messageHandlers, const int* componentOffset
 
 {}
 
-// Base entity deconstructor.
-Entity::~Entity()
-{}
-
 // Base entity's message dispatcher.
 bool Entity::SendMessage(int msg, const void* data) {
 	MessageHandler handler = messageHandlers[msg];
@@ -148,7 +144,7 @@ bool Entity::SendMessage(int msg, const void* data) {
 	{% for message in entity.get_messages_to_handle() %}
 
 		// {{entity.get_type_name()}}'s {{message.get_name()}} message dispatcher.
-		void {{entity.get_message_handler_name(message)}}(Entity* _entity, const void* {% if message.get_num_args() > 0 %} _data{% endif %}) {
+		void {{entity.get_message_handler_name(message)}}(Entity* _entity, const void*{% if message.get_num_args() > 0 %} _data{% endif %}) {
 			//* Cast the entity to the correct type (receive an Entity*)
 			{{entity.get_type_name()}}* entity = ({{entity.get_type_name()}}*) _entity;
 			{% if message.get_num_args() == 0 %}
@@ -202,11 +198,6 @@ bool Entity::SendMessage(int msg, const void* data) {
 				, {{required.get_variable_name()}}
 			{%- endfor -%})
 		{% endfor %}
-	{}
-
-	// {{entity.get_type_name()}}'s deconstructor.
-	//* Destroys all the components in reverse order.
-	{{entity.get_type_name()}}::~{{entity.get_type_name()}}()
 	{}
 {% endfor %}
 
