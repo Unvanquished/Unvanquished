@@ -86,7 +86,7 @@ class Entity;
 {% endfor %}
 
 /** Message handler declaration. */
-typedef void (*MessageHandler)(Entity*, const void*);
+using MessageHandler = void (*)(Entity*, const void* /*_data*/);
 
 // //////////////////// //
 // Component priorities //
@@ -125,7 +125,7 @@ class Entity {
 		/**
 		 * @brief Base entity deconstructor.
 		 */
-		virtual ~Entity();
+		virtual ~Entity() = default;
 
 		// /////////////// //
 		// Message helpers //
