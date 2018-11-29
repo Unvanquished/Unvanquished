@@ -77,16 +77,16 @@ components:
             anInt:     int
             aBool:     bool
         defaults:
-            aConstant: !!plain __LINE__
-            aString:   "I am a string"
+            aConstant: __LINE__
+            aString:   '"I am a string"'
             anInt:     23
             aBool:     true
 
     TypeTest2:
         requires:
             TypeTest1:
-                aConstant: !!plain __LINE__
-                aString:   "I am a string"
+                aConstant: __LINE__
+                aString:   '"I am a string literal"'
                 anInt:     23
                 aBool:     true
 
@@ -118,8 +118,10 @@ entities:
     TypeTest3:
         components:
             TypeTest1:
-                aConstant: !!plain __LINE__
-                aString:   "I am a string"
+                aConstant: __LINE__
+                someCode:  '&*yaml::conflicting::symbols[0]'
+                aString:   '"I am a string literal"'
+                aChar:     "'a'"
                 anInt:     23
                 aBool:     true
 
