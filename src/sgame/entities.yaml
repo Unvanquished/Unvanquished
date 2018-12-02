@@ -140,7 +140,7 @@ components:
         requires:
             Client:
             Team:
-                team: !!plain TEAM_ALIENS
+                team: TEAM_ALIENS
             Armor:
             Knockback:
             Health:
@@ -149,7 +149,7 @@ components:
         requires:
             Client:
             Team:
-                team: !!plain TEAM_HUMANS
+                team: TEAM_HUMANS
             Armor:
             Knockback:
             Health:
@@ -174,7 +174,7 @@ components:
         requires:
             Buildable:
             Team:
-                team: !!plain TEAM_ALIENS
+                team: TEAM_ALIENS
             Ignitable:
 
     HumanBuildable:
@@ -183,7 +183,7 @@ components:
         requires:
             Buildable:
             Team:
-                team: !!plain TEAM_HUMANS
+                team: TEAM_HUMANS
 
     MainBuildable:
         messages:
@@ -346,7 +346,7 @@ entities:
         components:
             Client:
             Team:
-                team: !!plain TEAM_NONE
+                team: TEAM_NONE
 
     ##################
     # Player Classes #
