@@ -6,7 +6,7 @@ set -e
 set -u
 
 # Dynamic libraries for inclusion in app bundle
-DEPS_VERSION=3
+DEPS_VERSION=4
 SDL2_VERSION=2.0.3
 GLEW_VERSION=1.12.0
 OPENAL_VERSION=1.16.0
@@ -55,5 +55,6 @@ install -m 644 "${DEPS_PATH}/lib/libopenal.${OPENAL_VERSION}.dylib"  "${DEST_PAT
 
 # SDL is already compiled as a universal binary, just remove the headers
 cp -a "${DEPS_PATH}/SDL2.framework" "${DEST_PATH}/Contents/MacOS/"
-rm -f "${DEST_PATH}/Contents/MacOS/SDL2.framework/Headers"
+rm -rf "${DEST_PATH}/Contents/MacOS/SDL2.framework/Headers"
 rm -rf "${DEST_PATH}/Contents/MacOS/SDL2.framework/Versions/A/Headers"
+rm -rf "${DEST_PATH}/Contents/MacOS/SDL2.framework/Versions/Current/Headers"
