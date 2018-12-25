@@ -53,6 +53,21 @@ See below for build and launch instructions.
 64-bit: `mingw-w64-x86_64-{toolchain,cmake,aria2}`  
 _or_ 32-bit: `mingw-w64-i686-{toolchain,cmake,aria2}`
 
+## Download instructions
+
+Unvanquished requires several sub-repositories to be fetched before compilation.
+
+```sh
+# If you have not yet cloned this repository:
+git clone --recurse-submodules URL
+
+# If you have already cloned:
+cd Unvanquished/
+git submodule update --init --recursive
+```
+
+If cmake complains about the 'daemon/' folder being empty then you have skipped this step.
+
 ## Build Instructions
 
 Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores to speed up compilation. Linux systems usually provide an handy `nproc` tool that tells the number of CPU core so you can just do `make -j$(nproc)` to use all available cores.
