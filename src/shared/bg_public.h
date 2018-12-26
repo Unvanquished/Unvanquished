@@ -480,6 +480,7 @@ typedef enum
 #define SLOT_SIDEARM  0x00000040
 #define SLOT_GRENADE  0x00000080
 
+// NOTE: manually update AIEntity_t if you edit this enum (TODO: get rid of this task)
 typedef enum
 {
   BA_NONE,

@@ -42,6 +42,7 @@ typedef enum
 	E_A_BOOSTER,
 	E_A_HIVE,
 	E_A_LEECH,
+	E_A_SPIKER,
 	E_H_SPAWN,
 	E_H_MGTURRET,
 	E_H_ROCKETPOD,
