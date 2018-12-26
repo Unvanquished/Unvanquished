@@ -5602,7 +5602,8 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot fill <count> [<team> [<skill level>]]\n"
 	                                        "            bot del (<name> | all)\n"
 	                                        "            bot names (aliens | humans) <names>…\n"
-	                                        "            bot names (clear | list)" ) );
+	                                        "            bot names (clear | list)\n"
+	                                        "            bot debug_reload" ) );
 	ADMP( bot_usage );
 }
 
@@ -5779,6 +5780,13 @@ bool G_admin_bot( gentity_t *ent )
 			BotUsage( ent );
 			return false;
 		}
+	}
+	else if ( !Q_stricmp( arg1, "debug_reload" )  )
+	{
+		G_BotDelAllBots();
+		G_BotCleanup();
+		G_BotInit();
+		return true;
 	}
 	else
 	{
