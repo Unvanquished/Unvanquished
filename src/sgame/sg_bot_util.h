@@ -156,9 +156,6 @@ bool BotPathIsWalkable( gentity_t *self, botTarget_t target );
 //at what hp do we use medkit?
 #define BOT_USEMEDKIT_HP 50
 
-//when human bots reach this ammo percentage left or less(and no enemy), they will head back to the base to refuel ammo
-#define BOT_LOW_AMMO 0.50f
-
 //used for clamping distance to heal structure when deciding whether to go heal
 #define MAX_HEAL_DIST 2000.0f
 

@@ -41,8 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define VOTE_TIME          30000 // 30 seconds before vote times out
 
 #define MINS_Z             -24
-#define DEFAULT_VIEWHEIGHT 26
-#define CROUCH_VIEWHEIGHT  12
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
@@ -1495,9 +1493,6 @@ void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_
 #define MAX_ARENAS      1024
 #define MAX_ARENAS_TEXT 8192
 
-#define MAX_BOTS        1024
-#define MAX_BOTS_TEXT   8192
-
 float    atof_neg( char *token, bool allowNegative );
 int      atoi_neg( char *token, bool allowNegative );
 
@@ -1513,11 +1508,6 @@ bool BG_ClassDisabled( int class_ );
 bool BG_BuildableDisabled( int buildable );
 
 weapon_t BG_PrimaryWeapon( int stats[] );
-
-// Friendly Fire Flags
-#define FFF_HUMANS             1
-#define FFF_ALIENS             2
-#define FFF_BUILDABLES         4
 
 // bg_voice.c
 #define MAX_VOICES             8

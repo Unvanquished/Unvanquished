@@ -1027,32 +1027,6 @@ struct minimap_t
 
 //======================================================================
 
-typedef struct
-{
-	vec3_t alienBuildablePos[ MAX_GENTITIES ];
-	float  alienBuildableIntensity[ MAX_GENTITIES ];
-	int    numAlienBuildables;
-
-	vec3_t humanBuildablePos[ MAX_GENTITIES ];
-	float  humanBuildableIntensity[ MAX_GENTITIES ];
-	int    numHumanBuildables;
-
-	vec3_t alienClientPos[ MAX_CLIENTS ];
-	float  alienClientIntensity[ MAX_CLIENTS ];
-	int    numAlienClients;
-
-	vec3_t humanClientPos[ MAX_CLIENTS ];
-	float  humanClientIntensity[ MAX_CLIENTS ];
-	int    numHumanClients;
-
-	int    lastUpdateTime;
-	vec3_t origin;
-	vec3_t vangles;
-} entityPos_t;
-
-#define MAX_CONSOLE_TEXT  8192
-#define MAX_CONSOLE_LINES 32
-
 // all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
 // occurs, and they will have visible effects for #define STEP_TIME or whatever msec after
 
@@ -1305,7 +1279,6 @@ struct rocketMenu_t
 #define MAX_SERVERS 2048
 #define MAX_RESOLUTIONS 32
 #define MAX_LANGUAGES 64
-#define MAX_INPUTS 16
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
 #define MAX_DEMOS 256

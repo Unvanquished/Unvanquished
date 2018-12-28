@@ -25,8 +25,6 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 #include "sg_local.h"
 #include "CBSE.h"
 
-#define MINING_PERIOD 1000
-
 static Log::Logger buildpointLogger("sgame.buildpoints");
 
 /**
