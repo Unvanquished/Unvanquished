@@ -1467,9 +1467,6 @@ void     G_UpdateUnlockables();
 #ifdef BUILD_CGAME
 void     CG_UpdateUnlockables( playerState_t *ps );
 #endif
-#ifdef BUILD_UI
-void     UI_UpdateUnlockables();
-#endif
 
 // content masks
 #define MASK_ALL         ( -1 )
