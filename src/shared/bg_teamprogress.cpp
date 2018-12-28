@@ -95,12 +95,6 @@ static bool Disabled( unlockable_t *unlockable )
 #endif // BUILD_CGAME
 
 #ifdef BUILD_CGAME
-static void InformUnlockableStatusChange( unlockable_t*, bool )
-{
-}
-#endif // BUILD_CGAME
-
-#ifdef BUILD_CGAME
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
 {
 	char         text[ MAX_STRING_CHARS ];
@@ -342,8 +336,6 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 			if ( unlockablesTeamKnowledge == team && unlockable->statusKnown &&
 			     unlockable->unlocked != newStatus )
 			{
-				InformUnlockableStatusChange( unlockable, newStatus );
-
 				statusChanges[ unlockableNum ] = newStatus ? 1 : -1;
 				statusChangeCount++;
 			}

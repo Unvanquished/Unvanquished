@@ -379,33 +379,6 @@ void G_SnapVectorTowards( vec3_t v, vec3_t to )
 	}
 }
 
-/*
-======================
-Round a vector to integers for more efficient network
-transmission, but make sure that it rounds towards a given point
-rather than blindly truncating.  This prevents it from truncating
-into a wall.
-======================
-*/
-/*
-static void SnapVectorNormal( vec3_t v, vec3_t normal )
-{
-	int i;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		if ( v[ i ] >= 0 )
-		{
-			v[ i ] = ( int )( v[ i ] + ( normal[ i ] <= 0 ? 0 : 1 ) );
-		}
-		else
-		{
-			v[ i ] = ( int )( v[ i ] + ( normal[ i ] <= 0 ? -1 : 0 ) );
-		}
-	}
-}
-*/
-
 static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
 {
 	gentity_t *event;
