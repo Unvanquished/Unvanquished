@@ -461,7 +461,7 @@ bool G_ClientIsLagging( gclient_t *client )
 		}
 	}
 
-	return false; //is a non-existant client lagging? woooo zen
+	return false; //is a non-existent client lagging? woooo zen
 }
 
 //==============================================================================

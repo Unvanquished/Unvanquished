@@ -42,7 +42,7 @@ class MiningComponent: public MiningComponentBase {
 		// ///////////////////// //
 
 		/**
-		 * @brief Calculates modifier for the efficiency of one miner when another one interfers at
+		 * @brief Calculates modifier for the efficiency of one miner when another one interferes at
 		 *        given distance.
 		 */
 		static float InterferenceMod(float distance);
@@ -76,7 +76,7 @@ class MiningComponent: public MiningComponentBase {
 		bool active;
 
 		/**
-		 * @brief Currrent efficiency.
+		 * @brief Current efficiency.
 		 */
 		float currentEfficiency;
 

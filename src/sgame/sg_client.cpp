@@ -376,7 +376,7 @@ BODYQUE
 =============
 BodySink
 
-After sitting around for five seconds, fall into the ground and dissapear
+After sitting around for five seconds, fall into the ground and disappear
 =============
 */
 static void BodySink( gentity_t *ent )
@@ -1234,7 +1234,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 
 	G_ReadSessionData( client );
 
-	// get and distribute relevent paramters
+	// get and distribute relevant parameters
 	G_namelog_connect( client );
 	userInfoError = ClientUserinfoChanged( clientNum, false );
 

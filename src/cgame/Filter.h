@@ -30,7 +30,7 @@ class Filter
 	int width;
 
 	/**
-	 * @brief The Gaussian function used to calculate a Gaussian moving averaege.
+	 * @brief The Gaussian function used to calculate a Gaussian moving average.
 	 */
 	float Gaussian( float x )
 	{

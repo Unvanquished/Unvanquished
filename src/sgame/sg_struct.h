@@ -513,7 +513,7 @@ struct gclient_s
 	// timers
 	int        respawnTime; // can respawn when time > this
 	int        inactivityTime; // kick players when time > this
-	bool   inactivityWarning; // true if the five seoond warning has been given
+	bool   inactivityWarning; // true if the five second warning has been given
 	int        boostedTime; // last time we touched a booster
 
 	int        airOutTime;

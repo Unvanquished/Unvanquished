@@ -782,7 +782,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// entity used as drop-in for unmigrated entities
 	level.emptyEntity = new EmptyEntity({ nullptr });
 
-	// initilize special entities so they don't need to be special cased in the CBSE code later on
+	// initialize special entities so they don't need to be special cased in the CBSE code later on
 	G_InitGentityMinimal( g_entities + ENTITYNUM_NONE );
 	G_InitGentityMinimal( g_entities + ENTITYNUM_WORLD );
 

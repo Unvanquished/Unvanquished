@@ -46,7 +46,7 @@ Testmodel will create a fake entity 100 units in front of the current view
 position, directly facing the viewer.  It will remain immobile, so you can
 move around it to view it from different angles.
 
-Testgun will cause the model to follow the player around and supress the real
+Testgun will cause the model to follow the player around and suppress the real
 view weapon model.  The default frame 0 of most guns is completely off screen,
 so you will probably have to cycle a couple frames to see it.
 
@@ -428,7 +428,7 @@ void CG_OffsetThirdPersonView()
 		VectorCopy( trace.endpos, view );
 		view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
 		// Try another trace to this position, because a tunnel may have the ceiling
-		// close enogh that this is poking out.
+		// close enough that this is poking out.
 		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum,
 		          MASK_SOLID, 0 );
 		VectorCopy( trace.endpos, view );
@@ -807,7 +807,7 @@ void CG_OffsetFirstPersonView()
 		}
 	}
 
-	// this *feels* more realisitic for humans <- this comment feels very descriptive
+	// this *feels* more realistic for humans <- this comment feels very descriptive
 	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
 	     cg.predictedPlayerState.pm_type == PM_NORMAL )
 	{

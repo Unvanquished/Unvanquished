@@ -356,7 +356,7 @@ void gfx_shader_mod_reset( gentity_t *self )
 		return;
 	}
 
-	if( !self->shaderActive ) // initial reset doesnt need a remap
+	if( !self->shaderActive ) // initial reset doesn't need a remap
 	{
 		return;
 	}

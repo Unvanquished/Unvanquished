@@ -217,7 +217,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 /*
 =================================================================================
 
-gentity debuging
+gentity debugging
 
 =================================================================================
 */
@@ -289,7 +289,7 @@ gentity list handling and searching
 =============
 G_IterateEntities
 
-Iterates through all active enities optionally filtered by classname
+Iterates through all active entities optionally filtered by classname
 and a fieldoffset (set via FOFS() macro) of the callers choosing.
 
 Iteration will continue to return the gentity following the "previous" parameter that fullfill these conditions
@@ -755,8 +755,8 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
 
 /**
  * executes the entities act function
- * This is basicly nothing but a wrapper around act() ensuring a correct call,
- * neither paramater may be nullptr, and the entity is required to have an act function to execute
+ * This is basically nothing but a wrapper around act() ensuring a correct call,
+ * neither parameter may be nullptr, and the entity is required to have an act function to execute
  * or this function will fail
  */
 void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )

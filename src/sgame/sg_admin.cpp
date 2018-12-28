@@ -1724,7 +1724,7 @@ void G_admin_pubkey()
 	g_admin_admin_t *highest = nullptr, *a = nullptr;
 
 	// Uncomment this if your server lags (shouldn't happen unless you are on a *very* old computer)
-	// Will only regenrate messages when there are no active client (When they are all loading the map)
+	// Will only regenerate messages when there are no active client (When they are all loading the map)
 #if 0
 	int             i;
 
