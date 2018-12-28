@@ -57,7 +57,7 @@ const char *MomentumTypeToReason( momentum_t type )
 		case CONF_GENERIC:        return "generic actions";
 		case CONF_BUILDING:       return "building a structure";
 		case CONF_DECONSTRUCTING: return "deconstructing a structure";
-		case CONF_DESTROYING:     return "destryoing a structure";
+		case CONF_DESTROYING:     return "destroying a structure";
 		case CONF_KILLING:        return "killing a player";
 		default:                  return "(unknown momentum type)";
 	}

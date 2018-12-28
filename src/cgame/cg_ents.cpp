@@ -942,7 +942,7 @@ static void CG_InterpolateEntityPosition( centity_t *cent )
 	// a snapshot ahead of the current one
 	if ( cg.nextSnap == nullptr )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_InterpoateEntityPosition: cg.nextSnap == NULL" );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_InterpolateEntityPosition: cg.nextSnap == NULL" );
 	}
 
 	f = cg.frameInterpolation;
