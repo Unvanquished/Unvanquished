@@ -75,7 +75,6 @@ class RocketpodComponent: public RocketpodComponentBase {
 
 		bool firing;
 		bool lockingOn;
-		bool lockedOn;
 		bool safeMode;
 
 		int lastTargetSearch;
