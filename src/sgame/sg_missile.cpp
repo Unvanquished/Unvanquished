@@ -291,7 +291,7 @@ static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 		ent->think = G_ExplodeMissile;
 		ent->nextthink = level.time + FRAMETIME;
 
-		// Ddamage only humans and do so quietly.
+		// Damage only humans and do so quietly.
 		if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
 		{
 			return MIF_NO_EFFECT;
@@ -420,7 +420,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		// Prevent map models from appearing at impact point.
 		ent->s.modelindex = 0;
 
-		// Save net bandwith.
+		// Save net bandwidth.
 		G_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
 
 		G_SetOrigin( ent, trace->endpos );

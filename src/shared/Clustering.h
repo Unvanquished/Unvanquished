@@ -163,7 +163,7 @@ namespace Clustering {
 	/**
 	 * @brief A self-organizing container of clusters of objects located in euclidean space.
 	 *
-	 * The clustering algorihm is based on Kruskal's algorithm for minimum spanning trees.
+	 * The clustering algorithm is based on Kruskal's algorithm for minimum spanning trees.
 	 * In the minimum spanning tree of all edges that pass the optional visibility check, delete the
 	 * edges that are longer than the average plus the standard deviation multiplied by a "laxity"
 	 * factor. The remaining trees span the clusters.
@@ -426,7 +426,7 @@ namespace Clustering {
 			/** The standard deviation of the edge length in the minimum spanning tree. */
 			float mstStandardDeviation;
 
-			/** Whether clusters need to be rebuilt on read acces. Does not imply regeneration of
+			/** Whether clusters need to be rebuilt on read access. Does not imply regeneration of
 			 *  the minimum spanning tree. */
 			bool dirtyClusters;
 

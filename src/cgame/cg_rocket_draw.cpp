@@ -1261,7 +1261,7 @@ void CG_AddLagometerSnapshotInfo( snapshot_t *snap )
 ==============
 CG_DrawDisconnect
 
-Should we draw something differnet for long lag vs no packets?
+Should we draw something different for long lag vs no packets?
 ==============
 */
 static void CG_Rocket_DrawDisconnect()
@@ -1352,7 +1352,7 @@ public:
 
 		vscale = range / MAX_LAGOMETER_RANGE;
 
-		// draw the frame interpoalte / extrapolate graph
+		// draw the frame interpolate / extrapolate graph
 		for ( a = 0; a < aw; a++ )
 		{
 			i = ( lagometer.frameCount - 1 - a ) & ( LAG_SAMPLES - 1 );
@@ -1577,7 +1577,7 @@ static void CG_ScanForCrosshairEntity()
 
 	else
 	{
-		// we have a client entitiy
+		// we have a client entity
 		targetTeam = cgs.clientinfo[ trace.entityNum ].team;
 
 		// only react to living clients

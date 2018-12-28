@@ -247,7 +247,7 @@ static const fieldDescriptor_t fields[] =
 enum entityChainType_t
 {
 	/*
-	 * self sufficent, it might possibly be fired at, but it can do as well on its own, so won't be freed automaticly
+	 * self sufficient, it might possibly be fired at, but it can do as well on its own, so won't be freed automatically
 	 */
 	CHAIN_AUTONOMOUS,
 	/*

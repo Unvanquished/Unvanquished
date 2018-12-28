@@ -99,7 +99,7 @@ bool OvermindComponent::CompareTargets(Entity& a, Entity& b) const {
 		}
 	}
 
-	// Break tie by prefering smaller distance.
+	// Break tie by preferring smaller distance.
 	return aDistance < bDistance;
 }
 

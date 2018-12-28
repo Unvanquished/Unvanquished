@@ -463,7 +463,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 			modifier *= HUMAN_JOG_MODIFIER;
 		}
 
-		// Apply modfiers for strafing and going backwards
+		// Apply modifiers for strafing and going backwards
 		if ( cmd->forwardmove < 0 )
 		{
 			modifier *= HUMAN_BACK_MODIFIER;
@@ -865,7 +865,7 @@ static bool PM_CheckPounce()
 						}
 					}
 
-					// if there is a possible trajectoy they come in pairs, use the shorter one
+					// if there is a possible trajectory they come in pairs, use the shorter one
 					if ( foundTrajectory &&
 					     BG_GetTrajectoryPitch( pm->ps->origin, endpos, jumpMagnitude, pm->ps->gravity,
 					                            trajAngles, trajDir1, trajDir2 ) )
@@ -4844,7 +4844,7 @@ void PmoveSingle( pmove_t *pmove )
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 	}
 
-	// if talk button is down, dissallow all other input
+	// if talk button is down, disallow all other input
 	// this is to prevent any possible intercept proxy from
 	// adding fake talk balloons
 	if ( usercmdButtonPressed( pmove->cmd.buttons, BUTTON_TALK ) )

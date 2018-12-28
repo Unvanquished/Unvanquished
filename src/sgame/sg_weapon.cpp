@@ -142,7 +142,7 @@ static bool CanUseAmmoRefill( gentity_t *self )
 /**
  * @brief Refills clips on clip based weapons, refills charge on other weapons.
  * @param self
- * @param triggerEvent Trigger an event when relvant resource was modified.
+ * @param triggerEvent Trigger an event when relevant resource was modified.
  * @return Whether relevant resource was modified.
  */
 bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
@@ -645,7 +645,7 @@ static void FireShotgun( gentity_t *self )
 	tent->s.eventParm = rand() / ( RAND_MAX / 0x100 + 1 ); // seed for spread pattern
 	tent->s.otherEntityNum = self->s.number;
 
-	// caclulate the pattern and do the damage
+	// calculate the pattern and do the damage
 	G_UnlaggedOn( self, muzzle, SHOTGUN_RANGE );
 	ShotgunPattern( tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, self );
 	G_UnlaggedOff();
@@ -1684,7 +1684,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 	float  weightDPS, weightDamage;
 	int    attackerMass, victimMass;
 
-	// weigth damage is only dealt between clients
+	// weight damage is only dealt between clients
 	if ( !self->client || !victim->client )
 	{
 		return;

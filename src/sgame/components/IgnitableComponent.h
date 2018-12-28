@@ -100,7 +100,7 @@ class IgnitableComponent: public IgnitableComponentBase {
 		int igniteTime;         /**< Time of (re-)ignition. */
 		int immuneUntil;        /**< Fire immunity time after being extinguished. */
 		int spreadAt;           /**< Will try to spread to neighbours at this time. */
-		gentity_t* fireStarter; /**< Client who orginally started the fire. */
+		gentity_t* fireStarter; /**< Client who originally started the fire. */
 
 		std::default_random_engine randomGenerator;
 		std::normal_distribution<float> normalDistribution;

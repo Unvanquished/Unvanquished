@@ -48,7 +48,7 @@ float G_RGSPredictOwnEfficiency(vec3_t origin) {
 }
 
 /**
- * @brief Predict the efficiecy loss of an existing miner if another one is constructed closeby.
+ * @brief Predict the efficiency loss of an existing miner if another one is constructed closeby.
  * @return Efficiency loss as negative value.
  */
 static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {

@@ -781,7 +781,7 @@ void CG_PredictPlayerState()
 	//
 	// With this method, we get incremental predicts on every client frame
 	// except a frame following a new snapshot in which there was a prediction
-	// error.  This yeilds anywhere from a 15% to 40% performance increase,
+	// error.  This yields anywhere from a 15% to 40% performance increase,
 	// depending on how much of a bottleneck the CPU is.
 	if ( cg_optimizePrediction.integer )
 	{

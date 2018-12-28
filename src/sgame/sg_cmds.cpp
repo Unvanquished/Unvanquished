@@ -3880,7 +3880,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	 * With I a multiple of MAX_MAPLIST_COLS
 	 * And N a number of extra maps not being a multiple of MAX_MAPLIST_COLS
 	 * The way:
-	 *    mapNamesCount = I × MAX_MAPLISt_COLS + N
+	 *    mapNamesCount = I × MAX_MAPLIST_COLS + N
 	 *
 	 * We can compute:
 	 *    rows = (I + N + MAX_MAPLIST_COLS - 1)                     / MAX_MAPLIST_COLS

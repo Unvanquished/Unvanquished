@@ -1217,7 +1217,7 @@ bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
 	node = G_NodeByIndex( nodeIndex, rotation );
 	depth++;
 
-	// guard against inifinite loop in conditional code
+	// guard against infinite loop in conditional code
 	if ( depth > 32 && node->type != NT_MAP )
 	{
 		if ( depth > 64 )

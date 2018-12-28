@@ -288,7 +288,7 @@ void G_notify_sensor_end( team_t winningTeam );
 //
 // g_spawn_shared.c
 //
-void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallbacke );
+void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallback );
 void     G_ResetFloatField( float* target, bool fallbackIfNegativ, float instanceField, float classField, float fallback );
 void     G_ResetTimeField( variatingTime_t* result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback );
 

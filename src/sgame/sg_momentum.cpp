@@ -213,7 +213,7 @@ static float MomentumMod( momentum_t type )
 /**
  * Awards momentum to a team.
  *
- * Will notify the client hwo earned it if given, otherwise the whole team, with an event.
+ * Will notify the client who earned it if given, otherwise the whole team, with an event.
  */
 static float AddMomentum( momentum_t type, team_t team, float amount,
                             gentity_t *source, bool skipChangeHook )
