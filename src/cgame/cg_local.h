@@ -129,7 +129,6 @@ struct lerpFrame_t
 	int           animationNumber; // may include ANIM_TOGGLEBIT
 	animation_t   *animation;
 	int           animationTime; // time when the first frame of the animation will be exact
-	float         animationScale;
 
 	// added for smooth blending between animations on change
 
@@ -417,8 +416,6 @@ struct particle_t
 	pMoveValues_t     accMoveValues;
 
 	int               lastEvalTime;
-
-	int               nextChildTime;
 
 	pLerpValues_t     radius;
 	pLerpValues_t     alpha;
@@ -741,27 +738,17 @@ struct centity_t
 	bool       currentValid; // true if cg.frame holds this entity
 
 	int            muzzleFlashTime; // move to playerEntity?
-	int            muzzleFlashTime2; // move to playerEntity?
-	int            muzzleFlashTime3; // move to playerEntity?
 	int            previousEvent;
-	int            teleportFlag;
 
 	int            trailTime; // so missile trails can handle dropped initial packets
-	int            dustTrailTime;
 	int            miscTime;
 	int            snapShotTime; // last time this entity was found in a snapshot
 
 	playerEntity_t pe;
 
-	int            errorTime; // decay the error from this time
-	vec3_t         errorOrigin;
-	vec3_t         errorAngles;
-
 	bool       extrapolated; // false if origin / angles is an interpolation
 	vec3_t         rawOrigin;
 	vec3_t         rawAngles;
-
-	vec3_t         beamEnd;
 
 	// exact interpolated position of entity on this frame
 	vec3_t                lerpOrigin;
@@ -801,7 +788,6 @@ struct centity_t
 	bool              entityPSMissing;
 
 	trailSystem_t         *level2ZapTS[ LEVEL2_AREAZAP_MAX_TARGETS ];
-	int                   level2ZapTime;
 
 	trailSystem_t         *muzzleTS;
 	int                   muzzleTSDeathTime;
@@ -814,8 +800,6 @@ struct centity_t
 	bool              valid;
 	bool              oldValid;
 	int                   pvsEnterTime;
-
-	struct centity_s      *nextLocation;
 
 	cbeacon_t             beacon;
 
@@ -1188,23 +1172,17 @@ struct cg_t
 	// scoreboard
 	int      scoresRequestTime;
 	int      numScores;
-	int      selectedScore;
 	int      teamScores[ 2 ];
 	score_t  scores[ MAX_CLIENTS ];
 	bool showScores;
-	int      scoreFadeTime;
 	char     killerName[ MAX_NAME_LENGTH ];
 	char     spectatorList[ MAX_STRING_CHARS ]; // list of names
 	int      spectatorTime; // next time to offset
-	float    spectatorOffset; // current offset from start
 	bool scoreInvalidated; // needs update on next RocketUpdate
 
 	// centerprinting
 	int  centerPrintTime;
-	int  centerPrintCharWidth;
-	int  centerPrintY;
 	char centerPrint[ MAX_STRING_CHARS ];
-	int  centerPrintLines;
 
 	// crosshair client ID
 	int      crosshairClientNum;
@@ -1224,8 +1202,6 @@ struct cg_t
 	//==========================
 
 	int weaponSelectTime;
-	int weaponAnimation;
-	int weaponAnimationTime;
 
 	// blend blobs
 	float damageTime;
@@ -1261,8 +1237,6 @@ struct cg_t
 	bool                weapon2Firing;
 	bool                weapon3Firing;
 
-	int                     poisonedTime;
-
 	vec3_t                  lastNormal; // view smoothage
 	vec3_t                  lastVangles; // view smoothage
 	smooth_t                sList[ MAXSMOOTHS ]; // WW smoothing
@@ -1291,13 +1265,9 @@ struct cg_t
 	int                     stateHead, stateTail;
 	int                     ping;
 
-	float                   chargeMeterAlpha;
-	float                   chargeMeterValue;
 	qhandle_t               lastHealthCross;
 	float                   healthCrossFade;
 	int                     nearUsableBuildable;
-
-	int                     nextWeaponClickTime;
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
@@ -1493,12 +1463,10 @@ struct cgMedia_t
 
 	qhandle_t viewBloodShader;
 	qhandle_t tracerShader;
-	qhandle_t crosshairShader[ WP_NUM_WEAPONS ];
 	qhandle_t backTileShader;
 
 	qhandle_t creepShader;
 
-	qhandle_t scannerShader;
 	qhandle_t scannerBlipShader;
 	qhandle_t scannerBlipBldgShader;
 	qhandle_t scannerLineShader;
@@ -1533,7 +1501,6 @@ struct cgMedia_t
 	sfxHandle_t alienTalkSound;
 	sfxHandle_t humanTalkSound;
 	sfxHandle_t landSound;
-	sfxHandle_t fallSound;
 	sfxHandle_t turretSpinupSound;
 
 	sfxHandle_t grenadeBounceSound0;
@@ -1567,8 +1534,6 @@ struct cgMedia_t
 	sfxHandle_t alienL4ChargeStart;
 
 	qhandle_t   cursor;
-	qhandle_t   selectCursor;
-	qhandle_t   sizeCursor;
 
 	//light armour
 	qhandle_t   larmourHeadSkin;
@@ -1669,7 +1634,6 @@ struct cgs_t
 	glconfig_t  glconfig; // rendering configuration
 	float       screenXScale; // derived from glconfig
 	float       screenYScale;
-	float       screenXBias;
 	float       aspectScale;
 
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
@@ -1723,9 +1687,6 @@ struct cgs_t
 
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
-
-	void         *capturedItem;
-	qhandle_t    activeCursor;
 
 	buildStat_t  alienBuildStat;
 	buildStat_t  humanBuildStat;
