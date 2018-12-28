@@ -1184,14 +1184,14 @@ private:
 
 #define LAG_SAMPLES 128
 
-typedef struct
+struct lagometer_t
 {
 	int frameSamples[ LAG_SAMPLES ];
 	int frameCount;
 	int snapshotFlags[ LAG_SAMPLES ];
 	int snapshotSamples[ LAG_SAMPLES ];
 	int snapshotCount;
-} lagometer_t;
+};
 
 lagometer_t lagometer;
 
@@ -3570,12 +3570,12 @@ static void CG_Rocket_HaveJetpck()
 	Rocket_SetClass( "inactive", !jetpackInInventory );
 }
 
-typedef struct
+struct elementRenderCmd_t
 {
 	const char *name;
 	void ( *exec )();
 	rocketElementType_t type;
-} elementRenderCmd_t;
+};
 
 // THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =

@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // all of the locals will be zeroed before each
 // pmove, just to make damn sure we don't have
 // any differences when running on client or server
-typedef struct
+struct pml_t
 {
 	vec3_t   forward, right, up;
 	float    frametime;
@@ -59,7 +59,7 @@ typedef struct
 	vec3_t   previous_origin;
 	vec3_t   previous_velocity;
 	int      previous_waterlevel;
-} pml_t;
+};
 
 extern  pmove_t *pm;
 extern  pml_t   pml;

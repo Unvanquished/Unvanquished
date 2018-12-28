@@ -117,15 +117,13 @@ bool Float_Parse( const char **p, float *f )
 
 #define MAX_EXPR_ELEMENTS 32
 
-typedef enum
+enum exprType_t
 {
-  EXPR_OPERATOR,
-  EXPR_VALUE
-}
+	EXPR_OPERATOR,
+	EXPR_VALUE
+};
 
-exprType_t;
-
-typedef struct exprToken_s
+struct exprToken_t
 {
 	exprType_t type;
 	union
@@ -133,17 +131,13 @@ typedef struct exprToken_s
 		char  op;
 		float val;
 	} u;
-}
+};
 
-exprToken_t;
-
-typedef struct exprList_s
+struct exprList_t
 {
 	exprToken_t l[ MAX_EXPR_ELEMENTS ];
 	int         f, b;
-}
-
-exprList_t;
+};
 
 /*
 =================

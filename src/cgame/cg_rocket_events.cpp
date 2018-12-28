@@ -379,11 +379,11 @@ static void CG_Rocket_ResetPings()
 	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( src ) );
 }
 
-typedef struct
+struct eventCmd_t
 {
 	const char *const command;
 	void ( *exec ) ();
-} eventCmd_t;
+};
 
 static const eventCmd_t eventCmdList[] =
 {

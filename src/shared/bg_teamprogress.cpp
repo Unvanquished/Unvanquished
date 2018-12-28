@@ -41,7 +41,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // definitions
 // -----------
 
-typedef struct unlockable_s
+struct unlockable_t
 {
 	int      type;
 	int      num;
@@ -50,7 +50,7 @@ typedef struct unlockable_s
 	bool     statusKnown;
 	int      unlockThreshold;
 	int      lockThreshold;
-} unlockable_t;
+};
 
 // ----
 // data

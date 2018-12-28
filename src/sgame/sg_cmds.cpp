@@ -3983,10 +3983,10 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 #define MAX_MAPLOGS 5
 
-typedef struct {
+struct mapLogResult_t {
 	char       flag;
 	const char description[64];
-} mapLogResult_t;
+};
 
 static const mapLogResult_t maplog_table[] = {
 	{ 't', "^7tie"                                  },

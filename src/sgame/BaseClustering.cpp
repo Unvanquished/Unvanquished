@@ -57,14 +57,14 @@ namespace Clustering {
 namespace BaseClustering {
 	using namespace Clustering;
 
-	typedef enum baseClusteringLayer_e {
+	enum baseClusteringLayer_t {
 		BCL_ALIEN_FRIENDLY,
 		BCL_ALIEN_ENEMY,
 		BCL_HUMAN_FRIENDLY,
 		BCL_HUMAN_ENEMY,
 
 		NUM_BC_LAYERS
-	} baseClusteringLayer_t;
+	};
 
 	static std::map<baseClusteringLayer_t, EntityClustering>               bases;
 	static std::map<baseClusteringLayer_t, std::unordered_set<gentity_t*>> beacons;

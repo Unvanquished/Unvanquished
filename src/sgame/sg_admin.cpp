@@ -366,12 +366,11 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 };
 #define adminNumCmds ARRAY_LEN( g_admin_cmds )
 
-typedef struct
+struct g_admin_flag_t
 {
 	const char *flag;
 	const char *description;
-}
-g_admin_flag_t;
+};
 
 static const g_admin_flag_t g_admin_flags[] = {
 	{ ADMF_ACTIVITY,        "inactivity rules do not apply" },

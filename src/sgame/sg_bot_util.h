@@ -110,13 +110,13 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass );
 float    CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed );
 
 //g_bot_nav.c
-typedef enum
+enum botMoveDir_t
 {
 	MOVE_FORWARD = BIT( 0 ),
 	MOVE_BACKWARD = BIT( 1 ),
 	MOVE_LEFT = BIT( 2 ),
 	MOVE_RIGHT = BIT( 3 )
-} botMoveDir_t;
+};
 
 // global navigation
 extern bool navMeshLoaded;

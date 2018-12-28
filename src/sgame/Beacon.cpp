@@ -584,11 +584,11 @@ namespace Beacon //this should eventually become a class
 	}
 
 	//TODO: clean this mess
-	typedef struct
+	struct tagtrace_ent_t
 	{
 		gentity_t *ent;
 		float dot;
-	} tagtrace_ent_t;
+	};
 
 	static int TagTrace_EntCmp( const void *a, const void *b )
 	{

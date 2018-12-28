@@ -41,10 +41,10 @@ public:
 	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
 
 private:
-	typedef struct {
+	struct delta_t {
 		vec3_t delta;
 		quat_t rot;
-	} delta_t;
+	};
 
 	std::unordered_map<int, std::vector<delta_t>> deltas_;
 	std::vector<int> boneIndicies_;

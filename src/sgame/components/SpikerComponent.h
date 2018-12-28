@@ -34,11 +34,11 @@ class SpikerComponent: public SpikerComponentBase {
 		// ///////////////////// //
 
 	private:
-		typedef enum activeThinker_e {
+		enum activeThinker_t {
 			AT_NONE,
 			AT_SLOW,
 			AT_FAST
-		} activeThinker_t;
+		};
 
 		/**
 		 * Instead of using exactly the upper hemisphere of the spiker as radius of damage, this

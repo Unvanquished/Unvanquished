@@ -610,13 +610,13 @@ bounds.  This does NOT mean that they actually touch in the case of bmodels.
 ============================================================================
 */
 
-typedef struct
+struct areaParms_t
 {
 	const float *mins;
 	const float *maxs;
 	int         *list;
 	int         count, maxcount;
-} areaParms_t;
+};
 
 /*
 ====================
@@ -700,7 +700,7 @@ int G_CM_AreaEntities( const vec3_t mins, const vec3_t maxs, int *entityList, in
 
 //===========================================================================
 
-typedef struct
+struct moveclip_t
 {
 	vec3_t      boxmins, boxmaxs; // enclose the test object along entire move
 	const float *mins;
@@ -712,7 +712,7 @@ typedef struct
 	int         contentmask;
 	int         skipmask;
 	traceType_t collisionType;
-} moveclip_t;
+};
 
 /*
 ====================

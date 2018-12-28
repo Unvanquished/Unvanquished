@@ -40,13 +40,15 @@ vmCvar_t rocket_menuFile;
 vmCvar_t rocket_hudFile;
 vmCvar_t rocket_pak;
 
-typedef struct
+namespace {
+struct cvarTable_t
 {
 	vmCvar_t   *vmCvar;
 	const char *cvarName;
 	const char *defaultString;
 	int        cvarFlags;
-} cvarTable_t;
+};
+} //namespace
 
 static const cvarTable_t rocketCvarTable[] =
 {
