@@ -34,11 +34,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MISSILE_PRESTEP_TIME 50
 
-typedef enum missileTimePowerMod_e {
+enum missileTimePowerMod_t {
 	MTPR_LINEAR_DECREASE,
 	MTPR_LINEAR_INCREASE,
 	MTPR_EXPONENTIAL_DECREASE // endTime is half time period, endMod is ignored
-} missileTimePowerMod_t;
+};
 
 // -------------
 // local methods

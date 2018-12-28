@@ -8,12 +8,12 @@
 
 class ThinkingComponent: public ThinkingComponentBase {
 	public:
-		typedef enum {
+		enum thinkScheduler_t {
 			SCHEDULER_CLOSEST,
 			SCHEDULER_BEFORE,
 			SCHEDULER_AFTER,
 			SCHEDULER_AVERAGE
-		} thinkScheduler_t;
+		};
 
 		/**
 		 * @brief A function that takes the time since last execution and its fraction of the
@@ -42,14 +42,14 @@ class ThinkingComponent: public ThinkingComponentBase {
 		void UnregisterActiveThinker();
 
 	private:
-		typedef struct {
+		struct thinkRecord_t {
 			thinker_t thinker;
 			thinkScheduler_t scheduler;
 			int period;
 			int timestamp; /**< Time of last thinker execution. */
 			int delay; /**< Summed lateness of previous executions. */
 			bool unregister;
-		} thinkRecord_t;
+		};
 
 		std::vector<thinkRecord_t> thinkers;
 

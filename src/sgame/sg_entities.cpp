@@ -499,11 +499,11 @@ gentity chain handling
  */
 #define NULL_CALL gentityCall_t{ nullptr, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
 
-typedef struct
+struct entityCallEventDescription_t
 {
 	const char *key;
 	gentityCallEvent_t eventType;
-} entityCallEventDescription_t;
+};
 
 static const entityCallEventDescription_t gentityEventDescriptions[] =
 {
@@ -536,11 +536,11 @@ gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 	return ON_CUSTOM;
 }
 
-typedef struct
+struct entityActionDescription_t
 {
 	const char *alias;
 	gentityCallActionType_t action;
-} entityActionDescription_t;
+};
 
 static const entityActionDescription_t actionDescriptions[] =
 {
@@ -675,11 +675,11 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
-typedef struct
+struct gentityTargetChoice_t
 {
 	gentityCallDefinition_t *callDefinition;
 	gentity_t *recipient;
-} gentityTargetChoice_t;
+};
 
 void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 {

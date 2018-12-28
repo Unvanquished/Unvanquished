@@ -190,13 +190,15 @@ vmCvar_t        cg_fov_human;
 vmCvar_t        ui_chatPromptColors;
 vmCvar_t        cg_sayCommand;
 
-typedef struct
+namespace {
+struct cvarTable_t
 {
 	vmCvar_t   *vmCvar;
 	const char *cvarName;
 	const char *defaultString;
 	int        cvarFlags;
-} cvarTable_t;
+};
+} //namespace
 
 static const cvarTable_t cvarTable[] =
 {

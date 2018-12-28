@@ -166,7 +166,7 @@ bool  G_SpawnVector4( const char *key, const char *defaultString, float *out )
 //
 // fields are needed for spawning from the entity string
 //
-typedef enum
+enum fieldType_t
 {
   F_INT,
   F_FLOAT,
@@ -178,16 +178,16 @@ typedef enum
   F_4D_VECTOR,
   F_YAW,
   F_SOUNDINDEX
-} fieldType_t;
+};
 
-typedef struct
+struct fieldDescriptor_t
 {
 	const char  *name;
 	size_t      offset;
 	fieldType_t type;
 	int   versionState;
 	const char  *replacement;
-} fieldDescriptor_t;
+};
 
 static const fieldDescriptor_t fields[] =
 {
@@ -244,7 +244,7 @@ static const fieldDescriptor_t fields[] =
 	{ "yaw",                 FOFS( s.angles ),            F_YAW       ,ENT_V_UNCLEAR, nullptr },
 };
 
-typedef enum
+enum entityChainType_t
 {
 	/*
 	 * self sufficent, it might possibly be fired at, but it can do as well on its own, so won't be freed automaticly
@@ -266,9 +266,9 @@ typedef enum
 	 * will be aimed at by something, but no firing needs to be involved at all, if not aimed at, it will be freed
 	 */
 	CHAIN_TARGET,
-} entityChainType_t;
+};
 
-typedef struct
+struct entityClassDescriptor_t
 {
 	const char *name;
 	void ( *spawn )( gentity_t *entityToSpawn );
@@ -277,7 +277,7 @@ typedef struct
 	//optional spawn-time data
 	int	versionState;
 	const char  *replacement;
-} entityClassDescriptor_t;
+};
 
 
 static const entityClassDescriptor_t entityClassDescriptions[] =

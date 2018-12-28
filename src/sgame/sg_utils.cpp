@@ -29,12 +29,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 
-typedef struct
+struct shaderRemap_t
 {
 	char  oldShader[ MAX_QPATH ];
 	char  newShader[ MAX_QPATH ];
 	float timeOffset;
-} shaderRemap_t;
+};
 
 #define MAX_SHADER_REMAPS 128
 

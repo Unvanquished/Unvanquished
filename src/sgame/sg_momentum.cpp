@@ -35,7 +35,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // Used for legacy stage sensors
 #define MOMENTUM_PER_LEGACY_STAGE 100
 
-typedef enum
+enum momentum_t
 {
 	CONF_GENERIC,
 	CONF_BUILDING,
@@ -44,7 +44,7 @@ typedef enum
 	CONF_KILLING,
 
 	NUM_CONF
-} momentum_t;
+};
 
 // -------------
 // local methods

@@ -47,7 +47,7 @@ static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 };
 
 // Shorthand definitions for the buildable animation names below.
-typedef enum shorthand_e {
+enum shorthand_t {
 	XX,
 
 	// classic names
@@ -80,7 +80,7 @@ typedef enum shorthand_e {
 	DS, // destroyed_shrunk
 
 	NUM_SHORTHANDS
-} shorthand_t;
+};
 
 // Buildable animation names.
 static const char* shorthandToName[ NUM_SHORTHANDS ] = {

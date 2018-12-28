@@ -33,7 +33,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 level_locals_t level;
 
-typedef struct
+namespace {
+struct cvarTable_t
 {
 	vmCvar_t   *vmCvar;
 	const char *cvarName;
@@ -47,7 +48,8 @@ typedef struct
 	   end. unfortunately, if the server crashes, the value set in worldspawn may
 	   persist */
 	char      *explicit_;
-} cvarTable_t;
+};
+} //namespace
 
 gentity_t          *g_entities;
 gclient_t          *g_clients;

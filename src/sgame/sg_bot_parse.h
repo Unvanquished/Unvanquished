@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define P_LOGIC_GREATER    36
 #define P_LOGIC_LESS       37
 
-typedef struct
+struct pc_token_stripped_t
 {
 	tokenType_t type;
 	int   subtype;
@@ -53,7 +53,7 @@ typedef struct
 	float floatvalue;
 	char  *string;
 	int   line;
-} pc_token_stripped_t;
+};
 
 typedef struct pc_token_list_s
 {
@@ -62,12 +62,12 @@ typedef struct pc_token_list_s
 	struct pc_token_list_s *next;
 } pc_token_list;
 
-typedef struct
+struct AITreeList_t
 {
 	AIBehaviorTree_t **trees;
 	int numTrees;
 	int maxTrees;
-} AITreeList_t;
+};
 
 void              InitTreeList( AITreeList_t *list );
 void              AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree );

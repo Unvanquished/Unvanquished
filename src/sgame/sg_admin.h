@@ -80,7 +80,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_ADMIN_LISTITEMS  20
 #define MAX_ADMIN_SHOWBANS   10
 
-typedef struct
+struct g_admin_cmd_t
 {
 	const char *keyword;
 	bool  ( *handler )( gentity_t *ent );
@@ -88,24 +88,20 @@ typedef struct
 	const char *flag;
 	const char *function; // used for /help
 	const char *syntax; // used for /help
-}
+};
 
-g_admin_cmd_t;
-
-typedef struct g_admin_level
+struct g_admin_level_t
 {
-	struct g_admin_level *next;
+	g_admin_level_t      *next;
 
 	int                  level;
 	char                 name[ MAX_NAME_LENGTH ];
 	char                 flags[ MAX_ADMIN_FLAGS ];
-}
+};
 
-g_admin_level_t;
-
-typedef struct g_admin_admin
+struct g_admin_admin_t
 {
-	struct g_admin_admin *next;
+	g_admin_admin_t      *next;
 
 	int                  level;
 	char                 guid[ 33 ];
@@ -116,9 +112,7 @@ typedef struct g_admin_admin
 	char                 msg2[ RSA_STRING_LENGTH ];
 	qtime_t              lastSeen;
 	int                  counter;
-}
-
-g_admin_admin_t;
+};
 
 #define ADDRLEN 16
 
@@ -131,18 +125,18 @@ enum
   IPv4,
   IPv6
 };
-typedef struct
+struct addr_t
 {
 	char str[ 44 ];
 	int type;
 
 	byte addr[ ADDRLEN ];
 	int  mask;
-} addr_t;
+};
 
-typedef struct g_admin_ban
+struct g_admin_ban_t
 {
-	struct g_admin_ban *next;
+	g_admin_ban_t      *next;
 	int                id;
 
 	char               name[ MAX_NAME_LENGTH ];
@@ -153,30 +147,24 @@ typedef struct g_admin_ban
 	int                expires;
 	char               banner[ MAX_NAME_LENGTH ];
 	int                warnCount;
-}
+};
 
-g_admin_ban_t;
-
-typedef struct g_admin_spec
+struct g_admin_spec_t
 {
-	struct g_admin_spec *next;
+	g_admin_spec_t     *next;
 	char               guid[ 33 ];
 	int                expires;
-}
+};
 
-g_admin_spec_t;
-
-typedef struct g_admin_command
+struct g_admin_command_t
 {
-	struct g_admin_command *next;
+	g_admin_command_t      *next;
 
 	char                   command[ MAX_ADMIN_CMD_LEN ];
 	char                   exec[ MAX_QPATH ];
 	char                   desc[ 50 ];
 	char                   flag[ MAX_ADMIN_FLAG_LEN ];
-}
-
-g_admin_command_t;
+};
 
 void            G_admin_register_cmds();
 void            G_admin_unregister_cmds();

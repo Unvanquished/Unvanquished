@@ -20,15 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-typedef struct
+struct rectDef_t
 {
 	float x; // horiz position
 	float y; // vert position
 	float w; // width
 	float h; // height;
-}
-
-rectDef_t;
+};
 
 typedef rectDef_t Rectangle;
 

@@ -47,13 +47,13 @@ PUSHMOVE
 ===============================================================================
 */
 
-typedef struct
+struct pushed_t
 {
 	gentity_t *ent;
 	vec3_t    origin;
 	vec3_t    angles;
 	float     deltayaw;
-} pushed_t;
+};
 
 pushed_t pushed[ MAX_GENTITIES ], *pushed_p;
 

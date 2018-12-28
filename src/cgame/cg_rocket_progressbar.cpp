@@ -164,12 +164,12 @@ float CG_Rocket_DownloadProgress()
 }
 
 
-typedef struct progressBarCmd_s
+struct progressBarCmd_t
 {
 	const char *command;
 	float( *get )();
 	rocketElementType_t type;
-} progressBarCmd_t;
+};
 
 static const progressBarCmd_t progressBarCmdList[] =
 {

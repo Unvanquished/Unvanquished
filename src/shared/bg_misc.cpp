@@ -39,12 +39,12 @@ void                               trap_FS_Seek( fileHandle_t f, long offset, fs
 int                                trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 void                               trap_QuoteString( const char *, char *, int );
 
-typedef struct
+struct buildableName_t
 {
 	buildable_t number;
 	const char* name;
 	const char* classname;
-} buildableName_t;
+};
 
 static const buildableName_t bg_buildableNameList[] =
 {
@@ -203,12 +203,12 @@ void BG_InitBuildableModelConfigs()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef struct
+struct classData_t
 {
 	class_t number;
 	const char* name;
 	weapon_t startWeapon;
-} classData_t;
+};
 
 static classData_t bg_classData[] =
 {
@@ -555,11 +555,11 @@ void BG_InitClassModelConfigs()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct
+struct weaponData_t
 {
 	weapon_t number;
 	const char* name;
-} weaponData_t;
+};
 
 static const weaponData_t bg_weaponsData[] =
 {
@@ -664,11 +664,11 @@ void BG_InitWeaponAttributes()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct
+struct upgradeData_t
 {
 	upgrade_t number;
 	const char* name;
-} upgradeData_t;
+};
 
 
 static const upgradeData_t bg_upgradesData[] =
@@ -748,11 +748,11 @@ void BG_InitUpgradeAttributes()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct
+struct missileData_t
 {
 	missile_t   number;
 	const char* name;
-} missileData_t;
+};
 
 static const missileData_t bg_missilesData[] =
 {
@@ -833,11 +833,11 @@ void BG_InitMissileAttributes()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct
+struct meansOfDeathData_t
 {
 	meansOfDeath_t number;
 	const char     *name;
-} meansOfDeathData_t;
+};
 
 static const meansOfDeathData_t bg_meansOfDeathData[] =
 {
@@ -916,12 +916,12 @@ meansOfDeath_t BG_MeansOfDeathByName( const char *name )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct
+struct beaconData_t
 {
 	beaconType_t  number;
 	const char*   name;
 	int           flags;
-} beaconData_t;
+};
 
 static const beaconAttributes_t nullBeacon {};
 
@@ -2536,13 +2536,13 @@ void BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int 
 	buildables[ i ] = BA_NONE;
 }
 
-typedef struct gameElements_s
+struct gameElements_t
 {
 	buildable_t buildables[ BA_NUM_BUILDABLES ];
 	class_t     classes[ PCL_NUM_CLASSES ];
 	weapon_t    weapons[ WP_NUM_WEAPONS ];
 	upgrade_t   upgrades[ UP_NUM_UPGRADES ];
-} gameElements_t;
+};
 
 static gameElements_t bg_disabledGameElements;
 
