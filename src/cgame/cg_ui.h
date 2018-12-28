@@ -48,14 +48,11 @@ const char *GettextPlural( const char *msgid, const char *msgid2, int number ) P
 // Parsing
 //
 
-bool            String_Parse( char **p, const char **out );
 bool            Script_Parse( char **p, const char **out );
 bool            PC_Float_Parse( int handle, float *f );
 bool            PC_Color_Parse( int handle, Color::Color *c );
 bool            PC_Int_Parse( int handle, int *i );
-bool            PC_Rect_Parse( int handle, rectDef_t *r );
 bool            PC_String_Parse( int handle, const char **out );
-bool            PC_Script_Parse( int handle, const char **out );
 
 //
 // Chat

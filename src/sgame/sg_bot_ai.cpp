@@ -600,12 +600,6 @@ AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_SUCCESS;
 }
 
-AINodeStatus_t BotActionStandStill( gentity_t *self, AIGenericNode_t* )
-{
-	BotStandStill( self );
-	return STATUS_SUCCESS;
-}
-
 AINodeStatus_t BotActionStrafeDodge( gentity_t *self, AIGenericNode_t* )
 {
 	BotStrafeDodge( self );

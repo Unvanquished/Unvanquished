@@ -149,22 +149,6 @@ void CG_KeyEvent( Keyboard::Key key, bool down )
 	}
 }
 
-int CG_ClientNumFromName( const char *p )
-{
-	int i;
-
-	for ( i = 0; i < cgs.maxclients; i++ )
-	{
-		if ( cgs.clientinfo[ i ].infoValid &&
-		     Q_stricmp( cgs.clientinfo[ i ].name, p ) == 0 )
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
 void CG_RunMenuScript( char **args )
 {
 	Q_UNUSED(args);
