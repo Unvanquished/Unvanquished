@@ -65,7 +65,6 @@ extern  pmove_t *pm;
 extern  pml_t   pml;
 
 // movement parameters
-#define pm_stopspeed         (100.0f)
 #define pm_duckScale         (0.25f)
 #define pm_swimScale         (0.50f)
 
@@ -73,9 +72,7 @@ extern  pml_t   pml;
 #define pm_wateraccelerate   (4.0f)
 #define pm_flyaccelerate     (4.0f)
 
-#define pm_friction          (6.0f)
 #define pm_waterfriction     (1.125f)
-#define pm_flightfriction    (6.0f)
 #define pm_spectatorfriction (5.0f)
 
 extern  int     c_pmove;
