@@ -2636,7 +2636,7 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 
 	if ( weaponNum >= WP_NUM_WEAPONS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_FireWeapon: ent->weapon >= WP_NUM_WEAPONS" );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_HandleFireWeapon: ent->weapon >= WP_NUM_WEAPONS" );
 	}
 
 	wi = &cg_weapons[ weaponNum ];

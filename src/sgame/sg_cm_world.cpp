@@ -49,7 +49,7 @@ worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 {
 	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
 	{
-		Com_Error(errorParm_t::ERR_DROP, "G_CM_SvEntityForGentity: bad gEnt" );
+		Com_Error(errorParm_t::ERR_DROP, "G_CM_WorldEntityForGentity: bad gEnt" );
 	}
 
 	return &wentities[ gEnt->s.number ];

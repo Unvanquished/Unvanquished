@@ -399,7 +399,7 @@ int BG_UnlockablesMask( int team )
 {
 	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
 	{
-		Com_Error( errorParm_t::ERR_FATAL, "G_GetUnlockablesMask: Requested mask for a team with unknown unlockable status" );
+		Com_Error( errorParm_t::ERR_FATAL, "BG_UnlockablesMask: Requested mask for a team with unknown unlockable status" );
 	}
 
 	return unlockablesMask[ team ];

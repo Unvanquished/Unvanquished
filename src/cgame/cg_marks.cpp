@@ -73,7 +73,7 @@ void CG_FreeMarkPoly( markPoly_t *le )
 {
 	if ( !le->prevMark )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_FreeLocalEntity: not active" );
+		Com_Error(errorParm_t::ERR_DROP,  "CG_FreeMarkPoly: not active" );
 	}
 
 	// remove from the doubly linked active list
