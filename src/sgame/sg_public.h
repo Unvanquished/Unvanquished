@@ -100,25 +100,16 @@ void              G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void              G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void              G_BuildLogRevert( int id );
 void              G_UpdateBuildablePowerStates();
-gentity_t         *G_NearestPowerSourceInRange( gentity_t *self );
 void              G_BuildableTouchTriggers( gentity_t *ent );
 
 // TODO: Convert these functions to component methods.
-void AGeneric_Blast( gentity_t *self );
 void ABarricade_Shrink( gentity_t *self, bool shrink );
-void HGeneric_Blast( gentity_t *self );
-void HGeneric_Cancel( gentity_t *self );
-void AHive_Fire( gentity_t *self );
-bool AHive_TargetValid( gentity_t *self, gentity_t *target, bool ignoreDistance );
-bool ASpiker_Fire( gentity_t *self );
-void HTurret_PreBlast( gentity_t *self );
 
 // sg_buildpoints
 float             G_RGSPredictOwnEfficiency(vec3_t origin);
 float             G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team);
 void              G_UpdateBuildPointBudgets();
 void              G_RecoverBuildPoints();
-int               G_GetSpentBudget(team_t team);
 int               G_GetFreeBudget(team_t team);
 int               G_GetMarkedBudget(team_t team);
 int               G_GetSpendableBudget(team_t team);
@@ -315,7 +306,6 @@ void              G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void              G_CloseMenus( int clientNum );
 void              G_ClientnumToMask( int clientNum, int *loMask, int *hiMask );
 void              G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
-void              G_FireThink( gentity_t *self );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfFire( const gentity_t *from, const gentity_t *to );
@@ -351,8 +341,5 @@ namespace CombatFeedback
 {
   void HitNotify(gentity_t *attacker, gentity_t *victim, Util::optional<Vec3> point, float damage, meansOfDeath_t mod, bool lethal);
 }
-
-// Components
-void G_IgnitableThink();
 
 #endif // SG_PUBLIC_H_

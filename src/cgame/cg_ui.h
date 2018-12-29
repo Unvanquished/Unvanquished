@@ -48,7 +48,6 @@ const char *GettextPlural( const char *msgid, const char *msgid2, int number ) P
 // Parsing
 //
 
-bool            Script_Parse( char **p, const char **out );
 bool            PC_Float_Parse( int handle, float *f );
 bool            PC_Color_Parse( int handle, Color::Color *c );
 bool            PC_Int_Parse( int handle, int *i );

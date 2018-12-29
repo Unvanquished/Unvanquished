@@ -745,7 +745,7 @@ void CG_InitBuildables()
 CG_BuildableRangeMarkerProperties
 ================
 */
-bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, Color::Color& rgba )
+static bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, Color::Color& rgba )
 {
 	shaderColorEnum_t shc;
 
