@@ -1823,9 +1823,6 @@ extern  vmCvar_t            cg_debugParticles;
 extern  vmCvar_t            cg_debugTrails;
 extern  vmCvar_t            cg_debugPVS;
 extern  vmCvar_t            cg_disableWarningDialogs;
-extern  vmCvar_t            cg_disableUpgradeDialogs;
-extern  vmCvar_t            cg_disableBuildDialogs;
-extern  vmCvar_t            cg_disableCommandDialogs;
 extern  vmCvar_t            cg_disableScannerPlane;
 extern  vmCvar_t            cg_tutorial;
 
@@ -1871,16 +1868,12 @@ extern vmCvar_t             cg_projectileNudge;
 
 extern vmCvar_t             cg_voice;
 
-extern vmCvar_t             cg_emoticons;
 extern vmCvar_t             cg_emoticonsInMessages;
 
 extern vmCvar_t             cg_chatTeamPrefix;
 
 extern vmCvar_t             cg_animBlend;
 
-extern vmCvar_t             cg_highPolyPlayerModels;
-extern vmCvar_t             cg_highPolyBuildableModels;
-extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
