@@ -2408,7 +2408,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 
 /*
 ======================
-BG_ParseBeaconAttirubteFile
+BG_ParseBeaconAttributeFile
 
 Parses a configuration file describing a beacon type
 ======================

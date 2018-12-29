@@ -1828,7 +1828,7 @@ bool CG_CullBox(vec3_t mins, vec3_t maxs)
 
 /*
 =================
-CG_PointAndRadius
+CG_CullPointAndRadius
 
 returns true if culled
 =================

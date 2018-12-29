@@ -1894,7 +1894,7 @@ void Touch_PlatCenterTrigger( gentity_t *ent, gentity_t *other, trace_t* )
 
 /*
 ================
-SpawnPlatTrigger
+SpawnPlatSensor
 
 Spawn a trigger in the middle of the plat's low position
 Elevator cars require that the trigger extend through the entire low position,

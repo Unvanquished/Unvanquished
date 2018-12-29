@@ -1259,7 +1259,7 @@ void CG_AddLagometerSnapshotInfo( snapshot_t *snap )
 
 /*
 ==============
-CG_DrawDisconnect
+CG_Rocket_DrawDisconnect
 
 Should we draw something different for long lag vs no packets?
 ==============
