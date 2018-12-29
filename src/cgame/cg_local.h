@@ -1900,7 +1900,6 @@ void       CG_NotifyHooks();
 void       CG_UpdateCvars();
 
 int        CG_CrosshairPlayer();
-void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( Keyboard::Key key, bool down );
 void       CG_MouseEvent( int dx, int dy );
 void       CG_MousePosEvent( int x, int y );
@@ -1922,7 +1921,6 @@ void     CG_TestModelNextFrame_f();
 void     CG_TestModelPrevFrame_f();
 void     CG_TestModelNextSkin_f();
 void     CG_TestModelPrevSkin_f();
-void     CG_AddBufferedSound( sfxHandle_t sfx );
 bool CG_CullBox(vec3_t mins, vec3_t maxs);
 bool CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
 void     CG_DrawActiveFrame( int serverTime, bool demoPlayback );
@@ -1968,22 +1966,12 @@ ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001 );
 // cg_draw.c
 //
 
-void CG_AlignText( rectDef_t *rect, const char *text, float scale, float w, float h, int align, int valign,float *x, float *y );
 void CG_AddLagometerFrameInfo();
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed();
 void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawActive();
-void CG_OwnerDraw( rectDef_t *rect, float text_x,
-                   float text_y, int ownerDraw, int ownerDrawFlags,
-                   int align, int textalign, int textvalign,
-                   float borderSize, float scale, const Color::Color& foreColor,
-                   const Color::Color& backColor, qhandle_t shader, int textStyle );
-float      CG_GetValue( int ownerDraw );
 void       CG_RunMenuScript( char **args );
-void       CG_SetPrintString( int type, const char *p );
-const char *CG_GetKillerText();
-void       CG_DrawLoadingScreen();
 void       CG_ResetPainBlend();
 void       CG_DrawField( float x, float y, int width, float cw, float ch, int value );
 
@@ -2014,7 +2002,6 @@ void     CG_InitBuildables();
 void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
 void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
-bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb );
 
 //
 // cg_animation.c
@@ -2062,7 +2049,6 @@ void CG_OnMapRestart();
 void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities();
-void CG_Beam( centity_t *cent );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
                                 vec3_t angles_in, vec3_t angles_out );
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
@@ -2138,7 +2124,6 @@ void CG_ExecuteServerCommands( snapshot_t* snap );
 void CG_ParseServerinfo();
 void CG_SetConfigValues();
 void CG_ShaderStateChanged();
-void CG_CompleteCommand( int argNum );
 void CG_CenterPrint_f();
 
 //
@@ -2243,7 +2228,6 @@ bool   CG_ParseColor( byte *c, const char **text_p );
 const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
-void CG_FormatSI( char *buf, int size, float num, int sf, const char *unit );
 void CG_SetKeyCatcher( int catcher );
 
 //

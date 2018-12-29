@@ -51,7 +51,6 @@ void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
 void  BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
 void  BotAimAtEnemy( gentity_t *self );
 void  BotSlowAim( gentity_t *self, vec3_t target, float slow );
-void  BotShakeAim( gentity_t *self, vec3_t rVec );
 void  BotAimAtLocation( gentity_t *self, vec3_t target );
 float BotAimAngle( gentity_t *self, vec3_t pos );
 
@@ -92,7 +91,6 @@ void     BotClassMovement( gentity_t *self, bool inAttackRange );
 bool   WeaponIsEmpty( weapon_t weapon, playerState_t *ps );
 float      PercentAmmoRemaining( weapon_t weapon, playerState_t *ps );
 void       BotFindDamagedFriendlyStructure( gentity_t *self );
-bool   BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building );
 void       BotBuyWeapon( gentity_t *self, weapon_t weapon );
 void       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );
 void       BotSellWeapons( gentity_t *self );
@@ -129,7 +127,6 @@ void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
 void         BotClampPos( gentity_t *self );
 
 // local navigation
-bool BotDodge( gentity_t *self );
 void     BotWalk( gentity_t *self, bool enable );
 bool BotSprint( gentity_t *self, bool enable );
 bool BotJump( gentity_t *self );

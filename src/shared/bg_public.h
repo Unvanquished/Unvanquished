@@ -1477,10 +1477,7 @@ void     CG_UpdateUnlockables( playerState_t *ps );
 #define MASK_ENTITY      ( CONTENTS_MOVER )
 
 void     *BG_Alloc( size_t size );
-void     BG_InitMemory();
 void     BG_Free( void *ptr );
-void     BG_DefragmentMemory();
-void     BG_MemoryInfo();
 
 void     BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
 void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
