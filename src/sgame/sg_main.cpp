@@ -2841,7 +2841,7 @@ void G_PrepareEntityNetCode() {
 	}
 
 	// Prepare netcode for specs
-	ForEntities<SpectatorComponent>([&](Entity& entity, SpectatorComponent& spectatorComponent){
+	ForEntities<SpectatorComponent>([&](Entity& entity, SpectatorComponent&){
 		entity.PrepareNetCode();
 	});
 }
