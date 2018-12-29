@@ -157,8 +157,6 @@ vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
 vmCvar_t        ui_humanTeamVoteActive;
 vmCvar_t        ui_unlockables;
-vmCvar_t        ui_momentumHalfLife;
-vmCvar_t        ui_unlockablesMinTime;
 
 vmCvar_t        cg_debugRandom;
 
@@ -167,7 +165,6 @@ vmCvar_t        cg_projectileNudge;
 
 vmCvar_t        cg_voice;
 
-vmCvar_t        cg_emoticons;
 vmCvar_t        cg_emoticonsInMessages;
 
 vmCvar_t        cg_chatTeamPrefix;
@@ -296,12 +293,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_buildableRangeMarkerMask,    "cg_buildableRangeMarkerMask",    "",             0                            },
 	{ &cg_binaryShaderScreenScale,     "cg_binaryShaderScreenScale",     "1.0",          0                            },
 
-	{ &cg_hudFiles,                    "cg_hudFiles",                    "ui/hud.txt",   0                            },
-	{ &cg_hudFilesEnable,              "cg_hudFilesEnable",              "0",            0                            },
-	{ nullptr,                            "cg_alienConfig",                 "",             0                            },
-	{ nullptr,                            "cg_humanConfig",                 "",             0                            },
-	{ nullptr,                            "cg_spectatorConfig",             "",             0                            },
-
 	{ &cg_painBlendUpRate,             "cg_painBlendUpRate",             "10.0",         0                            },
 	{ &cg_painBlendDownRate,           "cg_painBlendDownRate",           "0.5",          0                            },
 	{ &cg_painBlendMax,                "cg_painBlendMax",                "0.7",          0                            },
@@ -332,7 +323,6 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
 
-	{ &cg_emoticons,                   "cg_emoticons",                   "1",            CVAR_LATCH                   },
 	{ &cg_emoticonsInMessages,         "cg_emoticonsInMessages",         "0",            0                            },
 
 	{ &cg_animSpeed,                   "cg_animspeed",                   "1",            CVAR_CHEAT                   },

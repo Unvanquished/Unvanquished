@@ -4321,10 +4321,6 @@ bool G_admin_restart( gentity_t *ent )
 		ADMP( va( "%s %s", QQ( N_( "^3restart:^* unrecognised option '$1$'") ), Quote( teampref ) ) );
 		return false;
 	}
-	else
-	{
-		trap_Cvar_Set( "g_teamsKept", "" );
-	}
 
 	if ( !Q_stricmp( teampref, "switchteamslock" ) ||
 	     !Q_stricmp( teampref, "keepteamslock" ) ||
