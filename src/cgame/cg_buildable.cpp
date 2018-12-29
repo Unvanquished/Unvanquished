@@ -196,7 +196,7 @@ void CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir )
 
 /*
 =================
-CG_HumanBuildableDieing
+CG_HumanBuildableDying
 
 Called for human buildables that are about to blow up
 =================
@@ -742,7 +742,7 @@ void CG_InitBuildables()
 
 /*
 ================
-CG_BuildableRangeMarkerProperties
+CG_GetBuildableRangeMarkerProperties
 ================
 */
 static bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, Color::Color& rgba )
@@ -1401,7 +1401,7 @@ static void CG_BuildableParticleEffects( centity_t *cent )
 
 /*
 ==================
-CG_Parse
+CG_BuildableStatusParse
 ==================
 */
 void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )

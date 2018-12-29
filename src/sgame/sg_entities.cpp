@@ -410,7 +410,7 @@ gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, vec3_t origin, floa
 
 /*
 ===============
-G_ClosestEnt
+G_FindClosestEntity
 
 Test a list of entities for the closest to a particular point
 ===============
@@ -709,7 +709,7 @@ void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 
 /*
 ==============================
-G_FireAllTargetsOf
+G_EventFireEntity
 
 "activator" should be set to the entity that initiated the firing.
 
@@ -906,7 +906,7 @@ bool G_MatchesName( gentity_t *entity, const char* name )
 
 /*
 ===============
-G_Visible
+G_IsVisible
 
 Test for a LOS between two entities
 ===============

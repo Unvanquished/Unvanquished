@@ -130,7 +130,7 @@ static void CG_AMOAnimation( centity_t *cent, int *old, int *now, float *backLer
 
 /*
 ==================
-CG_animMapObj
+CG_AnimMapObj
 ==================
 */
 void CG_AnimMapObj( centity_t *cent )
