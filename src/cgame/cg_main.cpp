@@ -665,16 +665,6 @@ void CG_UpdateCvars()
 	CG_UpdateBuildableRangeMarkerMask();
 }
 
-int CG_CrosshairPlayer()
-{
-	if ( cg.time > ( cg.crosshairClientTime + 1000 ) )
-	{
-		return -1;
-	}
-
-	return cg.crosshairClientNum;
-}
-
 /*
 ================
 CG_Argv
