@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "shared/parse.h"
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
 #include "Entities.h"
@@ -1331,7 +1332,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
-	handle = trap_Parse_LoadSource( treefilename );
+	handle = Parse_LoadSourceHandle( treefilename );
 	if ( !handle )
 	{
 		Log::Warn( "Cannot load behavior tree %s: File not found", treefilename );
@@ -1339,7 +1340,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	}
 
 	tokenlist = CreateTokenList( handle );
-	trap_Parse_FreeSource( handle );
+	Parse_FreeSourceHandle( handle );
 
 	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
 
@@ -1374,7 +1375,7 @@ pc_token_list *CreateTokenList( int handle )
 	pc_token_list *current = nullptr;
 	pc_token_list *root = nullptr;
 
-	while ( trap_Parse_ReadToken( handle, &token ) )
+	while ( Parse_ReadTokenHandle( handle, &token ) )
 	{
 		pc_token_list *list = ( pc_token_list * ) BG_Alloc( sizeof( pc_token_list ) );
 
@@ -1397,7 +1398,7 @@ pc_token_list *CreateTokenList( int handle )
 		current->token.subtype = token.subtype;
 		current->token.type = token.type;
 		current->token.string = BG_strdup( token.string );
-		trap_Parse_SourceFileAndLine( handle, filename, &current->token.line );
+		Parse_SourceFileAndLine( handle, filename, &current->token.line );
 	}
 
 	return root;
