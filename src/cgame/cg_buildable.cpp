@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "shared/parse.h"
 #include "cg_local.h"
 
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
@@ -1413,7 +1414,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 	float      f;
 	Color::Color c;
 
-	handle = trap_Parse_LoadSource( filename );
+	handle = Parse_LoadSourceHandle( filename );
 
 	if ( !handle )
 	{
@@ -1422,7 +1423,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 
 	while ( 1 )
 	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
+		if ( !Parse_ReadTokenHandle( handle, &token ) )
 		{
 			break;
 		}
@@ -1598,13 +1599,13 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 			Log::Notice( "CG_BuildableStatusParse: unknown token %s in %s\n",
 			            token.string, filename );
 			bs->loaded = false;
-			trap_Parse_FreeSource( handle );
+			Parse_FreeSourceHandle( handle );
 			return;
 		}
 	}
 
 	bs->loaded = true;
-	trap_Parse_FreeSource( handle );
+	Parse_FreeSourceHandle( handle );
 }
 
 #define STATUS_FADE_TIME     200

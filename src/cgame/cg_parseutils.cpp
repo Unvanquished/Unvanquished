@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "cg_local.h"
+#include "shared/parse.h"
 
 /*
 =================
@@ -40,7 +41,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 
 	filename[ 0 ] = '\0';
 	line = 0;
-	trap_Parse_SourceFileAndLine( handle, filename, &line );
+	Parse_SourceFileAndLine( handle, filename, &line );
 
 	Log::Warn( "%s, line %d: %s", filename, line, string );
 }
@@ -63,7 +64,7 @@ void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 
 	filename[ 0 ] = '\0';
 	line = 0;
-	trap_Parse_SourceFileAndLine( handle, filename, &line );
+	Parse_SourceFileAndLine( handle, filename, &line );
 
 	Log::Warn( "%s, line %d: %s", filename, line, string );
 }
@@ -226,7 +227,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 	stack.f = fifo.f = 0;
 	stack.b = fifo.b = -1;
 
-	while ( trap_Parse_ReadToken( handle, &token ) )
+	while ( Parse_ReadTokenHandle( handle, &token ) )
 	{
 		if ( !unmatchedParentheses && token.string[ 0 ] == ')' )
 		{
@@ -236,7 +237,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 		// Special case to catch negative numbers
 		if ( expectingNumber && token.string[ 0 ] == '-' )
 		{
-			if ( !trap_Parse_ReadToken( handle, &token ) )
+			if ( !Parse_ReadTokenHandle( handle, &token ) )
 			{
 				return false;
 			}
@@ -394,7 +395,7 @@ bool PC_Float_Parse( int handle, float *f )
 	pc_token_t token;
 	int        negative = false;
 
-	if ( !trap_Parse_ReadToken( handle, &token ) )
+	if ( !Parse_ReadTokenHandle( handle, &token ) )
 	{
 		return false;
 	}
@@ -406,7 +407,7 @@ bool PC_Float_Parse( int handle, float *f )
 
 	if ( token.string[ 0 ] == '-' )
 	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
+		if ( !Parse_ReadTokenHandle( handle, &token ) )
 		{
 			return false;
 		}
@@ -509,7 +510,7 @@ bool PC_Int_Parse( int handle, int *i )
 	pc_token_t token;
 	int        negative = false;
 
-	if ( !trap_Parse_ReadToken( handle, &token ) )
+	if ( !Parse_ReadTokenHandle( handle, &token ) )
 	{
 		return false;
 	}
@@ -531,7 +532,7 @@ bool PC_Int_Parse( int handle, int *i )
 
 	if ( token.string[ 0 ] == '-' )
 	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
+		if ( !Parse_ReadTokenHandle( handle, &token ) )
 		{
 			return false;
 		}
@@ -588,7 +589,7 @@ bool PC_String_Parse( int handle, const char **out )
 {
 	pc_token_t token;
 
-	if ( !trap_Parse_ReadToken( handle, &token ) )
+	if ( !Parse_ReadTokenHandle( handle, &token ) )
 	{
 		return false;
 	}

@@ -25,6 +25,7 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 // cg_beacon.c
 // beacon code shared by HUD and minimap
 
+#include "shared/parse.h"
 #include "cg_local.h"
 
 // keep in sync with ../game/Beacon.cpp
@@ -53,13 +54,13 @@ void CG_LoadBeaconsConfig()
 	bc->hudCenter[ 0 ] = vw / 2;
 	bc->hudCenter[ 1 ] = vh / 2;
 
-	fd = trap_Parse_LoadSource( path );
+	fd = Parse_LoadSourceHandle( path );
 	if ( !fd )
 		return;
 
 	while ( 1 )
 	{
-		if( !trap_Parse_ReadToken( fd, &token ) )
+		if( !Parse_ReadTokenHandle( fd, &token ) )
 			break;
 
 #define READ_INT(x) \
@@ -142,7 +143,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
 	bc->fadeMinDist = Square( bc->hudSize / bc->hudMaxSize );
 	bc->fadeMaxDist = Square( bc->hudSize / bc->hudMinSize );
 
-	trap_Parse_FreeSource( fd  );
+	Parse_FreeSourceHandle( fd  );
 }
 
 #define Distance2(a,b) sqrt(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
