@@ -915,7 +915,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK_PSAW, "psaw_attack", false, false, false ) )
 			{
-				ci->animations[ TORSO_ATTACK_BLASTER ] = ci->animations[ LEGS_IDLE ];
+				ci->animations[ TORSO_ATTACK_PSAW ] = ci->animations[ LEGS_IDLE ];
 			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND, "stand", true, false, false ) )
