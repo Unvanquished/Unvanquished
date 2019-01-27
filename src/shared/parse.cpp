@@ -1358,7 +1358,7 @@ static token_t *Parse_CopyToken( token_t *token )
 //  t = freetokens;
 	if ( !t )
 	{
-		Com_Error( errorParm_t::ERR_FATAL, "out of token space" );
+		Sys::Error( "out of token space" );
 		return nullptr;
 	}
 

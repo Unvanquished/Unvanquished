@@ -143,12 +143,12 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 				break;
 
             default:
-                Com_Error(errorParm_t::ERR_DROP, "VMMain(): unknown cgame command %i", minor);
+                Sys::Drop("VMMain(): unknown cgame command %i", minor);
 
         }
     } else if (major < VM::LAST_COMMON_SYSCALL) {
         VM::HandleCommonSyscall(major, minor, std::move(reader), VM::rootChannel);
     } else {
-        Com_Error(errorParm_t::ERR_DROP, "unhandled VM major syscall number %i", major);
+        Sys::Drop("unhandled VM major syscall number %i", major);
     }
 }
