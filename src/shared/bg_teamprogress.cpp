@@ -74,7 +74,7 @@ static const char *UnlockableHumanName( unlockable_t *unlockable )
 		case UNLT_CLASS:     return BG_ClassModelConfig( unlockable->num )->humanName;
 	}
 
-	Com_Error( errorParm_t::ERR_FATAL, "UnlockableHumanName: Unlockable has unknown type" );
+	Sys::Error( "UnlockableHumanName: Unlockable has unknown type" );
 	return nullptr;
 }
 
@@ -89,7 +89,7 @@ static bool Disabled( unlockable_t *unlockable )
 		case UNLT_CLASS:     return BG_ClassDisabled( unlockable->num );
 	}
 
-	Com_Error( errorParm_t::ERR_FATAL, "Disabled: Unlockable has unknown type" );
+	Sys::Error( "Disabled: Unlockable has unknown type" );
 	return false;
 }
 #endif // BUILD_CGAME
@@ -310,7 +310,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 				break;
 
 			default:
-				Com_Error( errorParm_t::ERR_FATAL, "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
+				Sys::Error( "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
 		}
 
 		unlockThreshold = std::max( unlockThreshold, 0 );
@@ -378,7 +378,7 @@ int BG_UnlockablesMask( int team )
 {
 	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
 	{
-		Com_Error( errorParm_t::ERR_FATAL, "BG_UnlockablesMask: Requested mask for a team with unknown unlockable status" );
+		Sys::Error( "BG_UnlockablesMask: Requested mask for a team with unknown unlockable status" );
 	}
 
 	return unlockablesMask[ team ];
@@ -501,12 +501,12 @@ static void UpdateUnlockablesMask()
 
 			if ( unlockableNum[ team ] > 15 ) // 16 bit available for transmission
 			{
-				Com_Error( errorParm_t::ERR_FATAL, "UpdateUnlockablesMask: Number of unlockable items for a team exceeded" );
+				Sys::Error( "UpdateUnlockablesMask: Number of unlockable items for a team exceeded" );
 			}
 
 			if ( !unlockables[ unlockable ].statusKnown )
 			{
-				Com_Error( errorParm_t::ERR_FATAL, "UpdateUnlockablesMask: Called before G_UpdateUnlockables" );
+				Sys::Error( "UpdateUnlockablesMask: Called before G_UpdateUnlockables" );
 			}
 
 			if ( unlockables[ unlockable ].unlocked )
@@ -564,7 +564,7 @@ void G_UpdateUnlockables()
 				break;
 
 			default:
-				Com_Error( errorParm_t::ERR_FATAL, "G_UpdateUnlockables: Unknown unlockable type" );
+				Sys::Error( "G_UpdateUnlockables: Unknown unlockable type" );
 		}
 
 		unlockThreshold = std::max( unlockThreshold, 0 );

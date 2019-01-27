@@ -149,12 +149,12 @@ static void CG_TransitionSnapshot()
 
 	if ( !cg.snap )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_TransitionSnapshot: NULL cg.snap" );
+		Sys::Drop( "CG_TransitionSnapshot: NULL cg.snap" );
 	}
 
 	if ( !cg.nextSnap )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_TransitionSnapshot: NULL cg.nextSnap" );
+		Sys::Drop( "CG_TransitionSnapshot: NULL cg.nextSnap" );
 	}
 
 	// execute any server string commands before transitioning entities
@@ -372,7 +372,7 @@ void CG_ProcessSnapshots()
 		if ( n < cg.latestSnapshotNum )
 		{
 			// this should never happen
-			Com_Error(errorParm_t::ERR_DROP,  "CG_ProcessSnapshots: n (%i) < cg.latestSnapshotNum (%i)", n, cg.latestSnapshotNum );
+			Sys::Drop( "CG_ProcessSnapshots: n (%i) < cg.latestSnapshotNum (%i)", n, cg.latestSnapshotNum );
 		}
 
 		cg.latestSnapshotNum = n;
@@ -421,7 +421,7 @@ void CG_ProcessSnapshots()
 			// if time went backwards, we have a level restart
 			if ( cg.nextSnap->serverTime < cg.snap->serverTime )
 			{
-				Com_Error(errorParm_t::ERR_DROP,  "CG_ProcessSnapshots: Server time went backwards" );
+				Sys::Drop( "CG_ProcessSnapshots: Server time went backwards" );
 			}
 		}
 
@@ -439,7 +439,7 @@ void CG_ProcessSnapshots()
 	// assert our valid conditions upon exiting
 	if ( cg.snap == nullptr )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_ProcessSnapshots: cg.snap == NULL" );
+		Sys::Drop( "CG_ProcessSnapshots: cg.snap == NULL" );
 	}
 
 	if ( cg.time < cg.snap->serverTime )
@@ -450,6 +450,6 @@ void CG_ProcessSnapshots()
 
 	if ( cg.nextSnap != nullptr && cg.nextSnap->serverTime <= cg.time )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_ProcessSnapshots: cg.nextSnap->serverTime <= cg.time" );
+		Sys::Drop( "CG_ProcessSnapshots: cg.nextSnap->serverTime <= cg.time" );
 	}
 }

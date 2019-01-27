@@ -42,7 +42,7 @@ bool G_SpawnString( const char *key, const char *defaultString, char **out )
 	if ( !level.spawning )
 	{
 		*out = ( char * ) defaultString;
-//    Com_Error(errorParm_t::ERR_DROP,  "G_SpawnString() called while not spawning" );
+//    Sys::Drop( "G_SpawnString() called while not spawning" );
 		return false;
 	}
 
@@ -714,14 +714,14 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 
 		case F_TARGET:
 			if(entity->targetCount >= MAX_ENTITY_TARGETS)
-				Com_Error(errorParm_t::ERR_DROP, "Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
+				Sys::Drop("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
 
 			( ( char ** ) entityDataField ) [ entity->targetCount++ ] = G_NewString( rawString );
 			break;
 
 		case F_CALLTARGET:
 			if(entity->callTargetCount >= MAX_ENTITY_CALLTARGETS)
-				Com_Error(errorParm_t::ERR_DROP, "Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
+				Sys::Drop("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
 
 			( ( gentityCallDefinition_t * ) entityDataField ) [ entity->callTargetCount++ ] = G_NewCallDefinition( fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name, rawString );
 			break;
@@ -765,7 +765,7 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 		case F_SOUNDINDEX:
 			if ( strlen( rawString ) >= MAX_QPATH )
 			{
-				Com_Error(errorParm_t::ERR_DROP,  "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
+				Sys::Drop( "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
 			}
 
 			* ( int * ) entityDataField  = G_SoundIndex( rawString );
@@ -917,7 +917,7 @@ char *G_AddSpawnVarToken( const char *string )
 
 	if ( level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "G_AddSpawnVarToken: MAX_SPAWN_VARS_CHARS" );
+		Sys::Drop( "G_AddSpawnVarToken: MAX_SPAWN_VARS_CHARS" );
 	}
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;
@@ -955,7 +955,7 @@ bool G_ParseSpawnVars()
 
 	if ( com_token[ 0 ] != '{' )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: found %s when expecting {", com_token );
+		Sys::Drop( "G_ParseSpawnVars: found %s when expecting {", com_token );
 	}
 
 	// go through all the key / value pairs
@@ -964,7 +964,7 @@ bool G_ParseSpawnVars()
 		// parse key
 		if ( !trap_GetEntityToken( keyname, sizeof( keyname ) ) )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: EOF without closing brace" );
+			Sys::Drop( "G_ParseSpawnVars: EOF without closing brace" );
 		}
 
 		if ( keyname[ 0 ] == '}' )
@@ -975,17 +975,17 @@ bool G_ParseSpawnVars()
 		// parse value
 		if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: EOF without closing brace" );
+			Sys::Drop( "G_ParseSpawnVars: EOF without closing brace" );
 		}
 
 		if ( com_token[ 0 ] == '}' )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: closing brace without data" );
+			Sys::Drop( "G_ParseSpawnVars: closing brace without data" );
 		}
 
 		if ( level.numSpawnVars == MAX_SPAWN_VARS )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "G_ParseSpawnVars: MAX_SPAWN_VARS" );
+			Sys::Drop( "G_ParseSpawnVars: MAX_SPAWN_VARS" );
 		}
 
 		level.spawnVars[ level.numSpawnVars ][ 0 ] = G_AddSpawnVarToken( keyname );
@@ -1024,7 +1024,7 @@ void SP_worldspawn()
 
 	if ( Q_stricmp( s, S_WORLDSPAWN ) )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "SP_worldspawn: The first entry in the spawn string isn't of expected type '" S_WORLDSPAWN "'" );
+		Sys::Drop( "SP_worldspawn: The first entry in the spawn string isn't of expected type '" S_WORLDSPAWN "'" );
 	}
 
 	// make some data visible to connecting client
@@ -1100,7 +1100,7 @@ void G_SpawnEntitiesFromString()
 	// needed by a level (setting configstrings or cvars, etc)
 	if ( !G_ParseSpawnVars() )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "SpawnEntities: no entities" );
+		Sys::Drop( "SpawnEntities: no entities" );
 	}
 
 	SP_worldspawn();

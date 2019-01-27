@@ -859,7 +859,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( newAnimation < 0 || newAnimation >= MAX_BUILDABLE_ANIMATIONS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "Bad animation number: %i", newAnimation );
+		Sys::Drop( "Bad animation number: %i", newAnimation );
 	}
 
 	if ( cg_buildables[ buildable ].md5 )

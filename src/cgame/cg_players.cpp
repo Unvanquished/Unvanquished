@@ -88,7 +88,7 @@ sfxHandle_t CG_CustomSound( int clientNum, const char *soundName )
 		}
 	}
 
-	Com_Error(errorParm_t::ERR_DROP,  "Unknown custom sound: %s", soundName );
+	Sys::Drop( "Unknown custom sound: %s", soundName );
 	return 0;
 }
 
@@ -1255,7 +1255,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 
 	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName ) )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_RegisterClientModelname( %s, %s ) failed", ci->modelName, ci->skinName );
+		Sys::Drop( "CG_RegisterClientModelname( %s, %s ) failed", ci->modelName, ci->skinName );
 	}
 
 	// sounds
@@ -1609,7 +1609,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 	if ( newAnimation < 0 || newAnimation >= MAX_PLAYER_TOTALANIMATIONS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "Bad animation number: %i", newAnimation );
+		Sys::Drop( "Bad animation number: %i", newAnimation );
 	}
 
 	anim = &ci->animations[ newAnimation ];
@@ -2024,7 +2024,7 @@ static void CG_PlayerAngles( centity_t *cent, const vec3_t srcAngles,
 
 		if ( dir < 0 || dir > 7 )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "Bad player movement angle" );
+			Sys::Drop( "Bad player movement angle" );
 		}
 	}
 
@@ -2293,7 +2293,7 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 
 		if ( dir < 0 || dir > 7 )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "Bad player movement angle" );
+			Sys::Drop( "Bad player movement angle" );
 		}
 	}
 
@@ -2364,7 +2364,7 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 		lf->animationNumber = cent->jetpackAnim;
 
 		if( cent->jetpackAnim < 0 || cent->jetpackAnim >= MAX_JETPACK_ANIMATIONS )
-			Com_Error(errorParm_t::ERR_DROP,  "Bad animation number: %i", cent->jetpackAnim );
+			Sys::Drop( "Bad animation number: %i", cent->jetpackAnim );
 
 
 		if( JETPACK_USES_SKELETAL_ANIMATION )
@@ -2944,7 +2944,7 @@ void CG_Player( centity_t *cent )
 
 	if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "Bad clientNum on player entity" );
+		Sys::Drop( "Bad clientNum on player entity" );
 	}
 
 	ci = &cgs.clientinfo[ clientNum ];
@@ -3442,7 +3442,7 @@ void CG_Corpse( centity_t *cent )
 
 	if ( corpseNum < 0 || corpseNum >= MAX_CLIENTS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "Bad corpseNum on corpse entity: %d", corpseNum );
+		Sys::Drop( "Bad corpseNum on corpse entity: %d", corpseNum );
 	}
 
 	ci = &cgs.corpseinfo[ corpseNum ];

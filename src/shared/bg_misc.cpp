@@ -1180,7 +1180,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 			break;
 
 		default:
-			Com_Error(errorParm_t::ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
+			Sys::Drop( "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
 	}
 }
 
@@ -1237,7 +1237,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 			break;
 
 		default:
-			Com_Error(errorParm_t::ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
+			Sys::Drop( "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
 	}
 }
 
@@ -2194,7 +2194,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 
 		if ( entityNum & ~GENTITYNUM_MASK )
 		{
-			Com_Error( errorParm_t::ERR_FATAL, "BG_PackEntityNumbers passed an entity number (%d) which "
+			Sys::Error( "BG_PackEntityNumbers passed an entity number (%d) which "
 			           "exceeds %d bits", entityNum, GENTITYNUM_BITS );
 		}
 
@@ -2241,7 +2241,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 				break;
 
 			default:
-				Com_Error( errorParm_t::ERR_FATAL, "Entity index %d not handled", i );
+				Sys::Error( "Entity index %d not handled", i );
 		}
 	}
 }
@@ -2309,7 +2309,7 @@ int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int cou
 				break;
 
 			default:
-				Com_Error( errorParm_t::ERR_FATAL, "Entity index %d not handled", i );
+				Sys::Error( "Entity index %d not handled", i );
 		}
 
 		*entityNum &= GENTITYNUM_MASK;

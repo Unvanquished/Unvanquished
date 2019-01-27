@@ -124,7 +124,7 @@ gentity_t *G_NewEntity()
 			Log::Warn( "%4i: %s", i, g_entities[ i ].classname );
 		}
 
-		Com_Error(errorParm_t::ERR_DROP,  "G_Spawn: no free entities" );
+		Sys::Drop( "G_Spawn: no free entities" );
 	}
 
 	// open up a new slot

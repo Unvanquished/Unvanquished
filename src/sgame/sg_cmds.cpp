@@ -1018,7 +1018,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 			// console say_team is handled in g_svscmds, not here
 			if ( !ent || !ent->client )
 			{
-				Com_Error( errorParm_t::ERR_FATAL, "SAY_TEAM by non-client entity" );
+				Sys::Error( "SAY_TEAM by non-client entity" );
 			}
 
 			G_LogPrintf( "SayTeam: %d \"%s^*\": ^5%s",
@@ -1028,7 +1028,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 		case SAY_RAW:
 			if ( ent )
 			{
-				Com_Error( errorParm_t::ERR_FATAL, "SAY_RAW by client entity" );
+				Sys::Error( "SAY_RAW by client entity" );
 			}
 
 			G_LogPrintf( "Chat: -1 \"console\": %s", chatText );
@@ -1232,7 +1232,7 @@ void Cmd_VSay_f( gentity_t *ent )
 
 	if ( !ent || !ent->client )
 	{
-		Com_Error( errorParm_t::ERR_FATAL, "Cmd_VSay_f() called by non-client entity" );
+		Sys::Error( "Cmd_VSay_f() called by non-client entity" );
 	}
 
 	trap_Argv( 0, arg, sizeof( arg ) );

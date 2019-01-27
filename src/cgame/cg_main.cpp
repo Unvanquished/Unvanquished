@@ -1210,7 +1210,7 @@ static void CG_RegisterGraphics()
 
 	if ( cgs.numInlineModels > MAX_SUBMODELS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
+		Sys::Drop( "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
 	}
 
 	for ( i = 1; i < cgs.numInlineModels; i++ )
@@ -1397,7 +1397,7 @@ const char *CG_ConfigString( int index )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_ConfigString: bad index: %i", index );
+		Sys::Drop( "CG_ConfigString: bad index: %i", index );
 	}
 
 	return cgs.gameState[index].c_str();
@@ -1512,7 +1512,7 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	s = CG_ConfigString( CS_GAME_VERSION );
 
 //   if( strcmp( s, GAME_VERSION ) )
-//     Com_Error(errorParm_t::ERR_DROP,  "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+//     Sys::Drop( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );

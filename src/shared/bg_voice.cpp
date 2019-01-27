@@ -51,7 +51,7 @@ static void NORETURN BG_VoiceParseError( fileHandle_t handle, const char *err )
 
 	Parse_SourceFileAndLine( handle, filename, &line );
 	Parse_FreeSourceHandle( handle );
-	Com_Error( errorParm_t::ERR_FATAL, "%s on line %d of %s", err, line, filename );
+	Sys::Error( "%s on line %d of %s", err, line, filename );
 }
 
 /*
@@ -449,7 +449,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 				char filename[ MAX_QPATH ];
 
 				Parse_SourceFileAndLine( handle, filename, &line );
-				Com_Error( errorParm_t::ERR_FATAL, "BG_VoiceParse(): "
+				Sys::Error( "BG_VoiceParse(): "
 				           "parse error on line %d of %s", line, filename );
 			}
 		}
@@ -460,7 +460,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 			char filename[ MAX_QPATH ];
 
 			Parse_SourceFileAndLine( handle, filename, &line );
-			Com_Error( errorParm_t::ERR_FATAL, "BG_VoiceParse(): "
+			Sys::Error( "BG_VoiceParse(): "
 			           "command \"%s\" exceeds MAX_VOICE_CMD_LEN (%d) on line %d of %s",
 			           token.string, MAX_VOICE_CMD_LEN, line, filename );
 		}

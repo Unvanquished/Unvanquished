@@ -180,7 +180,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 		if ( !spot )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "Couldn't find a spawn point" );
+			Sys::Drop( "Couldn't find a spawn point" );
 		}
 
 		VectorCopy( spot->s.origin, origin );
@@ -1671,7 +1671,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		if ( spawn == nullptr )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "ClientSpawn: spawn is NULL" );
+			Sys::Drop( "ClientSpawn: spawn is NULL" );
 		}
 
 		spawnPoint = spawn;

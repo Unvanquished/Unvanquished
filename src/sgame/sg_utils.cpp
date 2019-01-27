@@ -132,7 +132,7 @@ static int G_FindConfigstringIndex( const char *name, int start, int max, bool c
 
 	if ( i == max )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "G_FindConfigstringIndex: overflow" );
+		Sys::Drop( "G_FindConfigstringIndex: overflow" );
 	}
 
 	trap_SetConfigstring( start + i, name );
