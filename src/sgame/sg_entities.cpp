@@ -124,7 +124,7 @@ gentity_t *G_NewEntity()
 			Log::Warn( "%4i: %s", i, g_entities[ i ].classname );
 		}
 
-		Com_Error(errorParm_t::ERR_DROP,  "G_Spawn: no free entities" );
+		Sys::Drop( "G_Spawn: no free entities" );
 	}
 
 	// open up a new slot
@@ -217,7 +217,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 /*
 =================================================================================
 
-gentity debuging
+gentity debugging
 
 =================================================================================
 */
@@ -289,7 +289,7 @@ gentity list handling and searching
 =============
 G_IterateEntities
 
-Iterates through all active enities optionally filtered by classname
+Iterates through all active entities optionally filtered by classname
 and a fieldoffset (set via FOFS() macro) of the callers choosing.
 
 Iteration will continue to return the gentity following the "previous" parameter that fullfill these conditions
@@ -410,7 +410,7 @@ gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, vec3_t origin, floa
 
 /*
 ===============
-G_ClosestEnt
+G_FindClosestEntity
 
 Test a list of entities for the closest to a particular point
 ===============
@@ -491,19 +491,15 @@ gentity chain handling
 */
 
 /**
- * a call made by the world, mostly by hard coded calls due to world-events
- */
-#define WORLD_CALL gentityCall_t{ nullptr, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] }
-/**
  * a non made call
  */
 #define NULL_CALL gentityCall_t{ nullptr, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
 
-typedef struct
+struct entityCallEventDescription_t
 {
 	const char *key;
 	gentityCallEvent_t eventType;
-} entityCallEventDescription_t;
+};
 
 static const entityCallEventDescription_t gentityEventDescriptions[] =
 {
@@ -536,11 +532,11 @@ gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 	return ON_CUSTOM;
 }
 
-typedef struct
+struct entityActionDescription_t
 {
 	const char *alias;
 	gentityCallActionType_t action;
-} entityActionDescription_t;
+};
 
 static const entityActionDescription_t actionDescriptions[] =
 {
@@ -675,11 +671,11 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
-typedef struct
+struct gentityTargetChoice_t
 {
 	gentityCallDefinition_t *callDefinition;
 	gentity_t *recipient;
-} gentityTargetChoice_t;
+};
 
 void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 {
@@ -713,7 +709,7 @@ void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 
 /*
 ==============================
-G_FireAllTargetsOf
+G_EventFireEntity
 
 "activator" should be set to the entity that initiated the firing.
 
@@ -755,8 +751,8 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
 
 /**
  * executes the entities act function
- * This is basicly nothing but a wrapper around act() ensuring a correct call,
- * neither paramater may be nullptr, and the entity is required to have an act function to execute
+ * This is basically nothing but a wrapper around act() ensuring a correct call,
+ * neither parameter may be nullptr, and the entity is required to have an act function to execute
  * or this function will fail
  */
 void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
@@ -910,7 +906,7 @@ bool G_MatchesName( gentity_t *entity, const char* name )
 
 /*
 ===============
-G_Visible
+G_IsVisible
 
 Test for a LOS between two entities
 ===============

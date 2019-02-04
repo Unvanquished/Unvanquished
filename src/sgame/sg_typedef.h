@@ -56,23 +56,23 @@ typedef struct zap_s               zap_t;
 // enum types
 // ----------
 
-typedef enum
+enum clientConnected_t
 {
 	CON_DISCONNECTED,
 	CON_CONNECTING,
 	CON_CONNECTED
-} clientConnected_t;
+};
 
 //status of the warning of certain events
-typedef enum
+enum timeWarning_t
 {
 	TW_NOT = 0,
 	TW_IMMINENT,
 	TW_PASSED
-} timeWarning_t;
+};
 
 // fate of a buildable
-typedef enum
+enum buildFate_t
 {
 	BF_CONSTRUCT,
 	BF_DECONSTRUCT,
@@ -81,9 +81,9 @@ typedef enum
 	BF_TEAMKILL,
 	BF_UNPOWER,
 	BF_AUTO
-} buildFate_t;
+};
 
-typedef enum {
+enum voteType_t {
 	VOTE_KICK,
 	VOTE_SPECTATE,
 	VOTE_MUTE,
@@ -99,6 +99,6 @@ typedef enum {
 	VOTE_NEXT_MAP,
 	VOTE_POLL,
 	VOTE_BOT_KICK,
-} voteType_t;
+};
 
 #endif // SG_TYPEDEF_H_

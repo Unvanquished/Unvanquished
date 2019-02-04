@@ -180,7 +180,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 		if ( !spot )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "Couldn't find a spawn point" );
+			Sys::Drop( "Couldn't find a spawn point" );
 		}
 
 		VectorCopy( spot->s.origin, origin );
@@ -376,7 +376,7 @@ BODYQUE
 =============
 BodySink
 
-After sitting around for five seconds, fall into the ground and dissapear
+After sitting around for five seconds, fall into the ground and disappear
 =============
 */
 static void BodySink( gentity_t *ent )
@@ -1234,7 +1234,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 
 	G_ReadSessionData( client );
 
-	// get and distribute relevent paramters
+	// get and distribute relevant parameters
 	G_namelog_connect( client );
 	userInfoError = ClientUserinfoChanged( clientNum, false );
 
@@ -1671,7 +1671,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		if ( spawn == nullptr )
 		{
-			Com_Error(errorParm_t::ERR_DROP,  "ClientSpawn: spawn is NULL" );
+			Sys::Drop( "ClientSpawn: spawn is NULL" );
 		}
 
 		spawnPoint = spawn;
@@ -1732,8 +1732,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	trap_GetUserinfo( index, userinfo, sizeof( userinfo ) );
 	client->ps.eFlags = flags;
-
-	//Log::Notice( "ent->client->pers->pclass = %i\n", ent->client->pers.classSelection );
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];

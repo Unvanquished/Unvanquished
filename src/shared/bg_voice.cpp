@@ -27,15 +27,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // bg_voice.c -- both games voice functions
 #include "engine/qcommon/q_shared.h"
+#include "shared/parse.h"
 #include "bg_public.h"
 #include "bg_local.h"
 
 int         trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 int         trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
-int         trap_Parse_LoadSource( const char *filename );
-int         trap_Parse_FreeSource( int handle );
-bool        trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
-int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
 #ifdef BUILD_CGAME
 sfxHandle_t trap_S_RegisterSound( const char *sample, bool compressed );
@@ -52,9 +49,9 @@ static void NORETURN BG_VoiceParseError( fileHandle_t handle, const char *err )
 	int  line;
 	char filename[ MAX_QPATH ];
 
-	trap_Parse_SourceFileAndLine( handle, filename, &line );
-	trap_Parse_FreeSource( handle );
-	Com_Error( errorParm_t::ERR_FATAL, "%s on line %d of %s", err, line, filename );
+	Parse_SourceFileAndLine( handle, filename, &line );
+	Parse_FreeSourceHandle( handle );
+	Sys::Error( "%s on line %d of %s", err, line, filename );
 }
 
 /*
@@ -156,7 +153,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 	pc_token_t token;
 	bool   found = false;
 	bool   foundText = false;
-	bool   foundToken = trap_Parse_ReadToken( handle, &token );
+	bool   foundToken = Parse_ReadTokenHandle( handle, &token );
 
 	while ( foundToken )
 	{
@@ -174,7 +171,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 		}
 		else if ( !Q_stricmp( token.string, "team" ) )
 		{
-			foundToken = trap_Parse_ReadToken( handle, &token );
+			foundToken = Parse_ReadTokenHandle( handle, &token );
 			found = false;
 
 			while ( foundToken )
@@ -198,7 +195,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				}
 
 				found = true;
-				foundToken = trap_Parse_ReadToken( handle, &token );
+				foundToken = Parse_ReadTokenHandle( handle, &token );
 			}
 
 			if ( !found )
@@ -212,7 +209,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 		{
 			bool negate = false;
 
-			foundToken = trap_Parse_ReadToken( handle, &token );
+			foundToken = Parse_ReadTokenHandle( handle, &token );
 			found = false;
 
 			while ( foundToken )
@@ -276,7 +273,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				}
 
 				found = true;
-				foundToken = trap_Parse_ReadToken( handle, &token );
+				foundToken = Parse_ReadTokenHandle( handle, &token );
 			}
 
 			if ( !found )
@@ -294,7 +291,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				                    "duplicate \"text\" definition for track" );
 			}
 
-			foundToken = trap_Parse_ReadToken( handle, &token );
+			foundToken = Parse_ReadTokenHandle( handle, &token );
 
 			if ( !foundToken )
 			{
@@ -314,12 +311,12 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 
 			voiceTrack->text = ( char * ) BG_Alloc( tokenLen + 1 );
 			Q_strncpyz( voiceTrack->text, token.string, tokenLen + 1 );
-			foundToken = trap_Parse_ReadToken( handle, &token );
+			foundToken = Parse_ReadTokenHandle( handle, &token );
 			continue;
 		}
 		else if ( !Q_stricmp( token.string, "enthusiasm" ) )
 		{
-			foundToken = trap_Parse_ReadToken( handle, &token );
+			foundToken = Parse_ReadTokenHandle( handle, &token );
 
 			if ( token.type == tokenType_t::TT_NUMBER )
 			{
@@ -331,7 +328,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				                    "missing \"enthusiasm\" value" );
 			}
 
-			foundToken = trap_Parse_ReadToken( handle, &token );
+			foundToken = Parse_ReadTokenHandle( handle, &token );
 			continue;
 		}
 		else
@@ -356,7 +353,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 	voiceTrack_t *voiceTracks = nullptr;
 	voiceTrack_t *top = nullptr;
 
-	while ( trap_Parse_ReadToken( handle, &token ) )
+	while ( Parse_ReadTokenHandle( handle, &token ) )
 	{
 		if ( !parsingTrack && token.string[ 0 ] == '}' )
 		{
@@ -396,7 +393,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 			int  line;
 			char filename[ MAX_QPATH ];
 
-			trap_Parse_SourceFileAndLine( handle, filename, &line );
+			Parse_SourceFileAndLine( handle, filename, &line );
 			Log::Warn( "BG_VoiceParseCommand(): "
 					"track \"%s\" referenced on line %d of %s does not exist",
 					token.string, line, filename );
@@ -429,14 +426,14 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 	bool   parsingCmd = false;
 	int        handle;
 
-	handle = trap_Parse_LoadSource( va( "voice/%s.voice", name ) );
+	handle = Parse_LoadSourceHandle( va( "voice/%s.voice", name ) );
 
 	if ( !handle )
 	{
 		return nullptr;
 	}
 
-	while ( trap_Parse_ReadToken( handle, &token ) )
+	while ( Parse_ReadTokenHandle( handle, &token ) )
 	{
 		if ( parsingCmd )
 		{
@@ -451,8 +448,8 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 				int  line;
 				char filename[ MAX_QPATH ];
 
-				trap_Parse_SourceFileAndLine( handle, filename, &line );
-				Com_Error( errorParm_t::ERR_FATAL, "BG_VoiceParse(): "
+				Parse_SourceFileAndLine( handle, filename, &line );
+				Sys::Error( "BG_VoiceParse(): "
 				           "parse error on line %d of %s", line, filename );
 			}
 		}
@@ -462,8 +459,8 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 			int  line;
 			char filename[ MAX_QPATH ];
 
-			trap_Parse_SourceFileAndLine( handle, filename, &line );
-			Com_Error( errorParm_t::ERR_FATAL, "BG_VoiceParse(): "
+			Parse_SourceFileAndLine( handle, filename, &line );
+			Sys::Error( "BG_VoiceParse(): "
 			           "command \"%s\" exceeds MAX_VOICE_CMD_LEN (%d) on line %d of %s",
 			           token.string, MAX_VOICE_CMD_LEN, line, filename );
 		}
@@ -484,7 +481,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 		parsingCmd = true;
 	}
 
-	trap_Parse_FreeSource( handle );
+	Parse_FreeSourceHandle( handle );
 
 	return top;
 }

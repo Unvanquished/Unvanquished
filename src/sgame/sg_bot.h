@@ -26,44 +26,44 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
 
-typedef struct
+struct botEntityAndDistance_t
 {
 	gentity_t *ent;
 	float distance;
-} botEntityAndDistance_t;
+};
 
-typedef struct
+struct botTarget_t
 {
 	gentity_t *ent;
 	vec3_t coord;
 	bool inuse;
-} botTarget_t;
+};
 
 #define MAX_ENEMY_QUEUE 32
-typedef struct
+struct enemyQueueElement_t
 {
 	gentity_t *ent;
 	int        timeFound;
-} enemyQueueElement_t;
+};
 
-typedef struct
+struct enemyQueue_t
 {
 	enemyQueueElement_t enemys[ MAX_ENEMY_QUEUE ];
 	int front;
 	int back;
-} enemyQueue_t;
+};
 
-typedef struct
+struct botSkill_t
 {
 	int level;
 	float aimSlowness;
 	float aimShake;
-} botSkill_t;
+};
 
 #include "sg_bot_ai.h"
 #define MAX_NODE_DEPTH 20
 
-typedef struct
+struct botMemory_t
 {
 	enemyQueue_t enemyQueue;
 	int enemyLastSeen;
@@ -92,7 +92,7 @@ typedef struct
 	int lastThink;
 	int stuckTime;
 	vec3_t stuckPosition;
-} botMemory_t;
+};
 
 constexpr int BOT_DEFAULT_SKILL = 5;
 const char BOT_DEFAULT_BEHAVIOR[] = "default";

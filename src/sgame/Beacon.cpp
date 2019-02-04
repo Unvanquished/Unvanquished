@@ -107,7 +107,7 @@ namespace Beacon //this should eventually become a class
 
 	/**
 	 * @brief Create a new ET_BEACON entity.
-	 * @param conflictHandler How to handle existing similiar beacons.
+	 * @param conflictHandler How to handle existing similar beacons.
 	 * @return A pointer to the new entity.
 	 */
 	gentity_t *New( const vec3_t origin, beaconType_t type, int data,
@@ -584,11 +584,11 @@ namespace Beacon //this should eventually become a class
 	}
 
 	//TODO: clean this mess
-	typedef struct
+	struct tagtrace_ent_t
 	{
 		gentity_t *ent;
 		float dot;
-	} tagtrace_ent_t;
+	};
 
 	static int TagTrace_EntCmp( const void *a, const void *b )
 	{

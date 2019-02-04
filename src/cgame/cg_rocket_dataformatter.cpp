@@ -435,11 +435,11 @@ static void CG_Rocket_DFCMBeacons( int handle, const char *data )
 	Rocket_DataFormatterFormattedData( handle, va( "<button class='beacons' onMouseover='Events.pushevent(\"setDS beacons default %s\", event)' %s><img src='/%s'/></button>", Info_ValueForKey( data, "2" ), action, icon ), false );
 }
 
-typedef struct
+struct dataFormatterCmd_t
 {
 	const char *name;
 	void ( *exec ) ( int handle, const char *data );
-} dataFormatterCmd_t;
+};
 
 static const dataFormatterCmd_t dataFormatterCmdList[] =
 {

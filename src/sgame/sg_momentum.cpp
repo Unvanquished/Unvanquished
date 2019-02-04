@@ -35,7 +35,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 // Used for legacy stage sensors
 #define MOMENTUM_PER_LEGACY_STAGE 100
 
-typedef enum
+enum momentum_t
 {
 	CONF_GENERIC,
 	CONF_BUILDING,
@@ -44,7 +44,7 @@ typedef enum
 	CONF_KILLING,
 
 	NUM_CONF
-} momentum_t;
+};
 
 // -------------
 // local methods
@@ -57,7 +57,7 @@ const char *MomentumTypeToReason( momentum_t type )
 		case CONF_GENERIC:        return "generic actions";
 		case CONF_BUILDING:       return "building a structure";
 		case CONF_DECONSTRUCTING: return "deconstructing a structure";
-		case CONF_DESTROYING:     return "destryoing a structure";
+		case CONF_DESTROYING:     return "destroying a structure";
 		case CONF_KILLING:        return "killing a player";
 		default:                  return "(unknown momentum type)";
 	}
@@ -213,7 +213,7 @@ static float MomentumMod( momentum_t type )
 /**
  * Awards momentum to a team.
  *
- * Will notify the client hwo earned it if given, otherwise the whole team, with an event.
+ * Will notify the client who earned it if given, otherwise the whole team, with an event.
  */
 static float AddMomentum( momentum_t type, team_t team, float amount,
                             gentity_t *source, bool skipChangeHook )

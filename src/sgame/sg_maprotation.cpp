@@ -33,20 +33,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define NOT_ROTATING          -1
 
-typedef enum
+enum conditionVariable_t
 {
   CV_ERR,
   CV_RANDOM,
   CV_NUMCLIENTS,
   CV_LASTWIN
-} conditionVariable_t;
+};
 
-typedef enum
+enum conditionOperator_t
 {
   CO_LT,
   CO_EQ,
   CO_GT
-} conditionOperator_t;
+};
 #define CONDITION_OPERATOR(op) ( ( op ) + '<' )
 
 typedef struct condition_s
@@ -73,7 +73,7 @@ typedef struct label_s
 	char name[ MAX_QPATH ];
 } mrLabel_t;
 
-typedef enum
+enum nodeType_t
 {
   NT_MAP,
   NT_CONDITION,
@@ -81,7 +81,7 @@ typedef enum
   NT_RESUME,
   NT_LABEL,
   NT_RETURN
-} nodeType_t;
+};
 
 typedef struct rotationNode_s
 {
@@ -95,20 +95,20 @@ typedef struct rotationNode_s
 	} u;
 } mrNode_t;
 
-typedef struct mapRotation_s
+struct mapRotation_t
 {
 	char   name[ MAX_QPATH ];
 
 	mrNode_t *nodes[ MAX_MAP_ROTATION_MAPS ];
 	int      numNodes;
 	int      currentNode;
-} mapRotation_t;
+};
 
-typedef struct mapRotations_s
+struct mapRotations_t
 {
 	mapRotation_t rotations[ MAX_MAP_ROTATIONS ];
 	int           numRotations;
-} mapRotations_t;
+};
 
 static mapRotations_t mapRotations;
 
@@ -1217,7 +1217,7 @@ bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
 	node = G_NodeByIndex( nodeIndex, rotation );
 	depth++;
 
-	// guard against inifinite loop in conditional code
+	// guard against infinite loop in conditional code
 	if ( depth > 32 && node->type != NT_MAP )
 	{
 		if ( depth > 64 )

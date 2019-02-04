@@ -8,7 +8,7 @@ cd $(dirname "$0")
 generator_name="CBSE.py"
 generator="../utils/cbse/${generator_name}"
 
-# (absolute pathes to) generator arguments
+# (absolute paths to) generator arguments
 output_dir="$(pwd)"
 definitions="${output_dir}/entities.yaml"
 

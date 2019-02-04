@@ -587,36 +587,6 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 	return false;
 }
 
-//copy of PM_CheckLadder in bg_pmove.c
-bool BotOnLadder( gentity_t *self )
-{
-	vec3_t forward, end;
-	vec3_t mins, maxs;
-	trace_t trace;
-
-	if ( !BG_ClassHasAbility( ( class_t ) self->client->ps.stats[ STAT_CLASS ], SCA_CANUSELADDERS ) )
-	{
-		return false;
-	}
-
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-
-	forward[ 2 ] = 0.0f;
-	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
-	VectorMA( self->s.origin, 1.0f, forward, end );
-
-	trap_Trace( &trace, self->s.origin, mins, maxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
-
-	if ( trace.fraction < 1.0f && trace.surfaceFlags & SURF_LADDER )
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 {
 	vec3_t forward;

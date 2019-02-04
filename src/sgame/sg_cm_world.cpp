@@ -49,7 +49,7 @@ worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 {
 	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
 	{
-		Com_Error(errorParm_t::ERR_DROP, "G_CM_SvEntityForGentity: bad gEnt" );
+		Sys::Drop( "G_CM_WorldEntityForGentity: bad gEnt" );
 	}
 
 	return &wentities[ gEnt->s.number ];
@@ -77,12 +77,12 @@ void G_CM_SetBrushModel( gentity_t *ent, const char *name )
 
 	if ( !name )
 	{
-		Com_Error(errorParm_t::ERR_DROP, "G_CM_SetBrushModel: NULL for #%i", ent->s.number );
+		Sys::Drop( "G_CM_SetBrushModel: NULL for #%i", ent->s.number );
 	}
 
 	if ( name[ 0 ] != '*' )
 	{
-		Com_Error(errorParm_t::ERR_DROP, "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
+		Sys::Drop( "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
 	}
 
 	ent->s.modelindex = atoi( name + 1 );
@@ -610,13 +610,13 @@ bounds.  This does NOT mean that they actually touch in the case of bmodels.
 ============================================================================
 */
 
-typedef struct
+struct areaParms_t
 {
 	const float *mins;
 	const float *maxs;
 	int         *list;
 	int         count, maxcount;
-} areaParms_t;
+};
 
 /*
 ====================
@@ -700,7 +700,7 @@ int G_CM_AreaEntities( const vec3_t mins, const vec3_t maxs, int *entityList, in
 
 //===========================================================================
 
-typedef struct
+struct moveclip_t
 {
 	vec3_t      boxmins, boxmaxs; // enclose the test object along entire move
 	const float *mins;
@@ -712,7 +712,7 @@ typedef struct
 	int         contentmask;
 	int         skipmask;
 	traceType_t collisionType;
-} moveclip_t;
+};
 
 /*
 ====================

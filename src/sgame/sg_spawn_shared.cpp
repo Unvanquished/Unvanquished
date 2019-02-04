@@ -170,7 +170,7 @@ void G_ResetTimeField( variatingTime_t *result,
 
 		if( g_debugEntities.integer > 0 )
 		{
-			Log::Warn( "limitting variance (%f) to be smaller than time (%f)", result->variance, result->time );
+			Log::Warn( "limiting variance (%f) to be smaller than time (%f)", result->variance, result->time );
 		}
 	}
 }

@@ -1947,7 +1947,7 @@ static int nullGetFunc( const char* )
 	return -1;
 }
 
-typedef struct
+struct dataSourceCmd_t
 {
 	const char *name;
 	void ( *build )( const char *args );
@@ -1957,7 +1957,7 @@ typedef struct
 	void ( *filter )( const char *table, const char *filter );
 	void ( *exec )( const char *table );
 	int  ( *get )( const char *table );
-} dataSourceCmd_t;
+};
 
 static const dataSourceCmd_t dataSourceCmdList[] =
 {

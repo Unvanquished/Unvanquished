@@ -137,7 +137,7 @@ Maryland 20850 USA.
 #define SENSOR_POLL_PERIOD 100
 
 // movers are things like doors, plats, buttons, etc
-typedef enum
+enum moverState_t
 {
   MOVER_POS1,
   MOVER_POS2,
@@ -153,9 +153,9 @@ typedef enum
   MODEL_POS2,
   MODEL_1TO2,
   MODEL_2TO1
-} moverState_t;
+};
 
-typedef enum
+enum gentityCallActionType_t
 {
 	ECA_NOP = 0,
 	ECA_DEFAULT,
@@ -172,9 +172,9 @@ typedef enum
 	ECA_DISABLE,
 	ECA_TOGGLE
 
-} gentityCallActionType_t;
+};
 
-typedef enum
+enum gentityCallEvent_t
 {
 	ON_DEFAULT = 0,
 	ON_CUSTOM,
@@ -195,9 +195,9 @@ typedef enum
 
 	ON_SPAWN
 
-} gentityCallEvent_t;
+};
 
-typedef struct
+struct gentityCallDefinition_t
 {
 	const char *event;
 	gentityCallEvent_t eventType;
@@ -206,15 +206,14 @@ typedef struct
 
 	char  *action;
 	gentityCallActionType_t actionType;
-} gentityCallDefinition_t;
+};
 
-typedef struct
+struct gentityCall_t
 {
 	gentityCallDefinition_t *definition;
-	//struct gentity_s *recipient;
-	struct gentity_s *caller;
-	struct gentity_s *activator;
-} gentityCall_t;
+	gentity_t *caller;
+	gentity_t *activator;
+};
 
 //
 // g_entities.c
@@ -289,7 +288,7 @@ void G_notify_sensor_end( team_t winningTeam );
 //
 // g_spawn_shared.c
 //
-void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallbacke );
+void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallback );
 void     G_ResetFloatField( float* target, bool fallbackIfNegativ, float instanceField, float classField, float fallback );
 void     G_ResetTimeField( variatingTime_t* result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback );
 

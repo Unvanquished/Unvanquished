@@ -33,7 +33,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 level_locals_t level;
 
-typedef struct
+namespace {
+struct cvarTable_t
 {
 	vmCvar_t   *vmCvar;
 	const char *cvarName;
@@ -47,7 +48,8 @@ typedef struct
 	   end. unfortunately, if the server crashes, the value set in worldspawn may
 	   persist */
 	char      *explicit_;
-} cvarTable_t;
+};
+} //namespace
 
 gentity_t          *g_entities;
 gclient_t          *g_clients;
@@ -780,7 +782,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// entity used as drop-in for unmigrated entities
 	level.emptyEntity = new EmptyEntity({ nullptr });
 
-	// initilize special entities so they don't need to be special cased in the CBSE code later on
+	// initialize special entities so they don't need to be special cased in the CBSE code later on
 	G_InitGentityMinimal( g_entities + ENTITYNUM_NONE );
 	G_InitGentityMinimal( g_entities + ENTITYNUM_WORLD );
 
@@ -2839,7 +2841,7 @@ void G_PrepareEntityNetCode() {
 	}
 
 	// Prepare netcode for specs
-	ForEntities<SpectatorComponent>([&](Entity& entity, SpectatorComponent& spectatorComponent){
+	ForEntities<SpectatorComponent>([&](Entity& entity, SpectatorComponent&){
 		entity.PrepareNetCode();
 	});
 }

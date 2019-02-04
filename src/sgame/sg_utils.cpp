@@ -29,12 +29,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 
-typedef struct
+struct shaderRemap_t
 {
 	char  oldShader[ MAX_QPATH ];
 	char  newShader[ MAX_QPATH ];
 	float timeOffset;
-} shaderRemap_t;
+};
 
 #define MAX_SHADER_REMAPS 128
 
@@ -132,7 +132,7 @@ static int G_FindConfigstringIndex( const char *name, int start, int max, bool c
 
 	if ( i == max )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "G_FindConfigstringIndex: overflow" );
+		Sys::Drop( "G_FindConfigstringIndex: overflow" );
 	}
 
 	trap_SetConfigstring( start + i, name );
@@ -461,7 +461,7 @@ bool G_ClientIsLagging( gclient_t *client )
 		}
 	}
 
-	return false; //is a non-existant client lagging? woooo zen
+	return false; //is a non-existent client lagging? woooo zen
 }
 
 //==============================================================================

@@ -51,7 +51,6 @@ void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
 void  BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
 void  BotAimAtEnemy( gentity_t *self );
 void  BotSlowAim( gentity_t *self, vec3_t target, float slow );
-void  BotShakeAim( gentity_t *self, vec3_t rVec );
 void  BotAimAtLocation( gentity_t *self, vec3_t target );
 float BotAimAngle( gentity_t *self, vec3_t pos );
 
@@ -92,7 +91,6 @@ void     BotClassMovement( gentity_t *self, bool inAttackRange );
 bool   WeaponIsEmpty( weapon_t weapon, playerState_t *ps );
 float      PercentAmmoRemaining( weapon_t weapon, playerState_t *ps );
 void       BotFindDamagedFriendlyStructure( gentity_t *self );
-bool   BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building );
 void       BotBuyWeapon( gentity_t *self, weapon_t weapon );
 void       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );
 void       BotSellWeapons( gentity_t *self );
@@ -110,13 +108,13 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass );
 float    CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed );
 
 //g_bot_nav.c
-typedef enum
+enum botMoveDir_t
 {
 	MOVE_FORWARD = BIT( 0 ),
 	MOVE_BACKWARD = BIT( 1 ),
 	MOVE_LEFT = BIT( 2 ),
 	MOVE_RIGHT = BIT( 3 )
-} botMoveDir_t;
+};
 
 // global navigation
 extern bool navMeshLoaded;
@@ -129,7 +127,6 @@ void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
 void         BotClampPos( gentity_t *self );
 
 // local navigation
-bool BotDodge( gentity_t *self );
 void     BotWalk( gentity_t *self, bool enable );
 bool BotSprint( gentity_t *self, bool enable );
 bool BotJump( gentity_t *self );
@@ -147,7 +144,7 @@ float    BotGetGoalRadius( gentity_t *self );
 void     BotFindRandomPointOnMesh( gentity_t *self, vec3_t point );
 bool BotPathIsWalkable( gentity_t *self, botTarget_t target );
 
-//configureable constants
+//configurable constants
 //For a reference of how far a number represents, take a look at tremulous.h
 
 //how long our traces are for obstacle avoidence
@@ -155,9 +152,6 @@ bool BotPathIsWalkable( gentity_t *self, botTarget_t target );
 
 //at what hp do we use medkit?
 #define BOT_USEMEDKIT_HP 50
-
-//when human bots reach this ammo percentage left or less(and no enemy), they will head back to the base to refuel ammo
-#define BOT_LOW_AMMO 0.50f
 
 //used for clamping distance to heal structure when deciding whether to go heal
 #define MAX_HEAL_DIST 2000.0f

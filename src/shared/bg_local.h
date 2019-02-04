@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // all of the locals will be zeroed before each
 // pmove, just to make damn sure we don't have
 // any differences when running on client or server
-typedef struct
+struct pml_t
 {
 	vec3_t   forward, right, up;
 	float    frametime;
@@ -59,13 +59,12 @@ typedef struct
 	vec3_t   previous_origin;
 	vec3_t   previous_velocity;
 	int      previous_waterlevel;
-} pml_t;
+};
 
 extern  pmove_t *pm;
 extern  pml_t   pml;
 
 // movement parameters
-#define pm_stopspeed         (100.0f)
 #define pm_duckScale         (0.25f)
 #define pm_swimScale         (0.50f)
 
@@ -73,9 +72,7 @@ extern  pml_t   pml;
 #define pm_wateraccelerate   (4.0f)
 #define pm_flyaccelerate     (4.0f)
 
-#define pm_friction          (6.0f)
 #define pm_waterfriction     (1.125f)
-#define pm_flightfriction    (6.0f)
 #define pm_spectatorfriction (5.0f)
 
 extern  int     c_pmove;

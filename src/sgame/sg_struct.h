@@ -186,7 +186,6 @@ struct gentity_s
 
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
-	gentity_t    *prevPathSegment;
 
 	/*
 	 * gentities to call on certain events
@@ -513,12 +512,10 @@ struct gclient_s
 	// timers
 	int        respawnTime; // can respawn when time > this
 	int        inactivityTime; // kick players when time > this
-	bool   inactivityWarning; // true if the five seoond warning has been given
+	bool   inactivityWarning; // true if the five second warning has been given
 	int        boostedTime; // last time we touched a booster
 
 	int        airOutTime;
-
-	int        switchTeamTime; // time the player switched teams
 
 	int        time100; // timer for 100ms interval events
 	int        time1000; // timer for one second interval events
@@ -635,8 +632,6 @@ struct level_locals_s
 	int      sortedClients[ MAX_CLIENTS ]; // sorted by score
 
 	int      snd_fry; // sound index for standing in lava
-
-	int      warmupModificationCount; // for detecting if g_warmup is changed
 
 	// spawn variables
 	bool spawning; // the G_Spawn*() functions are valid

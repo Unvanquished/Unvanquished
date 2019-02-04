@@ -275,7 +275,7 @@ static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* mi
     transformAngle = - cg.refdefViewAngles[1];
     angle = DEG2RAD(transformAngle + 90.0);
 
-    //Try to show the same region of the map for everyong
+    //Try to show the same region of the map for everyone
     transformScale = (rect->w + rect->h) / 2.0f / MINIMAP_DEFAULT_SIZE;
 
     scale = transformScale * MINIMAP_MAP_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);

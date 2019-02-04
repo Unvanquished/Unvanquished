@@ -106,9 +106,6 @@ extern int   LEVEL4_TRAMPLE_CHARGE_TRIGGER;
 extern int   LEVEL4_TRAMPLE_DURATION;
 extern int   LEVEL4_TRAMPLE_STOP_PENALTY;
 extern int   LEVEL4_TRAMPLE_REPEAT;
-extern float LEVEL4_CRUSH_DAMAGE_PER_V;
-extern int   LEVEL4_CRUSH_DAMAGE;
-extern int   LEVEL4_CRUSH_REPEAT;
 
 /*
  * ALIEN buildables
@@ -156,7 +153,6 @@ extern int   LEVEL4_CRUSH_REPEAT;
 
 #define ALIEN_POISON_TIME        10000
 #define ALIEN_POISON_DMG         5
-#define ALIEN_POISON_DIVIDER     ( 1.0f / 1.32f ) //about 1.0/((time)th root of damage)
 
 #define ALIEN_SPAWN_REPEAT_TIME  10000
 
@@ -248,8 +244,6 @@ extern int   MEDKIT_STARTUP_SPEED;
  * HUMAN buildables
  */
 
-extern float REACTOR_BASESIZE;
-
 #define MGTURRET_ATTACK_PERIOD  125
 #define MGTURRET_RANGE          350
 #define MGTURRET_SPREAD         200
@@ -261,10 +255,6 @@ extern float REACTOR_BASESIZE;
 #define ROCKET_TURN_ANGLE       8.0f
 #define ROCKET_LIFETIME         3000
 
-extern float REACTOR_ATTACK_RANGE;
-extern int   REACTOR_ATTACK_REPEAT;
-extern int   REACTOR_ATTACK_DAMAGE;
-
 /*
  * HUMAN misc
  */
@@ -272,7 +262,6 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define HUMAN_JOG_MODIFIER            1.0f
 #define HUMAN_BACK_MODIFIER           0.8f
 #define HUMAN_SIDE_MODIFIER           0.9f
-#define HUMAN_LAND_FRICTION           3.0f
 #define HUMAN_SLIDE_FRICTION_MODIFIER 0.05f
 #define HUMAN_SLIDE_THRESHOLD         400.0f
 
@@ -369,7 +358,6 @@ extern int   REACTOR_ATTACK_DAMAGE;
 #define MAIN_STRUCTURE_MOMENTUM_VALUE    20    // momentum reward for destroying OM/RC
 #define MINER_MOMENTUM_VALUE             10    // momentum reward for destroying Drill/Leech
 
-#define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
 #define BUILDABLE_START_HEALTH_FRAC        0.25f
 
 #endif // G_GAMEPLAY_H_

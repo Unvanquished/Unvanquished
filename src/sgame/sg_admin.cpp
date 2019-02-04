@@ -366,12 +366,11 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 };
 #define adminNumCmds ARRAY_LEN( g_admin_cmds )
 
-typedef struct
+struct g_admin_flag_t
 {
 	const char *flag;
 	const char *description;
-}
-g_admin_flag_t;
+};
 
 static const g_admin_flag_t g_admin_flags[] = {
 	{ ADMF_ACTIVITY,        "inactivity rules do not apply" },
@@ -1725,7 +1724,7 @@ void G_admin_pubkey()
 	g_admin_admin_t *highest = nullptr, *a = nullptr;
 
 	// Uncomment this if your server lags (shouldn't happen unless you are on a *very* old computer)
-	// Will only regenrate messages when there are no active client (When they are all loading the map)
+	// Will only regenerate messages when there are no active client (When they are all loading the map)
 #if 0
 	int             i;
 
@@ -4321,10 +4320,6 @@ bool G_admin_restart( gentity_t *ent )
 	{
 		ADMP( va( "%s %s", QQ( N_( "^3restart:^* unrecognised option '$1$'") ), Quote( teampref ) ) );
 		return false;
-	}
-	else
-	{
-		trap_Cvar_Set( "g_teamsKept", "" );
 	}
 
 	if ( !Q_stricmp( teampref, "switchteamslock" ) ||

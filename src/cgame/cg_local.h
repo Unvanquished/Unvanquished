@@ -70,7 +70,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_MINIMAP_ZONES              32
 
-typedef enum
+enum footstep_t
 {
   FOOTSTEP_GENERAL,
   FOOTSTEP_FLESH,
@@ -80,22 +80,22 @@ typedef enum
   FOOTSTEP_NONE,
 
   FOOTSTEP_TOTAL
-} footstep_t;
+};
 
-typedef enum
+enum impactSound_t
 {
   IMPACTSOUND_DEFAULT,
   IMPACTSOUND_METAL,
   IMPACTSOUND_FLESH
-} impactSound_t;
+};
 
-typedef enum
+enum jetPackState_t
 {
   JPS_INACTIVE,
   JPS_ACTIVE
-} jetPackState_t;
+};
 
-typedef enum
+enum jetpackAnimNumber_t
 {
   JANIM_NONE,
 
@@ -103,13 +103,13 @@ typedef enum
   JANIM_SLIDEIN,
 
   MAX_JETPACK_ANIMATIONS
-} jetpackAnimNumber_t;
+};
 
 //======================================================================
 
 // when changing animation, set animationTime to frameTime + lerping time
 // The current lerp will finish out, then it will lerp to the new animation
-typedef struct
+struct lerpFrame_t
 {
 	int           oldFrame;
 	int           oldFrameTime; // time when ->oldFrame was exactly on
@@ -129,7 +129,6 @@ typedef struct
 	int           animationNumber; // may include ANIM_TOGGLEBIT
 	animation_t   *animation;
 	int           animationTime; // time when the first frame of the animation will be exact
-	float         animationScale;
 
 	// added for smooth blending between animations on change
 
@@ -138,7 +137,7 @@ typedef struct
 
 	float       blendlerp;
 	float       blendtime;
-} lerpFrame_t;
+};
 
 // debugging values:
 
@@ -149,18 +148,18 @@ extern float debug_anim_blend;
 //======================================================================
 
 //attachment system
-typedef enum
+enum attachmentType_t
 {
   AT_STATIC,
   AT_TAG,
   AT_CENT,
   AT_PARTICLE
-} attachmentType_t;
+};
 
 //forward declaration for particle_t
-struct particle_s;
+struct particle_t;
 
-typedef struct attachment_s
+struct attachment_t
 {
 	attachmentType_t type;
 	bool         attached;
@@ -188,8 +187,8 @@ typedef struct attachment_s
 	int centNum;
 
 	//AT_PARTICLE
-	struct particle_s *particle;
-} attachment_t;
+	particle_t *particle;
+};
 
 //======================================================================
 
@@ -213,7 +212,7 @@ typedef struct attachment_s
 #define PARTICLES_SAME_AS_INITIAL -2
 
 //COMPILE TIME STRUCTURES
-typedef enum
+enum pMoveType_t
 {
   PMT_STATIC,
   PMT_STATIC_TRANSFORM,
@@ -222,15 +221,15 @@ typedef enum
   PMT_NORMAL,
   PMT_LAST_NORMAL,
   PMT_OPPORTUNISTIC_NORMAL
-} pMoveType_t;
+};
 
-typedef enum
+enum pDirType_t
 {
   PMD_LINEAR,
   PMD_POINT
-} pDirType_t;
+};
 
-typedef struct pMoveValues_u
+struct pMoveValues_t
 {
 	pDirType_t dirType;
 
@@ -247,9 +246,9 @@ typedef struct pMoveValues_u
 
 	float  parentVelFrac;
 	float  parentVelFracRandFrac;
-} pMoveValues_t;
+};
 
-typedef struct pLerpValues_s
+struct pLerpValues_t
 {
 	int   delay;
 	float delayRandFrac;
@@ -261,10 +260,10 @@ typedef struct pLerpValues_s
 	float finalRandFrac;
 
 	float randFrac;
-} pLerpValues_t;
+};
 
 //particle template
-typedef struct baseParticle_s
+struct baseParticle_t
 {
 	vec3_t        displacement;
 	vec3_t        randDisplacement;
@@ -334,10 +333,10 @@ typedef struct baseParticle_s
 	bool    cullOnStartSolid;
 
 	float       scaleWithCharge;
-} baseParticle_t;
+};
 
 //ejector template
-typedef struct baseParticleEjector_s
+struct baseParticleEjector_t
 {
 	baseParticle_t *particles[ MAX_PARTICLES_PER_EJECTOR ];
 	int            numParticles;
@@ -346,10 +345,10 @@ typedef struct baseParticleEjector_s
 
 	int            totalParticles; //can be infinite
 	float          totalParticlesRandFrac;
-} baseParticleEjector_t;
+};
 
 //particle system template
-typedef struct baseParticleSystem_s
+struct baseParticleSystem_t
 {
 	char                  name[ MAX_QPATH ];
 	baseParticleEjector_t *ejectors[ MAX_EJECTORS_PER_SYSTEM ];
@@ -357,10 +356,10 @@ typedef struct baseParticleSystem_s
 
 	bool              thirdPersonOnly;
 	bool              registered; //whether or not the assets for this particle have been loaded
-} baseParticleSystem_t;
+};
 
 //RUN TIME STRUCTURES
-typedef struct particleSystem_s
+struct particleSystem_t
 {
 	baseParticleSystem_t  *class_;
 
@@ -377,9 +376,9 @@ typedef struct particleSystem_s
 	vec3_t   lastNormal;
 
 	int      charge;
-} particleSystem_t;
+};
 
-typedef struct particleEjector_s
+struct particleEjector_t
 {
 	baseParticleEjector_t *class_;
 	particleSystem_t *parent;
@@ -392,10 +391,10 @@ typedef struct particleEjector_s
 	int              nextEjectionTime;
 
 	bool         valid;
-} particleEjector_t;
+};
 
 //used for actual particle evaluation
-typedef struct particle_s
+struct particle_t
 {
 	baseParticle_t    *class_;
 	particleEjector_t *parent;
@@ -418,8 +417,6 @@ typedef struct particle_s
 
 	int               lastEvalTime;
 
-	int               nextChildTime;
-
 	pLerpValues_t     radius;
 	pLerpValues_t     alpha;
 	pLerpValues_t     rotation;
@@ -436,7 +433,7 @@ typedef struct particle_s
 	int               frameWhenInvalidated;
 
 	int               sortKey;
-} particle_t;
+};
 
 //======================================================================
 
@@ -454,20 +451,20 @@ typedef struct particle_s
 
 #define MAX_TRAIL_BEAM_JITTERS 4
 
-typedef enum
+enum trailBeamTextureType_t
 {
   TBTT_STRETCH,
   TBTT_REPEAT
-} trailBeamTextureType_t;
+};
 
-typedef struct baseTrailJitter_s
+struct baseTrailJitter_t
 {
 	float magnitude;
 	int   period;
-} baseTrailJitter_t;
+};
 
 //beam template
-typedef struct baseTrailBeam_s
+struct baseTrailBeam_t
 {
 	int   numSegments;
 	float frontWidth;
@@ -505,10 +502,10 @@ typedef struct baseTrailBeam_s
 	int               numJitters;
 	baseTrailJitter_t jitters[ MAX_TRAIL_BEAM_JITTERS ];
 	bool          jitterAttachments;
-} baseTrailBeam_t;
+};
 
 //trail system template
-typedef struct baseTrailSystem_s
+struct baseTrailSystem_t
 {
 	char            name[ MAX_QPATH ];
 	baseTrailBeam_t *beams[ MAX_BEAMS_PER_SYSTEM ];
@@ -517,9 +514,9 @@ typedef struct baseTrailSystem_s
 	int             lifeTime;
 	bool        thirdPersonOnly;
 	bool        registered; //whether or not the assets for this trail have been loaded
-} baseTrailSystem_t;
+};
 
-typedef struct trailSystem_s
+struct trailSystem_t
 {
 	baseTrailSystem_t   *class_;
 
@@ -529,9 +526,9 @@ typedef struct trailSystem_s
 	int          birthTime;
 	int          destroyTime;
 	bool     valid;
-} trailSystem_t;
+};
 
-typedef struct trailBeamNode_s
+struct trailBeamNode_t
 {
 	vec3_t                 refPosition;
 	vec3_t                 position;
@@ -545,14 +542,14 @@ typedef struct trailBeamNode_s
 
 	vec2_t                 jitters[ MAX_TRAIL_BEAM_JITTERS ];
 
-	struct trailBeamNode_s *prev;
+	trailBeamNode_t *prev;
 
-	struct trailBeamNode_s *next;
+	trailBeamNode_t *next;
 
 	bool               used;
-} trailBeamNode_t;
+};
 
-typedef struct trailBeam_s
+struct trailBeam_t
 {
 	baseTrailBeam_t   *class_;
 	trailSystem_t   *parent;
@@ -565,7 +562,7 @@ typedef struct trailBeam_s
 	bool        valid;
 
 	int             nextJitterTimes[ MAX_TRAIL_BEAM_JITTERS ];
-} trailBeam_t;
+};
 
 //======================================================================
 
@@ -575,16 +572,16 @@ typedef struct trailBeam_s
 // smoothing of view and model for WW transitions
 #define   MAXSMOOTHS 32
 
-typedef struct
+struct smooth_t
 {
 	float  time;
 	float  timeMod;
 
 	vec3_t rotAxis;
 	float  rotAngle;
-} smooth_t;
+};
 
-typedef struct
+struct playerEntity_t
 {
 	lerpFrame_t legs, torso, nonseg, weapon, jetpack;
 	int         painTime;
@@ -603,24 +600,24 @@ typedef struct
 	float    lastMinimapAngle;
 	float    minimapFading;
 	bool minimapFadingOut;
-} playerEntity_t;
+};
 
-typedef struct lightFlareStatus_s
+struct lightFlareStatus_t
 {
 	float    lastRadius; //caching of likely flare radius
 	float    lastRatio; //caching of likely flare ratio
 	int      lastTime; //last time flare was visible/occluded
 	bool status; //flare is visible?
 	qhandle_t hTest;
-} lightFlareStatus_t;
+};
 
-typedef struct buildableStatus_s
+struct buildableStatus_t
 {
 	int      lastTime; // Last time status was visible
 	bool visible; // Status is visible?
-} buildableStatus_t;
+};
 
-typedef struct buildableCache_s
+struct buildableCache_t
 {
 	vec3_t cachedOrigin; // If any of the values differ from their
 	vec3_t cachedAngles; //  cached versions, then the cache is invalid
@@ -628,7 +625,7 @@ typedef struct buildableCache_s
 	buildable_t cachedType;
 	vec3_t axis[ 3 ];
 	vec3_t origin;
-} buildableCache_t;
+};
 
 //=================================================
 
@@ -641,7 +638,7 @@ typedef struct buildableCache_s
 // static data belonging to a specific beacon
 // here's all beacon info that can't be deduced at will (e.g. because
 // it depends on past states)
-typedef struct
+struct cbeacon_t
 {
 	bool      old;
 	bool      eventFired;
@@ -672,9 +669,9 @@ typedef struct
 
 	bool      clamped;
 	vec2_t        clamp_dir;
-} cbeacon_t;
+};
 
-typedef struct
+struct beaconsConfig_t
 {
 	// behavior
 	int           fadeIn;
@@ -705,10 +702,10 @@ typedef struct
 	// minimap
 	float         minimapScale;
 	float         minimapAlpha;
-} beaconsConfig_t;
+};
 
 // strings to display on the libRocket HUD
-typedef struct
+struct beaconRocket_t
 {
 	qhandle_t    icon;
 	float        iconAlpha;
@@ -727,13 +724,13 @@ typedef struct
 
 	char         owner[ 128 ];
 	float        ownerAlpha;
-} beaconRocket_t;
+};
 
 //======================================================================
 
 // centity_t has a direct correspondence with gentity_t in the game, but
 // only the entityState_t is directly communicated to the cgame
-typedef struct centity_s
+struct centity_t
 {
 	entityState_t  currentState; // from cg.frame
 	entityState_t  nextState; // from cg.nextFrame, if available
@@ -741,27 +738,17 @@ typedef struct centity_s
 	bool       currentValid; // true if cg.frame holds this entity
 
 	int            muzzleFlashTime; // move to playerEntity?
-	int            muzzleFlashTime2; // move to playerEntity?
-	int            muzzleFlashTime3; // move to playerEntity?
 	int            previousEvent;
-	int            teleportFlag;
 
 	int            trailTime; // so missile trails can handle dropped initial packets
-	int            dustTrailTime;
 	int            miscTime;
 	int            snapShotTime; // last time this entity was found in a snapshot
 
 	playerEntity_t pe;
 
-	int            errorTime; // decay the error from this time
-	vec3_t         errorOrigin;
-	vec3_t         errorAngles;
-
 	bool       extrapolated; // false if origin / angles is an interpolation
 	vec3_t         rawOrigin;
 	vec3_t         rawAngles;
-
-	vec3_t         beamEnd;
 
 	// exact interpolated position of entity on this frame
 	vec3_t                lerpOrigin;
@@ -801,7 +788,6 @@ typedef struct centity_s
 	bool              entityPSMissing;
 
 	trailSystem_t         *level2ZapTS[ LEVEL2_AREAZAP_MAX_TARGETS ];
-	int                   level2ZapTime;
 
 	trailSystem_t         *muzzleTS;
 	int                   muzzleTSDeathTime;
@@ -815,21 +801,19 @@ typedef struct centity_s
 	bool              oldValid;
 	int                   pvsEnterTime;
 
-	struct centity_s      *nextLocation;
-
 	cbeacon_t             beacon;
 
 	// Content flags derived from the entity state
 	// HACK: This is not an exact copy of the content flags the server sees.
 	// If this is desired, it needs to be made part of entityState_t instead.
 	int                   contents;
-} centity_t;
+};
 
 //======================================================================
 
-typedef struct markPoly_s
+struct markPoly_t
 {
-	struct markPoly_s *prevMark, *nextMark;
+	markPoly_t *prevMark, *nextMark;
 
 	int               time;
 	qhandle_t         markShader;
@@ -837,11 +821,11 @@ typedef struct markPoly_s
 	float             color[ 4 ];
 	poly_t            poly;
 	polyVert_t        verts[ MAX_VERTS_ON_POLY ];
-} markPoly_t;
+};
 
 //======================================================================
 
-typedef struct
+struct score_t
 {
 	int       client;
 	int       score;
@@ -850,7 +834,7 @@ typedef struct
 	int       team;
 	weapon_t  weapon;
 	upgrade_t upgrade;
-} score_t;
+};
 
 // each client has an associated clientInfo_t
 // that contains media references necessary to present the
@@ -920,7 +904,7 @@ struct clientInfo_t
 
 };
 
-typedef struct weaponInfoMode_s
+struct weaponInfoMode_t
 {
 	float       flashDlight;
 	float       flashDlightIntensity;
@@ -939,12 +923,12 @@ typedef struct weaponInfoMode_s
 	sfxHandle_t impactSound[ 4 ]; //random impact sound
 	sfxHandle_t impactFleshSound[ 4 ]; //random impact sound
 	sfxHandle_t reloadSound;
-} weaponInfoMode_t;
+};
 
 // each WP_* weapon enum has an associated weaponInfo_t
 // that contains media references necessary to present the
 // weapon and its effects
-typedef struct weaponInfo_s
+struct weaponInfo_t
 {
 	bool         registered;
 	bool         md5;
@@ -980,30 +964,30 @@ typedef struct weaponInfo_s
 	vec_t            scale;
 
 	weaponInfoMode_t wim[ WPM_NUM_WEAPONMODES ];
-} weaponInfo_t;
+};
 
-typedef struct upgradeInfo_s
+struct upgradeInfo_t
 {
 	bool  registered;
 	const char *humanName;
 
 	qhandle_t upgradeIcon;
-} upgradeInfo_t;
+};
 
-typedef struct
+struct classInfo_t
 {
 	qhandle_t classIcon;
-} classInfo_t;
+};
 
-typedef struct
+struct sound_t
 {
 	bool    looped;
 	bool    enabled;
 
 	sfxHandle_t sound;
-} sound_t;
+};
 
-typedef struct
+struct buildableInfo_t
 {
 	qhandle_t   models[ MAX_BUILDABLE_MODELS ];
 	animation_t animations[ MAX_BUILDABLE_ANIMATIONS ];
@@ -1014,19 +998,19 @@ typedef struct
 	qhandle_t buildableIcon;
 
 	bool md5;
-} buildableInfo_t;
+};
 
 //======================================================================
 
-typedef struct
+struct minimapZone_t
 {
     vec3_t    boundsMin, boundsMax;
     vec2_t    imageMin, imageMax;
     float     scale;
     qhandle_t image;
-} minimapZone_t;
+};
 
-typedef struct
+struct minimap_t
 {
     bool     active;
     bool     defined;
@@ -1039,35 +1023,9 @@ typedef struct
         qhandle_t playerArrow, teamArrow;
     } gfx;
     minimapZone_t zones[ MAX_MINIMAP_ZONES ];
-} minimap_t;
+};
 
 //======================================================================
-
-typedef struct
-{
-	vec3_t alienBuildablePos[ MAX_GENTITIES ];
-	float  alienBuildableIntensity[ MAX_GENTITIES ];
-	int    numAlienBuildables;
-
-	vec3_t humanBuildablePos[ MAX_GENTITIES ];
-	float  humanBuildableIntensity[ MAX_GENTITIES ];
-	int    numHumanBuildables;
-
-	vec3_t alienClientPos[ MAX_CLIENTS ];
-	float  alienClientIntensity[ MAX_CLIENTS ];
-	int    numAlienClients;
-
-	vec3_t humanClientPos[ MAX_CLIENTS ];
-	float  humanClientIntensity[ MAX_CLIENTS ];
-	int    numHumanClients;
-
-	int    lastUpdateTime;
-	vec3_t origin;
-	vec3_t vangles;
-} entityPos_t;
-
-#define MAX_CONSOLE_TEXT  8192
-#define MAX_CONSOLE_LINES 32
 
 // all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
 // occurs, and they will have visible effects for #define STEP_TIME or whatever msec after
@@ -1079,21 +1037,21 @@ typedef struct
 // After this many msec the crosshair name fades out completely
 #define CROSSHAIR_CLIENT_TIMEOUT 1000
 
-typedef struct
+struct cgBinaryShaderSetting_t
 {
 	Color::Color32Bit color;
 	bool drawIntersection;
 	bool drawFrontline;
-} cgBinaryShaderSetting_t;
+};
 
-typedef enum
+enum sayType_t
 {
 	SAY_TYPE_NONE,
 	SAY_TYPE_PUBLIC,
 	SAY_TYPE_TEAM,
 	SAY_TYPE_ADMIN,
 	SAY_TYPE_COMMAND,
-} sayType_t;
+};
 
 #include "Filter.h"
 
@@ -1110,7 +1068,7 @@ struct WeaponOffsets
 
 #define NUM_BINARY_SHADERS 256
 
-typedef struct
+struct cg_t
 {
 	int      clientFrame; // incremented each frame
 
@@ -1188,23 +1146,17 @@ typedef struct
 	// scoreboard
 	int      scoresRequestTime;
 	int      numScores;
-	int      selectedScore;
 	int      teamScores[ 2 ];
 	score_t  scores[ MAX_CLIENTS ];
 	bool showScores;
-	int      scoreFadeTime;
 	char     killerName[ MAX_NAME_LENGTH ];
 	char     spectatorList[ MAX_STRING_CHARS ]; // list of names
 	int      spectatorTime; // next time to offset
-	float    spectatorOffset; // current offset from start
 	bool scoreInvalidated; // needs update on next RocketUpdate
 
 	// centerprinting
 	int  centerPrintTime;
-	int  centerPrintCharWidth;
-	int  centerPrintY;
 	char centerPrint[ MAX_STRING_CHARS ];
-	int  centerPrintLines;
 
 	// crosshair client ID
 	int      crosshairClientNum;
@@ -1224,8 +1176,6 @@ typedef struct
 	//==========================
 
 	int weaponSelectTime;
-	int weaponAnimation;
-	int weaponAnimationTime;
 
 	// blend blobs
 	float damageTime;
@@ -1261,8 +1211,6 @@ typedef struct
 	bool                weapon2Firing;
 	bool                weapon3Firing;
 
-	int                     poisonedTime;
-
 	vec3_t                  lastNormal; // view smoothage
 	vec3_t                  lastVangles; // view smoothage
 	smooth_t                sList[ MAXSMOOTHS ]; // WW smoothing
@@ -1291,13 +1239,9 @@ typedef struct
 	int                     stateHead, stateTail;
 	int                     ping;
 
-	float                   chargeMeterAlpha;
-	float                   chargeMeterValue;
 	qhandle_t               lastHealthCross;
 	float                   healthCrossFade;
 	int                     nearUsableBuildable;
-
-	int                     nextWeaponClickTime;
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
@@ -1324,24 +1268,23 @@ typedef struct
 	} pmoveParams;
 
 	Filter<WeaponOffsets>   weaponOffsetsFilter;
-} cg_t;
+};
 
-typedef struct
+struct rocketMenu_t
 {
 	const char *path;
 	const char *id;
-} rocketMenu_t;
+};
 
 #define MAX_SERVERS 2048
 #define MAX_RESOLUTIONS 32
 #define MAX_LANGUAGES 64
-#define MAX_INPUTS 16
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
 #define MAX_DEMOS 256
 #define MAX_MAPS 128
 
-typedef struct server_s
+struct server_t
 {
 	char *name;
 	char *label;
@@ -1351,39 +1294,39 @@ typedef struct server_s
 	int maxClients;
 	char *mapName;
 	char *addr;
-} server_t;
+};
 
 
 
-typedef struct resolution_s
+struct resolution_t
 {
 	int width;
 	int height;
-} resolution_t;
+};
 
 
 
-typedef struct language_s
+struct language_t
 {
 	char *name;
 	char *lang;
-} language_t;
+};
 
 
 
-typedef struct modInfo_s
+struct modInfo_t
 {
 	char *name;
 	char *description;
-} modInfo_t;
+};
 
-typedef struct
+struct mapInfo_t
 {
 	char *mapName;
 	char *mapLoadName;
-} mapInfo_t;
+};
 
-typedef struct
+struct rocketDataSource_t
 {
 	server_t servers[ AS_FAVORITES + 1 ][ MAX_SERVERS ];
 	int serverCount[ AS_FAVORITES + 1 ];
@@ -1448,9 +1391,9 @@ typedef struct
 	int beaconList[ NUM_BEACON_TYPES ];
 	int selectedBeacon;
 	int beaconListCount;
-} rocketDataSource_t;
+};
 
-typedef struct
+struct rocketInfo_t
 {
 	int currentNetSrc;
 	int serversLastRefresh;
@@ -1462,7 +1405,7 @@ typedef struct
 	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;
-} rocketInfo_t;
+};
 
 extern rocketInfo_t rocketInfo;
 
@@ -1471,7 +1414,7 @@ extern rocketInfo_t rocketInfo;
 // Other media that can be tied to clients, weapons, or items are
 // stored in the clientInfo_t, itemInfo_t, and weaponInfo_t
 
-typedef struct
+struct cgMediaBinaryShader_t
 {
 	qhandle_t f1;
 	qhandle_t f2;
@@ -1479,9 +1422,9 @@ typedef struct
 	qhandle_t b1;
 	qhandle_t b2;
 	qhandle_t b3;
-} cgMediaBinaryShader_t;
+};
 
-typedef struct
+struct cgMedia_t
 {
 	qhandle_t whiteShader;
 	qhandle_t outlineShader;
@@ -1493,12 +1436,10 @@ typedef struct
 
 	qhandle_t viewBloodShader;
 	qhandle_t tracerShader;
-	qhandle_t crosshairShader[ WP_NUM_WEAPONS ];
 	qhandle_t backTileShader;
 
 	qhandle_t creepShader;
 
-	qhandle_t scannerShader;
 	qhandle_t scannerBlipShader;
 	qhandle_t scannerBlipBldgShader;
 	qhandle_t scannerLineShader;
@@ -1533,7 +1474,6 @@ typedef struct
 	sfxHandle_t alienTalkSound;
 	sfxHandle_t humanTalkSound;
 	sfxHandle_t landSound;
-	sfxHandle_t fallSound;
 	sfxHandle_t turretSpinupSound;
 
 	sfxHandle_t grenadeBounceSound0;
@@ -1567,8 +1507,6 @@ typedef struct
 	sfxHandle_t alienL4ChargeStart;
 
 	qhandle_t   cursor;
-	qhandle_t   selectCursor;
-	qhandle_t   sizeCursor;
 
 	//light armour
 	qhandle_t   larmourHeadSkin;
@@ -1634,9 +1572,9 @@ typedef struct
 
 	qhandle_t   damageIndicatorFont;
   sfxHandle_t killSound;
-} cgMedia_t;
+};
 
-typedef struct
+struct buildStat_t
 {
 	qhandle_t frameShader;
 	qhandle_t overlayShader;
@@ -1657,19 +1595,18 @@ typedef struct
 	Color::Color foreColor;
 	Color::Color backColor;
 	bool  loaded;
-} buildStat_t;
+};
 
 // The client game static (cgs) structure hold everything
 // loaded or calculated from the gamestate.  It will NOT
 // be cleared when a tournement restart is done, allowing
 // all clients to begin playing instantly
-typedef struct
+struct cgs_t
 {
 	GameStateCSs gameState; // gamestate from server
 	glconfig_t  glconfig; // rendering configuration
 	float       screenXScale; // derived from glconfig
 	float       screenYScale;
-	float       screenXBias;
 	float       aspectScale;
 
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
@@ -1724,9 +1661,6 @@ typedef struct
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
 
-	void         *capturedItem;
-	qhandle_t    activeCursor;
-
 	buildStat_t  alienBuildStat;
 	buildStat_t  humanBuildStat;
 
@@ -1737,15 +1671,15 @@ typedef struct
 	clientList_t ignoreList;
 
 	beaconsConfig_t  bc;
-} cgs_t;
+};
 
-typedef struct
+struct consoleCommand_t
 {
 	const char *cmd;
 	void     ( *function )();
-} consoleCommand_t;
+};
 
-typedef enum
+enum shaderColorEnum_t
 {
   SHC_DARK_BLUE,
   SHC_LIGHT_BLUE,
@@ -1760,16 +1694,16 @@ typedef enum
   SHC_PINK,
   SHC_GREY,
   SHC_NUM_SHADER_COLORS
-} shaderColorEnum_t;
+};
 
-typedef enum
+enum rangeMarker_t
 {
 	RM_SPHERE,
 	RM_SPHERICAL_CONE_64,
 	RM_SPHERICAL_CONE_240,
-} rangeMarker_t;
+};
 
-typedef enum
+enum rocketElementType_t
 {
 	ELEMENT_ALL,
 	ELEMENT_GAME,
@@ -1778,16 +1712,16 @@ typedef enum
 	ELEMENT_ALIENS,
 	ELEMENT_DEAD,
 	ELEMENT_BOTH,
-} rocketElementType_t;
+};
 
-typedef enum
+enum altShader_t
 {
   CG_ALTSHADER_DEFAULT, // must be first
   CG_ALTSHADER_UNPOWERED,
   CG_ALTSHADER_DEAD,
   CG_ALTSHADER_IDLE,
   CG_ALTSHADER_IDLE2
-} altShader_t;
+};
 
 //==============================================================================
 
@@ -1889,9 +1823,6 @@ extern  vmCvar_t            cg_debugParticles;
 extern  vmCvar_t            cg_debugTrails;
 extern  vmCvar_t            cg_debugPVS;
 extern  vmCvar_t            cg_disableWarningDialogs;
-extern  vmCvar_t            cg_disableUpgradeDialogs;
-extern  vmCvar_t            cg_disableBuildDialogs;
-extern  vmCvar_t            cg_disableCommandDialogs;
 extern  vmCvar_t            cg_disableScannerPlane;
 extern  vmCvar_t            cg_tutorial;
 
@@ -1937,16 +1868,12 @@ extern vmCvar_t             cg_projectileNudge;
 
 extern vmCvar_t             cg_voice;
 
-extern vmCvar_t             cg_emoticons;
 extern vmCvar_t             cg_emoticonsInMessages;
 
 extern vmCvar_t             cg_chatTeamPrefix;
 
 extern vmCvar_t             cg_animBlend;
 
-extern vmCvar_t             cg_highPolyPlayerModels;
-extern vmCvar_t             cg_highPolyBuildableModels;
-extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 extern vmCvar_t             ui_chatPromptColors;
@@ -1973,7 +1900,6 @@ void       CG_NotifyHooks();
 void       CG_UpdateCvars();
 
 int        CG_CrosshairPlayer();
-void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( Keyboard::Key key, bool down );
 void       CG_MouseEvent( int dx, int dy );
 void       CG_MousePosEvent( int x, int y );
@@ -1995,7 +1921,6 @@ void     CG_TestModelNextFrame_f();
 void     CG_TestModelPrevFrame_f();
 void     CG_TestModelNextSkin_f();
 void     CG_TestModelPrevSkin_f();
-void     CG_AddBufferedSound( sfxHandle_t sfx );
 bool CG_CullBox(vec3_t mins, vec3_t maxs);
 bool CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
 void     CG_DrawActiveFrame( int serverTime, bool demoPlayback );
@@ -2041,22 +1966,12 @@ ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001 );
 // cg_draw.c
 //
 
-void CG_AlignText( rectDef_t *rect, const char *text, float scale, float w, float h, int align, int valign,float *x, float *y );
 void CG_AddLagometerFrameInfo();
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed();
 void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawActive();
-void CG_OwnerDraw( rectDef_t *rect, float text_x,
-                   float text_y, int ownerDraw, int ownerDrawFlags,
-                   int align, int textalign, int textvalign,
-                   float borderSize, float scale, const Color::Color& foreColor,
-                   const Color::Color& backColor, qhandle_t shader, int textStyle );
-float      CG_GetValue( int ownerDraw );
 void       CG_RunMenuScript( char **args );
-void       CG_SetPrintString( int type, const char *p );
-const char *CG_GetKillerText();
-void       CG_DrawLoadingScreen();
 void       CG_ResetPainBlend();
 void       CG_DrawField( float x, float y, int width, float cw, float ch, int value );
 
@@ -2087,7 +2002,6 @@ void     CG_InitBuildables();
 void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
 void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
-bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb );
 
 //
 // cg_animation.c
@@ -2135,7 +2049,6 @@ void CG_OnMapRestart();
 void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities();
-void CG_Beam( centity_t *cent );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
                                 vec3_t angles_in, vec3_t angles_out );
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
@@ -2211,7 +2124,6 @@ void CG_ExecuteServerCommands( snapshot_t* snap );
 void CG_ParseServerinfo();
 void CG_SetConfigValues();
 void CG_ShaderStateChanged();
-void CG_CompleteCommand( int argNum );
 void CG_CenterPrint_f();
 
 //
@@ -2316,7 +2228,6 @@ bool   CG_ParseColor( byte *c, const char **text_p );
 const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
-void CG_FormatSI( char *buf, int size, float num, int sf, const char *unit );
 void CG_SetKeyCatcher( int catcher );
 
 //

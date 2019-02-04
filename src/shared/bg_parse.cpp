@@ -45,20 +45,20 @@ void trap_FS_FCloseFile( fileHandle_t f );
 		break; \
 	}
 
-typedef enum
+enum configVarType_t
 {
 	INTEGER,
 	FLOAT
-} configVarType_t;
+};
 
-typedef struct
+struct configVar_t
 {
 	//The name is on top of the structure, this is useful for bsearch
 	const char *name;
 	configVarType_t type;
 	bool defined;
 	void *var;
-} configVar_t;
+};
 
 //Definition of the config vars
 
@@ -2408,7 +2408,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 
 /*
 ======================
-BG_ParseBeaconAttirubteFile
+BG_ParseBeaconAttributeFile
 
 Parses a configuration file describing a beacon type
 ======================

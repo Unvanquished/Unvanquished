@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "shared/parse.h"
 #include "cg_local.h"
 
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
@@ -47,7 +48,7 @@ static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 };
 
 // Shorthand definitions for the buildable animation names below.
-typedef enum shorthand_e {
+enum shorthand_t {
 	XX,
 
 	// classic names
@@ -80,7 +81,7 @@ typedef enum shorthand_e {
 	DS, // destroyed_shrunk
 
 	NUM_SHORTHANDS
-} shorthand_t;
+};
 
 // Buildable animation names.
 static const char* shorthandToName[ NUM_SHORTHANDS ] = {
@@ -196,7 +197,7 @@ void CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir )
 
 /*
 =================
-CG_HumanBuildableDieing
+CG_HumanBuildableDying
 
 Called for human buildables that are about to blow up
 =================
@@ -742,10 +743,10 @@ void CG_InitBuildables()
 
 /*
 ================
-CG_BuildableRangeMarkerProperties
+CG_GetBuildableRangeMarkerProperties
 ================
 */
-bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, Color::Color& rgba )
+static bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, Color::Color& rgba )
 {
 	shaderColorEnum_t shc;
 
@@ -858,7 +859,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( newAnimation < 0 || newAnimation >= MAX_BUILDABLE_ANIMATIONS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "Bad animation number: %i", newAnimation );
+		Sys::Drop( "Bad animation number: %i", newAnimation );
 	}
 
 	if ( cg_buildables[ buildable ].md5 )
@@ -1401,7 +1402,7 @@ static void CG_BuildableParticleEffects( centity_t *cent )
 
 /*
 ==================
-CG_Parse
+CG_BuildableStatusParse
 ==================
 */
 void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
@@ -1413,7 +1414,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 	float      f;
 	Color::Color c;
 
-	handle = trap_Parse_LoadSource( filename );
+	handle = Parse_LoadSourceHandle( filename );
 
 	if ( !handle )
 	{
@@ -1422,7 +1423,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 
 	while ( 1 )
 	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
+		if ( !Parse_ReadTokenHandle( handle, &token ) )
 		{
 			break;
 		}
@@ -1598,13 +1599,13 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 			Log::Notice( "CG_BuildableStatusParse: unknown token %s in %s\n",
 			            token.string, filename );
 			bs->loaded = false;
-			trap_Parse_FreeSource( handle );
+			Parse_FreeSourceHandle( handle );
 			return;
 		}
 	}
 
 	bs->loaded = true;
-	trap_Parse_FreeSource( handle );
+	Parse_FreeSourceHandle( handle );
 }
 
 #define STATUS_FADE_TIME     200

@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // values E_A_SPAWN to E_H_REACTOR are meant to have the same
 // integer values as the corresponding enum in buildable_t
 // TODO: get rid of dependence on buildable_t
-typedef enum
+enum AIEntity_t
 {
 	E_NONE,
 	E_A_SPAWN,
@@ -55,26 +55,26 @@ typedef enum
 	E_ENEMY,
 	E_DAMAGEDBUILDING,
 	E_SELF
-} AIEntity_t;
+};
 
 // all behavior tree nodes must return one of
 // these status when finished
-typedef enum
+enum AINodeStatus_t
 {
 	STATUS_FAILURE = 0,
 	STATUS_SUCCESS,
 	STATUS_RUNNING
-} AINodeStatus_t;
+};
 
 // behavior tree node types
-typedef enum
+enum AINode_t
 {
 	SELECTOR_NODE,
 	ACTION_NODE,
 	CONDITION_NODE,
 	BEHAVIOR_NODE,
 	DECORATOR_NODE
-} AINode_t;
+};
 
 struct AIGenericNode_s;
 
@@ -88,26 +88,26 @@ typedef struct AIGenericNode_s
 } AIGenericNode_t;
 
 #define MAX_NODE_LIST 20
-typedef struct
+struct AINodeList_t
 {
 	AINode_t type;
 	AINodeRunner run;
 	AIGenericNode_t *list[ MAX_NODE_LIST ];
 	int numNodes;
-} AINodeList_t;
+};
 
-typedef struct
+struct AIBehaviorTree_t
 {
 	AINode_t     type;
 	AINodeRunner run;
 	char name[ MAX_QPATH ];
 	AIGenericNode_t *root;
-} AIBehaviorTree_t;
+};
 
 // operations used in condition nodes
 // ordered according to precedence
 // lower values == higher precedence
-typedef enum
+enum AIOpType_t
 {
 	OP_NOT,
 	OP_LESSTHAN,
@@ -119,24 +119,24 @@ typedef enum
 	OP_AND,
 	OP_OR,
 	OP_NONE
-} AIOpType_t;
+};
 
 // types of expressions in condition nodes
-typedef enum
+enum AIExpType_t
 {
 	EX_OP,
 	EX_VALUE,
 	EX_FUNC
-} AIExpType_t;
+};
 
-typedef enum
+enum AIValueType_t
 {
 	VALUE_FLOAT,
 	VALUE_INT,
 	VALUE_STRING
-} AIValueType_t;
+};
 
-typedef struct
+struct AIValue_t
 {
 	AIExpType_t             expType;
 	AIValueType_t           valType;
@@ -147,50 +147,50 @@ typedef struct
 		int   intValue;
 		char  *stringValue;
 	} l;
-} AIValue_t;
+};
 
 typedef AIValue_t (*AIFunc)( gentity_t *self, const AIValue_t *params );
 
-typedef struct
+struct AIValueFunc_t
 {
 	AIExpType_t   expType;
 	AIValueType_t retType;
 	AIFunc        func;
 	AIValue_t     *params;
 	int           nparams;
-} AIValueFunc_t;
+};
 
 // all ops must conform to this interface
-typedef struct
+struct AIOp_t
 {
 	AIExpType_t expType;
 	AIOpType_t  opType;
-} AIOp_t;
+};
 
-typedef struct
+struct AIBinaryOp_t
 {
 	AIExpType_t expType;
 	AIOpType_t  opType;
 	AIExpType_t *exp1;
 	AIExpType_t *exp2;
-} AIBinaryOp_t;
+};
 
-typedef struct
+struct AIUnaryOp_t
 {
 	AIExpType_t expType;
 	AIOpType_t  opType;
 	AIExpType_t *exp;
-} AIUnaryOp_t;
+};
 
-typedef struct
+struct AIConditionNode_t
 {
 	AINode_t        type;
 	AINodeRunner    run;
 	AIGenericNode_t *child;
 	AIExpType_t     *exp;
-} AIConditionNode_t;
+};
 
-typedef struct
+struct AIDecoratorNode_t
 {
 	AINode_t        type;
 	AINodeRunner    run;
@@ -198,15 +198,15 @@ typedef struct
 	AIValue_t       *params;
 	int             nparams;
 	int             data[ MAX_CLIENTS ]; // bot specific data
-} AIDecoratorNode_t;
+};
 
-typedef struct
+struct AIActionNode_t
 {
 	AINode_t     type;
 	AINodeRunner run;
 	AIValue_t    *params;
 	int          nparams;
-} AIActionNode_t;
+};
 
 bool isBinaryOp( AIOpType_t op );
 bool isUnaryOp( AIOpType_t op );

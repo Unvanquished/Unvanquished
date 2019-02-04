@@ -942,7 +942,7 @@ static void CG_InterpolateEntityPosition( centity_t *cent )
 	// a snapshot ahead of the current one
 	if ( cg.nextSnap == nullptr )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_InterpoateEntityPosition: cg.nextSnap == NULL" );
+		Sys::Drop( "CG_InterpolateEntityPosition: cg.nextSnap == NULL" );
 	}
 
 	f = cg.frameInterpolation;
@@ -1196,7 +1196,7 @@ static void CG_AddCEntity( centity_t *cent )
 	switch ( cent->currentState.eType )
 	{
 		default:
-			Com_Error(errorParm_t::ERR_DROP,  "Bad entity type: %s", Util::enum_str(cent->currentState.eType));
+			Sys::Drop("Bad entity type: %s", Util::enum_str(cent->currentState.eType));
 
 		case entityType_t::ET_INVISIBLE:
 		case entityType_t::ET_PUSHER:

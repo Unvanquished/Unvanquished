@@ -142,7 +142,7 @@ static bool CanUseAmmoRefill( gentity_t *self )
 /**
  * @brief Refills clips on clip based weapons, refills charge on other weapons.
  * @param self
- * @param triggerEvent Trigger an event when relvant resource was modified.
+ * @param triggerEvent Trigger an event when relevant resource was modified.
  * @return Whether relevant resource was modified.
  */
 bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
@@ -378,33 +378,6 @@ void G_SnapVectorTowards( vec3_t v, vec3_t to )
 		}
 	}
 }
-
-/*
-======================
-Round a vector to integers for more efficient network
-transmission, but make sure that it rounds towards a given point
-rather than blindly truncating.  This prevents it from truncating
-into a wall.
-======================
-*/
-/*
-static void SnapVectorNormal( vec3_t v, vec3_t normal )
-{
-	int i;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		if ( v[ i ] >= 0 )
-		{
-			v[ i ] = ( int )( v[ i ] + ( normal[ i ] <= 0 ? 0 : 1 ) );
-		}
-		else
-		{
-			v[ i ] = ( int )( v[ i ] + ( normal[ i ] <= 0 ? -1 : 0 ) );
-		}
-	}
-}
-*/
 
 static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
 {
@@ -645,7 +618,7 @@ static void FireShotgun( gentity_t *self )
 	tent->s.eventParm = rand() / ( RAND_MAX / 0x100 + 1 ); // seed for spread pattern
 	tent->s.otherEntityNum = self->s.number;
 
-	// caclulate the pattern and do the damage
+	// calculate the pattern and do the damage
 	G_UnlaggedOn( self, muzzle, SHOTGUN_RANGE );
 	ShotgunPattern( tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, self );
 	G_UnlaggedOff();
@@ -1684,7 +1657,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 	float  weightDPS, weightDamage;
 	int    attackerMass, victimMass;
 
-	// weigth damage is only dealt between clients
+	// weight damage is only dealt between clients
 	if ( !self->client || !victim->client )
 	{
 		return;

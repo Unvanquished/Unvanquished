@@ -18,7 +18,7 @@ void ReactorComponent::Think(int timeDelta) {
 	float baseDamage = ATTACK_DAMAGE * ((float)timeDelta / 1000.0f);
 
 	// Zap close enemies.
-	ForEntities<AlienClassComponent>([&](Entity& other, AlienClassComponent& alienClassComponent) {
+	ForEntities<AlienClassComponent>([&](Entity& other, AlienClassComponent&) {
 		// Respect the no-target flag.
 		if (other.oldEnt->flags & FL_NOTARGET) return;
 

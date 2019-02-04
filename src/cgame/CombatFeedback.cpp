@@ -46,14 +46,14 @@ Cvar::Cvar<bool> killSounds_enable(
 	"enable/disable kill sounds",
 	Cvar::NONE, true);
 
-typedef enum {
+enum damageIndicatorLayer_t {
 	DIL_ENEMY,
 	DIL_TEAMMATE,
 	DIL_ALIEN_BUILDING,
 	DIL_HUMAN_BUILDING,
 
 	DAMAGE_INDICATOR_LAYERS
-} damageIndicatorLayer_t;
+};
 
 float damageIndicatorColors[DAMAGE_INDICATOR_LAYERS][3] = {
 	{1, 1, 1},  // enemy

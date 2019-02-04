@@ -33,15 +33,11 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 #include "cgame/cg_local.h"
 #endif
 
-#ifdef BUILD_UI
-#include "engine/client/ui_api.h"
-#endif
-
 // -----------
 // definitions
 // -----------
 
-typedef struct unlockable_s
+struct unlockable_t
 {
 	int      type;
 	int      num;
@@ -50,7 +46,7 @@ typedef struct unlockable_s
 	bool     statusKnown;
 	int      unlockThreshold;
 	int      lockThreshold;
-} unlockable_t;
+};
 
 // ----
 // data
@@ -78,7 +74,7 @@ static const char *UnlockableHumanName( unlockable_t *unlockable )
 		case UNLT_CLASS:     return BG_ClassModelConfig( unlockable->num )->humanName;
 	}
 
-	Com_Error( errorParm_t::ERR_FATAL, "UnlockableHumanName: Unlockable has unknown type" );
+	Sys::Error( "UnlockableHumanName: Unlockable has unknown type" );
 	return nullptr;
 }
 
@@ -93,14 +89,8 @@ static bool Disabled( unlockable_t *unlockable )
 		case UNLT_CLASS:     return BG_ClassDisabled( unlockable->num );
 	}
 
-	Com_Error( errorParm_t::ERR_FATAL, "Disabled: Unlockable has unknown type" );
+	Sys::Error( "Disabled: Unlockable has unknown type" );
 	return false;
-}
-#endif // BUILD_CGAME
-
-#ifdef BUILD_CGAME
-static void InformUnlockableStatusChange( unlockable_t*, bool )
-{
 }
 #endif // BUILD_CGAME
 
@@ -195,9 +185,6 @@ static float UnlockToLockThreshold( float unlockThreshold )
 {
 	float momentumHalfLife = 0.0f;
 	float unlockableMinTime  = 0.0f;
-#ifdef BUILD_UI
-	char  buffer[ MAX_TOKEN_CHARS ];
-#endif
 
 	// maintain cache
 	static float lastMomentumHalfLife = 0.0f;
@@ -212,12 +199,6 @@ static float UnlockToLockThreshold( float unlockThreshold )
 #ifdef BUILD_CGAME
 	momentumHalfLife = cgs.momentumHalfLife;
 	unlockableMinTime  = cgs.unlockableMinTime;
-#endif
-#ifdef BUILD_UI
-	trap_Cvar_VariableStringBuffer( "ui_momentumHalfLife", buffer, sizeof( buffer ) );
-	sscanf( buffer, "%f", &momentumHalfLife );
-	trap_Cvar_VariableStringBuffer( "ui_unlockableMinTime",  buffer, sizeof( buffer ) );
-	sscanf( buffer, "%f", &unlockableMinTime );
 #endif
 
 	// a half life time of 0 means there is no decrease, so we don't need to alter thresholds
@@ -329,7 +310,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 				break;
 
 			default:
-				Com_Error( errorParm_t::ERR_FATAL, "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
+				Sys::Error( "BG_ImportUnlockablesFromMask: Unknown unlockable type" );
 		}
 
 		unlockThreshold = std::max( unlockThreshold, 0 );
@@ -355,8 +336,6 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 			if ( unlockablesTeamKnowledge == team && unlockable->statusKnown &&
 			     unlockable->unlocked != newStatus )
 			{
-				InformUnlockableStatusChange( unlockable, newStatus );
-
 				statusChanges[ unlockableNum ] = newStatus ? 1 : -1;
 				statusChangeCount++;
 			}
@@ -399,7 +378,7 @@ int BG_UnlockablesMask( int team )
 {
 	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
 	{
-		Com_Error( errorParm_t::ERR_FATAL, "G_GetUnlockablesMask: Requested mask for a team with unknown unlockable status" );
+		Sys::Error( "BG_UnlockablesMask: Requested mask for a team with unknown unlockable status" );
 	}
 
 	return unlockablesMask[ team ];
@@ -522,12 +501,12 @@ static void UpdateUnlockablesMask()
 
 			if ( unlockableNum[ team ] > 15 ) // 16 bit available for transmission
 			{
-				Com_Error( errorParm_t::ERR_FATAL, "UpdateUnlockablesMask: Number of unlockable items for a team exceeded" );
+				Sys::Error( "UpdateUnlockablesMask: Number of unlockable items for a team exceeded" );
 			}
 
 			if ( !unlockables[ unlockable ].statusKnown )
 			{
-				Com_Error( errorParm_t::ERR_FATAL, "UpdateUnlockablesMask: Called before G_UpdateUnlockables" );
+				Sys::Error( "UpdateUnlockablesMask: Called before G_UpdateUnlockables" );
 			}
 
 			if ( unlockables[ unlockable ].unlocked )
@@ -585,7 +564,7 @@ void G_UpdateUnlockables()
 				break;
 
 			default:
-				Com_Error( errorParm_t::ERR_FATAL, "G_UpdateUnlockables: Unknown unlockable type" );
+				Sys::Error( "G_UpdateUnlockables: Unknown unlockable type" );
 		}
 
 		unlockThreshold = std::max( unlockThreshold, 0 );
@@ -629,23 +608,5 @@ void G_UpdateUnlockables()
 void CG_UpdateUnlockables( playerState_t *ps )
 {
 	BG_ImportUnlockablesFromMask( ps->persistant[ PERS_TEAM ], ps->persistant[ PERS_UNLOCKABLES ] );
-}
-#endif
-
-// ----------
-// UI methods
-// ----------
-
-#ifdef BUILD_UI
-void UI_UpdateUnlockables()
-{
-	char   buffer[ MAX_TOKEN_CHARS ];
-	team_t team;
-	int    mask;
-
-	trap_Cvar_VariableStringBuffer( "ui_unlockables", buffer, sizeof( buffer ) );
-	sscanf( buffer, "%d %d", ( int * )&team, &mask );
-
-	BG_ImportUnlockablesFromMask( team, mask );
 }
 #endif

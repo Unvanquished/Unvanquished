@@ -26,11 +26,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __BOT_PARSE_HEADER
 #define __BOT_PARSE_HEADER
 
+#include "shared/parse.h"
 #include "sg_bot_ai.h"
 
 #define allocNode(T) ( T * ) BG_Alloc( sizeof( T ) );
 #define stringify2(T, val) va( #T " %d", val )
-#define D2(T, val) trap_Parse_AddGlobalDefine( stringify2( T, val ) )
+#define D2(T, val) Parse_AddGlobalDefine( stringify2( T, val ) )
 #define D(T) D2(T, T)
 
 // FIXME: copied from parse.c
@@ -45,7 +46,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define P_LOGIC_GREATER    36
 #define P_LOGIC_LESS       37
 
-typedef struct
+struct pc_token_stripped_t
 {
 	tokenType_t type;
 	int   subtype;
@@ -53,7 +54,7 @@ typedef struct
 	float floatvalue;
 	char  *string;
 	int   line;
-} pc_token_stripped_t;
+};
 
 typedef struct pc_token_list_s
 {
@@ -62,12 +63,12 @@ typedef struct pc_token_list_s
 	struct pc_token_list_s *next;
 } pc_token_list;
 
-typedef struct
+struct AITreeList_t
 {
 	AIBehaviorTree_t **trees;
 	int numTrees;
 	int maxTrees;
-} AITreeList_t;
+};
 
 void              InitTreeList( AITreeList_t *list );
 void              AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree );

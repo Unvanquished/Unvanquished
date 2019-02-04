@@ -969,7 +969,7 @@ public:
 
 			if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 			{
-				Com_Error(errorParm_t::ERR_DROP,  "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
+				Sys::Drop( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
 			}
 
 			if ( !cg_weapons[ weapon ].registered )
@@ -1184,14 +1184,14 @@ private:
 
 #define LAG_SAMPLES 128
 
-typedef struct
+struct lagometer_t
 {
 	int frameSamples[ LAG_SAMPLES ];
 	int frameCount;
 	int snapshotFlags[ LAG_SAMPLES ];
 	int snapshotSamples[ LAG_SAMPLES ];
 	int snapshotCount;
-} lagometer_t;
+};
 
 lagometer_t lagometer;
 
@@ -1259,9 +1259,9 @@ void CG_AddLagometerSnapshotInfo( snapshot_t *snap )
 
 /*
 ==============
-CG_DrawDisconnect
+CG_Rocket_DrawDisconnect
 
-Should we draw something differnet for long lag vs no packets?
+Should we draw something different for long lag vs no packets?
 ==============
 */
 static void CG_Rocket_DrawDisconnect()
@@ -1352,7 +1352,7 @@ public:
 
 		vscale = range / MAX_LAGOMETER_RANGE;
 
-		// draw the frame interpoalte / extrapolate graph
+		// draw the frame interpolate / extrapolate graph
 		for ( a = 0; a < aw; a++ )
 		{
 			i = ( lagometer.frameCount - 1 - a ) & ( LAG_SAMPLES - 1 );
@@ -1577,7 +1577,7 @@ static void CG_ScanForCrosshairEntity()
 
 	else
 	{
-		// we have a client entitiy
+		// we have a client entity
 		targetTeam = cgs.clientinfo[ trace.entityNum ].team;
 
 		// only react to living clients
@@ -3570,12 +3570,12 @@ static void CG_Rocket_HaveJetpck()
 	Rocket_SetClass( "inactive", !jetpackInInventory );
 }
 
-typedef struct
+struct elementRenderCmd_t
 {
 	const char *name;
 	void ( *exec )();
 	rocketElementType_t type;
-} elementRenderCmd_t;
+};
 
 // THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =

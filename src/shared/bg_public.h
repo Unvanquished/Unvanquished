@@ -41,14 +41,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define VOTE_TIME          30000 // 30 seconds before vote times out
 
 #define MINS_Z             -24
-#define DEFAULT_VIEWHEIGHT 26
-#define CROUCH_VIEWHEIGHT  12
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
 // player teams
-typedef enum team_e
+enum team_t
 {
   TEAM_ALL = -1,
   TEAM_NONE,
@@ -56,7 +54,7 @@ typedef enum team_e
   TEAM_HUMANS,
 
   NUM_TEAMS
-} team_t;
+};
 
 //
 // config strings are a general means of communicating variable length strings
@@ -105,12 +103,12 @@ enum
 #error exceeded configstrings: CS_MAX > MAX_CONFIGSTRINGS
 #endif
 
-typedef enum
+enum gender_t
 {
   GENDER_MALE,
   GENDER_FEMALE,
   GENDER_NEUTER
-} gender_t;
+};
 
 /*
 ===================================================================================
@@ -123,7 +121,7 @@ movement on the server game.
 ===================================================================================
 */
 
-typedef enum
+enum pmtype_t
 {
   PM_NORMAL, // can accelerate and turn
   PM_NOCLIP, // noclip movement
@@ -132,13 +130,13 @@ typedef enum
   PM_DEAD, // no acceleration or turning, but free falling
   PM_FREEZE, // stuck in place with no control
   PM_INTERMISSION // no movement or status bar
-} pmtype_t;
+};
 
 // pmtype_t categories
 #define PM_Paralyzed( x ) ( ( x ) == PM_DEAD || ( x ) == PM_FREEZE || ( x ) == PM_INTERMISSION )
 #define PM_Live( x )      ( ( x ) == PM_NORMAL || ( x ) == PM_GRABBED )
 
-typedef enum
+enum weaponstate_t
 {
   WEAPON_READY,
   WEAPON_RAISING,
@@ -146,7 +144,7 @@ typedef enum
   WEAPON_FIRING,
   WEAPON_RELOADING,
   WEAPON_NEEDS_RESET,
-} weaponstate_t;
+};
 
 // pmove->pm_flags
 #define PMF_DUCKED         0x000001
@@ -169,14 +167,14 @@ typedef enum
 
 #define PMF_ALL_TIMES      ( PMF_TIME_WATERJUMP | PMF_TIME_KNOCKBACK | PMF_TIME_WALLJUMP )
 
-typedef struct
+struct pmoveExt_t
 {
 	int    pouncePayload;
 	vec3_t fallImpactVelocity;
-} pmoveExt_t;
+};
 
 #define MAXTOUCH 32
-typedef struct pmove_s
+struct pmove_t
 {
 	// state (in / out)
 	playerState_t *ps;
@@ -215,7 +213,7 @@ typedef struct pmove_s
 	                 const vec3_t end, int passEntityNum, int contentMask, int skipmask );
 
 	int ( *pointcontents )( const vec3_t point, int passEntityNum );
-} pmove_t;
+};
 
 // if a full pmove isn't done on the client, you can just update the angles
 void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
@@ -225,7 +223,7 @@ void Pmove( pmove_t *pmove );
 
 // player_state->stats[] indexes
 // netcode has space for 16 stats
-typedef enum
+enum statIndex_t
 {
   STAT_HEALTH,
   STAT_ITEMS,
@@ -243,7 +241,7 @@ typedef enum
   STAT_PREDICTION, // predictions for current player action
   STAT_FUEL,       // humans: jetpack fuel
   STAT_TAGSCORE    // tagging progress
-} statIndex_t;
+};
 
 #define SCA_WALLCLIMBER     0x00000001
 #define SCA_TAKESFALLDAMAGE 0x00000002
@@ -285,7 +283,7 @@ typedef enum
 #define SB_BUILDABLE_FROM_IBE(x) ( ( x ) << SB_BUILDABLE_STATE_SHIFT )
 #define SB_BUILDABLE_TO_IBE(x)   ( ( ( x ) & SB_BUILDABLE_STATE_MASK ) >> SB_BUILDABLE_STATE_SHIFT )
 
-typedef enum
+enum itemBuildError_t
 {
   IBE_NONE,             // no error, can build
 
@@ -305,12 +303,12 @@ typedef enum
   IBE_MAINSTRUCTURE,    // may not replace main structure with other buildable
 
   IBE_MAXERRORS
-} itemBuildError_t;
+};
 
 // player_state->persistent[] indexes
 // these fields are the only part of player_state that isn't
 // cleared on respawn
-typedef enum
+enum persEnum_t
 {
   PERS_SCORE,          // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
   PERS_MOMENTUM,     // the total momentum of a team
@@ -327,7 +325,7 @@ typedef enum
   PERS_TOTALBUDGET,
   PERS_QUEUEDBUDGET
   // netcode has space for 2 more. TODO: extend
-} persEnum_t;
+};
 
 #define PS_WALLCLIMBINGFOLLOW 0x00000001
 #define PS_WALLCLIMBINGTOGGLE 0x00000002
@@ -379,7 +377,7 @@ typedef enum
 #define EF_BC_TAG_RELEVANT  (EF_BC_ENEMY|EF_BC_TAG_PLAYER)   // relevant flags for tags
 #define EF_BC_BASE_RELEVANT (EF_BC_ENEMY|EF_BC_BASE_OUTPOST) // relevant flags for bases
 
-typedef enum
+enum weaponMode_t
 {
   WPM_NONE,
 
@@ -390,9 +388,9 @@ typedef enum
   WPM_NOTFIRING,
 
   WPM_NUM_WEAPONMODES
-} weaponMode_t;
+};
 
-typedef enum
+enum weapon_t
 {
   WP_NONE,
 
@@ -426,9 +424,9 @@ typedef enum
   WP_HBUILD,
 
   WP_NUM_WEAPONS
-} weapon_t;
+};
 
-typedef enum
+enum upgrade_t
 {
   UP_NONE,
 
@@ -445,9 +443,9 @@ typedef enum
   UP_MEDKIT,
 
   UP_NUM_UPGRADES
-} upgrade_t;
+};
 
-typedef enum
+enum missile_t
 {
 	MIS_NONE,
 
@@ -467,7 +465,7 @@ typedef enum
 	MIS_SPIKER,
 
 	MIS_NUM_MISSILES
-} missile_t;
+};
 
 // bitmasks for upgrade slots
 #define SLOT_NONE     0x00000000
@@ -481,7 +479,7 @@ typedef enum
 #define SLOT_GRENADE  0x00000080
 
 // NOTE: manually update AIEntity_t if you edit this enum (TODO: get rid of this task)
-typedef enum
+enum buildable_t
 {
   BA_NONE,
 
@@ -508,7 +506,7 @@ typedef enum
   BA_H_REACTOR,
 
   BA_NUM_BUILDABLES
-} buildable_t;
+};
 
 // entityState_t->event values
 // entity events are for effects that take place relative
@@ -527,7 +525,7 @@ typedef enum
 
 const char *BG_EventName( int num );
 
-typedef enum
+enum entity_event_t
 {
   EV_NONE,
 
@@ -639,9 +637,9 @@ typedef enum
   EV_HIT, // notify client of a hit
 
   EV_MOMENTUM // notify client of generated momentum
-} entity_event_t;
+};
 
-typedef enum
+enum dynMenu_t
 {
   MN_NONE,
 
@@ -713,10 +711,10 @@ typedef enum
   MN_H_NOBP,
   MN_H_NOTPOWERED,
   MN_H_ONEREACTOR
-} dynMenu_t;
+};
 
 // animations
-typedef enum
+enum playerAnimNumber_t
 {
   BOTH_DEATH1,
   BOTH_DEAD1,
@@ -781,10 +779,10 @@ typedef enum
   FLAG_STAND2RUN,
 
   MAX_PLAYER_TOTALANIMATIONS
-} playerAnimNumber_t;
+};
 
 // nonsegmented animations
-typedef enum
+enum nonSegPlayerAnimNumber_t
 {
   NSPA_STAND,
 
@@ -829,10 +827,10 @@ typedef enum
   NSPA_WALKBACK,
 
   MAX_NONSEG_PLAYER_TOTALANIMATIONS
-} nonSegPlayerAnimNumber_t;
+};
 
 // for buildable animations
-typedef enum
+enum buildableAnimNumber_t
 {
   BANIM_NONE,
 
@@ -861,9 +859,9 @@ typedef enum
   BANIM_DESTROYED_UNPOWERED,
 
   MAX_BUILDABLE_ANIMATIONS
-} buildableAnimNumber_t;
+};
 
-typedef enum
+enum weaponAnimNumber_t
 {
   WANIM_NONE,
 
@@ -883,9 +881,9 @@ typedef enum
   WANIM_ATTACK8,
 
   MAX_WEAPON_ANIMATIONS
-} weaponAnimNumber_t;
+};
 
-typedef struct animation_s
+struct animation_t
 {
 	qhandle_t handle;
 	bool  clearOrigin;
@@ -897,7 +895,7 @@ typedef struct animation_s
 	int       initialLerp; // msec to get to first frame
 	int       reversed; // true if animation is reversed
 	int       flipflop; // true if animation should flipflop back to base
-} animation_t;
+};
 
 // flip the togglebit every time an animation
 // changes so a restart of the same anim can be detected
@@ -908,7 +906,7 @@ typedef struct animation_s
 #define TEAM_LOCATION_UPDATE_TIME 500
 
 // player classes
-typedef enum
+enum class_t
 {
   PCL_NONE,
 
@@ -932,24 +930,24 @@ typedef enum
   PCL_HUMAN_BSUIT,
 
   PCL_NUM_CLASSES
-} class_t;
+};
 // convenience bitmasks
 #define PCL_ALIEN_CLASSES ( ( 1 << PCL_HUMAN_NAKED ) - ( 1 << PCL_ALIEN_BUILDER0 ) )
 #define PCL_HUMAN_CLASSES ( ( 1 << PCL_NUM_CLASSES ) - ( 1 << PCL_HUMAN_NAKED ) )
 #define PCL_ALL_CLASSES   ( PCL_ALIEN_CLASSES | PCL_HUMAN_CLASSES )
 
 // spectator state
-typedef enum
+enum spectatorState_t
 {
   SPECTATOR_NOT,
   SPECTATOR_FREE,
   SPECTATOR_LOCKED,
   SPECTATOR_FOLLOW,
   SPECTATOR_SCOREBOARD
-} spectatorState_t;
+};
 
 // modes of text communication
-typedef enum
+enum saymode_t
 {
   SAY_ALL,
   SAY_TEAM,
@@ -964,13 +962,13 @@ typedef enum
   SAY_ALL_ME,
   SAY_TEAM_ME,
   SAY_DEFAULT = 99
-} saymode_t;
+};
 
 // means of death
 // keep modNames[] in g_combat.c in sync with this list!
 // keep bg_meansOfDeathData[] in bg_misc.c in sync, too!
 // TODO: Get rid of the former and use the latter instead
-typedef enum
+enum meansOfDeath_t
 {
   MOD_UNKNOWN,
   MOD_SHOTGUN,
@@ -1026,13 +1024,13 @@ typedef enum
   MOD_OVERMIND,
   MOD_DECONSTRUCT,
   MOD_REPLACE
-} meansOfDeath_t;
+};
 
 //---------------------------------------------------------
 
 #define BEACON_TIMER_TIME 3500
 
-typedef enum
+enum beaconType_t
 {
 	BCT_NONE = 0,
 
@@ -1054,14 +1052,14 @@ typedef enum
 	BCT_AMMO,
 
 	NUM_BEACON_TYPES
-} beaconType_t;
+};
 
-typedef enum
+enum beaconConflictHandler_t
 {
 	BCH_NONE,
 	BCH_REMOVE,
 	BCH_MOVE
-} beaconConflictHandler_t;
+};
 
 // beacon flags
 #define BCF_RESERVED      0x0001 // generated automatically, not created by players
@@ -1073,7 +1071,7 @@ typedef enum
 #define BCF_PRECISE       0x0010 // place exactly at crosshair
 #define BCF_IMPORTANT     0x0020 // display at 100% alpha
 
-typedef struct
+struct beaconAttributes_t
 {
 	beaconType_t  number;
 	int           flags;
@@ -1090,12 +1088,12 @@ typedef struct
 #endif
 
 	int           decayTime;
-} beaconAttributes_t;
+};
 
 //---------------------------------------------------------
 
 // player class record
-typedef struct
+struct classAttributes_t
 {
 	class_t  number;
 
@@ -1141,9 +1139,9 @@ typedef struct
 
 	int      cost;
 	int      value;
-} classAttributes_t;
+};
 
-typedef struct
+struct classModelConfig_t
 {
 	char   modelName[ MAX_QPATH ];
 	float  modelScale;
@@ -1165,12 +1163,12 @@ typedef struct
 
 	class_t navMeshClass; // if not PCL_NONE, which model's navmesh to use
 	int     navHandle;
-} classModelConfig_t;
+};
 
 #define MAX_BUILDABLE_MODELS 3
 
 // buildable item record
-typedef struct
+struct buildableAttributes_t
 {
 	buildable_t number;
 
@@ -1209,9 +1207,9 @@ typedef struct
 
 	bool    transparentTest;
 	bool    uniqueTest;
-} buildableAttributes_t;
+};
 
-typedef struct
+struct buildableModelConfig_t
 {
 	char   models[ MAX_BUILDABLE_MODELS ][ MAX_QPATH ];
 
@@ -1222,10 +1220,10 @@ typedef struct
 	float  zOffset;
 	float  oldScale;
 	float  oldOffset;
-} buildableModelConfig_t;
+};
 
 // weapon record
-typedef struct
+struct weaponAttributes_t
 {
 	weapon_t number;
 
@@ -1259,10 +1257,10 @@ typedef struct
 	bool longRanged;
 
 	team_t   team;
-} weaponAttributes_t;
+};
 
 // upgrade record
-typedef struct
+struct upgradeAttributes_t
 {
 	upgrade_t number;
 
@@ -1281,10 +1279,10 @@ typedef struct
 	bool  usable;
 
 	team_t    team;
-} upgradeAttributes_t;
+};
 
 // missile record
-typedef struct
+struct missileAttributes_t
 {
 	// attributes
 	missile_t      number;
@@ -1337,7 +1335,7 @@ typedef struct
 	qhandle_t      impactMarkSize;
 	sfxHandle_t    impactSound[ 4 ];
 	sfxHandle_t    impactFleshSound[ 4 ];
-} missileAttributes_t;
+};
 
 // bg_utilities.c
 bool BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
@@ -1436,19 +1434,19 @@ void                      BG_ParseBeaconAttributeFile( const char *filename, bea
 // bg_teamprogress.c
 #define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES
 
-typedef enum
+enum unlockableType_t
 {
 	UNLT_WEAPON,
 	UNLT_UPGRADE,
 	UNLT_BUILDABLE,
 	UNLT_CLASS,
 	UNLT_NUM_UNLOCKABLETYPES
-} unlockableType_t;
+};
 
-typedef struct {
+struct momentumThresholdIterator_t {
 	int num;
 	int threshold;
-} momentumThresholdIterator_t;
+};
 
 void     BG_InitUnlockackables();
 void     BG_ImportUnlockablesFromMask( int team, int mask );
@@ -1467,9 +1465,6 @@ void     G_UpdateUnlockables();
 #ifdef BUILD_CGAME
 void     CG_UpdateUnlockables( playerState_t *ps );
 #endif
-#ifdef BUILD_UI
-void     UI_UpdateUnlockables();
-#endif
 
 // content masks
 #define MASK_ALL         ( -1 )
@@ -1482,10 +1477,7 @@ void     UI_UpdateUnlockables();
 #define MASK_ENTITY      ( CONTENTS_MOVER )
 
 void     *BG_Alloc( size_t size );
-void     BG_InitMemory();
 void     BG_Free( void *ptr );
-void     BG_DefragmentMemory();
-void     BG_MemoryInfo();
 
 void     BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
 void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
@@ -1497,9 +1489,6 @@ void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_
 
 #define MAX_ARENAS      1024
 #define MAX_ARENAS_TEXT 8192
-
-#define MAX_BOTS        1024
-#define MAX_BOTS_TEXT   8192
 
 float    atof_neg( char *token, bool allowNegative );
 int      atoi_neg( char *token, bool allowNegative );
@@ -1517,27 +1506,22 @@ bool BG_BuildableDisabled( int buildable );
 
 weapon_t BG_PrimaryWeapon( int stats[] );
 
-// Friendly Fire Flags
-#define FFF_HUMANS             1
-#define FFF_ALIENS             2
-#define FFF_BUILDABLES         4
-
 // bg_voice.c
 #define MAX_VOICES             8
 #define MAX_VOICE_NAME_LEN     16
 #define MAX_VOICE_CMD_LEN      16
 #define VOICE_ENTHUSIASM_DECAY 0.5f // enthusiasm lost per second
 
-typedef enum
+enum voiceChannel_t
 {
   VOICE_CHAN_ALL,
   VOICE_CHAN_TEAM,
   VOICE_CHAN_LOCAL,
 
   VOICE_CHAN_NUM_CHANS
-} voiceChannel_t;
+};
 
-typedef struct voiceTrack_s
+struct voiceTrack_t
 {
 #ifdef BUILD_CGAME
 	sfxHandle_t         track;
@@ -1548,22 +1532,22 @@ typedef struct voiceTrack_s
 	int                 team;
 	int                 pClass;
 	int                 weapon;
-	struct voiceTrack_s *next;
-} voiceTrack_t;
+	voiceTrack_t        *next;
+};
 
-typedef struct voiceCmd_s
+struct voiceCmd_t
 {
 	char              cmd[ MAX_VOICE_CMD_LEN ];
 	voiceTrack_t      *tracks;
-	struct voiceCmd_s *next;
-} voiceCmd_t;
+	voiceCmd_t        *next;
+};
 
-typedef struct voice_s
+struct voice_t
 {
 	char           name[ MAX_VOICE_NAME_LEN ];
 	voiceCmd_t     *cmds;
-	struct voice_s *next;
-} voice_t;
+	voice_t        *next;
+};
 
 voice_t      *BG_VoiceInit();
 void         BG_PrintVoices( voice_t *voices, int debugLevel );
@@ -1584,10 +1568,10 @@ const char *BG_TeamNamePlural( int team );
 
 team_t BG_PlayableTeamFromString( const char* s );
 
-typedef struct
+struct dummyCmd_t
 {
 	const char *name;
-} dummyCmd_t;
+};
 int cmdcmp( const void *a, const void *b );
 
 char *Quote( const char *str );

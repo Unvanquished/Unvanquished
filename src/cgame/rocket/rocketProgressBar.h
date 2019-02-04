@@ -41,13 +41,13 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
-typedef enum
+enum progressBarOrientation_t
 {
 	LEFT,
 	RIGHT,
 	UP,
 	DOWN
-} progressBarOrientation_t;
+};
 
 class RocketProgressBar : public Rocket::Core::Element
 {

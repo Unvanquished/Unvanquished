@@ -1505,7 +1505,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	contents = trap_PointContents( entity_origin, -1 );
 
-	// Prepare replacment of other buildables.
+	// Prepare replacement of other buildables.
 	itemBuildError_t replacementError;
 	if ( ( replacementError = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
 	{
@@ -1576,7 +1576,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 					break;
 
 				default:
-					Com_Error( errorParm_t::ERR_FATAL, "No reason for denying build of %d", buildable );
+					Sys::Error( "No reason for denying build of %d", buildable );
 					break;
 			}
 		}

@@ -32,7 +32,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active );
 
 /*
 ===============
-G_DamageFeedback
+P_DamageFeedback
 
 Called just before a snapshot is sent to the given player.
 Totals up all damage and generates both the player_state_t

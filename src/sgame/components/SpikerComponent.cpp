@@ -7,7 +7,7 @@ constexpr int   COOLDOWN = 5000;
 /** Shoot prematurely whenever this much damage is expected. */
 constexpr float DAMAGE_THRESHOLD = 60.0f;
 /** Total number of missiles to shoot. Some might be skipped if they endanger allies.
- *  Actual values is +/- SPIKER_MISSILEROWS. */
+ *  Actual values is +/- MISSILEROWS. */
 constexpr int   MISSILES = 26;
 /** Number of rows from which to launch spikes. */
 constexpr int   MISSILEROWS = 4;

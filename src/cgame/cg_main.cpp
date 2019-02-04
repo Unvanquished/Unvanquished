@@ -157,8 +157,6 @@ vmCvar_t        ui_voteActive;
 vmCvar_t        ui_alienTeamVoteActive;
 vmCvar_t        ui_humanTeamVoteActive;
 vmCvar_t        ui_unlockables;
-vmCvar_t        ui_momentumHalfLife;
-vmCvar_t        ui_unlockablesMinTime;
 
 vmCvar_t        cg_debugRandom;
 
@@ -167,7 +165,6 @@ vmCvar_t        cg_projectileNudge;
 
 vmCvar_t        cg_voice;
 
-vmCvar_t        cg_emoticons;
 vmCvar_t        cg_emoticonsInMessages;
 
 vmCvar_t        cg_chatTeamPrefix;
@@ -190,13 +187,15 @@ vmCvar_t        cg_fov_human;
 vmCvar_t        ui_chatPromptColors;
 vmCvar_t        cg_sayCommand;
 
-typedef struct
+namespace {
+struct cvarTable_t
 {
 	vmCvar_t   *vmCvar;
 	const char *cvarName;
 	const char *defaultString;
 	int        cvarFlags;
-} cvarTable_t;
+};
+} //namespace
 
 static const cvarTable_t cvarTable[] =
 {
@@ -294,12 +293,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_buildableRangeMarkerMask,    "cg_buildableRangeMarkerMask",    "",             0                            },
 	{ &cg_binaryShaderScreenScale,     "cg_binaryShaderScreenScale",     "1.0",          0                            },
 
-	{ &cg_hudFiles,                    "cg_hudFiles",                    "ui/hud.txt",   0                            },
-	{ &cg_hudFilesEnable,              "cg_hudFilesEnable",              "0",            0                            },
-	{ nullptr,                            "cg_alienConfig",                 "",             0                            },
-	{ nullptr,                            "cg_humanConfig",                 "",             0                            },
-	{ nullptr,                            "cg_spectatorConfig",             "",             0                            },
-
 	{ &cg_painBlendUpRate,             "cg_painBlendUpRate",             "10.0",         0                            },
 	{ &cg_painBlendDownRate,           "cg_painBlendDownRate",           "0.5",          0                            },
 	{ &cg_painBlendMax,                "cg_painBlendMax",                "0.7",          0                            },
@@ -330,7 +323,6 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
 
-	{ &cg_emoticons,                   "cg_emoticons",                   "1",            CVAR_LATCH                   },
 	{ &cg_emoticonsInMessages,         "cg_emoticonsInMessages",         "0",            0                            },
 
 	{ &cg_animSpeed,                   "cg_animspeed",                   "1",            CVAR_CHEAT                   },
@@ -370,14 +362,6 @@ void CG_RegisterCvars()
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 		                    cv->defaultString, cv->cvarFlags );
 	}
-}
-
-int FloatAsInt( float f )
-{
-	floatint_t fi;
-
-	fi.f = f;
-	return fi.i;
 }
 
 
@@ -1216,7 +1200,7 @@ static void CG_RegisterGraphics()
 
 	if ( cgs.numInlineModels > MAX_SUBMODELS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
+		Sys::Drop( "MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS );
 	}
 
 	for ( i = 1; i < cgs.numInlineModels; i++ )
@@ -1403,7 +1387,7 @@ const char *CG_ConfigString( int index )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error(errorParm_t::ERR_DROP,  "CG_ConfigString: bad index: %i", index );
+		Sys::Drop( "CG_ConfigString: bad index: %i", index );
 	}
 
 	return cgs.gameState[index].c_str();
@@ -1518,7 +1502,7 @@ void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs g
 	s = CG_ConfigString( CS_GAME_VERSION );
 
 //   if( strcmp( s, GAME_VERSION ) )
-//     Com_Error(errorParm_t::ERR_DROP,  "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+//     Sys::Drop( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );

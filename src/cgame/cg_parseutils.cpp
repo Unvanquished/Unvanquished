@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "cg_local.h"
+#include "shared/parse.h"
 
 /*
 =================
@@ -40,7 +41,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 
 	filename[ 0 ] = '\0';
 	line = 0;
-	trap_Parse_SourceFileAndLine( handle, filename, &line );
+	Parse_SourceFileAndLine( handle, filename, &line );
 
 	Log::Warn( "%s, line %d: %s", filename, line, string );
 }
@@ -63,7 +64,7 @@ void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 
 	filename[ 0 ] = '\0';
 	line = 0;
-	trap_Parse_SourceFileAndLine( handle, filename, &line );
+	Parse_SourceFileAndLine( handle, filename, &line );
 
 	Log::Warn( "%s, line %d: %s", filename, line, string );
 }
@@ -117,15 +118,13 @@ bool Float_Parse( const char **p, float *f )
 
 #define MAX_EXPR_ELEMENTS 32
 
-typedef enum
+enum exprType_t
 {
-  EXPR_OPERATOR,
-  EXPR_VALUE
-}
+	EXPR_OPERATOR,
+	EXPR_VALUE
+};
 
-exprType_t;
-
-typedef struct exprToken_s
+struct exprToken_t
 {
 	exprType_t type;
 	union
@@ -133,17 +132,13 @@ typedef struct exprToken_s
 		char  op;
 		float val;
 	} u;
-}
+};
 
-exprToken_t;
-
-typedef struct exprList_s
+struct exprList_t
 {
 	exprToken_t l[ MAX_EXPR_ELEMENTS ];
 	int         f, b;
-}
-
-exprList_t;
+};
 
 /*
 =================
@@ -232,7 +227,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 	stack.f = fifo.f = 0;
 	stack.b = fifo.b = -1;
 
-	while ( trap_Parse_ReadToken( handle, &token ) )
+	while ( Parse_ReadTokenHandle( handle, &token ) )
 	{
 		if ( !unmatchedParentheses && token.string[ 0 ] == ')' )
 		{
@@ -242,7 +237,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 		// Special case to catch negative numbers
 		if ( expectingNumber && token.string[ 0 ] == '-' )
 		{
-			if ( !trap_Parse_ReadToken( handle, &token ) )
+			if ( !Parse_ReadTokenHandle( handle, &token ) )
 			{
 				return false;
 			}
@@ -367,7 +362,7 @@ static bool PC_Expression_Parse( int handle, float *f )
 					break;
 
 				default:
-					Com_Error( errorParm_t::ERR_FATAL, "Unknown operator '%c' in postfix string", op );
+					Sys::Error( "Unknown operator '%c' in postfix string", op );
 			}
 
 			PUSH_VAL( stack, result );
@@ -400,7 +395,7 @@ bool PC_Float_Parse( int handle, float *f )
 	pc_token_t token;
 	int        negative = false;
 
-	if ( !trap_Parse_ReadToken( handle, &token ) )
+	if ( !Parse_ReadTokenHandle( handle, &token ) )
 	{
 		return false;
 	}
@@ -412,7 +407,7 @@ bool PC_Float_Parse( int handle, float *f )
 
 	if ( token.string[ 0 ] == '-' )
 	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
+		if ( !Parse_ReadTokenHandle( handle, &token ) )
 		{
 			return false;
 		}
@@ -515,7 +510,7 @@ bool PC_Int_Parse( int handle, int *i )
 	pc_token_t token;
 	int        negative = false;
 
-	if ( !trap_Parse_ReadToken( handle, &token ) )
+	if ( !Parse_ReadTokenHandle( handle, &token ) )
 	{
 		return false;
 	}
@@ -537,7 +532,7 @@ bool PC_Int_Parse( int handle, int *i )
 
 	if ( token.string[ 0 ] == '-' )
 	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
+		if ( !Parse_ReadTokenHandle( handle, &token ) )
 		{
 			return false;
 		}
@@ -587,50 +582,6 @@ bool Rect_Parse( const char **p, rectDef_t *r )
 
 /*
 =================
-PC_Rect_Parse
-=================
-*/
-bool PC_Rect_Parse( int handle, rectDef_t *r )
-{
-	if ( PC_Float_Parse( handle, &r->x ) )
-	{
-		if ( PC_Float_Parse( handle, &r->y ) )
-		{
-			if ( PC_Float_Parse( handle, &r->w ) )
-			{
-				if ( PC_Float_Parse( handle, &r->h ) )
-				{
-					return true;
-				}
-			}
-		}
-	}
-
-	return false;
-}
-
-/*
-=================
-String_Parse
-=================
-*/
-bool String_Parse( const char **p, const char **out )
-{
-	char *token;
-
-	token = COM_ParseExt( p, false );
-
-	if ( token && token[ 0 ] != 0 )
-	{
-		* ( out ) = BG_strdup( token );
-		return true;
-	}
-
-	return false;
-}
-
-/*
-=================
 PC_String_Parse
 =================
 */
@@ -638,7 +589,7 @@ bool PC_String_Parse( int handle, const char **out )
 {
 	pc_token_t token;
 
-	if ( !trap_Parse_ReadToken( handle, &token ) )
+	if ( !Parse_ReadTokenHandle( handle, &token ) )
 	{
 		return false;
 	}
@@ -646,90 +597,4 @@ bool PC_String_Parse( int handle, const char **out )
 	* ( out ) = BG_strdup( token.string );
 
 	return true;
-}
-
-bool PC_String_ParseTranslate( int handle, const char **out )
-{
-	pc_token_t token;
-
-	if ( !trap_Parse_ReadToken( handle, &token ) )
-	{
-		return false;
-	}
-
-	* ( out ) = BG_strdup( _(token.string) );
-
-	return true;
-}
-
-
-/*
-================
-PC_Char_Parse
-================
-*/
-bool PC_Char_Parse( int handle, char *out )
-{
-	pc_token_t token;
-
-	if ( !trap_Parse_ReadToken( handle, &token ) )
-	{
-		return false;
-	}
-
-	*out = token.string[ 0 ];
-
-	return true;
-}
-
-/*
-=================
-PC_Script_Parse
-=================
-*/
-bool PC_Script_Parse( int handle, const char **out )
-{
-	char       script[ 1024 ];
-	pc_token_t token;
-
-	memset( script, 0, sizeof( script ) );
-	// scripts start with { and have ; separated command lists.. commands are command, arg..
-	// basically we want everything between the { } as it will be interpreted at run time
-
-	if ( !trap_Parse_ReadToken( handle, &token ) )
-	{
-		return false;
-	}
-
-	if ( Q_stricmp( token.string, "{" ) != 0 )
-	{
-		return false;
-	}
-
-	while ( 1 )
-	{
-		if ( !trap_Parse_ReadToken( handle, &token ) )
-		{
-			return false;
-		}
-
-		if ( Q_stricmp( token.string, "}" ) == 0 )
-		{
-			*out = BG_strdup( script );
-			return true;
-		}
-
-		if ( token.string[ 1 ] != '\0' )
-		{
-			Q_strcat( script, 1024, va( "\"%s\"", token.string ) );
-		}
-		else
-		{
-			Q_strcat( script, 1024, token.string );
-		}
-
-		Q_strcat( script, 1024, " " );
-	}
-
-	return false;
 }
