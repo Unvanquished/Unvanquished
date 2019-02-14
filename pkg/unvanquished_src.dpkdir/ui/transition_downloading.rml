@@ -17,8 +17,8 @@
 				height: 1em;
 
 				position: absolute;
-				left: 0;
-				bottom: 0px;
+				left: 0em;
+				bottom: 0em;
 
 				background-color: #00000000;
 			}
@@ -40,11 +40,11 @@
 				text-align: right;
 
 				color: white;
-				font-size: 18px;
+				font-size: 1.5em;
 				font-weight: bold;
 			}
 			div.infobox {
-				font-size: 18px;
+				font-size: 1.5em;
 				position: absolute;
 				width: 90%;
 				left: 5%;

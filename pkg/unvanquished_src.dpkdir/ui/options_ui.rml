@@ -4,7 +4,7 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 
 	</head>
-	<body id="options_ui" template="window" style="width: 32em; margin: 10%;">
+	<body id="options_ui" template="window" style="width: 32em; margin: 1em;">
 		<h1> User Interface </h1>
 
 

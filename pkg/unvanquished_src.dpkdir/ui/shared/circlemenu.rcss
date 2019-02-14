@@ -1,13 +1,12 @@
 /* circlemenu */
 
-
 .circlemenu tab{
 	width: 8%;
 	color:#83fff5;
 	white-space: nowrap;
 
-	padding:5px 20px 0px 20px ;
-	margin:10px;
+	padding: .4em 1.6em 0em 1.6em;
+	margin: .8em;
 }
 
 .circlemenu panel{
@@ -16,9 +15,9 @@
 }
 
 .circlemenu tab:selected{
-	font-size:2em;
+	font-size: 1.5em;
 	border-bottom-style:solid;
-	border-bottom-width:3px;
+	border-bottom-width: .1em;
 	border-bottom-color:#83fff5;
 }
 
@@ -26,7 +25,7 @@ tabset.circlemenu tabs{
 	z-index: 1;
 	text-align:left;
 	position: absolute;
-	margin-top:30px;
+	margin-top: 2.5em;
 	padding-left:15%;
 }
 
@@ -35,20 +34,20 @@ circlemenu
 	display: block;
 	width: 100%;
 	margin-left:-17%;
-	margin-top:30px;
+	margin-top: 1em;
 	position:absolute;
-	height: 500px;
-	radius: 130px;
+	height: 130%;
+	radius: 14em;
 	vertical-align: middle;
 	text-align: center;
 }
 
 .circlemenu button, .circlemenu button:hover
 {
-	margin-left:-20px;
+	margin-left: -2.6em;
 	display: block;
-	width:100px;
-	height:100px;
+	width: 6.7em;
+	height: 6.7em;
 	vertical-align: middle;
 	text-align:center;
 	icon-decorator: image;
@@ -56,7 +55,6 @@ circlemenu
 }
 .circlemenu button:hover, .circlemenu button:active, .circlemenu button:focus{
 	icon-image: /ui/assets/circlemenu/circle-hover.png;
-
 }
 
 .circlemenu button.disabled, .circlemenu button.disabled:hover,
@@ -75,10 +73,10 @@ circlemenu
 }
 
 .circlemenu button.cancelButton{
-	width:180px;
-	height:180px;
+	width: 9em;
+	height: 9em;
 
-	line-height:170px;
+	line-height: 7.8em;
 }
 
 .circlemenu button:hover
@@ -89,7 +87,7 @@ circlemenu
 .circlemenu button img
 {
 	display: block;
-	width: 50px;
-	height: 50px;
+	width: 4.2em;
+	height: 4.2em;
 	margin: auto;
 }

@@ -26,8 +26,8 @@
 				height: 1em;
 
 				position: absolute;
-				left: 0;
-				bottom: 0px;
+				left: 0em;
+				bottom: 0em;
 
 				background-color: #00000000;
 			}
@@ -49,7 +49,7 @@
 				text-align: right;
 
 				color: white;
-				font-size: 18px;
+				font-size: 1.5em;
 				font-weight: bold;
 				/* Dejavu has monospaced numbers, but Roboto does not
 				   This stops the the percentage number "jiggling" left and right */
@@ -58,7 +58,7 @@
 			infobox {
 				display:block;
 				position: absolute;
-				left: 0;
+				left: 0em;
 				bottom: 10em;
 				text-align: center;
 			}

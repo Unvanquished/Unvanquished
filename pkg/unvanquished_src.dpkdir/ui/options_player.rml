@@ -4,14 +4,14 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 
 	</head>
-	<body id="options_player"  template="window" style="width: 50em; margin: 10%;">
+	<body id="options_player"  template="window" style="width: 45em; margin: 1em;">
 		<h1>Player Setup</h1>
 
 		<h2> Personal </h2>
 		<row>
 			<colorinput type="text" cvar="name" style="overflow: hidden; white-space: pre;"/>
 			<h3>Nickname</h3>
-			<p>Your name visible to others.  </p>
+			<p>Your name visible to others.</p>
 			<p><ilink onClick='Events.pushevent("show help_textentry", event)'>Colours and symbols</ilink> can be used.</p>
 		</row>
 		<row>
@@ -23,7 +23,6 @@
 			<input cvar="cg_teamChatsOnly" type="checkbox" />
 			<h3>Show only team chat</h3>
 		</row>
-
 
 		<h2> Movement </h2>
 		<row>

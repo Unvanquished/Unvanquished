@@ -4,8 +4,11 @@
 		<style>
 			body
 			{
+				<!-- game overwrites this>
 				width: 20px;
 				height: 28px;
+				<!-- / game overwrites this>
+
 				<!-- Add a simple image decorator onto the body element. -->
 				cursor-decorator: image;
 				cursor-image: /ui/assets/cursor.png 0px 0px 61px 81px;
