@@ -4,7 +4,7 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 
 	</head>
-	<body id="options_keys" template="window" style="width: 32em; margin: 10%;">
+	<body id="options_keys" template="window" style="width: 40em; margin: 1em;">
 		<h1> Key Bindings </h1>
 
 		<p> Press Escape to cancel changing a key binding. </p>

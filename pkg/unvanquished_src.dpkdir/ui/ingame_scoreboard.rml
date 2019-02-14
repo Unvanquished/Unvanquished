@@ -26,16 +26,19 @@
 			margin-right: 1em;
 			overflow: auto;
 		}
+
 		teambox.alien {
 			background-color: #FF2B2630;
 			width: 23em;
 			height: 25em;
 		}
+
 		teambox.human {
 			background-color: #26ABFF30;
 			width: 23em;
 			height: 25em;
 		}
+
 		teambox.spec {
 			background-color: rgba( 30%, 30%, 30%, 40%);
 			height: 3em;
@@ -63,6 +66,7 @@
 			width: 100%;
 			padding: 0.5em;
 		}
+
 		infopiece
 		{
 			display: block;
@@ -77,9 +81,11 @@
                         padding-top: 0.1em;
                         padding-bottom: 0.1em;
 		}
+
                 datagridrow, datagridheader {
                         padding-right: 0.2em;
                 }
+
 		datagridrow:nth-child(odd) {
 			background: rgba( 50%, 50%, 50%, 20%);
 		}
@@ -87,28 +93,32 @@
                 datagridcell, datagridcolumn {
                         overflow: hidden;
                         width: 100%;
-                        margin: 0;
-                        padding: 0;
+                        margin: 0em;
+                        padding: 0em;
                 }
+
 		datagridcell:nth-child(1), datagridcolumn:nth-child(1) {
                         max-width: 14%;
                         position: relative;
                         bottom: 0.1em;
                 }
+
 		datagridcell:nth-child(2), datagridcolumn:nth-child(2) {
 			/* Name cell */
 			text-align: left;
-			max-width: 56%;
+			max-width: 51%;
 			white-space: pre;
 		}
+
                 datagridcell:nth-child(n+3), datagridcolumn:nth-child(n+3) {
                         text-align: right;
-                        max-width: 10%;
+                        max-width: 11%;
                 }
 
 		datagridcell {
 			text-align: center;
 		}
+
 		datagridcolumn {
 			text-align: left;
                         padding-top: 0.25em;

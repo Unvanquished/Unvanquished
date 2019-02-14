@@ -10,7 +10,7 @@ jetpack
 {
 	position: fixed;
 	float: left;
-	bottom: 0px;
+	bottom: 0em;
 	width: 25%;
 	height: 20%;
 }
@@ -35,7 +35,7 @@ img
 }
 jetpack.inactive
 {
-	opacity: 0;
+	opacity: 0em;
 }
 jetpack.active
 {

@@ -8,7 +8,7 @@ body {
 
 	/* Global font default size */
 	font-family: Roboto;
-	font-size: 16px;
+	font-size: 1.5em;
 	color: #999999;
 }
 
@@ -18,33 +18,32 @@ p {
 }
 
 p.example {
-	font-size: 15px;
+	font-size: 1.5em;
 	text-align: center;
 	color: #666666;
 }
 
 h1 {
 	display: block;
-	font-size: 25px;
+	font-size: 1.65em;
 	font-family: Dejavu Sans;
 	font-weight: bold;
 	text-align: right;
 	color: #666666;
-
-	border-bottom: 1px #666666;
+	border-bottom: .08em #666666;
 }
 
 h2 {
 	display: block;
-	font-size: 20px;
-	margin-top: 1em;
+	font-size: 1.6em;
+	margin-top: .5em;
 	color: #666666;
 }
 
 h3 {
 	display: block;
 	color:white;
-	height: 1.5em; /* Same as input boxes */
+	height: 1.3em; /* Same as input boxes */
 }
 
 indent {
@@ -57,7 +56,6 @@ indent {
 /* Inline */
 ilink {
 	color:#136D67;   /* Dark cyan */
-
 	tab-index: auto;
 
 }
@@ -68,7 +66,6 @@ ilink:hover{
 /* Block-style link, used in main menu */
 blocklink {
 	display: block;
-
 	color:#999999;
 	tab-index: auto;
 
@@ -83,20 +80,20 @@ blocklink.fake:hover{
 
 /* ##### Scroll-bars #### */
 scrollbarvertical{
-
-	width: 15px;
-	margin-right: -15px;
+	width: .8em;
+	margin-right: -.8em;
+	/* window's border-right is .17em but makes it a bit larger to
+	   fill the empty pixel that can appear at some resolution */
+	margin-left: -.18em;
 	background-color: rgba(0,0,0,0);
 }
 
 scrollbarvertical sliderbar{
 	background-color: #136D6788;   /* Dark cyan */
-
 }
 
 scrollbarvertical sliderbar:hover{
 	background-color: #00F8FF44;   /* Bright cyan */
-
 }
 
 /* #### Useful classes #### */
@@ -122,7 +119,7 @@ img.trem-emoticon {
 
 .material-icon {
 	font-family: Material Icons;
-	height: 1.0em;
+	height: 1em;
 	width: auto;
 	margin-top: auto;
 	margin-bottom: auto;

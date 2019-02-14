@@ -1,9 +1,7 @@
 <rml>
 <head>
 	<link type="text/rcss" href="/ui/shared/basics.rcss" />
-
 	<style>
-
 		body{
 			width:100%;
 			height: 100%;
@@ -14,42 +12,47 @@
 			position: fixed;
 			display: block;
 		}
+
 		region.topright {
-			top:0;
-			right:0;
+			top: 0em;
+			right: 0em;
 
 			text-align: right;
 			width: 50em;
 			height: 25em;
 		}
+
 		region.votes {
 			bottom: 35%;
 			text-align: left;
 			width: 40%;
-			left: 0.5em;
+			left: .5em;
 		}
+
 		region.tutorial {
 			bottom: 21%;
 			text-align: left;
 			width: 40%;
-			left: 0.5em;
+			left: .5em;
 		}
+
 		region.crosshair {
 			width: 100%;
 			height: 100%;
 			position: absolute;
 			text-align: center;
 		}
+
 		region.speedo
 		{
 			position: absolute;
-			bottom: 8em;
+			bottom: 38%;
 			margin-left: auto;
 			margin-right: auto;
 			width: 8%;
 			height: 4%;
 			text-align: center;
-			font-size: 16;
+			font-size: 1.4em;
 			background-color: #1E1E1E1E;
 		}
 
@@ -71,14 +74,16 @@
 
 			background-color: black;
 		}
+
 		statsbox {
 			display: block;
 			width: 25em;
 			height: 12em;
-			padding: 0.5em;
+			padding: .5em;
 
 			float:right;
 		}
+
 		stat {
 			display: block;
 		}
@@ -100,6 +105,7 @@
 			color: #FFFFFF77;  /* Transparency */
 
 		}
+
 		crosshair_name
 		{
 			display: block;
@@ -118,16 +124,18 @@
 			display: block;
 			position: absolute;
 			bottom: 6em;
-			left: 0;
+			left: 0em;
 			width: 100%;
 			text-align: center;
 			font-size: 1.5em;
 		}
+
 		speedometer
 		{
 			width: 100%;
 			height: 100%;
 		}
+
 		speedometer span
 		{
 			margin: auto auto;
@@ -143,21 +151,20 @@
 
 		beacon_name
 		{
-			font-size: 150%;
+			font-size: 1.5em;
 		}
 
 		beacon_icon {
 			display:  inline;
 			width:    3em;
 			height:   3em;
-			margin-right: 0.5em;
+			margin-right: .5em;
 		}
 
 		.trem-emoticon
 		{
 			height: 1.1em;
 		}
-
 	</style>
 </head>
 
@@ -188,7 +195,6 @@
 		</statsbox>
 	</region>
 
-
 	<region class="votes">
 		<p><votes /></p>
 		<p><votes_team /></p>
@@ -197,15 +203,12 @@
 		<tutorial />
 	</region>
 
-
 	<region class="crosshair">
 		<crosshair/>
 		<crosshair_indicator/>
 		<crosshair_name/>
 		<follow/>
 	</region>
-
-
 
 	<if cvar="cg_drawSpeed" condition="!=" value="0">
 		<!-- Do we need this if? -->
