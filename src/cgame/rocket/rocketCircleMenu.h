@@ -370,9 +370,12 @@ protected:
 			float y = sin( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
 			float x = cos( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
 
+			// This gets 12px on 1920×1080 screen, which is libRocket default for 1em
+			int fontSize = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight) / 90;
+
 			child->SetProperty( "position", "absolute" );
-			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x ) );
-			child->SetProperty( "top", va( "%fpx", ( dimensions.y / 2 ) - ( height / 2 ) + offset.y + y ) );
+			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x * fontSize ) );
+			child->SetProperty( "top", va( "%fpx", ( dimensions.y / 2 ) - ( height / 2 ) + offset.y + y * fontSize ) );
 		}
 	}
 
