@@ -60,8 +60,16 @@ void Rocket_LoadDocument( const char *path )
 void Rocket_LoadCursor( const char *path )
 {
 	Rocket::Core::ElementDocument* document = menuContext->LoadMouseCursor( path );
+
 	if( document )
 	{
+		// This gets 12px on 1920×1080 screen, which is libRocket default for 1em
+		int fontSize = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight) / 90;
+
+		// 1.6×2.3em ≈ 20×28px on 1920×1080 screen
+		document->SetProperty( "width", va( "%fpx", 1.6 * fontSize ) );
+		document->SetProperty( "height", va( "%fpx", 2.3 * fontSize ) );
+
 		document->RemoveReference();
 	}
 }
