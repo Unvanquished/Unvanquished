@@ -13,10 +13,8 @@
 				width: 48em;
 			}
 
-
 			/* Datagrid for server list */
 			datagrid{
-
 				height:30em;
 				width:100%;
 				display:block;
@@ -27,7 +25,7 @@
 			}
 		</style>
 	</head>
-	<body id="serverbrowser" template="window" style="width: 60em; margin:10%;" onshow='Events.pushevent("init_servers internet;buildDS server_browser internet", event)' >
+	<body id="serverbrowser" template="window" style="width: 60em; margin: 10em;" onshow='Events.pushevent("init_servers internet;buildDS server_browser internet", event)' >
 
 		<h1>Server Listings</h1>
 		<tabset>
@@ -35,7 +33,7 @@
 			<tab>Internet</tab>
 			<panel>
 				<datagrid id="iServers" source="server_browser.internet">
-					<col fields="label" width="30px" class="label" formatter="ServerLabel"></col>
+					<col fields="label" width="2.5em" class="label" formatter="ServerLabel"></col>
 					<col fields="name" width="45%" class="name" ><ilink onClick='Events.pushevent("sortDS server_browser internet name", event)'>Name:</ilink></col>
 					<col fields="map" width="15%" class="map"><ilink onClick='Events.pushevent("sortDS server_browser internet map", event)'>Map:</ilink></col>
 					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><ilink onClick='Events.pushevent("sortDS server_browser internet players", event)'>Players (Bots)</ilink></col>
@@ -53,7 +51,7 @@
 			<tab onClick='Events.pushevent("init_servers local;buildDS server_browser local", event)'>LAN</tab>
 			<panel>
 				<datagrid source="server_browser.local">
-					<col fields="label" width="30px" class="label" formatter="ServerLabel"></col>
+					<col fields="label" width="2.5em" class="label" formatter="ServerLabel"></col>
 					<col fields="name" width="45%" class="name" >Name:</col>
 					<col fields="map" width="15%" class="map"><ilink onClick='Events.pushevent("sortDS server_browser local map", event)'>Map:</ilink></col>
 					<col fields="players,bots,maxClients" width="20%" formatter="ServerPlayers" class="players"><ilink onClick='Events.pushevent("sortDS server_browser local players", event)'>Players (Bots)</ilink></col>
@@ -68,8 +66,5 @@
 			</panel>
 
 		</tabset>
-
-
-
 	</body>
 </rml>

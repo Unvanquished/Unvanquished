@@ -30,7 +30,7 @@ div#timer
 div#rate
 {
 	position: absolute;
-	font-size: 16;
+	font-size: 1.3em;
 	height: 1.5em;
 	bottom: 0em;
 	left: 0em;

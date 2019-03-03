@@ -17,11 +17,8 @@
 		<img class="logo" src="/ui/assets/logos/fuzzy_blue" />
 
 		<sidebar>
-				<!-- HACK: Add some extra spacing atop the main menu if the screen res is high enough -->
-				<if cvar="r_customheight" condition=">" value="850">
-					<hackyspacer />
-				</if>
-
+				<!-- HACK: Add some extra spacing atop the main menu -->
+				<hackyspacer />
 
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
 				<window id="innersidebar" class="innersidebar">

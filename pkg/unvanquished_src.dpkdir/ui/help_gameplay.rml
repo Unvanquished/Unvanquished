@@ -16,7 +16,7 @@
 
 		</style>
 	</head>
-	<body template="window" id="help_gameplay" style="width:45em; margin: 10%;">
+	<body template="window" id="help_gameplay" style="width:45em; margin: 1em;">
 
 		<h1>Gameplay Guide</h1>
 		<tabset>

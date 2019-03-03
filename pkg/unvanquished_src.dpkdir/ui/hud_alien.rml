@@ -5,7 +5,6 @@
 		<style>
 			body
 			{
-				font-size: 46;
 				width: 100%;
 				height: 100%;
 			}
@@ -13,9 +12,9 @@
 			.speed_max, .speed_current
 			{
 				color: black;
-				font-size: 20;
-				padding: 25px;
-				margin: -65px;
+				font-size: 1.6em;
+				padding: 2em;
+				margin: -5.4em;
 			}
 			div.item_select img
 			{
@@ -23,8 +22,8 @@
 			}
 			div.item_select img.selected
 			{
-				width: 256px;
-				height: 256px;
+				width: 21.3em;
+				height: 21.3em;
 				color: black;
 			}
 			div.item_select img.inactive, div.item_select img.no_ammo
@@ -36,20 +35,20 @@
 				position: absolute;
 				width: 85%;
 				height: 85%;
-				top: 40px;
+				top: 4.8em;
 				margin-left: auto;
 				margin-right: auto;
 			}
 			div#barbs
 			{
 				position: absolute;
-				height: 100px;
-				width: 20px;
+				height: 8.3em;
+				width: 1.6em;
 			}
 			img.sides
 			{
-				width: 33px;
-				height: 33px;
+				width: 2.7em;
+				height: 2.7em;
 			}
 			#left img.sides,#right img.sides{
 				width:80%;
@@ -65,8 +64,8 @@
 				orientation: left;
 				width: 65%;
 				height: auto;
-				left: 0px;
-				bottom: 0px;
+				left: 0em;
+				bottom: 0em;
 			}
 			progressbar#poison-bar
 			{
@@ -75,8 +74,8 @@
 				orientation: right;
 				width: 65%;
 				height: auto;
-				right: 0px;
-				bottom: 0px;
+				right: 0em;
+				bottom: 0em;
 			}
 			wallwalk.wallwalking img.sides
 			{
@@ -87,14 +86,14 @@
 				display: block;
 			}
 			#left img.sides{
-				left:0px;
+				left:0em;
 				position:absolute;
-				bottom:0px;
+				bottom:0em;
 			}
 			#right img.sides{
-				right:0px;
+				right:0em;
 				position:absolute;
-				bottom:0px;
+				bottom:0em;
 			}
 			#right img.poison{
 				opacity: 0.2;
@@ -110,34 +109,33 @@
 			}
 			#left,#right{
 				display:block;
-				width:37%;
-				bottom:0px;
+				width: 35em;
+				height: 28em;
+				bottom: 0em;
 				position:absolute;
-				height:30%;
 			}
 			#left{
-				left:0px;
+				left:0em;
 			}
 			#right{
-				right:0px;
+				right:0em;
 			}
 
 			#health-icon{
 				position:absolute;
-				right:-1.3em;
-				top: 10px;
-				bottom:15%;
-				width:15%;
-				height:100%;
-				width: 1.3em;
+				right: -1.3em;
+				bottom: .09em;
+				width: 1.2em;
+				height: 1.2em;
 				color:#ff0000ff;
 			}
 			#health{
+				font-size: 5em;
 				color:#f02119;
 				position:absolute;
-				left:15%;
+				left:12.5%;
 				width: 20%;
-				bottom:15%;
+				bottom: .2em;
 				line-height:1.3em;
 				text-align: right;
 			}
@@ -150,17 +148,17 @@
 				color:#f500ffAA;
 			}
 
-			weapon_icon img{
+			weapon_icon img {
 				position:absolute;
-				right:27%;
-				bottom:20%;
-				width:15%;
+				right: 12.6em;
+				bottom: 3.9em;
+				width: 5.1em;
 				height:auto;
 				color:#ff0000ff;
 			}
 
 			#evos{
-				font-size:0.5em;
+				font-size: 2em;
 				position:absolute;
 				right:3%;
 				bottom:3%;
@@ -202,7 +200,7 @@
 				cell-color: #93141466;
 				color: #703030FF;
 
-				border-width: 0px;
+				border-width: 0em;
 			}
 
 			health, health_cross

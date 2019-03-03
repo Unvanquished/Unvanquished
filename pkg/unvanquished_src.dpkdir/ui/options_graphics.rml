@@ -25,7 +25,7 @@
 
 
 	</head>
-	<body id="options_graphics" template="window" style="width: 45em; margin: 10%;" onload='Events.pushevent("buildDS resolutions", event)'>
+	<body id="options_graphics" template="window" style="width: 45em; margin: 1em;" onload='Events.pushevent("buildDS resolutions", event)'>
 		<h1> Graphics </h1>
 
 		<tabset>
@@ -72,11 +72,6 @@
 						avoiding stuttering when the FPS drops.
 					</p>
 				</row>
-
-
-
-
-
 
 				<row>
 					<select cvar="r_ext_multisample">
@@ -240,7 +235,6 @@
 			<panel>
 				<h2> Building markers </h2>
 				<row>
-					<h3>Building ranges</h3>
 					<select cvar="cg_rangeMarkerBuildableTypes" style="width: 20em;">
 						<option value="none">None (disabled)</option>
 						<option value="all">All structures</option>
@@ -253,7 +247,7 @@
 						<option value="alienoffensive">Offensive alien structures</option>
 						<option value="humanoffensive">Offensive human structures</option>
 					</select>
-					<p></p>
+					<h3>Building ranges</h3>
 				</row>
 				<row>
 					<h3></h3>
