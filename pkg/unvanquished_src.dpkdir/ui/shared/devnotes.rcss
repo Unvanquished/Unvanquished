@@ -5,14 +5,14 @@ notebox {
    display: block;
 
    position: absolute;
-   width:200px;
-   left:-200px;
-   top:0px;
+   width: 16em;
+   left: -16em;
+   top: 0em;
 
    background-color: #aa5555aa;
 
    border-style: solid;
-   border-width: 2px;
+   border-width: .1em;
    border-color: red;
 
    padding: 1em;

@@ -15,14 +15,14 @@
 		{
 			width: 40%;
 			float: left;
-			margin-left: 0;
+			margin-left: 0em;
 		}
 
 		button.ckit
 		{
 			width: 40%;
 			float: right;
-			margin-right: 0;
+			margin-right: 0em;
 		}
 
 		button.teamselect

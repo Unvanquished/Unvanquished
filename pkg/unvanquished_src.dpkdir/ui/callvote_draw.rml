@@ -4,13 +4,9 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 
 		<style>
-
-
-
 		</style>
-
 	</head>
-	<body id="callvote_draw" template="window" style="width: 35em; margin: 10%;">
+	<body id="callvote_draw" template="window" style="width: 35em; margin: 1em;">
 		<h1> Call a vote for a draw </h1>
 
 		<form onsubmit='Events.pushevent("execForm \"callvote draw $reason$\"; hide", event)'>

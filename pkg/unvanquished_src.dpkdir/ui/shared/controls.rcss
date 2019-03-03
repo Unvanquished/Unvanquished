@@ -6,10 +6,14 @@
 colorinput, dataselect, select, input.text, input.checkbox, input.radio, input.range, keybind {
 	float: right;
 }
+
+colorinput, dataselect, select, input.text, input.range {
+	width: 12em;
+}
+
 selectvalue {
 	overflow: hidden;
 }
-
 
 /* #### Large input boxes. #### */
 colorinput, dataselect, select, input.text {
@@ -18,13 +22,11 @@ colorinput, dataselect, select, input.text {
 	padding-left: 0.5em;
 	vertical-align: middle;
 
-	width: 12em;
-
 	background-color: rgba( 0%, 0%, 0%, 50%);
 
 	/* FIXME: Borders don't work here */
 	border-style: solid;
-	border-width: 1px;
+	border-width: .1em;
 	border-color:  #FFFFFF;
 }
 
@@ -39,10 +41,10 @@ dataselect selectbox option
 {
 	/* FIXME: Borders don't work here */
 	border-style: solid;
-	border-width: 1px;
+	border-width: .1em;
 	border-color:  #FFFFFF;
 
-	padding: 2px;
+	padding: .16em;
 
 }
 
@@ -66,17 +68,14 @@ dataselect selectbox option:hover
 }
 
 
-
-
-
 /* #### Images for controls inside boxes #### */
 select selectarrow,
 dataselect selectarrow
 {
-	margin-right: 3px;
-	margin-top:3px;
-	width:20px;
-	height:20px;
+	margin-right: .03em;
+	margin-top: .06em;
+	width: 1.3em;
+	height: 1.5em;
 	icon-decorator: image;
 	icon-image: /ui/assets/widgets/select_dull;
 }
@@ -90,8 +89,9 @@ dataselect selectarrow:hover
 /* #### Simple small-box controls #### */
 input.checkbox
 {
-	width:25px;
-	height:25px;
+	width: 2.1em;
+	height: 2.1em;
+	margin-top: -.3em;
 	icon-decorator: image;
 	icon-image: /ui/assets/widgets/radio-check;
 	icon-image-s: 444px 666px;
@@ -99,9 +99,9 @@ input.checkbox
 }
 input.radio
 {
-
-	width:20px;
-	height:20px;
+	width: 2.1em;
+	height: 2.1em;
+	margin-top: -.3em;
 	icon-decorator: image;
 	icon-image: /ui/assets/widgets/radio-check 444px 0px 666px 222px;
 }
@@ -132,28 +132,29 @@ input.radio:checked, input.radio:checked:hover, input.radio.checked:active
 /* #### Sliders #### */
 
 input.range{
-
 }
+
 input.range slidertrack{
 	background:#83fff522;
 	border-style:solid;
-	border-width:1px;
+	border-width: .1em;
 	border-color:#83fff555;
-	height: 8px;
-	margin-top: 5px;
-	width: 50px;
+	height: .4em;
+	margin-top: .4em;
+	width: 4.1em;
 }
+
 input.range sliderbar{
 	border-style:solid;
-	border-width:1px;
+	border-width: .1em;
 	border-color:#83fff588;
 	background:#136D67;
-	height: 18px;
-	width: 10px;
+	height: 1.2em;
+	width: .6em;
 }
+
 input.range sliderbar:hover{
 	background:#00F8FF;   /* Bright cyan */
-
 }
 
 
@@ -165,7 +166,6 @@ keybind {
 	tab-index: auto;
 
 }
-
 
 
 /* #### Buttons #### */
@@ -183,11 +183,8 @@ button {
 	text-align: center;
 	padding: 0.3em;
 	margin: 0.5em;
-
-
 }
 
 button:hover{
 	background-color: #178079;   /* MED cyan */
 }
-

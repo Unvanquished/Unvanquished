@@ -15,7 +15,7 @@
 		{
 			width: 40%;
 			float: left;
-			margin-left: 0;
+			margin-left: 0em;
 			background-color: #6D131D;
 
 		}
@@ -28,7 +28,7 @@
 		{
 			width: 40%;
 			float: right;
-			margin-right: 0;
+			margin-right: 0em;
 			background-color: #131F6D;
 		}
 		button.human:hover
