@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int VM::VM_API_VERSION = CGAME_API_VERSION;
 
-void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState );
+void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState );
 void CG_Shutdown();
 
 void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
@@ -62,7 +62,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
             case CG_INIT:
-                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gamestate) {
+                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gamestate) {
                     CG_Init(serverMessageNum, clientNum, gl, gamestate);
                     cmdBuffer.TryFlush();
                 });

@@ -1442,7 +1442,7 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 
-void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState)
+void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState)
 {
 	const char *s;
 
