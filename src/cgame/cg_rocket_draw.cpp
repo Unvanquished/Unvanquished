@@ -3294,7 +3294,6 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 
 static void CG_Rocket_DrawVote_internal( team_t team )
 {
-	char   *s;
 	int    sec;
 
 	if ( !cgs.voteTime[ team ] )
@@ -3317,16 +3316,16 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 		sec = 0;
 	}
 
-	Rocket::Core::String yeskey = CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team );
-	Rocket::Core::String nokey = CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team );
+	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
+	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
 
-	s = va( "%sVOTE(%i): %s\n"
+	std::string s = Str::Format( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
 			"    [%s][<span class='material-icon'>&#xe8dc;</span>]:%i [%s][<span class='material-icon'>&#xe8db;</span>]:%i\n",
 			team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
-			cgs.voteCaller[ team ], yeskey.CString(), cgs.voteYes[ team ], nokey.CString(), cgs.voteNo[ team ] );
+			cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
-	Rocket_SetInnerRML( s, 0 );
+	Rocket_SetInnerRML( s.c_str(), 0 );
 }
 
 static void CG_Rocket_DrawVote()
