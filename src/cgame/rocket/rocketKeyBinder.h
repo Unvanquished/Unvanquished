@@ -98,7 +98,7 @@ public:
 		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.Empty() && !waitingForKeypress )
 		{
 			nextKeyUpdateTime = rocketInfo.realtime + KEY_BINDING_REFRESH_INTERVAL_MS;
-			SetInnerRML( CG_KeyBinding( cmd.CString(), team ) );
+			SetInnerRML( CG_EscapeHTMLText( CG_KeyBinding( cmd.CString(), team ) ).c_str() );
 		}
 	}
 

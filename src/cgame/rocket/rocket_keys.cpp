@@ -313,7 +313,7 @@ void Rocket_MouseMove( int x, int y )
 CG_KeyBinding
 ================
 */
-Rocket::Core::String CG_KeyBinding( const char* bind, int team )
+std::string CG_KeyBinding( const char* bind, int team )
 {
 	std::vector<Keyboard::Key> keys = trap_Key_GetKeysForBinds( team, {bind} )[0];
 
@@ -322,7 +322,7 @@ Rocket::Core::String CG_KeyBinding( const char* bind, int team )
 		return "Unbound";
 	}
 
-	Rocket::Core::String keyNames = CG_KeyDisplayName( keys[0] ).c_str();
+	std::string keyNames = CG_KeyDisplayName( keys[0] );
 
 	for ( size_t i = 1; i < keys.size(); i++ )
 	{

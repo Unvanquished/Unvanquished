@@ -485,6 +485,28 @@ static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 	return false;
 }
 
+std::string CG_EscapeHTMLText( Str::StringRef text )
+{
+	std::string out;
+	for (char c : text) {
+		switch (c) {
+		case '<':
+			out += "&lt;";
+			break;
+		case '>':
+			out += "&gt;";
+			break;
+		case '&':
+			out += "&amp;";
+			break;
+		default:
+			out += c;
+			break;
+		}
+	}
+	return out;
+}
+
 // TODO: Make this take Rocket::Core::String as an input.
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
