@@ -1797,7 +1797,6 @@ extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
 extern  vmCvar_t            cg_maxSpeedTimeWindow;
 extern  vmCvar_t            cg_stats;
-extern  vmCvar_t            cg_paused;
 extern  vmCvar_t            cg_blood;
 extern  vmCvar_t            cg_teamOverlayUserinfo;
 extern  vmCvar_t            cg_teamChatsOnly;
