@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
 [![Github release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/latest/total.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
 
-[![IRC](http://img.shields.io/irc/%23unvanquished%2C%23unvanquished-dev.png)](https://webchat.freenode.net/?channels=%23unvanquished%2C%23unvanquished-dev)
+[![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-4cc51c.svg)](https://webchat.freenode.net/?channels=%23unvanquished%2C%23unvanquished-dev)
 
 | Windows | OSX | Linux |
 |---------|-----|-------|
@@ -15,7 +15,24 @@ This repository contains the gamelogic of the game Unvanquished.
 You need to download the game's assets in addition to that to make it run.
 See below for build and launch instructions.
 
+## Workspace requirements
+
+To fetch and build Unvanquished, you'll need:
+`git`,
+`cmake`,
+`python` = 2,
+`python-yaml`,
+`python-jinja`,
+and a C++11 compiler.
+
+The following are actively supported:
+`gcc` ≥ 4.8,
+`clang` ≥ 3.5,
+Visual Studio/MSVC (at least Visual Studio 2017).
+
 ## Dependencies
+
+### Required
 
 `zlib`,
 `libgmp`,
@@ -34,13 +51,6 @@ See below for build and launch instructions.
 `libopus`,
 `libopusfile`
 
-### Buildtime
-
-`cmake`,
-`python` ≥ 2,
-`python-yaml`,
-`python-jinja`
-
 ### Optional
 
 `ncurses`,
@@ -53,24 +63,34 @@ See below for build and launch instructions.
 64-bit: `mingw-w64-x86_64-{toolchain,cmake,aria2}`  
 _or_ 32-bit: `mingw-w64-i686-{toolchain,cmake,aria2}`
 
+MSYS2 is an easy way to get MingW compiler and build dependencies, the standalone MingW on Windows also works.
+
 ## Download instructions
 
-Unvanquished requires several sub-repositories to be fetched before compilation.
+Unvanquished requires several sub-repositories to be fetched before compilation. If you have not yet cloned this repository:
 
 ```sh
-# If you have not yet cloned this repository:
-git clone --recurse-submodules URL
+git clone --recurse-submodules https://github.com/Unvanquished/Unvanquished.git
+```
 
-# If you have already cloned:
+If you have already cloned:
+
+```sh
 cd Unvanquished/
 git submodule update --init --recursive
 ```
 
-If cmake complains about the 'daemon/' folder being empty then you have skipped this step.
+If cmake complains about the `daemon/` folder being empty then you have skipped this step.
 
 ## Build Instructions
 
-Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores to speed up compilation. Linux systems usually provide an handy `nproc` tool that tells the number of CPU core so you can just do `make -j$(nproc)` to use all available cores.
+Instead of `-j4` you can use `-jN` where `N` is your number of CPU cores to distribute compilation on them. Linux systems usually provide an handy `nproc` tool that tells the number of CPU core so you can just do `-j$(nproc)` to use all available cores.
+
+Enter the directory before anything else:
+
+```sh
+cd Unvanquished/
+```
 
 ### Visual Studio
 
@@ -78,48 +98,34 @@ Instead of `make`, you can use `make -jN` where `N` is your number of CPU cores 
 2. Choose your compiler.
 3. Open `Unvanquished.sln` and compile.
 
-### Linux, Mac OS X
+### Linux, macOS
+
+Produced files will be stored in a new directory named `build`.
 
 ```sh
-mkdir build && cd build
-cmake ..
-make
+cmake -H. -Bbuild
+cmake --build build -- -j4
 ```
 
 ### MSYS2
 
 ```sh
-mkdir build && cd build
-cmake -G "MSYS Makefiles" ..
-make
+cmake -H. -Bbuild -G "MSYS Makefiles"
+cmake --build build -- -j4
 ```
 
 ### Linux cross-compile to Windows
 
-```sh
-mkdir build && cd build
-# Use “cross-toolchain-mingw64.cmake” for a Win64 build.
-cmake -DCMAKE_TOOLCHAIN_FILE=../daemon/cmake/cross-toolchain-mingw32.cmake ..
-make
-```
-
-### Mac OS X universal app
+For a 32-bit build use the `cross-toolchain-mingw32.cmake` toolchain file instead.
 
 ```sh
-mkdir build32 && cd build32
-cmake -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
-make
-cd ..
-mkdir build64 && cd build64
-cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
-make
-cd ..
-./make-macosx-app.sh build32 build64
+cmake -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE=cmake/cross-toolchain-mingw64.cmake
+cmake --build build -- -j4
 ```
 
 ## Launch Instructions
 
-### Linux, Mac OS X, MSYS2
+### Linux, macOS, MSYS2
 
 #### If Unvanquished's assets are already installed somewhere on your system
 
@@ -140,6 +146,7 @@ mkdir pkg
 ```sh
 # Fast, requires “aria2c”:
 ../download-dpk-torrent.sh pkg
+
 # Or with unreliable speed, requires “curl”:
 ../download-dpk.sh pkg
 ```
@@ -157,11 +164,11 @@ cd build
 ./daemon -pakpath ../pkg -set vm.sgame.type 3 -set vm.cgame.type 3
 ```
 
-Note that only the basic `unvanquished_src.dpkdir` asset package is provided that way, and running Unvanquished only with that package will bring you some warnings about other missing packages and you will miss soundtrack and stuff like that. Note that you need to load your own game code (using _vm type_ switches) at this point.
+Note that only the basic `unvanquished_src.dpkdir` asset package is provided that way, and running Unvanquished only with that package will bring you some warnings about other missing packages and you will miss soundtrack and stuff like that. You also need to load your own game code (using _vm type_ switches) at this point.
 
 This should be enough to start the game and reach the main menu and from there, join a server. If the server supports autodownload mechanism, Unvanquished will fetch all the missing packages from it.
 
-If you are looking for the sources of the whole assets, have a look at the [UnvanquishedAssets](https://github.com/UnvanquishedAssets/UnvanquishedAssets) repository. Beware, unlike the `unvanquished_src.dpkdir` package, most of them can't be loaded correctly by the engine without being built first.
+If you are looking for the sources of the whole assets, have a look at the [UnvanquishedAssets](https://github.com/UnvanquishedAssets/UnvanquishedAssets) repository. Beware that unlike the `unvanquished_src.dpkdir` package most of them can't be loaded correctly by the engine without being built first.
 
 #### Loading your own assets
 
