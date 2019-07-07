@@ -128,7 +128,7 @@ public:
 		}
 	}
 
-
+private:
 	void UpdateValue()
 	{
 		if ( !type.Empty() )
@@ -142,13 +142,11 @@ public:
 					if ( result )
 					{
 						SetAttribute( "checked", "" );
-						SetValue( "1" );
 					}
 
 					else
 					{
 						RemoveAttribute( "checked" );
-						SetValue( "0" );
 					}
 				}
 			}
@@ -169,7 +167,6 @@ public:
 
 	}
 
-private:
 	void SetCvarValueAndFlags( const Rocket::Core::String& cvar, const Rocket::Core::String& value )
 	{
 		Cvar::SetValue( cvar.CString(), value.CString() );
