@@ -204,7 +204,7 @@
 				</row>
 				<row>
 					<h3>Dynamic lights</h3>
-					<input cvar="r_dynamiclight" type="checkbox" />
+					<input cvar="r_dynamiclight" type="checkbox" checked-value="2" />
 					<p>Lighting made by weapons and buildings.</p>
 				</row>
 				<row>
