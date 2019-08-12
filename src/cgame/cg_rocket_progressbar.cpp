@@ -160,7 +160,13 @@ float CG_Rocket_FuelProgress()
 
 float CG_Rocket_DownloadProgress()
 {
-	return trap_Cvar_VariableValue( "cl_downloadCount" ) / trap_Cvar_VariableValue( "cl_downloadSize" );
+	float count = trap_Cvar_VariableValue("cl_downloadCount");
+	float total = trap_Cvar_VariableValue("cl_downloadSize");
+	if (total > 0 && count >= 0 && count <= total )
+	{
+		return count / total;
+	}
+	return 0.0f;
 }
 
 
