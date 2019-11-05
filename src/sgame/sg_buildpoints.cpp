@@ -78,7 +78,7 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
 	});
 
 	buildpointLogger.Debug("Predicted efficiency delta: %f. Build point delta: %f.", delta,
-	                       delta * g_buildPointBudgetPerMiner.value);
+	                       delta * g_buildPointBudgetPerMiner.Get());
 
 	return delta;
 }
@@ -88,12 +88,12 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
  */
 void G_UpdateBuildPointBudgets() {
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		level.team[team].totalBudget = g_buildPointInitialBudget.value;
+		level.team[team].totalBudget = g_buildPointInitialBudget.Get();
 	}
 
 	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
 		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
-		                                                 g_buildPointBudgetPerMiner.value;
+		                                                 g_buildPointBudgetPerMiner.Get();
 	});
 }
 
