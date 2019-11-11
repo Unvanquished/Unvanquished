@@ -939,7 +939,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 					{
 						float deltaEff = G_RGSPredictEfficiencyDelta(dummy, team);
 						int   deltaBP  = (int)(level.team[team].totalBudget + deltaEff *
-						                       g_buildPointBudgetPerMiner.value) -
+						                       g_buildPointBudgetPerMiner.Get()) -
 						                 (int)(level.team[team].totalBudget);
 
 						signed char deltaEffNetwork = (signed char)((float)0x7f * deltaEff);
