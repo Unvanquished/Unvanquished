@@ -683,6 +683,11 @@ void CG_Menu( int menuType, int arg )
 			shortMsg = _("This location is too close to the enemy to evolve");
 			break;
 
+		case MN_A_NOTINBASE:
+			longMsg = _("The Overmind is too far away to devolve.");
+			shortMsg = _("The Overmind is too far away to devolve.");
+			break;
+
 		case MN_A_NOOVMND_EVOLVE:
 			longMsg = _("There is no Overmind. An Overmind must be built to allow "
 			          "you to upgrade.");

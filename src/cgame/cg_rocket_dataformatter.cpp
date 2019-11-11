@@ -409,7 +409,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if ( cost == -1 )
+	else if ( cost == CANT_EVOLVE )
 	{
 
 		Class = "expensive";
