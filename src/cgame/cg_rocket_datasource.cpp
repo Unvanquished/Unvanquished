@@ -1652,7 +1652,7 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 				Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );
 				Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
-				Info_SetValueForKey( buf, "price", va( "%d", BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], i, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) / CREDITS_PER_EVO ), false );
+				Info_SetValueForKey( buf, "price", va( "%d", BG_CostToEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], i ) / CREDITS_PER_EVO ), false );
 
 				Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
