@@ -667,6 +667,7 @@ enum dynMenu_t
   MN_A_INFEST,
   MN_A_NOEROOM,
   MN_A_TOOCLOSE,
+  MN_A_NOTINBASE,
   MN_A_NOOVMND_EVOLVE,
   MN_A_EVOLVEBUILDTIMER,
   MN_A_CANTEVOLVE,
@@ -1025,6 +1026,9 @@ enum meansOfDeath_t
   MOD_DECONSTRUCT,
   MOD_REPLACE
 };
+
+#define DEVOLVE_RETURN_RATE 0.9f
+#define CANT_EVOLVE -999
 
 //---------------------------------------------------------
 

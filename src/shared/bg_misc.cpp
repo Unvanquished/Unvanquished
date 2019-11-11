@@ -423,30 +423,12 @@ int BG_CostToEvolve( int from, int to )
 			 from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
 			 to <= PCL_NONE || to >= PCL_NUM_CLASSES )
 	{
-		return -1;
+		return CANT_EVOLVE;
 	}
 
 	fromCost = BG_Class( from )->cost;
 	toCost = BG_Class( to )->cost;
 
-	// classes w/o a cost are for spawning only
-	if ( toCost == 0 )
-	{
-		// (adv.) granger may evolve into adv. granger or dretch at no cost
-		if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) &&
-		     ( to == PCL_ALIEN_BUILDER0_UPG || to == PCL_ALIEN_LEVEL0 ) )
-		{
-			return 0;
-		}
-
-		return -1;
-	}
-
-	// don't allow devolving
-	if ( toCost <= fromCost )
-	{
-		return -1;
-	}
 
 	return toCost - fromCost;
 }
@@ -462,14 +444,14 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 
 	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
 	{
-		return -1;
+		return CANT_EVOLVE;
 	}
 
 	evolveCost = BG_CostToEvolve( from, to );
 
 	if ( credits < evolveCost )
 	{
-		return -1;
+		return CANT_EVOLVE;
 	}
 
 	return evolveCost;
@@ -486,7 +468,7 @@ bool BG_AlienCanEvolve( int from, int credits )
 
 	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( from, to, credits ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( from, to, credits ) != CANT_EVOLVE )
 		{
 			return true;
 		}

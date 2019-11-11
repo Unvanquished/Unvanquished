@@ -242,7 +242,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
 	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass,
-	                                  self->client->ps.persistant[PERS_CREDIT] ) >= 0 );
+	                                  self->client->ps.persistant[PERS_CREDIT] ) >= 1 );
 }
 
 bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
@@ -1751,7 +1751,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
 			//...check we can evolve to that class
-			if ( numLevels >= 0 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
+			if ( numLevels >= 1 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
 			{
 				ent->client->pers.evolveHealthFraction = Entities::HealthFraction(ent);
 
