@@ -2345,6 +2345,9 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 			num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
 
+			float aliensInRange = 0;
+			float humansInRange = 0;
+
 			for ( i = 0; i < num; i++ )
 			{
 				other = &g_entities[ entityList[ i ] ];
@@ -2353,13 +2356,23 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				     ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
 				       other->powered ) )
 				{
-					if ( report )
-					{
-						G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
-					}
-					return false;
+					humansInRange++;
+
+				}
+				else if ( ( other->client && other->client->pers.team == TEAM_ALIENS ) ||
+				     			( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS ) )
+				{
+					aliensInRange++;
 				}
 			}
+			if ( humansInRange > ( aliensInRange * g_evolveArroundHumans.Get() ) ) {
+				if ( report )
+				{
+					G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
+				}
+				return false;
+			}
+
 
 			//check that we are not wallwalking
 			if ( ent->client->ps.eFlags & EF_WALLCLIMB )
