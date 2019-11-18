@@ -13,7 +13,9 @@ DEB_HOST_GNU_TYPE := $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_HOST_ARCH_CPU := $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 DEB_HOST_GNU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's/i.86/i386/')
 
-SDL2 := $(shell test -d /usr/include/SDL2 && echo ON || echo OFF)
+NACL_HOST_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's/i.86/x86/')
+NACL_SIZE_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's/i.86/32/;s/x86_64/64/')
+NACL_STRIP := daemon/external_deps/linux${NACL_SIZE_CPU}-4/pnacl/bin/pnacl-strip
 
 %:
 	dh $@ --parallel
@@ -22,28 +24,60 @@ override_dh_auto_configure:
 	mkdir -p obj-${DEB_HOST_GNU_TYPE}
 	cd obj-${DEB_HOST_GNU_TYPE} && \
 	cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
-		 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-		 -DCMAKE_SKIP_RPATH=ON \
-		 -DUSE_VOIP=ON \
-		 -DBUILD_GAME_QVM=OFF \
-		 -DBUILD_GAME_NACL=OFF \
-		 -DBUILD_GAME_NACL_NATIVE_DLL=OFF \
-		 -DUSE_SDL2=${SDL2} \
-		 -DBUILD_TTY_CLIENT=OFF \
-		 -DNACL_RUNTIME_PATH=/usr/lib/nacl
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_SKIP_RPATH=ON \
+		-DBUILD_CLIENT=ON \
+		-DBUILD_SERVER=ON \
+		-DBUILD_TTY_CLIENT=ON \
+		-DBUILD_CGAME=ON \
+		-DBUILD_SGAME=ON \
+		-DBUILD_GAME_NACL=OFF \
+		-DBUILD_GAME_NACL_NEXE=OFF \
+		-DBUILD_GAME_NATIVE_EXE=OFF \
+		-DBUILD_GAME_NATIVE_DLL=ON \
+		-DUSE_CURSES=ON \
+		-DUSE_GEOIP=ON \
+		-DUSE_SMP=ON \
+		-DUSE_BREAKPAD=OFF
+	mkdir -pv obj-${DEB_HOST_GNU_TYPE}/nacl
+	set
+	cd obj-${DEB_HOST_GNU_TYPE}/nacl && \
+	cmake ../.. -DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_CLIENT=OFF \
+		-DBUILD_SERVER=OFF \
+		-DBUILD_TTY_CLIENT=OFF \
+		-DBUILD_CGAME=ON \
+		-DBUILD_SGAME=ON \
+		-DBUILD_GAME_NACL=ON \
+		-DBUILD_GAME_NACL_NEXE=ON \
+		-DBUILD_GAME_NATIVE_EXE=OFF \
+		-DBUILD_GAME_NATIVE_DLL=OFF \
+		-DUSE_CURSES=OFF \
+		-DUSE_GEOIP=OFF \
+		-DUSE_SMP=ON \
+		-DUSE_BREAKPAD=OFF
+
+override_dh_auto_build:
+	dh_auto_build
+	cd obj-${DEB_HOST_GNU_TYPE}/nacl && \
+	unset LDFLAGS && \
+	make -j$(nproc)
 
 override_dh_auto_install:
 
 override_dh_install:
 	dh_install
-	rename "s/daemon/unvanquished/" debian/unvanquished*/usr/lib/games/unvanquished/daemon*
 
 override_dh_strip:
-	dh_strip --dbg-package=unvanquished-dbg
+	dh_strip -Xnacl_ -X.nexe --dbg-package=unvanquished-dbg
+	${NACL_STRIP} \
+		obj-${DEB_HOST_GNU_TYPE}/irt_core-${NACL_HOST_CPU}.nexe \
+		obj-${DEB_HOST_GNU_TYPE}/nacl/cgame-${NACL_HOST_CPU}.nexe \
+		obj-${DEB_HOST_GNU_TYPE}/nacl/sgame-${NACL_HOST_CPU}.nexe
 
 override_dh_auto_clean:
 	dh_auto_clean
-	rm -rf CMakeFiles lcc vm src/tests/CMakeFiles
+	rm -rf CMakeFiles
 
 override_dh_builddeb:
 	dh_builddeb -- -Zxz
@@ -71,4 +105,3 @@ override_dh_ucf:
 override_dh_gconf:
 override_dh_perl:
 override_dh_usrlocal:
-                                 

@@ -15,7 +15,8 @@ set -e
 # the debian-policy package
 
 UNV_SERVER_HOME=/var/games/unvanquished-server
-UNV_SERVER_DATA=$UNV_SERVER_HOME/.unvanquished/
+
+UNV_SERVER_DATA=$UNV_SERVER_HOME/.local/share/unvanquished
 
 case "$1" in
   configure)
@@ -24,38 +25,27 @@ case "$1" in
         --home $UNV_SERVER_HOME --no-create-home \
         --gecos "Unvanquished dedicated server" --ingroup games unvanquished-server
     fi
-    install -d /var/games
-    install -d -o unvanquished-server -g games $UNV_SERVER_HOME $UNV_SERVER_DATA $UNV_SERVER_DATA/config $UNV_SERVER_DATA/game $UNV_SERVER_DATA/pkg
 
-    if dpkg --compare-versions "$2" '<' 0.24.0-0 && test -d $UNV_SERVER_HOME/.Unvanquished/main -a ! -f $UNV_SERVER_DATA/config/default.cfg; then
-      # move data files from the old (< 0.24.0) locations
-      echo "Copying some files from $UNV_SERVER_HOME/.Unvanquished to $UNV_SERVER_HOME/.unvanquished..."
-      echo "You need to check the configuration manually then remove $UNV_SERVER_HOME/.Unvanquished."
-      cd $UNV_SERVER_HOME/.Unvanquished/main
-      for UNV_FILE in default.cfg; do
-        test -e "$UNV_FILE" && cp -alu "$UNV_FILE" $UNV_SERVER_DATA/config/
-      done
-      for UNV_FILE in layouts; do
-        test -e "$UNV_FILE" && cp -alu "$UNV_FILE" $UNV_SERVER_DATA/game/
-      done
-      for UNV_FILE in configs scripts; do
-        if test -d "$UNV_FILE" -a -d /etc/unvanquished-server/"$UNV_FILE"; then
-          cp -alu "$UNV_FILE" /etc/unvanquished-server/
-        fi
-      done
-    fi
+    install -d -o unvanquished-server -g games \
+       $UNV_SERVER_HOME \
+       $UNV_SERVER_HOME/.local \
+       $UNV_SERVER_HOME/.local/share
 
-    if ! test -s $UNV_SERVER_DATA/config/default.cfg; then
-      echo >$UNV_SERVER_DATA/config/default.cfg
-      chown unvanquished-server:games $UNV_SERVER_DATA/config/default.cfg
-    fi
-    ln -fs /etc/unvanquished-server/maprotation.cfg $UNV_SERVER_DATA/game/
-    ln -fs /etc/unvanquished-server/server.cfg      \
-           /etc/unvanquished-server/configs         \
-           /etc/unvanquished-server/scripts         $UNV_SERVER_DATA/config/
+    install -d -o unvanquished-server -g games \
+       $UNV_SERVER_DATA \
+       $UNV_SERVER_DATA/config \
+       $UNV_SERVER_DATA/config/map \
+       $UNV_SERVER_DATA/game \
+       $UNV_SERVER_DATA/pkg
+
+    ln -fs /etc/unvanquished-server/config/server.cfg $UNV_SERVER_DATA/config/server.cfg
+    ln -fs /etc/unvanquished-server/config/map/default.cfg $UNV_SERVER_DATA/config/map/default.cfg
+    ln -fs /etc/unvanquished-server/game/maprotation.cfg $UNV_SERVER_DATA/game/maprotation.cfg
   ;;
+
   abort-upgrade|abort-remove|abort-deconfigure)
   ;;
+
   *)
     echo "postinst called with unknown argument \`$1'" >&2
     exit 1

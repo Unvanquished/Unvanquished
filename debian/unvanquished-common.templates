@@ -1,7 +1,7 @@
-Template: unvanquished-common/download-pk3
+Template: unvanquished-common/download-paks
 Type: boolean
-_Description: Download base .pk3 files?
- Unvanquished needs a set of .pk3 files to be able to run. Some of these
+_Description: Download base .dpk files?
+ Unvanquished needs a set of .dpk files to be able to run. Some of these
  files are rather large; their total size is somewhere a little short of
  1GB.
  .
@@ -17,8 +17,8 @@ Default: true
 
 Template: unvanquished-common/mirror
 Type: string
-_Description: Sourceforge mirror or URL from which to download base .pk3 files?
- Unvanquished needs to know where to download the base .pk3 files.
+_Description: Sourceforge mirror or URL from which to download base .dpk files?
+ Unvanquished needs to know where to download the base .dpk files.
  .
  This location can be a URL, e.g. "http://example.com/unvanquished/main",
  or a Sourceforge mirror, e.g. "example" (which will be expanded to

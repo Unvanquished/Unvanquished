@@ -1,2 +1,0 @@
-#! /bin/sh
-exec bash /usr/lib/games/unvanquished/download-pk3.sh "$@" /var/games/unvanquished/pkg /var/games/unvanquished

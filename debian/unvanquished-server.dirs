@@ -1,2 +1,3 @@
-etc/unvanquished-server/configs
-etc/unvanquished-server/scripts
+etc/unvanquished-server/config
+etc/unvanquished-server/config/map
+etc/unvanquished-server/game

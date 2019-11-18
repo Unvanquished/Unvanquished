@@ -4,4 +4,4 @@
 	title="Unvanquished" \
 	longtitle="Destroy the enemy and their base" \
 	command="/usr/games/unvanquished" \
-	icon="/usr/share/icons/hicolor/512x512/apps/unvanquished.png"
+	icon="/usr/share/pixmaps/unvanquished.xpm"

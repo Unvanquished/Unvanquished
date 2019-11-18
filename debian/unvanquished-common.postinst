@@ -8,34 +8,19 @@ if test "$1" = "configure"; then
   . /usr/share/debconf/confmodule
   db_version 2.0
 
-  if test -n "$2" && dpkg --compare-versions "$2" '<' 0.4.0-0; then
+  if test -n "$2" && dpkg --compare-versions "$2" '<' '0.51.1-0'; then
     echo 'Upgrading from a very old version of Unvanquished is not supported.'
     echo 'You need to purge and re-install unvanquished-common.'
     exit 1
   fi
 
-  if test -n "$2" && dpkg --compare-versions "$2" '<' 0.24.0-0; then
-    # move data files from the old (< 0.24.0) location
-    if test -d /var/games/unvanquished/main; then
-      echo 'Moving files from /var/games/unvanquished/main to /var/games/unvanquished/pkg...'
-      echo 'You are advised to check content as some may not be used.'
-      mv /var/games/unvanquished/main/* /var/games/unvanquished/pkg
-    fi
-  fi
-
-  db_get unvanquished-common/download-pk3
+  db_get unvanquished-common/download-paks
   if test "$RET" = true; then
-    db_get unvanquished-common/mirror
-
     FAILED=
-    if test -n "$RET"; then
-      unvanquished-download-paks --source "$RET" || FAILED=1
-    else
-      unvanquished-download-paks || FAILED=1
-    fi
+    unvanquished-download-paks || FAILED=1
 
     if test "$FAILED" = 1; then
-      echo 'Unvanquished was unable to download all of its base .pk3 files.
+      echo 'Unvanquished was unable to download all of its base .dpk files.
 You can retry the download by running, as root, this command:
   dpkg-reconfigure unvanquished-common
 You may not be able to play Unvanquished until you do so. (However, any
