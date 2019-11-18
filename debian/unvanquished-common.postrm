@@ -6,23 +6,12 @@ set -e
 
 if test "$1" = "purge"; then
   # First, remove files listed in the md5sums file - only read leafnames from that file
-  if test -f /var/games/unvanquished/md5sums && test -d /var/games/unvanquished/pkg; then
-    sed -ne '/\// d; s%^.* \*%/var/games/unvanquished/pkg/%; t p; d; :p p' </var/games/unvanquished/md5sums | while read FILE; do rm -f "$FILE"; done
+  if test -f /usr/share/games/unvanquished/pkg/md5sums && test -d /usr/share/games/unvanquished/pkg; then
+    sed -ne '/\// d; s%^.* \*%/usr/share/games/unvanquished/pkg/%; t p; d; :p p' </usr/share/games/unvanquished/pkg/md5sums | while read FILE; do rm -f "$FILE"; done
   fi
-  # Remove the md5sums file and its predecessor
-  rm -f /var/games/unvanquished/md5sums.old /var/games/unvanquished/md5sums
+  # Remove the md5sums file
+  rm -f /usr/share/games/unvanquished/pkg/md5sums
   # Remove the game dir unless non-empty (which should mean that the admin has added some files)
   # (dpkg may remove them; that's fine)
-  rmdir --ignore-fail-on-non-empty /var/games/unvanquished
-fi
-
-if test "$1" = 'abort-upgrade' -o "$1" = 'upgrade'; then
-  if dpkg --compare-versions "$2" '<' 0.24.0-0; then
-    # move data files to the old (< 0.24.0) location
-    if test -f /var/games/unvanquished/pkg; then
-      echo 'Moving files from /var/games/unvanquished/pkg to /var/games/unvanquished/main...'
-      mkdir -p /var/games/unvanquished/main
-      mv /var/games/unvanquished/pkg/* /var/games/unvanquished/main
-    fi
-  fi
+  rmdir --ignore-fail-on-non-empty /usr/share/games/unvanquished
 fi
