@@ -1,0 +1,569 @@
+#! /usr/bin/env bash
+
+# Retrieve Unvanquished resources from CDN
+# Arguments:
+# 1. Destination directory
+# 2. Cache file directory
+# For system-wide installation, you probably want something like
+# /usr/lib/games/unvanquished/pkg
+# /var/cache/games/unvanquished
+
+# Requirements: GNU coreutils, grep, sed, awk, diff,
+# and a download tool like aria2c, curl or wget.
+
+set -e
+
+# Work around a reported locale problem
+export LANG=C.UTF-8
+
+xdgHomeDir="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
+
+# Version of Unvanquished for which this script is built
+version=0.51.1
+
+realDirPath () {
+	if command -v realpath >/dev/null
+	then
+		realpath "${1}" || exit 1
+	else
+		( cd -P "${1}" >/dev/null 2>&1 && pwd ) || exit 1
+	fi
+}
+
+colorPrintf () {
+	local color_code="${1}"
+	local format_string="${2}"
+	shift
+	shift
+
+	printf '\x1b['"${color_code}"'m'"${format_string}"'\x1b[m\n' ${@} >&2
+}
+
+listCdn () {
+	(sed -e 's/#.*//g;s/[ \t]*//g' | grep -v '^$') <<-EOF
+	# official
+	http://cdn.unvanquished.net
+	# Viech
+	http://unvcdn.viech.name
+	# illwieckz
+	http://cdn.illwieckz.net/unvanquished
+	# kangz
+	# http://webseed.unv.kangz.net/unv-launcher
+	# Amanieu
+	# http://vanquished.zapto.org/~amanieu/unv-launcher
+	EOF
+}
+
+getCdnUrl () {
+	printf '%s/unvanquished_%s/pkg\n' "${1}" "${version}"
+}
+
+sum_file_cdn='md5sums'
+sum_file="$sum_file_cdn"
+
+# Select checksum command
+if command -v md5sum >/dev/null
+then
+	md5_tool='md5sum'
+elif command -v md5 >/dev/null
+then
+	md5_tool='md5 -q'
+else
+	colorPrintf '1:31' 'No md5 checksum tool found.'
+fi
+
+# Default destination directory
+case "$(uname -s)" in
+	Darwin)
+		default_dest_dir="${HOME}/Library/Application Support/Unvanquished/pkg"
+		;;
+	*)
+		default_dest_dir="${xdgHomeDir}/pkg"
+		;;
+esac
+
+download_method='http'
+if command -v aria2c >/dev/null
+then
+	# in this configuration, aria2c expects absolute path to downloaded file
+	httpGet='aria2c --max-tries=5 --follow-torrent=false --continue=true -d / -o'
+	download_method='torrent'
+elif command -v curl >/dev/null
+then
+	httpGet='curl --retry 5 -C - -fLo'
+	colorPrintf '31' 'Missing aria2c tool, fallback on HTTP download using curl…'
+elif command -v wget >/dev/null
+then
+	httpGet='wget --tries 5 -c -O'
+	colorPrintf '31' 'Missing aria2c tool, fallback on HTTP download using wget…'
+else
+	colorPrintf '1;31' 'There is no supported way to download files, please install either aria2c (recommended), curl, or wget.'
+	exit 3
+fi
+
+dest_dir=''
+cache_dir=''
+unique_base_url=''
+do_check='true'
+do_download='true'
+
+tab="$(printf '\t')"
+
+program_name="$(basename "${0}")"
+
+while ! [ -z "${1}" ]
+do
+	case "${1}" in
+		'--help'|'-h'|'-?'|'/?')
+			cat <<-EOF
+			${program_name}: download Unvanquished game files
+
+			Usage: ${program_name} [option] [destination directory] [cache directory]
+
+			Options:
+			${tab}--help             Print this help
+			${tab}--http             Download using HTTP (requires aria2c or curl or wget)
+			${tab}--torrent          Download using BitTorrent (requires aria2c, default if aria2c is available)
+			${tab}--no-check         Do not verify downloaded files
+			${tab}--no-download      Do not download files (only perform file verification)
+			${tab}--mirror=MIRROR    Download from MIRROR (will not cycle through known mirrors)
+			${tab}--version=VERSION  Download this VERSION
+
+			Default destination directory is ${default_dest_dir}
+			Default cache directory is destination directory (files are always downloaded in a .cache subdirectory)
+
+			Default version to download:
+			${tab}${version}
+			
+			Mirror URL examples:
+			$(listCdn | xargs -n 1 -P1 printf '\t%s\n')
+			EOF
+			exit 0
+			;;
+
+		'--http')
+			download_method='http'
+			shift
+			;;
+
+		'--torrent')
+			download_method='torrent'
+			shift
+			;;
+
+		'--no-check')
+			do_check='false'
+			shift
+			;;
+
+		'--no-download')
+			do_download='false'
+			shift
+			;;
+
+		'--mirror='*)
+			unique_base_url="${1:9}"
+			sum_file="$sum_file_cdn"
+			shift
+			;;
+
+		'--version='*)
+			version="${1:10}"
+			shift
+			;;
+
+		*)
+			if [ -z "${dest_dir}" ]
+			then
+				dest_dir="${1}"
+				shift
+			elif [ -z "${cache_dir}" ]
+			then
+				cache_dir="${1}"
+				shift
+			else
+				echo "ERROR: unknown option: $1" >&2
+				exit 1
+			fi
+			;;
+	esac
+done
+
+# Paths passed to script
+dest_dir="${dest_dir:-${default_dest_dir}}"
+cache_dir="${cache_dir:-${dest_dir}}/.cache"
+
+# TODO:
+# Set up for clean-up on exit
+# NOTE THAT THIS INDISCRIMINATELY REMOVES *.tmp FROM DEST & cache_dir DIRS
+cleanup ()
+{
+	RET="${?}"
+	if [ "${RET}" != 0 ]
+	then
+		colorPrintf '1;31' 'FAILED.'
+	fi
+
+# TODO:
+#	rm -f -- "${cache_dir}/"*.tmp "${dest_dir}/"*.tmp
+	return "${RET}"
+}
+trap cleanup EXIT
+
+colorPrintf '1;32' 'Cache directory: %s' "${cache_dir}"
+colorPrintf '1;32' 'Download directory: %s' "${dest_dir}"
+
+# Create directories if needed
+mkdir -p -- "${dest_dir}" "$cache_dir"
+
+# Canonicalise the pathnames
+dest_dir="$(realDirPath "${dest_dir}")"
+cache_dir="$(realDirPath "${cache_dir}")"
+
+checkUrl () {
+	if echo "${1}" | grep -qv '^[a-z]\+://'
+	then
+		colorPrintf '1;31' 'Invalid url: %s' "${base_url}"
+		return 1
+	fi
+}
+
+checkSumFile () {
+	local sum_file="${1}"
+
+	if ! [ -f "${sum_file}" ]
+	then
+		colorPrintf '1;31' 'Missing file: %s' "${sum_file}"
+		exit 1
+	fi
+
+	# Check if empty
+	if cat "${sum_file}" | wc -l | grep -q '^0$'
+	then
+		colorPrintf '1;31' 'Empty file: %s' "${sum_file}"
+		exit 1
+	fi
+
+	# Check if malformed
+	if grep -sqve '^[0-9a-f]\{32\} [ *][^ .\\/][^ \\/]*$' "${sum_file}"
+	then
+		colorPrintf '1;31' 'Malformed file: %s' "${sum_file}"
+		exit 1
+	fi
+}
+
+listFilesFromSumFile () {
+	sed 's/^.* [ *]//' "${dest_dir}/md5sums"
+}
+
+checkFile () {
+	local file_name="${1}"
+
+	if ! [ -f "${file_name}" ]
+	then
+		colorPrintf '1;31' 'Missing: %s' "${file_name}"
+		return 1
+	fi
+
+	if ! checkSumFile "${dest_dir}/md5sums"
+	then
+		return 1
+	fi
+
+	local base_name="$(basename "${file_name}" '.tmp')"
+	local record="$(grep " [ *]${base_name}$" "${dest_dir}/md5sums")"
+	local known_sum="$(echo "${record}" | cut -f1 -d' ')"
+	local file_sum="$("${md5_tool}" "${file_name}" | cut -f1 -d' ')"
+
+	if [ "${file_sum}" != "${known_sum}" ]
+	then
+		colorPrintf '1;31' 'Mismatch: %s' "${file_name}"
+		return 1
+	fi
+}
+
+checkAllFiles () {
+	local file_name
+	local is_complete='true'
+	local is_checked='false'
+
+	for file_name in $(listFilesFromSumFile)
+	do
+		is_checked='true'
+
+		if ! checkFile "${dest_dir}/${file_name}"
+		then
+			is_complete='false'
+		fi
+	done
+
+	if ! "${is_checked}"
+	then
+		return 1
+	fi
+
+	if ! "${is_complete}"
+	then
+		return 1
+	fi
+}
+
+# Utility function for downloading.
+getFileFromMirror () {
+	local is_nested='false'
+	local is_bare='false'
+
+	if [ "${1}" = '--nested' ]
+	then
+		is_nested='true'
+		shift
+	fi
+
+	if [ "${1}" = '--bare' ]
+	then
+		is_bare='true'
+		shift
+	fi
+
+	local dest_dir="${1}"
+	local file_name="${2}"
+	local file_alt_name="${3}"
+
+	local is_failed='false'
+
+	if [ -z "${unique_base_url}" ]
+	then
+		base_url_list="$(listCdn)"
+	else
+		base_url_list="${unique_base_url}"
+	fi
+
+	for base_url in ${base_url_list}
+	do
+		if ! checkUrl "${base_url}"
+		then
+			if [ -z "${unique_base_url}" ]
+			then
+				exit 2
+			fi
+		fi
+
+		if ! "${is_bare}"
+		then
+			base_url="$(getCdnUrl "${base_url}")"
+		fi
+
+		colorPrintf '33' 'Downloading from: %s' "${base_url}"
+		colorPrintf '33' "Downloading ${file_name} ${file_alt_name:+as ${file_alt_name} }to ${cache_dir}…"
+
+		if ! [ -z "${file_alt_name}" ]
+		then
+			if ! ${httpGet} "${cache_dir}/${file_alt_name}.tmp" "${base_url}/${file_alt_name}"
+			then
+				colorPrintf '33' "Downloading ${file_alt_name} instead…"
+				if ! ${httpGet} "${cache_dir}/${file_alt_name}.tmp" "${base_url}/${file_alt_name}"
+				then
+					is_failed='true'
+				fi
+			fi
+		else
+			if ! ${httpGet} "${cache_dir}/${file_name}.tmp" "${base_url}/${file_name}"
+			then
+				is_failed='true'
+			fi
+		fi
+
+		if "${is_failed}"
+		then
+			continue
+		else
+			if [ "$(basename "${file_name}")" != 'md5sums' ]
+			then
+				if ! "${is_bare}"
+				then
+					if ! checkFile "${cache_dir}/${file_name}.tmp"
+					then
+						if ! "${is_nested}"
+						then
+							rm -f "${cache_dir}/${file_name}.tmp"
+							if [ -z "${file_alt_name}" ]
+							then
+								if ! getFileFromMirror --nested "${cache_dir}" "${file_name}"
+								then
+									return 1
+								fi
+							else
+								if ! getFileFromMirror --nested "${cache_dir}" "${file_name}" "${file_alt_name}"
+								then
+									return 1
+								fi
+							fi
+						else
+							continue
+						fi
+					fi
+				fi
+			fi
+
+			if ! "${is_nested}"
+			then
+				mv -f "${cache_dir}/${file_alt_name:-${file_name}}.tmp" "${dest_dir}/${file_alt_name:-${file_name}}"
+				colorPrintf '1;32' 'Downloaded.'
+			fi
+			break
+		fi
+	done
+
+	if "${is_failed}"
+	then
+		return 1
+	fi
+}
+
+downloadHttp () {
+	colorPrintf '1;33' 'Starting HTTP download…'
+
+	if "${do_download}"
+	then
+		# Get the md5sum checksums
+		getFileFromMirror "${dest_dir}" "${sum_file}" "md5sums"
+	fi
+
+	# Check that the file is properly formatted
+	colorPrintf '33' 'Verifying md5sums integrity…'
+
+	# Check if malformed
+	if ! checkSumFile "${dest_dir}/md5sums"
+	then
+		exit 1
+	fi
+	colorPrintf '1;32' 'Successful.'
+
+	# List the files whose checksums are listed
+	colorPrintf '33' 'Listed files:'
+	listFilesFromSumFile
+
+	if "${do_download}"
+	then
+		colorPrintf '33' 'Downloading missing or updated files…'
+		# Download those files unless the local copies match the checksums
+
+		for file_name in $(listFilesFromSumFile)
+		do
+			local is_complete='true'
+
+			if ! [ -f "${dest_dir}/${file_name}" ]
+			then
+				is_complete='false'
+			fi
+
+			if ! checkFile "${dest_dir}/${file_name}"
+			then
+				is_complete='false'
+			fi
+
+			if ! "${is_complete}"
+			then
+				getFileFromMirror "${dest_dir}" "$(basename "${file_name}")"
+			fi
+		done
+	fi
+}
+
+downloadTorrent () {
+	colorPrintf '1;33' 'Starting BitTorrent download…'
+
+	local torrent_file="unvanquished_${version}.torrent"
+
+	getFileFromMirror --bare "${cache_dir}" "${torrent_file}"
+
+	torrent_file="${cache_dir}/${torrent_file}"
+
+	# get the contained asset path
+	asset_path="$(aria2c -S "${torrent_file}" | grep '/pkg/unvanquished_.*\.pk3\|/pkg/unvanquished_.*\.dpk' | head -n 1 | awk -F'/' '{print $2}')"
+
+	asset_path="${cache_dir}/${asset_path}"
+	if [ -z "${asset_path}" ]
+	then
+		colorPrintf '1;31' 'Unable to find unvanquished package reference in torrent file: %s' "${torrent_file}"
+		exit 1
+	fi
+
+	# delete old torrent directories
+	find "${cache_dir}"/* -maxdepth 0 -type d -exec rm -rf {} \;
+
+	# symlink the extraction asset_path to the target so the files land in the right place
+	if [ ! -d "${asset_path}" ]
+	then
+		if ! mkdir -p -- "${asset_path}"
+		then
+			exit 1
+		fi
+	fi
+
+	if [ -e "${asset_path}/pkg" ]
+	then
+		if [ -d "${asset_path}/pkg" ]
+		then
+			rm -rf "${asset_path}/pkg"
+		else
+			rm -f "${asset_path}/pkg"
+		fi
+	fi
+
+	ln -s "${dest_dir}" "${asset_path}/pkg"
+
+	# build a space separated list of assets
+	asset_lst="$(aria2c -S "${torrent_file}" | grep '.*/pkg/.*\.pk3\|.*/pkg/.*\.dpk\|.*/pkg/md5sums' | awk -F'|' '{print $2}' | grep -o '[^/]*$')"
+
+	# build a comma separated list of ids
+	asset_ids="$(aria2c -S "${torrent_file}" | grep '.*/pkg/.*\.pk3\|.*/pkg/.*\.dpk\|.*/pkg/md5sums' | awk -F'|' '{print $1}' | tr '\n' ',' | grep -o '[0-9].*[0-9]')"
+
+	# download assets
+	colorPrintf '33' 'Downloading assets…'
+
+	if aria2c \
+		--no-conf=true \
+		--summary-interval=0 \
+		--check-integrity=true \
+		--seed-time=0 \
+		--select-file="${asset_ids}" \
+		-T "${torrent_file}" -d "${cache_dir}"
+	then
+		colorPrintf '1;32' 'Downloaded.'
+	else
+		exit 1
+	fi
+}
+
+if "${do_download}"
+then
+	if [ ${download_method} = 'http' ]
+	then
+		downloadHttp
+	else
+		downloadTorrent
+	fi
+fi
+
+
+if "${do_check}"
+then
+	colorPrintf '33' 'Verifying files…'
+	if checkAllFiles
+	then
+		colorPrintf '1;32' 'Verified.'
+	else
+		colorPrintf '1;31' 'Errors found during verification. Re-downloading is recommended.'
+	fi
+fi
+
+colorPrintf '33' 'Cleaning-up cache…'
+rm -rf "${cache_dir}"
+
+# TODO: Delete all files that aren't needed anymore (files from previous version, leftovers…)
+
+# All done :-)
+colorPrintf '1;32' 'Finished.'
+
+exit 0

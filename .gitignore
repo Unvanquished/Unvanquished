@@ -28,8 +28,9 @@ build
 nacl_helper_bootstrap*
 nacl_loader*
 
-# pk3s
+# pk3s, dpks
 *.pk3
+*.dpk
 
 # CBSE
 src/sgame/backend

@@ -137,21 +137,15 @@ cd build
 
 #### If you don't have the assets, you can download them first
 
+The package downloader script can use `aria2c`, `curl` or `wget`, `aria2c` is recommended.
+You can do `./download-paks --help` for more options.
+
+```sh
+./download-paks build/pkg
+```
 
 ```sh
 cd build
-mkdir pkg
-```
-
-```sh
-# Fast, requires “aria2c”:
-../download-dpk-torrent.sh pkg
-
-# Or with unreliable speed, requires “curl”:
-../download-dpk.sh pkg
-```
-
-```sh
 ./daemon
 ```
 
