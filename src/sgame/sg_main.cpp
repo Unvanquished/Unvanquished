@@ -207,7 +207,7 @@ vmCvar_t           g_emptyTeamsSkipMapTime;
 
 Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful to load a map without spawn for testing purpose", Cvar::NONE, false);
 
-Cvar::Cvar<float>  g_evolveArroundHumans("g_evolveArroundHumans", "Rate of human to alien entities that prevent evolution", Cvar::NONE, 1.5f);
+Cvar::Cvar<float>  g_evolveArroundHumans("g_evolveArroundHumans", "Ratio of alien buildings to human entities that always allow evolution", Cvar::NONE, 1.5f);
 
 // <bot stuff>
 

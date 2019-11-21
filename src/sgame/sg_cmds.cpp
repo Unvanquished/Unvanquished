@@ -2345,8 +2345,9 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 			num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
 
-			float aliensInRange = 0;
-			float humansInRange = 0;
+			int aliensInRange = 0;
+			int humansInRange = 0;
+			bool visibleToHumans = false;
 
 			for ( i = 0; i < num; i++ )
 			{
@@ -2357,15 +2358,18 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				       other->powered ) )
 				{
 					humansInRange++;
+					if( !visibleToHumans && G_LineOfSight( ent, other ) )
+					{
+						visibleToHumans = true;
+					}
 
 				}
-				else if ( ( other->client && other->client->pers.team == TEAM_ALIENS ) ||
-				     			( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS ) )
+				else if ( ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS ) )
 				{
 					aliensInRange++;
 				}
 			}
-			if ( humansInRange > ( aliensInRange * g_evolveArroundHumans.Get() ) ) {
+			if ( visibleToHumans && aliensInRange < ( humansInRange * g_evolveArroundHumans.Get() ) ) {
 				if ( report )
 				{
 					G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
