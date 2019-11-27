@@ -169,7 +169,7 @@ extern  vmCvar_t g_debugEntities;
 
 extern  vmCvar_t g_instantBuilding;
 
-extern  Cvar::Cvar<float> g_evolveArroundHumans;
+extern  Cvar::Cvar<float> g_evolveAroundHumans;
 
 // bot buy cvars
 extern vmCvar_t g_bot_buy;
