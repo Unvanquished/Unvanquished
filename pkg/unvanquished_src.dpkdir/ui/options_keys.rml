@@ -136,6 +136,10 @@
 					<p>Beacon menu:</p>
 				</row>
 				<row>
+					<keybind cmd="<console>" />
+					<p>Toggle console:</p>
+				</row>
+				<row>
 					<keybind cmd="modcase shift /screenshotPNG /screenshotJPEG" />
 					<p>Screenshot:</p>
 				</row>
