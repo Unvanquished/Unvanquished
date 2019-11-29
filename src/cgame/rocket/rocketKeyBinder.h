@@ -40,6 +40,8 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
+static const Str::StringRef TOGGLE_CONSOLE_COMMAND = "<console>";
+
 static const Rocket::Core::String BINDABLE_KEY_EVENT = "bindableKey";
 static const Rocket::Core::String BINDABLE_KEY_KEY = "bkey";
 
@@ -168,6 +170,15 @@ protected:
 		{
 			return;
 		}
+
+		nextKeyUpdateTime = rocketInfo.realtime;
+		waitingForKeypress = false;
+
+		if (cmd == TOGGLE_CONSOLE_COMMAND.c_str()) {
+			trap_Key_SetConsoleKeys({newKey});
+			return;
+		}
+
 		// For a team-specific bind, this returns keys that have the command set for the specific
 		// team as well as for the default team (when there is no team-specific bind overriding it.
 		auto previouslyBoundKeys = trap_Key_GetKeysForBinds(team, { cmd.CString() })[0];
@@ -184,9 +195,6 @@ protected:
 			}
 		}
 		trap_Key_SetBinding( newKey, team, cmd.CString() );
-
-		nextKeyUpdateTime = rocketInfo.realtime;
-		waitingForKeypress = false;
 	}
 
 	int GetTeam( Rocket::Core::String team )
