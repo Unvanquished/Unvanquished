@@ -89,8 +89,8 @@ extern  vmCvar_t g_botKickVotesAllowedThisMap;
 extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
 
-extern  vmCvar_t g_buildPointInitialBudget;
-extern  vmCvar_t g_buildPointBudgetPerMiner;
+extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget;
+extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;
 extern  vmCvar_t g_buildPointRecoveryInititalRate;
 extern  vmCvar_t g_buildPointRecoveryRateHalfLife;
 

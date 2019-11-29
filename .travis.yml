@@ -26,12 +26,12 @@ matrix:
       os: linux
       compiler: clang
       env: MODE=2
-    - name: "osx game-native-dll (clang)"
+    - name: "macOS game-native-dll (clang)"
       os: osx
       compiler: clang
       env: MODE=1
   allow_failures:
-    - name: "osx nacl-nexe (pnacl-clang)"
+    - name: "macOS nacl-nexe (pnacl-clang)"
       os: osx
       compiler: clang
       env: MODE=2
@@ -42,10 +42,12 @@ install:
       sudo apt-get -y -q --no-install-recommends install
         zlib1g-dev libncursesw5-dev
         nettle-dev libfreetype6-dev
-        liblua5.2-dev;
+        liblua5.2-dev
+        ninja-build python-yaml python-jinja2;
     fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      sudo apt-get -y -q --no-install-recommends install ninja-build python-yaml python-jinja2;
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      brew update;
+      brew install ccache ninja;
     fi
   - |
     # workarounds to make ccache work
@@ -59,7 +61,6 @@ install:
 
 before_script:
   - ccache --zero-stats
-  - mkdir -p build && cd build
   # In older versions of gcc the missing field initializer warning fires even when the initialization list is empty, which is stupid.
   # This issue is fixed in version 5 of gcc, so if we get a newer version on Travis the warning can be re-enabled.
   - if [ "$CC" == "gcc" ]; then export CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers"; fi
@@ -70,8 +71,9 @@ script:
     -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0
     -DBUILD_GAME_NATIVE_DLL=$(($MODE == 1)) -DBUILD_GAME_NATIVE_EXE=0
     -DBUILD_GAME_NACL=$(($MODE == 2)) -DBUILD_GAME_NACL_NEXE=0
-    -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG_OPTIMIZE=0 ..
-  - cmake --build . -- -j8
+    -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG_OPTIMIZE=0
+    -H. -Bbuild
+  - cmake --build build -- -j8
 
 before_cache:
   - ccache --show-stats

@@ -110,7 +110,7 @@ public:
 					{
 						if ( HasAttribute( "checked" ) )
 						{
-							SetCvarValueAndFlags( cvar, "1" );
+							SetCvarValueAndFlags( cvar, GetAttribute<Rocket::Core::String>( "checked-value", "1" ) );
 						}
 
 						else
@@ -128,7 +128,7 @@ public:
 		}
 	}
 
-
+private:
 	void UpdateValue()
 	{
 		if ( !type.Empty() )
@@ -136,20 +136,21 @@ public:
 			if ( type == "checkbox" )
 			{
 				bool result;
-
-				if ( Cvar::ParseCvarValue( Cvar::GetValue( cvar.CString() ).c_str(), result ) )
+				std::string stringValue = Cvar::GetValue( cvar.CString() );
+				if ( !Cvar::ParseCvarValue( stringValue, result ) )
 				{
-					if ( result )
-					{
-						SetAttribute( "checked", "" );
-						SetValue( "1" );
-					}
+					// ParseCvarValue<bool> will only work correctly for a Cvar<bool>
+					// but it's also possible the cvar might be a legacy cvar which is parsed with atoi
+					result = atoi(stringValue.c_str()) != 0;
+				}
+				if ( result )
+				{
+					SetAttribute( "checked", "" );
+				}
 
-					else
-					{
-						RemoveAttribute( "checked" );
-						SetValue( "0" );
-					}
+				else
+				{
+					RemoveAttribute( "checked" );
 				}
 			}
 
@@ -169,7 +170,6 @@ public:
 
 	}
 
-private:
 	void SetCvarValueAndFlags( const Rocket::Core::String& cvar, const Rocket::Core::String& value )
 	{
 		Cvar::SetValue( cvar.CString(), value.CString() );

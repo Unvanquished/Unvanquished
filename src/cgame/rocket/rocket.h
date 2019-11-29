@@ -41,6 +41,7 @@ Maryland 20850 USA.
 
 #include "common/Compiler.h"
 #include "common/Color.h"
+#include "common/String.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -74,8 +75,12 @@ public:
 	Rocket::Core::String cmd;
 };
 
+// HTML-escape a string that will be used as text. Text meaning that it will be not be
+// somewhere weird like inside a tag, which may require a different form of escaping.
+std::string CG_EscapeHTMLText( Str::StringRef text );
+
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
-Rocket::Core::String CG_KeyBinding( const char *bind, int team );
+std::string CG_KeyBinding( const char *bind, int team );
 
 void Rocket_AddEvent( RocketEvent_t *event );
 

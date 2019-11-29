@@ -107,8 +107,22 @@ vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
-vmCvar_t           g_buildPointInitialBudget;
-vmCvar_t           g_buildPointBudgetPerMiner;
+Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget(
+		"g_BPInitialBudget",
+		"Initial Budget",
+		Cvar::SERVERINFO,
+		DEFAULT_BP_INITIAL_BUDGET,
+		[](int) {
+			G_UpdateBuildPointBudgets();
+		});
+Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
+		"g_BPBudgetPerMiner",
+		"Budget per Miner",
+		Cvar::SERVERINFO,
+		DEFAULT_BP_BUDGET_PER_MINER,
+		[](int) {
+			G_UpdateBuildPointBudgets();
+		});
 vmCvar_t           g_buildPointRecoveryInititalRate;
 vmCvar_t           g_buildPointRecoveryRateHalfLife;
 
@@ -354,8 +368,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                0,                                               0, true     , nullptr       },
 
 	// gameplay: mining
-	{ &g_buildPointInitialBudget,        "g_BPInitialBudget",          DEFAULT_BP_INITIAL_BUDGET,          0,                                               0, false    , nullptr       },
-	{ &g_buildPointBudgetPerMiner,       "g_BPBudgetPerMiner",         DEFAULT_BP_BUDGET_PER_MINER,        CVAR_SERVERINFO,                                 0, false    , nullptr       },
 	{ &g_buildPointRecoveryInititalRate, "g_BPRecoveryInitialRate",    DEFAULT_BP_RECOVERY_INITIAL_RATE,   CVAR_SERVERINFO,                                 0, false    , nullptr       },
 	{ &g_buildPointRecoveryRateHalfLife, "g_BPRecoveryRateHalfLife",   DEFAULT_BP_RECOVERY_RATE_HALF_LIFE, CVAR_SERVERINFO,                                 0, false    , nullptr       },
 
@@ -1900,8 +1912,8 @@ static void G_LogGameplayStats( int state )
 			             t.tm_hour, t.tm_min, t.tm_sec,
 			             LOG_GAMEPLAY_STATS_VERSION,
 			             g_momentumHalfLife.integer,
-			             g_buildPointInitialBudget.integer,
-			             g_buildPointBudgetPerMiner.integer );
+			             g_buildPointInitialBudget.Get(),
+			             g_buildPointBudgetPerMiner.Get() );
 
 			break;
 		}

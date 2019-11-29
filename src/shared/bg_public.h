@@ -1394,6 +1394,7 @@ void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t
 team_t                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
+int                         BG_CostToEvolve(int from, int to);
 int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
 bool                    BG_AlienCanEvolve(int from, int credits);
 

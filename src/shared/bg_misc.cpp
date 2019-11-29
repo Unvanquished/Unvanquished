@@ -412,21 +412,16 @@ bool BG_ClassHasAbility( int pClass, int ability )
 
 /*
 ==============
-BG_ClassCanEvolveFromTo
+BG_CostToEvolve
 ==============
 */
-int BG_ClassCanEvolveFromTo( int from, int to, int credits )
+int BG_CostToEvolve( int from, int to )
 {
-	int fromCost, toCost, evolveCost;
+	int fromCost, toCost;
 
 	if ( from == to ||
-	     from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
-	     to <= PCL_NONE || to >= PCL_NUM_CLASSES )
-	{
-		return -1;
-	}
-
-	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
+			 from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
+			 to <= PCL_NONE || to >= PCL_NUM_CLASSES )
 	{
 		return -1;
 	}
@@ -453,7 +448,24 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 		return -1;
 	}
 
-	evolveCost = toCost - fromCost;
+	return toCost - fromCost;
+}
+
+/*
+==============
+BG_ClassCanEvolveFromTo
+==============
+*/
+int BG_ClassCanEvolveFromTo( int from, int to, int credits )
+{
+	int evolveCost;
+
+	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
+	{
+		return -1;
+	}
+
+	evolveCost = BG_CostToEvolve( from, to );
 
 	if ( credits < evolveCost )
 	{

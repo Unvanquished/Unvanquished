@@ -91,7 +91,6 @@ vmCvar_t        cg_lagometer;
 vmCvar_t        cg_drawSpeed;
 vmCvar_t        cg_maxSpeedTimeWindow;
 vmCvar_t        cg_stats;
-vmCvar_t        cg_paused;
 vmCvar_t        cg_blood;
 vmCvar_t        cg_teamChatsOnly;
 vmCvar_t        cg_drawTeamOverlay;
@@ -312,7 +311,6 @@ static const cvarTable_t cvarTable[] =
 	// the following variables are created in other parts of the system,
 	// but we also reference them here
 
-	{ &cg_paused,                      "cl_paused",                      "0",            CVAR_ROM                     },
 	{ &cg_blood,                       "com_blood",                      "1",            0                            },
 	{ &cg_timescaleFadeEnd,            "cg_timescaleFadeEnd",            "1",            CVAR_CHEAT                   },
 	{ &cg_timescaleFadeSpeed,          "cg_timescaleFadeSpeed",          "0",            CVAR_CHEAT                   },
@@ -1432,7 +1430,7 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 
-void CG_Init( int serverMessageNum, int clientNum, glconfig_t gl, GameStateCSs gameState)
+void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState)
 {
 	const char *s;
 
