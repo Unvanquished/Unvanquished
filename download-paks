@@ -21,6 +21,18 @@ xdgHomeDir="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
 # Version of Unvanquished for which this script is built
 version=0.51.1
 
+exitStatus ()
+{
+	RET="${?}"
+	if [ "${RET}" != 0 ]
+	then
+		colorPrintf '1;31' 'FAILED.'
+	fi
+
+	return "${RET}"
+}
+trap exitStatus EXIT
+
 realDirPath () {
 	if command -v realpath >/dev/null
 	then
@@ -59,7 +71,7 @@ getCdnUrl () {
 }
 
 sum_file_cdn='md5sums'
-sum_file="$sum_file_cdn"
+sum_file="${sum_file_cdn}"
 
 # Select checksum command
 if command -v md5sum >/dev/null
@@ -192,23 +204,6 @@ done
 # Paths passed to script
 dest_dir="${dest_dir:-${default_dest_dir}}"
 cache_dir="${cache_dir:-${dest_dir}}/.cache"
-
-# TODO:
-# Set up for clean-up on exit
-# NOTE THAT THIS INDISCRIMINATELY REMOVES *.tmp FROM DEST & cache_dir DIRS
-cleanup ()
-{
-	RET="${?}"
-	if [ "${RET}" != 0 ]
-	then
-		colorPrintf '1;31' 'FAILED.'
-	fi
-
-# TODO:
-#	rm -f -- "${cache_dir}/"*.tmp "${dest_dir}/"*.tmp
-	return "${RET}"
-}
-trap cleanup EXIT
 
 colorPrintf '1;32' 'Cache directory: %s' "${cache_dir}"
 colorPrintf '1;32' 'Download directory: %s' "${dest_dir}"
@@ -354,13 +349,13 @@ getFileFromMirror () {
 		fi
 
 		colorPrintf '33' 'Downloading from: %s' "${base_url}"
-		colorPrintf '33' "Downloading ${file_name} ${file_alt_name:+as ${file_alt_name} }to ${cache_dir}…"
+		colorPrintf '33' "Downloading %s %sto %s…" "${file_name}" "${file_alt_name:+as ${file_alt_name} }" "${cache_dir}"
 
 		if ! [ -z "${file_alt_name}" ]
 		then
 			if ! ${httpGet} "${cache_dir}/${file_alt_name}.tmp" "${base_url}/${file_alt_name}"
 			then
-				colorPrintf '33' "Downloading ${file_alt_name} instead…"
+				colorPrintf '33' "Downloading %s instead…" "${file_alt_name}"
 				if ! ${httpGet} "${cache_dir}/${file_alt_name}.tmp" "${base_url}/${file_alt_name}"
 				then
 					is_failed='true'
