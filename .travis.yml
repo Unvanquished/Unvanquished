@@ -58,6 +58,8 @@ install:
       export PATH="/usr/local/opt/ccache/libexec:$PATH"
     fi
   - pip2 install --user -r src/utils/cbse/requirements.txt
+  - curl https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o ~/git-checkout-modules
+  - chmod +x ~/git-checkout-modules
 
 before_script:
   - ccache --zero-stats
@@ -65,6 +67,10 @@ before_script:
   # This issue is fixed in version 5 of gcc, so if we get a newer version on Travis the warning can be re-enabled.
   - if [ "$CC" == "gcc" ]; then export CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers"; fi
   - export CXXFLAGS="$CXXFLAGS -D__extern_always_inline=inline"
+  - ~/git-checkout-modules
+    --only-sub="${TRAVIS_BRANCH}":has='/sync$'
+    --only-sub="${TRAVIS_PULL_REQUEST_BRANCH}":has='/sync$'
+    --print
 
 script:
   - cmake -DUSE_PRECOMPILED_HEADER=0
