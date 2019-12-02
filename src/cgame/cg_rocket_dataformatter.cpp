@@ -390,6 +390,13 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	const char *action = "";
 	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
 
+	if ( ( alienClass == PCL_ALIEN_BUILDER0 && ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) && !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) ) )||
+			 ( alienClass == PCL_ALIEN_BUILDER0_UPG && ( !BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ) ) )
+	{
+		Rocket_DataFormatterFormattedData( handle, "", false );
+		return;
+	}
+
 	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
 	{
 		Class = "active";
