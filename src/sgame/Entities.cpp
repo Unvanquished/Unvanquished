@@ -96,7 +96,7 @@ float Entities::HealthOf(gentity_t* ent) {
 bool Entities::HasFullHealth(Entity& entity) {
 	HealthComponent *healthComponent = entity.Get<HealthComponent>();
 	ASSERT_NQ(healthComponent, nullptr);
-	return healthComponent->Health();
+	return healthComponent->FullHealth();
 }
 
 bool Entities::HasFullHealth(gentity_t* ent) {
