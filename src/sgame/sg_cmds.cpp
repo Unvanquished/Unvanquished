@@ -2345,6 +2345,10 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 			num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
 
+			int alienBuildingsInRange = 0;
+			int humansInRange = 0;
+			bool visibleToHumans = false;
+
 			for ( i = 0; i < num; i++ )
 			{
 				other = &g_entities[ entityList[ i ] ];
@@ -2353,13 +2357,26 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				     ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
 				       other->powered ) )
 				{
-					if ( report )
+					humansInRange++;
+					if( !visibleToHumans && G_LineOfSight( ent, other ) )
 					{
-						G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
+						visibleToHumans = true;
 					}
-					return false;
+
+				}
+				else if ( ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS ) )
+				{
+					alienBuildingsInRange++;
 				}
 			}
+			if ( visibleToHumans && alienBuildingsInRange < ( humansInRange * g_evolveAroundHumans.Get() ) ) {
+				if ( report )
+				{
+					G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
+				}
+				return false;
+			}
+
 
 			//check that we are not wallwalking
 			if ( ent->client->ps.eFlags & EF_WALLCLIMB )
