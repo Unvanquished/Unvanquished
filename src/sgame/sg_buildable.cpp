@@ -2229,6 +2229,7 @@ int G_LayoutList( const char *map, char *list, int len )
 void G_LayoutSelect()
 {
 	char fileName[ MAX_OSPATH ];
+	char fileName2[ MAX_OSPATH ];
 	char layouts[ MAX_CVAR_VALUE_STRING ];
 	char layouts2[ MAX_CVAR_VALUE_STRING ];
 	const char *layoutPtr;
@@ -2255,10 +2256,26 @@ void G_LayoutSelect()
 		G_LayoutList( map, layouts, sizeof( layouts ) );
 	}
 
-	// no layout specified, use the map's builtin layout
+	// no layout specified
 	if ( !layouts[ 0 ] )
 	{
-		return;
+		Com_sprintf( fileName, sizeof( fileName ), "layouts/%s/default.dat", map );
+		Com_sprintf( fileName2, sizeof( fileName ), "layouts/%s/builtin.dat", map );
+
+		//use default layout if available
+		if ( trap_FS_FOpenFile( fileName, nullptr, fsMode_t::FS_READ ) > 0 )
+		{
+			strcpy( layouts, "default" );
+		}
+		else if ( trap_FS_FOpenFile( fileName2, nullptr, fsMode_t::FS_READ ) > 0 )
+		{
+			strcpy( layouts, "builtin" );
+		}
+		else
+		{
+			//use the map's builtin layout
+			return;
+		}
 	}
 
 	Q_strncpyz( layouts2, layouts, sizeof( layouts2 ) );
