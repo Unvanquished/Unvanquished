@@ -4268,7 +4268,7 @@ bool G_admin_restart( gentity_t *ent )
 	admin_log( teampref );
 
 	// cvars
-	trap_Cvar_Set( "g_layouts", builtin ? S_BUILTIN_LAYOUT : layout );
+	trap_Cvar_Set( "g_layouts", layout );
 	trap_Cvar_Set( "g_mapRestarted", "y" );
 
 	// handle the flag
