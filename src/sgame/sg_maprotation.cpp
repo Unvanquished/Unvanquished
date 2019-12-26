@@ -404,7 +404,7 @@ static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool
 
 		Q_strncpyz( label->name, token, sizeof( label->name ) );
 	}
-	else if ( *token == '#' || conditional )
+	else if ( *token == '#' )
 	{
 		mrLabel_t *label;
 
@@ -1042,6 +1042,14 @@ Send commands to the server to actually change the map
 static void G_IssueMapChange( int index, int rotation )
 {
 	mrNode_t *node = mapRotations.rotations[ rotation ].nodes[ index ];
+
+	if( node->type == NT_CONDITION )
+	{
+		mrCondition_t *condition;
+		condition = &node->u.condition;
+		node = condition->target;
+	}
+
 	mrMapDescription_t  *map = &node->u.map;
 	char currentMapName[ MAX_STRING_CHARS ];
 
