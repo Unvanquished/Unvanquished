@@ -317,12 +317,12 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 		score_t *s = ScoreFromClientNum( clientNum );
 		const char *rml = "";
 
-		if ( s && s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->weapon != WP_NONE )
+		if ( s && ( s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] || cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ) && s->weapon != WP_NONE )
 		{
 			rml = va( "<img src='/%s'/>", CG_GetShaderNameFromHandle( cg_weapons[ s->weapon ].weaponIcon ) );
 		}
 
-		if ( s && s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
+		if ( s && ( s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] || cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ) && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
 		{
 			rml = va( "%s<img src='/%s'/>", rml, CG_GetShaderNameFromHandle( cg_upgrades[ s->upgrade ].upgradeIcon ) );
 		}
