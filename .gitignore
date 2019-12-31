@@ -50,6 +50,10 @@ src/sgame/backend
 
 #ignore clion project files
 .idea/
+
+#ignore visual studio code project files
+.vscode/
+
 #ignore qtcreator project files
 CMakeLists.txt.user
 #ignore external deps
