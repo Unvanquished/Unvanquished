@@ -1199,15 +1199,7 @@ static bool G_EvaluateMapCondition( mrCondition_t **condition )
 			break;
 
 		case CV_NUMPLAYERS:
-			{
-				int numPlayers = 0;
-				for ( int team = TEAM_NONE; team < NUM_TEAMS; team++ )
-				{
-					numPlayers += level.team[ team ].numPlayers;
-				}
-
-				result = G_EvaluateIntegerCondition(localCondition, numPlayers);
-			}
+			result = G_EvaluateIntegerCondition(localCondition, level.numConnectedPlayers);
 			break;
 
 		case CV_NUMCLIENTS:
