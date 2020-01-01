@@ -1421,6 +1421,7 @@ void CalculateRanks()
 	char P[ MAX_CLIENTS + 1 ] = "", B[ MAX_CLIENTS + 1 ] = "";
 
 	level.numConnectedClients = 0;
+	level.numConnectedPlayers = 0;
 	level.numPlayingClients   = 0;
 	level.numPlayingPlayers   = 0;
 	level.numPlayingBots      = 0;
@@ -1469,6 +1470,7 @@ void CalculateRanks()
 			else
 			{
 				level.team[ team ].numPlayers++;
+				level.numConnectedPlayers++;
 			}
 
 			if ( level.clients[ clientNum ].pers.connected != CON_CONNECTED )
