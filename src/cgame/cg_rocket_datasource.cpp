@@ -437,8 +437,8 @@ void CG_Rocket_CleanUpServerList( const char *table )
 				BG_Free( rocketInfo.data.servers[ i ][ j ].label );
 				BG_Free( rocketInfo.data.servers[ i ][ j ].addr );
 				BG_Free( rocketInfo.data.servers[ i ][ j ].mapName );
-				rocketInfo.data.serverCount[ i ] = 0;
 			}
+			rocketInfo.data.serverCount[ i ] = 0;
 		}
 	}
 }
