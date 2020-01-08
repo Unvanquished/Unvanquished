@@ -47,7 +47,10 @@ install:
     fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
       brew update;
-      brew install ccache ninja;
+      touch BrewFile;
+      echo 'brew "ccache"' >> BrewFile;
+      echo 'brew "ninja"' >> BrewFile;
+      brew bundle;
     fi
   - |
     # workarounds to make ccache work
