@@ -292,6 +292,7 @@ void CG_OffsetThirdPersonView()
 	// Set the focus point where the camera will look (at the player's vieworg)
 	VectorCopy( cg.refdef.vieworg, focusPoint );
 
+	bool noclip = cg.predictedPlayerState.pm_type == PM_NOCLIP;
 	bool alive = cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0;
 	bool spectate = cg.predictedPlayerState.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT;
 	// pretend the spectator is alive
@@ -421,20 +422,21 @@ void CG_OffsetThirdPersonView()
 	// Ensure that the current camera position isn't out of bounds and that there
 	// is nothing between the camera and the player.
 
-	// Trace a ray from the origin to the viewpoint to make sure the view isn't
-	// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
-	CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum,
-	          MASK_SOLID, 0 );
-
-	if ( trace.fraction != 1.0f )
+	if ( !noclip )
 	{
-		VectorCopy( trace.endpos, view );
-		view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
-		// Try another trace to this position, because a tunnel may have the ceiling
-		// close enough that this is poking out.
-		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum,
-		          MASK_SOLID, 0 );
-		VectorCopy( trace.endpos, view );
+		// Trace a ray from the origin to the viewpoint to make sure the view isn't
+		// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
+		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID, 0 );
+
+		if ( trace.fraction != 1.0f )
+		{
+			VectorCopy( trace.endpos, view );
+			view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
+			// Try another trace to this position, because a tunnel may have the ceiling
+			// close enough that this is poking out.
+			CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID, 0 );
+			VectorCopy( trace.endpos, view );
+		}
 	}
 
 	// Set the camera position to what we calculated.
