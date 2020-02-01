@@ -292,9 +292,14 @@ void CG_OffsetThirdPersonView()
 	// Set the focus point where the camera will look (at the player's vieworg)
 	VectorCopy( cg.refdef.vieworg, focusPoint );
 
+	bool alive = cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0;
+	bool spectate = cg.predictedPlayerState.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT;
+	// pretend the spectator is alive
+	alive |= spectate;
+
 	// If player is dead, we want the player to be between us and the killer
 	// so pretend that the player was looking at the killer, then place cam behind them.
-	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
+	if ( !alive )
 	{
 		int killerEntNum = cg.predictedPlayerState.stats[ STAT_VIEWLOCK ];
 
@@ -320,9 +325,7 @@ void CG_OffsetThirdPersonView()
 	// Calculate the angle of the camera's position around the player.
 	// Unless in demo, PLAYING in third person, or in dead-third-person cam, allow the player
 	// to control camera position offsets using the mouse position.
-	if ( cg.demoPlayback ||
-	     ( ( cg.snap->ps.pm_flags & PMF_FOLLOW ) &&
-	       ( cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0 ) ) )
+	if ( cg.demoPlayback || ( ( cg.snap->ps.pm_flags & PMF_FOLLOW ) && alive ) )
 	{
 		// Collect our input values from the mouse.
 		cmdNum = trap_GetCurrentCmdNumber();
@@ -392,7 +395,7 @@ void CG_OffsetThirdPersonView()
 	}
 	else
 	{
-		if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0 )
+		if ( alive )
 		{
 			// If we're playing the game in third person, the viewangles already
 			// take care of our mouselook, so just use them.
@@ -440,7 +443,7 @@ void CG_OffsetThirdPersonView()
 	// The above checks may have moved the camera such that the existing viewangles
 	// may not still face the player. Recalculate them to do so.
 	// but if we're dead, don't bother because we'd rather see what killed us
-	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0 )
+	if ( alive )
 	{
 		VectorSubtract( focusPoint, cg.refdef.vieworg, focusPoint );
 		vectoangles( focusPoint, cg.refdefViewAngles );
@@ -593,8 +596,13 @@ void CG_OffsetFirstPersonView()
 
 	VectorCopy( origin, baseOrigin );
 
+	bool alive = ps->stats[ STAT_HEALTH ] > 0;
+	bool spectate = ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT;
+	// pretend the spectator is alive
+	alive |= spectate;
+
 	// if dead, fix the angle and don't add any kick
-	if ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( !alive )
 	{
 		angles[ ROLL ] = 40;
 		angles[ PITCH ] = -15;
@@ -1900,9 +1908,14 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	// update cvars (needs valid unlockables data)
 	CG_UpdateCvars();
 
+	bool alive = cg.snap->ps.stats[ STAT_HEALTH ] > 0;
+	bool spectate = cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT;
+	// pretend the spectator is alive
+	alive |= spectate;
+
 	// decide on third person view
-	cg.renderingThirdPerson = ( cg_thirdPerson.integer || ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 ) ||
-	                            ( cg.chaseFollow && cg.snap->ps.pm_flags & PMF_FOLLOW ) );
+	cg.renderingThirdPerson = ( cg_thirdPerson.integer || !alive
+		|| ( cg.chaseFollow && cg.snap->ps.pm_flags & PMF_FOLLOW ) );
 
 	// update speedometer
 	CG_AddSpeed();
