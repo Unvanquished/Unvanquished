@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "Cvar.h"
 #include "../../cg_local.h"
 
-namespace Rocket {
+namespace Rml {
 namespace Core {
 namespace Lua {
 
@@ -94,7 +94,7 @@ luaL_Reg CvarSetters[] =
 	{ NULL, NULL },
 };
 
-LUACORETYPEDEFINE(Cvar,false)
+LUACORETYPEDEFINE(Cvar)
 
 }
 }

@@ -35,54 +35,54 @@ Maryland 20850 USA.
 #ifndef ROCKETELEMENT_H
 #define ROCKETELEMENT_H
 
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/ElementInstancer.h>
-#include <Rocket/Core/Geometry.h>
-#include <Rocket/Core/GeometryUtilities.h>
-#include <Rocket/Core/Texture.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/ElementInstancer.h>
+#include <RmlUi/Core/Geometry.h>
+#include <RmlUi/Core/GeometryUtilities.h>
+#include <RmlUi/Core/Texture.h>
 
 #include <queue>
 #include "../cg_local.h"
 #include "rocket.h"
 
-Rocket::Core::Element *activeElement = nullptr;
+Rml::Core::Element *activeElement = nullptr;
 
-class RocketElement : public Rocket::Core::Element
+class RocketElement : public Rml::Core::Element
 {
 public:
-	RocketElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
+	RocketElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ) { }
 	~RocketElement() { }
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension ) override
 	{
-		const Rocket::Core::Property *property;
+		const Rml::Core::Property *property;
 		property = GetProperty( "width" );
 
 		// Absolute unit. We can use it as is
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.x = property->value.Get<float>();
 		}
 		else
 		{
-			Rocket::Core::Element *parent = GetParentNode();
+			Rml::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.x = ResolveProperty( "width", parent->GetBox().GetSize().x );
+				dimensions.x = ResolveNumericProperty( "width" );
 			}
 		}
 
 		property = GetProperty( "height" );
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.y = property->value.Get<float>();
 		}
 		else
 		{
-			Rocket::Core::Element *parent = GetParentNode();
+			Rml::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.y = ResolveProperty( "height", parent->GetBox().GetSize().y );
+				dimensions.y = ResolveNumericProperty( "height" );
 			}
 		}
 
@@ -93,56 +93,43 @@ public:
 		return true;
 	}
 
-	void ProcessEvent( Rocket::Core::Event &event )
+	void ProcessDefaultAction( Rml::Core::Event &event ) override
 	{
 		extern std::queue< RocketEvent_t* > eventQueue;
 
 		// Class base class's Event processor
-		Rocket::Core::Element::ProcessEvent( event );
+		Rml::Core::Element::ProcessDefaultAction( event );
 
 
 		// Let this be picked up in the event loop if it is meant for us
 		// HACK: Ignore mouse and resize events
-		if ( event.GetTargetElement() == this && !Q_stristr( event.GetType().CString(), "mouse" ) && !Q_stristr( event.GetType().CString(), "resize" ) )
+		if ( event.GetTargetElement() == this && !Q_stristr( event.GetType().c_str(), "mouse" ) && !Q_stristr( event.GetType().c_str(), "resize" ) )
 		{
 			eventQueue.push( new RocketEvent_t( event, event.GetType() ) );
 		}
 	}
 
-	void OnRender()
+	void OnRender() override
 	{
 		activeElement = this;
 
-		CG_Rocket_RenderElement( GetTagName().CString() );
+		CG_Rocket_RenderElement( GetTagName().c_str() );
 
 		// Render text on top
-		Rocket::Core::Element::OnRender();
+		Rml::Core::Element::OnRender();
+	}
+
+	void OnUpdate() override
+	{
+		activeElement = this;
+
+		CG_Rocket_UpdateElement( GetTagName().c_str() );
+
+		Rml::Core::Element::OnUpdate();
 	}
 
 
-	Rocket::Core::Vector2f dimensions;
+	Rml::Core::Vector2f dimensions;
 };
 
-class RocketElementInstancer : public Rocket::Core::ElementInstancer
-{
-public:
-	RocketElementInstancer() { }
-	~RocketElementInstancer() { }
-	Rocket::Core::Element *InstanceElement( Rocket::Core::Element*,
-											const Rocket::Core::String &tag,
-											const Rocket::Core::XMLAttributes& )
-	{
-		return new RocketElement( tag );
-	}
-
-	void ReleaseElement( Rocket::Core::Element *element )
-	{
-		delete element;
-	}
-
-	void Release()
-	{
-		delete this;
-	}
-};
 #endif

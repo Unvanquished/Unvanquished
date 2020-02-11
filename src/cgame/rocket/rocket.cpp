@@ -36,13 +36,13 @@ Maryland 20850 USA.
 
 #include "common/Common.h"
 #include "rocket.h"
-#include <Rocket/Core/FileInterface.h>
-#include <Rocket/Core/SystemInterface.h>
-#include <Rocket/Core/RenderInterface.h>
-#include <Rocket/Controls.h>
-#include <Rocket/Core/Lua/Interpreter.h>
-#include <Rocket/Core/Lua/LuaType.h>
-#include <Rocket/Controls/Lua/Controls.h>
+#include <RmlUi/Core/FileInterface.h>
+#include <RmlUi/Core/SystemInterface.h>
+#include <RmlUi/Core/RenderInterface.h>
+#include <RmlUi/Controls.h>
+#include <RmlUi/Core/Lua/Interpreter.h>
+#include <RmlUi/Core/Lua/LuaType.h>
+#include <RmlUi/Controls/Lua/Controls.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
 #include "rocketEventInstancer.h"
@@ -62,42 +62,42 @@ Maryland 20850 USA.
 #include "rocketColorInput.h"
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
-#include <Rocket/Debugger.h>
 #include "lua/CDataSource.h"
+#include <RmlUi/Debugger.h>
 #include "lua/Cvar.h"
 #include "lua/Cmd.h"
 #include "lua/Events.h"
 #include "lua/Timer.h"
 #include "../cg_local.h"
 
-class DaemonFileInterface : public Rocket::Core::FileInterface
+class DaemonFileInterface : public Rml::Core::FileInterface
 {
 public:
-	Rocket::Core::FileHandle Open( const Rocket::Core::String &filePath )
+	Rml::Core::FileHandle Open( const Rml::Core::String &filePath )
 	{
 		fileHandle_t fileHandle;
-		trap_FS_OpenPakFile( filePath.CString(), fileHandle );
-		return ( Rocket::Core::FileHandle )fileHandle;
+		trap_FS_OpenPakFile( filePath.c_str(), fileHandle );
+		return ( Rml::Core::FileHandle )fileHandle;
 	}
 
-	void Close( Rocket::Core::FileHandle file )
+	void Close( Rml::Core::FileHandle file )
 	{
 		trap_FS_FCloseFile( ( fileHandle_t ) file );
 	}
 
-	size_t Read( void *buffer, size_t size, Rocket::Core::FileHandle file )
+	size_t Read( void *buffer, size_t size, Rml::Core::FileHandle file )
 	{
 		return ( size_t ) trap_FS_Read( buffer, (int)size, ( fileHandle_t ) file );
 	}
 
 	// TODO
-	bool Seek( Rocket::Core::FileHandle file, long offset, int origin )
+	bool Seek( Rml::Core::FileHandle file, long offset, int origin )
 	{
 		return trap_FS_Seek( ( fileHandle_t ) file, offset, ( fsOrigin_t ) origin );
 	}
 
 	// TODO
-	size_t Tell( Rocket::Core::FileHandle file )
+	size_t Tell( Rml::Core::FileHandle file )
 	{
 		return ( size_t ) trap_FS_Tell( ( fileHandle_t ) file );
 	}
@@ -106,47 +106,64 @@ public:
 		May not be correct for files in zip files
 	*/
 	// TODO
-	size_t Length( Rocket::Core::FileHandle file )
+	size_t Length( Rml::Core::FileHandle file )
 	{
 		return ( size_t ) trap_FS_FileLength( ( fileHandle_t ) file );
 	}
 };
 
-class DaemonSystemInterface : public Rocket::Core::SystemInterface
+class DaemonSystemInterface : public Rml::Core::SystemInterface
 {
 public:
-	float GetElapsedTime()
+	double GetElapsedTime() override
 	{
 		return trap_Milliseconds() / 1000.0f;
 	}
 
 	// TODO: Add explicit support for other log types
-	bool LogMessage( Rocket::Core::Log::Type type, const Rocket::Core::String &message )
+	bool LogMessage( Rml::Core::Log::Type type, const Rml::Core::String &message ) override
 	{
 		switch ( type )
 		{
-			case Rocket::Core::Log::LT_ALWAYS :
-			case Rocket::Core::Log::LT_ERROR :
-			case Rocket::Core::Log::LT_WARNING :
-				Log::Warn( message.CString() );
+			case Rml::Core::Log::LT_ALWAYS :
+			case Rml::Core::Log::LT_ERROR :
+			case Rml::Core::Log::LT_WARNING :
+				Log::Warn( message.c_str() );
 				break;
 			default:
-			case Rocket::Core::Log::LT_INFO :
-				Log::Notice( message.CString() );
+			case Rml::Core::Log::LT_INFO :
+				Log::Notice( message.c_str() );
 				break;
 		}
 		return true;
 	}
+
+	void SetMouseCursor(const Rml::Core::String& cursor_name) override
+	{
+		if ( cursor_name.empty() )
+		{
+			// HACK: ignore this and keep using the previous cursor
+			// RmlUi wants to get rid of the cursor when it is not above a document, but
+			// we want to keep it whenever there is any menu open. For example the team
+			// selection menu which only covers a small part of the screen.
+			return;
+		}
+		Log::Verbose("Loading new cursor: %s", cursor_name);
+		if ( !CG_Rocket_LoadCursor( cursor_name ) )
+		{
+			Log::Warn( "Error loading cursor: %s", cursor_name );
+		}
+	}
 };
 
-static polyVert_t *createVertexArray( Rocket::Core::Vertex *vertices, int count )
+static polyVert_t *createVertexArray( Rml::Core::Vertex *vertices, int count )
 {
 	polyVert_t *verts = new polyVert_t[ count ];
 
 	for ( int i = 0; i < count; i++ )
 	{
 		polyVert_t &polyVert = verts[ i ];
-		Rocket::Core::Vertex &vert = vertices[ i ];
+		Rml::Core::Vertex &vert = vertices[ i ];
 
 		Vector2Copy( vert.position, polyVert.xyz );
 
@@ -170,7 +187,7 @@ public:
 	int         numIndicies;
 	qhandle_t   shader;
 
-	RocketCompiledGeometry( Rocket::Core::Vertex *verticies, int numVerticies, int *_indices, int _numIndicies, qhandle_t shader ) : numVerts( numVerticies ), numIndicies( _numIndicies )
+	RocketCompiledGeometry( Rml::Core::Vertex *verticies, int numVerticies, int *_indices, int _numIndicies, qhandle_t shader ) : numVerts( numVerticies ), numIndicies( _numIndicies )
 	{
 		this->verts = createVertexArray( verticies, numVerticies );
 
@@ -191,41 +208,41 @@ public:
 static qhandle_t whiteShader;
 
 // TODO: CompileGeometry, RenderCompiledGeometry, ReleaseCompileGeometry ( use vbos and ibos )
-class DaemonRenderInterface : public Rocket::Core::RenderInterface
+class DaemonRenderInterface : public Rml::Core::RenderInterface
 {
 public:
 	DaemonRenderInterface() { }
 
-	void RenderGeometry( Rocket::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation )
+	void RenderGeometry( Rml::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rml::Core::TextureHandle texture, const Rml::Core::Vector2f& translation ) override
 	{
 		polyVert_t *verts = createVertexArray( verticies, numVerticies );
 		trap_R_Add2dPolysIndexedToScene( verts, numVerticies, indices, numIndicies, translation.x, translation.y, texture ? ( qhandle_t ) texture : whiteShader );
 		delete[]  verts;
 	}
 
-	Rocket::Core::CompiledGeometryHandle CompileGeometry( Rocket::Core::Vertex *vertices, int num_vertices, int *indices, int num_indices, Rocket::Core::TextureHandle texture )
+	Rml::Core::CompiledGeometryHandle CompileGeometry( Rml::Core::Vertex *vertices, int num_vertices, int *indices, int num_indices, Rml::Core::TextureHandle texture ) override
 	{
 		RocketCompiledGeometry *geometry = new RocketCompiledGeometry( vertices, num_vertices, indices, num_indices, texture ? ( qhandle_t ) texture : whiteShader );
 
-		return Rocket::Core::CompiledGeometryHandle( geometry );
+		return Rml::Core::CompiledGeometryHandle( geometry );
 
 	}
 
-	void RenderCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry, const Rocket::Core::Vector2f &translation )
+	void RenderCompiledGeometry( Rml::Core::CompiledGeometryHandle geometry, const Rml::Core::Vector2f &translation ) override
 	{
 		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
 		trap_R_Add2dPolysIndexedToScene( g->verts, g->numVerts, g->indices, g->numIndicies, translation.x, translation.y, g->shader );
 	}
 
-	void ReleaseCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry )
+	void ReleaseCompiledGeometry( Rml::Core::CompiledGeometryHandle geometry ) override
 	{
 		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
 		delete g;
 	}
 
-	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source )
+	bool LoadTexture( Rml::Core::TextureHandle& textureHandle, Rml::Core::Vector2i& textureDimensions, const Rml::Core::String& source ) override
 	{
-		qhandle_t shaderHandle = trap_R_RegisterShader( source.CString(), RSF_NOMIP );
+		qhandle_t shaderHandle = trap_R_RegisterShader( source.c_str(), RSF_NOMIP );
 
 		if ( shaderHandle <= 0 )
 		{
@@ -233,11 +250,11 @@ public:
 		}
 
 		// Find the size of the texture
-		textureHandle = ( Rocket::Core::TextureHandle ) shaderHandle;
+		textureHandle = ( Rml::Core::TextureHandle ) shaderHandle;
 		trap_R_GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
 		return true;
 	}
-	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions, int )
+	bool GenerateTexture( Rml::Core::TextureHandle& texture_handle, const byte* source, const Rml::Core::Vector2i& source_dimensions ) override
 	{
 
 		texture_handle = trap_R_GenerateTexture( (const byte* )source, source_dimensions.x, source_dimensions.y );
@@ -246,20 +263,26 @@ public:
 		return ( texture_handle > 0 );
 	}
 
-	void ReleaseTexture( Rocket::Core::TextureHandle )
+	void ReleaseTexture( Rml::Core::TextureHandle ) override
 	{
 		// we free all textures after each map load, but this may have to be filled for the libRocket font system
 	}
 
-	void EnableScissorRegion( bool enable )
+	void EnableScissorRegion( bool enable ) override
 	{
 		trap_R_ScissorEnable( enable );
 
 	}
 
-	void SetScissorRegion( int x, int y, int width, int height )
+	void SetScissorRegion( int x, int y, int width, int height ) override
 	{
 		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
+	}
+
+	void SetTransform( const Rml::Core::Matrix4f* ) override
+	{
+		// TODO: implement.
+		Log::Warn("Transforms for RmlUi not yet implemented");
 	}
 };
 
@@ -275,21 +298,21 @@ void Rocket_RocketDebug_f()
 
 	if ( !init )
 	{
-		Rocket::Debugger::Initialise(menuContext);
+		Rml::Debugger::Initialise(menuContext);
 		init = true;
 	}
 
-	Rocket::Debugger::SetVisible( !Rocket::Debugger::IsVisible() );
+	Rml::Debugger::SetVisible( !Rml::Debugger::IsVisible() );
 
-	if ( Rocket::Debugger::IsVisible() )
+	if ( Rml::Debugger::IsVisible() )
 	{
 		if ( !Q_stricmp( CG_Argv( 1 ), "hud" ) )
 		{
-			Rocket::Debugger::SetContext( hudContext );
+			Rml::Debugger::SetContext( hudContext );
 		}
 		else
 		{
-			Rocket::Debugger::SetContext( menuContext );
+			Rml::Debugger::SetContext( menuContext );
 		}
 		CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
 	}
@@ -301,7 +324,7 @@ void Rocket_RocketDebug_f()
 
 void Rocket_Lua_f( void )
 {
-	Rocket::Core::Lua::Interpreter::DoString( CG_Argv( 1 ), "commandline" );
+	Rml::Core::Lua::Interpreter::DoString( CG_Argv( 1 ), "commandline" );
 }
 
 static DaemonFileInterface fileInterface;
@@ -310,70 +333,85 @@ static DaemonRenderInterface renderInterface;
 
 static RocketFocusManager fm;
 
-Rocket::Core::Context *menuContext = nullptr;
-Rocket::Core::Context *hudContext = nullptr;
+Rml::Core::Context *menuContext = nullptr;
+Rml::Core::Context *hudContext = nullptr;
+
+Rml::Core::PropertyId UnvPropertyId::Orientation;
+
+// TODO
+// cvar_t *cg_draw2D;
 
 void Rocket_Init()
 {
-	Rocket::Core::SetFileInterface( &fileInterface );
-	Rocket::Core::SetSystemInterface( &systemInterface );
-	Rocket::Core::SetRenderInterface( &renderInterface );
+	Rml::Core::SetFileInterface( &fileInterface );
+	Rml::Core::SetSystemInterface( &systemInterface );
+	Rml::Core::SetRenderInterface( &renderInterface );
 
-	if ( !Rocket::Core::Initialise() )
+	if ( !Rml::Core::Initialise() )
 	{
 		Log::Notice( "Could not init libRocket\n" );
 		return;
 	}
 
 	// Initialize the controls plugin
-	Rocket::Controls::Initialise();
+	Rml::Controls::Initialise();
 
 	// Initialize Lua
-	Rocket::Core::Lua::Interpreter::Initialise();
-	Rocket::Core::Lua::Interpreter::DoString("math.randomseed(os.time())");
-	Rocket::Controls::Lua::RegisterTypes(Rocket::Core::Lua::Interpreter::GetLuaState());
-	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cvar>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
-	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cmd>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
-	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Events>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
-	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Timer>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
-	CG_Rocket_RegisterLuaCDataSource(Rocket::Core::Lua::Interpreter::GetLuaState());
+	Rml::Core::Lua::Interpreter::Initialise();
+	Rml::Core::Lua::Interpreter::DoString("math.randomseed(os.time())");
+	Rml::Controls::Lua::RegisterTypes(Rml::Core::Lua::Interpreter::GetLuaState());
+	Rml::Core::Lua::LuaType<Rml::Core::Lua::Cvar>::Register(Rml::Core::Lua::Interpreter::GetLuaState());
+	Rml::Core::Lua::LuaType<Rml::Core::Lua::Cmd>::Register(Rml::Core::Lua::Interpreter::GetLuaState());
+	Rml::Core::Lua::LuaType<Rml::Core::Lua::Events>::Register(Rml::Core::Lua::Interpreter::GetLuaState());
+	Rml::Core::Lua::LuaType<Rml::Core::Lua::Timer>::Register(Rml::Core::Lua::Interpreter::GetLuaState());
+	CG_Rocket_RegisterLuaCDataSource(Rml::Core::Lua::Interpreter::GetLuaState());
+
+	// Register custom properties.
+	UnvPropertyId::Orientation = Rml::Core::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
+		.AddParser("keyword", "left, right, up, down")
+		.GetId();
 
 	// Set backup font
-	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
+	Rml::Core::GetFontEngineInterface()->LoadFontFace( "fonts/unifont.ttf", /*fallback_face=*/true );
 
 	// Initialize keymap
 	Rocket_InitKeys();
 
 	// Create the menu context
-	menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
+	menuContext = Rml::Core::CreateContext( "menuContext", Rml::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
+	// Allow this context to set the mouse cursor.
+	menuContext->EnableMouseCursor( true );
 
 	// Add the listener so we know where to give mouse/keyboard control to
-	menuContext->GetRootElement()->AddEventListener( "show", &fm );
-	menuContext->GetRootElement()->AddEventListener( "hide", &fm );
-	menuContext->GetRootElement()->AddEventListener( "close", &fm );
-	menuContext->GetRootElement()->AddEventListener( "load", &fm );
+	menuContext->GetRootElement()->AddEventListener( "show", &fm, true );
+	menuContext->GetRootElement()->AddEventListener( "hide", &fm, true );
+	menuContext->GetRootElement()->AddEventListener( "close", &fm, true );
+	menuContext->GetRootElement()->AddEventListener( "load", &fm, true );
 
 	// Create the HUD context
-	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
+	hudContext = Rml::Core::CreateContext( "hudContext", Rml::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
+	// HUDs do not get to interact with the mouse. In fact, we do not even inject mouse events.
+	hudContext->EnableMouseCursor( false );
 
 	// Add custom client elements
-	Rocket::Core::Factory::RegisterElementInstancer( "datagrid", new Rocket::Core::ElementInstancerGeneric< SelectableDataGrid >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "progressbar", new Rocket::Core::ElementInstancerGeneric< RocketProgressBar >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "dataselect", new Rocket::Core::ElementInstancerGeneric< RocketDataSelect >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "console_text", new Rocket::Core::ElementInstancerGeneric< RocketConsoleTextElement >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "datasource_single", new Rocket::Core::ElementInstancerGeneric< RocketDataSourceSingle >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "datasource", new Rocket::Core::ElementInstancerGeneric< RocketDataSource >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "keybind", new Rocket::Core::ElementInstancerGeneric< RocketKeyBinder >() )->RemoveReference();
-// 	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "select", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlSelect >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "if", new Rocket::Core::ElementInstancerGeneric< RocketConditionalElement >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "colorinput", new Rocket::Core::ElementInstancerGeneric< RocketColorInput >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "include", new Rocket::Core::ElementInstancerGeneric< RocketIncludeElement > () )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "inlinecvar", new Rocket::Core::ElementInstancerGeneric< RocketCvarInlineElement > () )->RemoveReference();
+	REGISTER_ELEMENT("datagrid", SelectableDataGrid )
+	REGISTER_ELEMENT("progressbar", RocketProgressBar )
+	REGISTER_ELEMENT("dataselect", RocketDataSelect )
+	REGISTER_ELEMENT("console_text", RocketConsoleTextElement )
+	REGISTER_ELEMENT("datasource_single", RocketDataSourceSingle )
+	REGISTER_ELEMENT("datasource", RocketDataSource )
+	REGISTER_ELEMENT("keybind", RocketKeyBinder )
+	REGISTER_ELEMENT("chatfield", RocketChatField )
+	REGISTER_ELEMENT("input", CvarElementFormControlInput )
+	REGISTER_ELEMENT("select", CvarElementFormControlSelect )
+	REGISTER_ELEMENT("if", RocketConditionalElement )
+	REGISTER_ELEMENT("colorinput", RocketColorInput )
+	REGISTER_ELEMENT("include", RocketIncludeElement )
+	REGISTER_ELEMENT("inlinecvar", RocketCvarInlineElement )
 
 	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_DEFAULT );
+
+	CG_FocusEvent( rocketInfo.keyCatcher & KEYCATCH_CONSOLE ? false : true );
 }
 
 void Rocket_Shutdown()
@@ -389,20 +427,21 @@ void Rocket_Shutdown()
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
 
-	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
-	{
-		Rocket::Core::Lua::Interpreter::Shutdown();
-	}
-
 	if ( menuContext )
 	{
-		menuContext->RemoveReference();
+		if (! Rml::Core::RemoveContext( "menuContext" ) )
+		{
+			Log::Warn( "Could not remove menuContext" );
+		}
 		menuContext = nullptr;
 	}
 
 	if ( hudContext )
 	{
-		hudContext->RemoveReference();
+		if (! Rml::Core::RemoveContext( "hudContext" ) )
+		{
+			Log::Warn( "Could not remove hudContext" );
+		}
 		hudContext = nullptr;
 	}
 
@@ -413,7 +452,7 @@ void Rocket_Shutdown()
 	}
 	dataFormatterList.clear();
 
-	Rocket::Core::Shutdown();
+	Rml::Core::Shutdown();
 
 	for ( std::map<std::string, RocketDataGrid*>::iterator it = dataSourceMap.begin(); it != dataSourceMap.end(); ++it )
 	{
@@ -461,7 +500,7 @@ void Rocket_Update()
 	{
 		hudContext->Update();
 	}
-	Rocket::Core::Lua::Timer::Update(rocketInfo.realtime);
+	Rml::Core::Lua::Timer::Update(rocketInfo.realtime);
 }
 
 std::string CG_EscapeHTMLText( Str::StringRef text )
@@ -486,11 +525,11 @@ std::string CG_EscapeHTMLText( Str::StringRef text )
 	return out;
 }
 
-// TODO: Make this take Rocket::Core::String as an input.
-Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
+// TODO: Make this take Rml::Core::String as an input.
+Rml::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
-	Rocket::Core::String out;
-	Rocket::Core::String spanstr;
+	Rml::Core::String out;
+	Rml::Core::String spanstr;
 	bool span = false;
 	bool spanHasContent = false;
 
@@ -507,31 +546,31 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				if ( span && !spanHasContent )
 				{
 					spanHasContent = true;
-					out.Append( spanstr );
+					out.append( spanstr );
 				}
-				out.Append( "&lt;" );
+				out.append( "&lt;" );
 			}
 			else if ( c == '>' )
 			{
 				if ( span && !spanHasContent )
 				{
 					spanHasContent = true;
-					out.Append( spanstr );
+					out.append( spanstr );
 				}
-				out.Append( "&gt;" );
+				out.append( "&gt;" );
 			}
 			else if ( c == '&' )
 			{
 				if ( span && !spanHasContent )
 				{
 					spanHasContent = true;
-					out.Append( spanstr );
+					out.append( spanstr );
 				}
-				out.Append( "&amp;" );
+				out.append( "&amp;" );
 			}
 			else if ( c == '\n' )
 			{
-				out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
+				out.append( span && spanHasContent ? "</span><br />" : "<br />" );
 				span = false;
 				spanHasContent = false;
 			}
@@ -540,9 +579,9 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				if ( span && !spanHasContent )
 				{
 					spanHasContent = true;
-					out.Append( spanstr );
+					out.append( spanstr );
 				}
-				out.Append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
 				while ( *iter->Begin() != ']' )
 				{
 					++iter;
@@ -552,17 +591,17 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			{
 				if ( span && !spanHasContent )
 				{
-					out.Append( spanstr );
+					out.append( spanstr );
 					spanHasContent = true;
 				}
-				out.Append( token.Begin(), token.Size() );
+				out.append( token.Begin(), token.Size() );
 			}
 		}
 		else if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
 			if ( span && spanHasContent )
 			{
-				out.Append( "</span>" );
+				out.append( "</span>" );
 				span = false;
 				spanHasContent = false;
 			}
@@ -587,16 +626,16 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 		{
 			if ( span && !spanHasContent )
 			{
-				out.Append( spanstr );
+				out.append( spanstr );
 				spanHasContent = true;
 			}
-			out.Append( Color::Constants::ESCAPE );
+			out.append( 1, Color::Constants::ESCAPE );
 		}
 	}
 
 	if ( span && spanHasContent )
 	{
-		out.Append( "</span>" );
+		out.append( "</span>" );
 	}
 
 	return out;
@@ -604,9 +643,10 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 
 void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 {
-	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).CString(), length );
+	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).c_str(), length );
 }
 
+// FIXME: Poor naming, this deals with the custom cursors as well
 class EngineCursor
 {
 public:
@@ -633,7 +673,7 @@ private:
     {
         if ( menuContext )
         {
-            menuContext->ShowMouseCursor( show_cursor && focus );
+			CG_Rocket_EnableCursor( show_cursor && focus );
         }
 
         MouseMode mode;
@@ -664,22 +704,8 @@ static EngineCursor engineCursor;
 
 void Rocket_SetActiveContext( int catcher )
 {
-	switch ( catcher )
-	{
-		case KEYCATCH_UI:
-			engineCursor.Show( true );
-			drawMenu = true;
-			break;
-
-		default:
-			if ( !( catcher & KEYCATCH_CONSOLE ) )
-			{
-				engineCursor.Show( false );
-			}
-
-			drawMenu = false;
-			break;
-	}
+	drawMenu = catcher & KEYCATCH_UI;
+	engineCursor.Show( catcher & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) );
 }
 
 void CG_FocusEvent( bool has_focus )
@@ -689,5 +715,5 @@ void CG_FocusEvent( bool has_focus )
 
 void Rocket_LoadFont( const char *font )
 {
-	Rocket::Core::FontDatabase::LoadFontFace( font );
+	Rml::Core::GetFontEngineInterface()->LoadFontFace( font, false );
 }

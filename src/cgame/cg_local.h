@@ -1398,6 +1398,9 @@ struct rocketInfo_t
 	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;
+	bool renderCursor;
+	qhandle_t cursor;
+	rectDef_t cursor_pos;
 };
 
 extern rocketInfo_t rocketInfo;
@@ -1499,8 +1502,6 @@ struct cgMedia_t
 
 	sfxHandle_t alienL4ChargePrepare;
 	sfxHandle_t alienL4ChargeStart;
-
-	qhandle_t   cursor;
 
 	//light armour
 	qhandle_t   larmourHeadSkin;
@@ -2233,6 +2234,8 @@ int CG_StringToNetSource( const char *src );
 const char *CG_NetSourceToString( int netSrc );
 const char *CG_Rocket_QuakeToRML( const char *in );
 bool CG_Rocket_IsCommandAllowed( rocketElementType_t type );
+bool CG_Rocket_LoadCursor( Str::StringRef cursorPath );
+void CG_Rocket_EnableCursor( bool enable );
 
 //
 // cg_rocket_events.c
@@ -2248,6 +2251,7 @@ void CG_Rocket_RegisterDataFormatters();
 //
 // cg_rocket_draw.c
 //
+void CG_Rocket_UpdateElement( const char* tag );
 void CG_Rocket_RenderElement( const char* tag );
 void CG_Rocket_RegisterElements( void );
 
@@ -2292,7 +2296,6 @@ void Rocket_Shutdown();
 void Rocket_Render();
 void Rocket_Update();
 void Rocket_LoadDocument( const char *path );
-void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
 bool Rocket_GetEvent(std::string& cmdText);
 void Rocket_DeleteEvent();

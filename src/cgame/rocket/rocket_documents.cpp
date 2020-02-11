@@ -39,12 +39,12 @@ Maryland 20850 USA.
 
 void Rocket_LoadDocument( const char *path )
 {
-	Rocket::Core::ElementDocument* document = menuContext->LoadDocument( path );
-	Rocket::Core::ElementDocument* other;
+	Rml::Core::ElementDocument* document = menuContext->LoadDocument( path );
+	Rml::Core::ElementDocument* other;
 
 	if( document )
 	{
-		document->RemoveReference();
+		Rocket_SetDocumentScale( *document );
 		menuContext->PullDocumentToFront( document ); // Ensure any duplicates will be found first.
 
 		// Close any other documents which may have the same ID
@@ -57,28 +57,20 @@ void Rocket_LoadDocument( const char *path )
 
 }
 
-void Rocket_LoadCursor( const char *path )
+// Scale the UI proportional to the screen size
+void Rocket_SetDocumentScale( Rml::Core::ElementDocument& document )
 {
-	Rocket::Core::ElementDocument* document = menuContext->LoadMouseCursor( path );
-
-	if( document )
-	{
-		// This gets 12px on 1920×1080 screen, which is libRocket default for 1em
-		int fontSize = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight) / 90;
-
-		// 1.6×2.3em ≈ 20×28px on 1920×1080 screen
-		document->SetProperty( "width", va( "%fpx", 1.6 * fontSize ) );
-		document->SetProperty( "height", va( "%fpx", 2.3 * fontSize ) );
-
-		document->RemoveReference();
-	}
+	// This gets 12pt on 1920�1080 screen, which is libRocket default for 1em
+	int size = std::min( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) / 90;
+	document.SetProperty( Rml::Core::PropertyId::FontSize,
+	                      Rml::Core::Property( size, Rml::Core::Property::PT ));
 }
 
 void Rocket_DocumentAction( const char *name, const char *action )
 {
 	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )
 	{
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Show();
@@ -97,7 +89,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 			return;
 		}
 
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Close();
@@ -105,10 +97,10 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "goto", action ) )
 	{
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
-			Rocket::Core::ElementDocument *owner = menuContext->GetFocusElement()->GetOwnerDocument();
+			Rml::Core::ElementDocument *owner = menuContext->GetFocusElement()->GetOwnerDocument();
 			if ( owner )
 			{
 				owner->Close();
@@ -122,7 +114,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "blur", action ) || !Q_stricmp( "hide", action ) )
 	{
-		Rocket::Core::ElementDocument* document = nullptr;
+		Rml::Core::ElementDocument* document = nullptr;
 
 		if ( !*name ) // If name is empty, hide active
 		{
@@ -151,7 +143,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "reload", action ) )
 	{
-		Rocket::Core::ElementDocument* document = nullptr;
+		Rml::Core::ElementDocument* document = nullptr;
 
 		if ( !*name ) // If name is empty, hide active
 		{
@@ -168,9 +160,10 @@ void Rocket_DocumentAction( const char *name, const char *action )
 
 		if ( document )
 		{
-			Rocket::Core::String url = document->GetSourceURL();
+			Rml::Core::String url = document->GetSourceURL();
 			document->Close();
 			document = menuContext->LoadDocument( url );
+			Rocket_SetDocumentScale( *document );
 			document->Show();
 		}
 	}

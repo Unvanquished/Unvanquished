@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "common/FileSystem.h"
 #include "cg_local.h"
 
-rocketInfo_t rocketInfo;
+rocketInfo_t rocketInfo = {};
 
 Cvar::Cvar<std::string> rocket_menuFile("rocket_menuFile", "VFS path of config file for menus", Cvar::CHEAT, "ui/rocket.txt");
 Cvar::Cvar<std::string> rocket_hudFile("rocket_hudFile", "VFS path of config file for HUD", Cvar::CHEAT, "ui/rockethud.txt");
@@ -49,6 +49,7 @@ void CG_Rocket_Init( glconfig_t gl )
 
 	oldConnState = connstate_t::CA_UNINITIALIZED;
 	cgs.glconfig = gl;
+	rocketInfo.keyCatcher = trap_Key_GetCatcher();
 
 	Trans_Init();
 
@@ -66,12 +67,8 @@ void CG_Rocket_Init( glconfig_t gl )
 	// Register elements
 	CG_Rocket_RegisterElements();
 
-	// This gets 12px on 1920×1080 screen, which is libRocket default for 1em
-	int fontSize = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight) / 90;
-	Rocket_RegisterProperty( "font-size", std::to_string(fontSize).c_str(), true, true, "number" );
-
 	Rocket_RegisterProperty( "cell-color", "white", false, false, "color" );
-	Rocket_RegisterProperty( "border-width", "0.5", false, false, "number" );
+	Rocket_RegisterProperty( "momentum-border-width", "0.5", false, false, "number" );
 	Rocket_RegisterProperty( "unlocked-marker-color", "green", false, false, "color" );
 	Rocket_RegisterProperty( "locked-marker-color", "red", false, false, "color" );
 
@@ -98,17 +95,12 @@ void CG_Rocket_Init( glconfig_t gl )
 		}
 
 		// Set the cursor
+		// TODO: Use the RmlUi cursor mechanism to allow per-cursor stuff...
 		if ( !Q_stricmp( token, "cursor" ) )
 		{
 			token = COM_Parse2( &text_p );
 
-			// Skip non-RML files
-			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
-			{
-				continue;
-			}
 
-			Rocket_LoadCursor( token );
 			continue;
 		}
 
@@ -245,7 +237,7 @@ void CG_Rocket_Init( glconfig_t gl )
 		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
 	}
 
-	CG_SetKeyCatcher( KEYCATCH_UI );
+	CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
 }
 
 void CG_Rocket_LoadHuds()
@@ -562,6 +554,11 @@ void CG_Rocket_Frame( cgClientState_t state )
 	CG_Rocket_ProcessEvents();
 	Rocket_Update();
 	Rocket_Render();
+	if ( rocketInfo.renderCursor && rocketInfo.cursor )
+	{
+		trap_R_ClearColor();
+		trap_R_DrawStretchPic( rocketInfo.cursor_pos.x, rocketInfo.cursor_pos.y, rocketInfo.cursor_pos.w,rocketInfo.cursor_pos.h, 0, 0, 1, 1, rocketInfo.cursor );
+	}
 }
 
 const char *CG_Rocket_GetTag()
@@ -643,4 +640,25 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 		default:
 			return false;
 	}
+}
+
+bool CG_Rocket_LoadCursor( Str::StringRef cursorPath )
+{
+	rocketInfo.cursor = trap_R_RegisterShader( cursorPath.c_str(), (RegisterShaderFlags_t) RSF_DEFAULT );
+	if ( rocketInfo.cursor == 0 )
+	{
+		return false;
+	}
+	// Scale cursor with resolution while maintaining the original aspect ratio.
+	int x, y;
+	trap_R_GetTextureSize( rocketInfo.cursor, &x, &y );
+	float ratio = static_cast<float>( x ) / static_cast<float>( y );
+	rocketInfo.cursor_pos.h = cgs.glconfig.vidHeight * 0.025f;
+	rocketInfo.cursor_pos.w = rocketInfo.cursor_pos.h * ratio;
+	return true;
+}
+
+void CG_Rocket_EnableCursor( bool enable )
+{
+	rocketInfo.renderCursor = enable;
 }
