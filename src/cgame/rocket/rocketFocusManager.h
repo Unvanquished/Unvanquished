@@ -37,7 +37,7 @@ Maryland 20850 USA.
 
 #include "../cg_local.h"
 #include "rocket.h"
-#include <Rocket/Core/Core.h>
+#include <RmlUi/Core/Core.h>
 
 class RocketFocusManager : public Rocket::Core::EventListener
 {

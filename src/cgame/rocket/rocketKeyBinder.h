@@ -35,8 +35,8 @@ Maryland 20850 USA.
 #ifndef ROCKETKEYBINDER_H
 #define ROCKETKEYBINDER_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
@@ -55,18 +55,20 @@ public:
 	{
 	}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		Rocket::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "cmd" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "cmd" );
+		if ( it != changed_attributes.end() )
 		{
-			cmd = GetAttribute( "cmd" )->Get<Rocket::Core::String>();
+			cmd = it->second.Get<Rocket::Core::String>();
 			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 
-		if ( changed_attributes.find( "team" ) != changed_attributes.end() )
+		it = changed_attributes.find( "team" );
+		if ( it != changed_attributes.end() )
 		{
-			team = GetTeam( GetAttribute( "team" )->Get<Rocket::Core::String>().CString() );
+			team = GetTeam( it->second.Get<Rocket::Core::String>().CString() );
 			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 	}
@@ -97,17 +99,16 @@ public:
 
 	void OnUpdate()
 	{
+		Element::OnUpdate();
 		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.Empty() && !waitingForKeypress )
 		{
 			nextKeyUpdateTime = rocketInfo.realtime + KEY_BINDING_REFRESH_INTERVAL_MS;
-			SetInnerRML( CG_EscapeHTMLText( CG_KeyBinding( cmd.CString(), team ) ).c_str() );
+			SetInnerRML( CG_EscapeHTMLText( CG_KeyBinding( cmd.CString(), team ) ).CString() );
 		}
 	}
 
 	void ProcessEvent( Rocket::Core::Event &event )
 	{
-		Element::ProcessEvent( event );
-
 		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
 			waitingForKeypress = true;

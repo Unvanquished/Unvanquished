@@ -36,27 +36,28 @@ Maryland 20850 USA.
 #define ROCKETFORMCONTROLINPUT_H
 
 #include "../cg_local.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Controls/ElementFormControlInput.h>
+#include <RmlUi/Core/Core.h>
+#include <RmlUi/Controls/ElementFormControlInput.h>
 
 class CvarElementFormControlInput : public Rocket::Controls::ElementFormControlInput, public Rocket::Core::EventListener
 {
 public:
 	CvarElementFormControlInput( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlInput( tag ), owner( nullptr ) { }
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		Rocket::Controls::ElementFormControlInput::OnAttributeChange( changed_attributes );
-
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
+		Rocket::Core::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
+		if ( it != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar", "" );
+			cvar = it->second.Get< Rocket::Core::String >( "cvar" );
 			UpdateValue();
 		}
 
-		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
+		it = changed_attributes.find( "type" );
+		if ( it != changed_attributes.end() )
 		{
-			type = GetAttribute< Rocket::Core::String >( "type", "" );
+			type = it->second.Get< Rocket::Core::String >( "type" );
 		}
 	}
 
@@ -83,8 +84,6 @@ public:
 
 	virtual void ProcessEvent( Rocket::Core::Event &event )
 	{
-		Rocket::Controls::ElementFormControlInput::ProcessEvent( event );
-
 		if ( !cvar.Empty() )
 		{
 			if ( owner == event.GetTargetElement() && event == "show" )
@@ -174,11 +173,11 @@ private:
 	{
 		if ( type == "range" )
 		{
-			size_t point = value.Find( "." );
+			size_t point = value.find( "." );
 			if ( point != value.npos &&
 			     point + 1 + strspn( value.CString() + point + 1, "0" ) == value.Length() )
 			{
-				value.Erase( point ); // for compatibility with integer cvars
+				value.erase( point ); // for compatibility with integer cvars
 			}
 		}
 		Cvar::SetValue( cvar.CString(), value.CString() );

@@ -36,7 +36,7 @@ Maryland 20850 USA.
 
 #include <queue>
 #include "rocket.h"
-#include <Rocket/Core/StringUtilities.h>
+#include <RmlUi/Core/StringUtilities.h>
 #include "../cg_local.h"
 
 std::queue< RocketEvent_t* > eventQueue;
@@ -79,13 +79,9 @@ void Rocket_GetEventParameters( char *params, int /*length*/ )
 	*params = '\0';
 	if ( !eventQueue.empty() )
 	{
-		int index = 0;
-		Rocket::Core::String key;
-		Rocket::Core::String value;
-
-		while ( event->Parameters.Iterate( index, key, value ) )
+		for ( const auto& it : event->Parameters )
 		{
-			Info_SetValueForKeyRocket( params, key.CString(), value.CString(), true );
+			Info_SetValueForKeyRocket( params, it.first.CString(), it.second.Get<Rocket::Core::String>().CString(), true );
 		}
 	}
 }

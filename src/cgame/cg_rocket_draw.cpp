@@ -35,12 +35,10 @@ Maryland 20850 USA.
 #include "cg_local.h"
 #include "cg_key_name.h"
 #include "rocket/rocket.h"
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/ElementInstancer.h>
-#include <Rocket/Core/ElementInstancerGeneric.h>
-#include <Rocket/Core/Factory.h>
-#include <Rocket/Core/ElementText.h>
-#include <Rocket/Core/StyleSheetKeywords.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/ElementInstancer.h>
+#include <RmlUi/Core/Factory.h>
+#include <RmlUi/Core/ElementText.h>
 
 static void CG_GetRocketElementColor( Color::Color& color )
 {
@@ -105,8 +103,7 @@ public:
 			return false;
 		}
 
-		const Rocket::Core::Property *property;
-		property = GetProperty( "width" );
+		const Rocket::Core::Property *property = GetProperty( Rocket::Core::PropertyId::Width );
 
 		// Absolute unit. We can use it as is
 		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
@@ -118,11 +115,11 @@ public:
 			Rocket::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.x = ResolveProperty( "width", parent->GetBox().GetSize().x );
+				dimensions.x = ResolveNumericProperty( property, parent->GetBox().GetSize().x );
 			}
 		}
 
-		property = GetProperty( "height" );
+		property = GetProperty( Rocket::Core::PropertyId::Height );
 		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.y = property->value.Get<float>();
@@ -132,7 +129,7 @@ public:
 			Rocket::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.y = ResolveProperty( "height", parent->GetBox().GetSize().y );
+				dimensions.y = ResolveNumericProperty( property, parent->GetBox().GetSize().y );
 			}
 		}
 
@@ -194,12 +191,11 @@ public:
 private:
 	void InitializeTextElement()
 	{
-		textElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+		textElement = dynamic_cast< Rocket::Core::ElementText* >( AppendChild( Rocket::Core::Factory::InstanceElement(
 			this,
 			"#text",
 			"#text",
-			Rocket::Core::XMLAttributes() ) );
-		AppendChild( textElement );
+			Rocket::Core::XMLAttributes() ) ) );
 	}
 
 	Rocket::Core::ElementText* textElement;
@@ -219,7 +215,7 @@ public:
 			totalBudget( 0 ),
 			queuedBudget( 0 ) {}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	void OnAttributeChange( const Rocket::Core::ElementAttributes& changed_attributes )
 	{
 		TextHudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
@@ -431,7 +427,7 @@ public:
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::Color ) )
 		{
 			GetColor( "color", color );
 		}
@@ -542,7 +538,7 @@ public:
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::Color ) )
 		{
 			GetColor( "color", color );
 		}
@@ -725,27 +721,25 @@ public:
 			HudElement( tag, ELEMENT_GAME, true )
 	{
 		Rocket::Core::XMLAttributes xml;
-		maxSpeedElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+		maxSpeedElement = dynamic_cast< Rocket::Core::ElementText* >( AppendChild( Rocket::Core::Factory::InstanceElement(
 			this,
 			"#text",
 			"span",
-			xml ) );
+			xml ) ) );
 		maxSpeedElement->SetClass( "speed_max", true );
-		currentSpeedElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+		currentSpeedElement = dynamic_cast< Rocket::Core::ElementText* >( AppendChild( Rocket::Core::Factory::InstanceElement(
 			this,
 			"#text",
 			"span",
-			xml) );
+			xml) ) );
 		currentSpeedElement->SetClass( "speed_current", true );
-		AppendChild( maxSpeedElement );
-		AppendChild( currentSpeedElement );
 	}
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
 
-		if ( changed_properties.find( "background-color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::BackgroundColor ) )
 		{
 			GetColor( "background-color", backColor );
 		}
@@ -1052,14 +1046,14 @@ class UsableBuildableElement : public HudElement
 public:
 	UsableBuildableElement( const Rocket::Core::String& tag ) :
 			HudElement( tag, ELEMENT_HUMANS ),
-			display( "block" ) {}
+			display( Rocket::Core::Style::Display::Block ) {}
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( display.Empty() && changed_properties.find( "display" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::Display ) )
 		{
-			display = GetProperty<Rocket::Core::String>( "display" );
+			display = GetDisplay();
 		}
 	}
 
@@ -1082,7 +1076,7 @@ public:
 		{
 			if ( !IsVisible() )
 			{
-				SetProperty( "display", display );
+				SetProperty( Rocket::Core::PropertyId::Display, Rocket::Core::Property( display ) );
 				cg.nearUsableBuildable = es.modelindex;
 			}
 		}
@@ -1091,14 +1085,14 @@ public:
 			if ( IsVisible() )
 			{
 				// Clear the old image if there was one.
-				SetProperty( "display", "none" );
+				SetProperty( Rocket::Core::PropertyId::Display, Rocket::Core::Property( Rocket::Core::Style::Display::None ) );
 				cg.nearUsableBuildable = BA_NONE;
 			}
 		}
 	}
 
 private:
-	Rocket::Core::String display;
+	Rocket::Core::Style::Display display;
 };
 
 class LocationElement : public HudElement
@@ -1317,7 +1311,7 @@ public:
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "background-color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::BackgroundColor ) )
 		{
 			GetColor( "background-color", adjustedColor );
 		}
@@ -1986,7 +1980,7 @@ public:
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::Color ) )
 		{
 			GetColor( "color", color_ );
 		}
@@ -2067,7 +2061,7 @@ public:
 	PredictedMineEfficiencyElement( const Rocket::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, false ),
 			shouldBeVisible( true ),
-			display( -1 ),
+			display( Rocket::Core::Style::Display::Block ),
 			lastDeltaEfficiencyPct( -999 ),
 			lastDeltaBudget( -999 ),
 			pluralSuffix{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
@@ -2078,9 +2072,9 @@ public:
 	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( display < 0 && changed_properties.find( "display" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::Display ) )
 		{
-			display = GetProperty<int>( "display" );
+			display = GetDisplay();
 		}
 	}
 
@@ -2089,19 +2083,12 @@ public:
 		playerState_t  *ps = &cg.snap->ps;
 		buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
-		// If display hasn't been set yet explicitly, assume display is block
-		if ( display < 0 )
-		{
-			display = Rocket::Core::DISPLAY_BLOCK;
-		}
-
 		if ( buildable != BA_H_DRILL && buildable != BA_A_LEECH )
 		{
 			if ( IsVisible() && shouldBeVisible )
 			{
-				SetProperty("display",
-							Rocket::Core::Property(Rocket::Core::DISPLAY_NONE,
-												   Rocket::Core::Property::KEYWORD));
+				SetProperty( Rocket::Core::PropertyId::Display,
+						Rocket::Core::Property( Rocket::Core::Style::Display::None ) );
 				SetInnerRML( "" );
 				shouldBeVisible = false;
 
@@ -2114,8 +2101,7 @@ public:
 		{
 			if ( !IsVisible() && !shouldBeVisible )
 			{
-				SetProperty( "display", Rocket::Core::Property( display,
-															   Rocket::Core::Property::KEYWORD ) );
+				SetProperty( Rocket::Core::PropertyId::Display, Rocket::Core::Property( display ) );
 				shouldBeVisible = true;
 			}
 		}
@@ -2184,7 +2170,7 @@ public:
 	}
 private:
 	bool shouldBeVisible;
-	int  display;
+	Rocket::Core::Style::Display display;
 	int  lastDeltaEfficiencyPct;
 	int  lastDeltaBudget;
 	std::unordered_map<int, std::string> pluralSuffix;
@@ -2201,7 +2187,7 @@ public:
 	t0 ( 0 ),
 	offset ( 0 ) {}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	void OnAttributeChange( const Rocket::Core::ElementAttributes& changed_attributes )
 	{
 		HudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
@@ -3605,7 +3591,7 @@ void CG_Rocket_RenderElement( const char *tag )
 	}
 }
 
-#define REGISTER_ELEMENT( tag, clazz ) Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< clazz >() )->RemoveReference();
+#define REGISTER_ELEMENT( tag, clazz ) Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< clazz >() );
 void CG_Rocket_RegisterElements()
 {
 	for ( unsigned i = 0; i < elementRenderCmdListCount; i++ )

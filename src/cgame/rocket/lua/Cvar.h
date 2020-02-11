@@ -36,9 +36,9 @@ Maryland 20850 USA.
 #define LUACVAR_H
 
 #include "../rocket.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Core/Lua/lua.hpp>
-#include <Rocket/Core/Lua/LuaType.h>
+#include <RmlUi/Core/Core.h>
+#include <RmlUi/Core/Lua/lua.hpp>
+#include <RmlUi/Core/Lua/LuaType.h>
 
 namespace Rocket {
 namespace Core {

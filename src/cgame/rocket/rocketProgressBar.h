@@ -35,9 +35,9 @@ Maryland 20850 USA.
 #ifndef ROCKETPROGRESSBAR_H
 #define ROCKETPROGRESSBAR_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/GeometryUtilities.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/GeometryUtilities.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
@@ -149,27 +149,14 @@ public:
 	{
 		Element::OnPropertyChange( changed_properties );
 
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::Color ) )
 		{
-			color = Color::Adapt( GetProperty( "color" )->Get<Rocket::Core::Colourb>() );
+			color = Color::Adapt( GetProperty( Rocket::Core::PropertyId::Color )->Get<Rocket::Core::Colourb>() );
 		}
 
-		if ( changed_properties.find( "image" ) != changed_properties.end() )
+		if ( changed_properties.Contains( UnvPropertyId::Orientation ) )
 		{
-			Rocket::Core::String image = GetProperty<Rocket::Core::String>( "image" );
-
-			// skip the leading slash
-			if ( !image.Empty() && image[0] == '/' )
-			{
-				image = image.Substring( 1 );
-			}
-
-			shader = trap_R_RegisterShader( image.CString(), RSF_NOMIP );
-		}
-
-		if ( changed_properties.find( "orientation" ) != changed_properties.end() )
-		{
-			Rocket::Core::String  orientation_string = GetProperty<Rocket::Core::String>( "orientation" );
+			Rocket::Core::String  orientation_string = GetProperty( UnvPropertyId::Orientation )->Get<Rocket::Core::String>();
 
 			if ( orientation_string == "left" )
 			{
@@ -190,19 +177,36 @@ public:
 		}
 	}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		Rocket::Core::Element::OnAttributeChange( changed_attributes );
 
-		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "value" );
+		if ( it != changed_attributes.end() )
 		{
-			value = Math::Clamp( GetAttribute<float>( "value", 0.0f ), 0.0f, 1.0f );
+			value = Math::Clamp( it->second.Get<float>(), 0.0f, 1.0f );
 		}
 
-		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
+		it = changed_attributes.find( "src" );
+		if ( it != changed_attributes.end() )
 		{
-			source = GetAttribute<Rocket::Core::String>( "src", "" );
+			source = it->second.Get<Rocket::Core::String>();
 		}
+
+		it = changed_attributes.find( "image" );
+		if ( it != changed_attributes.end() )
+		{
+			Rocket::Core::String image = it->second.Get<Rocket::Core::String>();
+
+			// skip the leading slash
+			if ( !image.Empty() && image[0] == '/' )
+			{
+				image = image.substr( 1 );
+			}
+
+			shader = trap_R_RegisterShader( image.CString(), RSF_NOMIP );
+		}
+
 	}
 
 	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
@@ -237,7 +241,7 @@ public:
 					dimensions.x = base_size;
 					while ( !stack.empty() )
 					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+						dimensions.x = stack.top()->ResolveNumericProperty( "width" );
 
 						stack.pop();
 					}
@@ -271,7 +275,7 @@ public:
 					dimensions.y = base_size;
 					while ( !stack.empty() )
 					{
-						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
+						dimensions.y = stack.top()->ResolveNumericProperty( "height" );
 
 						stack.pop();
 					}

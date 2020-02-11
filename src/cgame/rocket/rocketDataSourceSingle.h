@@ -38,9 +38,9 @@ Maryland 20850 USA.
 
 #include "../cg_local.h"
 
-#include <Rocket/Core.h>
-#include <Rocket/Controls.h>
-#include <Rocket/Controls/DataSource.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Controls.h>
+#include <RmlUi/Controls/DataSource.h>
 
 class RocketDataSourceSingle : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener, public Rocket::Core::EventListener
 {
@@ -48,46 +48,54 @@ public:
 	RocketDataSourceSingle( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), formatter( nullptr ), data_source( nullptr ), selection( -1 ),
 	targetElement( nullptr ), dirty_query( false ), dirty_listener( false ) { }
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes ) override
 	{
 		Rocket::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "source" );
+		if ( it != changed_attributes.end() )
 		{
-			ParseDataSource( data_source, data_table, GetAttribute( "source")->Get<Rocket::Core::String>() );
+			ParseDataSource( data_source, data_table, it->second.Get<Rocket::Core::String>() );
 			dirty_query = true;
 		}
-		if ( changed_attributes.find( "fields" ) != changed_attributes.end() )
+
+		it = changed_attributes.find( "fields" );
+		if ( it != changed_attributes.end() )
 		{
-			csvFields = GetAttribute( "fields" )->Get<Rocket::Core::String>();
+			csvFields = it->second.Get<Rocket::Core::String>();
 			Rocket::Core::StringUtilities::ExpandString( fields, csvFields );
 			dirty_query = true;
 		}
-		if ( changed_attributes.find( "formatter" ) != changed_attributes.end() )
+
+		it = changed_attributes.find( "formatter" );
+		if ( it != changed_attributes.end() )
 		{
-			formatter = Rocket::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rocket::Core::String>() );
+			formatter = Rocket::Controls::DataFormatter::GetDataFormatter( it->second.Get<Rocket::Core::String>() );
 			dirty_query = true;
 		}
-		if ( changed_attributes.find( "targetid" ) != changed_attributes.end() || changed_attributes.find( "targetdoc" ) != changed_attributes.end() )
+		if ( changed_attributes.count( "targetid" ) || changed_attributes.count( "targetdoc" ) )
 		{
 			dirty_listener = true;
 		}
 	}
 
-	void ProcessEvent( Rocket::Core::Event &evt )
+	void ProcessDefaultAction( Rocket::Core::Event& event ) override
 	{
-		Rocket::Core::Element::ProcessEvent( evt );
+		Element::ProcessDefaultAction( event );
+	}
 
+	void ProcessEvent( Rocket::Core::Event &evt ) override
+	{
 		// Make sure it is meant for the element we are listening to
 		if ( evt == "rowselect" && targetElement == evt.GetTargetElement() )
 		{
-			const Rocket::Core::Dictionary *parameters = evt.GetParameters();
-			selection = parameters->Get<int>( "index", -1 );
+			const Rocket::Core::Dictionary& parameters = evt.GetParameters();
+			selection = parameters.at("index").Get<int>( -1 );
 			dirty_query = true;
 		}
 
 	}
 
-	void OnUpdate()
+	void OnUpdate() override
 	{
 		if ( dirty_listener )
 		{

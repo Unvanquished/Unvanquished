@@ -36,21 +36,21 @@ Maryland 20850 USA.
 #define ROCKETFORMCONTROLSELECT_H
 
 #include "../cg_local.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Controls/ElementFormControlSelect.h>
+#include <RmlUi/Core/Core.h>
+#include <RmlUi/Controls/ElementFormControlSelect.h>
 
 class CvarElementFormControlSelect : public Rocket::Controls::ElementFormControlSelect, public Rocket::Core::EventListener
 {
 public:
 	CvarElementFormControlSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlSelect( tag ), owner( nullptr ) { }
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		Rocket::Controls::ElementFormControlSelect::OnAttributeChange( changed_attributes );
-
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
+		Rocket::Core::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
+		if ( it != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar", "" );
+			cvar = it->second.Get<Rocket::Core::String>();
 			UpdateValue();
 		}
 	}
@@ -78,8 +78,6 @@ public:
 
 	virtual void ProcessEvent( Rocket::Core::Event &event )
 	{
-		Rocket::Controls::ElementFormControlSelect::ProcessEvent( event );
-
 		if ( !cvar.Empty() )
 		{
 			if ( owner == event.GetTargetElement() && event == "show" )

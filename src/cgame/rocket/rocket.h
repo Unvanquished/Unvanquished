@@ -47,7 +47,7 @@ Maryland 20850 USA.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
-#include <Rocket/Core/Core.h>
+#include <RmlUi/Core.h>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
@@ -61,7 +61,7 @@ public:
 	RocketEvent_t( Rocket::Core::Event &event, const Rocket::Core::String &cmds ) : cmd( cmds )
 	{
 		targetElement = event.GetTargetElement();
-		Parameters = *(event.GetParameters());
+		Parameters = event.GetParameters();
 	}
 	RocketEvent_t( const Rocket::Core::String &cmds ) : RocketEvent_t( nullptr, cmds )
 	{
@@ -83,6 +83,10 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
 std::string CG_KeyBinding( const char *bind, int team );
 
 void Rocket_AddEvent( RocketEvent_t *event );
+
+struct UnvPropertyId {
+	static Rocket::Core::PropertyId Orientation;
+};
 
 namespace Color {
 

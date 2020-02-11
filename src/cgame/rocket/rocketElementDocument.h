@@ -35,9 +35,9 @@ Maryland 20850 USA.
 #ifndef ROCKETELEMENTDOCUMENT_H
 #define ROCKETELEMENTDOCUMENT_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/ElementDocument.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/ElementDocument.h>
 
 
 class RocketElementDocument : public Rocket::Core::ElementDocument
@@ -45,9 +45,9 @@ class RocketElementDocument : public Rocket::Core::ElementDocument
 public:
 	RocketElementDocument( const Rocket::Core::String &tag ) : Rocket::Core::ElementDocument( tag ) { }
 
-	void ProcessEvent( Rocket::Core::Event &event )
+	void ProcessDefaultAction( Rocket::Core::Event &event ) override
 	{
-		Rocket::Core::ElementDocument::ProcessEvent( event );
+		Rocket::Core::ElementDocument::ProcessDefaultAction( event );
 
 		if ( event == "keydown" )
 		{
