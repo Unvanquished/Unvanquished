@@ -35,36 +35,36 @@ Maryland 20850 USA.
 #ifndef ROCKETKEYBINDER_H
 #define ROCKETKEYBINDER_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
-static const Rocket::Core::String BINDABLE_KEY_EVENT = "bindableKey";
-static const Rocket::Core::String BINDABLE_KEY_KEY = "bkey";
+static const Rml::Core::String BINDABLE_KEY_EVENT = "bindableKey";
+static const Rml::Core::String BINDABLE_KEY_KEY = "bkey";
 
 // The displayed bindings are refreshed periodically since they can also change due to a layout change or /bind command.
 constexpr int KEY_BINDING_REFRESH_INTERVAL_MS = 500;
 
-class RocketKeyBinder : public Rocket::Core::Element, public Rocket::Core::EventListener
+class RocketKeyBinder : public Rml::Core::Element, public Rml::Core::EventListener
 {
 public:
-	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
+	RocketKeyBinder( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
 	{
 	}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Core::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "cmd" ) != changed_attributes.end() )
 		{
-			cmd = GetAttribute( "cmd" )->Get<Rocket::Core::String>();
+			cmd = GetAttribute( "cmd" )->Get<Rml::Core::String>();
 			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 
 		if ( changed_attributes.find( "team" ) != changed_attributes.end() )
 		{
-			team = GetTeam( GetAttribute( "team" )->Get<Rocket::Core::String>().CString() );
+			team = GetTeam( GetAttribute( "team" )->Get<Rml::Core::String>().c_str() );
 			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 	}
@@ -98,11 +98,11 @@ public:
 		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.Empty() && !waitingForKeypress )
 		{
 			nextKeyUpdateTime = rocketInfo.realtime + KEY_BINDING_REFRESH_INTERVAL_MS;
-			SetInnerRML( CG_EscapeHTMLText( CG_KeyBinding( cmd.CString(), team ) ).c_str() );
+			SetInnerRML( CG_EscapeHTMLText( CG_KeyBinding( cmd.c_str(), team ) ).c_str() );
 		}
 	}
 
-	void ProcessEvent( Rocket::Core::Event &event )
+	void ProcessEvent( Rml::Core::Event &event )
 	{
 		Element::ProcessEvent( event );
 
@@ -118,9 +118,9 @@ public:
 
 		else if ( waitingForKeypress && event == "keydown" )
 		{
-			auto keyIdentifier = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 );
+			auto keyIdentifier = ( Rml::Core::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 );
 
-			if ( keyIdentifier == Rocket::Core::Input::KeyIdentifier::KI_ESCAPE )
+			if ( keyIdentifier == Rml::Core::Input::KeyIdentifier::KI_ESCAPE )
 			{
 				CancelSelection();
 			}
@@ -170,30 +170,30 @@ protected:
 		}
 		// For a team-specific bind, this returns keys that have the command set for the specific
 		// team as well as for the default team (when there is no team-specific bind overriding it.
-		auto previouslyBoundKeys = trap_Key_GetKeysForBinds(team, { cmd.CString() })[0];
+		auto previouslyBoundKeys = trap_Key_GetKeysForBinds(team, { cmd.c_str() })[0];
 		for (Keyboard::Key key : previouslyBoundKeys)
 		{
 			trap_Key_SetBinding( key, team, "" );
 		}
 		if (team != 0) {
 			// If the bind was set for the default team, then the previous attempt will have failed to remove it.
-			previouslyBoundKeys = trap_Key_GetKeysForBinds(team, { cmd.CString() })[0];
+			previouslyBoundKeys = trap_Key_GetKeysForBinds(team, { cmd.c_str() })[0];
 			for (Keyboard::Key key : previouslyBoundKeys)
 			{
 				trap_Key_SetBinding( key, 0, "" );
 			}
 		}
-		trap_Key_SetBinding( newKey, team, cmd.CString() );
+		trap_Key_SetBinding( newKey, team, cmd.c_str() );
 
 		nextKeyUpdateTime = rocketInfo.realtime;
 		waitingForKeypress = false;
 	}
 
-	int GetTeam( Rocket::Core::String team )
+	int GetTeam( Rml::Core::String team )
 	{
 		static const struct {
 			int team;
-			Rocket::Core::String label;
+			Rml::Core::String label;
 		} labels[] = {
 			{ 3, "spectators" },
 			{ 0, "default" },
@@ -209,7 +209,7 @@ protected:
 			}
 		}
 
-		Log::Warn( "Team %s not found", team.CString() );
+		Log::Warn( "Team %s not found", team.c_str() );
 		return -1;
 	}
 
@@ -218,10 +218,10 @@ private:
 	bool waitingForKeypress;
 	int team;
 
-	Rocket::Core::String cmd;
+	Rml::Core::String cmd;
 	int mouse_x;
 	int mouse_y;
-	Rocket::Core::Context* context;
+	Rml::Core::Context* context;
 };
 
 

@@ -37,12 +37,12 @@ Maryland 20850 USA.
 
 struct HudUnit
 {
-	HudUnit( Rocket::Core::ElementDocument *doc ) : unit( doc )
+	HudUnit( Rml::Core::ElementDocument *doc ) : unit( doc )
 	{
 		load = true;
 	}
 
-	Rocket::Core::ElementDocument *unit; // Element document that holds the unit
+	Rml::Core::ElementDocument *unit; // Element document that holds the unit
 	bool load; // Whether to load or not
 };
 
@@ -66,9 +66,9 @@ void Rocket_InitializeHuds( int size )
 
 void Rocket_LoadUnit( const char *path )
 {
-	Rocket::Core::ElementDocument *document = hudContext->LoadDocument( path );
+	Rml::Core::ElementDocument *document = hudContext->LoadDocument( path );
 
-	Rocket::Core::ElementDocument* other;
+	Rml::Core::ElementDocument* other;
 
 	if ( document )
 	{
@@ -90,7 +90,7 @@ void Rocket_AddUnitToHud( int weapon, const char *id )
 {
 	if ( id && *id )
 	{
-		Rocket::Core::ElementDocument *doc = hudContext->GetDocument( id );
+		Rml::Core::ElementDocument *doc = hudContext->GetDocument( id );
 		if ( doc )
 		{
 			huds[ weapon ].push_back( HudUnit( doc ) );
@@ -158,7 +158,7 @@ void Rocket_ClearHud( unsigned weapon )
 
 void Rocket_ShowScoreboard( const char *name, bool show )
 {
-	Rocket::Core::ElementDocument* doc = hudContext->GetDocument( name );
+	Rml::Core::ElementDocument* doc = hudContext->GetDocument( name );
 
 	if ( doc )
 	{

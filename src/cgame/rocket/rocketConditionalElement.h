@@ -35,34 +35,34 @@ Maryland 20850 USA.
 #ifndef ROCKETCONDITIONALELEMENT_H
 #define ROCKETCONDITIONALELEMENT_H
 
-#include <Rocket/Core/Core.h>
+#include <RmlUi/Core/Core.h>
 #include "../cg_local.h"
 
-class RocketConditionalElement : public Rocket::Core::Element
+class RocketConditionalElement : public Rml::Core::Element
 {
 public:
-	RocketConditionalElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), condition( NOT_EQUAL ), dirty_value( false ) {}
+	RocketConditionalElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), condition( NOT_EQUAL ), dirty_value( false ) {}
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Core::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar",  "" );
-			cvar_value = Cvar::GetValue( cvar.CString() ).c_str();
+			cvar = GetAttribute< Rml::Core::String >( "cvar",  "" );
+			cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
 		}
 
 		if ( changed_attributes.find( "condition" ) != changed_attributes.end() )
 		{
-			ParseCondition( GetAttribute< Rocket::Core::String >( "condition", "" ) );
+			ParseCondition( GetAttribute< Rml::Core::String >( "condition", "" ) );
 		}
 
 		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
 		{
-			Rocket::Core::String attrib = GetAttribute< Rocket::Core::String >( "value", "" );
+			Rml::Core::String attrib = GetAttribute< Rml::Core::String >( "value", "" );
 			char *end = nullptr;
 			// Check if float
-			float floatVal = strtof( attrib.CString(), &end );
+			float floatVal = strtof( attrib.c_str(), &end );
 
 			// Is either an integer or float
 			if ( end )
@@ -90,7 +90,7 @@ public:
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar::GetValue( cvar.CString() ).c_str() ) )
+		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar::GetValue( cvar.c_str() ).c_str() ) )
 		{
 			if ( IsConditionValid() )
 			{
@@ -107,7 +107,7 @@ public:
 				}
 			}
 
-			cvar_value = Cvar::GetValue( cvar.CString() ).c_str();
+			cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
 
 			if ( dirty_value )
 			{
@@ -127,7 +127,7 @@ private:
 		NOT_EQUAL
 	};
 
-	void ParseCondition( const Rocket::Core::String& str )
+	void ParseCondition( const Rml::Core::String& str )
 	{
 		if ( str == "==" )
 		{
@@ -167,12 +167,12 @@ private:
 	{
 		switch ( value.GetType() )
 		{
-			case Rocket::Core::Variant::INT:
-				Compare( atoi( Cvar::GetValue( cvar.CString() ).c_str() ), value.Get<int>() );
-			case Rocket::Core::Variant::FLOAT:
-				Compare( atof( Cvar::GetValue( cvar.CString() ).c_str() ), value.Get<float>() );
+			case Rml::Core::Variant::INT:
+				Compare( atoi( Cvar::GetValue( cvar.c_str() ).c_str() ), value.Get<int>() );
+			case Rml::Core::Variant::FLOAT:
+				Compare( atof( Cvar::GetValue( cvar.c_str() ).c_str() ), value.Get<float>() );
 			default:
-				Compare( Cvar::GetValue( cvar.CString() ), value.Get< Rocket::Core::String >().CString() );
+				Compare( Cvar::GetValue( cvar.c_str() ), value.Get< Rml::Core::String >().c_str() );
 		}
 
 		// Should never reach
@@ -181,27 +181,27 @@ private:
 
 	bool IsConditionValidLatched()
 	{
-		std::string str = Cvar::GetValue( cvar.CString() );
+		std::string str = Cvar::GetValue( cvar.c_str() );
 		if ( !str.empty() )
 		{
 			switch ( value.GetType() )
 			{
-				case Rocket::Core::Variant::INT:
+				case Rml::Core::Variant::INT:
 					Compare( atoi( str.c_str() ), value.Get<int>() );
-				case Rocket::Core::Variant::FLOAT:
+				case Rml::Core::Variant::FLOAT:
 					Compare( atof( str.c_str() ), value.Get<float>() );
 				default:
-					Compare( str, value.Get< Rocket::Core::String >().CString() );
+					Compare( str, value.Get< Rml::Core::String >().c_str() );
 			}
 		}
 
 		return false;
 	}
 
-	Rocket::Core::String cvar;
-	Rocket::Core::String cvar_value;
+	Rml::Core::String cvar;
+	Rml::Core::String cvar_value;
 	Condition condition;
-	Rocket::Core::Variant value;
+	Rml::Core::Variant value;
 	bool dirty_value;
 };
 #endif

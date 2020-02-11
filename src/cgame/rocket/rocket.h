@@ -47,39 +47,39 @@ Maryland 20850 USA.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
-#include <Rocket/Core/Core.h>
+#include <RmlUi/Core/Core.h>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 
-extern Rocket::Core::Context *menuContext;
-extern Rocket::Core::Context *hudContext;
+extern Rml::Core::Context *menuContext;
+extern Rml::Core::Context *hudContext;
 
 class RocketEvent_t
 {
 public:
-	RocketEvent_t( Rocket::Core::Event &event, const Rocket::Core::String &cmds ) : cmd( cmds )
+	RocketEvent_t( Rml::Core::Event &event, const Rml::Core::String &cmds ) : cmd( cmds )
 	{
 		targetElement = event.GetTargetElement();
-		Parameters = *(event.GetParameters());
+		Parameters = event.GetParameters();
 	}
-	RocketEvent_t( const Rocket::Core::String &cmds ) : cmd( cmds )
+	RocketEvent_t( const Rml::Core::String &cmds ) : cmd( cmds )
 	{
 	}
-	RocketEvent_t( Rocket::Core::Element *e, const Rocket::Core::String &cmds ) : targetElement( e ), cmd( cmds )
+	RocketEvent_t( Rml::Core::Element *e, const Rml::Core::String &cmds ) : targetElement( e ), cmd( cmds )
 	{
 	}
 	~RocketEvent_t() { }
-	Rocket::Core::Element *targetElement;
-	Rocket::Core::Dictionary Parameters;
-	Rocket::Core::String cmd;
+	Rml::Core::Element *targetElement;
+	Rml::Core::Dictionary Parameters;
+	Rml::Core::String cmd;
 };
 
 // HTML-escape a string that will be used as text. Text meaning that it will be not be
 // somewhere weird like inside a tag, which may require a different form of escaping.
 std::string CG_EscapeHTMLText( Str::StringRef text );
 
-Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
+Rml::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
 std::string CG_KeyBinding( const char *bind, int team );
 
 void Rocket_AddEvent( RocketEvent_t *event );
@@ -87,11 +87,11 @@ void Rocket_AddEvent( RocketEvent_t *event );
 namespace Color {
 
 template<class ColourType, int AlphaDefault>
-class ColorAdaptor<Rocket::Core::Colour<ColourType,AlphaDefault>>
+class ColorAdaptor<Rml::Core::Colour<ColourType,AlphaDefault>>
 {
 public:
 	static CONSTEXPR bool is_color = true;
-	typedef Rocket::Core::Colour<ColourType,AlphaDefault> color_type;
+	typedef Rml::Core::Colour<ColourType,AlphaDefault> color_type;
 	typedef ColourType component_type;
 	static CONSTEXPR int component_max = AlphaDefault;
 

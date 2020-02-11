@@ -36,17 +36,17 @@ Maryland 20850 USA.
 
 #include <queue>
 #include "rocket.h"
-#include <Rocket/Core/StringUtilities.h>
+#include <RmlUi/Core/StringUtilities.h>
 #include "../cg_local.h"
 
 std::queue< RocketEvent_t* > eventQueue;
-extern Rocket::Core::Element *activeElement;
+extern Rml::Core::Element *activeElement;
 
-void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
+void Rocket_ProcessEvent( Rml::Core::Event& event, Rml::Core::String& value )
 {
-	Rocket::Core::StringList list;
+	Rml::Core::StringList list;
 
-	Rocket::Core::StringUtilities::ExpandString( list, value, ';' );
+	Rml::Core::StringUtilities::ExpandString( list, value, ';' );
 	for ( size_t i = 0; i < list.size(); ++i )
 	{
 		eventQueue.push( new RocketEvent_t( event, list[ i ] ) );
@@ -57,7 +57,7 @@ bool Rocket_GetEvent(std::string& cmdText)
 {
 	if ( !eventQueue.empty() )
 	{
-		cmdText = eventQueue.front()->cmd.CString();
+		cmdText = eventQueue.front()->cmd.c_str();
 		activeElement = eventQueue.front()->targetElement;
 		return true;
 	}
@@ -80,12 +80,12 @@ void Rocket_GetEventParameters( char *params, int /*length*/ )
 	if ( !eventQueue.empty() )
 	{
 		int index = 0;
-		Rocket::Core::String key;
-		Rocket::Core::String value;
+		Rml::Core::String key;
+		Rml::Core::String value;
 
 		while ( event->Parameters.Iterate( index, key, value ) )
 		{
-			Info_SetValueForKeyRocket( params, key.CString(), value.CString(), true );
+			Info_SetValueForKeyRocket( params, key.c_str(), value.c_str(), true );
 		}
 	}
 }

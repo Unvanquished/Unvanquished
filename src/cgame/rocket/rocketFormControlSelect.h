@@ -36,28 +36,28 @@ Maryland 20850 USA.
 #define ROCKETFORMCONTROLSELECT_H
 
 #include "../cg_local.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Controls/ElementFormControlSelect.h>
+#include <RmlUi/Core/Core.h>
+#include <RmlUi/Controls/ElementFormControlSelect.h>
 
-class CvarElementFormControlSelect : public Rocket::Controls::ElementFormControlSelect, public Rocket::Core::EventListener
+class CvarElementFormControlSelect : public Rml::Controls::ElementFormControlSelect, public Rml::Core::EventListener
 {
 public:
-	CvarElementFormControlSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlSelect( tag ) { }
+	CvarElementFormControlSelect( const Rml::Core::String &tag ) : Rml::Controls::ElementFormControlSelect( tag ) { }
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
-		Rocket::Controls::ElementFormControlSelect::OnAttributeChange( changed_attributes );
+		Rml::Controls::ElementFormControlSelect::OnAttributeChange( changed_attributes );
 
 		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar", "" );
+			cvar = GetAttribute< Rml::Core::String >( "cvar", "" );
 			UpdateValue();
 		}
 	}
 
 	virtual void OnChildAdd( Element *child )
 	{
-		Rocket::Controls::ElementFormControlSelect::OnChildAdd( child );
+		Rml::Controls::ElementFormControlSelect::OnChildAdd( child );
 		if ( child == this )
 		{
 			// Need to cache this because it is not available
@@ -69,16 +69,16 @@ public:
 
 	virtual void OnChildRemove( Element *child )
 	{
-		Rocket::Controls::ElementFormControlSelect::OnChildRemove( child );
+		Rml::Controls::ElementFormControlSelect::OnChildRemove( child );
 		if ( child == this )
 		{
 			owner->RemoveEventListener( "show", this );
 		}
 	}
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
+	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rocket::Controls::ElementFormControlSelect::ProcessEvent( event );
+		Rml::Controls::ElementFormControlSelect::ProcessEvent( event );
 
 		if ( !cvar.Empty() )
 		{
@@ -88,19 +88,19 @@ public:
 			}
 			else if ( this == event.GetTargetElement() && event == "change" )
 			{
-				Cvar::SetValue( cvar.CString(), GetValue().CString() );
-				Cvar::AddFlags( cvar.CString(), Cvar::USER_ARCHIVE );
+				Cvar::SetValue( cvar.c_str(), GetValue().c_str() );
+				Cvar::AddFlags( cvar.c_str(), Cvar::USER_ARCHIVE );
 			}
 		}
 	}
 
 	void UpdateValue()
 	{
-		Rocket::Core::String value = Cvar::GetValue( cvar.CString() ).c_str();
+		Rml::Core::String value = Cvar::GetValue( cvar.c_str() ).c_str();
 
 		for ( int i = 0; i < GetNumOptions(); ++i )
 		{
-			Rocket::Controls::SelectOption *o = GetOption( i );
+			Rml::Controls::SelectOption *o = GetOption( i );
 			if ( o->GetValue() == value )
 			{
 				SetSelection( i );
@@ -112,9 +112,9 @@ public:
 	}
 
 private:
-	Rocket::Core::String cvar;
-	Rocket::Core::String type;
-	Rocket::Core::Element *owner;
+	Rml::Core::String cvar;
+	Rml::Core::String type;
+	Rml::Core::Element *owner;
 };
 
 #endif

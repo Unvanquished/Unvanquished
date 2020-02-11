@@ -35,20 +35,20 @@ Maryland 20850 USA.
 #ifndef ROCKETCHATFIELD_H
 #define ROCKETCHATFIELD_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/ElementUtilities.h>
-#include <Rocket/Core/GeometryUtilities.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/ElementUtilities.h>
+#include <RmlUi/Core/GeometryUtilities.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
-class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
+class RocketChatField : public Rml::Core::Element, Rml::Core::EventListener
 {
 public:
-	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
+	RocketChatField( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
 	{
 		// Spawn text container
-		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
+		text_element = Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() );
 
 		// Add it to this element
 		AppendChild( text_element );
@@ -90,11 +90,11 @@ public:
 		}
 	}
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	virtual void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes )
 	{
 		if (changed_attributes.find( "exec" ) != changed_attributes.end() )
 		{
-			cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
+			cmd = GetAttribute<Rml::Core::String>( "exec", "" );
 		}
 	}
 
@@ -114,7 +114,7 @@ public:
 		}
 	}
 
-	void ProcessEvent( Rocket::Core::Event &event )
+	void ProcessEvent( Rml::Core::Event &event )
 	{
 		Element::ProcessEvent( event );
 
@@ -154,17 +154,17 @@ public:
 			// Handle key presses
 			else if ( event == "keydown" )
 			{
-				Rocket::Core::Input::KeyIdentifier key_identifier = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
+				Rml::Core::Input::KeyIdentifier key_identifier = ( Rml::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
 
 				switch ( key_identifier )
 				{
-					case Rocket::Core::Input::KI_BACK:
+					case Rml::Core::Input::KI_BACK:
 						text.Erase( cursor_character_index - 1, 1 );
 						UpdateText();
 						MoveCursor( -1 );
 						break;
 
-					case Rocket::Core::Input::KI_DELETE:
+					case Rml::Core::Input::KI_DELETE:
 						if ( cursor_character_index < (int) text.Length() )
 						{
 							text.Erase( cursor_character_index, 1 );
@@ -173,16 +173,16 @@ public:
 
 						break;
 
-					case Rocket::Core::Input::KI_LEFT:
+					case Rml::Core::Input::KI_LEFT:
 						MoveCursor( -1 );
 						break;
 
-					case Rocket::Core::Input::KI_RIGHT:
+					case Rml::Core::Input::KI_RIGHT:
 						MoveCursor( 1 );
 						break;
 
-					case Rocket::Core::Input::KI_RETURN:
-					case Rocket::Core::Input::KI_NUMPADENTER:
+					case Rml::Core::Input::KI_RETURN:
+					case Rml::Core::Input::KI_NUMPADENTER:
 					{
 						if ( text.Empty() )
 						{
@@ -191,9 +191,9 @@ public:
 						}
 						else if ( cmd == "/" )
 						{
-							Rocket::Core::String utf8String;
-							Rocket::Core::WString( text ).ToUTF8( utf8String );
-							trap_SendConsoleCommand( va( "%s\n", utf8String.CString() ) );
+							Rml::Core::String utf8String;
+							Rml::Core::WString( text ).ToUTF8( utf8String );
+							trap_SendConsoleCommand( va( "%s\n", utf8String.c_str() ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -207,9 +207,9 @@ public:
 
 						if ( !cmd.Empty() && !text.Empty() )
 						{
-							Rocket::Core::String utf8String;
-							Rocket::Core::WString( text ).ToUTF8( utf8String );
-							trap_SendConsoleCommand( va( "%s %s", cmd.CString(), Cmd::Escape( utf8String.CString() ).c_str() ) );
+							Rml::Core::String utf8String;
+							Rml::Core::WString( text ).ToUTF8( utf8String );
+							trap_SendConsoleCommand( va( "%s %s", cmd.c_str(), Cmd::Escape( utf8String.c_str() ).c_str() ) );
 							text.Clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
@@ -228,7 +228,7 @@ public:
 				        event.GetParameter< int >( "alt_key", 0 ) == 0 &&
 				        event.GetParameter< int >( "meta_key", 0 ) == 0 )
 				{
-					Rocket::Core::word character = event.GetParameter< Rocket::Core::word >( "data", 0 );
+					Rml::Core::word character = event.GetParameter< Rml::Core::word >( "data", 0 );
 
 					if ( (int) text.Length() == cursor_character_index )
 					{
@@ -247,13 +247,13 @@ public:
 		}
 	}
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension )
 	{
-		const Rocket::Core::Property *property;
+		const Rml::Core::Property *property;
 		property = GetProperty( "width" );
 
 		// Absolute unit. We can use it as is
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.x = property->value.Get<float>();
 		}
@@ -261,8 +261,8 @@ public:
 		else
 		{
 			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
+			Rml::Core::Element *parent = this;
+			std::stack<Rml::Core::Element*> stack;
 			stack.push( this );
 
 			while ( ( parent = parent->GetParentNode() ) )
@@ -283,7 +283,7 @@ public:
 			}
 		}
 
-		dimensions.y = Rocket::Core::ElementUtilities::GetLineHeight( this );
+		dimensions.y = Rml::Core::ElementUtilities::GetLineHeight( this );
 
 		dimension = dimensions;
 
@@ -297,22 +297,22 @@ protected:
 		// Generates the cursor.
 		cursor_geometry.Release();
 
-		std::vector< Rocket::Core::Vertex > &vertices = cursor_geometry.GetVertices();
+		std::vector< Rml::Core::Vertex > &vertices = cursor_geometry.GetVertices();
 		vertices.resize( 4 );
 
 		std::vector< int > &indices = cursor_geometry.GetIndices();
 		indices.resize( 6 );
 
 		cursor_size.x = 1;
-		cursor_size.y = ( float ) Rocket::Core::ElementUtilities::GetLineHeight( text_element ) + 2;
-		Rocket::Core::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rocket::Core::Vector2f( 0, 0 ), cursor_size, GetProperty< Rocket::Core::Colourb >( "color" ) );
+		cursor_size.y = ( float ) Rml::Core::ElementUtilities::GetLineHeight( text_element ) + 2;
+		Rml::Core::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rml::Core::Vector2f( 0, 0 ), cursor_size, GetProperty< Rml::Core::Colourb >( "color" ) );
 	}
 
 	void MoveCursor( int amt )
 	{
 		cursor_character_index += amt;
 
-		cursor_character_index = Rocket::Core::Math::Clamp<int>( cursor_character_index, 0, text.Length() );
+		cursor_character_index = Rml::Core::Math::Clamp<int>( cursor_character_index, 0, text.Length() );
 	}
 
 	void UpdateCursorPosition()
@@ -324,28 +324,28 @@ protected:
 
 		cursor_position = GetAbsoluteOffset();
 
-		cursor_position.x += ( float ) Rocket::Core::ElementUtilities::GetStringWidth( text_element, text.Substring( 0, cursor_character_index ) );
+		cursor_position.x += ( float ) Rml::Core::ElementUtilities::GetStringWidth( text_element, text.Substring( 0, cursor_character_index ) );
 	}
 
 	void UpdateText()
 	{
 		RemoveChild( text_element );
-		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
+		text_element = Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() );
 		AppendChild( text_element );
 		text_element->RemoveReference();
 		if ( !text.Empty() )
 		{
-            Rocket::Core::String utf8;
+            Rml::Core::String utf8;
             text.ToUTF8(utf8);
 			q2rml( utf8, text_element );
 		}
 	}
 
 	// Special q -> rml conversion function that preserves carets and codes
-	void q2rml( Rocket::Core::String in, Rocket::Core::Element *parent )
+	void q2rml( Rml::Core::String in, Rml::Core::Element *parent )
 	{
-		Rocket::Core::String out;
-		Rocket::Core::Element *child = nullptr;
+		Rml::Core::String out;
+		Rml::Core::Element *child = nullptr;
 		bool span = false;
 
 		if ( in.Empty() )
@@ -353,17 +353,17 @@ protected:
 			return;
 		}
 
-		for ( const auto& token : Color::Parser( in.CString(), Color::White ) )
+		for ( const auto& token : Color::Parser( in.c_str(), Color::White ) )
 		{
 			if ( token.Type() == Color::Token::TokenType::COLOR )
 			{
-				Rocket::Core::XMLAttributes xml;
+				Rml::Core::XMLAttributes xml;
 
 				// Child element initialized
 				if ( span )
 				{
 					span = false;
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+					static_cast<Rml::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
 					child->RemoveReference();
 					out.Clear();
@@ -371,17 +371,17 @@ protected:
 				// If not intialized, probably the first one, and should be white.
 				else if ( !out.Empty() )
 				{
-					Rocket::Core::XMLAttributes xml;
-					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+					Rml::Core::XMLAttributes xml;
+					child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 					child->SetProperty( "color", "#FFFFFF" );
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+					static_cast<Rml::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
 					child->RemoveReference();
 					out.Clear();
 				}
 
 
-				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+				child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 				Color::Color32Bit color32 = token.Color();
 				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
 				out.Append( token.Begin(), token.Size() );
@@ -418,15 +418,15 @@ protected:
 					// If not intialized, probably the first one, and should be white.
 					else
 					{
-						Rocket::Core::XMLAttributes xml;
-						child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+						Rml::Core::XMLAttributes xml;
+						child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 						child->SetProperty( "color", "#FFFFFF" );
 					}
 
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+					static_cast<Rml::Core::ElementText *>( child )->SetText( out );
 					parent->AppendChild( child );
 					child->RemoveReference();
-					parent->AppendChild( ( child = Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) ) );
+					parent->AppendChild( ( child = Rml::Core::Factory::InstanceElement( parent, "*", "br", Rml::Core::XMLAttributes() ) ) );
 					child->RemoveReference();
 					out.Clear();
 				}
@@ -439,7 +439,7 @@ protected:
 
 		if ( span && child && !out.Empty() )
 		{
-			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+			static_cast<Rml::Core::ElementText *>( child )->SetText( out );
 			parent->AppendChild( child );
 			child->RemoveReference();
 			span = false;
@@ -447,25 +447,25 @@ protected:
 
 		else if ( !span && !child && !out.Empty() )
 		{
-			child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", Rocket::Core::XMLAttributes() );
-			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
+			child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", Rml::Core::XMLAttributes() );
+			static_cast<Rml::Core::ElementText *>( child )->SetText( out );
 			parent->AppendChild( child );
 			child->RemoveReference();
 		}
 	}
 
 private:
-	Rocket::Core::Vector2f cursor_position;
+	Rml::Core::Vector2f cursor_position;
 	bool focus;
 	int cursor_character_index;
-	Rocket::Core::Element *text_element;
-	Rocket::Core::Context *context;
+	Rml::Core::Element *text_element;
+	Rml::Core::Context *context;
 
-	Rocket::Core::Geometry cursor_geometry;
-	Rocket::Core::Vector2f cursor_size;
-	Rocket::Core::Vector2f dimensions;
-	Rocket::Core::WString text;
-	Rocket::Core::String cmd;
+	Rml::Core::Geometry cursor_geometry;
+	Rml::Core::Vector2f cursor_size;
+	Rml::Core::Vector2f dimensions;
+	Rml::Core::WString text;
+	Rml::Core::String cmd;
 
 };
 #endif

@@ -35,18 +35,18 @@ Maryland 20850 USA.
 #ifndef ROCKETDATASOURCE_H
 #define ROCKETDATASOURCE_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Controls.h>
-#include <Rocket/Controls/DataSourceListener.h>
-#include <Rocket/Controls/DataSource.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Controls.h>
+#include <RmlUi/Controls/DataSourceListener.h>
+#include <RmlUi/Controls/DataSource.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
-class RocketDataSource : public Rocket::Core::Element, public Rocket::Controls::DataSourceListener
+class RocketDataSource : public Rml::Core::Element, public Rml::Controls::DataSourceListener
 {
 public:
-	RocketDataSource( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
+	RocketDataSource( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
 	{
 	}
 
@@ -58,51 +58,51 @@ public:
 		}
 	}
 
-	void SetDataSource( const Rocket::Core::String &dsn )
+	void SetDataSource( const Rml::Core::String &dsn )
 	{
 		ParseDataSource( data_source, data_table, dsn );
 		data_source->AttachListener( this );
 		dirty_query = true;
 	}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Core::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
 		{
-			SetDataSource( GetAttribute<Rocket::Core::String>( "source", "" ) );
+			SetDataSource( GetAttribute<Rml::Core::String>( "source", "" ) );
 		}
 
 		if ( changed_attributes.find( "fields" ) != changed_attributes.end() )
 		{
-			csvFields = GetAttribute<Rocket::Core::String>( "fields", "" );
-			Rocket::Core::StringUtilities::ExpandString( fields, csvFields );
+			csvFields = GetAttribute<Rml::Core::String>( "fields", "" );
+			Rml::Core::StringUtilities::ExpandString( fields, csvFields );
 			dirty_query = true;
 		}
 
 		if ( changed_attributes.find( "formatter" ) != changed_attributes.end() )
 		{
-			formatter = Rocket::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rocket::Core::String>() );
+			formatter = Rml::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rml::Core::String>() );
 			dirty_query = true;
 		}
 	}
 
-	void OnRowAdd( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
+	void OnRowAdd( Rml::Controls::DataSource*, const Rml::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
+	void OnRowChange( Rml::Controls::DataSource*, const Rml::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rocket::Controls::DataSource*, const Rocket::Core::String& )
+	void OnRowChange( Rml::Controls::DataSource*, const Rml::Core::String& )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowRemove( Rocket::Controls::DataSource*, const Rocket::Core::String&, int, int )
+	void OnRowRemove( Rml::Controls::DataSource*, const Rml::Core::String&, int, int )
 	{
 		dirty_query = true;
 	}
@@ -120,17 +120,17 @@ public:
 				RemoveChild( GetFirstChild() );
 			}
 
-			Rocket::Controls::DataQuery query( data_source, data_table, csvFields, 0, -1 );
+			Rml::Controls::DataQuery query( data_source, data_table, csvFields, 0, -1 );
 			int index = 0;
 
 			while ( query.NextRow() )
 			{
-				Rocket::Core::StringList raw_data;
-				Rocket::Core::String out;
+				Rml::Core::StringList raw_data;
+				Rml::Core::String out;
 
 				for ( size_t i = 0; i < fields.size(); ++i )
 				{
-					raw_data.push_back( query.Get<Rocket::Core::String>( fields[ i ], "" ) );
+					raw_data.push_back( query.Get<Rml::Core::String>( fields[ i ], "" ) );
 				}
 
 				raw_data.push_back( va( "%d", index++ ) );
@@ -156,18 +156,18 @@ public:
 					}
 				}
 
-				Rocket::Core::Factory::InstanceElementText( this, out );
+				Rml::Core::Factory::InstanceElementText( this, out );
 			}
 		}
 	}
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
+	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
 		Element::ProcessEvent( event );
 		if ( event == "mouseover" )
 		{
-			Rocket::Core::Element *parent = event.GetTargetElement();
-			Rocket::Core::Element *button = parent->GetTagName() == "button" ? parent : nullptr;
+			Rml::Core::Element *parent = event.GetTargetElement();
+			Rml::Core::Element *button = parent->GetTagName() == "button" ? parent : nullptr;
 			while ( ( parent = parent->GetParentNode() ) )
 			{
 				if ( !button && parent->GetTagName() == "button" )
@@ -178,7 +178,7 @@ public:
 
 				if ( parent == this )
 				{
-					Rocket::Core::Dictionary parameters;
+					Rml::Core::Dictionary parameters;
 					int i = 0;
 
 					for ( i = 1; i < GetNumChildren(); ++i )
@@ -207,8 +207,8 @@ protected:
 
 		int numChildren = 0;
 		float width, height;
-		Rocket::Core::Element *child;
-		Rocket::Core::Vector2f offset = GetRelativeOffset();
+		Rml::Core::Element *child;
+		Rml::Core::Vector2f offset = GetRelativeOffset();
 
 		// First child is the cancel button. It should go in the center.
 		child = GetFirstChild();
@@ -246,7 +246,7 @@ private:
 	void AddCancelbutton()
 	{
 		init = true;
-		Rocket::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().CString() ) );
+		Rml::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().c_str() ) );
 		GetFirstChild()->SetClass( "cancelButton", true );
 	}
 
@@ -254,13 +254,13 @@ private:
 	bool dirty_layout;
 	bool init;
 	float radius;
-	Rocket::Controls::DataFormatter *formatter;
-	Rocket::Controls::DataSource *data_source;
+	Rml::Controls::DataFormatter *formatter;
+	Rml::Controls::DataSource *data_source;
 
-	Rocket::Core::String data_table;
-	Rocket::Core::String csvFields;
-	Rocket::Core::StringList fields;
-	Rocket::Core::Vector2f dimensions;
+	Rml::Core::String data_table;
+	Rml::Core::String csvFields;
+	Rml::Core::StringList fields;
+	Rml::Core::Vector2f dimensions;
 };
 
 #endif

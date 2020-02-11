@@ -35,25 +35,25 @@ Maryland 20850 USA.
 #ifndef ROCKETELEMENTDOCUMENT_H
 #define ROCKETELEMENTDOCUMENT_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/ElementDocument.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/ElementDocument.h>
 
 
-class RocketElementDocument : public Rocket::Core::ElementDocument
+class RocketElementDocument : public Rml::Core::ElementDocument
 {
 public:
-	RocketElementDocument( const Rocket::Core::String &tag ) : Rocket::Core::ElementDocument( tag ) { }
+	RocketElementDocument( const Rml::Core::String &tag ) : Rml::Core::ElementDocument( tag ) { }
 
-	void ProcessEvent( Rocket::Core::Event &event )
+	void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rocket::Core::ElementDocument::ProcessEvent( event );
+		Rml::Core::ElementDocument::ProcessEvent( event );
 
 		if ( event == "keydown" )
 		{
-			Rocket::Core::Input::KeyIdentifier key = (Rocket::Core::Input::KeyIdentifier) event.GetParameter<int>( "key_identifier", 0 );
+			Rml::Core::Input::KeyIdentifier key = (Rml::Core::Input::KeyIdentifier) event.GetParameter<int>( "key_identifier", 0 );
 
-			if ( key == Rocket::Core::Input::KI_ESCAPE && !HasAttribute( "nohide" ) )
+			if ( key == Rml::Core::Input::KI_ESCAPE && !HasAttribute( "nohide" ) )
 			{
 				this->Hide();
 			}

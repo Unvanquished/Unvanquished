@@ -39,8 +39,8 @@ Maryland 20850 USA.
 
 void Rocket_LoadDocument( const char *path )
 {
-	Rocket::Core::ElementDocument* document = menuContext->LoadDocument( path );
-	Rocket::Core::ElementDocument* other;
+	Rml::Core::ElementDocument* document = menuContext->LoadDocument( path );
+	Rml::Core::ElementDocument* other;
 
 	if( document )
 	{
@@ -59,7 +59,7 @@ void Rocket_LoadDocument( const char *path )
 
 void Rocket_LoadCursor( const char *path )
 {
-	Rocket::Core::ElementDocument* document = menuContext->LoadMouseCursor( path );
+	Rml::Core::ElementDocument* document = menuContext->LoadMouseCursor( path );
 
 	if( document )
 	{
@@ -78,7 +78,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 {
 	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )
 	{
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Show();
@@ -97,7 +97,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 			return;
 		}
 
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Close();
@@ -105,10 +105,10 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "goto", action ) )
 	{
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
-			Rocket::Core::ElementDocument *owner = menuContext->GetFocusElement()->GetOwnerDocument();
+			Rml::Core::ElementDocument *owner = menuContext->GetFocusElement()->GetOwnerDocument();
 			if ( owner )
 			{
 				owner->Close();
@@ -122,7 +122,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "blur", action ) || !Q_stricmp( "hide", action ) )
 	{
-		Rocket::Core::ElementDocument* document = nullptr;
+		Rml::Core::ElementDocument* document = nullptr;
 
 		if ( !*name ) // If name is empty, hide active
 		{
@@ -151,7 +151,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "reload", action ) )
 	{
-		Rocket::Core::ElementDocument* document = nullptr;
+		Rml::Core::ElementDocument* document = nullptr;
 
 		if ( !*name ) // If name is empty, hide active
 		{
@@ -168,7 +168,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 
 		if ( document )
 		{
-			Rocket::Core::String url = document->GetSourceURL();
+			Rml::Core::String url = document->GetSourceURL();
 			document->Close();
 			document = menuContext->LoadDocument( url );
 			document->Show();

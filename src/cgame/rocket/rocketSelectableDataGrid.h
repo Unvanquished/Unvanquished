@@ -37,14 +37,14 @@ Maryland 20850 USA.
 #define ROCKETSELECTABLEDATAGRID_H
 #include "../cg_local.h"
 #include "rocket.h"
-#include <Rocket/Core.h>
-#include <Rocket/Controls.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Controls.h>
 
-class SelectableDataGrid : public Rocket::Controls::ElementDataGrid
+class SelectableDataGrid : public Rml::Controls::ElementDataGrid
 {
 public:
-	SelectableDataGrid( const Rocket::Core::String& tag ) :
-		Rocket::Controls::ElementDataGrid(tag), lastSelectedRow( nullptr ), lastSelectedRowIndex( -1 )
+	SelectableDataGrid( const Rml::Core::String& tag ) :
+		Rml::Controls::ElementDataGrid(tag), lastSelectedRow( nullptr ), lastSelectedRowIndex( -1 )
 	{
 		SetProperty( "selected-row", "-1" );
 	}
@@ -58,10 +58,10 @@ public:
 
 	/// Called for every event sent to this element or one of its descendants.
 	/// @param[in] event The event to process.
-	void ProcessEvent( Rocket::Core::Event& evt )
+	void ProcessEvent( Rml::Core::Event& evt )
 	{
 		extern std::queue< RocketEvent_t* > eventQueue;
-		Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
+		Rml::Core::String dataSource = GetAttribute<Rml::Core::String>( "source", "" );
 
 		ElementDataGrid::ProcessEvent( evt );
 
@@ -69,8 +69,8 @@ public:
 		{
 			Element* elem;
 			int column = -1;
-			Rocket::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
-			Rocket::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
+			Rml::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
+			Rml::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
 
 
 			// get the column index
@@ -83,7 +83,7 @@ public:
 				// FIXME: We could be little smarter with this and get the column definition here too
 				// and use colselect or colactivate events
 				if( elem->GetTagName() == "datagridcolumn" ) {
-					Rocket::Core::Element* child = elem->GetParentNode()->GetFirstChild();
+					Rml::Core::Element* child = elem->GetParentNode()->GetFirstChild();
 					column = 0;
 					while( child && child != elem ) {
 						child = child->GetNextSibling();
@@ -91,7 +91,7 @@ public:
 					}
 				}
 				else {
-					column = static_cast<Rocket::Controls::ElementDataGridCell *>( elem )->GetColumn();
+					column = static_cast<Rml::Controls::ElementDataGridCell *>( elem )->GetColumn();
 				}
 			}
 
@@ -103,9 +103,9 @@ public:
 
 			if( elem )
 			{
-				Rocket::Controls::ElementDataGridRow *row = dynamic_cast<Rocket::Controls::ElementDataGridRow*>( elem );
+				Rml::Controls::ElementDataGridRow *row = dynamic_cast<Rml::Controls::ElementDataGridRow*>( elem );
 				int index = row->GetTableRelativeIndex();
-				Rocket::Core::String indexStr( va( "%d", index ) );
+				Rml::Core::String indexStr( va( "%d", index ) );
 
 				// this should never happen
 				if( index >= this->GetNumRows() )
@@ -132,10 +132,10 @@ public:
 
 
 
-					eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "setDS %s %s %d", dsName.CString(),tableName.CString(), index ) ) ) );
+					eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "setDS %s %s %d", dsName.c_str(),tableName.c_str(), index ) ) ) );
 				}
 
-				Rocket::Core::Dictionary parameters;
+				Rml::Core::Dictionary parameters;
 				parameters.Set( "index", indexStr );
 				parameters.Set( "column_index", column );
 				parameters.Set( "datasource", dsName );
@@ -149,7 +149,7 @@ public:
 
 			if( evt == "dblclick" )
 			{
-				eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "execDS %s %s", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), tableName.CString() ) ) ) );
+				eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "execDS %s %s", dataSource.Substring( 0, dataSource.Find( "." ) ).c_str(), tableName.c_str() ) ) ) );
 			}
 		}
 		else if( evt == "rowremove" )
@@ -172,7 +172,7 @@ public:
 	}
 
 private:
-	Rocket::Core::Element *lastSelectedRow;
+	Rml::Core::Element *lastSelectedRow;
 	int lastSelectedRowIndex;
 };
 #endif

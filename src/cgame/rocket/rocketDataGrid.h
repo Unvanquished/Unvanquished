@@ -37,15 +37,15 @@ Maryland 20850 USA.
 
 #include "../cg_local.h"
 #include "rocket.h"
-#include <Rocket/Controls/DataSource.h>
-#include <Rocket/Core/Types.h>
+#include <RmlUi/Controls/DataSource.h>
+#include <RmlUi/Core/Types.h>
 
-class RocketDataGrid : public Rocket::Controls::DataSource
+class RocketDataGrid : public Rml::Controls::DataSource
 {
 public:
-	RocketDataGrid( const char *name ) : Rocket::Controls::DataSource( name ) { }
+	RocketDataGrid( const char *name ) : Rml::Controls::DataSource( name ) { }
 	~RocketDataGrid() { }
-	void GetRow( Rocket::Core::StringList& row, const Rocket::Core::String& table, int row_index, const Rocket::Core::StringList& columns )
+	void GetRow( Rml::Core::StringList& row, const Rml::Core::String& table, int row_index, const Rml::Core::StringList& columns )
 	{
 		if ( data.find( table ) == data.end() || data[table].size() <= (unsigned) row_index )
 		{
@@ -54,11 +54,11 @@ public:
 
 		for ( size_t i = 0; i < columns.size(); ++i )
 		{
-			row.push_back( Rocket_QuakeToRML( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ), RP_EMOTICONS ) );
+			row.push_back( Rocket_QuakeToRML( Info_ValueForKey( data[ table ][ row_index ].c_str(), columns[ i ].c_str() ), RP_EMOTICONS ) );
 		}
 	}
 
-	int GetNumRows( const Rocket::Core::String& table )
+	int GetNumRows( const Rml::Core::String& table )
 	{
 		return data[ table ].size();
 	}
@@ -89,7 +89,7 @@ public:
 
 
 private:
-	std::map<Rocket::Core::String, std::vector<Rocket::Core::String> > data;
+	std::map<Rml::Core::String, std::vector<Rml::Core::String> > data;
 };
 
 #endif

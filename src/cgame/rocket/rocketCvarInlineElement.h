@@ -35,13 +35,13 @@ Maryland 20850 USA.
 #ifndef ROCKETCVARINLINEELEMENT_H
 #define ROCKETCVARINLINEELEMENT_H
 
-#include <Rocket/Core/Core.h>
+#include <RmlUi/Core/Core.h>
 #include "../cg_local.h"
 
-class RocketCvarInlineElement : public Rocket::Core::Element
+class RocketCvarInlineElement : public Rml::Core::Element
 {
 public:
-	RocketCvarInlineElement( const Rocket::Core::String& tag ) : Rocket::Core::Element( tag ), cvar( "" ), cvar_value( "" ), dirty_value( false ) {}
+	RocketCvarInlineElement( const Rml::Core::String& tag ) : Rml::Core::Element( tag ), cvar( "" ), cvar_value( "" ), dirty_value( false ) {}
 
 	enum CvarType
 	{
@@ -49,19 +49,19 @@ public:
 	    STRING
 	};
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	virtual void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes )
 	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Core::Element::OnAttributeChange( changed_attributes );
 
 		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar",  "" );
+			cvar = GetAttribute< Rml::Core::String >( "cvar",  "" );
 			dirty_value = true;
 		}
 
 		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
 		{
-			Rocket::Core::String typeString = GetAttribute< Rocket::Core::String >( "type", "" );
+			Rml::Core::String typeString = GetAttribute< Rml::Core::String >( "type", "" );
 
 			if ( typeString == "number" )
 			{
@@ -76,26 +76,26 @@ public:
 
 		if ( changed_attributes.find( "format" ) != changed_attributes.end() )
 		{
-			format = GetAttribute<Rocket::Core::String>( "format", "" );
+			format = GetAttribute<Rml::Core::String>( "format", "" );
 			dirty_value = true;
 		}
 	}
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.Empty() && cvar_value.CString() != Cvar::GetValue( cvar.CString() ) ) )
+		if ( dirty_value || ( !cvar.empty() && cvar_value.c_str() != Cvar::GetValue( cvar.c_str() ) ) )
 		{
-			Rocket::Core::String value = cvar_value = Cvar::GetValue( cvar.CString() ).c_str();
+			Rml::Core::String value = cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
 
-			if (!format.Empty())
+			if (!format.empty())
 			{
 				if (type == NUMBER)
 				{
-					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), atof( Cvar::GetValue( cvar.CString() ).c_str() ) );
+					value = va( format.c_str(), atof( Cvar::GetValue( cvar.c_str() ).c_str() ) );
 				}
 				else
 				{
-					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar::GetValue(cvar.CString()).c_str());
+					value = va( format.c_str(), Cvar::GetValue(cvar.c_str()).c_str() );
 				}
 			}
 
@@ -104,9 +104,9 @@ public:
 		}
 	}
 private:
-	Rocket::Core::String cvar;
-	Rocket::Core::String cvar_value;
-	Rocket::Core::String format;
+	Rml::Core::String cvar;
+	Rml::Core::String cvar_value;
+	Rml::Core::String format;
 	CvarType type;
 	bool dirty_value;
 };
