@@ -35,9 +35,8 @@ Maryland 20850 USA.
 #ifndef ROCKETCONSOLETEXTELEMENT_H
 #define ROCKETCONSOLETEXTELEMENT_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/FontFaceHandle.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
@@ -55,7 +54,7 @@ class RocketConsoleTextElement : public Rocket::Core::Element
 {
 public:
 	RocketConsoleTextElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), numLines( 0 ), maxLines( 0 ), lastTime( -1 ),
-	dirty_height( true )
+	dirty_height( true ), font_engine_interface( Rocket::Core::GetFontEngineInterface() )
 	{
 	}
 
@@ -91,21 +90,20 @@ public:
 			// Each line gets its own span element
 			for (line = line - 1; line >= 0; --line, numLines++ )
 			{
-				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
-				Rocket::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.CString(), RP_EMOTICONS ));
-				child->SetId( va( "%d", lines[ line ].time ) );
-				AppendChild( child );
-				child->RemoveReference();
+				Rocket::Core::ElementPtr childPtr = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
+				Rocket::Core::Factory::InstanceElementText( childPtr.get(), Rocket_QuakeToRML( lines[ line ].text.CString(), RP_EMOTICONS ));
+				childPtr->SetId( va( "%d", lines[ line ].time ) );
+				AppendChild( std::move( childPtr ) );
 			}
 		}
 
 		// Calculate max lines when we have a child element with a fontface
 		if ( dirty_height && HasChildNodes() )
 		{
-			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
+			const Rocket::Core::FontFaceHandle font = GetFirstChild()->GetFontFaceHandle();
 			if ( font )
 			{
-				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
+				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font_engine_interface->GetBaseline( font ) + font_engine_interface->GetLineHeight( font ) ) );
 
 				if ( maxLines <= 0 )
 				{
@@ -127,7 +125,7 @@ public:
 
 	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
 	{
-		if ( changed_properties.find( "height" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rocket::Core::PropertyId::Height ) )
 		{
 			int fontPt = GetProperty<int>( "font-size" );
 			maxLines = GetProperty<int>("height") / ( fontPt > 0 ? fontPt : 1 );
@@ -141,6 +139,7 @@ private:
 	int maxLines;
 	int lastTime;
 	bool dirty_height;
+	Rocket::Core::FontEngineInterface* const font_engine_interface;
 };
 #endif
 

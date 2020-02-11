@@ -31,13 +31,13 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
+#include <unordered_map>
 
 #include "rocket.h"
 #include "rocketElement.h"
-#include <Rocket/Core/Factory.h>
-#include <Rocket/Core/ElementInstancer.h>
-#include <Rocket/Core/ElementInstancerGeneric.h>
-#include <Rocket/Controls/ElementFormControlDataSelect.h>
+#include <RmlUi/Core/Factory.h>
+#include <RmlUi/Core/ElementInstancer.h>
+#include <RmlUi/Controls/ElementFormControlDataSelect.h>
 #include "rocketConsoleTextElement.h"
 #include "../cg_local.h"
 
@@ -55,9 +55,11 @@ void Rocket_GetElementTag( char *tag, int length )
 	}
 }
 
+static std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketElement>> rocketElementInstancer(new Rocket::Core::ElementInstancerGeneric< RocketElement >());
+
 void Rocket_RegisterElement( const char *tag )
 {
-	Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< RocketElement >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( tag, rocketElementInstancer.get() );
 }
 
 // reduces an rml string to a common format so two rml strings can be compared
@@ -65,7 +67,7 @@ static Rocket::Core::String ReduceRML( const Rocket::Core::String &rml )
 {
 	Rocket::Core::String ret;
 	Rocket::Core::String::size_type length = rml.Length();
-	ret.Reserve( length );
+	ret.reserve( length );
 
 	for ( unsigned i = 0; i < length; i++ )
 	{
@@ -244,7 +246,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					{
 						if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
 						{
-							*f = activeElement->ResolveProperty( "width", base_size );
+							*f = activeElement->ResolveNumericProperty( "width" );
 							return;
 						}
 					}
@@ -259,7 +261,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					{
 						if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
 						{
-							*f = activeElement->ResolveProperty( "height", base_size );
+							*f = activeElement->ResolveNumericProperty( "height" );
 							return;
 						}
 					}

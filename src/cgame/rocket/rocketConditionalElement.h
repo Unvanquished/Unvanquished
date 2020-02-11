@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #ifndef ROCKETCONDITIONALELEMENT_H
 #define ROCKETCONDITIONALELEMENT_H
 
-#include <Rocket/Core/Core.h>
+#include <RmlUi/Core/Core.h>
 #include "../cg_local.h"
 
 class RocketConditionalElement : public Rocket::Core::Element
@@ -43,26 +43,29 @@ class RocketConditionalElement : public Rocket::Core::Element
 public:
 	RocketConditionalElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), condition( NOT_EQUAL ), dirty_value( false ) {}
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		Rocket::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
+		Rocket::Core::ElementAttributes::const_iterator it;
+		it = changed_attributes.find( "cvar" );
+		if ( it != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar",  "" );
+			cvar = it->second.Get<Rocket::Core::String>();
 			cvar_value = Cvar::GetValue( cvar.CString() ).c_str();
 		}
 
-		if ( changed_attributes.find( "condition" ) != changed_attributes.end() )
+		it = changed_attributes.find( "condition" );
+		if ( it != changed_attributes.end() )
 		{
-			ParseCondition( GetAttribute< Rocket::Core::String >( "condition", "" ) );
+			ParseCondition( it->second.Get<Rocket::Core::String>() );
 		}
 
-		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
+		it = changed_attributes.find( "value" );
+		if ( it !=  changed_attributes.end() )
 		{
-			Rocket::Core::String attrib = GetAttribute< Rocket::Core::String >( "value", "" );
 			char *end = nullptr;
 			// Check if float
-			float floatVal = strtof( attrib.CString(), &end );
+			float floatVal = strtof( it->second.Get<Rocket::Core::String>().CString(), &end );
 
 			// Is either an integer or float
 			if ( end )
@@ -70,18 +73,18 @@ public:
 				// is integer
 				if ( static_cast< int >( floatVal ) == floatVal )
 				{
-					value.Set( static_cast< int >( floatVal ) );
+					value = static_cast< int >( floatVal );
 				}
 				else
 				{
-					value.Set( floatVal );
+					value = floatVal;
 				}
 			}
 
 			// Is a string
 			else
 			{
-				value.Set( attrib );
+				value = it->second;
 			}
 
 			dirty_value = true;

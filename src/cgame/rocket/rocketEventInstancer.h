@@ -35,8 +35,8 @@ Maryland 20850 USA.
 #ifndef ROCKETEVENTINSTANCER_H
 #define ROCKETEVENTINSTANCER_H
 
-#include <Rocket/Core/EventListener.h>
-#include <Rocket/Core/EventListenerInstancer.h>
+#include <RmlUi/Core/EventListener.h>
+#include <RmlUi/Core/EventListenerInstancer.h>
 #include "rocket.h"
 
 void Rocket_ProcessEvent( Rocket::Core::Event&, Rocket::Core::String& );

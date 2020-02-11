@@ -34,9 +34,9 @@ Maryland 20850 USA.
 
 #include "CDataSource.h"
 #include "cgame/rocket/rocket.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Controls/DataSource.h>
-#include <Rocket/Controls/DataQuery.h>
+#include <RmlUi/Core/Core.h>
+#include <RmlUi/Controls/DataSource.h>
+#include <RmlUi/Controls/DataQuery.h>
 #include "cgame/cg_local.h"
 
 // Lua function to request the datasource be (re)built, e.g.

@@ -34,8 +34,8 @@ Maryland 20850 USA.
 
 // Override for the default dataselect element.
 
-#include <Rocket/Core/Core.h>
-#include <Rocket/Controls/ElementFormControlDataSelect.h>
+#include <RmlUi/Core/Core.h>
+#include <RmlUi/Controls/ElementFormControlDataSelect.h>
 
 #include "../cg_local.h"
 
@@ -69,15 +69,16 @@ public:
 		}
 	}
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		ElementFormControlDataSelect::OnAttributeChange( changed_attributes );
-		if (  changed_attributes.find( "source" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "source" );
+		if ( it != changed_attributes.end() )
 		{
-			Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
-			unsigned int pos = dataSource.Find( "." );
-			dsName = dataSource.Substring( 0, pos );
-			tableName =  dataSource.Substring( pos + 1, dataSource.Length() );
+			Rocket::Core::String dataSource = it->second.Get<Rocket::Core::String>();
+			size_t pos = dataSource.find( "." );
+			dsName = dataSource.substr( 0, pos );
+			tableName =  dataSource.substr( pos + 1, dataSource.Length() );
 		}
 	}
 
@@ -87,7 +88,7 @@ public:
 
 		if ( event.GetTargetElement() == owner && event == "show" )
 		{
-			eventQueue.push( new RocketEvent_t( this, Rocket::Core::String( 1024, "setDataSelectValue %s %s", dsName.CString(), tableName.CString() ) ) );
+			eventQueue.push( new RocketEvent_t( this, va( "setDataSelectValue %s %s", dsName.CString(), tableName.CString() ) ) );
 		}
 	}
 
@@ -106,9 +107,9 @@ public:
 
 			// dispatch event so rocket knows about it
 			Rocket::Core::Dictionary parameters;
-			parameters.Set( "index", va( "%d", selection ) );
-			parameters.Set( "datasource", dsName );
-			parameters.Set( "table", tableName );
+			parameters[ "index" ] = va( "%d", selection );
+			parameters[ "datasource" ] = dsName;
+			parameters[ "table" ] = tableName;
 			DispatchEvent( "rowselect", parameters );
 		}
 	}

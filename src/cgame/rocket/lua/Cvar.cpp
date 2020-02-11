@@ -94,7 +94,7 @@ luaL_Reg CvarSetters[] =
 	{ NULL, NULL },
 };
 
-LUACORETYPEDEFINE(Cvar,false)
+LUACORETYPEDEFINE(Cvar)
 
 }
 }

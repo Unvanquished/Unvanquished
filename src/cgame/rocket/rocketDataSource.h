@@ -35,11 +35,11 @@ Maryland 20850 USA.
 #ifndef ROCKETDATASOURCE_H
 #define ROCKETDATASOURCE_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Controls.h>
-#include <Rocket/Controls/DataSourceListener.h>
-#include <Rocket/Controls/DataSource.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Controls.h>
+#include <RmlUi/Controls/DataSourceListener.h>
+#include <RmlUi/Controls/DataSource.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
@@ -65,7 +65,7 @@ public:
 		dirty_query = true;
 	}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		Rocket::Core::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
@@ -161,9 +161,9 @@ public:
 		}
 	}
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
+	virtual void ProcessDefaultAction( Rocket::Core::Event &event )
 	{
-		Element::ProcessEvent( event );
+		Element::ProcessDefaultAction( event );
 		if ( event == "mouseover" )
 		{
 			Rocket::Core::Element *parent = event.GetTargetElement();
@@ -185,9 +185,9 @@ public:
 					{
 						if ( GetChild( i ) == button )
 						{
-							parameters.Set( "index", va( "%d", i - 1 ) );
-							parameters.Set( "datasource", data_source->GetDataSourceName() );
-							parameters.Set( "table", data_table );
+							parameters[ "index" ] = va( "%d", i - 1 );
+							parameters[ "datasource" ] = data_source->GetDataSourceName();
+							parameters[ "table" ] = data_table;
 
 							DispatchEvent( "rowselect", parameters );
 							break;

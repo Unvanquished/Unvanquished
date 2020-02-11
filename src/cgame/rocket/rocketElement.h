@@ -35,11 +35,11 @@ Maryland 20850 USA.
 #ifndef ROCKETELEMENT_H
 #define ROCKETELEMENT_H
 
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/ElementInstancer.h>
-#include <Rocket/Core/Geometry.h>
-#include <Rocket/Core/GeometryUtilities.h>
-#include <Rocket/Core/Texture.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/ElementInstancer.h>
+#include <RmlUi/Core/Geometry.h>
+#include <RmlUi/Core/GeometryUtilities.h>
+#include <RmlUi/Core/Texture.h>
 
 #include <queue>
 #include "../cg_local.h"
@@ -53,7 +53,7 @@ public:
 	RocketElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
 	~RocketElement() { }
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension ) override
 	{
 		const Rocket::Core::Property *property;
 		property = GetProperty( "width" );
@@ -68,7 +68,7 @@ public:
 			Rocket::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.x = ResolveProperty( "width", parent->GetBox().GetSize().x );
+				dimensions.x = ResolveNumericProperty( "width" );
 			}
 		}
 
@@ -82,7 +82,7 @@ public:
 			Rocket::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.y = ResolveProperty( "height", parent->GetBox().GetSize().y );
+				dimensions.y = ResolveNumericProperty( "height" );
 			}
 		}
 
@@ -93,12 +93,12 @@ public:
 		return true;
 	}
 
-	void ProcessEvent( Rocket::Core::Event &event )
+	void ProcessDefaultAction( Rocket::Core::Event &event ) override
 	{
 		extern std::queue< RocketEvent_t* > eventQueue;
 
 		// Class base class's Event processor
-		Rocket::Core::Element::ProcessEvent( event );
+		Rocket::Core::Element::ProcessDefaultAction( event );
 
 
 		// Let this be picked up in the event loop if it is meant for us
@@ -109,7 +109,7 @@ public:
 		}
 	}
 
-	void OnRender()
+	void OnRender() override
 	{
 		activeElement = this;
 
@@ -123,26 +123,4 @@ public:
 	Rocket::Core::Vector2f dimensions;
 };
 
-class RocketElementInstancer : public Rocket::Core::ElementInstancer
-{
-public:
-	RocketElementInstancer() { }
-	~RocketElementInstancer() { }
-	Rocket::Core::Element *InstanceElement( Rocket::Core::Element*,
-											const Rocket::Core::String &tag,
-											const Rocket::Core::XMLAttributes& )
-	{
-		return new RocketElement( tag );
-	}
-
-	void ReleaseElement( Rocket::Core::Element *element )
-	{
-		delete element;
-	}
-
-	void Release()
-	{
-		delete this;
-	}
-};
 #endif

@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #ifndef ROCKETCVARINLINEELEMENT_H
 #define ROCKETCVARINLINEELEMENT_H
 
-#include <Rocket/Core/Core.h>
+#include <RmlUi/Core/Core.h>
 #include "../cg_local.h"
 
 class RocketCvarInlineElement : public Rocket::Core::Element
@@ -49,7 +49,7 @@ public:
 	    STRING
 	};
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	virtual void OnAttributeChange( const Rocket::Core::ElementAttributes& changed_attributes )
 	{
 		Rocket::Core::Element::OnAttributeChange( changed_attributes );
 
@@ -91,11 +91,11 @@ public:
 			{
 				if (type == NUMBER)
 				{
-					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), atof( Cvar::GetValue( cvar.CString() ).c_str() ) );
+					value = va( format.CString(), atof( Cvar::GetValue( cvar.CString() ).c_str() ) );
 				}
 				else
 				{
-					value = Rocket::Core::String(cvar_value.Length() + format.Length(), format.CString(), Cvar::GetValue(cvar.CString()).c_str());
+					value = va( format.CString(), Cvar::GetValue(cvar.CString()).c_str() );
 				}
 			}
 

@@ -43,7 +43,7 @@ class RocketIncludeElement : public Rocket::Core::Element
 {
 public:
 	RocketIncludeElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
@@ -53,8 +53,8 @@ public:
 			if ( !filename.Empty() )
 			{
 				std::string buffer;
-				buffer = FS::PakPath::ReadFile(filename.CString());
-				SetInnerRML(buffer.c_str());
+				buffer = FS::PakPath::ReadFile(filename);
+				SetInnerRML(buffer);
 			}
 		}
 	}

@@ -37,8 +37,8 @@ Maryland 20850 USA.
 
 #include "../cg_local.h"
 #include "rocket.h"
-#include <Rocket/Controls/DataSource.h>
-#include <Rocket/Core/Types.h>
+#include <RmlUi/Controls/DataSource.h>
+#include <RmlUi/Core/Types.h>
 
 class RocketDataGrid : public Rocket::Controls::DataSource
 {

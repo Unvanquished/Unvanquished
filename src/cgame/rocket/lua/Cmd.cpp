@@ -75,7 +75,7 @@ luaL_Reg CmdSetters[] =
 	{ NULL, NULL },
 };
 
-LUACORETYPEDEFINE(Cmd,false)
+LUACORETYPEDEFINE(Cmd)
 
 }
 }

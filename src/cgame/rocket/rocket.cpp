@@ -36,13 +36,13 @@ Maryland 20850 USA.
 
 #include "common/Common.h"
 #include "rocket.h"
-#include <Rocket/Core/FileInterface.h>
-#include <Rocket/Core/SystemInterface.h>
-#include <Rocket/Core/RenderInterface.h>
-#include <Rocket/Controls.h>
-#include <Rocket/Core/Lua/Interpreter.h>
-#include <Rocket/Core/Lua/LuaType.h>
-#include <Rocket/Controls/Lua/Controls.h>
+#include <RmlUi/Core/FileInterface.h>
+#include <RmlUi/Core/SystemInterface.h>
+#include <RmlUi/Core/RenderInterface.h>
+#include <RmlUi/Controls.h>
+#include <RmlUi/Core/Lua/Interpreter.h>
+#include <RmlUi/Core/Lua/LuaType.h>
+#include <RmlUi/Controls/Lua/Controls.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
 #include "rocketEventInstancer.h"
@@ -62,8 +62,8 @@ Maryland 20850 USA.
 #include "rocketColorInput.h"
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
-#include <Rocket/Debugger.h>
 #include "lua/CDataSource.h"
+#include <RmlUi/Debugger.h>
 #include "lua/Cvar.h"
 #include "lua/Cmd.h"
 #include "lua/Events.h"
@@ -115,7 +115,7 @@ public:
 class DaemonSystemInterface : public Rocket::Core::SystemInterface
 {
 public:
-	float GetElapsedTime()
+	double GetElapsedTime()
 	{
 		return trap_Milliseconds() / 1000.0f;
 	}
@@ -196,14 +196,14 @@ class DaemonRenderInterface : public Rocket::Core::RenderInterface
 public:
 	DaemonRenderInterface() { }
 
-	void RenderGeometry( Rocket::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation )
+	void RenderGeometry( Rocket::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation ) override
 	{
 		polyVert_t *verts = createVertexArray( verticies, numVerticies );
 		trap_R_Add2dPolysIndexedToScene( verts, numVerticies, indices, numIndicies, translation.x, translation.y, texture ? ( qhandle_t ) texture : whiteShader );
 		delete[]  verts;
 	}
 
-	Rocket::Core::CompiledGeometryHandle CompileGeometry( Rocket::Core::Vertex *vertices, int num_vertices, int *indices, int num_indices, Rocket::Core::TextureHandle texture )
+	Rocket::Core::CompiledGeometryHandle CompileGeometry( Rocket::Core::Vertex *vertices, int num_vertices, int *indices, int num_indices, Rocket::Core::TextureHandle texture ) override
 	{
 		RocketCompiledGeometry *geometry = new RocketCompiledGeometry( vertices, num_vertices, indices, num_indices, texture ? ( qhandle_t ) texture : whiteShader );
 
@@ -211,19 +211,19 @@ public:
 
 	}
 
-	void RenderCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry, const Rocket::Core::Vector2f &translation )
+	void RenderCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry, const Rocket::Core::Vector2f &translation ) override
 	{
 		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
 		trap_R_Add2dPolysIndexedToScene( g->verts, g->numVerts, g->indices, g->numIndicies, translation.x, translation.y, g->shader );
 	}
 
-	void ReleaseCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry )
+	void ReleaseCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry ) override
 	{
 		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
 		delete g;
 	}
 
-	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source )
+	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source ) override
 	{
 		qhandle_t shaderHandle = trap_R_RegisterShader( source.CString(), RSF_NOMIP );
 
@@ -237,7 +237,7 @@ public:
 		trap_R_GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
 		return true;
 	}
-	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions, int )
+	bool GenerateTexture( Rocket::Core::TextureHandle& texture_handle, const byte* source, const Rocket::Core::Vector2i& source_dimensions ) override
 	{
 
 		texture_handle = trap_R_GenerateTexture( (const byte* )source, source_dimensions.x, source_dimensions.y );
@@ -246,20 +246,25 @@ public:
 		return ( texture_handle > 0 );
 	}
 
-	void ReleaseTexture( Rocket::Core::TextureHandle )
+	void ReleaseTexture( Rocket::Core::TextureHandle ) override
 	{
 		// we free all textures after each map load, but this may have to be filled for the libRocket font system
 	}
 
-	void EnableScissorRegion( bool enable )
+	void EnableScissorRegion( bool enable ) override
 	{
 		trap_R_ScissorEnable( enable );
 
 	}
 
-	void SetScissorRegion( int x, int y, int width, int height )
+	void SetScissorRegion( int x, int y, int width, int height ) override
 	{
 		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
+	}
+
+	void SetTransform( const Rocket::Core::Matrix4f* transform ) override
+	{
+		// TODO: implement.
 	}
 };
 
@@ -313,6 +318,26 @@ static RocketFocusManager fm;
 Rocket::Core::Context *menuContext = nullptr;
 Rocket::Core::Context *hudContext = nullptr;
 
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<SelectableDataGrid>> selectableDataGridInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketProgressBar>> rocketProgressBarInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketDataSelect>> rocketDataSelectInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketConsoleTextElement>> rocketConsoleTextElementInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketDataSourceSingle>> rocketDataSourceSingleInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketDataSource>> rocketDataSourceInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketKeyBinder>> rocketKeyBinderInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketChatField>> rocketChatFieldInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<CvarElementFormControlInput>> cvarElementFormControlInputInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<CvarElementFormControlSelect>> cvarElementFormControlSelectInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketConditionalElement>> rocketConditionalElementInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketColorInput>> rocketColorInputInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketIncludeElement>> rocketIncludeElementInstancer;
+std::unique_ptr<Rocket::Core::ElementInstancerGeneric<RocketCvarInlineElement>> rocketCvarInlineElementInstancer;
+
+Rocket::Core::PropertyId UnvPropertyId::Orientation;
+
+// TODO
+// cvar_t *cg_draw2D;
+
 void Rocket_Init()
 {
 	Rocket::Core::SetFileInterface( &fileInterface );
@@ -338,8 +363,14 @@ void Rocket_Init()
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Timer>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaCDataSource(Rocket::Core::Lua::Interpreter::GetLuaState());
 
+	// Register custom properties.
+	UnvPropertyId::Orientation = Rocket::Core::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
+		.AddParser("keyword", "left, right, up, down")
+		.GetId();
+
 	// Set backup font
-	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
+	// TODO
+	// Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
 
 	// Initialize keymap
 	Rocket_InitKeys();
@@ -357,21 +388,24 @@ void Rocket_Init()
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
 
 	// Add custom client elements
-	Rocket::Core::Factory::RegisterElementInstancer( "datagrid", new Rocket::Core::ElementInstancerGeneric< SelectableDataGrid >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "progressbar", new Rocket::Core::ElementInstancerGeneric< RocketProgressBar >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "dataselect", new Rocket::Core::ElementInstancerGeneric< RocketDataSelect >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "console_text", new Rocket::Core::ElementInstancerGeneric< RocketConsoleTextElement >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "datasource_single", new Rocket::Core::ElementInstancerGeneric< RocketDataSourceSingle >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "datasource", new Rocket::Core::ElementInstancerGeneric< RocketDataSource >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "keybind", new Rocket::Core::ElementInstancerGeneric< RocketKeyBinder >() )->RemoveReference();
-// 	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "input", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlInput >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "select", new Rocket::Core::ElementInstancerGeneric< CvarElementFormControlSelect >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "if", new Rocket::Core::ElementInstancerGeneric< RocketConditionalElement >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "colorinput", new Rocket::Core::ElementInstancerGeneric< RocketColorInput >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "include", new Rocket::Core::ElementInstancerGeneric< RocketIncludeElement > () )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "inlinecvar", new Rocket::Core::ElementInstancerGeneric< RocketCvarInlineElement > () )->RemoveReference();
+	#define REGISTER_ELEMENT(tag, type, instancer) \
+		instancer.reset(new Rocket::Core::ElementInstancerGeneric< type >()); \
+		Rocket::Core::Factory::RegisterElementInstancer(tag, instancer.get());
+
+	REGISTER_ELEMENT("datagrid", SelectableDataGrid, selectableDataGridInstancer);
+	REGISTER_ELEMENT("progressbar", RocketProgressBar, rocketProgressBarInstancer);
+	REGISTER_ELEMENT("dataselect", RocketDataSelect, rocketDataSelectInstancer);
+	REGISTER_ELEMENT("console_text", RocketConsoleTextElement, rocketConsoleTextElementInstancer);
+	REGISTER_ELEMENT("datasource_single", RocketDataSourceSingle, rocketDataSourceSingleInstancer);
+	REGISTER_ELEMENT("datasource", RocketDataSource, rocketDataSourceInstancer);
+	REGISTER_ELEMENT("keybind", RocketKeyBinder, rocketKeyBinderInstancer);
+	REGISTER_ELEMENT("chatfield", RocketChatField, rocketChatFieldInstancer);
+	REGISTER_ELEMENT("input", CvarElementFormControlInput, cvarElementFormControlInputInstancer);
+	REGISTER_ELEMENT("select", CvarElementFormControlSelect, cvarElementFormControlSelectInstancer);
+	REGISTER_ELEMENT("if", RocketConditionalElement, rocketConditionalElementInstancer);
+	REGISTER_ELEMENT("colorinput", RocketColorInput, rocketColorInputInstancer);
+	REGISTER_ELEMENT("include", RocketIncludeElement, rocketIncludeElementInstancer);
+	REGISTER_ELEMENT("inlinecvar", RocketCvarInlineElement, rocketCvarInlineElementInstancer);
 
 	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_DEFAULT );
 }
@@ -389,20 +423,21 @@ void Rocket_Shutdown()
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
 
-	if ( Rocket::Core::Lua::Interpreter::GetLuaState() )
-	{
-		Rocket::Core::Lua::Interpreter::Shutdown();
-	}
-
 	if ( menuContext )
 	{
-		menuContext->RemoveReference();
+		if (! Rocket::Core::RemoveContext( "menuContext" ) )
+		{
+			Log::Warn( "Could not remove menuContext" );
+		}
 		menuContext = nullptr;
 	}
 
 	if ( hudContext )
 	{
-		hudContext->RemoveReference();
+		if (! Rocket::Core::RemoveContext( "hudContext" ) )
+		{
+			Log::Warn( "Could not remove hudContext" );
+		}
 		hudContext = nullptr;
 	}
 
@@ -590,7 +625,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( spanstr );
 				spanHasContent = true;
 			}
-			out.Append( Color::Constants::ESCAPE );
+			out.Append( 1, Color::Constants::ESCAPE );
 		}
 	}
 
@@ -633,7 +668,7 @@ private:
     {
         if ( menuContext )
         {
-            menuContext->ShowMouseCursor( show_cursor && focus );
+            menuContext->EnableMouseCursor( show_cursor && focus );
         }
 
         MouseMode mode;
@@ -689,5 +724,5 @@ void CG_FocusEvent( bool has_focus )
 
 void Rocket_LoadFont( const char *font )
 {
-	Rocket::Core::FontDatabase::LoadFontFace( font );
+	Rocket::Core::GetFontEngineInterface()->LoadFontFace( font, false );
 }

@@ -125,7 +125,7 @@ luaL_Reg EventsSetters[] =
 	{ NULL, NULL },
 };
 
-LUACORETYPEDEFINE(Events,false)
+LUACORETYPEDEFINE(Events)
 
 }
 }

@@ -35,20 +35,15 @@ Maryland 20850 USA.
 #ifndef ROCKETCOLORINPUT_H
 #define ROCKETCOLORINPUT_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Controls/ElementFormControlInput.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Controls/ElementFormControlInput.h>
 #include "../cg_local.h"
 
 class RocketColorInput : public Rocket::Core::Element, public Rocket::Core::EventListener
 {
 public:
-	RocketColorInput( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag )
+	RocketColorInput( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), input( nullptr ), color_value( nullptr )
 	{
-		// Initialize the input element
-		Rocket::Core::XMLAttributes attribs;
-		attribs.Set( "type", "text" );
-		input = Rocket::Core::Factory::InstanceElement( this, "input", "input", attribs );
-		color_value = Rocket::Core::Factory::InstanceElement( this, "*", "div", Rocket::Core::XMLAttributes() );
 	}
 
 	virtual void OnChildAdd( Element *child )
@@ -56,29 +51,30 @@ public:
 		Element::OnChildAdd( child );
 		if ( child == this )
 		{
-			AppendChild(input);
-			AppendChild(color_value);
-			color_value->RemoveReference();
-			input->RemoveReference();
+			// Initialize the input element
+			Rocket::Core::XMLAttributes attribs;
+			attribs[ "type" ] = "text";
+			input = AppendChild( Rocket::Core::Factory::InstanceElement(
+					this, "input", "input", attribs ) );
+			color_value = AppendChild( Rocket::Core::Factory::InstanceElement(
+					this, "*", "div", Rocket::Core::XMLAttributes() ) );
 			input->SetProperty( "display", "none" );
+			input->SetAttributes( GetAttributes() );
 			UpdateValue();
 		}
 	}
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
 	{
 		Rocket::Core::Element::OnAttributeChange( changed_attributes );
 
 		// Pass all attributes down to the input element
-		for ( Rocket::Core::AttributeNameList::const_iterator it = changed_attributes.begin(); it != changed_attributes.end(); ++it )
-		{
-			input->SetAttribute( *it, GetAttribute<Rocket::Core::String>( *it, "" ) );
-		}
+		if ( input ) input->SetAttributes( changed_attributes );
 	}
 
 	virtual void ProcessEvent( Rocket::Core::Event &event )
 	{
-		Element::ProcessEvent( event );
+		if ( input || color_value ) return;
 		if ( event.GetTargetElement() == input )
 		{
 			if ( event == "change" )
@@ -116,7 +112,7 @@ private:
 	{
 		Rocket::Core::String string = "^7";
 
-		while( color_value->HasChildNodes() )
+		while( color_value && color_value->HasChildNodes() )
 		{
 			color_value->RemoveChild( color_value->GetFirstChild() );
 		}
