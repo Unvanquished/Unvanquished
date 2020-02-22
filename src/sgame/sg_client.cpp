@@ -1779,6 +1779,10 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	maxClips = BG_Weapon( weapon )->maxClips;
 	client->ps.stats[ STAT_WEAPON ] = weapon;
 	client->ps.ammo = maxAmmo;
+	if( ent->client->pers.classSelection == PCL_ALIEN_LEVEL3_UPG )
+	{
+		client->ps.ammo = 1;
+	}
 	client->ps.clips = maxClips;
 
 	// We just spawned, not changing weapons
