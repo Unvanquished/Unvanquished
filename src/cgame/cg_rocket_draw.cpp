@@ -1596,13 +1596,8 @@ static void CG_ScanForCrosshairEntity()
 			else if ( targetTeam != TEAM_NONE )
 			{
 				cg.crosshairFoe = true;
-
-				if ( ownTeam == TEAM_NONE )
-				{
-					// spectating, so show the name
-					cg.crosshairClientNum = trace.entityNum;
-					cg.crosshairClientTime = cg.time;
-				}
+				cg.crosshairClientNum = trace.entityNum;
+				cg.crosshairClientTime = cg.time;
 			}
 		}
 	}
