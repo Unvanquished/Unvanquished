@@ -2559,8 +2559,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, false, size, true );
 		}
 	}
-
-#	undef battpack
 }
 
 /*

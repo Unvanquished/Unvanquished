@@ -528,7 +528,8 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 
 		if ( !ps->valid )
 		{
-			*ps = {};
+			ps->~particleSystem_t();
+			new(ps) particleSystem_t{};
 
 			//found a free slot
 			ps->class_ = bps;
