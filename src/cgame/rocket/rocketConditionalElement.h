@@ -161,7 +161,8 @@ private:
 			case GREATER: return one > two; \
 			case LESS_EQUAL: return one <= two; \
 			case GREATER_EQUAL: return one >= two; \
-			case NOT_EQUAL: return one != two; }
+			case NOT_EQUAL: return one != two; \
+			default: return false; }
 
 	bool IsConditionValid()
 	{
