@@ -1460,7 +1460,8 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 
 		if ( !ts->valid )
 		{
-			*ts = {};
+			ts->~trailSystem_t();
+			new(ts) trailSystem_t{};
 
 			//found a free slot
 			ts->class_ = bts;
