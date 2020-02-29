@@ -1154,7 +1154,7 @@ CG_GhostBuildable
 */
 void CG_GhostBuildable( int buildableInfo )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
+	refEntity_t ent{};
 	playerState_t *ps;
 	vec3_t        angles, entity_origin;
 	vec3_t        mins, maxs;
@@ -1164,8 +1164,6 @@ void CG_GhostBuildable( int buildableInfo )
 	const buildableModelConfig_t *bmc = BG_BuildableModelConfig( buildable );
 
 	ps = &cg.predictedPlayerState;
-
-	memset( &ent, 0, sizeof( ent ) );
 
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
@@ -2171,7 +2169,7 @@ CG_Buildable
 */
 void CG_Buildable( centity_t *cent )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
+	refEntity_t ent{};
 	entityState_t *es = &cent->currentState;
 	vec3_t        angles;
 	vec3_t        surfNormal, xNormal, mins, maxs;
@@ -2204,8 +2202,6 @@ void CG_Buildable( centity_t *cent )
 
 		return;
 	}
-
-	memset( &ent, 0, sizeof( ent ) );
 
 	VectorCopy( es->origin2, surfNormal );
 
@@ -2468,10 +2464,8 @@ void CG_Buildable( centity_t *cent )
 	// MD3 turret special treatment part 1. TODO: Remove.
 	if ( cg_buildables[ es->modelindex ].models[ 1 ] )
 	{
-		static refEntity_t turretBarrel; // static for proper alignment in QVMs
+		refEntity_t turretBarrel{};
 		vec3_t      flatAxis[ 3 ];
-
-		memset( &turretBarrel, 0, sizeof( turretBarrel ) );
 
 		turretBarrel.hModel = cg_buildables[ es->modelindex ].models[ 1 ];
 
@@ -2514,11 +2508,9 @@ void CG_Buildable( centity_t *cent )
 	// MD3 turret special treatment part 2. TODO: Remove.
 	if ( cg_buildables[ es->modelindex ].models[ 2 ] )
 	{
-		static refEntity_t turretTop; // static for proper alignment in QVMs
+		refEntity_t turretTop{};
 		vec3_t      flatAxis[ 3 ];
 		vec3_t      swivelAngles;
-
-		memset( &turretTop, 0, sizeof( turretTop ) );
 
 		VectorCopy( es->angles2, swivelAngles );
 		swivelAngles[ PITCH ] = 0.0f;

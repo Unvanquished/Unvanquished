@@ -2425,11 +2425,7 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
-	static refEntity_t jetpack; // static for proper alignment in QVMs
-
-	// TODO: Remove this QVM relic.
-	// jetpack and battpack are never both in use together
-#	define radar jetpack
+	refEntity_t ent{};
 
 	int           held, publicFlags;
 	entityState_t *es = &cent->currentState;
@@ -2440,23 +2436,22 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	// jetpack model and effects
 	if ( held & ( 1 << UP_JETPACK ) )
 	{
-		memset( &jetpack, 0, sizeof( jetpack ) );
-		VectorCopy( torso->lightingOrigin, jetpack.lightingOrigin );
-		jetpack.renderfx = torso->renderfx;
+		VectorCopy( torso->lightingOrigin, ent.lightingOrigin );
+		ent.renderfx = torso->renderfx;
 
-		jetpack.hModel = cgs.media.jetpackModel;
+		ent.hModel = cgs.media.jetpackModel;
 
 		// identity matrix
-		AxisCopy( axisDefault, jetpack.axis );
+		AxisCopy( axisDefault, ent.axis );
 
 		// FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_gear" );
+		CG_PositionRotatedEntityOnTag( &ent, torso, torso->hModel, "tag_gear" );
 
-		CG_JetpackAnimation( cent, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
-		jetpack.skeleton = jetpackSkeleton;
-		CG_TransformSkeleton( &jetpack.skeleton, 1.0f );
+		CG_JetpackAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
+		ent.skeleton = jetpackSkeleton;
+		CG_TransformSkeleton( &ent.skeleton, 1.0f );
 
-		trap_R_AddRefEntityToScene( &jetpack );
+		trap_R_AddRefEntityToScene( &ent );
 
 		if ( publicFlags & PF_JETPACK_ACTIVE )
 		{
@@ -2487,14 +2482,14 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			// attach ps
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS[ 0 ]->attachment, &jetpack, jetpack.hModel, "nozzle.R" );
+				CG_SetAttachmentTag( &cent->jetPackPS[ 0 ]->attachment, &ent, ent.hModel, "nozzle.R" );
 				CG_SetAttachmentCent( &cent->jetPackPS[ 0 ]->attachment, cent );
 				CG_AttachToTag( &cent->jetPackPS[ 0 ]->attachment );
 			}
 
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS[ 1 ]->attachment, &jetpack, jetpack.hModel, "nozzle.L" );
+				CG_SetAttachmentTag( &cent->jetPackPS[ 1 ]->attachment, &ent, ent.hModel, "nozzle.L" );
 				CG_SetAttachmentCent( &cent->jetPackPS[ 1 ]->attachment, cent );
 				CG_AttachToTag( &cent->jetPackPS[ 1 ]->attachment );
 			}
@@ -2537,19 +2532,18 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	// battery pack
 	if ( held & ( 1 << UP_RADAR ) )
 	{
-		memset( &radar, 0, sizeof( radar ) );
-		VectorCopy( torso->lightingOrigin, radar.lightingOrigin );
-		radar.renderfx = torso->renderfx;
+		VectorCopy( torso->lightingOrigin, ent.lightingOrigin );
+		ent.renderfx = torso->renderfx;
 
-		radar.hModel = cgs.media.radarModel;
+		ent.hModel = cgs.media.radarModel;
 
 		//identity matrix
-		AxisCopy( axisDefault, radar.axis );
+		AxisCopy( axisDefault, ent.axis );
 
 		//FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &radar, torso, torso->hModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &ent, torso, torso->hModel, "tag_head" );
 
-		trap_R_AddRefEntityToScene( &radar );
+		trap_R_AddRefEntityToScene( &ent );
 	}
 
 	// creep below bloblocked players
@@ -2573,8 +2567,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, false, size, true );
 		}
 	}
-
-#	undef battpack
 }
 
 /*
@@ -2587,7 +2579,7 @@ Float a sprite over the player's head
 static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 {
 	int         rf;
-	static refEntity_t ent; // static for proper alignment in QVMs
+	refEntity_t ent{};
 
 	if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson )
 	{
@@ -2598,7 +2590,6 @@ static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 		rf = 0;
 	}
 
-	memset( &ent, 0, sizeof( ent ) );
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	ent.origin[ 2 ] += 48;
 	ent.reType = refEntityType_t::RT_SPRITE;
@@ -2923,7 +2914,7 @@ void CG_Player( centity_t *cent )
 
 	// NOTE: legs is used for nonsegmented and skeletal models
 	//       this helps reduce code to be changed
-	refEntity_t legs, torso, head;
+	refEntity_t legs{}, torso{}, head{};
 
 	int           clientNum;
 	int           renderfx;
@@ -2993,10 +2984,6 @@ void CG_Player( centity_t *cent )
 		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
 		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
-
-	memset( &legs,    0, sizeof( legs ) );
-	memset( &torso,   0, sizeof( torso ) );
-	memset( &head,    0, sizeof( head ) );
 
 	VectorCopy( cent->lerpAngles, angles );
 	AnglesToAxis( cent->lerpAngles, tempAxis );
@@ -3430,7 +3417,7 @@ CG_Corpse
 */
 void CG_Corpse( centity_t *cent )
 {
-	refEntity_t   legs, torso, head;
+	refEntity_t   legs{}, torso{}, head{};
 	clientInfo_t  *ci;
 	entityState_t *es = &cent->currentState;
 	int           corpseNum;
@@ -3453,10 +3440,6 @@ void CG_Corpse( centity_t *cent )
 	{
 		return;
 	}
-
-	memset( &legs, 0, sizeof( legs ) );
-	memset( &torso, 0, sizeof( torso ) );
-	memset( &head, 0, sizeof( head ) );
 
 	VectorCopy( cent->lerpOrigin, origin );
 	BG_ClassBoundingBox( es->clientNum, liveZ, nullptr, nullptr, deadZ, deadMax );

@@ -47,7 +47,7 @@ CG_ModelDoor
 */
 void CG_ModelDoor( centity_t *cent )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
+	refEntity_t ent{};
 	entityState_t *es;
 	animation_t   anim;
 	lerpFrame_t   *lf = &cent->lerpFrame;
@@ -60,7 +60,6 @@ void CG_ModelDoor( centity_t *cent )
 	}
 
 	//create the render entity
-	memset( &ent, 0, sizeof( ent ) );
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	VectorCopy( cent->lerpOrigin, ent.oldorigin );
 	AnglesToAxis( cent->lerpAngles, ent.axis );
@@ -135,7 +134,7 @@ CG_AnimMapObj
 */
 void CG_AnimMapObj( centity_t *cent )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
+	refEntity_t ent;
 	entityState_t *es;
 	float         scale;
 	animation_t   anim;
@@ -147,8 +146,6 @@ void CG_AnimMapObj( centity_t *cent )
 	{
 		return;
 	}
-
-	memset( &ent, 0, sizeof( ent ) );
 
 	VectorCopy( es->angles, cent->lerpAngles );
 	AnglesToAxis( cent->lerpAngles, ent.axis );

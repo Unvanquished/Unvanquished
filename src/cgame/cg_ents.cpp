@@ -315,7 +315,7 @@ CG_General
 */
 static void CG_General( centity_t *cent )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
+	static refEntity_t ent{};
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
@@ -325,8 +325,6 @@ static void CG_General( centity_t *cent )
 	{
 		return;
 	}
-
-	memset( &ent, 0, sizeof( ent ) );
 
 	// set frame
 
@@ -388,7 +386,7 @@ CG_Missile
 */
 static void CG_Missile( centity_t *cent )
 {
-	static refEntity_t        ent; // static for proper alignment in QVMs
+	static refEntity_t        ent{};
 	entityState_t             *es;
 	const missileAttributes_t *ma;
 
@@ -416,7 +414,6 @@ static void CG_Missile( centity_t *cent )
 	}
 
 	// create the render entity
-	memset( &ent, 0, sizeof( ent ) );
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	VectorCopy( cent->lerpOrigin, ent.oldorigin );
 
@@ -576,13 +573,12 @@ CG_Mover
 */
 static void CG_Mover( centity_t *cent )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
+	refEntity_t ent{};
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
 
 	// create the render entity
-	memset( &ent, 0, sizeof( ent ) );
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	VectorCopy( cent->lerpOrigin, ent.oldorigin );
 	AnglesToAxis( cent->lerpAngles, ent.axis );
@@ -621,13 +617,12 @@ CG_Portal
 */
 static void CG_Portal( centity_t *cent )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
+	refEntity_t ent{};
 	entityState_t *s1;
 
 	s1 = &cent->currentState;
 
 	// create the render entity
-	memset( &ent, 0, sizeof( ent ) );
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	VectorCopy( s1->origin2, ent.oldorigin );
 	ByteToDir( s1->eventParm, ent.axis[ 0 ] );
@@ -689,7 +684,7 @@ CG_LightFlare
 */
 static void CG_LightFlare( centity_t *cent )
 {
-	static refEntity_t flare; // static for proper alignment in QVMs
+	refEntity_t flare{};
 	entityState_t *es;
 	vec3_t        forward, delta;
 	float         len;
@@ -715,8 +710,6 @@ static void CG_LightFlare( centity_t *cent )
 	newStatus = trap_CheckVisibility( cent->lfs.hTest );
 
 	trap_AddVisTestToScene( cent->lfs.hTest, es->origin, 16.0f, 8.0f );
-
-	memset( &flare, 0, sizeof( flare ) );
 
 	flare.reType = refEntityType_t::RT_SPRITE;
 	flare.customShader = cgs.gameShaders[ es->modelindex ];
