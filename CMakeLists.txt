@@ -118,6 +118,7 @@ try_flag(WARNINGS           "-Wno-error=unused-but-set-variable")
 try_flag(WARNINGS           "-Wno-error=unused-function")
 try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
 try_flag(WARNINGS           "-Wno-error=unused-private-field")
+try_flag(WARNINGS           "-Wno-error=deprecated-copy")  # TODO: Remove when move to RmlUi is complete.
 
 if (BUILD_SGAME)
     include(DaemonCBSE)
