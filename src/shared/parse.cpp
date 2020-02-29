@@ -1593,14 +1593,14 @@ static int Parse_StringizeTokens( token_t *tokens, token_t *token )
 	token->whitespace_p = nullptr;
 	token->endwhitespace_p = nullptr;
 	token->string[ 0 ] = '\0';
-	strcat( token->string, "\"" );
+	Q_strcat( token->string, MAX_TOKEN_CHARS - strlen( token->string ), "\"" );
 
 	for ( t = tokens; t; t = t->next )
 	{
-		strncat( token->string, t->string, MAX_TOKEN_CHARS - strlen( token->string ) );
+		Q_strcat( token->string, MAX_TOKEN_CHARS - strlen( token->string ), t->string );
 	}
 
-	strncat( token->string, "\"", MAX_TOKEN_CHARS - strlen( token->string ) );
+	Q_strcat( token->string, MAX_TOKEN_CHARS - strlen( token->string ), "\"" );
 	return true;
 }
 
@@ -2992,14 +2992,14 @@ static int Parse_Directive_include( source_t *source )
 		{
 			// buffer too small?
 			path[ MAX_QPATH - 1 ] = 0;
-			strncpy( path, source->includepath, MAX_QPATH - 1 );
-			strncat( path, token.string, MAX_QPATH - 1 );
+			Q_strncpyz( path, source->includepath, MAX_QPATH - 1 );
+			Q_strcat( path, MAX_QPATH - 1, token.string );
 			script = Parse_LoadScriptFile( path );
 		}
 	}
 	else if ( token.type == tokenType_t::TT_PUNCTUATION && *token.string == '<' )
 	{
-		strcpy( path, source->includepath );
+		Q_strncpyz( path, source->includepath, sizeof( path ) );
 
 		while ( Parse_ReadSourceToken( source, &token ) )
 		{
@@ -3011,7 +3011,7 @@ static int Parse_Directive_include( source_t *source )
 
 			if ( token.type == tokenType_t::TT_PUNCTUATION && *token.string == '>' ) { break; }
 
-			strncat( path, token.string, MAX_QPATH - 1 );
+			Q_strcat( path, MAX_QPATH - 1, token.string );
 		}
 
 		if ( *token.string != '>' )
