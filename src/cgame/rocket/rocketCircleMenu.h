@@ -313,7 +313,7 @@ public:
 					{
 						if ( GetChild( i ) == button )
 						{
-							parameters.Set( "index", va( "%d", i - 1 ) );
+							parameters.Set( "index", button->GetAttribute< int >( "alienclass", 0 ) );
 							parameters.Set( "datasource", data_source->GetDataSourceName() );
 							parameters.Set( "table", data_table );
 
