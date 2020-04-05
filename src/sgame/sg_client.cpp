@@ -722,8 +722,9 @@ static const char *G_UnnamedClientName( gclient_t *client )
 G_ClientCleanName
 ============
 */
-static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t *client )
+static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclient_t *client )
 {
+	ASSERT_GE(outSize, 1U);
 	--outSize;
 
 	bool        has_visible_characters = false;
@@ -839,11 +840,11 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	// if something made the name bad, put them back to UnnamedPlayer
 	if ( invalid )
 	{
-		Q_strncpyz( out, G_UnnamedClientName( client ), outSize );
+		Q_strncpyz( out, G_UnnamedClientName( client ), static_cast<int>(outSize) );
 	}
 	else
 	{
-		Q_strncpyz( out, out_string.c_str(), outSize );
+		Q_strncpyz( out, out_string.c_str(), static_cast<int>(outSize) );
 	}
 }
 

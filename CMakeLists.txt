@@ -110,14 +110,9 @@ if (NOT BE_VERBOSE)
 endif()
 
 # remove
-try_flag(WARNINGS           "-Wno-error=maybe-uninitialized")
-try_flag(WARNINGS           "-W${WARNMODE}missing-field-initializers")
-try_flag(WARNINGS           "-W${WARNMODE}sign-compare")
 try_flag(WARNINGS           "-Wno-error=switch")
-try_flag(WARNINGS           "-Wno-error=unused-but-set-variable")
 try_flag(WARNINGS           "-Wno-error=unused-function")
 try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
-try_flag(WARNINGS           "-Wno-error=unused-private-field")
 
 if (BUILD_SGAME)
     include(DaemonCBSE)
