@@ -44,6 +44,7 @@ Visual Studio/MSVC (at least Visual Studio 2017).
 `libjpeg` ≥ 8,
 `libwebp` ≥ 0.2.0,
 `Freetype`,
+`Lua`,
 `OpenAL`,
 `libogg`,
 `libvorbis`,
