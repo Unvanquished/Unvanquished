@@ -170,19 +170,19 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				if ( !token || *token == '}' ) break;
 				if ( !Q_stricmp( token, "HandDelta" ) )
 				{
-					ci->modifiers.emplace_back(new AnimDelta());
+					ci->modifiers.emplace_back(std::make_shared<AnimDelta>());
 				}
 				else if ( !Q_stricmp( token, "HumanRotations" ) )
 				{
-					ci->modifiers.emplace_back(new HumanSkeletonRotations());
+					ci->modifiers.emplace_back(std::make_shared<HumanSkeletonRotations>());
 				}
 				else if ( !Q_stricmp( token, "BattlesuitRotations" ) )
 				{
-					ci->modifiers.emplace_back(new BsuitSkeletonRotations());
+					ci->modifiers.emplace_back(std::make_shared<BsuitSkeletonRotations>());
 				}
 				else if ( !Q_stricmp( token, "Segmented" ) )
 				{
-					ci->modifiers.emplace_back(new SegmentedSkeletonCombiner());
+					ci->modifiers.emplace_back(std::make_shared<SegmentedSkeletonCombiner>());
 				}
 				else
 				{
