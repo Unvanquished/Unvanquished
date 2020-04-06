@@ -2238,7 +2238,6 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	int           dir;
 	entityState_t *es = &cent->currentState;
 	vec3_t        surfNormal;
-	vec3_t        ceilingNormal = { 0.0f, 0.0f, -1.0f };
 
 	VectorCopy( srcAngles, localAngles );
 	localAngles[ YAW ] = AngleMod( localAngles[ YAW ] );
@@ -2252,6 +2251,7 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	}
 	else
 	{
+		vec3_t ceilingNormal = { 0.0f, 0.0f, -1.0f };
 		VectorCopy( ceilingNormal, surfNormal );
 	}
 
