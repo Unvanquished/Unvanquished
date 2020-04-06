@@ -205,14 +205,14 @@ void CG_ShaderStateChanged()
 
 	while ( o && *o )
 	{
-		n = strstr( o, "=" );
+		n = strchr( o, '=' );
 
 		if ( n && *n )
 		{
 			memcpy( originalShader, o, n - o );
 			originalShader[ n - o ] = 0;
 			n++;
-			t = strstr( n, ":" );
+			t = strchr( n, ':' );
 
 			if ( t && *t )
 			{
@@ -225,7 +225,7 @@ void CG_ShaderStateChanged()
 			}
 
 			t++;
-			o = strstr( t, "@" );
+			o = strchr( t, '@' );
 
 			if ( o )
 			{
