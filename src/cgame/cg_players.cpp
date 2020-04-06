@@ -747,11 +747,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->bodySkin )
 		{
-			Log::Notice( "MD5 skin load failure: %s\n", filename );
-		}
-
-		if ( !ci->bodySkin )
-		{
+			Log::Notice( "Body skin load failure: %s\n", filename );
 			return false;
 		}
 	}
@@ -794,10 +790,6 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 		if ( !ci->nonSegSkin )
 		{
 			Log::Notice( "Non-segmented skin load failure: %s\n", filename );
-		}
-
-		if ( !ci->nonSegSkin )
-		{
 			return false;
 		}
 	}
