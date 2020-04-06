@@ -5,6 +5,7 @@ static Log::Logger thinkLogger("sgame.thinking");
 ThinkingComponent::ThinkingComponent(Entity& entity, DeferredFreeingComponent& r_DeferredFreeingComponent)
 	: ThinkingComponentBase(entity, r_DeferredFreeingComponent)
 	, iteratingThinkers(false)
+	, unregisterActiveThinker(false)
 	, averageFrameTime(0)
 	, lastThinkRound(-1)
 {}
