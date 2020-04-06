@@ -1433,7 +1433,7 @@ void                      BG_ParseMissileDisplayFile( const char *filename, miss
 void                      BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba );
 
 // bg_teamprogress.c
-#define NUM_UNLOCKABLES WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES
+#define NUM_UNLOCKABLES (WP_NUM_WEAPONS + UP_NUM_UPGRADES + BA_NUM_BUILDABLES + PCL_NUM_CLASSES)
 
 enum unlockableType_t
 {
