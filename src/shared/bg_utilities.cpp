@@ -159,7 +159,7 @@ void AddFlag(int &flags, int flag) {
 }
 
 void RemoveFlag(int &flags, int flag) {
-	ModifyFlag(flags, flag, true);
+	ModifyFlag(flags, flag, false);
 }
 
 void ToggleFlag(int &flags, int flag) {
