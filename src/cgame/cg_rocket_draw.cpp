@@ -3481,9 +3481,11 @@ static void CG_Rocket_DrawDownloadTime()
 		return;
 	}
 
-	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
+	float downloadTimeDelta = ( rocketInfo.realtime - downloadTime ) / 1000;
+
+	if ( downloadTimeDelta != 0.0F )
 	{
-		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
+		xferRate = downloadCount / downloadTimeDelta;
 	}
 	else
 	{
@@ -3551,9 +3553,11 @@ static void CG_Rocket_DrawDownloadSpeed()
 		return;
 	}
 
-	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
+	float downloadTimeDelta = ( rocketInfo.realtime - downloadTime ) / 1000;
+
+	if ( downloadTimeDelta != 0.0F )
 	{
-		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
+		xferRate = downloadCount / downloadTimeDelta;
 		CG_ReadableSize( xferRateBuf, sizeof xferRateBuf, xferRate );
 		Rocket_SetInnerRML( va( "%s/Sec", xferRateBuf ), RP_QUAKE );
 	}
