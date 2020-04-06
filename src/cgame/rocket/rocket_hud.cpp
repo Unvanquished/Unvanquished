@@ -58,7 +58,7 @@ void Rocket_InitializeHuds( int size )
 
 	for ( int i = 0; i < size; ++i )
 	{
-		huds.push_back( RocketHud() );
+		huds.emplace_back();
 	}
 
 	activeHud = nullptr;
@@ -93,7 +93,7 @@ void Rocket_AddUnitToHud( int weapon, const char *id )
 		Rocket::Core::ElementDocument *doc = hudContext->GetDocument( id );
 		if ( doc )
 		{
-			huds[ weapon ].push_back( HudUnit( doc ) );
+			huds[ weapon ].emplace_back( doc );
 		}
 	}
 }
