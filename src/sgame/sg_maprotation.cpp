@@ -261,6 +261,7 @@ static bool G_ParseMapCommandSection( mrNode_t *node, const char **text_p )
 		}
 
 		commandLength = strlen( map->postCommand );
+		ASSERT_GE(commandLength, 1);
 		map->postCommand[ commandLength - 1 ] = ';';
 	}
 

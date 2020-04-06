@@ -2209,6 +2209,7 @@ int G_LayoutList( const char *map, char *list, int len )
 		Q_strcat( layouts,  sizeof( layouts ), filePtr );
 		listLen = strlen( layouts );
 
+		ASSERT_GE(listLen, 4);
 		// strip extension and add space delimiter
 		layouts[ listLen - 4 ] = ' ';
 		layouts[ listLen - 3 ] = '\0';
@@ -2388,7 +2389,7 @@ void G_LayoutLoad()
 		if ( *layout == '\n' )
 		{
 			i = 0;
-			sscanf( line, "%s %f %f %f %f %f %f %f %f %f %f %f %f\n",
+			sscanf( line, "%1023s %f %f %f %f %f %f %f %f %f %f %f %f\n",
 			        buildName,
 			        &origin[ 0 ], &origin[ 1 ], &origin[ 2 ],
 			        &angles[ 0 ], &angles[ 1 ], &angles[ 2 ],
