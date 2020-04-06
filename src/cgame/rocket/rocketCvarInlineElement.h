@@ -41,7 +41,7 @@ Maryland 20850 USA.
 class RocketCvarInlineElement : public Rocket::Core::Element
 {
 public:
-	RocketCvarInlineElement( const Rocket::Core::String& tag ) : Rocket::Core::Element( tag ), cvar( "" ), cvar_value( "" ), dirty_value( false ) {}
+	RocketCvarInlineElement( const Rocket::Core::String& tag ) : Rocket::Core::Element( tag ), cvar( "" ), cvar_value( "" ), dirty_value( false ), type( STRING ) {}
 
 	enum CvarType
 	{
