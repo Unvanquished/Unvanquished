@@ -253,8 +253,8 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 	int unlockableType = 0;
 	team_t           currentTeam;
 	bool         newStatus;
-	int              statusChanges[ NUM_UNLOCKABLES ];
 #ifdef BUILD_CGAME
+	int              statusChanges[ NUM_UNLOCKABLES ];
 	int statusChangeCount = 0;
 #endif
 
