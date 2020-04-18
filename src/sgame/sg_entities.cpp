@@ -230,7 +230,7 @@ Convenience function for printing entities
 =============
 */
 //assuming MAX_GENTITIES to be 5 digits or less
-#define MAX_ETOS_LENGTH MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5
+#define MAX_ETOS_LENGTH (MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5)
 const char *etos( const gentity_t *entity )
 {
 	static  int  index;

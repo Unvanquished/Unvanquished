@@ -35,7 +35,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
 // resolves a variatingTime_t to a variated next level.time
-#define VariatedLevelTime( variableTime ) level.time + ( variableTime.time + variableTime.variance * crandom() ) * 1000
+#define VariatedLevelTime( variableTime ) (level.time + ( variableTime.time + variableTime.variance * crandom() ) * 1000)
 
 #define QUEUE_PLUS1(x)  ((( x ) + 1 ) % MAX_CLIENTS )
 #define QUEUE_MINUS1(x) ((( x ) + MAX_CLIENTS - 1 ) % MAX_CLIENTS )

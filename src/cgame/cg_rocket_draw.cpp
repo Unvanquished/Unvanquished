@@ -1612,7 +1612,7 @@ class CrosshairNamesElement : public HudElement
 {
 public:
 	CrosshairNamesElement( const Rocket::Core::String& tag  ) :
-			HudElement( tag, ELEMENT_GAME ) {}
+			HudElement( tag, ELEMENT_GAME ), alpha_( 0.0F ) {}
 
 	void DoOnUpdate()
 	{
@@ -1747,7 +1747,7 @@ class LevelshotElement : public HudElement
 {
 public:
 	LevelshotElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_ALL ) {}
+			HudElement( tag, ELEMENT_ALL ), mapIndex( -1 ) {}
 
 	void DoOnUpdate()
 	{
@@ -2108,6 +2108,8 @@ public:
 			HudElement( tag, ELEMENT_BOTH, false ),
 			shouldBeVisible( true ),
 			display( -1 ),
+			lastDeltaEfficiencyPct( -999 ),
+			lastDeltaBudget( -999 ),
 			pluralSuffix{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
 	{
 
@@ -3479,9 +3481,11 @@ static void CG_Rocket_DrawDownloadTime()
 		return;
 	}
 
-	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
+	float downloadTimeDelta = ( rocketInfo.realtime - downloadTime ) / 1000;
+
+	if ( downloadTimeDelta != 0.0F )
 	{
-		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
+		xferRate = downloadCount / downloadTimeDelta;
 	}
 	else
 	{
@@ -3549,9 +3553,11 @@ static void CG_Rocket_DrawDownloadSpeed()
 		return;
 	}
 
-	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
+	float downloadTimeDelta = ( rocketInfo.realtime - downloadTime ) / 1000;
+
+	if ( downloadTimeDelta != 0.0F )
 	{
-		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
+		xferRate = downloadCount / downloadTimeDelta;
 		CG_ReadableSize( xferRateBuf, sizeof xferRateBuf, xferRate );
 		Rocket_SetInnerRML( va( "%s/Sec", xferRateBuf ), RP_QUAKE );
 	}

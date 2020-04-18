@@ -327,7 +327,7 @@ std::string CG_KeyBinding( const char* bind, int team )
 	for ( size_t i = 1; i < keys.size(); i++ )
 	{
 		keyNames += " or ";
-		keyNames += CG_KeyDisplayName( keys[i] ).c_str();
+		keyNames += CG_KeyDisplayName( keys[i] );
 	}
 
 	return keyNames;

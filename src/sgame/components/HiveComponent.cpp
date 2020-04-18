@@ -7,6 +7,7 @@ constexpr int   ATTACK_PERIOD = 3000;
 HiveComponent::HiveComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent)
 	: HiveComponentBase(entity, r_AlienBuildableComponent)
 	, insectsReady(true)
+	, insectsActiveSince(-ATTACK_PERIOD)
 {
 	GetAlienBuildableComponent().GetBuildableComponent().REGISTER_THINKER(
 		Think, ThinkingComponent::SCHEDULER_AVERAGE, 500

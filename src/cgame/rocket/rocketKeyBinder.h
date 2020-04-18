@@ -49,7 +49,7 @@ constexpr int KEY_BINDING_REFRESH_INTERVAL_MS = 500;
 class RocketKeyBinder : public Rocket::Core::Element, public Rocket::Core::EventListener
 {
 public:
-	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
+	RocketKeyBinder( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 ), context( nullptr )
 	{
 	}
 

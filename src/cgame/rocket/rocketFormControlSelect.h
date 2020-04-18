@@ -42,7 +42,7 @@ Maryland 20850 USA.
 class CvarElementFormControlSelect : public Rocket::Controls::ElementFormControlSelect, public Rocket::Core::EventListener
 {
 public:
-	CvarElementFormControlSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlSelect( tag ) { }
+	CvarElementFormControlSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlSelect( tag ), owner( nullptr ) { }
 
 	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
 	{

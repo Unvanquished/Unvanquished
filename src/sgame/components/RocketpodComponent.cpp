@@ -14,6 +14,7 @@ RocketpodComponent::RocketpodComponent(Entity& entity, HumanBuildableComponent& 
 	, safeMode(false)
 	, lastTargetSearch(-TARGET_SEARCH_PERIOD)
 	, openingShuttersSince(-SHUTTER_OPEN_TIME)
+	, lockingOnSince(-LOCKON_TIME)
 	, lastShot(-ATTACK_PERIOD)
 {
 	GetTurretComponent().SetRange(ATTACK_RANGE);

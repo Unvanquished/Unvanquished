@@ -989,7 +989,7 @@ void CG_RegisterGrading( int slot, const char *str )
 		return;
 	}
 
-	sscanf(str, "%d %f %s", &model, &dist, texture);
+	sscanf(str, "%d %f %63s", &model, &dist, texture);
 	cgs.gameGradingTextures[ slot ] =
 		trap_R_RegisterShader(texture, (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.gameGradingModels[ slot ] = model;
@@ -1015,7 +1015,7 @@ void CG_RegisterReverb( int slot, const char *str )
 		return;
 	}
 
-	sscanf(str, "%d %f %s %f", &model, &dist, name, &intensity);
+	sscanf(str, "%d %f %127s %f", &model, &dist, name, &intensity);
 	Q_strncpyz(cgs.gameReverbEffects[ slot ], name, MAX_NAME_LENGTH);
 	cgs.gameReverbModels[ slot ] = model;
 	cgs.gameReverbDistances[ slot ] = dist;
@@ -1508,9 +1508,8 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	// check version
 	s = CG_ConfigString( CS_GAME_VERSION );
-
-//   if( strcmp( s, GAME_VERSION ) )
-//     Sys::Drop( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+	//   if( strcmp( s, GAME_VERSION ) )
+	//     Sys::Drop( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );

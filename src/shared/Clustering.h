@@ -201,7 +201,7 @@ namespace Clustering {
 				for (const vertex_record_type& record : records) {
 					if (edgeVisCallback == nullptr || edgeVisCallback(data, record.first)) {
 						float distance = Distance(location, record.second);
-						edges.insert(std::make_pair(distance, edge_type(data, record.first)));
+						edges.emplace(distance, edge_type(data, record.first));
 					}
 				}
 
@@ -305,7 +305,7 @@ namespace Clustering {
 					components.Link(firstVertexRepr, secondVertexRepr);
 
 					// Add the edge to the MST.
-					mstEdges.insert(std::make_pair(distance, edge));
+					mstEdges.emplace(distance, edge);
 
 					// Add distance to average.
 					mstAverageDistance += distance;

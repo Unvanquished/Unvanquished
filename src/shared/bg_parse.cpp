@@ -803,7 +803,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 	else if ( !( defined & BUILDTIME) ) { token = "buildTime"; }
 	else if ( !( defined & NORMAL) ) { token = "minNormal"; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -960,7 +960,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 	else if ( !( defined & ZOFFSET ) ) { token = "zOffset"; }
 	else { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -1606,7 +1606,7 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 	else if ( !( defined & SHOULDEROFFSETS ) ) { token = "shoulderOffsets"; }
 	else { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -1800,7 +1800,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 	else if ( !( defined & TEAM ) ) { token = "team"; }
 	else { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -1933,7 +1933,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 	else if ( !( defined & TEAM ) ) { token = "team"; }
 	else { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -2095,7 +2095,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 	else if ( !( defined & SPEED ) )          { token = "speed"; }
 	else                                      { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}

@@ -42,7 +42,7 @@ Maryland 20850 USA.
 class RocketDataSelect : public Rocket::Controls::ElementFormControlDataSelect, public Rocket::Core::EventListener
 {
 public:
-	RocketDataSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlDataSelect( tag ), selection( -2 ) { }
+	RocketDataSelect( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlDataSelect( tag ), selection( -2 ), owner( nullptr) { }
 	~RocketDataSelect() { }
 
 	virtual void OnChildAdd( Element *child )
