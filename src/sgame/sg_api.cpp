@@ -138,10 +138,6 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			Sys::Drop("BOTAI_START_FRAME not implemented");
 			break;
 
-		case GAME_MESSAGERECEIVED:
-			Sys::Drop("GAME_MESSAGERECEIVED not implemented");
-			break;
-
 		default:
 			Sys::Drop("VMMain(): unknown game command %i", minor);
 		}
