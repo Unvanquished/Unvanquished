@@ -71,6 +71,7 @@ int   ABUILDER_BLOB_DMG;
 float ABUILDER_BLOB_SPEED;
 float ABUILDER_BLOB_SPEED_MOD;
 int   ABUILDER_BLOB_TIME;
+int		ABUILDER_BLOB_LOCK_TIME;
 
 int   LEVEL0_BITE_DMG;
 float LEVEL0_BITE_RANGE;
@@ -196,6 +197,7 @@ static configVar_t bg_configVars[] =
 	{"u_medkit_startupTime", INTEGER, false, &MEDKIT_STARTUP_TIME},
 
 	{"w_abuild_blobDmg", INTEGER, false, &ABUILDER_BLOB_DMG},
+	{"w_abuild_blobLockTime", INTEGER, false, &ABUILDER_BLOB_LOCK_TIME},
 	{"w_abuild_blobSlowTime", INTEGER, false, &ABUILDER_BLOB_TIME},
 	{"w_abuild_blobSpeed", FLOAT, false, &ABUILDER_BLOB_SPEED},
 	{"w_abuild_blobSpeedMod", FLOAT, false, &ABUILDER_BLOB_SPEED_MOD},
@@ -801,7 +803,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 	else if ( !( defined & BUILDTIME) ) { token = "buildTime"; }
 	else if ( !( defined & NORMAL) ) { token = "minNormal"; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -958,7 +960,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 	else if ( !( defined & ZOFFSET ) ) { token = "zOffset"; }
 	else { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -1604,7 +1606,7 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 	else if ( !( defined & SHOULDEROFFSETS ) ) { token = "shoulderOffsets"; }
 	else { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -1798,7 +1800,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 	else if ( !( defined & TEAM ) ) { token = "team"; }
 	else { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -1931,7 +1933,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 	else if ( !( defined & TEAM ) ) { token = "team"; }
 	else { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}
@@ -2093,7 +2095,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 	else if ( !( defined & SPEED ) )          { token = "speed"; }
 	else                                      { token = ""; }
 
-	if ( strlen( token ) > 0 )
+	if ( *token )
 	{
 		Log::Warn( "%s not defined in %s", token, filename );
 	}

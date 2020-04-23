@@ -128,9 +128,9 @@ public:
 				Rocket::Core::StringList raw_data;
 				Rocket::Core::String out;
 
-				for ( size_t i = 0; i < fields.size(); ++i )
+				for ( auto &&field : fields )
 				{
-					raw_data.push_back( query.Get<Rocket::Core::String>( fields[ i ], "" ) );
+					raw_data.emplace_back( query.Get<Rocket::Core::String>( field, "" ) );
 				}
 
 				raw_data.push_back( va( "%d", index++ ) );

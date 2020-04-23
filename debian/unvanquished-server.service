@@ -1,0 +1,17 @@
+[Unit]
+Description=Unvanquished dedicated server
+After=network.target
+RequiresMountsFor=/var/games/unvanquished-server
+
+[Service]
+Restart=on-failure
+User=unvanquished-server
+Group=games
+Environment=DAEMON_OPTS= GAME_OPTS=
+EnvironmentFile=-/etc/default/unvanquished-server
+ExecStart=/usr/games/unvanquished-server $DAEMON_OPTS $GAME_OPTS
+ExecReload=/usr/games/unvanquished-server $DAEMON_OPTS $GAME_OPTS
+ExecStop=/usr/games/unvanquished-server +quit
+
+[Install]
+WantedBy=multi-user.target

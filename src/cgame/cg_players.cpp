@@ -170,19 +170,19 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				if ( !token || *token == '}' ) break;
 				if ( !Q_stricmp( token, "HandDelta" ) )
 				{
-					ci->modifiers.emplace_back(new AnimDelta());
+					ci->modifiers.emplace_back(std::make_shared<AnimDelta>());
 				}
 				else if ( !Q_stricmp( token, "HumanRotations" ) )
 				{
-					ci->modifiers.emplace_back(new HumanSkeletonRotations());
+					ci->modifiers.emplace_back(std::make_shared<HumanSkeletonRotations>());
 				}
 				else if ( !Q_stricmp( token, "BattlesuitRotations" ) )
 				{
-					ci->modifiers.emplace_back(new BsuitSkeletonRotations());
+					ci->modifiers.emplace_back(std::make_shared<BsuitSkeletonRotations>());
 				}
 				else if ( !Q_stricmp( token, "Segmented" ) )
 				{
-					ci->modifiers.emplace_back(new SegmentedSkeletonCombiner());
+					ci->modifiers.emplace_back(std::make_shared<SegmentedSkeletonCombiner>());
 				}
 				else
 				{
@@ -747,11 +747,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->bodySkin )
 		{
-			Log::Notice( "MD5 skin load failure: %s\n", filename );
-		}
-
-		if ( !ci->bodySkin )
-		{
+			Log::Notice( "Body skin load failure: %s\n", filename );
 			return false;
 		}
 	}
@@ -794,10 +790,6 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 		if ( !ci->nonSegSkin )
 		{
 			Log::Notice( "Non-segmented skin load failure: %s\n", filename );
-		}
-
-		if ( !ci->nonSegSkin )
-		{
 			return false;
 		}
 	}
@@ -2246,7 +2238,6 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	int           dir;
 	entityState_t *es = &cent->currentState;
 	vec3_t        surfNormal;
-	vec3_t        ceilingNormal = { 0.0f, 0.0f, -1.0f };
 
 	VectorCopy( srcAngles, localAngles );
 	localAngles[ YAW ] = AngleMod( localAngles[ YAW ] );
@@ -2260,6 +2251,7 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	}
 	else
 	{
+		vec3_t ceilingNormal = { 0.0f, 0.0f, -1.0f };
 		VectorCopy( ceilingNormal, surfNormal );
 	}
 

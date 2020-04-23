@@ -8,7 +8,6 @@ CMakeFiles
 Makefile
 cmake_install.cmake
 vm
-main/*.pk3
 Release
 Debug
 build
@@ -19,6 +18,9 @@ build
 *.dylib
 *.so
 *.a
+
+# Debian
+obj-*-*-*/
 
 # NaCl
 *-native-dll.*
@@ -52,6 +54,7 @@ src/sgame/backend
 .idea/
 #ignore qtcreator project files
 CMakeLists.txt.user
+
 #ignore external deps
 external_deps/*
 !external_deps/build.sh

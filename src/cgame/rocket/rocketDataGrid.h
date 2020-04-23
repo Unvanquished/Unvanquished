@@ -52,9 +52,9 @@ public:
 			return;
 		}
 
-		for ( size_t i = 0; i < columns.size(); ++i )
+		for ( auto &&column : columns )
 		{
-			row.push_back( Rocket_QuakeToRML( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ), RP_EMOTICONS ) );
+			row.emplace_back( Rocket_QuakeToRML( Info_ValueForKey( data[ table ][ row_index ].CString(), column.CString() ), RP_EMOTICONS ) );
 		}
 	}
 

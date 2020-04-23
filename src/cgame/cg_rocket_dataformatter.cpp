@@ -317,12 +317,12 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 		score_t *s = ScoreFromClientNum( clientNum );
 		const char *rml = "";
 
-		if ( s && s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->weapon != WP_NONE )
+		if ( s && ( s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] || cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ) && s->weapon != WP_NONE )
 		{
 			rml = va( "<img src='/%s'/>", CG_GetShaderNameFromHandle( cg_weapons[ s->weapon ].weaponIcon ) );
 		}
 
-		if ( s && s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
+		if ( s && ( s->team == cg.predictedPlayerState.persistant[ PERS_TEAM ] || cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ) && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
 		{
 			rml = va( "%s<img src='/%s'/>", rml, CG_GetShaderNameFromHandle( cg_upgrades[ s->upgrade ].upgradeIcon ) );
 		}
@@ -390,6 +390,13 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	const char *action = "";
 	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
 
+	if ( ( alienClass == PCL_ALIEN_BUILDER0 && ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) && !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) ) )||
+			 ( alienClass == PCL_ALIEN_BUILDER0_UPG && ( !BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ) ) )
+	{
+		Rocket_DataFormatterFormattedData( handle, "", false );
+		return;
+	}
+
 	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
 	{
 		Class = "active";
@@ -402,7 +409,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if ( cost == -1 )
+	else if ( cost == CANT_EVOLVE )
 	{
 
 		Class = "expensive";
@@ -415,7 +422,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		action =  va( "onClick='Cmd.exec(\"class %s\") Events.pushevent(\"hide %s\", event)'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
 	}
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='Events.pushevent(\"setDS alienEvolveList alienClasss %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), false );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' alienclass='%s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), false );
 }
 
 static void CG_Rocket_DFCMBeacons( int handle, const char *data )

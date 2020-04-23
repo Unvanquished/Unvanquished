@@ -1,0 +1,13 @@
+.debhelper/
+*.debhelper.log
+*.debhelper
+*.substvars
+
+unvanquished/
+unvanquished-server/
+unvanquished-tty/
+unvanquished-common/
+unvanquished-data-downloader/
+unvanquished-dbg/
+
+files

@@ -253,8 +253,8 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 	int unlockableType = 0;
 	team_t           currentTeam;
 	bool         newStatus;
-	int              statusChanges[ NUM_UNLOCKABLES ];
 #ifdef BUILD_CGAME
+	int              statusChanges[ NUM_UNLOCKABLES ];
 	int statusChangeCount = 0;
 #endif
 
@@ -272,8 +272,10 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 	lastMask = mask;
 	lastTeam = (team_t) team;
 
+#ifdef BUILD_CGAME
 	// no status change yet
 	memset( statusChanges, 0, sizeof( statusChanges ) );
+#endif
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
 	{

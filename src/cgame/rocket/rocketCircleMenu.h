@@ -257,9 +257,9 @@ public:
 				Rocket::Core::StringList raw_data;
 				Rocket::Core::String out;
 
-				for ( size_t i = 0; i < fields.size(); ++i )
+				for ( auto &&field : fields )
 				{
-					raw_data.push_back( query.Get<Rocket::Core::String>( fields[ i ], "" ) );
+					raw_data.emplace_back( query.Get<Rocket::Core::String>( field, "" ) );
 				}
 
 				raw_data.push_back( va( "%d", index++ ) );
@@ -313,7 +313,7 @@ public:
 					{
 						if ( GetChild( i ) == button )
 						{
-							parameters.Set( "index", va( "%d", i - 1 ) );
+							parameters.Set( "index", button->GetAttribute< int >( "alienclass", 0 ) );
 							parameters.Set( "datasource", data_source->GetDataSourceName() );
 							parameters.Set( "table", data_table );
 

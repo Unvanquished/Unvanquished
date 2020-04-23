@@ -74,7 +74,7 @@ const char *BuildShaderStateConfig()
 	char        out[ MAX_QPATH * 2 + 5 ];
 	int         i;
 
-	memset( buff, 0, MAX_STRING_CHARS );
+	memset( buff, 0, sizeof(buff) );
 
 	for ( i = 0; i < remapCount; i++ )
 	{

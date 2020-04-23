@@ -437,8 +437,8 @@ void CG_Rocket_CleanUpServerList( const char *table )
 				BG_Free( rocketInfo.data.servers[ i ][ j ].label );
 				BG_Free( rocketInfo.data.servers[ i ][ j ].addr );
 				BG_Free( rocketInfo.data.servers[ i ][ j ].mapName );
-				rocketInfo.data.serverCount[ i ] = 0;
 			}
+			rocketInfo.data.serverCount[ i ] = 0;
 		}
 	}
 }
@@ -1639,6 +1639,7 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 	if ( !Q_stricmp( table, "default" ) )
 	{
 		int i;
+		float price;
 
 		Rocket_DSClearTable( "alienEvolveList", "default" );
 		CG_Rocket_CleanUpAlienEvolveList( "default" );
@@ -1648,11 +1649,17 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 			if ( BG_Class( i )->team == TEAM_ALIENS )
 			{
 				buf[ 0 ] = '\0';
-
+				price = BG_CostToEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], i );
+				if( price == CANT_EVOLVE){
+					price = 0;
+				}
+				if( price < 0 ){
+					price *= (( float ) cg.predictedPlayerState.stats[ STAT_HEALTH ] / ( float ) BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->health ) * DEVOLVE_RETURN_RATE;
+				}
 				Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );
 				Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
-				Info_SetValueForKey( buf, "price", va( "%d", BG_CostToEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], i ) / CREDITS_PER_EVO ), false );
+				Info_SetValueForKey( buf, "price", va( "%.1f", price / CREDITS_PER_EVO ), false );
 
 				Rocket_DSAddRow( "alienEvolveList", "default", buf );
 

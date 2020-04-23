@@ -327,7 +327,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				BG_VoiceParseError( handle, "BG_VoiceParseTrack(): "
 				                    "missing \"enthusiasm\" value" );
 			}
-
+			// Punctuation.
 			foundToken = Parse_ReadTokenHandle( handle, &token );
 			continue;
 		}

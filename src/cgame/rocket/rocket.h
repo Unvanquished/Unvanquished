@@ -63,7 +63,7 @@ public:
 		targetElement = event.GetTargetElement();
 		Parameters = *(event.GetParameters());
 	}
-	RocketEvent_t( const Rocket::Core::String &cmds ) : cmd( cmds )
+	RocketEvent_t( const Rocket::Core::String &cmds ) : RocketEvent_t( nullptr, cmds )
 	{
 	}
 	RocketEvent_t( Rocket::Core::Element *e, const Rocket::Core::String &cmds ) : targetElement( e ), cmd( cmds )

@@ -1,25 +1,42 @@
-# Defaults for unvanquished-server initscript
-# sourced by /etc/init.d/unvanquished-server
-# installed at /etc/default/unvanquished-server by the maintainer scripts
+# Prevent startup with default configuration.
+# Set the following varible to 1 in order to allow server to start.
+startup=0
 
-# set to 1 to enable
-START_DAEMON=0
+# Otions that are passed to the engine.
+# They start with a minus character: -option
 
 # DNS name or IP addresses of your Internet interface.
-# You will need to change at least one of these.
-# Set to "" if you want to let the server auto-detect.
+# The server auto-detects by default
 # IPv4
-NET_IP="localhost"
-# IPv6 (see also net_enabled below)
-NET_IP6="localhost"
+#  -set net_ip 'localhost'
+# IPv6 (see net_enabled below)
+#  -set net_ip6 'localhost'
 
-# Additional options that are passed to the server binary.
-# Note also options added below.
+# Server port.
+# The server uses 27960 by default or next available one.
+# IPv4
+#  -set net_port 27960
+# IPv6 (see net_enabled below)
+#  -set net_port6 27960
+
+# Enable IPv6
+#  -set net_enabled 3
+
+# Advertise your server on the public server list.
+#  -set dedicated 2
+
+# Serve packages from an extra directory (can be called multiple times)
+#  -pakpath /var/www/unvanquished/pkg
+
+# Load some extra packages (space separated base name list).
+#  -set fs_extrapaks 'dev/backport'
+
 DAEMON_OPTS=""
 
-# Uncomment if you want your server advertised on
-# the public server list.
-#DAEMON_OPTS+=" +set dedicated 2"
+# Options that are passed to the game.
+# They start with a plus character: +option
 
-# Uncomment if you want to be able to connect to this server over IPv6.
-#DAEMON_OPTS+=" +set net_enabled 3"
+# Game server startup script.
+# Default: +exec server.cfg
+
+GAME_OPTS="+exec server.cfg"

@@ -38,6 +38,7 @@ enum conditionVariable_t
   CV_ERR,
   CV_RANDOM,
   CV_NUMCLIENTS,
+  CV_NUMPLAYERS,
   CV_LASTWIN
 };
 
@@ -56,7 +57,7 @@ typedef struct condition_s
 	conditionVariable_t lhs;
 	conditionOperator_t operator_;
 
-	int                 numClients;
+	int                 intValue;
 	team_t              lastWin;
 } mrCondition_t;
 
@@ -260,10 +261,50 @@ static bool G_ParseMapCommandSection( mrNode_t *node, const char **text_p )
 		}
 
 		commandLength = strlen( map->postCommand );
+		ASSERT_GE(commandLength, 1);
 		map->postCommand[ commandLength - 1 ] = ';';
 	}
 
 	return false;
+}
+
+static bool G_ParseIntegerCondition( mrCondition_t *condition, char *token, const char **text_p, conditionVariable_t conditionVariable )
+{
+	condition->lhs = conditionVariable;
+	token = COM_Parse( text_p );
+
+	if ( !*token )
+	{
+		return false;
+	}
+
+	if ( !Q_stricmp( token, "<" ) )
+	{
+		condition->operator_ = CO_LT;
+	}
+	else if ( !Q_stricmp( token, ">" ) )
+	{
+		condition->operator_ = CO_GT;
+	}
+	else if ( !Q_stricmp( token, "=" ) )
+	{
+		condition->operator_ = CO_EQ;
+	}
+	else
+	{
+		Log::Warn("invalid operator in expression: %s", token );
+		return false;
+	}
+
+	token = COM_Parse( text_p );
+
+	if ( !*token )
+	{
+		return false;
+	}
+
+	condition->intValue = atoi( token );
+	return true;
 }
 
 /*
@@ -289,43 +330,19 @@ static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool
 			return false;
 		}
 
-		if ( !Q_stricmp( token, "numClients" ) )
+		if ( !Q_stricmp( token, "numPlayers" ) )
 		{
-			condition->lhs = CV_NUMCLIENTS;
-
-			token = COM_Parse( text_p );
-
-			if ( !*token )
+			if ( !G_ParseIntegerCondition( condition, token, text_p, CV_NUMPLAYERS) )
 			{
 				return false;
 			}
-
-			if ( !Q_stricmp( token, "<" ) )
-			{
-				condition->operator_ = CO_LT;
-			}
-			else if ( !Q_stricmp( token, ">" ) )
-			{
-				condition->operator_ = CO_GT;
-			}
-			else if ( !Q_stricmp( token, "=" ) )
-			{
-				condition->operator_ = CO_EQ;
-			}
-			else
-			{
-				Log::Warn("invalid operator in expression: %s", token );
-				return false;
-			}
-
-			token = COM_Parse( text_p );
-
-			if ( !*token )
+		}
+		else if ( !Q_stricmp( token, "numClients" ) )
+		{
+			if ( !G_ParseIntegerCondition( condition, token, text_p, CV_NUMCLIENTS) )
 			{
 				return false;
 			}
-
-			condition->numClients = atoi( token );
 		}
 		else if ( !Q_stricmp( token, "lastWin" ) )
 		{
@@ -404,7 +421,7 @@ static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool
 
 		Q_strncpyz( label->name, token, sizeof( label->name ) );
 	}
-	else if ( *token == '#' || conditional )
+	else if ( *token == '#' )
 	{
 		mrLabel_t *label;
 
@@ -678,10 +695,15 @@ static const char *G_RotationNode_ToString( const mrNode_t *node )
 					return MAP_CONTROL "condition: random";
 					break;
 
+				case CV_NUMPLAYERS:
+					return va( MAP_CONTROL "condition: numPlayers %c %i",
+					           CONDITION_OPERATOR( node->u.condition.operator_ ),
+					           node->u.condition.intValue );
+
 				case CV_NUMCLIENTS:
 					return va( MAP_CONTROL "condition: numClients %c %i",
 					           CONDITION_OPERATOR( node->u.condition.operator_ ),
-					           node->u.condition.numClients );
+					           node->u.condition.intValue );
 
 				case CV_LASTWIN:
 					return va( MAP_CONTROL "condition: lastWin %s",
@@ -1042,6 +1064,14 @@ Send commands to the server to actually change the map
 static void G_IssueMapChange( int index, int rotation )
 {
 	mrNode_t *node = mapRotations.rotations[ rotation ].nodes[ index ];
+
+	if( node->type == NT_CONDITION )
+	{
+		mrCondition_t *condition;
+		condition = &node->u.condition;
+		node = condition->target;
+	}
+
 	mrMapDescription_t  *map = &node->u.map;
 	char currentMapName[ MAX_STRING_CHARS ];
 
@@ -1132,6 +1162,25 @@ static bool G_GotoLabel( int rotation, int nodeIndex, char *name,
 	return false;
 }
 
+static bool G_EvaluateIntegerCondition( mrCondition_t *localCondition, int valueCompared ) 
+{
+	switch ( localCondition->operator_ )
+	{
+		case CO_LT:
+			return valueCompared < localCondition->intValue;
+			break;
+
+		case CO_GT:
+			return valueCompared > localCondition->intValue;
+			break;
+
+		case CO_EQ:
+			return valueCompared == localCondition->intValue;
+			break;
+	}
+	return false;
+}
+
 /*
 ===============
 G_EvaluateMapCondition
@@ -1150,22 +1199,12 @@ static bool G_EvaluateMapCondition( mrCondition_t **condition )
 			result = rand() / ( RAND_MAX / 2 + 1 );
 			break;
 
+		case CV_NUMPLAYERS:
+			result = G_EvaluateIntegerCondition(localCondition, level.numConnectedPlayers);
+			break;
+
 		case CV_NUMCLIENTS:
-			switch ( localCondition->operator_ )
-			{
-				case CO_LT:
-					result = level.numConnectedClients < localCondition->numClients;
-					break;
-
-				case CO_GT:
-					result = level.numConnectedClients > localCondition->numClients;
-					break;
-
-				case CO_EQ:
-					result = level.numConnectedClients == localCondition->numClients;
-					break;
-			}
-
+			result = G_EvaluateIntegerCondition(localCondition, level.numConnectedClients);
 			break;
 
 		case CV_LASTWIN:

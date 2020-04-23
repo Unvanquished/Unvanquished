@@ -623,7 +623,8 @@ struct level_locals_s
 
 	bool restarted; // waiting for a map_restart to fire
 
-	int      numConnectedClients; // connected
+	int      numConnectedClients; // connected clients (players + bots)
+	int      numConnectedPlayers; // connected players (not bot) in a team or spec mode
 	int      numAliveClients;     // on a team and alive
 	int      numPlayingClients;   // on a team
 	int      numPlayingPlayers;   // on a team and not a bot
