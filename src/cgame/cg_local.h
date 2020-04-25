@@ -2059,6 +2059,7 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 //
 // cg_weapons.c
 //
+weapon_t CG_FindNextWeapon( playerState_t *ps );
 void CG_NextWeapon_f();
 void CG_PrevWeapon_f();
 void CG_Weapon_f();
