@@ -54,8 +54,8 @@ static bind_t bindings[] =
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
 	{ "modcase alt \"/deconstruct marked\" /deconstruct",
 	                    N_( "Deconstruct Structure" ),                 {} },
-	{ "weapprev",       N_( "Previous Upgrade" ),                      {} },
-	{ "weapnext",       N_( "Next Upgrade" ),                          {} },
+	{ "weapprev",       N_( "Previous Weapon" ),                       {} },
+	{ "weapnext",       N_( "Next Weapon" ),                           {} },
 	{ OPEN_CONSOLE_CMD, N_( "Toggle Console" ),                        {} },
 	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
 };
@@ -444,13 +444,22 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		}
 	}
 
-	if ( upgrade == UP_NONE ||
-	     ( upgrade > UP_NONE && BG_Upgrade( upgrade )->usable ) )
+	// This would have to be reimplemented the day it will be possible
+	// to cycle more than two weapons, like grenade or a buyable side firearm.
+	switch ( ps->weapon )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to use the %s\n" ),
-		              CG_KeyNameForCommand( "+useitem" ),
-		              name ) );
+		case WP_BLASTER:
+			// FIXME: Properly name the next weapon.
+			Q_strcat( text, MAX_TUTORIAL_TEXT,
+			          va( _( "Press %s to use the primary weapon\n" ),
+			              CG_KeyNameForCommand( "weapprev" ) ) );
+			break;
+		default:
+			Q_strcat( text, MAX_TUTORIAL_TEXT,
+			          va( _( "Press %s to use the %s\n" ),
+			              CG_KeyNameForCommand( "weapnext" ),
+			              _( BG_Weapon( WP_BLASTER )->humanName ) ) );
+			break;
 	}
 
 	if ( ps->stats[ STAT_HEALTH ] <= 35 &&
