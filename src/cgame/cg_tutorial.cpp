@@ -41,13 +41,13 @@ static const char* const OPEN_CONSOLE_CMD = "toggleconsole";
 
 static bind_t bindings[] =
 {
-	{ "+useitem",       N_( "Activate Upgrade" ),                      {} },
 	{ "+speed",         N_( "Run/Walk" ),                              {} },
 	{ "+sprint",        N_( "Sprint" ),                                {} },
 	{ "+moveup",        N_( "Jump" ),                                  {} },
 	{ "+movedown",      N_( "Crouch" ),                                {} },
 	{ "+attack",        N_( "Primary Attack" ),                        {} },
 	{ "+attack2",       N_( "Secondary Attack" ),                      {} },
+	{ "+attack3",       N_( "Tertiary Attack" ),                       {} },
 	{ "reload",         N_( "Reload" ),                                {} },
 	{ "buy ammo",       N_( "Buy Ammo" ),                              {} },
 	{ "itemact medkit", N_( "Use Medkit" ),                            {} },
@@ -227,8 +227,8 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to launch a projectile\n" ),
-		              CG_KeyNameForCommand( "+useitem" ) ) );
+		          va( _( "Press %s to spit\n" ),
+		              CG_KeyNameForCommand( "+attack3" ) ) );
 
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to walk on walls\n" ),
@@ -307,8 +307,8 @@ static void CG_AlienLevel3Text( char *text, playerState_t *ps )
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to launch a projectile\n" ),
-		              CG_KeyNameForCommand( "+useitem" ) ) );
+		          va( _( "Press %s to launch a barb\n" ),
+		              CG_KeyNameForCommand( "+attack3" ) ) );
 	}
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
@@ -532,26 +532,26 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( _( "Press %s to switch to chase-cam spectator mode\n" ),
-			              CG_KeyNameForCommand( "+useitem" ) ) );
+			              CG_KeyNameForCommand( "+attack3" ) ) );
 		}
 		else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( _( "Press %s to return to free spectator mode\n" ),
-			              CG_KeyNameForCommand( "+useitem" ) ) );
+			              CG_KeyNameForCommand( "+attack3" ) ) );
 		}
 		else
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( _( "Press %s to stop following\n" ),
-			              CG_KeyNameForCommand( "+useitem" ) ) );
+			              CG_KeyNameForCommand( "+attack3" ) ) );
 		}
 	}
 	else
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to follow a player\n" ),
-		              CG_KeyNameForCommand( "+useitem" ) ) );
+		              CG_KeyNameForCommand( "+attack3" ) ) );
 	}
 }
 

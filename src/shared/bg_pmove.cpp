@@ -3766,9 +3766,6 @@ static void PM_FinishWeaponChange()
 	}
 }
 
-// TODO: move other button definitions into gamelogic
-constexpr int BUTTON_DECONSTRUCT = 13;
-
 static void HandleDeconstructButton()
 {
 	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) ||
@@ -3857,7 +3854,7 @@ static void PM_Weapon()
 	int      addTime = 200; //default addTime - should never be used
 	bool attack1 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK );
 	bool attack2 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 );
-	bool attack3 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE );
+	bool attack3 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK3 );
 
 	// Ignore weapons in some cases
 	if ( pm->ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
@@ -4851,7 +4848,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// set the firing flag for continuous beam weapons
 	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	     usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE ) &&
+	     usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK3 ) &&
 	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
 	{
 		pm->ps->eFlags |= EF_FIRING3;

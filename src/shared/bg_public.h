@@ -1120,6 +1120,13 @@ enum meansOfDeath_t
   MOD_REPLACE
 };
 
+// TODO: move other button definitions into gamelogic
+enum buttonNumber_t
+{
+  BUTTON_ATTACK3 = 9,
+  BUTTON_DECONSTRUCT = 13,
+};
+
 #define DEVOLVE_RETURN_RATE 0.9f
 #define CANT_EVOLVE -999
 
