@@ -2036,14 +2036,14 @@ void CG_DrawHumanInventory()
 		{
 			if ( !CG_WeaponSelectable( (weapon_t) cg.weaponSelect ) )
 			{
-				CG_NextWeapon_f();
+				CG_SelectNextInventoryItem_f();
 			}
 		}
 		else
 		{
 			if ( !CG_UpgradeSelectable( (upgrade_t) ( cg.weaponSelect - 32 ) ) )
 			{
-				CG_NextWeapon_f();
+				CG_SelectNextInventoryItem_f();
 			}
 		}
 	}
@@ -2196,9 +2196,6 @@ CG_NextWeapon_f
 */
 void CG_NextWeapon_f()
 {
-	int i;
-	int original;
-
 	if ( !cg.snap )
 	{
 		return;
@@ -2207,6 +2204,26 @@ void CG_NextWeapon_f()
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
 		trap_SendClientCommand( "followprev\n" );
+		return;
+	}
+
+	// HACK: This only works with two weapons.
+	// See: https://github.com/Unvanquished/Unvanquished/issues/544#issuecomment-619299752
+	trap_SendClientCommand( "itemtoggle blaster\n" );
+}
+
+/*
+===============
+CG_SelectNextInventoryItem_f
+===============
+*/
+void CG_SelectNextInventoryItem_f()
+{
+	int i;
+	int original;
+
+	if ( !cg.snap )
+	{
 		return;
 	}
 
@@ -2251,9 +2268,6 @@ CG_PrevWeapon_f
 */
 void CG_PrevWeapon_f()
 {
-	int i;
-	int original;
-
 	if ( !cg.snap )
 	{
 		return;
@@ -2262,6 +2276,26 @@ void CG_PrevWeapon_f()
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
 		trap_SendClientCommand( "follownext\n" );
+		return;
+	}
+
+	// HACK: This only works with two weapons.
+	// See: https://github.com/Unvanquished/Unvanquished/issues/544#issuecomment-619299752
+	trap_SendClientCommand( "itemtoggle blaster\n" );
+}
+
+/*
+===============
+CG_SelectPrevInventoryItem_f
+===============
+*/
+void CG_SelectPrevInventoryItem_f()
+{
+	int i;
+	int original;
+
+	if ( !cg.snap )
+	{
 		return;
 	}
 
