@@ -41,7 +41,6 @@
 					<p>Jump:</p>
 				</row>
 				<row>
-
 					<keybind cmd="+movedown" team="humans" />
 					<p>Crouch:</p>
 				</row>
@@ -49,7 +48,6 @@
 					<keybind cmd="+movedown" team="aliens" />
 					<p>Wallwalk:</p>
 				</row>
-
 			</panel>
 			<tab>Abilities</tab>
 			<panel>
@@ -62,7 +60,7 @@
 					<p>Secondary Attack:</p>
 				</row>
 				<row>
-					<keybind cmd="+useitem" team="aliens" />
+					<keybind cmd="+attack3" team="aliens" />
 					<p>Shoot Barb:</p>
 				</row>
 				<row>
@@ -75,7 +73,7 @@
 				</row>
 				<row>
 					<keybind cmd="itemact grenade" team="humans" />
-					<p>Throw grenade</p>
+					<p>Throw grenade:</p>
 				</row>
 				<row>
 					<keybind cmd="+activate" team="humans" />
