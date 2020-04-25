@@ -153,7 +153,7 @@
 				<row>
 					<h3>Rim-lighting</h3>
 					<input cvar="r_rimlighting" type="checkbox" />
-					<p>Light the edges of models from behind.  Experimental. </p>
+					<p>Light the edges of models from behind.</p>
 				</row>
 				<row>
 					<h3>Heat-haze</h3>
