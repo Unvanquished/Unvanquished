@@ -334,7 +334,7 @@ static void CG_AlienLevel4Text( char *text, playerState_t *ps )
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Hold down and release %s while moving forwards to trample\n" ),
+	          va( _( "Hold down %s while moving forwards to trample\n" ),
 	              CG_KeyNameForCommand( "+attack2" ) ) );
 }
 
