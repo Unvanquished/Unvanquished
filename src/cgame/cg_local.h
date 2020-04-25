@@ -2062,6 +2062,7 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 void CG_NextWeapon_f();
 void CG_PrevWeapon_f();
 void CG_Weapon_f();
+void CG_SelectNextInventoryItem_f();
 
 void CG_InitUpgrades();
 void CG_RegisterUpgrade( int upgradeNum );
