@@ -266,6 +266,10 @@ static void CG_AlienLevel1Text( char *text )
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
+	          va( _( "Press %s to lunge\n" ),
+	              CG_KeyNameForCommand( "+attack2" ) ) );
+
+	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
 }
