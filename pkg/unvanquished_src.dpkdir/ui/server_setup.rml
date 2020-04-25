@@ -5,7 +5,7 @@
 
 	</head>
 	<body id="server_general" template="window" style="width: 32em; margin: 1em;">
-		<h1> Server Settings </h1>
+		<h1> Server Setup </h1>
 		
 		<h2> General </h2>
 		<row>
