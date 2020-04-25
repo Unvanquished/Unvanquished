@@ -198,7 +198,7 @@
 				<row>
 					<select cvar="r_vertexLighting">
 						<option value="0">Light Map (normal)</option>
-						<option value="1">Vertex (low, ugly)</option>
+						<option value="1">Grid light (low, ugly)</option>
 					</select>
 					<h3>Lighting system</h3>
 				</row>
