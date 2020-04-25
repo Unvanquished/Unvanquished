@@ -146,6 +146,11 @@
 					<p>Simulates extra lighting detail on flat surfaces.</p>
 				</row>
 				<row>
+					<h3>Relief mapping</h3>
+					<input cvar="r_reliefMapping" type="checkbox" />
+					<p>Adds bumps on supported surfaces. Experimental.</p>
+				</row>
+				<row>
 					<h3>Bloom</h3>
 					<input cvar="r_bloom" type="checkbox" />
 					<p>Makes bright areas on your screen glow.</p>
