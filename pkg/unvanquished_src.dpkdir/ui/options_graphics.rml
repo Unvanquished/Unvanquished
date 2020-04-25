@@ -137,7 +137,7 @@
 			<panel>
 				<h2>Effects</h2>
 				<p>
-					These special effects are all optional and can be toggled without having to restart video.
+					These special effects are all optional.
 					All of these effects will reduce your frame-rate.
 				</p>
 				<row>
@@ -195,6 +195,10 @@
 						<ilink onclick='Events.pushevent("exec reset cg_motionblurMinSpeed", event)'> (reset) </ilink>
 					</p>
 				</row>
+
+				<buttonbar>
+					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+				</buttonbar>
 			</panel>
 
 			<tab> Lighting and particles</tab>
