@@ -211,9 +211,11 @@
 					<select cvar="cg_shadows" style="width:20em;">
 						<option value="0">None</option>
 						<option value="1">Blobs (low)</option>
+						<!-- Implementations for those options are broken and can make the game unusable
 						<option value="3">Exponential mapping</option>
 						<option value="5">Variance mapping</option>
 						<option value="6">Exponential + variance (high)</option>
+						-->
 					</select>
 					<h3>Shadows</h3>
 				</row>
