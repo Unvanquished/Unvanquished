@@ -106,7 +106,7 @@
 							<blocklink onClick='Events.pushevent("show options_player", event)'> Player </blocklink>
 							<blocklink onClick='Events.pushevent("show options_graphics", event)'> Graphics </blocklink>
 							<blocklink onClick='Events.pushevent("show options_keys", event)'> Key bindings </blocklink>
-							<blocklink onClick='Events.pushevent("show options_mouse", event)'> Mouse and aim </blocklink>
+							<blocklink onClick='Events.pushevent("show options_mouse", event)'> Mouse and Aiming </blocklink>
 							<blocklink onClick='Events.pushevent("show options_sound", event)'> Sound </blocklink>
 							<blocklink onClick='Events.pushevent("show options_ui", event)'> User interface and HUD </blocklink>
 							<!-- <blocklink onClick='Events.pushevent("show options_fov", event)'> Fields of view </blocklink> -->

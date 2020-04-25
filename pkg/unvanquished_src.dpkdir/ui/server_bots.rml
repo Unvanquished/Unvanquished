@@ -5,7 +5,7 @@
 
 	</head>
 	<body id="server_bots" template="window" style="width: 32em; margin: 1em;">
-		<h1> Bot Setup </h1>
+		<h1> Bot Settings </h1>
 		
 		<tabset>
 			<tab>General</tab>
