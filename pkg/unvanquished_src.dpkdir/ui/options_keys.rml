@@ -168,7 +168,7 @@
 					<p>Mouse Look:</p>
 				</row>
 				<row>
-					<qkeybind cmd="centerview" />
+					<keybind cmd="centerview" />
 					<p>Centerview:</p>
 				</row>
 			</panel>
