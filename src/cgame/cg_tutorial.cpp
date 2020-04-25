@@ -54,8 +54,8 @@ static bind_t bindings[] =
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
 	{ "modcase alt \"/deconstruct marked\" /deconstruct",
 	                    N_( "Deconstruct Structure" ),                 {} },
-	{ "weapprev",       N_( "Previous Upgrade" ),                      {} },
-	{ "weapnext",       N_( "Next Upgrade" ),                          {} },
+	{ "weapprev",       N_( "Previous Weapon" ),                       {} },
+	{ "weapnext",       N_( "Next Weapon" ),                           {} },
 	{ OPEN_CONSOLE_CMD, N_( "Toggle Console" ),                        {} },
 	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
 };
@@ -444,13 +444,15 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		}
 	}
 
-	if ( upgrade == UP_NONE ||
-	     ( upgrade > UP_NONE && BG_Upgrade( upgrade )->usable ) )
+	// Find next weapon in inventory.
+	weapon_t nextWeapon = CG_FindNextWeapon( ps );
+
+	if ( nextWeapon != WP_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to use the %s\n" ),
-		              CG_KeyNameForCommand( "+useitem" ),
-		              name ) );
+		              CG_KeyNameForCommand( "weapnext" ),
+		              _( BG_Weapon( nextWeapon )->humanName ) ) );
 	}
 
 	if ( ps->stats[ STAT_HEALTH ] <= 35 &&
