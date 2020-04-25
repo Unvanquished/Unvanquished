@@ -168,7 +168,7 @@
 				<row>
 					<input cvar="r_ssao" type="checkbox" />
 					<h3>SSAO</h3>
-					<p> Screen space ambient occlusion.</p>
+					<p> Screen space ambient occlusion. Experimental</p>
 				</row>
 
 				<h2> Motion blur </h2>
