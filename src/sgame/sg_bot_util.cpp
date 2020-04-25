@@ -1470,7 +1470,7 @@ void BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer )
 	}
 	else if ( mode == WPM_TERTIARY )
 	{
-		usercmdPressButton( botCmdBuffer->buttons, BUTTON_USE_HOLDABLE );
+		usercmdPressButton( botCmdBuffer->buttons, BUTTON_ATTACK3 );
 	}
 }
 void BotClassMovement( gentity_t *self, bool inAttackRange )

@@ -579,9 +579,10 @@ void CG_InitConsoleCommands()
 		trap_AddCommand( commands[ i ].cmd );
 	}
 
+	// Defined in src/engine/qcommon/q_shared.h, see BUTTON_ATTACK etc.
 	trap_RegisterButtonCommands(
-	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.
-	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,,rally"
+	    // 0      1       2       3     45      6        7       89ABCDE     F <- bit nos.
+	      "attack,attack2,attack3,taunt,,sprint,activate,useitem,,,,,,,rally,"
 	    );
 }
 
