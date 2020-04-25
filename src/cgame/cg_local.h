@@ -1206,7 +1206,7 @@ struct cg_t
 	int                     spawnTime; // fovwarp
 	int                     weapon1Time; // time when BUTTON_ATTACK went t->f f->t
 	int                     weapon2Time; // time when BUTTON_ATTACK2 went t->f f->t
-	int                     weapon3Time; // time when BUTTON_USE_HOLDABLE went t->f f->t
+	int                     weapon3Time; // time when BUTTON_ATTACK3 went t->f f->t
 	bool                weapon1Firing;
 	bool                weapon2Firing;
 	bool                weapon3Firing;

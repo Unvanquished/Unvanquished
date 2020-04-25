@@ -902,7 +902,7 @@ static int CG_CalcFov()
 	trap_GetUserCmd( cmdNum - 1, &oldcmd );
 
 	// switch follow modes if necessary: cycle between free -> follow -> third-person follow
-	if ( usercmdButtonPressed( cmd.buttons, BUTTON_USE_HOLDABLE ) && !usercmdButtonPressed( oldcmd.buttons, BUTTON_USE_HOLDABLE ) )
+	if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK3 ) && !usercmdButtonPressed( oldcmd.buttons, BUTTON_ATTACK3 ) )
 	{
 		if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 		{
