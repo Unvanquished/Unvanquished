@@ -41,9 +41,8 @@
 				</datagrid>
 
 				<buttonbar>
-					<button onClick='Events.pushevent("buildDS server_browser internet", event)'>Refresh list</button>
 					<button onClick='Events.pushevent("execDS server_browser internet", event)'>Connect</button>
-					<button onClick='Events.pushevent("init_servers internet;buildDS server_browser internet", event)'>Fetch new list</button>
+					<button onClick='Events.pushevent("init_servers internet;buildDS server_browser internet", event)'>Refresh</button>
 				</buttonbar>
 
 			</panel>
@@ -59,9 +58,8 @@
 				</datagrid>
 
 				<buttonbar>
-					<button onClick='Events.pushevent("buildDS server_browser local", event)'>Refresh list</button>
 					<button onClick='Events.pushevent("execDS server_browser local", event)'>Connect</button>
-					<button onClick='Events.pushevent("init_servers local;buildDS server_browser local", event)'>Scan for new</button>
+					<button onClick='Events.pushevent("init_servers local;buildDS server_browser local", event)'>Refresh</button>
 				</buttonbar>
 			</panel>
 
