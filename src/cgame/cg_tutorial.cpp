@@ -536,30 +536,32 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 
 	if ( ps->pm_flags & PMF_FOLLOW )
 	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+		          va( _( "Press %s to stop following\n" ),
+		              CG_KeyNameForCommand( "+attack2" ) ) );
+
 		if ( !cg.chaseFollow )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( _( "Press %s to switch to chase-cam spectator mode\n" ),
 			              CG_KeyNameForCommand( "+attack3" ) ) );
 		}
-		else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
-		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to return to free spectator mode\n" ),
-			              CG_KeyNameForCommand( "+attack3" ) ) );
-		}
 		else
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to stop following\n" ),
+			          va( _( "Press %s to return to first-person spectator mode\n" ),
 			              CG_KeyNameForCommand( "+attack3" ) ) );
 		}
+
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+		          va( _( "Press %s to follow the next player\n" ),
+		              CG_KeyNameForCommand( "weapnext" ) ) );
 	}
 	else
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to follow a player\n" ),
-		              CG_KeyNameForCommand( "+attack3" ) ) );
+		              CG_KeyNameForCommand( "+attack2" ) ) );
 	}
 }
 
