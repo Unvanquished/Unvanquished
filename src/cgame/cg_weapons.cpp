@@ -2191,6 +2191,62 @@ void CG_DrawItemSelectText()
 
 /*
 ===============
+CG_FindNextWeapon
+Find next weapon in inventory.
+===============
+*/
+weapon_t CG_FindNextWeapon( playerState_t *ps )
+{
+	weapon_t nextWeapon = WP_NONE;
+
+	// For each weapon in the known weapon list from the beginning to the end:
+	// we can skip WP_NONE because there is no weapon in this slot:
+	for ( weapon_t w = weapon_t( WP_NONE + 1 ); w < WP_NUM_WEAPONS; w = weapon_t( w + 1 ) )
+	{
+		if ( w != cg.snap->ps.weapon && BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		{
+			if ( w < cg.snap->ps.weapon )
+			{
+				if ( nextWeapon == WP_NONE )
+				{
+					// If this weapon is not the current player weapon,
+					// and if the player has this weapon in inventory,
+					// and this weapon is listed before the current player weapon,
+					// and that's the first weapon we find:
+					// Remember this weapon,
+					// and look at the one after.
+					nextWeapon = w;
+				}
+				// If this weapon is not the current player weapon,
+				// and if the player has this weapon in inventory,
+				// and this weapon is listed before the current player weapon,
+				// and that's not the first weapon we find:
+				// Ignore this weapon,
+				// and look at the one after.
+			}
+			else 
+			{
+				// If this weapon is not the current player weapon,
+				// and if the player has this weapon in inventory,
+				// and this weapon is not listed before the current player weapon,
+				// Remember it,
+				// replace the one we may already have found,
+				// and stop.
+				nextWeapon = w;
+				break;
+			}
+		}
+		// If the player does not have this weapon in inventory,
+		// and this weapon is listed before the current player weapon:
+		// Ignore this weapon,
+		// and look at the one after.
+	}
+
+	return nextWeapon;
+}
+
+/*
+===============
 CG_NextWeapon_f
 ===============
 */
@@ -2207,9 +2263,17 @@ void CG_NextWeapon_f()
 		return;
 	}
 
-	// HACK: This only works with two weapons.
-	// See: https://github.com/Unvanquished/Unvanquished/issues/544#issuecomment-619299752
-	trap_SendClientCommand( "itemtoggle blaster\n" );
+	weapon_t nextWeapon = CG_FindNextWeapon( &cg.snap->ps );
+
+	if ( nextWeapon != WP_NONE )
+	{
+		if ( !BG_PlayerCanChangeWeapon( &cg.snap->ps ) )
+		{
+			return;
+		}
+
+		trap_SendClientCommand( va( "itemact %s\n", BG_WeaponNameByNumber( nextWeapon ) ) );
+	}
 }
 
 /*
@@ -2263,6 +2327,62 @@ void CG_SelectNextInventoryItem_f()
 
 /*
 ===============
+CG_FindPrevWeapon
+Find previous weapon in inventory.
+===============
+*/
+weapon_t CG_FindPrevWeapon( playerState_t *ps )
+{
+	weapon_t prevWeapon = WP_NONE;
+
+	// For each weapon in the known weapon list from the end to the beginning,
+	// we must skip WP_NUM_WEAPONS because it's not a weapon slot:
+	for ( weapon_t w = weapon_t( WP_NUM_WEAPONS - 1 ); w > WP_NONE; w = weapon_t( w - 1 ) )
+	{
+		if ( w != cg.snap->ps.weapon && BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		{
+			if ( w > cg.snap->ps.weapon )
+			{
+				if ( prevWeapon == WP_NONE )
+				{
+					// If this weapon is not the current player weapon,
+					// and if the player has this weapon in inventory,
+					// and this weapon is listed after the current player weapon,
+					// and that's the first weapon we find:
+					// Remember this weapon,
+					// and look at the one before.
+					prevWeapon = w;
+				}
+				// If this weapon is not the current player weapon,
+				// and if the player has this weapon in inventory,
+				// and this weapon is listed after the current player weapon,
+				// and that's not the first weapon we find:
+				// Ignore this weapon,
+				// and look at the one before.
+			}
+			else 
+			{
+				// If this weapon is not the current player weapon,
+				// and if the player has this weapon in inventory,
+				// and this weapon is not listed after the current player weapon,
+				// Remember it,
+				// replace the one we may already have found,
+				// and stop.
+				prevWeapon = w;
+				break;
+			}
+		}
+		// If the player does not have this weapon in inventory,
+		// and this weapon is listed after the current player weapon:
+		// Ignore this weapon,
+		// and look at the one before.
+	}
+
+	return prevWeapon;
+}
+
+/*
+===============
 CG_PrevWeapon_f
 ===============
 */
@@ -2279,9 +2399,17 @@ void CG_PrevWeapon_f()
 		return;
 	}
 
-	// HACK: This only works with two weapons.
-	// See: https://github.com/Unvanquished/Unvanquished/issues/544#issuecomment-619299752
-	trap_SendClientCommand( "itemtoggle blaster\n" );
+	weapon_t prevWeapon = CG_FindPrevWeapon( &cg.snap->ps );
+
+	if ( prevWeapon != WP_NONE )
+	{
+		if ( !BG_PlayerCanChangeWeapon( &cg.snap->ps ) )
+		{
+			return;
+		}
+
+		trap_SendClientCommand( va( "itemact %s\n", BG_WeaponNameByNumber( prevWeapon ) ) );
+	}
 }
 
 /*

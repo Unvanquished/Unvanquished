@@ -602,6 +602,19 @@ weapon_t BG_WeaponNumberByName( const char *name )
 	return ( weapon_t )0;
 }
 
+const char* BG_WeaponNameByNumber( weapon_t number )
+{
+	for ( unsigned i = 0; i < bg_numWeapons; i++ )
+	{
+		if ( bg_weaponsData[ i ].number == number )
+		{
+			return bg_weaponsData[ i ].name;
+		}
+	}
+
+	return "";
+}
+
 const weaponAttributes_t *BG_WeaponByName( const char *name )
 {
 	weapon_t weapon = BG_WeaponNumberByName( name );
