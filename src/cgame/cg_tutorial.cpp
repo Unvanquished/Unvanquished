@@ -664,6 +664,8 @@ const char *CG_TutorialText()
 
 	if ( !cg.demoPlayback )
 	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+
 		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to chat\n" ), CG_KeyNameForCommand( "message_public" ) ) );
@@ -672,6 +674,9 @@ const char *CG_TutorialText()
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to chat or %s to chat to your team\n" ), CG_KeyNameForCommand( "message_public" ),  CG_KeyNameForCommand( "message_team" ) ) );
 		}
+
+		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+
 		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console\n" ), CG_KeyNameForCommand( "toggleconsole" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, _( "Press ESCAPE for the menu" ) );
 	}
