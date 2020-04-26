@@ -52,8 +52,6 @@ static bind_t bindings[] =
 	{ "buy ammo",       N_( "Buy Ammo" ),                              {} },
 	{ "itemact medkit", N_( "Use Medkit" ),                            {} },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
-	{ "modcase alt \"/deconstruct marked\" /deconstruct",
-	                    N_( "Deconstruct Structure" ),                 {} },
 	{ "weapprev",       N_( "Previous Weapon" ),                       {} },
 	{ "weapnext",       N_( "Next Weapon" ),                           {} },
 	{ "message_public", N_( "Global chat" ),                           {} },
@@ -195,18 +193,22 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 	if ( ( es = CG_BuildableInRange( ps, nullptr ) ) )
 	{
-		const char *key = CG_KeyNameForCommand( "modcase alt \"/deconstruct marked\" /deconstruct" );
-
 		if ( es->eFlags & EF_B_MARKED )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
-					  va( _( "Press %s to unmark this structure for replacement\n" ), key ) );
+					  va( _( "Press %s to unmark this structure for replacement\n" ),
+					  CG_KeyNameForCommand( "+attack2" ) ) );
 		}
 		else
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
-					  va( _( "Press %s to mark this structure for replacement\n" ), key ) );
+					  va( _( "Press %s to mark this structure for replacement\n" ),
+					  CG_KeyNameForCommand( "+attack2" ) ) );
 		}
+
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+				  va( _( "Hold %s to deconstruct this structure\n" ),
+				  CG_KeyNameForCommand( "+attack2" ) ) );
 	}
 }
 
@@ -219,22 +221,25 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 {
 	CG_BuilderText( text, ps );
 
-	if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) == BA_NONE )
+	if ( !CG_BuildableInRange( ps, nullptr ) )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to swipe\n" ),
-		              CG_KeyNameForCommand( "+attack2" ) ) );
-	}
+		if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) == BA_NONE )
+		{
+			Q_strcat( text, MAX_TUTORIAL_TEXT,
+			          va( _( "Press %s to swipe\n" ),
+			              CG_KeyNameForCommand( "+attack2" ) ) );
+		}
 
-	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to spit\n" ),
-		              CG_KeyNameForCommand( "+attack3" ) ) );
+		if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
+		{
+			Q_strcat( text, MAX_TUTORIAL_TEXT,
+			          va( _( "Press %s to spit\n" ),
+			              CG_KeyNameForCommand( "+attack3" ) ) );
 
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to walk on walls\n" ),
-		              CG_KeyNameForCommand( "+movedown" ) ) );
+			Q_strcat( text, MAX_TUTORIAL_TEXT,
+			          va( _( "Press %s to walk on walls\n" ),
+			              CG_KeyNameForCommand( "+movedown" ) ) );
+		}
 	}
 }
 
@@ -449,7 +454,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	if ( upgrade != UP_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to throw the %s\n" ),
-			CG_KeyNameForCommand( "+itemact grenade" ),
+			CG_KeyNameForCommand( "itemact grenade" ),
 			_( BG_Upgrade( upgrade )->humanName ) ));
 	}
 
