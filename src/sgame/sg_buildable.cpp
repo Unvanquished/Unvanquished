@@ -1086,6 +1086,50 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	return aPrecedence - bPrecedence;
 }
 
+gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
+{
+	vec3_t viewOrigin, forward, end;
+	trace_t trace;
+	gentity_t *buildable;
+
+	// Check for revoked building rights.
+	if ( ent->client->pers.namelog->denyBuild )
+	{
+		G_TriggerMenu( ent->client->ps.clientNum, MN_B_REVOKED );
+		return nullptr;
+	}
+
+	// Trace for target.
+	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
+	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
+	VectorMA( viewOrigin, 100, forward, end );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	buildable = &g_entities[ trace.entityNum ];
+
+	// Check if target is valid.
+	if ( trace.fraction >= 1.0f ||
+	     buildable->s.eType != entityType_t::ET_BUILDABLE ||
+	     !G_OnSameTeam( ent, buildable ) )
+	{
+		return nullptr;
+	}
+
+	return buildable;
+}
+
+bool G_DeconstructDead( gentity_t *buildable )
+{
+	// Always let the builder prevent the explosion of a buildable.
+	if ( Entities::IsDead( buildable ) )
+	{
+		G_RewardAttackers( buildable );
+		G_FreeEntity( buildable );
+		return true;
+	}
+
+	return false;
+}
+
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	if ( !self || self->s.eType != entityType_t::ET_BUILDABLE )
@@ -1112,6 +1156,42 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 
 	// TODO: Check if freeing needs to be deferred.
 	G_FreeEntity( self );
+}
+
+void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
+{
+	if ( !g_cheats.integer )
+	{
+		// Check if the buildable is protected from instant deconstruction.
+		switch ( buildable->s.modelindex )
+		{
+			case BA_A_OVERMIND:
+			case BA_H_REACTOR:
+				G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
+				return;
+
+			case BA_A_SPAWN:
+			case BA_H_SPAWN:
+				if ( level.team[ ent->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
+					return;
+				}
+				break;
+		}
+
+		// Deny if build timer active.
+		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+		{
+			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+			return;
+		}
+
+		// Add to build timer.
+		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
+	}	
+
+	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
 }
 
 /**
