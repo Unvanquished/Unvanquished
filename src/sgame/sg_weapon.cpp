@@ -1115,22 +1115,106 @@ void G_CheckCkitRepair( gentity_t *self )
 	}
 }
 
-static void CancelBuild( gentity_t *self )
+// Cancel ghost buildable if exists.
+// Return true if something was cancelled.
+static bool CancelBuild( gentity_t *self )
 {
-	// Cancel ghost buildable
-	if ( self->client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
+
+	if ( !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING )
+		&& (self->client->ps.stats[ STAT_BUILDABLE ] != BA_NONE ) )
 	{
 		self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 		self->client->ps.stats[ STAT_PREDICTION ] = 0;
-		return;
+
+		// Player must release the key.
+		self->client->ps.weaponstate = WEAPON_NEEDS_RESET;
+		self->client->ps.weaponTime = 0;
+		return true;
 	}
 
-	if ( self->client->ps.weapon == WP_ABUILD ||
-	     self->client->ps.weapon == WP_ABUILD2 )
+	return false;
+}
+
+// Toggle deconstruct mark if buildable in range.
+// Return true if buildable in range.
+static bool MarkOrDeconstructBuildable( gentity_t *self )
+{
+
+	gentity_t *buildable;
+	buildable = G_GetDeconstructibleBuildable( self );
+
+	if ( buildable != nullptr )
 	{
-		FireMelee( self, ABUILDER_CLAW_RANGE, ABUILDER_CLAW_WIDTH,
-		             ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW );
+		// Always let the builder prevent the explosion of a buildable.
+		if ( G_DeconstructDead( buildable ) )
+		{
+			// Player must release the key.
+			self->client->ps.weaponstate = WEAPON_NEEDS_RESET;
+
+			// Do not use the weaponTime from the attack.
+			self->client->ps.weaponTime = 0;
+			return true;
+		}
+
+		if ( !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) )
+		{
+			// Toggle mark for replacement.
+			buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
+			self->client->ps.stats[ STAT_STATE ] |= SS_CHARGING;
+
+			// Do not use the weaponTime from the attack.
+			// FIXME: To uncomment when granger attack2 sound bug is fixed:
+			// self->client->ps.weaponTime = 0;
+			return true;
+		}
+		else
+		{
+			// HACK: build timer uses negative values.
+			// Note: if one day weapon charge and build timer are stored
+			// in two different fields, test for build timer to not be 0
+			// and set weapon charge to 0 before returning.
+			if ( self->client->ps.stats[ STAT_MISC ] < 0 )
+			{
+				// Wait for existing build time to expire.
+				// No need to release the key.
+				/* self->client->ps.stats[ STAT_MISC ] = 0; */
+				return true;
+			}
+
+			// Display the replacement icon as a feedback for the user.
+			// Maybe add a deletion icon in the future to be displayed instead.
+			if ( self->client->ps.stats[ STAT_MISC ] > CKIT_DECON_CHARGE_TIME_MIN )
+			{
+				buildable->entity->Get<BuildableComponent>()->SetDeconstructionMark();
+			}
+
+			if ( self->client->ps.stats[ STAT_MISC ] == CKIT_DECON_CHARGE_TIME )
+			{
+				// Reset the charge, deconstruct the buildable.
+				self->client->ps.stats[ STAT_STATE ] &= ~SS_CHARGING;
+				self->client->ps.stats[ STAT_MISC ] = 0;
+
+				// Deconstruct the buildable.
+				G_DeconstructUnprotected( buildable, self );
+
+				// Player must release the key.
+				self->client->ps.weaponstate = WEAPON_NEEDS_RESET;
+			}
+
+			// Do not use the weaponTime from the attack.
+			// FIXME: To uncomment when granger attack2 sound bug is fixed:
+			// self->client->ps.weaponTime = 0;
+			return true;
+		}
 	}
+
+	if ( ( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) )
+	{
+		// Player must release the key.
+		self->client->ps.weaponstate = WEAPON_NEEDS_RESET;
+	}
+
+	return false;
 }
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
@@ -1858,8 +1942,21 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 
 				case WP_ABUILD:
 				case WP_ABUILD2:
+					if ( !CancelBuild( self ) )
+					{
+						if ( !MarkOrDeconstructBuildable( self ) )
+						{
+							FireMelee( self, ABUILDER_CLAW_RANGE, ABUILDER_CLAW_WIDTH,
+							             ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW );
+						}
+					}
+					break;
+
 				case WP_HBUILD:
-					CancelBuild( self );
+					if ( !CancelBuild( self ) )
+					{
+						MarkOrDeconstructBuildable( self );
+					}
 					break;
 
 				default:

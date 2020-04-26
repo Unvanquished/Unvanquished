@@ -3820,6 +3820,60 @@ static void PM_Weapon()
 	{
 		int max;
 
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_HBUILD:
+			if ( attack2 )
+			{
+				if ( pm->ps->weaponstate == WEAPON_NEEDS_RESET )
+				{
+					// Reset the charge.
+					// HACK: build timer uses negative values.
+					// Note: if one day weapon charge and build timer are stored
+					// in two different fields, do not test anything and set
+					// weapon charge to 0 unconditionally.
+					if ( pm->ps->stats[ STAT_MISC ] > 0 )
+					{
+						pm->ps->stats[ STAT_MISC ] = 0;
+					}
+					pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
+					pm->ps->weaponTime = 0;
+					return;
+				}
+
+				if ( pm->ps->stats [ STAT_STATE ] & SS_CHARGING )
+				{
+					// HACK: build timer uses negative values.
+					// Note: if one day weapon charge and build timer are stored
+					// in two different fields, do not test anything and increment
+					// weapon charge unconditionally.
+					if ( pm->ps->stats[ STAT_MISC ] >= 0 )
+					{
+						pm->ps->stats[ STAT_MISC ] += pml.msec;
+					}
+
+					if ( pm->ps->stats[ STAT_MISC ] > CKIT_DECON_CHARGE_TIME )
+					{
+						pm->ps->stats[ STAT_MISC ] = CKIT_DECON_CHARGE_TIME;
+					}
+				}
+			}
+			else
+			{
+				// Reset the charge.
+				// HACK: build timer uses negative values.
+				// Note: if one day weapon charge and build timer are stored
+				// in two different fields, do not test anything and set
+				// weapon charge to 0 unconditionally.
+				if ( pm->ps->stats[ STAT_MISC ] > 0 )
+				{
+					pm->ps->stats[ STAT_MISC ] = 0;
+				}
+				pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
+			}
+
+			break;
+
 		case WP_ALEVEL1:
 			// Pounce cooldown (Mantis).
 			pm->ps->stats[ STAT_MISC ] -= pml.msec;
