@@ -2499,35 +2499,7 @@ void Cmd_Class_f( gentity_t *ent )
 
 void Cmd_Deconstruct_f( gentity_t *ent )
 {
-	char      arg[ 32 ];
-	vec3_t    viewOrigin, forward, end;
-	trace_t   trace;
-	gentity_t *buildable;
-	bool  instant;
-
-	// check for revoked building rights
-	if ( ent->client->pers.namelog->denyBuild )
-	{
-		G_TriggerMenu( ent->client->ps.clientNum, MN_B_REVOKED );
-		return;
-	}
-
-	// trace for target
-	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
-	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
-	buildable = &g_entities[ trace.entityNum ];
-
-	// check if target is valid
-	if ( trace.fraction >= 1.0f ||
-	     buildable->s.eType != entityType_t::ET_BUILDABLE ||
-	     !G_OnSameTeam( ent, buildable ) )
-	{
-		return;
-	}
-
-	// check for valid build weapon
+	// Check for valid build weapon.
 	switch ( ent->client->ps.weapon )
 	{
 		case WP_HBUILD:
@@ -2539,15 +2511,24 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 			return;
 	}
 
-	// always let the builder prevent the explosion of a buildable
-	if ( Entities::IsDead( buildable ) )
+	gentity_t *buildable;
+	buildable = G_GetDeconstructibleBuildable( ent );
+
+	if ( buildable == nullptr )
 	{
-		G_RewardAttackers( buildable );
-		G_FreeEntity( buildable );
 		return;
 	}
 
-	// check for instant mode
+	// Always let the builder prevent the explosion of a buildable.
+	if ( G_DeconstructDead( buildable ) )
+	{
+		return;
+	}
+
+	char arg[ 32 ];
+	bool instant;
+
+	// Check for instant mode.
 	if ( trap_Argc() == 2 )
 	{
 		trap_Argv( 1, arg, sizeof( arg ) );
@@ -2560,42 +2541,11 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 
 	if ( instant && buildable->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 	{
-		if ( !g_cheats.integer )
-		{
-			// check if the buildable is protected from instant deconstruction
-			switch ( buildable->s.modelindex )
-			{
-				case BA_A_OVERMIND:
-				case BA_H_REACTOR:
-					G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
-					return;
-
-				case BA_A_SPAWN:
-				case BA_H_SPAWN:
-					if ( level.team[ ent->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
-					{
-						G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
-						return;
-					}
-					break;
-			}
-
-			// deny if build timer active
-			if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
-				return;
-			}
-
-			// add to build timer
-			ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
-		}
-
-		G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
+		G_DeconstructUnprotected( buildable, ent );
 	}
 	else
 	{
-		// toggle mark
+		// Toggle mark.
 		buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
 	}
 }
