@@ -462,6 +462,13 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		              _( BG_Weapon( nextWeapon )->humanName ) ) );
 	}
 
+	if ( BG_InventoryContainsUpgrade( UP_JETPACK, ps->stats ) )
+	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Hold %s to use the %s\n" ),
+			CG_KeyNameForCommand( "+moveup" ),
+			_( BG_Upgrade( UP_JETPACK )->humanName ) ));
+	}
+
 	if ( ps->stats[ STAT_HEALTH ] <= 35 &&
 	     BG_InventoryContainsUpgrade( UP_MEDKIT, ps->stats ) )
 	{
