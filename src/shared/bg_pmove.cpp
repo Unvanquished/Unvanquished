@@ -3820,6 +3820,39 @@ static void PM_Weapon()
 	{
 		int max;
 
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_HBUILD:
+			if ( attack2 )
+			{
+				if ( pm->ps->weaponstate == WEAPON_NEEDS_RESET )
+				{
+					// Reset the charge.
+					pm->ps->weaponCharge = 0;
+					pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
+					pm->ps->weaponTime = 0;
+					return;
+				}
+
+				if ( pm->ps->stats [ STAT_STATE ] & SS_CHARGING )
+				{
+					pm->ps->weaponCharge += pml.msec;
+
+					if ( pm->ps->weaponCharge > CKIT_DECON_CHARGE_TIME )
+					{
+						pm->ps->weaponCharge = CKIT_DECON_CHARGE_TIME;
+					}
+				}
+			}
+			else
+			{
+				// Reset the charge.
+				pm->ps->weaponCharge = 0;
+				pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
+			}
+
+			break;
+
 		case WP_ALEVEL1:
 			// Pounce cooldown (Mantis).
 			pm->ps->weaponCharge -= pml.msec;

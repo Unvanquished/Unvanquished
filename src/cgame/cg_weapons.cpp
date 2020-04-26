@@ -3028,6 +3028,12 @@ float CG_ChargeProgress()
 
 	switch ( cg.snap->ps.weapon )
 	{
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_HBUILD:
+			min = 0;
+			max = CKIT_DECON_CHARGE_TIME;
+			break;
 		case WP_ALEVEL1:
 			min = 0;
 			max = LEVEL1_POUNCE_COOLDOWN;
@@ -3063,8 +3069,21 @@ float CG_ChargeProgress()
 		return 0.0f;
 	}
 
-	progress = ( ( float ) cg.predictedPlayerState.weaponCharge - min ) /
-	( max - min );
+	int statCharge = cg.predictedPlayerState.weaponCharge;
+
+	switch ( cg.snap->ps.weapon )
+	{
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_HBUILD:
+			/* Do not display the charge bar until it's greater than an
+			arbitrary value, to make sure simple right-click like build
+			cancellation or mark for replacement does not display th
+			bar, remap the range to look good. */
+			statCharge = std::max( 0, remapInRange( statCharge, CKIT_DECON_CHARGE_TIME_MIN, max, 0, max ) );
+	}
+
+	progress = ( ( float ) statCharge - min ) / ( max - min );
 
 	if ( progress > 1.0f )
 	{

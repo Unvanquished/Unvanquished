@@ -40,6 +40,9 @@ extern int   ABUILDER_BLOB_TIME;
 #define ABUILDER_BLOB_FIRE_IMMUNITY   3000   // in ms, friendly buildables gain immunity for fire on hit
 #define ABUILDER_BLOB_FIRE_STOP_RANGE 20     // granger spit that hits a surface kills environmental fire in this range
 
+#define      CKIT_DECON_CHARGE_TIME_MIN 300 // in ms, minimum before displaying deconstruction charge bar
+#define      CKIT_DECON_CHARGE_TIME 3000 // in ms, deconstruct after this time
+
 extern int   LEVEL0_BITE_DMG;
 extern float LEVEL0_BITE_RANGE;
 extern float LEVEL0_BITE_WIDTH;
