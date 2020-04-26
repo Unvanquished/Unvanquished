@@ -56,6 +56,8 @@ static bind_t bindings[] =
 	                    N_( "Deconstruct Structure" ),                 {} },
 	{ "weapprev",       N_( "Previous Weapon" ),                       {} },
 	{ "weapnext",       N_( "Next Weapon" ),                           {} },
+	{ "message_public", N_( "Global chat" ),                           {} },
+	{ "message_team",   N_( "Team chat" ),                             {} },
 	{ OPEN_CONSOLE_CMD, N_( "Toggle Console" ),                        {} },
 	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
 };
@@ -662,6 +664,14 @@ const char *CG_TutorialText()
 
 	if ( !cg.demoPlayback )
 	{
+		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
+		{
+			Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to chat\n" ), CG_KeyNameForCommand( "message_public" ) ) );
+		}
+		else
+		{
+			Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to chat or %s to chat to your team\n" ), CG_KeyNameForCommand( "message_public" ),  CG_KeyNameForCommand( "message_team" ) ) );
+		}
 		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console\n" ), CG_KeyNameForCommand( "toggleconsole" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, _( "Press ESCAPE for the menu" ) );
 	}
