@@ -901,7 +901,7 @@ static int CG_CalcFov()
 	trap_GetUserCmd( cmdNum, &cmd );
 	trap_GetUserCmd( cmdNum - 1, &oldcmd );
 
-	// switch follow modes if necessary: cycle between free -> follow -> third-person follow
+	// Cycle between follow and third-person follow modes on mouse middle click.
 	if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK3 ) && !usercmdButtonPressed( oldcmd.buttons, BUTTON_ATTACK3 ) )
 	{
 		if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
@@ -913,10 +913,18 @@ static int CG_CalcFov()
 			else
 			{
 				cg.chaseFollow = false;
-				trap_SendClientCommand( "follow\n" );
 			}
 		}
 		else if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+		{
+			trap_SendClientCommand( "follow\n" );
+		}
+	}
+
+	// Stop to follow on mouse right click.
+	if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) && !usercmdButtonPressed( oldcmd.buttons, BUTTON_ATTACK2 ) )
+	{
+		if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 		{
 			trap_SendClientCommand( "follow\n" );
 		}
