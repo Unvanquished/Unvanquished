@@ -4263,6 +4263,20 @@ void Cmd_MapLog_f( gentity_t *ent )
 		else if ( ptr == maplog )
 		{
 			result = "^7current map";
+
+			// find start time for the current game
+			int     mins, seconds, tens;
+			int     msec;
+
+			msec = level.time - level.startTime;
+
+			seconds = msec / 1000;
+			mins = seconds / 60;
+			seconds -= mins * 60;
+			tens = seconds / 10;
+			seconds -= tens * 10;
+
+			clock = va( "^3%3i^7:^3%d%d^*", mins, tens, seconds );
 		}
 
 		ADMBP( va( "  ^%s%-20s %6s %s^*",
