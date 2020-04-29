@@ -3021,38 +3021,36 @@ float CG_ChargeProgress()
 	float progress;
 	int   min = 0, max = 0;
 
-	if ( cg.snap->ps.weapon ==  WP_ALEVEL1 )
+	switch ( cg.snap->ps.weapon )
 	{
-		min = 0;
-		max = LEVEL1_POUNCE_COOLDOWN;
-	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL3 )
-	{
-		min = LEVEL3_POUNCE_TIME_MIN;
-		max = LEVEL3_POUNCE_TIME;
-	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL3_UPG )
-	{
-		min = LEVEL3_POUNCE_TIME_MIN;
-		max = LEVEL3_POUNCE_TIME_UPG;
-	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL4 )
-	{
-		if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_CHARGING )
-		{
+		case WP_ALEVEL1:
 			min = 0;
-			max = LEVEL4_TRAMPLE_DURATION;
-		}
-		else
-		{
-			min = LEVEL4_TRAMPLE_CHARGE_MIN;
-			max = LEVEL4_TRAMPLE_CHARGE_MAX;
-		}
-	}
-	else if ( cg.snap->ps.weapon == WP_LUCIFER_CANNON )
-	{
-		min = LCANNON_CHARGE_TIME_MIN;
-		max = LCANNON_CHARGE_TIME_MAX;
+			max = LEVEL1_POUNCE_COOLDOWN;
+			break;
+		case WP_ALEVEL3:
+			min = LEVEL3_POUNCE_TIME_MIN;
+			max = LEVEL3_POUNCE_TIME;
+			break;
+		case WP_ALEVEL3_UPG:
+			min = LEVEL3_POUNCE_TIME_MIN;
+			max = LEVEL3_POUNCE_TIME_UPG;
+			break;
+		case WP_ALEVEL4:
+			if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_CHARGING )
+			{
+				min = 0;
+				max = LEVEL4_TRAMPLE_DURATION;
+			}
+			else
+			{
+				min = LEVEL4_TRAMPLE_CHARGE_MIN;
+				max = LEVEL4_TRAMPLE_CHARGE_MAX;
+			}
+			break;
+		case WP_LUCIFER_CANNON:
+			min = LCANNON_CHARGE_TIME_MIN;
+			max = LCANNON_CHARGE_TIME_MAX;
+			break;
 	}
 
 	if ( max - min <= 0.0f )

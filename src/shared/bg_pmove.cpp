@@ -3798,7 +3798,7 @@ Generates weapon events and modifies the weapon counter
 */
 static void PM_Weapon()
 {
-	int      addTime = 200; //default addTime - should never be used
+	int addTime = 200; // Default addTime (should never be used).
 	bool attack1 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK );
 	bool attack2 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 );
 	bool attack3 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK3 );
@@ -3816,168 +3816,170 @@ static void PM_Weapon()
 		return;
 	}
 
-	// Pounce cooldown (Mantis)
-	if ( pm->ps->weapon == WP_ALEVEL1 )
-	{
-		pm->ps->stats[ STAT_MISC ] -= pml.msec;
-
-		if ( pm->ps->stats[ STAT_MISC ] < 0 )
-		{
-			pm->ps->stats[ STAT_MISC ] = 0;
-		}
-	}
-
-	// Charging for a pounce or canceling a pounce (Dragoon)
-	if ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
+	switch ( pm->ps->weapon )
 	{
 		int max;
 
-		max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
-
-		if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
-		{
-			pm->ps->stats[ STAT_MISC ] += pml.msec;
-		}
-		else
-		{
+		case WP_ALEVEL1:
+			// Pounce cooldown (Mantis).
 			pm->ps->stats[ STAT_MISC ] -= pml.msec;
-		}
 
-		if ( pm->ps->stats[ STAT_MISC ] > max )
-		{
-			pm->ps->stats[ STAT_MISC ] = max;
-		}
-		else if ( pm->ps->stats[ STAT_MISC ] < 0 )
-		{
-			pm->ps->stats[ STAT_MISC ] = 0;
-		}
-	}
-
-	// Trample charge mechanics
-	if ( pm->ps->weapon == WP_ALEVEL4 )
-	{
-		// Charging up
-		if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
-		{
-			// Charge button held
-			if ( pm->ps->stats[ STAT_MISC ] < LEVEL4_TRAMPLE_CHARGE_TRIGGER &&
-			     usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) )
-			{
-				pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
-
-				if ( pm->cmd.forwardmove > 0 )
-				{
-					int    charge = pml.msec;
-					vec3_t dir, vel;
-
-					AngleVectors( pm->ps->viewangles, dir, nullptr, nullptr );
-					VectorCopy( pm->ps->velocity, vel );
-					vel[ 2 ] = 0;
-					dir[ 2 ] = 0;
-					VectorNormalize( vel );
-					VectorNormalize( dir );
-
-					charge *= DotProduct( dir, vel );
-
-					pm->ps->stats[ STAT_MISC ] += charge;
-				}
-				else
-				{
-					pm->ps->stats[ STAT_MISC ] = 0;
-				}
-			}
-
-			// Charge button released
-			else if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
-			{
-				if ( pm->ps->stats[ STAT_MISC ] > LEVEL4_TRAMPLE_CHARGE_MIN )
-				{
-					if ( pm->ps->stats[ STAT_MISC ] > LEVEL4_TRAMPLE_CHARGE_MAX )
-					{
-						pm->ps->stats[ STAT_MISC ] = LEVEL4_TRAMPLE_CHARGE_MAX;
-					}
-
-					pm->ps->stats[ STAT_MISC ] = pm->ps->stats[ STAT_MISC ] *
-					                             LEVEL4_TRAMPLE_DURATION /
-					                             LEVEL4_TRAMPLE_CHARGE_MAX;
-					pm->ps->stats[ STAT_STATE ] |= SS_CHARGING;
-					PM_AddEvent( EV_LEV4_TRAMPLE_START );
-				}
-				else
-				{
-					pm->ps->stats[ STAT_MISC ] -= pml.msec;
-				}
-			}
-		}
-
-		// Discharging
-		else
-		{
-			if ( pm->ps->stats[ STAT_MISC ] < LEVEL4_TRAMPLE_CHARGE_MIN )
+			if ( pm->ps->stats[ STAT_MISC ] < 0 )
 			{
 				pm->ps->stats[ STAT_MISC ] = 0;
+			}
+			break;
+
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+			// Charging for a pounce or canceling a pounce (Dragoon).
+			max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
+
+			if ( attack2 )
+			{
+				pm->ps->stats[ STAT_MISC ] += pml.msec;
 			}
 			else
 			{
 				pm->ps->stats[ STAT_MISC ] -= pml.msec;
 			}
 
-			// If the charger has stopped moving take a chunk of charge away
-			if ( VectorLength( pm->ps->velocity ) < 64.0f || pm->cmd.rightmove )
+			if ( pm->ps->stats[ STAT_MISC ] > max )
 			{
-				pm->ps->stats[ STAT_MISC ] -= LEVEL4_TRAMPLE_STOP_PENALTY * pml.msec;
+				pm->ps->stats[ STAT_MISC ] = max;
 			}
-		}
-
-		// Charge is over
-		if ( pm->ps->stats[ STAT_MISC ] <= 0 || pm->cmd.forwardmove <= 0 )
-		{
-			pm->ps->stats[ STAT_MISC ] = 0;
-			pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
-		}
-	}
-
-	// Charging up a Lucifer Cannon
-	pm->ps->eFlags &= ~EF_WARN_CHARGE;
-
-	if ( pm->ps->weapon == WP_LUCIFER_CANNON )
-	{
-		// Charging up
-		if ( !pm->ps->weaponTime && pm->ps->weaponstate != WEAPON_NEEDS_RESET &&
-		     usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) )
-		{
-			pm->ps->stats[ STAT_MISC ] += pml.msec;
-
-			if ( pm->ps->stats[ STAT_MISC ] >= LCANNON_CHARGE_TIME_MAX )
+			else if ( pm->ps->stats[ STAT_MISC ] < 0 )
 			{
-				pm->ps->stats[ STAT_MISC ] = LCANNON_CHARGE_TIME_MAX;
+				pm->ps->stats[ STAT_MISC ] = 0;
 			}
 
-			if ( pm->ps->stats[ STAT_MISC ] > pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
-			     LCANNON_CHARGE_AMMO )
+			// No bite during pounce.
+			if ( attack1 && ( pm->ps->pm_flags & PMF_CHARGE ) )
 			{
-				pm->ps->stats[ STAT_MISC ] = pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
-				                             LCANNON_CHARGE_AMMO;
+				return;
 			}
-		}
+			break;
 
-		// Set overcharging flag so other players can hear the warning beep
-		if ( pm->ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_WARN )
-		{
-			pm->ps->eFlags |= EF_WARN_CHARGE;
-		}
+		case WP_ALEVEL4:
+			// Trample charge mechanics.
+			// Charging up.
+			if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
+			{
+				// Charge button held.
+				if ( pm->ps->stats[ STAT_MISC ] < LEVEL4_TRAMPLE_CHARGE_TRIGGER && attack2 )
+				{
+					pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
+
+					if ( pm->cmd.forwardmove > 0 )
+					{
+						int charge = pml.msec;
+						vec3_t dir, vel;
+
+						AngleVectors( pm->ps->viewangles, dir, nullptr, nullptr );
+						VectorCopy( pm->ps->velocity, vel );
+						vel[ 2 ] = 0;
+						dir[ 2 ] = 0;
+						VectorNormalize( vel );
+						VectorNormalize( dir );
+
+						charge *= DotProduct( dir, vel );
+
+						pm->ps->stats[ STAT_MISC ] += charge;
+					}
+					else
+					{
+						pm->ps->stats[ STAT_MISC ] = 0;
+					}
+				}
+
+				// Charge button released.
+				else if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
+				{
+					if ( pm->ps->stats[ STAT_MISC ] > LEVEL4_TRAMPLE_CHARGE_MIN )
+					{
+						if ( pm->ps->stats[ STAT_MISC ] > LEVEL4_TRAMPLE_CHARGE_MAX )
+						{
+							pm->ps->stats[ STAT_MISC ] = LEVEL4_TRAMPLE_CHARGE_MAX;
+						}
+
+						pm->ps->stats[ STAT_MISC ] = pm->ps->stats[ STAT_MISC ] *
+													 LEVEL4_TRAMPLE_DURATION /
+													 LEVEL4_TRAMPLE_CHARGE_MAX;
+						pm->ps->stats[ STAT_STATE ] |= SS_CHARGING;
+						PM_AddEvent( EV_LEV4_TRAMPLE_START );
+					}
+					else
+					{
+						pm->ps->stats[ STAT_MISC ] -= pml.msec;
+					}
+				}
+			}
+
+			// Discharging.
+			else
+			{
+				if ( pm->ps->stats[ STAT_MISC ] < LEVEL4_TRAMPLE_CHARGE_MIN )
+				{
+					pm->ps->stats[ STAT_MISC ] = 0;
+				}
+				else
+				{
+					pm->ps->stats[ STAT_MISC ] -= pml.msec;
+				}
+
+				// If the charger has stopped moving take a chunk of charge away.
+				if ( VectorLength( pm->ps->velocity ) < 64.0f || pm->cmd.rightmove )
+				{
+					pm->ps->stats[ STAT_MISC ] -= LEVEL4_TRAMPLE_STOP_PENALTY * pml.msec;
+				}
+			}
+
+			// Charge is over.
+			if ( pm->ps->stats[ STAT_MISC ] <= 0 || pm->cmd.forwardmove <= 0 )
+			{
+				pm->ps->stats[ STAT_MISC ] = 0;
+				pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
+			}
+
+			// no slash during charge
+			if ( pm->ps->stats[ STAT_STATE ] & SS_CHARGING )
+			{
+				return;
+			}
+			break;
+
+		case WP_LUCIFER_CANNON:
+			// Charging up a Lucifer Cannon.
+			pm->ps->eFlags &= ~EF_WARN_CHARGE;
+
+			// Charging up.
+			if ( !pm->ps->weaponTime && pm->ps->weaponstate != WEAPON_NEEDS_RESET && attack1 )
+			{
+				pm->ps->stats[ STAT_MISC ] += pml.msec;
+
+				if ( pm->ps->stats[ STAT_MISC ] >= LCANNON_CHARGE_TIME_MAX )
+				{
+					pm->ps->stats[ STAT_MISC ] = LCANNON_CHARGE_TIME_MAX;
+				}
+
+				if ( pm->ps->stats[ STAT_MISC ] > pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
+					 LCANNON_CHARGE_AMMO )
+				{
+					pm->ps->stats[ STAT_MISC ] = pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
+												 LCANNON_CHARGE_AMMO;
+				}
+			}
+
+			// Set overcharging flag so other players can hear the warning beep.
+			if ( pm->ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_WARN )
+			{
+				pm->ps->eFlags |= EF_WARN_CHARGE;
+			}
+			break;
 	}
 
 	// don't allow attack until all buttons are up
 	if ( pm->ps->pm_flags & PMF_RESPAWNED )
-	{
-		return;
-	}
-
-	// no bite during pounce
-	if ( ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
-	     && usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK )
-	     && ( pm->ps->pm_flags & PMF_CHARGE ) )
 	{
 		return;
 	}
@@ -3991,12 +3993,6 @@ static void PM_Weapon()
 	if ( pm->ps->weaponTime < 0 )
 	{
 		pm->ps->weaponTime = 0;
-	}
-
-	// no slash during charge
-	if ( pm->ps->stats[ STAT_STATE ] & SS_CHARGING )
-	{
-		return;
 	}
 
 	// check for weapon change
