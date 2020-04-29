@@ -588,6 +588,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 
 	if ( pps->clientNum != ps->clientNum ||
 	     pps->weapon != ps->weapon ||
+	     pps->weaponCharge != ps->weaponCharge ||
 	     pps->weaponstate != ps->weaponstate )
 	{
 		return 11;

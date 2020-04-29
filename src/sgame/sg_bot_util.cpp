@@ -1630,7 +1630,7 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
-			else if ( self->client->ps.stats[ STAT_MISC ] == 0 )
+			else if ( self->client->ps.weaponCharge == 0 )
 			{
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
@@ -1650,7 +1650,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME )
+			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1666,7 +1666,7 @@ void BotFireWeaponAI( gentity_t *self )
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 			}
-			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_UPG )
+			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1677,7 +1677,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL4:
-			if ( distance > LEVEL4_CLAW_RANGE && self->client->ps.stats[STAT_MISC] < LEVEL4_TRAMPLE_CHARGE_MAX )
+			if ( distance > LEVEL4_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //rant charge
 			}
@@ -1687,7 +1687,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_LUCIFER_CANNON:
-			if ( self->client->ps.stats[STAT_MISC] < LCANNON_CHARGE_TIME_MAX * Com_Clamp( 0.5, 1, random() ) )
+			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Com_Clamp( 0.5, 1, random() ) )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 			}
@@ -1842,7 +1842,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		G_ForceWeaponChange( self, weapon );
 
 		//set build delay/pounce etc to 0
-		self->client->ps.stats[ STAT_MISC ] = 0;
+		self->client->ps.weaponCharge = 0;
 
 		//subtract from funds
 		G_AddCreditToClient( self->client, -( short )BG_Weapon( weapon )->price, false );
@@ -1967,7 +1967,7 @@ void BotSellWeapons( gentity_t *self )
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{
 		//guard against selling the HBUILD weapons exploit
-		if ( i == WP_HBUILD && self->client->ps.stats[ STAT_MISC ] > 0 )
+		if ( i == WP_HBUILD && self->client->ps.stats[ STAT_BUILDTIME ] > 0 )
 		{
 			continue;
 		}

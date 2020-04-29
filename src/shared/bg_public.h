@@ -234,7 +234,7 @@ enum statIndex_t
   STAT_STATE2,     // more client states
   STAT_STAMINA,    // humans: stamina
   STAT_STATE,      // client states
-  STAT_MISC,       // aliens: pounce, trample; humans: lcannon
+  STAT_BUILDTIME,  // build timer
   STAT_BUILDABLE,  // ghost model to display for building
   STAT_FALLDIST,   // distance the player fell
   STAT_VIEWLOCK,   // direction to lock the view in

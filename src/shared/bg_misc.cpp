@@ -1496,6 +1496,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap
 	}
 
 	s->weapon = ps->weapon;
+	s->weaponCharge = ps->weaponCharge;
 	s->groundEntityNum = ps->groundEntityNum;
 
 	// HACK: store held items in modelindex
@@ -2044,7 +2045,7 @@ bool BG_PlayerCanChangeWeapon( playerState_t *ps )
 {
 	// Do not allow Lucifer Cannon "canceling" via weapon switch
 	if ( ps->weapon == WP_LUCIFER_CANNON &&
-	     ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_MIN )
+	     ps->weaponCharge > LCANNON_CHARGE_TIME_MIN )
 	{
 		return false;
 	}

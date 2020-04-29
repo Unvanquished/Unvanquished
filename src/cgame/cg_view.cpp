@@ -674,9 +674,9 @@ void CG_OffsetFirstPersonView()
 	//give a charging player some feedback
 	if ( ps->weapon == WP_ALEVEL4 )
 	{
-		if ( ps->stats[ STAT_MISC ] > 0 )
+		if ( ps->weaponCharge > 0 )
 		{
-			float fraction = ( float ) ps->stats[ STAT_MISC ] /
+			float fraction = ( float ) ps->weaponCharge /
 			                 LEVEL4_TRAMPLE_CHARGE_MAX;
 
 			if ( fraction > 1.0f )
@@ -721,7 +721,7 @@ void CG_OffsetFirstPersonView()
 	//provide some feedback for pouncing
 	if ( ( cg.predictedPlayerState.weapon == WP_ALEVEL3 ||
 	       cg.predictedPlayerState.weapon == WP_ALEVEL3_UPG ) &&
-	     cg.predictedPlayerState.stats[ STAT_MISC ] > 0 )
+	     cg.predictedPlayerState.weaponCharge > 0 )
 	{
 		float  fraction1, fraction2;
 		vec3_t forward;
@@ -729,7 +729,7 @@ void CG_OffsetFirstPersonView()
 		AngleVectors( angles, forward, nullptr, nullptr );
 		VectorNormalize( forward );
 
-		fraction1 = ( float ) cg.predictedPlayerState.stats[ STAT_MISC ] /
+		fraction1 = ( float ) cg.predictedPlayerState.weaponCharge /
 		            LEVEL3_POUNCE_TIME_UPG;
 
 		if ( fraction1 > 1.0f )

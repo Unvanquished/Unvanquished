@@ -632,7 +632,8 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		client->ps.speed = client->pers.flySpeed;
 		client->ps.stats[ STAT_STAMINA ] = 0;
 		client->ps.stats[ STAT_FUEL ] = 0;
-		client->ps.stats[ STAT_MISC ] = 0;
+		client->ps.weaponCharge = 0;
+		client->ps.stats[ STAT_BUILDTIME ] = 0;
 		client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 		client->ps.stats[ STAT_CLASS ] = PCL_NONE;
 		client->ps.weapon = WP_NONE;
@@ -898,14 +899,14 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||
 		     BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) )
 		{
-			if ( client->ps.stats[ STAT_MISC ] > 0 )
+			if ( client->ps.stats[ STAT_BUILDTIME ] > 0 )
 			{
-				client->ps.stats[ STAT_MISC ] -= 100;
+				client->ps.stats[ STAT_BUILDTIME ] -= 100;
 			}
 
-			if ( client->ps.stats[ STAT_MISC ] < 0 )
+			if ( client->ps.stats[ STAT_BUILDTIME ] < 0 )
 			{
-				client->ps.stats[ STAT_MISC ] = 0;
+				client->ps.stats[ STAT_BUILDTIME ] = 0;
 			}
 		}
 

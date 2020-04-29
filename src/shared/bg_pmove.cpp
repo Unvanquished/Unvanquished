@@ -505,7 +505,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 	// Go faster when using the Tyrant charge attack
 	if ( pm->ps->weapon == WP_ALEVEL4 && pm->ps->pm_flags & PMF_CHARGE )
 	{
-		modifier *= 1.0f + ( pm->ps->stats[ STAT_MISC ] * ( LEVEL4_TRAMPLE_SPEED - 1.0f ) /
+		modifier *= 1.0f + ( pm->ps->weaponCharge * ( LEVEL4_TRAMPLE_SPEED - 1.0f ) /
 		                     LEVEL4_TRAMPLE_DURATION );
 	}
 
@@ -639,7 +639,7 @@ static void PM_CheckCharge()
 		return;
 	}
 
-	if ( pm->ps->stats[ STAT_MISC ] > 0 )
+	if ( pm->ps->weaponCharge > 0 )
 	{
 		pm->ps->pm_flags |= PMF_CHARGE;
 	}
@@ -772,7 +772,7 @@ static bool PM_CheckPounce()
 			}
 
 			// Check if cooldown is over
-			if ( pm->ps->stats[ STAT_MISC ] > 0 )
+			if ( pm->ps->weaponCharge > 0 )
 			{
 				return false;
 			}
@@ -789,7 +789,7 @@ static bool PM_CheckPounce()
 			}
 
 			// Pounce if minimum charge time has passed and the charge button isn't held anymore
-			if ( pm->ps->stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_MIN )
+			if ( pm->ps->weaponCharge < LEVEL3_POUNCE_TIME_MIN )
 			{
 				return false;
 			}
@@ -940,7 +940,7 @@ static bool PM_CheckPounce()
 				}
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL1_WALLPOUNCE_COOLDOWN;
+				pm->ps->weaponCharge = LEVEL1_WALLPOUNCE_COOLDOWN;
 			}
 			// moving foward or standing still
 			else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0 ) )
@@ -972,7 +972,7 @@ static bool PM_CheckPounce()
 				jumpMagnitude = ( int )sqrt( LEVEL1_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL1_POUNCE_COOLDOWN;
+				pm->ps->weaponCharge = LEVEL1_POUNCE_COOLDOWN;
 			}
 			// going backwards or strafing
 			else if ( pm->cmd.forwardmove < 0 || pm->cmd.rightmove != 0 )
@@ -997,7 +997,7 @@ static bool PM_CheckPounce()
 				jumpMagnitude = LEVEL1_SIDEPOUNCE_MAGNITUDE;
 
 				// add cooldown
-				pm->ps->stats[ STAT_MISC ] = LEVEL1_SIDEPOUNCE_COOLDOWN;
+				pm->ps->weaponCharge = LEVEL1_SIDEPOUNCE_COOLDOWN;
 			}
 			// compilers don't get my epic dijkstra-if
 			else
@@ -1011,22 +1011,22 @@ static bool PM_CheckPounce()
 		case WP_ALEVEL3_UPG:
 			if ( pm->ps->weapon == WP_ALEVEL3 )
 			{
-				jumpMagnitude = pm->ps->stats[ STAT_MISC ]
+				jumpMagnitude = pm->ps->weaponCharge
 				              * LEVEL3_POUNCE_JUMP_MAG / LEVEL3_POUNCE_TIME;
 			}
 			else
 			{
-				jumpMagnitude = pm->ps->stats[ STAT_MISC ]
+				jumpMagnitude = pm->ps->weaponCharge
 				              * LEVEL3_POUNCE_JUMP_MAG_UPG / LEVEL3_POUNCE_TIME_UPG;
 			}
 
 			VectorCopy( pml.forward, jumpDirection );
 
 			// save payload
-			pm->pmext->pouncePayload = pm->ps->stats[ STAT_MISC ];
+			pm->pmext->pouncePayload = pm->ps->weaponCharge;
 
 			// reset charge bar
-			pm->ps->stats[ STAT_MISC ] = 0;
+			pm->ps->weaponCharge = 0;
 
 			break;
 
@@ -1524,13 +1524,13 @@ static bool PM_CheckJump()
 	//       meter has nothing to do with the land time.
 	if ( ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3 ||
 	       pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG ) &&
-	     pm->ps->stats[ STAT_MISC ] > 0 )
+	     pm->ps->weaponCharge > 0 )
 	{
 		return false;
 	}
 
 	// can't jump and charge at the same time
-	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 && pm->ps->stats[ STAT_MISC ] > 0 )
+	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 && pm->ps->weaponCharge > 0 )
 	{
 		return false;
 	}
@@ -3717,7 +3717,7 @@ static void PM_BeginWeaponChange( int weapon )
 	//special case to prevent storing a charged up lcannon
 	if ( pm->ps->weapon == WP_LUCIFER_CANNON )
 	{
-		pm->ps->stats[ STAT_MISC ] = 0;
+		pm->ps->weaponCharge = 0;
 	}
 
 	// prevent flamer effect from continuing
@@ -3822,11 +3822,11 @@ static void PM_Weapon()
 
 		case WP_ALEVEL1:
 			// Pounce cooldown (Mantis).
-			pm->ps->stats[ STAT_MISC ] -= pml.msec;
+			pm->ps->weaponCharge -= pml.msec;
 
-			if ( pm->ps->stats[ STAT_MISC ] < 0 )
+			if ( pm->ps->weaponCharge < 0 )
 			{
-				pm->ps->stats[ STAT_MISC ] = 0;
+				pm->ps->weaponCharge = 0;
 			}
 			break;
 
@@ -3837,20 +3837,20 @@ static void PM_Weapon()
 
 			if ( attack2 )
 			{
-				pm->ps->stats[ STAT_MISC ] += pml.msec;
+				pm->ps->weaponCharge += pml.msec;
 			}
 			else
 			{
-				pm->ps->stats[ STAT_MISC ] -= pml.msec;
+				pm->ps->weaponCharge -= pml.msec;
 			}
 
-			if ( pm->ps->stats[ STAT_MISC ] > max )
+			if ( pm->ps->weaponCharge > max )
 			{
-				pm->ps->stats[ STAT_MISC ] = max;
+				pm->ps->weaponCharge = max;
 			}
-			else if ( pm->ps->stats[ STAT_MISC ] < 0 )
+			else if ( pm->ps->weaponCharge < 0 )
 			{
-				pm->ps->stats[ STAT_MISC ] = 0;
+				pm->ps->weaponCharge = 0;
 			}
 
 			// No bite during pounce.
@@ -3866,7 +3866,7 @@ static void PM_Weapon()
 			if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
 			{
 				// Charge button held.
-				if ( pm->ps->stats[ STAT_MISC ] < LEVEL4_TRAMPLE_CHARGE_TRIGGER && attack2 )
+				if ( pm->ps->weaponCharge < LEVEL4_TRAMPLE_CHARGE_TRIGGER && attack2 )
 				{
 					pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
 
@@ -3884,25 +3884,25 @@ static void PM_Weapon()
 
 						charge *= DotProduct( dir, vel );
 
-						pm->ps->stats[ STAT_MISC ] += charge;
+						pm->ps->weaponCharge += charge;
 					}
 					else
 					{
-						pm->ps->stats[ STAT_MISC ] = 0;
+						pm->ps->weaponCharge = 0;
 					}
 				}
 
 				// Charge button released.
 				else if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
 				{
-					if ( pm->ps->stats[ STAT_MISC ] > LEVEL4_TRAMPLE_CHARGE_MIN )
+					if ( pm->ps->weaponCharge > LEVEL4_TRAMPLE_CHARGE_MIN )
 					{
-						if ( pm->ps->stats[ STAT_MISC ] > LEVEL4_TRAMPLE_CHARGE_MAX )
+						if ( pm->ps->weaponCharge > LEVEL4_TRAMPLE_CHARGE_MAX )
 						{
-							pm->ps->stats[ STAT_MISC ] = LEVEL4_TRAMPLE_CHARGE_MAX;
+							pm->ps->weaponCharge = LEVEL4_TRAMPLE_CHARGE_MAX;
 						}
 
-						pm->ps->stats[ STAT_MISC ] = pm->ps->stats[ STAT_MISC ] *
+						pm->ps->weaponCharge = pm->ps->weaponCharge *
 													 LEVEL4_TRAMPLE_DURATION /
 													 LEVEL4_TRAMPLE_CHARGE_MAX;
 						pm->ps->stats[ STAT_STATE ] |= SS_CHARGING;
@@ -3910,7 +3910,7 @@ static void PM_Weapon()
 					}
 					else
 					{
-						pm->ps->stats[ STAT_MISC ] -= pml.msec;
+						pm->ps->weaponCharge -= pml.msec;
 					}
 				}
 			}
@@ -3918,26 +3918,26 @@ static void PM_Weapon()
 			// Discharging.
 			else
 			{
-				if ( pm->ps->stats[ STAT_MISC ] < LEVEL4_TRAMPLE_CHARGE_MIN )
+				if ( pm->ps->weaponCharge < LEVEL4_TRAMPLE_CHARGE_MIN )
 				{
-					pm->ps->stats[ STAT_MISC ] = 0;
+					pm->ps->weaponCharge = 0;
 				}
 				else
 				{
-					pm->ps->stats[ STAT_MISC ] -= pml.msec;
+					pm->ps->weaponCharge -= pml.msec;
 				}
 
 				// If the charger has stopped moving take a chunk of charge away.
 				if ( VectorLength( pm->ps->velocity ) < 64.0f || pm->cmd.rightmove )
 				{
-					pm->ps->stats[ STAT_MISC ] -= LEVEL4_TRAMPLE_STOP_PENALTY * pml.msec;
+					pm->ps->weaponCharge -= LEVEL4_TRAMPLE_STOP_PENALTY * pml.msec;
 				}
 			}
 
 			// Charge is over.
-			if ( pm->ps->stats[ STAT_MISC ] <= 0 || pm->cmd.forwardmove <= 0 )
+			if ( pm->ps->weaponCharge <= 0 || pm->cmd.forwardmove <= 0 )
 			{
-				pm->ps->stats[ STAT_MISC ] = 0;
+				pm->ps->weaponCharge = 0;
 				pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
 			}
 
@@ -3955,23 +3955,23 @@ static void PM_Weapon()
 			// Charging up.
 			if ( !pm->ps->weaponTime && pm->ps->weaponstate != WEAPON_NEEDS_RESET && attack1 )
 			{
-				pm->ps->stats[ STAT_MISC ] += pml.msec;
+				pm->ps->weaponCharge += pml.msec;
 
-				if ( pm->ps->stats[ STAT_MISC ] >= LCANNON_CHARGE_TIME_MAX )
+				if ( pm->ps->weaponCharge >= LCANNON_CHARGE_TIME_MAX )
 				{
-					pm->ps->stats[ STAT_MISC ] = LCANNON_CHARGE_TIME_MAX;
+					pm->ps->weaponCharge = LCANNON_CHARGE_TIME_MAX;
 				}
 
-				if ( pm->ps->stats[ STAT_MISC ] > pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
+				if ( pm->ps->weaponCharge > pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
 					 LCANNON_CHARGE_AMMO )
 				{
-					pm->ps->stats[ STAT_MISC ] = pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
+					pm->ps->weaponCharge = pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
 												 LCANNON_CHARGE_AMMO;
 				}
 			}
 
 			// Set overcharging flag so other players can hear the warning beep.
-			if ( pm->ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_WARN )
+			if ( pm->ps->weaponCharge > LCANNON_CHARGE_TIME_WARN )
 			{
 				pm->ps->eFlags |= EF_WARN_CHARGE;
 			}
@@ -4128,17 +4128,17 @@ static void PM_Weapon()
 			}
 
 			// Can't fire secondary while primary is charging
-			if ( attack1 || pm->ps->stats[ STAT_MISC ] > 0 )
+			if ( attack1 || pm->ps->weaponCharge > 0 )
 			{
 				attack2 = false;
 			}
 
-			if ( ( attack1 || pm->ps->stats[ STAT_MISC ] == 0 ) && !attack2 )
+			if ( ( attack1 || pm->ps->weaponCharge == 0 ) && !attack2 )
 			{
 				pm->ps->weaponTime = 0;
 
 				// Charging
-				if ( pm->ps->stats[ STAT_MISC ] < LCANNON_CHARGE_TIME_MAX )
+				if ( pm->ps->weaponCharge < LCANNON_CHARGE_TIME_MAX )
 				{
 					pm->ps->weaponstate = WEAPON_READY;
 					return;
@@ -4148,16 +4148,16 @@ static void PM_Weapon()
 				pm->ps->weaponstate = WEAPON_NEEDS_RESET;
 			}
 
-			if ( pm->ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_MIN )
+			if ( pm->ps->weaponCharge > LCANNON_CHARGE_TIME_MIN )
 			{
 				// Fire primary attack
 				attack1 = true;
 				attack2 = false;
 			}
-			else if ( pm->ps->stats[ STAT_MISC ] > 0 )
+			else if ( pm->ps->weaponCharge > 0 )
 			{
 				// Not enough charge
-				pm->ps->stats[ STAT_MISC ] = 0;
+				pm->ps->weaponCharge = 0;
 				pm->ps->weaponTime = 0;
 				pm->ps->weaponstate = WEAPON_READY;
 				return;
@@ -4384,7 +4384,7 @@ static void PM_Weapon()
 		// Special case for lcannon
 		if ( pm->ps->weapon == WP_LUCIFER_CANNON && attack1 && !attack2 )
 		{
-			pm->ps->ammo -= ( pm->ps->stats[ STAT_MISC ] * LCANNON_CHARGE_AMMO +
+			pm->ps->ammo -= ( pm->ps->weaponCharge * LCANNON_CHARGE_AMMO +
 			                  LCANNON_CHARGE_TIME_MAX - 1 ) / LCANNON_CHARGE_TIME_MAX;
 		}
 		else

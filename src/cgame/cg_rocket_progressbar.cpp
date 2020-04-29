@@ -68,12 +68,12 @@ static float CG_Rocket_GetBuildTimerProgress()
 	}
 
 	// Building something new. Note max value.
-	if ( ps->stats[ STAT_MISC ] > 0 && misc <= 0 )
+	if ( ps->stats[ STAT_BUILDTIME ] > 0 && misc <= 0 )
 	{
-		max = ps->stats[ STAT_MISC ];
+		max = ps->stats[ STAT_BUILDTIME ];
 	}
 
-	misc = ps->stats[ STAT_MISC ];
+	misc = ps->stats[ STAT_BUILDTIME ];
 
 	return ( float ) misc / ( float ) max;
 }

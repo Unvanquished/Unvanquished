@@ -1053,7 +1053,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self, vec3_t start, vec3_t dir,
 
 static void FireLcannon( gentity_t *self, bool secondary )
 {
-	if ( secondary && self->client->ps.stats[ STAT_MISC ] <= 0 )
+	if ( secondary && self->client->ps.weaponCharge <= 0 )
 	{
 		FireLcannonHelper( self, muzzle, forward, LCANNON_SECONDARY_DAMAGE,
 		                   LCANNON_SECONDARY_RADIUS, LCANNON_SECONDARY_SPEED );
@@ -1061,11 +1061,11 @@ static void FireLcannon( gentity_t *self, bool secondary )
 	else
 	{
 		FireLcannonHelper( self, muzzle, forward,
-		                   self->client->ps.stats[ STAT_MISC ] * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
+		                   self->client->ps.weaponCharge * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
 		                   LCANNON_RADIUS, LCANNON_SPEED );
 	}
 
-	self->client->ps.stats[ STAT_MISC ] = 0;
+	self->client->ps.weaponCharge = 0;
 }
 
 /*
@@ -1083,7 +1083,7 @@ void G_CheckCkitRepair( gentity_t *self )
 	gentity_t *traceEnt;
 
 	if ( self->client->ps.weaponTime > 0 ||
-	     self->client->ps.stats[ STAT_MISC ] > 0 )
+	     self->client->ps.stats[ STAT_BUILDTIME ] > 0 )
 	{
 		return;
 	}
@@ -1151,7 +1151,7 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 	}
 
 	// can't build just yet
-	if ( self->client->ps.stats[ STAT_MISC ] > 0 )
+	if ( self->client->ps.stats[ STAT_BUILDTIME ] > 0 )
 	{
 		G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
 		return;
@@ -1178,7 +1178,7 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 					break;
 			}
 
-			self->client->ps.stats[ STAT_MISC ] += buildTime;
+			self->client->ps.stats[ STAT_BUILDTIME ] += buildTime;
 		}
 
 		self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
@@ -1546,7 +1546,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	int    i;
 	vec3_t forward;
 
-	if ( !self->client || self->client->ps.stats[ STAT_MISC ] <= 0 ||
+	if ( !self->client || self->client->ps.weaponCharge <= 0 ||
 	     !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
 	     self->client->ps.weaponTime )
 	{
@@ -1579,7 +1579,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 		    victim - g_entities;
 	}
 
-	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.stats[ STAT_MISC ] / LEVEL4_TRAMPLE_DURATION;
+	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.weaponCharge / LEVEL4_TRAMPLE_DURATION;
 
 	victim->entity->Damage((float)damage, self, Vec3::Load(victim->s.origin), Vec3::Load(forward),
 	                       DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE);
