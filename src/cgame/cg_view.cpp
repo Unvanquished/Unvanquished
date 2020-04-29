@@ -729,6 +729,7 @@ void CG_OffsetFirstPersonView()
 		AngleVectors( angles, forward, nullptr, nullptr );
 		VectorNormalize( forward );
 
+		// FIXME: Time may be different for non-advanced dragoon.
 		fraction1 = ( float ) cg.predictedPlayerState.weaponCharge /
 		            LEVEL3_POUNCE_TIME_UPG;
 
