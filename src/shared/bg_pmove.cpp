@@ -3806,6 +3806,7 @@ static void PM_Weapon()
 	// Ignore weapons in some cases
 	if ( pm->ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 	{
+		// Spectator reads BUTTON_ATTACK3 in CG_CalcFov() from src/cgame/cg_view.cpp.
 		return;
 	}
 
