@@ -3016,6 +3016,11 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
 	}
 }
 
+static int remapInRange( int number, int srcMin, int srcMax, int destMin, int destMax )
+{
+	return ( ( ( number - srcMin ) * ( destMax - destMin ) ) / ( srcMax - srcMin ) ) + destMin;
+}
+
 float CG_ChargeProgress()
 {
 	float progress;
