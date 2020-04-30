@@ -64,16 +64,16 @@
 					<p>Shoot Barb:</p>
 				</row>
 				<row>
+					<keybind cmd="itemact grenade" team="humans" />
+					<p>Throw grenade:</p>
+				</row>
+				<row>
 					<keybind cmd="reload" team="humans" />
 					<p>Reload:</p>
 				</row>
 				<row>
 					<keybind cmd="itemact medkit" team="humans" />
 					<p>Use Medkit:</p>
-				</row>
-				<row>
-					<keybind cmd="itemact grenade" team="humans" />
-					<p>Throw grenade:</p>
 				</row>
 				<row>
 					<keybind cmd="+activate" team="humans" />
