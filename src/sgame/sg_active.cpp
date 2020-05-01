@@ -898,14 +898,17 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||
 		     BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) )
 		{
-			if ( client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				client->ps.stats[ STAT_MISC ] -= 100;
-			}
-
+			// HACK: build timer uses negative values.
 			if ( client->ps.stats[ STAT_MISC ] < 0 )
 			{
-				client->ps.stats[ STAT_MISC ] = 0;
+				if ( client->ps.stats[ STAT_MISC ] < -100 )
+				{
+					client->ps.stats[ STAT_MISC ] += 100;
+				}
+				else
+				{
+					client->ps.stats[ STAT_MISC ] = 0;
+				}
 			}
 		}
 

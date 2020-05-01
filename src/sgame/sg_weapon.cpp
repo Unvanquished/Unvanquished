@@ -1082,8 +1082,9 @@ void G_CheckCkitRepair( gentity_t *self )
 	trace_t   tr;
 	gentity_t *traceEnt;
 
+	// HACK: build timer uses negative values.
 	if ( self->client->ps.weaponTime > 0 ||
-	     self->client->ps.stats[ STAT_MISC ] > 0 )
+	     self->client->ps.stats[ STAT_MISC ] < 0 )
 	{
 		return;
 	}
@@ -1151,7 +1152,8 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 	}
 
 	// can't build just yet
-	if ( self->client->ps.stats[ STAT_MISC ] > 0 )
+	// HACK: build timer uses negative values.
+	if ( self->client->ps.stats[ STAT_MISC ] < 0 )
 	{
 		G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
 		return;
@@ -1178,7 +1180,8 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 					break;
 			}
 
-			self->client->ps.stats[ STAT_MISC ] += buildTime;
+			// HACK: build timer uses negative values.
+			self->client->ps.stats[ STAT_MISC ] -= buildTime;
 		}
 
 		self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;

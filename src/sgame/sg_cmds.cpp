@@ -2388,10 +2388,11 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				return false;
 			}
 
+			// HACK: build timer uses negative values.
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
 			     ( currentClass == PCL_ALIEN_BUILDER0 ||
 			       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
-			     ent->client->ps.stats[ STAT_MISC ] > 0 )
+			     ent->client->ps.stats[ STAT_MISC ] < 0 )
 			{
 				if ( report )
 				{
@@ -2735,7 +2736,8 @@ static bool Cmd_Sell_weapons( gentity_t *ent )
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{
 		// guard against selling the HBUILD weapons exploit
-		if ( i == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
+		// HACK: build timer uses negative values.
+		if ( i == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] < 0 )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
 			continue;
@@ -2861,7 +2863,8 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 		if ( BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
 		{
 			//guard against selling the HBUILD weapons exploit
-			if ( weapon == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
+			// HACK: build timer uses negative valyes.
+			if ( weapon == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] < 0 )
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
 				return false;

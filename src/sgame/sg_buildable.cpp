@@ -1192,14 +1192,16 @@ void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 		}
 
 		// Deny if build timer active.
-		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+		// HACK: build timer uses negative values.
+		if ( ent->client->ps.stats[ STAT_MISC ] < 0 )
 		{
 			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
 			return;
 		}
 
 		// Add to build timer.
-		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
+		// HACK: build timer uses negative values
+		ent->client->ps.stats[ STAT_MISC ] -= BG_Buildable( buildable->s.modelindex )->buildTime / 4;
 	}	
 
 	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );

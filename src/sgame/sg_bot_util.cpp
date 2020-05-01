@@ -1967,7 +1967,8 @@ void BotSellWeapons( gentity_t *self )
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{
 		//guard against selling the HBUILD weapons exploit
-		if ( i == WP_HBUILD && self->client->ps.stats[ STAT_MISC ] > 0 )
+		// HACK: build timer uses negative value.
+		if ( i == WP_HBUILD && self->client->ps.stats[ STAT_MISC ] < 0 )
 		{
 			continue;
 		}

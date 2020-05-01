@@ -68,12 +68,17 @@ static float CG_Rocket_GetBuildTimerProgress()
 	}
 
 	// Building something new. Note max value.
-	if ( ps->stats[ STAT_MISC ] > 0 && misc <= 0 )
+	// HACK: build timer uses negative value.
+	if ( ps->stats[ STAT_MISC ] <= 0 )
 	{
-		max = ps->stats[ STAT_MISC ];
+		int stat = abs( ps->stats[ STAT_MISC ] );
+		if ( stat > 0 && misc <= 0 )
+		{
+			max = stat;
+		}
+	
+		misc = stat;
 	}
-
-	misc = ps->stats[ STAT_MISC ];
 
 	return ( float ) misc / ( float ) max;
 }
