@@ -2548,6 +2548,15 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 	{
 		// Toggle mark.
 		buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
+
+		if ( buildable->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
+		{
+			// Check if the buildable is protected from instant deconstruction.
+			// This display a message if it is true, this way the message is
+			// displayed as soon as possible, not only when the deconstruction
+			// procedure is complete. There is nothing to do with the result.
+			G_IsProtectedBuildable( buildable, ent );
+		}
 	}
 }
 

@@ -1162,6 +1162,17 @@ static bool MarkOrDeconstructBuildable( gentity_t *self )
 			buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
 			self->client->ps.stats[ STAT_STATE ] |= SS_CHARGING;
 
+			if ( buildable->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
+			{
+				// Check if the buildable is protected from instant deconstruction,
+				// display a message if yes.
+				if ( G_IsProtectedBuildable( buildable, self ) )
+				{
+					// Player must release the key.
+					self->client->ps.weaponstate = WEAPON_NEEDS_RESET;
+				}
+			}
+
 			// Do not use the weaponTime from the attack.
 			// FIXME: To uncomment when granger attack2 sound bug is fixed:
 			// self->client->ps.weaponTime = 0;
@@ -1169,6 +1180,18 @@ static bool MarkOrDeconstructBuildable( gentity_t *self )
 		}
 		else
 		{
+			if ( buildable->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
+			{
+				// Check if the buildable is protected from instant deconstruction,
+				// display a message if yes, and return to do nothing.
+				if ( G_IsProtectedBuildable( buildable, self ) )
+				{
+					// Player must release the key.
+					self->client->ps.weaponstate = WEAPON_NEEDS_RESET;
+					return true;
+				}
+			}
+
 			// HACK: build timer uses negative values.
 			// Note: if one day weapon charge and build timer are stored
 			// in two different fields, test for build timer to not be 0
