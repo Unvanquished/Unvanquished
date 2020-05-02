@@ -547,8 +547,8 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_B_LASTSPAWN:
-			longMsg = _("This action would remove your team's last spawn point, "
-			          "which often quickly results in a loss. Try building more "
+			longMsg = _("This is your team's last spawn point, removing it "
+			          "often quickly results in a loss. Try building more "
 			          "spawns.");
 			shortMsg = _("You may not deconstruct the last spawn");
 			break;
