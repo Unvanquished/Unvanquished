@@ -101,9 +101,7 @@ enum
   CS_MAX = CS_LOCATIONS + MAX_LOCATIONS
 };
 
-#if CS_MAX > MAX_CONFIGSTRINGS
-#error exceeded configstrings: CS_MAX > MAX_CONFIGSTRINGS
-#endif
+static_assert(CS_MAX <= MAX_CONFIGSTRINGS, "exceeded configstrings");
 
 enum gender_t
 {
