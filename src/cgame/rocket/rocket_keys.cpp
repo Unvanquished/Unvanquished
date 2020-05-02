@@ -311,6 +311,8 @@ void Rocket_MouseMove( int x, int y )
 /*
 ================
 CG_KeyBinding
+
+The team argument corresponds to Keyboard::BindTeam, not team_t
 ================
 */
 std::string CG_KeyBinding( const char* bind, int team )

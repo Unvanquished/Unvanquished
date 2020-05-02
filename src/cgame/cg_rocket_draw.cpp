@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
+#include "cg_key_name.h"
 #include "rocket/rocket.h"
 #include <Rocket/Core/Element.h>
 #include <Rocket/Core/ElementInstancer.h>
@@ -3318,8 +3319,9 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 		sec = 0;
 	}
 
-	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
-	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
+	int bindTeam = CG_CurrentBindTeam();
+	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
+	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 
 	std::string s = Str::Format( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
