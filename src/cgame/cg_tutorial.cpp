@@ -64,10 +64,10 @@ static const size_t numBindings = ARRAY_LEN( bindings );
 
 /*
 =================
-CG_GetBindings
+CG_RefreshBindings
 =================
 */
-static void CG_GetBindings( team_t team )
+static void CG_RefreshBindings()
 {
     std::vector<std::string> binds;
 
@@ -75,7 +75,7 @@ static void CG_GetBindings( team_t team )
         binds.push_back(bindings[i].command);
     }
 
-    std::vector<std::vector<Keyboard::Key>> keys = trap_Key_GetKeysForBinds(team, binds);
+    std::vector<std::vector<Keyboard::Key>> keys = trap_Key_GetKeysForBinds(CG_CurrentBindTeam(), binds);
 
     for (unsigned i = 0; i < numBindings; i++) {
         bindings[i].keys = keys[i];
@@ -573,7 +573,7 @@ const char *CG_TutorialText()
 
 	if ( refreshBindings == 0 )
 	{
-		CG_GetBindings( (team_t) ps->persistant[ PERS_TEAM ] );
+		CG_RefreshBindings();
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;
