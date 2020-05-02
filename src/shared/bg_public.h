@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bg_public.h -- definitions shared by both the server game and client game modules
 //==================================================================
 
+#include "engine/qcommon/q_shared.h"
+
 //Unvanquished balance header
 #include "bg_gameplay.h"
 
