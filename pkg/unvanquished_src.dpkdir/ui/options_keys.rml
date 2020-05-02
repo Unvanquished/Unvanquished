@@ -129,8 +129,10 @@
 				</row>
 				<row>
 					<keybind cmd='modcase alt "/deconstruct marked" /deconstruct' />
-					<p>Deconstruct Structure:</p>
+					<p>Mark structure for replacement:</p>
 				</row>
+				<p>Hold ALT to deconstruct marked structure.
+				</p>
 				<row>
 					<keybind cmd='beaconMenu' />
 					<p>Beacon menu:</p>
