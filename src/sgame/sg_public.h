@@ -86,6 +86,7 @@ gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec
 bool              G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
 gentity_t         *G_GetDeconstructibleBuildable( gentity_t *ent );
 bool              G_DeconstructDead( gentity_t *buildable );
+bool              G_IsProtectedBuildable( gentity_t *buildable, gentity_t *ent );
 void              G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent );
 itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal, int *groundEntNum );
 bool              G_BuildIfValid( gentity_t *ent, buildable_t buildable );

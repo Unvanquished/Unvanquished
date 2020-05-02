@@ -1158,26 +1158,37 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	G_FreeEntity( self );
 }
 
+bool G_IsProtectedBuildable( gentity_t *buildable, gentity_t *ent )
+{
+	// Check if the buildable is protected from instant deconstruction.
+	switch ( buildable->s.modelindex )
+	{
+		case BA_A_OVERMIND:
+		case BA_H_REACTOR:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
+			return true;
+
+		case BA_A_SPAWN:
+		case BA_H_SPAWN:
+			if ( level.team[ ent->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
+				return true;
+			}
+			break;
+	}
+
+	return false;
+}
+
 void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 {
 	if ( !g_cheats.integer )
 	{
 		// Check if the buildable is protected from instant deconstruction.
-		switch ( buildable->s.modelindex )
+		if ( G_IsProtectedBuildable( buildable, ent ) )
 		{
-			case BA_A_OVERMIND:
-			case BA_H_REACTOR:
-				G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
-				return;
-
-			case BA_A_SPAWN:
-			case BA_H_SPAWN:
-				if ( level.team[ ent->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
-					return;
-				}
-				break;
+			return;
 		}
 
 		// Deny if build timer active.
