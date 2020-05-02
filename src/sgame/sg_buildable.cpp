@@ -1181,7 +1181,7 @@ bool G_IsProtectedBuildable( gentity_t *buildable, gentity_t *ent )
 	return false;
 }
 
-void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
+void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent, bool onHold )
 {
 	if ( !g_cheats.integer )
 	{
@@ -1199,9 +1199,24 @@ void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 			return;
 		}
 
+		int buildTimer = BG_Buildable( buildable->s.modelindex )->buildTime / 4;
+
+		// If player hold a key, substract the already spent time.
+		if ( onHold )
+		{
+			if ( CKIT_DECON_CHARGE_TIME > buildTimer )
+			{
+				buildTimer = 0;
+			}
+			else
+			{
+				buildTimer = buildTimer - CKIT_DECON_CHARGE_TIME;
+			}
+		}
+
 		// Add to build timer.
 		// HACK: build timer uses negative values
-		ent->client->ps.stats[ STAT_MISC ] -= BG_Buildable( buildable->s.modelindex )->buildTime / 4;
+		ent->client->ps.stats[ STAT_MISC ] -= buildTimer;
 	}	
 
 	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );

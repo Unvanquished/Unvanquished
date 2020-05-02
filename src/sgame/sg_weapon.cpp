@@ -1194,8 +1194,8 @@ static bool MarkOrDeconstructBuildable( gentity_t *self )
 				self->client->ps.stats[ STAT_STATE ] &= ~SS_CHARGING;
 				self->client->ps.stats[ STAT_MISC ] = 0;
 
-				// Deconstruct the buildable.
-				G_DeconstructUnprotected( buildable, self );
+				// Deconstruct the buildable, tell that the player has hold a key.
+				G_DeconstructUnprotected( buildable, self, true );
 
 				// Player must release the key.
 				self->client->ps.weaponstate = WEAPON_NEEDS_RESET;
