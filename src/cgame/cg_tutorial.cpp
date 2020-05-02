@@ -449,7 +449,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	if ( upgrade != UP_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to throw the %s\n" ),
-			CG_KeyNameForCommand( "+itemact grenade" ),
+			CG_KeyNameForCommand( "itemact grenade" ),
 			_( BG_Upgrade( upgrade )->humanName ) ));
 	}
 
