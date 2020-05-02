@@ -143,7 +143,7 @@
 					<keybind cmd="modcase shift screenshotPNG screenshotJPEG" />
 					<p>Screenshot:</p>
 				</row>
-				<p> Hold shift when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG. </p>
+				<p>Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG.</p>
 			</panel>
 			<tab>Quake-look</tab>
 			<panel>
