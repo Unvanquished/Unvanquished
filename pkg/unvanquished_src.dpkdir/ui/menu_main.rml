@@ -16,6 +16,8 @@
 		<img class="black2" src="/ui/assets/background/black2" />
 		<img class="logo" src="/ui/assets/logos/fuzzy_blue" />
 
+		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 100); font-size: 80%;">This game version is part of the Unvanquished beta development program, game experience and depicted assets may not represent the final game.</div>
+
 		<sidebar>
 				<!-- HACK: Add some extra spacing atop the main menu -->
 				<hackyspacer />
