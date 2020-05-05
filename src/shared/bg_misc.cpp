@@ -2879,3 +2879,128 @@ const char *Trans_GenderContext( gender_t gender )
 			break;
 	}
 }
+
+// using the stringizing operator to save typing...
+#define PSF( x ) # x,(int((uintptr_t)&( (playerState_t*)0 )->x))
+
+static const NetcodeTable playerStateFields =
+{
+	{ PSF(persistant), STATS_GROUP_FIELD, 0},
+	{ PSF(stats), STATS_GROUP_FIELD, 0},
+	{ PSF(misc), STATS_GROUP_FIELD, 0},
+
+	{ PSF( commandTime ),          32             , 0 }
+	,
+	{ PSF( pm_type ),              8              , 0 }
+	,
+	{ PSF( bobCycle ),             8              , 0 }
+	,
+	{ PSF( pm_flags ),             16             , 0 }
+	,
+	{ PSF( pm_time ),              -16            , 0 }
+	,
+	{ PSF( origin[ 0 ] ),          0              , 0 }
+	,
+	{ PSF( origin[ 1 ] ),          0              , 0 }
+	,
+	{ PSF( origin[ 2 ] ),          0              , 0 }
+	,
+	{ PSF( velocity[ 0 ] ),        0              , 0 }
+	,
+	{ PSF( velocity[ 1 ] ),        0              , 0 }
+	,
+	{ PSF( velocity[ 2 ] ),        0              , 0 }
+	,
+	{ PSF( weaponTime ),           -16            , 0 }
+	,
+	{ PSF( gravity ),              16             , 0 }
+	,
+	{ PSF( speed ),                16             , 0 }
+	,
+	{ PSF( delta_angles[ 0 ] ),    16             , 0 }
+	,
+	{ PSF( delta_angles[ 1 ] ),    16             , 0 }
+	,
+	{ PSF( delta_angles[ 2 ] ),    16             , 0 }
+	,
+	{ PSF( groundEntityNum ),      GENTITYNUM_BITS, 0 }
+	,
+	{ PSF( legsTimer ),            16             , 0 }
+	,
+	{ PSF( torsoTimer ),           16             , 0 }
+	,
+	{ PSF( legsAnim ),             ANIM_BITS      , 0 }
+	,
+	{ PSF( torsoAnim ),            ANIM_BITS      , 0 }
+	,
+	{ PSF( movementDir ),          8              , 0 }
+	,
+	{ PSF( eFlags ),               24             , 0 }
+	,
+	{ PSF( eventSequence ),        8              , 0 }
+	,
+	{ PSF( events[ 0 ] ),          8              , 0 }
+	,
+	{ PSF( events[ 1 ] ),          8              , 0 }
+	,
+	{ PSF( events[ 2 ] ),          8              , 0 }
+	,
+	{ PSF( events[ 3 ] ),          8              , 0 }
+	,
+	{ PSF( eventParms[ 0 ] ),      8              , 0 }
+	,
+	{ PSF( eventParms[ 1 ] ),      8              , 0 }
+	,
+	{ PSF( eventParms[ 2 ] ),      8              , 0 }
+	,
+	{ PSF( eventParms[ 3 ] ),      8              , 0 }
+	,
+	{ PSF( clientNum ),            8              , 0 }
+	,
+	{ PSF( weapon ),               7              , 0 }
+	,
+	{ PSF( weaponstate ),          4              , 0 }
+	,
+	{ PSF( viewangles[ 0 ] ),      0              , 0 }
+	,
+	{ PSF( viewangles[ 1 ] ),      0              , 0 }
+	,
+	{ PSF( viewangles[ 2 ] ),      0              , 0 }
+	,
+	{ PSF( viewheight ),           -8             , 0 }
+	,
+	{ PSF( damageEvent ),          8              , 0 }
+	,
+	{ PSF( damageYaw ),            8              , 0 }
+	,
+	{ PSF( damagePitch ),          8              , 0 }
+	,
+	{ PSF( damageCount ),          8              , 0 }
+	,
+	{ PSF( generic1 ),             10             , 0 }
+	,
+	{ PSF( loopSound ),            16             , 0 }
+	,
+	{ PSF( grapplePoint[ 0 ] ),    0              , 0 }
+	,
+	{ PSF( grapplePoint[ 1 ] ),    0              , 0 }
+	,
+	{ PSF( grapplePoint[ 2 ] ),    0              , 0 }
+	,
+	{ PSF( ammo ),                 12             , 0 }
+	,
+	{ PSF( clips ),                4              , 0 }
+	,
+	{ PSF( tauntTimer ),           12             , 0 }
+	,
+	{ PSF( otherEntityNum ),       10             , 0 }
+	,
+	{ PSF( weaponAnim ),           ANIM_BITS      , 0 }
+};
+
+namespace VM {
+	void GetNetcodeTables(NetcodeTable& playerStateTable, int& playerStateSize) {
+		playerStateTable = playerStateFields;
+		playerStateSize = sizeof(playerState_t);
+	}
+}
