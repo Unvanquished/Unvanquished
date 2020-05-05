@@ -823,7 +823,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// let the server system know where the entites are
 	trap_LocateGameData( level.num_entities, sizeof( gentity_t ),
-	                     &level.clients[ 0 ].ps, sizeof( level.clients[ 0 ] ) );
+	                     sizeof( level.clients[ 0 ] ) );
 
 	level.emoticonCount = BG_LoadEmoticons( level.emoticons, MAX_EMOTICONS );
 
