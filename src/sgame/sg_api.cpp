@@ -77,6 +77,13 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 			});
 			break;
 
+		case GAME_NETCODE_TABLES:
+			IPC::HandleMsg<GameNetcodeTablesMsg>(VM::rootChannel, std::move(reader), [](NetcodeTable& playerStateTable, int& playerStateSize) {
+				playerStateTable = playerStateFields;
+				playerStateSize = sizeof(playerState_t);
+			});
+			break;
+
 		case GAME_SHUTDOWN:
 			IPC::HandleMsg<GameShutdownMsg>(VM::rootChannel, std::move(reader), [](bool restart) {
 				G_ShutdownGame(restart);
