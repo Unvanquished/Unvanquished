@@ -44,11 +44,6 @@ class RocketColorInput : public Rml::Core::Element, public Rml::Core::EventListe
 public:
 	RocketColorInput( const Rml::Core::String &tag ) : Rml::Core::Element( tag )
 	{
-		// Initialize the input element
-		Rml::Core::XMLAttributes attribs;
-		attribs.Set( "type", "text" );
-		input = Rml::Core::Factory::InstanceElement( this, "input", "input", attribs );
-		color_value = Rml::Core::Factory::InstanceElement( this, "*", "div", Rml::Core::XMLAttributes() );
 	}
 
 	virtual void OnChildAdd( Element *child )
@@ -56,10 +51,13 @@ public:
 		Element::OnChildAdd( child );
 		if ( child == this )
 		{
-			AppendChild(input);
-			AppendChild(color_value);
-			color_value->RemoveReference();
-			input->RemoveReference();
+			// Initialize the input element
+			Rml::Core::XMLAttributes attribs;
+			attribs[ "type" ] = "text";
+			input = AppendChild( Rml::Core::Factory::InstanceElement(
+					this, "input", "input", attribs ) );
+			color_value = AppendChild( Rml::Core::Factory::InstanceElement(
+					this, "*", "div", Rml::Core::XMLAttributes() ) );
 			input->SetProperty( "display", "none" );
 			UpdateValue();
 		}
@@ -72,13 +70,13 @@ public:
 		// Pass all attributes down to the input element
 		for ( Rml::Core::ElementAttributes::const_iterator it = changed_attributes.begin(); it != changed_attributes.end(); ++it )
 		{
-			input->SetAttribute( *it, GetAttribute<Rml::Core::String>( *it, "" ) );
+			input->SetAttribute( it->first, it->second );
 		}
 	}
 
-	virtual void ProcessDefaultAction( Rml::Core::Event &event )
+	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		Element::ProcessDefaultAction( event );
+		Rml::Core::EventListener::ProcessEvent( event );
 		if ( event.GetTargetElement() == input )
 		{
 			if ( event == "change" )
