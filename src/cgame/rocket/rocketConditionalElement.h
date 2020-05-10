@@ -46,23 +46,26 @@ public:
 	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
 		Rml::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
+		Rml::Core::ElementAttributes::const_iterator it;
+		it = changed_attributes.find( "cvar" );
+		if ( it != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rml::Core::String >( "cvar",  "" );
+			cvar = it->second.Get<Rml::Core::String>();
 			cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
 		}
 
-		if ( changed_attributes.find( "condition" ) != changed_attributes.end() )
+		it = changed_attributes.find( "condition" );
+		if ( it != changed_attributes.end() )
 		{
-			ParseCondition( GetAttribute< Rml::Core::String >( "condition", "" ) );
+			ParseCondition( it->second.Get<Rml::Core::String>() );
 		}
 
-		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
+		it = changed_attributes.find( "value" );
+		if ( it !=  changed_attributes.end() )
 		{
-			Rml::Core::String attrib = GetAttribute< Rml::Core::String >( "value", "" );
 			char *end = nullptr;
 			// Check if float
-			float floatVal = strtof( attrib.c_str(), &end );
+			float floatVal = strtof( it->second.Get<Rml::Core::String>().c_str(), &end );
 
 			// Is either an integer or float
 			if ( end )
@@ -70,18 +73,18 @@ public:
 				// is integer
 				if ( static_cast< int >( floatVal ) == floatVal )
 				{
-					value.Set( static_cast< int >( floatVal ) );
+					value = static_cast< int >( floatVal );
 				}
 				else
 				{
-					value.Set( floatVal );
+					value = floatVal;
 				}
 			}
 
 			// Is a string
 			else
 			{
-				value.Set( attrib );
+				value = it->second;
 			}
 
 			dirty_value = true;
@@ -90,7 +93,7 @@ public:
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar::GetValue( cvar.c_str() ).c_str() ) )
+		if ( dirty_value || ( !cvar.empty() && cvar_value != Cvar::GetValue( cvar.c_str() ).c_str() ) )
 		{
 			if ( IsConditionValid() )
 			{
@@ -181,7 +184,7 @@ private:
 
 	bool IsConditionValidLatched()
 	{
-		std::string str = Cvar::GetValue( cvar.c_str() );
+		Rml::Core::String str = Cvar::GetValue( cvar.c_str() );
 		if ( !str.empty() )
 		{
 			switch ( value.GetType() )
