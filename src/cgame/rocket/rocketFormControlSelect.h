@@ -47,10 +47,10 @@ public:
 	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
 		Rml::Controls::ElementFormControlSelect::OnAttributeChange( changed_attributes );
-
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
+		Rml::Core::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
+		if ( it != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rml::Core::String >( "cvar", "" );
+			cvar = it->second.Get<Rml::Core::String>();
 			UpdateValue();
 		}
 	}
@@ -80,7 +80,7 @@ public:
 	{
 		Rml::Controls::ElementFormControlSelect::ProcessEvent( event );
 
-		if ( !cvar.Empty() )
+		if ( !cvar.empty() )
 		{
 			if ( owner == event.GetTargetElement() && event == "show" )
 			{
