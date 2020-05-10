@@ -57,7 +57,7 @@ static float CG_Rocket_GetOverallLoadProgress()
 static float CG_Rocket_GetBuildTimerProgress()
 {
 	static int misc = 0;
-	static int max;
+	static int max = 0;
 	playerState_t *ps = &cg.snap->ps;
 	weapon_t weapon = BG_GetPlayerWeapon( ps );
 
@@ -71,6 +71,12 @@ static float CG_Rocket_GetBuildTimerProgress()
 	if ( ps->stats[ STAT_MISC ] > 0 && misc <= 0 )
 	{
 		max = ps->stats[ STAT_MISC ];
+	}
+
+	// Avoid division by zero.
+	if ( max == 0 )
+	{
+		return 0;
 	}
 
 	misc = ps->stats[ STAT_MISC ];
