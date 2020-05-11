@@ -1918,7 +1918,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	{
 		float fraction;
 
-		fraction = ( float ) ps->stats[ STAT_MISC ] / LCANNON_CHARGE_TIME_MAX;
+		fraction = ( float ) ps->weaponCharge / LCANNON_CHARGE_TIME_MAX;
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 0 ],
 		          hand.origin );
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
@@ -2904,7 +2904,7 @@ float CG_ChargeProgress()
 		return 0.0f;
 	}
 
-	progress = ( ( float ) cg.predictedPlayerState.stats[ STAT_MISC ] - min ) /
+	progress = ( ( float ) cg.predictedPlayerState.weaponCharge - min ) /
 	( max - min );
 
 	if ( progress > 1.0f )

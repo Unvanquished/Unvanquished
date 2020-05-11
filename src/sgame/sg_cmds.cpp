@@ -3055,6 +3055,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 
 		//set build delay/pounce etc to 0
 		ent->client->ps.stats[ STAT_MISC ] = 0;
+		ent->client->ps.weaponCharge = 0;
 
 		//subtract from funds
 		G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, false );

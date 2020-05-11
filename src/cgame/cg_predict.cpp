@@ -629,6 +629,12 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 		}
 	}
 
+	int weaponChargeDiff = pps->weaponCharge - ps->weaponCharge;
+	if ( weaponChargeDiff <= -50 || weaponChargeDiff >= 50 )
+	{
+		return 17;
+	}
+
 	if ( pps->generic1 != ps->generic1 ||
 	     pps->loopSound != ps->loopSound )
 	{
