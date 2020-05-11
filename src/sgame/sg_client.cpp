@@ -1755,6 +1755,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->evaluateAcceleration = true;
 
 	client->ps.stats[ STAT_MISC ] = 0;
+	client->ps.weaponTime = 0;
 
 	client->ps.eFlags = flags;
 	client->ps.clientNum = index;
