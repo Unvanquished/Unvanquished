@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cg_main.c -- initialization for cgame
 
 #include "cg_local.h"
+#include "cg_key_name.h"
 
 cg_t            cg;
 cgs_t           cgs;
@@ -610,6 +611,8 @@ void CG_NotifyHooks()
 		if( lastTeam != ps->persistant[ PERS_TEAM ] )
 		{
 			trap_notify_onTeamChange( ps->persistant[ PERS_TEAM ] );
+
+			CG_SetBindTeam( static_cast<team_t>( ps->persistant[ PERS_TEAM ] ) );
 
 			/* execute team-specific config files */
 			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
