@@ -636,6 +636,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 		client->ps.stats[ STAT_CLASS ] = PCL_NONE;
 		client->ps.weapon = WP_NONE;
+		client->ps.weaponCharge = 0;
 
 		// Set up for pmove
 		memset( &pm, 0, sizeof( pm ) );

@@ -99,6 +99,7 @@ struct playerState_t
 	// weapon info
 	int weapon; // copied to entityState_t->weapon
 	int weaponstate;
+	int weaponCharge; // luci charge, dragoon pounce charge, mantis pounce cooldown, tyrant trample
 
 	// damage feedback
 	int damageEvent; // when it changes, latch the other parms
@@ -318,7 +319,7 @@ enum statIndex_t
   STAT_STATE2,     // more client states
   STAT_STAMINA,    // humans: stamina
   STAT_STATE,      // client states
-  STAT_MISC,       // aliens: pounce, trample; humans: lcannon
+  STAT_MISC,       // build timer
   STAT_BUILDABLE,  // ghost model to display for building
   STAT_FALLDIST,   // distance the player fell
   STAT_VIEWLOCK,   // direction to lock the view in

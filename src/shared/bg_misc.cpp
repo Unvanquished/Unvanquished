@@ -2031,7 +2031,7 @@ bool BG_PlayerCanChangeWeapon( playerState_t *ps )
 {
 	// Do not allow Lucifer Cannon "canceling" via weapon switch
 	if ( ps->weapon == WP_LUCIFER_CANNON &&
-	     ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_MIN )
+	     ps->weaponCharge > LCANNON_CHARGE_TIME_MIN )
 	{
 		return false;
 	}
@@ -2910,6 +2910,8 @@ const NetcodeTable playerStateFields =
 	{ PSF( velocity[ 1 ] ),        0              , 0 }
 	,
 	{ PSF( velocity[ 2 ] ),        0              , 0 }
+	,
+	{ PSF( weaponCharge ),         14             , 0 }
 	,
 	{ PSF( weaponTime ),           -16            , 0 }
 	,
