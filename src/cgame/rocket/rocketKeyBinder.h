@@ -56,15 +56,17 @@ public:
 	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
 		Rml::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "cmd" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "cmd" );
+		if ( it != changed_attributes.end() )
 		{
-			cmd = GetAttribute( "cmd" )->Get<Rml::Core::String>();
+			cmd = it->second.Get<Rml::Core::String>();
 			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 
-		if ( changed_attributes.find( "team" ) != changed_attributes.end() )
+		it = changed_attributes.find( "team" );
+		if ( it != changed_attributes.end() )
 		{
-			team = GetTeam( GetAttribute( "team" )->Get<Rml::Core::String>().c_str() );
+			team = GetTeam( it->second.Get<Rml::Core::String>().c_str() );
 			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 	}
@@ -95,7 +97,8 @@ public:
 
 	void OnUpdate()
 	{
-		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.Empty() && !waitingForKeypress )
+		Element::OnUpdate();
+		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.empty() && !waitingForKeypress )
 		{
 			nextKeyUpdateTime = rocketInfo.realtime + KEY_BINDING_REFRESH_INTERVAL_MS;
 			SetInnerRML( CG_EscapeHTMLText( CG_KeyBinding( cmd.c_str(), team ) ).c_str() );
@@ -104,7 +107,7 @@ public:
 
 	void ProcessEvent( Rml::Core::Event &event )
 	{
-		Element::ProcessEvent( event );
+		Rml::Core::EventListener::ProcessEvent( event );
 
 		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
