@@ -149,10 +149,10 @@ public:
 					{
 						if ( i > 0 )
 						{
-							out.Append( "," );
+							out.append( "," );
 						}
 
-						out.Append( raw_data[ i ] );
+						out.append( raw_data[ i ] );
 					}
 				}
 
@@ -161,9 +161,9 @@ public:
 		}
 	}
 
-	virtual void ProcessEvent( Rml::Core::Event &event )
+	virtual void ProcessDefaultAction( Rml::Core::Event &event )
 	{
-		Element::ProcessEvent( event );
+		Element::ProcessDefaultAction( event );
 		if ( event == "mouseover" )
 		{
 			Rml::Core::Element *parent = event.GetTargetElement();
@@ -185,9 +185,9 @@ public:
 					{
 						if ( GetChild( i ) == button )
 						{
-							parameters.Set( "index", va( "%d", i - 1 ) );
-							parameters.Set( "datasource", data_source->GetDataSourceName() );
-							parameters.Set( "table", data_table );
+							parameters[ "index" ] = va( "%d", i - 1 );
+							parameters[ "datasource" ] = data_source->GetDataSourceName();
+							parameters[ "table" ] = data_table;
 
 							DispatchEvent( "rowselect", parameters );
 							break;
