@@ -45,14 +45,15 @@ Maryland 20850 USA.
 class RocketChatField : public Rml::Core::Element, Rml::Core::EventListener
 {
 public:
-	RocketChatField( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
+	RocketChatField( const Rml::Core::String &tag ) :
+			Rml::Core::Element( tag ),
+			font_engine_interface( Rml::Core::GetFontEngineInterface() ),
+			focus( false ),
+			cursor_character_index( 0 ),
+			text_element( nullptr )
 	{
-		// Spawn text container
-		text_element = Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() );
-
-		// Add it to this element
-		AppendChild( text_element );
-		text_element->RemoveReference();
+		// Spawn text container and add it to this element
+		text_element = AppendChild( Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() ) );
 	}
 
 	virtual void OnChildRemove( Element *child )
@@ -116,7 +117,7 @@ public:
 
 	void ProcessEvent( Rml::Core::Event &event )
 	{
-		Element::ProcessEvent( event );
+		Rml::Core::EventListener::ProcessEvent( event );
 
 		// Cannot move mouse while this element is in view
 		if ( focus && event == "mousemove" )
@@ -131,13 +132,13 @@ public:
 			if ( event == "show" )
 			{
 				focus = true;
-				GetContext()->ShowMouseCursor( false );
+				GetContext()->EnableMouseCursor( false );
 			}
 
 			else if ( event == "blur" || event == "hide" )
 			{
 				focus =  false;
-				text.Clear();
+				text.clear();
 				UpdateText();
 			}
 		}
@@ -146,7 +147,7 @@ public:
 		{
 			if ( event == "resize" )
 			{
-				GetContext()->ShowMouseCursor( false );
+				GetContext()->EnableMouseCursor( false );
 				focus = true;
 				GenerateCursor();
 			}
@@ -159,15 +160,15 @@ public:
 				switch ( key_identifier )
 				{
 					case Rml::Core::Input::KI_BACK:
-						text.Erase( cursor_character_index - 1, 1 );
+						text.erase( cursor_character_index - 1, 1 );
 						UpdateText();
 						MoveCursor( -1 );
 						break;
 
 					case Rml::Core::Input::KI_DELETE:
-						if ( cursor_character_index < (int) text.Length() )
+						if ( cursor_character_index < (int) text.size() )
 						{
-							text.Erase( cursor_character_index, 1 );
+							text.erase( cursor_character_index, 1 );
 							UpdateText();
 						}
 
@@ -184,33 +185,29 @@ public:
 					case Rml::Core::Input::KI_RETURN:
 					case Rml::Core::Input::KI_NUMPADENTER:
 					{
-						if ( text.Empty() )
+						if ( text.empty() )
 						{
 							GetOwnerDocument()->Hide();
 							return;
 						}
 						else if ( cmd == "/" )
 						{
-							Rml::Core::String utf8String;
-							Rml::Core::WString( text ).ToUTF8( utf8String );
-							trap_SendConsoleCommand( va( "%s\n", utf8String.c_str() ) );
-							text.Clear();
+							trap_SendConsoleCommand( va( "%s\n", text.c_str() ) );
+							text.clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
 							return;
 						}
 
-						if ( cmd.Empty() )
+						if ( cmd.empty() )
 						{
 							cmd = cg_sayCommand.string;
 						}
 
-						if ( !cmd.Empty() && !text.Empty() )
+						if ( !cmd.empty() && !text.empty() )
 						{
-							Rml::Core::String utf8String;
-							Rml::Core::WString( text ).ToUTF8( utf8String );
-							trap_SendConsoleCommand( va( "%s %s", cmd.c_str(), Cmd::Escape( utf8String.c_str() ).c_str() ) );
-							text.Clear();
+							trap_SendConsoleCommand( va( "%s %s", cmd.c_str(), Cmd::Escape( text.c_str() ).c_str() ) );
+							text.clear();
 							UpdateText();
 							GetOwnerDocument()->Hide();
 						}
@@ -228,16 +225,16 @@ public:
 				        event.GetParameter< int >( "alt_key", 0 ) == 0 &&
 				        event.GetParameter< int >( "meta_key", 0 ) == 0 )
 				{
-					Rml::Core::word character = event.GetParameter< Rml::Core::word >( "data", 0 );
+					const Rml::Core::String& character = event.GetParameter< Rml::Core::String >( "text", "" );
 
-					if ( (int) text.Length() == cursor_character_index )
+					if ( (int) text.size() == cursor_character_index )
 					{
-						text.Append( character );
+						text.append( character );
 					}
 
 					else
 					{
-						text.Insert( cursor_character_index, character );
+						text.insert( cursor_character_index, character );
 					}
 
 					UpdateText();
@@ -249,6 +246,12 @@ public:
 
 	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension )
 	{
+		Rml::Core::FontFaceHandle font = text_element->GetFontFaceHandle();
+		if ( font == 0 )
+		{
+			return false;
+		}
+
 		const Rml::Core::Property *property;
 		property = GetProperty( "width" );
 
@@ -272,7 +275,7 @@ public:
 					dimensions.x = base_size;
 					while ( !stack.empty() )
 					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+						dimensions.x = stack.top()->ResolveNumericProperty( property, dimensions.x );
 
 						stack.pop();
 					}
@@ -283,7 +286,7 @@ public:
 			}
 		}
 
-		dimensions.y = Rml::Core::ElementUtilities::GetLineHeight( this );
+		dimensions.y = font_engine_interface->GetLineHeight( font );
 
 		dimension = dimensions;
 
@@ -294,6 +297,8 @@ public:
 protected:
 	void GenerateCursor()
 	{
+		Rml::Core::FontFaceHandle font = text_element->GetFontFaceHandle();
+		if ( font == 0) return;
 		// Generates the cursor.
 		cursor_geometry.Release();
 
@@ -304,7 +309,7 @@ protected:
 		indices.resize( 6 );
 
 		cursor_size.x = 1;
-		cursor_size.y = ( float ) Rml::Core::ElementUtilities::GetLineHeight( text_element ) + 2;
+		cursor_size.y = ( float ) font_engine_interface->GetLineHeight( font ) + 2;
 		Rml::Core::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rml::Core::Vector2f( 0, 0 ), cursor_size, GetProperty< Rml::Core::Colourb >( "color" ) );
 	}
 
@@ -312,43 +317,39 @@ protected:
 	{
 		cursor_character_index += amt;
 
-		cursor_character_index = Rml::Core::Math::Clamp<int>( cursor_character_index, 0, text.Length() );
+		cursor_character_index = Rml::Core::Math::Clamp<int>( cursor_character_index, 0, text.size() );
 	}
 
 	void UpdateCursorPosition()
 	{
-		if ( text_element->GetFontFaceHandle() == nullptr )
+		if ( text_element->GetFontFaceHandle() == 0 )
 		{
 			return;
 		}
 
 		cursor_position = GetAbsoluteOffset();
 
-		cursor_position.x += ( float ) Rml::Core::ElementUtilities::GetStringWidth( text_element, text.Substring( 0, cursor_character_index ) );
+		cursor_position.x += ( float ) Rml::Core::ElementUtilities::GetStringWidth( text_element, text.substr( 0, cursor_character_index ) );
 	}
 
 	void UpdateText()
 	{
 		RemoveChild( text_element );
-		text_element = Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() );
-		AppendChild( text_element );
-		text_element->RemoveReference();
-		if ( !text.Empty() )
+		text_element = AppendChild( Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() ) );
+		if ( !text.empty() )
 		{
-            Rml::Core::String utf8;
-            text.ToUTF8(utf8);
-			q2rml( utf8, text_element );
+			q2rml( text, text_element );
 		}
 	}
 
 	// Special q -> rml conversion function that preserves carets and codes
-	void q2rml( Rml::Core::String in, Rml::Core::Element *parent )
+	void q2rml( Str::StringRef in, Rml::Core::Element *parent )
 	{
 		Rml::Core::String out;
-		Rml::Core::Element *child = nullptr;
+		Rml::Core::ElementPtr child;
 		bool span = false;
 
-		if ( in.Empty() )
+		if ( in.empty() )
 		{
 			return;
 		}
@@ -360,36 +361,34 @@ protected:
 				Rml::Core::XMLAttributes xml;
 
 				// Child element initialized
-				if ( span )
+				if ( span && child )
 				{
 					span = false;
-					static_cast<Rml::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					out.Clear();
+					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					parent->AppendChild( std::move( child ) );
+					out.clear();
 				}
 				// If not intialized, probably the first one, and should be white.
-				else if ( !out.Empty() )
+				else if ( !out.empty() )
 				{
 					Rml::Core::XMLAttributes xml;
 					child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 					child->SetProperty( "color", "#FFFFFF" );
-					static_cast<Rml::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					out.Clear();
+					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					parent->AppendChild( std::move( child ) );
+					out.clear();
 				}
 
 
 				child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 				Color::Color32Bit color32 = token.Color();
 				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
-				out.Append( token.Begin(), token.Size() );
+				out.append( token.Begin(), token.Size() );
 				span = true;
 			}
 			else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 			{
-				out.Append( Color::Constants::ESCAPE );
+				out.push_back( Color::Constants::ESCAPE );
 			}
 			else if ( token.Type() == Color::Token::TokenType::CHARACTER )
 			{
@@ -397,15 +396,15 @@ protected:
 
 				if ( c == '<' )
 				{
-					out.Append( "&lt;" );
+					out.append( "&lt;" );
 				}
 				else if ( c == '>' )
 				{
-					out.Append( "&gt;" );
+					out.append( "&gt;" );
 				}
 				else if ( c == '&' )
 				{
-					out.Append( "&amp;" );
+					out.append( "&amp;" );
 				}
 				else if ( c == '\n' )
 				{
@@ -423,38 +422,35 @@ protected:
 						child->SetProperty( "color", "#FFFFFF" );
 					}
 
-					static_cast<Rml::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					parent->AppendChild( ( child = Rml::Core::Factory::InstanceElement( parent, "*", "br", Rml::Core::XMLAttributes() ) ) );
-					child->RemoveReference();
-					out.Clear();
+					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					parent->AppendChild( std::move( child ) );
+					parent->AppendChild( Rml::Core::Factory::InstanceElement( parent, "*", "br", Rml::Core::XMLAttributes() ) );
+					out.clear();
 				}
 				else
 				{
-					out.Append( token.Begin(), token.Size() );
+					out.append( token.Begin(), token.Size() );
 				}
 			}
 		}
 
-		if ( span && child && !out.Empty() )
+		if ( span && child && !out.empty() )
 		{
-			static_cast<Rml::Core::ElementText *>( child )->SetText( out );
-			parent->AppendChild( child );
-			child->RemoveReference();
+			static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+			parent->AppendChild( std::move( child ) );
 			span = false;
 		}
 
-		else if ( !span && !child && !out.Empty() )
+		else if ( !span && !child && !out.empty() )
 		{
 			child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", Rml::Core::XMLAttributes() );
-			static_cast<Rml::Core::ElementText *>( child )->SetText( out );
-			parent->AppendChild( child );
-			child->RemoveReference();
+			static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+			parent->AppendChild( std::move( child ) );
 		}
 	}
 
 private:
+	Rml::Core::FontEngineInterface* const font_engine_interface;
 	Rml::Core::Vector2f cursor_position;
 	bool focus;
 	int cursor_character_index;
@@ -464,7 +460,7 @@ private:
 	Rml::Core::Geometry cursor_geometry;
 	Rml::Core::Vector2f cursor_size;
 	Rml::Core::Vector2f dimensions;
-	Rml::Core::WString text;
+	Rml::Core::String text;
 	Rml::Core::String cmd;
 
 };
