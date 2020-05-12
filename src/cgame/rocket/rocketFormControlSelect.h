@@ -78,7 +78,7 @@ public:
 
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rml::Controls::ElementFormControlSelect::ProcessEvent( event );
+		Rml::Core::EventListener::ProcessEvent( event );
 
 		if ( !cvar.empty() )
 		{

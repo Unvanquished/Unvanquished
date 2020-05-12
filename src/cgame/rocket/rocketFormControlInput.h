@@ -47,16 +47,17 @@ public:
 	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
 		Rml::Controls::ElementFormControlInput::OnAttributeChange( changed_attributes );
-
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
+		Rml::Core::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
+		if ( it != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rml::Core::String >( "cvar", "" );
+			cvar = it->second.Get< Rml::Core::String >( "cvar" );
 			UpdateValue();
 		}
 
-		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
+		it = changed_attributes.find( "type" );
+		if ( it != changed_attributes.end() )
 		{
-			type = GetAttribute< Rml::Core::String >( "type", "" );
+			type = it->second.Get< Rml::Core::String >( "type" );
 		}
 	}
 
@@ -83,9 +84,9 @@ public:
 
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rml::Controls::ElementFormControlInput::ProcessEvent( event );
+		Rml::Core::EventListener::ProcessEvent( event );
 
-		if ( !cvar.Empty() )
+		if ( !cvar.empty() )
 		{
 			if ( owner == event.GetTargetElement() && event == "show" )
 			{
@@ -131,7 +132,7 @@ public:
 private:
 	void UpdateValue()
 	{
-		if ( !type.Empty() )
+		if ( !type.empty() )
 		{
 			if ( type == "checkbox" )
 			{
