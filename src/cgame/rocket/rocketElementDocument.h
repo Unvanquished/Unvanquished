@@ -45,9 +45,9 @@ class RocketElementDocument : public Rml::Core::ElementDocument
 public:
 	RocketElementDocument( const Rml::Core::String &tag ) : Rml::Core::ElementDocument( tag ) { }
 
-	void ProcessEvent( Rml::Core::Event &event )
+	void ProcessDefaultAction( Rml::Core::Event &event ) override
 	{
-		Rml::Core::ElementDocument::ProcessEvent( event );
+		Rml::Core::ElementDocument::ProcessDefaultAction( event );
 
 		if ( event == "keydown" )
 		{
