@@ -72,7 +72,6 @@ void Rocket_LoadUnit( const char *path )
 
 	if ( document )
 	{
-		document->RemoveReference();
 		hudContext->PullDocumentToFront( document );
 
 		// Close any other documents which may have the same ID
