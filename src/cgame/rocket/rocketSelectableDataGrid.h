@@ -46,31 +46,28 @@ public:
 	SelectableDataGrid( const Rml::Core::String& tag ) :
 		Rml::Controls::ElementDataGrid(tag), lastSelectedRow( nullptr ), lastSelectedRowIndex( -1 )
 	{
-		SetProperty( "selected-row", "-1" );
+		SetAttribute("selected-row", "-1");
 	}
 
 	~SelectableDataGrid()
 	{
-		if( lastSelectedRow != nullptr ) {
-			lastSelectedRow->RemoveReference();
-		}
 	}
 
 	/// Called for every event sent to this element or one of its descendants.
 	/// @param[in] event The event to process.
-	void ProcessEvent( Rml::Core::Event& evt )
+	void ProcessDefaultAction( Rml::Core::Event& evt ) override
 	{
 		extern std::queue< RocketEvent_t* > eventQueue;
 		Rml::Core::String dataSource = GetAttribute<Rml::Core::String>( "source", "" );
 
-		ElementDataGrid::ProcessEvent( evt );
+		ElementDataGrid::ProcessDefaultAction( evt );
 
-		if( evt == "click" || evt == "dblclick" )
+		if( evt == Rml::Core::EventId::Click || evt == Rml::Core::EventId::Dblclick )
 		{
 			Element* elem;
 			int column = -1;
-			Rml::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
-			Rml::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
+			Rml::Core::String dsName = dataSource.substr( 0, dataSource.find( "." ) );
+			Rml::Core::String tableName =  dataSource.substr( dataSource.find( "." ) + 1, dataSource.size() );
 
 
 			// get the column index
@@ -117,39 +114,33 @@ public:
 					{
 						if( lastSelectedRow ) {
 							lastSelectedRow->SetPseudoClass( "selected", false );
-							lastSelectedRow->RemoveReference();
 						}
 					}
 
 					// select clicked row
 					lastSelectedRow = row;
 					lastSelectedRowIndex = index;
-
-					this->SetProperty( "selected-row", indexStr );
+					SetAttribute( "selected-row", std::to_string( lastSelectedRowIndex ) );
 
 					row->SetPseudoClass( "selected", true );
-					row->AddReference();
-
-
-
 					eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "setDS %s %s %d", dsName.c_str(),tableName.c_str(), index ) ) ) );
 				}
 
 				Rml::Core::Dictionary parameters;
-				parameters.Set( "index", indexStr );
-				parameters.Set( "column_index", column );
-				parameters.Set( "datasource", dsName );
-				parameters.Set( "table", tableName );
+				parameters[ "index" ] = indexStr;
+				parameters[ "column_index" ] = column;
+				parameters[ "datasource" ] = dsName;
+				parameters[ "table" ] = tableName;
 
-				if( evt == "click" )
+				if( evt == Rml::Core::EventId::Click )
 					DispatchEvent( "rowselect", parameters );
 				else
 					DispatchEvent( "rowactivate", parameters );
 			}
 
-			if( evt == "dblclick" )
+			if( evt == Rml::Core::EventId::Dblclick )
 			{
-				eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "execDS %s %s", dataSource.Substring( 0, dataSource.Find( "." ) ).c_str(), tableName.c_str() ) ) ) );
+				eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "execDS %s %s", dataSource.substr( 0, dataSource.find( "." ) ).c_str(), tableName.c_str() ) ) ) );
 			}
 		}
 		else if( evt == "rowremove" )
@@ -161,11 +152,10 @@ public:
 
 			int firstRowRemoved = evt.GetParameter< int >("first_row_removed", 0);
 			if( lastSelectedRowIndex >= firstRowRemoved && lastSelectedRowIndex < firstRowRemoved + numRowsRemoved ) {
-				lastSelectedRow->RemoveReference();
 				lastSelectedRow = nullptr;
 
 				lastSelectedRowIndex = -1;
-				this->SetProperty( "selected-row", "-1" );
+				SetAttribute( "selected-row", "-1" );
 			}
 		}
 
