@@ -72,12 +72,13 @@ public:
 	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
 		ElementFormControlDataSelect::OnAttributeChange( changed_attributes );
-		if (  changed_attributes.find( "source" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "source" );
+		if ( it != changed_attributes.end() )
 		{
-			Rml::Core::String dataSource = GetAttribute<Rml::Core::String>( "source", "" );
-			unsigned int pos = dataSource.Find( "." );
-			dsName = dataSource.Substring( 0, pos );
-			tableName =  dataSource.Substring( pos + 1, dataSource.Length() );
+			Rml::Core::String dataSource = it->second.Get<Rml::Core::String>();
+			size_t pos = dataSource.find( "." );
+			dsName = dataSource.substr( 0, pos );
+			tableName =  dataSource.substr( pos + 1, dataSource.size() );
 		}
 	}
 
@@ -87,7 +88,7 @@ public:
 
 		if ( event.GetTargetElement() == owner && event == "show" )
 		{
-			eventQueue.push( new RocketEvent_t( this, Rml::Core::String( 1024, "setDataSelectValue %s %s", dsName.c_str(), tableName.c_str() ) ) );
+			eventQueue.push( new RocketEvent_t( this, va( "setDataSelectValue %s %s", dsName.c_str(), tableName.c_str() ) ) );
 		}
 	}
 
@@ -106,9 +107,9 @@ public:
 
 			// dispatch event so rocket knows about it
 			Rml::Core::Dictionary parameters;
-			parameters.Set( "index", va( "%d", selection ) );
-			parameters.Set( "datasource", dsName );
-			parameters.Set( "table", tableName );
+			parameters[ "index" ] = va( "%d", selection );
+			parameters[ "datasource" ] = dsName;
+			parameters[ "table" ] = tableName;
 			DispatchEvent( "rowselect", parameters );
 		}
 	}
