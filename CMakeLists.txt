@@ -147,7 +147,7 @@ if (BUILD_CGAME)
     FILES
         ${CGAMELIST}
     LIBS
-        RMLUI_STATIC_LIB
+        RMLUI_LIB
         ${FREETYPE_LIBRARIES}
         ${LUA_LIBRARY}
   )
