@@ -68,7 +68,7 @@ public:
 			Rml::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.x = ResolveProperty( "width", parent->GetBox().GetSize().x );
+				dimensions.x = ResolveNumericProperty( "width" );
 			}
 		}
 
@@ -82,7 +82,7 @@ public:
 			Rml::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.y = ResolveProperty( "height", parent->GetBox().GetSize().y );
+				dimensions.y = ResolveNumericProperty( "height" );
 			}
 		}
 
@@ -93,12 +93,12 @@ public:
 		return true;
 	}
 
-	void ProcessEvent( Rml::Core::Event &event )
+	void ProcessDefaultAction( Rml::Core::Event &event ) override
 	{
 		extern std::queue< RocketEvent_t* > eventQueue;
 
 		// Class base class's Event processor
-		Rml::Core::Element::ProcessEvent( event );
+		Rml::Core::Element::ProcessDefaultAction( event );
 
 
 		// Let this be picked up in the event loop if it is meant for us
@@ -129,26 +129,4 @@ public:
 	Rml::Core::Vector2f dimensions;
 };
 
-class RocketElementInstancer : public Rml::Core::ElementInstancer
-{
-public:
-	RocketElementInstancer() { }
-	~RocketElementInstancer() { }
-	Rml::Core::Element *InstanceElement( Rml::Core::Element*,
-											const Rml::Core::String &tag,
-											const Rml::Core::XMLAttributes& )
-	{
-		return new RocketElement( tag );
-	}
-
-	void ReleaseElement( Rml::Core::Element *element )
-	{
-		delete element;
-	}
-
-	void Release()
-	{
-		delete this;
-	}
-};
 #endif

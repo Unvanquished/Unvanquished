@@ -31,12 +31,12 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
+#include <unordered_map>
 
 #include "rocket.h"
 #include "rocketElement.h"
 #include <RmlUi/Core/Factory.h>
 #include <RmlUi/Core/ElementInstancer.h>
-#include <RmlUi/Core/ElementInstancerGeneric.h>
 #include <RmlUi/Controls/ElementFormControlDataSelect.h>
 #include "rocketConsoleTextElement.h"
 #include "../cg_local.h"
@@ -63,17 +63,19 @@ void Rocket_SetElementDimensions( float x, float y )
 	}
 }
 
+static std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketElement>> rocketElementInstancer(new Rml::Core::ElementInstancerGeneric< RocketElement >());
+
 void Rocket_RegisterElement( const char *tag )
 {
-	Rml::Core::Factory::RegisterElementInstancer( tag, new Rml::Core::ElementInstancerGeneric< RocketElement >() )->RemoveReference();
+	Rml::Core::Factory::RegisterElementInstancer( tag, rocketElementInstancer.get() );
 }
 
 // reduces an rml string to a common format so two rml strings can be compared
 static Rml::Core::String ReduceRML( const Rml::Core::String &rml )
 {
 	Rml::Core::String ret;
-	Rml::Core::String::size_type length = rml.Length();
-	ret.Reserve( length );
+	Rml::Core::String::size_type length = rml.size();
+	ret.reserve( length );
 
 	for ( unsigned i = 0; i < length; i++ )
 	{
@@ -251,7 +253,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					{
 						if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
 						{
-							*f = activeElement->ResolveProperty( "width", base_size );
+							*f = activeElement->ResolveNumericProperty( "width" );
 							return;
 						}
 					}
@@ -266,7 +268,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					{
 						if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
 						{
-							*f = activeElement->ResolveProperty( "height", base_size );
+							*f = activeElement->ResolveNumericProperty( "height" );
 							return;
 						}
 					}

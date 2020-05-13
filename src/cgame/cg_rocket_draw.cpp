@@ -2125,7 +2125,7 @@ public:
 		{
 			if ( IsVisible() && shouldBeVisible )
 			{
-				SetProperty( Rml::Core::PropertyId::Display, 
+				SetProperty( Rml::Core::PropertyId::Display,
 						Rml::Core::Property( Rml::Core::Style::Display::None ) );
 				SetInnerRML( "" );
 				shouldBeVisible = false;
