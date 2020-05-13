@@ -90,11 +90,10 @@ public:
 			// Each line gets its own span element
 			for (line = line - 1; line >= 0; --line, numLines++ )
 			{
-				Rml::Core::Element *child = Rml::Core::Factory::InstanceElement( this, "#text", "span", Rml::Core::XMLAttributes() );
-				Rml::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.c_str(), RP_EMOTICONS ));
-				child->SetId( va( "%d", lines[ line ].time ) );
-				AppendChild( child );
-				child->RemoveReference();
+				Rml::Core::ElementPtr childPtr = Rml::Core::Factory::InstanceElement( this, "#text", "span", Rml::Core::XMLAttributes() );
+				Rml::Core::Factory::InstanceElementText( childPtr.get(), Rocket_QuakeToRML( lines[ line ].text.c_str(), RP_EMOTICONS ));
+				childPtr->SetId( va( "%d", lines[ line ].time ) );
+				AppendChild( std::move( childPtr ) );
 			}
 		}
 
@@ -124,9 +123,9 @@ public:
 		Rml::Core::Element::OnUpdate();
 	}
 
-	void OnPropertyChange( const Rml::Core::PropertyNameList &changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet &changed_properties )
 	{
-		if ( changed_properties.find( "height" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::Height ) )
 		{
 			int fontPt = GetProperty<int>( "font-size" );
 			maxLines = GetProperty<int>("height") / ( fontPt > 0 ? fontPt : 1 );
