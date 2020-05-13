@@ -109,7 +109,7 @@ luaL_Reg TimerSetters[] =
 {
 	{ nullptr, nullptr },
 };
-LUACORETYPEDEFINE(Timer,false)
+LUACORETYPEDEFINE(Timer)
 }
 }
 }
