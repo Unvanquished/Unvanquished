@@ -84,6 +84,10 @@ std::string CG_KeyBinding( const char *bind, int team );
 
 void Rocket_AddEvent( RocketEvent_t *event );
 
+struct UnvPropertyId {
+	static Rml::Core::PropertyId Radius;
+};
+
 namespace Color {
 
 template<class ColourType, int AlphaDefault>

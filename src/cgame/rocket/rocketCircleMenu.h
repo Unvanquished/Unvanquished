@@ -93,7 +93,7 @@ public:
 					dimensions.x = base_size;
 					while ( !stack.empty() )
 					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+						dimensions.x = stack.top()->ResolveNumericProperty( "width" );
 
 						stack.pop();
 					}
@@ -125,7 +125,7 @@ public:
 					dimensions.y = base_size;
 					while ( !stack.empty() )
 					{
-						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
+						dimensions.y = stack.top()->ResolveNumericProperty( "height" );
 
 						stack.pop();
 					}
@@ -151,36 +151,39 @@ public:
 	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
 		Rml::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "source" );
+		if ( it != changed_attributes.end() )
 		{
-			SetDataSource( GetAttribute<Rml::Core::String>( "source", "" ) );
+			SetDataSource( it->second.Get<Rml::Core::String>( "source" ) );
 		}
 
-		if ( changed_attributes.find( "fields" ) != changed_attributes.end() )
+		it = changed_attributes.find( "fields" );
+		if ( it != changed_attributes.end() )
 		{
-			csvFields = GetAttribute<Rml::Core::String>( "fields", "" );
+			csvFields = it->second.Get<Rml::Core::String>();
 			Rml::Core::StringUtilities::ExpandString( fields, csvFields );
 			dirty_query = true;
 		}
 
-		if ( changed_attributes.find( "formatter" ) != changed_attributes.end() )
+		it = changed_attributes.find( "formatter" );
+		if ( it != changed_attributes.end() )
 		{
-			formatter = Rml::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rml::Core::String>() );
+			formatter = Rml::Controls::DataFormatter::GetDataFormatter( it->second.Get<Rml::Core::String>() );
 			dirty_query = true;
 		}
 	}
 
-	void OnPropertyChange( const Rml::Core::PropertyNameList &changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet &changed_properties )
 	{
 		Rml::Core::Element::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "width" ) != changed_properties.end() || changed_properties.find( "height" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::Width ) || changed_properties.Contains( Rml::Core::PropertyId::Height ) )
 		{
 			dirty_layout = true;
 		}
 
-		if ( changed_properties.find( "radius" ) != changed_properties.end() )
+		if ( changed_properties.Contains( UnvPropertyId::Radius ) )
 		{
-			radius = GetProperty( "radius" )->Get<float>();
+			radius = GetProperty( UnvPropertyId::Radius )->Get<float>();
 		}
 
 	}
@@ -275,10 +278,10 @@ public:
 					{
 						if ( i > 0 )
 						{
-							out.Append( "," );
+							out.append( "," );
 						}
 
-						out.Append( raw_data[ i ] );
+						out.append( raw_data[ i ] );
 					}
 				}
 
@@ -289,9 +292,15 @@ public:
 		}
 	}
 
+	virtual void ProcessDefaultAction( Rml::Core::Event& event )
+	{
+		Element::ProcessDefaultAction( event );
+		ProcessEvent( event );
+	}
+
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		Element::ProcessEvent( event );
+		Rml::Core::EventListener::ProcessEvent( event );
 		if ( event == "mouseover" )
 		{
 			Rml::Core::Element *parent = event.GetTargetElement();
@@ -313,9 +322,9 @@ public:
 					{
 						if ( GetChild( i ) == button )
 						{
-							parameters.Set( "index", va( "%d", i - 1 ) );
-							parameters.Set( "datasource", data_source->GetDataSourceName() );
-							parameters.Set( "table", data_table );
+							parameters[ "index" ] = va( "%d", i - 1 );
+							parameters[ "datasource" ] = data_source->GetDataSourceName();
+							parameters[ "table" ] = data_table;
 
 							DispatchEvent( "rowselect", parameters );
 							break;

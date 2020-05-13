@@ -268,7 +268,7 @@ public:
 		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
 	}
 
-	void SetTransform( const Rml::Core::Matrix4f* transform ) override 
+	void SetTransform( const Rml::Core::Matrix4f* transform ) override
 	{
 		// TODO: implement.
 	}
@@ -366,6 +366,11 @@ void Rocket_Init()
 	Rml::Core::Lua::LuaType<Rml::Core::Lua::Events>::Register(Rml::Core::Lua::Interpreter::GetLuaState());
 	Rml::Core::Lua::LuaType<Rml::Core::Lua::Timer>::Register(Rml::Core::Lua::Interpreter::GetLuaState());
 
+	// Register custom properties.
+	UnvPropertyId::Radius = Rml::Core::StyleSheetSpecification::RegisterProperty("radius", "auto", false, true)
+		.AddParser("length_percent").SetRelativeTarget(Rml::Core::RelativeTarget::ContainingBlockHeight)
+		.GetId();
+
 	// Set backup font
 	// TODO
 	// Rml::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
@@ -388,7 +393,7 @@ void Rocket_Init()
 	// Add custom client elements
 	#define REGISTER_ELEMENT(tag, type, instancer) \
 		instancer.reset(new Rml::Core::ElementInstancerGeneric< type >()); \
-		Rml::Core::Factory::RegisterElementInstancer(tag, instancer.get());	
+		Rml::Core::Factory::RegisterElementInstancer(tag, instancer.get());
 
 	REGISTER_ELEMENT("datagrid", SelectableDataGrid, selectableDataGridInstancer);
 	REGISTER_ELEMENT("progressbar", RocketProgressBar, rocketProgressBarInstancer);
@@ -424,7 +429,7 @@ void Rocket_Shutdown()
 
 	if ( menuContext )
 	{
-		if (! Rml::Core::RemoveContext( "menuContext" ) ) 
+		if (! Rml::Core::RemoveContext( "menuContext" ) )
 		{
 			Log::Warn( "^3WARN: ^7Could not remove menuContext." );
 		}
@@ -433,7 +438,7 @@ void Rocket_Shutdown()
 
 	if ( hudContext )
 	{
-		if (! Rml::Core::RemoveContext( "hudContext" ) ) 
+		if (! Rml::Core::RemoveContext( "hudContext" ) )
 		{
 			Log::Warn( "^3WARN: ^7Could not remove hudContext." );
 		}
