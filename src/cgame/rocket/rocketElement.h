@@ -53,7 +53,7 @@ public:
 	RocketElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ) { }
 	~RocketElement() { }
 
-	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension ) override
 	{
 		const Rml::Core::Property *property;
 		property = GetProperty( "width" );
@@ -115,7 +115,7 @@ public:
 		dimensions.y = y;
 	}
 
-	void OnRender()
+	void OnRender() override
 	{
 		activeElement = this;
 

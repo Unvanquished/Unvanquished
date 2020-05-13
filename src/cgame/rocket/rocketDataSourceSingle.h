@@ -48,7 +48,7 @@ public:
 	RocketDataSourceSingle( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), formatter( nullptr ), data_source( nullptr ), selection( -1 ),
 	targetElement( nullptr ), dirty_query( false ), dirty_listener( false ) { }
 
-	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes ) override
 	{
 		Rml::Core::Element::OnAttributeChange( changed_attributes );
 		auto it = changed_attributes.find( "source" );
@@ -95,7 +95,7 @@ public:
 
 	}
 
-	void OnUpdate()
+	void OnUpdate() override
 	{
 		if ( dirty_listener )
 		{
