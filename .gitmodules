@@ -9,4 +9,4 @@
 	url = https://github.com/UnvanquishedAssets/unvanquished_src.dpkdir.git
 [submodule "libs/RmlUi"]
 	path = libs/RmlUi
-	url = https://github.com/mikke89/RmlUi.git
+	url = https://github.com/DolceTriade/RmlUi.git

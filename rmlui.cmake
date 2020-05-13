@@ -240,6 +240,8 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/FontEffectShadow.cpp
     ${RMLUI_DIR}/Source/Core/FontEngineInterface.cpp
     ${RMLUI_DIR}/Source/Core/Geometry.cpp
+    ${RMLUI_DIR}/Source/Core/GeometryDatabase.h
+    ${RMLUI_DIR}/Source/Core/GeometryDatabase.cpp
     ${RMLUI_DIR}/Source/Core/GeometryUtilities.cpp
     ${RMLUI_DIR}/Source/Core/LayoutBlockBox.cpp
     ${RMLUI_DIR}/Source/Core/LayoutBlockBoxSpace.cpp
@@ -253,7 +255,6 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/ObserverPtr.cpp
     ${RMLUI_DIR}/Source/Core/Plugin.cpp
     ${RMLUI_DIR}/Source/Core/PluginRegistry.cpp
-    ${RMLUI_DIR}/Source/Core/precompiled.cpp
     ${RMLUI_DIR}/Source/Core/Profiling.cpp
     ${RMLUI_DIR}/Source/Core/PropertiesIteratorView.cpp
     ${RMLUI_DIR}/Source/Core/Property.cpp
@@ -303,6 +304,7 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/Transform.cpp
     ${RMLUI_DIR}/Source/Core/TransformPrimitive.cpp
     ${RMLUI_DIR}/Source/Core/TransformState.cpp
+    ${RMLUI_DIR}/Source/Core/Tween.cpp
     ${RMLUI_DIR}/Source/Core/TypeConverter.cpp
     ${RMLUI_DIR}/Source/Core/URL.cpp
     ${RMLUI_DIR}/Source/Core/Variant.cpp
@@ -449,7 +451,6 @@ set(Core_HDR_FILES
     ${RMLUI_DIR}/Source/Core/FontEngineDefault/FontProvider.h
     ${RMLUI_DIR}/Source/Core/FontEngineDefault/FontTypes.h
     ${RMLUI_DIR}/Source/Core/FontEngineDefault/FreeTypeInterface.h
-    ${RMLUI_DIR}/Source/Core/FontEngineDefault/precompiled.h
 )
 
 set(Core_SRC_FILES

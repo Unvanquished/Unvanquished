@@ -47,7 +47,7 @@ Maryland 20850 USA.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
-#include <RmlUi/Core/Core.h>
+#include <RmlUi/Core.h>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
