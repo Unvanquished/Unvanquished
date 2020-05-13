@@ -44,7 +44,6 @@ void Rocket_LoadDocument( const char *path )
 
 	if( document )
 	{
-		document->RemoveReference();
 		menuContext->PullDocumentToFront( document ); // Ensure any duplicates will be found first.
 
 		// Close any other documents which may have the same ID
@@ -59,19 +58,7 @@ void Rocket_LoadDocument( const char *path )
 
 void Rocket_LoadCursor( const char *path )
 {
-	Rml::Core::ElementDocument* document = menuContext->LoadMouseCursor( path );
-
-	if( document )
-	{
-		// This gets 12px on 1920×1080 screen, which is libRocket default for 1em
-		int fontSize = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight) / 90;
-
-		// 1.6×2.3em ≈ 20×28px on 1920×1080 screen
-		document->SetProperty( "width", va( "%fpx", 1.6 * fontSize ) );
-		document->SetProperty( "height", va( "%fpx", 2.3 * fontSize ) );
-
-		document->RemoveReference();
-	}
+	// TODO: Remove.
 }
 
 void Rocket_DocumentAction( const char *name, const char *action )
