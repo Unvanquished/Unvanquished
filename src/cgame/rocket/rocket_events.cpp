@@ -79,13 +79,9 @@ void Rocket_GetEventParameters( char *params, int /*length*/ )
 	*params = '\0';
 	if ( !eventQueue.empty() )
 	{
-		int index = 0;
-		Rml::Core::String key;
-		Rml::Core::String value;
-
-		while ( event->Parameters.Iterate( index, key, value ) )
+		for ( const auto& it : event->Parameters )
 		{
-			Info_SetValueForKeyRocket( params, key.c_str(), value.c_str(), true );
+			Info_SetValueForKeyRocket( params, it.first.c_str(), it.second.Get<Rml::Core::String>().c_str(), true );
 		}
 	}
 }
