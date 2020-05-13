@@ -51,37 +51,47 @@ public:
 	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
 		Rml::Core::Element::OnAttributeChange( changed_attributes );
-		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "source" );
+		if ( it != changed_attributes.end() )
 		{
-			ParseDataSource( data_source, data_table, GetAttribute( "source")->Get<Rml::Core::String>() );
+			ParseDataSource( data_source, data_table, it->second.Get<Rml::Core::String>() );
 			dirty_query = true;
 		}
-		if ( changed_attributes.find( "fields" ) != changed_attributes.end() )
+
+		it = changed_attributes.find( "fields" );
+		if ( it != changed_attributes.end() )
 		{
-			csvFields = GetAttribute( "fields" )->Get<Rml::Core::String>();
+			csvFields = it->second.Get<Rml::Core::String>();
 			Rml::Core::StringUtilities::ExpandString( fields, csvFields );
 			dirty_query = true;
 		}
-		if ( changed_attributes.find( "formatter" ) != changed_attributes.end() )
+
+		it = changed_attributes.find( "formatter" );
+		if ( it != changed_attributes.end() )
 		{
-			formatter = Rml::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rml::Core::String>() );
+			formatter = Rml::Controls::DataFormatter::GetDataFormatter( it->second.Get<Rml::Core::String>() );
 			dirty_query = true;
 		}
-		if ( changed_attributes.find( "targetid" ) != changed_attributes.end() || changed_attributes.find( "targetdoc" ) != changed_attributes.end() )
+		if ( changed_attributes.count( "targetid" ) || changed_attributes.count( "targetdoc" ) )
 		{
 			dirty_listener = true;
 		}
 	}
 
-	void ProcessEvent( Rml::Core::Event &evt )
+	void ProcessDefaultAction( Rml::Core::Event& event ) override
 	{
-		Rml::Core::Element::ProcessEvent( evt );
+		Element::ProcessDefaultAction( event );
+	}
+
+	void ProcessEvent( Rml::Core::Event &evt ) override
+	{
+		Rml::Core::EventListener::ProcessEvent( evt );
 
 		// Make sure it is meant for the element we are listening to
 		if ( evt == "rowselect" && targetElement == evt.GetTargetElement() )
 		{
-			const Rml::Core::Dictionary *parameters = evt.GetParameters();
-			selection = parameters->Get<int>( "index", -1 );
+			const Rml::Core::Dictionary& parameters = evt.GetParameters();
+			selection = parameters.at("index").Get<int>( -1 );
 			dirty_query = true;
 		}
 
@@ -94,7 +104,7 @@ public:
 			Rml::Core::ElementDocument *document;
 			Rml::Core::String td;
 
-			if (  ( td = GetAttribute<Rml::Core::String>( "targetdoc", "" ) ).Empty() )
+			if (  ( td = GetAttribute<Rml::Core::String>( "targetdoc", "" ) ).empty() )
 			{
 				document = GetOwnerDocument();
 			}
@@ -147,10 +157,10 @@ public:
 				{
 					if ( i > 0 )
 					{
-						out_data.Append( "," );
+						out_data.append( "," );
 					}
 
-					out_data.Append( raw_data[ i ] );
+					out_data.append( raw_data[ i ] );
 				}
 			}
 
