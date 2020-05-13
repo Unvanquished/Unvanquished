@@ -370,6 +370,9 @@ void Rocket_Init()
 	UnvPropertyId::Radius = Rml::Core::StyleSheetSpecification::RegisterProperty("radius", "auto", false, true)
 		.AddParser("length_percent").SetRelativeTarget(Rml::Core::RelativeTarget::ContainingBlockHeight)
 		.GetId();
+	UnvPropertyId::Orientation = Rml::Core::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
+		.AddParser("keyword", "left, right, up, down")
+		.GetId();
 
 	// Set backup font
 	// TODO

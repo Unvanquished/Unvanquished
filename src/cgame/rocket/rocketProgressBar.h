@@ -75,7 +75,7 @@ public:
 	{
 		float newValue;
 
-		if ( !source.Empty() )
+		if ( !source.empty() )
 		{
 			newValue = CG_Rocket_ProgressBarValue(source.c_str());
 
@@ -145,31 +145,18 @@ public:
 		}
 	}
 
-	void OnPropertyChange( const Rml::Core::PropertyNameList &changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet &changed_properties )
 	{
 		Element::OnPropertyChange( changed_properties );
 
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::Color ) )
 		{
-			color = Color::Adapt( GetProperty( "color" )->Get<Rml::Core::Colourb>() );
+			color = Color::Adapt( GetProperty( Rml::Core::PropertyId::Color )->Get<Rml::Core::Colourb>() );
 		}
 
-		if ( changed_properties.find( "image" ) != changed_properties.end() )
+		if ( changed_properties.Contains( UnvPropertyId::Orientation ) )
 		{
-			Rml::Core::String image = GetProperty<Rml::Core::String>( "image" );
-
-			// skip the leading slash
-			if ( !image.Empty() && image[0] == '/' )
-			{
-				image = image.Substring( 1 );
-			}
-
-			shader = trap_R_RegisterShader( image.c_str(), RSF_NOMIP );
-		}
-
-		if ( changed_properties.find( "orientation" ) != changed_properties.end() )
-		{
-			Rml::Core::String  orientation_string = GetProperty<Rml::Core::String>( "orientation" );
+			Rml::Core::String  orientation_string = GetProperty( UnvPropertyId::Orientation )->Get<Rml::Core::String>();
 
 			if ( orientation_string == "left" )
 			{
@@ -194,15 +181,32 @@ public:
 	{
 		Rml::Core::Element::OnAttributeChange( changed_attributes );
 
-		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
+		auto it = changed_attributes.find( "value" );
+		if ( it != changed_attributes.end() )
 		{
-			value = Com_Clamp( 0.0f, 1.0f, GetAttribute<float>( "value", 0.0f ) );
+			value = Com_Clamp( 0.0f, 1.0f, it->second.Get<float>() );
 		}
 
-		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
+		it = changed_attributes.find( "src" );
+		if ( it != changed_attributes.end() )
 		{
-			source = GetAttribute<Rml::Core::String>( "src", "" );
+			source = it->second.Get<Rml::Core::String>();
 		}
+
+		it = changed_attributes.find( "image" );
+		if ( it != changed_attributes.end() )
+		{
+			Rml::Core::String image = it->second.Get<Rml::Core::String>();
+
+			// skip the leading slash
+			if ( !image.empty() && image[0] == '/' )
+			{
+				image = image.substr( 1 );
+			}
+
+			shader = trap_R_RegisterShader( image.c_str(), RSF_NOMIP );
+		}
+
 	}
 
 	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension )
@@ -237,7 +241,7 @@ public:
 					dimensions.x = base_size;
 					while ( !stack.empty() )
 					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+						dimensions.x = stack.top()->ResolveNumericProperty( "width" );
 
 						stack.pop();
 					}
@@ -271,7 +275,7 @@ public:
 					dimensions.y = base_size;
 					while ( !stack.empty() )
 					{
-						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
+						dimensions.y = stack.top()->ResolveNumericProperty( "height" );
 
 						stack.pop();
 					}

@@ -86,6 +86,7 @@ void Rocket_AddEvent( RocketEvent_t *event );
 
 struct UnvPropertyId {
 	static Rml::Core::PropertyId Radius;
+	static Rml::Core::PropertyId Orientation;
 };
 
 namespace Color {
