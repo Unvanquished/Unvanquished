@@ -76,7 +76,6 @@ public:
 
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rml::Core::EventListener::ProcessEvent( event );
 		if ( event.GetTargetElement() == input )
 		{
 			if ( event == "change" )

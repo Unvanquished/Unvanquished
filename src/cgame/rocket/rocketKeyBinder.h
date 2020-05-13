@@ -107,8 +107,6 @@ public:
 
 	void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rml::Core::EventListener::ProcessEvent( event );
-
 		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
 			waitingForKeypress = true;

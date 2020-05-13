@@ -85,8 +85,6 @@ public:
 
 	void ProcessEvent( Rml::Core::Event &evt ) override
 	{
-		Rml::Core::EventListener::ProcessEvent( evt );
-
 		// Make sure it is meant for the element we are listening to
 		if ( evt == "rowselect" && targetElement == evt.GetTargetElement() )
 		{

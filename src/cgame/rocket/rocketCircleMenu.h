@@ -300,7 +300,6 @@ public:
 
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rml::Core::EventListener::ProcessEvent( event );
 		if ( event == "mouseover" )
 		{
 			Rml::Core::Element *parent = event.GetTargetElement();

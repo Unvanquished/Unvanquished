@@ -84,8 +84,6 @@ public:
 
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rml::Core::EventListener::ProcessEvent( event );
-
 		if ( !cvar.empty() )
 		{
 			if ( owner == event.GetTargetElement() && event == "show" )

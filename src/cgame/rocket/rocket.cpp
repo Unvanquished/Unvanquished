@@ -340,6 +340,9 @@ std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketColorInput>> rocketColo
 std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketIncludeElement>> rocketIncludeElementInstancer;
 std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketCvarInlineElement>> rocketCvarInlineElementInstancer;
 
+Rml::Core::PropertyId UnvPropertyId::Radius;
+Rml::Core::PropertyId UnvPropertyId::Orientation;
+
 // TODO
 // cvar_t *cg_draw2D;
 

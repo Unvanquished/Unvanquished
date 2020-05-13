@@ -117,8 +117,6 @@ public:
 
 	void ProcessEvent( Rml::Core::Event &event )
 	{
-		Rml::Core::EventListener::ProcessEvent( event );
-
 		// Cannot move mouse while this element is in view
 		if ( focus && event == "mousemove" )
 		{
