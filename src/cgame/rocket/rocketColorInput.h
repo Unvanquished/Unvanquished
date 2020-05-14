@@ -42,7 +42,7 @@ Maryland 20850 USA.
 class RocketColorInput : public Rml::Core::Element, public Rml::Core::EventListener
 {
 public:
-	RocketColorInput( const Rml::Core::String &tag ) : Rml::Core::Element( tag )
+	RocketColorInput( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), input( nullptr ), color_value( nullptr )
 	{
 	}
 
@@ -59,6 +59,7 @@ public:
 			color_value = AppendChild( Rml::Core::Factory::InstanceElement(
 					this, "*", "div", Rml::Core::XMLAttributes() ) );
 			input->SetProperty( "display", "none" );
+			input->SetAttributes( GetAttributes() );
 			UpdateValue();
 		}
 	}
@@ -68,14 +69,12 @@ public:
 		Rml::Core::Element::OnAttributeChange( changed_attributes );
 
 		// Pass all attributes down to the input element
-		for ( Rml::Core::ElementAttributes::const_iterator it = changed_attributes.begin(); it != changed_attributes.end(); ++it )
-		{
-			input->SetAttribute( it->first, it->second );
-		}
+		if ( input ) input->SetAttributes( changed_attributes );
 	}
 
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
+		if ( input || color_value ) return;
 		if ( event.GetTargetElement() == input )
 		{
 			if ( event == "change" )
@@ -113,7 +112,7 @@ private:
 	{
 		Rml::Core::String string = "^7";
 
-		while( color_value->HasChildNodes() )
+		while( color_value && color_value->HasChildNodes() )
 		{
 			color_value->RemoveChild( color_value->GetFirstChild() );
 		}
