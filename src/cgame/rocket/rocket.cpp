@@ -679,7 +679,8 @@ private:
         }
         else if ( show_cursor )
         {
-            mode = MouseMode::CustomCursor;
+            // TODO: implement a proper rmlui cursor.
+            mode = MouseMode::SystemCursor;
         }
         else
         {
