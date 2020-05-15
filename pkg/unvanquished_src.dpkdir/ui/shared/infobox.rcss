@@ -47,7 +47,6 @@ div.infobox {
 	height: .8em;
 	width: .8em;
 	background: #BBBBBBAA;
-	border-style: solid;
 	border-width: .1em;
 	border-color: #86868633;
 	display: inline-block;
