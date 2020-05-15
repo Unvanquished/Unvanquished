@@ -1451,7 +1451,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	new(&cgs) cgs_t{}; // Using {} instead of () to work around MSVC bug
 	cg.~cg_t();
 	new(&cg) cg_t{};
-	memset( cg_entities, 0, sizeof( cg_entities ) );
+	new(cg_entities) centity_t[MAX_GENTITIES];
 
 	// Set up the pmove params with sensible default values, the server params will
 	// be communicated with the "pmove_params" server commands.
