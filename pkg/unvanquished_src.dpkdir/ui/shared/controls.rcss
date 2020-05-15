@@ -68,13 +68,12 @@ dataselect selectarrow {
 	margin-top: .06em;
 	width: 1.3em;
 	height: 1.5em;
-	icon-decorator: image;
-	icon-image: /ui/assets/widgets/select_dull;
+	decorator: image( /ui/assets/widgets/select_dull );
 }
 select selectarrow:hover,
 dataselect selectarrow:hover
 {
-	icon-image: /ui/assets/widgets/select_hover;
+	decorator: image( /ui/assets/widgets/select_hover );
 }
 
 
