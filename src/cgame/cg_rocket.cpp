@@ -105,10 +105,6 @@ void CG_Rocket_Init( glconfig_t gl )
 	// Register elements
 	CG_Rocket_RegisterElements();
 
-	// This gets 12px on 1920×1080 screen, which is libRocket default for 1em
-	int fontSize = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight) / 90;
-	Rocket_RegisterProperty( "font-size", std::to_string(fontSize).c_str(), true, true, "number" );
-
 	Rocket_RegisterProperty( "cell-color", "white", false, false, "color" );
 	Rocket_RegisterProperty( "border-width", "0.5", false, false, "number" );
 	Rocket_RegisterProperty( "unlocked-marker-color", "green", false, false, "color" );
