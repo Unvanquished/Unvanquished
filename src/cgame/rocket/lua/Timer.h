@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #ifndef LUATIMER_H
 #define LUATIMER_H
 
+#include <list>
+
 #include "../rocket.h"
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/Lua/lua.hpp>
