@@ -55,7 +55,7 @@ public:
 	{
 	}
 
-	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes ) override
 	{
 		Rml::Core::Element::OnAttributeChange( changed_attributes );
 		auto it = changed_attributes.find( "cmd" );
@@ -73,7 +73,7 @@ public:
 		}
 	}
 
-	virtual void OnChildAdd( Element *child )
+	virtual void OnChildAdd( Element *child ) override
 	{
 		Element::OnChildAdd( child );
 		if ( child == this )
@@ -85,7 +85,7 @@ public:
 		}
 	}
 
-	virtual void OnChildRemove( Element *child )
+	virtual void OnChildRemove( Element *child ) override
 	{
 		Element::OnChildRemove( child );
 		if ( child == this )
@@ -97,7 +97,7 @@ public:
 		}
 	}
 
-	void OnUpdate()
+	void OnUpdate() override
 	{
 		Element::OnUpdate();
 		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.empty() && !waitingForKeypress )
@@ -107,7 +107,13 @@ public:
 		}
 	}
 
-	void ProcessEvent( Rml::Core::Event &event )
+	void ProcessDefaultAction( Rml::Core::Event &event) override
+	{
+		Element::ProcessDefaultAction( event );
+		ProcessEvent( event );
+	}
+
+	void ProcessEvent( Rml::Core::Event &event ) override
 	{
 		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
