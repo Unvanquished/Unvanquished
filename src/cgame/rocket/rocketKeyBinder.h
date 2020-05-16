@@ -40,8 +40,10 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
-static const Rml::Core::String BINDABLE_KEY_EVENT = "bindableKey";
-static const Rml::Core::String BINDABLE_KEY_KEY = "bkey";
+static const Str::StringRef TOGGLE_CONSOLE_COMMAND = "<console>";
+
+static const Str::StringRef BINDABLE_KEY_EVENT = "bindableKey";
+static const Str::StringRef BINDABLE_KEY_KEY = "bkey";
 
 // The displayed bindings are refreshed periodically since they can also change due to a layout change or /bind command.
 constexpr int KEY_BINDING_REFRESH_INTERVAL_MS = 500;
@@ -49,7 +51,7 @@ constexpr int KEY_BINDING_REFRESH_INTERVAL_MS = 500;
 class RocketKeyBinder : public Rml::Core::Element, public Rml::Core::EventListener
 {
 public:
-	RocketKeyBinder( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 )
+	RocketKeyBinder( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 ), context( nullptr )
 	{
 	}
 
@@ -169,6 +171,15 @@ protected:
 		{
 			return;
 		}
+
+		nextKeyUpdateTime = rocketInfo.realtime;
+		waitingForKeypress = false;
+
+		if (cmd == TOGGLE_CONSOLE_COMMAND.c_str()) {
+			trap_Key_SetConsoleKeys({newKey});
+			return;
+		}
+
 		// For a team-specific bind, this returns keys that have the command set for the specific
 		// team as well as for the default team (when there is no team-specific bind overriding it.
 		auto previouslyBoundKeys = trap_Key_GetKeysForBinds(team, { cmd.c_str() })[0];
@@ -185,9 +196,6 @@ protected:
 			}
 		}
 		trap_Key_SetBinding( newKey, team, cmd.c_str() );
-
-		nextKeyUpdateTime = rocketInfo.realtime;
-		waitingForKeypress = false;
 	}
 
 	int GetTeam( Rml::Core::String team )

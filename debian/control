@@ -5,6 +5,7 @@ Maintainer: Darren Salt <devspam@moreofthesa.me.uk>
 Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
 	libcurl4-gnutls-dev,
 	libfreetype6-dev,
+	liblua5.2-dev,
 	libglew-dev | libglew1.6-dev | libglew1.5-dev,
 	libgmp-dev | libgmp3-dev,
 	libjpeg-dev | libjpeg8-dev (>= 8d-1) | libjpeg62-dev,

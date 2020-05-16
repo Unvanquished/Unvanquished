@@ -915,7 +915,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 			if ( BG_ClassHasAbility( cg.predictedPlayerState.stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
 			{
-				vec3_t surfNormal, refNormal = { 0.0f, 0.0f, 1.0f };
+				vec3_t surfNormal;
 				vec3_t rotAxis;
 
 				if ( clientNum != cg.predictedPlayerState.clientNum )
@@ -929,6 +929,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				//if we are moving from one surface to another smooth the transition
 				if ( !VectorCompare( surfNormal, cg.lastNormal ) && surfNormal[ 2 ] != 1.0f )
 				{
+					vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
 					CrossProduct( refNormal, surfNormal, rotAxis );
 					VectorNormalize( rotAxis );
 

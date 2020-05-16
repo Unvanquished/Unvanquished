@@ -128,9 +128,9 @@ public:
 				Rml::Core::StringList raw_data;
 				Rml::Core::String out;
 
-				for ( size_t i = 0; i < fields.size(); ++i )
+				for ( auto &&field : fields )
 				{
-					raw_data.push_back( query.Get<Rml::Core::String>( fields[ i ], "" ) );
+					raw_data.emplace_back( query.Get<Rml::Core::String>( field, "" ) );
 				}
 
 				raw_data.push_back( va( "%d", index++ ) );

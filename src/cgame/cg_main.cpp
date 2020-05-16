@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cg_main.c -- initialization for cgame
 
 #include "cg_local.h"
+#include "cg_key_name.h"
 
 cg_t            cg;
 cgs_t           cgs;
@@ -611,6 +612,8 @@ void CG_NotifyHooks()
 		{
 			trap_notify_onTeamChange( ps->persistant[ PERS_TEAM ] );
 
+			CG_SetBindTeam( static_cast<team_t>( ps->persistant[ PERS_TEAM ] ) );
+
 			/* execute team-specific config files */
 			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
 			if ( config[ 0 ] )
@@ -645,16 +648,6 @@ void CG_UpdateCvars()
 	CG_SetPVars();
 	CG_SetUIVars();
 	CG_UpdateBuildableRangeMarkerMask();
-}
-
-int CG_CrosshairPlayer()
-{
-	if ( cg.time > ( cg.crosshairClientTime + 1000 ) )
-	{
-		return -1;
-	}
-
-	return cg.crosshairClientNum;
 }
 
 /*
@@ -989,7 +982,7 @@ void CG_RegisterGrading( int slot, const char *str )
 		return;
 	}
 
-	sscanf(str, "%d %f %s", &model, &dist, texture);
+	sscanf(str, "%d %f %63s", &model, &dist, texture);
 	cgs.gameGradingTextures[ slot ] =
 		trap_R_RegisterShader(texture, (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.gameGradingModels[ slot ] = model;
@@ -1015,7 +1008,7 @@ void CG_RegisterReverb( int slot, const char *str )
 		return;
 	}
 
-	sscanf(str, "%d %f %s %f", &model, &dist, name, &intensity);
+	sscanf(str, "%d %f %127s %f", &model, &dist, name, &intensity);
 	Q_strncpyz(cgs.gameReverbEffects[ slot ], name, MAX_NAME_LENGTH);
 	cgs.gameReverbModels[ slot ] = model;
 	cgs.gameReverbDistances[ slot ] = dist;
@@ -1508,9 +1501,8 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	// check version
 	s = CG_ConfigString( CS_GAME_VERSION );
-
-//   if( strcmp( s, GAME_VERSION ) )
-//     Sys::Drop( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+	//   if( strcmp( s, GAME_VERSION ) )
+	//     Sys::Drop( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );

@@ -25,7 +25,12 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 #define CG_KEY_NAME_H_
 
 #include "common/KeyIdentification.h"
+#include "shared/bg_public.h"
 
 std::string CG_KeyDisplayName(Keyboard::Key key);
+
+void CG_SetBindTeam(team_t team);
+
+int CG_CurrentBindTeam();
 
 #endif // CG_KEY_NAME_H_

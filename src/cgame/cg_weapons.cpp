@@ -2648,6 +2648,12 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 		}
 	}
 
+	if ( ( weaponNum == WP_ABUILD || weaponNum == WP_ABUILD2 ) && weaponMode == WPM_SECONDARY
+	     && ( cg.snap->ps.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) > BA_NONE )
+	{
+		return; // no sound for canceling buildable placement
+	}
+
 	// play a sound
 	for ( c = 0; c < 4; c++ )
 	{

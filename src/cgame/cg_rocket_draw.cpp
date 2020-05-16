@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
+#include "cg_key_name.h"
 #include "rocket/rocket.h"
 #include <RmlUi/Core/Element.h>
 #include <RmlUi/Core/ElementInstancer.h>
@@ -1606,7 +1607,7 @@ class CrosshairNamesElement : public HudElement
 {
 public:
 	CrosshairNamesElement( const Rml::Core::String& tag  ) :
-			HudElement( tag, ELEMENT_GAME ) {}
+			HudElement( tag, ELEMENT_GAME ), alpha_( 0.0F ) {}
 
 	void DoOnUpdate()
 	{
@@ -1741,7 +1742,7 @@ class LevelshotElement : public HudElement
 {
 public:
 	LevelshotElement( const Rml::Core::String& tag ) :
-			HudElement( tag, ELEMENT_ALL ) {}
+			HudElement( tag, ELEMENT_ALL ), mapIndex( -1 ) {}
 
 	void DoOnUpdate()
 	{
@@ -2101,7 +2102,9 @@ public:
 	PredictedMineEfficiencyElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, false ),
 			shouldBeVisible( true ),
-			display( Rml::Core::Style::Display::Block ),
+			display( -1 ),
+			lastDeltaEfficiencyPct( -999 ),
+			lastDeltaBudget( -999 ),
 			pluralSuffix{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
 	{
 
@@ -3302,8 +3305,9 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 		sec = 0;
 	}
 
-	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
-	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
+	int bindTeam = CG_CurrentBindTeam();
+	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
+	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 
 	std::string s = Str::Format( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
@@ -3465,9 +3469,11 @@ static void CG_Rocket_DrawDownloadTime()
 		return;
 	}
 
-	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
+	float downloadTimeDelta = ( rocketInfo.realtime - downloadTime ) / 1000;
+
+	if ( downloadTimeDelta != 0.0F )
 	{
-		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
+		xferRate = downloadCount / downloadTimeDelta;
 	}
 	else
 	{
@@ -3535,9 +3541,11 @@ static void CG_Rocket_DrawDownloadSpeed()
 		return;
 	}
 
-	if ( ( rocketInfo.realtime - downloadTime ) / 1000 )
+	float downloadTimeDelta = ( rocketInfo.realtime - downloadTime ) / 1000;
+
+	if ( downloadTimeDelta != 0.0F )
 	{
-		xferRate = downloadCount / ( ( rocketInfo.realtime - downloadTime ) / 1000 );
+		xferRate = downloadCount / downloadTimeDelta;
 		CG_ReadableSize( xferRateBuf, sizeof xferRateBuf, xferRate );
 		Rocket_SetInnerRML( va( "%s/Sec", xferRateBuf ), RP_QUAKE );
 	}

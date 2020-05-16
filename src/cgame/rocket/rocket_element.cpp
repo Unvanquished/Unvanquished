@@ -349,7 +349,7 @@ void Rocket_AddConsoleText(Str::StringRef text)
 		return;
 	}
 
-	RocketConsoleTextElement::lines.push_front( ConsoleLine( Rml::Core::String( va( "%s\n", buffer ) ) ) );
+	RocketConsoleTextElement::lines.emplace_front( Rml::Core::String( va( "%s\n", buffer ) ) );
 }
 
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs )

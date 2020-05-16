@@ -205,14 +205,14 @@ void CG_ShaderStateChanged()
 
 	while ( o && *o )
 	{
-		n = strstr( o, "=" );
+		n = strchr( o, '=' );
 
 		if ( n && *n )
 		{
 			memcpy( originalShader, o, n - o );
 			originalShader[ n - o ] = 0;
 			n++;
-			t = strstr( n, ":" );
+			t = strchr( n, ':' );
 
 			if ( t && *t )
 			{
@@ -225,7 +225,7 @@ void CG_ShaderStateChanged()
 			}
 
 			t++;
-			o = strstr( t, "@" );
+			o = strchr( t, '@' );
 
 			if ( o )
 			{
@@ -681,6 +681,11 @@ void CG_Menu( int menuType, int arg )
 			longMsg = _("This location is too close to the enemy to evolve. Move away "
 			          "from the enemy's presence and try again.");
 			shortMsg = _("This location is too close to the enemy to evolve");
+			break;
+
+		case MN_A_NOTINBASE:
+			longMsg = _("The Overmind is too far away to devolve.");
+			shortMsg = _("The Overmind is too far away to devolve.");
 			break;
 
 		case MN_A_NOOVMND_EVOLVE:

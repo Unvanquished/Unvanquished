@@ -423,30 +423,12 @@ int BG_CostToEvolve( int from, int to )
 			 from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
 			 to <= PCL_NONE || to >= PCL_NUM_CLASSES )
 	{
-		return -1;
+		return CANT_EVOLVE;
 	}
 
 	fromCost = BG_Class( from )->cost;
 	toCost = BG_Class( to )->cost;
 
-	// classes w/o a cost are for spawning only
-	if ( toCost == 0 )
-	{
-		// (adv.) granger may evolve into adv. granger or dretch at no cost
-		if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) &&
-		     ( to == PCL_ALIEN_BUILDER0_UPG || to == PCL_ALIEN_LEVEL0 ) )
-		{
-			return 0;
-		}
-
-		return -1;
-	}
-
-	// don't allow devolving
-	if ( toCost <= fromCost )
-	{
-		return -1;
-	}
 
 	return toCost - fromCost;
 }
@@ -462,14 +444,14 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 
 	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
 	{
-		return -1;
+		return CANT_EVOLVE;
 	}
 
 	evolveCost = BG_CostToEvolve( from, to );
 
 	if ( credits < evolveCost )
 	{
-		return -1;
+		return CANT_EVOLVE;
 	}
 
 	return evolveCost;
@@ -486,7 +468,7 @@ bool BG_AlienCanEvolve( int from, int credits )
 
 	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( from, to, credits ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( from, to, credits ) != CANT_EVOLVE )
 		{
 			return true;
 		}
@@ -1054,31 +1036,25 @@ void BG_UnloadAllConfigs()
 
     for ( unsigned i = 0; i < bg_numBuildables; i++ )
     {
-        buildableAttributes_t *ba = &bg_buildableList[i];
+        buildableAttributes_t &ba = bg_buildableList[i];
 
-        if ( ba )
-        {
-            BG_Free( (char *)ba->humanName );
-            BG_Free( (char *)ba->info );
-        }
+        BG_Free( (char *)ba.humanName );
+        BG_Free( (char *)ba.info );
     }
 
     for ( unsigned i = 0; i < bg_numClasses; i++ )
     {
-        classAttributes_t *ca = &bg_classList[i];
+        classAttributes_t& ca = bg_classList[i];
 
-        if ( ca )
+        // Do not free the statically allocated empty string
+        if( ca.info && *ca.info != '\0' )
         {
-            // Do not free the statically allocated empty string
-            if( ca->info && *ca->info != '\0' )
-            {
-                BG_Free( (char *)ca->info );
-            }
+            BG_Free( (char *)ca.info );
+        }
 
-            if( ca->fovCvar && *ca->fovCvar != '\0' )
-            {
-                BG_Free( (char *)ca->fovCvar );
-            }
+        if( ca.fovCvar && *ca.fovCvar != '\0' )
+        {
+            BG_Free( (char *)ca.fovCvar );
         }
     }
 
@@ -1089,46 +1065,37 @@ void BG_UnloadAllConfigs()
 
     for ( unsigned i = 0; i < bg_numWeapons; i++ )
     {
-        weaponAttributes_t *wa = &bg_weapons[i];
+        weaponAttributes_t &wa = bg_weapons[i];
 
-        if ( wa )
+        BG_Free( (char *)wa.humanName );
+
+        if( wa.info && *wa.info != '\0' )
         {
-            BG_Free( (char *)wa->humanName );
-
-            if( wa->info && *wa->info != '\0' )
-            {
-                BG_Free( (char *)wa->info );
-            }
+            BG_Free( (char *)wa.info );
         }
     }
 
     for ( unsigned i = 0; i < bg_numUpgrades; i++ )
     {
-        upgradeAttributes_t *ua = &bg_upgrades[i];
+        upgradeAttributes_t &ua = bg_upgrades[i];
 
-        if ( ua )
+        BG_Free( (char *)ua.humanName );
+
+        if( ua.info && *ua.info != '\0' )
         {
-            BG_Free( (char *)ua->humanName );
-
-            if( ua->info && *ua->info != '\0' )
-            {
-                BG_Free( (char *)ua->info );
-            }
+            BG_Free( (char *)ua.info );
         }
     }
 
     for ( unsigned i = 0; i < bg_numBeacons; i++ )
     {
-		    beaconAttributes_t *ba = bg_beacons + i;
+        beaconAttributes_t &ba = bg_beacons[i];
 
-		    if ( ba )
-		    {
-				    BG_Free( (char *)ba->humanName );
+        BG_Free((char*)ba.humanName);
 
 #ifdef BUILD_CGAME
-						BG_Free( (char *)ba->text[0] );
+        BG_Free((char*)ba.text[0]);
 #endif
-		    }
     }
 }
 

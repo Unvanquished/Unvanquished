@@ -42,7 +42,7 @@ Maryland 20850 USA.
 class CvarElementFormControlInput : public Rml::Controls::ElementFormControlInput, public Rml::Core::EventListener
 {
 public:
-	CvarElementFormControlInput( const Rml::Core::String &tag ) : Rml::Controls::ElementFormControlInput( tag ) { }
+	CvarElementFormControlInput( const Rml::Core::String &tag ) : Rml::Controls::ElementFormControlInput( tag ), owner( nullptr ) { }
 
 	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{

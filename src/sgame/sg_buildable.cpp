@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "CustomSurfaceFlags.h"
 #include "Entities.h"
 #include "CBSE.h"
 
@@ -1523,7 +1524,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		}
 
 		// Check surface permissions
-		if ( (tr1.surfaceFlags & (SURF_NOALIENBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOALIENBUILD | CONTENTS_NOBUILD)) )
+		if ( (tr1.surfaceFlags & (CUSTOM_SURF_NOALIENBUILD | CUSTOM_SURF_NOBUILD)) || (contents & (CUSTOM_CONTENTS_NOALIENBUILD | CUSTOM_CONTENTS_NOBUILD)) )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -1546,7 +1547,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		}
 
 		// Check permissions
-		if ( (tr1.surfaceFlags & (SURF_NOHUMANBUILD | SURF_NOBUILD)) || (contents & (CONTENTS_NOHUMANBUILD | CONTENTS_NOBUILD)) )
+		if ( (tr1.surfaceFlags & (CUSTOM_SURF_NOHUMANBUILD | CUSTOM_SURF_NOBUILD)) || (contents & (CUSTOM_CONTENTS_NOHUMANBUILD | CUSTOM_CONTENTS_NOBUILD)) )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -2209,6 +2210,7 @@ int G_LayoutList( const char *map, char *list, int len )
 		Q_strcat( layouts,  sizeof( layouts ), filePtr );
 		listLen = strlen( layouts );
 
+		ASSERT_GE(listLen, 4);
 		// strip extension and add space delimiter
 		layouts[ listLen - 4 ] = ' ';
 		layouts[ listLen - 3 ] = '\0';
@@ -2388,7 +2390,7 @@ void G_LayoutLoad()
 		if ( *layout == '\n' )
 		{
 			i = 0;
-			sscanf( line, "%s %f %f %f %f %f %f %f %f %f %f %f %f\n",
+			sscanf( line, "%1023s %f %f %f %f %f %f %f %f %f %f %f %f\n",
 			        buildName,
 			        &origin[ 0 ], &origin[ 1 ], &origin[ 2 ],
 			        &angles[ 0 ], &angles[ 1 ], &angles[ 2 ],

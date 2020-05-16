@@ -286,10 +286,10 @@ extern int   MEDKIT_STARTUP_SPEED;
 #define JETPACK_FUEL_USAGE            6     // in 1/ms
 #define JETPACK_FUEL_PER_DMG          300   // per damage point received (before armor mod is applied)
 #define JETPACK_FUEL_RESTORE          3     // in 1/ms
-#define JETPACK_FUEL_IGNITE           JETPACK_FUEL_MAX / 20      // used when igniting the engine
-#define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5       // jetpack doesn't start from a jump below this
-#define JETPACK_FUEL_STOP             JETPACK_FUEL_RESTORE * 150 // jetpack doesn't activate below this
-#define JETPACK_FUEL_REFUEL           JETPACK_FUEL_MAX - JETPACK_FUEL_USAGE * 1000
+#define JETPACK_FUEL_IGNITE           JETPACK_FUEL_MAX / 20        // used when igniting the engine
+#define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5         // jetpack doesn't start from a jump below this
+#define JETPACK_FUEL_STOP             (JETPACK_FUEL_RESTORE * 150) // jetpack doesn't activate below this
+#define JETPACK_FUEL_REFUEL           (JETPACK_FUEL_MAX - JETPACK_FUEL_USAGE * 1000)
 
 /*
  * Misc

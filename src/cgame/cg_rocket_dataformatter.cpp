@@ -409,7 +409,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if ( cost == -1 )
+	else if ( cost == CANT_EVOLVE )
 	{
 
 		Class = "expensive";
@@ -422,7 +422,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		action =  va( "onClick='Cmd.exec(\"class %s\") Events.pushevent(\"hide %s\", event)'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
 	}
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' onMouseover='Events.pushevent(\"setDS alienEvolveList alienClasss %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), false );
+	Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' alienclass='%s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), false );
 }
 
 static void CG_Rocket_DFCMBeacons( int handle, const char *data )

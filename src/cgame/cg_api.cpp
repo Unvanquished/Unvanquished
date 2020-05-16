@@ -94,12 +94,6 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 });
                 break;
 
-            case CG_CROSSHAIR_PLAYER:
-                IPC::HandleMsg<CGameCrosshairPlayerMsg>(VM::rootChannel, std::move(reader), [] (int& player) {
-                    player = CG_CrosshairPlayer();
-                });
-                break;
-
             case CG_KEY_EVENT:
                 IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (Keyboard::Key key, bool down) {
                     CG_KeyEvent(key, down);

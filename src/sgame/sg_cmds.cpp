@@ -2404,8 +2404,17 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 			{
-				if ( cost >= 0 )
+				if ( cost != CANT_EVOLVE )
 				{
+
+					if ( ( cost < 0 || ( cost == 0 && currentClass == PCL_ALIEN_LEVEL0 ) )	&& ( G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) ) {
+						if ( report )
+						{
+							G_TriggerMenu( clientNum, MN_A_NOTINBASE );
+						}
+						return false;
+					}
+
 					ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
 
 					if ( ent->client->pers.evolveHealthFraction < 0.0f )
@@ -2417,6 +2426,9 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 						ent->client->pers.evolveHealthFraction = 1.0f;
 					}
 
+					if ( cost < 0 ){
+						 cost = cost * ent->client->pers.evolveHealthFraction * DEVOLVE_RETURN_RATE;
+					}
 					//remove credit
 					G_AddCreditToClient( ent->client, -cost, true );
 					ent->client->pers.classSelection = newClass;

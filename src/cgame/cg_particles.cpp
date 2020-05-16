@@ -2413,7 +2413,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	}
 }
 
-#define GETKEY(x,y) ((( x ) >> y ) & 0xFF )
+#define GETKEY(x,y) ((( x ) >> (y) ) & 0xFF )
 
 /*
 ===============

@@ -42,7 +42,7 @@ Maryland 20850 USA.
 class RocketDataSelect : public Rml::Controls::ElementFormControlDataSelect, public Rml::Core::EventListener
 {
 public:
-	RocketDataSelect( const Rml::Core::String &tag ) : Rml::Controls::ElementFormControlDataSelect( tag ), selection( -2 ) { }
+	RocketDataSelect( const Rml::Core::String &tag ) : Rocket::Controls::ElementFormControlDataSelect( tag ), selection( -2 ), owner( nullptr) { }
 	~RocketDataSelect() { }
 
 	virtual void OnChildAdd( Element *child )
@@ -107,7 +107,7 @@ public:
 
 			// dispatch event so rocket knows about it
 			Rml::Core::Dictionary parameters;
-			parameters[ "index" ] = va( "%d", selection );
+			parameters[ "index" ] = selection;
 			parameters[ "datasource" ] = dsName;
 			parameters[ "table" ] = tableName;
 			DispatchEvent( "rowselect", parameters );

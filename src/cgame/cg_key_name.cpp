@@ -23,6 +23,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 
 #include "cg_key_name.h"
 
+#include "common/Log.h"
 #include "common/String.h"
 #include "engine/client/cg_api.h"
 
@@ -46,4 +47,25 @@ std::string CG_KeyDisplayName(Key key) {
     default:
         return "???";
     }
+}
+
+static int bindTeam;
+
+void CG_SetBindTeam(team_t team) {
+    switch (team) {
+    case TEAM_NONE:
+        bindTeam = 3; // BIND_TEAM_SPECTATORS
+        break;
+    case TEAM_HUMANS:
+    case TEAM_ALIENS:
+        bindTeam = static_cast<int>(team);
+        break;
+    default:
+        Log::Warn("Invalid team %d", team);
+    }
+}
+
+// Get the current team according to the Keyboard::BindTeam type in the engine
+int CG_CurrentBindTeam() {
+    return bindTeam;
 }

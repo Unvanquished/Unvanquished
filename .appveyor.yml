@@ -32,7 +32,14 @@ build:
   parallel: true
 
 before_build:
-  - git submodule update --init --recursive
+  - curl -sS https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o git-checkout-modules
+  # The git-checkout-modules command below is normally equivalent to 'git submodule update --init --recursive',
+  # but in the case that the branch name ends with '/sync' it tries to find branches with the same name.
+  - bash git-checkout-modules
+    --update
+    --sub-ref=%APPVEYOR_REPO_BRANCH%:has=/sync$
+    --sub-ref=%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%:has=/sync$
+    --print
   - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
   - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - python --version
