@@ -54,7 +54,7 @@ public:
 
 		for ( auto &&column : columns )
 		{
-			row.emplace_back( Rocket_QuakeToRML( Info_ValueForKey( data[ table ][ row_index ].c_str(), columns[ i ].c_str() ), RP_EMOTICONS ) );
+			row.emplace_back( Rocket_QuakeToRML( Info_ValueForKey( data[ table ][ row_index ].c_str(), column.c_str() ), RP_EMOTICONS ) );
 		}
 	}
 
