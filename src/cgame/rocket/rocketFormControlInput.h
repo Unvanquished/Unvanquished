@@ -69,7 +69,7 @@ public:
 			// Need to cache this because it is not available
 			// when this element is being removed
 			owner = GetOwnerDocument();
-			owner->AddEventListener( "show", this );
+			owner->AddEventListener( Rml::Core::EventId::Show, this );
 		}
 	}
 
@@ -78,32 +78,38 @@ public:
 		Rml::Controls::ElementFormControlInput::OnChildRemove( child );
 		if ( child == this )
 		{
-			owner->RemoveEventListener( "show", this );
+			owner->RemoveEventListener( Rml::Core::EventId::Show, this );
 		}
+	}
+
+	virtual void ProcessDefaultAction( Rml::Core::Event &event )
+	{
+		ElementFormControlInput::ProcessDefaultAction( event );
+		ProcessEvent( event );
 	}
 
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
 		if ( !cvar.empty() )
 		{
-			if ( owner == event.GetTargetElement() && event == "show" )
+			if ( owner == event.GetTargetElement() && event == Rml::Core::EventId::Show )
 			{
 				UpdateValue();
 			}
 
 			if ( this == event.GetTargetElement() )
 			{
-				if ( event == "blur" && ( type != "checkbox" && type != "radio" ) )
+				if ( event == Rml::Core::EventId::Blur && ( type != "checkbox" && type != "radio" ) )
 				{
 					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
-				else if ( event == "change" && type == "range" )
+				else if ( event == Rml::Core::EventId::Change && type == "range" )
 				{
 					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
-				else if ( event == "click" && !IsDisabled() )
+				else if ( event == Rml::Core::EventId::Click && !IsDisabled() )
 				{
 					if ( type == "checkbox" )
 					{
