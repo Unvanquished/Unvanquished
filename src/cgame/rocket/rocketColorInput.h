@@ -60,6 +60,7 @@ public:
 					this, "*", "div", Rml::Core::XMLAttributes() ) );
 			input->SetProperty( "display", "none" );
 			input->SetAttributes( GetAttributes() );
+			input->AddEventListener( Rml::Core::EventId::Blur, this );
 			UpdateValue();
 		}
 	}
@@ -72,12 +73,19 @@ public:
 		if ( input ) input->SetAttributes( changed_attributes );
 	}
 
+	virtual void ProcessDefaultAction( Rml::Core::Event &event )
+	{
+		Element::ProcessDefaultAction( event );
+		ProcessEvent( event );
+	}
+
 	virtual void ProcessEvent( Rml::Core::Event &event )
 	{
-		if ( input || color_value ) return;
+		if ( !input || !color_value ) return;
+
 		if ( event.GetTargetElement() == input )
 		{
-			if ( event == "change" )
+			if ( event == Rml::Core::EventId::Change )
 			{
 				UpdateValue();
 			}
@@ -90,7 +98,7 @@ public:
 			}
 		}
 
-		if ( event == "click" )
+		if ( event == Rml::Core::EventId::Click )
 		{
 			Rml::Core::Element* elem = event.GetTargetElement();
 
@@ -111,13 +119,11 @@ private:
 	void UpdateValue()
 	{
 		Rml::Core::String string = "^7";
-
-		while( color_value && color_value->HasChildNodes() )
+		string += dynamic_cast< Rml::Controls::ElementFormControlInput* >( input )->GetValue();
+		while ( color_value && color_value->HasChildNodes() )
 		{
 			color_value->RemoveChild( color_value->GetFirstChild() );
 		}
-
-		string += dynamic_cast< Rml::Controls::ElementFormControlInput* >( input )->GetValue();
 
 		Rml::Core::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( string.c_str(), RP_QUAKE ) );
 	}
