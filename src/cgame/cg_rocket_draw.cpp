@@ -2102,7 +2102,7 @@ public:
 	PredictedMineEfficiencyElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, false ),
 			shouldBeVisible( true ),
-			display( -1 ),
+			display( Rml::Core::Style::Display::Block ),
 			lastDeltaEfficiencyPct( -999 ),
 			lastDeltaBudget( -999 ),
 			pluralSuffix{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
