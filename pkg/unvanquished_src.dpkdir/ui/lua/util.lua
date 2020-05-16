@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]--
 
 function detectEscape(event, document)
-	if event.parameters["key_identifier"] == rocket.key_identifier.ESCAPE then
+	if event.parameters["key_identifier"] == rmlui.key_identifier.ESCAPE then
 		if document.context.documents["menu_ingame"].style["visibility"] == "hidden" then
 			document:Hide()
 		else
@@ -92,10 +92,10 @@ end
 function CirclemenuHandleKey(event, document, num_handler)
 	local key = event.parameters["key_identifier"]
 	local index
-	if key == rocket.key_identifier["0"] then
+	if key == rmlui.key_identifier["0"] then
 		index = 10
-	elseif key >= rocket.key_identifier["1"] and key <= rocket.key_identifier["9"] then
-		index = key - rocket.key_identifier["1"] + 1
+	elseif key >= rmlui.key_identifier["1"] and key <= rmlui.key_identifier["9"] then
+		index = key - rmlui.key_identifier["1"] + 1
 	else
 		detectEscape(event, document)
 		return

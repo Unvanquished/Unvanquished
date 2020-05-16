@@ -23,7 +23,7 @@
 		</style>
 	</head>
 	<body id="connecting"
-	      onkeydown="if event.parameters['key_identifier'] == rocket.key_identifier.ESCAPE then Events.pushevent('exec disconnect', event) end"
+	      onkeydown="if event.parameters['key_identifier'] == rmlui.key_identifier.ESCAPE then Events.pushevent('exec disconnect', event) end"
 	      nohide>
 		<div>
 			<connecting/>

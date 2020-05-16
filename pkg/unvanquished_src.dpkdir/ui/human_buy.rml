@@ -195,7 +195,7 @@ tab:selected {
 			end
 			function HumanBuyHandleKey(event, document)
 				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
-				if event.parameters.key_identifier == rocket.key_identifier.TAB then
+				if event.parameters.key_identifier == rmlui.key_identifier.TAB then
 					tabset.active_tab = 1 - tabset.active_tab
 				else
 					local handler = ({[0]=WeaponClick, [1]=UpgradeClick})[tabset.active_tab]
