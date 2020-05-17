@@ -3766,6 +3766,31 @@ static void PM_FinishWeaponChange()
 	}
 }
 
+// TODO: move other button definitions into gamelogic
+constexpr int BUTTON_DECONSTRUCT = 13;
+
+static void HandleDeconstructButton()
+{
+	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) ||
+	     ( pm->ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK) > BA_NONE ||
+	     ( pm->ps->weaponstate != WEAPON_READY && pm->ps->weaponstate != WEAPON_FIRING ) )
+	{
+		// cancel if player is involved in building something, or if the weapon is in a weird state
+		pm->ps->weaponCharge = 0;
+		return;
+	}
+
+	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_DECONSTRUCT ) )
+	{
+		pm->ps->weaponCharge = 1;
+	}
+	else if ( pm->ps->weaponCharge > 0 )
+	{
+		PM_AddEvent( EV_FIRE_DECONSTRUCT );
+		pm->ps->weaponCharge = 0;
+	}
+}
+
 /*
 ==============
 PM_TorsoAnimation
@@ -3962,6 +3987,11 @@ static void PM_Weapon()
 		{
 			pm->ps->eFlags |= EF_WARN_CHARGE;
 		}
+	}
+
+	if ( pm->ps->weapon == WP_ABUILD || pm->ps->weapon == WP_ABUILD2 || pm->ps->weapon == WP_HBUILD )
+	{
+		HandleDeconstructButton();
 	}
 
 	// don't allow attack until all buttons are up
