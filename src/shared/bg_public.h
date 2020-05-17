@@ -469,6 +469,7 @@ enum weaponMode_t
   WPM_PRIMARY,
   WPM_SECONDARY,
   WPM_TERTIARY,
+  WPM_DECONSTRUCT,
 
   WPM_NOTFIRING,
 
@@ -654,6 +655,7 @@ enum entity_event_t
   EV_FIRE_WEAPON,
   EV_FIRE_WEAPON2,
   EV_FIRE_WEAPON3,
+  EV_FIRE_DECONSTRUCT,
   EV_WEAPON_RELOAD,
 
   EV_PLAYER_RESPAWN, // for fovwarp effects

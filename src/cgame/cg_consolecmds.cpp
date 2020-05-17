@@ -580,8 +580,8 @@ void CG_InitConsoleCommands()
 	}
 
 	trap_RegisterButtonCommands(
-	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.
-	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,,rally"
+	    // 0      12       3     45      6        78       9ABCD           E      <- bit nos.
+	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,deconstruct,rally"
 	    );
 }
 
