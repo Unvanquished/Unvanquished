@@ -1185,6 +1185,10 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_TERTIARY );
 				break;
 
+			case EV_FIRE_DECONSTRUCT:
+				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_DECONSTRUCT );
+				break;
+
 			case EV_NOAMMO:
 				break;
 
