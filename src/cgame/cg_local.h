@@ -1398,6 +1398,8 @@ struct rocketInfo_t
 	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;
+	qhandle_t cursor;
+	rectDef_t cursor_pos;
 };
 
 extern rocketInfo_t rocketInfo;
@@ -1499,8 +1501,6 @@ struct cgMedia_t
 
 	sfxHandle_t alienL4ChargePrepare;
 	sfxHandle_t alienL4ChargeStart;
-
-	qhandle_t   cursor;
 
 	//light armour
 	qhandle_t   larmourHeadSkin;
