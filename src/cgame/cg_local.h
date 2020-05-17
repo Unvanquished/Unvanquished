@@ -1405,6 +1405,7 @@ struct rocketInfo_t
 	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;
+	bool renderCursor;
 	qhandle_t cursor;
 	rectDef_t cursor_pos;
 };
@@ -2242,6 +2243,8 @@ int CG_StringToNetSource( const char *src );
 const char *CG_NetSourceToString( int netSrc );
 const char *CG_Rocket_QuakeToRML( const char *in );
 bool CG_Rocket_IsCommandAllowed( rocketElementType_t type );
+bool CG_Rocket_LoadCursor( Str::StringRef cursorPath );
+void CG_Rocket_EnableCursor( bool enable );
 
 //
 // cg_rocket_events.c

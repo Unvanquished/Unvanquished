@@ -130,7 +130,7 @@ public:
 			if ( event == "show" )
 			{
 				focus = true;
-				GetContext()->EnableMouseCursor( false );
+				CG_Rocket_EnableCursor( false );
 			}
 
 			else if ( event == "blur" || event == "hide" )
@@ -145,7 +145,7 @@ public:
 		{
 			if ( event == "resize" )
 			{
-				GetContext()->EnableMouseCursor( false );
+				CG_Rocket_EnableCursor( false );
 				focus = true;
 				GenerateCursor();
 			}

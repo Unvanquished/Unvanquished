@@ -162,13 +162,7 @@ void CG_Rocket_Init( glconfig_t gl )
 		{
 			token = COM_Parse2( &text_p );
 
-			rocketInfo.cursor = trap_R_RegisterShader( token, (RegisterShaderFlags_t) RSF_DEFAULT );
-			// Scale cursor with resolution while maintaining the original aspect ratio.
-			int x, y;
-			trap_R_GetTextureSize( rocketInfo.cursor, &x, &y );
-			float ratio = static_cast<float>( x ) / static_cast<float>( y );
-			rocketInfo.cursor_pos.h = cgs.glconfig.vidHeight * 0.025f;
-			rocketInfo.cursor_pos.w = rocketInfo.cursor_pos.h * ratio;
+
 			continue;
 		}
 
@@ -644,7 +638,10 @@ void CG_Rocket_Frame( cgClientState_t state )
 	CG_Rocket_ProcessEvents();
 	Rocket_Update();
 	Rocket_Render();
-	trap_R_DrawStretchPic( rocketInfo.cursor_pos.x, rocketInfo.cursor_pos.y, rocketInfo.cursor_pos.w,rocketInfo.cursor_pos.h, 0, 0, 1, 1, rocketInfo.cursor );
+	if ( rocketInfo.renderCursor && rocketInfo.cursor )
+	{
+		trap_R_DrawStretchPic( rocketInfo.cursor_pos.x, rocketInfo.cursor_pos.y, rocketInfo.cursor_pos.w,rocketInfo.cursor_pos.h, 0, 0, 1, 1, rocketInfo.cursor );
+	}
 }
 
 const char *CG_Rocket_GetTag()
@@ -747,4 +744,30 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 	}
 
 	return false;
+}
+
+bool CG_Rocket_LoadCursor( Str::StringRef cursorPath )
+{
+	if ( cursorPath.empty() )
+	{
+		rocketInfo.cursor = 0;
+		return true;
+	}
+	rocketInfo.cursor = trap_R_RegisterShader( cursorPath.c_str(), (RegisterShaderFlags_t) RSF_DEFAULT );
+	if ( rocketInfo.cursor == 0 )
+	{
+		return false;
+	}
+	// Scale cursor with resolution while maintaining the original aspect ratio.
+	int x, y;
+	trap_R_GetTextureSize( rocketInfo.cursor, &x, &y );
+	float ratio = static_cast<float>( x ) / static_cast<float>( y );
+	rocketInfo.cursor_pos.h = cgs.glconfig.vidHeight * 0.025f;
+	rocketInfo.cursor_pos.w = rocketInfo.cursor_pos.h * ratio;
+	return true;
+}
+
+void CG_Rocket_EnableCursor( bool enable )
+{
+	rocketInfo.renderCursor = enable;
 }

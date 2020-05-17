@@ -114,12 +114,12 @@ public:
 class DaemonSystemInterface : public Rml::Core::SystemInterface
 {
 public:
-	double GetElapsedTime()
+	double GetElapsedTime() override
 	{
 		return trap_Milliseconds() / 1000.0f;
 	}
 
-	int TranslateString( Rml::Core::String &translated, const Rml::Core::String &input )
+	int TranslateString( Rml::Core::String &translated, const Rml::Core::String &input ) override
 	{
 		const char* ret = _( input.c_str() );
 		translated = ret;
@@ -127,7 +127,7 @@ public:
 	}
 
 	// TODO: Add explicit support for other log types
-	bool LogMessage( Rml::Core::Log::Type type, const Rml::Core::String &message )
+	bool LogMessage( Rml::Core::Log::Type type, const Rml::Core::String &message ) override
 	{
 		switch ( type )
 		{
@@ -142,6 +142,15 @@ public:
 				break;
 		}
 		return true;
+	}
+
+	void SetMouseCursor(const Rml::Core::String& cursor_name) override
+	{
+		Log::Verbose("Loading new cursor: %s", cursor_name);
+		if ( !CG_Rocket_LoadCursor( cursor_name ) )
+		{
+			Log::Warn( "Error loading cursor: %s", cursor_name );
+		}
 	}
 };
 
@@ -386,6 +395,8 @@ void Rocket_Init()
 
 	// Create the menu context
 	menuContext = Rml::Core::CreateContext( "menuContext", Rml::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
+	// Allow this context to set the mouse cursor.
+	menuContext->EnableMouseCursor( true );
 
 	// Add the listener so we know where to give mouse/keyboard control to
 	menuContext->GetRootElement()->AddEventListener( "show", &fm, true );
@@ -395,6 +406,8 @@ void Rocket_Init()
 
 	// Create the HUD context
 	hudContext = Rml::Core::CreateContext( "hudContext", Rml::Core::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
+	// HUDs do not get to interact with the mouse. In fact, we do not even inject mouse events.
+	hudContext->EnableMouseCursor( false );
 
 	// Add custom client elements
 	#define REGISTER_ELEMENT(tag, type, instancer) \
@@ -729,7 +742,7 @@ private:
     {
         if ( menuContext )
         {
-            menuContext->EnableMouseCursor( show_cursor && focus );
+			CG_Rocket_EnableCursor( show_cursor && focus );
         }
 
         MouseMode mode;
@@ -740,8 +753,7 @@ private:
         }
         else if ( show_cursor )
         {
-            // TODO: implement a proper rmlui cursor.
-            mode = MouseMode::SystemCursor;
+            mode = MouseMode::CustomCursor;
         }
         else
         {
