@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-rocketInfo_t rocketInfo;
+rocketInfo_t rocketInfo = {};
 
 vmCvar_t rocket_menuFile;
 vmCvar_t rocket_hudFile;
@@ -157,17 +157,18 @@ void CG_Rocket_Init( glconfig_t gl )
 		}
 
 		// Set the cursor
+		// TODO: Use the RmlUi cursor mechanism to allow per-cursor stuff...
 		if ( !Q_stricmp( token, "cursor" ) )
 		{
 			token = COM_Parse2( &text_p );
 
-			// Skip non-RML files
-			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
-			{
-				continue;
-			}
-
-			Rocket_LoadCursor( token );
+			rocketInfo.cursor = trap_R_RegisterShader( token, (RegisterShaderFlags_t) RSF_DEFAULT );
+			// Scale cursor with resolution while maintaining the original aspect ratio.
+			int x, y;
+			trap_R_GetTextureSize( rocketInfo.cursor, &x, &y );
+			float ratio = static_cast<float>( x ) / static_cast<float>( y );
+			rocketInfo.cursor_pos.h = cgs.glconfig.vidHeight * 0.025f;
+			rocketInfo.cursor_pos.w = rocketInfo.cursor_pos.h * ratio;
 			continue;
 		}
 
@@ -643,6 +644,7 @@ void CG_Rocket_Frame( cgClientState_t state )
 	CG_Rocket_ProcessEvents();
 	Rocket_Update();
 	Rocket_Render();
+	trap_R_DrawStretchPic( rocketInfo.cursor_pos.x, rocketInfo.cursor_pos.y, rocketInfo.cursor_pos.w,rocketInfo.cursor_pos.h, 0, 0, 1, 1, rocketInfo.cursor );
 }
 
 const char *CG_Rocket_GetTag()
