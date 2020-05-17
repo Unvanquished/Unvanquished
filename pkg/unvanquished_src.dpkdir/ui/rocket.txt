@@ -56,5 +56,5 @@
 		ui/callvote_draw.rml
 		ui/callvote_map.rml
 	}
-	cursor ui/shared/cursor.rml
+	cursor ui/assets/cursor
 }
