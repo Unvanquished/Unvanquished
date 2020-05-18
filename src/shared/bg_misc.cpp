@@ -2911,7 +2911,7 @@ static const NetcodeTable playerStateFields =
 	,
 	{ PSF( velocity[ 2 ] ),        0              , 0 }
 	,
-	{ PSF( weaponCharge ),         14             , 0 }
+	{ PSF( weaponCharge ),         -15            , 0 }
 	,
 	{ PSF( weaponTime ),           -16            , 0 }
 	,
