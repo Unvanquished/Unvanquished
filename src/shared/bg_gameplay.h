@@ -25,6 +25,16 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #ifndef G_GAMEPLAY_H_
 #define G_GAMEPLAY_H_
 
+/* Common constants for the build weapons for both teams. These two are really user interface-related
+   constants, not gameplay, as the player can always use the /deconstruct command to immediately
+   decon something.
+ */
+
+// Pressing +deconstruct for less than this many milliseconds toggles the deconstruction mark
+#define BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE 200
+// Holding +deconstruct for this many milliseconds force-deconstructs a buildable
+#define BUILDER_LONG_DECONSTRUCT_CHARGE 800
+
 /*
  * ALIEN weapons
  */

@@ -1132,9 +1132,9 @@ static void CancelBuild( gentity_t *self )
 	}
 }
 
-static void FireDeconstruct( gentity_t *self )
+static void FireDeconstruct( gentity_t *self, bool force )
 {
-	// do same thing as /deconstruct marked
+	// do same thing as /deconstruct [marked] (except you can instantly deconstruct without marking first)
 	gentity_t* buildable = G_GetDeconstructibleBuildable( self );
 	if ( buildable == nullptr )
 	{
@@ -1144,7 +1144,14 @@ static void FireDeconstruct( gentity_t *self )
 	{
 		return;
 	}
-	buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
+	if ( force )
+	{
+		G_DeconstructUnprotected( buildable, self );
+	}
+	else
+	{
+		buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
+	}
 }
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
@@ -1897,13 +1904,14 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			break;
 		}
 		case WPM_DECONSTRUCT:
+		case WPM_DECONSTRUCT_LONG:
 		{
 			switch ( weapon )
 			{
 				case WP_ABUILD:
 				case WP_ABUILD2:
 				case WP_HBUILD:
-					FireDeconstruct( self );
+					FireDeconstruct( self, weaponMode == WPM_DECONSTRUCT_LONG );
 					break;
 			}
 			break;
