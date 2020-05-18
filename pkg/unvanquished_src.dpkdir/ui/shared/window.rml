@@ -28,12 +28,11 @@
 			top: .5em;
 			left: .5em;
 
-			background-decorator: image;
-			background-image:/ui/assets/widgets/close_cross;
+			decorator: image( /ui/assets/widgets/close_cross );
 		}
 
 		closebutton:hover {
-			background-image: /ui/assets/widgets/close_cross_hover;
+			decorator: image( /ui/assets/widgets/close_cross_hover );
 		}
 
 		row {
