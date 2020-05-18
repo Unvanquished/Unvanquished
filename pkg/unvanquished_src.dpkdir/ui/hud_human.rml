@@ -250,8 +250,7 @@
 			}
 			scanner.active
 			{
-				background-decorator: image;
-				background-image: "/ui/assets/human/scanner";
+				decorator: image( "/ui/assets/human/scanner" );
 			}
 
 	</style>
