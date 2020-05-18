@@ -76,6 +76,28 @@ dataselect selectarrow:hover
 	decorator: image( /ui/assets/widgets/select_hover );
 }
 
+@spritesheet checks
+{
+	src: /ui/assets/widgets/radio-check;
+
+	checkbox: 0px 222px 222px 222px;
+	checkbox-hover: 222px 222px 222px 222px;
+	checkbox-active: 444px 222px 222px 222px;
+
+	checkbox-checked: 0px 666px 222px 222px;
+	checkbox-checked-hover: 222px 666px 222px 222px;
+	checkbox-checked-active: 444px 666px 222px 222px;
+
+	radio: 0px 0px 222px 222px;
+	radio-hover: 222px 0px 222px 222px;
+	radio-active: 444px 0px 222px 222px;
+
+	radio-checked: 0px 444px 222px 222px;
+	radio-checked-hover: 222px 444px 222px 222px;
+	radio-checked-active: 444px 444px 222px 222px;
+
+
+}
 
 /* #### Simple small-box controls #### */
 input.checkbox
@@ -83,40 +105,84 @@ input.checkbox
 	width: 2.1em;
 	height: 2.1em;
 	margin-top: -.3em;
-	icon-decorator: image;
-	icon-image: /ui/assets/widgets/radio-check;
-	icon-image-s: 444px 666px;
-	icon-image-t: 222px 444px;
+	decorator: image( checkbox );
 }
 input.radio
 {
 	width: 2.1em;
 	height: 2.1em;
 	margin-top: -.3em;
-	icon-decorator: image;
-	icon-image: /ui/assets/widgets/radio-check 444px 0px 666px 222px;
+	decorator: image( radio );
 }
 
-input.checkbox:hover,input.checkbox:checked:hover,
-input.radio:hover, input.radio:checked:hover
+input.checkbox:hover
 {
-	icon-image-s: 222px 444px;
+	decorator: image( checkbox-hover );
 }
 
-input.checkbox:active,input.checkbox:checked:active,
-input.radio:active, input.radio:checked:active
+input.checkbox:checked:hover
 {
-	icon-image-s: 0px 222px;
+	decorator: image( checkbox-checked-hover );
 }
 
-input.checkbox:checked,input.checkbox:checked:active,input.checkbox:checked:hover
+input.radio:hover
 {
-	icon-image-t: 666px 888px;
+	decorator: image( radio-hover );
 }
 
-input.radio:checked, input.radio:checked:hover, input.radio.checked:active
+input.radio:checked:hover
 {
-	icon-image-t: 444px 666px;
+	decorator: image( radio-checked-hover );
+}
+
+input.checkbox:active
+{
+	decorator: image( checkbox-active );
+}
+
+input.checkbox:checked:active
+{
+	decorator: image( checkbox-checked-active );
+}
+
+input.radio:active
+{
+	decorator: image( radio-active );
+}
+
+input.radio:checked:active
+{
+	decorator: image( radio-checked-active );
+}
+
+input.checkbox:checked
+{
+	decorator: image( checkbox-checked );
+}
+
+input.checkbox:checked:active
+{
+	decorator: image( checkbox-checked-active );
+}
+
+input.checkbox:checked:hover
+{
+	decorator: image( checkbox-checked-hover );
+}
+
+input.radio:checked
+{
+	decorator: image( radio-checked );
+}
+
+input.radio:checked:hover
+{
+	decorator: image( radio-checked-hover );
+}
+
+input.radio.checked:active
+{
+	decorator: image( radio-checked-active );
 }
 
 
