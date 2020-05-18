@@ -3780,13 +3780,32 @@ static void HandleDeconstructButton()
 		return;
 	}
 
+	if ( pm->ps->weaponCharge < 0 )
+	{
+		// weaponCharge==-1 is analogous to the WEAPON_NEEDS_RESET state when overcharging the luci
+		if ( !usercmdButtonPressed( pm->cmd.buttons, BUTTON_DECONSTRUCT ) )
+		{
+			pm->ps->weaponCharge = 0;
+		}
+		return;
+	}
+
 	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_DECONSTRUCT ) )
 	{
-		pm->ps->weaponCharge = 1;
+		pm->ps->weaponCharge = std::min( pm->ps->weaponCharge + pml.msec, BUILDER_LONG_DECONSTRUCT_CHARGE );
+		// only fire if the build timer is not running
+		if ( pm->ps->weaponCharge >= BUILDER_LONG_DECONSTRUCT_CHARGE && pm->ps->stats[ STAT_MISC ] == 0 )
+		{
+			PM_AddEvent( EV_FIRE_DECONSTRUCT_LONG );
+			pm->ps->weaponCharge = -1;
+		}
 	}
 	else if ( pm->ps->weaponCharge > 0 )
 	{
-		PM_AddEvent( EV_FIRE_DECONSTRUCT );
+		if ( pm->ps->weaponCharge < BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE )
+		{
+			PM_AddEvent( EV_FIRE_DECONSTRUCT );
+		}
 		pm->ps->weaponCharge = 0;
 	}
 }
