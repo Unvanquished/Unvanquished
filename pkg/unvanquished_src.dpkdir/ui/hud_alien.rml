@@ -28,7 +28,7 @@
 			}
 			div.item_select img.inactive, div.item_select img.no_ammo
 			{
-				color: red;
+				image-color: red;
 			}
 			alien_sense
 			{
@@ -99,13 +99,13 @@
 				opacity: 0.2;
 			}
 			.bg,.health,.spikes{
-				color:#ff0000AA;
+				image-color:#ff0000AA;
 			}
 			#health-bar{
-				color:#b3000094;
+				image-color:#b3000094;
 			}
 			#poison-bar{
-				color:#ff009b94;
+				image-color:#ff009b94;
 			}
 			#left,#right{
 				display:block;
@@ -127,7 +127,7 @@
 				bottom: .09em;
 				width: 1.2em;
 				height: 1.2em;
-				color:#ff0000ff;
+				image-color:#ff0000ff;
 			}
 			#health{
 				font-size: 5em;
@@ -145,7 +145,7 @@
 				bottom:20%;
 				width:13%;
 				height:auto;
-				color:#f500ffAA;
+				image-color:#f500ffAA;
 			}
 
 			weapon_icon img {
@@ -154,7 +154,7 @@
 				bottom: 3.9em;
 				width: 5.1em;
 				height:auto;
-				color:#ff0000ff;
+				image-color:#ff0000ff;
 			}
 
 			#evos{

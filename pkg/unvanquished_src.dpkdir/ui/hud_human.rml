@@ -15,7 +15,7 @@
 				width: 31%;
 				height: 20%;
 				bottom: 0%;
-				color: #267070AA;
+				image-color: #267070AA;
 				z-index: -1;
 			}
 			div#hudbg img#right
@@ -143,7 +143,7 @@
 				position:absolute;
 				top:-60%;
 				left:-1%;
-				color:#aaffffff;
+				image-color:#aaffffff;
 
 
 			}
