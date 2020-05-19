@@ -8,22 +8,27 @@ body
 }
 jetpack
 {
+	display: inline-block;
 	position: fixed;
-	float: left;
-	bottom: 0em;
+	left: 0%;
+	bottom: 0%;
 	width: 25%;
 	height: 20%;
 }
 progressbar
 {
-	margin-top: 10%;
+	display: inline-block;
+	margin-top: 27%;
 	margin-left: 5%;
 	width: 80%;
 	height: 15%;
-	image: /gfx/colors/white;
-	orientation: left;
 	z-index: -1;
-	color: #FF00FF84;
+}
+
+progressbar fill
+{
+	image-color: #FF00FF84;
+	decorator: image( /gfx/colors/white );
 }
 img
 {

@@ -55,10 +55,12 @@
 			}
 			progressbar
 			{
-
-				image: /gfx/colors/white;
-				orientation: right;
+				display: block;
 				z-index: -1;
+			}
+			progressbar fill
+			{
+				decorator: image( /gfx/colors/white );
 			}
 
 			.credits{
@@ -74,7 +76,7 @@
 				margin-top:40%;
 			}
 			div.stamina{
-				margin-top:45%;
+				margin-top:50%;
 			}
 			div.clips, div.health{
 				margin-top:5%;
@@ -99,7 +101,6 @@
 				position:absolute;
 				bottom:0em;
 				left:0em;
-				z-index:2;
 				display:block;
 				width: 100%;
 				height: 100%;
@@ -110,14 +111,12 @@
 			{
 				color: #4A928F80;
 			}
-			progressbar.health{
-				orientation:left;
-				color: #ff001c7a;
+			progressbar.health fill {
+				image-color: #ff001c7a;
 			}
 
-			progressbar.stamina{
-				orientation:left;
-				color: #82ffee52;
+			progressbar.stamina fill {
+				image-color: #82ffee52;
 			}
 
 			ammo, clips, health.health{
