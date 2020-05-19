@@ -2898,6 +2898,11 @@ float CG_ChargeProgress()
 		min = LCANNON_CHARGE_TIME_MIN;
 		max = LCANNON_CHARGE_TIME_MAX;
 	}
+	else if ( cg.snap->ps.weapon == WP_ABUILD || cg.snap->ps.weapon == WP_ABUILD2 || cg.snap->ps.weapon == WP_HBUILD )
+	{
+		min = BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE;
+		max = BUILDER_LONG_DECONSTRUCT_CHARGE;
+	}
 
 	if ( max - min <= 0.0f )
 	{
