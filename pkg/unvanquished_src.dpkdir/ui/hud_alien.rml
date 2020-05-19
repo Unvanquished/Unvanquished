@@ -59,23 +59,29 @@
 			}
 			progressbar#health-bar
 			{
+				display: block;
 				position: absolute;
-				image: /ui/assets/alien/bar-l;
-				orientation: left;
 				width: 65%;
-				height: auto;
+				height: 37%;
 				left: 0em;
 				bottom: 0em;
 			}
+			progressbar#health-bar fill
+			{
+				fill-image: /ui/assets/alien/bar-l;
+			}
 			progressbar#poison-bar
 			{
+				display: block;
 				position: absolute;
-				image: /ui/assets/alien/bar-r;
-				orientation: right;
 				width: 65%;
-				height: auto;
+				height: 37%;
 				right: 0em;
 				bottom: 0em;
+			}
+			progressbar#poison-bar fill
+			{
+				fill-image: /ui/assets/alien/bar-r;
 			}
 			wallwalk.wallwalking img.sides
 			{
@@ -237,7 +243,7 @@
 		</div>
 		<div id="right">
 			<img class="bg sides" src="/ui/assets/alien/bg-r" />
-			<progressbar src="poison" id="poison-bar" />
+			<progressbar direction="left" src="poison" id="poison-bar" />
 			<wallwalk>
 				<img class="spikes sides" src="/ui/assets/alien/smallspikes-r" />
 			</wallwalk>
