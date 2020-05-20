@@ -20,15 +20,15 @@
   font-size: 1.7em;
 }
 .circlemenu button {
-	icon-color-multiplier: #83fff5;
+	image-color: #83fff5;
 }
 .circlemenu button.locked{
-	icon-image: /ui/assets/circlemenu/circle;
-	icon-color-multiplier: rgb(0,100,100);
+	decorator: image( /ui/assets/circlemenu/circle );
+	image-color: rgb(0,100,100);
 }
 .circlemenu button.locked:hover{
-	icon-image: /ui/assets/circlemenu/circle;
-	icon-color-multiplier: rgb(0,120,120);
+	decorator: image( /ui/assets/circlemenu/circle );
+	image-color: rgb(0,120,120);
 }
 .circlemenu button.locked:hover img,
 .circlemenu button.locked:hover icon,
@@ -45,12 +45,12 @@
 }
 
 .circlemenu button.expensive{
-	icon-image: /ui/assets/circlemenu/circle;
-	icon-color-multiplier: rgb(0,150,150);
+	decorator: image( /ui/assets/circlemenu/circle );
+	image-color: rgb(0,150,150);
 }
 .circlemenu button.expensive:hover{
-	icon-image: /ui/assets/circlemenu/circle;
-	icon-color-multiplier: rgb(0,170,170);
+	decorator: image( /ui/assets/circlemenu/circle );
+	image-color: rgb(0,170,170);
 
 }
 
@@ -71,12 +71,12 @@
 }
 
 .circlemenu button.active{
-	icon-image: /ui/assets/circlemenu/circle-hover;
-	icon-color-multiplier: rgb(0,200,200);
+	decorator: image( /ui/assets/circlemenu/circle-hover );
+	image-color: rgb(0,200,200);
 }
 .circlemenu button.active:hover{
-	icon-image: /ui/assets/circlemenu/circle-hover;
-	icon-color-multiplier: rgb(0,220,220);
+	decorator: image( /ui/assets/circlemenu/circle-hover );
+	image-color: rgb(0,220,220);
 }
 .circlemenu button.active icon{
 	color:#9AFFBD;
@@ -93,7 +93,6 @@
 	padding-left: 0.1em;
 	padding-right: 0.1em;
 	border-top-style: solid;
-	border-bottom-style: solid;
 	border-right-style: solid;
 	border-left-style: solid;
 	border-top-width: .1em;
