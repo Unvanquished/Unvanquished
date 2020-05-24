@@ -3625,7 +3625,6 @@ void CG_Rocket_RenderElement( const char *tag )
 	}
 }
 
-#define REGISTER_ELEMENT( tag, clazz ) Rml::Core::Factory::RegisterElementInstancer( tag, new Rml::Core::ElementInstancerGeneric< clazz >() );
 void CG_Rocket_RegisterElements()
 {
 	for ( unsigned i = 0; i < elementRenderCmdListCount; i++ )

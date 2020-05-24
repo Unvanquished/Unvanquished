@@ -333,22 +333,6 @@ static RocketFocusManager fm;
 Rml::Core::Context *menuContext = nullptr;
 Rml::Core::Context *hudContext = nullptr;
 
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<SelectableDataGrid>> selectableDataGridInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketProgressBar>> rocketProgressBarInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketDataSelect>> rocketDataSelectInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketConsoleTextElement>> rocketConsoleTextElementInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketDataSourceSingle>> rocketDataSourceSingleInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketDataSource>> rocketDataSourceInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketCircleMenu>> rocketCirlceMenuInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketKeyBinder>> rocketKeyBinderInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketChatField>> rocketChatFieldInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<CvarElementFormControlInput>> cvarElementFormControlInputInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<CvarElementFormControlSelect>> cvarElementFormControlSelectInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketConditionalElement>> rocketConditionalElementInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketColorInput>> rocketColorInputInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketIncludeElement>> rocketIncludeElementInstancer;
-std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketCvarInlineElement>> rocketCvarInlineElementInstancer;
-
 Rml::Core::PropertyId UnvPropertyId::Radius;
 Rml::Core::PropertyId UnvPropertyId::Orientation;
 
@@ -410,25 +394,21 @@ void Rocket_Init()
 	hudContext->EnableMouseCursor( false );
 
 	// Add custom client elements
-	#define REGISTER_ELEMENT(tag, type, instancer) \
-		instancer.reset(new Rml::Core::ElementInstancerGeneric< type >()); \
-		Rml::Core::Factory::RegisterElementInstancer(tag, instancer.get());
-
-	REGISTER_ELEMENT("datagrid", SelectableDataGrid, selectableDataGridInstancer);
-	REGISTER_ELEMENT("progressbar", RocketProgressBar, rocketProgressBarInstancer);
-	REGISTER_ELEMENT("dataselect", RocketDataSelect, rocketDataSelectInstancer);
-	REGISTER_ELEMENT("console_text", RocketConsoleTextElement, rocketConsoleTextElementInstancer);
-	REGISTER_ELEMENT("datasource_single", RocketDataSourceSingle, rocketDataSourceSingleInstancer);
-	REGISTER_ELEMENT("datasource", RocketDataSource, rocketDataSourceInstancer);
-	REGISTER_ELEMENT("circlemenu", RocketCircleMenu, rocketCirlceMenuInstancer);
-	REGISTER_ELEMENT("keybind", RocketKeyBinder, rocketKeyBinderInstancer);
-	REGISTER_ELEMENT("chatfield", RocketChatField, rocketChatFieldInstancer);
-	REGISTER_ELEMENT("input", CvarElementFormControlInput, cvarElementFormControlInputInstancer);
-	REGISTER_ELEMENT("select", CvarElementFormControlSelect, cvarElementFormControlSelectInstancer);
-	REGISTER_ELEMENT("if", RocketConditionalElement, rocketConditionalElementInstancer);
-	REGISTER_ELEMENT("colorinput", RocketColorInput, rocketColorInputInstancer);
-	REGISTER_ELEMENT("include", RocketIncludeElement, rocketIncludeElementInstancer);
-	REGISTER_ELEMENT("inlinecvar", RocketCvarInlineElement, rocketCvarInlineElementInstancer);
+	REGISTER_ELEMENT("datagrid", SelectableDataGrid )
+	REGISTER_ELEMENT("progressbar", RocketProgressBar )
+	REGISTER_ELEMENT("dataselect", RocketDataSelect )
+	REGISTER_ELEMENT("console_text", RocketConsoleTextElement )
+	REGISTER_ELEMENT("datasource_single", RocketDataSourceSingle )
+	REGISTER_ELEMENT("datasource", RocketDataSource )
+	REGISTER_ELEMENT("circlemenu", RocketCircleMenu )
+	REGISTER_ELEMENT("keybind", RocketKeyBinder )
+	REGISTER_ELEMENT("chatfield", RocketChatField )
+	REGISTER_ELEMENT("input", CvarElementFormControlInput )
+	REGISTER_ELEMENT("select", CvarElementFormControlSelect )
+	REGISTER_ELEMENT("if", RocketConditionalElement )
+	REGISTER_ELEMENT("colorinput", RocketColorInput )
+	REGISTER_ELEMENT("include", RocketIncludeElement )
+	REGISTER_ELEMENT("inlinecvar", RocketCvarInlineElement )
 
 	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_DEFAULT );
 }
