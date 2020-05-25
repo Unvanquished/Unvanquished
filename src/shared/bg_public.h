@@ -124,7 +124,6 @@ struct playerState_t
 
 	int           generic1;
 	int           loopSound;
-	int           otherEntityNum;
 	vec3_t        grapplePoint; // location of grapple to pull towards if PMF_GRAPPLE_PULL
 	int           weaponAnim; // mask off ANIM_TOGGLEBIT
 	int           ammo;
