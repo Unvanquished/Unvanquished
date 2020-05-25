@@ -1160,7 +1160,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 
 void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 {
-	if ( !g_cheats.integer )
+	if ( !g_instantBuilding.integer )
 	{
 		// Check if the buildable is protected from instant deconstruction.
 		switch ( buildable->s.modelindex )
