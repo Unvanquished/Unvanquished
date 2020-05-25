@@ -1532,7 +1532,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap
 		s->generic1 = WPM_PRIMARY;
 	}
 
-	s->otherEntityNum = ps->otherEntityNum;
+	s->otherEntityNum = 0;
 }
 
 /*
@@ -1681,7 +1681,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 		s->generic1 = WPM_PRIMARY;
 	}
 
-	s->otherEntityNum = ps->otherEntityNum;
+	s->otherEntityNum = 0;
 }
 
 /*
@@ -2992,8 +2992,6 @@ static const NetcodeTable playerStateFields =
 	{ PSF( clips ),                4              , 0 }
 	,
 	{ PSF( tauntTimer ),           12             , 0 }
-	,
-	{ PSF( otherEntityNum ),       10             , 0 }
 	,
 	{ PSF( weaponAnim ),           ANIM_BITS      , 0 }
 };
