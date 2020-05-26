@@ -1106,7 +1106,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	// Trace for target.
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 100, forward, end );
+	VectorMA( viewOrigin, BUILDER_DECONSTRUCT_RANGE, forward, end );
 	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
 
@@ -1162,27 +1162,38 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 	G_FreeEntity( self );
 }
 
+// Returns true and warns the player if they are not allowed to decon it
+bool G_CheckDeconProtectionAndWarn( gentity_t *buildable, gentity_t *player )
+{
+	if ( g_instantBuilding.integer )
+	{
+		return false;
+	}
+	switch ( buildable->s.modelindex )
+	{
+		case BA_A_OVERMIND:
+		case BA_H_REACTOR:
+			G_TriggerMenu( player->client->ps.clientNum, MN_B_MAINSTRUCTURE );
+			return true;
+
+		case BA_A_SPAWN:
+		case BA_H_SPAWN:
+			if ( level.team[ player->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
+			{
+				G_TriggerMenu( player->client->ps.clientNum, MN_B_LASTSPAWN );
+				return true;
+			}
+			break;
+	}
+	return false;
+}
+
 void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 {
 	if ( !g_instantBuilding.integer )
 	{
 		// Check if the buildable is protected from instant deconstruction.
-		switch ( buildable->s.modelindex )
-		{
-			case BA_A_OVERMIND:
-			case BA_H_REACTOR:
-				G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
-				return;
-
-			case BA_A_SPAWN:
-			case BA_H_SPAWN:
-				if ( level.team[ ent->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
-					return;
-				}
-				break;
-		}
+		G_CheckDeconProtectionAndWarn( buildable, ent );
 
 		// Deny if build timer active.
 		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
