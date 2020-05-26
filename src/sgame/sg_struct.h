@@ -90,6 +90,24 @@ struct entityClass_s
 
 class Entity;
 
+// Replacement for gentity_t* that can detect the case where an entity has been recycled.
+// operator bool checks that the entity is non-null and has not been freed since the reference
+// was formed.
+struct GentityRef
+{
+	struct gentity_s *entity = nullptr;
+	unsigned generation;
+
+	GentityRef& operator=(struct gentity_s *ent);
+
+	operator bool();
+
+	struct gentity_s * operator->()
+	{
+		return entity;
+	}
+};
+
 struct gentity_s
 {
 	entityState_t  s; // communicated by server to clients
@@ -104,9 +122,10 @@ struct gentity_s
 
 	struct gclient_s *client; // nullptr if not a client
 
-	bool     inuse;
+	unsigned generation; // used with GentityRef
 	int          freetime; // level.time when the object was freed
 	int          eventTime; // events will be cleared EVENT_VALID_MSEC after set
+	bool     inuse;
 	bool     freeAfterEvent;
 	bool     unlinkAfterEvent;
 
@@ -356,6 +375,20 @@ struct gentity_s
 	int         tagScore;
 	int         tagScoreTime;
 };
+
+inline GentityRef& GentityRef::operator=(struct gentity_s *ent)
+{
+	entity = ent;
+	if (ent) {
+		generation = ent->generation;
+	}
+	return *this;
+}
+
+inline GentityRef::operator bool()
+{
+	return entity != nullptr && entity->generation == generation;
+}
 
 /**
  * client data that stays across multiple levels or map restarts

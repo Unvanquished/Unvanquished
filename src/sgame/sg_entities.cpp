@@ -55,6 +55,7 @@ void G_InitGentityMinimal( gentity_t *entity )
 void G_InitGentity( gentity_t *entity )
 {
 	G_InitGentityMinimal( entity );
+	++entity->generation;
 	entity->inuse = true;
 	entity->enabled = true;
 	entity->classname = "noclass";
@@ -175,7 +176,9 @@ void G_FreeEntity( gentity_t *entity )
 		delete entity->entity;
 	}
 
+	unsigned generation = entity->generation;
 	memset( entity, 0, sizeof( *entity ) );
+	entity->generation = generation + 1;
 	entity->entity = level.emptyEntity;
 	entity->classname = "freent";
 	entity->freetime = level.time;
