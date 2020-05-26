@@ -3772,10 +3772,9 @@ constexpr int BUTTON_DECONSTRUCT = 13;
 static void HandleDeconstructButton()
 {
 	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) ||
-	     ( pm->ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK) > BA_NONE ||
 	     ( pm->ps->weaponstate != WEAPON_READY && pm->ps->weaponstate != WEAPON_FIRING ) )
 	{
-		// cancel if player is involved in building something, or if the weapon is in a weird state
+		// cancel if player starts to build something, or if the weapon is in a weird state
 		pm->ps->weaponCharge = 0;
 		return;
 	}
