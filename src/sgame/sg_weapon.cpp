@@ -752,7 +752,7 @@ static void FireHive( gentity_t *self )
 	// fire from the hive tip, not the center
 	VectorMA( muzzle, self->r.maxs[ 2 ], self->s.origin2, origin );
 
-	m = G_SpawnMissile( MIS_HIVE, self, origin, forward, self->target,
+	m = G_SpawnMissile( MIS_HIVE, self, origin, forward, self->target.entity,
 	                    HiveMissileThink, level.time + HIVE_DIR_CHANGE_PERIOD );
 
 	m->timestamp = level.time + HIVE_LIFETIME;
@@ -817,7 +817,7 @@ static void RocketThink( gentity_t *self )
 
 static void FireRocket( gentity_t *self )
 {
-	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target, RocketThink,
+	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target.entity, RocketThink,
 	                level.time + ROCKET_TURN_PERIOD )->timestamp = level.time + ROCKET_LIFETIME;
 }
 
