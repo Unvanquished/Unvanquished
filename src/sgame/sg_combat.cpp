@@ -868,7 +868,6 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 	int       entityList[ MAX_GENTITIES ];
 	int       numListedEntities;
 	vec3_t    mins, maxs;
-	vec3_t    v;
 	int       i, e;
 	bool  hitClient = false;
 
@@ -900,23 +899,7 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		}
 
 		// find the distance from the edge of the bounding box
-		for ( i = 0; i < 3; i++ )
-		{
-			if ( origin[ i ] < ent->r.absmin[ i ] )
-			{
-				v[ i ] = ent->r.absmin[ i ] - origin[ i ];
-			}
-			else if ( origin[ i ] > ent->r.absmax[ i ] )
-			{
-				v[ i ] = origin[ i ] - ent->r.absmax[ i ];
-			}
-			else
-			{
-				v[ i ] = 0;
-			}
-		}
-
-		dist = VectorLength( v );
+		dist = G_DistanceToBBox( origin, ent );
 
 		if ( dist >= radius )
 		{
@@ -944,7 +927,6 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 	int       entityList[ MAX_GENTITIES ];
 	int       numListedEntities;
 	vec3_t    mins, maxs;
-	vec3_t    v;
 	vec3_t    dir;
 	int       i, e;
 	bool  hitSomething = false;
@@ -972,23 +954,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		}
 
 		// find the distance from the edge of the bounding box
-		for ( i = 0; i < 3; i++ )
-		{
-			if ( origin[ i ] < ent->r.absmin[ i ] )
-			{
-				v[ i ] = ent->r.absmin[ i ] - origin[ i ];
-			}
-			else if ( origin[ i ] > ent->r.absmax[ i ] )
-			{
-				v[ i ] = origin[ i ] - ent->r.absmax[ i ];
-			}
-			else
-			{
-				v[ i ] = 0;
-			}
-		}
-
-		dist = VectorLength( v );
+		dist = G_DistanceToBBox( origin, ent );
 
 		if ( dist >= radius )
 		{
