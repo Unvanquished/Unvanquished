@@ -379,7 +379,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 
 void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 {
-	gentity_t *target = self->target;
+	gentity_t *target = self->target.entity;
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = LOCKBLOB_RANGE;
@@ -429,7 +429,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	self->customNumber = level.time + firespeed;
 }
 
-bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
+bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
 {
 	vec3_t  distance;
 	trace_t trace;
@@ -444,7 +444,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return false;
 	}
 
-	if ( target == self ) // is the target us?
+	if ( target.entity == self ) // is the target us?
 	{
 		return false;
 	}
@@ -469,7 +469,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return false;
 	}
 
-	if ( Entities::IsDead( target ) ) // is the target still alive?
+	if ( Entities::IsDead( target.entity ) ) // is the target still alive?
 	{
 		return false;
 	}
@@ -507,7 +507,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 
 void ATrapper_FindEnemy( gentity_t *ent, int range )
 {
-	gentity_t *target;
+	GentityRef target;
 	int       i;
 	int       start;
 
@@ -603,6 +603,10 @@ void HMedistat_Think( gentity_t *self )
 	{
 		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
 	}
+	else
+	{
+		self->target = nullptr;
+	}
 
 	// clear target on power loss
 	if ( !self->powered )
@@ -631,7 +635,7 @@ void HMedistat_Think( gentity_t *self )
 		player = &g_entities[ entityList[ playerNum ] ];
 		client = player->client;
 
-		if ( self->target == player && PM_Live( client->ps.pm_type ) &&
+		if ( self->target.entity == player && PM_Live( client->ps.pm_type ) &&
 			 ( !player->entity->Get<HealthComponent>()->FullHealth() ||
 		       client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 		{
@@ -695,7 +699,7 @@ void HMedistat_Think( gentity_t *self )
 	// if we have a target, heal it
 	if ( self->target && self->target->client )
 	{
-		player = self->target;
+		player = self->target.entity;
 		client = player->client;
 		client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
 

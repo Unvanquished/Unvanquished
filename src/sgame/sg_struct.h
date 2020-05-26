@@ -201,7 +201,8 @@ struct gentity_s
 	 */
 	int          targetCount;
 	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
-	gentity_t    *target;  /*< the currently selected target to aim at/for, is the reverse to "tracker" */
+
+	GentityRef   target; // target of trapper, medistation, hive, rocketpod
 
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
