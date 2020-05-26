@@ -244,8 +244,10 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 		return false;
 	}
 	bot = &g_entities[ clientNum ];
+	G_InitGentity( bot );
 	bot->r.svFlags |= SVF_BOT;
-	bot->inuse = true;
+
+	// TODO: probably this should do more of the same stuff as ClientBegin?
 
 	if ( !Q_stricmp( name, BOT_NAME_FROM_LIST ) )
 	{
