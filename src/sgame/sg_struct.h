@@ -202,7 +202,7 @@ struct gentity_s
 	int          targetCount;
 	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
 
-	GentityRef   target; // target of trapper, medistation, hive, rocketpod
+	GentityRef   target; // target of trapper, medistation, hive, rocketpod, builder's +deconstruct
 
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
