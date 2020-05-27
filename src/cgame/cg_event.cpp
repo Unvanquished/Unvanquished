@@ -1018,6 +1018,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_FIRE_DECONSTRUCT:
 		case EV_FIRE_DECONSTRUCT_LONG:
+		case EV_DECONSTRUCT_SELECT_TARGET:
 			break;
 
 		case EV_WEAPON_RELOAD:

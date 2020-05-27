@@ -3791,7 +3791,24 @@ static void HandleDeconstructButton()
 
 	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_DECONSTRUCT ) )
 	{
+		if ( pm->ps->weaponCharge >= BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE && pm->pmext->cancelDeconstructCharge )
+		{
+			pm->ps->weaponCharge = -1;
+			return;
+		}
+
+		int oldWeaponCharge = pm->ps->weaponCharge;
 		pm->ps->weaponCharge = std::min( pm->ps->weaponCharge + pml.msec, BUILDER_LONG_DECONSTRUCT_CHARGE );
+		if ( oldWeaponCharge < BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE &&
+		     pm->ps->weaponCharge >= BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE )
+		{
+			// Lock on to a target at this point. If the target is dead it will be deconned immediately.
+			// If the target is not valid for deconstruction, the player receives a warning (this is why
+			// we wait until we know it's a long press to select the target, because it is still valid
+			// to mark some targets which are protected from deconning).
+			PM_AddEvent( EV_DECONSTRUCT_SELECT_TARGET );
+			pm->pmext->cancelDeconstructCharge = false;
+		}
 		// only fire if the build timer is not running
 		if ( pm->ps->weaponCharge >= BUILDER_LONG_DECONSTRUCT_CHARGE && pm->ps->stats[ STAT_MISC ] == 0 )
 		{

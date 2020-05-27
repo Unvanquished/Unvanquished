@@ -99,7 +99,7 @@ struct playerState_t
 	// weapon info
 	int weapon; // copied to entityState_t->weapon
 	int weaponstate;
-	int weaponCharge; // luci charge, dragoon pounce charge, mantis pounce cooldown, tyrant trample
+	int weaponCharge; // luci charge, dragoon pounce charge, mantis pounce cooldown, tyrant trample, +deconstruct hold
 
 	// damage feedback
 	int damageEvent; // when it changes, latch the other parms
@@ -256,6 +256,7 @@ struct pmoveExt_t
 {
 	int    pouncePayload;
 	vec3_t fallImpactVelocity;
+	bool cancelDeconstructCharge;
 };
 
 #define MAXTOUCH 32
@@ -469,8 +470,9 @@ enum weaponMode_t
   WPM_PRIMARY,
   WPM_SECONDARY,
   WPM_TERTIARY,
-  WPM_DECONSTRUCT,
-  WPM_DECONSTRUCT_LONG, // press and hold +deconstruct
+  WPM_DECONSTRUCT, // short press of +deconstruct
+  WPM_DECONSTRUCT_SELECT_TARGET, // when starting to hold +deconstruct
+  WPM_DECONSTRUCT_LONG, // finished holding +deconstruct
 
   WPM_NOTFIRING,
 
@@ -658,6 +660,7 @@ enum entity_event_t
   EV_FIRE_WEAPON3,
   EV_FIRE_DECONSTRUCT,
   EV_FIRE_DECONSTRUCT_LONG,
+  EV_DECONSTRUCT_SELECT_TARGET,
   EV_WEAPON_RELOAD,
 
   EV_PLAYER_RESPAWN, // for fovwarp effects

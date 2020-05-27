@@ -1132,9 +1132,9 @@ static void CancelBuild( gentity_t *self )
 	}
 }
 
-static void FireDeconstruct( gentity_t *self, bool force )
+// do the same thing as /deconstruct
+static void FireMarkDeconstruct( gentity_t *self )
 {
-	// do same thing as /deconstruct [marked] (except you can instantly deconstruct without marking first)
 	gentity_t* buildable = G_GetDeconstructibleBuildable( self );
 	if ( buildable == nullptr )
 	{
@@ -1144,14 +1144,52 @@ static void FireDeconstruct( gentity_t *self, bool force )
 	{
 		return;
 	}
-	if ( force )
+	buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
+}
+
+static void DeconstructSelectTarget( gentity_t *self )
+{
+	gentity_t* target = G_GetDeconstructibleBuildable( self );
+	if ( target == nullptr // No target found
+		|| G_DeconstructDead( target ) // Successfully deconned dead target
+		|| G_CheckDeconProtectionAndWarn( target, self ) ) // Not allowed to decon target
 	{
-		G_DeconstructUnprotected( buildable, self );
+		self->target = nullptr;
+		// Stop the force-deconstruction charge bar
+		self->client->pmext.cancelDeconstructCharge = true;
 	}
 	else
 	{
-		buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
+		// Set the target which will be used upon reaching full charge
+		self->target = target;
 	}
+}
+
+static void FireForceDeconstruct( gentity_t *self )
+{
+	if ( !self->target )
+	{
+		return;
+	}
+	gentity_t* target = self->target.entity;
+	vec3_t viewOrigin;
+	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
+	// The builder must still be in a range such that G_GetDeconstructibleBuildable could return
+	// the buildable (but with 10% extra distance allowed).
+	// However it is not necessary to be aiming at the target.
+	if ( G_DistanceToBBox( viewOrigin, target ) > BUILDER_DECONSTRUCT_RANGE * 1.1f )
+	{
+		// Target is too far away.
+		// TODO: Continuously check that target is valid (in range and still exists), rather
+		// than only at the beginning and end of the charge.
+		return;
+	}
+
+	if ( G_DeconstructDead( self->target.entity ) )
+	{
+		return;
+	}
+	G_DeconstructUnprotected( self->target.entity, self );
 }
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
@@ -1904,6 +1942,29 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			break;
 		}
 		case WPM_DECONSTRUCT:
+		{
+			switch ( weapon )
+			{
+				case WP_ABUILD:
+				case WP_ABUILD2:
+				case WP_HBUILD:
+					FireMarkDeconstruct( self );
+					break;
+			}
+			break;
+		}
+		case WPM_DECONSTRUCT_SELECT_TARGET:
+		{
+			switch ( weapon )
+			{
+				case WP_ABUILD:
+				case WP_ABUILD2:
+				case WP_HBUILD:
+					DeconstructSelectTarget( self );
+					break;
+			}
+			break;
+		}
 		case WPM_DECONSTRUCT_LONG:
 		{
 			switch ( weapon )
@@ -1911,7 +1972,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				case WP_ABUILD:
 				case WP_ABUILD2:
 				case WP_HBUILD:
-					FireDeconstruct( self, weaponMode == WPM_DECONSTRUCT_LONG );
+					FireForceDeconstruct( self );
 					break;
 			}
 			break;
