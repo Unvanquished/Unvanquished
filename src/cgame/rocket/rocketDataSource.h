@@ -246,7 +246,7 @@ private:
 	void AddCancelbutton()
 	{
 		init = true;
-		Rml::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().c_str() ) );
+		Rml::Core::Factory::InstanceElementText( this, va( "<button onclick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().c_str() ) );
 		GetFirstChild()->SetClass( "cancelButton", true );
 	}
 
