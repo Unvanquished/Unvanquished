@@ -336,6 +336,8 @@ Rml::Core::Context *hudContext = nullptr;
 Rml::Core::PropertyId UnvPropertyId::Radius;
 Rml::Core::PropertyId UnvPropertyId::Orientation;
 
+Rml::Core::EventId UnvEventId::Rowselect;
+
 // TODO
 // cvar_t *cg_draw2D;
 
@@ -369,6 +371,9 @@ void Rocket_Init()
 	UnvPropertyId::Orientation = Rml::Core::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
 		.AddParser("keyword", "left, right, up, down")
 		.GetId();
+
+	UnvEventId::Rowselect = Rml::Core::RegisterEventType( "rowselect", /*interruptible=*/false, /*bubbles=*/true,
+			/*default_action_phase=*/Rml::Core::DefaultActionPhase::None );
 
 	// Set backup font
 	// TODO

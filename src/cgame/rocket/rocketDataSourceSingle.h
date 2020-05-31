@@ -125,7 +125,7 @@ public:
 						}
 
 						targetElement = element;
-						targetElement->AddEventListener( "rowselect", this, true );
+						targetElement->AddEventListener( "rowselect", this );
 					}
 				}
 			}

@@ -265,7 +265,7 @@ public:
 					raw_data.emplace_back( query.Get<Rml::Core::String>( field, "" ) );
 				}
 
-				raw_data.push_back( va( "%d", index++ ) );
+				raw_data.push_back( va( "%d", index ) );
 
 				if ( formatter )
 				{
@@ -284,8 +284,17 @@ public:
 						out.append( raw_data[ i ] );
 					}
 				}
-
+				if ( out.empty() )
+				{
+					index++;
+					continue;
+				}
 				Rml::Core::Factory::InstanceElementText( this, out );
+				// This will be the element we just added.
+				auto* child = GetLastChild();
+				child->AddEventListener( Rml::Core::EventId::Mouseover, this );
+				child->SetAttribute( "index", index );
+				index++;
 			}
 
 			LayoutChildren();
@@ -302,34 +311,18 @@ public:
 	{
 		if ( event == "mouseover" )
 		{
-			Rml::Core::Element *parent = event.GetTargetElement();
-			Rml::Core::Element *button = parent->GetTagName() == "button" ? parent : nullptr;
-			while ( ( parent = parent->GetParentNode() ) )
+			Rml::Core::Dictionary parameters;
+			int i = 0;
+
+			// Skip the first child, since it's the cancel button.
+			for ( i = 1; i < GetNumChildren(); ++i )
 			{
-				if ( !button && parent->GetTagName() == "button" )
+				if ( GetChild( i ) == event.GetTargetElement() )
 				{
-					button = parent;
-					continue;
-				}
-
-				if ( parent == this )
-				{
-					Rml::Core::Dictionary parameters;
-					int i = 0;
-
-					for ( i = 1; i < GetNumChildren(); ++i )
-					{
-						if ( GetChild( i ) == button )
-						{
-							parameters[ "index" ] = button->GetAttribute< int >( "alienclass", 0 );
-							parameters[ "datasource" ] = data_source->GetDataSourceName();
-							parameters[ "table" ] = data_table;
-
-							DispatchEvent( "rowselect", parameters );
-							break;
-						}
-					}
-
+					parameters[ "index" ] = event.GetTargetElement()->GetAttribute<int>( "index", -1 );
+					parameters[ "datasource" ] = data_source->GetDataSourceName();
+					parameters[ "table" ] = data_table;
+					DispatchEvent( "rowselect", parameters );
 					break;
 				}
 			}
