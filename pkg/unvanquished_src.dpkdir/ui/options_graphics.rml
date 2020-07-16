@@ -116,6 +116,38 @@
 
 			</panel>
 
+			<tab>Lighting</tab>
+			<panel>
+				<h2>Lights</h2>
+				<row>
+					<select cvar="r_vertexLighting">
+						<option value="0">Light Map (normal)</option>
+						<option value="1">Grid light (low, ugly)</option>
+					</select>
+					<h3>Lighting system</h3>
+				</row>
+				<row>
+					<h3>Dynamic lights</h3>
+					<input cvar="r_dynamiclight" type="checkbox" checked-value="2" />
+					<p>Lighting made by weapons and buildings.</p>
+				</row>
+				<row>
+					<select cvar="cg_shadows" style="width:20em;">
+						<option value="0">None</option>
+						<option value="1">Blobs (low)</option>
+						<!-- Implementations for those options are broken and can make the game unusable
+						<option value="3">Exponential mapping</option>
+						<option value="5">Variance mapping</option>
+						<option value="6">Exponential + variance (high)</option>
+						-->
+					</select>
+					<h3>Shadows</h3>
+				</row>
+				<buttonbar>
+					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+				</buttonbar>
+			</panel>
+
 			<tab> Textures </tab>
 			<panel>
 				<h2> General </h2>
@@ -233,38 +265,6 @@
 					<h3>Depth-sort particles</h3>
 					<input cvar="cg_depthSortParticles" type="checkbox" />
 					<p>Ensure over-lapping particles are rendered correctly.</p>
-				</row>
-				<buttonbar>
-					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
-				</buttonbar>
-			</panel>
-
-			<tab>Lighting</tab>
-			<panel>
-				<h2>Lights</h2>
-				<row>
-					<select cvar="r_vertexLighting">
-						<option value="0">Light Map (normal)</option>
-						<option value="1">Grid light (low, ugly)</option>
-					</select>
-					<h3>Lighting system</h3>
-				</row>
-				<row>
-					<h3>Dynamic lights</h3>
-					<input cvar="r_dynamiclight" type="checkbox" checked-value="2" />
-					<p>Lighting made by weapons and buildings.</p>
-				</row>
-				<row>
-					<select cvar="cg_shadows" style="width:20em;">
-						<option value="0">None</option>
-						<option value="1">Blobs (low)</option>
-						<!-- Implementations for those options are broken and can make the game unusable
-						<option value="3">Exponential mapping</option>
-						<option value="5">Variance mapping</option>
-						<option value="6">Exponential + variance (high)</option>
-						-->
-					</select>
-					<h3>Shadows</h3>
 				</row>
 				<buttonbar>
 					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
