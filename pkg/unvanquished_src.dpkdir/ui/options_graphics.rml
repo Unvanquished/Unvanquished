@@ -260,26 +260,7 @@
 					</select>
 					<h3>Building ranges</h3>
 				</row>
-				<row>
-					<h3></h3>
-
-					<p></p>
-				</row>
-				<row>
-					<h3></h3>
-
-					<p></p>
-				</row>
-				<row>
-					<h3></h3>
-
-					<p></p>
-				</row>
 			</panel>
-
-
 		</tabset>
-
-
 	</body>
 </rml>
