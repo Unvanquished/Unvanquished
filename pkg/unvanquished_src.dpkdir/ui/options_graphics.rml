@@ -234,27 +234,6 @@
 					<input cvar="cg_depthSortParticles" type="checkbox" />
 					<p>Ensure over-lapping particles are rendered correctly.</p>
 				</row>
-
-				<h2> Motion blur </h2>
-				<row>
-					<select cvar="cg_motionblur">
-						<option value="0.10">High (0.10)</option>
-						<option value="0.05">Moderate (0.05)</option>
-						<option value="0.02">Low (0.02)</option>
-						<option value="0">Off</option>
-					</select>
-					<h3>Intensity</h3>
-					<p>Level of motion-blur.</p>
-				</row>
-				<row>
-					<h3>Minimum movement speed for motion-blur to activate</h3>
-					<input type="range" min="10" max="1500" step="10" cvar="cg_motionblurMinSpeed"/>
-					<p class="inline">
-						Current: <inlinecvar cvar="cg_motionblurMinSpeed" type="number" format="%.0f"/>
-						<ilink onclick='Events.pushevent("exec reset cg_motionblurMinSpeed", event)'> (reset) </ilink>
-					</p>
-				</row>
-
 				<buttonbar>
 					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
 				</buttonbar>
@@ -292,7 +271,7 @@
 				</buttonbar>
 			</panel>
 
-			<tab> Misc</tab>
+			<tab>Gameplay</tab>
 			<panel>
 				<h2> Building markers </h2>
 				<row>
@@ -309,6 +288,25 @@
 						<option value="humanoffensive">Offensive human structures</option>
 					</select>
 					<h3>Building ranges</h3>
+				</row>
+				<h2> Motion blur </h2>
+				<row>
+					<select cvar="cg_motionblur">
+						<option value="0.10">High (0.10)</option>
+						<option value="0.05">Moderate (0.05)</option>
+						<option value="0.02">Low (0.02)</option>
+						<option value="0">Off</option>
+					</select>
+					<h3>Intensity</h3>
+					<p>Level of motion-blur.</p>
+				</row>
+				<row>
+					<h3>Minimum movement speed for motion-blur to activate</h3>
+					<input type="range" min="10" max="1500" step="10" cvar="cg_motionblurMinSpeed"/>
+					<p class="inline">
+						Current: <inlinecvar cvar="cg_motionblurMinSpeed" type="number" format="%.0f"/>
+						<ilink onclick='Events.pushevent("exec reset cg_motionblurMinSpeed", event)'> (reset) </ilink>
+					</p>
 				</row>
 			</panel>
 		</tabset>
