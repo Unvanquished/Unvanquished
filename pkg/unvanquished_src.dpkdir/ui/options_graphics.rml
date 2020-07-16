@@ -263,6 +263,10 @@
 					<input cvar="cg_depthSortParticles" type="checkbox" />
 					<p>Ensure over-lapping particles are rendered correctly.</p>
 				</row>
+
+				<buttonbar>
+					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+				</buttonbar>
 			</panel>
 
 			<tab> Misc</tab>
