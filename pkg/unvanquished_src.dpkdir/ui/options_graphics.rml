@@ -29,6 +29,30 @@
 		<h1> Graphics </h1>
 
 		<tabset>
+			<tab> Presets </tab>
+			<panel id="presets">
+				<h2>Presets</h2>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/lowest.cfg", event)'>Lowest</button>
+					<span>Quarter size textures, no multitexturing like normal or specular mapping…</span>
+				</row>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/low.cfg", event)'>Low</button>
+					<span>Half size textures, multisampling, anisotropic mip-mapping, shadows, bouncing particles…</span>
+				</row>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/medium.cfg", event)'>Medium</button>
+					<span>Multitexturing like normal, specular and physical mapping, bloom, trilinear filtering…</span>
+				</row>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/high.cfg", event)'>High</button>
+					<span>Dynamic lights, heat haze, motion blur, better multisampling…</span>
+				</row>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/ultra.cfg", event)'>Ultra</button>
+					<span>Relief mapping and other features and effects enabled, options maxed out…</span>
+				</row>
+			</panel>
 			<tab> General </tab>
 			<panel>
 
