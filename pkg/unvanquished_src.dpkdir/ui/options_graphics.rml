@@ -250,8 +250,8 @@
 					<p>Simulate air refraction in severe heat.</p>
 				</row>
 				<row>
-					<input cvar="r_ssao" type="checkbox" />
 					<h3>SSAO</h3>
+					<input cvar="r_ssao" type="checkbox" />
 					<p> Screen space ambient occlusion. Experimental</p>
 				</row>
 
