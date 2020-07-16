@@ -56,10 +56,6 @@
 			<tab> Video </tab>
 			<panel>
 				<h2> Video </h2>
-				<p>
-					These settings can also be changed in the game config files.  See the Unvanquished wiki for details.
-				</p>
-
 				<row>
 					<h3>Brightness</h3>
 					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma"/>
