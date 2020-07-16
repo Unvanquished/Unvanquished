@@ -201,10 +201,6 @@
 			<tab>Materials</tab>
 			<panel>
 				<h2>Materials</h2>
-				<p>
-					These special effects are all optional.
-					All of these effects will reduce your frame-rate.
-				</p>
 				<row>
 					<h3>Normal mapping</h3>
 					<input cvar="r_normalMapping" type="checkbox" />
