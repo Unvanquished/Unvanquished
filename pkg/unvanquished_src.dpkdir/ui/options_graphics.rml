@@ -53,11 +53,12 @@
 					<span>Relief mapping and other features and effects enabled, options maxed out…</span>
 				</row>
 			</panel>
-			<tab> General </tab>
+			<tab> Video </tab>
 			<panel>
-
-
-				<h2> Comfort </h2>
+				<h2> Video </h2>
+				<p>
+					These settings can also be changed in the game config files.  See the Unvanquished wiki for details.
+				</p>
 
 				<row>
 					<h3>Brightness</h3>
@@ -67,12 +68,6 @@
 						<ilink onclick='Events.pushevent("exec reset r_gamma", event)'> (reset) </ilink>
 					</p>
 				</row>
-
-				<h2> Video </h2>
-
-				<p>
-					These settings can also be changed in the game config files.  See the Unvanquished wiki for details.
-				</p>
 
 				<row>
 					<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
