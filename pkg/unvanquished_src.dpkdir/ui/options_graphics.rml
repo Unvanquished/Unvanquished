@@ -153,14 +153,13 @@
 			<panel>
 				<h2> General </h2>
 				<row>
-
 					<select cvar="r_picmip" style="width: 20em;">
 						<option value="2">Low (1:4)</option>
 						<option value="1">Medium (1:2)</option>
 						<option value="0">Full (1:1)</option>
 					</select>
-					<h3>Texture quality</h3>
-					<p>Lower texture quality is useful for cards with limited VRAM</p>
+					<h3>Texture size</h3>
+					<p>Lower texture size is useful for cards with limited video memory (VRAM).</p>
 				</row>
 
 				<h2> Mip-mapping </h2>
