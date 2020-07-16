@@ -155,6 +155,10 @@
 					</select>
 					<h3>Texture scaling filter</h3>
 				</row>
+
+				<buttonbar>
+					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+				</buttonbar
 			</panel>
 
 			<tab> Effects </tab>
