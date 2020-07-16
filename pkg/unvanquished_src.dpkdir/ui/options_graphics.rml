@@ -132,6 +132,11 @@
 					<p>Lighting made by weapons and buildings.</p>
 				</row>
 				<row>
+					<h3>Rim lighting</h3>
+					<input cvar="r_rimlighting" type="checkbox" />
+					<p>Light the edges of models from behind.</p>
+				</row>
+				<row>
 					<select cvar="cg_shadows" style="width:20em;">
 						<option value="0">None</option>
 						<option value="1">Blobs (low)</option>
@@ -238,11 +243,6 @@
 					<h3>Bloom</h3>
 					<input cvar="r_bloom" type="checkbox" />
 					<p>Makes bright areas on your screen glow.</p>
-				</row>
-				<row>
-					<h3>Rim-lighting</h3>
-					<input cvar="r_rimlighting" type="checkbox" />
-					<p>Light the edges of models from behind.</p>
 				</row>
 				<row>
 					<h3>Heat-haze</h3>
