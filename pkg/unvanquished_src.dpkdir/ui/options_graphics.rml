@@ -100,9 +100,14 @@
 						<option value="8">8×</option>
 						<option value="16">16×</option>
 					</select>
-					<h3> Multisampling level </h3>
+					<h3>Multisampling level (MSAA)</h3>
 					<p> Anti-aliasing smoothes out 'jaggy edges' but is very costly to your frame-rate. </p>
+				</row>
 
+				<row>
+					<input cvar="r_FXAA" type="checkbox" />
+					<h3>Fast approximate anti-aliasing (FXAA)</h3>
+					<p>Faster than full MSAA, but not as sharp.</p>
 				</row>
 
 				<buttonbar>
@@ -183,11 +188,6 @@
 					<h3>Heat-haze</h3>
 					<input cvar="r_heatHaze" type="checkbox" />
 					<p>Simulate air refraction in severe heat.</p>
-				</row>
-				<row>
-					<input cvar="r_FXAA" type="checkbox" />
-					<h3>FXAA</h3>
-					<p> Fast approximate anti-aliasing.  Faster than full MSAA, but not as sharp. </p>
 				</row>
 				<row>
 					<input cvar="r_ssao" type="checkbox" />
