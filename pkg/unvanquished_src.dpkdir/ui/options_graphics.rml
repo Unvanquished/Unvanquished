@@ -133,6 +133,11 @@
 					<p>Light the edges of models from behind.</p>
 				</row>
 				<row>
+					<h3>Half Lambert lighting</h3>
+					<input cvar="r_halfLambertLighting" type="checkbox" />
+					<p>Non-physical lighting technique to make models less dark.</p>
+				</row>
+				<row>
 					<select cvar="cg_shadows" style="width:20em;">
 						<option value="0">None</option>
 						<option value="1">Blobs (low)</option>
