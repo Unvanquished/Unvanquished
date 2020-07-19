@@ -248,7 +248,7 @@
 				<row>
 					<h3>Screen space ambient occlusion (SSAO)</h3>
 					<input cvar="r_ssao" type="checkbox" />
-					<p>Simulate dark corners. Experimental</p>
+					<p>Simulate dark corners. Experimental.</p>
 				</row>
 
 				<h2>Particles</h2>
