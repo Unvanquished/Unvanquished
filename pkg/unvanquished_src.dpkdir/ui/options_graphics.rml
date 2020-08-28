@@ -200,16 +200,15 @@
 
 			<tab>Materials</tab>
 			<panel>
-				<h2>Materials</h2>
+				<h2>Effects</h2>
+				<p>
+					These special effects are all optional.
+					All of these effects will reduce your frame-rate.
+				</p>
 				<row>
 					<h3>Normal mapping</h3>
 					<input cvar="r_normalMapping" type="checkbox" />
 					<p>Simulates extra lighting detail on flat surfaces.</p>
-				</row>
-				<row>
-					<h3>Deluxe mapping</h3>
-					<input cvar="r_deluxeMapping" type="checkbox" />
-					<p>Light direction based on baked textures.</p>
 				</row>
 				<row>
 					<h3>Relief mapping</h3>
@@ -217,28 +216,14 @@
 					<p>Adds bumps on supported surfaces. Experimental.</p>
 				</row>
 				<row>
-					<h3>Specular mapping</h3>
-					<input cvar="r_specularMapping" type="checkbox" />
-					<p>Simulate light specularity.</p>
-				</row>
-				<row>
-					<h3>Physical mapping</h3>
-					<input cvar="r_physicalMapping" type="checkbox" />
-					<p>Material appearance based on physical approximations.</p>
-				</row>
-
-				<buttonbar>
-					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
-				</buttonbar>
-			</panel>
-
-			<tab>Effects</tab>
-			<panel>
-				<h2>Effects</h2>
-				<row>
 					<h3>Bloom</h3>
 					<input cvar="r_bloom" type="checkbox" />
 					<p>Makes bright areas on your screen glow.</p>
+				</row>
+				<row>
+					<h3>Rim-lighting</h3>
+					<input cvar="r_rimlighting" type="checkbox" />
+					<p>Light the edges of models from behind.</p>
 				</row>
 				<row>
 					<h3>Heat-haze</h3>
@@ -248,7 +233,8 @@
 				<row>
 					<h3>Screen space ambient occlusion (SSAO)</h3>
 					<input cvar="r_ssao" type="checkbox" />
-					<p>Simulate dark corners. Experimental.</p>
+					<h3>SSAO</h3>
+					<p> Screen space ambient occlusion. Experimental</p>
 				</row>
 
 				<h2>Particles</h2>
@@ -304,7 +290,89 @@
 						<ilink onclick='Events.pushevent("exec reset cg_motionblurMinSpeed", event)'> (reset) </ilink>
 					</p>
 				</row>
+
+				<buttonbar>
+					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+				</buttonbar>
 			</panel>
+
+			<tab> Lighting and particles</tab>
+			<panel>
+				<h2>Lights</h2>
+				<row>
+					<select cvar="r_vertexLighting">
+						<option value="0">Light Map (normal)</option>
+						<option value="1">Grid light (low, ugly)</option>
+					</select>
+					<h3>Lighting system</h3>
+				</row>
+				<row>
+					<h3>Dynamic lights</h3>
+					<input cvar="r_dynamiclight" type="checkbox" checked-value="2" />
+					<p>Lighting made by weapons and buildings.</p>
+				</row>
+				<row>
+					<select cvar="cg_shadows" style="width:20em;">
+						<option value="0">None</option>
+						<option value="1">Blobs (low)</option>
+						<!-- Implementations for those options are broken and can make the game unusable
+						<option value="3">Exponential mapping</option>
+						<option value="5">Variance mapping</option>
+						<option value="6">Exponential + variance (high)</option>
+						-->
+					</select>
+					<h3>Shadows</h3>
+				</row>
+
+				<h2>Particles</h2>
+				<row>
+					<h3>Particle physics</h3>
+					<input cvar="cg_bounceParticles" type="checkbox" />
+					<p>Allow particles to bounce off surfaces.</p>
+				</row>
+				<row>
+					<h3>Depth-sort particles</h3>
+					<input cvar="cg_depthSortParticles" type="checkbox" />
+					<p>Ensure over-lapping particles are rendered correctly.</p>
+				</row>
+			</panel>
+
+			<tab> Misc</tab>
+			<panel>
+				<h2> Building markers </h2>
+				<row>
+					<select cvar="cg_rangeMarkerBuildableTypes" style="width: 20em;">
+						<option value="none">None (disabled)</option>
+						<option value="all">All structures</option>
+						<option value="support">Support structures</option>
+						<option value="offensive">Offensive structures</option>
+						<option value="alien">Alien structures</option>
+						<option value="human">Human structures</option>
+						<option value="aliensupport">Alien support structures</option>
+						<option value="humansupport">Human support structures</option>
+						<option value="alienoffensive">Offensive alien structures</option>
+						<option value="humanoffensive">Offensive human structures</option>
+					</select>
+					<h3>Building ranges</h3>
+				</row>
+				<row>
+					<h3></h3>
+
+					<p></p>
+				</row>
+				<row>
+					<h3></h3>
+
+					<p></p>
+				</row>
+				<row>
+					<h3></h3>
+
+					<p></p>
+				</row>
+			</panel>
+
+
 		</tabset>
 	</body>
 </rml>
