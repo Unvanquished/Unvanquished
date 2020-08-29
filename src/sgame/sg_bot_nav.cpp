@@ -690,7 +690,6 @@ void BotMoveToGoal( gentity_t *self )
 		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
 		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
 
 		// walk to regain stamina
 		BotWalk( self, true );
