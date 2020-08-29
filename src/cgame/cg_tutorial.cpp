@@ -49,7 +49,6 @@ static bind_t bindings[] =
 	{ "+attack2",       N_( "Secondary Attack" ),                      {} },
 	{ "+attack3",       N_( "Tertiary Attack" ),                       {} },
 	{ "reload",         N_( "Reload" ),                                {} },
-	{ "buy ammo",       N_( "Buy Ammo" ),                              {} },
 	{ "itemact medkit", N_( "Use Medkit" ),                            {} },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
 	{ "+deconstruct",   N_( "Deconstruct Structure" ),                 {} },
