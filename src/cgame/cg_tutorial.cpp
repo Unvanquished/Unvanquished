@@ -52,8 +52,7 @@ static bind_t bindings[] =
 	{ "buy ammo",       N_( "Buy Ammo" ),                              {} },
 	{ "itemact medkit", N_( "Use Medkit" ),                            {} },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
-	{ "modcase alt \"/deconstruct marked\" /deconstruct",
-	                    N_( "Deconstruct Structure" ),                 {} },
+	{ "+deconstruct",   N_( "Deconstruct Structure" ),                 {} },
 	{ "weapprev",       N_( "Previous Weapon" ),                       {} },
 	{ "weapnext",       N_( "Next Weapon" ),                           {} },
 	{ "message_public", N_( "Global chat" ),                           {} },
@@ -195,7 +194,7 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 	if ( ( es = CG_BuildableInRange( ps, nullptr ) ) )
 	{
-		const char *key = CG_KeyNameForCommand( "modcase alt \"/deconstruct marked\" /deconstruct" );
+		const char *key = CG_KeyNameForCommand( "+deconstruct" );
 
 		if ( es->eFlags & EF_B_MARKED )
 		{
@@ -207,6 +206,9 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 					  va( _( "Press %s to mark this structure for replacement\n" ), key ) );
 		}
+
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+				  va( _( "Hold %s to deconstruct this structure\n" ), key ) );
 	}
 }
 
