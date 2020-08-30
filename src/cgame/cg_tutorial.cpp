@@ -504,6 +504,10 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s and any direction to sprint\n" ),
 	              CG_KeyNameForCommand( "+sprint" ) ) );
+
+	Q_strcat( text, MAX_TUTORIAL_TEXT,
+	          va( _( "Press %s to crouch\n" ),
+	              CG_KeyNameForCommand( "+movedown" ) ) );
 }
 
 /*
