@@ -242,7 +242,7 @@ enum weaponstate_t
 #define PMF_TIME_KNOCKBACK 0x000040 // pm_time is an air-accelerate only time
 #define PMF_TIME_WATERJUMP 0x000080 // pm_time is waterjump
 #define PMF_RESPAWNED      0x000100 // clear after attack and jump buttons come up
-#define PMF_USE_ITEM_HELD  0x000200
+// available               0x000200
 #define PMF_WEAPON_RELOAD  0x000400 // force a weapon switch
 #define PMF_FOLLOW         0x000800 // spectate following another player
 #define PMF_QUEUED         0x001000 // player is queued

@@ -4065,43 +4065,6 @@ static void PM_Weapon()
 	// again if lowering or raising
 	if ( BG_PlayerCanChangeWeapon( pm->ps ) )
 	{
-		// must press use to switch weapons
-		if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE ) )
-		{
-			if ( !( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) )
-			{
-				if ( pm->cmd.weapon < 32 )
-				{
-					//if trying to select a weapon, select it
-					if ( pm->ps->weapon != pm->cmd.weapon )
-					{
-						PM_BeginWeaponChange( pm->cmd.weapon );
-					}
-				}
-				else
-				{
-					//if trying to toggle an upgrade, toggle it
-					if ( BG_InventoryContainsUpgrade( pm->cmd.weapon - 32, pm->ps->stats ) )  //sanity check
-					{
-						if ( BG_UpgradeIsActive( pm->cmd.weapon - 32, pm->ps->stats ) )
-						{
-							BG_DeactivateUpgrade( pm->cmd.weapon - 32, pm->ps->stats );
-						}
-						else
-						{
-							BG_ActivateUpgrade( pm->cmd.weapon - 32, pm->ps->stats );
-						}
-					}
-				}
-
-				pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
-			}
-		}
-		else
-		{
-			pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
-		}
-
 		//something external thinks a weapon change is necessary
 		if ( pm->ps->pm_flags & PMF_WEAPON_SWITCH )
 		{
@@ -4900,7 +4863,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// clear the respawned flag if attack and use are cleared
 	if ( pm->ps->stats[ STAT_HEALTH ] > 0 &&
-	     !( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) || usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE ) ) )
+	     !( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) ) )
 	{
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 	}
