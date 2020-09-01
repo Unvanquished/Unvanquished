@@ -351,19 +351,6 @@ CG_HumanText
 */
 static void CG_HumanText( char *text, playerState_t *ps )
 {
-	const char *name;
-	upgrade_t upgrade = UP_NONE;
-
-	if ( cg.weaponSelect < 32 )
-	{
-		name = cg_weapons[ cg.weaponSelect ].humanName;
-	}
-	else
-	{
-		name = cg_upgrades[ cg.weaponSelect - 32 ].humanName;
-		upgrade = (upgrade_t) ( cg.weaponSelect - 32 );
-	}
-
 	if ( !ps->ammo && !ps->clips && !BG_Weapon( ps->weapon )->infiniteAmmo )
 	{
 		//no ammo
@@ -444,6 +431,22 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		}
 	}
 
+	upgrade_t upgrade = UP_NONE;
+	for ( const auto u : { UP_GRENADE, UP_FIREBOMB } )
+	{
+		if ( BG_InventoryContainsUpgrade( u, ps->stats ) )
+		{
+			upgrade = u;
+		}
+	}
+
+	if ( upgrade != UP_NONE )
+	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to throw the %s\n" ),
+			CG_KeyNameForCommand( "itemact grenade" ),
+			_( BG_Upgrade( upgrade )->humanName ) ));
+	}
+
 	// Find next weapon in inventory.
 	weapon_t nextWeapon = CG_FindNextWeapon( ps );
 
@@ -487,14 +490,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s and any direction to sprint\n" ),
 	              CG_KeyNameForCommand( "+sprint" ) ) );
-
-	if ( BG_InventoryContainsUpgrade( UP_FIREBOMB, ps->stats ) ||
-		BG_InventoryContainsUpgrade( UP_GRENADE, ps->stats ) )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to throw a grenade\n" ),
-			CG_KeyNameForCommand( "itemact grenade" )
-		));
-	}
 }
 
 /*
