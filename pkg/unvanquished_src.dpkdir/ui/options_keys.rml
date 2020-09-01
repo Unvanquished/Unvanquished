@@ -126,10 +126,10 @@
 					<p>Show Scores:</p>
 				</row>
 				<row>
-					<keybind cmd='modcase alt "/deconstruct marked" /deconstruct' />
+					<keybind cmd='+deconstruct' />
 					<p>Mark structure for replacement:</p>
 				</row>
-				<p>Hold ALT to deconstruct marked structure.
+				<p>Hold the key to deconstruct structure.
 				</p>
 				<row>
 					<keybind cmd='beaconMenu' />
