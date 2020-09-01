@@ -140,7 +140,7 @@
 					<p>Toggle console:</p>
 				</row>
 				<row>
-					<keybind cmd="modcase shift /screenshotPNG /screenshotJPEG" />
+					<keybind cmd="modcase shift screenshotPNG screenshotJPEG" />
 					<p>Screenshot:</p>
 				</row>
 				<p> Hold shift when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG. </p>
