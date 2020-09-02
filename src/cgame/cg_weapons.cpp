@@ -2036,14 +2036,14 @@ void CG_DrawHumanInventory()
 		{
 			if ( !CG_WeaponSelectable( (weapon_t) cg.weaponSelect ) )
 			{
-				CG_NextWeapon_f();
+				CG_SelectNextInventoryItem_f();
 			}
 		}
 		else
 		{
 			if ( !CG_UpgradeSelectable( (upgrade_t) ( cg.weaponSelect - 32 ) ) )
 			{
-				CG_NextWeapon_f();
+				CG_SelectNextInventoryItem_f();
 			}
 		}
 	}
@@ -2191,14 +2191,38 @@ void CG_DrawItemSelectText()
 
 /*
 ===============
+CG_FindNextWeapon
+Find next weapon in inventory.
+===============
+*/
+weapon_t CG_FindNextWeapon( playerState_t *ps )
+{
+	int currentWeapon = cg.snap->ps.weapon;
+
+	for ( int w = currentWeapon; ++w < WP_NUM_WEAPONS; )
+	{
+		if ( BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		{
+			return static_cast<weapon_t>(w);
+		}
+	}
+	for ( int w = WP_NONE; ++w < currentWeapon; )
+	{
+		if ( BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		{
+			return static_cast<weapon_t>(w);
+		}
+	}
+	return WP_NONE;
+}
+
+/*
+===============
 CG_NextWeapon_f
 ===============
 */
 void CG_NextWeapon_f()
 {
-	int i;
-	int original;
-
 	if ( !cg.snap )
 	{
 		return;
@@ -2207,6 +2231,34 @@ void CG_NextWeapon_f()
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
 		trap_SendClientCommand( "followprev\n" );
+		return;
+	}
+
+	weapon_t nextWeapon = CG_FindNextWeapon( &cg.snap->ps );
+
+	if ( nextWeapon != WP_NONE )
+	{
+		if ( !BG_PlayerCanChangeWeapon( &cg.snap->ps ) )
+		{
+			return;
+		}
+
+		trap_SendClientCommand( va( "itemact %s\n", BG_Weapon( nextWeapon )->name ) );
+	}
+}
+
+/*
+===============
+CG_SelectNextInventoryItem_f
+===============
+*/
+void CG_SelectNextInventoryItem_f()
+{
+	int i;
+	int original;
+
+	if ( !cg.snap )
+	{
 		return;
 	}
 
@@ -2246,14 +2298,38 @@ void CG_NextWeapon_f()
 
 /*
 ===============
+CG_FindPrevWeapon
+Find previous weapon in inventory.
+===============
+*/
+weapon_t CG_FindPrevWeapon( playerState_t *ps )
+{
+	int currentWeapon = cg.snap->ps.weapon;
+
+	for ( int w = currentWeapon; --w > WP_NONE; )
+	{
+		if ( BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		{
+			return static_cast<weapon_t>(w);
+		}
+	}
+	for ( int w = WP_NUM_WEAPONS; --w > currentWeapon; )
+	{
+		if ( BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		{
+			return static_cast<weapon_t>(w);
+		}
+	}
+	return WP_NONE;
+}
+
+/*
+===============
 CG_PrevWeapon_f
 ===============
 */
 void CG_PrevWeapon_f()
 {
-	int i;
-	int original;
-
 	if ( !cg.snap )
 	{
 		return;
@@ -2262,6 +2338,34 @@ void CG_PrevWeapon_f()
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
 		trap_SendClientCommand( "follownext\n" );
+		return;
+	}
+
+	weapon_t prevWeapon = CG_FindPrevWeapon( &cg.snap->ps );
+
+	if ( prevWeapon != WP_NONE )
+	{
+		if ( !BG_PlayerCanChangeWeapon( &cg.snap->ps ) )
+		{
+			return;
+		}
+
+		trap_SendClientCommand( va( "itemact %s\n", BG_Weapon( prevWeapon )->name ) );
+	}
+}
+
+/*
+===============
+CG_SelectPrevInventoryItem_f
+===============
+*/
+void CG_SelectPrevInventoryItem_f()
+{
+	int i;
+	int original;
+
+	if ( !cg.snap )
+	{
 		return;
 	}
 

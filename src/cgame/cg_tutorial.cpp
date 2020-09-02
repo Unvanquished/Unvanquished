@@ -41,21 +41,21 @@ static const char* const OPEN_CONSOLE_CMD = "toggleconsole";
 
 static bind_t bindings[] =
 {
-	{ "+useitem",       N_( "Activate Upgrade" ),                      {} },
 	{ "+speed",         N_( "Run/Walk" ),                              {} },
 	{ "+sprint",        N_( "Sprint" ),                                {} },
 	{ "+moveup",        N_( "Jump" ),                                  {} },
 	{ "+movedown",      N_( "Crouch" ),                                {} },
 	{ "+attack",        N_( "Primary Attack" ),                        {} },
 	{ "+attack2",       N_( "Secondary Attack" ),                      {} },
+	{ "+attack3",       N_( "Tertiary Attack" ),                       {} },
 	{ "reload",         N_( "Reload" ),                                {} },
-	{ "buy ammo",       N_( "Buy Ammo" ),                              {} },
 	{ "itemact medkit", N_( "Use Medkit" ),                            {} },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
-	{ "modcase alt \"/deconstruct marked\" /deconstruct",
-	                    N_( "Deconstruct Structure" ),                 {} },
-	{ "weapprev",       N_( "Previous Upgrade" ),                      {} },
-	{ "weapnext",       N_( "Next Upgrade" ),                          {} },
+	{ "+deconstruct",   N_( "Deconstruct Structure" ),                 {} },
+	{ "weapprev",       N_( "Previous Weapon" ),                       {} },
+	{ "weapnext",       N_( "Next Weapon" ),                           {} },
+	{ "message_public", N_( "Global chat" ),                           {} },
+	{ "message_team",   N_( "Team chat" ),                             {} },
 	{ OPEN_CONSOLE_CMD, N_( "Toggle Console" ),                        {} },
 	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
 };
@@ -102,7 +102,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 			if ( binding.command == OPEN_CONSOLE_CMD )
 			{
 				// Hard-coded console toggle key binding
-				keyNames = "Shift-Escape";
+				keyNames = "SHIFT-ESCAPE";
 				// cl_consoleKeys is yet another source of keys for toggling the console,
 				// but it is omitted out of laziness.
 			}
@@ -193,7 +193,7 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 	if ( ( es = CG_BuildableInRange( ps, nullptr ) ) )
 	{
-		const char *key = CG_KeyNameForCommand( "modcase alt \"/deconstruct marked\" /deconstruct" );
+		const char *key = CG_KeyNameForCommand( "+deconstruct" );
 
 		if ( es->eFlags & EF_B_MARKED )
 		{
@@ -205,6 +205,9 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 					  va( _( "Press %s to mark this structure for replacement\n" ), key ) );
 		}
+
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+				  va( _( "Hold %s to deconstruct this structure\n" ), key ) );
 	}
 }
 
@@ -227,8 +230,8 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to launch a projectile\n" ),
-		              CG_KeyNameForCommand( "+useitem" ) ) );
+		          va( _( "Press %s to spit\n" ),
+		              CG_KeyNameForCommand( "+attack3" ) ) );
 
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to walk on walls\n" ),
@@ -264,6 +267,10 @@ static void CG_AlienLevel1Text( char *text )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to swipe\n" ),
 	              CG_KeyNameForCommand( "+attack" ) ) );
+
+	Q_strcat( text, MAX_TUTORIAL_TEXT,
+	          va( _( "Press %s to lunge\n" ),
+	              CG_KeyNameForCommand( "+attack2" ) ) );
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
@@ -307,8 +314,8 @@ static void CG_AlienLevel3Text( char *text, playerState_t *ps )
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to launch a projectile\n" ),
-		              CG_KeyNameForCommand( "+useitem" ) ) );
+		          va( _( "Press %s to launch a barb\n" ),
+		              CG_KeyNameForCommand( "+attack3" ) ) );
 	}
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
@@ -330,7 +337,7 @@ static void CG_AlienLevel4Text( char *text, playerState_t *ps )
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Hold down and release %s while moving forwards to trample\n" ),
+	          va( _( "Hold down %s while moving forwards to trample\n" ),
 	              CG_KeyNameForCommand( "+attack2" ) ) );
 }
 
@@ -351,19 +358,6 @@ CG_HumanText
 */
 static void CG_HumanText( char *text, playerState_t *ps )
 {
-	const char *name;
-	upgrade_t upgrade = UP_NONE;
-
-	if ( cg.weaponSelect < 32 )
-	{
-		name = cg_weapons[ cg.weaponSelect ].humanName;
-	}
-	else
-	{
-		name = cg_upgrades[ cg.weaponSelect - 32 ].humanName;
-		upgrade = (upgrade_t) ( cg.weaponSelect - 32 );
-	}
-
 	if ( !ps->ammo && !ps->clips && !BG_Weapon( ps->weapon )->infiniteAmmo )
 	{
 		//no ammo
@@ -444,13 +438,38 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		}
 	}
 
-	if ( upgrade == UP_NONE ||
-	     ( upgrade > UP_NONE && BG_Upgrade( upgrade )->usable ) )
+	upgrade_t upgrade = UP_NONE;
+	for ( const auto u : { UP_GRENADE, UP_FIREBOMB } )
+	{
+		if ( BG_InventoryContainsUpgrade( u, ps->stats ) )
+		{
+			upgrade = u;
+		}
+	}
+
+	if ( upgrade != UP_NONE )
+	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to throw the %s\n" ),
+			CG_KeyNameForCommand( "itemact grenade" ),
+			_( BG_Upgrade( upgrade )->humanName ) ));
+	}
+
+	// Find next weapon in inventory.
+	weapon_t nextWeapon = CG_FindNextWeapon( ps );
+
+	if ( nextWeapon != WP_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to use the %s\n" ),
-		              CG_KeyNameForCommand( "+useitem" ),
-		              name ) );
+		              CG_KeyNameForCommand( "weapnext" ),
+		              _( BG_Weapon( nextWeapon )->humanName ) ) );
+	}
+
+	if ( BG_InventoryContainsUpgrade( UP_JETPACK, ps->stats ) )
+	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Hold %s to use the %s\n" ),
+			CG_KeyNameForCommand( "+moveup" ),
+			_( BG_Upgrade( UP_JETPACK )->humanName ) ));
 	}
 
 	if ( ps->stats[ STAT_HEALTH ] <= 35 &&
@@ -486,13 +505,9 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	          va( _( "Press %s and any direction to sprint\n" ),
 	              CG_KeyNameForCommand( "+sprint" ) ) );
 
-	if ( BG_InventoryContainsUpgrade( UP_FIREBOMB, ps->stats ) ||
-		BG_InventoryContainsUpgrade( UP_GRENADE, ps->stats ) )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to throw a grenade\n" ),
-			CG_KeyNameForCommand( "itemact grenade" )
-		));
-	}
+	Q_strcat( text, MAX_TUTORIAL_TEXT,
+	          va( _( "Press %s to crouch\n" ),
+	              CG_KeyNameForCommand( "+movedown" ) ) );
 }
 
 /*
@@ -526,30 +541,32 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 
 	if ( ps->pm_flags & PMF_FOLLOW )
 	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+		          va( _( "Press %s to stop following\n" ),
+		              CG_KeyNameForCommand( "+attack2" ) ) );
+
 		if ( !cg.chaseFollow )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( _( "Press %s to switch to chase-cam spectator mode\n" ),
-			              CG_KeyNameForCommand( "+useitem" ) ) );
-		}
-		else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
-		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to return to free spectator mode\n" ),
-			              CG_KeyNameForCommand( "+useitem" ) ) );
+			              CG_KeyNameForCommand( "+attack3" ) ) );
 		}
 		else
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to stop following\n" ),
-			              CG_KeyNameForCommand( "+useitem" ) ) );
+			          va( _( "Press %s to return to first-person spectator mode\n" ),
+			              CG_KeyNameForCommand( "+attack3" ) ) );
 		}
+
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+		          va( _( "Press %s to follow the next player\n" ),
+		              CG_KeyNameForCommand( "weapnext" ) ) );
 	}
 	else
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to follow a player\n" ),
-		              CG_KeyNameForCommand( "+useitem" ) ) );
+		              CG_KeyNameForCommand( "+attack2" ) ) );
 	}
 }
 
@@ -654,6 +671,19 @@ const char *CG_TutorialText()
 
 	if ( !cg.demoPlayback )
 	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+
+		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
+		{
+			Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to chat\n" ), CG_KeyNameForCommand( "message_public" ) ) );
+		}
+		else
+		{
+			Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to chat or %s to chat to your team\n" ), CG_KeyNameForCommand( "message_public" ),  CG_KeyNameForCommand( "message_team" ) ) );
+		}
+
+		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+
 		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console\n" ), CG_KeyNameForCommand( "toggleconsole" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, _( "Press ESCAPE for the menu" ) );
 	}

@@ -1100,8 +1100,7 @@ void ClientIntermissionThink( gclient_t *client )
 	usercmdCopyButtons( client->oldbuttons, client->buttons );
 	usercmdCopyButtons( client->buttons, client->pers.cmd.buttons );
 
-	if ( ( usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) ||
-	       usercmdButtonPressed( client->buttons, BUTTON_USE_HOLDABLE ) ) &&
+	if ( usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
 	     usercmdButtonsDiffer( client->oldbuttons, client->buttons ) )
 	{
 		client->readyToExit = 1;

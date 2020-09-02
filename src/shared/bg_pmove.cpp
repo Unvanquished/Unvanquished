@@ -3766,9 +3766,6 @@ static void PM_FinishWeaponChange()
 	}
 }
 
-// TODO: move other button definitions into gamelogic
-constexpr int BUTTON_DECONSTRUCT = 13;
-
 static void HandleDeconstructButton()
 {
 	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) ||
@@ -3857,7 +3854,7 @@ static void PM_Weapon()
 	int      addTime = 200; //default addTime - should never be used
 	bool attack1 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK );
 	bool attack2 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 );
-	bool attack3 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE );
+	bool attack3 = usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK3 );
 
 	// Ignore weapons in some cases
 	if ( pm->ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
@@ -4065,43 +4062,6 @@ static void PM_Weapon()
 	// again if lowering or raising
 	if ( BG_PlayerCanChangeWeapon( pm->ps ) )
 	{
-		// must press use to switch weapons
-		if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE ) )
-		{
-			if ( !( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) )
-			{
-				if ( pm->cmd.weapon < 32 )
-				{
-					//if trying to select a weapon, select it
-					if ( pm->ps->weapon != pm->cmd.weapon )
-					{
-						PM_BeginWeaponChange( pm->cmd.weapon );
-					}
-				}
-				else
-				{
-					//if trying to toggle an upgrade, toggle it
-					if ( BG_InventoryContainsUpgrade( pm->cmd.weapon - 32, pm->ps->stats ) )  //sanity check
-					{
-						if ( BG_UpgradeIsActive( pm->cmd.weapon - 32, pm->ps->stats ) )
-						{
-							BG_DeactivateUpgrade( pm->cmd.weapon - 32, pm->ps->stats );
-						}
-						else
-						{
-							BG_ActivateUpgrade( pm->cmd.weapon - 32, pm->ps->stats );
-						}
-					}
-				}
-
-				pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
-			}
-		}
-		else
-		{
-			pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
-		}
-
 		//something external thinks a weapon change is necessary
 		if ( pm->ps->pm_flags & PMF_WEAPON_SWITCH )
 		{
@@ -4888,7 +4848,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// set the firing flag for continuous beam weapons
 	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	     usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE ) &&
+	     usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK3 ) &&
 	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
 	{
 		pm->ps->eFlags |= EF_FIRING3;
@@ -4900,7 +4860,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// clear the respawned flag if attack and use are cleared
 	if ( pm->ps->stats[ STAT_HEALTH ] > 0 &&
-	     !( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) || usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE ) ) )
+	     !( usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) ) )
 	{
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 	}

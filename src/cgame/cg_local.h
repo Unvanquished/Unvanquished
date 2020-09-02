@@ -1206,7 +1206,7 @@ struct cg_t
 	int                     spawnTime; // fovwarp
 	int                     weapon1Time; // time when BUTTON_ATTACK went t->f f->t
 	int                     weapon2Time; // time when BUTTON_ATTACK2 went t->f f->t
-	int                     weapon3Time; // time when BUTTON_USE_HOLDABLE went t->f f->t
+	int                     weapon3Time; // time when BUTTON_ATTACK3 went t->f f->t
 	bool                weapon1Firing;
 	bool                weapon2Firing;
 	bool                weapon3Firing;
@@ -2059,9 +2059,11 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 //
 // cg_weapons.c
 //
+weapon_t CG_FindNextWeapon( playerState_t *ps );
 void CG_NextWeapon_f();
 void CG_PrevWeapon_f();
 void CG_Weapon_f();
+void CG_SelectNextInventoryItem_f();
 
 void CG_InitUpgrades();
 void CG_RegisterUpgrade( int upgradeNum );
