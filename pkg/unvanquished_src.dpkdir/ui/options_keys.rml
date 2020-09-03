@@ -41,7 +41,6 @@
 					<p>Jump:</p>
 				</row>
 				<row>
-
 					<keybind cmd="+movedown" team="humans" />
 					<p>Crouch:</p>
 				</row>
@@ -49,7 +48,6 @@
 					<keybind cmd="+movedown" team="aliens" />
 					<p>Wallwalk:</p>
 				</row>
-
 			</panel>
 			<tab>Abilities</tab>
 			<panel>
@@ -62,8 +60,12 @@
 					<p>Secondary Attack:</p>
 				</row>
 				<row>
-					<keybind cmd="+useitem" team="aliens" />
+					<keybind cmd="+attack3" team="aliens" />
 					<p>Shoot Barb:</p>
+				</row>
+				<row>
+					<keybind cmd="itemact grenade" team="humans" />
+					<p>Throw grenade:</p>
 				</row>
 				<row>
 					<keybind cmd="reload" team="humans" />
@@ -72,10 +74,6 @@
 				<row>
 					<keybind cmd="itemact medkit" team="humans" />
 					<p>Use Medkit:</p>
-				</row>
-				<row>
-					<keybind cmd="itemact grenade" team="humans" />
-					<p>Throw grenade</p>
 				</row>
 				<row>
 					<keybind cmd="+activate" team="humans" />
@@ -128,10 +126,10 @@
 					<p>Show Scores:</p>
 				</row>
 				<row>
-					<keybind cmd='modcase alt "/deconstruct marked" /deconstruct' />
+					<keybind cmd='+deconstruct' />
 					<p>Mark structure for replacement:</p>
 				</row>
-				<p>Hold ALT to deconstruct marked structure.
+				<p>Hold the key to deconstruct structure.
 				</p>
 				<row>
 					<keybind cmd='beaconMenu' />
@@ -142,10 +140,10 @@
 					<p>Toggle console:</p>
 				</row>
 				<row>
-					<keybind cmd="modcase shift /screenshotPNG /screenshotJPEG" />
+					<keybind cmd="modcase shift screenshotPNG screenshotJPEG" />
 					<p>Screenshot:</p>
 				</row>
-				<p> Hold shift when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG. </p>
+				<p>Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG.</p>
 			</panel>
 			<tab>Quake-look</tab>
 			<panel>
